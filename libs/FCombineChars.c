@@ -1504,11 +1504,11 @@ convert_to_utf8(const unsigned short int *str_ucs2, unsigned char *str_utf8,
 	       else
 	       {
 		      str_utf8[out_pos] =
-			(str_ucs2[in_pos] >> 12) & 0xe0;
+			(str_ucs2[in_pos] >> 12) | 0xe0;
 		      str_utf8[out_pos+1] =
-			(str_ucs2[in_pos] >> 6 & 0x3f) | 0x80;
+			((str_ucs2[in_pos] & 0xfff) >> 6) | 0x80;
 		      str_utf8[out_pos+2] =
-			(str_ucs2[in_pos] & 0x3f) & 0x80;
+			(str_ucs2[in_pos] & 0x3f) | 0x80;
 		      out_pos += 3;
 	       }
 	       /* this doesn't handle values outside UCS2 (16-bit) */
@@ -1611,6 +1611,7 @@ FCombineChars(unsigned char *str_visual, int len)
 	        unsigned short int *temp;
 		Bool last_changed = False;
 	        has_changed = False;
+
 		for(i = 0, j = 0; i < str_len - 1; j++)
 		{
 		        unsigned short int composed = 
@@ -1618,15 +1619,18 @@ FCombineChars(unsigned char *str_visual, int len)
 			if(composed != 0)
 			{
 			       dest[j] = composed;
+			       /* if the last character was "absorbed" */
+			       if(i == str_len - 2)
+			       {
+				       last_changed = True;
+			       }
 			       i += 2;
 			       has_changed = True;
-			       last_changed = True;
 			}
 			else
 			{
 			       dest[j] = source[i];
 			       i++;
-			       last_changed = False;
 			}
 		}
 		temp = dest;

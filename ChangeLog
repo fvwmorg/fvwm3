@@ -1,3 +1,12 @@
+2003-06-03  Marcus Lundblad  <ml@update.uu.se>
+
+	* libs/FCombineChars.c (convert_to_utf8)
+	fixed a bug when converting back to UTF-8 and a bug giving
+	garbage at end of string in some cases
+
+	* libs/Flocale.c (FlocaleEncodeString)
+	fixed problem regarding combining-characters when BIDI is used
+	
 2003-05-31  Marcus Lundblad  <ml@update.uu.se>
 
 	* libs/Makefile.am:

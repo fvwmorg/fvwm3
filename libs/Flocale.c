@@ -293,7 +293,7 @@ char *FlocaleEncodeString(
 	Display *dpy, FlocaleFont *flf, char *str, int *do_free, int len,
 	int *nl, int *is_rtl)
 {
-	char *str1, *str2;
+	char *str1, *str2, *str3;
 	int len1 = len, len2;
 	Bool do_iconv = True;
 	const char *bidi_charset;
@@ -341,36 +341,54 @@ char *FlocaleEncodeString(
 	if (FiconvSupport && do_iconv)
 	{
 		
-		str1 = FiconvCharsetToCharset(
+		str2 = FiconvCharsetToCharset(
 			dpy, flf->str_fc, flf->fc, (const char *)str1, len);
-		if (str1 == NULL)
+		if (str2 == NULL)
 		{
 			/* fail to convert */
 			*do_free = False;
-			return str;
+			return str1;
 		}
-		if (str1 != str)
+		if (str2 != str1)
 		{
 			*do_free = True;
-			len1 = strlen(str1);
+			len1 = strlen(str2);
 		}
+	}
+	else
+	{
+	        str2 = str1;
+		len1 = len;
 	}
 
 	if (FlocaleGetBidiCharset(dpy, flf->str_fc) != NULL &&
 	    (bidi_charset = FlocaleGetBidiCharset(dpy, flf->fc)) != NULL)
 	{
-		str2 = FBidiConvert(str1, bidi_charset, len1, is_rtl, &len2);
-		if (str2 != NULL && str2  != str1)
+		str3 = FBidiConvert(str2, bidi_charset, len1, is_rtl, &len2);
+		if (str3 != NULL && str3  != str2)
 		{
 			if (*do_free)
 			{
 				free(str1);
+				free(str2);
 			}
 			*do_free = True;
 			len1 = len2;
-			str1 = str2;
+			str1 = str3;
+		}
+		/* if we failed to do BIDI convert, return string string from
+		   combining phase */
+		else
+		{
+		        str1 = str2;
 		}
 	}
+	/* if non-bidi charset */
+	else
+	{
+	        str1 = str2;
+	}
+
 	*nl = len1;
 	return str1;
 }
