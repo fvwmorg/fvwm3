@@ -1,3 +1,15 @@
+1999-07-10  Chris Rankin <rankinc@zipworld.com.au>
+
+	* FvwmTaskBar/FvwmTaskBar.c
+	Changed SIGALRM handler to use sigaction-type semantics; replaced
+    MotionNotify event-mask for XSendEvent() with EnterNotify since
+    no clients accept MotionNotify events (hence no tool-tips!). Removed
+    lingering debug-fprintfs and rewrote EndLessLoop() so that it only
+    uses the single select() statement. (Modelled after FvwmWinList.)
+    Added "void" to a lot of empty prototypes, and added GNU "noreturn"
+    attribute to DeadPipe(). Concentrated all calls to alarm() within the
+    SetAlarm() and ClearAlarm() functions.
+
 1999-07-10  Tomas Ogren  <stric@ing.umu.se>
 
 	* FvwmConsole/FvwmConsole.c: s/socklen_t/size_t/ - socklen_t doesn't
