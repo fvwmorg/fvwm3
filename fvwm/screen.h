@@ -298,16 +298,10 @@ typedef struct ScreenInfo
   FvwmWindow *Hilite;		/* the fvwm window that is highlighted
 				 * except for networking delays, this is the
 				 * window which REALLY has the focus */
-  FvwmWindow *Focus;            /* Last window which Fvwm gave the focus to
-                                 * NOT the window that really has the focus */
   Window UnknownWinFocused;      /* None, if the focus is nowhere or on an fvwm
 				 * managed window. Set to id of otherwindow
 				 * with focus otherwise */
   FvwmWindow *Ungrabbed;
-  FvwmWindow *PreviousFocus;    /* Window which had focus before fvwm stole it
-				 * to do moves/menus/etc. */
-  FvwmWindow *LastScreenFocus;  /* Window which had focus before the pointer
-				 * moved to a different screen. */
   int EdgeScrollX;              /* #pixels to scroll on screen edge */
   int EdgeScrollY;              /* #pixels to scroll on screen edge */
   unsigned char buttons2grab;   /* buttons to grab in click to focus mode */

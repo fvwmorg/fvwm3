@@ -1,3 +1,48 @@
+2001-04-05  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* fvwm/screen.h (ScreenInfo):
+	* fvwm/events.c (HandleUnmapNotify):
+	(HandleFocusIn):
+	(HandleKeyPress):
+	(HandlePropertyNotify):
+	(HandleLeaveNotify):
+	(HandleEnterNotify):
+	(HandleButtonPress):
+	(HandleUnmapNotify):
+	(HandleMapNotify):
+	(HandleMapRequestKeepRaised):
+	(HandleEnterNotify):
+	(HandleLeaveNotify):
+	* fvwm/virtual.c (MapDesk):
+	(UnmapDesk):
+	* fvwm/icons.c (DeIconify):
+	(Iconify):
+	* fvwm/fvwm.c (InitVariables):
+	(InitVariables):
+	* fvwm/move_resize.c (CMD_Maximize):
+	(handle_stick):
+	* fvwm/update.c (apply_decor_change):
+	(flush_window_updates):
+	* fvwm/windowlist.c (CMD_WindowList):
+	* fvwm/conditional.c (Circulate):
+	(MatchesConditionMask):
+	* fvwm/builtins.c (CMD_WindowShade):
+	* fvwm/add_window.c (CaptureAllWindows):
+	(destroy_window):
+	* fvwm/misc.c (GrabEm):
+	removed Focus, LastScreenFocus and PreviousFocus members from screen
+	struct; handle these locally in focus.c and provide access functions
+	fixed Prev condition in complex functions
+
+	* fvwm/conditional.c (MatchesConditionMask):
+	fixed core dump
+
+	* fvwm/focus.c (get_focus_window):
+	(get_current_focus_window):
+	(set_focus_window):
+	(store_prevfocus_window):
+	new functions
+
 2001-04-04  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* fvwm/functions.c (AddToFunction):

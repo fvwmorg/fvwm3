@@ -1206,6 +1206,7 @@ void GetIconBitmap(FvwmWindow *tmp_win)
 void DeIconify(FvwmWindow *tmp_win)
 {
   FvwmWindow *t,*tmp;
+  FvwmWindow *sf;
 
   if(!tmp_win)
     return;
@@ -1322,9 +1323,9 @@ void DeIconify(FvwmWindow *tmp_win)
 #if 1
   RaiseWindow(tmp_win); /* moved dje */
 #endif
-  if (Scr.Focus)
+  if ((sf = get_focus_window()))
   {
-    focus_grab_buttons(Scr.Focus, True);
+    focus_grab_buttons(sf, True);
   }
   if(HAS_CLICK_FOCUS(tmp_win))
     FocusOn(tmp_win, TRUE, "");
@@ -1342,6 +1343,7 @@ void DeIconify(FvwmWindow *tmp_win)
 void Iconify(FvwmWindow *tmp_win, int def_x, int def_y)
 {
   FvwmWindow *t;
+  FvwmWindow *sf;
   XWindowAttributes winattrs = {0};
   unsigned long eventMask;
 
@@ -1488,19 +1490,18 @@ void Iconify(FvwmWindow *tmp_win, int def_x, int def_y)
   }
   if (HAS_CLICK_FOCUS(tmp_win) || HAS_SLOPPY_FOCUS(tmp_win))
   {
-    if (tmp_win == Scr.Focus)
+    if (tmp_win == get_current_focus_window())
     {
-      if(Scr.PreviousFocus == Scr.Focus)
-	Scr.PreviousFocus = NULL;
-      if(HAS_CLICK_FOCUS(tmp_win) && tmp_win->next)
+      update_prevfocus_window(NULL);
+      if (HAS_CLICK_FOCUS(tmp_win) && tmp_win->next)
 	SetFocusWindow(tmp_win->next, 1);
       else
 	DeleteFocus(1);
     }
   }
-  if (Scr.Focus)
+  if ((sf = get_focus_window()))
   {
-    focus_grab_buttons(Scr.Focus, True);
+    focus_grab_buttons(sf, True);
   }
 
   return;

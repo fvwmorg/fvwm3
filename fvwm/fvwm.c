@@ -1445,11 +1445,8 @@ static void InitVariables(void)
   Scr.MyDisplayHeight = DisplayHeight(dpy, Scr.screen);
   Scr.BusyCursor = BUSY_NONE;
   Scr.Hilite = NULL;
-  Scr.Focus = NULL;
-  Scr.PreviousFocus = NULL;
   /* this indicates that the root window was never entered since the startup of
    * fvwm. */
-  Scr.LastScreenFocus = &Scr.FvwmRoot;
   Scr.Ungrabbed = NULL;
 
   Scr.DefaultFont.font = NULL;

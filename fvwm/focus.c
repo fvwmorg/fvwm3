@@ -46,6 +46,13 @@
 #include "stack.h"
 
 static Bool lastFocusType;
+/* Last window which Fvwm gave the focus to NOT the window that really has the
+ * focus */
+static FvwmWindow *ScreenFocus = NULL;
+/* Window which had focus before fvwm stole it to do moves/menus/etc. */
+static FvwmWindow *PreviousFocus = NULL;
+/* Window which had focus before the pointer moved to a different screen. */
+static FvwmWindow *LastScreenFocus = NULL;
 
 Bool do_accept_input_focus(FvwmWindow *tmp_win)
 {
@@ -80,7 +87,7 @@ static void DoSetFocus(Window w, FvwmWindow *Fw, Bool FocusByMouse, Bool NoWarp)
 
   if (Fw && !IS_LENIENT(Fw) &&
       Fw->wmhints && (Fw->wmhints->flags & InputHint) && !Fw->wmhints->input &&
-      Scr.Focus && Scr.Focus->Desk == Scr.CurrentDesk)
+      ScreenFocus && ScreenFocus->Desk == Scr.CurrentDesk)
   {
     /* window doesn't want focus */
     return;
@@ -90,7 +97,7 @@ static void DoSetFocus(Window w, FvwmWindow *Fw, Bool FocusByMouse, Bool NoWarp)
    * Focus-by-mouse type focus events */
   /* Watch out: Fw may not be on the windowlist and the windowlist may be
    * empty */
-  if (Fw && Fw != Scr.Focus && Fw != &Scr.FvwmRoot)
+  if (Fw && Fw != ScreenFocus && Fw != &Scr.FvwmRoot)
   {
     if (FocusByMouse) /* pluck window from list and deposit at top */
     {
@@ -140,7 +147,7 @@ static void DoSetFocus(Window w, FvwmWindow *Fw, Bool FocusByMouse, Bool NoWarp)
   if (!Fw && !Scr.flags.is_pointer_on_this_screen)
   {
     focus_grab_buttons(Scr.Ungrabbed, False);
-    Scr.Focus = NULL;
+    ScreenFocus = NULL;
     /* DV (25-Nov-2000): Don't give the Scr.NoFocusWin the focus here. This
      * would steal the focus from the other screen's root window again. */
     /* FOCUS_SET(Scr.NoFocusWin); */
@@ -208,7 +215,7 @@ static void DoSetFocus(Window w, FvwmWindow *Fw, Bool FocusByMouse, Bool NoWarp)
   if (Fw && IS_LENIENT(Fw))
   {
     FOCUS_SET(w);
-    Scr.Focus = Fw;
+    ScreenFocus = Fw;
     SET_FOCUS_CHANGE_BROADCAST_PENDING(Fw, 1);
     Scr.UnknownWinFocused = None;
   }
@@ -217,14 +224,14 @@ static void DoSetFocus(Window w, FvwmWindow *Fw, Bool FocusByMouse, Bool NoWarp)
   {
     /* Window will accept input focus */
     FOCUS_SET(w);
-    Scr.Focus = Fw;
+    ScreenFocus = Fw;
     if (Fw)
     {
       SET_FOCUS_CHANGE_BROADCAST_PENDING(Fw, 1);
     }
     Scr.UnknownWinFocused = None;
   }
-  else if ((Scr.Focus)&&(Scr.Focus->Desk == Scr.CurrentDesk))
+  else if ((ScreenFocus)&&(ScreenFocus->Desk == Scr.CurrentDesk))
   {
     /* Window doesn't want focus. Leave focus alone */
     /* FOCUS_SET(Scr.Hilite->w);*/
@@ -232,7 +239,7 @@ static void DoSetFocus(Window w, FvwmWindow *Fw, Bool FocusByMouse, Bool NoWarp)
   else
   {
     FOCUS_SET(Scr.NoFocusWin);
-    Scr.Focus = NULL;
+    ScreenFocus = NULL;
   }
 
   if (Fw && WM_TAKES_FOCUS(Fw))
@@ -246,19 +253,19 @@ static void DoSetFocus(Window w, FvwmWindow *Fw, Bool FocusByMouse, Bool NoWarp)
 static void MoveFocus(
   Window w, FvwmWindow *Fw, Bool FocusByMouse, Bool NoWarp, Bool do_force)
 {
-  FvwmWindow *ffw_old = Scr.Focus;
+  FvwmWindow *ffw_old = ScreenFocus;
   Bool accepts_input_focus = do_accept_input_focus(Fw);
 
-  if (!do_force && Fw == Scr.Focus)
+  if (!do_force && Fw == ScreenFocus)
   {
     return;
   }
   DoSetFocus(w, Fw, FocusByMouse, NoWarp);
-  if (Scr.Focus != ffw_old)
+  if (ScreenFocus != ffw_old)
   {
     if (accepts_input_focus)
     {
-      focus_grab_buttons(Scr.Focus, True);
+      focus_grab_buttons(ScreenFocus, True);
     }
     focus_grab_buttons(ffw_old, False);
   }
@@ -292,7 +299,7 @@ void restore_focus_after_unmap(FvwmWindow *tmp_win)
   FvwmWindow *t = NULL;
   FvwmWindow *set_focus_to = NULL;
 
-  if (tmp_win != Scr.Focus)
+  if (tmp_win != ScreenFocus)
     set_focus_to = tmp_win;
   if (!set_focus_to &&
       tmp_win->transientfor != None && tmp_win->transientfor != Scr.Root)
@@ -324,7 +331,7 @@ void restore_focus_after_unmap(FvwmWindow *tmp_win)
     /* Don't transfer focus to windows on other desks */
     SetFocusWindow(set_focus_to, 1);
   }
-  if(Scr.Focus == tmp_win)
+  if(ScreenFocus == tmp_win)
     DeleteFocus(1);
   if (tmp_win == Scr.pushed_window)
     Scr.pushed_window = NULL;
@@ -627,6 +634,87 @@ void focus_grab_buttons(FvwmWindow *tmp_win, Bool is_focused)
     tmp_win->grabbed_buttons = grab_buttons;
     MyXUngrabServer (dpy);
   }
+
+  return;
+}
+
+/* functions to access ScreenFocus and PreviousFocus */
+FvwmWindow *get_focus_window(void)
+{
+  if (ScreenFocus)
+    return ScreenFocus;
+  else
+    return PreviousFocus;
+}
+
+FvwmWindow *get_current_focus_window(void)
+{
+  return ScreenFocus;
+}
+
+void set_focus_window(FvwmWindow *fw)
+{
+  ScreenFocus = fw;
+  if (PreviousFocus == fw)
+    PreviousFocus = NULL;
+
+  return;
+}
+
+void store_prevfocus_window(void)
+{
+  if (PreviousFocus == NULL)
+    PreviousFocus = ScreenFocus;
+
+  return;
+}
+
+void restore_prevfocus_window(void)
+{
+  /* if the window still exists, focus on it */
+  if (PreviousFocus && PreviousFocus->w)
+  {
+    ReturnFocusWindow(PreviousFocus, 0);
+  }
+  PreviousFocus = NULL;
+
+  return;
+}
+
+void update_prevfocus_window(FvwmWindow *fw)
+{
+  FvwmWindow *cw = (fw) ? fw : ScreenFocus;
+
+  if (cw == PreviousFocus)
+    PreviousFocus = NULL;
+
+  return;
+}
+
+void update_lastscreenfocus_window(FvwmWindow *fw)
+{
+  if (fw == LastScreenFocus)
+    LastScreenFocus = NULL;
+
+  return;
+}
+
+FvwmWindow *get_last_screen_focus_window(void)
+{
+  return LastScreenFocus;
+}
+
+void set_last_screen_focus_window(FvwmWindow *fw)
+{
+  LastScreenFocus = fw;
+
+  return;
+}
+
+void update_last_screen_focus_window(FvwmWindow *fw)
+{
+  if (fw == LastScreenFocus)
+    LastScreenFocus = NULL;
 
   return;
 }

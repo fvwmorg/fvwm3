@@ -121,12 +121,14 @@ void CMD_WindowShade(F_CMD_ARGS)
   rectangle big_g;
   rectangle small_g;
   Bool do_scroll;
+  FvwmWindow *sf;
 
   if (DeferExecution(eventp,&w,&tmp_win,&context, CRS_SELECT,ButtonRelease))
     return;
   if (tmp_win == NULL || IS_ICONIFIED(tmp_win))
     return;
 
+  sf = get_focus_window();
   /* parse arguments */
   toggle = ParseToggleArgument(action, NULL, -1, 0);
   if (toggle == -1)
@@ -218,7 +220,7 @@ void CMD_WindowShade(F_CMD_ARGS)
           tmp_win->frame_g.width = big_g.width;
           tmp_win->frame_g.height = big_g.height;
           DrawDecorations(
-	    tmp_win, DRAW_FRAME, Scr.Focus == tmp_win, True, None);
+	    tmp_win, DRAW_FRAME, sf == tmp_win, True, None);
         }
       }
       while (frame_g.height + diff.height < big_g.height)
@@ -257,9 +259,9 @@ void CMD_WindowShade(F_CMD_ARGS)
       {
 	XMoveWindow(dpy, tmp_win->w, 0, 0);
       }
-      if (Scr.Focus)
+      if (sf)
       {
-	focus_grab_buttons(Scr.Focus, True);
+	focus_grab_buttons(sf, True);
       }
     }
     else
@@ -365,7 +367,7 @@ void CMD_WindowShade(F_CMD_ARGS)
      * window removes the input focus from the client window.  I have no idea
      * why, but if we explicitly restore the focus here everything works fine.
      */
-    if (Scr.Focus == tmp_win)
+    if (sf == tmp_win)
       FOCUS_SET(tmp_win->w);
     set_decor_gravity(
       tmp_win, NorthWestGravity, NorthWestGravity, NorthWestGravity);

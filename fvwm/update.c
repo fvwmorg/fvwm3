@@ -328,7 +328,7 @@ void apply_decor_change(FvwmWindow *tmp_win)
   memset(&flags, 0, sizeof(flags));
   flags.do_redecorate = True;
   flags.do_update_window_font_height = True;
-  apply_window_updates(tmp_win, &flags, &style, Scr.Focus);
+  apply_window_updates(tmp_win, &flags, &style, get_current_focus_window());
   Scr.flags.do_need_window_update = 1;
 }
 
@@ -349,7 +349,7 @@ void flush_window_updates(void)
 
   /* This is necessary in case the focus policy changes. With ClickToFocus some
    * buttons have to be grabbed/ungrabbed. */
-  focus_fw = Scr.Focus;
+  focus_fw = get_current_focus_window();
   DeleteFocus(1);
 
   /* Apply the new default font and colours first */

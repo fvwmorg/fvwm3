@@ -43,6 +43,7 @@
 #include "menus.h"
 #include "conditional.h"
 #include "stack.h"
+#include "focus.h"
 
 extern FvwmWindow *Tmp_win;
 extern FvwmWindow *ButtonWindow;
@@ -308,7 +309,7 @@ void CMD_WindowList(F_CMD_ARGS)
     return;
   }
   /* get the windowlist starting from the current window (if any)*/
-  if ((t = Scr.Focus) == NULL)
+  if ((t = get_focus_window()) == NULL)
     t = Scr.FvwmRoot.next;
   for (ii = 0; ii < numWindows; ii++)
   {

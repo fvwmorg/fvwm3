@@ -1965,10 +1965,8 @@ void destroy_window(FvwmWindow *tmp_win)
 
   if(tmp_win == Scr.Hilite)
     Scr.Hilite = NULL;
-  if(Scr.PreviousFocus == tmp_win)
-    Scr.PreviousFocus = NULL;
-  if(Scr.LastScreenFocus == tmp_win)
-    Scr.LastScreenFocus = NULL;
+  update_prevfocus_window(tmp_win);
+  update_last_screen_focus_window(tmp_win);
   if(ButtonWindow == tmp_win)
     ButtonWindow = NULL;
 
@@ -2454,7 +2452,8 @@ void CaptureAllWindows(Bool is_recapture)
     Window focus_w;
     FvwmWindow *t;
 
-    focus_w = (Scr.Focus) ? Scr.Focus->w : None;
+    t = get_focus_window();
+    focus_w = (t) ? t->w : None;
     hide_screen(True, &keep_on_top_win, &parent_win);
     /* reborder all windows */
     for (i=0;i<nchildren;i++)

@@ -35,6 +35,7 @@
 #include "screen.h"
 #include "update.h"
 #include "style.h"
+#include "focus.h"
 
 
 /**********************************************************************
@@ -281,6 +282,7 @@ Bool MatchesConditionMask(FvwmWindow *fw, WindowConditionMask *mask)
   Bool fMatchesClass;
   Bool fMatchesResource;
   Bool fMatches;
+  FvwmWindow *sf = get_focus_window();
 
   if (!blockcmpmask((char *)&(fw->flags), (char *)&(mask->flags),
                     (char *)&(mask->flag_mask), sizeof(fw->flags)))
@@ -333,7 +335,7 @@ Bool MatchesConditionMask(FvwmWindow *fw, WindowConditionMask *mask)
   if (mask->my_flags.needs_not_name && fMatches)
     return 0;
 
-  if ((mask->layer == -1) && (fw->layer != Scr.Focus->layer))
+  if ((mask->layer == -1) && (sf) && (fw->layer != sf->layer))
     return 0;
 
   if ((mask->layer >= 0) && (fw->layer != mask->layer))
@@ -353,6 +355,7 @@ static FvwmWindow *Circulate(char *action, int Direction, char **restofline)
 {
   int pass = 0;
   FvwmWindow *fw, *found = NULL;
+  FvwmWindow *sf;
   WindowConditionMask mask;
   char *flags;
 
@@ -367,15 +370,15 @@ static FvwmWindow *Circulate(char *action, int Direction, char **restofline)
   CreateConditionMask(flags, &mask);
   if (flags)
     free(flags);
-
-  if(Scr.Focus)
+  sf = get_focus_window();
+  if (sf)
   {
-    if(Direction == 1)
-      fw = Scr.Focus->prev;
-    else if(Direction == -1)
-      fw = Scr.Focus->next;
+    if (Direction == 1)
+      fw = sf->prev;
+    else if (Direction == -1)
+      fw = sf->next;
     else
-      fw = Scr.Focus;
+      fw = sf;
   }
   else
     fw = NULL;
@@ -392,7 +395,7 @@ static FvwmWindow *Circulate(char *action, int Direction, char **restofline)
 	found = fw;
       else
       {
-	if(Direction == 1)
+	if (Direction == 1)
 	  fw = fw->prev;
 	else
 	  fw = fw->next;

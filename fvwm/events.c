@@ -153,7 +153,8 @@ void HandleFocusIn(void)
   Window focus_fw = None;
   Pixel fc = 0;
   Pixel bc = 0;
-  FvwmWindow *ffw_old = Scr.Focus;
+  FvwmWindow *ffw_old = get_current_focus_window();
+  FvwmWindow *sf;
   Bool do_force_broadcast = False;
   Bool is_unmanaged_focused = False;
   static Window last_focus_w = None;
@@ -231,7 +232,7 @@ void HandleFocusIn(void)
     focus_fw = Tmp_win->frame;
     fc = Tmp_win->hicolors.fore;
     bc = Tmp_win->hicolors.back;
-    Scr.Focus = Tmp_win;
+    set_focus_window(Tmp_win);
     if (Scr.ColormapFocus == COLORMAP_FOLLOWS_FOCUS)
     {
       if((Scr.Hilite)&&(!IS_ICONIFIED(Scr.Hilite)))
@@ -261,9 +262,9 @@ void HandleFocusIn(void)
     last_focus_fw = focus_fw;
     is_never_focused = False;
   }
-  if (Scr.Focus != ffw_old)
+  if ((sf = get_current_focus_window()) != ffw_old)
   {
-    focus_grab_buttons(Scr.Focus, True);
+    focus_grab_buttons(sf, True);
     focus_grab_buttons(ffw_old, False);
   }
 }
@@ -277,6 +278,7 @@ void HandleFocusIn(void)
 void HandleKeyPress(void)
 {
   char *action;
+  FvwmWindow *sf;
 
   DBUG("HandleKeyPress","Routine Entered");
 
@@ -304,10 +306,11 @@ void HandleKeyPress(void)
   /* if we get here, no function key was bound to the key.  Send it
    * to the client if it was in a window we know about.
    */
-  if (Scr.Focus && Event.xkey.window != Scr.Focus->w)
+  sf = get_current_focus_window();
+  if (sf && Event.xkey.window != sf->w)
   {
-    Event.xkey.window = Scr.Focus->w;
-    XSendEvent(dpy, Scr.Focus->w, False, KeyPressMask, &Event);
+    Event.xkey.window = sf->w;
+    XSendEvent(dpy, sf->w, False, KeyPressMask, &Event);
   }
   else if (Tmp_win && Event.xkey.window != Tmp_win->w)
   {
@@ -790,14 +793,14 @@ ICON_DBG((stderr,"hpn: applying new icon '%s'\n", Tmp_win->name));
       FetchWmColormapWindows (Tmp_win);	/* frees old data */
       ReInstallActiveColormap();
     }
-    else if(Event.xproperty.atom == _XA_WM_STATE)
+    else if (Event.xproperty.atom == _XA_WM_STATE)
     {
-      if((Tmp_win != NULL)&&(HAS_CLICK_FOCUS(Tmp_win))
-	 &&(Tmp_win == Scr.Focus))
+      if (Tmp_win && HAS_CLICK_FOCUS(Tmp_win) &&
+	  Tmp_win == get_current_focus_window())
       {
 	if (OnThisPage)
 	{
-	  Scr.Focus = NULL;
+	  set_focus_window(NULL);
 	  SetFocusWindow(Tmp_win, 0);
 	}
       }
@@ -997,6 +1000,7 @@ void HandleMapRequestKeepRaised(Window KeepRaised, FvwmWindow *ReuseWin)
   Bool is_on_this_page = False;
   Bool is_new_window = False;
   FvwmWindow *tmp;
+  FvwmWindow *sf;
 
   Event.xany.window = Event.xmaprequest.window;
 
@@ -1088,7 +1092,8 @@ void HandleMapRequestKeepRaised(Window KeepRaised, FvwmWindow *ReuseWin)
 	  do_grab_focus = True;
 	}
 	else if (IS_TRANSIENT(Tmp_win) && DO_GRAB_FOCUS_TRANSIENT(Tmp_win) &&
-		 Scr.Focus && Scr.Focus->w == Tmp_win->transientfor)
+		 (sf = get_current_focus_window()) &&
+		 sf->w == Tmp_win->transientfor)
 	{
 	  /* it's a transient and its transientfor currently has focus. */
 	  do_grab_focus = True;
@@ -1113,9 +1118,9 @@ void HandleMapRequestKeepRaised(Window KeepRaised, FvwmWindow *ReuseWin)
 	{
 	  /* make sure the old focused window still has grabbed all necessary
 	   * buttons. */
-	  if (Scr.Focus)
+	  if ((sf = get_current_focus_window()))
 	  {
-	    focus_grab_buttons(Scr.Focus, True);
+	    focus_grab_buttons(sf, True);
 	  }
 	}
       }
@@ -1174,14 +1179,14 @@ void HandleMapRequestKeepRaised(Window KeepRaised, FvwmWindow *ReuseWin)
                     (unsigned long)Tmp_win);
   }
 
-  if (!IS_ICONIFIED(Tmp_win) && Scr.Focus && Scr.Focus != Tmp_win &&
-      !is_on_top_of_layer(Scr.Focus))
+  if (!IS_ICONIFIED(Tmp_win) && (sf = get_current_focus_window()) &&
+      sf != Tmp_win && !is_on_top_of_layer(sf))
   {
     if (Tmp_win->Desk == Scr.CurrentDesk &&
-	Tmp_win->frame_g.x + Tmp_win->frame_g.width > Scr.Focus->frame_g.x &&
-	Scr.Focus->frame_g.x + Scr.Focus->frame_g.width > Tmp_win->frame_g.x &&
-	Tmp_win->frame_g.y + Tmp_win->frame_g.height > Scr.Focus->frame_g.y &&
-	Scr.Focus->frame_g.y + Scr.Focus->frame_g.height > Tmp_win->frame_g.y)
+	Tmp_win->frame_g.x + Tmp_win->frame_g.width > sf->frame_g.x &&
+	sf->frame_g.x + sf->frame_g.width > Tmp_win->frame_g.x &&
+	Tmp_win->frame_g.y + Tmp_win->frame_g.height > sf->frame_g.y &&
+	sf->frame_g.y + sf->frame_g.height > Tmp_win->frame_g.y)
     {
       /* The newly mapped window overlaps the focused window. Make sure
        * ClickToFocusRaises and MouseFocusClickRaises work again.
@@ -1189,7 +1194,7 @@ void HandleMapRequestKeepRaised(Window KeepRaised, FvwmWindow *ReuseWin)
        * Note: There are many conditions under which we do not have to call
        * focus_grab_buttons(), but it is not worth the effort to write them
        * down here.  Rather do some unnecessary work in this function. */
-      focus_grab_buttons(Scr.Focus, True);
+      focus_grab_buttons(sf, True);
     }
   }
 
@@ -1274,7 +1279,8 @@ void HandleMapNotify(void)
 
   if((!IS_TRANSIENT(Tmp_win) && DO_GRAB_FOCUS(Tmp_win)) ||
      (IS_TRANSIENT(Tmp_win) && DO_GRAB_FOCUS_TRANSIENT(Tmp_win) &&
-      Scr.Focus && Scr.Focus->w == Tmp_win->transientfor))
+      get_current_focus_window() &&
+      get_current_focus_window()->w == Tmp_win->transientfor))
   {
     if (is_on_this_page)
     {
@@ -1286,7 +1292,7 @@ void HandleMapNotify(void)
     DrawDecorations(
       Tmp_win, DRAW_ALL, False, True, Tmp_win->decor_w);
   }
-  else if (Tmp_win == Scr.Focus && Tmp_win != Scr.Hilite)
+  else if (Tmp_win == get_current_focus_window() && Tmp_win != Scr.Hilite)
   {
     /* BUG 679: must redraw decorations here to make sure the window is properly
      * hilighted after being de-iconified by a key press. */
@@ -1363,9 +1369,8 @@ void HandleUnmapNotify(void)
   {
     Scr.Hilite = NULL;
   }
-  if(Scr.PreviousFocus == Tmp_win)
-    Scr.PreviousFocus = NULL;
-  focus_grabbed = (Tmp_win == Scr.Focus) &&
+  update_prevfocus_window(Tmp_win);
+  focus_grabbed = (Tmp_win == get_current_focus_window()) &&
     ((!IS_TRANSIENT(Tmp_win) && DO_GRAB_FOCUS(Tmp_win)) ||
      (IS_TRANSIENT(Tmp_win) && DO_GRAB_FOCUS_TRANSIENT(Tmp_win)));
   restore_focus_after_unmap(Tmp_win);
@@ -1500,7 +1505,7 @@ void HandleButtonPress(void)
   /* click to focus stuff goes here */
   if((Tmp_win)&&(HAS_CLICK_FOCUS(Tmp_win))&&(Tmp_win != Scr.Ungrabbed))
   {
-    if (Tmp_win != Scr.Focus)
+    if (Tmp_win != get_current_focus_window())
       SetFocusWindow(Tmp_win, 1);
     /* RBW - 12/09/.1999- I'm not sure we need to check both cases, but
        I'll leave this as is for now.  */
@@ -1534,11 +1539,12 @@ void HandleButtonPress(void)
 	SET_SCHEDULED_FOR_RAISE(Tmp_win, 0);
       }
       if (do_regrab_buttons)
-	focus_grab_buttons(Tmp_win, (Tmp_win == Scr.Focus));
+	focus_grab_buttons(Tmp_win, (Tmp_win == get_current_focus_window()));
       XSync(dpy,0);
       /* Pass click event to just clicked to focus window? Do not swallow the
        * click if the window didn't accept the focus. */
-      if (!DO_NOT_PASS_CLICK_FOCUS_CLICK(Tmp_win) || Scr.Focus != Tmp_win)
+      if (!DO_NOT_PASS_CLICK_FOCUS_CLICK(Tmp_win) ||
+	  get_current_focus_window() != Tmp_win)
       {
 	XAllowEvents(dpy,ReplayPointer,CurrentTime);
       }
@@ -1660,7 +1666,7 @@ void HandleButtonPress(void)
   }
   if (do_regrab_buttons)
   {
-    focus_grab_buttons(Tmp_win, (Tmp_win == Scr.Focus));
+    focus_grab_buttons(Tmp_win, (Tmp_win == get_current_focus_window()));
   }
 
   OldPressedW = PressedW;
@@ -1697,6 +1703,7 @@ void HandleButtonRelease()
    char *action;
    int real_modifier;
    Window dummy;
+
 
    DBUG("HandleButtonRelease","Routine Entered");
 
@@ -1759,6 +1766,7 @@ void HandleEnterNotify(void)
 {
   XEnterWindowEvent *ewp = &Event.xcrossing;
   XEvent d;
+  FvwmWindow *sf;
 
   DBUG("HandleEnterNotify","Routine Entered");
 
@@ -1785,16 +1793,17 @@ void HandleEnterNotify(void)
 
   if (ewp->window == Scr.Root)
   {
+    FvwmWindow *lf = get_last_screen_focus_window();
+
     if (!Scr.flags.is_pointer_on_this_screen)
     {
       Scr.flags.is_pointer_on_this_screen = 1;
-      if (Scr.LastScreenFocus && Scr.LastScreenFocus != &Scr.FvwmRoot &&
-	  (HAS_SLOPPY_FOCUS(Scr.LastScreenFocus) ||
-	   HAS_CLICK_FOCUS(Scr.LastScreenFocus)))
+      if (lf && lf != &Scr.FvwmRoot &&
+	  (HAS_SLOPPY_FOCUS(lf) || HAS_CLICK_FOCUS(lf)))
       {
-	SetFocusWindow(Scr.LastScreenFocus, 1);
+	SetFocusWindow(lf, 1);
       }
-      else if (Scr.LastScreenFocus != &Scr.FvwmRoot)
+      else if (lf != &Scr.FvwmRoot)
       {
 	ForceDeleteFocus(1);
       }
@@ -1802,9 +1811,9 @@ void HandleEnterNotify(void)
       {
 	/* This was the first EnterNotify event for the root window - ignore */
       }
-      Scr.LastScreenFocus = NULL;
+      set_last_screen_focus_window(NULL);
     }
-    else if (!Scr.Focus || HAS_MOUSE_FOCUS(Scr.Focus))
+    else if (!(sf = get_current_focus_window()) || HAS_MOUSE_FOCUS(sf))
     {
       DeleteFocus(1);
     }
@@ -1850,13 +1859,13 @@ void HandleEnterNotify(void)
   else if (HAS_NEVER_FOCUS(Tmp_win))
   {
     /* Give the window a chance to grab the buttons needed for raise-on-click */
-    if (Scr.Focus != Tmp_win)
+    if ((sf = get_current_focus_window()) != Tmp_win)
     {
       focus_grab_buttons(Tmp_win, False);
-      focus_grab_buttons(Scr.Focus, True);
+      focus_grab_buttons(sf, True);
     }
   }
-  else if (HAS_CLICK_FOCUS(Tmp_win) && Tmp_win == Scr.Focus &&
+  else if (HAS_CLICK_FOCUS(Tmp_win) && Tmp_win == get_current_focus_window() &&
 	   do_accept_input_focus(Tmp_win))
   {
     /* We have to refresh the focus window here in case we left the focused
@@ -1922,9 +1931,11 @@ void HandleLeaveNotify(void)
     {
       if (Event.xcrossing.detail != NotifyInferior)
       {
+	FvwmWindow *sf = get_current_focus_window();
+
 	Scr.flags.is_pointer_on_this_screen = 0;
-	Scr.LastScreenFocus = Scr.Focus;
-	if (Scr.Focus != NULL)
+	set_last_screen_focus_window(sf);
+	if (sf != NULL)
 	{
 	  DeleteFocus(1);
 	}

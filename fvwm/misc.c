@@ -148,12 +148,12 @@ Bool GrabEm(int cursor, int grab_context)
     /* cannot happen */
     return False;
   default:
-    if (!Scr.Focus || do_accept_input_focus(Scr.Focus))
+    if (!get_current_focus_window() ||
+	do_accept_input_focus(get_current_focus_window()))
     {
       /* But do not grab if the window does not accept input focus from the
        * window manager */
-      if(Scr.PreviousFocus == NULL)
-	Scr.PreviousFocus = Scr.Focus;
+      store_prevfocus_window();
       DeleteFocus(0);
       focus_prev_level = grab_count[GRAB_ALL];
     }
@@ -278,14 +278,9 @@ print_grab_stats("-ungrab");
   }
   if (grab_count[GRAB_ALL] == 0 || grab_count[GRAB_ALL] == focus_prev_level)
   {
-    if (Scr.PreviousFocus && ungrab_context != GRAB_BUSY)
+    if (ungrab_context != GRAB_BUSY)
     {
-      /* if the window still exists, focus on it */
-      if (Scr.PreviousFocus->w)
-      {
-	ReturnFocusWindow(Scr.PreviousFocus, 0);
-      }
-      Scr.PreviousFocus = NULL;
+      restore_prevfocus_window();
     }
   }
   XSync(dpy,0);

@@ -46,4 +46,14 @@ Bool IsLastFocusSetByMouse(void);
 void focus_grab_buttons(FvwmWindow *tmp_win, Bool is_focused);
 Bool do_accept_input_focus(FvwmWindow *tmp_win);
 
+FvwmWindow *get_focus_window(void);
+FvwmWindow *get_current_focus_window(void);
+void set_focus_window(FvwmWindow *fw);
+void store_prevfocus_window(void);
+void restore_prevfocus_window(void);
+void update_prevfocus_window(FvwmWindow *fw);
+FvwmWindow *get_last_screen_focus_window(void);
+void set_last_screen_focus_window(FvwmWindow *fw);
+void update_last_screen_focus_window(FvwmWindow *fw);
+
 #endif /* _FOCUS_ */

@@ -799,6 +799,7 @@ void MoveViewport(int newx, int newy, Bool grab)
   int PageTop, PageLeft;
   int PageBottom, PageRight;
   int txl, txr, tyt, tyb;
+  FvwmWindow *sf = get_focus_window();
 
   if(grab)
     MyXGrabServer(dpy);
@@ -971,10 +972,10 @@ void MoveViewport(int newx, int newy, Bool grab)
     }
   }
   checkPanFrames();
-  if (Scr.Focus)
+  if ((sf = get_focus_window()))
   {
     /* regrab buttons for focused window in case it is now obscured */
-    focus_grab_buttons(Scr.Focus, True);
+    focus_grab_buttons(sf, True);
   }
 
   /* do this with PanFrames too ??? HEDU */
@@ -996,7 +997,8 @@ void MoveViewport(int newx, int newy, Bool grab)
  *************************************************************************/
 static void UnmapDesk(int desk, Bool grab)
 {
-  FvwmWindow  *t;
+  FvwmWindow *t;
+  FvwmWindow *sf = get_focus_window();
 
   if (grab)
   {
@@ -1010,7 +1012,7 @@ static void UnmapDesk(int desk, Bool grab)
     {
       if (t->Desk == desk)
       {
-	if (Scr.Focus == t)
+	if (sf == t)
 	{
 	  t->flags.is_focused_on_other_desk = 1;
 	  t->FocusDesk = desk;
@@ -1050,6 +1052,7 @@ static void MapDesk(int desk, Bool grab)
   FvwmWindow *t;
   FvwmWindow *FocusWin = NULL;
   FvwmWindow *StickyWin = NULL;
+  FvwmWindow *sf = get_focus_window();
 
   Scr.flags.is_map_desk_in_progress = 1;
   if (grab)
@@ -1071,7 +1074,7 @@ static void MapDesk(int desk, Bool grab)
     {
       /*  If window is sticky, just update its desk (it's still mapped).  */
       t->Desk = desk;
-      if (Scr.Focus == t)
+      if (sf == t)
       {
 	StickyWin = t;
       }

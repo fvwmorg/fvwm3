@@ -2833,6 +2833,7 @@ void CMD_Maximize(F_CMD_ARGS)
   Bool grow_right = False;
   Bool do_force_maximize = False;
   rectangle new_g;
+  FvwmWindow *sf;
 
   if (DeferExecution(eventp,&w,&tmp_win,&context, CRS_SELECT,ButtonRelease))
     return;
@@ -3027,9 +3028,9 @@ void CMD_Maximize(F_CMD_ARGS)
 fprintf(stderr,"%d %d %d %d, max_offset.x = %d, max_offset.y = %d\n", tmp_win->max_g.x, tmp_win->max_g.y, tmp_win->max_g.width, tmp_win->max_g.height, tmp_win->max_offset.x, tmp_win->max_offset.y);
 #endif
   }
-  if (Scr.Focus)
+  if ((sf = get_focus_window()))
   {
-    focus_grab_buttons(Scr.Focus, True);
+    focus_grab_buttons(sf, True);
   }
   GNOME_SetWinArea(tmp_win);
 }
@@ -3038,6 +3039,8 @@ fprintf(stderr,"%d %d %d %d, max_offset.x = %d, max_offset.y = %d\n", tmp_win->m
 
 void handle_stick(F_CMD_ARGS, int toggle)
 {
+  FvwmWindow *sf;
+
   if ((toggle == 1 && IS_STICKY(tmp_win)) ||
       (toggle == 0 && !IS_STICKY(tmp_win)))
     return;
@@ -3065,9 +3068,9 @@ void handle_stick(F_CMD_ARGS, int toggle)
   }
   BroadcastConfig(M_CONFIGURE_WINDOW,tmp_win);
   DrawDecorations(tmp_win, DRAW_TITLE, (Scr.Hilite==tmp_win), True, None);
-  if (Scr.Focus)
+  if ((sf = get_focus_window()))
   {
-    focus_grab_buttons(Scr.Focus, True);
+    focus_grab_buttons(sf, True);
   }
   GNOME_SetHints(tmp_win);
 }
