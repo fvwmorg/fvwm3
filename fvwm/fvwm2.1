@@ -111,6 +111,10 @@ a separate window, called the FvwmWinList (another module).
 Fvwm2 keeps the windows on the desktop in a "layered" stacking order;
 a window in a lower layer will never obscure a window in a higher layer.
 The layer of a window can be changed by using the Layer built-in command.
+The concept of layers is a generalization of the StaysOnTop flag of older
+fvwm versions. The StaysOnTop and StaysPut style options are now implemented
+by putting the windows in suitable layers and the previously missing 
+StaysOnBottom style option has been added.
 
 "Sticky" windows are windows which transcend the virtual desktop by
 "Sticking to the screen's glass."  They always stay put on the screen.
@@ -1191,9 +1195,9 @@ client-supplied icon nor an icon supplied via the Icon option
 of the Style command.
 
 
-.IP "DefaultLayers \fIontop\fP \fIput\fP"
-changes the layers that are used for the StaysOnTop/StaysPut style
-options. Initially, the layers 6 and 4 are used.
+.IP "DefaultLayers \fIbottom\fP \fIput\fP \fItop\fP"
+changes the layers that are used for the StaysOnBottom/StaysPut/StaysOnTop
+style options. Initially, the layers 2, 4 and 6 are used.
 
 
 .IP "Delete"
@@ -2640,8 +2644,8 @@ are given Class = "NoClass" and those that don't have a resource
 keywords BorderWidth, HandleWidth, NoIcon/Icon, MiniIcon, IconBox,
 IconGrid, IconFill,
 NoTitle/Title, NoHandles/Handles, WindowListSkip/WindowListHit,
-CirculateSkip/CirculateHit, Layer, StaysOnTop/StaysPut, Sticky/Slippery,
-StartIconic/StartNormal, Color, ForeColor, BackColor,
+CirculateSkip/CirculateHit, Layer, StaysOnTop/StaysOnBottom/StaysPut, 
+Sticky/Slippery, StartIconic/StartNormal, Color, ForeColor, BackColor,
 StartsOnDesk/StartsOnPage/StartsAnyWhere, IconTitle/NoIconTitle,
 MWMButtons/FvwmButtons, MWMBorder/FvwmBorder, MWMDecor/NoDecorHint,
 MWMFunctions/NoFuncHint, HintOverride/NoOverride, NoButton/Button,
@@ -2670,7 +2674,17 @@ buttons to the sides and the client window of an undecorated window
 
 \fIIcon\fP takes an (optional) unquoted string argument which is the icon
 bitmap or pixmap to use. Icons specified this way override icons
-provided by the client in the WM_HINTS property.
+provided by the client in the WM_HINTS property. There is one exception
+to this rule, namely 
+.EX
+Style * Icon unknown.xpm
+.EE
+doesn't force the unknown.xpm icon on every window, it just sets the 
+default icon like the DefaultIcon command. If you really want all 
+windows to have the same icon, you can use
+.EX
+Style ** Icon unknown.xpm
+.EE
 
 \fIIconBox\fP takes four numeric arguments or an X11 geometry string:
 .EX
@@ -2763,11 +2777,14 @@ doing, rather than waiting for it to appear.
 \fILayer\fP accepts one argument: a nonnegative integer. This is
 the layer the window is put in.
 
-\fIStaysOnTop\fP puts the window in the ontop layer. This layer can
+\fIStaysOnTop\fP puts the window in the top layer. This layer can
 be changed by the built-in command DefaultLayers; the default is 6.
 
 \fIStaysPut\fP puts the window in the put layer. This layer can
 be changed by the built-in command DefaultLayers; the default is 4.
+
+\fIStaysOnBottom\fP puts the window in the bottom layer. This layer can
+be changed by the built-in command DefaultLayers; the default is 2.
 
 \fIBorderWidth\fP takes a numeric argument which is the width of the border
 to place the window if it does not have resize-handles.

@@ -1,5 +1,7 @@
 Changes in alpha release 2.3.0 (February 1999)
 
+* StaysOnBottom style.
+
 * ResizeHintOverride style: a window with this style can be resized beyond the
   program supplied minimum and maximum size. This is a hack to make fvwm
   cooperate with broken applications.

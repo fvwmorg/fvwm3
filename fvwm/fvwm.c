@@ -1512,8 +1512,9 @@ void InitVariables(void)
   /* zero all flags */
   memset(&Scr.flags, 0, sizeof(Scr.flags));
 
-  Scr.OnTopLayer = 6;
-  Scr.StaysPutLayer = 4;
+  Scr.BottomLayer  = 2;
+  Scr.DefaultLayer = 4;
+  Scr.TopLayer     = 6;
 
   /* create graphics contexts */
   CreateGCs();

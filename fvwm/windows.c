@@ -167,17 +167,17 @@ void do_windowList(XEvent *eventp,Window w,FvwmWindow *tmp_win,
            */
       else if (StrEquals(tok, "NoOnTop"))
 	{
-	  if (high_layer >= Scr.OnTopLayer)
-            high_layer = Scr.OnTopLayer - 1;
+	  if (high_layer >= Scr.TopLayer)
+            high_layer = Scr.TopLayer - 1;
         }
       else if (StrEquals(tok, "OnTop"))
         {
-	  if (high_layer < Scr.OnTopLayer)
-            high_layer = Scr.OnTopLayer;
+	  if (high_layer < Scr.TopLayer)
+            high_layer = Scr.TopLayer;
 	}
       else if (StrEquals(tok, "OnlyOnTop"))
         {
-	  high_layer = low_layer = Scr.OnTopLayer;
+	  high_layer = low_layer = Scr.TopLayer;
         }
       else if (StrEquals(tok, "Layers"))
       {

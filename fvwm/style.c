@@ -223,7 +223,7 @@ void lookup_style(FvwmWindow *tmp_win, window_style *styles)
   /* clear callers return area */
   memset(styles, 0, sizeof(window_style));
   /* initialize to default layer */
-  styles->layer = Scr.StaysPutLayer;
+  styles->layer = Scr.DefaultLayer;
   /* look thru all styles in order defined. */
   for (nptr = all_styles; nptr != NULL; nptr = nptr->next) {
     /* If name/res_class/res_name match, merge */
@@ -751,12 +751,11 @@ void ProcessNewStyle(XEvent *eventp, Window w, FvwmWindow *tmp_win,
         {
 	  found = True;
 	  GetNextToken(rest, &token);
-          if(token)
-          {
-            tmpstyle.icon_name = token;
-            tmpstyle.flags.has_icon = 1;
-            tmpstyle.flag_mask.has_icon = 1;
-          }
+        
+          tmpstyle.icon_name = token;
+          tmpstyle.flags.has_icon = (token != NULL);
+          tmpstyle.flag_mask.has_icon = 1;
+
 	  tmpstyle.flags.common.is_icon_suppressed = 0;
 	  tmpstyle.flag_mask.common.is_icon_suppressed = 1;
         }
@@ -1011,15 +1010,20 @@ void ProcessNewStyle(XEvent *eventp, Window w, FvwmWindow *tmp_win,
           tmpstyle.flags.common.do_start_iconic = 0;
           tmpstyle.flag_mask.common.do_start_iconic = 1;
         }
+        else if(StrEquals(token, "StaysOnBottom"))
+        {
+	  found = True;
+          tmpstyle.layer = Scr.BottomLayer;
+        }
         else if(StrEquals(token, "StaysOnTop"))
         {
 	  found = True;
-          tmpstyle.layer = Scr.OnTopLayer;
+          tmpstyle.layer = Scr.TopLayer;
         }
         else if(StrEquals(token, "StaysPut"))
         {
 	  found = True;
-          tmpstyle.layer = Scr.StaysPutLayer;
+          tmpstyle.layer = Scr.DefaultLayer;
         }
         else if(StrEquals(token, "Sticky"))
         {

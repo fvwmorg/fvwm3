@@ -1,3 +1,22 @@
+1999-04-16  Matthias Clasen  <clasen@mathematik.uni-freiburg.de>
+
+	* fvwm/fvwm2.1: expanded the introductory remarks on layers,
+	documented StaysOnBottom, more detailed explanation of the
+	override behaviour of Icon.
+	
+	* fvwm/windows.c (do_windowList): 
+	* fvwm/style.c (ProcessNewStyle): 
+	* fvwm/fvwm.c:
+	* fvwm/screen.h (ScreenInfo): renamed OnTopLayer -->
+	TopLayer, StaysPutLayer --> DefaultLayer, new variable
+	BottomLayer.
+
+	* fvwm/builtins.c (SetDefaultLayers): set all three 
+	layer variables in the Scr struct.
+	
+	* fvwm/style.c (ProcessNewStyle): added style option
+	StaysOnBottom.
+
 1999-04-16  Dominik Vogt  <dominik_vogt@gmx.de>
 
 	* fvwm/repeat.c (set_repeat_data): removed fprintfs

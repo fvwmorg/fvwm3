@@ -265,8 +265,9 @@ typedef struct ScreenInfo
   ColorPair StdColors; 	/* standard fore/back colors */
   ColorPair StdRelief;
 
-  int OnTopLayer;
-  int StaysPutLayer;
+  int TopLayer;
+  int DefaultLayer;
+  int BottomLayer;
 
   FvwmFunction *functions;
 
