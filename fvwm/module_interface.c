@@ -2001,7 +2001,6 @@ void CMD_Send_WindowList(F_CMD_ARGS)
 			rc = get_visible_icon_geometry(t, &r);
 			if (rc == True)
 			{
-fprintf(stderr,"MI3: %d %d %dx%d\n", r.x, r.y, r.width, r.height);
 				SendPacket(
 					mod, M_ICONIFY, 7, FW_W(t),
 					FW_W_FRAME(t), (unsigned long)t, r.x,
@@ -2010,7 +2009,6 @@ fprintf(stderr,"MI3: %d %d %dx%d\n", r.x, r.y, r.width, r.height);
 		}
 		if ((IS_ICONIFIED(t))&&(IS_ICON_UNMAPPED(t)))
 		{
-fprintf(stderr,"MI4: %d %d %dx%d\n", 0, 0, 0, 0);
 			SendPacket(
 				mod, M_ICONIFY, 7, FW_W(t), FW_W_FRAME(t),
 				(unsigned long)t, 0, 0, 0, 0);
