@@ -405,7 +405,8 @@ static void ParsePanel(char **ss, byte *flags, byte *mask, char *direction,
     case 19: /* noborder */
       (*panel_flags).ignore_border = 1;
       break;
-    case 20: /* triangle */
+    case 20: /* indicator */
+      n = 0;
       (*panel_flags).panel_indicator = 1;
       *indicator_size = 0;
       sscanf(s, "%d%n", indicator_size, &n);

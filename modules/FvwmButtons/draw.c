@@ -315,7 +315,8 @@ void RedrawButton(button_info *b,int clean)
     int is;
 
     /* draw the panel indicator, but not if there is a title */
-    if (b->slide_direction != SLIDE_GEOMETRY && (b->indicator_size & 1) == 0)
+    if (b->slide_direction != SLIDE_GEOMETRY && b->indicator_size != 0 &&
+        (b->indicator_size & 1) == 0)
     {
       /* make sure we have an odd number */
       b->indicator_size--;
