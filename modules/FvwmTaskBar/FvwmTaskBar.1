@@ -95,16 +95,33 @@ Tells the module to use colorset \fIcolorset\fP for the
 buttons of iconified windows.  Please refer to the man page of
 the FvwmTheme module for details about colorsets.
 
+.IP "*FvwmTaskBarFocusFore \fIcolor\fP"
+Specifies the color to use for the button name which represents the window
+with the focus. If not specified the color specified by *FvwmTaskBarFore or 
+*FvwmTaskBarColorset is used.
+
+.IP "*FvwmTaskBarFocusBack \fIcolor\fP"
+Specifies the color to use for the button which represents the window
+with the focus. If not specified the color specified by  *FvwmTaskBarBack or 
+*FvwmTaskBarColorset is used. Note that the button which represent the window
+with the focus is also brighted.
+
+.IP "*FvwmTaskFocusColorset \fIcolorset\fP"
+Tells the module to use colorset \fIcolorset\fP for the button 
+which represents the window with the focus. Please refer to the man page of
+the FvwmTheme module for details about colorsets.
+
+.IP "*FvwmTaskNoBrightFocus"
+By default the button which represents the window with the focus is brighted. 
+This option disables this feature.  \fINote:\fP You will want this option 
+if you use a pixmap (via FvwmTheme) for the background.
+
+
 .IP "*FvwmTaskBarTipsFore \fIcolor\fP"
 Specifies the color to be used for the text in the tips windows.
 
 .IP "*FvwmTaskBarTipsBack \fIcolor\fP"
 Specifies the background color for the tips windows.
-
-.IP "*FvwmTaskIconColorset \fIcolorset\fP"
-Tells the module to use colorset \fIcolorset\fP for the tips
-window.  Please refer to the man page of the FvwmTheme module
-for details about colorsets.
 
 .IP "*FvwmTaskBarGeometry \fIgeometry\fP"
 This option specifies the geometry of the window (only the Y coordinate is
@@ -152,6 +169,10 @@ the AddToFunc command of fvwm).
 .IP "*FvwmTaskBarButtonWidth \fIwidth\fP"
 Indicates the maximum width that window buttons should reach.
 (the minimum is hard coded at 32).
+
+.IP "*FvwmTaskBar3DFvwm"
+By default the buttons use a special (asymetric) 3D look. This option enable
+a more classical 3D look (i.e., a la fvwm).
 
 .IP "*FvwmTaskBarHighlightFocus"
 If the mouse pointer is over the taskbar, the window under the current

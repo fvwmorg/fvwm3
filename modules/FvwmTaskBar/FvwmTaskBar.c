@@ -114,16 +114,25 @@ Pixel back;
 Pixel fore;
 static Pixel iconfore;
 static Pixel iconback;
+static Pixel focusfore;
+static Pixel focusback;
 GC      icongraph = None;
 GC      iconbackgraph = None;
+GC      focusgraph = None;
+GC      focusbackgraph = None;
 GC      graph = None;
 GC      shadow = None;
 GC      hilite = None;
+GC      iconshadow = None;
+GC      iconhilite = None;
+GC      focusshadow = None;
+GC      focushilite = None;
 GC      blackgc = None;
 GC      whitegc = None;
 GC      checkered = None;
 int     colorset = -1;
 int     iconcolorset = -1;
+int     focuscolorset = -1;
 XFontStruct *ButtonFont, *SelButtonFont;
 #ifdef I18N_MB
 XFontSet ButtonFontset, SelButtonFontset;
@@ -164,6 +173,8 @@ char *ClickAction[3] = { DEFAULT_CLICK1, DEFAULT_CLICK2, DEFAULT_CLICK3 },
      *ForeColor      = "black",
      *IconBackColor  = "white",
      *IconForeColor  = "black",
+     *FocusBackColor = NULL,
+     *FocusForeColor = NULL,
      *geometry       = NULL,
      *font_string    = "fixed",
      *selfont_string = NULL;
@@ -178,7 +189,9 @@ int UseSkipList    = False,
     AutoHide       = False,
     AutoFocus      = False,
     HighlightFocus = False,
-    DeskOnly       = False;
+    DeskOnly       = False,
+    NoBrightFocus  = False,
+    ThreeDfvwm     = False;
 
 unsigned int ScreenWidth, ScreenHeight;
 
@@ -863,6 +876,11 @@ static char *moduleopts[] =
   "Swallow",
   "ButtonWidth",
   "NoIconAction",
+  "NoBrightFocus",
+  "FocusFore",
+  "FocusBack",
+  "FocusColorset",
+  "3DFvwm",
   NULL
 };
 
@@ -1040,6 +1058,25 @@ static void ParseConfigLine(char *tline)
       CopyString(&AnimCommand, rest);
       if (strlen(AnimCommand) > MAX_NO_ICON_ACTION_LENGTH)
 	AnimCommand[MAX_NO_ICON_ACTION_LENGTH] = 0;
+      break;
+    case 23: /* NoBrightFocus */
+      NoBrightFocus = True;
+      break;
+    case 24: /* FocusFore */
+      CopyString(&FocusForeColor, rest);
+      focuscolorset = -1;
+      break;
+    case 25: /* FocusBack */
+      CopyString(&FocusBackColor, rest);
+      focuscolorset = -1;
+      break;
+    case 26: /* FocusColorset */
+      focuscolorset = -1;
+      focuscolorset = atoi(rest);
+      AllocColorset(focuscolorset);
+      break;
+    case 27: /* 3DFvwm */
+      ThreeDfvwm = True;
       break;
     default:
       if (!GoodiesParseConfig(tline) &&
@@ -1459,6 +1496,12 @@ static void CreateOrUpdateGCs(void)
    Pixel pback;
    Pixel piconfore;
    Pixel piconback;
+   Pixel piconhilite;
+   Pixel piconshadow;
+   Pixel pfocusfore;
+   Pixel pfocusback;
+   Pixel pfocushilite;
+   Pixel pfocusshadow;
    Pixel philite;
    Pixel pshadow;
 
@@ -1483,11 +1526,51 @@ static void CreateOrUpdateGCs(void)
    {
      piconfore = Colorset[iconcolorset].fg;
      piconback = Colorset[iconcolorset].bg;
+     piconhilite = Colorset[iconcolorset].hilite;
+     piconshadow = Colorset[iconcolorset].shadow;
    }
    else
    {
      piconfore = iconfore;
      piconback = iconback;
+     piconhilite = GetHilite(iconback);
+     if(Pdepth < 2)
+       piconshadow = GetShadow(iconfore);
+     else
+       piconshadow = GetShadow(iconback);
+   }
+   if (focuscolorset >= 0)
+   {
+     pfocusfore = Colorset[focuscolorset].fg;
+     pfocusback = Colorset[focuscolorset].bg;
+     pfocushilite = Colorset[focuscolorset].hilite;
+     pfocusshadow = Colorset[focuscolorset].shadow;
+   }
+   else
+   {
+     pfocusshadow = pshadow;
+     if (FocusForeColor != NULL)
+     {
+       pfocusfore = focusfore;
+       if(Pdepth < 2)
+	 pfocusshadow = GetShadow(focusfore);
+     }
+     else
+     {
+       pfocusfore = fore;
+     }
+     if (FocusBackColor != NULL)
+     {
+       pfocusback = focusback;
+       pfocushilite = GetHilite(focusback);
+       if(!(Pdepth < 2))
+	 pfocusshadow = GetShadow(focusback);
+     }
+     else
+     {
+       pfocusback = back;
+       pfocushilite = philite;
+     }
    }
 
    /* only the foreground changes for all GCs */
@@ -1496,12 +1579,14 @@ static void CreateOrUpdateGCs(void)
    gcval.graphics_exposures = False;
 
    gcmask = GCForeground | GCBackground | GCFont | GCGraphicsExposures;
+   /* Normal */
    gcval.foreground = pfore;
    if (graph)
      XChangeGC(dpy,graph,gcmask,&gcval);
    else
      graph = XCreateGC(dpy,win,gcmask,&gcval);
 
+   /* iconified */
    gcval.foreground = piconfore;
    if (iconbackgraph)
      XChangeGC(dpy,icongraph,gcmask,&gcval);
@@ -1514,6 +1599,44 @@ static void CreateOrUpdateGCs(void)
    else
      iconbackgraph = XCreateGC(dpy,Root,gcmask,&gcval);
 
+   gcval.foreground = piconshadow;
+   if (iconshadow)
+     XChangeGC(dpy,iconshadow,gcmask,&gcval);
+   else
+     iconshadow = XCreateGC(dpy,win,gcmask,&gcval);
+
+   gcval.foreground = piconhilite;
+   if (iconhilite)
+     XChangeGC(dpy,iconhilite,gcmask,&gcval);
+   else
+     iconhilite = XCreateGC(dpy,win,gcmask,&gcval);
+
+   /* focused */
+   gcval.foreground = pfocusfore;
+   if (focusbackgraph)
+     XChangeGC(dpy,focusgraph,gcmask,&gcval);
+   else
+     focusgraph = XCreateGC(dpy,Root,gcmask,&gcval);
+
+   gcval.foreground = pfocusback;
+      if (focusbackgraph)
+     XChangeGC(dpy,focusbackgraph,gcmask,&gcval);
+   else
+     focusbackgraph = XCreateGC(dpy,Root,gcmask,&gcval);
+
+   gcval.foreground = pfocusshadow;
+   if (focusshadow)
+     XChangeGC(dpy,focusshadow,gcmask,&gcval);
+   else
+     focusshadow = XCreateGC(dpy,win,gcmask,&gcval);
+
+   gcval.foreground = pfocushilite;
+   if (focushilite)
+     XChangeGC(dpy,focushilite,gcmask,&gcval);
+   else
+     focushilite = XCreateGC(dpy,win,gcmask,&gcval);
+
+   /* "normal" continued */
    gcmask = GCForeground | GCBackground | GCGraphicsExposures;
    gcval.foreground = pshadow;
    if (shadow)
@@ -1539,9 +1662,13 @@ static void CreateOrUpdateGCs(void)
    else
      blackgc = XCreateGC(dpy,win,gcmask,&gcval);
 
+   /* brighting */
    gcmask = GCForeground | GCBackground | GCTile |
             GCFillStyle  | GCGraphicsExposures;
-   gcval.foreground = philite;
+   if (focuscolorset >= 0 || FocusBackColor != NULL)
+     gcval.foreground = pfocusback;
+   else
+     gcval.foreground = philite;
    gcval.fill_style = FillTiled;
    gcval.tile       = XCreatePixmapFromBitmapData(dpy, win, (char *)gray_bits,
 						  gray_width, gray_height,
@@ -1559,7 +1686,8 @@ static Bool change_colorset(int cset, Bool force)
 
   if (cset < 0)
     return False;
-  if (force || cset == colorset || cset == iconcolorset)
+  if (force || cset == colorset || cset == iconcolorset || 
+      cset == focuscolorset)
   {
     CreateOrUpdateGCs();
     if (force || cset == colorset)
@@ -1689,11 +1817,21 @@ void StartMeUp(void)
      fore = BlackPixel(dpy, screen);
      iconback = WhitePixel(dpy, screen);
      iconfore = BlackPixel(dpy, screen);
+     focusback = WhitePixel(dpy, screen);
+     focusfore = BlackPixel(dpy, screen);
    } else {
      back = GetColor(BackColor);
      fore = GetColor(ForeColor);
      iconback = GetColor(IconBackColor);
      iconfore = GetColor(IconForeColor);
+     if (FocusBackColor != NULL)
+       focusback = GetColor(FocusBackColor);
+     else
+       focusback = back;
+     if (FocusForeColor != NULL)
+       focusfore = GetColor(FocusForeColor);
+     else
+       focusfore = fore;
    }
 
    attr.background_pixel =
@@ -1749,6 +1887,7 @@ ShutMeDown(void)
   FreeAllButtons(&buttons);
   XFreeGC(dpy,graph);
   XFreeGC(dpy,icongraph);
+  XFreeGC(dpy,focusgraph);
   XDestroyWindow(dpy, win);
   XCloseDisplay(dpy);
 }

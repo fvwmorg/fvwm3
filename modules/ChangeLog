@@ -1,4 +1,17 @@
-1999-11_16  olicha  <olivier.chapuis@free.fr>
+1999-11-16  olicha  <olivier.chapuis@free.fr>
+
+	* FvwmTaskBar/FvwmTaskBar.c (ParseConfigLine):
+	(CreateOrUpdateGCs):
+	(change_colorset):
+	(StartMeUp):
+	(ShutMeDown):
+	* FvwmTaskBar/FvwmTaskBar.1:
+	* FvwmTaskBar/ButtonArray.c (Draw3dRect):
+	(ButtonDraw):
+	New configuration options: FocusFore, FocusBack, FocusColorset,
+	NoBrightFocus, 3Dfvwm. Fixed drawing of buttons.
+	
+1999-11-16  olicha  <olivier.chapuis@free.fr>
 
 	* FvwmTaskBar/ButtonArray.c (DoButton):
 	Fixed drawing out of a button
