@@ -1,7 +1,9 @@
 Note, the changes for the last STABLE release start with release
 _+_A HREF="#2.2.5"_-_2.2.5_+_/A_-_.
 
-Changes in beta release 2.3.30 (not released yet)
+Changes in beta release 2.3.31 (not released yet)
+
+Changes in beta release 2.3.30 (2001-03-29)
 
 * The configure option --disable-modality was removed.
 
