@@ -7,7 +7,7 @@ Changes in beta release 2.3.29 (2001-03-02)
 
 * New temporary option -debug_stack_ring.
 
-* New styles IconifyWindowGroupsTogether  and IconifyWindowGroupsOff.
+* New styles IconifyWindowGroupsTogether and IconifyWindowGroupsOff.
 
 * New styles KeepWindowGroupsOnDesk and ScatterWindowGroups to cope with
   applications using the window group hint incorrectly (mozilla).
@@ -29,7 +29,7 @@ Changes in beta release 2.3.28 (2001-01-25)
 
 * New command CopyMenuStyle.
 
-* Replaced Dump/SmartPlacement, Active/RandomPlacement, SmartPlacement/Off
+* Replaced Dumb/SmartPlacement, Active/RandomPlacement, SmartPlacement/Off
   style by ManualPlacement / CascadePlacement / MinOverlapPlacement /
   MinOverlapPercentPlacement / TileManualPlacement /TileCascadePlacement
   (old style still supported).
@@ -87,7 +87,7 @@ Changes in beta release 2.3.22 (2000-11-10)
 
 Changes in beta release 2.3.21 (September 2000)
 
-* Module configuration syntax now accepts a delimeter - colon and optional
+* Module configuration syntax now accepts a delimiter - colon and optional
   spaces; the old syntax is supported as usual (but it allows conflicts):
     *FvwmIconBoxMaxIconSize 48x48
     *FvwmIconBox: MaxIconSize 48x48
@@ -156,7 +156,7 @@ Changes in beta release 2.3.17 (May 2000)
   the fvwm user directory is now created if needed.
 
 * It is suggested to put all personal fvwm files to $HOME/.fvwm; to simulate
-  the old fvwm behaviour, export FVWM_USERDIR=$HOME .
+  the old fvwm behaviour, export FVWM_USERDIR=$HOME.
 
 * Instalating fvwm goodies is now to share/fvwm (FVWM_DATADIR), not etc/fvwm.
 
@@ -477,8 +477,8 @@ Changes in alpha release 2.3.3 (June 1999)
 
 Changes in alpha release 2.3.2 (May 1999)
 
-* The Meta-Tab binding to invoke the window list as described in the FAQ
-  is  now built-in.  You can  remove it as  described in the fvwm man page.
+* The Alt-Tab binding to invoke the window list as described in the FAQ
+  is  now built-in.  You can remove it as described in the fvwm man page.
 
 * The MoveThreshold command lets the user fine tune the threshold when a click
   becomes a move. It works in FvwmPager too.
@@ -644,9 +644,9 @@ Changes in alpha release 2.3.0 (February 1999)
 * New start up sequence: all start up scripts etc. are read before the initial
   capture so windows styles will be correct, no need for a recapture.
 
-* EdgeThickness can resize/hide/show panframes in mid function
+* EdgeThickness can resize/hide/show panframes in mid function.
 
-* Support for transparent Eterms etc. during opaque/animated moves
+* Support for transparent Eterms etc. during opaque/animated moves.
 
 * FvwmPager tracks windows during opaque/animated moves.
 
