@@ -1838,7 +1838,7 @@ void CMD_Iconify(F_CMD_ARGS)
   {
     if (toggle == 1)
     {
-      if(check_if_function_allowed(F_ICONIFY,tmp_win,True,0) == 0)
+      if (!is_function_allowed(F_ICONIFY, NULL, tmp_win, False, True))
       {
 	XBell(dpy, 0);
 	return;

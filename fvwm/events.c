@@ -93,6 +93,7 @@
 #include "focus.h"
 #include "move_resize.h"
 #include "virtual.h"
+#include "decorations.h"
 #ifdef HAVE_STROKE
 #include "stroke.h"
 #endif /* HAVE_STROKE */
@@ -2321,12 +2322,14 @@ fprintf(stderr, "cre: %d(%d) %d(%d) %d(%d)x%d(%d) w 0x%08x '%s'\n",
     dw = 0;
     dh = 0;
 
-    if (IS_SHADED(Tmp_win) || !is_move_allowed(Tmp_win, False))
+    if (IS_SHADED(Tmp_win) ||
+        !is_function_allowed(F_MOVE, NULL, Tmp_win, False, False))
     {
       /* forbid shaded applications to move their windows */
       cre->value_mask &= ~(CWX | CWY);
     }
-    if (IS_MAXIMIZED(Tmp_win) || !is_resize_allowed(Tmp_win, False))
+    if (IS_MAXIMIZED(Tmp_win) ||
+        !is_function_allowed(F_RESIZE, NULL, Tmp_win, False, False))
     {
       /* dont allow clients to resize maximized windows */
       cre->value_mask &= ~(CWWidth | CWHeight);

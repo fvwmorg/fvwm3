@@ -936,22 +936,22 @@ Bool ewmh_AllowsYes(EWMH_CMD_ARGS)
 
 Bool ewmh_AllowsClose(EWMH_CMD_ARGS)
 {
-  return check_if_function_allowed(F_CLOSE, fwin, False, NULL);
+  return is_function_allowed(F_CLOSE, NULL, fwin, False, False);
 }
 
 Bool ewmh_AllowsMaximize(EWMH_CMD_ARGS)
 {
-  return is_maximize_allowed(fwin, True);
+  return is_function_allowed(F_MAXIMIZE, NULL, fwin, True, False);
 }
 
 Bool ewmh_AllowsMove(EWMH_CMD_ARGS)
 {
-  return is_move_allowed(fwin, True);
+  return is_function_allowed(F_MOVE, NULL, fwin, True, False);
 }
 
 Bool ewmh_AllowsResize(EWMH_CMD_ARGS)
 {
-  return is_resize_allowed(fwin, True);
+  return is_function_allowed(F_RESIZE, NULL, fwin, True, False);
 }
 
 void EWMH_SetAllowedActions(FvwmWindow *fwin)

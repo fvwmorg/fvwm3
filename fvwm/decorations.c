@@ -532,91 +532,154 @@ void SelectDecor(FvwmWindow *t, window_style *pstyle, short *buttons)
 ** check_allowed_function2 partially overlapping in their checks, so I
 ** combined them here and made them wrapper functions instead.
 */
-int check_if_function_allowed(int function, FvwmWindow *t,
-			      Bool override_allowed, char *menu_string)
+Bool is_function_allowed(
+        int function, char *action_string, FvwmWindow *t, Bool is_user_request,
+        Bool do_allow_override_mwm_hints)
 {
-  if (!t)
-    return 1;
+        unsigned int functions;
+        char *functionlist[] = {
+                MOVE_STRING,
+                RESIZE_STRING1,
+                RESIZE_STRING2,
+                MINIMIZE_STRING,
+                MINIMIZE_STRING2,
+                MAXIMIZE_STRING,
+                CLOSE_STRING1,
+                CLOSE_STRING2,
+                CLOSE_STRING3,
+                CLOSE_STRING4,
+                NULL
+        };
 
-  if (override_allowed && HAS_MWM_OVERRIDE_HINTS(t))
-    return 1;
+        if (t == NULL)
+        {
+		return True;  /* this logic come from animated menu */
+        }
+        if (do_allow_override_mwm_hints && HAS_MWM_OVERRIDE_HINTS(t))
+        {
+                /* allow everything */
+                functions = ~0;
+        }
+        else
+        {
+                /* restrict by mwm hints */
+                functions = t->functions;
+        }
 
-  switch(function)
-  {
-    case F_DELETE:
-      if (!WM_DELETES_WINDOW(t))
-	return 0;
-      /* fall through to close clause */
-    case F_CLOSE:
-      if (!(t->functions & MWM_FUNC_CLOSE))
-	return 0;
-      break;
-    case F_DESTROY: /* shouldn't destroy always be allowed??? */
-      if (!(t->functions & MWM_FUNC_CLOSE))
-	return 0;
-      break;
-    case F_RESIZE:
-      if (!(t->functions & MWM_FUNC_RESIZE))
-	return 0;
-      break;
-    case F_ICONIFY:
-      if ((!IS_ICONIFIED(t))&&
-	  (!(t->functions & MWM_FUNC_MINIMIZE)))
-	return 0;
-      break;
-    case F_MAXIMIZE:
-      if (!(t->functions & MWM_FUNC_MAXIMIZE))
-	return 0;
-      break;
-    case F_MOVE:
-      /* Move is a funny hint. Keeps it out of the menu, but you're
-       * still allowed to move. */
-      if((!(t->functions & MWM_FUNC_MOVE))&&menu_string)
-	return 0;
-      break;
-    case F_FUNCTION:
-      /* Hard part! What to do now? */
-      /* Hate to do it, but for lack of a better idea,
-       * check based on the menu entry name */
-      /* Complex functions are a little tricky, ignore them if no menu item*/
-      if (menu_string)
-      {
-	if((!(t->functions & MWM_FUNC_MOVE))&&
-	   (StrEquals(menu_string,MOVE_STRING)))
-	  return 0;
-	if((!(t->functions & MWM_FUNC_RESIZE))&&
-	   (StrEquals(menu_string,RESIZE_STRING1)))
-	  return 0;
-	if((!(t->functions & MWM_FUNC_RESIZE))&&
-	   (StrEquals(menu_string,RESIZE_STRING2)))
-	  return 0;
-	if((!(t->functions & MWM_FUNC_MINIMIZE))&&
-	   (!IS_ICONIFIED(t))&&
-	   (StrEquals(menu_string,MINIMIZE_STRING)))
-	  return 0;
-	if((!(t->functions & MWM_FUNC_MINIMIZE))&&
-	   (StrEquals(menu_string,MINIMIZE_STRING2)))
-	  return 0;
-	if((!(t->functions & MWM_FUNC_MAXIMIZE))&&
-	   (StrEquals(menu_string,MAXIMIZE_STRING)))
-	  return 0;
-	if((!(t->functions & MWM_FUNC_CLOSE))&&
-	   (StrEquals(menu_string,CLOSE_STRING1)))
-	  return 0;
-	if((!(t->functions & MWM_FUNC_CLOSE))&&
-	   (StrEquals(menu_string,CLOSE_STRING2)))
-	  return 0;
-	if((!(t->functions & MWM_FUNC_CLOSE))&&
-	   (StrEquals(menu_string,CLOSE_STRING3)))
-	  return 0;
-	if((!(t->functions & MWM_FUNC_CLOSE))&&
-	   (StrEquals(menu_string,CLOSE_STRING4)))
-	  return 0;
-      }
-      break;
-    default:
-      break;
-  } /* end of switch */
-  /* if we fell through, just return a 1 */
-  return 1;
+        /* Hate to do it, but for lack of a better idea, check based on the
+         * menu entry name */
+        /* Complex functions are a little tricky, ignore them if no menu item*/
+        if (function == F_FUNCTION && action_string != NULL)
+        {
+                int i;
+
+                /* remap to regular actions */
+
+                i = GetTokenIndex(action_string, functionlist, 0, NULL);
+                switch (i)
+                {
+                case 0:
+                        function = F_MOVE;
+                        break;
+                case 1:
+                        function = F_RESIZE;
+                        break;
+                case 2:
+                        function = F_RESIZE;
+                        break;
+                case 3:
+                        function = F_ICONIFY;
+                        break;
+                case 4:
+                        function = F_ICONIFY;
+                        break;
+                case 5:
+                        function = F_MAXIMIZE;
+                        break;
+                case 6:
+                        function = F_CLOSE;
+                        break;
+                case 7:
+                        function = F_DELETE;
+                        break;
+                case 8:
+                        function = F_DESTROY;
+                        break;
+                case 9:
+                        function = F_QUIT;
+                        break;
+                default:
+                        break;
+                }
+        }
+        /* now do the real checks */
+        switch(function)
+        {
+        case F_DELETE:
+                if (!WM_DELETES_WINDOW(t))
+                        return False;
+                /* fall through to close clause */
+        case F_CLOSE:
+                if (!(functions & MWM_FUNC_CLOSE))
+                        return False;
+                break;
+        case F_DESTROY: /* shouldn't destroy always be allowed??? */
+                if (!(functions & MWM_FUNC_CLOSE))
+                        return False;
+                break;
+        case F_RESIZE:
+                if (!HAS_OVERRIDE_SIZE_HINTS(t) &&
+                    t->hints.min_width == t->hints.min_width &&
+                    t->hints.min_height == t->hints.max_height)
+                {
+                        return False;
+                }
+                if (is_user_request && IS_SIZE_FIXED(t))
+                {
+                        return False;
+                }
+                else if (!is_user_request && IS_PSIZE_FIXED(t))
+                {
+                        return False;
+                }
+                if (is_user_request && !(functions & MWM_FUNC_RESIZE))
+                {
+                        return False;
+                }
+                break;
+        case F_ICONIFY:
+                if ((!IS_ICONIFIED(t))&&
+                    (!(functions & MWM_FUNC_MINIMIZE)))
+                        return False;
+                break;
+        case F_MAXIMIZE:
+                if (is_user_request && !(functions & MWM_FUNC_MAXIMIZE))
+                {
+                        return False;
+                }
+                break;
+        case F_MOVE:
+                /* Move is a funny hint. Keeps it out of the menu, but you're
+                 * still allowed to move. */
+
+                if (is_user_request && IS_FIXED(t))
+                {
+                        return False;
+                }
+                else if (!is_user_request && IS_FIXED_PPOS(t))
+                {
+                        return False;
+                }
+                if (is_user_request && !(functions & MWM_FUNC_MOVE))
+                {
+                        return False;
+                }
+                break;
+        case F_FUNCTION:
+        default:
+                break;
+        } /* end of switch */
+
+        /* if we fell through, just return True */
+        return True;
 }

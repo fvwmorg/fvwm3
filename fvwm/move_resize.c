@@ -107,77 +107,6 @@ static void draw_move_resize_grid(int x, int  y, int  width, int height);
 
 /* ----- end of resize globals ----- */
 
-Bool is_move_allowed(
-	FvwmWindow *tmp_win, Bool is_user_request)
-{
-	if (tmp_win == NULL)
-	{
-		return True;  /* this logic come from animated menu */
-	}
-	if (is_user_request && IS_FIXED(tmp_win))
-	{
-		return False;
-	}
-	else if (!is_user_request && IS_FIXED_PPOS(tmp_win))
-	{
-		return False;
-	}
-	if (is_user_request &&
-	    !check_if_function_allowed(F_MOVE, tmp_win, False, NULL))
-	{
-		return False;
-	}
-
-	return True;
-}
-
-Bool is_resize_allowed(
-	FvwmWindow *tmp_win, Bool is_user_request)
-{
-
-	if (tmp_win == NULL)
-	{
-		return False;
-	}
-	if (!HAS_OVERRIDE_SIZE_HINTS(tmp_win) &&
-	    tmp_win->hints.min_width == tmp_win->hints.min_width &&
-	    tmp_win->hints.min_height == tmp_win->hints.max_height)
-	{
-		return False;
-	}
-	if (is_user_request && IS_SIZE_FIXED(tmp_win))
-	{
-		return False;
-	}
-	else if (!is_user_request && IS_PSIZE_FIXED(tmp_win))
-	{
-		return False;
-	}
-	if (is_user_request &&
-	    !check_if_function_allowed(F_RESIZE, tmp_win, False, NULL))
-	{
-		return False;
-	}
-
-	return True;
-}
-
-Bool is_maximize_allowed(
-	FvwmWindow *tmp_win, Bool is_user_request)
-{
-	if (tmp_win == NULL)
-	{
-		return False;
-	}
-	if (is_user_request &&
-	    !check_if_function_allowed(F_MAXIMIZE, tmp_win, False, NULL))
-	{
-		return False;
-	}
-
-	return True;
-}
-
 /* The vars are named for the x-direction, but this is used for both x and y */
 static int GetOnePositionArgument(
   char *s1,int x,int w,int *pFinalX,float factor, int max, Bool is_x)
@@ -675,9 +604,9 @@ void CMD_ResizeMove(F_CMD_ARGS)
     return;
   if (tmp_win == NULL || IS_ICONIFIED(tmp_win))
     return;
-  if (is_move_allowed(tmp_win, True))
+  if (is_function_allowed(F_MOVE, NULL, tmp_win, True, False))
     return;
-  if (check_if_function_allowed(F_RESIZE,tmp_win,True,NULL) == 0)
+  if (is_function_allowed(F_RESIZE, NULL, tmp_win, True, True) == 0)
   {
     XBell(dpy, 0);
     return;
@@ -871,7 +800,7 @@ static void AnimatedMoveAnyWindow(
   int lastX, lastY;
   int deltaX, deltaY;
 
-  if (!is_move_allowed(tmp_win, True))
+  if (!is_function_allowed(F_MOVE, NULL, tmp_win, True, False))
     return;
 
   /* set our defaults */
@@ -1033,7 +962,7 @@ static void move_window_doit(F_CMD_ARGS, Bool do_animate, int mode)
   }
   if (tmp_win == NULL)
     return;
-  if (!is_move_allowed(tmp_win, True))
+  if (!is_function_allowed(F_MOVE, NULL, tmp_win, True, False))
     return;
 
   /* gotta have a window */
@@ -2311,7 +2240,7 @@ void CMD_Resize(F_CMD_ARGS)
   }
   button_mask &= DEFAULT_ALL_BUTTONS_MASK;
 
-  if (!check_if_function_allowed(F_RESIZE, tmp_win, True, NULL))
+  if (!is_function_allowed(F_RESIZE, NULL, tmp_win, True, True))
   {
     XBell(dpy, 0);
     return;
@@ -3271,7 +3200,7 @@ void CMD_Maximize(F_CMD_ARGS)
   if (tmp_win == NULL || IS_ICONIFIED(tmp_win))
     return;
 
-  if (check_if_function_allowed(F_MAXIMIZE,tmp_win,True,NULL) == 0)
+  if (!is_function_allowed(F_MAXIMIZE, NULL, tmp_win, True, False))
   {
     XBell(dpy, 0);
     return;

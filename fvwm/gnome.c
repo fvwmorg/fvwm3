@@ -36,6 +36,7 @@
 #include "virtual.h"
 #include "window_flags.h"
 #include "borders.h"
+#include "decorations.h"
 
 
 /*********************************************************/
@@ -469,7 +470,7 @@ GNOME_SetHints(FvwmWindow *fwin)
     val |= WIN_STATE_STICKY;
   if (IS_SHADED(fwin))
     val |= WIN_STATE_SHADED;
-  if (!is_move_allowed(fwin, True))
+  if (!is_function_allowed(F_MOVE, NULL, fwin, True, False))
     val |= WIN_STATE_FIXED_POSITION;
 
   XChangeProperty(dpy, fwin->w, atom_set, XA_CARDINAL, 32,

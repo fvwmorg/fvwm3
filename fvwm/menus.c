@@ -3643,8 +3643,8 @@ static void paint_item(MenuRoot *mr, MenuItem *mi, FvwmWindow *fw,
     }
   }
 
-  /* Note: it's ok to pass a NULL label to check_if_function_allowed. */
-  if(check_if_function_allowed(MI_FUNC_TYPE(mi), fw, False, MI_LABEL(mi)[0]))
+  /* Note: it's ok to pass a NULL label to is_function_allowed. */
+  if(is_function_allowed(MI_FUNC_TYPE(mi), MI_LABEL(mi)[0], fw, True, False))
   {
     currentGC = (is_item_selected) ?
       MST_MENU_ACTIVE_GC(mr) : MST_MENU_GC(mr);

@@ -668,7 +668,7 @@ void CMD_Destroy(F_CMD_ARGS)
   if (DeferExecution(eventp,&w,&tmp_win,&context, CRS_DESTROY, ButtonRelease))
     return;
 
-  if(check_if_function_allowed(F_DESTROY,tmp_win,True,NULL) == 0)
+  if(!is_function_allowed(F_DESTROY, NULL, tmp_win, True, True))
   {
     XBell(dpy, 0);
     return;
@@ -689,7 +689,7 @@ void CMD_Delete(F_CMD_ARGS)
   if (DeferExecution(eventp,&w,&tmp_win,&context, CRS_DESTROY,ButtonRelease))
     return;
 
-  if(check_if_function_allowed(F_DELETE,tmp_win,True,NULL) == 0)
+  if (!is_function_allowed(F_DELETE, NULL, tmp_win, True, True))
   {
     XBell(dpy, 0);
     return;
@@ -712,7 +712,7 @@ void CMD_Close(F_CMD_ARGS)
   if (DeferExecution(eventp,&w,&tmp_win,&context, CRS_DESTROY,ButtonRelease))
     return;
 
-  if(check_if_function_allowed(F_CLOSE,tmp_win,True,NULL) == 0)
+  if (!is_function_allowed(F_CLOSE, NULL, tmp_win, True, True))
   {
     XBell(dpy, 0);
     return;
