@@ -1,3 +1,7 @@
+Thu Jul  1 22:32:28 1999  DanEspen  <dje@blue>
+
+	* Moved web stuff into fvwm-web.
+
 1999-06-24  Dominik Vogt  <dominik_vogt@gmx.de>
 
 	* FAQ (3.15): added a hint how to get auto arranging icons
