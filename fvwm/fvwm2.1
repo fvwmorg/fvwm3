@@ -1366,6 +1366,19 @@ number <n> that is defined with the
 .B DesktopName
 command. If no name is defined, then the default name is returned.
 
+$[schedule.last]
+.in -.5i
+This is replaced by the id of the last command that was scheduled
+with the
+.B Schedule
+command, even if this command was already executed.
+
+$[schedule.next]
+.in -.5i
+This is replaced by the id the next command used with
+.B Schedule
+will get (unless a different id is specified explicitly).
+
 .in +.5i
 $[...]
 .in +.3i
@@ -3060,6 +3073,18 @@ changes the layers that are used for the
 options.  Initially, the layers 2, 4 and 6 are used.
 
 .TP
+.BI "Deschedule " "[command_id]"
+Removes all commands that were scheduled with the id
+.I command_id
+with the
+.B Schedule
+command from the list of commands to be executed unless they were
+already executed.  If the
+.I command_id
+is omitted, the value of the variable $[schedule.last] is used as
+the id.
+
+.TP
 .BI "Emulate " Fvwm | Mwm | Win
 This command affects how miscellaneous things are done by
 fvwm. For example where the move/resize feedback window appears
@@ -3329,14 +3354,22 @@ This command is obsolete. Please use
 instead.
 
 .TP
-.BI "Schedule " "delay_ms command"
-the
+.BI "Schedule " "delay_ms [command_id] command"
+The
 .I command
 is executed after about
 .I delay_ms
 milliseconds.  This may be useful in some tricky setups.  The
 .I command
 is executed in the same context window as the
+.B Schedule
+command.  An optional integer argument
+.I command_id
+may be given.  This id can be used with the
+.B Deschedule
+command to remove the scheduled command before it is executed.  If
+no id is given, fvwm uses negative id numbers, starting with -1
+and descreasing by one with each use of the
 .B Schedule
 command.
 Note that the

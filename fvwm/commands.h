@@ -53,6 +53,7 @@ void CMD_DefaultFont(F_CMD_ARGS);
 void CMD_DefaultIcon(F_CMD_ARGS);
 void CMD_DefaultLayers(F_CMD_ARGS);
 void CMD_Delete(F_CMD_ARGS);
+void CMD_Deschedule(F_CMD_ARGS);
 void CMD_Desk(F_CMD_ARGS);
 void CMD_DesktopName(F_CMD_ARGS);
 void CMD_DesktopSize(F_CMD_ARGS);

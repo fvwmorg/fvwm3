@@ -52,6 +52,7 @@
 #include "virtual.h"
 #include "libs/Colorset.h"
 #include "ewmh.h"
+#include "schedule.h"
 
 extern XEvent Event;
 extern FvwmWindow *Tmp_win;
@@ -129,6 +130,7 @@ static const func_type func_config[] =
   CMD_ENTRY("defaulticon", CMD_DefaultIcon, F_DFLT_ICON, 0),
   CMD_ENTRY("defaultlayers", CMD_DefaultLayers, F_DFLT_LAYERS, 0),
   CMD_ENTRY("delete", CMD_Delete, F_DELETE, FUNC_NEEDS_WINDOW),
+  CMD_ENTRY("deschedule", CMD_Deschedule, F_DESCHEDULE, 0),
   CMD_ENTRY("desk", CMD_Desk, F_GOTO_DESK, 0),
   CMD_ENTRY("desktopname", CMD_DesktopName, F_DESKTOP_NAME, 0),
   CMD_ENTRY("desktopsize", CMD_DesktopSize, F_SETDESK, 0),
@@ -341,6 +343,8 @@ static char *function_vars[] =
   "i.height",
   "screen",
   "desk.name",
+  "schedule.last",
+  "schedule.next",
   NULL
 };
 
@@ -661,6 +665,16 @@ static int expand_extended_var(
     /* screen */
     is_numeric = True;
     val = Scr.screen;
+    break;
+  case 34:
+    /* schedule.last */
+    is_numeric = True;
+    val = get_last_schedule_id();
+    break;
+  case 35:
+    /* schedule.next */
+    is_numeric = True;
+    val = get_next_schedule_id();
     break;
   default:
     /* unknown variable - try to find it in the environment */

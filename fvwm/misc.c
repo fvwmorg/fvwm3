@@ -547,7 +547,7 @@ Time get_server_time(void)
 		dpy, Scr.NoFocusWin, XA_WM_CLASS, XA_STRING, 8, PropModeAppend,
 		NULL, 0);
 	XWindowEvent(dpy, Scr.NoFocusWin, PropertyChangeMask, &xev);
-	attr.event_mask = NoEventMask;
+	attr.event_mask = XEVMASK_NOFOCUSW;
 	XChangeWindowAttributes(dpy, Scr.NoFocusWin, CWEventMask, &attr);
 	StashEventTime(&xev);
 
