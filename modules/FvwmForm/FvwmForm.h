@@ -225,41 +225,20 @@ EXTERN Window root, ref;
 EXTERN int screen;
 
 enum { c_bg, c_fg, c_item_bg, c_item_fg, c_itemlo, c_itemhi };
-#ifdef IamTheMain
-EXTERN char *color_names[4] = {
-  "Light Gray", "Black", "Gray50", "Wheat"
-};
-#else
 EXTERN char *color_names[4];
-#endif
-/*
-  Its hard to tell the difference between the txt background color and
-  the screen background.  Perhaps there should be a new command for
-  the text background...dje */
 #ifdef IamTheMain
-EXTERN char *screen_background_color = "Light Gray";
 EXTERN char bg_state = 'd';                    /* in default state */
   /* d = default state */
   /* s = set by command (must be in "d" state for first "back" cmd to set it) */
   /* u = used (color allocated, too late to accept "back") */
-#else
-EXTERN char *screen_background_color;
-EXTERN char bg_state;
-#endif
-enum { f_text, f_input, f_button };
-#ifdef IamTheMain
-EXTERN char *font_names[3] = {
-  "8x13bold", "8x13bold", "8x13bold"    /* dje */
-/*   "fixed", */
-/*   "fixed", */
-/*   "fixed" */
-};
-
 EXTERN char endDefaultsRead = 'n';
 #else
-EXTERN char *font_names[3];
+EXTERN char bg_state;
 EXTERN char endDefaultsRead;
 #endif
+enum { f_text, f_input, f_button };
+EXTERN char *font_names[3];
+EXTERN char *screen_background_color;
 
 
 /* From FvwmAnimate start */

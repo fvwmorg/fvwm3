@@ -948,7 +948,17 @@ static void ct_Command(char *cp)
 
 /* End of ct_ routines */
 
-
+/* Init constants with values that can be freed later. */
+static void InitConstants () {
+  color_names[0]=strdup("Light Gray");
+  color_names[1]=strdup("Black");
+  color_names[2]=strdup("Gray50");
+  color_names[3]=strdup("Wheat");
+  font_names[0]=strdup("8x13bold");
+  font_names[1]=strdup("8x13bold");
+  font_names[2]=strdup("8x13bold");
+  screen_background_color=strdup("Light Gray");
+}
 
 /* read the configuration file */
 static void ReadDefaults ()
@@ -1883,6 +1893,7 @@ int main (int argc, char **argv)
   screen = DefaultScreen(dpy);
   root = RootWindow(dpy, screen);
 
+  InitConstants();
   ReadDefaults();                       /* get config from fvwm */
 
   if (strcasecmp(MyName+1,"FvwmForm") != 0) { /* if not already read */
