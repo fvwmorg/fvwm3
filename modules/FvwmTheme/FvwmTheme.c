@@ -195,7 +195,6 @@ static void parse_colorset(char *line)
   if (!token) {
     return;
   }
-fprintf(stderr,"1: token = %s, line = %s\n", token, line);
   ret = !sscanf(token, "%d", &n);
   if (ret)
     return;
@@ -231,8 +230,10 @@ fprintf(stderr,"1: token = %s, line = %s\n", token, line);
   if (!ret) {
     XFreePixmap(dpy, cs->pixmap);
     XFreePixmap(dpy, cs->mask);
+    XFreePixmap(dpy, cs->shape_mask);
     cs->pixmap = None;
     cs->mask = None;
+    cs->shape_mask = None;
   }
 
   if (StrEquals(token, "Shape") || StrEquals(token, "Shaped"))
@@ -243,12 +244,6 @@ fprintf(stderr,"1: token = %s, line = %s\n", token, line);
     /* try to load the shape mask */
     if (token && !ret)
     {
-      if (cs->shape_mask)
-      {
-	XFreePixmap(dpy, cs->shape_mask);
-	cs->shape_mask = None;
-      }
-
       /* load the shape mask */
       picture = GetPicture(dpy, win, NULL, token, color_limit);
       if (!picture)
@@ -287,7 +282,6 @@ fprintf(stderr,"1: token = %s, line = %s\n", token, line);
 	    }
 	    XCopyPlane(dpy, mask, cs->shape_mask, shape_gc, 0, 0,
 		       picture->width, picture->height, 0, 0, 1);
-fprintf(stderr,"successfully created shape mask 0x%x\n", cs->shape_mask);
 	  }
 	}
       }
@@ -352,18 +346,18 @@ fprintf(stderr,"successfully created shape mask 0x%x\n", cs->shape_mask);
 	XGCValues xgcv;
 	static GC mask_gc = None;
 
+	/* first restore the gc we modified earlier */
 	XSetClipMask(dpy, gc, None);
+	/* make sure we have a gc */
 	if (mask_gc == None)
 	{
 	  /* create a gc for 1 bit depth */
-	  mask_gc = XCreateGC(
-	    dpy, picture->mask, GCForeground|GCBackground, &xgcv);
+	  mask_gc = XCreateGC(dpy, picture->mask, 0, &xgcv);
 	}
 	cs->mask = XCreatePixmap(
 	  dpy, picture->mask, cs->width, cs->height, 1);
 	XCopyArea(dpy, picture->mask, cs->mask, mask_gc, 0, 0, cs->width,
 		  cs->height, 0, 0);
-
       }
       DestroyPicture(dpy, picture);
       cs->keep_aspect = (type == 2);
@@ -395,7 +389,6 @@ fprintf(stderr,"successfully created shape mask 0x%x\n", cs->shape_mask);
   XSync(dpy, False);
 
   /* inform fvwm of the change */
-fprintf(stderr,"FvwmTheme: n=%d; ", n);
   SendText(fd, DumpColorset(n), 0);
 }
 

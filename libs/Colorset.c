@@ -74,13 +74,11 @@ char *DumpColorset(unsigned int n)
 {
   colorset_struct *cs = &Colorset[n];
 
-fprintf(stderr,"sm[%d] = 0x%x\n", n, Colorset[n].shape_mask);
   sprintf(csetbuf, "Colorset %x %lx %lx %lx %lx %lx %lx %lx %x %x %x %x %x",
 	  n, cs->fg,
 	  cs->bg, cs->hilite, cs->shadow, cs->pixmap, cs->mask, cs->shape_mask,
 	  cs->width, cs->height, cs->stretch_x, cs->stretch_y,
 	  cs->keep_aspect);
-fprintf(stderr,"dumping cs %d = %s\n", n, csetbuf);
   return csetbuf;
 }
 
@@ -97,7 +95,6 @@ static int LoadColorsetConditional(char *line, Bool free)
   Pixmap shape_mask;
   unsigned int width, height, stretch_x, stretch_y, keep_aspect;
 
-fprintf(stderr,"lcc: line = %s\n", line);
   if (line == NULL)
     return -1;
   if (sscanf(line, "%x%n", &n, &chars) != 1)
@@ -134,7 +131,7 @@ fprintf(stderr,"lcc: line = %s\n", line);
   cs->shadow = shadow;
   cs->pixmap = pixmap;
   cs->mask = mask;
-  cs->mask = shape_mask;
+  cs->shape_mask = shape_mask;
   cs->width = width;
   cs->height = height;
   cs->stretch_x = stretch_x;
@@ -161,14 +158,22 @@ void SetWindowBackground(Display *dpy, Window win, int width, int height,
   Pixmap mask = None;
   XID junk;
 
-if (colorset->shape_mask)
-{
-fprintf(stderr,"have shape mask\n");
-}
   if (0 ==width || 0 == height)
     XGetGeometry(dpy, win, &junk, (int *)&junk, (int *)&junk, &width, &height,
 		 (unsigned int *)&junk, (unsigned int *)&junk);
 
+#ifdef SHAPE
+  if (colorset->shape_mask)
+  {
+    mask = CreateBackgroundPixmap(
+      dpy, 0, width, height, colorset, 1, None, True);
+    if (mask)
+    {
+      XShapeCombineMask(dpy, win, ShapeBounding, 0, 0, mask, ShapeSet);
+      XFreePixmap(dpy, mask);
+    }
+  }
+#endif
   if (!colorset->pixmap) {
     /* use the bg pixel */
     XSetWindowBackground(dpy, win, colorset->bg);
@@ -177,19 +182,6 @@ fprintf(stderr,"have shape mask\n");
     pixmap = CreateBackgroundPixmap(dpy, win, width, height, colorset, depth,
 				    gc, False);
     if (pixmap) {
-#ifdef SHAPE
-      if (colorset->shape_mask)
-      {
-fprintf(stderr,"using shape mask\n");
-	mask = CreateBackgroundPixmap(
-	  dpy, 0, width, height, colorset, 1, None, True);
-	if (mask)
-	{
-	  XShapeCombineMask(dpy, win, ShapeBounding, 0, 0, mask, ShapeSet);
-	  XFreePixmap(dpy, mask);
-	}
-      }
-#endif
       XSetWindowBackgroundPixmap(dpy, win, pixmap);
       XClearArea(dpy, win, 0, 0, width, height, True);
       XFreePixmap(dpy, pixmap);

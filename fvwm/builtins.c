@@ -1319,7 +1319,7 @@ void HandleColorset(F_CMD_ARGS)
   char *token;
 
   token = PeekToken(action, NULL);
-  ret = sscanf(token, "%d", &n);
+  ret = sscanf(token, "%x", &n);
 
   if ((ret == 0) || (n < 0))
     return;

@@ -200,10 +200,9 @@ void SendDataToModule(XEvent *eventp,Window w,FvwmWindow *tmp_win,
     SendName(*Module,M_CONFIG_INFO,0,0,0,msg2);
   }
 #endif
-  /* now dump the colorsets (in reverse order to minimize mallocing lots */
-  buf = DumpColorset(n);
+  /* now dump the colorsets (in reverse order to minimize mallocing lots) */
   while (n--)
-    SendName(*Module, M_CONFIG_INFO, 0, 0, 0, buf);
+    SendName(*Module, M_CONFIG_INFO, 0, 0, 0, DumpColorset(n));
 
   /* Dominik Vogt (8-Nov-1998): Scr.ClickTime patch to set ClickTime to
    * 'not at all' during InitFunction and RestartFunction. */

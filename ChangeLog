@@ -1,3 +1,9 @@
+1999-08-16  Dominik Vogt  <dominik_vogt@gmx.de>
+
+	* libs/Colorset.c (LoadColorset): fixed reading shape_mask into mask
+
+	* fvwm/modconf.c (SendDataToModule): fixed sending the wrong colorset
+
 1999-08-16  Mikhael Goikhman  <migo@homemail.com>
 
 	* configure.in: produce utils/fvwm-menu-{xlock|directory|desktop}
@@ -5,6 +11,7 @@
 
 1999-08-16  Dominik Vogt  <dominik_vogt@gmx.de>
 
+	* fvwm/builtins.c (HandleColorset):
 	* libs/Colorset.c (LoadColorset): fixed bug that caused colorsets 10
 	and up not to work (parsed a hex as decimal).
 
