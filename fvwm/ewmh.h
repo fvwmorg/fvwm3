@@ -24,6 +24,8 @@ Bool EWMH_CMD_Style(char *token, window_style *ptmpstyle);
 
 void EWMH_SetCurrentDesktop(void);
 void EWMH_SetNumberOfDesktops(void);
+void EWMH_SetDesktopViewPort(void);
+void EWMH_SetDesktopGeometry(void);
 
 void EWMH_SetActiveWindow(Window w);
 void EWMH_SetWMDesktop(FvwmWindow *fwin);

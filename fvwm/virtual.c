@@ -1239,6 +1239,7 @@ void MoveViewport(int newx, int newy, Bool grab)
 	}
 	/* update GNOME pager */
 	GNOME_SetCurrentArea();
+	EWMH_SetDesktopViewPort();
 
 	return;
 }
@@ -1772,6 +1773,7 @@ void CMD_DesktopSize(F_CMD_ARGS)
 	checkPanFrames();
 	/* update GNOME pager */
 	GNOME_SetAreaCount();
+	EWMH_SetDesktopGeometry();
 
 	return;
 }

@@ -471,6 +471,33 @@ void EWMH_SetNumberOfDesktops(void)
 	ewmh_SetWorkArea();
 }
 
+void EWMH_SetDesktopViewPort(void)
+{
+	CARD32 val[256][2]; /* no more than 256 desktops */
+	int i = 0;
+
+	while(i < ewmhc.NumberOfDesktops && i < 256)
+	{
+		val[i][0] = Scr.Vx;
+		val[i][1] = Scr.Vy;
+		i++;
+	}
+	ewmh_ChangeProperty(
+		Scr.Root, "_NET_DESKTOP_VIEWPORT", EWMH_ATOM_LIST_CLIENT_ROOT,
+		(unsigned char *)&val, i*2);
+}
+
+void EWMH_SetDesktopGeometry(void)
+{
+	CARD32 val[2];
+
+	val[0] = Scr.VxMax + Scr.MyDisplayWidth;
+	val[1] = Scr.VyMax + Scr.MyDisplayHeight;
+	ewmh_ChangeProperty(
+		Scr.Root,"_NET_DESKTOP_GEOMETRY", EWMH_ATOM_LIST_CLIENT_ROOT,
+		(unsigned char *)&val, 2);
+}
+
 /*
  *  client_win: here the client is fvwm
  */
@@ -1622,6 +1649,8 @@ void EWMH_Init(void)
 	EWMH_SetDesktopNames();
 	EWMH_SetCurrentDesktop();
 	EWMH_SetNumberOfDesktops();
+	EWMH_SetDesktopViewPort();
+	EWMH_SetDesktopGeometry();
 	EWMH_SetClientList();
 	EWMH_SetClientListStacking();
 	ewmh_ComputeAndSetWorkArea();

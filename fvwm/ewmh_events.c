@@ -56,8 +56,18 @@ int ewmh_CurrentDesktop(EWMH_CMD_ARGS)
 int ewmh_DesktopGeometry(EWMH_CMD_ARGS)
 {
 	char action[256];
-	sprintf(action, "DesktoSize %ld %ld", ev->xclient.data.l[0],
-		ev->xclient.data.l[1]);
+	long width = ev->xclient.data.l[0];
+	long height = ev->xclient.data.l[1];
+
+	width = width / Scr.MyDisplayWidth;
+	height = height / Scr.MyDisplayHeight;
+
+	if (width <= 0 || height <= 0)
+	{
+		return -1;
+	}
+
+	sprintf(action, "DesktoSize %ld %ld", width, height);
 	execute_function_override_window(NULL, NULL, action, 0, NULL);
 
 	return -1;
