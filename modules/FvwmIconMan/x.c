@@ -368,7 +368,10 @@ void xevent_loop (void)
       set_manager_width (man, theEvent.xconfigure.width);
       ConsoleDebug (X11, "\tboxwidth = %d\n", man->geometry.boxwidth);
       if (force_redraw)
+      {
 	force_manager_redraw(man);
+	force_redraw = 0;
+      }
       else
 	draw_manager (man);
 
