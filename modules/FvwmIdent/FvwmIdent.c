@@ -633,6 +633,7 @@ void RedrawWindow(void)
 void change_window_name(char *str)
 {
   XTextProperty name;
+  XClassHint myclasshints;
 
   if (XStringListToTextProperty(&str,1,&name) == 0)
     {
@@ -642,6 +643,9 @@ void change_window_name(char *str)
   XSetWMName(dpy,main_win,&name);
   XSetWMIconName(dpy,main_win,&name);
   XFree(name.value);
+  myclasshints.res_name = str;
+  myclasshints.res_class = "FvwmIdent";
+  XSetClassHint(dpy,main_win,&myclasshints);
 }
 
 

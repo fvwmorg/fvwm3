@@ -1,5 +1,8 @@
 2000-04-22  Dan Espen  <dane@mk.telcordia.com>
 
+	* FvwmIdent/FvwmIdent.c (change_window_name):  FvwmIdent sets resource
+	name to module alias and resource class to module name.
+
 	* FvwmForm/FvwmForm.c (OpenWindows): FvwmForm sets resource
 	name to module alias and resource class to module name.
 
