@@ -11,7 +11,7 @@
 	functions moved to add_window.c
 
 	* fvwm/session.c (RestartInSession):
-	fixed windows travelling upon restart with outdates session state file
+	fixed windows travelling upon restart with outdated session state file
 
 2001-03-19  Dominik Vogt  <dominik.vogt@gmx.de>
 

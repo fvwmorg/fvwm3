@@ -367,7 +367,9 @@ module for details about colorsets.
 .IP "*FvwmPagerWindowColorsets \fIcolorset activecolorset\fP"
 Uses colorsets in the same way as *FvwmPagerWindowColors.
 Please refer to the man page of the FvwmTheme module for details
-about colorsets.
+about colorsets.  The shadow and hilight colors of the colorset are
+only used for the window borders if the *FvwmPagerWindow3DBorders
+is specified too.
 .IP "*FvwmPagerWindowBorderWidth \fIn\fP"
 Specifies the width of the border drawn around the mini windows. This also sets
 the minimum size of the mini windows to (2 * \fIn\fP + 1).
