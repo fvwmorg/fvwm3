@@ -2061,7 +2061,7 @@ FvwmWindow *AddWindow(
 	sflags = SGET_FLAGS_POINTER(style);
 	SET_TRANSIENT(
 		fw, !!XGetTransientForHint(
-			dpy, FW_W(fw), &FW_W_TRANSIENTFOR (fw)));
+			dpy, FW_W(fw), &FW_W_TRANSIENTFOR(fw)));
 	if (win_opts->flags.is_menu)
 	{
 		SET_TEAR_OFF_MENU(fw, 1);

@@ -656,6 +656,53 @@ static Bool __restack_window(
 	return False;
 }
 
+Bool __raise_lower_recursion(
+	FvwmWindow *t, Bool do_lower)
+{
+	FvwmWindow *t2;
+
+	for (t2 = Scr.FvwmRoot.stack_next; t2 != &Scr.FvwmRoot;
+	     t2 = t2->stack_next)
+	{
+		if (FW_W(t2) == FW_W_TRANSIENTFOR(t))
+		{
+			if (t2 == t)
+			{
+				return False;
+			}
+			if (IS_ICONIFIED(t2) || t->layer != t2->layer)
+			{
+				break;
+			}
+			if (do_lower &&
+			    (!IS_TRANSIENT(t2) ||
+			     !DO_STACK_TRANSIENT_PARENT(t2)))
+			{
+				/* hit the highest level transient; lower this
+				 * subtree below all other subtrees of the
+				 * same window */
+				t->scratch.i = -LOWER_PENALTY;
+			}
+			else
+			{
+				/* Add a bonus to the stack ring position for
+				 * this branch of the transient tree over all
+				 * other branches. */
+				t->scratch.i = MAX_TRANSIENTS_IN_BRANCH;
+			}
+			__RaiseOrLowerWindow(t2, do_lower, True, False);
+			if ((!do_lower && DO_RAISE_TRANSIENT(t2)) ||
+			    (do_lower && DO_LOWER_TRANSIENT(t2))  )
+			{
+				/* moving the parent moves our window already */
+				return True;
+			}
+		}
+	}
+
+	return False;
+}
+
 static void __RaiseOrLowerWindow(
 	FvwmWindow *t, Bool do_lower, Bool allow_recursion, Bool is_new_window)
 {
@@ -685,47 +732,9 @@ static void __RaiseOrLowerWindow(
 		 * window). */
 		if (IS_TRANSIENT(t) && DO_STACK_TRANSIENT_PARENT(t))
 		{
-			for (t2 = Scr.FvwmRoot.stack_next; t2 != &Scr.FvwmRoot;
-			     t2 = t2->stack_next)
+			if (__raise_lower_recursion(t, do_lower) == True)
 			{
-				if (FW_W(t2) == FW_W_TRANSIENTFOR(t))
-				{
-					if (IS_ICONIFIED(t2) ||
-					    t->layer != t2->layer)
-					{
-						break;
-					}
-					if (do_lower &&
-					    (!IS_TRANSIENT(t2) ||
-					     !DO_STACK_TRANSIENT_PARENT(t2)))
-					{
-						/* hit the highest level
-						 * transient; lower this
-						 * subtree below all other
-						 * subtrees of the same window
-						 */
-						t->scratch.i = -LOWER_PENALTY;
-					}
-					else
-					{
-						/* Add a bonus to the stack
-						 * ring position for this
-						 * branch of the transient tree
-						 * over all other branches. */
-						t->scratch.i = MAX_TRANSIENTS_IN_BRANCH;
-					}
-					__RaiseOrLowerWindow(
-						t2, do_lower, True, False);
-					if ((!do_lower &&
-					     DO_RAISE_TRANSIENT(t2)) ||
-					    (do_lower &&
-					     DO_LOWER_TRANSIENT(t2))  )
-					{
-						/* moving the parent moves our
-						 * window already */
-						return;
-					}
-				}
+				return;
 			}
 		}
 	}
@@ -739,8 +748,7 @@ static void __RaiseOrLowerWindow(
 		do_move_transients = must_move_transients(t, do_lower);
 	}
 	if (__restack_window(
-		    t, do_lower, do_move_transients,
-		    is_new_window) == True)
+		    t, do_lower, do_move_transients, is_new_window) == True)
 	{
 		return;
 	}
