@@ -1,3 +1,10 @@
+1999-12-09  Mikhael Goikhman  <migo@homemail.com>
+
+	* NEWS:
+	* fvwm/session.c (LoadGlobalState): restore only the current desk
+	and page, and not other global state parameters (but they are still
+	stored for now); some indenting in session.c
+
 1999-12-07  Bob Woodside  <proteus@pcnet.com>
 
 	* fvwm/virtual.c (gotoDeskAndPage_func):  Pager desk-switch fix,

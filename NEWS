@@ -1,16 +1,19 @@
 Note, the changes for the last OFFICIAL release start with release
 _+_A HREF="#2.2.4"_-_2.2.4_+_/A_-_.
 
-Changes in beta release 2.3.10
+Changes in beta release 2.3.11 (not released yet)
+
+* Any changes in your configuration file are applied during a restart now.
+  (This obsoletes the contrary entry for 2.3.6.)
 
 * New FvwmIconMan options: iconbutton and iconcolorset to control colors for
   iconified windows.
 
+Changes in beta release 2.3.10 (December 1999)
+
 * Fixed build problem without shape extension.
 
 * New FvwmIconBox option: FvwmIconBoxUseSkipList.
-
-* FvwmBacker is page aware.
 
 * New 'flat' and 'sunk' options to BorderStyle command.
 

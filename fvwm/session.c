@@ -177,11 +177,11 @@ LoadGlobalState(char *filename)
      * to the file containing the true session state. */
     if (!strcmp(s1, "[REAL_STATE_FILENAME]"))
     {
-/* migo: temporarily (?) moved to LoadWindowStates (trick for gnome-session)
+    /* migo: temporarily (?) moved to LoadWindowStates (trick for gnome-session)
       sscanf(s, "%*s %s", s2);
       setSmProperties (sm_conn, s2, SmRestartIfRunning);
       setRealStateFilename(s2);
-*/
+    */
     }
     else
 #endif /* SESSION */
@@ -193,13 +193,17 @@ LoadGlobalState(char *filename)
     else if (!strcmp(s1, "[VIEWPORT]"))
     {
       sscanf(s, "%*s %i %i %i %i", &i1, &i2, &i3, &i4);
+    /* migo: we don't want to lose DeskTopSize in configurations,
+     * and it does not work well anyways - GNOME is not updated
       Scr.VxMax = i3;
       Scr.VyMax = i4;
+    */
       MoveViewport(i1, i2, True);
     }
-    else if (!Restarting)
+    /* migo (08-Dec-1999): we don't want to eliminate .fvwm2rc for now */
+    else if (/*!Restarting*/ 0)
     {
-      /* We don't want to restore too much state if
+      /* Matthias: We don't want to restore too much state if
        * we are restarting, since that would make restarting
        * useless for rereading changed rc files. */
       if (!strcmp(s1, "[SCROLL]"))
@@ -262,10 +266,10 @@ GetWindowRole(Window window)
   XTextProperty tp;
 
   if (XGetTextProperty (dpy, window, &tp, _XA_WM_WINDOW_ROLE))
-    {
-      if (tp.encoding == XA_STRING && tp.format == 8 && tp.nitems != 0)
-	return ((char *) tp.value);
-    }
+  {
+    if (tp.encoding == XA_STRING && tp.format == 8 && tp.nitems != 0)
+      return ((char *) tp.value);
+  }
 
   return NULL;
 }
@@ -285,24 +289,24 @@ GetClientID(Window window)
   if (XGetWindowProperty(dpy, window, _XA_WM_CLIENT_LEADER,
 			 0L, 1L, False, AnyPropertyType, &actual_type,
 			 &actual_format, &nitems, &bytes_after, &prop)
-      == Success)
+    == Success)
+  {
+    if (actual_type == XA_WINDOW && actual_format == 32 &&
+        nitems == 1 && bytes_after == 0)
     {
-      if (actual_type == XA_WINDOW && actual_format == 32 &&
-	  nitems == 1 && bytes_after == 0)
-	{
-	  client_leader = *((Window *) prop);
+      client_leader = *((Window *) prop);
 
-	  if (XGetTextProperty (dpy, client_leader, &tp, _XA_SM_CLIENT_ID))
-	    {
-	      if (tp.encoding == XA_STRING &&
-		  tp.format == 8 && tp.nitems != 0)
-		client_id = (char *) tp.value;
-	    }
-	}
-
-      if (prop)
-	XFree (prop);
+      if (XGetTextProperty (dpy, client_leader, &tp, _XA_SM_CLIENT_ID))
+      {
+        if (tp.encoding == XA_STRING &&
+            tp.format == 8 && tp.nitems != 0)
+          client_id = (char *) tp.value;
+      }
     }
+
+    if (prop)
+      XFree (prop);
+  }
 
   return client_id;
 }
@@ -320,78 +324,78 @@ SaveWindowStates(FILE *f)
 
   for (ewin = Scr.FvwmRoot.stack_next; ewin != &Scr.FvwmRoot;
        ewin = ewin->stack_next)
+  {
+    Bool is_icon_sticky;
+
+    if (!XGetGeometry(dpy, ewin->w, &JunkRoot, &JunkX, &JunkY, &JunkWidth,
+		      &JunkHeight, &JunkBW, &JunkDepth))
     {
-      Bool is_icon_sticky;
-
-      if (!XGetGeometry(dpy, ewin->w, &JunkRoot, &JunkX, &JunkY, &JunkWidth,
-			&JunkHeight, &JunkBW, &JunkDepth))
-      {
-          /* Don't save the state of windows that already died (i.e. modules)!
-           */
-          continue;
-      }
-      is_icon_sticky = (IS_STICKY(ewin) ||
-			(IS_ICONIFIED(ewin) && IS_ICON_STICKY(ewin)));
-      fprintf(f, "[CLIENT] %lx\n", ewin->w);
-
-      client_id = GetClientID(ewin->w);
-      if (client_id)
-	{
-	  fprintf(f, "  [CLIENT_ID] %s\n", client_id);
-	  XFree(client_id);
-	}
-
-      window_role = GetWindowRole(ewin->w);
-      if (window_role)
-	{
-	  fprintf(f, "  [WINDOW_ROLE] %s\n", window_role);
-	  XFree(window_role);
-	}
-      else
-	{
-	  if (ewin->class.res_class)
-	    fprintf(f, "  [RES_NAME] %s\n", ewin->class.res_name);
-	  if (ewin->class.res_name)
-	    fprintf(f, "  [RES_CLASS] %s\n", ewin->class.res_class);
-	  if (ewin->name)
-	    fprintf(f, "  [WM_NAME] %s\n", ewin->name);
-
-	  wm_command = NULL;
-	  wm_command_count = 0;
-	  XGetCommand (dpy, ewin->w, &wm_command, &wm_command_count);
-
-	  if (wm_command && (wm_command_count > 0))
-	    {
-	      fprintf(f, "  [WM_COMMAND] %i", wm_command_count);
-	      for (i = 0; i < wm_command_count; i++)
-		fprintf(f, " %s", wm_command[i]);
-	      fprintf(f, "\n");
-	      XFreeStringList (wm_command);
-	    }
-	} /* !window_role */
-
-      gravity_get_naked_geometry(
-	ewin->hints.win_gravity, ewin, &save_g, &ewin->normal_g);
-      if (IS_STICKY(ewin))
-      {
-	save_g.x -= Scr.Vx;
-	save_g.y -= Scr.Vy;
-      }
-      fprintf(
-	f, "  [GEOMETRY] %i %i %i %i %i %i %i %i %i %i %i %i %i\n",
-	save_g.x, save_g.y, save_g.width, save_g.height,
-	ewin->max_g.x, ewin->max_g.y, ewin->max_g.width, ewin->max_g.height,
-	ewin->icon_x_loc + ((!is_icon_sticky) ? Scr.Vx : 0),
-	ewin->icon_y_loc + ((!is_icon_sticky) ? Scr.Vy : 0),
-	ewin->hints.win_gravity,
-	ewin->max_offset.x, ewin->max_offset.y);
-      fprintf(f, "  [DESK] %i\n", ewin->Desk);
-      fprintf(f, "  [LAYER] %i\n", get_layer(ewin));
-      fprintf(f, "  [FLAGS] ");
-      for (i = 0; i < sizeof(window_flags); i++)
-	fprintf(f, "%02x ", (int)(((unsigned char *)&(ewin->flags))[i]));
-      fprintf(f, "\n");
+      /* Don't save the state of windows that already died (i.e. modules)!
+       */
+      continue;
     }
+    is_icon_sticky = (IS_STICKY(ewin) ||
+		     (IS_ICONIFIED(ewin) && IS_ICON_STICKY(ewin)));
+    fprintf(f, "[CLIENT] %lx\n", ewin->w);
+
+    client_id = GetClientID(ewin->w);
+    if (client_id)
+    {
+      fprintf(f, "  [CLIENT_ID] %s\n", client_id);
+      XFree(client_id);
+    }
+
+    window_role = GetWindowRole(ewin->w);
+    if (window_role)
+    {
+      fprintf(f, "  [WINDOW_ROLE] %s\n", window_role);
+      XFree(window_role);
+    }
+    else
+    {
+      if (ewin->class.res_class)
+        fprintf(f, "  [RES_NAME] %s\n", ewin->class.res_name);
+      if (ewin->class.res_name)
+        fprintf(f, "  [RES_CLASS] %s\n", ewin->class.res_class);
+      if (ewin->name)
+        fprintf(f, "  [WM_NAME] %s\n", ewin->name);
+
+      wm_command = NULL;
+      wm_command_count = 0;
+      XGetCommand (dpy, ewin->w, &wm_command, &wm_command_count);
+
+      if (wm_command && (wm_command_count > 0))
+      {
+        fprintf(f, "  [WM_COMMAND] %i", wm_command_count);
+        for (i = 0; i < wm_command_count; i++)
+          fprintf(f, " %s", wm_command[i]);
+        fprintf(f, "\n");
+        XFreeStringList (wm_command);
+      }
+    } /* !window_role */
+
+    gravity_get_naked_geometry(
+      ewin->hints.win_gravity, ewin, &save_g, &ewin->normal_g);
+    if (IS_STICKY(ewin))
+    {
+      save_g.x -= Scr.Vx;
+      save_g.y -= Scr.Vy;
+    }
+    fprintf(
+      f, "  [GEOMETRY] %i %i %i %i %i %i %i %i %i %i %i %i %i\n",
+      save_g.x, save_g.y, save_g.width, save_g.height,
+      ewin->max_g.x, ewin->max_g.y, ewin->max_g.width, ewin->max_g.height,
+      ewin->icon_x_loc + ((!is_icon_sticky) ? Scr.Vx : 0),
+      ewin->icon_y_loc + ((!is_icon_sticky) ? Scr.Vy : 0),
+      ewin->hints.win_gravity,
+      ewin->max_offset.x, ewin->max_offset.y);
+    fprintf(f, "  [DESK] %i\n", ewin->Desk);
+    fprintf(f, "  [LAYER] %i\n", get_layer(ewin));
+    fprintf(f, "  [FLAGS] ");
+    for (i = 0; i < sizeof(window_flags); i++)
+      fprintf(f, "%02x ", (int)(((unsigned char *)&(ewin->flags))[i]));
+    fprintf(f, "\n");
+  }
   return 1;
 }
 
@@ -713,6 +717,9 @@ MatchWinToSM(FvwmWindow *ewin, int *do_shade, int *do_max)
       }
 
 #if 0
+      int j;
+      FvwmWindow *t;
+
       /* Find the window to stack this one below. */
       for (j = i-1; j >= 0; j--) {
 
@@ -890,17 +897,19 @@ setSmProperties (SmcConn sm_conn, char *filename, char hint)
   numVals = 0;
 
   for (i = 0; i < g_argc; i++)
+  {
+    if (strcmp (g_argv[i], "-clientId") == 0 ||
+        strcmp (g_argv[i], "-restore") == 0 ||
+        strcmp (g_argv[i], "-d") == 0)
     {
-      if (strcmp (g_argv[i], "-clientId") == 0 ||
-	  strcmp (g_argv[i], "-restore") == 0 ||
-	  strcmp (g_argv[i], "-d") == 0)
-	{
-	  i++;
-	} else if (strcmp (g_argv[i], "-s") != 0) {
-	  prop5.vals[numVals].value = (SmPointer) g_argv[i];
-	  prop5.vals[numVals++].length = strlen (g_argv[i]);
-	}
+      i++;
     }
+    else if (strcmp (g_argv[i], "-s") != 0)
+    {
+      prop5.vals[numVals].value = (SmPointer) g_argv[i];
+      prop5.vals[numVals++].length = strlen (g_argv[i]);
+    }
+  }
 
   prop5.vals[numVals].value = (SmPointer) "-d";
   prop5.vals[numVals++].length = 2;
@@ -992,10 +1001,10 @@ callback_save_yourself(SmcConn sm_conn, SmPointer client_data,
 #endif
 
   if (!SmcRequestSaveYourselfPhase2(sm_conn, callback_save_yourself2, NULL))
-    {
-      SmcSaveYourselfDone (sm_conn, False);
-      sent_save_done = 1;
-    }
+  {
+    SmcSaveYourselfDone (sm_conn, False);
+    sent_save_done = 1;
+  }
   else
     sent_save_done = 0;
 }
@@ -1034,10 +1043,10 @@ callback_shutdown_cancelled(SmcConn sm_conn, SmPointer client_data)
 #endif
 
   if (!sent_save_done)
-    {
-      SmcSaveYourselfDone(sm_conn, False);
-      sent_save_done = 1;
-    }
+  {
+    SmcSaveYourselfDone(sm_conn, False);
+    sent_save_done = 1;
+  }
 }
 
 /* the following is taken from xsm */
