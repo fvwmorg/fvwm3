@@ -1,5 +1,5 @@
 Note, the changes for the last STABLE release start with release
-2.4.18.
+2.4.19.
 
 -------------------------------------------------------------------
 
@@ -677,6 +677,41 @@ Changes in alpha release 2.5.0 (27-Jan-2002)
 * New conditions Focused, !Focused, HasPointer and !HasPointer.
 
 * New commands EWMHBaseStruts and EWMHNumberOfDesktops.
+
+-------------------------------------------------------------------
+
+Changes in stable release 2.4.19 (30-Sep-2004)
+
+* Fixed BackingStore style option.
+
+* Fixed MoveToDesk commend with a single argument.
+
+* Allow whitespace in menu names.
+
+* Fixed a hang when restarting FvwmCommand or FvwmConsole.
+
+* A double click no longer occurs when two different mouse
+  buttons are pressed.
+
+* Fixed a relief drawing problem in FvwmWinList.
+
+* Fixed traveling windows on restart if a window used non NorthWest
+  gravity and changed that before the restart.
+
+* Fixed installation of FvwmGtk.1 for debian (with DESTDIR set).
+
+* The clock in FvwmTaskBar is redrawn immediately when its colour
+  changes.
+
+* The option CurrentGlobalPageAnyDesk was accidentally named
+  CurrentGlobbalPageAnyDesk before.
+
+* Fixed a problem with fvwm startup and shutdown when the pointer
+  was grabbed by another application.
+
+* Fixed parsing of the Pointer option to the Move command.
+
+* Fixed handling of MWM hints on 64 bit machines.
 
 -------------------------------------------------------------------
 

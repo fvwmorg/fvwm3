@@ -1,6 +1,9 @@
 2004-09-30  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* NEWS:
+	updated for 2.4.19
+
+	* NEWS:
 	* configure.in:
 	increased version to 2.5.12
 	released 2.5.11

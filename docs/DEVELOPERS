@@ -288,7 +288,7 @@ Increase the version number:
 Update fvwm-web:
 
   - Update the release numbers at the bottom of definitions.inc file.
-  - If this is the head developement version, then run shell script
+  - If this is the head developement version, then run a shell script
     in fvwm-web called regenerate_pages to update the web pages for
     NEWS, FAQ and AUTHORS.  It should usually work without parameters
     for a typical setup (when fvwm and fvwm-web trees are sibling
