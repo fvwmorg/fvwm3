@@ -6,6 +6,8 @@
 %define c_p --disable-multibyte
 %define m_p CFLAGS="-O2"
 
+# Different distributions expect sources to be in different places;
+# the following solves this problem, but makes it hardier to reuse .src.rpm
 %define _sourcedir /tmp
 
 Summary:   F(?) Virtual Window Manager
@@ -26,7 +28,7 @@ Requires:  perl >= 5.002
 
 # GTK, Imlib, stroke
 
-# RedHat should stop using fvwm name to refer to fvwm1 package.
+# RedHat should stop using name "fvwm" to refer to fvwm1 package.
 Provides:  fvwm, fvwm2
 
 Docdir:    %{prefix}/share/doc
@@ -35,9 +37,27 @@ Docdir:    %{prefix}/share/doc
 FVWM is a powerful ICCCM-compliant multiple virtual desktop window manager
 for the X Window System.
 
-This pre-2.4 version includes new features like colorsets, ICCCM2 and GNOME
-compliance, experimental session management, improvements in all modules,
-several new modules, revised menu code, stroke support and more.
+This 2.4 version includes new features like colorsets, ICCCM2 and GNOME
+compliance, session management, improvements in all modules, several
+new modules, revised menu code, stroke support and much more.
+
+### to be translated
+%description -l fr
+FVWM est un powerful ICCCM-compliant multiple virtual desktop window manager
+for the X Window System.
+
+This 2.4 version contient des new features like colorsets, ICCCM2 and GNOME
+compliance, session management, improvements in all modules, several
+new modules, revised menu code, stroke support and much more.
+
+%description -l ru
+FVWM является мощным оконным менеджером для X Window System, соответствующим
+стандартам ICCCM, с поддержкой множественных виртульных десктопов.
+
+Версия 2.4 включает в себя новые особенности, такие как цветовые комплекты
+(colorsets), соответствие ICCCM2 и совместимость с GNOME, управление сессий,
+улучшения во всех модулях, несколько новых модулей, переработанный код меню,
+поддержка stroke и многое другое.
 
 %prep
 %setup

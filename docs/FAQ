@@ -535,12 +535,18 @@ A: Since the latest fvwm versions are mostly GNOME compliant, you may
    The file ~/.xinitrc can be used for the similar purposes if you want
    to bypass any system-wide logic put by your distributor or sysadmin.
 
-   An alternative solution is to run FVWM on top of gnome-session.
-   From the gnome foot menu in the gnome panel, choose
+
+   An alternative solution is to run FVWM inside of /usr/bin/gnome-session.
+   After you start gnome-session (don't start FVWM yourself), go to the
+   foot menu in the GNOME panel, then choose
 
      System menus / Settings / Desktop / Window Manager
 
    and create an entry for FVWM.  FVWM supports session management.
+
+   If you run gnome-session, SessionInitFunction and SessionRestartFunction
+   are called instead of InitFunction and RestartFunction, see the man page.
+   StartFunction, where we suggest to run modules, is called as usual.
 
 
    Here are examples of the GNOME Window Manager hints support in FVWM:

@@ -1,3 +1,8 @@
+2001-03-31  Mikhael Goikhman  <migo@homemail.com>
+
+	* fvwm.spec.in:
+	translated lang=ru; not translated lang=fr
+
 2001-01-26  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* fvwm.spec.in:
