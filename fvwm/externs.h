@@ -73,6 +73,7 @@ extern Atom _XA_OL_DECOR_RESIZE;
 extern Atom _XA_OL_DECOR_HEADER;
 extern Atom _XA_OL_DECOR_ICON_NAME;
 extern Atom _XA_WM_WINDOW_ROLE;
+extern Atom _XA_WINDOW_ROLE;
 extern Atom _XA_WM_CLIENT_LEADER;
 extern Atom _XA_SM_CLIENT_ID;
 extern Atom _XA_WIN_SX;

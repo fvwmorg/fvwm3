@@ -49,8 +49,8 @@
 
 /* ---------------------------- local definitions -------------------------- */
 
-/*#define FVWM_DEBUG_MSGS 1*/
-/*#define FVWM_DEBUG_DEVEL 1*/
+/*#define FVWM_DEBUG_MSGS*/
+/*#define FVWM_DEBUG_DEVEL*/
 
 /* ---------------------------- local macros ------------------------------- */
 
@@ -259,21 +259,32 @@ GetWindowRole(Window window)
 			return ((char *) tp.value);
 		}
 	}
+	if (XGetTextProperty (dpy, window, &tp, _XA_WINDOW_ROLE))
+	{
+		if (tp.encoding == XA_STRING && tp.format == 8 &&
+		    tp.nitems != 0)
+		{
+			return ((char *) tp.value);
+		}
+	}
 
 	return NULL;
 }
 
 static char *
-GetClientID(Window window)
+GetClientID(FvwmWindow *fw)
 {
 	char *client_id = NULL;
-	Window client_leader;
+	Window client_leader = None;
+	Window window;
 	XTextProperty tp;
 	Atom actual_type;
 	int actual_format;
 	unsigned long nitems;
 	unsigned long bytes_after;
 	unsigned char *prop = NULL;
+	
+	window = FW_W(fw);
 
 	if (XGetWindowProperty(
 		    dpy, window, _XA_WM_CLIENT_LEADER, 0L, 1L, False,
@@ -284,22 +295,30 @@ GetClientID(Window window)
 		    nitems == 1 && bytes_after == 0)
 		{
 			client_leader = *((Window *) prop);
+		}
+	}
 
-			if (XGetTextProperty(
-				    dpy, client_leader, &tp, _XA_SM_CLIENT_ID))
+	if (!client_leader && fw->wmhints &&
+	    (fw->wmhints->flags & WindowGroupHint))
+	{
+		client_leader = fw->wmhints->window_group;
+	}
+
+	if (client_leader)
+	{
+		if (XGetTextProperty(dpy, client_leader, &tp, _XA_SM_CLIENT_ID))
+		{
+			if (tp.encoding == XA_STRING && tp.format == 8 &&
+			    tp.nitems != 0)
 			{
-				if (tp.encoding == XA_STRING &&
-				    tp.format == 8 && tp.nitems != 0)
-				{
-					client_id = (char *) tp.value;
-				}
+				client_id = (char *) tp.value;
 			}
 		}
+	}
 
-		if (prop)
-		{
-			XFree (prop);
-		}
+	if (prop)
+	{
+		XFree (prop);
 	}
 
 	return client_id;
@@ -388,9 +407,37 @@ SaveWindowStates(FILE *f)
 		}
 		is_icon_sticky_across_pages =
 			is_window_sticky_across_pages(ewin);
-		fprintf(f, "[CLIENT] %lx\n", FW_W(ewin));
 
-		client_id = GetClientID(FW_W(ewin));
+		wm_command = NULL;
+		wm_command_count = 0;
+
+		client_id = GetClientID(ewin);
+		if (!client_id)
+		{
+			/* no client id, some session manager do not manage
+			 * such client ... this can cause problem */
+			if (XGetCommand(
+				    dpy, FW_W(ewin), &wm_command,
+				    &wm_command_count) &&
+			    wm_command && wm_command_count > 0)
+			{
+				/* ok */
+			}
+			else
+			{
+				/* No client id and no WM_COMMAND, the client
+				 * cannot be managed by the sessiom manager
+				 * skip it! */
+				if (wm_command)
+				{
+					XFreeStringList(wm_command);
+					wm_command = NULL;
+				}
+				continue;
+			}
+		}
+
+		fprintf(f, "[CLIENT] %lx\n", FW_W(ewin));
 		if (client_id)
 		{
 			fprintf(f, "  [CLIENT_ID] %s\n", client_id);
@@ -421,12 +468,7 @@ SaveWindowStates(FILE *f)
 					ewin->name.name);
 			}
 
-			wm_command = NULL;
-			wm_command_count = 0;
-			if (XGetCommand(
-				    dpy, FW_W(ewin), &wm_command,
-				    &wm_command_count) &&
-			    wm_command && wm_command_count > 0)
+			if (wm_command && wm_command_count > 0)
 			{
 				fprintf(f, "  [WM_COMMAND] %i",
 					wm_command_count);
@@ -437,12 +479,13 @@ SaveWindowStates(FILE *f)
 				}
 				fprintf(f, "\n");
 			}
-			if (wm_command)
-			{
-				XFreeStringList(wm_command);
-				wm_command = NULL;
-			}
 		} /* !window_role */
+		
+		if (wm_command)
+		{
+			XFreeStringList(wm_command);
+			wm_command = NULL;
+		}
 
 		gravity_get_naked_geometry(
 			ewin->hints.win_gravity, ewin, &save_g,
@@ -495,7 +538,7 @@ static Bool matchWin(FvwmWindow *w, Match *m)
 	int found;
 
 	found = 0;
-	client_id = GetClientID(FW_W(w));
+	client_id = GetClientID(w);
 
 	if (xstreq(client_id, m->client_id))
 	{
@@ -510,63 +553,97 @@ static Bool matchWin(FvwmWindow *w, Match *m)
 
 			found = xstreq(window_role, m->window_role);
 		}
-		else
+		else if (xstreq(w->class.res_name, m->res_name) &&
+			 xstreq(w->class.res_class, m->res_class) &&
+			 (IS_NAME_CHANGED(w) || IS_NAME_CHANGED(m) ||
+			  xstreq(w->name.name, m->wm_name)))
 		{
-			/* Compare res_class, res_name and WM_NAME, unless the
-			   user has changed WM_NAME */
-
-			if (xstreq(w->class.res_name, m->res_name) &&
-			    xstreq(w->class.res_class, m->res_class) &&
-			    (IS_NAME_CHANGED(w) || IS_NAME_CHANGED(m) ||
-			     xstreq(w->name.name, m->wm_name)))
+			if (client_id)
 			{
-				if (client_id)
+				/* If we have a client_id, we don't
+				 * compare WM_COMMAND, since it will be
+				 * different. */
+				found = 1;
+			}
+			else
+			{
+				/* for non-SM-aware clients we also
+				 * compare WM_COMMAND */
+
+				if (!XGetCommand(
+					    dpy, FW_W(w), &wm_command,
+					    &wm_command_count))
 				{
-					/* If we have a client_id, we don't
-					 * compare WM_COMMAND, since it will be
-					 * different. */
-					found = 1;
+					wm_command = NULL;
+					wm_command_count = 0;
 				}
-				else
+				if (wm_command_count == m->wm_command_count)
 				{
-					/* for non-SM-aware clients we also
-					 * compare WM_COMMAND */
-
-					if (!XGetCommand(
-						    dpy, FW_W(w), &wm_command,
-						    &wm_command_count))
+					for (i = 0; i < wm_command_count; i++)
 					{
-						wm_command = NULL;
-						wm_command_count = 0;
+						if (strcmp(unspace_string(
+								   wm_command[i]),
+							   m->wm_command[i])!=0)
+						{
+							break;
+						}
 					}
-					if (wm_command_count ==
-					    m->wm_command_count)
-					{
-						for (i = 0;
-						     i < wm_command_count; i++)
-						{
-							if (strcmp(unspace_string(wm_command[i]), m->wm_command[i]) != 0)
-							{
-								break;
-							}
-						}
 
-						if (i == wm_command_count)
+					if (i == wm_command_count)
+					{
+						/* migo (21/Oct/1999):
+						 * on restarts compare
+						 * window ids too */
+						if (!Restarting ||
+						    FW_W(w) == m->win)
 						{
-							/* migo (21/Oct/1999):
-							 * on restarts compare
-							 * window ids too */
-							if (!Restarting ||
-							    FW_W(w) == m->win)
-							{
-								found = 1;
-							}
+							found = 1;
 						}
-					} /* if (wm_command_count ==... */
-				} /* else no client id */
-			} /* if res_class, res_name and wm_name agree */
+					}
+				} /* if (wm_command_count ==... */
+			} /* else if res_class, res_name and wm_name agree */
 		} /* else no window roles */
 	} /* if client_id's agree */
+
+#ifdef FVWM_DEBUG_DEVEL
+	fprintf(stderr,
+		"\twin(%s, %s, %s, %s, %s,",
+		w->class.res_name, w->class.res_class, w->name.name,
+		(client_id)? client_id:"(null)",
+		(window_role)? window_role:"(null)");
+	if (wm_command)
+	{
+		for (i = 0; i < wm_command_count; i++)
+		{
+			fprintf(stderr," %s", wm_command[i]);
+		}
+		fprintf(stderr,",");
+	}
+	else
+	{
+		fprintf(stderr," no_wmc,");
+	}
+	fprintf(stderr," %d)", IS_NAME_CHANGED(w));
+	fprintf(stderr,"\n[%d]", found);
+	fprintf(stderr,
+		"\tmat(%s, %s, %s, %s, %s,",
+		m->res_name, m->res_class, m->wm_name,
+		(m->client_id)?m->client_id:"(null)",
+		(m->window_role)?m->window_role:"(null)");
+	if (m->wm_command)
+	{
+		for (i = 0; i < m->wm_command_count; i++)
+		{
+			fprintf(stderr," %s", m->wm_command[i]);
+		}
+		fprintf(stderr,",");
+	}
+	else
+	{
+		fprintf(stderr," no_wmc,");
+	}
+	fprintf(stderr," %d)\n\n", IS_NAME_CHANGED(m));
+#endif
 
 	if (client_id)
 	{
@@ -581,12 +658,6 @@ static Bool matchWin(FvwmWindow *w, Match *m)
 		XFreeStringList (wm_command);
 	}
 
-#ifdef FVWM_DEBUG_DEVEL
-	fprintf(stderr, "\twin(%s, %s, %s, %d)\n[%d]\tmat(%s, %s, %s, %d)\n\n",
-		w->class.res_name, w->class.res_class, w->name,
-		IS_NAME_CHANGED(w), found, m->res_name, m->res_class,
-		m->wm_name, IS_NAME_CHANGED(m));
-#endif
 	return found;
 }
 
@@ -642,11 +713,8 @@ static int saveStateFile(char *filename)
 static void
 setSmProperties(SmcConn sm_conn, char *filename, char hint)
 {
-	SmProp prop1, prop2, prop3, prop4, prop5, prop6, *props[6];
-	SmPropValue prop1val, prop2val, prop3val, prop4val;
-	/*#ifdef XSM_BUGGY_DISCARD_COMMAND*/
-	SmPropValue prop6val;
-	/*#endif*/
+	SmProp prop1, prop2, prop3, prop4, prop5, prop6, prop7, *props[7];
+	SmPropValue prop1val, prop2val, prop3val, prop4val, prop7val;
 	struct passwd *pwd;
 	char *user_id;
 	int numVals, i, priority = 30;
@@ -693,14 +761,10 @@ setSmProperties(SmcConn sm_conn, char *filename, char hint)
 	prop4val.value = (SmPointer) &priority;
 	prop4val.length = 1;
 
-	prop5.name = SmRestartCommand;
+	prop5.name = SmCloneCommand;
 	prop5.type = SmLISTofARRAY8;
-
-	prop5.vals = (SmPropValue *)malloc(
-		(g_argc + 7) * sizeof (SmPropValue));
-
+	prop5.vals = (SmPropValue *)malloc((g_argc + 1) * sizeof (SmPropValue));
 	numVals = 0;
-
 	for (i = 0; i < g_argc; i++)
 	{
 		if (strcmp (g_argv[i], "-clientId") == 0 ||
@@ -715,44 +779,58 @@ setSmProperties(SmcConn sm_conn, char *filename, char hint)
 			prop5.vals[numVals++].length = strlen (g_argv[i]);
 		}
 	}
-
-	prop5.vals[numVals].value = (SmPointer) "-d";
-	prop5.vals[numVals++].length = 2;
-
-	prop5.vals[numVals].value = (SmPointer) XDisplayString (dpy);
-	prop5.vals[numVals++].length = strlen (XDisplayString (dpy));
-
-	prop5.vals[numVals].value = (SmPointer) "-s";
-	prop5.vals[numVals++].length = 2;
-
-	prop5.vals[numVals].value = (SmPointer) "-clientId";
-	prop5.vals[numVals++].length = 9;
-
-	prop5.vals[numVals].value = (SmPointer) sm_client_id;
-	prop5.vals[numVals++].length = strlen (sm_client_id);
-
-	prop5.vals[numVals].value = (SmPointer) "-restore";
-	prop5.vals[numVals++].length = 8;
-
-	prop5.vals[numVals].value = (SmPointer) filename;
-	prop5.vals[numVals++].length = strlen (filename);
-
 	prop5.num_vals = numVals;
 
-	prop6.name = SmDiscardCommand;
+	prop6.name = SmRestartCommand;
+	prop6.type = SmLISTofARRAY8;
 
-	/* migo (15-Jul-1999): IMHO, XSM_BUGGY_DISCARD_COMMAND must be deleted
-	 * at all.  Is there a better way to detect xsm, then requiring to set
-	 * environment? */
-	xsmDetected =
-#ifdef XSM_BUGGY_DISCARD_COMMAND
-		1
-#else
-		StrEquals(getenv("SESSION_MANAGER_NAME"), "xsm")
-#endif
-		;
+	prop6.vals = (SmPropValue *)malloc(
+		(g_argc + 7) * sizeof (SmPropValue));
 
-	/*#ifdef XSM_BUGGY_DISCARD_COMMAND*/
+	numVals = 0;
+
+	for (i = 0; i < g_argc; i++)
+	{
+		if (strcmp (g_argv[i], "-clientId") == 0 ||
+		    strcmp (g_argv[i], "-restore") == 0 ||
+		    strcmp (g_argv[i], "-d") == 0)
+		{
+			i++;
+		}
+		else if (strcmp (g_argv[i], "-s") != 0)
+		{
+			prop6.vals[numVals].value = (SmPointer) g_argv[i];
+			prop6.vals[numVals++].length = strlen (g_argv[i]);
+		}
+	}
+
+	prop6.vals[numVals].value = (SmPointer) "-d";
+	prop6.vals[numVals++].length = 2;
+
+	prop6.vals[numVals].value = (SmPointer) XDisplayString (dpy);
+	prop6.vals[numVals++].length = strlen (XDisplayString (dpy));
+
+	prop6.vals[numVals].value = (SmPointer) "-s";
+	prop6.vals[numVals++].length = 2;
+
+	prop6.vals[numVals].value = (SmPointer) "-clientId";
+	prop6.vals[numVals++].length = 9;
+
+	prop6.vals[numVals].value = (SmPointer) sm_client_id;
+	prop6.vals[numVals++].length = strlen (sm_client_id);
+
+	prop6.vals[numVals].value = (SmPointer) "-restore";
+	prop6.vals[numVals++].length = 8;
+
+	prop6.vals[numVals].value = (SmPointer) filename;
+	prop6.vals[numVals++].length = strlen (filename);
+
+	prop6.num_vals = numVals;
+
+	prop7.name = SmDiscardCommand;
+
+	xsmDetected = StrEquals(getenv("SESSION_MANAGER_NAME"), "xsm");
+
 	if (xsmDetected)
 	{
 		/* the protocol spec says that the discard command
@@ -762,24 +840,24 @@ setSmProperties(SmcConn sm_conn, char *filename, char hint)
 		char *discardCommand = alloca(
 			(10 + strlen(filename)) * sizeof(char));
 		sprintf (discardCommand, "rm -f '%s'", filename);
-		prop6.type = SmARRAY8;
-		prop6.num_vals = 1;
-		prop6.vals = &prop6val;
-		prop6val.value = (SmPointer) discardCommand;
-		prop6val.length = strlen (discardCommand);
+		prop7.type = SmARRAY8;
+		prop7.num_vals = 1;
+		prop7.vals = &prop7val;
+		prop7val.value = (SmPointer) discardCommand;
+		prop7val.length = strlen (discardCommand);
 		/*#else*/
 	}
 	else
 	{
-		prop6.type = SmLISTofARRAY8;
-		prop6.num_vals = 3;
-		prop6.vals = (SmPropValue *) malloc (3 * sizeof (SmPropValue));
-		prop6.vals[0].value = "rm";
-		prop6.vals[0].length = 2;
-		prop6.vals[1].value = "-f";
-		prop6.vals[1].length = 2;
-		prop6.vals[2].value = filename;
-		prop6.vals[2].length = strlen (filename);
+		prop7.type = SmLISTofARRAY8;
+		prop7.num_vals = 3;
+		prop7.vals = (SmPropValue *) malloc (3 * sizeof (SmPropValue));
+		prop7.vals[0].value = "rm";
+		prop7.vals[0].length = 2;
+		prop7.vals[1].value = "-f";
+		prop7.vals[1].length = 2;
+		prop7.vals[2].value = filename;
+		prop7.vals[2].length = strlen (filename);
 		/*#endif*/
 	}
 
@@ -789,13 +867,16 @@ setSmProperties(SmcConn sm_conn, char *filename, char hint)
 	props[3] = &prop4;
 	props[4] = &prop5;
 	props[5] = &prop6;
+	props[6] = &prop7;
 
-	SmcSetProperties (sm_conn, 6, props);
+	SmcSetProperties (sm_conn, 7, props);
 
 	free ((char *) prop5.vals);
-	/*#ifndef XSM_BUGGY_DISCARD_COMMAND*/
-	if (!xsmDetected) free ((char *) prop6.vals);
-	/*#endif*/
+	free ((char *) prop6.vals);
+	if (!xsmDetected)
+	{
+		free ((char *) prop7.vals);
+	}
 }
 #endif
 
@@ -1270,8 +1351,7 @@ MatchWinToSM(
 	FvwmWindow *ewin, mwtsm_state_args *ret_state_args,
 	initial_window_options_t *win_opts)
 {
-	int i,j;
-	Bool double_entries = False;
+	int i;
 
 	if (!does_file_version_match)
 	{
@@ -1282,18 +1362,7 @@ MatchWinToSM(
 		if (!matches[i].used && matchWin(ewin, &matches[i]))
 		{
 			matches[i].used = 1;
-			for (j = i+1; j < num_match; j++)
-			{
-				if (matchWin(ewin, &matches[j]))
-				{
-					double_entries = True;
-					matches[j].used = 1;
-				}
-			}
-			if (double_entries)
-			{
-				return False;
-			}
+
 			if (!Restarting)
 			{
 				/* We don't want to restore too much state if

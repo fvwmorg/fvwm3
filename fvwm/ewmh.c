@@ -1545,8 +1545,9 @@ void EWMH_Init(void)
 	int supported_count = 0;
 	CARD32 val;
 	XTextProperty text;
-	CARD32 utf_name[4];
+	unsigned char utf_name[4];
 	char *names[1];
+	XClassHint classhints;
 
 	/* initialisation of all the atoms */
 	XA_UTF8_STRING = XInternAtom(dpy,"UTF8_STRING",False);
@@ -1568,6 +1569,10 @@ void EWMH_Init(void)
 		EWMH_ATOM_LIST_FVWM_ROOT, (unsigned char *)&val, 1);
 
 	names[0] = "FVWM";
+	classhints.res_name= "fvwm";
+	classhints.res_class= "FVWM";
+
+	XSetClassHint(dpy, Scr.NoFocusWin, &classhints);
 	if (XStringListToTextProperty(names, 1, &text))
 	{
 		XSetWMName(dpy, Scr.NoFocusWin, &text);
@@ -1582,7 +1587,7 @@ void EWMH_Init(void)
 
 	ewmh_ChangeProperty(
 		Scr.NoFocusWin, "_NET_WM_NAME", EWMH_ATOM_LIST_PROPERTY_NOTIFY,
-		(unsigned char *)&utf_name, 5);
+		(unsigned char *)&utf_name, 4);
 
 	clean_up();
 

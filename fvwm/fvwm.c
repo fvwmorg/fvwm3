@@ -196,6 +196,7 @@ Atom _XA_OL_DECOR_HEADER;
 Atom _XA_OL_DECOR_ICON_NAME;
 
 Atom _XA_WM_WINDOW_ROLE;
+Atom _XA_WINDOW_ROLE;
 Atom _XA_WM_CLIENT_LEADER;
 Atom _XA_SM_CLIENT_ID;
 
@@ -253,6 +254,7 @@ static void InternUsefulAtoms (void)
 	_XA_OL_DECOR_HEADER=XInternAtom(dpy, "_OL_DECOR_HEADER",False);
 	_XA_OL_DECOR_ICON_NAME=XInternAtom(dpy, "_OL_DECOR_ICON_NAME",False);
 	_XA_WM_WINDOW_ROLE=XInternAtom(dpy, "WM_WINDOW_ROLE",False);
+	_XA_WINDOW_ROLE=XInternAtom(dpy, "WINDOW_ROLE",False);
 	_XA_WM_CLIENT_LEADER=XInternAtom(dpy, "WM_CLIENT_LEADER",False);
 	_XA_SM_CLIENT_ID=XInternAtom(dpy, "SM_CLIENT_ID",False);
 	_XA_XROOTPMAP_ID=XInternAtom(dpy, "_XROOTPMAP_ID",False);

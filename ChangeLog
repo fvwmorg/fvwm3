@@ -1,3 +1,25 @@
+2003-07-20  olicha  <olivier.chapuis@free.fr>
+
+	* fvwm/ewmh.c (EWMH_Init):
+	fixed _NET_WM_NAME for our ewmh WM_CHECK window
+
+	* fvwm/fvwm.c (InternUsefulAtoms):
+	* fvwm/externs.h: 
+	* fvwm/session.c (GetWindowRole):
+	Some applications use WINDOW_ROLE and not WM_WINDOW_ROLE
+	
+	* fvwm/session.c (GetClientID):
+	Better determination of the CLIENT_LEADER
+
+	* fvwm/session.c (setSmProperties):
+	Set the CloneCommand for gnome-session editor (the sm spec says this
+	properties is required). Removed the commented XSM ifdef.
+	
+	* fvwm/session.c (matchWin):
+	(SaveWindowStates): 
+	Consider client only if it has a client id or a wm command.
+	Removed the "two entries" session previous commit 
+
 2003-07-16  olicha  <olivier.chapuis@free.fr>
 
 	* fvwm/session.c (MatchWinToSM):
