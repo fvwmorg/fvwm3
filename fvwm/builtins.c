@@ -104,6 +104,12 @@ static char *button_states[BS_MaxButtonStateName + 1] =
 	"Inactive",
 	"ToggledActive",
 	"ToggledInactive",
+	"AllNormal",
+	"AllToggled",
+	"AllActive",
+	"AllInactive",
+	"AllUp",
+	"AllDown",
 	NULL
 };
 
@@ -196,6 +202,10 @@ static char *ReadTitleButton(
 	int pstyle = 0;
 	DecorFace tmpdf;
 
+	Bool multiple;
+	int use_mask = 0;
+	int set_mask = 0;
+
 	s = SkipSpaces(s, NULL, 0);
 	t = GetNextTokenIndex(s, button_states, 0, &bs);
 	if (bs != BS_All)
@@ -203,31 +213,78 @@ static char *ReadTitleButton(
 		s = SkipSpaces(t, NULL, 0);
 	}
 
-	bs_start = bs_end = bs;
 	if (bs == BS_All)
 	{
-		bs_start = 0;
-		bs_end = BS_MaxButtonState - 1;
+		use_mask = 0;
+		set_mask = 0;
 	}
 	else if (bs == BS_Active)
 	{
-		bs_start = BS_ActiveUp;
-		bs_end = BS_ActiveDown;
+		use_mask = BS_MASK_INACTIVE | BS_MASK_TOGGLED;
+		set_mask = 0;
 	}
 	else if (bs == BS_Inactive)
 	{
-		bs_start = BS_InactiveUp;
-		bs_end = BS_InactiveDown;
+		use_mask = BS_MASK_INACTIVE | BS_MASK_TOGGLED;
+		set_mask = BS_MASK_INACTIVE;
 	}
 	else if (bs == BS_ToggledActive)
 	{
-		bs_start = BS_ToggledActiveUp;
-		bs_end = BS_ToggledActiveDown;
+		use_mask = BS_MASK_INACTIVE | BS_MASK_TOGGLED;
+		set_mask = BS_MASK_TOGGLED;
 	}
 	else if (bs == BS_ToggledInactive)
 	{
-		bs_start = BS_ToggledInactiveUp;
-		bs_end = BS_ToggledInactiveDown;
+		use_mask = BS_MASK_INACTIVE | BS_MASK_TOGGLED;
+		set_mask = BS_MASK_INACTIVE | BS_MASK_TOGGLED;
+	}
+	else if (bs == BS_AllNormal)
+	{
+		use_mask = BS_MASK_TOGGLED;
+		set_mask = 0;
+	}
+	else if (bs == BS_AllToggled)
+	{
+		use_mask = BS_MASK_TOGGLED;
+		set_mask = BS_MASK_TOGGLED;
+	}
+	else if (bs == BS_AllActive)
+	{
+		use_mask = BS_MASK_INACTIVE;
+		set_mask = 0;
+	}
+	else if (bs == BS_AllInactive)
+	{
+		use_mask = BS_MASK_INACTIVE;
+		set_mask = BS_MASK_INACTIVE;
+	}
+	else if (bs == BS_AllUp)
+	{
+		use_mask = BS_MASK_DOWN;
+		set_mask = 0;
+	}
+	else if (bs == BS_AllDown)
+	{
+		use_mask = BS_MASK_DOWN;
+		set_mask = BS_MASK_DOWN;
+	}
+
+	if ((bs & BS_MaxButtonStateMask) == bs)
+	{
+		multiple = False;
+		bs_start = bs;
+		bs_end = bs;
+	}
+	else
+	{
+		multiple = True;
+		bs_start = 0;
+		bs_end = BS_MaxButtonState - 1;
+		for (i = bs_start; (i & use_mask) != set_mask && i <= bs_end;
+			i++)
+		{
+			bs_start++;
+		}
 	}
 
 	if (*s == '(')
@@ -263,6 +320,10 @@ static char *ReadTitleButton(
 		Bool verbose = True;
 		for (i = bs_start; i <= bs_end; ++i)
 		{
+			if (multiple && (i & use_mask) != set_mask)
+			{
+				continue;
+			}
 			ReadDecorFace(spec, &TB_STATE(*tb)[i], button, verbose);
 			verbose = False;
 		}
@@ -298,6 +359,10 @@ static char *ReadTitleButton(
 			}
 			for (i = bs_start + 1; i <= bs_end; ++i)
 			{
+				if (multiple && (i & use_mask) != set_mask)
+				{
+					continue;
+				}
 				head = &TB_STATE(*tb)[i];
 				tail = head;
 				while (tail->next)
@@ -341,6 +406,10 @@ static char *ReadTitleButton(
 				sizeof(DecorFace));
 			for (i = bs_start + 1; i <= bs_end; ++i)
 			{
+				if (multiple && (i & use_mask) != set_mask)
+				{
+					continue;
+				}
 				ReadDecorFace(
 					spec, &TB_STATE(*tb)[i], button, False);
 			}

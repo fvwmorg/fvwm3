@@ -176,12 +176,23 @@ typedef enum
 	BS_ToggledInactiveUp,
 	BS_ToggledInactiveDown,
 	BS_MaxButtonState,
-	BS_Active = BS_MaxButtonState,
+	BS_MaxButtonStateMask = BS_MaxButtonState - 1,
+	BS_Active,
 	BS_Inactive,
 	BS_ToggledActive,
 	BS_ToggledInactive,
+	BS_AllNormal,
+	BS_AllToggled,
+	BS_AllActive,
+	BS_AllInactive,
+	BS_AllUp,
+	BS_AllDown,
 	BS_MaxButtonStateName,
 } ButtonState;
+
+#define BS_MASK_DOWN     (1 << 0)
+#define BS_MASK_INACTIVE (1 << 1)
+#define BS_MASK_TOGGLED  (1 << 2)
 
 typedef enum
 {

@@ -29,6 +29,10 @@ Changes in *unstable* development release 2.5.4 (not released yet)
   Inactive means InactiveUp + InactiveDown, similarly for shortcuts
   ToggledActive and ToggledInactive.
 
+* More shortcuts for button states added: AllNormal, AllToggled,
+  AllActive, AllInactive, AllUp, AllDown.  These six shortcuts are
+  actually different masks for 4 individual states (from 8 total).
+
 * FPClickToFocus and FPClickToRaise work with any modifier by
   default.
 

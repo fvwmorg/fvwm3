@@ -7107,7 +7107,12 @@ non pressed buttons, the "Down" ones apply to pressed buttons.
 The "Toggled" prefix refers to maximized, shaded or sticky windows
 that have the corresponding
 .I MwmDecor...
-button style set.  If
+button style set.
+Additionally, the following shotcuts may be used: "AllNormal",
+"AllToggled", "AllActive", "AllInactive", "AllUp", "AllDown".
+These are actually different masks for 4 individual states from
+8 total.
+If
 .I state
 is omitted, then the style is added to every state.  If the
 .IR style " and " flags
@@ -7410,6 +7415,10 @@ AddToDecor Default
  + ButtonStyle 6 - MwmDecorShade
 Mouse 0 6 N WindowShade
 .EE
+Additionally, the following shotcuts may be used: "AllNormal",
+"AllToggled", "AllActive", "AllInactive", "AllUp", "AllDown".
+These are actually different masks for 4 individual states from
+8 total.
 If
 .I state
 is specified,
@@ -7787,12 +7796,14 @@ This command is deprecated and will be removed in the future.  There
 are plans to replace it with a more flexible solution in fvwm-3.0.
 
 Sets the style for the title-bar.
+See also
+.BR AddTitleStyle " and " ButtonStyle .
 .I state
 can be one of "ActiveUp", "ActiveDown", "InactiveUp",
-or "InactiveDown". Shortcuts "Active" and "Inactive" are allowed.
-The states with the "Toggled" prefix are allowed too, the title
-itself does not use "Toggled" states, but these states are used
-for the buttons with
+or "InactiveDown".  Shortcuts like "Active" and "Inactive" are
+allowed.  The states with the "Toggled" prefix are allowed too,
+the title itself does not use "Toggled" states, but these states
+are used for the buttons with
 .B ButtonStyle
 .IR UseTitleStyle .
 If

@@ -1328,37 +1328,39 @@ BroadcastName(unsigned long event_type,
 }
 
 void
-BroadcastWindowIconNames(FvwmWindow *t, Bool window, Bool icon)
+BroadcastWindowIconNames(FvwmWindow *fw, Bool window, Bool icon)
 {
 	if (window)
 	{
 		BroadcastName(
-			M_WINDOW_NAME,FW_W(t), FW_W_FRAME(t), (unsigned long)t,
-			t->name.name);
+			M_WINDOW_NAME, FW_W(fw), FW_W_FRAME(fw),
+			(unsigned long)fw, fw->name.name);
 		BroadcastName(
-			M_VISIBLE_NAME,FW_W(t),FW_W_FRAME(t),(unsigned long)t,
-			t->visible_name);
+			M_VISIBLE_NAME, FW_W(fw), FW_W_FRAME(fw),
+			(unsigned long)fw, fw->visible_name);
 	}
 	if (icon)
 	{
 		BroadcastName(
-			M_ICON_NAME, FW_W(t), FW_W_FRAME(t), (unsigned long)t,
-			t->icon_name.name);
+			M_ICON_NAME, FW_W(fw), FW_W_FRAME(fw),
+			(unsigned long)fw, fw->icon_name.name);
 		BroadcastName(
-			MX_VISIBLE_ICON_NAME,FW_W(t),FW_W_FRAME(t),
-			(unsigned long)t, t->visible_icon_name);
+			MX_VISIBLE_ICON_NAME, FW_W(fw), FW_W_FRAME(fw),
+			(unsigned long)fw, fw->visible_icon_name);
 	}
 
 	return;
 }
 
 void
-SendFvwmPicture(int module, unsigned long event_type,
-		unsigned long data1, unsigned long data2,
-		unsigned long data3, FvwmPicture *picture, char *name)
+SendFvwmPicture(
+	int module, unsigned long event_type, unsigned long data1,
+	unsigned long data2, unsigned long data3, FvwmPicture *picture,
+	char *name)
 {
 	unsigned long *body;
-	unsigned int data4 = 0, data5 = 0, data6 = 0,
+	unsigned int
+		data4 = 0, data5 = 0, data6 = 0,
 		data7 = 0, data8 = 0, data9 = 0;
 	int l;
 
@@ -1391,9 +1393,9 @@ SendFvwmPicture(int module, unsigned long event_type,
 }
 
 void
-BroadcastFvwmPicture(unsigned long event_type,
-		     unsigned long data1, unsigned long data2,
-		     unsigned long data3, FvwmPicture *picture, char *name)
+BroadcastFvwmPicture(
+	unsigned long event_type, unsigned long data1, unsigned long data2,
+	unsigned long data3, FvwmPicture *picture, char *name)
 {
 	unsigned long *body;
 	unsigned int data4, data5, data6, data7, data8, data9;
