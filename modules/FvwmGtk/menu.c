@@ -108,7 +108,7 @@ convert_label_with_ampersand (const gchar * _label,
 	if (!p[1])
 	    break;
 	if (*p == '&') {
-	    memmov (p, p + 1, strlen (p));
+	    memmove (p, p + 1, strlen (p));
 	    if (*p == '&')	/* use && for an actual & */
 		continue;
 	    *underbar_pos = (unsigned long) p - (unsigned long) label;

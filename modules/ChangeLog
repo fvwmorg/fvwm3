@@ -1,5 +1,8 @@
 2000-11-21  Dominik Vogt  <dominik.vogt@gmx.de>
 
+	* FvwmGtk/menu.c (convert_label_with_ampersand):
+	fixed typo
+
 	* FvwmGtk/expand.c (recursive_replace):
 	(combine_string):
 	* FvwmGtk/FvwmGtk.c (process_message):
