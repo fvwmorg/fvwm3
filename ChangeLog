@@ -1,4 +1,9 @@
-2021-09-30  Dominik Vogt  <dominik.vogt@gmx.de>
+2001-10-02  olicha  <olivier.chapuis@free.fr>
+
+	* fvwm/menus.c (get_menu_options):
+	fixed Xinerama placement of menu with empty but not null position hints
+
+2001-09-30  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* fvwm/menus.c (get_menu_options):
 	A 'rectangle' context rectangle for menus honours the '@screen' bit

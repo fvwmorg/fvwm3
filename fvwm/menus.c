@@ -7361,6 +7361,7 @@ char *get_menu_options(
   {
     if (!pops->pos_hints.has_screen_origin)
     {
+      pops->pos_hints.has_screen_origin = 1;
       if (!GetLocationFromEventOrQuery(
 	    dpy, None, e, &pops->pos_hints.screen_origin_x,
 	    &pops->pos_hints.screen_origin_y))
@@ -7381,11 +7382,20 @@ char *get_menu_options(
     naction = GetNextToken(taction, &tok);
     if (!tok)
     {
-      /* no context string */
+      /* no context string */ 
       fHasContext = False;
+      if (!pops->pos_hints.has_screen_origin)
+      {
+	if (!GetLocationFromEventOrQuery(
+	    dpy, None, e, &pops->pos_hints.screen_origin_x,
+	    &pops->pos_hints.screen_origin_y))
+	{
+	  pops->pos_hints.screen_origin_x = 0;
+	  pops->pos_hints.screen_origin_y = 0;
+	}
+      }
       break;
     }
-
     pops->pos_hints.is_relative = True; /* set to False for absolute hints! */
     fUseItemOffset = False;
     fHasContext = True;
