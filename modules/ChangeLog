@@ -1,3 +1,7 @@
+Sat Mar 13 14:44:19 1999  Steve Robbins  <steve@nyongwa.montreal.qc.ca>
+
+	* FvwmScript/INSTALL: removed obsolete file.
+
 Sat Mar 13 14:29:41 1999  Steve Robbins  <steve@nyongwa.montreal.qc.ca>
 
 	* FvwmConsole/FvwmConsoleC.pl: replaced by FvwmConsoleC.pl.in

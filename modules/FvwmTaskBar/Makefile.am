@@ -1,14 +1,13 @@
 ## Process this file with automake to create Makefile.in
 
-## Notes: two files present in the directory, but not mentioned in the
-## Imakefile were dropped: goodies.c and signal.c.
-
 moduledir = @FVWM_MODULEDIR@
+
 module_PROGRAMS = FvwmTaskBar
 
-FvwmTaskBar_SOURCES =  FvwmTaskBar.c List.c ButtonArray.c Mallocs.c \
-	Colors.c Start.c FvwmTaskBar.h ButtonArray.h List.h \
+FvwmTaskBar_SOURCES =  FvwmTaskBar.c List.c ButtonArray.c Mallocs.c	\
+	Colors.c Start.c FvwmTaskBar.h ButtonArray.h List.h		\
 	Colors.h Mallocs.h Start.h Goodies.c Goodies.h
+
 FvwmTaskBar_DEPENDENCIES = $(top_builddir)/libs/libfvwm.a
 
 man_MANS = FvwmTaskBar.1
