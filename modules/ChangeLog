@@ -1,5 +1,11 @@
 2000-12-09  olicha  <olivier.chapuis@free.fr>
 
+	* FvwmScript/Scripts/FvwmScripts-*:
+	Added Flags NoReliefString so that all Scripts work with every
+	colors
+	
+2000-12-09  olicha  <olivier.chapuis@free.fr>
+
 	* FvwmWinList/FvwmWinList.c (ProcessMessage):
 	Fixed animation of non visible items with ShowCurrent desk
 

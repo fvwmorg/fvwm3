@@ -42,6 +42,7 @@ Widget 1
 Property
  Size 50 30
  Position 100 150
+ Flags NoReliefString
  Type PushButton
  Title {Apply}
 Main
@@ -59,6 +60,7 @@ Widget 2
 Property
  Size 50 30
  Position 190 150
+ Flags NoReliefString
  Type PushButton
  Title {OK}
 Main
@@ -76,6 +78,7 @@ Widget 3
 Property
  Size 50 30
  Position 280 150
+ Flags NoReliefString
  Type PushButton
  Title {Cancel}
 Main
@@ -90,6 +93,7 @@ Widget 12
 Property
  Size 50 30
  Position 20 150
+ Flags NoReliefString
  Type PushButton
  Title {Beep}
 Main
@@ -109,6 +113,7 @@ Widget 4
 Property
  Size 250 1
  Position 90 30
+ Flags NoReliefString
  Type HScrollBar
  MinValue 0
  MaxValue 100
@@ -123,6 +128,7 @@ End
 Widget 5
 Property
  Position 20 53
+ Flags NoReliefString
  Type ItemDraw
  Title {Volume:}
 Main
@@ -136,6 +142,7 @@ Widget 6
 Property
  Size 60 1
  Position 90 90
+ Flags NoReliefString
  Type TextField
 Main
  Case message of
@@ -147,6 +154,7 @@ End
 Widget 7
 Property
  Position 20 95
+ Flags NoReliefString
  Type ItemDraw
  Title {Pitch(Hz):}
 Main
@@ -160,6 +168,7 @@ Widget 8
 Property
  Size 60 1
  Position 280 90
+ Flags NoReliefString
  Type TextField
 Main
  Case message of
@@ -171,6 +180,7 @@ End
 Widget 9
 Property
  Position 190 95
+ Flags NoReliefString
  Type ItemDraw
  Title {Duration(ms):}
 Main
@@ -195,6 +205,7 @@ End
 Widget 11
 Property
  Position 15 3
+ Flags NoReliefString
  Type ItemDraw
  Title {Bell}
 Main

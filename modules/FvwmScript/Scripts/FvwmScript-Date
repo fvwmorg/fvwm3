@@ -44,6 +44,7 @@ Widget 1
 Property
  Size 50 30
  Position 190 280
+ Flags NoReliefString
  Type PushButton
  Title {OK}
 Main
@@ -59,6 +60,7 @@ Widget 2
 Property
  Size 50 30
  Position 280 280
+ Flags NoReliefString
  Type PushButton
  Title {Cancel}
 Main
@@ -85,6 +87,7 @@ End
 Widget 4
 Property
  Position 15 2
+ Flags NoReliefString
  Type ItemDraw
  Title {Time}
 Main
@@ -98,6 +101,7 @@ Widget 5
 Property
  Size 80 80
  Position 240 35
+ Flags NoReliefString
  Type SwallowExec
  Title {xclock}
  SwallowExec {exec xclock -analog -padding 0 -geometry 70x56-1500-1500 -fg MidnightBlue -hd Blue -hl Blue -bg Grey85 -update 1 &}
@@ -123,6 +127,7 @@ End
 Widget 7
 Property
  Position 35 40
+ Flags NoReliefString
  Type ItemDraw
  Title {Hours:}
 Main
@@ -135,6 +140,7 @@ End
 Widget 8
 Property
  Position 100 40
+ Flags NoReliefString
  Type ItemDraw
  Title {00}
 Main
@@ -159,6 +165,7 @@ End
 Widget 10
 Property
  Position 125 32
+ Flags NoReliefString
  Type MiniScroll
  Value 15
  MaxValue 23
@@ -177,6 +184,7 @@ End
 Widget 11
 Property
  Position 35 90
+ Flags NoReliefString
  Type ItemDraw
  Title {Minutes:}
 Main
@@ -189,6 +197,7 @@ End
 Widget 12
 Property
  Position 100 90
+ Flags NoReliefString
  Type ItemDraw
  Title {00}
 Main
@@ -213,6 +222,7 @@ End
 Widget 14
 Property
  Position 125 82
+ Flags NoReliefString
  Type MiniScroll
  Value 15
  MaxValue 59
@@ -232,6 +242,7 @@ Widget 15
 Property
  Size 340 110
  Position 10 155
+ Flags NoReliefString
  Type Rectangle
 Main
  Case message of
@@ -243,6 +254,7 @@ End
 Widget 16
 Property
  Position 15 147
+ Flags NoReliefString
  Type ItemDraw
  Title {Date}
 Main
@@ -255,6 +267,7 @@ End
 Widget 17
 Property
  Position 30 180
+ Flags NoReliefString
  Type ItemDraw
  Title {Day:}
 Main
@@ -267,6 +280,7 @@ End
 Widget 18
 Property
  Position 80 180
+ Flags NoReliefString
  Type ItemDraw
  Title {00}
 Main
@@ -291,6 +305,7 @@ End
 Widget 20
 Property
  Position 105 172
+ Flags NoReliefString
  Type MiniScroll
  Value 1
  MaxValue 1
@@ -309,6 +324,7 @@ End
 Widget 21
 Property
  Position 200 180
+ Flags NoReliefString
  Type ItemDraw
  Title {Year:}
 Main
@@ -321,8 +337,9 @@ End
 Widget 22
 Property
  Position 250 180
+ Flags NoReliefString
  Type ItemDraw
- Title {1996}
+ Title {2001}
 Main
  Case message of
   SingleClic :
@@ -345,6 +362,7 @@ End
 Widget 24
 Property
  Position 290 172
+ Flags NoReliefString
  Type MiniScroll
  Value 1996
  MaxValue 1999
@@ -373,6 +391,7 @@ End
 Widget 25
 Property
  Position 30 225
+ Flags NoReliefString
  Type ItemDraw
  Title {Month:}
 Main
@@ -385,6 +404,7 @@ End
 Widget 26
 Property
  Position 100 220
+ Flags NoReliefString
  Type PopupMenu
  Title {January|February|March|April|May|June|July|August|September|October|November|December}
 Main

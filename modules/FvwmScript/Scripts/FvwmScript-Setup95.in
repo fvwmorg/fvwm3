@@ -164,6 +164,7 @@ PeriodicTasks
 Widget 10
 Property
  Position 10 10
+ Flags NoReliefString
  Type ItemDraw
  Title {This Script creates configuration files (.fvwm2rc, bindings, decorations, desktop, functions, menus,}
 Main
@@ -176,6 +177,7 @@ End
 Widget 14
 Property
  Position 10 30
+ Flags NoReliefString
  Type ItemDraw
  Title {modules, startup, styles, iconstyles) and copies them to your FVWM_USERDIR directory:}
 Main
@@ -188,6 +190,7 @@ End
 Widget 11
 Property
  Position 10 47
+ Flags NoReliefString
  Size 580 20
  Font fixed	
  Type ItemDraw
@@ -202,6 +205,7 @@ End
 Widget 12
 Property
  Position 10 70
+ Flags NoReliefString
  Type ItemDraw
  Title {If those files already exist they will be backed up in a subdirectory. Set your preferences:}
 Main
@@ -229,6 +233,7 @@ End
 Widget 21
 Property
  Position 20 100
+ Flags NoReliefString
  Type ItemDraw
  Title {You should have a recent version of fvwm_icons installed. The builtin FVWM image path is:}
 Main
@@ -241,6 +246,7 @@ End
 Widget 20
 Property
  Position 20 118
+ Flags NoReliefString
  Size 570 20
  Type ItemDraw
  Font fixed
@@ -255,6 +261,7 @@ End
 Widget 19
 Property
  Position 20 140
+ Flags NoReliefString
  Type ItemDraw
  Title {You can add another directory to this path if you want:}
 Main
@@ -268,6 +275,7 @@ End
 Widget 22
 Property
  Position 20 165
+ Flags NoReliefString
  Type PopupMenu
  Title {No|$HOME/icons/|$HOME/icons/fvwm/|$FVWM_USERDIR/images/|$FVWM_USERDIR/icons/|$HOME/fvwm-web/icons/|/usr/share/icons/|/usr/share/icons/fvwm/|/usr/local/share/icons/|/usr/local/share/icons/fvwm/}
 Main
@@ -301,6 +309,7 @@ Widget 24
 Property
  Size 250 30
  Position 240 165
+ Flags NoReliefString
  Type TextField
  Title {No}
 Main
@@ -313,6 +322,7 @@ End
 Widget 25
 Property
  Position 510 165
+ Flags NoReliefString
  Type PushButton
  Title {Browser...}
 Main
@@ -332,6 +342,7 @@ End
 Widget 26
 Property
  Position 20 205
+ Flags NoReliefString
  Type ItemDraw
  Title {For sound effects you need fvwm_sounds and an .au player. Set the fvwm_sounds directory:}
 Main
@@ -344,6 +355,7 @@ End
 Widget 27
 Property
  Position 20 230
+ Flags NoReliefString
  Type PopupMenu
  Title {/usr/share/sounds/|/usr/share/sounds/fvwm/|/usr/local/share/sounds/|/usr/local/share/sounds/fvwm/|$HOME/sounds|$HOME/sounds/fvwm/|$FVWM_USERDIR/sounds/}
 Main
@@ -371,6 +383,7 @@ Widget 29
 Property
  Size 250 30
  Position 240 230
+ Flags NoReliefString
  Type TextField
  Title {/usr/share/sounds/}
 Main
@@ -383,6 +396,7 @@ End
 Widget 30
 Property
  Position 510 230
+ Flags NoReliefString
  Type PushButton
  Title {Browser...}
 Main
@@ -397,6 +411,7 @@ End
 Widget 31
 Property
  Position 20 275
+ Flags NoReliefString
  Type ItemDraw
  Title {and choose a player:}
 Main
@@ -409,6 +424,7 @@ End
 Widget 32
 Property
  Position 175 270
+ Flags NoReliefString
  Type PopupMenu
  Title {rplay|esdplay|audioplayer|auplay}
 Main
@@ -430,6 +446,7 @@ Widget 33
 Property
  Size 190 30
  Position 345 270
+ Flags NoReliefString
  Type TextField
  Title {rplay}
 Main
@@ -445,6 +462,7 @@ End
 Widget 17
 Property
  Position 20 110
+ Flags NoReliefString
  Type ItemDraw
  Title {Look Preference:}
 Main
@@ -457,6 +475,7 @@ End
 Widget 18
 Property
  Position 155 105
+ Flags NoReliefString
  Type PopupMenu
  Title {FVWM 95|FVWM}
 Main
@@ -473,6 +492,7 @@ End
 Widget 47
 Property
  Position 285 110
+ Flags NoReliefString
  Type ItemDraw
  Title {Do you have a slow X server?}
 Main
@@ -486,6 +506,7 @@ Widget 48
 Property
  Title {No}
  Position 485 110
+ Flags NoReliefString
  Type RadioButton
  Value 1
 Main
@@ -502,6 +523,7 @@ Widget 49
 Property
  Title {Yes}
  Position 535 110
+ Flags NoReliefString
  Type RadioButton
  Value 0
 Main
@@ -517,6 +539,7 @@ End
 Widget 35
 Property
  Position 20 155
+ Flags NoReliefString
  Type ItemDraw
  Title {Preferred Editor:}
 Main
@@ -529,6 +552,7 @@ End
 Widget 36
 Property
  Position 155 150
+ Flags NoReliefString
  Type PopupMenu
  Title {emacs|xemacs|gvim|nedit|xedit|gxedit|kwrite|dtpad}
 Main
@@ -558,6 +582,7 @@ Widget 37
 Property
  Size 180 30
  Position 365 150
+ Flags NoReliefString
  Type TextField
  Title {emacs}
 Main
@@ -570,6 +595,7 @@ End
 Widget 38
 Property
  Position 20 190
+ Flags NoReliefString
  Type ItemDraw
  Title {Preferred FileMgr:}
 Main
@@ -582,6 +608,7 @@ End
 Widget 39
 Property
  Position 155 185
+ Flags NoReliefString
  Type PopupMenu
  Title {xfm|Midnight-Commander|File Runner|dfm|kfm|gmc|dtfile|kexplorer}
 Main
@@ -611,6 +638,7 @@ Widget 40
 Property
  Size 180 30
  Position 365 185
+ Flags NoReliefString
  Type TextField
  Title {xfm}
 Main
@@ -623,6 +651,7 @@ End
 Widget 41
 Property
  Position 20 225
+ Flags NoReliefString
  Type ItemDraw
  Title {Preferred Terminal:}
 Main
@@ -635,6 +664,7 @@ End
 Widget 42
 Property
  Position 155 220
+ Flags NoReliefString
  Type PopupMenu
  Title {xterm|nxterm|rxvt|Eterm|xiterm|aterm|kvt|konsole|gnome-terminal|dtterm}
 Main
@@ -668,6 +698,7 @@ Widget 43
 Property
  Size 180 30
  Position 365 220
+ Flags NoReliefString
  Type TextField
  Title {xterm}
 Main
@@ -680,6 +711,7 @@ End
 Widget 44
 Property
  Position 20 275
+ Flags NoReliefString
  Type ItemDraw
  Title {Do you have a laptop (and xapm)?}
 Main
@@ -693,6 +725,7 @@ Widget 45
 Property
  Title {No}
  Position 250 275
+ Flags NoReliefString
  Type RadioButton
  Value 1
 Main
@@ -709,6 +742,7 @@ Widget 46
 Property
  Title {Yes}
  Position 300 275
+ Flags NoReliefString
  Type RadioButton
  Value 0
 Main
@@ -727,6 +761,7 @@ End
 Widget 50
 Property
  Position 20 100
+ Flags NoReliefString
  Type ItemDraw
  Title {Desktop Options (GNOME, KDE & CDE)}
 Main
@@ -739,6 +774,7 @@ End
 Widget 51
 Property
  Position 20 130
+ Flags NoReliefString
  Type CheckBox
  Title {Add GNOME system menu}
 Main
@@ -756,6 +792,7 @@ End
 Widget 52
 Property
  Position 275 130
+ Flags NoReliefString
  Type CheckBox
  Title {Add GNOME user menu}
 Main
@@ -773,6 +810,7 @@ End
 Widget 53
 Property
  Position 20 165
+ Flags NoReliefString
  Type CheckBox
  Title {Add GNOME "RedHat" menu}
 Main
@@ -790,6 +828,7 @@ End
 Widget 54
 Property
  Position 275 165
+ Flags NoReliefString
  Type CheckBox
  Title {Use Gtk Menu instead of Fvwm menu}
 Main
@@ -813,6 +852,7 @@ End
 Widget 55
 Property
  Position 20 150
+ Flags NoReliefString
  Type ItemDraw
  Title {It does not seem that GNOME is installed on your machine}
 Main
@@ -826,6 +866,7 @@ End
 Widget 57
 Property
  Position 20 200
+ Flags NoReliefString
  Type CheckBox
  Title {Build a config for gnome-session}
 Main
@@ -842,6 +883,7 @@ End
 Widget 58
 Property
  Position 275 200
+ Flags NoReliefString
  Type CheckBox
  Title {Try a "stays put" panel (for gnome-session)}
 Main
@@ -859,6 +901,7 @@ End
 Widget 59
 Property
  Position 20 200
+ Flags NoReliefString
  Type ItemDraw
  Title {Your version of FVWM is not compiled with support for GNOME}
 Main
@@ -871,6 +914,7 @@ End
 Widget 60
 Property
  Position 20 240
+ Flags NoReliefString
  Type CheckBox
  Title {Add KDE system menu}
 Main
@@ -888,6 +932,7 @@ End
 Widget 61
 Property
  Position 210 240
+ Flags NoReliefString
  Type CheckBox
  Title {Add KDE user menu}
 Main
@@ -904,6 +949,7 @@ End
 Widget 62
 Property
  Position 400 240
+ Flags NoReliefString
  Type CheckBox
  Title {Add support for KFM icons}
 Main
@@ -921,6 +967,7 @@ End
 Widget 63
 Property
  Position 20 240
+ Flags NoReliefString
  Type ItemDraw
  Title {It does not seem that KDE is installed on your machine}
 Main
@@ -934,6 +981,7 @@ End
 Widget 64
 Property
  Position 20 275
+ Flags NoReliefString
  Type ItemDraw
  Title {It does not seem that CDE is installed on your machine}
 Main
@@ -950,6 +998,7 @@ Widget 4
 Property
  Size 30 30
  Position 350 320
+ Flags NoReliefString
  Type PushButton
  Title {Next >>}
 Main
@@ -1096,6 +1145,7 @@ Widget 5
 Property
  Size 30 30
  Position 200 320
+ Flags NoReliefString
  Type PushButton
  Title {<< Previous}
 Main
@@ -1242,6 +1292,7 @@ Widget 3
 Property
  Size 30 30
  Position 520 320
+ Flags NoReliefString
  Type PushButton
  Title {Cancel}
 Main
@@ -1257,6 +1308,7 @@ End
 Widget 80
 Property
  Position 20 110
+ Flags NoReliefString
  Type ItemDraw
  Title {Your new FVWM configuration file has been built and installed. For further FVWM cusomtization}
 Main
@@ -1269,6 +1321,7 @@ End
 Widget 81
 Property
  Position 20 130
+ Flags NoReliefString
  Type ItemDraw
  Title {you can edit this file, read the FVWM man pages and the FAQ. Also, you will find a special}
 Main
@@ -1281,6 +1334,7 @@ End
 Widget 82
 Property
  Position 20 150
+ Flags NoReliefString
  Type ItemDraw
  Title {MINI-FAQ on this file via the root menu (Documents->Mini-FAQ).}
 Main
@@ -1295,6 +1349,7 @@ Widget 2
 Property
  Size 70 30
  Position 235 190
+ Flags NoReliefString
  Type PushButton
  Title {Restart To Apply}
 Main
@@ -1313,6 +1368,7 @@ Widget 71
 Property
  Size 570 20
  Position 20 140
+ Flags NoReliefString
  Type ItemDraw
  Title {Are you ready to build the configuration?}
 Main
@@ -1326,6 +1382,7 @@ Widget 1
 Property
  Size 70 30
  Position 265 180
+ Flags NoReliefString
  Type PushButton
  Title {Yes, I am!}
 Main
@@ -1434,6 +1491,7 @@ End
 Widget 90
 Property
  Position 20 110
+ Flags NoReliefString
  Type ItemDraw
  Title {It seems that perl is not installed in your machine (bad idea). So, this script will just copy}
 Main
@@ -1446,6 +1504,7 @@ End
 Widget 91
 Property
  Position 20 130
+ Flags NoReliefString
  Type ItemDraw
  Title {fvwm2rc.system-sample-95 to your FVWM configuration directory.}
 Main
@@ -1460,6 +1519,7 @@ Widget 92
 Property
  Size 70 30
  Position 265 160
+ Flags NoReliefString
  Type PushButton
  Title {Copy!}
 Main

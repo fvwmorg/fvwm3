@@ -18,6 +18,7 @@ Widget 1
 Property
  Size 50 30
  Position 190 320
+ Flags NoReliefString
  Type PushButton
  Title {OK}
 Main
@@ -36,6 +37,7 @@ Widget 2
 Property
  Size 50 30
  Position 280 320
+ Flags NoReliefString
  Type PushButton
  Title {Cancel}
 Main
@@ -62,6 +64,7 @@ End
 Widget 4
 Property
  Position 15 2
+ Flags NoReliefString
  Type ItemDraw
  Title {Dump to:}
 Main
@@ -75,6 +78,7 @@ Widget 5
 Property
  Size 50 30
  Position 30 30
+ Flags NoReliefString
  Type RadioButton
  Title {File}
  Value 1
@@ -90,6 +94,7 @@ Widget 6
 Property
  Size 50 30
  Position 30 110
+ Flags NoReliefString
  Type RadioButton
  Title {Printer}
  Value 0
@@ -105,6 +110,7 @@ Widget 7
 Property
  Size 250 30
  Position 75 27
+ Flags NoReliefString
  Type TextField
  Title {~/picture}
  Value 200
@@ -118,6 +124,7 @@ End
 Widget 8
 Property
  Position 74 65
+ Flags NoReliefString
  Type ItemDraw
  Title {Format}
  Value 1
@@ -131,6 +138,7 @@ End
 Widget 9
 Property
  Position 130 60
+ Flags NoReliefString
  Type PopupMenu
  Title {GIF|PostScript|Tiff|X11 Pixmap|Pgm|Bmp|Sun rasterfile}
  Value 1
@@ -194,6 +202,7 @@ End
 Widget 10
 Property
  Position 74 138
+ Flags NoReliefString
  Type ItemDraw
  Title {Command line}
  Value 1
@@ -209,6 +218,7 @@ Widget 11
 Property
  Size 150 30
  Position 175 135
+ Flags NoReliefString
  Type TextField
  Title {lpr}
  Value 200
@@ -223,6 +233,7 @@ Widget 12
 Property
  Size 340 100
  Position 10 200
+ Flags NoReliefString
  Type Rectangle
 Main
  Case message of
@@ -234,6 +245,7 @@ End
 Widget 13
 Property
  Position 15 192
+ Flags NoReliefString
  Type ItemDraw
  Title {Options:}
 Main
@@ -246,6 +258,7 @@ End
 Widget 14
 Property
  Position 30 220
+ Flags NoReliefString
  Type CheckBox
  Title {Include frame}
 Main
@@ -262,6 +275,7 @@ End
 Widget 15
 Property
  Position 30 260
+ Flags NoReliefString
  Type CheckBox
  Title {Select the root window}
 Main

@@ -359,6 +359,7 @@ Widget 1
 Property
  Size 50 30
  Position 350 365
+ Flags NoReliefString
  Type PushButton
  Title {Ok}
 Main
@@ -438,6 +439,7 @@ Widget 2
 Property
  Size 50 30
  Position 450 365
+ Flags NoReliefString
  Type PushButton
  Title {Apply}
 Main
@@ -471,6 +473,7 @@ Widget 3
 Property
  Size 30 30
  Position 550 365
+ Flags NoReliefString
  Type PushButton
  Title {Cancel}
 Main
@@ -485,6 +488,7 @@ Widget 4
 Property
  Size 30 30
  Position 30 365
+ Flags NoReliefString
  Type PushButton
  Title {Reset "Defaults"}
 Main
@@ -565,6 +569,7 @@ Widget 5
 Property
  Size 30 30
  Position 210 365
+ Flags NoReliefString
  Type PushButton
  Title {Misc Config}
 Main
@@ -578,6 +583,7 @@ Widget 6
 Property
  Size 310 345
  Position 10 10
+ Flags NoReliefString
  Type Rectangle
 Main
  Case message of
@@ -605,6 +611,7 @@ Widget 10
 Property
  Position 20 30
  Type ItemDraw
+ Flags NoReliefString
  Title {Focus:}
 Main
  Case message of
@@ -616,6 +623,7 @@ End
 Widget 11
 Property
  Position 100 25
+ Flags NoReliefString
  Type PopupMenu
  Title {Sloppy Focus|Focus Follows Mouse|Click To Focus}
 Main
@@ -634,6 +642,7 @@ End
 Widget 12
 Property
  Position 70 60
+ Flags NoReliefString
  Type CheckBox
  Title {Mouse Focus Click Raise}
 Main
@@ -650,6 +659,7 @@ End
 Widget 13
 Property
  Position 70 80
+ Flags NoReliefString
  Type CheckBox
  Title {Click To Focus Raise}
 Main
@@ -666,6 +676,7 @@ End
 Widget 14
 Property
  Position 70 100
+ Flags NoReliefString
  Type CheckBox
  Title {Click To Focus Passes Click}
 Main
@@ -682,6 +693,7 @@ End
 Widget 15
 Property
  Position 20 135
+ Flags NoReliefString
  Type ItemDraw
  Title {Horizontal Paging:}
 Main
@@ -694,6 +706,7 @@ End
 Widget 17
 Property
  Position 150 130
+ Flags NoReliefString
  Type PopupMenu
  Title {OFF|100%|100% & Warp|50%|50% & Warp|25%|25% & Warp|10%|10% & Warp}
 Main
@@ -732,6 +745,7 @@ End
 Widget 19
 Property
  Position 20 170
+ Flags NoReliefString
  Type ItemDraw
  Title {Vertical Paging:}
 Main
@@ -744,6 +758,7 @@ End
 Widget 20
 Property
  Position 150 165
+ Flags NoReliefString
  Type PopupMenu
  Title {OFF|100%|100% & Warp|50%|50% & Warp|25%|25% & Warp| 10% |10% & Warp}
 Main
@@ -782,6 +797,7 @@ End
 Widget 21
 Property
  Position 20 205
+ Flags NoReliefString
  Type ItemDraw
  Title {Paging Delay (ms):}
 Main
@@ -795,6 +811,7 @@ Widget 22
 Property
  Position 145 200
  Size 40 15
+ Flags NoReliefString
  Type TextField
  Font fixed
  Title {}
@@ -808,6 +825,7 @@ End
 Widget 23
 Property
  Position 190 205
+ Flags NoReliefString
  Type ItemDraw
  Title {Thickness:}
 Main
@@ -820,6 +838,7 @@ End
 Widget 24
 Property
  Position 265 200
+ Flags NoReliefString
  Type PopupMenu
  Title {0|1|2}
 Main
@@ -844,6 +863,7 @@ End
 Widget 25
 Property
  Position 20 235
+ Flags NoReliefString
  Type ItemDraw
  Title {Windows Placement:}
 Main
@@ -856,6 +876,7 @@ End
 Widget 26
 Property
  Position 40 255
+ Flags NoReliefString
  Type PopupMenu
  Title {Smart|Dumb}
 Main
@@ -872,6 +893,7 @@ End
 Widget 27
 Property
  Position 200 255
+ Flags NoReliefString
  Type PopupMenu
  Title {Random|Active}
 Main
@@ -888,6 +910,7 @@ End
 Widget 28
 Property
  Position 40 285
+ Flags NoReliefString
  Type CheckBox
  Title {Smart Placement is Clever}
 Main
@@ -904,6 +927,7 @@ End
 Widget 29
 Property
  Position 30 310
+ Flags NoReliefString
  Type ItemDraw
  Title {New windows grab the focus:}
 Main
@@ -917,6 +941,7 @@ Widget 30
 Property
  Title {Yes}
  Position 225 310
+ Flags NoReliefString
  Type RadioButton
  Value 0
 Main
@@ -933,6 +958,7 @@ Widget 31
 Property
  Title {No}
  Position 275 310
+ Flags NoReliefString
  Type RadioButton
  Value 0
 Main
@@ -948,6 +974,7 @@ End
 Widget 32
 Property
  Position 30 330
+ Flags NoReliefString
  Type ItemDraw
  Title {Use Applications position hints:}
 Main
@@ -961,6 +988,7 @@ Widget 33
 Property
  Title {Yes}
  Position 225 330
+ Flags NoReliefString
  Type RadioButton
  Value 0
 Main
@@ -977,6 +1005,7 @@ Widget 34
 Property
  Title {No}
  Position 275 330
+ Flags NoReliefString
  Type RadioButton
  Value 0
 Main
@@ -996,6 +1025,7 @@ Widget 40
 Property
  Size 35 25
  Position 520 25
+ Flags NoReliefString
  Type Rectangle
 Main
  Case message of
@@ -1008,6 +1038,7 @@ Widget 41
 Property
  Size 25 25
  Position 560 21
+ Flags NoReliefString
  Value 10
  MaxValue 101
  MinValue 0
@@ -1024,6 +1055,7 @@ Widget 42
 Property
  Size 25 25
  Position 340 25
+ Flags NoReliefString
  Type ItemDraw
  Title {Opaque move size (%):}
 Main
@@ -1036,6 +1068,7 @@ End
 Widget 43
 Property
  Position 528 28
+ Flags NoReliefString
  Size 20 20
  Font fixed
  Type ItemDraw
@@ -1050,6 +1083,7 @@ End
 Widget 44
 Property
  Position 340 70
+ Flags NoReliefString
  Type ItemDraw
  Title {Moving Edge Resistance (pixels):}
 Main
@@ -1062,6 +1096,7 @@ End
 Widget 45
 Property
  Position 550 65
+ Flags NoReliefString
  Size 30 15
  Font fixed
  Type TextField
@@ -1077,6 +1112,7 @@ End
 Widget 46
 Property
  Position 340 103
+ Flags NoReliefString
  Type ItemDraw
  Title {Move Threshold:}
 Main
@@ -1089,6 +1125,7 @@ End
 Widget 47
 Property
  Position 480 98
+ Flags NoReliefString
  Size 30 15
  Type TextField
  Title {}
@@ -1102,6 +1139,7 @@ End
 Widget 48
 Property
  Position 340 135
+ Flags NoReliefString
  Type ItemDraw
  Title {Resize:}
 Main
@@ -1115,6 +1153,7 @@ Widget 49
 Property
  Title {Opaque}
  Position 410 135
+ Flags NoReliefString
  Type RadioButton
  Value 0
 Main
@@ -1131,6 +1170,7 @@ Widget 50
 Property
  Title {Out line}
  Position 500 135
+ Flags NoReliefString
  Type RadioButton
  Value 0
 Main
@@ -1146,6 +1186,7 @@ End
 Widget 51
 Property
  Position 340 165
+ Flags NoReliefStringe
  Type ItemDraw
  Title {Hide Geometry:}
 Main
@@ -1159,6 +1200,7 @@ Widget 52
 Property
  Title {Move}
  Position 460 165
+ Flags NoReliefString
  Type RadioButton
  Value 0
 Main
@@ -1190,6 +1232,7 @@ Widget 53
 Property
  Title {Resize}
  Position 540 165
+ Flags NoReliefString
  Type RadioButton
  Value 0
 Main
@@ -1220,6 +1263,7 @@ End
 Widget 54
 Property
  Position 340 195
+ Flags NoReliefString
  Type ItemDraw
  Title {Snap Attraction:}
 Main
@@ -1232,6 +1276,7 @@ End
 Widget 55
 Property
  Position 350 220
+ Flags NoReliefString
  Type ItemDraw
  Title {distance (pixels):}
 Main
@@ -1245,6 +1290,7 @@ End
 Widget 56
 Property
  Position 480 215
+ Flags NoReliefString
  Size 30 15
  Type TextField
  Title {}
@@ -1258,6 +1304,7 @@ End
 Widget 57
 Property
  Position 350 255
+ Flags NoReliefString
  Type ItemDraw
  Title {behavior:}
 Main
@@ -1270,6 +1317,7 @@ End
 Widget 58
 Property
  Position 425 250
+ Flags NoReliefString
  Type PopupMenu
  Title {Icons & Windows|Icons & Windows (Screen)|Same Type |Same Type (Screen)|Windows|Windows (Screen)|Icons|Icons (Screen)}
 Main
@@ -1298,6 +1346,7 @@ End
 Widget 59
 Property
  Position 340 290
+ Flags NoReliefString
  Type ItemDraw
  Title {Emulate:}
 Main
@@ -1311,6 +1360,7 @@ Widget 60
 Property
  Title {FVWM}
  Position 410 290
+ Flags NoReliefString
  Type RadioButton
  Value 0
 Main
@@ -1328,6 +1378,7 @@ Widget 61
 Property
  Title {MWM}
  Position 480 290
+ Flags NoReliefString
  Type RadioButton
  Value 0
 Main
@@ -1345,6 +1396,7 @@ Widget 62
 Property
  Title {WIN}
  Position 550 290
+ Flags NoReliefString
  Type RadioButton
  Value 0
 Main
@@ -1361,6 +1413,7 @@ End
 Widget 63
 Property
  Position 340 323
+ Flags NoReliefString
  Type ItemDraw
  Title {Window shade animation steps:}
 Main
@@ -1374,6 +1427,7 @@ End
 Widget 64
 Property
  Position 550 320
+ Flags NoReliefString
  Size 30 15
  Type TextField
  Title {}

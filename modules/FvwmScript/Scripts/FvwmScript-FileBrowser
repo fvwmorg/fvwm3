@@ -41,6 +41,7 @@ Widget 1
 Property
  Size 50 30
  Position 190 300
+ Flags NoReliefString
  Type PushButton
  Title {OK}
 Main
@@ -56,6 +57,7 @@ Widget 2
 Property
  Size 50 30
  Position 250 300
+ Flags NoReliefString
  Type PushButton
  Title {Cancel}
 Main
@@ -69,6 +71,7 @@ End
 Widget 3
 Property
  Position 10 10
+ Flags NoReliefString
  Size 340 280
  Type Rectangle
 Main
@@ -81,6 +84,7 @@ End
 Widget 4
 Property
  Position 20 42
+ Flags NoReliefString
  Type ItemDraw
  Title {Path:}
 Main
@@ -93,6 +97,7 @@ End
 Widget 5
 Property
  Position 65 42
+ Flags NoReliefString
  Size 270 0
  Type ItemDraw
  Title {*}
@@ -119,6 +124,7 @@ End
 Widget 6
 Property
  Position 21 67
+ Flags NoReliefString
  Size 50 18
  Title {up}
  #Icon up.xpm
@@ -146,6 +152,7 @@ End
 Widget 11
 Property
  Position 91 67
+ Flags NoReliefString
  Size 50 18
  Title {home}
  #Icon home.xpm
@@ -172,6 +179,7 @@ End
 Widget 12
 Property
  Position 180 72
+ Flags NoReliefString
  Type CheckBox
  Title { Show hidden files}
 Main
@@ -199,6 +207,7 @@ End
 Widget 7
 Property
  Position 20 100
+ Flags NoReliefString
  Size 320 115
  Type List
  Title {}
@@ -235,6 +244,7 @@ End
 Widget 8
 Property
  Position 20 220
+ Flags NoReliefString
  Type ItemDraw
  Title {Selected file:}
 Main
@@ -247,6 +257,7 @@ End
 Widget 9
 Property
  Position 20 240
+ Flags NoReliefString
  Size 320 20
  Type TextField
  Title {}

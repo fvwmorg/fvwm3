@@ -32,6 +32,7 @@ Widget 1
 Property
  Size 70 18
  Position 25 300
+ Flags NoReliefString
  Type PushButton
  Title {Search}
 Main
@@ -75,6 +76,7 @@ Widget 2
 Property
  Size 70 18
  Position 425 300
+ Flags NoReliefString
  Type PushButton
  Title {Quit}
 Main
@@ -100,6 +102,7 @@ End
 Widget 4
 Property
  Position 20 42
+ Flags NoReliefString
  Type ItemDraw
  Title {Path:}
 Main
@@ -112,6 +115,7 @@ End
 Widget 5
 Property
  Position 65 37
+ Flags NoReliefString
  Size 320 20
  Type TextField
  Title {}
@@ -126,6 +130,7 @@ End
 Widget 6
 Property
  Position 20 67
+ Flags NoReliefString
  Type ItemDraw
  Title {Name:}
 Main
@@ -138,6 +143,7 @@ End
 Widget 7
 Property
  Position 65 62
+ Flags NoReliefString
  Size 270 20
  Type TextField
  Title {}
@@ -151,6 +157,7 @@ End
 Widget 8
 Property
  Position 20 92
+ Flags NoReliefString
  Type ItemDraw
  Title {Body:}
 Main
@@ -163,6 +170,7 @@ End
 Widget 9
 Property
  Position 65 87
+ Flags NoReliefString
  Size 270 20
  Type TextField
  Title {}
@@ -177,6 +185,7 @@ Widget 10
 Property
  Size 70 18
  Position 410 35
+ Flags NoReliefString
  Type PushButton
  Title {Browser...}
 Main
@@ -191,6 +200,7 @@ End
 Widget 12
 Property
  Position 20 125
+ Flags NoReliefString
  Type CheckBox
  Title {Recursive Search}
  Value 0
@@ -204,6 +214,7 @@ End
 Widget 13
 Property
  Position 20 157
+ Flags NoReliefString
  Size 480 115
  Type List
  Title {}

@@ -46,6 +46,7 @@ Widget 3
 Property
  Title { What do you want to do? }
  Position 100  8
+ Flags NoReliefString
  Type ItemDraw
  Value 0
  Font -adobe-helvetica-bold-r-*-*-12-*
@@ -61,6 +62,7 @@ Property
  Title {OK}
  Size 60 28
  Position 300 225
+ Flags NoReliefString
  Type PushButton
  Value 1
 Main
@@ -102,6 +104,7 @@ Property
  Title {Cancel}
  Size 60 28
  Position 40 225
+ Flags NoReliefString
  Type PushButton
  Value 1
 Main
@@ -116,6 +119,7 @@ Widget 6
 Property
  Title {Logout}
  Position 90 45
+ Flags NoReliefString
  Type RadioButton
  Value 0
 Main
@@ -134,6 +138,7 @@ Widget 7
 Property
  Title {Restart fvwm}
  Position 90 75
+ Flags NoReliefString
  Type RadioButton
  Value 0
 Main
@@ -152,6 +157,7 @@ Widget 8
 Property
  Title {Restart with:}
  Position 90 105
+ Flags NoReliefString
  Type RadioButton
  Value 0
 Main
@@ -184,6 +190,7 @@ Widget 9
 Property
  Title {Shut down the computer}
  Position 90 135
+ Flags NoReliefString
  Type RadioButton
  Value 0
 Main
@@ -202,6 +209,7 @@ Widget 10
 Property
  Title {Restart the computer}
  Position 90 165
+ Flags NoReliefString
  Type RadioButton
  Value 1
 Main

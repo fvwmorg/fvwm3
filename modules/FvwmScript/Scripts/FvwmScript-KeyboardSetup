@@ -41,6 +41,7 @@ Widget 1
 Property
  Size 50 30
  Position 55 200
+ Flags NoReliefString
  Type PushButton
  Title {Apply}
 Main
@@ -59,6 +60,7 @@ Widget 2
 Property
  Size 50 30
  Position 155 200
+ Flags NoReliefString
  Type PushButton
  Title {OK}
 Main
@@ -85,6 +87,7 @@ Widget 3
 Property
  Size 50 30
  Position 255 200
+ Flags NoReliefString
  Type PushButton
  Title {Cancel}
 Main
@@ -99,6 +102,7 @@ Widget 4
 Property
  Size 300 1
  Position 30 120
+ Flags NoReliefString
  Type HScrollBar
  MinValue 0
  MaxValue 100
@@ -113,6 +117,7 @@ End
 Widget 5
 Property
  Position 130 100
+ Flags NoReliefString
  Type ItemDraw
  Title {Click Volume (%)}
 Main
@@ -125,6 +130,7 @@ End
 Widget 6
 Property
  Position 30 40
+ Flags NoReliefString
  Type CheckBox
  Title {AutoRepeat On}
 Main
@@ -138,6 +144,7 @@ Widget 7
 Property
  Size 60 1
  Position 270 35
+ Flags NoReliefString
  Type TextField
 Main
  Case message of
@@ -149,6 +156,7 @@ End
 Widget 8
 Property
  Position 170 40
+ Flags NoReliefString
  Type ItemDraw
  Title {Start Delay:  }
 Main
@@ -162,6 +170,7 @@ Widget 9
 Property
  Size 60 1
  Position 270 60
+ Flags NoReliefString
  Type TextField
 Main
  Case message of
@@ -173,6 +182,7 @@ End
 Widget 10
 Property
  Position 170 65
+ Flags NoReliefString
  Type ItemDraw
  Title {Repeat Delay:}
 Main
@@ -197,6 +207,7 @@ End
 Widget 12
 Property
  Position 15 3
+ Flags NoReliefString
  Type ItemDraw
  Title {Keyboard}
 Main

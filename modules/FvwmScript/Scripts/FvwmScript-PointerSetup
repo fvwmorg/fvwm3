@@ -45,6 +45,7 @@ Widget 1
 Property
  Size 50 30
  Position 45 210
+ Flags NoReliefString
  Type PushButton
  Title {Apply}
 Main
@@ -63,6 +64,7 @@ Widget 2
 Property
  Size 50 30
  Position 135 210
+ Flags NoReliefString
  Type PushButton
  Title {OK}
 Main
@@ -90,6 +92,7 @@ Widget 3
 Property
  Size 50 30
  Position 225 210
+ Flags NoReliefString
  Type PushButton
  Title {Cancel}
 Main
@@ -103,6 +106,7 @@ End
 Widget 4
 Property
  Position 150 140
+ Flags NoReliefString
  Type PopupMenu
  Title {Right-handed user|Left-handed user}
  Value 1
@@ -116,6 +120,7 @@ End
 Widget 5
 Property
  Position 20 145
+ Flags NoReliefString
  Type ItemDraw
  Title {Mouse configuration:}
 Main
@@ -129,6 +134,7 @@ Widget 6
 Property
  Size 188 1
  Position 110 25
+ Flags NoReliefString
  MinValue 5
  MaxValue 100
  Type HScrollBar
@@ -142,6 +148,7 @@ End
 Widget 7
 Property
  Position 20 45
+ Flags NoReliefString
  Type ItemDraw
  Title {Acceleration:}
 Main
@@ -155,6 +162,7 @@ Widget 8
 Property
  Size 60 1
  Position 150 90
+ Flags NoReliefString
  Type TextField
 Main
  Case message of
@@ -167,6 +175,7 @@ Widget 9
 Property
  Size 110 1
  Position 20 95
+ Flags NoReliefString
  Type ItemDraw
  Title {Threshold (pixels):}
 Main
@@ -191,6 +200,7 @@ End
 Widget 11
 Property
  Position 15 3
+ Flags NoReliefString
  Type ItemDraw
  Title {Pointer}
 Main
