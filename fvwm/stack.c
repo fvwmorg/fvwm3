@@ -241,6 +241,7 @@ static void add_windowlist_to_stack_ring_after(
 	list_head->stack_prev->stack_next = add_after_win->stack_next;
 	add_after_win->stack_next = list_head->stack_next;
 	list_head->stack_next->stack_prev = add_after_win;
+
 	return;
 }
 
@@ -253,7 +254,9 @@ static FvwmWindow *get_transientfor_top_fvwmwindow(FvwmWindow *t)
 	{
 		s = get_transientfor_fvwmwindow(s);
 		if (s)
+		{
 			t = s;
+		}
 	}
 
 	return t;

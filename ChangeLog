@@ -1,3 +1,16 @@
+2004-10-17  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* fvwm/focus.c (__update_windowlist):
+	replaced while loop by for loop
+
+	* fvwm/style.c (style_destroy_style):
+	* fvwm/conditional.c (Circulate):
+	removed useless check whether fw == &Scr.FvwmRoot
+
+	* fvwm/icons.c (DeIconify):
+	defused possible endless loop when a window iconified by the
+	transientfor window loses the "transient" relationship
+
 2004-10-13  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* fvwm/move_resize.c (__move_loop):

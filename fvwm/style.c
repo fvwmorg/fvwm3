@@ -4883,8 +4883,7 @@ void style_destroy_style(style_id_t s_id)
 		return;
 	}
 	/* mark windows for update */
-	for (t = Scr.FvwmRoot.next; t != NULL && t != &Scr.FvwmRoot;
-	     t = t->next)
+	for (t = Scr.FvwmRoot.next; t != NULL; t = t->next)
 	{
 		if (fw_match_style_id(t, s_id))
 		{

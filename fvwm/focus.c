@@ -188,12 +188,10 @@ static void __update_windowlist(
 		FvwmWindow *fw2;
 
 		/* find the window on the windowlist */
-		fw2 = &Scr.FvwmRoot;
-		while (fw2 && fw2 != fw)
+		for (fw2 = &Scr.FvwmRoot; fw2 && fw2 != fw; fw2 = fw2->next)
 		{
-			fw2 = fw2->next;
+			/* nothing */
 		}
-
 		if (fw2)
 		{
 			/* the window is on the (non-zero length) windowlist */
