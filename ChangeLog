@@ -22,7 +22,7 @@
 
 	* libs/Parse.c (DoGetNextToken): Added parameter to return the
 	character that ended the string.
-	
+
 Mon Nov  9 18:51:19 1998  Steve Robbins  <steve@nyongwa.montreal.qc.ca>
 
 	* Makefile.am (EXTRA_SUBDIRS): Removed textures from list of SUBDIRS.
@@ -40,8 +40,8 @@ Mon Nov  9 18:51:19 1998  Steve Robbins  <steve@nyongwa.montreal.qc.ca>
 
 1998-11-08  Dominik Vogt  <dominik_vogt@hp.com>
 
-	* fvwm/resize.c (resize_window): 
-	* fvwm/move.c (moveLoop): 
+	* fvwm/resize.c (resize_window):
+	* fvwm/move.c (moveLoop):
 	Cleaned up aborting with a mouse button:
 	If the move/resize started with a button down, pressing any button
 	aborts the operation. If no button was down, pressing button 1 confirms
@@ -144,15 +144,15 @@ Sat Nov  7 02:01:41 1998  Steve Robbins  <steve@nyongwa.montreal.qc.ca>
 	(UGLY_WHEN_PIXMAPS_MISSING is defined).  Also, make sure to always
 	free it (we had a bad memory leak here).
 
+1998-11-05  Bob Woodside  <proteus@pcnet.com>
+
+	* folded in StartsOnPage style modifications.
+
 1998-11-05  Paul D. Smith  <psmith@gnu.org>
 
 	* configure.in: Check for the div() function (for extras/FvwmScript).
 	Remove check for stdarg.h; we'd need a lot fancier config to allow
 	the use of varargs.h or something else; for now assume we have it.
-
-1998-11-05  Bob Woodside  <proteus@pcnet.com>
-
-	* folded in StartsOnPage style modifications.
 
 	* fvwm/module.c (make_vpacket): New function: creates a module
 	packet from a va_list.  This is the most basic function: all
