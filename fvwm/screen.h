@@ -87,7 +87,7 @@ typedef enum
 
 typedef struct
 {
-  DecorFaceType face_type : 3;
+  unsigned face_type : 3; /* was DecorFaceType : 3 */
   struct
   {
     JustificationType h_justification : 2;

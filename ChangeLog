@@ -1,5 +1,8 @@
 2000-02-04  Dominik Vogt  <dominik.vogt@gmx.de>
 
+	* fvwm/screen.h (struct):
+	use 'unsigned : 3' instead of 'DecorFaceType : 3'
+
 	* fvwm/icons.c (AutoPlaceIcon):
 	another page flipping fix:
 	  style * icon, iconify, movetopage 1 1, deiconify, iconify; the

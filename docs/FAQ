@@ -1122,9 +1122,18 @@ A: Yes, but not with the current implementation of the panels.  Please
 ======================================================================
 
 5.1  I'd really like to see neat feature XYZ in FVWM.  Wouldn't
-     that be cool? I even have a patch.  When can it be added?
+     that be cool?  I even have a patch.  When can it be added?
 
-A: People are always requesting or suggesting new features (many of
+A: If you plan to write a patch, *please*, first of all fetch the
+   latest development release from our web site.  It is also a good
+   idea to contact the fvwm-workers list.  At times, patches for
+   older releases may prove completely worthless, e.g. because the
+   fix has already been integrated, a feature already added or
+   removed or simply because the code is very different to the code
+   you patches.  You will do yourself and us a great favour.
+   Otherwise all your hard work may be wasted.
+
+   People are always requesting or suggesting new features (many of
    which are great ideas and where a lot of the current features came
    from).  One of the more common ones for example is Windows 95 look
    and feel (although since this was first written, that particular
@@ -1164,7 +1173,9 @@ A: People are always requesting or suggesting new features (many of
 
 5.2  How do I create/submit/apply patches?
 
-A: Creating a patch -
+A: First of all, please read the first section of the answer to Q5.1!
+
+   Creating a patch -
 
         1) Copy the original file(s) to the same name with the
            additional extension of .orig (or something like that).
