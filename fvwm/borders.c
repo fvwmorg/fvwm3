@@ -1249,8 +1249,6 @@ void DrawDecorations(
   if (!t)
     return;
   memset(&cd, 0, sizeof(cd));
-  if (HAS_NEVER_FOCUS(t))
-    has_focus = False;
   if (force || expose_win == None)
   {
     is_frame_redraw_allowed = True;

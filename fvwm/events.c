@@ -272,7 +272,7 @@ void HandleKeyPress(void)
   if (action != NULL)
   {
     ButtonWindow = Tmp_win;
-    ExecuteFunction(action,Tmp_win, &Event, Context, -1, EXPAND_COMMAND, NULL);
+    ExecuteFunction(action, Tmp_win, &Event, Context, -1, 0, NULL);
     ButtonWindow = NULL;
     return;
   }
@@ -586,15 +586,15 @@ void HandlePropertyNotify(void)
       if (!(old_wmhints_flags & XUrgencyHint) &&
 	  (Tmp_win->wmhints->flags & XUrgencyHint))
 	{
-	  ExecuteFunction("Function UrgencyFunc",
-			  Tmp_win,&Event,C_WINDOW,-1,EXPAND_COMMAND, NULL);
+	  ExecuteFunction(
+	    "Function UrgencyFunc", Tmp_win, &Event, C_WINDOW, -1, 0, NULL);
 	}
 
       if ((old_wmhints_flags & XUrgencyHint) &&
 	  !(Tmp_win->wmhints->flags & XUrgencyHint))
 	{
-	  ExecuteFunction("Function UrgencyDoneFunc",
-			  Tmp_win,&Event,C_WINDOW,-1,EXPAND_COMMAND, NULL);
+	  ExecuteFunction(
+	    "Function UrgencyDoneFunc", Tmp_win, &Event, C_WINDOW, -1, 0, NULL);
 	}
       break;
     case XA_WM_NORMAL_HINTS:
@@ -753,8 +753,7 @@ void HandleClientMessage(void)
                    &(button.xmotion.y_root),
                    &JunkX, &JunkY, &JunkMask);
     button.type = 0;
-    ExecuteFunction(
-      "Iconify",Tmp_win, &button,C_FRAME,-1, EXPAND_COMMAND, NULL);
+    ExecuteFunction("Iconify", Tmp_win, &button, C_FRAME, -1, 0, NULL);
     return;
   }
 
@@ -930,7 +929,7 @@ void HandleMapRequestKeepRaised(Window KeepRaised, FvwmWindow *ReuseWin)
 	   (IS_TRANSIENT(Tmp_win) && DO_GRAB_FOCUS_TRANSIENT(Tmp_win) &&
 	    Scr.Focus && Scr.Focus->w == Tmp_win->transientfor))
 	{
-	  if (OnThisPage && !HAS_NEVER_FOCUS(Tmp_win))
+	  if (OnThisPage)
 	  {
 	    SetFocus(Tmp_win->w, Tmp_win, 1);
 	  }
@@ -1060,7 +1059,7 @@ void HandleMapNotify(void)
      (IS_TRANSIENT(Tmp_win) && DO_GRAB_FOCUS_TRANSIENT(Tmp_win) &&
       Scr.Focus && Scr.Focus->w == Tmp_win->transientfor))
   {
-    if (OnThisPage && !HAS_NEVER_FOCUS(Tmp_win))
+    if (OnThisPage)
     {
       SetFocus(Tmp_win->w,Tmp_win,1);
     }
@@ -1316,6 +1315,13 @@ void HandleButtonPress(void)
       DrawDecorations(Tmp_win, DRAW_ALL, True, True, PressedW);
     }
   }
+  else if (Tmp_win && HAS_NEVER_FOCUS(Tmp_win))
+  {
+    /* It might seem odd to try to focus a window that never is given focus by
+     * fvwm, but the window might want to take focus itself, and SetFocus will
+     * tell it to do so in this case instead of giving it focus. */
+    SetFocus(Tmp_win->w, Tmp_win, 1);
+  }
   else if ((Tmp_win) && !(HAS_CLICK_FOCUS(Tmp_win)) &&
            (Event.xbutton.window == Tmp_win->Parent
 	    /* RBW - I don't think we need these!!! Dominik...if this sems
@@ -1390,7 +1396,8 @@ void HandleButtonPress(void)
 			MOUSE_BINDING);
   if (action != NULL && (action[0] != 0))
   {
-    ExecuteFunction(action, Tmp_win, &Event, Context, -1, EXPAND_COMMAND, NULL);
+    ExecuteFunction(
+      action, Tmp_win, &Event, Context, -1, FUNC_DO_SYNC_BUTTONS, NULL);
   }
   else
   {
@@ -1433,7 +1440,6 @@ void HandleButtonPress(void)
  ************************************************************************/
 void HandleButtonRelease()
 {
-   /* unsigned int modifier; */
    char *action;
    int real_modifier;
    Window dummy;
@@ -1457,7 +1463,8 @@ void HandleButtonRelease()
    /* got a match, now process it */
    if (action != NULL && (action[0] != 0))
    {
-     ExecuteFunction(action,Tmp_win, &Event,Context,-1, EXPAND_COMMAND, NULL);
+     ExecuteFunction(
+       action, Tmp_win, &Event, Context, -1, FUNC_DO_SYNC_BUTTONS, NULL);
    }
    else
    {

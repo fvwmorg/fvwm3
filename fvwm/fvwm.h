@@ -52,9 +52,19 @@
  * fvwm include file
  ***********************************************************************/
 
+/*
+ * Fvwm trivia: There were 97 commands in the fvwm command table
+ * when the F_CMD_ARGS macro was written.
+ * dje 12/19/98.
+ */
+
+/* Macro for args passed to fvwm commands... */
 #define F_CMD_ARGS XEvent *eventp, Window w, FvwmWindow *tmp_win,\
 unsigned long context,char *action, int *Module
 #define F_PASS_ARGS eventp, w, tmp_win, context, action, Module
+#define F_EXEC_ARGS char *action, FvwmWindow *tmp_win, XEvent *eventp,\
+unsigned long context, int Module
+#define F_PASS_EXEC_ARGS action, tmp_win, eventp, context, *Module
 
 #include <X11/Xlib.h>
 #include <X11/Xutil.h>

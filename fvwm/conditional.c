@@ -433,7 +433,7 @@ void PrevFunc(F_CMD_ARGS)
   if(found && restofline)
   {
     ExecuteFunction(
-      restofline,found,eventp,C_WINDOW,*Module,EXPAND_COMMAND,NULL);
+      restofline, found, eventp, C_WINDOW, *Module, 0, NULL);
   }
 
 }
@@ -447,7 +447,7 @@ void NextFunc(F_CMD_ARGS)
   if(found && restofline)
   {
     ExecuteFunction(
-      restofline,found,eventp,C_WINDOW,*Module,EXPAND_COMMAND,NULL);
+      restofline, found, eventp, C_WINDOW, *Module, 0, NULL);
   }
 
 }
@@ -460,7 +460,8 @@ void NoneFunc(F_CMD_ARGS)
   found = Circulate(action, 1, &restofline);
   if(!found && restofline)
   {
-    ExecuteFunction(restofline,NULL,eventp,C_ROOT,*Module,EXPAND_COMMAND,NULL);
+    ExecuteFunction(
+      restofline, NULL, eventp, C_ROOT, *Module, 0, NULL);
   }
 }
 
@@ -473,7 +474,7 @@ void CurrentFunc(F_CMD_ARGS)
   if(found && restofline)
   {
     ExecuteFunction(
-      restofline,found,eventp,C_WINDOW,*Module,EXPAND_COMMAND,NULL);
+      restofline, found, eventp, C_WINDOW, *Module, 0, NULL);
   }
 }
 
@@ -511,7 +512,7 @@ void AllFunc(F_CMD_ARGS)
   for (i = 0; i < num; i++)
     {
        ExecuteFunction(
-	 restofline,g[i],eventp,C_WINDOW,*Module,EXPAND_COMMAND,NULL);
+	 restofline, g[i], eventp, C_WINDOW, *Module, 0, NULL);
     }
 
   free (g);
@@ -680,7 +681,8 @@ void DirectionFunc(F_CMD_ARGS)
   if (best_window)
   {
     ExecuteFunction(
-      restofline, best_window, eventp, C_WINDOW, *Module, EXPAND_COMMAND, NULL);
+      restofline, best_window, eventp, C_WINDOW, *Module, 0,
+      NULL);
   }
 
   FreeConditionMask(&mask);
@@ -704,7 +706,7 @@ void PickFunc(F_CMD_ARGS)
   if (MatchesConditionMask(tmp_win, &mask) && restofline)
   {
     ExecuteFunction(
-      restofline,tmp_win,eventp,C_WINDOW,*Module,EXPAND_COMMAND,NULL);
+      restofline, tmp_win, eventp, C_WINDOW, *Module, 0, NULL);
   }
 }
 
@@ -752,7 +754,8 @@ void WindowIdFunc(F_CMD_ARGS)
     if (t->w == win) {
       /* do it if no conditions or the conditions match */
       if (!use_condition || MatchesConditionMask(t, &mask))
-        ExecuteFunction(action,t,eventp,C_WINDOW,*Module,EXPAND_COMMAND,NULL);
+        ExecuteFunction(
+	  action, t, eventp, C_WINDOW, *Module, 0, NULL);
       break;
   }
 

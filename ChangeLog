@@ -1,3 +1,76 @@
+2000-09-05  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* fvwm/fvwm2.1 (Example):
+	hopefully clarified problems with xview a bit
+
+	* fvwm/focus.c (FocusOn):
+	* fvwm/virtual.c (MapDesk):
+	* fvwm/events.c (HandleMapRequestKeepRaised):
+	(HandleMapNotify):
+	(HandleButtonPress):
+	* fvwm/borders.c (DrawDecorations):
+	tried to fix handling of windows with "Input hint = false"
+
+	* fvwm/functions.c (ExecuteFunction):
+	removed redundant code
+
+	* fvwm/windowlist.c (do_windowList):
+	* fvwm/conditional.c:
+	* fvwm/gnome.c (GNOME_HandlePropRequest):
+	* fvwm/functions.c (ExecuteFunction):
+	(execute_complex_function):
+	* fvwm/module_interface.c (ExecuteModuleCommand):
+	* fvwm/read.c (run_command_stream):
+	* fvwm/fvwm.c (main):
+	(StartupStuff):
+	(SetRCDefaults):
+	(Done):
+	(StartupStuff):
+	* fvwm/events.c (HandleKeyPress):
+	(HandlePropertyNotify):
+	(HandleButtonPress):
+	(HandleButtonRelease):
+	* fvwm/builtins.c (AddToDecor):
+	(DestroyDecor):
+	(strokeFunc):
+	* fvwm/menus.c (do_menu):
+	(pop_menu_up):
+	(pop_menu_down):
+	Replaced expand_cmd parameter of the ExecuteFunction() with exec_flags
+	and added a flag to indicate that the function has to wait for a button
+	release before proceeding. This is supposed to speed up startup and
+	script execution over slow network connections dramatically.
+
+	* fvwm/functions.c (ExecuteFunctionSaveTmpWin):
+	(ExecuteFunction):
+	* fvwm/repeat.c (repeat_function):
+	* fvwm/module_interface.c (executeModuleDesperate):
+	(executeModule):
+	(executeModuleSync):
+	* fvwm/builtins.c (ButtonStyle):
+	(AddButtonStyle):
+	(SetGlobalOptions):
+	(setShadeAnim):
+	* fvwm/move_resize.c (handle_stick):
+	(SetXORPixmap):
+	(stick_function):
+	* fvwm/menus.c (popup_func):
+	(staysup_func):
+	(OldMenuStyle):
+	(SetMenuStyle):
+	(menu_func):
+	use the F_PASS_ARGS/F_EXEC_ARGS/F_PASS_EXEC_ARGS macros
+
+	* fvwm/builtins.c (setModuleTimeout):
+	removed empty declarations
+
+	* fvwm/fvwm.h (F_EXEC_ARGS):
+	(F_PASS_EXEC_ARGS):
+	new macros
+
+	* fvwm/misc.h (F_CMD_ARGS):
+	removed duplicate macro (already in fvwm.h)
+
 2000-09-04  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* configure.in: changed version to 2.3.22

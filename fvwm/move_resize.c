@@ -1740,7 +1740,8 @@ void SetXORPixmap(F_CMD_ARGS)
   if(PixmapName == NULL)
   {
     /* return to default value. */
-    SetXOR(eventp, w, tmp_win, context, "0", Module);
+    action = "0";
+    SetXOR(F_PASS_ARGS);
     return;
   }
   /* get the picture in the root visual, colorlimit is ignored because the
@@ -2980,7 +2981,8 @@ void handle_stick(F_CMD_ARGS, int toggle)
     SET_STICKY(tmp_win, 1);
     if (!IsRectangleOnThisPage(&tmp_win->frame_g, Scr.CurrentDesk))
     {
-      move_window_doit(eventp, w, tmp_win, context, "", Module, FALSE, TRUE);
+      action = "";
+      move_window_doit(F_PASS_ARGS, FALSE, TRUE);
       /* move_window_doit resets the STICKY flag, so we must set it after the
        * call! */
       SET_STICKY(tmp_win, 1);
@@ -3000,5 +3002,5 @@ void stick_function(F_CMD_ARGS)
 
   toggle = ParseToggleArgument(action, &action, -1, 0);
 
-  handle_stick(eventp, w, tmp_win, context, action, Module, toggle);
+  handle_stick(F_PASS_ARGS, toggle);
 }

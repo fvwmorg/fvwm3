@@ -32,17 +32,7 @@
 #endif
 #endif
 
-/* Start of function prototype area.
-   I wonder if there is any sequence to this stuff.
-
-   Fvwm trivia: There were 97 commands in the fvwm command table
-   when the F_CMD_ARGS macro was written.
-   dje 12/19/98.
-   */
-
-/* Macro for args passed to fvwm commands... */
-#define F_CMD_ARGS XEvent *eventp, Window w, FvwmWindow *tmp_win,\
-unsigned long context,char *action, int *Module
+/* Start of function prototype area. */
 
 void ReapChildren(void);
 

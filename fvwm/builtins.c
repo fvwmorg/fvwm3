@@ -892,15 +892,6 @@ void setModuleTimeout(F_CMD_ARGS)
 {
   int timeout;
 
-  /*
-   * Remove compiler warnings about unused parameters
-   */
-  (void)eventp;
-  (void)w;
-  (void)tmp_win;
-  (void)context;
-  (void)Module;
-
   moduleTimeout = DEFAULT_MODULE_TIMEOUT;
   if (
        (GetIntegerArguments(action, NULL, &timeout, 1) == 1) &&
@@ -1785,7 +1776,7 @@ void AddToDecor(FvwmDecor *decor, char *s)
   if (!*s)
     return;
   Scr.cur_decor = decor;
-  ExecuteFunction(s,NULL,&Event,C_ROOT,-1,EXPAND_COMMAND,NULL);
+  ExecuteFunction(s, NULL, &Event, C_ROOT, -1, 0, NULL);
   Scr.cur_decor = NULL;
 }
 
@@ -1842,43 +1833,47 @@ void ChangeDecor(F_CMD_ARGS)
  ****************************************************************************/
 void DestroyDecor(F_CMD_ARGS)
 {
-    char *item;
-    FvwmDecor *decor = Scr.DefaultDecor.next;
-    FvwmDecor *prev = &Scr.DefaultDecor, *found = NULL;
+  char *item;
+  FvwmDecor *decor = Scr.DefaultDecor.next;
+  FvwmDecor *prev = &Scr.DefaultDecor, *found = NULL;
 
-    action = GetNextToken(action, &item);
-    if (!action || !item)
+  action = GetNextToken(action, &item);
+  if (!action || !item)
+  {
+    if (item)
+      free(item);
+    return;
+  }
+
+  /* search for tag */
+  for (; decor; decor = decor->next)
+  {
+    if (decor->tag)
+      if (StrEquals(item, decor->tag))
       {
-	if (item)
-	  free(item);
-	return;
+	found = decor;
+	break;
       }
+    prev = decor;
+  }
+  free(item);
 
-    /* search for tag */
-    for (; decor; decor = decor->next) {
-	if (decor->tag)
-	    if (StrEquals(item, decor->tag)) {
-		found = decor;
-		break;
-	    }
-	prev = decor;
+  if (found && (found != &Scr.DefaultDecor))
+  {
+    FvwmWindow *fw = Scr.FvwmRoot.next;
+    while(fw)
+    {
+      if (fw->decor == found)
+      {
+	ExecuteFunction(
+	  "ChangeDecor Default", fw, eventp, C_WINDOW, *Module, 0, NULL);
+      }
+      fw = fw->next;
     }
-    free(item);
-
-    if (found && (found != &Scr.DefaultDecor)) {
-	FvwmWindow *fw = Scr.FvwmRoot.next;
-	while(fw)
-	{
-	    if (fw->decor == found)
-	      ExecuteFunction(
-		"ChangeDecor Default", fw, eventp, C_WINDOW, *Module,
-		EXPAND_COMMAND, NULL);
-	    fw = fw->next;
-	}
-	prev->next = found->next;
-	DestroyFvwmDecor(found);
-	free(found);
-    }
+    prev->next = found->next;
+    DestroyFvwmDecor(found);
+    free(found);
+  }
 }
 
 /***********************************************************************
@@ -2293,7 +2288,7 @@ static void do_button_style(F_CMD_ARGS, Bool do_add)
 
 void ButtonStyle(F_CMD_ARGS)
 {
-  do_button_style(eventp, w, tmp_win, context, action, Module, False);
+  do_button_style(F_PASS_ARGS, False);
 }
 
 #ifdef MULTISTYLE
@@ -2304,7 +2299,7 @@ void ButtonStyle(F_CMD_ARGS)
  ****************************************************************************/
 void AddButtonStyle(F_CMD_ARGS)
 {
-  do_button_style(eventp, w, tmp_win, context, action, Module, True);
+  do_button_style(F_PASS_ARGS, True);
 }
 #endif /* MULTISTYLE */
 
@@ -2487,16 +2482,21 @@ void SetGlobalOptions(F_CMD_ARGS)
     if (replace)
     {
       char *cmd;
+      char *tmp;
+
+      tmp = action;
+      action = replace;
       if (!is_bugopt)
       {
-        ProcessNewStyle(eventp, w, tmp_win, context, replace, Module);
+        ProcessNewStyle(F_PASS_ARGS);
         cmd = "Style";
       }
       else
       {
-        SetBugOptions(eventp, w, tmp_win, context, replace, Module);
+        SetBugOptions(F_PASS_ARGS);
         cmd = "BugOpts";
       }
+      action = tmp;
       fvwm_msg(
         ERR, "SetGlobalOptions",
         "Please replace 'GlobalOpts %s' with '%s %s'.", opt, cmd, replace);
@@ -2748,7 +2748,8 @@ void setShadeAnim(F_CMD_ARGS)
     "Please use 'Style * WindowShadeSteps %s' instead.", action);
   buf = safemalloc(strlen(action) + 32);
   sprintf(buf, "* WindowShadeSteps %s", action);
-  ProcessNewStyle(eventp, w, tmp_win, context, buf, Module);
+  action = buf;
+  ProcessNewStyle(F_PASS_ARGS);
   free(buf);
   return;
 }
@@ -2886,7 +2887,7 @@ void strokeFunc(F_CMD_ARGS)
 	    if (!x || !y)
 	    {
 	      /* unlikely */
-	      fvwm_msg(WARN, 
+	      fvwm_msg(WARN,
 		       "strokeFunc","unable to allocate %d bytes ... aborted.",
 		       coords_size * sizeof(int));
 	      abort = 1;
@@ -2984,8 +2985,7 @@ void strokeFunc(F_CMD_ARGS)
       usleep(200000);
       UngrabEm(GRAB_BUSY);
     }
-    ExecuteFunction(
-      stroke_action, tmp_win, eventp, context, -1, EXPAND_COMMAND, NULL);
+    ExecuteFunction(stroke_action, tmp_win, eventp, context, -1, 0, NULL);
   }
 
 }

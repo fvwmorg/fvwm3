@@ -978,13 +978,13 @@ void GNOME_HandlePropRequest(unsigned int propm,
     {
       /* shade up */
       ExecuteFunction(
-	"WindowShade 1", fwin, ev, C_WINDOW, -1, EXPAND_COMMAND, NULL);
+	"WindowShade 1", fwin, ev, C_WINDOW, -1, 0, NULL);
     }
     else
     {
       /* shade down */
       ExecuteFunction(
-	"WindowShade 0", fwin, ev, C_WINDOW, -1, EXPAND_COMMAND, NULL);
+	"WindowShade 0", fwin, ev, C_WINDOW, -1, 0, NULL);
 
     }
   }

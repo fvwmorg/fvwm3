@@ -1,7 +1,13 @@
 Note, the changes for the last STABLE release start with release
 _+_A HREF="#2.2.4"_-_2.2.4_+_/A_-_.
 
-Changes in beta release 2.3.21 (not released yet)
+Changes in beta release 2.3.22 (not released yet)
+
+* Sped up command execution and startup.
+
+* Improved handling of windows that set the "input focus" hint to "false".
+
+Changes in beta release 2.3.21 (September 2000)
 
 * Module configuration syntax now accepts a delimeter, colon and optional
   spaces; the old syntax is supported as usual:

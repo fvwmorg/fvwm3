@@ -67,12 +67,9 @@ typedef enum
   CF_TIMEOUT =        '-'
 } cfunc_action_type;
 
-/* for fExpand parameter of ExecuteFunction */
-typedef enum
-{
-  DONT_EXPAND_COMMAND,
-  EXPAND_COMMAND
-} expand_command_type;
+/* for exec_flags parameter of ExecuteFunction */
+#define FUNC_DONT_EXPAND_COMMAND 0x01
+#define FUNC_DO_SYNC_BUTTONS     0x02
 
 void find_func_type(char *action, short *func_type, unsigned char *flags);
 FvwmFunction *FindFunction(const char *function_name);
@@ -82,10 +79,10 @@ extern int DeferExecution(XEvent *, Window *,FvwmWindow **, unsigned long *,
 			  cursor_type, int);
 void ExecuteFunction(
   char *Action, FvwmWindow *tmp_win, XEvent *eventp, unsigned long context,
-  int Module, expand_command_type expand_cmd, char *args[]);
+  int Module, unsigned int exec_flags, char *args[]);
 void ExecuteFunctionSaveTmpWin(
   char *Action, FvwmWindow *tmp_win, XEvent *eventp, unsigned long context,
-  int Module, expand_command_type expand_cmd, char *args[]);
+  int Module, unsigned int exec_flags, char *args[]);
 void AddToFunction(FvwmFunction *func, char *action);
 
 enum

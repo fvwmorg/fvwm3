@@ -831,7 +831,7 @@ void do_menu(MenuParameters *pmp, MenuReturn *pmret)
 	indirect_depth++;
 	ExecuteFunctionSaveTmpWin(
 	  *(pmp->ret_paction), pmp->button_window,
-	  &Event, *(pmp->pcontext), -1, EXPAND_COMMAND, NULL);
+	  &Event, *(pmp->pcontext), -1, 0, NULL);
 	indirect_depth--;
 	free(*(pmp->ret_paction));
 	*(pmp->ret_paction) = NULL;
@@ -1849,7 +1849,7 @@ static void MenuInteraction(
 	  /* Execute the action */
 	  ExecuteFunctionSaveTmpWin(
 	    action, *(pmp->pTmp_win), &Event, *(pmp->pcontext) , -2,
-	    DONT_EXPAND_COMMAND, NULL);
+	    FUNC_DONT_EXPAND_COMMAND, NULL);
 	  if (is_complex_function)
 	    free(action);
 	  /* Busy cursor stuff	*/
@@ -2276,7 +2276,7 @@ static int pop_menu_up(
       GrabEm(CRS_WAIT, GRAB_BUSYMENU);
     /* Execute the action */
     ExecuteFunctionSaveTmpWin(MR_POPUP_ACTION(mr), *pfw, &Event,
-			      *pcontext, -2, DONT_EXPAND_COMMAND, NULL);
+			      *pcontext, -2, FUNC_DONT_EXPAND_COMMAND, NULL);
     if (GrabPointerState & GRAB_BUSYMENU)
     {
       GrabPointerState &= ~GRAB_BUSYMENU;
@@ -2822,7 +2822,7 @@ static void pop_menu_down(MenuRoot **pmr, MenuParameters *pmp)
     /* Execute the action */
     ExecuteFunctionSaveTmpWin(
       MR_POPDOWN_ACTION(*pmr), (*pmp->pTmp_win), &Event, *(pmp->pcontext), -2,
-      DONT_EXPAND_COMMAND, NULL);
+      FUNC_DONT_EXPAND_COMMAND, NULL);
     /* restore the stuff we saved */
     last_saved_pos_hints = pos_hints;
     lastTimestamp = t;
@@ -5058,20 +5058,20 @@ static void menu_func(F_CMD_ARGS, Bool fStaysUp)
   do_menu(&mp, &mret);
   if (mret.rc == MENU_DOUBLE_CLICKED && action)
   {
-    ExecuteFunction(action,tmp_win,eventp,context,*Module,EXPAND_COMMAND, NULL);
+    ExecuteFunction(F_PASS_EXEC_ARGS, 0, NULL);
   }
 }
 
 /* the function for the "Popup" command */
 void popup_func(F_CMD_ARGS)
 {
-  menu_func(eventp, w, tmp_win, context, action, Module, False);
+  menu_func(F_PASS_ARGS, False);
 }
 
 /* the function for the "Menu" command */
 void staysup_func(F_CMD_ARGS)
 {
-  menu_func(eventp, w, tmp_win, context, action, Module, True);
+  menu_func(F_PASS_ARGS, True);
 }
 
 /*
@@ -6163,11 +6163,13 @@ static void OldMenuStyle(F_CMD_ARGS)
   {
     buffer = (char *)safemalloc(strlen(action) + 100);
     sprintf(buffer,
-	    "* \"%s\", Foreground \"%s\", Background \"%s\", Greyed \"%s\", Font \"%s\", \"%s\"",
+	    "* \"%s\", Foreground \"%s\", Background \"%s\", "
+	    "Greyed \"%s\", Font \"%s\", \"%s\"",
 	    style, fore, back, stipple, font,
 	    (animated && StrEquals(animated, "anim")) ?
 	    "Animation" : "AnimationOff");
-    NewMenuStyle(eventp, w, tmp_win, context, buffer, Module);
+    action = buffer;
+    NewMenuStyle(F_PASS_ARGS);
     free(buffer);
   }
 
@@ -6191,9 +6193,9 @@ void SetMenuStyle(F_CMD_ARGS)
 
   GetNextSimpleOption(SkipNTokens(action, 1), &option);
   if (option == NULL || GetMenuStyleIndex(option) != -1)
-    NewMenuStyle(eventp, w, tmp_win, context, action, Module);
+    NewMenuStyle(F_PASS_ARGS);
   else
-    OldMenuStyle(eventp, w, tmp_win, context, action, Module);
+    OldMenuStyle(F_PASS_ARGS);
   if (option)
     free(option);
   return;

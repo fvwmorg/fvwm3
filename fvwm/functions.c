@@ -832,9 +832,7 @@ static cfunc_action_type CheckActionType(
  *	context - the context in which the button was pressed
  *
  ***********************************************************************/
-void ExecuteFunction(
-  char *Action, FvwmWindow *tmp_win, XEvent *eventp, unsigned long context,
-  int Module, expand_command_type expand_cmd, char *args[])
+void ExecuteFunction(F_EXEC_ARGS, unsigned int exec_flags, char *args[])
 {
   static unsigned int func_depth = 0;
   Window w;
@@ -849,12 +847,12 @@ void ExecuteFunction(
   Bool set_silent;
   Bool must_free_string = False;
 
-  if (!Action || Action[0] == 0 || Action[1] == 0)
+  if (!action || action[0] == 0 || action[1] == 0)
   {
     /* impossibly short command */
     return;                             /* done */
   }
-  if (Action[0] == '#')
+  if (action[0] == '#')
   {
     /* a comment */
     return;                             /* done */
@@ -862,7 +860,7 @@ void ExecuteFunction(
   /* Note: the module config command, "*" can not be handled by the
      regular command table because there is no required white space after
      the asterisk. */
-  if (Action[0] == '*')
+  if (action[0] == '*')
   {
 #ifdef USEDECOR
     if (Scr.cur_decor && Scr.cur_decor != &Scr.DefaultDecor)
@@ -870,11 +868,11 @@ void ExecuteFunction(
       fvwm_msg(
 	WARN, "ExecuteFunction",
 	"Command can not be added to a decor; executing command now: '%s'",
-	Action);
+	action);
     }
 #endif
     /* a module config command */
-    ModuleConfig(Action);  /* process the command */
+    ModuleConfig(action);  /* process the command */
     return;                             /* done */
   }
   func_depth++;
@@ -914,13 +912,13 @@ void ExecuteFunction(
   }
 
   set_silent = False;
-  if (Action[0] == '-')
+  if (action[0] == '-')
   {
-    expand_cmd = DONT_EXPAND_COMMAND;
-    Action++;
+    exec_flags |= FUNC_DONT_EXPAND_COMMAND;
+    action++;
   }
 
-  taction = Action;
+  taction = action;
   /* parse prefixes */
   trash = PeekToken(taction, &trash2);
   while (trash)
@@ -971,26 +969,23 @@ void ExecuteFunction(
     fvwm_msg(
       ERR, "ExecuteFunction",
       "Command can not be added to a decor; executing command now: '%s'",
-      Action);
+      action);
   }
 #endif
-  if (expand_cmd == EXPAND_COMMAND)
+  if (!(exec_flags & FUNC_DONT_EXPAND_COMMAND))
   {
     expaction = expand(taction, arguments, tmp_win,
 		       (bif) ? !!(bif->flags & FUNC_ADD_TO) : False);
+    if (func_depth <= 1)
+      must_free_string = set_repeat_data(expaction, REPEAT_COMMAND, bif);
+    else
+      must_free_string = True;
   }
   else
   {
     expaction = taction;
   }
   j = 0;
-  if (expand_cmd == EXPAND_COMMAND)
-  {
-    if (func_depth <= 1)
-      must_free_string = set_repeat_data(expaction, REPEAT_COMMAND, bif);
-    else
-      must_free_string = True;
-  }
   if (bif && bif->func_type != F_FUNCTION)
   {
     char *runaction;
@@ -1029,7 +1024,7 @@ void ExecuteFunction(
 
   /* Only wait for an all-buttons-up condition after calls from
    * regular built-ins, not from complex-functions, menus or modules. */
-  if(Module == -1)
+  if (Module == -1 && (exec_flags & FUNC_DO_SYNC_BUTTONS))
     WaitForButtonsUp(True);
 
   if (set_silent)
@@ -1046,12 +1041,11 @@ void ExecuteFunction(
 
 
 void ExecuteFunctionSaveTmpWin(
-  char *Action, FvwmWindow *tmp_win, XEvent *eventp, unsigned long context,
-  int Module, expand_command_type expand_cmd, char *args[])
+  F_EXEC_ARGS, unsigned int exec_flags, char *args[])
 {
   FvwmWindow *s_Tmp_win = Tmp_win;
 
-  ExecuteFunction(Action, tmp_win, eventp, context, Module, expand_cmd, args);
+  ExecuteFunction(action, tmp_win, eventp, context, Module, exec_flags, args);
   Tmp_win = s_Tmp_win;
 }
 
@@ -1496,8 +1490,7 @@ static void execute_complex_function(F_CMD_ARGS, Bool *desperate)
 	w = tmp_win->frame;
       else
 	w = None;
-      ExecuteFunction(
-	fi->action,tmp_win,eventp,context,-2,EXPAND_COMMAND,arguments);
+      ExecuteFunction(fi->action, tmp_win, eventp, context, -1, 0, arguments);
       break;
     case CF_DOUBLE_CLICK:
       HaveDoubleClick = True;
@@ -1604,8 +1597,8 @@ static void execute_complex_function(F_CMD_ARGS, Bool *desperate)
   /* domivogt (11-Apr-2000): The pointer ***must not*** be ungrabbed here.  If
    * it is, any window that the mouse enters during the function will receive
    * MotionNotify events with a button held down!  The results are
-   * unpredictable and likely unpredictable.  E.g. rxvt interprets the
-   * ButtonMotion as user input to select text. */
+   * unpredictable.  E.g. rxvt interprets the ButtonMotion as user input to
+   * select text. */
   UngrabEm(GRAB_NORMAL);
 #endif
   while(fi != NULL)
@@ -1621,11 +1614,10 @@ static void execute_complex_function(F_CMD_ARGS, Bool *desperate)
       else
 	w = None;
       ExecuteFunction(
-	fi->action, tmp_win, ev, context, -2, EXPAND_COMMAND, arguments);
+	fi->action, tmp_win, ev, context, -1, 0, arguments);
     }
     fi = fi->next_item;
   }
-  WaitForButtonsUp(True);
   /* This is the right place to ungrab the pointer (see comment above). */
   UngrabEm(GRAB_NORMAL);
   for(i=0;i<11;i++)

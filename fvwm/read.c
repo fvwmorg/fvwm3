@@ -74,9 +74,10 @@ void run_command_stream( FILE* f, XEvent *eventp, FvwmWindow *tmp_win,
     while(isspace((unsigned char)*tline))
       tline++;
     if (debugging)
-      fvwm_msg(DBG,"ReadSubFunc","Module switch %d, about to exec: '%.*s'",Module,strlen(tline)-1,tline);
+      fvwm_msg(DBG,"ReadSubFunc","Module switch %d, about to exec: '%.*s'",
+	       Module,strlen(tline)-1,tline);
 
-    ExecuteFunction(tline,tmp_win,eventp,context,Module,EXPAND_COMMAND,NULL);
+    ExecuteFunction(tline, tmp_win, eventp, context, Module, 0, NULL);
     tline = fgets(line,(sizeof line)-1,f);
   }
 }
@@ -189,63 +190,63 @@ static void cursor_control(Bool grab)
 
 void ReadFile(F_CMD_ARGS)
 {
-    char* filename;
-    int read_quietly;
+  char* filename;
+  int read_quietly;
 
-    DoingCommandLine = False;
+  DoingCommandLine = False;
 
-    if (debugging)
-	fvwm_msg(DBG,"ReadFile","Module flag %d, about to attempt %s",
-                 *Module,action);
+  if (debugging)
+    fvwm_msg(DBG, "ReadFile", "Module flag %d, about to attempt %s",
+	     *Module, action);
 
-    if ( !parse_filename( "Read", action, &filename, &read_quietly ) )
-	return;
-    cursor_control(True);
-    if ( !run_command_file( filename, eventp, tmp_win, context, *Module ) &&
-	 !read_quietly )
-    {
-	fvwm_msg( ERR, "Read",
-		  "file '%s' not found in %s or "FVWM_DATADIR,
-		  filename, fvwm_userdir );
-    }
-    free( filename );
-    cursor_control(False);
+  if ( !parse_filename( "Read", action, &filename, &read_quietly ) )
+    return;
+  cursor_control(True);
+  if ( !run_command_file( filename, eventp, tmp_win, context, *Module ) &&
+       !read_quietly )
+  {
+    fvwm_msg( ERR, "Read",
+	      "file '%s' not found in %s or "FVWM_DATADIR,
+	      filename, fvwm_userdir );
+  }
+  free( filename );
+  cursor_control(False);
 }
 
 
 
 void PipeRead(F_CMD_ARGS)
 {
-    char* command;
-    int read_quietly;
-    FILE* f;
+  char* command;
+  int read_quietly;
+  FILE* f;
 
-    DoingCommandLine = False;
+  DoingCommandLine = False;
 
-    /* Save filename for passing as argument to modules */
-    if (fvwm_file != NULL)
-      free(fvwm_file);
-    fvwm_file = NULL;
+  /* Save filename for passing as argument to modules */
+  if (fvwm_file != NULL)
+    free(fvwm_file);
+  fvwm_file = NULL;
 
-    if (debugging)
-      fvwm_msg(DBG,"PipeRead","about to attempt '%s'", action);
+  if (debugging)
+    fvwm_msg(DBG,"PipeRead","about to attempt '%s'", action);
 
-    if (!parse_filename("PipeRead", action, &command, &read_quietly))
-      return;
-    cursor_control(True);
-    f = popen(command, "r");
+  if (!parse_filename("PipeRead", action, &command, &read_quietly))
+    return;
+  cursor_control(True);
+  f = popen(command, "r");
 
-    if (f == NULL)
-    {
-      if (!read_quietly)
-	fvwm_msg( ERR, "PipeRead", "command '%s' not run", command );
-      free(command);
-      cursor_control(False);
-      return;
-    }
+  if (f == NULL)
+  {
+    if (!read_quietly)
+      fvwm_msg( ERR, "PipeRead", "command '%s' not run", command );
     free(command);
-
-    run_command_stream(f, eventp, tmp_win, context, *Module);
-    pclose(f);
     cursor_control(False);
+    return;
+  }
+  free(command);
+
+  run_command_stream(f, eventp, tmp_win, context, *Module);
+  pclose(f);
+  cursor_control(False);
 }

@@ -59,10 +59,20 @@ static void DoSetFocus(Window w, FvwmWindow *Fw, Bool FocusByMouse, Bool NoWarp)
 
   if (Fw && HAS_NEVER_FOCUS(Fw))
   {
-    /* make sure the window is not hilighted */
-    DrawDecorations(Fw, DRAW_ALL, False, False, None);
+    if (WM_TAKES_FOCUS(Fw))
+    {
+      /* give it a chance to take the focus itself */
+      send_clientmessage(dpy, w, _XA_WM_TAKE_FOCUS, lastTimestamp);
+      XSync(dpy,0);
+    }
+    else
+    {
+      /* make sure the window is not hilighted */
+      DrawDecorations(Fw, DRAW_ALL, False, False, None);
+    }
     return;
   }
+
   if (Fw && !IS_LENIENT(Fw) &&
       Fw->wmhints && (Fw->wmhints->flags & InputHint) && !Fw->wmhints->input &&
       Scr.Focus && Scr.Focus->Desk == Scr.CurrentDesk)
@@ -247,7 +257,6 @@ static void DoSetFocus(Window w, FvwmWindow *Fw, Bool FocusByMouse, Bool NoWarp)
     Scr.Focus = NULL;
   }
 
-
   if ((Fw)&&(WM_TAKES_FOCUS(Fw)))
   {
     send_clientmessage(dpy, w, _XA_WM_TAKE_FOCUS, lastTimestamp);
@@ -291,8 +300,16 @@ void FocusOn(FvwmWindow *t, Bool FocusByMouse, char *action)
   int cx,cy;
   Bool NoWarp;
 
-  if(t == NULL || HAS_NEVER_FOCUS(t))
+  if (t == NULL || HAS_NEVER_FOCUS(t))
+  {
+    UngrabEm(GRAB_NORMAL);
+    if (t)
+    {
+      /* give the window a chance to take the focus itself */
+      DoSetFocus(t->w, t, FocusByMouse, 1);
+    }
     return;
+  }
 
   if (!(NoWarp = StrEquals(PeekToken(action, NULL), "NoWarp")))
   {

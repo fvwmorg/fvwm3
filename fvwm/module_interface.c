@@ -181,19 +181,19 @@ static int do_execute_module(F_CMD_ARGS, Bool desperate)
   arg1 = searchPath( ModulePath, cptr, EXECUTABLE_EXTENSION, X_OK );
 
   if(arg1 == NULL)
+  {
+    /* If this function is called in 'desparate' mode this means fvwm is
+     * trying a module name as a last resort.  In this case the error message
+     * is inappropriate because it was most likely a typo in a command, not
+     * a module name. */
+    if (!desperate)
     {
-      /* If this function is called in 'desparate' mode this means fvwm is
-       * trying a module name as a last resort.  In this case the error message
-       * is inappropriate because it was most likely a typo in a command, not
-       * a module name. */
-      if (!desperate)
-      {
-	fvwm_msg(ERR,"executeModule",
-		 "No such module '%s' in ModulePath '%s'",cptr,ModulePath);
-      }
-      free(cptr);
-      return -1;
+      fvwm_msg(ERR,"executeModule",
+	       "No such module '%s' in ModulePath '%s'",cptr,ModulePath);
     }
+    free(cptr);
+    return -1;
+  }
 
 #ifdef REMOVE_EXECUTABLE_EXTENSION
   {
@@ -208,33 +208,33 @@ static int do_execute_module(F_CMD_ARGS, Bool desperate)
   while((i<npipes) && (writePipes[i] >=0))
     i++;
   if(i>=npipes)
-    {
-      fvwm_msg(ERR,"executeModule","Too many Accessories!");
-      free(arg1);
-      free(cptr);
-      return -1;
-    }
+  {
+    fvwm_msg(ERR,"executeModule","Too many Accessories!");
+    free(arg1);
+    free(cptr);
+    return -1;
+  }
   ret_pipe = i;
 
   /* I want one-ended pipes, so I open two two-ended pipes,
    * and close one end of each. I need one ended pipes so that
    * I can detect when the module crashes/malfunctions */
   if(pipe(fvwm_to_app)!=0)
-    {
-      fvwm_msg(ERR,"executeModule","Failed to open pipe");
-      free(arg1);
-      free(cptr);
-      return -1;
-    }
+  {
+    fvwm_msg(ERR,"executeModule","Failed to open pipe");
+    free(arg1);
+    free(cptr);
+    return -1;
+  }
   if(pipe(app_to_fvwm)!=0)
-    {
-      fvwm_msg(ERR,"executeModule","Failed to open pipe2");
-      free(arg1);
-      free(cptr);
-      close(fvwm_to_app[0]);
-      close(fvwm_to_app[1]);
-      return -1;
-    }
+  {
+    fvwm_msg(ERR,"executeModule","Failed to open pipe2");
+    free(arg1);
+    free(cptr);
+    close(fvwm_to_app[0]);
+    close(fvwm_to_app[1]);
+    return -1;
+  }
 
   pipeName[i] = stripcpy(cptr);
   free(cptr);
@@ -253,19 +253,19 @@ static int do_execute_module(F_CMD_ARGS, Bool desperate)
   args[5]=arg6;
   nargs = 6;
   while((action != NULL)&&(nargs < 20)&&(args[nargs-1] != NULL))
-    {
-      args[nargs] = 0;
-      action = GetNextToken(action,&args[nargs]);
+  {
+    args[nargs] = 0;
+    action = GetNextToken(action,&args[nargs]);
 #ifndef WITHOUT_KILLMODULE_ALIAS_SUPPORT
-      if (pipeAlias[i] == NULL && args[nargs])
-      {
-        const char *ptr = skipModuleAliasToken(args[nargs]);
-        if (ptr && *ptr == '\0')
-          pipeAlias[i] = stripcpy(args[nargs]);
-      }
-#endif
-      nargs++;
+    if (pipeAlias[i] == NULL && args[nargs])
+    {
+      const char *ptr = skipModuleAliasToken(args[nargs]);
+      if (ptr && *ptr == '\0')
+	pipeAlias[i] = stripcpy(args[nargs]);
     }
+#endif
+    nargs++;
+  }
   if(args[nargs-1] == NULL)
     nargs--;
   args[nargs] = 0;
@@ -275,95 +275,95 @@ static int do_execute_module(F_CMD_ARGS, Bool desperate)
   /* Not everyone has vfork! */
   val = fork();
   if(val > 0)
-    {
-      /* This fork remains running fvwm */
-      /* close appropriate descriptors from each pipe so
-       * that fvwm will be able to tell when the app dies */
-      close(app_to_fvwm[1]);
-      close(fvwm_to_app[0]);
+  {
+    /* This fork remains running fvwm */
+    /* close appropriate descriptors from each pipe so
+     * that fvwm will be able to tell when the app dies */
+    close(app_to_fvwm[1]);
+    close(fvwm_to_app[0]);
 
-      /* add these pipes to fvwm's active pipe list */
-      writePipes[i] = fvwm_to_app[1];
-      readPipes[i] = app_to_fvwm[0];
-      pipeOn[i] = -1;
-      PipeMask[i] = MAX_MASK;
-      SyncMask[i] = 0;
-      NoGrabMask[i] = 0;
-      free(arg1);
-      pipeQueue[i] = NULL;
-      if (DoingCommandLine) {
-        /* add to the list of command line modules */
-        DBUG("executeModule", "starting commandline module\n");
-        FD_SET(i, &init_fdset);
-      }
-
-      /* make the PositiveWrite pipe non-blocking. Don't want to jam up
-	 fvwm because of an uncooperative module */
-      fcntl(writePipes[i], F_SETFL, O_NONBLOCK);
-      /* Mark the pipes close-on exec so other programs
-       * won`t inherit them */
-      if (fcntl(readPipes[i], F_SETFD, 1) == -1)
-	fvwm_msg(ERR,"executeModule","module close-on-exec failed");
-      if (fcntl(writePipes[i], F_SETFD, 1) == -1)
-	fvwm_msg(ERR,"executeModule","module close-on-exec failed");
-      for(i=6;i<nargs;i++)
-	{
-	  if(args[i] != 0)
-	    free(args[i]);
-	}
+    /* add these pipes to fvwm's active pipe list */
+    writePipes[i] = fvwm_to_app[1];
+    readPipes[i] = app_to_fvwm[0];
+    pipeOn[i] = -1;
+    PipeMask[i] = MAX_MASK;
+    SyncMask[i] = 0;
+    NoGrabMask[i] = 0;
+    free(arg1);
+    pipeQueue[i] = NULL;
+    if (DoingCommandLine) {
+      /* add to the list of command line modules */
+      DBUG("executeModule", "starting commandline module\n");
+      FD_SET(i, &init_fdset);
     }
+
+    /* make the PositiveWrite pipe non-blocking. Don't want to jam up
+       fvwm because of an uncooperative module */
+    fcntl(writePipes[i], F_SETFL, O_NONBLOCK);
+    /* Mark the pipes close-on exec so other programs
+     * won`t inherit them */
+    if (fcntl(readPipes[i], F_SETFD, 1) == -1)
+      fvwm_msg(ERR,"executeModule","module close-on-exec failed");
+    if (fcntl(writePipes[i], F_SETFD, 1) == -1)
+      fvwm_msg(ERR,"executeModule","module close-on-exec failed");
+    for(i=6;i<nargs;i++)
+    {
+      if(args[i] != 0)
+	free(args[i]);
+    }
+  }
   else if (val ==0)
-    {
-      /* this is  the child */
-      /* this fork execs the module */
+  {
+    /* this is  the child */
+    /* this fork execs the module */
 #ifdef FORK_CREATES_CHILD
-      close(fvwm_to_app[1]);
-      close(app_to_fvwm[0]);
+    close(fvwm_to_app[1]);
+    close(app_to_fvwm[0]);
 #endif
-      if (!Pdefault) {
-        char *visualid, *colormap;
+    if (!Pdefault) {
+      char *visualid, *colormap;
 
-        visualid = safemalloc(32);
-	sprintf(visualid, "FVWM_VISUALID=%lx", XVisualIDFromVisual(Pvisual));
-	putenv(visualid);
-	colormap = safemalloc(32);
-	sprintf(colormap, "FVWM_COLORMAP=%lx", Pcmap);
-	putenv(colormap);
-      }
-
-      /** Why is this execvp??  We've already searched the module path! **/
-      execvp(arg1,args);
-      fvwm_msg(ERR,"executeModule","Execution of module failed: %s",arg1);
-      perror("");
-      close(app_to_fvwm[1]);
-      close(fvwm_to_app[0]);
-#ifdef FORK_CREATES_CHILD
-      exit(1);
-#endif
+      visualid = safemalloc(32);
+      sprintf(visualid, "FVWM_VISUALID=%lx", XVisualIDFromVisual(Pvisual));
+      putenv(visualid);
+      colormap = safemalloc(32);
+      sprintf(colormap, "FVWM_COLORMAP=%lx", Pcmap);
+      putenv(colormap);
     }
+
+    /** Why is this execvp??  We've already searched the module path! **/
+    execvp(arg1,args);
+    fvwm_msg(ERR,"executeModule","Execution of module failed: %s",arg1);
+    perror("");
+    close(app_to_fvwm[1]);
+    close(fvwm_to_app[0]);
+#ifdef FORK_CREATES_CHILD
+    exit(1);
+#endif
+  }
   else
+  {
+    fvwm_msg(ERR,"executeModule","Fork failed");
+    free(arg1);
+    for(i=6;i<nargs;i++)
     {
-      fvwm_msg(ERR,"executeModule","Fork failed");
-      free(arg1);
-      for(i=6;i<nargs;i++)
-	{
-	  if(args[i] != 0)
-	    free(args[i]);
-	}
-      return -1;
+      if(args[i] != 0)
+	free(args[i]);
     }
+    return -1;
+  }
 
   return ret_pipe;
 }
 
 int executeModuleDesperate(F_CMD_ARGS)
 {
-  return do_execute_module(eventp, w, tmp_win, context, action, Module, True);
+  return do_execute_module(F_PASS_ARGS, True);
 }
 
 void executeModule(F_CMD_ARGS)
 {
-  do_execute_module(eventp, w, tmp_win, context, action, Module, False);
+  do_execute_module(F_PASS_ARGS, False);
   return;
 }
 
@@ -423,8 +423,7 @@ void executeModuleSync(F_CMD_ARGS)
     return;
   }
 
-  pipe_slot =
-    do_execute_module(eventp, w, tmp_win, context, action, Module, False);
+  pipe_slot = do_execute_module(F_PASS_ARGS, False);
   if (pipe_slot == -1)
   {
     /* executing the module failed, just return */
@@ -586,31 +585,31 @@ void ExecuteModuleCommand(Window w, int module, char *text)
   extern int Context;
   FvwmWindow *tmp_win;
 
-      if (XFindContext (dpy, w, FvwmContext, (caddr_t *) &tmp_win) == XCNOENT)
-	{
-	  tmp_win = NULL;
-	  w = None;
-	}
+  if (XFindContext (dpy, w, FvwmContext, (caddr_t *) &tmp_win) == XCNOENT)
+  {
+    tmp_win = NULL;
+    w = None;
+  }
 
-      /* Query the pointer, the pager-drag-out feature doesn't work properly.*/
-      /* This is OK now that the Pager uses "Move pointer" */
-      /* A real fix would be for the modules to pass the button press coords */
-      XQueryPointer(dpy, Scr.Root, &JunkRoot, &JunkChild, &JunkX,&JunkY,
-		    &Event.xbutton.x_root,&Event.xbutton.y_root,&JunkMask);
-      /* If a module does XUngrabPointer(), it can now get proper Popups */
-      if(StrEquals(text, "popup"))
-	Event.xbutton.type = ButtonPress;
-      else
-	Event.xbutton.type = ButtonRelease;
-      Event.xbutton.window = w;
-      Event.xbutton.button = 1;
-      Event.xbutton.x = 0;
-      Event.xbutton.y = 0;
-      Event.xbutton.subwindow = None;
-      Context = GetContext(tmp_win,&Event,&w);
-      ButtonWindow = tmp_win;
-      ExecuteFunction(text,tmp_win,&Event,Context,module,EXPAND_COMMAND,NULL);
-      ButtonWindow = NULL;
+  /* Query the pointer, the pager-drag-out feature doesn't work properly.*/
+  /* This is OK now that the Pager uses "Move pointer" */
+  /* A real fix would be for the modules to pass the button press coords */
+  XQueryPointer(dpy, Scr.Root, &JunkRoot, &JunkChild, &JunkX,&JunkY,
+		&Event.xbutton.x_root,&Event.xbutton.y_root,&JunkMask);
+  /* If a module does XUngrabPointer(), it can now get proper Popups */
+  if(StrEquals(text, "popup"))
+    Event.xbutton.type = ButtonPress;
+  else
+    Event.xbutton.type = ButtonRelease;
+  Event.xbutton.window = w;
+  Event.xbutton.button = 1;
+  Event.xbutton.x = 0;
+  Event.xbutton.y = 0;
+  Event.xbutton.subwindow = None;
+  Context = GetContext(tmp_win,&Event,&w);
+  ButtonWindow = tmp_win;
+  ExecuteFunction(text, tmp_win, &Event, Context, module, 0, NULL);
+  ButtonWindow = NULL;
 }
 
 

@@ -1052,17 +1052,15 @@ static void MapDesk(int desk, Bool grab)
   }
 
   /*  If a sticky window has focus, don't disturb it.  */
-  if (! StickyWin)
+  if (!StickyWin)
   {
     /*  Otherwise, handle remembering the last-focused clicky window.  */
-    if((FocusWin)&&(HAS_CLICK_FOCUS(FocusWin)))
+    if(FocusWin && HAS_CLICK_FOCUS(FocusWin))
     {
-#ifndef NO_REMEMBER_FOCUS
       SetFocus(FocusWin->w, FocusWin, True);
     }
-    else if ((FocusWin) && (!HAS_NEVER_FOCUS(FocusWin)))
+    else if (FocusWin && !HAS_NEVER_FOCUS(FocusWin))
     {
-#endif
       SetFocus(Scr.NoFocusWin, NULL, 1);
     }
   }

@@ -550,7 +550,8 @@ provides a window-style,
 .IR Lenience ", "
 which will allow fvwm to overlook this
 .SM ICCCM
-rule.
+rule.  Even with this window-style it is not guaranteed that the
+application will accept focus.
 
 The differences between
 .SM ICCCM
@@ -615,7 +616,12 @@ Please refer to the
 .IR OLDecor " and " Lenience
 options of the
 .B Style
-command for details.
+command for details.  Certain Open Look applications (Textedit is
+an example) still do not work well with this settings.  Try to use
+these instead:
+.EX
+Style Textedit OLDecor, NoLenience, NeverFocus
+.EE
 
 .SH M4 PREPROCESSING
 
@@ -3989,7 +3995,7 @@ context of the
 command if the recorded stroke sequence corresponds to a stroke binding.
 .I StrokeWidth
 takes an integer argument, which must be  >= 0 and <= 100 and which defines
-the width of the line for the 
+the width of the line for the
 .I DrawMotion option.
 
 .I NotStayPressed
@@ -4886,9 +4892,18 @@ makes fvwm attempt to recognize and respect the olwm and olvwm
 hints that many older XView and OLIT applications use.  Switch
 this option off with
 .IR NoOLDecor .
-If you have such applications, be sure to use the
+If you have such applications, be sure to try either the
+.I NeverFocus
+or the
 .I Lenience
-style too.
+style for these windows too.  Example:
+.EX
+Style Textedit NeverFocus
+.EE
+or
+.EX
+Style * Lenience
+.EE
 
 .I UseDecor
 accepts one argument: the name of a decor created with
