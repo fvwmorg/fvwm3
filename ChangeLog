@@ -1,3 +1,8 @@
+2003-12-16  olicha  <olivier.chapuis@free.fr>
+
+	* sample.fvwmrc/system.fvwm2rc-sample-95:
+	Added some Xft fonts
+
 2003-12-12  olicha  <olivier.chapuis@free.fr>
 
 	* fvwm/ewmh_events.c (ewmh_WMStateFullScreen):

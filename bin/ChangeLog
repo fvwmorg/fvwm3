@@ -1,3 +1,8 @@
+2003-12-16  olicha  <olivier.chapuis@free.fr>
+
+	* fvwm-menu-desktop.in:
+	Tried to found KDE3 icons and mini icons
+
 2003-11-29  Mikhael Goikhman  <migo@homemail.com>
 
 	* fvwm-menu-headlines.1:

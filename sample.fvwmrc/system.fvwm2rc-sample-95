@@ -179,11 +179,12 @@ CursorStyle MENU         left_ptr
 #------------------------------------------------------------------------------
 
 #WIN 1
-Style * Font		-*-times-medium-r-*-*-16-*-*-*-*-*-*-*
+Style * Font "xft:sans-serif:Medium;-*-times-medium-r-*-*-16-*-*-*-*-*-*-*"
 #FVWM 1
-#Style * Font		-*-times-bold-r-*-*-14-*-*-*-*-*-*-*
+#Style * Font "xft:sans-serif:Medium;-*-times-bold-r-*-*-14-*-*-*-*-*-*-*"
 
-Style * IconFont	fixed
+Style * IconFont \
+  "xft:monospace:pixelsize=12:Medium;-*-fixed-medium-r-*-*-12-*-*-*-*-*-*-*"
 
 #------------------------------------------------------------------------------
 # Set the default window colors.
@@ -221,12 +222,12 @@ TitleStyle	Inactive (solid grey51 -- Flat)
 TitleStyle	LeftJustified
 ButtonStyle	1	MiniIcon (-- flat)
 ButtonStyle	all	-- UseTitleStyle Flat
-AddButtonStyle	2	Pixmap mini.winXX-close.xpm
-AddButtonStyle	4	Pixmap mini.winXX-maximize.xpm
-AddButtonStyle	6	Pixmap mini.winXX-minimize.xpm
+AddButtonStyle	2	Pixmap mini.winXX-close.xpm -- left
+AddButtonStyle	4	Pixmap mini.winXX-maximize.xpm -- left
+AddButtonStyle	6	Pixmap mini.winXX-minimize.xpm -- right
 
 #FVWM 11
-#Style	"*"	FvwmBorder  # MWMBorder
+#Style	"*"	MWMBorder  # FVWMBorder
 #Style	"*"	MWMButtons
 #TitleStyle	Centered
 #ButtonStyle	all	-- UseTitleStyle
@@ -248,12 +249,12 @@ AddButtonStyle	6	Pixmap mini.winXX-minimize.xpm
 
 #WIN 4
 MenuStyle * win
-MenuStyle * font -*-times-medium-r-*-*-16-*-*-*-*-*-*-*
+MenuStyle * font "xft:sans-serif:Medium;-*-times-medium-r-*-*-16-*-*-*-*-*-*-*"
 MenuStyle * Foreground black, Background grey80
 MenuStyle * ActiveFore white, HilightBack Blue4
 #FVWM 5
 #MenuStyle * fvwm
-#MenuStyle * font -*-times-bold-r-*-*-14-*-*-*-*-*-*-*
+#MenuStyle * font "xft:sans-serif:Medium;-*-times-bold-r-*-*-14-*-*-*-*-*-*-*"
 #MenuStyle * Foreground black, Background grey80
 #MenuStyle * ActiveFore black, HilightBack grey85
 #MenuStyle * Hilight3DThick
@@ -264,9 +265,9 @@ MenuStyle * VerticalItemSpacing 2 4, VerticalTitleSpacing 2 4
 CopyMenuStyle * winops
 
 #WIN 1
-MenuStyle winops font -*-times-medium-r-*-*-14-*-*-*-*-*-*-*
+MenuStyle winops font "xft:sans-serif:Medium;-*-times-medium-r-*-*-14-*-*-*-*-*-*-*"
 #FVWM 2
-#MenuStyle winops font -*-times-bold-r-*-*-12-*-*-*-*-*-*-*
+#MenuStyle winops font "xft:sans-serif:Medium;-*-times-bold-r-*-*-12-*-*-*-*-*-*-*"
 #MenuStyle winops TitleWarpOff
 
 MenuStyle winops VerticalItemSpacing 1 2, VerticalTitleSpacing 1 2
@@ -2562,7 +2563,7 @@ Style BarButtons NoTitle, NoHandles, Sticky, WindowListSkip, \
 DestroyModuleConfig BarButtons: *
 *BarButtons: Fore Black
 *BarButtons: Back #c3c3c3
-*BarButtons: Font -adobe-helvetica-bold-r-*-*-10-*-*-*-*-*-*-*
+*BarButtons: Font "xft:sans-serif:Bold:pixelsize=10;-*-helvetica-bold-r-*-*-10-*-*-*-*-*-*-*"
 # Geometry - really likes to pick its own size, but giving a position is OK
 # Warning: I've added a size geometry to avoid pbs if the fvwm_icons are
 # not in the image path ! Remove the size in this geometry especially if
@@ -2618,7 +2619,6 @@ Style "MiniButtons" NoTitle, NoHandles, Sticky, WindowListSkip, \
 DestroyModuleConfig MiniButtons*
 *MiniButtons: Fore Black
 *MiniButtons: Back #c0c0c0
-*MiniButtons: Font -adobe-helvetica-bold-r-*-*-10-*-*-*-*-*-*-*
 *MiniButtons: Geometry -2+2
 *MiniButtons: Rows 1
 *MiniButtons: Padding 1 1
@@ -2642,7 +2642,6 @@ Style "DeskerPanelButtons" NoTitle, NoHandles, Sticky, WindowListSkip, \
 DestroyModuleConfig DeskerPanelButtons: *
 *DeskerPanelButtons: Fore Black
 *DeskerPanelButtons: Back grey57
-*DeskerPanelButtons: Font -adobe-helvetica-bold-r-*-*-10-*-*-*-*-*-*-*
 *DeskerPanelButtons: Geometry 12x79
 *DeskerPanelButtons: Rows 1
 *DeskerPanelButtons: Frame 1
@@ -2767,7 +2766,7 @@ DestroyModuleConfig FvwmIconBox: *
 *FvwmIconBox: IconHiFore  white
 *FvwmIconBox: Geometry +0-0
 *FvwmIconBox: MaxIconSize 48x48
-*FvwmIconBox: Font -adobe-helvetica-bold-r-*-*-12-*-*-*-*-*-*-*
+*FvwmIconBox: Font "xft:sans-serif:Bold:pixelsize=12;-*-helvetica-bold-r-*-*-12-*-*-*-*-*-*-*"
 *FvwmIconBox: SortIcons    IconName
 #*FvwmIconBox: SortIcons    ResClass
 *FvwmIconBox: Padding 10
@@ -2825,7 +2824,7 @@ DestroyModuleConfig FvwmIconMan: *
 #*FvwmIconMan: focusbutton up white SlateBlue
 #*FvwmIconMan: focusandselectbutton down white SlateBlue
 *FvwmIconMan: iconbutton down Black grey51
-*FvwmIconMan: font  -adobe-times-bold-r-*-*-12-*-*-*-*-*-*-*-
+*FvwmIconMan: font  "xft:sans-serif:Medium:pixelsize=12;-*-times-bold-r-*-*-12-*-*-*-*-*-*-*"
 *FvwmIconMan: followfocus true
 *FvwmIconMan: usewinlist true
 *FvwmIconMan: sort name
@@ -2838,8 +2837,8 @@ DestroyModuleConfig FvwmIconMan: *
 *FvwmIconMan: 1 show            resource=*macs
 *FvwmIconMan: 2 managergeometry 1x0+0-0
 *FvwmIconMan: 1 managergeometry 1x0+260-0
-*FvwmIconMan: 1 buttongeometry 200x20
-*FvwmIconMan: 2 buttongeometry 250x20
+*FvwmIconMan: 1 buttongeometry 200x22
+*FvwmIconMan: 2 buttongeometry 250x22
 # action
 *FvwmIconMan: action    Mouse    1 N sendcommand DeiconifyFocusAndRaise
 *FvwmIconMan: action    Mouse    2 N sendcommand Iconify
@@ -2863,7 +2862,7 @@ Style "FvwmIdent" Sticky, NoButton 2, NoButton 4, NoButton 6
 
 *FvwmIdent: Back Blue4
 *FvwmIdent: Fore Yellow
-*FvwmIdent: Font -adobe-times-medium-r-*-*-14-*-*-*-*-*-*-*
+*FvwmIdent: Font ""xft:sans-serif:Medium;-adobe-times-medium-r-*-*-14-*-*-*-*-*-*-*
 
 #------------------------------------------------------------------------------
 #------------------ FvwmPager:  Swallowed by ButtonBar
@@ -2871,14 +2870,16 @@ Style "FvwmIdent" Sticky, NoButton 2, NoButton 4, NoButton 6
 Style "FvwmPagerPager" NoTitle, NoHandles, Sticky, WindowListSkip, CirculateSkip
 
 DestroyModuleConfig FvwmPagerPager: *
+*FvwmPagerPager: UseSkipList
 *FvwmPagerPager: Back grey60
 *FvwmPagerPager: Fore black
-*FvwmPagerPager: Font -adobe-helvetica-bold-r-*-*-10-*-*-*-*-*-*-*
+*FvwmPagerPager: Font "xft:monospace:Bold:pixelsize=10;-adobe-helvetica-bold-r-*-*-10-*-*-*-*-*-*-*
 *FvwmPagerPager: Hilight white
 *FvwmPagerPager: MiniIcons
 *FvwmPagerPager: Balloons
 *FvwmPagerPager: BalloonFore black
 *FvwmPagerPager: BalloonBack bisque
+*FvwmPagerPager: BalloonFont "xft:monospace:Medium:pixelsize=10;-*-fixed-medium-r-*-*-10-*-*-*-*-*-*-*"
 *FvwmPagerPager: Geometry 319x69+5000+5000
 #WIN 1
 *FvwmPagerPager: WindowColors white grey51 white Blue4
@@ -2888,7 +2889,7 @@ DestroyModuleConfig FvwmPagerPager: *
 *FvwmPagerPager: Label 1 Development
 *FvwmPagerPager: Label 2 Internet
 *FvwmPagerPager: Label 3 Misc
-*FvwmPagerPager: SmallFont 5x8
+*FvwmPagerPager: SmallFont "xft:sans-serif:Medium:pixelsize=8;-*-fixed-medium-r-*-*-8-*-*-*-*-*-*-*"
 
 #------------------------------------------------------------------------------
 #------------------ FvwmPager: FvwmDesker, the panel of StartPagerButtons
@@ -2896,15 +2897,17 @@ DestroyModuleConfig FvwmPagerPager: *
 Style "FvwmDesker" NoTitle, NoHandles, Sticky, WindowListSkip, CirculateSkip
 
 DestroyModuleConfig FvwmDesker: *
+*FvwmDesker: UseSkipList
 *FvwmDesker: Back grey60
 *FvwmDesker: Fore black
-*FvwmDesker: Font -adobe-helvetica-bold-r-*-*-10-*-*-*-*-*-*-*
+*FvwmDesker: Font "xft:monospace:Bold:pixelsize=10;-*-helvetica-bold-r-*-*-10-*-*-*-*-*-*-*"
 *FvwmDesker: Hilight white
 *FvwmDesker: Geometry 319x69+5000+5000
 *FvwmDesker: MiniIcons
 *FvwmDesker: Balloons
 *FvwmDesker: BalloonFore black
 *FvwmDesker: BalloonBack bisque
+*FvwmDesker: BalloonFont "xft:monospace:Medium:pixelsize=10;-*-fixed-medium-r-*-*-10-*-*-*-*-*-*-*"
 #WIN 1
 *FvwmDesker: WindowColors white grey51 white Blue4
 #FVWM 1
@@ -2912,13 +2915,13 @@ DestroyModuleConfig FvwmDesker: *
 *FvwmDesker: Label 1 Development
 *FvwmDesker: Label 2 Internet
 *FvwmDesker: Label 3 Misc
-*FvwmDesker: SmallFont 5x8
+*FvwmDesker: SmallFont "xft:sans-serif:Medium:pixelsize=8;-*-fixed-medium-r-*-*-8-*-*-*-*-*-*-*"
 
 #------------------------------------------------------------------------------
 #------------------ FvwmScript
 #------------------------------------------------------------------------------
 
-*FvwmScript: DefaultFont -adobe-helvetica-bold-r-*-*-12-*-*-*-*-*-*-*
+*FvwmScript: DefaultFont "xft:sans-serif:Medium:pixelsize=12;-adobe-helvetica-bold-r-*-*-12-*-*-*-*-*-*-*"
 *FvwmScript: DefaultFore black
 *FvwmScript: DefaultBack grey85
 *FvwmScript: DefaultHilight grey100
@@ -2937,9 +2940,9 @@ Style "FvwmTaskBar" NoTitle, NoHandles, Sticky, WindowListSkip, \
 *FvwmTaskBar: Back #c0c0c0
 *FvwmTaskBar: IconFore Black
 *FvwmTaskBar: IconBack grey51
-*FvwmTaskBar: Font -adobe-times-medium-r-*-*-14-*-*-*-*-*-*-*
-*FvwmTaskBar: SelFont -adobe-times-bold-r-*-*-14-*-*-*-*-*-*-*
-*FvwmTaskBar: StatusFont fixed
+*FvwmTaskBar: Font "xft:sans-serif:Medium:pixelsize=12;-adobe-times-medium-r-*-*-14-*-*-*-*-*-*-*"
+*FvwmTaskBar: SelFont "xft:sans-serif:Bold:pixelsize=12;-adobe-times-bold-r-*-*-14-*-*-*-*-*-*-*"
+*FvwmTaskBar: StatusFont "xft:sans-serif:Medium:pixelsize=12;*-fixed-medium-r-*-*-12-*-*-*-*-*-*-*"
 *FvwmTaskBar: Action Click1 DeiconifyFocusAndRaise
 *FvwmTaskBar: Action Click2 Iconify
 *FvwmTaskBar: Action Click3 Menu Window-Ops3 c+0 -101m
@@ -3012,7 +3015,7 @@ DestroyModuleConfig FvwmWinList: *
 *FvwmWinList: FocusFore white
 *FvwmWinList: IconBack grey51
 *FvwmWinList: IconFore Black
-*FvwmWinList: Font -adobe-helvetica-bold-r-*-*-12-*-*-*-*-*-*-*
+*FvwmWinList: Font "xft:sans-serif:Medium:pixelsize=12;-adobe-helvetica-bold-r-*-*-12-*-*-*-*-*-*-*"
 *FvwmWinList: Action Click1 DeiconifyFocusAndRaise
 *FvwmWinList: Action Click2 Iconify
 *FvwmWinList: Action Click3 Menu Window-Ops3 c+0 -101m

@@ -34,10 +34,12 @@ my $GNOME_PREFIX = '/usr';		# gnome install-dir
 # Default is "gnome" since fvwm is gnome compliant and not kde compliant.
 my $APPS_DIR = "$GNOME_PREFIX/share/gnome/apps";
 my $GNOME_APPS = $APPS_DIR;
-my $KDE_PREFIX = $ENV{KDEDIR};
+my $KDE_PREFIX = $ENV{KDEDIR} || '/usr';
 my $KDE_APPS = "$KDE_PREFIX/share/applnk";
 my $KDE_MINI_ICONS = "$KDE_PREFIX/share/icons/mini/";
+my $KDE3_MINI_ICONS = "$KDE_PREFIX/share/icons/hicolor/16x16/apps/";
 my $KDE_ICONS = "$KDE_PREFIX/share/icons/";
+my $KDE3_ICONS = "$KDE_PREFIX/share/icons/hicolor/48x48/apps/";
 my $OPT_INSTALL_PREFIX = '';
 
 # Default for the mini-icons is mini/ (relatively to the ImagePath)
@@ -234,7 +236,9 @@ if ( $OPT_INSTALL_PREFIX ne '' ) {
 	$APPS_DIR = $GNOME_APPS = "$OPT_INSTALL_PREFIX/share/gnome/apps";
 	$KDE_APPS = "$OPT_INSTALL_PREFIX/share/applnk";
 	$KDE_MINI_ICONS = "$OPT_INSTALL_PREFIX/share/icons/mini";
+	$KDE3_MINI_ICONS = "$OPT_INSTALL_PREFIX/share/icons/hicolor/16x16/apps/";
 	$KDE_ICONS = "$OPT_INSTALL_PREFIX/share/icons";
+	$KDE3_ICONS = "$OPT_INSTALL_PREFIX/share/icons/hicolor/48x48/apps/";
 	#$GNOME_ICONS = "$OPT_INSTALL_PREFIX/share/pixmaps";
 }
 
@@ -259,6 +263,11 @@ if ( $MENU_NAME eq 'gnome-user' ) {
 if ( $MENU_NAME eq 'gnome-redhat' ) {
 	$APPS_DIR   = "$ENV{HOME}/.gnome/apps-redhat";
 	$MENU_TITLE = 'Gnome RedHat Menu';
+}
+
+if (! -d $KDE_APPS)
+{
+	$KDE_PREFIX = '';
 }
 
 if ( $DESKTOP eq 'Kde' && $KDE_PREFIX eq '' && $DESC_DIR eq '') {
@@ -967,9 +976,13 @@ sub get_info {
 		#sometimes kde workers forget the icons and the mini-icons:
 		if ( $mini_icon eq '' && $APPS_DIR eq  $KDE_APPS) {
 			$mini_icon = "$exec_exec.xpm"
-				if ( -f "$KDE_MINI_ICONS$exec_exec.xpm" );
+				if ( -f "$KDE_MINI_ICONS$exec_exec.xpm");
+			$mini_icon = "$exec_exec.png"
+				if ( -f "$KDE3_MINI_ICONS$exec_exec.png");
 			$icon = "$exec_exec.xpm"
 				if ( -f "$KDE_ICONS$exec_exec.xpm" );
+			$icon = "$exec_exec.png"
+				if ( -f "$KDE3_ICONS$exec_exec.png" );
 		}
 	}
 
