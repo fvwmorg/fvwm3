@@ -543,7 +543,7 @@ static void __cr_get_grav_position(
 	gravity_get_offsets(fw->hints.win_gravity, &grav_x, &grav_y);
 	if (cre->value_mask & CWX)
 	{
-		ret_g->x = cre->x - ((grav_x + 1) * b->top_left.width) / 2;
+		ret_g->x = cre->x - ((grav_x + 1) * b->total_size.width) / 2;
 	}
 	else
 	{
@@ -551,7 +551,7 @@ static void __cr_get_grav_position(
 	}
 	if (cre->value_mask & CWY)
 	{
-		ret_g->y = cre->y - ((grav_y + 1) * b->top_left.height) / 2;
+		ret_g->y = cre->y - ((grav_y + 1) * b->total_size.height) / 2;
 	}
 	else
 	{
@@ -561,6 +561,7 @@ static void __cr_get_grav_position(
 	return;
 }
 
+#define CR_DETECT_MOTION_METHOD_DEBUG
 /* Try to detect whether the application uses the ICCCM way of moving its
  * window or the traditional way, always assuming StaticGravity. */
 static void __cr_detect_icccm_move(
@@ -575,67 +576,111 @@ static void __cr_detect_icccm_move(
 	int m;
 	int w;
 	int h;
+	int has_x;
+	int has_y;
 
-	if (CR_MOTION_METHOD(fw) != CR_MOTION_METHOD_AUTO ||
-	    fw->hints.win_gravity == StaticGravity ||
-	    (cre->value_mask & (CWX | CWY)) == 0)
+	if (CR_MOTION_METHOD(fw) != CR_MOTION_METHOD_AUTO)
 	{
+#ifdef CR_DETECT_MOTION_METHOD_DEBUG
+fprintf(stderr,"_cdim: --- already detected (pid %d)\n", HAS_EWMH_WM_PID(fw));
+#endif
+		return;
+	}
+	if (fw->hints.win_gravity == StaticGravity)
+	{
+#ifdef CR_DETECT_MOTION_METHOD_DEBUG
+fprintf(stderr,"_cdim: --- using StaticGravity\n");
+#endif
+		return;
+	}
+	has_x = (cre->value_mask & CWX);
+	has_y = (cre->value_mask & CWY);
+	if (!has_x && !has_y)
+	{
+#ifdef CR_DETECT_MOTION_METHOD_DEBUG
+fprintf(stderr,"_cdim: --- not moved\n");
+#endif
 		return;
 	}
 	__cr_get_grav_position(&grav_g, fw, cre, b);
 	__cr_get_static_position(&static_g, fw, cre, b);
-	/* check full screen */
-	if ((cre->value_mask & (CWWidth | CWHeight | CWX | CWY)) ==
-	    (CWWidth | CWHeight | CWX | CWY) &&
-	    cre->width == Scr.MyDisplayWidth &&
-	    cre->height == Scr.MyDisplayHeight)
+	if (static_g.x == grav_g.x)
 	{
-		if (grav_g.x == 0 && grav_g.y == 0)
-		{
-			/* Window is fullscreen using the ICCCM way. */
-			SET_CR_MOTION_METHOD(fw, CR_MOTION_METHOD_USE_GRAV);
-			SET_CR_MOTION_METHOD_DETECTED(fw, 1);
-			return;
-		}
-		else if (static_g.x == 0 && static_g.y == 0)
-		{
-			/* Window is fullscreen using the traditional way. */
-			SET_CR_MOTION_METHOD(fw, CR_MOTION_METHOD_STATIC_GRAV);
-			SET_CR_MOTION_METHOD_DETECTED(fw, 1);
-			return;
-		}
+		/* both methods have the same result; ignore */
+		has_x = 0;
 	}
-	/* check travelling across the screen */
+	if (static_g.y == grav_g.y)
+	{
+		/* both methods have the same result; ignore */
+		has_y = 0;
+	}
+	if (!has_x && !has_y)
+	{
+#ifdef CR_DETECT_MOTION_METHOD_DEBUG
+fprintf(stderr,"_cdim: --- not moved\n");
+#endif
+		return;
+	}
+	/*!!!move down*/
 	dg_g.x = grav_g.x - fw->frame_g.x;
 	dg_g.y = grav_g.y - fw->frame_g.y;
 	ds_g.x = static_g.x - fw->frame_g.x;
 	ds_g.y = static_g.y - fw->frame_g.y;
-	if (ds_g.x == 0 && ds_g.y == 0 &&
-	    (!(cre->value_mask & CWX) ||
-	     dg_g.x == b->top_left.width ||
-	     dg_g.x == -b->bottom_right.width) &&
-	    (!(cre->value_mask & CWY) ||
-	     dg_g.y == b->top_left.height ||
-	     dg_g.y == -b->bottom_right.height))
+#ifdef CR_DETECT_MOTION_METHOD_DEBUG
+fprintf(stderr,"s %3d/%3d %2d/%2d, g %3d/%3d %2d/%2d: ", static_g.x, static_g.y, ds_g.x, ds_g.y, grav_g.x, grav_g.y, dg_g.x, dg_g.y);
+#endif
+	/* check full screen */
+	if ((cre->value_mask & (CWWidth | CWHeight | CWX | CWY)) ==
+	    (CWWidth | CWHeight | CWX | CWY) && (has_x || has_y) &&
+	    cre->width == Scr.MyDisplayWidth &&
+	    cre->height == Scr.MyDisplayHeight)
+	{
+		if (grav_g.x == -b->top_left.width &&
+		    grav_g.y == -b->top_left.height)
+		{
+			/* Window is fullscreen using the ICCCM way. */
+			SET_CR_MOTION_METHOD(fw, CR_MOTION_METHOD_USE_GRAV);
+			SET_CR_MOTION_METHOD_DETECTED(fw, 1);
+#ifdef CR_DETECT_MOTION_METHOD_DEBUG
+fprintf(stderr,"+++ fullscreen icccm\n");
+#endif
+			return;
+		}
+		else if (static_g.x == -b->top_left.width &&
+			 static_g.y == -b->top_left.height)
+		{
+			/* Window is fullscreen using the traditional way. */
+			SET_CR_MOTION_METHOD(fw, CR_MOTION_METHOD_STATIC_GRAV);
+			SET_CR_MOTION_METHOD_DETECTED(fw, 1);
+#ifdef CR_DETECT_MOTION_METHOD_DEBUG
+fprintf(stderr,"+++ fullscreen traditional\n");
+#endif
+			return;
+		}
+	}
+	/* check travelling across the screen */
+	if (has_x && dg_g.x == 0 && ds_g.x != 0 &&
+	    has_y && dg_g.y == 0 && ds_g.y != 0)
+	{
+		/* The traditional way causes a shift by the border width or
+		 * height.  Use ICCCM way. */
+		SET_CR_MOTION_METHOD(fw, CR_MOTION_METHOD_USE_GRAV);
+		SET_CR_MOTION_METHOD_DETECTED(fw, 1);
+#ifdef CR_DETECT_MOTION_METHOD_DEBUG
+fprintf(stderr,"+++ travelling icccm\n");
+#endif
+		return;
+	}
+	if (has_x && dg_g.x != 0 && ds_g.x == 0 &&
+	    has_y && dg_g.y != 0 && ds_g.y == 0)
 	{
 		/* The ICCCM way causes a shift by the border width or height.
 		 * Use traditional way. */
 		SET_CR_MOTION_METHOD(fw, CR_MOTION_METHOD_STATIC_GRAV);
 		SET_CR_MOTION_METHOD_DETECTED(fw, 1);
-		return;
-	}
-	if (dg_g.x == 0 && dg_g.y == 0 &&
-	    (!(cre->value_mask & CWX) ||
-	     ds_g.x == -b->top_left.width ||
-	     ds_g.x == b->bottom_right.width) &&
-	    (!(cre->value_mask & CWY) ||
-	     ds_g.y == -b->top_left.height ||
-	     ds_g.y == b->bottom_right.height))
-	{
-		/* The traditional way causes a shift by the border width or
-		 * height.  Use traditional way. */
-		SET_CR_MOTION_METHOD(fw, CR_MOTION_METHOD_USE_GRAV);
-		SET_CR_MOTION_METHOD_DETECTED(fw, 1);
+#ifdef CR_DETECT_MOTION_METHOD_DEBUG
+fprintf(stderr,"+++ travelling traditional\n");
+#endif
 		return;
 	}
 	/* check placement near border */
@@ -643,7 +688,7 @@ static void __cr_detect_icccm_move(
 		cre->width + b->total_size.width : fw->frame_g.width;
 	h = (cre->value_mask & CWHeight) ?
 		cre->height + b->total_size.height : fw->frame_g.height;
-	if (!(cre->value_mask & CWX))
+	if (!has_x)
 	{
 		mx = CR_MOTION_METHOD_AUTO;
 	}
@@ -659,7 +704,7 @@ static void __cr_detect_icccm_move(
 	{
 		mx = CR_MOTION_METHOD_AUTO;
 	}
-	if (!(cre->value_mask & CWY))
+	if (!has_y)
 	{
 		my = CR_MOTION_METHOD_AUTO;
 	}
@@ -673,19 +718,25 @@ static void __cr_detect_icccm_move(
 	}
 	else
 	{
-		my = CR_MOTION_METHOD_MASK;
+		my = CR_MOTION_METHOD_AUTO;
 	}
 	m = (mx != CR_MOTION_METHOD_AUTO) ? mx : my;
-	if (m != CR_MOTION_METHOD_AUTO && m != CR_MOTION_METHOD_MASK)
+	if (m != CR_MOTION_METHOD_AUTO)
 	{
 		/* Window was placed next to the display border. */
 		if (m == my || my == CR_MOTION_METHOD_AUTO)
 		{
 			SET_CR_MOTION_METHOD(fw, m);
 			SET_CR_MOTION_METHOD_DETECTED(fw, 1);
+#ifdef CR_DETECT_MOTION_METHOD_DEBUG
+fprintf(stderr, "+++ near border %s\n", (m == CR_MOTION_METHOD_USE_GRAV) ? "icccm" : "traditional");
+#endif
 			return;
 		}
 	}
+#ifdef CR_DETECT_MOTION_METHOD_DEBUG
+fprintf(stderr,"--- not detected\n");
+#endif
 
 	return;
 }
@@ -808,9 +859,14 @@ static int __handle_cr_on_client(
 
 	get_window_borders(fw, &b);
 #ifdef EXPERIMENTAL_ANTI_RACE_CONDITION_CODE
-	/* merge all pending ConfigureRequests for the window into a single
-	 * event */
-	cn_count = __merge_cr_moveresize(ea, &cre, fw, &b);
+	/* Merge all pending ConfigureRequests for the window into a single
+	 * event.  However, we can not do this if the window uses the motion
+	 * method autodetection because the merged event might confuse the
+	 * detection code. */
+	if (CR_MOTION_METHOD(fw) == CR_MOTION_METHOD_AUTO)
+	{
+		cn_count = __merge_cr_moveresize(ea, &cre, fw, &b);
+	}
 #endif
 #if 0
 	fprintf(stderr,
@@ -911,12 +967,14 @@ static int __handle_cr_on_client(
 		gravity_get_offsets(fw->hints.win_gravity, &grav_x, &grav_y);
 		if (cre.value_mask & CWX)
 		{
-			ref_x = cre.x - ((grav_x + 1) * b.top_left.width) / 2;
+			ref_x = cre.x -
+				((grav_x + 1) * b.total_size.width) / 2;
 			d_g.x = ref_x - fw->frame_g.x;
 		}
 		if (cre.value_mask & CWY)
 		{
-			ref_y = cre.y - ((grav_y + 1) * b.top_left.height) / 2;
+			ref_y = cre.y -
+				((grav_y + 1) * b.total_size.height) / 2;
 			d_g.y = ref_y - fw->frame_g.y;
 		}
 	}

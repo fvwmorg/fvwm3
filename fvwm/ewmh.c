@@ -1416,15 +1416,6 @@ static void ewmh_check_wm_pid(FvwmWindow *fw)
 			SET_CR_MOTION_METHOD_DETECTED(fw, 1);
 		}
 	}
-	else
-	{
-		SET_HAS_EWMH_WM_PID(fw, 0);
-		if (CR_MOTION_METHOD(fw) == CR_MOTION_METHOD_AUTO)
-		{
-			SET_CR_MOTION_METHOD(fw, CR_MOTION_METHOD_USE_GRAV);
-			SET_CR_MOTION_METHOD_DETECTED(fw, 1);
-		}
-	}
 }
 
 /* see also EWMH_WMName and EWMH_WMIconName in add_window */

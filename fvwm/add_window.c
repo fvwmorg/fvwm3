@@ -2788,7 +2788,6 @@ void GetWindowSizeHints(FvwmWindow *tmp)
 		tmp->hints.win_gravity = NorthWestGravity;
 	}
 
-
 	if ((tmp->hints.flags & PMaxSize) &&
 	    ((tmp->hints.flags & PMinSize) || (tmp->hints.flags & PBaseSize)))
 	{

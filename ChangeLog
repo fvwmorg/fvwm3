@@ -1,3 +1,10 @@
+2003-07-06  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* fvwm/events.c (__handle_cr_on_client):
+	fixed handling of gravities other than NW or Static
+	(__cr_detect_icccm_move):
+	fixed several bugs
+
 2003-07-06  Marcus Lundblad  <ml@update.uu.se>
 
 
@@ -6,9 +13,8 @@
 	* libs/Flocale.c (FlocaleEncodeString):
 	* libs/FBidi.[ch]:
 	* libs/Makefile.am:
-
 	Removed "F" prefix on FBidiJoin.[ch] and FCombineChars.[ch]
-	
+
 2003-07-06  olicha  <olivier.chapuis@free.fr>
 
 	* libs/FRender.c (FRenderRender):
