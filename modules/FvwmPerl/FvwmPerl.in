@@ -128,6 +128,13 @@ sub detach () {
 	$detached = 1;
 }
 
+sub showMessage ($;$$) {
+	require FVWM::Module::Toolkit;
+	FVWM::Module::Toolkit->showMessage(
+		$_[0], $_[1] || "FvwmPerl user message", $_[2]
+	);
+}
+
 sub load ($) {
 	my $filename = shift;
 	my $contents = loadFile($filename);
@@ -398,7 +405,7 @@ __END__
 
 =head1 NAME
 
-FvwmPerl - the FVWM perl manipulator
+FvwmPerl - the FVWM perl manipulator and preprocessor
 
 =head1 SYNOPSIS
 
@@ -406,7 +413,13 @@ FvwmPerl should be spawned by fvwm(1) for normal functionality.
 
 To run this module, place this command somewhere in the configuration:
 
-  Module FvwmPerl [params]
+    Module FvwmPerl [params]
+
+or:
+
+    ModuleSynchronize FvwmPerl [params]
+
+if you want to immediatelly start to send commands to FvwmPerl.
 
 =head1 DESCRIPTION
 
@@ -458,10 +471,43 @@ B<--nolock> - when one of the 3 action options is given, this option causes
 unlocking I<fvwm> immediately. By default the requested action is executed
 synchronously; this only makes difference when invoked like:
 
-  ModuleSynchronous FvwmPerl --preprocess someconfig.ppp
+    ModuleSynchronous FvwmPerl --preprocess someconfig.ppp
 
 If B<--nolock> is added here, B<ModuleSynchronous> returns immediately.
 Note that B<Module> returns immediately regardless of this option.
+
+=head1 PREPROCESSING EXAMPLE
+
+One of the effective proprocessing solutions is to pass the whole fvwm
+configuration with embeded perl code to "FvwmPerl --preprocess".
+An alternative approach is to write a perl script that produces fvwm
+commands and sends them for execution, this script may be loaded using
+"FvwmPerl --load". There are hovewer intermediate solutions that
+preprocess only separate configuration lines (or alternativelly,
+execute separate perl commands that produce fvwm commands).
+
+The following code snippet adds ability of arithmetics and string scripting
+to certain lines that needs this. To use this, you want to start FvwmPerl as
+your first command so that other commands may be asked to be preprosessed.
+
+    ModuleSynchronize FvwmPerl
+
+    AddToFunc .
+    + I SendToModule FvwmPerl preprocess -c -- $*
+
+    . Exec exec xterm -name xterm-%{++$i}%   # use unique name
+
+    . GotoDesk 0 %{ $[desk.n] + 1 }%         # go to next desk
+
+    . Exec exec %{ -x "/usr/bin/X11/aterm" ? "aterm" : "xterm" }% -sb
+
+    # center a window (here "WindowId $[w.id]" is a workaround)
+    Next (MyWindow) . WindowId $[w.id] Move \
+      %{($WIDTH - $[w.width]) / 2}%p %{($HEIGHT - $[w.height]) / 2}%p
+
+    . Exec exec xmessage %{2 + 2}%           # simple calculator
+
+    . %{main::showMessage(2 + 2, "Yet another Calculator"); ""}%
 
 =head1 ACTIONS
 
@@ -561,29 +607,29 @@ Ends any of the directives described above, may be nested.
 
 Examples:
 
-  %Prefix "AddToFunc SwitchToWindow I"
-    Iconify off
-    WindowShade off
-    Raise
-    WrapToWindow 50 50
-  %End
+    %Prefix "AddToFunc SwitchToWindow I"
+        Iconify off
+        WindowShade off
+        Raise
+        WrapToWindow 50 50
+    %End
 
-  %ModuleConfig FvwmPager destroy
-    Colorset 0
-    Font lucidasans-10
-    DeskTopScale 28
-    MiniIcons
-  %End ModuleConfig FvwmPager
+    %ModuleConfig FvwmPager destroy
+        Colorset 0
+        Font lucidasans-10
+        DeskTopScale 28
+        MiniIcons
+    %End ModuleConfig FvwmPager
 
-  %Prefix "All (MyWindowToAnimate) ResizeMove "
-  100 100 %{($WIDTH - 100) / 2}% %{($HEIGHT - 100) / 2}%
-  %Repeat %{$count}%
-  br w+2c w+2c w-1c w-1c
-  %End
-  %Repeat %{$count}%
-  br w-2c w-2c w+1c w+1c
-  %End
-  %End Prefix
+    %Prefix "All (MyWindowToAnimate) ResizeMove "
+    100 100 %{($WIDTH - 100) / 2}% %{($HEIGHT - 100) / 2}%
+    %Repeat %{$count}%
+    br w+2c w+2c w-1c w-1c
+    %End
+    %Repeat %{$count}%
+    br w-2c w-2c w+1c w+1c
+    %End
+    %End Prefix
 
 Additional preprocess parameters --nosend and --noremove may be given too.
 See their description at the top.
@@ -621,6 +667,36 @@ on the file $fileName, described above.
 
 This function is equivalent to the B<preprocess> functionality
 with the given parameters and the file $fileName described above.
+
+=item B<stop()>
+
+Terminates the module.
+
+=item B<skip()>
+
+Skips the rest of the event callback code, i.e. the module returns to listen
+to new module events.
+
+=item B<unlock()>
+
+Unsynchronizes the event callback from fvwm. This may be useful to prevent
+deadlocks, see also the B<detach> solution.
+
+=item B<detach()>
+
+Forks and detaches the rest of the event callback code from the main
+process. This may be useful to prevent killing the module if its event
+callback should take a long time to complete and it may be done in the
+detached child. The detached child may still send commands to fvwm (don't
+rely on this), but not receive the events of course, it exits immediately
+after the callback execution is finished.
+
+=item B<showMessage(>$msg, $title[, $useStderrToo=1]B<)>
+
+Shows a dialog window with the given message, using whichever tool is find
+in the system.
+
+See B<FVWM::Module::Toolkit>::B<showMessage> for more information.
 
 =back
 

@@ -1,3 +1,10 @@
+2003-10-31  Mikhael Goikhman  <migo@homemail.com>
+
+	* FvwmPerl/FvwmPerl.in:
+	* FvwmPerl/FvwmPerl.1:
+	added showMessage user function to find and invoke a good dialog window
+	and better documentation
+
 2003-10-26  Mikhael Goikhman  <migo@homemail.com>
 
 	* FvwmAnimate/FvwmAnimate.c:
