@@ -1053,13 +1053,6 @@ void CMD_WindowList(F_CMD_ARGS)
 	    (!MST_SELECT_ON_RELEASE_KEY(mr) ||
 	     sor_keyname != sor_default_keyname))
 	{
-		KeyCode keycode = 0;
-
-		if (sor_keyname)
-		{
-			keycode = XKeysymToKeycode(
-				dpy, FvwmStringToKeysym(dpy, sor_keyname));
-		}
 		MST_SELECT_ON_RELEASE_KEY(mr) =
 			XKeysymToKeycode(
 				dpy, FvwmStringToKeysym(dpy, sor_keyname));

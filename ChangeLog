@@ -1,9 +1,14 @@
+2003-02-24  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* fvwm/windowlist.c (CMD_WindowList):
+	removed unused instruction
+
 2003-02-22  Dan Espen  <dane@mk.telcordia.com>
 
 	* configure.in: Remove nested function from -Werror check.
 	Lets configure work without gcc.
 
-	* fvwm/read.h: 
+	* fvwm/read.h:
 	* fvwm/read.c (run_command_stream): Make Break work from PipeRead.
 
 2003-02-21  Dan Espen  <dane@mk.telcordia.com>
