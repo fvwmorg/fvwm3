@@ -431,7 +431,7 @@ static MenuItem *find_entry(
 /***************************************************************
  * Returns the position of the item in the menu, but counts
  * only items that can be selected (i.e. nor separators or
- * titles=. The count begins with 0.
+ * titles). The count begins with 0.
  ***************************************************************/
 static int get_selectable_item_index(
   MenuRoot *mr, MenuItem *miTarget, int *ret_sections)
@@ -512,7 +512,12 @@ static MenuItem *get_selectable_item_from_section(MenuRoot *mr, int section)
 
 static int get_selectable_item_count(MenuRoot *mr, int *ret_sections)
 {
-  return get_selectable_item_index(mr, MR_LAST_ITEM(mr), ret_sections);
+  int count;
+
+  count = get_selectable_item_index(mr, MR_LAST_ITEM(mr), ret_sections);
+  if (MR_LAST_ITEM(mr) && MI_IS_SELECTABLE(MR_LAST_ITEM(mr)))
+    count++;
+  return count;
 }
 
 
@@ -852,6 +857,18 @@ void do_menu(MenuParameters *pmp, MenuReturn *pmret)
  * routine is called.
  * TKP - uses XLookupString so that keypad numbers work with windowlist
  ***********************************************************************/
+typedef enum
+{
+  SA_NONE = 0,
+  SA_ENTER,
+  SA_LEAVE,
+  SA_MOVE_ITEMS,
+  SA_FIRST,
+  SA_LAST,
+  SA_CONTINUE,
+  SA_WARPBACK
+} shortcut_action;
+
 static void menuShortcuts(MenuRoot *mr, MenuReturn *pmret, XEvent *event,
 			  MenuItem **pmiCurrent, double_keypress *pdkp)
 {
@@ -872,6 +889,7 @@ static void menuShortcuts(MenuRoot *mr, MenuReturn *pmret, XEvent *event,
   unsigned int menu_height;
   int items_to_move;
   Bool fSkipSection = False;
+  shortcut_action saction = SA_NONE;
 
   if (event->type == KeyRelease)
   {
@@ -881,7 +899,8 @@ static void menuShortcuts(MenuRoot *mr, MenuReturn *pmret, XEvent *event,
     return;
   }
 
-  /* handle double-keypress */
+  /*** handle double-keypress ***/
+
   if (pdkp->timestamp &&
       lastTimestamp - pdkp->timestamp < Menus.DoubleClickTime &&
       event->xkey.state == pdkp->keystate &&
@@ -892,11 +911,16 @@ static void menuShortcuts(MenuRoot *mr, MenuReturn *pmret, XEvent *event,
     return;
   }
   pdkp->timestamp = 0;
-  /* Is it okay to treat keysym-s as Ascii? */
-  /* No, because the keypad numbers don't work. Use XlookupString */
+
+  /*** find out the key ***/
+
+  /* Is it okay to treat keysym-s as Ascii?
+   * No, because the keypad numbers don't work. Use XlookupString */
   index = XLookupString(&(event->xkey), &ckeychar, 1, &keysym, NULL);
   ikeychar = (int)ckeychar;
-  /* Try to match hot keys */
+
+  /*** Try to match hot keys ***/
+
   /* Need isascii here - isgraph might coredump! */
   if (index == 1 && isascii(ikeychar) && isgraph(ikeychar) &&
       fControlKey == False && fMetaKey == False)
@@ -956,237 +980,214 @@ static void menuShortcuts(MenuRoot *mr, MenuReturn *pmret, XEvent *event,
     /* MMH mikehan@best.com 2/7/99 */
   }
 
-  /* to understand the following, pay attention to the fall thrus in the
-     switch statement, and how "items_to_move" affects the flow. */
-  items_to_move = 0;
+  /*** now determine the action to take ***/
 
-  switch(keysym)		/* Other special keyboard handling	*/
+  items_to_move = 0;
+  pmret->rc = MENU_NOP;
+
+  switch(keysym)
   {
-  case XK_Escape:		/* Escape key pressed. Abort		*/
+  case XK_Escape:
   case XK_Delete:
   case XK_KP_Separator:
+    /* abort */
     pmret->rc = MENU_ABORTED;
     return;
 
   case XK_space:
   case XK_Return:
   case XK_KP_Enter:
+    /* select menu item */
     pmret->rc = MENU_SELECTED;
     return;
 
   case XK_Insert:
   case XK_KP_0:
     /* move to last entry of menu ('More...' if this exists) and try to enter
-     * the menu. */
-    if (MR_CONTINUATION_MENU(mr) != NULL)
-    {
-      if ((*pmiCurrent = MR_LAST_ITEM(mr)) != NULL)
-      {
-	if (*pmiCurrent && MI_IS_POPUP(*pmiCurrent))
-	{
-	  /* enter the submenu */
-	  pmret->rc = MENU_POPUP;
-	  return;
-	}
-      }
-      /* do nothing */
-      *pmiCurrent = miCurrent;
-    }
-    else if (miCurrent && MI_IS_POPUP(miCurrent))
-    {
-      pmret->rc = MENU_POPUP;
-      return;
-    }
-    pmret->rc = MENU_NOP;
-    return;
+     * the menu.  Otherwise try to enter the current submenu */
+    saction = (MR_CONTINUATION_MENU(mr) != NULL) ? SA_CONTINUE : SA_ENTER;
+    break;
 
-  case XK_Left: /* back or forward */
+  case XK_Left:
   case XK_KP_4:
-    if (MST_USE_LEFT_SUBMENUS(mr))
-    {
-      if (miCurrent && MI_IS_POPUP(miCurrent))
-      {
-	pmret->rc = MENU_POPUP;
-	return;
-      }
-    }
-    else
-    {
-      pmret->rc = MENU_POPDOWN;
-      return;
-    }
+  case XK_h: /* vi left */
+    /* leave or enter a submenu */
+    saction = (MST_USE_LEFT_SUBMENUS(mr)) ? SA_ENTER : SA_LEAVE;
+    break;
+
+  case XK_Right:
+  case XK_KP_6:
+  case XK_l: /* vi right */
+    /* enter or leave a submenu */
+    saction = (MST_USE_LEFT_SUBMENUS(mr)) ? SA_LEAVE : SA_ENTER;
     break;
 
   case XK_b: /* back */
-  case XK_h: /* vi left */
-    pmret->rc = MENU_POPDOWN;
-    return;
-
-  case XK_Right: /* forward or back */
-  case XK_KP_6:
-    if (!MST_USE_LEFT_SUBMENUS(mr))
-    {
-      if (miCurrent && MI_IS_POPUP(miCurrent))
-      {
-	pmret->rc = MENU_POPUP;
-	return;
-      }
-    }
-    else
-    {
-      pmret->rc = MENU_POPDOWN;
-      return;
-    }
+    /* leave menu */
+    saction = SA_LEAVE;
     break;
 
   case XK_f: /* forward */
-  case XK_l: /* vi right */
-    if (miCurrent && MI_IS_POPUP(miCurrent))
-    {
-      pmret->rc = MENU_POPUP;
-      return;
-    }
+    /* enter menu */
+    saction = SA_ENTER;
     break;
 
   case XK_Page_Up:
   case XK_KP_9:
     items_to_move = -5;
-    /* fall through */
+    saction = SA_MOVE_ITEMS;
+    break;
 
   case XK_Page_Down:
   case XK_KP_3:
-    if (items_to_move == 0)
-    {
-      items_to_move = 5;
-    }
-    /* fall through */
+    items_to_move = 5;
+    saction = SA_MOVE_ITEMS;
+    break;
 
   case XK_Up:
   case XK_KP_8:
   case XK_k: /* vi up */
   case XK_p: /* prior */
-    if (items_to_move == 0)
+    if (fShiftedKey && !fControlKey && !fMetaKey)
     {
-      if (fShiftedKey && !fControlKey && !fMetaKey)
-      {
-	items_to_move = 0x80000000;
-      }
-      else if (fControlKey && fMetaKey)
-      {
-	items_to_move = -5;
-      }
-      else if (fControlKey)
-      {
-	items_to_move = -1;
-	fSkipSection = True;
-      }
-      else
-      {
-	items_to_move = -1;
-      }
+      saction = SA_FIRST;
+      break;
     }
-    /* fall through */
+    else if (fControlKey && fMetaKey)
+      items_to_move = -5;
+    else if (fControlKey)
+    {
+      items_to_move = -1;
+      fSkipSection = True;
+    }
+    else
+      items_to_move = -1;
+    saction = SA_MOVE_ITEMS;
+    break;
 
   case XK_Down:
   case XK_KP_2:
   case XK_j: /* vi down */
   case XK_n: /* next */
-    if (items_to_move == 0)
+    if (fShiftedKey && !fControlKey && !fMetaKey)
     {
-      if (fShiftedKey && !fControlKey && !fMetaKey)
-      {
-	items_to_move = 0x7fffffff;
-      }
-      else if (fControlKey && fMetaKey)
-      {
-	items_to_move = 5;
-      }
-      else if (fControlKey)
-      {
-	items_to_move = 1;
-	fSkipSection = True;
-      }
-      else
-      {
-	items_to_move = 1;
-      }
+      saction = SA_LAST;
+      break;
     }
-    /* fall through */
+    else if (fControlKey && fMetaKey)
+      items_to_move = 5;
+    else if (fControlKey)
+    {
+      items_to_move = 1;
+      fSkipSection = True;
+    }
+    else
+      items_to_move = 1;
+    saction = SA_MOVE_ITEMS;
+    break;
 
   case XK_Tab:
 #ifdef XK_XKB_KEYS
   case XK_ISO_Left_Tab:
 #endif
     /* Tab added mostly for Winlist */
-    if (items_to_move == 0)
+    items_to_move = 1;
+    switch (fMetaKey + 2 * fControlKey)
     {
-      switch (fShiftedKey + 2 * fMetaKey + 4 * fControlKey)
-      {
-      case 1:
-      case 3:
-	/* shift-tab, shift-meta-tab */
-	items_to_move = -1;
-	break;
-      case 4:
-	/* ctrl-tab */
-	items_to_move = 1;
-	fSkipSection = True;
-	break;
-      case 5:
-	/* shift-ctrl-tab */
-	items_to_move = -1;
-	fSkipSection = True;
-	break;
-      case 6:
-	/* ctrl-meta-tab */
-	items_to_move = 5;
-	break;
-      case 7:
-	/* shift-ctrl-meta-tab */
-	items_to_move = -5;
-	break;
-      case 0:
-      case 2:
-      default:
-	/* tab, alt-tab */
-	items_to_move = 1;
-	break;
-      }
+    case 0:
+    case 1:
+      /* tab, alt-tab */
+      break;
+    case 2:
+      /* ctrl-tab */
+      fSkipSection = True;
+      break;
+    case 3:
+      /* ctrl-meta-tab */
+      items_to_move = 5;
+      break;
+    default:
+      break;
     }
-
-    if (!miCurrent)
+    if (fShiftedKey)
     {
-      XGetGeometry(dpy, MR_WINDOW(mr), &JunkRoot, &menu_x, &menu_y,
-		   &menu_width, &menu_height, &JunkBW, &JunkDepth);
-      XQueryPointer(dpy, Scr.Root, &JunkRoot, &JunkChild,
-		    &mx, &my, &JunkX, &JunkY, &JunkMask);
-      if (my < menu_y + MST_BORDER_WIDTH(mr))
-      {
-	if ((*pmiCurrent = get_selectable_item_from_index(mr,0)) != NULL)
-	  pmret->rc = MENU_NEWITEM;
-	else
-	  pmret->rc = MENU_NOP;
-	return;
-      }
-      else if (my > menu_y + menu_height - MST_BORDER_WIDTH(mr))
-      {
-	if ((*pmiCurrent = MR_LAST_ITEM(mr)) != NULL)
-	  pmret->rc = MENU_NEWITEM;
-	else
-	  pmret->rc = MENU_NOP;
-	return;
-      }
-      else
-      {
-	/*Warp the pointer back into the menu. */
-	XWarpPointer(dpy, 0, MR_WINDOW(mr), 0, 0, 0, 0,
-		     menu_middle_x_offset(mr), my - menu_y);
-	*pmiCurrent = find_entry(NULL, NULL);
-	pmret->rc = MENU_NEWITEM;
-	return;
-      }
+      /* shift reverses direction */
+      items_to_move = -items_to_move;
     }
+    saction = SA_MOVE_ITEMS;
+    break;
 
+  case XK_Home:
+  case XK_KP_7:
+    saction = SA_FIRST;
+    break;
+
+  case XK_End:
+  case XK_KP_1:
+    saction = SA_LAST;
+    break;
+
+#ifdef TEAR_OFF_MENUS
+  case XK_BackSpace:
+fprintf(stderr,"menu torn off\n");
+    pmret->rc = MENU_TEAR_OFF;
+    return;
+#endif
+
+  default:
+    break;
+  }
+
+  if (!miCurrent && (saction == SA_ENTER || saction == SA_MOVE_ITEMS))
+  {
+    XGetGeometry(dpy, MR_WINDOW(mr), &JunkRoot, &menu_x, &menu_y,
+		 &menu_width, &menu_height, &JunkBW, &JunkDepth);
+    XQueryPointer(dpy, Scr.Root, &JunkRoot, &JunkChild,
+		  &mx, &my, &JunkX, &JunkY, &JunkMask);
+    if (my < menu_y + MST_BORDER_WIDTH(mr))
+      saction = SA_FIRST;
+    else if (my > menu_y + menu_height - MST_BORDER_WIDTH(mr))
+      saction = SA_LAST;
+    else
+      saction = SA_WARPBACK;
+  }
+
+  /*** execute the necessary actions ***/
+
+  switch (saction)
+  {
+  case SA_ENTER:
+    if (miCurrent && MI_IS_POPUP(miCurrent))
+      pmret->rc = MENU_POPUP;
+    else
+      pmret->rc = MENU_NOP;
+    break;
+
+  case SA_LEAVE:
+    pmret->rc = MENU_POPDOWN;
+    break;
+
+  case SA_FIRST:
+    if ((*pmiCurrent = get_selectable_item_from_index(mr,0)) != NULL)
+      pmret->rc = MENU_NEWITEM;
+    else
+      pmret->rc = MENU_NOP;
+    break;
+
+  case SA_LAST:
+    index = get_selectable_item_count(mr, NULL);
+    if (index > 0)
+    {
+      *pmiCurrent = get_selectable_item_from_index(mr, index);
+      pmret->rc = (*pmiCurrent) ? MENU_NEWITEM : MENU_NOP;
+    }
+    else
+    {
+      pmret->rc = MENU_NOP;
+    }
+    break;
+
+  case SA_MOVE_ITEMS:
     /* Need isascii here - isgraph might coredump! */
     if (isascii(keysym) && isgraph(keysym))
       fControlKey = False; /* don't use control modifier
@@ -1213,9 +1214,6 @@ static void menuShortcuts(MenuRoot *mr, MenuReturn *pmret, XEvent *event,
       if (index == 0)
 	/* wraparound */
 	index = get_selectable_item_count(mr, NULL);
-      else if (items_to_move == 0x80000000)
-	/* move to start */
-	index = 0;
       else
       {
 	index += items_to_move;
@@ -1223,16 +1221,10 @@ static void menuShortcuts(MenuRoot *mr, MenuReturn *pmret, XEvent *event,
     }
     else
     {
-      if (items_to_move == 0x7fffffff)
-	/* move to end */
-	index = get_selectable_item_count(mr, NULL);
-      else
-      {
-	index = get_selectable_item_index(mr, miCurrent, NULL) + items_to_move;
-	/* correct for the case that we're between items */
-	if (MI_IS_SEPARATOR(miCurrent) || MI_IS_TITLE(miCurrent))
-	  index--;
-      }
+      index = get_selectable_item_index(mr, miCurrent, NULL) + items_to_move;
+      /* correct for the case that we're between items */
+      if (MI_IS_SEPARATOR(miCurrent) || MI_IS_TITLE(miCurrent))
+	index--;
     }
     if (fSkipSection)
     {
@@ -1251,47 +1243,43 @@ static void menuShortcuts(MenuRoot *mr, MenuReturn *pmret, XEvent *event,
     {
       *pmiCurrent = newItem;
       pmret->rc = MENU_NEWITEM;
-      return;
     }
     else
     {
       pmret->rc = MENU_NOP;
-      return;
     }
     break;
 
-  case XK_Home:
-  case XK_KP_7:
-    if ((*pmiCurrent = get_selectable_item_from_index(mr,0)) != NULL)
-      pmret->rc = MENU_NEWITEM;
+  case SA_CONTINUE:
+    *pmiCurrent = MR_LAST_ITEM(mr);
+    if (*pmiCurrent && MI_IS_POPUP(*pmiCurrent))
+    {
+      /* enter the submenu */
+      pmret->rc = MENU_POPUP;
+    }
     else
+    {
+      /* do nothing */
+      *pmiCurrent = miCurrent;
       pmret->rc = MENU_NOP;
-    return;
+    }
+    break;
 
-  case XK_End:
-  case XK_KP_1:
-    if ((*pmiCurrent = MR_LAST_ITEM(mr)) != NULL)
-      pmret->rc = MENU_NEWITEM;
-    else
-      pmret->rc = MENU_NOP;
-    return;
+  case SA_WARPBACK:
+    /*Warp the pointer back into the menu. */
+    XWarpPointer(dpy, 0, MR_WINDOW(mr), 0, 0, 0, 0,
+		 menu_middle_x_offset(mr), my - menu_y);
+    *pmiCurrent = find_entry(NULL, NULL);
+    pmret->rc = MENU_NEWITEM;
+    break;
 
-#ifdef TEAR_OFF_MENUS
-  case XK_BackSpace:
-fprintf(stderr,"menu torn off\n");
-    pmret->rc = MENU_TEAR_OFF;
-    return;
-#endif
-
+  case SA_NONE:
   default:
-    /* Nothing special --- Allow other shortcuts */
-    /* There are no useful shortcuts, so don't do that.
-     * (Dominik Vogt, 11-Nov-1998)
-     * Keyboard_shortcuts(event, NULL, ButtonRelease); */
+    pmret->rc = MENU_NOP;
     break;
   }
 
-  pmret->rc = MENU_NOP;
+  return;
 }
 
 

@@ -1,5 +1,9 @@
 2000-04-27  Dominik Vogt  <dominik.vogt@gmx.de>
 
+	* fvwm/menus.c (get_selectable_item_count):
+	(menuShortcuts):
+	cleand up menu shorcut code and fixed several minor bugs
+
 	* fvwm/menus.c (MenuInteraction):
 	fixed bug: pressing 'right' when a menu is posted but nothing in it
 	selected sometimes closed all open menus instead of entering the submenu
