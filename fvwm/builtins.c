@@ -183,7 +183,6 @@ void WindowShade(F_CMD_ARGS)
     SET_SHADED(tmp_win, 1);
 
     if (Scr.shade_anim_steps != 0) {
-      XLowerWindow(dpy, tmp_win->w);
       h = tmp_win->frame_g.height;
       y = 0;
       old_h = tmp_win->frame_g.height;

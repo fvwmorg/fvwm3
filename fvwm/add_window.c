@@ -569,8 +569,6 @@ void setup_resize_handle_windows(FvwmWindow *tmp_win)
 					   InputOnly,
 					   DefaultVisual(dpy, Scr.screen),
 					   valuemask, &attributes);
-      XLowerWindow(dpy, tmp_win->corners[i]);
-
       attributes.cursor = Scr.FvwmCursors[CRS_TOP+i];
       tmp_win->sides[i] = XCreateWindow (dpy, tmp_win->frame, 0, 0,
 					 tmp_win->boundary_width,
@@ -579,7 +577,7 @@ void setup_resize_handle_windows(FvwmWindow *tmp_win)
 					 DefaultVisual(dpy, Scr.screen),
 					 valuemask, &attributes);
       XSaveContext(dpy, tmp_win->sides[i], FvwmContext, (caddr_t) tmp_win);
-      XSaveContext(dpy, tmp_win->corners[i],FvwmContext, (caddr_t) tmp_win);
+      XSaveContext(dpy, tmp_win->corners[i], FvwmContext, (caddr_t) tmp_win);
     }
   }
 }
@@ -943,8 +941,14 @@ FvwmWindow *AddWindow(Window w, FvwmWindow *ReuseWin)
 
   /******  ******/
 
+  /* Put parent at the bottom so it appears first in XQueryTree() results */
+  XLowerWindow(dpy, tmp_win->Parent);
+  /* have to lower the corners as they may overlap with the client */
+  XLowerWindow(dpy, tmp_win->corners[0]);
+  XLowerWindow(dpy, tmp_win->corners[1]);
+  XLowerWindow(dpy, tmp_win->corners[2]);
+  XLowerWindow(dpy, tmp_win->corners[3]);
   XMapSubwindows (dpy, tmp_win->frame);
-  XRaiseWindow(dpy, tmp_win->Parent);
   XReparentWindow(dpy, tmp_win->w, tmp_win->Parent, 0, 0);
 
   /******  ******/

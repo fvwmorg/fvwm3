@@ -1084,7 +1084,6 @@ void DeIconify(FvwmWindow *tmp_win)
       Scr.Hilite = t;
       SetBorder(t,False,True,True,None);
       Scr.Hilite = tmp;
-      XRaiseWindow(dpy,t->w);
     }
   }
 
