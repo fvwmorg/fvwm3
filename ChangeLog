@@ -1,3 +1,11 @@
+1999-03-19  Andrew T. Veliath  <andrewtv@usa.net>
+
+	* fvwm/builtins.c
+	(add_item_to_menu),
+	(add_item_to_func),
+	(add_item_to_decor): Fix state changes to keep `+' happy.
+	(SetButtonFlag): Reindent and make more readable.
+
 1999-03-19  Tomas Ogren  <stric@ing.umu.se>
 
 	* fvwm/fvwm2.1: Fixed some *roff tyops

@@ -447,17 +447,18 @@ void add_item_to_menu(F_CMD_ARGS)
   MenuRoot *mrPrior;
   char *token, *rest,*item;
 
-#ifdef USEDECOR
-  last_decor = NULL;
-#endif
-
   rest = GetNextToken(action,&token);
   if (!token)
     return;
   mr = FollowMenuContinuations(FindPopup(token),&mrPrior);
   if(mr == NULL)
     mr = NewMenuRoot(token);
+
+  /* Set + state to last menu */
   last_menu = mr;
+#ifdef USEDECOR
+  last_decor = NULL;
+#endif
   last_func = NULL;
 
   rest = GetNextToken(rest,&item);
@@ -561,8 +562,14 @@ void add_item_to_func(F_CMD_ARGS)
   func = FindFunction(token);
   if(func == NULL)
     func = NewFvwmFunction(token);
-  last_menu = NULL;
+
+  /* Set + state to last function */
   last_func = func;
+#ifdef USEDECOR
+  last_decor = NULL;
+#endif
+  last_menu = NULL;
+
   free(token);
   AddToFunction(func, action);
 
@@ -3812,8 +3819,6 @@ void add_item_to_decor(F_CMD_ARGS)
     FvwmDecor *fl, *found = NULL;
     char *item = NULL, *s = action;
 
-    last_menu = NULL;
-
     s = GetNextToken(s, &item);
 
     if (!item)
@@ -3839,9 +3844,14 @@ void add_item_to_decor(F_CMD_ARGS)
 	fl->next = found;
     } else
 	free(item);
+
     if (found) {
 	AddToDecor(found, s);
+
+	/* Set + state to last decor */
 	last_decor = found;
+	last_menu = NULL;
+	last_func = NULL;
     }
 }
 #endif /* USEDECOR */
@@ -3897,27 +3907,31 @@ void UpdateDecor(F_CMD_ARGS)
  * Changes a button decoration style (changes by veliaa@rpi.edu)
  *
  ****************************************************************************/
-#define SetButtonFlag(a) \
-        do { \
-             int i; \
-             if (multi) { \
-               if (multi&1) \
-                 for (i=0;i<5;++i) \
-                   if (set) \
-                     fl->left_buttons[i].flags |= (a); \
-                   else \
-                     fl->left_buttons[i].flags &= ~(a); \
-               if (multi&2) \
-                 for (i=0;i<5;++i) \
-                   if (set) \
-                     fl->right_buttons[i].flags |= (a); \
-                   else \
-                     fl->right_buttons[i].flags &= ~(a); \
-             } else \
-                 if (set) \
-                   tb->flags |= (a); \
-                 else \
-                   tb->flags &= ~(a); } while (0)
+#define SetButtonFlag(flag)	do {				\
+    int i;							\
+								\
+    if (multi) {						\
+	if (multi & 1)						\
+	    for (i = 0; i < 5; ++i) {				\
+		if (set)					\
+		    fl->left_buttons[i].flags |= (flag);	\
+		else						\
+		    fl->left_buttons[i].flags &= ~(flag);	\
+	    }							\
+	if (multi & 2)						\
+	    for (i = 0; i < 5; ++i) {				\
+		if (set)					\
+		    fl->right_buttons[i].flags |= (flag);	\
+		else						\
+		    fl->right_buttons[i].flags &= ~(flag);	\
+	    }							\
+    } else {							\
+	if (set)						\
+	    tb->flags |= (flag);				\
+	else							\
+	    tb->flags &= ~(flag);				\
+    }								\
+} while (0)
 
 void ButtonStyle(F_CMD_ARGS)
 {
