@@ -706,6 +706,7 @@ void setup_icon_size_limits(FvwmWindow *fw, window_style *pstyle)
 		fw->min_icon_height = SGET_MIN_ICON_HEIGHT(*pstyle);
 		fw->max_icon_width = SGET_MAX_ICON_WIDTH(*pstyle);
 		fw->max_icon_height = SGET_MAX_ICON_HEIGHT(*pstyle);
+		fw->icon_resize_type = SGET_ICON_RESIZE_TYPE(*pstyle);
 	}
 	else
 	{
@@ -713,6 +714,7 @@ void setup_icon_size_limits(FvwmWindow *fw, window_style *pstyle)
 		fw->min_icon_height = MIN_ALLOWABLE_ICON_DIMENSION;
 		fw->max_icon_width = MAX_ALLOWABLE_ICON_DIMENSION;
 		fw->max_icon_height = MAX_ALLOWABLE_ICON_DIMENSION;
+		fw->icon_resize_type = ICON_RESIZE_TYPE_NONE;
 	}
 
 	return;

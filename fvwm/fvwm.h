@@ -559,6 +559,12 @@ typedef struct window_style
 	unsigned char max_icon_width;
 	unsigned char min_icon_height;
 	unsigned char max_icon_height;
+#define ICON_RESIZE_TYPE_NONE      0x0
+#define ICON_RESIZE_TYPE_STRETCHED 0x1
+#define ICON_RESIZE_TYPE_ADJUSTED  0x2
+#define ICON_RESIZE_TYPE_SHRUNK    0x3
+#define ICON_RESIZE_TYPE_MASK      0x3
+	unsigned icon_resize_type : 2;
 	unsigned char icon_background_padding;
 	unsigned char icon_background_relief;
 	unsigned char icon_title_relief;
@@ -768,10 +774,13 @@ typedef struct FvwmWindow
 	/* Note: if the type of this variable is changed, do update the
 	 * CONFIGARGSNEW macro in module_interface.c, libs/vpacket.h and too! */
 	int layer;
+
 	unsigned char min_icon_width;
 	unsigned char max_icon_width;
 	unsigned char min_icon_height;
 	unsigned char max_icon_height;
+	unsigned short icon_resize_type;
+
 	unsigned char icon_background_padding;
 	unsigned char icon_background_relief;
 	unsigned char icon_title_relief;

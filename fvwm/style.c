@@ -420,6 +420,8 @@ static void merge_styles(
 			*merged_style, SGET_MAX_ICON_WIDTH(*add_style));
 		SSET_MAX_ICON_HEIGHT(
 			*merged_style, SGET_MAX_ICON_HEIGHT(*add_style));
+		SSET_ICON_RESIZE_TYPE(
+			*merged_style, SGET_ICON_RESIZE_TYPE(*add_style));
 	}
 	if (add_style->flags.has_max_window_size)
 	{
@@ -1410,6 +1412,27 @@ static void style_parse_icon_size_style(
 {
 	int vals[4];
 	int i;
+
+	option = PeekToken(rest, NULL);
+	if (StrEquals(option, "Stretched"))
+	{
+		SSET_ICON_RESIZE_TYPE(*ps, ICON_RESIZE_TYPE_STRETCHED);
+		option = PeekToken(rest, &rest);
+	}
+	else if (StrEquals(option, "Adjusted"))
+	{
+		SSET_ICON_RESIZE_TYPE(*ps, ICON_RESIZE_TYPE_ADJUSTED);
+		option = PeekToken(rest, &rest);
+	}
+	else if (StrEquals(option, "Shrunk"))
+	{
+		SSET_ICON_RESIZE_TYPE(*ps, ICON_RESIZE_TYPE_SHRUNK);
+		option = PeekToken(rest, &rest);
+	}
+	else
+	{
+		SSET_ICON_RESIZE_TYPE(*ps, ICON_RESIZE_TYPE_NONE);
+	}
 
 	switch (GetIntegerArguments(rest, &rest, vals, 4))
 	{

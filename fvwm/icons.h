@@ -34,10 +34,6 @@ void RedoIconName(FvwmWindow *fw);
 void DrawIconWindow(
 	FvwmWindow *fw, Bool draw_title, Bool draw_pixmap, Bool focus_change,
 	Bool reset_bg, XEvent *pev);
-void SetIconPixmapSize(
-	Pixmap *icon, unsigned int width, unsigned int height,
-	unsigned int depth, unsigned int newWidth, unsigned int newHeight,
-	unsigned int freeOldPixmap);
 void CreateIconWindow(FvwmWindow *fw, int def_x, int def_y);
 void Iconify(FvwmWindow *fw, initial_window_options_type *win_opts);
 void DeIconify(FvwmWindow *);

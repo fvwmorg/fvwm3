@@ -476,6 +476,10 @@
 	((s).max_icon_height)
 #define SSET_MAX_ICON_HEIGHT(s,x) \
 	((s).max_icon_height = (x))
+#define SGET_ICON_RESIZE_TYPE(s) \
+	((s).icon_resize_type)
+#define SSET_ICON_RESIZE_TYPE(s,x) \
+	((s).icon_resize_type = (x))
 #define SGET_ICON_BACKGROUND_RELIEF(s) \
 	((s).icon_background_relief)
 #define SSET_ICON_BACKGROUND_RELIEF(s,x) \

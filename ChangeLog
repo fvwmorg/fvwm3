@@ -1,3 +1,18 @@
+2002-12-31  olicha  <olivier.chapuis@free.fr>
+
+	* NEWS:
+	* fvwm/style.c (style_parse_icon_size_style):
+	(merge_styles):
+	* fvwm/fvwm.h (window_style):
+	* fvwm/add_window.c (setup_icon_size_limits):
+	* fvwm/icons.c (SetIconPixmapSize):
+	(GetIconPicture):
+	New option to IconSize style: Adjusted, Streched, Shrunk
+
+	* fvwm/icons.c (SetIconPixmapSize):
+	(GetIconPicture):
+	Always center the icon with IconSize if the icon has a background
+
 2002-12-30  Mikhael Goikhman  <migo@homemail.com>
 
 	* configure.in:

@@ -32,6 +32,8 @@ Changes in developement release 2.5.6 (not released yet)
 
 * Renamed FvwmWindowLister to FvwmWindowMenu.
 
+* New option to IconSize style: Adjusted, Stretched, Shrunk
+
 -------------------------------------------------------------------
 
 Changes in developement release 2.5.5 (2-Dec-2002)
