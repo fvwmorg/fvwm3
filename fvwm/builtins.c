@@ -93,10 +93,7 @@ static char  *button_states[MaxButtonState] =
  *     Based on code from AfterStep-1.0 (CT: ctibirna@gch.ulaval.ca)
  *     Additional fixes by Tomas Ogren <stric@ing.umu.se>
  *
- *  Builtin function: WindowShadeAnimate <steps>
- *      <steps> is number of steps in animation. If 0, the
- *              windowshade animation goes off. Default = 0.
- *
+ *  Builtin function: WindowShade
  ***********************************************************************/
 void WindowShade(F_CMD_ARGS)
 {
@@ -2438,7 +2435,7 @@ void SetGlobalOptions(F_CMD_ARGS)
       }
       fvwm_msg(
         ERR, "SetGlobalOptions",
-        "Please replace 'GlobalOpts %s with '%s %s'.", opt, cmd, replace);
+        "Please replace 'GlobalOpts %s' with '%s %s'.", opt, cmd, replace);
     }
     /* should never be null, but checking anyways... */
     if (opt)
@@ -2684,9 +2681,9 @@ void setShadeAnim(F_CMD_ARGS)
     action = "";
   fvwm_msg(
     ERR, "setShadeAnim", "The WindowshadeAnimate command is obsolete. "
-    "Please use 'Style * WindowshadeAnimate %s' instead.", action);
-  buf = safemalloc(strlen(action + 3));
-  sprintf(buf, "* %s", action);
+    "Please use 'Style * WindowShadeSteps %s' instead.", action);
+  buf = safemalloc(strlen(action) + 32);
+  sprintf(buf, "* WindowShadeSteps %s", action);
   ProcessNewStyle(eventp, w, tmp_win, context, buf, Module);
   free(buf);
   return;

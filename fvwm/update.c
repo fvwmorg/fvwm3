@@ -260,6 +260,7 @@ static void apply_window_updates(
   {
     setup_frame_attributes(t, pstyle);
   }
+  t->shade_anim_steps = pstyle->shade_anim_steps;
 
   return;
 }

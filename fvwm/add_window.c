@@ -438,6 +438,9 @@ void setup_style_and_decor(
   /****** window colors ******/
   update_window_color_style(tmp_win, pstyle);
   update_window_color_hi_style(tmp_win, pstyle);
+
+  /****** window shading ******/
+  tmp_win->shade_anim_steps = pstyle->shade_anim_steps;
 }
 
 void setup_icon_boxes(FvwmWindow *tmp_win, window_style *pstyle)

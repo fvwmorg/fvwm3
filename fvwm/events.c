@@ -841,7 +841,6 @@ void HandlePropertyNotify(void)
 	int wdiff;
 	int hdiff;
 
-fprintf(stderr,"ohi=%d hi=%d imp=%d\n", old_height_inc, Tmp_win->hints.height_inc, IS_MAP_PENDING(Tmp_win));
         if (!was_size_inc_set && old_width_inc == 1 && old_height_inc == 1)
         {
           /* This is a hack for xvile.  It sets the _inc hints after it

@@ -4210,10 +4210,13 @@ Warning: If a style is built from one or more parent styles and the
 parent styles are changed, the derived style is not modified. To achieve
 this you have to issue the 'UseStyle' line again.
 
-\fISkipMapping\fP tells fvwm not to switch to the desk the window is on when
-it gets mapped initially (useful with StartsOnDesk or StartsOnPage).
+.I SkipMapping
+tells fvwm not to switch to the desk the window is on when
+it gets mapped initially (useful with
+.IR StartsOnDesk " or " StartsOnPage ).
 
-\fILenience\fP instructs fvwm to ignore the convention in the
+.I Lenience
+instructs fvwm to ignore the convention in the
 .SM ICCCM
 which states that if an application sets the input field of the wm_hints
 structure to False, then it never wants the window manager to give it
@@ -4247,16 +4250,19 @@ The defaults are
 .IR ClickToFocusPassesClick ,
 .IR ClickToFocusRaises and MouseFocusClickRaisesOff .
 
-\fINoPPosition\fP instructs fvwm to ignore the PPosition field when adding
+.I NoPPosition
+instructs fvwm to ignore the PPosition field when adding
 new windows.  Adherence to the PPosition field is required for some
 applications, but if you don't have one of those its a real headache.
 
-\fIRandomPlacement\fP causes windows which would normally require user
+.I RandomPlacement
+causes windows which would normally require user
 placement to be automatically placed in ever-so-slightly random
 locations.  For the best of all possible worlds use both
-RandomPlacement and SmartPlacement.
+.IR RandomPlacement " and " SmartPlacement .
 
-\fISmartPlacement\fP causes windows which would normally require user
+.I SmartPlacement
+causes windows which would normally require user
 placement to be automatically placed in a smart location - a location
 in which they do not overlap any other windows on the screen.  If no
 such position can be found user placement or random placement (if

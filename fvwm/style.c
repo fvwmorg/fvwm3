@@ -319,6 +319,10 @@ static void merge_styles(window_style *merged_style, window_style *add_style,
     SSET_MAX_WINDOW_WIDTH(*merged_style, SGET_MAX_WINDOW_WIDTH(*add_style));
     SSET_MAX_WINDOW_HEIGHT(*merged_style, SGET_MAX_WINDOW_HEIGHT(*add_style));
   }
+  if(add_style->flags.has_window_shade_steps)
+  {
+    SSET_WINDOW_SHADE_STEPS(*merged_style, SGET_WINDOW_SHADE_STEPS(*add_style));
+  }
 
   /* merge the style flags */
   merge_flags = (char *)&(merged_style->flags);
@@ -2076,12 +2080,13 @@ void ProcessNewStyle(XEvent *eventp, Window w, FvwmWindow *tmp_win,
 	  SMSET_DO_WINDOW_LIST_SKIP(*ptmpstyle, 1);
 	  SCSET_DO_WINDOW_LIST_SKIP(*ptmpstyle, 1);
         }
-	else if(StrEquals(token, "WindowshadeSteps"))
+	else if(StrEquals(token, "WindowShadeSteps"))
         {
           int n = 0;
           int val = 0;
           int unit = 0;
 
+	  found = True;
           n = GetOnePercentArgument(rest, &val, &unit);
           if (n != 1)
           {
@@ -2090,6 +2095,9 @@ void ProcessNewStyle(XEvent *eventp, Window w, FvwmWindow *tmp_win,
           /* we have a 'pixel' suffix if unit != 0; negative values mean
            * pixels */
           val = (unit != 0) ? -val : val;
+	  ptmpstyle->flags.has_window_shade_steps = 1;
+	  ptmpstyle->flag_mask.has_window_shade_steps = 1;
+	  ptmpstyle->change_mask.has_window_shade_steps = 1;
           SSET_WINDOW_SHADE_STEPS(*ptmpstyle, val);
         }
 	else if(StrEquals(token, "WindowShadeScrolls"))
