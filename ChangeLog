@@ -1,4 +1,20 @@
+2002-07-06  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* fvwm/events.c (CMD_XSync):
+	very experimental patch to cycle through subwindows accepting keyboard
+	input; call Xsync command repeatedly to test; crashes fvwm if more than
+	1000 subwindows are used;
+
+	* fvwm/focus.c (CMD_WarpToWindow):
+	fixed a bug in warpttowindow command with subwindows of unmanaged
+	windows
+
 2002-07-05  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* fvwm/events.c (HandlePropertyNotify):
+	* fvwm/events.h:
+	handle changes in the size_inc and base_size hints during opaque
+	resizing.
 
 	* fvwm/events.c (HandleButtonPress):
 	ClickToFocus + ClickToFocusPassesClickOff now blocks event handling

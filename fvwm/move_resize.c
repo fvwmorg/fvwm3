@@ -2533,6 +2533,7 @@ static Bool resize_window(F_CMD_ARGS)
 	size_borders b;
 	Bool called_from_title = False;
 	frame_move_resize_args mr_args = NULL;
+	long evmask;
 
 	bad_window = False;
 	ResizeWindow = FW_W_FRAME(fw);
@@ -2564,10 +2565,12 @@ static Bool resize_window(F_CMD_ARGS)
 	if (IS_SHADED(fw) || !IS_MAPPED(fw))
 	{
 		do_resize_opaque = False;
+		evmask = XEVMASK_RESIZE;
 	}
 	else
 	{
 		do_resize_opaque = DO_RESIZE_OPAQUE(fw);
+		evmask = XEVMASK_RESIZE_OPAQUE;
 	}
 
 	/* no suffix = % of screen, 'p' = pixels, 'c' = increment units */
@@ -2876,10 +2879,7 @@ static Bool resize_window(F_CMD_ARGS)
 
 		/* block until there is an interesting event */
 		while (rc != -1 &&
-		       (!XCheckMaskEvent(
-			       dpy, ButtonPressMask | ButtonReleaseMask |
-			       KeyPressMask | PointerMotionMask |
-			       ButtonMotionMask | ExposureMask, &Event)))
+		       (!XCheckMaskEvent(dpy, evmask, &Event)))
 		{
 			rc = HandlePaging(
 				Scr.EdgeScrollX, Scr.EdgeScrollY, &x, &y,
@@ -2895,9 +2895,7 @@ static Bool resize_window(F_CMD_ARGS)
 		}
 		if (rc == -1)
 		{
-			XMaskEvent(dpy, ButtonPressMask | ButtonReleaseMask |
-				   KeyPressMask | PointerMotionMask |
-				   ButtonMotionMask | ExposureMask, &Event);
+			XMaskEvent(dpy, evmask, &Event);
 		}
 		StashEventTime(&Event);
 
@@ -2926,7 +2924,7 @@ static Bool resize_window(F_CMD_ARGS)
 			Keyboard_shortcuts(
 				&Event, fw, NULL, NULL, ButtonRelease);
 		}
-		switch(Event.type)
+		switch (Event.type)
 		{
 		case ButtonPress:
 			is_done = True;
@@ -3014,6 +3012,11 @@ static Bool resize_window(F_CMD_ARGS)
 			}
 			fForceRedraw = False;
 			is_done = True;
+
+		case PropertyNotify:
+			HandlePropertyNotify();
+			break;
+
 		default:
 			break;
 		}

@@ -711,20 +711,20 @@ void CMD_WarpToWindow(F_CMD_ARGS)
 			}
 			if (val1_unit != Scr.MyDisplayWidth)
 			{
-				x = wx + val1;
+				x = val1;
 			}
 			else
 			{
-				x = wx + (ww - 1) * val1 / 100;
+				x = (ww - 1) * val1 / 100;
 			}
 
 			if (val2_unit != Scr.MyDisplayHeight)
 			{
-				y = wy + val2;
+				y = val2;
 			}
 			else
 			{
-				y = wy + (wh - 1) * val2 / 100;
+				y = (wh - 1) * val2 / 100;
 			}
 		}
 		XWarpPointer(dpy, None, w, 0, 0, 0, 0, x, y);

@@ -61,6 +61,9 @@
 	  SubstructureNotifyMask | ColormapChangeMask | \
 	  STROKE_CODE(ButtonMotionMask | DEFAULT_ALL_BUTTONS_MOTION_MASK |) \
 	  ButtonPressMask | ButtonReleaseMask)
+#define XEVMASK_RESIZE ButtonPressMask | ButtonReleaseMask | KeyPressMask | \
+	PointerMotionMask | ButtonMotionMask | ExposureMask
+#define XEVMASK_RESIZE_OPAQUE XEVMASK_RESIZE | PropertyChangeMask
 
 /* ---------------------------- global macros ------------------------------- */
 
