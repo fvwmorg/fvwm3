@@ -165,7 +165,6 @@ Contents
     7.12  Toggling windows on and off.
     7.13  Starting applications by clicking on an icon.
     7.14  Positioning a window using arithmetic.
-    
 
 
 ======================================================================
@@ -1949,9 +1948,10 @@ A: Setting the background image is not really part of the window
    for you.
 
    There is a program shipped with fvwm (fvwm-root, previously known as
-   xpmroot) that you can use to set the background to XPM or PNG image.
-   Other programs like "xv", "xli", "xloadimage", and "display" may be
-   used too, they support some image formats that fvwm-root does not.
+   xpmroot) that you can use to set the background to an XPM or PNG
+   image.  Other programs like "xv", "xli", "xloadimage", and "display"
+   may be used too, they support some image formats that fvwm-root does
+   not.
 
    If you just want a static image on your background, you might invoke
    one of these programs from your .xsession or .xinitrc file.  You can
