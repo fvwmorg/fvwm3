@@ -1,3 +1,10 @@
+1999-01-16  Bob Woodside  <proteus@pcnet.com>
+
+	* docs/FAQ:  Removed Question 20 (why do Motif popups disappear
+	under the window with Autoraise in effect, etc.?). This no longer
+	happens as of 2.1.8. Added Question 49 (why can't I use StartIconic
+	with Netscape, etc.?).
+
 1999-01-16  Dominik Vogt  <dominik_vogt@hp.com>
 
 	* ANNOUNCE: updated for 2.1.8

@@ -43,8 +43,8 @@ INDEX
        19) How do I set the Sun keyboard key xxxx to an FVWM command?
            Or more generally, I'm having problems defining key
            bindings for FVWM - what can I do?
-       20) I clicked on a program's Motif menubar and the menu pops up
-           then dissappears.  What gives?
+       20) (Question gone)
+
        21) I heard about this FvwmFileMgr module.  Where can I find it?
        22) I'd really like {NeXT, Win95, etc} look and feel.  Are you
            going to support that?
@@ -610,17 +610,6 @@ A: From Jon Mountjoy, one of FVWM's users:
    or xkeykaps (an X11 interface to xmodmap written by Jamie Zawinski,
    available from ftp.x.org) to find out what the keysym for whatever
    key you want REALLY is, and use that for binding fvwm commands.
-
-----------------------------------------------------------------------
-
-20) I clicked on a program's Motif menubar (with click to focus or
-    stays on top set) and the menu pops up then dissappears.  What
-    gives?
-
-A: Known problem.  The window is being raised over the
-   override_redirect window that is being used to display the menu.
-   Be sure the window is raised before you click on the menubar.  I
-   don't know if there is really anything I can do to help this.
 
 ----------------------------------------------------------------------
 
