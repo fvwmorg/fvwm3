@@ -53,7 +53,7 @@ export PATH
 
 : ${EDITOR=emacs}
 
-TEMP=/tmp/fvwm-bug.$$
+TEMP=`mktemp -q "/tmp/fvwm-bug.XXXXXX"`
 
 # Figure out how to echo a string without a trailing newline
 N=`echo 'hi there\c'`

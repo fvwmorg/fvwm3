@@ -1,3 +1,9 @@
+2004-03-19  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* fvwm-bug.in:
+	script safty patch; see
+	http://securitytracker.com/alerts/2004/Jan/1008781.html
+
 2004-01-01  Mikhael Goikhman  <migo@homemail.com>
 
 	* fvwm-menu-directory.in:
@@ -86,7 +92,7 @@
 2002-11-28  olicha  <olivier.chapuis@free.fr>
 
 	* fvwm-config.1:
-	* fvwm-config.in: 
+	* fvwm-config.in:
 	localedir and gettext
 
 2002-11-10  Mikhael Goikhman  <migo@homemail.com>
