@@ -67,7 +67,9 @@ Instead of invoking "m4", fvwm will invoke \fIname\fP.
 -outfile \fIfilename\fP
 Instead of creating a random unique name for the temporary file for
 the preprocessed rc file, this option will let you specify the name of
-the temporary file it will create.
+the temporary file it will create.  Please not that FvwmM4 will attempt
+to remove this file before writing to it, so don't point it at anything
+important even if has read-only protection.
 
 .IP -debug
 Causes the temporary file create by m4 to

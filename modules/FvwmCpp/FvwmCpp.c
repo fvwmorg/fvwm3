@@ -224,7 +224,9 @@ static char *cpp_defs(Display *display, const char *host, char *cpp_options, cha
   /*
   ** check to make sure it doesn't exist already, to prevent security hole
   */
-  if ((fd = open(tmp_name, O_WRONLY|O_EXCL|O_CREAT, 0600)) < 0)
+  /* first try to unlink it */
+  unlink(tmp_name);
+  if ((fd = open(tmp_name, O_WRONLY|O_EXCL|O_CREAT, 0644)) < 0)
   {
     perror("exclusive open for output file failed in cpp_defs");
     exit(0377);
