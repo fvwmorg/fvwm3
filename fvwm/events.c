@@ -489,6 +489,10 @@ void HandlePropertyNotify(void)
   XTextProperty text_prop;
   Bool OnThisPage = False;
   int old_wmhints_flags;
+  int old_width_inc;
+  int old_height_inc;
+  int old_base_width;
+  int old_base_height;
 
 #ifdef I18N_MB
   Atom actual = None;
@@ -768,24 +772,37 @@ void HandlePropertyNotify(void)
 	}
       break;
     case XA_WM_NORMAL_HINTS:
+      old_width_inc = Tmp_win->hints.width_inc;
+      old_height_inc = Tmp_win->hints.height_inc;
+      old_base_width = Tmp_win->hints.base_width;
+      old_base_height = Tmp_win->hints.base_height;
       GetWindowSizeHints (Tmp_win);
-#if 0
-      /*
-      ** ckh - not sure why this next stuff was here, but fvwm 1.xx
-      ** didn't do this, and it seems to cause a bug when changing
-      ** fonts in XTerm
-      */
+      if (IS_MAXIMIZED(Tmp_win) &&
+	  (old_width_inc != Tmp_win->hints.width_inc ||
+	   old_height_inc != Tmp_win->hints.height_inc))
       {
-	int new_width, new_height;
-	new_width = Tmp_win->frame_g.width;
-	new_height = Tmp_win->frame_g.height;
-	ConstrainSize(Tmp_win, &new_width, &new_height, 0, 0, False);
-	if((new_width != Tmp_win->frame_g.width)||
-	   (new_height != Tmp_win->frame_g.height))
-	  SetupFrame(Tmp_win,Tmp_win->frame_g.x, Tmp_win->frame_g.y,
-		     new_width,new_height,False,False);
+	int units_w;
+	int units_h;
+
+	/* we have to resize the unmaximized window to keep the size in resize
+	 * increments constant */
+	units_w = Tmp_win->orig_g.width - 2 * Tmp_win->boundary_width -
+	  old_base_width;
+        units_h = Tmp_win->orig_g.height - Tmp_win->title_g.height -
+	  2 * Tmp_win->boundary_width - old_base_height;
+	units_w /= old_width_inc;
+	units_h /= old_height_inc;
+
+	/* update the 'invisible' geometry */
+	Tmp_win->orig_g.width +=
+	  units_w * (Tmp_win->hints.width_inc - old_width_inc) +
+	  (Tmp_win->hints.base_width - old_base_width);
+	Tmp_win->orig_g.height +=
+	  units_h * (Tmp_win->hints.height_inc - old_height_inc) +
+	  (Tmp_win->hints.base_height - old_base_height);
+	ConstrainSize(Tmp_win, &Tmp_win->orig_g.width, &Tmp_win->orig_g.height,
+		      0, 0, False);
       }
-#endif /* 0 */
       BroadcastConfig(M_CONFIGURE_WINDOW,Tmp_win);
       break;
 

@@ -2540,7 +2540,43 @@ void SetBugOptions(F_CMD_ARGS)
       toggle = ParseToggleArgument(action, &action, 1, False);
     }
 
-    if (StrEquals(opt, "ModalityIsEvil"))
+    if (StrEquals(opt, "FlickeringMoveWorkaround"))
+    {
+      switch (toggle)
+      {
+      case -1:
+	Scr.bo.DisableConfigureNotify ^= 1;
+	break;
+      case 0:
+      case 1:
+	Scr.bo.DisableConfigureNotify = toggle;
+	break;
+      default:
+#ifdef DISABLE_CONFIGURE_NOTIFY_DURING_MOVE
+	Scr.bo.DisableConfigureNotify = 1;
+#else
+	Scr.bo.DisableConfigureNotify = 0;
+#endif
+	break;
+      }
+    }
+    else if (StrEquals(opt, "MixedVisualWorkaround"))
+    {
+      switch (toggle)
+      {
+      case -1:
+	Scr.bo.InstallRootCmap ^= 1;
+	break;
+      case 0:
+      case 1:
+	Scr.bo.InstallRootCmap = toggle;
+	break;
+      default:
+	Scr.bo.InstallRootCmap = 0;
+	break;
+      }
+    }
+    else if (StrEquals(opt, "ModalityIsEvil"))
     {
       switch (toggle)
       {
@@ -2592,45 +2628,9 @@ void SetBugOptions(F_CMD_ARGS)
 	break;
       }
     }
-    else if (StrEquals(opt, "FlickeringMoveWorkaround"))
-    {
-      switch (toggle)
-      {
-      case -1:
-	Scr.bo.DisableConfigureNotify ^= 1;
-	break;
-      case 0:
-      case 1:
-	Scr.bo.DisableConfigureNotify = toggle;
-	break;
-      default:
-#ifdef DISABLE_CONFIGURE_NOTIFY_DURING_MOVE
-	Scr.bo.DisableConfigureNotify = 1;
-#else
-	Scr.bo.DisableConfigureNotify = 0;
-#endif
-	break;
-      }
-    }
-    else if (StrEquals(opt, "MixedVisualWorkaround"))
-    {
-      switch (toggle)
-      {
-      case -1:
-	Scr.bo.InstallRootCmap ^= 1;
-	break;
-      case 0:
-      case 1:
-	Scr.bo.InstallRootCmap = toggle;
-	break;
-      default:
-	Scr.bo.InstallRootCmap = 0;
-	break;
-      }
-    }
     else
     {
-      fvwm_msg(ERR,"SetButOptions","Unknown Bug Option '%s'",opt);
+      fvwm_msg(ERR, "SetBugOptions", "Unknown Bug Option '%s'", opt);
     }
     free(opt);
   }

@@ -222,6 +222,13 @@ void GetTargetWindow(Window *app_win)
   if(eventp.xbutton.subwindow != None)
     *app_win = eventp.xbutton.subwindow;
 
+  /* Don't allow operations on the root window */
+  if (*app_win == Root)
+  {
+    *app_win = None;
+    return;
+  }
+
   target_win = ClientWindow(*app_win);
   if(target_win != None)
     *app_win = target_win;

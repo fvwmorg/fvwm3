@@ -70,7 +70,7 @@ extern Window PressedW;
 
 static void DoResize(int x_root, int y_root, FvwmWindow *tmp_win,
 		     rectangle *drag, rectangle *orig, int *xmotionp,
-		     int *ymotionp);
+		     int *ymotionp, Bool do_resize_opaque);
 static void DisplaySize(FvwmWindow *, int, int, Bool, Bool);
 /* ----- end of resize globals ----- */
 
@@ -1349,6 +1349,7 @@ void SetXORPixmap(F_CMD_ARGS)
 void resize_window(F_CMD_ARGS)
 {
   Bool finished = FALSE, done = FALSE, abort = FALSE;
+  Bool do_resize_opaque;
   int x,y,delta_x,delta_y,stashed_x,stashed_y;
   Window ResizeWindow;
   Bool fButtonAbort = False;
@@ -1394,6 +1395,7 @@ void resize_window(F_CMD_ARGS)
   if(IS_ICONIFIED(tmp_win))
     return;
 
+  do_resize_opaque = DO_RESIZE_OPAQUE(tmp_win);
   /* no suffix = % of screen, 'p' = pixels, 'c' = increment units */
   n = GetSuffixedIntegerArguments(action, NULL, values, 2, "pc", suffix);
   if(n == 2)
@@ -1452,8 +1454,8 @@ void resize_window(F_CMD_ARGS)
     return;
   }
 
-  MyXGrabServer(dpy);
-
+  if (!do_resize_opaque)
+    MyXGrabServer(dpy);
 
   /* handle problems with edge-wrapping while resizing */
   edge_wrap_x = Scr.flags.edge_wrap_x;
@@ -1642,14 +1644,16 @@ void resize_window(F_CMD_ARGS)
    * starting a resize. */
 
   /* draw the rubber-band window */
-  MoveOutline(drag->x, drag->y, drag->width - 1, drag->height - 1);
+  if (!do_resize_opaque)
+    MoveOutline(drag->x, drag->y, drag->width - 1, drag->height - 1);
   /* kick off resizing without requiring any motion if invoked with a key
    * press */
   if (eventp->type == KeyPress)
   {
     XQueryPointer(dpy, Scr.Root, &JunkRoot, &JunkChild,
 		  &stashed_x,&stashed_y,&JunkX, &JunkY, &JunkMask);
-    DoResize(stashed_x, stashed_y, tmp_win, drag, orig, &xmotion, &ymotion);
+    DoResize(stashed_x, stashed_y, tmp_win, drag, orig, &xmotion, &ymotion,
+	     do_resize_opaque);
   }
   else
     stashed_x = stashed_y = -1;
@@ -1736,7 +1740,8 @@ void resize_window(F_CMD_ARGS)
 	y = Event.xmotion.y_root;
 	/* resize before paging request to prevent resize from lagging
 	 * mouse - mab */
-	DoResize(x, y, tmp_win, drag, orig, &xmotion, &ymotion);
+	DoResize(x, y, tmp_win, drag, orig, &xmotion, &ymotion,
+		 do_resize_opaque);
 	/* need to move the viewport */
 	HandlePaging(Scr.EdgeScrollX, Scr.EdgeScrollY, &x, &y,
 		     &delta_x, &delta_y, False, False, False);
@@ -1749,7 +1754,8 @@ void resize_window(F_CMD_ARGS)
 	drag->x -= delta_x;
 	drag->y -= delta_y;
 
-	DoResize(x, y, tmp_win, drag, orig, &xmotion, &ymotion);
+	DoResize(x, y, tmp_win, drag, orig, &xmotion, &ymotion,
+		 do_resize_opaque);
       }
       fForceRedraw = False;
       done = TRUE;
@@ -1759,17 +1765,19 @@ void resize_window(F_CMD_ARGS)
     if(!done)
     {
       DispatchEvent(False);
-      MoveOutline(drag->x, drag->y, drag->width - 1, drag->height - 1);
+      if (!do_resize_opaque)
+	MoveOutline(drag->x, drag->y, drag->width - 1, drag->height - 1);
     }
   }
 
   /* erase the rubber-band */
-  MoveOutline(0, 0, 0, 0);
+  if (!do_resize_opaque)
+    MoveOutline(0, 0, 0, 0);
 
   /* pop down the size window */
   XUnmapWindow(dpy, Scr.SizeWindow);
 
-  if(!abort)
+  if(!abort && !do_resize_opaque /*!!!*/)
   {
     /* size will be >= to requested */
     ConstrainSize(tmp_win, &drag->width, &drag->height, xmotion, ymotion,
@@ -1789,7 +1797,8 @@ void resize_window(F_CMD_ARGS)
   else
     UninstallFvwmColormap();
   ResizeWindow = None;
-  MyXUngrabServer(dpy);
+  if (!do_resize_opaque)
+    MyXUngrabServer(dpy);
   UngrabEm();
   xmotion = 0;
   ymotion = 0;
@@ -1820,7 +1829,7 @@ void resize_window(F_CMD_ARGS)
  ************************************************************************/
 static void DoResize(int x_root, int y_root, FvwmWindow *tmp_win,
 		     rectangle *drag, rectangle *orig, int *xmotionp,
-		     int *ymotionp)
+		     int *ymotionp, Bool do_resize_opaque)
 {
   int action=0;
 
@@ -1868,7 +1877,15 @@ static void DoResize(int x_root, int y_root, FvwmWindow *tmp_win,
     if (*ymotionp == 1)
       drag->y = orig->y + orig->height - drag->height;
 
-    MoveOutline(drag->x, drag->y, drag->width - 1, drag->height - 1);
+    if(!do_resize_opaque)
+    {
+      MoveOutline(drag->x, drag->y, drag->width - 1, drag->height - 1);
+    }
+    else
+    {
+      SetupFrame(tmp_win, drag->x, drag->y, drag->width - 1, drag->height - 1,
+		 False, False);
+    }
   }
   DisplaySize(tmp_win, drag->width, drag->height,False,False);
 }

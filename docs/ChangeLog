@@ -1,3 +1,8 @@
+1999-09-19  Dominik Vogt  <dominik_vogt@gmx.de>
+
+	* FAQ: removed some cut-and-paste trash
+	(5.11): FAQ for RaiseOverUnmanaged bug option
+
 1999-08-15  Dominik Vogt  <dominik_vogt@gmx.de>
 
 	* Y2K-Compliance:

@@ -20,19 +20,20 @@
 
 /* access to the common flags of a window */
 /* call these with a pointer to a style_flags struct */
+#define SDO_FLIP_TRANSIENT(sf) \
+                                      ((sf)->common.do_flip_transient)
 #define SDO_GRAB_FOCUS(sf)            ((sf)->common.do_grab_focus_when_created)
 #define SDO_GRAB_FOCUS_TRANSIENT(sf)  \
           ((sf)->common.do_grab_focus_when_transient_created)
-#define SDO_SKIP_CIRCULATE(sf)        ((sf)->common.do_circulate_skip)
-#define SDO_SKIP_CIRCULATE_ICON(sf)   ((sf)->common.circulate_skip_icon)
 #define SDO_LOWER_TRANSIENT(sf)       ((sf)->common.do_lower_transient)
 #define SDO_RAISE_TRANSIENT(sf)       ((sf)->common.do_raise_transient)
-#define SDO_FLIP_TRANSIENT(sf) \
-                                      ((sf)->common.do_flip_transient)
-#define SDO_STACK_TRANSIENT_PARENT(sf) \
-                                      ((sf)->common.do_stack_transient_parent)
+#define SDO_RESIZE_OPAQUE(sf)         ((sf)->common.do_resize_opaque)
+#define SDO_SKIP_CIRCULATE(sf)        ((sf)->common.do_circulate_skip)
+#define SDO_SKIP_CIRCULATE_ICON(sf)   ((sf)->common.circulate_skip_icon)
 #define SDO_NOT_SHOW_ON_MAP(sf)       ((sf)->common.do_not_show_on_map)
 #define SDO_SKIP_WINDOW_LIST(sf)      ((sf)->common.do_window_list_skip)
+#define SDO_STACK_TRANSIENT_PARENT(sf) \
+                                      ((sf)->common.do_stack_transient_parent)
 #define SDO_START_ICONIC(sf)          ((sf)->common.do_start_iconic)
 #define SIS_ICON_STICKY(sf)           ((sf)->common.is_icon_sticky)
 #define SIS_ICON_SUPPRESSED(sf)       ((sf)->common.is_icon_suppressed)

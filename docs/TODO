@@ -42,8 +42,6 @@ Bugfixes:
         MotionThreshold not exceeded & ClickTime not exceeded -> DoubleClick
   - Make transient FvwmWinList reposition itself & pointer if popped up
     off the screen (like built in menus)
-  - Maximize XTerm, change font, UnMaximize, XTerm goes to wrong window size
-    (still unfixed on 28-Nov-1998)
   - Colormaps and xlock -install -mode blank (& swirl) interaction still
     isn't 100% correct?
   - Should also have way to make windows off desktop be recovered easier
@@ -131,9 +129,6 @@ New stuff:
 
   - Add twm SqeezeTitle functionality to TitleStyle stuff & merge into
     Style command, perhaps???
-
-  - Allow neg vals for Maximize to indicate from bottom/right of screen
-  - Allow neg vals for Move to indicate from bottom/right of screen
 
   - Add way to set keyword/value pairs to windows (via Atoms?) as a
     way for giving extra info to modules through style commands?

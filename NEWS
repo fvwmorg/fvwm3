@@ -1,4 +1,6 @@
-Changes in beta release 2.3.8 (September? 1999)
+Changes in beta release 2.3.8 (September 1999)
+
+* New Style options ResizeOpaque and ResizeOutline.
 
 * A long-awaited new default FvwmBanner logo.
 

@@ -407,7 +407,7 @@ Button *button_below (WinManager *man, Button *b)
 
 Button *button_right (WinManager *man, Button *b)
 {
-  int i = 0;
+  int i = -1;
 
   if (index_to_col (man, b->index) < man->geometry.cols - 1) {
     i = box_to_index (man, index_to_box (man, b->index) + 1);

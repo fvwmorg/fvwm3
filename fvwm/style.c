@@ -1154,6 +1154,18 @@ void ProcessNewStyle(XEvent *eventp, Window w, FvwmWindow *tmp_win,
           tmpstyle.flags.common.do_raise_transient = 1;
           tmpstyle.flag_mask.common.do_raise_transient = 1;
         }
+        else if(StrEquals(token, "ResizeOpaque"))
+        {
+	  found = True;
+          tmpstyle.flags.common.do_resize_opaque = 1;
+          tmpstyle.flag_mask.common.do_resize_opaque = 1;
+        }
+        else if(StrEquals(token, "ResizeOutline"))
+        {
+	  found = True;
+          tmpstyle.flags.common.do_resize_opaque = 0;
+          tmpstyle.flag_mask.common.do_resize_opaque = 1;
+        }
         break;
 
       case 's':

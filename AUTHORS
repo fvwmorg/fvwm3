@@ -43,6 +43,9 @@ hilight/shadow calc from scwm as a library routine, updated web docs,
 lots of improvements in FvwmForm, replacement of FvwmTalk with FvwmForm,
 fvwm setup form.
 
+Tony Finch:
+Original patch for opaque resizing for 2.2.
+
 Will French:
 $d, $x and $y macros for functions.
 
@@ -114,7 +117,7 @@ improved transient FvwmPager, improved transient window handling, MaxWindowSize
 style, Improved(?) mouse paging, RaiseTransient and LowerTransient styles,
 nicer cursors, helped with colorset implementation, variables for FvwmButtons
 actions, fvwm-cats page, ported &%!#?-95 like config file from fvwm95, cleanup
-of gradient drawing code.
+of gradient drawing code, rewrite of opaque resize patch for 2.3.8.
 
 A.J. Weber:
 SnapAttraction patch.

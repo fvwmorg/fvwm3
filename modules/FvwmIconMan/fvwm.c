@@ -255,13 +255,13 @@ static void focus_change (FvwmPacketBody *body)
   ConsoleDebug (FVWM, "Focus Change\n");
   ConsoleDebug (FVWM, "\tID: %ld\n", app_id);
 
-  if (globals.focus_win) {
-    del_win_state (globals.focus_win, FOCUS_CONTEXT);
-    if (globals.focus_win->manager && globals.focus_win->manager->focus_button)
-      globals.focus_win->manager->focus_button = NULL;
-    globals.focus_win = NULL;
+  if (fvwm_focus_win)
+  {
+    del_win_state (fvwm_focus_win, FOCUS_CONTEXT);
+    if (fvwm_focus_win->manager && fvwm_focus_win->manager->focus_button)
+      fvwm_focus_win->manager->focus_button = NULL;
+    fvwm_focus_win = NULL;
   }
-
 
   if (win->complete  &&
       win->button  &&

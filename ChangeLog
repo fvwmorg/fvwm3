@@ -1,3 +1,17 @@
+1999-09-19  Dominik Vogt  <dominik_vogt@gmx.de>
+
+	* fvwm/events.c (HandlePropertyNotify): fixed bug with xterm:
+	<maximize, change font, normalize> got the window size wrong
+
+	* fvwm/fvwm.h (common_flags):
+	* fvwm/window_flags.h (DO_RESIZE_OPAQUE):
+	* fvwm/style.h (SDO_RESIZE_OPAQUE):
+	* fvwm/style.c (ProcessNewStyle):
+	* fvwm/move_resize.c (DoResize):
+	(resize_window):
+	implemented opaque resizing (styles ResizeOpaque and ResizeOutline)
+	base on patch by Tony Finch
+
 1999-09-18  Bob Woodside  <proteus@pcnet.com>
 
 	* fvwm/builtins.c:

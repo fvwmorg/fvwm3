@@ -17,10 +17,16 @@
 #define _WINDOW_FLAGS_
 
 /* access to the common flags of a window */
+#define DO_FLIP_TRANSIENT(fw)  ((fw)->flags.common.do_flip_transient)
 #define DO_GRAB_FOCUS(fw) \
           ((fw)->flags.common.do_grab_focus_when_created)
 #define DO_GRAB_FOCUS_TRANSIENT(fw) \
           ((fw)->flags.common.do_grab_focus_when_transient_created)
+#define DO_LOWER_TRANSIENT(fw) ((fw)->flags.common.do_lower_transient)
+#define DO_NOT_SHOW_ON_MAP(fw)  \
+          ((fw)->flags.common.do_not_show_on_map)
+#define DO_RAISE_TRANSIENT(fw) ((fw)->flags.common.do_raise_transient)
+#define DO_RESIZE_OPAQUE(fw)   ((fw)->flags.common.do_resize_opaque)
 #define DO_SKIP_CIRCULATE(fw)  \
           ((fw)->flags.common.do_circulate_skip)
 #define SET_DO_SKIP_CIRCULATE(fw,x) \
@@ -33,24 +39,20 @@
           (fw)->flags.common.do_circulate_skip_icon = !!(x)
 #define SETM_DO_SKIP_ICON_CIRCULATE(fw,x) \
           (fw)->flag_mask.common.do_circulate_skip_icon = !!(x)
-#define DO_LOWER_TRANSIENT(fw) ((fw)->flags.common.do_lower_transient)
-#define DO_RAISE_TRANSIENT(fw) ((fw)->flags.common.do_raise_transient)
-#define DO_FLIP_TRANSIENT(fw)  ((fw)->flags.common.do_flip_transient)
-#define DO_STACK_TRANSIENT_PARENT(fw) \
-          ((fw)->flags.common.do_stack_transient_parent)
-#define DO_NOT_SHOW_ON_MAP(fw)  \
-          ((fw)->flags.common.do_not_show_on_map)
 #define DO_SKIP_WINDOW_LIST(fw) \
           ((fw)->flags.common.do_window_list_skip)
 #define SET_DO_SKIP_WINDOW_LIST(fw,x) \
           (fw)->flags.common.do_window_list_skip = !!(x)
 #define SETM_DO_SKIP_WINDOW_LIST(fw,x) \
           (fw)->flag_mask.common.do_window_list_skip = !!(x)
+#define DO_STACK_TRANSIENT_PARENT(fw) \
+          ((fw)->flags.common.do_stack_transient_parent)
 #define DO_START_ICONIC(fw)    ((fw)->flags.common.do_start_iconic)
 #define SET_DO_START_ICONIC(fw,x) \
           (fw)->flags.common.do_start_iconic = !!(x)
 #define SETM_DO_START_ICONIC(fw,x) \
           (fw)->flag_mask.common.do_start_iconic = !!(x)
+
 #define IS_ICON_STICKY(fw)     ((fw)->flags.common.is_icon_sticky)
 #define SET_ICON_STICKY(fw,x)  (fw)->flags.common.is_icon_sticky = !!(x)
 #define SETM_ICON_STICKY(fw,x) \

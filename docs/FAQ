@@ -67,17 +67,6 @@ Contents
           application. Is there some kind of auto arrange function?
     3.16  How do I set up a fvwm menu item that shuts down my Linux machine?
 
-I'm trying to get Linux set up on our home box.  I'd like my wife
-to be able to use it, so I need a simple way to shutdown the
-machine.  (I don't think she will want to su, enter the password,
-and type shutdown -h now...)
-
-I know this is probably not a pure FVWM question, and I appologize
-if this is the wrong place to ask.  But, I'm looking for suggestions
-on how to implement this.  Preferably, she would just have to click
-a button or menu item (in X, with fvwm) to cleanly bring the system
-down.
-
 4. Modules
 
      4.1  I'm using FvwmButtons (or GoodStuff in 1.xx), and sometimes the
@@ -113,6 +102,10 @@ down.
           under MWM or OLWM.  What's going on?
     5.10  Every time I update my install, my currently running fvwm
           session dies.  Why is that?
+    5.11  After I restart fvwm certain windows or icons raise above
+          all other windows and cannot be lowered by any means. One
+          example are the shortcuts of KFM (the KDE file manager).
+          What can I do about that?
 
 6. Miscellaneous
 
@@ -1346,6 +1339,32 @@ A: Many OSes swap the program from memory via the image on the disk,
    directory.  The 'mv' command preserves the inode so it won't
    coredump, but then when you restart fvwm it'll pick up the new
    copy.
+
+----------------------------------------------------------------------
+
+5.11  After I restart fvwm certain windows or icons raise above
+      all other windows and cannot be lowered by any means. One
+      example are the shortcuts of KFM (the KDE file manager).
+      What can I do about that?
+
+A: Some applications use so called 'override redirect' windows that
+   are not (and cannot be) managed by the window manager.  By
+   convention as defined in the ICCCM, such windows must only be
+   displayed for a very short time.  KFM and possibly other
+   applications ignore this convention and use permanent 'override
+   redirect' windows, e.g. the KFM shortcuts.  Fvwm can not easily
+   detect these windows when it restarts and places the windows
+   managed by fvwm below them.
+
+   However, since fvwm version 2.3.8 there is a command that will
+   help you, altghough it might cause trouble with other applications
+   using 'override redirect' windows.  We can't make any promises
+   since KFM is violating the conventions and othe applications may
+   viaolate them in different ways.
+
+   Now the command. Put this anywhere in your .fvwm2rc file:
+
+     BugOpts RaiseOverUnmanaged on
 
 
 ======================================================================

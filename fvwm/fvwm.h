@@ -152,12 +152,13 @@ typedef struct
   /* common flags (former flags in bits 0-12) */
   unsigned do_circulate_skip : 1;
   unsigned do_circulate_skip_icon : 1;
+  unsigned do_flip_transient : 1;
   unsigned do_grab_focus_when_created : 1;
   unsigned do_grab_focus_when_transient_created : 1;
-  unsigned do_not_show_on_map : 1;
   unsigned do_lower_transient : 1;
+  unsigned do_not_show_on_map : 1;
   unsigned do_raise_transient : 1;
-  unsigned do_flip_transient : 1;
+  unsigned do_resize_opaque : 1;
   unsigned do_stack_transient_parent : 1;
   unsigned do_start_iconic : 1;
   unsigned do_window_list_skip : 1;

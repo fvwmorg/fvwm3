@@ -1,3 +1,19 @@
+1999-09-19  Dominik Vogt  <dominik_vogt@gmx.de>
+
+	* FvwmIconMan/x.c (xevent_loop): removed debug messages
+
+	* FvwmIconMan/xmanager.c (button_right): fixed 'gotobutton right' in
+	the rightmost column of buttons (bug #457)
+
+	* FvwmIconMan/fvwm.c (focus_change): fixed: sometimes two buttons were
+	hilighted at the same time.
+
+	* FvwmScroll/FvwmScroll.c (GetTargetWindow): FvwmScroll just exits when
+	called with the root window.
+
+	* FvwmWinList/FvwmWinList.c (ParseConfigLine):
+	(ProcessMessage): removed use of snprintf
+
 1999-09-17  Mikhael Goikhman  <migo@homemail.com>
 
 	* FvwmBanner/fvwm-logo-{current,colorful,old}.xpm: reduce size of

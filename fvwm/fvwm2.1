@@ -1480,6 +1480,18 @@ if the bug workaround is enabled or not.  It can either be
 switch is back and forth.  If \fIbool\fP is omitted, the default
 setting is restored.
 
+\fIFlickeringMoveWorkaround\fP disables so called 'ConfigurNotify'
+events that are usually sent to an application while it is moved.
+If some windows flicker annoyingly while being moved, this option
+may help you.  Note that if this problem occurs its not a fvwm bug,
+its the fault of the application.
+
+\fIMixedVisualWorkaround\fP makes fvwm install the root colormap before
+it does some operations using the root window visuals. This is only
+useful when the -visual option is used to start fvwm and then only with
+some configurations of some servers (e.g. Exceed 6.0 with an 8 bit
+Pseudocolor root and fvwm using a 24 bit Truecolor visual).
+
 The \fIModalityIsEvil\fP option controls if motif applications have the
 ability to have modal dialogs (dialogs that force you to close them
 first before you can do anything else).  The default is to not allow
@@ -1496,18 +1508,6 @@ is listed under the GlobalOpts command.
 manages over override_redirect windows. This is used to cope with
 ill-mannered applications that use long-lived windows of this sort,
 contrary to ICCCM conventions.
-
-\fIFlickeringMoveWorkaround\fP disables so called 'ConfigurNotify'
-events that are usually sent to an application while it is moved.
-If some windows flicker annoyingly while being moved, this option
-may help you.  Note that if this problem occurs its not a fvwm bug,
-its the fault of the application.
-
-\fIMixedVisualWorkaround\fP makes fvwm install the root colormap before
-it does some operations using the root window visuals. This is only
-useful when the -visual option is used to start fvwm and then only with
-some configurations of some servers (e.g. Exceed 6.0 with an 8 bit
-Pseudocolor root and fvwm using a 24 bit Truecolor visual).
 
 .TP
 .B "ClickTime" "[\fIdelay\fP]"
@@ -2075,7 +2075,8 @@ traditional rubber-band outline.  With "OpaqueMoveSize 100" all windows
 will be moved as solid windows.  The default is "OpaqueMoveSize 5", which
 allows small windows to be moved in an opaque manner but large windows
 are moved as rubber-bands.  If \fIpercentage\fP is omitted or invalid
-the default value is set.
+the default value is set.  To resize windows in an opaque manner you can
+use the 'ResizeOpaque' style.  See \fIStyle\fP command.
 
 
 .TP
@@ -2101,6 +2102,9 @@ where ontop is the highest layer used in your setup.
 .TP
 .B "RaiseLower"
 Alternately raises and lowers a window.
+The window is raised if it is obscured by any window
+(except for its own transients when RaiseTransient style is used)
+otherwise it is lowered.
 
 
 .TP
@@ -3046,7 +3050,8 @@ IgnoreRestack / AllowRestack,
 FixedPosition / VariablePosition,
 IconOverride / NoIconOverride / NoActiveIconOverride,
 DepressableBorder / FirmBorder,
-MaxWindowSize.
+MaxWindowSize,
+ResizeOpaque / Resize Outline.
 
 In the above list some options are listed as
 style-option/opposite-style-option.  The opposite-style-option for
@@ -3075,6 +3080,9 @@ are then treated as if they had no transients.
 The \fIFlipTransient\fP style augments \fIRaiseTransient\fP and
 \fILowerTransient\fP styles so that repeated raising or repeated lowering
 of the main window makes the transients flip above and below the main.
+Note that flipping only occurs at the top or bottom of the layer,
+and so a second raise or lower may be neccessary to actually flip when the
+first has simply moved the window's position.
 The \fIDontFlipTransient\fP style disables this behaviour so that the
 main window is always below its transients.
 \fI(Dont)FlipTransient\fP has no effect if \fIRaiseTransient\fP and
@@ -3282,6 +3290,24 @@ large application windows to be fully visible.  Neither \fIheight\fP
 nor \fIwidth\fP may be less than 100 pixels.  If you omit the
 parameters or their values are invalid, both limits are set to 32767
 pixels (which is the default).
+
+\fIResizeOpaque\fP instructs fvwm to resize the corresponding windows
+opaque instead of using an outline.  Since this causes the application
+to redraw frequently it can be quite slow and make the window flicker
+excessiveley, depending on the amount of graphics the application
+has to redraw.  The \fIResizeOutline\fP style (default) negates the
+\fIResizeOutlineStyle\fP.  Many applications do not like their windows
+being resized opaque, e.g. XEmacs, Netscape or terminals with a pixmap
+background.  If you don't like the result, do not like the result,
+don't use the \fIResizeOpaque\fP style for these windows.  To exempt
+certain windows from opaque resizing you could use these lines
+in your configuration file:
+
+.EX
+Style * ResizeOpaque
+Style rxvt ResizeOutline
+Style emaxs ResizeOutline
+.EE
 
 \fIButton\fP and \fINoButton\fP take a numeric argument which is the
 number of the title-bar button which is to be included/omitted.

@@ -82,6 +82,8 @@
 #include "Mallocs.h"
 #include "libs/Colorset.h"
 
+#define MAX_NO_ICON_ACTION_LENGTH (MAX_MODULE_INPUT_TEXT_LEN - 100)
+
 #define GRAB_EVENTS (ButtonPressMask|ButtonReleaseMask|ButtonMotionMask|EnterWindowMask|LeaveWindowMask)
 
 #define SomeButtonDown(a) ((a)&Button1Mask||(a)&Button2Mask||(a)&Button3Mask)
@@ -346,7 +348,7 @@ void ProcessMessage(unsigned long type,unsigned long *body)
       SendText(Fvwm_fd, "Unlock 1", 0);
       break;
   }
-  
+
   switch(type)
   {
     case M_ADD_WINDOW:
@@ -413,7 +415,7 @@ void ProcessMessage(unsigned long type,unsigned long *body)
       break;
     case M_DEICONIFY:
     case M_ICONIFY:
-      /* fwvm is will wait for an Unlock message before continuing
+      /* fwvm will wait for an Unlock message before continuing
        * be careful when changing this construct, make sure unlock happens */
       if ((i = FindItem(&windows, body[0])) != -1) {
 	flagitem = ItemFlags(&windows, body[0]);
@@ -421,7 +423,7 @@ void ProcessMessage(unsigned long type,unsigned long *body)
 	    || (type == M_ICONIFY && !IS_ICONIFIED(flagitem))) {
 	  if (IS_ICON_SUPPRESSED(flagitem) && AnimCommand
 	      && (AnimCommand[0] != 0)) {
-	    char buff[256];
+	    char buff[MAX_MODULE_INPUT_TEXT_LEN];
 	    Window child;
 	    int x, y;
 
@@ -430,13 +432,14 @@ void ProcessMessage(unsigned long type,unsigned long *body)
 				  &x, &y, &child);
 	    /* tell FvwmAnimate to animate to our button */
 	    if (IS_ICONIFIED(flagitem)) {
-	      snprintf(buff, 256, "%s %d %d %d %d %d %d %d %d", AnimCommand,
-		       x, y, win_width, buttonheight,
-		       body[7], body[8], body[9], body[10]);
+	      sprintf(buff, "%s %d %d %d %d %d %d %d %d", AnimCommand,
+		      x, y, win_width, buttonheight,
+		      (int)body[7], (int)body[8], (int)body[9],
+		      (int)body[10]);
 	    } else {
-	      snprintf(buff, 256, "%s %d %d %d %d %d %d %d %d", AnimCommand,
-		       body[7], body[8], body[9], body[10],
-		       x, y, win_width, buttonheight);
+	      sprintf(buff, "%s %d %d %d %d %d %d %d %d", AnimCommand,
+		      (int)body[7], (int)body[8], (int)body[9], (int)body[10],
+		      x, y, win_width, buttonheight);
 	    }
 	    SendText(Fvwm_fd, buff, 0);
 	  }
@@ -684,6 +687,8 @@ ParseConfigLine(char *tline)
     } else if (strncasecmp(tline, CatString3(Module, "NoIconAction", ""),
 			 Clength + 12) == 0) {
       CopyString(&AnimCommand, &tline[Clength + 12]);
+      if (strlen(AnimCommand) > MAX_NO_ICON_ACTION_LENGTH)
+	AnimCommand[MAX_NO_ICON_ACTION_LENGTH] = 0;
     } else if (strncasecmp(tline, CatString3(Module, "Colorset", ""),
 			 Clength + 8) == 0)
       colorset[0] = atoi(&tline[Clength + 8]);
