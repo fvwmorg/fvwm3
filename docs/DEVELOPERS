@@ -14,8 +14,9 @@ To build from the CVS sources, you will need:
   * automake (version >= 1.4)
 
 
-After the *initial* checkout of the sources, you will need to execute
-the following commands from the top of the source tree.
+After the *initial* checkout of the sources, (see cvs.html) you will
+need to execute the following commands from the top of the source
+tree.
 
     automake --add-missing
     autoreconf
@@ -25,6 +26,43 @@ working configure script.
 
 Now, configure and build as per INSTALL.fvwm and INSTALL.
 
+
+Rules of the Road
+-----------------
+
+ 1) _Every_ change must be properly ChangeLogged.  If you use Emacs, you
+    can do this oh-so-trivially with the C-x 4 a command; it will add a
+    header (if it's a new day), the name of the file, and even the name
+    of the function you're currently in.
+
+    If you start adding them as you change functions, it'll soon become
+    second-nature and we'll get proper changelogs.
+
+ 2) If you add a new user-visible feature, please add a blurb about it
+    to the NEWS file.  A couple sentences is fine; don't repeat the
+    documentation but give folks enough of an idea so they can decide if
+    they want to learn more.  Bug fixes (unless they're _really_ user
+    visible) shouldn't be noted in the NEWS file.
+
+ 3) If you add a new user-visible feature, please don't forget to update
+    the appropriate man pages at the same time.
+
+ 4) Bug fixes may be committed at any time (unless we're in code freeze
+    for a release) usually without much review (unless you want someone
+    else to look at it).
+
+ 5) New features should be discussed on the list to ensure everyone
+    thinks they're "appropriate" (one of the goals of fvwm is to be
+    relatively efficient, remember, which means we don't necessarily
+    want the kitchen sink).
+
+ 6) If the new feature is large enough, unstable enough, or not
+    targetted at the next release, it should go on a private branch.
+    Otherwise, concensus will probably have it installed on the main
+    branch.
+
+
+        ** Of course, compile and test before committing! **
 
 
 Changing a Makefile
@@ -114,14 +152,3 @@ package into the tar file. It may be hard to appreciate how useful
 this is, until it has reminded you that you forgot file "foo.h" in
 some _SOURCES line.  But trust me, it will save your bacon in this way
 some day!
-
-
-Modules and Extras
-------------------
-
-There are short notes at the top of all the extras/*/Makefile.am files
-about what may have differed vis-a-vis the old Imakefiles.  Some of
-the modules, for example (currently fvwmpython and fvwmperl) have no
-install rules at all.
-
-

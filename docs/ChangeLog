@@ -1,3 +1,7 @@
+Sun Feb 28 08:29:59 1999  Steve Robbins  <steve@nyongwa.montreal.qc.ca>
+
+	* DEVELOPERS: added Paul Smith's "Rules of the Road".
+
 Sat Feb 27 11:19:51 1999  Steve Robbins  <steve@nyongwa.montreal.qc.ca>
 
 	* DEVELOPERS: document "autoreconf" step upon initial checkout.
