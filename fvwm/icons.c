@@ -52,6 +52,7 @@
 #include "borders.h"
 #include "module_interface.h"
 #include "decorations.h"
+#include "colormaps.h"
 
 
 #ifdef SHAPE

@@ -203,6 +203,7 @@ Pixmap CreateBackgroundPixmap(Display *dpy, Window win, int width, int height,
   Pixmap cs_pixmap = None;
   XGCValues xgcv;
   static GC shape_gc = None;
+  static GC solid_gc = None;
   int cs_width;
   int cs_height;
   unsigned int cs_keep_aspect;
@@ -247,7 +248,23 @@ Pixmap CreateBackgroundPixmap(Display *dpy, Window win, int width, int height,
     cs_stretch_y = !(colorset->shape_tile);
   }
 
-  if (cs_keep_aspect) {
+  if (cs_pixmap == None)
+  {
+    xgcv.foreground = colorset->bg;
+    if (solid_gc == None)
+    {
+      /* create a gc for solid drawing */
+      solid_gc = XCreateGC(dpy, win, GCForeground, &xgcv);
+    }
+    else
+    {
+      XChangeGC(dpy, solid_gc, GCForeground, &xgcv);
+    }
+    /* create a solid pixmap - not very useful most of the time */
+    pixmap = XCreatePixmap(dpy, win, width, height, depth);
+    XFillRectangle(dpy, pixmap, solid_gc, 0, 0, width, height);
+  }
+  else if (cs_keep_aspect) {
     Bool trim_side;
     int big_width, big_height;
     Pixmap big_pixmap;
@@ -308,7 +325,7 @@ Pixmap CreateBackgroundPixmap(Display *dpy, Window win, int width, int height,
 
 
 /* Draws a colorset background into the specified rectangle in the target
- * window. */
+ * drawable. */
 void SetRectangleBackground(
   Display *dpy, Window win, int x, int y, int width, int height,
   colorset_struct *colorset, unsigned int depth, GC gc)

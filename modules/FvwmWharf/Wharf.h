@@ -45,6 +45,7 @@ extern int    GetXPMFile(int button,int ico);
 extern int    GetXPMData(int button, char **data);
 extern int    GetXPMGradient(int button, int from[3], int to[3], int maxcols,
 		   int type);
+extern void   GetXPMColorset(int button, int colorset);
 extern int    GetSolidXPM(int button, Pixel pixel);
 extern Bool Pushed;
 extern Bool ForceSize;

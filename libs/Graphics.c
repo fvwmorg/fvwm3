@@ -668,7 +668,8 @@ Drawable CreateGradientPixmap(Display *dpy, Drawable d, GC gc,
       {
 	register int w = t_width - 1;
 	register int h = t_height - 1;
-	register int t_scale = sqrt(t_width*t_width/2 * t_height*t_height/2);
+	register int t_scale = t_width * t_height / 2;
+
 	for (i = 0; i <= w; i++)
 	  for (j = 0; j <= h; j++) {
 	    register int x = (i - t_width / 2) * h / 2;
@@ -719,8 +720,8 @@ Drawable CreateGradientPixmap(Display *dpy, Drawable d, GC gc,
       {
 	register int w = t_width - 1;
 	register int h = t_height - 1;
-        register int r = sqrt(w*w * h*h) / 4;
-        /* g_width == g_height, both are odd, therefore x can be 0.0 */
+        register int r = w * h / 4;
+
         for (i = 0; i <= w; i++) {
           for (j = 0; j <= h; j++) {
             register double x = (i - w / 2) * h / 2;
@@ -728,6 +729,7 @@ Drawable CreateGradientPixmap(Display *dpy, Drawable d, GC gc,
             register double rad = sqrt(x * x + y * y);
             /* angle ranges from -pi/2 to +pi/2 */
             register double angle;
+
             if (x != 0.0) {
               angle = atan(y / x);
             } else {

@@ -72,6 +72,7 @@
 #include "libs/fvwmlib.h"
 #include "libs/Module.h"
 #include "libs/Picture.h"
+#include "libs/Colorset.h"
 #include <X11/Xlib.h>
 #include <X11/Xutil.h>
 #include <X11/Xproto.h>
@@ -131,7 +132,9 @@ Bool NoBorder=0;
 Bool Pushed = 0;
 Bool Pushable = 1;
 Bool ForceSize=0;
-Pixel back_pix, fore_pix, light_grey;
+Pixel back_pix = 0;
+Pixel fore_pix = 0;
+Pixel light_grey = 0;
 GC  NormalGC, HiReliefGC, HiInnerGC;
 
 GC MaskGC;
@@ -179,6 +182,7 @@ int FromColor[3]={0x4000,0x4000,0x4000}, ToColor[3]={0x8000,0x8000,0x8000};
 Pixel BgColor=0;
 int MaxColors=16;
 int Withdrawn;
+static int global_colorset = -1;
 
 #define DIR_TOLEFT	1
 #define DIR_TORIGHT	2
@@ -188,15 +192,16 @@ int Withdrawn;
 #ifdef ENABLE_SOUND
 void waitchild(int bullshit)
 {
-    int stat;
+  int stat;
 
-    wait(&stat);
-    SoundActive=0;
+  wait(&stat);
+  SoundActive=0;
 }
 #endif
 
 unsigned int lock_mods[256];
 void FindLockMods(void);
+static void configure_all_icon_windows(void);
 
 
 /***********************************************************************
@@ -211,7 +216,7 @@ int main(int argc, char **argv)
   char *display_name = NULL;
   int i,j;
   Window junkroot;
-  int x,y,border_width,button;
+  int x,y,border_width;
   int depth;
   char *temp, *s;
   temp = argv[0];
@@ -224,44 +229,47 @@ int main(int argc, char **argv)
   strcpy(MyName, temp);
 
   for(i=0;i<BUTTON_ARRAY_LN;i++)
-    {
+  {
 #ifdef ENABLE_DND
-      Buttons[i].drop_action = NULL;
+    Buttons[i].drop_action = NULL;
 #endif
-      Buttons[i].title = NULL;
-      Buttons[i].action = NULL;
-      Buttons[i].iconno = 0;
-      for(j=0;j<MAX_OVERLAY;j++) {
-	  Buttons[i].icons[j].file = NULL;
-	  Buttons[i].icons[j].w = 0;
-	  Buttons[i].icons[j].h = 0;
-	  Buttons[i].icons[j].mask = None;	/* pixmap for the icon mask */
-	  Buttons[i].icons[j].icon = None;
-	  Buttons[i].icons[j].depth = 0;
-      }
-      Buttons[i].IconWin = None;
-      Buttons[i].completeIcon = None;
-      Buttons[i].up = 1;                        /* Buttons start up */
-      Buttons[i].hangon = NULL;                 /* don't wait on anything yet*/
-      Buttons[i].folder = -1;
+    Buttons[i].title = NULL;
+    Buttons[i].action = NULL;
+    Buttons[i].iconno = 0;
+    for(j=0;j<MAX_OVERLAY;j++) {
+      Buttons[i].icons[j].file = NULL;
+      Buttons[i].icons[j].w = 0;
+      Buttons[i].icons[j].h = 0;
+      Buttons[i].icons[j].mask = None;	/* pixmap for the icon mask */
+      Buttons[i].icons[j].icon = None;
+      Buttons[i].icons[j].depth = 0;
     }
+    Buttons[i].IconWin = None;
+    Buttons[i].completeIcon = None;
+    Buttons[i].up = 1;                        /* Buttons start up */
+    Buttons[i].hangon = NULL;                 /* don't wait on anything yet*/
+    Buttons[i].folder = -1;
+  }
   signal (SIGPIPE, DeadPipe);
   if((argc != 6)&&(argc != 7))
-    {
-      fprintf(stderr,"%s Version %s should only be executed by Fvwm!\n",
-		MyName, VERSION);
-      exit(1);
-    }
+  {
+    fprintf(stderr,"%s Version %s should only be executed by Fvwm!\n",
+	    MyName, VERSION);
+    exit(1);
+  }
   fd[0] = atoi(argv[1]);
   fd[1] = atoi(argv[2]);
 
   if (!(dpy = XOpenDisplay(display_name)))
-    {
-      fprintf(stderr,"%s: can't open display %s", MyName,
-	      XDisplayName(display_name));
-      exit (1);
-    }
+  {
+    fprintf(stderr,"%s: can't open display %s", MyName,
+	    XDisplayName(display_name));
+    exit (1);
+  }
   InitPictureCMap(dpy);
+  /* Initialise default colorset */
+  AllocColorset(0);
+
   x_fd = XConnectionNumber(dpy);
 
   fd_width = GetFdWidth();
@@ -269,136 +277,148 @@ int main(int argc, char **argv)
   screen= DefaultScreen(dpy);
   Root = RootWindow(dpy, screen);
   if(Root == None)
-    {
-      fprintf(stderr,"%s: Screen %d is not valid ", MyName, screen);
-      exit(1);
-    }
+  {
+    fprintf(stderr,"%s: Screen %d is not valid ", MyName, screen);
+    exit(1);
+  }
   display_width = DisplayWidth(dpy, screen);
   display_height = DisplayHeight(dpy, screen);
 
   SetMessageMask(fd, M_NEW_DESK | M_END_WINDOWLIST | M_MAP | M_WINDOW_NAME |
-		 M_RES_CLASS | M_CONFIG_INFO | M_END_CONFIG_INFO | M_RES_NAME);
-/*
-  sprintf(set_mask_mesg,"SET_MASK %lu\n",
-	  (unsigned long)(M_NEW_DESK |
-			  M_END_WINDOWLIST|
-			  M_MAP|
-			  M_RES_NAME|
-			  M_RES_CLASS|
-			  M_WINDOW_NAME));
+		 M_RES_CLASS | M_CONFIG_INFO | M_END_CONFIG_INFO | M_RES_NAME |
+		 M_SENDCONFIG);
+  /*
+    sprintf(set_mask_mesg,"SET_MASK %lu\n",
+    (unsigned long)(M_NEW_DESK |
+    M_END_WINDOWLIST|
+    M_MAP|
+    M_RES_NAME|
+    M_RES_CLASS|
+    M_WINDOW_NAME));
 
-  SendText(fd,set_mask_mesg,0);
-*/
+    SendText(fd,set_mask_mesg,0);
+  */
 
   /* create a temporary window of the correct visual for the pixmaps */
   CreateVizWindow();
 
   ParseOptions(argv[3]);
   if(num_buttons == 0)
-    {
-      fprintf(stderr,"%s: No Buttons defined. Quitting\n", MyName);
-      exit(0);
-    }
+  {
+    fprintf(stderr,"%s: No Buttons defined. Quitting\n", MyName);
+    exit(0);
+  }
 
 #ifdef ENABLE_SOUND
-    /* startup sound subsystem */
-     if (SoundActive) {
-	if (pipe(PlayerChannel)<0) {
-	    fprintf(stderr,"%s: could not create pipe. Disabling sound\n");
-	    SoundActive=0;
-	} else {
-	    signal(SIGCHLD,waitchild);
-	    SoundThread=fork();
-	    if (SoundThread<0) {
-		fprintf(stderr,"%s: could not fork(). Disabling sound",
-			MyName);
-		perror(".");
-		SoundActive=0;
-	    } else if (SoundThread==0) { /* in the sound player process */
-		char *margv[9], *name;
-		int i;
+  /* startup sound subsystem */
+  if (SoundActive) {
+    if (pipe(PlayerChannel)<0) {
+      fprintf(stderr,"%s: could not create pipe. Disabling sound\n");
+      SoundActive=0;
+    } else {
+      signal(SIGCHLD,waitchild);
+      SoundThread=fork();
+      if (SoundThread<0) {
+	fprintf(stderr,"%s: could not fork(). Disabling sound",
+		MyName);
+	perror(".");
+	SoundActive=0;
+      } else if (SoundThread==0) { /* in the sound player process */
+	char *margv[9], *name;
+	int i;
 
-		margv[0]="ASSound";
-		name = findImageFile("ASSound",ModulePath,X_OK);
-		if(name == NULL) {
-		    fprintf(stderr,"Wharf: couldn't find ASSound\n");
-		    SoundActive = 0;
-		} else {
-		    margv[1]=safemalloc(16);
-		    close(PlayerChannel[1]);
-		    sprintf(margv[1],"%x",PlayerChannel[0]);
-		    if (SoundPlayer!=NULL)
-		      margv[2]=SoundPlayer;
-		    else
-		      margv[2]="-";
-		    for(i=0;i<MAX_EVENTS;i++) {
-			if (Sounds[i][0]=='.') {
-			    margv[i+3]=Sounds[i];
-			} else {
-			    margv[i+3]=safemalloc(strlen(Sounds[i])
-						  +strlen(SoundPath)+4);
-			    sprintf(margv[i+3],"%s/%s",SoundPath,Sounds[i]);
-			}
-		    }
-		    margv[i+3]=NULL;
-		    execvp(name,margv);
-		    fprintf(stderr,"Wharf: couldn't spawn ASSound\n");
-		    exit(1);
-		}
-	    } else { /* in parent */
-		close(PlayerChannel[0]);
+	margv[0]="ASSound";
+	name = findImageFile("ASSound",ModulePath,X_OK);
+	if(name == NULL) {
+	  fprintf(stderr,"Wharf: couldn't find ASSound\n");
+	  SoundActive = 0;
+	} else {
+	  margv[1]=safemalloc(16);
+	  close(PlayerChannel[1]);
+	  sprintf(margv[1],"%x",PlayerChannel[0]);
+	  if (SoundPlayer!=NULL)
+	    margv[2]=SoundPlayer;
+	  else
+	    margv[2]="-";
+	  for(i=0;i<MAX_EVENTS;i++) {
+	    if (Sounds[i][0]=='.') {
+	      margv[i+3]=Sounds[i];
+	    } else {
+	      margv[i+3]=safemalloc(strlen(Sounds[i])
+				    +strlen(SoundPath)+4);
+	      sprintf(margv[i+3],"%s/%s",SoundPath,Sounds[i]);
 	    }
+	  }
+	  margv[i+3]=NULL;
+	  execvp(name,margv);
+	  fprintf(stderr,"Wharf: couldn't spawn ASSound\n");
+	  exit(1);
 	}
-     }
+      } else { /* in parent */
+	close(PlayerChannel[0]);
+      }
+    }
+  }
 #endif
 
-    CreateShadowGC();
+  CreateShadowGC();
 
-    switch (TextureType) {
-     case TEXTURE_PIXMAP:
-	if (BgPixmapFile==NULL) {
-	    fprintf(stderr,"%s: No Button background pixmap defined.Using default\n", MyName);
-	    goto Builtin;
-	}
-	Buttons[BACK_BUTTON].icons[0].file=BgPixmapFile;
-	if (GetXPMFile(BACK_BUTTON,0))
-	  break;
-	else goto Solid;
-     case TEXTURE_GRADIENT:
-     case TEXTURE_HGRADIENT:
-     case TEXTURE_HCGRADIENT:
-     case TEXTURE_VGRADIENT:
-     case TEXTURE_VCGRADIENT:
-	if (GetXPMGradient(BACK_BUTTON, FromColor, ToColor, MaxColors,TextureType))
-	  break;
-	else goto Solid;
-
-     case TEXTURE_BUILTIN:
-	Builtin:
-	TextureType=TEXTURE_BUILTIN;
-/*	if (GetXPMData( BACK_BUTTON, button_xpm))
-	  break;
-pdg */
-     default:
-Solid:
-	TextureType=TEXTURE_SOLID;
-	if (GetSolidXPM(BACK_BUTTON, BgColor))
-	  break;
-	else {
-	    fprintf( stderr, "back Wharf button creation\n");
-	    exit(-1);
-	}
+  switch (TextureType)
+  {
+  case TEXTURE_PIXMAP:
+    if (BgPixmapFile==NULL) {
+      fprintf(stderr,
+	      "%s: No Button background pixmap defined.Using default\n",
+	      MyName);
+      goto Builtin;
     }
+    Buttons[BACK_BUTTON].icons[0].file=BgPixmapFile;
+    if (GetXPMFile(BACK_BUTTON,0))
+      break;
+    else
+      goto Solid;
+  case TEXTURE_GRADIENT:
+  case TEXTURE_HGRADIENT:
+  case TEXTURE_HCGRADIENT:
+  case TEXTURE_VGRADIENT:
+  case TEXTURE_VCGRADIENT:
+    if (GetXPMGradient(BACK_BUTTON, FromColor, ToColor, MaxColors,TextureType))
+      break;
+    else
+      goto Solid;
+
+  case TEXTURE_COLORSET:
+    BgColor = Colorset[global_colorset % nColorsets].bg;
+    /* use a colorset */
+    GetXPMColorset(BACK_BUTTON, global_colorset);
+    break;
+
+  case TEXTURE_BUILTIN:
+    Builtin:
+    TextureType=TEXTURE_BUILTIN;
+    /* if (GetXPMData( BACK_BUTTON, button_xpm))
+       break;
+       pdg */
+  default:
+    Solid:
+    TextureType=TEXTURE_SOLID;
+    if (GetSolidXPM(BACK_BUTTON, BgColor))
+      break;
+    else {
+      fprintf( stderr, "back Wharf button creation\n");
+      exit(-1);
+    }
+  } /* switch */
   for(i=0;i<num_buttons;i++)
-    {
-	for(j=0;j<Buttons[i].iconno;j++) {
-	    LoadIconFile(i,j);
-	}
+  {
+    for(j=0;j<Buttons[i].iconno;j++) {
+      LoadIconFile(i,j);
     }
+  }
   for(i=num_folderbuttons;i<MAX_BUTTONS;i++) {
-     	for(j=0;j<Buttons[i].iconno;j++) {
-	    LoadIconFile(i,j);
-	}
+    for(j=0;j<Buttons[i].iconno;j++) {
+      LoadIconFile(i,j);
+    }
   }
 #ifdef ENABLE_DND
   DndProtocol=XInternAtom(dpy,"DndProtocol",False);
@@ -407,7 +427,7 @@ Solid:
 
   CreateWindow();
   for(i=0;i<num_buttons;i++) {
-      CreateIconWindow(i, &main_win);
+    CreateIconWindow(i, &main_win);
   }
   for(i=num_folderbuttons;i<MAX_BUTTONS;i++)
     CreateIconWindow(i, Buttons[i].parent);
@@ -415,25 +435,12 @@ Solid:
 	       (unsigned int *)&Width,(unsigned int *)&Height,
  	       (unsigned int *)&border_width,(unsigned int *)&depth);
 
-  for(i=0;i<num_rows;i++)
-    for(j=0;j<num_columns; j++)
-      {
-	button = i*num_columns + j;
-	ConfigureIconWindow(button,i,j);
-      };
-  for(i=0;i<num_folders;i++)
-    for(j=0;j<Folders[i].count;j++)
-      if(num_columns < num_rows) {
-	ConfigureIconWindow(Folders[i].firstbutton+j,0, j);
-      } else {
-	ConfigureIconWindow(Folders[i].firstbutton+j,j, 0);
-      }
-  /* dirty hack to make swallowed app background be textured */
-  XSetWindowBackgroundPixmap(dpy, main_win, Buttons[BACK_BUTTON].icons[0].icon);
+  configure_all_icon_windows();
+  configure_all_icon_windows();
   XMapSubwindows(dpy,main_win);
   XMapWindow(dpy,main_win);
   for(i=0;i<num_folders;i++)
-      XMapSubwindows(dpy, Folders[i].win);
+    XMapSubwindows(dpy, Folders[i].win);
 
   FindLockMods();
 
@@ -467,823 +474,826 @@ void Loop(void)
   int CancelPush=0;
 
   while(1)
+  {
+    if(My_XNextEvent(dpy,&Event))
     {
-      if(My_XNextEvent(dpy,&Event))
+      switch(Event.type)
+      {
+
+      case Expose:
+	for(x=0;x<num_folders;x++)
+	  if(Event.xany.window == Folders[x].win )
+	  {
+	    RedrawWindow(&Folders[x].win,num_folderbuttons, -1,
+			 Folders[x].cols,Folders[x].rows);
+	    for(y=1;y<=Folders[x].count;y++)
+	      if(num_columns<num_rows)
+		RedrawUnpushedOutline(&Folders[x].win, 1, y);
+	      else
+		RedrawUnpushedOutline(&Folders[x].win, y, 1);
+	  }
+	if (Pushed)
+	  break;
+	if((Event.xexpose.count == 0)&&
+	   (Event.xany.window == main_win))
 	{
-	  switch(Event.type)
-	    {
-
-	    case Expose:
-	      for(x=0;x<num_folders;x++)
-		if(Event.xany.window == Folders[x].win )
-		  {
-		    RedrawWindow(&Folders[x].win,num_folderbuttons, -1, Folders[x].cols,Folders[x].rows);
-		    for(y=1;y<=Folders[x].count;y++)
-		    if(num_columns<num_rows)
-		      RedrawUnpushedOutline(&Folders[x].win, 1, y);
-		    else
-		      RedrawUnpushedOutline(&Folders[x].win, y, 1);
-		  }
-		    if (Pushed)
-                break;
-	      if((Event.xexpose.count == 0)&&
-		 (Event.xany.window == main_win))
-		{
-		    if(ready < 1)
-		      ready ++;
-		    RedrawWindow(&main_win,0, -1, num_rows, num_columns);
-		}
-	      break;
-
-	    case ButtonPress:
-	      if (Event.xbutton.button != Button1) {
-		  if (Event.xbutton.button == Button2) {
-		      static int LastX, LastY;
-
-		      if (LastMapped != -1) {
-			  CloseFolder(LastMapped);
-			  Folders[LastMapped].mapped = NOTMAPPED;
-			  LastMapped=-1;
-		      }
-		      if (Withdrawn) {
-#ifdef ENABLE_SOUND
-			  PlaySound(WHEV_OPEN_MAIN);
-#endif
-			  if (AnimationStyle>0 && AnimateMain)
-			    OpenFolder(-1,LastX,LastY,Width,Height,
-				       AnimationDir);
-			  else
-			    XMoveResizeWindow(dpy,main_win,LastX,LastY,
-					      Width,Height);
-			  Withdrawn=0;
-		      } else {
-			  Window junk;
-			  unsigned int junk2,junk3,junk4,junk5;
-			  int CornerX, CornerY;
-
-#ifdef ENABLE_SOUND
-			  PlaySound(WHEV_CLOSE_MAIN);
-#endif
-			  XGetGeometry(dpy,main_win,&junk,&LastX,&LastY,
-				       &junk2,&junk3,&junk4,&junk5);
-			  XTranslateCoordinates(dpy,main_win,Root,
-						LastX,LastY,
-						&LastX,&LastY,&junk);
-			  if (num_rows<num_columns) { /* horizontal */
-			      if (LastY > display_height/2) {
-				  CornerY = display_height-BUTTONHEIGHT;
-			      } else {
-				  CornerY = 0;
-			      }
-			      if (Event.xbutton.x>num_columns*BUTTONWIDTH/2) {
-				  CornerX = display_width - BUTTONWIDTH;
-				  AnimationDir = DIR_TOLEFT;
-			      } else {
-				  CornerX = 0;
-				  AnimationDir = DIR_TORIGHT;
-			      }
-			      if (AnimationStyle>0 && AnimateMain) {
-				  CloseFolder(-1);
-				  XMoveWindow(dpy,main_win, CornerX, CornerY);
-			      } else {
-				  XMoveResizeWindow(dpy,main_win,
-						    CornerX, CornerY,
-						    BUTTONWIDTH,BUTTONHEIGHT);
-			      }
-			  } else {	/* vertical */
-			      if (LastX > display_width/2) {
-				  CornerX = display_width - BUTTONWIDTH;
-			      } else {
-				  CornerX = 0;
-			      }
-			      if (Event.xbutton.y>num_rows*BUTTONHEIGHT/2) {
-				  CornerY = display_height-BUTTONHEIGHT;
-				  AnimationDir = DIR_TOUP;
-			      } else {
-				  CornerY = 0;
-				  AnimationDir = DIR_TODOWN;
-			      }
-			      if (AnimationStyle>0 && AnimateMain) {
-				  CloseFolder(-1);
-				  XMoveWindow(dpy,main_win, CornerX, CornerY);
-			      } else {
-				  XMoveResizeWindow(dpy,main_win,
-						    CornerX, CornerY,
-						    BUTTONWIDTH,BUTTONHEIGHT);
-			      }
-			  }
-			  Withdrawn=1;
-		      }
-		  }
-		  break;
-	      }
-#ifdef ENABLE_SOUND
-		PlaySound(WHEV_PUSH);
-#endif
-	      CancelPush = 0;
-	      CurrentWin = &Event.xbutton.window;
-	      CurrentBase = 0;
-	      CurrentRow = (Event.xbutton.y/BUTTONHEIGHT);
-	      CurrentColumn = (Event.xbutton.x/BUTTONWIDTH);
-	      if (*CurrentWin!=main_win) {
-		  CurrentButton = CurrentBase + CurrentColumn*num_rows
-		    + CurrentRow*num_columns;
-	      }	else {
-		  CurrentButton = CurrentBase + CurrentColumn
-		    + CurrentRow*num_columns;
-		  if (CurrentButton>=num_buttons) {
-		      CurrentButton = -1;
-		      break;
-		  }
-	      }
-
-              for(x=0;x<num_buttons;x++)
-                {
-                  if (*CurrentWin == Buttons[x].IconWin)
-                    {
-                      CurrentButton = x;
-                      CurrentRow = x / num_columns;
-                      CurrentColumn = x % num_columns;
-                    }
-                }
-
-	      for(x=0;x<num_folders;x++)
-		if(*CurrentWin == Folders[x].win)
-		  {
-		    CurrentBase = Folders[x].firstbutton;
-		    if (num_rows<num_columns)
-			CurrentButton = CurrentBase + CurrentRow;
-		     else
-			CurrentButton = CurrentBase + CurrentColumn;
-		  }
-	      i = CurrentRow+1;
-	      j = CurrentColumn +1;
-
-              if (Buttons[CurrentButton].swallow == 1 ||
-                  Buttons[CurrentButton].swallow == 2 ||
-                  Buttons[CurrentButton].action == NULL)
-		break;
-
-	      if (Pushable)
-		{
-                  if (Buttons[CurrentButton].swallow != 3 &&
-                      Buttons[CurrentButton].swallow != 4)
-                    {
-                      Pushed = 1;
-                      RedrawPushed(CurrentWin, i, j);
-                    }
-		}
-	      if (strncasecmp(Buttons[CurrentButton].action,"Folder",6)==0) {
-                Window junk;
-                unsigned int junk2,junk3,junk4,junk5;
-                XGetGeometry(dpy,main_win,&junk,&x,&y,
-                          &junk2,&junk3,&junk4,&junk5);
-                XTranslateCoordinates(dpy,main_win,Root,
-                          x,y,
-                          &x,&y,&junk);
-/* kludge until Beat takes a look */
-if ((num_columns == 1) && (num_rows == 1))
-		MapFolder(Buttons[CurrentButton].folder,
-			  &LastMapped,
-                          x, y,
-			  1,1);
-else
-		MapFolder(Buttons[CurrentButton].folder,
-			  &LastMapped,
-                          x, y,
-			  CurrentRow, CurrentColumn);
-	      }
-              break;
-	     case EnterNotify:
-		CancelPush = 0;
-		break;
-	     case LeaveNotify:
-		CancelPush = 1;
-		break;
-#ifdef ENABLE_DND
-	     case ClientMessage:
-		if (Event.xclient.message_type==DndProtocol) {
-		    unsigned long  dummy_r,size;
-		    Atom dummy_a;
-		    int dummy_f;
-		    unsigned char *data, *Command;
-
-		    Window dummy_rt, dummy_c;
-		    int dummy_x, dummy_y, base, pos_x, pos_y;
-		    unsigned int dummy;
-
-/*		    if (Event.xclient.data.l[0]!=DndFile ||
-			Event.xclient.data.l[0]!=DndFiles ||
-			Event.xclient.data.l[0]!=DndExe
-			)
-		      break; */
-
-		    XQueryPointer(dpy,main_win,
-				  &dummy_rt,&dummy_c,
-				  &dummy_x,&dummy_y,
-				  &pos_x,&pos_y,
-				  &dummy);
-		    base = 0;
-		    dummy_y = (pos_y/BUTTONHEIGHT);
-		    dummy_x= (pos_x/BUTTONWIDTH);
-		    dummy = base + dummy_x + dummy_y*num_columns;
-
-		    /*
-		    for(x=0;x<num_folders;x++) {
-			if(Event.xbutton.window == Folders[x].win) {
-			    base = Folders[x].firstbutton;
-			    dummy = base + dummy_y + dummy_x -1;
-			}
-		    } */
-		    if (Buttons[dummy].drop_action == NULL)
-		      break;
-		    dummy_x++;
-		    dummy_y++;
-		    CurrentWin=Buttons[dummy].parent;
-		    if (Pushable) {
-			RedrawPushedOutline(CurrentWin, dummy_y, dummy_x);
-			XSync(dpy, 0);
-		    }
-		    XGetWindowProperty(dpy, Root, DndSelection, 0L,
-				       100000L, False, AnyPropertyType,
-				       &dummy_a, &dummy_f,
-				       &size,&dummy_r,
-				       &data);
-		    if (Event.xclient.data.l[0]==DndFiles) {
-			for (dummy_r = 0; dummy_r<size-1; dummy_r++) {
-			    if (data[dummy_r]==0)
-			      data[dummy_r]=' ';
-			}
-		    }
-#ifdef ENABLE_SOUND
-		    PlaySound(WHEV_DROP);
-#endif
-		    Command=(unsigned char *)safemalloc(strlen((char *)data)
-				    + strlen((char *)(Buttons[dummy].drop_action)));
-		    sprintf((char *)Command,Buttons[dummy].drop_action,
-			    data,Event.xclient.data.l[0]);
-		    SendInfo(fd,(char *)Command,0);
-		    free(Command);
-		    if (Pushable) {
-			usleep(50000);
-			XClearWindow(dpy,Buttons[dummy].IconWin);
-			RedrawUnpushedOutline(CurrentWin, dummy_y, dummy_x);
-		    }
-		}
-		break;
-#endif /* ENABLE_DND */
-            case ButtonRelease:
-	      if ((Event.xbutton.button != Button1) ||
-		  (Buttons[CurrentButton].swallow == 1) ||
-		  (Buttons[CurrentButton].swallow == 2) ||
-		  (Buttons[CurrentButton].action == NULL)) {
-		  break;
-	      }
-
-              CurrentRow = (Event.xbutton.y/BUTTONHEIGHT);
-              CurrentColumn = (Event.xbutton.x/BUTTONWIDTH);
-
-              if (Pushable)
-              {
-		if (Buttons[CurrentButton].swallow != 3 &&
-		    Buttons[CurrentButton].swallow != 4)
-		  {
-		    Pushed=0;
-		    RedrawUnpushed(CurrentWin, i, j);
-		  }
-              }
-	      if (CancelPush)
-		  break;
-	      if (*CurrentWin!=main_win) {
-		  NewButton = CurrentBase + CurrentColumn*num_rows
-		    + CurrentRow*num_columns;
-	      }	else {
-		  NewButton = CurrentBase + CurrentColumn
-		    + CurrentRow*num_columns;
-	      }
-
- 	      for(x=0;x<num_folders;x++)
-		if(*CurrentWin == Folders[x].win)
-		  {
-		    if (num_rows<num_columns)
-			NewButton = Folders[x].firstbutton + CurrentRow;
-		     else
-			NewButton = Folders[x].firstbutton + CurrentColumn;
-		  }
-	      for (x=0;x<num_buttons;x++)
-	        {
-		  if (*CurrentWin == Buttons[x].IconWin)
-		    {
-		      NewButton = x;
-		      CurrentRow = x / num_columns;
-		      CurrentColumn = x % num_columns;
-		    }
-		}
-
-              if(NewButton == CurrentButton)
-                {
-		  t = time( 0);
-		  bl = -1;
-		  tl = -1;
-		  if(strncasecmp(Buttons[CurrentButton].action,"Folder",6)!=0)
-		    {
-		      if (LastMapped != -1 && CurrentWin != &main_win)
-			{
-			  CloseFolder(LastMapped);
-			  Folders[LastMapped].mapped = NOTMAPPED;
-			  LastMapped = -1;
-			}
-		      SendInfo(fd,Buttons[CurrentButton].action,0);
-		    }
-		  if((Buttons[CurrentButton].action)&&
-		     (strncasecmp(Buttons[CurrentButton].action,"exec",4)== 0))
-		    {
-		      i=4;
-		      while((Buttons[CurrentButton].action[i] != 0)&&
-			    (Buttons[CurrentButton].action[i] != '"'))
-			i++;
-		      i2=i+1;
-
-		      while((Buttons[CurrentButton].action[i2] != 0)&&
-			    (Buttons[CurrentButton].action[i2] != '"'))
-			i2++;
-		      if(i2 - i >1)
-			{
-                          Buttons[CurrentButton].hangon = safemalloc(i2-i);
-                          strncpy(Buttons[CurrentButton].hangon,
-				  &Buttons[CurrentButton].action[i+1],i2-i-1);
-                          Buttons[CurrentButton].hangon[i2-i-1] = 0;
-                          Buttons[CurrentButton].up = 0;
-			  if (Buttons[CurrentButton].swallow == 3 ||
-			      Buttons[CurrentButton].swallow == 4)
-                            Buttons[CurrentButton].swallow = 4;
-			  else
-                            Buttons[CurrentButton].swallow = 0;
-			}
-		    }
-                }
-              break;
-
-	      /*
-		case ClientMessage:
-		if ((Event.xclient.format==32) &&
-		(Event.xclient.data.l[0]==wm_del_win))
-		{
-		DeadPipe(1);
-		}
-		break;
-		case PropertyNotify:
-		if (Pushed)
-		break;
-		for(i=0;i<num_rows;i++)
-		for(j=0;j<num_columns; j++)
-		{
-		button = i*num_columns + j;
-		if(((Buttons[button].swallow == 3)||
-		(Buttons[button.swallow == 4))&&
-		(Event.xany.window == Buttons[button].IconWin)&&
-		(Event.xproperty.atom == XA_WM_NAME))
-		{
-		XFetchName(dpy, Buttons[button].IconWin, &temp);
-		if(strcmp(Buttons[button].title,"-")!=0)
-		CopyString(&Buttons[button].title, temp);
-		XFree(temp);
-		XClearArea(dpy,main_win,j*BUTTONWIDTH,
-		i*BUTTONHEIGHT, BUTTONWIDTH,BUTTONHEIGHT,0);
-		RedrawWindow(&main_win,0, button, num_rows, num_columns);
-		}
-		}
-		break;
-		*/
-	    default:
-	      break;
-	    }
+	  if(ready < 1)
+	    ready ++;
+	  RedrawWindow(&main_win,0, -1, num_rows, num_columns);
 	}
+	break;
+
+      case ButtonPress:
+	if (Event.xbutton.button != Button1) {
+	  if (Event.xbutton.button == Button2) {
+	    static int LastX, LastY;
+
+	    if (LastMapped != -1) {
+	      CloseFolder(LastMapped);
+	      Folders[LastMapped].mapped = NOTMAPPED;
+	      LastMapped=-1;
+	    }
+	    if (Withdrawn) {
+#ifdef ENABLE_SOUND
+	      PlaySound(WHEV_OPEN_MAIN);
+#endif
+	      if (AnimationStyle>0 && AnimateMain)
+		OpenFolder(-1,LastX,LastY,Width,Height,
+			   AnimationDir);
+	      else
+		XMoveResizeWindow(dpy,main_win,LastX,LastY,
+				  Width,Height);
+	      Withdrawn=0;
+	    } else {
+	      Window junk;
+	      unsigned int junk2,junk3,junk4,junk5;
+	      int CornerX, CornerY;
+
+#ifdef ENABLE_SOUND
+	      PlaySound(WHEV_CLOSE_MAIN);
+#endif
+	      XGetGeometry(dpy,main_win,&junk,&LastX,&LastY,
+			   &junk2,&junk3,&junk4,&junk5);
+	      XTranslateCoordinates(dpy,main_win,Root,
+				    LastX,LastY,
+				    &LastX,&LastY,&junk);
+	      if (num_rows<num_columns) { /* horizontal */
+		if (LastY > display_height/2) {
+		  CornerY = display_height-BUTTONHEIGHT;
+		} else {
+		  CornerY = 0;
+		}
+		if (Event.xbutton.x>num_columns*BUTTONWIDTH/2) {
+		  CornerX = display_width - BUTTONWIDTH;
+		  AnimationDir = DIR_TOLEFT;
+		} else {
+		  CornerX = 0;
+		  AnimationDir = DIR_TORIGHT;
+		}
+		if (AnimationStyle>0 && AnimateMain) {
+		  CloseFolder(-1);
+		  XMoveWindow(dpy,main_win, CornerX, CornerY);
+		} else {
+		  XMoveResizeWindow(dpy,main_win,
+				    CornerX, CornerY,
+				    BUTTONWIDTH,BUTTONHEIGHT);
+		}
+	      } else {	/* vertical */
+		if (LastX > display_width/2) {
+		  CornerX = display_width - BUTTONWIDTH;
+		} else {
+		  CornerX = 0;
+		}
+		if (Event.xbutton.y>num_rows*BUTTONHEIGHT/2) {
+		  CornerY = display_height-BUTTONHEIGHT;
+		  AnimationDir = DIR_TOUP;
+		} else {
+		  CornerY = 0;
+		  AnimationDir = DIR_TODOWN;
+		}
+		if (AnimationStyle>0 && AnimateMain) {
+		  CloseFolder(-1);
+		  XMoveWindow(dpy,main_win, CornerX, CornerY);
+		} else {
+		  XMoveResizeWindow(dpy,main_win,
+				    CornerX, CornerY,
+				    BUTTONWIDTH,BUTTONHEIGHT);
+		}
+	      }
+	      Withdrawn=1;
+	    }
+	  }
+	  break;
+	}
+#ifdef ENABLE_SOUND
+	PlaySound(WHEV_PUSH);
+#endif
+	CancelPush = 0;
+	CurrentWin = &Event.xbutton.window;
+	CurrentBase = 0;
+	CurrentRow = (Event.xbutton.y/BUTTONHEIGHT);
+	CurrentColumn = (Event.xbutton.x/BUTTONWIDTH);
+	if (*CurrentWin!=main_win) {
+	  CurrentButton = CurrentBase + CurrentColumn*num_rows
+	    + CurrentRow*num_columns;
+	}	else {
+	  CurrentButton = CurrentBase + CurrentColumn
+	    + CurrentRow*num_columns;
+	  if (CurrentButton>=num_buttons) {
+	    CurrentButton = -1;
+	    break;
+	  }
+	}
+
+	for(x=0;x<num_buttons;x++)
+	{
+	  if (*CurrentWin == Buttons[x].IconWin)
+	  {
+	    CurrentButton = x;
+	    CurrentRow = x / num_columns;
+	    CurrentColumn = x % num_columns;
+	  }
+	}
+
+	for(x=0;x<num_folders;x++)
+	  if(*CurrentWin == Folders[x].win)
+	  {
+	    CurrentBase = Folders[x].firstbutton;
+	    if (num_rows<num_columns)
+	      CurrentButton = CurrentBase + CurrentRow;
+	    else
+	      CurrentButton = CurrentBase + CurrentColumn;
+	  }
+	i = CurrentRow+1;
+	j = CurrentColumn +1;
+
+	if (Buttons[CurrentButton].swallow == 1 ||
+	    Buttons[CurrentButton].swallow == 2 ||
+	    Buttons[CurrentButton].action == NULL)
+	  break;
+
+	if (Pushable)
+	{
+	  if (Buttons[CurrentButton].swallow != 3 &&
+	      Buttons[CurrentButton].swallow != 4)
+	  {
+	    Pushed = 1;
+	    RedrawPushed(CurrentWin, i, j);
+	  }
+	}
+	if (strncasecmp(Buttons[CurrentButton].action,"Folder",6)==0) {
+	  Window junk;
+	  unsigned int junk2,junk3,junk4,junk5;
+	  XGetGeometry(dpy,main_win,&junk,&x,&y,
+		       &junk2,&junk3,&junk4,&junk5);
+	  XTranslateCoordinates(dpy,main_win,Root,
+				x,y,
+				&x,&y,&junk);
+	  /* kludge until Beat takes a look */
+	  if ((num_columns == 1) && (num_rows == 1))
+	    MapFolder(Buttons[CurrentButton].folder,
+		      &LastMapped,
+		      x, y,
+		      1,1);
+	  else
+	    MapFolder(Buttons[CurrentButton].folder,
+		      &LastMapped,
+		      x, y,
+		      CurrentRow, CurrentColumn);
+	}
+	break;
+      case EnterNotify:
+	CancelPush = 0;
+	break;
+      case LeaveNotify:
+	CancelPush = 1;
+	break;
+#ifdef ENABLE_DND
+      case ClientMessage:
+	if (Event.xclient.message_type==DndProtocol) {
+	  unsigned long  dummy_r,size;
+	  Atom dummy_a;
+	  int dummy_f;
+	  unsigned char *data, *Command;
+
+	  Window dummy_rt, dummy_c;
+	  int dummy_x, dummy_y, base, pos_x, pos_y;
+	  unsigned int dummy;
+
+	  /*		    if (Event.xclient.data.l[0]!=DndFile ||
+			    Event.xclient.data.l[0]!=DndFiles ||
+			    Event.xclient.data.l[0]!=DndExe
+			    )
+			    break; */
+
+	  XQueryPointer(dpy,main_win,
+			&dummy_rt,&dummy_c,
+			&dummy_x,&dummy_y,
+			&pos_x,&pos_y,
+			&dummy);
+	  base = 0;
+	  dummy_y = (pos_y/BUTTONHEIGHT);
+	  dummy_x= (pos_x/BUTTONWIDTH);
+	  dummy = base + dummy_x + dummy_y*num_columns;
+
+	  /*
+	    for(x=0;x<num_folders;x++) {
+	    if(Event.xbutton.window == Folders[x].win) {
+	    base = Folders[x].firstbutton;
+	    dummy = base + dummy_y + dummy_x -1;
+	    }
+	    } */
+	  if (Buttons[dummy].drop_action == NULL)
+	    break;
+	  dummy_x++;
+	  dummy_y++;
+	  CurrentWin=Buttons[dummy].parent;
+	  if (Pushable) {
+	    RedrawPushedOutline(CurrentWin, dummy_y, dummy_x);
+	    XSync(dpy, 0);
+	  }
+	  XGetWindowProperty(dpy, Root, DndSelection, 0L,
+			     100000L, False, AnyPropertyType,
+			     &dummy_a, &dummy_f,
+			     &size,&dummy_r,
+			     &data);
+	  if (Event.xclient.data.l[0]==DndFiles) {
+	    for (dummy_r = 0; dummy_r<size-1; dummy_r++) {
+	      if (data[dummy_r]==0)
+		data[dummy_r]=' ';
+	    }
+	  }
+#ifdef ENABLE_SOUND
+	  PlaySound(WHEV_DROP);
+#endif
+	  Command = (unsigned char *)safemalloc(
+	    strlen((char *)data) +
+	    strlen((char *)(Buttons[dummy].drop_action)));
+	  sprintf((char *)Command,Buttons[dummy].drop_action,
+		  data,Event.xclient.data.l[0]);
+	  SendInfo(fd,(char *)Command,0);
+	  free(Command);
+	  if (Pushable) {
+	    usleep(50000);
+	    XClearWindow(dpy,Buttons[dummy].IconWin);
+	    RedrawUnpushedOutline(CurrentWin, dummy_y, dummy_x);
+	  }
+	}
+	break;
+#endif /* ENABLE_DND */
+      case ButtonRelease:
+	if ((Event.xbutton.button != Button1) ||
+	    (Buttons[CurrentButton].swallow == 1) ||
+	    (Buttons[CurrentButton].swallow == 2) ||
+	    (Buttons[CurrentButton].action == NULL)) {
+	  break;
+	}
+
+	CurrentRow = (Event.xbutton.y/BUTTONHEIGHT);
+	CurrentColumn = (Event.xbutton.x/BUTTONWIDTH);
+
+	if (Pushable)
+	{
+	  if (Buttons[CurrentButton].swallow != 3 &&
+	      Buttons[CurrentButton].swallow != 4)
+	  {
+	    Pushed=0;
+	    RedrawUnpushed(CurrentWin, i, j);
+	  }
+	}
+	if (CancelPush)
+	  break;
+	if (*CurrentWin!=main_win) {
+	  NewButton = CurrentBase + CurrentColumn*num_rows
+	    + CurrentRow*num_columns;
+	}	else {
+	  NewButton = CurrentBase + CurrentColumn
+	    + CurrentRow*num_columns;
+	}
+
+	for(x=0;x<num_folders;x++)
+	  if(*CurrentWin == Folders[x].win)
+	  {
+	    if (num_rows<num_columns)
+	      NewButton = Folders[x].firstbutton + CurrentRow;
+	    else
+	      NewButton = Folders[x].firstbutton + CurrentColumn;
+	  }
+	for (x=0;x<num_buttons;x++)
+	{
+	  if (*CurrentWin == Buttons[x].IconWin)
+	  {
+	    NewButton = x;
+	    CurrentRow = x / num_columns;
+	    CurrentColumn = x % num_columns;
+	  }
+	}
+
+	if(NewButton == CurrentButton)
+	{
+	  t = time( 0);
+	  bl = -1;
+	  tl = -1;
+	  if(strncasecmp(Buttons[CurrentButton].action,"Folder",6)!=0)
+	  {
+	    if (LastMapped != -1 && CurrentWin != &main_win)
+	    {
+	      CloseFolder(LastMapped);
+	      Folders[LastMapped].mapped = NOTMAPPED;
+	      LastMapped = -1;
+	    }
+	    SendInfo(fd,Buttons[CurrentButton].action,0);
+	  }
+	  if((Buttons[CurrentButton].action)&&
+	     (strncasecmp(Buttons[CurrentButton].action,"exec",4)== 0))
+	  {
+	    i=4;
+	    while((Buttons[CurrentButton].action[i] != 0)&&
+		  (Buttons[CurrentButton].action[i] != '"'))
+	      i++;
+	    i2=i+1;
+
+	    while((Buttons[CurrentButton].action[i2] != 0)&&
+		  (Buttons[CurrentButton].action[i2] != '"'))
+	      i2++;
+	    if(i2 - i >1)
+	    {
+	      Buttons[CurrentButton].hangon = safemalloc(i2-i);
+	      strncpy(Buttons[CurrentButton].hangon,
+		      &Buttons[CurrentButton].action[i+1],i2-i-1);
+	      Buttons[CurrentButton].hangon[i2-i-1] = 0;
+	      Buttons[CurrentButton].up = 0;
+	      if (Buttons[CurrentButton].swallow == 3 ||
+		  Buttons[CurrentButton].swallow == 4)
+		Buttons[CurrentButton].swallow = 4;
+	      else
+		Buttons[CurrentButton].swallow = 0;
+	    }
+	  }
+	}
+	break;
+
+	/*
+	  case ClientMessage:
+	  if ((Event.xclient.format==32) &&
+	  (Event.xclient.data.l[0]==wm_del_win))
+	  {
+	  DeadPipe(1);
+	  }
+	  break;
+	  case PropertyNotify:
+	  if (Pushed)
+	  break;
+	  for(i=0;i<num_rows;i++)
+	  for(j=0;j<num_columns; j++)
+	  {
+	  button = i*num_columns + j;
+	  if(((Buttons[button].swallow == 3)||
+	  (Buttons[button.swallow == 4))&&
+	  (Event.xany.window == Buttons[button].IconWin)&&
+	  (Event.xproperty.atom == XA_WM_NAME))
+	  {
+	  XFetchName(dpy, Buttons[button].IconWin, &temp);
+	  if(strcmp(Buttons[button].title,"-")!=0)
+	  CopyString(&Buttons[button].title, temp);
+	  XFree(temp);
+	  XClearArea(dpy,main_win,j*BUTTONWIDTH,
+	  i*BUTTONHEIGHT, BUTTONWIDTH,BUTTONHEIGHT,0);
+	  RedrawWindow(&main_win,0, button, num_rows, num_columns);
+	  }
+	  }
+	  break;
+	*/
+      default:
+	break;
+      }
     }
+  }
 }
 
 void OpenFolder(int folder,int x, int y, int w, int h,  int direction)
 {
-    int winc, hinc;
-    int cx, cy, cw, ch;
-    Window win;
-    int isize;
+  int winc, hinc;
+  int cx, cy, cw, ch;
+  Window win;
+  int isize;
 
-    if (folder<0) {
-	    winc = BUTTONWIDTH/ANIM_STEP_MAIN;
-	    hinc = BUTTONHEIGHT/ANIM_STEP_MAIN;
-    } else {
-	    winc = BUTTONWIDTH/ANIM_STEP;
-	    hinc = BUTTONHEIGHT/ANIM_STEP;
-    }
+  if (folder<0) {
+    winc = BUTTONWIDTH/ANIM_STEP_MAIN;
+    hinc = BUTTONHEIGHT/ANIM_STEP_MAIN;
+  } else {
+    winc = BUTTONWIDTH/ANIM_STEP;
+    hinc = BUTTONHEIGHT/ANIM_STEP;
+  }
 
-    if (folder>=0) {
-	win = Folders[folder].win;
-	Folders[folder].direction = direction;
-	if (direction == DIR_TOLEFT || direction == DIR_TORIGHT)
-	  isize = winc;
-	else
-	  isize = hinc;
-    } else {
-	win = main_win;
-	if (direction == DIR_TOLEFT || direction == DIR_TORIGHT)
-	  isize = BUTTONWIDTH;
-	else
-	  isize = BUTTONHEIGHT;
-    }
-    cx = x;    cy = y;
-    ch = h;    cw = w;
-    if (AnimationStyle==0) {
- 	XMapWindow(dpy, win);
-    } else
+  if (folder>=0) {
+    win = Folders[folder].win;
+    Folders[folder].direction = direction;
+    if (direction == DIR_TOLEFT || direction == DIR_TORIGHT)
+      isize = winc;
+    else
+      isize = hinc;
+  } else {
+    win = main_win;
+    if (direction == DIR_TOLEFT || direction == DIR_TORIGHT)
+      isize = BUTTONWIDTH;
+    else
+      isize = BUTTONHEIGHT;
+  }
+  cx = x;    cy = y;
+  ch = h;    cw = w;
+  if (AnimationStyle==0) {
+    XMapWindow(dpy, win);
+  } else
     switch (direction) {
-     case DIR_TOLEFT:
-	cx = x+w;
-	XMoveResizeWindow(dpy,win,cx,y, 1, h);
-	XMapWindow(dpy, win);
-	for(cw=isize;cw<=w;cw+=winc) {
-	    cx -= winc;
-	    usleep(ANIM_DELAY/2);
-	    XMoveResizeWindow(dpy,win,cx,y, cw,h);
-	    XSync(dpy,0);
-	}
-	break;
-     case DIR_TORIGHT:
-	XMoveResizeWindow(dpy,win,x,y, 1, h);
-	XMapWindow(dpy, win);
-	for(cw=isize;cw<=w;cw+=winc) {
-	    usleep(ANIM_DELAY/2);
-	    XMoveResizeWindow(dpy,win,x,y, cw,h);
-	    XSync(dpy,0);
-	}
-	break;
-     case DIR_TOUP:
-	cy = y+h;
-	XMoveResizeWindow(dpy,win,x,cy, w, 1);
-	XMapWindow(dpy, win);
-	for(ch=isize;ch<=h;ch+=hinc) {
-	    cy -= hinc;
-	    usleep(ANIM_DELAY/2);
-	    XMoveResizeWindow(dpy,win,x,cy, w, ch);
-	    XSync(dpy,0);
-	}
-	break;
-     case DIR_TODOWN:
-	XMoveResizeWindow(dpy,win,x,y, w, 1);
-	XMapWindow(dpy, win);
-	for(ch=isize;ch<=h;ch+=hinc) {
-	    usleep(ANIM_DELAY/2);
-	    XMoveResizeWindow(dpy,win,x,y, w, ch);
-	    XSync(dpy,0);
-	}
-	break;
-     default:
-	XBell(dpy,100);
-	fprintf(stderr,"WHARF INTERNAL BUG in OpenFolder()\n");
-	exit(-1);
+    case DIR_TOLEFT:
+      cx = x+w;
+      XMoveResizeWindow(dpy,win,cx,y, 1, h);
+      XMapWindow(dpy, win);
+      for(cw=isize;cw<=w;cw+=winc) {
+	cx -= winc;
+	usleep(ANIM_DELAY/2);
+	XMoveResizeWindow(dpy,win,cx,y, cw,h);
+	XSync(dpy,0);
+      }
+      break;
+    case DIR_TORIGHT:
+      XMoveResizeWindow(dpy,win,x,y, 1, h);
+      XMapWindow(dpy, win);
+      for(cw=isize;cw<=w;cw+=winc) {
+	usleep(ANIM_DELAY/2);
+	XMoveResizeWindow(dpy,win,x,y, cw,h);
+	XSync(dpy,0);
+      }
+      break;
+    case DIR_TOUP:
+      cy = y+h;
+      XMoveResizeWindow(dpy,win,x,cy, w, 1);
+      XMapWindow(dpy, win);
+      for(ch=isize;ch<=h;ch+=hinc) {
+	cy -= hinc;
+	usleep(ANIM_DELAY/2);
+	XMoveResizeWindow(dpy,win,x,cy, w, ch);
+	XSync(dpy,0);
+      }
+      break;
+    case DIR_TODOWN:
+      XMoveResizeWindow(dpy,win,x,y, w, 1);
+      XMapWindow(dpy, win);
+      for(ch=isize;ch<=h;ch+=hinc) {
+	usleep(ANIM_DELAY/2);
+	XMoveResizeWindow(dpy,win,x,y, w, ch);
+	XSync(dpy,0);
+      }
+      break;
+    default:
+      XBell(dpy,100);
+      fprintf(stderr,"WHARF INTERNAL BUG in OpenFolder()\n");
+      exit(-1);
     }
 
-    if (cw!=w || ch!=h || x != cx || cy != y || AnimationStyle==0)
-      XMoveResizeWindow(dpy,win,x,y,w,h);
+  if (cw!=w || ch!=h || x != cx || cy != y || AnimationStyle==0)
+    XMoveResizeWindow(dpy,win,x,y,w,h);
 }
 
 
 
 void CloseFolder(int folder)
 {
-    int winc, hinc;
-    int cx, cy, cw, ch;
-    int x,y;
-    unsigned int w,h, junk_depth, junk_bd;
-    int fsize, direction;
-    Window win, junk_win;
+  int winc, hinc;
+  int cx, cy, cw, ch;
+  int x,y;
+  unsigned int w,h, junk_depth, junk_bd;
+  int fsize, direction;
+  Window win, junk_win;
 
 #ifdef ENABLE_SOUND
-	PlaySound(WHEV_CLOSE_FOLDER);
+  PlaySound(WHEV_CLOSE_FOLDER);
 #endif
-    if (folder<0) {
-	winc = BUTTONWIDTH/ANIM_STEP_MAIN;
-	hinc = BUTTONHEIGHT/ANIM_STEP_MAIN;
-    } else {
-	winc = BUTTONWIDTH/ANIM_STEP;
-	hinc = BUTTONHEIGHT/ANIM_STEP;
+  if (folder<0) {
+    winc = BUTTONWIDTH/ANIM_STEP_MAIN;
+    hinc = BUTTONHEIGHT/ANIM_STEP_MAIN;
+  } else {
+    winc = BUTTONWIDTH/ANIM_STEP;
+    hinc = BUTTONHEIGHT/ANIM_STEP;
+  }
+  if (folder < 0)  {
+    win = main_win;
+    direction = AnimationDir;
+    if (direction==DIR_TOUP || direction==DIR_TODOWN)
+      fsize=BUTTONHEIGHT;
+    else
+      fsize=BUTTONWIDTH;
+  } else {
+    direction = Folders[folder].direction;
+    win = Folders[folder].win;
+    if (direction==DIR_TOUP || direction==DIR_TODOWN)
+      fsize=hinc;
+    else
+      fsize=winc;
+  }
+  if (AnimationStyle==0) {
+    goto end;
+  }
+  XGetGeometry(dpy,win,&junk_win,&x,&y,&w,&h,&junk_bd,&junk_depth);
+  XTranslateCoordinates(dpy,win,Root,x,y,&x,&y,&junk_win);
+  switch (direction) {
+  case DIR_TOLEFT:
+    cx = x;
+    for(cw=w;cw >= fsize; cw-=winc) {
+      XMoveResizeWindow(dpy,win,cx,y, cw,h);
+      XSync(dpy,0);
+      usleep(ANIM_DELAY);
+      cx += winc;
     }
-    if (folder < 0)  {
-	win = main_win;
-	direction = AnimationDir;
-	if (direction==DIR_TOUP || direction==DIR_TODOWN)
-	  fsize=BUTTONHEIGHT;
-	else
-	  fsize=BUTTONWIDTH;
-    } else {
-	direction = Folders[folder].direction;
-	win = Folders[folder].win;
-	if (direction==DIR_TOUP || direction==DIR_TODOWN)
-	  fsize=hinc;
-	else
-	  fsize=winc;
+    break;
+  case DIR_TORIGHT:
+    for(cw=w;cw >= fsize; cw-=winc) {
+      XMoveResizeWindow(dpy,win,x,y, cw,h);
+      XSync(dpy,0);
+      usleep(ANIM_DELAY);
     }
-    if (AnimationStyle==0) {
-	goto end;
+    break;
+  case DIR_TOUP:
+    cy = y;
+    for(ch=h;ch >= fsize; ch-=hinc) {
+      XMoveResizeWindow(dpy,win,x,cy, w,ch);
+      XSync(dpy,0);
+      usleep(ANIM_DELAY);
+      cy += hinc;
     }
-    XGetGeometry(dpy,win,&junk_win,&x,&y,&w,&h,&junk_bd,&junk_depth);
-    XTranslateCoordinates(dpy,win,Root,x,y,&x,&y,&junk_win);
-    switch (direction) {
-     case DIR_TOLEFT:
-	cx = x;
-	for(cw=w;cw >= fsize; cw-=winc) {
-	    XMoveResizeWindow(dpy,win,cx,y, cw,h);
-	    XSync(dpy,0);
-	    usleep(ANIM_DELAY);
-	    cx += winc;
-	}
-	break;
-     case DIR_TORIGHT:
-	for(cw=w;cw >= fsize; cw-=winc) {
-	    XMoveResizeWindow(dpy,win,x,y, cw,h);
-	    XSync(dpy,0);
-	    usleep(ANIM_DELAY);
-	}
-	break;
-     case DIR_TOUP:
-	cy = y;
-	for(ch=h;ch >= fsize; ch-=hinc) {
-	    XMoveResizeWindow(dpy,win,x,cy, w,ch);
-	    XSync(dpy,0);
-	    usleep(ANIM_DELAY);
-	    cy += hinc;
-	}
-	break;
-     case DIR_TODOWN:
-	for(ch=h;ch >= fsize; ch-=hinc) {
-	    XMoveResizeWindow(dpy,win,x,y, w, ch);
-	    XSync(dpy,0);
-	    usleep(ANIM_DELAY);
-	}
-	break;
-     default:
-	XBell(dpy,100);
-	fprintf(stderr,"WHARF INTERNAL BUG in CloseFolder()\n");
-	exit(-1);
+    break;
+  case DIR_TODOWN:
+    for(ch=h;ch >= fsize; ch-=hinc) {
+      XMoveResizeWindow(dpy,win,x,y, w, ch);
+      XSync(dpy,0);
+      usleep(ANIM_DELAY);
     }
-    Folders[folder].direction = 0;
- end:
-    if (folder<0) {
-	XResizeWindow(dpy,win,BUTTONWIDTH,BUTTONHEIGHT);
-    } else {
-	XUnmapWindow(dpy,win);
-    }
+    break;
+  default:
+    XBell(dpy,100);
+    fprintf(stderr,"WHARF INTERNAL BUG in CloseFolder()\n");
+    exit(-1);
+  }
+  Folders[folder].direction = 0;
+  end:
+  if (folder<0) {
+    XResizeWindow(dpy,win,BUTTONWIDTH,BUTTONHEIGHT);
+  } else {
+    XUnmapWindow(dpy,win);
+  }
 }
 
 
-void MapFolder(int folder, int *LastMapped, int base_x, int base_y, int row, int col)
+void MapFolder(int folder, int *LastMapped, int base_x, int base_y, int row,
+	       int col)
 {
-    int dir;
+  int dir;
 
   if (Folders[folder].mapped ==ISMAPPED)
+  {
+    CloseFolder(folder);
+    Folders[folder].mapped = NOTMAPPED;
+    *LastMapped = -1;
+  }
+  else
+  {
+    int folderx, foldery, folderw, folderh;
+    if (*LastMapped != -1)
     {
-      CloseFolder(folder);
-      Folders[folder].mapped = NOTMAPPED;
+      CloseFolder(*LastMapped);
+      Folders[*LastMapped].mapped = NOTMAPPED;
       *LastMapped = -1;
     }
-  else
+    Folders[folder].mapped = ISMAPPED;
+    if(num_columns < num_rows)
     {
-      int folderx, foldery, folderw, folderh;
-      if (*LastMapped != -1)
-	{
-	  CloseFolder(*LastMapped);
-	  Folders[*LastMapped].mapped = NOTMAPPED;
-	  *LastMapped = -1;
+      if((base_x % display_width) > display_width / 2 ) {
+	folderx = base_x+(col-Folders[folder].count)*BUTTONWIDTH-2;
+	dir = DIR_TOLEFT;
+      }
+      else {
+	folderx = base_x+(col+1)*BUTTONHEIGHT+1;
+	dir = DIR_TORIGHT;
+      }
+      foldery = base_y+row*BUTTONHEIGHT;
+      folderw = Folders[folder].count*BUTTONWIDTH;
+      folderh = BUTTONHEIGHT;
+    }
+    /* more kludgery */
+    else if (num_columns == num_rows)
+    {
+      /*
+	if((base_x % display_width) > display_width / 2 )
+	folderx = (col-Folders[folder].count)*BUTTONHEIGHT-2;
+	else
+	folderx = (col+1)*BUTTONHEIGHT+1;
+      */
+      if (ROWS)
+      {
+	if ((base_y % display_height) > display_height / 2) {
+	  foldery = base_y-(Folders[folder].count)*BUTTONHEIGHT-2;
+	  dir = DIR_TOUP;
 	}
-      Folders[folder].mapped = ISMAPPED;
-      if(num_columns < num_rows)
-	{
-	  if((base_x % display_width) > display_width / 2 ) {
-	      folderx = base_x+(col-Folders[folder].count)*BUTTONWIDTH-2;
-	      dir = DIR_TOLEFT;
-	  }
-	  else {
-	      folderx = base_x+(col+1)*BUTTONHEIGHT+1;
-	      dir = DIR_TORIGHT;
-	  }
-	  foldery = base_y+row*BUTTONHEIGHT;
-	  folderw = Folders[folder].count*BUTTONWIDTH;
-	  folderh = BUTTONHEIGHT;
+	else {
+	  foldery = base_y+BUTTONHEIGHT+2;
+	  dir = DIR_TODOWN;
 	}
-/* more kludgery */
-      else if (num_columns == num_rows)
-        {
-/*
-	  if((base_x % display_width) > display_width / 2 )
-	    folderx = (col-Folders[folder].count)*BUTTONHEIGHT-2;
-	  else
-	    folderx = (col+1)*BUTTONHEIGHT+1;
-*/
-          if (ROWS)
-          {
-            if ((base_y % display_height) > display_height / 2) {
-		foldery = base_y-(Folders[folder].count)*BUTTONHEIGHT-2;
-		dir = DIR_TOUP;
-	    }
-            else {
-		foldery = base_y+BUTTONHEIGHT+2;
-		dir = DIR_TODOWN;
-	    }
-            folderx = base_x;
-	    folderw = BUTTONWIDTH;
-	    folderh = (Folders[folder].count)*BUTTONHEIGHT;
-          }
-          else
-          {
-	    if((base_x % display_width) > display_width / 2 ) {
-		folderx = base_x-(Folders[folder].count)*BUTTONWIDTH-2;
-		dir = DIR_TOLEFT;
-	    }
-            else {
-		folderx = base_x+BUTTONWIDTH+1;
-		dir = DIR_TORIGHT;
-	    }
-            foldery = base_y-1;
-	    folderh = BUTTONHEIGHT;
-	    folderw = (Folders[folder].count)*BUTTONWIDTH;
-          }
-        }
+	folderx = base_x;
+	folderw = BUTTONWIDTH;
+	folderh = (Folders[folder].count)*BUTTONHEIGHT;
+      }
       else
-	{
-	  if ((base_y % display_height) < display_height / 2) {
-	    foldery  =base_y+(row+1)*BUTTONHEIGHT;
-	    dir = DIR_TODOWN;
-	  }
-	  else {
-	    foldery = base_y+(row-Folders[folder].count)*BUTTONHEIGHT;
-	    dir = DIR_TOUP;
-	  }
-	  folderx = base_x+col*BUTTONWIDTH;
-	  folderw = BUTTONWIDTH;
-	  folderh = (Folders[folder].count)*BUTTONHEIGHT;
-       	}
+      {
+	if((base_x % display_width) > display_width / 2 ) {
+	  folderx = base_x-(Folders[folder].count)*BUTTONWIDTH-2;
+	  dir = DIR_TOLEFT;
+	}
+	else {
+	  folderx = base_x+BUTTONWIDTH+1;
+	  dir = DIR_TORIGHT;
+	}
+	foldery = base_y-1;
+	folderh = BUTTONHEIGHT;
+	folderw = (Folders[folder].count)*BUTTONWIDTH;
+      }
+    }
+    else
+    {
+      if ((base_y % display_height) < display_height / 2) {
+	foldery  =base_y+(row+1)*BUTTONHEIGHT;
+	dir = DIR_TODOWN;
+      }
+      else {
+	foldery = base_y+(row-Folders[folder].count)*BUTTONHEIGHT;
+	dir = DIR_TOUP;
+      }
+      folderx = base_x+col*BUTTONWIDTH;
+      folderw = BUTTONWIDTH;
+      folderh = (Folders[folder].count)*BUTTONHEIGHT;
+    }
 
 #ifdef ENABLE_SOUND
-	PlaySound(WHEV_OPEN_FOLDER);
+    PlaySound(WHEV_OPEN_FOLDER);
 #endif
-	XMoveWindow(dpy, Folders[folder].win, folderx, foldery);
-	OpenFolder(folder,folderx, foldery, folderw, folderh, dir);
-	*LastMapped = folder;
-    }
+    XMoveWindow(dpy, Folders[folder].win, folderx, foldery);
+    OpenFolder(folder,folderx, foldery, folderw, folderh, dir);
+    *LastMapped = folder;
+  }
 }
 
 void
 DrawOutline(Drawable d, int w, int h)
 {
-    if (NoBorder)
-      return;
-/* top */
-    XDrawLine( dpy, d, HiInnerGC, 0, 0, w-1, 0);
-    /*
+  if (NoBorder)
+    return;
+  /* top */
+  XDrawLine( dpy, d, HiInnerGC, 0, 0, w-1, 0);
+  /*
     XDrawLine( dpy, d, HiInnerGC, 0, 1, w-1, 1);
-*/
-/* bottom */
-    XFillRectangle(dpy, d, NormalGC, 0,h-2,w-1,h-1);
+  */
+  /* bottom */
+  XFillRectangle(dpy, d, NormalGC, 0,h-2,w-1,h-1);
 
-/* left */
-    XDrawLine( dpy, d, HiInnerGC, 0, 1, 0, h-1);
-    /*
+  /* left */
+  XDrawLine( dpy, d, HiInnerGC, 0, 1, 0, h-1);
+  /*
     XDrawLine( dpy, d, HiInnerGC, 1, 2, 1, h-2);
-     */
-/* right */
-    XDrawLine( dpy, d, NormalGC, w-1, 1, w-1, h-1);
-    XDrawLine( dpy, d, NormalGC, w-2, 2, w-2, h-2);
+  */
+  /* right */
+  XDrawLine( dpy, d, NormalGC, w-1, 1, w-1, h-1);
+  XDrawLine( dpy, d, NormalGC, w-2, 2, w-2, h-2);
 }
 
 void RedrawUnpushed(Window *win, int i, int j)
 {
-    if (PushStyle!=0) {
-	XMoveResizeWindow(dpy, Buttons[CurrentButton].IconWin,
-			  (j-1)*BUTTONWIDTH ,(i-1)*BUTTONHEIGHT,
-			  BUTTONWIDTH, BUTTONHEIGHT);
-    } else {
-	XCopyArea( dpy, Buttons[CurrentButton].completeIcon,
-		  Buttons[CurrentButton].IconWin, NormalGC, 0, 0,
-		  Buttons[BACK_BUTTON].icons[0].w,
-		  Buttons[BACK_BUTTON].icons[0].h,
-		  0,0);
-    }
-    RedrawWindow(win,0, CurrentButton, num_rows, num_columns);
+  if (PushStyle!=0) {
+    XMoveResizeWindow(dpy, Buttons[CurrentButton].IconWin,
+		      (j-1)*BUTTONWIDTH ,(i-1)*BUTTONHEIGHT,
+		      BUTTONWIDTH, BUTTONHEIGHT);
+  } else {
+    XCopyArea( dpy, Buttons[CurrentButton].completeIcon,
+	       Buttons[CurrentButton].IconWin, NormalGC, 0, 0,
+	       Buttons[BACK_BUTTON].icons[0].w,
+	       Buttons[BACK_BUTTON].icons[0].h,
+	       0,0);
+  }
+  RedrawWindow(win,0, CurrentButton, num_rows, num_columns);
 
-    RedrawUnpushedOutline(win, i, j);
+  RedrawUnpushedOutline(win, i, j);
 }
 
 void RedrawUnpushedOutline(Window *win, int i, int j)
 {
-/* top */
-    if (NoBorder) {
-      return;
-    }
+  /* top */
+  if (NoBorder) {
+    return;
+  }
 
-    XDrawLine( dpy, *win, HiInnerGC,
-	      j*BUTTONWIDTH-BUTTONWIDTH, i*BUTTONHEIGHT-BUTTONHEIGHT,
-	      j*BUTTONWIDTH,i*BUTTONHEIGHT-BUTTONHEIGHT);
-/*
+  XDrawLine( dpy, *win, HiInnerGC,
+	     j*BUTTONWIDTH-BUTTONWIDTH, i*BUTTONHEIGHT-BUTTONHEIGHT,
+	     j*BUTTONWIDTH,i*BUTTONHEIGHT-BUTTONHEIGHT);
+  /*
     XDrawLine( dpy, *win, HiInnerGC, j*BUTTONWIDTH-BUTTONWIDTH,
-	      i*BUTTONHEIGHT-BUTTONHEIGHT+1, j*BUTTONWIDTH,
-	      i*BUTTONHEIGHT-BUTTONHEIGHT+1);
- */
-    /* left */
-    XDrawLine( dpy, *win, HiInnerGC, j*BUTTONWIDTH-BUTTONWIDTH,
-	      i*BUTTONHEIGHT-BUTTONHEIGHT+1, j*BUTTONWIDTH-BUTTONWIDTH,
-	      i*BUTTONHEIGHT-1);
-   /*
+    i*BUTTONHEIGHT-BUTTONHEIGHT+1, j*BUTTONWIDTH,
+    i*BUTTONHEIGHT-BUTTONHEIGHT+1);
+  */
+  /* left */
+  XDrawLine( dpy, *win, HiInnerGC, j*BUTTONWIDTH-BUTTONWIDTH,
+	     i*BUTTONHEIGHT-BUTTONHEIGHT+1, j*BUTTONWIDTH-BUTTONWIDTH,
+	     i*BUTTONHEIGHT-1);
+  /*
     XDrawLine( dpy, *win, HiInnerGC, j*BUTTONWIDTH
-	      -BUTTONWIDTH+1, i*BUTTONHEIGHT-BUTTONHEIGHT+2,
-	      j*BUTTONWIDTH-BUTTONWIDTH+1 ,i*BUTTONHEIGHT-1);
-    */
-    /* right */
-    XDrawLine( dpy, *win, NormalGC, j*BUTTONWIDTH-BUTTONWIDTH
-	      +BUTTONWIDTH-2, i*BUTTONHEIGHT-BUTTONHEIGHT+2, j*BUTTONWIDTH
-	      -BUTTONWIDTH+BUTTONWIDTH-2 ,i*BUTTONHEIGHT-1);
+    -BUTTONWIDTH+1, i*BUTTONHEIGHT-BUTTONHEIGHT+2,
+    j*BUTTONWIDTH-BUTTONWIDTH+1 ,i*BUTTONHEIGHT-1);
+  */
+  /* right */
+  XDrawLine( dpy, *win, NormalGC, j*BUTTONWIDTH-BUTTONWIDTH
+	     +BUTTONWIDTH-2, i*BUTTONHEIGHT-BUTTONHEIGHT+2, j*BUTTONWIDTH
+	     -BUTTONWIDTH+BUTTONWIDTH-2 ,i*BUTTONHEIGHT-1);
 
-    XDrawLine( dpy, *win, NormalGC, j*BUTTONWIDTH-BUTTONWIDTH
-	      +BUTTONWIDTH-1, i*BUTTONHEIGHT-BUTTONHEIGHT+1,
-	      j*BUTTONWIDTH-BUTTONWIDTH+BUTTONWIDTH-1 ,i*BUTTONHEIGHT-1);
+  XDrawLine( dpy, *win, NormalGC, j*BUTTONWIDTH-BUTTONWIDTH
+	     +BUTTONWIDTH-1, i*BUTTONHEIGHT-BUTTONHEIGHT+1,
+	     j*BUTTONWIDTH-BUTTONWIDTH+BUTTONWIDTH-1 ,i*BUTTONHEIGHT-1);
 
-    /* bottom */
-    XDrawLine( dpy, *win, NormalGC, j*BUTTONWIDTH
-	      -BUTTONWIDTH+1, i*BUTTONHEIGHT-1, j*BUTTONWIDTH-BUTTONWIDTH
-	      +BUTTONWIDTH-2,i*BUTTONHEIGHT-1);
+  /* bottom */
+  XDrawLine( dpy, *win, NormalGC, j*BUTTONWIDTH
+	     -BUTTONWIDTH+1, i*BUTTONHEIGHT-1, j*BUTTONWIDTH-BUTTONWIDTH
+	     +BUTTONWIDTH-2,i*BUTTONHEIGHT-1);
 
-    XDrawLine( dpy, *win, NormalGC, j*BUTTONWIDTH-BUTTONWIDTH
-	      +1, i*BUTTONHEIGHT-2, j*BUTTONWIDTH-BUTTONWIDTH+BUTTONWIDTH-2,
-	      i*BUTTONHEIGHT-2);
+  XDrawLine( dpy, *win, NormalGC, j*BUTTONWIDTH-BUTTONWIDTH
+	     +1, i*BUTTONHEIGHT-2, j*BUTTONWIDTH-BUTTONWIDTH+BUTTONWIDTH-2,
+	     i*BUTTONHEIGHT-2);
 }
 
 void RedrawPushed(Window *win, int i,int j)
 {
-    if (PushStyle!=0) {
-	XMoveResizeWindow(dpy, Buttons[CurrentButton].IconWin,
-			  2+(j-1)*BUTTONWIDTH,(i-1)*BUTTONHEIGHT+2,
-			  BUTTONWIDTH-2, BUTTONHEIGHT-2);
-    } else {
-	XCopyArea( dpy, Buttons[CurrentButton].completeIcon,
-		  Buttons[CurrentButton].IconWin, NormalGC, 2, 2,
-		  Buttons[BACK_BUTTON].icons[0].w-2,
-		  Buttons[BACK_BUTTON].icons[0].h-2, 4, 4);
-	XCopyArea( dpy, Buttons[BACK_BUTTON].icons[0].icon,
-		  Buttons[CurrentButton].IconWin, NormalGC, 2, 2,
-		  2, BUTTONHEIGHT, 2, 2);
-	XCopyArea( dpy, Buttons[BACK_BUTTON].icons[0].icon,
-		  Buttons[CurrentButton].IconWin, NormalGC, 2, 2,
-		  BUTTONWIDTH, 2, 2, 2);
-    }
-    RedrawWindow(win,0, CurrentButton, num_rows, num_columns);
-    RedrawPushedOutline(win, i,j);
+  if (PushStyle!=0) {
+    XMoveResizeWindow(dpy, Buttons[CurrentButton].IconWin,
+		      2+(j-1)*BUTTONWIDTH,(i-1)*BUTTONHEIGHT+2,
+		      BUTTONWIDTH-2, BUTTONHEIGHT-2);
+  } else {
+    XCopyArea( dpy, Buttons[CurrentButton].completeIcon,
+	       Buttons[CurrentButton].IconWin, NormalGC, 2, 2,
+	       Buttons[BACK_BUTTON].icons[0].w-2,
+	       Buttons[BACK_BUTTON].icons[0].h-2, 4, 4);
+    XCopyArea( dpy, Buttons[BACK_BUTTON].icons[0].icon,
+	       Buttons[CurrentButton].IconWin, NormalGC, 2, 2,
+	       2, BUTTONHEIGHT, 2, 2);
+    XCopyArea( dpy, Buttons[BACK_BUTTON].icons[0].icon,
+	       Buttons[CurrentButton].IconWin, NormalGC, 2, 2,
+	       BUTTONWIDTH, 2, 2, 2);
+  }
+  RedrawWindow(win,0, CurrentButton, num_rows, num_columns);
+  RedrawPushedOutline(win, i,j);
 }
 
 void RedrawPushedOutline(Window *win, int i, int j)
 {
-    GC gc1;
-    /* Top Hilite */
+  GC gc1;
+  /* Top Hilite */
+  XDrawLine( dpy, *win, NormalGC, j*BUTTONWIDTH-BUTTONWIDTH,
+	     i*BUTTONHEIGHT-BUTTONHEIGHT, j*BUTTONWIDTH,i*BUTTONHEIGHT
+	     -BUTTONHEIGHT);
+  /*
     XDrawLine( dpy, *win, NormalGC, j*BUTTONWIDTH-BUTTONWIDTH,
-	      i*BUTTONHEIGHT-BUTTONHEIGHT, j*BUTTONWIDTH,i*BUTTONHEIGHT
-	      -BUTTONHEIGHT);
-/*
-    XDrawLine( dpy, *win, NormalGC, j*BUTTONWIDTH-BUTTONWIDTH,
-	      i*BUTTONHEIGHT-BUTTONHEIGHT+1, j*BUTTONWIDTH,i*BUTTONHEIGHT
-	      -BUTTONHEIGHT+1);
- */
-    /* Left Hilite */
+    i*BUTTONHEIGHT-BUTTONHEIGHT+1, j*BUTTONWIDTH,i*BUTTONHEIGHT
+    -BUTTONHEIGHT+1);
+  */
+  /* Left Hilite */
 
-    XDrawLine( dpy, *win, NormalGC, j*BUTTONWIDTH-BUTTONWIDTH,
-	      i*BUTTONHEIGHT-BUTTONHEIGHT+1, j*BUTTONWIDTH-BUTTONWIDTH,
-	      i*BUTTONHEIGHT-1);
-   /*
+  XDrawLine( dpy, *win, NormalGC, j*BUTTONWIDTH-BUTTONWIDTH,
+	     i*BUTTONHEIGHT-BUTTONHEIGHT+1, j*BUTTONWIDTH-BUTTONWIDTH,
+	     i*BUTTONHEIGHT-1);
+  /*
     XDrawLine( dpy, *win, NormalGC, j*BUTTONWIDTH-BUTTONWIDTH
-	      +1, i*BUTTONHEIGHT-BUTTONHEIGHT+2, j*BUTTONWIDTH-BUTTONWIDTH+1,
-	      i*BUTTONHEIGHT-1);
-    */
-    if (PushStyle!=0) {
-	gc1 = HiReliefGC;
-    } else {
-	gc1 = HiInnerGC;
-    }
+    +1, i*BUTTONHEIGHT-BUTTONHEIGHT+2, j*BUTTONWIDTH-BUTTONWIDTH+1,
+    i*BUTTONHEIGHT-1);
+  */
+  if (PushStyle!=0) {
+    gc1 = HiReliefGC;
+  } else {
+    gc1 = HiInnerGC;
+  }
 
-    /* Right Hilite */
+  /* Right Hilite */
 
-    XDrawLine( dpy, *win, HiReliefGC, j*BUTTONWIDTH
-	      -BUTTONWIDTH+BUTTONWIDTH-2, i*BUTTONHEIGHT-BUTTONHEIGHT+2,
-	      j*BUTTONWIDTH-BUTTONWIDTH+BUTTONWIDTH-2 ,i*BUTTONHEIGHT-1);
+  XDrawLine( dpy, *win, HiReliefGC, j*BUTTONWIDTH
+	     -BUTTONWIDTH+BUTTONWIDTH-2, i*BUTTONHEIGHT-BUTTONHEIGHT+2,
+	     j*BUTTONWIDTH-BUTTONWIDTH+BUTTONWIDTH-2 ,i*BUTTONHEIGHT-1);
 
-    XDrawLine( dpy, *win, gc1, j*BUTTONWIDTH
-	      -BUTTONWIDTH+BUTTONWIDTH-1, i*BUTTONHEIGHT-BUTTONHEIGHT+1,
-	      j*BUTTONWIDTH-BUTTONWIDTH+BUTTONWIDTH-1 ,i*BUTTONHEIGHT-1);
+  XDrawLine( dpy, *win, gc1, j*BUTTONWIDTH
+	     -BUTTONWIDTH+BUTTONWIDTH-1, i*BUTTONHEIGHT-BUTTONHEIGHT+1,
+	     j*BUTTONWIDTH-BUTTONWIDTH+BUTTONWIDTH-1 ,i*BUTTONHEIGHT-1);
 
-    /* Bottom Hilite */
-    XDrawLine( dpy, *win, gc1, j*BUTTONWIDTH
-	      -BUTTONWIDTH+1, i*BUTTONHEIGHT-1, j*BUTTONWIDTH-BUTTONWIDTH
-	      +BUTTONWIDTH-2,i*BUTTONHEIGHT-1);
+  /* Bottom Hilite */
+  XDrawLine( dpy, *win, gc1, j*BUTTONWIDTH
+	     -BUTTONWIDTH+1, i*BUTTONHEIGHT-1, j*BUTTONWIDTH-BUTTONWIDTH
+	     +BUTTONWIDTH-2,i*BUTTONHEIGHT-1);
 
-    XDrawLine( dpy, *win, HiReliefGC, j*BUTTONWIDTH
-	      -BUTTONWIDTH+1, i*BUTTONHEIGHT-2, j*BUTTONWIDTH-BUTTONWIDTH
-	      +BUTTONWIDTH-2,i*BUTTONHEIGHT-2);
+  XDrawLine( dpy, *win, HiReliefGC, j*BUTTONWIDTH
+	     -BUTTONWIDTH+1, i*BUTTONHEIGHT-2, j*BUTTONWIDTH-BUTTONWIDTH
+	     +BUTTONWIDTH-2,i*BUTTONHEIGHT-2);
 }
 /************************************************************************
  *
@@ -1303,17 +1313,17 @@ void RedrawWindow(Window *win, int firstbutton, int newbutton,
 
   for(i=0;i<num_rows;i++)
     for(j=0;j<num_columns; j++)
+    {
+      button = firstbutton+i*num_columns + j;
+      if((newbutton == -1)||(newbutton == button))
       {
-	button = firstbutton+i*num_columns + j;
-	if((newbutton == -1)||(newbutton == button))
-	  {
-	      if(((Buttons[button].swallow == 3)||
-	          (Buttons[button].swallow == 4))&&
-		  (Buttons[button].IconWin != None))
-		XSetWindowBorderWidth(dpy,Buttons[button].IconWin,0);
-	  }
-	  RedrawUnpushedOutline(win,i,j);
+	if(((Buttons[button].swallow == 3)||
+	    (Buttons[button].swallow == 4))&&
+	   (Buttons[button].IconWin != None))
+	  XSetWindowBorderWidth(dpy,Buttons[button].IconWin,0);
       }
+      RedrawUnpushedOutline(win,i,j);
+    }
 }
 
 
@@ -1327,21 +1337,27 @@ void CreateShadowGC(void)
   XGCValues gcv;
   unsigned long gcm;
 
-    if(Pdepth < 2)
-    {
-      back_pix = GetColor("white");
-      fore_pix = GetColor("black");
-    }
+  if(Pdepth < 2)
+  {
+    back_pix = GetColor("white");
+    fore_pix = GetColor("black");
+  }
+  else if (global_colorset >= 0)
+  {
+    /*!!! ??? right?*/
+    fore_pix = Colorset[global_colorset % nColorsets].shadow;
+    light_grey = Colorset[global_colorset % nColorsets].hilite;
+  }
   else
-    {
-      if (TextureType>0 && TextureType < 128) {
-	  MakeShadowColors(dpy, FromColor, ToColor, &fore_pix, &light_grey);
-      } else {
-	  back_pix = GetColor("grey40");
-	  fore_pix = GetColor("grey17");
-	  light_grey = GetColor("white");
-      }
+  {
+    if (TextureType>0 && TextureType < 128) {
+      MakeShadowColors(dpy, FromColor, ToColor, &fore_pix, &light_grey);
+    } else {
+      back_pix = GetColor("grey40");
+      fore_pix = GetColor("grey17");
+      light_grey = GetColor("white");
     }
+  }
   gcm = GCForeground|GCBackground|GCSubwindowMode;
   gcv.subwindow_mode = IncludeInferiors;
 
@@ -1377,7 +1393,8 @@ void CreateVizWindow(void)
     attr.border_pixel = 0;
     attr.colormap = Pcmap;
     main_win = XCreateWindow(dpy,Root,-10,-10,10,10,0,Pdepth,InputOutput,
-			     Pvisual,CWBackPixel|CWBorderPixel|CWColormap,&attr);
+			     Pvisual,CWBackPixel|CWBorderPixel|CWColormap,
+			     &attr);
   }
 }
 
@@ -1398,26 +1415,26 @@ void CreateWindow(void)
   first_avail_button = num_buttons;
 
   if(num_buttons > MAX_BUTTONS)
-    {
-      fprintf(stderr,"%s: Out of Buttons!\n",MyName);
-      exit(0);
-    }
+  {
+    fprintf(stderr,"%s: Out of Buttons!\n",MyName);
+    exit(0);
+  }
 
   /* size and create the window */
   if((num_rows == 0)&&(num_columns == 0))
     num_columns = 1;
   if(num_columns == 0)
-    {
-      num_columns = num_buttons/num_rows;
-      while(num_rows * num_columns < num_buttons)
-	num_columns++;
-    }
+  {
+    num_columns = num_buttons/num_rows;
+    while(num_rows * num_columns < num_buttons)
+      num_columns++;
+  }
   if(num_rows == 0)
-    {
-      num_rows = num_buttons/num_columns;
-      while(num_rows * num_columns < num_buttons)
-	num_rows++;
-    }
+  {
+    num_rows = num_buttons/num_columns;
+    while(num_rows * num_columns < num_buttons)
+      num_rows++;
+  }
 
   while(num_rows * num_columns < num_buttons)
     num_columns++;
@@ -1431,28 +1448,28 @@ void CreateWindow(void)
   mysizehints.base_height = num_rows - 1;
   mysizehints.base_width = num_columns - 1;
   if(x > -100000)
+  {
+    if (x <= -1)
     {
-      if (x <= -1)
-	{
-          mysizehints.x = DisplayWidth(dpy,screen) + x - mysizehints.width-1;
-	  gravity = NorthEastGravity;
-	}
-      else if ((x == 0) && (flags & 16))
-        mysizehints.x = DisplayWidth(dpy,screen) - mysizehints.width-2;
-      else
-	mysizehints.x = x;
-      if ( y<0)
-	{
-	  mysizehints.y = DisplayHeight(dpy,screen) + y - mysizehints.height-2;
-	  gravity = SouthWestGravity;
-	}
-      else
-	mysizehints.y = y;
-
-      if((x < 0) && (y < 0))
-	gravity = SouthEastGravity;
-      mysizehints.flags |= USPosition;
+      mysizehints.x = DisplayWidth(dpy,screen) + x - mysizehints.width-1;
+      gravity = NorthEastGravity;
     }
+    else if ((x == 0) && (flags & 16))
+      mysizehints.x = DisplayWidth(dpy,screen) - mysizehints.width-2;
+    else
+      mysizehints.x = x;
+    if ( y<0)
+    {
+      mysizehints.y = DisplayHeight(dpy,screen) + y - mysizehints.height-2;
+      gravity = SouthWestGravity;
+    }
+    else
+      mysizehints.y = y;
+
+    if((x < 0) && (y < 0))
+      gravity = SouthEastGravity;
+    mysizehints.flags |= USPosition;
+  }
 
   mysizehints.win_gravity = gravity;
 
@@ -1466,29 +1483,29 @@ void CreateWindow(void)
 			   CWBackPixel|CWBorderPixel|CWColormap,&attr);
 
   for(i=0;i<num_folders;i++)
+  {
+    if(num_columns <num_rows)
     {
-      if(num_columns <num_rows)
-	{
-	  Folders[i].cols = 1;
-	  Folders[i].rows = Folders[i].count;
-	}
-      else if ((num_columns == num_rows) && (!ROWS))
-      {
-	  Folders[i].cols = 1;
-	  Folders[i].rows = Folders[i].count;
-      }
-      else
-	{
-	  Folders[i].cols = Folders[i].count;
-	  Folders[i].rows = 1;
-	}
-      Folders[i].win = XCreateWindow(dpy, Root,0,0,BUTTONWIDTH*Folders[i].rows,
-				     BUTTONHEIGHT*Folders[i].cols,0,Pdepth,
-				     InputOutput,Pvisual,
-				     CWBackPixel|CWBorderPixel|CWColormap,&attr);
-      XSetWMNormalHints(dpy,Folders[i].win,&mysizehints);
-      XSelectInput(dpy, Folders[i].win, MW_EVENTS);
-     }
+      Folders[i].cols = 1;
+      Folders[i].rows = Folders[i].count;
+    }
+    else if ((num_columns == num_rows) && (!ROWS))
+    {
+      Folders[i].cols = 1;
+      Folders[i].rows = Folders[i].count;
+    }
+    else
+    {
+      Folders[i].cols = Folders[i].count;
+      Folders[i].rows = 1;
+    }
+    Folders[i].win = XCreateWindow(dpy, Root,0,0,BUTTONWIDTH*Folders[i].rows,
+				   BUTTONHEIGHT*Folders[i].cols,0,Pdepth,
+				   InputOutput,Pvisual,
+				   CWBackPixel|CWBorderPixel|CWColormap,&attr);
+    XSetWMNormalHints(dpy,Folders[i].win,&mysizehints);
+    XSelectInput(dpy, Folders[i].win, MW_EVENTS);
+  }
 
   XSetWMProtocols(dpy,main_win,&wm_del_win,1);
 
@@ -1508,25 +1525,25 @@ void DeadPipe(int nonsense)
   int i,j,button;
 
 #ifdef ENABLE_SOUND
-    int val=-1;
-    write(PlayerChannel[1],&val,sizeof(val));
-    if (SoundThread != 0)
-      kill(SoundThread,SIGUSR1);
+  int val=-1;
+  write(PlayerChannel[1],&val,sizeof(val));
+  if (SoundThread != 0)
+    kill(SoundThread,SIGUSR1);
 #endif
   for(i=0;i<num_rows;i++)
     for(j=0;j<num_columns; j++)
+    {
+      button = i*num_columns + j;
+      /* delete swallowed windows, but not modules
+	 (afterstep handles those) */
+      if(((Buttons[button].swallow == 3)||(Buttons[button].swallow == 4))&&
+	 (Buttons[button].module == 0))
       {
-	button = i*num_columns + j;
-        /* delete swallowed windows, but not modules
-	   (afterstep handles those) */
-	if(((Buttons[button].swallow == 3)||(Buttons[button].swallow == 4))&&
-	    (Buttons[button].module == 0))
-	  {
-	    my_send_clientmessage(Buttons[button].IconWin,wm_del_win,
-				  CurrentTime);
-	    XSync(dpy,0);
-	  }
+	my_send_clientmessage(Buttons[button].IconWin,wm_del_win,
+			      CurrentTime);
+	XSync(dpy,0);
       }
+    }
   XSync(dpy,0);
   exit(0);
 }
@@ -1542,179 +1559,230 @@ void ParseOptions(char *filename)
   char *tline,*orig_tline,*tmp;
   int Clength, len;
 
-  InitGetConfigLine(fd,CatString3("*",MyName,0)); /* speedup */
+  InitGetConfigLine(fd,CatString3("*", MyName, 0)); /* speedup */
   GetConfigLine(fd, &tline);
   orig_tline = tline;
   Clength = strlen(MyName);
   while(tline != NULL && tline[0] != '\0')
+  {
+    int g_x, g_y;
+    unsigned width,height;
+    while(isspace(*tline))tline++;
+
+    if(strlen(&tline[0]) <= 0)
     {
-      int g_x, g_y;
-      unsigned width,height;
-      while(isspace(*tline))tline++;
-
-      if((strlen(&tline[0])>1)&&
-	 (strncasecmp(tline,CatString3("*", MyName, "Geometry"),Clength+9)==0))
-	{
-	  tmp = &tline[Clength+9];
-	  while(((isspace(*tmp))&&(*tmp != '\n'))&&(*tmp != 0))
-	    {
-	      tmp++;
-	    }
-	  tmp[strlen(tmp)-1] = 0;
-
-	  flags = XParseGeometry(tmp,&g_x,&g_y,&width,&height);
-	  if (flags & WidthValue)
-	    w = width;
-	  if (flags & HeightValue)
-	    h = height;
-	  if (flags & XValue)
-	    x = g_x;
-	  if (flags & YValue)
-	    y = g_y;
-	}
-      else if((strlen(&tline[0])>1)&&
-	      (strncasecmp(tline,CatString3("*",MyName,"Rows"),Clength+5)==0))
-	{
-	  len=sscanf(&tline[Clength+5],"%d",&num_rows);
-	  if(len < 1)
-	    num_rows = 0;
-            ROWS = True;
-	}
-      else if((strlen(&tline[0])>1)&&
-	      (strncasecmp(tline,CatString3("*",MyName,"Columns"),Clength+8)==0))
-	{
-	  len=sscanf(&tline[Clength+8],"%d",&num_columns);
-	  if(len < 1)
-	    num_columns = 0;
-            ROWS = False;
-	}
-      else if((strlen(&tline[0])>1)&&
-              (strncasecmp(tline,CatString3("*",MyName,"NoPush"),Clength+5)==0))
-        {
-	  Pushable = 0;
-        } else if((strlen(&tline[0])>1)&&
-              (strncasecmp(tline,CatString3("*",MyName,"FullPush"),Clength+9)==0))
-        {
-	  PushStyle = 1;
-        } else if((strlen(&tline[0])>1)&&
-              (strncasecmp(tline,CatString3("*",MyName,"NoBorder"),Clength+9)==0))
-        {
-	  NoBorder = 1;
-        } else if ((strlen(&tline[0])>1)
-	  &&(strncasecmp(tline,CatString3("*",MyName,"ForceSize"),Clength+10)==0)) {
-	    ForceSize = 1;
-        } else if ((strlen(&tline[0])>1)
-	  &&(strncasecmp(tline,CatString3("*",MyName,"TextureType"),Clength+12)==0)) {
-	    if (sscanf(&tline[Clength+12],"%d",&TextureType)<1)
-	      TextureType = TEXTURE_BUILTIN;
-	} else if ((strlen(&tline[0])>1)
-	  &&(strncasecmp(tline,CatString3("*",MyName,"MaxColors"),Clength+10)==0)) {
-
-	    if (sscanf(&tline[Clength+10],"%d",&MaxColors)<1)
-	      MaxColors = 16;
-	} else if ((strlen(&tline[0])>1)
-	  &&(strncasecmp(tline,CatString3("*",MyName,"BgColor"),Clength+8)==0)) {
-	    char *tmp;
-	    tmp=safemalloc(strlen(tline));
-	    sscanf(&tline[Clength+8],"%s",tmp);
-	    BgColor=GetColor(tmp);
-	    free(tmp);
-	} else if ((strlen(&tline[0])>1)
-	  &&(strncasecmp(tline,CatString3("*",MyName,"TextureColor"),Clength+13)==0)) {
-	    char *c1, *c2;
-	    XColor color;
-
-	    len = strlen(&tline[Clength+13]);
-	    c1 = safemalloc(len);
-	    c2 = safemalloc(len);
-	    if (sscanf(&tline[Clength+13],"%s %s",c1,c2)!=2) {
-		fprintf(stderr,"%s:You must specify two colors for the texture\n",MyName);
-		FromColor[0]=0;
-		FromColor[1]=0;
-		FromColor[2]=0;
-		ToColor[0]=0;
-		ToColor[1]=0;
-		ToColor[2]=0;
-	    }
-	    if (!XParseColor (dpy, Pcmap, c1, &color))
-	    {
-		fprintf(stderr, "Cannot parse %s\n", c1);
-		TextureType=TEXTURE_BUILTIN;
-	    } else {
-		FromColor[0]=color.red;
-		FromColor[1]=color.green;
-		FromColor[2]=color.blue;
-	    }
-	    if (!XParseColor (dpy, Pcmap, c2, &color))
-	    {
-		fprintf(stderr, "Cannot parse %s\n", c2);
-		TextureType=TEXTURE_BUILTIN;
-	    } else {
-		ToColor[0]=color.red;
-		ToColor[1]=color.green;
-		ToColor[2]=color.blue;
-	    }
-	    free(c1);
-	    free(c2);
-	} else if ((strlen(&tline[0])>1)
-	  &&(strncasecmp(tline,CatString3("*",MyName,"Pixmap"),Clength+7)==0)) {
-	    CopyString(&BgPixmapFile,&tline[Clength+7]);
-	} else if((strlen(&tline[0])>1)&&
-		  (strncasecmp(tline,CatString3("*",MyName,"AnimateMain"),Clength+12)==0))
-        {
-	    AnimateMain = 1;
-        }
-	else if((strlen(&tline[0])>1)&&
-		(strncasecmp(tline,CatString3("*",MyName,"Animate"),Clength+8)==0))
-        {
-	    if ((tline[Clength+9]!='M') && (tline[Clength+9]!='m'))
-	      AnimationStyle = 1;
-        }
-#ifdef ENABLE_SOUND
-	else if((strlen(&tline[0])>1)&&
-		(strncasecmp(tline,CatString3("*",MyName,"Player"),Clength+7)==0))
-        {
-	    CopyString(&SoundPlayer, &tline[Clength+7]);
-        } else if((strlen(&tline[0])>1)&&
-		(strncasecmp(tline,CatString3("*",MyName,"Sound"),Clength+6)==0))
-        {
-	    bind_sound(&tline[Clength+6]);
-	    SoundActive = 1;
-        }
-#endif
-	 else if((strlen(&tline[0])>1)
-		  &&(strncasecmp(tline,CatString3("*", MyName, ""),Clength+1)==0)
-		  && (num_buttons < MAX_BUTTONS))
-	{
-	    /* check if this is a invalid option */
-	    if (!isspace(tline[Clength+1]))
-	      fprintf(stderr,"%s:invalid option %s\n",MyName,tline);
-	    else
-	      match_string(&tline[Clength+1]);
-	}
-      else if((strlen(&tline[0])>1)&&(strncasecmp(tline,"ImagePath",9)==0))
-	{
-	  CopyString(&imagePath,&tline[9]);
-	}
-#ifdef ENABLE_SOUND
-      else if((strlen(&tline[0])>1)&&(strncasecmp(tline,"*AudioDir",9)==0))
-	{
-	  CopyString(&SoundPath,&tline[9]);
-	}
-      else if((strlen(&tline[0])>1)&&(strncasecmp(tline,"ModulePath",11)==0))
-	{
-	  CopyString(&ModulePath,&tline[11]);
-	}
-#endif
       GetConfigLine(fd, &tline);
       orig_tline = tline;
+      continue;
     }
+
+    if((strncasecmp(tline,CatString3("*", MyName, "Geometry"),Clength+9)==0))
+    {
+      tmp = &tline[Clength+9];
+      while(((isspace(*tmp))&&(*tmp != '\n'))&&(*tmp != 0))
+      {
+	tmp++;
+      }
+      tmp[strlen(tmp)-1] = 0;
+
+      flags = XParseGeometry(tmp,&g_x,&g_y,&width,&height);
+      if (flags & WidthValue)
+	w = width;
+      if (flags & HeightValue)
+	h = height;
+      if (flags & XValue)
+	x = g_x;
+      if (flags & YValue)
+	y = g_y;
+    }
+    else if((strncasecmp(tline,CatString3("*",MyName,"Rows"),Clength+5)==0))
+    {
+      len=sscanf(&tline[Clength+5],"%d",&num_rows);
+      if(len < 1)
+	num_rows = 0;
+      ROWS = True;
+    }
+    else if((strncasecmp(tline,CatString3("*",MyName,"Columns"),Clength+8)==0))
+    {
+      len=sscanf(&tline[Clength+8],"%d",&num_columns);
+      if(len < 1)
+	num_columns = 0;
+      ROWS = False;
+    }
+    else if((strncasecmp(tline,CatString3("*",MyName,"NoPush"),Clength+5)==0))
+    {
+      Pushable = 0;
+    }
+    else if((strncasecmp(tline,CatString3("*",MyName,"FullPush"),
+			   Clength+9)==0))
+    {
+      PushStyle = 1;
+    }
+    else if((strncasecmp(tline,CatString3("*",MyName,"NoBorder"),
+			   Clength+9)==0))
+    {
+      NoBorder = 1;
+    }
+    else if ((strncasecmp(tline,CatString3("*",MyName,"ForceSize"),
+			      Clength+10)==0)) {
+      ForceSize = 1;
+    }
+    else if ((strncasecmp(tline,CatString3("*",MyName,"TextureType"),
+			      Clength+12)==0)) {
+      if (sscanf(&tline[Clength+12],"%d",&TextureType) >= 1)
+      {
+	/* disable colorset */
+	global_colorset = -1;
+      }
+      else
+      {
+	TextureType = TEXTURE_BUILTIN;
+      }
+    }
+    else if ((strncasecmp(tline,CatString3("*",MyName,"MaxColors"),
+			      Clength+10)==0)) {
+
+      if (sscanf(&tline[Clength+10],"%d",&MaxColors)<1)
+	MaxColors = 16;
+    }
+    else if ((strncasecmp(tline,CatString3("*",MyName,"BgColor"),
+			      Clength+8)==0)) {
+      char *tmp;
+      tmp=safemalloc(strlen(tline));
+      if (sscanf(&tline[Clength+8],"%s",tmp) == 1)
+      {
+	/* disable colorset */
+	global_colorset = -1;
+      }
+      BgColor=GetColor(tmp);
+      free(tmp);
+    }
+    else if ((strncasecmp(tline,CatString3("*",MyName,"TextureColor"),
+			      Clength+13)==0)) {
+      char *c1, *c2;
+      XColor color;
+
+      len = strlen(&tline[Clength+13]);
+      c1 = safemalloc(len);
+      c2 = safemalloc(len);
+      if (sscanf(&tline[Clength+13],"%s %s",c1,c2)!=2) {
+	fprintf(stderr, "%s:You must specify two colors for the texture\n",
+		MyName);
+	FromColor[0]=0;
+	FromColor[1]=0;
+	FromColor[2]=0;
+	ToColor[0]=0;
+	ToColor[1]=0;
+	ToColor[2]=0;
+      }
+      if (!XParseColor (dpy, Pcmap, c1, &color))
+      {
+	fprintf(stderr, "Cannot parse %s\n", c1);
+	TextureType=TEXTURE_BUILTIN;
+      } else {
+	FromColor[0]=color.red;
+	FromColor[1]=color.green;
+	FromColor[2]=color.blue;
+	/* disable colorset */
+	global_colorset = -1;
+      }
+      if (!XParseColor (dpy, Pcmap, c2, &color))
+      {
+	fprintf(stderr, "Cannot parse %s\n", c2);
+	TextureType=TEXTURE_BUILTIN;
+      } else {
+	ToColor[0]=color.red;
+	ToColor[1]=color.green;
+	ToColor[2]=color.blue;
+	/* disable colorset */
+	global_colorset = -1;
+      }
+      free(c1);
+      free(c2);
+    }
+    else if ((strncasecmp(tline,CatString3("*",MyName,"Pixmap"),
+			  Clength+7)==0)) {
+      CopyString(&BgPixmapFile,&tline[Clength+7]);
+    }
+    else if((strncasecmp(tline,CatString3("*",MyName,"AnimateMain"),
+			 Clength+12)==0))
+    {
+      AnimateMain = 1;
+    }
+    else if((strncasecmp(tline,CatString3("*",MyName,"Animate"),Clength+8)==0))
+    {
+      if ((tline[Clength+9]!='M') && (tline[Clength+9]!='m'))
+	AnimationStyle = 1;
+    }
+    else if((strncasecmp(
+      tline,CatString3("*",MyName,"Colorset"),Clength+9)==0))
+    {
+      global_colorset = -1;
+      sscanf(&(tline[Clength + 9]), "%d", &global_colorset);
+      if (global_colorset < 0)
+      {
+	global_colorset = -1;
+	TextureType=TEXTURE_BUILTIN;
+      }
+      else
+      {
+	/* disable texture, if any */
+	TextureType=TEXTURE_COLORSET;
+	if (BgPixmapFile)
+	{
+	  free(BgPixmapFile);
+	  BgPixmapFile = NULL;
+	}
+      }
+    }
+#ifdef ENABLE_SOUND
+    else if((strncasecmp(tline,CatString3("*",MyName,"Player"),Clength+7)==0))
+    {
+      CopyString(&SoundPlayer, &tline[Clength+7]);
+    }
+    else if((strncasecmp(tline,CatString3("*",MyName,"Sound"),Clength+6)==0))
+    {
+      bind_sound(&tline[Clength+6]);
+      SoundActive = 1;
+    }
+#endif
+    else if((strncasecmp(tline,CatString3("*", MyName, ""),Clength+1)==0)
+	    && (num_buttons < MAX_BUTTONS))
+    {
+      /* check if this is a invalid option */
+      if (!isspace(tline[Clength+1]))
+	fprintf(stderr,"%s:invalid option %s\n",MyName,tline);
+      else
+	match_string(&tline[Clength+1]);
+    }
+    else if((strncasecmp(tline,"ImagePath",9)==0))
+    {
+      CopyString(&imagePath,&tline[9]);
+    }
+#ifdef ENABLE_SOUND
+    else if((strncasecmp(tline,"*AudioDir",9)==0))
+    {
+      CopyString(&SoundPath,&tline[9]);
+    }
+    else if((strncasecmp(tline,"ModulePath",11)==0))
+    {
+      CopyString(&ModulePath,&tline[11]);
+    }
+#endif
+    else if((strncasecmp(tline,"Colorset",8)==0))
+    {
+      /* store colorset sent by fvwm */
+      LoadColorset(&(tline[8]));
+    }
+    GetConfigLine(fd, &tline);
+    orig_tline = tline;
+  } /* while */
 #ifdef ENABLE_DND
-    /* ignore last button if there's nothing bound to it */
-    if ((Buttons[num_buttons-1].drop_action!=NULL) &&
-	(Buttons[num_buttons-1].iconno==0)) {
-	num_buttons--;
-    }
+  /* ignore last button if there's nothing bound to it */
+  if ((Buttons[num_buttons-1].drop_action!=NULL) &&
+      (Buttons[num_buttons-1].iconno==0)) {
+    num_buttons--;
+  }
 #endif
   return;
 }
@@ -1726,33 +1794,33 @@ void ParseOptions(char *filename)
 #ifdef ENABLE_SOUND
 char *get_token(char *tline, int index)
 {
-    char *start, *end;
-    int i,c,size;
-    char *word;
+  char *start, *end;
+  int i,c,size;
+  char *word;
 
-    index++; /* index is 0 based */
-    size = strlen(tline);
-    i=c=0;
-    start=end=tline;
-    while (i<index && c<size) {
-	start=end;
-	while(isspace(*start) && c<size) {
-	    start++;
-	    c++;
-	}
-	end=start;
-	while(!isspace(*end) && c<size) {
-	    end++;
-	    c++;
-	}
-	if (end==start) return NULL;
-	i++;
+  index++; /* index is 0 based */
+  size = strlen(tline);
+  i=c=0;
+  start=end=tline;
+  while (i<index && c<size) {
+    start=end;
+    while(isspace(*start) && c<size) {
+      start++;
+      c++;
     }
-    if (i<index) return NULL;
-    word=safemalloc(end-start+1);
-    strncpy(word, start, end-start);
-    word[end-start]=0;
-    return word;
+    end=start;
+    while(!isspace(*end) && c<size) {
+      end++;
+      c++;
+    }
+    if (end==start) return NULL;
+    i++;
+  }
+  if (i<index) return NULL;
+  word=safemalloc(end-start+1);
+  strncpy(word, start, end-start);
+  word[end-start]=0;
+  return word;
 }
 
 /**************************************************************************
@@ -1762,37 +1830,37 @@ char *get_token(char *tline, int index)
  **************************************************************************/
 void bind_sound(char *tline)
 {
-    char *event, *sound;
+  char *event, *sound;
 
-    event = get_token(tline,0);
-    if (event==NULL) {
-	fprintf(stderr,"%s:bad sound binding %s\n",MyName,tline);
-	return;
-    }
-    sound = get_token(tline,1);
-    if (sound==NULL) {
-	free(event);
-	fprintf(stderr,"%s:bad sound binding %s\n",MyName,tline);
-	return;
-    }
-    if (strcmp(event,"open_folder")==0) {
-	Sounds[WHEV_OPEN_FOLDER]=sound;
-    } else if (strcmp(event,"close_folder")==0) {
-	Sounds[WHEV_CLOSE_FOLDER]=sound;
-    } else if (strcmp(event,"open_main")==0) {
-	Sounds[WHEV_OPEN_MAIN]=sound;
-    } else if (strcmp(event,"close_main")==0) {
-	Sounds[WHEV_CLOSE_MAIN]=sound;
-    } else if (strcmp(event,"push")==0) {
-	Sounds[WHEV_PUSH]=sound;
-    } else if (strcmp(event,"drop")==0) {
-	Sounds[WHEV_DROP]=sound;
-    } else {
-	fprintf(stderr,"%s:bad event %s in sound binding\n",MyName,event);
-	free(sound);
-    }
-    free(event);
+  event = get_token(tline,0);
+  if (event==NULL) {
+    fprintf(stderr,"%s:bad sound binding %s\n",MyName,tline);
     return;
+  }
+  sound = get_token(tline,1);
+  if (sound==NULL) {
+    free(event);
+    fprintf(stderr,"%s:bad sound binding %s\n",MyName,tline);
+    return;
+  }
+  if (strcmp(event,"open_folder")==0) {
+    Sounds[WHEV_OPEN_FOLDER]=sound;
+  } else if (strcmp(event,"close_folder")==0) {
+    Sounds[WHEV_CLOSE_FOLDER]=sound;
+  } else if (strcmp(event,"open_main")==0) {
+    Sounds[WHEV_OPEN_MAIN]=sound;
+  } else if (strcmp(event,"close_main")==0) {
+    Sounds[WHEV_CLOSE_MAIN]=sound;
+  } else if (strcmp(event,"push")==0) {
+    Sounds[WHEV_PUSH]=sound;
+  } else if (strcmp(event,"drop")==0) {
+    Sounds[WHEV_DROP]=sound;
+  } else {
+    fprintf(stderr,"%s:bad event %s in sound binding\n",MyName,event);
+    free(sound);
+  }
+  free(event);
+  return;
 }
 #endif /* ENABLE_SOUND */
 
@@ -1824,25 +1892,25 @@ void match_string(char *tline)
   ptr[len] = 0;
 
   if (strncmp(ptr,"~Folder",7)==0)
-    {
-      TOTHEFOLDER = -1;
-      Folders[num_folders].firstbutton = num_folderbuttons;
-      num_folders++;
-      free(ptr);
-      return;
-    }
+  {
+    TOTHEFOLDER = -1;
+    Folders[num_folders].firstbutton = num_folderbuttons;
+    num_folders++;
+    free(ptr);
+    return;
+  }
 
   if(TOTHEFOLDER==-1)
-    {
-      actual = &Buttons[num_buttons++];
-      actual->parent = &main_win;
-    }
+  {
+    actual = &Buttons[num_buttons++];
+    actual->parent = &main_win;
+  }
   else
-    {
-      actual = &Buttons[--num_folderbuttons];
-      actual->folder = num_folders;
-      actual->parent = &Folders[num_folders].win;
-    };
+  {
+    actual = &Buttons[--num_folderbuttons];
+    actual->folder = num_folders;
+    actual->parent = &Folders[num_folders].win;
+  };
 
   actual->title = ptr;
 
@@ -1864,25 +1932,25 @@ void match_string(char *tline)
   i2 = len;
   j=k=0;
   for(i=0;i<MAX_OVERLAY;i++) {
-      while (ptr[j]!=',' && j<i2) j++;
-      actual->icons[i].file=safemalloc(j-k+1);
-      strncpy(actual->icons[i].file,&(ptr[k]),j-k);
-      actual->icons[i].file[j-k]=0;
-      actual->iconno++;
-      j++;
-      k=j;
-      if (j>=i2) break;
+    while (ptr[j]!=',' && j<i2) j++;
+    actual->icons[i].file=safemalloc(j-k+1);
+    strncpy(actual->icons[i].file,&(ptr[k]),j-k);
+    actual->icons[i].file[j-k]=0;
+    actual->iconno++;
+    j++;
+    k=j;
+    if (j>=i2) break;
   }
   tline = end;
   for (i=num_buttons - 2;i>=0;i--)
+  {
+    if (strcmp(Buttons[i].title, actual->title) == 0)
     {
-      if (strcmp(Buttons[i].title, actual->title) == 0)
-        {
-          actual = &Buttons[i];
-          num_buttons--;
-          for(i=0;i<actual->iconno;i++) {
-          free(actual->icons[i].file);
-        }
+      actual = &Buttons[i];
+      num_buttons--;
+      for(i=0;i<actual->iconno;i++) {
+	free(actual->icons[i].file);
+      }
       break;
     }
   }
@@ -1891,40 +1959,41 @@ void match_string(char *tline)
     tline++;
 #ifdef ENABLE_DND
   if (strncasecmp(tline,"dropexec",8)==0) {
-      /* get command to execute for dropped stuff */
+    /* get command to execute for dropped stuff */
 
-      if(TOTHEFOLDER==-1) {
-	  num_buttons--; /* make the next parsed thing the button for this */
-	  free(ptr);
-	  for(i=0;i<actual->iconno;i++) {
-	      free(actual->icons[i].file);
-	  }
-	  actual->iconno=0;
-      } else {
-	  num_folderbuttons++;
-	  free(ptr);
-	  for(i=0;i<actual->iconno;i++) {
-	      free(actual->icons[i].file);
-	  }
-	  actual->iconno=0;
-	  fprintf(stderr,"Drop in Folders not supported. Ignoring option\n");
-	  return;
+    if(TOTHEFOLDER==-1) {
+      num_buttons--; /* make the next parsed thing the button for this */
+      free(ptr);
+      for(i=0;i<actual->iconno;i++) {
+	free(actual->icons[i].file);
       }
+      actual->iconno=0;
+    } else {
+      num_folderbuttons++;
+      free(ptr);
+      for(i=0;i<actual->iconno;i++) {
+	free(actual->icons[i].file);
+      }
+      actual->iconno=0;
+      fprintf(stderr,"Drop in Folders not supported. Ignoring option\n");
+      return;
+    }
 
-      tline=strstr(tline,"Exec");
-      len = strlen(tline);
-      tmp = tline + len -1;
-      while(((isspace(*tmp))||(*tmp == '\n'))&&(tmp >=tline)) {
-	  tmp--;
-	  len--;
-      }
-      ptr = safemalloc(len+1);
-      actual->drop_action=ptr;
-      strncpy(ptr,tline,len);
-      ptr[len]=0;
+    tline=strstr(tline,"Exec");
+    len = strlen(tline);
+    tmp = tline + len -1;
+    while(((isspace(*tmp))||(*tmp == '\n'))&&(tmp >=tline)) {
+      tmp--;
+      len--;
+    }
+    ptr = safemalloc(len+1);
+    actual->drop_action=ptr;
+    strncpy(ptr,tline,len);
+    ptr[len]=0;
   } else
 #endif
-  if(strncasecmp(tline,"swallow",7)==0 || strncasecmp(tline,"maxswallow",10)==0)
+    if(strncasecmp(tline,"swallow",7)==0 ||
+       strncasecmp(tline,"maxswallow",10)==0)
     {
       /* Look for swallow "identifier", in which
 	 case Wharf spawns and gobbles up window */
@@ -1937,14 +2006,14 @@ void match_string(char *tline)
 	    (tline[i2] != '"'))
 	i2++;
       actual->maxsize =
-                 strncasecmp(tline,"maxswallow",10) == 0 ? 1 : 0;
+	strncasecmp(tline,"maxswallow",10) == 0 ? 1 : 0;
       if(i2 - i >1)
-	{
-	  actual->hangon = safemalloc(i2-i);
-	  strncpy(actual->hangon,&tline[i+1],i2-i-1);
-	  actual->hangon[i2-i-1] = 0;
-	  actual->swallow = 1;
-	}
+      {
+	actual->hangon = safemalloc(i2-i);
+	strncpy(actual->hangon,&tline[i+1],i2-i-1);
+	actual->hangon[i2-i-1] = 0;
+	actual->swallow = 1;
+      }
       n = 7;
       n = i2+1;
       while((isspace(tline[n]))&&(tline[n]!=0))
@@ -1952,16 +2021,16 @@ void match_string(char *tline)
       len = strlen(&tline[n]);
       tmp = tline + n + len -1;
       while(((isspace(*tmp))||(*tmp == '\n'))&&(tmp >=(tline + n)))
-	{
-	  tmp--;
-	  len--;
-	}
+      {
+	tmp--;
+	len--;
+      }
       ptr = safemalloc(len+6);
       if(strncasecmp(&tline[n],"Module",6)==0)
-	{
-	  ptr[0] = 0;
-          actual->module = 1;
-	}
+      {
+	ptr[0] = 0;
+	actual->module = 1;
+      }
       else
 	strcpy(ptr,"Exec ");
       i2 = strlen(ptr);
@@ -1971,31 +2040,31 @@ void match_string(char *tline)
       free(ptr);
       actual->action = NULL;
     }
-  else
+    else
     {
       if(!TOTHEFOLDER)
-	{
-	  Folders[num_folders].count++;
-	}
+      {
+	Folders[num_folders].count++;
+      }
 
       len = strlen(tline);
       tmp = tline + len -1;
       while(((isspace(*tmp))||(*tmp == '\n'))&&(tmp >=tline))
-	{
-	  tmp--;
-	  len--;
-	}
+      {
+	tmp--;
+	len--;
+      }
       ptr = safemalloc(len+1);
       strncpy(ptr,tline,len);
       ptr[len]=0;
 
       if (strncmp(ptr,"Folder",6)==0)
-	{
-	  TOTHEFOLDER = 0;
-	  Folders[num_folders].count = 0;
-	  actual->folder = num_folders;
-	  Folders[num_folders].mapped = NOTMAPPED;
-	}
+      {
+	TOTHEFOLDER = 0;
+	Folders[num_folders].count = 0;
+	actual->folder = num_folders;
+	Folders[num_folders].mapped = NOTMAPPED;
+      }
       actual->action = ptr;
     }
   return;
@@ -2010,17 +2079,17 @@ void change_window_name(char *str)
   int i;
 
   if (XStringListToTextProperty(&str,1,&name) == 0)
-    {
-      fprintf(stderr,"%s: cannot allocate window name",MyName);
-      return;
-    }
+  {
+    fprintf(stderr,"%s: cannot allocate window name",MyName);
+    return;
+  }
   XSetWMName(dpy,main_win,&name);
   XSetWMIconName(dpy,main_win,&name);
   for(i=0;i<num_folders;i++)
-    {
-      XSetWMName(dpy, Folders[i].win,&name);
-      XSetWMIconName(dpy, Folders[i].win,&name);
-    }
+  {
+    XSetWMName(dpy, Folders[i].win,&name);
+    XSetWMIconName(dpy, Folders[i].win,&name);
+  }
   XFree(name.value);
 }
 
@@ -2037,10 +2106,10 @@ int My_XNextEvent(Display *dpy, XEvent *event)
   static int miss_counter = 0;
 
   if(XPending(dpy))
-    {
-      XNextEvent(dpy,event);
-      return 1;
-    }
+  {
+    XNextEvent(dpy,event);
+    return 1;
+  }
 
   FD_ZERO(&in_fdset);
   FD_SET(x_fd,&in_fdset);
@@ -2050,27 +2119,27 @@ int My_XNextEvent(Display *dpy, XEvent *event)
 
 
   if(FD_ISSET(x_fd, &in_fdset))
+  {
+    if(XPending(dpy))
     {
-      if(XPending(dpy))
-	{
-	  XNextEvent(dpy,event);
-	  miss_counter = 0;
-	  return 1;
-	}
-      else
-	miss_counter++;
-      if(miss_counter > 100)
-	DeadPipe(0);
+      XNextEvent(dpy,event);
+      miss_counter = 0;
+      return 1;
     }
+    else
+      miss_counter++;
+    if(miss_counter > 100)
+      DeadPipe(0);
+  }
 
   if(FD_ISSET(fd[1], &in_fdset))
-    {
-      FvwmPacket* packet = ReadFvwmPacket(fd[1]);
-      if ( packet == NULL )
-	  DeadPipe(0);
-      else
-	  process_message( packet->type, packet->body );
-    }
+  {
+    FvwmPacket* packet = ReadFvwmPacket(fd[1]);
+    if ( packet == NULL )
+      DeadPipe(0);
+    else
+      process_message( packet->type, packet->body );
+  }
   return 0;
 }
 
@@ -2082,36 +2151,118 @@ void CheckForHangon(unsigned long *body)
   cbody = (char *)&body[3];
   for(i=0;i<num_rows;i++)
     for(j=0;j<num_columns; j++)
+    {
+      button = i*num_columns + j;
+      if(Buttons[button].hangon != NULL)
       {
-	button = i*num_columns + j;
-	if(Buttons[button].hangon != NULL)
+	if(strcmp(cbody,Buttons[button].hangon)==0)
+	{
+	  if(Buttons[button].swallow == 1)
 	  {
-	    if(strcmp(cbody,Buttons[button].hangon)==0)
-	      {
-		if(Buttons[button].swallow == 1)
-		  {
-		    Buttons[button].swallow = 2;
-		    if(Buttons[button].IconWin != None)
-		      {
-			XDestroyWindow(dpy,Buttons[button].IconWin);
-		      }
-		    Buttons[button].IconWin = (Window)body[0];
-		    free(Buttons[button].hangon);
-		    Buttons[button].hangon = NULL;
-		  }
-		else
-		  {
-		    if (Buttons[button].swallow == 4)
-		      Buttons[button].swallow = 3;
-		    Buttons[button].up = 1;
-		    free(Buttons[button].hangon);
-		    Buttons[button].hangon = NULL;
-		    RedrawWindow(&main_win,0, button, num_rows, num_columns);
-		  }
-	      }
+	    Buttons[button].swallow = 2;
+	    if(Buttons[button].IconWin != None)
+	    {
+	      XDestroyWindow(dpy,Buttons[button].IconWin);
+	    }
+	    Buttons[button].IconWin = (Window)body[0];
+	    free(Buttons[button].hangon);
+	    Buttons[button].hangon = NULL;
 	  }
+	  else
+	  {
+	    if (Buttons[button].swallow == 4)
+	      Buttons[button].swallow = 3;
+	    Buttons[button].up = 1;
+	    free(Buttons[button].hangon);
+	    Buttons[button].hangon = NULL;
+	    RedrawWindow(&main_win,0, button, num_rows, num_columns);
+	  }
+	}
       }
+    }
 }
+
+static void configure_all_icon_windows(void)
+{
+  int i;
+  int j;
+  int button;
+
+  for(i=0;i<num_rows;i++)
+    for(j=0;j<num_columns; j++)
+    {
+      button = i*num_columns + j;
+      ConfigureIconWindow(button,i,j);
+    };
+  for(i=0;i<num_folders;i++)
+    for(j=0;j<Folders[i].count;j++)
+      if(num_columns < num_rows) {
+	ConfigureIconWindow(Folders[i].firstbutton+j,0, j);
+      } else {
+	ConfigureIconWindow(Folders[i].firstbutton+j,j, 0);
+      }
+  /* dirty hack to make swallowed app background be textured */
+  XSetWindowBackgroundPixmap(
+    dpy, main_win, Buttons[BACK_BUTTON].icons[0].icon);
+}
+
+static void change_colorset(int colorset)
+{
+  if (colorset == global_colorset && colorset >= 0)
+  {
+    BgColor = Colorset[global_colorset % nColorsets].bg;
+
+    /* update GCs */
+    XFreeGC(dpy, NormalGC);
+    XFreeGC(dpy, HiReliefGC);
+    XFreeGC(dpy, HiInnerGC);
+    XFreeGC(dpy, MaskGC);
+    CreateShadowGC();
+
+    /* update background pixmap */
+    GetXPMColorset(BACK_BUTTON, global_colorset);
+  }
+
+  /* activate changes */
+  configure_all_icon_windows();
+
+  for(x = 0; x < num_folders; x++)
+  {
+    XClearWindow(dpy, Folders[x].win);
+    RedrawWindow(&Folders[x].win,num_folderbuttons, -1,
+		 Folders[x].cols, Folders[x].rows);
+    for(y = 1; y <= Folders[x].count; y++)
+    {
+      if(num_columns < num_rows)
+	RedrawUnpushedOutline(&Folders[x].win, 1, y);
+      else
+	RedrawUnpushedOutline(&Folders[x].win, y, 1);
+    }
+    XClearWindow(dpy, main_win);
+    RedrawWindow(&main_win,0, -1, num_rows, num_columns);
+  }
+
+  XSync(dpy, 0);
+
+  return;
+}
+
+static void handle_colorset_packet(unsigned long *body)
+{
+  char *tline, *token;
+  int colorset;
+
+  tline = (char*)&(body[3]);
+  token = PeekToken(tline, &tline);
+  if (StrEquals(token, "Colorset"))
+  {
+    colorset = LoadColorset(tline);
+    change_colorset(colorset);
+  }
+
+  return;
+}
+
 
 /**************************************************************************
  *
@@ -2121,28 +2272,31 @@ void CheckForHangon(unsigned long *body)
 void process_message(unsigned long type,unsigned long *body)
 {
   switch(type)
-    {
-/*    case M_TOGGLE_PAGING:
-      pageing_enabled = body[0];
-      RedrawWindow(&main_win,0, -1, num_rows, num_columns);
-      break;
- pdg */
-    case M_NEW_DESK:
-      new_desk = body[0];
-      RedrawWindow(&main_win,0, -1, num_rows, num_columns);
-      break;
-    case M_END_WINDOWLIST:
-      RedrawWindow(&main_win,0, -1, num_rows, num_columns);
-    case M_MAP:
-      swallow(body);
-    case M_RES_NAME:
-    case M_RES_CLASS:
-    case M_WINDOW_NAME:
-      CheckForHangon(body);
-      break;
-    default:
-      break;
-    }
+  {
+    /*    case M_TOGGLE_PAGING:
+	  pageing_enabled = body[0];
+	  RedrawWindow(&main_win,0, -1, num_rows, num_columns);
+	  break;
+	  pdg */
+  case M_NEW_DESK:
+    new_desk = body[0];
+    RedrawWindow(&main_win,0, -1, num_rows, num_columns);
+    break;
+  case M_END_WINDOWLIST:
+    RedrawWindow(&main_win,0, -1, num_rows, num_columns);
+  case M_MAP:
+    swallow(body);
+  case M_RES_NAME:
+  case M_RES_CLASS:
+  case M_WINDOW_NAME:
+    CheckForHangon(body);
+    break;
+  case M_CONFIG_INFO:
+    handle_colorset_packet((unsigned long*)body);
+    break;
+  default:
+    break;
+  }
 }
 
 
@@ -2183,77 +2337,79 @@ void swallow(unsigned long *body)
   long supplied;
 
   for(i=0;i<num_rows;i++)
+  {
     for(j=0;j<num_columns; j++)
+    {
+      button = i*num_columns + j;
+      if((Buttons[button].IconWin == (Window)body[0])&&
+	 (Buttons[button].swallow == 2))
       {
-	button = i*num_columns + j;
-	if((Buttons[button].IconWin == (Window)body[0])&&
-	   (Buttons[button].swallow == 2))
-	  {
-	    Buttons[button].swallow = 3;
-	    /* "Swallow" the window! */
+	Buttons[button].swallow = 3;
+	/* "Swallow" the window! */
 
-	    XReparentWindow(dpy,Buttons[button].IconWin, main_win,
-			    j*BUTTONWIDTH+4, i*BUTTONHEIGHT+4);
-	    XMapWindow(dpy,Buttons[button].IconWin);
-	    XSelectInput(dpy,(Window)body[0],
-			 PropertyChangeMask);
-	    if (Buttons[button].action)
-	      {
-		/*
-	        XGrabButton(dpy, Button1Mask | Button2Mask, None,
-		            (Window)body[0],
-	                    False, ButtonPressMask | ButtonReleaseMask,
-			    GrabModeAsync, GrabModeAsync, None, None);
-	        XGrabButton(dpy, Button1Mask | Button2Mask, LockMask,
-		*/
-     unsigned *mods = lock_mods;
-     do XGrabButton(dpy, Button1Mask | Button2Mask, *mods,
+	XReparentWindow(dpy,Buttons[button].IconWin, main_win,
+			j*BUTTONWIDTH+4, i*BUTTONHEIGHT+4);
+	XMapWindow(dpy,Buttons[button].IconWin);
+	XSelectInput(dpy,(Window)body[0],
+		     PropertyChangeMask);
+	if (Buttons[button].action)
+	{
+	  /*
+	    XGrabButton(dpy, Button1Mask | Button2Mask, None,
+	    (Window)body[0],
+	    False, ButtonPressMask | ButtonReleaseMask,
+	    GrabModeAsync, GrabModeAsync, None, None);
+	    XGrabButton(dpy, Button1Mask | Button2Mask, LockMask,
+	  */
+	  unsigned *mods = lock_mods;
+	  do XGrabButton(dpy, Button1Mask | Button2Mask, *mods,
 
-			    (Window)body[0],
-	                    False, ButtonPressMask | ButtonReleaseMask,
-			    GrabModeAsync, GrabModeAsync, None, None);
-     while (*mods++);
+			 (Window)body[0],
+			 False, ButtonPressMask | ButtonReleaseMask,
+			 GrabModeAsync, GrabModeAsync, None, None);
+	  while (*mods++);
 
-	      }
-	    if (Buttons[button].maxsize) {
-	      int width, height;
-	      int junk1, junk2, junk3, junk4;
-	      Window root;
-	      XGetGeometry(dpy, Buttons[button].IconWin, &root,
-	      	           &junk1, &junk2, &width, &height, &junk3,
-	      	           &junk4);
+	}
+	if (Buttons[button].maxsize) {
+	  int width, height;
+	  int junk1, junk2, junk3, junk4;
+	  Window root;
+	  XGetGeometry(dpy, Buttons[button].IconWin, &root,
+		       &junk1, &junk2, &width, &height, &junk3,
+		       &junk4);
 
-	      if (width  > 64) width  = 64;
-	      if (height > 64) height = 64;
-	      Buttons[button].icons[0].w = width;
-	      Buttons[button].icons[0].h = height;
-	    }
-	    else {
-	      Buttons[button].icons[0].w = ICON_WIN_WIDTH;
-	      Buttons[button].icons[0].h = ICON_WIN_HEIGHT;
-	    }
-	    if (!XGetWMNormalHints (dpy, Buttons[button].IconWin,
-				    &Buttons[button].hints,
-				    &supplied))
-	      Buttons[button].hints.flags = 0;
+	  if (width  > 64) width  = 64;
+	  if (height > 64) height = 64;
+	  Buttons[button].icons[0].w = width;
+	  Buttons[button].icons[0].h = height;
+	}
+	else {
+	  Buttons[button].icons[0].w = ICON_WIN_WIDTH;
+	  Buttons[button].icons[0].h = ICON_WIN_HEIGHT;
+	}
+	if (!XGetWMNormalHints (dpy, Buttons[button].IconWin,
+				&Buttons[button].hints,
+				&supplied))
+	  Buttons[button].hints.flags = 0;
 
-	    XResizeWindow(dpy,(Window)body[0], Buttons[button].icons[0].w,
-			  Buttons[button].icons[0].h);
-	    XMoveWindow(dpy,Buttons[button].IconWin,
-			j*BUTTONWIDTH +
-			(BUTTONWIDTH - Buttons[button].icons[0].w)/2,
-			i*BUTTONHEIGHT +
-			(BUTTONHEIGHT - Buttons[button].icons[0].h)/2);
+	XResizeWindow(dpy,(Window)body[0], Buttons[button].icons[0].w,
+		      Buttons[button].icons[0].h);
+	XMoveWindow(dpy,Buttons[button].IconWin,
+		    j*BUTTONWIDTH +
+		    (BUTTONWIDTH - Buttons[button].icons[0].w)/2,
+		    i*BUTTONHEIGHT +
+		    (BUTTONHEIGHT - Buttons[button].icons[0].h)/2);
 
-	    XFetchName(dpy, Buttons[button].IconWin, &temp);
-	    XClearArea(dpy, main_win,j*BUTTONWIDTH, i*BUTTONHEIGHT,
-		       BUTTONWIDTH,BUTTONHEIGHT,0);
-	    if(strcmp(Buttons[button].title,"-")!=0)
-	      CopyString(&Buttons[button].title, temp);
-	    RedrawWindow(&main_win,0, -1, num_rows, num_columns);
-	    XFree(temp);
-	  }
+	XFetchName(dpy, Buttons[button].IconWin, &temp);
+	XClearArea(dpy, main_win,j*BUTTONWIDTH, i*BUTTONHEIGHT,
+		   BUTTONWIDTH,BUTTONHEIGHT,0);
+	if(strcmp(Buttons[button].title,"-")!=0)
+	  CopyString(&Buttons[button].title, temp);
+	RedrawWindow(&main_win,0, -1, num_rows, num_columns);
+	XFree(temp);
       }
+    }
+  }
 }
 
 
@@ -2268,32 +2424,32 @@ void FindLockMods(void)
   XModifierKeymap* mm = XGetModifierMapping(dpy);
   lockmask = LockMask;
   if (mm)
+  {
+    kp = mm->modifiermap;
+    for (m = 0; m < 8; m++)
     {
-      kp = mm->modifiermap;
-      for (m = 0; m < 8; m++)
-        {
-          for (i = 0; i < mm->max_keypermod; i++)
-            {
+      for (i = 0; i < mm->max_keypermod; i++)
+      {
       	if ((kc = *kp++) &&
       	    ((ks = XKeycodeToKeysym(dpy, kc, 0)) != NoSymbol))
-      	  {
-      	    kn = XKeysymToString(ks);
-      	    knl = strlen(kn);
-      	    if ((knl > 6) && (strcasecmp(kn + knl - 4, "lock") == 0))
-      		lockmask |= (1 << m);
-      	  }
-            }
-        }
-      XFreeModifiermap(mm);
+	{
+	  kn = XKeysymToString(ks);
+	  knl = strlen(kn);
+	  if ((knl > 6) && (strcasecmp(kn + knl - 4, "lock") == 0))
+	    lockmask |= (1 << m);
+	}
+      }
     }
+    XFreeModifiermap(mm);
+  }
   lockmask &= ~(ShiftMask | ControlMask);
 
   mp = lock_mods;
   for (m = 0, i = 1; i < 256; i++)
-    {
-      if ((i & lockmask) > m)
-          m = *mp++ = (i & lockmask);
-    }
+  {
+    if ((i & lockmask) > m)
+      m = *mp++ = (i & lockmask);
+  }
   *mp = 0;
 }
 
@@ -2319,55 +2475,55 @@ void ConstrainSize (XSizeHints *hints, int *widthp, int *heightp)
   int dwidth = *widthp, dheight = *heightp;
 
   if(hints->flags & PMinSize)
+  {
+    minWidth = hints->min_width;
+    minHeight = hints->min_height;
+    if(hints->flags & PBaseSize)
     {
-      minWidth = hints->min_width;
-      minHeight = hints->min_height;
-      if(hints->flags & PBaseSize)
-	{
-	  baseWidth = hints->base_width;
-	  baseHeight = hints->base_height;
-	}
-      else
-	{
-	  baseWidth = hints->min_width;
-	  baseHeight = hints->min_height;
-	}
-    }
-  else if(hints->flags & PBaseSize)
-    {
-      minWidth = hints->base_width;
-      minHeight = hints->base_height;
       baseWidth = hints->base_width;
       baseHeight = hints->base_height;
     }
-  else
+    else
     {
-      minWidth = 1;
-      minHeight = 1;
-      baseWidth = 1;
-      baseHeight = 1;
+      baseWidth = hints->min_width;
+      baseHeight = hints->min_height;
     }
+  }
+  else if(hints->flags & PBaseSize)
+  {
+    minWidth = hints->base_width;
+    minHeight = hints->base_height;
+    baseWidth = hints->base_width;
+    baseHeight = hints->base_height;
+  }
+  else
+  {
+    minWidth = 1;
+    minHeight = 1;
+    baseWidth = 1;
+    baseHeight = 1;
+  }
 
   if(hints->flags & PMaxSize)
-    {
-      maxWidth = hints->max_width;
-      maxHeight = hints->max_height;
-    }
+  {
+    maxWidth = hints->max_width;
+    maxHeight = hints->max_height;
+  }
   else
-    {
-      maxWidth = 10000;
-      maxHeight = 10000;
-    }
+  {
+    maxWidth = 10000;
+    maxHeight = 10000;
+  }
   if(hints->flags & PResizeInc)
-    {
-      xinc = hints->width_inc;
-      yinc = hints->height_inc;
-    }
+  {
+    xinc = hints->width_inc;
+    yinc = hints->height_inc;
+  }
   else
-    {
-      xinc = 1;
-      yinc = 1;
-    }
+  {
+    xinc = 1;
+    yinc = 1;
+  }
 
   /*
    * First, clamp to min and max values
@@ -2409,35 +2565,35 @@ void ConstrainSize (XSizeHints *hints, int *widthp, int *heightp)
    */
 
   if (hints->flags & PAspect)
+  {
+    if (minAspectX * dheight > minAspectY * dwidth)
     {
-      if (minAspectX * dheight > minAspectY * dwidth)
-	{
-	  delta = makemult(minAspectX * dheight / minAspectY - dwidth,
-			   xinc);
-	  if (dwidth + delta <= maxWidth)
-	    dwidth += delta;
-	  else
-	    {
-	      delta = makemult(dheight - dwidth*minAspectY/minAspectX,
-			       yinc);
-	      if (dheight - delta >= minHeight) dheight -= delta;
-	    }
-	}
-
-      if (maxAspectX * dheight < maxAspectY * dwidth)
-	{
-	  delta = makemult(dwidth * maxAspectY / maxAspectX - dheight,
-			   yinc);
-	  if (dheight + delta <= maxHeight)
-	    dheight += delta;
-	  else
-	    {
-	      delta = makemult(dwidth - maxAspectX*dheight/maxAspectY,
-			       xinc);
-	      if (dwidth - delta >= minWidth) dwidth -= delta;
-	    }
-	}
+      delta = makemult(minAspectX * dheight / minAspectY - dwidth,
+		       xinc);
+      if (dwidth + delta <= maxWidth)
+	dwidth += delta;
+      else
+      {
+	delta = makemult(dheight - dwidth*minAspectY/minAspectX,
+			 yinc);
+	if (dheight - delta >= minHeight) dheight -= delta;
+      }
     }
+
+    if (maxAspectX * dheight < maxAspectY * dwidth)
+    {
+      delta = makemult(dwidth * maxAspectY / maxAspectX - dheight,
+		       yinc);
+      if (dheight + delta <= maxHeight)
+	dheight += delta;
+      else
+      {
+	delta = makemult(dwidth - maxAspectX*dheight/maxAspectY,
+			 xinc);
+	if (dwidth - delta >= minWidth) dwidth -= delta;
+      }
+    }
+  }
 
   *widthp = dwidth;
   *heightp = dheight;
@@ -2448,16 +2604,16 @@ void ConstrainSize (XSizeHints *hints, int *widthp, int *heightp)
 #ifdef ENABLE_SOUND
 void   PlaySound(int event)
 {
-    int timestamp;
+  int timestamp;
 
-    if (!SoundActive)
-      return;
-    if (Sounds[event]==NULL) return;
-    write(PlayerChannel[1],&event,sizeof(event));
-    timestamp = clock();
-    write(PlayerChannel[1],&timestamp,sizeof(timestamp));
-    /*
+  if (!SoundActive)
+    return;
+  if (Sounds[event]==NULL) return;
+  write(PlayerChannel[1],&event,sizeof(event));
+  timestamp = clock();
+  write(PlayerChannel[1],&timestamp,sizeof(timestamp));
+  /*
     kill(SoundThread,SIGUSR1);
-     */
+  */
 }
 #endif

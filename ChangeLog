@@ -1,3 +1,16 @@
+1999-09-06  Dominik Vogt  <dominik_vogt@gmx.de>
+
+	* fvwm/icons.c: -Wall fix
+
+	* libs/Colorset.c (CreateBackgroundPixmap): hadle solid backgorunds
+	without crashing
+
+1999-09-04  Dominik Vogt  <dominik_vogt@gmx.de>
+
+	* libs/Graphics.c (CreateGradientPixmap):
+	(CreateGradientPixmap):
+	fixed large y and c gradients
+
 1999-09-05  Mikhael Goikhman  <migo@homemail.com>
 
 	* fvwm/fvwm.c (StartupStuff):
@@ -31,6 +44,9 @@
 	* fvwm/decorations.c (SelectDecor): applied OL-DECOR fix by Neil Bird
 
 1999-09-03  Dominik Vogt  <dominik_vogt@gmx.de>
+
+	* fvwm/fvwm2.1 (AddToDecor):
+	use different name for style and decor ion Exmaple
 
 	* fvwm/fvwm2.1 (AddToDecor):
 	(UseStyle): clarified usage of UseStyle style

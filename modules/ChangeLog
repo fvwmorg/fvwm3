@@ -1,3 +1,18 @@
+1999-09-06  Dominik Vogt  <dominik_vogt@gmx.de>
+
+	* FvwmWharf/FvwmWharf.1:
+	* FvwmWharf/icons.c (GetXPMColorset):
+	(ConfigureIconWindow):
+	* FvwmWharf/Makefile.am:
+	* FvwmWharf/FvwmWharf.c (main):
+	* FvwmWharf/FvwmWharf.c:
+	(main):
+	(ParseOptions):
+	(change_colorset):
+	(handle_colorset_packet): implemented colour set support
+
+	* FvwmWharf/FvwmWharf.c: reindented file (had negative indentation)
+
 1999-09-05  Mikhael Goikhman  <migo@homemail.com>
 
 	* modules/FvwmAnimate/FvwmAnimate.1:

@@ -2586,19 +2586,19 @@ and WindowFont commands.  Decors created with AddToDecor can be
 manipulated with ChangeDecor, DestroyDecor, UpdateDecor, and the
 UseDecor Style option.
 
-The following example creates a decor and style, both named
-"flatness."  Despite having the same name, they are distinct entities:
+The following example creates a decor 'FlatDecor' and style
+'FlatStyle'.  They are distinct entities:
 .EX
-AddToDecor flatness
+AddToDecor FlatDecor
  + ButtonStyle All ActiveUp (-- flat) \\
    Inactive (-- flat)
  + TitleStyle -- flat
  + BorderStyle -- HiddenHandles NoInset
  + HilightColor white navy
- + Style "flatness" UseDecor flatness, \\
+ + Style FlatStyle UseDecor FlatDecor, \\
      Color white/grey40,HandleWidth 4
 
-Style "xterm" UseStyle flatness
+Style xterm UseStyle FlatStyle
 .EE
 An existing window's decor may be reassigned with ChangeDecor, or a
 Style command followed by a Recapture.  The decorations of all windows
@@ -2608,23 +2608,23 @@ If you change styles in the decor you must re-apply the style to
 all windows that are supposed to do it followed by a Recapture:
 
 .EX
-AddToDecor flatness
- + Style "flatness" UseDecor flatness, \\
+AddToDecor FlatDecor
+ + Style FlatStyle UseDecor FlatDecor, \\
      Color white/grey40,HandleWidth 4
 .EE
 
 and now apply the style again:
 
 .EX
-Style "xterm" UseStyle flatness
+Style xterm UseStyle FlatStyle
 .EE
 
 A different way to achieve this to add the 'UseStyle' style
 to the decor itself:
 
 .EX
-AddToDecor flatness
- + Style "xterm" UseStyle flatness
+AddToDecor FlatDecor
+ + Style xterm UseStyle FlatStyle
 .EE
 
 

@@ -61,6 +61,14 @@ Designates that full-length Wharf windraws will be animated.
 If \fI*FvwmWharfTextureType 0\fP is specified, \fIFvwmWharf\fP's buttons
 will be filled with \fIcolor\fP.
 
+.IP "*FvwmWharfColorset \fIcolorset\fP"
+Tells the module to use colorset \fIcolorset\fP for the background
+of all buttons.  This option disables the options 'BgColor',
+'TextureType' and 'TextureColor' if specified after these and is
+disabled by them if used before any of them in the configuration.
+Please refer to the man page of the FvwmTheme module for details
+about colorsets.
+
 .IP "*FvwmWharfColumns \fIcolumns\fP"
 Specifies the number of columns of buttons to be created. If unspecified,
 the number of columns will be set to 1.
@@ -196,8 +204,8 @@ have Drag and Drop enabled on a particular button, the following syntax
 must be adhered to:
 .nf
 .sp
-*FvwmWharf	nil      nil	     DropExec "\fIprogram\fP" \fIprogram\fP %s
-*FvwmWharf	\fIprogram\fP  \fIiconname\fP	Exec "\fIprogram\fP" \fIprogram\fP
+*FvwmWharf nil nil DropExec "\fIprogram\fP" \fIprogram\fP %s
+*FvwmWharf \fIprogram\fP \fIiconname\fP Exec "\fIprogram\fP" \fIprogram\fP
 .sp
 .fi
 
