@@ -1,3 +1,9 @@
+1999-06-11  Bob Woodside  <proteus@pcnet.com>
+
+	* fvwm/borders.c (SetupFrame): Reinstated the ConfigureNotify, so
+	apps know where their windows are after they're moved by the window
+	manager.
+
 1999-06-10  Hippo
 
 	* fvwm/{{colors,fvwm,icons}.c,screen.h}: clean up of icon rendering:
@@ -16,7 +22,7 @@
 	* fvwm/fvwm.c: Fixed the problem of windows wandering after a
 	Restart from a page other than 0,0, followed by a Recapture.
 	* fvwm/placement.c: Corrected my overzealous attempt to keep windows
-	from switching desktops on Rastart/Recapture, which broke a couple
+	from switching desktops on Restart/Recapture, which broke a couple
 	of the StartsOnPage options.
 
 1999-06-09  Dominik Vogt  <dominik_vogt@gmx.de>
