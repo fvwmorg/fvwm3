@@ -339,6 +339,17 @@ void ProcessMessage(unsigned long type,unsigned long *body)
     case M_ADD_WINDOW:
     case M_CONFIGURE_WINDOW:
       cfgpacket = (void *) body;
+      /* We get the win_borders only when WinList  map it self, this is ok
+       *  since we need it only after an unmap */
+      if ( cfgpacket->w == win)
+      {
+	win_border_x = win_border_y = cfgpacket->border_width;
+	if (((win_grav == NorthWestGravity || win_grav == NorthEastGravity)
+	     && !HAS_BOTTOM_TITLE(cfgpacket)) ||
+	    ((win_grav == SouthWestGravity || win_grav == SouthEastGravity)
+	    && HAS_BOTTOM_TITLE(cfgpacket)))
+	  win_border_y +=  cfgpacket->title_height;
+      }
       if ((i = FindItem(&windows,cfgpacket->w))!=-1)
       {
 	if(UpdateItemDesk(&windows, cfgpacket->w, cfgpacket->desk) > 0)
@@ -387,15 +398,6 @@ void ProcessMessage(unsigned long type,unsigned long *body)
       if ((type==M_ICON_NAME && !UseIconNames) ||
           (type==M_WINDOW_NAME && UseIconNames))
 	break;
-      /* We get the win_borders only when WinList  map it self, this is ok
-       *  since we need it only after an unmap */
-      if (!strcmp((char *)&body[3],&Module[1]))
-      {
-	win_border_x = body[10];
-	win_border_y = body[10];
-	if (win_grav == NorthWestGravity || win_grav == NorthEastGravity)
-	  win_border_y +=  body[9];
-      }
       if ((i=UpdateItemName(&windows,body[0],(char *)&body[3]))==-1) break;
       string=(char *)&body[3];
       flagitem = ItemFlags(&windows,body[0]);

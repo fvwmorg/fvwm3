@@ -1,7 +1,18 @@
+1999-12-06  olicha   <olivier.chapuis@free.fr>
+
+	* FvwmWinList/FvwmWinList.c (ProcessMessage):
+	Take in account bottom title and update the border width and title 
+	height in the good place to fix a bug with dynamic style changes
+	and DeskOnly option.
+
+	* FvwmButtons/FvwmButtons.1:
+	Added a sentence in the position doc
+
 1999-12-06  Dan Espen  <dane@mk.telcordia.com>
 
 	* FvwmButtons/FvwmButtons.1 (panel): Corrections to wording.
 
+>>>>>>> 1.410
 1999-12-06  olicha   <olivier.chapuis@free.fr>
 
 	* FvwmButtons/FvwmButons.c (GetPanelGeometry):
