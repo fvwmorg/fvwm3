@@ -1,12 +1,19 @@
+1998-11-18  Paul D. Smith  <psmith@gnu.org>
+
+	* fvwm/menus.c (NewMenuRoot): Initialize the in_use flag.
+
+	* fvwm/builtins.c (ReadButtonFace): Don't free() NULL pointers.
+	(CursorStyle): Message was printing already-freed memory; don't
+	free until afterwards.
+
 1998-11-17  Dominik Vogt  <dominik_vogt@hp.com>
 
-	* fvwm/misc.c (Destroy):
-	applied mini-icon compile patch by Tim Phipps
+	* fvwm/misc.c (Destroy): applied mini-icon compile patch by Tim Phipps
 
 Mon Nov 16 20:30:16 1998  DanEspen  <dje@blue>
 
-      * libs/ColorUtils.c (BRIGHTNESS_FACTOR): Set adjustment factors
-      to fvwm2 defaults instead of scwm numbers.   
+	* libs/ColorUtils.c (BRIGHTNESS_FACTOR): Set adjustment factors
+	to fvwm2 defaults instead of scwm numbers.
 
 Sun Nov 15 12:24:12 1998  DanEspen  <dje@blue>
 
@@ -18,7 +25,7 @@ Sun Nov 15 12:24:12 1998  DanEspen  <dje@blue>
 	Control-Escape.
 	(movecursor): fixed bugs: cursor move didn't work on edge of screen;
 	didn't work if NON_VIRTUAL is defined
-	
+
 1998-11-14  Dominik Vogt  <dominik_vogt@hp.com>
 
 	* fvwm/builtins.c (CursorStyle): fixed coredump
@@ -96,7 +103,7 @@ Sat Nov 14 19:56:11 1998  DanEspen  <dje@blue>
 	* fvwm/misc.h:
 	* fvwm/fvwm2.1:
 	Applied Warp option patch for Move by Tim Phipps (see below).
-	
+
 	* fvwm/misc.{c,h}: changed GetPositionArguments to GetMoveArguments
 	and added parsing for optional Warp flag for Move/AnimatedMove
 

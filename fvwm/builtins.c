@@ -501,7 +501,7 @@ void add_item_to_menu(XEvent *eventp,Window w,FvwmWindow *tmp_win,
    * It cannot be NULL! GetNextToken never returns an empty string! */
   if (*token)
     free(token);
-  
+
   MakeMenu(mr);
   return;
 }
@@ -1509,13 +1509,14 @@ void CursorStyle(XEvent *eventp,Window junk,FvwmWindow *tmp_win,
     return;
   }
   nc = atoi(newcursor);
-  free(newcursor);
   free(cname);
   if ((nc < 0) || (nc >= XC_num_glyphs) || ((nc % 2) != 0))
   {
-    fvwm_msg(ERR,"CursorStyle","Bad cursor number %s",newcursor);
+    fvwm_msg(ERR, "CursorStyle", "Bad cursor number %s", newcursor);
+    free(newcursor);
     return;
   }
+  free(newcursor);
 
   /* replace the cursor defn */
   if (Scr.FvwmCursors[index]) XFreeCursor(dpy,Scr.FvwmCursors[index]);
@@ -2273,7 +2274,7 @@ Boolean ReadButtonFace(char *s, ButtonFace *bf, int button, int verbose)
 			    perc[i] = atoi(item);
 			    free(item);
 			  }
-			else 
+			else
 			  perc[i] = 0;
 		    }
 		}
@@ -2284,8 +2285,9 @@ Boolean ReadButtonFace(char *s, ButtonFace *bf, int button, int verbose)
 
 	    if (sum != 100) {
 		if(verbose)fvwm_msg(ERR,"ReadButtonFace",
-				    "multi gradient lenghts must sum to 100");
+				    "multi gradient lengths must sum to 100");
 		for (i = 0; i <= nsegs; ++i)
+                  if (s_colors[i])
 		    free(s_colors[i]);
 		free(s_colors);
 		free(perc);
@@ -2297,6 +2299,7 @@ Boolean ReadButtonFace(char *s, ButtonFace *bf, int button, int verbose)
 
 	    pixels = AllocNonlinearGradient(s_colors, perc, nsegs, npixels);
 	    for (i = 0; i <= nsegs; ++i)
+              if (s_colors[i])
 		free(s_colors[i]);
 	    free(s_colors);
 
@@ -2343,7 +2346,7 @@ Boolean ReadButtonFace(char *s, ButtonFace *bf, int button, int verbose)
 		free(file);
 		file = NULL;
 	      }
-	
+
 	    if (strncasecmp(style,"Tiled",5)==0)
 		bf->style = TiledPixmapButton;
 	    else
@@ -2390,7 +2393,7 @@ Boolean ReadButtonFace(char *s, ButtonFace *bf, int button, int verbose)
 		    bf->style &= ~HRight;
 		} else
 		    bf->style |= HOffCenter | HRight;
-	    } 
+	    }
 	    else if (StrEquals(tok,"Right"))
 	    {
 		if (set)
@@ -2399,7 +2402,7 @@ Boolean ReadButtonFace(char *s, ButtonFace *bf, int button, int verbose)
 		    bf->style |= HOffCenter;
 		    bf->style &= ~HRight;
 		}
-	    } 
+	    }
 	    else if (StrEquals(tok,"Centered")) {
 		bf->style &= ~HOffCenter;
 		bf->style &= ~VOffCenter;
@@ -2411,8 +2414,8 @@ Boolean ReadButtonFace(char *s, ButtonFace *bf, int button, int verbose)
 		    bf->style &= ~VBottom;
 		} else
 		    bf->style |= VOffCenter | VBottom;
-		  
-	    } 
+
+	    }
 	    else if (StrEquals(tok,"Bottom"))
 	    {
 		if (set)
@@ -2429,7 +2432,7 @@ Boolean ReadButtonFace(char *s, ButtonFace *bf, int button, int verbose)
 		    bf->style |= FlatButton;
 		} else
 		    bf->style &= ~FlatButton;
-	    } 
+	    }
 	    else if (StrEquals(tok,"Sunk"))
 	    {
 		if (set) {
@@ -2437,7 +2440,7 @@ Boolean ReadButtonFace(char *s, ButtonFace *bf, int button, int verbose)
 		    bf->style |= SunkButton;
 		} else
 		    bf->style &= ~SunkButton;
-	    } 
+	    }
 	    else if (StrEquals(tok,"Raised"))
 	    {
 		if (set) {
@@ -2467,7 +2470,7 @@ Boolean ReadButtonFace(char *s, ButtonFace *bf, int button, int verbose)
 		    bf->style |= HiddenHandles;
 		else
 		    bf->style &= ~HiddenHandles;
-	    } 
+	    }
 	    else if (StrEquals(tok,"NoInset"))
 	    {
 		if (set)
@@ -2690,7 +2693,7 @@ void DestroyDecor(XEvent *eventp,Window junk,FvwmWindow *tmp_win,
 	prev = fl;
     }
     free(item);
-    
+
     if (found && (found != &Scr.DefaultDecor)) {
 	FvwmWindow *fw = Scr.FvwmRoot.next;
 	while(fw != NULL)
@@ -3567,6 +3570,6 @@ void set_menudelay(XEvent *eventp,Window w,FvwmWindow *tmp_win,
   if (sscanf(action,"%d",&delay) == 1 && delay >= 0)
     /* user enters in ms, we store in 10 ms */
     c10msDelaysBeforePopup = delay/10;
-  else 
+  else
     fvwm_msg(ERR,"SetMenuDelay","Improper ms delay count as argument.");
 }

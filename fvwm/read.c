@@ -1,7 +1,7 @@
 /*
  * *************************************************************************
- * This module is all original code 
- * by Rob Nation 
+ * This module is all original code
+ * by Rob Nation
  * Copyright 1993, Robert Nation
  *     You may use this code for any purpose, as long as the original
  *     copyright remains in the source code and all documentation
@@ -111,7 +111,7 @@ static void ReadSubFunc(XEvent *eventp,Window junk,FvwmWindow *tmp_win,
 	    strcat(home_file,"/");
 	    strcat(home_file,ofilename);
 	    filename = home_file;
-	    fd = fopen(filename,"r");      
+	    fd = fopen(filename,"r");
 	  }
       }
   }

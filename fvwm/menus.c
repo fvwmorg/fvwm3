@@ -1938,22 +1938,22 @@ void MakeMenu(MenuRoot *mr)
 	     since strlen("Popup ")==6 ) */
 	  menuContinuation = NewMenuRoot(szMenuContinuationActionAndName+6,0);
 	  mr->continuation = menuContinuation;
-	  
+
 	  /* Now move this item and the remaining items into the new menu */
 	  cItems--;
 	  menuContinuation->first = cur;
 	  menuContinuation->last = mr->last;
 	  menuContinuation->items = mr->items - cItems;
-	  
+
 	  /* cur_prev is now the last item in the current menu */
 	  mr->last = cur_prev;
 	  mr->items = cItems;
 	  cur_prev->next = NULL;
-	  
+
 	  /* Go back one, so that this loop will process the new item */
 	  y -= cur->y_height;
 	  cur = cur_prev;
-	  
+
 	  /* And add the entry pointing to the new menu */
 	  AddToMenu(mr,"More&...",szMenuContinuationActionAndName,
 		    FALSE /* no pixmap scan */, FALSE);
@@ -2412,6 +2412,7 @@ MenuRoot *NewMenuRoot(char *name,int fFunction)
   tmp->first = NULL;
   tmp->last = NULL;
   tmp->selected = NULL;
+  tmp->in_use = 0;
   tmp->items = 0;
   tmp->width = 0;
   tmp->width2 = 0;
