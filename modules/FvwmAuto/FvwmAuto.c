@@ -202,31 +202,31 @@ main(int argc, char **argv)
 	}
 
 	n = 7;
-	if (argv[n])                  /* if specified */
+	if (n < argc && argv[n])                  /* if specified */
 	{
 		char *token;
 
 		/* -passid option */
-		if (*argv[n] && StrEquals(argv[n], "-passid"))
+		if (n < argc && *argv[n] && StrEquals(argv[n], "-passid"))
 		{
 			do_pass_id = True;
 			n++;
 		}
-		if (*argv[n] && StrEquals(argv[n], "-menterleave"))
+		if (n < argc && *argv[n] && StrEquals(argv[n], "-menterleave"))
 		{
 			/* enterleave mode */
 			use_leave_mode = True;
 			use_enter_mode = True;
 			n++;
 		}
-		else if (*argv[n] && StrEquals(argv[n], "-menter"))
+		else if (n < argc && *argv[n] && StrEquals(argv[n], "-menter"))
 		{
 			/* enter mode */
 			use_leave_mode = False;
 			use_enter_mode = True;
 			n++;
 		}
-		else if (*argv[n] && StrEquals(argv[n], "-mfocus"))
+		else if (n < argc && *argv[n] && StrEquals(argv[n], "-mfocus"))
 		{
 			/* focus mode */
 			use_leave_mode = False;
@@ -234,14 +234,17 @@ main(int argc, char **argv)
 			n++;
 		}
 		/*** enter command ***/
-		if (*argv[n] && !StrEquals(argv[n],"NOP")) /* not empty */
+		if (n < argc && *argv[n] && StrEquals(argv[n], "Nop"))
 		{
-			enter_fn = argv[n];               /* override default */
+			/* nop */
+			enter_fn = NULL;
 			n++;
 		}
-		else
+		else if (n < argc)
 		{
-			enter_fn = NULL;          /* nop */
+			/* override default */
+			enter_fn = argv[n];
+			n++;
 		}
 		/* This is a hack to prevent user interaction with old configs.
 		 */
@@ -255,7 +258,14 @@ main(int argc, char **argv)
 			}
 		}
 		/*** leave command ***/
-		if (argv[n] && *argv[n] && !StrEquals(argv[n],"NOP"))
+		if (n < argc && argv[n] && *argv[n] &&
+		    StrEquals(argv[n], "Nop"))
+		{
+			/* nop */
+			leave_fn = NULL;
+			n++;
+		}
+		else if (n < argc)
 		{
 			/* leave function specified */
 			leave_fn=argv[n];
@@ -329,6 +339,7 @@ main(int argc, char **argv)
 	}
 	buf = safemalloc(len);
 
+fprintf(stderr,"FvwmAuto: em %d, lm %d, enter '%s', leave '%s'\n", use_enter_mode, use_leave_mode, enter_fn, leave_fn);
 	while (!isTerminated)
 	{
 		char raise_window_now;
@@ -514,6 +525,10 @@ main(int argc, char **argv)
 					sprintf(buf, "%s\n", enter_fn);
 				}
 				SendInfo(fd, buf, focus_win);
+				raised_win = focus_win;
+			}
+			else if (focus_win && enter_fn == NULL)
+			{
 				raised_win = focus_win;
 			}
 
