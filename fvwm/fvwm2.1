@@ -891,11 +891,11 @@ other kinds of quotes.
 
 Whenever a fvwm command line is executed, fvwm performs parameter
 expansion.  A parameter is a '$' followed by a single letter or
-a word enclosed in braces ($[...]).  If fvwm encounters an unquoted
+a word enclosed in brackets ($[...]).  If fvwm encounters an unquoted
 parameter on the command line it expands it to a string indicated
 by the parameter name.  Unknown parameters are left untouched.
-Parameter expansion is performed before quoting.  To quote a
-'$' use "$$".  Note that module configuration lines (i.e. lines
+Parameter expansion is performed before quoting.  To quote a '$'
+use "$$".  Note that module configuration lines (i.e. lines
 beginning with '*') are not subject to parameter expansion.  The
 parameters known by fvwm are:
 
@@ -3975,8 +3975,8 @@ You can use the
 .I NotStayPressed
 option enabled.  However,
 .I Modifiers
-will, in general, not work as expected (i.e., in this case use
-'A' or 'N' as
+will, in general, not work as expected (i.e., in this case
+use 'A' or 'N' as
 .I Modifiers
 in the stroke bindings).
 
