@@ -820,14 +820,34 @@ void CaptureOneWindow(
   unsigned char *prop = NULL;
   unsigned long data[1];
 
+  isIconicState = DontCareState;
   if (fw == NULL)
+  {
     return;
+  }
+  if (IS_SCHEDULED_FOR_DESTROY(fw))
+  {
+    /* Fvwm might crash in complex functions if we really try to the dying
+     * window here because AddWindow() may fail and leave a destroyed window
+     * in Tmp_win.  Any, by the way, it is pretty useless to recapture a
+     * window that will vanish in a moment. */
+    return;
+  }
+  /* Grab the server to make sure the window does not die during the recapture.
+   */
+  MyXGrabServer(dpy);
+  if (!XGetGeometry(dpy, fw->w, &JunkRoot, &JunkX, &JunkY, &JunkWidth,
+		   &JunkHeight, &JunkBW,  &JunkDepth))
+  {
+    /* The window has already died, do not recapture it! */
+    MyXUngrabServer(dpy);
+    return;
+  }
   if (XFindContext(dpy, window, FvwmContext, (caddr_t *)&fw) != XCNOENT)
   {
     Bool f = PPosOverride;
 
     PPosOverride = True;
-    isIconicState = DontCareState;
     if(XGetWindowProperty(dpy, fw->w, _XA_WM_STATE, 0L, 3L, False,
 			  _XA_WM_STATE, &atype, &aformat, &nitems,
 			  &bytes_remain, &prop) == Success)
@@ -852,20 +872,20 @@ void CaptureOneWindow(
     XSelectInput(dpy, fw->w, 0);
     w = fw->w;
     XUnmapWindow(dpy, fw->frame);
-    /* This unmap may cause some applications think that they are iconified
-     * (e.g. ddd).  Thus, when the window is remapped, it will become iconic.
-     */
     RestoreWithdrawnLocation(fw, True, parent_win);
     SET_DO_REUSE_DESTROYED(fw, 1); /* RBW - 1999/03/20 */
     destroy_window(fw);
     Event.xmaprequest.window = w;
     HandleMapRequestKeepRaised(keep_on_top_win, fw);
+    if (!fFvwmInStartup)
+      SET_MAP_PENDING(fw, 0);
     /* Clean out isIconicState here, otherwise all new windos may start
      * iconified. */
     isIconicState = DontCareState;
     /* restore previous value */
     PPosOverride = f;
   }
+  MyXUngrabServer(dpy);
 
   return;
 }
@@ -903,8 +923,8 @@ static void hide_screen(
     {
       /* When recapturing, all windows are reparented to this window. If they
        * are reparented to the root window, they will flash over the hide_win
-       * with XFree.  So reparent them to an unmapped window that looks like the
-       * root window. */
+       * with XFree.  So reparent them to an unmapped window that looks like
+       * the root window. */
       parent_win = XCreateWindow(
 	dpy, Scr.Root, 0, 0, Scr.MyDisplayWidth, Scr.MyDisplayHeight, 0,
 	CopyFromParent, InputOutput, CopyFromParent, valuemask, &xswa);

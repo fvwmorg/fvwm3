@@ -29,17 +29,22 @@
 */
 XFontStruct *GetFontOrFixed(Display *disp, char *fontname)
 {
-  XFontStruct *fnt;
+  XFontStruct *fnt = NULL;
 
-  if ((fnt = XLoadQueryFont(disp,fontname))==NULL)
+  if (fontname)
+    fnt = XLoadQueryFont(disp,fontname);
+  if (!fnt && fontname)
   {
     fprintf(stderr,
-            "[GetFontOrFixed]: WARNING -- can't get font %s, trying 'fixed'",
+            "[GetFontOrFixed]: WARNING -- can't get font %s, trying 'fixed'\n",
             fontname);
-    /* fixed should always be avail, so try that */
+  }
+  if (!fnt)
+  {
+    /* fixed should always be available, so try that */
     if ((fnt = XLoadQueryFont(disp,"fixed"))==NULL)
     {
-      fprintf(stderr,"[GetFontOrFixed]: ERROR -- can't get font 'fixed'");
+      fprintf(stderr,"[GetFontOrFixed]: ERROR -- can't get font 'fixed'\n");
     }
   }
   return fnt;
@@ -51,17 +56,22 @@ XFontStruct *GetFontOrFixed(Display *disp, char *fontname)
 */
 XFontSet GetFontSetOrFixed(Display *disp, char *fontname)
 {
-  XFontSet fontset;
+  XFontSet fontset = NULL;
   char **ml;
   int mc;
   char *ds;
 
-  if ((fontset = XCreateFontSet(disp,fontname,&ml,&mc,&ds))==NULL)
+  if (fontname)
+    fontset = XCreateFontSet(disp,fontname,&ml,&mc,&ds);
+  if (!fontset && fontname)
   {
     fprintf(stderr,
             "[FVWM][GetFontSetOrFixed]: "
 	    "WARNING -- can't get fontset %s, trying 'fixed'\n",
             fontname);
+  }
+  if (!fontset)
+  {
     /* fixed should always be avail, so try that */
 #ifdef STRICTLY_FIXED
     if ((fontset = XCreateFontSet(disp,"fixed",&ml,&mc,&ds))==NULL)

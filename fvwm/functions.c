@@ -79,22 +79,6 @@ static void dummy_func(F_CMD_ARGS)
 
 /*
  * be sure to keep this list properly ordered for bsearch routine!
- *
- * Note: the 3rd column of this table is no longer in use!
- * Remove the field "code" from the structure "functions" in misc.c.
- * Then remove the values from this table.
- * dje 9/25/98
- *
- * Note: above comment is incorrect. The 3rd column is still used in
- * find_func_type which is called from menus.c. Some work has to be done
- * before it can be removed.
- * Dominik Vogt 21/11/98
- *
- * My   mistake. However,  they  are  no  longer  used for their original
- * purpose, and  the   use menus.c is  putting   them to  seems  somewhat
- * unnecessary.  I'm  going to use  F_NOP for EdgeThickness,  and see
- * how that goes.
- * dje 12/19/98.
  */
 
 #define PRE_REPEAT       "repeat"
@@ -1139,7 +1123,12 @@ void execute_function(exec_func_args_type *efa)
     free(function);
   }
   if (efa->flags.do_save_tmpwin)
-    Tmp_win = s_Tmp_win;
+  {
+    if (check_if_fvwm_window_exists(s_Tmp_win))
+      Tmp_win = s_Tmp_win;
+    else
+      Tmp_win = NULL;
+  }
   func_depth--;
 
   return;
@@ -1516,6 +1505,8 @@ static void cf_cleanup(unsigned int *depth, char **arguments)
   int i;
 
   (*depth)--;
+  if (!(*depth))
+    Scr.flags.is_executing_complex_function = 0;
   for (i = 0; i < 11; i++)
     if(arguments[i] != NULL)
       free(arguments[i]);
@@ -1556,6 +1547,8 @@ static void execute_complex_function(F_CMD_ARGS, Bool *desperate)
       fvwm_msg(ERR,"ComplexFunction","No such function %s",action);
     return;
   }
+  if (!depth)
+    Scr.flags.is_executing_complex_function = 1;
   depth++;
   *desperate = 0;
   /* duplicate the whole argument list for use as '$*' */
@@ -1642,10 +1635,7 @@ static void execute_complex_function(F_CMD_ARGS, Bool *desperate)
   if(!Persist)
   {
     func->use_depth--;
-    for(i=0;i<11;i++)
-      if(arguments[i] != NULL)
-	free(arguments[i]);
-    depth--;
+    cf_cleanup(&depth, arguments);
     return;
   }
 

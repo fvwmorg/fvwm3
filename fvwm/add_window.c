@@ -245,6 +245,11 @@ static void destroy_window_font(FvwmWindow *tmp_win)
     FreeFvwmFont(dpy, &(tmp_win->title_font));
   }
   SET_WINDOW_FONT_LOADED(tmp_win, 0);
+  /* Fall back to default font. There are some race conditions when a window
+   * is destroyed and recaptured where an invalid font might be accessed
+   * otherwise. */
+  tmp_win->title_font = Scr.DefaultFont;
+  SET_USING_DEFAULT_WINDOW_FONT(tmp_win, 1);
 }
 
 void setup_window_font(
@@ -313,6 +318,9 @@ static void destroy_icon_font(FvwmWindow *tmp_win)
     FreeFvwmFont(dpy, &(tmp_win->icon_font));
   }
   SET_ICON_FONT_LOADED(tmp_win, 0);
+  /* Fall back to default font (see comment above). */
+  tmp_win->icon_font = Scr.DefaultFont;
+  SET_USING_DEFAULT_ICON_FONT(tmp_win, 1);
 }
 
 void setup_icon_font(
@@ -449,6 +457,7 @@ void destroy_icon_boxes(FvwmWindow *tmp_win)
     {
       /* finally destroy the icon box */
       free_icon_boxes(tmp_win->IconBoxes);
+      tmp_win->IconBoxes = NULL;
     }
   }
 }
@@ -667,7 +676,10 @@ void setup_title_window(
 void destroy_title_window(FvwmWindow *tmp_win, Bool do_only_delete_context)
 {
   if (!do_only_delete_context)
+  {
     XDestroyWindow(dpy, tmp_win->title_w);
+    tmp_win->title_w = None;
+  }
   XDeleteContext(dpy, tmp_win->title_w, FvwmContext);
   tmp_win->title_w = None;
 }
@@ -730,7 +742,10 @@ void destroy_button_windows(FvwmWindow *tmp_win, Bool do_only_delete_context)
     if(tmp_win->button_w[i] != None)
     {
       if (!do_only_delete_context)
+      {
 	XDestroyWindow(dpy, tmp_win->button_w[i]);
+	tmp_win->button_w[i] = None;
+      }
       XDeleteContext(dpy, tmp_win->button_w[i], FvwmContext);
       tmp_win->button_w[i] = None;
     }
@@ -820,11 +835,11 @@ void destroy_resize_handle_windows(
     {
       XDestroyWindow(dpy, tmp_win->sides[i]);
       XDestroyWindow(dpy, tmp_win->corners[i]);
+      tmp_win->sides[i] = None;
+      tmp_win->corners[i] = None;
     }
     XDeleteContext(dpy, tmp_win->sides[i], FvwmContext);
     XDeleteContext(dpy, tmp_win->corners[i], FvwmContext);
-    tmp_win->sides[i] = None;
-    tmp_win->corners[i] = None;
   }
 }
 
@@ -921,6 +936,7 @@ void destroy_auxiliary_windows(FvwmWindow *tmp_win,
   if (destroy_frame_and_parent)
   {
     XDestroyWindow(dpy, tmp_win->frame);
+    tmp_win->frame = None;
     XDeleteContext(dpy, tmp_win->frame, FvwmContext);
     XDeleteContext(dpy, tmp_win->decor_w, FvwmContext);
     XDeleteContext(dpy, tmp_win->Parent, FvwmContext);
@@ -1013,7 +1029,9 @@ void destroy_icon(FvwmWindow *tmp_win)
     {
       XFreePixmap(dpy, tmp_win->iconPixmap);
       if (tmp_win->icon_maskPixmap != None)
+      {
 	XFreePixmap(dpy, tmp_win->icon_maskPixmap);
+      }
     }
     XDestroyWindow(dpy, tmp_win->icon_w);
     XDeleteContext(dpy, tmp_win->icon_w, FvwmContext);
@@ -1079,6 +1097,7 @@ void destroy_mini_icon(FvwmWindow *tmp_win)
   if (tmp_win->mini_icon)
   {
     DestroyPicture(dpy, tmp_win->mini_icon);
+    tmp_win->mini_icon = 0;
   }
 }
 
@@ -1783,7 +1802,10 @@ void free_window_names (FvwmWindow *tmp, Bool nukename, Bool nukeicon)
     if (tmp->name != tmp->icon_name && tmp->name != NoName)
 #ifdef I18N_MB
       if (tmp->name_list != NULL)
+      {
 	XFreeStringList(tmp->name_list);
+	tmp->name_list = NULL;
+      }
       else
 	XFree(tmp->name);
 #else
@@ -1796,7 +1818,10 @@ void free_window_names (FvwmWindow *tmp, Bool nukename, Bool nukeicon)
     if (tmp->name != tmp->icon_name && tmp->icon_name != NoName)
 #ifdef I18N_MB
       if (tmp->icon_name_list != NULL)
+      {
 	XFreeStringList(tmp->icon_name_list);
+	tmp->icon_name_list = NULL;
+      }
       else
 	XFree(tmp->icon_name);
 #else
@@ -1825,6 +1850,15 @@ void destroy_window(FvwmWindow *tmp_win)
    */
   if(!tmp_win)
     return;
+
+  if (Scr.flags.is_executing_complex_function && !DO_REUSE_DESTROYED(tmp_win))
+  {
+    /* mark window for destruction */
+    SET_SCHEDULED_FOR_DESTROY(tmp_win, 1);
+    Scr.flags.do_need_window_update = 1;
+    Scr.flags.is_window_scheduled_for_destroy = 1;
+    return;
+  }
 
   /****** remove from window list ******/
 
@@ -1891,14 +1925,23 @@ void destroy_window(FvwmWindow *tmp_win)
 
   /****** free strings ******/
 
-  free_window_names (tmp_win, True, True);
+  free_window_names(tmp_win, True, True);
 
   if (tmp_win->class.res_name && tmp_win->class.res_name != NoResource)
+  {
     XFree ((char *)tmp_win->class.res_name);
+    tmp_win->class.res_name = NoResource;
+  }
   if (tmp_win->class.res_class && tmp_win->class.res_class != NoClass)
+  {
     XFree ((char *)tmp_win->class.res_class);
-  if(tmp_win->mwm_hints)
+    tmp_win->class.res_class = NoClass;
+  }
+  if (tmp_win->mwm_hints)
+  {
     XFree((char *)tmp_win->mwm_hints);
+    tmp_win->mwm_hints = NULL;
+  }
 
   /****** free fonts ******/
 
@@ -1908,12 +1951,18 @@ void destroy_window(FvwmWindow *tmp_win)
   /****** free wmhints ******/
 
   if (tmp_win->wmhints)
+  {
     XFree ((char *)tmp_win->wmhints);
+    tmp_win->wmhints = NULL;
+  }
 
   /****** free colormap windows ******/
 
   if(tmp_win->cmap_windows != (Window *)NULL)
+  {
     XFree((void *)tmp_win->cmap_windows);
+    tmp_win->cmap_windows = NULL;
+  }
 
   /****** throw away the structure ******/
 

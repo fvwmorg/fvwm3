@@ -683,7 +683,12 @@ static void refresh_window(Window w)
     flush_window_updates();
   }
   XDestroyWindow(dpy, w);
-  XFlush(dpy);
+  XSync(dpy, 0);
+  usleep(1);
+  XSync(dpy, 0);
+  handle_all_expose();
+
+  return;
 }
 
 void refresh_function(F_CMD_ARGS)
@@ -1207,14 +1212,11 @@ void LoadDefaultFont(F_CMD_ARGS)
   font = PeekToken(action, &action);
   if (!font)
   {
-    /* Try 'fixed' */
-    font = "";
+    /* Try 'fixed', pass NULL font name */
   }
 
   if (!LoadFvwmFont(dpy, font, &new_font))
   {
-    fvwm_msg(
-      ERR, "SetDefaultFont", "Couldn't load font '%s' or 'fixed'\n", font);
     if (Scr.DefaultFont.font == NULL)
       exit(1);
     else
@@ -1226,6 +1228,8 @@ void LoadDefaultFont(F_CMD_ARGS)
   /* set flags to indicate that the font has changed */
   Scr.flags.do_need_window_update = 1;
   Scr.flags.has_default_font_changed = 1;
+
+  return;
 }
 
 void LoadIconFont(F_CMD_ARGS)

@@ -299,6 +299,7 @@ void apply_decor_change(FvwmWindow *tmp_win)
 void flush_window_updates(void)
 {
   FvwmWindow *t;
+  FvwmWindow *next;
   window_style style;
   FvwmWindow *focus_fw;
   Bool do_need_ungrab = False;
@@ -310,6 +311,23 @@ void flush_window_updates(void)
     do_need_ungrab = True;
   MyXGrabServer(dpy);
   XSync(dpy,0);
+
+  if (Scr.flags.is_window_scheduled_for_destroy &&
+      !Scr.flags.is_executing_complex_function)
+  {
+    Scr.flags.is_window_scheduled_for_destroy = 0;
+
+    /* need to destroy one or more windows before looking at the window list */
+    for (t = Scr.FvwmRoot.next, next = NULL; t != NULL; t = next)
+    {
+      next = t->next;
+      if (IS_SCHEDULED_FOR_DESTROY(t))
+      {
+	SET_SCHEDULED_FOR_DESTROY(t, 0);
+	destroy_window(t);
+      }
+    }
+  }
 
   /* This is necessary in case the focus policy changes. With ClickToFocus some
    * buttons have to be grabbed/ungrabbed. */

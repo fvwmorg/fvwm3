@@ -80,17 +80,18 @@ static void verify_stack_ring_consistency(void)
     {
       fprintf(
 	stderr,
-	"stack ring is corrupt! '%s' (layer %d) is above '%s' (layer %d)\n",
+	"vsrc: stack ring is corrupt! "
+	"'%s' (layer %d) is above '%s' (layer %d)\n",
 	t1->name, t1->layer, t2->name, t2->layer);
       dump_stack_ring();
       return;
     }
     last_layer = t1->layer;
   }
-  MyXGrabServer (dpy);
-  if (!XQueryTree (dpy, Scr.Root, &root, &parent, &children, &nchildren))
+  MyXGrabServer(dpy);
+  if (!XQueryTree(dpy, Scr.Root, &root, &parent, &children, &nchildren))
   {
-    MyXUngrabServer (dpy);
+    MyXUngrabServer(dpy);
     return;
   }
 
@@ -102,13 +103,13 @@ static void verify_stack_ring_consistency(void)
       ;
     if (i == nchildren)
     {
-      fprintf(stderr,"window already died: fw=0x%08x w=0x%08x '%s'\n",
+      fprintf(stderr,"vsrc: window already died: fw=0x%08x w=0x%08x '%s'\n",
 	      (int)t1, (int)t1->frame, t1->name);
     }
     else if (i >= last_index)
     {
       fprintf(
-	stderr, "window is at wrong position in stack ring: "
+	stderr, "vsrc: window is at wrong position in stack ring: "
 	"fw=0x%08x f=0x%08x '%s'\n", (int)t1, (int)t1->frame, t1->name);
       dump_stack_ring();
       fprintf(stderr,"dumping X stacking order:\n");

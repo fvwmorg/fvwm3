@@ -984,12 +984,13 @@ void HandleMapRequestKeepRaised(Window KeepRaised, FvwmWindow *ReuseWin)
 #if 0
 	/* nope, this is forbidden by the ICCCM */
 	XMapWindow(dpy, Tmp_win->w);
+	SetMapStateProp(Tmp_win, NormalState);
 #else
 	/* Since we will not get a MapNotify, set the IS_MAPPED flag manually.
 	 */
 	SET_MAPPED(Tmp_win, 1);
+	SetMapStateProp(Tmp_win, IconicState);
 #endif
-	SetMapStateProp(Tmp_win, NormalState);
       }
       break;
 
@@ -2682,6 +2683,32 @@ int flush_expose (Window w)
 
   while (XCheckTypedWindowEvent (dpy, w, Expose, &dummy))
     i++;
+  return i;
+}
+
+/* same as above, but merges the expose rectangles into a single big one */
+int flush_accumulate_expose(Window w, XEvent *e)
+{
+  XEvent dummy;
+  int i = 0;
+  int x1 = e->xexpose.x;
+  int y1 = e->xexpose.y;
+  int x2 = x1 + e->xexpose.width;
+  int y2 = x2 + e->xexpose.height;
+
+  while (XCheckTypedWindowEvent(dpy, w, Expose, &dummy))
+  {
+    x1 = min(x1, dummy.xexpose.x);
+    y1 = min(y1, dummy.xexpose.y);
+    x2 = max(x2, dummy.xexpose.x + dummy.xexpose.width);
+    y2 = max(y2, dummy.xexpose.y + dummy.xexpose.height);
+    i++;
+  }
+  e->xexpose.x = x1;
+  e->xexpose.y = y1;
+  e->xexpose.width = x2 - x1;
+  e->xexpose.height = y2 - y1;
+
   return i;
 }
 

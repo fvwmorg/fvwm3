@@ -1439,6 +1439,7 @@ static void MenuInteraction(
     unsigned is_key_press : 1;
     unsigned do_force_reposition : 1;
     unsigned is_off_menu_allowed : 1;
+    unsigned do_force_popup : 1;
     unsigned do_popdown : 1;
     unsigned do_popup : 1;
     unsigned do_menu : 1;
@@ -1504,17 +1505,16 @@ static void MenuInteraction(
       else if (!XCheckMaskEvent(dpy,ExposureMask,&Event))
       {
 	/* handle exposure events first */
-	if (Menus.PopupDelay10ms > 0 && !flags.is_popped_up_by_timeout)
+	if (flags.do_force_popup ||
+	    (Menus.PopupDelay10ms > 0 && !flags.is_popped_up_by_timeout))
 	{
-	  while (!XPending(dpy) ||
-		 !XCheckMaskEvent(
+	  while (!XPending(dpy) || !XCheckMaskEvent(
 		   dpy, ButtonPressMask|ButtonReleaseMask|ExposureMask|
 		   KeyReleaseMask|KeyPressMask|VisibilityChangeMask|
 		   ButtonMotionMask,
 		   &Event))
 	  {
-	    usleep(10000 /* 10 ms*/);
-	    if (c10msDelays++ == Menus.PopupDelay10ms)
+	    if (flags.do_force_popup || c10msDelays++ > Menus.PopupDelay10ms)
 	    {
 	      DBUG("MenuInteraction","Faking motion");
 	      /* fake a motion event, and set flags.do_popup_now */
@@ -1523,8 +1523,10 @@ static void MenuInteraction(
 	      flags.is_motion_faked = True;
 	      flags.is_popped_up_by_timeout = True;
 	      flags.do_popup_now = True;
+	      flags.do_force_popup = False;
 	      break;
 	    }
+	    usleep(10000 /* 10 ms*/);
 	  }
 	}
 	else
@@ -1730,7 +1732,7 @@ static void MenuInteraction(
       if((XFindContext(dpy, Event.xany.window, MenuContext,
 		       (caddr_t *)&mrNeedsPainting) != XCNOENT))
       {
-	flush_expose(Event.xany.window);
+	flush_accumulate_expose(Event.xany.window, &Event);
 	paint_menu(mrNeedsPainting, &Event, (*pmp->pTmp_win));
       }
       /* we want to dispatch this too so window decorations get redrawn
@@ -1777,7 +1779,7 @@ static void MenuInteraction(
       {
 	c10msDelays = 0;
 	/* we're on the same menu, but a different item,
-	   so we need to unselect the old item */
+	 * so we need to unselect the old item */
 	if (MR_SELECTED_ITEM(pmp->menu))
 	{
 	  /* something else was already selected on this menu */
@@ -1835,13 +1837,19 @@ static void MenuInteraction(
 	}
 	else
 	{
-	  if (pointer_in_active_item_area(x_offset, mrMi) ||
-	      flags.do_popup_now || flags.do_popup_immediately)
+	  if (flags.do_popup_now || flags.do_popup_immediately ||
+	      pointer_in_active_item_area(x_offset, mrMi))
 	  {
 	    /* must create a new menu or popup */
 	    if (mrPopup == NULL || mrPopup != mrMiPopup)
 	    {
-	      flags.do_popup = True;
+	      if (flags.do_popup_now)
+		flags.do_popup = True;
+	      else
+	      {
+		/* pop up in next pass through loop */
+		flags.do_force_popup = True;
+	      }
 	    }
 	    else if (flags.do_popup_and_warp)
 	    {
@@ -1874,8 +1882,8 @@ static void MenuInteraction(
 	if (!MR_IS_PAINTED(pmp->menu))
 	{
 	  /* draw the parent menu if it is not already drawn */
-	  paint_menu(pmp->menu, NULL, (*pmp->pTmp_win));
 	  flush_expose(MR_WINDOW(pmp->menu));
+	  paint_menu(pmp->menu, NULL, (*pmp->pTmp_win));
 	}
 	/* get pos hints for item's action */
 	get_popup_options(pmp->menu, mi, &mops);
@@ -2043,8 +2051,8 @@ static void MenuInteraction(
 	     !MST_DO_POPUP_IMMEDIATELY(pmp->menu)) &&
 	    MST_DO_UNMAP_SUBMENU_ON_POPDOWN(pmp->menu))
 	{
-	  pop_menu_down_and_repaint_parent(&mrPopup, &does_submenu_overlap,
-					   pmp);
+	  pop_menu_down_and_repaint_parent(
+	    &mrPopup, &does_submenu_overlap, pmp);
 	  mrPopup = NULL;
 	}
 	if (pmret->rc == MENU_POPDOWN)
@@ -2763,8 +2771,8 @@ static void select_menu_item(MenuRoot *mr, MenuItem *mi, Bool select,
 
 	if (!MR_IS_PAINTED(mr))
 	{
-	  paint_menu(mr, NULL, fw);
 	  flush_expose(MR_WINDOW(mr));
+	  paint_menu(mr, NULL, fw);
 	}
 	iy = MI_Y_OFFSET(mi);
 	ih = MI_HEIGHT(mi) +
@@ -2926,7 +2934,6 @@ static void pop_menu_down_and_repaint_parent(
     /* popping down the menu may destroy the menu via the dynamic popdown
      * action! Thus we must not access *pmr afterwards. */
     win = MR_WINDOW(*pmr);
-    pop_menu_down(pmr, pmp);
 
     /* Create a fake event to pass into paint_menu */
     event.type = Expose;
@@ -2935,10 +2942,12 @@ static void pop_menu_down_and_repaint_parent(
 	!XGetGeometry(dpy, MR_WINDOW(parent), &JunkRoot, &parent_x, &parent_y,
 		       &parent_width, &parent_height, &JunkBW, &JunkDepth))
     {
+      pop_menu_down(pmr, pmp);
       paint_menu(parent, NULL, (*pmp->pTmp_win));
     }
     else
     {
+      pop_menu_down(pmr, pmp);
       event.xexpose.x = mr_x - parent_x;
       event.xexpose.width = mr_width;
       if (event.xexpose.x < 0)
@@ -2961,9 +2970,9 @@ static void pop_menu_down_and_repaint_parent(
       {
 	event.xexpose.height = parent_height - event.xexpose.y;
       }
+      flush_accumulate_expose(MR_WINDOW(parent), &event);
       paint_menu(parent, &event, (*pmp->pTmp_win));
     }
-    flush_expose(MR_WINDOW(parent));
   }
   else
   {
@@ -5375,7 +5384,6 @@ void DestroyMenuStyle(F_CMD_ARGS)
   ms = FindMenuStyle(name);
   if(ms == NULL)
   {
-    fvwm_msg(ERR,"DestroyMenuStyle", "cannot find style %s", name);
     return;
   }
   else if (ms == Menus.DefaultStyle)
@@ -5519,7 +5527,8 @@ static void UpdateMenuStyle(MenuStyle *ms)
   if(ST_MENU_ACTIVE_RELIEF_GC(ms))
     XChangeGC(dpy, ST_MENU_ACTIVE_RELIEF_GC(ms), gcm, &gcv);
   else
-    ST_MENU_ACTIVE_RELIEF_GC(ms) = fvwmlib_XCreateGC(dpy, Scr.NoFocusWin, gcm, &gcv);
+    ST_MENU_ACTIVE_RELIEF_GC(ms) =
+      fvwmlib_XCreateGC(dpy, Scr.NoFocusWin, gcm, &gcv);
 
   /* update active shadow gc */
   gcv.foreground = active_relief_back;
@@ -5527,7 +5536,8 @@ static void UpdateMenuStyle(MenuStyle *ms)
   if(ST_MENU_ACTIVE_SHADOW_GC(ms))
     XChangeGC(dpy, ST_MENU_ACTIVE_SHADOW_GC(ms), gcm, &gcv);
   else
-    ST_MENU_ACTIVE_SHADOW_GC(ms) = fvwmlib_XCreateGC(dpy, Scr.NoFocusWin, gcm, &gcv);
+    ST_MENU_ACTIVE_SHADOW_GC(ms) =
+      fvwmlib_XCreateGC(dpy, Scr.NoFocusWin, gcm, &gcv);
 
   /* update active back gc */
   gcv.foreground = active_back;
@@ -5535,7 +5545,8 @@ static void UpdateMenuStyle(MenuStyle *ms)
   if (ST_MENU_ACTIVE_BACK_GC(ms))
     XChangeGC(dpy, ST_MENU_ACTIVE_BACK_GC(ms), gcm, &gcv);
   else
-    ST_MENU_ACTIVE_BACK_GC(ms) = fvwmlib_XCreateGC(dpy, Scr.NoFocusWin, gcm, &gcv);
+    ST_MENU_ACTIVE_BACK_GC(ms) =
+      fvwmlib_XCreateGC(dpy, Scr.NoFocusWin, gcm, &gcv);
 
   /* update menu gc */
   gcv.foreground = menu_fore;

@@ -1,5 +1,58 @@
 2000-12-05  Dominik Vogt  <dominik.vogt@gmx.de>
 
+	* fvwm/builtins.c (LoadDefaultFont):
+	removed duplicate error message
+
+	* libs/GetFont.c (GetFontOrFixed):
+	(GetFontSetOrFixed):
+	suppress stupid error message, added newlines after error messages
+	can be called with NULL fontname to load fixed font
+
+	* fvwm/add_window.c (destroy_icon_font):
+	(destroy_window_font):
+	use default font when no font is currently loaded to fix an esoteric
+	reace contition with restart/destroy/recapture
+
+	* fvwm/menus.c (pop_menu_down_and_repaint_parent):
+	(MenuInteraction):
+	* fvwm/events.c (flush_accumulate_expose):
+	fixed redrawing of grandparent menus, PopupImmediately take effect only
+	after one pass through the loop, so there is a chance to handle events
+	first and thus leave the popup item before the sub menu is popped up
+
+	* fvwm/fvwm.c (CaptureOneWindow):
+	* fvwm/add_window.c (destroy_window):
+	(destroy_auxiliary_windows):
+	(destroy_title_window):
+	(destroy_button_windows):
+	(destroy_resize_handle_windows):
+	(destroy_icon_boxes):
+	fix core dump caused by destroy followed by a recapture in complex
+	functions
+
+	* fvwm/update.c (flush_window_updates):
+	* fvwm/add_window.c (destroy_window):
+	* fvwm/window_flags.h (IS_SCHEDULED_FOR_DESTROY):
+	* fvwm/screen.h (ScreenInfo):
+	* fvwm/fvwm.h (struct):
+	* fvwm/functions.c (execute_complex_function):
+	(cf_cleanup):
+	(execute_function):
+	set a global flag when in a complex function
+	use this flag to mark windows to be destroyed after the last complex
+	function has finished
+
+	* tests/purify/purify.fvwm2rc:
+	removec 'recapture' from BusyCursor test
+	destroy makewindows function before adding to it
+	moved some tests behind window creation
+
+	* fvwm/menus.c (DestroyMenuStyle):
+	no error message when trying to destroy a menu style that does not exist
+
+	* fvwm/icons.c (CreateIconWindow):
+	removed icon font hack
+
 	* NEWS, configure.in:
 	changed version to 2.3.26
 
