@@ -182,21 +182,20 @@ Name this module TestModuleGtk2, make it executable and place in ModulePath:
 
     use lib `fvwm-perllib dir`;
     use FVWM::Module::Gtk2;
-    use Gtk2;  # preferably in this order
+    use Gtk2 -init;  # preferably in this order
 
     my $module = new FVWM::Module::Gtk2(
         Debug => 2,
     );
 
-    init Gtk2;
     my $dialog = new Gtk2::Dialog;
-    my $id = $dialog->window->XWINDOW();
     $dialog->signal_connect("destroy", sub { Gtk2->main_quit; });
     $dialog->set_title("Simple Test");
     my $button = new Gtk2::Button "Close";
     $button->signal_connect("clicked", sub { $dialog->destroy; });
     $dialog->action_area->pack_start($button, 1, 1, 0);
     $dialog->show_all;
+    my $id = $dialog->window->XWINDOW();
 
     $module->addDefaultErrorHandler;
     $module->addHandler(M_ICONIFY, sub {

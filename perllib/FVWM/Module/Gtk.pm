@@ -173,21 +173,20 @@ Name this module TestModuleGtk, make it executable and place in ModulePath:
 
     use lib `fvwm-perllib dir`;
     use FVWM::Module::Gtk;
-    use Gtk;  # preferably in this order
+    use Gtk -init;  # preferably in this order
 
     my $module = new FVWM::Module::Gtk(
         Debug => 2,
     );
 
-    init Gtk;
     my $dialog = new Gtk::Dialog;
-    my $id = $dialog->window->XWINDOW();
     $dialog->signal_connect("destroy", sub { Gtk->main_quit; });
     $dialog->set_title("Simple Test");
     my $button = new Gtk::Button "Close";
     $button->signal_connect("clicked", sub { $dialog->destroy; });
     $dialog->action_area->pack_start($button, 1, 1, 0);
     $dialog->show_all;
+    my $id = $dialog->window->XWINDOW();
 
     $module->addDefaultErrorHandler;
     $module->addHandler(M_ICONIFY, sub {

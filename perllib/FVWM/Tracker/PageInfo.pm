@@ -88,10 +88,13 @@ __END__
 
 =head1 DESCRIPTION
 
-This is a subclass of B<FVWM::Tracker> that enables to read the current
-page information.
+This B<FVWM::Tracker> subclass provides an information about the current
+FVWM page and desk and screen dimensions. Like with all trackers, this
+information is automatically brought up to the date for the entire tracker
+object life and may be retrieved by its C<data> method.
 
-This tracker defines the following observables:
+This tracker defines the following observables that enable additional way
+of work:
 
     "desk/page changed",
     "desk only changed",
@@ -111,20 +114,23 @@ Using B<FVWM::Module> $module object:
 
 =item B<data>
 
-Returns hash ref representing the current page/desk, with the following keys:
+Returns hash ref representing the current page/desk, with the following keys
+(the fvwm variable equivalents are shown on the right):
 
-    desk_n
-    page_nx
-    page_ny
-    vp_x
-    vp_y
-    vp_width
-    vp_height
+    desk_n           $[desk.n]
+    page_nx          $[page.nx]
+    page_ny          $[page.ny]
+    desk_pages_x     $[desk.pagesx]
+    desk_pages_y     $[desk.pagesy]
+    vp_width         $[vp.width]
+    vp_height        $[vp.height]
+    vp_x             $[vp.x]
+    vp_y             $[vp.y]
 
 =item B<dump>
 
-Works similarly to B<data>, but returns 2 debug lines representing
-the current page data in the human readable format.
+Returns 2 debug lines representing the current page data (as described in
+C<data>) in the human readable format.
 
 =back
 
