@@ -91,13 +91,11 @@
 #define COLORMAP_FOLLOWS_FOCUS 2
 
 
-#ifndef NON_VIRTUAL
 typedef struct
 {
   Window win;
   int isMapped;
 } PanFrame;
-#endif
 
 
 typedef enum {
@@ -247,9 +245,10 @@ typedef struct ScreenInfo
   Window SizeWindow;		/* the resize dimensions window */
   Window NoFocusWin;            /* Window which will own focus when no other
 				 * windows have it */
-#ifndef NON_VIRTUAL
-  PanFrame PanFrameTop,PanFrameLeft,PanFrameRight,PanFrameBottom;
-#endif
+  PanFrame PanFrameTop;
+  PanFrame PanFrameLeft;
+  PanFrame PanFrameRight;
+  PanFrame PanFrameBottom;
 
   Pixmap gray_bitmap;           /*dark gray pattern for shaded out menu items*/
   Pixmap gray_pixmap;           /* dark gray pattern for inactive borders */
@@ -353,6 +352,7 @@ typedef struct ScreenInfo
     Bool MouseFocusClickRaises : 1;
     Bool StipledTitles : 1;
     Bool WindowShadeScrolls : 1;
+    Bool RaiseHackNeeded : 1;
   } go; /* global options */
   struct
   {

@@ -681,16 +681,12 @@ int main(int argc, char **argv)
 				  InputOutput, Scr.viz,
 				  valuemask, &attributes);
 
-#ifndef NON_VIRTUAL
   initPanFrames();
-#endif
 
   MyXGrabServer(dpy);
-
-#ifndef NON_VIRTUAL
   checkPanFrames();
-#endif
   MyXUngrabServer(dpy);
+
   UnBlackoutScreen(); /* if we need to remove blackout window */
   CoerceEnterNotifyOnCurrentWindow();
 
@@ -732,11 +728,9 @@ void StartupStuff(void)
 
   CaptureAllWindows();
   MakeMenus();
-#ifndef NON_VIRTUAL
   /* Have to do this here too because preprocessor modules have not run to the
    * end when HandleEvents is entered from the main loop. */
   checkPanFrames();
-#endif
 
   fFvwmInStartup = False;
 
@@ -1554,13 +1548,9 @@ void InitVariables(void)
   Scr.StdFont.font = NULL;
   Scr.IconFont.font = NULL;
 
-#ifndef NON_VIRTUAL
   Scr.VxMax = 2*Scr.MyDisplayWidth;
   Scr.VyMax = 2*Scr.MyDisplayHeight;
-#else
-  Scr.VxMax = 0;
-  Scr.VyMax = 0;
-#endif
+
   Scr.Vx = Scr.Vy = 0;
 
   Scr.SizeWindow = None;
@@ -1621,7 +1611,20 @@ void InitVariables(void)
   Scr.go.CaptureHonorsStartsOnPage          =  True;
   Scr.go.RecaptureHonorsStartsOnPage        =  False;
   Scr.go.ActivePlacementHonorsStartsOnPage  =  False;
+  /* Initialize RaiseHackNeeded by identifying X servers
+     possibly running under NT. This is probably not an
+     ideal solution, since eg NCD also produces X servers
+     which do not run under NT. 
 
+     "Hummingbird Communications Ltd." 
+        is the ServerVendor string of the Exceed X server under NT,
+
+     "Network Computing Devices Inc."
+        is the ServerVendor string of the PCXware X server under Windows.
+  */
+  Scr.go.RaiseHackNeeded = 
+    (strcmp (ServerVendor (dpy), "Hummingbird Communications Ltd.") == 0) ||
+    (strcmp (ServerVendor (dpy), "Network Computing Devices Inc.") == 0);
   Scr.gs.EmulateMWM = False;
   Scr.gs.EmulateWIN = False;
   /* Not the right place for this, should only be called once somewhere .. */
@@ -1678,9 +1681,7 @@ void Done(int restart, char *command)
 {
   FvwmFunction *func;
 
-#ifndef NON_VIRTUAL
   MoveViewport(0,0,False);
-#endif
 
   func = FindFunction("ExitFunction");
   if(func != NULL)

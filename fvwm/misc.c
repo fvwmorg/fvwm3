@@ -806,10 +806,10 @@ void RaiseWindow(FvwmWindow *t)
   raisePanFrames();
 
   /*
-     The following is a hack to raise X windows over NT windows when
-     operating under the Hummingbird Exceed X server.
+     The following is a hack to raise X windows over native windows 
+     which is needed for some (all ?) X servers running under windows NT.
    */
-  if (strcmp (ServerVendor (dpy), "Hummingbird Communications Ltd.") == 0)
+  if (Scr.go.RaiseHackNeeded)
     {
       Window junk;
       Window *tops;

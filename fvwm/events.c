@@ -1309,7 +1309,6 @@ void HandleEnterNotify(void)
         }
     }
 
-#ifndef NON_VIRTUAL
   /* an EnterEvent in one of the PanFrameWindows activates the Paging */
   if (ewp->window==Scr.PanFrameTop.win
       || ewp->window==Scr.PanFrameLeft.win
@@ -1323,7 +1322,6 @@ void HandleEnterNotify(void)
                  &delta_x,&delta_y,True,True);
     return;
   }
-#endif /* NON_VIRTUAL */
 
   /* multi screen? */
   if (Event.xany.window == Scr.Root)

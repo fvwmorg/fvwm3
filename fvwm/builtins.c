@@ -67,10 +67,8 @@ static char  *button_states[MaxButtonState]={
  *************************************************************************/
 void FocusOn(FvwmWindow *t,Bool FocusByMouse)
 {
-#ifndef NON_VIRTUAL
   int dx,dy;
   int cx,cy;
-#endif
 #if 0
   /* not used anymore (see below) */
   int x,y;
@@ -84,7 +82,6 @@ void FocusOn(FvwmWindow *t,Bool FocusByMouse)
     changeDesks(t->Desk);
   }
 
-#ifndef NON_VIRTUAL
   if(IS_ICONIFIED(t))
   {
     cx = t->icon_xl_loc + t->icon_w_width/2;
@@ -100,7 +97,6 @@ void FocusOn(FvwmWindow *t,Bool FocusByMouse)
   dy = (cy +Scr.Vy)/Scr.MyDisplayHeight*Scr.MyDisplayHeight;
 
   MoveViewport(dx,dy,True);
-#endif
 
 #if 0
   /* x and y not used anymore (see below) */
@@ -142,10 +138,8 @@ void FocusOn(FvwmWindow *t,Bool FocusByMouse)
  *************************************************************************/
 void WarpOn(FvwmWindow *t,int warp_x, int x_unit, int warp_y, int y_unit)
 {
-#ifndef NON_VIRTUAL
   int dx,dy;
   int cx,cy;
-#endif
   int x,y;
 
   if(t == (FvwmWindow *)0 || (IS_ICONIFIED(t) && t->icon_w == None))
@@ -156,7 +150,6 @@ void WarpOn(FvwmWindow *t,int warp_x, int x_unit, int warp_y, int y_unit)
     changeDesks(t->Desk);
   }
 
-#ifndef NON_VIRTUAL
   if(IS_ICONIFIED(t))
   {
     cx = t->icon_xl_loc + t->icon_w_width/2;
@@ -172,7 +165,6 @@ void WarpOn(FvwmWindow *t,int warp_x, int x_unit, int warp_y, int y_unit)
   dy = (cy +Scr.Vy)/Scr.MyDisplayHeight*Scr.MyDisplayHeight;
 
   MoveViewport(dx,dy,True);
-#endif
 
   if(IS_ICONIFIED(t))
   {
@@ -677,11 +669,9 @@ void movecursor(F_CMD_ARGS)
  {
   int x = 0, y = 0;
   int val1, val2, val1_unit, val2_unit;
-#ifndef NON_VIRTUAL
   int virtual_x, virtual_y;
   int pan_x, pan_y;
   int x_pages, y_pages;
-#endif
 
   if (GetTwoArguments(action, &val1, &val2, &val1_unit, &val2_unit) != 2)
   {
@@ -695,7 +685,6 @@ void movecursor(F_CMD_ARGS)
   x = x + val1 * val1_unit / 100;
   y = y + val2 * val2_unit / 100;
 
-#ifndef NON_VIRTUAL
   virtual_x = Scr.Vx;
   virtual_y = Scr.Vy;
   if (x >= 0)
@@ -744,7 +733,6 @@ void movecursor(F_CMD_ARGS)
     y = Scr.MyDisplayHeight - pan_y - 1;
   else if (y < pan_y)
     y = pan_y;
-#endif
 
   XWarpPointer(dpy, Scr.Root, Scr.Root, 0, 0, Scr.MyDisplayWidth,
 	       Scr.MyDisplayHeight, x, y);
@@ -1689,12 +1677,10 @@ void CursorStyle(F_CMD_ARGS)
   /* Do the menus for good measure */
   SetMenuCursor(Scr.FvwmCursors[MENU]);
 
-#ifndef NON_VIRTUAL
   SafeDefineCursor(Scr.PanFrameTop.win, Scr.FvwmCursors[TOP_EDGE]);
   SafeDefineCursor(Scr.PanFrameBottom.win, Scr.FvwmCursors[BOTTOM_EDGE]);
   SafeDefineCursor(Scr.PanFrameLeft.win, Scr.FvwmCursors[LEFT_EDGE]);
   SafeDefineCursor(Scr.PanFrameRight.win, Scr.FvwmCursors[RIGHT_EDGE]);
-#endif
 }
 
 
@@ -4034,6 +4020,14 @@ void SetGlobalOptions(F_CMD_ARGS)
     else if (StrEquals(opt,"ACTIVEPLACEMENTIGNORESSTARTSONPAGE"))
     {
       Scr.go.ActivePlacementHonorsStartsOnPage = False;
+    }
+    else if (StrEquals(opt,"RAISEOVERNATIVEWINDOWS"))
+    {
+      Scr.go.RaiseHackNeeded = True;
+    }
+    else if (StrEquals(opt,"IGNORENATIVEWINDOWS"))
+    {
+      Scr.go.RaiseHackNeeded = False;
     }
     else
       fvwm_msg(ERR,"SetGlobalOptions","Unknown Global Option '%s'",opt);

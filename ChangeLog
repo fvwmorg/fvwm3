@@ -1,5 +1,26 @@
 1999-04-17  Matthias Clasen  <clasen@mathematik.uni-freiburg.de>
 
+	* fvwm/screen.h (ScreenInfo): new member for go struct:
+	RaiseHackNeeded.
+
+	* fvwm/fvwm.c (InitVariables): initialize Scr.go.RaiseHackNeeded
+	based on the ServerVendor string.
+
+	* fvwm/misc.c (RaiseWindow): use the hack for raising over
+	NT windows if Scr.go.RaiseHackNeeded is set.
+
+	* fvwm/builtins.c (SetGlobalOptions): allow to set 
+	Scr.go.RaiseHackNeeded with the global options
+	RaiseOverNativeWindows/IgnoreNativeWindows.
+
+	* fvwm/fvwm2.1: Document the new global options
+	RaiseOverNativeWindows/IgnoreNativeWindows.	
+
+	* fvwm/fvwm.c:
+	* fvwm/builtins.c:
+	* fvwm/events.c:
+	* fvwm/screen.h: remove NON_VIRTUAL.
+
 	* fvwm/virtual.c (HandlePaging): ensure that HandlePaging
 	doesn't return false unless it really did change the viewport,
 	ie called MoveViewPort with nonzero delta_x, delta_y. The 
