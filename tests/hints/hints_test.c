@@ -277,7 +277,7 @@ int main(int argc, char **argv)
 			mwm_func_arg = 0;
 			mwm_decor_arg = 0;
 		}
-		if (strcasecmp(argv[i], "--mwm-func") == 0)
+		else if (strcasecmp(argv[i], "--mwm-func") == 0)
 		{
 			ewmh_state_arg = 0;
 			ewmh_type_arg = 0;

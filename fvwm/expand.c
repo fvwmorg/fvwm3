@@ -381,16 +381,20 @@ static signed int expand_vars_extended(
 		}
 		break;
 	case VAR_W_ICONFILE:
-		if (fw && !IS_EWMH_DESKTOP(FW_W(fw)))
-		{
-			string = fw->icon_bitmap_file;
-		}
-		break;
 	case VAR_W_MINIICONFILE:
 		if (fw && !IS_EWMH_DESKTOP(FW_W(fw)))
 		{
-			string = fw->mini_pixmap_file;
-		}
+			char *t;
+
+			t = (i == VAR_W_ICONFILE) ?
+				fw->icon_bitmap_file : fw->mini_pixmap_file;
+                        /* expand the path if possible */
+                        string = PictureFindImageFile(t, NULL, R_OK);
+                        if (!string)
+                        {
+				string = t;
+			}
+                }
 		break;
 	case VAR_W_CLASS:
 		if (fw && !IS_EWMH_DESKTOP(FW_W(fw)))

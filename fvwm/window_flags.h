@@ -683,7 +683,7 @@
 #define SETM_HAS_EWMH_INIT_MAXVERT_STATE(fw,x) \
 	(fw)->flag_mask.has_ewmh_init_maxvert_state = (x)
 #define HAS_EWMH_INIT_MAXVERT_STATE(fw) \
-	((fw)->flags.has_ewmh_init_fullscreen_state)
+	((fw)->flags.has_ewmh_init_maxvert_state)
 #define SET_HAS_EWMH_INIT_MODAL_STATE(fw,x) \
 	(fw)->flags.has_ewmh_init_modal_state = (x)
 #define SETM_HAS_EWMH_INIT_MODAL_STATE(fw,x) \

@@ -1789,7 +1789,8 @@ $[w.resource]
 The window's name, icon name, file name of its icon or mini icon
 defined with the
 .IR Icon " or " MiniIcon
-style, resource class or resource name respectivelly, or
+style including the path information if the file was found on disk,
+resource class or resource name respectivelly, or
 unexpended "$[w.<attribute>]" string if no window is associated
 with the command.
 

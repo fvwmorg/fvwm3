@@ -1,3 +1,35 @@
+2004-06-03  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* fvwm/ewmh_events.c (ewmh_WMStateFullScreen):
+	use EWMH_fullscreen
+	* fvwm/ewmh.c (EWMH_fullscreen):
+	new function
+
+	* fvwm/add_window.c (AddWindow):
+	implemented MAXVERT, MAXHORIZ and FULLSCREEN initial EWMH states
+
+	* fvwm/ewmh_events.c (ewmh_WMStateMaxHoriz):
+	(ewmh_WMStateMaxVert):
+	(ewmh_WMStateShaded):
+	(ewmh_WMStateSticky):
+	(ewmh_WMStateStaysOnBottom):
+	fixed core dumps
+	(ewmh_WMState):
+	don't try to maximize window when looking up the style
+	(ewmh_WMDesktop):
+	(ewmh_WMStateFullScreen):
+	(ewmh_WMStateHidden):
+	(ewmh_WMStateMaxVert):
+	(ewmh_WMStateModal):
+	(ewmh_WMStateShaded):
+	(ewmh_WMStateSkipPager):
+	(ewmh_WMStateSticky):
+	(ewmh_WMStateStaysOnBottom):
+	fixed ignoring ewmh hints
+
+	* fvwm/expand.c (expand_vars_extended):
+	include full path in iconfile and miniiconfile variables
+
 2004-06-02  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* fvwm/functions.c (execute_complex_function):

@@ -75,5 +75,6 @@ int EWMH_WMName(
 int EWMH_WMIconName(
 	FvwmWindow *fwin, XEvent *ev, window_style *style, unsigned long any);
 void EWMH_SetDesktopNames(void);
+void EWMH_fullscreen(FvwmWindow *fwin);
 
 #endif /* _EWMH_ */

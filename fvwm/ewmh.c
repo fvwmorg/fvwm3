@@ -56,8 +56,10 @@
 #include <stdio.h>
 
 #include "libs/fvwmlib.h"
+#include "libs/FScreen.h"
 #include "fvwm.h"
 #include "execcontext.h"
+#include "functions.h"
 #include "commands.h"
 #include "misc.h"
 #include "screen.h"
@@ -1748,3 +1750,75 @@ void EWMH_DLOG(char *msg, ...)
 	fprintf(stderr, "            [time]: %s\n",buffer);
 }
 #endif
+
+void EWMH_fullscreen(FvwmWindow *fwin)
+{
+	fscreen_scr_arg fscr;
+	rectangle scr_g;
+	size_borders b;
+	int page_x;
+	int page_y;
+	char cmd[128] = "\0";
+
+	/* maximize with ResizeMoveMaximize */
+	if (!is_function_allowed(
+		    F_MAXIMIZE, NULL, fwin, True, False) ||
+	    !is_function_allowed(
+		    F_MOVE, NULL, fwin, True, False) ||
+	    !is_function_allowed(
+		    F_RESIZE, NULL, fwin, True, True))
+	{
+		return;
+	}
+	if (IS_ICONIFIED(fwin))
+	{
+		execute_function_override_window(
+			NULL, NULL, "Iconify off", 0, fwin);
+	}
+	if (IS_SHADED(fwin))
+	{
+		int sas = fwin->shade_anim_steps;
+
+		fwin->shade_anim_steps = 0;
+		execute_function_override_window(
+			NULL, NULL, "WindowShade off", 0, fwin);
+		fwin->shade_anim_steps = sas;
+	}
+	SET_EWMH_FULLSCREEN(fwin,True);
+	apply_decor_change(fwin);
+	fscr.xypos.x =
+		fwin->frame_g.x + fwin->frame_g.width / 2;
+	fscr.xypos.y =
+		fwin->frame_g.y + fwin->frame_g.height / 2;
+	FScreenGetScrRect(
+		&fscr, FSCREEN_XYPOS, &scr_g.x, &scr_g.y,
+		&scr_g.width, &scr_g.height);
+	get_window_borders(fwin, &b);
+	get_page_offset_check_visible(&page_x, &page_y, fwin);
+	sprintf(
+		cmd, "ResizeMoveMaximize %dp %dp +%dp +%dp",
+		scr_g.width, scr_g.height,
+		scr_g.x - b.top_left.width + page_x,
+		scr_g.y - b.top_left.height + page_y);
+	if (DO_EWMH_USE_STACKING_HINTS(fwin))
+	{
+		int sl = fwin->ewmh_normal_layer;
+
+		new_layer(fwin, Scr.TopLayer);
+		if (sl == 0)
+		{
+			fwin->ewmh_normal_layer =
+				Scr.DefaultLayer;
+		}
+		else
+		{
+			fwin->ewmh_normal_layer = sl;
+		}
+	}
+	if (cmd[0] != 0)
+	{
+		execute_function_override_window(NULL, NULL, cmd, 0, fwin);
+	}
+
+	return;
+}

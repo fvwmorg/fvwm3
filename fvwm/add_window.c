@@ -84,6 +84,7 @@
 #include "frame.h"
 #include "colormaps.h"
 #include "decorations.h"
+#include "functions.h"
 
 /* ---------------------------- local definitions -------------------------- */
 
@@ -2422,6 +2423,28 @@ FvwmWindow *AddWindow(
 		SendConfigureNotify(
 			fw, fw->frame_g.x, fw->frame_g.y, fw->frame_g.width,
 			fw->frame_g.height, 0, False);
+	}
+	if (HAS_EWMH_INIT_MAXVERT_STATE(fw) == EWMH_STATE_HAS_HINT ||
+		 HAS_EWMH_INIT_MAXHORIZ_STATE(fw) == EWMH_STATE_HAS_HINT)
+	{
+		int h;
+		int v;
+		char cmd[256];
+
+		if (is_function_allowed(F_MAXIMIZE, NULL, fw, True, False))
+		{
+			h = (HAS_EWMH_INIT_MAXHORIZ_STATE(fw) ==
+			     EWMH_STATE_HAS_HINT) ? 100 : 0;
+			v = (HAS_EWMH_INIT_MAXVERT_STATE(fw) ==
+			     EWMH_STATE_HAS_HINT) ? 100 : 0;
+			sprintf(cmd,"Maximize on %i %i", h, v);
+			execute_function_override_window(
+				NULL, NULL, cmd, 0, fw);
+		}
+	}
+	if (HAS_EWMH_INIT_FULLSCREEN_STATE(fw) == EWMH_STATE_HAS_HINT)
+	{
+		EWMH_fullscreen(fw);
 	}
 	if (!XGetGeometry(dpy, FW_W(fw), &JunkRoot, &JunkX, &JunkY, &JunkWidth,
 			  &JunkHeight, &JunkBW,  &JunkDepth))
