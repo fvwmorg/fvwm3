@@ -161,7 +161,7 @@ static void LinkAction(char *string)
 				safestrdup(string);
 		}
 	}
-	else if(StrEquals(token, "Select"))
+	else if (StrEquals(token, "Select"))
 	{
 		if (action_list[PROXY_ACTION_SELECT] != NULL)
 		{
@@ -169,7 +169,7 @@ static void LinkAction(char *string)
 		}
 		action_list[PROXY_ACTION_SELECT] = safestrdup(string);
 	}
-	else if(StrEquals(token, "Show"))
+	else if (StrEquals(token, "Show"))
 	{
 		if (action_list[PROXY_ACTION_SHOW] != NULL)
 		{
@@ -177,7 +177,7 @@ static void LinkAction(char *string)
 		}
 		action_list[PROXY_ACTION_SHOW] = safestrdup(string);
 	}
-	else if(StrEquals(token, "Hide"))
+	else if (StrEquals(token, "Hide"))
 	{
 		if (action_list[PROXY_ACTION_HIDE] != NULL)
 		{
@@ -185,7 +185,7 @@ static void LinkAction(char *string)
 		}
 		action_list[PROXY_ACTION_HIDE] = safestrdup(string);
 	}
-	else if(StrEquals(token, "Abort"))
+	else if (StrEquals(token, "Abort"))
 	{
 		if (action_list[PROXY_ACTION_ABORT] != NULL)
 		{
@@ -193,7 +193,7 @@ static void LinkAction(char *string)
 		}
 		action_list[PROXY_ACTION_ABORT] = safestrdup(string);
 	}
-	else if(StrEquals(token, "Mark"))
+	else if (StrEquals(token, "Mark"))
 	{
 		if (action_list[PROXY_ACTION_MARK] != NULL)
 		{
@@ -201,7 +201,7 @@ static void LinkAction(char *string)
 		}
 		action_list[PROXY_ACTION_MARK] = safestrdup(string);
 	}
-	else if(StrEquals(token, "Unmark"))
+	else if (StrEquals(token, "Unmark"))
 	{
 		if (action_list[PROXY_ACTION_UNMARK] != NULL)
 		{
@@ -249,9 +249,9 @@ static Bool parse_options(void)
 	{
 		action_list[PROXY_ACTION_CLICK + 2] = strdup(CMD_CLICK3);
 	}
-	for(m=0;m<PROXY_ACTION_LAST;m++)
+	for (m=0;m<PROXY_ACTION_LAST;m++)
 	{
-		if(action_list[m]==NULL)
+		if (action_list[m]==NULL)
 		{
 			action_list[m] = strdup(CMD_DEFAULT);
 		}
@@ -279,9 +279,9 @@ static Bool parse_options(void)
 		}
 
 		/* dump leading whitespace */
-		while(*tline==' ' || *tline=='\t')
+		while (*tline==' ' || *tline=='\t')
 			tline++;
-		if(!strncasecmp(resource,"Action",6))
+		if (!strncasecmp(resource,"Action",6))
 		{
 			LinkAction(tline);
 		}
@@ -469,8 +469,10 @@ static ProxyWindow *FindProxy(Window window)
 
 	for (proxy=firstProxy; proxy != NULL; proxy=proxy->next)
 	{
-		if(proxy->proxy==window || proxy->window==window)
+		if (proxy->proxy==window || proxy->window==window)
+		{
 			return proxy;
+		}
 	}
 
 	return NULL;
@@ -481,7 +483,7 @@ static void DrawPicture(
 {
 	FvwmRenderAttributes fra;
 
-	if(!picture || picture->picture == None)
+	if (!picture || picture->picture == None)
 		return;
 
 	fra.mask = FRAM_DEST_IS_A_WINDOW;
@@ -504,8 +506,10 @@ static void DrawWindow(
 	FvwmPicture *picture = &proxy->picture;
 	int drawMiniIcon=(showMiniIcons && proxy->picture.picture != None);
 
-	if (!proxy)
+	if (!proxy || proxy->proxy == None)
+	{
 		return;
+	}
 
 	x=0;
 	y=0;
@@ -513,12 +517,16 @@ static void DrawWindow(
 	h=proxy->proxyh;
 
 	texty=(h+ Ffont->ascent - Ffont->descent)/2;	/* center */
-	if(drawMiniIcon)
+	if (drawMiniIcon)
+	{
 		texty+=8;				/* half icon height */
+	}
 
 	maxy=h-Ffont->descent-4;
-	if(texty>maxy)
+	if (texty>maxy)
+	{
 		texty=maxy;
+	}
 
 	cset = (proxy==selectProxy) ? cset_select : cset_normal;
 	XSetForeground(dpy,fg_gc,Colorset[cset].fg);
@@ -537,8 +545,11 @@ static void DrawWindow(
 		int text_width = FlocaleTextWidth(
 			Ffont,proxy->iconname,strlen(proxy->iconname));
 		int edge=(w-text_width)/2;
-		if(edge<5)
+
+		if (edge<5)
+		{
 			edge=5;
+		}
 
 		FwinString->str = proxy->iconname;
 		FwinString->win = proxy->proxy;
@@ -553,8 +564,10 @@ static void DrawWindow(
 		}
 		FlocaleDrawString(dpy, Ffont, FwinString, 0);
 	}
-	if(drawMiniIcon)
+	if (drawMiniIcon)
+	{
 		DrawPicture(proxy->proxy, (w-16)/2, 4, picture, cset);
+	}
 }
 
 static void DrawProxy(ProxyWindow *proxy)
@@ -571,7 +584,7 @@ static void DrawProxyBackground(ProxyWindow *proxy)
 {
 	int cset;
 
-	if (proxy == NULL)
+	if (proxy == NULL || proxy->proxy == None)
 	{
 		return;
 	}
@@ -604,9 +617,11 @@ static void OpenOneWindow(ProxyWindow *proxy)
 	if (proxy->proxy == None)
 	{
 		long eventMask=ButtonPressMask|ExposureMask|ButtonMotionMask;
-		if(enterSelect)
-			eventMask|=EnterWindowMask;
 
+		if (enterSelect)
+		{
+			eventMask|=EnterWindowMask;
+		}
 		attributes.override_redirect = True;
 		proxy->proxy = XCreateWindow(
 			dpy, rootWindow, proxy->proxyx, proxy->proxyy,
@@ -682,12 +697,12 @@ static Bool SortProxiesOnce(void)
 		x1=proxy->proxyx;
 		x2=proxy->next->proxyx;
 
-		if( x1>x2 || (x1==x2 && proxy->proxyy > proxy->next->proxyy) )
+		if ( x1>x2 || (x1==x2 && proxy->proxyy > proxy->next->proxyy) )
 		{
 			change=True;
 			next=proxy->next;
 
-			if(lastProxy)
+			if (lastProxy)
 				lastProxy->next=next;
 			else
 				firstProxy=next;
@@ -727,13 +742,13 @@ static Bool AdjustOneWindow(ProxyWindow *proxy)
 	{
 		int dx=abs(proxy->proxyx-other->proxyx);
 		int dy=abs(proxy->proxyy-other->proxyy);
-		if(dx<(proxyWidth+proxySeparation) &&
+		if (dx<(proxyWidth+proxySeparation) &&
 		   dy<proxyHeight+proxySeparation )
 		{
 			rc = True;
-			if(proxyWidth-dx<proxyHeight-dy)
+			if (proxyWidth-dx<proxyHeight-dy)
 			{
-				if(proxy->proxyx<other->proxyx)
+				if (proxy->proxyx<other->proxyx)
 				{
 					other->proxyx=
 						proxy->proxyx+ proxy->proxyw+
@@ -748,7 +763,7 @@ static Bool AdjustOneWindow(ProxyWindow *proxy)
 			}
 			else
 			{
-				if(proxy->proxyy<other->proxyy)
+				if (proxy->proxyy<other->proxyy)
 				{
 					other->proxyy=
 						proxy->proxyy+ proxy->proxyh+
@@ -771,7 +786,7 @@ static void AdjustWindows(void)
 {
 	Bool collision=True;
 
-	while(collision == True)
+	while (collision == True)
 	{
 		ProxyWindow *proxy;
 
@@ -877,7 +892,7 @@ static void DestroyWindow(Window w)
 	for (proxy=firstProxy, prev = NULL; proxy != NULL;
 		prev = proxy, proxy=proxy->next)
 	{
-		if(proxy->proxy==w || proxy->window==w)
+		if (proxy->proxy==w || proxy->window==w)
 			break;
 	}
 	if (proxy == NULL)
@@ -1000,14 +1015,14 @@ static void SelectProxy(void)
 	ProxyWindow *proxy;
 
 	HideProxies();
-	if(selectProxy)
+	if (selectProxy)
 		send_command_to_fvwm(action_list[PROXY_ACTION_SELECT],
 				selectProxy->window);
 
 	send_command_to_fvwm(action_list[PROXY_ACTION_HIDE], None);
 
-	for(proxy=firstProxy; proxy != NULL; proxy=proxy->next)
-		if(proxy==selectProxy)
+	for (proxy=firstProxy; proxy != NULL; proxy=proxy->next)
+		if (proxy==selectProxy)
 		{
 			startProxy=proxy;
 			break;
@@ -1098,10 +1113,10 @@ static void ProcessMessage(FvwmPacket* packet)
 		}
 		break;
 	case M_NEW_DESK:
-		if(deskNumber!=body[0])
+		if (deskNumber!=body[0])
 		{
 			deskNumber=body[0];
-			if(are_windows_shown)
+			if (are_windows_shown)
 			{
 				CloseWindows();
 				OpenWindows();
@@ -1138,7 +1153,7 @@ static void ProcessMessage(FvwmPacket* packet)
 
 		token = PeekToken(message, &next);
 		prev=(StrEquals(token, "Prev"));
-		if(StrEquals(token, "Next") || prev)
+		if (StrEquals(token, "Next") || prev)
 		{
 			ProxyWindow *lastSelect=selectProxy;
 			ProxyWindow *newSelect=selectProxy;
@@ -1148,37 +1163,37 @@ static void ProcessMessage(FvwmPacket* packet)
 			if (!are_windows_shown)
 				StartProxies();
 
-			if(startProxy && startProxy->desk==deskNumber)
+			if (startProxy && startProxy->desk==deskNumber)
 			{
 				newSelect=startProxy;
 				startProxy=NULL;
 			}
 			else
 			{
-				if(newSelect)
+				if (newSelect)
 				{
-					if(prev)
+					if (prev)
 						newSelect=newSelect->prev;
 					else
 						newSelect=newSelect->next;
 				}
-				if(!newSelect)
+				if (!newSelect)
 					newSelect=first;
-				while(newSelect!=lastSelect &&
+				while (newSelect!=lastSelect &&
 				      newSelect->desk!=deskNumber)
 				{
-					if(prev)
+					if (prev)
 						newSelect=newSelect->prev;
 					else
 						newSelect=newSelect->next;
-					if(!newSelect && lastSelect)
+					if (!newSelect && lastSelect)
 						newSelect=first;
 				}
 			}
 
 			MarkProxy(newSelect);
 		}
-		else if(StrEquals(token, "Circulate"))
+		else if (StrEquals(token, "Circulate"))
 		{
 			Window w;
 
@@ -1190,29 +1205,33 @@ static void ProcessMessage(FvwmPacket* packet)
 
 			strcpy(commandBuffer,next);
 			strcat(commandBuffer," SendToModule FvwmProxy Mark");
-			if(next)
+			if (next)
 				SendFvwmPipe(fd,commandBuffer,w);
 		}
-		else if(StrEquals(token, "Show"))
+		else if (StrEquals(token, "Show"))
 		{
 			StartProxies();
 		}
-		else if(StrEquals(token, "Hide"))
+		else if (StrEquals(token, "Hide"))
 		{
 			SelectProxy();
 		}
-		else if(StrEquals(token, "ShowToggle"))
+		else if (StrEquals(token, "ShowToggle"))
 		{
-			if(are_windows_shown)
+			if (are_windows_shown)
+			{
 				SelectProxy();
+			}
 			else
+			{
 				StartProxies();
+			}
 		}
-		else if(StrEquals(token, "Abort"))
+		else if (StrEquals(token, "Abort"))
 		{
 			AbortProxies();
 		}
-		else if(StrEquals(token, "Mark"))
+		else if (StrEquals(token, "Mark"))
 		{
 #if 0
 			Window w;
@@ -1262,7 +1281,7 @@ static int My_XNextEvent(Display *dpy,XEvent *event)
 	timevalue.tv_sec = 0;
 	timevalue.tv_usec = 100000;
 
-	if(FPending(dpy))
+	if (FPending(dpy))
 	{
 		FNextEvent(dpy,event);
 		return 1;
@@ -1272,21 +1291,21 @@ static int My_XNextEvent(Display *dpy,XEvent *event)
 	FD_SET(x_fd,&in_fdset);
 	FD_SET(fd[1],&in_fdset);
 
-	if( fvwmSelect(fd_width, &in_fdset, 0, 0, timeout) > 0)
+	if ( fvwmSelect(fd_width, &in_fdset, 0, 0, timeout) > 0)
 	{
-		if(FD_ISSET(x_fd, &in_fdset))
+		if (FD_ISSET(x_fd, &in_fdset))
 		{
-			if(FPending(dpy))
+			if (FPending(dpy))
 			{
 				FNextEvent(dpy,event);
 				return 1;
 			}
 		}
 
-		if(FD_ISSET(fd[1], &in_fdset))
+		if (FD_ISSET(fd[1], &in_fdset))
 		{
 			FvwmPacket* packet = ReadFvwmPacket(fd[1]);
-			if(!packet)
+			if (!packet)
 			{
 				fprintf(stderr, "\nNULL packet: exiting\n");
 				exit(0);
@@ -1318,10 +1337,10 @@ static void DispatchEvent(XEvent *pEvent)
 		break;
 	case ButtonPress:
 		proxy = FindProxy(window);
-		if(proxy)
+		if (proxy)
 		{
 			int button=pEvent->xbutton.button;
-			if(button >= 1 && button<=NUMBER_OF_MOUSE_BUTTONS)
+			if (button >= 1 && button<=NUMBER_OF_MOUSE_BUTTONS)
 			{
 				SendFvwmPipe(
 					fd, action_list[
@@ -1336,7 +1355,7 @@ static void DispatchEvent(XEvent *pEvent)
 		proxy = FindProxy(window);
 		dx=pEvent->xbutton.x_root-mousex;
 		dy=pEvent->xbutton.y_root-mousey;
-		if(proxy && proxyMove)
+		if (proxy && proxyMove)
 		{
 			sprintf(commandBuffer,"Silent Move w%dp w%dp",dx,dy);
 			SendText(fd,commandBuffer,proxy->window);
@@ -1373,9 +1392,9 @@ static void Loop(int *fd)
 	XEvent event;
 	long result;
 
-	while(1)
+	while (1)
 	{
-		if((result=My_XNextEvent(dpy,&event))==1)
+		if ((result=My_XNextEvent(dpy,&event))==1)
 		{
 			DispatchEvent(&event);
 		}
@@ -1410,8 +1429,10 @@ int main(int argc, char **argv)
 		fprintf(stderr,"can't open display\n");
 		exit (1);
 	}
+/*!!!*/XSynchronize(dpy, 1);
+/*!!!*/sleep(30);
 	titles[0]="FvwmProxy";
-	if(XStringListToTextProperty(titles,1,&windowName) == 0)
+	if (XStringListToTextProperty(titles,1,&windowName) == 0)
 	{
 		fprintf(stderr,"Proxy_CreateBar() could not allocate space"
 			" for window title");
