@@ -396,6 +396,8 @@ void SetBorder (FvwmWindow *t, Bool onoroff,Bool force,Bool Mapped,
       if((flush_expose(t->frame))||(expose_win == t->frame)||
          (expose_win == None))
       {
+        /* remove any lines drawn in the border */
+        XClearWindow(dpy, t->frame);
         /* draw the inside relief */
         if(
 #ifdef BORDERSTYLE
@@ -444,101 +446,102 @@ void SetBorder (FvwmWindow *t, Bool onoroff,Bool force,Bool Mapped,
 #endif BORDERSTYLE
         {
           /* MWM border windows have thin 3d effects 
-           * FvwmBorders have 3 pixels top/left, 2 bot/right so this make
-           * claculating the length of the marks difficult, top and bottom
+           * FvwmBorders have 3 pixels top/left, 2 bot/right so this makes
+           * calculating the length of the marks difficult, top and bottom
            * marks for FvwmBorders are different if NoInset is specified */
-          int tlength = t->boundary_width - rwidth - 1;
-          int blength = t->boundary_width - rwidth - 1;
-          int badjust = 1;
-          XRectangle marks[8];
+          int tlength = t->boundary_width - 1;
+          int blength = tlength;
+          int badjust = 3 - rwidth; /* offset from ottom and right edge */
+          XSegment marks[8];
+          int j;
 
 #ifdef BORDERSTYLE
-          if (borderflags & NoInset) {
-            tlength += 1;
-            blength += rwidth; /* coincidence, just happens to be 1 or 2 */
-            badjust += rwidth;
+          /* NoInset FvwmBorder windows need special treatment */
+          if ((borderflags & NoInset) && (rwidth == 2)) {
+            blength += 1;
           }
 #endif BORDERSTYLE
 
-          /* hilite marks */
-          i = 0;
-          /* top left */
-          marks[i].x = t->corner_width;
-          marks[i].y = rwidth;
-          marks[i].width = rwidth - 1; marks[i++].height = tlength;
-          /* top right */
-          marks[i].x = t->frame_width - t->corner_width;
-          marks[i].y = rwidth;
-          marks[i].width = rwidth - 1; marks[i++].height = tlength;
-#ifdef WINDOWSHADE
-          if (!shaded)
-#endif
-          { /* bot left */
-            marks[i].x = t->corner_width;
-            marks[i].y = t->frame_height - t->boundary_width + rwidth - badjust;
-            marks[i].width = rwidth - 1; marks[i++].height = blength;
-            /* bot right */
-            marks[i].x = t->frame_width - t->corner_width;
-            marks[i].y = t->frame_height - t->boundary_width + rwidth - badjust;
-            marks[i].width = rwidth - 1; marks[i++].height = blength;
-            /* left top */
-            marks[i].x = rwidth;
-            marks[i].y = t->corner_width;
-            marks[i].width = tlength; marks[i++].height = rwidth - 1;
-            /* left bot */
-            marks[i].x = rwidth;
-            marks[i].y = t->frame_height - t->corner_width;
-            marks[i].width = tlength; marks[i++].height = rwidth - 1;
-            /* right top */
-            marks[i].x = t->frame_width - t->boundary_width + rwidth - badjust;
-            marks[i].y = t->corner_width;
-            marks[i].width = blength; marks[i++].height = rwidth - 1;
-            /* right bot */
-            marks[i].x = t->frame_width - t->boundary_width + rwidth - badjust;
-            marks[i].y = t->frame_height - t->corner_width;
-            marks[i].width = blength; marks[i++].height = rwidth - 1;
-          }
-          XDrawRectangles(dpy, t->frame, rgc, marks, i);
+          for (j = 0; j < rwidth; ) { /* j is incremented below */
+            /* shorten marks for beveled effect */
+            tlength -= 2 * j;
+            blength -= 2 * j;
+            badjust += j;
 
-          /* shadow marks */
-          i = 0;
-          /* top left */
-          marks[i].x = t->corner_width - rwidth;
-          marks[i].y = rwidth;
-          marks[i].width = rwidth - 1; marks[i++].height = tlength;
-          /* top right */
-          marks[i].x = t->frame_width - t->corner_width - rwidth;
-          marks[i].y = rwidth;
-          marks[i].width = rwidth - 1; marks[i++].height = tlength;
+            /* hilite marks */
+            i = 0;
+
+            /* top left */
+            marks[i].x2 = marks[i].x1 = t->corner_width + j;
+            marks[i].y2 = (marks[i].y1 = 1 + j) + tlength;
+            i++;
+            /* top right */
+            marks[i].x2 = marks[i].x1 = t->frame_width - t->corner_width + j;
+            marks[i].y2 = (marks[i].y1 = 1 + j) + tlength;
+            i++;
 #ifdef WINDOWSHADE
-          if (!shaded)
+            if (!shaded)
 #endif
-          { /* bot left */
-            marks[i].x = t->corner_width - rwidth;
-            marks[i].y = t->frame_height - t->boundary_width + rwidth - badjust;
-            marks[i].width = rwidth - 1; marks[i++].height = blength;
-            /* bot right */
-            marks[i].x = t->frame_width - t->corner_width - rwidth;
-            marks[i].y = t->frame_height - t->boundary_width + rwidth - badjust;
-            marks[i].width = rwidth - 1; marks[i++].height = blength;
-            /* left top */
-            marks[i].x = rwidth;
-            marks[i].y = t->corner_width - rwidth;
-            marks[i].width = tlength; marks[i++].height = rwidth - 1;
-            /* left bot */
-            marks[i].x = rwidth;
-            marks[i].y = t->frame_height - t->corner_width - rwidth;
-            marks[i].width = tlength; marks[i++].height = rwidth - 1;
-            /* right top */
-            marks[i].x = t->frame_width - t->boundary_width + rwidth - badjust;
-            marks[i].y = t->corner_width - rwidth;
-            marks[i].width = blength; marks[i++].height = rwidth - 1;
-            /* right bot */
-            marks[i].x = t->frame_width - t->boundary_width + rwidth - badjust;
-            marks[i].y = t->frame_height - t->corner_width - rwidth;
-            marks[i].width = blength; marks[i++].height = rwidth - 1;
+            { /* bot left */
+              marks[i].x2 = marks[i].x1 = t->corner_width + j;
+              marks[i].y2 = (marks[i].y1 = t->frame_height - badjust) - blength;
+              i++;
+              /* bot right */
+              marks[i].x2 = marks[i].x1 = t->frame_width - t->corner_width + j;
+              marks[i].y2 = (marks[i].y1 = t->frame_height - badjust) - blength;
+              i++;
+              /* left top */
+              marks[i].x2 = (marks[i].x1 = 1 + j) + tlength;
+              marks[i].y2 = marks[i].y1 = t->corner_width + j;
+              i++;
+              /* left bot */
+              marks[i].x2 = (marks[i].x1 = 1 + j) + tlength;
+              marks[i].y2 = marks[i].y1 = t->frame_height - t->corner_width + j;
+              i++;
+              /* right top */
+              marks[i].x2 = (marks[i].x1 = t->frame_width - badjust) - blength;
+              marks[i].y2 = marks[i].y1 = t->corner_width + j;
+              i++;
+              /* right bot */
+              marks[i].x2 = (marks[i].x1 = t->frame_width - badjust) - blength;
+              marks[i].y2 = marks[i].y1 = t->frame_height - t->corner_width + j;
+              i++;
+            }
+            XDrawSegments(dpy, t->frame, rgc, marks, i);
+
+            /* shadow marks, reuse the array assuming XDraw doesn't trash it */
+            i = 0;
+            j += j + 1; /* yuck, but j goes 0->1 in the first pass, 1->3 in 2nd */
+            /* top left */
+            marks[i].x2 = (marks[i].x1 -= j);
+            i++;
+            /* top right */
+            marks[i].x2 = (marks[i].x1 -= j);
+            i++;
+#ifdef WINDOWSHADE
+            if (!shaded)
+#endif
+            { /* bot left */
+              marks[i].x2 = (marks[i].x1 -= j);
+              i++;
+              /* bot right */
+              marks[i].x2 = (marks[i].x1 -= j);
+              i++;
+              /* left top */
+              marks[i].y2 = (marks[i].y1 -= j);
+              i++;
+              /* left bot */
+              marks[i].y2 = (marks[i].y1 -= j);
+              i++;
+              /* right top */
+              marks[i].y2 = (marks[i].y1 -= j);
+              i++;
+              /* right bot */
+              marks[i].y2 = (marks[i].y1 -= j);
+              i++;
+            }
+            XDrawSegments(dpy, t->frame, sgc, marks, i);
           }
-          XDrawRectangles(dpy, t->frame, sgc, marks, i);
         }
 
       
@@ -547,11 +550,76 @@ void SetBorder (FvwmWindow *t, Bool onoroff,Bool force,Bool Mapped,
            never mind the esoterics, feel the thin-ness */
         /* undocumented dependancy on MWMbuttons !!!
            MWMButtons style makes the border undepressable */
-        /* GSFR candidate
-        if(!(t->flags & MWMButtons))
-          case (PressedW) in
-            t->side[1] {
-        */
+        /* GSFR candidate */
+        if((t->flags & BORDER) && !(t->flags & MWMButtons)) {
+          if (PressedW == t->sides[0]) { /* top */
+            RelieveWindowGC(dpy, t->frame,
+                            t->corner_width, 1,
+                            t->frame_width - 2 * t->corner_width - 1,
+                            t->boundary_width - 2,
+                            sgc, rgc, rwidth);
+          } else if (PressedW == t->sides[1]) { /* right */
+            RelieveWindowGC(dpy, t->frame,
+                            t->frame_width - t->boundary_width + rwidth - 1, t->corner_width,
+                            t->boundary_width - 2,
+                            t->frame_height - 2 * t->corner_width - 1,
+                            sgc, rgc, rwidth);
+          } else if (PressedW == t->sides[2]) { /* bottom */
+            RelieveWindowGC(dpy, t->frame,
+                            t->corner_width, t->frame_height - t->boundary_width + rwidth - 1,
+                            t->frame_width - 2 * t->corner_width - 1,
+                            t->boundary_width - 2,
+                            sgc, rgc, rwidth);
+          } else if (PressedW == t->sides[3]) { /* left */
+            RelieveWindowGC(dpy, t->frame,
+                            1, t->corner_width,
+                            t->boundary_width - 2,
+                            t->frame_height - 2 * t->corner_width - 1,
+                            sgc, rgc, rwidth);
+          } else if (PressedW == t->corners[0]) { /* top left */
+            /* drawn as two relieved rectangles, this will have to change if the
+               title bar and buttons ever get to be InputOnly windows */
+            RelieveWindowGC(dpy, t->frame,
+                            t->boundary_width - rwidth, t->boundary_width - rwidth,
+                            t->corner_width - t->boundary_width + rwidth,
+                            t->corner_width - t->boundary_width + rwidth,
+                            rgc, sgc, rwidth);
+            RelieveWindowGC(dpy, t->frame,
+                            1, 1,
+                            t->corner_width - 2, t->corner_width - 2,
+                            sgc, rgc, rwidth);
+          } else if (PressedW == t->corners[1]) { /* top right */
+            RelieveWindowGC(dpy, t->frame,
+                            t->frame_width - t->corner_width + rwidth - 2, t->boundary_width - rwidth,
+                            t->corner_width - t->boundary_width + rwidth,
+                            t->corner_width - t->boundary_width + rwidth,
+                            rgc, sgc, rwidth);
+            RelieveWindowGC(dpy, t->frame,
+                            t->frame_width - t->corner_width, 1,
+                            t->corner_width - 3 + rwidth, t->corner_width - 2,
+                            sgc, rgc, rwidth);
+          } else if (PressedW == t->corners[2]) { /* bottom left */
+            RelieveWindowGC(dpy, t->frame,
+                            t->boundary_width - rwidth, t->frame_height - t->corner_width + rwidth -2,
+                            t->corner_width - t->boundary_width + rwidth,
+                            t->corner_width - t->boundary_width + rwidth,
+                            rgc, sgc, rwidth);
+            RelieveWindowGC(dpy, t->frame,
+                            1, t->frame_height - t->corner_width,
+                            t->corner_width - 2, t->corner_width - 3 + rwidth,
+                            sgc, rgc, rwidth);
+          } else if (PressedW == t->corners[3]) { /* bottom right */
+            RelieveWindowGC(dpy, t->frame,
+                            t->frame_width - t->corner_width + rwidth - 2, t->frame_height - t->corner_width + rwidth - 2,
+                            t->corner_width - t->boundary_width + rwidth,
+                            t->corner_width - t->boundary_width + rwidth,
+                            rgc, sgc, rwidth);
+            RelieveWindowGC(dpy, t->frame,
+                            t->frame_width - t->corner_width, t->frame_height - t->corner_width,
+                            t->corner_width - 3 + rwidth, t->corner_width - 3 + rwidth,
+                            sgc, rgc, rwidth);
+          }
+        }    
       }
     }
   }

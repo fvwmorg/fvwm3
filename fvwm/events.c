@@ -1125,7 +1125,6 @@ void HandleButtonPress()
 {
   unsigned int modifier;
   Binding *MouseEntry;
-  Window x;
   int LocalContext;
 
   DBUG("HandleButtonPress","Routine Entered");
@@ -1184,11 +1183,10 @@ void HandleButtonPress()
 
   Context = GetContext(Tmp_win,&Event, &PressedW);
   LocalContext = Context;
-  x= PressedW;
   if(Context == C_TITLE)
     SetTitleBar(Tmp_win,(Scr.Hilite == Tmp_win),False);
   else
-    SetBorder(Tmp_win,(Scr.Hilite == Tmp_win),True,True,PressedW);
+    SetBorder(Tmp_win,(Scr.Hilite == Tmp_win),True,True,Tmp_win ? Tmp_win->frame : 0);
 
   ButtonWindow = Tmp_win;
 
@@ -1214,7 +1212,7 @@ void HandleButtonPress()
   }
   PressedW = None;
   if(LocalContext!=C_TITLE)
-    SetBorder(ButtonWindow,(Scr.Hilite == ButtonWindow),True,True,x);
+    SetBorder(ButtonWindow,(Scr.Hilite == ButtonWindow),True,True,Tmp_win ? Tmp_win->frame : 0);
   else
     SetTitleBar(ButtonWindow,(Scr.Hilite==ButtonWindow),False);
   ButtonWindow = NULL;
