@@ -95,7 +95,7 @@ int main(int argc, char **argv)
 
   m4_enable = True;
   m4_prefix = False;
-  sprintf(m4_options, "-I '%s'", FVWM_DATADIR);
+  sprintf(m4_options, "-I '%s' ", FVWM_DATADIR);
   m4_default_quotes = 1;
 
   /* Record the program name for error messages */
