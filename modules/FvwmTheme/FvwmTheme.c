@@ -243,8 +243,8 @@ static void free_colorset_background(colorset_struct *cs)
   if (cs->pixmap && cs->pixmap != ParentRelative)
   {
     XFreePixmap(dpy, cs->pixmap);
-    cs->pixmap = None;
   }
+  cs->pixmap = None;
   if (cs->mask)
   {
     XFreePixmap(dpy, cs->mask);
