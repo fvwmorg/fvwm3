@@ -2208,8 +2208,8 @@ void StartMeUp(void)
     char *list[]={NULL,NULL};
     list[0] = Module+1;
 
-    classhints.res_name=safestrdup(Module+1);
-    classhints.res_class=safestrdup("FvwmTaskBar");
+    classhints.res_name= Module+1;
+    classhints.res_class= "FvwmTaskBar";
 
     if(!XStringListToTextProperty(list,1,&nametext))
     {

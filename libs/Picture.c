@@ -84,6 +84,25 @@ FvwmPicture *PGetFvwmPicture(
 	return p;
 }
 
+void PFreeFvwmPictureData(FvwmPicture *p)
+{
+	if (!p)
+	{
+		return;
+	}
+	if (p->alloc_pixels != NULL)
+	{
+		free(p->alloc_pixels);
+	}
+	if(p->name!=NULL)
+	{
+		free(p->name);
+	}
+	free(p);
+
+	return;
+}
+
 FvwmPicture *PCacheFvwmPicture(
 	Display *dpy, Window win, char *ImagePath, const char *name,
 	FvwmPictureAttributes fpa)

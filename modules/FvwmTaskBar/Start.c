@@ -368,6 +368,7 @@ void StartButtonInit(int height)
     tempPtr->height = height;
     StartAndLaunchButtonsWidth += tempPtr->width;
     tempPtr=tempPtr->tail;
+    PFreeFvwmPictureData(p); /* should not destroy of course */
   }
   StartAndLaunchButtonsWidth += StartButtonRightMargin;
   First_Start_Button->height = height;

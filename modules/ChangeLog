@@ -1,5 +1,9 @@
 2003-04-23  olicha  <olivier.chapuis@free.fr>
 
+	* FvwmTaskBar/FvwmTaskBar.c (StartMeUp):
+	* FvwmTaskBar/Start.c (StartButtonInit):
+	Fixed some minor memory leaks
+
 	* FvwmTaskBar/ButtonArray.c (ButtonDraw): 
 	Fixed a Region leaks when a buttons has no title
 

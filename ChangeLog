@@ -1,3 +1,10 @@
+2003-04-23  olicha  <olivier.chapuis@free.fr>
+
+	* libs/Picture.c (PFreeFvwmPictureData):
+	* libs/Picture.h:
+	New interface function for just freeing the allocated data (not
+	the pixmaps).
+
 2003-04-22  olicha  <olivier.chapuis@free.fr>
 
 	* fvwm/colorset.c (get_root_pixmap):

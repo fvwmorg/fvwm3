@@ -36,6 +36,14 @@ FvwmPicture* PGetFvwmPicture(
 	Display* dpy, Window win, char* ImagePath, const char* pictureName,
 	FvwmPictureAttributes fpa);
 
+/* <pubfunc>PFreeFvwmPictureData
+ * <description>
+ * Just free the data allocated by PGetFvwmPicture. This function does not
+ * Free the pixmaps for example.
+ * </description>
+ */
+void PFreeFvwmPictureData(FvwmPicture *p);
+
 /* <pubfunc>PCacheFvwmPicture
  * <description>
  * Return the FvwmPicture loaded from the file pictureName found in the
