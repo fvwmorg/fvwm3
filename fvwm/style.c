@@ -1009,7 +1009,6 @@ static void style_set_old_focus_policy(window_style *ps, int policy)
 		FPS_ALLOW_FUNC_FOCUS_CLICK(fp, 1);
 		FPS_ALLOW_FUNC_RAISE_CLICK(fp, 1);
 		FPS_WARP_POINTER_ON_FOCUS_FUNC(fp, 0);
-		FPS_SORT_WINDOWLIST_BY(fp, FPOL_SORT_WL_BY_OPEN);
 		break;
 	case 1:
 		/* MouseFocus */
@@ -1031,7 +1030,6 @@ static void style_set_old_focus_policy(window_style *ps, int policy)
 		FPS_ALLOW_FUNC_FOCUS_CLICK(fp, 0);
 		FPS_ALLOW_FUNC_RAISE_CLICK(fp, 0);
 		FPS_WARP_POINTER_ON_FOCUS_FUNC(fp, 1);
-		FPS_SORT_WINDOWLIST_BY(fp, FPOL_SORT_WL_BY_FOCUS);
 		break;
 	case 2:
 		/* SloppyFocus */
@@ -1053,7 +1051,6 @@ static void style_set_old_focus_policy(window_style *ps, int policy)
 		FPS_ALLOW_FUNC_FOCUS_CLICK(fp, 0);
 		FPS_ALLOW_FUNC_RAISE_CLICK(fp, 0);
 		FPS_WARP_POINTER_ON_FOCUS_FUNC(fp, 1);
-		FPS_SORT_WINDOWLIST_BY(fp, FPOL_SORT_WL_BY_FOCUS);
 		break;
 	case 3:
 		/* NeverFocus */
@@ -1075,7 +1072,6 @@ static void style_set_old_focus_policy(window_style *ps, int policy)
 		FPS_ALLOW_FUNC_FOCUS_CLICK(fp, 1);
 		FPS_ALLOW_FUNC_RAISE_CLICK(fp, 1);
 		FPS_WARP_POINTER_ON_FOCUS_FUNC(fp, 0);
-		FPS_SORT_WINDOWLIST_BY(fp, FPOL_SORT_WL_BY_FOCUS);
 		break;
 	}
 	FPS_FOCUS_ENTER(S_FOCUS_POLICY(SCM(*ps)), 1);
