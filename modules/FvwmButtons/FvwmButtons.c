@@ -3021,10 +3021,13 @@ void parse_message_line(char *line)
 {
   char *rest;
   char *next;
+  char *s;
   int type;
   int count, i;
   int n;
-  int vals[2];
+  int mask;
+  int x;
+  int y;
   button_info *b, *ub = UberButton;
 
   type = GetTokenIndex(line, message_options, -1, &rest);
@@ -3034,37 +3037,50 @@ void parse_message_line(char *line)
   }
 
   /* find out which button */
-  n = GetIntegerArguments(rest, &rest, &(vals[0]), 1);
-  if (n < 1) {
-    fprintf(stderr, "%s: missing button number\n", MyName);
+  s = PeekToken(rest, &next);
+  if (s != NULL && *s == '+')
+  {
+    unsigned int JunkWidth;
+    unsigned int JunkHeight;
+
+    mask = XParseGeometry(s, &x, &y, &JunkWidth, &JunkHeight);
+    if (!(mask & XValue) || (mask & XNegative) ||
+	!(mask & YValue) || (mask & YNegative))
+    {
+      fprintf(stderr, "%s: illegal button position '%s'\n", MyName, s);
+      return;
+    }
+    rest = next;
+    if (x < 0 || y < 0) {
+      fprintf(stderr, "%s: button column/row must not be negative\n", MyName);
+      return;
+    }
+    b = get_xy_button(ub, x, y);
+    if (b == NULL) {
+      fprintf(stderr, "%s: button at column %d row %d not found\n", MyName,
+	      x, y);
+      return;
+    }
   }
-  n = GetIntegerArguments(rest, &next, &(vals[1]), 1);
-  if (n < 1) {
-    if (vals[0] < 0) {
+  else
+  {
+    n = GetIntegerArguments(rest, &rest, &x, 1);
+    if (n < 1) {
+      fprintf(stderr, "%s: missing button number\n", MyName);
+      return;
+    }
+    if (x < 0) {
       fprintf(stderr, "%s: button number must not be negative\n", MyName);
       return;
     }
     i = count = -1;
     /* find the button */
     while (NextButton(&ub, &b, &i, 0)) {
-      if (++count == vals[0])
+      if (++count == x)
 	break;
     }
-    if (count != vals[0] || b == NULL) {
-      fprintf(stderr, "%s: button number %d not found\n", MyName, n);
-      return;
-    }
-  }
-  else {
-    rest = next;
-    if (vals[0] < 0 || vals[1] < 0) {
-      fprintf(stderr, "%s: button row/column must not be negative\n", MyName);
-      return;
-    }
-    b = get_xy_button(ub, vals[0], vals[1]);
-    if (b == NULL) {
-      fprintf(stderr, "%s: button at row %d column %d not found\n", MyName,
-	      vals[0], vals[1]);
+    if (count != x || b == NULL) {
+      fprintf(stderr, "%s: button number %d not found\n", MyName, x);
       return;
     }
   }

@@ -1,3 +1,20 @@
+2002-02-22  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* fvwm/events.c:
+	fixed problem with root bindings and xfishtank
+
+	* fvwm/windowlist.c (CMD_WindowList):
+	applied patch by to Darren Marshall to fix placement of window list on
+	wrong xinerama screen
+
+	* libs/Parse.c (GetSuffixedIntegerArguments):
+	integer arguments that must not have a suffix but have one are ignored
+
+	* fvwm/icons.c (DeIconify):
+	(Iconify):
+	applied patch by Markus Schwarzenberg to fix a rare problem with the
+	is_map_pending flag, iconified icons and restart
+
 2002-02-22  Mikhael Goikhman  <migo@homemail.com>
 
 	* fvwm/commands.h:
@@ -50,7 +67,7 @@
 
 2002-02-11  olicha  <olivier.chapuis@free.fr>
 
-	* INSTALL.fvwm: 
+	* INSTALL.fvwm:
 	* NEWS:
 	Multibyte news. Document --disable-compound-text and --disable-ewmh.
 
@@ -67,7 +84,7 @@
 	* fvwm/events.c (HandleUnmapNotify):
 	(HandleReparentNotify):
 	* fvwm/ewmh_events.c (ewmh_WMStateShaded):
-	(ewmh_WMStateSticky): 
+	(ewmh_WMStateSticky):
 	(ewmh_WMStateHidden):
 	Restore various ewmh initial states when a window is  unmapped or
 	reparented
@@ -79,7 +96,7 @@
 	added support for new perllib directory
 
 2002-02-09  olicha  <olivier.chapuis@free.fr>
- 
+
 	* libs/fvwmlib.h:
 	* libs/Flocale.{c,h}:
 	* acconfig.h:
@@ -96,7 +113,7 @@
 	If COMPOUND_TEXT, then non XA_STRING text properties are converted
 	with XmbTextPropertyToTextList
 
-	* fvwm/events.c (HandlePropertyNotify): 
+	* fvwm/events.c (HandlePropertyNotify):
 	* fvwm/misc.c (NewFontAndColor):
 	* fvwm/icons.h:
 	* fvwm/misc.h:
@@ -113,15 +130,15 @@
 	(setup_icon_font):
 	(destroy_window_font):
 	(setup_window_font):
-	(free_window_names): 
-	(setup_window_name): 
-	(setup_icon): 
-	* fvwm/fvwm.h (FvwmWindow): 
+	(free_window_names):
+	(setup_window_name):
+	(setup_icon):
+	* fvwm/fvwm.h (FvwmWindow):
 	* fvwm/move_resize.c (DisplayPosition):
 	(resize_geometry_window):
 	(DisplaySize):
 	* fvwm/fvwm.c (InitVariables):
-	* fvwm/icons.c (DrawIconWindow): 
+	* fvwm/icons.c (DrawIconWindow):
 	(setup_icon_title_size):
 	* fvwm/borders.c (RedrawTitle):
 	(DrawMultiPixmapTitlebar):

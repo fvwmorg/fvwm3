@@ -470,6 +470,7 @@ int GetSuffixedIntegerArguments(
 {
   int i;
   int j;
+  int n;
   char *token;
   int suffixes;
 
@@ -483,7 +484,7 @@ int GetSuffixedIntegerArguments(
     token = PeekToken(action, &action);
     if (token == NULL)
       break;
-    if (sscanf(token, "%d", &(retvals[i])) != 1)
+    if (sscanf(token, "%d%n", &(retvals[i]), &n) < 1)
       break;
     if (suffixes != 0 && ret_suffixnum != NULL)
     {
@@ -508,6 +509,11 @@ int GetSuffixedIntegerArguments(
       }
       if (j == suffixes)
 	ret_suffixnum[i] = 0;
+    }
+    else if (token[n] != 0 && !isspace(token[n]))
+    {
+      /* there is a suffix but no suffix list was specified */
+      break;
     }
   }
   if (ret_action != NULL)

@@ -158,6 +158,9 @@ void CMD_WindowList(F_CMD_ARGS)
 
   memset(&mops, 0, sizeof(mops));
   memset(&mret, 0, sizeof(MenuReturn));
+  /* parse postitioning args - must call this even if no action is given
+   * because it sets the xinerama screen origin */
+  opts = get_menu_options(action, w, tmp_win, eventp, NULL, NULL, &mops);
   if (action && *action)
   {
     /* Look for condition - CreateFlagString returns NULL if no '(' or '[' */
@@ -175,10 +178,6 @@ void CMD_WindowList(F_CMD_ARGS)
       CreateConditionMask(cond_flags, &mask);
       free(cond_flags);
     }
-
-    /* parse postitioning args - must call this even if no action is given
-     * because it sets the xinerama screen origin */
-    opts = get_menu_options(action, w, tmp_win, eventp, NULL, NULL, &mops);
 
     /* parse options */
     while (opts && *opts)

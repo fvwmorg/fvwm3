@@ -397,7 +397,7 @@ void HandlePropertyNotify(void)
     {
       return;
     }
- 
+
     free_window_names (Tmp_win, True, False);
     Tmp_win->name = new_name;
     MULTIBYTE_CODE(Tmp_win->name_list = new_name_list);
@@ -1498,15 +1498,13 @@ void HandleButtonPress(void)
 
   GrabEm(CRS_NONE, GRAB_PASSIVE);
   if (!Tmp_win &&
-      (Event.xbutton.window != Scr.PanFrameTop.win &&
-       Event.xbutton.window != Scr.PanFrameBottom.win &&
-       Event.xbutton.window != Scr.PanFrameLeft.win &&
-       Event.xbutton.window != Scr.PanFrameRight.win) &&
-      (Event.xbutton.window != Scr.Root || Event.xbutton.subwindow != None))
+      Event.xbutton.window != Scr.PanFrameTop.win &&
+      Event.xbutton.window != Scr.PanFrameBottom.win &&
+      Event.xbutton.window != Scr.PanFrameLeft.win &&
+      Event.xbutton.window != Scr.PanFrameRight.win &&
+      Event.xbutton.window != Scr.Root)
   {
     /* event in unmanaged window or subwindow of a client */
-    /* DV: of course we should never have got an event in this case since the
-     * button should not be grabbed. */
     XSync(dpy,0);
     XAllowEvents(dpy,ReplayPointer,CurrentTime);
     XSync(dpy,0);

@@ -1504,10 +1504,21 @@ void DeIconify(FvwmWindow *tmp_win)
   FvwmWindow *t,*tmp;
   FvwmWindow *sf = get_focus_window();
   rectangle icon_rect;
+  XWindowAttributes winattrs = {0};
 
-  if (!tmp_win)
+  if(!tmp_win)
     return;
-  if (IS_MAP_PENDING(tmp_win))
+
+  if (!XGetWindowAttributes(dpy, tmp_win->w, &winattrs))
+  {
+    return;
+  }
+  /* make sure tmp_win->flags.is_map_pending is OK */
+  if (winattrs.map_state == IsViewable && IS_MAP_PENDING(tmp_win))
+  {
+    SET_MAP_PENDING(tmp_win, 0);
+  }
+  else if (IS_MAP_PENDING(tmp_win))
   {
     /* final state: de-iconified */
     SET_ICONIFY_AFTER_MAP(tmp_win, 0);
@@ -1661,14 +1672,22 @@ void Iconify(FvwmWindow *tmp_win, int def_x, int def_y)
 
   if(!tmp_win)
     return;
+
+  if (!XGetWindowAttributes(dpy, tmp_win->w, &winattrs))
+  {
+    return;
+  }
+
+  /* make sure tmp_win->flags.is_map_pending is OK */
+  if((winattrs.map_state == IsViewable) && IS_MAP_PENDING(tmp_win))
+  {
+    SET_MAP_PENDING(tmp_win, 0);
+  }
+
   if (IS_MAP_PENDING(tmp_win))
   {
     /* final state: iconified */
     SET_ICONIFY_AFTER_MAP(tmp_win, 1);
-    return;
-  }
-  if (!XGetWindowAttributes(dpy, tmp_win->w, &winattrs))
-  {
     return;
   }
   eventMask = winattrs.your_event_mask;

@@ -1,7 +1,12 @@
+2002-02-22  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* FvwmButtons/FvwmButtons.c (parse_message_line):
+	changed alternate syntax for title and icon changes
+
 2002-02-12  olicha  <olivier.chapuis@free.fr>
 
-	* FvwmForm/ReadXServer.c (ReadXServer): 
-	* FvwmForm/FvwmForm.c (RedrawItem): 
+	* FvwmForm/ReadXServer.c (ReadXServer):
+	* FvwmForm/FvwmForm.c (RedrawItem):
 	(ct_Input):
 	Used the max_char_width member of the FlocaleFont in the place of
 	the width of the W character
@@ -14,18 +19,18 @@
 
 2002-02-11  Dan Espen  <dane@mk.telcordia.com>
 
-	* FvwmForm/ReadXServer.c: 
+	* FvwmForm/ReadXServer.c:
 	* FvwmForm/FvwmForm.c: Finish Locale stuff.
 
 2002-02-11  olicha  <olivier.chapuis@free.fr>
 
-	* FvwmForm/FvwmForm.c (CheckAlloc): 
+	* FvwmForm/FvwmForm.c (CheckAlloc):
 	Set a font gc value only if we have a font and not a fontset
 
 2002-02-10  Dan Espen  <dane@mk.telcordia.com>
 
-	* FvwmForm/FvwmForm.h: 
-	* FvwmForm/FvwmForm.c: 
+	* FvwmForm/FvwmForm.h:
+	* FvwmForm/FvwmForm.c:
 	* FvwmForm/ReadXServer.c: First pass at Flocale stuff.
 
 2002-02-10  olicha  <olivier.chapuis@free.fr>
@@ -37,29 +42,29 @@
 
 	* FvwmCpp/FvwmCpp.c (cpp_defs):
 	* FvwmM4/FvwmM4.c (m4_defs):
-	* FvwmWinList/ButtonArray.c (*): 
-	* FvwmWinList/FvwmWinList.c (*): 
-	* FvwmTaskBar/Goodies.c (*): 
+	* FvwmWinList/ButtonArray.c (*):
+	* FvwmWinList/FvwmWinList.c (*):
+	* FvwmTaskBar/Goodies.c (*):
 	* FvwmTaskBar/FvwmTaskBar.c (*):
 	* FvwmTaskBar/ButtonArray.c (*):
 	* FvwmTaskBar/Start.c (*):
 	* FvwmScript/Widgets/VScrollBar.c (*):
-	* FvwmScript/Widgets/TextField.c (*): 
-	* FvwmScript/Widgets/RadioButton.c (*): 
+	* FvwmScript/Widgets/TextField.c (*):
+	* FvwmScript/Widgets/RadioButton.c (*):
 	* FvwmScript/Widgets/PushButton.c (*):
 	* FvwmScript/Widgets/PopupMenu.c (*):
 	* FvwmScript/Widgets/Menu.c (*):
 	* FvwmScript/Widgets/List.c (*):
 	* FvwmScript/Widgets/ItemDraw.c (*):
-	* FvwmScript/Widgets/HScrollBar.c (*): 
+	* FvwmScript/Widgets/HScrollBar.c (*):
 	* FvwmScript/Widgets/Tools.c (*):
 	* FvwmScript/Widgets/CheckBox.c (*):
 	* FvwmScript/Instructions.c (ChangeFont):
 	* FvwmScript/FvwmScript.c (main):
-	(Xinit): 
+	(Xinit):
 	* FvwmIdent/FvwmIdent.c (list_end):
-	(main): 
-	(RedrawWindow): 
+	(main):
+	(RedrawWindow):
 	(AddToList):
 	* FvwmIconMan/xmanager.h:
 	* FvwmIconMan/FvwmIconMan.c (main):
@@ -77,7 +82,7 @@
 	* FvwmButtons/output.c (DumpButtons):
 	* FvwmButtons/icons.c (ConfigureIconWindow):
 	* FvwmButtons/FvwmButtons.h:
-	* FvwmButtons/FvwmButtons.c (SetTransparentBackground): 
+	* FvwmButtons/FvwmButtons.c (SetTransparentBackground):
 	(RecursiveLoadData):
 	(CreateUberButtonWindow):
 	(Loop):
@@ -93,7 +98,7 @@
 	* FvwmPager/x_pager.c (*):
 	Use new Font and Text "Flocale" API. Note: Form and Wharf are not
 	multibyted
-	
+
 2002-02-09  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* FvwmButtons/FvwmButtons.c (parse_message_line):
