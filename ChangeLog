@@ -1,3 +1,14 @@
+2002-11-16  Mikhael Goikhman  <migo@homemail.com>
+
+	* libs/FBidi.c:
+	* libs/FBidi.h:
+	* libs/FBidiJoin.c:
+	* libs/FBidiJoin.h:
+	* libs/Makefile.am:
+	incorporated a shape-and-join bidi functionality from Nadim Shaikli
+	with minor improvements; it is disabled for now (#if 0) since
+	some Arabic chars cause core dump
+
 2002-11-15  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* fvwm/fvwm.1.in (Examples):

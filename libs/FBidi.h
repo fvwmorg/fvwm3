@@ -23,7 +23,8 @@
 /***
  * The main function is
  *   char *FBidiConvert(
- *     const char *logical_str, const char *charset, Bool *is_rtl);
+ *     const char *logical_str, const char *charset, int str_len, Bool *is_rtl,
+ *     int *out_len);
  *
  * input:
  *   logical string - the original string
@@ -93,14 +94,15 @@ Bool FBidiIsApplicable(const char *charset);
 /*
  * Converts the given logical string to visual string for the given charset.
  */
-char *FBidiConvert(const char *logical_str, const char *charset, int str_len,
-		   Bool *is_rtl, int *out_len);
+char *FBidiConvert(
+	const char *logical_str, const char *charset, int str_len, Bool *is_rtl,
+	int *out_len);
 
 #else /* !HAVE_BIDI */
 
 #define FBidiIsApplicable(c) False
 
-#define FBidiConvert(s,c,r,x,y) NULL
+#define FBidiConvert(s, c, l, r, o) NULL
 
 #endif /* HAVE_BIDI */
 

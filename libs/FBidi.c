@@ -25,6 +25,7 @@
 
 #if HAVE_BIDI
 
+#include "FBidiJoin.h"
 #include <fribidi/fribidi.h>
 #include "safemalloc.h"
 
@@ -37,8 +38,9 @@ Bool FBidiIsApplicable(const char *charset)
 	return True;
 }
 
-char *FBidiConvert(const char *logical_str, const char *charset, int str_len,
-		   Bool *is_rtl, int *out_len)
+char *FBidiConvert(
+	const char *logical_str, const char *charset, int str_len, Bool *is_rtl,
+	int *out_len)
 {
 
 	char *visual_str;
@@ -86,6 +88,9 @@ char *FBidiConvert(const char *logical_str, const char *charset, int str_len,
 	fribidi_log2vis(
 		logical_unicode_str, str_len, &pbase_dir,
 		visual_unicode_str, NULL, NULL, NULL);
+
+	/* character shape/join - will get pulled into fribidi with time */
+	(void)shape_n_join(visual_unicode_str, str_len);
 
 	/* convert from unicode finally */
 	*out_len = fribidi_unicode_to_charset(
