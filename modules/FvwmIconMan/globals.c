@@ -35,8 +35,10 @@ ContextDefaults contextDefaults[] = {
 
 int Fvwm_fd[2];
 int x_fd;
-char *Module = "*FvwmIconMan";
-int ModuleLen = 12;
+/* char *Module = "*FvwmIconMan"; */
+char *Module;
+/* int ModuleLen = 12; */
+int ModuleLen;
 
 /* This is solely so that we can turn a string constant into something
    which can be freed */

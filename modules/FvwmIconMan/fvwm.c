@@ -164,6 +164,12 @@ static void got_configure (WinManager *man)
   }
 }
 
+/* MMH <mikehan@best.com> 6/99
+ * Following a gruesome hack this function has been hijacked.
+ * The function is no longer about whether or not the window is in the
+ * viewport, but whether or not the manager wants to display the window,
+ * based on its current location.
+ */
 int win_in_viewport (WinData *win)
 {
   WinManager *manager = win->manager;
@@ -190,6 +196,20 @@ int win_in_viewport (WinData *win)
 				   0, 0, globals.screenx, globals.screeny);
     }
     break;
+
+  case NO_SHOW_DESKTOP:
+    /* Show the window if it's not on the current desk */
+    if (!(IS_STICKY(win)) && win->desknum != globals.desknum)
+      flag = 1;
+    break;
+
+  case NO_SHOW_PAGE:
+    /* Show the window if it's not in the viewport (on the page) */
+    if (!(IS_STICKY(win)) &&
+	 ( win->desknum != globals.desknum ||
+	   !(RECTANGLES_INTERSECT (win->x, win->y, win->width, win->height,
+      				   0, 0, globals.screenx, globals.screeny))))
+      flag = 1;
   }
   return flag;
 }

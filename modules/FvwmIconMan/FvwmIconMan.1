@@ -212,10 +212,12 @@ option is ignored, but must still be set.
 .IP "*FvwmIconMan*[id*]resolution \fIresolution\fP"
 Specifies when the manager will display an entry for a certain
 window. \fIresolution\fP may take one of the following values: global, desk,
-or page. If global, then all windows of the appropriate type (see the show and
-dontshow options below) will be shown. If desk, then only those windows on the
-current desk will be down. And if page, then only those windows on the current
-page will be shown. The default is global.
+page, !desk, or !page. If global, then all windows of the appropriate type
+(see the show and dontshow options below) will be shown. If desk, then only
+those windows on the current desk will be down. If page, then only those
+windows on the current page will be shown. !desk reverses the sense of desk,
+displaying only those windows not on the current desk. Likewise, !page shows
+only those windows not on the current page. The default is global.
 
 .IP "*FvwmIconMan*[id*]selectcolorset \fIcolorset\fP"
 Works like selectbutton but uses colorsets instead.  The style setting can
