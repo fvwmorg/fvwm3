@@ -1,5 +1,17 @@
 2002-09-16  Dominik Vogt  <dominik.vogt@gmx.de>
 
+	* libs/queue.c (fqueue_add_inside):
+	add a new command with the same execution time as a previous one behind
+	it
+
+	* configure.in:
+	override CFLAGS and CPPFLAGS with empty strings instead of generating an
+	error message
+
+	* fvwm/functions.c (__execute_function):
+	* fvwm/execcontext.h (exec_context_type_t):
+	replace enum values with letters for readability
+
 	* fvwm/functions.c (__execute_function):
 	improved command log output
 

@@ -34,12 +34,12 @@ typedef struct
 /* Interface types */
 typedef enum
 {
-	EXCT_NULL = 0,
-	EXCT_EVENT,
-	EXCT_MODULE,
-	EXCT_MENULOOP,
-	EXCT_PAGING,
-	EXCT_SCHEDULE
+	EXCT_NULL = '-',
+	EXCT_EVENT ='E',
+	EXCT_MODULE ='O',
+	EXCT_MENULOOP ='m',
+	EXCT_PAGING = 'P',
+	EXCT_SCHEDULE = 'S'
 } exec_context_type_t;
 
 typedef struct

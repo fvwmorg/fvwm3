@@ -7669,3 +7669,135 @@ char *get_menu_options(
 
 	return action;
 }
+/* ---------------------------- new menu loop code -------------------------- */
+
+/*!!!*/
+typedef enum
+{
+	MEV_XEVENT = 0x1,
+	MEV_PROPAGATE_XEVENT = 0x2,
+	MEV_POPUP = 0x4,
+	MEV_POPDOWN = 0x8
+} mloop_event_t;
+
+/*!!!static*/
+mloop_event_t __mloop_get_event_new(
+	MenuParameters *pmp, MenuReturn *pmret,
+	mloop_evh_input_t *in, mloop_evh_data_t *med, mloop_static_info_t *msi)
+{
+	if (0/*!!!do_propagate_event_to_submenu*/)
+	{
+		/*!!!return propagate down*/
+	}
+	else if (0/*!!!do_propagate_event_to_parent menu*/)
+	{
+		/*!!!return propagate up*/
+		/*!!!*/
+	}
+	/*!!!read event or wait for timeout*/
+	while (0/*!!!not finished*/)
+	{
+		/*!!!rc = 0*/
+		if (0/*!!!wait for tiomeout*/)
+		{
+			/*!!!check for event*/
+		}
+		else
+		{
+			/*!!!block for event*/
+		}
+		if (0/*got event*/)
+		{
+			/*!!!rc = MEV_XEVENT*/
+		}
+		if (0/*!!!popup timed out;break*/)
+		{
+			/*!!!rc = MEV_POPUP;break*/
+		}
+		if (0/*!!!popdown timed out;break*/)
+		{
+			/*!!!rc = MEV_POPDOWN;break*/
+		}
+		/*!!!sleep*/
+	}
+	if (0/*!!!rc == MEV_XEVENT && evtype == MotionNotify*/)
+	{
+		/*!!!eat up further MotionNotify events*/
+	}
+
+	return 0/*!!!rc*/;
+}
+
+/*!!!static*/
+void __menu_loop_new(
+	MenuParameters *pmp, MenuReturn *pmret, double_keypress *pdkp)
+{
+	mloop_evh_input_t mei;
+	mloop_ret_code_t mloop_ret;
+	mloop_evh_data_t med;
+	mloop_static_info_t msi;
+	MenuOptions mops;
+	Bool is_finished;
+
+	/*!!!init menu loop*/
+	__mloop_init(pmp, pmret, &mei, &med, &msi, &mops);
+	for (is_finished = False; !is_finished; )
+	{
+		mloop_event_t mev;
+
+		mev = __mloop_get_event_new(pmp, pmret, &mei, &med, &msi);
+		switch (mev)
+		{
+		case MEV_XEVENT:
+			/*!!!handle event*/
+			break;
+		case MEV_PROPAGATE_XEVENT:
+			/*!!!handle propagation*/
+			break;
+		case MEV_POPUP:
+			/*!!!handle popup*/
+			break;
+		case MEV_POPDOWN:
+			/*!!!handle popdown*/
+			break;
+		}
+
+
+
+
+
+
+		mloop_ret = __mloop_handle_event(
+			pmp, pmret, pdkp, &mei, &med, &msi);
+		switch (mloop_ret)
+		{
+		case MENU_MLOOP_RET_LOOP:
+			continue;
+		case MENU_MLOOP_RET_END:
+			is_finished = True;
+			break;
+		default:
+			break;
+		}
+		/* Now handle new menu items, whether it is from a keypress or
+		 * a pointer motion event. */
+		if (med.mi != NULL)
+		{
+			mloop_ret = __mloop_handle_action_with_mi(
+				pmp, pmret, pdkp, &mei, &med, &msi, &mops);
+		}
+		else
+		{
+			mloop_ret = __mloop_handle_action_without_mi(
+				pmp, pmret, pdkp, &mei, &med, &msi, &mops);
+		}
+		if (mloop_ret == MENU_MLOOP_RET_END)
+		{
+			is_finished = True;
+		}
+		XFlush(dpy);
+	}
+	__mloop_exit(pmp, pmret, pdkp, &mei, &med, &msi, &mops);
+
+	return;
+}

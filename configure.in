@@ -68,10 +68,12 @@ AC_SUBST(FVWMWORKERSLISTLONG)
 AM_INIT_AUTOMAKE(fvwm, ${version})
 AM_CONFIG_HEADER(config.h)
 
-if test ! x"$CFLAGS" = x; then
-	AC_MSG_ERROR(
-		[configure must not be run with the CFLAGS variable set!]);
-fi
+dnl override CFLAGS and CPPFLAGS as they may cause configure to exit or to
+dnl fail detecting some features
+CFLAGS=""
+CPPFLAGS=""
+export CFLAGS
+export CPPFLAGS
 
 dnl installation paths
 FVWM_MODULESUBDIR=/${PACKAGE}/${VERSION}

@@ -105,7 +105,7 @@ void fqueue_add_inside(
 
 	/* search place to insert record */
 	for (p = NULL, t = fq->first;
-	     t != NULL && cmp_objects(object, t->object, cmp_args) > 0;
+	     t != NULL && cmp_objects(object, t->object, cmp_args) >= 0;
 	     p = t, t = t->next)
 	{
 		/* nothing to do here */

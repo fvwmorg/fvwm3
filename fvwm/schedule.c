@@ -111,8 +111,6 @@ static void deschedule(int *pid)
 	{
 		id = last_schedule_id;
 	}
-
-
 	/* deschedule matching jobs */
 	fqueue_remove_or_operate_all(&sq, deschedule_obj_func, (void *)&id);
 
@@ -159,7 +157,7 @@ static void schedule(
 static int execute_obj_func(void *object, void *args)
 {
 	sq_object_type *obj = object;
-	Time *ptime = ((Time **)args)[0];
+	Time *ptime = (Time *)args;
 
 	if (cmp_times(*ptime, obj->time_to_execute) >= 0)
 	{
@@ -198,15 +196,13 @@ static int execute_obj_func(void *object, void *args)
 void squeue_execute(void)
 {
 	Time current_time;
-	void *p[2];
 
 	if (FQUEUE_IS_EMPTY(&sq))
 	{
 		return;
 	}
-	p[0] = &current_time;
 	current_time = get_server_time();
-	fqueue_remove_or_operate_all(&sq, execute_obj_func, p);
+	fqueue_remove_or_operate_all(&sq, execute_obj_func, &current_time);
 
 	return;
 }
@@ -241,7 +237,6 @@ int squeue_get_next_id(void)
 	return next_schedule_id;
 }
 
-
 int squeue_get_last_id(void)
 {
 	return last_schedule_id;
@@ -275,7 +270,7 @@ void CMD_Schedule(F_CMD_ARGS)
 	/* eats up way too much cpu if schedule is used excessively */
 	current_time = get_server_time();
 #else
-	/* with this version, scheduled commands may be executed later than
+	/* with this version, scheduled commands may be executed earlier than
 	 * intended. */
 	current_time = fev_get_evtime();
 #endif
