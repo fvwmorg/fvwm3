@@ -1,3 +1,13 @@
+2000-11-10  Dan Espen  <dane@mk.telcordia.com>
+
+	* libs/Strings.c (stripcpy): Only strncpy when length is not zero.
+
+2000-11-09  Dan Espen  <dane@mk.telcordia.com>
+
+	* tests/purify/purify.fvwm2rc: Move ModulePath tests to end to leave a
+	working modulepath for most of the tests.
+	Make menus readable at end of test, (no yellow on green).
+
 2000-11-10  Mikhael Goikhman  <migo@homemail.com>
 
 	* NEWS, configure.in:

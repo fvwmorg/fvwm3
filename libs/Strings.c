@@ -123,7 +123,9 @@ char *stripcpy( const char *source )
 	len--;
     }
     ptr = safemalloc(len+1);
-    strncpy(ptr,source,len);
+    if (len) {
+      strncpy(ptr,source,len);
+    }
     ptr[len]=0;
     return ptr;
 }

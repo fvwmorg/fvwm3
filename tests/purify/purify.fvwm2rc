@@ -70,20 +70,6 @@ Module FvwmBanner
 Module    FvwmBanner
 Module		FvwmBanner
 
-Log "Test ModulePath"
-# the proper config does not have ModulePath, this overwrites a good default
-
-ModulePath
-ModulePath
-ModulePath $HOME/bin/fvwm2:/usr/local/libexec/fvwm/2.1.2
-ModulePath /usr/local/libexec/fvwm/2.1.2:/nonexisT/FOO/bar:$HOME/bin/fvwm2
-ModulePath /usr/local/libexec/fvwm/2.1.2:/nonexisT/FOO/bar:$HOME/bin/fvwm2
-ModulePath $HOME/bin/fvwm2
-ModulePath   $HOME/bin/fvwm2:/usr/local/libexec/fvwm/2.1.2:/nonexist/foo/bar
-ModulePath 		$HOME/bin/fvwm2:/usr/local/libexec/fvwm/2.1.2:/nonexist/foo/bar
-ModulePath
-ModulePath $HOME/bin/fvwm2:/usr/local/libexec/fvwm/2.3.22:/opt/public/src/fvwm/2.3.22
-
 ################# GLOBAL COMMANDS ###################
 
 Log "Test AddToFunc, DestroyFunc, Function"
@@ -762,7 +748,7 @@ MenuStyle red yellow green 6x10 mwm anim
 MenuStyle red yellow green 6x10 mwm
 MenuStyle red yellow green 6x10 fvwm
 MenuStyle red yellow green 6x10 fvwm anim
-MenuStyle yellow green blue 6x10 fvwm anim
+MenuStyle yellow black pink 8x13bold fvwm anim
 
 Log "Test MOUSE"
 
@@ -1698,6 +1684,21 @@ AddToFunc test_func
  + "I" WindowShade
  + "I" echo XORvalue
  + "I" XORvalue
+
+Log "Test ModulePath"
+# the proper config does not have ModulePath, this overwrites a good default
+# This is near the end because it kills module execution.
+
+ModulePath
+ModulePath
+ModulePath $HOME/bin/fvwm2:/usr/local/libexec/fvwm/2.1.2
+ModulePath /usr/local/libexec/fvwm/2.1.2:/nonexisT/FOO/bar:$HOME/bin/fvwm2
+ModulePath /usr/local/libexec/fvwm/2.1.2:/nonexisT/FOO/bar:$HOME/bin/fvwm2
+ModulePath $HOME/bin/fvwm2
+ModulePath   $HOME/bin/fvwm2:/usr/local/libexec/fvwm/2.1.2:/nonexist/foo/bar
+ModulePath 		$HOME/bin/fvwm2:/usr/local/libexec/fvwm/2.1.2:/nonexist/foo/bar
+ModulePath
+ModulePath $HOME/bin/fvwm2:/usr/local/libexec/fvwm/2.3.22:/opt/public/src/fvwm/2.3.22
 
 Log "Test cleanup"
  + "I" beep
