@@ -1,17 +1,4 @@
-/* This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
- */
+/* -*-c-*- */
 
 /*
 ** FShape.h: drop in replacements for the X shape library encapsulation
@@ -28,7 +15,7 @@
 #define FShapeCombineRegion(dpy, dst, dst_kind, xoff, yoff, reg, op) \
 	XShapeCombineRegion(dpy, dst, dst_kind, xoff, yoff, reg, op)
 #define FShapeCombineRectangles( \
-		dpy, dst, dst_kind, xoff, yoff, rect, n_rects, op, ordering) \
+	dpy, dst, dst_kind, xoff, yoff, rect, n_rects, op, ordering) \
 	XShapeCombineRectangles( \
 		dpy, dst, dst_kind, xoff, yoff, rect, n_rects, op, ordering)
 #define FShapeCombineMask(dpy, dst, dst_kind, xoff, yoff, src, op) \
@@ -38,8 +25,8 @@
 #define FShapeOffsetShape(dpy, dst, dst_kind, xoff, yoff) \
 	XShapeOffsetShape(dpy, dst, dst_kind, xoff, yoff)
 #define FShapeQueryExtents( \
-		dpy, w, bounding_shaped, xb, yb, wb, hb, clip_shaped, \
-		xclip, yclip, wclip, hclip) \
+	dpy, w, bounding_shaped, xb, yb, wb, hb, clip_shaped, \
+	xclip, yclip, wclip, hclip) \
 	XShapeQueryExtents( \
 		dpy, w, bounding_shaped, xb, yb, wb, hb, clip_shaped, \
 		xclip, yclip, wclip, hclip)
@@ -81,16 +68,16 @@ void FShapeInit(Display *dpy);
 #define ShapeNumberEvents               (FShapeNotify + 1)
 typedef struct
 {
-  int   type;               /* of event */
-  unsigned long serial;   /* # of last request processed by server */
-  Bool send_event;          /* true if this came frome a SendEvent request */
-  Display *display;         /* Display the event was read from */
-  Window window;            /* window of event */
-  int kind;                 /* ShapeBounding or ShapeClip */
-  int x, y;                 /* extents of new region */
-  unsigned width, height;
-  Time time;                /* server timestamp when region changed */
-  Bool shaped;      /* true if the region exists */
+	int   type;               /* of event */
+	unsigned long serial;   /* # of last request processed by server */
+	Bool send_event;          /* true if this came frome a SendEvent request */
+	Display *display;         /* Display the event was read from */
+	Window window;            /* window of event */
+	int kind;                 /* ShapeBounding or ShapeClip */
+	int x, y;                 /* extents of new region */
+	unsigned width, height;
+	Time time;                /* server timestamp when region changed */
+	Bool shaped;      /* true if the region exists */
 } XShapeEvent;
 #define FShapeQueryExtension(dpy, evbase, errbase) ((Bool)False)
 #define FShapeQueryVersion(dpy, vmajor, vminor) ((Status)0)

@@ -1,6 +1,6 @@
-/* Copyright (C) 1999  Dominik Vogt
- *
- * This program is free software; you can redistribute it and/or modify
+/* -*-c-*- */
+/* Copyright (C) 1999  Dominik Vogt */
+/* This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 2 of the License, or
  * (at your option) any later version.
@@ -77,10 +77,10 @@ FvwmWindow *repeat_last_fvwm_window = NULL;
 #endif
 
 /* Stores the contents of the data pointer internally for the repeat command.
- * The sype of data is determined by the 'type' parameter. If this function is
- * called to set a string value representing a fvwm builtin function the
- * 'func_typetion' can be set to the F_<func_type> value in the function table
- * in functions.c. If this value is set certain functions are not recorded.
+ * The type of data is determined by the 'type' parameter. If this function is
+ * called to set a string value representing an fvwm builtin function the
+ * 'builtin' can be set to the F_... value in the function table in
+ * functions.c. If this value is set certain functions are not recorded.
  * The 'depth' parameter indicates the recursion depth of the current data
  * pointer (i.e. the first function call has a depth of one, functions called
  * from within this function have depth 2 and higher, this may be applicable
@@ -88,7 +88,7 @@ FvwmWindow *repeat_last_fvwm_window = NULL;
  *
  * TODO: [finish and update description]
  */
-Bool set_repeat_data(void *data, repeat_type type, const func_type *builtin)
+Bool set_repeat_data(void *data, repeat_t type, const func_t *builtin)
 {
 	/* No history recording during startup. */
 	if (fFvwmInStartup)

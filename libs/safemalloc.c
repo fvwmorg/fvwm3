@@ -1,3 +1,4 @@
+/* -*-c-*- */
 /* This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 2 of the License, or
@@ -21,8 +22,8 @@
 
 static void alloc_failed(char *c, int length)
 {
-  fprintf(stderr, "%s of %d bytes failed. Exiting\n", c, length);
-  exit(1);
+	fprintf(stderr, "%s of %d bytes failed. Exiting\n", c, length);
+	exit(1);
 }
 
 
@@ -35,18 +36,18 @@ static void alloc_failed(char *c, int length)
  ***********************************************************************/
 char *safemalloc(int length)
 {
-  char *ptr;
+	char *ptr;
 
-  if(length <= 0)
-    length = 1;
+	if(length <= 0)
+		length = 1;
 
-  ptr = malloc(length);
-  if(ptr == (char *)0)
-  {
-    /* doesn't return */
-    alloc_failed("malloc", length);
-  }
-  return ptr;
+	ptr = malloc(length);
+	if(ptr == (char *)0)
+	{
+		/* doesn't return */
+		alloc_failed("malloc", length);
+	}
+	return ptr;
 }
 
 
@@ -59,15 +60,15 @@ char *safemalloc(int length)
  ***********************************************************************/
 char *safecalloc(int num, int length)
 {
-  char *ptr;
+	char *ptr;
 
-  ptr = calloc(num, length);
-  if(ptr == (char *)0)
-  {
-    /* doesn't return */
-    alloc_failed("calloc", length);
-  }
-  return ptr;
+	ptr = calloc(num, length);
+	if(ptr == (char *)0)
+	{
+		/* doesn't return */
+		alloc_failed("calloc", length);
+	}
+	return ptr;
 }
 
 
@@ -80,18 +81,18 @@ char *safecalloc(int num, int length)
  ***********************************************************************/
 char *saferealloc(char *src, int length)
 {
-  char *ptr;
+	char *ptr;
 
-  if (src)
-    ptr = realloc((void *)src, length);
-  else
-    ptr = malloc(length);
-  if(ptr == (char *)0)
-  {
-    /* doesn't return */
-    alloc_failed("realloc", length);
-  }
-  return ptr;
+	if (src)
+		ptr = realloc((void *)src, length);
+	else
+		ptr = malloc(length);
+	if(ptr == (char *)0)
+	{
+		/* doesn't return */
+		alloc_failed("realloc", length);
+	}
+	return ptr;
 }
 
 /***********************************************************************
@@ -103,11 +104,11 @@ char *saferealloc(char *src, int length)
  ***********************************************************************/
 char *safestrdup(const char *src)
 {
-  char *cpy = strdup(src);
-  if (cpy == (char *)0)
-  {
-    /* doesn't return */
-    alloc_failed("strdup", strlen(src) + (size_t)1);
-  }
-  return cpy;
+	char *cpy = strdup(src);
+	if (cpy == (char *)0)
+	{
+		/* doesn't return */
+		alloc_failed("strdup", strlen(src) + (size_t)1);
+	}
+	return cpy;
 }

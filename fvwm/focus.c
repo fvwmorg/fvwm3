@@ -14,17 +14,17 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307	 USA
  */
 
-/****************************************************************************
+/*
  * This module is all original code
  * by Rob Nation
  * Copyright 1993, Robert Nation
  *     You may use this code for any purpose, as long as the original
  *     copyright remains in the source code and all documentation
- ****************************************************************************/
+ */
 
-/* ---------------------------- included header files ----------------------- */
+/* ---------------------------- included header files ---------------------- */
 
-#include <config.h>
+#include "config.h"
 
 #include <stdio.h>
 
@@ -45,15 +45,15 @@
 #include "colormaps.h"
 #include "add_window.h"
 
-/* ---------------------------- local definitions --------------------------- */
+/* ---------------------------- local definitions -------------------------- */
 
-/* ---------------------------- local macros -------------------------------- */
+/* ---------------------------- local macros ------------------------------- */
 
-/* ---------------------------- imports ------------------------------------- */
+/* ---------------------------- imports ------------------------------------ */
 
-/* ---------------------------- included code files ------------------------- */
+/* ---------------------------- included code files ------------------------ */
 
-/* ---------------------------- local types --------------------------------- */
+/* ---------------------------- local types -------------------------------- */
 
 typedef struct
 {
@@ -65,9 +65,9 @@ typedef struct
 	fpol_set_focus_by_t set_by;
 } sftfwin_args_t;
 
-/* ---------------------------- forward declarations ------------------------ */
+/* ---------------------------- forward declarations ----------------------- */
 
-/* ---------------------------- local variables ----------------------------- */
+/* ---------------------------- local variables ---------------------------- */
 
 static Bool lastFocusType;
 /* Last window which Fvwm gave the focus to NOT the window that really has the
@@ -76,9 +76,9 @@ static FvwmWindow *ScreenFocus = NULL;
 /* Window which had focus before the pointer moved to a different screen. */
 static FvwmWindow *LastScreenFocus = NULL;
 
-/* ---------------------------- exported variables (globals) ---------------- */
+/* ---------------------------- exported variables (globals) --------------- */
 
-/* ---------------------------- local functions ----------------------------- */
+/* ---------------------------- local functions ---------------------------- */
 
 static Bool focus_get_fpol_context_flag(
 	fpol_context_t *fpol_context, int context)
@@ -101,9 +101,9 @@ static Bool focus_get_fpol_context_flag(
 	return (flag) ? True : False;
 }
 
-/********************************************************************
+/*
  * Helper functions for setting the focus
- ********************************************************************/
+ */
 static void __try_program_focus(Window w, const FvwmWindow *fw)
 {
 	if (fw && WM_TAKES_FOCUS(fw) &&
@@ -258,9 +258,9 @@ static Bool __try_other_screen_focus(const FvwmWindow *fw)
 	return False;
 }
 
-/********************************************************************
+/*
  * Sets the input focus to the indicated window.
- ********************************************************************/
+ */
 static void __set_focus_to_fwin(
 	Window w, FvwmWindow *fw, sftfwin_args_t *args)
 {
@@ -404,11 +404,11 @@ static void set_focus_to_fwin(
 	return;
 }
 
-/**************************************************************************
+/*
  *
  * Moves pointer to specified window
  *
- *************************************************************************/
+ */
 static void warp_to_fvwm_window(
 	const exec_context_t *exc, int warp_x, int x_unit, int warp_y,
 	int y_unit)
@@ -607,11 +607,11 @@ static FvwmWindow *__restore_focus_after_unmap(
 	return set_focus_to;
 }
 
-/**************************************************************************
+/*
  *
  * Moves focus to specified window; only to be called bay Focus and FlipFocus
  *
- *************************************************************************/
+ */
 static void __activate_window_by_command(
 	F_CMD_ARGS, int is_focus_by_flip_focus_cmd)
 {
@@ -736,7 +736,7 @@ static void __focus_grab_one_button(
 	return;
 }
 
-/* ---------------------------- interface functions ------------------------- */
+/* ---------------------------- interface functions ------------------------ */
 
 Bool focus_does_accept_input_focus(const FvwmWindow *fw)
 {
@@ -1156,7 +1156,7 @@ void refresh_focus(const FvwmWindow *fw)
 	return;
 }
 
-/* ---------------------------- builtin commands ---------------------------- */
+/* ---------------------------- builtin commands --------------------------- */
 
 void CMD_FlipFocus(F_CMD_ARGS)
 {

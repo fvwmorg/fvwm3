@@ -1,3 +1,4 @@
+/* -*-c-*- */
 /* This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 2 of the License, or
@@ -59,9 +60,9 @@ typedef struct {
 static void print_button_info(Button *b);
 static void insert_windows_button(WinData *win);
 
-/***************************************************************************/
-/* Utility leaf functions                                                  */
-/***************************************************************************/
+/*
+ * Utility leaf functions
+ */
 
 static int selected_button_in_man(WinManager *man)
 {
@@ -523,9 +524,9 @@ Button *xy_to_button(WinManager *man, int x, int y)
   return NULL;
 }
 
-/***************************************************************************/
-/* Routines which change dirtyable state                                   */
-/***************************************************************************/
+/*
+ * Routines which change dirtyable state
+ */
 
 static void set_button_geometry(WinManager *man, Button *box)
 {
@@ -1053,9 +1054,9 @@ void set_manager_window_mapping(WinManager *man, int flag)
   }
 }
 
-/***************************************************************************/
-/* Major exported functions                                                */
-/***************************************************************************/
+/*
+ * Major exported functions
+ */
 
 void init_boxes(void)
 {
@@ -2341,9 +2342,9 @@ void man_exposed(WinManager *man, XEvent *theEvent)
 	}
 }
 
-/***************************************************************************/
-/* Debugging routines                                                      */
-/***************************************************************************/
+/*
+ * Debugging routines
+ */
 
 void check_managers_consistency(void)
 {

@@ -1,10 +1,11 @@
-/****************************************************************************
+/* -*-c-*- */
+/*
  * This is an all new program to set the root window to an Xpm pixmap.
  * Copyright 1993, Rob Nation
  * You may use this file for anything you want, as long as the copyright
  * is kept intact. No guarantees of any sort are made in any way regarding
  * this program or anything related to it.
- ****************************************************************************/
+ */
 
 #include "config.h"
 

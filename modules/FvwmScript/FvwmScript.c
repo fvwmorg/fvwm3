@@ -1,3 +1,4 @@
+/* -*-c-*- */
 /* Copyright May 1996, Frederic Cordier.  No guarantees or warantees are
  * provided or implied in any way whatsoever.  Use this program at your own
  * risk.  Permission to use, modify, and redistribute this program is hereby
@@ -351,9 +352,9 @@ void Xinit(int IsFather)
   atexit(ShutdownX);
 }
 
-/***********************/
-/* Lecture d'un icone  */
-/***********************/
+/*
+ * Lecture d'un icone
+ */
 void LoadIcon(struct XObj *xobj)
 {
 	char *path;
@@ -512,9 +513,9 @@ void OpenWindow (void)
   free(classHints.res_name);
 }
 
-/***********************************************/
-/* Execution d'une sequence d'instruction      */
-/***********************************************/
+/*
+ * Execution d'une sequence d'instruction
+ */
 void ExecBloc(Bloc *bloc)
 {
   int i;
@@ -676,9 +677,9 @@ void BuildGUI(int IsFather)
       XMapWindow(dpy,tabxobj[i]->win);
 }
 
-/***********************************************/
-/* Fonction de traitement des msg entre objets */
-/***********************************************/
+/*
+ * Fonction de traitement des msg entre objets
+ */
 void SendMsg(struct XObj *xobj,int TypeMsg)
 {
   int i;
@@ -691,9 +692,9 @@ void SendMsg(struct XObj *xobj,int TypeMsg)
     }
 }
 
-/***********************************************/
-/* Fonction de traitement des msg entre objets */
-/***********************************************/
+/*
+ * Fonction de traitement des msg entre objets
+ */
 void SendMsgAndString(char *action, char *type)
 {
   int val[2];
@@ -737,9 +738,9 @@ void SendMsgAndString(char *action, char *type)
   }
 }
 
-/*******************************************/
-/* Appeler lors d'une demande de selection */
-/*******************************************/
+/*
+ * Appeler lors d'une demande de selection
+ */
 void SendMsgToScript(XEvent event)
 {
   Atom Sender,Receiver=None;
@@ -875,7 +876,7 @@ void ReadXServer (void)
       event.xexpose.x = ex;
       event.xexpose.y = ey;
       event.xexpose.width = ex2 - ex;
-      event.xexpose.height = ey2 - ey;  
+      event.xexpose.height = ey2 - ey;
       for (i=0; i<nbobj; i++)
       {
 	      if (event.xexpose.window == tabxobj[i]->win)

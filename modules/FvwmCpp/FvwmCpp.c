@@ -1,3 +1,4 @@
+/* -*-c-*- */
 /* This module, and the entire FvwmCpp program, and the concept for
  * interfacing this module to the Window Manager, are all original work
  * by Robert Nation
@@ -71,12 +72,12 @@ char cpp_options[BUFSIZ];
 char cpp_outfile[BUFSIZ]="";
 
 
-/***********************************************************************
+/*
  *
  *  Procedure:
  *      main - start of module
  *
- ***********************************************************************/
+ */
 int main(int argc, char **argv)
 {
   Display *dpy;                 /* which display are we talking to */
@@ -442,12 +443,12 @@ static char *cpp_defs(Display *display, const char *host, char *cpp_options, cha
 
 
 
-/***********************************************************************
+/*
  *
  *  Procedure:
  *      SIGPIPE handler - SIGPIPE means fvwm is dying
  *
- ***********************************************************************/
+ */
 void DeadPipe(int nonsense)
 {
   exit(0);

@@ -14,15 +14,15 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-/****************************************************************************
+/*
  * This module is all original code
  * by Rob Nation
  * Copyright 1993, Robert Nation
  *     You may use this code for any purpose, as long as the original
  *     copyright remains in the source code and all documentation
- ****************************************************************************/
+ */
 
-/* ---------------------------- included header files ----------------------- */
+/* ---------------------------- included header files ---------------------- */
 
 #include "config.h"
 
@@ -43,32 +43,32 @@
 #include "events.h"
 #include "eventmask.h"
 
-/* ---------------------------- local definitions --------------------------- */
+/* ---------------------------- local definitions -------------------------- */
 
-/* ---------------------------- local macros -------------------------------- */
+/* ---------------------------- local macros ------------------------------- */
 
 #define GRAB_EVMASK (ButtonPressMask | ButtonReleaseMask | ButtonMotionMask | \
 	PointerMotionMask | EnterWindowMask | LeaveWindowMask)
 
-/* ---------------------------- imports ------------------------------------- */
+/* ---------------------------- imports ------------------------------------ */
 
-/* ---------------------------- included code files ------------------------- */
+/* ---------------------------- included code files ------------------------ */
 
-/* ---------------------------- local types --------------------------------- */
+/* ---------------------------- local types -------------------------------- */
 
-/* ---------------------------- forward declarations ------------------------ */
+/* ---------------------------- forward declarations ----------------------- */
 
-/* ---------------------------- local variables ----------------------------- */
+/* ---------------------------- local variables ---------------------------- */
 
 static unsigned int grab_count[GRAB_MAXVAL] = { 1, 1, 0, 0, 0, 0, 0 };
 
-/* ---------------------------- exported variables (globals) ---------------- */
+/* ---------------------------- exported variables (globals) --------------- */
 
-/* ---------------------------- local functions ----------------------------- */
+/* ---------------------------- local functions ---------------------------- */
 
-/*****************************************************************************
+/*
  * Change the appearance of the grabbed cursor.
- ****************************************************************************/
+ */
 static void change_grab_cursor(int cursor)
 {
 	if (cursor != None)
@@ -80,7 +80,7 @@ static void change_grab_cursor(int cursor)
 	return;
 }
 
-/* ---------------------------- interface functions ------------------------- */
+/* ---------------------------- interface functions ------------------------ */
 
 int GetTwoArguments(
 	char *action, int *val1, int *val2, int *val1_unit, int *val2_unit)
@@ -91,7 +91,7 @@ int GetTwoArguments(
 	return GetTwoPercentArguments(action, val1, val2, val1_unit, val2_unit);
 }
 
-/*****************************************************************************
+/*
  * Grab the pointer.
  * grab_context: GRAB_NORMAL, GRAB_BUSY, GRAB_MENU, GRAB_BUSYMENU,
  * GRAB_PASSIVE.
@@ -99,7 +99,7 @@ int GetTwoArguments(
  * to be grab_context.
  * GRAB_PASSIVE does not actually grab, but only delays the following ungrab
  * until the GRAB_PASSIVE is released too.
- ****************************************************************************/
+ */
 #define DEBUG_GRAB 0
 #if DEBUG_GRAB
 void print_grab_stats(char *text)
@@ -247,11 +247,11 @@ Bool GrabEm(int cursor, int grab_context)
 }
 
 
-/*****************************************************************************
+/*
  *
  * UnGrab the pointer
  *
- ****************************************************************************/
+ */
 Bool UngrabEm(int ungrab_context)
 {
 	if (ungrab_context <= GRAB_ALL || ungrab_context >= GRAB_MAXVAL)
@@ -340,7 +340,7 @@ static char *fvwm_msg_strings[] =
 	"<<DEBUG>> ", "", "", "<<WARNING>> ", "<<DEPRECATED>> ", "<<ERROR>> "
 };
 
-void fvwm_msg(fvwm_msg_type type, char *id, char *msg, ...)
+void fvwm_msg(fvwm_msg_t type, char *id, char *msg, ...)
 {
 	va_list args;
 	char fvwm_id[20];
@@ -414,7 +414,7 @@ void fvwm_msg(fvwm_msg_type type, char *id, char *msg, ...)
 
 
 /* Store the last item that was added with '+' */
-void set_last_added_item(last_added_item_type type, void *item)
+void set_last_added_item(last_added_item_t type, void *item)
 {
 	Scr.last_added_item.type = type;
 	Scr.last_added_item.item = item;
@@ -439,12 +439,12 @@ void NewFontAndColor(FlocaleFont *flf, Pixel color, Pixel backcolor)
 }
 
 
-/****************************************************************************
+/*
  *
  * For menus, move, and resize operations, we can effect keyboard
  * shortcuts by warping the pointer.
  *
- ****************************************************************************/
+ */
 void Keyboard_shortcuts(
 	XEvent *ev, FvwmWindow *fw, int *x_defect, int *y_defect,
 	int ReturnEvent)
@@ -465,11 +465,11 @@ void Keyboard_shortcuts(
 }
 
 
-/****************************************************************************
+/*
  *
  * Check if the given FvwmWindow structure still points to a valid window.
  *
- ****************************************************************************/
+ */
 
 Bool check_if_fvwm_window_exists(FvwmWindow *fw)
 {
@@ -578,5 +578,3 @@ void print_g(char *text, rectangle *g)
 
 	return;
 }
-
-/* ---------------------------- builtin commands ---------------------------- */

@@ -1,19 +1,5 @@
-/* Copyright (C) 2001  Olivier Chapuis
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
- */
+/* -*-c-*- */
+/* Copyright (C) 2001  Olivier Chapuis */
 
 #ifndef _EWMH_
 #define _EWMH_
@@ -74,16 +60,16 @@ void EWMH_ProcessPropertyNotify(const exec_context_t *exc);
 
 /* ewmh_icon.c */
 void EWMH_DeleteWmIcon(FvwmWindow *fwin, Bool mini_icon, Bool icon);
-int EWMH_SetIconFromWMIcon(FvwmWindow *fwin, CARD32 *list, unsigned int size,
-			   Bool is_mini_icon);
+int EWMH_SetIconFromWMIcon(
+	FvwmWindow *fwin, CARD32 *list, unsigned int size, Bool is_mini_icon);
 void EWMH_DoUpdateWmIcon(FvwmWindow *fwin, Bool mini_icon, Bool icon);
 
 /* ewmh_name.c */
 void EWMH_SetVisibleName(FvwmWindow *fwin, Bool is_icon_name);
-int EWMH_WMName(FvwmWindow *fwin, XEvent *ev, window_style *style,
-		unsigned long any);
-int EWMH_WMIconName(FvwmWindow *fwin, XEvent *ev, window_style *style,
-		    unsigned long any);
+int EWMH_WMName(
+	FvwmWindow *fwin, XEvent *ev, window_style *style, unsigned long any);
+int EWMH_WMIconName(
+	FvwmWindow *fwin, XEvent *ev, window_style *style, unsigned long any);
 void EWMH_SetDesktopNames(void);
 
 #endif /* _EWMH_ */

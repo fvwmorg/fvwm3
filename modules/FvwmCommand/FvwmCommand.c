@@ -1,3 +1,4 @@
+/* -*-c-*- */
 /*
  * Fvwm command input interface.
  *
@@ -22,6 +23,8 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
+
+#include "config.h"
 
 #include "FvwmCommand.h"
 #include "libs/fvwmsignal.h"
@@ -73,11 +76,11 @@ void list_string (char *str);
 void spawn_child( void );
 
 
-/*******************************************************
+/*
  *
  * send command to and receive message from the server
  *
- *******************************************************/
+ */
 int main ( int argc, char *argv[])
 {
   char cmd[MAX_MODULE_INPUT_TEXT_LEN + 1];
@@ -412,9 +415,9 @@ void close_fifos (void)
   unlink (Fr_name);
 }
 
-/******************************************
+/*
  *  signal handlers
- ******************************************/
+ */
 static RETSIGTYPE
 sig_quit(int sig)
 {
@@ -431,9 +434,9 @@ sig_ttin(int dummy)
   signal(SIGTTIN, SIG_IGN);
 }
 
-/************************************/
-/* print error message on stderr */
-/************************************/
+/*
+ * print error message on stderr
+ */
 void err_quit( const char *msg )
 {
   fprintf (stderr, "%s ", strerror(errno));
@@ -447,9 +450,9 @@ void err_msg( const char *msg )
   fprintf( stderr, "%s error in %s\n", MYNAME , msg );
 }
 
-/*************************************/
-/* add cr to the command and send it */
-/*************************************/
+/*
+ * add cr to the command and send it
+ */
 void sendit( char *cmd )
 {
   int clen;
@@ -511,9 +514,9 @@ void receive(void)
 }
 
 
-/*******************************
+/*
  * print usage
- *******************************/
+ */
 void usage(void)
 {
   fprintf (stderr, "Usage: %s [OPTION] [COMMAND]...\n", MYNAME);
@@ -706,11 +709,11 @@ void process_message( void )
 }
 
 
-/**********************************
+/*
  *
  *  print configuration info
  *
- **********************************/
+ */
 
 void list_configure(unsigned long *body)
 {
@@ -908,44 +911,44 @@ void list_configure(unsigned long *body)
 	  cfgpacket->TextPixel, cfgpacket->BackPixel);
 }
 
-/*************************************************************************
+/*
  *
  * print info  icon location
  *
- ************************************************************************/
+ */
 void list_icon_loc(unsigned long *body)
 {
   printf( "0x%08lx %-20s x %ld, y %ld, width %ld, height%ld\n",
 	  body[0], "icon location", body[3], body[4], body[5], body[6] );
 }
 
-/*************************************************************************
+/*
  *
  * print info mini icon
  *
- ************************************************************************/
+ */
 void list_mini_icon(unsigned long *body)
 {
   printf( "0x%08lx %-20s width %ld, height %ld, depth %ld\n",
 	  body[0], "mini icon",body[5], body[6], body[7] );
 }
 
-/*************************************************************************
+/*
  *
  * print info  message body[3]
  *
- ************************************************************************/
+ */
 void list( unsigned long *body, char *text )
 {
   printf( "0x%08lx %-20s %s\n", body[0], text, (char *)&body[3] );
 }
 
 
-/*************************************************************************
+/*
  *
  * print info  new page
  *
- ************************************************************************/
+ */
 void list_new_page(unsigned long *body)
 {
   printf( "           %-20s x %ld, y %ld, desk %ld, max x %ld, max y %ld\n",
@@ -953,52 +956,52 @@ void list_new_page(unsigned long *body)
 	  body[0], body[1], body[2], body[3], body[4]);
 }
 
-/*************************************************************************
+/*
  *
  * print info  new desk
  *
- ************************************************************************/
+ */
 void list_new_desk(unsigned long *body)
 {
   printf( "           %-20s %ld\n",  "new desk", body[0] );
 }
 
-/*************************************************************************
+/*
  *
  * print string
  *
- ************************************************************************/
+ */
 void list_string (char *str)
 {
     printf( "%-20s\n", str );
 }
 
-/*************************************************************************
+/*
  *
  * print info header
  *
- ************************************************************************/
+ */
 void list_header(unsigned long *body, char *text)
 {
   printf("0x%08lx %s\n", body[0], text);
 }
 
-/*************************************************************************
+/*
  *
  * print info focus change
  *
- ************************************************************************/
+ */
 void list_focus_change(unsigned long *body)
 {
   printf( "0x%08lx %-20s highlight 0x%lx, foreground 0x%lx, background 0x%lx\n",
 	  body[0], "focus change", body[3], body[4], body[5] );
 }
 
-/*************************************************************************
+/*
  *
  * print info iconify
  *
- ************************************************************************/
+ */
 void list_iconify(unsigned long *body)
 {
   printf( "0x%08lx %-20s x %ld, y %ld, width %ld, hight %ld\n",

@@ -1,3 +1,4 @@
+/* -*-c-*- */
 /* This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 2 of the License, or
@@ -13,14 +14,16 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
+#include "config.h"
+
 #include "Tools.h"
 
 /* left, center and right offsets */
 #define ITEM_DRAW_LCR_OFFSETS 1,0,1
 
-/***************************************************/
-/* Fonction pour ItemDraw / functions for ItemDraw */
-/***************************************************/
+/*
+ * Fonction pour ItemDraw / functions for ItemDraw
+ */
 void InitItemDraw(struct XObj *xobj)
 {
   unsigned long mask;

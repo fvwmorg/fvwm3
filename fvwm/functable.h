@@ -3,22 +3,22 @@
 #ifndef FUNCTABLE_H
 #define FUNCTABLE_H
 
-/* ---------------------------- included header files ----------------------- */
+/* ---------------------------- included header files ---------------------- */
 
-/* ---------------------------- global definitions -------------------------- */
+/* ---------------------------- global definitions ------------------------- */
 
 #define PRE_KEEPRC       "keeprc"
 #define PRE_REPEAT       "repeat"
 #define PRE_SILENT       "silent"
 
-/* ---------------------------- global macros ------------------------------- */
+/* ---------------------------- global macros ------------------------------ */
 
-/* ---------------------------- type definitions ---------------------------- */
+/* ---------------------------- type definitions --------------------------- */
 
-/* ---------------------------- exported variables (globals) ---------------- */
+/* ---------------------------- exported variables (globals) --------------- */
 
-extern const func_type func_table[];
+extern const func_t func_table[];
 
-/* ---------------------------- interface functions ------------------------- */
+/* ---------------------------- interface functions ------------------------ */
 
 #endif /* FUNCTABLE_H */

@@ -14,7 +14,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-/* ---------------------------- included header files ----------------------- */
+/* ---------------------------- included header files ---------------------- */
 
 #define FEVENT_C
 #define FEVENT_PRIVILEGED_ACCESS
@@ -29,27 +29,27 @@
 #include "libs/ftime.h"
 #include "libs/safemalloc.h"
 
-/* ---------------------------- local definitions --------------------------- */
+/* ---------------------------- local definitions -------------------------- */
 
-/* ---------------------------- local macros -------------------------------- */
+/* ---------------------------- local macros ------------------------------- */
 
-/* ---------------------------- imports ------------------------------------- */
+/* ---------------------------- imports ------------------------------------ */
 
-/* ---------------------------- included code files ------------------------- */
+/* ---------------------------- included code files ------------------------ */
 
-/* ---------------------------- local types --------------------------------- */
+/* ---------------------------- local types -------------------------------- */
 
-/* ---------------------------- forward declarations ------------------------ */
+/* ---------------------------- forward declarations ----------------------- */
 
-/* ---------------------------- local variables ----------------------------- */
+/* ---------------------------- local variables ---------------------------- */
 
 static XEvent fev_event;
 /* until Xlib does this for us */
 Time fev_last_timestamp = CurrentTime;
 
-/* ---------------------------- exported variables (globals) ---------------- */
+/* ---------------------------- exported variables (globals) --------------- */
 
-/* ---------------------------- local functions ----------------------------- */
+/* ---------------------------- local functions ---------------------------- */
 
 /* Records the time of the last processed event. */
 static void fev_update_last_timestamp(const XEvent *ev)
@@ -114,7 +114,7 @@ XEvent *fev_get_last_event_address(void)
 	return &fev_event;
 }
 
-/* ---------------------------- interface functions (normal_access) --------- */
+/* ---------------------------- interface functions (normal_access) -------- */
 
 Time fev_get_evtime(void)
 {
@@ -235,7 +235,7 @@ void fev_make_null_event(XEvent *ev, Display *dpy)
 	return;
 }
 
-/* ---------------------------- X event replacements ------------------------ */
+/* ---------------------------- X event replacements ----------------------- */
 
 XTimeCoord *FGetMotionEvents(
 	Display *display, Window w, Time start, Time stop, int *nevents_return)

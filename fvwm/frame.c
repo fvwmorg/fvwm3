@@ -14,7 +14,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-/* ---------------------------- included header files ----------------------- */
+/* ---------------------------- included header files ---------------------- */
 
 #include "config.h"
 
@@ -35,15 +35,15 @@
 #include "borders.h"
 #include "frame.h"
 
-/* ---------------------------- local definitions --------------------------- */
+/* ---------------------------- local definitions -------------------------- */
 
-/* ---------------------------- local macros -------------------------------- */
+/* ---------------------------- local macros ------------------------------- */
 
-/* ---------------------------- imports ------------------------------------- */
+/* ---------------------------- imports ------------------------------------ */
 
-/* ---------------------------- included code files ------------------------- */
+/* ---------------------------- included code files ------------------------ */
 
-/* ---------------------------- local types --------------------------------- */
+/* ---------------------------- local types -------------------------------- */
 
 typedef struct
 {
@@ -72,7 +72,7 @@ typedef struct
 	Window w_with_focus;
 	int current_step;
 	int curr_titlebar_compression;
-	direction_type shade_dir;
+	direction_t shade_dir;
 	window_parts trans_parts;
 	struct
 	{
@@ -105,9 +105,9 @@ typedef struct
 	} step_flags;
 } mr_args_internal;
 
-/* ---------------------------- forward declarations ------------------------ */
+/* ---------------------------- forward declarations ----------------------- */
 
-/* ---------------------------- local variables ----------------------------- */
+/* ---------------------------- local variables ---------------------------- */
 
 /* windows used to hide animation steps */
 static struct
@@ -116,9 +116,9 @@ static struct
 	Window w[4];
 } hide_wins;
 
-/* ---------------------------- exported variables (globals) ---------------- */
+/* ---------------------------- exported variables (globals) --------------- */
 
-/* ---------------------------- local functions ----------------------------- */
+/* ---------------------------- local functions ---------------------------- */
 
 #if 0
 static void print_g(char *text, rectangle *g)
@@ -165,9 +165,9 @@ static void combine_decor_gravities(
 }
 
 static void get_resize_decor_gravities_one_axis(
-	frame_decor_gravities_type *ret_grav, direction_type title_dir,
-	frame_move_resize_mode axis_mode, direction_type neg_dir,
-	direction_type pos_dir, int is_moving)
+	frame_decor_gravities_type *ret_grav, direction_t title_dir,
+	frame_move_resize_mode axis_mode, direction_t neg_dir,
+	direction_t pos_dir, int is_moving)
 {
 
 	int title_grav;
@@ -312,7 +312,7 @@ static void frame_setup_titlebar(
 	FvwmWindow *fw, rectangle *frame_g, window_parts setup_parts,
 	rectangle *diff_g)
 {
-	frame_title_layout_type title_layout;
+	frame_title_layout_t title_layout;
 	int i;
 
 	if (!HAS_TITLE(fw))
@@ -518,13 +518,13 @@ static int frame_get_titlebar_compression(
  *   The mode for the resize operation
  */
 static void frame_get_resize_decor_gravities(
-	frame_decor_gravities_type *ret_grav, direction_type title_dir,
+	frame_decor_gravities_type *ret_grav, direction_t title_dir,
 	frame_move_resize_mode rmode, rectangle *delta_g)
 {
 	frame_decor_gravities_type grav_x;
 	frame_decor_gravities_type grav_y;
-	direction_type title_dir_x;
-	direction_type title_dir_y;
+	direction_t title_dir_x;
+	direction_t title_dir_y;
 
 	gravity_split_xy_dir(&title_dir_x, &title_dir_y, title_dir);
 	get_resize_decor_gravities_one_axis(
@@ -658,8 +658,8 @@ static rectangle *frame_get_hidden_pos(
 	rectangle *ret_hidden_g)
 {
 	rectangle *target_g;
-	direction_type dir_x;
-	direction_type dir_y;
+	direction_t dir_x;
+	direction_t dir_y;
 
 	if (do_unhide == False)
 	{
@@ -1178,7 +1178,7 @@ static int frame_get_shading_laziness(
 	}
 }
 
-/* ---------------------------- interface functions ------------------------- */
+/* ---------------------------- interface functions ------------------------ */
 
 /* Initialise structures local to frame.c */
 void frame_init(void)
@@ -1247,7 +1247,7 @@ void frame_destroyed_frame(
 
 void frame_get_titlebar_dimensions(
 	FvwmWindow *fw, rectangle *frame_g, rectangle *diff_g,
-	frame_title_layout_type *title_layout)
+	frame_title_layout_t *title_layout)
 {
 	size_borders b;
 	int i;
@@ -1679,7 +1679,7 @@ frame_move_resize_args frame_create_move_resize_args(
 		mra->flags.do_not_configure_client = 1;
 	}
 	mra->mode = mr_mode;
-	mra->shade_dir = (direction_type)shade_dir;
+	mra->shade_dir = (direction_t)shade_dir;
 	mra->w_with_focus = (fw == get_focus_window()) ? FW_W(fw) : None;
 
 	/* calculate various geometries */
@@ -2013,4 +2013,4 @@ void frame_setup_shape(FvwmWindow *fw, int w, int h)
 	return;
 }
 
-/* ---------------------------- builtin commands ---------------------------- */
+/* ---------------------------- builtin commands --------------------------- */

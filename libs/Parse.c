@@ -18,7 +18,7 @@
 ** Parse.c: routines for parsing in fvwm & modules
 */
 
-/* ---------------------------- included header files ----------------------- */
+/* ---------------------------- included header files ---------------------- */
 
 #include "config.h"
 
@@ -30,23 +30,23 @@
 #include "Strings.h"
 #include "Parse.h"
 
-/* ---------------------------- local definitions --------------------------- */
+/* ---------------------------- local definitions -------------------------- */
 
-/* ---------------------------- local macros -------------------------------- */
+/* ---------------------------- local macros ------------------------------- */
 
-/* ---------------------------- imports ------------------------------------- */
+/* ---------------------------- imports ------------------------------------ */
 
-/* ---------------------------- included code files ------------------------- */
+/* ---------------------------- included code files ------------------------ */
 
-/* ---------------------------- local types --------------------------------- */
+/* ---------------------------- local types -------------------------------- */
 
-/* ---------------------------- forward declarations ------------------------ */
+/* ---------------------------- forward declarations ----------------------- */
 
-/* ---------------------------- local variables ----------------------------- */
+/* ---------------------------- local variables ---------------------------- */
 
-/* ---------------------------- exported variables (globals) ---------------- */
+/* ---------------------------- exported variables (globals) --------------- */
 
-/* ---------------------------- local functions ----------------------------- */
+/* ---------------------------- local functions ---------------------------- */
 
 /* Copies a token beginning at src to a previously allocated area dest. dest
  * must be large enough to hold the token. Leading whitespace causes the token
@@ -122,7 +122,7 @@ static char *CopyToken(
 	return src;
 }
 
-/* ---------------------------- interface functions ------------------------- */
+/* ---------------------------- interface functions ------------------------ */
 
 /* This function escapes all occurences of the characters in the string qchars
  * in the string as with a preceding echar character.  The resulting string is
@@ -431,7 +431,7 @@ int XCmpToken(const char *s, const char **t)
 }
 
 
-/****************************************************************************
+/*
  *
  * Gets the next "word" of input from string indata.
  * "word" is a string with no spaces, or a qouted string.
@@ -449,7 +449,7 @@ int XCmpToken(const char *s, const char **t)
  * Use "spaces" and "delims" to define additional space/delimiter
  * characters (spaces are skipped before a token, delimiters are not).
  *
- **************************************************************************/
+ */
 char *DoGetNextToken(
 	char *indata, char **token, char *spaces, char *delims, char *out_delim)
 {
@@ -500,7 +500,7 @@ char *SkipNTokens(char *indata, unsigned int n)
  * convenience functions
  */
 
-/****************************************************************************
+/*
  *
  * Works like GetNextToken, but with the following differences:
  *
@@ -510,7 +510,7 @@ char *SkipNTokens(char *indata, unsigned int n)
  * e.g. GetModuleResource("*FvwmPagerGeometry", &token, "FvwmPager")
  * returns "Geometry" in token.
  *
- **************************************************************************/
+ */
 char *GetModuleResource(char *indata, char **resource, char *module_name)
 {
 	char *tmp;
@@ -539,7 +539,7 @@ char *GetModuleResource(char *indata, char **resource, char *module_name)
 }
 
 
-/****************************************************************************
+/*
  *
  * This function uses GetNextToken to parse action for up to num integer
  * arguments. The number of values actually found is returned.
@@ -548,7 +548,7 @@ char *GetModuleResource(char *indata, char **resource, char *module_name)
  * integer values. The index of the matched suffix is returned in
  * ret_suffixnum (0 = no suffix, 1 = first suffix in suffixlist ...).
  *
- **************************************************************************/
+ */
 int _get_suffixed_integer_arguments(
 	char *action, char **ret_action, int *retvals, int num,
 	char *suffixlist, int *ret_suffixnum, char *parsestring)
@@ -631,7 +631,7 @@ int GetSuffixedIntegerArguments(
 		"%d%n");
 }
 
-/****************************************************************************
+/*
  *
  * This function converts the suffix/number pairs returned by
  * GetSuffixedIntegerArguments into pixels. The unit_table is an array of
@@ -642,31 +642,31 @@ int GetSuffixedIntegerArguments(
  * into the table. No size checking of the unit_table is done, so make sure
  * it is big enough before calling this function.
  *
- **************************************************************************/
+ */
 int SuffixToPercentValue(int value, int suffix, int *unit_table)
 {
 	return (value * unit_table[suffix]) / 100;
 }
 
-/****************************************************************************
+/*
  *
  * This function uses GetNextToken to parse action for up to num integer
  * arguments. The number of values actually found is returned.
  * If ret_action is non-NULL, a pointer to the next token is returned there.
  *
- **************************************************************************/
+ */
 int GetIntegerArguments(char *action, char **ret_action, int *retvals,int num)
 {
 	return _get_suffixed_integer_arguments(
 		action, ret_action, retvals, num, NULL, NULL, "%d%n");
 }
 
-/****************************************************************************
+/*
  *
  * Same as above, but supports hexadecimal and octal integers via 0x and 0
  * prefixes.
  *
- **************************************************************************/
+ */
 int GetIntegerArgumentsAnyBase(
 	char *action, char **ret_action, int *retvals,int num)
 {
@@ -674,7 +674,7 @@ int GetIntegerArgumentsAnyBase(
 		action, ret_action, retvals, num, NULL, NULL, "%i%n");
 }
 
-/***************************************************************************
+/*
  *
  * This function tries to match a token with a list of strings and returns
  * the position of token in the array or -1 if no match is found. The last
@@ -687,7 +687,7 @@ int GetIntegerArgumentsAnyBase(
  * if next is non-NULL, *next will be set to point to the first character
  * in token after the match.
  *
- **************************************************************************/
+ */
 int GetTokenIndex(char *token, char **list, int len, char **next)
 {
 	int i;
@@ -727,14 +727,14 @@ int GetTokenIndex(char *token, char **list, int len, char **next)
 	return (list[i]) ? i : -1;
 }
 
-/***************************************************************************
+/*
  *
  * This function does roughly the same as GetTokenIndex but reads the
  * token from string action with GetNextToken. The index is returned
  * in *index. The return value is a pointer to the character after the
  * token (just like the return value of GetNextToken).
  *
- **************************************************************************/
+ */
 char *GetNextTokenIndex(char *action, char **list, int len, int *index)
 {
 	char *token;
@@ -757,13 +757,13 @@ char *GetNextTokenIndex(char *action, char **list, int len, int *index)
 }
 
 
-/***************************************************************************
+/*
  *
  * Parses two integer arguments given in the form <int><character><int>.
  * character can be ' ' or 'x', but any other character is allowed too
  * (except 'p' or 'P').
  *
- **************************************************************************/
+ */
 int GetRectangleArguments(char *action, int *width, int *height)
 {
 	char *token;

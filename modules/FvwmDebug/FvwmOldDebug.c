@@ -1,3 +1,4 @@
+/* -*-c-*- */
 #define OUTPUT_FLAGS
 /* This module, and the entire FvwmDebug program, and the concept for
  * interfacing this module to the Window Manager, are all original work
@@ -93,12 +94,12 @@ pid_t spawn_xtee(void)
   return pid;
 } /* spawn_xtee */
 
-/***********************************************************************
+/*
  *
  *  Procedure:
  *      main - start of module
  *
- ***********************************************************************/
+ */
 int main(int argc, char **argv)
 {
   const char *temp, *s;
@@ -194,12 +195,12 @@ int main(int argc, char **argv)
 }
 
 
-/***********************************************************************
+/*
  *
  *  Procedure:
  *      Loop - wait for data to process
  *
- ***********************************************************************/
+ */
 void Loop(const int *fd)
 {
     while (1) {
@@ -211,12 +212,12 @@ void Loop(const int *fd)
 }
 
 
-/***********************************************************************
+/*
  *
  *  Procedure:
  *      Process message - examines packet types, and takes appropriate action
  *
- ***********************************************************************/
+ */
 void process_message(unsigned long type, const unsigned long *body)
 {
   switch(type)
@@ -336,12 +337,12 @@ void process_message(unsigned long type, const unsigned long *body)
 
 
 
-/***********************************************************************
+/*
  *
  *  Procedure:
  *      SIGPIPE handler - SIGPIPE means fvwm is dying
  *
- ***********************************************************************/
+ */
 void DeadPipe(int nonsense)
 {
   (void)nonsense;
@@ -349,12 +350,12 @@ void DeadPipe(int nonsense)
   exit(0);
 }
 
-/***********************************************************************
+/*
  *
  *  Procedure:
  *      list_old_configure - displays packet contents to output
  *
- ***********************************************************************/
+ */
 void list_old_configure(const unsigned long *body)
 {
   fprintf(output,"\t ID %lx\n",body[0]);
@@ -382,12 +383,12 @@ void list_old_configure(const unsigned long *body)
   fflush(output);
 }
 
-/***********************************************************************
+/*
  *
  *  Procedure:
  *      list_new_page - displays packet contents to output
  *
- ***********************************************************************/
+ */
 void list_new_page(const unsigned long *body)
 {
   fprintf(output,"\t x %ld\n",(long)body[0]);
@@ -396,24 +397,24 @@ void list_new_page(const unsigned long *body)
   fflush(output);
 }
 
-/***********************************************************************
+/*
  *
  *  Procedure:
  *      list_new_desk - displays packet contents to output
  *
- ***********************************************************************/
+ */
 void list_new_desk(const unsigned long *body)
 {
   fprintf(output,"\t desk %ld\n",(long)body[0]);
   fflush(output);
 }
 
-/***********************************************************************
+/*
  *
  *  Procedure:
  *      list_focus - displays packet contents to output
  *
- ***********************************************************************/
+ */
 void list_focus(const unsigned long *body)
 {
   fprintf(output,"\t ID %lx\n",body[0]);
@@ -422,13 +423,13 @@ void list_focus(const unsigned long *body)
   fflush(output);
 }
 
-/***********************************************************************
+/*
  *
  *  Procedure:
  *      list_winid - displays packet contents to for three-field
  *                   window ID-bearing packets
  *
- ***********************************************************************/
+ */
 void list_winid(const unsigned long *body)
 {
   fprintf(output,"\t ID %lx\n",body[0]);
@@ -438,12 +439,12 @@ void list_winid(const unsigned long *body)
 }
 
 
-/***********************************************************************
+/*
  *
  *  Procedure:
  *      list_unknown - handles an unrecognized packet.
  *
- ***********************************************************************/
+ */
 void list_unknown(const unsigned long *body)
 {
   (void)body;
@@ -451,12 +452,12 @@ void list_unknown(const unsigned long *body)
   fflush(output);
 }
 
-/***********************************************************************
+/*
  *
  *  Procedure:
  *      list_iconify - displays packet contents to output
  *
- ***********************************************************************/
+ */
 void list_icon(const unsigned long *body)
 {
   fprintf(output,"\t ID %lx\n",body[0]);
@@ -469,12 +470,12 @@ void list_icon(const unsigned long *body)
   fflush(output);
 }
 
-/***********************************************************************
+/*
  *
  *  Procedure:
  *      list_window_name - displays packet contents to output
  *
- ***********************************************************************/
+ */
 
 void list_window_name(const unsigned long *body)
 {
@@ -485,12 +486,12 @@ void list_window_name(const unsigned long *body)
   fflush(output);
 }
 
-/***********************************************************************
+/*
  *
  *  Procedure:
  *      list_restack - displays packet contents to output
  *
- ***********************************************************************/
+ */
 
 void list_restack(const unsigned long *body)
 {
@@ -512,12 +513,12 @@ void list_restack(const unsigned long *body)
   fflush(output);
 }
 
-/***********************************************************************
+/*
  *
  *  Procedure:
  *      list_error - displays packet contents to output
  *
- ***********************************************************************/
+ */
 
 void list_error(const unsigned long *body)
 {
@@ -525,12 +526,12 @@ void list_error(const unsigned long *body)
   fflush(output);
 }
 
-/***********************************************************************
+/*
  *
  *  Procedure:
  *      list_configure - displays packet contents to output
  *
- ***********************************************************************/
+ */
 void list_configure(const unsigned long *body)
 {
   struct ConfigWinPacket *p = (void *)body;

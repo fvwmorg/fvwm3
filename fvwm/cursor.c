@@ -14,7 +14,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-/* ---------------------------- included header files ----------------------- */
+/* ---------------------------- included header files ---------------------- */
 
 #include "config.h"
 
@@ -32,19 +32,19 @@
 #include "cursor.h"
 #include "menus.h"
 
-/* ---------------------------- local definitions --------------------------- */
+/* ---------------------------- local definitions -------------------------- */
 
-/* ---------------------------- local macros -------------------------------- */
+/* ---------------------------- local macros ------------------------------- */
 
-/* ---------------------------- imports ------------------------------------- */
+/* ---------------------------- imports ------------------------------------ */
 
-/* ---------------------------- included code files ------------------------- */
+/* ---------------------------- included code files ------------------------ */
 
-/* ---------------------------- local types --------------------------------- */
+/* ---------------------------- local types -------------------------------- */
 
-/* ---------------------------- forward declarations ------------------------ */
+/* ---------------------------- forward declarations ----------------------- */
 
-/* ---------------------------- local variables ----------------------------- */
+/* ---------------------------- local variables ---------------------------- */
 
 static Cursor cursors[CRS_MAX];
 static const unsigned int default_cursors[CRS_MAX] =
@@ -76,9 +76,9 @@ static const unsigned int default_cursors[CRS_MAX] =
 	XC_plus                  /* CRS_STROKE */
 };
 
-/* ---------------------------- exported variables (globals) ---------------- */
+/* ---------------------------- exported variables (globals) --------------- */
 
-/* ---------------------------- local functions ----------------------------- */
+/* ---------------------------- local functions ---------------------------- */
 
 static void SafeDefineCursor(Window w, Cursor cursor)
 {
@@ -90,7 +90,7 @@ static void SafeDefineCursor(Window w, Cursor cursor)
 	return;
 }
 
-/* ---------------------------- interface functions ------------------------- */
+/* ---------------------------- interface functions ------------------------ */
 
 /* CreateCursors - Loads fvwm cursors */
 Cursor *CreateCursors(Display *dpy)
@@ -106,7 +106,7 @@ Cursor *CreateCursors(Display *dpy)
 	return cursors;
 }
 
-/* ---------------------------- builtin commands ---------------------------- */
+/* ---------------------------- builtin commands --------------------------- */
 
 void CMD_CursorStyle(F_CMD_ARGS)
 {

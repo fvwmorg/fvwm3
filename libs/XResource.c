@@ -1,6 +1,6 @@
-/* Copyright (C) 1999  Dominik Vogt
- *
- * This program is free software; you can redistribute it and/or modify
+/* -*-c-*- */
+/* Copyright (C) 1999  Dominik Vogt */
+/* This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 2 of the License, or
  * (at your option) any later version.
@@ -31,11 +31,11 @@
 
 
 
-/***************************************************************************
+/*
  * If you have a module MyModule and want to parse X resources as well as
  * command line options and a config file:
  *
- *** EXAMPLE ***************************************************************/
+ *** EXAMPLE */
 #if 0
     #include <fvwmlib.h>
 
@@ -94,7 +94,7 @@
     }
 #endif
 
-/*** END OF EXAMPLE ********************************************************/
+/*** END OF EXAMPLE ***/
 
 
 
@@ -124,7 +124,7 @@ static void DoMergeString(char *resource, XrmDatabase *ptarget, Bool override)
   XrmCombineDatabase(db, ptarget, override);
 }
 
-/***************************************************************************
+/*
  *
  * Merges all X resources for the display/screen into a Xrm database.
  * If the database does not exist (*pdb == NULL), a new database is created.
@@ -133,7 +133,7 @@ static void DoMergeString(char *resource, XrmDatabase *ptarget, Bool override)
  * Please remember to destroy the database with XrmDestroyDatabase(*pdb)
  * if you do not need it amymore.
  *
- ***************************************************************************/
+ */
 void MergeXResources(Display *dpy, XrmDatabase *pdb, Bool override)
 {
   if (!*pdb)
@@ -144,7 +144,7 @@ void MergeXResources(Display *dpy, XrmDatabase *pdb, Bool override)
 		override);
 }
 
-/***************************************************************************
+/*
  *
  * Parses the command line given through pargc/argv and puts recognized
  * entries into the Xrm database *pdb (if *pdb is NULL a new database is
@@ -160,7 +160,7 @@ void MergeXResources(Display *dpy, XrmDatabase *pdb, Bool override)
  * Please remember to destroy the database with XrmDestroyDatabase(*pdb)
  * if you do not need it amymore.
  *
- ***************************************************************************/
+ */
 void MergeCmdLineResources(XrmDatabase *pdb, XrmOptionDescList opts,
 			   int num_opts, char *name, int *pargc, char **argv,
 			   Bool fNoDefaults)
@@ -174,7 +174,7 @@ void MergeCmdLineResources(XrmDatabase *pdb, XrmOptionDescList opts,
 		    name, pargc, argv);
 }
 
-/***************************************************************************
+/*
  *
  * Takes a line from a config file and puts a corresponding value into the
  * Xrm database *pdb (will be created if *pdb is NULL). 'prefix' is the
@@ -195,7 +195,7 @@ void MergeCmdLineResources(XrmDatabase *pdb, XrmOptionDescList opts,
  * Please remember to destroy the database with XrmDestroyDatabase(*pdb)
  * if you do not need it amymore.
  *
- ***************************************************************************/
+ */
 Bool MergeConfigLineResource(XrmDatabase *pdb, char *line, char *prefix,
 			     char *bindstr)
 {
@@ -245,7 +245,7 @@ Bool MergeConfigLineResource(XrmDatabase *pdb, char *line, char *prefix,
   return True;
 }
 
-/***************************************************************************
+/*
  *
  * Reads the string-value for the pair prefix/resource from the Xrm database
  * db and returns a pointer to it. The string may only be read and must not
@@ -261,7 +261,7 @@ Bool MergeConfigLineResource(XrmDatabase *pdb, char *line, char *prefix,
  *
  * returns the resource value of the "Geometry" resource for MyModule in r.
  *
- ***************************************************************************/
+ */
 Bool GetResourceString(
   XrmDatabase db, const char *resource, const char *prefix, XrmValue *xval)
 {

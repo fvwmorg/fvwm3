@@ -1,3 +1,4 @@
+/* -*-c-*- */
 /* Copyright (C) 2002 the late Joey Shutup.
  *
  * http://www.streetmap.co.uk/streetmap.dll?postcode2map?BS24+9TZ

@@ -1,27 +1,13 @@
 /* -*-c-*- */
-/* This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
- */
 
 #ifndef FUNCTIONS_H
 #define FUNCTIONS_H
 
-/* ---------------------------- included header files ----------------------- */
+/* ---------------------------- included header files ---------------------- */
 
 #include "execcontext.h"
 
-/* ---------------------------- global definitions -------------------------- */
+/* ---------------------------- global definitions ------------------------- */
 
 /* Bits for the function flag byte. */
 typedef enum
@@ -37,9 +23,9 @@ typedef enum
 	FUNC_DONT_DEFER          = 0x80
 } execute_flags_t;
 
-/* ---------------------------- global macros ------------------------------- */
+/* ---------------------------- global macros ------------------------------ */
 
-/* ---------------------------- type definitions ---------------------------- */
+/* ---------------------------- type definitions --------------------------- */
 
 /* used for parsing commands*/
 typedef struct
@@ -50,17 +36,17 @@ typedef struct
 #else
 	void (*action)();
 #endif
-	short func_type;
+	short func_t;
 	FUNC_FLAGS_TYPE flags;
 	int cursor;
-} func_type;
+} func_t;
 
-/* ---------------------------- exported variables (globals) ---------------- */
+/* ---------------------------- exported variables (globals) --------------- */
 
-/* ---------------------------- interface functions ------------------------- */
+/* ---------------------------- interface functions ------------------------ */
 
-void find_func_type(
-	char *action, short *func_type, unsigned char *flags);
+void find_func_t(
+	char *action, short *func_t, unsigned char *flags);
 Bool functions_is_complex_function(
 	const char *function_name);
 void execute_function(

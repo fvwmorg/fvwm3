@@ -1,7 +1,5 @@
 /* -*-c-*- */
-/* Copyright (C) 2002  fvwm workers
- *
- * This program is free software; you can redistribute it and/or modify
+/* This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 2 of the License, or
  * (at your option) any later version.
@@ -16,7 +14,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-/* ---------------------------- included header files ----------------------- */
+/* ---------------------------- included header files ---------------------- */
 
 #include "config.h"
 
@@ -29,19 +27,19 @@
 #include "libs/PictureBase.h"
 #include "libs/FImage.h"
 
-/* ---------------------------- local definitions --------------------------- */
+/* ---------------------------- local definitions -------------------------- */
 
-/* ---------------------------- local macros -------------------------------- */
+/* ---------------------------- local macros ------------------------------- */
 
-/* ---------------------------- imports ------------------------------------- */
+/* ---------------------------- imports ------------------------------------ */
 
-/* ---------------------------- included code files ------------------------- */
+/* ---------------------------- included code files ------------------------ */
 
-/* ---------------------------- local types --------------------------------- */
+/* ---------------------------- local types -------------------------------- */
 
-/* ---------------------------- forward declarations ------------------------ */
+/* ---------------------------- forward declarations ----------------------- */
 
-/* ---------------------------- local variables ----------------------------- */
+/* ---------------------------- local variables ---------------------------- */
 
 int FShmMajorOpCode = -10000;
 int FShmEventBase = -10000;
@@ -49,9 +47,9 @@ int FShmErrorBase = -10000;
 Bool FShmInitialized = False;
 Bool FShmImagesSupported = False;
 
-/* ---------------------------- exported variables (globals) ---------------- */
+/* ---------------------------- exported variables (globals) --------------- */
 
-/* ---------------------------- local functions ----------------------------- */
+/* ---------------------------- local functions ---------------------------- */
 
 static void FShmInit(Display *dpy)
 {
@@ -135,7 +133,7 @@ static void FShmSafeCreateImage(
 	}
 }
 
-/* ---------------------------- interface functions ------------------------- */
+/* ---------------------------- interface functions ------------------------ */
 
 FImage *FCreateFImage (
 	Display *dpy, Visual *visual, unsigned int depth, int format,
@@ -144,7 +142,7 @@ FImage *FCreateFImage (
 	FImage *fim;
 
 	FShmInit(dpy);
-	
+
 	fim = (FImage *)safemalloc(sizeof(FImage));
 	fim->im = NULL;
 	fim->shminfo = NULL;
@@ -210,7 +208,7 @@ void FPutFImage(
 	Display *dpy, Drawable d, GC gc, FImage *fim, int src_x, int src_y,
 	int dest_x, int dest_y, unsigned int width, unsigned int height)
 {
-	
+
 	if (fim->shminfo)
 	{
 		if (FShmPutImage(

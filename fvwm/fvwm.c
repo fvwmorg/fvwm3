@@ -14,17 +14,17 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-/****************************************************************************
+/*
  * This module is all original code
  * by Rob Nation
  * Copyright 1993, Robert Nation
  *     You may use this code for any purpose, as long as the original
  *     copyright remains in the source code and all documentation
- ****************************************************************************/
+ */
 
-/* ---------------------------- included header files ----------------------- */
+/* ---------------------------- included header files ---------------------- */
 
-#include <config.h>
+#include "config.h"
 
 #include <stdio.h>
 #include <signal.h>
@@ -77,7 +77,7 @@
 #include "menus.h"
 #include "libs/FGettext.h"
 
-/* ---------------------------- local definitions --------------------------- */
+/* ---------------------------- local definitions -------------------------- */
 
 #define MAXHOSTNAME 255
 #define MAX_CFG_CMDS 10
@@ -90,15 +90,15 @@
 #define s_g_width 4
 #define s_g_height 4
 
-/* ---------------------------- local macros -------------------------------- */
+/* ---------------------------- local macros ------------------------------- */
 
-/* ---------------------------- imports ------------------------------------- */
+/* ---------------------------- imports ------------------------------------ */
 
 extern int last_event_type;
 
-/* ---------------------------- included code files ------------------------- */
+/* ---------------------------- included code files ------------------------ */
 
-/* ---------------------------- local types --------------------------------- */
+/* ---------------------------- local types -------------------------------- */
 
 typedef enum
 {
@@ -107,9 +107,9 @@ typedef enum
 	FVWM_RESTART
 } fvwm_run_state_t;
 
-/* ---------------------------- forward declarations ------------------------ */
+/* ---------------------------- forward declarations ----------------------- */
 
-/* ---------------------------- local variables ----------------------------- */
+/* ---------------------------- local variables ---------------------------- */
 
 static char *config_commands[MAX_CFG_CMDS];
 static int num_config_commands=0;
@@ -134,7 +134,7 @@ static const char *initFunctionNames[4] =
 	"Nop"
 };
 
-/* ---------------------------- exported variables (globals) ---------------- */
+/* ---------------------------- exported variables (globals) --------------- */
 
 int master_pid;                 /* process number of 1st fvwm process */
 
@@ -200,7 +200,7 @@ Atom _XA_SM_CLIENT_ID;
 Atom _XA_XROOTPMAP_ID;
 Atom _XA_XSETROOT_ID;
 
-/* ---------------------------- local functions ----------------------------- */
+/* ---------------------------- local functions ---------------------------- */
 
 static void SaveDesktopState()
 {
@@ -280,9 +280,9 @@ static void catch_exit(void)
 	return;
 }
 
-/*************************************************************************
+/*
  * Restart on a signal
- ************************************************************************/
+ */
 static RETSIGTYPE
 Restart(int sig)
 {
@@ -490,12 +490,12 @@ static int parseCommandArgs(
 	return errorCode ? errorCode : argc;
 }
 
-/***********************************************************************
+/*
  *
  *  Procedure:
  *      Done - tells FVWM to clean up and exit
  *
- ***********************************************************************/
+ */
 /* if restart is true, command must not be NULL... */
 void Done(int restart, char *command)
 {
@@ -680,11 +680,11 @@ void Done(int restart, char *command)
 	exit(0);
 }
 
-/*************************************************************************
+/*
  * Reap child processes, preventing them from becoming zombies.
  * We do this asynchronously within the SIGCHLD handler so that
  * "it just happens".
- ************************************************************************/
+ */
 static RETSIGTYPE
 ReapChildren(int sig)
 {
@@ -1471,7 +1471,7 @@ static int FvwmErrorHandler(Display *dpy, XErrorEvent *event)
 	return 0;
 }
 
-/* ---------------------------- interface functions ------------------------- */
+/* ---------------------------- interface functions ------------------------ */
 
 /* Does initial window captures and runs init/restart function */
 void StartupStuff(void)

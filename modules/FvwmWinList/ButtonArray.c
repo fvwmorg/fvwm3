@@ -1,3 +1,4 @@
+/* -*-c-*- */
 /* FvwmWinList Module for Fvwm.
  *
  *  Copyright 1994,  Mike Finger (mfinger@mermaid.micro.umn.edu or
@@ -10,21 +11,6 @@
  * program for any purpose is given, as long as the copyright is kept intact.
  *
  *  Things to do:  Convert to C++  (In Progress)
- */
-
-/* This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
 /* This program is free software; you can redistribute it and/or modify
@@ -74,15 +60,13 @@ extern long CurrentDesk;
 extern int ShowCurrentDesk;
 extern int UseSkipList;
 
-/*************************************************************************
- *                                                                       *
- *  Button handling functions and procedures                             *
- *                                                                       *
- *************************************************************************/
+/*
+ * Button handling functions and procedures
+ */
 
-/* -------------------------------------------------------------------------
-   ButtonNew - Allocates and fills a new button structure
-   ------------------------------------------------------------------------- */
+/*
+  ButtonNew - Allocates and fills a new button structure
+*/
 Button *ButtonNew(char *title, FvwmPicture *p, int up)
 {
   Button *new;
@@ -110,9 +94,9 @@ Button *ButtonNew(char *title, FvwmPicture *p, int up)
   return new;
 }
 
-/******************************************************************************
+/*
   InitArray - Initialize the arrary of buttons
-******************************************************************************/
+*/
 void InitArray(ButtonArray *array,int x,int y,int w,int h,int rw)
 {
   array->count=0;
@@ -124,9 +108,9 @@ void InitArray(ButtonArray *array,int x,int y,int w,int h,int rw)
   array->rw=rw;
 }
 
-/******************************************************************************
+/*
   UpdateArray - Update the array width
-******************************************************************************/
+*/
 void UpdateArray(ButtonArray *array, int w)
 {
   Button *temp;
@@ -139,9 +123,9 @@ void UpdateArray(ButtonArray *array, int w)
   }
 }
 
-/******************************************************************************
+/*
   Reorder buttons in window list order (see List.c:ReorderList()
-******************************************************************************/
+*/
 void ReorderButtons(ButtonArray *array, int ButNum, int FlipFocus)
 {
   Button *temp = array->head, *prev = NULL;
@@ -183,9 +167,9 @@ void ReorderButtons(ButtonArray *array, int ButNum, int FlipFocus)
       temp->needsupdate = True;
 }
 
-/******************************************************************************
+/*
   AddButton - Allocate space for and add the button to the bottom
-******************************************************************************/
+*/
 int AddButton(ButtonArray *array, char *title, FvwmPicture *p, int up)
 {
   Button *new;
@@ -214,9 +198,9 @@ int AddButton(ButtonArray *array, char *title, FvwmPicture *p, int up)
   return (array->count-1);
 }
 
-/******************************************************************************
+/*
   UpdateButton - Change the name/state of a button
-******************************************************************************/
+*/
 int UpdateButton(ButtonArray *array, int butnum, char *title, int up)
 {
   Button *temp;
@@ -274,9 +258,9 @@ void UpdateButtonIconified(ButtonArray *array, int butnum, int iconified)
 }
 
 
-/******************************************************************************
+/*
   UpdateButtonSet - Change colour set of a button between odd and even
-******************************************************************************/
+*/
 int UpdateButtonSet(ButtonArray *array, int butnum, int set)
 {
   Button *btn;
@@ -293,9 +277,9 @@ int UpdateButtonSet(ButtonArray *array, int butnum, int set)
   return 1;
 }
 
-/******************************************************************************
+/*
   UpdateButtonDeskFlags - Change desk and flags of a button
-******************************************************************************/
+*/
 int UpdateButtonDeskFlags(ButtonArray *array, int butnum, long desk,
 			  int is_sticky, int skip)
 {
@@ -312,9 +296,9 @@ int UpdateButtonDeskFlags(ButtonArray *array, int butnum, long desk,
 }
 
 
-/******************************************************************************
+/*
   RemoveButton - Delete a button from the list
-******************************************************************************/
+*/
 void RemoveButton(ButtonArray *array, int butnum)
 {
   Button *temp, *to_die;
@@ -344,9 +328,9 @@ void RemoveButton(ButtonArray *array, int butnum)
     temp->needsupdate = 1;
 }
 
-/******************************************************************************
+/*
   find_n - Find the nth button in the list (Use internally)
-******************************************************************************/
+*/
 Button *find_n(ButtonArray *array, int n)
 {
   Button *temp;
@@ -357,9 +341,9 @@ Button *find_n(ButtonArray *array, int n)
   return temp;
 }
 
-/******************************************************************************
+/*
   FreeButton - Free space allocated to a button
-******************************************************************************/
+*/
 void FreeButton(Button *ptr)
 {
   if (ptr != NULL) {
@@ -368,9 +352,9 @@ void FreeButton(Button *ptr)
   }
 }
 
-/******************************************************************************
+/*
   FreeAllButtons - Free the whole array of buttons
-******************************************************************************/
+*/
 void FreeAllButtons(ButtonArray *array)
 {
 Button *temp,*temp2;
@@ -382,9 +366,9 @@ Button *temp,*temp2;
   }
 }
 
-/******************************************************************************
+/*
   DoButton - Draw the specified button.  (Used internally)
-******************************************************************************/
+*/
 void DoButton(
 	Button *button, int x, int y, int w, int h, Bool clear_bg, XEvent *evp)
 {
@@ -587,9 +571,9 @@ void DoButton(
 	button->needsupdate=0;
 }
 
-/******************************************************************************
+/*
   DrawButtonArray - Draw the whole array (all=1), or only those that need.
-******************************************************************************/
+*/
 void DrawButtonArray(
 	ButtonArray *barray, Bool all, Bool clear_bg, XEvent *evp)
 {
@@ -606,9 +590,9 @@ void DrawButtonArray(
     }
 }
 
-/******************************************************************************
+/*
   Mark all the buttons in the array as dirty
-******************************************************************************/
+*/
 void DirtyButtonArray(ButtonArray *barray)
 {
 	Button *btn;
@@ -621,9 +605,9 @@ void DirtyButtonArray(ButtonArray *barray)
 	return;
 }
 
-/******************************************************************************
+/*
   DrawButtonArray - Draw the whole array (all=1), or only those that need.
-******************************************************************************/
+*/
 void DrawTransparentButtonArray(ButtonArray *barray)
 {
 	Button *btn;
@@ -662,9 +646,9 @@ void DrawTransparentButtonArray(ButtonArray *barray)
 		}
 	}
 }
-/******************************************************************************
+/*
   SwitchButton - Alternate the state of a button
-******************************************************************************/
+*/
 void SwitchButton(ButtonArray *array, int butnum)
 {
   Button *btn;
@@ -725,9 +709,9 @@ void RadioButton(ButtonArray *array, int butnum, int butnumpressed)
   }
 }
 
-/******************************************************************************
+/*
   WhichButton - Based on x,y which button was pressed
-******************************************************************************/
+*/
 int WhichButton(ButtonArray *array,int x, int y)
 {
   int num;
@@ -748,9 +732,9 @@ int WhichButton(ButtonArray *array,int x, int y)
   return(num);
 }
 
-/******************************************************************************
+/*
   ButtonName - Return the name of the button
-******************************************************************************/
+*/
 char *ButtonName(ButtonArray *array, int butnum)
 {
   Button *temp;
@@ -759,9 +743,9 @@ char *ButtonName(ButtonArray *array, int butnum)
   return temp->title;
 }
 
-/******************************************************************************
+/*
   PrintButtons - Print the array of button names to the console. (Debugging)
-******************************************************************************/
+*/
 void PrintButtons(ButtonArray *array)
 {
   Button *temp;
@@ -771,9 +755,9 @@ void PrintButtons(ButtonArray *array)
     ConsoleMessage("   %s is %s\n",temp->title,(temp->up) ? "Up":"Down");
 }
 
-/******************************************************************************
+/*
   ButtonPicture - Return the mini icon associated with the button
-******************************************************************************/
+*/
 FvwmPicture *ButtonPicture(ButtonArray *array, int butnum)
 {
   Button *temp;
@@ -786,9 +770,9 @@ FvwmPicture *ButtonPicture(ButtonArray *array, int butnum)
   return &(temp->p);
 }
 
-/******************************************************************************
+/*
   IsButtonVisible - Says if the button should be in winlist
-******************************************************************************/
+*/
 int IsButtonVisible(Button *btn)
 {
 
@@ -799,10 +783,10 @@ int IsButtonVisible(Button *btn)
     return 0;
 }
 
-/******************************************************************************
+/*
   IsButtonIndexVisible - Says if the button of index butnum should be
   in winlist
-******************************************************************************/
+*/
 int IsButtonIndexVisible(ButtonArray *array, int butnum)
 {
   Button *temp;
@@ -816,9 +800,9 @@ int IsButtonIndexVisible(ButtonArray *array, int butnum)
 }
 
 #if 0
-/******************************************************************************
+/*
   ButtonArrayMaxWidth - Calculate the width needed for the widest title
-******************************************************************************/
+*/
 int ButtonArrayMaxWidth(ButtonArray *array)
 {
 Button *temp;

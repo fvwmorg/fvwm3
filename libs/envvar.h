@@ -1,12 +1,8 @@
+/* -*-c-*- */
 #ifndef FVWMLIB_ENVVAR_H
 #define FVWMLIB_ENVVAR_H
 
-/*-------------------------------------------------------------------------
- *
- *  NAME          envExpand
- *
- *  FUNCTION      Expand environment variables in a string.
- *
+/*
  *  SYNOPSIS      #include "envvar.h"
  *                int envExpand(char *s, int maxstrlen);
  *
@@ -23,11 +19,7 @@
  */
 int envExpand(char *s, int maxstrlen);
 
-
-/*-------------------------------------------------------------------------
- *
- *  NAME          envDupExpand
- *
+/*
  *  FUNCTION      Expand environment variables into a new string.
  *
  *  SYNOPSIS      #include "envvar.h"
@@ -50,11 +42,7 @@ int envExpand(char *s, int maxstrlen);
  */
 char *envDupExpand(const char *s, int extra);
 
-
-/*-------------------------------------------------------------------------
- *
- *  NAME          getFirstEnv
- *
+/*
  *  FUNCTION      Search for the first environment variable and return
  *                its contents and coordinates in the given string.
  *

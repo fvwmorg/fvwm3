@@ -14,19 +14,19 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-/*****************************************************************************
+/*
  * This module is all original code
  * by Rob Nation
  * Copyright 1993, Robert Nation
  *     You may use this code for any purpose, as long as the original
  *     copyright remains in the source code and all documentation
- ****************************************************************************/
+ */
 
 /* IMPORTANT NOTE: Do *not* use any constant numbers in this file. All values
  * have to be #defined in the section below or defaults.h to ensure full
  * control over the menus. */
 
-/* ---------------------------- included header files ----------------------- */
+/* ---------------------------- included header files ---------------------- */
 
 #include "config.h"
 
@@ -40,23 +40,23 @@
 #include "screen.h"
 #include "menus.h"
 
-/* ---------------------------- local definitions --------------------------- */
+/* ---------------------------- local definitions -------------------------- */
 
-/* ---------------------------- local macros -------------------------------- */
+/* ---------------------------- local macros ------------------------------- */
 
-/* ---------------------------- imports ------------------------------------- */
+/* ---------------------------- imports ------------------------------------ */
 
-/* ---------------------------- included code files ------------------------- */
+/* ---------------------------- included code files ------------------------ */
 
-/* ---------------------------- local types --------------------------------- */
+/* ---------------------------- local types -------------------------------- */
 
-/* ---------------------------- forward declarations ------------------------ */
+/* ---------------------------- forward declarations ----------------------- */
 
-/* ---------------------------- local variables ----------------------------- */
+/* ---------------------------- local variables ---------------------------- */
 
-/* ---------------------------- exported variables (globals) ---------------- */
+/* ---------------------------- exported variables (globals) --------------- */
 
-/* ---------------------------- local functions ----------------------------- */
+/* ---------------------------- local functions ---------------------------- */
 
 static void menu_func(F_CMD_ARGS, Bool fStaysUp)
 {
@@ -127,9 +127,9 @@ static void menu_func(F_CMD_ARGS, Bool fStaysUp)
 	return;
 }
 
-/* ---------------------------- interface functions ------------------------- */
+/* ---------------------------- interface functions ------------------------ */
 
-/* ---------------------------- builtin commands ---------------------------- */
+/* ---------------------------- builtin commands --------------------------- */
 
 /* the function for the "Popup" command */
 void CMD_Popup(F_CMD_ARGS)

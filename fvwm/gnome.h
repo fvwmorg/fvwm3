@@ -1,14 +1,15 @@
-/*********************************************************/
-/* GNOME WM Compliance adapted for FVWM                  */
-/* Properties set on the root window (or desktop window) */
-/*                                                       */
-/* Even though the rest of fvwm is GPL consider this file*/
-/* Public Domain - use it however you see fit to make    */
-/* your WM GNOME compiant                                */
-/*                                                       */
-/* written by Raster                                     */
-/* adapted for FVWM by Jay Painter <jpaint@gnu.org>      */
-/*********************************************************/
+/* -*-c-*- */
+/*
+ * GNOME WM Compliance adapted for FVWM
+ * Properties set on the root window (or desktop window)
+ *
+ * Even though the rest of fvwm is GPL consider this file
+ * Public Domain - use it however you see fit to make
+ * your WM GNOME compiant
+ *
+ * written by Raster
+ * adapted for FVWM by Jay Painter <jpaint@gnu.org>
+ */
 
 #ifndef GNOME_H
 #define GNOME_H
@@ -23,22 +24,14 @@ int  GNOME_ProcessClientMessage(const exec_context_t *exc);
 
 /* hook into .fvwm2rc functions */
 void GNOME_ButtonFunc(
-	 XEvent *eventp,
-	 Window w,
-	 FvwmWindow *fwin,
-	 unsigned long context,
-	 char *action,
-	 int *Module);
+	XEvent *eventp, Window w, FvwmWindow *fwin, unsigned long context,
+	char *action, int *Module);
 
 void GNOME_ProxyButtonEvent(const XEvent *ev);
 
 void GNOME_ShowDesks(
-	 XEvent *eventp,
-	 Window w,
-	 FvwmWindow *fwin,
-	 unsigned long context,
-	 char *action,
-	 int *Module);
+	XEvent *eventp, Window w, FvwmWindow *fwin, unsigned long context,
+	char *action, int *Module);
 
 /* get hints on a window; sets parameters in a FvwmWindow */
 void GNOME_GetHints(FvwmWindow *fwin);

@@ -1,7 +1,6 @@
 /* -*-c-*- */
-/* Copyright (C) 2002  Olivier Chapuis
- *
- * This program is free software; you can redistribute it and/or modify
+/* Copyright (C) 2002  Olivier Chapuis */
+/* This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 2 of the License, or
  * (at your option) any later version.
@@ -19,9 +18,9 @@
 /* Some code (convert_charsets) inspired by the glib-2 (gutf8.c) copyrighted
  * by Tom Tromey & Red Hat, Inc. */
 
-/* ---------------------------- included header files ----------------------- */
+/* ---------------------------- included header files ---------------------- */
 
-#include <config.h>
+#include "config.h"
 #include <stdio.h>
 #include <errno.h>
 
@@ -42,27 +41,27 @@
 #endif
 #endif /* FiconvSupport */
 
-/* ---------------------------- local definitions --------------------------- */
+/* ---------------------------- local definitions -------------------------- */
 
-/* ---------------------------- local macros -------------------------------- */
+/* ---------------------------- local macros ------------------------------- */
 
-/* ---------------------------- imports ------------------------------------- */
+/* ---------------------------- imports ------------------------------------ */
 
-/* ---------------------------- included code files ------------------------- */
+/* ---------------------------- included code files ------------------------ */
 
-/* ---------------------------- local types --------------------------------- */
+/* ---------------------------- local types -------------------------------- */
 
-/* ---------------------------- forward declarations ------------------------ */
+/* ---------------------------- forward declarations ----------------------- */
 
-/* ---------------------------- local variables ----------------------------- */
+/* ---------------------------- local variables ---------------------------- */
 
 static Bool FiconvInitialized = False;
 static FlocaleCharset *FLCIconvUtf8Charset = NULL;       /* UTF-8 charset */
-static FlocaleCharset *FLCIconvDefaultCharset = NULL; 
+static FlocaleCharset *FLCIconvDefaultCharset = NULL;
 
-/* ---------------------------- exported variables (globals) ---------------- */
+/* ---------------------------- exported variables (globals) --------------- */
 
-/* ---------------------------- local functions ----------------------------- */
+/* ---------------------------- local functions ---------------------------- */
 
 static
 Bool is_iconv_supported(char *c1, char *c2)
@@ -353,7 +352,7 @@ FlocaleCharset *FiconvSetupConversion(Display *dpy, FlocaleCharset *fc)
 #endif
 		if (!FLC_HAVE_ICONV_CHARSET(my_fc))
 		{
-			fprintf(stderr, "[fvwmlibs] cannot get iconv converter " 
+			fprintf(stderr, "[fvwmlibs] cannot get iconv converter "
 				"for charset %s\n",
 				FLC_DEBUG_GET_X_CHARSET(my_fc));
 			return NULL;
@@ -367,7 +366,7 @@ FlocaleCharset *FiconvSetupConversion(Display *dpy, FlocaleCharset *fc)
 	return my_fc;
 }
 
-/* ---------------------------- interface functions ------------------------- */
+/* ---------------------------- interface functions ------------------------ */
 
 /* conversion from UTF8 to the "current" charset */
 char *FiconvUtf8ToCharset(Display *dpy, FlocaleCharset *fc,

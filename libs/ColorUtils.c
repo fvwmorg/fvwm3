@@ -1,3 +1,4 @@
+/* -*-c-*- */
 /*
  * Around 12/20/99 we did the 3rd rewrite of the shadow/hilite stuff.
  * (That I know about (dje).

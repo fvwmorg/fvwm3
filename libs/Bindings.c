@@ -1,3 +1,4 @@
+/* -*-c-*- */
 /* This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 2 of the License, or
@@ -102,12 +103,12 @@ static unsigned int modifier_mapindex_to_mask[8] =
 static int key_min;
 static int key_max;
 
-/****************************************************************************
+/*
  *
  * Turns a  string context of context or modifier values into an array of
  * true/false values (bits)
  *
- ****************************************************************************/
+ */
 static Bool find_context(
 	const char *string, int *output, struct charstring *table)
 {
@@ -246,7 +247,7 @@ void RemoveBinding(Binding **pblist, Binding *b, Binding *prev)
 	return;
 }
 
-/****************************************************************************
+/*
  *
  *  Actually adds a new binding to a list (pblist) of existing bindings.
  *  Specify either button or keysym/key_name, depending on type.
@@ -254,7 +255,7 @@ void RemoveBinding(Binding **pblist, Binding *b, Binding *prev)
  *  that will be freed in RemoveBinding. The key_name is copied into private
  *  memory and has to be freed by the caller.
  *
- ****************************************************************************/
+ */
 int AddBinding(
 	Display *dpy, Binding **pblist, binding_t type,
 	STROKE_ARG(void *stroke)
@@ -421,14 +422,14 @@ static Bool AreBindingsEqual(Binding *b1, Binding *b2)
 	return False;
 }
 
-/****************************************************************************
+/*
  *
  *  Does exactly the opposite of AddBinding: It removes the bindings that
  *  AddBinding would have added to the *pblist_src and collects them in the
  *  *pblist_dest.  This can be used to remove a binding completely from the
  *  list.  The bindings still have to be freed.
  *
- ****************************************************************************/
+ */
 void CollectBindingList(
 	Display *dpy, Binding **pblist_src, Binding **pblist_dest,
 	binding_t type, STROKE_ARG(void *stroke)
@@ -592,9 +593,7 @@ Bool MatchBindingExactly(
 	return True;
 }
 
-/***********************************************************************
- *
- *  Procedure:
+/*
  *      GrabWindowKey        - grab needed keys for the window for one binding
  *      GrabAllWindowKeys    - grab needed keys for the window for all bindings
  *                             in blist
@@ -611,7 +610,7 @@ Bool MatchBindingExactly(
  *   cursor         - the mouse cursor to use when the pointer is on the
  *                    grabbed area (mouse bindings only)
  *
- ***********************************************************************/
+ */
 void GrabWindowKey(Display *dpy, Window w, Binding *binding,
 		   unsigned int contexts, unsigned int dead_modifiers,
 		   Bool fGrab)
@@ -845,21 +844,19 @@ void GrabWindowKeyOrButton(
 	}
 	else if (BIND_IS_KEY_BINDING(binding->type))
 	{
-		GrabWindowKey(dpy, w, binding, contexts, dead_modifiers, fGrab);
+		GrabWindowKey(
+			dpy, w, binding, contexts, dead_modifiers, fGrab);
 	}
 
 	return;
 }
 
-/***********************************************************************
- *
- *  Procedure:
- *      FvwmStringToKeysym
+/*
  *
  *  Like XStringToKeysym, but allows some typos and does some additional
  *  error checking.
  *
- ***********************************************************************/
+ */
 KeySym FvwmStringToKeysym(Display *dpy, char *key)
 {
 	KeySym keysym;

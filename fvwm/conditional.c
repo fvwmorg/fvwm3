@@ -14,15 +14,15 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-/****************************************************************************
+/*
  * This module is all original code
  * by Rob Nation
  * Copyright 1993, Robert Nation
  *     You may use this code for any purpose, as long as the original
  *     copyright remains in the source code and all documentation
- ****************************************************************************/
+ */
 
-/* ---------------------------- included header files ----------------------- */
+/* ---------------------------- included header files ---------------------- */
 
 #include "config.h"
 
@@ -46,31 +46,31 @@
 #include "commands.h"
 #include "decorations.h"
 
-/* ---------------------------- local definitions --------------------------- */
+/* ---------------------------- local definitions -------------------------- */
 
-/* ---------------------------- local macros -------------------------------- */
+/* ---------------------------- local macros ------------------------------- */
 
-/* ---------------------------- imports ------------------------------------- */
+/* ---------------------------- imports ------------------------------------ */
 
-/* ---------------------------- included code files ------------------------- */
+/* ---------------------------- included code files ------------------------ */
 
-/* ---------------------------- local types --------------------------------- */
+/* ---------------------------- local types -------------------------------- */
 
-/* ---------------------------- forward declarations ------------------------ */
+/* ---------------------------- forward declarations ----------------------- */
 
-/* ---------------------------- local variables ----------------------------- */
+/* ---------------------------- local variables ---------------------------- */
 
-/* ---------------------------- exported variables (globals) ---------------- */
+/* ---------------------------- exported variables (globals) --------------- */
 
-/* ---------------------------- local functions ----------------------------- */
+/* ---------------------------- local functions ---------------------------- */
 
-/**************************************************************************
+/*
  *
  * Direction = 1 ==> "Next" operation
  * Direction = -1 ==> "Previous" operation
  * Direction = 0 ==> operation on current window (returns pass or fail)
  *
- **************************************************************************/
+ */
 static FvwmWindow *Circulate(
 	FvwmWindow *sf, char *action, int Direction, char **restofline)
 {
@@ -289,15 +289,15 @@ static Bool cond_check_access(char *file, int type, Bool im)
 	return False;
 }
 
-/* ---------------------------- interface functions ------------------------- */
+/* ---------------------------- interface functions ------------------------ */
 
-/**********************************************************************
+/*
  * Parses the flag string and returns the text between [ ] or ( )
  * characters.  The start of the rest of the line is put in restptr.
  * Note that the returned string is allocated here and it must be
  * freed when it is not needed anymore.
  * NOTE - exported via .h
- **********************************************************************/
+ */
 char *CreateFlagString(char *string, char **restptr)
 {
 	char *retval;
@@ -363,11 +363,11 @@ char *CreateFlagString(char *string, char **restptr)
 	return retval;
 }
 
-/**********************************************************************
+/*
  * The name field of the mask is allocated in CreateConditionMask.
  * It must be freed.
  * NOTE - exported via .h
- **********************************************************************/
+ */
 void FreeConditionMask(WindowConditionMask *mask)
 {
 	if (mask->my_flags.needs_name)
@@ -393,11 +393,11 @@ void DefaultConditionMask(WindowConditionMask *mask)
 	return;
 }
 
-/**********************************************************************
+/*
  * Note that this function allocates the name field of the mask struct.
  * FreeConditionMask must be called for the mask when the mask is discarded.
  * NOTE - exported via .h
- **********************************************************************/
+ */
 void CreateConditionMask(char *flags, WindowConditionMask *mask)
 {
 	char *condition;
@@ -635,11 +635,11 @@ void CreateConditionMask(char *flags, WindowConditionMask *mask)
 	return;
 }
 
-/**********************************************************************
+/*
  * Checks whether the given window matches the mask created with
  * CreateConditionMask.
  * NOTE - exported via .h
- **********************************************************************/
+ */
 Bool MatchesConditionMask(FvwmWindow *fw, WindowConditionMask *mask)
 {
 	Bool fMatchesName;
@@ -863,8 +863,6 @@ Bool MatchesConditionMask(FvwmWindow *fw, WindowConditionMask *mask)
 
 static void direction_cmd(F_CMD_ARGS, Bool is_scan)
 {
-	/* The rectangles are intended for a future enhancement and are not used
-	 * yet. */
 	rectangle my_g;
 	rectangle his_g;
 	int my_cx;
@@ -921,11 +919,12 @@ static void direction_cmd(F_CMD_ARGS, Bool is_scan)
 		cycle = True;
 		tmp = PeekToken(action, &action);
 		dir2 = gravity_parse_dir_argument(tmp, NULL, -1);
-		/* if enum direction_type changes, this is trashed. */
+		/* if enum direction_t changes, this is trashed. */
 		if (dir2 == -1 || dir2 > DIR_NW ||
 		    (dir < 4) != (dir2 < 4) || (abs(dir - dir2) & 1) != 1)
 		{
-			fvwm_msg(ERR, "Direction", "Invalid minor direction %s",
+			fvwm_msg(
+				ERR, "Direction", "Invalid minor direction %s",
 				(tmp) ? tmp : "");
 			if (cond_rc != NULL)
 			{
@@ -1053,8 +1052,9 @@ static void direction_cmd(F_CMD_ARGS, Bool is_scan)
 		{
 			offset=0;
 		}
-		else if (distance < 0)	/* Target must be in given direction. */
+		else if (distance < 0)
 		{
+			/* Target must be in given direction. */
 			continue;
 		}
 		else if (distance == 0 && dir != DIR_C)
@@ -1183,7 +1183,7 @@ static int __rc_matches_rcstring_consume(
 	return ret;
 }
 
-/* ---------------------------- builtin commands ---------------------------- */
+/* ---------------------------- builtin commands --------------------------- */
 
 void CMD_Prev(F_CMD_ARGS)
 {

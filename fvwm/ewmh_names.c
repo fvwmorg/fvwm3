@@ -1,7 +1,6 @@
-/*
- * Copyright (C) 2001  Olivier Chapuis
- *
- * This program is free software; you can redistribute it and/or modify
+/* -*-c-*- */
+/* Copyright (C) 2001  Olivier Chapuis */
+/* This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 2 of the License, or
  * (at your option) any later version.
@@ -41,9 +40,9 @@
 #include "ewmh_intern.h"
 #include "externs.h"
 
-/***********************************************************************
+/*
  * set the visibale window name and icon name
- ***********************************************************************/
+ */
 void EWMH_SetVisibleName(FvwmWindow *fwin, Bool is_icon_name)
 {
 	unsigned char *val;
@@ -113,9 +112,9 @@ void EWMH_SetVisibleName(FvwmWindow *fwin, Bool is_icon_name)
 	free(val);
 }
 
-/***********************************************************************
+/*
  * setup and property notify
- ***********************************************************************/
+ */
 int EWMH_WMIconName(EWMH_CMD_ARGS)
 {
 	unsigned int size = 0;
@@ -154,7 +153,7 @@ int EWMH_WMIconName(EWMH_CMD_ARGS)
 	}
 	if (fwin->icon_name.name && strcmp(tmp_str, fwin->icon_name.name) == 0)
 	{
-		/* migo: some apps update their names every second */  
+		/* migo: some apps update their names every second */
 		free(tmp_str);
 		return 0;
 	}
@@ -221,7 +220,7 @@ int EWMH_WMName(EWMH_CMD_ARGS)
 	}
 	if (fwin->name.name && strcmp(tmp_str, fwin->name.name) == 0)
 	{
-		/* migo: some apps update their names every second */  
+		/* migo: some apps update their names every second */
 		free(tmp_str);
 		return 0;
 	}
@@ -265,9 +264,9 @@ int EWMH_WMName(EWMH_CMD_ARGS)
 }
 
 #define MAX(A,B) ((A)>(B)? (A):(B))
-/***********************************************************************
+/*
  * set the desktop name
- ***********************************************************************/
+ */
 void EWMH_SetDesktopNames(void)
 {
 	int nbr = 0;

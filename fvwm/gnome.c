@@ -1,14 +1,15 @@
-/*********************************************************/
-/* GNOME WM Compliance adapted for FVWM                  */
-/* Properties set on the root window (or desktop window) */
-/*                                                       */
-/* Even though the rest of fvwm is GPL consider this file*/
-/* Public Domain - use it however you see fit to make    */
-/* your WM GNOME compiant                                */
-/*                                                       */
-/* written by Raster                                     */
-/* adapted for FVWM by Jay Painter <jpaint@gnu.org>      */
-/*********************************************************/
+/* -*-c-*- */
+/*
+ * GNOME WM Compliance adapted for FVWM
+ * Properties set on the root window (or desktop window)
+ *
+ * Even though the rest of fvwm is GPL consider this file
+ * Public Domain - use it however you see fit to make
+ * your WM GNOME compiant
+ *
+ * written by Raster
+ * adapted for FVWM by Jay Painter <jpaint@gnu.org>
+ */
 #include "config.h"
 
 #include <stdio.h>
@@ -38,9 +39,9 @@
 #include "decorations.h"
 
 
-/*********************************************************/
-/* Properties set on the root window (or desktop window) */
-/*********************************************************/
+/*
+ * Properties set on the root window (or desktop window)
+ */
 
 /* WIN_AREA CARD32[2] contains the current desktop area X,Y */
 #define XA_WIN_AREA                        "_WIN_AREA"
@@ -74,7 +75,7 @@
 /* unused by enlightenment */
 #define XA_WIN_WORKSPACE_NAMES             "_WIN_WORKSPACE_NAMES"
 
-/* ********** Don't use this.. iffy at best. *********** */
+/* *** Don't use this.. iffy at best. ** */
 /* The available work area for client windows. The WM can set this and the WM */
 /* and/or clients may change it at any time. If it is changed the WM and/or  */
 /* clients should honor the changes. If this property does not exist a client */
@@ -93,9 +94,9 @@
 #define XA_WIN_CLIENT_LIST                 "_WIN_CLIENT_LIST"
 /* array of N XID's */
 
-/*********************************************************/
-/* Properties on client windows                          */
-/*********************************************************/
+/*
+ * Properties on client windows
+ */
 
 /* The layer the window exists in */
 /*      0 = Desktop */

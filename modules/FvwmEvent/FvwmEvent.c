@@ -37,7 +37,8 @@
 
 /* ---------------------------- included header files ----------------------- */
 
-#include <config.h>
+#include "config.h"
+
 #include <stdio.h>
 /*
  * rplay includes:
@@ -395,13 +396,13 @@ int main(int argc, char **argv)
 }
 
 
-/***********************************************************************
+/*
  *
  * Procedure:
  *
  *    execute_event - actually executes the actions from lookup table
  *
- **********************************************************************/
+ */
 void execute_event(short event, unsigned long *body)
 {
 #ifdef HAVE_RPLAY
@@ -495,12 +496,12 @@ void execute_event(short event, unsigned long *body)
 }
 
 
-/***********************************************************************
+/*
  *
  *  Procedure:
  *      config - read the configuration file.
  *
- ***********************************************************************/
+ */
 
 char *table[]=
 {
@@ -770,12 +771,12 @@ void config(void)
 	return;
 }
 
-/***********************************************************************
+/*
  *
  *  Procedure:
  *      SIGPIPE handler - SIGPIPE means fvwm is dying
  *
- ***********************************************************************/
+ */
 static RETSIGTYPE
 TerminateHandler(int nonsense)
 {
@@ -784,12 +785,12 @@ TerminateHandler(int nonsense)
 	return;
 }
 
-/***********************************************************************
+/*
  *
  *  Procedure:
  *      Externally callable procedure to quit
  *
- ***********************************************************************/
+ */
 void DeadPipe(int flag)
 {
 	execute_event(BUILTIN_SHUTDOWN, NULL);

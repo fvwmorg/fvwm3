@@ -13,38 +13,37 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
-/****************************************************************************
- * This module is based on Twm, but has been siginificantly modified
+/* This module is based on Twm, but has been siginificantly modified
  * by Rob Nation
- ****************************************************************************/
-/*****************************************************************************/
-/**       Copyright 1988 by Evans & Sutherland Computer Corporation,        **/
-/**                          Salt Lake City, Utah                           **/
-/**  Portions Copyright 1989 by the Massachusetts Institute of Technology   **/
-/**                        Cambridge, Massachusetts                         **/
-/**                                                                         **/
-/**                           All Rights Reserved                           **/
-/**                                                                         **/
-/**    Permission to use, copy, modify, and distribute this software and    **/
-/**    its documentation  for  any  purpose  and  without  fee is hereby    **/
-/**    granted, provided that the above copyright notice appear  in  all    **/
-/**    copies and that both  that  copyright  notice  and  this  permis-    **/
-/**    sion  notice appear in supporting  documentation,  and  that  the    **/
-/**    names of Evans & Sutherland and M.I.T. not be used in advertising    **/
-/**    in publicity pertaining to distribution of the  software  without    **/
-/**    specific, written prior permission.                                  **/
-/**                                                                         **/
-/**    EVANS & SUTHERLAND AND M.I.T. DISCLAIM ALL WARRANTIES WITH REGARD    **/
-/**    TO THIS SOFTWARE, INCLUDING ALL IMPLIED WARRANTIES  OF  MERCHANT-    **/
-/**    ABILITY  AND  FITNESS,  IN  NO  EVENT SHALL EVANS & SUTHERLAND OR    **/
-/**    M.I.T. BE LIABLE FOR ANY SPECIAL, INDIRECT OR CONSEQUENTIAL  DAM-    **/
-/**    AGES OR  ANY DAMAGES WHATSOEVER  RESULTING FROM LOSS OF USE, DATA    **/
-/**    OR PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR OTHER    **/
-/**    TORTIOUS ACTION, ARISING OUT OF OR IN  CONNECTION  WITH  THE  USE    **/
-/**    OR PERFORMANCE OF THIS SOFTWARE.                                     **/
-/*****************************************************************************/
+ */
+/*
+ *       Copyright 1988 by Evans & Sutherland Computer Corporation,
+ *                          Salt Lake City, Utah
+ *  Portions Copyright 1989 by the Massachusetts Institute of Technology
+ *                        Cambridge, Massachusetts
+ *
+ *                           All Rights Reserved
+ *
+ *    Permission to use, copy, modify, and distribute this software and
+ *    its documentation  for  any  purpose  and  without  fee is hereby
+ *    granted, provided that the above copyright notice appear  in  all
+ *    copies and that both  that  copyright  notice  and  this  permis-
+ *    sion  notice appear in supporting  documentation,  and  that  the
+ *    names of Evans & Sutherland and M.I.T. not be used in advertising
+ *    in publicity pertaining to distribution of the  software  without
+ *    specific, written prior permission.
+ *
+ *    EVANS & SUTHERLAND AND M.I.T. DISCLAIM ALL WARRANTIES WITH REGARD
+ *    TO THIS SOFTWARE, INCLUDING ALL IMPLIED WARRANTIES  OF  MERCHANT-
+ *    ABILITY  AND  FITNESS,  IN  NO  EVENT SHALL EVANS & SUTHERLAND OR
+ *    M.I.T. BE LIABLE FOR ANY SPECIAL, INDIRECT OR CONSEQUENTIAL  DAM-
+ *    AGES OR  ANY DAMAGES WHATSOEVER  RESULTING FROM LOSS OF USE, DATA
+ *    OR PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR OTHER
+ *    TORTIOUS ACTION, ARISING OUT OF OR IN  CONNECTION  WITH  THE  USE
+ *    OR PERFORMANCE OF THIS SOFTWARE.
+ */
 
-/* ---------------------------- included header files ----------------------- */
+/* ---------------------------- included header files ---------------------- */
 
 #include "config.h"
 
@@ -84,27 +83,27 @@
 #include "colormaps.h"
 #include "decorations.h"
 
-/* ---------------------------- local definitions --------------------------- */
+/* ---------------------------- local definitions -------------------------- */
 
-/* ---------------------------- local macros -------------------------------- */
+/* ---------------------------- local macros ------------------------------- */
 
-/* ---------------------------- imports ------------------------------------- */
+/* ---------------------------- imports ------------------------------------ */
 
-/* ---------------------------- included code files ------------------------- */
+/* ---------------------------- included code files ------------------------ */
 
-/* ---------------------------- local types --------------------------------- */
+/* ---------------------------- local types -------------------------------- */
 
-/* ---------------------------- forward declarations ------------------------ */
+/* ---------------------------- forward declarations ----------------------- */
 
-/* ---------------------------- local variables ----------------------------- */
+/* ---------------------------- local variables ---------------------------- */
 
-/* ---------------------------- exported variables (globals) ---------------- */
+/* ---------------------------- exported variables (globals) --------------- */
 
 char NoName[] = "Untitled"; /* name if no name in XA_WM_NAME */
 char NoClass[] = "NoClass"; /* Class if no res_class in class hints */
 char NoResource[] = "NoResource"; /* Class if no res_name in class hints */
 
-/* ---------------------------- local functions ----------------------------- */
+/* ---------------------------- local functions ---------------------------- */
 
 static void delete_client_context(FvwmWindow *fw)
 {
@@ -123,7 +122,7 @@ static void delete_client_context(FvwmWindow *fw)
 	return;
 }
 
-/***********************************************************************
+/*
  *
  *  Procedure:
  *      CaptureOneWindow
@@ -131,7 +130,7 @@ static void delete_client_context(FvwmWindow *fw)
  *
  *   Decorates windows at start-up and during recaptures
  *
- ***********************************************************************/
+ */
 
 static void CaptureOneWindow(
 	const exec_context_t *exc, FvwmWindow *fw, Window window,
@@ -139,7 +138,7 @@ static void CaptureOneWindow(
 {
 	Window w;
 	unsigned long data[1];
-	initial_window_options_type win_opts;
+	initial_window_options_t win_opts;
 	evh_args_t ea;
 	exec_context_changes_t ecc;
 	XEvent e;
@@ -330,7 +329,7 @@ static void hide_screen(
 	return;
 }
 
-/***********************************************************************
+/*
  *
  *  Procedure:
  *      MappedNotOverride - checks to see if we should really
@@ -343,10 +342,10 @@ static void hide_screen(
  *  Inputs:
  *      w       - the window to check
  *
- ***********************************************************************/
+ */
 
 static int MappedNotOverride(
-	Window w, initial_window_options_type *win_opts)
+	Window w, initial_window_options_t *win_opts)
 {
 	XWindowAttributes wa;
 	Atom atype;
@@ -1451,7 +1450,7 @@ static void setup_key_and_button_grabs(FvwmWindow *fw)
 	return;
 }
 
-/* ---------------------------- interface functions ------------------------- */
+/* ---------------------------- interface functions ------------------------ */
 
 void setup_visible_name(FvwmWindow *fw, Bool is_icon)
 {
@@ -1665,7 +1664,7 @@ void setup_style_and_decor(
 {
 	/* first copy the static styles into the window struct */
 	memcpy(&(FW_COMMON_FLAGS(fw)), &(SCF(*pstyle)),
-	       sizeof(common_flags_type));
+	       sizeof(common_flags_t));
 	fw->wShaped = None;
 	if (FShapesSupported)
 	{
@@ -1947,7 +1946,7 @@ void setup_focus_policy(FvwmWindow *fw)
 
 Bool setup_window_placement(
 	FvwmWindow *fw, window_style *pstyle, rectangle *attr_g,
-	initial_window_options_type *win_opts)
+	initial_window_options_t *win_opts)
 {
 	int client_argc = 0;
 	char **client_argv = NULL;
@@ -2107,15 +2106,15 @@ Bool setup_transientfor(FvwmWindow *fw)
 	return rc;
 }
 
-/***********************************************************************
+/*
  *
  *  Procedure:
  *      AddWindow - add a new window to the fvwm list
  *
- ***********************************************************************/
+ */
 FvwmWindow *AddWindow(
 	const exec_context_t *exc, FvwmWindow *ReuseWin,
-	initial_window_options_type * win_opts)
+	initial_window_options_t * win_opts)
 {
 	/* new fvwm window structure */
 	register FvwmWindow *fw;
@@ -2524,7 +2523,7 @@ FvwmWindow *AddWindow(
 }
 
 
-/***********************************************************************
+/*
  *
  *  Procedure:
  *      FetchWMProtocols - finds out which protocols the window supports
@@ -2532,7 +2531,7 @@ FvwmWindow *AddWindow(
  *  Inputs:
  *      tmp - the fvwm window structure to use
  *
- ***********************************************************************/
+ */
 void FetchWmProtocols(FvwmWindow *tmp)
 {
 	Atom *protocols = NULL, *ap;
@@ -2600,7 +2599,7 @@ void FetchWmProtocols(FvwmWindow *tmp)
 
 
 
-/***********************************************************************
+/*
  *
  *  Procedure:
  *      GetWindowSizeHints - gets application supplied size info
@@ -2608,7 +2607,7 @@ void FetchWmProtocols(FvwmWindow *tmp)
  *  Inputs:
  *      tmp - the fvwm window structure to use
  *
- ***********************************************************************/
+ */
 
 void GetWindowSizeHints(FvwmWindow *tmp)
 {
@@ -2936,11 +2935,11 @@ void GetWindowSizeHints(FvwmWindow *tmp)
 	return;
 }
 
-/**************************************************************************
+/*
  *
  * Releases dynamically allocated space used to store window/icon names
  *
- **************************************************************************/
+ */
 void free_window_names(FvwmWindow *fw, Bool nukename, Bool nukeicon)
 {
 	if (!fw)
@@ -2999,11 +2998,11 @@ void free_window_names(FvwmWindow *fw, Bool nukename, Bool nukeicon)
 
 
 
-/***************************************************************************
+/*
  *
  * Handles destruction of a window
  *
- ****************************************************************************/
+ */
 void destroy_window(FvwmWindow *fw)
 {
 	/* Warning, this is also called by HandleUnmapNotify; if it ever needs
@@ -3173,14 +3172,14 @@ void destroy_window(FvwmWindow *fw)
 }
 
 
-/***********************************************************************
+/*
  *
  *  Procedure:
  *      RestoreWithdrawnLocation
  *
  *  Puts windows back where they were before fvwm took over
  *
- ************************************************************************/
+ */
 void RestoreWithdrawnLocation(
 	FvwmWindow *fw, Bool is_restart_or_recapture, Window parent)
 {
@@ -3295,12 +3294,12 @@ void RestoreWithdrawnLocation(
 }
 
 
-/***********************************************************************
+/*
  *
  *  Procedure:
  *      Reborder - Removes fvwm border windows
  *
- ************************************************************************/
+ */
 void Reborder(void)
 {
 	FvwmWindow *fw;
@@ -3339,7 +3338,7 @@ void CaptureAllWindows(const exec_context_t *exc, Bool is_recapture)
 	int i,j;
 	unsigned int nchildren;
 	Window root, parent, *children;
-	initial_window_options_type win_opts;
+	initial_window_options_t win_opts;
 	FvwmWindow *fw;
 
 	MyXGrabServer(dpy);
@@ -3455,7 +3454,7 @@ void CaptureAllWindows(const exec_context_t *exc, Bool is_recapture)
 	return;
 }
 
-/* ---------------------------- builtin commands ---------------------------- */
+/* ---------------------------- builtin commands --------------------------- */
 
 void CMD_Recapture(F_CMD_ARGS)
 {

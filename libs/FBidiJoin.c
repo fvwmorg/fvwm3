@@ -1,7 +1,6 @@
 /* -*-c-*- */
-/* Copyright (C) 2002  Nadim Shaikli (arabeyes.org)
- *
- * This program is free software; you can redistribute it and/or modify
+/* Copyright (C) 2002  Nadim Shaikli (arabeyes.org) */
+/* This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 2 of the License, or
  * (at your option) any later version.
@@ -26,16 +25,18 @@
  * Uighur, Kirghiz, etc).
  */
 
+#include "config.h"
+
 #include "FBidiJoin.h"
 
 #if HAVE_BIDI
 
-/* ---------------------------- included header files ----------------------- */
+/* ---------------------------- included header files ---------------------- */
 
 #include <stdio.h>
 #include "safemalloc.h"
 
-/* ---------------------------- local types --------------------------------- */
+/* ---------------------------- local types -------------------------------- */
 
 typedef struct char_shaped
 {
@@ -57,7 +58,7 @@ typedef struct char_shaped_comb
 	FriBidiChar comb_joined;
 } char_shaped_comb_t;
 
-/* ---------------------------- static variables ---------------------------- */
+/* ---------------------------- static variables --------------------------- */
 
 static const char_shaped_t shaped_table[] =
 {
@@ -147,7 +148,7 @@ static const char_shaped_comb_t shaped_comb_table[] =
 	{ 0x0644, 0x0627, 0xFEFB, 0xFEFC, },          /* LAM_ALEF */
 };
 
-/* -------------------------- local functions ----------------------------- */
+/* -------------------------- local functions ------------------------------ */
 
 static const char_shaped_t *
 get_shaped_entry(FriBidiChar ch)
@@ -200,7 +201,7 @@ get_shaped_combined_char(
 	return 0;
 }
 
-/* ------------------------- interface functions ------------------------- */
+/* ------------------------- interface functions --------------------------- */
 
 int
 shape_n_join(
@@ -268,7 +269,8 @@ shape_n_join(
 				{
 					if (!prev->initial || !prev->medial)
 					{
-						str_visual[len] = curr->initial?
+						str_visual[len] =
+							curr->initial?
 							curr->initial:
 							curr->isolated;
 					}

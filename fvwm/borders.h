@@ -1,32 +1,17 @@
 /* -*-c-*- */
-/* This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
- */
 
 #ifndef _BORDERS_H
 #define _BORDERS_H
 
-/* ---------------------------- included header files ----------------------- */
+/* ---------------------------- included header files ---------------------- */
 
-/* ---------------------------- global definitions -------------------------- */
-
+/* ---------------------------- global definitions ------------------------- */
 
 #define NPARTS_KEEP_STATE 12
 
-/* ---------------------------- global macros ------------------------------- */
+/* ---------------------------- global macros ------------------------------ */
 
-/* ---------------------------- type definitions ---------------------------- */
+/* ---------------------------- type definitions --------------------------- */
 
 typedef enum
 {
@@ -63,9 +48,9 @@ typedef enum
 	CLEAR_ALL      = 0x7
 } clear_window_parts;
 
-/* ---------------------------- exported variables (globals) ---------------- */
+/* ---------------------------- exported variables (globals) --------------- */
 
-/* ---------------------------- interface functions ------------------------- */
+/* ---------------------------- interface functions ------------------------ */
 
 DecorFace *border_get_border_style(
 	FvwmWindow *fw, Bool has_focus);

@@ -1,3 +1,4 @@
+/* -*-c-*- */
 /*
  * x selection/cut buffer utility for Fvwm
  *
@@ -18,7 +19,7 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
 
-#include <config.h>
+#include "config.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <X11/Xlib.h>

@@ -1,7 +1,6 @@
 /* -*-c-*- */
-/* Copyright (C) 2002  Olivier Chapuis
- *
- * This program is free software; you can redistribute it and/or modify
+/* Copyright (C) 2002  Olivier Chapuis */
+/* This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 2 of the License, or
  * (at your option) any later version.
@@ -16,7 +15,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-/* ---------------------------- included header files ----------------------- */
+/* ---------------------------- included header files ---------------------- */
 
 #include "config.h"
 
@@ -31,19 +30,19 @@
 #include "FRender.h"
 #include "FRenderInterface.h"
 
-/* ---------------------------- local definitions --------------------------- */
+/* ---------------------------- local definitions -------------------------- */
 
-/* ---------------------------- local macros -------------------------------- */
+/* ---------------------------- local macros ------------------------------- */
 
-/* ---------------------------- imports ------------------------------------- */
+/* ---------------------------- imports ------------------------------------ */
 
-/* ---------------------------- included code files ------------------------- */
+/* ---------------------------- included code files ------------------------ */
 
-/* ---------------------------- local types --------------------------------- */
+/* ---------------------------- local types -------------------------------- */
 
-/* ---------------------------- forward declarations ------------------------ */
+/* ---------------------------- forward declarations ----------------------- */
 
-/* ---------------------------- local variables ----------------------------- */
+/* ---------------------------- local variables ---------------------------- */
 
 static FRenderPictFormat *PFrenderVisualFormat = NULL;
 static FRenderPictFormat *PFrenderAlphaFormat = NULL;
@@ -54,9 +53,9 @@ Bool FRenderVisualInitialized = False;
 
 /* #define USE_ABSOLUTE_FORMAT 1*/
 
-/* ---------------------------- exported variables (globals) ---------------- */
+/* ---------------------------- exported variables (globals) --------------- */
 
-/* ---------------------------- local functions ----------------------------- */
+/* ---------------------------- local functions ---------------------------- */
 
 static
 void FRenderVisualInit(Display *dpy)
@@ -79,12 +78,9 @@ void FRenderVisualInit(Display *dpy)
 	pf.type = FRenderPictTypeDirect;
 	pf.direct.alpha = 0;
 	pf.direct.alphaMask = 0xff;
-	PFrenderAlphaFormat = FRenderFindFormat(dpy,
-						FRenderPictFormatType|
-						FRenderPictFormatDepth|
-						FRenderPictFormatAlpha|
-						FRenderPictFormatAlphaMask,
-						&pf, 0);
+	PFrenderAlphaFormat = FRenderFindFormat(
+		dpy, FRenderPictFormatType| FRenderPictFormatDepth|
+		FRenderPictFormatAlpha| FRenderPictFormatAlphaMask, &pf, 0);
 	if (!PFrenderAlphaFormat)
 	{
 		fprintf(stderr,"[fvwmlibs][FRenderInit] -- ERROR: "
@@ -95,12 +91,9 @@ void FRenderVisualInit(Display *dpy)
 	pf.type = FRenderPictTypeDirect;
 	pf.direct.alpha = 0;
 	pf.direct.alphaMask = 1;
-	PFrenderMaskFormat = FRenderFindFormat(dpy,
-						FRenderPictFormatType|
-						FRenderPictFormatDepth|
-						FRenderPictFormatAlpha|
-						FRenderPictFormatAlphaMask,
-						&pf, 0);
+	PFrenderMaskFormat = FRenderFindFormat(
+		dpy, FRenderPictFormatType| FRenderPictFormatDepth|
+		FRenderPictFormatAlpha| FRenderPictFormatAlphaMask, &pf, 0);
 	if (!PFrenderMaskFormat)
 	{
 		fprintf(stderr,"[fvwmlibs][FRenderInit] -- ERROR: "
@@ -117,18 +110,12 @@ void FRenderVisualInit(Display *dpy)
 	pf.direct.greenMask = 0xff;
 	pf.direct.blue = 0;
 	pf.direct.blueMask = 0xff;
-	PFrenderDirectFormat = FRenderFindFormat(dpy,
-						 FRenderPictFormatType|
-						 FRenderPictFormatDepth|
-						 FRenderPictFormatRed|
-						 FRenderPictFormatRedMask|
-						 FRenderPictFormatGreen|
-						 FRenderPictFormatGreenMask|
-						 FRenderPictFormatBlue|
-						 FRenderPictFormatBlueMask|
-						 FRenderPictFormatAlpha|
-						 FRenderPictFormatAlphaMask,
-						 &pf, 0);
+	PFrenderDirectFormat = FRenderFindFormat(
+		dpy, FRenderPictFormatType| FRenderPictFormatDepth|
+		FRenderPictFormatRed| FRenderPictFormatRedMask|
+		FRenderPictFormatGreen| FRenderPictFormatGreenMask|
+		FRenderPictFormatBlue| FRenderPictFormatBlueMask|
+		FRenderPictFormatAlpha| FRenderPictFormatAlphaMask, &pf, 0);
 	if (!PFrenderDirectFormat)
 	{
 		fprintf(stderr,"[fvwmlibs][FRenderInit] -- ERROR: "
@@ -145,18 +132,12 @@ void FRenderVisualInit(Display *dpy)
 	pf.direct.greenMask = 0xff;
 	pf.direct.blue = 0;
 	pf.direct.blueMask = 0xff;
-	PFrenderAbsoluteFormat = FRenderFindFormat(dpy,
-						 FRenderPictFormatType|
-						 FRenderPictFormatDepth|
-						 FRenderPictFormatRed|
-						 FRenderPictFormatRedMask|
-						 FRenderPictFormatGreen|
-						 FRenderPictFormatGreenMask|
-						 FRenderPictFormatBlue|
-						 FRenderPictFormatBlueMask|
-						 FRenderPictFormatAlpha|
-						 FRenderPictFormatAlphaMask,
-						 &pf, 0);
+	PFrenderAbsoluteFormat = FRenderFindFormat(
+		dpy, FRenderPictFormatType| FRenderPictFormatDepth|
+		FRenderPictFormatRed| FRenderPictFormatRedMask|
+		FRenderPictFormatGreen| FRenderPictFormatGreenMask|
+		FRenderPictFormatBlue| FRenderPictFormatBlueMask|
+		FRenderPictFormatAlpha| FRenderPictFormatAlphaMask, &pf, 0);
 	if (!PFrenderAbsoluteFormat)
 	{
 		fprintf(stderr,"[fvwmlibs][FRenderInit] -- ERROR: "
@@ -175,7 +156,7 @@ Bool FRenderCompositeAndCheck(
 		dpy, op, src, alpha, dest, x, y, a_x, a_y, d_x, d_y, d_w, d_h);
 
 	return True;
-	
+
 }
 
 static
@@ -194,7 +175,7 @@ Bool FRenderCreateShadePicture(
 	}
 
 	/* FRender Visuals should be already initialized */
-	
+
 	if (!shade_pixmap || !shade_picture)
 	{
 		FRenderPictureAttributes  pa;
@@ -271,7 +252,7 @@ Bool FRenderTintPicture(
 		}
 		force_update = True;
 	}
-	if (tint_picture && 
+	if (tint_picture &&
 	    (tint != saved_tint || tint_percent != saved_tint_percent ||
 	     force_update))
 	{
@@ -304,7 +285,7 @@ Bool FRenderTintPicture(
 	return rv;
 }
 
-/* ---------------------------- interface functions ------------------------- */
+/* ---------------------------- interface functions ------------------------ */
 
 
 Bool FRenderTintRectangle(
@@ -316,7 +297,7 @@ Bool FRenderTintRectangle(
 	unsigned int val = 0;
 	Bool rv = True;
 
-	
+
 	if (!XRenderSupport || !FRenderGetExtensionSupported())
 	{
 		return 0;
@@ -473,7 +454,7 @@ int FRenderRender(
 	else if (!pixmap_copy)
 	{
 		src_picture = XRenderCreatePicture(
-			dpy, pixmap, PFrenderVisualFormat, pam, &pa);	
+			dpy, pixmap, PFrenderVisualFormat, pam, &pa);
 	}
 
 	if (!src_picture && pixmap_copy)
@@ -509,7 +490,8 @@ int FRenderRender(
 		}
 		else
 		{
-			/* fix a bug in certain XRender server implementation? */
+			/* fix a bug in certain XRender server implementation?
+			 */
 			if (!(shade_picture = FRenderCreateShadePicture(
 				dpy, win, 100)))
 			{

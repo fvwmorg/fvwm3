@@ -14,7 +14,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-/* ---------------------------- included header files ----------------------- */
+/* ---------------------------- included header files ---------------------- */
 
 #include "config.h"
 
@@ -35,25 +35,25 @@
 #include "colorset.h"
 #include "menustyle.h"
 
-/* ---------------------------- local definitions --------------------------- */
+/* ---------------------------- local definitions -------------------------- */
 
-/* ---------------------------- local macros -------------------------------- */
+/* ---------------------------- local macros ------------------------------- */
 
-/* ---------------------------- imports ------------------------------------- */
+/* ---------------------------- imports ------------------------------------ */
 
-/* ---------------------------- included code files ------------------------- */
+/* ---------------------------- included code files ------------------------ */
 
-/* ---------------------------- local types --------------------------------- */
+/* ---------------------------- local types -------------------------------- */
 
-/* ---------------------------- forward declarations ------------------------ */
+/* ---------------------------- forward declarations ----------------------- */
 
-/* ---------------------------- local variables ----------------------------- */
+/* ---------------------------- local variables ---------------------------- */
 
 static MenuStyle *default_menu_style;
 
-/* ---------------------------- exported variables (globals) ---------------- */
+/* ---------------------------- exported variables (globals) --------------- */
 
-/* ---------------------------- local functions ----------------------------- */
+/* ---------------------------- local functions ---------------------------- */
 
 static void menustyle_free_face(MenuFace *mf)
 {
@@ -97,11 +97,11 @@ static void menustyle_free_face(MenuFace *mf)
 	return;
 }
 
-/*****************************************************************************
+/*
  *
  * Reads a menu face line into a structure (veliaa@rpi.edu)
  *
- ****************************************************************************/
+ */
 static Boolean menustyle_parse_face(char *s, MenuFace *mf, int verbose)
 {
 	char *style;
@@ -366,7 +366,7 @@ static void change_or_make_gc(GC *gc, unsigned long gcm, XGCValues *gcv)
 	return;
 }
 
-/* ---------------------------- interface functions ------------------------- */
+/* ---------------------------- interface functions ------------------------ */
 
 MenuStyle *menustyle_get_default_style(void)
 {
@@ -1334,7 +1334,7 @@ void menustyle_parse_style(F_CMD_ARGS)
 	return;
 }
 
-/* ---------------------------- builtin commands ---------------------------- */
+/* ---------------------------- builtin commands --------------------------- */
 
 void CMD_CopyMenuStyle(F_CMD_ARGS)
 {

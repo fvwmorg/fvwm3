@@ -14,9 +14,9 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-/* ---------------------------- included header files ----------------------- */
+/* ---------------------------- included header files ---------------------- */
 
-#include <config.h>
+#include "config.h"
 
 #include <stdio.h>
 
@@ -32,9 +32,9 @@
 #include "FRenderInit.h"
 #include "PictureBase.h"
 
-/* ---------------------------- local definitions --------------------------- */
+/* ---------------------------- local definitions -------------------------- */
 
-/* ---------------------------- local macros -------------------------------- */
+/* ---------------------------- local macros ------------------------------- */
 
 #define FFT_SET_ROTATED_90_MATRIX(m) \
 	((m)->xx = (m)->yy = 0, (m)->xy = 1, (m)->yx = -1)
@@ -45,23 +45,23 @@
 #define FFT_SET_ROTATED_180_MATRIX(m) \
 	((m)->xx = (m)->yy = -1, (m)->xy = (m)->yx = 0)
 
-/* ---------------------------- imports ------------------------------------- */
+/* ---------------------------- imports ------------------------------------ */
 
-/* ---------------------------- included code files ------------------------- */
+/* ---------------------------- included code files ------------------------ */
 
-/* ---------------------------- local types --------------------------------- */
+/* ---------------------------- local types -------------------------------- */
 
-/* ---------------------------- forward declarations ------------------------ */
+/* ---------------------------- forward declarations ----------------------- */
 
-/* ---------------------------- local variables ----------------------------- */
+/* ---------------------------- local variables ---------------------------- */
 
 static Display *fftdpy = NULL;
 static int fftscreen;
 static int fft_initialized = False;
 
-/* ---------------------------- exported variables (globals) ---------------- */
+/* ---------------------------- exported variables (globals) --------------- */
 
-/* ---------------------------- local functions ----------------------------- */
+/* ---------------------------- local functions ---------------------------- */
 
 static
 void init_fft(Display *dpy)
@@ -158,7 +158,7 @@ void FftSetupEncoding(
 
 static
 FftFont *FftGetRotatedFont(
-	Display *dpy, FftFont *f, rotation_type rotation)
+	Display *dpy, FftFont *f, rotation_t rotation)
 {
 	FftPattern *rotated_pat;
 	FftMatrix r,b;
@@ -230,7 +230,7 @@ void FftPDumyFunc(void)
 {
 }
 
-/* ---------------------------- interface functions ------------------------- */
+/* ---------------------------- interface functions ------------------------ */
 
 void FftGetFontHeights(
 	FftFontType *fftf, int *height, int *ascent, int *descent)

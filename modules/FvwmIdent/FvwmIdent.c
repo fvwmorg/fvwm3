@@ -1,3 +1,4 @@
+/* -*-c-*- */
 
 /* This module, and the entire NoClutter program, and the concept for
  * interfacing this module to the Window Manager, are all original work
@@ -117,12 +118,12 @@ static char ewmh_init_state[512];
 static int minimal_layer = default_layer;
 static int my_layer = default_layer;
 
-/***********************************************************************
+/*
  *
  *  Procedure:
  *      main - start of module
  *
- ***********************************************************************/
+ */
 int main(int argc, char **argv)
 {
 	char *temp, *s;
@@ -322,11 +323,11 @@ int main(int argc, char **argv)
 	return 0;
 }
 
-/**************************************************************************
+/*
  *
  * Read the entire window list from fvwm
  *
- *************************************************************************/
+ */
 void Loop(int *fd)
 {
 	while (1)
@@ -344,11 +345,11 @@ void Loop(int *fd)
 }
 
 
-/**************************************************************************
+/*
  *
  * Process window list messages
  *
- *************************************************************************/
+ */
 void process_message(unsigned long type,unsigned long *body)
 {
 	switch(type)
@@ -378,23 +379,23 @@ void process_message(unsigned long type,unsigned long *body)
 	}
 }
 
-/***********************************************************************
+/*
  *
  *  Procedure:
  *      SIGPIPE handler - SIGPIPE means fvwm is dying
  *
- ***********************************************************************/
+ */
 static RETSIGTYPE
 TerminateHandler(int sig)
 {
 	fvwmSetTerminate(sig);
 }
 
-/***********************************************************************
+/*
  *
  * Got window configuration info - if its our window, save data
  *
- ***********************************************************************/
+ */
 void list_configure(unsigned long *body)
 {
 	struct ConfigWinPacket  *cfgpacket = (void *) body;
@@ -434,11 +435,11 @@ void list_configure(unsigned long *body)
 	}
 }
 
-/*************************************************************************
+/*
  *
  * Capture  Window name info
  *
- ************************************************************************/
+ */
 void list_window_name(unsigned long *body)
 {
 	if((app_win == (Window)body[1])||(app_win == (Window)body[0]))
@@ -447,11 +448,11 @@ void list_window_name(unsigned long *body)
 	}
 }
 
-/*************************************************************************
+/*
  *
  * Capture  Window Icon name info
  *
- ************************************************************************/
+ */
 void list_icon_name(unsigned long *body)
 {
 	if((app_win == (Window)body[1])||(app_win == (Window)body[0]))
@@ -461,11 +462,11 @@ void list_icon_name(unsigned long *body)
 }
 
 
-/*************************************************************************
+/*
  *
  * Capture  Window class name info
  *
- ************************************************************************/
+ */
 void list_class(unsigned long *body)
 {
 	if((app_win == (Window)body[1])||(app_win == (Window)body[0]))
@@ -475,11 +476,11 @@ void list_class(unsigned long *body)
 }
 
 
-/*************************************************************************
+/*
  *
  * Capture  Window resource info
  *
- ************************************************************************/
+ */
 void list_res_name(unsigned long *body)
 {
 	if((app_win == (Window)body[1])||(app_win == (Window)body[0]))
@@ -568,11 +569,11 @@ void list_config_info(unsigned long *body)
 		free(token);
 }
 
-/*************************************************************************
+/*
  *
  * Process X Events
  *
- ************************************************************************/
+ */
 int ProcessXEvent(int x, int y)
 {
 	XEvent Event,event;
@@ -733,11 +734,11 @@ int ProcessXEvent(int x, int y)
 	return 0;
 }
 
-/*************************************************************************
+/*
  *
  * End of window list, open an x window and display data in it
  *
- ************************************************************************/
+ */
 void list_end(void)
 {
 	XSizeHints mysizehints;
@@ -927,11 +928,11 @@ void list_end(void)
 	}
 }
 
-/************************************************************************
+/*
  *
  * Draw the items
  *
- ***********************************************************************/
+ */
 void DrawItems(Drawable d, int x, int y, int w, int h)
 {
 	int fontheight,i=0;
@@ -1035,9 +1036,9 @@ void PixmapDrawWindow(int w, int h)
 	}
 }
 
-/**************************************************************************
+/*
  *  Change the window name displayed in the title bar.
- **************************************************************************/
+ */
 void change_window_name(char *str)
 {
 	XTextProperty name;
@@ -1070,11 +1071,11 @@ void DestroyList(void)
 	itemlistRoot = NULL;
 }
 
-/**************************************************************************
+/*
 *
 * Add s1(string at first column) and s2(string at second column) to itemlist
 *
- *************************************************************************/
+*/
 void AddToList(char *s1, char* s2)
 {
 	int tw1, tw2;
@@ -1406,9 +1407,9 @@ void MakeList(void)
 	}
 }
 
-/************************************************************************
+/*
   X Error Handler
-************************************************************************/
+*/
 static int
 ErrorHandler(Display *d, XErrorEvent *event)
 {

@@ -1,35 +1,21 @@
 /* -*-c-*- */
-/* This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
- */
 
 #ifndef ADD_WINDOW_H
 #define ADD_WINDOW_H
 
-/* ---------------------------- included header files ----------------------- */
+/* ---------------------------- included header files ---------------------- */
 
-/* ---------------------------- global definitions -------------------------- */
+/* ---------------------------- global definitions ------------------------- */
 
-/* ---------------------------- global macros ------------------------------- */
+/* ---------------------------- global macros ------------------------------ */
 
-/* ---------------------------- type definitions ---------------------------- */
+/* ---------------------------- type definitions --------------------------- */
 
-/* ---------------------------- forward declarations ------------------------ */
+/* ---------------------------- forward declarations ----------------------- */
 
-/* ---------------------------- exported variables (globals) ---------------- */
+/* ---------------------------- exported variables (globals) --------------- */
 
-/* ---------------------------- interface functions ------------------------- */
+/* ---------------------------- interface functions ------------------------ */
 
 void setup_visible_name(FvwmWindow *fw, Bool is_icon);
 void setup_wm_hints(FvwmWindow *fw);
@@ -41,7 +27,7 @@ void setup_icon_background_parameters(FvwmWindow *fw, window_style *pstyle);
 void setup_icon_title_parameters(FvwmWindow *fw, window_style *pstyle);
 Bool setup_window_placement(
 	FvwmWindow *fw, window_style *pstyle, rectangle *attr_g,
-	initial_window_options_type *win_opts);
+	initial_window_options_t *win_opts);
 Bool validate_transientfor(FvwmWindow *fw);
 void setup_title_geometry(
 	FvwmWindow *fw, window_style *pstyle);
@@ -71,7 +57,7 @@ void FetchWmProtocols(
 	FvwmWindow *);
 FvwmWindow *AddWindow(
 	const exec_context_t *exc, FvwmWindow *ReuseWin,
-	initial_window_options_type * win_opts);
+	initial_window_options_t * win_opts);
 void GetWindowSizeHints(
 	FvwmWindow *);
 void free_window_names(

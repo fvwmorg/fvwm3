@@ -1,3 +1,4 @@
+/* -*-c-*- */
 /* This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 2 of the License, or
@@ -13,12 +14,12 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
 
-/***************************************************************************
+/*
  * FvwmBanner
  *
  *  Show Fvwm Banner
  *
- ***************************************************************************/
+ */
 
 #include "config.h"
 
@@ -64,9 +65,9 @@ typedef struct _PImageIcon {
 	int depth;
 }        PImageIcon;
 
-/**************************************************************************
+/*
  * A few function prototypes
- **************************************************************************/
+ */
 void RedrawWindow(void);
 void GetXPMData(char **);
 void GetXBMData(void);
@@ -96,11 +97,11 @@ Bool no_wm = False;
 
 #define MW_EVENTS   (ExposureMask | ButtonReleaseMask)
 
-/****************************************************************************
+/*
  *
  * Creates an icon window as needed
  *
- ****************************************************************************/
+ */
 int main(int argc, char **argv)
 {
   char *display_name = NULL, *string = NULL;
@@ -280,11 +281,11 @@ int main(int argc, char **argv)
   return 0;
 }
 
-/****************************************************************************
+/*
  *
  * Looks for a color XPM icon file
  *
- ****************************************************************************/
+ */
 void GetXBMData(void)
 {
   if ((view.pixmap =
@@ -408,9 +409,9 @@ static void parseOptions(int fd[2])
   return;
 }
 
-/**************************************************************************
+/*
  *  Change the window name displayed in the title bar.
- **************************************************************************/
+ */
 void change_window_name(char *str)
 {
   XTextProperty name;
@@ -426,12 +427,12 @@ void change_window_name(char *str)
 }
 
 
-/***********************************************************************
+/*
  *
  *  Procedure:
  *      SIGPIPE handler - SIGPIPE means fvwm is dying
  *
- ***********************************************************************/
+ */
 
 /*ARGSUSED*/
 void DeadPipe (int nonsense)

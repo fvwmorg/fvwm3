@@ -1,27 +1,13 @@
 /* -*-c-*- */
-/* This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
- */
 
 #ifndef MENUITEM_H
 #define MENUITEM_H
 
-/* ---------------------------- included header files ----------------------- */
+/* ---------------------------- included header files ---------------------- */
 
-/* ---------------------------- global definitions -------------------------- */
+/* ---------------------------- global definitions ------------------------- */
 
-/* ---------------------------- global macros ------------------------------- */
+/* ---------------------------- global macros ------------------------------ */
 
 #define MI_NEXT_ITEM(i)         ((i)->next)
 #define MI_PREV_ITEM(i)         ((i)->prev)
@@ -52,7 +38,7 @@
 /* temporary flags */
 #define MI_WAS_DESELECTED(i)    ((i)->flags.was_deselected)
 
-/* ---------------------------- type definitions ---------------------------- */
+/* ---------------------------- type definitions --------------------------- */
 
 /* IMPORTANT NOTE: Don't put members into this struct that can change while the
  * menu is visible! This will wreak havoc on recursive menus. */
@@ -131,9 +117,9 @@ typedef struct
 	} flags;
 } MenuPaintItemParameters;
 
-/* ---------------------------- exported variables (globals) ---------------- */
+/* ---------------------------- exported variables (globals) --------------- */
 
-/* ---------------------------- interface functions ------------------------- */
+/* ---------------------------- interface functions ------------------------ */
 
 MenuItem *menuitem_clone(MenuItem *mi);
 MenuItem *menuitem_create(void);

@@ -1,3 +1,4 @@
+/* -*-c-*- */
 /* Copyright (C) 2002 the late Joey Shutup.
  *
  * http://www.streetmap.co.uk/streetmap.dll?postcode2map?BS24+9TZ
@@ -22,7 +23,7 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
 
-/* ---------------------------- included header files ----------------------- */
+/* ---------------------------- included header files ---------------------- */
 
 #include "config.h"
 
@@ -48,17 +49,17 @@
 #include "execcontext.h"
 #include "builtins.h"
 
-/* ---------------------------- local definitions --------------------------- */
+/* ---------------------------- local definitions -------------------------- */
 
-/* ---------------------------- local macros -------------------------------- */
+/* ---------------------------- local macros ------------------------------- */
 
-/* ---------------------------- imports ------------------------------------- */
+/* ---------------------------- imports ------------------------------------ */
 
 extern int nColorsets;  /* in libs/Colorset.c */
 
-/* ---------------------------- included code files ------------------------- */
+/* ---------------------------- included code files ------------------------ */
 
-/* ---------------------------- local types --------------------------------- */
+/* ---------------------------- local types -------------------------------- */
 
 /* When fvwm destroys pixmaps it puts them on a list and only destroys them
  * after some period of inactivity. This is necessary because changing colorset
@@ -80,9 +81,9 @@ struct root_pic
 	int height;
 };
 
-/* ---------------------------- forward declarations ------------------------ */
+/* ---------------------------- forward declarations ----------------------- */
 
-/* ---------------------------- local variables ----------------------------- */
+/* ---------------------------- local variables ---------------------------- */
 
 static char *black = "black";
 static char *white = "white";
@@ -162,9 +163,9 @@ static char *csetopts[] =
 	NULL
 };
 
-/* ---------------------------- exported variables (globals) ---------------- */
+/* ---------------------------- exported variables (globals) --------------- */
 
-/* ---------------------------- local functions ----------------------------- */
+/* ---------------------------- local functions ---------------------------- */
 static
 Pixmap get_root_pixmap(Atom prop)
 {
@@ -577,7 +578,7 @@ static void parse_simple_tint(
 	}
 }
 
-/* ---------------------------- interface functions ------------------------- */
+/* ---------------------------- interface functions ------------------------ */
 
 void cleanup_colorsets()
 {
@@ -648,11 +649,13 @@ void parse_colorset(int n, char *line)
 	alloc_colorset(n);
 	cs = &Colorset[n];
 
-	/* ---------- Parse the options ---------- */
+	/*** Parse the options ***/
 	while (line && *line)
 	{
-		/* Read next option specification delimited by a comma or \0. */
-		line = GetQuotedString(line, &optstring, ",", NULL, NULL, NULL);
+		/* Read next option specification delimited by a comma or \0.
+		 */
+		line = GetQuotedString(
+			line, &optstring, ",", NULL, NULL, NULL);
 		if (!optstring)
 			break;
 		args = GetNextToken(optstring, &option);
@@ -1640,11 +1643,11 @@ void parse_colorset(int n, char *line)
 	return;
 }
 
-/*****************************************************************************
+/*
  * alloc_colorset() grows the size of the Colorset array to include set n
  * colorset_t *Colorset will be altered
  * returns the address of the member
- *****************************************************************************/
+ */
 void alloc_colorset(int n)
 {
 	/* do nothing if it already exists */

@@ -1,3 +1,4 @@
+/* -*-c-*- */
 /* This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 2 of the License, or
@@ -13,14 +14,16 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
+#include "config.h"
+
 #include "Tools.h"
 
 #define BdWidth 2               /* Border width */
 #define SbWidth 15              /* ScrollBar width */
 
-/*************************************************/
-/* Fonction pour Liste / Functions for the List  */
-/*************************************************/
+/*
+ * Fonction pour Liste / Functions for the List
+ */
 void InitList(struct XObj *xobj)
 {
   unsigned long mask;
@@ -164,7 +167,7 @@ void DrawCellule(
 		  if (!frect_get_intersection(
 			  r.x - 2, r.y + (i - xobj->value2)*HeightCell + 2,
 			  r.width + 4, HeightCell-2,
-			  evp->xexpose.x, evp->xexpose.y, 
+			  evp->xexpose.x, evp->xexpose.y,
 			  evp->xexpose.width, evp->xexpose.height,
 			  &inter))
 		  {

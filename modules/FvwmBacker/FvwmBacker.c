@@ -1,3 +1,4 @@
+/* -*-c-*- */
 /* FvwmBacker Module for Fvwm.
  *
  *  Copyright 1994,  Mike Finger (mfinger@mermaid.micro.umn.edu or
@@ -140,7 +141,7 @@ ErrorHandler(Display *d, XErrorEvent *event)
 	/* some errors are OK=ish */
 	if (0 && event->error_code == BadValue)
 		return 0;
- 
+
 	PrintXErrorAndCoredump(d, event, Module);
 	return 0;
 }
@@ -224,9 +225,9 @@ int main(int argc, char **argv)
 	return 1;
 }
 
-/******************************************************************************
+/*
   EndLessLoop - Read until we get killed, blocking when can't read
-******************************************************************************/
+*/
 void EndLessLoop()
 {
 	while(1)
@@ -235,9 +236,9 @@ void EndLessLoop()
 	}
 }
 
-/******************************************************************************
+/*
   ReadFvwmPipe - Read a single message from the pipe from Fvwm
-******************************************************************************/
+*/
 void ReadFvwmPipe()
 {
 	FvwmPacket* packet = ReadFvwmPacket(Fvwm_fd[1]);
@@ -390,7 +391,7 @@ void SetDeskPageBackground(const Command *c)
 				{
 					GC gc;
 					XGCValues xgcv;
-					
+
 					xgcv.foreground = c->solidColor;
 					gc = fvwmlib_XCreateGC(
 						dpy2, root2, GCForeground,
@@ -460,9 +461,9 @@ void ExecuteMatchingCommands(int colorset, int changed)
 	}
 }
 
-/******************************************************************************
+/*
   ProcessMessage - Process the message coming from Fvwm
-******************************************************************************/
+*/
 void ProcessMessage(unsigned long type, unsigned long *body)
 {
 	char *tline;
@@ -514,17 +515,17 @@ void ProcessMessage(unsigned long type, unsigned long *body)
 	}
 }
 
-/******************************************************************************
+/*
   Detected a broken pipe - time to exit
-******************************************************************************/
+*/
 void DeadPipe(int nonsense)
 {
 	exit(1);
 }
 
-/******************************************************************************
+/*
   ParseConfigLine - Parse the configuration line fvwm to us to use
-******************************************************************************/
+*/
 int ParseConfigLine(char *line)
 {
 	int cpl = strlen(configPrefix);
@@ -556,9 +557,9 @@ int ParseConfigLine(char *line)
 	return -1;
 }
 
-/******************************************************************************
+/*
   ParseConfig - Parse the configuration file fvwm to us to use
-******************************************************************************/
+*/
 void ParseConfig()
 {
 	char *line_start;
@@ -648,9 +649,9 @@ Bool ParseNewCommand(
 	return 0;
 }
 
-/******************************************************************************
+/*
   AddCommand - Add a command to the correct spot on the dynamic array.
-******************************************************************************/
+*/
 void AddCommand(char *line)
 {
 	char *token;

@@ -1,18 +1,4 @@
 /* -*-c-*- */
-/* This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
- */
 
 /* This module is all new
  * by Rob Nation
@@ -27,21 +13,21 @@
 #ifndef COLORMAP_H
 #define COLORMAP_H
 
-/* ---------------------------- included header files ----------------------- */
+/* ---------------------------- included header files ---------------------- */
 
-/* ---------------------------- global definitions -------------------------- */
+/* ---------------------------- global definitions ------------------------- */
 
-/* ---------------------------- global macros ------------------------------- */
+/* ---------------------------- global macros ------------------------------ */
 
-/* ---------------------------- type definitions ---------------------------- */
+/* ---------------------------- type definitions --------------------------- */
 
-/* ---------------------------- forward declarations ------------------------ */
+/* ---------------------------- forward declarations ----------------------- */
 
-/* ---------------------------- exported variables (globals) ---------------- */
+/* ---------------------------- exported variables (globals) --------------- */
 
-/* ---------------------------- interface functions ------------------------- */
+/* ---------------------------- interface functions ------------------------ */
 
-/* HandleColormapNotify - colormap notify event handler
+/* colormap notify event handler
  *
  * This procedure handles both a client changing its own colormap, and
  * a client explicitly installing its colormap itself (only the window
@@ -51,7 +37,7 @@ void colormap_handle_colormap_notify(const evh_args_t *ea);
 /* Re-Install the active colormap */
 void ReInstallActiveColormap(void);
 
-/* InstallWindowColormaps - install the colormaps for one fvwm window
+/* install the colormaps for one fvwm window
  *
  *  Inputs:
  *      type    - type of event that caused the installation
@@ -59,7 +45,7 @@ void ReInstallActiveColormap(void);
  *                window structure, whose colormaps are to be installed. */
 void InstallWindowColormaps(const FvwmWindow *tmp);
 
-/* <Uni/I>nstallRootColormap - Force (un)loads root colormap(s)
+/* Force (un)loads root colormap(s)
  *
  * These matching routines provide a mechanism to insure that
  * the root colormap(s) is installed during operations like
@@ -78,7 +64,7 @@ void InstallRootColormap(void);
  * If we peel off the last layer, re-install the application colormap  */
 void UninstallRootColormap(void);
 
-/* <Uni/I>nstallFvwmColormap - Force (un)loads fvwm colormap(s)
+/* Force (un)loads fvwm colormap(s)
  *
  * This is used to ensure the fvwm colormap is installed during
  * menu operations */

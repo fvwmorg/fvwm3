@@ -1,3 +1,4 @@
+/* -*-c-*- */
 /* This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 2 of the License, or
@@ -13,14 +14,16 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
+#include "config.h"
+
 #include "Tools.h"
 
 
-/***********************************************/
-/* Fonction pour HDipstick                     */
-/* Création d'une jauge horizontale            */
-/* plusieurs options                           */
-/***********************************************/
+/*
+ * Fonction pour HDipstick
+ * Création d'une jauge horizontale
+ * plusieurs options
+ */
 void InitHDipstick(struct XObj *xobj)
 {
  unsigned long mask;

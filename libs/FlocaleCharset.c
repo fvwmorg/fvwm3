@@ -1,7 +1,6 @@
 /* -*-c-*- */
-/* Copyright (C) 2002  Olivier Chapuis
- *
- * This program is free software; you can redistribute it and/or modify
+/* Copyright (C) 2002  Olivier Chapuis */
+/* This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 2 of the License, or
  * (at your option) any later version.
@@ -16,9 +15,9 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-/* ---------------------------- included header files ----------------------- */
+/* ---------------------------- included header files ---------------------- */
 
-#include <config.h>
+#include "config.h"
 #include <stdio.h>
 
 #include <X11/Xlib.h>
@@ -38,19 +37,19 @@
 #include <langinfo.h>
 #endif
 
-/* ---------------------------- local definitions --------------------------- */
+/* ---------------------------- local definitions -------------------------- */
 
-/* ---------------------------- local macros -------------------------------- */
+/* ---------------------------- local macros ------------------------------- */
 
-/* ---------------------------- imports ------------------------------------- */
+/* ---------------------------- imports ------------------------------------ */
 
-/* ---------------------------- included code files ------------------------- */
+/* ---------------------------- included code files ------------------------ */
 
-/* ---------------------------- local types --------------------------------- */
+/* ---------------------------- local types -------------------------------- */
 
-/* ---------------------------- forward declarations ------------------------ */
+/* ---------------------------- forward declarations ----------------------- */
 
-/* ---------------------------- local variables ----------------------------- */
+/* ---------------------------- local variables ---------------------------- */
 
 /* X locale charset */
 static FlocaleCharset *FLCXOMCharset = NULL;
@@ -398,9 +397,9 @@ FlocaleCharset FlocaleCharsetTable[] =
 
 /* to be supported: ADOBE-STANDARD, some Xft1 charset  */
 
-/* ---------------------------- exported variables (globals) ---------------- */
+/* ---------------------------- exported variables (globals) --------------- */
 
-/* ---------------------------- local functions ----------------------------- */
+/* ---------------------------- local functions ---------------------------- */
 
 static
 FlocaleCharset *FlocaleCharsetOfXCharset(char *x)
@@ -526,7 +525,7 @@ void FlocaleInit_X_Charset(Display *dpy, const char *module)
 #endif
 }
 
-/* ---------------------------- interface functions ------------------------- */
+/* ---------------------------- interface functions ------------------------ */
 
 void FlocaleCharsetInit(Display *dpy, const char *module)
 {
@@ -565,7 +564,7 @@ void FlocaleCharsetInit(Display *dpy, const char *module)
 		FLC_DEBUG_GET_BIDI_CHARSET (FLCXOMCharset));
 	fprintf(stderr,"[FlocaleCharsetInit] locale charset: x:%s, bidi:%s\n",
 		FLC_DEBUG_GET_X_CHARSET(FLCLocaleCharset),
-		FLC_DEBUG_GET_BIDI_CHARSET (FLCLocaleCharset));      
+		FLC_DEBUG_GET_BIDI_CHARSET (FLCLocaleCharset));
 #endif
 }
 

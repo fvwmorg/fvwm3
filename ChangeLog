@@ -1,5 +1,63 @@
 2003-06-29  Dominik Vogt  <dominik.vogt@gmx.de>
 
+	**/*.[ch]:
+	shortened some comments
+	removed GPL from .h files
+	added "/* -*-c-*- */ where missing
+	include config.h in all .c files
+	added GPL to all .c files
+	some reformatting
+
+	* fvwm/module_interface.c:
+	* fvwm/module_interface.h:
+	* libs/Fft.c:
+	* libs/Flocale.c:
+	* libs/gravity.h:
+	* libs/Flocale.h:
+	* fvwm/screen.h:
+	* fvwm/misc.c:
+	* fvwm/misc.h:
+	* fvwm/windowshade.c:
+	* fvwm/virtual.c:
+	* fvwm/conditional.c:
+	* fvwm/geometry.h:
+	* fvwm/geometry.c:
+	* fvwm/borders.c:
+	* fvwm/frame.h:
+	* fvwm/frame.c:
+	* fvwm/update.c:
+	* fvwm/session.c:
+	* fvwm/placement.c:
+	* fvwm/menus.c:
+	* fvwm/icons.c:
+	* fvwm/events.c:
+	* fvwm/add_window.c:
+	* fvwm/session.h:
+	* fvwm/placement.h:
+	* fvwm/icons.h:
+	* fvwm/eventhandler.h:
+	* fvwm/fvwm.h:
+	* fvwm/add_window.h:
+	* fvwm/repeat.c:
+	* fvwm/functions.c:
+	* fvwm/functable.c:
+	* fvwm/functable.h:
+	* fvwm/functions.h:
+	renamed types func_type, repeat_t, initial_window_options_t,
+	frame_title_layout_type, rotation_t, direction_t, fvwm_msg_t,
+	last_added_item_type, common_flags_type, multi_direction_type,
+	msg_masks_type to ..._t
+
+	* fvwm/functions.c (__execute_function):
+	(execute_complex_function):
+	* fvwm/condrc.c (condrc_init):
+	new function in new file to encapsulate all cond_rc_t handling
+
+	* fvwm/condrc.h:
+	* fvwm/fvwm.h (cond_rc_t):
+	(cond_rc_enum):
+	moved typed to new file
+
 	* fvwm/functable.h:
 	* fvwm/commands.h:
 	* fvwm/functable.c (func_table):
@@ -8,8 +66,8 @@
 
 	* fvwm/conditional.c (CMD_Break):
 	(__rc_matches_rcstring_consume):
-	new option "levels" to the Break command
-	Break takes the number of function levels to break out of as an argument
+	Break takes the number of function levels to break out of as an
+	argument
 
 	* fvwm/expand.c (expand_vars_extended):
 	* fvwm/conditional.c (circulate_cmd):
@@ -32,7 +90,8 @@
 	* fvwm/conditional.c:
 	renamed fvwm_cond_func_rc by cond_rc_t
 	made a type a struct
-	added a member to indicate the number of function levels to break out of
+	added a member to indicate the number of function levels to break out
+	of
 
 	* fvwm/functable.c (func_table):
 	* fvwm/conditional.c (CMD_TestRc):

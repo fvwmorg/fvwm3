@@ -14,7 +14,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-/* ---------------------------- included header files ----------------------- */
+/* ---------------------------- included header files ---------------------- */
 
 #include "config.h"
 
@@ -31,25 +31,25 @@
 #include "borders.h"
 #include "icons.h"
 
-/* ---------------------------- local definitions --------------------------- */
+/* ---------------------------- local definitions -------------------------- */
 
-/* ---------------------------- local macros -------------------------------- */
+/* ---------------------------- local macros ------------------------------- */
 
-/* ---------------------------- imports ------------------------------------- */
+/* ---------------------------- imports ------------------------------------ */
 
-/* ---------------------------- included code files ------------------------- */
+/* ---------------------------- included code files ------------------------ */
 
-/* ---------------------------- local types --------------------------------- */
+/* ---------------------------- local types -------------------------------- */
 
-/* ---------------------------- forward declarations ------------------------ */
+/* ---------------------------- forward declarations ----------------------- */
 
-/* ---------------------------- local variables ----------------------------- */
+/* ---------------------------- local variables ---------------------------- */
 
-/* ---------------------------- exported variables (globals) ---------------- */
+/* ---------------------------- exported variables (globals) --------------- */
 
-/* ---------------------------- local functions ----------------------------- */
+/* ---------------------------- local functions ---------------------------- */
 
-/* ---------------------------- interface functions ------------------------- */
+/* ---------------------------- interface functions ------------------------ */
 
 /* Removes decorations from the source rectangle and moves it according to the
  * gravity specification. */
@@ -223,7 +223,7 @@ Bool get_title_button_geometry(
 }
 
 void get_title_font_size_and_offset(
-	FvwmWindow *fw, direction_type title_dir,
+	FvwmWindow *fw, direction_t title_dir,
 	Bool is_left_title_rotated_cw, Bool is_right_title_rotated_cw,
 	Bool is_top_title_rotated, Bool is_bottom_title_rotated,
 	int *size, int *offset)
@@ -233,7 +233,7 @@ void get_title_font_size_and_offset(
 	int font_size;
 	int min_offset;
 	Bool is_rotated_cw, is_rotated;
-	rotation_type draw_rotation;
+	rotation_t draw_rotation;
 
 	/* adjust font offset according to height specified in title style */
 	decor_size = fw->decor->title_height;
@@ -381,9 +381,9 @@ void get_shaded_geometry(
 
 void get_shaded_geometry_with_dir(
 	FvwmWindow *fw, rectangle *small_g, rectangle *big_g,
-	direction_type shade_dir)
+	direction_t shade_dir)
 {
-	direction_type old_shade_dir;
+	direction_t old_shade_dir;
 
 	old_shade_dir = SHADED_DIR(fw);
 	SET_SHADED_DIR(fw, shade_dir);
@@ -647,7 +647,7 @@ void maximize_adjust_offset(FvwmWindow *fw)
 	return;
 }
 
-/***********************************************************************
+/*
  *
  *  Procedure:
  *      constrain_size - adjust the given width and height to account for the
@@ -655,8 +655,8 @@ void maximize_adjust_offset(FvwmWindow *fw)
  *
  *      The general algorithm, especially the aspect ratio stuff, is
  *      borrowed from uwm's CheckConsistency routine.
-*
-***********************************************************************/
+ *
+ */
 #define MAKEMULT(a,b) ((b==1) ? (a) : (((int)((a)/(b))) * (b)) )
 void constrain_size(
 	FvwmWindow *fw, const XEvent *e, unsigned int *widthp,
@@ -1265,5 +1265,5 @@ void resize_icon_title_height(FvwmWindow *fw, int dh)
 	return;
 }
 
-/* ---------------------------- builtin commands ---------------------------- */
+/* ---------------------------- builtin commands --------------------------- */
 

@@ -1,3 +1,4 @@
+/* -*-c-*- */
 /*
  * AfterStep Sound System - sound module for Wharf
  *
@@ -8,6 +9,9 @@
  * realtime audio mixing
  * replace the Audio module
  */
+
+#include "config.h"
+
 #include <stdlib.h>
 #include <stdio.h>
 #include <sys/stat.h>

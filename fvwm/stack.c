@@ -14,7 +14,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-/* ---------------------------- included header files ----------------------- */
+/* ---------------------------- included header files ---------------------- */
 
 #include "config.h"
 #include <stdio.h>
@@ -43,7 +43,7 @@
 #include "gnome.h"
 #include "ewmh.h"
 
-/* ---------------------------- local definitions --------------------------- */
+/* ---------------------------- local definitions -------------------------- */
 
 /* If more than this many transients are in a single branch of a transient
  * tree, they will end up in more or less random stacking order. */
@@ -53,15 +53,15 @@
 /* This number must fit in a signed int! */
 #define LOWER_PENALTY (MAX_TRANSIENTS_IN_BRANCH * MAX_TRANSIENT_LEVELS)
 
-/* ---------------------------- local macros -------------------------------- */
+/* ---------------------------- local macros ------------------------------- */
 
-/* ---------------------------- imports ------------------------------------- */
+/* ---------------------------- imports ------------------------------------ */
 
 extern Bool is_frame_hide_window();
 
-/* ---------------------------- included code files ------------------------- */
+/* ---------------------------- included code files ------------------------ */
 
-/* ---------------------------- local types --------------------------------- */
+/* ---------------------------- local types -------------------------------- */
 
 typedef enum
 {
@@ -70,7 +70,7 @@ typedef enum
 	SM_RESTACK = MARK_RESTACK
 } stack_mode_t;
 
-/* ---------------------------- forward declarations ------------------------ */
+/* ---------------------------- forward declarations ----------------------- */
 
 static void __raise_or_lower_window(
 	FvwmWindow *t, stack_mode_t mode, Bool allow_recursion,
@@ -88,11 +88,11 @@ static int collect_transients_recursive(
 	FvwmWindow *t, FvwmWindow *list_head, int layer, stack_mode_t mode,
 	Bool do_include_target_window);
 
-/* ---------------------------- local variables ----------------------------- */
+/* ---------------------------- local variables ---------------------------- */
 
-/* ---------------------------- exported variables (globals) ---------------- */
+/* ---------------------------- exported variables (globals) --------------- */
 
-/* ---------------------------- local functions ----------------------------- */
+/* ---------------------------- local functions ---------------------------- */
 
 #define DEBUG_STACK_RING 1
 #ifdef DEBUG_STACK_RING
@@ -260,7 +260,7 @@ static FvwmWindow *get_transientfor_top_fvwmwindow(FvwmWindow *t)
 	return t;
 }
 
-/********************************************************************
+/*
  * Raise a target and all higher FVWM-managed windows above any
  *  override_redirects:
  *  - locate the highest override_redirect above our target
@@ -268,7 +268,7 @@ static FvwmWindow *get_transientfor_top_fvwmwindow(FvwmWindow *t)
  *    below the highest override_redirect in the restack list
  *  - configure our target window above the override_redirect sibling,
  *    and restack.
- ********************************************************************/
+ */
 static void raise_over_unmanaged(FvwmWindow *t)
 {
 	int i;
@@ -280,12 +280,12 @@ static void raise_over_unmanaged(FvwmWindow *t)
 	XWindowChanges changes;
 
 
-	/********************************************************************
+	/*
 	 * Locate the highest override_redirect window above our target, and
 	 * the highest of our windows below it.
-
+	 *
 	 * Count the windows we need to restack, then build the stack list.
-	 ********************************************************************/
+	 */
 	if (!is_above_unmanaged(t, &OR_Above))
 	{
 		for (count = 0, t2 = Scr.FvwmRoot.stack_next;
@@ -1170,10 +1170,10 @@ static Bool is_above_unmanaged(FvwmWindow *fw, Window *umtop)
 		return ontop;
 	}
 
-	/********************************************************************
+	/*
 	 * Locate the highest override_redirect window above our target, and
 	 * the highest of our windows below it.
-	 ********************************************************************/
+	 */
 	for (i = 0; i < num && tops[i] != FW_W_FRAME(fw); i++)
 	{
 		/* look for target window in list */
@@ -1317,7 +1317,7 @@ static Bool __is_on_top_of_layer(FvwmWindow *fw, Bool client_entered)
 	}
 }
 
-/* ---------------------------- interface functions ------------------------- */
+/* ---------------------------- interface functions ------------------------ */
 
 /* Remove a window from the stack ring */
 void remove_window_from_stack_ring(FvwmWindow *t)
@@ -1766,7 +1766,7 @@ Bool is_on_top_of_layer_and_above_unmanaged(FvwmWindow *fw)
 	return __is_on_top_of_layer(fw, True);
 }
 
-/* ----------------------------- built in functions ------------------------ */
+/* ----------------------------- built in functions ----------------------- */
 
 void CMD_Raise(F_CMD_ARGS)
 {

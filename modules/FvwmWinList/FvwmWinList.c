@@ -1,3 +1,4 @@
+/* -*-c-*- */
 /* FvwmWinList Module for Fvwm.
  *
  *  Copyright 1994,  Mike Finger (mfinger@mermaid.micro.umn.edu or
@@ -166,9 +167,9 @@ static RETSIGTYPE TerminateHandler(int sig);
 
 static char *AnimCommand = NULL;
 
-/***************************************************************************
+/*
  * TerminateHandler - reentrant signal handler that ends the main event loop
- ***************************************************************************/
+ */
 static RETSIGTYPE TerminateHandler(int sig)
 {
   /*
@@ -206,11 +207,11 @@ static void window_shade(unsigned long *body, int do_shade)
 	return;
 }
 
-/******************************************************************************
+/*
   Main - Setup the XConnection,request the window list and loop forever
     Based on main() from FvwmIdent:
       Copyright 1994, Robert Nation and Nobutaka Suzuki.
-******************************************************************************/
+*/
 int main(int argc, char **argv)
 {
   char *temp, *s;
@@ -349,9 +350,9 @@ int main(int argc, char **argv)
 }
 
 
-/******************************************************************************
+/*
   MainEventLoop -  Read and redraw until we die, blocking when can't read
-******************************************************************************/
+*/
 void MainEventLoop(void)
 {
   fd_set readset;
@@ -376,11 +377,11 @@ void MainEventLoop(void)
   } /* while */
 }
 
-/******************************************************************************
+/*
   ReadFvwmPipe - Read a single message from the pipe from Fvwm
     Originally Loop() from FvwmIdent:
       Copyright 1994, Robert Nation and Nobutaka Suzuki.
-******************************************************************************/
+*/
 void ReadFvwmPipe(void)
 {
     FvwmPacket* packet = ReadFvwmPacket(Fvwm_fd[1]);
@@ -390,11 +391,11 @@ void ReadFvwmPipe(void)
 	ProcessMessage( packet->type, packet->body );
 }
 
-/******************************************************************************
+/*
   ProcessMessage - Process the message coming from Fvwm
     Skeleton based on processmessage() from FvwmIdent:
       Copyright 1994, Robert Nation and Nobutaka Suzuki.
-******************************************************************************/
+*/
 void ProcessMessage(unsigned long type,unsigned long *body)
 {
   int redraw=0,i,j;
@@ -596,9 +597,9 @@ void ProcessMessage(unsigned long type,unsigned long *body)
 }
 
 
-/******************************************************************************
+/*
   RedrawWindow - Update the needed lines and erase any old ones
-******************************************************************************/
+*/
 void RedrawWindow(Bool force, Bool clear_bg, XEvent *evp)
 {
   DrawButtonArray(&buttons, force, clear_bg, evp);
@@ -606,9 +607,9 @@ void RedrawWindow(Bool force, Bool clear_bg, XEvent *evp)
   if (FQLength(dpy) && !force) LoopOnEvents();
 }
 
-/******************************************************************************
+/*
   ConsoleMessage - Print a message on the console.  Works like printf.
-******************************************************************************/
+*/
 void ConsoleMessage(const char *fmt, ...)
 {
 #ifndef NO_CONSOLE
@@ -623,9 +624,9 @@ void ConsoleMessage(const char *fmt, ...)
 #endif
 }
 
-/******************************************************************************
+/*
   OpenConsole - Open the console as a way of sending messages
-******************************************************************************/
+*/
 int OpenConsole(void)
 {
 #ifndef NO_CONSOLE
@@ -637,11 +638,11 @@ int OpenConsole(void)
   return 1;
 }
 
-/******************************************************************************
+/*
   ParseConfig - Parse the configuration file fvwm to us to use
     Based on part of main() from FvwmIdent:
       Copyright 1994, Robert Nation and Nobutaka Suzuki.
-******************************************************************************/
+*/
 void ParseConfig(void)
 {
   char *tline;
@@ -810,9 +811,9 @@ ParseConfigLine(char *tline)
 }
 
 
-/******************************************************************************
+/*
   LoopOnEvents - Process all the X events we get
-******************************************************************************/
+*/
 void LoopOnEvents(void)
 {
   int num;
@@ -977,9 +978,9 @@ void LoopOnEvents(void)
 }
 
 
-/******************************************************************************
+/*
   AdjustWindow - Resize the window according to maxwidth by number of buttons
-******************************************************************************/
+*/
 void AdjustWindow(Bool force)
 {
   int new_width=0,new_height=0,tw,i,total,all;
@@ -1135,9 +1136,9 @@ void AdjustWindow(Bool force)
   }
 }
 
-/******************************************************************************
+/*
   makename - Based on the flags return me '(name)' or 'name'
-******************************************************************************/
+*/
 char *makename(const char *string, Bool iconified)
 {
   char *ptr;
@@ -1149,9 +1150,9 @@ char *makename(const char *string, Bool iconified)
   return ptr;
 }
 
-/******************************************************************************
+/*
   LinkAction - Link an response to a users action
-******************************************************************************/
+*/
 void LinkAction(char *string)
 {
 char *temp;
@@ -1174,9 +1175,9 @@ char *temp;
     CopyString(&EnterAction,&temp[5]);
 }
 
-/******************************************************************************
+/*
   MakeMeWindow - Create and setup the window we will need
-******************************************************************************/
+*/
 void MakeMeWindow(void)
 {
   XSizeHints hints;
@@ -1459,9 +1460,9 @@ void MakeMeWindow(void)
   }
 }
 
-/******************************************************************************
+/*
   StartMeUp - Do X initialization things
-******************************************************************************/
+*/
 void StartMeUp_I(void)
 {
   if (!(dpy = XOpenDisplay("")))
@@ -1510,9 +1511,9 @@ void StartMeUp_II(void)
 
 }
 
-/******************************************************************************
+/*
   ShutMeDown - Do X client cleanup
-******************************************************************************/
+*/
 void ShutMeDown(void)
 {
   FreeList(&windows);
@@ -1522,11 +1523,11 @@ void ShutMeDown(void)
   XCloseDisplay(dpy);
 }
 
-/******************************************************************************
+/*
   ChangeWindowName - Self explanitory
     Original work from FvwmIdent:
       Copyright 1994, Robert Nation and Nobutaka Suzuki.
-******************************************************************************/
+*/
 void ChangeWindowName(char *str)
 {
   XTextProperty name;
@@ -1539,11 +1540,11 @@ void ChangeWindowName(char *str)
   XFree(name.value);
 }
 
-/**************************************************************************
+/*
  *
  * Sets mwm hints
  *
- *************************************************************************/
+ */
 /*
  *  Now, if we (hopefully) have MWW - compatible window manager ,
  *  say, mwm, ncdwm, or else, we will set useful decoration style.
@@ -1576,9 +1577,9 @@ PropMwmHints prop;
     }
 }
 
-/************************************************************************
+/*
   X Error Handler
-************************************************************************/
+*/
 int ErrorHandler(Display *d, XErrorEvent *event)
 {
   /* some errors are OK=ish */
@@ -1586,7 +1587,7 @@ int ErrorHandler(Display *d, XErrorEvent *event)
     return 0;
   if (event->error_code == BadDrawable)
     return 0;
-if (FRenderGetErrorCodeBase() + FRenderBadPicture == event->error_code)
+  if (FRenderGetErrorCodeBase() + FRenderBadPicture == event->error_code)
     return 0;
 
   PrintXErrorAndCoredump(d, event, Module);

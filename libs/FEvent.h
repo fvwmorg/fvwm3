@@ -1,33 +1,19 @@
 /* -*-c-*- */
-/* This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
- */
 
 #ifndef FEVENT_H
 #define FEVENT_H
 
-/* ---------------------------- included header files ----------------------- */
+/* ---------------------------- included header files ---------------------- */
 
-/* ---------------------------- global definitions -------------------------- */
+/* ---------------------------- global definitions ------------------------- */
 
-/* ---------------------------- global macros ------------------------------- */
+/* ---------------------------- global macros ------------------------------ */
 
-/* ---------------------------- type definitions ---------------------------- */
+/* ---------------------------- type definitions --------------------------- */
 
-/* ---------------------------- forward declarations ------------------------ */
+/* ---------------------------- forward declarations ----------------------- */
 
-/* ---------------------------- exported variables (globals) ---------------- */
+/* ---------------------------- exported variables (globals) --------------- */
 
 /* ---------------------------- interface functions (privileged access) ----- */
 
@@ -36,7 +22,7 @@ void fev_copy_last_event(XEvent *dest);
 XEvent *fev_get_last_event_address(void);
 #endif
 
-/* ---------------------------- interface functions (normal_access) --------- */
+/* ---------------------------- interface functions (normal_access) -------- */
 
 /* get the latest event time */
 Time fev_get_evtime(void);
@@ -65,7 +51,7 @@ void fev_restore_event(void *ev);
 /* fill the event structure *ev with a dummy event of no particular type */
 void fev_make_null_event(XEvent *ev, Display *dpy);
 
-/* ---------------------------- X event replacements ------------------------ */
+/* ---------------------------- X event replacements ----------------------- */
 
 /* Replacements for X functions */
 XTimeCoord *FGetMotionEvents(
@@ -122,7 +108,7 @@ int FWarpPointer(
 int FWindowEvent(
 	Display *display, Window w, long event_mask, XEvent *event_return);
 
-/* ---------------------------- disable X symbols --------------------------- */
+/* ---------------------------- disable X symbols -------------------------- */
 
 /* FEVENT_C must only be defined in FEvent.c! */
 #ifndef FEVENT_C

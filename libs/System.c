@@ -1,3 +1,4 @@
+/* -*-c-*- */
 /* This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 2 of the License, or
@@ -97,7 +98,7 @@ void setPath(char **p_path, const char *newpath, int free_old_path)
 }
 
 
-/****************************************************************************
+/*
  *
  * Find the specified file somewhere along the given path.
  *
@@ -105,7 +106,7 @@ void setPath(char **p_path, const char *newpath, int free_old_path)
  * do something with it.  By then, the file might not be accessible.
  * Oh well.
  *
- ****************************************************************************/
+ */
 #include <stdio.h>
 char *searchPath(
 	const char *pathlist, const char *filename, const char *suffix,

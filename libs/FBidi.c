@@ -1,7 +1,6 @@
 /* -*-c-*- */
-/* Copyright (C) 2002  Mikhael Goikhman
- *
- * This program is free software; you can redistribute it and/or modify
+/* Copyright (C) 2002  Mikhael Goikhman */
+/* This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 2 of the License, or
  * (at your option) any later version.
@@ -21,6 +20,8 @@
  * See FBidi.h for some comments on this interface.
  */
 
+#include "config.h"
+
 #include "FBidi.h"
 
 #if HAVE_BIDI
@@ -32,7 +33,8 @@
 
 Bool FBidiIsApplicable(const char *charset)
 {
-	if (fribidi_parse_charset((char *)charset) == FRIBIDI_CHARSET_NOT_FOUND)
+	if (fribidi_parse_charset((char *)charset) ==
+	    FRIBIDI_CHARSET_NOT_FOUND)
 	{
 		return False;
 	}
@@ -40,8 +42,8 @@ Bool FBidiIsApplicable(const char *charset)
 }
 
 char *FBidiConvert(
-	const char *logical_str, const char *charset, int str_len, Bool *is_rtl,
-	int *out_len)
+	const char *logical_str, const char *charset, int str_len,
+	Bool *is_rtl, int *out_len)
 {
 	char *visual_str;
 	FriBidiCharSet fribidi_charset;

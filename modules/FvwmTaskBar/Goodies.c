@@ -1,3 +1,4 @@
+/* -*-c-*- */
 /* This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 2 of the License, or
@@ -144,7 +145,7 @@ static void CreateOrUpdateGoodyGC(void)
   }
   else
   {
-	  goodies_width += 0;	  
+	  goodies_width += 0;
   }
 
 }
@@ -219,7 +220,7 @@ Bool GoodiesParseConfig(char *tline)
     if (clockfmt && clockfmt[0] == '\0' && datefmt && datefmt[0] == '\0')
     {
 	    do_display_clock = False;
-    } 
+    }
     break;
   case 4: /* StatusFont */
     CopyStringWithQuotes(&statusfont_string, rest);

@@ -1,3 +1,4 @@
+/* -*-c-*- */
 /* This module, and the entire NoClutter program, and the concept for
  * interfacing this module to the Window Manager, are all original work
  * by Robert Nation and Nobutaka Suzuki <nobuta-s@is.aist-nara.ac.jp>
@@ -59,12 +60,12 @@ Window app_win;
 
 static int ErrorHandler(Display*, XErrorEvent*);
 
-/***********************************************************************
+/*
  *
  *  Procedure:
  *      main - start of module
  *
- ***********************************************************************/
+ */
 int main(int argc, char **argv)
 {
   char *temp, *s;
@@ -200,11 +201,11 @@ int main(int argc, char **argv)
   return 0;
 }
 
-/***********************************************************************
+/*
  *
  * Detected a broken pipe - time to exit
  *
- **********************************************************************/
+ */
 void DeadPipe(int nonsense)
 {
   extern Atom wm_del_win;
@@ -216,12 +217,12 @@ void DeadPipe(int nonsense)
 }
 
 
-/**********************************************************************
+/*
  *
  * If no application window was indicated on the command line, prompt
  * the user to select one
  *
- *********************************************************************/
+ */
 void GetTargetWindow(Window *app_win)
 {
   Window target_win;
@@ -232,9 +233,9 @@ void GetTargetWindow(Window *app_win)
     *app_win = target_win;
 }
 
-/************************************************************************
+/*
   X Error Handler
-************************************************************************/
+*/
 static int
 ErrorHandler(Display *dpy, XErrorEvent *event)
 {

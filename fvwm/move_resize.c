@@ -1,3 +1,4 @@
+/* -*-c-*- */
 /* This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 2 of the License, or
@@ -13,19 +14,19 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-/*****************************************************************************
+/*
  * This module is all original code
  * by Rob Nation
  * Copyright 1993, Robert Nation
  *     You may use this code for any purpose, as long as the original
  *     copyright remains in the source code and all documentation
- ****************************************************************************/
+ */
 
-/************************************************************************
+/*
  *
  * code for moving and resizing windows
  *
- ***********************************************************************/
+ */
 
 #include "config.h"
 
@@ -102,7 +103,7 @@ static void draw_move_resize_grid(int x, int  y, int  width, int height);
 
 /* ----- end of resize globals ----- */
 
-/***********************************************************************
+/*
  *
  *  Procedure:
  *      draw_move_resize_grid - move a window outline
@@ -114,7 +115,7 @@ static void draw_move_resize_grid(int x, int  y, int  width, int height);
  *      width       - the width of the rectangle
  *      height      - the height of the rectangle
  *
- ***********************************************************************/
+ */
 static int get_outline_rects(
 	XRectangle *rects, int x, int y, int width, int height)
 {
@@ -643,7 +644,7 @@ void resize_geometry_window(void)
 	return;
 }
 
-/***********************************************************************
+/*
  *
  *  Procedure:
  *      DisplayPosition - display the position in the dimensions window
@@ -652,7 +653,7 @@ void resize_geometry_window(void)
  *      tmp_win - the current fvwm window
  *      x, y    - position of the window
  *
- ************************************************************************/
+ */
 
 static void DisplayPosition(
 	const FvwmWindow *tmp_win, const XEvent *eventp, int x, int y,int Init)
@@ -715,7 +716,7 @@ static void DisplayPosition(
 }
 
 
-/***********************************************************************
+/*
  *
  *  Procedure:
  *      DisplaySize - display the size in the dimensions window
@@ -725,7 +726,7 @@ static void DisplayPosition(
  *      width   - the width of the rubber band
  *      height  - the height of the rubber band
  *
- ***********************************************************************/
+ */
 static void DisplaySize(
 	const FvwmWindow *tmp_win, const XEvent *eventp, int width,
 	int height, Bool Init, Bool resetLast)
@@ -1233,11 +1234,11 @@ void AnimatedMoveFvwmWindow(
 	return;
 }
 
-/****************************************************************************
+/*
  *
  * Start a window move operation
  *
- ****************************************************************************/
+ */
 void __move_icon(
 	FvwmWindow *fw, int x, int y, int old_x, int old_y,
 	Bool do_move_animated, Bool do_warp_pointer)
@@ -1862,13 +1863,13 @@ static void DoSnapAttract(
 	return;
 }
 
-/****************************************************************************
+/*
  *
  * Move the rubberband around, return with the new window location
  *
  * Returns True if the window has to be resized after the move.
  *
- ****************************************************************************/
+ */
 Bool __move_loop(
 	const exec_context_t *exc, int XOffset, int YOffset, int Width,
 	int Height, int *FinalX, int *FinalY,Bool do_move_opaque)
@@ -2705,7 +2706,7 @@ void CMD_XorPixmap(F_CMD_ARGS)
 
 /* ----------------------------- resizing code ----------------------------- */
 
-/***********************************************************************
+/*
  *
  *  Procedure:
  *      __resize_step - move the rubberband around.  This is called for
@@ -2720,7 +2721,7 @@ void CMD_XorPixmap(F_CMD_ARGS)
  *      xmotionp - pointer to xmotion in resize_window
  *      ymotionp - pointer to ymotion in resize_window
  *
- ************************************************************************/
+ */
 static void __resize_step(
 	const exec_context_t *exc, int x_root, int y_root, rectangle *drag,
 	rectangle *orig, int *xmotionp, int *ymotionp, Bool do_resize_opaque)
@@ -3722,12 +3723,12 @@ fprintf(stderr,"%d %d %d %d, max_offset.x = %d, max_offset.y = %d\n", fw->max_g.
     return;
 }
 
-/***********************************************************************
+/*
  *
  *  Procedure:
  *      (Un)Maximize a window.
  *
- ***********************************************************************/
+ */
 void CMD_Maximize(F_CMD_ARGS)
 {
 	int page_x, page_y;
@@ -4006,12 +4007,12 @@ void CMD_Maximize(F_CMD_ARGS)
 	return;
 }
 
-/****************************************************************************
+/*
  *
  * Same as CMD_Resize and CMD_ResizeMove, but the window ends up maximized
  * without touching the normal geometry.
  *
- ****************************************************************************/
+ */
 void CMD_ResizeMaximize(F_CMD_ARGS)
 {
 	rectangle normal_g;

@@ -1,3 +1,4 @@
+/* -*-c-*- */
 /* This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 2 of the License, or
@@ -25,11 +26,11 @@
 #include <libs/FShape.h>
 #include <libs/Module.h>
 
-/************************************************************************
+/*
  *
  * Builtin functions:
  *
- ************************************************************************/
+ */
 
 extern int builtin_quit(int numargs, BuiltinArg *args);
 extern int builtin_printdebug(int numargs, BuiltinArg *args);
@@ -81,7 +82,6 @@ FunctionType builtin_functions[] = {
 
 static int num_builtins = sizeof(builtin_functions) / sizeof(FunctionType);
 
-/************************************************************************/
 
 
 struct charstring
@@ -333,7 +333,7 @@ static int extract_int(char *p, int *n)
 	return 1;
 }
 
-/****************************************************************************
+/*
  *
  * Gets the next "word" of input from char string indata.
  * "word" is a string with no spaces, or a qouted string.
@@ -342,7 +342,7 @@ static int extract_int(char *p, int *n)
  * token is the extracted word, which is copied into a malloced
  * space, and must be freed after use.
  *
- **************************************************************************/
+ */
 
 static void find_context(
 	char *string, int *output, struct charstring *table, char *tline)

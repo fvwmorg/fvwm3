@@ -1,3 +1,4 @@
+/* -*-c-*- */
 /* This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 2 of the License, or
@@ -13,7 +14,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-/****************************************************************************
+/*
  * This module is all new
  * by Rob Nation
  *
@@ -22,7 +23,7 @@
  * Copyright 1994 Robert Nation. No restrictions are placed on this code,
  * as long as the copyright notice is preserved . No guarantees or
  * warrantees of any sort whatsoever are given or implied or anything.
- ****************************************************************************/
+ */
 
 #include "config.h"
 
@@ -526,7 +527,7 @@ static float test_fit(
 }
 
 
-/**************************************************************************
+/*
  *
  * Handles initial placement and sizing of a new window
  *
@@ -536,11 +537,11 @@ static float test_fit(
  *   1 = OK
  *   2 = OK, window must be resized too
  *
- **************************************************************************/
+ */
 Bool PlaceWindow(
 	const exec_context_t *exc, style_flags *sflags, rectangle *attr_g,
 	int Desk, int PageX, int PageY, int XineramaScreen, int mode,
-	initial_window_options_type *win_opts)
+	initial_window_options_t *win_opts)
 {
   FvwmWindow *t;
   int xl = -1;
@@ -1220,7 +1221,7 @@ void CMD_PlaceAgain(F_CMD_ARGS)
 	else
 	{
 		window_style style;
-		initial_window_options_type win_opts;
+		initial_window_options_t win_opts;
 
 		memset(&win_opts, 0, sizeof(win_opts));
 		lookup_style(fw, &style);

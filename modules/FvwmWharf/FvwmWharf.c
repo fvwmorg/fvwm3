@@ -1,3 +1,4 @@
+/* -*-c-*- */
 /* Wharf.c. by Bo Yang.
  *
  * Copyright 1993, Robert Nation.
@@ -206,12 +207,11 @@ void FindLockMods(void);
 static void configure_all_icon_windows(void);
 
 
-/***********************************************************************
+/*
  *
  *  Procedure:
  *      main - start of afterstep
  *
- ***********************************************************************
  */
 int main(int argc, char **argv)
 {
@@ -462,12 +462,12 @@ int main(int argc, char **argv)
   return 0;
 }
 
-/***********************************************************************
+/*
  *
  *  Procedure:
  *      Loop - wait for data to process
  *
- ***********************************************************************/
+ */
 
 void Loop(void)
 {
@@ -1298,11 +1298,11 @@ void RedrawPushedOutline(Window *win, int i, int j)
 	     -BUTTONWIDTH+1, i*BUTTONHEIGHT-2, j*BUTTONWIDTH-BUTTONWIDTH
 	     +BUTTONWIDTH-2,i*BUTTONHEIGHT-2);
 }
-/************************************************************************
+/*
  *
  * Draw the window
  *
- ***********************************************************************/
+ */
 void RedrawWindow(Window *win, int firstbutton, int newbutton,
 		  int num_rows, int num_columns)
 {
@@ -1330,11 +1330,11 @@ void RedrawWindow(Window *win, int firstbutton, int newbutton,
 }
 
 
-/*******************************************************************
+/*
  *
  * Create GC's
  *
- ******************************************************************/
+ */
 void CreateShadowGC(void)
 {
   XGCValues gcv;
@@ -1380,11 +1380,11 @@ void CreateShadowGC(void)
   MaskGC = fvwmlib_XCreateGC(dpy, main_win, gcm, &gcv);
 }
 
-/************************************************************************
+/*
  *
  * Creates a dummy window of the correct visual for the pixmap creation
  *
- ***********************************************************************/
+ */
 void CreateVizWindow(void)
 {
   XSetWindowAttributes attr;
@@ -1401,11 +1401,11 @@ void CreateVizWindow(void)
   }
 }
 
-/************************************************************************
+/*
  *
  * Sizes and creates the window
  *
- ***********************************************************************/
+ */
 void CreateWindow(void)
 {
   int first_avail_button,i;
@@ -1526,11 +1526,11 @@ void CreateWindow(void)
   change_window_name(MyName);
 }
 
-/************************************************************************
+/*
  *
  * Dead pipe handler
  *
- ***********************************************************************/
+ */
 void DeadPipe(int nonsense)
 {
   int i,j,button;
@@ -1560,11 +1560,11 @@ void DeadPipe(int nonsense)
 }
 
 int TOTHEFOLDER = -1;
-/*****************************************************************************
+/*
  *
  * This routine is responsible for reading and parsing the config file
  *
- ****************************************************************************/
+ */
 void ParseOptions(char *filename)
 {
   char *tline,*orig_tline,*tmp;
@@ -1849,11 +1849,11 @@ char *get_token(char *tline, int index)
   return word;
 }
 
-/**************************************************************************
+/*
  *
  * Parses a sound binding
  *
- **************************************************************************/
+ */
 void bind_sound(char *tline)
 {
   char *event, *sound;
@@ -1890,11 +1890,11 @@ void bind_sound(char *tline)
 }
 #endif /* ENABLE_SOUND */
 
-/**************************************************************************
+/*
  *
  * Parses a button command line from the config file
  *
- *************************************************************************/
+ */
 void match_string(char *tline)
 {
   int len,i,i2,n,j,k;
@@ -2096,9 +2096,9 @@ void match_string(char *tline)
   return;
 }
 
-/**************************************************************************
+/*
  *  Change the window name displayed in the title bar.
- **************************************************************************/
+ */
 void change_window_name(char *str)
 {
   XTextProperty name;
@@ -2125,11 +2125,11 @@ void change_window_name(char *str)
 
 
 
-/***************************************************************************
+/*
  *
  * Waits for next X event, or for an auto-raise timeout.
  *
- ****************************************************************************/
+ */
 int My_XNextEvent(Display *dpy, XEvent *event)
 {
   fd_set in_fdset;
@@ -2295,11 +2295,11 @@ static void handle_config_info_packet(unsigned long *body)
 }
 
 
-/**************************************************************************
+/*
  *
  * Process window list messages
  *
- *************************************************************************/
+ */
 void process_message(unsigned long type,unsigned long *body)
 {
   switch(type)
@@ -2334,7 +2334,7 @@ void process_message(unsigned long type,unsigned long *body)
 
 
 
-/***************************************************************************
+/*
  *
  * ICCCM Client Messages - Section 4.2.8 of the ICCCM dictates that all
  * client messages will have the following form:
@@ -2346,7 +2346,7 @@ void process_message(unsigned long type,unsigned long *body)
  *     data[0]          message atom
  *     data[1]          time stamp
  *
- ****************************************************************************/
+ */
 void my_send_clientmessage (Window w, Atom a, Time timestamp)
 {
   XClientMessageEvent ev;
@@ -2501,7 +2501,7 @@ void FindLockMods(void)
 }
 
 
-/***********************************************************************
+/*
  *
  *  Procedure:
  *      ConstrainSize - adjust the given width and height to account for the
@@ -2510,7 +2510,7 @@ void FindLockMods(void)
  *      The general algorithm, especially the aspect ratio stuff, is
  *      borrowed from uwm's CheckConsistency routine.
  *
- ***********************************************************************/
+ */
 void ConstrainSize (XSizeHints *hints, int *widthp, int *heightp)
 {
 #define makemult(a,b) ((b==1) ? (a) : (((int)((a)/(b))) * (b)) )

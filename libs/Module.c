@@ -1,3 +1,4 @@
+/* -*-c-*- */
 /* This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 2 of the License, or
@@ -93,34 +94,34 @@ FvwmPacket *ReadFvwmPacket(int fd)
 }
 
 
-/************************************************************************
+/*
  *
  * SendFinishedStartupNotification - informs fvwm that the module has
  * finished its startup procedures and is fully operational now.
  *
- ***********************************************************************/
+ */
 void SendFinishedStartupNotification(int *fd)
 {
 	SendText(fd, ModuleFinishedStartupResponse, 0);
 }
 
-/************************************************************************
+/*
  *
  * SendUnlockNotification - informs fvwm that the module has
  * finished it's procedures and fvwm may proceed.
  *
- ***********************************************************************/
+ */
 void SendUnlockNotification(int *fd)
 {
 	SendText(fd, ModuleUnlockResponse, 0);
 }
 
-/************************************************************************
+/*
  *
  * SendQuitNotification - informs fvwm that the module has
  * finished and may be killed.
  *
- ***********************************************************************/
+ */
 static unsigned long ModuleContinue = 1;
 void SendQuitNotification(int *fd)
 {
@@ -128,11 +129,11 @@ void SendQuitNotification(int *fd)
 	SendText(fd, ModuleUnlockResponse, 0); /* unlock just in case */
 }
 
-/************************************************************************
+/*
  *
  * SendText - Sends arbitrary text/command back to fvwm
  *
- ***********************************************************************/
+ */
 void SendText(int *fd, const char *message, unsigned long window)
 {
 	char *p, *buf;
@@ -164,14 +165,14 @@ void SendText(int *fd, const char *message, unsigned long window)
 	write(fd[0], buf, p - buf);
 }
 
-/************************************************************************
+/*
  *
  * SendFvwmPipe - Sends message to fvwm:  The message is a comma-delimited
  * string separated into its component sections and sent one by one to fvwm.
  * It is discouraged to use this function with a "synchronous" module.
  * (Form FvwmIconMan)
  *
- ***********************************************************************/
+ */
 void SendFvwmPipe(int *fd, const char *message, unsigned long window)
 {
 	const char *hold = message;
@@ -242,7 +243,7 @@ void InitGetConfigLine(int *fd, char *match)
 }
 
 
-/***************************************************************************
+/*
  * Gets a module configuration line from fvwm. Returns NULL if there are
  * no more lines to be had. "line" is a pointer to a char *.
  *
@@ -251,7 +252,7 @@ void InitGetConfigLine(int *fd, char *match)
  * - The "isspace"  call was referring to  memory  beyond the end of  the
  * input area.  This could have led to the creation of a core file. Added
  * "body_size" to keep it in bounds.
- **************************************************************************/
+ */
 void GetConfigLine(int *fd, char **tline)
 {
 	FvwmPacket *packet;

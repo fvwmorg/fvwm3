@@ -1,3 +1,4 @@
+/* -*-c-*- */
 /* This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 2 of the License, or
@@ -26,10 +27,10 @@
 
 int usleep (unsigned long usec)
 {
-    struct timeval timeout;
-    timeout.tv_usec = usec % (unsigned long) 1000000;
-    timeout.tv_sec = usec / (unsigned long) 1000000;
-    select(0, NULL, NULL, NULL, &timeout);
+	struct timeval timeout;
+	timeout.tv_usec = usec % (unsigned long) 1000000;
+	timeout.tv_sec = usec / (unsigned long) 1000000;
+	select(0, NULL, NULL, NULL, &timeout);
 
-    return 0;
+	return 0;
 }

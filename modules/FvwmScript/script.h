@@ -1,3 +1,4 @@
+/* -*-c-*- */
 #ifndef BISON_Y_TAB_H
 # define BISON_Y_TAB_H
 

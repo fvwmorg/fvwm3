@@ -14,7 +14,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-/* ---------------------------- included header files ----------------------- */
+/* ---------------------------- included header files ---------------------- */
 #include "config.h"
 
 #include <stdio.h>
@@ -29,18 +29,18 @@
 #include "FGettext.h"
 #include "locale.h"
 
-/* ---------------------------- local definitions --------------------------- */
+/* ---------------------------- local definitions -------------------------- */
 
-/* ---------------------------- local macros -------------------------------- */
+/* ---------------------------- local macros ------------------------------- */
 
 #define FGP_DOMAIN(l) ((FGettextPath *)l->object)->domain
 #define FGP_DIR(l)    ((FGettextPath *)l->object)->dir
 
-/* ---------------------------- imports ------------------------------------- */
+/* ---------------------------- imports ------------------------------------ */
 
-/* ---------------------------- included code files ------------------------- */
+/* ---------------------------- included code files ------------------------ */
 
-/* ---------------------------- local types --------------------------------- */
+/* ---------------------------- local types -------------------------------- */
 
 typedef struct
 {
@@ -48,9 +48,9 @@ typedef struct
 	char *dir;
 } FGettextPath;
 
-/* ---------------------------- forward declarations ------------------------ */
+/* ---------------------------- forward declarations ----------------------- */
 
-/* ---------------------------- local variables ----------------------------- */
+/* ---------------------------- local variables ---------------------------- */
 
 static int FGettextInitOk = 0;
 static char *FGDefaultDir = NULL;
@@ -60,7 +60,7 @@ static const char *FGModuleName = NULL;
 static flist *FGPathList = NULL;
 static FGettextPath *FGLastPath = NULL;
 
-/* ---------------------------- interface functions ------------------------- */
+/* ---------------------------- interface functions ------------------------ */
 
 static
 void fgettext_add_one_path(char *path, int position)
@@ -90,7 +90,7 @@ void fgettext_add_one_path(char *path, int position)
 	tmp = (FGettextPath *)safemalloc(sizeof(FGettextPath));
 	tmp->dir = dir;
 	CopyString(&tmp->domain, domain);
-	
+
 	FGPathList = flist_insert_obj(FGPathList, tmp, position);
 }
 
@@ -123,7 +123,7 @@ void fgettext_free_fgpath_list(void)
 	FGPathList = flist_free_list(FGPathList);
 }
 
-/* ---------------------------- interface functions ------------------------- */
+/* ---------------------------- interface functions ------------------------ */
 
 void FGettextInit(const char *domain, const char *dir, const char *module)
 {

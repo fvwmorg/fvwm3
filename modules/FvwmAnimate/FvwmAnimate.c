@@ -1,3 +1,4 @@
+/* -*-c-*- */
 /*
  * FvwmAnimate! Animation module for Fvwm
  *
@@ -993,12 +994,12 @@ static void Loop(void) {
   } /* end while */
 }
 
-/*****************************************************************************
+/*
  *
  * This routine is responsible for reading and parsing the config file
  * Used FvwmEvent as a model.
  *
- ****************************************************************************/
+ */
 
 static const char *table[]= {
   "Color",

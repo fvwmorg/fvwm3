@@ -1,3 +1,4 @@
+/* -*-c-*- */
 /* FvwmForm is original work of Thomas Zuwei Feng.
  *
  * Copyright Feb 1995, Thomas Zuwei Feng.  No guarantees or warantees are
@@ -2706,9 +2707,9 @@ void DeadPipe(int nonsense)
   exit(0);
 }
 
-/************************************************************************
+/*
   X Error Handler
-************************************************************************/
+*/
 static int
 ErrorHandler(Display *dpy, XErrorEvent *event)
 {

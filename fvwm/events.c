@@ -13,38 +13,37 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
-/****************************************************************************
- * This module is based on Twm, but has been siginificantly modified
+/* This module is based on Twm, but has been siginificantly modified
  * by Rob Nation
- ****************************************************************************/
-/*****************************************************************************/
-/**       Copyright 1988 by Evans & Sutherland Computer Corporation,        **/
-/**                          Salt Lake City, Utah                           **/
-/**  Portions Copyright 1989 by the Massachusetts Institute of Technology   **/
-/**                        Cambridge, Massachusetts                         **/
-/**                                                                         **/
-/**                           All Rights Reserved                           **/
-/**                                                                         **/
-/**    Permission to use, copy, modify, and distribute this software and    **/
-/**    its documentation  for  any  purpose  and  without  fee is hereby    **/
-/**    granted, provided that the above copyright notice appear  in  all    **/
-/**    copies and that both  that  copyright  notice  and  this  permis-    **/
-/**    sion  notice appear in supporting  documentation,  and  that  the    **/
-/**    names of Evans & Sutherland and M.I.T. not be used in advertising    **/
-/**    in publicity pertaining to distribution of the  software  without    **/
-/**    specific, written prior permission.                                  **/
-/**                                                                         **/
-/**    EVANS & SUTHERLAND AND M.I.T. DISCLAIM ALL WARRANTIES WITH REGARD    **/
-/**    TO THIS SOFTWARE, INCLUDING ALL IMPLIED WARRANTIES  OF  MERCHANT-    **/
-/**    ABILITY  AND  FITNESS,  IN  NO  EVENT SHALL EVANS & SUTHERLAND OR    **/
-/**    M.I.T. BE LIABLE FOR ANY SPECIAL, INDIRECT OR CONSEQUENTIAL  DAM-    **/
-/**    AGES OR  ANY DAMAGES WHATSOEVER  RESULTING FROM LOSS OF USE, DATA    **/
-/**    OR PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR OTHER    **/
-/**    TORTIOUS ACTION, ARISING OUT OF OR IN  CONNECTION  WITH  THE  USE    **/
-/**    OR PERFORMANCE OF THIS SOFTWARE.                                     **/
-/*****************************************************************************/
+ */
+/*
+ *       Copyright 1988 by Evans & Sutherland Computer Corporation,
+ *                          Salt Lake City, Utah
+ *  Portions Copyright 1989 by the Massachusetts Institute of Technology
+ *                        Cambridge, Massachusetts
+ *
+ *                           All Rights Reserved
+ *
+ *    Permission to use, copy, modify, and distribute this software and
+ *    its documentation  for  any  purpose  and  without  fee is hereby
+ *    granted, provided that the above copyright notice appear  in  all
+ *    copies and that both  that  copyright  notice  and  this  permis-
+ *    sion  notice appear in supporting  documentation,  and  that  the
+ *    names of Evans & Sutherland and M.I.T. not be used in advertising
+ *    in publicity pertaining to distribution of the  software  without
+ *    specific, written prior permission.
+ *
+ *    EVANS & SUTHERLAND AND M.I.T. DISCLAIM ALL WARRANTIES WITH REGARD
+ *    TO THIS SOFTWARE, INCLUDING ALL IMPLIED WARRANTIES  OF  MERCHANT-
+ *    ABILITY  AND  FITNESS,  IN  NO  EVENT SHALL EVANS & SUTHERLAND OR
+ *    M.I.T. BE LIABLE FOR ANY SPECIAL, INDIRECT OR CONSEQUENTIAL  DAM-
+ *    AGES OR  ANY DAMAGES WHATSOEVER  RESULTING FROM LOSS OF USE, DATA
+ *    OR PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR OTHER
+ *    TORTIOUS ACTION, ARISING OUT OF OR IN  CONNECTION  WITH  THE  USE
+ *    OR PERFORMANCE OF THIS SOFTWARE.
+ */
 
-/* ---------------------------- included header files ----------------------- */
+/* ---------------------------- included header files ---------------------- */
 
 #include "config.h"
 
@@ -96,7 +95,7 @@
 #include "stroke.h"
 #endif /* HAVE_STROKE */
 
-/* ---------------------------- local definitions --------------------------- */
+/* ---------------------------- local definitions -------------------------- */
 
 #ifndef XUrgencyHint
 #define XUrgencyHint            (1L << 8)
@@ -111,15 +110,15 @@
 #undef LASTEvent
 #define LASTEvent 256
 
-/* ---------------------------- local macros -------------------------------- */
+/* ---------------------------- local macros ------------------------------- */
 
-/* ---------------------------- imports ------------------------------------- */
+/* ---------------------------- imports ------------------------------------ */
 
 extern void StartupStuff(void);
 
-/* ---------------------------- included code files ------------------------- */
+/* ---------------------------- included code files ------------------------ */
 
-/* ---------------------------- local types --------------------------------- */
+/* ---------------------------- local types -------------------------------- */
 
 typedef void (*PFEH)(const evh_args_t *ea);
 
@@ -141,9 +140,9 @@ typedef struct
 	unsigned do_raise : 1;
 } hfrc_ret_t;
 
-/* ---------------------------- forward declarations ------------------------ */
+/* ---------------------------- forward declarations ----------------------- */
 
-/* ---------------------------- local variables ----------------------------- */
+/* ---------------------------- local variables ---------------------------- */
 
 static int Button = 0;
 static const FvwmWindow *xcrossing_last_grab_window = NULL;
@@ -151,13 +150,13 @@ STROKE_CODE(static int send_motion);
 STROKE_CODE(static char sequence[STROKE_MAX_SEQUENCE + 1]);
 static PFEH EventHandlerJumpTable[LASTEvent];
 
-/* ---------------------------- exported variables (globals) ---------------- */
+/* ---------------------------- exported variables (globals) --------------- */
 
 int last_event_type = 0;
 Window PressedW = None;
 fd_set init_fdset;
 
-/* ---------------------------- local functions ----------------------------- */
+/* ---------------------------- local functions ---------------------------- */
 
 static void fake_map_unmap_notify(const FvwmWindow *fw, int event_type)
 {
@@ -258,7 +257,7 @@ static Bool test_resizing_event(
 	return rc;
 }
 
-/***********************************************************************
+/*
  *
  *  Procedure:
  *      SendConfigureNotify - inform a client window of its geometry.
@@ -266,7 +265,7 @@ static Bool test_resizing_event(
  *  The input (frame) geometry will be translated to client geometry
  *  before sending.
  *
- ************************************************************************/
+ */
 void SendConfigureNotify(
 	FvwmWindow *fw, int x, int y, unsigned int w, unsigned int h,
 	int bw, Bool send_for_frame_too)
@@ -701,7 +700,7 @@ static void __handle_bpress_on_managed(const exec_context_t *exc)
 	return;
 }
 
-/* ---------------------------- event handlers ------------------------------ */
+/* ---------------------------- event handlers ----------------------------- */
 
 void HandleButtonPress(const evh_args_t *ea)
 {
@@ -2246,7 +2245,7 @@ void HandleMapNotify(const evh_args_t *ea)
 	SET_ICON_UNMAPPED(fw, 0);
 	if (DO_ICONIFY_AFTER_MAP(fw))
 	{
-		initial_window_options_type win_opts;
+		initial_window_options_t win_opts;
 
 		/* finally, if iconification was requested before the window
 		 * was mapped, request it now. */
@@ -2284,13 +2283,13 @@ void HandleMapRequest(const evh_args_t *ea)
 
 void HandleMapRequestKeepRaised(
 	const evh_args_t *ea, Window KeepRaised, FvwmWindow *ReuseWin,
-	initial_window_options_type *win_opts)
+	initial_window_options_t *win_opts)
 {
 	Bool is_on_this_page = False;
 	Bool is_new_window = False;
 	FvwmWindow *tmp;
 	FvwmWindow *sf;
-	initial_window_options_type win_opts_bak;
+	initial_window_options_t win_opts_bak;
 	Window ew;
 	FvwmWindow *fw;
 
@@ -3164,7 +3163,7 @@ void HandleVisibilityNotify(const evh_args_t *ea)
 	return;
 }
 
-/* ---------------------------- interface functions ------------------------- */
+/* ---------------------------- interface functions ------------------------ */
 
 /*
 ** Procedure:
@@ -3305,13 +3304,13 @@ void HandleEvents(void)
 	return;
 }
 
-/***************************************************************************
+/*
  *
  * Waits for next X or module event, fires off startup routines when startup
  * modules have finished or after a timeout if the user has specified a
  * command line module that doesn't quit or gets stuck.
  *
- ****************************************************************************/
+ */
 int My_XNextEvent(Display *dpy, XEvent *event)
 {
 	extern fd_set_size_t fd_width;
@@ -3542,12 +3541,12 @@ int My_XNextEvent(Display *dpy, XEvent *event)
 	return 0;
 }
 
-/***********************************************************************
+/*
  *
  *  Procedure:
  *      Find the Fvwm context for the event.
  *
- ************************************************************************/
+ */
 int GetContext(FvwmWindow **ret_fw, FvwmWindow *t, const XEvent *e, Window *w)
 {
 	int context;
@@ -3635,11 +3634,11 @@ int GetContext(FvwmWindow **ret_fw, FvwmWindow *t, const XEvent *e, Window *w)
 	return context;
 }
 
-/**************************************************************************
+/*
  *
  * Removes expose events for a specific window from the queue
  *
- *************************************************************************/
+ */
 int flush_expose(Window w)
 {
 	XEvent dummy;
@@ -3679,11 +3678,11 @@ int flush_accumulate_expose(Window w, XEvent *e)
 	return i;
 }
 
-/**************************************************************************
+/*
  *
  * Removes all expose events from the queue and does the necessary redraws
  *
- *************************************************************************/
+ */
 void handle_all_expose(void)
 {
 	void *saved_event;
@@ -3810,14 +3809,14 @@ int flush_property_notify(Atom atom, Window w)
 	return count;
 }
 
-/***************************************************************************
+/*
  *
  * Wait for all mouse buttons to be released
  * This can ease some confusion on the part of the user sometimes
  *
  * Discard superflous button events during this wait period.
  *
- ***************************************************************************/
+ */
 void WaitForButtonsUp(Bool do_handle_expose)
 {
 	unsigned int mask;
@@ -3929,7 +3928,7 @@ Bool is_resizing_event_pending(
 	return args.ret_does_match;
 }
 
-/* ---------------------------- builtin commands ---------------------------- */
+/* ---------------------------- builtin commands --------------------------- */
 
 void CMD_XSynchronize(F_CMD_ARGS)
 {

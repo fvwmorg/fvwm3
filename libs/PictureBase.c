@@ -1,3 +1,4 @@
+/* -*-c-*- */
 /* This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 2 of the License, or
@@ -13,13 +14,13 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-/****************************************************************************
+/*
  * This module is all original code
  * by Rob Nation
  * Copyright 1993, Robert Nation
  *     You may use this code for any purpose, as long as the original
  *     copyright remains in the source code and all documentation
- ****************************************************************************/
+ */
 /*
   Changed 02/12/97 by Dan Espen:
   - added routines to determine color closeness, for color use reduction.
@@ -38,12 +39,12 @@
  *
  */
 
-/****************************************************************************
+/*
  *
  * Routines to handle initialization, loading, and removing of xpm's or mono-
  * icon images.
  *
- ****************************************************************************/
+ */
 
 #include "config.h"
 
@@ -232,7 +233,7 @@ char* PictureGetImagePath()
 	return imagePath;
 }
 
-/****************************************************************************
+/*
  *
  * Find the specified image file somewhere along the given path.
  *
@@ -240,7 +241,7 @@ char* PictureGetImagePath()
  * do something with it.  By then, the file might not be accessible.
  * Oh well.
  *
- ****************************************************************************/
+ */
 char* PictureFindImageFile(const char* icon, const char* pathlist, int type)
 {
 	if (pathlist == NULL)

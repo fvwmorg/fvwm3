@@ -13,16 +13,13 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
-/* ---------------------------- included header files ----------------------- */
+/* ---------------------------- included header files ---------------------- */
 
-#include <config.h>
+#include "config.h"
 
 #include <stdio.h>
 
 #include "fvwm.h"
-#if 0
-#include "commands.h"
-#endif
 #include "externs.h"
 #include "cursor.h"
 #include "functions.h"
@@ -35,21 +32,21 @@
 #include "schedule.h"
 #include "libs/FGettext.h"
 
-/* ---------------------------- local definitions --------------------------- */
+/* ---------------------------- local definitions -------------------------- */
 
-/* ---------------------------- local macros -------------------------------- */
+/* ---------------------------- local macros ------------------------------- */
 
-/* ---------------------------- imports ------------------------------------- */
+/* ---------------------------- imports ------------------------------------ */
 
 extern char const * const Fvwm_VersionInfo;
 
-/* ---------------------------- included code files ------------------------- */
+/* ---------------------------- included code files ------------------------ */
 
-/* ---------------------------- local types --------------------------------- */
+/* ---------------------------- local types -------------------------------- */
 
-/* ---------------------------- forward declarations ------------------------ */
+/* ---------------------------- forward declarations ----------------------- */
 
-/* ---------------------------- local variables ----------------------------- */
+/* ---------------------------- local variables ---------------------------- */
 
 static char *function_vars[] =
 {
@@ -172,9 +169,9 @@ enum
 	VAR_VERSION_LINE,
 } extended_vars;
 
-/* ---------------------------- exported variables (globals) ---------------- */
+/* ---------------------------- exported variables (globals) --------------- */
 
-/* ---------------------------- local functions ----------------------------- */
+/* ---------------------------- local functions ---------------------------- */
 
 static signed int expand_vars_extended(
 	char *var_name, char *output, FvwmWindow *fw, cond_rc_t *cond_rc)
@@ -651,7 +648,7 @@ static signed int expand_vars_extended(
 	}
 }
 
-/* ---------------------------- interface functions ------------------------- */
+/* ---------------------------- interface functions ------------------------ */
 
 char *expand_vars(
 	char *input, char *arguments[], FvwmWindow *fw, Bool addto, Bool ismod,

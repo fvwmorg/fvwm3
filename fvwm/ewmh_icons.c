@@ -1,6 +1,6 @@
-/* Copyright (C) 2001  Olivier Chapuis
- *
- * This program is free software; you can redistribute it and/or modify
+/* -*-c-*- */
+/* Copyright (C) 2001  Olivier Chapuis */
+/* This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 2 of the License, or
  * (at your option) any later version.
@@ -39,9 +39,9 @@
 #include "ewmh.h"
 #include "ewmh_intern.h"
 
-/* ***************************************************************************
+/*
  * net icon handler
- * ***************************************************************************/
+ */
 int ewmh_WMIcon(EWMH_CMD_ARGS)
 {
   CARD32 *list = NULL;
@@ -108,9 +108,9 @@ int ewmh_WMIcon(EWMH_CMD_ARGS)
   return 0;
 }
 
-/* ***************************************************************************
+/*
  * update
- * ***************************************************************************/
+ */
 void EWMH_DoUpdateWmIcon(FvwmWindow *fwin, Bool mini_icon, Bool icon)
 {
   CARD32 *list = NULL;
@@ -173,9 +173,9 @@ void EWMH_DoUpdateWmIcon(FvwmWindow *fwin, Bool mini_icon, Bool icon)
     free(new_list);
 }
 
-/* ***************************************************************************
+/*
  * build and set a net icon from a pixmap
- * ***************************************************************************/
+ */
 CARD32 *ewmh_SetWmIconFromPixmap(FvwmWindow *fwin,
 				 CARD32 *orig_icon,
 				 unsigned int *orig_size,
@@ -489,9 +489,9 @@ CARD32 *ewmh_SetWmIconFromPixmap(FvwmWindow *fwin,
 	return new_icon;
 }
 
-/* ***************************************************************************
+/*
  * delete the mini icon and/or the icon from a ewmh icon
- * ***************************************************************************/
+ */
 void EWMH_DeleteWmIcon(FvwmWindow *fwin, Bool mini_icon, Bool icon)
 {
   CARD32 *list;
@@ -583,9 +583,9 @@ void EWMH_DeleteWmIcon(FvwmWindow *fwin, Bool mini_icon, Bool icon)
   free(list);
 }
 
-/* ***************************************************************************
+/*
  * Create an x image from a NET icon
- * ***************************************************************************/
+ */
 
 #define SQUARE(X) ((X)*(X))
 static

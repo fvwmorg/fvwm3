@@ -18,7 +18,7 @@
   twm and enlightenment.
 */
 
-/* ---------------------------- included header files ----------------------- */
+/* ---------------------------- included header files ---------------------- */
 
 #include "config.h"
 
@@ -47,16 +47,16 @@
 #include "geometry.h"
 #include "move_resize.h"
 
-/* ---------------------------- local definitions --------------------------- */
+/* ---------------------------- local definitions -------------------------- */
 
 /*#define FVWM_DEBUG_MSGS 1*/
 /*#define FVWM_DEBUG_DEVEL 1*/
 
-/* ---------------------------- local macros -------------------------------- */
+/* ---------------------------- local macros ------------------------------- */
 
 #define xstreq(a,b) ((!a && !b) || (a && b && (strcmp(a,b)==0)))
 
-/* ---------------------------- imports ------------------------------------- */
+/* ---------------------------- imports ------------------------------------ */
 
 extern Bool Restarting;
 #ifdef SESSION
@@ -65,9 +65,9 @@ extern char **g_argv;
 extern int g_argc;
 #endif
 
-/* ---------------------------- included code files ------------------------- */
+/* ---------------------------- included code files ------------------------ */
 
-/* ---------------------------- local types --------------------------------- */
+/* ---------------------------- local types -------------------------------- */
 
 typedef struct _match
 {
@@ -91,9 +91,9 @@ typedef struct _match
 	window_flags flags;
 } Match;
 
-/* ---------------------------- forward declarations ------------------------ */
+/* ---------------------------- forward declarations ----------------------- */
 
-/* ---------------------------- local variables ----------------------------- */
+/* ---------------------------- local variables ---------------------------- */
 
 #ifdef SESSION
 static char *previous_sm_client_id = NULL;
@@ -109,13 +109,13 @@ static Match *matches = NULL;
 static Bool does_file_version_match = False;
 static Bool doPreserveState = True;
 
-/* ---------------------------- exported variables (globals) ---------------- */
+/* ---------------------------- exported variables (globals) --------------- */
 
 #ifdef SESSION
 int sm_fd = -1;
 #endif
 
-/* ---------------------------- local functions ----------------------------- */
+/* ---------------------------- local functions ---------------------------- */
 
 static
 char *duplicate(const char *s)
@@ -918,7 +918,7 @@ InstallIOErrorHandler(void)
 }
 #endif
 
-/* ---------------------------- interface functions ------------------------- */
+/* ---------------------------- interface functions ------------------------ */
 
 void
 LoadGlobalState(char *filename)
@@ -1268,7 +1268,7 @@ LoadWindowStates(char *filename)
 Bool
 MatchWinToSM(
 	FvwmWindow *ewin, mwtsm_state_args *ret_state_args,
-	initial_window_options_type *win_opts)
+	initial_window_options_t *win_opts)
 {
 	int i;
 
@@ -1636,7 +1636,7 @@ Bool saveQuitSession(void)
 #endif
 }
 
-/* ---------------------------- builtin commands ---------------------------- */
+/* ---------------------------- builtin commands --------------------------- */
 
 void CMD_QuitSession(F_CMD_ARGS)
 {

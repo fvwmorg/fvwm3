@@ -14,19 +14,19 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-/*****************************************************************************
+/*
  * This module is all original code
  * by Rob Nation
  * Copyright 1993, Robert Nation
  *     You may use this code for any purpose, as long as the original
  *     copyright remains in the source code and all documentation
- ****************************************************************************/
+ */
 
 /* IMPORTANT NOTE: Do *not* use any constant numbers in this file. All values
  * have to be #defined in the section below or in defaults.h to ensure full
  * control over the menus. */
 
-/* ---------------------------- included header files ----------------------- */
+/* ---------------------------- included header files ---------------------- */
 
 #include "config.h"
 
@@ -56,21 +56,21 @@
 #include "geometry.h"
 #include "menus.h"
 
-/* ---------------------------- local definitions --------------------------- */
+/* ---------------------------- local definitions -------------------------- */
 
 /* used in float to int arithmetic */
 #define ROUNDING_ERROR_TOLERANCE  0.005
 
-/* ---------------------------- local macros -------------------------------- */
+/* ---------------------------- local macros ------------------------------- */
 
-/* ---------------------------- imports ------------------------------------- */
+/* ---------------------------- imports ------------------------------------ */
 
 /* This external is safe. It's written only during startup. */
 extern XContext MenuContext;
 
-/* ---------------------------- included code files ------------------------- */
+/* ---------------------------- included code files ------------------------ */
 
-/* ---------------------------- local types --------------------------------- */
+/* ---------------------------- local types -------------------------------- */
 
 typedef struct
 {
@@ -130,7 +130,7 @@ typedef enum
 	SA_ABORT
 } shortcut_action;
 
-/* ---------------------------- menu loop types ----------------------------- */
+/* ---------------------------- menu loop types ---------------------------- */
 
 typedef enum
 {
@@ -196,9 +196,9 @@ typedef struct
 	unsigned int event_mask;
 } mloop_static_info_t;
 
-/* ---------------------------- forward declarations ------------------------ */
+/* ---------------------------- forward declarations ----------------------- */
 
-/* ---------------------------- local variables ----------------------------- */
+/* ---------------------------- local variables ---------------------------- */
 
 /* This global is saved and restored every time a function is called that
  * might modify them, so we can safely let it live outside a function. */
@@ -211,9 +211,9 @@ static saved_pos_hints last_saved_pos_hints =
 /* structures for menus */
 static MenuInfo Menus;
 
-/* ---------------------------- exported variables (globals) ---------------- */
+/* ---------------------------- exported variables (globals) --------------- */
 
-/* ---------------------------- local functions ----------------------------- */
+/* ---------------------------- local functions ---------------------------- */
 
 static void __menu_execute_function(const exec_context_t **pexc, char *action)
 {
@@ -325,9 +325,9 @@ static Bool pointer_in_passive_item_area(int x_offset, MenuRoot *mr)
 	}
 }
 
-/***************************************************************
+/*
  * warping functions
- ***************************************************************/
+ */
 
 static void warp_pointer_to_title(MenuRoot *mr)
 {
@@ -366,9 +366,9 @@ static MenuItem *warp_pointer_to_item(
 	return mi;
 }
 
-/***************************************************************
+/*
  * menu animation functions
- ***************************************************************/
+ */
 
 /* prepares the parameters to be passed to AnimatedMoveOfWindow
  * mr - the menu instance that holds the menu item
@@ -492,13 +492,13 @@ static MenuRoot *mr_popup_for_mi(MenuRoot *mr, MenuItem *mi)
 
 /* ---------------------------- item handling ------------------------------ */
 
-/***********************************************************************
+/*
  * find_entry()
  *
  * Returns the menu item the pointer is over and optionally the offset
  * from the left side of the menu entry (if px_offset is != NULL) and
  * the MenuRoot the pointer is over (if pmr is != NULL).
- ***********************************************************************/
+ */
 static MenuItem *find_entry(
 	MenuParameters *pmp,
 	int *px_offset /*NULL means don't return this value */,
@@ -527,8 +527,9 @@ static MenuItem *find_entry(
 	/* get the pointer position */
 	if (p_rx < 0)
 	{
-		if (!FQueryPointer(dpy, Scr.Root, &JunkRoot, &Child,
-				   &root_x, &root_y, &JunkX, &JunkY, &JunkMask))
+		if (!FQueryPointer(
+			    dpy, Scr.Root, &JunkRoot, &Child,
+			    &root_x, &root_y, &JunkX, &JunkY, &JunkMask))
 		{
 			/* pointer is on a different screen */
 			return NULL;
@@ -579,7 +580,8 @@ static MenuItem *find_entry(
 		{
 			b = 0;
 		}
-		else if (MI_NEXT_ITEM(mi) && MI_IS_SELECTABLE(MI_NEXT_ITEM(mi)))
+		else if (MI_NEXT_ITEM(mi) &&
+			 MI_IS_SELECTABLE(MI_NEXT_ITEM(mi)))
 		{
 			b = r / 2;
 		}
@@ -606,11 +608,11 @@ static MenuItem *find_entry(
 	return mi;
 }
 
-/***************************************************************
+/*
  * Returns the position of the item in the menu, but counts
  * only items that can be selected (i.e. nor separators or
  * titles). The count begins with 0.
- ***************************************************************/
+ */
 static int get_selectable_item_index(
 	MenuRoot *mr, MenuItem *miTarget, int *ret_sections)
 {
@@ -754,7 +756,7 @@ static void handle_emacs_bindings(
 	return;
 }
 
-/***********************************************************************
+/*
  * Procedure
  *      menuShortcuts() - Menu keyboard processing
  *
@@ -765,7 +767,7 @@ static void handle_emacs_bindings(
  * If none of these conditions are true, then the default processing
  * routine is called.
  * TKP - uses XLookupString so that keypad numbers work with windowlist
- ***********************************************************************/
+ */
 static void menuShortcuts(
 	MenuRoot *mr, MenuParameters *pmp, MenuReturn *pmret, XEvent *event,
 	MenuItem **pmiCurrent, double_keypress *pdkp)
@@ -1285,7 +1287,7 @@ static Bool is_double_click(
 
 /* ---------------------------- item label parsing ------------------------- */
 
-/***********************************************************************
+/*
  * Procedure:
  *      scanForHotkeys - Look for hotkey markers in a MenuItem
  *                                                      (pete@tecc.co.uk)
@@ -1294,7 +1296,7 @@ static Bool is_double_click(
  *      it      - MenuItem to scan
  *      column  - The column number in which to look for a hotkey.
  *
- ***********************************************************************/
+ */
 static void scanForHotkeys(
 	MenuItem *it, int column)
 {
@@ -1645,12 +1647,12 @@ static void calculate_item_sizes(MenuSizingParameters *msp)
 	return;
 }
 
-/****************************************************************************
+/*
  *
  * Calculate the positions of the columns in the menu.
  * Called by make_menu().
  *
- ****************************************************************************/
+ */
 static void size_menu_horizontally(MenuSizingParameters *msp)
 {
 	MenuItem *mi;
@@ -2086,12 +2088,12 @@ static void size_menu_horizontally(MenuSizingParameters *msp)
 }
 
 
-/****************************************************************************
+/*
  *
  * Calculate the positions of the columns in the menu.
  * Called by make_menu().
  *
- ****************************************************************************/
+ */
 static Bool size_menu_vertically(MenuSizingParameters *msp)
 {
 	MenuItem *mi;
@@ -2323,12 +2325,12 @@ static Bool size_menu_vertically(MenuSizingParameters *msp)
 	return has_continuation_menu;
 }
 
-/****************************************************************************
+/*
  *
  * Merge menu continuations back into the original menu.
  * Called by make_menu().
  *
- ****************************************************************************/
+ */
 static void merge_continuation_menus(MenuRoot *mr)
 {
 	/* merge menu continuations into one menu again - needed when changing
@@ -2354,11 +2356,11 @@ static void merge_continuation_menus(MenuRoot *mr)
 	return;
 }
 
-/****************************************************************************
+/*
  *
  * Creates the window for the menu.
  *
- ****************************************************************************/
+ */
 static void make_menu_window(MenuRoot *mr)
 {
 	unsigned long valuemask;
@@ -2436,11 +2438,11 @@ static void make_menu_window(MenuRoot *mr)
 }
 
 
-/****************************************************************************
+/*
  *
  * Generates the window for a menu
  *
- ****************************************************************************/
+ */
 static void make_menu(MenuRoot *mr)
 {
 	MenuSizingParameters msp;
@@ -2517,7 +2519,7 @@ static void update_menu(MenuRoot *mr, MenuParameters *pmp)
 	return;
 }
 
-/***********************************************************************
+/*
  *
  *  Procedure:
  *      copy_menu_root - creates a new instance of an existing menu
@@ -2528,7 +2530,7 @@ static void update_menu(MenuRoot *mr, MenuParameters *pmp)
  *  Inputs:
  *      mr      - the MenuRoot structure of the existing menu
  *
- ***********************************************************************/
+ */
 static MenuRoot *copy_menu_root(MenuRoot *mr)
 {
 	MenuRoot *tmp;
@@ -2553,7 +2555,7 @@ static MenuRoot *copy_menu_root(MenuRoot *mr)
 	return tmp;
 }
 
-/***********************************************************************
+/*
  *
  *  Procedure:
  *      clone_menu - duplicates an existing menu in newly allocated
@@ -2565,7 +2567,7 @@ static MenuRoot *copy_menu_root(MenuRoot *mr)
  *  Inputs:
  *      mr      - the MenuRoot structure of the existing menu
  *
- ***********************************************************************/
+ */
 static void clone_menu_root_static(
 	MenuRoot *dest_mr, MenuRoot *src_mr)
 {
@@ -2670,11 +2672,11 @@ static void get_xy_from_position_hints(
 	return;
 }
 
-/*****************************************************************************
+/*
  * Used by get_menu_options
  *
  * The vars are named for the x-direction, but this is used for both x and y
- *****************************************************************************/
+ */
 static char *get_one_menu_position_argument(
 	char *action, int x, int w, int *pFinalX, int *x_offset,
 	float *width_factor, float *context_width_factor,
@@ -2792,12 +2794,12 @@ static void clear_expose_menu_area(Window win, XEvent *e)
 	return;
 }
 
-/************************************************************
+/*
  *
  * Draws a picture on the left side of the menu
  * What about a SidePic Colorset ? (olicha 2002-08-21)
  *
- ************************************************************/
+ */
 static void paint_side_pic(MenuRoot *mr, XEvent *pevent)
 {
 	GC gc;
@@ -3122,7 +3124,7 @@ static Bool paint_menu_pixmap_background(
 	return False;
 }
 
-/***********************************************************************
+/*
  *
  *  Procedure:
  *      get_menu_paint_item_parameters - prepares the parameters to be
@@ -3132,7 +3134,7 @@ static Bool paint_menu_pixmap_background(
  *      mi - the menu item to redraw
  *      fw - the FvwmWindow structure to check against allowed functions
  *
- ***********************************************************************/
+ */
 static void get_menu_paint_item_parameters(
 	MenuPaintItemParameters *mpip, MenuRoot *mr, MenuItem *mi,
 	FvwmWindow *fw, XEvent *pevent, Bool do_redraw_menu_border)
@@ -3151,12 +3153,12 @@ static void get_menu_paint_item_parameters(
 	return;
 }
 
-/***********************************************************************
+/*
  *
  *  Procedure:
  *      paint_menu - draws the entire menu
  *
- ***********************************************************************/
+ */
 static void paint_menu(
 	MenuRoot *mr, XEvent *pevent, FvwmWindow *fw)
 {
@@ -3592,7 +3594,7 @@ static int do_menus_overlap(
 	return x_overlap;
 }
 
-/***********************************************************************
+/*
  *
  *  Procedure:
  *      pop_menu_up - pop up a pull down menu
@@ -3602,7 +3604,7 @@ static int do_menus_overlap(
  *      do_warp_to_item - warp pointer to the first item after title
  *      pops      - pointer to the menu options for new menu
  *
- ***********************************************************************/
+ */
 static int pop_menu_up(
 	MenuRoot **pmenu, MenuParameters *pmp, MenuRoot *parent_menu,
 	MenuItem *parent_item, const exec_context_t **pexc, int x, int y,
@@ -3632,9 +3634,9 @@ static int pop_menu_up(
 		return False;
 	}
 
-	/***************************************************************
+	/*
 	 * handle dynamic menu actions
-	 ***************************************************************/
+	 */
 
 	/* First of all, execute the popup action (if defined). */
 	if (MR_POPUP_ACTION(mr))
@@ -3695,9 +3697,9 @@ static int pop_menu_up(
 	}
 	context = (*pexc)->w.wcontext;
 
-	/***************************************************************
+	/*
 	 * Create a new menu instance (if necessary)
-	 ***************************************************************/
+	 */
 
 	if (MR_MAPPED_COPIES(mr) > 0)
 	{
@@ -3711,9 +3713,9 @@ static int pop_menu_up(
 		mr = *pmenu;
 	}
 
-	/***************************************************************
+	/*
 	 * Evaluate position hints
-	 ***************************************************************/
+	 */
 
 	/* calculate position from position hints if available */
 	if (pops->flags.has_poshints &&
@@ -3725,9 +3727,9 @@ static int pop_menu_up(
 			prefer_left_submenu, &x, &y);
 	}
 
-	/***************************************************************
+	/*
 	 * Initialise new menu
-	 ***************************************************************/
+	 */
 
 	MR_PARENT_MENU(mr) = parent_menu;
 	MR_PARENT_ITEM(mr) = parent_item;
@@ -3739,10 +3741,10 @@ static int pop_menu_up(
 	MR_XANIMATION(mr) = 0;
 	InstallFvwmColormap();
 
-	/***************************************************************
+	/*
 	 * Handle popups from button clicks on buttons in the title bar,
 	 * or the title bar itself. Position hints override this.
-	 ***************************************************************/
+	 */
 
 	if (!pops->flags.has_poshints && fw && parent_menu == NULL &&
 	    pmp->flags.is_first_root_menu)
@@ -3818,9 +3820,9 @@ static int pop_menu_up(
 		}
 	} /* if (pops->flags.has_poshints) */
 
-	/***************************************************************
+	/*
 	 * Clip to screen
-	 ***************************************************************/
+	 */
 
 	{
 		fscreen_scr_arg fscr;
@@ -3846,9 +3848,9 @@ static int pop_menu_up(
 			bwp, bwp, True);
 	}
 
-	/***************************************************************
+	/*
 	 * Calculate position and animate menus
-	 ***************************************************************/
+	 */
 
 	if (parent_menu == NULL ||
 	    !menu_get_geometry(
@@ -4137,9 +4139,9 @@ static int pop_menu_up(
 		}
 	} /* if (parent_menu) */
 
-	/***************************************************************
+	/*
 	 * Make sure we have the correct events selected
-	 ***************************************************************/
+	 */
 
 	if (pmp->tear_off_root_menu_window == NULL)
 	{
@@ -4157,9 +4159,9 @@ static int pop_menu_up(
 		event_mask = XEVMASK_TEAR_OFF_SUBMENUW;
 	}
 
-	/***************************************************************
+	/*
 	 * Pop up the menu
-	 ***************************************************************/
+	 */
 
 	XMoveWindow(dpy, MR_WINDOW(mr), x, y);
 	XSelectInput(dpy, MR_WINDOW(mr), event_mask);
@@ -4177,9 +4179,9 @@ static int pop_menu_up(
 				0, 0, 0, False) ? True : False;
 	}
 
-	/***************************************************************
+	/*
 	 * Warp the pointer
-	 ***************************************************************/
+	 */
 
 	if (!do_warp_to_item)
 	{
@@ -4229,7 +4231,7 @@ static int pop_menu_up(
 	return True;
 }
 
-/***********************************************************************
+/*
  *
  *  Procedure:
  *      pop_menu_down - unhighlight the current menu selection and
@@ -4243,7 +4245,7 @@ static int pop_menu_up(
  *               menu foo. You must use the MenuRoot that is currently
  *               being processed here. DO NOT USE MR_PARENT_MENU(mr) here!
  *
- ***********************************************************************/
+ */
 static void pop_menu_down(MenuRoot **pmr, MenuParameters *pmp)
 {
 	MenuItem *mi;
@@ -4289,7 +4291,7 @@ static void pop_menu_down(MenuRoot **pmr, MenuParameters *pmp)
 	return;
 }
 
-/***********************************************************************
+/*
  *
  *  Procedure:
  *      pop_menu_down_and_repaint_parent - Pops down a menu and repaints the
@@ -4297,7 +4299,7 @@ static void pop_menu_down(MenuRoot **pmr, MenuParameters *pmp)
  *      *fSubmenuOverlaps is True. *fSubmenuOverlaps is set to False
  *      afterwards.
  *
- ***********************************************************************/
+ */
 static void pop_menu_down_and_repaint_parent(
 	MenuRoot **pmr, Bool *fSubmenuOverlaps, MenuParameters *pmp)
 {
@@ -5965,7 +5967,7 @@ static void menu_tear_off(MenuRoot *mr_to_copy)
 	int x = 0;
 	int y = 0;
 	unsigned int add_mask = 0;
-	initial_window_options_type win_opts;
+	initial_window_options_t win_opts;
 	evh_args_t ea;
 	exec_context_changes_t ecc;
 
@@ -6115,7 +6117,7 @@ void menu_close_tear_off_menu(FvwmWindow *fw)
 	return;
 }
 
-/****************************************************************************
+/*
  *
  * Initiates a menu pop-up
  *
@@ -6133,7 +6135,7 @@ void menu_close_tear_off_menu(FvwmWindow *fw)
  * do_menu() may destroy the *pmp->pexec member and replace it with a new
  * copy.  Be sure not to rely on the original structure being kept intact
  * when calling do_menu().
- ***************************************************************************/
+ */
 void do_menu(MenuParameters *pmp, MenuReturn *pmret)
 {
 	int x;
@@ -6480,7 +6482,7 @@ void menu_expose(XEvent *event, FvwmWindow *fw)
 	return;
 }
 
-/***********************************************************************
+/*
  *
  *  Procedure:
  *      repaint_transparent_menu - repaint the menu background if it is
@@ -6491,7 +6493,7 @@ void menu_expose(XEvent *event, FvwmWindow *fw)
  *	    the items
  *         - Use a Buffer if !IS_TRANSPARENT_PR_PURE and if we do not have one
  *           already
- ***********************************************************************/
+ */
 void repaint_transparent_menu(
 	MenuRepaintTransparentParameters *prtm,
 	Bool first, int x, int y, int end_x, int end_y)
@@ -6758,7 +6760,7 @@ MenuRoot *FollowMenuContinuations(MenuRoot *mr, MenuRoot **pmrPrior )
 	return mr;
 }
 
-/***********************************************************************
+/*
  *
  *  Procedure:
  *      AddToMenu - add an item to a root menu
@@ -6774,7 +6776,7 @@ MenuRoot *FollowMenuContinuations(MenuRoot *mr, MenuRoot **pmrPrior )
  * ckh - need to add boolean to say whether or not to expand for pixmaps,
  *       so built in window list can handle windows w/ * and % in title.
  *
- ***********************************************************************/
+ */
 void AddToMenu(
 	MenuRoot *mr, char *item, char *action, Bool fPixmapsOk, Bool fNoPlus,
 	Bool is_continuation_item)
@@ -6804,9 +6806,9 @@ void AddToMenu(
 	if (item == NULL)
 		item = "";
 
-	/***************************************************************
+	/*
 	 * Handle dynamic actions
-	 ***************************************************************/
+	 */
 
 	if (StrEquals(item, "DynamicPopupAction"))
 	{
@@ -6857,9 +6859,9 @@ void AddToMenu(
 		return;
 	}
 
-	/***************************************************************
+	/*
 	 * Parse the action
-	 ***************************************************************/
+	 */
 
 	if (action == NULL || *action == 0)
 	{
@@ -6888,9 +6890,9 @@ void AddToMenu(
 
 	MI_ACTION(tmp) = stripcpy(action);
 
-	/***************************************************************
+	/*
 	 * Parse the labels
-	 ***************************************************************/
+	 */
 
 	start = item;
 	end = item;
@@ -6994,15 +6996,15 @@ void AddToMenu(
 			(MI_LABEL(tmp)[i]) ? strlen(MI_LABEL(tmp)[i]) : 0;
 	} /* for */
 
-	/***************************************************************
+	/*
 	 * Set the type flags
-	 ***************************************************************/
+	 */
 
 	if (is_continuation_item)
 	{
 		MI_IS_CONTINUATION(tmp) = True;
 	}
-	find_func_type(MI_ACTION(tmp), &(MI_FUNC_TYPE(tmp)), NULL);
+	find_func_t(MI_ACTION(tmp), &(MI_FUNC_TYPE(tmp)), NULL);
 	switch (MI_FUNC_TYPE(tmp))
 	{
 	case F_POPUP:
@@ -7040,9 +7042,9 @@ void AddToMenu(
 		((MI_HAS_TEXT(tmp) || MI_HAS_PICTURE(tmp) ||
 		  MI_IS_TEAR_OFF_BAR(tmp)) && !MI_IS_TITLE(tmp));
 
-	/***************************************************************
+	/*
 	 * misc stuff
-	 ***************************************************************/
+	 */
 
 	MR_ITEMS(mr)++;
 	MR_IS_UPDATED(mr) = 1;
@@ -7050,7 +7052,7 @@ void AddToMenu(
 	return;
 }
 
-/***********************************************************************
+/*
  *
  *  Procedure:
  *      NewMenuRoot - create a new menu root
@@ -7061,7 +7063,7 @@ void AddToMenu(
  *  Inputs:
  *      name    - the name of the menu root
  *
- ***********************************************************************/
+ */
 MenuRoot *NewMenuRoot(char *name)
 {
 	MenuRoot *mr;
@@ -7183,7 +7185,7 @@ void add_another_menu_item(char *action)
 	return;
 }
 
-/*****************************************************************************
+/*
  * get_menu_options is used for Menu, Popup and WindowList
  * It parses strings matching
  *
@@ -7193,7 +7195,7 @@ void add_another_menu_item(char *action)
  * match this syntax.
  *
  * See documentation for a detailed description.
- ****************************************************************************/
+ */
 char *get_menu_options(
 	char *action, Window w, FvwmWindow *fw, XEvent *e, MenuRoot *mr,
 	MenuItem *mi, MenuOptions *pops)

@@ -1,9 +1,8 @@
 /* -*-c-*- */
 /* Copyright (C) 1993, Robert Nation
  * Copyright (C) 1999 Carsten Haitzler and various contributors (imlib2)
- * Copyright (C) 2002  Olivier Chapuis
- *
- * This program is free software; you can redistribute it and/or modify
+ * Copyright (C) 2002  Olivier Chapuis */
+/* This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 2 of the License, or
  * (at your option) any later version.
@@ -25,7 +24,7 @@
  *
  */
 
-/* ---------------------------- included header files ----------------------- */
+/* ---------------------------- included header files ---------------------- */
 
 #include "config.h"
 
@@ -45,7 +44,7 @@
 #include "FRenderInit.h"
 #include "FImage.h"
 
-/* ---------------------------- local definitions --------------------------- */
+/* ---------------------------- local definitions -------------------------- */
 #define FIMAGE_CMD_ARGS Display *dpy, Window win, char *path, \
 		  Pixmap *pixmap, Pixmap *mask, Pixmap *alpha, \
 		  int *width, int *height, int *depth, \
@@ -62,21 +61,21 @@ typedef struct PImageLoader
 #endif
 } PImageLoader;
 
-/* ---------------------------- local macros -------------------------------- */
+/* ---------------------------- local macros ------------------------------- */
 
-/* ---------------------------- imports ------------------------------------- */
+/* ---------------------------- imports ------------------------------------ */
 
-/* ---------------------------- included code files ------------------------- */
+/* ---------------------------- included code files ------------------------ */
 
-/* ---------------------------- local types --------------------------------- */
+/* ---------------------------- local types -------------------------------- */
 
-/* ---------------------------- forward declarations ------------------------ */
+/* ---------------------------- forward declarations ----------------------- */
 
 static Bool PImageLoadPng(FIMAGE_CMD_ARGS);
 static Bool PImageLoadXpm(FIMAGE_CMD_ARGS);
 static Bool PImageLoadBitmap(FIMAGE_CMD_ARGS);
 
-/* ---------------------------- local variables ----------------------------- */
+/* ---------------------------- local variables ---------------------------- */
 
 PImageLoader Loaders[] =
 {
@@ -86,16 +85,16 @@ PImageLoader Loaders[] =
 	{NULL,0}
 };
 
-/* ---------------------------- exported variables (globals) ---------------- */
+/* ---------------------------- exported variables (globals) --------------- */
 
-/* ---------------------------- local functions ----------------------------- */
+/* ---------------------------- local functions ---------------------------- */
 
 
-/* ***************************************************************************
+/*
  *
  * png loader
  *
- * ***************************************************************************/
+ */
 static
 Bool PImageLoadPng(FIMAGE_CMD_ARGS)
 {
@@ -252,11 +251,11 @@ Bool PImageLoadPng(FIMAGE_CMD_ARGS)
 	return True;
 }
 
-/* ***************************************************************************
+/*
  *
  * xpm loader
  *
- * ***************************************************************************/
+ */
 static
 Bool PImageLoadXpm(FIMAGE_CMD_ARGS)
 {
@@ -327,7 +326,7 @@ Bool PImageLoadXpm(FIMAGE_CMD_ARGS)
 	pica = PictureOpenImageColorAllocator(
 		dpy, Pcmap, w, h,
 		fpa.mask & FPAM_NO_COLOR_LIMIT,
-		fpa.mask & FPAM_NO_ALLOC_PIXELS, 
+		fpa.mask & FPAM_NO_ALLOC_PIXELS,
 		fpa.mask & FPAM_DITHER,
 		False);
 	for(i=0; i < xpm_im.ncolors; i++)
@@ -436,11 +435,11 @@ Bool PImageLoadXpm(FIMAGE_CMD_ARGS)
 	return True;
 }
 
-/* ***************************************************************************
+/*
  *
  * bitmap loader
  *
- * ***************************************************************************/
+ */
 static
 Bool PImageLoadBitmap(FIMAGE_CMD_ARGS)
 {
@@ -456,13 +455,13 @@ Bool PImageLoadBitmap(FIMAGE_CMD_ARGS)
 	return False;
 }
 
-/* ---------------------------- interface functions ------------------------- */
+/* ---------------------------- interface functions ------------------------ */
 
-/* ***************************************************************************
+/*
  *
  * argb data to pixmaps
  *
- * ***************************************************************************/
+ */
 Bool PImageCreatePixmapFromArgbData(
 	Display *dpy, Window win, CARD32 *data, int start, int width,
 	int height, Pixmap pixmap, Pixmap mask, Pixmap alpha, int *have_alpha,
@@ -522,7 +521,7 @@ Bool PImageCreatePixmapFromArgbData(
 	pica = PictureOpenImageColorAllocator(
 		dpy, Pcmap, width, height,
 		!!(fpa.mask & FPAM_NO_COLOR_LIMIT),
-		!!(fpa.mask & FPAM_NO_ALLOC_PIXELS), 
+		!!(fpa.mask & FPAM_NO_ALLOC_PIXELS),
 		!!(fpa.mask & FPAM_DITHER),
 		True);
 
@@ -596,11 +595,11 @@ Bool PImageCreatePixmapFromArgbData(
 }
 
 
-/* ***************************************************************************
+/*
  *
  * the images loaders
  *
- * ***************************************************************************/
+ */
 
 Bool PImageLoadPixmapFromFile(
 	Display *dpy, Window win, char *path, Pixmap *pixmap, Pixmap *mask,

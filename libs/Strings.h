@@ -1,3 +1,4 @@
+/* -*-c-*- */
 #ifndef FVWMLIB_STRINGS_H
 #define FVWMLIB_STRINGS_H
 

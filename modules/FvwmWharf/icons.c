@@ -1,3 +1,4 @@
+/* -*-c-*- */
 /* icons.c. by Bo Yang.
  * Modifications: Copyright 1995 by Bo Yang.
  *
@@ -27,11 +28,11 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-/***********************************************************************
+/*
  *
  * Derived from fvwm icon code
  *
- ***********************************************************************/
+ */
 
 #include "config.h"
 #include "libs/fvwmlib.h"
@@ -58,11 +59,11 @@
 #include "stepgfx.h"
 
 
-/****************************************************************************
+/*
  *
  * Loads an icon file into a pixmap
  *
- ****************************************************************************/
+ */
 Bool LoadIconFile(int button, int ico)
 {
 #ifndef NO_ICONS
@@ -126,11 +127,11 @@ Bool LoadIconFile(int button, int ico)
 #endif
 }
 
-/****************************************************************************
+/*
  *
  * Creates an Icon Window
  *
- ****************************************************************************/
+ */
 void CreateIconWindow(int button, Window *win)
 {
 #ifndef NO_ICONS
@@ -155,11 +156,11 @@ void CreateIconWindow(int button, Window *win)
 #endif
 }
 
-/****************************************************************************
+/*
  *
  * Combines icon shape masks after a resize
  *
- ****************************************************************************/
+ */
 void ConfigureIconWindow(int button, int row, int column, int colorset)
 {
 #ifndef NO_ICONS
@@ -228,11 +229,11 @@ void ConfigureIconWindow(int button, int row, int column, int colorset)
 #endif
 }
 
-/*******************************************************************
+/*
  *
  * Make a gradient pixmap
  *
- *******************************************************************/
+ */
 
 int GetXPMGradient(int button, int from[3], int to[3], int maxcols,
 		   int type)
@@ -279,11 +280,11 @@ int GetXPMGradient(int button, int from[3], int to[3], int maxcols,
     return 1;
 }
 
-/*******************************************************************
+/*
  *
  * Make a colorset pixmap
  *
- *******************************************************************/
+ */
 
 void GetXPMColorset(int button, int colorset)
 {
@@ -310,11 +311,11 @@ void GetXPMColorset(int button, int colorset)
   return;
 }
 
-/*******************************************************************
+/*
  *
  * Make a solid color pixmap
  *
- *******************************************************************/
+ */
 
 int GetSolidXPM(int button, Pixel pixel)
 {

@@ -1,3 +1,4 @@
+/* -*-c-*- */
 /* FvwmTaskBar Module for Fvwm.
  *
  *  Copyright 1994,  Mike Finger (mfinger@mermaid.micro.umn.edu or
@@ -69,11 +70,9 @@ extern int NRows, RowHeight;
 
 #define MIN_BUTTON_SIZE 32 /*....*/
 
-/*************************************************************************
- *                                                                       *
- *  Button handling functions and procedures                             *
- *                                                                       *
- *************************************************************************/
+/*
+ * Button handling functions and procedures
+ */
 
 /* Draws a 3D rectangle */
 void Draw3dRect(
@@ -360,7 +359,7 @@ void ButtonDraw(Button *button, int x, int y, int w, int h, XEvent *evp)
 	{
 		return;
 	}
-	
+
 	t_region = XCreateRegion();
 	XUnionRectWithRegion (&rect, t_region, t_region);
 	/* see if we have the place for "...", if not for "..", if not for "."
@@ -468,11 +467,9 @@ char *ButtonName(Button *button)
 }
 
 
-/*************************************************************************
- *                                                                       *
- *  ButtonArray handling functions and procedures                        *
- *                                                                       *
- *************************************************************************/
+/*
+ *  ButtonArray handling functions and procedures
+ */
 
 /* -------------------------------------------------------------------------
    InitArray - Initialize the arrary of buttons
@@ -727,7 +724,7 @@ void RadioButton(ButtonArray *array, int butnum, int state)
   }
 }
 /* -------------------------------------------------------------------------
-   
+
    ------------------------------------------------------------------------- */
 Bool CheckRootTransparentButtons(ButtonArray *array)
 {

@@ -1,3 +1,4 @@
+/* -*-c-*- */
 /*
 Copyright (C) 1996 César Crusius
 

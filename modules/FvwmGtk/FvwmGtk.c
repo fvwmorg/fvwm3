@@ -1,3 +1,4 @@
+/* -*-c-*- */
 /*
  * FvwmGtk - gtk menus and dialogs for fvwm
  *

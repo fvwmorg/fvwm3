@@ -1,3 +1,4 @@
+/* -*-c-*- */
 #include "config.h"
 
 #if TIME_WITH_SYS_TIME

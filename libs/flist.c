@@ -14,17 +14,17 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-/****************************************************************************
+/*
  * This module was all original code
  * by Rob Nation
  * Copyright 1993, Robert Nation
  *     You may use this code for any purpose, as long as the original
  *     copyright remains in the source code and all documentation
- ****************************************************************************/
+ */
 
 /* code for parsing the fvwm style command */
 
-/* ---------------------------- included header files ----------------------- */
+/* ---------------------------- included header files ---------------------- */
 
 #include "config.h"
 #include <stdio.h>
@@ -32,25 +32,25 @@
 #include "flist.h"
 #include "safemalloc.h"
 
-/* ---------------------------- local definitions --------------------------- */
+/* ---------------------------- local definitions -------------------------- */
 
-/* ---------------------------- local macros -------------------------------- */
+/* ---------------------------- local macros ------------------------------- */
 
-/* ---------------------------- imports ------------------------------------- */
+/* ---------------------------- imports ------------------------------------ */
 
-/* ---------------------------- included code files ------------------------- */
+/* ---------------------------- included code files ------------------------ */
 
-/* ---------------------------- local types --------------------------------- */
+/* ---------------------------- local types -------------------------------- */
 
-/* ---------------------------- forward declarations ------------------------ */
+/* ---------------------------- forward declarations ----------------------- */
 
-/* ---------------------------- local variables ----------------------------- */
+/* ---------------------------- local variables ---------------------------- */
 
-/* ---------------------------- exported variables (globals) ---------------- */
+/* ---------------------------- exported variables (globals) --------------- */
 
-/* ---------------------------- local functions ----------------------------- */
+/* ---------------------------- local functions ---------------------------- */
 
-/* ---------------------------- interface functions ------------------------- */
+/* ---------------------------- interface functions ------------------------ */
 
 flist *flist_append_obj(flist *list, void *object)
 {
@@ -78,7 +78,7 @@ flist *flist_append_obj(flist *list, void *object)
 flist *flist_prepend_obj(flist *list, void *object)
 {
 	flist *new = (flist *)safemalloc(sizeof(flist));
-  
+
 	new->object = object;
 	new->next = NULL;
 	new->prev = NULL;
@@ -95,7 +95,7 @@ flist *flist_prepend_obj(flist *list, void *object)
 	}
 	list->prev = new;
 	new->next = list;
-  
+
 	return new;
 }
 
@@ -177,7 +177,7 @@ flist *flist_remove_obj(flist *list, void *object)
 flist *flist_free_list(flist *list)
 {
 	flist *tl;
-  
+
 	while (list)
 	{
 		tl = list;

@@ -1,3 +1,4 @@
+/* -*-c-*- */
 /* This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 2 of the License, or
@@ -17,13 +18,13 @@
 
 char *strerror(int num)
 {
-  extern int sys_nerr;
-  extern char *sys_errlist[];
+	extern int sys_nerr;
+	extern char *sys_errlist[];
 
-  if (num >= 0 && num < sys_nerr)
-    return(sys_errlist[num]);
-  else
-    return "Unknown error number";
+	if (num >= 0 && num < sys_nerr)
+		return(sys_errlist[num]);
+	else
+		return "Unknown error number";
 }
 
 

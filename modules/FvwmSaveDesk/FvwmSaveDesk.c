@@ -1,3 +1,4 @@
+/* -*-c-*- */
 /* This module, and the entire FvwmSaveDesktop program, and the concept for
  * interfacing this module to the Window Manager, are all original work
  * by Robert Nation and Mr. Per Persson <pp@solace.mh.se>
@@ -70,12 +71,12 @@ long Vx, Vy;
 
 long CurDesk = 1;   /* actual Desktop while being called */
 
-/***********************************************************************
+/*
  *
  *  Procedure:
  *      main - start of module
  *
- ***********************************************************************/
+ */
 int main(int argc, char **argv)
 {
   char *temp, *s;
@@ -130,12 +131,12 @@ int main(int argc, char **argv)
 
 
 
-/***********************************************************************
+/*
  *
  *  Procedure:
  *      Loop - wait for data to process
  *
- ***********************************************************************/
+ */
 void Loop(int *fd)
 {
     while(1) {
@@ -148,12 +149,12 @@ void Loop(int *fd)
 }
 
 
-/***********************************************************************
+/*
  *
  *  Procedure:
  *      Process message - examines packet types, and takes appropriate action
  *
- ***********************************************************************/
+ */
 void process_message(unsigned long type,unsigned long *body)
 {
   switch(type)
@@ -187,12 +188,12 @@ void process_message(unsigned long type,unsigned long *body)
 
 
 
-/***********************************************************************
+/*
  *
  *  Procedure:
  *      find_window - find a window in the current window list
  *
- ***********************************************************************/
+ */
 struct list *find_window(unsigned long id)
 {
   struct list *l;
@@ -210,12 +211,12 @@ struct list *find_window(unsigned long id)
 
 
 
-/***********************************************************************
+/*
  *
  *  Procedure:
  *      add_window - add a new window in the current window list
  *
- ***********************************************************************/
+ */
 void add_window(unsigned long new_win, unsigned long *body)
 {
   struct list *t;
@@ -246,36 +247,36 @@ void add_window(unsigned long new_win, unsigned long *body)
 
 
 
-/***********************************************************************
+/*
  *
  *  Procedure:
  *      list_new_page - capture new-page info
  *
- ***********************************************************************/
+ */
 void list_new_page(unsigned long *body)
 {
   Vx = (long)body[0];
   Vy = (long)body[1];
 }
-/***********************************************************************
+/*
  *
  *  Procedure:
  *      SIGPIPE handler - SIGPIPE means fvwm is dying
  *
- ***********************************************************************/
+ */
 void DeadPipe(int nonsense)
 {
   exit(0);
 }
 
 
-/***********************************************************************
+/*
  *
  *  Procedure:
  *      writes a command line argument to file "out"
  *      checks for qoutes and stuff
  *
- ***********************************************************************/
+ */
 void write_string(FILE *out, char *line)
 {
   int len,space = 0, qoute = 0,i;
@@ -426,13 +427,13 @@ void do_save_command(FILE *out, struct list *t, int *curdesk,
 }
 
 
-/***********************************************************************
+/*
  *
  *  Procedure:
  *      checks to see if we are supposed to take some action now,
  *      finds time for next action to be performed.
  *
- ***********************************************************************/
+ */
 void do_save(void)
 {
   struct list *t;

@@ -1,3 +1,4 @@
+/* -*-c-*- */
 /* This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 2 of the License, or
@@ -13,7 +14,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-/*********************************************************************
+/*
  *  FScreen.c
  *    Xinerama abstraction support for window manager.
  *
@@ -22,9 +23,9 @@
  *  Copyright 2001, Dmitry Bolkhovityanov
  *     You may use this code for any purpose, as long as the original
  *     copyright remains in the source code and all documentation
- ********************************************************************/
+ */
 
-/*********************************************************************
+/*
  * Brief description of used concept:
  *
  *   This code is always used by client, regardless of if Xinerama is
@@ -53,7 +54,7 @@
  *   M_CONFIG_INFO packets and call FScreenEnable() or
  *   FScreenDisable in response.
  *
- *********************************************************************/
+ */
 
 #include "config.h"
 

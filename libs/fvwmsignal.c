@@ -1,8 +1,23 @@
-/***************************************************************************
+/* -*-c-*- */
+/* This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ */
+/*
  * fvwmsignal.c
  * Written by Chris Rankin,  rankinc@zipworld.com.au
  *
- ***************************************************************************/
+ */
 
 #include "config.h"
 
@@ -28,7 +43,7 @@ static sigjmp_buf deadJump;
 static int term_sigs;
 
 
-/************************************************************************
+/*
  * fvwmSetSignalMask - store the set of mutually exclusive signals
  * away for future reference. This prevents different signals from
  * trying to access the same static data at the same time.
@@ -43,7 +58,7 @@ fvwmSetSignalMask(int sigmask)
 }
 
 
-/************************************************************************
+/*
  * fvwmGetSignalMask - get the set of signals that will terminate FVWM
  *
  * NOTE: We don't need this if we have POSIX.1 since we can install
@@ -58,7 +73,7 @@ fvwmGetSignalMask(void)
 #endif
 
 
-/************************************************************************
+/*
  * fvwmSetTerminate - set the "end-of-execution" flag.
  * This function should ONLY be called at the end of a
  * signal handler. It is an integral part of the mechanism
@@ -97,7 +112,7 @@ fvwmSetTerminate(int sig)
 
 
 #ifdef HAVE_SELECT
-/************************************************************************
+/*
  * fvwmSelect - wrapper around the select() system call.
  * This system call may block indefinitely. We don't want
  * to block at all if the "terminate" flag is set - we

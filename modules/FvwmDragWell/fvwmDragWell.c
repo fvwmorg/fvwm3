@@ -1,3 +1,4 @@
+/* -*-c-*- */
 /* This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 2 of the License, or
@@ -22,6 +23,7 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
 
+#include "config.h"
 
 #ifdef HAVE_SYS_BSDTYPES_H
 #include <sys/bsdtypes.h> /* Saul */
@@ -364,7 +366,7 @@ void parseFvwmMessage(char *msg)
 }
 
 
-/************************************************************************
+/*
  * TerminateHandler - signal handler to make FvwmIconBox exit cleanly
  */
 static RETSIGTYPE
@@ -732,7 +734,7 @@ static void change_colorset(int colorset)
 
 
 
-/***************************************************************************
+/*
  *
  * myXNextEvent - waits for the next event, which is either an XEvent,
  *                  or an fvwm event.
@@ -745,7 +747,7 @@ static void change_colorset(int colorset)
  * Note that for fvwm packet type M_CONFIG(colorset), it updates the
  *  colorset
  * Borrowed from FvwmPager
- ****************************************************************************/
+ */
 int myXNextEvent(XEvent *event, char *fvwmMessage)
 {
   fd_set in_fdset;

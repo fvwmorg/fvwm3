@@ -1,3 +1,4 @@
+/* -*-c-*- */
 #ifndef _DIALOG_H
 #define _DIALOG_H
 

@@ -1,48 +1,33 @@
-/* This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
- */
-
-/****************************************************************************
- * This module is based on Twm, but has been siginificantly modified
+/* -*-c-*- */
+/* This module is based on Twm, but has been siginificantly modified
  * by Rob Nation
- ****************************************************************************/
-/*****************************************************************************/
-/**       Copyright 1988 by Evans & Sutherland Computer Corporation,        **/
-/**                          Salt Lake City, Utah                           **/
-/**  Portions Copyright 1989 by the Massachusetts Institute of Technology   **/
-/**                        Cambridge, Massachusetts                         **/
-/**                                                                         **/
-/**                           All Rights Reserved                           **/
-/**                                                                         **/
-/**    Permission to use, copy, modify, and distribute this software and    **/
-/**    its documentation  for  any  purpose  and  without  fee is hereby    **/
-/**    granted, provided that the above copyright notice appear  in  all    **/
-/**    copies and that both  that  copyright  notice  and  this  permis-    **/
-/**    sion  notice appear in supporting  documentation,  and  that  the    **/
-/**    names of Evans & Sutherland and M.I.T. not be used in advertising    **/
-/**    in publicity pertaining to distribution of the  software  without    **/
-/**    specific, written prior permission.                                  **/
-/**                                                                         **/
-/**    EVANS & SUTHERLAND AND M.I.T. DISCLAIM ALL WARRANTIES WITH REGARD    **/
-/**    TO THIS SOFTWARE, INCLUDING ALL IMPLIED WARRANTIES  OF  MERCHANT-    **/
-/**    ABILITY  AND  FITNESS,  IN  NO  EVENT SHALL EVANS & SUTHERLAND OR    **/
-/**    M.I.T. BE LIABLE FOR ANY SPECIAL, INDIRECT OR CONSEQUENTIAL  DAM-    **/
-/**    AGES OR  ANY DAMAGES WHATSOEVER  RESULTING FROM LOSS OF USE, DATA    **/
-/**    OR PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR OTHER    **/
-/**    TORTIOUS ACTION, ARISING OUT OF OR IN  CONNECTION  WITH  THE  USE    **/
-/**    OR PERFORMANCE OF THIS SOFTWARE.                                     **/
-/*****************************************************************************/
+ */
+/*
+ *       Copyright 1988 by Evans & Sutherland Computer Corporation,
+ *                          Salt Lake City, Utah
+ *  Portions Copyright 1989 by the Massachusetts Institute of Technology
+ *                        Cambridge, Massachusetts
+ *
+ *                           All Rights Reserved
+ *
+ *    Permission to use, copy, modify, and distribute this software and
+ *    its documentation  for  any  purpose  and  without  fee is hereby
+ *    granted, provided that the above copyright notice appear  in  all
+ *    copies and that both  that  copyright  notice  and  this  permis-
+ *    sion  notice appear in supporting  documentation,  and  that  the
+ *    names of Evans & Sutherland and M.I.T. not be used in advertising
+ *    in publicity pertaining to distribution of the  software  without
+ *    specific, written prior permission.
+ *
+ *    EVANS & SUTHERLAND AND M.I.T. DISCLAIM ALL WARRANTIES WITH REGARD
+ *    TO THIS SOFTWARE, INCLUDING ALL IMPLIED WARRANTIES  OF  MERCHANT-
+ *    ABILITY  AND  FITNESS,  IN  NO  EVENT SHALL EVANS & SUTHERLAND OR
+ *    M.I.T. BE LIABLE FOR ANY SPECIAL, INDIRECT OR CONSEQUENTIAL  DAM-
+ *    AGES OR  ANY DAMAGES WHATSOEVER  RESULTING FROM LOSS OF USE, DATA
+ *    OR PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR OTHER
+ *    TORTIOUS ACTION, ARISING OUT OF OR IN  CONNECTION  WITH  THE  USE
+ *    OR PERFORMANCE OF THIS SOFTWARE.
+ */
 
 #ifndef _MENUS_
 #define _MENUS_
@@ -56,9 +41,9 @@
 #define MENU_IS_UP    0x04
 #define MENU_IS_DOWN  0x08
 
-/************************
- * MENU ROOT STRUCTURES *
- ************************/
+/*
+ * MENU ROOT STRUCTURES
+ */
 
 /* This struct contains the parts of a root menu that are shared among all
  * copies of the menu */
@@ -219,9 +204,9 @@ typedef struct MenuRoot
 } MenuRoot;
 /* don't forget to initialise new members in NewMenuRoot()! */
 
-/***********************************
- * MENU OPTIONS AND POSITION HINTS *
- ***********************************/
+/*
+ * MENU OPTIONS AND POSITION HINTS
+ */
 
 typedef struct
 {
@@ -263,9 +248,9 @@ typedef struct
 	} flags;
 } MenuOptions;
 
-/****************************
- * MISCELLANEOUS MENU STUFF *
- ****************************/
+/*
+ * MISCELLANEOUS MENU STUFF
+ */
 
 typedef struct
 {
@@ -340,9 +325,9 @@ typedef struct
   ((x)==MENU_DONE || (x)==MENU_ABORTED || (x)==MENU_SUBMENU_TORN_OFF)
 
 
-/**********************
- * EXPORTED FUNCTIONS *
- **********************/
+/*
+ * EXPORTED FUNCTIONS
+ */
 
 void menus_init(void);
 MenuRoot *menus_find_menu(char *name);

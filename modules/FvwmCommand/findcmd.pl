@@ -19,12 +19,12 @@
 sub getcmd {
   $/ = "\n\n";
   while(<STDIN>) {
-    #find "func_type func_config[] =" in various spacing
-    if (s/func_type.*\[\]\s*=(\s|\n)*\{// ) {
+    #find "func_t func_config[] =" in various spacing
+    if (s/func_t.*\[\]\s*=(\s|\n)*\{// ) {
       return listcmd();
     }
   }
-  print stderr "Can't find func_type\n";
+  print stderr "Can't find func_t\n";
   exit 1;
 }
 

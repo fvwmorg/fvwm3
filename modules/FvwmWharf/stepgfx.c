@@ -1,3 +1,4 @@
+/* -*-c-*- */
 /* This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 2 of the License, or
@@ -15,8 +16,9 @@
 
 /*
  * Generic graphics and misc. utilities
- *
  */
+
+#include "config.h"
 
 #include <X11/Xlib.h>
 #include <stdlib.h>
@@ -32,7 +34,6 @@ extern Window main_win;
 #define GREEN_MASK      0xff00
 #define BLUE_MASK       0xff00
 /*
- ***********************************************************************
  * Allocates colors and fill a pixel value array. Color values are
  * truncated with RED_MASK, GREEN_MASK and BLUE_MASK
  *
@@ -43,7 +44,6 @@ extern Window main_win;
  * dr,dg,db are the increment values for the colors
  * alloc_relief if colors for relief should be allocated
  * incr - 0 if gradient is light to dark, 1 if dark to light
- ***********************************************************************
  */
 int MakeColors(Display *dpy, Drawable d, int from[3], int to[3], int maxcols,
 	       unsigned long *colors, unsigned long *dark,
@@ -135,7 +135,6 @@ int MakeColors(Display *dpy, Drawable d, int from[3], int to[3], int maxcols,
 
 
 /*
- ************************************************************************
  *
  * Draws a texture similar to Wharf's button background
  *
@@ -145,7 +144,6 @@ int MakeColors(Display *dpy, Drawable d, int from[3], int to[3], int maxcols,
  * maxcols: # of max colors to use
  *
  * Aborts and returns 0 on error
- ************************************************************************
  */
 
 int DrawDegradeRelief(Display *dpy, Drawable d, int x, int y, int w, int h,
@@ -249,8 +247,6 @@ int DrawDegradeRelief(Display *dpy, Drawable d, int x, int y, int w, int h,
 
 
 /*
- ************************************************************************
- *
  * Draws a horizontal gradient
  *
  * from: r,g,b values of top color
@@ -260,7 +256,6 @@ int DrawDegradeRelief(Display *dpy, Drawable d, int x, int y, int w, int h,
  * type: gradient type. 0 for one-way, != 0 for cilindrical
  *
  * aborts and returns 0 on error.
- ************************************************************************
  */
 int DrawHGradient(Display *dpy, Drawable d, int x, int y, int w, int h,
 		       int from[3], int to[3], int relief, int maxcols,
@@ -373,8 +368,6 @@ int DrawHGradient(Display *dpy, Drawable d, int x, int y, int w, int h,
 
 
 /*
- ************************************************************************
- *
  * Draws a vertical gradient
  *
  * from: r,g,b values of left color
@@ -384,7 +377,6 @@ int DrawHGradient(Display *dpy, Drawable d, int x, int y, int w, int h,
  * type: gradient type. 0 for one-way, != 0 for cilindrical
  *
  * aborts and returns 0 on error.
- ************************************************************************
  */
 int DrawVGradient(Display *dpy, Drawable d, int x, int y, int w, int h,
 		       int from[3], int to[3], int relief, int maxcols,
@@ -496,9 +488,7 @@ int DrawVGradient(Display *dpy, Drawable d, int x, int y, int w, int h,
 }
 
 
-/************************************************************************
- *
- * Draws text with a texture
+/* Draws text with a texture
  *
  * d - target drawable
  * font - font to draw text
@@ -506,7 +496,7 @@ int DrawVGradient(Display *dpy, Drawable d, int x, int y, int w, int h,
  * gradient - texture pixmap. size must be at least as large as text
  * text - text to draw
  * chars - chars in text
- ************************************************************************/
+ */
 void DrawTexturedText(Display *dpy, Drawable d, XFontStruct *font,
 		      int x, int y, Pixmap gradient, char *text, int chars)
 

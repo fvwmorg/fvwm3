@@ -1,7 +1,8 @@
-/****************************************************************************
+/* -*-c-*- */
+/*
  * This module is all new
  * by Rob Nation
- ****************************************************************************/
+ */
 
 /* This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,11 +19,11 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307	 USA
  */
 
-/***********************************************************************
+/*
  *
  * fvwm pager handling code
  *
- ***********************************************************************/
+ */
 
 #include "config.h"
 
@@ -154,7 +155,7 @@ static void discard_events(long event_type, Window w, XEvent *last_ev)
   return;
 }
 
-/***********************************************************************
+/*
  *
  *  Procedure:
  *	CalcGeom - calculates the size and position of a mini-window
@@ -162,7 +163,7 @@ static void discard_events(long event_type, Window w, XEvent *last_ev)
  *	You can always tell bad code by the size of the comments.
  *
  *	dv: Some people say that good code does not nee lengthy comments. :-)
- ***********************************************************************/
+ */
 static void CalcGeom(PagerWindow *t, int win_w, int win_h,
 		     int *x_ret, int *y_ret, int *w_ret, int *h_ret)
 {
@@ -245,12 +246,12 @@ static void CalcGeom(PagerWindow *t, int win_w, int win_h,
   *h_ret = size;
 }
 
-/***********************************************************************
+/*
  *
  *  Procedure:
  *	Initialize_viz_pager - creates a temp window of the correct visual
  *	so that pixmaps may be created for use with the main window
- ***********************************************************************/
+ */
 void initialize_viz_pager(void)
 {
 	XSetWindowAttributes attr;
@@ -374,7 +375,7 @@ void draw_desk_background(int i, int page_w, int page_h)
 	return;
 }
 
-/***********************************************************************
+/*
  *
  *  Procedure:
  *	Initialize_pager - creates the pager window, if needed
@@ -382,7 +383,7 @@ void draw_desk_background(int i, int page_w, int page_h)
  *  Inputs:
  *	x,y location of the window
  *
- ***********************************************************************/
+ */
 char *pager_name = "Fvwm Pager";
 XSizeHints sizehints =
 {
@@ -971,11 +972,11 @@ void UpdateWindowShape ()
 
 
 
-/****************************************************************************
+/*
  *
  * Decide what to do about received X events
  *
- ****************************************************************************/
+ */
 void DispatchEvent(XEvent *Event)
 {
   int i,x,y;
@@ -1295,11 +1296,11 @@ void HandleExpose(XEvent *Event)
 	discard_events(Expose, Event->xany.window, NULL);
 }
 
-/****************************************************************************
+/*
  *
  * Respond to a change in window geometry.
  *
- ****************************************************************************/
+ */
 void ReConfigure(void)
 {
   Window root;
@@ -1383,11 +1384,11 @@ void ReConfigure(void)
   ReConfigureAll();
 }
 
-/****************************************************************************
+/*
  *
  * Respond to a "background" change: update the Parental Relative cset
  *
- ****************************************************************************/
+ */
 
 /* layout:
  * Root -> pager window (pr) -> title window -> desk window -> window view
@@ -1614,11 +1615,11 @@ void ReConfigureIcons(Bool do_reconfigure_desk_only)
   }
 }
 
-/****************************************************************************
+/*
  *
  * Draw grid lines for desk #i
  *
- ****************************************************************************/
+ */
 void DrawGrid(int desk, int erase, Window ew, XRectangle *r)
 {
 	int y, y1, y2, x, x1, x2,d,w;
@@ -2608,12 +2609,12 @@ void MoveWindow(XEvent *Event)
 }
 
 
-/***********************************************************************
+/*
  *
  *  Procedure:
  *	FvwmErrorHandler - displays info on internal errors
  *
- ************************************************************************/
+ */
 int FvwmErrorHandler(Display *dpy, XErrorEvent *event)
 {
 #if 1

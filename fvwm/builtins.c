@@ -14,15 +14,15 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-/****************************************************************************
+/*
  * This module is all original code
  * by Rob Nation
  * Copyright 1993, Robert Nation
  *     You may use this code for any purpose, as long as the original
  *     copyright remains in the source code and all documentation
- ****************************************************************************/
+ */
 
-/* ---------------------------- included header files ----------------------- */
+/* ---------------------------- included header files ---------------------- */
 
 #include "config.h"
 
@@ -66,23 +66,23 @@
 #include "stroke.h"
 #endif /* HAVE_STROKE */
 
-/* ---------------------------- local definitions --------------------------- */
+/* ---------------------------- local definitions -------------------------- */
 
-/* ---------------------------- local macros -------------------------------- */
+/* ---------------------------- local macros ------------------------------- */
 
-/* ---------------------------- imports ------------------------------------- */
+/* ---------------------------- imports ------------------------------------ */
 
 extern float rgpctMovementDefault[32];
 extern int cpctMovementDefault;
 extern int cmsDelayDefault;
 
-/* ---------------------------- included code files ------------------------- */
+/* ---------------------------- included code files ------------------------ */
 
-/* ---------------------------- local types --------------------------------- */
+/* ---------------------------- local types -------------------------------- */
 
-/* ---------------------------- forward declarations ------------------------ */
+/* ---------------------------- forward declarations ----------------------- */
 
-/* ---------------------------- local variables ----------------------------- */
+/* ---------------------------- local variables ---------------------------- */
 
 static char *exec_shell_name="/bin/sh";
 
@@ -114,12 +114,12 @@ static char *button_states[BS_MaxButtonStateName + 1] =
 	NULL
 };
 
-/* ---------------------------- exported variables (globals) ---------------- */
+/* ---------------------------- exported variables (globals) --------------- */
 
 char *ModulePath = FVWM_MODULEDIR;
 int moduleTimeout = DEFAULT_MODULE_TIMEOUT;
 
-/* ---------------------------- local functions ----------------------------- */
+/* ---------------------------- local functions ---------------------------- */
 
 /** Prepend rather than replace the image path.
     Used for obsolete PixmapPath and IconPath **/
@@ -139,11 +139,11 @@ static void obsolete_imagepaths( const char* pre_path )
 	return;
 }
 
-/*****************************************************************************
+/*
  *
  * Reads a title button description (veliaa@rpi.edu)
  *
- ****************************************************************************/
+ */
 static char *ReadTitleButton(
 	char *s, TitleButton *tb, Boolean append, int button)
 {
@@ -516,11 +516,11 @@ static void do_title_style(F_CMD_ARGS, Bool do_add)
 	return;
 }
 
-/*****************************************************************************
+/*
  *
  * Reads a multi-pixmap titlebar config. (tril@igs.net)
  *
- ****************************************************************************/
+ */
 static char *ReadMultiPixmapDecor(char *s, DecorFace *df)
 {
 	static char *pm_names[TBMP_NUM_PIXMAPS+1] =
@@ -752,12 +752,12 @@ static char *ReadMultiPixmapDecor(char *s, DecorFace *df)
 	return s;
 }
 
-/***********************************************************************
+/*
  *
  *  DestroyFvwmDecor -- frees all memory assocated with an FvwmDecor
  *      structure, but does not free the FvwmDecor itself
  *
- ************************************************************************/
+ */
 static void DestroyFvwmDecor(FvwmDecor *decor)
 {
 	int i;
@@ -826,11 +826,11 @@ static void SetLayerButtonFlag(
 	return;
 }
 
-/*****************************************************************************
+/*
  *
  * Changes a button decoration style (changes by veliaa@rpi.edu)
  *
- ****************************************************************************/
+ */
 static void SetMWMButtonFlag(
 	mwm_flags flag, int multi, int set, FvwmDecor *decor, TitleButton *tb)
 {
@@ -1274,7 +1274,7 @@ static Bool __parse_vector_line(
 	return is_valid;
 }
 
-/* ---------------------------- interface functions ------------------------- */
+/* ---------------------------- interface functions ------------------------ */
 
 void refresh_window(Window w, Bool window_update)
 {
@@ -1499,11 +1499,11 @@ void FreeDecorFace(Display *dpy, DecorFace *df)
 	return;
 }
 
-/*****************************************************************************
+/*
  *
  * Reads a button face line into a structure (veliaa@rpi.edu)
  *
- ****************************************************************************/
+ */
 Bool ReadDecorFace(char *s, DecorFace *df, int button, int verbose)
 {
 	int offset;
@@ -2045,11 +2045,11 @@ Bool ReadDecorFace(char *s, DecorFace *df, int button, int verbose)
 }
 
 #ifdef USEDECOR
-/*****************************************************************************
+/*
  *
  * Diverts a style definition to an FvwmDecor structure (veliaa@rpi.edu)
  *
- ****************************************************************************/
+ */
 void AddToDecor(F_CMD_ARGS, FvwmDecor *decor)
 {
 	if (!action)
@@ -2071,11 +2071,11 @@ void AddToDecor(F_CMD_ARGS, FvwmDecor *decor)
 	return;
 }
 
-/***********************************************************************
+/*
  *
  *  InitFvwmDecor -- initializes an FvwmDecor structure to defaults
  *
- ************************************************************************/
+ */
 void InitFvwmDecor(FvwmDecor *decor)
 {
 	int i;
@@ -2143,7 +2143,7 @@ void update_fvwm_colorset(int cset)
 	return;
 }
 
-/* ---------------------------- builtin commands ---------------------------- */
+/* ---------------------------- builtin commands --------------------------- */
 
 void CMD_Beep(F_CMD_ARGS)
 {
@@ -2830,11 +2830,11 @@ void CMD_TitleStyle(F_CMD_ARGS)
 	return;
 } /* SetTitleStyle */
 
-/*****************************************************************************
+/*
  *
  * Appends a titlestyle (veliaa@rpi.edu)
  *
- ****************************************************************************/
+ */
 void CMD_AddTitleStyle(F_CMD_ARGS)
 {
 	do_title_style(F_PASS_ARGS, True);
@@ -3061,11 +3061,11 @@ void CMD_WindowFont(F_CMD_ARGS)
 	return;
 }
 
-/*****************************************************************************
+/*
  *
  * Changes the window's FvwmDecor pointer (veliaa@rpi.edu)
  *
- ****************************************************************************/
+ */
 void CMD_ChangeDecor(F_CMD_ARGS)
 {
 	char *item;
@@ -3101,11 +3101,11 @@ void CMD_ChangeDecor(F_CMD_ARGS)
 	return;
 }
 
-/*****************************************************************************
+/*
  *
  * Destroys an FvwmDecor (veliaa@rpi.edu)
  *
- ****************************************************************************/
+ */
 void CMD_DestroyDecor(F_CMD_ARGS)
 {
 	char *item;
@@ -3171,11 +3171,11 @@ void CMD_DestroyDecor(F_CMD_ARGS)
 	return;
 }
 
-/*****************************************************************************
+/*
  *
  * Initiates an AddToDecor (veliaa@rpi.edu)
  *
- ****************************************************************************/
+ */
 void CMD_AddToDecor(F_CMD_ARGS)
 {
 	FvwmDecor *decor;
@@ -3232,11 +3232,11 @@ void CMD_AddToDecor(F_CMD_ARGS)
 #endif /* USEDECOR */
 
 
-/*****************************************************************************
+/*
  *
  * Updates window decoration styles (veliaa@rpi.edu)
  *
- ****************************************************************************/
+ */
 void CMD_UpdateDecor(F_CMD_ARGS)
 {
 	FvwmWindow *fw2;
@@ -3299,11 +3299,11 @@ void CMD_ButtonStyle(F_CMD_ARGS)
 	return;
 }
 
-/*****************************************************************************
+/*
  *
  * Appends a button decoration style (veliaa@rpi.edu)
  *
- ****************************************************************************/
+ */
 void CMD_AddButtonStyle(F_CMD_ARGS)
 {
 	do_button_style(F_PASS_ARGS, True);

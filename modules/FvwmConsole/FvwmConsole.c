@@ -1,3 +1,4 @@
+/* -*-c-*- */
 /*
   Fvwm command input interface.
 
@@ -21,6 +22,8 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
+
+#include "config.h"
 
 #include "FvwmConsole.h"
 
@@ -135,9 +138,9 @@ int main(int argc, char *argv[])
   return (0);
 }
 
-/***********************************************************************
+/*
  *      signal handler
- ***********************************************************************/
+ */
 void DeadPipe( int dummy )
 {
   CloseSocket();
@@ -150,9 +153,9 @@ void SigHandler(int dummy)
   exit(1);
 }
 
-/*********************************************************/
-/* close sockets and spawned process                     */
-/*********************************************************/
+/*
+ * close sockets and spawned process
+ */
 void CloseSocket()
 {
   send(Ns, C_CLOSE, strlen(C_CLOSE), 0);
@@ -161,9 +164,9 @@ void CloseSocket()
 
 }
 
-/*********************************************************/
-/* setup server and communicate with fvwm and the client */
-/*********************************************************/
+/*
+ * setup server and communicate with fvwm and the client
+ */
 void server ( void )
 {
   struct sockaddr_un sas, csas;
@@ -277,9 +280,9 @@ void server ( void )
   }
 }
 
-/******************************************/
-/* print error message on stderr and exit */
-/******************************************/
+/*
+ * print error message on stderr and exit
+ */
 void ErrMsg( char *msg )
 {
   fprintf( stderr, "%s server error in %s, errno %d\n", Name, msg, errno );

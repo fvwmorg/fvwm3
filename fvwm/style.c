@@ -14,17 +14,17 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-/****************************************************************************
+/*
  * This module was all original code
  * by Rob Nation
  * Copyright 1993, Robert Nation
  *     You may use this code for any purpose, as long as the original
  *     copyright remains in the source code and all documentation
- ****************************************************************************/
+ */
 
 /* code for parsing the fvwm style command */
 
-/* ---------------------------- included header files ----------------------- */
+/* ---------------------------- included header files ---------------------- */
 
 #include "config.h"
 #include <stdio.h>
@@ -41,29 +41,29 @@
 #include "ewmh.h"
 #include "gnome.h"
 
-/* ---------------------------- local definitions --------------------------- */
+/* ---------------------------- local definitions -------------------------- */
 
 #define SAFEFREE( p )  {if (p) {free(p);(p)=NULL;}}
 
-/* ---------------------------- local macros -------------------------------- */
+/* ---------------------------- local macros ------------------------------- */
 
-/* ---------------------------- imports ------------------------------------- */
+/* ---------------------------- imports ------------------------------------ */
 
-/* ---------------------------- included code files ------------------------- */
+/* ---------------------------- included code files ------------------------ */
 
-/* ---------------------------- local types --------------------------------- */
+/* ---------------------------- local types -------------------------------- */
 
-/* ---------------------------- forward declarations ------------------------ */
+/* ---------------------------- forward declarations ----------------------- */
 
-/* ---------------------------- local variables ----------------------------- */
+/* ---------------------------- local variables ---------------------------- */
 
 /* list of window names with attributes */
 static window_style *all_styles = NULL;
 static window_style *last_style_in_list = NULL;
 
-/* ---------------------------- exported variables (globals) ---------------- */
+/* ---------------------------- exported variables (globals) --------------- */
 
-/* ---------------------------- local functions ----------------------------- */
+/* ---------------------------- local functions ---------------------------- */
 
 static Bool blockor(char *dest, char *blk1, char *blk2, int length)
 {
@@ -4002,7 +4002,7 @@ static void __style_command(F_CMD_ARGS, char *prefix)
 	return;
 }
 
-/* ---------------------------- interface functions ------------------------- */
+/* ---------------------------- interface functions ------------------------ */
 
 /* Compare two flag structures passed as byte arrays. Only compare bits set in
  * the mask.
@@ -4060,7 +4060,7 @@ void simplify_style_list(void)
 	{
 		/* repeat until nothing has been done for a complete pass */
 	}
-	
+
 	return;
 }
 
@@ -4144,7 +4144,7 @@ void check_window_style_change(
 		flags->do_update_gnome_styles = True;
 	}
 
-	/****** common style flags ******/
+	/*** common style flags ***/
 
 	wf = (char *)(&FW_COMMON_STATIC_FLAGS(t));
 	sf = (char *)(&SCFS(*ret_style));
@@ -4269,7 +4269,7 @@ void check_window_style_change(
 	 * handled below
 	 */
 
-	/****** private style flags ******/
+	/*** private style flags ***/
 
 	/* nothing to do for these flags (only used when mapping new windows):
 	 *
@@ -4812,7 +4812,7 @@ void update_icon_background_cs_style(FvwmWindow *fw, window_style *pstyle)
 	}
 }
 
-/* ---------------------------- builtin commands ---------------------------- */
+/* ---------------------------- builtin commands --------------------------- */
 
 void CMD_Style(F_CMD_ARGS)
 {

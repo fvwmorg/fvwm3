@@ -1,19 +1,6 @@
+/* -*-c-*- */
 #ifndef LIBS_MODULE_H
 #define LIBS_MODULE_H
-/* This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
- */
 
 /*
 ** Module.c: code for modules to communicate with fvwm
@@ -151,79 +138,79 @@ typedef struct
 FvwmPacket* ReadFvwmPacket( int fd );
 
 
-/************************************************************************
+/*
  *
  * SendFinishedStartupNotification - informs fvwm that the module has
  * finished its startup procedures and is fully operational now.
  *
- ***********************************************************************/
+ */
 void SendFinishedStartupNotification(int *fd);
 
-/************************************************************************
+/*
  *
  * SendText - Sends arbitrary text/command back to fvwm
  *
- ***********************************************************************/
+ */
 void SendText(int *fd, const char *message, unsigned long window);
 
 
 /** Compatibility **/
 #define SendInfo SendText
 
-/************************************************************************
+/*
  *
  * SendFinishedStartupNotification - informs fvwm that the module has
  * finished its startup procedures and is fully operational now.
  *
- ***********************************************************************/
+ */
 void SendFinishedStartupNotification(int *fd);
 
-/************************************************************************
+/*
  *
  * SendUnlockNotification - informs fvwm that the module has
  * finished it's procedures and fvwm may proceed.
  *
- ***********************************************************************/
+ */
 void SendUnlockNotification(int *fd);
 
-/************************************************************************
+/*
  *
  * SendQuitNotification - informs fvwm that the module has
  * finished and may be killed.
  *
- ***********************************************************************/
+ */
 void SendQuitNotification(int *fd);
 
-/************************************************************************
+/*
  *
  * SendFvwmPipe - Sends message to fvwm:  The message is a comma-delimited
  * string separated into its component sections and sent one by one to fvwm.
  * It is discouraged to use this function with a "synchronous" module.
  * (Form FvwmIconMan)
  *
- ***********************************************************************/
+ */
 void SendFvwmPipe(int *fd, const char *message, unsigned long window);
 
-/***************************************************************************
+/*
  *
  * Sets the which-message-types-do-I-want mask for modules
  *
- **************************************************************************/
+ */
 void SetMessageMask(int *fd, unsigned long mask);
 
-/***************************************************************************
+/*
  *
  * Sets the which-message-types-do-I-want to be lock on send for modules
  *
- **************************************************************************/
+ */
 void SetSyncMask(int *fd, unsigned long mask);
 
-/***************************************************************************
+/*
  *
  * Sets the which-message-types-I-do-not-want while the server is grabbed
  * and module transmission is locked at the same time.
  *
- **************************************************************************/
+ */
 void SetNoGrabMask(int *fd, unsigned long mask);
 
 /*

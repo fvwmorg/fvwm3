@@ -1,17 +1,4 @@
-/* This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
- */
+/* -*-c-*- */
 
 #ifndef FVWM_MODULE_INTERFACE_H
 #define FVWM_MODULE_INTERFACE_H
@@ -52,22 +39,22 @@ extern fqueue *pipeQueue;
  * and extended messages.
  */
 #define IS_MESSAGE_IN_MASK(mask, msg) \
-  (((msg) & M_EXTENDED_MSG) ? ((mask)->m2 & (msg)) : ((mask)->m1 & (msg)))
+	(((msg)&M_EXTENDED_MSG) ? ((mask)->m2 & (msg)) : ((mask)->m1 & (msg)))
 
 /*
  * Returns non zero if one of the specified messages is selected for the module
  */
-/* please don't use msg_masks_type and PipeMask outside of module_interface.c.
+/* please don't use msg_masks_t and PipeMask outside of module_interface.c.
  * They are only global to allow to access the IS_MESSAGE_SELECTED macro without
  * having to call a function. */
 typedef struct
 {
 	unsigned long m1;
 	unsigned long m2;
-} msg_masks_type;
-extern msg_masks_type *PipeMask;
+} msg_masks_t;
+extern msg_masks_t *PipeMask;
 #define IS_MESSAGE_SELECTED(module, msg_mask) \
-  IS_MESSAGE_IN_MASK(&PipeMask[(module)], (msg_mask))
+	IS_MESSAGE_IN_MASK(&PipeMask[(module)], (msg_mask))
 
 /*
  * M_SENDCONFIG for   modules to tell  fvwm that  they  want to  see each

@@ -1,3 +1,4 @@
+/* -*-c-*- */
 /* FvwmIconBox Module --- Copyright 1994, 1995 Nobutaka Suzuki.
  *
  * No guarantees or warantees or anything are provided or implied in
@@ -201,11 +202,11 @@ static void change_colorset(int color);
 Bool do_allow_bad_access = False;
 Bool was_bad_access = False;
 
-/************************************************************************
+/*
   Main
   Based on main() from GoodStuff:
 	Copyright 1993, Robert Nation.
-************************************************************************/
+*/
 int main(int argc, char **argv)
 {
   char *display_name = NULL;
@@ -335,11 +336,11 @@ int main(int argc, char **argv)
 
 
 
-/************************************************************************
+/*
   Loop
   Based on Loop() from GoodStuff:
       Copyright 1993, Robert Nation.
-************************************************************************/
+*/
 void Loop(void)
 {
   Window root;
@@ -704,11 +705,11 @@ struct icon_info *Search(Window w)
   return NULL;
 }
 
-/************************************************************************
+/*
  *
  * Draw the window
  *
- ***********************************************************************/
+ */
 void RedrawWindow(XEvent *evp)
 {
   XEvent dummy;
@@ -1141,11 +1142,11 @@ void animate(struct icon_info *item, unsigned long *body)
   }
 }
 
-/***********************************************************************
+/*
  * RedrawHScrollbar
  *      Based on part of Loop() of GrabWindow.c in FvwmScroll:
  *              Copyright 1994, Robert Nation.
- ***********************************************************************/
+ */
 void RedrawHScrollbar(void)
 {
   int x,width;
@@ -1157,11 +1158,11 @@ void RedrawHScrollbar(void)
 		   ReliefGC, ShadowGC, 2);
 }
 
-/***********************************************************************
+/*
  * RedrawVScrollbar
  *      Based on part of Loop() of GrabWindow.c in FvwmScroll:
  *              Copyright 1994, Robert Nation.
- ***********************************************************************/
+ */
 void RedrawVScrollbar(void)
 {
   int y, height;
@@ -1282,11 +1283,11 @@ void RedrawBottomButton(GC rgc, GC sgc)
   XDrawSegments(dpy, b_button, sgc, seg, i);
 }
 
-/************************************************************************
+/*
  * CreateWindow --Sizes and creates the window
  *      Based on CreateWindow() from GoodStuff:
  *              Copyright 1993, Robert Nation.
- ***********************************************************************/
+ */
 void CreateWindow(void)
 {
   XGCValues gcv;
@@ -1835,7 +1836,7 @@ void Prev(void)
   }
 }
 
-/************************************************************************
+/*
  * TerminateHandler - signal handler to make FvwmIconBox exit cleanly
  */
 static RETSIGTYPE
@@ -1850,11 +1851,11 @@ TerminateHandler(int sig)
 }
 
 
-/************************************************************************
+/*
  * DeadPipe --Dead pipe handler
  *      Based on DeadPipe() from GoodStuff:
  *              Copyright 1993, Robert Nation.
- ***********************************************************************/
+ */
 void
 DeadPipe(int nonsense)
 {
@@ -1938,11 +1939,11 @@ CleanUp(void)
 }
 
 
-/************************************************************************
+/*
  * ParseOptions
  *      Based on ParseConfig() from FvwmWinList:
  *              Copyright 1994, Mike Finger.
- ***********************************************************************/
+ */
 void ParseOptions(void)
 {
   char *tline= NULL,*tmp;
@@ -2381,13 +2382,13 @@ void parsemouse(char *tline)
   MouseActions = f;
 }
 
-/***********************************************************************
+/*
   parsekey
 	Based on part of AddFunckey() of configure.c in Fvwm.
 	Copyright 1988, Evans and Sutherland Computer Corporation,
 	Copyright 1989, Massachusetts Institute of Technology,
 	Copyright 1993, Robert Nation.
- ***********************************************************************/
+*/
 void parsekey(char *tline)
 {
   struct keyfunc *k;
@@ -2448,11 +2449,11 @@ void parsekey(char *tline)
       }
 }
 
-/***********************************************************************
+/*
  * change_window_name
  *      Original work from GoodStuff:
  *              Copyright 1993, Robert Nation.
- ***********************************************************************/
+ */
 void change_window_name(char *str)
 {
   XTextProperty name;
@@ -2467,11 +2468,11 @@ void change_window_name(char *str)
   XFree(name.value);
 }
 
-/***********************************************************************
+/*
  * My_XNextEvent
  *      Original work from GoodStuff:
  *              Copyright 1993, Robert Nation.
- ***********************************************************************/
+ */
 int My_XNextEvent(Display *dpy, XEvent *event)
 {
   fd_set in_fdset;
@@ -2516,11 +2517,11 @@ int My_XNextEvent(Display *dpy, XEvent *event)
   return 0;
 }
 
-/**************************************************************************
+/*
  * process_message
  *      Based on ProcessMassage() from FvwmWinList:
  *              Copyright 1994, Mike Finger.
- *************************************************************************/
+ */
 int diffx, diffy;
 void process_message(unsigned long type, unsigned long *body)
 {
@@ -2882,11 +2883,11 @@ int window_cond(struct icon_info *item)
   return 0;
 }
 
-/************************************************************************
+/*
  * AddItem
  *      Skeleton based on AddItem() from FvwmWinList:
  *              Copyright 1994, Mike Finger.
- ***********************************************************************/
+ */
 /*Bool AddItem(unsigned long id, long desk, unsigned long flags) */
 Bool AddItem(ConfigWinPacket *cfgpacket)
 {
@@ -2939,11 +2940,11 @@ Bool AddItem(ConfigWinPacket *cfgpacket)
   return False;
 }
 
-/************************************************************************
+/*
  * Deletetem
  *      Skeleton based on DeleteItem() from FvwmWinList:
  *              Copyright 1994, Mike Finger.
- ***********************************************************************/
+ */
 Bool DeleteItem(unsigned long id)
 {
   struct icon_info *tmp = Head;
@@ -2979,11 +2980,11 @@ Bool DeleteItem(unsigned long id)
   return False;
 }
 
-/************************************************************************
+/*
  * UpdateItem
  *      Skeleton based on UpdateItem() from FvwmWinList:
  *              Copyright 1994, Mike Finger.
- ***********************************************************************/
+ */
 struct icon_info *UpdateItem(unsigned long type, unsigned long id, char *item)
 {
   struct icon_info *tmp;
@@ -3260,10 +3261,10 @@ void freeitem(struct icon_info *item, int d)
 }
 
 
-/************************************************************************
+/*
  * CheckActionType
  *   Based on functions.c from Fvwm:
- ***********************************************************************/
+ */
 static int CheckActionType(
   int x, int y, XEvent *d, Bool may_time_out, Bool is_button_pressed)
 {
@@ -3328,13 +3329,13 @@ static int CheckActionType(
 }
 
 
-/************************************************************************
+/*
  * ExecuteAction
 *       Based on part of ComplexFunction() of functions.c from fvwm:
 	Copyright 1988, Evans and Sutherland Computer Corporation,
 	Copyright 1989, Massachusetts Institute of Technology,
 	Copyright 1993, Robert Nation.
- ***********************************************************************/
+*/
 void ExecuteAction(int x, int y, struct icon_info *item)
 {
   int type = NO_CLICK;
@@ -3401,13 +3402,13 @@ void ExecuteKey(XEvent event)
   }
 }
 
-/***********************************************************************
+/*
  LookInList
 	Based on part of LookInList() of add_window.c from fvwm:
 	Copyright 1988, Evans and Sutherland Computer Corporation,
 	Copyright 1989, Massachusetts Institute of Technology,
 	Copyright 1993, Robert Nation.
- ***********************************************************************/
+*/
 int LookInList(struct icon_info *item)
 {
   int isdefault=1;
@@ -3482,13 +3483,13 @@ int LookInList(struct icon_info *item)
   return 1;
 }
 
-/***********************************************************************
+/*
  strcpy
 	Based on stripcpy2() of configure.c from Fvwm:
 	Copyright 1988, Evans and Sutherland Computer Corporation,
 	Copyright 1989, Massachusetts Institute of Technology,
 	Copyright 1993, Robert Nation.
- ***********************************************************************/
+*/
 char *stripcpy2(char *source)
 {
   char *ptr;
@@ -3510,9 +3511,9 @@ char *stripcpy2(char *source)
   return ptr;
 }
 
-/***********************************************************************
+/*
  Error handler
- ***********************************************************************/
+*/
 static int
 myErrorHandler(Display *dpy, XErrorEvent *event)
 {

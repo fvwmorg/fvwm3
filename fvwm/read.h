@@ -1,3 +1,4 @@
+/* -*-c-*- */
 #ifndef FVWM_READ_H
 #define FVWM_READ_H
 
@@ -16,7 +17,8 @@ extern const char *get_current_read_dir(void);
  * for executing the commands.
  * cond_rc_t is passed thru incase piperead is running in a function.
  **/
-void run_command_stream(cond_rc_t *cond_rc, FILE *f, const exec_context_t *exc);
+void run_command_stream(
+	cond_rc_t *cond_rc, FILE *f, const exec_context_t *exc);
 
 
 /**

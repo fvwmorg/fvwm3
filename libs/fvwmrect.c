@@ -1,6 +1,6 @@
-/* Copyright (C) 2001  Dominik Vogt
- *
- * This program is free software; you can redistribute it and/or modify
+/* -*-c-*- */
+/* Copyright (C) 2001  Dominik Vogt */
+/* This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 2 of the License, or
  * (at your option) any later version.
@@ -20,27 +20,27 @@
 ** This file supplies routines for fvwm internal rectangle handling.
 */
 
-/* ---------------------------- included header files ----------------------- */
+/* ---------------------------- included header files ---------------------- */
 
 #include "config.h"
 #include <X11/Xlib.h>
 #include "fvwmrect.h"
 
-/* ---------------------------- local definitions --------------------------- */
+/* ---------------------------- local definitions -------------------------- */
 
-/* ---------------------------- local macros -------------------------------- */
+/* ---------------------------- local macros ------------------------------- */
 
-/* ---------------------------- imports ------------------------------------- */
+/* ---------------------------- imports ------------------------------------ */
 
-/* ---------------------------- exported variables (globals) ---------------- */
+/* ---------------------------- exported variables (globals) --------------- */
 
-/* ---------------------------- local types --------------------------------- */
+/* ---------------------------- local types -------------------------------- */
 
-/* ---------------------------- forward declarations ------------------------ */
+/* ---------------------------- forward declarations ----------------------- */
 
-/* ---------------------------- local variables ----------------------------- */
+/* ---------------------------- local variables ---------------------------- */
 
-/* ---------------------------- local functions ----------------------------- */
+/* ---------------------------- local functions ---------------------------- */
 
 static int fvwmrect_do_intervals_intersect(
 	int x1, int width1, int x2, int width2)
@@ -48,7 +48,7 @@ static int fvwmrect_do_intervals_intersect(
 	return !(x1 + width1 <= x2 || x2 + width2 <= x1);
 }
 
-/* ---------------------------- interface functions ------------------------- */
+/* ---------------------------- interface functions ------------------------ */
 
 /* Returns 1 if the given rectangles intersect and 0 otherwise */
 int fvwmrect_do_rectangles_intersect(rectangle *r, rectangle *s)

@@ -1,3 +1,4 @@
+/* -*-c-*- */
 /* This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 2 of the License, or
@@ -14,7 +15,6 @@
  */
 
 /*
- * *************************************************************************
  * This module is all original code
  * by Rob Nation
  * Copyright 1993, Robert Nation
@@ -24,7 +24,6 @@
  * Changed 09/24/98 by Dan Espen:
  * - remove logic that processed and saved module configuration commands.
  * Its now in "modconf.c".
- * *************************************************************************
  */
 #include "config.h"
 
@@ -116,9 +115,9 @@ const char *get_current_read_dir(void)
 }
 
 
-/**
+/*
  * Read and execute each line from stream.
- **/
+ */
 void run_command_stream(
 	cond_rc_t *cond_rc, FILE *f, const exec_context_t *exc)
 {

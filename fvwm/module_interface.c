@@ -1,3 +1,4 @@
+/* -*-c-*- */
 /* This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 2 of the License, or
@@ -13,19 +14,19 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-/****************************************************************************
+/*
  * This module is all original code
  * by Rob Nation
  * Copyright 1993, Robert Nation
  *     You may use this code for any purpose, as long as the original
  *     copyright remains in the source code and all documentation
- ****************************************************************************/
+ */
 
-/***********************************************************************
+/*
  *
  * code for launching fvwm modules.
  *
- ***********************************************************************/
+ */
 #include "config.h"
 
 #include <stdio.h>
@@ -76,9 +77,9 @@ typedef struct
 	int done;
 } mqueue_object_type;
 
-msg_masks_type *PipeMask;
-static msg_masks_type *SyncMask;
-static msg_masks_type *NoGrabMask;
+msg_masks_t *PipeMask;
+static msg_masks_t *SyncMask;
+static msg_masks_t *NoGrabMask;
 fqueue *pipeQueue;
 
 extern fd_set init_fdset;
@@ -91,7 +92,7 @@ static void AddToCommandQueue(Window w, int module, char * command);
  * function operates only on the extended messages, otherwise it operates only
  * on normal messages.
  */
-static void set_message_mask(msg_masks_type *mask, unsigned long msg)
+static void set_message_mask(msg_masks_t *mask, unsigned long msg)
 {
 	if (msg & M_EXTENDED_MSG)
 	{
@@ -138,10 +139,10 @@ void initModules(void)
 	writePipes = (int *)safemalloc(sizeof(int)*npipes);
 	readPipes = (int *)safemalloc(sizeof(int)*npipes);
 	pipeOn = (int *)safemalloc(sizeof(int)*npipes);
-	PipeMask = (msg_masks_type *)safemalloc(sizeof(msg_masks_type)*npipes);
-	SyncMask = (msg_masks_type *)safemalloc(sizeof(msg_masks_type)*npipes);
-	NoGrabMask = (msg_masks_type *)safemalloc(
-		sizeof(msg_masks_type)*npipes);
+	PipeMask = (msg_masks_t *)safemalloc(sizeof(msg_masks_t)*npipes);
+	SyncMask = (msg_masks_t *)safemalloc(sizeof(msg_masks_t)*npipes);
+	NoGrabMask = (msg_masks_t *)safemalloc(
+		sizeof(msg_masks_t)*npipes);
 	pipeName = (char **)safemalloc(sizeof(char *)*npipes);
 	pipeAlias = (char **)safemalloc(sizeof(char *)*npipes);
 	pipeQueue = (fqueue *)safemalloc(sizeof(fqueue)*npipes);
@@ -885,7 +886,7 @@ make_vpacket(unsigned long *body, unsigned long event_type,
 
 
 
-/*************************************************************
+/*
     RBW - 04/16/1999 - new packet builder for GSFR --
     Arguments are pairs of lengths and argument data pointers.
     RBW - 05/01/2000 -
@@ -894,7 +895,7 @@ make_vpacket(unsigned long *body, unsigned long event_type,
     a special hack to accommodate the old CONFIGARGSNEW
     technique of sending the args for the M_CONFIGURE_WINDOW
     packet.
-**************************************************************/
+*/
 static unsigned long
 make_new_vpacket(unsigned char *body, unsigned long event_type,
 		 unsigned long num, va_list ap)
@@ -995,9 +996,9 @@ BroadcastPacket(unsigned long event_type, unsigned long num_datum, ...)
 }
 
 
-/* ************************************************************
+/*
    RBW - 04/16/1999 - new style packet senders for GSFR --
-   ************************************************************ */
+*/
 static void SendNewPacket(int module, unsigned long event_type,
 			  unsigned long num_datum, ...)
 {
@@ -1135,7 +1136,7 @@ static void BroadcastNewPacket(unsigned long event_type,
 
 
 
-/****************************************************************
+/*
     RBW - 04/16/1999 - new version for GSFR --
 	- args are now pairs:
 	  - length of arg data
@@ -1144,7 +1145,7 @@ static void BroadcastNewPacket(unsigned long event_type,
 	- the 9th field, where flags used to be, is temporarily left
 	as a dummy to preserve alignment of the other fields in the
 	old packet: we should drop this before the next release.
-*****************************************************************/
+*/
 #define CONFIGARGSNEW(_t) 28,\
 	    (unsigned long)(sizeof(unsigned long)),\
 	    &FW_W(*(_t)),\
@@ -1440,9 +1441,9 @@ BroadcastFvwmPicture(
 	return;
 }
 
-/**********************************************************************
+/*
  * Reads a colorset command from a module and broadcasts it back out
- **********************************************************************/
+ */
 void BroadcastColorset(int n)
 {
 	int i;
@@ -1461,9 +1462,9 @@ void BroadcastColorset(int n)
 	return;
 }
 
-/**********************************************************************
+/*
  * Broadcasts a string to all modules as M_CONFIG_INFO.
- **********************************************************************/
+ */
 void BroadcastPropertyChange(unsigned long argument, unsigned long data1,
 			     unsigned long data2, char *string)
 {
@@ -1483,9 +1484,9 @@ void BroadcastPropertyChange(unsigned long argument, unsigned long data1,
 	return;
 }
 
-/**********************************************************************
+/*
  * Broadcasts a string to all modules as M_CONFIG_INFO.
- **********************************************************************/
+ */
 void BroadcastConfigInfoString(char *string)
 {
 	int i;
@@ -1503,9 +1504,9 @@ void BroadcastConfigInfoString(char *string)
 }
 
 
-/**********************************************************************
+/*
  * Broadcasts the state of Xinerama support to all modules as M_CONFIG_INFO.
- **********************************************************************/
+ */
 void broadcast_xinerama_state(void)
 {
 	BroadcastConfigInfoString((char *)FScreenGetConfiguration());
@@ -1514,9 +1515,9 @@ void broadcast_xinerama_state(void)
 }
 
 
-/**********************************************************************
+/*
  * Broadcasts the ignored modifiers to all modules as M_CONFIG_INFO.
- **********************************************************************/
+ */
 void broadcast_ignore_modifiers(void)
 {
 	char msg[32];
@@ -1587,7 +1588,7 @@ extern char *ModuleUnlock;              /* defined in libs/Module.c */
 void PositiveWrite(int module, unsigned long *ptr, int size)
 {
 	extern int moduleTimeout;
-	msg_masks_type mask;
+	msg_masks_t mask;
 
 	if (ptr == NULL)
 	{
@@ -1874,12 +1875,12 @@ typedef struct
 
 static fqueue cqueue = FQUEUE_INIT;
 
-/***********************************************************************
+/*
  *
  *  Procedure:
  *      AddToCommandQueue - add a module command to the command queue
  *
- ************************************************************************/
+ */
 
 static void AddToCommandQueue(Window window, int module, char *command)
 {
@@ -1900,14 +1901,14 @@ static void AddToCommandQueue(Window window, int module, char *command)
 	return;
 }
 
-/***********************************************************************
+/*
  *
  *  Procedure:
  *      ExecuteCommandQueue - runs command from the module command queue
  *      This may be called recursively if a module command runs a function
  *      that does a Wait, so it must be re-entrant
  *
- ************************************************************************/
+ */
 void ExecuteCommandQueue(void)
 {
 	cqueue_object_type *obj;

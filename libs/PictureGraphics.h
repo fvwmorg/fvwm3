@@ -1,20 +1,5 @@
 /* -*-c-*- */
-/* Copyright (C) 2002  Olivier Chapuis
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
- */
+/* Copyright (C) 2002  Olivier Chapuis */
 
 #ifndef F_PICTURE_GRAPHICS_H
 #define F_PICTURE_GRAPHICS_H
@@ -48,8 +33,8 @@ Pixmap PictureBitmapToPixmap(
  * <pubfunc>PGraphicsRenderPixmaps
  * <description>
  * PGraphicsRenderPixmaps copies a rectangle, the src, constituted by a pixmap
- * with its mask, alpha channel, and rendering attributes to a drawable at a given
- * position.
+ * with its mask, alpha channel, and rendering attributes to a drawable at a
+ * given position.
  * </description>
  */
 void PGraphicsRenderPixmaps(
@@ -88,10 +73,10 @@ void PGraphicsRenderPicture(
  * its use.
  * </note>
  */
-void PGraphicsCopyPixmaps(Display *dpy, Pixmap pixmap, Pixmap mask, Pixmap alpha,
-			  int depth, Drawable d, GC gc,
-			  int src_x, int src_y, int src_w, int src_h,
-			  int dest_x, int dest_y);
+void PGraphicsCopyPixmaps(
+	Display *dpy, Pixmap pixmap, Pixmap mask, Pixmap alpha, int depth,
+	Drawable d, GC gc, int src_x, int src_y, int src_w, int src_h,
+	int dest_x, int dest_y);
 
 /*
  * <pubfunc>PGraphicsCopyFvwmPicture
@@ -103,9 +88,9 @@ void PGraphicsCopyPixmaps(Display *dpy, Pixmap pixmap, Pixmap mask, Pixmap alpha
  * mask, the alpha and the depth).
  * </description>
  */
-void PGraphicsCopyFvwmPicture(Display *dpy, FvwmPicture *p, Drawable d, GC gc,
-			      int src_x, int src_y, int src_w, int src_h,
-			      int dest_x, int dest_y);
+void PGraphicsCopyFvwmPicture(
+	Display *dpy, FvwmPicture *p, Drawable d, GC gc, int src_x, int src_y,
+	int src_w, int src_h, int dest_x, int dest_y);
 
 /*
  * <pubfunc>PGraphicsTileRectangle

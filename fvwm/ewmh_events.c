@@ -1,6 +1,6 @@
-/* Copyright (C) 2001  Olivier Chapuis
- *
- * This program is free software; you can redistribute it and/or modify
+/* -*-c-*- */
+/* Copyright (C) 2001  Olivier Chapuis */
+/* This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 2 of the License, or
  * (at your option) any later version.
@@ -40,9 +40,9 @@
 extern ewmh_atom ewmh_atom_wm_state[];
 
 #define DEBUG_EWMH_INIT_STATE 0
-/* ************************************************************************* *
+/*
  * root
- * ************************************************************************* */
+ */
 int ewmh_CurrentDesktop(EWMH_CMD_ARGS)
 {
   goto_desk(ev->xclient.data.l[0]);
@@ -78,9 +78,9 @@ int ewmh_NumberOfDesktops(EWMH_CMD_ARGS)
   return -1;
 }
 
-/* ************************************************************************* *
+/*
  * window
- * ************************************************************************* */
+ */
 
 int ewmh_ActiveWindow(EWMH_CMD_ARGS)
 {
@@ -260,9 +260,9 @@ int ewmh_MoveResize(EWMH_CMD_ARGS)
 	return 0;
 }
 
-/* ************************************************************************* *
+/*
  * WM_STATE*
- * ************************************************************************* */
+ */
 int ewmh_WMState(EWMH_CMD_ARGS)
 {
   unsigned long maximize = 0;
@@ -985,10 +985,10 @@ int ewmh_WMStateSticky(EWMH_CMD_ARGS)
   return 0;
 }
 
-/* ************************************************************************* *
+/*
  * Property Notify (_NET_WM_ICON is in ewmh_icon.c, _NET_WM_*NAME are in
  * ewmh_name)                        *
- * ************************************************************************* */
+ */
 int ewmh_WMIconGeometry(EWMH_CMD_ARGS)
 {
   unsigned int size;
@@ -1078,9 +1078,9 @@ int ewmh_WMStrut(EWMH_CMD_ARGS)
   return 0;
 }
 
-/* ************************************************************************* *
+/*
  *
- * ************************************************************************* */
+ */
 Bool EWMH_ProcessClientMessage(const exec_context_t *exc)
 {
   ewmh_atom *ewmh_a = NULL;
@@ -1112,9 +1112,9 @@ Bool EWMH_ProcessClientMessage(const exec_context_t *exc)
   return False;
 }
 
-/* ************************************************************************* *
+/*
  *
- * ************************************************************************* */
+ */
 void EWMH_ProcessPropertyNotify(const exec_context_t *exc)
 {
   ewmh_atom *ewmh_a = NULL;

@@ -1,3 +1,4 @@
+/* -*-c-*- */
 /* This module, and the entire GoodStuff program, and the concept for
  * interfacing this module to the Window Manager, are all original work
  * by Robert Nation
@@ -79,11 +80,11 @@ Atom wm_del_win;
 Atom _XA_WM_PROTOCOLS;
 Atom _XA_WM_COLORMAP_WINDOWS;
 
-/************************************************************************
+/*
  *
  * Sizes and creates the window
  *
- ***********************************************************************/
+ */
 XSizeHints mysizehints;
 void CreateWindow(int x,int y, int w, int h)
 {
@@ -183,9 +184,9 @@ void CreateWindow(int x,int y, int w, int h)
   _XA_WM_COLORMAP_WINDOWS = XInternAtom (dpy, "WM_COLORMAP_WINDOWS", False);
 }
 
-/******************************************************************************
+/*
   LoopOnEvents - Process all the X events we get
-******************************************************************************/
+*/
 
 #define RIGHT 7
 #define LEFT 6
@@ -628,9 +629,9 @@ void LoopOnEvents(Window target)
 	}
 }
 
-/******************************************************************************
+/*
   ProcessMessage - Process the message coming from Fvwm
-******************************************************************************/
+*/
 void ProcessMessage(unsigned long type,unsigned long *body)
 {
 	char *tline, *token;
@@ -671,9 +672,9 @@ void ProcessMessage(unsigned long type,unsigned long *body)
 	}
 }
 
-/******************************************************************************
+/*
   Loop -  Read and redraw until we die, blocking when can't read
-******************************************************************************/
+*/
 void Loop(Window target)
 {
 	while(1)
@@ -713,11 +714,11 @@ void Loop(Window target)
 
 
 
-/************************************************************************
+/*
  *
  * Draw the window
  *
- ***********************************************************************/
+ */
 void RedrawWindow(Window target)
 {
   static int xv= 0,yv= 0,hv=0,wv=0;
@@ -829,9 +830,9 @@ void RedrawWindow(Window target)
 }
 
 
-/**************************************************************************
+/*
  *  Change the window name displayed in the title bar.
- **************************************************************************/
+ */
 void change_window_name(char *str)
 {
   XTextProperty name;
@@ -849,9 +850,9 @@ void change_window_name(char *str)
 }
 
 
-/**************************************************************************
+/*
  *  Change the window name displayed in the icon.
- **************************************************************************/
+ */
 void change_icon_name(char *str)
 {
   XTextProperty name;

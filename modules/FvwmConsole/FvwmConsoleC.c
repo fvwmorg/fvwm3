@@ -1,3 +1,4 @@
+/* -*-c-*- */
 /* This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 2 of the License, or
@@ -21,17 +22,17 @@ char *name;  /* name of this program at executing time */
 char *getline();
 
 
-/******************************************/
-/*  close socket and exit */
-/******************************************/
+/*
+ *  close socket and exit
+ */
 void sclose (int foo) {
   fclose(sp);
   exit(0);
 }
 
-/************************************/
-/* print error message on stderr */
-/************************************/
+/*
+ * print error message on stderr
+ */
 void ErrMsg( char *msg ) {
   fprintf( stderr, "%s error in %s\n", name , msg );
   fclose(sp);
@@ -39,10 +40,10 @@ void ErrMsg( char *msg ) {
 }
 
 
-/*******************************************************/
-/* setup socket.                                       */
-/* send command to and receive message from the server */
-/*******************************************************/
+/*
+ * setup socket.
+ * send command to and receive message from the server
+ */
 int main ( int argc, char *argv[]) {
   char *cmd;
   char data[MAX_MESSAGE_SIZE];

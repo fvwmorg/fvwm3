@@ -1,3 +1,4 @@
+/* -*-c-*- */
 /*
  * FvwmRearrange.c -- fvwm module to arrange windows
  *

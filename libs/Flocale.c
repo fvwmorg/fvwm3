@@ -1,7 +1,6 @@
 /* -*-c-*- */
-/* Copyright (C) 2002  Olivier Chapuis
- *
- * This program is free software; you can redistribute it and/or modify
+/* Copyright (C) 2002  Olivier Chapuis */
+/* This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 2 of the License, or
  * (at your option) any later version.
@@ -15,7 +14,6 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
-
 /* FlocaleRotateDrawString is strongly inspired by some part of xvertext
  * taken from wmx */
 /* Here the copyright for this function: */
@@ -35,7 +33,7 @@
  * Simplification and complications by olicha for use with fvwm
  */
 
-/* ---------------------------- included header files ----------------------- */
+/* ---------------------------- included header files ---------------------- */
 
 #include "config.h"
 
@@ -61,9 +59,9 @@
 #include "Ficonv.h"
 #include "FCombineChars.h"
 
-/* ---------------------------- local definitions --------------------------- */
+/* ---------------------------- local definitions -------------------------- */
 
-/* ---------------------------- local macros -------------------------------- */
+/* ---------------------------- local macros ------------------------------- */
 
 #define FSwitchDrawString(use_16, dpy, d, gc, x, y, s8, s16, l) \
 	(use_16) ? \
@@ -74,27 +72,27 @@
 	XDrawImageString16(dpy, d, gc, x, y, s16, l) : \
 	XDrawImageString(dpy, d, gc, x, y, s8, l)
 
-/* ---------------------------- imports ------------------------------------- */
+/* ---------------------------- imports ------------------------------------ */
 
-/* ---------------------------- included code files ------------------------- */
+/* ---------------------------- included code files ------------------------ */
 
-/* ---------------------------- local types --------------------------------- */
+/* ---------------------------- local types -------------------------------- */
 
-/* ---------------------------- forward declarations ------------------------ */
+/* ---------------------------- forward declarations ----------------------- */
 
-/* ---------------------------- local variables ----------------------------- */
+/* ---------------------------- local variables ---------------------------- */
 
 static FlocaleFont *FlocaleFontList = NULL;
 static char *Flocale = NULL;
 static char *Fmodifiers = NULL;
 
-/* ---------------------------- exported variables (globals) ---------------- */
+/* ---------------------------- exported variables (globals) --------------- */
 
-/* ---------------------------- local functions ----------------------------- */
+/* ---------------------------- local functions ---------------------------- */
 
-/* ***************************************************************************
+/*
  * shadow local functions
- * ***************************************************************************/
+ */
 
 static
 void FlocaleParseShadow(char *str, int *shadow_size, int *shadow_offset,
@@ -102,7 +100,7 @@ void FlocaleParseShadow(char *str, int *shadow_size, int *shadow_offset,
 {
 	char *dir_str;
 	char *token;
-	multi_direction_type dir;
+	multi_direction_t dir;
 
 	*direction = MULTI_DIR_NONE;
 	token = PeekToken(str, &dir_str);
@@ -153,9 +151,9 @@ void FlocaleParseShadow(char *str, int *shadow_size, int *shadow_offset,
 		*direction = MULTI_DIR_SE;
 }
 
-/* ***************************************************************************
+/*
  * some simple converters
- * ***************************************************************************/
+ */
 
 static
 XChar2b *FlocaleUtf8ToUnicodeStr2b(unsigned char *str, int len, int *nl)
@@ -331,7 +329,7 @@ char *FlocaleEncodeString(
 						   flf->str_fc,
 						   (const char *)tmp_str,len);
 			if (tmp_str != str1)
-			{ 
+			{
 				free(tmp_str);
 			}
 			if (str1)
@@ -350,7 +348,7 @@ char *FlocaleEncodeString(
 
 	if (FiconvSupport && do_iconv)
 	{
-		
+
 		str2 = FiconvCharsetToCharset(
 			dpy, flf->str_fc, flf->fc, (const char *)str1, len);
 		if (str2 == NULL)
@@ -434,9 +432,9 @@ void FlocaleEncodeWinString(
 	}
 }
 
-/* ***************************************************************************
+/*
  * Text Drawing with a FontStruct
- * ***************************************************************************/
+ */
 
 static
 void FlocaleFontStructDrawString(
@@ -487,9 +485,9 @@ void FlocaleFontStructDrawString(
 	return;
 }
 
-/* ***************************************************************************
+/*
  * Rotated Text Drawing with a FontStruct or a FontSet
- * ***************************************************************************/
+ */
 static
 void FlocaleRotateDrawString(
 	Display *dpy, FlocaleFont *flf, FlocaleWinString *fws, Pixel fg,
@@ -702,9 +700,9 @@ void FlocaleRotateDrawString(
 	return;
 }
 
-/* ***************************************************************************
+/*
  * Fonts info and checking
- * ***************************************************************************/
+ */
 
 static
 char *FlocaleGetFullNameOfFontStruct(Display *dpy, XFontStruct *font)
@@ -832,9 +830,9 @@ char *FlocaleFixNameForFontSet(Display *dpy, char *name, char *module)
 	return new_name;
 }
 
-/* ***************************************************************************
+/*
  * Fonts loading
- * ***************************************************************************/
+ */
 
 static
 FlocaleFont *FlocaleGetFftFont(
@@ -1080,9 +1078,9 @@ FlocaleFont *FlocaleGetFontOrFontSet(
 	return NULL;
 }
 
-/* ***************************************************************************
+/*
  * locale local functions
- * ***************************************************************************/
+ */
 
 static
 void FlocaleSetlocaleForX(
@@ -1106,11 +1104,11 @@ void FlocaleSetlocaleForX(
 	}
 }
 
-/* ---------------------------- interface functions ------------------------- */
+/* ---------------------------- interface functions ------------------------ */
 
-/* ***************************************************************************
+/*
  * locale initialisation
- * ***************************************************************************/
+ */
 
 void FlocaleInit(
 	int category, const char *locale, const char *modifiers,
@@ -1134,9 +1132,9 @@ void FlocaleInit(
 #endif
 }
 
-/* ***************************************************************************
+/*
  * fonts loading
- * ***************************************************************************/
+ */
 char *prefix_list[] =
 {
 	"Shadow=",
@@ -1436,9 +1434,9 @@ void FlocaleUnloadFont(Display *dpy, FlocaleFont *flf)
 	free(flf);
 }
 
-/* ***************************************************************************
+/*
  * Width and Drawing Text
- * ***************************************************************************/
+ */
 
 void FlocaleInitGstpArgs(
 	flocale_gstp_args *args, FlocaleFont *flf, FlocaleWinString *fws,
@@ -1553,9 +1551,9 @@ Bool FlocaleGetShadowTextPosition(
 	}
 	else
 	{
-		direction_type dir;
-		direction_type dir_x;
-		direction_type dir_y;
+		direction_t dir;
+		direction_t dir_x;
+		direction_t dir_y;
 
 		dir = gravity_multi_dir_to_dir(args->direction);
 		gravity_split_xy_dir(&dir_x, &dir_y, dir);
@@ -1759,7 +1757,7 @@ int FlocaleTextWidth(FlocaleFont *flf, char *str, int sl)
 }
 
 int FlocaleGetMinOffset(
-	FlocaleFont *flf, rotation_type rotation)
+	FlocaleFont *flf, rotation_t rotation)
 {
 	int min_offset;
 
@@ -1803,9 +1801,9 @@ void FlocaleAllocateWinString(FlocaleWinString **pfws)
 	memset(*pfws, '\0', sizeof(FlocaleWinString));
 }
 
-/* ***************************************************************************
+/*
  * Text properties
- * ***************************************************************************/
+ */
 void FlocaleGetNameProperty(
 	Status (func)(Display *, Window, XTextProperty *), Display *dpy,
 	Window w, FlocaleNameString *ret_name)
@@ -1906,9 +1904,9 @@ Bool FlocaleTextListToTextProperty(
 	return ret;
 }
 
-/* ***************************************************************************
+/*
  * Info
- * ***************************************************************************/
+ */
 void FlocalePrintLocaleInfo(Display *dpy, int verbose)
 {
 	FlocaleFont *flf = FlocaleFontList;

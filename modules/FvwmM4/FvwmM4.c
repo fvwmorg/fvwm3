@@ -1,3 +1,4 @@
+/* -*-c-*- */
 /* This module, and the entire FvwmM4 program, and the concept for
  * interfacing this module to the Window Manager, are all original work
  * by Robert Nation
@@ -76,12 +77,12 @@ char *m4_startquote = "`";         /* Left quote characters for m4 */
 char *m4_endquote = "'";           /* Right quote characters for m4 */
 
 
-/***********************************************************************
+/*
  *
  *  Procedure:
  *      main - start of module
  *
- ***********************************************************************/
+ */
 int main(int argc, char **argv)
 {
   Display *dpy;                 /* which display are we talking to */
@@ -500,15 +501,12 @@ static char *m4_defs(
 }
 
 
-
-
-
-/***********************************************************************
+/*
  *
  *  Procedure:
  *      SIGPIPE handler - SIGPIPE means fvwm is dying
  *
- ***********************************************************************/
+ */
 void DeadPipe(int nonsense)
 {
   exit(0);

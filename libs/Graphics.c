@@ -16,7 +16,7 @@
 
 /* Graphics.c: misc convenience functions for drawing stuff  */
 
-/* ---------------------------- included header files ----------------------- */
+/* ---------------------------- included header files ---------------------- */
 
 #include "config.h"
 
@@ -32,7 +32,7 @@
 #include "libs/gravity.h"
 #include "libs/FImage.h"
 
-/* ---------------------------- local definitions --------------------------- */
+/* ---------------------------- local definitions -------------------------- */
 
 /* Define some standard constants that are not defined on QNX 4.25 */
 #ifndef M_PI
@@ -42,23 +42,23 @@
 #define M_PI_2 1.57079632679489661923
 #endif
 
-/* ---------------------------- local macros -------------------------------- */
+/* ---------------------------- local macros ------------------------------- */
 
-/* ---------------------------- imports ------------------------------------- */
+/* ---------------------------- imports ------------------------------------ */
 
-/* ---------------------------- included code files ------------------------- */
+/* ---------------------------- included code files ------------------------ */
 
-/* ---------------------------- local types --------------------------------- */
+/* ---------------------------- local types -------------------------------- */
 
-/* ---------------------------- forward declarations ------------------------ */
+/* ---------------------------- forward declarations ----------------------- */
 
-/* ---------------------------- local variables ----------------------------- */
+/* ---------------------------- local variables ---------------------------- */
 
-/* ---------------------------- exported variables (globals) ---------------- */
+/* ---------------------------- exported variables (globals) --------------- */
 
-/* ---------------------------- local functions ----------------------------- */
+/* ---------------------------- local functions ---------------------------- */
 
-/* ---------------------------- interface functions ------------------------- */
+/* ---------------------------- interface functions ------------------------ */
 
 /* Draws the relief pattern around a window
  * Draws a line_width wide rectangle from (x,y) to (x+w,y+h) i.e w+1 wide,
@@ -426,11 +426,11 @@ Pixmap CreateRotatedPixmap(
 	return pixmap;
 }
 
-/****************************************************************************
+/*
  *
  * Returns True if the given type of gradient is supported.
  *
- ****************************************************************************/
+ */
 Bool IsGradientTypeSupported(char type)
 {
 	switch (toupper(type))
@@ -451,11 +451,11 @@ Bool IsGradientTypeSupported(char type)
 	}
 }
 
-/****************************************************************************
+/*
  *
  * Allocates a linear color gradient (veliaa@rpi.edu)
  *
- ****************************************************************************/
+ */
 static
 XColor *AllocLinearGradient(
 	char *s_from, char *s_to, int npixels, int skip_first_color, int dither)
@@ -530,11 +530,11 @@ XColor *AllocLinearGradient(
 	return xcs;
 }
 
-/****************************************************************************
+/*
  *
  * Allocates a nonlinear color gradient (veliaa@rpi.edu)
  *
- ****************************************************************************/
+ */
 XColor *AllocNonlinearGradient(
 	char *s_colors[], int clen[], int nsegs, int npixels, int dither)
 {
@@ -1132,13 +1132,13 @@ Drawable CreateGradientPixmap(
 		}
 	}
 	break;
-	/* ********************************************************************
+	/*
 	 * The Yin Yang gradient style and the following code are:
 	 * Copyright 1999 Sir Boris. (email to sir_boris@bigfoot.com may be
 	 * read by his groom but is not guaranteed to elicit a response)
 	 * No restrictions are placed on this code, as long as the copyright
 	 * notice is preserved.
-	 *********************************************************************/
+	 */
 	case Y_GRADIENT:
 	{
 		register int r = t_width * t_height / 4;
@@ -1323,11 +1323,11 @@ Pixmap CreateGradientPixmapFromString(
 	return pixmap;
 }
 
-/****************************************************************************
+/*
  *
  *  Draws a little Triangle pattern within a window
  *
- ****************************************************************************/
+ */
 void DrawTrianglePattern(
 	Display *dpy, Drawable d, GC ReliefGC, GC ShadowGC, GC FillGC,
 	int x, int y, int width, int height, int bw, char orientation,

@@ -1,3 +1,4 @@
+/* -*-c-*- */
 /* FvwmWinList Module for Fvwm.
  *
  *  Copyright 1994,  Mike Finger (mfinger@mermaid.micro.umn.edu or
@@ -41,18 +42,18 @@ extern long CurrentDesk;
 extern int ShowCurrentDesk;
 extern int UseSkipList;
 
-/******************************************************************************
+/*
   InitList - Initialize the list
-******************************************************************************/
+*/
 void InitList(List *list)
 {
   list->head=list->tail=NULL;
   list->count=0;
 }
 
-/******************************************************************************
+/*
   AddItem - Allocates spaces for and appends an item to the list
-******************************************************************************/
+*/
 /*void AddItem(List *list, long id,long flags, long desk)*/
 void AddItem(List *list, ConfigWinPacket *cfgpacket)
 {
@@ -72,14 +73,14 @@ Item *new;
   list->count++;
 }
 
-/******************************************************************************
+/*
   ReorderList - Make the list order matcht the internal fvwm winlist
   FlipFocus is False when the Focus command has been used, True for all other
   cases of Focus change.
   If true the item is plucked from the list and placed at the start
   If false the list is closed into a loop, rotated around to bring id to
   the top and then opened up into a terminated line again.
-******************************************************************************/
+*/
 void ReorderList(List *list, long id, long FlipFocus)
 {
   Item *temp = list->head, *prev = NULL;
@@ -116,9 +117,9 @@ void ReorderList(List *list, long id, long FlipFocus)
   }
 }
 
-/******************************************************************************
+/*
   FindItem - Find the item in the list matching the id
-******************************************************************************/
+*/
 int FindItem(List *list, long id)
 {
   Item *temp;
@@ -129,10 +130,10 @@ int FindItem(List *list, long id)
   return i;
 }
 
-/******************************************************************************
+/*
   FindItemVisible - Find the item which should be in winlist in the list
   matching the id
-******************************************************************************/
+*/
 int FindItemVisible(List *list, long id)
 {
   Item *temp;
@@ -147,9 +148,9 @@ int FindItemVisible(List *list, long id)
 }
 
 
-/******************************************************************************
+/*
   UpdateItem - Update the item in the list, setting name & flags as necessary.
-******************************************************************************/
+*/
 int UpdateItemName(List *list, long id, char *string)
 {
   Item *temp;
@@ -161,12 +162,12 @@ int UpdateItemName(List *list, long id, char *string)
   return i;
 }
 
-/******************************************************************************
+/*
   UpdateItemDesk - Update the item in the list, setting desk as necessary.
   returns 1 if desk was updated,
   returns 0, if not changed
   returns -1 if not found
-******************************************************************************/
+*/
 int UpdateItemDesk(List *list, ConfigWinPacket *cfgpacket)
 {
   Item *temp;
@@ -182,10 +183,10 @@ int UpdateItemDesk(List *list, ConfigWinPacket *cfgpacket)
   return 0;
 }
 
-/******************************************************************************
+/*
   UpdateItemGSFRFlags - Update the GSFR flags
   returns -1 if not found
-******************************************************************************/
+*/
 int UpdateItemGSFRFlags(List *list, ConfigWinPacket *cfgpacket)
 {
   Item *temp;
@@ -195,9 +196,9 @@ int UpdateItemGSFRFlags(List *list, ConfigWinPacket *cfgpacket)
   return 0;
 }
 
-/******************************************************************************
+/*
   FreeItem - Frees allocated space for an Item
-******************************************************************************/
+*/
 void FreeItem(Item *ptr)
 {
   if (ptr != NULL) {
@@ -206,9 +207,9 @@ void FreeItem(Item *ptr)
   }
 }
 
-/******************************************************************************
+/*
   DeleteItem - Deletes an item from the list
-******************************************************************************/
+*/
 int DeleteItem(List *list,long id)
 {
   Item *temp,*temp2;
@@ -237,9 +238,9 @@ int DeleteItem(List *list,long id)
   return i+1;
 }
 
-/******************************************************************************
+/*
   FreeList - Free the entire list of Items
-******************************************************************************/
+*/
 void FreeList(List *list)
 {
   Item *temp,*temp2;
@@ -253,9 +254,9 @@ void FreeList(List *list)
   list->count=0;
 }
 
-/******************************************************************************
+/*
   PrintList - Print the list of item on the console. (Debugging)
-******************************************************************************/
+*/
 void PrintList(List *list)
 {
     Item *temp;
@@ -276,9 +277,9 @@ void PrintList(List *list)
     }
 }
 
-/******************************************************************************
+/*
   ItemName - Return the name of an Item
-******************************************************************************/
+*/
 char *ItemName(List *list, int n)
 {
   Item *temp;
@@ -289,13 +290,13 @@ char *ItemName(List *list, int n)
   return temp->name;
 }
 
-/******************************************************************************
+/*
   ItemFlags - Return the flags for an item
   RBW - this is no longer appropriate since the Great Style Flag Rewrite, so
   this function will just return the Item pointer. The GSFR macros know how
   deal with that.
   Function returns NULL if the item is not found.
-******************************************************************************/
+*/
 Item *ItemFlags(List *list, long id)
 {
   Item *temp;
@@ -306,9 +307,9 @@ Item *ItemFlags(List *list, long id)
 }
 
 
-/******************************************************************************
+/*
   ItemDesk - Return the desk for an item
-******************************************************************************/
+*/
 long ItemDesk(List *list, long id)
 {
   Item *temp;
@@ -321,18 +322,18 @@ long ItemDesk(List *list, long id)
 
 
 
-/******************************************************************************
+/*
   ItemCount - Return the number of items in the list
-******************************************************************************/
+*/
 int ItemCount(List *list)
 {
   return list->count;
 }
 
-/******************************************************************************
+/*
   ItemCountDesk - Return the number of items in the list which should be in
   in winlist
-******************************************************************************/
+*/
 
 int ItemCountVisible(List *list)
 {
@@ -348,9 +349,9 @@ int ItemCountVisible(List *list)
   return count;
 }
 
-/******************************************************************************
+/*
   ItemID - Return the ID of the item in the list.
-******************************************************************************/
+*/
 long ItemID(List *list, int n)
 {
   Item *temp;
@@ -361,9 +362,9 @@ long ItemID(List *list, int n)
   return temp->id;
 }
 
-/******************************************************************************
+/*
   CopyItem - Copy an item from one list to another
-******************************************************************************/
+*/
 void CopyItem(List *dest, List *source, int n)
 {
   Item *temp;
@@ -378,9 +379,9 @@ void CopyItem(List *dest, List *source, int n)
   DeleteItem(source,temp->id);
 }
 
-/******************************************************************************
+/*
   IsItemVisible - Says if the item should be in winlist
-******************************************************************************/
+*/
 int IsItemVisible(Item *temp)
 {
   if ((!ShowCurrentDesk || temp->desk == CurrentDesk ||
@@ -391,10 +392,10 @@ int IsItemVisible(Item *temp)
     return 0;
 }
 
-/******************************************************************************
+/*
   IsItemIndexVisible - Says if the item of index i in the list should be in
   winlist
-******************************************************************************/
+*/
 int IsItemIndexVisible(List *list,int n)
 {
   Item *temp;

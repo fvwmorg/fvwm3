@@ -1,18 +1,4 @@
 /* -*-c-*- */
-/* This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
- */
 
 #ifndef FOCUS_POLICY_H
 #define FOCUS_POLICY_H
@@ -21,13 +7,13 @@
  * only.  No code dealing with *any* external data types belongs in here!  Put
  * it in focus.[ch] instead. */
 
-/* ---------------------------- included header files ----------------------- */
+/* ---------------------------- included header files ---------------------- */
 
-/* ---------------------------- global definitions -------------------------- */
+/* ---------------------------- global definitions ------------------------- */
 
 #define FPOL_ANY_MODIFIER 0xff
 
-/* ---------------------------- access macros ------------------------------- */
+/* ---------------------------- access macros ------------------------------ */
 
 #define FP_DO_RAISE_FOCUSED_CLICK(fp) \
 	((fp).do_raise_focused_click)
@@ -156,7 +142,7 @@
 #define FPS_SORT_WINDOWLIST_BY(fp,x) \
 	((fp).do_sort_windowlist_by = !!(x))
 
-/* ---------------------------- type definitions ---------------------------- */
+/* ---------------------------- type definitions --------------------------- */
 
 typedef enum
 {
@@ -217,11 +203,11 @@ typedef struct
 	unsigned do_sort_windowlist_by : 1;
 } focus_policy_t;
 
-/* ---------------------------- forward declarations ------------------------ */
+/* ---------------------------- forward declarations ----------------------- */
 
-/* ---------------------------- exported variables (globals) ---------------- */
+/* ---------------------------- exported variables (globals) --------------- */
 
-/* ---------------------------- interface functions ------------------------- */
+/* ---------------------------- interface functions ------------------------ */
 
 void fpol_init_default_fp(
 	focus_policy_t *fp);

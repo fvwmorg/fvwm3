@@ -1,25 +1,10 @@
 /* -*-c-*- */
-/* Copyright (C) 2002  Olivier Chapuis
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
- */
+/* Copyright (C) 2002  Olivier Chapuis */
 
 #ifndef FLOCALE_H
 #define FLOCALE_H
 
-/* ---------------------------- included header files ----------------------- */
+/* ---------------------------- included header files ---------------------- */
 
 #include "config.h"
 
@@ -34,7 +19,7 @@
 /* FlocaleCharset.h and Ficonv.h should not be included */
 
 
-/* ---------------------------- global definitions -------------------------- */
+/* ---------------------------- global definitions ------------------------- */
 
 #define FWS_HAVE_LENGTH (1)
 
@@ -59,7 +44,7 @@
 #define FLOCALE_DEBUG_CHARSET   0
 #define FLOCALE_DEBUG_ICONV     0
 
-/* ---------------------------- global macros ------------------------------- */
+/* ---------------------------- global macros ------------------------------ */
 
 #define IS_TEXT_DRAWN_VERTICALLY(x) \
 	((x) == TEXT_ROTATED_90 || (x) == TEXT_ROTATED_270)
@@ -128,7 +113,7 @@
 #define FLF_FONT_HAS_ALPHA(flf,cset) \
      ((flf && flf->fftf.fftfont != None) ||                      \
       (0 && cset >= 0 && Colorset[cset].fg_alpha_percent < 100))
-/* ---------------------------- type definitions ---------------------------- */
+/* ---------------------------- type definitions --------------------------- */
 
 typedef struct FlocaleCharset
 {
@@ -199,19 +184,19 @@ typedef struct
 	int orig_y;
 	int offset;
 	int outer_offset;
-	multi_direction_type direction;
+	multi_direction_t direction;
 	int inter_step;
 	int num_inter_steps;
 	int x_sign;
 	int y_sign;
 	int size;
 	unsigned sdir : (DIR_ALL_MASK + 1);
-	rotation_type rot;
+	rotation_t rot;
 } flocale_gstp_args;
 
-/* ---------------------------- exported variables (globals) ---------------- */
+/* ---------------------------- exported variables (globals) --------------- */
 
-/* ---------------------------- interface functions ------------------------- */
+/* ---------------------------- interface functions ------------------------ */
 
 /*
  * i18n X initialization
@@ -229,9 +214,9 @@ void FlocaleInit(
 	int category, const char *local, const char *modifier,
 	const char *module);
 
-/* ***************************************************************************
+/*
  * font loading
- * ***************************************************************************/
+ */
 
 /*
  * load a FlocaleFont (create it or load it from a cache)
@@ -270,9 +255,9 @@ FlocaleFont *FlocaleLoadFont(Display *dpy, char *fontname, char *module);
  */
 void FlocaleUnloadFont(Display *dpy, FlocaleFont *flf);
 
-/* ***************************************************************************
+/*
  * Width and Drawing
- * ***************************************************************************/
+ */
 
 /*
  * Draw the text specified in fstring->str using fstring->gc as GC on the
@@ -291,7 +276,7 @@ void FlocaleDrawString(
  * Underline a character in a string (pete@tecc.co.uk) at coffest position
  */
 void FlocaleDrawUnderline(
-	     Display *dpy, FlocaleFont *flf, FlocaleWinString *fws, int coffset);
+	Display *dpy, FlocaleFont *flf, FlocaleWinString *fws, int coffset);
 
 /*
  * Get the position for shadow text
@@ -314,16 +299,16 @@ int FlocaleTextWidth(FlocaleFont *ff, char *str, int sl);
 /*
  * "y" (or "x" position if rotated and Xft font) of the text relatively to 0
  */
-int FlocaleGetMinOffset(FlocaleFont *flf, rotation_type rotation);
+int FlocaleGetMinOffset(FlocaleFont *flf, rotation_t rotation);
 
 /*
  * Allocate memory for a FlocaleWinString intialized to 0
  */
 void FlocaleAllocateWinString(FlocaleWinString **pfws);
 
-/* ***************************************************************************
+/*
  * Text properties
- * ***************************************************************************/
+ */
 
 /*
  * return the window or icon name of a window w
@@ -351,14 +336,14 @@ Bool FlocaleTextListToTextProperty(
 	Display *dpy, char **list, int count, XICCEncodingStyle style,
 	XTextProperty *text_prop_return);
 
-/* ***************************************************************************
+/*
  * Info
- * ***************************************************************************/
+ */
 void FlocalePrintLocaleInfo(Display *dpy, int verbose);
 
-/* ***************************************************************************
+/*
  * Misc
- * ***************************************************************************/
+ */
 
 #endif /* FLOCALE_H */
 

@@ -1,3 +1,4 @@
+/* -*-c-*- */
 /*
  * ParseComand.c was originally part of FvwmForm.c.
  *

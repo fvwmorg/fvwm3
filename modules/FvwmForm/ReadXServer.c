@@ -1,3 +1,4 @@
+/* -*-c-*- */
 /*
  * This file  is  partly derived from   FvwmForm.c, this is  the original
  * copyright:

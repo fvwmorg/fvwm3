@@ -1,53 +1,38 @@
 /* -*-c-*- */
-/* This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
- */
-/****************************************************************************
- * This module is based on Twm, but has been siginificantly modified
+/* This module is based on Twm, but has been siginificantly modified
  * by Rob Nation
- ****************************************************************************/
-/*****************************************************************************/
-/**       Copyright 1988 by Evans & Sutherland Computer Corporation,        **/
-/**                          Salt Lake City, Utah                           **/
-/**  Portions Copyright 1989 by the Massachusetts Institute of Technology   **/
-/**                        Cambridge, Massachusetts                         **/
-/**                                                                         **/
-/**                           All Rights Reserved                           **/
-/**                                                                         **/
-/**    Permission to use, copy, modify, and distribute this software and    **/
-/**    its documentation  for  any  purpose  and  without  fee is hereby    **/
-/**    granted, provided that the above copyright notice appear  in  all    **/
-/**    copies and that both  that  copyright  notice  and  this  permis-    **/
-/**    sion  notice appear in supporting  documentation,  and  that  the    **/
-/**    names of Evans & Sutherland and M.I.T. not be used in advertising    **/
-/**    in publicity pertaining to distribution of the  software  without    **/
-/**    specific, written prior permission.                                  **/
-/**                                                                         **/
-/**    EVANS & SUTHERLAND AND M.I.T. DISCLAIM ALL WARRANTIES WITH REGARD    **/
-/**    TO THIS SOFTWARE, INCLUDING ALL IMPLIED WARRANTIES  OF  MERCHANT-    **/
-/**    ABILITY  AND  FITNESS,  IN  NO  EVENT SHALL EVANS & SUTHERLAND OR    **/
-/**    M.I.T. BE LIABLE FOR ANY SPECIAL, INDIRECT OR CONSEQUENTIAL  DAM-    **/
-/**    AGES OR  ANY DAMAGES WHATSOEVER  RESULTING FROM LOSS OF USE, DATA    **/
-/**    OR PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR OTHER    **/
-/**    TORTIOUS ACTION, ARISING OUT OF OR IN  CONNECTION  WITH  THE  USE    **/
-/**    OR PERFORMANCE OF THIS SOFTWARE.                                     **/
-/*****************************************************************************/
+ */
+/*
+ *       Copyright 1988 by Evans & Sutherland Computer Corporation,
+ *                          Salt Lake City, Utah
+ *  Portions Copyright 1989 by the Massachusetts Institute of Technology
+ *                        Cambridge, Massachusetts
+ *
+ *                           All Rights Reserved
+ *
+ *    Permission to use, copy, modify, and distribute this software and
+ *    its documentation  for  any  purpose  and  without  fee is hereby
+ *    granted, provided that the above copyright notice appear  in  all
+ *    copies and that both  that  copyright  notice  and  this  permis-
+ *    sion  notice appear in supporting  documentation,  and  that  the
+ *    names of Evans & Sutherland and M.I.T. not be used in advertising
+ *    in publicity pertaining to distribution of the  software  without
+ *    specific, written prior permission.
+ *
+ *    EVANS & SUTHERLAND AND M.I.T. DISCLAIM ALL WARRANTIES WITH REGARD
+ *    TO THIS SOFTWARE, INCLUDING ALL IMPLIED WARRANTIES  OF  MERCHANT-
+ *    ABILITY  AND  FITNESS,  IN  NO  EVENT SHALL EVANS & SUTHERLAND OR
+ *    M.I.T. BE LIABLE FOR ANY SPECIAL, INDIRECT OR CONSEQUENTIAL  DAM-
+ *    AGES OR  ANY DAMAGES WHATSOEVER  RESULTING FROM LOSS OF USE, DATA
+ *    OR PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR OTHER
+ *    TORTIOUS ACTION, ARISING OUT OF OR IN  CONNECTION  WITH  THE  USE
+ *    OR PERFORMANCE OF THIS SOFTWARE.
+ */
 
 #ifndef FVWM_H
 #define FVWM_H
 
-/* ---------------------------- included header files ----------------------- */
+/* ---------------------------- included header files ---------------------- */
 
 #include <X11/Xlib.h>
 #include <X11/Xutil.h>
@@ -56,8 +41,9 @@
 #include "libs/PictureBase.h"
 #include "libs/Flocale.h"
 #include "window_flags.h"
+#include "condrc.h"
 
-/* ---------------------------- global definitions -------------------------- */
+/* ---------------------------- global definitions ------------------------- */
 
 #ifndef WithdrawnState
 #define WithdrawnState 0
@@ -76,7 +62,7 @@
 
 #define NULLSTR ((char *) NULL)
 
-/* ---------------------------- global macros ------------------------------- */
+/* ---------------------------- global macros ------------------------------ */
 
 /*
  * Fvwm trivia: There were 97 commands in the fvwm command table
@@ -103,7 +89,7 @@
 #define FW_W_ICON_PIXMAP(fw)  ((fw)->wins.icon_pixmap_w)
 #define FW_W_TRANSIENTFOR(fw) ((fw)->wins.transientfor)
 
-/* ---------------------------- forward declarations ------------------------ */
+/* ---------------------------- forward declarations ----------------------- */
 
 struct exec_context_t;
 
@@ -112,7 +98,7 @@ struct exec_context_t;
 struct FvwmDecor;
 #endif
 
-/* ---------------------------- type definitions ---------------------------- */
+/* ---------------------------- type definitions --------------------------- */
 
 /* This structure carries information about the initial window state and
  * placement.  This information is gathered at various places: the (re)capture
@@ -173,21 +159,7 @@ typedef struct
 	int initial_icon_y;
 	int default_icon_x;
 	int default_icon_y;
-} initial_window_options_type;
-
-typedef enum
-{
-	COND_RC_BREAK = -2,
-	COND_RC_ERROR = -1,
-	COND_RC_NO_MATCH = 0,
-	COND_RC_OK = 1
-} cond_rc_enum;
-
-typedef struct
-{
-	cond_rc_enum rc;
-	int break_levels;
-} cond_rc_t;
+} initial_window_options_t;
 
 /*
   For 1 style statement, there can be any number of IconBoxes.
@@ -306,11 +278,11 @@ typedef struct
 		unsigned use_title_decor_rotation : 1;
 		focus_policy_t focus_policy;
 	} s;
-} common_flags_type;
+} common_flags_t;
 
 typedef struct
 {
-	common_flags_type common;
+	common_flags_t common;
 	unsigned does_wm_delete_window : 1;
 	unsigned does_wm_take_focus : 1;
 	unsigned do_force_next_cr : 1;
@@ -458,7 +430,7 @@ typedef struct WindowConditionMask
 /* only style.c and add_window.c are allowed to access this struct!! */
 typedef struct
 {
-	common_flags_type common;
+	common_flags_t common;
 	unsigned do_decorate_transient : 1;
 	/* old placement flags */
 #define PLACE_DUMB            0x0
@@ -689,7 +661,7 @@ typedef struct FvwmWindow
 	/* Note: if the type of this variable is changed, do update the
 	 * CONFIGARGSNEW macro in module_interface.c, libs/vpacket.h and too! */
 	short title_thickness;
-	rotation_type title_text_rotation;
+	rotation_t title_text_rotation;
 	struct
 	{
 		/* geometry of the icon picture window */
@@ -842,9 +814,9 @@ typedef struct FvwmWindow
 	} scratch;
 } FvwmWindow;
 
-/* ---------------------------- exported variables (globals) ---------------- */
+/* ---------------------------- exported variables (globals) --------------- */
 
-/* ---------------------------- interface functions ------------------------- */
+/* ---------------------------- interface functions ------------------------ */
 
 void SetMWM_INFO(Window window);
 

@@ -14,9 +14,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-/**************************************************************************
- *
- *  FILE            envvar.c
+/*
  *  MODULE OF       fvwm
  *
  *  DESCRIPTION     Routines to expand environment-variables into strings.
@@ -29,9 +27,9 @@
  *
  *  UPDATED         migo - 21/Jun/1999 - added getFirstEnv, some changes
  *
- **************************************************************************/
+ */
 
-/* ---------------------------- included header files ----------------------- */
+/* ---------------------------- included header files ---------------------- */
 
 #include "config.h"
 #include <stdio.h>
@@ -40,20 +38,20 @@
 
 #include "fvwmlib.h"
 
-/* ---------------------------- local definitions --------------------------- */
+/* ---------------------------- local definitions -------------------------- */
 
-/* ---------------------------- local macros -------------------------------- */
+/* ---------------------------- local macros ------------------------------- */
 
 #define ENV_LIST_INC 10
 #ifndef NULL
 #define NULL 0
 #endif
 
-/* ---------------------------- imports ------------------------------------- */
+/* ---------------------------- imports ------------------------------------ */
 
-/* ---------------------------- included code files ------------------------- */
+/* ---------------------------- included code files ------------------------ */
 
-/* ---------------------------- local types --------------------------------- */
+/* ---------------------------- local types -------------------------------- */
 
 typedef struct
 {
@@ -61,13 +59,13 @@ typedef struct
 	char *env;
 } env_list_item;
 
-/* ---------------------------- forward declarations ------------------------ */
+/* ---------------------------- forward declarations ----------------------- */
 
-/* ---------------------------- local variables ----------------------------- */
+/* ---------------------------- local variables ---------------------------- */
 
-/* ---------------------------- exported variables (globals) ---------------- */
+/* ---------------------------- exported variables (globals) --------------- */
 
-/* ---------------------------- local functions ----------------------------- */
+/* ---------------------------- local functions ---------------------------- */
 
 /*-------------------------------------------------------------------------
  *
@@ -208,8 +206,6 @@ static char *findEnvVar(const char *s, int *len)
 
 /*-------------------------------------------------------------------------
  *
- *  NAME          getEnv
- *
  *  FUNCTION      Look up environment variable.
  *
  *  INPUT         name    name of environment variable to look up. This
@@ -241,12 +237,9 @@ static const char *getEnv(const char *name, int len)
 	return ret;
 }
 
-/* ---------------------------- interface functions ------------------------- */
+/* ---------------------------- interface functions ------------------------ */
 
-/*-------------------------------------------------------------------------
- *
- *  NAME          envExpand
- *
+/*
  *  FUNCTION      Expand environment variables in a string.
  *
  *  SYNOPSIS      #include "envvar.h"
@@ -280,10 +273,7 @@ int envExpand(char *s, int maxstrlen)
 	return ret;
 }
 
-/*-------------------------------------------------------------------------
- *
- *  NAME          envDupExpand
- *
+/*
  *  FUNCTION      Expand environment variables into a new string.
  *
  *  SYNOPSIS      #include "envvar.h"
@@ -338,10 +328,7 @@ char *envDupExpand(const char *s, int extra)
 	return ret;
 }
 
-/*-------------------------------------------------------------------------
- *
- *  NAME          getFirstEnv
- *
+/*
  *  FUNCTION      Search for the first environment variable and return
  *                its contents and coordinates in the given string.
  *

@@ -1,23 +1,9 @@
 /* -*-c-*- */
-/* This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
- */
 
 #ifndef FVWMLIB_BINDINGS_H_H
 #define FVWMLIB_BINDINGS_H_H
 
-/* ---------------------------- global definitions -------------------------- */
+/* ---------------------------- global definitions ------------------------- */
 
 #define binding_t_t    unsigned char
 
@@ -61,7 +47,7 @@
 #define ALL_MODIFIERS (ShiftMask|LockMask|ControlMask|Mod1Mask|Mod2Mask|\
 		       Mod3Mask|Mod4Mask|Mod5Mask)
 
-/* ---------------------------- global macros ------------------------------- */
+/* ---------------------------- global macros ------------------------------ */
 
 #define BIND_IS_KEY_PRESS(t) ((t) == BIND_KEYPRESS || (t) == BIND_PKEYPRESS)
 #define BIND_IS_KEY_BINDING(t) ((t) == BIND_KEYPRESS || (t) == BIND_PKEYPRESS)
@@ -70,7 +56,7 @@
 	((t) == BIND_BUTTONPRESS || (t) == BIND_BUTTONRELEASE)
 #define BIND_IS_STROKE_BINDING(t) ((t) == BIND_STROKE)
 
-/* ---------------------------- type definitions ---------------------------- */
+/* ---------------------------- type definitions --------------------------- */
 
 typedef enum
 {
@@ -95,7 +81,7 @@ typedef struct Binding
 	struct Binding *NextBinding;
 } Binding;
 
-/* ---------------------------- interface functions ------------------------- */
+/* ---------------------------- interface functions ------------------------ */
 
 Bool ParseContext(char *in_context, int *out_context_mask);
 Bool ParseModifiers(char *in_modifiers, int *out_modifier_mask);
@@ -104,15 +90,16 @@ void CollectBindingList(
 	binding_t type, STROKE_ARG(void *stroke) int button, KeySym keysym,
 	int modifiers, int contexts);
 int AddBinding(
-	Display *dpy, Binding **pblist, binding_t type, STROKE_ARG(void *stroke)
-	int button, KeySym keysym, char *key_name, int modifiers, int contexts,
-	void *action, void *action2);
+	Display *dpy, Binding **pblist, binding_t type,
+	STROKE_ARG(void *stroke) int button, KeySym keysym, char *key_name,
+	int modifiers, int contexts, void *action, void *action2);
 void FreeBindingStruct(Binding *b);
 void FreeBindingList(Binding *b);
 void RemoveBinding(Binding **pblist, Binding *b, Binding *prev);
 Bool RemoveMatchingBinding(
-	Display *dpy, Binding **pblist, binding_t type, STROKE_ARG(char *stroke)
-	int button, KeySym keysym, int modifiers, int contexts);
+	Display *dpy, Binding **pblist, binding_t type,
+	STROKE_ARG(char *stroke) int button, KeySym keysym, int modifiers,
+	int contexts);
 void *CheckBinding(
 	Binding *blist, STROKE_ARG(char *stroke) int button_keycode,
 	unsigned int modifier, unsigned int dead_modifiers, int Context,

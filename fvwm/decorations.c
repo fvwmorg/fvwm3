@@ -14,15 +14,15 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-/****************************************************************************
+/*
  *
  * This is all original code by Robert Nation
  * which reads motif mwm window manager
  * hints from a window, and makes necessary adjustments for fvwm.
  *
- ****************************************************************************/
+ */
 
-/* ---------------------------- included header files ----------------------- */
+/* ---------------------------- included header files ---------------------- */
 
 #include "config.h"
 
@@ -42,7 +42,7 @@
 #include "style.h"
 #include "geometry.h"
 
-/* ---------------------------- local definitions --------------------------- */
+/* ---------------------------- local definitions -------------------------- */
 
 /* Motif window hints */
 #define MWM_HINTS_FUNCTIONS           (1L << 0)
@@ -81,15 +81,15 @@
 /* indicates if there are any OL hints */
 #define OL_ANY_HINTS                  (1L << 7)
 
-/* ---------------------------- local macros -------------------------------- */
+/* ---------------------------- local macros ------------------------------- */
 
-/* ---------------------------- imports ------------------------------------- */
+/* ---------------------------- imports ------------------------------------ */
 
 extern Atom _XA_MwmAtom;
 
-/* ---------------------------- included code files ------------------------- */
+/* ---------------------------- included code files ------------------------ */
 
-/* ---------------------------- local types --------------------------------- */
+/* ---------------------------- local types -------------------------------- */
 
 /* Motif  window hints */
 typedef struct
@@ -102,21 +102,21 @@ typedef struct
 
 typedef PropMotifWmHints PropMwmHints;
 
-/* ---------------------------- forward declarations ------------------------ */
+/* ---------------------------- forward declarations ----------------------- */
 
-/* ---------------------------- local variables ----------------------------- */
+/* ---------------------------- local variables ---------------------------- */
 
-/* ---------------------------- exported variables (globals) ---------------- */
+/* ---------------------------- exported variables (globals) --------------- */
 
-/* ---------------------------- local functions ----------------------------- */
+/* ---------------------------- local functions ---------------------------- */
 
-/* ---------------------------- interface functions ------------------------- */
+/* ---------------------------- interface functions ------------------------ */
 
-/****************************************************************************
+/*
  *
  * Reads the property MOTIF_WM_HINTS
  *
- *****************************************************************************/
+ */
 void GetMwmHints(FvwmWindow *t)
 {
 	int actual_format;
@@ -144,7 +144,7 @@ void GetMwmHints(FvwmWindow *t)
 	return;
 }
 
-/****************************************************************************
+/*
  *
  * Reads the openlook properties _OL_WIN_ATTR, _OL_DECOR_ADD, _OL_DECOR_DEL
  *
@@ -170,7 +170,7 @@ void GetMwmHints(FvwmWindow *t)
  * Window Application Programming", Eric F. Johnson and Kevin Reichard
  * (M&T Books), and the olvwm source code (available at ftp.x.org in
  * /R5contrib).
- *****************************************************************************/
+ */
 void GetOlHints(FvwmWindow *t)
 {
 	int actual_format;
@@ -308,12 +308,12 @@ void GetOlHints(FvwmWindow *t)
 }
 
 
-/****************************************************************************
+/*
  *
  * Interprets the property MOTIF_WM_HINTS, sets decoration and functions
  * accordingly
  *
- *****************************************************************************/
+ */
 void SelectDecor(FvwmWindow *t, window_style *pstyle, short *buttons)
 {
 	int decor;

@@ -1,3 +1,4 @@
+/* -*-c-*- */
 /* This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 2 of the License, or
@@ -13,18 +14,18 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-/****************************************************************************
+/*
  * This module is all new
  * by Rob Nation
  * A little of it is borrowed from ctwm.
  * Copyright 1993 Robert Nation. No restrictions are placed on this code,
  * as long as the copyright notice is preserved
- ****************************************************************************/
-/***********************************************************************
+ */
+/*
  *
  * fvwm window-list popup code
  *
- ***********************************************************************/
+ */
 
 #include "config.h"
 
@@ -1081,7 +1082,8 @@ void CMD_WindowList(F_CMD_ARGS)
 		free(ret_action);
 	}
 	DestroyMenu(mr, False, False);
-	if (mret.rc == MENU_DOUBLE_CLICKED && default_action && *default_action)
+	if (mret.rc == MENU_DOUBLE_CLICKED &&
+	    default_action && *default_action)
 	{
 		execute_function(cond_rc, exc2, default_action, 0);
 	}

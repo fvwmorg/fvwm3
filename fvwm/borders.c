@@ -14,13 +14,13 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-/****************************************************************************
+/*
  * This module is all original code
  * by Rob Nation
  * Copyright 1993, Robert Nation
  *     You may use this code for any purpose, as long as the original
  *     copyright remains in the source code and all documentation
- ****************************************************************************/
+ */
 
 /* IMPORTANT NOTE:
  *
@@ -33,7 +33,7 @@
  * structure pointers, e.d. "td".
  */
 
-/* ---------------------------- included header files ----------------------- */
+/* ---------------------------- included header files ---------------------- */
 
 #include "config.h"
 
@@ -54,19 +54,19 @@
 #include "icons.h"
 #include "frame.h"
 
-/* ---------------------------- local definitions --------------------------- */
+/* ---------------------------- local definitions -------------------------- */
 
-/* ---------------------------- local macros -------------------------------- */
+/* ---------------------------- local macros ------------------------------- */
 
 #define SWAP_ARGS(f,a1,a2) (f)?(a2):(a1),(f)?(a1):(a2)
 
-/* ---------------------------- imports ------------------------------------- */
+/* ---------------------------- imports ------------------------------------ */
 
 extern Window PressedW;
 
-/* ---------------------------- included code files ------------------------- */
+/* ---------------------------- included code files ------------------------ */
 
-/* ---------------------------- local types --------------------------------- */
+/* ---------------------------- local types -------------------------------- */
 
 typedef struct
 {
@@ -207,8 +207,8 @@ typedef struct
 	rectangle bar_g;             /* titlebar geo vs the frame */
 	rectangle left_buttons_g;    /* vs the frame */
 	rectangle right_buttons_g;   /* vs the frame */
-	frame_title_layout_type layout;
-	frame_title_layout_type old_layout;
+	frame_title_layout_t layout;
+	frame_title_layout_t old_layout;
 	border_titlebar_state tbstate;
 	int length;                   /* text */
 	int offset;                   /* text offset */
@@ -222,15 +222,15 @@ typedef struct
 	int left_of_text_length;
 	int right_end_length;
 	int right_of_text_length;
-	rotation_type draw_rotation;
-	rotation_type restore_rotation;
+	rotation_t draw_rotation;
+	rotation_t restore_rotation;
 	unsigned td_is_rotated : 1;
 	unsigned has_been_saved : 1;
 	unsigned has_vt : 1;             /* vertical title ? */
 	unsigned has_an_upsidedown_rotation : 1;  /* 270 || 180 */
 } titlebar_descr;
 
-/* ---------------------------- forward declarations ------------------------ */
+/* ---------------------------- forward declarations ----------------------- */
 /*  forward declarations are not so good */
 
 /* for grouping titlebar_descr computation */
@@ -241,17 +241,17 @@ static Bool border_mp_get_use_title_style_parts_and_geometry(
 	titlebar_descr *td, FvwmPicture **pm, FvwmAcs *acs,
 	unsigned short sf, int is_left, rectangle *g, int *part);
 
-/* ---------------------------- local variables ----------------------------- */
+/* ---------------------------- local variables ---------------------------- */
 
 static const char ulgc[] = { 1, 0, 0, 0x7f, 2, 1, 1 };
 static const char brgc[] = { 1, 1, 2, 0x7f, 0, 0, 3 };
 
-/* ---------------------------- exported variables (globals) ---------------- */
+/* ---------------------------- exported variables (globals) --------------- */
 
 XGCValues Globalgcv;
 unsigned long Globalgcm;
 
-/* ---------------------------- local functions ----------------------------- */
+/* ---------------------------- local functions ---------------------------- */
 
 static Bool is_button_toggled(
 	FvwmWindow *fw, int button)
@@ -1619,11 +1619,11 @@ static void border_draw_all_border_parts(
 	return;
 }
 
-/****************************************************************************
+/*
  *
  *  Draws a little pattern within a window (more complex)
  *
- ****************************************************************************/
+ */
 static void border_draw_vector_to_pixmap(
 	Pixmap dest_pix, common_decorations_type *cd, int is_toggled,
 	struct vector_coords *coords, rectangle *pixmap_g)
@@ -1673,11 +1673,11 @@ static void border_draw_vector_to_pixmap(
 	return;
 }
 
-/****************************************************************************
+/*
  *
  *  Handle Title pixmaps used for UseTitleStyle
  *
- ****************************************************************************/
+ */
 static void border_setup_bar_pixmaps(
 	titlebar_descr *td, dynamic_common_decorations *dcd, DecorFace *df,
 	ButtonState bs)
@@ -1920,11 +1920,11 @@ static void border_free_bar_pixmaps(
 	}
 }
 
-/****************************************************************************
+/*
  *
  *  MultiPixmap (aka, fancy title bar) (tril@igs.net)
  *
- ****************************************************************************/
+ */
 #define TBMP_HAS_PART(p, pm, acs, sf) \
        (pm[p] || acs[p].cs >= 0 || (sf & (1 << p)))
 
@@ -2678,11 +2678,11 @@ static void border_mp_draw_mp_titlebar(
 	return;
 }
 
-/****************************************************************************
+/*
  *
  *  draw title bar and buttons
  *
- ****************************************************************************/
+ */
 static void border_draw_decor_to_pixmap(
 	FvwmWindow *fw, Pixmap dest_pix, Window w,
 	pixmap_background_type *solid_bg, rectangle *w_g,
@@ -3383,7 +3383,7 @@ static void border_draw_title_stick_lines(
 	int under_text_offset = 0;
 	int right_length = 0;
 	int left_length = 0;
-	rotation_type rotation;
+	rotation_t rotation;
 
 	if (!IS_STICKY_ACROSS_PAGES(fw) && !IS_STICKY_ACROSS_DESKS(fw) &&
 	    !HAS_STIPPLED_TITLE(fw))
@@ -3512,7 +3512,7 @@ static void border_draw_title_relief(
 	Pixmap dest_pix)
 {
 	int reverse = 0;
-	rotation_type rotation;
+	rotation_t rotation;
 
 	if (td->td_is_rotated)
 	{
@@ -3830,7 +3830,7 @@ static void border_setup_use_title_style(
 static void border_rotate_titlebar_descr(
 	FvwmWindow *fw, titlebar_descr *td)
 {
-	rotation_type rotation;
+	rotation_t rotation;
 	int i, tmpi;
 	static titlebar_descr saved_td;
 
@@ -4374,11 +4374,11 @@ static void border_draw_titlebar(
 	return;
 }
 
-/****************************************************************************
+/*
  *
  * Redraws the windows borders
  *
- ****************************************************************************/
+ */
 static void border_draw_border_parts(
 	common_decorations_type *cd, FvwmWindow *fw,
 	window_parts pressed_parts, window_parts force_draw_parts,
@@ -4434,7 +4434,7 @@ static void border_draw_border_parts(
 	return;
 }
 
-/* ---------------------------- interface functions ------------------------- */
+/* ---------------------------- interface functions ------------------------ */
 
 DecorFace *border_get_border_style(
 	FvwmWindow *fw, Bool has_focus)
@@ -4752,11 +4752,11 @@ void border_undraw_decorations(
 	return;
 }
 
-/****************************************************************************
+/*
  *
  *  redraw the decoration when style change
  *
- ****************************************************************************/
+ */
 void border_redraw_decorations(
 	FvwmWindow *fw)
 {
@@ -4772,11 +4772,11 @@ void border_redraw_decorations(
 	return;
 }
 
-/****************************************************************************
+/*
  *
  *  get the the root transparent parts of the decoration
  *
- ****************************************************************************/
+ */
 unsigned int border_get_transparent_decorations_part(FvwmWindow *fw)
 {
 	DecorFace *df,*tdf;
@@ -4881,13 +4881,13 @@ unsigned int border_get_transparent_decorations_part(FvwmWindow *fw)
 	return draw_parts;
 }
 
-/* ---------------------------- builtin commands ---------------------------- */
+/* ---------------------------- builtin commands --------------------------- */
 
-/****************************************************************************
+/*
  *
  *  Sets the allowed button states
  *
- ****************************************************************************/
+ */
 void CMD_ButtonState(F_CMD_ARGS)
 {
 	char *token;
@@ -4941,11 +4941,11 @@ void CMD_ButtonState(F_CMD_ARGS)
 	return;
 }
 
-/****************************************************************************
+/*
  *
  *  Sets the border style (veliaa@rpi.edu)
  *
- ****************************************************************************/
+ */
 void CMD_BorderStyle(F_CMD_ARGS)
 {
 	char *parm;

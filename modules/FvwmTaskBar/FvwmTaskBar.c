@@ -1,3 +1,4 @@
+/* -*-c-*- */
 /* FvwmTaskBar Module for Fvwm.
  *
  * (Much reworked version of FvwmWinList)
@@ -254,11 +255,11 @@ static Bool change_colorset(int cset, Bool force);
 static void WarpTaskBar(int y);
 int IsItemIndexIconSuppressed(List *list, int i);
 
-/******************************************************************************
+/*
   Main - Setup the XConnection,request the window list and loop forever
     Based on main() from FvwmIdent:
       Copyright 1994, Robert Nation and Nobutaka Suzuki.
-******************************************************************************/
+*/
 int main(int argc, char **argv)
 {
   const char *temp;
@@ -396,9 +397,9 @@ int main(int argc, char **argv)
 }
 
 
-/******************************************************************************
+/*
   EndLessLoop -  Read and redraw until we get killed, blocking when can't read
-******************************************************************************/
+*/
 void EndLessLoop(void)
 {
   fd_set readset;
@@ -438,11 +439,11 @@ void EndLessLoop(void)
 }
 
 
-/******************************************************************************
+/*
   ReadFvwmPipe - Read a single message from the pipe from Fvwm
     Originally Loop() from FvwmIdent:
       Copyright 1994, Robert Nation and Nobutaka Suzuki.
-******************************************************************************/
+*/
 void ReadFvwmPipe(void)
 {
     FvwmPacket* packet = ReadFvwmPacket(Fvwm_fd[1]);
@@ -452,11 +453,11 @@ void ReadFvwmPipe(void)
 	ProcessMessage( packet->type, packet->body );
 }
 
-/******************************************************************************
+/*
   ProcessMessage - Process the message coming from Fvwm
     Skeleton based on processmessage() from FvwmIdent:
       Copyright 1994, Robert Nation and Nobutaka Suzuki.
-******************************************************************************/
+*/
 void ProcessMessage(unsigned long type,unsigned long *body)
 {
   int redraw=-1;
@@ -940,23 +941,23 @@ void redraw_buttons()
 }
 
 
-/***********************************************************************
+/*
   Detected a broken pipe - time to exit
     Based on DeadPipe() from FvwmIdent:
       Copyright 1994, Robert Nation and Nobutaka Suzuki.
- **********************************************************************/
+*/
 void DeadPipe(int nonsense)
 {
   is_dead_pipe = True;
   exit(1);
 }
 
-/**********************************************************************
+/*
   Reentrant signal handler that will tell the application to quit.
     It is not safe to just call "exit()" here; instead we will
     just set a flag that will break the event-loop when the
     handler returns.
- **********************************************************************/
+*/
 static RETSIGTYPE
 TerminateHandler(int sig)
 {
@@ -964,9 +965,9 @@ TerminateHandler(int sig)
 }
 
 #if 0
-/******************************************************************************
+/*
   WaitForExpose - Used to wait for expose event so we don't draw too early
-******************************************************************************/
+*/
 void WaitForExpose(void)
 {
   XEvent Event;
@@ -980,9 +981,9 @@ void WaitForExpose(void)
 }
 #endif
 
-/******************************************************************************
+/*
   RedrawWindow - Update the needed lines and erase any old ones
-******************************************************************************/
+*/
 void RedrawWindow(int force, XEvent *evp)
 {
 	if (Tip.open)
@@ -1243,9 +1244,9 @@ static void ParseConfigLine(char *tline)
   } /* else options */
 }
 
-/******************************************************************************
+/*
   Alarm - Handle a SIGALRM - used to implement timeout events
-******************************************************************************/
+*/
 static RETSIGTYPE
 Alarm(int nonsense)
 {
@@ -1268,9 +1269,9 @@ Alarm(int nonsense)
 #endif
 }
 
-/******************************************************************************
+/*
   DoAlarmAction -
-******************************************************************************/
+*/
 void
 DoAlarmAction(void)
 {
@@ -1317,9 +1318,9 @@ DoAlarmAction(void)
   }
 }
 
-/******************************************************************************
+/*
   CheckForTip - determine when to popup the tip window
-******************************************************************************/
+*/
 void CheckForTip(int x, int y)
 {
   int  num, bx, by, trunc;
@@ -1364,9 +1365,9 @@ void CheckForTip(int x, int y)
   }
 }
 
-/******************************************************************************
+/*
    HandleButtonRelease - Process a ButtonRelease X event
-******************************************************************************/
+*/
 void HandleButtonRelease(
 	XEvent *evp, Time *NewTimestamp, int *redraw)
 {
@@ -1481,9 +1482,9 @@ void HandleButtonRelease(
 	*redraw = 0;
 }
 
-/******************************************************************************
+/*
   HandleEvents - Process an X event
-******************************************************************************/
+*/
 void HandleEvents(
 	XEvent *evp, Time *NewTimestamp, int *redraw, int *expose_redraw)
 {
@@ -1760,9 +1761,9 @@ void HandleEvents(
 	XSync(dpy,0); /* needed (tips) */
 }
 
-/******************************************************************************
+/*
   LoopOnEvents - Process all the X events we get
-******************************************************************************/
+*/
 void LoopOnEvents(void)
 {
 	XEvent Event;
@@ -1792,9 +1793,9 @@ void LoopOnEvents(void)
 	return;
 }
 
-/***********************************
+/*
   AdjustWindow - Resize the window
-  **********************************/
+*/
 void AdjustWindow(int width, int height)
 {
   NRows = (height+2)/RowHeight;
@@ -1804,9 +1805,9 @@ void AdjustWindow(int width, int height)
   change_colorset(0, False);
 }
 
-/******************************************************************************
+/*
   LinkAction - Link an response to a users action
-******************************************************************************/
+*/
 void LinkAction(const char *string)
 {
   const char *temp=string;
@@ -2049,9 +2050,9 @@ static Bool change_colorset(int cset, Bool force)
 }
 
 
-/******************************************************************************
+/*
   StartMeUp - Do X initialization things
-******************************************************************************/
+*/
 void StartMeUp(void)
 {
    XSizeHints hints;
@@ -2261,9 +2262,9 @@ void StartMeUp(void)
    atexit(ShutMeDown);
 }
 
-/******************************************************************************
+/*
   ShutMeDown - Do X client cleanup
-******************************************************************************/
+*/
 static void
 ShutMeDown(void)
 {
@@ -2280,11 +2281,11 @@ ShutMeDown(void)
 }
 
 
-/******************************************************************************
+/*
   ChangeWindowName - Self explanitory
     Original work from FvwmIdent:
       Copyright 1994, Robert Nation and Nobutaka Suzuki.
-******************************************************************************/
+*/
 void ChangeWindowName(char *str)
 {
   XTextProperty name;
@@ -2297,11 +2298,11 @@ void ChangeWindowName(char *str)
   XFree(name.value);
 }
 
-/**************************************************************************
+/*
  *
  * Sets mwm hints
  *
- *************************************************************************/
+ */
 /*
  *  Now, if we (hopefully) have MWW - compatible window manager ,
  *  say, mwm, ncdwm, or else, we will set useful decoration style.
@@ -2334,9 +2335,9 @@ PropMwmHints prop;
     }
 }
 
-/***********************************************************************
+/*
  WarpTaskBar -- Enforce AutoStick feature
- ***********************************************************************/
+*/
 static void WarpTaskBar(int y)
 {
   /* The tests on y are really useful ! */
@@ -2362,10 +2363,10 @@ static void WarpTaskBar(int y)
   ClearAlarm(STICK_TASK_BAR);
 }
 
-/***********************************************************************
+/*
  SleepALittle -- do a small delay in a fairly portable way
  Replace "#if 1" with "#if 0" to turn delay off
- ***********************************************************************/
+*/
 static void SleepALittle(void)
 {
   struct timeval tv;
@@ -2379,9 +2380,9 @@ static void SleepALittle(void)
 #endif
 }
 
-/***********************************************************************
+/*
  RevealTaskBar -- Make taskbar fully visible
- ***********************************************************************/
+*/
 void RevealTaskBar()
 {
   int new_win_y;
@@ -2418,9 +2419,9 @@ void RevealTaskBar()
   WindowState = 0;
 }
 
-/***********************************************************************
+/*
  HideTaskbar -- Make taskbar partially visible
- ***********************************************************************/
+*/
 void HideTaskBar()
 {
   int new_win_y;
@@ -2479,9 +2480,9 @@ void HideTaskBar()
   WindowState = -1;
 }
 
-/***********************************************************************
+/*
  SetAlarm -- Schedule a timeout event
- ************************************************************************/
+*/
 static void
 SetAlarm(tb_alarm_t event)
 {
@@ -2490,9 +2491,9 @@ SetAlarm(tb_alarm_t event)
   alarm(1);
 }
 
-/***********************************************************************
+/*
  ClearAlarm -- Disable timeout events
- ************************************************************************/
+*/
 static void
 ClearAlarm(tb_alarm_t event)
 {
@@ -2503,9 +2504,9 @@ ClearAlarm(tb_alarm_t event)
   }
 }
 
-/************************************************************************
+/*
   X Error Handler
-************************************************************************/
+*/
 static int
 ErrorHandler(Display *d, XErrorEvent *event)
 {

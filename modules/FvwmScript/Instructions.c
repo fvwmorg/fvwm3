@@ -1,3 +1,4 @@
+/* -*-c-*- */
 /* This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 2 of the License, or
@@ -12,6 +13,8 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
+
+#include "config.h"
 
 #include "types.h"
 #include "libs/fvwmsignal.h"
@@ -49,9 +52,9 @@ char *BufCom;
 char Command[255]="None";
 time_t TimeCom=0;
 
-/*************************************************************/
-/* Utilities                                                 */
-/*************************************************************/
+/*
+ * Utilities
+ */
 void setFvwmUserDir(void)
 {
   char *home_dir;
@@ -79,9 +82,9 @@ void setFvwmUserDir(void)
   }
 }
 
-/*************************************************************/
-/* Ensemble de fonction de comparaison de deux entiers       */
-/*************************************************************/
+/*
+ * Ensemble de fonction de comparaison de deux entiers
+ */
 static int Inf(char *arg1,char *arg2)
 {
   int an1,an2;
@@ -130,9 +133,9 @@ static int Diff(char *arg1,char *arg2)
   return (strcmp(arg1,arg2)!=0);
 }
 
-/*****************************************************/
-/* Fonction qui retourne la valeur d'un argument     */
-/*****************************************************/
+/*
+ * Fonction qui retourne la valeur d'un argument
+ */
 static char *CalcArg (long *TabArg,int *Ix)
 {
   char *TmpStr;
@@ -161,11 +164,11 @@ static char *CalcArg (long *TabArg,int *Ix)
   return (TmpStr);
 }
 
-/*************************************************************/
-/* Ensemble des fonctions pour recuperer les prop d'un objet */
-/*************************************************************/
+/*
+ * Ensemble des fonctions pour recuperer les prop d'un objet
+ */
 
-/******* GetValue *******/
+/* GetValue */
 static char *FuncGetValue(int *NbArg, long *TabArg)
 {
   char *tmp;
@@ -180,7 +183,7 @@ static char *FuncGetValue(int *NbArg, long *TabArg)
   return tmp;
 }
 
-/******* GetMinValue *******/
+/* GetMinValue */
 static char *FuncGetMinValue(int *NbArg, long *TabArg)
 {
   char *tmp;
@@ -195,7 +198,7 @@ static char *FuncGetMinValue(int *NbArg, long *TabArg)
   return tmp;
 }
 
-/******* GetMaxValue *******/
+/* GetMaxValue */
 static char *FuncGetMaxValue(int *NbArg, long *TabArg)
 {
   char *tmp;
@@ -210,7 +213,7 @@ static char *FuncGetMaxValue(int *NbArg, long *TabArg)
   return tmp;
 }
 
-/******* GetFore *******/
+/* GetFore */
 static char *FuncGetFore(int *NbArg, long *TabArg)
 {
   char *tmp;
@@ -229,7 +232,7 @@ static char *FuncGetFore(int *NbArg, long *TabArg)
   return tmp;
 }
 
-/******* GetBack *******/
+/* GetBack */
 static char *FuncGetBack(int *NbArg, long *TabArg)
 {
   char *tmp;
@@ -248,7 +251,7 @@ static char *FuncGetBack(int *NbArg, long *TabArg)
   return tmp;
 }
 
-/******* GetHili *******/
+/* GetHili */
 static char *FuncGetHili(int *NbArg, long *TabArg)
 {
   char *tmp;
@@ -267,7 +270,7 @@ static char *FuncGetHili(int *NbArg, long *TabArg)
   return tmp;
 }
 
-/******* GetShad *******/
+/* GetShad */
 static char *FuncGetShad(int *NbArg, long *TabArg)
 {
   char *tmp;
@@ -286,7 +289,7 @@ static char *FuncGetShad(int *NbArg, long *TabArg)
   return tmp;
 }
 
-/******* Fonction qui retourne le titre d'un objet *******/
+/* Fonction qui retourne le titre d'un objet */
 static char *FuncGetTitle(int *NbArg, long *TabArg)
 {
   char *tmp;
@@ -308,7 +311,7 @@ static char *FuncGetTitle(int *NbArg, long *TabArg)
   return tmp;
 }
 
-/******* Fonction qui retourne la sortie d'une commande *******/
+/* Fonction qui retourne la sortie d'une commande */
 static char *FuncGetOutput(int *NbArg, long *TabArg)
 {
   char *cmndbuf;
@@ -396,7 +399,7 @@ static char *FuncGetOutput(int *NbArg, long *TabArg)
   return str;
 }
 
-/******* Convertion decimal vers hexadecimal *******/
+/* Convertion decimal vers hexadecimal */
 static char *FuncNumToHex(int *NbArg, long *TabArg)
 {
   char *str;
@@ -425,7 +428,7 @@ static char *FuncNumToHex(int *NbArg, long *TabArg)
   return str;
 }
 
-/******* Convertion hexadecimal vers decimal *******/
+/* Convertion hexadecimal vers decimal */
 static char *FuncHexToNum(int *NbArg, long *TabArg)
 {
   char *str,*str2;
@@ -443,7 +446,7 @@ static char *FuncHexToNum(int *NbArg, long *TabArg)
   return str2;
 }
 
-/******* + *******/
+/* + */
 static char *FuncAdd(int *NbArg, long *TabArg)
 {
   char *str;
@@ -462,7 +465,7 @@ static char *FuncAdd(int *NbArg, long *TabArg)
   return str;
 }
 
-/******* * *******/
+/* * */
 static char *FuncMult(int *NbArg, long *TabArg)
 {
   char *str;
@@ -481,7 +484,7 @@ static char *FuncMult(int *NbArg, long *TabArg)
   return str;
 }
 
-/******* / *******/
+/* / */
 static char *FuncDiv(int *NbArg, long *TabArg)
 {
   char *str;
@@ -500,7 +503,7 @@ static char *FuncDiv(int *NbArg, long *TabArg)
   return str;
 }
 
-/******* % *******/
+/* % */
 static char *RemainderOfDiv(int *NbArg, long *TabArg)
 {
 #ifndef HAVE_DIV
@@ -526,7 +529,7 @@ static char *RemainderOfDiv(int *NbArg, long *TabArg)
 }
 
 
-/******* StrCopy *******/
+/* StrCopy */
 static char *FuncStrCopy(int *NbArg, long *TabArg)
 {
   char *str,*strsrc;
@@ -561,7 +564,7 @@ static char *FuncStrCopy(int *NbArg, long *TabArg)
  return str;
 }
 
-/******* Lancement d'un script avec pipe *******/
+/* Lancement d'un script avec pipe */
 static char *LaunchScript (int *NbArg,long *TabArg)
 {
   char *arg,*execstr,*str,*scriptarg,*scriptname;
@@ -627,7 +630,7 @@ static char *LaunchScript (int *NbArg,long *TabArg)
   return str;
 }
 
-/******* GetScriptFather *******/
+/* GetScriptFather */
 static char *GetScriptFather (int *NbArg,long *TabArg)
 {
   char *str;
@@ -637,7 +640,7 @@ static char *GetScriptFather (int *NbArg,long *TabArg)
   return str;
 }
 
-/******* GetTime *******/
+/* GetTime */
 static char *GetTime (int *NbArg,long *TabArg)
 {
   char *str;
@@ -649,7 +652,7 @@ static char *GetTime (int *NbArg,long *TabArg)
   return str;
 }
 
-/******* GetScriptArg *******/
+/* GetScriptArg */
 static char *GetScriptArg (int *NbArg,long *TabArg)
 {
   char *str;
@@ -674,7 +677,7 @@ static char *GetScriptArg (int *NbArg,long *TabArg)
  return str;
 }
 
-/******* ReceivFromScript *******/
+/* ReceivFromScript */
 static char *ReceivFromScript (int *NbArg,long *TabArg)
 {
   char *arg,*msg;
@@ -745,7 +748,7 @@ static char *ReceivFromScript (int *NbArg,long *TabArg)
   return msg;
 }
 
-/******* GetPid *******/
+/* GetPid */
 static char *FuncGetPid(int *NbArg,long *TabArg)
 {
   char *str;
@@ -757,7 +760,7 @@ static char *FuncGetPid(int *NbArg,long *TabArg)
   return str;
 }
 
-/*******  SendMsgAndGet *******/
+/*  SendMsgAndGet */
 #define IN_FIFO_NBR_OF_TRY 200
 #define IN_FIFO_TIMEOUT    100000 /* usec: 0.1 sec (20 sec) */
 #define OUT_FIFO_NBR_OF_TRY  400
@@ -912,7 +915,7 @@ static char *FuncSendMsgAndGet(int *NbArg,long *TabArg)
   return str;
 }
 
-/******* Parse *******/
+/* Parse */
 static char *FuncParse(int *NbArg,long *TabArg)
 {
   char *string,*str;
@@ -961,7 +964,7 @@ static char *FuncParse(int *NbArg,long *TabArg)
   return str;
 }
 
-/******* GetLastString *******/
+/* GetLastString */
 static char *FuncGetLastString(int *NbArg,long *TabArg)
 {
   char *str;
@@ -977,11 +980,11 @@ static char *FuncGetLastString(int *NbArg,long *TabArg)
   return str;
 }
 
-/***********************************************/
-/* Ensemble des commandes possible pour un obj */
-/***********************************************/
+/*
+ * Ensemble des commandes possible pour un obj
+ */
 
-/******* Exec *******/
+/* Exec */
 static void Exec (int NbArg,long *TabArg)
 {
   unsigned long leng = 0;
@@ -1016,7 +1019,7 @@ static void Exec (int NbArg,long *TabArg)
   free(execstr);
 }
 
-/******* Hide *******/
+/* Hide */
 static void HideObj (int NbArg,long *TabArg)
 {
   char *arg[1];
@@ -1033,7 +1036,7 @@ static void HideObj (int NbArg,long *TabArg)
   free(arg[0]);
 }
 
-/******* Show *******/
+/* Show */
 static void ShowObj (int NbArg,long *TabArg)
 {
   char *arg[1];
@@ -1049,7 +1052,7 @@ static void ShowObj (int NbArg,long *TabArg)
   free(arg[0]);
 }
 
-/******* ChangeValue *******/
+/* ChangeValue */
 static void ChangeValue (int NbArg,long *TabArg)
 {
   int i = 0;
@@ -1068,7 +1071,7 @@ static void ChangeValue (int NbArg,long *TabArg)
   free(arg[1]);
 }
 
-/******* ChangeValueMax *******/
+/* ChangeValueMax */
 static void ChangeValueMax (int NbArg,long *TabArg)
 {
   int i=0;
@@ -1093,7 +1096,7 @@ static void ChangeValueMax (int NbArg,long *TabArg)
   free(arg[1]);
 }
 
-/******* ChangeValueMin *******/
+/* ChangeValueMin */
 static void ChangeValueMin (int NbArg,long *TabArg)
 {
   int i=0;
@@ -1118,7 +1121,7 @@ static void ChangeValueMin (int NbArg,long *TabArg)
   free(arg[1]);
 }
 
-/******* ChangePosition *******/
+/* ChangePosition */
 static void ChangePos (int NbArg,long *TabArg)
 {
   int i=0;
@@ -1144,7 +1147,7 @@ static void ChangePos (int NbArg,long *TabArg)
   free(arg[2]);
 }
 
-/******* ChangeFont *******/
+/* ChangeFont */
 static void ChangeFont (int NbArg,long *TabArg)
 {
   int i=0;
@@ -1180,7 +1183,7 @@ static void ChangeFont (int NbArg,long *TabArg)
   free(arg[1]);
 }
 
-/******* ChangeSize *******/
+/* ChangeSize */
 static void ChangeSize (int NbArg,long *TabArg)
 {
   int i=0;
@@ -1207,7 +1210,7 @@ static void ChangeSize (int NbArg,long *TabArg)
   free(arg[2]);
 }
 
-/******* ChangeTitle *******/
+/* ChangeTitle */
 static void ChangeTitle (int NbArg,long *TabArg)
 {
   int i=0;
@@ -1229,7 +1232,7 @@ static void ChangeTitle (int NbArg,long *TabArg)
   free(arg[1]);
 }
 
-/******* ChangeLocaleTitle *******/
+/* ChangeLocaleTitle */
 static void ChangeLocaleTitle (int NbArg,long *TabArg)
 {
   int i=0;
@@ -1251,7 +1254,7 @@ static void ChangeLocaleTitle (int NbArg,long *TabArg)
   free(arg[1]);
 }
 
-/******* ChangeIcon *******/
+/* ChangeIcon */
 static void ChangeIcon (int NbArg,long *TabArg)
 {
 	int i=0;
@@ -1277,7 +1280,7 @@ static void ChangeIcon (int NbArg,long *TabArg)
 	free(arg[1]);
 }
 
-/******* ChangeForeColor *******/
+/* ChangeForeColor */
 static void ChangeForeColor (int NbArg,long *TabArg)
 {
   int i=0;
@@ -1317,7 +1320,7 @@ static void ChangeForeColor (int NbArg,long *TabArg)
 
 }
 
-/******* ChangeBackColor *******/
+/* ChangeBackColor */
 static void ChangeBackColor (int NbArg,long *TabArg)
 {
   int i=0;
@@ -1360,7 +1363,7 @@ static void ChangeBackColor (int NbArg,long *TabArg)
   free(arg[1]);
 }
 
-/******* ChangeMainColorset *******/
+/* ChangeMainColorset */
 static void ChangeMainColorset (int i)
 {
  /* Liberation de la couleur */
@@ -1380,7 +1383,7 @@ static void ChangeMainColorset (int i)
 		      &Colorset[i], Pdepth, x11base->gc, True);
 }
 
-/******* ChangeMainColorset *******/
+/* ChangeMainColorset */
 static void ChangeColorset (int NbArg,long *TabArg)
 {
   int i=0;
@@ -1425,7 +1428,7 @@ static void ChangeColorset (int NbArg,long *TabArg)
   free(arg[1]);
 }
 
-/******* SetVar *******/
+/* SetVar */
 static void SetVar (int NbArg,long *TabArg)
 {
   int i;
@@ -1445,7 +1448,7 @@ static void SetVar (int NbArg,long *TabArg)
   TabVVar[TabArg[0]] = str;
 }
 
-/******* SendSign *******/
+/* SendSign */
 static void SendSign (int NbArg,long *TabArg)
 {
   int i=0;
@@ -1463,7 +1466,7 @@ static void SendSign (int NbArg,long *TabArg)
   free(arg[1]);
 }
 
-/******* MyWarpPointer *******/
+/* MyWarpPointer */
 static void MyWarpPointer(int NbArg,long *TabArg)
 {
   int i=0;
@@ -1478,13 +1481,13 @@ static void MyWarpPointer(int NbArg,long *TabArg)
   free(arg);
 }
 
-/******* Quit *******/
+/* Quit */
 void Quit (int NbArg,long *TabArg)
 {
   exit(0);
 }
 
-/******* IfThen *******/
+/* IfThen */
 static void IfThen (int NbArg,long *TabArg)
 {
   char *arg[10];
@@ -1528,7 +1531,7 @@ static void IfThen (int NbArg,long *TabArg)
   free(arg[1]);
 }
 
-/******* Instruction boucle ********/
+/* Instruction boucle **/
 static void Loop (int NbArg,long *TabArg)
 {
   int IdVar;
@@ -1582,7 +1585,7 @@ static void Loop (int NbArg,long *TabArg)
  free(arg[1]);
 }
 
-/******** Instruction While ********/
+/** Instruction While **/
 static void While (int NbArg,long *TabArg)
 {
   char *arg[3],*str;
@@ -1608,7 +1611,7 @@ static void While (int NbArg,long *TabArg)
   }
 }
 
-/******* WriteToFile *******/
+/* WriteToFile */
 static void WriteToFile (int NbArg,long *TabArg)
 {
   int i=0;
@@ -1711,7 +1714,7 @@ static void WriteToFile (int NbArg,long *TabArg)
   free(arg[1]);
 }
 
-/******* SendToScript *******/
+/* SendToScript */
 static void SendToScript (int NbArg,long *TabArg)
 {
   char *tempstr,*Msg,*R;
@@ -1761,7 +1764,7 @@ static void SendToScript (int NbArg,long *TabArg)
   }
 }
 
-/******* Key *******/
+/* Key */
 static void Key (int NbArg,long *TabArg)
 {
   char *key_string,*in_modifier,*action,*str,*tmp,*widget,*sig;
@@ -1826,9 +1829,9 @@ static void Key (int NbArg,long *TabArg)
   free(in_modifier);
 }
 
-/****************************************************/
-/* GetText Support                                  */
-/****************************************************/
+/*
+ * GetText Support
+ */
 
 static char *FuncGettext(int *NbArg,long *TabArg)
 {
@@ -1846,9 +1849,9 @@ static char *FuncGettext(int *NbArg,long *TabArg)
 	return (char *)string;
 }
 
-/****************************************************/
-/* Fonction d'initialisation de TabCom et TabFunc   */
-/****************************************************/
+/*
+ * Fonction d'initialisation de TabCom et TabFunc
+ */
 void InitCom()
 {
   /* commande */

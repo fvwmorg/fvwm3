@@ -14,9 +14,10 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-/* ---------------------------- included header files ----------------------- */
+/* ---------------------------- included header files ---------------------- */
 
-#include <config.h>
+#include "config.h"
+
 #include <stdio.h>
 
 #include <X11/Xlib.h>
@@ -25,38 +26,38 @@
 #include "fvwmrect.h"
 #include "gravity.h"
 
-/* ---------------------------- local definitions --------------------------- */
+/* ---------------------------- local definitions -------------------------- */
 
-/* ---------------------------- local macros -------------------------------- */
+/* ---------------------------- local macros ------------------------------- */
 
-/* ---------------------------- imports ------------------------------------- */
+/* ---------------------------- imports ------------------------------------ */
 
-/* ---------------------------- included code files ------------------------- */
+/* ---------------------------- included code files ------------------------ */
 
-/* ---------------------------- local types --------------------------------- */
+/* ---------------------------- local types -------------------------------- */
 
 struct _gravity_offset
 {
 	int x, y;
 };
 
-/* ---------------------------- forward declarations ------------------------ */
+/* ---------------------------- forward declarations ----------------------- */
 
-/* ---------------------------- local variables ----------------------------- */
+/* ---------------------------- local variables ---------------------------- */
 
-/* ---------------------------- exported variables (globals) ---------------- */
+/* ---------------------------- exported variables (globals) --------------- */
 
-/* ---------------------------- local functions ----------------------------- */
+/* ---------------------------- local functions ---------------------------- */
 
-/* ---------------------------- interface functions ------------------------- */
+/* ---------------------------- interface functions ------------------------ */
 
-/************************************************************************
+/*
  *
  *  Procedure:
  *      gravity_get_offsets - map gravity to (x,y) offset signs for adding
  *              to x and y when window is mapped to get proper placement.
  *
- ************************************************************************/
+ */
 void gravity_get_offsets(int grav, int *xp,int *yp)
 {
 	static struct _gravity_offset gravity_offsets[11] =
@@ -132,7 +133,7 @@ void gravity_move_resize_parent_child(
 	return;
 }
 
-direction_type gravity_grav_to_dir(
+direction_t gravity_grav_to_dir(
 	int grav)
 {
 	switch (grav)
@@ -163,7 +164,7 @@ direction_type gravity_grav_to_dir(
 }
 
 int gravity_dir_to_grav(
-	direction_type dir)
+	direction_t dir)
 {
 	switch (dir)
 	{
@@ -382,7 +383,7 @@ void gravity_split_xy_dir(
 }
 
 int gravity_dir_to_sign_one_axis(
-	direction_type dir)
+	direction_t dir)
 {
 	switch (dir)
 	{
@@ -414,8 +415,8 @@ int gravity_dir_to_sign_one_axis(
  * through ret_action in this case. ret_action may be NULL. If the token
  * matches none of these strings the default_ret value is returned and the
  * action itself is passed back in ret_action. */
-direction_type gravity_parse_dir_argument(
-	char *action, char **ret_action, direction_type default_ret)
+direction_t gravity_parse_dir_argument(
+	char *action, char **ret_action, direction_t default_ret)
 {
 	int index;
 	int rc;
@@ -449,15 +450,15 @@ direction_type gravity_parse_dir_argument(
 		*ret_action = next;
 	}
 
-	return (direction_type)rc;
+	return (direction_t)rc;
 }
 
-multi_direction_type gravity_parse_multi_dir_argument(
+multi_direction_t gravity_parse_multi_dir_argument(
 	char *action, char **ret_action)
 {
 	int rc = MULTI_DIR_NONE;
 	char *token, *str;
-	direction_type dir = gravity_parse_dir_argument(action, ret_action, -1);
+	direction_t dir = gravity_parse_dir_argument(action, ret_action, -1);
 
 	if (dir != -1)
 	{
@@ -477,10 +478,10 @@ multi_direction_type gravity_parse_multi_dir_argument(
 		}
 	}
 
-	return (multi_direction_type)rc;
+	return (multi_direction_t)rc;
 }
 
-void gravity_get_next_multi_dir(int dir_set, multi_direction_type *dir)
+void gravity_get_next_multi_dir(int dir_set, multi_direction_t *dir)
 {
 	if (*dir == MULTI_DIR_NONE)
 	{
@@ -503,9 +504,9 @@ void gravity_get_next_multi_dir(int dir_set, multi_direction_type *dir)
 	return;
 }
 
-direction_type gravity_multi_dir_to_dir(multi_direction_type mdir)
+direction_t gravity_multi_dir_to_dir(multi_direction_t mdir)
 {
-	direction_type dir = DIR_NONE;
+	direction_t dir = DIR_NONE;
 
 	for ( ; mdir != 0; dir++)
 	{
@@ -519,7 +520,7 @@ direction_type gravity_multi_dir_to_dir(multi_direction_type mdir)
 	return dir;
 }
 
-void gravity_rotate_xy(rotation_type rot, int x, int y, int *ret_x, int *ret_y)
+void gravity_rotate_xy(rotation_t rot, int x, int y, int *ret_x, int *ret_y)
 {
 	int tx;
 	int ty;

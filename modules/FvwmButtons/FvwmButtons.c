@@ -1,3 +1,4 @@
+/* -*-c-*- */
 /*
  * FvwmButtons, copyright 1996, Jarl Totland
  *

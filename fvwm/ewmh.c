@@ -1,6 +1,6 @@
-/* Copyright (C) 2001  Olivier Chapuis
- *
- * This program is free software; you can redistribute it and/or modify
+/* -*-c-*- */
+/* Copyright (C) 2001  Olivier Chapuis */
+/* This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 2 of the License, or
  * (at your option) any later version.
@@ -15,7 +15,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-/* ************************************************************************
+/*
  * An partial implementation of the Extended Window Manager Hints specification
  * http://www.freedesktop.org/standards/wm-spec.html
  *
@@ -45,7 +45,7 @@
  * in GNOME (the spec) and in KDE 2/3.0 (~ simple dock?).
  * - What is a window of TYPE MENU ?
  *
- * ************************************************************************/
+ */
 
 #include "config.h"
 
@@ -76,9 +76,9 @@ typedef struct kst_item
 Atom XA_UTF8_STRING = None;
 KstItem *ewmh_KstWinList = NULL;
 
-/* ************************************************************************* *
+/*
  * Default
- * ************************************************************************* */
+ */
 ewmhInfo ewmhc =
 {
   4,            /* NumberOfDesktops */
@@ -88,9 +88,9 @@ ewmhInfo ewmhc =
   {0, 0, 0, 0}, /* BaseStrut */
 };
 
-/* ************************************************************************* *
+/*
  * The ewmh atoms lists
- * ************************************************************************* */
+ */
 #define ENTRY(name, type, func) \
  {name, None, type, func}
 
@@ -240,9 +240,9 @@ ewmh_atom_list atom_list[] =
   L_ENTRY(EWMH_ATOM_LIST_END,               NULL)
 };
 
-/* ************************************************************************* *
+/*
  * Atoms utilities
- * ************************************************************************* */
+ */
 
 static
 int compare(const void *a, const void *b)
@@ -380,9 +380,9 @@ void *ewmh_AtomGetByName(Window win, const char *atom_name,
   return data;
 }
 
-/* ************************************************************************* *
+/*
  *  client_root: here the client is fvwm
- * ************************************************************************* */
+ */
 static
 int check_desk(void)
 {
@@ -445,9 +445,9 @@ void EWMH_SetNumberOfDesktops(void)
   ewmh_SetWorkArea();
 }
 
-/* ************************************************************************* *
+/*
  *  client_win: here the client is fvwm
- * ************************************************************************* */
+ */
 void EWMH_SetActiveWindow(Window w)
 {
   ewmh_ChangeProperty(Scr.Root, "_NET_ACTIVE_WINDOW", EWMH_ATOM_LIST_CLIENT_WIN,
@@ -471,9 +471,9 @@ void EWMH_SetWMDesktop(FvwmWindow *fwin)
 		      (unsigned char *)&desk, 1);
 }
 
-/* ************************************************************************* *
+/*
  *  fvwm must maintain the _NET_WM_STATE
- * ************************************************************************* */
+ */
 
 void EWMH_SetWMState(FvwmWindow *fwin, Bool do_restore)
 {
@@ -495,9 +495,9 @@ void EWMH_SetWMState(FvwmWindow *fwin, Bool do_restore)
     ewmh_DeleteProperty(FW_W(fwin), "_NET_WM_STATE", EWMH_ATOM_LIST_CLIENT_WIN);
 }
 
-/* ************************************************************************* *
+/*
  *  fvwm_root
- * ************************************************************************* */
+ */
 
 /*** kde system tray ***/
 /* #define DEBUG_KST */
@@ -931,9 +931,9 @@ float EWMH_GetStrutIntersection(
   return ret;
 }
 
-/* ************************************************************************* *
+/*
  *  fvwm_win
- * ************************************************************************* */
+ */
 void EWMH_SetFrameStrut(FvwmWindow *fwin)
 {
   CARD32 val[4];
@@ -954,9 +954,9 @@ void EWMH_SetFrameStrut(FvwmWindow *fwin)
 		      EWMH_ATOM_LIST_FVWM_WIN, (unsigned char *)&val, 4);
 }
 
-/* **T*********************************************************************** *
+/*
  * allowed actions
- * ************************************************************************* */
+ */
 Bool ewmh_AllowsYes(EWMH_CMD_ARGS)
 {
   return True;
@@ -1008,9 +1008,9 @@ void EWMH_SetAllowedActions(FvwmWindow *fwin)
 		 EWMH_ATOM_LIST_FVWM_WIN);
 }
 
-/* ************************************************************************* *
+/*
  * Window types
- * ************************************************************************* */
+ */
 
 int ewmh_HandleDesktop(EWMH_CMD_ARGS)
 {
@@ -1260,9 +1260,9 @@ void ewmh_HandleWindowType(FvwmWindow *fwin, window_style *style)
   free(val);
 }
 
-/* ************************************************************************* *
+/*
  * a workaround for ksmserver exit windows
- * ************************************************************************* */
+ */
 static
 int ksmserver_workarround(FvwmWindow *fwin)
 {
@@ -1286,9 +1286,9 @@ int ksmserver_workarround(FvwmWindow *fwin)
   return 0;
 }
 
-/* ************************************************************************* *
+/*
  * Window Initialisation / Destroy
- * ************************************************************************* */
+ */
 
 void EWMH_GetStyle(FvwmWindow *fwin, window_style *style)
 {
@@ -1356,9 +1356,9 @@ void EWMH_WindowDestroyed(void)
   ewmh_HandleDynamicWorkArea();
 }
 
-/* ************************************************************************* *
+/*
  * Init Stuff
- * ************************************************************************* */
+ */
 static
 int set_all_atom_in_list(ewmh_atom *list)
 {
@@ -1457,9 +1457,9 @@ void EWMH_Init(void)
   ewmh_ComputeAndSetWorkArea();
 }
 
-/* ************************************************************************* *
+/*
  * Exit Stuff
- * ************************************************************************* */
+ */
 void EWMH_ExitStuff(void)
 {
   FvwmWindow *t;

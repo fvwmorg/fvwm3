@@ -1,3 +1,4 @@
+/* -*-c-*- */
 /*
  * FvwmButtons, copyright 1996, Jarl Totland
  *
@@ -313,7 +314,7 @@ int buttonBackgroundButton(button_info *b, button_info **r_b)
 {
 	button_info *tmpb, *pb;
 	Bool done = False;
-	
+
 	tmpb = pb = b;
 	while(tmpb->parent != NULL && !done)
 	{
@@ -348,7 +349,7 @@ int buttonBackgroundButton(button_info *b, button_info **r_b)
 		}
 		tmpb = tmpb->parent;
 	}
-	
+
 	if (done)
 	{
 		if (r_b != NULL)

@@ -1,7 +1,6 @@
 /* -*-c-*- */
-/* Copyright (C) 2003  Marcus Lundblad
- *
- * This program is free software; you can redistribute it and/or modify
+/* Copyright (C) 2003  Marcus Lundblad */
+/* This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 2 of the License, or
  * (at your option) any later version.
@@ -16,12 +15,14 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
+#include "config.h"
+
 #include <X11/Xlib.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include "safemalloc.h"
 
-/* ---------------------------- local types --------------------------------- */
+/* ---------------------------- local types -------------------------------- */
 
 typedef struct char_combclass
 {
@@ -37,7 +38,7 @@ typedef struct char_comb
         unsigned short int second;
 } char_comb_t;
 
-/* ---------------------------- static variables ---------------------------- */
+/* ---------------------------- static variables --------------------------- */
 
 /* maps characters to combination classes (not in list => 0) */
 /* parsed from UnicodeData-3.2.0.txt */
@@ -1380,10 +1381,10 @@ static const char_comb_t comb_table[] =
 	{ 0x1D1BD, 0x1D1BB, 0x1D16E },
 	{ 0x1D1BE, 0x1D1BC, 0x1D16E },
 	{ 0x1D1BF, 0x1D1BB, 0x1D16F },
-	{ 0x1D1C0, 0x1D1BC, 0x1D16F }, */ 
+	{ 0x1D1C0, 0x1D1BC, 0x1D16F }, */
 };
 
-/* -------------------------- local functions ----------------------------- */
+/* -------------------------- local functions ------------------------------ */
 
 
 /* look-up functions, maybe theese should use binary search?
@@ -1393,7 +1394,7 @@ get_combining_class(unsigned short int ch)
 {
         int count;
         int table_size = sizeof(combclass_table) / sizeof(combclass_table[0]);
-	
+
 	for(count = 0; count < table_size; count++)
 	{
 	        if(combclass_table[count].key == ch)
@@ -1401,7 +1402,7 @@ get_combining_class(unsigned short int ch)
 		        return combclass_table[count].combclass;
 		}
 	}
-	
+
 	return 0;
 }
 
@@ -1418,7 +1419,7 @@ get_comb_entry_decomposed(unsigned short int ch)
 		       return &comb_table[count];
 	       }
 	}
-	
+
 	return NULL;
 }
 
@@ -1427,7 +1428,7 @@ get_comb_entry_composed(unsigned short int first, unsigned short int second)
 {
         int count;
 	int table_size = sizeof(comb_table) / sizeof(comb_table[0]);
-	
+
 	for(count = 0; count < table_size; count++)
 	{
 	       if(comb_table[count].first == first &&
@@ -1436,7 +1437,7 @@ get_comb_entry_composed(unsigned short int first, unsigned short int second)
 		       return comb_table[count].key;
 	       }
 	}
-	
+
 	return (unsigned short int) 0;
 }
 
@@ -1449,11 +1450,11 @@ convert_to_ucs2(const unsigned char *str_utf8, unsigned short int *str_ucs2, int
 	{
 	       if(str_utf8[in_pos] <= 0x7f)
 	       {
-		       str_ucs2[out_pos] = 
+		       str_ucs2[out_pos] =
 			 (unsigned short int)str_utf8[in_pos];
 		       in_pos++;
 	       }
-	       else if(in_pos < len-1 && 
+	       else if(in_pos < len-1 &&
 		       str_utf8[in_pos] <= 0xdf)
 	       {
 		       str_ucs2[out_pos] =
@@ -1485,7 +1486,7 @@ convert_to_utf8(const unsigned short int *str_ucs2, unsigned char *str_utf8,
 {
         int in_pos = 0;
 	int out_pos = 0;
-	
+
 	for(in_pos = 0 ; in_pos < len ; in_pos++)
 	{
 	       if(str_ucs2[in_pos] <= 0x7f)
@@ -1495,9 +1496,9 @@ convert_to_utf8(const unsigned short int *str_ucs2, unsigned char *str_utf8,
 	       }
 	       else if(str_ucs2[in_pos] <= 0x7ff)
 	       {
-		      str_utf8[out_pos] = 
+		      str_utf8[out_pos] =
 			(str_ucs2[in_pos] >> 6) | 0xc0;
-		      str_utf8[out_pos+1] = 
+		      str_utf8[out_pos+1] =
 			(str_ucs2[in_pos] & 0x3f) | 0x80;
 		      out_pos += 2;
 	       }
@@ -1515,14 +1516,14 @@ convert_to_utf8(const unsigned short int *str_ucs2, unsigned char *str_utf8,
 	}
 	return out_pos;
 }
-	     
+
 
 /* main procedure:
    takes a pointer to a string (UTF-8)
    first decomposes string, then rearrange combining characters, the
    combines them back.
    Result is stored in original string (can never be "expanded" from
-   original size), new length is returned 
+   original size), new length is returned
 */
 
 
@@ -1550,14 +1551,14 @@ FCombineChars(unsigned char *str_visual, int len)
 	   have string length */
 
 	/* be pessimistic, assume all characters are decomposed */
-	dest = (unsigned short int *)safemalloc( (str_len + 1) * 2 * 
+	dest = (unsigned short int *)safemalloc( (str_len + 1) * 2 *
 					   sizeof(unsigned short int));
 	do
 	{
 	        has_changed = False;
 	        for(i = 0, j = 0; i < str_len; i++)
 		{
-		        const char_comb_t *decomp = 
+		        const char_comb_t *decomp =
 			  get_comb_entry_decomposed(source[i]);
 			/* current character is decomposable */
 			if(decomp)
@@ -1584,14 +1585,14 @@ FCombineChars(unsigned char *str_visual, int len)
 	   loop, str_len holds string length */
 	/* we reuse dest for composing, can use existing string lengths
 	   since it will only get shorter */
-	
+
 	/* rearrange combining characters */
 	do
 	{
 	        has_changed = False;
 		for(i = 0; i < str_len - 1; i++)
 		{
-		        /* swap if combining-class(c1) > combining-class(c2) 
+		        /* swap if combining-class(c1) > combining-class(c2)
 			   and combining-class(c2) != 0 */
 		        int c1 = get_combining_class(source[i]);
 			int c2 = get_combining_class(source[i+1]);
@@ -1614,7 +1615,7 @@ FCombineChars(unsigned char *str_visual, int len)
 
 		for(i = 0, j = 0; i < str_len - 1; j++)
 		{
-		        unsigned short int composed = 
+		        unsigned short int composed =
 			  get_comb_entry_composed(source[i],source[i+1]);
 			if(composed != 0)
 			{
@@ -1655,7 +1656,7 @@ FCombineChars(unsigned char *str_visual, int len)
 	/* source contains composed string */
 	str_len = convert_to_utf8(source,str_visual,str_len);
 	str_visual[str_len] = 0;
-	
+
 	/* clean up */
 	free(source);
 	free(dest);

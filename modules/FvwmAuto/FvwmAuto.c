@@ -1,3 +1,4 @@
+/* -*-c-*- */
 /* This module, and the entire FvwmAuto program, and the concept for
  * interfacing this module to the Window Manager, are all original work
  * by Robert Nation
@@ -67,12 +68,12 @@
 
 static RETSIGTYPE TerminateHandler(int signo);
 
-/***********************************************************************
+/*
  *
  *  Procedure:
  *  Termination procedure : *not* a signal handler
  *
- ***********************************************************************/
+ */
 void DeadPipe(int nonsense)
 {
 	(void)nonsense;
@@ -80,24 +81,24 @@ void DeadPipe(int nonsense)
 	exit(0);
 }
 
-/***********************************************************************
+/*
  *
  *  Procedure:
  *  Signal handler that tells the module to quit
  *
- ***********************************************************************/
+ */
 static RETSIGTYPE
 TerminateHandler(int signo)
 {
 	fvwmSetTerminate(signo);
 }
 
-/***********************************************************************
+/*
  *
  *  Procedure:
  *      main - start of module
  *
- ***********************************************************************/
+ */
 int
 main(int argc, char **argv)
 {

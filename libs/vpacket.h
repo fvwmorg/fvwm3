@@ -1,38 +1,20 @@
-/* This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
- */
+/* -*-c-*- */
 
 #ifndef _VPACKET_
 #define _VPACKET_
 #include <fvwm/window_flags.h>
 
 /*
-    *********************************************************************
-    All new-style module packets (i.e., those that are not simply arrays
-    of long ints, as used by the older modules) should have a structure
-    definition in this file.
-    *********************************************************************
+  All new-style module packets (i.e., those that are not simply arrays
+  of long ints, as used by the older modules) should have a structure
+  definition in this file.
 */
 
-
-
-
-/*  ************************************************************
-    The M_CONFIGURE_WINDOW packet.
-    This is the same packet as the M_ADD_WINDOW packet, the
-    only difference being the type.
-    ************************************************************  */
+/*
+  The M_CONFIGURE_WINDOW packet.
+  This is the same packet as the M_ADD_WINDOW packet, the
+  only difference being the type.
+*/
 /*  RBW- typedef struct config_win_packet  */
 typedef struct ConfigWinPacket
 {

@@ -1,25 +1,10 @@
 /* -*-c-*- */
-/* Copyright (C) 2002  Olivier Chapuis
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
- */
+/* Copyright (C) 2002  Olivier Chapuis */
 
 #ifndef FPNG_H
 #define FPNH_H
 
-/* ---------------------------- included header files ----------------------- */
+/* ---------------------------- included header files ---------------------- */
 
 #include "PictureBase.h"
 
@@ -29,11 +14,11 @@
 #include <setjmp.h>
 #endif
 
-/* ---------------------------- global definitions -------------------------- */
+/* ---------------------------- global definitions ------------------------- */
 
-/* ---------------------------- global macros ------------------------------- */
+/* ---------------------------- global macros ------------------------------ */
 
-/* ---------------------------- type definitions ---------------------------- */
+/* ---------------------------- type definitions --------------------------- */
 
 #ifndef _ZLIB_H
 typedef unsigned char  FzByte;
@@ -41,22 +26,22 @@ typedef unsigned int   FzuInt;
 typedef unsigned long  FzuLong;
 typedef FzByte  FzBytef;
 #ifdef __STDC__
-   typedef void *Fzvoidpf;
-   typedef void *Fzvoidp;
+typedef void *Fzvoidpf;
+typedef void *Fzvoidp;
 #else
-   typedef FzByte *Fzvoidpf;
-   typedef FzByte *Fzvoidp;
+typedef FzByte *Fzvoidpf;
+typedef FzByte *Fzvoidp;
 #endif
 typedef Fzvoidpf (*Fzalloc_func) (
 #ifdef __STDC__
-Fzvoidpf opaque, FzuInt items, FzuInt size
+	Fzvoidpf opaque, FzuInt items, FzuInt size
 #endif
-);
+	);
 typedef Fzvoidp (*Fzfree_func)  (
 #ifdef __STDC__
-Fzvoidpf opaque, Fzvoidpf address
+	Fzvoidpf opaque, Fzvoidpf address
 #endif
-);
+	);
 typedef struct Fz_stream_s {
 	FzBytef    *next_in;
 	FzuInt     avail_in;
@@ -135,49 +120,49 @@ typedef double           **Fpng_doublepp;
 typedef char             ** *Fpng_charppp;
 typedef struct Fpng_color_struct
 {
-   Fpng_byte red;
-   Fpng_byte green;
-   Fpng_byte blue;
+	Fpng_byte red;
+	Fpng_byte green;
+	Fpng_byte blue;
 } Fpng_color;
 typedef Fpng_color  *Fpng_colorp;
 typedef Fpng_color  **Fpng_colorpp;
 typedef struct Fpng_color_16_struct
 {
-   Fpng_byte index;
-   Fpng_uint_16 red;
-   Fpng_uint_16 green;
-   Fpng_uint_16 blue;
-   Fpng_uint_16 gray;
+	Fpng_byte index;
+	Fpng_uint_16 red;
+	Fpng_uint_16 green;
+	Fpng_uint_16 blue;
+	Fpng_uint_16 gray;
 } Fpng_color_16;
 typedef Fpng_color_16  *Fpng_color_16p;
 typedef Fpng_color_16  **Fpng_color_16pp;
 typedef struct Fpng_color_8_struct
 {
-   Fpng_byte red;
-   Fpng_byte green;
-   Fpng_byte blue;
-   Fpng_byte gray;
-   Fpng_byte alpha;
+	Fpng_byte red;
+	Fpng_byte green;
+	Fpng_byte blue;
+	Fpng_byte gray;
+	Fpng_byte alpha;
 } Fpng_color_8;
 typedef Fpng_color_8  *Fpng_color_8p;
 typedef Fpng_color_8  **Fpng_color_8pp;
 typedef struct Fpng_text_struct
 {
-   int compression;
-   Fpng_charp key;
-   Fpng_charp text;
-   Fpng_size_t text_length;
+	int compression;
+	Fpng_charp key;
+	Fpng_charp text;
+	Fpng_size_t text_length;
 } Fpng_text;
 typedef Fpng_text  *Fpng_textp;
 typedef Fpng_text  **Fpng_textpp;
 typedef struct Fpng_time_struct
 {
-   Fpng_uint_16 year;
-   Fpng_byte month;
-   Fpng_byte day;
-   Fpng_byte hour;
-   Fpng_byte minute;
-   Fpng_byte second;
+	Fpng_uint_16 year;
+	Fpng_byte month;
+	Fpng_byte day;
+	Fpng_byte hour;
+	Fpng_byte minute;
+	Fpng_byte second;
 } Fpng_time;
 typedef Fpng_time  *Fpng_timep;
 typedef Fpng_time  **Fpng_timepp;
@@ -249,59 +234,59 @@ typedef Fpng_row_info  *Fpng_row_infop;
 typedef Fpng_row_info  **Fpng_row_infopp;
 typedef void (*Fpng_error_ptr)(
 #ifdef __STDC__
-Fpng_structp, Fpng_const_charp
+	Fpng_structp, Fpng_const_charp
 #endif
-);
+	);
 typedef void (*Fpng_rw_ptr)(
 #ifdef __STDC__
-Fpng_structp, Fpng_bytep, Fpng_size_t
+	Fpng_structp, Fpng_bytep, Fpng_size_t
 #endif
-);
+	);
 typedef void (*Fpng_flush_ptr) (
 #ifdef __STDC__
-Fpng_structp
+	Fpng_structp
 #endif
-);
+	);
 typedef void (*Fpng_read_status_ptr) (
 #ifdef __STDC__
-Fpng_structp, Fpng_uint_32, int
+	Fpng_structp, Fpng_uint_32, int
 #endif
-);
+	);
 typedef void (*Fpng_write_status_ptr) (
 #ifdef __STDC__
-Fpng_structp, Fpng_uint_32, int
+	Fpng_structp, Fpng_uint_32, int
 #endif
-);
+	);
 typedef void (*Fpng_progressive_info_ptr) (
 #ifdef __STDC__
-Fpng_structp, Fpng_infop
+	Fpng_structp, Fpng_infop
 #endif
-);
+	);
 typedef void (*Fpng_progressive_end_ptr) (
 #ifdef __STDC__
-Fpng_structp, Fpng_infop
+	Fpng_structp, Fpng_infop
 #endif
-);
+	);
 typedef void (*Fpng_progressive_row_ptr) (
 #ifdef __STDC__
-Fpng_structp, Fpng_bytep,Fpng_uint_32, int
+	Fpng_structp, Fpng_bytep,Fpng_uint_32, int
 #endif
-);
+	);
 typedef void (*Fpng_user_transform_ptr)(
 #ifdef __STDC__
-Fpng_structp, Fpng_row_infop, Fpng_bytep
+	Fpng_structp, Fpng_row_infop, Fpng_bytep
 #endif
-);
+	);
 typedef Fpng_voidp (*Fpng_malloc_ptr) (
 #ifdef __STDC__
-Fpng_structp, Fpng_size_t
+	Fpng_structp, Fpng_size_t
 #endif
-);
+	);
 typedef void (*Fpng_free_ptr) (
 #ifdef __STDC__
-Fpng_structp, Fpng_voidp
+	Fpng_structp, Fpng_voidp
 #endif
-);
+	);
 struct png_struct_def
 {
 	jmp_buf jmpbuf;
@@ -429,7 +414,7 @@ struct png_struct_def
 };
 typedef Fpng_struct  **Fpng_structpp;
 #endif
-/* ---------------------------- global definitions -------------------------- */
+/* ---------------------------- global definitions ------------------------- */
 
 #define FPNG_BYTES_TO_CHECK 4
 

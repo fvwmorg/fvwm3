@@ -1,18 +1,4 @@
 /* -*-c-*- */
-/* This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
- */
 
 #ifndef FFT_H
 #define FFT_H
@@ -24,7 +10,7 @@
  *
  */
 
-/* ---------------------------- included header files ----------------------- */
+/* ---------------------------- included header files ---------------------- */
 
 /* no compat to avoid problems in the future */
 #define _XFT_NO_COMPAT_ 1
@@ -37,7 +23,7 @@
 
 #include "FRender.h"
 
-/* ---------------------------- global definitions -------------------------- */
+/* ---------------------------- global definitions ------------------------- */
 
 #ifdef HAVE_XFT
 
@@ -63,9 +49,9 @@
 
 #endif
 
-/* ---------------------------- global macros ------------------------------- */
+/* ---------------------------- global macros ------------------------------ */
 
-/* ---------------------------- type definitions ---------------------------- */
+/* ---------------------------- type definitions --------------------------- */
 
 #if FftSupport
 
@@ -83,23 +69,25 @@ typedef FcPattern   FftPattern;
 typedef FcFontSet   FftFontSet;
 typedef FcObjectSet FftObjectSet;
 
-typedef enum _FftResult {
-      FftResultMatch        = FcResultMatch,
-      FftResultNoMatch      = FcResultNoMatch,
-      FftResultTypeMismatch = FcResultTypeMismatch,
-      FftFftResultNoId	    = FcResultNoId
+typedef enum _FftResult
+{
+	FftResultMatch        = FcResultMatch,
+	FftResultNoMatch      = FcResultNoMatch,
+	FftResultTypeMismatch = FcResultTypeMismatch,
+	FftFftResultNoId	    = FcResultNoId
 } FftResult;
 
 /* XftValue and are different in Xft+Fc and Xft 1 */
-typedef struct _Xft1Value {
-    FftType     type;
-    union {
-	char    *s;
-	int     i;
-	Bool    b;
-	double  d;
-	FftMatrix *m;
-    } u;
+typedef struct _Xft1Value
+{
+	FftType     type;
+	union {
+		char    *s;
+		int     i;
+		Bool    b;
+		double  d;
+		FftMatrix *m;
+	} u;
 } Xft1Value;
 typedef Xft1Value Fft1Value;
 /* no value list in Xft+Fc */
@@ -117,10 +105,11 @@ typedef struct
 } XftPatternElt;
 typedef XftPatternElt FftPatternElt;
 /* XftPattern and FcPattern are different */
-typedef struct _Xft1Pattern {
-    int             num;
-    int             size;
-    FftPatternElt   *elts;
+typedef struct _Xft1Pattern
+{
+	int             num;
+	int             size;
+	FftPatternElt   *elts;
 } Fft1Pattern;
 
 #else /* !FftSupportUseXft2 */
@@ -138,11 +127,12 @@ typedef XftPattern   FftPattern;
 typedef XftValue     Fft1Value;
 typedef XftPattern   Fft1Pattern;
 
-typedef enum _FftResult {
-      FftResultMatch        = XftResultMatch,
-      FftResultNoMatch      = XftResultNoMatch,
-      FftResultTypeMismatch = XftResultTypeMismatch,
-      FftFftResultNoId	    = XftResultNoId
+typedef enum _FftResult
+{
+	FftResultMatch        = XftResultMatch,
+	FftResultNoMatch      = XftResultNoMatch,
+	FftResultTypeMismatch = XftResultTypeMismatch,
+	FftFftResultNoId	    = XftResultNoId
 } FftResult;
 
 #endif /* FftSupportUseXft2 */
@@ -154,21 +144,22 @@ typedef XftColor FftColor;
 
 #if FftSupportUseXft2
 /* XftFont are != in Xft+Fc and Xft */
-typedef struct _Fft1Font {
-    int         ascent;
-    int         descent;
-    int         height;
-    int         max_advance_width;
-    Bool        core;
-    Fft1Pattern *pattern;
-    union {
-	struct {
-	    XFontStruct     *font;
-	} core;
-	struct {
-	    void *font;
-	} ft;
-    } u;
+typedef struct _Fft1Font
+{
+	int         ascent;
+	int         descent;
+	int         height;
+	int         max_advance_width;
+	Bool        core;
+	Fft1Pattern *pattern;
+	union {
+		struct {
+			XFontStruct     *font;
+		} core;
+		struct {
+			void *font;
+		} ft;
+	} u;
 } Fft1Font;
 #else
 typedef XftFont Fft1Font;
@@ -182,13 +173,13 @@ typedef unsigned int FftChar32;
 typedef int FftType;
 typedef struct
 {
-    double xx, xy, yx, yy;
+	double xx, xy, yx, yy;
 } FftMatrix;
 typedef enum _FftResult {
-      FftResultMatch        = 0,
-      FftResultNoMatch      = 1,
-      FftResultTypeMismatch = 2,
-      FftFftResultNoId	    = 3
+	FftResultMatch        = 0,
+	FftResultNoMatch      = 1,
+	FftResultTypeMismatch = 2,
+	FftFftResultNoId	    = 3
 } FftResult;
 typedef struct
 {
@@ -253,38 +244,46 @@ typedef struct
 typedef XftColor FftColor;
 typedef void FftObjectSet;
 /* XftValue are different in Xft+Fc and Xft 1 */
-typedef struct _Xft1Value {
-    FftType     type;
-    union {
-	char    *s;
-	int     i;
-	Bool    b;
-	double  d;
-	FftMatrix *m;
-    } u;
+typedef struct _Xft1Value
+{
+	FftType     type;
+	union
+	{
+		char    *s;
+		int     i;
+		Bool    b;
+		double  d;
+		FftMatrix *m;
+	} u;
 } Xft1Value;
 typedef Xft1Value Fft1Value;
 /* XftPattern and XftFont are different in Xft+Fc and Xft 1 */
-typedef struct _Xft1Pattern {
-    int             num;
-    int             size;
-    FftPatternElt   *elts;
+typedef struct _Xft1Pattern
+{
+	int             num;
+	int             size;
+	FftPatternElt   *elts;
 } Fft1Pattern;
-typedef struct _Fft1Font {
-    int         ascent;
-    int         descent;
-    int         height;
-    int         max_advance_width;
-    Bool        core;
-    Fft1Pattern *pattern;
-    union {
-	struct {
-	    XFontStruct     *font;
-	} core;
-	struct {
-	    void *font;
-	} ft;
-    } u;
+
+typedef struct _Fft1Font
+{
+	int         ascent;
+	int         descent;
+	int         height;
+	int         max_advance_width;
+	Bool        core;
+	Fft1Pattern *pattern;
+	union
+	{
+		struct
+		{
+			XFontStruct     *font;
+		} core;
+		struct
+		{
+			void *font;
+		} ft;
+	} u;
 } Fft1Font;
 #endif
 
@@ -303,11 +302,11 @@ typedef struct
 	char *str_encoding;
 } FftFontType;
 
-/* ---------------------------- exported variables (globals) ---------------- */
+/* ---------------------------- exported variables (globals) --------------- */
 
-/* ---------------------------- interface functions ------------------------- */
+/* ---------------------------- interface functions ------------------------ */
 
-/* ---------------------------- global definitions -------------------------- */
+/* ---------------------------- global definitions ------------------------- */
 
 #if FftSupport
 

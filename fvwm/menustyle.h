@@ -1,27 +1,13 @@
 /* -*-c-*- */
-/* This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
- */
 
 #ifndef MENUSTYLE_H
 #define MENUSTYLE_H
 
-/* ---------------------------- included header files ----------------------- */
+/* ---------------------------- included header files ---------------------- */
 
-/* ---------------------------- global definitions -------------------------- */
+/* ---------------------------- global definitions ------------------------- */
 
-/* ---------------------------- global macros ------------------------------- */
+/* ---------------------------- global macros ------------------------------ */
 
 #define ST_NAME(s)                    ((s)->name)
 #define MST_NAME(m)                   ((m)->s->ms->name)
@@ -157,7 +143,7 @@
 #define ST_SELECT_ON_RELEASE_KEY(s)   ((s)->feel.select_on_release_key)
 #define MST_SELECT_ON_RELEASE_KEY(m)  ((m)->s->ms->feel.select_on_release_key)
 
-/* ---------------------------- type definitions ---------------------------- */
+/* ---------------------------- type definitions --------------------------- */
 
 typedef enum
 {
@@ -280,9 +266,9 @@ typedef struct MenuStyle
 	} flags;
 } MenuStyle;
 
-/* ---------------------------- exported variables (globals) ---------------- */
+/* ---------------------------- exported variables (globals) --------------- */
 
-/* ---------------------------- interface functions ------------------------- */
+/* ---------------------------- interface functions ------------------------ */
 
 void menustyle_free(MenuStyle *ms);
 MenuStyle *menustyle_find(char *name);

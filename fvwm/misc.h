@@ -1,25 +1,11 @@
 /* -*-c-*- */
-/* This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
- */
 
 #ifndef MISC_H
 #define MISC_H
 
-/* ---------------------------- included header files ----------------------- */
+/* ---------------------------- included header files ---------------------- */
 
-/* ---------------------------- global definitions -------------------------- */
+/* ---------------------------- global definitions ------------------------- */
 
 enum
 {
@@ -32,11 +18,11 @@ enum
 	GRAB_PASSIVE  = 6,       /* Override of passive grab, only prevents grab
 			          * to be released too early */
 	GRAB_FREEZE_CURSOR = 7,  /* Freeze the cursor shape if a window is
-			       * pressed. */
+				  * pressed. */
 	GRAB_MAXVAL              /* last GRAB macro + 1 */
 };
 
-/* ---------------------------- global macros ------------------------------- */
+/* ---------------------------- global macros ------------------------------ */
 
 #ifdef ICON_DEBUG
 #define ICON_DBG(X) fprintf X;
@@ -44,7 +30,7 @@ enum
 #define ICON_DBG(X)
 #endif
 
-/* ---------------------------- type definitions ---------------------------- */
+/* ---------------------------- type definitions --------------------------- */
 
 /* message levels for fvwm_msg */
 typedef enum
@@ -55,7 +41,7 @@ typedef enum
 	WARN,
 	OLD,
 	ERR
-} fvwm_msg_type;
+} fvwm_msg_t;
 
 typedef enum
 {
@@ -65,13 +51,13 @@ typedef enum
 	ADDED_DECOR,
 #endif
 	ADDED_FUNCTION
-} last_added_item_type;
+} last_added_item_t;
 
-/* ---------------------------- forward declarations ------------------------ */
+/* ---------------------------- forward declarations ----------------------- */
 
-/* ---------------------------- exported variables (globals) ---------------- */
+/* ---------------------------- exported variables (globals) --------------- */
 
-/* ---------------------------- interface functions ------------------------- */
+/* ---------------------------- interface functions ------------------------ */
 
 Bool GrabEm(
 	int cursor, int grab_context);
@@ -92,9 +78,9 @@ Bool IsRectangleOnThisPage(
 	const rectangle *rec, int desk);
 FvwmWindow *get_pointer_fvwm_window(void);
 Time get_server_time(void);
-void fvwm_msg(fvwm_msg_type type, char *id, char *msg, ...)
+void fvwm_msg(fvwm_msg_t type, char *id, char *msg, ...)
 	__attribute__ ((format (printf, 3, 4)));
-void set_last_added_item(last_added_item_type type, void *item);
+void set_last_added_item(last_added_item_t type, void *item);
 void print_g(char *text, rectangle *g);
 
 #endif /* MISC_H */

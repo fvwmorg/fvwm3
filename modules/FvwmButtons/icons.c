@@ -1,3 +1,4 @@
+/* -*-c-*- */
 /*
  * Fvwmbuttons, copyright 1996, Jarl Totland
  *
@@ -27,11 +28,11 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-/***********************************************************************
+/*
  *
  * Derived from fvwm icon code
  *
- ***********************************************************************/
+ */
 
 #include "config.h"
 
@@ -57,11 +58,11 @@
 #include "libs/Colorset.h"
 #include "libs/Rectangles.h"
 
-/****************************************************************************
+/*
  *
  * Creates an Icon Window
  *
- ****************************************************************************/
+ */
 void CreateIconWindow(button_info *b)
 {
 #ifndef NO_ICONS
@@ -199,11 +200,11 @@ void DestroyIconWindow(button_info *b)
 #endif
 }
 
-/****************************************************************************
+/*
  *
  * Combines icon shape masks after a resize
  *
- ****************************************************************************/
+ */
 Bool GetIconWindowPosition(
 	button_info *b, int *r_x, int *r_y, int *r_w, int *r_h)
 {

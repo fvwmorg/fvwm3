@@ -1,24 +1,8 @@
-/* This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
- */
-
-/****************************************************************************
- * This module is based on Twm, but has been siginificantly modified
+/* -*-c-*- */
+/* This module is based on Twm, but has been siginificantly modified
  * by Rob Nation
- ****************************************************************************/
-/*
- * Copyright 1989 Massachusetts Institute of Technology
+ */
+/* Copyright 1989 Massachusetts Institute of Technology
  *
  * Permission to use, copy, modify, and distribute this software and its
  * documentation for any purpose and without fee is hereby granted, provided
@@ -38,11 +22,11 @@
  * CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
-/***********************************************************************
+/*
  *
  * fvwm per-screen data include file
  *
- ***********************************************************************/
+ */
 
 #ifndef _SCREEN_
 #define _SCREEN_
@@ -93,58 +77,59 @@ typedef struct
 
 typedef struct
 {
-  Window win;
-  int isMapped;
-  char * command ; /* command which is executed when the pan frame is entered */
+	Window win;
+	int isMapped;
+	/* command which is executed when the pan frame is entered */
+	char *command;
 } PanFrame;
 
 typedef enum
 {
-    /* button types */
-    DefaultVectorButton       ,
-    VectorButton              ,
-    SimpleButton              ,
-    GradientButton            ,
-    PixmapButton              ,
-    TiledPixmapButton         ,
-    StretchedPixmapButton     ,
-    AdjustedPixmapButton      ,
-    ShrunkPixmapButton        ,
-    MultiPixmap               ,
-    MiniIconButton            ,
-    SolidButton               ,
-    ColorsetButton
+	/* button types */
+	DefaultVectorButton,
+	VectorButton,
+	SimpleButton,
+	GradientButton,
+	PixmapButton,
+	TiledPixmapButton,
+	StretchedPixmapButton,
+	AdjustedPixmapButton,
+	ShrunkPixmapButton,
+	MultiPixmap,
+	MiniIconButton,
+	SolidButton,
+	ColorsetButton
 } DecorFaceType;
 
 typedef enum
 {
-  JUST_CENTER = 0,
-  JUST_LEFT = 1,
-  JUST_TOP = 1,
-  JUST_RIGHT = 2,
-  JUST_BOTTOM = 2,
-  JUST_MASK = 3
+	JUST_CENTER = 0,
+	JUST_LEFT = 1,
+	JUST_TOP = 1,
+	JUST_RIGHT = 2,
+	JUST_BOTTOM = 2,
+	JUST_MASK = 3
 } JustificationType;
 
 typedef struct
 {
-  unsigned face_type : 4;
-  struct
-  {
-    unsigned h_justification : 2; /* was JustificationType : 2 */
-    unsigned v_justification : 2; /* was JustificationType : 2 */
+	unsigned face_type : 4;
+	struct
+	{
+		unsigned h_justification : 2;
+		unsigned v_justification : 2;
 #define DFS_BUTTON_IS_UP   0
 #define DFS_BUTTON_IS_FLAT 1
 #define DFS_BUTTON_IS_SUNK 2
 #define DFS_BUTTON_MASK    3
-    unsigned int button_relief : 2;
-    /* not used in border styles */
-    unsigned int use_title_style : 1;
-    unsigned int use_border_style : 1;
-    /* only used in border styles */
-    unsigned int has_hidden_handles : 1;
-    unsigned int has_no_inset : 1;
-  } flags;
+		unsigned int button_relief : 2;
+		/* not used in border styles */
+		unsigned int use_title_style : 1;
+		unsigned int use_border_style : 1;
+		/* only used in border styles */
+		unsigned int has_hidden_handles : 1;
+		unsigned int has_no_inset : 1;
+	} flags;
 } DecorFaceStyle;
 
 #define DFS_FACE_TYPE(dfs)          ((dfs).face_type)
@@ -317,213 +302,247 @@ typedef struct FvwmDecor
 
 typedef struct DesktopsInfo
 {
-  int desk;
-  char *name;
+	int desk;
+	char *name;
 
-  struct
-  {
-    int x;
-    int y;
-    int width;
-    int height;
-  } ewmh_working_area;
-  struct
-  {
-    int x;
-    int y;
-    int width;
-    int height;
-  } ewmh_dyn_working_area;
+	struct
+	{
+		int x;
+		int y;
+		int width;
+		int height;
+	} ewmh_working_area;
+	struct
+	{
+		int x;
+		int y;
+		int width;
+		int height;
+	} ewmh_dyn_working_area;
 
-  struct DesktopsInfo *next;
+	struct DesktopsInfo *next;
 } DesktopsInfo;
 
 typedef struct ScreenInfo
 {
-  unsigned long screen;
-  Screen *pscreen;
-  int NumberOfScreens;          /* number of screens on display */
-  int MyDisplayWidth;           /* my copy of DisplayWidth(dpy, screen) */
-  int MyDisplayHeight;          /* my copy of DisplayHeight(dpy, screen) */
+	unsigned long screen;
+	Screen *pscreen;
+	/* number of screens on display */
+	int NumberOfScreens;
+	/* my copy of DisplayWidth(dpy, screen) */
+	int MyDisplayWidth;
+	/* my copy of DisplayHeight(dpy, screen) */
+	int MyDisplayHeight;
 
-  FvwmWindow FvwmRoot;          /* the head of the fvwm window list */
-  Window Root;                  /* the root window */
-  Window SizeWindow;            /* the resize dimensions window */
-  Window NoFocusWin;            /* Window which will own focus when no other
-				 * windows have it */
-  flist *FWScheduledForDestroy;
+	/* the head of the fvwm window list */
+	FvwmWindow FvwmRoot;
+	/* the root window */
+	Window Root;
+	/* the resize dimensions window */
+	Window SizeWindow;
+	/* Window which will own focus when no other windows have it */
+	Window NoFocusWin;
 
-  PanFrame PanFrameTop;
-  PanFrame PanFrameLeft;
-  PanFrame PanFrameRight;
-  PanFrame PanFrameBottom;
+	flist *FWScheduledForDestroy;
 
-  Pixmap gray_bitmap;           /*dark gray pattern for shaded out menu items*/
-  Pixmap gray_pixmap;           /* dark gray pattern for inactive borders */
-  Pixmap light_gray_pixmap;     /* light gray pattern for inactive borders */
-  Pixmap sticky_gray_pixmap;     /* light gray pattern for sticky borders */
+	PanFrame PanFrameTop;
+	PanFrame PanFrameLeft;
+	PanFrame PanFrameRight;
+	PanFrame PanFrameBottom;
 
-  Binding *AllBindings;
+	/*dark gray pattern for shaded out menu items*/
+	Pixmap gray_bitmap;
+	/* dark gray pattern for inactive borders */
+	Pixmap gray_pixmap;
+	/* light gray pattern for inactive borders */
+	Pixmap light_gray_pixmap;
+	/* light gray pattern for sticky borders */
+	Pixmap sticky_gray_pixmap;
 
-  int root_pushes;              /* current push level to install root
-				   colormap windows */
-  int fvwm_pushes;              /* current push level to install fvwm
-				   colormap windows */
-  const FvwmWindow *pushed_window; /* saved window to install when pushes drops
-				      to zero */
-  Cursor *FvwmCursors;
-  int BusyCursor;               /* context where we display the busy cursor */
-  char *DefaultIcon;            /* Icon to use when no other icons are found */
+	Binding *AllBindings;
 
-  int TopLayer;
-  int DefaultLayer;
-  int BottomLayer;
+	/* current push level to install root colormap windows */
+	int root_pushes;
+	/* current push level to install fvwm colormap windows */
+	int fvwm_pushes;
+	/* saved window to install when pushes drops to zero */
+	const FvwmWindow *pushed_window;
+	Cursor *FvwmCursors;
+	/* context where we display the busy cursor */
+	int BusyCursor;
+	/* Icon to use when no other icons are found */
+	char *DefaultIcon;
 
-  struct FvwmFunction *functions;
+	int TopLayer;
+	int DefaultLayer;
+	int BottomLayer;
 
-  FlocaleFont *DefaultFont;             /* font structure */
+	struct FvwmFunction *functions;
 
-  GC TransMaskGC;               /* GC for transparency masks */
-  Pixel StdFore, StdBack, StdHilite, StdShadow; /* don't change the order */
-  GC StdGC;
-  GC StdReliefGC;
-  GC StdShadowGC;
+	/* font structure */
+	FlocaleFont *DefaultFont;
 
-  Pixmap ScratchMonoPixmap;     /* A scratch 1x1x1 pixmap */
-  GC MonoGC;                    /* GC for drawing into depth 1 drawables */
-  Pixmap ScratchAlphaPixmap;    /* A scratch 1x1xalpha_depth pixmap */
-  GC AlphaGC;                   /* GC for drawing into depth alpha_depth 
-				 * drawables */
+	/* GC for transparency masks */
+	GC TransMaskGC;
+	/* don't change the order */
+	Pixel StdFore, StdBack, StdHilite, StdShadow;
+	GC StdGC;
+	GC StdReliefGC;
+	GC StdShadowGC;
 
-  GC XorGC;                     /* GC to draw lines for move and resize */
-  GC ScratchGC1;
-  GC ScratchGC2;
-  GC ScratchGC3;
-  GC ScratchGC4;
-  GC TitleGC;
-  GC BordersGC;
-  int SizeStringWidth;          /* minimum width of size window */
+	/* A scratch 1x1x1 pixmap */
+	Pixmap ScratchMonoPixmap;
+	/* GC for drawing into depth 1 drawables */
+	GC MonoGC;
+	/* A scratch 1x1xalpha_depth pixmap */
+	Pixmap ScratchAlphaPixmap;
+	/* GC for drawing into depth alpha_depth drawables */
+	GC AlphaGC;
 
-  FvwmDecor DefaultDecor;       /* decoration style(s) */
-  FvwmDecor *cur_decor;
 
-  int nr_left_buttons;          /* number of left-side title-bar buttons */
-  int nr_right_buttons;         /* number of right-side title-bar buttons */
+	/* GC to draw lines for move and resize */
+	GC XorGC;
+	GC ScratchGC1;
+	GC ScratchGC2;
+	GC ScratchGC3;
+	GC ScratchGC4;
+	GC TitleGC;
+	GC BordersGC;
+	/* minimum width of size window */
+	int SizeStringWidth;
 
-  FvwmWindow *Hilite;           /* the fvwm window that is highlighted
-				 * except for networking delays, this is the
-				 * window which REALLY has the focus */
-  Window UnknownWinFocused;      /* None, if the focus is nowhere or on an fvwm
-				 * managed window. Set to id of otherwindow
-				 * with focus otherwise */
-  Window StolenFocusWin;        /* The window that the UnknownWinFocused window
-				 * stole the focus from. */
-  FvwmWindow *focus_in_pending_window;
-  int EdgeScrollX;              /* #pixels to scroll on screen edge */
-  int EdgeScrollY;              /* #pixels to scroll on screen edge */
-  unsigned short buttons2grab;  /* buttons to grab in click to focus mode */
-  int NumBoxes;
-  int cascade_x;                /* values used for CascadePlacement */
-  int cascade_y;
-  FvwmWindow *cascade_window;
-  int VxMax;                    /* Max location for top left of virt desk*/
-  int VyMax;
-  int Vx;                       /* Current loc for top left of virt desk */
-  int Vy;
+	/* decoration style(s) */
+	FvwmDecor DefaultDecor;
+	FvwmDecor *cur_decor;
 
-  int ClickTime;               /*Max button-click delay for Function built-in*/
-  int ScrollResistance;        /* resistance to scrolling in desktop */
-  int MoveResistance;          /* res to moving windows over viewport edge */
-  int XiMoveResistance;        /* the same for edges of xinerama screens */
-  int MoveThreshold;           /* number of pixels of mouse motion to decide
-				* it's a move operation */
-  int SnapAttraction;          /* attractiveness of window edges */
-  int SnapMode;                /* mode of snap attraction */
-  int SnapGridX;               /* snap grid X size */
-  int SnapGridY;               /* snap grid Y size */
-  int OpaqueSize;
-  int CurrentDesk;             /* The current desktop number */
-  int ColormapFocus;           /* colormap focus style */
-  int ColorLimit;              /* Limit on colors used in pixmaps */
-  int DefaultColorset;         /* Default Colorset used by feedback window */
+	/* number of left-side title-bar buttons */
+	int nr_left_buttons;
+	/* number of right-side title-bar buttons */
+	int nr_right_buttons;
 
-  int use_backing_store;
+	/* the fvwm window that is highlighted except for networking delays,
+	 * this is the window which REALLY has the focus */
+	FvwmWindow *Hilite;
+	/* None, if the focus is nowhere or on an fvwm managed window. Set to
+	 * id of otherwindow with focus otherwise */
+	Window UnknownWinFocused;
+	/* The window that the UnknownWinFocused window stole the focus from.
+	 */
+	Window StolenFocusWin;
+	FvwmWindow *focus_in_pending_window;
+	/* #pixels to scroll on screen edge */
+	int EdgeScrollX;
+	/* #pixels to scroll on screen edge */
+	int EdgeScrollY;
+	/* buttons to grab in click to focus mode */
+	unsigned short buttons2grab;
+	int NumBoxes;
+	/* values used for CascadePlacement */
+	int cascade_x;
+	int cascade_y;
+	FvwmWindow *cascade_window;
+	/* Max location for top left of virt desk*/
+	int VxMax;
+	int VyMax;
+	/* Current loc for top left of virt desk */
+	int Vx;
+	int Vy;
 
-  /*
-  ** some additional global options which will probably become window
-  ** specific options later on:
-  */
-#if 0
-  /* Scr.go.ModifyUSP was always 1.  How is it supposed to be set? */
-  struct
-  {
-    unsigned ModifyUSP : 1;                          /* - RBW - 11/02/1998  */
-  } go; /* global options */
-#endif
-  struct
-  {
-    unsigned ModalityIsEvil : 1;
-    unsigned RaiseHackNeeded : 1;
-    unsigned DisableConfigureNotify : 1;
-    unsigned InstallRootCmap : 1;
-    unsigned RaiseOverUnmanaged : 1;
-    unsigned FlickeringQtDialogsWorkaround : 1;
-    unsigned EWMHIconicStateWorkaround : 1;
-  } bo; /* bug workaround control options */
-  struct
-  {
-    unsigned EmulateMWM : 1;
-    unsigned EmulateWIN : 1;
-    unsigned use_active_down_buttons : 1;
-    unsigned use_inactive_buttons : 1;
-    unsigned use_inactive_down_buttons : 1;
-    unsigned do_hide_position_window : 1;
-    unsigned do_hide_resize_window : 1;
-  } gs; /* global style structure */
-  struct
-  {
-    Bool do_save_under : 1;
-    unsigned do_need_window_update : 1;
-    unsigned do_need_style_list_update : 1;
-    unsigned has_default_font_changed : 1;
-    unsigned has_default_color_changed : 1;
-    unsigned has_mouse_binding_changed : 1;
-    unsigned has_nr_buttons_changed : 1;
-    unsigned has_xinerama_state_changed : 1;
-    unsigned is_executing_complex_function : 1;
-    unsigned is_executing_menu_function : 1;
-    unsigned is_map_desk_in_progress : 1;
-    unsigned is_pointer_on_this_screen : 1;
-    unsigned is_single_screen : 1;
-    unsigned is_window_scheduled_for_destroy : 1;
-    unsigned is_wire_frame_displayed : 1;
-    unsigned silent_functions : 1;
-    unsigned windows_captured : 1;
-    unsigned edge_wrap_x : 1;
-    unsigned edge_wrap_y : 1;
-  } flags;
+	/*Max button-click delay for Function built-in*/
+	int ClickTime;
+	/* resistance to scrolling in desktop */
+	int ScrollResistance;
+	/* res to moving windows over viewport edge */
+	int MoveResistance;
+	/* the same for edges of xinerama screens */
+	int XiMoveResistance;
+	/* number of pixels of mouse motion to decide it's a move operation */
+	int MoveThreshold;
+	/* attractiveness of window edges */
+	int SnapAttraction;
+	/* mode of snap attraction */
+	int SnapMode;
+	/* snap grid X size */
+	int SnapGridX;
+	/* snap grid Y size */
+	int SnapGridY;
+	int OpaqueSize;
+	/* The current desktop number */
+	int CurrentDesk;
+	/* colormap focus style */
+	int ColormapFocus;
+	/* Limit on colors used in pixmaps */
+	int ColorLimit;
+	/* Default Colorset used by feedback window */
+	int DefaultColorset;
 
-  DesktopsInfo *Desktops; /* info for some desktops; the first entries should be
-			  * generic info correct for any desktop not in the
-			  * list */
-  FvwmWindow *EwmhDesktop;   /* the window of desktop type if any */
-  struct
-  {
-    last_added_item_type type;
-    void *item;
-  } last_added_item;
+	int use_backing_store;
+
+	/* some additional global options which will probably become window
+	 * specific options later on: */
+	struct
+	{
+		unsigned ModalityIsEvil : 1;
+		unsigned RaiseHackNeeded : 1;
+		unsigned DisableConfigureNotify : 1;
+		unsigned InstallRootCmap : 1;
+		unsigned RaiseOverUnmanaged : 1;
+		unsigned FlickeringQtDialogsWorkaround : 1;
+		unsigned EWMHIconicStateWorkaround : 1;
+	} bo; /* bug workaround control options */
+	struct
+	{
+		unsigned EmulateMWM : 1;
+		unsigned EmulateWIN : 1;
+		unsigned use_active_down_buttons : 1;
+		unsigned use_inactive_buttons : 1;
+		unsigned use_inactive_down_buttons : 1;
+		unsigned do_hide_position_window : 1;
+		unsigned do_hide_resize_window : 1;
+	} gs; /* global style structure */
+	struct
+	{
+		Bool do_save_under : 1;
+		unsigned do_need_window_update : 1;
+		unsigned do_need_style_list_update : 1;
+		unsigned has_default_font_changed : 1;
+		unsigned has_default_color_changed : 1;
+		unsigned has_mouse_binding_changed : 1;
+		unsigned has_nr_buttons_changed : 1;
+		unsigned has_xinerama_state_changed : 1;
+		unsigned is_executing_complex_function : 1;
+		unsigned is_executing_menu_function : 1;
+		unsigned is_map_desk_in_progress : 1;
+		unsigned is_pointer_on_this_screen : 1;
+		unsigned is_single_screen : 1;
+		unsigned is_window_scheduled_for_destroy : 1;
+		unsigned is_wire_frame_displayed : 1;
+		unsigned silent_functions : 1;
+		unsigned windows_captured : 1;
+		unsigned edge_wrap_x : 1;
+		unsigned edge_wrap_y : 1;
+	} flags;
+
+	/* info for some desktops; the first entries should be generic info
+	 * correct for any desktop not in the list */
+	DesktopsInfo *Desktops;
+	/* the window of desktop type if any */
+	FvwmWindow *EwmhDesktop;
+	struct
+	{
+		last_added_item_t type;
+		void *item;
+	} last_added_item;
 } ScreenInfo;
 
 /* A macro to to simplify he "ewmh desktop code" */
 #define IS_EWMH_DESKTOP(win) \
-  (Scr.EwmhDesktop && win == Scr.EwmhDesktop->wins.client)
+	(Scr.EwmhDesktop && win == Scr.EwmhDesktop->wins.client)
 #define IS_EWMH_DESKTOP_FW(fwin) \
-  (fwin && Scr.EwmhDesktop && Scr.EwmhDesktop == fwin)
-/*
-   Macro which gets specific decor or default decor.
-   This saves an indirection in case you don't want
-   the UseDecor mechanism.
- */
+	(fwin && Scr.EwmhDesktop && Scr.EwmhDesktop == fwin)
+/* Macro which gets specific decor or default decor.
+ * This saves an indirection in case you don't want
+ * the UseDecor mechanism. */
 #ifdef USEDECOR
 #define GetDecor(window,part) ((window)->decor->part)
 #else

@@ -1,3 +1,4 @@
+/* -*-c-*- */
 /* This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 2 of the License, or
@@ -13,18 +14,18 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-/****************************************************************************
+/*
  * This module is mostly all new
  * by Rob Nation
  * A little of it is borrowed from ctwm.
  * Copyright 1993 Robert Nation. No restrictions are placed on this code,
  * as long as the copyright notice is preserved
- ****************************************************************************/
-/***********************************************************************
+ */
+/*
  *
  * fvwm icon code
  *
- ***********************************************************************/
+ */
 
 #include "config.h"
 
@@ -172,11 +173,11 @@ void setup_icon_title_size(FvwmWindow *fw)
 	return;
 }
 
-/****************************************************************************
+/*
  *
  * Resizes the given icon Pixmap.
  *
- ****************************************************************************/
+ */
 static void SetIconPixmapSize(
 	Pixmap *icon, unsigned int width, unsigned int height,
 	unsigned int depth, unsigned int newWidth, unsigned int newHeight,
@@ -270,11 +271,11 @@ static void SetIconPixmapSize(
 }
 
 /* Move the icon of a window by dx/dy pixels */
-/****************************************************************************
+/*
  *
  * Get the Icon for the icon window (also used by ewmh_icon)
  *
- ****************************************************************************/
+ */
 void GetIconPicture(FvwmWindow *fw, Bool no_icon_window)
 {
 	char icon_order[4];
@@ -508,11 +509,11 @@ ICON_DBG((stderr,"ciw: iph%s used '%s'\n", (fw->icon_g.picture_w_g.height)?"":" 
 	return;
 }
 
-/****************************************************************************
+/*
  *
  * set the icon pixmap window background
  *
- ****************************************************************************/
+ */
 static void set_icon_pixmap_background(FvwmWindow *fw)
 {
 	if (fw->iconPixmap != None &&
@@ -546,11 +547,11 @@ static void set_icon_pixmap_background(FvwmWindow *fw)
 	}
 }
 
-/****************************************************************************
+/*
  *
  * Creates an icon window as needed
  *
- ****************************************************************************/
+ */
 void CreateIconWindow(FvwmWindow *fw, int def_x, int def_y)
 {
 	/* mask for create windows */
@@ -748,7 +749,7 @@ void CreateIconWindow(FvwmWindow *fw, int def_x, int def_y)
 			 * relief */
 			int off = 0;
 
-			if (Pdefault || fw->iconDepth == 1 || 
+			if (Pdefault || fw->iconDepth == 1 ||
 			    fw->iconDepth == Pdepth || IS_PIXMAP_OURS(fw))
 			{
 				off = abs(fw->icon_background_relief) +
@@ -810,11 +811,11 @@ void CreateIconWindow(FvwmWindow *fw, int def_x, int def_y)
 	return;
 }
 
-/****************************************************************************
+/*
  *
  * Draws the icon window
  *
- ****************************************************************************/
+ */
 static
 void DrawIconTitleWindow(
 	FvwmWindow *fw, XEvent *pev, Pixel BackColor, GC Shadow, GC Relief,
@@ -1523,13 +1524,13 @@ void DrawIconWindow(
 	XFlush(dpy);
 }
 
-/***********************************************************************
+/*
  *
  *  Procedure:
  *    ChangeIconPixmap - procedure change the icon pixmap or "pixmap"
  *      window. Called in events.c and ewmh_events.c
  *
- ************************************************************************/
+ */
 void ChangeIconPixmap(FvwmWindow *fw)
 {
 	rectangle g;
@@ -1581,12 +1582,12 @@ void ChangeIconPixmap(FvwmWindow *fw)
 	return;
 }
 
-/***********************************************************************
+/*
  *
  *  Procedure:
  *      RedoIconName - procedure to re-position the icon window and name
  *
- ************************************************************************/
+ */
 void RedoIconName(FvwmWindow *fw)
 {
 	if (IS_ICON_SUPPRESSED(fw))
@@ -1608,14 +1609,14 @@ void RedoIconName(FvwmWindow *fw)
 	return;
 }
 
-/************************************************************************
+/*
  *
  *  Procedure:
  *      AutoPlace - Find a home for an icon
  *
- ************************************************************************/
+ */
 void AutoPlaceIcon(
-	FvwmWindow *t, initial_window_options_type *win_opts,
+	FvwmWindow *t, initial_window_options_t *win_opts,
 	Bool do_move_immediately)
 {
   int base_x, base_y;
@@ -2085,11 +2086,11 @@ do_all_iconboxes(FvwmWindow *t, icon_boxes **icon_boxes_ptr)
 	return (1);
 }
 
-/****************************************************************************
+/*
  *
  * Looks for icon from a file
  *
- ****************************************************************************/
+ */
 static void GetIconFromFile(FvwmWindow *fw)
 {
 	char *path = NULL;
@@ -2128,11 +2129,11 @@ static void GetIconFromFile(FvwmWindow *fw)
 	return;
 }
 
-/****************************************************************************
+/*
  *
  * Looks for an application supplied icon window
  *
- ****************************************************************************/
+ */
 static void GetIconWindow(FvwmWindow *fw)
 {
 	fw->icon_g.picture_w_g.width = 0;
@@ -2181,11 +2182,11 @@ static void GetIconWindow(FvwmWindow *fw)
 }
 
 
-/****************************************************************************
+/*
  *
  * Looks for an application supplied bitmap or pixmap
  *
- ****************************************************************************/
+ */
 static void GetIconBitmap(FvwmWindow *fw)
 {
 	unsigned int width, height, depth;
@@ -2240,12 +2241,12 @@ static void GetIconBitmap(FvwmWindow *fw)
 	return;
 }
 
-/***********************************************************************
+/*
  *
  *  Procedure:
  *      DeIconify a window
  *
- ***********************************************************************/
+ */
 void DeIconify(FvwmWindow *fw)
 {
 	FvwmWindow *t,*tmp;
@@ -2425,12 +2426,12 @@ void DeIconify(FvwmWindow *fw)
 }
 
 
-/****************************************************************************
+/*
  *
  * Iconifies the selected window
  *
- ****************************************************************************/
-void Iconify(FvwmWindow *fw, initial_window_options_type *win_opts)
+ */
+void Iconify(FvwmWindow *fw, initial_window_options_t *win_opts)
 {
 	FvwmWindow *t;
 	FvwmWindow *sf;
@@ -2612,13 +2613,13 @@ void Iconify(FvwmWindow *fw, initial_window_options_type *win_opts)
 
 
 
-/****************************************************************************
+/*
  *
  * This is used to tell applications which windows on the screen are
  * top level appication windows, and which windows are the icon windows
  * that go with them.
  *
- ****************************************************************************/
+ */
 void SetMapStateProp(const FvwmWindow *fw, int state)
 {
 	/* "suggested" by ICCCM version 1 */
@@ -2676,7 +2677,7 @@ void CMD_Iconify(F_CMD_ARGS)
 	{
 		if (toggle == 1)
 		{
-			initial_window_options_type win_opts;
+			initial_window_options_t win_opts;
 
 			if (!is_function_allowed(
 				    F_ICONIFY, NULL, fw, False, True))

@@ -1,18 +1,4 @@
 /* -*-c-*- */
-/* This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
- */
 
 #ifndef Picture_Utils_H
 #define Picture_Utils_H
@@ -28,7 +14,8 @@ int PictureAllocColorAllProp(
 	Display *dpy, Colormap cmap, XColor *c, int x, int y,
 	Bool no_limit, Bool is_8, Bool do_dither);
 int PictureAllocColorImage(
-	Display *dpy, PictureImageColorAllocator *pica, XColor *c, int x, int y);
+	Display *dpy, PictureImageColorAllocator *pica, XColor *c, int x,
+	int y);
 PictureImageColorAllocator *PictureOpenImageColorAllocator(
 	Display *dpy, Colormap cmap, int x, int y, Bool no_limit,
 	Bool save_pixels, int dither, Bool is_8);
@@ -36,8 +23,8 @@ void PictureCloseImageColorAllocator(
 	Display *dpy, PictureImageColorAllocator *pica, int *nalloc_pixels,
 	Pixel **alloc_pixels, int *no_limit);
 void PictureFreeColors(
-	Display *dpy, Colormap cmap, Pixel *pixels, int n, unsigned long planes,
-	Bool no_limit);
+	Display *dpy, Colormap cmap, Pixel *pixels, int n,
+	unsigned long planes, Bool no_limit);
 Pixel PictureGetNextColor(Pixel p, int n);
 Bool PictureDitherByDefault(void);
 Bool PictureUseBWOnly(void);

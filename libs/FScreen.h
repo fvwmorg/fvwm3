@@ -1,3 +1,4 @@
+/* -*-c-*- */
 #ifndef FVWMLIB_FSCRREN_H
 #define FVWMLIB_FSCRREN_H
 

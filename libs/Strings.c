@@ -1,3 +1,4 @@
+/* -*-c-*- */
 /* This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 2 of the License, or
@@ -146,12 +147,12 @@ void CopyStringWithQuotes(char **dest, const char *src)
 }
 
 
-/****************************************************************************
+/*
  *
  * Copies a string into a new, malloc'ed string
  * Strips leading spaces and trailing spaces and new lines
  *
- ****************************************************************************/
+ */
 char *stripcpy( const char *source )
 {
 	const char* tmp;
@@ -217,14 +218,14 @@ int StrHasPrefix( const char* string, const char* prefix )
 }
 
 
-/****************************************************************************
+/*
  *
  * Adds single quotes arround the string and escapes single quotes with
  * backslashes.  The result is placed in the given dest, not allocated.
  * The end of destination, i.e. pointer to '\0' is returned.
  * You should allocate dest yourself, at least strlen(source) * 2 + 3.
  *
- ****************************************************************************/
+ */
 char *QuoteString(char *dest, const char *source)
 {
 	int i = 0;

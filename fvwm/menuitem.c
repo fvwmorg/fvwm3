@@ -14,7 +14,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-/* ---------------------------- included header files ----------------------- */
+/* ---------------------------- included header files ---------------------- */
 
 #include "config.h"
 
@@ -34,23 +34,23 @@
 #include "menuitem.h"
 #include "decorations.h"
 
-/* ---------------------------- local definitions --------------------------- */
+/* ---------------------------- local definitions -------------------------- */
 
-/* ---------------------------- local macros -------------------------------- */
+/* ---------------------------- local macros ------------------------------- */
 
-/* ---------------------------- imports ------------------------------------- */
+/* ---------------------------- imports ------------------------------------ */
 
-/* ---------------------------- included code files ------------------------- */
+/* ---------------------------- included code files ------------------------ */
 
-/* ---------------------------- local types --------------------------------- */
+/* ---------------------------- local types -------------------------------- */
 
-/* ---------------------------- forward declarations ------------------------ */
+/* ---------------------------- forward declarations ----------------------- */
 
-/* ---------------------------- local variables ----------------------------- */
+/* ---------------------------- local variables ---------------------------- */
 
-/* ---------------------------- exported variables (globals) ---------------- */
+/* ---------------------------- exported variables (globals) --------------- */
 
-/* ---------------------------- local functions ----------------------------- */
+/* ---------------------------- local functions ---------------------------- */
 void static
 clear_menu_item_background(
 	MenuPaintItemParameters *mpip, int x, int y, int w, int h)
@@ -76,11 +76,11 @@ clear_menu_item_background(
 	}
 }
 
-/****************************************************************************
+/*
  *
  *  Draws two horizontal lines to form a separator
  *
- ****************************************************************************/
+ */
 static void draw_separator(
 	Window w, GC TopGC, GC BottomGC, int x1, int y, int x2)
 {
@@ -90,11 +90,11 @@ static void draw_separator(
 	return;
 }
 
-/****************************************************************************
+/*
  *
  *  Draws a tear off bar.  Similar to a separator, but with a dashed line.
  *
- ****************************************************************************/
+ */
 static void draw_tear_off_bar(
 	Window w, GC TopGC, GC BottomGC, int x1, int y, int x2)
 {
@@ -121,7 +121,7 @@ static void draw_tear_off_bar(
 	return;
 }
 
-/* ---------------------------- interface functions ------------------------- */
+/* ---------------------------- interface functions ------------------------ */
 
 /* Allocates a new, empty menu item */
 MenuItem *menuitem_create(void)
@@ -294,7 +294,7 @@ void menuitem_get_size(
 	return;
 }
 
-/***********************************************************************
+/*
  *
  *  Procedure:
  *      menuitem_paint - draws a single entry in a popped up menu
@@ -303,7 +303,7 @@ void menuitem_get_size(
  *      mi - the menu item to redraw
  *      fw - the FvwmWindow structure to check against allowed functions
  *
- ***********************************************************************/
+ */
 void menuitem_paint(
 	MenuItem *mi, MenuPaintItemParameters *mpip)
 {
@@ -403,9 +403,9 @@ void menuitem_paint(
 		cs = off_cs;
 	}
 
-	/***************************************************************
+	/*
 	 * Hilight the item.
-	 ***************************************************************/
+	 */
 	if (FftSupport && ST_PSTDFONT(ms)->fftf.fftfont != NULL)
 	{
 		xft_clear = True;
@@ -491,9 +491,9 @@ void menuitem_paint(
 	}
 
 
-	/***************************************************************
+	/*
 	 * Draw the item itself.
-	 ***************************************************************/
+	 */
 
 	/* Calculate the separator offsets. */
 	if (ST_HAS_LONG_SEPARATORS(ms))
@@ -588,9 +588,9 @@ void menuitem_paint(
 		}
 	}
 
-	/***************************************************************
+	/*
 	 * Draw the labels.
-	 ***************************************************************/
+	 */
 	if (fws == NULL)
 	{
 		FlocaleAllocateWinString(&fws);
@@ -702,9 +702,9 @@ void menuitem_paint(
 		}
 	}
 
-	/***************************************************************
+	/*
 	 * Draw the submenu triangle.
-	 ***************************************************************/
+	 */
 
 	if (MI_IS_POPUP(mi))
 	{
@@ -733,9 +733,9 @@ void menuitem_paint(
 			!ST_HAS_TRIANGLE_RELIEF(ms), is_item_selected);
 	}
 
-	/***************************************************************
+	/*
 	 * Draw the item picture.
-	 ***************************************************************/
+	 */
 
 	if (MI_PICTURE(mi))
 	{
@@ -794,9 +794,9 @@ void menuitem_paint(
 		}
 	}
 
-	/***************************************************************
+	/*
 	 * Draw the mini icons.
-	 ***************************************************************/
+	 */
 
 	for (i = 0; i < MAX_MENU_ITEM_MINI_ICONS; i++)
 	{

@@ -24,7 +24,7 @@
  * fvwm built-in functions and complex functions
  */
 
-/* ---------------------------- included header files ----------------------- */
+/* ---------------------------- included header files ---------------------- */
 
 #include "config.h"
 
@@ -49,15 +49,15 @@
 #include "expand.h"
 #include "menus.h"
 
-/* ---------------------------- local definitions --------------------------- */
+/* ---------------------------- local definitions -------------------------- */
 
-/* ---------------------------- local macros -------------------------------- */
+/* ---------------------------- local macros ------------------------------- */
 
-/* ---------------------------- imports ------------------------------------- */
+/* ---------------------------- imports ------------------------------------ */
 
-/* ---------------------------- included code files ------------------------- */
+/* ---------------------------- included code files ------------------------ */
 
-/* ---------------------------- local types --------------------------------- */
+/* ---------------------------- local types -------------------------------- */
 
 typedef struct FunctionItem
 {
@@ -88,19 +88,19 @@ typedef enum
 	CF_CLICK =          'c',
 	CF_DOUBLE_CLICK =   'd',
 	CF_TIMEOUT =        '-'
-} cfunc_action_type;
+} cfunc_action_t;
 
-/* ---------------------------- forward declarations ------------------------ */
+/* ---------------------------- forward declarations ----------------------- */
 
 static void execute_complex_function(
 	cond_rc_t *cond_rc, const exec_context_t *exc, char *action,
 	Bool *desperate);
 
-/* ---------------------------- local variables ----------------------------- */
+/* ---------------------------- local variables ---------------------------- */
 
-/* ---------------------------- exported variables (globals) ---------------- */
+/* ---------------------------- exported variables (globals) --------------- */
 
-/* ---------------------------- local functions ----------------------------- */
+/* ---------------------------- local functions ---------------------------- */
 
 static int __context_has_window(
 	const exec_context_t *exc, execute_flags_t flags)
@@ -321,13 +321,13 @@ void CMD_TearMenuOff(F_CMD_ARGS)
 */
 static int func_comp(const void *a, const void *b)
 {
-	return (strcmp((char *)a, ((func_type *)b)->keyword));
+	return (strcmp((char *)a, ((func_t *)b)->keyword));
 }
 
-static const func_type *find_builtin_function(char *func)
+static const func_t *find_builtin_function(char *func)
 {
 	static int nfuncs = 0;
-	func_type *ret_func;
+	func_t *ret_func;
 	char *temp;
 	char *s;
 
@@ -358,8 +358,8 @@ static const func_type *find_builtin_function(char *func)
 			/* nothing to do here */
 		}
 	}
-	ret_func = (func_type *)bsearch(
-		temp, func_table, nfuncs, sizeof(func_type), func_comp);
+	ret_func = (func_t *)bsearch(
+		temp, func_table, nfuncs, sizeof(func_t), func_comp);
 	free(temp);
 
 	return ret_func;
@@ -380,7 +380,7 @@ static void __execute_function(
 	char *trash2;
 	char *expaction = NULL;
 	char *arguments[11];
-	const func_type *bif;
+	const func_t *bif;
 	Bool set_silent;
 	Bool must_free_string = False;
 	Bool must_free_function = False;
@@ -509,7 +509,7 @@ static void __execute_function(
 	}
 	if (cond_rc == NULL || do_keep_rc == True)
 	{
-		memset(&dummy_rc, 0, sizeof(dummy_rc));
+		condrc_init(&dummy_rc);
 		func_rc = &dummy_rc;
 	}
 	else
@@ -615,7 +615,7 @@ static void __execute_function(
 		ecc.w.fw = exc->w.fw;
 		ecc.w.w = w;
 		ecc.w.wcontext = exc->w.wcontext;
-		if (bif && bif->func_type != F_FUNCTION)
+		if (bif && bif->func_t != F_FUNCTION)
 		{
 			char *runaction;
 			Bool rc = False;
@@ -732,7 +732,7 @@ static FvwmFunction *find_complex_function(const char *function_name)
  * Waits Scr.ClickTime, or until it is evident that the user is not
  * clicking, but is moving the cursor
  */
-static cfunc_action_type CheckActionType(
+static cfunc_action_t CheckActionType(
 	int x, int y, XEvent *d, Bool may_time_out, Bool is_button_pressed)
 {
 	int xcurrent,ycurrent,total = 0;
@@ -818,8 +818,7 @@ static void __run_complex_function_items(
 	char c;
 	FunctionItem *fi;
 
-	for (fi = func->first_item;
-	     fi != NULL && cond_rc->break_levels == 0; )
+	for (fi = func->first_item; fi != NULL && cond_rc->break_levels == 0; )
 	{
 		/* make lower case */
 		c = fi->condition;
@@ -869,7 +868,7 @@ static void execute_complex_function(
 	Bool *desperate)
 {
 	cond_rc_t tmp_rc;
-	cfunc_action_type type = CF_MOTION;
+	cfunc_action_t type = CF_MOTION;
 	char c;
 	FunctionItem *fi;
 	Bool Persist = False;
@@ -893,7 +892,7 @@ static void execute_complex_function(
 
 	if (cond_rc == NULL)
 	{
-		memset(&tmp_rc, 0, sizeof(tmp_rc));
+		condrc_init(&tmp_rc);
 		cond_rc = &tmp_rc;
 	}
 	cond_rc->rc = COND_RC_OK;
@@ -1136,7 +1135,8 @@ static void execute_complex_function(
 	__run_complex_function_items(
 		cond_rc, type, func, exc2, arguments);
 	exc_destroy_context(exc2);
-	/* This is the right place to ungrab the pointer (see comment above). */
+	/* This is the right place to ungrab the pointer (see comment above).
+	 */
 	func->use_depth--;
 	__cf_cleanup(&depth, arguments, cond_rc);
 	UngrabEm(GRAB_NORMAL);
@@ -1220,7 +1220,7 @@ static void DestroyFunction(FvwmFunction *func)
 	return;
 }
 
-/* ---------------------------- interface functions ------------------------- */
+/* ---------------------------- interface functions ------------------------ */
 
 Bool functions_is_complex_function(const char *function_name)
 {
@@ -1291,7 +1291,7 @@ void execute_function_override_window(
 	return;
 }
 
-void find_func_type(char *action, short *func_type, unsigned char *flags)
+void find_func_t(char *action, short *func_t, unsigned char *flags)
 {
 	int j, len = 0;
 	char *endtok = action;
@@ -1315,9 +1315,9 @@ void find_func_type(char *action, short *func_type, unsigned char *flags)
 			{
 				matched=True;
 				/* found key word */
-				if (func_type)
+				if (func_t)
 				{
-					*func_type = func_table[j].func_type;
+					*func_t = func_table[j].func_t;
 				}
 				if (flags)
 				{
@@ -1332,9 +1332,9 @@ void find_func_type(char *action, short *func_type, unsigned char *flags)
 		}
 		/* No clue what the function is. Just return "BEEP" */
 	}
-	if (func_type)
+	if (func_t)
 	{
-		*func_type = F_BEEP;
+		*func_t = F_BEEP;
 	}
 	if (flags)
 	{
@@ -1416,12 +1416,12 @@ void AddToFunction(FvwmFunction *func, char *action)
 	tmp->condition = condition;
 	tmp->action = stripcpy(action);
 
-	find_func_type(tmp->action, NULL, &(tmp->flags));
+	find_func_t(tmp->action, NULL, &(tmp->flags));
 
 	return;
 }
 
-/* ---------------------------- builtin commands ---------------------------- */
+/* ---------------------------- builtin commands --------------------------- */
 
 void CMD_DestroyFunc(F_CMD_ARGS)
 {

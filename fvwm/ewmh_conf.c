@@ -1,6 +1,6 @@
-/* Copyright (C) 2001  Olivier Chapuis
- *
- * This program is free software; you can redistribute it and/or modify
+/* -*-c-*- */
+/* Copyright (C) 2001  Olivier Chapuis */
+/* This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 2 of the License, or
  * (at your option) any later version.
@@ -37,9 +37,9 @@
 #include "ewmh_intern.h"
 #include "move_resize.h"
 
-/* ************************************************************************* *
+/*
  * CMDS
- * ************************************************************************* */
+ */
 
 static
 void set_state_workaround(void)
@@ -155,9 +155,9 @@ void CMD_EwmhBaseStruts(F_CMD_ARGS)
 		ewmh_HandleDynamicWorkArea();
 	}
 }
-/* ************************************************************************* *
+/*
  * Styles
- * ************************************************************************* */
+ */
 
 Bool EWMH_CMD_Style(char *token, window_style *ptmpstyle)
 {

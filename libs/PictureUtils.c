@@ -1,8 +1,7 @@
 /* -*-c-*- */
 /* Copyright (C) 1993, Robert Nation
- * Copyright (C) 2002  Olivier Chapuis
- *
- * This program is free software; you can redistribute it and/or modify
+ * Copyright (C) 2002  Olivier Chapuis */
+/* This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 2 of the License, or
  * (at your option) any later version.
@@ -17,7 +16,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-/* ---------------------------- included header files ----------------------- */
+/* ---------------------------- included header files ---------------------- */
 
 #include "config.h"
 
@@ -36,7 +35,7 @@
 #include "PictureUtils.h"
 #include "PictureDitherMatrice.h"
 
-/* ---------------------------- local definitions and macro ------------------ */
+/* ---------------------------- local definitions and macro ----------------- */
 
 #define PICTURE_DEBUG_COLORS_ALLOC_FAILURE 0
 
@@ -80,16 +79,16 @@
  * do think that using gamma correction for the colors cubes is a good
  * idea */
 #define USE_GAMMA_CORECTION 0
-/* 2.2 is recommanded by the Poynon colors FAQ, some others suggest 1.5 and 2 
+/* 2.2 is recommanded by the Poynon colors FAQ, some others suggest 1.5 and 2
  * Use float constants!*/
 #define COLOR_GAMMA 1.5
 #define GREY_GAMMA  2.0
 
-/* ---------------------------- imports ------------------------------------- */
+/* ---------------------------- imports ------------------------------------ */
 
-/* ---------------------------- included code files ------------------------- */
+/* ---------------------------- included code files ------------------------ */
 
-/* ---------------------------- local types --------------------------------- */
+/* ---------------------------- local types -------------------------------- */
 
 typedef struct
 {
@@ -140,9 +139,9 @@ typedef struct {
 	long closeness;
 } CloseColor;
 
-/* ---------------------------- forward declarations ------------------------ */
+/* ---------------------------- forward declarations ----------------------- */
 
-/* ---------------------------- local variables ----------------------------- */
+/* ---------------------------- local variables ---------------------------- */
 
 static int PColorLimit = 0;
 static PColor *Pct = NULL;
@@ -155,13 +154,13 @@ static PColorsInfo Pcsi = {
 	0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, NULL, NULL, NULL, NULL,
 	NULL, NULL, NULL, NULL};
 
-/* ---------------------------- exported variables (globals) ---------------- */
+/* ---------------------------- exported variables (globals) --------------- */
 
-/* ---------------------------- local functions ----------------------------- */
+/* ---------------------------- local functions ---------------------------- */
 
-/* ***************************************************************************
+/*
  * get shift and prec from a mask
- * ***************************************************************************/
+ */
 static
 void decompose_mask(
 	unsigned long mask, int *shift, int *prec)
@@ -182,10 +181,10 @@ void decompose_mask(
 	}
 }
 
-/* ***************************************************************************
+/*
  * color allocation in the colormap. strongly inspired by SetCloseColor from
  * the Xpm library (depth <= 8)
- * ***************************************************************************/
+ */
 
 static int
 closeness_cmp(const void *a, const void *b)
@@ -264,9 +263,9 @@ int alloc_color_in_cmap(XColor *c, Bool force)
 	return 0;
 }
 
-/* ***************************************************************************
+/*
  * dithering
- * ***************************************************************************/
+ */
 
 static
 int my_dither(int x, int y, XColor *c)
@@ -297,7 +296,7 @@ int my_dither(int x, int y, XColor *c)
 		/* color cube */
 		int dith, rs, gs, bs, gb, b;
 		int tr,tb,tg;
-		
+
 		rs = Pcsi.d_nr - 1;
 		gs = Pcsi.d_ng - 1;
 		bs = Pcsi.d_nb - 1;
@@ -430,9 +429,9 @@ int my_dither_depth_15_16_init(void)
 	return 1;
 }
 
-/* ***************************************************************************
+/*
  * Color allocation in the "palette"
- * ***************************************************************************/
+ */
 
 static
 int alloc_color_in_pct(XColor *c, int index)
@@ -566,9 +565,9 @@ int get_color_index(int r, int g, int b, int is_8)
 	return index;
 }
 
-/* ***************************************************************************
+/*
  * Main colors allocator
- * ***************************************************************************/
+ */
 static
 int alloc_color_proportion(Display *dpy, Colormap cmap, XColor *c)
 {
@@ -737,10 +736,10 @@ void free_colors_x(
 	}
 }
 
-/* ***************************************************************************
+/*
  * local function for building pallet (dynamic colors, private DirectColor
  * cmap)
- * ***************************************************************************/
+ */
 static
 XColor *build_mapping_colors(int nr, int ng, int nb)
 {
@@ -949,7 +948,7 @@ PColor *alloc_color_cube(
 			}
 		}
 	}
-	
+
 	if (ngrey > 0)
 	{
 		for (grey = start_grey; grey < end_grey; grey++)
@@ -1660,7 +1659,7 @@ int PictureAllocColorTable(
 				 * limit = 68 4x4x4 + 4
 				 * limit = 64 4x4x4 + 0 */
 			}
-			
+
 		}
 		else if (limit == 128 || limit == 64)
 		{
@@ -1767,9 +1766,9 @@ int PictureAllocColorTable(
 	return PColorLimit;
 }
 
-/* ***************************************************************************
+/*
  * Allocation of a private DirectColor cmap this is broken for depth > 16
- * ***************************************************************************/
+ */
 static
 Bool alloc_direct_colors(int *limit, Bool use_my_color_limit)
 {
@@ -1837,9 +1836,9 @@ Bool alloc_direct_colors(int *limit, Bool use_my_color_limit)
 	return 1;
 }
 
-/* ***************************************************************************
+/*
  * Init the table for Static Colors
- * ***************************************************************************/
+ */
 static
 void init_static_colors_table(void)
 {
@@ -1869,9 +1868,9 @@ void init_static_colors_table(void)
 }
 
 
-/* ***************************************************************************
+/*
  * misc local functions
- * ***************************************************************************/
+ */
 static
 void print_colormap(Colormap cmap)
 {
@@ -1892,7 +1891,7 @@ void print_colormap(Colormap cmap)
 	}
 }
 
-/* ---------------------------- interface functions ------------------------- */
+/* ---------------------------- interface functions ------------------------ */
 
 int PictureAllocColor(Display *dpy, Colormap cmap, XColor *c, int no_limit)
 {
@@ -2045,7 +2044,7 @@ void PictureCloseImageColorAllocator(
 				}
 				for(j=1; j < pica->pixels_table[i]; j++)
 				{
-					free_pixels[l++] = i; 
+					free_pixels[l++] = i;
 				}
 			}
 		}
@@ -2241,7 +2240,7 @@ int PictureInitColors(
 		{
 			Pcsi.alloc_color_dither = NULL;
 		}
-		break;	
+		break;
 	case StaticColor:
 		if (0 && Pvisual->red_mask != 0 && Pvisual->green_mask != 0 &&
 		    Pvisual->blue_mask != 0)

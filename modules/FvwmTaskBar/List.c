@@ -1,3 +1,4 @@
+/* -*-c-*- */
 /* FvwmTaskBar Module for Fvwm.
  *
  *  Copyright 1994,  Mike Finger (mfinger@mermaid.micro.umn.edu or
@@ -39,18 +40,18 @@
 
 extern char *Module;
 
-/******************************************************************************
+/*
   InitList - Initialize the list
-******************************************************************************/
+*/
 void InitList(List *list)
 {
   list->head=list->tail=NULL;
   list->count=0;
 }
 
-/******************************************************************************
+/*
   AddItem - Allocates spaces for and appends an item to the list
-******************************************************************************/
+*/
 void AddItem(List *list, long id, ConfigWinPacket *cfgpacket,
 	     long Desk, int count)
 {
@@ -71,9 +72,9 @@ void AddItem(List *list, long id, ConfigWinPacket *cfgpacket,
   list->count++;
 }
 
-/******************************************************************************
+/*
   AddItemName - Allocates spaces for and appends an item to the list
-******************************************************************************/
+*/
 void AddItemName(List *list, char *string, int iconified)
 {
   Item *new;
@@ -96,9 +97,9 @@ void AddItemName(List *list, char *string, int iconified)
 }
 
 
-/******************************************************************************
+/*
   FindItem - Find the item in the list matching the id
-******************************************************************************/
+*/
 int FindItem(List *list, long id)
 {
   Item *temp;
@@ -109,9 +110,9 @@ int FindItem(List *list, long id)
   return temp->count;
 }
 
-/******************************************************************************
+/*
   FindNameItem - Find the item in the list matching the string
-******************************************************************************/
+*/
 int FindNameItem(List *list, char *string)
 {
   Item *temp;
@@ -123,9 +124,9 @@ int FindNameItem(List *list, char *string)
   return temp->count;
 }
 
-/******************************************************************************
+/*
   UpdateItem* - Update the item in the list
-******************************************************************************/
+*/
 
 int UpdateItemName(List *list, long id, char *string)
 {
@@ -187,9 +188,9 @@ int UpdateItemIndexGeometry(List *list, int i, rectangle *new_g)
   return temp->count;
 }
 
-/******************************************************************************
+/*
   FreeItem - Frees allocated space for an Item
-******************************************************************************/
+*/
 void FreeItem(Item *ptr)
 {
   if (ptr != NULL) {
@@ -198,9 +199,9 @@ void FreeItem(Item *ptr)
   }
 }
 
-/******************************************************************************
+/*
   DeleteItem - Deletes an item from the list
-******************************************************************************/
+*/
 int DeleteItem(List *list,long id)
 {
 Item *temp,*temp2;
@@ -229,9 +230,9 @@ int i;
 /*    return i+1; */
 }
 
-/******************************************************************************
+/*
   FreeList - Free the entire list of Items
-******************************************************************************/
+*/
 void FreeList(List *list)
 {
   Item *temp,*temp2;
@@ -244,9 +245,9 @@ void FreeList(List *list)
   list->count=0;
 }
 
-/******************************************************************************
+/*
   PrintList - Print the list of item to stderr. (Debugging)
-******************************************************************************/
+*/
 void PrintList(List *list)
 {
   Item *temp;
@@ -260,9 +261,9 @@ void PrintList(List *list)
   }
 }
 
-/******************************************************************************
+/*
   ItemName - Return the name of an Item
-******************************************************************************/
+*/
 char *ItemName(List *list, int n)
 {
   Item *temp;
@@ -271,9 +272,9 @@ char *ItemName(List *list, int n)
   return temp->name;
 }
 
-/******************************************************************************
+/*
   IsItemIndexIconified - Say if an item is iconified
-******************************************************************************/
+*/
 int IsItemIconified(List *list, long id)
 {
   Item *temp;
@@ -282,9 +283,9 @@ int IsItemIconified(List *list, long id)
   return IS_ICONIFIED(temp);
 }
 
-/******************************************************************************
+/*
   IsItemIndexIconified - Say if an item of index i is iconified
-******************************************************************************/
+*/
 int IsItemIndexIconified(List *list, int i)
 {
   Item *temp;
@@ -293,9 +294,9 @@ int IsItemIndexIconified(List *list, int i)
   return IS_ICONIFIED(temp);
 }
 
-/******************************************************************************
+/*
   IsItemIndexSticky - Say if an item of index i is sticky
-******************************************************************************/
+*/
 int IsItemIndexSticky(List *list, int i)
 {
   Item *temp;
@@ -305,9 +306,9 @@ int IsItemIndexSticky(List *list, int i)
 	  (IS_ICONIFIED(temp) && IS_ICON_STICKY_ACROSS_DESKS(temp)));
 }
 
-/******************************************************************************
+/*
   IsItemIndexSkipWindowList - Say if an item of index i is in the skip list
-******************************************************************************/
+*/
 int IsItemIndexSkipWindowList(List *list, int i)
 {
   Item *temp;
@@ -316,9 +317,9 @@ int IsItemIndexSkipWindowList(List *list, int i)
   return DO_SKIP_WINDOW_LIST(temp);
 }
 
-/******************************************************************************
+/*
   IsItemIndexIconSuppressed - Say if an item has a no icon style
-******************************************************************************/
+*/
 int IsItemIndexIconSuppressed(List *list, int i)
 {
   Item *temp;
@@ -327,17 +328,17 @@ int IsItemIndexIconSuppressed(List *list, int i)
   return IS_ICON_SUPPRESSED(temp);
 }
 
-/******************************************************************************
+/*
   ItemCount - Return the number of items inthe list
-******************************************************************************/
+*/
 int ItemCount(List *list)
 {
   return list->count;
 }
 
-/******************************************************************************
+/*
   ItemID - Return the ID of the item in the list.
-******************************************************************************/
+*/
 long ItemID(List *list, int n)
 {
   Item *temp;
@@ -346,9 +347,9 @@ long ItemID(List *list, int n)
   return temp->id;
 }
 
-/******************************************************************************
+/*
   CopyItem - Copy an item from one list to another
-******************************************************************************/
+*/
 void CopyItem(List *dest, List *source, int n)
 {
   Item *temp;
@@ -362,9 +363,9 @@ void CopyItem(List *dest, List *source, int n)
   DeleteItem(source,temp->id);
 }
 
-/******************************************************************************
+/*
   UpdateItemPicture - Adds the picture information in the list
-******************************************************************************/
+*/
 void UpdateItemPicture(List *list, int n, FvwmPicture *p)
 {
   Item *temp;
@@ -391,9 +392,9 @@ void UpdateItemPicture(List *list, int n, FvwmPicture *p)
   }
 }
 
-/******************************************************************************
+/*
   GetDeskNumber - Returns the desknumber of the item
-******************************************************************************/
+*/
 int GetDeskNumber(List *list, int n, long *Desk)
 {
   Item *temp;
@@ -404,9 +405,9 @@ int GetDeskNumber(List *list, int n, long *Desk)
   return 1;
 }
 
-/******************************************************************************
+/*
   GetItemPicture - Returns the picture
-******************************************************************************/
+*/
 FvwmPicture *GetItemPicture(List *list, int n)
 {
   Item *temp;
@@ -416,9 +417,9 @@ FvwmPicture *GetItemPicture(List *list, int n)
   return &(temp->p);
 }
 
-/******************************************************************************
+/*
   GetItemGeometry - returns a pointer to the internal geometry rectangle
-******************************************************************************/
+*/
 int GetItemGeometry(List *list, int n, rectangle **r)
 {
   Item *temp;

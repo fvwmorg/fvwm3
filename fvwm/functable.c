@@ -14,7 +14,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-/* ---------------------------- included header files ----------------------- */
+/* ---------------------------- included header files ---------------------- */
 
 #include "config.h"
 
@@ -26,7 +26,7 @@
 #include "misc.h"
 #include "functable.h"
 
-/* ---------------------------- local definitions --------------------------- */
+/* ---------------------------- local definitions -------------------------- */
 
 /* The function names in the first field *must* be in lowercase or else the
  * function cannot be called.  The func parameter of the macro is also used
@@ -35,24 +35,24 @@
 #define CMD_ENT(cmd, func, cmd_id, flags, cursor) \
 	{ cmd, func, cmd_id, flags, cursor }
 
-/* ---------------------------- local macros -------------------------------- */
+/* ---------------------------- local macros ------------------------------- */
 
-/* ---------------------------- imports ------------------------------------- */
+/* ---------------------------- imports ------------------------------------ */
 
-/* ---------------------------- included code files ------------------------- */
+/* ---------------------------- included code files ------------------------ */
 
-/* ---------------------------- local types --------------------------------- */
+/* ---------------------------- local types -------------------------------- */
 
-/* ---------------------------- forward declarations ------------------------ */
+/* ---------------------------- forward declarations ----------------------- */
 
-/* ---------------------------- local variables ----------------------------- */
+/* ---------------------------- local variables ---------------------------- */
 
-/* ---------------------------- exported variables (globals) ---------------- */
+/* ---------------------------- exported variables (globals) --------------- */
 
 /* IMPORTANT: command description should not be longer than 53 characters */
 /* the next line must be blank for modules to properly parse this file */
 
-const func_type func_table[] =
+const func_t func_table[] =
 {
 	/* CMD_ENT("#", CMD_Comment, 0, 0, 0), */
 	/* - Comment line (ignored) */

@@ -1,3 +1,4 @@
+/* -*-c-*- */
 /* This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 2 of the License, or
@@ -13,14 +14,16 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
+#include "config.h"
+
 #include "Tools.h"
 
 /* left, center and right offsets for title 0 (not very usefull here) */
 #define MENU_LCR_OFFSETS 2,0,2
 
-/***********************************************/
-/* Fonction pour Menu / Functions for the Menu */
-/***********************************************/
+/*
+ * Fonction pour Menu / Functions for the Menu
+ */
 void InitMenu(struct XObj *xobj)
 {
   unsigned long mask;

@@ -14,7 +14,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-/* ---------------------------- included header files ----------------------- */
+/* ---------------------------- included header files ---------------------- */
 
 #include "config.h"
 
@@ -43,19 +43,19 @@
 #include "icons.h"
 #include "stack.h"
 
-/* ---------------------------- local definitions --------------------------- */
+/* ---------------------------- local definitions -------------------------- */
 
-/* ---------------------------- local macros -------------------------------- */
+/* ---------------------------- local macros ------------------------------- */
 
-/* ---------------------------- imports ------------------------------------- */
+/* ---------------------------- imports ------------------------------------ */
 
-/* ---------------------------- included code files ------------------------- */
+/* ---------------------------- included code files ------------------------ */
 
-/* ---------------------------- local types --------------------------------- */
+/* ---------------------------- local types -------------------------------- */
 
-/* ---------------------------- forward declarations ------------------------ */
+/* ---------------------------- forward declarations ----------------------- */
 
-/* ---------------------------- local variables ----------------------------- */
+/* ---------------------------- local variables ---------------------------- */
 
 /*
  * dje 12/19/98
@@ -85,11 +85,11 @@ static int prev_desk_and_page_desk = 0;
 static unsigned int prev_desk_and_page_page_x = 0;
 static unsigned int prev_desk_and_page_page_y = 0;
 
-/* ---------------------------- exported variables (globals) ---------------- */
+/* ---------------------------- exported variables (globals) --------------- */
 
-/* ---------------------------- local functions ----------------------------- */
+/* ---------------------------- local functions ---------------------------- */
 
-/**************************************************************************
+/*
  *
  * Parse arguments for "Desk" and "MoveToDesk" (formerly "WindowsDesk"):
  *
@@ -106,7 +106,7 @@ static unsigned int prev_desk_and_page_page_y = 0;
  * The current desk number is returned if not enough parameters could be
  * read (or if action is empty).
  *
- **************************************************************************/
+ */
 static int GetDeskNumber(char *action)
 {
 	int n;
@@ -197,11 +197,11 @@ static int GetDeskNumber(char *action)
 	return desk;
 }
 
-/**************************************************************************
+/*
  *
  * Unmaps a window on transition to a new desktop
  *
- *************************************************************************/
+ */
 static void unmap_window(FvwmWindow *t)
 {
 	XWindowAttributes winattrs;
@@ -251,11 +251,11 @@ static void unmap_window(FvwmWindow *t)
 	return;
 }
 
-/**************************************************************************
+/*
  *
  * Maps a window on transition to a new desktop
  *
- *************************************************************************/
+ */
 static void map_window(FvwmWindow *t)
 {
 	XWindowAttributes winattrs;
@@ -313,14 +313,14 @@ static void map_window(FvwmWindow *t)
 	return;
 }
 
-/************************************************************************
+/*
  *
  * Unmap all windows on a desk -
  *   - Part 1 of a desktop switch
  *   - must eventually be followed by a call to MapDesk
  *   - unmaps from the bottom of the stack up
  *
- *************************************************************************/
+ */
 static void UnmapDesk(int desk, Bool grab)
 {
 	FvwmWindow *t;
@@ -364,14 +364,14 @@ static void UnmapDesk(int desk, Bool grab)
 	return;
 }
 
-/************************************************************************
+/*
  *
  * Map all windows on a desk -
  *   - Part 2 of a desktop switch
  *   - only use if UnmapDesk has previously been called
  *   - maps from the top of the stack down
  *
- ************************************************************************/
+ */
 static void MapDesk(int desk, Bool grab)
 {
 	FvwmWindow *t;
@@ -451,9 +451,9 @@ static void MapDesk(int desk, Bool grab)
 	return;
 }
 
-/* ---------------------------- interface functions ------------------------- */
+/* ---------------------------- interface functions ------------------------ */
 
-/***************************************************************************
+/*
  *
  * Check to see if the pointer is on the edge of the screen, and scroll/page
  * if needed
@@ -462,7 +462,7 @@ static void MapDesk(int desk, Bool grab)
  *  0: no paging
  *  1: paging occured
  * -1: no need to call the function again before a new event arrives
- ***************************************************************************/
+ */
 int HandlePaging(
 	XEvent *pev, int HorWarpSize, int VertWarpSize, int *xl, int *yt,
 	int *delta_x, int *delta_y, Bool Grab, Bool fLoop,
@@ -765,11 +765,11 @@ int HandlePaging(
  * Hermann Dunkel, HEDU, dunkel@cul-ipn.uni-kiel.de 1/94
  */
 
-/***************************************************************************
+/*
  * checkPanFrames hides PanFrames if they are on the very border of the
  * VIRTUAL screen and EdgeWrap for that direction is off.
  * (A special cursor for the EdgeWrap border could be nice) HEDU
- ****************************************************************************/
+ */
 void checkPanFrames(void)
 {
 	Bool do_unmap_l = False;
@@ -941,14 +941,14 @@ void checkPanFrames(void)
 	return;
 }
 
-/****************************************************************************
+/*
  *
  * Gotta make sure these things are on top of everything else, or they
  * don't work!
  *
  * For some reason, this seems to be unneeded.
  *
- ***************************************************************************/
+ */
 void raisePanFrames(void)
 {
 	if (Scr.PanFrameTop.isMapped)
@@ -971,11 +971,11 @@ void raisePanFrames(void)
 	return;
 }
 
-/****************************************************************************
+/*
  *
  * Creates the windows for edge-scrolling
  *
- ****************************************************************************/
+ */
 void initPanFrames(void)
 {
 	XSetWindowAttributes attributes;
@@ -1037,11 +1037,11 @@ Bool is_pan_frame(Window w)
 	}
 }
 
-/***************************************************************************
+/*
  *
  *  Moves the viewport within the virtual desktop
  *
- ***************************************************************************/
+ */
 void MoveViewport(int newx, int newy, Bool grab)
 {
 	FvwmWindow *t, *t1;
@@ -1275,11 +1275,11 @@ void goto_desk(int desk)
 	return;
 }
 
-/**************************************************************************
+/*
  *
  * Move a window to a new desktop
  *
- *************************************************************************/
+ */
 void do_move_window_to_desk(FvwmWindow *fw, int desk)
 {
 	if (fw == NULL)
@@ -1447,12 +1447,12 @@ char *GetDesktopName(int desk)
 	return NULL;
 }
 
-/* ---------------------------- builtin commands ---------------------------- */
+/* ---------------------------- builtin commands --------------------------- */
 
 /* EdgeCommand - binds a function to a pan frame enter event */
 void CMD_EdgeCommand(F_CMD_ARGS)
 {
-	direction_type direction;
+	direction_t direction;
 	char * command;
 
 	/* get the direction */
@@ -1771,11 +1771,11 @@ void CMD_DesktopSize(F_CMD_ARGS)
 	return;
 }
 
-/**************************************************************************
+/*
  *
  * Move to a new desktop
  *
- *************************************************************************/
+ */
 void CMD_GotoDesk(F_CMD_ARGS)
 {
 	goto_desk(GetDeskNumber(action));
@@ -1790,7 +1790,7 @@ void CMD_Desk(F_CMD_ARGS)
 	return;
 }
 
-/*************************************************************************
+/*
  *
  * Move to a new desktop and page at the same time.
  *   This function is designed for use by the Pager, and replaces the old
@@ -1798,7 +1798,7 @@ void CMD_Desk(F_CMD_ARGS)
  *   - unmap all windows on the current desk so they don't flash when the
  *     viewport is moved, then switch the viewport, then the desk.
  *
- *************************************************************************/
+ */
 void CMD_GotoDeskAndPage(F_CMD_ARGS)
 {
 	int val[3];
@@ -1970,11 +1970,11 @@ void CMD_Scroll(F_CMD_ARGS)
 	return;
 }
 
-/**************************************************************************
+/*
  *
  * Defines the name of a desktop
  *
- *************************************************************************/
+ */
 void CMD_DesktopName(F_CMD_ARGS)
 {
 	int desk;

@@ -1,17 +1,4 @@
-/* This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
- */
+/* -*-c-*- */
 
 #ifndef FVWMLIB_H
 #define FVWMLIB_H
@@ -27,9 +14,9 @@
 #include "fvwmrect.h"
 #include "Bindings.h"
 
-/***********************************************************************
+/*
  * Generic debugging
- ***********************************************************************/
+ */
 
 #ifdef NDEBUG
 /* Make everything evaluates to empty.  */
@@ -55,39 +42,41 @@
 # endif
 
 # define DB_IS_LEVEL(_l)    ((_l)<=f_db_level)
-# define DBL(_l,_x) do if (DB_IS_LEVEL(_l)) { \
-		      f_db_info.filenm=__FILE__;\
-		      f_db_info.funcnm=__PRETTY_FUNCTION__;\
-		      f_db_info.module=DB_MODULE;\
-		      f_db_info.lineno=__LINE__;\
-		      f_db_print _x; }while(0)
-# define DB(_x)     DBL(2,_x)
+# define DBL(_l,_x) \
+	do if (DB_IS_LEVEL(_l)) { \
+		f_db_info.filenm=__FILE__;\
+		f_db_info.funcnm=__PRETTY_FUNCTION__;\
+		f_db_info.module=DB_MODULE;\
+		f_db_info.lineno=__LINE__;\
+		f_db_print _x; \
+	} while(0)
+# define DB(_x) DBL(2,_x)
 
 struct f_db_info
 {
-  const char *filenm;
-  const char *funcnm;
-  const char *module;
-  long lineno;
+	const char *filenm;
+	const char *funcnm;
+	const char *module;
+	long lineno;
 };
 
 extern struct f_db_info f_db_info;
 extern int f_db_level;
 
 extern void f_db_print(const char *fmt, ...)
-		       __attribute__ ((__format__ (__printf__, 1, 2)));
+	__attribute__ ((__format__ (__printf__, 1, 2)));
 #endif
 
 
 
-/***********************************************************************
+/*
  * typedefs
- ***********************************************************************/
+ */
 
 
-/***********************************************************************
+/*
  * Replacements for missing system calls.
- ***********************************************************************/
+ */
 
 #ifndef HAVE_ATEXIT
 int atexit( void(*func)() );
@@ -126,9 +115,9 @@ int matchWildcards(char *pattern, char *string);
 #define MAX_MODULE_INPUT_TEXT_LEN 1000
 
 
-/***********************************************************************
+/*
  * Various system related utils
- ***********************************************************************/
+ */
 
 int GetFdWidth(void);
 int getostype(char *buf, int max);
@@ -183,9 +172,9 @@ Bool isFileStampChanged(const FileStamp *stamp, const char *name);
 
 
 
-/***********************************************************************
+/*
  * Stuff for dealing w/ bitmaps & pixmaps:
- ***********************************************************************/
+ */
 
 XColor *GetShadowColor(Pixel);
 XColor *GetHiliteColor(Pixel);
@@ -205,7 +194,7 @@ Pixel GetTintedPixel(Pixel in, Pixel tint, int percent);
  * memory area pointed at by 'output' must be at least 64 bytes (in case of
  * future extensions and multibyte characters).*/
 int pixel_to_color_string(
-  Display *dpy, Colormap cmap, Pixel pixel, char *output, Bool use_hash);
+	Display *dpy, Colormap cmap, Pixel pixel, char *output, Bool use_hash);
 
 Pixel GetSimpleColor(char *name);
 /* handles colorset color names too */
@@ -214,16 +203,16 @@ Pixel GetColor(char *name);
 /* duplicate an already allocated color */
 Pixel fvwmlib_clone_color(Pixel p);
 
-/***********************************************************************
+/*
  * Wrappers around various X11 routines
- ***********************************************************************/
+ */
 
 typedef struct FvwmFont
 {
-  XFontStruct *font;            /* font structure */
-  XFontSet fontset;             /* font set */
-  int height;                   /* height of the font */
-  int y;                        /* Y coordinate to draw characters */
+	XFontStruct *font;            /* font structure */
+	XFontSet fontset;             /* font set */
+	int height;                   /* height of the font */
+	int y;                        /* Y coordinate to draw characters */
 } FvwmFont;
 
 XFontStruct *GetFontOrFixed(Display *disp, char *fontname);
@@ -244,9 +233,9 @@ void PrintXErrorAndCoredump(Display *dpy, XErrorEvent *error, char *MyName);
  */
 Window GetSubwindowFromEvent(Display *dpy, const XEvent *eventp);
 
-/***********************************************************************
+/*
  * Wrappers around Xrm routines (XResources.c)
- ***********************************************************************/
+ */
 void MergeXResources(Display *dpy, XrmDatabase *pdb, Bool override);
 void MergeCmdLineResources(XrmDatabase *pdb, XrmOptionDescList opts,
 			   int num_opts, char *name, int *pargc, char **argv,
@@ -254,12 +243,12 @@ void MergeCmdLineResources(XrmDatabase *pdb, XrmOptionDescList opts,
 Bool MergeConfigLineResource(XrmDatabase *pdb, char *line, char *prefix,
 			     char *bindstr);
 Bool GetResourceString(
-  XrmDatabase db, const char *resource, const char *prefix, XrmValue *xval);
+	XrmDatabase db, const char *resource, const char *prefix, XrmValue *xval);
 
 
-/***********************************************************************
+/*
  * Stuff for Graphics.c and ModGraph.c
- ***********************************************************************/
+ */
 
 void do_relieve_rectangle(
 	Display *dpy, Drawable d, int x, int y, int w, int h,
@@ -285,9 +274,9 @@ Pixmap CreateStretchYPixmap(Display *dpy, Pixmap src, int src_width,
 			    int dest_height, GC gc);
 
 Pixmap CreateStretchPixmap(Display *dpy, Pixmap src, int src_width,
-			    int src_height, int src_depth,
-			    int dest_width, int dest_height,
-			    GC gc);
+			   int src_height, int src_depth,
+			   int dest_width, int dest_height,
+			   GC gc);
 
 Pixmap CreateTiledPixmap(Display *dpy, Pixmap src, int src_width,
 			 int src_height, int dest_width,
@@ -298,8 +287,8 @@ Pixmap CreateRotatedPixmap(
 	GC gc, int rotation);
 
 GC fvwmlib_XCreateGC(
-  Display *display, Drawable drawable, unsigned long valuemask,
-  XGCValues *values);
+	Display *display, Drawable drawable, unsigned long valuemask,
+	XGCValues *values);
 
 /**** gradient stuff ****/
 
@@ -345,45 +334,45 @@ Pixmap CreateGradientPixmapFromString(
 	Pixel **alloc_pixels, int *nalloc_pixels, int dither);
 
 void DrawTrianglePattern(
-  Display *dpy, Drawable d, GC ReliefGC, GC ShadowGC, GC FillGC,
-  int x, int y, int width, int height, int bw, char orientation,
-  Bool draw_relief, Bool do_fill, Bool is_pressed);
+	Display *dpy, Drawable d, GC ReliefGC, GC ShadowGC, GC FillGC,
+	int x, int y, int width, int height, int bw, char orientation,
+	Bool draw_relief, Bool do_fill, Bool is_pressed);
 
 
-/***********************************************************************
+/*
  * WinMagic.c
- ***********************************************************************/
+ */
 
 void SlideWindow(
-  Display *dpy, Window win,
-  int s_x, int s_y, unsigned int s_w, unsigned int s_h,
-  int e_x, int e_y, unsigned int e_w, unsigned int e_h,
-  int steps, int delay_ms, float *ppctMovement,
-  Bool do_sync, Bool use_hints);
+	Display *dpy, Window win,
+	int s_x, int s_y, unsigned int s_w, unsigned int s_h,
+	int e_x, int e_y, unsigned int e_w, unsigned int e_h,
+	int steps, int delay_ms, float *ppctMovement,
+	Bool do_sync, Bool use_hints);
 
 Window GetTopAncestorWindow(Display *dpy, Window child);
 
 int GetEqualSizeChildren(
-  Display *dpy, Window parent, int depth, VisualID visualid, Colormap colormap,
-  Window **ret_children);
+	Display *dpy, Window parent, int depth, VisualID visualid, Colormap colormap,
+	Window **ret_children);
 
-/***********************************************************************
+/*
  * Target.c
- ***********************************************************************/
+ */
 
 void fvwmlib_keyboard_shortcuts(
-    Display *dpy, int screen, XEvent *Event, int x_move_size, int y_move_size,
-    int *x_defect, int *y_defect, int ReturnEvent);
+	Display *dpy, int screen, XEvent *Event, int x_move_size, int y_move_size,
+	int *x_defect, int *y_defect, int ReturnEvent);
 
 void fvwmlib_get_target_window(
-    Display *dpy, int screen, char *MyName, Window *app_win,
-    Bool return_subwindow);
+	Display *dpy, int screen, char *MyName, Window *app_win,
+	Bool return_subwindow);
 
 Window fvwmlib_client_window(Display *dpy, Window input);
 
-/***********************************************************************
+/*
  * Cursor.c
- ***********************************************************************/
+ */
 
 int fvwmCursorNameToIndex (char *cursor_name);
 

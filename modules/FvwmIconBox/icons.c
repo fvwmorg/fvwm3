@@ -1,8 +1,9 @@
-/***********************************************************************
+/* -*-c-*- */
+/*
  * icons.c
  *      Based on icons.c of GoodStuff:
  *              Copyright 1993, Robert Nation.
- ***********************************************************************/
+ */
 
 /* Copyright 1993, Robert Nation. No guarantees or warantees or anything
  * are provided or implied in any way whatsoever. Use this program at your
@@ -24,11 +25,11 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-/***********************************************************************
+/*
  *
  * Derived from fvwm icon code
  *
- ***********************************************************************/
+ */
 
 #include "config.h"
 
@@ -67,14 +68,14 @@ extern int iconified_title_relief;
 #define ICON_EVENTS (ExposureMask |\
 ButtonReleaseMask | ButtonPressMask | EnterWindowMask | LeaveWindowMask)
 
-/****************************************************************************
+/*
  *
  * Creates an Icon Window
  * Loads an icon file and combines icon shape masks after a resize
  * special thanks to Rich Neitzel <thor@thor.atd.ucar.edu>
  *    for his patch to handle icon windows
  *
- ****************************************************************************/
+ */
 void CreateIconWindow(struct icon_info *item)
 {
 	unsigned long valuemask;              /* mask for create windows */
@@ -170,13 +171,13 @@ void CreateIconWindow(struct icon_info *item)
 	}
 }
 
-/****************************************************************************
+/*
  *
  * Bodge the icon title and picture windows for the 3D shadows
  * Puts them in the correct location
  * This could do with some serious variable renaming
  *
- ****************************************************************************/
+ */
 void AdjustIconWindow(struct icon_info *item, int n)
 {
 	int x=0, y=0, w, h, h2, h3, w3;
@@ -250,11 +251,11 @@ void AdjustIconWindow(struct icon_info *item, int n)
 	XMoveResizeWindow(dpy, item->IconWin, x,y + h2,w,h - h2);
 }
 
-/****************************************************************************
+/*
  *
  * Looks for icon from a file
  *
- ****************************************************************************/
+ */
 void GetIconFromFile(struct icon_info *item)
 {
 	char *path = PictureFindImageFile(item->icon_file, imagePath, R_OK);
@@ -294,11 +295,11 @@ void GetIconFromFile(struct icon_info *item)
 	return;
 }
 
-/****************************************************************************
+/*
  *
  * Looks for an application supplied icon window
  *
- *************************************************************************** */
+ */
 void GetIconWindow(struct icon_info *item)
 {
 	int x, y;
@@ -365,12 +366,10 @@ void GetIconWindow(struct icon_info *item)
 	SET_PIXMAP_OURS(item, False);
 }
 
-/***************************************************************************
-*
+/*
  *
  * Looks for an application supplied bitmap or pixmap
  *
- ***************************************************************************
 */
 void GetIconBitmap(struct icon_info *item)
 {

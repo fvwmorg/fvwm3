@@ -1,3 +1,4 @@
+/* -*-c-*- */
 /* This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 2 of the License, or
@@ -17,12 +18,12 @@
 
 int strncasecmp(register char *s1,register char *s2,register int n)
 {
-  while ((--n > 0) && (tolower(*s1) == tolower(*s2)))
-  {
-    ++s1;
-    ++s2;
-    if (!*s1 || !*s2)
-      break;
-  }
-  return (tolower(*s1) - tolower(*s2));
+	while ((--n > 0) && (tolower(*s1) == tolower(*s2)))
+	{
+		++s1;
+		++s2;
+		if (!*s1 || !*s2)
+			break;
+	}
+	return (tolower(*s1) - tolower(*s2));
 }

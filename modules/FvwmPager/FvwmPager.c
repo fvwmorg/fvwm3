@@ -1,3 +1,4 @@
+/* -*-c-*- */
 /* This module, and the entire ModuleDebugger program, and the concept for
  * interfacing this module to the Window Manager, are all original work
  * by Robert Nation
@@ -66,11 +67,11 @@ PagerStringList *NewPagerStringItem(PagerStringList *last, int desk);
 extern FlocaleFont *FwindowFont;
 extern Pixmap default_pixmap;
 
-/*************************************************************************
+/*
  *
  * Screen, font, etc info
  *
- **************************************************************************/
+ */
 ScreenInfo Scr;
 PagerWindow *Start = NULL;
 PagerWindow *FocusWin = NULL;
@@ -156,12 +157,12 @@ static void SetDeskLabel(int desk, const char *label);
 static RETSIGTYPE TerminateHandler(int);
 void ExitPager(void);
 
-/***********************************************************************
+/*
  *
  *  Procedure:
  *      main - start of module
  *
- ***********************************************************************/
+ */
 int main(int argc, char **argv)
 {
   char *display_name = NULL;
@@ -464,12 +465,12 @@ int main(int argc, char **argv)
   return 0;
 }
 
-/***********************************************************************
+/*
  *
  *  Procedure:
  *      Loop - wait for data to process
  *
- ***********************************************************************/
+ */
 void Loop(int *fd)
 {
   XEvent Event;
@@ -497,12 +498,12 @@ void Loop(int *fd)
 }
 
 
-/***********************************************************************
+/*
  *
  *  Procedure:
  *      Process message - examines packet types, and takes appropriate action
  *
- ***********************************************************************/
+ */
 void process_message( FvwmPacket* packet )
 {
   unsigned long type = packet->type;
@@ -571,12 +572,12 @@ void process_message( FvwmPacket* packet )
 }
 
 
-/***********************************************************************
+/*
  *
  *  Procedure:
  *      SIGPIPE handler - SIGPIPE means fvwm is dying
  *
- ***********************************************************************/
+ */
 static RETSIGTYPE
 TerminateHandler(int sig)
 {
@@ -588,12 +589,12 @@ void DeadPipe(int nonsense)
   exit(0);
 }
 
-/***********************************************************************
+/*
  *
  *  Procedure:
  *      list_add - displays packet contents to stderr
  *
- ***********************************************************************/
+ */
 void list_add(unsigned long *body)
 {
 	PagerWindow *t,**prev;
@@ -653,12 +654,12 @@ void list_add(unsigned long *body)
 	return;
 }
 
-/***********************************************************************
+/*
  *
  *  Procedure:
  *      list_configure - displays packet contents to stderr
  *
- ***********************************************************************/
+ */
 void list_configure(unsigned long *body)
 {
   PagerWindow *t;
@@ -728,12 +729,12 @@ void list_configure(unsigned long *body)
   }
 }
 
-/***********************************************************************
+/*
  *
  *  Procedure:
  *      list_destroy - displays packet contents to stderr
  *
- ***********************************************************************/
+ */
 void list_destroy(unsigned long *body)
 {
   PagerWindow *t,**prev;
@@ -769,12 +770,12 @@ void list_destroy(unsigned long *body)
     }
 }
 
-/***********************************************************************
+/*
  *
  *  Procedure:
  *      list_focus - displays packet contents to stderr
  *
- ***********************************************************************/
+ */
 void list_focus(unsigned long *body)
 {
   PagerWindow *t;
@@ -816,12 +817,12 @@ void list_focus(unsigned long *body)
   }
 }
 
-/***********************************************************************
+/*
  *
  *  Procedure:
  *      list_new_page - displays packet contents to stderr
  *
- ***********************************************************************/
+ */
 void list_new_page(unsigned long *body)
 {
   Scr.Vx = body[0];
@@ -847,12 +848,12 @@ void list_new_page(unsigned long *body)
   Hilight(FocusWin,True);
 }
 
-/***********************************************************************
+/*
  *
  *  Procedure:
  *      list_new_desk - displays packet contents to stderr
  *
- ***********************************************************************/
+ */
 void list_new_desk(unsigned long *body)
 {
   int oldDesk;
@@ -1010,12 +1011,12 @@ void list_new_desk(unsigned long *body)
   Hilight(FocusWin,True);
 }
 
-/***********************************************************************
+/*
  *
  *  Procedure:
  *      list_raise - displays packet contents to stderr
  *
- ***********************************************************************/
+ */
 void list_raise(unsigned long *body)
 {
   PagerWindow *t;
@@ -1036,12 +1037,12 @@ void list_raise(unsigned long *body)
 }
 
 
-/***********************************************************************
+/*
  *
  *  Procedure:
  *      list_lower - displays packet contents to stderr
  *
- ***********************************************************************/
+ */
 void list_lower(unsigned long *body)
 {
   PagerWindow *t;
@@ -1064,12 +1065,12 @@ void list_lower(unsigned long *body)
 }
 
 
-/***********************************************************************
+/*
  *
  *  Procedure:
  *      list_iconify - displays packet contents to stderr
  *
- ***********************************************************************/
+ */
 void list_iconify(unsigned long *body)
 {
 	PagerWindow *t;
@@ -1115,12 +1116,12 @@ void list_iconify(unsigned long *body)
 }
 
 
-/***********************************************************************
+/*
  *
  *  Procedure:
  *      list_deiconify - displays packet contents to stderr
  *
- ***********************************************************************/
+ */
 
 void list_deiconify(unsigned long *body, unsigned long length)
 {
@@ -1218,12 +1219,12 @@ void list_window_name(unsigned long *body,unsigned long type)
     }
 }
 
-/***********************************************************************
+/*
  *
  *  Procedure:
  *      list_icon_name - displays packet contents to stderr
  *
- ***********************************************************************/
+ */
 void list_icon_name(unsigned long *body)
 {
   PagerWindow *t;
@@ -1331,12 +1332,12 @@ void list_restack(unsigned long *body, unsigned long length)
 }
 
 
-/***********************************************************************
+/*
  *
  *  Procedure:
  *      list_end - displays packet contents to stderr
  *
- ***********************************************************************/
+ */
 void list_end(void)
 {
   unsigned int nchildren,i;
@@ -1425,11 +1426,11 @@ void list_property_change(unsigned long *body)
   }
 }
 
-/***************************************************************************
+/*
  *
  * Waits for next X event, or for an auto-raise timeout.
  *
- ****************************************************************************/
+ */
 int My_XNextEvent(Display *dpy, XEvent *event)
 {
   fd_set in_fdset;
@@ -1578,11 +1579,11 @@ static void SetDeskLabel(int desk, const char *label)
   }
 }
 
-/*****************************************************************************
+/*
  *
  * This routine is responsible for reading and parsing the config file
  *
- ****************************************************************************/
+ */
 void ParseOptions(void)
 {
   char *tline= NULL;
