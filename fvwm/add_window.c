@@ -1998,6 +1998,7 @@ void setup_focus_policy(FvwmWindow *fw)
 Bool validate_transientfor(FvwmWindow *fw)
 {
 	XWindowAttributes wa;
+	FvwmWindow *cw;
 	Window w;
 
 	w = FW_W_TRANSIENTFOR(fw);
@@ -2005,6 +2006,15 @@ Bool validate_transientfor(FvwmWindow *fw)
 	{
 		FW_W_TRANSIENTFOR(fw) = Scr.Root;
 		return False;
+	}
+	else if (XFindContext(dpy, w, FvwmContext, (caddr_t *)&cw) != XCNOENT)
+	{
+		if (cw == fw)
+		{
+			/* It's a transient of itself, ignore the hint */
+			FW_W_TRANSIENTFOR(fw) = Scr.Root;
+			return False;
+		}
 	}
 	else if (!XGetWindowAttributes(dpy, w, &wa) ||
 		 wa.map_state != IsViewable)
