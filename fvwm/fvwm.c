@@ -523,13 +523,32 @@ int main(int argc, char **argv)
 
   XSetErrorHandler(FvwmErrorHandler);
 
+  {
+    Atom atype;
+    int aformat;
+    unsigned long nitems, bytes_remain;
+    unsigned char *prop;
+
+    if (
+      XGetWindowProperty(
+        dpy, Scr.Root, _XA_WM_DESKTOP, 0L, 1L, True, _XA_WM_DESKTOP,
+        &atype, &aformat, &nitems, &bytes_remain, &prop
+      ) == Success
+    ) {
+      if (prop != NULL) {
+        Restarting = True;
+        /* single = True; */
+      }
+    }
+  }
+
   restore_filename = strdup(CatString2(user_home_dir, "/.fvwm_restart"));
 
   /*
      This should be done early enough to have the window states loaded
      before the first call to AddWindow.
    */
-  LoadWindowStates(restore_filename);
+  if (Restarting) LoadWindowStates(restore_filename);
 
   BlackoutScreen(); /* if they want to hide the capture/startup */
 
@@ -709,7 +728,7 @@ void StartupStuff(void)
      This should be done after the initialization is finished, since
      it directly changes the global state.
    */
-  LoadGlobalState(restore_filename);
+  if (Restarting) LoadGlobalState(restore_filename);
 
 } /* StartupStuff */
 
@@ -1590,25 +1609,6 @@ static void InitVariables(void)
   /* Multiple desks are available even in non-virtual
    * compilations */
   Scr.CurrentDesk = 0;
-
-  {
-    Atom atype;
-    int aformat;
-    unsigned long nitems, bytes_remain;
-    unsigned char *prop;
-
-    if (
-      XGetWindowProperty(
-        dpy, Scr.Root, _XA_WM_DESKTOP, 0L, 1L, True, _XA_WM_DESKTOP,
-        &atype, &aformat, &nitems, &bytes_remain, &prop
-      ) == Success
-    ) {
-      if (prop != NULL) {
-        Restarting = True;
-        /* single = True; */
-      }
-    }
-  }
 
   Scr.EdgeScrollX = Scr.EdgeScrollY = 100;
   Scr.ScrollResistance = Scr.MoveResistance = 0;

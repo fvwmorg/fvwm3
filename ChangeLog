@@ -1,3 +1,9 @@
+1999-06-18  Mikhael Goikhman  <migo@homemail.com>
+
+	* fvwm/fvwm.c (main):
+	(InitVariables): calling LoadWindowStates, LoadGlobalState only
+	on Restarting.
+
 1999-06-17  Dominik Vogt  <domivogt@bvstp038.bbn.hp.com>
 
 	* fvwm/builtins.c (ReadTitleButton): fixed compile error if MINI_ICONS
