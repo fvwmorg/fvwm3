@@ -2511,13 +2511,13 @@ void HandlePropertyNotify(void)
 		 * pixmap or window or has reset the hints to `no icon'.
 		 */
 		if ((Fw->wmhints->flags & IconPixmapHint) ||
-		    (old_wmhints_flags       & IconPixmapHint))
+		    (old_wmhints_flags & IconPixmapHint))
 		{
 ICON_DBG((stderr,"hpn: iph changed (%d) '%s'\n", !!(int)(Fw->wmhints->flags & IconPixmapHint), Fw->name));
 			has_icon_pixmap_hint_changed = True;
 		}
 		if ((Fw->wmhints->flags & IconWindowHint) ||
-		    (old_wmhints_flags       & IconWindowHint))
+		    (old_wmhints_flags & IconWindowHint))
 		{
 ICON_DBG((stderr,"hpn: iwh changed (%d) '%s'\n", !!(int)(Fw->wmhints->flags & IconWindowHint), Fw->name));
 			has_icon_window_hint_changed = True;

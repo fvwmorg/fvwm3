@@ -2816,8 +2816,7 @@ void free_window_names(FvwmWindow *fw, Bool nukename, Bool nukeicon)
  ****************************************************************************/
 void destroy_window(FvwmWindow *fw)
 {
-	/*
-	 * Warning, this is also called by HandleUnmapNotify; if it ever needs
+	/* Warning, this is also called by HandleUnmapNotify; if it ever needs
 	 * to look at the event, HandleUnmapNotify will have to mash the
 	 * UnmapNotify into a DestroyNotify. */
 	if (!fw)
@@ -2871,8 +2870,9 @@ void destroy_window(FvwmWindow *fw)
 			XUnmapWindow(dpy, FW_W_FRAME(fw));
 		}
 		adjust_fvwm_internal_windows(fw);
-		BroadcastPacket(M_DESTROY_WINDOW, 3,
-				FW_W(fw), FW_W_FRAME(fw), (unsigned long)fw);
+		BroadcastPacket(
+			M_DESTROY_WINDOW, 3, FW_W(fw), FW_W_FRAME(fw),
+			(unsigned long)fw);
 		EWMH_DestroyWindow(fw);
 		return;
 	}

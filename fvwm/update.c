@@ -89,6 +89,19 @@ static void apply_window_updates(
 	frame_g.y = t->frame_g.y;
 	frame_g.width = t->frame_g.width;
 	frame_g.height = t->frame_g.height;
+	if (flags->do_setup_focus_policy)
+	{
+		setup_focus_policy(t);
+		if (t == focus_w && HAS_NEVER_FOCUS(t))
+		{
+			focus_w = NULL;
+			if (Scr.Hilite == t)
+			{
+				Scr.Hilite = NULL;
+			}
+			flags->do_redraw_decoration = True;
+		}
+	}
 	if (flags->do_update_gnome_styles)
 	{
 		if (!SDO_IGNORE_GNOME_HINTS(pstyle->flags))
@@ -96,12 +109,10 @@ static void apply_window_updates(
 			GNOME_GetStyle(t, pstyle);
 		}
 	}
-
 	if (flags->do_update_window_grabs)
 	{
 		focus_grab_buttons(t, False);
 	}
-
 	if (IS_TRANSIENT(t) && flags->do_redecorate_transient)
 	{
 		flags->do_redecorate = True;
@@ -147,7 +158,9 @@ static void apply_window_updates(
 		else
 		{
 			if (EWMH_SetIconFromWMIcon(t, NULL, 0, True))
+			{
 				SET_HAS_EWMH_MINI_ICON(t, True);
+			}
 			else
 			{
 				/* "should" not happen */
@@ -386,7 +399,7 @@ static void apply_window_updates(
 	}
 	if (flags->do_update_window_color)
 	{
-		if (focus_w != t)
+		if (t != focus_w)
 		{
 			flags->do_redraw_decoration = True;
 		}
@@ -398,8 +411,10 @@ static void apply_window_updates(
 	}
 	if (flags->do_update_window_color_hi)
 	{
-		if (focus_w == t)
+		if (t == focus_w)
+		{
 			flags->do_redraw_decoration = True;
+		}
 		update_window_color_hi_style(t, pstyle);
 		flags->do_broadcast_focus = True;
 		if (t == Scr.Hilite)
@@ -454,10 +469,6 @@ static void apply_window_updates(
 			SET_ICONIFIED(t, 0);
 			Iconify(t, &win_opts);
 		}
-	}
-	if (flags->do_setup_focus_policy)
-	{
-		setup_focus_policy(t);
 	}
 	if (flags->do_update_frame_attributes)
 	{
@@ -541,10 +552,14 @@ void destroy_scheduled_windows(void)
 
 	if (Scr.flags.is_executing_complex_function != 0 ||
 	    Scr.flags.is_window_scheduled_for_destroy == 0)
+	{
 		return;
+	}
 	/* Grab the server during the style update! */
 	if (GrabEm(CRS_WAIT, GRAB_BUSY))
+	{
 		do_need_ungrab = True;
+	}
 	MyXGrabServer(dpy);
 	Scr.flags.is_window_scheduled_for_destroy = 0;
 	/* need to destroy one or more windows before looking at the window
@@ -595,7 +610,9 @@ void flush_window_updates(void)
 
 	/* Grab the server during the style update! */
 	if (GrabEm(CRS_WAIT, GRAB_BUSY))
+	{
 		do_need_ungrab = True;
+	}
 	MyXGrabServer(dpy);
 
 	/* This is necessary in case the focus policy changes. With
@@ -621,7 +638,9 @@ void flush_window_updates(void)
 			flags.do_update_icon_placement = True;
 		}
 		if (Scr.flags.has_nr_buttons_changed)
+		{
 			flags.do_redecorate = True;
+		}
 		/* TODO: this is not optimised for minimal redrawing yet*/
 		if (t->decor->flags.has_changed)
 		{
