@@ -249,15 +249,18 @@ A: A lot.  To name a few general ones:
 6) My .fvwmrc from version 1.xx no longer works.  What do I do?
 
 A: Start with a new one or convert your old one.  This can be done by
-   hand or with a little help from the 'conversion_script' in the
-   sample.fvwmrc directory.
+   hand or with a little help from the 'fvwmrc_convert' in the
+   utils directory.
 
    And here is a list of rc file command changes compiled by Makoto
    'MAR_kun' MATSUSHITA <matusita@ics.es.osaka-u.ac.jp>.  It may or
    may not be 100% accurate or complete, especially as changes evolve,
    but it's a good start.
 
-   ** Fvwm-1.xx commands **                   ** Fvwm-2.xx equiv **
+   Note that there have been some changes in 2.1.x and up that are
+   not reflected in the conversion script yet.
+
+   ** Fvwm-1.xx commands **                   ** Fvwm-2.0.x equiv **
 
    AppsBackingStore                           (obsoleted)
    AutoRaise delay                            (obsoleted, use FvwmAuto)
