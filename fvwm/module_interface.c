@@ -783,6 +783,7 @@ Bool HandleModuleInput(Window w, int module, char *expect, Bool queue)
 
 RETSIGTYPE DeadPipe(int sig)
 {
+	SIGNAL_RETURN;
 }
 
 void KillModule(int channel)

@@ -1,7 +1,6 @@
 /* -*-c-*- */
 /* This module is based on Twm, but has been siginificantly modified
- * by Rob Nation
- */
+ * by Rob Nation */
 /*
  *       Copyright 1988 by Evans & Sutherland Computer Corporation,
  *                          Salt Lake City, Utah
@@ -49,18 +48,10 @@
 #define WithdrawnState 0
 #endif
 
-#if RETSIGTYPE != void
-#define SIGNAL_RETURN return 0
-#else
-#define SIGNAL_RETURN return
-#endif
-
 #ifndef TRUE
 #define TRUE    1
 #define FALSE   0
 #endif
-
-#define NULLSTR ((char *) NULL)
 
 /* ---------------------------- global macros ------------------------------ */
 
@@ -114,8 +105,8 @@ struct FvwmDecor;
  *
  * do_override_ppos
  *   This flag is used in PlaceWindow().  If it is set, the position requested
- *   by the program is ignored unconditionally.  This is used during the initial
- *   capture and later recapture operations.
+ *   by the program is ignored unconditionally.  This is used during the
+ *   initial capture and later recapture operations.
  *
  * is_iconified_by_parent
  *   Preserves the information if the window is a transient window that was
@@ -213,8 +204,8 @@ typedef struct
 	unsigned has_no_border : 1;
 	unsigned has_window_font : 1;
 	unsigned title_dir : 2;
-	/* static flags that do not change dynamically after the window has been
-	 * created */
+	/* static flags that do not change dynamically after the window has
+	 * been created */
 	struct
 	{
 		unsigned do_circulate_skip : 1;
@@ -283,6 +274,12 @@ typedef struct
 typedef struct
 {
 	common_flags_t common;
+#define CR_MOTION_METHOD_AUTO        0
+#define CR_MOTION_METHOD_USE_GRAV    1
+#define CR_MOTION_METHOD_STATIC_GRAV 2
+#define CR_MOTION_METHOD_MASK      0x3
+	unsigned cr_motion_method : 2;
+	unsigned was_cr_motion_method_detected : 1;
 	unsigned does_wm_delete_window : 1;
 	unsigned does_wm_take_focus : 1;
 	unsigned do_force_next_cr : 1;
@@ -409,9 +406,9 @@ typedef struct WindowConditionMask
 		unsigned needs_current_desk : 1;
 		unsigned needs_current_page : 1;
 		unsigned needs_current_global_page : 1;
-#define NEEDS_ANY        0
-#define NEEDS_TRUE       1
-#define NEEDS_FALSE      2
+#define NEEDS_ANY   0
+#define NEEDS_TRUE  1
+#define NEEDS_FALSE 2
 		unsigned needs_focus : 2;
 		unsigned needs_name : 1;
 		unsigned needs_not_name : 1;
@@ -427,7 +424,7 @@ typedef struct WindowConditionMask
 	int layer;
 } WindowConditionMask;
 
-/* only style.c and add_window.c are allowed to access this struct!! */
+/* only style.c and add_window.c are allowed to access this struct! */
 typedef struct
 {
 	common_flags_t common;
@@ -440,16 +437,16 @@ typedef struct
 #define PLACE_RANDOM          0x4
 	/* new placements value, try to get a minimal backward compatibility
 	 * with the old flags:
-	 * Dumb+Active=Manual,
-	 * Dumb+Random=Cascade,
-	 * Smart+Random= TileCascade,
-	 * Smart+Active=TileManual,
-	 * Random+Smart+Clever=MINOVERLAP which is the original Clever
+	 * Dumb+Active = Manual,
+	 * Dumb+Random = Cascade,
+	 * Smart+Random = TileCascade,
+	 * Smart+Active = TileManual,
+	 * Random+Smart+Clever = MINOVERLAP which is the original Clever
 	 * placement code,
-	 * Active+Smart+Clever= MINOVERLAPPERCENT which is the "new" Clever
+	 * Active+Smart+Clever = MINOVERLAPPERCENT which is the "new" Clever
 	 * placement code and was the original Clever placement code. Now the
 	 * original placement code said:
-	 * Active/Random+Dumb+Clever=Active/Random+Dumb (with Dumb Clever is
+	 * Active/Random+Dumb+Clever = Active/Random+Dumb (with Dumb Clever is
 	 * ignored); These represent the not use value: 0x2=Active+Dumb+Clever,
 	 * 0x6=Random+Dumb+Clever */
 #define PLACE_MANUAL            0x0
@@ -463,6 +460,11 @@ typedef struct
 #define PLACE_MASK              0x7
 	unsigned placement_mode : 3;
 	unsigned ewmh_placement_mode : 2; /* see ewmh.h */
+#define WS_CR_MOTION_METHOD_AUTO CR_MOTION_METHOD_AUTO
+#define WS_CR_MOTION_METHOD_USE_GRAV CR_MOTION_METHOD_USE_GRAV
+#define WS_CR_MOTION_METHOD_STATIC_GRAV CR_MOTION_METHOD_STATIC_GRAV
+#define WS_CR_MOTION_METHOD_MASK CR_MOTION_METHOD_MASK
+	unsigned ws_cr_motion_method : 2;
 	unsigned do_save_under : 1;
 	unsigned do_start_iconic : 1;
 	unsigned do_start_lowered : 1;
@@ -519,7 +521,7 @@ typedef struct
 	unsigned has_placement_percentage_penalty : 1;
 } style_flags;
 
-/* only style.c and add_window.c are allowed to access this struct!! */
+/* only style.c and add_window.c are allowed to access this struct! */
 typedef struct window_style
 {
 	struct window_style *next;
@@ -659,7 +661,8 @@ typedef struct FvwmWindow
 	short title_text_offset;
 	short title_length;
 	/* Note: if the type of this variable is changed, do update the
-	 * CONFIGARGSNEW macro in module_interface.c, libs/vpacket.h and too! */
+	 * CONFIGARGSNEW macro in module_interface.c, libs/vpacket.h and too!
+	 */
 	short title_thickness;
 	rotation_t title_text_rotation;
 	struct
@@ -702,7 +705,8 @@ typedef struct FvwmWindow
 	XClassHint class;
 	/* Tells which desktop this window is on */
 	/* Note: if the type of this variable is changed, do update the
-	 * CONFIGARGSNEW macro in module_interface.c, libs/vpacket.h and too! */
+	 * CONFIGARGSNEW macro in module_interface.c, libs/vpacket.h and too!
+	 */
 	int Desk;
 	/* Where (if at all) was it focussed */
 	int FocusDesk;
@@ -750,7 +754,8 @@ typedef struct FvwmWindow
 
 	int default_layer;
 	/* Note: if the type of this variable is changed, do update the
-	 * CONFIGARGSNEW macro in module_interface.c, libs/vpacket.h and too! */
+	 * CONFIGARGSNEW macro in module_interface.c, libs/vpacket.h and too!
+	 */
 	int layer;
 
 	unsigned char min_icon_width;
@@ -785,7 +790,8 @@ typedef struct FvwmWindow
 #define EWMH_WINDOW_TYPE_NORMAL_ID    5
 #define EWMH_WINDOW_TYPE_TOOLBAR_ID   6
 	/* Note: if the type of this variable is changed, do update the
-	 * CONFIGARGSNEW macro in module_interface.c, libs/vpacket.h and too! */
+	 * CONFIGARGSNEW macro in module_interface.c, libs/vpacket.h and too!
+	 */
 	int ewmh_window_type;
 	/* icon geometry */
 	rectangle ewmh_icon_geometry;
@@ -801,7 +807,8 @@ typedef struct FvwmWindow
 	int ewmh_mini_icon_width;
 	/* memory for the initial _NET_WM_STATE */
 	/* Note: if the type of this variable is changed, do update the
-	 * CONFIGARGSNEW macro in module_interface.c, libs/vpacket.h and too! */
+	 * CONFIGARGSNEW macro in module_interface.c, libs/vpacket.h and too!
+	 */
 	int ewmh_hint_layer;
 	/* memory for the initial _NET_WM_STATE */
 	unsigned long ewmh_hint_desktop;

@@ -221,6 +221,12 @@ This text should not appear anywhere (but it does with autoconf-2.50+).
 @BOTTOM@
 
 
+#if RETSIGTYPE != void
+#define SIGNAL_RETURN return 0
+#else
+#define SIGNAL_RETURN return
+#endif
+
 /* Allow GCC extensions to work, if you have GCC. */
 #ifndef __attribute__
 /* This feature is available in gcc versions 2.5 and later. */
@@ -235,7 +241,6 @@ This text should not appear anywhere (but it does with autoconf-2.50+).
 #  endif
 #endif
 
-
 #if HAVE_ALLOCA_H
 #  include <alloca.h>
 #else
@@ -247,7 +252,6 @@ This text should not appear anywhere (but it does with autoconf-2.50+).
 #    endif
 #  endif
 #endif
-
 
 #ifdef STDC_HEADERS
 #  include <stdlib.h>

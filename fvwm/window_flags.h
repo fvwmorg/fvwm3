@@ -60,7 +60,7 @@
 #define SET_TITLE_DIR(fw,x) \
 	((fw)->flags.common.title_dir = x)
 #define SETM_TITLE_DIR(fw,x) \
-	(fw)->flag_mask.common.title_dir = DIR_MAJOR_MASK * !!(x)
+	(fw)->flag_mask.common.title_dir = ((x) ? DIR_MAJOR_MASK : 0)
 #define HAS_VERTICAL_TITLE(fw) \
 	(HAS_TITLE_DIR(fw,DIR_W) || HAS_TITLE_DIR(fw,DIR_E))
 #define HAS_STIPPLED_TITLE(fw) \
@@ -536,6 +536,18 @@
 	(fw)->flags.is_window_font_loaded = !!(x)
 #define SETM_WINDOW_FONT_LOADED(fw,x) \
 	(fw)->flag_mask.is_window_font_loaded = !!(x)
+#define CR_MOTION_METHOD(fw) \
+	((fw)->flags.cr_motion_method)
+#define SET_CR_MOTION_METHOD(fw,x) \
+	(fw)->flags.cr_motion_method = ((x) & CR_MOTION_METHOD_MASK)
+#define SETM_CR_MOTION_METHOD(fw,x) \
+	(fw)->flag_mask.cr_motion_method = ((x) ? CR_MOTION_METHOD_MASK : 0)
+#define WAS_CR_MOTION_METHOD_DETECTED(fw) \
+	((fw)->flags.was_cr_motion_method_detected)
+#define SET_CR_MOTION_METHOD_DETECTED(fw,x) \
+	(fw)->flags.was_cr_motion_method_detected = !!(x)
+#define SETM_CR_MOTION_METHOD_DETECTED(fw,x) \
+	(fw)->flag_mask.was_cr_motion_method_detected = !!(x)
 #define WM_DELETES_WINDOW(fw) \
 	((fw)->flags.does_wm_delete_window)
 #define SET_WM_DELETES_WINDOW(fw,x) \

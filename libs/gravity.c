@@ -51,29 +51,23 @@ struct _gravity_offset
 
 /* ---------------------------- interface functions ------------------------ */
 
-/*
- *
- *  Procedure:
- *      gravity_get_offsets - map gravity to (x,y) offset signs for adding
- *              to x and y when window is mapped to get proper placement.
- *
- */
+/* map gravity to (x,y) offset signs for adding to x and y when window is
+ * mapped to get proper placement. */
 void gravity_get_offsets(int grav, int *xp,int *yp)
 {
-	static struct _gravity_offset gravity_offsets[11] =
-		{
-			{  0,  0 },     /* ForgetGravity */
-			{ -1, -1 },     /* NorthWestGravity */
-			{  0, -1 },     /* NorthGravity */
-			{  1, -1 },     /* NorthEastGravity */
-			{ -1,  0 },     /* WestGravity */
-			{  0,  0 },     /* CenterGravity */
-			{  1,  0 },     /* EastGravity */
-			{ -1,  1 },     /* SouthWestGravity */
-			{  0,  1 },     /* SouthGravity */
-			{  1,  1 },     /* SouthEastGravity */
-			{  0,  0 },     /* StaticGravity */
-		};
+	static struct _gravity_offset gravity_offsets[11] = {
+		{  0,  0 },     /* ForgetGravity */
+		{ -1, -1 },     /* NorthWestGravity */
+		{  0, -1 },     /* NorthGravity */
+		{  1, -1 },     /* NorthEastGravity */
+		{ -1,  0 },     /* WestGravity */
+		{  0,  0 },     /* CenterGravity */
+		{  1,  0 },     /* EastGravity */
+		{ -1,  1 },     /* SouthWestGravity */
+		{  0,  1 },     /* SouthGravity */
+		{  1,  1 },     /* SouthEastGravity */
+		{  0,  0 },     /* StaticGravity */
+	};
 
 	if (grav < ForgetGravity || grav > StaticGravity)
 	{

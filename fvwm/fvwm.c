@@ -227,9 +227,7 @@ static void SaveDesktopState()
 
 static void InternUsefulAtoms (void)
 {
-	/*
-	 * Create priority colors if necessary.
-	 */
+	/* Create priority colors if necessary. */
 	_XA_MIT_PRIORITY_COLORS = XInternAtom(
 		dpy, "_MIT_PRIORITY_COLORS", False);
 	_XA_WM_CHANGE_STATE = XInternAtom(dpy, "WM_CHANGE_STATE", False);
@@ -242,7 +240,6 @@ static void InternUsefulAtoms (void)
 	_XA_WM_DESKTOP = XInternAtom(dpy, "WM_DESKTOP", False);
 	_XA_MwmAtom=XInternAtom(dpy, "_MOTIF_WM_HINTS",False);
 	_XA_MOTIF_WM=XInternAtom(dpy, "_MOTIF_WM_INFO",False);
-
 	_XA_OL_WIN_ATTR=XInternAtom(dpy, "_OL_WIN_ATTR",False);
 	_XA_OL_WT_BASE=XInternAtom(dpy, "_OL_WT_BASE",False);
 	_XA_OL_WT_CMD=XInternAtom(dpy, "_OL_WT_CMD",False);
@@ -255,11 +252,9 @@ static void InternUsefulAtoms (void)
 	_XA_OL_DECOR_RESIZE=XInternAtom(dpy, "_OL_DECOR_RESIZE",False);
 	_XA_OL_DECOR_HEADER=XInternAtom(dpy, "_OL_DECOR_HEADER",False);
 	_XA_OL_DECOR_ICON_NAME=XInternAtom(dpy, "_OL_DECOR_ICON_NAME",False);
-
 	_XA_WM_WINDOW_ROLE=XInternAtom(dpy, "WM_WINDOW_ROLE",False);
 	_XA_WM_CLIENT_LEADER=XInternAtom(dpy, "WM_CLIENT_LEADER",False);
 	_XA_SM_CLIENT_ID=XInternAtom(dpy, "SM_CLIENT_ID",False);
-
 	_XA_XROOTPMAP_ID=XInternAtom(dpy, "_XROOTPMAP_ID",False);
 	_XA_XSETROOT_ID=XInternAtom(dpy, "_XSETROOT_ID",False);
 
@@ -295,7 +290,7 @@ Restart(int sig)
 	 * BEFORE we call it ... */
 	fvwmSetTerminate(sig);
 
-	return;
+	SIGNAL_RETURN;
 }
 
 static RETSIGTYPE
@@ -308,7 +303,7 @@ SigDone(int sig)
 	 * BEFORE we call it ... */
 	fvwmSetTerminate(sig);
 
-	return;
+	SIGNAL_RETURN;
 }
 
 /*
@@ -715,7 +710,7 @@ ReapChildren(int sig)
 #endif
 	BSD_UNBLOCK_SIGNALS;
 
-	return;
+	SIGNAL_RETURN;
 }
 
 /***********************************************************************
@@ -760,30 +755,25 @@ InstallSignals(void)
 	sigaction(SIGQUIT, &sigact, NULL);
 	sigaction(SIGTERM, &sigact, NULL);
 
-	/*
-	 * Reap all zombies automatically! This signal handler will
-	 * only be called if a child process dies, not if someone
-	 * sends a child a STOP signal. Note that none of our "terminate"
-	 * signals can be delivered until the SIGCHLD handler completes,
-	 * and this is a Good Thing because the terminate handlers
-	 * might exit abruptly via "siglongjmp". This could potentially
-	 * leave SIGCHLD handler with unfinished business ...
+	/* Reap all zombies automatically! This signal handler will only be
+	 * called if a child process dies, not if someone sends a child a STOP
+	 * signal. Note that none of our "terminate" signals can be delivered
+	 * until the SIGCHLD handler completes, and this is a Good Thing
+	 * because the terminate handlers might exit abruptly via "siglongjmp".
+	 * This could potentially leave SIGCHLD handler with unfinished
+	 * business ...
 	 *
-	 * NOTE: We could still receive SIGPIPE signals within the
-	 *       SIGCHLD handler, but the SIGPIPE handler has the
-	 *       SA_RESTART flag set and so should not affect our
-	 *       "wait" system call.
-	 */
+	 * NOTE:  We could still receive SIGPIPE signals within the SIGCHLD
+	 * handler, but the SIGPIPE handler has the SA_RESTART flag set and so
+	 * should not affect our "wait" system call. */
 	sigact.sa_flags |= SA_NOCLDSTOP;
 	sigact.sa_handler = ReapChildren;
 	sigaction(SIGCHLD, &sigact, NULL);
 #else
 #ifdef USE_BSD_SIGNALS
-	fvwmSetSignalMask( sigmask(SIGUSR1) |
-			   sigmask(SIGINT)  |
-			   sigmask(SIGHUP)  |
-			   sigmask(SIGQUIT) |
-			   sigmask(SIGTERM) );
+	fvwmSetSignalMask(
+		sigmask(SIGUSR1) | sigmask(SIGINT) | sigmask(SIGHUP) |
+		sigmask(SIGQUIT) | sigmask(SIGTERM) );
 #endif
 
 	/*

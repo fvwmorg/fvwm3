@@ -10,6 +10,28 @@
 	
 2003-07-05  Dominik Vogt  <dominik.vogt@gmx.de>
 
+	* fvwm/events.c (__cr_detect_icccm_move):
+	(__handle_cr_on_client):
+	(__cr_get_grav_position):
+	(__cr_get_static_position):
+	* fvwm/window_flags.h:
+	* fvwm/fvwm.h:
+	try to autodetect whether application uses the icccm way of moving
+	windows of the traditional way always using static gravity
+
+	* acconfig.h:
+	moved SIGNAL_RETURN macro definition to acconfig.h
+
+	* fvwm/module_interface.c (DeadPipe):
+	* fvwm/fvwm.c (SigDone):
+	(Restart):
+	(ReapChildren):
+	use SIGNAL_RETURN macro
+
+	* fvwm/events.c (__handle_cr_on_client):
+	(__merge_cr_moveresize):
+	(__cr_detect_icccm_move):
+
 	* fvwm/events.c (__handle_cr_on_unmanaged):
 	(__handle_cr_on_icon):
 	(__handle_cr_on_shaped):
