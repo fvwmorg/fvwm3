@@ -220,7 +220,6 @@ void SetWindowBackgroundWithOffset(
 		{
 			Pixmap p2;
 
-fprintf(stderr,"xoyy %d yoff %d\n", x_off, y_off);
 			p2 = ScrollPixmap(
 				dpy, pixmap, gc, x_off, y_off, width, height,
 				depth);
