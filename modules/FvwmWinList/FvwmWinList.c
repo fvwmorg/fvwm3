@@ -200,8 +200,7 @@ static void window_shade(unsigned long *body, int do_shade)
 		flags.is_shaded = 0;
 		if (flags.needs_resize_after_unshade)
 		{
-			AdjustWindow(False);
-			RedrawWindow(True, True, NULL);
+			AdjustWindow(True);
 			flags.needs_resize_after_unshade = 0;
 		}
 	}
@@ -1478,6 +1477,7 @@ void StartMeUp_I(void)
       XDisplayName(""));
     exit (1);
   }
+XSynchronize(dpy, 1);
   PictureInitCMap(dpy);
   FScreenInit(dpy);
   AllocColorset(0);

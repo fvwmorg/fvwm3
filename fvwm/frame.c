@@ -600,6 +600,25 @@ static void frame_set_decor_gravities(
 	return;
 }
 
+/* Just restore the win and bit gravities on the client window. */
+static void frame_restore_client_gravities(FvwmWindow *fw)
+{
+	XSetWindowAttributes xcwa;
+	long valuemask;
+
+	valuemask = CWWinGravity;
+	if (fw->attr_backup.is_bit_gravity_stored)
+	{
+		fw->attr_backup.is_bit_gravity_stored = 0;
+		xcwa.bit_gravity = fw->attr_backup.bit_gravity;
+		valuemask = CWBitGravity;
+	}
+	xcwa.win_gravity = fw->hints.win_gravity;
+	XChangeWindowAttributes(dpy, FW_W(fw), valuemask, &xcwa);
+
+	return;
+}
+
 /* Prepares the structure for the next animation step. */
 static void frame_next_move_resize_args(
 	frame_move_resize_args mr_args)
@@ -1811,10 +1830,7 @@ void frame_free_move_resize_args(
 	}
 	else
 	{
-		XSetWindowAttributes xcwa;
-
-		xcwa.win_gravity = fw->hints.win_gravity;
-		XChangeWindowAttributes(dpy, FW_W(fw), CWWinGravity, &xcwa);
+		frame_restore_client_gravities(fw);
 	}
 
 	focus_grab_buttons_on_layer(fw->layer);

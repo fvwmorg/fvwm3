@@ -607,6 +607,21 @@ void DrawButtonArray(
 }
 
 /******************************************************************************
+  Mark all the buttons in the array as dirty
+******************************************************************************/
+void DirtyButtonArray(ButtonArray *barray)
+{
+	Button *btn;
+
+	for (btn = barray->head; btn != NULL; btn = btn->next)
+	{
+		btn->needsupdate = 1;
+	}
+
+	return;
+}
+
+/******************************************************************************
   DrawButtonArray - Draw the whole array (all=1), or only those that need.
 ******************************************************************************/
 void DrawTransparentButtonArray(ButtonArray *barray)

@@ -75,6 +75,7 @@ extern void DoButton(
 	Button *ptr, int x, int y, int w, int h, Bool clear_bg, XEvent *evp);
 extern void DrawButtonArray(
 	ButtonArray *array, Bool all, Bool clear_bg, XEvent *evp);
+void DirtyButtonArray(ButtonArray *barray);
 extern void DrawTransparentButtonArray(ButtonArray *barray);
 extern void SwitchButton(ButtonArray *array,int butnum);
 extern int WhichButton(ButtonArray *array,int x, int y);
