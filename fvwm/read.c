@@ -161,6 +161,13 @@ void ReadFile(F_CMD_ARGS)
     int read_quietly;
 
     DoingCommandLine = False;
+    
+    if (fFvwmInStartup && *Module > -1)
+    {
+      Cursor cursor = XCreateFontCursor(dpy, XC_watch);
+      XGrabPointer(dpy, Scr.Root, 0, 0, GrabModeSync, GrabModeSync,
+		   None, cursor, CurrentTime);
+    }
 
     if (debugging)
 	fvwm_msg(DBG,"ReadFile","about to attempt '%s'",action);

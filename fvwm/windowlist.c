@@ -103,6 +103,7 @@ void do_windowList(XEvent *eventp,Window w,FvwmWindow *tmp_win,
   int low_layer = 0;  /* show all layers by default */
   int high_layer = INT_MAX;
   int tc;
+  int show_listskip = 0; /* do not show listskip by default */
 
   /* Condition vars. */
   Bool use_condition = False;
@@ -193,6 +194,10 @@ void do_windowList(XEvent *eventp,Window w,FvwmWindow *tmp_win,
         flags |= SHOW_STICKY;
       else if (StrEquals(tok,"OnlySticky"))
         flags = SHOW_STICKY;
+      else if (StrEquals(tok,"UseListSkip"))
+	show_listskip = 1;
+      else if (StrEquals(tok,"OnlyListSkip"))
+	show_listskip = 2;
           /*
              these are a bit dubious, but we
              should keep the OnTop options
@@ -306,9 +311,12 @@ void do_windowList(XEvent *eventp,Window w,FvwmWindow *tmp_win,
     for (ii = 0; ii < numWindows; ii++)
     {
       t = windowList[ii];
-      if(((t->Desk == next_desk) || (flags & NO_DESK_SORT)) &&
-         (!(DO_SKIP_WINDOW_LIST(t))))
+      if(((t->Desk == next_desk) || (flags & NO_DESK_SORT)))
       {
+	if (!show_listskip && DO_SKIP_WINDOW_LIST(t))
+          continue; /* don't want listskip windows - skip */
+	if (show_listskip == 2 && !DO_SKIP_WINDOW_LIST(t))
+	  continue; /* don't want no listskip one - skip */
 	if (use_condition && !MatchesConditionMask(t, &mask))
 	  continue; /* doesn't match specified condition */
         if (!(flags & SHOW_ICONIC) && (IS_ICONIFIED(t)))

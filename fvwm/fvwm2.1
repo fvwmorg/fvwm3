@@ -1852,8 +1852,8 @@ and background colors for the cursor, defaulting to black and white.
 colors used in miscellaneous windows created by fvwm, for example
 in the geometry feedback windows during a move or resize operation.
 If you don't want to change one color or the other, use - as its
-color name. To revert to the builtin default colors omit both
-color names. Note that the default colors are not used in menus,
+color name.  To revert to the builtin default colors omit both
+color names.  Note that the default colors are not used in menus,
 window titles or icon titles.
 
 
@@ -2053,7 +2053,8 @@ The \fIoptions\fP passed to WindowList can be "NoGeometry", "Function
 <funcname>", "Desk <desknum>", "CurrentDesk", "NoIcons", "Icons",
 "OnlyIcons", "NoNormal", "Normal", "OnlyNormal", "NoSticky", "Sticky",
 "OnlySticky", "NoOnTop", "OnTop", "OnlyOnTop", "Layer m [n]",
-"NoDeskSort", "UseIconName", "Alphabetic", "NotAlphabetic".
+"UseListSkip", "OnlyListSkip", "NoDeskSort", "UseIconName", "Alphabetic", 
+"NotAlphabetic".
 
 (Note - normal means not iconic, sticky, or ontop)
 
@@ -2073,7 +2074,9 @@ the following:
 .EX
 WindowList OnlyIcons, Sticky, OnTop, Geometry
 .EE
-(Note - the "Only" options essentially wipe out all other ones...)
+(Note - the "Only" options essentially wipe out all other ones... but
+the "OnlyListSkip" option which just causes WindowList to only consider 
+the windows with WindowListSkip style)
 
 
 .TP
