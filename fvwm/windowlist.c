@@ -158,6 +158,11 @@ void do_windowList(XEvent *eventp,Window w,FvwmWindow *tmp_win,
 	  flags &= ~SHOW_ALLDESKS;
 	}
       }
+      else if (StrEquals(tok,"CurrentDesk"))
+      {
+        desk = Scr.CurrentDesk;
+        flags &= ~SHOW_ALLDESKS;
+      }
       else if (StrEquals(tok,"NotAlphabetic"))
         flags &= ~SHOW_ALPHABETIC;
       else if (StrEquals(tok,"Alphabetic"))
