@@ -75,7 +75,7 @@
 #define MW_EVENTS   (ExposureMask |\
 		     StructureNotifyMask |\
 		     ButtonReleaseMask | ButtonPressMask |\
-		     KeyReleaseMask | KeyPressMask)
+		     KeyReleaseMask | KeyPressMask | ButtonMotionMask)
 /* SW_EVENTS are for swallowed windows... */
 #define SW_EVENTS   (PropertyChangeMask | StructureNotifyMask |\
 		     ResizeRedirectMask | SubstructureNotifyMask)
@@ -178,6 +178,7 @@ Bool is_transient = 0;
 Bool is_transient_panel = 0;
 
 button_info *CurrentButton = NULL;
+Bool is_pointer_in_current_button = False;
 int fd[2];
 
 button_info *UberButton=NULL;
@@ -1081,6 +1082,20 @@ void Loop(void)
       }
       break;
 
+      case MotionNotify:
+	{
+	  Bool f = is_pointer_in_current_button;
+
+	  is_pointer_in_current_button =
+	    (CurrentButton && CurrentButton ==
+	     select_button(UberButton, Event.xmotion.x, Event.xmotion.y));
+	  if (CurrentButton && is_pointer_in_current_button != f)
+	  {
+	    RedrawButton(b, 0);
+	  }
+	}
+	break;
+
       case KeyPress:
 	XLookupString(&Event.xkey,buffer,10,&keysym,0);
 	if(keysym!=XK_Return && keysym!=XK_KP_Enter && keysym!=XK_Linefeed)
@@ -1094,8 +1109,13 @@ void Loop(void)
 	  RedrawButton(b, 0);
 	  break;
 	}
+	if (Event.xbutton.state & DEFAULT_ALL_BUTTONS_MASK)
+	{
+	  break;
+	}
 	CurrentButton = b =
 	  select_button(UberButton,Event.xbutton.x,Event.xbutton.y);
+	is_pointer_in_current_button = True;
 
 	act = NULL;
 	if (!(b->flags & b_Panel) &&
@@ -1130,6 +1150,11 @@ void Loop(void)
 
       case KeyRelease:
       case ButtonRelease:
+	if (CurrentButton == NULL || !is_pointer_in_current_button)
+	{
+	  CurrentButton = NULL;
+	  break;
+	}
 	b = select_button(UberButton,Event.xbutton.x,Event.xbutton.y);
 	act = GetButtonAction(b,Event.xbutton.button);
 	if (b && !act && (b->flags & b_Panel))

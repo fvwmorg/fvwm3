@@ -241,6 +241,7 @@ extern Window Root;
 extern Window MyWindow;
 extern char *MyName;
 extern button_info *UberButton,*CurrentButton;
+extern Bool is_pointer_in_current_button;
 
 extern char *imagePath;
 extern int fd[];

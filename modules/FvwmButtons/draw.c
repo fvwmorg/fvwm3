@@ -242,13 +242,13 @@ void RedrawButton(button_info *b,int clean)
     {
       rev = 1;
     }
-    if (b == CurrentButton)
+    if (b == CurrentButton && is_pointer_in_current_button)
     {
       rev_xor = 1;
     }
   }
   else if (((b->flags & b_Hangon) && (b->flags & b_Swallow)) ||
-	   b == CurrentButton)
+	   (b == CurrentButton && is_pointer_in_current_button))
   {
     /* Hanging swallow or held down by user */
     rev = 1;
