@@ -19,11 +19,19 @@ extern Display *PictureSaveDisplay;     /* Save area for display pointer */
 /* This routine called during fvwm and some modules initialization */
 void InitPictureCMap(Display *dpy, Window Root);
 
-/** Access to the image path **/
+/** Returns current setting of the image path **/
 char* GetImagePath( void );
-void SetImagePath( char* newpath );
 
-char* findImageFile( char* filename, char* pathlist, int mode );
+/** Sets image path to newpath.  Environment variables are expanded, and '+'
+    is expanded to previous value of imagepath.  The new path is in
+    newly-allocated memory, so newpath may be freed or re-used.  **/
+void SetImagePath( const char* newpath );
+
+/** Search for file along pathlist.  If pathlist is NULL, will use the current
+    imagepath setting.  If filename is not found, but filename.gz is found,
+    will return the latter.  Mode is typically R_OK.  See searchPath() for
+    more details.  **/
+char* findImageFile( const char* filename, const char* pathlist, int mode );
 
 
 /** Manipulating Pictures **/

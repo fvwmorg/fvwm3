@@ -1,3 +1,11 @@
+Sun Mar 28 11:57:25 1999  Steve Robbins  <steve@nyongwa.montreal.qc.ca>
+
+	* FvwmForm/Makefile.am (FvwmTalk): 
+	* FvwmCommand/scripts/Makefile.am (.pl):
+	* FvwmConsole/Makefile.am: removed unnecesary chmod +x commands;
+	anything listed in a _SCRIPTS primary is correctly installed with
+	execute permissions set.
+
 1999-03-27  Dominik Vogt  <dominik_vogt@gmx.de>
 
 	* FvwmIconMan/x.c:

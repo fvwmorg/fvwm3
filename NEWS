@@ -1,5 +1,8 @@
 Changes in alpha release 2.3.0 (February 1999)
 
+* ImagePath and ModulePath commands will now expand '+' to be the
+  previous value of the path.
+
 * Key and mouse bindings take effect immediately. A 'Recapture' was necessary
   before this change.
 
@@ -121,8 +124,7 @@ Changes in alpha release 2.3.0 (February 1999)
 
 * IconPath and PixmapPath are replaced by single ImagePath.  All
   images, no matter what their format are searched for along the
-  ImagePath.  The ImagePath command ADDS to the front of the
-  image path, preserving the built in ImagePath.
+  ImagePath.
 
 Changes in official release 2.2 (February 1999)
 

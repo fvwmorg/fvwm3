@@ -13,7 +13,6 @@ EXTRA_DIST = ex-auto.pl ex-cascade.pl ex-grpmv.pl focus-Netscape.pl	\
 
 SUFFIXES = .pl
 .pl:
-	rm -f $@
+	@rm -f $@
 	sed -e 's,xPERLx,$(PERL),' $< > $@-t
 	mv $@-t $@
-	chmod +x $@

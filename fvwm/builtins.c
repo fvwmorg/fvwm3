@@ -1575,21 +1575,38 @@ void SetDeskSize(F_CMD_ARGS)
 
 void imagePath_function(F_CMD_ARGS)
 {
-    SetImagePath( envDupExpand( stripcpy(action), 0 ) );
+    SetImagePath( action );
 }
+
+/** Prepend rather than replace the image path.  
+    Used for obsolete PixmapPath and IconPath **/
+static obsolete_imagepaths( const char* pre_path )
+{
+    char* tmp = stripcpy( pre_path );
+    char* path = alloca( strlen( tmp ) + strlen( GetImagePath() ) + 2 );
+    
+    strcpy( path, tmp );
+    free( tmp );
+
+    strcat( path, ":" );
+    strcat( path, GetImagePath() );
+    
+    SetImagePath( path );
+}
+
 
 void iconPath_function(F_CMD_ARGS)
 {
     fvwm_msg(ERR, "iconPath_function",
 	     "IconPath is deprecated since 2.3.0; use ImagePath instead." );
-    imagePath_function( eventp, w, tmp_win, context, action, Module );
+    obsolete_imagepaths( action );
 }
 
 void pixmapPath_function(F_CMD_ARGS)
 {
     fvwm_msg(ERR, "pixmapPath_function",
 	     "PixmapPath is deprecated since 2.3.0; use ImagePath instead." );
-    imagePath_function( eventp, w, tmp_win, context, action, Module );
+    obsolete_imagepaths( action );
 }
 
 
@@ -1598,15 +1615,8 @@ char *ModulePath = FVWM_MODULEDIR;
 void setModulePath(F_CMD_ARGS)
 {
     static int need_to_free = 0;
-    char *tmp;
-
-    if ( need_to_free && ModulePath != NULL )
-	free(ModulePath);
-
-    tmp = stripcpy(action);
-    ModulePath = envDupExpand(tmp, 0);
+    setPath( &ModulePath, action, need_to_free );
     need_to_free = 1;
-    free(tmp);
 }
 
 

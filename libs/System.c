@@ -5,6 +5,7 @@
 #include "config.h"
 #include "fvwmlib.h"
 
+
 #if HAVE_UNAME
 #include <sys/utsname.h>
 #endif
@@ -43,6 +44,34 @@ int getostype(char *buf, int max)
 }
 
 
+/**
+ * Set a colon-separated path, with environment variable expansions,
+ * and expand '+' to be the value of the previous path.
+ **/
+void setPath( char** p_path, const char* newpath, int free_old_path )
+{
+    char* oldpath = *p_path;
+    int oldlen = strlen( oldpath );
+    char* stripped_path = stripcpy( newpath );
+    int found_plus = strchr( newpath, '+' ) != NULL;
+
+    /** Leave room for the old path, if we find a '+' in newpath **/
+    *p_path = envDupExpand( stripped_path, found_plus ? oldlen : 0 );
+    free( stripped_path );
+    
+    if ( found_plus ) {
+	char* p = strchr( *p_path, '+' );
+	memmove( p+oldlen, p+1, strlen(p+1) );
+
+	/* copy oldlen+1 bytes to include the trailing NUL */
+	strncpy( p, oldpath, oldlen+1 ); 
+    }
+
+    if ( free_old_path )
+	free( oldpath );
+}
+
+
 /****************************************************************************
  *
  * Find the specified file somewhere along the given path.
@@ -52,7 +81,8 @@ int getostype(char *buf, int max)
  * Oh well.
  *
  ****************************************************************************/
-char* searchPath( char* pathlist, char* filename, char* suffix, int type )
+char* searchPath( const char* pathlist, const char* filename, 
+		  const char* suffix, int type )
 {
     char *path;
     int l;

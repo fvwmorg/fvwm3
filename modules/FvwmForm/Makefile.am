@@ -12,14 +12,13 @@ module_SCRIPTS = FvwmTalk
 FvwmTalk:
 	echo "#!/bin/sh" > $@
 	echo exec ${moduledir}/FvwmForm '$$@' FormFvwmTalk.>> $@
-	chmod +x $@
 
 ## NB: Neither _MANS nor _DATA are included by default in
 ## distributions! 
 EXTRA_DIST = $(man_MANS) $(config_DATA) Changes
 
-FvwmForm_SOURCES = FvwmForm.c FvwmForm.h ReadXServer.c \
- ParseCommand.c
+FvwmForm_SOURCES = FvwmForm.c FvwmForm.h ReadXServer.c ParseCommand.c
+
 FvwmForm_DEPENDENCIES = $(top_builddir)/libs/libfvwm.a
 
 config_DATA =        \

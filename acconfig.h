@@ -16,7 +16,9 @@ char *alloca ();
 # endif
 #endif
 
-/** Compatibility stuff **/
+
+/* Suffix for config filenames */
+#define FVWMRC ".fvwm2rc"
 
 /* Where to search for images.  */
 #undef FVWM_IMAGEPATH

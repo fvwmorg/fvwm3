@@ -1537,21 +1537,27 @@ modifiers. E.g. do not ignore scroll-lock if you have no problem with
 it. In the FAQ you will find a better solution of this problem.
 
 .IP "ImagePath \fIpath\fP"
-Specifies a colon separated list of full path names of directories
-where images (both monochrome and pixmap) can be found.  Each path should start
-with a slash.  Environment variables can be used here as well (i.e.
-$HOME or ${HOME}).
+Specifies a colon separated list of directories in which to search
+for images (both monochrome and pixmap).  To find an image given by
+a relative pathname, FVWM looks into each directory listed in turn,
+and uses the first file found.
+
+The ImagePath may contain environment variables such as $HOME (or
+${HOME}).  Further, a '+' in the path is expanded to the previous
+value of the path, allowing easy appending or prepending to the path.
+
+For example:
+.EX
+ImagePath ${HOME}/icons:+:/usr/local/include/X11/bitmaps
+.EE
 
 Note: if the FvwmM4 is used to parse your rc files, then \fIm4\fP may
 want to mangle the word "include" which will frequently show up in the
-ImagePath command.  To fix this add undefine(`include')
-prior to the ImagePath command, or better use the '-m4-prefix' option
+ImagePath command.  To fix this one may add undefine(`include')
+prior to the ImagePath command, or better: use the '-m4-prefix' option
 to force all m4 directives to have a prefix of "m4_" (see the
 \fIFvwmM4\fP man page).
 
-During installation, some image directories are builtin to fvwm2.
-Any directories specified with this command are added to the front
-of the current image path.
 
 .IP "Key \fIkeyname Context Modifiers Function\fP"
 Binds a keyboard key to a specified \fIfvwm2\fP built-in function, or
@@ -2086,10 +2092,21 @@ built-in and function names.
 
 
 .IP "ModulePath"
-Specifies a colon separated list of paths for \fIfvwm2\fP to search
-when looking for a module to load.  Individual directories do not need
-trailing slashes.  Environment variables can be used here as well (i.e.
-$HOME or ${HOME}).  The builtin module path is available via the
+Specifies a colon separated list of directories in which to search for
+modules.  To find a module, \fIFVWM\fP searches each directory in turn
+and uses the first file found.  Directory names on the list do not
+need trailing slashes.
+
+The ModulePath may contain environment variables such as $HOME (or
+${HOME}).  Further, a '+' in the path is expanded to the previous
+value of the path, allowing easy appending or prepending to the path.
+
+For example:
+.EX
+ModulePath ${HOME}/lib/fvwm/modules:+
+.EE
+
+The directory containing the standard modules is available via the
 environment variable $FVWM_MODULEDIR.
 
 

@@ -1,3 +1,30 @@
+Sun Mar 28 15:42:30 1999  Steve Robbins  <steve@nyongwa.montreal.qc.ca>
+
+	* libs/Strings.c (stripcpy): add 'const' qualifier to 'char*'
+	argument type.
+
+	* fvwm/builtins.c (imagePath_function, iconPath_function,
+	pixmapPath_function, setModulePath): change to new setPath().
+
+	* libs/Picture.c (SetImagePath): use new setPath() internally.
+
+	* libs/fvwmlib.h:
+	* libs/System.c (setPath): new function. Sets a colon-separated
+	path variable, e.g. ImagePath and ModulePath.  Expands environment
+	variables, and expands + to be the previous value of the path.
+
+	* fvwm/fvwm2.1: rewrote ImagePath and ModulePath entries to
+	document the '+' expansion.
+
+Sun Mar 28 11:44:29 1999  Steve Robbins  <steve@nyongwa.montreal.qc.ca>
+
+	* fvwm/Makefile.am (AM_CFLAGS): move '-D' flags for FVWM_MODLEDIR
+	and FVWM_LIBDIR to this variable and removed the special build
+	rules for builtins.c, fvwm.c, and read.c; the special rules
+	prevented automake's dependency-tracking from working
+
+	* acconfig.h (FVWMRC): moved filename suffix symbol FVWMRC here.
+
 1999-03-28  Dominik Vogt  <dominik_vogt@gmx.de>
 
 	* fvwm/fvwm2.1: Removed obsolete doublequotes from many examples

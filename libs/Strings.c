@@ -84,28 +84,29 @@ void CopyString(char **dest, char *source)
  * Strips leading spaces and trailing spaces and new lines
  *
  ****************************************************************************/ 
-char *stripcpy(char *source)
+char *stripcpy( const char *source )
 {
-  char *tmp,*ptr;
-  int len;
+    const char* tmp;
+    char* ptr;
+    int len;
 
-  if(source == NULL)
-    return NULL;
+    if(source == NULL)
+	return NULL;
 
-  while(isspace(*source))
-    source++;
-  len = strlen(source);
-  tmp = source + len -1;
+    while(isspace(*source))
+	source++;
+    len = strlen(source);
+    tmp = source + len -1;
 
-  while( (tmp >= source) && ((isspace(*tmp)) || (*tmp == '\n')) )
+    while( (tmp >= source) && ((isspace(*tmp)) || (*tmp == '\n')) )
     {
-      tmp--;
-      len--;
+	tmp--;
+	len--;
     }
-  ptr = safemalloc(len+1);
-  strncpy(ptr,source,len);
-  ptr[len]=0;
-  return ptr;
+    ptr = safemalloc(len+1);
+    strncpy(ptr,source,len);
+    ptr[len]=0;
+    return ptr;
 }
   
 int StrEquals(char *s1,char *s2)

@@ -80,7 +80,7 @@ int usleep( unsigned long usec );
 
 char *CatString3(char *a, char *b, char *c);
 void CopyString(char **dest, char *source);
-char *stripcpy(char *source);
+char *stripcpy( const char *source );
 int StrEquals(char *s1,char *s2);
 
 int  envExpand(char *s, int maxstrlen);
@@ -136,8 +136,44 @@ int GetFdWidth(void);
 int getostype(char *buf, int max);
 char *safemalloc(int);
 
-/* Search along colon-separated path for filename, with optional suffix */
-char* searchPath( char* path, char* filename, char* suffix, int type );
+/**
+ * Set a colon-separated path, with environment variable expansions.
+ * Expand '+' to be the value of the previous path.  
+ * 
+ * Parameters:
+ * p_path          pointer to the path variable
+ * newpath         new value for *p_path
+ * free_old_path   set true if we should free the memory pointed to
+ *                 by p_path on entry
+ *
+ * The value of newpath is copied into a newly-allocated place, to which 
+ * '*p_path' will point to upon return.  The memory region pointed to by
+ * '*p_path' upon entry will be freed if 'free_old_path' is true.
+ * 
+ **/
+void setPath( char** p_path, const char* newpath, int free_old_path );
+
+/**
+ * Search along colon-separated path for filename, with optional suffix.
+ *
+ * Parameters:
+ * path          colon-separated path of directory names
+ * filename      basename of file to search for
+ * suffix        if non-NULL, filename may have this suffix
+ * type          mode sought for file
+ *
+ * For each DIR in the path, search for DIR/filename then
+ * DIR/<filename><suffix> (if suffix is non-NULL).  Return the full path of
+ * the first found.
+ *
+ * The parameter type is a mask consisting of one or more of R_OK, W_OK, X_OK
+ * and F_OK.  R_OK, W_OK and X_OK request checking whether the file exists and
+ * has read, write and execute permissions, respectively.  F_OK just requests
+ * checking for the existence of the file.
+ *
+ **/
+char* searchPath( const char* path, const char* filename, 
+		  const char* suffix, int type );
 
 
 /***********************************************************************
