@@ -1649,9 +1649,6 @@ static void InitVariables(void)
   Menus.all = NULL;
   Menus.DefaultStyle = NULL;
   Menus.LastStyle = NULL;
-  Menus.PopupDelay10ms = DEFAULT_POPUP_DELAY;
-  Menus.DoubleClickTime = DEFAULT_MENU_CLICKTIME;
-  memset(&Menus.flags, 0, sizeof(Menus.flags));
   Scr.last_added_item.type = ADDED_NONE;
 
   Scr.DefaultIcon = NULL;

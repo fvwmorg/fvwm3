@@ -913,8 +913,9 @@ typedef enum
   SA_ABORT
 } shortcut_action;
 
-static void menuShortcuts(MenuRoot *mr, MenuReturn *pmret, XEvent *event,
-			  MenuItem **pmiCurrent, double_keypress *pdkp)
+static void menuShortcuts(
+  MenuRoot *mr, MenuParameters *pmp, MenuReturn *pmret, XEvent *event,
+  MenuItem **pmiCurrent, double_keypress *pdkp)
 {
   int fControlKey = event->xkey.state & ControlMask? True : False;
   int fShiftedKey = event->xkey.state & ShiftMask? True: False;
@@ -946,7 +947,7 @@ static void menuShortcuts(MenuRoot *mr, MenuReturn *pmret, XEvent *event,
   /*** handle double-keypress ***/
 
   if (pdkp->timestamp &&
-      lastTimestamp - pdkp->timestamp < Menus.DoubleClickTime &&
+      lastTimestamp - pdkp->timestamp < MST_DOUBLE_CLICK_TIME(pmp->menu) &&
       event->xkey.state == pdkp->keystate &&
       event->xkey.keycode == pdkp->keycode)
   {
@@ -1356,7 +1357,7 @@ static Bool is_double_click(
 {
   if (Event.type == KeyPress)
     return False;
-  if (lastTimestamp - t0 >= Menus.DoubleClickTime)
+  if (lastTimestamp - t0 >= MST_DOUBLE_CLICK_TIME(pmp->menu))
     return False;
   if (has_mouse_moved)
     return False;
@@ -1438,8 +1439,7 @@ static void MenuInteraction(
 
   memset(&mops, 0, sizeof(mops));
   flags.do_popup_immediately =
-    (MST_DO_POPUP_IMMEDIATELY(pmp->menu) &&
-     (Menus.PopupDelay10ms > 0));
+    (MST_DO_POPUP_IMMEDIATELY(pmp->menu) && MST_POPUP_DELAY(pmp->menu) > 0);
 
   /* remember where the pointer was so we can tell if it has moved */
   XQueryPointer(dpy, Scr.Root, &JunkRoot, &JunkChild,
@@ -1484,7 +1484,7 @@ static void MenuInteraction(
       {
 	/* handle exposure events first */
 	if (flags.do_force_popup ||
-	    (Menus.PopupDelay10ms > 0 && !flags.is_popped_up_by_timeout))
+	    (MST_POPUP_DELAY(pmp->menu) > 0 && !flags.is_popped_up_by_timeout))
 	{
 	  while (!XPending(dpy) || !XCheckMaskEvent(
 		   dpy, ButtonPressMask|ButtonReleaseMask|ExposureMask|
@@ -1492,7 +1492,8 @@ static void MenuInteraction(
 		   ButtonMotionMask,
 		   &Event))
 	  {
-	    if (flags.do_force_popup || c10msDelays++ > Menus.PopupDelay10ms)
+	    if (flags.do_force_popup ||
+		c10msDelays++ > MST_POPUP_DELAY(pmp->menu))
 	    {
 	      DBUG("MenuInteraction","Faking motion");
 	      /* fake a motion event, and set flags.do_popup_now */
@@ -1626,7 +1627,7 @@ static void MenuInteraction(
       }
 
       /* now handle the actual key press */
-      menuShortcuts(pmp->menu, pmret, &Event, &mi, pdkp);
+      menuShortcuts(pmp->menu, pmp, pmret, &Event, &mi, pdkp);
       if (pmret->rc != MENU_NOP)
       {
 	/* using a key 'unposts' the posted menu */
@@ -5384,7 +5385,7 @@ void DestroyMenuStyle(F_CMD_ARGS)
   }
   else if (ST_USAGE_COUNT(ms) != 0)
   {
-    fvwm_msg(ERR,"DestroyMenuStyle", "menu style is in use");
+    fvwm_msg(ERR,"DestroyMenuStyle", "menu style %s is in use", name);
     return;
   }
   else
@@ -5420,7 +5421,7 @@ static void UpdateMenuStyle(MenuStyle *ms)
 
   if (ST_USAGE_COUNT(ms) != 0)
   {
-    fvwm_msg(ERR,"UpdateMenuStyle", "menu style is in use");
+    fvwm_msg(ERR,"UpdateMenuStyle", "menu style %s is in use", ST_NAME(ms));
     return;
   }
   ST_IS_UPDATED(ms) = 1;
@@ -5679,7 +5680,7 @@ static void NewMenuStyle(F_CMD_ARGS)
   ms = FindMenuStyle(name);
   if (ms && ST_USAGE_COUNT(ms) != 0)
   {
-    fvwm_msg(ERR,"NewMenuStyle", "menu style is in use");
+    fvwm_msg(ERR,"NewMenuStyle", "menu style %s is in use", name);
     return;
   }
   tmpms = (MenuStyle *)safemalloc(sizeof(MenuStyle));
@@ -5712,6 +5713,8 @@ static void NewMenuStyle(F_CMD_ARGS)
       ST_HAS_ACTIVE_FORE(tmpms) = 0;
       ST_HAS_ACTIVE_BACK(tmpms) = 0;
       ST_DO_POPUP_AS_ROOT_MENU(tmpms) = 0;
+      ST_DOUBLE_CLICK_TIME(tmpms) = DEFAULT_MENU_CLICKTIME;
+      ST_POPUP_DELAY(tmpms) = DEFAULT_POPUP_DELAY;
       has_gc_changed = True;
       option = "fvwm";
     }
@@ -5942,15 +5945,9 @@ static void NewMenuStyle(F_CMD_ARGS)
 
     case 17: /* PopupDelay */
       if (GetIntegerArguments(args, NULL, val, 1) == 0 || *val < 0)
-	Menus.PopupDelay10ms = DEFAULT_POPUP_DELAY;
+	ST_POPUP_DELAY(tmpms) = DEFAULT_POPUP_DELAY;
       else
-	Menus.PopupDelay10ms = (*val+9)/10;
-      if (!is_default_style)
-      {
-	fvwm_msg(WARN, "NewMenuStyle",
-		 "PopupDelay applied to style '%s' will affect all menus",
-		 ST_NAME(tmpms));
-      }
+	ST_POPUP_DELAY(tmpms) = (*val+9)/10;
       break;
 
     case 18: /* PopupOffset */
@@ -6015,15 +6012,9 @@ static void NewMenuStyle(F_CMD_ARGS)
 
     case 30: /* DoubleClickTime */
       if (GetIntegerArguments(args, NULL, val, 1) == 0 || *val < 0)
-	Menus.DoubleClickTime = DEFAULT_MENU_CLICKTIME;
+	ST_DOUBLE_CLICK_TIME(tmpms) = DEFAULT_MENU_CLICKTIME;
       else
-	Menus.DoubleClickTime = *val;
-      if (!is_default_style)
-      {
-	fvwm_msg(WARN, "NewMenuStyle",
-		 "DoubleClickTime for style '%s' will affect all menus",
-		 ST_NAME(tmpms));
-      }
+	ST_DOUBLE_CLICK_TIME(tmpms) = *val;
       break;
 
     case 31: /* SidePic */

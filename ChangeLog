@@ -1,5 +1,20 @@
 2000-12-17  Dominik Vogt  <dominik.vogt@gmx.de>
 
+	* fvwm/menus.c (DestroyMenuStyle):
+	(UpdateMenuStyle):
+	(NewMenuStyle):
+	improved error messages
+
+	* fvwm/fvwm.c (InitVariables):
+	* fvwm/menus.c (MenuInteraction):
+	(NewMenuStyle):
+	(is_double_click):
+	(menuShortcuts):
+	* fvwm/menus.h (MenuFeel):
+	DoubleClickTime and PopupDelay can now be menu specific
+	(MenuInfo):
+	removed unused flags member
+
 	* fvwm/stack.c (verify_stack_ring_consistency):
 	additional checks
 	(remove_window_from_stack_ring):

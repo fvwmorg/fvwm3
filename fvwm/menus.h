@@ -96,6 +96,8 @@ typedef struct MenuFeel
   } flags;
   int PopupOffsetPercent;
   int PopupOffsetAdd;
+  int PopupDelay10ms;
+  int DoubleClickTime;
   char *item_format;
   KeyCode select_on_release_key;
 } MenuFeel;
@@ -301,6 +303,10 @@ typedef struct MenuStyle
 #define MST_POPUP_OFFSET_PERCENT(m)   ((m)->s->ms->feel.PopupOffsetPercent)
 #define ST_POPUP_OFFSET_ADD(s)        ((s)->feel.PopupOffsetAdd)
 #define MST_POPUP_OFFSET_ADD(m)       ((m)->s->ms->feel.PopupOffsetAdd)
+#define ST_POPUP_DELAY(s)             ((s)->feel.PopupDelay10ms)
+#define MST_POPUP_DELAY(m)            ((m)->s->ms->feel.PopupDelay10ms)
+#define ST_DOUBLE_CLICK_TIME(s)       ((s)->feel.DoubleClickTime)
+#define MST_DOUBLE_CLICK_TIME(m)      ((m)->s->ms->feel.DoubleClickTime)
 #define ST_ITEM_FORMAT(s)             ((s)->feel.item_format)
 #define MST_ITEM_FORMAT(m)            ((m)->s->ms->feel.item_format)
 #define ST_SELECT_ON_RELEASE_KEY(s)   ((s)->feel.select_on_release_key)
@@ -629,12 +635,6 @@ typedef struct MenuInfo
   MenuRoot *all;
   struct MenuStyle *DefaultStyle;
   struct MenuStyle *LastStyle;
-  int PopupDelay10ms;
-  int DoubleClickTime;
-  struct
-  {
-    unsigned use_animated_menus : 1;
-  } flags;
 } MenuInfo;
 
 extern MenuInfo Menus;
