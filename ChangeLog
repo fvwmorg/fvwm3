@@ -99,7 +99,6 @@
 	* fvwm/fvwm2.1: Update the section that said there was no way to
 	map a window to someplace other than the current viewport.
 
->>>>>>> 1.138
 1999-01-20  Paul D. Smith  <psmith@gnu.org>
 
 	* INSTALL.fvwm: Document new install-strip issue and workaround.
