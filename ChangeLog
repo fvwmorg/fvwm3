@@ -1,3 +1,36 @@
+1999-06-12  Dominik Vogt  <dominik_vogt@gmx.de>
+
+	* fvwm/menus.c (paint_item):
+	(draw_underline):
+	(paint_item):
+	(scanForHotkeys):
+	(AddToMenu):
+	(GetMenuStyleIndex): cleaned up strange hotkey code, renamed the
+	MenuItem members so you can guess from their name what they do,
+	fixed automatic hotkeys to play nicely with numbers as hotkeys,
+	rewrote draw_underline to do something comprehensible, removed
+	member 'chhotkey' from MenuItem struct (was used only once),
+	AutomaticHotkeys can be switched on/off even after the menus have
+	been defined.
+	(menuShortcuts): fixed character handling with is... macros.
+	(pop_menu_up): fixed bug that caused v/HGradient menus to always
+	hilight the first item when invoked with a key stroke.
+
+	* utils/fvwm_make_directory_menu.sh: improved performance dramatically
+	by letting sed do all the work
+
+	* fvwm/menus.c:
+	* fvwm/menus.h: renamed 'AutomaticHotkey' to 'AutomaticHotkeys'
+	                                                            ^^^
+
+1999-06-10  Michael Han  <mikehan@best.com>
+
+	* fvwm/menus.c (AddToMenu, GetMenuStyleIndex, NewMenuStyle):
+	added AutomaticHotkey handling
+	* fvwm/menus.h: Added a "feel" flag for automatic_hotkey and
+	macros to handle the flag
+	* fvwm/fvwm2.1: documentation for AutomaticHotkey MenuStyle
+
 1999-06-11  Bob Woodside  <proteus@pcnet.com>
 
 	* fvwm/borders.c (SetupFrame): Reinstated the ConfigureNotify, so

@@ -102,6 +102,7 @@ typedef struct MenuFeel
       unsigned do_popup_as_root_menu : 1;
       unsigned do_unmap_submenu_on_popdown : 1;
       unsigned use_left_submenus : 1;
+      unsigned use_automatic_hotkeys : 1;
     } flags;
     int PopupOffsetPercent;
     int PopupOffsetAdd;
@@ -249,7 +250,11 @@ typedef struct MenuStyle
 #define MST_DO_UNMAP_SUBMENU_ON_POPDOWN(m) \
         ((m)->s->ms->feel.flags.do_unmap_submenu_on_popdown)
 #define ST_USE_LEFT_SUBMENUS(s)       ((s)->feel.flags.use_left_submenus)
-#define MST_USE_LEFT_SUBMENUS(m)      ((m)->s->ms->feel.flags.use_left_submenus)
+#define MST_USE_LEFT_SUBMENUS(m) \
+        ((m)->s->ms->feel.flags.use_left_submenus)
+#define ST_USE_AUTOMATIC_HOTKEYS(s)   ((s)->feel.flags.use_automatic_hotkeys)
+#define MST_USE_AUTOMATIC_HOTKEYS(m) \
+        ((m)->s->ms->feel.flags.use_automatic_hotkeys)
 #define ST_FLAGS(s)                   ((s)->feel.flags)
 #define MST_FLAGS(m)                  ((m)->s->ms->feel.flags)
 #define ST_POPUP_OFFSET_PERCENT(s)    ((s)->feel.PopupOffsetPercent)
@@ -288,15 +293,8 @@ typedef struct MenuItem
 
     char *action;		/* action to be performed */
     short func_type;		/* type of built in function */
-    short hotkey;		/* Hot key offset (pete@tecc.co.uk).
-				   0 - No hot key
-				   +ve - offset to hot key char in label
-				   -ve - offset to hot key char in item2
-				   (offsets have 1 added, so +1 or -1
-				   refer to the *first* character)
-				   */
+    short hotkey_coffset;	/* Hot key offset (pete@tecc.co.uk). */
     char hotkey_column;         /* The column number the hotkey is defined in*/
-    char chHotkey;
     struct
     {
       unsigned is_separator : 1;
@@ -306,6 +304,8 @@ typedef struct MenuItem
       unsigned is_menu : 1;
       unsigned has_text : 1;
       unsigned has_picture : 1;
+      unsigned has_hotkey : 1;
+      unsigned is_hotkey_automatic : 1;
       unsigned is_selectable : 1;
       /* temporary flags */
       unsigned was_deselected : 1;
@@ -323,9 +323,8 @@ typedef struct MenuItem
 #define MI_HEIGHT(i)            ((i)->height)
 #define MI_ACTION(i)            ((i)->action)
 #define MI_FUNC_TYPE(i)         ((i)->func_type)
-#define MI_HOTKEY(i)            ((i)->hotkey)
+#define MI_HOTKEY_COFFSET(i)    ((i)->hotkey_coffset)
 #define MI_HOTKEY_COLUMN(i)     ((i)->hotkey_column)
-#define MI_CHHOTKEY(i)          ((i)->chHotkey)
 /* flags */
 #define MI_IS_SEPARATOR(i)      ((i)->flags.is_separator)
 #define MI_IS_TITLE(i)          ((i)->flags.is_title)
@@ -334,6 +333,8 @@ typedef struct MenuItem
 #define MI_IS_MENU(i)           ((i)->flags.is_menu)
 #define MI_HAS_TEXT(i)          ((i)->flags.has_text)
 #define MI_HAS_PICTURE(i)       ((i)->flags.has_picture)
+#define MI_HAS_HOTKEY(i)        ((i)->flags.has_hotkey)
+#define MI_IS_HOTKEY_AUTOMATIC(i) ((i)->flags.is_hotkey_automatic)
 #define MI_IS_SELECTABLE(i)     ((i)->flags.is_selectable)
 /* temporary flags */
 #define MI_WAS_DESELECTED(i)    ((i)->flags.was_deselected)

@@ -30,8 +30,12 @@
 # is running.
 OPTIMIZE_SPACE=yes
 
+# you may use the absolute path here if you have an alias like ls="ls -F"
+LS="/bin/ls -LF"
+SED=sed
+
 # the name of our menu
-MENU="$1"
+MENU=`echo $1 | $SED -e 's://*:/:g'`
 
 # the item title
 ITEM='basename $MENU'
@@ -42,10 +46,6 @@ ACTION=vi
 # the terminal program to invoke
 TERMINAL="xterm -e"
 TERMINALSHELL="xterm"
-
-# you may use the absolute path here if you have an alias like ls="ls -F"
-LS="ls"
-SED=sed
 
 #
 # you may customize this script below here.
@@ -69,14 +69,14 @@ fi
 echo AddToMenu \"$MENU\" MissingSubmenuFunction MakeMissingDirectoryMenu
 
 # add directory contents
-for i in `"$LS" "$MENU" 2> /dev/null` ; do
-    j=`echo $MENU/$i | $SED -e 's://*:/:g'`
-    if [ -d "$j" ] ; then
-        # it's a directory
-        cd "$j" 2> /dev/null
-        echo AddToMenu \"$MENU\" \"$i\" Popup \"$j\" item +100 c
-    else
-        # something else, apply $ACTION to it
-        echo AddToMenu \"$MENU\" \"$i\" Exec $TERMINAL $ACTION \"$j\"
-    fi
-done
+$LS "$MENU" 2> /dev/null | $SED -n '
+  /\/$/ bdirectory
+  s:[=*@|]$::1
+  s:^\(.*\)$:AddToMenu "'$MENU'" "\1" Exec '"$TERMINAL $ACTION"' "'"$MENU"'/\1":1
+  bnext
+  :directory
+  s:^\(.*\)/$:AddToMenu "'$MENU'" "\1" Popup "'"$MENU"'/\1" item +100 c:1
+  :next
+  s://*:/:g
+  p
+'

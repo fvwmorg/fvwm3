@@ -2028,7 +2028,8 @@ SideColor,
 PopupAsRootMenu/PopupAsSubmenu,
 DeleteSubmenus/HoldSubmenus,
 SubmenusRight/SubmenusLeft,
-ItemFormat.
+ItemFormat,
+AutomaticHotkeys/AutomaticHotkeysOff.
 
 In the above list some options are listed as option pairs or triples
 with a / in between. These options exclude each other.
@@ -2050,19 +2051,20 @@ MWM and WIN style menus never overlap the parent menu.
 \fIFVWM\fP style is equivalent to HilightBackOff, Hilight3DThin,
 ActiveForeOff, AnimationOff, Font, MenuFace, PopupOffset 0 67, TitleWarp,
 TitleUnderlines1, SeparatorsShort, TrianglesRelief, PopupDelayed,
-PopupAsSubmenu, HoldSubmenus, SubmenusRight, BorderWidth 2.
+PopupAsSubmenu, HoldSubmenus, SubmenusRight, BorderWidth 2,
+AutomaticHotkeysOff.
 
 \fIMWM\fP style is equivalent to HilightBackOff, Hilight3DThick,
 ActiveForeOff, AnimationOff, Font, MenuFace, PopupOffset -3 100,
 TitleWarpOff, TitleUnderlines2, SeparatorsLong, TrianglesRelief,
 PopupImmediately, PopupAsSubmenu, HoldSubmenus, SubmenusRight,
-BorderWidth 2.
+BorderWidth 2, AutomaticHotkeysOff.
 
 \fIWIN\fP style is equivalent to HilightBack, Hilight3DOff,
 ActiveForeOff, AnimationOff, Font, MenuFace, PopupOffset -5 100,
 TitleWarpOff, TitleUnderlines1, SeparatorsShort, TrianglesSolid,
 PopupImmediately, PopupAsSubmenu, DeleteSubmenus, SubmenusRight,
-BorderWidth 2.
+BorderWidth 2, AutomaticHotkeysOff.
 
 \fIBorderWidth\fP takes the thickness of the border around the menus
 in pixels. It may be zero to 50 pixels. The default is 2. Using an
@@ -2312,6 +2314,11 @@ side picture are drawn at the right side of the menu. The default
 is \fISubmenusRight\fP. The position hints of a menu are also affected
 by this setting, i.e. position hints using 'item' or 'menu' as context
 rectangle and position hints using 'm' offsets.
+
+\fIAutomaticHotkeys\fP and \fIAutomaticHotkeysOff\fP control the menu's
+ability to automatically provide hotkeys on the first character of
+each menu item's label. This behavior is always overridden if an
+explicit hotkey is assigned in the AddToMenu command.
 
 Examples:
 

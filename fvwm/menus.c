@@ -177,8 +177,8 @@ extern Time lastTimestamp;
 
 static void draw_triangle_pattern(Window,GC,GC,GC,int,int,int,int,char,Bool);
 static void draw_separator(Window, GC,GC,int, int,int,int,int);
-static void draw_underline(MenuRoot *mr, GC gc, int x, int y,
-			   char *txt, int off);
+static void draw_underline(MenuRoot *mr, GC gc, int x, int y, char *txt,
+			   int coffset);
 static MenuStatus MenuInteraction(
   MenuParameters *pmp, double_keypress *pdkp, Bool *pdo_warp_to_item,
   Bool *phas_mouse_moved);
@@ -333,7 +333,8 @@ static MenuItem *warp_pointer_to_item(MenuRoot *mr, MenuItem *mi,
 {
   if (do_skip_title)
   {
-    while (MI_NEXT_ITEM(mi) != NULL && (MI_IS_SEPARATOR(mi) || MI_IS_TITLE(mi)))
+    while (MI_NEXT_ITEM(mi) != NULL &&
+	   (MI_IS_SEPARATOR(mi) || MI_IS_TITLE(mi)))
     {
       /* skip separators and titles until the first 'real' item is found */
       mi = MI_NEXT_ITEM(mi);
@@ -790,7 +791,8 @@ static MenuStatus menuShortcuts(MenuRoot *mr, XEvent *event,
   int fControlKey = event->xkey.state & ControlMask? True : False;
   int fShiftedKey = event->xkey.state & ShiftMask? True: False;
   KeySym keysym;
-  char keychar;
+  char ckeychar;
+  int ikeychar;
   MenuItem *newItem = NULL;
   MenuItem *miCurrent = pmiCurrent ? *pmiCurrent : NULL;
   int index;
@@ -814,22 +816,23 @@ static MenuStatus menuShortcuts(MenuRoot *mr, XEvent *event,
   pdkp->timestamp = 0;
   /* Is it okay to treat keysym-s as Ascii? */
   /* No, because the keypad numbers don't work. Use XlookupString */
-  index = XLookupString(&(event->xkey), &keychar, 1, &keysym, NULL);
+  index = XLookupString(&(event->xkey), &ckeychar, 1, &keysym, NULL);
+  ikeychar = (int)ckeychar;
   /* Try to match hot keys */
   /* Need isascii here - isgraph might coredump! */
-  if (index == 1 && isascii((int)keychar) && isgraph((int)keychar) &&
+  if (index == 1 && isascii(ikeychar) && isgraph(ikeychar) &&
       fControlKey == False)
   {
     /* allow any printable character to be a keysym, but be sure control
        isn't pressed */
     MenuItem *mi;
     MenuItem *mi1;
-    char key;
+    int key;
     int countHotkey = 0;      /* Added by MMH mikehan@best.com 2/7/99 */
 
     /* if this is a letter set it to lower case */
-    if (isupper(keychar))
-      keychar = tolower((int)keychar) ;
+    if (isupper(ikeychar))
+      ikeychar = tolower(ikeychar) ;
 
     /* MMH mikehan@best.com 2/7/99
      * Multiple hotkeys per menu
@@ -840,12 +843,16 @@ static MenuStatus menuShortcuts(MenuRoot *mr, XEvent *event,
     mi1 = mi;
     do
     {
-      key = tolower( MI_CHHOTKEY(mi) );
-      if ( keychar == key )
+      if (MI_HAS_HOTKEY(mi) && !MI_IS_TITLE(mi) &&
+	  (!MI_IS_HOTKEY_AUTOMATIC(mi) || MST_USE_AUTOMATIC_HOTKEYS(mr)))
       {
-	if ( ++countHotkey == 1 )
-	  newItem = mi;
-
+	key = (MI_LABEL(mi)[MI_HOTKEY_COLUMN(mi)])[MI_HOTKEY_COFFSET(mi)];
+	key = tolower(key);
+	if ( ikeychar == key )
+	{
+	  if ( ++countHotkey == 1 )
+	    newItem = mi;
+	}
       }
       mi = (mi == MR_LAST_ITEM(mr)) ? MR_FIRST_ITEM(mr) : MI_NEXT_ITEM(mi);
     }
@@ -2183,8 +2190,8 @@ static Bool pop_menu_up(
   {
     /* also warp */
     DBUG("pop_menu_up","Warping to item");
-    MR_SELECTED_ITEM(mr) =
-      warp_pointer_to_item(mr, MR_FIRST_ITEM(mr), True /* skip Title */);
+    MR_SELECTED_ITEM(mr) = NULL;
+    warp_pointer_to_item(mr, MR_FIRST_ITEM(mr), True /* skip Title */);
     select_menu_item(mr, MR_SELECTED_ITEM(mr), True, fw);
   }
   else if(do_warp_to_title)
@@ -2716,11 +2723,13 @@ static void paint_item(MenuRoot *mr, MenuItem *mi, FvwmWindow *fw,
       XDrawString(dpy, MR_WINDOW(mr), currentGC, MI_LABEL_OFFSET(mi)[i],
 		  text_y, MI_LABEL(mi)[i], MI_LABEL_STRLEN(mi)[i]);
     }
-    if (MI_HOTKEY(mi) && !MI_IS_TITLE(mi) && MI_HOTKEY_COLUMN(mi) == i)
+    if (MI_HAS_HOTKEY(mi) && !MI_IS_TITLE(mi) &&
+	(!MI_IS_HOTKEY_AUTOMATIC(mi) || MST_USE_AUTOMATIC_HOTKEYS(mr)) &&
+	MI_HOTKEY_COLUMN(mi) == i)
     {
       /* pete@tecc.co.uk: If the item has a hot key, underline it */
       draw_underline(mr, currentGC, MI_LABEL_OFFSET(mi)[i], text_y,
-		     MI_LABEL(mi)[i], MI_HOTKEY(mi) - 1);
+		     MI_LABEL(mi)[i], MI_HOTKEY_COFFSET(mi));
     }
   }
 
@@ -2925,10 +2934,10 @@ static void paint_side_pic(MenuRoot *mr)
  *
  ****************************************************************************/
 static void draw_underline(MenuRoot *mr, GC gc, int x, int y, char *txt,
-			   int posn)
+			   int coffset)
 {
-  int off1 = XTextWidth(MST_PSTDFONT(mr)->font, txt, posn);
-  int off2 = XTextWidth(MST_PSTDFONT(mr)->font, txt, posn + 1) - 1;
+  int off1 = XTextWidth(MST_PSTDFONT(mr)->font, txt, coffset);
+  int off2 = XTextWidth(MST_PSTDFONT(mr)->font, txt + coffset, 1) - 1 + off1;
   XDrawLine(dpy, MR_WINDOW(mr), gc, x + off1, y + 2, x + off2, y + 2);
 }
 
@@ -4083,7 +4092,7 @@ static void make_menu(MenuRoot *mr)
  * 	column 	- The column number in which to look for a hotkey.
  *
  ***********************************************************************/
-static char scanForHotkeys(MenuItem *it, int column)
+static void scanForHotkeys(MenuItem *it, int column)
 {
   char *start, *txt;
 
@@ -4104,17 +4113,20 @@ static char scanForHotkeys(MenuItem *it, int column)
       {
 	char ch = txt[1];
 	/* It's a hot key marker - work out the offset value */
-	MI_HOTKEY(it) = 1 + (txt - start);
+	MI_HOTKEY_COFFSET(it) = txt - start;
 	MI_HOTKEY_COLUMN(it) = column;
+	MI_HAS_HOTKEY(it) = 1;
+	MI_IS_HOTKEY_AUTOMATIC(it) = 0;
 	for (; *txt != '\0'; txt++)
+	{
 	  /* Copy down.. */
 	  txt[0] = txt[1];
-	return ch;			/* Only one hotkey per item...	*/
+	}
+	return;			/* Only one hotkey per item...	*/
       }
     }
   }
-  MI_HOTKEY(it) = 0;		/* No hotkey found.  Set offset to zero	*/
-  return '\0';
+  return;
 }
 
 
@@ -4439,13 +4451,25 @@ void AddToMenu(MenuRoot *mr, char *item, char *action, Bool fPixmapsOk,
 	    break;
 	}
       }
-      if (MI_HOTKEY(tmp) == 0)
+      if (!MI_HAS_HOTKEY(tmp))
       {
 	/* pete@tecc.co.uk */
-        char ch = scanForHotkeys(tmp, i);
+        scanForHotkeys(tmp, i);
 
-	if (ch != '\0')
-	  MI_CHHOTKEY(tmp) = ch;
+	if (!MI_HAS_HOTKEY(tmp))
+	{
+	  int j;
+	  for ( j = 0; j < MAX_ITEM_LABELS; j++ )
+	  {
+	    if (MI_LABEL(tmp)[j])
+	    {
+	      MI_HOTKEY_COFFSET(tmp) = 0;
+	      MI_HOTKEY_COLUMN(tmp) = j;
+	      MI_HAS_HOTKEY(tmp) = 1;
+	      MI_IS_HOTKEY_AUTOMATIC(tmp) = 1;
+	    }
+	  }
+	}
       }
       if (*(MI_LABEL(tmp)[i]))
       {
@@ -5142,6 +5166,7 @@ static int GetMenuStyleIndex(char *option)
     "BorderWidth",
     "Hilight3DThickness",
     "ItemFormat",
+    "AutomaticHotkeys", "AutomaticHotkeysOff",
     NULL
   };
   return GetTokenIndex(option, optlist, 0, NULL);
@@ -5277,6 +5302,7 @@ static void NewMenuStyle(F_CMD_ARGS)
       ST_BORDER_WIDTH(tmpms) = DEFAULT_MENU_BORDER_WIDTH;
       ST_USE_LEFT_SUBMENUS(tmpms) = 0;
       ST_IS_ANIMATED(tmpms) = 0;
+      ST_USE_AUTOMATIC_HOTKEYS(tmpms) = 0;
       FreeMenuFace(dpy, &ST_FACE(tmpms));
       ST_FACE(tmpms).type = SimpleMenu;
       if (ST_PSTDFONT(tmpms) && ST_PSTDFONT(tmpms) != &Scr.StdFont)
@@ -5594,6 +5620,14 @@ static void NewMenuStyle(F_CMD_ARGS)
       {
 	ST_ITEM_FORMAT(tmpms) = strdup(arg1);
       }
+      break;
+
+    case 42: /* AutomaticHotkeys */
+      ST_USE_AUTOMATIC_HOTKEYS(tmpms) = 1;
+      break;
+
+    case 43: /* AutomaticHotkeysOff */
+      ST_USE_AUTOMATIC_HOTKEYS(tmpms) = 0;
       break;
 
 #if 0
