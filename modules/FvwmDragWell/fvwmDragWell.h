@@ -96,7 +96,7 @@ struct DragWellButton_struct {
 #define DRAGWELLMENUITEM_DIR          1
 #define DRAGWELLMENUITEM_FILE         2
 
-/*Total time it takes to animate a sucessful selection*/
+/*Total time it takes to animate a successful selection*/
 #define TOTAL_ANIMATION_TIME 500000
 
 #define DRAG_DATA_TYPE_PATH      0
