@@ -1069,6 +1069,8 @@ static void ChangeColorset (int NbArg,long *TabArg)
  arg[1]=CalcArg(TabArg,&i);
  if (atoi(arg[0]) == 0) {
    ChangeMainColorset(atoi(arg[1]));
+   free(arg[0]);
+   free(arg[1]);
    return;
  }
  IdItem= TabIdObj[atoi(arg[0])];

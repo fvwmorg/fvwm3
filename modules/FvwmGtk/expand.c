@@ -100,6 +100,7 @@ combine_string (str *p)
     {
       strcat (res, r->s);
       next = r->next;
+      free (r->s);
       free (r);
     }
   return res;
@@ -129,6 +130,7 @@ recursive_replace (GtkWidget *d, char *val)
               /* this changes r->next, thus freeing next is safe */
 	      tail = split_string (nval, r);
 	      tail->next = next->next;
+	      free (next->s);
               free (next);
 	    }
 	  else

@@ -1,5 +1,19 @@
 2000-11-21  Dominik Vogt  <dominik.vogt@gmx.de>
 
+	* FvwmGtk/expand.c (recursive_replace):
+	(combine_string):
+	* FvwmGtk/FvwmGtk.c (process_message):
+	fixed memory leaks
+
+	* FvwmGtk/menu.c (convert_label_with_ampersand):
+	fixed overlapping memcpy
+
+	* FvwmScript/Instructions.c (ChangeColorset):
+	fixed memory leak
+
+	* FvwmIconMan/x.c (handle_error):
+	prevent core dump if a managed window dies
+
 	* FvwmForm/FvwmForm.c (ct_ButtonFont):
 	(ct_InputFont):
 	(ct_Line):

@@ -876,11 +876,16 @@ void create_manager_window (int man_id)
 
 static int handle_error (Display *d, XErrorEvent *ev)
 {
-  /* BadDrawable is allowed, it happens when colrosets change too fast */
-  if (ev->error_code == BadDrawable)
+  /* BadDrawable is allowed, it happens when colorsets change too fast */
+  switch (ev->error_code)
+  {
+  case BadDrawable:
+  case BadPixmap:
+  case BadWindow:
     return 0;
-  if (ev->error_code == BadPixmap)
-    return 0;
+  default:
+    break;
+  }
 
   /* does not return */
   PrintXErrorAndCoredump(d, ev, MyName);
