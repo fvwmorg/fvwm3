@@ -160,6 +160,10 @@ Bool setup_window_structure(
 void setup_window_name(FvwmWindow *tmp_win)
 {
   XTextProperty text_prop;
+#ifdef I18N_MB
+  char **list;
+  int num;
+#endif
 
   if ( XGetWMName(dpy, tmp_win->w, &text_prop) != 0 )
 #ifdef I18N_MB

@@ -1,3 +1,8 @@
+2000-04-13  Dan Espen  <dane@mk.telcordia.com>
+
+	* fvwm/add_window.c (setup_window_name): applied I18N patch from
+	MURAKAMI Tomokazu.
+
 2000-04-12  Mikhael Goikhman  <migo@homemail.com>
 
 	* configure.in:
