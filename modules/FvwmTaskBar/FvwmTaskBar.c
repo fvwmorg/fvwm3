@@ -139,6 +139,9 @@ int  win_width    = 5,
      win_x,
      win_y,
      win_border,
+     win_has_title = 0,
+     win_has_bottom_title = 0,
+     win_title_height = 0,
      button_width = DEFAULT_BTN_WIDTH,
      Clength,
      ButPressed   = -1,
@@ -441,24 +444,31 @@ void ProcessMessage(unsigned long type,unsigned long *body)
        2. be carful with dynamic "border width" change */
     if (cfgpacket->w == win)
     {
-      if (win_border != (int)cfgpacket->border_width)
+      if (win_border != (int)cfgpacket->border_width ||
+	  win_title_height != (int)cfgpacket->title_height ||
+	  win_has_title != HAS_TITLE(cfgpacket) ||
+	  win_has_bottom_title != HAS_BOTTOM_TITLE(cfgpacket))
       {
 	XSizeHints hints;
 	long dumy;
 
 	win_border = (int)cfgpacket->border_width;
 	win_width = ScreenWidth-(win_border<<1);
+	win_title_height = (int)cfgpacket->title_height;
+	win_has_title = HAS_TITLE(cfgpacket);
+	win_has_bottom_title = HAS_BOTTOM_TITLE(cfgpacket);
 
 	if (AutoStick)
 	{
 	  win_x = win_border;
 	  if (win_y > Midline)
-	    win_y = ScreenHeight - (AutoHide ? 2 : win_height + win_border);
+	    win_y = ScreenHeight - 
+	      (AutoHide ? 2 - win_title_height*win_has_bottom_title : 
+	       win_height + win_border);
 	  else
-	    win_y = AutoHide ? 2  - win_height : win_border;
+	    win_y = AutoHide ? 2 + win_title_height*win_has_bottom_title 
+	      - win_height : win_border + win_title_height;
 	}
-
-	/* allows to resize */
 	XGetWMNormalHints(dpy,win,&hints,&dumy);
 	hints.min_width   = win_width;
 	hints.base_width  = win_width;
@@ -540,12 +550,9 @@ void ProcessMessage(unsigned long type,unsigned long *body)
   case M_DESTROY_WINDOW:
     if ((i = FindItem(&windows, body[0])) == -1)
       break;
-    /*    if (GetDeskNumber(&windows, i, &Desk))
-	  {*/
       DeleteItem(&windows, body[0]);
       RemoveButton(&buttons, i);
       redraw = 1;
-      /*}*/
     break;
 
 #ifdef MINI_ICONS
@@ -1263,9 +1270,11 @@ void LoopOnEvents(void)
 	  if (AutoHide)
 	  {
 	    if (win_y > Midline)
-	      win_y = ScreenHeight - 2;
+	      win_y = ScreenHeight - 2 +
+		win_title_height*win_has_bottom_title;
 	    else
-	      win_y = 2 - win_height;
+	      win_y = 2 + win_title_height*win_has_bottom_title 
+		- win_height;
 	    XSync(dpy,0);
 	    XMoveWindow(dpy, win, win_x, win_y);
 	    XSync(dpy,0);
@@ -1647,9 +1656,9 @@ void StartMeUp(void)
      if (AutoStick)
      {
        if (-hints.y < Midline)
-	 hints.y = ScreenHeight - (AutoHide ? 1 : win_height);
+	 hints.y = ScreenHeight - (AutoHide ? 2 : win_height);
        else
-	 hints.y = AutoHide ? 1 - win_height : 0;
+	 hints.y = AutoHide ? 2 - win_height : 0;
      }
      else
        hints.y += ScreenHeight - win_height;
@@ -1657,9 +1666,9 @@ void StartMeUp(void)
    else if (AutoStick)
    {
      if (hints.y < Midline)
-       hints.y = AutoHide ? 1 - win_height : 0;
+       hints.y = AutoHide ? 2 - win_height : 0;
      else
-       hints.y = ScreenHeight - (AutoHide ? 1 : win_height);
+       hints.y = ScreenHeight - (AutoHide ? 2 : win_height);
    }
 
     if (ret & XNegative)
@@ -1836,7 +1845,7 @@ void WarpTaskBar(int y, Bool force)
     if (y > Midline)
       win_y = (int)ScreenHeight - win_height - win_border;
     else
-      win_y = win_border;
+      win_y = win_border + win_title_height;
     XSync(dpy, 0);
     XMoveWindow(dpy, win, win_x, win_y);
     XSync(dpy, 0);
@@ -1869,7 +1878,7 @@ void RevealTaskBar()
   inc_y += (NRows >= 3 ? 3 : 0) + (NRows >= 5 ? 3 : 0);
 
   if (win_y < Midline) {
-    new_win_y = win_border;
+    new_win_y = win_border + win_title_height;
     for (; win_y<=new_win_y; win_y +=inc_y)
       XMoveWindow(dpy, win, win_x, win_y);
   } else {
@@ -1903,7 +1912,9 @@ void HideTaskBar()
   {
     XQueryPointer(dpy, win, &d_rt,&d_ch, &d_x, &d_y,
 		  &wx, &wy, &mask);
-    if (wy >= -win_border && wy < win_height + win_border)
+    if (wy >= -(win_border + win_title_height*(1-win_has_bottom_title)) && 
+	wy < win_height + win_border + 
+	win_title_height*win_has_bottom_title)
     {
       if (wy < 0 || wy >= win_height || wx < 0 || wx >= win_width)
 	SetAlarm(HIDE_TASK_BAR);
@@ -1915,11 +1926,13 @@ void HideTaskBar()
   inc_y += (NRows >= 3 ? 2 : 0) + (NRows >= 5 ? 2 : 0);
 
   if (win_y < Midline) {
-    new_win_y = 1 - win_height;
+    new_win_y = 2 + win_title_height*win_has_bottom_title - 
+      win_height;
     for (; win_y>=new_win_y; win_y -=inc_y)
       XMoveWindow(dpy, win, win_x, win_y);
   } else {
-    new_win_y = (int)ScreenHeight - 1;
+    new_win_y = (int)ScreenHeight - 2 + 
+      win_title_height*win_has_bottom_title;
     for (; win_y<=new_win_y; win_y +=inc_y)
       XMoveWindow(dpy, win, win_x, win_y);
   }
