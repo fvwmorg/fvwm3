@@ -1,7 +1,9 @@
 Note, the changes for the last STABLE release start with release
 _+_A HREF="#2.2.5"_-_2.2.5_+_/A_-_.
 
-Changes in beta release 2.3.29 (not released yet)
+Changes in beta release 2.3.30 (not released yet)
+
+Changes in beta release 2.3.29 (2001-03-02)
 
 * New temporary option -debug_stack_ring.
 

@@ -1,5 +1,10 @@
 2001-03-02  Dominik Vogt  <dominik.vogt@gmx.de>
 
+	* NEWS, configure.in:
+	changed version to 2.3.30
+
+2001-03-02  Dominik Vogt  <dominik.vogt@gmx.de>
+
 	* fvwm/fvwm2.1:
 	* fvwm/builtins.c (do_recapture):
 	* fvwm/stack.h:
