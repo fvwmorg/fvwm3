@@ -227,25 +227,25 @@ void ParseOptions(void)
       else if (strncasecmp(tline,"*FvwmScriptDefaultBack",22) == 0)
       {
 	x11base->colorset = -1;
-	CopyString(&x11base->backcolor, &tline[22]);
+        CopyString(&x11base->backcolor,&tline[22]);
       }
       else if (strncasecmp(tline,"*FvwmScriptDefaultFore",22) == 0)
       {
 	x11base->colorset = -1;
-	CopyString(&x11base->forecolor, &tline[22]);
+        CopyString(&x11base->forecolor,&tline[22]);
       }
       else if (strncasecmp(tline,"*FvwmScriptDefaultHilight",25) == 0)
       {
 	x11base->colorset = -1;
-	CopyString(&x11base->hilicolor, &tline[25]);
+        CopyString(&x11base->hilicolor,&tline[25]);
       }
       else if (strncasecmp(tline,"*FvwmScriptDefaultShadow",24) == 0)
       {
 	x11base->colorset = -1;
-	CopyString(&x11base->shadcolor, &tline[24]);
+        CopyString(&x11base->shadcolor,&tline[24]);
       }
       else if (strncasecmp(tline,"*FvwmScriptDefaultFont",22) == 0)
-	CopyString(&x11base->font, &tline[22]);
+	CopyString(&x11base->font,&tline[22]);
       else if (strncasecmp(tline,"ColorLimit",10) == 0)
 	save_color_limit = atoi(&tline[10]);
       else if (strncasecmp(tline,"Colorset",8) == 0)
@@ -449,17 +449,25 @@ void BuildGUI(int IsFather)
   x11base->font=scriptprop->font;
 
  if (scriptprop->forecolor != NULL)
+ {
+  x11base->colorset=-1;
   x11base->forecolor=scriptprop->forecolor;
-
+ }
  if (scriptprop->backcolor != NULL)
+ {
+  x11base->colorset=-1;
   x11base->backcolor=scriptprop->backcolor;
-
+ }
  if (scriptprop->shadcolor != NULL)
+ {
+  x11base->colorset=-1;
   x11base->shadcolor=scriptprop->shadcolor;
-
+ }
  if (scriptprop->hilicolor != NULL)
+ {
+  x11base->colorset=-1;
   x11base->hilicolor=scriptprop->hilicolor;
-
+ }
  if (scriptprop->colorset != -1)
    x11base->colorset = scriptprop->colorset;
 
@@ -530,8 +538,11 @@ void BuildGUI(int IsFather)
 
   if ((*tabobj)[i].colorset >= 0)
     tabxobj[i]->colorset=(*tabobj)[i].colorset;
-  else
+  else if ((*tabobj)[i].backcolor==NULL && (*tabobj)[i].forecolor==NULL &&
+	   (*tabobj)[i].shadcolor==NULL && (*tabobj)[i].hilicolor==NULL)
     tabxobj[i]->colorset=x11base->colorset;
+  else tabxobj[i]->colorset=-1;
+  
 
   ChooseFunction(tabxobj[i],(*tabobj)[i].type);
   tabxobj[i]->gc=x11base->gc;
