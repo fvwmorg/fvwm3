@@ -1,3 +1,9 @@
+1999-05-11  Dan Espen  <dane@mk.bellcore.com>
+
+	* FvwmAnimate/FvwmAnimate.c: Put slash and dot between FVWM_USERHOME
+ 	and filename on save.
+	Save and apply was not updating the "delay" value.
+
 1999-05-09  Matthias Clasen  <clasen@mathematik.uni-freiburg.de>
 
 	* FvwmGtk/FvwmGtk.c: improved window list; it displays
