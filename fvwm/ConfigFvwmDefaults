@@ -1,8 +1,6 @@
 # This file gets installed in the "datadir" during fvwm
 # installation.  Do not remove or change this file.
-
-#  Modification History
-
+#
 #  Created on 21/Mar/1999 by DanEspen (dje):
 #  - FvwmDefaults file.  Contains fvwm defaults, and enough to help out
 #  the new user with no configuration file.
@@ -21,9 +19,6 @@ AddToFunc WindowListFunc
 + I WindowId $0 FlipFocus
 + I WindowId $0 Raise
 + I WindowId $0 WarpToWindow 5p 5p
-
-# defaults for FvwmProxy
-Read ConfigFvwmProxyDefaults
 
 # Needed by the ewmh support
 AddToFunc EWMHActivateWindowFunc
@@ -52,8 +47,9 @@ Style fvwm_menu NoPPosition, NeverFocus, NoLenience, \
 Key Tab A M WindowList Root c c NoDeskSort
 
 # Basic Mouse controls:
-Mouse 1 T  A FuncFvwmRaiseLowerX Move
-Mouse 1 FS A FuncFvwmRaiseLowerX Resize
+Mouse 1 T   A FuncFvwmRaiseLowerX Move
+Mouse 1 FS  A FuncFvwmRaiseLowerX Resize
+Mouse 2 FST A FuncFvwmRaiseLowerX Move
 AddToFunc FuncFvwmRaiseLowerX
 + I Raise
 + M $0

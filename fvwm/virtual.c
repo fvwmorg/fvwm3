@@ -1576,7 +1576,7 @@ void CMD_EdgeThickness(F_CMD_ARGS)
 
 void CMD_EdgeScroll(F_CMD_ARGS)
 {
-	int val1, val2, val1_unit,val2_unit,n;
+	int val1, val2, val1_unit, val2_unit, n;
 
 	n = GetTwoArguments(action, &val1, &val2, &val1_unit, &val2_unit);
 	if (n != 2)
@@ -1588,7 +1588,7 @@ void CMD_EdgeScroll(F_CMD_ARGS)
 	}
 
 	/*
-	 * if edgescroll >1000 and < 100000m
+	 * if edgescroll >1000 and <100000
 	 * wrap at edges of desktop (a "spherical" desktop)
 	 */
 	if (val1 >= 1000)
@@ -1610,8 +1610,8 @@ void CMD_EdgeScroll(F_CMD_ARGS)
 		Scr.flags.edge_wrap_y = 0;
 	}
 
-	Scr.EdgeScrollX = val1*val1_unit/100;
-	Scr.EdgeScrollY = val2*val2_unit/100;
+	Scr.EdgeScrollX = val1 * val1_unit / 100;
+	Scr.EdgeScrollY = val2 * val2_unit / 100;
 
 	checkPanFrames();
 

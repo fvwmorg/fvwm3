@@ -1130,7 +1130,8 @@ static void InitVariables(void)
 	/* Multiple desks are available even in non-virtual
 	 * compilations */
 	Scr.CurrentDesk = 0;
-	Scr.EdgeScrollX = Scr.EdgeScrollY = DEFAULT_EDGE_SCROLL;
+	Scr.EdgeScrollX = DEFAULT_EDGE_SCROLL * Scr.MyDisplayWidth / 100;
+	Scr.EdgeScrollY = DEFAULT_EDGE_SCROLL * Scr.MyDisplayHeight / 100;
 	Scr.ScrollResistance = DEFAULT_SCROLL_RESISTANCE;
 	Scr.MoveResistance = DEFAULT_MOVE_RESISTANCE;
 	Scr.XiMoveResistance = DEFAULT_XIMOVE_RESISTANCE;

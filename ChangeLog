@@ -1,3 +1,14 @@
+2002-11-26  Mikhael Goikhman  <migo@homemail.com>
+
+	* fvwm/fvwm.c (InitVariables):
+	fixed DEFAULT_EDGE_SCROLL being interpretted as 100 pixels instead
+	of 100%
+	* fvwm/virtual.c (CMD_EdgeScroll):
+	minor spacing
+
+	* fvwm/ConfigFvwmDefaults:
+	do not include empty ConfigFvwmProxyDefaults, added one binding
+
 2002-11-26  olicha  <olivier.chapuis@free.fr>
 
 	* libs/Colorset.c (CreateBackgroundPixmap):
@@ -13,6 +24,7 @@
 	Fixed the fgsh Colorset colors when the Image change but not the bg
 
 2002-11-24  Jason Weber  <baboon@imonk.com>
+
 	* fvwm/conditional.c
 	Extended Direction to allow CycleWest, CycleEast, etc that guarantees
 	eventual traversal of all windows over repeated calls.  It also cycles
