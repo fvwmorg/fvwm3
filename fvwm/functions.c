@@ -69,9 +69,7 @@ extern FvwmWindow *Tmp_win;
 extern char const * const Fvwm_VersionInfo;
 
 /* forward declarations */
-static void ComplexFunction(F_CMD_ARGS);
-static void execute_complex_function(
-  F_CMD_ARGS, Bool *desperate, expand_command_type expand_cmd);
+static void execute_complex_function(F_CMD_ARGS, Bool *desperate);
 
 /*
  * be sure to keep this list properly ordered for bsearch routine!
@@ -161,7 +159,7 @@ static const func_type func_config[] =
   {"execuseshell", exec_setup,       F_EXEC_SETUP,           0},
   {"flipfocus",    flip_focus_func,  F_FLIP_FOCUS,           FUNC_NEEDS_WINDOW},
   {"focus",        focus_func,       F_FOCUS,                FUNC_NEEDS_WINDOW},
-  {"function",     ComplexFunction,  F_FUNCTION,             0},
+  {"function",     NULL,             F_FUNCTION,             0},
   {"globalopts",   SetGlobalOptions, F_GLOBAL_OPTS,          0},
 #ifdef GNOME
   {"gnomebutton",  GNOME_ButtonFunc, F_MOUSE,                0},
@@ -950,7 +948,14 @@ void ExecuteFunction(
   if (function)
     function = expand(function, arguments, tmp_win, False);
   if (function)
+  {
+    char *tmp = function;
+
+    while (*tmp && !isspace(*tmp))
+      tmp++;
+    *tmp = 0;
     bif = FindBuiltinFunction(function);
+  }
   else
   {
     bif = NULL;
@@ -984,22 +989,35 @@ void ExecuteFunction(
     else
       must_free_string = True;
   }
-  if (bif)
+  if (bif && bif->func_type != F_FUNCTION)
   {
     char *runaction;
+
     runaction = SkipNTokens(expaction, 1);
     bif->action(eventp,w,tmp_win,context,runaction,&Module);
   }
   else
   {
     Bool desperate = 1;
+    char *runaction;
 
-    execute_complex_function(eventp,w,tmp_win,context,expaction, &Module,
-			     &desperate, DONT_EXPAND_COMMAND);
-    if(desperate)
+    if (bif)
+    {
+      /* strip "function" command */
+      runaction = SkipNTokens(expaction, 1);
+    }
+    else
+    {
+      runaction = expaction;
+    }
+
+    execute_complex_function(
+      eventp,w,tmp_win,context,runaction, &Module, &desperate);
+    if (!bif && desperate)
     {
       if (executeModuleDesperate(
-	eventp,w,tmp_win,context,expaction, &Module) == -1 && *function != 0)
+	eventp, w, tmp_win, context, runaction, &Module) == -1 &&
+	  *function != 0)
       {
 	fvwm_msg(
 	  ERR, "ExecuteFunction", "No such command '%s'", function);
@@ -1371,16 +1389,7 @@ FvwmFunction *FindFunction(const char *function_name)
 }
 
 
-static void ComplexFunction(F_CMD_ARGS)
-{
-  Bool desperate = 0;
-
-  execute_complex_function(eventp, w, tmp_win, context, action, Module,
-			   &desperate, EXPAND_COMMAND);
-}
-
-static void execute_complex_function(
-  F_CMD_ARGS, Bool *desperate, expand_command_type expand_cmd)
+static void execute_complex_function(F_CMD_ARGS, Bool *desperate)
 {
   cfunc_action_type type = CF_MOTION;
   char c;
@@ -1490,38 +1499,38 @@ static void execute_complex_function(
   }
 
   if(!Persist)
-    {
-      func->use_depth--;
-      for(i=0;i<11;i++)
-	if(arguments[i] != NULL)
-	  free(arguments[i]);
-      return;
-    }
+  {
+    func->use_depth--;
+    for(i=0;i<11;i++)
+      if(arguments[i] != NULL)
+	free(arguments[i]);
+    return;
+  }
 
   /* Only defer execution if there is a possibility of needing
    * a window to operate on */
   if(NeedsTarget)
-    {
-      if (DeferExecution(eventp,&w,&tmp_win,&context, CRS_SELECT,ButtonPress))
-	{
-	  func->use_depth--;
-	  WaitForButtonsUp(False);
-	  for(i=0;i<11;i++)
-	    if(arguments[i] != NULL)
-	      free(arguments[i]);
-	  return;
-	}
-    }
-
-  if(!GrabEm(CRS_NONE, GRAB_NORMAL))
+  {
+    if (DeferExecution(eventp,&w,&tmp_win,&context, CRS_SELECT,ButtonPress))
     {
       func->use_depth--;
-      XBell(dpy, 0);
+      WaitForButtonsUp(False);
       for(i=0;i<11;i++)
 	if(arguments[i] != NULL)
 	  free(arguments[i]);
       return;
     }
+  }
+
+  if(!GrabEm(CRS_NONE, GRAB_NORMAL))
+  {
+    func->use_depth--;
+    XBell(dpy, 0);
+    for(i=0;i<11;i++)
+      if(arguments[i] != NULL)
+	free(arguments[i]);
+    return;
+  }
   switch (eventp->xany.type)
   {
   case ButtonPress:
@@ -1542,33 +1551,33 @@ static void execute_complex_function(
   /* wait forever, see if the user releases the button */
   type = CheckActionType(x, y, &d, HaveHold, True);
   if (type == CF_CLICK)
+  {
+    ev = &d;
+    /* If it was a click, wait to see if its a double click */
+    if(HaveDoubleClick)
     {
-      ev = &d;
-      /* If it was a click, wait to see if its a double click */
-      if(HaveDoubleClick)
-	{
-	  type = CheckActionType(x, y, &d, True, False);
-	  switch (type)
-	  {
-	  case CF_CLICK:
-	  case CF_HOLD:
-	  case CF_MOTION:
-	    type = CF_DOUBLE_CLICK;
-	    ev = &d;
-	    break;
-	  case CF_TIMEOUT:
-	    type = CF_CLICK;
-	    break;
-	  default:
-	    /* can't happen */
-	    break;
-	  }
-	}
+      type = CheckActionType(x, y, &d, True, False);
+      switch (type)
+      {
+      case CF_CLICK:
+      case CF_HOLD:
+      case CF_MOTION:
+	type = CF_DOUBLE_CLICK;
+	ev = &d;
+	break;
+      case CF_TIMEOUT:
+	type = CF_CLICK;
+	break;
+      default:
+	/* can't happen */
+	break;
+      }
     }
+  }
   else if (type == CF_TIMEOUT)
-    {
-      type = CF_HOLD;
-    }
+  {
+    type = CF_HOLD;
+  }
 
   /* some functions operate on button release instead of
    * presses. These gets really weird for complex functions ... */
@@ -1585,22 +1594,22 @@ static void execute_complex_function(
   UngrabEm(GRAB_NORMAL);
 #endif
   while(fi != NULL)
+  {
+    /* make lower case */
+    c = fi->condition;
+    if(isupper(c))
+      c=tolower(c);
+    if(c == type)
     {
-      /* make lower case */
-      c = fi->condition;
-      if(isupper(c))
-	c=tolower(c);
-      if(c == type)
-	{
-	  if(tmp_win)
-	    w = tmp_win->frame;
-	  else
-	    w = None;
-	  ExecuteFunction(
-	    fi->action, tmp_win, ev, context, -2, expand_cmd, arguments);
-	}
-      fi = fi->next_item;
+      if(tmp_win)
+	w = tmp_win->frame;
+      else
+	w = None;
+      ExecuteFunction(
+	fi->action, tmp_win, ev, context, -2, DONT_EXPAND_COMMAND, arguments);
     }
+    fi = fi->next_item;
+  }
   WaitForButtonsUp(False);
   /* This is the right place to ungrab the pointer (see comment above). */
   UngrabEm(GRAB_NORMAL);
