@@ -1,7 +1,9 @@
 2000-04-27  Mikhael Goikhman  migo@homemail.com
 
 	* FvwmAuto/FvwmAuto.c (main):
-	fixed incorrect allocation when adding Silent prefix
+	fixed incorrect allocation when adding Silent prefix;
+	use special Raise/Lower support only if actions have something
+	to do with Raise/Lower, otherwise listen to focus changes only
 
 2000-04-27  Dominik Vogt  <dominik.vogt@gmx.de>
 

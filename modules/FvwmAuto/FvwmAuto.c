@@ -108,6 +108,7 @@ main(int argc, char **argv)
 {
   char *enter_fn="Silent Raise";	/* default */
   char *leave_fn=NULL;
+  unsigned long m_mask;
   unsigned long last_win = 0;	/* last window handled */
   unsigned long focus_win = 0;	/* current focus */
   unsigned long raised_win = 0;
@@ -226,11 +227,18 @@ main(int argc, char **argv)
     }
   }
 
-  SetMessageMask(fd, M_FOCUS_CHANGE|M_RAISE_WINDOW|M_LOWER_WINDOW);
+  m_mask = M_FOCUS_CHANGE;
+  /* A hack; disable special raise/lower support on general actions. */
+  if (matchWildcards("*Raise*", CatString2(enter_fn, leave_fn)))
+    m_mask |= M_RAISE_WINDOW;
+  if (matchWildcards("*Lower*", CatString2(enter_fn, leave_fn)))
+    m_mask |= M_LOWER_WINDOW;
+
+  SetMessageMask(fd, m_mask);
   /* tell fvwm we're running */
   SendFinishedStartupNotification(fd);
   /* tell fvwm that we want to be lock on send */
-  SetSyncMask(fd, M_FOCUS_CHANGE|M_RAISE_WINDOW|M_LOWER_WINDOW);
+  SetSyncMask(fd, m_mask);
 
   fd_width = fd[1] + 1;
   FD_ZERO(&in_fdset);
