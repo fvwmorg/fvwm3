@@ -22,6 +22,7 @@
 
 #include <libs/fvwmlib.h>
 #include <libs/Module.h>
+#include "libs/fvwmsignal.h"
 
 #define S_NAME  "/.FvwmConsole-Socket"
 /* Prompts for readline support */

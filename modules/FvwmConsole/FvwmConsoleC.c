@@ -14,6 +14,10 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
+/* FIXME: The signal handling of this module is largely broken */
+
+#include "config.h"
+
 #include "FvwmConsole.h"
 
 int  s;    /* socket handle */
@@ -21,22 +25,40 @@ FILE *sp;
 char *name;  /* name of this program at executing time */
 char *getline();
 
-
 /*
  *  close socket and exit
  */
-void sclose (int foo) {
-  fclose(sp);
-  exit(0);
-  SIGNAL_RETURN;
+void sclose (int foo)
+{
+	if (sp != NULL)
+	{
+		fclose(sp);
+		sp = NULL;
+	}
+	exit(0);
+	SIGNAL_RETURN;
+}
+
+RETSIGTYPE ReapChildren(int sig)
+{
+	fvwmReapChildren(sig);
+
+	sclose(sig);
+
+	exit(0);
+	SIGNAL_RETURN;
 }
 
 /*
  * print error message on stderr
  */
-void ErrMsg( char *msg ) {
-  fprintf( stderr, "%s error in %s\n", name , msg );
-  fclose(sp);
+void ErrMsg( char *msg )
+{
+  fprintf(stderr, "%s error in %s: %s\n", name , msg, strerror(errno));
+  if (sp != NULL) {
+	  fclose(sp);
+	  sp = NULL;
+  }
   exit(1);
 }
 
@@ -45,7 +67,8 @@ void ErrMsg( char *msg ) {
  * setup socket.
  * send command to and receive message from the server
  */
-int main ( int argc, char *argv[]) {
+int main( int argc, char *argv[])
+{
   char *cmd;
   char data[MAX_MESSAGE_SIZE];
   int  len;  /* length of socket address */
@@ -55,9 +78,10 @@ int main ( int argc, char *argv[]) {
   char *home;
   char *s_name;
 
-  signal (SIGPIPE, sclose);
-  signal (SIGINT, sclose);
-  signal (SIGQUIT, sclose);
+  signal(SIGCHLD, ReapChildren);
+  signal(SIGPIPE, sclose);
+  signal(SIGINT, sclose);
+  signal(SIGQUIT, sclose);
 
   name=strrchr(argv[0], '/');
   if (name != NULL) {
@@ -83,6 +107,9 @@ int main ( int argc, char *argv[]) {
   }
 
   sp = fdopen( s, "r" );
+  if (sp == NULL) {
+	ErrMsg( "fdopen");
+  }
 
   pid = fork();
   if( pid == -1 ) {
@@ -130,4 +157,3 @@ int main ( int argc, char *argv[]) {
   }
   return (0);
 }
-

@@ -1,3 +1,29 @@
+2004-06-25  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* FvwmConsole/FvwmConsole.c (server):
+	make FvwmConsole socket inaccessible by other users
+	(CloseSocket):
+	removed
+	(clean_up):
+	new function
+
+	* FvwmConsole/FvwmConsoleC.c (ReapChildren):
+	(main):
+	kill all FvwmConsole processes if a child dies
+
+	* FvwmConsole/FvwmConsole.c (CloseSocket):
+	fixed core dump
+	(main):
+
+	* FvwmIconMan/xmanager.c (check_in_window):
+	* FvwmIconMan/globals.c (init_win_manager):
+	* FvwmIconMan/readconfig.c (read_in_resources):
+	new FvwmIconMan option ShowNoIcons
+
+	* FvwmConsole/FvwmConsoleC.c (sclose):
+	(ErrMsg):
+	fixed core dump
+
 2004-06-08  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* FvwmWinList/ButtonArray.c (DoButton):

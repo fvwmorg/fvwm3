@@ -55,6 +55,7 @@ extern volatile sig_atomic_t debug_term_signal;
 /*
  * Module prototypes
  */
+RETSIGTYPE fvwmReapChildren(int sig);
 extern void fvwmSetTerminate(int sig);
 
 #ifdef USE_BSD_SIGNALS

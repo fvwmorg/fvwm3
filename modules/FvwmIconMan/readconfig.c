@@ -1508,8 +1508,29 @@ void read_in_resources()
 	 ConsoleMessage("What is this: %s?\n", p);
 	 continue;
        }
-       ConsoleDebug(CONFIG, "Setting showonlyiconx to: %d\n", i);
+       ConsoleDebug(CONFIG, "Setting showonlyicons to: %d\n", i);
        SET_MANAGER(manager, showonlyiconic, i);
+      }
+      else if (!strcasecmp(option1, "shownoicons")) {
+       p = read_next_cmd(READ_ARG);
+       if (!p) {
+	 ConsoleMessage("Bad line: %s\n", current_line);
+	 ConsoleMessage("Need argument to shownoicons\n");
+	 continue;
+       }
+       if (!strcasecmp(p, "true")) {
+	 i = 1;
+       }
+       else if (!strcasecmp(p, "false")) {
+	 i = 0;
+       }
+       else {
+	 ConsoleMessage("Bad line: %s\n", current_line);
+	 ConsoleMessage("What is this: %s?\n", p);
+	 continue;
+       }
+       ConsoleDebug(CONFIG, "Setting shownoicons to: %d\n", i);
+       SET_MANAGER(manager, shownoiconic, i);
       }
       else if (!strcasecmp(option1, "font")) {
 	char *f;

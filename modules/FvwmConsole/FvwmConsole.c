@@ -23,6 +23,8 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
+/* FIXME: The signal handling of this module is largely broken */
+
 #include "config.h"
 
 #include "FvwmConsole.h"
@@ -30,7 +32,7 @@
 char *MyName;
 
 int Fd[2];  /* pipe to fvwm */
-int  Ns;             /* socket handles */
+int  Ns = -1; /* socket handles */
 char Name[80]; /* name of this program in executable format */
 char *S_name;  /* socket name */
 
@@ -39,6 +41,32 @@ RETSIGTYPE DeadPipe( int );
 void CloseSocket();
 void ErrMsg( char *msg );
 void SigHandler( int );
+
+void clean_up(void)
+{
+	if (Ns != -1)
+	{
+		close(Ns);
+		Ns = -1;
+		}
+	if (S_name != NULL)
+	{
+		unlink(S_name);
+		S_name = NULL;
+	}
+
+	return;
+}
+
+RETSIGTYPE ReapChildren(int sig)
+{
+	fvwmReapChildren(sig);
+
+	clean_up();
+	exit(0);
+
+	SIGNAL_RETURN;
+}
 
 int main(int argc, char *argv[])
 {
@@ -114,6 +142,7 @@ int main(int argc, char *argv[])
 
   eargv[j] = NULL;
 
+  signal (SIGCHLD, ReapChildren);
   /* Dead pipes mean fvwm died */
   signal (SIGPIPE, DeadPipe);
   signal (SIGINT, SigHandler);
@@ -143,27 +172,16 @@ int main(int argc, char *argv[])
  */
 RETSIGTYPE DeadPipe( int dummy )
 {
-  CloseSocket();
-  exit(0);
-  SIGNAL_RETURN;
+	clean_up();
+	exit(0);
+	SIGNAL_RETURN;
 }
 
 RETSIGTYPE SigHandler(int dummy)
 {
-  CloseSocket();
-  exit(1);
-  SIGNAL_RETURN;
-}
-
-/*
- * close sockets and spawned process
- */
-void CloseSocket()
-{
-  send(Ns, C_CLOSE, strlen(C_CLOSE), 0);
-  close(Ns);     /* remove the socket */
-  unlink( S_name );
-
+	clean_up();
+	exit(0);
+	SIGNAL_RETURN;
 }
 
 /*
@@ -190,7 +208,7 @@ void server ( void )
 
   /* name the socket */
   home = getenv("FVWM_USERDIR");
-  S_name = safemalloc(strlen(home) + sizeof(S_NAME) + 1);
+  S_name = safemalloc(strlen(home) + sizeof(S_NAME) + 11);
   strcpy(S_name, home);
   strcat(S_name, S_NAME);
 
@@ -202,6 +220,7 @@ void server ( void )
   unlink( S_name );
   len = sizeof(sas) - sizeof( sas.sun_path) + strlen( sas.sun_path );
 
+  umask(0077);
   if( bind(s, (struct sockaddr *)&sas,len) < 0 ) {
 	ErrMsg( "bind" );
 	exit(1);
@@ -249,8 +268,8 @@ void server ( void )
       if (FD_ISSET(Fd[1], &fdset)){
 	  FvwmPacket* packet = ReadFvwmPacket(Fd[1]);
 	  if ( packet == NULL ) {
-	      CloseSocket();
-	      exit(0);
+		  clean_up();
+		  exit(0);
 	  } else {
 	      if (packet->type == M_PASS) {
 		  msglen = strlen((char *)&(packet->body[3]));
@@ -265,10 +284,9 @@ void server ( void )
       if (FD_ISSET(Ns, &fdset)){
 	  int len;
 	  if( recv( Ns, buf, MAX_COMMAND_SIZE,0 ) == 0 ) {
-	    /* client is terminated */
-	    close(Ns);
-	    unlink(S_name);
-	    exit(0);
+		  /* client is terminated */
+		  clean_up();
+		  exit(0);
 	  }
 
 	  /* process the own unique commands */
@@ -287,7 +305,9 @@ void server ( void )
  */
 void ErrMsg( char *msg )
 {
-  fprintf( stderr, "%s server error in %s, errno %d\n", Name, msg, errno );
-  CloseSocket();
-  exit(1);
+	fprintf(
+		stderr, "%s server error in %s, errno %d: %s\n", Name, msg,
+		errno, strerror(errno) );
+	clean_up();
+	exit(1);
 }

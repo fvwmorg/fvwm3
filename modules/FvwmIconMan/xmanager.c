@@ -1477,6 +1477,7 @@ void check_in_window(WinData *win)
   if (win->manager && win->complete) {
     is_state_selected =
 	    ((!win->manager->showonlyiconic || win->iconified) &&
+	     (!win->manager->shownoiconic || !win->iconified) &&
 	     (win->manager->showtransient || !IS_TRANSIENT(win)));
     in_viewport = win_in_viewport(win);
     if (win->manager->usewinlist && DO_SKIP_WINDOW_LIST(win))

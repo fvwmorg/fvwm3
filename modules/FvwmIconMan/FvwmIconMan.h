@@ -301,6 +301,7 @@ typedef struct win_manager {
 	int weighted_sorts_len, weighted_sorts_size;
 	char *AnimCommand;
 	Uchar showonlyiconic;
+	Uchar shownoiconic;
 	Uchar showtransient;
 	rectangle managed_g;    /* dimensions of managed screen portion */
 	int relief_thickness;	/* relief thickness for each non-flat button */

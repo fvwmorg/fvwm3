@@ -116,6 +116,7 @@ SelectColorset
 Shape           use shape extension        false
 Show            list of windows to show
 ShowOnlyIcons   only icons visible         false
+ShowNoIcons     icons are not displayer    false
 ShowTransient   transient windows visible  false
 Sort            keep managers sorted       name
 SortWeight      weight for sorting
@@ -373,6 +374,9 @@ Show transient windows in the list (default false).
 
 .IP "*FvwmIconMan: [id] ShowOnlyIcons \fIboolean\fP"
 Only iconified windows are shown if \fIboolean\fP is true.
+
+.IP "*FvwmIconMan: [id] ShowNoIcons \fIboolean\fP"
+Only windows that are not iconified are shown if \fIboolean\fP is true.
 
 .SH ACTIONS
 Actions are commands which may be bound to an event of the type: a key press, a

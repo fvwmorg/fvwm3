@@ -28,7 +28,6 @@
 
 #include <stdio.h>
 #include <signal.h>
-#include <sys/wait.h>
 #include <sys/stat.h>
 #ifdef HAVE_FCNTL_H
 #include <fcntl.h>
@@ -712,42 +711,6 @@ void Done(int restart, char *command)
 	exit(0);
 }
 
-/*
- * Reap child processes, preventing them from becoming zombies.
- * We do this asynchronously within the SIGCHLD handler so that
- * "it just happens".
- */
-static RETSIGTYPE
-ReapChildren(int sig)
-{
-	(void)sig;
-
-	BSD_BLOCK_SIGNALS;
-	/*
-	 * This is a signal handler, AND SO MUST BE REENTRANT!
-	 * Now the wait() functions are safe here, but please don't
-	 * add anything unless you're SURE that the new functions
-	 * (plus EVERYTHING they call) are also reentrant. There
-	 * are very few functions which are truly safe.
-	 */
-#if HAVE_WAITPID
-	while (waitpid(-1, NULL, WNOHANG) > 0)
-	{
-		/* nothing to do here */
-	}
-#elif HAVE_WAIT3
-	while (wait3(NULL, WNOHANG, NULL) > 0)
-	{
-		/* nothing to do here */
-	}
-#else
-# error One of waitpid or wait3 is needed.
-#endif
-	BSD_UNBLOCK_SIGNALS;
-
-	SIGNAL_RETURN;
-}
-
 /***********************************************************************
  *
  *  Procedure:
@@ -802,7 +765,7 @@ InstallSignals(void)
 	 * handler, but the SIGPIPE handler has the SA_RESTART flag set and so
 	 * should not affect our "wait" system call. */
 	sigact.sa_flags |= SA_NOCLDSTOP;
-	sigact.sa_handler = ReapChildren;
+	sigact.sa_handler = fvwmReapChildren;
 	sigaction(SIGCHLD, &sigact, NULL);
 #else
 #ifdef USE_BSD_SIGNALS
@@ -837,7 +800,7 @@ InstallSignals(void)
 #ifdef HAVE_SIGINTERRUPT
 	siginterrupt(SIGTERM, 0);
 #endif
-	signal(SIGCHLD, ReapChildren);
+	signal(SIGCHLD, fvwmReapChildren);
 #ifdef HAVE_SIGINTERRUPT
 	siginterrupt(SIGCHLD, 0);
 #endif
@@ -849,7 +812,7 @@ InstallSignals(void)
 	 * table if they exited while the default handler was in place.
 	 * We fix this by invoking the SIGCHLD handler NOW, so that they
 	 * may finally rest in peace. */
-	ReapChildren(0);
+	fvwmReapChildren(0);
 
 	return;
 }

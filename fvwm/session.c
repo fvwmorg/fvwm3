@@ -1551,6 +1551,7 @@ MatchWinToSM(
 			SET_HAS_EWMH_INIT_MAXVERT_STATE(
 				ewin, HAS_EWMH_INIT_MAXVERT_STATE(
 					&(matches[i])));
+/*!!!*/fprintf(stderr, "session: %d %d\n", HAS_EWMH_INIT_MAXHORIZ_STATE(&(matches[i])), HAS_EWMH_INIT_MAXVERT_STATE(&(matches[i])));
 			SET_HAS_EWMH_INIT_SHADED_STATE(
 				ewin, HAS_EWMH_INIT_SHADED_STATE(
 					&(matches[i])));

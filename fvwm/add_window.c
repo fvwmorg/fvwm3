@@ -2425,7 +2425,7 @@ FvwmWindow *AddWindow(
 			fw->frame_g.height, 0, False);
 	}
 	if (HAS_EWMH_INIT_MAXVERT_STATE(fw) == EWMH_STATE_HAS_HINT ||
-		 HAS_EWMH_INIT_MAXHORIZ_STATE(fw) == EWMH_STATE_HAS_HINT)
+	    HAS_EWMH_INIT_MAXHORIZ_STATE(fw) == EWMH_STATE_HAS_HINT)
 	{
 		int h;
 		int v;

@@ -21,6 +21,7 @@
 
 #include "config.h"
 
+#include <sys/wait.h>
 #include <setjmp.h>
 #include <errno.h>
 #include "fvwmsignal.h"
@@ -39,9 +40,44 @@ volatile sig_atomic_t debug_term_signal = 0;
 static volatile sig_atomic_t canJump = false;
 static sigjmp_buf deadJump;
 
+/*
+ * Reap child processes, preventing them from becoming zombies.
+ * We do this asynchronously within the SIGCHLD handler so that
+ * "it just happens".
+ */
+RETSIGTYPE
+fvwmReapChildren(int sig)
+{
+	(void)sig;
+
+	BSD_BLOCK_SIGNALS;
+	/*
+	 * This is a signal handler, AND SO MUST BE REENTRANT!
+	 * Now the wait() functions are safe here, but please don't
+	 * add anything unless you're SURE that the new functions
+	 * (plus EVERYTHING they call) are also reentrant. There
+	 * are very few functions which are truly safe.
+	 */
+#if HAVE_WAITPID
+	while (waitpid(-1, NULL, WNOHANG) > 0)
+	{
+		/* nothing to do here */
+	}
+#elif HAVE_WAIT3
+	while (wait3(NULL, WNOHANG, NULL) > 0)
+	{
+		/* nothing to do here */
+	}
+#else
+# error One of waitpid or wait3 is needed.
+#endif
+	BSD_UNBLOCK_SIGNALS;
+
+	SIGNAL_RETURN;
+}
+
 #ifdef USE_BSD_SIGNALS
 static int term_sigs;
-
 
 /*
  * fvwmSetSignalMask - store the set of mutually exclusive signals
