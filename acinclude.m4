@@ -974,7 +974,9 @@ size_t iconv();
 ], [], use_const=no, use_const=yes)
 	AC_MSG_RESULT($use_const)
 	if test "x$use_const" = "xyes"; then
-		AC_DEFINE(ICONV_ARG_USE_CONST)
+		AC_DEFINE(ICONV_ARG_CONST, const)
+	else
+		AC_DEFINE(ICONV_ARG_CONST, )
 	fi
 ])
 

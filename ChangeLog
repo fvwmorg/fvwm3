@@ -1,3 +1,25 @@
+2004-07-08  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* libs/FEvent.c (FPeekEvent):
+	(FPeekIfEvent):
+	(FCheckPeekIfEvent):
+	fixed some event handling bugs
+
+	* fvwm/conditional.c (CMD_Test):
+	(match_version):
+	corrected use of Bool types
+	(match_version):
+	simplified, fixed compilation
+	(ver):
+	use int as return type
+
+	* libs/Ficonv.c (convert_charsets):
+	reindented
+
+	* libs/Ficonv.c (convert_charsets):
+	* acinclude.m4 (ICONV_SECOND_ARG):
+	rewrote iconf configure test to save an ifdef
+
 2004-07-06  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* fvwm/move_resize.c (__resize_window):

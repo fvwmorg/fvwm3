@@ -98,7 +98,8 @@ int set_default_iconv_charsets(FlocaleCharset *fc)
 		while(FLC_GET_LOCALE_CHARSET(fc,j) != NULL)
 		{
 			if (is_iconv_supported(
-				  FLC_GET_LOCALE_CHARSET(FLCIconvUtf8Charset,i),
+				  FLC_GET_LOCALE_CHARSET(
+					  FLCIconvUtf8Charset,i),
 				  FLC_GET_LOCALE_CHARSET(fc,j)))
 			{
 				FLC_SET_ICONV_INDEX(FLCIconvUtf8Charset,i);
@@ -149,121 +150,146 @@ static
 char *convert_charsets(const char *in_charset, const char *out_charset,
 		       const unsigned char *in, unsigned int in_size)
 {
-  static int error_count = 0;
-  Ficonv_t cd;
-  int have_error = 0;
-  int is_finished = 0;
-  size_t nconv;
-  size_t insize,outbuf_size,outbytes_remaining,len;
-  const char *inptr;
-  char *dest;
-  char *outp;
+	static int error_count = 0;
+	Ficonv_t cd;
+	int have_error = 0;
+	int is_finished = 0;
+	size_t nconv;
+	size_t insize,outbuf_size,outbytes_remaining,len;
+	const char *inptr;
+	char *dest;
+	char *outp;
 
-  if (in == NULL || !FiconvSupport)
-    return NULL;
+	if (in == NULL || !FiconvSupport)
+		return NULL;
 
-  cd = Ficonv_open(out_charset, in_charset);
-  if (cd == (Ficonv_t) -1)
-  {
-    /* Something went wrong.  */
-    if (error_count > FICONV_CONVERSION_MAX_NUMBER_OF_WARNING)
-      return NULL;
-    error_count++;
-    if (errno == EINVAL)
-    {
-      fprintf(stderr, "[FVWM][convert_charsets]: WARNING -\n\t");
-      fprintf(stderr, "conversion from `%s' to `%s' not available\n",
-	      in_charset,out_charset);
-    }
-    else
-    {
-      fprintf(stderr, "[FVWM][convert_charsets]: WARNING -\n\t");
-      fprintf(stderr, "conversion from `%s' to `%s' fail (init)\n",
-	      in_charset,out_charset);
-    }
-    /* Terminate the output string.  */
-    return NULL;
-  }
+	cd = Ficonv_open(out_charset, in_charset);
+	if (cd == (Ficonv_t) -1)
+	{
+		/* Something went wrong.  */
+		if (error_count > FICONV_CONVERSION_MAX_NUMBER_OF_WARNING)
+			return NULL;
+		error_count++;
+		if (errno == EINVAL)
+		{
+			fprintf(
+				stderr,
+				"[FVWM][convert_charsets]: WARNING -\n\t");
+			fprintf(
+				stderr,
+				"conversion from `%s' to `%s' not available\n",
+				in_charset,out_charset);
+		}
+		else
+		{
+			fprintf(
+				stderr,
+				"[FVWM][convert_charsets]: WARNING -\n\t");
+			fprintf(
+				stderr,
+				"conversion from `%s' to `%s' fail (init)\n",
+				in_charset,out_charset);
+		}
+		/* Terminate the output string.  */
+		return NULL;
+	}
 
-  /* in maybe a none terminate string */
-  len = in_size;
+	/* in maybe a none terminate string */
+	len = in_size;
 
-  outbuf_size = len + 1;
-  outbytes_remaining = outbuf_size - 1;
-  insize = len;
-  outp = dest = safemalloc(outbuf_size);
+	outbuf_size = len + 1;
+	outbytes_remaining = outbuf_size - 1;
+	insize = len;
+	outp = dest = safemalloc(outbuf_size);
 
-  inptr = in;
+	inptr = in;
 
-  for (is_finished = 0; is_finished == 0; )
-  {
-#ifdef ICONV_ARG_USE_CONST
-    nconv =
-      Ficonv(cd, (const char **)&inptr, &insize, &outp, &outbytes_remaining);
-#else
-    nconv =
-      Ficonv(cd, (char **)&inptr,&insize, &outp, &outbytes_remaining);
-#endif
-    is_finished = 1;
-    if (nconv == (size_t) - 1)
-    {
-      switch (errno)
-      {
-      case EINVAL:
-	/* Incomplete text, do not report an error */
-	break;
-      case E2BIG:
-      {
-	size_t used = outp - dest;
+	for (is_finished = 0; is_finished == 0; )
+	{
+		nconv = Ficonv(
+			cd, (ICONV_ARG_CONST char **)&inptr, &insize, &outp,
+			&outbytes_remaining);
+		is_finished = 1;
+		if (nconv == (size_t) - 1)
+		{
+			switch (errno)
+			{
+			case EINVAL:
+				/* Incomplete text, do not report an error */
+				break;
+			case E2BIG:
+			{
+				size_t used = outp - dest;
 
-	outbuf_size *= 2;
-	dest = realloc (dest, outbuf_size);
+				outbuf_size *= 2;
+				dest = realloc (dest, outbuf_size);
 
-	outp = dest + used;
-	outbytes_remaining = outbuf_size - used - 1; /* -1 for nul */
-	is_finished = 0;
-	break;
-      }
+				outp = dest + used;
+				/* -1 for nul */
+				outbytes_remaining = outbuf_size - used - 1;
+				is_finished = 0;
+				break;
+			}
 #ifdef EILSEQ
-      case EILSEQ:
-	    /* Something went wrong.  */
-	if (error_count <= FICONV_CONVERSION_MAX_NUMBER_OF_WARNING)
-	{
-	  fprintf(stderr, "[FVWM][convert_charsets]: WARNING -\n\t");
-	  fprintf(stderr,
-		  "Invalid byte sequence during conversion from %s to %s\n",
-		  in_charset,out_charset);
-	}
-	have_error = 1;
-	break;
+			case EILSEQ:
+				/* Something went wrong.  */
+				if (error_count <=
+				    FICONV_CONVERSION_MAX_NUMBER_OF_WARNING)
+				{
+					fprintf(
+						stderr,
+						"[FVWM][convert_charsets]:"
+						" WARNING -\n\t");
+					fprintf(
+						stderr,
+						"Invalid byte sequence during"
+						" conversion from %s to %s\n",
+						in_charset,out_charset);
+				}
+				have_error = 1;
+				break;
 #endif
-      default:
-	if (error_count <= FICONV_CONVERSION_MAX_NUMBER_OF_WARNING)
-	{
-	  fprintf(stderr, "[FVWM][convert_charsets]: WARNING -\n\t");
-	  fprintf(stderr, "Error during conversion from %s to %s\n",
-		  in_charset,out_charset);
+			default:
+				if (error_count <=
+				    FICONV_CONVERSION_MAX_NUMBER_OF_WARNING)
+				{
+					fprintf(
+						stderr,
+						"[FVWM][convert_charsets]:"
+						" WARNING -\n\t");
+					fprintf(
+						stderr,
+						"Error during conversion from"
+						" %s to %s\n", in_charset,
+						out_charset);
+				}
+				have_error = 1;
+				break;
+			}
+		}
 	}
-	have_error = 1;
-	break;
-      }
-    }
-  }
 
-  /* Terminate the output string  */
-  *outp = '\0';
+	/* Terminate the output string  */
+	*outp = '\0';
 
-  if (Ficonv_close (cd) != 0)
-    fprintf(stderr, "[FVWM][convert_charsets]: WARNING - iconv_close fail\n");
+	if (Ficonv_close (cd) != 0)
+	{
+		fprintf(
+			stderr,
+			"[FVWM][convert_charsets]: WARNING - iconv_close"
+			" fail\n");
+	}
 
-  if (have_error)
-  {
-    error_count++;
-    free (dest);
-    return NULL;
-  }
-  else
-    return dest;
+	if (have_error)
+	{
+		error_count++;
+		free (dest);
+		return NULL;
+	}
+	else
+	{
+		return dest;
+	}
 }
 
 static
@@ -291,7 +317,8 @@ void FiconvInit(Display *dpy, const char *module)
 		       "[%s][FiconvInit]: WARN -- Cannot get default "
 		       "iconv charset for default charsets '%s' and '%s'\n",
 		       module,
-		       FLC_DEBUG_GET_X_CHARSET(FlocaleCharsetGetFLCXOMCharset()),
+		       FLC_DEBUG_GET_X_CHARSET(
+			       FlocaleCharsetGetFLCXOMCharset()),
 		       FLC_DEBUG_GET_X_CHARSET(FLCIconvDefaultCharset));
 		FLCIconvUtf8Charset = NULL;
 		FLCIconvDefaultCharset = NULL;
@@ -352,7 +379,9 @@ FlocaleCharset *FiconvSetupConversion(Display *dpy, FlocaleCharset *fc)
 #endif
 		if (!FLC_HAVE_ICONV_CHARSET(my_fc))
 		{
-			fprintf(stderr, "[fvwmlibs] cannot get iconv converter "
+			fprintf(
+				stderr,
+				"[fvwmlibs] cannot get iconv converter "
 				"for charset %s\n",
 				FLC_DEBUG_GET_X_CHARSET(my_fc));
 			return NULL;
@@ -394,7 +423,8 @@ char *FiconvUtf8ToCharset(Display *dpy, FlocaleCharset *fc,
 
 	if (FLC_ENCODING_TYPE_IS_UTF_8(my_fc))
 	{
-		/* in can be a none terminate string so do not use CopyString */
+		/* in can be a none terminate string so do not use CopyString
+		 */
 		out = safemalloc(in_size+1);
 		strncpy(out, in, in_size);
 		out[in_size]=0;

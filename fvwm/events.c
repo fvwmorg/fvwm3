@@ -4259,14 +4259,10 @@ int flush_property_notify(Atom atom, Window w)
 	return count;
 }
 
-/*
- *
- * Wait for all mouse buttons to be released
+/* Wait for all mouse buttons to be released
  * This can ease some confusion on the part of the user sometimes
  *
- * Discard superflous button events during this wait period.
- *
- */
+ * Discard superflous button events during this wait period. */
 void WaitForButtonsUp(Bool do_handle_expose)
 {
 	unsigned int mask;

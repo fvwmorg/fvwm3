@@ -1488,8 +1488,8 @@ static void ParseColorset(char *arg1, char *arg2, void *offset_deskinfo,
   int colorset = 0;
   int i;
   int desk;
-  unsigned int colorset_offset = (unsigned int)offset_deskinfo;
-  unsigned int item_colorset_offset = (unsigned int)offset_item;
+  unsigned long colorset_offset = (unsigned long)offset_deskinfo;
+  unsigned long item_colorset_offset = (unsigned long)offset_item;
 
   sscanf(arg2, "%d", &colorset);
   AllocColorset(colorset);

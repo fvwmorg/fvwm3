@@ -1431,6 +1431,7 @@ void EWMH_ProcessPropertyNotify(const exec_context_t *exc)
 	{
 		if (ewmh_a->action != None)
 		{
+/*!!!*/fprintf(stderr, "eppn: fpn\n");
 			flush_property_notify(ewmh_a->atom, FW_W(fwin));
 			ewmh_a->action(fwin, ev, NULL, 0);
 		}

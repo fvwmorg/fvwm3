@@ -66,7 +66,7 @@
 #undef USE_LIBICONV
 
 /* define if second arg of iconv use const */
-#undef ICONV_ARG_USE_CONST
+#undef ICONV_ARG_CONST
 
 #ifdef USE_LIBICONV
 /* define to use locale_charset in the place of nl_langinfog if libiconv

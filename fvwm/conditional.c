@@ -276,11 +276,11 @@ static Bool cond_check_access(char *file, int type, Bool im)
 			return False;
 		}
 	}
-	if (type != X_OK && !im)
+	if (type != X_OK && im == False)
 	{
 		return False;
 	}
-	if (!im)
+	if (im == False)
 	{
 		path = getenv("PATH");
 	}
@@ -1580,67 +1580,86 @@ void CMD_NoWindow(F_CMD_ARGS)
 	return;
 }
 
-// ver() - convert a version string to a floating-point number that
-// can be used to compare different versions.
-// ie. converts "2.5.11" to 2.005011
-static double ver (char *str)
+/* ver() - convert a version string to a floating-point number that
+ * can be used to compare different versions.
+ * ie. converts "2.5.11" to 2005011 */
+static int ver (char *str)
 {
 	char *n;
-	double v;
+	int v;
 
 	str = DoPeekToken(str, &n, NULL, ".", NULL);
 	if (!n)
+	{
 		return -1.0;
-	v = atof(n);
+	}
+	v = atoi(n) * 1000000;
 	str = DoPeekToken(str, &n, NULL, ".", NULL);
 	if (!n)
+	{
 		return -1.0;
-	v += atof(n) / 1000.0;
+	}
+	v += atoi(n) * 1000;
 	str = DoPeekToken(str, &n, NULL, ".", NULL);
 	if (!n)
+	{
 		return -1.0;
-	v += atof(n) / 1000000.0;
+	}
+	v += atoi(n);
 
 	return v;
 }
 
-// matchVersion() - compare $version against this version of FVWM
-// using the operator specified by $operator.
-static Bool matchVersion(char *version, char *operator)
+/* match_version() - compare $version against this version of FVWM
+ * using the operator specified by $operator. */
+static Bool match_version(char *version, char *operator)
 {
-	static double fvwmVersion = -1.0;
-	if (fvwmVersion < 0.0)
+	static int fvwm_version = -1;
+	const int v = ver(version);
+
+	if (fvwm_version < 0)
 	{
 		char *tmp = safestrdup(VERSION);
-		fvwmVersion = ver(tmp);
+		fvwm_version = ver(tmp);
 		free(tmp);
 	}
-
-	const double v = ver(version);
-	if (v < 0.0)
+	if (v < 0)
 	{
-		fprintf(stderr, "matchVersion: Invalid version: %s\n", version);
+		fprintf(
+			stderr, "match_version: Invalid version: %s\n",
+			version);
 		return False;
 	}
-
 	if (strcmp(operator, ">=") == 0)
-		return fvwmVersion >= v;
+	{
+		return fvwm_version >= v;
+	}
 	else if (strcmp(operator, ">") == 0)
-		return fvwmVersion > v;
+	{
+		return fvwm_version > v;
+	}
 	else if (strcmp(operator, "<=") == 0)
-		return fvwmVersion <= v;
+	{
+		return fvwm_version <= v;
+	}
 	else if (strcmp(operator, "<") == 0)
-		return fvwmVersion < v;
+	{
+		return fvwm_version < v;
+	}
 	else if (strcmp(operator, "==") == 0)
 	{
-		// It is dangerous to check equality of floating-point variables,
-		// hence why just check whether values are _almost_ equal.
-		return (fabs(fvwmVersion - v) < 1e-7);
+		return (v == fvwm_version);
 	}
 	else if (strcmp(operator, "!=") == 0)
-		return (fabs(fvwmVersion - v) > 1e-7);
+	{
+		return (v != fvwm_version);
+	}
 	else
-		fprintf(stderr, "matchVersion: Invalid operator: %s\n", operator);
+	{
+		fprintf(
+			stderr, "match_version: Invalid operator: %s\n",
+			operator);
+	}
 
 	return False;
 }
@@ -1651,7 +1670,8 @@ void CMD_Test(F_CMD_ARGS)
 	char *flags;
 	char *condition;
 	char *tmp;
-	Bool match, error;
+	int match;
+	int error;
 
 	flags = CreateFlagString(action, &restofline);
 
@@ -1659,12 +1679,12 @@ void CMD_Test(F_CMD_ARGS)
 	tmp = flags;
 	tmp = GetNextSimpleOption(tmp, &condition);
 
-	match = True;
-	error = False;
+	match = 1;
+	error = 0;
 	while (condition)
 	{
 		char *cond;
-		Bool reverse;
+		int reverse;
 
 		cond = condition;
 		reverse = 0;
@@ -1675,11 +1695,11 @@ void CMD_Test(F_CMD_ARGS)
 		}
 		if (StrEquals(cond, "True"))
 		{
-			match = True;
+			match = 1;
 		}
 		else if (StrEquals(cond, "False"))
 		{
-			match = False;
+			match = 0;
 		}
 		else if (StrEquals(cond, "Version"))
 		{
@@ -1691,19 +1711,19 @@ void CMD_Test(F_CMD_ARGS)
 				tmp = GetNextSimpleOption(tmp, &ver);
 				if (ver == NULL)
 				{
-					match = matchWildcards(pattern, VERSION);
-					// fprintf(stderr, "This syntax for \"Version\" is deprecated.\nPlease specify an operator. eg \"Test (Version >= %s) ...\"\n", VERSION);
+					match = matchWildcards(
+						pattern, VERSION);
 				}
 				else
 				{
-					match = matchVersion(ver, pattern);
+					match = match_version(ver, pattern);
 					free(ver);
 				}
 				free(pattern);
 			}
 			else
 			{
-				error = True;
+				error = 1;
 			}
 		}
 		else if (StrEquals(cond, "Start"))
@@ -1738,7 +1758,7 @@ void CMD_Test(F_CMD_ARGS)
 		{
 			char *pattern;
 			int type = X_OK;
-			Bool im = False;
+			Bool im = 0;
 
 			switch(cond[0])
 			{
@@ -1775,7 +1795,7 @@ void CMD_Test(F_CMD_ARGS)
 			}
 			else
 			{
-				error = True;
+				error = 1;
 			}
 		}
 		else

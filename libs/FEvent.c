@@ -340,24 +340,20 @@ Bool FCheckPeekIfEvent(
 	Bool (*predicate) (Display *display, XEvent *event, XPointer arg),
 	XPointer arg)
 {
-	int rc;
+	XEvent dummy;
 	fev_check_peek_args cpa;
-
-	fev_event_old = fev_event;
 
 	cpa.predicate = predicate;
 	cpa.arg = arg;
 	cpa.found = False;
-	XCheckIfEvent(display, &fev_event, fev_check_peek_pred, (char *)&cpa);
-	rc = cpa.found;
-	if (rc == True)
+	XCheckIfEvent(display, &dummy, fev_check_peek_pred, (char *)&cpa);
+	if (cpa.found == True)
 	{
 		*event_return = cpa.event;
+		fev_update_last_timestamp(event_return);
 	}
-	*event_return = fev_event;
-	fev_update_last_timestamp(event_return);
 
-	return rc;
+	return cpa.found;
 }
 
 Bool FCheckTypedEvent(
@@ -470,10 +466,11 @@ int FPeekEvent(
 {
 	int rc;
 
-	fev_event_old = fev_event;
-	rc = XPeekEvent(display, &fev_event);
-	*event_return = fev_event;
-	fev_update_last_timestamp(event_return);
+	rc = XPeekEvent(display, event_return);
+	if (rc == True)
+	{
+		fev_update_last_timestamp(event_return);
+	}
 
 	return rc;
 }
@@ -485,10 +482,11 @@ int FPeekIfEvent(
 {
 	int rc;
 
-	fev_event_old = fev_event;
-	rc = XPeekIfEvent(display, &fev_event, predicate, arg);
-	*event_return = fev_event;
-	fev_update_last_timestamp(event_return);
+	rc = XPeekIfEvent(display, event_return, predicate, arg);
+	if (rc == True)
+	{
+		fev_update_last_timestamp(event_return);
+	}
 
 	return rc;
 }
