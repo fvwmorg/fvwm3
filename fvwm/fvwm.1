@@ -1045,75 +1045,74 @@ then, if either loading the Xft font fails or fvwm has no Xft support,
 fvwm loads the font "-adobe-courier-bold-r-normal--14-*". This
 allows for writting portable configuration files.
 
-.\"needs_lang_check
+.SH FONT ENCODINGS
+
 The font name is used by FVWM, (and X),
-to determine the encoding used.
+to determine the font encoding.
 
 For example,
-if you use an iso10646-1 (unicode) font for menus you should use
-UTF-8 encoding in your configuration file for the menus labels.
+if you use an iso10646-1 (Unicode) font for menus you should use
+UTF-8 encoding in your configuration file for the menu labels.
 
-Also, the EWMH specification forces fvwm to convert some window
-names from/into UTF-8. FVWM uses the font encoding to do font
-converersions. FVWM has to know the font encoding to display
-the string correctly. One example is ISO10646-1 and encodings
-for right to left languages.
-In most cases, FVWM correctly deterimines the
-encoding.
+Windows with EWMH hints have their names treated as UTF-8.
+FVWM has to know the font encoding to display
+the UTF-8 fonts correctly. One example is ISO10646-1 and encodings
+for right to left languages. (See BI-DIRECTIONAL TEXT.)
+In most cases, FVWM correctly determines the
+encoding.  Some fonts don't end with valid encoding names.
 When the font name isn't normal, for example:
 .EX
 -misc-fixed-*--20-*-my_utf8-36
 .EE
 you need to add the encoding after the font name
 using a slash as a delimiter.
-In the example, "my_utf8-36" isn't an "official"
 For example:
 .EX
 MenuStyle * Font -misc-fixed-*--20-*-my_utf8-36/iso10646-1
 .EE
-Concerning UTF-8 conversions the problem is a bit different.
-If fvwm has found the good encoding, fvwm try to found valid converts.
-Unfortunately, there are no standard here: for conversion between
-iso8859-1 and UTF-8 a GNU system use ISO-8859-1 and some other
-system use iso881 to define the converters (these two names are
-supported by fvwm). Moreover, in certain case it may be useful
-to use machine specific converters. So, if you experiment problems
-with some windows names (e.g., with KDE or GNOME applications,
+With UTF-8 conversions the problem is a bit different.
+If FVWM finds an encoding, FVWM uses system functions to do the conversion.
+Unfortunately, there are no standards: for conversion between
+iso8859-1 and UTF-8. A GNU system uses "ISO-8859-1" and other
+systems use "iso881" to define the converters (these two names are
+supported by FVWM).  In some cases it may be necessary
+to use machine specific converters. So, if you experience problems
+with some windows names (e.g., with the KDE or GNOME
 pager or task bar) you can try to get information on your iconv
-implementation ("man iconv" may help) and passes the name which
-defines the converters at the end of the font name after the encoding
-and a / (a possible other solution is to use GNU libiconv).
+implementation ("man iconv" may help) and put the name which
+defines the converter at the end of the font name after the encoding
+and a / (another possible other solution is to use GNU libiconv).
 For example use:
 .EX
 Style * Font -misc-fixed-*--14-*-iso8859-1/*/latin1
 .EE
-to use latin1 for defining the converters for iso8859-1 encoding.
-The "*" in between the "/" says to fvwm to found itself the
-encoding (no problems here). Use:
+to use latin1 for defining the converter for the iso8859-1 encoding.
+The "*" in between the "/" says to FVWM to determine the
+encoding from the end of the font name. Use:
 .EX
 Style * Font -misc-fixed-*--14-*-local8859-6/iso8859-6/local_iso8859_6_iconv
 .EE
-to force fvwm to consider the font with iso8859-6 as encoding (useful for
+to force FVWM to use the font with iso8859-6 as the encoding (this is useful for
 bi-directionality) and to use local_iso8859_6_iconv for defining the converters.
-.\"end
 
-.SH BI-DIRECTIONAL TEXTS
+.SH BI-DIRECTIONAL TEXT
 
-Arabic and Hebrew texts require bi-directional text support to be
+Arabic and Hebrew text require bi-directional text support to be
 displayed correctly, this means that logical strings should be
 converted before their visual presentation, so left-to-right and
 right-to-left sub-strings are determined and reshuffled.
-In fvwm this is done automatically in window titles, menus,
-module labels and other places if fonts used for displaying the
+In FVWM this is done automatically in window titles, menus,
+module labels and other places if the fonts used for displaying the
 text are of one of the charsets that require
 .I bidi
+(bi-directional)
 support.
 For example, this includes iso8859-6, iso8859-8 and iso10646-1
 (unicode), but not other iso8859-* fonts.
 
-This bi-directional text support is done using
+This bi-directional text support is done using the
 .I fribidi
-library that should be linked to fvwm, see
+library compile time option, see
 .IR INSTALL.fvwm .
 
 .SH KEYBOARD SHORTCUTS
@@ -4912,6 +4911,7 @@ is '-'.
 is the mouse button number.  If
 .I Button
 is zero then any button performs the specified function.
+
 .I Context
 describes where the binding applies.  Valid contexts are 'R' for
 the root window, 'W' for an application window, 'D' for a desktop

@@ -1,21 +1,12 @@
-2002-05-03  olicha  <olivier.chapuis@free.fr>
+2002-05-03  Dan Espen  <dane@mk.telcordia.com>
 
-	* libs/PictureImageLoader.h
-	* libs/PictureImageLoader.c (PImageLoadPixmapFromFile):
-	(PImageLoadFvwmPictureFromFile):
-	(FIMAGE_CMD_ARGS):
-	(PImageLoadXpm):
-	Fixed initialization of alloc_pixels ptr of the FvwmPicture structure
-
-2002-05-03  olicha  <olivier.chapuis@free.fr>
-	* fvwm/colorset.c (parse_tint):
-	(parse_colorset):
-	Fixed tint and bg of the transparent part of a pixmap 
+	* fvwm/fvwm.1: Finish language check.
+	Fix typo in Mouse section, context should be on new line.
 
 2002-05-02  Dan Espen  <dane@mk.telcordia.com>
 
-	* fvwm/fvwm.1 (file): Restore icons and images text with some
-	improvement. Started on lang check, not done yet.
+	* fvwm/fvwm.1 (file): Restore icons and images text with some improvement.
+	Started on lang check, not done yet.
 
 2002-05-02  Mikhail Kruk  <meshko@cs.brandeis.edu>
 
