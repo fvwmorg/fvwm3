@@ -30,6 +30,7 @@
 #include "screen.h"
 #include "gnome.h"
 #include "stack.h"
+#include "update.h"
 #include "style.h"
 #include "virtual.h"
 #include "borders.h"
