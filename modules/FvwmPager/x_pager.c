@@ -2280,12 +2280,16 @@ void Scroll(int window_w, int window_h, int x, int y, int Desk,
 	{
 		sy = -1;
 	}
+	if (sx==0&&sy==0) return;
 	if (Wait == 0 || last_sx != sx || last_sy != sy)
 	{
 		sprintf(command, "Scroll %d %d", sx, sy);
 		SendText(fd, command, 0);
-		MyVx+=sx;
-		MyVy+=sy;
+		/* Here we need to track the view offset on the desk. */
+		/* sx/y are are a percent of the screen to scroll. */
+		/* We don't use Scr.Vx/y since they lag the true position. */
+		MyVx+=Scr.MyDisplayWidth*sx/100;
+		MyVy+=Scr.MyDisplayHeight*sy/100;
 		Wait = 1;
 	}
 	if (Wait == 0)
