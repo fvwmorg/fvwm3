@@ -295,7 +295,7 @@ void DeIconify(FvwmWindow *);
 void KeepOnTop(void);
 void show_panner(void);
 void WaitForButtonsUp(void);
-void FocusOn(FvwmWindow *t,int DeIconifyOnly);
+void FocusOn(FvwmWindow *t,Bool FocusByMouse);
 void WarpOn(FvwmWindow *t,int warp_x, int x_unit, int warp_y, int y_unit);
 /*  RBW - 11/02/1998  */
 Bool PlaceWindow(FvwmWindow *tmp_win, unsigned long flags,

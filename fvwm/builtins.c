@@ -167,7 +167,7 @@ int DeferExecution(XEvent *eventp, Window *w,FvwmWindow **tmp_win,
  * Moves focus to specified window
  *
  *************************************************************************/
-void FocusOn(FvwmWindow *t,int DeIconifyOnly)
+void FocusOn(FvwmWindow *t,Bool FocusByMouse)
 {
 #ifndef NON_VIRTUAL
   int dx,dy;
@@ -229,7 +229,7 @@ void FocusOn(FvwmWindow *t,int DeIconifyOnly)
       XWarpPointer(dpy, None, Scr.Root, 0, 0, 0, 0, 2,2);
   }
   UngrabEm();
-  SetFocus(t->w,t,0);
+  SetFocus(t->w,t,FocusByMouse);
 }
 
 

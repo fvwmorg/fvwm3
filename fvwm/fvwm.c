@@ -664,7 +664,7 @@ void SetRCDefaults()
     "+ \"Exit FVWM\" Quit",
     "Mouse 1 R N Popup builtin_menu",
     "AddToFunc WindowListFunc \"I\" WindowId $0 Iconify -1",
-    "+ \"I\" WindowId $0 Focus",
+    "+ \"I\" WindowId $0 FlipFocus",
     "+ \"I\" WindowId $0 Raise",
     "+ \"I\" WindowId $0 WarpToWindow 5p 5p",
     NULL

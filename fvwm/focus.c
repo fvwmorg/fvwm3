@@ -65,7 +65,7 @@ void SetFocus(Window w, FvwmWindow *Fw, Bool FocusByMouse)
       while (tmp_win && tmp_win != Fw)
         tmp_win = tmp_win->next;
         
-      if (!tmp_win) /* the window is on the (non-zero length) windowlist */
+      if (tmp_win) /* the window is on the (non-zero length) windowlist */
       {
         /* make tmp_win point to the last window on the list */
         while (tmp_win->next)
@@ -76,13 +76,14 @@ void SetFocus(Window w, FvwmWindow *Fw, Bool FocusByMouse)
         Scr.FvwmRoot.next->prev = tmp_win;
 
         /* make Fw the new start of the list */
-      Scr.FvwmRoot.next = Fw;
+        Scr.FvwmRoot.next = Fw;
         /* open the closed loop windowlist */
         Fw->prev->next = NULL;
-      Fw->prev = &Scr.FvwmRoot;
-    }                                 
-    }
+        Fw->prev = &Scr.FvwmRoot;
+      }
 
+    }
+  
   if(Scr.NumberOfScreens > 1)
     {
       XQueryPointer(dpy, Scr.Root, &JunkRoot, &JunkChild,

@@ -864,7 +864,7 @@ void DeIconify(FvwmWindow *tmp_win)
   RaiseWindow(tmp_win); /* moved dje */
 
   if(tmp_win->flags & ClickToFocus)
-    FocusOn(tmp_win,1);
+    FocusOn(tmp_win,TRUE);
 
   KeepOnTop();
 
