@@ -1,3 +1,8 @@
+2003-05-25  Dan Espen  <dane@mk.telcordia.com>
+
+	* fvwm/decorations.c: Sync up motif hints structure to aix,hp,
+	solaris.
+
 2003-05-24  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* fvwm/misc.c (GrabEm):

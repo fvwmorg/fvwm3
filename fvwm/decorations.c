@@ -94,10 +94,10 @@ extern Atom _XA_MwmAtom;
 /* Motif  window hints */
 typedef struct
 {
-	CARD32      flags;
-	CARD32      functions;
-	CARD32      decorations;
-	INT32         inputMode;
+	int      flags;
+	int      functions;
+	int      decorations;
+	int      inputMode;
 } PropMotifWmHints;
 
 typedef PropMotifWmHints PropMwmHints;
