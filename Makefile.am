@@ -15,7 +15,6 @@ SUBDIRS = libs \
 	tests
 
 EXTRA_DIST = INSTALL.fvwm \
-	perllib \
 	vms/README \
 	vms/config.h \
 	vms/fvwmrc.dat \
