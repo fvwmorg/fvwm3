@@ -2600,8 +2600,8 @@ main menu, called "RootMenu":
 AddToMenu Quit-Verify
  + "Really Quit Fvwm?" Title
  + "Yes, Really Quit"  Quit
- + "Restart Fvwm2"     Restart fvwm2
- + "Restart Fvwm 1.xx" Restart fvwm
+ + "Restart Fvwm2"     Restart
+ + "Restart Fvwm 1.xx" Restart fvwm -s
  + ""                  Nop
  + "No, Don't Quit"    Nop
 
@@ -2713,7 +2713,7 @@ of x and y are percent-of-screen, unless a letter "p" is appended to
 each coordinate, in which case the location is specified in pixels.
 
 
-.IP "Restart [ \fIWindowManagerName\fP ]"
+.IP "Restart [ \fIWindowManagerName\fP [ \fIparams\fP ] ]"
 Causes \fIfvwm2\fP to restart itself if \fIWindowManagerName\fP is
 "fvwm2" or left blank, or to switch to an alternate window manager
 if \fIWindowManagerName\fP is other than "fvwm2".  If the window
@@ -2721,17 +2721,24 @@ manager is not in your default search path, then you should use the
 full path name for \fIWindowManagerName\fP.
 
 This command should not have a trailing ampersand or any command line
-arguments and should not make use of any environmental variables.  Of
-the following examples, the first two are sure losers, but the third
-is OK:
+arguments and (currently) should not make use of any environmental variables.
+The command can have optional parameters with simple shell-like syntax.
+Of the following examples, the first two are sure losers, but the next three
+are OK:
 .EX
 Key F1 R N Restart fvwm2 &
 Key F1 R N Restart $(HOME)/bin/fvwm2
 Key F1 R N Restart /home/nation/bin/fvwm2
+Key F1 R N Restart fvwm1 -s -f .fvwm1rc
+Key F1 R N Restart xterm -n '"X console"' -T \"X\ console\" -e fvwm1 -s
 .EE
 
 The command 'Restart fvwm2' preserves most per-window state by writing
 it to a file named .fvwm_restart in the user's home directory.
+
+Note, the said above supposes your executable name is "fvwm2", if your
+executable is, for instance, "my_wm", substitute all "fvwm2" tokens above
+with "my_wm".
 
 .IP "Scroll \fIhorizonal vertical\fP"
 Scrolls the virtual desktop's viewport by \fIhorizontal\fP pages in

@@ -98,6 +98,9 @@ void SetMWM_INFO(Window window);
 void SetRCDefaults(void);
 void StartupStuff(void);
 
+const char *getBasename(const char *filename);
+int parseCommandArgs(const char *cmd, char **argv, int maxv, const char **err);
+
 XContext FvwmContext;		/* context for fvwm windows */
 XContext MenuContext;		/* context for fvwm menus */
 
@@ -1724,67 +1727,74 @@ void Done(int restart, char *command)
 
   if(restart)
   {
-     char* filename = strdup( CatString2(user_home_dir, "/.fvwm_restart") );
+    char* filename = strdup( CatString2(user_home_dir, "/.fvwm_restart") );
+    int native = 1;  /* native restart of this executable */
 
-     if (command == NULL || command[0] == '\0') command = g_argv[0];
-     if (*command == '\0' || strstr (command, "fvwm2"))
-       {
-	 RestartInSession (filename); /* won't return under SM */
-       }
+    if (command == NULL || command[0] == '\0') command = g_argv[0];
+    if (strcmp(getBasename(command), getBasename(g_argv[0])) != 0) native = 0;
+
+    if (native) {
+      RestartInSession (filename); /* won't return under SM */
+    }
 
     /* Really make sure that the connection is closed and cleared! */
     XSelectInput(dpy, Scr.Root, 0 );
     XSync(dpy, 0);
     XCloseDisplay(dpy);
 
+    /* really need to destroy all windows, explicitly,
+     * not sleep, but this is adequate for now */
+    sleep(1);
+    ReapChildren();
+
     {
-      char *my_argv[20];
+      const int MAX_ARG_SIZE = 30;
+      char *my_argv[MAX_ARG_SIZE];
       int i,done,j;
 
+      if (!native) {
+        const char *errorMsg;
+        i = parseCommandArgs(command, my_argv, MAX_ARG_SIZE, &errorMsg);
+        if (i <= 0) {
+          fvwm_msg(ERR, "Done", "Restart parsing error in (%s): [%s]",
+            command, errorMsg);
+        } else {
+          command = my_argv[0];
+          execvp(command,my_argv);
+          fvwm_msg(ERR, "Done", "Call of '%s' failed!!!! (restarting '%s' instead)",
+            command, g_argv[0]);
+          perror("  system error description");
+        }
+      }
+
+      /* Trying a native restart */
       i=0;
       j=0;
       done = 0;
-      if (strstr(command, "fvwm2") != NULL) {
-        /* must be 4 less than the size of my_argv to add 3 args and NULL */
-        while((g_argv[j] != NULL)&&(i<16))
+      while((g_argv[j] != NULL) && (i < MAX_ARG_SIZE - 4))
+      {
+        if(strcmp(g_argv[j],"-s")!=0)
         {
-          if(strcmp(g_argv[j],"-s")!=0)
-          {
-            my_argv[i] = g_argv[j];
-            i++;
-            j++;
-          }
-          else
-            j++;
+          my_argv[i] = g_argv[j];
+          i++;
+          j++;
         }
-        my_argv[i++] = "-s";
-
-        for (j = i - 1; j >= 0; j--)
-        {
-          if (strcmp (my_argv[j], "-restore") == 0)
-            break;
-        }
-        if (j >= 0) {
-          my_argv[j + 1] = filename;
-        } else {
-          my_argv[i++] = "-restore";
-          my_argv[i++] = filename;
-        }
-      } else {
-        /* This must be divided to args by spaces! */
-        my_argv[i++] = command;
+        else
+          j++;
       }
-      while(i<10)
-        my_argv[i++] = NULL;
+      my_argv[i++] = "-s";
 
-      /* really need to destroy all windows, explicitly,
-       * not sleep, but this is adequate for now */
-      sleep(1);
-      ReapChildren();
-      execvp(command,my_argv);
-      fvwm_msg(ERR,"Done","Call of '%s' failed!!!! (restarting '%s' instead)",
-	       command, g_argv[0]);
-      perror("  system error description");
+      for (j = i - 1; j >= 0; j--) {
+        if (strcmp (my_argv[j], "-restore") == 0)
+          break;
+      }
+      if (j >= 0) {
+        my_argv[j + 1] = filename;
+      } else {
+        my_argv[i++] = "-restore";
+        my_argv[i++] = filename;
+      }
+      my_argv[i++] = NULL;
 
       execvp(g_argv[0], my_argv);    /* that _should_ work */
       fvwm_msg(ERR,"Done","Call of '%s' failed!!!! (trying again)", g_argv[0]);
@@ -1915,3 +1925,97 @@ void UnBlackoutScreen(void)
     BlackoutWin = None;
   }
 } /* UnBlackoutScreen */
+
+
+/*
+ * getBasename - similar to basename(1).
+ */
+const char *getBasename(const char *filename) {
+  const char *fptr = filename + strlen(filename);
+  const char sep = '/';
+  while (fptr > filename && *(fptr-1) != sep) fptr--;
+  return fptr;
+}
+
+/*
+ * parseCommandArgs - parses a given command string into a given limited
+ * argument array suitable for execv*. The parsing is similar to shell's.
+ * Returns:
+ *   positive number of parsed arguments - on success,
+ *   0 - on empty command (only spaces),
+ *   negative - on no command or parsing error.
+ * 
+ * Any character can be quoted with a backslash (even inside single quotes).
+ * Every command argument is separated by a space/tab/new-line from both sizes
+ * or is at the start/end of a string. Sequential spaces are ignored.
+ * An argument can be enclosed into single quotes (no further expanding)
+ * or double quotes (expending environment $VAR or ${VAR}).
+ *
+ * In the current implementation, parsed arguments are stored in one
+ * large static string pointed by returned argv[0], so they will be lost
+ * on the next function call. This can be changed using dynamic allocation,
+ * in this case the caller must free the string pointed by argv[0].
+ */
+int parseCommandArgs(const char *command, char **argv, int maxArgc, const char **errorMsg) {
+  /* It is impossible to guess the exact length because of expanding */
+  #define MAX_TOTAL_ARG_LEN 256
+  /* char *argString = safemalloc(MAX_TOTAL_ARG_LEN); */
+  static char argString[MAX_TOTAL_ARG_LEN];
+  int totalArgLen = 0;
+  int errorCode = 0;
+  int argc;
+  char *aptr = argString;
+  const char *cptr = command;
+  #define theChar (*cptr)
+  #define advChar (*(cptr++))
+  #define topChar (*cptr     == '\\'? *(cptr+1): *cptr)
+  #define popChar (*(cptr++) == '\\'? *(cptr++): *(cptr-1))
+  #define isSpace (theChar == ' ' || theChar == '\t' || theChar == '\n')
+  #define canAddArgChar (totalArgLen < MAX_TOTAL_ARG_LEN-1)
+  #define addArgChar(ch) (++totalArgLen, *(aptr++) = ch)
+
+  *errorMsg = "";
+  if (!command) { *errorMsg = "No command"; return -1; }
+  for (argc = 0; argc < maxArgc - 1; argc++) {
+    int sQuote = 0;
+    argv[argc] = aptr;
+    while (isSpace) advChar;
+    if (theChar == '\0') break;
+    while ((sQuote || !isSpace) && theChar != '\0' && canAddArgChar) {
+      if (theChar == '"') {
+        if (sQuote) { sQuote = 0; }
+        else { sQuote = 1; }
+        advChar;
+      } else if (!sQuote && theChar == '\'') {
+        advChar;
+        while (theChar != '\'' && theChar != '\0' && canAddArgChar) {
+          addArgChar(popChar);
+        }
+        if (theChar == '\'') advChar;
+        else if (!canAddArgChar) break;
+        else { *errorMsg = "No closing single quote"; errorCode = -3; break; }
+      } else if (theChar == '$') {
+        /* Not implemented yet */
+        addArgChar(advChar);
+      } else {
+        if (addArgChar(popChar) == '\0') break;
+      }
+    }
+    if (*(aptr-1) == '\0') { *errorMsg = "Unexpected last backslash"; errorCode = -2; break; }
+    if (errorCode) break;
+    if (!canAddArgChar) { *errorMsg = "The command is too long"; errorCode = -argc - 100; break; }
+    if (sQuote) { *errorMsg = "No closing double quote"; errorCode = -4; break; }
+    addArgChar('\0');
+  }
+
+  #undef theChar
+  #undef advChar
+  #undef topChar
+  #undef popChar
+  #undef isSpace
+  #undef canAddArgChar
+  #undef addArgChar
+  argv[argc] = 0;
+  if (argc == 0) *errorMsg = "Void command";
+  return errorCode? errorCode: argc;
+}

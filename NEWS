@@ -1,5 +1,7 @@
 Changes in beta release 2.3.4 (June 1999)
 
+* The Restart command accepts simple shell-like syntax now.
+
 * Added support for mouse strokes recognition, uses LibStroke 0.3
   by Mark Willey(willey@etla.net).
   (http://www.etla.net/~willey/projects/libstroke/)

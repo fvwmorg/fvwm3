@@ -1,3 +1,16 @@
+1999-06-06  Mikhael Goikhman  <migo@homemail.com>
+
+	* fvwm/fvwm.c (Done, parseCommandArgs):
+	Implemented and used function parseCommandArgs(), accept shell-like
+	syntax in the Restart command.
+
+	* fvwm/fvwm.c (Done, getBasename):
+	Implemented and used function getBasename(). If fvwm argv[0] is
+	[path1/]the_executable, the two forms "Restart [path2/]the_executable"
+	and "Restart" work as a native restart (using session or -restore -s).
+	Any other form of the Restart command processed as a foreign restart
+	(with command parsing). The argument list is limited to 30.
+
 Sun Jun  6 21:12:39 1999  Steve Robbins  <steve@nyongwa.montreal.qc.ca>
 
 	* libs/Module.c:
