@@ -1290,6 +1290,7 @@ void SetupFrame(FvwmWindow *tmp_win,int x,int y,int w,int h,Bool sendEvent,
     }
   }
 #endif /* SHAPE */
+#if 0
   XSync(dpy,0);
   if (sendEvent && !shaded)
   {
@@ -1316,6 +1317,7 @@ void SetupFrame(FvwmWindow *tmp_win,int x,int y,int w,int h,Bool sendEvent,
              client_event.xconfigure.width,client_event.xconfigure.height);
 #endif
   }
+#endif 
   XSync(dpy,0);
 
   BroadcastConfig(M_CONFIGURE_WINDOW,tmp_win);

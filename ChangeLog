@@ -1,3 +1,17 @@
+1999-06-03  Matthias Clasen  <clasen@mathematik.uni-freiburg.de>
+
+	* fvwm/events.c (HandleConfigureRequest): send the synthetic
+	ConfigureNotify here whenever the client may not receive a real
+	ConfigureNotify on its toplevel window (as the ICCCM demands).
+	As a hack to support buggy tk, duplicate the ConfigureNotify on
+	the frame window.
+	
+	* fvwm/borders.c (SetupFrame): ifdef out the code for sending
+	synthetic ConfigureNotify events. This should only be done in
+	response to ConfigureRequests, thus it is better done in 
+	HandleConfigureRequest. This was old twm heritage. The sendEvent
+	parameter is now defunct.
+
 1999-06-02  Hippo
 
 	* fvwm/colors.c: new gradient styles for the DefaultBackground
@@ -242,6 +256,7 @@ Mon May 24 17:45:34 1999  Steve Robbins  <steve@nyongwa.montreal.qc.ca>
 
 1999-05-24  Matthias Clasen  <clasen@mathematik.uni-freiburg.de>
 
+>>>>>>> 1.456
 	* fvwm/fvwm.c (Done): call RestartInSession if command is
 	empty or contains "fvwm". Remove unnecessary "if (command)"
 	statements, since Done is never called as Done (1, NULL).

@@ -1389,7 +1389,7 @@ void HandleConfigureRequest(void)
   unsigned long xwcm;
   int x, y, width, height;
   XConfigureRequestEvent *cre = &Event.xconfigurerequest;
-  Bool sendEvent=False;
+  Bool sendEvent=True;
 
   DBUG("HandleConfigureRequest","Routine Entered");
 
@@ -1481,7 +1481,14 @@ void HandleConfigureRequest(void)
   x = Tmp_win->frame_g.x;
   y = Tmp_win->frame_g.y;
   width = Tmp_win->frame_g.width;
-  height = Tmp_win->frame_g.height;
+  if (IS_SHADED(Tmp_win))
+    {
+      height = Tmp_win->orig_g.height;
+    }
+  else 
+    {
+      height = Tmp_win->frame_g.height;
+    }
 
   /* for restoring */
   if (cre->value_mask & CWBorderWidth)
@@ -1509,6 +1516,12 @@ void HandleConfigureRequest(void)
   ConstrainSize(Tmp_win, &width, &height, False, 0, 0);
   if (IS_SHADED(Tmp_win))
     {
+      if (width != Tmp_win->frame_g.width || height != Tmp_win->orig_g.height)
+	{
+	  /* resizing implies that the client will get a real ConfigureNotify,
+	     no need to send a synthetic one */
+	  sendEvent = False;
+	}
       /* for shaded windows, allow resizing, but keep it shaded */
       SetupFrame (Tmp_win, x, y, width, Tmp_win->frame_g.height,sendEvent,
 		  False);
@@ -1516,6 +1529,12 @@ void HandleConfigureRequest(void)
     }
   else if (!IS_MAXIMIZED(Tmp_win))
     {
+      if (width != Tmp_win->frame_g.width || height != Tmp_win->frame_g.height)
+	{
+	  /* resizing implies that the client will get a real ConfigureNotify,
+	     no need to send a synthetic one */
+	  sendEvent = False;
+	}
       /* dont allow clients to resize maximized windows */
       SetupFrame (Tmp_win, x, y, width, height, sendEvent, False);
     }
@@ -1613,14 +1632,51 @@ void HandleConfigureRequest(void)
 	      otherwin->stack_next = Tmp_win;
 	    }
 
-	  sendEvent = True;
-
 	  /*
 	    Let the modules know that Tmp_win changed its place
 	    in the stacking order
 	  */
 	  BroadcastRestack (Tmp_win->stack_prev, Tmp_win->stack_next);
 	}
+    }
+  
+  if (sendEvent)
+    {
+      XEvent client_event;
+      client_event.type = ConfigureNotify;
+      client_event.xconfigure.display = dpy;
+      client_event.xconfigure.event = Tmp_win->w;
+      client_event.xconfigure.window = Tmp_win->w;
+      
+      client_event.xconfigure.x = Tmp_win->frame_g.x + Tmp_win->boundary_width;
+      client_event.xconfigure.y = Tmp_win->frame_g.y + Tmp_win->title_g.height+
+	Tmp_win->boundary_width;
+      client_event.xconfigure.width = width-2*Tmp_win->boundary_width;
+      client_event.xconfigure.height = height-2*Tmp_win->boundary_width -
+	Tmp_win->title_g.height;
+      
+      client_event.xconfigure.border_width = cre->border_width;
+      /* Real ConfigureNotify events say we're above title window, so ... 
+         what if we don't have a title ????? 
+         Doesn't really matter since the ICCCM demands that above field
+         of ConfigureNotify events be ignored by clients. */
+      client_event.xconfigure.above = Tmp_win->frame;
+      client_event.xconfigure.override_redirect = False;
+
+      XSendEvent(dpy, Tmp_win->w, False, StructureNotifyMask, &client_event);
+
+#if 1
+      /* This is for buggy tk, which waits for the real ConfigureNotify 
+	 on frame instead of the synthetic one on w. The geometry data
+         in the event will not be correct for the frame, but tk doesn't
+	 look at that data anyway. */
+      client_event.xconfigure.event = Tmp_win->frame;
+      client_event.xconfigure.window = Tmp_win->frame;
+
+      XSendEvent(dpy, Tmp_win->frame, False,StructureNotifyMask,&client_event);
+#endif
+
+      XSync(dpy,0);
     }
 }
 
