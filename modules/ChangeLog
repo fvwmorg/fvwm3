@@ -1,3 +1,9 @@
+2004-07-16  Scott Smedley  <scottie7@tpg.com.au>
+
+	* FvwmButtons/FvwmButtons.c:
+	bugfix: cancelling a button press didn't cause the active
+	button to be redrawn as active.
+
 2004-07-15  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* FvwmBanner/FvwmBanner.c (main):

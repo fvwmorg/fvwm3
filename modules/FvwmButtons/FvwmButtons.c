@@ -1142,17 +1142,6 @@ void Loop(void)
 	  break;                        /* fall through to ButtonPress */
 
       case ButtonPress:
-	if (CurrentButton)
-	{
-	  b = CurrentButton;
-	  CurrentButton = NULL;
-	  RedrawButton(b, DRAW_FORCE, NULL);
-	  break;
-	}
-	if (Event.xbutton.state & DEFAULT_ALL_BUTTONS_MASK)
-	{
-	  break;
-	}
 	if (Event.xbutton.window == MyWindow)
 	{
 	  x = Event.xbutton.x;
@@ -1165,6 +1154,23 @@ void Loop(void)
 	  XTranslateCoordinates(
 	    Dpy, Event.xbutton.window, MyWindow, Event.xbutton.x,
 	    Event.xbutton.y, &x, &y, &dummy);
+	}
+	if (CurrentButton)
+	{
+	  b = CurrentButton;
+	  CurrentButton = NULL;
+	  ActiveButton = select_button(UberButton, x, y);
+	  RedrawButton(b, DRAW_FORCE, NULL);
+	  if (ActiveButton != b)
+	  {
+		  RedrawButton(ActiveButton, DRAW_FORCE, NULL);
+		  b = ActiveButton;
+	  }
+	  break;
+	}
+	if (Event.xbutton.state & DEFAULT_ALL_BUTTONS_MASK)
+	{
+	  break;
 	}
 
 	CurrentButton = b = select_button(UberButton, x, y);
