@@ -1,8 +1,7 @@
-2003-10-26  Mikhael Goikhman  <migo@homemail.com>
+2003-11-11  Mikhael Goikhman  <migo@homemail.com>
 
 	* fvwm.spec.in:
-	* Makefile.am:
-	tweaked cparams and renamed make target
+	changed Group from "X11/Window Managers" to "User Interface/Desktops"
 
 2003-10-23  Mikhael Goikhman  <migo@homemail.com>
 

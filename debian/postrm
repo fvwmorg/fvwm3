@@ -19,7 +19,15 @@ set -e
 
 
 case "$1" in
-	purge|remove|upgrade|failed-upgrade|abort-install|abort-upgrade|disappear)
+	purge|remove|upgrade)
+		if [ -x update-alternatives ]; then
+			update-alternatives --remove \
+				x-window-manager /usr/bin/fvwm
+			update-alternatives --auto x-window-manager
+		fi
+		;;
+
+	failed-upgrade|abort-install|abort-upgrade|disappear)
 		;;
 
 	*)

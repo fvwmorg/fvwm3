@@ -24,8 +24,17 @@ set -e
 #     `abort-remove' or `abort-deconfigure'.
 
 case "$1" in
-
 	configure)
+		if [ -x /usr/sbin/update-alternatives ]; then
+			update-alternatives --install \
+				/usr/bin/x-window-manager x-window-manager \
+				/usr/bin/fvwm 50 --slave \
+				/usr/share/man/man1/x-window-manager.1.gz \
+				x-window-manager.1.gz \
+				/usr/share/man/man1/fvwm.1.gz
+			update-alternatives --set \
+				x-window-manager /usr/bin/fvwm
+		fi
 		;;
 
 	abort-upgrade|abort-remove|abort-deconfigure)

@@ -2,7 +2,7 @@
   needs=wm\
   section=WindowManagers\
   title="FVWM"\
-  longtitle="FVWM Windows Manager"\
+  longtitle="FVWM Window Manager"\
   command="/usr/bin/fvwm"
 
 ?package(fvwm):\

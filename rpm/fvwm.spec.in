@@ -15,7 +15,7 @@ Name:      fvwm
 Version:   %{ver}
 Release:   %{rel}
 Copyright: GPL
-Group:     X11/Window Managers
+Group:     User Interface/Desktops
 Source:    %{name}-%{version}.tar.gz
 URL:       http://www.fvwm.org/
 BuildRoot: %{_tmppath}/%{name}-%{version}-root
