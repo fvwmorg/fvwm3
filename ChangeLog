@@ -5,6 +5,8 @@
 	(MenuInteraction):
 	Fixed RemoveSubmenus menu style; affects keyboard navigation only
 	Clicking on a posted menu item unposts the menu
+	Changed item hilighting with popdown delays at cost of the drawing speed
+	of overlapping B/D gradient sub menus
 
 2000-01-09  Mikhael Goikhman  <migo@homemail.com>
 

@@ -484,9 +484,11 @@ typedef struct MenuRootDynamic
   struct MenuItem *parent_item; /* the menu item that popped this up, if any */
   Window window;                /* the window of the menu */
   MenuItem *selected_item;      /* the selected item in menu */
+#if 0
   MenuItem *to_be_selected_item;/* item that will be selected when the current
 				 * item's popup menu will be closed */
-  MenuItem *submenu_items;      /* item that has it's submenu mapped */
+#endif
+  MenuItem *submenu_item;       /* item that has it's submenu mapped */
   int xanimation;               /* x distance window was moved by animation */
   /* dynamic temp flags */
   struct
@@ -517,7 +519,9 @@ typedef struct MenuRootDynamic
 #define MR_PARENT_ITEM(m)           ((m)->d->parent_item)
 #define MR_WINDOW(m)                ((m)->d->window)
 #define MR_SELECTED_ITEM(m)         ((m)->d->selected_item)
+#if 0
 #define MR_TO_BE_SELECTED_ITEM(m)   ((m)->d->to_be_selected_item)
+#endif
 #define MR_SUBMENU_ITEM(m)          ((m)->d->submenu_item)
 #define MR_XANIMATION(m)            ((m)->d->xanimation)
 #define MR_STORED_ITEM(m)           ((m)->d->stored_item)
