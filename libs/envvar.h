@@ -51,4 +51,34 @@ int envExpand(char *s, int maxstrlen);
 char *envDupExpand(const char *s, int extra);
 
 
+/*-------------------------------------------------------------------------
+ *
+ *  NAME          getFirstEnv
+ *
+ *  FUNCTION      Search for the first environment variable and return
+ *                its contents and coordinates in the given string.
+ *
+ *  INPUT         s       the string to scan.
+ *                        may include $ and { } that introduce variable.
+ *
+ *  OUTPUT        beg     index in the string of matching $.
+ *                end     index in the string, first after matching var.
+ *
+ *  RETURNS       The variable contents; "" if env variable has legal name,
+ *                but does not exist; or NULL if no env variables found.
+ *                Returned constant string must not be deallocated.
+ *
+ *  NOTE          This function will only return `legal' variables. There
+ *                may be $'s in the string that are not followed by what
+ *                is considered a legal variable name introducer. Such
+ *                occurrences are skipped.
+ *                If nothing is found returns NULL and sets beg and end to 0.  
+ *
+ *  EXAMPLE       getFirstEnv("echo $HOME/.fvwm2rc", &beg, &end)
+ *                returns "/home/username" and beg=5, end=10.
+ *
+ */
+const char* getFirstEnv(const char *s, int *beg, int *end);
+
+
 #endif

@@ -1,3 +1,13 @@
+1999-06-21  Mikhael Goikhman  <migo@homemail.com>
+
+	* libs/envvar.h:
+	* libs/envvar.c (getFirstEnv): new public function
+	(getEnv): added parameter
+	(envExpand, envDupExpand): removed dirty hack using 'save'
+
+	* fvwm/fvwm2.1 (Restart): 
+	* fvwm/fvwm.c (parseCommandArgs): added expanding of ${VAR} and ~.
+
 1999-06-21  Dan Espen  <dane@mk.bellcore.com>
 
 	* AUTHORS: A little update to my entry, moved 2 entries into

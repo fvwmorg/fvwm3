@@ -2782,21 +2782,20 @@ version) if \fIWindowManagerName\fP is specified.  If the window
 manager is not in your default search path, then you should use the
 full path name for \fIWindowManagerName\fP.
 
-This command should not have a trailing ampersand and (currently) should not
-make use of any environmental variables. The command can have optional
-parameters with simple shell-like syntax. Of the following examples, the
-first two are sure losers, but the next three
-are OK:
+This command should not have a trailing ampersand. The command can have
+optional parameters with simple shell-like syntax. You can use ~ (will be
+expanded to user home directory) and environmental variables $VAR or ${VAR}.
+Here are several examples:
 .EX
-Key F1 R N Restart fvwm2 &
-Key F1 R N Restart $(HOME)/bin/fvwm2
+Key F1 R N Restart fvwm2
 Key F1 R N Restart /home/nation/bin/fvwm2
+Key F1 R N Restart ~/bin/fvwm2 -f $HOME/.fvwm/main
 Key F1 R N Restart fvwm1 -s -f .fvwm1rc
 Key F1 R N Restart xterm -n '"X console"' \\
   -T \\"X\\ console\\" -e fvwm1 -s
 .EE
 
-The command 'Restart' without parameters preserves most per-window state by
+Restart command without parameters preserves most per-window state by
 writing it to a file named .fvwm_restart in the user's home directory.
 
 .IP "Restart --pass-args \fIWindowManagerName\fP"

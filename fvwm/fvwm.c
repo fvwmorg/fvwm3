@@ -1990,14 +1990,16 @@ void UnBlackoutScreen(void)
  * Every command argument is separated by a space/tab/new-line from both sizes
  * or is at the start/end of a string. Sequential spaces are ignored.
  * An argument can be enclosed into single quotes (no further expanding)
- * or double quotes (expending environment $VAR or ${VAR}).
+ * or double quotes (expending environmental variables $VAR or ${VAR}).
+ * The character '~' is expanded into user home directory (if not in quotes).
  *
  * In the current implementation, parsed arguments are stored in one
  * large static string pointed by returned argv[0], so they will be lost
  * on the next function call. This can be changed using dynamic allocation,
  * in this case the caller must free the string pointed by argv[0].
  */
-int parseCommandArgs(const char *command, char **argv, int maxArgc, const char **errorMsg) {
+int parseCommandArgs(const char *command, char **argv, int maxArgc, const char **errorMsg)
+{
   /* It is impossible to guess the exact length because of expanding */
   #define MAX_TOTAL_ARG_LEN 256
   /* char *argString = safemalloc(MAX_TOTAL_ARG_LEN); */
@@ -2008,12 +2010,14 @@ int parseCommandArgs(const char *command, char **argv, int maxArgc, const char *
   char *aptr = argString;
   const char *cptr = command;
   #define theChar (*cptr)
-  #define advChar (cptr++)
+  #define advChar (*(cptr++))
   #define topChar (*cptr     == '\\'? *(cptr+1): *cptr)
   #define popChar (*(cptr++) == '\\'? *(cptr++): *(cptr-1))
   #define isSpace (theChar == ' ' || theChar == '\t' || theChar == '\n')
   #define canAddArgChar (totalArgLen < MAX_TOTAL_ARG_LEN-1)
   #define addArgChar(ch) (++totalArgLen, *(aptr++) = ch)
+  #define canAddArgStr(str) (totalArgLen < MAX_TOTAL_ARG_LEN-strlen(str))
+  #define addArgStr(str) {const char *tmp = str; while (*tmp) { addArgChar(*(tmp++)); }}
 
   *errorMsg = "";
   if (!command) { *errorMsg = "No command"; return -1; }
@@ -2035,17 +2039,25 @@ int parseCommandArgs(const char *command, char **argv, int maxArgc, const char *
         if (theChar == '\'') advChar;
         else if (!canAddArgChar) break;
         else { *errorMsg = "No closing single quote"; errorCode = -3; break; }
-      } else if (theChar == '$') {
-        /* Not implemented yet */
-        addArgChar(theChar);
+      } else if (!sQuote && theChar == '~') {
+        if (!canAddArgStr(user_home_dir)) break;
+        addArgStr(user_home_dir);
         advChar;
+      } else if (theChar == '$') {
+        int beg, len;
+        const char *str = getFirstEnv(cptr, &beg, &len);
+        if (!str || beg) { addArgChar(advChar); continue; }
+        if (!canAddArgStr(str)) { break; }
+        addArgStr(str);
+        cptr += len;
       } else {
         if (addArgChar(popChar) == '\0') break;
       }
     }
     if (*(aptr-1) == '\0') { *errorMsg = "Unexpected last backslash"; errorCode = -2; break; }
     if (errorCode) break;
-    if (!canAddArgChar) { *errorMsg = "The command is too long"; errorCode = -argc - 100; break; }
+    if (theChar == '~' || theChar == '$' || !canAddArgChar)
+      { *errorMsg = "The command is too long"; errorCode = -argc - 100; break; }
     if (sQuote) { *errorMsg = "No closing double quote"; errorCode = -4; break; }
     addArgChar('\0');
   }
@@ -2057,7 +2069,9 @@ int parseCommandArgs(const char *command, char **argv, int maxArgc, const char *
   #undef isSpace
   #undef canAddArgChar
   #undef addArgChar
-  argv[argc] = 0;
-  if (argc == 0) *errorMsg = "Void command";
+  #undef canAddArgStr
+  #undef addArgStr
+  argv[argc] = NULL;
+  if (argc == 0 && !errorCode) *errorMsg = "Void command";
   return errorCode? errorCode: argc;
 }

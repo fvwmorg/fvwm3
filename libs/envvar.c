@@ -26,6 +26,8 @@
  *
  *  CREATED         1995/10/3
  *
+ *  UPDATED         migo - 21/Jun/1999 - added getFirstEnv, some changes
+ *
  **************************************************************************/
 
 #include <stdlib.h>
@@ -196,11 +198,12 @@ static char *findEnvVar(const char *s, int *len)
  *
  *  INPUT         name    name of environment variable to look up. This
  *                        may include $ and { }.
+ *                len     length for environment variable name (0 - ignore).
  *
  *  RETURNS       The variable contents, or "" if not found.
  *
  */
-static const char *getEnv(const char *name)
+static const char *getEnv(const char *name, int len)
 {
     static char *empty = "";
     char   *ret, *tmp, *p, *p2;
@@ -215,6 +218,7 @@ static const char *getEnv(const char *name)
 	if ((p2 = strchr(p, '}')) != NULL)
 	    *p2 = '\0';
     }
+    if (len > 0 && len < strlen(tmp)) tmp[len] = '\0';
     if ((ret = getenv(p)) == NULL)
 	ret = empty;
     free(tmp);
@@ -251,17 +255,14 @@ static const char *getEnv(const char *name)
  */
 int envExpand(char *s, int maxstrlen)
 {
-    char  *var, *s2, save;
+    char  *var, *s2;
     const char *env;
     int   len, ret = 0;
 
     s2 = s;
     while ((var = findEnvVar(s2, &len)) != NULL) {
 	++ret;
-	save = var[len];
-	var[len] = '\0';
-	env = getEnv(var);
-	var[len] = save;
+	env = getEnv(var, len);
 	strDel(s, var - s, len);
 	strIns(s, env, var - s, maxstrlen);
 	s2 = var + strlen(env);
@@ -297,7 +298,7 @@ int envExpand(char *s, int maxstrlen)
  */
 char *envDupExpand(const char *s, int extra)
 {
-    char  *var, *ret, save;
+    char  *var, *ret;
     const char *env, *s2;
     int   len, slen, elen, bufflen;
 
@@ -308,10 +309,7 @@ char *envDupExpand(const char *s, int extra)
     slen = strlen(s);
     bufflen = slen + 1 + extra;
     while ((var = findEnvVar(s2, &len)) != NULL) {
-	save = var[len];
-	var[len] = '\0';
-	env = getEnv(var);
-	var[len] = save;
+	env = getEnv(var, len);
 	elen = strlen(env);
 	/* need to make a buffer the maximum possible size, else we
 	 * may get trouble while expanding. */
@@ -330,4 +328,49 @@ char *envDupExpand(const char *s, int extra)
     envExpand(ret, bufflen - extra);
 
     return ret;
+}
+
+
+
+/*-------------------------------------------------------------------------
+ *
+ *  NAME          getFirstEnv
+ *
+ *  FUNCTION      Search for the first environment variable and return
+ *                its contents and coordinates in the given string.
+ *
+ *  INPUT         s       the string to scan.
+ *                        may include $ and { } that introduce variable.
+ *
+ *  OUTPUT        beg     index in the string of matching $.
+ *                end     index in the string, first after matching var.
+ *
+ *  RETURNS       The variable contents; "" if env variable has legal name,
+ *                but does not exist; or NULL if no env variables found.
+ *                Returned constant string must not be deallocated.
+ *
+ *  NOTE          This function will only return `legal' variables. There
+ *                may be $'s in the string that are not followed by what
+ *                is considered a legal variable name introducer. Such
+ *                occurrences are skipped.
+ *                If nothing is found returns NULL and sets beg and end to 0.  
+ *
+ *  EXAMPLE       getFirstEnv("echo $HOME/.fvwm2rc", &beg, &end)
+ *                returns "/home/username" and beg=5, end=10.
+ *
+ */
+const char* getFirstEnv(const char *s, int *beg, int *end)
+{
+    char *var, save;
+    const char *env, *ret;
+    int len;
+
+    *beg = *end = 0;
+    if ((var = findEnvVar(s, &len)) == NULL) return NULL;
+    env = getEnv(var, len);
+
+    *beg = var - s;
+    *end = *beg + len;
+
+    return env;
 }
