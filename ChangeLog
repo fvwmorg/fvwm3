@@ -1,3 +1,12 @@
+2001-06-22  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* fvwm/misc.c (UngrabEm):
+	fixed ungrabbing BUSY cursor when a menu is still open
+
+	* fvwm/events.c (HandleMapRequestKeepRaised):
+	don't grab the server when 'mapping' windows that start iconic
+	fixes FvwmIconMan not noticing iconic state of windows starting iconic
+
 2001-06-17  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* fvwm/functions.c (execute_function):

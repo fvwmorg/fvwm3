@@ -351,10 +351,15 @@ void HandlePropertyNotify(void)
 
   DBUG("HandlePropertyNotify","Routine Entered");
 
-  if ((!Tmp_win)||
-      (XGetGeometry(dpy, Tmp_win->w, &JunkRoot, &JunkX, &JunkY,
-		    &JunkWidth, &JunkHeight, &JunkBW, &JunkDepth) == 0))
+  if (!Tmp_win)
+  {
     return;
+  }
+  if (XGetGeometry(dpy, Tmp_win->w, &JunkRoot, &JunkX, &JunkY,
+		   &JunkWidth, &JunkHeight, &JunkBW, &JunkDepth) == 0)
+  {
+    return;
+  }
 
   /*
    * Make sure at least part of window is on this page
@@ -380,6 +385,9 @@ void HandlePropertyNotify(void)
   case XA_WM_NAME:
     flush_property_notify(XA_WM_NAME, Tmp_win->w);
 #ifdef I18N_MB
+#if 0
+fprintf(stderr, "hpn: got name packet for window 0x%08x", (int)Tmp_win);
+#endif
     if (XGetWindowProperty (dpy, Tmp_win->w, Event.xproperty.atom, 0L,
 			    MAX_WINDOW_NAME_LEN, False, AnyPropertyType,
 			    &actual, &actual_format, &nitems, &bytesafter,
@@ -424,6 +432,9 @@ void HandlePropertyNotify(void)
       Tmp_win->name = (char *)text_prop.value;
       Tmp_win->name_list = NULL;
     }
+#if 0
+fprintf(stderr, " '%s'\n", Tmp_win->name);
+#endif
 #else
     if (!XGetWMName(dpy, Tmp_win->w, &text_prop))
       return;
@@ -1073,13 +1084,13 @@ void HandleMapRequestKeepRaised(Window KeepRaised, FvwmWindow *ReuseWin)
     if(isIconicState != DontCareState)
       state = isIconicState;
 
-    MyXGrabServer(dpy);
     switch (state)
     {
     case DontCareState:
     case NormalState:
     case InactiveState:
     default:
+      MyXGrabServer(dpy);
       if (Tmp_win->Desk == Scr.CurrentDesk)
       {
 	Bool do_grab_focus;
@@ -1146,6 +1157,7 @@ void HandleMapRequestKeepRaised(Window KeepRaised, FvwmWindow *ReuseWin)
 	  M_MAP, 3, Tmp_win->w,Tmp_win->frame, (unsigned long)Tmp_win);
 #endif
       }
+      MyXUngrabServer(dpy);
       break;
 
     case IconicState:
@@ -1172,12 +1184,6 @@ void HandleMapRequestKeepRaised(Window KeepRaised, FvwmWindow *ReuseWin)
       }
       break;
     }
-#if 0
-    /* This is implicitly done in MyXUngrabServer(). */
-    if(!PPosOverride)
-      XSync(dpy,0);
-#endif
-    MyXUngrabServer(dpy);
   }
   if (IS_SHADED(Tmp_win))
   {
@@ -1215,6 +1221,12 @@ void HandleMapRequestKeepRaised(Window KeepRaised, FvwmWindow *ReuseWin)
   /* Clean out the global so that it isn't used on additional map events. */
   isIconicState = DontCareState;
   GNOME_SetClientList();
+#if 0
+{void setup_window_name(FvwmWindow *tmp_win);
+usleep(200000);
+setup_window_name(Tmp_win);}
+fprintf(stderr,"-----\n");
+#endif
 }
 
 

@@ -227,18 +227,11 @@ Bool UngrabEm(int ungrab_context)
     {
     case GRAB_NORMAL:
     case GRAB_BUSY:
+    case GRAB_MENU:
       if (grab_count[GRAB_BUSYMENU] > 0)
 	new_cursor = CRS_WAIT;
       else if (grab_count[GRAB_BUSY] > 0)
 	new_cursor = CRS_WAIT;
-      else
-	new_cursor = None;
-      break;
-    case GRAB_MENU:
-      if (grab_count[GRAB_BUSY] > 0)
-	new_cursor = CRS_WAIT;
-      else if (grab_count[GRAB_BUSYMENU] > 0)
-	new_cursor = CRS_MENU;
       else if (grab_count[GRAB_MENU] > 0)
 	new_cursor = CRS_MENU;
       else
