@@ -516,10 +516,10 @@ void ProcessMessage(unsigned long type,unsigned long *body)
           RemoveButton(&buttons, i);
           redraw = 1;
         }
-	/* NEED TO DETERMINE IF BODY[8] IS RIGHT HERE! */
-	tb_flags = ItemFlags(&windows, cfgpacket->w);
-	UpdateItemFlagsDesk(&windows, tb_flags, cfgpacket);
+	UpdateItemFlagsDesk(&windows, cfgpacket);
       }
+      if (AnimCommand && AnimCommand[0] != 0)
+	UpdateItemFlagsAnimate(&windows, cfgpacket);
     }
     else if (!(DO_SKIP_WINDOW_LIST(cfgpacket)) || !UseSkipList)
     {
@@ -617,7 +617,12 @@ void ProcessMessage(unsigned long type,unsigned long *body)
       Button *temp = find_n(&buttons, i);
       if (temp)
       {
-	if (AnimCommand && (AnimCommand[0] != 0))
+	/* Seems that we cannot use IS_ICON_SUPPRESSED on the cfgpacket.
+	 * Sometimes we've got no or double animation after a Style  
+	 * (No)Icon command because fvwm2 does not warn about this.
+	 * are these bugs? */
+	if (AnimCommand && (AnimCommand[0] != 0) 
+	    && IsItemIndexIconSuppressed(&windows,i))
 	{
 	  char buff[MAX_MODULE_INPUT_TEXT_LEN];
 	  Window child;
@@ -638,12 +643,13 @@ void ProcessMessage(unsigned long type,unsigned long *body)
 		    abs_x, abs_y, buttons.tw-2, RowHeight);
 	  }
 	  SendText(Fvwm_fd, buff, 0);
-	  SendText(Fvwm_fd, "Unlock 1", 0);
 	}
 	temp->needsupdate = 1;
 	temp->iconified = (tb_flags & F_ICONIFIED) ? 1 : 0;
 	DrawButtonArray(&buttons, 0);
       }
+      if (AnimCommand && AnimCommand[0] != 0)
+	SendText(Fvwm_fd, "Unlock 1", 0);
     }
     if (type == M_ICONIFY && i == ButReleased) {
       RadioButton(&buttons, -1, BUTTON_UP);

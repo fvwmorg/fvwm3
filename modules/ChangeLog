@@ -1,3 +1,17 @@
+2000-04-24  olicha <olivier.chapuis@free.fr>
+
+	* FvwmTaskBar/FvwmTaskBar.c (ProcessMessage):
+	* FvwmTaskBar/List.{c,h} (UpdateItemFlagsDesk, UpdateItemFlagsAnimate,
+	IsItemIndexIconSuppressed):
+	Fixed double animations (module & icon) with NoIconAction. 
+	This does not work perfectly with a dynamic (no)icon style change.
+
+2000-04-24  olicha <olivier.chapuis@free.fr>
+
+	* FvwmTaskBar/FvwmTaskBar.c (ProcessMessage):
+	* FvwmTaskBar/List.{c,h} (UpdateItemFlagsDesk, IsItemIndexSticky):
+	Fixed sticky/slippery change with DeskOnly
+	
 2000-04-23  Mikhael Goikhman  <migo@homemail.com>
 
 	* FvwmWharf/FvwmWharf.c (CreateWindow): fixed (re)size hints

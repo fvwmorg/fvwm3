@@ -151,14 +151,22 @@ int UpdateItemFlags(List *list, long id, long flags)
   return temp->count;
 }
 
-int UpdateItemFlagsDesk(List *list, long flags, ConfigWinPacket *cfgpacket)
+int UpdateItemFlagsAnimate(List *list, ConfigWinPacket *cfgpacket)
 {
   Item *temp;
   for(temp=list->head;temp!=NULL && cfgpacket->w!=temp->id;temp=temp->next);
   if (temp==NULL) return -1;
-  if (flags!=-1) temp->tb_flags=flags;
+  SET_ICON_SUPPRESSED(temp,IS_ICON_SUPPRESSED(cfgpacket));
+  return temp->count;
+}
+
+int UpdateItemFlagsDesk(List *list, ConfigWinPacket *cfgpacket)
+{
+  Item *temp;
+  for(temp=list->head;temp!=NULL && cfgpacket->w!=temp->id;temp=temp->next);
+  if (temp==NULL) return -1;
+  SET_STICKY(temp,IS_STICKY(cfgpacket));
   temp->Desk=cfgpacket->desk;
-  memcpy(&temp->flags, &cfgpacket->flags, sizeof(temp->flags));
   return temp->count;
 }
 
@@ -292,6 +300,17 @@ int IsItemIndexSticky(List *list, int i)
   for(temp=list->head;temp!=NULL && temp->count!=i;temp=temp->next);
   if (temp==NULL) return -1;
   return IS_STICKY(temp);
+}
+
+/******************************************************************************
+  IsItemIndexIconSuppressed - Say if an item has a no icon style
+******************************************************************************/
+int IsItemIndexIconSuppressed(List *list, int i)
+{
+  Item *temp;
+  for(temp=list->head;temp!=NULL && temp->count!=i;temp=temp->next);
+  if (temp==NULL) return -1;
+  return IS_ICON_SUPPRESSED(temp);
 }
 
 /* RBW- never used... */
