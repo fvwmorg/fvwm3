@@ -1371,6 +1371,7 @@ static void MenuInteraction(
   MenuItem *mi = NULL;
   MenuItem *tmi;
   MenuItem *miUnselect = NULL;
+  MenuItem *miRemovedSubmenu = NULL;
   MenuRoot *mrMi = NULL;
   MenuRoot *tmrMi = NULL;
   MenuRoot *mrPopup = NULL;
@@ -1510,6 +1511,16 @@ static void MenuInteraction(
 		flags.is_popped_up_by_timeout = True;
 	      }
 	    }
+	    if (flags.do_popup_now && mi == miRemovedSubmenu &&
+		!flags.is_key_press)
+	    {
+	      /* prevent popping up the menu again with RemoveSubemenus */
+	      flags.do_popup_now = False;
+	      flags.do_force_popup = False;
+	      do_fake_motion = flags.do_popdown_now;
+	      flags.is_popped_up_by_timeout = False;
+	    }
+
 	    if (do_fake_motion)
 	    {
 	      DBUG("MenuInteraction","Faking motion");
@@ -1761,6 +1772,10 @@ static void MenuInteraction(
     {
       /* we're on a menu item */
       flags.is_off_menu_allowed = False;
+      if (mrMi == pmp->menu && mi != miRemovedSubmenu)
+      {
+	miRemovedSubmenu = NULL;
+      }
       if (mrMi != pmp->menu && mrMi != mrPopup && mrMi != mrPopdown)
       {
 	/* we're on an item from a prior menu */
@@ -1870,9 +1885,11 @@ static void MenuInteraction(
 	  Bool do_it_now = False;
 
 	  if (flags.do_popup_now)
+	  {
 	    do_it_now = True;
-	  else if (MST_DO_POPUP_IMMEDIATELY(pmp->menu) ||
-		   pointer_in_active_item_area(x_offset, mrMi))
+	  }
+	  else if (MST_DO_POPUP_IMMEDIATELY(pmp->menu) &&
+		   mi != miRemovedSubmenu)
 	  {
 	    if (flags.is_key_press ||
 		MST_DO_POPDOWN_IMMEDIATELY(pmp->menu) || !mrPopdown)
@@ -1880,8 +1897,17 @@ static void MenuInteraction(
 	      do_it_now = True;
 	    }
 	  }
+	  else if (pointer_in_active_item_area(x_offset, mrMi))
+	  {
+	    if (flags.is_key_press || mi == miRemovedSubmenu ||
+		MST_DO_POPDOWN_IMMEDIATELY(pmp->menu) || !mrPopdown)
+	    {
+	      do_it_now = True;
+	    }
+	  }
 	  if (do_it_now)
 	  {
+	    miRemovedSubmenu = NULL;
 	    /* must create a new menu or popup */
 	    if (mrPopup == NULL || mrPopup != mrMiPopup)
 	    {
@@ -2099,7 +2125,8 @@ static void MenuInteraction(
 	      flags.do_menu = True;
 	      flags.is_submenu_mapped = True;
 	      flags.do_popdown =
-		!MST_DO_POPUP_IMMEDIATELY(pmp->menu);
+		(!MST_DO_POPUP_IMMEDIATELY(pmp->menu) ||
+		 MST_DO_UNMAP_SUBMENU_ON_POPDOWN(pmp->menu));
 	    }
 	  }
 	  else
@@ -2163,10 +2190,11 @@ static void MenuInteraction(
 	  pdkp->timestamp = 0;
 	  goto DO_RETURN;
 	}
-	if ((flags.do_popdown ||
-	     !MST_DO_POPUP_IMMEDIATELY(pmp->menu)) &&
-	    MST_DO_UNMAP_SUBMENU_ON_POPDOWN(pmp->menu))
+
+	if (flags.do_popdown && MST_DO_UNMAP_SUBMENU_ON_POPDOWN(pmp->menu) &&
+	    pmret->flags.is_key_press)
 	{
+	  miRemovedSubmenu = MR_PARENT_ITEM(mrPopup);
 	  pop_menu_down_and_repaint_parent(
 	    &mrPopup, &does_submenu_overlap, pmp);
 	  if (mrPopup == mrPopdown)

@@ -1,7 +1,9 @@
-1904-01-08  Dominik Vogt  <dominik.vogt@gmx.de>
+2000-01-09  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* fvwm/menus.c (MenuInteraction):
 	tried to fix core dump w/ windowlist
+	(MenuInteraction):
+	Fixed RemoveSubmenus menu style; affects keyboard navigation only
 
 2000-01-09  Mikhael Goikhman  <migo@homemail.com>
 

@@ -330,38 +330,39 @@ struct MenuRoot; /* forward declaration */
  * get implemented. */
 typedef struct MenuItem
 {
-    struct MenuItem *next;	/* next menu item */
-    struct MenuItem *prev;	/* prev menu item */
+  struct MenuItem *next;	/* next menu item */
+  struct MenuItem *prev;	/* prev menu item */
 
-    char *label[MAX_MENU_ITEM_LABELS]; /* the strings displayed in the item */
-    unsigned short label_offset[MAX_MENU_ITEM_LABELS]; /* witdh of label[i] */
-    unsigned short label_strlen[MAX_MENU_ITEM_LABELS]; /* strlen(label[i]) */
+  char *label[MAX_MENU_ITEM_LABELS]; /* the strings displayed in the item */
+  unsigned short label_offset[MAX_MENU_ITEM_LABELS]; /* witdh of label[i] */
+  unsigned short label_strlen[MAX_MENU_ITEM_LABELS]; /* strlen(label[i]) */
 
-    Picture *picture;           /* Pixmap to show above label*/
-    Picture *lpicture[MAX_MENU_ITEM_MINI_ICONS]; /* Pics to show left/right of label */
+  Picture *picture;           /* Pixmap to show above label*/
+  /* Pics to show left/right of label */
+  Picture *lpicture[MAX_MENU_ITEM_MINI_ICONS];
 
-    short y_offset;		/* y offset for item */
-    short height;		/* y height for item */
+  short y_offset;		/* y offset for item */
+  short height;		/* y height for item */
 
-    char *action;		/* action to be performed */
-    short func_type;		/* type of built in function */
-    short hotkey_coffset;	/* Hot key offset (pete@tecc.co.uk). */
-    char hotkey_column;         /* The column number the hotkey is defined in*/
-    struct
-    {
-      unsigned is_separator : 1;
-      unsigned is_title : 1;
-      unsigned is_title_centered : 1;
-      unsigned is_popup : 1;
-      unsigned is_menu : 1;
-      unsigned has_text : 1;
-      unsigned has_picture : 1;
-      unsigned has_hotkey : 1;
-      unsigned is_hotkey_automatic : 1;
-      unsigned is_selectable : 1;
-      /* temporary flags */
-      unsigned was_deselected : 1;
-    } flags;
+  char *action;		/* action to be performed */
+  short func_type;		/* type of built in function */
+  short hotkey_coffset;	/* Hot key offset (pete@tecc.co.uk). */
+  char hotkey_column;         /* The column number the hotkey is defined in*/
+  struct
+  {
+    unsigned is_separator : 1;
+    unsigned is_title : 1;
+    unsigned is_title_centered : 1;
+    unsigned is_popup : 1;
+    unsigned is_menu : 1;
+    unsigned has_text : 1;
+    unsigned has_picture : 1;
+    unsigned has_hotkey : 1;
+    unsigned is_hotkey_automatic : 1;
+    unsigned is_selectable : 1;
+    /* temporary flags */
+    unsigned was_deselected : 1;
+  } flags;
 } MenuItem;
 
 #define MI_NEXT_ITEM(i)         ((i)->next)
