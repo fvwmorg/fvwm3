@@ -4739,10 +4739,14 @@ void PickFunc(F_CMD_ARGS)
 
 void WindowIdFunc(F_CMD_ARGS)
 {
-  FvwmWindow *found=NULL,*t;
+  FvwmWindow *t;
   char *num;
   unsigned long win;
+  Bool use_condition = False;
+  WindowConditionMask mask;
+  char *flags, *restofline;
 
+  /* Get window ID */
   action = GetNextToken(action, &num);
 
   if (num)
@@ -4752,17 +4756,39 @@ void WindowIdFunc(F_CMD_ARGS)
     }
   else
     win = 0;
-  for (t = Scr.FvwmRoot.next; t != NULL; t = t->next)
-  {
-    if (t->w == win)
+
+  /* Look for condition - CreateFlagString returns NULL if no '(' or '[' */
+  flags = CreateFlagString(action, &restofline);
+  if (flags != NULL)
     {
-      found = t;
-      break;
+    /* Create window mask */
+    use_condition = True;
+    DefaultConditionMask(&mask);
+
+    /* override for Current [] */
+    mask.useCirculateHit = True;
+    mask.useCirculateHitIcon = True;
+
+    CreateConditionMask(flags, &mask);
+    free(flags);
+
+    /* Relocate action */
+    action = restofline;
     }
+
+  /* Search windows */
+  for (t = Scr.FvwmRoot.next; t != NULL; t = t->next)
+    if (t->w == win) {
+      /* do it if no conditions or the conditions match */
+      if (!use_condition || MatchesConditionMask(t, &mask))
+        ExecuteFunction(action,t,eventp,C_WINDOW,*Module);
+      break;
   }
-  if(found)
+
+  /* Tidy up */
+  if (use_condition)
   {
-    ExecuteFunction(action,found,eventp,C_WINDOW,*Module);
+    FreeConditionMask(&mask);
   }
 }
 

@@ -1,3 +1,8 @@
+18 Mar 1999  Hippo
+
+	* fvwm/{fvwm{2.1,.h},builtins.c} Patch from Neil Bird to add conditions
+	to the WindowId command.
+
 1999-03-17  Matthias Clasen  <clasen@mathematik.uni-freiburg.de>
 
 	* fvwm/builtins.c (CursorStyle): 

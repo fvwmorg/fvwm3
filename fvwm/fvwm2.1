@@ -2843,15 +2843,18 @@ title-bars. To reset this font to the default font (see \fIDefaultFont\fP)
 you may omit \fIfontname\fP.
 
 
-.IP "WindowId \fIid func\fP"
+.IP "WindowId \fIid (\fIconditions\fP) func\fP"
 The WindowId function is similar to the Next and Prev funcs, except
 that it looks for a specific window \fIid\fP and runs the specified
-\fIfunc\fP on it.
+\fIfunc\fP on it. The optional \fIconditions\fP are the same as for
+\fICurrent\fP.
 .EX
 WindowId 0x34567890 Raise
 WindowId 0x34567890 WarpToWindow 50 50
+WindowId $0 (Silly_Popup) Delete
 .EE
-Mostly this is useful for functions used with the WindowList builtin.
+Mostly this is useful for functions used with the WindowList builtin,
+or for selective processing of FvwmEvent calls (as in the last example).
 
 
 .IP "WindowList [ \fIposition\fP ] [ \fIoptions\fP ] [ \fIdouble-click-action\fP ]"

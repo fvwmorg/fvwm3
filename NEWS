@@ -1,5 +1,7 @@
 Changes in alpha release 2.3.0 (February 1999)
 
+* WindowID command now takes conditions like Current
+
 * Improved cursor support: CursorStyle now supports changing
   cursor colors and creating cursors from xpm files.
 
