@@ -866,7 +866,12 @@ typedef enum
   SA_FIRST,
   SA_LAST,
   SA_CONTINUE,
-  SA_WARPBACK
+  SA_WARPBACK,
+  SA_SELECT,
+#ifdef TEAR_OFF_MENUS
+  SA_TEAROFF,
+#endif
+  SA_ABORT
 } shortcut_action;
 
 static void menuShortcuts(MenuRoot *mr, MenuReturn *pmret, XEvent *event,
@@ -991,15 +996,15 @@ static void menuShortcuts(MenuRoot *mr, MenuReturn *pmret, XEvent *event,
   case XK_Delete:
   case XK_KP_Separator:
     /* abort */
-    pmret->rc = MENU_ABORTED;
-    return;
+    saction = SA_ABORT;
+    break;
 
   case XK_space:
   case XK_Return:
   case XK_KP_Enter:
     /* select menu item */
-    pmret->rc = MENU_SELECTED;
-    return;
+    saction = SA_SELECT;
+    break;
 
   case XK_Insert:
   case XK_KP_0:
@@ -1130,15 +1135,16 @@ static void menuShortcuts(MenuRoot *mr, MenuReturn *pmret, XEvent *event,
 #ifdef TEAR_OFF_MENUS
   case XK_BackSpace:
 fprintf(stderr,"menu torn off\n");
-    pmret->rc = MENU_TEAR_OFF;
-    return;
+    saction = SA_TEAROFF;
+    break;
 #endif
 
   default:
     break;
   }
 
-  if (!miCurrent && (saction == SA_ENTER || saction == SA_MOVE_ITEMS))
+  if (!miCurrent &&
+      (saction == SA_ENTER || saction == SA_MOVE_ITEMS || saction == SA_SELECT))
   {
     XGetGeometry(dpy, MR_WINDOW(mr), &JunkRoot, &menu_x, &menu_y,
 		 &menu_width, &menu_height, &JunkBW, &JunkDepth);
@@ -1272,6 +1278,20 @@ fprintf(stderr,"menu torn off\n");
     *pmiCurrent = find_entry(NULL, NULL);
     pmret->rc = MENU_NEWITEM;
     break;
+
+  case SA_SELECT:
+    pmret->rc = MENU_SELECTED;
+    return;
+
+  case SA_ABORT:
+    pmret->rc = MENU_ABORTED;
+    return;
+
+#ifdef TEAR_OFF_MENUS
+  case SA_TEAROFF:
+    pmret->rc = MENU_TEAR_OFF;
+    return;
+#endif
 
   case SA_NONE:
   default:
