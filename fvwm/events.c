@@ -3146,17 +3146,14 @@ void HandleVisibilityNotify(const evh_args_t *ea)
 		case VisibilityUnobscured:
 			SET_FULLY_VISIBLE(fw, 1);
 			SET_PARTIALLY_VISIBLE(fw, 1);
-fprintf(stderr, "hvn: 0x%08x F '%s'\n", (int)fw, fw->visible_name);
 			break;
 		case VisibilityPartiallyObscured:
 			SET_FULLY_VISIBLE(fw, 0);
 			SET_PARTIALLY_VISIBLE(fw, 1);
-fprintf(stderr, "hvn: 0x%08x P '%s'\n", (int)fw, fw->visible_name);
 			break;
 		default:
 			SET_FULLY_VISIBLE(fw, 0);
 			SET_PARTIALLY_VISIBLE(fw, 0);
-fprintf(stderr, "hvn: 0x%08x - '%s'\n", (int)fw, fw->visible_name);
 			break;
 		}
 		/* Make sure the button grabs are up to date */
