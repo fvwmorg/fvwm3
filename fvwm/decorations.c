@@ -468,18 +468,14 @@ void SelectDecor(FvwmWindow *t, style_flags *sflags, int border_width,
   t->nr_left_buttons = Scr.nr_left_buttons;
   t->nr_right_buttons = Scr.nr_right_buttons;
 
-  for (i = 0; i < NUMBER_OF_BUTTONS; ++i)
-  {
-  }
-
-  for (i = 0; i < Scr.nr_left_buttons; i++)
+  for (i = 0; i / 2 < Scr.nr_left_buttons; i += 2)
   {
     if((*buttons & (1 << i)) == 0)
       t->nr_left_buttons--;
   }
-  for (i = 0; i < Scr.nr_right_buttons; i++)
+  for (i = 1; i / 2 < Scr.nr_right_buttons; i += 2)
   {
-    if((*buttons & (1 << (i + NR_LEFT_BUTTONS))) == 0)
+    if((*buttons & (1 << i)) == 0)
       t->nr_right_buttons--;
   }
 

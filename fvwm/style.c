@@ -710,16 +710,12 @@ void ProcessNewStyle(XEvent *eventp, Window w, FvwmWindow *tmp_win,
 	  found = True;
           butt = -1;
 	  GetIntegerArguments(rest, NULL, &butt, 1);
-          if (butt == 0)
-	    butt = 10;
-          if (butt > 0 && butt <= 10)
+	  butt = BUTTON_INDEX(butt);
+          if (butt >= 0 && butt < NUMBER_OF_BUTTONS)
 	  {
-	    /* migo (06/Jan/1999): added the next correcting line */
-	    butt = (butt + 1) / 2 + ((butt % 2 == 0)? NR_LEFT_BUTTONS: 0);
-
-            ptmpstyle->flags.is_button_disabled &= ~(1<<(butt-1));
-            ptmpstyle->flag_mask.is_button_disabled |= (1<<(butt-1));
-            ptmpstyle->change_mask.is_button_disabled |= (1<<(butt-1));
+            ptmpstyle->flags.is_button_disabled &= ~(1 << butt);
+            ptmpstyle->flag_mask.is_button_disabled |= (1 << butt);
+            ptmpstyle->change_mask.is_button_disabled |= (1 << butt);
 	  }
         }
         else if(StrEquals(token, "BorderWidth"))
@@ -1594,16 +1590,12 @@ void ProcessNewStyle(XEvent *eventp, Window w, FvwmWindow *tmp_win,
 	  found = True;
           butt = -1;
 	  GetIntegerArguments(rest, NULL, &butt, 1);
-          if (butt == 0)
-	    butt = 10;
-          if (butt > 0 && butt <= 10)
+	  butt = BUTTON_INDEX(butt);
+          if (butt >= 0 && butt < NUMBER_OF_BUTTONS)
 	  {
-	    /* migo (06/Jan/1999): added the next correcting line */
-	    butt = (butt + 1) / 2 + ((butt % 2 == 0)? NR_LEFT_BUTTONS: 0);
-
-            ptmpstyle->flags.is_button_disabled |= (1<<(butt-1));
-            ptmpstyle->flag_mask.is_button_disabled |= (1<<(butt-1));
-            ptmpstyle->change_mask.is_button_disabled |= (1<<(butt-1));
+            ptmpstyle->flags.is_button_disabled |= (1 << butt);
+            ptmpstyle->flag_mask.is_button_disabled |= (1 << butt);
+            ptmpstyle->change_mask.is_button_disabled |= (1 << butt);
 	  }
         }
         else if(StrEquals(token, "NOOLDECOR"))

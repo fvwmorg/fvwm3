@@ -731,7 +731,8 @@ static void RedrawButtons(
 
   for (i = 0; i < NUMBER_OF_BUTTONS; i++)
   {
-    if (HAS_BUTTON(t, i))
+    if (t->button_w[i] != None && (((i & 1) && i / 2 < Scr.nr_right_buttons) ||
+				   (!(i & 1) && i / 2 < Scr.nr_left_buttons)))
     {
       mwm_flags stateflags =
 	TB_MWM_DECOR_FLAGS(GetDecor(t, buttons[i]));
@@ -1028,11 +1029,11 @@ void SetupTitleBar(FvwmWindow *tmp_win, int w, int h)
 
   /* left */
   xwc.x = tmp_win->boundary_width;
-  for(i = 0; i < tmp_win->nr_left_buttons; i++)
+  for(i = 0; i / 2 < NUMBER_OF_BUTTONS; i += 2)
   {
-    if(tmp_win->button_w[i] != None)
+    if (tmp_win->button_w[i] != None)
     {
-      if(xwc.x + tmp_win->title_g.height < w-tmp_win->boundary_width)
+      if (xwc.x + tmp_win->title_g.height < w - tmp_win->boundary_width)
       {
 	XConfigureWindow(dpy, tmp_win->button_w[i], xwcm, &xwc);
 	xwc.x += tmp_win->title_g.height;
@@ -1045,15 +1046,16 @@ void SetupTitleBar(FvwmWindow *tmp_win, int w, int h)
     }
   }
   /* right */
-  xwc.x = w - tmp_win->boundary_width;
-  for(i = NR_LEFT_BUTTONS ; i < tmp_win->nr_right_buttons + NR_LEFT_BUTTONS;
-      i++)
+  xwc.x = w - tmp_win->boundary_width - tmp_win->title_g.height;
+  for (i = 1 ; i / 2 < NUMBER_OF_BUTTONS; i += 2)
   {
-    if(tmp_win->button_w[i] != None)
+    if (tmp_win->button_w[i] != None)
     {
-      xwc.x -= tmp_win->title_g.height;
       if (xwc.x > tmp_win->boundary_width)
+      {
 	XConfigureWindow(dpy, tmp_win->button_w[i], xwcm, &xwc);
+	xwc.x -= tmp_win->title_g.height;
+      }
       else
       {
 	xwc.x = -tmp_win->title_g.height;

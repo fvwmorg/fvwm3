@@ -697,9 +697,8 @@ void setup_button_windows(
 
   for (i = 0; i < NUMBER_OF_BUTTONS; i++)
   {
-    has_button = ((i < Scr.nr_left_buttons ||
-		  (i >= NR_LEFT_BUTTONS &&
-		   i < Scr.nr_right_buttons + NR_LEFT_BUTTONS)) &&
+    has_button = (((!(i & 1) && i / 2 < Scr.nr_left_buttons) ||
+		   ( (i & 1) && i / 2 < Scr.nr_right_buttons)) &&
 		  (buttons & (1 << i)));
     if (tmp_win->button_w[i] == None && has_button)
     {

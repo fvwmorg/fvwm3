@@ -1,5 +1,31 @@
 2000-01-09  Dominik Vogt  <dominik.vogt@gmx.de>
 
+	* fvwm/bindings.c (update_nr_buttons):
+	* libs/fvwmlib.h:
+	* fvwm/cursor.c (CursorStyle):
+	* fvwm/decorations.c (SelectDecor):
+	* fvwm/misc.c (ButtonPosition):
+	* fvwm/add_window.c (setup_button_windows):
+	* fvwm/style.c (ProcessNewStyle):
+	* fvwm/borders.c (RedrawButtons):
+	(SetupTitleBar):
+	(set_decor_gravity):
+	* fvwm/move_resize.c (resize_window):
+	* fvwm/fvwm.c (LoadDefaultButton):
+	* fvwm/events.c (GetContext):
+	* fvwm/builtins.c (InitFvwmDecor):
+	(SetMWMButtonFlag):
+	(do_button_style):
+	(ReadTitleButton):
+	(ReadDecorFace):
+	* fvwm/menus.c (GetMenuOptions):
+	fixed title button bugs
+	revised button members of decors and windows
+
+	* libs/Picture.c (xpmcolor_require_c_color):
+	(color_reduce_pixmap):
+	applied core dump fix by Kevin Ryde
+
 	* libs/Colorset.c (SetWindowBackground):
 	(CreateBackgroundPixmap)
 	some changes for FvwmTHeme 'Transparent' option

@@ -6446,7 +6446,8 @@ char *GetMenuOptions(char *action, Window w, FvwmWindow *tmp_win,
       }
       else if (tmp_win)
       {
-	context_window = tmp_win->button_w[BUTTON_INDEX(button)];
+	button = BUTTON_INDEX(button);
+	context_window = tmp_win->button_w[button];
       }
     }
     else if (StrEquals(tok,"root"))

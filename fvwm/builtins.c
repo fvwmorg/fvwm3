@@ -1302,15 +1302,19 @@ Bool ReadDecorFace(char *s, DecorFace *df, int button, int verbose)
       {
 	if (button == -1)
 	{
-	  if(verbose)fvwm_msg(ERR,"ReadDecorFace",
-			      "need default button number to load");
+	  if(verbose)
+	    fvwm_msg(ERR,"ReadDecorFace", "need default button number to load");
 	  return False;
 	}
 	b = button;
       }
+      else
+      {
+	b = BUTTON_INDEX(b);
+      }
       s += offset;
-      if ((b > 0) && (b <= 10))
-	LoadDefaultButton(df, BUTTON_INDEX(b));
+      if (b >= 0 && b < NUMBER_OF_BUTTONS)
+	LoadDefaultButton(df, b);
       else
       {
 	if(verbose)
@@ -2026,16 +2030,16 @@ static void SetMWMButtonFlag(
   mwm_flags flag, int multi, int set, FvwmDecor *decor, TitleButton *tb)
 {
   int i;
-  int start = NR_LEFT_BUTTONS;
-  int end = start;
+  int start = 0;
+  int add = 2;
 
   if (multi)
   {
-    if (multi & 1)
-      start = 0;
-    if (multi & 2)
-      end = NUMBER_OF_BUTTONS;
-    for (i = start; i < end; ++i)
+    if (multi == 2)
+      start = 1;
+    else if (multi == 3)
+      add = 1;
+    for (i = start; i < NUMBER_OF_BUTTONS; i += add)
     {
       if (set)
 	TB_MWM_DECOR_FLAGS(decor->buttons[i]) |= flag;
@@ -2057,7 +2061,6 @@ static void SetMWMButtonFlag(
 static void do_button_style(F_CMD_ARGS, Bool do_add)
 {
   int i;
-  int n;
   int multi = 0;
   int button = 0;
   char *text = NULL;
@@ -2072,9 +2075,12 @@ static void do_button_style(F_CMD_ARGS, Bool do_add)
 
   parm = PeekToken(action, &text);
   if (parm && isdigit(*parm))
+  {
     button = atoi(parm);
+    button = BUTTON_INDEX(button);
+  }
 
-  if (parm == NULL || button > 10 || button < 0)
+  if (parm == NULL || button >= NUMBER_OF_BUTTONS || button < 0)
   {
     fvwm_msg(ERR,"ButtonStyle","Bad button style (1) in line %s",action);
     return;
@@ -2108,18 +2114,15 @@ static void do_button_style(F_CMD_ARGS, Bool do_add)
   if (multi == 0)
   {
     /* a single button was specified */
-    if (button == 10)
-      button = 0;
-    n = BUTTON_INDEX(button);
-    tb = &decor->buttons[n];
+    tb = &decor->buttons[button];
     TB_FLAGS(*tb).has_changed = 1;
   }
   else
   {
     for (i = 0; i < NUMBER_OF_BUTTONS; ++i)
     {
-      if (((multi & 1) && i < NR_LEFT_BUTTONS) ||
-	  ((multi & 2) && i >= NR_LEFT_BUTTONS))
+      if (((multi & 1) && !(i & 1)) ||
+	  ((multi & 2) && (i & 1)))
 	TB_FLAGS(decor->buttons[i]).has_changed = 1;
     }
   }
@@ -2146,8 +2149,8 @@ static void do_button_style(F_CMD_ARGS, Bool do_add)
 	  {
 	    for (i = 0; i < NUMBER_OF_BUTTONS; ++i)
 	    {
-	      if (((multi & 1) && i < NR_LEFT_BUTTONS) ||
-		  ((multi & 2) && i >= NR_LEFT_BUTTONS))
+	      if (((multi & 1) && !(i & 1)) ||
+		  ((multi & 2) && (i & 1)))
 	      {
 		TB_JUSTIFICATION(decor->buttons[i]) =
 		  (set) ? JUST_CENTER : JUST_RIGHT;
@@ -2204,11 +2207,10 @@ static void do_button_style(F_CMD_ARGS, Bool do_add)
       {
 	for (i = 0; i < NUMBER_OF_BUTTONS; ++i)
 	{
-	  if (((multi & 1) && i < NR_LEFT_BUTTONS) ||
-	      ((multi & 2) && i >= NR_LEFT_BUTTONS))
+	  if (((multi & 1) && !(i & 1)) ||
+	      ((multi & 2) && (i & 1)))
 	  {
-	    text = ReadTitleButton(
-	      prev, &decor->buttons[i], do_add, i*2+1);
+	    text = ReadTitleButton(prev, &decor->buttons[i], do_add, i);
 	  }
 	}
       }

@@ -1372,10 +1372,10 @@ static void LoadDefaultRightButton(DecorFace *df, int i)
  ************************************************************************/
 void LoadDefaultButton(DecorFace *df, int i)
 {
-  if (i >= NR_LEFT_BUTTONS)
-    LoadDefaultRightButton(df, i - NR_LEFT_BUTTONS);
+  if (i & 1)
+    LoadDefaultRightButton(df, i / 2);
   else
-    LoadDefaultLeftButton(df, i);
+    LoadDefaultLeftButton(df, i / 2);
 }
 
 extern void FreeDecorFace(Display *dpy, DecorFace *df);
@@ -1410,8 +1410,8 @@ void ResetAllButtons(FvwmDecor *decor)
   /* standard MWM decoration hint assignments (veliaa@rpi.edu)
      [Menu]  - Title Bar - [Minimize] [Maximize] */
   TB_MWM_DECOR_FLAGS(decor->buttons[0]) |= MWMDecorMenu;
-  TB_MWM_DECOR_FLAGS(decor->buttons[NR_LEFT_BUTTONS + 1]) |= MWMDecorMinimize;
-  TB_MWM_DECOR_FLAGS(decor->buttons[NR_LEFT_BUTTONS]) |= MWMDecorMaximize;
+  TB_MWM_DECOR_FLAGS(decor->buttons[3]) |= MWMDecorMinimize;
+  TB_MWM_DECOR_FLAGS(decor->buttons[1]) |= MWMDecorMaximize;
 }
 
 /***********************************************************************

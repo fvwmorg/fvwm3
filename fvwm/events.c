@@ -106,7 +106,7 @@ extern Bool fFvwmInStartup;
 extern void StartupStuff(void);
 
 int Context = C_NO_CONTEXT;	/* current button press context */
-int Button = 0;
+static int Button = 0;
 FvwmWindow *ButtonWindow;	/* button press window structure */
 XEvent Event;			/* the current event */
 FvwmWindow *Tmp_win;		/* the current fvwm window */
@@ -340,11 +340,10 @@ int GetContext(FvwmWindow *t, XEvent *e, Window *w)
 	    {
 	      if (*w == t->button_w[i])
 	      {
-		if ((i < NR_LEFT_BUTTONS && i < Scr.nr_left_buttons) ||
-		    (i >= NR_LEFT_BUTTONS &&
-		     i - NR_LEFT_BUTTONS < Scr.nr_right_buttons))
+		if ((!(i & 1) && i / 2 < Scr.nr_left_buttons) ||
+		    ( (i & 1) && i / 2 < Scr.nr_right_buttons))
 		{
-		  Context = (1<<i)*C_L1;
+		  Context = (1 << i) * C_L1;
 		  Button = i;
 		  break;
 		}

@@ -40,40 +40,33 @@ static void update_nr_buttons(
   int contexts, int *nr_left_buttons, int *nr_right_buttons)
 {
   int i;
-  int j;
   int l = (nr_left_buttons) ? *nr_left_buttons : 0;
   int r = (nr_right_buttons) ? *nr_right_buttons : 0;
 
   if (contexts != C_ALL && (contexts & C_LALL) && nr_left_buttons != NULL)
   {
     /* check for nr_left_buttons */
-    i = 0;
-    j = (contexts &C_LALL) / C_L1;
-    while (j > 0)
+    for (i = 0; i < NUMBER_OF_BUTTONS; i += 2)
     {
-      i++;
-      j = j >> 1;
-    }
-    if (*nr_left_buttons < i)
-    {
-      *nr_left_buttons = i;
+      if ((contexts & (C_L1 << i)) && *nr_left_buttons <= i / 2)
+      {
+	Scr.flags.do_need_window_update = 1;
+	Scr.flags.has_nr_buttons_changed = 1;
+	*nr_left_buttons = i / 2 + 1;
+      }
     }
   }
   if(contexts != C_ALL && (contexts & C_RALL) && nr_right_buttons != NULL)
   {
     /* check for nr_right_buttons */
-    i = 0;
-    j = (contexts&C_RALL) / C_R1;
-    while (j > 0)
+    for (i = 1; i < NUMBER_OF_BUTTONS; i += 2)
     {
-      i++;
-      j = j >> 1;
-    }
-    if(*nr_right_buttons < i)
-    {
-      Scr.flags.do_need_window_update = 1;
-      Scr.flags.has_nr_buttons_changed = 1;
-      *nr_right_buttons = i;
+      if ((contexts & (C_L1 << i)) && *nr_right_buttons <= i / 2)
+      {
+	Scr.flags.do_need_window_update = 1;
+	Scr.flags.has_nr_buttons_changed = 1;
+	*nr_right_buttons = i / 2 + 1;
+      }
     }
   }
   if ((nr_left_buttons && *nr_left_buttons != l) ||

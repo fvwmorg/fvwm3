@@ -439,24 +439,27 @@ Bool check_if_fvwm_window_exists(FvwmWindow *fw)
  ***********************************************************************/
 int ButtonPosition(int context, FvwmWindow *t)
 {
-  int i;
+  int i = 0;
   int buttons = -1;
+  int end = Scr.nr_left_buttons;
 
-  for (i = 0; i < NUMBER_OF_BUTTONS; i++)
+  if (context & C_RALL)
   {
-    if (i == NR_LEFT_BUTTONS)
-      buttons = -1;
-    if (t->button_w[i])
+    i  = 1;
+    end = Scr.nr_right_buttons;
+  }
+  {
+    for (; i / 2 < end; i += 2)
     {
-      buttons++;
-    }
-    /* is this the button ? */
-    if (((1 << i) * C_L1) & context)
-    {
-      return buttons;
+      if (t->button_w[i])
+      {
+	buttons++;
+      }
+      /* is this the button ? */
+      if (((1 << i) * C_L1) & context)
+	return buttons;
     }
   }
-
   /* you never know... */
   return 0;
 }

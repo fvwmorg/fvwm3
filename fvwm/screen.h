@@ -188,11 +188,11 @@ typedef struct
     unsigned has_changed : 1;
     mwm_flags mwm_decor_flags : 5;
   } flags;
-  DecorFace styte[MaxButtonState];
+  DecorFace state[MaxButtonState];
 } TitleButton;
 
 #define TB_FLAGS(tb)              ((tb).flags)
-#define TB_STATE(tb)              ((tb).styte)
+#define TB_STATE(tb)              ((tb).state)
 #define TB_JUSTIFICATION(tb)      ((tb).just)
 #define TB_MWM_DECOR_FLAGS(tb)    ((tb).flags.mwm_decor_flags)
 #define TB_HAS_CHANGED(tb)     \

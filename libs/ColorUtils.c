@@ -213,7 +213,7 @@ color_mult (unsigned short *red,
 
 XColor *GetShadowColor(Pixel background)
 {
-  long brightness, brightadj;
+  long brightness;
   unsigned short red, green, blue;
 
   color.pixel = background;
@@ -268,7 +268,7 @@ Pixel GetShadow(Pixel background)
 
 XColor *GetHiliteColor(Pixel background)
 {
-  long brightness, brightadj;
+  long brightness;
   unsigned short red, green, blue;
 
   color.pixel = background;
