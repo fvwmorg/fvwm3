@@ -222,6 +222,7 @@ static RETSIGTYPE TerminateHandler(int sig);
 static RETSIGTYPE Alarm(int sig);
 static void SetAlarm(int event);
 static void ClearAlarm(void);
+static void DoAlarmAction(void);
 static int ErrorHandler(Display*, XErrorEvent*);
 static Bool change_colorset(int cset, Bool force);
 
@@ -387,6 +388,8 @@ void EndLessLoop(void)
       if (FD_ISSET(Fvwm_fd[1], &readset))
         ReadFvwmPipe();
     }
+    
+    DoAlarmAction();
 
     DrawGoodies();
   } /* while */
@@ -1102,39 +1105,61 @@ void Swallow(unsigned long *body)
 static RETSIGTYPE
 Alarm(int nonsense)
 {
-  XEvent event;
-  Bool trigger_event = False;
 
   switch(AlarmSet)
   {
   case SHOW_TIP:
-    if (!tip_window_alarm)
-    {
-      tip_window_alarm = True;
-      trigger_event = True;
-    }
+    tip_window_alarm = True;
     break;
 
   case HIDE_TASK_BAR:
-    if (!hide_taskbar_alarm)
-    {
       hide_taskbar_alarm = True;
-      trigger_event = True;
-    }
     break;
   }
 
-  if (trigger_event)
-  {
-    event.xmotion.x = -1;
-    event.xmotion.y = -1;
-    event.xany.type = MotionNotify;
-    XSendEvent(dpy, win, False, EnterWindowMask, &event);
-  }
   AlarmSet = NOT_SET;
 #if !defined(HAVE_SIGACTION) && !defined(USE_BSD_SIGNALS)
   signal (SIGALRM, Alarm);
 #endif
+}
+
+/******************************************************************************
+  DoAlarmAction -
+******************************************************************************/
+void
+DoAlarmAction(void)
+{
+
+  if (hide_taskbar_alarm)
+  {
+    hide_taskbar_alarm = False;
+    HideTaskBar();
+  }
+  else if (tip_window_alarm)
+  {
+    tip_window_alarm = False;
+    if (AutoHide && WindowState == 0)
+    {
+      Window dummy_rt, dummy_c;
+      int abs_x, abs_y, pos_x, pos_y;
+      unsigned int dummy;
+      XEvent sevent;
+      
+      /* We are now "sure" that the TaskBar is not hidden for the
+	 Event loop. We send a motion notify for activating tips */
+      WindowState = 1;
+      XQueryPointer(dpy, win, &dummy_rt,&dummy_c, &abs_x, &abs_y,
+		    &pos_x, &pos_y, &dummy);
+      sevent.xmotion.x = pos_x;
+      sevent.xmotion.y = pos_y;
+      sevent.xany.type = MotionNotify;
+      sevent.xmotion.state = 0;
+      XSendEvent(dpy, win, False, EnterWindowMask, &sevent);
+      Tip.type = NO_TIP;
+    }
+    else
+      ShowTipWindow(1);
+  }
 }
 
 /******************************************************************************
@@ -1336,40 +1361,6 @@ void LoopOnEvents(void)
         break;
 
       case MotionNotify:
-	if (Event.xmotion.x < 0 && Event.xmotion.y < 0)
-	{
-	  /* This condition means that the event was triggered by an Alarm */
-	  if (hide_taskbar_alarm)
-	  {
-	    hide_taskbar_alarm = False;
-	    HideTaskBar();
-	  }
-	  else if (tip_window_alarm)
-	  {
-	    tip_window_alarm = False;
-	    if (AutoHide && WindowState == 0)
-	    {
-	      Window dummy_rt, dummy_c;
-	      int abs_x, abs_y, pos_x, pos_y;
-	      unsigned int dummy;
-	      XEvent sevent;
-
-	      /* We are now "sure" that the TaskBar is not hidden for the
-		 Event loop. We send a motion notify for activating tips */
-	      WindowState = 1;
-	      XQueryPointer(dpy, win, &dummy_rt,&dummy_c, &abs_x, &abs_y,
-			    &pos_x, &pos_y, &dummy);
-	      sevent.xmotion.x = pos_x;
-	      sevent.xmotion.y = pos_y;
-	      sevent.xany.type = MotionNotify;
-	      XSendEvent(dpy, win, False, EnterWindowMask, &sevent);
-	      Tip.type = NO_TIP;
-	    }
-	    else
-	      ShowTipWindow(1);
-	  }
-	  break;
-	}
 	if (MouseInStartButton(Event.xmotion.x, Event.xbutton.y)) {
 	  if (SomeButtonDown(Event.xmotion.state))
 	    redraw = StartButtonUpdate(NULL, BUTTON_DOWN) ? 0 : -1;
@@ -1406,8 +1397,6 @@ void LoopOnEvents(void)
 	  AdjustWindow(Event.xconfigure.width, Event.xconfigure.height);
 	  if (AutoHide)
 	  {
-	    /* the less bad solution I found to limit crazy evens I see
-	     * when resizing (olicha dec 14, 1999) */
 	    if (win_y > Midline)
 	      win_y = ScreenHeight - 2;
 	    else
@@ -1415,6 +1404,7 @@ void LoopOnEvents(void)
 	    XSync(dpy,0);
 	    XMoveWindow(dpy, win, win_x, win_y);
 	    XSync(dpy,0);
+	    hide_taskbar_alarm = False;
 	    WindowState = -1;
 	  } 
 	  else if (AutoStick)
@@ -1447,10 +1437,13 @@ void LoopOnEvents(void)
     if (redraw >= 0)
       RedrawWindow(redraw);
 
+    DoAlarmAction();
+
     if (Event.xkey.time - lasttime > UpdateInterval*1000L) {
       DrawGoodies();
       lasttime = Event.xkey.time;
     }
+
   }
 
 }
