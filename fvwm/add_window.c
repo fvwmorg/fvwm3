@@ -781,6 +781,7 @@ void setup_parent_window(FvwmWindow *tmp_win, int valuemask,
   /* This window is exactly the same size as the client for the
      benefit of some clients */
   valuemask |= CWBackPixmap | CWCursor | CWEventMask;
+  valuemask &= ~CWBackPixel;
   /* The background is None to avoid flashing anything when a window dies */
   pattributes->background_pixmap = None;
   pattributes->cursor = Scr.FvwmCursors[CRS_DEFAULT];
