@@ -19,25 +19,23 @@ reads the Xpm file specified in the command line and displays it in the
 root window.
 
 \".SH OPTIONS
-\"needs_lang_check
-\"These are the command line options that are recognized by xpmroot:
+\"These command line options are recognized by xpmroot:
 \".TP
 \".BI "-np"
-\"Causes xpmroot to do not keep the Xpm pixmap in permanent memory under
+\"Causes xpmroot to NOT keep the Xpm pixmap in permanent memory under
 \"the _XSETROOT_ID property (_XSETROOT_ID is set to None).
 \".TP
 \".BI "-d"
-\"Causes xpmroot to do not set the background but to free the memory
+\"Causes xpmroot to NOT set the background but to free the memory
 \"associated with the _XSETROOT_ID property (if any).
 \"In any case the _XSETROOT_ID property is set to None and some programs
-\"(as the fvwm2 modules) may use this to update its background if it is
-\"transparent.
+\"(the fvwm2 modules) may use this to update their background if the background
+\"is transparent.
 \".TP
 \".BI "-fe"
 \"Causes xpmroot to free the memory associated with the ESETROOT_PMAP_ID
-\"property. This is useful if you use alternatively xpmroot and an
+\"property. This is useful if you  alternately use xpmroot and an
 \"Esetroot compatible program.
-\"end
 
 .SH BUGS
 Repeated use of xpmroot with different xpm pixmaps will use up slots in
