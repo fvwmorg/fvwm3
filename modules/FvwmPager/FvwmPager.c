@@ -763,7 +763,8 @@ void list_new_page(unsigned long *body)
 {
   Scr.Vx = (long)body[0];
   Scr.Vy = (long)body[1];
-  Scr.CurrentDesk = (long)body[2];
+  /* Seems to be a very bad idea to update the desk here (olicha 17 Dec 99):
+  Scr.CurrentDesk = (long)body[2]; */
   if((Scr.VxMax != body[3])||(Scr.VyMax != body[4]))
   {
     Scr.VxMax = body[3];

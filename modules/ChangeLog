@@ -1,5 +1,13 @@
 1999-12-06  olicha   <olivier.chapuis@free.fr>
 
+	* FvwmPager/FvwmPager.c (list_new_page):
+	Fixed a problem if you switch of desk via clicking on a page
+
+	* FvwmButtons/FvwmButtons/parse.c (ParsePanel):
+	Fixed typo in comments
+
+1999-12-06  olicha   <olivier.chapuis@free.fr>
+
 	* FvwmWinList/FvwmWinList.c (ProcessMessage):
 	Take in account bottom title and update the border width and title 
 	height in the good place to fix a bug with dynamic style changes
@@ -12,7 +20,6 @@
 
 	* FvwmButtons/FvwmButtons.1 (panel): Corrections to wording.
 
->>>>>>> 1.410
 1999-12-06  olicha   <olivier.chapuis@free.fr>
 
 	* FvwmButtons/FvwmButons.c (GetPanelGeometry):

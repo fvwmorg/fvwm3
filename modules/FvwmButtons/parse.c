@@ -455,7 +455,7 @@ static void ParsePanel(char **ss, byte *flags, byte *mask, char *direction,
 	}
 	switch(GetTokenIndex(s,positionopts,-1,&s))
 	{
-	case 0: /* panelbutton */
+	case 0: /* button */
 	  *context = SLIDE_CONTEXT_PB;
 	  break;
 	case 1: /* module */
@@ -475,10 +475,10 @@ static void ParsePanel(char **ss, byte *flags, byte *mask, char *direction,
 	case 7: /* bottom */
 	  *position = SLIDE_POSITION_RIGHT_BOTTOM;
 	  break;
-	case 8: /*  nobplr */
+	case 8: /*  noplr */
 	  (*panel_flags).ignore_lrborder = 1;
 	  break;
-	case 9: /* nobptb */
+	case 9: /* noptb */
 	  (*panel_flags).ignore_tbborder = 1;
 	  break;
 	case 10: /* mlr */
