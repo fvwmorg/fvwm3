@@ -4292,6 +4292,22 @@ which prints information on fvwm styles.
 can be 1.
 
 .TP
+.BI "Repeat"
+When the
+.B Repeat
+command is invoked, the last command that was executed by fvwm is
+executed again.  This happens regardless of whether it was
+triggered by user interaction, a module or by an X event.
+Commands that are executed from a function defined with the
+.B Function
+command, from the
+.BR Read " or " PipeRead
+commands or by a menu are not repeated.  Instead, the function,
+menu  or the
+.B Read " or " PipeRead
+command is executed again.
+
+.TP
 .BI "Schedule " "delay_ms [command_id] command"
 The
 .I command
@@ -6527,6 +6543,11 @@ style option works similarly to
 .IR BorderColorset
 but is used when the window has the focus.
 
+.I NoIconTitle
+disables displaying icon labels while the opposite style
+.I IconTitle
+enables icon labels (default behaviour).
+
 .IR IconTitleColorset
 takes the colorset number as its sole argument and overrides the
 colors set by
@@ -6972,12 +6993,20 @@ and each desk.  The opposite style,
 .I Slippery
 reverts back to the default.
 
-.I StickyAcrossPages
-works like
-.IR Sticky ,
-but sticks the window only across pages, not desks while
-.I StickyAcrossDesks
+.IR StickyAcrossPages " and " StickyAcrossPagesIcon
+work like
+.IR Sticky " and " StickyIcon ,
+but stick the window only across pages, not desks while
+.I StickyAcrossDesks " and " StickyAcrossDesksIcon
 works the other way round.
+
+Windows with the
+.I StartIconic
+style are shown as icons initially.  Note that some applications
+counteract that by deiconifying themselves.  The default is to not
+iconify windows and can be set with the
+.I StartNormal
+style.
 
 .I StickyIcon
 makes the window sticky when its iconified.  It de-iconifies on
@@ -7754,6 +7783,50 @@ the parent styles are changed, the derived style is not
 modified. To achieve this you have to issue the
 .I UseStyle
 line again.
+
+.\" +++++++++++++++ styles affecting window selection
+
+Windows with the
+.I WindowListSkip
+styles do not appear in the menu that is created with the
+.B WindowList
+command or the lists shown in several modules like
+.BR FvwmIconMan " or " FvwmWinList .
+In the modules, the style can usually be ignored with an option.
+Please refer to the man pages of the module in question for
+further information.  To disable this feature, use the default
+style
+.IR WindowListHit .
+
+The styles
+.IR CirculateSkip " and " CirculateHit
+control wheter the window is considered by conditional commands,
+for example
+.BR Next ", " Prev " or " All .
+Windows with
+.IR CirculateSkip ,
+are never selected by conditional commands.  However, the styles
+can be overridden explicitly in the condition with the
+.IR CirculateHit ", " CirculateHitIcon " or " CirculateHitShaded
+conditions, and some conditional commands, e.g.
+.B Current " and " All ,
+do this by default.
+The styles
+.IR CirculateSkipIcon ", " CirculateHitIcon ,
+.IR CirculateSkipShaded " and " CirculateHitShaded
+work like
+.IR CirculateSkip " and " CirculateHit
+but apply only to iconic or shaded windows.
+Note: if multiple ...Skip... options are combined, windows are
+only selected if they match none of the given conditions.  So,
+with
+.EX
+Style * CirculateSkipIcon, CirculateSkipShaded
+.EE
+only windows that are neither iconic nor shaded are selecte.
+Note:  For historical reasons, the conditional commands understand
+the names of these styles as condition names.  Take care no to
+confuse them.
 
 .\" +++++++++++++++ examples
 .TP
@@ -10119,10 +10192,24 @@ by default for the
 command.  They can be turned off by specifying
 .I !CirculateHit
 etc. explicitly.
+Note:  Do not confuse these conditions with the style options of
+the same name.  Specifically,
+.EX
+Style foo CirculateSkip
+Next (foo, CirculateHit) ...
+.EE
+is not the same as
+.EX
+Style foo CirculateHit ...
+Next (foo)
+.EE
+The prior selects windows with the name foo only in the Next
+command.  In the second example, these windows are always matched
+in all conditional commands.
 
 The
 .I Closable
-matches only windows that are allowed to be closed.
+condition matches only windows that are allowed to be closed.
 
 The
 .I CurrentDesk
