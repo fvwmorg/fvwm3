@@ -1651,6 +1651,12 @@ void ParseOptions(void)
     {
       if (strncasecmp(tline,CatString3("*", MyName, "Geometry"),Clength+9)==0)
       {
+	num_columns = 6;
+	num_rows = 1;
+	geom_x = -10000;
+	geom_y = -10000;
+	xneg = 0;
+	yneg = 0;
 	tmp = &tline[Clength+9];
 	while(((isspace((unsigned char)*tmp))&&(*tmp != '\n'))&&(*tmp != 0))
 	  tmp++;

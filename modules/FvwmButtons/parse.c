@@ -1325,6 +1325,8 @@ static void ParseConfigLine(button_info **ubb,char *s)
 	break;
       UberButton->w = 0;
       UberButton->h = 0;
+      UberButton->x = 0;
+      UberButton->y = 0;
       if (flags&WidthValue)
 	button_width = width;
       if (flags&HeightValue)
@@ -1636,6 +1638,8 @@ void parse_window_geometry(char *geom)
   flags = FScreenParseGeometry(geom,&g_x,&g_y,&width,&height);
   UberButton->w = 0;
   UberButton->h = 0;
+  UberButton->x = 0;
+  UberButton->y = 0;
   if (flags&WidthValue)
     w = width;
   if (flags&HeightValue)

@@ -1587,6 +1587,10 @@ void ParseOptions(char *filename)
 
     if((strncasecmp(tline,CatString3("*", MyName, "Geometry"),Clength+9)==0))
     {
+      w= -1;
+      h= -1;
+      x= -100000;
+      y= -100000;
       tmp = &tline[Clength+9];
       while(((isspace(*tmp))&&(*tmp != '\n'))&&(*tmp != 0))
       {

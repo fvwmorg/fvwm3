@@ -433,6 +433,10 @@ static void ct_Geometry(char *cp)
   int flags;
   unsigned int dummy;
 
+  CF.gx = 0;
+  CF.gy = 0;
+  CF.xneg = 0;
+  CF.yneg = 0;
   while (isspace(*cp))
     cp++;
   flags = FScreenParseGeometry(cp, &x, &y, &dummy, &dummy);

@@ -610,6 +610,13 @@ void parseOptions(void)
     } else if (StrEquals(resource, "Geometry")) {
       int g_x,g_y,flags;
       unsigned width,height;
+      xg.w = 48;
+      xg.h = 48;
+      xg.x = 0;
+      xg.y = 0;
+      xg.xneg = 0;
+      xg.yneg = 0;
+      xg.usposition = 0;
       flags = FScreenParseGeometry(arg1,&g_x,&g_y,&width,&height);
       if (flags & WidthValue) {
 	xg.w = width;
@@ -634,6 +641,10 @@ void parseOptions(void)
     } else if (StrEquals(resource, "DragWellGeometry")) {
       int g_x,g_y,flags;
       unsigned width,height;
+      xg.dbw = 30;
+      xg.dbh = 30;
+      xg.dbx = 9;
+      xg.dby = 9;
       flags = FScreenParseGeometry(arg1,&g_x,&g_y,&width,&height);
       if (flags & WidthValue) {
 	xg.dbw = width;
