@@ -33,12 +33,12 @@ void DumpButtons(button_info *b)
   if(b!=UberButton)
     {
       int button=buttonNum(b);
-      fprintf(stderr,"0x%lx(%ix%i@(%i,%i),0x%04x): ",
+      fprintf(stderr,"0x%lx(%ix%i@(%i,%i),0x%04lx): ",
 	      (unsigned long)b,b->BWidth,b->BHeight,
 	      buttonXPos(b,button),buttonYPos(b,button),b->flags);
     }
   else
-    fprintf(stderr,"0x%lx(%ix%i@,0x%04x): ",(unsigned long)b,
+    fprintf(stderr,"0x%lx(%ix%i@,0x%04lx): ",(unsigned long)b,
 	    b->BWidth,b->BHeight,b->flags);
     
   if(b->flags&b_Font)
@@ -69,7 +69,7 @@ void DumpButtons(button_info *b)
   if(b->flags&b_Container)
     {
       int i=0;
-      fprintf(stderr,"  Container(%ix%i=%i buttons 0x%04x (alloc %i), size %ix%i, pos %i,%i)\n{ ",
+      fprintf(stderr,"  Container(%ix%i=%i buttons 0x%04lx (alloc %i), size %ix%i, pos %i,%i)\n{ ",
 	      b->c->num_columns,b->c->num_rows,b->c->num_buttons,b->c->flags,
 	      b->c->allocated_buttons,
 	      b->c->ButtonWidth,b->c->ButtonHeight,b->c->xpos,b->c->ypos);

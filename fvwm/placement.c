@@ -208,8 +208,6 @@ int get_next_x(FvwmWindow *t, int x, int y, int pdeltax, int pdeltay)
   int xnew;
   int xtest;
   FvwmWindow *testw;
-  int PageBottom    =  Scr.MyDisplayHeight - pdeltay;
-  int PageRight     =  Scr.MyDisplayWidth - pdeltax;
 
   /* Test window at far right of screen */
 /*  RBW - 11/02/1998  */
@@ -375,8 +373,7 @@ Bool PlaceWindow(FvwmWindow *tmp_win, unsigned long tflag,int Desk, int PageX, i
   int xl = -1,yt,DragWidth,DragHeight;
   int gravx, gravy;			/* gravity signs for positioning */
 /*  RBW - 11/02/1998  */
-  int px = 0, py = 0, pdeltax = 0, pdeltay = 0, pdesk = 0;
-  int a,b;
+  int px = 0, py = 0, pdeltax = 0, pdeltay = 0;
   int PageRight = Scr.MyDisplayWidth, PageBottom = Scr.MyDisplayHeight;
   int smartlyplaced       =  False;
   Bool HonorStartsOnPage  =  False;

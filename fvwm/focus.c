@@ -41,7 +41,7 @@ void SetFocus(Window w, FvwmWindow *Fw, Bool FocusByMouse)
   /* ClickToFocus focus queue manipulation - only performed for
    * Focus-by-mouse type focus events */
   /* Watch out: Fw may not be on the windowlist and the windowlist may be empty */
-  if (Fw && Fw != Scr.Focus && Fw != &Scr.FvwmRoot)
+  if (Fw && Fw != Scr.Focus && Fw != &Scr.FvwmRoot) {
     if (FocusByMouse) /* pluck window from list and deposit at top */
     {
       /* remove Fw from list */
@@ -81,8 +81,8 @@ void SetFocus(Window w, FvwmWindow *Fw, Bool FocusByMouse)
         Fw->prev->next = NULL;
         Fw->prev = &Scr.FvwmRoot;
       }
-
     }
+  }
   
   if(Scr.NumberOfScreens > 1)
     {

@@ -8,9 +8,6 @@
  * own risk. Permission to use this program for any purpose is given,
  * as long as the copyright is kept intact. */
 
-#define TRUE 1
-#define FALSE
-
 #include "config.h"
 
 #include <stdio.h>
@@ -95,6 +92,7 @@ int main(int argc, char **argv)
   SendInfo(fd,"Send_WindowList",0);
 
   Loop(fd);
+  return 0;
 }
 
 
@@ -107,8 +105,7 @@ int main(int argc, char **argv)
 void Loop(int *fd)
 {
   unsigned long header[HEADER_SIZE], *body;
-  char *cbody;
-  int body_length,count,count2=0,total;
+  int count;
 
   while(1)
     {

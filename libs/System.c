@@ -11,13 +11,6 @@
 #endif
 
 
-#ifdef min
-#undef min
-#endif
-
-#define min(a,b) ((a)<(b) ? (a) : (b))
-
-
 /*
 ** just in case...
 */

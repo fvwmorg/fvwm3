@@ -942,8 +942,8 @@ void ParseCommand (int dn, char *sp, char end, int *dn1, char **sp1)
 	      }
 	    } else {
 	      ParseCommand(dn, sp, ')', &dn2, &sp);
-	      if (x == '?' && strlen(item->input.value) > 0 ||
-		  x == '!' && strlen(item->input.value) == 0)
+	      if ((x == '?' && strlen(item->input.value) > 0) ||
+		  (x == '!' && strlen(item->input.value) == 0))
 		dn = dn2;
 	    }
 	    break;
@@ -953,8 +953,8 @@ void ParseCommand (int dn, char *sp, char end, int *dn1, char **sp1)
 		AddChar(*cp);
 	    } else {
 	      ParseCommand(dn, sp, ')', &dn2, &sp);
-	      if (x == '?' && item->choice.on ||
-		  x == '!' && !item->choice.on)
+	      if ((x == '?' && item->choice.on) ||
+		  (x == '!' && !item->choice.on))
 		dn = dn2;
 	    }
 	    break;
@@ -1499,7 +1499,7 @@ void MainLoop ()
 
 
 /* main procedure */
-main (int argc, char **argv)
+int main (int argc, char **argv)
 {
   FILE *fdopen();
   int i;
@@ -1564,7 +1564,10 @@ main (int argc, char **argv)
   OpenWindows();
 
   MainLoop();
+
+  return 0;
 }
+
 
 void DeadPipe(int nonsense)
 {

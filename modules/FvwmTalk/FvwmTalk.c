@@ -211,7 +211,9 @@ int main(int argc, char **argv)
   last_error[0] = 0;
   XMapWindow(dpy,window);
   Loop(fd);
+  return 0;
 }
+
 
 
 /***********************************************************************

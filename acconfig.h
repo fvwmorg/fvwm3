@@ -161,6 +161,14 @@
 #  define memmove(_d,_s,_l) bcopy((_s),(_d),(_l))
 #endif
 
+#if HAVE_SYS_TYPES_H
+#  include <sys/types.h>
+#endif
+
+#if HAVE_UNISTD_H
+#  include <unistd.h>
+#endif
+
 #ifndef min
 #  define min(a,b) (((a)<(b)) ? (a) : (b))
 #endif

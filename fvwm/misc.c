@@ -449,13 +449,14 @@ int GetMoveArguments(char *action, int x, int y, int w, int h,
   GetNextToken(action, &warp);
   *fWarp = StrEquals(warp, "Warp");
 
-  if (s1 != NULL && s2 != NULL)
+  if (s1 != NULL && s2 != NULL) {
     if (GetOnePositionArgument(s1,x,w,pFinalX,(float)scrWidth/100,scrWidth) &&
         GetOnePositionArgument(s2,y,h,pFinalY,(float)scrHeight/100,scrHeight))
       retval = 2;
     else
-      *fWarp = FALSE; /* make sure warping is off for interactive moves */
-
+	*fWarp = FALSE; /* make sure warping is off for interactive moves */
+  }
+  
   if (s1) free(s1);
   if (s2) free(s2);
   if (warp) free(warp);

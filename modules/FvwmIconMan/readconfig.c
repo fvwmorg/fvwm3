@@ -451,7 +451,7 @@ static int JmpArgs=0;
 static Function *parse_function (char **line, char *pstop_char)
 {
   Function *ftype = (Function *)safemalloc (sizeof (Function));
-  char *ptr, *name, *tok, tmp;
+  char *ptr, *name, *tok;
   int j, flag;
   FunctionType *builtin_functions_i;
 
@@ -585,7 +585,7 @@ static Function *parse_function (char **line, char *pstop_char)
 static Function *parse_function_list (char *line)
 {
   Function *ret = NULL, *tail = NULL, *f, *i;
-  char *token, *p;
+  char *token;
   int jump_count, j;
   char stop_char;
   char c;

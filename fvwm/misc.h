@@ -285,6 +285,9 @@ void ComplexFunction(F_CMD_ARGS);
 extern int DeferExecution(XEvent *, Window *,FvwmWindow **, unsigned long *, int, int);
 void SetBorder (FvwmWindow *, Bool,Bool,Bool, Window);
 void move_window(F_CMD_ARGS);
+void move_window_doit(XEvent *eventp,Window w,FvwmWindow *tmp_win,
+		      unsigned long context, char *action,int* Module,
+		      Bool fAnimated, Bool fMoveToPage);
 void animated_move_window(F_CMD_ARGS);
 void move_window_to_page(F_CMD_ARGS);
 void set_animation(F_CMD_ARGS);
@@ -385,6 +388,8 @@ int GetMoveArguments(char *action, int x, int y, int w, int h,
                      int *pfinalX, int *pfinalY, Bool *fWarp);
 char *GetMenuOptions(char *action, Window w, FvwmWindow *tmp_win,
 		     MenuItem *mi, MenuOptions *pops);
+int GetTwoArguments(char *action, int *val1, int *val2, int *val1_unit,
+		    int *val2_unit);
 int GetTwoPercentArguments(char *action, int *val1, int *val2, int *val1_unit,
 		    int *val2_unit);
 

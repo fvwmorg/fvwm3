@@ -200,7 +200,6 @@ int main(int argc, char **argv)
   int x,y,border_width,button;
   int depth;
   char *temp, *s;
-  char set_mask_mesg[50];
   temp = argv[0];
 
   s=strrchr(argv[0], '/');
@@ -427,7 +426,7 @@ Solid:
    * indent buttons correctly */
   SendText(fd,"Send_WindowList",0);
   Loop();
-
+  return 0;
 }
 
 /***********************************************************************
@@ -442,7 +441,7 @@ void Loop(void)
   Window *CurrentWin=None;
   int x,y,CurrentRow,CurrentColumn,CurrentBase=0;
   XEvent Event;
-  int NewButton,i=0,j=0,button,i2, bl=-1;
+  int NewButton,i=0,j=0,i2, bl=-1;
   int LastMapped=-1;
   time_t t, tl = (time_t) 0;
   int CancelPush=0;

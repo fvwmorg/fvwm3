@@ -35,7 +35,7 @@ int fd[2];
 pid_t spawn_xtee(void)
 {
   pid_t pid;
-  int PIPE[2],argno=3;
+  int PIPE[2];
   char *argarray[256];
 
   setvbuf(stdout,NULL,_IOLBF,0); /* line buffered */
@@ -122,7 +122,9 @@ int main(int argc, char **argv)
   SendInfo(fd,"Send_WindowList",0);
 
   Loop(fd);
+  return 0;
 }
+
 
 /***********************************************************************
  *

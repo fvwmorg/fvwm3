@@ -416,7 +416,7 @@ void ParseContainer(char **ss,button_info *b)
 void match_string(button_info **uberb,char *s)
 {
   button_info *b,*ub=*uberb;
-  int i,j,x,y;
+  int i,j;
   char *t,*o;
   b=alloc_button(ub,(ub->c->num_buttons)++);
   s = trimleft(s);
@@ -983,7 +983,6 @@ void ParseOptions(button_info *ub)
 {
   char *s;
   char *items[]={"iconpath","pixmappath","colorlimit",NULL,NULL};
-  int rc;
 
   items[3]=mymalloc(strlen(MyName)+2);
   sprintf(items[3],"*%s",MyName);

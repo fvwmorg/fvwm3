@@ -424,19 +424,6 @@ make_vpacket(unsigned long *body, unsigned long event_type,
   return body;
 }
 
-static unsigned long *
-make_packet(unsigned long *body, unsigned long event_type,
-            unsigned long num, ...)
-{
-  va_list ap;
-
-  va_start(ap, num);
-  make_vpacket(body, event_type, num, ap);
-  va_end(ap);
-
-  return body;
-}
-
 void
 SendPacket(int module, unsigned long event_type, unsigned long num_datum, ...)
 {

@@ -1571,7 +1571,7 @@ void RelieveHalfRectangle(Window win,int x,int y,int w,int h,
 static
 void PaintEntry(MenuItem *mi)
 {
-  int y_offset,text_y,d,dx, y_height,y,x;
+  int y_offset,text_y,d, y_height,y,x;
   GC ShadowGC, ReliefGC, currentGC;
   MenuRoot *mr = mi->mr;
   char th = mr->ms->look.ReliefThickness;
@@ -1641,12 +1641,16 @@ void PaintEntry(MenuItem *mi)
 #ifdef GRADIENT_BUTTONS
     if (!fGradient)
 #endif
+    {
+	
       if (th == 2 && mi->prev && mi->prev->state)
 	XClearArea(dpy, mr->w,mr->xoffset,y_offset+1,mr->width,y_height-1,0);
       else
 	XClearArea(dpy, mr->w, mr->xoffset, y_offset - th + 1, mr->width,
 		   y_height + 2*(th - 1), 0);
+    }
   }
+  
 
 
   /* Hilight 3D */
@@ -1762,7 +1766,7 @@ void PaintEntry(MenuItem *mi)
 		 -1 - mi->hotkey);
 
   d=(mr->ms->look.EntryHeight-7)/2;
-  if(mi->func_type == F_POPUP)
+  if(mi->func_type == F_POPUP) {
     if(mi->state)
       DrawTrianglePattern(mr->w, ShadowGC, ReliefGC, ShadowGC, ReliefGC,
 			  mr->width-13, y_offset+d-1, mr->width-7,
@@ -1772,7 +1776,8 @@ void PaintEntry(MenuItem *mi)
 			  mr->ms->look.MenuGC,
 			  mr->width-13, y_offset+d-1, mr->width-7,
 			  y_offset+d+7, mr->ms->look.f.TriangleRelief);
-
+  }
+  
  if(mi->picture)
     {
       x = (mr->width - mi->picture->width)/2;
@@ -2648,7 +2653,7 @@ void scanForColor(char *instring, Pixel *p, Bool *c, char identifier)
 
 void scanForPixmap(char *instring, Picture **p, char identifier)
 {
-  char *tstart, *txt, *save_instring, *name;
+  char *tstart, *txt, *name;
   int i;
   Picture *pp;
   extern char *IconPath;
@@ -2772,7 +2777,6 @@ void AddToMenu(MenuRoot *menu, char *item, char *action, Bool fPixmapsOk,
   char *token = NULL;
   char *token2 = NULL;
   char *option = NULL;
-  char *next_action;
 
   if ((item == NULL || *item == 0) && fNoPlus)
     return;

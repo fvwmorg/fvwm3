@@ -838,7 +838,6 @@ void exec_function(XEvent *eventp,Window w,FvwmWindow *tmp_win,
 		   unsigned long context,char *action, int *Module)
 {
   char *cmd=NULL;
-  char *tok;
 
   /* if it doesn't already have an 'exec' as the first word, add that
    * to keep down number of procs started */
@@ -1039,10 +1038,8 @@ static void menu_func(XEvent *eventp,Window w,FvwmWindow *tmp_win,
   MenuRoot *menu;
   MenuItem *miExecuteAction = NULL;
   MenuOptions mops;
-  char *dummy = NULL;
   char *menu_name = NULL;
   XEvent *teventp;
-  Bool fHasDefaultAction = False;
 
   mops.flags.allflags = 0;
   action = GetNextToken(action,&menu_name);
@@ -1192,7 +1189,7 @@ void SetEdgeScroll(XEvent *eventp,Window w,FvwmWindow *tmp_win,
 void SetEdgeResistance(XEvent *eventp,Window w,FvwmWindow *tmp_win,
                        unsigned long context, char *action,int* Module)
 {
-  int val[2], n;
+  int val[2];
 
   if (GetIntegerArguments(action, NULL, val, 2) != 2)
   {
@@ -1280,7 +1277,6 @@ void SetSnapGrid(XEvent *eventp,Window w,FvwmWindow *tmp_win,
 		 unsigned long context, char *action,int* Module)
 {
   int val[2];
-  int val1_unit,val2_unit,n;
 
   if(GetIntegerArguments(action, NULL, &val[0], 2) != 2)
   {
@@ -1345,7 +1341,7 @@ void SetOpaque(XEvent *eventp,Window w,FvwmWindow *tmp_win,
 void SetDeskSize(XEvent *eventp,Window w,FvwmWindow *tmp_win,
                  unsigned long context, char *action,int* Module)
 {
-  int val[2], n;
+  int val[2];
 
   if (GetIntegerArguments(action, NULL, val, 2) != 2 &&
       GetRectangleArguments(action, &val[0], &val[1]) != 2)
@@ -1790,14 +1786,12 @@ static void NewMenuStyle(XEvent *eventp,Window w,FvwmWindow *tmp_win,
   char *nextarg;
   char *args;
   char *arg1;
-  char *tmp;
   MenuStyle *ms;
   MenuStyle *tmpms;
   Bool is_initialised = True;
   Bool gc_changed = False;
   Bool is_default_style = False;
   int val[2];
-  int len;
   int n;
   XFontStruct *xfs = NULL;
   int i;
@@ -2188,7 +2182,6 @@ static void OldMenuStyle(XEvent *eventp,Window w,FvwmWindow *tmp_win,
 		  unsigned long context, char *action,int* Module)
 {
   char *buffer, *rest;
-  int i = 0;
   char *fore, *back, *stipple, *font, *style, *animated;
 
   rest = GetNextToken(action,&fore);
@@ -2233,8 +2226,6 @@ void SetMenuStyle(XEvent *eventp,Window w,FvwmWindow *tmp_win,
 		  unsigned long context, char *action,int* Module)
 {
   char *option;
-  char *rest;
-  int i;
 
   GetNextOption(SkipNTokens(action, 1), &option);
   if (option == NULL || GetMenuStyleIndex(option) != -1)
@@ -2636,7 +2627,6 @@ void LoadDefaultFont(XEvent *eventp,Window w,FvwmWindow *tmp_win,
 {
   char *font;
   XFontStruct *xfs = NULL;
-  FvwmWindow *tmp;
 
   action = GetNextToken(action,&font);
   if (!font)
@@ -3370,7 +3360,6 @@ static void FreeMenuFace(Display *dpy, MenuFace *mf)
  ****************************************************************************/
 static Boolean ReadMenuFace(char *s, MenuFace *mf, int verbose)
 {
-  int offset;
   char *style;
   char *token;
   char *action = s;
@@ -3892,50 +3881,58 @@ void ButtonStyle(XEvent *eventp,Window junk,FvwmWindow *tmp_win,
 		if (StrEquals(tok,"Clear")) {
 		    int i;
 		    if (multi) {
-			if (multi&1)
+			if (multi&1) {
 			    for (i=0;i<5;++i)
 				if (set)
 				    fl->left_buttons[i].flags = 0;
 				else
 				    fl->left_buttons[i].flags = ~0;
-			if (multi&2)
-			    for (i=0;i<5;++i)
+			}
+			if (multi&2) {
+			    for (i=0;i<5;++i) {
 				if (set)
 				    fl->right_buttons[i].flags = 0;
 				else
 				    fl->right_buttons[i].flags = ~0;
-		    } else
+			    }
+			}
+		    } else {
 			if (set)
 			    tb->flags = 0;
 			else
 			    tb->flags = ~0;
+		    }
 		}
-                else if (strncasecmp(tok,"MWMDecorMenu",12)==0)
-                  SetButtonFlag(MWMDecorMenu);
-                else if (strncasecmp(tok,"MWMDecorMin",11)==0)
-                  SetButtonFlag(MWMDecorMinimize);
-                else if (strncasecmp(tok,"MWMDecorMax",11)==0)
-                  SetButtonFlag(MWMDecorMaximize);
-		else
-		  fvwm_msg(ERR,"ButtonStyle",
-			   "unknown title button flag %s -- line: %s", tok,
-			   text);
-		if (set) free(tok);
-		else free(tok - 1);
-		text = GetNextToken(text, &tok);
+                else if (strncasecmp(tok,"MWMDecorMenu",12)==0) {
+		    SetButtonFlag(MWMDecorMenu);
+		} else if (strncasecmp(tok,"MWMDecorMin",11)==0) {
+		    SetButtonFlag(MWMDecorMinimize);
+                } else if (strncasecmp(tok,"MWMDecorMax",11)==0) {
+		    SetButtonFlag(MWMDecorMaximize);
+		} else {
+		    fvwm_msg(ERR, "ButtonStyle",
+			     "unknown title button flag %s -- line: %s", 
+			     tok, text);
+		    if (set) 
+			free(tok);
+		    else 
+			free(tok - 1);
+		    text = GetNextToken(text, &tok);
+		}
 	    }
 	    free(parm);
 	    break;
-	}
-	else {
+	} else {
 	    if (multi) {
 		int i;
 		if (multi&1)
 		    for (i=0;i<5;++i)
-			text = ReadTitleButton(prev, &fl->left_buttons[i], False, i*2+1);
+			text = ReadTitleButton(prev, &fl->left_buttons[i], 
+					       False, i*2+1);
 		if (multi&2)
 		    for (i=0;i<5;++i)
-			text = ReadTitleButton(prev, &fl->right_buttons[i], False, i*2);
+			text = ReadTitleButton(prev, &fl->right_buttons[i], 
+					       False, i*2);
 	    }
 	    else if (!(text = ReadTitleButton(prev, tb, False, button))) {
 		free(parm);

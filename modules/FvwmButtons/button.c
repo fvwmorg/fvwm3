@@ -498,8 +498,7 @@ void ShrinkButton(button_info *b, container_info *c)
 **/
 void ShuffleButtons(button_info *ub)
 {
-  int i,j,k,tb,sb;
-  int actual_buttons_used;
+  int i,actual_buttons_used;
   int next_button_x, next_button_y, num_items;
   button_info *b;
   button_info **local_buttons;

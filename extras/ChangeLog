@@ -1,3 +1,24 @@
+Sun Jan 10 23:13:45 1999  Steve Robbins  <steve@nyongwa.montreal.qc.ca>
+
+	* FvwmGoodStuff/FvwmGoodStuff.c (main): Inserted parentheses
+	around && within ||. 
+
+Sun Jan 10 23:06:00 1999  Steve Robbins  <steve@nyongwa.montreal.qc.ca>
+
+	* FvwmWharf/FvwmWharf.c: 
+	* FvwmTaskBar/FvwmTaskBar.c: 
+	* FvwmDebug/FvwmDebug.c: Removed unused variables.
+
+Sun Jan 10 21:11:09 1999  Steve Robbins  <steve@nyongwa.montreal.qc.ca>
+
+	* FvwmWharf/FvwmWharf.c (main): 
+	* FvwmTaskBar/FvwmTaskBar.c (main): 
+	* FvwmScript/FvwmScript.c (main): 
+	* FvwmPipe/FvwmPipe.c (main): 
+	* FvwmGoodStuff/FvwmGoodStuff.c (main): 
+	* FvwmDebug/FvwmDebug.c (main): Fixed "control reaches end of
+	non-void function" bug.
+
 Sun Jan 10 15:14:22 1999  Steve Robbins  <steve@nyongwa.montreal.qc.ca>
 
 	* FvwmTaskBar/Colors.c: 

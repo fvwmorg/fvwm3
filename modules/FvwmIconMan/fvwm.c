@@ -1,14 +1,11 @@
+#include "config.h"
+
 #include "FvwmIconMan.h"
 #include "x.h"
 #include "xmanager.h"
 
-#ifdef COMPILE_STANDALONE
-#include "fvwm.h"
-#include "module.h"
-#else
-#include "../../fvwm/fvwm.h"
-#include "../../fvwm/module.h"
-#endif
+#include "../fvwm/fvwm.h"
+#include "../fvwm/module.h"
 
 static char const rcsid[] =
   "$Id$";
@@ -123,7 +120,8 @@ static void set_draw_mode (WinManager *man, int flag)
   else if (man->we_are_drawing && !flag) {
     the_manager = man;
     num = accumulate_walk_hashtab (count_nonsticky_in_hashtab);
-    ConsoleDebug (FVWM, "SetDrawMode on 0x%x, num = %d\n", man, num);
+    ConsoleDebug (FVWM, "SetDrawMode on 0x%lx, num = %d\n", 
+		  (unsigned long)man, num);
 
     if (num == 0)
       return;
@@ -144,8 +142,8 @@ static void got_configure (WinManager *man)
 {
   if (man && !man->we_are_drawing) {
     man->configures_expected--;
-    ConsoleDebug (FVWM, "got_configure on 0x%x, num_expected now = %d\n",
-		  man, man->configures_expected);
+    ConsoleDebug (FVWM, "got_configure on 0x%lx, num_expected now = %d\n",
+		  (unsigned long) man, man->configures_expected);
     if (man->configures_expected <= 0)
       set_draw_mode (man, 1);
   }
@@ -210,7 +208,7 @@ static void configure_window (FvwmPacketBody *body)
 {
   Ulong app_id = body->add_config_data.app_id;
   WinData *win;
-  ConsoleDebug (FVWM, "configure_window: %d\n", app_id);
+  ConsoleDebug (FVWM, "configure_window: %ld\n", app_id);
 
   win = id_to_win (app_id);
 
@@ -227,7 +225,7 @@ static void focus_change (FvwmPacketBody *body)
   WinData *win = id_to_win (app_id);
 
   ConsoleDebug (FVWM, "Focus Change\n");
-  ConsoleDebug (FVWM, "\tID: %d\n", app_id);
+  ConsoleDebug (FVWM, "\tID: %ld\n", app_id);
 
   if (globals.focus_win) {
     del_win_state (globals.focus_win, FOCUS_CONTEXT);
@@ -385,9 +383,10 @@ static void mini_icon (FvwmPacketBody *body)
 		   body->mini_icon_data.width, body->mini_icon_data.height);
 
 
-  ConsoleDebug (FVWM, "mini_icon: 0x%x 0x%x %dx%dx%d\n", win->pic.picture,
-		win->pic.mask, win->pic.width, win->pic.height,
-		win->pic.depth);
+  ConsoleDebug (FVWM, "mini_icon: 0x%lx 0x%lx %dx%dx%d\n", 
+		(unsigned long) win->pic.picture,
+		(unsigned long) win->pic.mask, 
+		win->pic.width, win->pic.height, win->pic.depth);
 }
 #endif
 
@@ -434,7 +433,7 @@ static void ProcessMessage (Ulong type, FvwmPacketBody *body)
 {
   int i;
 
-  ConsoleDebug (FVWM, "FVWM Message type: %d\n", type);
+  ConsoleDebug (FVWM, "FVWM Message type: %ld\n", type);
 
   switch(type) {
   case M_CONFIGURE_WINDOW:

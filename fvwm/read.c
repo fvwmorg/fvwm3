@@ -54,7 +54,6 @@ static void ReadSubFunc(XEvent *eventp,Window junk,FvwmWindow *tmp_win,
   char *rest,*tline,line[1024];
   FILE *fd;
   int thisfileno;
-  extern XEvent Event;
   char missing_quiet;                   /* missing file msg control */
   char *cmdname;
 

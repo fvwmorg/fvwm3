@@ -448,16 +448,15 @@ void SetBorder (FvwmWindow *t, Bool onoroff,Bool force,Bool Mapped,
 			    ((i/2)?t->corner_width+t->bw:t->corner_width),
 			    rgc,sgc, corners[i], corners[i]);
 
-	    if (!(flags&NoInset))
+	    if (!(flags&NoInset)) {
 		if (t->boundary_width > 1)
 		    RelieveParts(t,i|HH_HILITE,
 				 ((i/2)?rgc:sgc),(vertical?rgc:sgc));
 		else
 		    RelieveParts(t,i|HH_HILITE,
 				 ((i/2)?sgc:sgc),(vertical?sgc:sgc));
-         }
-         else
-         {
+	    }
+         } else {
 #endif /* ! BORDERSTYLE */
 	     RelieveWindow(t,t->corners[i],0,0,t->corner_width,
 			   ((i/2)?t->corner_width+t->bw:t->corner_width),

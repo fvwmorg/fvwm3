@@ -96,6 +96,7 @@ int GetTwoPercentArguments(char *action, int *val1, int *val2, int *val1_unit,
  ***********************************************************************/
 
 int GetFdWidth(void);
+int getostype(char *buf, int max);
 char *safemalloc(int);
 
 /***********************************************************************

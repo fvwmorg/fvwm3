@@ -147,13 +147,15 @@ int main(int argc, char **argv)
     GetTargetWindow(&app_win);
 
   if(app_win == 0)
-    return;
+    return 0;
 
   fd_width = GetFdWidth();
 
   GrabWindow(app_win);
   Loop(app_win);
+  return 0;
 }
+
 
 
 /***********************************************************************

@@ -182,6 +182,7 @@ int main(int argc, char **argv)
       sprintf(delete_string,"exec rm %s\n",tmp_file);
       SendInfo(fd,delete_string,0);
     }
+  return 0;
 }
 
 

@@ -86,7 +86,6 @@ char mymin_aspect[11], max_aspect[11];
 int main(int argc, char **argv)
 {
   char *temp, *s;
-  FILE *file;
   char *display_name = NULL;
   int Clength;
   char *tline;
@@ -185,11 +184,10 @@ int main(int argc, char **argv)
 void Loop(int *fd)
 {
   unsigned long header[4], *body;
-  int count;
 
   while(1)
     {
-      if(count = ReadFvwmPacket(fd[1],header,&body) > 0)
+      if(ReadFvwmPacket(fd[1],header,&body) > 0)
 	{
 	  process_message(header[1],body);
 	  free(body);
@@ -768,10 +766,10 @@ void MakeList(void)
       long supplied_return;             /* flags, hints that were supplied */
       int getrc;
       XSizeHints *size_hints = XAllocSizeHints(); /* the size hints */
-      if (getrc = XGetWMSizeHints(dpy,target.id, /* get size hints */
+      if ((getrc = XGetWMSizeHints(dpy,target.id, /* get size hints */
                           size_hints,    /* Hints */
                           &supplied_return,
-                          XA_WM_ZOOM_HINTS)) {
+                          XA_WM_ZOOM_HINTS))) {
         if (supplied_return & PAspect) { /* if window has a aspect ratio */
           sprintf(mymin_aspect, "%d/%d", size_hints->min_aspect.x,
                   size_hints->min_aspect.y);

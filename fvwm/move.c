@@ -412,9 +412,6 @@ void moveLoop(FvwmWindow *tmp_win, int XOffset, int YOffset, int Width,
 	      int Height, int *FinalX, int *FinalY,Bool opaque_move,
 	      Bool AddWindow)
 {
-  Window root, parent, *children;
-  unsigned int nchildren;
-  int i,j;
   Bool finished = False;
   Bool done;
   int xl,yt,delta_x,delta_y,paged;

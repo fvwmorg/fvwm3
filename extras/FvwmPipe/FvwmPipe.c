@@ -187,6 +187,5 @@ int main(int argc, char **argv)
 
   fd_width = GetFdWidth();
   Loop(fd);
+  return 0;
 }
-
-

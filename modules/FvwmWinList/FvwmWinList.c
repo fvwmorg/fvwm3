@@ -193,7 +193,9 @@ int main(int argc, char **argv)
 
   /* Recieve all messages from Fvwm */
   EndLessLoop();
+  return 0;
 }
+
 
 /******************************************************************************
   EndLessLoop -  Read and redraw until we get killed, blocking when can't read
@@ -1015,12 +1017,13 @@ PropMwmHints prop;
   X Error Handler
 ************************************************************************/
 XErrorHandler ErrorHandler(Display *d, XErrorEvent *event)
-  {
-  char errmsg[256];
-
-  XGetErrorText(d, event->error_code, errmsg, 256);
-  ConsoleMessage("%s failed request: %s\n", Module, errmsg);
-  ConsoleMessage("Major opcode: 0x%x, resource id: 0x%x\n",
-                  event->request_code, event->resourceid);
-  }
+{
+    char errmsg[256];
+    
+    XGetErrorText(d, event->error_code, errmsg, 256);
+    ConsoleMessage("%s failed request: %s\n", Module, errmsg);
+    ConsoleMessage("Major opcode: 0x%x, resource id: 0x%x\n",
+		   event->request_code, event->resourceid);
+    return 0;
+}
 

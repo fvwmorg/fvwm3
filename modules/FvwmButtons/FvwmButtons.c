@@ -219,7 +219,7 @@ static void DeadPipeCleanup(void)
 	  fprintf(stderr,"%s: Button 0x%06x window 0x%x (\"%s\") is ",
 		  MyName,(ushort)b,(ushort)b->IconWin,b->hangon);
 #         endif
-	  if(!IsThereADestroyEvent(b)) /* Has someone destroyed it? */
+	  if(!IsThereADestroyEvent(b)) { /* Has someone destroyed it? */
 	    if(!(buttonSwallow(b)&b_NoClose))
 	      {
 		if(buttonSwallow(b)&b_Kill)
@@ -248,6 +248,7 @@ static void DeadPipeCleanup(void)
 		XResizeWindow(Dpy,b->IconWin,b->w,b->h);
 		XSetWindowBorderWidth(Dpy,b->IconWin,b->bw);
 	      }
+	  }
 #         ifdef DEBUG_HANGON
 	  else
 	    fprintf(stderr,"already handled\n");
@@ -1642,7 +1643,7 @@ void process_message(unsigned long type,unsigned long *body)
       break;
     }
 
-  } while (PanelIndex = PanelIndex->next);
+  } while ((PanelIndex = PanelIndex->next));
 }
 
 

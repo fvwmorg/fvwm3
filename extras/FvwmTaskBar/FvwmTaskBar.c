@@ -229,7 +229,9 @@ int main(int argc, char **argv)
 
   /* Receive all messages from Fvwm */
   EndLessLoop();
+  return 0;
 }
+
 
 /******************************************************************************
   EndLessLoop -  Read and redraw until we get killed, blocking when can't read
@@ -578,7 +580,6 @@ void ParseConfig() {
 } /* end function */
 
 static void ParseConfigLine(unsigned char *tline) {
-  char line[256];
   char *str;
   int i, j;
 

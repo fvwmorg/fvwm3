@@ -234,7 +234,10 @@ int main(int argc, char **argv)
   SendFvwmPipe(fd,"Send_WindowList",0);
 
   Loop();
+  return 0;
 }
+
+
 
 /************************************************************************
   Loop
@@ -1772,7 +1775,6 @@ int My_XNextEvent(Display *dpy, XEvent *event)
 {
   fd_set in_fdset;
   unsigned long header[HEADER_SIZE];
-  int count;
   static int miss_counter = 0;
   unsigned long *body;
 
@@ -1804,7 +1806,7 @@ int My_XNextEvent(Display *dpy, XEvent *event)
 
   if(FD_ISSET(fd[1], &in_fdset))
     {
-      if(count = ReadFvwmPacket(fd[1],header,&body) > 0)
+      if(ReadFvwmPacket(fd[1],header,&body) > 0)
 	{
 	  process_message(header[1],body);
 	  free(body);
@@ -2647,11 +2649,14 @@ XErrorHandler myErrorHandler(Display *dpy, XErrorEvent *event)
   char msg[256];
 
   if (event->error_code == BadWindow)
-    return;
+    return 0;
 
   XGetErrorText(dpy, event->error_code, msg, 256);
 
   fprintf(stderr, "Error in %s:  %s \n", MyName, msg);
-  fprintf(stderr, "Major opcode of failed request:  %d \n", event->request_code);
-  fprintf(stderr, "Resource id of failed request:  0x%x \n", event->resourceid);
+  fprintf(stderr, "Major opcode of failed request:  %d \n", 
+	  event->request_code);
+  fprintf(stderr, "Resource id of failed request:  0x%lx \n", 
+	  event->resourceid);
+  return 0;
 }

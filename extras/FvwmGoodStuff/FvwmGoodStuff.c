@@ -200,7 +200,8 @@ int main(int argc, char **argv)
       LoadIconFile(i);
       if(Buttons[i].icon_w/Buttons[i].BWidth > max_internal_width)
 	max_internal_width = Buttons[i].icon_w/Buttons[i].BWidth;
-      if(Buttons[i].title && strcmp(Buttons[i].title,"-")==0||font==NULL)
+      if( (Buttons[i].title && strcmp(Buttons[i].title,"-")==0) ||
+	  font==NULL )
 	{
           if(Buttons[i].icon_h/Buttons[i].BHeight > max_internal_height)
 	    max_internal_height = Buttons[i].icon_h/Buttons[i].BHeight;
@@ -239,7 +240,7 @@ int main(int argc, char **argv)
   SendText(fd,"Send_WindowList",0);
 
   Loop();
-
+  return 0;
 }
 
 /***********************************************************************

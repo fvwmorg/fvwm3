@@ -5,6 +5,8 @@
 ** file lines) in the same way (Xrm database).
 */
 
+#include "config.h"
+
 #include <X11/Xlib.h>
 #include <X11/Xresource.h>
 #include <string.h>
@@ -82,7 +84,7 @@
 
 
 /* Default option table */
-static const XrmOptionDescRec default_opts[] =
+static XrmOptionDescRec default_opts[] =
 {
   { "-fg",       "*Foreground", XrmoptionSepArg, NULL },
   { "-bg",       "*Background", XrmoptionSepArg, NULL },

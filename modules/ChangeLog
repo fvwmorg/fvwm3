@@ -1,11 +1,55 @@
+Sun Jan 10 23:40:01 1999  Steve Robbins  <steve@nyongwa.montreal.qc.ca>
+
+	* FvwmIconMan/fvwm.c: 
+	* FvwmButtons/output.c: 
+	* FvwmIconBox/FvwmIconBox.c (myErrorHandler): Fixed format/arg
+	mismatch in [v][f]printf().
+
+Sun Jan 10 23:12:48 1999  Steve Robbins  <steve@nyongwa.montreal.qc.ca>
+
+	* FvwmForm/FvwmForm.c (AddChar): Inserted parentheses around &&
+	within ||.
+
+Sun Jan 10 23:04:05 1999  Steve Robbins  <steve@nyongwa.montreal.qc.ca>
+
+	* FvwmWinList/ButtonArray.c: 
+	* FvwmSave/FvwmSave.c: 
+	* FvwmIconMan/readconfig.c: 
+	* FvwmIconMan/debug.c: 
+	* FvwmButtons/parse.c: 
+	* FvwmButtons/button.c (ShuffleButtons): Removed unused
+	variables. 
+
+Sun Jan 10 22:26:43 1999  Steve Robbins  <steve@nyongwa.montreal.qc.ca>
+
+	* FvwmIconBox/FvwmIconBox.c (My_XNextEvent): 
+	* FvwmIdent/FvwmIdent.c: 
+	* FvwmButtons/FvwmButtons.c (process_message): Inserted
+	parentheses around assignment used as truth value.
+
+Sun Jan 10 21:06:38 1999  Steve Robbins  <steve@nyongwa.montreal.qc.ca>
+
+	* FvwmWinList/FvwmWinList.c (main): 
+	* FvwmWinList/FvwmWinList.c (ErrorHandler): 
+	* FvwmTalk/FvwmTalk.c (main): 
+	* FvwmScroll/FvwmScroll.c (main): 
+	* FvwmSaveDesk/FvwmSaveDesk.c (main): 
+	* FvwmSave/FvwmSave.c (main):
+	* FvwmM4/FvwmM4.c (main): 
+	* FvwmIconBox/FvwmIconBox.c (myErrorHandler): 
+	* FvwmIconBox/FvwmIconBox.c (main): 
+	* FvwmForm/FvwmForm.c (main): 
+	* FvwmCpp/FvwmCpp.c (main): Fixed "control reaches end of non-void
+	function" bug.
+
 Sun Jan 10 18:17:06 1999  Steve Robbins  <steve@nyongwa.montreal.qc.ca>
 
 	* FvwmIconMan/winlist.c (check_win_complete): 
 	* FvwmIconMan/FvwmIconMan.c (copy_string): 
 	* FvwmButtons/FvwmButtons.c:
 	* FvwmButtons/icons.c: 
-	* FvwmButtons/output.c: Cast pointers to unsigned long, rather
-	than ints or shorts (!) to suppress warnings on 64 bit machines.
+	* FvwmButtons/output.c: Cast pointers to unsigned long --- rather
+	than ints or shorts (!) --- to suppress warnings on 64 bit machines.
 	These were all in debugging fprintf() calls, so it shouldn't upset
 	anyone. 
 

@@ -752,5 +752,5 @@ int main (int argc, char **argv)
  ReadFvwmScriptArg(argc,argv,IsFather);
 
  MainLoop();
-
+ return 0;
 }

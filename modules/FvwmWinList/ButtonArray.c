@@ -46,8 +46,7 @@ extern int ShowCurrentDesk;
    ------------------------------------------------------------------------- */
 Button *ButtonNew(char *title, Picture *p, int up)
 {
-  int updateneeded = 0;
-  Button *new, *temp;
+  Button *new;
 
   new = (Button *)safemalloc(sizeof(Button));
   new->title = safemalloc(strlen(title)+1);
@@ -232,7 +231,7 @@ void RemoveButton(ButtonArray *array, int butnum)
   FreeButton(temp2);
 
   if (temp!=array->head) temp=temp->next;
-  for(temp;temp!=NULL;temp=temp->next) temp->needsupdate=1;
+  for(;temp!=NULL;temp=temp->next) temp->needsupdate=1;
 }
 
 /******************************************************************************

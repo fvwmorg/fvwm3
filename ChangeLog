@@ -1,3 +1,41 @@
+Sun Jan 10 22:23:14 1999  Steve Robbins  <steve@nyongwa.montreal.qc.ca>
+
+	* libs/XResource.c: Now includes config.h to get function
+	prototypes, and removed const from XrmOptionDescRec.  Both changes
+	are to placate the compiler.
+
+Sun Jan 10 22:13:10 1999  Steve Robbins  <steve@nyongwa.montreal.qc.ca>
+
+	* fvwm/module.c (make_packet): Removed dead code.
+
+Sun Jan 10 22:11:36 1999  Steve Robbins  <steve@nyongwa.montreal.qc.ca>
+
+	* fvwm/misc.c (GetMoveArguments): 
+	* fvwm/menus.c: 
+	* fvwm/icons.c (Iconify): 
+	* fvwm/focus.c (SetFocus): 
+	* fvwm/builtins.c (ButtonStyle): 
+	* fvwm/borders.c (SetBorder): Inserted explicit braces to avoid
+	ambiguous `else'.
+
+Sun Jan 10 21:39:08 1999  Steve Robbins  <steve@nyongwa.montreal.qc.ca>
+
+	* libs/Parse.c (NukeToken): Removed assignment used as truth
+	value.
+
+Sun Jan 10 21:31:32 1999  Steve Robbins  <steve@nyongwa.montreal.qc.ca>
+
+	* acconfig.h: Include sys/types.h and unistd.h; most code will
+	benefit from the function prototypes contained therein.
+
+Sun Jan 10 21:22:22 1999  Steve Robbins  <steve@nyongwa.montreal.qc.ca>
+
+	* fvwm/read.c: 
+	* fvwm/placement.c: 
+	* fvwm/move.c: 
+	* fvwm/menus.c: 
+	* fvwm/builtins.c: Removed unused variables.
+
 Sun Jan 10 18:11:09 1999  Steve Robbins  <steve@nyongwa.montreal.qc.ca>
 
 	* fvwm/module.c (HandleModuleInput): Removed unnecessary cast of

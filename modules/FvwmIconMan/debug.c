@@ -14,7 +14,6 @@ void
 ConsoleMessage(const char *fmt, ...)
 {
   va_list args;
-  FILE *filep;
 
   assert(console != NULL);
 

@@ -941,12 +941,13 @@ void Iconify(FvwmWindow *tmp_win, int def_x, int def_y)
 	    }
 	} /* if */
     } /* for */
-  if (tmp_win->icon_w == None)
+  if (tmp_win->icon_w == None) {
     if(tmp_win->flags & ICON_MOVED)
       CreateIconWindow(tmp_win,tmp_win->icon_x_loc,tmp_win->icon_y_loc);
     else
-      CreateIconWindow(tmp_win, def_x, def_y);
-
+	CreateIconWindow(tmp_win, def_x, def_y);
+  }
+  
   /* if no pixmap we want icon width to change to text width every iconify */
   if( (tmp_win->icon_w != None) && (tmp_win->icon_pixmap_w == None) ) {
     tmp_win->icon_t_width =
