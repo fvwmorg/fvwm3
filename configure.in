@@ -60,7 +60,11 @@ AC_MSG_RESULT($val)
 
 dnl GNOME WM Hints
 AM_CONDITIONAL(GNOME, test "x$enable_gnome" = "xyes")
-with_gnome=$enable_gnome
+if test "x$enable_gnome" = xyes; then
+  with_gnome=yes
+else
+  with_gnome=no
+fi
 
 dnl Minimal checks for programs: enough to enable checking for
 dnl optional libraries.

@@ -1,4 +1,8 @@
-2000-05-17  olicha <olivier.chapuis@free.fr>
+2000-05-18  Mikhael Goikhman  <migo@homemail.com>
+
+	* configure.in: display "no" for gnome if not supported
+
+2000-05-17  olicha  <olivier.chapuis@free.fr>
 
 	* samples/system.fvwm2rc-sample-95
 	Some Clean up
