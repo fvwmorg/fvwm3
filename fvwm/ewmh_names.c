@@ -66,7 +66,7 @@ void EWMH_SetVisibleName(FvwmWindow *fwin, Bool is_icon_name)
 					    EWMH_ATOM_LIST_FVWM_WIN);
 			return;
 		}
-		if (fwin->icon_font != NULL)
+		if (IS_ICON_FONT_LOADED(fwin) && fwin->icon_font != NULL)
 		{
 			fc = fwin->icon_font->str_fc;
 		}
@@ -82,7 +82,7 @@ void EWMH_SetVisibleName(FvwmWindow *fwin, Bool is_icon_name)
 					    EWMH_ATOM_LIST_FVWM_WIN);
 			return;
 		}
-		if (fwin->title_font != NULL)
+		if (IS_WINDOW_FONT_LOADED(fwin) && fwin->title_font != NULL)
 		{
 			fc = fwin->title_font->str_fc;
 		}
@@ -135,7 +135,7 @@ int EWMH_WMIconName(EWMH_CMD_ARGS)
 		SET_HAS_EWMH_WM_ICON_NAME(fwin,0);
 		return 0;
 	}
-	if (fwin->icon_font != NULL)
+	if (IS_ICON_FONT_LOADED(fwin) && fwin->icon_font != NULL)
 	{
 		fc = fwin->icon_font->str_fc;
 	}
@@ -202,7 +202,7 @@ int EWMH_WMName(EWMH_CMD_ARGS)
 		SET_HAS_EWMH_WM_NAME(fwin,0);
 		return 0;
 	}
-	if (fwin->title_font != NULL)
+	if (IS_WINDOW_FONT_LOADED(fwin) && fwin->title_font != NULL)
 	{
 		fc = fwin->title_font->str_fc;
 	}
@@ -279,44 +279,55 @@ void EWMH_SetDesktopNames(void)
 	unsigned char *val;
 
 	if (!FiconvSupport)
+	{
 		return;
+	}
 
 	d = Scr.Desktops->next;
 	/* skip negative desk */
 	while (d != NULL && d->desk < 0)
+	{
 		d = d->next;
+	}
 	s = d;
 	while (d != NULL && d->name != NULL && d->desk == nbr)
 	{
 		nbr++;
-		len += strlen(d->name) + 1;
 		d = d->next;
 	}
 	if (nbr == 0)
+	{
 		return;
-
-	val = (unsigned char *)safemalloc(len);
+	}
 	names = (void *)safemalloc(sizeof(*names)*nbr);
 	for (i = 0; i < nbr; i++)
 	{
-		names[i] =
-			(unsigned char *)FiconvCharsetToUtf8(dpy, NULL,
-							     s->name,
-							     strlen(s->name));
+		names[i] = (unsigned char *)FiconvCharsetToUtf8(
+			dpy, NULL, s->name, strlen(s->name));
+		if (names[i])
+		{
+			len += strlen(names[i]) + 1;
+		}
+		else
+		{
+			len++;
+		}
 		s = s->next;
 	}
+	val = (unsigned char *)safemalloc(len);
 	for (i = 0; i < nbr; i++)
 	{
 		if (names[i] != NULL)
 		{
-			memcpy(&val[j], names[i], strlen(names[i])+1);
-			j += strlen(names[i]) + 1;
+			memcpy(&val[j], names[i], strlen(names[i]));
+			j += strlen(names[i]);
 			free(names[i]);
 		}
+		val[j++] = '\0';
 	}
+	ewmh_ChangeProperty(
+		Scr.Root, "_NET_DESKTOP_NAMES", EWMH_ATOM_LIST_CLIENT_ROOT,
+		(unsigned char *)val, len);
 	free(names);
-	ewmh_ChangeProperty(Scr.Root, "_NET_DESKTOP_NAMES",
-			    EWMH_ATOM_LIST_CLIENT_ROOT,
-			    (unsigned char *)val, len);
 	free(val);
 }

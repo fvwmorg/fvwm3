@@ -1,3 +1,21 @@
+2003-04-22  olicha  <olivier.chapuis@free.fr>
+
+	* fvwm/colorset.c (get_root_pixmap):
+	Fixed a minor memory leak
+
+	* fvwm/functions.c (execute_complex_function):
+	Fixed uninitialized d.type
+
+	* libs/Ficonv.c (FiconvSetupConversion):
+	(FiconvUtf8ToCharset):
+	(FiconvCharsetToUtf8):
+	Formating clean-up
+
+	* fvwm/ewmh_names.c (EWMH_SetVisibleName): 
+	(EWMH_WMIconName):
+	(EWMH_WMName):
+	Fixed a core dump and safety check related to not loaded font
+
 2003-04-19  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* libs/Module.h:

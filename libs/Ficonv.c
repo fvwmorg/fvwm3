@@ -312,22 +312,30 @@ void FiconvInit(Display *dpy, const char *module)
 static
 FlocaleCharset *FiconvSetupConversion(Display *dpy, FlocaleCharset *fc)
 {
-	FlocaleCharset *my_fc;
+	FlocaleCharset *my_fc = NULL;
 
 	if (!FiconvSupport)
+	{
 		return NULL;
+	}
 
 	if (!FiconvInitialized)
+	{
 		FiconvInit(dpy, "FVWM");
+	}
 
 	if (FLCIconvUtf8Charset == NULL)
+	{
 		return NULL;
+	}
 
 	if (fc == NULL)
 	{
 		my_fc = FLCIconvDefaultCharset;
 		if (my_fc == NULL)
+		{
 			return NULL;
+		}
 	}
 	else
 	{
@@ -366,9 +374,15 @@ char *FiconvUtf8ToCharset(Display *dpy, FlocaleCharset *fc,
 			  const char *in, unsigned int in_size)
 {
 	char *out = NULL;
-	FlocaleCharset *my_fc;
+	FlocaleCharset *my_fc = NULL;
 
-	if (!FiconvSupport || (my_fc = FiconvSetupConversion(dpy, fc)) == NULL)
+	if (!FiconvSupport)
+	{
+		return NULL;
+	}
+
+	my_fc = FiconvSetupConversion(dpy, fc);
+	if (my_fc == NULL)
 	{
 		return NULL;
 	}
@@ -402,9 +416,15 @@ char *FiconvCharsetToUtf8(Display *dpy, FlocaleCharset *fc,
 			  const char *in, unsigned int in_size)
 {
 	char *out = NULL;
-	FlocaleCharset *my_fc;
+	FlocaleCharset *my_fc = NULL;
 
-	if (!FiconvSupport || (my_fc = FiconvSetupConversion(dpy, fc)) == NULL)
+	if (!FiconvSupport)
+	{
+		return NULL;
+	}
+
+	my_fc = FiconvSetupConversion(dpy, fc);
+	if (my_fc == NULL)
 	{
 		return NULL;
 	}
@@ -417,7 +437,7 @@ char *FiconvCharsetToUtf8(Display *dpy, FlocaleCharset *fc,
 
 	if (FLC_ENCODING_TYPE_IS_UTF_8(my_fc))
 	{
-		/* in can be a none terminate string so do not use CopyString */
+		/* in can be a non terminate string so do not use CopyString */
 		out = safemalloc(in_size+1);
 		strncpy(out, in, in_size);
 		out[in_size]=0;

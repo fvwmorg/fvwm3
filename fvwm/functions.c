@@ -843,6 +843,7 @@ static void execute_complex_function(
 	XEvent *te;
 
 	mask = 0;
+	d.type = 0;
 	ecc.w.fw = exc->w.fw;
 	ecc.w.w = exc->w.w;
 	ecc.w.wcontext = exc->w.wcontext;

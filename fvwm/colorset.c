@@ -171,17 +171,22 @@ Pixmap get_root_pixmap(Atom prop)
 	Atom type;
 	int format;
 	unsigned long length, after;
-	unsigned char *data;
+	unsigned char *reteval = NULL;
 	int ret;
+	Pixmap pix = None;
 
 	ret = XGetWindowProperty(dpy, Scr.Root, prop, 0L, 1L, False, XA_PIXMAP,
-			   &type, &format, &length, &after, &data);
+			   &type, &format, &length, &after, &reteval);
 	if (ret == Success && type == XA_PIXMAP && format == 32 && length == 1 &&
 	    after == 0)
 	{
-		return *((Pixmap *)data);
+		pix = ((Pixmap *)reteval)[0];
 	}
-	return None;
+	if (reteval)
+	{
+		XFree(reteval);
+	}
+	return pix;
 }
 
 void update_root_pixmap(Atom prop)
