@@ -2,6 +2,8 @@
 
 ## The script "focus-link" has a manpage, so perhaps it is intended to be
 ## installed?  (it is not installed currently)
+## migo: if we ever fix and install this, it should be renamed to
+## fvwm-focus-list or fvwm-command-focus
 
 PERL = @PERL@
 

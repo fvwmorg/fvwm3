@@ -12,14 +12,12 @@ FvwmCommandS must be invoked from fvwm prior to this command.
 
 This script can be invoked from a shell or from .fvwm2rc. For example.
 
-   AddToFunc "InitFunction" "I" Module FvwmBanner
-   + "I" Module	FvwmPager 0 8
-   + "I" Exec    xcb -n 4 -l vertical -g 240x180-0+530 &
-   + "I" Exec sh -c "sleep 2;$HOME/scripts/focus-link.pl & "
+   AddToFunc "InitFunction"
+   + "I" Exec exec xcb -n 4 -l vertical -g 240x180-0+530
+   + "I" Exec sleep 2; $HOME/scripts/focus-link.pl
 
 Sleep is used in order to avoid un-necessary reaction during initial
-window creation. A shell is invoked to avoid fvwm itself sleeps for
-2 seconds.
+window creation. Note, fvwm itself continues to run during these 2 seconds.
 
 Default behavior is listed below.
 In order to change the behavior, modify user_function using user

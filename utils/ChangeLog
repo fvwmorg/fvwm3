@@ -1,3 +1,8 @@
+2000-11-19  Mikhael Goikhman  <migo@homemail.com>
+
+	* Makefile.am:
+	fixed 'make distcheck' by adding $(top_srcdir)/utils/ path
+
 2000-11-17  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* rebuild_dev.sh:

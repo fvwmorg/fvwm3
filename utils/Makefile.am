@@ -55,7 +55,8 @@ fvwmbug: fvwmbug.sh
 # Add the builtin imagepath to the 2.4 conversion script:
 fvwm24_convert: fvwm24_convert.in
 	rm -f $@
-	sed -e 's,FVWM_IMAGEPATH,$(FVWM_IMAGEPATH),' fvwm24_convert.in > $@
+	sed -e 's,FVWM_IMAGEPATH,$(FVWM_IMAGEPATH),' \
+		$(top_srcdir)/utils/fvwm24_convert.in > $@
 	chmod a+rx $@
 
 CLEANFILES = $(bin_SCRIPTS)
