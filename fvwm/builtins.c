@@ -111,6 +111,10 @@ static char *button_states[BS_MaxButtonStateName + 1] =
 	"AllInactive",
 	"AllUp",
 	"AllDown",
+	"AllActiveUp",
+	"AllActiveDown",
+	"AllInactiveUp",
+	"AllInactiveDown",
 	NULL
 };
 
@@ -268,6 +272,26 @@ static char *ReadTitleButton(
 	{
 		use_mask = BS_MASK_DOWN;
 		set_mask = BS_MASK_DOWN;
+	}
+	else if (bs == BS_AllActiveUp)
+	{
+		use_mask = BS_MASK_INACTIVE | BS_MASK_DOWN;
+		set_mask = 0;
+	}
+	else if (bs == BS_AllActiveDown)
+	{
+		use_mask = BS_MASK_INACTIVE | BS_MASK_DOWN;
+		set_mask = BS_MASK_DOWN;
+	}
+	else if (bs == BS_AllInactiveUp)
+	{
+		use_mask = BS_MASK_INACTIVE | BS_MASK_DOWN;
+		set_mask = BS_MASK_INACTIVE;
+	}
+	else if (bs == BS_AllInactiveDown)
+	{
+		use_mask = BS_MASK_INACTIVE | BS_MASK_DOWN;
+		set_mask = BS_MASK_INACTIVE | BS_MASK_DOWN;
 	}
 
 	if ((bs & BS_MaxButtonStateMask) == bs)

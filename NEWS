@@ -26,13 +26,16 @@ Changes in developement release 2.5.6 (not released yet)
 
 * New style options IconBackgroundColorset, IconTitleColorset,
   HilightIconTitleColorset, IconTitleRelief, IconBackgroundRelief
-  and IconBackgroundPadding,
+  and IconBackgroundPadding.
 
 * Minor incompatible improvements to the Perl library API.
 
 * Renamed FvwmWindowLister to FvwmWindowMenu.
 
-* New option to IconSize style: Adjusted, Stretched, Shrunk
+* New option to IconSize style: Adjusted, Stretched, Shrunk.
+
+* New shortcuts for button states: AllActiveUp, AllActiveDown,
+  AllInactiveUp, AllInactiveDown.
 
 -------------------------------------------------------------------
 

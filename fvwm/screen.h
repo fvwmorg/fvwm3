@@ -226,6 +226,10 @@ typedef enum
 	BS_AllInactive,
 	BS_AllUp,
 	BS_AllDown,
+	BS_AllActiveUp,
+	BS_AllActiveDown,
+	BS_AllInactiveUp,
+	BS_AllInactiveDown,
 	BS_MaxButtonStateName,
 } ButtonState;
 

@@ -1,3 +1,11 @@
+2002-12-31  Mikhael Goikhman  <migo@homemail.com>
+
+	* NEWS:
+	* fvwm/builtins.c (ReadTitleButton):
+	* fvwm/screen.h:
+	new button state shortcuts AllActiveUp, AllActiveDown,
+	AllInactiveUp, AllInactiveDown
+
 2002-12-31  olicha  <olivier.chapuis@free.fr>
 
 	* libs/PictureGraphics.c (PCopyArea):
