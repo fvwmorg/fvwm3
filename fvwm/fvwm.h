@@ -399,6 +399,23 @@ typedef struct
 	unsigned has_ewmh_init_wm_desktop : 2;
 } window_flags;
 
+/* Window name data structure for window conditions: a list of lists
+   of names to match, the boolean operation on the matches being an
+   AND of ORs. */
+struct namelist			/* matches to names in this list are ORed */
+{
+	char *name;
+	struct namelist *next;
+};
+
+struct name_condition		/* matches to namelists in this list are
+				   ANDed, after possibly inverting each */
+{
+	Bool invert;
+	struct namelist *namelist;
+	struct name_condition *next;
+};
+
 /* Window mask for Circulate and Direction functions */
 typedef struct WindowConditionMask
 {
@@ -419,8 +436,6 @@ typedef struct WindowConditionMask
 #define NEEDS_TRUE  1
 #define NEEDS_FALSE 2
 		unsigned needs_focus : 2;
-		unsigned needs_name : 1;
-		unsigned needs_not_name : 1;
 		unsigned needs_pointer : 2;
 		unsigned needs_same_layer : 1;
 		unsigned use_circulate_hit : 1;
@@ -430,7 +445,7 @@ typedef struct WindowConditionMask
 	} my_flags;
 	window_flags flags;
 	window_flags flag_mask;
-	char *name;
+	struct name_condition *name_condition;
 	int layer;
 } WindowConditionMask;
 

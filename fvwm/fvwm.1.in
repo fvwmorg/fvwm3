@@ -10384,12 +10384,42 @@ parentheses (this is still supported for backward compatibility).
 
 In addition, the
 .I conditions
-may include one window name to match to.  The window name may
-include the wildcards '*' and '?'.  The window name, icon name,
-class, and resource are considered when attempting to find a
-match.  The window name can begin with '!' which prevents
+may include one or more window names to match to.  If more than one
+window name is given, all of them must match.  The window name, icon
+name, class, and resource are considered when attempting to find a match.
+Each name may include the wildcards '*' and '?', and may consist
+of two or more alternatives, separated by the character '|', which acts
+as an OR operator.  (If OR operators are used, they must not be separated
+by spaces from the names.)  Each window name can begin with '!', which prevents
 .I command
-if any of the window name, icon name, class or resource match.
+if any of the window name, icon name, class or resource match.  However, '!'
+must not be applied to individual names in a group separated by OR
+operators; it may only be applied to the beginning of the group, and
+then it operates on the whole group.
+
+Examples:
+.EX
+ Next ("Netscape|konqueror|Mozilla*") WarpToWindow 99 90
+.EE
+This goes to the next web browser window, no matter which of the three
+named web browsers is being used.
+.EX
+ Next ("Mozilla*" "Bookmark*") WarpToWindow 99 90
+.EE
+This goes to Mozilla's bookmark manager window, ignoring other Mozilla
+windows and other browsers' bookmark windows.
+.EX
+ All ("XTerm|rxvt" !console) Iconify
+.EE
+This iconifies all the xterm and rxvt windows on the current page,
+except that the one named "console" (with the -name option to xterm)
+is excluded.
+.EX
+ Next (!"FvwmPager|FvwmForm*|FvwmButtons") Raise
+ Next (!FvwmPager, !FvwmForm*, !FvwmButtons) Raise
+.EE
+These two commands are equivalent; either one raises the next window
+which is not one of the named fvwm modules.
 
 Any condition can be negated by using a an exclamation mark ('!')
 directly in front of its name.

@@ -376,22 +376,36 @@ char *CreateFlagString(char *string, char **restptr)
 }
 
 /*
- * The name field of the mask is allocated in CreateConditionMask.
+ * The name_condition field of the mask is allocated in CreateConditionMask.
  * It must be freed.
  * NOTE - exported via .h
  */
 void FreeConditionMask(WindowConditionMask *mask)
 {
-	if (mask->my_flags.needs_name)
-	{
-		free(mask->name);
-	}
-	else if (mask->my_flags.needs_not_name)
-	{
-		free(mask->name - 1);
-	}
+	struct name_condition *pp,*pp2;
+	struct namelist *p,*p2;
 
-	return;
+	for (pp=mask->name_condition; pp; )
+	{
+		/* One malloc() is done for all the name strings.
+		   The string is tokenised & the name fields point to
+		   different parts of the one string.
+		   The start of the string is the first name in the string
+		   which is actually the last node in the linked list. */
+		for (p=pp->namelist; p; )
+		{
+			p2=p->next;
+			if(!p2)
+			{
+				free(p->name - (pp->invert ? 1 : 0));
+			}
+			free(p);
+			p=p2;
+		}
+		pp2=pp->next;
+		free(pp);
+		pp=pp2;
+	}
 }
 
 /* Assign the default values for the window mask
@@ -614,21 +628,36 @@ void CreateConditionMask(char *flags, WindowConditionMask *mask)
 			}
 			mask->my_flags.needs_same_layer = on;
 		}
-		else if (!mask->my_flags.needs_name &&
-			 !mask->my_flags.needs_not_name)
-		{
-			/* only 1st name to avoid mem leak */
-			mask->name = condition;
-			condition = NULL;
-			if (on == 0)
+		else
+		{ 
+			struct name_condition *pp;
+			struct namelist *p;
+			char *condp;
+
+			pp = (struct name_condition *)
+				safemalloc(sizeof(struct name_condition));
+			pp->invert = (!on ? True : False);
+			pp->namelist = NULL;
+			pp->next = mask->name_condition;
+			mask->name_condition = pp;
+			for(condp=cond; ; )
 			{
-				mask->my_flags.needs_not_name = 1;
-				mask->name++;
+				p = (struct namelist *)
+					safemalloc(sizeof(struct namelist));
+				p->name=condp;
+				p->next=pp->namelist;
+				pp->namelist=p;
+				while(*condp && *condp != '|')
+				{
+					condp++;
+				}
+				if(!*condp)
+				{
+					break;
+				}
+				*condp++='\0';
 			}
-			else
-			{
-				mask->my_flags.needs_name = 1;
-			}
+			condition = NULL;	/* so it won't be freed */
 		}
 
 		if (prev_condition)
@@ -654,15 +683,14 @@ void CreateConditionMask(char *flags, WindowConditionMask *mask)
  */
 Bool MatchesConditionMask(FvwmWindow *fw, WindowConditionMask *mask)
 {
-	int does_name_match;
-	int does_icon_name_match;
-	int does_class_match;
-	int does_resource_match;
 	int does_match;
 	int is_on_desk;
 	int is_on_page;
 	int is_on_global_page;
 	FvwmWindow *sf = get_focus_window();
+	struct name_condition *pp;
+	struct namelist *p;
+	char *name;
 
 	/* match FixedSize conditional */
 	/* special treatment for FixedSize, because more than just
@@ -822,27 +850,28 @@ Bool MatchesConditionMask(FvwmWindow *fw, WindowConditionMask *mask)
 		}
 	}
 
-	/* Yes, I know this could be shorter, but it's hard to understand then
-	 */
-	does_name_match = matchWildcards(mask->name, fw->name.name);
-	does_icon_name_match = matchWildcards(mask->name, fw->icon_name.name);
-	does_class_match =
-		(fw->class.res_class && matchWildcards(
-			mask->name,fw->class.res_class));
-	does_resource_match =
-		(fw->class.res_name && matchWildcards(
-			mask->name, fw->class.res_name));
-	does_match =
-		(does_name_match || does_icon_name_match || does_class_match ||
-		 does_resource_match);
-	if (mask->my_flags.needs_name && !does_match)
+	for(pp=mask->name_condition; pp; pp=pp->next)
 	{
-		return False;
+		does_match = 0;
+		for(p=pp->namelist; p; p=p->next)
+		{
+			name=p->name;
+			does_match |= matchWildcards(name, fw->name.name);
+			does_match |= matchWildcards(name, fw->icon_name.name);
+			if(fw->class.res_class)
+				does_match |= matchWildcards(name,
+					fw->class.res_class);
+			if(fw->class.res_name)
+				does_match |= matchWildcards(name,
+					fw->class.res_name);
+		}
+		if(( pp->invert &&  does_match) ||
+		   (!pp->invert && !does_match))
+		{
+			return False;
+		}
 	}
-	if (mask->my_flags.needs_not_name && does_match)
-	{
-		return False;
-	}
+
 	if (mask->layer == -1 && sf)
 	{
 		int is_same_layer;

@@ -2,6 +2,9 @@ To find out what should go in this file, see "Information For
 Maintainers of GNU Software" (maintain.texi), the section called
 "Recording Changes".
 
+Norman Yarvin
+Extend conditionals to handle multiple window names.
+
 Funda Wang:
 Chinese translations.
 
@@ -21,8 +24,10 @@ David Lazar:
 Use font for selected buttons in Start button.
 
 Scott Smedley:
-Wrote FvwmTabs. Improved Perl/Tk module support. FakeKeyPress
-command. Window-specific key/mouse bindings.
+Wrote FvwmTabs module. Improved Perl module support. FakeKeyPress
+command. Window-specific key/mouse bindings. FvwmButtons: HoverIcon,
+HoverTitle, HoverColorset, PressIcon, PressTitle & PressColorset options.
+FvwmWindowMenu: rewrote to use WindowList tracker.
 
 Francis Litterio:
 Fixed building FvwmScript under cygwin.  Added CenterPlacement style.
