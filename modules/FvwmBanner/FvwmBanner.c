@@ -49,7 +49,7 @@
 #include <libs/fvwmlib.h>
 #include <libs/Picture.h>
 #include <libs/Module.h>
-#include <libs/XineramaSupport.h>
+#include <libs/FScreen.h>
 
 
 /* migo (16-Sep-1999): How about to do this configurable? */
@@ -150,7 +150,7 @@ int main(int argc, char **argv)
   x_fd = XConnectionNumber(dpy);
 
   InitPictureCMap(dpy);
-  XineramaSupportInit(dpy);
+  FScreenInit(dpy);
   parseOptions(fd);
 
   /* chick in the neck situation:
@@ -188,7 +188,7 @@ int main(int argc, char **argv)
   mysizehints.max_width = mysizehints.width;
   mysizehints.win_gravity = NorthWestGravity;
 
-  XineramaSupportCenterPrimary(
+  FScreenCenterPrimary(
     &mysizehints.x, &mysizehints.y, view.attributes.width,
     view.attributes.height);
 
@@ -321,7 +321,7 @@ static void parseOptions(int fd[2])
       tok = PeekToken(tline, &tline);
       if (StrEquals(tok, XINERAMA_CONFIG_STRING))
       {
-	XineramaSupportConfigureModule(tline);
+	FScreenConfigureModule(tline);
 	continue;
       }
       if (StrEquals(tok, "ImagePath"))

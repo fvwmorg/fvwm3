@@ -19,7 +19,7 @@
 #include "x.h"
 #include "xmanager.h"
 #include "libs/fvwmlib.h"
-#include "libs/XineramaSupport.h"
+#include "libs/FScreen.h"
 
 static char const rcsid[] =
   "$Id$";
@@ -640,7 +640,7 @@ void X_init_manager (int man_id)
         man->geometry.boxheight = height;
     }
   }
-  XineramaSupportGetPrimaryScrRect(
+  FScreenGetPrimaryScrRect(
     &man->managed_g.x, &man->managed_g.y,
     &man->managed_g.width, &man->managed_g.height);
   man->geometry.x = man->managed_g.x;
@@ -648,10 +648,10 @@ void X_init_manager (int man_id)
   if (man->geometry_str) {
     int scr;
 
-    geometry_mask = XineramaSupportParseGeometryWithScreen(
+    geometry_mask = FScreenParseGeometryWithScreen(
       man->geometry_str, &man->geometry.x, &man->geometry.y,
       &man->geometry.cols, &man->geometry.rows, &scr);
-    XineramaSupportGetNumberedScrRect(
+    FScreenGetNumberedScrRect(
       scr, &man->managed_g.x, &man->managed_g.y,
       &man->managed_g.width, &man->managed_g.height);
 
@@ -705,7 +705,7 @@ void X_init_manager (int man_id)
 
     XQueryPointer(theDisplay, theRoot, &dummyroot, &dummychild,
 		  &man->geometry.x, &man->geometry.y, &junk, &junk, &ujunk);
-    XineramaSupportGetScrRect(
+    FScreenGetScrRect(
       man->geometry.x, man->geometry.y,
       &man->managed_g.x, &man->managed_g.y,
       &man->managed_g.width, &man->managed_g.height);
@@ -813,14 +813,14 @@ void create_manager_window (int man_id)
 
   if (man->res == SHOW_SCREEN || man->res == NO_SHOW_SCREEN)
   {
-    XineramaSupportGetScrRect(
+    FScreenGetScrRect(
       sizehints.x, sizehints.y,
       &man->managed_g.x, &man->managed_g.y,
       &man->managed_g.width, &man->managed_g.height);
   }
   else
   {
-    XineramaSupportGetGlobalScrRect(
+    FScreenGetGlobalScrRect(
       &man->managed_g.x, &man->managed_g.y,
       &man->managed_g.width, &man->managed_g.height);
   }
@@ -932,7 +932,7 @@ void init_display (void)
   }
   XSetErrorHandler (handle_error);
   InitPictureCMap (theDisplay);
-  XineramaSupportInit(theDisplay);
+  FScreenInit(theDisplay);
   AllocColorset(0);
   x_fd = XConnectionNumber (theDisplay);
   theScreen = DefaultScreen (theDisplay);

@@ -51,7 +51,7 @@
 #include "decorations.h"
 #include "libs/Colorset.h"
 #include "defaults.h"
-#include "libs/XineramaSupport.h"
+#include "libs/FScreen.h"
 
 /* IMPORTANT NOTE: Do *not* use any constant numbers in this file. All values
  * have to be #defined in the section below or defaults.h to ensure full
@@ -630,7 +630,7 @@ static void update_menu(MenuRoot *mr, MenuParameters *pmp)
     }
     MST_IS_UPDATED(mr) = 0;
   }
-  XineramaSupportGetScrRect(
+  FScreenGetScrRect(
     pmp->screen_origin_x, pmp->screen_origin_y, &JunkX, &JunkY, &sw, &sh);
   if (sw != MR_SCREEN_WIDTH(mr) || sh != MR_SCREEN_HEIGHT(mr))
   {
@@ -755,7 +755,7 @@ void do_menu(MenuParameters *pmp, MenuReturn *pmret)
 	return;
       }
       /* Make the menu appear under the pointer rather than warping */
-      XineramaSupportGetScrRect(x, y, &scr_x, &scr_y, &scr_w, &scr_h);
+      FScreenGetScrRect(x, y, &scr_x, &scr_y, &scr_w, &scr_h);
       x -= menu_middle_x_offset(pmp->menu);
       y -= item_middle_y_offset(pmp->menu, MR_FIRST_ITEM(pmp->menu));
       if (x < scr_x)
@@ -2751,7 +2751,7 @@ static int pop_menu_up(
     if (has_context)
     {
       pops->pos_hints.has_screen_origin = True;
-      if (XineramaSupportGetScrRect(
+      if (FScreenGetScrRect(
 	    cx, cy, &JunkX, &JunkY, &JunkWidth, &JunkHeight))
       {
 	/* use current cx/cy */
@@ -2785,12 +2785,12 @@ static int pop_menu_up(
   }
 
   /* clip to screen */
-  XineramaSupportClipToScreen(
+  FScreenClipToScreen(
     pops->pos_hints.screen_origin_x, pops->pos_hints.screen_origin_y,
     &x, &y, MR_WIDTH(mr), MR_HEIGHT(mr));
 
   /* "this" screen is defined -- so get its coords for future reference */
-  XineramaSupportGetScrRect(
+  FScreenGetScrRect(
     pops->pos_hints.screen_origin_x, pops->pos_hints.screen_origin_y,
     &scr_x, &scr_y, &scr_w, &scr_h);
 
@@ -7482,7 +7482,7 @@ char *get_menu_options(
 	}
 	return action;
       }
-      flags = XineramaSupportParseGeometry(tok, &x, &y, &width, &height);
+      flags = FScreenParseGeometry(tok, &x, &y, &width, &height);
       if ((flags & (XValue | YValue)) != (XValue | YValue))
       {
 	free(tok);
@@ -7599,7 +7599,7 @@ char *get_menu_options(
 	  }
 	  else
 	  {
-	    XineramaSupportGetScrRect(
+	    FScreenGetScrRect(
 	      pops->pos_hints.screen_origin_x, pops->pos_hints.screen_origin_y,
 	      &x, &y, &width, &height);
 	  }

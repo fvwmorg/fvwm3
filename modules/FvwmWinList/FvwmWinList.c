@@ -60,7 +60,7 @@
 #include "libs/Module.h"
 #include "libs/fvwmsignal.h"
 #include "libs/fvwmlib.h"
-#include "libs/XineramaSupport.h"
+#include "libs/FScreen.h"
 
 #include "FvwmWinList.h"
 #include "ButtonArray.h"
@@ -755,7 +755,7 @@ ParseConfigLine(char *tline)
     }
     else if (strncasecmp(tline, XINERAMA_CONFIG_STRING,
 			 sizeof(XINERAMA_CONFIG_STRING) - 1) == 0) {
-      XineramaSupportConfigureModule(
+      FScreenConfigureModule(
 	tline + sizeof(XINERAMA_CONFIG_STRING) - 1);
     }
   }
@@ -1122,7 +1122,7 @@ void MakeMeWindow(void)
   {
     XQueryPointer(dpy,Root,&dummyroot,&dummychild,&hints.x,&hints.y,&x,&y,
 		  &dummy1);
-    XineramaSupportGetScrRect(
+    FScreenGetScrRect(
       hints.x, hints.y,
       &screen_g.x, &screen_g.y, &screen_g.width, &screen_g.height);
     hints.x -= hints.width / 2;
@@ -1149,7 +1149,7 @@ void MakeMeWindow(void)
   else if (geometry!= NULL)
   {
     /* now evaluate the geometry parsed above */
-    ret = XineramaSupportParseGeometry(geometry, &x, &y, &dummy1, &dummy2);
+    ret = FScreenParseGeometry(geometry, &x, &y, &dummy1, &dummy2);
     hints.win_gravity=NorthWestGravity;
     if ((ret & XValue) && (ret & YValue))
     {
@@ -1356,7 +1356,7 @@ void StartMeUp_I(void)
     exit (1);
   }
   InitPictureCMap(dpy);
-  XineramaSupportInit(dpy);
+  FScreenInit(dpy);
   AllocColorset(0);
   x_fd = XConnectionNumber(dpy);
   screen= DefaultScreen(dpy);
@@ -1377,10 +1377,10 @@ void StartMeUp_II(void)
   if (geometry == NULL)
     UpdateString(&geometry, "");
   /* evaluate further down */
-  g_hints_rc = XineramaSupportParseGeometryWithScreen(
+  g_hints_rc = FScreenParseGeometryWithScreen(
     geometry, &g_hints.x, &g_hints.y, (unsigned int *)&g_hints.width,
     (unsigned int *)&g_hints.height, &xi_screen);
-  XineramaSupportGetNumberedScrRect(
+  FScreenGetNumberedScrRect(
     xi_screen, &screen_g.x, &screen_g.y, &screen_g.width, &screen_g.height);
 
 #ifdef I18N_MB

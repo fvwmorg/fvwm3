@@ -30,7 +30,7 @@
 #include <stdio.h>
 
 #include "libs/fvwmlib.h"
-#include "libs/XineramaSupport.h"
+#include "libs/FScreen.h"
 #include "fvwm.h"
 #include "externs.h"
 #include "cursor.h"
@@ -197,7 +197,8 @@ static void copy_icon_boxes(icon_boxes **pdest, icon_boxes *src)
 }
 
 /* Check word after IconFill to see if its "Top,Bottom,Left,Right" */
-static int Get_TBLR(char *token, unsigned char *IconFill) {
+static int Get_TBLR(char *token, unsigned char *IconFill)
+{
   /* init */
   if (StrEquals(token, "B") ||
       StrEquals(token, "BOT")||
@@ -1569,7 +1570,6 @@ void CMD_Style(F_CMD_ARGS)
 	    int l;
 	    unsigned int width;
 	    unsigned int height;
-            int screen;
 	    /* read in 1 word w/o advancing */
 	    token = PeekToken(rest, NULL);
 	    if (!token)
@@ -1577,7 +1577,7 @@ void CMD_Style(F_CMD_ARGS)
 	    l = strlen(token);
 	    if (l > 0 && l < 24) {
 	      /* if word found, not too long */
-              geom_flags = XineramaSupportParseGeometryWithScreen(
+              geom_flags = FScreenParseGeometryWithScreen(
 		token, &IconBoxes->IconBox[0], &IconBoxes->IconBox[1],
 		&width, &height,&IconBoxes->IconScreen);
               if (width == 0) {
@@ -2346,7 +2346,7 @@ void CMD_Style(F_CMD_ARGS)
 	  found = True;
 	  if (rest)
 	  {
-	    tmpno[0] = XineramaSupportGetScreenArgument(rest, 'c');
+	    tmpno[0] = FScreenGetScreenArgument(rest, 'c');
 	    ptmpstyle->flags.use_start_on_screen = 1;
 	    ptmpstyle->flag_mask.use_start_on_screen = 1;
 	    ptmpstyle->change_mask.use_start_on_screen = 1;

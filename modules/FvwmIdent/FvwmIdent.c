@@ -51,7 +51,7 @@
 #endif
 
 #include "libs/fvwmlib.h"
-#include "libs/XineramaSupport.h"
+#include "libs/FScreen.h"
 #include "libs/Module.h"
 #include "libs/Picture.h"
 #include "libs/Colorset.h"
@@ -204,7 +204,7 @@ int main(int argc, char **argv)
   Root = RootWindow(dpy, screen);
 
   InitPictureCMap(dpy);
-  XineramaSupportInit(dpy);
+  FScreenInit(dpy);
   /* prevent core dumps if fvwm doesn't provide any colorsets */
   AllocColorset(0);
 
@@ -239,7 +239,7 @@ int main(int argc, char **argv)
       }
       else if(strncasecmp(tline, XINERAMA_CONFIG_STRING,
 			  sizeof(XINERAMA_CONFIG_STRING) - 1) == 0){
-	XineramaSupportConfigureModule(
+	FScreenConfigureModule(
 	  tline + sizeof(XINERAMA_CONFIG_STRING) - 1);
       }
     }
@@ -508,7 +508,7 @@ void list_end(void)
       y = 0;
     }
 
-    XineramaSupportGetScrRect(x, y, &sx, &sy, &sw, &sh);
+    FScreenGetScrRect(x, y, &sx, &sy, &sw, &sh);
     if (y + height + 100 > sy + sh)
     {
       y = sy + sh - height - 10;
@@ -690,7 +690,7 @@ void list_end(void)
 	  }
 	}
 	else if (StrEquals(token, XINERAMA_CONFIG_STRING)) {
-	  XineramaSupportConfigureModule(tline);
+	  FScreenConfigureModule(tline);
 	}
 	free(token);
       }

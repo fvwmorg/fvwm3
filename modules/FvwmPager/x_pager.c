@@ -41,7 +41,7 @@
 #endif
 
 #include "libs/fvwmlib.h"
-#include "libs/XineramaSupport.h"
+#include "libs/FScreen.h"
 #include <libs/Module.h>
 #include "libs/Colorset.h"
 #include "fvwm/fvwm.h"
@@ -513,7 +513,7 @@ void initialize_pager(void)
   {
     rectangle screen_g;
 
-    XineramaSupportGetScrRect(
+    FScreenGetScrRect(
       window_x, window_y,
       &screen_g.x, &screen_g.y, &screen_g.width, &screen_g.height);
     if (window_w + window_x > screen_g.x + screen_g.width)

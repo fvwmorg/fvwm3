@@ -39,7 +39,7 @@
 #endif
 
 #include "libs/fvwmlib.h"
-#include "libs/XineramaSupport.h"
+#include "libs/FScreen.h"
 #include "fvwm.h"
 #include "externs.h"
 #include "cursor.h"
@@ -428,7 +428,7 @@ int main(int argc, char **argv)
     g_argv[argc] = NULL;
   }
 
-  XineramaSupportInit(dpy);
+  FScreenInit(dpy);
 
   x_fd = XConnectionNumber(dpy);
   fd_width = GetFdWidth();

@@ -46,7 +46,7 @@
 
 #include <libs/Picture.h>               /* for InitPictureCMap */
 #include "libs/Colorset.h"               /* for InitPictureCMap */
-#include "libs/XineramaSupport.h"
+#include "libs/FScreen.h"
 
 #include "FvwmForm.h"                   /* common FvwmForm stuff */
 
@@ -283,7 +283,7 @@ static void ParseConfigLine(char *buf)
   if (strncasecmp(buf, XINERAMA_CONFIG_STRING,
 		  sizeof(XINERAMA_CONFIG_STRING)-1) == 0)
   {
-    XineramaSupportConfigureModule(buf + sizeof(XINERAMA_CONFIG_STRING)-1);
+    FScreenConfigureModule(buf + sizeof(XINERAMA_CONFIG_STRING)-1);
     return;
   }
   if (strncasecmp(buf, "Colorset", 8) == 0) {
@@ -375,7 +375,7 @@ static void ct_Geometry(char *cp)
 
   while (isspace(*cp))
     cp++;
-  flags = XineramaSupportParseGeometry(cp, &x, &y, &dummy, &dummy);
+  flags = FScreenParseGeometry(cp, &x, &y, &dummy, &dummy);
   if (flags&XValue)
   {
     CF.have_geom = 1;
@@ -1531,7 +1531,7 @@ static void OpenWindows ()
       gravity = SouthEastGravity;
     }
   } else {
-    XineramaSupportCenterCurrent(NULL, &x, &y, CF.max_width, CF.total_height);
+    FScreenCenterCurrent(NULL, &x, &y, CF.max_width, CF.total_height);
   }
   myfprintf((stderr,"going to create window w. bg %s\n",
              screen_background_color));
@@ -1750,7 +1750,7 @@ static void ParseActiveMessage(char *buf)
   } /* end colorset command */
   if (strncasecmp(buf, XINERAMA_CONFIG_STRING, sizeof(XINERAMA_CONFIG_STRING)-1)
       == 0) {
-    XineramaSupportConfigureModule(buf + sizeof(XINERAMA_CONFIG_STRING)-1);
+    FScreenConfigureModule(buf + sizeof(XINERAMA_CONFIG_STRING)-1);
     return;
   }
   if (strncasecmp(buf, MyName, MyNameLen) != 0) {/* If its not for me */
@@ -1934,7 +1934,7 @@ int main (int argc, char **argv)
   myfprintf((stderr, "ref == %d\n", (int)ref));
 
   InitPictureCMap(dpy);
-  XineramaSupportInit(dpy);
+  FScreenInit(dpy);
   /* prevent core dumps if fvwm doesn't provide any colorsets */
   AllocColorset(0);
 

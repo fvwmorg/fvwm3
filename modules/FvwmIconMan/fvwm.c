@@ -20,7 +20,7 @@
 #include "xmanager.h"
 
 #include <libs/fvwmlib.h>
-#include <libs/XineramaSupport.h>
+#include <libs/FScreen.h>
 #include <libs/Module.h>
 
 static char const rcsid[] =
@@ -237,7 +237,7 @@ static void handle_config_info (unsigned long *body)
   }
   else if (StrEquals(token, XINERAMA_CONFIG_STRING))
   {
-    XineramaSupportConfigureModule(tline);
+    FScreenConfigureModule(tline);
   }
 }
 

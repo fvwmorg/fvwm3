@@ -55,7 +55,7 @@
 #include "libs/Colorset.h"
 #include "libs/Picture.h"
 #include "libs/fvwmsignal.h"
-#include "libs/XineramaSupport.h"
+#include "libs/FScreen.h"
 
 
 #include "fvwmDragWell.h"
@@ -439,7 +439,7 @@ void XStartup(char *appName)
   xg.appName = (char *) malloc(sizeof(char) * (strlen(appNameStart)+1));
   strcpy(xg.appName,appNameStart); /*save the name of the application*/
   InitPictureCMap(xg.dpy);
-  XineramaSupportInit(xg.dpy);
+  FScreenInit(xg.dpy);
   AllocColorset(0);
 
   /*get X stuff*/
@@ -569,7 +569,7 @@ void parseOptions(void)
 	LoadColorset(next);
       }
       else if (StrEquals(token, XINERAMA_CONFIG_STRING)) {
-	XineramaSupportConfigureModule(next);
+	FScreenConfigureModule(next);
       }
       continue;
     }
@@ -608,7 +608,7 @@ void parseOptions(void)
     } else if (StrEquals(resource, "Geometry")) {
       int g_x,g_y,flags;
       unsigned width,height;
-      flags = XineramaSupportParseGeometry(arg1,&g_x,&g_y,&width,&height);
+      flags = FScreenParseGeometry(arg1,&g_x,&g_y,&width,&height);
       if (flags & WidthValue) {
 	xg.w = width;
       }
@@ -632,7 +632,7 @@ void parseOptions(void)
     } else if (StrEquals(resource, "DragWellGeometry")) {
       int g_x,g_y,flags;
       unsigned width,height;
-      flags = XineramaSupportParseGeometry(arg1,&g_x,&g_y,&width,&height);
+      flags = FScreenParseGeometry(arg1,&g_x,&g_y,&width,&height);
       if (flags & WidthValue) {
 	xg.dbw = width;
       }
@@ -788,7 +788,7 @@ int myXNextEvent(XEvent *event, char *fvwmMessage)
             }
 	    else if (StrEquals(token, XINERAMA_CONFIG_STRING))
 	    {
-	      XineramaSupportConfigureModule(tline);
+	      FScreenConfigureModule(tline);
 	    }
 	    return FOUND_FVWM_NON_MESSAGE;
 	  }

@@ -26,7 +26,7 @@
 #include <stdio.h>
 
 #include "libs/fvwmlib.h"
-#include "libs/XineramaSupport.h"
+#include "libs/FScreen.h"
 #include "fvwm.h"
 #include "externs.h"
 #include "cursor.h"
@@ -334,9 +334,9 @@ Bool MatchesConditionMask(FvwmWindow *fw, WindowConditionMask *mask)
     return 0;
   if (mask->my_flags.needs_current_page)
   {
-    if (XineramaSupportIsEnabled())
+    if (FScreenIsEnabled())
     {
-      if (!XineramaSupportIsRectangleOnThisScreen(NULL, &(fw->frame_g), -1))
+      if (!FScreenIsRectangleOnThisScreen(NULL, &(fw->frame_g), -1))
 	return 0;
     }
     else

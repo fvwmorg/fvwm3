@@ -1,6 +1,31 @@
+2001-08-26  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* libs/Makefile.am:
+	* libs/XineramaSupport.c:
+	* libs/XineramaSupport.h:
+	* libs/FScreen.c:
+	* libs/FScreen.h:
+	renamed files
+
+	* fvwm/virtual.c:
+	* fvwm/style.c:
+	* fvwm/placement.c:
+	* fvwm/move_resize.c:
+	* fvwm/module_interface.c:
+	* fvwm/modconf.c:
+	* fvwm/menus.c:
+	* fvwm/icons.c:
+	* fvwm/fvwm.c:
+	* fvwm/conditional.c:
+	* libs/XineramaSupport.c:
+	renamed all XineramaSupport...() functions to FScreen...()
+
+	* fvwm/style.c (CMD_Style):
+	-Wall fix
+
 2001-08-25  Dan Espen  <dane@mk.telcordia.com>
 
-	* fvwm/style.c (CMD_Style): 
+	* fvwm/style.c (CMD_Style):
 	* fvwm/fvwm.h (icon_boxes_struct): Add screen to iconbox struct when
 	using geometry spec.
 

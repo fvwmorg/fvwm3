@@ -70,7 +70,7 @@
 
 #include "libs/Module.h"
 #include "libs/fvwmlib.h"  /* for pixmaps routines */
-#include "libs/XineramaSupport.h"
+#include "libs/FScreen.h"
 #include "libs/safemalloc.h"
 #include "libs/fvwmsignal.h"
 #include "libs/Colorset.h"
@@ -853,7 +853,7 @@ void ProcessMessage(unsigned long type,unsigned long *body)
       else if (strncasecmp(tline, XINERAMA_CONFIG_STRING,
 			   sizeof(XINERAMA_CONFIG_STRING) - 1) == 0)
       {
-	XineramaSupportConfigureModule(
+	FScreenConfigureModule(
 	  tline + sizeof(XINERAMA_CONFIG_STRING) - 1);
       }
     }
@@ -1806,10 +1806,10 @@ void StartMeUp(void)
      exit (1);
    }
    InitPictureCMap(dpy);
-   XineramaSupportInit(dpy);
+   FScreenInit(dpy);
    if (XineramaConfig)
    {
-     XineramaSupportConfigureModule(XineramaConfig);
+     FScreenConfigureModule(XineramaConfig);
      free(XineramaConfig);
    }
    AllocColorset(0);
@@ -1820,12 +1820,12 @@ void StartMeUp(void)
    if (geometry == NULL)
      UpdateString(&geometry, "+0-0");
    /* evaluate further down */
-   ret = XineramaSupportParseGeometryWithScreen(
+   ret = FScreenParseGeometryWithScreen(
      geometry, &hints.x, &hints.y, (unsigned int *)&hints.width,
      (unsigned int *)&hints.height, &xi_screen);
-   XineramaSupportGetNumberedScrRect(
+   FScreenGetNumberedScrRect(
      xi_screen, &screen_g.x, &screen_g.y, &screen_g.width, &screen_g.height);
-   XineramaSupportGetGlobalScrRect(
+   FScreenGetGlobalScrRect(
      &global_scr_g.x, &global_scr_g.y, &global_scr_g.width,
      &global_scr_g.height);
    Midline = (screen_g.height >> 1) + screen_g.y;

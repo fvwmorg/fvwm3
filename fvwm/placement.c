@@ -29,7 +29,7 @@
 #include <stdio.h>
 
 #include "libs/fvwmlib.h"
-#include "libs/XineramaSupport.h"
+#include "libs/FScreen.h"
 #include "fvwm.h"
 #include "externs.h"
 #include "cursor.h"
@@ -574,21 +574,21 @@ Bool PlaceWindow(
     if (flags.do_honor_starts_on_screen)
     {
       /* use screen from style */
-      XineramaSupportGetNumberedScrRect(
+      FScreenGetNumberedScrRect(
 	XineramaScreen,
 	&screen_g.x, &screen_g.y, &screen_g.width, &screen_g.height);
     }
     else
     {
       /* use global screen */
-      XineramaSupportGetGlobalScrRect(
+      FScreenGetGlobalScrRect(
 	&screen_g.x, &screen_g.y, &screen_g.width, &screen_g.height);
     }
   }
   else
   {
     /* use current screen */
-    XineramaSupportGetCurrentScrRect(
+    FScreenGetCurrentScrRect(
       NULL, &screen_g.x, &screen_g.y, &screen_g.width, &screen_g.height);
   }
   PageLeft   = screen_g.x - pdeltax;
@@ -808,7 +808,7 @@ Bool PlaceWindow(
 	DragHeight = tmp_win->frame_g.height;
 
 	XMapRaised(dpy, Scr.SizeWindow);
-	XineramaSupportGetCurrent00(NULL, &mx, &my);
+	FScreenGetCurrent00(NULL, &mx, &my);
 	if (moveLoop(tmp_win, mx, my, DragWidth, DragHeight,
 		     &xl, &yt, False))
 	{

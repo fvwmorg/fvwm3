@@ -39,7 +39,7 @@
 
 #include "libs/fvwmlib.h"
 #include "libs/Colorset.h"
-#include "libs/XineramaSupport.h"
+#include "libs/FScreen.h"
 #include "fvwm.h"
 #include "externs.h"
 #include "cursor.h"
@@ -1228,7 +1228,7 @@ void broadcast_xinerama_state(void)
   char buf[100];
   int scr;
 
-  scr = (XineramaSupportIsEnabled()) ? XineramaSupportGetPrimaryScreen() : -1;
+  scr = (FScreenIsEnabled()) ? FScreenGetPrimaryScreen() : -1;
   sprintf(buf, "%s %d", XINERAMA_CONFIG_STRING, scr);
   BroadcastConfigInfoString(buf);
 

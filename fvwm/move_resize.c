@@ -33,7 +33,7 @@
 
 #include "libs/fvwmlib.h"
 #include "libs/Colorset.h"
-#include "libs/XineramaSupport.h"
+#include "libs/FScreen.h"
 #include "fvwm.h"
 #include "externs.h"
 #include "cursor.h"
@@ -389,11 +389,11 @@ static void position_geometry_window(XEvent *eventp)
   /* Probably should remove this positioning code from {builtins,fvwm}.c? */
   if (Scr.gs.EmulateMWM)
   {
-    XineramaSupportCenterCurrent(eventp, &x, &y, sizew_g.width, sizew_g.height);
+    FScreenCenterCurrent(eventp, &x, &y, sizew_g.width, sizew_g.height);
   }
   else
   {
-    XineramaSupportGetCurrent00(eventp, &x, &y);
+    FScreenGetCurrent00(eventp, &x, &y);
   }
   if (x != sizew_g.x || y != sizew_g.y)
   {
@@ -985,8 +985,8 @@ static void move_window_doit(F_CMD_ARGS, Bool do_animate, int mode)
     do_animate = False;
     SET_STICKY(tmp_win, 0);
 
-    xi_screen = XineramaSupportGetScreenArgument(action, 'c');
-    XineramaSupportGetNumberedScrRect(
+    xi_screen = FScreenGetScreenArgument(action, 'c');
+    FScreenGetNumberedScrRect(
       xi_screen, &s.x, &s.y, &s.width, &s.height);
     page_x = Scr.Vx;
     page_y = Scr.Vy;
@@ -1429,12 +1429,12 @@ static void DoSnapAttract(
     }
   }
   /* Resist moving windows between xineramascreens */
-  if (Scr.XiMoveResistance > 0 && XineramaSupportIsEnabled())
+  if (Scr.XiMoveResistance > 0 && FScreenIsEnabled())
   {
     int scr_x0, scr_y0, scr_x1, scr_y1;
     Bool do_recalc_rectangle = False;
 
-    XineramaSupportGetResistanceRect(
+    FScreenGetResistanceRect(
       *px, *py, Width, Height, &scr_x0, &scr_y0, &scr_x1, &scr_y1);
 
     /* snap to right edge */
@@ -1455,7 +1455,7 @@ static void DoSnapAttract(
     {
       /* Snapping in X direction can move the window off a screen.  Thus, it
        * may no longer be necessary to snap in Y direction. */
-      XineramaSupportGetResistanceRect(
+      FScreenGetResistanceRect(
 	*px, *py, Width, Height, &scr_x0, &scr_y0, &scr_x1, &scr_y1);
     }
     /* snap to bottom edge */
@@ -3101,8 +3101,8 @@ void CMD_Maximize(F_CMD_ARGS)
 
       is_screen_given = True;
       token = PeekToken(taction, &action);
-      scr = XineramaSupportGetScreenArgument(token, 'p');
-      XineramaSupportGetNumberedScrRect(scr, &scr_x, &scr_y, &scr_w, &scr_h);
+      scr = FScreenGetScreenArgument(token, 'p');
+      FScreenGetNumberedScrRect(scr, &scr_x, &scr_y, &scr_w, &scr_h);
     }
   }
   toggle = ParseToggleArgument(action, &action, -1, 0);
@@ -3143,7 +3143,7 @@ void CMD_Maximize(F_CMD_ARGS)
   /* Check if we should constrain rectangle to some Xinerama screen */
   if (!is_screen_given)
   {
-    XineramaSupportGetScrRect(
+    FScreenGetScrRect(
       tmp_win->frame_g.x + tmp_win->frame_g.width  / 2 - page_x,
       tmp_win->frame_g.y + tmp_win->frame_g.height / 2 - page_y,
       &scr_x, &scr_y, &scr_w, &scr_h);

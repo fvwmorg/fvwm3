@@ -18,7 +18,7 @@
 #include <stdio.h>
 
 #include "libs/fvwmlib.h"
-#include "libs/XineramaSupport.h"
+#include "libs/FScreen.h"
 #include "fvwm.h"
 #include "externs.h"
 #include "cursor.h"
@@ -344,22 +344,22 @@ void CMD_Xinerama(F_CMD_ARGS)
   Scr.flags.has_xinerama_state_changed = True;
   if (GetIntegerArguments(action, NULL, &val, 1) == 1)
   {
-    XineramaSupportEnable();
-    XineramaSupportSetPrimaryScreen(val);
+    FScreenEnable();
+    FScreenSetPrimaryScreen(val);
     return;
   }
   toggle = ParseToggleArgument(action, NULL, -1, 0);
   if (toggle == -1)
   {
-    toggle = !XineramaSupportIsEnabled();
+    toggle = !FScreenIsEnabled();
   }
   if (toggle)
   {
-    XineramaSupportEnable();
+    FScreenEnable();
   }
   else
   {
-    XineramaSupportDisable();
+    FScreenDisable();
     broadcast_xinerama_state();
   }
   broadcast_xinerama_state();

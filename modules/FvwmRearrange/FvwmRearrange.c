@@ -44,7 +44,7 @@
 #include <X11/Xlib.h>
 
 #include "libs/fvwmlib.h"
-#include "libs/XineramaSupport.h"
+#include "libs/FScreen.h"
 #include "libs/Module.h"
 #include "fvwm/fvwm.h"
 #include "libs/vpacket.h"
@@ -499,7 +499,7 @@ int main(int argc, char *argv[])
   }
   signal (SIGPIPE, DeadPipe);
 
-  XineramaSupportInit(dpy);
+  FScreenInit(dpy);
   scr = DefaultScreen(dpy);
   fd_width = GetFdWidth();
 
@@ -513,12 +513,12 @@ int main(int argc, char *argv[])
     if (strncasecmp(config_line, XINERAMA_CONFIG_STRING,
 		    sizeof(XINERAMA_CONFIG_STRING) - 1) == 0)
     {
-      XineramaSupportConfigureModule(
+      FScreenConfigureModule(
 	config_line + sizeof(XINERAMA_CONFIG_STRING) - 1);
     }
     GetConfigLine(fd, &config_line);
   }
-  XineramaSupportGetCurrentScrRect(NULL, &dx, &dy, &dwidth, &dheight);
+  FScreenGetCurrentScrRect(NULL, &dx, &dy, &dwidth, &dheight);
 
   if (strcmp(argv0, "FvwmCascade") &&
       (!strcmp(argv0, "FvwmTile") ||

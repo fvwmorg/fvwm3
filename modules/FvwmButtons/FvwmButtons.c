@@ -60,7 +60,7 @@
 
 #include "libs/defaults.h"
 #include "libs/fvwmlib.h"
-#include "libs/XineramaSupport.h"
+#include "libs/FScreen.h"
 #include "libs/Grab.h"
 #include "fvwm/fvwm.h"
 #include "libs/Module.h"
@@ -802,7 +802,7 @@ int main(int argc, char **argv)
     exit (1);
   }
   InitPictureCMap(Dpy);
-  XineramaSupportInit(Dpy);
+  FScreenInit(Dpy);
   /* Initialise default colorset */
   AllocColorset(0);
 
@@ -2416,7 +2416,7 @@ static void handle_config_info_packet(unsigned long *body)
   }
   else if (StrEquals(token, XINERAMA_CONFIG_STRING))
   {
-    XineramaSupportConfigureModule(tline);
+    FScreenConfigureModule(tline);
   }
 
   return;

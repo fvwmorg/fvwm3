@@ -71,7 +71,7 @@
 #include <ctype.h>
 #include <stdlib.h>
 #include "libs/fvwmlib.h"
-#include "libs/XineramaSupport.h"
+#include "libs/FScreen.h"
 #include "libs/Module.h"
 #include "libs/Picture.h"
 #include "libs/Colorset.h"
@@ -269,7 +269,7 @@ int main(int argc, char **argv)
     exit (1);
   }
   InitPictureCMap(dpy);
-  XineramaSupportInit(dpy);
+  FScreenInit(dpy);
   /* Initialise default colorset */
   AllocColorset(0);
 
@@ -548,7 +548,7 @@ void Loop(void)
               /*!!! Note: maybe it will be better to use (LastX+W/2,LastY+H/2)
                 in ScrRect query? That could help in pathological cases when
                 Wharf is not completely on a single screen. */
-              XineramaSupportGetScrRect(LastX, LastY, &scr_x, &scr_y, &scr_w, &scr_h);
+              FScreenGetScrRect(LastX, LastY, &scr_x, &scr_y, &scr_w, &scr_h);
 	      if (num_rows<num_columns) { /* horizontal */
 		if (LastY > scr_y + scr_h / 2) {
 		  CornerY = scr_y+scr_h-BUTTONHEIGHT;
@@ -1052,7 +1052,7 @@ void MapFolder(int folder, int *LastMapped, int base_x, int base_y, int row,
     int folderx, foldery, folderw, folderh;
     int scr_x, scr_y, scr_w, scr_h;
 
-    XineramaSupportGetScrRect(base_x, base_y, &scr_x, &scr_y, &scr_w, &scr_h);
+    FScreenGetScrRect(base_x, base_y, &scr_x, &scr_y, &scr_w, &scr_h);
 
     if (*LastMapped != -1)
     {
@@ -1587,7 +1587,7 @@ void ParseOptions(char *filename)
 	if (isspace(tmp[strlen(tmp)-1]))
 	  tmp[strlen(tmp)-1] = 0;
 
-	flags = XineramaSupportParseGeometry(tmp,&g_x,&g_y,&width,&height);
+	flags = FScreenParseGeometry(tmp,&g_x,&g_y,&width,&height);
 	if (flags & WidthValue)
 	  w = width;
 	if (flags & HeightValue)
@@ -1781,7 +1781,7 @@ void ParseOptions(char *filename)
     else if((strncasecmp(tline, XINERAMA_CONFIG_STRING,
 			 sizeof(XINERAMA_CONFIG_STRING) - 1)==0))
     {
-      XineramaSupportConfigureModule(
+      FScreenConfigureModule(
 	tline + sizeof(XINERAMA_CONFIG_STRING) - 1);
     }
     GetConfigLine(fd, &tline);
@@ -2272,7 +2272,7 @@ static void handle_config_info_packet(unsigned long *body)
   }
   else if (StrEquals(token, XINERAMA_CONFIG_STRING))
   {
-    XineramaSupportConfigureModule(tline);
+    FScreenConfigureModule(tline);
   }
 
   return;

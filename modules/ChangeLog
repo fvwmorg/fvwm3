@@ -1,3 +1,24 @@
+2001-08-26  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* FvwmForm/FvwmForm.c:
+	* FvwmWinList/FvwmWinList.c:
+	* FvwmWharf/FvwmWharf.c:
+	* FvwmTaskBar/FvwmTaskBar.c:
+	* FvwmScript/FvwmScript.c:
+	* FvwmRearrange/FvwmRearrange.c:
+	* FvwmPager/x_pager.c:
+	* FvwmPager/FvwmPager.c:
+	* FvwmIdent/FvwmIdent.c:
+	* FvwmIconMan/x.c:
+	* FvwmIconMan/readconfig.c:
+	* FvwmIconMan/fvwm.c:
+	* FvwmIconBox/FvwmIconBox.c:
+	* FvwmDragWell/fvwmDragWell.c:
+	* FvwmButtons/parse.c:
+	* FvwmButtons/FvwmButtons.c:
+	* FvwmBanner/FvwmBanner.c:
+	renamed all XineramaSupport...() functions to FScreen...()
+
 2001-08-25  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* FvwmIconMan/globals.c (init_win_manager):

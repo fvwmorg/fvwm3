@@ -21,7 +21,7 @@
 
 #include "types.h"
 #include "libs/fvwmlib.h"
-#include "libs/XineramaSupport.h"
+#include "libs/FScreen.h"
 #include "libs/fvwmsignal.h"
 #include "libs/Picture.h"
 
@@ -258,7 +258,7 @@ void ParseOptions(void)
 	LoadColorset(&tline[8]);
       else if (strncasecmp(tline, XINERAMA_CONFIG_STRING,
 			   sizeof(XINERAMA_CONFIG_STRING) - 1) == 0)
-	XineramaSupportConfigureModule(
+	FScreenConfigureModule(
 	  tline + sizeof(XINERAMA_CONFIG_STRING) - 1);
     }
 
@@ -299,7 +299,7 @@ void Xinit(int IsFather)
   }
   screen=DefaultScreen(dpy);
   InitPictureCMap(dpy);
-  XineramaSupportInit(dpy);
+  FScreenInit(dpy);
   AllocColorset(0);
   XSetErrorHandler(myErrorHandler);
 
@@ -497,7 +497,7 @@ void BuildGUI(int IsFather)
     int sx;
     int sy;
 
-    XineramaSupportGetCurrent00(NULL, &sx, &sy);
+    FScreenGetCurrent00(NULL, &sx, &sy);
     x11base->size.x = scriptprop->x + sx;
     x11base->size.y = scriptprop->y + sy;
   }
@@ -872,7 +872,7 @@ void MainLoop (void)
 	    }
 	  }
 	  else if (StrEquals(token, XINERAMA_CONFIG_STRING)) {
-	    XineramaSupportConfigureModule(line);
+	    FScreenConfigureModule(line);
 	  }
 	  if (token)
 	    free(token);

@@ -20,7 +20,7 @@
 #include "readconfig.h"
 #include <libs/defaults.h>
 #include <libs/fvwmlib.h>
-#include <libs/XineramaSupport.h>
+#include <libs/FScreen.h>
 #include <libs/Module.h>
 
 static char const rcsid[] =
@@ -902,7 +902,7 @@ static int GetConfigLineWrapper (int *fd, char **tline)
     else if (strncasecmp(*tline, XINERAMA_CONFIG_STRING,
 			 sizeof(XINERAMA_CONFIG_STRING) - 1) == 0)
     {
-      XineramaSupportConfigureModule(
+      FScreenConfigureModule(
 	(*tline) + sizeof(XINERAMA_CONFIG_STRING) - 1);
     }
     temp = strchr (*tline, '\n');

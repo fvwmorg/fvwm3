@@ -14,7 +14,7 @@
  */
 
 /*********************************************************************
- *  XineramaSupport.c
+ *  FScreen.c
  *    Xinerama abstraction support for window manager.
  *
  *  This module is all original code
@@ -36,22 +36,22 @@
  *   so if Xinerama is unavailable or disabled, the module performs
  *   all checks on screens[0] instead of screens[1..num_screens].
  *
- *   The client should first call the XineramaSupportInit(), passing
+ *   The client should first call the FScreenInit(), passing
  *   it the opened display descriptor.  During this call the list of
  *   Xinerama screens is retrieved and 'dpy' is saved for future
  *   reference.
  *
  *   If the client wishes to hard-disable Xinerama support (e.g. if
  *   Xinerama extension is present but is broken on display), it should
- *   call XineramaSupportDisable() *before* XineramaSupportInit().
+ *   call FScreenDisable() *before* FScreenInit().
  *
  *   Using real Xinerama screens info may be switched on/off "on the
- *   fly" by calling XineramaSupportSetState(0=off/else=on).
+ *   fly" by calling FScreenSetState(0=off/else=on).
  *
  *   Modules with Xinerama support should listen to the XineramaEnable
  *   and XineramaDisable strings coming over the module pipe as
- *   M_CONFIG_INFO packets and call XineramaSupportEnable() or
- *   XineramaSupportDisable in response.
+ *   M_CONFIG_INFO packets and call FScreenEnable() or
+ *   FScreenDisable in response.
  *
  *********************************************************************/
 
@@ -64,7 +64,7 @@
 #include "defaults.h"
 #include "fvwmlib.h"
 #include "safemalloc.h"
-#include "XineramaSupport.h"
+#include "FScreen.h"
 
 #ifdef HAVE_XINERAMA
 #include <X11/extensions/Xinerama.h>
@@ -144,14 +144,14 @@ static int                 randr_error_base  = -1;
 static Window blank_w, vert_w;
 #endif
 
-static int XineramaSupportParseScreenBit(char *arg, char default_screen);
+static int FScreenParseScreenBit(char *arg, char default_screen);
 
-Bool XineramaSupportIsEnabled(void)
+Bool FScreenIsEnabled(void)
 {
   return (is_xinerama_disabled || num_screens == 0) ? False : True;
 }
 
-static void XineramaSupportSetState(Bool onoff)
+static void FScreenSetState(Bool onoff)
 {
   if (onoff && total_screens > 0)
   {
@@ -165,7 +165,7 @@ static void XineramaSupportSetState(Bool onoff)
   }
 }
 
-void XineramaSupportInit(Display *dpy)
+void FScreenInit(Display *dpy)
 {
   static Bool is_initialised = False;
 #ifdef HAVE_XINERAMA
@@ -275,29 +275,29 @@ void XineramaSupportInit(Display *dpy)
   screens[0].height        = DisplayHeight(disp, DefaultScreen(disp));
 
   /* Fill in the screen range */
-  XineramaSupportSetState(1);
+  FScreenSetState(1);
 
   return;
 }
 
-void XineramaSupportDisable(void)
+void FScreenDisable(void)
 {
   is_xinerama_disabled = 1;
   num_screens = 0;
   /* Fill in the screen range */
-  XineramaSupportSetState(1);
+  FScreenSetState(1);
 #ifdef USE_XINERAMA_EMULATION
   XUnmapWindow(disp,blank_w);
   XUnmapWindow(disp,vert_w);
 #endif
 }
 
-void XineramaSupportEnable(void)
+void FScreenEnable(void)
 {
   is_xinerama_disabled = 0;
   num_screens = total_screens;
   /* Fill in the screen range */
-  XineramaSupportSetState(1);
+  FScreenSetState(1);
 #ifdef USE_XINERAMA_EMULATION
   XMapRaised(disp,blank_w);
   XMapRaised(disp,vert_w);
@@ -305,23 +305,23 @@ void XineramaSupportEnable(void)
 }
 
 #if 0
-void XineramaSupportDisableRandR(void)
+void FScreenDisableRandR(void)
 {
   if (disp != NULL)
   {
-    fprintf(stderr, "XineramaSupport: WARNING: XineramaSupportDisableRandR()"
-	    " called after XineramaSupportInit()!\n");
+    fprintf(stderr, "FScreen: WARNING: FScreenDisableRandR()"
+	    " called after FScreenInit()!\n");
   }
   randr_disabled = 1;
 }
 #endif
 
-int XineramaSupportGetPrimaryScreen(void)
+int FScreenGetPrimaryScreen(void)
 {
   return (is_xinerama_disabled) ? 0 : primary_scr;
 }
 
-void XineramaSupportSetPrimaryScreen(int scr)
+void FScreenSetPrimaryScreen(int scr)
 {
   if (scr >= 0 && scr < num_screens)
   {
@@ -337,7 +337,7 @@ void XineramaSupportSetPrimaryScreen(int scr)
 
 /* Intended to be called by modules.  Simply pass in the parameter from the
  * config string sent by fvwm. */
-void XineramaSupportConfigureModule(char *args)
+void FScreenConfigureModule(char *args)
 {
   int screen = 0;
 
@@ -346,14 +346,14 @@ void XineramaSupportConfigureModule(char *args)
   {
     screen = -1;
   }
-  XineramaSupportSetPrimaryScreen(screen - 1);
+  FScreenSetPrimaryScreen(screen - 1);
   if (screen == -1)
   {
-    XineramaSupportDisable();
+    FScreenDisable();
   }
   else
   {
-    XineramaSupportEnable();
+    FScreenEnable();
   }
 
   return;
@@ -362,9 +362,9 @@ void XineramaSupportConfigureModule(char *args)
 /* Sets the default screen for ...ParseGeometry if no screen spec is given.
  * Usually this is 'p', but this won't allow modules to appear under the
  * pointer. */
-void XineramaSupportSetDefaultModuleScreen(char *arg)
+void FScreenSetDefaultModuleScreen(char *arg)
 {
-  default_geometry_scr = XineramaSupportParseScreenBit(arg, 'p');
+  default_geometry_scr = FScreenParseScreenBit(arg, 'p');
 }
 
 
@@ -412,13 +412,13 @@ static void GetMouseXY(XEvent *eventp, int *x, int *y)
 #if 0
 /* this function is useless. Rather force the caller to fill out all
  * parameters. */
-int XineramaSupportClipToScreen(int *x, int *y, int w, int h)
+int FScreenClipToScreen(int *x, int *y, int w, int h)
 {
-  return XineramaSupportClipToScreenAt(*x, *y, x, y, w, h);
+  return FScreenClipToScreenAt(*x, *y, x, y, w, h);
 }
 #endif
 
-int XineramaSupportClipToScreen(
+int FScreenClipToScreen(
   int at_x, int at_y, int *x, int *y, int w, int h)
 {
   int scr    = FindScreenOfXY(at_x, at_y);
@@ -449,12 +449,12 @@ int XineramaSupportClipToScreen(
 }
 
 /* Exists almost exclusively for FvwmForm's "Position" statement */
-void XineramaSupportPositionCurrent(
+void FScreenPositionCurrent(
   int *x, int *y, int px, int py, int w, int h)
 {
   int  scr_x, scr_y, scr_w, scr_h;
 
-  XineramaSupportGetCurrentScrRect(NULL, &scr_x, &scr_y, &scr_w, &scr_h);
+  FScreenGetCurrentScrRect(NULL, &scr_x, &scr_y, &scr_w, &scr_h);
   *x = scr_x + px;
   *y = scr_y + py;
   if (px < 0)
@@ -463,7 +463,7 @@ void XineramaSupportPositionCurrent(
     *y += scr_h - h;
 }
 
-void XineramaSupportCenter(int ms_x, int ms_y, int *x, int *y, int w, int h)
+void FScreenCenter(int ms_x, int ms_y, int *x, int *y, int w, int h)
 {
   int  scr = FindScreenOfXY(ms_x, ms_y);
 
@@ -477,24 +477,24 @@ void XineramaSupportCenter(int ms_x, int ms_y, int *x, int *y, int w, int h)
   *y += screens[scr].y_org;
 }
 
-void XineramaSupportCenterCurrent(XEvent *eventp, int *x, int *y, int w, int h)
+void FScreenCenterCurrent(XEvent *eventp, int *x, int *y, int w, int h)
 {
   int ms_x;
   int ms_y;
 
   GetMouseXY(eventp, &ms_x, &ms_y);
-  XineramaSupportCenter(ms_x, ms_y, x, y, w, h);
+  FScreenCenter(ms_x, ms_y, x, y, w, h);
 }
 
-void XineramaSupportCenterPrimary(int *x, int *y, int w, int h)
+void FScreenCenterPrimary(int *x, int *y, int w, int h)
 {
   int  scr_x, scr_y, scr_w, scr_h;
 
-  XineramaSupportGetPrimaryScrRect(&scr_x, &scr_y, &scr_w, &scr_h);
-  XineramaSupportCenter(scr_x, scr_y, x, y, w, h);
+  FScreenGetPrimaryScrRect(&scr_x, &scr_y, &scr_w, &scr_h);
+  FScreenCenter(scr_x, scr_y, x, y, w, h);
 }
 
-void XineramaSupportGetCurrent00(XEvent *eventp, int *x, int *y)
+void FScreenGetCurrent00(XEvent *eventp, int *x, int *y)
 {
   int  scr;
   int  ms_x, ms_y;
@@ -505,7 +505,7 @@ void XineramaSupportGetCurrent00(XEvent *eventp, int *x, int *y)
   *y = screens[scr].y_org;
 }
 
-Bool XineramaSupportGetScrRect(int l_x, int l_y, int *x, int *y, int *w, int *h)
+Bool FScreenGetScrRect(int l_x, int l_y, int *x, int *y, int *w, int *h)
 {
   int scr = FindScreenOfXY(l_x, l_y);
 
@@ -518,17 +518,17 @@ Bool XineramaSupportGetScrRect(int l_x, int l_y, int *x, int *y, int *w, int *h)
   return !(scr == 0 && num_screens > 1);
 }
 
-void XineramaSupportGetCurrentScrRect(
+void FScreenGetCurrentScrRect(
   XEvent *eventp, int *x, int *y, int *w, int *h)
 {
   int ms_x, ms_y;
 
   GetMouseXY(eventp, &ms_x, &ms_y);
-  XineramaSupportGetScrRect(ms_x, ms_y, x, y, w, h);
+  FScreenGetScrRect(ms_x, ms_y, x, y, w, h);
 }
 
 /* Note: <=-2:current, =-1:global, 0..?:screenN */
-void XineramaSupportGetPrimaryScrRect(int *x, int *y, int *w, int *h)
+void FScreenGetPrimaryScrRect(int *x, int *y, int *w, int *h)
 {
   int scr = primary_scr;
 
@@ -545,7 +545,7 @@ void XineramaSupportGetPrimaryScrRect(int *x, int *y, int *w, int *h)
   return;
 }
 
-void XineramaSupportGetGlobalScrRect(int *x, int *y, int *w, int *h)
+void FScreenGetGlobalScrRect(int *x, int *y, int *w, int *h)
 {
   *x = screens[0].x_org;
   *y = screens[0].y_org;
@@ -553,7 +553,7 @@ void XineramaSupportGetGlobalScrRect(int *x, int *y, int *w, int *h)
   *h = screens[0].height;
 }
 
-void XineramaSupportGetNumberedScrRect(
+void FScreenGetNumberedScrRect(
   int screen, int *x, int *y, int *w, int *h)
 {
   switch (screen)
@@ -562,7 +562,7 @@ void XineramaSupportGetNumberedScrRect(
     screen = 0;
     break;
   case GEOMETRY_SCREEN_CURRENT:
-    XineramaSupportGetCurrentScrRect(NULL, x, y, w, h);
+    FScreenGetCurrentScrRect(NULL, x, y, w, h);
     return;
   case GEOMETRY_SCREEN_PRIMARY:
     screen = primary_scr;
@@ -584,7 +584,7 @@ void XineramaSupportGetNumberedScrRect(
   return;
 }
 
-void XineramaSupportGetResistanceRect(int wx, int wy, int ww, int wh,
+void FScreenGetResistanceRect(int wx, int wy, int ww, int wh,
                                       int *x0, int *y0, int *x1, int *y1)
 {
   int  scr;
@@ -625,7 +625,7 @@ void XineramaSupportGetResistanceRect(int wx, int wy, int ww, int wh,
   }
 }
 
-Bool XineramaSupportIsRectangleOnThisScreen(
+Bool FScreenIsRectangleOnThisScreen(
   XEvent *eventp, rectangle *rec, int screen)
 {
   int x;
@@ -649,7 +649,7 @@ Bool XineramaSupportIsRectangleOnThisScreen(
 }
 
 
-static int XineramaSupportParseScreenBit(char *arg, char default_screen)
+static int FScreenParseScreenBit(char *arg, char default_screen)
 {
   int scr = default_geometry_scr;
   char c;
@@ -679,17 +679,17 @@ static int XineramaSupportParseScreenBit(char *arg, char default_screen)
   return scr;
 }
 
-int XineramaSupportGetScreenArgument(char *arg, char default_screen)
+int FScreenGetScreenArgument(char *arg, char default_screen)
 {
   while (arg && isspace(*arg))
     arg++;
 
-  return XineramaSupportParseScreenBit(arg, default_screen);
+  return FScreenParseScreenBit(arg, default_screen);
 }
 
 #if 1
 /*
- * XineramaSupportParseGeometry
+ * FScreenParseGeometry
  *     Does the same as XParseGeometry, but handles additional "@scr".
  *     Since it isn't safe to define "ScreenValue" constant (actual values
  *     of other "XXXValue" are specified in Xutil.h, not by us, so there can
@@ -697,7 +697,7 @@ int XineramaSupportGetScreenArgument(char *arg, char default_screen)
  *     present in `parse_string' (set to default in that case).
  *
  */
-int XineramaSupportParseGeometryWithScreen(
+int FScreenParseGeometryWithScreen(
   char *parsestring, int *x_return, int *y_return, unsigned int *width_return,
   unsigned int *height_return, int *screen_return)
 {
@@ -735,7 +735,7 @@ int XineramaSupportParseGeometryWithScreen(
 #endif
 
   /* Parse the "@scr", if any */
-  scr = XineramaSupportParseScreenBit(scr_p, 'p');
+  scr = FScreenParseScreenBit(scr_p, 'p');
   *screen_return = scr;
 
   /* We don't need the string any more */
@@ -746,7 +746,7 @@ int XineramaSupportParseGeometryWithScreen(
 
 /* Same as above, but dump screen return value to keep compatible with the X
  * function. */
-int XineramaSupportParseGeometry(
+int FScreenParseGeometry(
   char *parsestring, int *x_return, int *y_return, unsigned int *width_return,
   unsigned int *height_return)
 {
@@ -755,7 +755,7 @@ int XineramaSupportParseGeometry(
   int mx;
   int my;
 
-  rc = XineramaSupportParseGeometryWithScreen(
+  rc = FScreenParseGeometryWithScreen(
     parsestring, x_return, y_return, width_return, height_return, &scr);
   switch (scr)
   {
@@ -820,7 +820,7 @@ int XineramaSupportParseGeometry(
 }
 
 
-/*  XineramaSupportGetGeometry
+/*  FScreenGetGeometry
  *      Parses the geometry in a form: XGeometry[@screen], i.e.
  *          [=][<width>{xX}<height>][{+-}<xoffset>{+-}<yoffset>][@<screen>]
  *          where <screen> is either a number or "G" (global) "C" (current)
@@ -854,7 +854,7 @@ int XineramaSupportParseGeometry(
  *          This option can be also useful in cases where dimensions are
  *      specified not in pixels but in some other units (e.g., charcells).
  */
-int XineramaSupportGetGeometry(
+int FScreenGetGeometry(
   char *parsestring, int *x_return, int *y_return,
   int *width_return, int *height_return, XSizeHints *hints, int flags)
 {
@@ -866,7 +866,7 @@ int XineramaSupportGetGeometry(
   int   scr_x, scr_y, scr_w, scr_h;
 
   /* I. Do the parsing and strip off extra bits */
-  ret = XineramaSupportParseGeometryWithScreen(
+  ret = FScreenParseGeometryWithScreen(
     parsestring, &x, &y, &w, &h, &scr);
   saved = ret & (XNegative | YNegative);
   ret  &= flags;
@@ -875,15 +875,15 @@ int XineramaSupportGetGeometry(
   switch (scr)
   {
   case GEOMETRY_SCREEN_GLOBAL:
-    XineramaSupportGetGlobalScrRect(&scr_x, &scr_y, &scr_w, &scr_h);
+    FScreenGetGlobalScrRect(&scr_x, &scr_y, &scr_w, &scr_h);
     break;
 
   case GEOMETRY_SCREEN_CURRENT:
-    XineramaSupportGetCurrentScrRect(NULL, &scr_x, &scr_y, &scr_w, &scr_h);
+    FScreenGetCurrentScrRect(NULL, &scr_x, &scr_y, &scr_w, &scr_h);
     break;
 
   case GEOMETRY_SCREEN_PRIMARY:
-    XineramaSupportGetPrimaryScrRect(&scr_x, &scr_y, &scr_w, &scr_h);
+    FScreenGetPrimaryScrRect(&scr_x, &scr_y, &scr_w, &scr_h);
     break;
 
   default:
@@ -1006,7 +1006,7 @@ int XineramaSupportGetGeometry(
 
 /* no rand_r for now */
 # if 0
-int  XineramaSupportGetRandrEventType(void)
+int  FScreenGetRandrEventType(void)
 {
 #ifdef HAVE_RANDR
   return randr_active? randr_event_base + RRScreenChangeNotify : 0;
@@ -1015,9 +1015,8 @@ int  XineramaSupportGetRandrEventType(void)
 #endif
 }
 
-Bool XineramaSupportHandleRandrEvent(XEvent *event,
-                                     int *old_w, int *old_h,
-                                     int *new_w, int *new_h)
+Bool FScreenHandleRandrEvent(
+  XEvent *event, int *old_w, int *old_h, int *new_w, int *new_h)
 {
 #ifndef HAVE_RANDR
   return 0;

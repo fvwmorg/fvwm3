@@ -64,7 +64,7 @@
 
 #include "libs/defaults.h"
 #include "libs/fvwmlib.h"
-#include "libs/XineramaSupport.h"
+#include "libs/FScreen.h"
 #include "libs/Colorset.h"
 #include "fvwm/fvwm.h"
 #include "FvwmIconBox.h"
@@ -284,7 +284,7 @@ int main(int argc, char **argv)
       exit (1);
     }
   InitPictureCMap(dpy);
-  XineramaSupportInit(dpy);
+  FScreenInit(dpy);
   AllocColorset(0);
   x_fd = XConnectionNumber(dpy);
 
@@ -1655,7 +1655,7 @@ void ParseOptions(void)
 	while(((isspace((unsigned char)*tmp))&&(*tmp != '\n'))&&(*tmp != 0))
 	  tmp++;
 	tmp[strlen(tmp)] = 0;
-	flags = XineramaSupportParseGeometry(tmp,&g_x,&g_y,&width,&height);
+	flags = FScreenParseGeometry(tmp,&g_x,&g_y,&width,&height);
 	if (flags & WidthValue)
 	  num_columns = width;
 	if (flags & HeightValue)
@@ -1695,7 +1695,7 @@ void ParseOptions(void)
       else if (strncasecmp(tline, XINERAMA_CONFIG_STRING,
 			   sizeof(XINERAMA_CONFIG_STRING) - 1) == 0)
       {
-	XineramaSupportConfigureModule(
+	FScreenConfigureModule(
 	  tline + sizeof(XINERAMA_CONFIG_STRING) - 1);
       }
       else if (strncasecmp(
@@ -2446,7 +2446,7 @@ void process_message(unsigned long type, unsigned long *body)
     }
     else if (StrEquals(token, XINERAMA_CONFIG_STRING))
     {
-      XineramaSupportConfigureModule(tline);
+      FScreenConfigureModule(tline);
     }
   }
     break;
