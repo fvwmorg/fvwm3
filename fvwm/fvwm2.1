@@ -2653,28 +2653,23 @@ visually disturbing for other applications using windows not
 managed by fvwm.  Since these applications are rare it is most
 likely safe to leave this option at its default.
 
-.\"needswork  I don't understand the part about iconified in the place
-.\"of a state.
-.\"needs_lang_check (olicha) 
 .I EWMHIconicStateWorkaround
 is needed by EWMH compliant pagers or taskbars which represent
-all windows which are in a different desktop than the current one
-as iconified. This happen with pagers and taskbars which implement
-a version of the EWMH specification < to version 1.2 (this is the case
-for the current KDE2&3 versions).
-Form a technical point of view, such pagers and taskbars use the
+windows which are on a different desktops
+as iconified. These pagers and taskbars use
+a version of the EWMH specification before version 1.2 (the
+current KDE2&3 versions).
+These pagers and taskbars use the
 IconicState WM_STATE state to determine if an application is iconified.
-But this state, accordingly to the
+This state, according to the
 .SM ICCCM ,
 does not imply that a window is iconified (in the usual sense).
 Turning on this option forces fvwm2 to establish an equivalence
-between the IconicState WM_STATE state and really iconified window.
-This break the fvwm2
+between the IconicState WM_STATE state an iconified window.
+This violates
 .SM ICCCM
-implementation but should not cause big problems.
+compliance but should not cause big problems.
 By default this option is off.
-.\"end needs_lang_check
-.\"end needswork
 
 .TP
 .BI "BusyCursor [" "Option bool" "], " ...
