@@ -49,8 +49,8 @@
 
 /* ---------------------------- local definitions -------------------------- */
 
-/*#define FVWM_DEBUG_MSGS*/
-/*#define FVWM_DEBUG_DEVEL*/
+/*#define FVWM_DEBUG_MSGS 1*/
+/*#define FVWM_DEBUG_DEVEL 1*/
 
 /* ---------------------------- local macros ------------------------------- */
 
@@ -1406,6 +1406,7 @@ MatchWinToSM(
 					setup_visible_name(ewin, False);
 				}
 			}
+			SET_NAME_CHANGED(ewin,IS_NAME_CHANGED(&(matches[i])));
 			SET_PLACED_WB3(ewin,IS_PLACED_WB3(&(matches[i])));
 			SET_PLACED_BY_FVWM(
 				ewin, IS_PLACED_BY_FVWM(&(matches[i])));

@@ -1,3 +1,10 @@
+2003-07-21  olicha  <olivier.chapuis@free.fr>
+
+	* fvwm/add_window.c (setup_window_structure):
+	* fvwm/session.c (MatchWinToSM): 
+	Preserve is_name_changed window_flags within restart, session loading
+	and recapture
+
 2003-07-20  olicha  <olivier.chapuis@free.fr>
 
 	* fvwm/ewmh.c (EWMH_Init):
