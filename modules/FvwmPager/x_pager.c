@@ -486,20 +486,9 @@ void initialize_pager(void)
     if (Rows*Columns < ndesks)
       Rows++;
   }
-  if(window_w > 0)
-  {
-    window_w = ((window_w - n) / (n + 1)) * (n + 1) + n;
-    Scr.VScale = Columns * Scr.VWidth / (window_w - Columns + 1 - Columns * n);
-  }
-  if(window_h > 0)
-  {
-    window_h = ((window_h - m) / (m + 1)) * (m + 1) + m;
-    Scr.VScale = Rows * Scr.VHeight /(window_h + 2 - Rows * (label_h - m - 1));
-  }
-  if(window_w <= 0)
-    window_w = Columns * (Scr.VWidth / Scr.VScale + n) + Columns - 1;
-  if(window_h <= 0)
-    window_h = Rows * (Scr.VHeight / Scr.VScale + m + label_h + 1) - 2;
+
+  window_w = Columns * (Scr.VWidth / Scr.VScale + n) + Columns - 1;
+  window_h = Rows * (Scr.VHeight / Scr.VScale + m + label_h + 1) - 1;
 
   if (is_transient)
   {
@@ -544,7 +533,9 @@ void initialize_pager(void)
   sizehints.width_inc = Columns*(n+1);
   sizehints.height_inc = Rows*(m+1);
   sizehints.base_width = Columns * n + Columns - 1;
-  sizehints.base_height = Rows*(m + label_h+1) - 1;
+  sizehints.base_height = Rows * (m + label_h + 1) - 1;
+fprintf(stderr, "r %d, m %d, lh %d\n", Rows, m, label_h);
+fprintf(stderr,"bh %d, hi %d, wh %d\n", sizehints.base_height, sizehints.height_inc, sizehints.height);
 
   /* destroy the temp window first, don't worry if it's the Root */
   if (Scr.Pager_w != Scr.Root)
@@ -730,7 +721,7 @@ void initialize_pager(void)
 				     CopyFromParent, valuemask, &attributes);
     attributes.event_mask = (ExposureMask | ButtonReleaseMask |
 			     ButtonPressMask |ButtonMotionMask);
-    desk_h = window_h - label_h;
+    desk_h = (window_h - Rows * label_h - Rows + 1) / Rows;
 
     valuemask &= ~(CWBackPixel);
 
@@ -1282,21 +1273,28 @@ void ReConfigure(void)
   m1 = Scr.Vy / Scr.MyDisplayHeight;
   n = Scr.VxMax / Scr.MyDisplayWidth;
   m = Scr.VyMax / Scr.MyDisplayHeight;
-  if (window_w > 0)
-    window_w = ((window_w - n)/(n+1))*(n+1)+n;
-  if (window_h > 0)
-    window_h = ((window_h - m)/(m+1))*(m+1)+m;
-  desk_w = (window_w - Columns + 1)/Columns;
-  desk_h = (window_h - Rows*label_h - Rows + 1)/Rows;
-  w = (desk_w - n)/(n+1);
-  h = (desk_h - m)/(m+1);
 
-  sizehints.width_inc = Columns*(n+1);
-  sizehints.height_inc = Rows*(m+1);
+  sizehints.width_inc = Columns * (n + 1);
+  sizehints.height_inc = Rows * (m + 1);
   sizehints.base_width = Columns * n + Columns - 1;
   sizehints.base_height = Rows*(m + label_h+1) - 1;
   sizehints.min_width = sizehints.base_width;
   sizehints.min_height = sizehints.base_height;
+
+  if (window_w > 0)
+  {
+    window_w = (window_w - sizehints.base_width) / sizehints.width_inc;
+    window_w = window_w * sizehints.width_inc + sizehints.base_width;
+  }
+  if (window_h > 0)
+  {
+    window_h = (window_h - sizehints.base_height) / sizehints.height_inc;
+    window_h = window_h * sizehints.height_inc + sizehints.base_height;
+  }
+  desk_w = (window_w - Columns + 1) / Columns;
+  desk_h = (window_h - Rows * label_h - Rows + 1) / Rows;
+  w = (desk_w - n)/(n+1);
+  h = (desk_h - m)/(m+1);
 
   XSetWMNormalHints(dpy,Scr.Pager_w,&sizehints);
 
