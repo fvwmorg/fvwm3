@@ -102,6 +102,9 @@ void SetBorder (FvwmWindow *t, Bool onoroff,Bool force,Bool Mapped,
   int borderflags;
 #endif /* BORDERSTYLE */
   int rwidth; /* relief width */
+#ifdef WINDOWSHADE
+  Bool shaded;
+#endif        
 
   if(!t)
     return;
@@ -183,6 +186,10 @@ void SetBorder (FvwmWindow *t, Bool onoroff,Bool force,Bool Mapped,
   /* MWMBorder style means thin 3d effects */
   rwidth = ((t->flags & MWMBorders) ? 1 : 2);
   
+#ifdef WINDOWSHADE
+  shaded =  t->buttons & WSHADE;
+#endif        
+
   if(t->flags & ICONIFIED)
   {
     DrawIconWindow(t);
@@ -395,18 +402,24 @@ void SetBorder (FvwmWindow *t, Bool onoroff,Bool force,Bool Mapped,
            !(borderflags & NoInset)
 #endif
            && t->boundary_width > 2)
-        { /* draw a single pixel band for MWMBorders and the top FvwmBorder line */
+        {
+          int height = t->frame_height - (t->boundary_width * 2 ) + 1;
+#ifdef WINDOWSHADE
+          /* Inset for shaded windows goes to the bottom */
+          if (shaded) height += t->boundary_width;
+#endif        
+          /* draw a single pixel band for MWMBorders and the top FvwmBorder line */
           RelieveWindowGC(dpy, t->frame,
                           t->boundary_width - 1, t->boundary_width - 1,
                           t->frame_width - (t->boundary_width * 2 ) + 1,
-                          t->frame_height - (t->boundary_width * 2 ) + 1,
+                          height,
                           sgc, (t->flags & MWMBorders) ? rgc : sgc, 1);
           /* draw the rest of FvwmBorder Inset */
           if (!(t->flags & MWMBorders))
             RelieveWindowGC(dpy, t->frame,
                             t->boundary_width - 2, t->boundary_width - 2,
                             t->frame_width - (t->boundary_width * 2) + 4,
-                            t->frame_height - (t->boundary_width* 2) + 4,
+                            height + 3,
                             sgc, rgc, 2);
         }
       
@@ -424,7 +437,7 @@ void SetBorder (FvwmWindow *t, Bool onoroff,Bool force,Bool Mapped,
                           sgc, sgc, 1);
         }
         
-        /* draw the handles as eight depressed rectangles around the border */
+        /* draw the handles as eight marks rectangles around the border */
         if ((t->flags & BORDER) && (t->boundary_width > 2))
 #ifdef BORDERSTYLE
         if (!(borderflags & HiddenHandles))
@@ -434,16 +447,16 @@ void SetBorder (FvwmWindow *t, Bool onoroff,Bool force,Bool Mapped,
            * FvwmBorders have 3 pixels top/left, 2 bot/right so this make
            * claculating the length of the marks difficult, top and bottom
            * marks for FvwmBorders are different if NoInset is specified */
-          int tlength = t->boundary_width - rwidth - 2;
-          int blength = t->boundary_width - rwidth - 2;
-          int badjust = 0;
+          int tlength = t->boundary_width - rwidth - 1;
+          int blength = t->boundary_width - rwidth - 1;
+          int badjust = 1;
           XRectangle marks[8];
 
 #ifdef BORDERSTYLE
           if (borderflags & NoInset) {
             tlength += 1;
             blength += rwidth; /* coincidence, just happens to be 1 or 2 */
-            badjust = rwidth;
+            badjust += rwidth;
           }
 #endif BORDERSTYLE
 
@@ -457,31 +470,34 @@ void SetBorder (FvwmWindow *t, Bool onoroff,Bool force,Bool Mapped,
           marks[i].x = t->frame_width - t->corner_width;
           marks[i].y = rwidth;
           marks[i].width = rwidth - 1; marks[i++].height = tlength;
-          /* bot left */
-          marks[i].x = t->corner_width;
-          marks[i].y = t->frame_height - t->boundary_width + rwidth - badjust;
-          marks[i].width = rwidth - 1; marks[i++].height = blength;
-          /* bot right */
-          marks[i].x = t->frame_width - t->corner_width;
-          marks[i].y = t->frame_height - t->boundary_width + rwidth - badjust;
-          marks[i].width = rwidth - 1; marks[i++].height = blength;
-          /* left top */
-          marks[i].x = rwidth;
-          marks[i].y = t->corner_width;
-          marks[i].width = tlength; marks[i++].height = rwidth - 1;
-          /* left bot */
-          marks[i].x = rwidth;
-          marks[i].y = t->frame_height - t->corner_width;
-          marks[i].width = tlength; marks[i++].height = rwidth - 1;
-          /* right top */
-          marks[i].x = t->frame_width - t->boundary_width + rwidth - badjust;
-          marks[i].y = t->corner_width;
-          marks[i].width = blength; marks[i++].height = rwidth - 1;
-          /* right bot */
-          marks[i].x = t->frame_width - t->boundary_width + rwidth - badjust;
-          marks[i].y = t->frame_height - t->corner_width;
-          marks[i].width = blength; marks[i++].height = rwidth - 1;
-
+#ifdef WINDOWSHADE
+          if (!shaded)
+#endif
+          { /* bot left */
+            marks[i].x = t->corner_width;
+            marks[i].y = t->frame_height - t->boundary_width + rwidth - badjust;
+            marks[i].width = rwidth - 1; marks[i++].height = blength;
+            /* bot right */
+            marks[i].x = t->frame_width - t->corner_width;
+            marks[i].y = t->frame_height - t->boundary_width + rwidth - badjust;
+            marks[i].width = rwidth - 1; marks[i++].height = blength;
+            /* left top */
+            marks[i].x = rwidth;
+            marks[i].y = t->corner_width;
+            marks[i].width = tlength; marks[i++].height = rwidth - 1;
+            /* left bot */
+            marks[i].x = rwidth;
+            marks[i].y = t->frame_height - t->corner_width;
+            marks[i].width = tlength; marks[i++].height = rwidth - 1;
+            /* right top */
+            marks[i].x = t->frame_width - t->boundary_width + rwidth - badjust;
+            marks[i].y = t->corner_width;
+            marks[i].width = blength; marks[i++].height = rwidth - 1;
+            /* right bot */
+            marks[i].x = t->frame_width - t->boundary_width + rwidth - badjust;
+            marks[i].y = t->frame_height - t->corner_width;
+            marks[i].width = blength; marks[i++].height = rwidth - 1;
+          }
           XDrawRectangles(dpy, t->frame, rgc, marks, i);
 
           /* shadow marks */
@@ -494,31 +510,34 @@ void SetBorder (FvwmWindow *t, Bool onoroff,Bool force,Bool Mapped,
           marks[i].x = t->frame_width - t->corner_width - rwidth;
           marks[i].y = rwidth;
           marks[i].width = rwidth - 1; marks[i++].height = tlength;
-          /* bot left */
-          marks[i].x = t->corner_width - rwidth;
-          marks[i].y = t->frame_height - t->boundary_width + rwidth - badjust;
-          marks[i].width = rwidth - 1; marks[i++].height = blength;
-          /* bot right */
-          marks[i].x = t->frame_width - t->corner_width - rwidth;
-          marks[i].y = t->frame_height - t->boundary_width + rwidth - badjust;
-          marks[i].width = rwidth - 1; marks[i++].height = blength;
-          /* left top */
-          marks[i].x = rwidth;
-          marks[i].y = t->corner_width - rwidth;
-          marks[i].width = tlength; marks[i++].height = rwidth - 1;
-          /* left bot */
-          marks[i].x = rwidth;
-          marks[i].y = t->frame_height - t->corner_width - rwidth;
-          marks[i].width = tlength; marks[i++].height = rwidth - 1;
-          /* right top */
-          marks[i].x = t->frame_width - t->boundary_width + rwidth - badjust;
-          marks[i].y = t->corner_width - rwidth;
-          marks[i].width = blength; marks[i++].height = rwidth - 1;
-          /* right bot */
-          marks[i].x = t->frame_width - t->boundary_width + rwidth - badjust;
-          marks[i].y = t->frame_height - t->corner_width - rwidth;
-          marks[i].width = blength; marks[i++].height = rwidth - 1;
-
+#ifdef WINDOWSHADE
+          if (!shaded)
+#endif
+          { /* bot left */
+            marks[i].x = t->corner_width - rwidth;
+            marks[i].y = t->frame_height - t->boundary_width + rwidth - badjust;
+            marks[i].width = rwidth - 1; marks[i++].height = blength;
+            /* bot right */
+            marks[i].x = t->frame_width - t->corner_width - rwidth;
+            marks[i].y = t->frame_height - t->boundary_width + rwidth - badjust;
+            marks[i].width = rwidth - 1; marks[i++].height = blength;
+            /* left top */
+            marks[i].x = rwidth;
+            marks[i].y = t->corner_width - rwidth;
+            marks[i].width = tlength; marks[i++].height = rwidth - 1;
+            /* left bot */
+            marks[i].x = rwidth;
+            marks[i].y = t->frame_height - t->corner_width - rwidth;
+            marks[i].width = tlength; marks[i++].height = rwidth - 1;
+            /* right top */
+            marks[i].x = t->frame_width - t->boundary_width + rwidth - badjust;
+            marks[i].y = t->corner_width - rwidth;
+            marks[i].width = blength; marks[i++].height = rwidth - 1;
+            /* right bot */
+            marks[i].x = t->frame_width - t->boundary_width + rwidth - badjust;
+            marks[i].y = t->frame_height - t->corner_width - rwidth;
+            marks[i].width = blength; marks[i++].height = rwidth - 1;
+          }
           XDrawRectangles(dpy, t->frame, sgc, marks, i);
         }
 
