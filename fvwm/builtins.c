@@ -69,7 +69,7 @@ char *ModulePath = FVWM_MODULEDIR;
 int moduleTimeout = DEFAULT_MODULE_TIMEOUT;
 static char *exec_shell_name="/bin/sh";
 /* button state strings must match the enumerated states */
-static char *button_states[BS_MaxButtonState] =
+static char *button_states[BS_MaxButtonState + 1] =
 {
   "ActiveUp",
   "ActiveDown",
@@ -77,6 +77,7 @@ static char *button_states[BS_MaxButtonState] =
   "ToggledActiveUp",
   "ToggledActiveDown",
   "ToggledInactive",
+  NULL
 };
 
 
