@@ -702,8 +702,11 @@ Bool PlaceWindow(
       /* Try to find the parent's desktop */
       for (t = Scr.FvwmRoot.next; t != NULL; t = t->next)
       {
-	if(t->w == tmp_win->transientfor)
+	if (t->w == tmp_win->transientfor)
+        {
 	  tmp_win->Desk = t->Desk;
+          break;
+        }
       }
     }
 
