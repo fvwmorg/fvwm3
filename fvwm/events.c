@@ -112,6 +112,8 @@
 #undef LASTEvent
 #define LASTEvent 256
 
+#define CR_MOVERESIZE_MASK (CWX | CWY | CWWidth | CWHeight | CWBorderWidth)
+
 /* ---------------------------- local macros ------------------------------- */
 
 /* ---------------------------- imports ------------------------------------ */
@@ -511,7 +513,8 @@ static Bool __handle_click_to_focus(const exec_context_t *exc)
 	if (focus_is_focused(exc->w.fw) && !IS_ICONIFIED(exc->w.fw))
 	{
 		border_draw_decorations(
-			exc->w.fw, PART_ALL, True, True, CLEAR_ALL, NULL, NULL);
+			exc->w.fw, PART_ALL, True, True, CLEAR_ALL, NULL,
+			NULL);
 	}
 
 	return focus_is_focused(exc->w.fw);
@@ -644,8 +647,8 @@ static void __handle_bpress_on_managed(const exec_context_t *exc)
 	{
 		if (!__handle_click_to_focus(exc))
 		{
-			/* Window didn't accept the focus; pass the click to the
-			 * application. */
+			/* Window didn't accept the focus; pass the click to
+			 * the application. */
 			f.do_swallow_click = 0;
 		}
 	}
@@ -669,8 +672,8 @@ static void __handle_bpress_on_managed(const exec_context_t *exc)
 		/* mouse bindings */
 		action = CheckBinding(
 			Scr.AllBindings, STROKE_ARG(0) e->xbutton.button,
-			e->xbutton.state, GetUnusedModifiers(), exc->w.wcontext,
-			BIND_BUTTONPRESS);
+			e->xbutton.state, GetUnusedModifiers(),
+			exc->w.wcontext, BIND_BUTTONPRESS);
 		if (__handle_bpress_action(exc, action))
 		{
 			f.do_swallow_click = 1;
@@ -806,8 +809,8 @@ void HandleClientMessage(const evh_args_t *ea)
 	}
 
 	/* FIXME: Is this safe enough ? I guess if clients behave
-	   according to ICCCM and send these messages only if they
-	   when grabbed the pointer, it is OK */
+	 * according to ICCCM and send these messages only if they
+	 * grabbed the pointer, it is OK */
 	{
 		extern Atom _XA_WM_COLORMAP_NOTIFY;
 		if (te->xclient.message_type == _XA_WM_COLORMAP_NOTIFY)
@@ -817,13 +820,11 @@ void HandleClientMessage(const evh_args_t *ea)
 		}
 	}
 
-	/*
-	** CKH - if we get here, it was an unknown client message, so send
-	** it to the client if it was in a window we know about.  I'm not so
-	** sure this should be done or not, since every other window manager
-	** I've looked at doesn't.  But it might be handy for a free drag and
-	** drop setup being developed for Linux.
-	*/
+	/* CKH - if we get here, it was an unknown client message, so send
+	 * it to the client if it was in a window we know about.  I'm not so
+	 * sure this should be done or not, since every other window manager
+	 * I've looked at doesn't.  But it might be handy for a free drag and
+	 * drop setup being developed for Linux. */
 	if (fw)
 	{
 		if (te->xclient.window != FW_W(fw))
@@ -844,20 +845,525 @@ void HandleColormapNotify(const evh_args_t *ea)
 	return;
 }
 
-void HandleConfigureRequest(const evh_args_t *ea)
+static void __handle_cr_on_unmanaged(XConfigureRequestEvent *cre)
 {
-	rectangle new_g;
-	int dx;
-	int dy;
-	int dw;
-	int dh;
-	int constr_w;
-	int constr_h;
-	int oldnew_w;
-	int oldnew_h;
 	XWindowChanges xwc;
 	unsigned long xwcm;
-	Bool do_send_event = False;
+
+	xwcm = (cre->value_mask & CR_MOVERESIZE_MASK);
+	xwc.x = cre->x;
+	xwc.y = cre->y;
+	xwc.width = cre->width;
+	xwc.height = cre->height;
+	xwc.border_width = cre->border_width;
+	XConfigureWindow(dpy, cre->window, xwcm, &xwc);
+
+	return;
+}
+
+static void __handle_cr_on_icon(XConfigureRequestEvent *cre, FvwmWindow *fw)
+{
+	XWindowChanges xwc;
+	unsigned long xwcm;
+
+	xwcm = (cre->value_mask & CR_MOVERESIZE_MASK);
+	xwc.x = cre->x;
+	xwc.y = cre->y;
+	xwc.width = cre->width;
+	xwc.height = cre->height;
+	xwc.border_width = cre->border_width;
+	if (FW_W_ICON_PIXMAP(fw) == cre->window)
+	{
+		int bw;
+
+		if (cre->value_mask & CWBorderWidth)
+		{
+			bw = cre->border_width;
+		}
+		else
+		{
+			bw = 0;
+		}
+		if ((cre->value_mask & (CWWidth | CWHeight)) ==
+		    (CWWidth | CWHeight))
+		{
+			set_icon_picture_size(
+				fw, cre->width + 2 * bw, cre->height + 2 * bw);
+		}
+	}
+	set_icon_position(fw, cre->x, cre->y);
+	broadcast_icon_geometry(fw, False);
+	XConfigureWindow(dpy, cre->window, xwcm, &xwc);
+	if (cre->window != FW_W_ICON_PIXMAP(fw) &&
+	    FW_W_ICON_PIXMAP(fw) != None)
+	{
+		rectangle g;
+
+		get_icon_picture_geometry(fw, &g);
+		xwc.x = g.x;
+		xwc.y = g.y;
+		xwcm = cre->value_mask & (CWX | CWY);
+		XConfigureWindow(
+			dpy, FW_W_ICON_PIXMAP(fw), xwcm, &xwc);
+	}
+	if (FW_W_ICON_TITLE(fw) != None)
+	{
+		rectangle g;
+
+		get_icon_title_geometry(fw, &g);
+		xwc.x = g.x;
+		xwc.y = g.y;
+		xwcm = cre->value_mask & (CWX | CWY);
+		XConfigureWindow(
+			dpy, FW_W_ICON_TITLE(fw), xwcm, &xwc);
+	}
+
+	return;
+}
+
+static void __handle_cr_on_shaped(FvwmWindow *fw)
+{
+	/* suppress compiler warnings w/o shape extension */
+	int i = 0;
+	unsigned int u = 0;
+	Bool b = False;
+	int boundingShaped;
+
+	if (FShapeQueryExtents(
+		    dpy, FW_W(fw), &boundingShaped, &i, &i, &u, &u, &b,
+		    &i, &i, &u, &u))
+	{
+		fw->wShaped = boundingShaped;
+	}
+	else
+	{
+		fw->wShaped = 0;
+	}
+
+	return;
+}
+
+static void __handle_cr_restack(
+	int *ret_do_send_event, XConfigureRequestEvent *cre, FvwmWindow *fw)
+{
+	XWindowChanges xwc;
+	unsigned long xwcm;
+	FvwmWindow *fw2 = NULL;
+
+	if (cre->value_mask & CWSibling)
+	{
+		if (XFindContext(
+			    dpy, cre->above, FvwmContext,
+			    (caddr_t *)&fw2) == XCNOENT)
+		{
+			fw2 = NULL;
+		}
+		if (fw2 == fw)
+		{
+			fw2 = NULL;
+		}
+	}
+	if (cre->detail != Above && cre->detail != Below)
+	{
+		HandleUnusualStackmodes(
+			cre->detail, fw, cre->window, fw2, cre->above);
+	}
+	/* only allow clients to restack windows within their layer */
+	else if (fw2 == NULL || compare_window_layers(fw2, fw) != 0)
+	{
+		switch (cre->detail)
+		{
+		case Above:
+			RaiseWindow(fw);
+			break;
+		case Below:
+			LowerWindow(fw);
+			break;
+		}
+	}
+	else
+	{
+		xwc.sibling = FW_W_FRAME(fw2);
+		xwc.stack_mode = cre->detail;
+		xwcm = CWSibling | CWStackMode;
+		XConfigureWindow(dpy, FW_W_FRAME(fw), xwcm, &xwc);
+
+		/* Maintain the condition that icon windows are stacked
+		 * immediately below their frame
+		 * 1. for fw */
+		xwc.sibling = FW_W_FRAME(fw);
+		xwc.stack_mode = Below;
+		xwcm = CWSibling | CWStackMode;
+		if (FW_W_ICON_TITLE(fw) != None)
+		{
+			XConfigureWindow(
+				dpy, FW_W_ICON_TITLE(fw), xwcm, &xwc);
+		}
+		if (FW_W_ICON_PIXMAP(fw) != None)
+		{
+			XConfigureWindow(
+				dpy, FW_W_ICON_PIXMAP(fw), xwcm, &xwc);
+		}
+		/* 2. for fw2 */
+		if (cre->detail == Below)
+		{
+			xwc.sibling = FW_W_FRAME(fw2);
+			xwc.stack_mode = Below;
+			xwcm = CWSibling | CWStackMode;
+			if (FW_W_ICON_TITLE(fw2) != None)
+			{
+				XConfigureWindow(
+					dpy, FW_W_ICON_TITLE(fw2), xwcm, &xwc);
+			}
+			if (FW_W_ICON_PIXMAP(fw2) != None)
+			{
+				XConfigureWindow(
+					dpy, FW_W_ICON_PIXMAP(fw2), xwcm,
+					&xwc);
+			}
+		}
+		/* Maintain the stacking order ring */
+		if (cre->detail == Above)
+		{
+			remove_window_from_stack_ring(fw);
+			add_window_to_stack_ring_after(
+				fw, get_prev_window_in_stack_ring(fw2));
+		}
+		else /* cre->detail == Below */
+		{
+			remove_window_from_stack_ring(fw);
+			add_window_to_stack_ring_after(fw, fw2);
+		}
+	        BroadcastRestackThisWindow(fw);
+	}
+	/* srt (28-Apr-2001): Tk needs a ConfigureNotify event after a
+	 * raise, otherwise it would hang for two seconds */
+	*ret_do_send_event = 1;
+
+	return;
+}
+
+static int __handle_cr_on_client(
+	int *ret_do_send_event, const evh_args_t *ea, FvwmWindow *fw)
+{
+	XConfigureRequestEvent cre = ea->exc->x.etrigger->xconfigurerequest;
+	rectangle new_g;
+	rectangle d_g;
+	size_rect constr_dim;
+	size_rect oldnew_dim;
+	size_borders b;
+	int cn_count = 0;
+
+#define EXPERIMENTAL_ANTI_RACE_CONDITION_CODE
+	/* This is not a good idea because this interferes with changes in the
+	 * size hints of the window.  However, it is impossible to be
+	 * completely safe here.  For example, if the client changes the size
+	 * inc, then resizes the size of its window and then changes the size
+	 * inc again - all in one batch - then the WM will read the *second*
+	 * size inc upon the *first* event and use the wrong one in the
+	 * ConfigureRequest calculations. */
+	/* dv (31 Mar 2002): The code now handles these situations, so enable
+	 * it again. */
+#ifdef EXPERIMENTAL_ANTI_RACE_CONDITION_CODE
+	/* merge all pending ConfigureRequests for the window into a
+	 * single event */
+	XEvent e;
+	XConfigureRequestEvent *ecre;
+	check_if_event_args args;
+
+	args.w = cre.window;
+	args.do_return_true = False;
+	args.do_return_true_cr = True;
+	args.cr_value_mask = CR_MOVERESIZE_MASK;
+	args.ret_does_match = False;
+	args.ret_type = 0;
+#if 0
+	/* free some CPU */
+	/* dv (7 May 2002): No, it's better to not reschedule processes here
+	 * because some funny applications (XMMS, GTK) seem to expect that
+	 * ConfigureRequests are handled instantly or they freak out. */
+	usleep(1);
+#endif
+	for (cn_count = 0; 1; )
+	{
+		unsigned long vma;
+		unsigned long vmo;
+		unsigned long xm;
+		unsigned long ym;
+		evh_args_t ea2;
+		exec_context_changes_t ecc;
+
+		FCheckIfEvent(dpy, &e, test_resizing_event, (char *)&args);
+		if (args.ret_does_match == False)
+		{
+			break;
+		}
+		else if (args.ret_type == PropertyNotify)
+		{
+			/* Can't merge events with a PropertyNotify in
+			 * between.  The event is still on the queue. */
+			break;
+		}
+		else if (args.ret_type != ConfigureRequest)
+		{
+			/* not good. unselected event type! */
+			continue;
+		}
+		/* Event was removed from the queue and stored in e. */
+		xm = CWX | CWWidth;
+		ym = CWY | CWHeight;
+		ecre = &e.xconfigurerequest;
+		vma = cre.value_mask & ecre->value_mask;
+		vmo = cre.value_mask | ecre->value_mask;
+		if (((vma & xm) == 0 && (vmo & xm) == xm) ||
+		    ((vma & ym) == 0 && (vmo & ym) == ym))
+		{
+			/* can't merge events since location of window might
+			 * get screwed up. */
+			FPutBackEvent(dpy, &e);
+			break;
+		}
+		/* partially handle the event */
+		ecre->value_mask &= ~args.cr_value_mask;
+
+		ea2.exc = exc_clone_context(ea->exc, &ecc, ECC_ETRIGGER);
+		HandleConfigureRequest(&ea2);
+		exc_destroy_context(ea2.exc);
+
+		/* collect the size/position changes */
+		if (ecre->value_mask & CWX)
+		{
+			cre.x = ecre->x;
+		}
+		if (ecre->value_mask & CWY)
+		{
+			cre.y = ecre->y;
+		}
+		if (ecre->value_mask & CWWidth)
+		{
+			cre.width = ecre->width;
+		}
+		if (ecre->value_mask & CWHeight)
+		{
+			cre.height = ecre->height;
+		}
+		if (ecre->value_mask & CWBorderWidth)
+		{
+			cre.border_width = ecre->border_width;
+		}
+		cre.value_mask |= (ecre->value_mask & CR_MOVERESIZE_MASK);
+		cn_count++;
+	}
+#endif
+#if 0
+	fprintf(stderr,
+		"cre: %d(%d) %d(%d) %d(%d)x%d(%d) fw 0x%08x w 0x%08x "
+		"ew 0x%08x  '%s'\n",
+		cre.x, (int)(cre.value_mask & CWX),
+		cre.y, (int)(cre.value_mask & CWY),
+		cre.width, (int)(cre.value_mask & CWWidth),
+		cre.height, (int)(cre.value_mask & CWHeight),
+		(int)FW_W_FRAME(fw), (int)FW_W(fw), (int)cre.window,
+		(fw->name.name) ? fw->name.name : "");
+#endif
+	/* Don't modify frame_FW fields before calling SetupWindow! */
+	memset(&d_g, 0, sizeof(d_g));
+
+	if (HAS_NEW_WM_NORMAL_HINTS(fw))
+	{
+		/* get the latest size hints */
+		XSync(dpy, 0);
+		GetWindowSizeHints(fw);
+		SET_HAS_NEW_WM_NORMAL_HINTS(fw, 0);
+	}
+	if (!HAS_OVERRIDE_SIZE_HINTS(fw) && (fw->hints.flags & PMaxSize))
+	{
+		/* Java workaround */
+		if (cre.height > fw->hints.max_height &&
+		    fw->hints.max_height <= BROKEN_MAXSIZE_LIMIT)
+		{
+			fw->hints.max_height = DEFAULT_MAX_MAX_WINDOW_HEIGHT;
+			cre.value_mask |= CWHeight;
+		}
+		if (cre.width > fw->hints.max_width &&
+		    fw->hints.max_width <= BROKEN_MAXSIZE_LIMIT)
+		{
+			fw->hints.max_width = DEFAULT_MAX_MAX_WINDOW_WIDTH;
+			cre.value_mask |= CWWidth;
+		}
+	}
+	if (!HAS_OVERRIDE_SIZE_HINTS(fw) && (fw->hints.flags & PMinSize))
+	{
+		if (cre.width < fw->hints.max_width &&
+		    fw->hints.max_width >= BROKEN_MINSIZE_LIMIT)
+		{
+			fw->hints.min_width = 1;
+			cre.value_mask |= CWWidth;
+		}
+		if (cre.height < fw->hints.min_height &&
+		    fw->hints.min_height >= BROKEN_MINSIZE_LIMIT)
+		{
+			fw->hints.min_height = 1;
+			cre.value_mask |= CWHeight;
+		}
+	}
+	if (IS_SHADED(fw) ||
+	    !is_function_allowed(F_MOVE, NULL, fw, False, False))
+	{
+		/* forbid shaded applications to move their windows */
+		cre.value_mask &= ~(CWX | CWY);
+		/* resend the old geometry */
+		*ret_do_send_event = 1;
+	}
+	if (IS_MAXIMIZED(fw))
+	{
+		/* dont allow clients to resize maximized windows */
+		cre.value_mask &= ~(CWWidth | CWHeight);
+		/* resend the old geometry */
+		*ret_do_send_event = 1;
+		d_g.width = 0;
+		d_g.height = 0;
+	}
+	else if (!is_function_allowed(F_RESIZE, NULL, fw, False, False))
+	{
+		cre.value_mask &= ~(CWWidth | CWHeight);
+		*ret_do_send_event = 1;
+	}
+
+	/* for restoring */
+	if (cre.value_mask & CWBorderWidth)
+	{
+		fw->attr_backup.border_width = cre.border_width;
+	}
+	/* override even if border change */
+	get_window_borders(fw, &b);
+	if (cre.value_mask & CWX)
+	{
+		d_g.x = cre.x - fw->frame_g.x - b.top_left.width;
+	}
+	if (cre.value_mask & CWY)
+	{
+		d_g.y = cre.y - fw->frame_g.y - b.top_left.height;
+	}
+	if (cre.value_mask & CWHeight)
+	{
+		if (cre.height <
+		    (WINDOW_FREAKED_OUT_SIZE - b.total_size.height))
+		{
+			d_g.height = cre.height -
+				(fw->frame_g.height - b.total_size.height);
+		}
+		else
+		{
+			/* Ignore height changes to astronomically large
+			 * windows (needed for XEmacs 20.4); don't care if the
+			 * window is shaded here - we won't use 'height' in
+			 * this case anyway.
+			 * Inform the buggy app about the size that *we* want
+			 */
+			d_g.height = 0;
+			*ret_do_send_event = 1;
+		}
+	}
+	if (cre.value_mask & CWWidth)
+	{
+		if (cre.width < (WINDOW_FREAKED_OUT_SIZE - b.total_size.width))
+		{
+			d_g.width = cre.width -
+				(fw->frame_g.width - b.total_size.width);
+		}
+		else
+		{
+			d_g.width = 0;
+			*ret_do_send_event = 1;
+		}
+	}
+
+	/* SetupWindow (x,y) are the location of the upper-left outer corner
+	 * and are passed directly to XMoveResizeWindow (frame).  The
+	 * (width,height) are the inner size of the frame.  The inner width is
+	 * the same as the requested client window width; the inner height is
+	 * the same as the requested client window height plus any title bar
+	 * slop. */
+	new_g = fw->frame_g;
+	if (IS_SHADED(fw))
+	{
+		new_g.width = fw->normal_g.width;
+		new_g.height = fw->normal_g.height;
+	}
+	oldnew_dim.width = new_g.width + d_g.width;
+	oldnew_dim.height = new_g.height + d_g.height;
+	constr_dim.width = oldnew_dim.width;
+	constr_dim.height = oldnew_dim.height;
+	constrain_size(
+		fw, NULL, (unsigned int *)&constr_dim.width,
+		(unsigned int *)&constr_dim.height, 0, 0,
+		CS_UPDATE_MAX_DEFECT);
+	d_g.width += (constr_dim.width - oldnew_dim.width);
+	d_g.height += (constr_dim.height - oldnew_dim.height);
+	if ((cre.value_mask & CWX) && d_g.width)
+	{
+		new_g.x = fw->frame_g.x + d_g.x;
+		new_g.width = fw->frame_g.width + d_g.width;
+	}
+	else if ((cre.value_mask & CWX) && !d_g.width)
+	{
+		new_g.x = fw->frame_g.x + d_g.x;
+	}
+	else if (!(cre.value_mask & CWX) && d_g.width)
+	{
+		gravity_resize(fw->hints.win_gravity, &new_g, d_g.width, 0);
+	}
+	if ((cre.value_mask & CWY) && d_g.height)
+	{
+		new_g.y = fw->frame_g.y + d_g.y;
+		new_g.height = fw->frame_g.height + d_g.height;
+	}
+	else if ((cre.value_mask & CWY) && !d_g.height)
+	{
+		new_g.y = fw->frame_g.y + d_g.y;
+	}
+	else if (!(cre.value_mask & CWY) && d_g.height)
+	{
+		gravity_resize(fw->hints.win_gravity, &new_g, 0, d_g.height);
+	}
+
+	if (new_g.x == fw->frame_g.x && new_g.y == fw->frame_g.y &&
+	    new_g.width == fw->frame_g.width &&
+	    new_g.height == fw->frame_g.height)
+	{
+		/* Window will not be moved or resized; send a synthetic
+		 * ConfigureNotify. */
+		*ret_do_send_event = 1;
+	}
+	else if ((cre.value_mask & CWX) || (cre.value_mask & CWY) ||
+		 d_g.width || d_g.height)
+	{
+		if (IS_SHADED(fw))
+		{
+			get_shaded_geometry(fw, &new_g, &new_g);
+		}
+		frame_setup_window_app_request(
+			fw, new_g.x, new_g.y, new_g.width, new_g.height,
+			False);
+		/* make sure the window structure has the new position */
+		update_absolute_geometry(fw);
+		maximize_adjust_offset(fw);
+		GNOME_SetWinArea(fw);
+	}
+	else if (DO_FORCE_NEXT_CR(fw))
+	{
+		*ret_do_send_event = 1;
+	}
+	SET_FORCE_NEXT_CR(fw, 0);
+	SET_FORCE_NEXT_PN(fw, 0);
+
+	return cn_count;
+}
+
+void HandleConfigureRequest(const evh_args_t *ea)
+{
+	int do_send_event = 0;
 	int cn_count = 0;
 	const XEvent *te = ea->exc->x.etrigger;
 	XConfigureRequestEvent cre;
@@ -873,544 +1379,35 @@ void HandleConfigureRequest(const evh_args_t *ea)
 	{
 		fw = NULL;
 	}
-
-	/*
-	 * According to the July 27, 1988 ICCCM draft, we should ignore size
+	/* According to the July 27, 1988 ICCCM draft, we should ignore size
 	 * and position fields in the WM_NORMAL_HINTS property when we map a
 	 * window. Instead, we'll read the current geometry.  Therefore, we
 	 * should respond to configuration requests for windows which have
-	 * never been mapped.
-	 */
-	if (!fw || cre.window == FW_W_ICON_TITLE(fw) ||
+	 * never been mapped. */
+	if (fw == NULL)
+	{
+		__handle_cr_on_unmanaged(&cre);
+		return;
+	}
+	if (cre.window == FW_W_ICON_TITLE(fw) ||
 	    cre.window == FW_W_ICON_PIXMAP(fw))
 	{
-		xwcm = (cre.value_mask &
-			(CWX | CWY | CWWidth | CWHeight | CWBorderWidth));
-		xwc.x = cre.x;
-		xwc.y = cre.y;
-		if (fw && FW_W_ICON_PIXMAP(fw) == cre.window)
-		{
-			int bw;
-
-			if (cre.value_mask & CWBorderWidth)
-			{
-				bw = cre.border_width;
-			}
-			else
-			{
-				bw = 0;
-			}
-			if ((cre.value_mask & (CWWidth | CWHeight)) ==
-			    (CWWidth | CWHeight))
-			{
-				set_icon_picture_size(
-					fw, cre.width + 2 * bw,
-					cre.height + 2 * bw);
-			}
-		}
-		if (fw)
-		{
-			set_icon_position(fw, cre.x, cre.y);
-			broadcast_icon_geometry(fw, False);
-		}
-		xwc.width = cre.width;
-		xwc.height = cre.height;
-		xwc.border_width = cre.border_width;
-
-		XConfigureWindow(dpy, cre.window, xwcm, &xwc);
-
-		if (fw)
-		{
-			if (cre.window != FW_W_ICON_PIXMAP(fw) &&
-			    FW_W_ICON_PIXMAP(fw) != None)
-			{
-				rectangle g;
-
-				get_icon_picture_geometry(fw, &g);
-				xwc.x = g.x;
-				xwc.y = g.y;
-				xwcm = cre.value_mask & (CWX | CWY);
-				XConfigureWindow(
-					dpy, FW_W_ICON_PIXMAP(fw), xwcm, &xwc);
-			}
-			if (FW_W_ICON_TITLE(fw) != None)
-			{
-				rectangle g;
-
-				get_icon_title_geometry(fw, &g);
-				xwc.x = g.x;
-				xwc.y = g.y;
-				xwcm = cre.value_mask & (CWX | CWY);
-				XConfigureWindow(
-					dpy, FW_W_ICON_TITLE(fw), xwcm, &xwc);
-			}
-		}
-		if (!fw)
-		{
-			return;
-		}
+		__handle_cr_on_icon(&cre, fw);
 	}
-
 	if (FHaveShapeExtension && FShapesSupported)
 	{
-		int i;
-		unsigned int u;
-		Bool b;
-		int boundingShaped;
-
-		/* suppress compiler warnings w/o shape extension */
-		i = 0;
-		u = 0;
-		b = False;
-
-		if (FShapeQueryExtents(
-			    dpy, FW_W(fw), &boundingShaped, &i, &i, &u, &u, &b,
-			    &i, &i, &u, &u))
-		{
-			fw->wShaped = boundingShaped;
-		}
-		else
-		{
-			fw->wShaped = 0;
-		}
+		__handle_cr_on_shaped(fw);
 	}
-
-	/*  Stacking order change requested...  */
-	/*  Handle this *after* geometry changes, since we need the new
-	    geometry in occlusion calculations */
+	/* Stacking order change requested.  Handle this *after* geometry
+	 * changes, since we need the new geometry in occlusion calculations */
 	if ((cre.value_mask & CWStackMode) && !DO_IGNORE_RESTACK(fw))
 	{
-		FvwmWindow *otherwin = NULL;
-
-		if (cre.value_mask & CWSibling)
-		{
-			if (XFindContext(dpy, cre.above, FvwmContext,
-					 (caddr_t *) &otherwin) == XCNOENT)
-			{
-				otherwin = NULL;
-			}
-			if (otherwin == fw)
-			{
-				otherwin = NULL;
-			}
-		}
-		if ((cre.detail != Above) && (cre.detail != Below))
-		{
-			HandleUnusualStackmodes(
-				cre.detail, fw, cre.window, otherwin,
-				cre.above);
-		}
-		/* only allow clients to restack windows within their layer */
-		else if (!otherwin || compare_window_layers(otherwin, fw) != 0)
-		{
-			switch (cre.detail)
-			{
-			case Above:
-				RaiseWindow(fw);
-				break;
-			case Below:
-				LowerWindow(fw);
-				break;
-			}
-		}
-		else
-		{
-			xwc.sibling = FW_W_FRAME(otherwin);
-			xwc.stack_mode = cre.detail;
-			xwcm = CWSibling | CWStackMode;
-			XConfigureWindow(dpy, FW_W_FRAME(fw), xwcm, &xwc);
-
-			/* Maintain the condition that icon windows are stacked
-			   immediately below their frame */
-			/* 1. for fw */
-			xwc.sibling = FW_W_FRAME(fw);
-			xwc.stack_mode = Below;
-			xwcm = CWSibling | CWStackMode;
-			if (FW_W_ICON_TITLE(fw) != None)
-			{
-				XConfigureWindow(
-					dpy, FW_W_ICON_TITLE(fw), xwcm, &xwc);
-			}
-			if (FW_W_ICON_PIXMAP(fw) != None)
-			{
-				XConfigureWindow(
-					dpy, FW_W_ICON_PIXMAP(fw), xwcm, &xwc);
-			}
-
-			/* 2. for otherwin */
-			if (cre.detail == Below)
-			{
-				xwc.sibling = FW_W_FRAME(otherwin);
-				xwc.stack_mode = Below;
-				xwcm = CWSibling | CWStackMode;
-				if (FW_W_ICON_TITLE(otherwin) != None)
-				{
-					XConfigureWindow(
-						dpy, FW_W_ICON_TITLE(otherwin),
-						xwcm, &xwc);
-				}
-				if (FW_W_ICON_PIXMAP(otherwin) != None)
-				{
-					XConfigureWindow(
-						dpy, FW_W_ICON_PIXMAP(otherwin),
-						xwcm, &xwc);
-				}
-			}
-
-			/* Maintain the stacking order ring */
-			if (cre.detail == Above)
-			{
-				remove_window_from_stack_ring(fw);
-				add_window_to_stack_ring_after(
-					fw, get_prev_window_in_stack_ring(
-						otherwin));
-			}
-			else /* cre.detail == Below */
-			{
-				remove_window_from_stack_ring(fw);
-				add_window_to_stack_ring_after(fw, otherwin);
-			}
-
-			/*
-			  Let the modules know that fw changed its place
-			  in the stacking order
-			*/
-			BroadcastRestackThisWindow(fw);
-		}
-		/* srt (28-Apr-2001): Tk needs a ConfigureNotify event after a
-		 * raise, otherwise it would hang for two seconds */
-		new_g = fw->frame_g;
-		do_send_event = True;
+		__handle_cr_restack(&do_send_event, &cre, fw);
 	}
 
 	if (fw != NULL && cre.window == FW_W(fw))
 	{
-		size_borders b;
-
-#define EXPERIMENTAL_ANTI_RACE_CONDITION_CODE
-		/* This is not a good idea because this interferes with changes
-		 * in the size hints of the window.  However, it is impossible
-		 * to be completely safe here. For example, if the client
-		 * changes the size inc, then resizes the size of its window
-		 * and then changes the size inc again - all in one batch -
-		 * then the WM will read the *second* size inc upon the *first*
-		 * event and use the wrong one in the ConfigureRequest
-		 * calculations. */
-		/* dv (31 Mar 2002): The code now handles these situations, so
-		 * enable it again. */
-#ifdef EXPERIMENTAL_ANTI_RACE_CONDITION_CODE
-		/* merge all pending ConfigureRequests for the window into a
-		 * single event */
-		XEvent e;
-		XConfigureRequestEvent *ecre;
-		check_if_event_args args;
-
-		args.w = cre.window;
-		args.do_return_true = False;
-		args.do_return_true_cr = True;
-		args.cr_value_mask =
-			(CWX | CWY | CWWidth | CWHeight | CWBorderWidth);
-		args.ret_does_match = False;
-		args.ret_type = 0;
-#if 0
-		/* free some CPU */
-		/* dv (7 May 2002): No, it's better to not reschedule processes
-		 * here because some funny applications (XMMS, GTK) seem to
-		 * expect that ConfigureRequests are handled instantly or they
-		 * freak out. */
-		usleep(1);
-#endif
-		for (cn_count = 0; 1; )
-		{
-			unsigned long vma;
-			unsigned long vmo;
-			unsigned long xm;
-			unsigned long ym;
-			evh_args_t ea2;
-			exec_context_changes_t ecc;
-
-			FCheckIfEvent(
-				dpy, &e, test_resizing_event, (char *)&args);
-			if (args.ret_does_match == False)
-			{
-				break;
-			}
-			else if (args.ret_type == PropertyNotify)
-			{
-				/* Can't merge events with a PropertyNotify in
-				 * between.  The event is still on the queue.
-				 */
-				break;
-			}
-			else if (args.ret_type != ConfigureRequest)
-			{
-				/* not good.  unselected event type! */
-				continue;
-			}
-			/* Event was removed from the queue and stored in e. */
-			xm = CWX | CWWidth;
-			ym = CWY | CWHeight;
-			ecre = &e.xconfigurerequest;
-			vma = cre.value_mask & ecre->value_mask;
-			vmo = cre.value_mask | ecre->value_mask;
-			if (((vma & xm) == 0 && (vmo & xm) == xm) ||
-			    ((vma & ym) == 0 && (vmo & ym) == ym))
-			{
-				/* can't merge events since location of window
-				 * might get screwed up. */
-				FPutBackEvent(dpy, &e);
-				break;
-			}
-			/* partially handle the event */
-			ecre->value_mask &= ~args.cr_value_mask;
-
-			ea2.exc = exc_clone_context(
-				ea->exc, &ecc, ECC_ETRIGGER);
-			HandleConfigureRequest(&ea2);
-			exc_destroy_context(ea2.exc);
-
-
-			/* collect the size/position changes */
-			if (ecre->value_mask & CWX)
-			{
-				cre.value_mask |= CWX;
-				cre.x = ecre->x;
-			}
-			if (ecre->value_mask & CWY)
-			{
-				cre.value_mask |= CWY;
-				cre.y = ecre->y;
-			}
-			if (ecre->value_mask & CWWidth)
-			{
-				cre.value_mask |= CWWidth;
-				cre.width = ecre->width;
-			}
-			if (ecre->value_mask & CWHeight)
-			{
-				cre.value_mask |= CWHeight;
-				cre.height = ecre->height;
-			}
-			if (ecre->value_mask & CWBorderWidth)
-			{
-				cre.value_mask |= CWBorderWidth;
-				cre.border_width = ecre->border_width;
-			}
-			cn_count++;
-		}
-#endif
-
-#if 0
-		fprintf(stderr,
-			"cre: %d(%d) %d(%d) %d(%d)x%d(%d) fw 0x%08x w 0x%08x "
-			"ew 0x%08x  '%s'\n",
-			cre.x, (int)(cre.value_mask & CWX),
-			cre.y, (int)(cre.value_mask & CWY),
-			cre.width, (int)(cre.value_mask & CWWidth),
-			cre.height, (int)(cre.value_mask & CWHeight),
-			(int)FW_W_FRAME(fw), (int)FW_W(fw), (int)cre.window,
-			(fw->name.name) ? fw->name.name : "");
-#endif
-		/* Don't modify frame_FW fields before calling SetupWindow! */
-		dx = 0;
-		dy = 0;
-		dw = 0;
-		dh = 0;
-
-		if (HAS_NEW_WM_NORMAL_HINTS(fw))
-		{
-			/* get the latest size hints */
-			XSync(dpy, 0);
-			GetWindowSizeHints(fw);
-			SET_HAS_NEW_WM_NORMAL_HINTS(fw, 0);
-		}
-		if (!HAS_OVERRIDE_SIZE_HINTS(fw) && (fw->hints.flags & PMaxSize))
-		{
-			/* Java workaround */
-			if (cre.height > fw->hints.max_height &&
-			    fw->hints.max_height <= BROKEN_MAXSIZE_LIMIT)
-			{
-				fw->hints.max_height =
-					DEFAULT_MAX_MAX_WINDOW_HEIGHT;
-				cre.value_mask |= CWHeight;
-			}
-			if (cre.width > fw->hints.max_width &&
-			    fw->hints.max_width <= BROKEN_MAXSIZE_LIMIT)
-			{
-				fw->hints.max_width =
-					DEFAULT_MAX_MAX_WINDOW_WIDTH;
-				cre.value_mask |= CWWidth;
-			}
-		}
-		if (!HAS_OVERRIDE_SIZE_HINTS(fw) && (fw->hints.flags & PMinSize))
-		{
-			if (cre.height < fw->hints.min_height &&
-			    fw->hints.min_height >= BROKEN_MINSIZE_LIMIT)
-			{
-				fw->hints.min_height = 1;
-				cre.value_mask |= CWHeight;
-			}
-			if (cre.width < fw->hints.max_width &&
-			    fw->hints.max_width >= BROKEN_MINSIZE_LIMIT)
-			{
-				fw->hints.min_width = 1;
-				cre.value_mask |= CWWidth;
-			}
-		}
-		if (IS_SHADED(fw) ||
-		    !is_function_allowed(F_MOVE, NULL, fw, False, False))
-		{
-			/* forbid shaded applications to move their windows */
-			cre.value_mask &= ~(CWX | CWY);
-			/* resend the old geometry */
-			do_send_event = True;
-		}
-		if (IS_MAXIMIZED(fw))
-		{
-			/* dont allow clients to resize maximized windows */
-			cre.value_mask &= ~(CWWidth | CWHeight);
-			/* resend the old geometry */
-			do_send_event = True;
-			dw = 0;
-			dh = 0;
-		}
-		else if(!is_function_allowed(F_RESIZE, NULL, fw, False, False))
-		{
-			cre.value_mask &= ~(CWWidth | CWHeight);
-			do_send_event = True;
-		}
-
-		/* for restoring */
-		if (cre.value_mask & CWBorderWidth)
-		{
-			fw->attr_backup.border_width = cre.border_width;
-		}
-		/* override even if border change */
-		get_window_borders(fw, &b);
-		if (cre.value_mask & CWX)
-		{
-			dx = cre.x - fw->frame_g.x - b.top_left.width;
-		}
-		if (cre.value_mask & CWY)
-		{
-			dy = cre.y - fw->frame_g.y - b.top_left.height;
-		}
-		if (cre.value_mask & CWHeight)
-		{
-			if (cre.height <
-			    (WINDOW_FREAKED_OUT_SIZE - b.total_size.height))
-			{
-				dh = cre.height - (fw->frame_g.height -
-						    b.total_size.height);
-			}
-			else
-			{
-				/* patch to ignore height changes to
-				 * astronomically large windows (needed for
-				 * XEmacs 20.4); don't care if the window is
-				 * shaded here - we won't use 'height' in this
-				 * case anyway */
-				/* inform the buggy app about the size that
-				 * *we* want */
-				do_send_event = True;
-				dh = 0;
-			}
-		}
-		if (cre.value_mask & CWWidth)
-		{
-			if (cre.width < (WINDOW_FREAKED_OUT_SIZE -
-					  b.total_size.width))
-			{
-				dw = cre.width - (fw->frame_g.width -
-						   b.total_size.width);
-			}
-			else
-			{
-				/* see above */
-				do_send_event = True;
-				dw = 0;
-			}
-		}
-
-		/* SetupWindow (x,y) are the location of the upper-left outer
-		 * corner and are passed directly to XMoveResizeWindow (frame).
-		 *  The (width,height) are the inner size of the frame.  The
-		 * inner width is the same as the requested client window
-		 * width; the inner height is the same as the requested client
-		 * window height plus any title bar slop. */
-		new_g = fw->frame_g;
-		if (IS_SHADED(fw))
-		{
-			new_g.width = fw->normal_g.width;
-			new_g.height = fw->normal_g.height;
-		}
-		oldnew_w = new_g.width + dw;
-		oldnew_h = new_g.height + dh;
-		constr_w = oldnew_w;
-		constr_h = oldnew_h;
-		constrain_size(
-			fw, NULL, (unsigned int *)&constr_w,
-			(unsigned int *)&constr_h, 0, 0, CS_UPDATE_MAX_DEFECT);
-		dw += (constr_w - oldnew_w);
-		dh += (constr_h - oldnew_h);
-		if ((cre.value_mask & CWX) && dw)
-		{
-			new_g.x = fw->frame_g.x + dx;
-			new_g.width = fw->frame_g.width + dw;
-		}
-		else if ((cre.value_mask & CWX) && !dw)
-		{
-			new_g.x = fw->frame_g.x + dx;
-		}
-		else if (!(cre.value_mask & CWX) && dw)
-		{
-			gravity_resize(fw->hints.win_gravity, &new_g, dw, 0);
-		}
-		if ((cre.value_mask & CWY) && dh)
-		{
-			new_g.y = fw->frame_g.y + dy;
-			new_g.height = fw->frame_g.height + dh;
-		}
-		else if ((cre.value_mask & CWY) && !dh)
-		{
-			new_g.y = fw->frame_g.y + dy;
-		}
-		else if (!(cre.value_mask & CWY) && dh)
-		{
-			gravity_resize(fw->hints.win_gravity, &new_g, 0, dh);
-		}
-
-		if (new_g.x == fw->frame_g.x && new_g.y == fw->frame_g.y &&
-		    new_g.width == fw->frame_g.width &&
-		    new_g.height == fw->frame_g.height)
-		{
-			/* Window will not be moved or resized; send a
-			 * synthetic ConfigureNotify. */
-			do_send_event = True;
-		}
-		else if ((cre.value_mask & CWX) || (cre.value_mask & CWY) ||
-			 dw || dh)
-		{
-			if (IS_SHADED(fw))
-			{
-				get_shaded_geometry(fw, &new_g, &new_g);
-			}
-			frame_setup_window_app_request(
-				fw, new_g.x, new_g.y, new_g.width,
-				new_g.height, False);
-			/* make sure the window structure has the new position
-			 */
-			update_absolute_geometry(fw);
-			maximize_adjust_offset(fw);
-			GNOME_SetWinArea(fw);
-		}
-		else if (DO_FORCE_NEXT_CR(fw))
-		{
-			new_g = fw->frame_g;
-			do_send_event = True;
-		}
-		SET_FORCE_NEXT_CR(fw, 0);
-		SET_FORCE_NEXT_PN(fw, 0);
+		cn_count = __handle_cr_on_client(&do_send_event, ea, fw);
 	}
 #if 1
 	/* This causes some ddd windows not to be drawn properly. Reverted back

@@ -1,5 +1,13 @@
 2003-07-05  Dominik Vogt  <dominik.vogt@gmx.de>
 
+	* fvwm/events.c (__handle_cr_on_unmanaged):
+	(__handle_cr_on_icon):
+	(__handle_cr_on_shaped):
+	(__handle_cr_restack):
+	(__handle_cr_on_client):
+	(HandleConfigureRequest):
+	split the ConfigureRequest code into multiple functions
+
 	* fvwm/update.c (apply_window_updates):
 	fixed drawing of window decorations when "Style * Neverfocus" is used
 
