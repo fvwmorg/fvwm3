@@ -1,3 +1,7 @@
+1999-07-28  Hippo
+
+	* module/FvwmWinList/*: added colorset support
+
 1999-07-22  Brad Giaccio
 
 	* module/FvwmForm/*: added colorset support

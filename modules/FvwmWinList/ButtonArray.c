@@ -70,6 +70,7 @@ extern Display *dpy;
 extern Window win;
 extern GC shadow[MAX_COLOUR_SETS],hilite[MAX_COLOUR_SETS];
 extern GC graph[MAX_COLOUR_SETS],background[MAX_COLOUR_SETS];
+extern Pixmap pixmap[MAX_COLOUR_SETS];
 extern int LeftJustify, TruncateLeft, ShowFocus;
 
 extern long CurrentDesk;
@@ -367,7 +368,7 @@ Button *temp,*temp2;
 ******************************************************************************/
 void DoButton(Button *button, int x, int y, int w, int h)
 {
-  int up,Fontheight,newx,set;
+  int up,Fontheight,newx,set,len;
   GC topgc;
   GC bottomgc;
   char *string;
@@ -420,37 +421,43 @@ void DoButton(Button *button, int x, int y, int w, int h)
   }
 
   /* check if the string needs to be truncated */
-  string=button->title;
+  string = button->title;
+  len = strlen(string);
 
-  if (TruncateLeft
-      && (newx + button->tw + 2*button->reliefwidth + INNER_MARGIN) > w) {
-    if (button->truncatewidth == w)
-      string=button->truncate_title;
-    else {
-      while(*string && (newx + XTextWidth(ButtonFont,string,strlen(string))
-                      + 2*button->reliefwidth + INNER_MARGIN) > w)
-      string++;
-      button->truncatewidth = w;
-      button->truncate_title=string;
+  if (newx + button->tw + 2 * button->reliefwidth + INNER_MARGIN > w) {
+    if (button -> truncatewidth == w) {
+      /* truncated version already calculated, use it */
+      string = button->truncate_title;
+      len = strlen(string);
+    } else {
+      if (TruncateLeft) {
+	/* move the pointer up until the rest fits */
+	while (*string && (newx + XTextWidth(ButtonFont, string, strlen(string))
+			   + 2 * button->reliefwidth + INNER_MARGIN) > w) {
+	  string++;
+	  len--;
+	}
+	button->truncatewidth = w;
+	button->truncate_title = string;
+      } else {
+	while ((len > 1) && (newx + XTextWidth(ButtonFont, string, len)
+			   + 2 * button->reliefwidth + INNER_MARGIN) > w)
+	  len--;
+      }
     }
   }
 #ifdef I18N_MB
   XmbDrawString(dpy,win,ButtonFontset,graph[set],x+newx+button->reliefwidth,
               y+1+button->reliefwidth+ButtonFont->ascent,
-              string,strlen(string));
+              string,len);
 #else
   XDrawString(dpy,win,graph[set],x+newx+button->reliefwidth,
               y+1+button->reliefwidth+ButtonFont->ascent,
-              string,strlen(string));
+              string,len);
 #endif
 
-  /* Draw relief last, don't forget that XDrawLine doesn't do the last pixel */
-  RelieveRectangle(dpy,win,x,y,w,h,topgc,bottomgc,button->reliefwidth);
-
-  /* Make sure we have a one pixel border to the right too */
-  XDrawLine(dpy,win,background[set],
-            x+w-1-button->reliefwidth,y+1+button->reliefwidth,
-            x+w-1-button->reliefwidth,y+h-button->reliefwidth);
+  /* Draw relief last */
+  RelieveRectangle(dpy,win,x,y,w-1,h,topgc,bottomgc,button->reliefwidth);
 
   button->needsupdate=0;
 }
@@ -458,7 +465,7 @@ void DoButton(Button *button, int x, int y, int w, int h)
 /******************************************************************************
   DrawButtonArray - Draw the whole array (all=1), or only those that need.
 ******************************************************************************/
-void DrawButtonArray(ButtonArray *barray, int all)
+void DrawButtonArray(ButtonArray *barray, Bool all)
 {
   Button *btn;
   int i = 0;		/* buttons displayed */

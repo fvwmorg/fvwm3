@@ -136,13 +136,34 @@ void SetWindowBackground(Display *dpy, Window win, int width, int height,
 {
   Pixmap pixmap = None;
 
-  if (!colorset->pixmap) {
+  if (!colorset->pixmap)
     /* use the bg pixel */
     XSetWindowBackground(dpy, win, colorset->bg);
+  else {
+    pixmap = CreateBackgroundPixmap(dpy, win, width, height, colorset, depth, gc);
+    if (pixmap) {
+      XSetWindowBackgroundPixmap(dpy, win, pixmap);
+      XClearArea(dpy, win, 0, 0, width, height, True);
+      XFreePixmap(dpy, pixmap);
+    }
+  }
+}
+  
+/* create a pixmap suitable for plonking on the background of a window */  
+Pixmap CreateBackgroundPixmap(Display *dpy, Window win, int width, int height,
+			      colorset_struct *colorset, unsigned int depth,
+			      GC gc)
+{
+  Pixmap pixmap = None;
+
   /* fixme: test for keep_aspect here */
-  } else if (!colorset->stretch_x && !colorset->stretch_y) {
-    /* it's a tiled pixmap */
-    XSetWindowBackgroundPixmap(dpy, win, colorset->pixmap);
+  if (!colorset->stretch_x && !colorset->stretch_y) {
+    /* it's a tiled pixmap, create an unstretched one */
+    pixmap = XCreatePixmap(dpy, colorset->pixmap, colorset->width,
+			   colorset->height, depth);
+    if (pixmap)
+      XCopyArea(dpy, colorset->pixmap, pixmap, gc, 0, 0, colorset->width,
+		colorset->height, 0, 0);
   } else if (!colorset->stretch_x) {
     /* it's an VGradient */
     pixmap = CreateStretchYPixmap(dpy, colorset->pixmap, colorset->width,
@@ -156,11 +177,5 @@ void SetWindowBackground(Display *dpy, Window win, int width, int height,
     pixmap = CreateStretchPixmap(dpy, colorset->pixmap, colorset->width,
 				 colorset->height, depth, width, height, gc);
   }
-
-  if (pixmap)
-    XSetWindowBackgroundPixmap(dpy, win, pixmap);
-  XClearArea(dpy, win, 0, 0, width, height, True);
-  XFlush(dpy);
-  if (pixmap)
-    XFreePixmap(dpy, pixmap);
+  return pixmap;
 }

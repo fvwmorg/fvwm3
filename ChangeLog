@@ -1,3 +1,8 @@
+1999-07-28  Hippo
+
+	* libs/Colorset.{c,h}: New function CreateBackgroundPixmap() creates a
+	pixmap from a colrset suitable for using in XSetTile() XSetFillStyle().
+
 1999-07-23  Mikhael Goikhman  <migo@homemail.com>
 
 	* fvwm/functions.c (expand):

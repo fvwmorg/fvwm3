@@ -52,31 +52,42 @@ cause the window to draw up and to the left as windows are added)
 .IP "*FvwmWinListFont \fIfont\fP"
 Specifies the font to be used for labeling the buttons.
 
+.IP "*FvwmWinListColorset \fIn\fP"
+Specifies the colorset to use for the buttons. See FvwmTheme. Defaults to 0.
+
 .IP "*FvwmWinListFore \fIcolor\fP"
-Specifies the color to use for the button names.
+Specifies the color to use for the button names. Cancels *FvwmWinListColorset.
 
 .IP "*FvwmWinListBack \fIcolor\fP"
-Specifies the color for the buttons.
+Specifies the color for the buttons. Cancels *FvwmWinListColorset.
+
+.IP "*FvwmWinListFocusColorset \fIn\fP"
+Specifies the colorset to use for the button for the window that
+has the input focus. Defaults to 1.
 
 .IP "*FvwmWinListFocusFore \fIcolor\fP"
 Specifies the color to use for the button names for the window that
 has the input focus. If omitted, the color from \fBFvwmWinListFore\fP
-is used.
+is used. Cancels *FvwmWinListFocusColorset.
 
 .IP "*FvwmWinListFocusBack \fIcolor\fP"
 Specifies the color to use for the button for the window that
 has the input focus. If omitted, the color from \fBFvwmWinListBack\fP
-is used.
+is used. Cancels *FvwmWinListFocusColorset.
+
+.IP "*FvwmWinListIconColorset \fIn\fP"
+Specifies the colorset to use for buttons for windows that
+are iconified. Defaults to 0.
 
 .IP "*FvwmWinListIconFore \fIcolor\fP"
 Specifies the color to use for the button names for windows that
 are iconified. If omitted, the color from \fBFvwmWinListFore\fP
-is used.
+is used. Cancels *FvwmWinListIconColorset.
 
 .IP "*FvwmWinListIconBack \fIcolor\fP"
 Specifies the color to use for the button for windows that
 are iconified. If omitted, the color from \fBFvwmWinListBack\fP
-is used.
+is used. Cancels *FvwmWinListIconColorset.
 
 .IP "*FvwmWinListDontDepressFocus"
 By default FvwmWinlist will show the button for the window that has the

@@ -103,14 +103,15 @@ void SendFvwmPipe(char *message,unsigned long window);
 void DeadPipe(int nonsense) __attribute__((noreturn));
 void MakeMeWindow(void);
 void WaitForExpose(void);
-void RedrawWindow(int force);
+void RedrawWindow(Bool force);
 void StartMeUp(void);
 void ShutMeDown(void);
 void ConsoleMessage(const char *fmt,...) __attribute__((format(printf,1,2)));
 int OpenConsole(void);
 void ParseConfig(void);
+void ParseConfigLine(char *line);
 void LoopOnEvents(void);
-void AdjustWindow(void);
+void AdjustWindow(Bool force);
 
 char *makename(const char *string, Bool iconified);
 void ChangeWindowName(char *str);

@@ -48,6 +48,9 @@ char *DumpColorset(unsigned int n);
 inline int LoadColorset(char *line);
 inline int LoadColorsetAndFree(char *line);
 
+Pixmap CreateBackgroundPixmap(Display *dpy, Window win, int width, int height,
+			      colorset_struct *colorset, unsigned int depth,
+			      GC gc);
 void SetWindowBackground(Display *dpy, Window win, int width, int height,
 			 colorset_struct *colorset, unsigned int depth, GC gc);
 

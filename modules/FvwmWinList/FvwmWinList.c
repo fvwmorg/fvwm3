@@ -80,6 +80,7 @@
 #include "ButtonArray.h"
 #include "List.h"
 #include "Mallocs.h"
+#include "libs/Colorset.h"
 
 #define GRAB_EVENTS (ButtonPressMask|ButtonReleaseMask|ButtonMotionMask|EnterWindowMask|LeaveWindowMask)
 
@@ -117,6 +118,8 @@ char *ClickAction[3]={"Iconify -1,Raise","Iconify","Lower"},*EnterAction,
       *BackColor[MAX_COLOUR_SETS] = { "white" },
       *ForeColor[MAX_COLOUR_SETS] = { "black" },
       *geometry="";
+int colorset[MAX_COLOUR_SETS];
+Pixmap pixmap[MAX_COLOUR_SETS];
 char *font_string = "fixed";
 Bool UseSkipList = False, Anchor = True, UseIconNames = False,
      LeftJustify = False, TruncateLeft = False, ShowFocus = True,
@@ -224,6 +227,10 @@ int main(int argc, char **argv)
 #endif
 #endif
 
+  /* set default colorsets */
+  colorset[0] = colorset[1] = 0;
+  colorset[2] = colorset[3] = 1;
+
   /* Parse the config file */
   ParseConfig();
 
@@ -246,7 +253,7 @@ int main(int argc, char **argv)
 #ifdef MINI_ICONS
                  M_MINI_ICON |
 #endif
-                 M_STRING);
+                 M_STRING | M_CONFIG_INFO | M_SENDCONFIG);
 
   SendFvwmPipe("Send_WindowList",0);
 
@@ -328,8 +335,8 @@ void ProcessMessage(unsigned long type,unsigned long *body)
       {
 	if(UpdateItemDesk(&windows, i, cfgpacket->desk) > 0)
         {
-          AdjustWindow();
-          RedrawWindow(1);
+          AdjustWindow(False);
+          RedrawWindow(True);
         }
 	break;
       }
@@ -341,7 +348,7 @@ void ProcessMessage(unsigned long type,unsigned long *body)
       if ((i=DeleteItem(&windows,cfgpacket->w))==-1) break;
       RemoveButton(&buttons,i);
       if (WindowIsUp)
-        AdjustWindow();
+        AdjustWindow(False);
 
       redraw=1;
       break;
@@ -380,7 +387,7 @@ void ProcessMessage(unsigned long type,unsigned long *body)
         UpdateButtonDesk(&buttons,i,ItemDesk(&windows, body[0]));
       }
       free(name);
-      if (WindowIsUp) AdjustWindow();
+      if (WindowIsUp) AdjustWindow(False);
       redraw=1;
       break;
     case M_DEICONIFY:
@@ -423,15 +430,18 @@ void ProcessMessage(unsigned long type,unsigned long *body)
       CurrentDesk = body[0];
       if(ShowCurrentDesk)
       {
-        AdjustWindow();
-        RedrawWindow(1);
+        AdjustWindow(False);
+        RedrawWindow(True);
       }
       break;
     case M_NEW_PAGE:
       break;
+    case M_CONFIG_INFO:
+      ParseConfigLine((char *)&body[3]);
+      break;
   }
 
-  if (redraw && WindowIsUp==1) RedrawWindow(0);
+  if (redraw && WindowIsUp==1) RedrawWindow(False);
 }
 
 /******************************************************************************
@@ -524,7 +534,7 @@ void WaitForExpose(void)
 /******************************************************************************
   RedrawWindow - Update the needed lines and erase any old ones
 ******************************************************************************/
-void RedrawWindow(int force)
+void RedrawWindow(Bool force)
 {
   DrawButtonArray(&buttons, force);
   XFlush(dpy); /** Put here for VMS; ifdef if causes performance problem **/
@@ -575,58 +585,112 @@ void ParseConfig(void)
   GetConfigLine(Fvwm_fd,&tline);
   while(tline != (char *)0)
     {
-      if(strlen(tline)>1)
-	{
-	  if(strncasecmp(tline, CatString3(Module, "Font",""),Clength+4)==0)
-	    CopyString(&font_string,&tline[Clength+4]);
-	  else if(strncasecmp(tline,CatString3(Module,"Fore",""), Clength+4)==0)
-	    CopyString(&ForeColor[0],&tline[Clength+4]);
-	  else if(strncasecmp(tline,CatString3(Module,"IconFore",""), Clength+8)==0)
-	    CopyString(&ForeColor[1],&tline[Clength+8]);
-	  else if(strncasecmp(tline,CatString3(Module,"FocusFore",""), Clength+9)==0)
-	    {
-	      CopyString(&ForeColor[2],&tline[Clength+9]);
-	      CopyString(&ForeColor[3],&tline[Clength+9]);
-	    }
-	  else if(strncasecmp(tline,CatString3(Module, "Geometry",""), Clength+8)==0)
-	    CopyString(&geometry,&tline[Clength+8]);
-	  else if(strncasecmp(tline,CatString3(Module, "Back",""), Clength+4)==0)
-	    CopyString(&BackColor[0],&tline[Clength+4]);
-	  else if(strncasecmp(tline,CatString3(Module,"IconBack",""), Clength+8)==0)
-	    CopyString(&BackColor[1],&tline[Clength+8]);
-	  else if(strncasecmp(tline,CatString3(Module,"FocusBack",""), Clength+9)==0)
-	    {
-	      CopyString(&BackColor[2],&tline[Clength+9]);
-	      CopyString(&BackColor[3],&tline[Clength+9]);
-	    }
-	  else if(strncasecmp(tline,CatString3(Module, "NoAnchor",""),
-				Clength+8)==0) Anchor = False;
-	  else if(strncasecmp(tline,CatString3(Module, "Action",""), Clength+6)==0)
-	    LinkAction(&tline[Clength+6]);
-	  else if(strncasecmp(tline,CatString3(Module, "UseSkipList",""),
-				Clength+11)==0) UseSkipList = True;
-	  else if(strncasecmp(tline,CatString3(Module, "UseIconNames",""),
-				Clength+12)==0) UseIconNames = True;
-	  else if(strncasecmp(tline,CatString3(Module, "ShowCurrentDesk",""),
-				Clength+15)==0) ShowCurrentDesk=1;
-	  else if(strncasecmp(tline,CatString3(Module, "LeftJustify",""),
-				Clength+11)==0) LeftJustify = True;
-	  else if(strncasecmp(tline,CatString3(Module, "TruncateLeft",""),
-				Clength+12)==0) TruncateLeft = True;
-          else if(strncasecmp(tline,CatString3(Module, "MinWidth",""),
-                                Clength+8)==0) MinWidth=atoi(&tline[Clength+8]);
-          else if(strncasecmp(tline,CatString3(Module, "MaxWidth",""),
-                                Clength+8)==0) MaxWidth=atoi(&tline[Clength+8]);
-	  else if(strncasecmp(tline,CatString3(Module, "DontDepressFocus",""),
-				Clength+16)==0) ShowFocus = False;
-	  else if(strncasecmp(tline,CatString3(Module, "FollowWindowList",""),
-				Clength+16)==0) Follow = True;
-          else if(strncasecmp(tline,CatString3(Module, "ButtonFrameWidth",""),
-                                Clength+16)==0) ReliefWidth=atoi(&tline[Clength+16]);
-	}
+      ParseConfigLine(tline);
       GetConfigLine(Fvwm_fd,&tline);
     }
 }
+
+void
+ParseConfigLine(char *tline)
+{
+  if (!tline)
+    return;
+
+  if (strlen(tline) > 1) {
+    if (strncasecmp(tline, CatString3(Module, "Font", ""), Clength + 4)	== 0)
+      CopyString(&font_string, &tline[Clength + 4]);
+    else if (strncasecmp(tline, CatString3(Module, "Fore", ""), Clength + 4)
+	     == 0) {
+      CopyString(&ForeColor[0], &tline[Clength + 4]);
+      colorset[0] = -1;
+    } else if (strncasecmp(tline, CatString3(Module, "IconFore", ""),
+			   Clength + 8) == 0) {
+      CopyString(&ForeColor[1], &tline[Clength + 8]);
+      colorset[1] = -1;
+    } else if (strncasecmp(tline, CatString3(Module, "FocusFore", ""),
+			   Clength + 9) == 0) {
+      CopyString(&ForeColor[2], &tline[Clength + 9]);
+      CopyString(&ForeColor[3], &tline[Clength + 9]);
+      colorset[2] = colorset[3] = -1;
+    } else if (strncasecmp(tline, CatString3(Module, "Geometry", ""),
+			   Clength + 8) == 0)
+      CopyString(&geometry, &tline[Clength + 8]);
+    else if (strncasecmp(tline, CatString3(Module, "Back", ""), Clength + 4)
+			 == 0) {
+      CopyString(&BackColor[0], &tline[Clength + 4]);
+      colorset[0] = -1;
+    } else if (strncasecmp(tline, CatString3(Module, "IconBack", ""),
+			   Clength + 8) == 0) {
+      CopyString(&BackColor[1], &tline[Clength + 8]);
+      colorset[1] = -1;
+    } else if (strncasecmp(tline, CatString3(Module, "FocusBack", ""),
+			   Clength + 9) == 0) {
+      CopyString(&BackColor[2], &tline[Clength + 9]);
+      CopyString(&BackColor[3], &tline[Clength + 9]);
+      colorset[2] = colorset[3] = -1;
+    } else if (strncasecmp(tline, CatString3(Module, "NoAnchor", ""),
+			   Clength + 8) == 0)
+      Anchor = False;
+    else if (strncasecmp(tline, CatString3(Module, "Action", ""), Clength + 6)
+			 == 0)
+      LinkAction(&tline[Clength + 6]);
+    else if (strncasecmp(tline, CatString3(Module, "UseSkipList", ""),
+			 Clength + 11) == 0)
+      UseSkipList = True;
+    else if (strncasecmp(tline, CatString3(Module, "UseIconNames", ""),
+			 Clength + 12) == 0)
+      UseIconNames = True;
+    else if (strncasecmp(tline, CatString3(Module, "ShowCurrentDesk", ""),
+			 Clength + 15) == 0)
+      ShowCurrentDesk = 1;
+    else if (strncasecmp(tline, CatString3(Module, "LeftJustify", ""),
+			 Clength + 11) == 0)
+      LeftJustify = True;
+    else if (strncasecmp(tline, CatString3(Module, "TruncateLeft", ""),
+			 Clength + 12) == 0)
+      TruncateLeft = True;
+    else if (strncasecmp(tline, CatString3(Module, "MinWidth", ""),
+			 Clength + 8) == 0)
+      MinWidth = atoi(&tline[Clength + 8]);
+    else if (strncasecmp(tline, CatString3(Module, "MaxWidth", ""),
+			 Clength + 8) == 0)
+      MaxWidth = atoi(&tline[Clength + 8]);
+    else if (strncasecmp(tline, CatString3(Module, "DontDepressFocus", ""),
+			 Clength + 16) == 0)
+      ShowFocus = False;
+    else if (strncasecmp(tline, CatString3(Module, "FollowWindowList", ""),
+			 Clength + 16) == 0)
+      Follow = True;
+    else if (strncasecmp(tline, CatString3(Module, "ButtonFrameWidth", ""),
+			 Clength + 16) == 0)
+      ReliefWidth = atoi(&tline[Clength + 16]);
+    else if (strncasecmp(tline, CatString3(Module, "Colorset", ""),
+			 Clength + 8) == 0)
+      colorset[0] = atoi(&tline[Clength + 8]);
+    else if (strncasecmp(tline, CatString3(Module, "IconColorset", ""),
+			 Clength + 12) == 0)
+      colorset[1] = atoi(&tline[Clength + 12]);
+    else if (strncasecmp(tline, CatString3(Module, "FocusColorset", ""),
+			 Clength + 13) == 0)
+      colorset[2] = colorset[3] = atoi(&tline[Clength + 13]);
+    else if (strncasecmp(tline, "Colorset", 8) == 0) {
+      int cset = LoadColorset(&tline[8]);
+      
+      if (WindowIsUp && (cset >= 0)) {
+	int i;
+	
+	for (i = 0; i != MAX_COLOUR_SETS; i++) {
+	  if (colorset[i] == cset) {
+	    AdjustWindow(True);
+	    RedrawWindow(True);
+	    break;
+	  }
+	}
+      }
+    }
+  }
+}
+
 
 /******************************************************************************
   LoopOnEvents - Process all the X events we get
@@ -685,7 +749,7 @@ void LoopOnEvents(void)
         break;
       case Expose:
         if (Event.xexpose.count==0)
-          RedrawWindow(1);
+          RedrawWindow(True);
         break;
       case KeyPress:
         num=XLookupString(&Event.xkey,buffer,10,NULL,0);
@@ -761,7 +825,7 @@ Window find_frame_window (Window win, int *off_x, int *off_y)
 /******************************************************************************
   AdjustWindow - Resize the window according to maxwidth by number of buttons
 ******************************************************************************/
-void AdjustWindow(void)
+void AdjustWindow(Bool force)
 {
   int new_width=0,new_height=0,tw,i,total,off_x,off_y;
   char *temp;
@@ -795,7 +859,36 @@ void AdjustWindow(void)
   }
   new_width=max(new_width, MinWidth);
   new_width=min(new_width, MaxWidth);
-  new_height=(total*(fontheight+2+(2*ReliefWidth)+1));
+  new_height=(total * (fontheight + 3 + 2 * ReliefWidth));
+  if (force || (WindowIsUp && (new_height != win_height 
+			       || new_width != win_width))) {
+    for (i = 0; i != MAX_COLOUR_SETS; i++) {
+      int cset = colorset[i];
+      
+      if (cset >= 0) {
+        cset = cset % nColorsets;
+	fore[i] = Colorset[cset].fg;
+	back[i] = Colorset[cset].bg;
+	XSetForeground(dpy, graph[i], fore[i]);
+	XSetForeground(dpy, background[i], back[i]);
+	XSetForeground(dpy, hilite[i], Colorset[cset].hilite);
+	XSetForeground(dpy, shadow[i], Colorset[cset].shadow);
+	if (pixmap[i])
+	  XFreePixmap(dpy, pixmap[i]);
+	if (Colorset[cset].pixmap) {
+	  pixmap[i] = CreateBackgroundPixmap(dpy, win, new_width,
+					     fontheight + 3 + 2 * ReliefWidth,
+					     &Colorset[cset], Pdepth,
+					     background[i]);
+	  XSetTile(dpy, background[i], pixmap[i]);
+	  XSetFillStyle(dpy, background[i], FillTiled);
+	} else {
+	  pixmap[i] = None;
+	  XSetFillStyle(dpy, background[i], FillSolid);
+	}
+      }
+    }
+  }
   if (WindowIsUp && (new_height!=win_height  || new_width!=win_width))
   {
     if (Anchor)
@@ -879,7 +972,7 @@ void MakeMeWindow(void)
 
 
   if ((count = ItemCountD(&windows))==0 && Transient) exit(0);
-  AdjustWindow();
+  AdjustWindow(False);
 
   hints.width=win_width;
   hints.height=win_height;
@@ -929,23 +1022,30 @@ void MakeMeWindow(void)
 
 
   for (i = 0; i != MAX_COLOUR_SETS; i++)
-  if(Pdepth < 2)
-  {
-    back[i] = GetColor("white");
-    fore[i] = GetColor("black");
-  }
-  else
-  {
-    back[i] = GetColor(BackColor[i] == NULL ? BackColor[0] : BackColor[i]);
-    fore[i] = GetColor(ForeColor[i] == NULL ? ForeColor[0] : ForeColor[i]);
-  }
+    if(Pdepth < 2)
+    {
+      back[i] = GetColor("white");
+      fore[i] = GetColor("black");
+    }
+    else
+    {
+      if (colorset[i] >= 0) {
+        back[i] = Colorset[colorset[i] % nColorsets].bg;
+        fore[i] = Colorset[colorset[i] % nColorsets].fg;
+      } else {
+	back[i] = GetColor(BackColor[i] == NULL ? BackColor[0] : BackColor[i]);
+	fore[i] = GetColor(ForeColor[i] == NULL ? ForeColor[0] : ForeColor[i]);
+      }
+    }
 
-  attr.background_pixel = back[0];
+  /* set a NULL background to prevent annoying flashes when using colorsets */
+  attr.background_pixmap = None;
   attr.border_pixel = 0;
   attr.colormap = Pcmap;
   win=XCreateWindow(dpy, Root, hints.x, hints.y, hints.width, hints.height, 0,
 		    Pdepth, InputOutput, Pvisual,
-		    CWBackPixel | CWBorderPixel | CWColormap, &attr);
+		    CWBackPixmap | CWBorderPixel | CWColormap, &attr);
+
 
   wm_del_win=XInternAtom(dpy,"WM_DELETE_WINDOW",False);
   XSetWMProtocols(dpy,win,&wm_del_win,1);
@@ -981,12 +1081,18 @@ void MakeMeWindow(void)
     if(Pdepth < 2)
       gcval.foreground=GetShadow(fore[i]);
     else
-      gcval.foreground=GetShadow(back[i]);
+      if (colorset[i] < 0)
+	gcval.foreground=GetShadow(back[i]);
+      else
+	gcval.foreground=Colorset[colorset[i] % nColorsets].shadow;
     gcval.background=back[i];
     gcmask=GCForeground|GCBackground;
     shadow[i]=XCreateGC(dpy,win,gcmask,&gcval);
 
-    gcval.foreground=GetHilite(back[i]);
+    if (colorset[i] < 0)
+      gcval.foreground=GetHilite(back[i]);
+    else
+      gcval.foreground=Colorset[colorset[i] % nColorsets].hilite;
     gcval.background=back[i];
     gcmask=GCForeground|GCBackground;
     hilite[i]=XCreateGC(dpy,win,gcmask,&gcval);
@@ -995,7 +1101,7 @@ void MakeMeWindow(void)
     gcmask=GCForeground;
     background[i]=XCreateGC(dpy,win,gcmask,&gcval);
   }
-
+  AdjustWindow(True);
   XSelectInput(dpy,win,(ExposureMask | KeyPressMask));
 
   ChangeWindowName(&Module[1]);
@@ -1036,6 +1142,7 @@ void StartMeUp(void)
     exit (1);
   }
   InitPictureCMap(dpy);
+  AllocColorset(0);
   x_fd = XConnectionNumber(dpy);
   screen= DefaultScreen(dpy);
   Root = RootWindow(dpy, screen);

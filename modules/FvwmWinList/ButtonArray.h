@@ -66,7 +66,7 @@ extern Button *find_n(ButtonArray *array, int n);
 extern void FreeButton(Button *ptr);
 extern void FreeAllButtons(ButtonArray *array);
 extern void DoButton(Button *ptr, int x, int y, int w, int h);
-extern void DrawButtonArray(ButtonArray *array, int all);
+extern void DrawButtonArray(ButtonArray *array, Bool all);
 extern void SwitchButton(ButtonArray *array,int butnum);
 extern int WhichButton(ButtonArray *array,int x, int y);
 extern void PrintButtons(ButtonArray *array);
