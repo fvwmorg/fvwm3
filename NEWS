@@ -4,6 +4,8 @@ Changes in alpha release 2.3.0 (February 1999)
 
 * Layer information is displayed in WindowList.
 
+* Animated window shading.
+
 * Shaded windows can be resized.
 
 * Windows can be shaded and maximized.
