@@ -1,107 +1,48 @@
-FVWM is a powerful window manager.  Version 2.5.1 is a beta release
-that includes new features and improvements over beta 2.5.0 and stable
-2.4.7 versions.  You are welcome to upgrade and test new features.
+FVWM is a powerful window manager.  Version 2.5.2 is a beta release
+that includes new features and improvements over beta 2.5.1 and stable
+2.4.8 versions.  You are welcome to upgrade and test new features.
 
 The release is available at the fvwm home page: http://www.fvwm.org/
 
 New features:
 -------------
 
-* Changed the executable and the man page names from fvwm2 to fvwm.
-  The old names are still supported by symlinking.
+* Fonts can have shadow effects, see the FONT SHADOW EFFECTS
+  section of fvwm manual page.
 
-* All fvwm utilities are renamed to conform to the "fvwm-" scheme.
-  fvwm-bug, fvwm-root (was xpmroot), fvwm-config, fvwm-convert-2.4.
+* New Colorset options: fgsh for shadow text and fg_alpha for
+  merging text with the background.
 
-* Added a full support for the side window titles. New Style options
-  TitleAtLeft and TitleAtRight added to TitleAtTop and TitleAtBottom.
+* New module FvwmPerl adds perl scripting ability to fvwm commands.
 
-* A title text may now be optionally rotated for both vertical and
-  horizontal title directions, search for "Rotated" in the man page.
+* Provided powerful perl library for creating FVWM modules in perl.
 
-* Added support for loading images in PNG (including alpha blending)
-  and XBM formats anywhere.
+* New WindowList option IconifiedtAtEnd.
 
-* New commands Schedule and Deschedule.
+* Always display the current desk number in the FvwmPager window
+  title.
 
-* New command State.  New conditions State and !State.
+* Allow to bind a function to the focus click and pass it to the
+  application at the same time.
 
-* New commands XSync and XSynchronize for debugging purposes.
+* New styles NoBorder and Border to enable or disable window
+  borders.
 
-* In interactive move/placement when Alt/Meta modifier is pressed, snap
-  attraction (SnapAttraction, SnapGrid and EdgeResistance) is ignored.
+* Removed the --enable-multibyte configure option.  Multibyte
+  support is nor compiled in unconditionally.
 
-* New flags (No)FvwmModule to FvwmButtons Swallow option
+* New FvwmButtons option ActionOnPress enables execution of action
+  on press rather than on release for any specific button.
 
-* The I18N_MB patch (--enable-multibyte) has been rewritten. MULTIBYTE
-  is used to identify what is was I18N_MB. A set of locale functions
-  (locale initialization, font loading, text drawing, ...etc.) is created
-  in libs/Flocale.{c,h} and used in the entire fvwm code (but FvwmWharf).
-  Font loading and memory management is improved in the multibyte case.
+* Improved CascadePlacement, the last used position is reused if
+  the last placed window does not exist any more.
 
-* Better support of non ISO-8859-1 window and icon titles. See the
-  --disable-compound-text option in INSTALL.fvwm for more details.
+* FvwmIconMan may now change the resolution dynamically, just issue
+  "*FvwmIconMan: resolution page" while FvwmIconMan is running.
 
-* Added anti-aliased text rendering support using Xft (use --enable-xft
-  to enable it). Recent versions of XFree and freetype2 are needed (see
-  the FONT NAMES AND FONT LOADING section of the fvwm manual page).
+* New command XineramaSlsScreens.
 
-* Conditional commands now have a return code (Match, NoMatch or
-  Error).  This return code can be checked and tied to an action
-  with the new commands Cond and CondCase.
+* MoveToPage and MoveToDesk no longer unstick windows.
 
-* Bindings can be made to the separate parts of the window border
-  with the new contexts '[', ']', '-', '_', '<', '^', '>' and 'v'.
-
-* New parameters for FvwmRearange: -maximize and -animate.
-
-* New option StartCommand for FvwmTaskBar to allow placing the
-  StartMenu correctly.
-
-    *FvwmTaskBar: StartCommand Popup RootMenu \
-	rectangle $widthx$height+$left+$top 0 -100m
-
-  Please refer to the FvwmTaskBar man page for details.
-
-* New extended variables pointer.x, pointer.y, pointer.wx,
-  pointer.wy, pointer.cx and pointer.cy.
-
-* The Current command does not select a random window when no
-  window has the focus.
-
-* New colour '@4' (transparent) in button vectors.
-
-* New option "Frame" for the Resize and ResizeMove commands.
-
-* Added direction options to WindowShade command.  Windows can be
-  shaded in any of the eight compass directions.
-
-* Styles WindowShadeLazy (default), WindowShadeBusy and
-  WindowShadeAlwaysLazy to optimize performance of the WindowShade
-  command.
-
-* The DO_START_ICONIC flag is no longer supported in the module
-  interface.
-
-* Added bi-directional text support for asian charsets.
-
-* New option MinimalLayer for FvwmIdent to control window layer.
-
-* New FvwmIconMan configuration syntax now conforms to the syntax of
-  other modules, see the man page.
-
-* FvwmForm can automatically run commands after a timeout interval.
-
-* Fvwm commands can be invoked when the edge of the screen is hit
-  with the mouse.
-
-* New commands Colorset, ReadWriteColors and CleanupColorsets allow
-  the colorset functionality previously available using FvwmTheme.
-
-* FvwmTheme is obsolete now, but still supported for some time.
-
-* New options Tint, TintMask and NoTint to colorsets.
-
-* New WindowList option CurrentAtEnd.
-
-* New weighted sorting in FvwmIconMan.
+* It is possible to specify a string encoding in a font name, see
+  the FONT AND STRING ENCODINGS section of fvwm manual page.
