@@ -35,8 +35,50 @@
 #include <stdio.h>
 #include <X11/Intrinsic.h>
 #include "FvwmButtons.h"
+#include "button.h"
 
 extern char *MyName;
+
+
+int buttonXPos(button_info *b, int i)
+{
+  int column = i % b->parent->c->num_columns;
+
+  return b->parent->c->xpos +
+    (b->parent->c->width * column / b->parent->c->num_columns);
+}
+
+int buttonYPos(button_info *b, int i)
+{
+  int row = i / b->parent->c->num_columns;
+
+  return b->parent->c->ypos +
+    (b->parent->c->height * row / b->parent->c->num_rows);
+}
+
+int buttonWidth(button_info *b)
+{
+  int column = b->n % b->parent->c->num_columns;
+  int column2 = column + b->BWidth;
+
+  return (b->parent->c->width * column2 / b->parent->c->num_columns) -
+    (b->parent->c->width * column / b->parent->c->num_columns);
+}
+
+int buttonHeight(button_info *b)
+{
+  int row = b->n / b->parent->c->num_columns;
+  int row2 = row + b->BHeight;
+
+  return (b->parent->c->height * row2 / b->parent->c->num_rows) -
+    (b->parent->c->height * row / b->parent->c->num_rows);
+}
+
+int buttonSwallowCount(button_info *b)
+{
+  return (b->flags & b_Swallow) ? (b->swallow & b_Count) : 0;
+}
+
 
 /**
 *** buttonInfo()
@@ -388,8 +430,8 @@ button_info *alloc_button(button_info *ub,int num)
 
   if(b->parent != NULL)
   {
-    if (b->parent->c->flags&b_Colorset)
-      b->flags=b_ColorsetParent;
+    if (b->parent->c->flags & b_Colorset)
+      b->flags |= b_ColorsetParent;
   }
 
   return(b);
@@ -402,21 +444,14 @@ button_info *alloc_button(button_info *ub,int num)
 void MakeContainer(button_info *b)
 {
   b->c=(container_info*)mymalloc(sizeof(container_info));
+  memset((void *)b->c, 0, sizeof(container_info));
   b->flags|=b_Container;
-  b->c->buttons=NULL;
-  b->c->num_buttons=0;
-  b->c->num_rows=0;
-  b->c->num_columns=0;
-  b->c->allocated_buttons=0;
-  b->c->xpos=0;
-  b->c->ypos=0;
   if(b->parent != NULL)
   {
-    b->c->flags=0;
-    if (b->parent->c->flags&b_IconBack || b->parent->c->flags&b_IconParent)
-      b->c->flags=b_IconParent;
-    if (b->parent->c->flags&b_Colorset)
-      b->c->flags=b_ColorsetParent;
+    if (b->parent->c->flags & b_IconBack || b->parent->c->flags & b_IconParent)
+      b->c->flags = b_IconParent;
+    if (b->parent->c->flags & b_Colorset)
+      b->c->flags = b_ColorsetParent;
   }
   else /* This applies to the UberButton */
   {
@@ -772,21 +807,27 @@ int button_belongs_to(button_info *ub,int button)
 button_info *select_button(button_info *ub,int x,int y)
 {
   int i;
+  int row;
+  int column;
   button_info *b;
-  if(!(ub->flags&b_Container))
+
+  if (!(ub->flags&b_Container))
     return ub;
 
-  x-=buttonXPad(ub)+buttonFrame(ub);
-  y-=buttonYPad(ub)+buttonFrame(ub);
+  x -= buttonXPad(ub) + buttonFrame(ub);
+  y -= buttonYPad(ub) + buttonFrame(ub);
 
-  if(x >= ub->c->ButtonWidth * ub->c->num_columns || x<0 ||
-     y >= ub->c->ButtonHeight * ub->c->num_rows || y<0)
+  if(x >= ub->c->width || x < 0 || y >= ub->c->height || y < 0)
     return ub;
 
-  i=x/ub->c->ButtonWidth + (y/ub->c->ButtonHeight)*ub->c->num_columns;
-  i=button_belongs_to(ub,i);
-  if(i==-1)return ub;
-  b=ub->c->buttons[i];
-  return select_button(b,x-(i%ub->c->num_columns)*ub->c->ButtonWidth,
-		       y-(i/ub->c->num_columns)*ub->c->ButtonHeight);
+  column = x * ub->c->num_columns / ub->c->width;
+  row = y * ub->c->num_rows / ub->c->height;
+  i = button_belongs_to(ub, column + row * ub->c->num_columns);
+  if (i == -1)
+    return ub;
+  b = ub->c->buttons[i];
+
+  return select_button(
+    b, x - (ub->c->width * column / ub->c->num_columns),
+    y - (ub->c->height * row / ub->c->num_rows));
 }

@@ -87,7 +87,7 @@ void DumpButtons(button_info *b)
     fprintf(stderr,"  Container(%ix%i=%i buttons 0x%04lx (alloc %i), size %ix%i, pos %i,%i)\n{ ",
 	    b->c->num_columns,b->c->num_rows,b->c->num_buttons,b->c->flags,
 	    b->c->allocated_buttons,
-	    b->c->ButtonWidth,b->c->ButtonHeight,b->c->xpos,b->c->ypos);
+	    b->c->width,b->c->height,b->c->xpos,b->c->ypos);
     /*
       fprintf(stderr,"  font(%s,%i) framew(%i) pad(%i,%i) { ",
       b->c->font_string,(int)b->c->font,b->c->framew,b->c->xpad,

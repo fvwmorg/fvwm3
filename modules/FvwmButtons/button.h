@@ -29,20 +29,6 @@
 
 /* --------------------------- button information -------------------------- */
 
-#define buttonXPos(b,i) \
-  ((b)->parent->c->xpos + \
-   ((i)%(b)->parent->c->num_columns)*((b)->parent->c->ButtonWidth))
-#define buttonYPos(b,i) \
-  ((b)->parent->c->ypos + \
-   ((i)/(b)->parent->c->num_columns)*((b)->parent->c->ButtonHeight))
-#define buttonWidth(b) \
-  ((b)->BWidth*(b)->parent->c->ButtonWidth)
-#define buttonHeight(b) \
-  ((b)->BHeight*(b)->parent->c->ButtonHeight)
-
-#define buttonSwallowCount(b) \
-  (((b)->flags&b_Swallow)?((b)->swallow&b_Count):0)
-
 void buttonInfo(button_info*,int *x,int *y,int *padx,int *pady,int *frame);
 void GetInternalSize(button_info*,int*,int*,int*,int*);
 #define buttonFrame(b) abs(buttonFrameSigned(b))
@@ -80,3 +66,11 @@ button_info *NextButton(button_info**,button_info**,int*,int);
 
 int button_belongs_to(button_info*,int);
 button_info *select_button(button_info*,int,int);
+
+/* --------------------------- button geometry ----------------------------- */
+
+int buttonXPos(button_info *b, int i);
+int buttonYPos(button_info *b, int i);
+int buttonWidth(button_info *b);
+int buttonHeight(button_info *b);
+int buttonSwallowCount(button_info *b);

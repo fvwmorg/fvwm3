@@ -286,8 +286,8 @@ Pixmap CreateBackgroundPixmap(Display *dpy, Window win, int width, int height,
     else
     {
       /* can't tile masks, create a tiled version of the mask */
-      pixmap = CreateTiledMaskPixmap(
-	dpy, cs_pixmap, cs_width, cs_height, width, height, gc);
+      pixmap = CreateTiledPixmap(
+	dpy, cs_pixmap, cs_width, cs_height, width, height, 1, gc);
     }
   } else if (!cs_stretch_x) {
     /* it's an HGradient */
@@ -304,4 +304,114 @@ Pixmap CreateBackgroundPixmap(Display *dpy, Window win, int width, int height,
   }
 
   return pixmap;
+}
+
+
+/* Draws a colorset background into the specified rectangle in the target
+ * window. */
+void SetRectangleBackground(
+  Display *dpy, Window win, int x, int y, int width, int height,
+  colorset_struct *colorset, unsigned int depth, GC gc)
+{
+  GC draw_gc;
+  Pixmap pixmap2;
+  Pixmap pixmap = None;
+  static int last_depth = -1;
+  static GC last_gc = None;
+  XGCValues xgcv;
+#ifdef SHAPE
+  Pixmap clipmask = None;
+  GC clip_gc = None;
+#endif
+
+  /* minimize gc creation by remembering the last requested depth */
+  if (last_gc != None && depth != last_depth)
+  {
+    XFreeGC(dpy, last_gc);
+    last_gc = None;
+  }
+  if (last_gc == None)
+  {
+    last_gc = XCreateGC(dpy, win, 0, &xgcv);
+  }
+  draw_gc = last_gc;
+  last_depth = depth;
+
+#ifdef SHAPE
+  if (colorset->shape_mask != None)
+  {
+    clipmask = CreateBackgroundPixmap(
+      dpy, 0, width, height, colorset, 1, None, True);
+    if (clipmask)
+    {
+      /* create a GC for clipping */
+      xgcv.clip_x_origin = x;
+      xgcv.clip_y_origin = y;
+      xgcv.clip_mask = clipmask;
+      clip_gc = XCreateGC(
+	dpy, win, GCClipXOrigin|GCClipYOrigin|GCClipMask, &xgcv);
+      draw_gc = clip_gc;
+    }
+  }
+#endif
+
+  if (!colorset->pixmap)
+  {
+    /* use the bg pixel */
+    XSetForeground(dpy, draw_gc, colorset->bg);
+    XFillRectangle(dpy, win, draw_gc, x, y, width, height);
+  }
+  else
+  {
+    pixmap = CreateBackgroundPixmap(
+      dpy, win, width, height, colorset, depth, gc, False);
+    if (colorset->stretch_x != colorset->stretch_y)
+    {
+      if (colorset->stretch_x)
+      {
+	if (colorset->height != height)
+	{
+	  pixmap2 = CreateStretchYPixmap(
+	    dpy, pixmap, colorset->width, colorset->height, depth, height, gc);
+	  XFreePixmap(dpy, pixmap);
+	  pixmap = pixmap2;
+	}
+      }
+      else
+      {
+	if (colorset->width != width)
+	{
+	  pixmap2 = CreateStretchXPixmap(
+	    dpy, pixmap, colorset->width, colorset->height, depth, width, gc);
+	  XFreePixmap(dpy, pixmap);
+	  pixmap = pixmap2;
+	}
+      }
+    }
+    else if (!colorset->keep_aspect)
+    {
+      if (colorset->width != width || colorset->height != height)
+      {
+	pixmap2 = CreateStretchPixmap(
+	  dpy, pixmap, colorset->width, colorset->height, depth, width, height,
+	  gc);
+	XFreePixmap(dpy, pixmap);
+	pixmap = pixmap2;
+      }
+    }
+
+    if (pixmap)
+    {
+      /* Copy the pixmap into the rectangle. */
+      XCopyArea(dpy, pixmap, win, draw_gc, 0, 0, width, height, x, y);
+      XFreePixmap(dpy, pixmap);
+    }
+  }
+
+#ifdef SHAPE
+  if (clipmask != None)
+    XFreePixmap(dpy, clipmask);
+  if (clip_gc != None)
+    XFreeGC(dpy, clip_gc);
+#endif
 }

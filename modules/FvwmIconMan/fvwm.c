@@ -225,7 +225,7 @@ static void configure_colorsets (unsigned long *body)
   int color;
 
   tline = (char*)&(body[3]);
-  tline = GetNextToken(tline, &token);
+  token = PeekToken(tline, &tline);
   if (StrEquals(token, "Colorset")) {
     color = LoadColorset(tline);
     change_colorset(color);

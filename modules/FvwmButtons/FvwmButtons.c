@@ -149,6 +149,9 @@ int x= -30000,y= -30000,w= -1,h= -1,gravity = NorthWestGravity;
 int new_desk = 0;
 int ready = 0;
 int xneg = 0, yneg = 0;
+int button_width = 0;
+int button_height = 0;
+Bool has_button_geometry = 0;
 
 button_info *CurrentButton = NULL;
 int fd[2];
@@ -350,12 +353,15 @@ static void DeadPipeCleanup(void)
 
 /**
 *** SetButtonSize()
-*** Propagates global geometry down through the buttonhierarchy.
+*** Propagates global geometry down through the button hierarchy.
 **/
-void SetButtonSize(button_info *ub,int w,int h)
+void SetButtonSize(button_info *ub, int w, int h)
 {
-  int i=0,dx,dy;
-  if(!ub || !(ub->flags&b_Container))
+  int i = 0;
+  int dx;
+  int dy;
+
+  if(!ub || !(ub->flags & b_Container))
   {
     fprintf(stderr,"%s: BUG: Tried to set size of noncontainer\n",MyName);
     exit(2);
@@ -365,30 +371,30 @@ void SetButtonSize(button_info *ub,int w,int h)
     fprintf(stderr,"%s: BUG: Set size when rows/cols was unset\n",MyName);
     exit(2);
   }
-  w*=ub->BWidth;
-  h*=ub->BHeight;
 
-  if(ub->parent)
+  if (ub->parent)
   {
-    i=buttonNum(ub);
-    ub->c->xpos=buttonXPos(ub,i);
-    ub->c->ypos=buttonYPos(ub,i);
+    i = buttonNum(ub);
+    ub->c->xpos = buttonXPos(ub,i);
+    ub->c->ypos = buttonYPos(ub,i);
   }
-  dx=buttonXPad(ub)+buttonFrame(ub);
-  dy=buttonYPad(ub)+buttonFrame(ub);
-  ub->c->xpos+=dx;
-  ub->c->ypos+=dy;
-  w-=2*dx;
-  h-=2*dy;
-  ub->c->ButtonWidth=w/ub->c->num_columns;
-  ub->c->ButtonHeight=h/ub->c->num_rows;
+  dx = buttonXPad(ub) + buttonFrame(ub);
+  dy = buttonYPad(ub) + buttonFrame(ub);
+  ub->c->xpos += dx;
+  ub->c->ypos += dy;
+  w -= 2 * dx;
+  h -= 2 * dy;
+  ub->c->width = w;
+  ub->c->height = h;
 
-  i=0;
-  while(i<ub->c->num_buttons)
+  i = 0;
+  while (i < ub->c->num_buttons)
   {
-    if(ub->c->buttons[i] && ub->c->buttons[i]->flags&b_Container)
-      SetButtonSize(ub->c->buttons[i],
-		    ub->c->ButtonWidth,ub->c->ButtonHeight);
+    if (ub->c->buttons[i] && ub->c->buttons[i]->flags & b_Container)
+    {
+      SetButtonSize(ub->c->buttons[i], buttonWidth(ub->c->buttons[i]),
+		    buttonHeight(ub->c->buttons[i]));
+    }
     i++;
   }
 }
@@ -710,10 +716,15 @@ int main(int argc, char **argv)
 
   /* parse module options */
   ParseConfiguration(UberButton);
+XSynchronize(Dpy,1);
+sleep(15);
+  /* we can't set the size if it was specified in pixels per button here;
+   * delay until after call to RecursiveLoadData. */
   /* parse the geometry string */
   if (geom_option_argc != 0)
   {
     parse_window_geometry(argv[geom_option_argc]);
+    has_button_geometry = 0;
   }
 
   for (CurrentPanel = MainPanel, LastPanel = NULL;
@@ -753,6 +764,13 @@ int main(int argc, char **argv)
     maxx=0;
     maxy=0;
     RecursiveLoadData(UberButton,&maxx,&maxy);
+
+    /* now we can size the main window if pixels per button were specified */
+    if (has_button_geometry && button_width > 0 && button_height > 0)
+    {
+      w = button_width * UberButton->c->num_columns;
+      h = button_height * UberButton->c->num_rows;
+    }
 
 #ifdef DEBUG_INIT
     fprintf(stderr,"%s: Creating main window...",MyName);
@@ -931,15 +949,15 @@ void Loop(void)
 	unsigned int depth,tw,th,border_width;
 	Window root;
 
-	XGetGeometry(Dpy, MyWindow, &root, &x, &y,
-		     &tw,&th,
-		     &border_width,&depth);
+	XGetGeometry(Dpy, MyWindow, &root, &x, &y, &tw, &th, &border_width,
+		     &depth);
 	if(tw!=Width || th!=Height)
 	{
 	  Width=tw;
 	  Height=th;
 	  SetButtonSize(UberButton,Width,Height);
-	  button=-1;ub=UberButton;
+	  button=-1;
+	  ub=UberButton;
 	  while(NextButton(&ub,&b,&button,0))
 	    MakeButton(b);
 	  RedrawWindow(NULL);
@@ -1452,10 +1470,10 @@ void RecursiveLoadData(button_info *b,int *maxx,int *maxy)
     fprintf(stderr,"%s: Loading: Back to container 0x%06x",MyName,(ushort)b);
 #endif
 
-    b->c->ButtonWidth=x;
-    b->c->ButtonHeight=y;
     x*=b->c->num_columns;
     y*=b->c->num_rows;
+    b->c->width=x;
+    b->c->height=y;
   }
 
 
@@ -1550,14 +1568,11 @@ void CreateUberButtonWindow(button_info *ub,int maxx,int maxy)
   fprintf(stderr,"sizing...");
 #endif
 
-  mysizehints.flags = PWinGravity | PResizeInc | PBaseSize;
-  mysizehints.base_width=mysizehints.base_height=0;
-  mysizehints.width=mysizehints.base_width+maxx;
-  mysizehints.height=mysizehints.base_height+maxy;
-  mysizehints.width_inc=ub->c->num_columns;
-  mysizehints.height_inc=ub->c->num_rows;
-  mysizehints.base_height+=ub->c->num_rows*2;
-  mysizehints.base_width+=ub->c->num_columns*2;
+  mysizehints.flags = PWinGravity | PBaseSize;
+  mysizehints.base_width  = 0;
+  mysizehints.base_height = 0;
+  mysizehints.width  = mysizehints.base_width + maxx;
+  mysizehints.height = mysizehints.base_height + maxy;
 
   if(w>-1) /* from geometry */
   {
@@ -1928,6 +1943,95 @@ void SpawnSome(void)
       }
 }
 
+/* This function is a real hack. It forces our nice background upon the
+ * windows of the swallowed application! */
+static void change_swallowed_window_colorset(button_info *b)
+{
+  SetWindowBackground(
+    Dpy, b->IconWin, buttonWidth(b), buttonHeight(b),
+    &Colorset[b->colorset % nColorsets], Pdepth, NormalGC);
+  SetWindowBackground(
+    Dpy, b->IconWin+1, buttonWidth(b), buttonHeight(b),
+    &Colorset[b->colorset % nColorsets], Pdepth, NormalGC);
+
+  return;
+}
+
+static void recursive_change_colorset(container_info *c, int colorset)
+{
+  int i;
+
+  for (i = c->num_buttons; --i >= 0; )
+  {
+    button_info *b = c->buttons[i];
+
+    if (!b)
+      continue;
+    if (b->flags & b_Container)
+    {
+      if ((b->c->flags & b_Colorset) && (colorset == b->c->colorset))
+      {
+	/* re-apply colorset to button */
+	RedrawButton(b, True);
+      }
+      /* recursively update containers */
+      recursive_change_colorset(b->c, colorset);
+    }
+    else if (b->flags & b_Swallow)
+    {
+      /* swallowed window */
+      if ((buttonSwallowCount(b) == 3) && (b->IconWin != None) &&
+	  (b->flags & b_Colorset) && (colorset == b->colorset))
+      {
+	/* re-apply colorset to window background */
+	change_swallowed_window_colorset(b);
+      }
+    }
+    else
+    {
+      /* simple button */
+      if ((b->flags & b_Colorset) && (colorset == b->colorset))
+      {
+	/* re-apply colorset to button */
+	RedrawButton(b, True);
+      }
+    }
+  }
+
+  return;
+}
+
+static void change_colorset(int colorset)
+{
+  if (UberButton->c->flags & b_Colorset && colorset == UberButton->c->colorset)
+  {
+    SetWindowBackground(
+      Dpy, MyWindow, UberButton->c->width, UberButton->c->height,
+      &Colorset[colorset % nColorsets], Pdepth, NormalGC);
+  }
+
+  recursive_change_colorset(UberButton->c, colorset);
+
+  return;
+};
+
+static void handle_colorset_packet(unsigned long *body)
+{
+  char *tline, *token;
+  int colorset;
+
+  tline = (char*)&(body[3]);
+  token = PeekToken(tline, &tline);
+  if (StrEquals(token, "Colorset"))
+  {
+    colorset = LoadColorset(tline);
+    change_colorset(colorset);
+  }
+
+  return;
+}
+
+
 /**
 *** process_message()
 *** Process window list messages
@@ -1962,18 +2066,7 @@ void process_message(unsigned long type,unsigned long *body)
       CheckForHangon(body);
       break;
     case M_CONFIG_INFO:
-      {
-/* this is where you put the stuff for FvwmButtons to follow colorsets
-   in real time
-   	  if (UberButton->c->flags & b_FvwmLook))
-	  SetWindowBackground(Dpy, MyWindow, UberButton->c->ButtonWidth
-			      * UberButton->c->num_columns,
-			      UberButton->c->ButtonHeight
-			      * UberButton->c->num_rows, G->bg, G->depth,
-			      G->foreGC);
-*/
-      }
-      break;
+      handle_colorset_packet((unsigned long*)body);
     default:
       break;
     }
@@ -2138,16 +2231,8 @@ void swallow(unsigned long *body)
       }
       XMapWindow(Dpy,b->IconWin);
       MakeButton(b);
-if (b->flags&b_Colorset)
-{
-fprintf(stderr,"applying cs %d to window 0x%x and 0x%x\n", b->colorset % nColorsets, (int)b->IconWin, (int)b->IconWinParent);
-  SetWindowBackground(
-    Dpy, b->IconWin, buttonWidth(b), buttonHeight(b),
-    &Colorset[b->colorset % nColorsets], Pdepth, NormalGC);
-  SetWindowBackground(
-    Dpy, b->IconWin+1, buttonWidth(b), buttonHeight(b),
-    &Colorset[b->colorset % nColorsets], Pdepth, NormalGC);
-}
+
+      change_swallowed_window_colorset(b);
       RedrawButton(b,1);
       break;
     }
@@ -2293,7 +2378,7 @@ void Slide(panel_info *p, button_info *b)
       }
       else
       {
-	x += b->BWidth * b->parent->c->ButtonWidth;
+	x += buttonWidth(b);
 	c += mw / PanelPopUpStep;
 	wstep = PanelPopUpStep;
 	xstep = ystep = hstep = 0;
@@ -2311,7 +2396,7 @@ void Slide(panel_info *p, button_info *b)
       }
       if (direction == 'd')
       {
-	y += b->BHeight * b->parent->c->ButtonHeight;
+	y += buttonHeight(b);
 	c += mh / PanelPopUpStep;
 	hstep = PanelPopUpStep;
 	xstep = ystep = wstep = 0;

@@ -1,3 +1,52 @@
+1999-08-30  Dominik Vogt  <dominik_vogt@gmx.de>
+
+	* FvwmButtons/FvwmButtons.c (recursive_change_colorset): FvwmButtons
+	allows to set coluor sets on all buttons and containers and updates
+	them at run time
+
+1999-08-29  Dominik Vogt  <dominik_vogt@gmx.de>
+
+	* FvwmButtons/FvwmButtons.c (change_colorset):
+	(handle_colorset_packet):
+	(process_message): FvwmButtons updates colorset on main window at run
+	time
+	(recursive_change_colorset):
+	(change_swallowed_window_colorset): Colorsets on swallowed applications
+	are updated at run time
+
+	* FvwmIconMan/fvwm.c (configure_colorsets): fixed a memory leak
+
+	* FvwmButtons/FvwmButtons.c (main):
+	* FvwmButtons/parse.c (ParseConfigLine): new option
+	*FvwmButtonsButtonGeometry specifies the size of all individual buttons
+
+	* FvwmIconMan/x.c (create_manager_window): IconMan uses resize_inc 1
+	vertically too
+
+	* FvwmButtons/button.c (MakeContainer): initialise values with memset
+
+	* FvwmButtons/draw.c (RedrawButton):
+	* FvwmButtons/output.c (DumpButtons):
+	* FvwmButtons/FvwmButtons.c (RecursiveLoadData):
+	(CreateUberButtonWindow):
+	(Slide):
+	(SetButtonSize):
+	* FvwmButtons/draw.c (RedrawButton):
+	* FvwmButtons/button.c (select_button):
+	(buttonXPos):
+	(buttonYPos):
+	(buttonWidth):
+	(buttonHeight): FvwmButtons can be resized to any size, not just
+	multiples of the button size
+
+	* FvwmButtons/FvwmButtons.h (struct container_info_struct):
+
+	* FvwmButtons/button.c (buttonXPos):
+	(buttonYPos):
+	(buttonWidth):
+	(buttonHeight):
+	(buttonSwallowCount): made functions from former macros.
+
 1999-08-28  Dominik Vogt  <dominik_vogt@gmx.de>
 
 	* FvwmTaskBar/FvwmTaskBar.c (redraw_buttons):

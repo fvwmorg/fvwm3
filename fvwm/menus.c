@@ -3351,8 +3351,8 @@ void DestroyMenu(MenuRoot *mr, Bool recreate)
   }
 
 #ifdef GRADIENT_BUTTONS
-      if (MR_STORED_ITEM(mr).stored)
-	XFreePixmap(dpy, MR_STORED_ITEM(mr).stored);
+  if (MR_STORED_ITEM(mr).stored)
+    XFreePixmap(dpy, MR_STORED_ITEM(mr).stored);
 #endif
 
   MR_COPIES(mr)--;
@@ -3997,7 +3997,7 @@ static void size_menu_vertically(MenuRoot *mr)
 	((MI_IS_SELECTABLE(mi)) ? relief_thickness : 0)
 	> Scr.MyDisplayHeight)
     {
-      /* Item does not fit on screen any more. */
+      /* Item does not fit on screen anymore. */
       Bool does_fit = False;
       char *szMenuContinuationActionAndName;
       MenuRoot *menuContinuation;
@@ -4021,6 +4021,8 @@ static void size_menu_vertically(MenuRoot *mr)
       {
 	fvwm_msg(ERR, "size_menu_vertically",
 		 "Menu entry does not fit on screen");
+	/* leave a coredump */
+	abort();
 	exit(1);
       }
 
@@ -4042,19 +4044,21 @@ static void size_menu_vertically(MenuRoot *mr)
       MR_ITEMS(menuContinuation) = MR_ITEMS(mr) - cItems;
       MI_PREV_ITEM(MI_NEXT_ITEM(mi)) = NULL;
 
-      /* mi_prev is now the last item in the mirent menu */
+      /* mi_prev is now the last item in the parent menu */
       MR_LAST_ITEM(mr) = mi;
       MR_ITEMS(mr) = cItems;
       MI_NEXT_ITEM(mi) = NULL;
 
-#if 0
+      /* use the same style for the submenu */
+      MR_STYLE(menuContinuation) = MR_STYLE(mr);
+      MR_IS_LEFT_TRIANGLE(menuContinuation) = MR_IS_LEFT_TRIANGLE(mr);
       /* migo: propagate missing_submenu_func */
       if (MR_MISSING_SUBMENU_FUNC(mr))
       {
 	MR_MISSING_SUBMENU_FUNC(menuContinuation) =
 	  strdup(MR_MISSING_SUBMENU_FUNC(mr));
       }
-#endif
+      /* don't propagate sidepic, sidecolor, popup- and popdown actions */
 
       /* And add the entry pointing to the new menu */
       AddToMenu(mr, "More&...", szMenuContinuationActionAndName,

@@ -45,6 +45,9 @@
 
 extern int w,h,x,y,xneg,yneg; /* used in ParseConfigLine */
 extern char *config_file;
+extern int button_width;
+extern int button_height;
+extern int has_button_geometry;
 
 /* contains the character that terminated the last string from seekright */
 static char terminator = '\0';
@@ -960,6 +963,7 @@ static void ParseConfigLine(button_info **ubb,char *s)
   char *opts[] =
   {
     "geometry",
+    "buttongeometry",
     "font",
     "padding",
     "columns",
@@ -969,11 +973,11 @@ static void ParseConfigLine(button_info **ubb,char *s)
     "frame",
     "file",
     "pixmap",
-    "panel",
     "boxsize",
     "closeonselect",
     "stayuponselect",
     "colorset",
+    "panel",
     NULL
   };
   int i,j,k;
@@ -991,65 +995,83 @@ static void ParseConfigLine(button_info **ubb,char *s)
     }
     break;
   }
-  case 1:/* Font */
+  case 1:/* ButtonGeometry */
+  {
+    char geom[64];
+
+    i=sscanf(s,"%63s",geom);
+    if(i==1)
+    {
+      int flags;
+      int g_x;
+      int g_y;
+      unsigned int width;
+      unsigned int height;
+
+      flags = XParseGeometry(geom,&g_x,&g_y,&width,&height);
+      if (!flags)
+	break;
+      UberButton->w = 0;
+      UberButton->h = 0;
+      if (flags&WidthValue)
+	button_width = width;
+      if (flags&HeightValue)
+	button_height = height;
+      if (flags&XValue)
+	UberButton->x = g_x;
+      if (flags&YValue)
+	UberButton->y = g_y;
+      if (flags&XNegative)
+	UberButton->w = 1;
+      if (flags&YNegative)
+	UberButton->h = 1;
+      has_button_geometry = 1;
+    }
+    break;
+  }
+  case 2:/* Font */
     CopyString(&ub->c->font_string,s);
     break;
-  case 2:/* Padding */
+  case 3:/* Padding */
     i=sscanf(s,"%d %d",&j,&k);
     if(i>0)
       ub->c->xpad=ub->c->ypad=j;
     if(i>1)
       ub->c->ypad=k;
     break;
-  case 3:/* Columns */
+  case 4:/* Columns */
     i=sscanf(s,"%d",&j);
     if(i>0)
       ub->c->num_columns=j;
     break;
-  case 4:/* Rows */
+  case 5:/* Rows */
     i=sscanf(s,"%d",&j);
     if(i>0)
       ub->c->num_rows=j;
     break;
-  case 5:/* Back */
+  case 6:/* Back */
     CopyString(&(ub->c->back),s);
     break;
-  case 6:/* Fore */
+  case 7:/* Fore */
     CopyString(&(ub->c->fore),s);
     break;
-  case 7:/* Frame */
+  case 8:/* Frame */
     i=sscanf(s,"%d",&j);
     if(i>0) ub->c->framew=j;
     break;
-  case 8:/* File */
+  case 9:/* File */
     s = trimleft(s);
     if (config_file)
       free(config_file);
     config_file=seekright(&s);
     break;
-  case 9:/* Pixmap */
+  case 10:/* Pixmap */
     s = trimleft(s);
     if (strncasecmp(s,"none",4)==0)
       ub->c->flags|=b_TransBack;
     else
       CopyString(&(ub->c->back_file),s);
     ub->c->flags|=b_IconBack;
-    break;
-  case 10:/* Panel */
-    s = trimleft(s);
-    CurrentPanel->next = (panel_info *) mymalloc(sizeof(panel_info));
-    CurrentPanel = CurrentPanel->next;
-    memset(CurrentPanel, 0, sizeof(panel_info));
-    CurrentPanel->uber = UberButton
-      = (button_info *) mymalloc(sizeof(button_info));
-    memset(CurrentPanel->uber, 0, sizeof(button_info));
-    UberButton->title = seekright(&s);
-    UberButton->BWidth = 1;
-    UberButton->BHeight = 1;
-    /*subpanel is hidden initially */
-    UberButton->swallow = 0;
-    MakeContainer(UberButton);
-    ub = *ubb = UberButton;
     break;
   case 11: /* BoxSize */
     ParseBoxSize(&s, &ub->c->flags);
@@ -1073,6 +1095,22 @@ static void ParseConfigLine(button_info **ubb,char *s)
     {
       ub->c->flags &= ~b_Colorset;
     }
+    break;
+  case 15:/* Panel */
+    s = trimleft(s);
+    CurrentPanel->next = (panel_info *) mymalloc(sizeof(panel_info));
+    CurrentPanel = CurrentPanel->next;
+    memset(CurrentPanel, 0, sizeof(panel_info));
+    CurrentPanel->uber = UberButton
+      = (button_info *) mymalloc(sizeof(button_info));
+    memset(CurrentPanel->uber, 0, sizeof(button_info));
+    UberButton->title = seekright(&s);
+    UberButton->BWidth = 1;
+    UberButton->BHeight = 1;
+    /*subpanel is hidden initially */
+    UberButton->swallow = 0;
+    MakeContainer(UberButton);
+    ub = *ubb = UberButton;
     break;
   default:
     s = trimleft(s);
@@ -1312,6 +1350,7 @@ void parse_window_geometry(char *geom)
     UberButton->w = 1;
   if (flags&YNegative)
     UberButton->h = 1;
+  has_button_geometry = 0;
 
   return;
 }

@@ -293,6 +293,11 @@ static void parse_colorset(char *line)
 	  mask = picture->mask;
 	else
 	  mask = picture->picture;
+	/* Need to set width and height here in case there was no other pixmap
+	 * specified! Will be overwritten if we have a pixmat or gradient on
+	 * the same line. */
+	cs->width = picture->width;
+	cs->height = picture->height;
 
 	if (mask != None)
 	{
@@ -324,7 +329,7 @@ static void parse_colorset(char *line)
     }
 #else
     cs->shape_mask = None;
-#endif
+#endif /* SHAPE */
     /* skip filename */
     token = PeekToken(line, &line);
   }

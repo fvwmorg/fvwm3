@@ -109,9 +109,10 @@ struct container_info_struct
   int num_buttons;
   int num_columns;
   int num_rows;
-  int ButtonWidth;
-  int ButtonHeight;
-  int xpos,ypos;
+  int xpos;
+  int ypos;
+  int width;
+  int height;
 
   unsigned long flags;     /* Which data are set in this container? */
   byte justify;            /* b_Justify */

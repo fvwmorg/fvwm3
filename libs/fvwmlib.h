@@ -215,9 +215,9 @@ Pixmap CreateStretchPixmap(Display *dpy, Pixmap src, int src_width,
 			    int dest_width, int dest_height,
 			    GC gc);
 
-Pixmap CreateTiledMaskPixmap(Display *dpy, Pixmap src, int src_width,
-			     int src_height, int dest_width,
-			     int dest_height, GC gc);
+Pixmap CreateTiledPixmap(Display *dpy, Pixmap src, int src_width,
+			 int src_height, int dest_width,
+			 int dest_height, int depth, GC gc);
 
 
 /**** gradient stuff ****/

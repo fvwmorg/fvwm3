@@ -790,7 +790,13 @@ void create_manager_window (int man_id)
   }
   sizehints.win_gravity = man->gravity;
   sizehints.width_inc = 1;
+#if 0
   sizehints.height_inc = man->geometry.boxheight;
+#else
+  /* This works much better with colour sets and when swallowed in
+   * FvwmButtons. */
+  sizehints.height_inc = 1;
+#endif
   sizehints.flags |= PBaseSize | PMinSize | PMaxSize | PWinGravity | PResizeInc;
   sizehints.x = man->geometry.x;
   sizehints.y = man->geometry.y;

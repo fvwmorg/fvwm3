@@ -49,6 +49,7 @@
 #include <X11/Xatom.h>
 #include <X11/Intrinsic.h>
 
+#include "libs/Colorset.h"
 #include "FvwmButtons.h"
 #include "misc.h" /* ConstrainSize() */
 #include "icons.h" /* ConfigureIconWindow() */
@@ -235,23 +236,44 @@ void RedrawButton(button_info *b,int clean)
 
     if(b->flags&b_Container)
     {
-      int x1=x+f,y1=y+f;
-      int w1=px,h1=py,w2=w1,h2=h1;
-      int w=BW-2*f,h=BH-2*f;
-      w2+=iw - b->c->num_columns*b->c->ButtonWidth;
-      h2+=ih - b->c->num_rows*b->c->ButtonHeight;
+      if (b->c->flags & b_Colorset)
+      {
+	SetRectangleBackground(
+	  Dpy, MyWindow, ix, iy, iw, ih,
+	  &Colorset[b->c->colorset % nColorsets], Pdepth, NormalGC);
+      }
+      else
+      {
+	int x1 = x + f;
+	int y1 = y + f;
+	int w1 = px;
+	int h1 = py;
+	int w2 = w1;
+	int h2 = h1;
+	int w = BW - 2 * f;
+	int h = BH - 2 * f;
 
-      if(w1)
-	XFillRectangle(Dpy,MyWindow,NormalGC,x1,y1,w1,h);
-      if(w2)
-	XFillRectangle(Dpy,MyWindow,NormalGC,x1+w-w2,y1,w2,h);
-      if(h1)
-	XFillRectangle(Dpy,MyWindow,NormalGC,x1,y1,w,h1);
-      if(h2)
-	XFillRectangle(Dpy,MyWindow,NormalGC,x1,y1+h-h2,w,h2);
+	w2 += iw - b->c->width;
+	h2 += ih - b->c->height;
+
+	if(w1)
+	  XFillRectangle(Dpy,MyWindow,NormalGC,x1,y1,w1,h);
+	if(w2)
+	  XFillRectangle(Dpy,MyWindow,NormalGC,x1+w-w2,y1,w2,h);
+	if(h1)
+	  XFillRectangle(Dpy,MyWindow,NormalGC,x1,y1,w,h1);
+	if(h2)
+	  XFillRectangle(Dpy,MyWindow,NormalGC,x1,y1+h-h2,w,h2);
+      }
     }
-    else if(!(b->flags&b_IconBack) && !(b->flags&b_IconParent) &&
-	    !(b->flags&b_Swallow) && !(b->flags&b_ColorsetParent))
+    else if (b->flags & b_Colorset)
+    {
+      SetRectangleBackground(
+	Dpy, MyWindow, ix, iy, iw, ih, &Colorset[b->colorset % nColorsets],
+	Pdepth, NormalGC);
+    }
+    else if (!(b->flags&b_IconBack) && !(b->flags&b_IconParent) &&
+	     !(b->flags&b_Swallow) && !(b->flags&b_ColorsetParent))
     {
       XFillRectangle(Dpy,MyWindow,NormalGC,x+f,y+f,BW-2*f,BH-2*f);
     }

@@ -1,5 +1,8 @@
 Changes in beta release 2.3.7 (August 1999)
 
+* The *FvwmButtonsButtonGeometry option makes sizing the
+  individual buttons very easy.
+
 * FvwmAnimate accepts "animate" commands from other modules or
   other sources of commands thru "sendtomodule".
 

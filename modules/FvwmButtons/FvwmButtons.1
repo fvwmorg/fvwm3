@@ -104,9 +104,14 @@ normal relief. In effect, you will get a sunken button, which is raised when
 activated.
 
 .IP "*FvwmButtonsGeometry \fIgeometry\fP"
-Specifies the FvwmButtons window location. The size should not be specified,
-as FvwmButtons automatically chooses a size which gracefully accomodates
-all its buttons. The geometry is a standard X11 window geometry specification.
+Specifies the FvwmButtons window location and size.  The geometry
+is a standard X11 window geometry specification.
+
+.IP "*FvwmButtonsButtonGeometry \fIgeometry\fP"
+This option works exactly like the \fIGeometry\fP option except that
+the size is assumed to be the size of a single button.  The size of
+the whole FvwmButtons window is calculated by multiplying the given
+dimension with the number of rows and columns of buttons.
 
 .IP "*FvwmButtonsPadding \fIwidth height\fP"
 The amount of free space between the relief of the button and its contents
@@ -669,7 +674,7 @@ any whitespace character.
 
 .SH COPYRIGHTS
 The FvwmButtons program, and the concept for interfacing this module to
-the Window Manager, are all original work by Robert Nation
+the Window Manager, are all original work by Robert Nation.
 
 Copyright 1993, Robert Nation. No guarantees or warranties or anything
 are provided or implied in any way whatsoever. Use this program at your

@@ -142,12 +142,10 @@ Pixmap CreateStretchPixmap(Display *dpy, Pixmap src, int src_width,
 }
 
 
-/* Creates a pixmap that is a tiled version of the input pixmap (input pixmap
- * must be depth 1).
- */
-Pixmap CreateTiledMaskPixmap(Display *dpy, Pixmap src, int src_width,
-			     int src_height, int dest_width,
-			     int dest_height, GC gc)
+/* Creates a pixmap that is a tiled version of the input pixmap. */
+Pixmap CreateTiledPixmap(Display *dpy, Pixmap src, int src_width,
+			 int src_height, int dest_width,
+			 int dest_height, int depth, GC gc)
 {
   int x;
   int y;

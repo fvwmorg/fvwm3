@@ -1,3 +1,16 @@
+1999-08-30  Dominik Vogt  <dominik_vogt@gmx.de>
+
+	* libs/Colorset.c (SetRectangleBackground): new function that allows to
+	draw shaped colorset backgrounds into a rectangle.
+
+	* libs/Graphics.c (CreateTiledPixmap): former CreateTiledMaskPixmap,
+	takes depth argument
+
+1999-08-29  Dominik Vogt  <dominik_vogt@gmx.de>
+
+	* fvwm/menus.c (size_menu_vertically): propagate menu style and tringle
+	style to submenus
+
 1999-08-28  Dominik Vogt  <dominik_vogt@gmx.de>
 
 	* fvwm/menus.c (AddToMenu): rewrote fix for label allocation bug
