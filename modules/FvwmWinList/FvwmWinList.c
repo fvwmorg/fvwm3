@@ -346,11 +346,9 @@ void ProcessMessage(unsigned long type,unsigned long *body)
       flags=ItemFlags(&windows,body[0]);
       UpdateItemFlags(&windows,body[0],flags);
       RadioButton(&buttons,i);
-      redraw = 1;
     }
+    redraw = 1;
     break;
-
-      break;
     case M_END_WINDOWLIST:
       if (!WindowIsUp) MakeMeWindow();
       redraw=1;

@@ -1,5 +1,12 @@
 1998-12-15  Dominik Vogt  <dominik_vogt@hp.com>
 
+	* fvwm/builtins.c (MatchesContitionMask): tried to fix transient icons
+	bug with Next [iconic]
+
+	* libs/System.c (getostype): Fixed uname bug for Solaris 2.6. Is this
+	guaranteed to work with any every system? or could automake do
+	something for us there?
+
 	* fvwm/menus.c (MenuInteraction):
 	(FPopupMenu): fixed last patch (mrDynamicPrev not set, menu not popped
 	down when an item is selected)

@@ -41,7 +41,7 @@ int getostype(char *buf, int max)
 #if HAVE_UNAME
     struct utsname sysname;
 
-    if ( uname( &sysname ) == 0 ) {
+    if ( uname( &sysname ) >= 0 ) {
 	strncat( buf, sysname.sysname, max );
 	return 0;
     }

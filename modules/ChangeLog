@@ -1,3 +1,8 @@
+1998-12-15  Dominik Vogt  <dominik_vogt@hp.com>
+
+	* FvwmWinList/FvwmWinList.c (ProcessMessage): Applied patch to suppress
+	redrawing by Nadim Saeed
+
 1998-12-13  Dominik Vogt  <dominik_vogt@hp.com>
 
 	* FvwmButtons/draw.c (RedrawButton): fixed background pixmap for

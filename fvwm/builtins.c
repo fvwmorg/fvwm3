@@ -3736,29 +3736,33 @@ Bool MatchesContitionMask(FvwmWindow *fw, WindowConditionMask *mask)
 {
   return
     ((mask->onFlags & fw->flags) == mask->onFlags) &&
+
     ((mask->offFlags & fw->flags) == 0) &&
+
     (mask->useCirculateHit || !(fw->flags & CirculateSkip)) &&
-    ((mask->useCirculateHitIcon && fw->flags & ICONIFIED) ||
+
+    ((mask->useCirculateHitIcon &&
+      fw->flags & ICONIFIED && !fw->flags & TRANSIENT) ||
      !(fw->flags & CirculateSkipIcon && fw->flags & ICONIFIED)) &&
+
     (!mask->needsCurrentDesk || fw->Desk == Scr.CurrentDesk) &&
+
     (!mask->needsCurrentPage || (fw->frame_x < Scr.MyDisplayWidth &&
 				 fw->frame_y < Scr.MyDisplayHeight &&
 				 fw->frame_x + fw->frame_width > 0 &&
-				 fw->frame_y + fw->frame_height > 0)
-      ) &&
+				 fw->frame_y + fw->frame_height > 0)) &&
+
     (!mask->needsName ||
      matchWildcards(mask->name, fw->name) ||
      matchWildcards(mask->name, fw->icon_name) ||
      fw->class.res_class && matchWildcards(mask->name, fw->class.res_class) ||
-     fw->class.res_name && matchWildcards(mask->name, fw->class.res_name)
-      ) &&
+     fw->class.res_name && matchWildcards(mask->name, fw->class.res_name)) &&
+
     (!mask->needsNotName ||
      !(matchWildcards(mask->name, fw->name) ||
        matchWildcards(mask->name, fw->icon_name) ||
        fw->class.res_class && matchWildcards(mask->name, fw->class.res_class)||
-       fw->class.res_name && matchWildcards(mask->name, fw->class.res_name)
-       )
-      );
+       fw->class.res_name && matchWildcards(mask->name, fw->class.res_name)));
 }
 
 /**************************************************************************
