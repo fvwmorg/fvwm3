@@ -14,10 +14,6 @@
  *   The arg parsing is completely redone using library functions.
  *   I also added args to M_DEICONIFY to eliminate the need to read the
  *   window size.
- *   I couldn't get the color feature to generate colors,
- *   perhaps because I have 8-bit color only?
- *   I removed the description of the color
- *   feature from the docs, but its still here.
  *   Added AnimateResizeLines animation effect.
  *   Changed option "resize" to "effect", (resize still works).
  *   Changed effect "zoom" to "frame", (zoom still works).
@@ -929,8 +925,13 @@ void ParseConfigLine(char *buf) {
       case Color_arg:                   /* Color */
         if (Animate.color) {
           free(Animate.color);          /* release storage holding color name */
+          Animate.color = 0;            /* show its gone */
         }
-        Animate.color = (char *)strdup(q);
+        if ((strncasecmp(q,"None",4) != 0) /* If not color "none"  */
+            && (strncasecmp(q,"Black^White",11) != 0) 
+            && (strncasecmp(q,"White^Black",11) != 0)) {
+          Animate.color = (char *)strdup(q); /* make copy of name */
+        }
         CreateDrawGC();                 /* update GC */
         break;
       case Delay_arg:                   /* Delay */
@@ -1010,9 +1011,7 @@ static void CreateDrawGC() {
       if (XAllocColor(dpy, DefaultColormap(dpy,scr), &xcol)) {
         prior_color = 'y';              /* remember to free it */
         color = xcol.pixel;
-        /* On 8bit and 16bit systems I have access to, this doesn't really
-           draw in the color allocated. Perhaps it works with 24bit color? */
-        gcv.function = GXequiv;  /* dje, doesn't really give a color */
+        /*         gcv.function = GXequiv;  Afterstep used this. */
       } else {
         fprintf(stderr,"%s: could not allocate color '%s'\n",
                 MyName+1,Animate.color);
@@ -1052,6 +1051,7 @@ static void DefineMe() {
   CMD1X("DestroyMenu MenuWidth%s");
   CMD1X("DestroyMenu MenuTwist%s");
   CMD1X("DestroyMenu MenuDelay%s");
+  CMD1X("DestroyMenu MenuColor%s");
 
   CMD1X("AddToMenu Menu%s \"Animation Main Menu\" Title");
   CMD11("AddToMenu Menu%s \"&E. Effects\" Popup MenuEffects%s");
@@ -1059,6 +1059,7 @@ static void DefineMe() {
   CMD11("AddToMenu Menu%s \"&T. Twists\" Popup MenuTwist%s");
   CMD11("AddToMenu Menu%s \"&L. Line Width\" Popup MenuWidth%s");
   CMD11("AddToMenu Menu%s \"&D. Delays\" Popup MenuDelay%s");
+  CMD11("AddToMenu Menu%s \"&X. Color for XOR\" Popup MenuColor%s");
   CMD10("AddToMenu Menu%s \"&C. Custom Settings\" %sCustom");
   CMD10("AddToMenu Menu%s \"&S. Save Config\" %sSave");
   CMD10("AddToMenu Menu%s \"&Z. Stop Animation\" %sStop");
@@ -1096,6 +1097,24 @@ static void DefineMe() {
   CMD10("AddToMenu MenuDelay%s \"&1. Delay 1/1000 sec\" %sDelay 1");
   CMD10("AddToMenu MenuDelay%s \"&2. Delay 1/100 sec\" %sDelay 10");
   CMD10("AddToMenu MenuDelay%s \"&3. Delay 1/10 sec\" %sDelay 100");
+
+  /* Same as the colors at the front of the colorlimiting table */
+  CMD1X("AddToMenu MenuColor%s \"Colors\" Title");
+  CMD10("AddToMenu MenuColor%s \"&1. Color Black^White\" %sColor None");
+  CMD10("AddToMenu MenuColor%s \"&2. Color White\" %sColor white");
+  CMD10("AddToMenu MenuColor%s \"&3. Color Black\" %sColor black");
+  CMD10("AddToMenu MenuColor%s \"&4. Color Grey\" %sColor grey");
+  CMD10("AddToMenu MenuColor%s \"&5. Color Green\" %sColor green");
+  CMD10("AddToMenu MenuColor%s \"&6. Color Blue\" %sColor blue");
+  CMD10("AddToMenu MenuColor%s \"&7. Color Red\" %sColor red");
+  CMD10("AddToMenu MenuColor%s \"&8. Color Cyan\" %sColor cyan");
+  CMD10("AddToMenu MenuColor%s \"&9. Color Yellow\" %sColor yellow");
+  CMD10("AddToMenu MenuColor%s \"&A. Color Magenta\" %sColor magenta");
+  CMD10("AddToMenu MenuColor%s \"&B. Color DodgerBlue\" %sColor DodgerBlue");
+  CMD10("AddToMenu MenuColor%s \"&C. Color SteelBlue\" %sColor SteelBlue");
+  CMD10("AddToMenu MenuColor%s \"&D. Color Chartreuse\" %sColor chartreuse");
+  CMD10("AddToMenu MenuColor%s \"&E. Color Wheat\" %sColor wheat");
+  CMD10("AddToMenu MenuColor%s \"&F. Color Turquoise\" %sColor turquoise");
 
   CMD1X("AddToMenu MenuEffects%s \"Effects\" Title");
   CMD10("AddToMenu MenuEffects%s \"&1. Effect Random\" %sEffect Random");
@@ -1193,7 +1212,6 @@ static void DefineForm() {
   SendText(Channel,cmd,0);
 
   /* There is a cleaner way (using the array) for this...dje */
-  CMD1V("*Form%sChoice NONE NONE %s \"None\"",effects[0].button);
   CMD1V("*Form%sChoice RANDOM RANDOM %s \"Random\"",effects[1].button);
   CMD1V("*Form%sChoice FLIP FLIP %s \"Flip\"",effects[2].button);
   CMD1V("*Form%sChoice FRAME FRAME %s \"Frame\"",effects[3].button);
@@ -1214,16 +1232,23 @@ static void DefineForm() {
   CMD1V("*Form%sInput        Delays 5 \"%d\"",Animate.delay);
   CMD1X("*Form%sLine         left");
   CMD1X("*Form%sText         \"\"");
+  CMD1X("*Form%sLine         left");
+  CMD1X("*Form%sText         \"Color:\"");
+  CMD1V("*Form%sInput        Color 20 \"%s\"",
+        Animate.color ? Animate.color : "Black^White");
+  CMD1X("*Form%sLine         left");
+  CMD1X("*Form%sText         \"\"");
   /*
-    F1 - Apply, F2 - Apply and Save, F3 - Reset, F4 - Cancel
+    F1 - Apply, F2 - Apply and Save, F3 - Reset, F4 - Dismiss
   */
 
   CMD1X("*Form%sLine         expand");
-  CMD1X("*Form%sButton       quit \"F1 - Apply\" F1");
+  CMD1X("*Form%sButton       continue \"F1 - Apply\" F1");
   CMD11("*Form%sCommand      *%sIterations $(Iterations)");
   CMD11("*Form%sCommand      *%sTwist $(Twists)");
   CMD11("*Form%sCommand      *%sWidth $(Linewidth)");
   CMD11("*Form%sCommand      *%sDelay $(Delays)");
+  CMD11("*Form%sCommand      *%sColor $(Color)");
   CMD11("*Form%sCommand      *%sEffect $(RANDOM?Random)\
 $(FLIP?Flip)\
 $(FRAME?Frame)\
@@ -1232,11 +1257,11 @@ $(LINES?Lines)\
 $(TURN?Turn)\
 $(TWIST?Twist)");
 
-  CMD1X("*Form%sButton       quit \"F2 - Apply & Save\" F2");
+  CMD1X("*Form%sButton       continue \"F2 - Apply & Save\" F2");
   CMD11("*Form%sCommand      *%sIterations $(Iterations)");
   CMD11("*Form%sCommand      *%sTwist $(Twists)");
   CMD11("*Form%sCommand      *%sWidth $(Linewidth)");
-  CMD11("*Form%sCommand      *%sDelay $(Delays)");
+  CMD11("*Form%sCommand      *%sColor $(Color)");
   CMD11("*Form%sCommand      *%sEffect $(RANDOM?Random)\
 $(FLIP?Flip)\
 $(FRAME?Frame)\
@@ -1248,6 +1273,6 @@ $(TWIST?Twist)");
 
   CMD1X("*Form%sButton       restart   \"F3 - Reset\" F3");
 
-  CMD1X("*Form%sButton       quit \"F4 - Cancel\" F4");
+  CMD1X("*Form%sButton       quit \"F4 - Dismiss\" F4");
   CMD1X("*Form%sCommand Nop");
 }

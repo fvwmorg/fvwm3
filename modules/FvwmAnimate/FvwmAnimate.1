@@ -62,9 +62,20 @@ and
 in the configuration file name.   Unlike other fvwm2 modules, there is
 little reason to use the optional name.
 
-.\" .IP "*FvwmAnimateColor \fBcolor\fP"
-.\" Tells \fBFvwmAnimate\fP what color to draw with.
-.\"
+.IP "*FvwmAnimateColor \fBcolor\fP"
+Tells \fBFvwmAnimate\fP what color to draw with.
+The color is "XOR'ed" (exclusive ORed) onto the background.
+Depending on the display type you are using,  the effect this
+causes will vary.  Especially on 8-bit displays, it helps if the background
+is a solid color.  You have to experiment with this to see how it works.
+
+The default color is not really a color and can be entered as "Black^White",
+or more simply "None".  This is the same as the default XOR mask used
+by fvwm2 for move and resize frames.
+
+Other colors can be specified using standard X color notation.  Ie. color
+names like "LightBlue", or RGB values like "#FFFFFF".
+
 .IP "*FvwmAnimateDelay \fBmsecs\fP"
 Tells \fBFvwmAnimate\fP how many milliseconds to sleep
 between frames of animation.
