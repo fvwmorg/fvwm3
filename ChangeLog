@@ -1,3 +1,8 @@
+2000-03-27  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* libs/defaults.h (DEFAULT_MODULE_TIMEOUT):
+	increased module timeout to 30 seconds
+
 2000-03-25  Mikhael Goikhman  <migo@homemail.com>
 
 	* configure.in: removed duplicated checks for libxpg4 and Xsetlocale,
