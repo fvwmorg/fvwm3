@@ -897,15 +897,26 @@ void change_colorset(int color) {
           XSetWindowBorder(theDisplay, man->theWindow,
                            man->forecolor[PLAIN_CONTEXT]);
         }
-        XSetForeground (theDisplay, man->backContext[i], man->backcolor[i]);
-        XSetForeground (theDisplay, man->hiContext[i], man->forecolor[i]);
-        XSetBackground (theDisplay, man->flatContext[i], man->forecolor[i]);
-        XSetForeground (theDisplay, man->flatContext[i], man->backcolor[i]);
+	if (!man->backContext[i] || !man->hiContext[i] ||
+	    !man->flatContext[i] || !man->reliefContext[i] ||
+	    !man->shadowContext[i])
+	{
+	  /* colorset not properly defined yet, just skip it */
+	  continue;
+	}
+	XSetForeground (theDisplay, man->backContext[i], man->backcolor[i]);
+	XSetForeground (theDisplay, man->hiContext[i], man->forecolor[i]);
+	XSetBackground (theDisplay, man->flatContext[i], man->forecolor[i]);
+	XSetForeground (theDisplay, man->flatContext[i], man->backcolor[i]);
         if (Pdepth > 2) {
-          XSetBackground (theDisplay, man->reliefContext[i], man->backcolor[i]);
-          XSetForeground (theDisplay, man->reliefContext[i], man->hicolor[i]);
-          XSetBackground (theDisplay, man->shadowContext[i], man->backcolor[i]);
-          XSetForeground (theDisplay, man->shadowContext[i], man->shadowcolor[i]);
+	  XSetBackground (
+	    theDisplay, man->reliefContext[i], man->backcolor[i]);
+	  XSetForeground (
+	    theDisplay, man->reliefContext[i], man->hicolor[i]);
+	  XSetBackground (
+	    theDisplay, man->shadowContext[i], man->backcolor[i]);
+	  XSetForeground (
+	    theDisplay, man->shadowContext[i], man->shadowcolor[i]);
         }
 
         if (man->pixmap[i])

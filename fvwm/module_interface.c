@@ -112,9 +112,7 @@ void ClosePipes(void)
     }
 }
 
-
-void executeModule(XEvent *eventp,Window w,FvwmWindow *tmp_win,
-		     unsigned long context, char *action,int* Module)
+static int do_execute_module(F_CMD_ARGS)
 {
   int fvwm_to_app[2],app_to_fvwm[2];
   int i,val,nargs = 0;
@@ -133,7 +131,7 @@ void executeModule(XEvent *eventp,Window w,FvwmWindow *tmp_win,
     UngrabEm();
 
   if(action == NULL)
-    return;
+    return -1;
 
   if(tmp_win)
     win = tmp_win->w;
@@ -146,7 +144,7 @@ void executeModule(XEvent *eventp,Window w,FvwmWindow *tmp_win,
 
   action = GetNextToken(action, &cptr);
   if (!cptr)
-    return;
+    return -1;
 
   arg1 = searchPath( ModulePath, cptr, EXECUTABLE_EXTENSION, X_OK );
 
@@ -155,7 +153,7 @@ void executeModule(XEvent *eventp,Window w,FvwmWindow *tmp_win,
       fvwm_msg(ERR,"executeModule",
 	       "No such module '%s' in ModulePath '%s'",cptr,ModulePath);
       free(cptr);
-      return;
+      return -1;
     }
 
 #ifdef REMOVE_EXECUTABLE_EXTENSION
@@ -175,7 +173,7 @@ void executeModule(XEvent *eventp,Window w,FvwmWindow *tmp_win,
       fvwm_msg(ERR,"executeModule","Too many Accessories!");
       free(arg1);
       free(cptr);
-      return;
+      return -1;
     }
 
   /* I want one-ended pipes, so I open two two-ended pipes,
@@ -186,7 +184,7 @@ void executeModule(XEvent *eventp,Window w,FvwmWindow *tmp_win,
       fvwm_msg(ERR,"executeModule","Failed to open pipe");
       free(arg1);
       free(cptr);
-      return;
+      return -1;
     }
   if(pipe(app_to_fvwm)!=0)
     {
@@ -195,7 +193,7 @@ void executeModule(XEvent *eventp,Window w,FvwmWindow *tmp_win,
       free(cptr);
       close(fvwm_to_app[0]);
       close(fvwm_to_app[1]);
-      return;
+      return -1;
     }
 
   pipeName[i] = stripcpy(cptr);
@@ -308,12 +306,139 @@ void executeModule(XEvent *eventp,Window w,FvwmWindow *tmp_win,
 	  if(args[i] != 0)
 	    free(args[i]);
 	}
+      return -1;
     }
+
+  return i;
+}
+
+void executeModule(F_CMD_ARGS)
+{
+  do_execute_module(eventp, w, tmp_win, context, action, Module);
   return;
 }
 
+void executeModuleSync(F_CMD_ARGS)
+{
+  int sec = 0;
+  char *next;
+  char *token;
+  char *expect = NULL;
+  struct timeval timeout = {42, 0};
+  struct timeval *timeoutP = &timeout;
+  int pipe_slot;
+  fd_set in_fdset;
+  fd_set out_fdset;
+  Window targetWindow;
+  extern fd_set_size_t fd_width;
+
+fprintf(stderr,"1\n");
+  if (!action)
+    return;
+
+  token = PeekToken(action, &next);
+  if (StrEquals(token, "expect"))
+  {
+    token = PeekToken(next, &next);
+    if (token)
+    {
+      expect = alloca(strlen(token) + 1);
+      strcpy(expect, token);
+    }
+    action = next;
+    token = PeekToken(action, &next);
+  }
+  if (token && StrEquals(token, "timeout"))
+  {
+    if (GetIntegerArguments(next, &next, &sec, 1) > 0 && sec > 0)
+    {
+      /* we have a delay, skip the number */
+      action = next;
+    }
+    else
+    {
+      fvwm_msg(ERR, "executeModuleSync", "illegal timeout");
+      return;
+    }
+  }
+fprintf(stderr,"2\n");
+
+  if (!action)
+  {
+    /* no module name */
+    return;
+  }
+
+  pipe_slot = do_execute_module(eventp, w, tmp_win, context, action, Module);
+  if (pipe_slot == -1)
+  {
+    /* executing the module failed, just return */
+    return;
+  }
+
+  /* wait for the message from the module */
+
+fprintf(stderr,"3\n");
+
+  /* wait for module input */
+  while (1)
+  {
+    if (sec > 0)
+    {
+      timeout.tv_sec = sec;
+      timeout.tv_usec = 0;
+      timeoutP = &timeout;
+    }
+    else
+    {
+      timeoutP = NULL;
+    }
+
+    FD_ZERO(&in_fdset);
+    FD_ZERO(&out_fdset);
+    if(readPipes[pipe_slot] >= 0)
+      FD_SET(readPipes[pipe_slot], &in_fdset);
+    if(pipeQueue[pipe_slot]!= NULL)
+      FD_SET(writePipes[pipe_slot], &out_fdset);
+
+    if (fvwmSelect(fd_width, &in_fdset, &out_fdset, 0, timeoutP) > 0)
+    {
+      if ((readPipes[pipe_slot] >= 0) &&
+	  FD_ISSET(readPipes[pipe_slot], &in_fdset))
+      {
+	/* Check for module input. */
+	if (read(readPipes[pipe_slot], &targetWindow, sizeof(Window)) > 0)
+	{
+	  if (HandleModuleInput(targetWindow, pipe_slot, expect) == 77)
+	  {
+	    /* we got the message we were waiting for */
+fprintf(stderr,"module %s synchronized\n", action);
+	    return;
+	  }
+	}
+	else
+	{
+	  KillModule(pipe_slot, 10);
+	}
+      }
+      if ((writePipes[pipe_slot] >= 0) &&
+	  FD_ISSET(writePipes[pipe_slot], &out_fdset))
+      {
+        FlushQueue(pipe_slot);
+      }
+    }
+    else
+    {
+      /* timeout */
+fprintf(stderr,"5\n");
+      return;
+    }
+  }
+}
+
+
 /* Changed message from module from 255 to 1000. dje */
-int HandleModuleInput(Window w, int channel)
+int HandleModuleInput(Window w, int channel, char *expect)
 {
   char text[MAX_MODULE_INPUT_TEXT_LEN];
   int size;
@@ -366,6 +491,17 @@ int HandleModuleInput(Window w, int channel)
 
       if(strncasecmp(text,"UNLOCK",6)==0) { /* synchronous response */
         return 66;
+      }
+
+      if (expect && strncasecmp(text, expect, strlen(expect)) == 0)
+      {
+	/* the module sent the expected string */
+	return 77;
+      }
+      else if (!expect && strncasecmp(text, "FINISHED_STARTUP", 16) == 0)
+      {
+	/* module has finished startup */
+	return 77;
       }
 
       /* perhaps the module would like us to kill it? */
@@ -1015,7 +1151,7 @@ int PositiveWrite(int module, unsigned long *ptr, int size)
     FlushQueue(module);
     fcntl(readPipes[module],F_SETFL,0);
     while ((e = read(readPipes[module],&targetWindow, sizeof(Window))) > 0) {
-      if (HandleModuleInput(targetWindow,module) == 66) {
+      if (HandleModuleInput(targetWindow, module, NULL) == 66) {
         break;
       }
     }

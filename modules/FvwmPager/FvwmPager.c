@@ -773,97 +773,119 @@ void list_new_page(unsigned long *body)
 void list_new_desk(unsigned long *body)
 {
   int oldDesk;
+  int cs1 = -1;
+  int cs2 = -1;
 
   oldDesk = Scr.CurrentDesk;
   Scr.CurrentDesk = (long)body[0];
   if (fAlwaysCurrentDesk && oldDesk != Scr.CurrentDesk)
+  {
+    PagerWindow *t;
+    PagerStringList *item;
+    char line[100];
+
+    desk1 = Scr.CurrentDesk;
+    desk2 = Scr.CurrentDesk;
+    for (t = Start; t != NULL; t = t->next)
     {
-      PagerWindow *t;
-      PagerStringList *item;
-      char line[100];
-
-      desk1 = Scr.CurrentDesk;
-      desk2 = Scr.CurrentDesk;
-      for (t = Start; t != NULL; t = t->next)
-	{
-	  if (t->desk == oldDesk || t->desk == Scr.CurrentDesk)
-	    ChangeDeskForWindow(t, t->desk);
-	}
-      item = FindDeskStrings(Scr.CurrentDesk);
-      if (Desks[0].label != NULL)
-	{
-	  free(Desks[0].label);
-	  Desks[0].label = NULL;
-	}
-      if (item->next != NULL && item->next->label != NULL)
-	{
-	  CopyString(&Desks[0].label, item->next->label);
-	}
-      else
-	{
-	  sprintf(line, "Desk %d", desk1);
-	  CopyString(&Desks[0].label, line);
-	}
-      XStoreName(dpy, Scr.Pager_w, Desks[0].label);
-      XSetIconName(dpy, Scr.Pager_w, Desks[0].label);
-
-
-      if (Desks[0].bgPixmap != NULL)
-	{
-	  DestroyPicture(dpy, Desks[0].bgPixmap);
-	  Desks[0].bgPixmap = NULL;
-	}
-
-      if (Desks[0].Dcolor != NULL)
-	{
-	  free (Desks[0].Dcolor);
-	  Desks[0].Dcolor = NULL;
-	}
-
-      if (item->next != NULL && item->next->bgPixmap != NULL)
-	{
-	  Desks[0].bgPixmap = item->next->bgPixmap;
-	  Desks[0].bgPixmap->count++;
-	  XSetWindowBackgroundPixmap(dpy, Desks[0].w,
-				     Desks[0].bgPixmap->picture);
-	}
-      else if (item->next != NULL && item->next->Dcolor != NULL)
-	{
-	  CopyString(&Desks[0].Dcolor, item->next->Dcolor);
-	  XSetWindowBackground(dpy, Desks[0].w, GetColor(Desks[0].Dcolor));
-	}
-      else if (PixmapBack != NULL)
-	{
-	  Desks[0].bgPixmap = PixmapBack;
-	  Desks[0].bgPixmap->count++;
-	  XSetWindowBackgroundPixmap(dpy, Desks[0].w,
-				     Desks[0].bgPixmap->picture);
-	}
-      else
-	{
-	  CopyString(&Desks[0].Dcolor, PagerBack);
-	  XSetWindowBackground(dpy, Desks[0].w, GetColor(Desks[0].Dcolor));
-	}
-
-
-      if (item->next != NULL && item->next->Dcolor != NULL)
-	{
-	  CopyString(&Desks[0].Dcolor, item->next->Dcolor);
-	  XSetWindowBackground(dpy, Desks[0].title_w,
-			       GetColor(Desks[0].Dcolor));
-	}
-      else
-	{
-	  CopyString(&Desks[0].Dcolor, PagerBack);
-	  XSetWindowBackground(dpy, Desks[0].title_w,
-			       GetColor(Desks[0].Dcolor));
-	}
-
-      XClearWindow(dpy, Desks[0].w);
-      XClearWindow(dpy, Desks[0].title_w);
+      if (t->desk == oldDesk || t->desk == Scr.CurrentDesk)
+	ChangeDeskForWindow(t, t->desk);
     }
-  MovePage();
+    item = FindDeskStrings(Scr.CurrentDesk);
+    if (Desks[0].label != NULL)
+    {
+      free(Desks[0].label);
+      Desks[0].label = NULL;
+    }
+    if (item->next != NULL && item->next->label != NULL)
+    {
+      CopyString(&Desks[0].label, item->next->label);
+    }
+    else
+    {
+      sprintf(line, "Desk %d", desk1);
+      CopyString(&Desks[0].label, line);
+    }
+    XStoreName(dpy, Scr.Pager_w, Desks[0].label);
+    XSetIconName(dpy, Scr.Pager_w, Desks[0].label);
 
+
+    if (Desks[0].bgPixmap != NULL)
+    {
+      DestroyPicture(dpy, Desks[0].bgPixmap);
+      Desks[0].bgPixmap = NULL;
+    }
+
+    if (Desks[0].Dcolor != NULL)
+    {
+      free (Desks[0].Dcolor);
+      Desks[0].Dcolor = NULL;
+    }
+
+    if (item->next != NULL && item->next->colorset > -1)
+    {
+      /* use our colour set if we have one */
+      change_colorset(item->next->colorset);
+    }
+    else if (item->next != NULL && item->next->bgPixmap != NULL)
+    {
+      Desks[0].bgPixmap = item->next->bgPixmap;
+      Desks[0].bgPixmap->count++;
+      XSetWindowBackgroundPixmap(dpy, Desks[0].w,
+				 Desks[0].bgPixmap->picture);
+    }
+    else if (item->next != NULL && item->next->Dcolor != NULL)
+    {
+      CopyString(&Desks[0].Dcolor, item->next->Dcolor);
+      XSetWindowBackground(dpy, Desks[0].w, GetColor(Desks[0].Dcolor));
+    }
+    else if (PixmapBack != NULL)
+    {
+      Desks[0].bgPixmap = PixmapBack;
+      Desks[0].bgPixmap->count++;
+      XSetWindowBackgroundPixmap(dpy, Desks[0].w,
+				 Desks[0].bgPixmap->picture);
+    }
+    else
+    {
+      CopyString(&Desks[0].Dcolor, PagerBack);
+      XSetWindowBackground(dpy, Desks[0].w, GetColor(Desks[0].Dcolor));
+    }
+
+    if (item->next != NULL && item->next->Dcolor != NULL)
+    {
+      CopyString(&Desks[0].Dcolor, item->next->Dcolor);
+      XSetWindowBackground(dpy, Desks[0].title_w,
+			   GetColor(Desks[0].Dcolor));
+    }
+    else
+    {
+      CopyString(&Desks[0].Dcolor, PagerBack);
+      XSetWindowBackground(dpy, Desks[0].title_w,
+			   GetColor(Desks[0].Dcolor));
+    }
+
+    /* update the colour sets for the desk */
+    if (item->next != NULL)
+    {
+      if (item->next->highcolorset > -1 &&
+	  item->next->highcolorset != item->next->colorset)
+      {
+	change_colorset(item->next->highcolorset);
+      }
+      if (item->next->ballooncolorset > -1 &&
+	  item->next->ballooncolorset != item->next->highcolorset &&
+	  item->next->ballooncolorset != item->next->colorset)
+      {
+	change_colorset(item->next->ballooncolorset);
+      }
+    }
+
+    XClearWindow(dpy, Desks[0].w);
+    XClearWindow(dpy, Desks[0].title_w);
+  } /* if (fAlwaysCurrentDesk && oldDesk != Scr.CurrentDesk) */
+
+  MovePage();
   DrawGrid(oldDesk - desk1,1);
   DrawGrid(Scr.CurrentDesk - desk1,1);
   MoveStickyWindows();

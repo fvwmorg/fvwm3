@@ -1,4 +1,18 @@
+1999-08-18  Dominik Vogt  <dominik_vogt@gmx.de>
+
+	* fvwm/fvwm2.1: man page for ModuleSynchronous
+
+	* fvwm/events.c:
+	* fvwm/module_interface.c (HandleModuleInput): function takes an
+	optional string as input that replaces "FINISHED_STARTUP"
+
 1999-08-17  Dominik Vogt  <dominik_vogt@gmx.de>
+
+	* fvwm/module_interface.c (do_execute_module):
+	(executeModule):
+	(executeModuleSynchronous):
+	* fvwm/functions.h:
+	* fvwm/functions.c (func_config): new command ModuleSynchronous
 
 	* fvwm/fvwm.h: moved headers from misc.h
 

@@ -3939,6 +3939,26 @@ environment variable $FVWM_MODULEDIR.
 
 
 .TP
+.B "ModuleSynchronous" "[\fIExpect string\fP] [\fITimeout seconds\fP] \fIModuleName\fP"
+The \fIModuleSynchronous\fP command is very similar to \fIModule\fP.
+Fvwm stops processing any commands and user input until the module
+sends a string beginning with "FINISHED_STARTUP" back to fvwm. If
+the optional \fITimeout\fP is given fvwm gives up if the module sent
+no input back to fvwm for \fIsec\fP seconds. If the \fIExpect\fP
+option is given, fvwm waits for the given \fIstring\fP instead.
+\fIModuleSynchronous\fP should only be used during fvwm startup to
+enforce the order in which modules are started. This command is
+intended for use with the \fIFvwmTheme\fP module since the
+configuration must be in place before any other modules are started.
+
+Warning: It is quite easy to hang fvwm with this command, even if
+a timeout is given. Be extra careful to choose the string to wait.
+Although all modules in the fvwm distribution send back the
+"FINISHED_STARTUP" string once they have properly started up,
+this may not be the case for third party modules.
+
+
+.TP
 .B "SendToModule" "\fImodulename string\fP"
 Sends an arbitrary string (no quotes required) to all modules matching
 \fImodulename\fP, which may contain wildcards.  This only makes sense

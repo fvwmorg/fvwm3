@@ -105,6 +105,9 @@ int main(int argc, char **argv)
   /* get the initial configuration options */
   parse_config();
 
+  /* tell fvwm that we're up and running */
+  SendText(fd, "FINISHED_STARTUP", 0);
+
   /* garbage collect */
   alloca(0);
 

@@ -2028,7 +2028,7 @@ int My_XNextEvent(Display *dpy, XEvent *event)
       if ((readPipes[i] >= 0) && FD_ISSET(readPipes[i], &in_fdset)) {
         if (read(readPipes[i], &targetWindow, sizeof(Window)) > 0) {
           DBUG("My_XNextEvent","calling HandleModuleInput");
-          HandleModuleInput(targetWindow,i);
+          HandleModuleInput(targetWindow, i, NULL);
 	} else {
           DBUG("My_XNextEvent","calling KillModule");
           KillModule(i,10);
