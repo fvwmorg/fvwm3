@@ -1,3 +1,9 @@
+1998-12-11  Bob Woodside <proteus@pcnet.com>
+
+	* fvwm/events.c:  Fixed "window under mouse at startup doesn't
+	get focus" bug - suppressed stashing the event time if an old
+	LeaveNotify was found on the queue.
+
 1998-12-10  Dominik Vogt  <dominik_vogt@hp.com>
 
 	* fvwm/move.c (et al.): Applied updated SnapAttraction patch but put
