@@ -248,7 +248,8 @@ static void ParseTitle(char **ss, byte *flags, byte *mask)
 *** ParseSwallow()
 *** Parses the options possible to Swallow
 **/
-static void ParseSwallow(char **ss,unsigned int *flags,unsigned int *mask)
+static void ParseSwallow(
+	char **ss,unsigned int *flags,unsigned int *mask, button_info *b)
 {
   char *swallowopts[] =
   {
@@ -259,6 +260,7 @@ static void ParseSwallow(char **ss,unsigned int *flags,unsigned int *mask)
     "useold", "noold",
     "usetitle", "notitle",
     "fvwmmodule", "nofvwmmodule",
+    "swallownew",
     NULL
   };
   char *t,*s=*ss;
@@ -297,10 +299,12 @@ static void ParseSwallow(char **ss,unsigned int *flags,unsigned int *mask)
     case 6: /* Respawn */
       *flags|=b_Respawn;
       *mask|=b_Respawn;
+      b->newflags.do_swallow_new = 0;
       break;
     case 7: /* NoRespawn */
       *flags&=~b_Respawn;
       *mask|=b_Respawn;
+      b->newflags.do_swallow_new = 0;
       break;
     case 8: /* UseOld */
       *flags|=b_UseOld;
@@ -325,6 +329,11 @@ static void ParseSwallow(char **ss,unsigned int *flags,unsigned int *mask)
     case 13: /* NoFvwmModule */
       *flags&=~b_FvwmModule;
       *mask|=b_FvwmModule;
+      break;
+    case 14: /* SwallowNew */
+      *flags&=~b_Respawn;
+      *mask|=b_Respawn;
+      b->newflags.do_swallow_new = 1;
       break;
     default:
       t=seekright(&s);
@@ -689,7 +698,7 @@ static void ParseContainer(char **ss,button_info *b)
 	{
 	  b->c->swallow=0;
 	  b->c->swallow_mask=0;
-	  ParseSwallow(&s, &b->c->swallow, &b->c->swallow_mask);
+	  ParseSwallow(&s, &b->c->swallow, &b->c->swallow_mask, b);
 	  if(b->c->swallow_mask)
 	  {
 	    b->c->flags |= b_Swallow;
@@ -1013,7 +1022,7 @@ static void ParseButton(button_info **uberb,char *s)
 	if(*s=='(' && s++)
 	{
 	  if (is_swallow)
-	    ParseSwallow(&s, &b->swallow,&b->swallow_mask);
+	    ParseSwallow(&s, &b->swallow,&b->swallow_mask, b);
 	  else
 	    ParsePanel(&s, &b->swallow, &b->swallow_mask, &b->slide_direction,
 		       &b->slide_steps, &b->slide_delay_ms, &b->panel_flags,

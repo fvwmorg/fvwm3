@@ -1,3 +1,13 @@
+2004-08-31  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* FvwmButtons/output.c (DumpButtons):
+	* FvwmButtons/parse.c (ParseSwallow):
+	(ParseContainer):
+	(ParseButton):
+	* FvwmButtons/FvwmButtons.c (Loop):
+	with the SwallowNew option, swallow a new window if swallowed window
+	dies and the user start it again manually
+
 2004-08-30  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* FvwmTaskBar/Goodies.c (f_scandir):

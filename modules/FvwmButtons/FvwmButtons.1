@@ -40,7 +40,7 @@ The
 .I -transient
 option tells FvwmButtons to terminate itself after the first key
 or button press has been received (presses to open a sub panel do
-not count) or a sub panel has been closed or re-spawned. This is
+not count) or a sub panel has been closed or respawned. This is
 especially useful for sub panels where you want to select a single
 button and have it closed automatically.  It could be used to
 create two-dimensional graphical menus.  Since
@@ -561,11 +561,13 @@ it or by sending a message to it. This can be useful in ending
 programs that doesn't accept window manager protocol. The default
 value is "NoKill". This has no effect if "NoClose" is specified.
 
-NoRespawn / Respawn -
-Specifies whether the swallowed program is to be re-spawned
-(re-started) if it dies. If "Respawn" is specified, the program is
-re-spawned using the original \fIcommand\fP. Use this option with
-care, the program might have a legitimate reason to die.
+NoRespawn / Respawn / SwallowNew -
+Specifies whether the swallowed program is to be respawned
+(restarted) if it dies. If "Respawn" is specified, the program is
+respawned using the original \fIcommand\fP. Use this option with
+care, the program might have a legitimate reason to die.  If
+"SwallowNew" is given, the program is not respawned, but if a new
+window with the specified name appears, it is swallowed.
 
 NoOld / UseOld -
 Specifies whether the button will try to swallow an existing

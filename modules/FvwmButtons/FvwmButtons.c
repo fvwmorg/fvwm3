@@ -1397,6 +1397,20 @@ void Loop(void)
 		XWithdrawWindow(Dpy, MyWindow, screen);
 	      }
 	    }
+	    else if(b->newflags.do_swallow_new && b->hangon && b->spawn &&
+		    !b->newflags.is_panel)
+	    {
+#ifdef DEBUG_HANGON
+	      fprintf(stderr,", waiting for respawned window\n");
+#endif
+	      b->swallow |= 1;
+	      b->flags |= (b_Swallow | b_Hangon);
+	      RedrawButton(b, DRAW_CLEAN, NULL);
+	      if (is_transient_panel)
+	      {
+		XWithdrawWindow(Dpy, MyWindow, screen);
+	      }
+	    }
 	    else
 	    {
 	      b->flags &= ~(b_Swallow | b_Panel);

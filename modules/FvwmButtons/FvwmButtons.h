@@ -204,6 +204,7 @@ struct button_info_struct
     unsigned panel_mapped : 1;    /* b_Panel */
     unsigned panel_iconified : 1; /* b_Panel */
     unsigned panel_shaded : 1;    /* b_Panel */
+    unsigned do_swallow_new : 1;
   } newflags;
 #define SLIDE_UP 'u'
 #define SLIDE_DOWN 'd'

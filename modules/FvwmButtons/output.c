@@ -82,12 +82,16 @@ void DumpButtons(button_info *b)
     fprintf(stderr,"Swallow(0x%02x) ",b->swallow);
     if(b->swallow&b_Respawn)
       fprintf(stderr,"\n  Respawn(%s) ",b->spawn);
+    if(b->newflags.do_swallow_new)
+      fprintf(stderr,"\n  SwallowNew(%s) ",b->spawn);
   }
   if(b->flags&b_Panel)
   {
     fprintf(stderr,"Panel(0x%02x) ",b->swallow);
     if(b->swallow&b_Respawn)
       fprintf(stderr,"\n  Respawn(%s) ",b->spawn);
+    if(b->newflags.do_swallow_new)
+      fprintf(stderr,"\n  SwallowNew(%s) ",b->spawn);
   }
   if(b->flags&b_Hangon)
     fprintf(stderr,"Hangon(%s) ",b->hangon);
@@ -95,7 +99,8 @@ void DumpButtons(button_info *b)
   if(b->flags&b_Container)
   {
     int i=0;
-    fprintf(stderr,"  Container(%ix%i=%i buttons 0x%04lx (alloc %i), size %ix%i, pos %i,%i)\n{ ",
+    fprintf(stderr,"  Container(%ix%i=%i buttons 0x%04lx (alloc %i),"
+	    " size %ix%i, pos %i,%i)\n{ ",
 	    b->c->num_columns,b->c->num_rows,b->c->num_buttons,b->c->flags,
 	    b->c->allocated_buttons,
 	    b->c->width,b->c->height,b->c->xpos,b->c->ypos);

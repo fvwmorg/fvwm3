@@ -38,6 +38,8 @@ Changes in alpha release 2.5.11 (not released yet)
 * New FvwmButtons options: ActiveColorset, ActiveIcon, ActiveTitle,
   PressColorset, PressIcon and PressTitle.
 
+* New FvwmButtons swallow option: SwallowNew.
+
 * The option CurrentGlobalPageAnyDesk was accidentally named
   CurrentGlobbalPageAnyDesk before.
 
