@@ -1129,65 +1129,6 @@ void GetIconwinSize(int *dx, int *dy)
 }
 
 /************************************************************************
- * GetShadow 
- * 	Original work from GoodStuff:
- *		Copyright 1993, Robert Nation.
- ***********************************************************************/
-Pixel GetShadow(Pixel background) 
-{
-  XColor bg_color;
-  XWindowAttributes attributes;
-  
-  XGetWindowAttributes(dpy,Root,&attributes);
-  
-  bg_color.pixel = background;
-  XQueryColor(dpy,attributes.colormap,&bg_color);
-  
-  bg_color.red = (unsigned short)((bg_color.red*50)/100);
-  bg_color.green = (unsigned short)((bg_color.green*50)/100);
-  bg_color.blue = (unsigned short)((bg_color.blue*50)/100);
-  
-  if(!XAllocColor(dpy,attributes.colormap,&bg_color))
-    nocolor("alloc shadow","");
-  
-  return bg_color.pixel;
-}
-
-/************************************************************************
- * GetHilite 
- * 	Original work from GoodStuff:
- *		Copyright 1993, Robert Nation.
- ***********************************************************************/
-Pixel GetHilite(Pixel background) 
-{
-  XColor bg_color, white_p;
-  XWindowAttributes attributes;
-  
-  XGetWindowAttributes(dpy,Root,&attributes);
-  
-  bg_color.pixel = background;
-  XQueryColor(dpy,attributes.colormap,&bg_color);
-
-  white_p.pixel = GetColor("white");
-  XQueryColor(dpy,attributes.colormap,&white_p);
-  
-
-  bg_color.red = max((white_p.red/5), bg_color.red);
-  bg_color.green = max((white_p.green/5), bg_color.green);
-  bg_color.blue = max((white_p.blue/5), bg_color.blue);
-  
-  bg_color.red = min(white_p.red, (bg_color.red*140)/100);
-  bg_color.green = min(white_p.green, (bg_color.green*140)/100);
-  bg_color.blue = min(white_p.blue, (bg_color.blue*140)/100);
-  
-  if(!XAllocColor(dpy,attributes.colormap,&bg_color))
-    nocolor("alloc hilight","");
-  
-  return bg_color.pixel;
-}
-
-
-/************************************************************************
  * nocolor
  * 	Original work from GoodStuff:
  *		Copyright 1993, Robert Nation.

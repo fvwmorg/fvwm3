@@ -1376,7 +1376,6 @@ void SetHiColor(XEvent *eventp,Window w,FvwmWindow *tmp_win,
   XGCValues gcv;
   unsigned long gcm;
   char *hifore=NULL, *hiback=NULL;
-  extern char *white,*black;
   FvwmWindow *hilight;
 #ifdef USEDECOR
   FvwmDecor *fl = cur_decor ? cur_decor : &Scr.DefaultDecor;
@@ -1401,10 +1400,10 @@ void SetHiColor(XEvent *eventp,Window w,FvwmWindow *tmp_win,
   }
   else
   {
-    fl->HiColors.back  = GetColor(white);
-    fl->HiColors.fore  = GetColor(black);
-    fl->HiRelief.back  = GetColor(black);
-    fl->HiRelief.fore  = GetColor(white);
+    fl->HiColors.back  = GetColor("white");
+    fl->HiColors.fore  = GetColor("black");
+    fl->HiRelief.back  = GetColor("black");
+    fl->HiRelief.fore  = GetColor("white");
   }
   if (hifore) free(hifore);
   if (hiback) free(hiback);
@@ -1574,7 +1573,6 @@ void SetMenuStyle(XEvent *eventp,Window w,FvwmWindow *tmp_win,
   unsigned long gcm;
   char *fore=NULL, *back=NULL, *stipple = NULL, *font= NULL, *style = 0;
   char *animated=NULL;
-  extern char *white,*black;
   int wid,hei;
 
   action = GetNextToken(action,&fore);
@@ -1616,12 +1614,12 @@ void SetMenuStyle(XEvent *eventp,Window w,FvwmWindow *tmp_win,
   }
   else
   {
-    Scr.MenuColors.back  = GetColor(white);
-    Scr.MenuColors.fore  = GetColor(black);
-    Scr.MenuRelief.back  = GetColor(black);
-    Scr.MenuRelief.fore  = GetColor(white);
-    Scr.MenuStippleColors.back = GetColor(white);
-    Scr.MenuStippleColors.fore = GetColor(black);
+    Scr.MenuColors.back  = GetColor("white");
+    Scr.MenuColors.fore  = GetColor("black");
+    Scr.MenuRelief.back  = GetColor("black");
+    Scr.MenuRelief.fore  = GetColor("white");
+    Scr.MenuStippleColors.back = GetColor("white");
+    Scr.MenuStippleColors.fore = GetColor("black");
   }
 
   if (Scr.StdFont.font != NULL)

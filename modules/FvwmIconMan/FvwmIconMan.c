@@ -26,7 +26,7 @@ static char const rcsid[] =
 char *copy_string (char **target, char *src)
 {
   int len = strlen (src);
-  ConsoleDebug (CORE, "copy_string: 1: 0x%x %s\n", *target, *target);
+  ConsoleDebug (CORE, "copy_string: 1: 0x%x\n", *target);
 
   if (*target)
     Free (*target);

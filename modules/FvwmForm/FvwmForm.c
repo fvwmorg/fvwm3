@@ -638,39 +638,9 @@ void GetColors ()
        else
          colors[c_itemback] = WhitePixel(dpy, screen);
 
-    if (XParseColor(dpy, d_cmap, color_names[c_itemback], &xc_item)) {
-         red = (int) xc_item.red ;
-         green = (int) xc_item.green ;
-         blue = (int) xc_item.blue ;
-         xc_item.red = (60 * red) / 100 ;
-         xc_item.green = (60 * green) / 100 ;
-         xc_item.blue = (60 * blue) / 100 ;
-         if (XAllocColor(dpy, d_cmap, &xc_item))
-               colors[c_itemlo] = xc_item.pixel;
-         else
-               colors[c_itemlo] = BlackPixel(dpy, screen);
-       } else
-         colors[c_itemlo] = BlackPixel(dpy, screen);
-
-    if (XParseColor(dpy, d_cmap, color_names[c_itemback], &xc_item)) {
-         tmp1 = (14 * red) / 10 ;
-         if (tmp1 > MAX_INTENSITY) tmp1 = MAX_INTENSITY ;
-         tmp2 = (MAX_INTENSITY + red) / 2 ;
-         xc_item.red = (tmp1 > tmp2) ? tmp1 : tmp2 ;
-         tmp1 = (14 * green) / 10 ;
-         if (tmp1 > MAX_INTENSITY) tmp1 = MAX_INTENSITY ;
-         tmp2 = (MAX_INTENSITY + green) / 2 ;
-         xc_item.green = (tmp1 > tmp2) ? tmp1 : tmp2 ;
-         tmp1 = (14 * blue) / 10 ;
-         if (tmp1 > MAX_INTENSITY) tmp1 = MAX_INTENSITY ;
-         tmp2 = (MAX_INTENSITY + blue) / 2 ;
-         xc_item.blue = (tmp1 > tmp2) ? tmp1 : tmp2 ;
-         if (XAllocColor(dpy, d_cmap, &xc_item))
-               colors[c_itemhi] = xc_item.pixel;
-         else
-               colors[c_itemhi] = BlackPixel(dpy, screen);
-       } else
-         colors[c_itemhi] = BlackPixel(dpy, screen);
+    InitPictureCMap(dpy,root);          /* for shadow routines */
+    GetShadow(colors[c_itemlo]);        /* alloc shadow */
+    GetHilite(colors[c_itemhi]);        /* alloc shadow */
   } else if (!XAllocColorCells(dpy, d_cmap, 0, NULL, 0, colors, 6)) {
     colors[c_back] = colors[c_itemback] = WhitePixel(dpy, screen);
     colors[c_fore] = colors[c_itemfore] = colors[c_itemlo] = colors[c_itemhi]

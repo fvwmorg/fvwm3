@@ -348,10 +348,6 @@ void SetColormapFocus(XEvent *eventp,Window w,FvwmWindow *tmp_win,
 void SetColorLimit(XEvent *eventp,Window w,FvwmWindow *tmp_win,
 		      unsigned long context, char *action,int* Module);
 
-Pixel    GetShadow(Pixel);
-Pixel    GetHilite(Pixel);
-
-
 #define UP 1
 #define DOWN 0
 void MapIt(FvwmWindow *t);
@@ -490,6 +486,10 @@ void SetHiColor(XEvent *eventp,Window w,FvwmWindow *tmp_win,
 		unsigned long context, char *action,int* Module);
 void SetMenuColor(XEvent *eventp,Window w,FvwmWindow *tmp_win,
 		unsigned long context, char *action,int* Module);
+void ChangeMenuStyle(XEvent *eventp,Window w,FvwmWindow *tmp_win,
+                unsigned long context, char *action,int* Module);
+void DestroyMenuStyle(XEvent *eventp,Window w,FvwmWindow *tmp_win,
+                unsigned long context, char *action,int* Module);
 void LoadIconFont(XEvent *eventp,Window w,FvwmWindow *tmp_win,
 		unsigned long context, char *action,int* Module);
 void LoadWindowFont(XEvent *eventp,Window w,FvwmWindow *tmp_win,
@@ -498,6 +498,8 @@ void LoadWindowFont(XEvent *eventp,Window w,FvwmWindow *tmp_win,
 void SetBorderStyle(XEvent *eventp,Window w,FvwmWindow *tmp_win,
 		    unsigned long context, char *action,int* Module);
 #endif
+void SetMenuStyle1(XEvent *eventp,Window w,FvwmWindow *tmp_win,
+		unsigned long context, char *action,int* Module);
 void SetMenuStyle(XEvent *eventp,Window w,FvwmWindow *tmp_win,
 		unsigned long context, char *action,int* Module);
 void SetTitleStyle(XEvent *eventp,Window w,FvwmWindow *tmp_win,

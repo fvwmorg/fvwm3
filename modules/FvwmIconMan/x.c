@@ -57,55 +57,6 @@ static int lookup_color (char *name, Pixel *ans)
   return 1;
 }
 
-static int lookup_hilite_color (Pixel background, Pixel *ans)
-{
-  XColor bg_color, white_p;
-  XWindowAttributes attributes;
-
-  XGetWindowAttributes(theDisplay, theRoot, &attributes);
-
-  bg_color.pixel = background;
-  XQueryColor(theDisplay, attributes.colormap, &bg_color);
-
-  if (lookup_color ("white", &white_p.pixel) == 0)
-    return 0;
-  XQueryColor(theDisplay, attributes.colormap, &white_p);
-
-  bg_color.red = MAX((white_p.red/5), bg_color.red);
-  bg_color.green = MAX((white_p.green/5), bg_color.green);
-  bg_color.blue = MAX((white_p.blue/5), bg_color.blue);
-
-  bg_color.red = MIN(white_p.red, (bg_color.red*140)/100);
-  bg_color.green = MIN(white_p.green, (bg_color.green*140)/100);
-  bg_color.blue = MIN(white_p.blue, (bg_color.blue*140)/100);
-
-  if(!XAllocColor(theDisplay, attributes.colormap, &bg_color))
-    return 0;
-
-  *ans = bg_color.pixel;
-  return 1;
-}
-
-static int lookup_shadow_color (Pixel background, Pixel *ans)
-{
-  XColor bg_color;
-  XWindowAttributes attributes;
-
-  XGetWindowAttributes(theDisplay, theRoot, &attributes);
-
-  bg_color.pixel = background;
-  XQueryColor(theDisplay, attributes.colormap, &bg_color);
-
-  bg_color.red = (unsigned short)((bg_color.red*50)/100);
-  bg_color.green = (unsigned short)((bg_color.green*50)/100);
-  bg_color.blue = (unsigned short)((bg_color.blue*50)/100);
-
-  if(!XAllocColor(theDisplay, attributes.colormap, &bg_color))
-    return 0;
-
-  *ans = bg_color.pixel;
-  return 1;
-}
 
 WinManager *find_windows_manager (Window win)
 {
@@ -569,6 +520,10 @@ void X_init_manager (int man_id)
     }
 
     if (theDepth > 2) {
+      man->shadowcolor[i] = GetShadow(man->backcolor[i]);
+      man->hicolor[i] = GetHilite(man->backcolor[i]);
+#if 0
+      /* thing about message id bg vs fg */
       if (!lookup_shadow_color (man->backcolor[i], &man->shadowcolor[i])) {
 	ConsoleMessage ("Can't load %s shadow color\n",
 			contextDefaults[i].name);
@@ -577,6 +532,7 @@ void X_init_manager (int man_id)
 	ConsoleMessage ("Can't load %s hilite color\n",
 			contextDefaults[i].name);
       }
+#endif
     }
   }
 

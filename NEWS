@@ -1,5 +1,7 @@
 Changes in release 2.1.2
 * Modules FvwmCascade and FvwmTile were replaced with FvwmRearrange.
+* Improved Shadow/Hilite algorithm (from scwm).  Logic moved into
+library and all modules with 3D logic now use this routine.
 
 Changes in release 2.1.1
 * Official home page html added to docs directory.

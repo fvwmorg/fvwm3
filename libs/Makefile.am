@@ -6,7 +6,7 @@ noinst_LIBRARIES = libfvwm.a
 libfvwm_a_SOURCES = ClientMsg.c GetFont.c Grab.c ModParse.c ModParse.h \
 	Module.c Parse.c Picture.c Strings.c System.c \
 	envvar.c fvwmlib.h safemalloc.c wild.c \
-	lang-strings.h XResource.c debug.c
+	lang-strings.h XResource.c debug.c ColorUtils.c
 
 libfvwm_a_LIBADD = @LIBOBJS@
 

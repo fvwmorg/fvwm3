@@ -1,3 +1,38 @@
+Sun Nov 15 11:23:38 1998  DanEspen  <dje@blue>
+
+	* FvwmIconMan/winlist.c (figure_win_manager): various debug fixes.
+  	Got to line 225 and gave up.
+
+	* FvwmIconMan/debuglevels.h: Turned off debug.  Causing core dumps
+ 	galore.
+
+Sat Nov 14 19:08:01 1998  DanEspen  <dje@blue>
+
+	* FvwmScroll/GrabWindow.c (GrabWindow): Call InitPictureCMap with
+	captured windows colormap.
+
+	* FvwmIconMan/x.c (xevent_loop): Removed GetShadow, GetHilite
+	new versions now in library.
+
+	* FvwmWinList/Colors.c: Removed GetShadow, GetHilite
+	new versions now in libraryGetHilite.  All that remains is GetColor
+	which could be in libs if fvwm_msg worked there.
+
+	* FvwmScroll/GrabWindow.c (GetHilite): Removed GetShadow, GetHilite
+	new versions now in library.
+
+	* FvwmWinList/Colors.c (GetHilite): Removed GetShadow, GetHilite
+	new versions now in library.
+
+	* FvwmIconMan/x.c (lookup_shadow_color): removed lookup_hilite_color,
+	lookup_shadow_color, changed to use GetShadow, GetHilite from libs.
+
+	* FvwmIconBox/FvwmIconBox.c (nocolor):  removed GetShadow, GetHilite
+	new versions now in library.
+
+	* FvwmButtons/FvwmButtons.c (GetShadow): removed GetShadow, GetHilite
+	new versions now in library.
+
 Sat Nov 14 00:10:37 1998  Steve Robbins  <steve@nyongwa.montreal.qc.ca>
 
 	* FvwmRearrange/Makefile.am: Install scripts for FvwmCascade and

@@ -1,4 +1,4 @@
-# Makefile.in generated automatically by automake 1.3b from Makefile.am
+# Makefile.in generated automatically by automake 1.3 from Makefile.am
 
 # Copyright (C) 1994, 1995, 1996, 1997, 1998 Free Software Foundation, Inc.
 # This Makefile.in is free software; the Free Software Foundation
@@ -34,7 +34,7 @@ mandir = @mandir@
 includedir = @includedir@
 oldincludedir = /usr/include
 
-DESTDIR =
+DISTDIR =
 
 pkgdatadir = $(datadir)/@PACKAGE@
 pkglibdir = $(libdir)/@PACKAGE@
@@ -91,7 +91,7 @@ noinst_LIBRARIES = libfvwm.a
 libfvwm_a_SOURCES = ClientMsg.c GetFont.c Grab.c ModParse.c ModParse.h \
 	Module.c Parse.c Picture.c Strings.c System.c \
 	envvar.c fvwmlib.h safemalloc.c wild.c \
-	lang-strings.h XResource.c debug.c
+	lang-strings.h XResource.c debug.c ColorUtils.c
 
 libfvwm_a_LIBADD = @LIBOBJS@
 
@@ -113,11 +113,11 @@ X_PRE_LIBS = @X_PRE_LIBS@
 libfvwm_a_DEPENDENCIES =  @LIBOBJS@
 libfvwm_a_OBJECTS =  ClientMsg.o GetFont.o Grab.o ModParse.o Module.o \
 Parse.o Picture.o Strings.o System.o envvar.o safemalloc.o wild.o \
-XResource.o debug.o
+XResource.o debug.o ColorUtils.o
 AR = ar
 CFLAGS = @CFLAGS@
-COMPILE = $(CC) $(DEFS) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS)
-LINK = $(CC) $(AM_CFLAGS) $(CFLAGS) $(LDFLAGS) -o $@
+COMPILE = $(CC) $(DEFS) $(INCLUDES) $(CPPFLAGS) $(CFLAGS)
+LINK = $(CC) $(CFLAGS) $(LDFLAGS) -o $@
 DIST_COMMON =  Makefile.am Makefile.in gethostname.c strcasecmp.c \
 strerror.c strncasecmp.c usleep.c
 
@@ -126,10 +126,10 @@ DISTFILES = $(DIST_COMMON) $(SOURCES) $(HEADERS) $(TEXINFOS) $(EXTRA_DIST)
 
 TAR = tar
 GZIP = --best
-DEP_FILES =  .deps/ClientMsg.P .deps/GetFont.P .deps/Grab.P \
-.deps/ModParse.P .deps/Module.P .deps/Parse.P .deps/Picture.P \
-.deps/Strings.P .deps/System.P .deps/XResource.P .deps/debug.P \
-.deps/envvar.P .deps/gethostname.P .deps/safemalloc.P \
+DEP_FILES =  .deps/ClientMsg.P .deps/ColorUtils.P .deps/GetFont.P \
+.deps/Grab.P .deps/ModParse.P .deps/Module.P .deps/Parse.P \
+.deps/Picture.P .deps/Strings.P .deps/System.P .deps/XResource.P \
+.deps/debug.P .deps/envvar.P .deps/gethostname.P .deps/safemalloc.P \
 .deps/strcasecmp.P .deps/strerror.P .deps/strncasecmp.P .deps/usleep.P \
 .deps/wild.P
 SOURCES = $(libfvwm_a_SOURCES)
@@ -245,6 +245,7 @@ maintainer-clean-depend:
 info:
 dvi:
 check: all
+	$(MAKE)
 installcheck:
 install-exec: 
 	@$(NORMAL_INSTALL)
@@ -258,19 +259,24 @@ install: install-exec install-data all
 uninstall: 
 
 install-strip:
-	$(MAKE) $(AM_MAKEFLAGS) INSTALL_PROGRAM='$(INSTALL_PROGRAM) -s' INSTALL_SCRIPT='$(INSTALL_PROGRAM)' install
+	$(MAKE) INSTALL_PROGRAM='$(INSTALL_PROGRAM) -s' INSTALL_SCRIPT='$(INSTALL_PROGRAM)' install
 installdirs:
 
 
 mostlyclean-generic:
+	-test -z "$(MOSTLYCLEANFILES)" || rm -f $(MOSTLYCLEANFILES)
 
 clean-generic:
+	-test -z "$(CLEANFILES)" || rm -f $(CLEANFILES)
 
 distclean-generic:
-	-rm -f Makefile $(CONFIG_CLEAN_FILES)
+	-rm -f Makefile $(DISTCLEANFILES)
 	-rm -f config.cache config.log stamp-h stamp-h[0-9]*
+	-test -z "$(CONFIG_CLEAN_FILES)" || rm -f $(CONFIG_CLEAN_FILES)
 
 maintainer-clean-generic:
+	-test -z "$(MAINTAINERCLEANFILES)" || rm -f $(MAINTAINERCLEANFILES)
+	-test -z "$(BUILT_SOURCES)" || rm -f $(BUILT_SOURCES)
 mostlyclean:  mostlyclean-noinstLIBRARIES mostlyclean-compile \
 		mostlyclean-tags mostlyclean-depend mostlyclean-generic
 

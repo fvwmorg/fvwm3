@@ -4,6 +4,7 @@
 #include <X11/Xlib.h>
 #include <X11/Xutil.h>
 #include <X11/Xresource.h>
+#include <X11/Intrinsic.h>              /* needed for xpm.h and Pixel defn */
 #include <ctype.h>
 
 /***********************************************************************
@@ -105,10 +106,13 @@ void DestroyPicture(Display*,Picture*);
 
 char *findIconFile(char *icon, char *pathlist, int type);
 #ifdef XPM
-#include <X11/Intrinsic.h>              /* needed for xpm.h */
 #include <X11/xpm.h>                    /* needed for next prototype */
 void color_reduce_pixmap(XpmImage *, int);
 #endif
+
+Pixel    GetShadow(Pixel);              /* 3d.c */
+Pixel    GetHilite(Pixel);              /* 3d.c */
+
 
 /***********************************************************************
  * Wrappers around various X11 routines

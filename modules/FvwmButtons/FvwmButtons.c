@@ -85,8 +85,6 @@ void Loop(void);
 void RedrawWindow(button_info*);
 void RecursiveLoadData(button_info*,int*,int*);
 void CreateWindow(button_info*,int,int);
-Pixel GetShadow(Pixel background);
-Pixel GetHilite(Pixel background);
 void nocolor(char *a, char *b);
 Pixel GetColor(char *name);
 int My_XNextEvent(Display *dpy, XEvent *event);
@@ -1337,61 +1335,6 @@ int PleaseAllocColor(XColor *color)
   return 1;
 }
 #endif
-
-/**
-*** GetShadow()
-*** This routine computes the shadow color from the background color
-**/
-Pixel GetShadow(Pixel background)
-{
-  XColor bg_color;
-  XWindowAttributes attributes;
-
-  XGetWindowAttributes(Dpy,Root,&attributes);
-
-  bg_color.pixel = background;
-  XQueryColor(Dpy,attributes.colormap,&bg_color);
-
-  bg_color.red = (unsigned short)((bg_color.red*50)/100);
-  bg_color.green = (unsigned short)((bg_color.green*50)/100);
-  bg_color.blue = (unsigned short)((bg_color.blue*50)/100);
-
-  if(!MyAllocColor(Dpy,attributes.colormap,&bg_color))
-    nocolor("alloc shadow","");
-
-  return bg_color.pixel;
-}
-
-/**
-*** GetHilite()
-*** This routine computes the hilight color from the background color
-**/
-Pixel GetHilite(Pixel background)
-{
-  XColor bg_color, white_p;
-  XWindowAttributes attributes;
-
-  XGetWindowAttributes(Dpy,Root,&attributes);
-
-  bg_color.pixel = background;
-  XQueryColor(Dpy,attributes.colormap,&bg_color);
-
-  white_p.pixel = GetColor("white");
-  XQueryColor(Dpy,attributes.colormap,&white_p);
-
-  bg_color.red = max((white_p.red/5), bg_color.red);
-  bg_color.green = max((white_p.green/5), bg_color.green);
-  bg_color.blue = max((white_p.blue/5), bg_color.blue);
-
-  bg_color.red = min(white_p.red, (bg_color.red*140)/100);
-  bg_color.green = min(white_p.green, (bg_color.green*140)/100);
-  bg_color.blue = min(white_p.blue, (bg_color.blue*140)/100);
-
-  if(!MyAllocColor(Dpy,attributes.colormap,&bg_color))
-    nocolor("alloc hilight","");
-
-  return bg_color.pixel;
-}
 
 /**
 *** nocolor()

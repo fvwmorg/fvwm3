@@ -58,14 +58,14 @@ static double c400_distance(XColor *, XColor *); /* prototype */
 
 
 static Picture *PictureList=NULL;
-static Colormap PictureCMap;
-static Display *save_dpy;               /* Save area for display pointer */
+Colormap PictureCMap;
+Display *PictureSaveDisplay;            /* Save area for display pointer */
 
-/* This routine called during fvwm initialization */
+/* This routine called during fvwm and some modules initialization */
 void InitPictureCMap(Display *dpy,Window Root)
 {
   XWindowAttributes root_attr;
-  save_dpy = dpy;                       /* save for latter */
+  PictureSaveDisplay = dpy;                       /* save for latter */
   XGetWindowAttributes(dpy,Root,&root_attr);
   PictureCMap=root_attr.colormap;
 }
@@ -423,7 +423,7 @@ void c200_substitute_color(char **my_color, int color_limit) {
 
 static void c300_color_to_rgb(char *c_color, XColor *rgb_space) {
   int rc;
-  rc=XParseColor(save_dpy, PictureCMap, c_color, rgb_space);
+  rc=XParseColor(PictureSaveDisplay, PictureCMap, c_color, rgb_space);
   if (rc==0) {
     fprintf(stderr,"color_to_rgb: can't parse color %s, rc %d\n", c_color, rc);
     return;
