@@ -269,25 +269,11 @@ int GetContext(FvwmWindow *t, XEvent *e, Window *w)
 
   if(*w == Scr.NoFocusWin)
     return C_ROOT;
-
-  /* Since key presses and button presses are grabbed in the frame
-   * when we have re-parented windows, we need to find out the real
-   * window where the event occured */
   if(e->xkey.subwindow != None)
-    {
-      if (e->type == KeyPress)
-	*w = e->xkey.subwindow;
-      else if ((*w != t->w && *w != t->Parent) ||
-	       e->xbutton.subwindow == t->w ||
-	       e->xbutton.subwindow == t->Parent)
-	/* domivogt (6-Jan-1998): I don't understand what's happening here. If
-	 * the mouse is over the client window. The subwindow has an unique id
-	 * that no visible part of the FvwmWindow has. */
-	*w = e->xbutton.subwindow;
-    }
+    *w = e->xkey.subwindow;
 
   if (*w == Scr.Root)
-    Context = C_ROOT;
+    return C_ROOT;
   if (t)
     {
       if (*w == t->title_w)
@@ -296,7 +282,7 @@ int GetContext(FvwmWindow *t, XEvent *e, Window *w)
 	Context = C_WINDOW;
       else if (*w == t->icon_w || *w == t->icon_pixmap_w)
 	Context = C_ICON;
-      else if (*w == t->frame)
+      else if (*w == t->decor_w)
 	Context = C_SIDEBAR;
       else
       {
@@ -1144,6 +1130,7 @@ void HandleMapNotify(void)
   if(Tmp_win->icon_pixmap_w != None)
     XUnmapWindow(dpy, Tmp_win->icon_pixmap_w);
   XMapSubwindows(dpy, Tmp_win->frame);
+  XMapSubwindows(dpy, Tmp_win->decor_w);
 
   if(Tmp_win->Desk == Scr.CurrentDesk)
   {
@@ -1168,7 +1155,7 @@ void HandleMapNotify(void)
     }
   if((!(HAS_BORDER(Tmp_win)|HAS_TITLE(Tmp_win)))&&(Tmp_win->boundary_width <2))
     {
-      SetBorder(Tmp_win,False,True,True,Tmp_win->frame);
+      SetBorder(Tmp_win,False,True,True,Tmp_win->decor_w);
     }
   XSync(dpy,0);
   MyXUngrabServer (dpy);
@@ -1376,13 +1363,12 @@ void HandleButtonPress(void)
     }
   }
   else if ((Tmp_win) && !(HAS_CLICK_FOCUS(Tmp_win)) &&
-           (Event.xbutton.window == Tmp_win->frame) &&
+           (Event.xbutton.window == Tmp_win->Parent) &&
 	   Scr.go.MouseFocusClickRaises)
   {
     if (((DO_RAISE_TRANSIENT(Tmp_win) && DO_FLIP_TRANSIENT(Tmp_win)) ||
 	 !is_on_top_of_layer(Tmp_win))&&
-        MaskUsedModifiers(Event.xbutton.state) == 0 &&
-        GetContext(Tmp_win,&Event, &PressedW) == C_WINDOW)
+        MaskUsedModifiers(Event.xbutton.state) == 0)
     {
       RaiseWindow(Tmp_win);
       XSync(dpy,0);
@@ -1434,7 +1420,7 @@ void HandleButtonPress(void)
     SetBorder(ButtonWindow,(Scr.Hilite == ButtonWindow),True,True,OldPressedW);
   else
     SetBorder(ButtonWindow,(Scr.Hilite == ButtonWindow),True,True,
-	      Tmp_win ? Tmp_win->frame : 0);
+	      Tmp_win ? Tmp_win->decor_w : 0);
   ButtonWindow = NULL;
 }
 

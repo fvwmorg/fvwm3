@@ -158,6 +158,7 @@ void WindowShade(F_CMD_ARGS)
       old_h = tmp_win->frame_g.height;
       while (h < new_height) {
         XResizeWindow(dpy, tmp_win->frame, tmp_win->frame_g.width, h);
+        XResizeWindow(dpy, tmp_win->decor_w, tmp_win->frame_g.width, h);
         XResizeWindow(dpy, tmp_win->Parent,
                       tmp_win->frame_g.width - 2 * tmp_win->boundary_width,
                       max(h - 2 * tmp_win->boundary_width
@@ -166,7 +167,7 @@ void WindowShade(F_CMD_ARGS)
           XMoveWindow(dpy, tmp_win->w, 0, y);
         tmp_win->frame_g.height = h;
         /* way too flickery
-        SetBorder(tmp_win, tmp_win == Scr.Hilite, True, True, tmp_win->frame);
+        SetBorder(tmp_win, tmp_win == Scr.Hilite, True, True, tmp_win->decor_w);
         */
         BroadcastConfig(M_CONFIGURE_WINDOW, tmp_win);
         FlushOutputQueues();
@@ -195,13 +196,14 @@ void WindowShade(F_CMD_ARGS)
 	if (Scr.go.WindowShadeScrolls)
 	  XMoveWindow(dpy, tmp_win->w, 0, y);
         XResizeWindow(dpy, tmp_win->frame, tmp_win->frame_g.width, h);
+        XResizeWindow(dpy, tmp_win->decor_w, tmp_win->frame_g.width, h);
         XResizeWindow(dpy, tmp_win->Parent,
                       tmp_win->frame_g.width - 2 * tmp_win->boundary_width,
                       max(h - 2 * tmp_win->boundary_width
                           - tmp_win->title_g.height, 1));
         tmp_win->frame_g.height = h;
         /* way too flickery
-	SetBorder(tmp_win, tmp_win == Scr.Hilite, True, True, tmp_win->frame);
+	SetBorder(tmp_win, tmp_win == Scr.Hilite, True, True, tmp_win->decor_w);
         */
         BroadcastConfig(M_CONFIGURE_WINDOW, tmp_win);
         FlushOutputQueues();
@@ -232,7 +234,6 @@ void Bell(F_CMD_ARGS)
 {
   XBell(dpy, 0);
 }
-
 
 void add_another_item(F_CMD_ARGS)
 {
@@ -301,7 +302,7 @@ void Nop_func(F_CMD_ARGS)
 
 
 void movecursor(F_CMD_ARGS)
- {
+{
   int x = 0, y = 0;
   int val1, val2, val1_unit, val2_unit;
   int virtual_x, virtual_y;
@@ -2960,7 +2961,7 @@ void strokeFunc(F_CMD_ARGS)
     finish_on_release = True;
   else
     finish_on_release = False;
-  
+
   /* parse the option */
   for (action = GetNextSimpleOption(action, &opt); opt;
        action = GetNextSimpleOption(action, &opt))
@@ -2978,7 +2979,7 @@ void strokeFunc(F_CMD_ARGS)
   if (opt)
     free(opt);
 
-  /* Force auto repeat off and grab the Keyboard to get proper 
+  /* Force auto repeat off and grab the Keyboard to get proper
    * KeyRelease events if we need it.
    * Some computers do not support keyRelease events, can we
    * check this here ? No ? */
@@ -2992,22 +2993,22 @@ void strokeFunc(F_CMD_ARGS)
       XAutoRepeatOff(dpy);
       restor_repeat = True;
     }
-    XGrabKeyboard(dpy, Scr.Root, False, GrabModeAsync, GrabModeAsync, 
+    XGrabKeyboard(dpy, Scr.Root, False, GrabModeAsync, GrabModeAsync,
 		  CurrentTime);
   }
 
   /* be ready to get a stroke sequence */
   stroke_init();
-  
+
   while (!finished && !abort)
   {
     /* block until there is an event */
-    XMaskEvent(dpy,  ButtonPressMask | ButtonReleaseMask | KeyPressMask | 
-	       KeyReleaseMask | ButtonMotionMask | PointerMotionMask | 
+    XMaskEvent(dpy,  ButtonPressMask | ButtonReleaseMask | KeyPressMask |
+	       KeyReleaseMask | ButtonMotionMask | PointerMotionMask |
 	       EnterWindowMask | LeaveWindowMask, eventp);
     /* Records the time */
     StashEventTime(eventp);
-    
+
     switch (eventp->type)
     {
     case MotionNotify:
@@ -3024,7 +3025,7 @@ void strokeFunc(F_CMD_ARGS)
     case KeyPress:
       keysym = XLookupKeysym(&eventp->xkey,0);
       /* abort if Escape or Delete is pressed (as in menus.c) */
-      if (keysym == XK_Escape || keysym == XK_Delete || 
+      if (keysym == XK_Escape || keysym == XK_Delete ||
 	  keysym == XK_KP_Separator)
 	abort = 1;
       /* finish on enter or space (as in menus.c) */
@@ -3044,7 +3045,7 @@ void strokeFunc(F_CMD_ARGS)
   if ( start_event_type == KeyPress && finish_on_release)
     XUngrabKeyboard(dpy, CurrentTime);
   UngrabEm(GRAB_NORMAL);
-     
+
   if (restor_repeat)
     XAutoRepeatOn(dpy);
 
@@ -3058,12 +3059,12 @@ void strokeFunc(F_CMD_ARGS)
   if (abort) return;
 
   /* check for a binding */
-  stroke_action = CheckBinding(Scr.AllBindings, stroke, 0, modifiers, 
+  stroke_action = CheckBinding(Scr.AllBindings, stroke, 0, modifiers,
 			       GetUnusedModifiers(), context, STROKE_BINDING);
 
   /* execute the action */
   if (stroke_action != NULL)
-    ExecuteFunction(stroke_action, tmp_win, eventp, context, -1, 
+    ExecuteFunction(stroke_action, tmp_win, eventp, context, -1,
 		    EXPAND_COMMAND);
 
 }

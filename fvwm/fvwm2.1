@@ -2511,8 +2511,8 @@ and down a quarter of a page.  Alternatively, the distance can be
 specified in pixels by appending a 'p' to the horizontal and/or vertical
 specification.  For example "CursorMove -10p -10p" means move ten
 pixels up and ten pixels left.  The CursorMove function should not be
-called from pop-up menus.
-
+called from pop-up menus.  To simulate button presses you can use the
+\fIMouseClick\fP command.
 
 .TP
 .B "FlipFocus" "[\fINoWarp\fP]"
@@ -2845,7 +2845,7 @@ http://www.etla.net/~willey/projects/libstroke/
 Causes fvwm to record a mouse stroke sequence and to execute
 the corresponding action as defined in a Stroke command. The cursor
 is modified to the STROKE context of the CursorStyle command during
-recording. When the stroke is "finished" StrokeFunc looks for a Stroke 
+recording. When the stroke is "finished" StrokeFunc looks for a Stroke
 binding of the form
 .EX
 Stroke sequence 0 Context Modifiers action
@@ -2858,33 +2858,33 @@ Key x R N StrokeFunc
 .EE
 If you press mouse button 3 and Alt anywhere (respectively, press the key
 x when the cursor is on the root window), then fvwm will record the
-mouse motions until the mouse button 3 (respectively, the x key) is 
+mouse motions until the mouse button 3 (respectively, the x key) is
 released and then check if the recorded \fIsequence\fP corresponds
 to a Stroke binding of the form  "Stroke \fIsequence\fP 0 A M action"
-(respectively, "Stroke \fIsequence\fP 0 R N action"). Note that the 
-\fIContext\fP and \fIModifiers\fP are taken at the beginning of the 
-execution of the StrokeFunc command (so you can release the modifiers 
-before the end of the stroke recording in the case of a mouse binding 
-and if you used, say, a TitleBar context the mouse motion can go through an 
+(respectively, "Stroke \fIsequence\fP 0 R N action"). Note that the
+\fIContext\fP and \fIModifiers\fP are taken at the beginning of the
+execution of the StrokeFunc command (so you can release the modifiers
+before the end of the stroke recording in the case of a mouse binding
+and if you used, say, a TitleBar context the mouse motion can go through an
 application window). The keys Escape and Delete allow you to abort the command.
 
-The StrokeFunc command has two options \fINotStayPressed\fP and 
-\fIEchoSequence\fP. These options are disabled by default. 
+The StrokeFunc command has two options \fINotStayPressed\fP and
+\fIEchoSequence\fP. These options are disabled by default.
 \fIEchoSequence\fP causes fvwm to Echo the recorded stroke sequence.
 
-\fINotStayPressed\fP works only if StrokeFunc is used via a Mouse 
+\fINotStayPressed\fP works only if StrokeFunc is used via a Mouse
 or a Key command. This option removes the need to have a
-button or the key pressed during the stroke, but you have to do a 
-mouse click or press the Return or Space key to finish the mouse motion 
+button or the key pressed during the stroke, but you have to do a
+mouse click or press the Return or Space key to finish the mouse motion
 recording (these keys also work without the \fINotStayPressed\fP option).
 
 You can use the StrokeFunc "alone". In this case it will work as above
-with the \fINotStayPressed\fP option enabled. However, \fIModifiers\fP 
-will, in general, does not work as expected (i.e., in this case use A or 
+with the \fINotStayPressed\fP option enabled. However, \fIModifiers\fP
+will, in general, does not work as expected (i.e., in this case use A or
 N as \fIModifiers\fP in the Stroke bindings).
 
 Note that some computers do not support key release events. If that is the
-case the StrokeFunc used via a Key command will work as if the 
+case the StrokeFunc used via a Key command will work as if the
 \fINotStayPressed\fP option is enabled (I hope).
 
 

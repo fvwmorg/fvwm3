@@ -1,5 +1,36 @@
 1999-11-12  Dominik Vogt  <dominik.vogt@gmx.de>
 
+	* fvwm/add_window.c (setup_title_window):
+	(setup_frame_window):
+	(setup_button_windows):
+	(setup_resize_handle_windows):
+	(setup_auxiliary_windows):
+	(setup_focus_policy):
+	(setup_key_and_button_grabs):
+	(destroy_auxiliary_windows):
+	(setup_key_and_button_grabs):
+	* fvwm/bindings.c (activate_binding):
+	* fvwm/borders.c (RedrawBorder):
+	(SetupFrame):
+	* fvwm/misc.c (flush_expose):
+	* fvwm/fvwm.h (FvwmWindow):
+	* fvwm/builtins.c (WindowShade):
+	* fvwm/events.c (GetContext):
+	(HandleMapNotify):
+	(HandleButtonPress):
+	(DispatchEvent):
+	* fvwm/focus.c (DoSetFocus):
+	* fvwm/functions.c (DeferExecution):
+	* fvwm/fvwmdebug.c (DB_WI_SUBWINS):
+	(DB_WI_FRAMEWINS):
+	* fvwm/virtual.c (MapIt):
+	New frame window 'decor_w', parent of all decorative subwindows; this
+	is a patch to improve the current implementation of 'transparency' in
+	rxvt, aterm, ... These require that the background of their ancestros
+	is never set.
+
+1999-11-12  Dominik Vogt  <dominik.vogt@gmx.de>
+
 	* fvwm/add_window.c (setup_window_placement):
 	completed previous fix
 

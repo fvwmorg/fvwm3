@@ -199,6 +199,7 @@ static void MapIt(FvwmWindow *t)
       XMapWindow(dpy,t->frame);
       SET_MAP_PENDING(t, 1);
       XMapWindow(dpy, t->Parent);
+      XMapWindow(dpy, t->decor_w);
    }
 }
 

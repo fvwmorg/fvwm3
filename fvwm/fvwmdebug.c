@@ -44,13 +44,13 @@ void DB_WI_WINDOWS(char *label, FvwmWindow *fw)
 
 void DB_WI_SUBWINS(char *label, FvwmWindow *fw)
 {
-  fprintf(stderr, "%s: FvwmWindow=0x%x, frame=0x%x, w=0x%x, parent=0x%x, title_w=0x%x, icon_w=0x%x, icon_pixmap_w=0x%x\n", label?label:"", fw, fw->frame, fw->w, fw->Parent, fw->title_w, fw->icon_w, fw->icon_pixmap_w);
+  fprintf(stderr, "%s: FvwmWindow=0x%x, frame=0x%x, w=0x%x, parent=0x%x, decor_w=0x%x, title_w=0x%x, icon_w=0x%x, icon_pixmap_w=0x%x\n", label?label:"", fw, fw->frame, fw->w, fw->Parent, fw->decor_w, fw->title_w, fw->icon_w, fw->icon_pixmap_w);
   return;
 }
 
 void DB_WI_FRAMEWINS(char *label, FvwmWindow *fw)
 {
-  fprintf(stderr, "%s: FvwmWindow=0x%x, side windows: 0x%x 0x%x 0x%x 0x%x, corner windows: 0x%x 0x%x 0x%x 0x%x\n", label?label:"", fw, fw->frame, fw->sides[0], fw->sides[1], fw->sides[2], fw->sides[3], fw->corners[0], fw->corners[1], fw->corners[2], fw->corners[3]);
+  fprintf(stderr, "%s: FvwmWindow=0x%x, side windows: 0x%x 0x%x 0x%x 0x%x, corner windows: 0x%x 0x%x 0x%x 0x%x\n", label?label:"", fw, fw->sides[0], fw->sides[1], fw->sides[2], fw->sides[3], fw->corners[0], fw->corners[1], fw->corners[2], fw->corners[3]);
   return;
 }
 

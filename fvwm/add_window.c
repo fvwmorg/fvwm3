@@ -430,21 +430,27 @@ void setup_frame_window(
 #if defined(PIXMAP_BUTTONS) && defined(BORDERSTYLE)
   Pixmap TexturePixmap = None;
   Pixmap TexturePixmapSave;
-
-  /* stash valuemask bits in case BorderStyle TiledPixmap overwrites */
-  TexturePixmapSave = pattributes->background_pixmap;
 #endif
 
   valuemask |= CWCursor|CWColormap|CWBorderPixel|CWEventMask;
   pattributes->cursor = Scr.FvwmCursors[CRS_DEFAULT];
   pattributes->colormap = Pcmap;
   pattributes->border_pixel = 0;
-  pattributes->event_mask = (SubstructureRedirectMask | ButtonPressMask
-			     | ButtonReleaseMask | EnterWindowMask
-			     | LeaveWindowMask | ExposureMask
-			     | VisibilityChangeMask);
+  pattributes->event_mask = (SubstructureRedirectMask | EnterWindowMask
+			     | LeaveWindowMask);
+
+  /* create the frame window, child of root, grandparent of client */
+  tmp_win->frame = XCreateWindow(dpy, Scr.Root, tmp_win->frame_g.x,
+				 tmp_win->frame_g.y, tmp_win->frame_g.width,
+				 tmp_win->frame_g.height, 0, Pdepth,
+				 InputOutput, Pvisual, valuemask, pattributes);
+  XSaveContext(dpy, tmp_win->w, FvwmContext, (caddr_t) tmp_win);
+  XSaveContext(dpy, tmp_win->frame, FvwmContext, (caddr_t) tmp_win);
 
 #if defined(PIXMAP_BUTTONS) && defined(BORDERSTYLE)
+  /* stash valuemask bits in case BorderStyle TiledPixmap overwrites */
+  TexturePixmapSave = pattributes->background_pixmap;
+
   if (DFS_FACE_TYPE(GetDecor(tmp_win, BorderStyle.inactive.style)) ==
       TiledPixmapButton)
     TexturePixmap = GetDecor(tmp_win,BorderStyle.inactive.u.p->picture);
@@ -454,14 +460,14 @@ void setup_frame_window(
     valuemask = (valuemask & ~CWBackPixel) | CWBackPixmap;
   }
 #endif
-
-  /* create the frame window, child of root, grandparent of client */
-  tmp_win->frame = XCreateWindow(dpy, Scr.Root, tmp_win->frame_g.x,
-				 tmp_win->frame_g.y, tmp_win->frame_g.width,
-				 tmp_win->frame_g.height, 0, Pdepth,
-				 InputOutput, Pvisual, valuemask, pattributes);
-  XSaveContext(dpy, tmp_win->w, FvwmContext, (caddr_t) tmp_win);
-  XSaveContext(dpy, tmp_win->frame, FvwmContext, (caddr_t) tmp_win);
+  pattributes->event_mask = (ExposureMask | VisibilityChangeMask);
+  /* decor window, parent of all decorative subwindows */
+  tmp_win->decor_w = XCreateWindow(dpy, tmp_win->frame, 0, 0,
+				   tmp_win->frame_g.width,
+				   tmp_win->frame_g.height, 0, Pdepth,
+				   InputOutput, Pvisual, valuemask,
+				   pattributes);
+  XSaveContext(dpy, tmp_win->decor_w, FvwmContext, (caddr_t) tmp_win);
 
 #if defined(PIXMAP_BUTTONS) && defined(BORDERSTYLE)
   /* restore background */
@@ -483,7 +489,7 @@ void setup_title_window(
   tmp_win->title_g.x = tmp_win->boundary_width + tmp_win->title_g.height + 1;
   tmp_win->title_g.y = tmp_win->boundary_width;
   pattributes->cursor = Scr.FvwmCursors[CRS_TITLE];
-  tmp_win->title_w = XCreateWindow(dpy, tmp_win->frame,
+  tmp_win->title_w = XCreateWindow(dpy, tmp_win->decor_w,
 				   tmp_win->title_g.x,
 				   tmp_win->title_g.y,
 				   tmp_win->title_g.width,
@@ -512,7 +518,7 @@ void setup_button_windows(
   {
     if((i < Scr.nr_left_buttons) && (tmp_win->left_w[i] > 0))
     {
-      tmp_win->left_w[i] = XCreateWindow(dpy, tmp_win->frame,
+      tmp_win->left_w[i] = XCreateWindow(dpy, tmp_win->decor_w,
 					 tmp_win->title_g.height * i, 0,
 					 tmp_win->title_g.height,
 					 tmp_win->title_g.height, 0,
@@ -528,7 +534,7 @@ void setup_button_windows(
 
     if((i < Scr.nr_right_buttons) && (tmp_win->right_w[i] > 0))
     {
-      tmp_win->right_w[i] = XCreateWindow(dpy, tmp_win->frame,
+      tmp_win->right_w[i] = XCreateWindow(dpy, tmp_win->decor_w,
 					  tmp_win->title_g.width
 					  - tmp_win->title_g.height * (i+1),
 					  0, tmp_win->title_g.height,
@@ -590,14 +596,14 @@ void setup_resize_handle_windows(FvwmWindow *tmp_win)
     for(i = 0; i < 4; i++)
     {
       attributes.cursor = Scr.FvwmCursors[CRS_TOP_LEFT+i];
-      tmp_win->corners[i] = XCreateWindow (dpy, tmp_win->frame, 0, 0,
+      tmp_win->corners[i] = XCreateWindow (dpy, tmp_win->decor_w, 0, 0,
 					   tmp_win->corner_width,
 					   tmp_win->corner_width, 0, 0,
 					   InputOnly,
 					   DefaultVisual(dpy, Scr.screen),
 					   valuemask, &attributes);
       attributes.cursor = Scr.FvwmCursors[CRS_TOP+i];
-      tmp_win->sides[i] = XCreateWindow (dpy, tmp_win->frame, 0, 0,
+      tmp_win->sides[i] = XCreateWindow (dpy, tmp_win->decor_w, 0, 0,
 					 tmp_win->boundary_width,
 					 tmp_win->boundary_width, 0, 0,
 					 InputOnly,
@@ -640,13 +646,16 @@ void setup_auxiliary_windows(FvwmWindow *tmp_win, Bool setup_frame_and_parent)
     setup_parent_window(tmp_win);
 
   /****** setup frame stacking order ******/
+  XMapSubwindows (dpy, tmp_win->decor_w);
   /* Put parent at the bottom so it appears first in XQueryTree() results */
   XLowerWindow(dpy, tmp_win->Parent);
+  XLowerWindow(dpy, tmp_win->decor_w);
   /* have to lower the corners as they may overlap with the client */
   XLowerWindow(dpy, tmp_win->corners[0]);
   XLowerWindow(dpy, tmp_win->corners[1]);
   XLowerWindow(dpy, tmp_win->corners[2]);
   XLowerWindow(dpy, tmp_win->corners[3]);
+  XRaiseWindow(dpy, tmp_win->title_w);
   XMapSubwindows (dpy, tmp_win->frame);
 }
 
@@ -734,7 +743,7 @@ void setup_focus_policy(FvwmWindow *tmp_win)
     /* need to grab all buttons for window */
     for(button = 1; button <= 3; button++)
     {
-      XGrabButton(dpy, button, 0, tmp_win->frame, True, ButtonPressMask,
+      XGrabButton(dpy, button, 0, tmp_win->Parent, True, ButtonPressMask,
 		  GrabModeSync, GrabModeAsync, None,
 		  Scr.FvwmCursors[CRS_SYS]);
       if(GetUnusedModifiers() != 0)
@@ -751,7 +760,7 @@ void setup_focus_policy(FvwmWindow *tmp_win)
 	   * modifiers would be zero ==> mods == 0 */
 	  if (mods & living_modifiers)
 	    continue;
-	  XGrabButton(dpy, button, mods, tmp_win->frame, True,
+	  XGrabButton(dpy, button, mods, tmp_win->Parent, True,
 		      ButtonPressMask, GrabModeSync, GrabModeAsync, None,
 		      Scr.FvwmCursors[CRS_SYS]);
 	}
@@ -762,11 +771,11 @@ void setup_focus_policy(FvwmWindow *tmp_win)
 
 void setup_key_and_button_grabs(FvwmWindow *tmp_win)
 {
-  GrabAllWindowButtons(dpy, tmp_win->frame, Scr.AllBindings, C_WINDOW,
-		       GetUnusedModifiers(), Scr.FvwmCursors[CRS_DEFAULT],
-		       True);
-  GrabAllWindowKeys(dpy, tmp_win->frame, Scr.AllBindings,
-		    C_WINDOW|C_TITLE|C_RALL|C_LALL|C_SIDEBAR,
+  GrabAllWindowKeysAndButtons(dpy, tmp_win->Parent, Scr.AllBindings,
+			      C_WINDOW, GetUnusedModifiers(),
+			      Scr.FvwmCursors[CRS_DEFAULT],True);
+  GrabAllWindowKeys(dpy, tmp_win->decor_w, Scr.AllBindings,
+		    C_TITLE|C_RALL|C_LALL|C_SIDEBAR,
 		    GetUnusedModifiers(), True);
   setup_focus_policy(tmp_win);
 }
@@ -775,13 +784,6 @@ void setup_key_and_button_grabs(FvwmWindow *tmp_win)
  *
  *  Procedure:
  *	AddWindow - add a new window to the fvwm list
- *
- *  Returned Value:
- *	(FvwmWindow *) - pointer to the FvwmWindow structure
- *
- *  Inputs:
- *	w	- the window id of the window to add
- *	iconm	- flag to tell if this is an icon manager window
  *
  ***********************************************************************/
 FvwmWindow *AddWindow(Window w, FvwmWindow *ReuseWin)
@@ -1444,6 +1446,7 @@ void destroy_auxiliary_windows(FvwmWindow *tmp_win,
   {
     XDestroyWindow(dpy, tmp_win->frame);
     XDeleteContext(dpy, tmp_win->frame, FvwmContext);
+    XDeleteContext(dpy, tmp_win->decor_w, FvwmContext);
     XDeleteContext(dpy, tmp_win->Parent, FvwmContext);
     XDeleteContext(dpy, tmp_win->w, FvwmContext);
   }

@@ -164,8 +164,8 @@ static void DoSetFocus(Window w, FvwmWindow *Fw, Bool FocusByMouse,
       for(i=0;i<3;i++)
 	if(Scr.buttons2grab & (1<<i))
 	  {
-	    XUngrabButton(dpy,(i+1),0,Fw->frame);
-	    XUngrabButton(dpy,(i+1),GetUnusedModifiers(),Fw->frame);
+	    XUngrabButton(dpy,(i+1),0,Fw->decor_w);
+	    XUngrabButton(dpy,(i+1),GetUnusedModifiers(),Fw->decor_w);
 	  }
       Scr.Ungrabbed = Fw;
     }

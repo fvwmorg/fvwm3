@@ -309,6 +309,7 @@ typedef struct FvwmWindow
     Window w;			/* the child window */
     int old_bw;			/* border width before reparenting */
     Window frame;		/* the frame window */
+    Window decor_w;		/* parent of decoration windows */
     Window Parent;              /* Ugly Ugly Ugly - it looks like you
 				 * HAVE to reparent the app window into
 				 * a window whose size = app window,

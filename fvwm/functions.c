@@ -1021,7 +1021,7 @@ int DeferExecution(XEvent *eventp, Window *w,FvwmWindow **tmp_win,
   if((*w != original_w)&&(original_w != Scr.Root)&&
      (original_w != None)&&(original_w != Scr.NoFocusWin))
   {
-    if(!((*w == (*tmp_win)->frame)&&
+    if(!((*w == (*tmp_win)->decor_w)&&
          (original_w == (*tmp_win)->w)))
     {
       *context = C_ROOT;
