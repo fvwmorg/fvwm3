@@ -105,12 +105,15 @@ dnl since -lSM -lICE are in X_PRE_LIBS when they exist.
 dnl [old check] AC_CHECK_LIB(SM, SmcOpenConnection, AC_DEFINE(SESSION), ,
 dnl [old check]            [$X_LIBS $X_PRE_LIBS -lX11 $X_EXTRA_LIBS])
 
+problem_sm=""
+
 AC_ARG_ENABLE(sm,
   [  --disable-sm            disable session management support],
   [ if test "$enableval" = yes; then
     with_sm="yes, check"
   else
     with_sm="no"
+    problem_sm=": Explicitly disabled"
   fi ],
   [ with_sm="not specified, check" ]
 )
@@ -126,7 +129,8 @@ if test "$with_sm" != "no"; then
 
   $UNSET ac_cv_lib_SM_SmcOpenConnection
   AC_CHECK_LIB(SM, SmcOpenConnection, with_sm=yes; AC_DEFINE(SESSION),
-    with_sm=no, [$X_LIBS $X_PRE_LIBS -lX11 $X_EXTRA_LIBS])
+    with_sm=no; problem_sm=": Failed to detect libSM",
+    [$X_LIBS $X_PRE_LIBS -lX11 $X_EXTRA_LIBS])
 fi
 dnl AC_SUBST(sm_LIBS)
 dnl AC_SUBST(sm_CFLAGS)
@@ -139,17 +143,17 @@ dnl configure fails to find them, we fail early.
 
 
 dnl ********* xpm
+problem_xpm=": Xpm library or header not found!"
+
 $UNSET ac_cv_header_X11_xpm_h
 $UNSET ac_cv_lib_Xpm_XpmReadFileToXpmImage
 smr_CHECK_LIB(xpm, Xpm, for coloured or shaped icons,
     XpmReadFileToXpmImage, X11/xpm.h,
     [$X_LIBS $X_PRE_LIBS -lX11 $X_EXTRA_LIBS], $X_CFLAGS)
 
-xpm_problem=": Xpm library or header not found!"
-
 if test "$xpm_LIBS"; then
   dnl Check for proper version of Xpm -- from XEmacs 21.x configure.in
-  xpm_problem=""
+  problem_xpm=""
   AC_MSG_CHECKING(for Xpm 3.4g or better)
   my_CPPFLAGS="$CPPFLAGS"
   my_LIBS="$LIBS"
@@ -166,11 +170,11 @@ if test "$xpm_LIBS"; then
      else
        with_xpm=no;
        if test "$xpm_status" = "1"; then
-	 xpm_problem=": Xpm library version and header file version don't match!"
+	 problem_xpm=": Xpm library and header versions don't match!"
        elif test "$xpm_status" = "2"; then
-	 xpm_problem=": Xpm library version is too old!"
+	 problem_xpm=": Xpm library version is too old!"
        else
-	 xpm_problem=": Internal xpm detection logic error!"
+	 problem_xpm=": Internal xpm detection logic error!"
        fi
      fi],
    [with_xpm=no])
@@ -198,7 +202,6 @@ $UNSET ac_cv_lib_rplay_rplay_create
 dnl Add in X_EXTRA_LIBS here to get things like connect().
 smr_CHECK_LIB(rplay, , adds audio capability, rplay_create, rplay.h,
 	      $X_EXTRA_LIBS)
-
 test "$rplay_LIBS" && AC_DEFINE(HAVE_RPLAY)
 AC_SUBST(rplay_LIBS)
 AC_SUBST(rplay_CFLAGS)
@@ -218,6 +221,7 @@ AC_SUBST(stroke_CFLAGS)
 
 dnl ********* readline
 with_readline=no
+problem_readline=": Both termcap and ncurses disabled"
 
 smr_ARG_WITHLIB(termcap, , to accomplish readline)
 if test "$with_termcap" != "no"; then
@@ -267,10 +271,12 @@ AC_SUBST(readline_CFLAGS)
 
 dnl ********* multibyte
 with_multibyte=no
+problem_multibyte=": This is the suggested default"
 
 dnl FreeBSD has libxpg4, check this and use if found.
 if test "$enable_multibyte" = yes; then
   with_multibyte=yes
+  problem_multibyte=""
   AC_CANONICAL_HOST
   case $host_os in
     freebsd*)
@@ -414,8 +420,10 @@ dnl Check the availability of Gtk
 AM_PATH_GTK(1.1.0,[FVWMGTK=FvwmGtk AC_SUBST(FVWMGTK)],)
 if test "x$no_gtk" = x ; then
   with_gtk=yes
+  problem_gtk=""
 else
   with_gtk=no
+  problem_gtk=": Failed to detect GTK, see config.log"
 fi
 
 dnl Check the availability of gdk-imlib
@@ -427,8 +435,10 @@ dnl Unfortunately we have 2 gnome supports: WM hints and gnome libs.
 dnl The $with_gnome below refers to the first, not GNOME_INIT_HOOK.
 if test "x$enable_gnome" != "xno"; then
   with_gnome=yes
+  problem_gnome=""
 else
   with_gnome=no
+  problem_gnome=": Explicitly disabled"
 fi
 
 
@@ -529,15 +539,15 @@ FVWM Configuration:
   Modules:     $my_moddir
   Data files:  $my_datdir
 
-  Have ReadLine support?                 $with_readline
-  Have RPlay support?                    $with_rplay
-  Have Stroke support?                   $with_stroke
-  Have XPM support?                      $with_xpm$xpm_problem
-  Have GTK support?                      $with_gtk
-  Have GNOME Window Manager support?     $with_gnome
-  Have Session Management support?       $with_sm
-  Have GNOME support in FvwmGtk?         $with_gnomelibs
-  Have Multibyte support (experimental)? $with_multibyte
+  Have ReadLine support?             $with_readline$problem_readline
+  Have RPlay support?                $with_rplay$problem_rplay
+  Have Stroke support?               $with_stroke$problem_stroke
+  Have XPM support?                  $with_xpm$problem_xpm
+  Have GTK support?                  $with_gtk$problem_gtk
+  Have GNOME Window Manager support? $with_gnome$problem_gnome
+  Have Session Management support?   $with_sm$problem_sm
+  Have GNOME support in FvwmGtk?     $with_gnomelibs$problem_gnomelibs
+  Have Multibyte support?            $with_multibyte$problem_multibyte
 "
 case "$ac_cv_dmalloc" in
   yes) echo "  DMALLOC heap debugging library enabled." ;;

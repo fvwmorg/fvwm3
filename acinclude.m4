@@ -263,22 +263,27 @@ ifelse($5, , , smr_header=[$5])
 smr_ARG_WITHLIB($1,$2,$3)
 if test "$with_$1" != no; then
     AC_CHECK_LIB($smr_lib, $4,
-        smr_havelib=yes, smr_havelib=no,
+        smr_havelib=yes,
+        smr_havelib=no; problem_$1=": Can't find required lib$smr_lib",
         ifelse($6, , ${$1_LIBS}, [${$1_LIBS} $6]))
     if test "$smr_havelib" = yes -a "$smr_header" != ""; then
         smr_ARG_WITHINCLUDES($1, $smr_header, $7)
         smr_safe=`echo "$smr_header" | sed 'y%./+-%__p_%'`
         if eval "test \"`echo '$ac_cv_header_'$smr_safe`\" != yes"; then
             smr_havelib=no
+            problem_$1=": Can't find required $smr_header"
         fi
     fi
     if test "$smr_havelib" = yes; then
         with_$1=yes
+        problem_$1=
     else
         $1_LIBS=
         $1_CFLAGS=
         with_$1=no
     fi
+else
+    problem_$1=": Explicitly disabled"
 fi])
 
 
@@ -797,6 +802,7 @@ AC_DEFUN([GNOME_INIT_HOOK],[
         	else
 	    		if test "x$withval" = xno; then
 	        		with_gnomelibs=no
+				problem_gnomelibs=": Explicitly disabled"
 	    		else
 	        		with_gnomelibs=yes
 	    			LDFLAGS="$LDFLAGS -L$withval/lib"
@@ -807,6 +813,7 @@ AC_DEFUN([GNOME_INIT_HOOK],[
 		with_gnomelibs=yes)
 
 	if test "x$with_gnomelibs" = xyes; then
+	    problem_gnomelibs=": Can't find working gnome-config"
 
 	    AC_PATH_PROG(GNOME_CONFIG,gnome-config,no)
 	    if test "$GNOME_CONFIG" = "no"; then
@@ -856,6 +863,8 @@ AC_DEFUN([GNOME_INIT_HOOK],[
 
 	# test whether gnome can be compiled
 	if test "x$with_gnomelibs" = xyes; then
+		problem_gnomelibs=": Can't compile trivial gnome app"
+
 		AC_MSG_CHECKING(whether trivial gnome compilation passes)
 		my_CPPFLAGS="$CPPFLAGS"
 		my_LIBS="$LIBS"
@@ -875,10 +884,13 @@ AC_DEFUN([GNOME_INIT_HOOK],[
 		CPPFLAGS="$my_CPPFLAGS" 
 		LIBS="$my_LIBS"
 	else
+		# just for safety
 		with_gnomelibs=no
 	fi
 
-	if test "x$with_gnomelibs" = xno; then
+	if test "x$with_gnomelibs" = xyes; then
+		problem_gnomelibs=""
+	else
 	        GNOME_LIBS=
 	        GNOMEUI_LIBS=
 	        GNOME_LIBDIR=
