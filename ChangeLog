@@ -1,3 +1,29 @@
+1999-04-16  Dominik Vogt  <dominik_vogt@gmx.de>
+
+	* fvwm/functions.c (DeferExecution): allow to abot DeferExecution with
+	Escape key
+	(ComplexFunction2): fixed use_depth
+	(func_comp): removed temporary variables to speed things up a bit
+	(FindBuiltinFunction): added check for " +" which is fell through the
+	check for "+". This should save quite a bit of time with configs that
+	indent the '+' command with a space.
+	(FindBuiltinFunction): removed calculation of func_config table size
+	this is a constant that can be determined at compile time. No need to
+	store it in a static.
+	(FindBuiltinFunction):
+	(func_config): changed function table entries to lower case. Since most
+	letters in config files are lower case anyway this saves some CPU
+	cycles.
+
+	* fvwm/repeat.c (update_last_string): function replaced with new
+	function set_repeat_data
+
+1999-04-15  Dominik Vogt  <dominik_vogt@gmx.de>
+
+	* fvwm/ConfigFvwmSetup:
+	* fvwm/ConfigFvwmDefaults:
+	removed unnecessary duoble quotes
+
 1999-04-16  Hippo
 
 	* fvwm/module.{h,c}: Removed M_NEW_LOOK, will be a text config line

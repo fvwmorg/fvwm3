@@ -35,6 +35,7 @@
 #include <string.h>
 #include <unistd.h>
 
+#include <X11/keysym.h>
 #include "fvwm.h"
 #include "style.h"
 #include "functions.h"
@@ -74,146 +75,146 @@ static void ComplexFunction2(F_CMD_ARGS, Bool *desperate);
  * dje 12/19/98.
  */
 
-#define PRE_REPEAT       "REPEAT"
-#define PRE_SILENT       "SILENT"
+#define PRE_REPEAT       "repeat"
+#define PRE_SILENT       "silent"
 
-/* The function names in the first field *must* be in uppercase or else the
+/* The function names in the first field *must* be in lowercase or else the
  * function cannot be called. */
 static struct functions func_config[] =
 {
   {"+",            add_another_item, F_ADDMENU2,            FUNC_NO_WINDOW},
 #ifdef MULTISTYLE
-  {"ADDBUTTONSTYLE",AddButtonStyle,  F_ADD_BUTTON_STYLE,    FUNC_NO_WINDOW},
+  {"addbuttonstyle",AddButtonStyle,  F_ADD_BUTTON_STYLE,    FUNC_NO_WINDOW},
 #endif /* MULTISTYLE */
-  {"ADDMODULECONFIG",  AddModConfig, F_ADD_MOD,             FUNC_NO_WINDOW},
+  {"addmoduleconfig",  AddModConfig, F_ADD_MOD,             FUNC_NO_WINDOW},
 #ifdef MULTISTYLE
 #ifdef EXTENDED_TITLESTYLE
-  {"ADDTITLESTYLE",AddTitleStyle,    F_ADD_TITLE_STYLE,     FUNC_NO_WINDOW},
+  {"addtitlestyle",AddTitleStyle,    F_ADD_TITLE_STYLE,     FUNC_NO_WINDOW},
 #endif /* EXTENDED_TITLESTYLE */
 #endif /* MULTISTYLE */
 #ifdef USEDECOR
-  {"ADDTODECOR",   add_item_to_decor,F_ADD_DECOR,	    FUNC_NO_WINDOW},
+  {"addtodecor",   add_item_to_decor,F_ADD_DECOR,	    FUNC_NO_WINDOW},
 #endif /* USEDECOR */
-  {"ADDTOFUNC",    add_item_to_func, F_ADDFUNC,             FUNC_NO_WINDOW},
-  {"ADDTOMENU",    add_item_to_menu, F_ADDMENU,             FUNC_NO_WINDOW},
-  {"ALL",          AllFunc,          F_ALL,                 FUNC_NO_WINDOW},
-  {"ANIMATEDMOVE", animated_move_window,F_ANIMATED_MOVE,    FUNC_NEEDS_WINDOW},
-  {"BEEP",         Bell,             F_BEEP,                FUNC_NO_WINDOW},
+  {"addtofunc",    add_item_to_func, F_ADDFUNC,             FUNC_NO_WINDOW},
+  {"addtomenu",    add_item_to_menu, F_ADDMENU,             FUNC_NO_WINDOW},
+  {"all",          AllFunc,          F_ALL,                 FUNC_NO_WINDOW},
+  {"animatedmove", animated_move_window,F_ANIMATED_MOVE,    FUNC_NEEDS_WINDOW},
+  {"beep",         Bell,             F_BEEP,                FUNC_NO_WINDOW},
 #ifdef BORDERSTYLE
-  {"BORDERSTYLE",  SetBorderStyle,   F_BORDERSTYLE,         FUNC_NO_WINDOW},
+  {"borderstyle",  SetBorderStyle,   F_BORDERSTYLE,         FUNC_NO_WINDOW},
 #endif /* BORDERSTYLE */
-  {"BUTTONSTYLE",  ButtonStyle,      F_BUTTON_STYLE,        FUNC_NO_WINDOW},
+  {"buttonstyle",  ButtonStyle,      F_BUTTON_STYLE,        FUNC_NO_WINDOW},
 #ifdef USEDECOR
-  {"CHANGEDECOR",  ChangeDecor,      F_CHANGE_DECOR,        FUNC_NEEDS_WINDOW},
+  {"changedecor",  ChangeDecor,      F_CHANGE_DECOR,        FUNC_NEEDS_WINDOW},
 #endif /* USEDECOR */
-  {"CHANGEMENUSTYLE", ChangeMenuStyle, F_CHANGE_MENUSTYLE,  FUNC_NO_WINDOW},
-  {"CLICKTIME",    SetClick,         F_CLICK,               FUNC_NO_WINDOW},
-  {"CLOSE",        close_function,   F_CLOSE,               FUNC_NEEDS_WINDOW},
-  {"COLORLIMIT",   SetColorLimit,    F_COLOR_LIMIT,         FUNC_NO_WINDOW},
-  {"COLORMAPFOCUS",SetColormapFocus, F_COLORMAP_FOCUS,      FUNC_NO_WINDOW},
-  {"CURRENT",      CurrentFunc,      F_CURRENT,             FUNC_NO_WINDOW},
-  {"CURSORMOVE",   movecursor,       F_MOVECURSOR,          FUNC_NO_WINDOW},
-  {"CURSORSTYLE",  CursorStyle,      F_CURSOR_STYLE,        FUNC_NO_WINDOW},
-  {"DEFAULTCOLORS",SetDefaultColors, F_DFLT_COLORS,         FUNC_NO_WINDOW},
-  {"DEFAULTFONT",  LoadDefaultFont,  F_DFLT_FONT,           FUNC_NO_WINDOW},
-  {"DEFAULTICON",  SetDefaultIcon,   F_DFLT_ICON,           FUNC_NO_WINDOW},
-  {"DEFAULTLAYERS",SetDefaultLayers, F_DFLT_LAYERS,         FUNC_NO_WINDOW},
-  {"DELETE",       delete_function,  F_DELETE,              FUNC_NEEDS_WINDOW},
-  {"DESK",         changeDesks_func, F_DESK,                FUNC_NO_WINDOW},
-  {"DESKTOPSIZE",  SetDeskSize,      F_SETDESK,             FUNC_NO_WINDOW},
-  {"DESTROY",      destroy_function, F_DESTROY,             FUNC_NEEDS_WINDOW},
+  {"changemenustyle", ChangeMenuStyle, F_CHANGE_MENUSTYLE,  FUNC_NO_WINDOW},
+  {"clicktime",    SetClick,         F_CLICK,               FUNC_NO_WINDOW},
+  {"close",        close_function,   F_CLOSE,               FUNC_NEEDS_WINDOW},
+  {"colorlimit",   SetColorLimit,    F_COLOR_LIMIT,         FUNC_NO_WINDOW},
+  {"colormapfocus",SetColormapFocus, F_COLORMAP_FOCUS,      FUNC_NO_WINDOW},
+  {"current",      CurrentFunc,      F_CURRENT,             FUNC_NO_WINDOW},
+  {"cursormove",   movecursor,       F_MOVECURSOR,          FUNC_NO_WINDOW},
+  {"cursorstyle",  CursorStyle,      F_CURSOR_STYLE,        FUNC_NO_WINDOW},
+  {"defaultcolors",SetDefaultColors, F_DFLT_COLORS,         FUNC_NO_WINDOW},
+  {"defaultfont",  LoadDefaultFont,  F_DFLT_FONT,           FUNC_NO_WINDOW},
+  {"defaulticon",  SetDefaultIcon,   F_DFLT_ICON,           FUNC_NO_WINDOW},
+  {"defaultlayers",SetDefaultLayers, F_DFLT_LAYERS,         FUNC_NO_WINDOW},
+  {"delete",       delete_function,  F_DELETE,              FUNC_NEEDS_WINDOW},
+  {"desk",         changeDesks_func, F_DESK,                FUNC_NO_WINDOW},
+  {"desktopsize",  SetDeskSize,      F_SETDESK,             FUNC_NO_WINDOW},
+  {"destroy",      destroy_function, F_DESTROY,             FUNC_NEEDS_WINDOW},
 #ifdef USEDECOR
-  {"DESTROYDECOR", DestroyDecor,     F_DESTROY_DECOR,	    FUNC_NO_WINDOW},
+  {"destroydecor", DestroyDecor,     F_DESTROY_DECOR,	    FUNC_NO_WINDOW},
 #endif /* USEDECOR */
-  {"DESTROYFUNC",  destroy_fvwmfunc, F_DESTROY_FUNCTION,    FUNC_NO_WINDOW},
-  {"DESTROYMENU",  destroy_menu,     F_DESTROY_MENU,        FUNC_NO_WINDOW},
-  {"DESTROYMENUSTYLE", DestroyMenuStyle, F_DESTROY_MENUSTYLE,FUNC_NO_WINDOW},
-  {"DESTROYMODULECONFIG", DestroyModConfig, F_DESTROY_MOD,  FUNC_NO_WINDOW},
-  {"DIRECTION",    DirectionFunc,    F_DIRECTION,           FUNC_NO_WINDOW},
-  {"ECHO",         echo_func,        F_ECHO,                FUNC_NO_WINDOW},
-  {"EDGERESISTANCE",SetEdgeResistance,F_EDGE_RES,           FUNC_NO_WINDOW},
-  {"EDGESCROLL",   SetEdgeScroll,    F_EDGE_SCROLL,         FUNC_NO_WINDOW},
-  {"EDGETHICKNESS",setEdgeThickness, F_NOP,                 FUNC_NO_WINDOW},
-  {"EMULATE",      Emulate,          F_EMULATE,             FUNC_NO_WINDOW},
-  {"EXEC",         exec_function,    F_EXEC,                FUNC_NO_WINDOW},
-  {"EXECUSESHELL", exec_setup,       F_EXEC_SETUP,          FUNC_NO_WINDOW},
-  {"FLIPFOCUS",    flip_focus_func,  F_FLIP_FOCUS,          FUNC_NEEDS_WINDOW},
-  {"FOCUS",        focus_func,       F_FOCUS,               FUNC_NEEDS_WINDOW},
-  {"FUNCTION",     ComplexFunction,  F_FUNCTION,            FUNC_NO_WINDOW},
-  {"GLOBALOPTS",   SetGlobalOptions, F_GLOBAL_OPTS,         FUNC_NO_WINDOW},
+  {"destroyfunc",  destroy_fvwmfunc, F_DESTROY_FUNCTION,    FUNC_NO_WINDOW},
+  {"destroymenu",  destroy_menu,     F_DESTROY_MENU,        FUNC_NO_WINDOW},
+  {"destroymenustyle", DestroyMenuStyle, F_DESTROY_MENUSTYLE,FUNC_NO_WINDOW},
+  {"destroymoduleconfig", DestroyModConfig, F_DESTROY_MOD,  FUNC_NO_WINDOW},
+  {"direction",    DirectionFunc,    F_DIRECTION,           FUNC_NO_WINDOW},
+  {"echo",         echo_func,        F_ECHO,                FUNC_NO_WINDOW},
+  {"edgeresistance",SetEdgeResistance,F_EDGE_RES,           FUNC_NO_WINDOW},
+  {"edgescroll",   SetEdgeScroll,    F_EDGE_SCROLL,         FUNC_NO_WINDOW},
+  {"edgethickness",setEdgeThickness, F_NOP,                 FUNC_NO_WINDOW},
+  {"emulate",      Emulate,          F_EMULATE,             FUNC_NO_WINDOW},
+  {"exec",         exec_function,    F_EXEC,                FUNC_NO_WINDOW},
+  {"execuseshell", exec_setup,       F_EXEC_SETUP,          FUNC_NO_WINDOW},
+  {"flipfocus",    flip_focus_func,  F_FLIP_FOCUS,          FUNC_NEEDS_WINDOW},
+  {"focus",        focus_func,       F_FOCUS,               FUNC_NEEDS_WINDOW},
+  {"function",     ComplexFunction,  F_FUNCTION,            FUNC_NO_WINDOW},
+  {"globalopts",   SetGlobalOptions, F_GLOBAL_OPTS,         FUNC_NO_WINDOW},
 #ifdef GNOME
-  {"GNOMEBUTTON",  GNOME_ButtonFunc, F_MOUSE,               FUNC_NO_WINDOW},
+  {"gnomebutton",  GNOME_ButtonFunc, F_MOUSE,               FUNC_NO_WINDOW},
 #endif /* GNOME */
-  {"GOTODESK",     changeDesks_func, F_DESK,                FUNC_NO_WINDOW},
-  {"GOTOPAGE",     goto_page_func,   F_GOTO_PAGE,           FUNC_NO_WINDOW},
-  {"HILIGHTCOLOR", SetHiColor,       F_HICOLOR,             FUNC_NO_WINDOW},
-  {"ICONFONT",     LoadIconFont,     F_ICONFONT,            FUNC_NO_WINDOW},
-  {"ICONIFY",      iconify_function, F_ICONIFY,             FUNC_NEEDS_WINDOW},
-  {"ICONPATH",     iconPath_function,F_ICON_PATH,           FUNC_NO_WINDOW},
-  {"IGNOREMODIFIERS",ignore_modifiers,F_IGNORE_MODIFIERS,   FUNC_NO_WINDOW},
-  {"IMAGEPATH",    imagePath_function,F_IMAGE_PATH,         FUNC_NO_WINDOW},
-  {"KEY",          key_binding,      F_KEY,                 FUNC_NO_WINDOW},
-  {"KILLMODULE",   module_zapper,    F_ZAP,                 FUNC_NO_WINDOW},
-  {"LAYER",        change_layer,     F_LAYER,               FUNC_NEEDS_WINDOW},
-  {"LOWER",        lower_function,   F_LOWER,               FUNC_NEEDS_WINDOW},
-  {"MAXIMIZE",     Maximize,         F_MAXIMIZE,            FUNC_NEEDS_WINDOW},
-  {"MENU",         staysup_func,     F_STAYSUP,             FUNC_NO_WINDOW},
-  {"MENUSTYLE",    SetMenuStyle,     F_MENUSTYLE,           FUNC_NO_WINDOW},
-  {"MODULE",       executeModule,    F_MODULE,              FUNC_NO_WINDOW},
-  {"MODULEPATH",   setModulePath,    F_MODULE_PATH,         FUNC_NO_WINDOW},
-  {"MOUSE",        mouse_binding,    F_MOUSE,               FUNC_NO_WINDOW},
-  {"MOVE",         move_window,      F_MOVE,                FUNC_NEEDS_WINDOW},
-  {"MOVETODESK",   move_window_to_desk,F_MOVE_TO_DESK,      FUNC_NEEDS_WINDOW},
-  {"MOVETOPAGE",   move_window_to_page,F_MOVE_TO_PAGE,      FUNC_NEEDS_WINDOW},
-  {"NEXT",         NextFunc,         F_NEXT,                FUNC_NO_WINDOW},
-  {"NONE",         NoneFunc,         F_NONE,                FUNC_NO_WINDOW},
-  {"NOP",          Nop_func,         F_NOP,                 FUNC_NO_WINDOW},
-  {"OPAQUEMOVESIZE", SetOpaque,      F_OPAQUE,              FUNC_NO_WINDOW},
-  {"PICK",         PickFunc,         F_PICK,                FUNC_NO_WINDOW},
-  {"PIPEREAD",     PipeRead,         F_READ,                FUNC_NO_WINDOW},
-  {"PIXMAPPATH",   pixmapPath_function,F_PIXMAP_PATH,       FUNC_NO_WINDOW},
-  {"PLACEAGAIN",   PlaceAgain_func,  F_PLACEAGAIN,          FUNC_NEEDS_WINDOW},
-  {"POPUP",        popup_func,       F_POPUP,               FUNC_NO_WINDOW},
-  {"PREV",         PrevFunc,         F_PREV,                FUNC_NO_WINDOW},
-  {"QUIT",         quit_func,        F_QUIT,                FUNC_NO_WINDOW},
-  {"QUITSCREEN",   quit_screen_func, F_QUIT_SCREEN,         FUNC_NO_WINDOW},
-  {"RAISE",        raise_function,   F_RAISE,               FUNC_NEEDS_WINDOW},
-  {"RAISELOWER",   raiselower_func,  F_RAISELOWER,          FUNC_NEEDS_WINDOW},
-  {"READ",         ReadFile,         F_READ,                FUNC_NO_WINDOW},
-  {"RECAPTURE",    Recapture,        F_RECAPTURE,           FUNC_NO_WINDOW},
-  {"RECAPTUREWINDOW",RecaptureWindow,F_RECAPTURE_WINDOW,    FUNC_NO_WINDOW},
-  {"REFRESH",      refresh_function, F_REFRESH,             FUNC_NO_WINDOW},
-  {"REFRESHWINDOW",refresh_win_function, F_REFRESH,         FUNC_NEEDS_WINDOW},
+  {"gotodesk",     changeDesks_func, F_DESK,                FUNC_NO_WINDOW},
+  {"gotopage",     goto_page_func,   F_GOTO_PAGE,           FUNC_NO_WINDOW},
+  {"hilightcolor", SetHiColor,       F_HICOLOR,             FUNC_NO_WINDOW},
+  {"iconfont",     LoadIconFont,     F_ICONFONT,            FUNC_NO_WINDOW},
+  {"iconify",      iconify_function, F_ICONIFY,             FUNC_NEEDS_WINDOW},
+  {"iconpath",     iconPath_function,F_ICON_PATH,           FUNC_NO_WINDOW},
+  {"ignoremodifiers",ignore_modifiers,F_IGNORE_MODIFIERS,   FUNC_NO_WINDOW},
+  {"imagepath",    imagePath_function,F_IMAGE_PATH,         FUNC_NO_WINDOW},
+  {"key",          key_binding,      F_KEY,                 FUNC_NO_WINDOW},
+  {"killmodule",   module_zapper,    F_ZAP,                 FUNC_NO_WINDOW},
+  {"layer",        change_layer,     F_LAYER,               FUNC_NEEDS_WINDOW},
+  {"lower",        lower_function,   F_LOWER,               FUNC_NEEDS_WINDOW},
+  {"maximize",     Maximize,         F_MAXIMIZE,            FUNC_NEEDS_WINDOW},
+  {"menu",         staysup_func,     F_STAYSUP,             FUNC_NO_WINDOW},
+  {"menustyle",    SetMenuStyle,     F_MENUSTYLE,           FUNC_NO_WINDOW},
+  {"module",       executeModule,    F_MODULE,              FUNC_NO_WINDOW},
+  {"modulepath",   setModulePath,    F_MODULE_PATH,         FUNC_NO_WINDOW},
+  {"mouse",        mouse_binding,    F_MOUSE,               FUNC_NO_WINDOW},
+  {"move",         move_window,      F_MOVE,                FUNC_NEEDS_WINDOW},
+  {"movetodesk",   move_window_to_desk,F_MOVE_TO_DESK,      FUNC_NEEDS_WINDOW},
+  {"movetopage",   move_window_to_page,F_MOVE_TO_PAGE,      FUNC_NEEDS_WINDOW},
+  {"next",         NextFunc,         F_NEXT,                FUNC_NO_WINDOW},
+  {"none",         NoneFunc,         F_NONE,                FUNC_NO_WINDOW},
+  {"nop",          Nop_func,         F_NOP,                 FUNC_NO_WINDOW},
+  {"opaquemovesize", SetOpaque,      F_OPAQUE,              FUNC_NO_WINDOW},
+  {"pick",         PickFunc,         F_PICK,                FUNC_NO_WINDOW},
+  {"piperead",     PipeRead,         F_READ,                FUNC_NO_WINDOW},
+  {"pixmappath",   pixmapPath_function,F_PIXMAP_PATH,       FUNC_NO_WINDOW},
+  {"placeagain",   PlaceAgain_func,  F_PLACEAGAIN,          FUNC_NEEDS_WINDOW},
+  {"popup",        popup_func,       F_POPUP,               FUNC_NO_WINDOW},
+  {"prev",         PrevFunc,         F_PREV,                FUNC_NO_WINDOW},
+  {"quit",         quit_func,        F_QUIT,                FUNC_NO_WINDOW},
+  {"quitscreen",   quit_screen_func, F_QUIT_SCREEN,         FUNC_NO_WINDOW},
+  {"raise",        raise_function,   F_RAISE,               FUNC_NEEDS_WINDOW},
+  {"raiselower",   raiselower_func,  F_RAISELOWER,          FUNC_NEEDS_WINDOW},
+  {"read",         ReadFile,         F_READ,                FUNC_NO_WINDOW},
+  {"recapture",    Recapture,        F_RECAPTURE,           FUNC_NO_WINDOW},
+  {"recapturewindow",RecaptureWindow,F_RECAPTURE_WINDOW,    FUNC_NO_WINDOW},
+  {"refresh",      refresh_function, F_REFRESH,             FUNC_NO_WINDOW},
+  {"refreshwindow",refresh_win_function, F_REFRESH,         FUNC_NEEDS_WINDOW},
   {PRE_REPEAT,     repeat_function,  F_REPEAT,              FUNC_NO_WINDOW},
-  {"RESIZE",       resize_window,    F_RESIZE,              FUNC_NEEDS_WINDOW},
-  {"RESTART",      restart_function, F_RESTART,             FUNC_NO_WINDOW},
-  {"SCROLL",       scroll,           F_SCROLL,              FUNC_NO_WINDOW},
-  {"SENDTOMODULE", SendStrToModule,  F_SEND_STRING,         FUNC_NO_WINDOW},
-  {"SEND_CONFIGINFO",SendDataToModule, F_CONFIG_LIST,       FUNC_NO_WINDOW},
-  {"SEND_WINDOWLIST",send_list_func, F_SEND_WINDOW_LIST,    FUNC_NO_WINDOW},
-  {"SETANIMATION", set_animation,    F_SET_ANIMATION,	    FUNC_NO_WINDOW},
-  {"SETENV",       SetEnv,           F_SETENV,              FUNC_NO_WINDOW},
-  {"SET_MASK",     set_mask_function,F_SET_MASK,            FUNC_NO_WINDOW},
+  {"resize",       resize_window,    F_RESIZE,              FUNC_NEEDS_WINDOW},
+  {"restart",      restart_function, F_RESTART,             FUNC_NO_WINDOW},
+  {"scroll",       scroll,           F_SCROLL,              FUNC_NO_WINDOW},
+  {"send_configinfo",SendDataToModule, F_CONFIG_LIST,       FUNC_NO_WINDOW},
+  {"send_windowlist",send_list_func, F_SEND_WINDOW_LIST,    FUNC_NO_WINDOW},
+  {"sendtomodule", SendStrToModule,  F_SEND_STRING,         FUNC_NO_WINDOW},
+  {"set_mask",     set_mask_function,F_SET_MASK,            FUNC_NO_WINDOW},
+  {"setanimation", set_animation,    F_SET_ANIMATION,	    FUNC_NO_WINDOW},
+  {"setenv",       SetEnv,           F_SETENV,              FUNC_NO_WINDOW},
   {PRE_SILENT,     NULL,             F_SILENT,              FUNC_NO_WINDOW},
-  {"SNAPATTRACTION",SetSnapAttraction,F_SNAP_ATT,           FUNC_NO_WINDOW},
-  {"SNAPGRID",     SetSnapGrid,      F_SNAP_GRID,           FUNC_NO_WINDOW},
-  {"STICK",        stick_function,   F_STICK,               FUNC_NEEDS_WINDOW},
-  {"STYLE",        ProcessNewStyle,  F_STYLE,               FUNC_NO_WINDOW},
-  {"TITLE",        Nop_func,         F_TITLE,               FUNC_NO_WINDOW},
-  {"TITLESTYLE",   SetTitleStyle,    F_TITLESTYLE,          FUNC_NO_WINDOW},
-  {"UPDATEDECOR",  UpdateDecor,      F_UPDATE_DECOR,        FUNC_NO_WINDOW},
-  {"WAIT",         wait_func,        F_WAIT,                FUNC_NO_WINDOW},
-  {"WARPTOWINDOW", warp_func,        F_WARP,                FUNC_NEEDS_WINDOW},
-  {"WINDOWFONT",   LoadWindowFont,   F_WINDOWFONT,          FUNC_NO_WINDOW},
-  {"WINDOWID",     WindowIdFunc,     F_WINDOWID,            FUNC_NO_WINDOW},
-  {"WINDOWLIST",   do_windowList,    F_WINDOWLIST,          FUNC_NO_WINDOW},
+  {"snapattraction",SetSnapAttraction,F_SNAP_ATT,           FUNC_NO_WINDOW},
+  {"snapgrid",     SetSnapGrid,      F_SNAP_GRID,           FUNC_NO_WINDOW},
+  {"stick",        stick_function,   F_STICK,               FUNC_NEEDS_WINDOW},
+  {"style",        ProcessNewStyle,  F_STYLE,               FUNC_NO_WINDOW},
+  {"title",        Nop_func,         F_TITLE,               FUNC_NO_WINDOW},
+  {"titlestyle",   SetTitleStyle,    F_TITLESTYLE,          FUNC_NO_WINDOW},
+  {"updatedecor",  UpdateDecor,      F_UPDATE_DECOR,        FUNC_NO_WINDOW},
+  {"wait",         wait_func,        F_WAIT,                FUNC_NO_WINDOW},
+  {"warptowindow", warp_func,        F_WARP,                FUNC_NEEDS_WINDOW},
+  {"windowfont",   LoadWindowFont,   F_WINDOWFONT,          FUNC_NO_WINDOW},
+  {"windowid",     WindowIdFunc,     F_WINDOWID,            FUNC_NO_WINDOW},
+  {"windowlist",   do_windowList,    F_WINDOWLIST,          FUNC_NO_WINDOW},
 /*
-  {"WINDOWSDESK",  changeWindowsDesk,F_CHANGE_WINDOWS_DESK, FUNC_NEEDS_WINDOW},
+  {"windowsdesk",  changeWindowsDesk,F_CHANGE_WINDOWS_DESK, FUNC_NEEDS_WINDOW},
 */
-  {"WINDOWSHADE",  WindowShade,      F_WINDOW_SHADE,        FUNC_NEEDS_WINDOW},
-  {"WINDOWSHADEANIMATE",setShadeAnim,F_SHADE_ANIMATE,       FUNC_NO_WINDOW},
-  {"XORPIXMAP",    SetXORPixmap,     F_XOR,                 FUNC_NO_WINDOW},
-  {"XORVALUE",     SetXOR,           F_XOR,                 FUNC_NO_WINDOW},
+  {"windowshade",  WindowShade,      F_WINDOW_SHADE,        FUNC_NEEDS_WINDOW},
+  {"windowshadeanimate",setShadeAnim,F_SHADE_ANIMATE,       FUNC_NO_WINDOW},
+  {"xorpixmap",    SetXORPixmap,     F_XOR,                 FUNC_NO_WINDOW},
+  {"xorvalue",     SetXOR,           F_XOR,                 FUNC_NO_WINDOW},
   {"",0,0,0}
 };
 
@@ -223,9 +224,7 @@ static struct functions func_config[] =
 */
 static int func_comp(const void *a, const void *b)
 {
-  char *key=(char *)a;
-  char *f=((struct functions *)b)->keyword;
-  return (strcmp(key,f));
+  return (strcmp((char *)a, ((struct functions *)b)->keyword));
 }
 
 static struct functions *FindBuiltinFunction(char *func)
@@ -239,23 +238,19 @@ static struct functions *FindBuiltinFunction(char *func)
     return NULL;
 
   /* since a lot of lines in a typical rc are probably menu/func continues: */
-  if (func[0]=='+')
+  if (func[0]=='+' || func[0] == ' ' && func[1] == '+')
     return &(func_config[0]);
-
-  if (!func_config_size)
-  {
-    /* remove finial NULL entry from size */
-    func_config_size=((sizeof(func_config))/(sizeof(struct functions)))-1;
-  }
 
   if (!(temp = strdup(func)))
     return NULL;
   for (s = temp; *s != 0; s++)
-    if (islower(*s))
-      *s = toupper(*s);
+    if (isupper(*s))
+      *s = tolower(*s);
 
-  ret_func = (struct functions *)bsearch(temp, func_config, func_config_size,
-					 sizeof(struct functions), func_comp);
+  ret_func = (struct functions *)bsearch
+    (temp, func_config,
+     sizeof(func_config) / sizeof(struct functions) - 1,
+     sizeof(struct functions), func_comp);
   free(temp);
 
   return ret_func;
@@ -430,15 +425,20 @@ void ExecuteFunction(char *Action, FvwmWindow *tmp_win, XEvent *eventp,
 		     unsigned long context, int Module,
 		     expand_command_type expand_cmd)
 {
+  static unsigned int func_depth = 0;
   Window w;
-  int matched,j;
+  int j;
   char *function;
-  char *action, *taction, *t2action;
-  static char *expaction = NULL;
+  char *action;
+  char *taction;
+  char *t2action;
+  char *trash;
+  char *trash2;
+  char *expaction = NULL;
   char *arguments[10];
   struct functions *bif;
   Bool set_silent;
-  Bool no_store;
+  Bool must_free_string = False;
   int skip;
 
   if (!Action || Action[0] == 0 || Action[1] == 0)
@@ -456,6 +456,7 @@ void ExecuteFunction(char *Action, FvwmWindow *tmp_win, XEvent *eventp,
     ModuleConfig(NULL,0,0,0,Action,0);  /* process the command */
     return;                             /* done */
   }
+  func_depth++;
   for(j=0;j<10;j++)
     arguments[j] = NULL;
 
@@ -471,17 +472,17 @@ void ExecuteFunction(char *Action, FvwmWindow *tmp_win, XEvent *eventp,
     w = eventp->xbutton.subwindow;
 
   set_silent = False;
-  no_store = False;
   if (Action[0] == '-')
     {
-      no_store = True;
+      expand_cmd = DONT_EXPAND_COMMAND;
       Action++;
     }
 
   taction = Action;
   /* parse prefixes */
-  action = PeekToken(taction, &t2action);
-  while (action)
+  trash = PeekToken(taction, &trash2);
+/*
+  while (trash)
     {
       if (StrEquals(action, PRE_SILENT))
 	{
@@ -490,23 +491,20 @@ void ExecuteFunction(char *Action, FvwmWindow *tmp_win, XEvent *eventp,
 	      set_silent = 1;
 	      Scr.flags.silent_functions = 1;
 	    }
-	}
-      else if (StrEquals(action, PRE_REPEAT))
-	{
-	  no_store = True;
-	  break;
+	  taction = trash2;
+	  trash = PeekToken(taction, &trash2);
 	}
       else
 	break;
-      taction = t2action;
-      action = PeekToken(taction, &t2action);
     }
   if (taction == NULL)
     {
       if (set_silent)
 	Scr.flags.silent_functions = 0;
+      func_depth--;
       return;
     }
+*/
   skip = taction - Action;
 
   if (expand_cmd == EXPAND_COMMAND)
@@ -515,32 +513,24 @@ void ExecuteFunction(char *Action, FvwmWindow *tmp_win, XEvent *eventp,
     expaction = Action;
   taction = expaction + skip;
   j=0;
-  matched = FALSE;
 
   action = GetNextToken(taction,&function);
+  if (expand_cmd == EXPAND_COMMAND && func_depth <= 1)
+  {
+    must_free_string = set_repeat_data(expaction, REPEAT_COMMAND);
+  }
   bif = FindBuiltinFunction(function);
   if (bif)
     {
-      matched = TRUE;
-      update_last_string(&repeat_last_builtin_function, &repeat_last_function,
-			 expaction, no_store);
       bif->action(eventp,w,tmp_win,context,action,&Module);
     }
-
-  if (!matched)
+  else
     {
       Bool desperate = 1;
 
       ComplexFunction2(eventp,w,tmp_win,context,taction, &Module, &desperate);
       if(desperate)
-	{
-	  update_last_string(&repeat_last_module, &repeat_last_function,
-			     expaction, no_store);
 	  executeModule(eventp,w,tmp_win,context,taction, &Module);
-	}
-      else
-	update_last_string(&repeat_last_complex_function,
-			   &repeat_last_function, expaction, no_store);
     }
 
   /* Only wait for an all-buttons-up condition after calls from
@@ -552,8 +542,12 @@ void ExecuteFunction(char *Action, FvwmWindow *tmp_win, XEvent *eventp,
   if (set_silent)
     Scr.flags.silent_functions = 0;
 
-  if (no_store && expand_cmd == EXPAND_COMMAND)
+  if (must_free_string)
+{
     free(expaction);
+}
+
+  func_depth--;
   return;
 }
 
@@ -615,7 +609,12 @@ int DeferExecution(XEvent *eventp, Window *w,FvwmWindow **tmp_win,
     StashEventTime(eventp);
 
     if(eventp->type == KeyPress)
+    {
+      KeySym keysym = XLookupKeysym(&eventp->xkey,0);
+      if (keysym == XK_Escape)
+	return True;
       Keyboard_shortcuts(eventp, NULL, FinishEvent);
+    }
     if(eventp->type == FinishEvent)
       finished = 1;
     if(eventp->type == ButtonPress)
@@ -880,6 +879,7 @@ static void ComplexFunction(F_CMD_ARGS)
 
 static void ComplexFunction2(F_CMD_ARGS, Bool *desperate)
 {
+  static unsigned int cfunc_depth = 0;
   char type = MOTION;
   char c;
   FunctionItem *fi;
@@ -915,6 +915,7 @@ static void ComplexFunction2(F_CMD_ARGS, Bool *desperate)
   if(eventp->type == ButtonPress)
     eventp->type = ButtonRelease;
   func->use_depth++;
+  cfunc_depth++;
   fi = func->first_item;
   while(fi != NULL)
     {
@@ -944,8 +945,10 @@ static void ComplexFunction2(F_CMD_ARGS, Bool *desperate)
   if(!Persist)
     {
       func->use_depth--;
+      cfunc_depth--;
       for(i=0;i<10;i++)
-	  if(arguments[i] != NULL)free(arguments[i]);
+	if(arguments[i] != NULL)
+	  free(arguments[i]);
       return;
     }
 
@@ -955,18 +958,24 @@ static void ComplexFunction2(F_CMD_ARGS, Bool *desperate)
     {
       if (DeferExecution(eventp,&w,&tmp_win,&context, SELECT,ButtonPress))
 	{
+	  func->use_depth--;
+	  cfunc_depth--;
 	  WaitForButtonsUp();
 	  for(i=0;i<10;i++)
-	    if(arguments[i] != NULL)free(arguments[i]);
+	    if(arguments[i] != NULL)
+	      free(arguments[i]);
 	  return;
 	}
     }
 
   if(!GrabEm(SELECT))
     {
+      func->use_depth--;
+      cfunc_depth--;
       XBell(dpy, 0);
       for(i=0;i<10;i++)
-	  if(arguments[i] != NULL)free(arguments[i]);
+	if(arguments[i] != NULL)
+	  free(arguments[i]);
       return;
     }
   XQueryPointer( dpy, Scr.Root, &JunkRoot, &JunkChild,
@@ -1019,4 +1028,5 @@ static void ComplexFunction2(F_CMD_ARGS, Bool *desperate)
   for(i=0;i<10;i++)
     if(arguments[i] != NULL)free(arguments[i]);
   func->use_depth--;
+  cfunc_depth--;
 }

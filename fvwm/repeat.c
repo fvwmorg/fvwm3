@@ -21,14 +21,19 @@
 
 #include "repeat.h"
 #include "functions.h"
+#include "parse.h"
 
+/* If non-zero we are already repeating a function, so don't record the
+ * command again. */
+static unsigned int repeat_depth = 0;
+
+/*
 typedef struct
 {
   char *start;
   char *end;
 } double_ended_string;
 
-/*
 static struct
 {
   double_ended_string string;
@@ -47,69 +52,103 @@ static struct
 } last;
 */
 
+static struct
+{
+  char *command;
+  char *prev_command;
+} last = { NULL, NULL };
 
-/* please ignore unused variables beginning with 'repeat_' for now. Thanks,
- * Dominik */
+/*
 char *repeat_last_function = NULL;
 char *repeat_last_complex_function = NULL;
 char *repeat_last_builtin_function = NULL;
 char *repeat_last_module = NULL;
-/*
 char *repeat_last_top_function = NULL;
 char *repeat_last_menu = NULL;
 FvwmWindow *repeat_last_fvwm_window = NULL;
 */
 
-
-void update_last_string(char **pdest, char **pdest2, char *src, Bool no_store)
+/* Prcedure: set_repeat_data
+ *
+ * Stores the contents of the data pointer internally for the repeat command.
+ * The sype of data is determined by the 'type' parameter. If this function is
+ * called to set a string value representing a fvwm builtin function the
+ * 'func_typetion' can be set to the F_<func_type> value in the function table
+ * in functions.c. If this value is set certain functions are not recorded.
+ * The 'depth' parameter indicates the recursion depth of the current data
+ * pointer (i.e. the first function call has a depth of one, functions called
+ * from within this function have depth 2 and higher, this may be applicable
+ * to future enhancements like menus).
+ *
+ *
+ *
+ *
+ *
+ */
+Bool set_repeat_data(void *data, repeat_type type)
 {
-  if (no_store || *pdest == src || *pdest == NULL)
-    return;
-  if (*pdest2 && *pdest != *pdest2)
-    free(*pdest2);
-  if (*pdest)
-    free(*pdest);
-  *pdest = strdup(src);
-  *pdest2 = *pdest;
-  return;
-}
+  char **pdest;
+  char *trash = NULL;
 
+  /* No history recording during startup. */
+  if (fFvwmInStartup)
+    return True;
+
+fprintf(stderr,"srd: entered, type=%d, data=%s\n",type,data);
+  switch(type)
+  {
+  case REPEAT_COMMAND:
+    if (last.command == (char *)data)
+      /* Already stored, no need to free the data pointer. */
+      return False;
+    if (data == NULL || repeat_depth != 0)
+      /* Ignoring the data, must free it outside of this call. */
+      return True;
+fprintf(stderr,"srd: recording: *lc=0x%x, data=0x%x %s\n",last.command,data,data);
+    if (last.prev_command)
+    {
+fprintf(stderr,"srd: freeing 0x%x\n", last.command);
+      free(last.prev_command);
+    }
+    /* Store a backup. */
+    last.prev_command = last.command;
+    last.command = (char *)data;
+fprintf(stderr,"srd: leaving\n");
+    /* Since we stored the pointer the caller must not free it. */
+    return False;
+  case REPEAT_MENU:
+  case REPEAT_POPUP:
+  case REPEAT_PAGE:
+  case REPEAT_DESK:
+  case REPEAT_DESK_AND_PAGE:
+  case REPEAT_FVWM_WINDOW:
+  case REPEAT_NONE:
+  default:
+    return True;
+  }
+}
 
 void repeat_function(F_CMD_ARGS)
 {
   int index;
   char *optlist[] = {
-    "function",
-    "complex",
-    "builtin",
-    "module",
-    "top",
+    "command",
     NULL
   };
 
+  repeat_depth++;
+  /* Replay the backup, we don't want the repeat command recorded. */
+  last.command = last.prev_command;
+  last.prev_command = NULL;
   GetNextTokenIndex(action, optlist, 0, &index);
   switch (index)
   {
-  case 1: /* complex */
-fprintf(stderr,"repeating complex %s\n",repeat_last_complex_function);
-    ExecuteFunction(repeat_last_complex_function, tmp_win, eventp, context,
-		    *Module, DONT_EXPAND_COMMAND);
-    break;
-  case 2: /* builtin */
-fprintf(stderr,"repeating builtin %s\n",repeat_last_builtin_function);
-    ExecuteFunction(repeat_last_builtin_function, tmp_win, eventp, context,
-		    *Module, DONT_EXPAND_COMMAND);
-    break;
-  case 3: /* module */
-fprintf(stderr,"repeating module %s\n",repeat_last_module);
-    ExecuteFunction(repeat_last_module, tmp_win, eventp, context, *Module,
-		    DONT_EXPAND_COMMAND);
-    break;
-  case 0: /* function */
+  case 0: /* command */
   default:
-fprintf(stderr,"repeating %s\n",repeat_last_function);
-    ExecuteFunction(repeat_last_function, tmp_win, eventp, context, *Module,
+fprintf(stderr,"repeating 0x%x, %s\n",last.command,last.command);
+    ExecuteFunction(last.command, tmp_win, eventp, context, *Module,
 		    DONT_EXPAND_COMMAND);
     break;
   }
+  repeat_depth--;
 }

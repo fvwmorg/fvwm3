@@ -23,11 +23,13 @@
 typedef enum
 {
   REPEAT_NONE = 0,
-  REPEAT_STRING,
+  REPEAT_COMMAND,
+/* I think we don't need all these
   REPEAT_BUILTIN,
   REPEAT_FUNCTION,
   REPEAT_TOP_FUNCTION,
   REPEAT_MODULE,
+*/
   REPEAT_MENU,
   REPEAT_POPUP,
   REPEAT_PAGE,
@@ -47,6 +49,6 @@ extern FvwmWindow *repeat_last_fvwm_window;
 */
 
 void repeat_function(F_CMD_ARGS);
-void update_last_string(char **pdest, char **pdest2, char *src, Bool no_store);
+Bool set_repeat_data(void *data, repeat_type type);
 
 #endif /* _REPEAT_ */

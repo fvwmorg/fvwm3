@@ -1,6 +1,6 @@
 # This file is copied to a new users FVWM_USERDIR by form "FormFvwmSetup.".
 # This file contains the commands fvwm2 reads while starting.
-# 
+#
 
 EdgeResistance 250 10
 EdgeScroll 100 100
@@ -18,37 +18,37 @@ MenuStyle * Font -adobe-times-bold-r-*-*-14-*-*-*-*-*-*-*
 ColormapFocus FollowsMouse
 
 # default Styles:
-Style "*"           BorderWidth 7, HandleWidth 7
-Style "*"           Icon unknown1.xpm, Color lightgrey/dimgrey
-Style "*"           MWMFunctions, MWMDecor, HintOverride
-Style "*"           DecorateTransient, NoPPosition
-Style "*"           IconBox 0 -10 -280 -1
-Style "*"           FocusFollowsMouse
-Style "*"           RandomPlacement, SmartPlacement
+Style *           BorderWidth 7, HandleWidth 7
+Style *           Icon unknown1.xpm, Color lightgrey/dimgrey
+Style *           MWMFunctions, MWMDecor, HintOverride
+Style *           DecorateTransient, NoPPosition
+Style *           IconBox 0 -10 -280 -1
+Style *           FocusFollowsMouse
+Style *           RandomPlacement, SmartPlacement
 
 # Styles for various Fvwm modules:
-Style "Fvwm*"       NoTitle,  Sticky, WindowListSkip
-Style "Fvwm*"       BorderWidth 2, CirculateSkipIcon, CirculateSkip
-Style "FvwmPager"   StaysOnTop
-Style "FvwmBanner"  StaysOnTop
-Style "FvwmButtons" Icon toolbox.xpm, ClickToFocus
+Style Fvwm*       NoTitle,  Sticky, WindowListSkip
+Style Fvwm*       BorderWidth 2, CirculateSkipIcon, CirculateSkip
+Style FvwmPager   StaysOnTop
+Style FvwmBanner  StaysOnTop
+Style FvwmButtons Icon toolbox.xpm, ClickToFocus
 
 # Styles for your common terminal emulator programs.
 # xterms and rxvts in a separate icon box:
-Style "XTerm"       Icon xterm.xpm, SloppyFocus, IconBox -70 1 -1 -140
-Style "rxvt"        Icon term.xpm, SloppyFocus, IconBox -70 1 -1 -140
-Style "rxvt"        MWMBorder, MWMButtons
+Style XTerm       Icon xterm.xpm, SloppyFocus, IconBox -70 1 -1 -140
+Style rxvt        Icon term.xpm, SloppyFocus, IconBox -70 1 -1 -140
+Style rxvt        MWMBorder, MWMButtons
 
 # Styles for various common programs:
-Style "*lock"       NoTitle, NoHandles, Sticky, WindowListSkip, ClickToFocus
-Style "xbiff"       NoTitle, Sticky, WindowListSkip, ClickToFocus
-Style "xcalc"       Icon xcalc.xpm, NoButton 2,RandomPlacement,ClickToFocus
-Style "xmh"         Icon mail1.xpm, NoIconTitle,StickyIcon
-Style "xmh"         RandomPlacement, NoButton 2
-Style "xman"        Icon xman.xpm, RandomPlacement, ClickToFocus
-Style "xmag"        Icon mag_glass.xpm, RandomPlacement, ClickToFocus
-Style "xgraph"      Icon graphs.xpm, RandomPlacement, ClickToFocus
-Style "xmosaic"     Color Green/Yellow, ClickToFocus
+Style *lock       NoTitle, NoHandles, Sticky, WindowListSkip, ClickToFocus
+Style xbiff       NoTitle, Sticky, WindowListSkip, ClickToFocus
+Style xcalc       Icon xcalc.xpm, NoButton 2,RandomPlacement,ClickToFocus
+Style xmh         Icon mail1.xpm, NoIconTitle,StickyIcon
+Style xmh         RandomPlacement, NoButton 2
+Style xman        Icon xman.xpm, RandomPlacement, ClickToFocus
+Style xmag        Icon mag_glass.xpm, RandomPlacement, ClickToFocus
+Style xgraph      Icon graphs.xpm, RandomPlacement, ClickToFocus
+Style xmosaic     Color Green/Yellow, ClickToFocus
 
 
 # some simple default key bindings:
@@ -75,15 +75,15 @@ Mouse 2 FST     A       Menu MenuFvwmWindowOps2 Nop
 Mouse 3 TSIF    A       RaiseLower
 
 ######################## Initialization Functions ############################
-AddToFunc InitFunction    "I" Module FvwmButtons
-+                         "I" exec xsetroot -mod 2 2 -fg \#554055 -bg \#705070
+AddToFunc InitFunction    I Module FvwmButtons
++                         I exec xsetroot -mod 2 2 -fg \#554055 -bg \#705070
 
-AddToFunc RestartFunction "I" Module FvwmButtons
-+                         "I" exec xsetroot -mod 2 2 -fg \#554055 -bg \#705070
+AddToFunc RestartFunction I Module FvwmButtons
++                         I exec xsetroot -mod 2 2 -fg \#554055 -bg \#705070
 
 
 ######################## Menus ###################
-DestroyMenu MenuFvwmRoot 
+DestroyMenu MenuFvwmRoot
 AddToMenu MenuFvwmRoot  "Root Menu"             Title
 +                       "&1. XTerm"             Exec exec xterm
 +                       "&2. Rxvt"              Exec exec rxvt
@@ -114,7 +114,7 @@ AddToMenu MenuFvwmUtilities     "MenuFvwmUtilities" Title
 +                       ""              Nop
 +                       "&L. XLock"     Exec exec xlock -mode random
 +                       ""              Nop
-+                       "&D. Reset X defaults" Exec xrdb -load $HOME/.Xdefaults 
++                       "&D. Reset X defaults" Exec xrdb -load $HOME/.Xdefaults
 
 DestroyMenu MenuFvwmConfig
 AddToMenu MenuFvwmConfig "Fvwm Config Ops" Title
@@ -137,24 +137,24 @@ AddToMenu MenuFvwmConfig "Fvwm Config Ops" Title
 # things.  Here is the "common" part:
 DestroyFunc FuncFvwmWindowCommon
 AddToFunc FuncFvwmWindowCommon
-+ "I" AddToMenu $0 "&Move"              Move
-+ "I" AddToMenu $0 "&Resize"            Resize
-+ "I" AddToMenu $0 "R&aise"             Raise           
-+ "I" AddToMenu $0 "&Lower"             Lower           
-+ "I" AddToMenu $0 "(De)&Iconify"       Iconify         
-+ "I" AddToMenu $0 "(Un)&Stick"         Stick           
-+ "I" AddToMenu $0 "(Un)Ma&ximize"      Maximize
-+ "I" AddToMenu $0 ""                   Nop             
-+ "I" AddToMenu $0 "&Delete"            Delete  
-+ "I" AddToMenu $0 "&Close"             Close
-+ "I" AddToMenu $0 "Destroy"            Destroy
-+ "I" AddToMenu $0 ""                   Nop
++ I AddToMenu $0 &Move              Move
++ I AddToMenu $0 &Resize            Resize
++ I AddToMenu $0 R&aise             Raise
++ I AddToMenu $0 &Lower             Lower
++ I AddToMenu $0 (De)&Iconify       Iconify
++ I AddToMenu $0 (Un)&Stick         Stick
++ I AddToMenu $0 (Un)Ma&ximize      Maximize
++ I AddToMenu $0 ""                 Nop
++ I AddToMenu $0 &Delete            Delete
++ I AddToMenu $0 &Close             Close
++ I AddToMenu $0 Destroy            Destroy
++ I AddToMenu $0 ""                 Nop
 
 # First windowops menu, bound to:
 # mouse 2 on root
 # Root menu
 DestroyMenu MenuFvwmWindowOps
-AddToMenu MenuFvwmWindowOps     "Window Ops"    Title           
+AddToMenu MenuFvwmWindowOps     "Window Ops"    Title
 FuncFvwmWindowCommon MenuFvwmWindowOps
 +                       "Re&fresh Window" RefreshWindow
 
@@ -164,26 +164,26 @@ FuncFvwmWindowCommon MenuFvwmWindowOps
 DestroyMenu MenuFvwmWindowOps2
 AddToMenu MenuFvwmWindowOps2
 FuncFvwmWindowCommon MenuFvwmWindowOps2
-+                       "Scroll&Bar"    Module FvwmScroll 2 2   
-+                       "&Print"        FuncFvwmPrint
++                       Scroll&Bar       Module FvwmScroll 2 2
++                       &Print           FuncFvwmPrint
 +                       "Print Re&verse" FuncFvwmPrintReverse
 
 # 3 different ways to log on, take your pick:
 DestroyFunc FuncFvwmRloginXterm
 AddToFunc FuncFvwmRloginXterm \
-  "I" Exec xterm -name $0 -title "$USER @ $0" -e rlogin $0
+  I Exec xterm -name $0 -title "$USER @ $0" -e rlogin $0
 DestroyFunc FuncFvwmRloginRxvt
 AddToFunc FuncFvwmRloginRxvt \
-  "I" Exec rxvt -name $0 -n $0 -title "$USER@$0" -e rlogin $0
+  I Exec rxvt -name $0 -n $0 -title $USER@$0 -e rlogin $0
 DestroyFunc FuncFvwmRloginRshRxvt
 AddToFunc FuncFvwmRloginRshRxvt \
-  "I" Exec Exec rsh $0 rxvt -display $HOSTDISPLAY
+  I Exec Exec rsh $0 rxvt -display $HOSTDISPLAY
 
 # be sure to fill these in with your correct machine names:
 DestroyMenu MenuFvwmLogins
-AddToMenu MenuFvwmLogins "&dopey" FuncFvwmRloginXterm dopey
-+                       "&snoopy" FuncFvwmRloginXterm snoopy
-+                       "s&ignal" Exec rxterm signal
+AddToMenu MenuFvwmLogins &dopey FuncFvwmRloginXterm dopey
++                       &snoopy FuncFvwmRloginXterm snoopy
++                       s&ignal Exec rxterm signal
 
 DestroyMenu MenuFvwmModules
 AddToMenu MenuFvwmModules "Fvwm Modules"        Title
@@ -225,65 +225,65 @@ AddToMenu MenuFvwmForms "&Q. QuitVerify" Module FvwmForm FormFvwmQuitVerify.
 
 # Configure and start using an iconbox on the fly
 DestroyFunc FuncFvwmConfigureIconBox
-AddToFunc FuncFvwmConfigureIconBox "I" module FvwmIconBox
-+                       "I" Style     "*"  NoIcon
-+                       "I" Recapture
+AddToFunc FuncFvwmConfigureIconBox I module FvwmIconBox
++                       I Style     *  NoIcon
++                       I Recapture
 
 DestroyMenu MenuFvwmQuitVerify
-AddToMenu MenuFvwmQuitVerify "Really Quit Fvwm?" Title  
-+ "&Q. Yes, Really Quit" Quit   
-+ ""                     Nop    
+AddToMenu MenuFvwmQuitVerify "Really Quit Fvwm?" Title
++ "&Q. Yes, Really Quit" Quit
++ ""                     Nop
 + "&R. Restart Fvwm2"    Restart fvwm2
-+ ""                     Nop    
++ ""                     Nop
 + "&T. Start twm"        Restart twm
 + "&C. Start ctwm"       Restart ctwm
 + "&2. Start tvtwm"      Restart tvtwm
 + "&V. Start vtwm"       Restart vtwm
 + "&M. Start mwm"        Restart mwm
 + "&O. Start olwm"       Restart /usr/openwin/bin/olwm
-+ ""                     Nop    
++ ""                     Nop
 + "&X. Just an Xterm"    Restart xterm
-+ ""                     Nop    
-+ "&N. No, Don't Quit"   Nop    
++ ""                     Nop
++ "&N. No, Don't Quit"   Nop
 
 ######################## Sample Functions ##########################
 
 DestroyFunc FuncFvwmMailXmh
-AddToFunc FuncFvwmMailXmh  "I" Next [$0] Iconify -1
-+                          "I" Next [$0] Focus
-+                          "I" None [$0] Exec $0 $1
+AddToFunc FuncFvwmMailXmh  I Next [$0] Iconify -1
++                          I Next [$0] Focus
++                          I None [$0] Exec $0 $1
 
 DestroyFunc FuncFvwmMoveOrRaise
-AddToFunc FuncFvwmMoveOrRaise   "I" Raise
-+                               "M" Move
-+                               "D" Lower
+AddToFunc FuncFvwmMoveOrRaise   I Raise
++                               M Move
++                               D Lower
 
 DestroyFunc FuncFvwmMaximize
-AddToFunc FuncFvwmMaximize      "M" Maximize     0 100
-+                               "C" Maximize     0 80
-+                               "D" Maximize     100 100
+AddToFunc FuncFvwmMaximize      M Maximize     0 100
++                               C Maximize     0 80
++                               D Maximize     100 100
 
 DestroyFunc FuncFvwmMoveOrIconify
-AddToFunc FuncFvwmMoveOrIconify "I" Raise
-+                               "M" Move
-+                               "D" Iconify
+AddToFunc FuncFvwmMoveOrIconify I Raise
++                               M Move
++                               D Iconify
 
 DestroyFunc FuncFvwmResizeOrRaise
-AddToFunc FuncFvwmResizeOrRaise "I" Raise
-+                               "M" Resize
-+                               "D" Lower
+AddToFunc FuncFvwmResizeOrRaise I Raise
++                               M Resize
++                               D Lower
 
 DestroyFunc FuncFvwmPrint
-AddToFunc FuncFvwmPrint         "I" Raise
-+                               "I" Exec xdpr -id $w
+AddToFunc FuncFvwmPrint         I Raise
++                               I Exec xdpr -id $w
 
 DestroyFunc FuncFvwmPrintReverse
-AddToFunc FuncFvwmPrintReverse  "I" Raise
-+                               "I" Exec xdpr 1/2 -h -rv -id $w
+AddToFunc FuncFvwmPrintReverse  I Raise
++                               I Exec xdpr 1/2 -h -rv -id $w
 
 DestroyFunc FuncFvwmFocusPolicyChange
-AddToFunc FuncFvwmFocusPolicyChange "I" Style "*" $0
-+                            "I" Recapture
+AddToFunc FuncFvwmFocusPolicyChange I Style * $0
++                            I Recapture
 
 # Read config files for modules:
 read ConfigFvwmBacker
@@ -295,5 +295,5 @@ read ConfigFvwmPager
 read ConfigFvwmScroll
 read ConfigFvwmTaskBar
 read ConfigFvwmWinList
-AddToFunc "InitFunction" "I" Module FvwmAnimate
-AddToFunc "RestartFunction" "I" Module FvwmAnimate
+AddToFunc "InitFunction" I Module FvwmAnimate
+AddToFunc "RestartFunction" I Module FvwmAnimate
