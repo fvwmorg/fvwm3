@@ -804,6 +804,8 @@ static void ParseButton(button_info **uberb,char *s)
       "id",
       "hovericon",
       "hovertitle",
+      "pressicon",
+      "presstitle",
       NULL
     };
     s = trimleft(s);
@@ -943,7 +945,7 @@ static void ParseButton(button_info **uberb,char *s)
 	}
 	else
 	{
-	  fprintf(stderr,"%s: Missing icon argument\n",MyName);
+	  fprintf(stderr,"%s: Missing Icon argument\n",MyName);
 	  if(t)free(t);
 	}
 	break;
@@ -1253,14 +1255,14 @@ static void ParseButton(button_info **uberb,char *s)
 
 	/* ---------------------------- HoverIcon ------------------------- */
 	case 21: /* HoverIcon */
-		t=seekright(&s);
-		if(t && *t && (t[0] != '-' || t[1] != 0))
+		t = seekright(&s);
+		if (t && *t && (t[0] != '-' || t[1] != 0))
 		{
 			if (b->flags & b_Swallow)
 			{
 				fprintf(stderr,"%s: a button can not have a "
-					"hover icon and a swallowed window at "
-					"the same time. Ignoring hover icon.",
+					"HoverIcon and a swallowed window at "
+					"the same time. Ignoring HoverIcon.",
 					MyName);
 			}
 			else
@@ -1273,12 +1275,10 @@ static void ParseButton(button_info **uberb,char *s)
 		}
 		else
 		{
-			fprintf(stderr,"%s: Missing hover icon argument\n",
+			fprintf(stderr,"%s: Missing HoverIcon argument\n",
 				MyName);
-			if(t)
-			{
+			if (t)
 				free(t);
-			}
 		}
 		break;
 
@@ -1294,22 +1294,78 @@ static void ParseButton(button_info **uberb,char *s)
 		if(t && *t && (t[0] != '-' || t[1] != 0))
 		{
 			if (b->hoverTitle)
-			{
 				free(b->hoverTitle);
-			}
 			b->hoverTitle = t;
 #ifdef DEBUG_PARSER
-			fprintf(stderr,"PARSE: HoverTitle \"%s\"\n", b->hoverTitle);
+			fprintf(stderr,"PARSE: HoverTitle \"%s\"\n",
+				b->hoverTitle);
 #endif
 			b->flags |= b_HoverTitle;
 		}
 		else
 		{
-			fprintf(stderr,"%s: Missing HoverTitle argument\n",MyName);
+			fprintf(stderr,"%s: Missing HoverTitle argument\n",
+					MyName);
 			if (t)
-			{
 				free(t);
+		}
+		break;
+
+	/* ------------------------- PressIcon ------------------------- */
+	case 23: /* PressIcon */
+		t = seekright(&s);
+		if (t && *t && (t[0] != '-' || t[1] != 0))
+		{
+			if (b->flags & b_Swallow)
+			{
+				fprintf(stderr,"%s: a button can not have a "
+					"PressIcon and a swallowed window at "
+					"the same time. Ignoring PressIcon.",
+					MyName);
 			}
+			else
+			{
+				if (b->press_icon_file)
+					free(b->press_icon_file);
+				b->press_icon_file = t;
+				b->flags |= b_PressIcon;
+			}
+		}
+		else
+		{
+			fprintf(stderr,"%s: Missing PressIcon argument\n",
+				MyName);
+			if (t)
+				free(t);
+		}
+		break;
+
+	/* ------------------------- PressTitle ------------------------- */
+	case 24: /* PressTitle */
+		s = trimleft(s);
+		if (*s=='(')
+		{
+			fprintf(stderr,"%s: justification not allowed for "
+				"PressTitle.\n", MyName);
+		}
+		t = seekright(&s);
+		if (t && *t && (t[0] != '-' || t[1] != 0))
+		{
+			if (b->pressTitle)
+				free(b->pressTitle);
+			b->pressTitle = t;
+#ifdef DEBUG_PARSER
+			fprintf(stderr,"PARSE: PressTitle \"%s\"\n",
+				b->pressTitle);
+#endif
+			b->flags |= b_PressTitle;
+		}
+		else
+		{
+			fprintf(stderr,"%s: Missing PressTitle argument\n",
+				MyName);
+			if (t)
+				free(t);
 		}
 		break;
 
@@ -1433,6 +1489,7 @@ static void ParseConfigLine(button_info **ubb,char *s)
     "boxsize",
     "colorset",
     "hovercolorset",
+    "presscolorset",
     NULL
   };
   int i,j,k;
@@ -1542,6 +1599,20 @@ static void ParseConfigLine(button_info **ubb,char *s)
     else
     {
       ub->c->flags &= ~b_HoverColorset;
+    }
+    break;
+
+  case 14: /* PressColorset */
+    i = sscanf(s, "%d", &j);
+    if (i > 0)
+    {
+      ub->c->pressColorset = j;
+      ub->c->flags |= b_PressColorset;
+      AllocColorset(j);
+    }
+    else
+    {
+      ub->c->flags &= ~b_PressColorset;
     }
     break;
 

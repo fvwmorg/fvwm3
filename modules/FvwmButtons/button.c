@@ -299,9 +299,9 @@ Pixel buttonShadow(button_info *b)
 int buttonColorset(button_info *b)
 {
   if (b == HoverButton && UberButton->c->flags & b_HoverColorset)
-  {
     return UberButton->c->hoverColorset;
-  }
+  if (b == CurrentButton && UberButton->c->flags & b_PressColorset)
+    return UberButton->c->pressColorset;
 
   if (b->flags & b_Colorset)
     return b->colorset;

@@ -527,6 +527,15 @@ void RedrawButton(button_info *b, int draw, XEvent *pev)
 						&Colorset[UberButton->c->hoverColorset],
 						Pdepth, NormalGC);
 				}
+				else if (b == CurrentButton &&
+					UberButton->c->flags & b_PressColorset)
+				{
+					SetRectangleBackground(Dpy, MyWindow,
+						clip.x, clip.y, clip.width,
+						clip.height,
+						&Colorset[UberButton->c->pressColorset],
+						Pdepth, NormalGC);
+				}
 				else
 				{
 					XFillRectangle(Dpy, MyWindow, NormalGC,
@@ -560,13 +569,22 @@ void RedrawButton(button_info *b, int draw, XEvent *pev)
 						&Colorset[UberButton->c->hoverColorset],
 						Pdepth, NormalGC);
 				}
+				else if (b == CurrentButton &&
+					UberButton->c->flags & b_PressColorset)
+				{
+					SetRectangleBackground(Dpy, MyWindow,
+						clip.x, clip.y, clip.width,
+						clip.height,
+						&Colorset[UberButton->c->pressColorset],
+						Pdepth, NormalGC);
+				}
 			}
 		}
 	}
 
 	/* ------------------------------------------------------------------ */
 
-	if (cleaned && (b->flags & (b_Title|b_HoverTitle)))
+	if (cleaned && (b->flags & (b_Title|b_HoverTitle|b_PressTitle)))
 	{
 		DrawTitle(b,MyWindow,NormalGC,pev,False);
 	}
@@ -697,6 +715,16 @@ void DrawTitle(
 			iconFlag = b_HoverIcon;
 		}
 	}
+	else if (b == CurrentButton)
+	{
+		/* If no PressIcon is specified, we use Icon (if there is
+		   one). */
+		if (b->flags & b_PressIcon)
+		{
+			pic = b->pressicon;
+			iconFlag = b_PressIcon;
+		}
+	}
 
 	BH = buttonHeight(b);
 
@@ -705,20 +733,17 @@ void DrawTitle(
 	/* ------------------------------------------------------------------ */
 
 	/* If this is the current hover button but no explicit HoverTitle was
-	   specified, use the Title (if there is one). */
+	   specified, use the Title (if there is one).
+	   Similarly for PressTitle. */
 	if (b == HoverButton && b->flags & b_HoverTitle)
-	{
 		s = b->hoverTitle;
-	}
+	else if (b == CurrentButton && b->flags & b_PressTitle)
+		s = b->pressTitle;
 	else if (b->flags & b_Title)
-	{
 		s = b->title;
-	}
 
 	if (!s || !Ffont)
-	{
 		return;
-	}
 
 	cset = buttonColorset(b);
 	gcm = 0;

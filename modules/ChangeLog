@@ -1,4 +1,16 @@
-2004-07010  Scott Smedley  <scottie7@tpg.com.au>
+2004-07-11  Scott Smedley  <scottie7@tpg.com.au>
+
+	* FvwmButtons/FvwmButtons.1:
+	* FvwmButtons/FvwmButtons.c:
+	* FvwmButtons/FvwmButtons.h:
+	* FvwmButtons/button.c:
+	* FvwmButtons/draw.c:
+	* FvwmButtons/icons.c:
+	* FvwmButtons/parse.c:
+	More FvwmButtons eye candy: PressColorset, PressIcon & PressTitle options.
+	Don't utilise Hover options when button is selected.
+
+2004-07-10  Scott Smedley  <scottie7@tpg.com.au>
 
 	* FvwmButtons/FvwmButtons.1:
 	* FvwmButtons/FvwmButtons.c:

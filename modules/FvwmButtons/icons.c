@@ -64,8 +64,8 @@
  * Combines icon shape masks after a resize
  *
  */
-Bool GetIconPosition(button_info *b, unsigned long iconFlag, int *r_x,
-	int *r_y, int *r_w, int *r_h)
+Bool GetIconPosition(button_info *b, unsigned long iconFlag,
+	FvwmPicture *pic, int *r_x, int *r_y, int *r_w, int *r_h)
 {
 #ifdef NO_ICONS
 	return False;
@@ -75,23 +75,19 @@ Bool GetIconPosition(button_info *b, unsigned long iconFlag, int *r_x,
 	int framew,xpad,ypad;
 	FlocaleFont *Ffont;
 	int BW,BH;
-	FvwmPicture *pic = b->icon;
 	Bool has_title = (b->flags & b_Title ? True : False);
 
 	if (iconFlag & b_HoverIcon)
 	{
-		/* If no HoverIcon is specified, we use Icon (if there is
-		   one). */
-		if (b->flags & b_HoverIcon)
-		{
-			pic = b->hovericon;
-		}
 		/* If no HoverTitle is specified, we use Title (if there is
 		   one). */
 		if (b->flags & b_HoverTitle)
-		{
 			has_title = True;
-		}
+	}
+	else if (iconFlag & b_PressIcon)
+	{
+		if (b->flags & b_PressTitle)
+			has_title = True;
 	}
 
 	buttonInfo(b,&x,&y,&xpad,&ypad,&framew);
@@ -155,17 +151,23 @@ void DrawForegroundIcon(button_info *b, XEvent *pev)
 	int cset;
 	XRectangle clip;
 	FvwmRenderAttributes fra;
-	unsigned long iconFlag = b_Icon;
-	unsigned long flag = (b == HoverButton ? b_HoverIcon : b_Icon);
+	unsigned long flag = b_Icon;
 
 	FvwmPicture *pic = b->icon;
-	if (b == HoverButton && b->flags & b_HoverIcon)
+	if (b == HoverButton)
 	{
-		iconFlag = b_HoverIcon;
-		pic = b->hovericon;
+		flag = b_HoverIcon;
+		if (b->flags & b_HoverIcon)
+			pic = b->hovericon;
+	}
+	else if (b == CurrentButton)
+	{
+		flag = b_PressIcon;
+		if (b->flags & b_PressIcon)
+			pic = b->pressicon;
 	}
 
-	if (!GetIconPosition(b, flag, &x,&y,&w,&h))
+	if (!GetIconPosition(b, flag, pic, &x,&y,&w,&h))
 	{
 		return;
 	}

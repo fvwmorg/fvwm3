@@ -122,6 +122,10 @@ Tells the module to use colorset \fIcolorset\fP for the background
 color/image and/or title color of a button when the mouse is hovering
 above a button.
 
+.IP "*FvwmButtons: PressColorset \fIcolorset\fP"
+Tells the module to use colorset \fIcolorset\fP for the background
+color/image and/or title color of a button when it is pressed.
+
 .IP "*FvwmButtons: Columns \fIcolumns\fP"
 Specifies the number of columns of buttons to be created. If
 unspecified, the number of columns is set to the number of buttons
@@ -354,6 +358,11 @@ The name of an image file, containing an alternative icon to display
 on the button when the mouse is hovering above the button. If no
 HoverIcon is specified, the image specified by Icon is displayed
 (if there is one).
+
+.IP "PressIcon \fIfilename\fP"
+The name of an image file, containing an alternative icon to display
+on the button when the button is pressed. If no PressIcon is specified,
+the image specified by Icon is displayed (if there is one).
 
 .IP "Id \fIid\fP"
 The id to be used to identify this button.
@@ -618,6 +627,11 @@ or "Right" option, you can get a look similar to fvwm's menus.
 Specifies the title to be written on the button when the mouse is
 hovering above the button. If no HoverTitle is specified, the text
 specified by Title is displayed (if there is any).
+
+.IP "PressTitle \fIname\fP"
+Specifies the title to be written on the button when the button is
+pressed. If no PressTitle is specified, the text specified by Title
+is displayed (if there is any).
 
 .IP "Legacy fields [\fItitle icon command\fP]"
 These fields are kept for compatibility with previous versions of

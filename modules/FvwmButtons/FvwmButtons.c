@@ -1098,7 +1098,7 @@ void Loop(void)
 			redraw_relief = True;
 		}
 
-		if (b != HoverButton)
+		if (b != HoverButton && CurrentButton == NULL)
 		{
 			if (HoverButton)
 			{
@@ -1135,7 +1135,7 @@ void Loop(void)
 			}
 			if (CurrentButton)
 			{
-				RedrawButton(b, DRAW_RELIEF, NULL);
+				RedrawButton(b, DRAW_FORCE, NULL);
 			}
 		}
 		break;
@@ -1150,7 +1150,7 @@ void Loop(void)
 	{
 	  b = CurrentButton;
 	  CurrentButton = 0;
-	  RedrawButton(b, DRAW_RELIEF, NULL);
+	  RedrawButton(b, DRAW_FORCE, NULL);
 	  break;
 	}
 	if (Event.xbutton.state & DEFAULT_ALL_BUTTONS_MASK)
@@ -1183,7 +1183,17 @@ void Loop(void)
 	  CurrentButton=NULL;
 	  break;
 	}
-	RedrawButton(b, DRAW_RELIEF, NULL);
+
+	/* Undraw HoverButton (if there is one). */
+	if (HoverButton)
+	{
+	  /* $b & $HoverButton are always the same button. */
+	  button_info *tmp = HoverButton;
+	  HoverButton = NULL;
+	  RedrawButton(tmp, DRAW_FORCE, NULL);
+	}
+	else
+	  RedrawButton(b, DRAW_FORCE, NULL);
 	if (!act)
 	{
 	  break;
@@ -1211,7 +1221,7 @@ void Loop(void)
 	if (CurrentButton == NULL || !is_pointer_in_current_button)
 	{
 		if (CurrentButton)
-			RedrawButton(CurrentButton, DRAW_RELIEF, NULL);
+			RedrawButton(CurrentButton, DRAW_FORCE, NULL);
 
 		CurrentButton = NULL;
 		break;
@@ -1230,6 +1240,16 @@ void Loop(void)
 	    Event.xbutton.y, &x, &y, &dummy);
 	}
 	b = select_button(UberButton, x, y);
+	if (b->flags & (b_HoverIcon | b_HoverTitle) ||
+		UberButton->c->flags & b_HoverColorset)
+	{
+		if (Event.xbutton.x >= 0 && Event.xbutton.x < Width &&
+			Event.xbutton.y >= 0 && Event.xbutton.y < Height)
+		{
+			HoverButton = b;
+			RedrawButton(b, DRAW_FORCE, NULL);
+		}
+	}
 	act = GetButtonAction(b,Event.xbutton.button);
 	if (b && !act && (b->flags & b_Panel))
 	{
@@ -1337,7 +1357,7 @@ void Loop(void)
 	b = CurrentButton;
 	CurrentButton=NULL;
 	if (b)
-	  RedrawButton(b, DRAW_RELIEF, NULL);
+	  RedrawButton(b, DRAW_FORCE, NULL);
 	break;
 
       case ClientMessage:
@@ -1556,7 +1576,7 @@ int LoadIconFile(const char *s, FvwmPicture **p, int cset)
 **/
 void RecursiveLoadData(button_info *b,int *maxx,int *maxy)
 {
-  int i, x=0, y=0, ix, iy, tx, ty, hix, hiy, htx, hty;
+  int i, x=0, y=0, ix, iy, tx, ty, hix, hiy, htx, hty, pix, piy, ptx, pty;
   FlocaleFont *Ffont;
 
   if (!b)
@@ -1723,10 +1743,12 @@ void RecursiveLoadData(button_info *b,int *maxx,int *maxy)
      $tx & $ty are dimensions of Title
      $hix & $hiy are dimensions of HoverIcon
      $htx & $hty are dimensions of HoverTitle
+     $pix & $piy are dimensions of PressIcon
+     $ptx & $pty are dimensions of PressTitle
 
      Note that if No HoverIcon is specified, Icon is displayed during hover.
-     Similarly for HoverTitle. */
-  ix = iy = tx = ty = hix = hiy = htx = hty = 0;
+     Similarly for HoverTitle, PressIcon & PressTitle. */
+  ix = iy = tx = ty = hix = hiy = htx = hty = pix = piy = ptx = pty = 0;
 
   /* Load the icon */
   if(b->flags&b_Icon && LoadIconFile(b->icon_file,&b->icon, buttonColorset(b)))
@@ -1738,7 +1760,7 @@ void RecursiveLoadData(button_info *b,int *maxx,int *maxy)
     iy = b->icon->height;
   }
   else
-    b->flags&=~b_Icon;
+    b->flags &= ~b_Icon;
 
   /* load the hover icon. */
   if (b->flags & b_HoverIcon &&
@@ -1755,10 +1777,28 @@ void RecursiveLoadData(button_info *b,int *maxx,int *maxy)
   {
     hix = ix;
     hiy = iy;
-    b->flags&=~b_HoverIcon;
+    b->flags &= ~b_HoverIcon;
   }
 
+  /* load the press icon. */
+  if (b->flags & b_PressIcon &&
+      LoadIconFile(b->press_icon_file, &b->pressicon, buttonColorset(b)))
+  {
+#ifdef DEBUG_LOADDATA
+    fprintf(stderr,", press icon \"%s\"", b->press_icon_file);
+#endif
 
+    pix = b->pressicon->width;
+    piy = b->pressicon->height;
+  }
+  else
+  {
+    pix = ix;
+    piy = iy;
+    b->flags &= ~b_PressIcon;
+  }
+
+  /* calculate Title dimensions. */
   if(b->flags&b_Title && (Ffont = buttonFont(b)))
   {
 #ifdef DEBUG_LOADDATA
@@ -1771,11 +1811,12 @@ void RecursiveLoadData(button_info *b,int *maxx,int *maxy)
     }
     else
     {
-      tx = FlocaleTextWidth(Ffont,b->title,strlen(b->title));
+      tx = FlocaleTextWidth(Ffont, b->title, strlen(b->title));
       ty = Ffont->height;
     }
   }
 
+  /* calculate HoverTitle dimensions. */
   if (b->flags & b_HoverTitle && (Ffont = buttonFont(b)))
   {
 #ifdef DEBUG_LOADDATA
@@ -1789,7 +1830,7 @@ void RecursiveLoadData(button_info *b,int *maxx,int *maxy)
     }
     else
     {
-      htx = FlocaleTextWidth(Ffont,b->hoverTitle,strlen(b->hoverTitle));
+      htx = FlocaleTextWidth(Ffont, b->hoverTitle, strlen(b->hoverTitle));
       hty = Ffont->height;
     }
   }
@@ -1797,6 +1838,30 @@ void RecursiveLoadData(button_info *b,int *maxx,int *maxy)
   {
     htx = tx;
     hty = ty;
+  }
+
+  /* calculate PressTitle dimensions. */
+  if (b->flags & b_PressTitle && (Ffont = buttonFont(b)))
+  {
+#ifdef DEBUG_LOADDATA
+    fprintf(stderr,", title \"%s\"",b->title);
+#endif
+    if (buttonJustify(b) & b_Horizontal)
+    {
+      ptx = buttonXPad(b) + FlocaleTextWidth(Ffont, b->pressTitle,
+	      strlen(b->pressTitle));
+      pty = Ffont->height;
+    }
+    else
+    {
+      ptx = FlocaleTextWidth(Ffont, b->pressTitle, strlen(b->pressTitle));
+      pty = Ffont->height;
+    }
+  }
+  else
+  {
+    ptx = tx;
+    pty = ty;
   }
 
   x += max(max(ix, tx), max(hix, htx));
@@ -2596,7 +2661,7 @@ void process_message(unsigned long type,unsigned long *body)
 	    ub=UberButton;
 	    while(NextButton(&ub,&b,&button,1))
 	    {
-		    RedrawButton(b, DRAW_RELIEF, NULL);
+		    RedrawButton(b, DRAW_FORCE, NULL);
 	    }
     }
     break;
