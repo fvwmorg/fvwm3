@@ -1,3 +1,9 @@
+2003-01-04  Jason Weber  <baboon@imonk.com>
+
+	* FvwmProxy/FvwmProxy.c:
+	* FvwmProxy/FvwmProxy.1:
+	added ShowToggle command to Show/Hide to the opposite of current state
+
 2003-01-03  Mikhael Goikhman  <migo@homemail.com>
 
 	* FvwmPager/FvwmPager.c (list_new_page):

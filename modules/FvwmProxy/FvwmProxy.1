@@ -131,6 +131,9 @@ the Select Action is call on the window that the proxy represents.
 The default action includes raising the window and
 warping the mouse to a position over that window.
 
+.IP "SendToModule FvwmProxy ShowToggle"
+If shown, hide.  If hidden, show.
+
 .IP "SendToModule FvwmProxy Abort"
 Deactivate all proxy windows.
 This differs from the Hide command in that no action is taken
@@ -179,6 +182,13 @@ To have the proxies immediately pop up when you hold the Alt key, add
 .nf
 .sp
 Key Meta_L      A   N   SendToModule    FvwmProxy   Show
+.sp
+.fi
+If that's too intrusive, you can assign Alt-Esc to switch the proxies
+on and off by adding
+.nf
+.sp
+Key Escape      A   M   SendToModule    FvwmProxy   ShowToggle
 .sp
 .fi
 Some platforms have problems where general Alt key combinations becoming

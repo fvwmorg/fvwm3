@@ -1223,6 +1223,13 @@ static void ProcessMessage(FvwmPacket* packet)
 		{
 			SelectProxy();
 		}
+		else if(StrEquals(token, "ShowToggle"))
+		{
+			if(are_windows_shown)
+				SelectProxy();
+			else
+				StartProxies();
+		}
 		else if(StrEquals(token, "Abort"))
 		{
 			AbortProxies(True);
