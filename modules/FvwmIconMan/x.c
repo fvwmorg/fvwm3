@@ -191,7 +191,7 @@ void xevent_loop (void)
   Button *b;
   static int flag = 0;
   WinManager *man;
-  Bool do_redraw = False;
+  Bool force_redraw = False;
 
   if (flag == 0) {
     flag = 1;
@@ -310,7 +310,7 @@ fprintf(stderr,"removed last ConfigureNotify; new CN: x = %d, y = %d, w = %d, h 
 	  man->geometry.rows = 1;
 	man->geometry.cols =
 	  (man->buttons.num_windows - 1) / man->geometry.rows + 1;
-	do_redraw = 1;
+	force_redraw = 1;
       }
       if ( man->geometry.width != theEvent.xconfigure.width ||
            man->geometry.height != theEvent.xconfigure.height) {
@@ -337,15 +337,15 @@ fprintf(stderr,"removed last ConfigureNotify; new CN: x = %d, y = %d, w = %d, h 
 	    XSetFillStyle(theDisplay, man->backContext[DEFAULT], FillSolid);
 	  }
         }
-	do_redraw = 1;
+	force_redraw = 1;
       }
 
-      if (do_redraw)
-      {
-	set_manager_width (man, theEvent.xconfigure.width);
-	ConsoleDebug (X11, "\tboxwidth = %d\n", man->geometry.boxwidth);
+      set_manager_width (man, theEvent.xconfigure.width);
+      ConsoleDebug (X11, "\tboxwidth = %d\n", man->geometry.boxwidth);
+      if (force_redraw)
 	force_manager_redraw(man);
-      }
+      else
+	draw_manager (man);
 
 #if 0
       set_manager_width (man, theEvent.xconfigure.width);
