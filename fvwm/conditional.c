@@ -739,7 +739,6 @@ Bool MatchesConditionMask(FvwmWindow *fw, WindowConditionMask *mask)
 	}
 
 	/* desk and page matching */
-/*!!!*/fprintf(stderr,"MCM %s\n", fw->visible_name);
 	is_on_desk = 1;
 	if (mask->my_flags.do_check_desk ||
 	    mask->my_flags.do_check_desk_and_page ||
