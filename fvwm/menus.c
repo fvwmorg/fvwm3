@@ -3050,6 +3050,7 @@ static void paint_item(MenuRoot *mr, MenuItem *mi, FvwmWindow *fw,
       MST_MENU_ACTIVE_GC(mr) : MST_MENU_GC(mr);
     if (MST_DO_HILIGHT(mr) &&
 	!MST_HAS_ACTIVE_FORE(mr) &&
+	!MST_HAS_ACTIVE_CSET(mr) &&
 	is_item_selected)
     {
       /* Use a lighter color for highlighted windows menu items if the
@@ -5979,12 +5980,16 @@ static void NewMenuStyle(F_CMD_ARGS)
       break;
     case 47: /* ActiveColorset */
       if (GetIntegerArguments(args, NULL, val, 1) == 0 || *val < 0)
+      {
 	ST_HAS_ACTIVE_CSET(tmpms) = 0;
+        ST_DO_HILIGHT(tmpms) = 0;
+      }
       else
       {
 	ST_HAS_ACTIVE_CSET(tmpms) = 1;
 	ST_CSET_ACTIVE(tmpms) = *val;
 	AllocColorset(*val);
+        ST_DO_HILIGHT(tmpms) = 1;
       }
       has_gc_changed = True;
       break;

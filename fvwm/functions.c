@@ -636,6 +636,7 @@ static cfunc_action_type CheckActionType(
   XEvent old_event;
   extern Time lastTimestamp;
 
+fprintf(stderr,"cat entered...\n");
   xcurrent = x;
   ycurrent = y;
   t0 = lastTimestamp;
@@ -647,7 +648,7 @@ static cfunc_action_type CheckActionType(
     if (!(x - xcurrent < dist && xcurrent - x < dist &&
 	  y - ycurrent < dist && ycurrent - y < dist))
     {
-      return CF_MOTION;
+      return (is_button_pressed) ? CF_MOTION : CF_TIMEOUT;
     }
 
     usleep(20000);
@@ -662,14 +663,15 @@ static cfunc_action_type CheckActionType(
 	return CF_CLICK;
       case MotionNotify:
 	if (d->xmotion.state &
-	    (Button1Mask|Button2Mask|Button3Mask|Button4Mask|Button5Mask))
+	    (Button1Mask|Button2Mask|Button3Mask|Button4Mask|Button5Mask) ||
+            !is_button_pressed)
 	{
 	  xcurrent = d->xmotion.x_root;
 	  ycurrent = d->xmotion.y_root;
 	}
-	else
+        else
 	{
-	  return (is_button_pressed) ? CF_CLICK : CF_TIMEOUT;
+	  return CF_CLICK;
 	}
 	break;
       case ButtonPress:
@@ -1380,11 +1382,10 @@ static void execute_complex_function(F_CMD_ARGS, Bool *desperate,
 	  {
 	  case CF_CLICK:
 	  case CF_HOLD:
+	  case CF_MOTION:
 	    type = CF_DOUBLE_CLICK;
 	    ev = &d;
 	    break;
-	  case CF_MOTION:
-	    ev = &d;
 	  case CF_TIMEOUT:
 	    type = CF_CLICK;
 	    break;
