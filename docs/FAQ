@@ -1029,8 +1029,15 @@ A: People are always requesting or suggestion new features (many of
 
    So if you have a suggestion (or a patch), please think of a way to
    make it as small and generic as possible if you feel it belongs in
-   the main module.  Also, take a look in the TODO list and see if it
-   isn't already in there.
+   the main module. Please have a look at the enhancements that are
+   listed in our bug tracking system (see Q5.3).
+
+   If you plan to make a patch, please contact the fvwm-workers mailing
+   list first. From time to time we are changing the code in a very
+   disruptive way and if you create a patch to a version before such
+   changes were made we will all have a hard time to integrate the
+   patch. Most of the time we will ask you to update the patch for the
+   current code anyway.
 
    Bear in mind that we make no guarantees that we'll add any requested
    feature or apply any submitted patches to the official version, but
