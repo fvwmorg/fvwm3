@@ -120,7 +120,7 @@ const char *get_current_read_dir(void)
  * Read and execute each line from stream.
  **/
 void run_command_stream(
-	FILE *f, const exec_context_t *exc)
+	fvwm_cond_func_rc *cond_rc, FILE *f, const exec_context_t *exc)
 {
 	char *tline;
 	char line[1024];
@@ -158,7 +158,7 @@ void run_command_stream(
 				"Module switch %d, about to exec: '%s'",
 			exc->m.modnum, tline);
 		}
-		execute_function(NULL, exc, tline, 0);
+		execute_function(cond_rc, exc, tline, 0);
 		tline = fgets(line, (sizeof line) - 1, f);
 	}
 
@@ -236,7 +236,7 @@ int run_command_file(
 	{
 		return FALSE;
 	}
-	run_command_stream(f, exc);
+	run_command_stream(NULL, f, exc);
 	fclose(f);
 	pop_read_file();
 
@@ -351,7 +351,7 @@ void CMD_PipeRead(F_CMD_ARGS)
 	}
 	free(command);
 
-	run_command_stream(f, exc);
+	run_command_stream(cond_rc,f, exc);
 	pclose(f);
 	cursor_control(False);
 

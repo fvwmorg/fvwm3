@@ -14,8 +14,9 @@ extern const char *get_current_read_dir(void);
  *
  * Parameters eventp, fw, context, and Module supply the context
  * for executing the commands.
+ * fvwm_cond_func_rc is passed thru incase piperead is running in a function.
  **/
-void run_command_stream(FILE *f, const exec_context_t *exc);
+void run_command_stream(fvwm_cond_func_rc *cond_rc, FILE *f, const exec_context_t *exc);
 
 
 /**
