@@ -479,6 +479,10 @@ void menustyle_update(MenuStyle *ms)
 		return;
 	}
 	ST_IS_UPDATED(ms) = 1;
+	if (ST_USING_DEFAULT_FONT(ms))
+	{
+		ST_PSTDFONT(ms) = Scr.DefaultFont;
+	}
 	/* calculate colors based on foreground */
 	if (!ST_HAS_ACTIVE_FORE(ms))
 	{
