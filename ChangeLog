@@ -10,7 +10,8 @@
 	handle spaces propertly after DestroyModuleConfig with a new syntax
 
 	* libs/Picture.c (GetSimpleColor):
-	try to make "Cannot Parse Color " error message more meaningful
+	* libs/Graphics.c (AllocLinearGradient):
+	make "Cannot parse color " error message more meaningful
 
 2000-11-05  Dan Espen  <dane@mk.telcordia.com>
 

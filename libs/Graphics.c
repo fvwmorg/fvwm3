@@ -226,12 +226,12 @@ Pixel *AllocLinearGradient(char *s_from, char *s_to, int npixels,
   }
   if (!s_from || !XParseColor(Pdpy, Pcmap, s_from, &from))
   {
-    fprintf(stderr, "Cannot parse color %s\n", s_from ? s_from : "<blank>");
+    fprintf(stderr, "Cannot parse color \"%s\"\n", s_from ? s_from : "<blank>");
     return NULL;
   }
   if (!s_to || !XParseColor(Pdpy, Pcmap, s_to, &to))
   {
-    fprintf(stderr, "Cannot parse color %s\n", s_to ? s_to : "<blank>");
+    fprintf(stderr, "Cannot parse color \"%s\"\n", s_to ? s_to : "<blank>");
     return NULL;
   }
   /* divisor must not be zero, hence this calculation */
