@@ -3,16 +3,20 @@ _+_A HREF="#2.2.4"_-_2.2.4_+_/A_-_.
 
 Changes in beta release 2.3.29 (not released yet)
 
+* New configure option --disable-package-subdirs, see INSTALL.fvwm for info.
+
 * New option "None" to the IconBox style.
 
 Changes in beta release 2.3.28 (2001-01-25)
+
+* Renamed configure option --enable-kanji to --enable-multibyte.
 
 * Security fix related to .fvwm2rc being searched in the current directory
   when $HOME is not set.
 
 * New menu styles PopdownImmediately, PopdownDelayed and PopdownDelay.
 
-* New command CopyMenuStyle
+* New command CopyMenuStyle.
 
 * Replaced Dump/SmartPlacement, Active/RandomPlacement, SmartPlacement/Off
   style by ManualPlacement / CascadePlacement / MinOverlapPlacement /
@@ -22,7 +26,7 @@ Changes in beta release 2.3.28 (2001-01-25)
 * Replaced ActivePlacementHonorsStartsOnPage with
   ManualPlacementHonorsStartsOnPage and
   ActivePlacementHonorsStartsOnPageOff with
-  ManualPlacementHonorsStartsOnPageOff
+  ManualPlacementHonorsStartsOnPageOff.
 
 * We have two "clever" placement algorithms: MinOverlapPlacement (the old one)
   and MinOverlapPercentPlacement.

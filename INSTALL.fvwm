@@ -172,6 +172,7 @@ may be found:
 
 Only one version of the --with-foo-library flag may be specified.
 
+
 Optional libraries used by FvwmGtk
 ==================================
 
@@ -189,7 +190,7 @@ Run './configure --help' for more information about configure options.
 
 
 Shared Libraries in Non-standard Places
----------------------------------------
+=======================================
 
 Note that at this time, autoconf and FVWM don't handle systems which
 require a runtime library path separate from the link path very
@@ -227,26 +228,51 @@ the version of the switch that you are likely to use is the one
 listed.
 
 
+  --disable-package-subdirs     don't create subdirs for modules and data
+
+Usually FVWM is installed to common places, like /usr or /usr/local/X11,
+in this case it is essential to create the package subdirectories for
+modules and data files.  Hovewer, if FVWM is installed to its own prefix,
+like /opt/fvwm or /opt/fvwm-2.4, it's possible to disable them.
+
+With --enable-package-subdirs (default):
+  modules are installed into:    $libexecdir/fvwm/$VERSION
+  data files are installed into: $datadir/fvwm
+With --disable-package-subdirs:
+  modules are installed into:    $libexecdir
+  data files are installed into: $datadir
+
+This option is good if you need a full control over exact directory names:
+  $ ./configure --prefix=/tmp/fvwm --disable-package-subdirs \
+      --libexecdir='${prefix}/modules' --datadir='${prefix}/data'
+
+If you switch this option between builds, you need "make clean"!
+
+
   --enable-debug-msgs		enable debugging messages
 
 If you would like to see lots of debug messages from FVWM, for
 debugging purposes, enable this option.
 
-  --enable-multibyte            multibyte character support (does not work yet)
+
+  --enable-multibyte            multibyte character support (experimental)
 
 FVWM has limited support for multibyte charsets.  It is fully experimental
 and does not work in all places.  If you have access to a multibyte system
 and want to extend this support, contact the fvwm-workers@fvwm.org list.
+
 
   --enable-move-bug-workaround  workaround for flickering windows during move
 
 Try this option only if you have problems during window move.
 Most of users should not enable this.
 
+
   --disable-modality		disable modal dialogs for applications
 
 Totally disables motif applications ability to have modal dialogs.
 Use with care.
+
 
   --disable-shape		disable shape extensions
 
@@ -270,6 +296,7 @@ that the currently running X server supports it.
 
 The following configure options are either removed or will be removed soon:
 
+
   --disable-mini-icons		disable MiniIcon style option
 
 Disables the "MiniIcon" Style option to specify a small pixmap which
@@ -277,12 +304,14 @@ can be used as one of the title-bar buttons, shown in window list,
 utilized by modules, etc.  Requires pixmap-buttons to be defined (see
 below).
 
+
   --disable-multistyle		disable stacked button styles
 
 Disables stacked button styles (also for the title-bar if
 extended-titlestyle is enabled).  There is a slight memory penalty for
 each additional style. See the man page entries for AddButtonStyle and
 AddTitleStyle for usage information.
+
 
   --disable-usedecor		disable UseDecor style option
 
