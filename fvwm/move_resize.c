@@ -487,7 +487,7 @@ void resize_geometry_window(void)
 
   Scr.SizeStringWidth =
     XTextWidth(Scr.DefaultFont.font, GEOMETRY_WINDOW_STRING,
-	       sizeof(GEOMETRY_WINDOW_STRING));
+	       sizeof(GEOMETRY_WINDOW_STRING) - 1);
   w = Scr.SizeStringWidth + 2 * GEOMETRY_WINDOW_BW;
   h = Scr.DefaultFont.height + 2 * GEOMETRY_WINDOW_BW;
   if (w != sizew_g.width || h != sizew_g.height)
