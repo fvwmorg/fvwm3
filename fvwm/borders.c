@@ -48,6 +48,7 @@
 #include "icons.h"
 #include "module_interface.h"
 #include "colorset.h"
+#include "libs/Picture.h"
 #include "libs/PictureGraphics.h"
 #include "add_window.h"
 #include "frame.h"
@@ -207,22 +208,32 @@ static void border_render_into_pixmap(
 	GC gc, FvwmPicture *src, Pixmap dest, int x_start, int y_start,
 	int width, int height, Bool stretch)
 {
-	Pixmap pm;
+	FvwmPicture *pm = NULL;
+	Bool do_repeat = False;
 
 	if (stretch)
 	{
-		pm = CreateStretchPixmap(
-			dpy, src->picture, src->width, src->height, src->depth,
-			width, height, gc);
+		pm = PGraphicsCreateStretchPicture(
+			dpy, Scr.NoFocusWin, src, width, height,
+			gc, Scr.MonoGC, None);
 	}
 	else
 	{
-		pm = CreateTiledPixmap(
-			dpy, src->picture, src->width, src->height, width,
-			height, src->depth, gc);
+		pm = src;
+		do_repeat = True;
 	}
+	PGraphicsRenderPicture(
+		dpy, Scr.NoFocusWin, pm, 0, dest, gc, Scr.MonoGC, None,
+		0, 0, pm->width, pm->height,
+		x_start, y_start, width, height, do_repeat);
+	if (pm != src)
+	{
+		PDestroyFvwmPicture(dpy, pm);
+	}
+#if 0
 	XCopyArea(dpy, pm, dest, gc, 0, 0, width, height, x_start, y_start);
 	XFreePixmap(dpy, pm);
+#endif
 
 	return;
 }
@@ -1367,7 +1378,8 @@ static void border_fill_pixmap_background(
 			bg->pixmap.alpha, bg->pixmap.depth, &(bg->pixmap.fra),
 			dest_pix, Scr.TileGC, Scr.MonoGC, None,
 			0, 0, bg->pixmap.size.width, bg->pixmap.size.height,
-			pixmap_g->x, pixmap_g->y, 0, 0, False);
+			pixmap_g->x, pixmap_g->y, pixmap_g->width - pixmap_g->x,
+			pixmap_g->height - pixmap_g->y, False);
 	}
 	else
 	{

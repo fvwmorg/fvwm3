@@ -2413,6 +2413,9 @@ static void do_picture_window(
 {
 	int iconX;
 	int iconY;
+	int src_x = 0;
+	int src_y = 0;
+	int dest_w, dest_h;
 	int cs;
 	FvwmRenderAttributes fra;
 
@@ -2420,13 +2423,17 @@ static void do_picture_window(
 	{
 		if (t->mini_icon.picture && w != None)
 		{
+			dest_w = t->mini_icon.width;
+			dest_h = t->mini_icon.height;
 			if (width > t->mini_icon.width)
 			{
 				iconX = (width - t->mini_icon.width) / 2;
 			}
 			else if (width < t->mini_icon.width)
 			{
-				iconX = -((t->mini_icon.width - width) / 2);
+				iconX = 0;
+				src_x = (t->mini_icon.width - width) / 2;
+				dest_w = width;
 			}
 			else
 			{
@@ -2438,7 +2445,9 @@ static void do_picture_window(
 			}
 			else if (height < t->mini_icon.height)
 			{
-				iconY = -((t->mini_icon.height - height) / 2);
+				iconY = 0;
+				src_y = (t->mini_icon.height - height) / 2;
+				dest_h = height;
 			}
 			else
 			{
@@ -2467,9 +2476,10 @@ static void do_picture_window(
 			}
 			PGraphicsRenderPicture(
 				dpy, w, &t->mini_icon, &fra, w,
-				Scr.MiniIconGC, None, None, 0, 0,
-				t->mini_icon.width, t->mini_icon.height,
-				iconX, iconY, 0, 0, False);
+				Scr.MiniIconGC, None, None, src_x, src_y,
+				t->mini_icon.width - src_x,
+				t->mini_icon.height - src_y,
+				iconX, iconY, dest_w, dest_h, False);
 		}
 	}
 }

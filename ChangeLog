@@ -1,5 +1,19 @@
 2002-08-30  olicha  <olivier.chapuis@free.fr>
 
+	* fvwm/borders.c (border_render_into_pixmap):
+	* libs/PictureGraphics.c (PGraphicsCreateStretchPicture):
+	* libs/PictureGraphics.h:
+	* libs/Graphics.c (CreateStretchPixmap):
+	(CreateStretchYPixmap): 
+	(CreateStretchXPixmap):
+	Progress with masks in multipixmap title
+
+	* libs/PictureGraphics.c (PCopyArea):
+	(PTileRectangle):
+	(PCreateRenderPixmap):
+	* fvwm/borders.c (border_fill_pixmap_background): 
+	Some drawing fixes
+
 	* fvwm/icons.c (DrawIconWindow):
 	* fvwm/ewmh_icons.c (EWMH_SetIconFromWMIcon):
 	Fixed the shape mask of ewmh icons and icons with some alpha

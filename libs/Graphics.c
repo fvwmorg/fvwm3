@@ -114,6 +114,7 @@ Pixmap CreateStretchXPixmap(
 {
 	int i;
 	Pixmap pixmap;
+	GC my_gc = None;
 
 	if (src_width < 0 || src_height < 0 || dest_width < 0)
 	{
@@ -124,13 +125,20 @@ Pixmap CreateStretchXPixmap(
 	{
 		return None;
 	}
+	if (gc == None)
+	{
+		my_gc = fvwmlib_XCreateGC(dpy, pixmap, 0, 0);
+	}
 	for (i = 0; i < dest_width; i++)
 	{
 		XCopyArea(
-			dpy, src, pixmap, gc, (i * src_width) / dest_width, 0,
-			1, src_height, i, 0);
+			dpy, src, pixmap, (gc == None)? my_gc:gc,
+			(i * src_width) / dest_width, 0, 1, src_height, i, 0);
 	}
-
+	if (my_gc)
+	{
+		XFreeGC(dpy, my_gc);
+	}
 	return pixmap;
 }
 
@@ -144,6 +152,7 @@ Pixmap CreateStretchYPixmap(
 {
 	int i;
 	Pixmap pixmap;
+	GC my_gc = None;
 
 	if (src_height < 0 || src_depth < 0 || dest_height < 0)
 	{
@@ -154,13 +163,20 @@ Pixmap CreateStretchYPixmap(
 	{
 		return None;
 	}
+	if (gc == None)
+	{
+		my_gc = fvwmlib_XCreateGC(dpy, pixmap, 0, 0);
+	}
 	for (i = 0; i < dest_height; i++)
 	{
 		XCopyArea(
-			dpy, src, pixmap, gc, 0, (i * src_height) / dest_height,
-			src_width, 1, 0, i);
+			dpy, src, pixmap, (gc == None)? my_gc:gc,
+			0, (i * src_height) / dest_height, src_width, 1, 0, i);
 	}
-
+	if (my_gc)
+	{
+		XFreeGC(dpy, my_gc);
+	}
 	return pixmap;
 }
 
@@ -174,23 +190,35 @@ Pixmap CreateStretchPixmap(
 {
 	Pixmap pixmap = None;
 	Pixmap temp_pixmap;
+	GC my_gc = None;
 
 	if (src_width < 0 || src_height < 0 || src_depth < 0 || dest_width < 0)
 	{
 		return None;
 	}
-
+	if (gc == None)
+	{
+		my_gc = fvwmlib_XCreateGC(dpy, src, 0, 0);
+	}
 	temp_pixmap = CreateStretchXPixmap(
-		dpy, src, src_width, src_height, src_depth, dest_width, gc);
+		dpy, src, src_width, src_height, src_depth, dest_width,
+		(gc == None)? my_gc:gc);
 	if (temp_pixmap == None)
 	{
+		if (my_gc)
+		{
+			XFreeGC(dpy, my_gc);
+		}
 		return None;
 	}
 	pixmap = CreateStretchYPixmap(
 		dpy, temp_pixmap, dest_width, src_height, src_depth,
 		dest_height, gc);
 	XFreePixmap(dpy, temp_pixmap);
-
+	if (my_gc)
+	{
+		XFreeGC(dpy, my_gc);
+	}
 	return pixmap;
 }
 

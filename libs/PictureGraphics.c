@@ -26,6 +26,7 @@
 
 #include <fvwmlib.h>
 #include "PictureBase.h"
+#include "Picture.h"
 #include "Colorset.h"
 #include "PictureImageLoader.h"
 #include "FRenderInit.h"
@@ -68,8 +69,8 @@ void PCopyArea(Display *dpy, Pixmap pixmap, Pixmap mask, int depth,
 		my_gc = fvwmlib_XCreateGC(dpy, d, 0, NULL);
 	}
 	gcm = GCClipMask | GCClipXOrigin | GCClipYOrigin;
-	gcv.clip_x_origin = dest_x;
-	gcv.clip_y_origin = dest_y;
+	gcv.clip_x_origin = dest_x - src_x;
+	gcv.clip_y_origin = dest_y - src_y;
 	if (depth == Pdepth)
 	{
 		gcv.clip_mask = mask;
@@ -83,7 +84,7 @@ void PCopyArea(Display *dpy, Pixmap pixmap, Pixmap mask, int depth,
 		}
 		XCopyArea(dpy, pixmap, d,
 			  (my_gc != None)? my_gc:gc,
-			  src_x, src_y, src_w,src_h,
+			  src_x, src_y, src_w, src_h,
 			  dest_x, dest_y);
 	}
 	else
@@ -151,7 +152,8 @@ void PTileRectangle(Display *dpy, Window win, Pixmap pixmap, Pixmap mask,
 		gcv.ts_x_origin = src_x;
 		gcv.ts_y_origin = src_y;
 		gcv.fill_style = FillTiled;
-		gcm = GCFillStyle | GCClipXOrigin | GCClipYOrigin | GCTile;
+		gcm = GCFillStyle | GCTileStipXOrigin | GCTileStipYOrigin |
+			GCTile;
 		if (mono_gc != None)
 		{
 			XChangeGC(dpy, mono_gc, gcm, &gcv);
@@ -176,10 +178,12 @@ void PTileRectangle(Display *dpy, Window win, Pixmap pixmap, Pixmap mask,
 	gcv.clip_mask = tile_mask;
 	gcv.fill_style = FillTiled;
 	gcv.tile = pixmap;
-	gcv.ts_x_origin = src_x;
-	gcv.ts_y_origin = src_y;
+	gcv.ts_x_origin = dest_x;
+	gcv.ts_y_origin = dest_y;
+	gcv.clip_x_origin = dest_x;
+	gcv.clip_y_origin = dest_y;;
 	gcm = GCFillStyle | GCClipMask | GCTile | GCTileStipXOrigin |
-		GCTileStipYOrigin;
+		GCTileStipYOrigin | GCClipXOrigin | GCClipYOrigin;
 	if (depth != Pdepth)
 	{
 		Pixmap my_pixmap = None;
@@ -317,6 +321,8 @@ Pixmap PCreateRenderPixmap(
 		mask_im = XGetImage(
 			dpy, mask, src_x, src_y, src_w, src_h, AllPlanes,
 			ZPixmap);
+		if (src_x != 0 || src_y != 0)
+			make_new_mask = True;
 	}
 	if (alpha != None)
 	{
@@ -1047,6 +1053,40 @@ void PGraphicsTileRectangle(
 		dpy, win, pixmap, mask, alpha, depth, 0, d, gc, mono_gc, None,
 		src_x, src_y, dest_w, dest_h, dest_x, dest_y, dest_w, dest_h,
 		True);
+}
+
+FvwmPicture *PGraphicsCreateStretchPicture(
+	Display *dpy, Window win, FvwmPicture *src,
+	int dest_width, int dest_height, GC gc, GC mono_gc, GC alpha_gc)
+{
+	Pixmap pixmap = None, mask = None, alpha = None;
+	
+	if (src == NULL || src->picture == None)
+	{
+		return NULL;
+	}
+	pixmap = CreateStretchPixmap(
+		dpy, src->picture, src->width, src->height, src->depth,
+		dest_width, dest_height, gc);
+	if (!pixmap)
+	{
+		return NULL;
+	}
+	if (src->mask)
+	{
+		mask = CreateStretchPixmap(
+			dpy, src->mask, src->width, src->height, 1,
+			dest_width, dest_height, mono_gc);
+	}
+	if (src->alpha)
+	{
+		alpha = CreateStretchPixmap(
+			dpy, src->alpha, src->width, src->height, 8,
+			dest_width, dest_height, alpha_gc);
+	}
+	return PLoadFvwmPictureFromPixmap(
+		dpy, win, NULL, pixmap, mask, alpha,
+		dest_width, dest_height);
 }
 
 /* never tested and used ! */

@@ -115,6 +115,10 @@ void PGraphicsTileRectangle(
 	int src_x, int src_y,  int src_w, int src_h,
 	int dest_x, int dest_y, int dest_w, int dest_h);
 
+FvwmPicture *PGraphicsCreateStretchPicture(
+	Display *dpy, Window win, FvwmPicture *src,
+	int dest_width, int dest_height, GC gc, GC mono_gc, GC alpha_gc);
+
 /* never used ! */
 Pixmap PGraphicsCreateDitherPixmap(
 	Display *dpy, Window win, Drawable src, Pixmap mask, int depth, GC gc,
