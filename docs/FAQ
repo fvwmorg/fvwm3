@@ -102,6 +102,7 @@ INDEX
        46) Menus with gradient backgrounds flicker or are very slow.
        47) How do I get Alt-Tab behaviour like another GUI?
        48) What's the difference between the Focus and FlipFocus commands?
+       49) Why won't the StartIconic style work with {Netscape, etc.}?
 
 ======================================================================
 
@@ -1124,4 +1125,13 @@ A: Both of these commands change the keyboard focus to the target
    you subsequently use the mouse to focus or FlipFocus the order will
    be lost.
 
+----------------------------------------------------------------------
+
+49) Why won't the StartIconic style work with {Netscape, etc.}?
+
+A: The application won't allow it. This has only been observed with
+Netscape. When Netscape starts up, FVWM starts the main window in the
+iconic state. Netscape immediately issues another MapRequest, to which
+the window manager must respond by de-iconifying the window, according
+to the ICCCM rules.
 ----------------------------------------------------------------------
