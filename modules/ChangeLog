@@ -1,5 +1,6 @@
-Sun Mar 28 18:02:16 1999  Steve Robbins  <steve@nyongwa.montreal.qc.ca>
+Sun Mar 28 18:26:11 1999  Steve Robbins  <steve@nyongwa.montreal.qc.ca>
 
+	* FvwmScript/FvwmScript.c: 
 	* FvwmWharf/icons.c: include libs/Picture.h to get prototype of
 	findImageFile.
 

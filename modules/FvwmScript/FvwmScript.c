@@ -5,6 +5,9 @@
  */
 
 #include "types.h"
+#include "libs/fvwmlib.h"
+#include "libs/Picture.h"
+
 
 #ifdef MEMDEBUG			/* For debugging */
 #include <unchecked.h>
