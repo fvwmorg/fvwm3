@@ -1100,7 +1100,7 @@ void mark_transient_subtree(
     /* only work on the given layer */
     start = &Scr.FvwmRoot;
     end = &Scr.FvwmRoot;
-    for (s = Scr.FvwmRoot.stack_next; s != &Scr.FvwmRoot && s->layer <= layer;
+    for (s = Scr.FvwmRoot.stack_next; s != &Scr.FvwmRoot && s->layer >= layer;
 	 s = s->stack_next)
     {
       if (s->layer == layer)

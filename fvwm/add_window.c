@@ -1266,9 +1266,9 @@ FvwmWindow *AddWindow(Window w, FvwmWindow *ReuseWin)
    * reparented, so we'll get a DestroyNotify for it.  We won't have
    * gotten one for anything up to here, however. ******/
   MyXGrabServer(dpy);
-  if(XGetGeometry(dpy, w, &JunkRoot, &JunkX, &JunkY,
-                  &JunkWidth, &JunkHeight,
-                  &JunkBW,  &JunkDepth) == 0)
+  if (XGetGeometry(dpy, w, &JunkRoot, &JunkX, &JunkY,
+                   &JunkWidth, &JunkHeight,
+                   &JunkBW,  &JunkDepth) == 0)
   {
     free((char *)tmp_win);
     MyXUngrabServer(dpy);
