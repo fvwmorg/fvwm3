@@ -220,18 +220,19 @@ Bool PImageLoadPng(FIMAGE_CMD_ARGS)
 	*depth = Pdepth;
 	*pixmap = XCreatePixmap(dpy, win, w, h, Pdepth);
 	*mask = XCreatePixmap(dpy, win, w, h, 1);
-	if (!(fpa.mask & FPAM_NO_ALPHA) && FRenderGetAlphaDepth())
+	if (alpha && !(fpa.mask & FPAM_NO_ALPHA) && FRenderGetAlphaDepth())
 	{
 		*alpha = XCreatePixmap(dpy, win, w, h, FRenderGetAlphaDepth());
 	}
 	if (!PImageCreatePixmapFromArgbData(
 		dpy, win, data, 0, w, h, *pixmap, *mask,
-		*alpha, &have_alpha, nalloc_pixels, alloc_pixels, no_limit, fpa)
+		(alpha)? *alpha:0,
+		&have_alpha, nalloc_pixels, alloc_pixels, no_limit, fpa)
 	    || *pixmap == None)
 	{
 		if (*pixmap != None)
 			XFreePixmap(dpy, *pixmap);
-		if (*alpha != None)
+		if (alpha && *alpha != None)
 		{
 			XFreePixmap(dpy, *alpha);
 		}
@@ -241,7 +242,7 @@ Bool PImageLoadPng(FIMAGE_CMD_ARGS)
 		free(lines);
 		return False;
 	}
-	if (!have_alpha && *alpha != None)
+	if (!have_alpha && alpha && *alpha != None)
 	{
 		XFreePixmap(dpy, *alpha);
 		*alpha = None;

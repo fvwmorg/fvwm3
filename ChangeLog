@@ -1,3 +1,8 @@
+2003-06-06  olicha  <olivier.chapuis@free.fr>
+
+	* libs/PictureImageLoader.c (PImageLoadPng):
+	Fixed loading of png images if the caller want no alpha
+
 2003-06-04  olicha  <olivier.chapuis@free.fr>
 
 	* libs/Flocale.c (FlocaleEncodeString): 
