@@ -1522,6 +1522,14 @@ FvwmWindow *AddWindow(Window w, FvwmWindow *ReuseWin)
       tmp_win, tmp_win->frame_g.x, tmp_win->frame_g.y,
       tmp_win->frame_g.width, tmp_win->frame_g.height, False);
   }
+  if (!XGetGeometry(dpy, tmp_win->w, &JunkRoot, &JunkX, &JunkY, &JunkWidth,
+		    &JunkHeight, &JunkBW,  &JunkDepth))
+  {
+    /* The window has disappeared somehow.  For some reason we do not always
+     * get a DestroyNotify on the window, so make sure it is destroyed. */
+    destroy_window(tmp_win);
+    tmp_win = NULL;
+  }
 
   return tmp_win;
 }

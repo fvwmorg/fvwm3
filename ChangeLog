@@ -1,3 +1,9 @@
+2001-04-23  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* fvwm/add_window.c (AddWindow):
+	Explicitly destroy a window at the end of the function if the client
+	window does not exist anymore.
+
 2001-04-22  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* fvwm/events.c (HandleEnterNotify):
