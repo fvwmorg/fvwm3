@@ -893,7 +893,7 @@ fprintf(stderr, "cat stats (4): clp: %d (%d/%d/%d/%d/%d)  cev: %d csleep: %d\n",
 /***********************************************************************
  *
  *  Procedure:
- *	ExecuteFunction - execute a fvwm built in function
+ *	execute_function - execute a fvwm built in function
  *
  *  Inputs:
  *	Action	- the action to execute
@@ -945,7 +945,7 @@ void execute_function(exec_func_args_type *efa)
     if (Scr.cur_decor && Scr.cur_decor != &Scr.DefaultDecor)
     {
       fvwm_msg(
-	WARN, "ExecuteFunction",
+	WARN, "execute_function",
 	"Command can not be added to a decor; executing command now: '%s'",
 	efa->action);
     }
@@ -1056,7 +1056,7 @@ void execute_function(exec_func_args_type *efa)
       (!bif || !(bif->flags & FUNC_DECOR)))
   {
     fvwm_msg(
-      ERR, "ExecuteFunction",
+      ERR, "execute_function",
       "Command can not be added to a decor; executing command now: '%s'",
       efa->action);
   }
@@ -1107,7 +1107,7 @@ void execute_function(exec_func_args_type *efa)
 	  -1 && *function != 0)
       {
 	fvwm_msg(
-	  ERR, "ExecuteFunction", "No such command '%s'", function);
+	  ERR, "execute_function", "No such command '%s'", function);
       }
     }
   }
@@ -1387,15 +1387,15 @@ void AddToFunction(FvwmFunction *func, char *action)
   tmp->next_item = NULL;
   tmp->func = func;
   if (func->first_item == NULL)
-    {
-      func->first_item = tmp;
-      func->last_item = tmp;
-    }
+  {
+    func->first_item = tmp;
+    func->last_item = tmp;
+  }
   else
-    {
-      func->last_item->next_item = tmp;
-      func->last_item = tmp;
-    }
+  {
+    func->last_item->next_item = tmp;
+    func->last_item = tmp;
+  }
 
   tmp->condition = condition;
   tmp->action = stripcpy(action);
@@ -1437,42 +1437,48 @@ void DestroyFunction(FvwmFunction *func)
   FunctionItem *fi,*tmp2;
   FvwmFunction *tmp, *prev;
 
-  if(func == NULL)
+  if (func == NULL)
     return;
 
   tmp = Scr.functions;
   prev = NULL;
-  while((tmp != NULL)&&(tmp != func))
-    {
-      prev = tmp;
-      tmp = tmp->next_func;
-    }
-  if(tmp != func)
+  while (tmp && tmp != func)
+  {
+    prev = tmp;
+    tmp = tmp->next_func;
+  }
+  if (tmp != func)
+  {
     return;
+  }
 
   if (func->use_depth != 0)
-    {
-      fvwm_msg(ERR,"DestroyFunction", "Function %s is in use (depth %d)",
-	       func->name, func->use_depth);
-      return;
-    }
+  {
+    fvwm_msg(ERR,"DestroyFunction", "Function %s is in use (depth %d)",
+	     func->name, func->use_depth);
+    return;
+  }
 
-  if(prev == NULL)
+  if (prev == NULL)
+  {
     Scr.functions = func->next_func;
+  }
   else
+  {
     prev->next_func = func->next_func;
+  }
 
   free(func->name);
 
   fi = func->first_item;
   while(fi != NULL)
-    {
-      tmp2 = fi->next_item;
-      if (fi->action != NULL)
-	free(fi->action);
-      free(fi);
-      fi = tmp2;
-    }
+  {
+    tmp2 = fi->next_item;
+    if (fi->action != NULL)
+      free(fi->action);
+    free(fi);
+    fi = tmp2;
+  }
   free(func);
 }
 

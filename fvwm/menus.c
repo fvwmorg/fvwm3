@@ -1602,7 +1602,7 @@ static void MenuInteraction(
 	  /* just ignore the event */
 	  continue;
 	}
-	else if (MI_IS_POPUP(mi) && mrMi == pmp->menu)
+	else if (mi && MI_IS_POPUP(mi) && mrMi == pmp->menu)
 	{
 	  /* post menu - done below */
 	}
@@ -4071,7 +4071,6 @@ Bool DestroyMenu(MenuRoot *mr, Bool do_recreate, Bool is_command_request)
   }
   else
   {
-    //merge_continuation_menus(mr);
     /* free all items */
     mi = MR_FIRST_ITEM(mr);
     while (mi != NULL)
