@@ -64,7 +64,7 @@
  * Combines icon shape masks after a resize
  *
  */
-static Bool GetIconPosition(button_info *b, unsigned long iconFlag,
+Bool GetIconPosition(button_info *b, unsigned long iconFlag,
 	FvwmPicture *pic, int *r_x, int *r_y, int *r_w, int *r_h)
 {
 #ifdef NO_ICONS

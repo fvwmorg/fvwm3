@@ -40,6 +40,7 @@
 #include <ctype.h>
 #include <stdlib.h>
 #include <stdio.h>
+#include <strings.h>	/* strncasecmp() */
 
 #include <X11/Xlib.h>
 #include <X11/Xutil.h>
@@ -50,11 +51,14 @@
 #include "libs/Colorset.h"
 #include "libs/fvwmlib.h"
 #include "libs/Rectangles.h"
+#include "libs/FShape.h"	/* FShapesSupported */
 #include "FvwmButtons.h"
 #include "misc.h" /* ConstrainSize() */
 #include "icons.h" /* ConfigureIconWindow() */
 #include "button.h"
 #include "draw.h"
+
+extern Pixmap shapeMask;
 
 /* ---------------- Functions that design and draw buttons ----------------- */
 
@@ -182,7 +186,7 @@ static int buttonBGColorset(button_info *b)
 	if (b->flags & b_Hangon)
 	{
 		if ((UberButton->c->flags & b_PressColorset) &&
-		    (buttonSwallow(b) & b_UseOld))
+			(buttonSwallow(b) & b_UseOld))
 		{
 			return UberButton->c->pressColorset;
 		}
@@ -193,19 +197,18 @@ static int buttonBGColorset(button_info *b)
 		return UberButton->c->activeColorset;
 	}
 	else if (b == CurrentButton &&
-		 UberButton->c->flags & b_PressColorset)
+		UberButton->c->flags & b_PressColorset)
 	{
 		return UberButton->c->pressColorset;
 	}
+
 	if (b->flags & b_Colorset)
 	{
 		return b->colorset;
 	}
 
 	return -1;
-
 }
-
 
 /**
 *** RedrawButton()
@@ -233,7 +236,6 @@ void RedrawButton(button_info *b, int draw, XEvent *pev)
 	int i,j,k,BH,BW;
 	int f,of,x,y,px,py;
 	int ix,iy,iw,ih;
-	// FlocaleFont *Ffont=buttonFont(b);
 	XGCValues gcv;
 	int rev = 0;
 	int rev_xor = 0;
@@ -246,6 +248,7 @@ void RedrawButton(button_info *b, int draw, XEvent *pev)
 	Bool clean = False;
 	Bool cleaned = False;
 	Bool clear_bg = False;
+	char *title;
 
 	if (b->parent == NULL)
 	{
@@ -486,20 +489,8 @@ void RedrawButton(button_info *b, int draw, XEvent *pev)
 				}
 			}
 		} /* container */
-#if 0
-		else if (UberButton->c->flags & b_TransBack)
-		{
-			/* TODO: fixme, this ain't right -- SS. */
-			fprintf(
-				stderr, "trans back w=%d\n",
-				UberButton->c->width);
-			SetTransparentBackground(
-				UberButton, UberButton->c->width,
-				UberButton->c->height);
-		}
-#endif
-		else if (buttonSwallowCount(b) == 3 &&
-			 (b->flags & b_Swallow) && b->flags&b_Colorset)
+		else if (buttonSwallowCount(b) == 3 && (b->flags & b_Swallow) &&
+			 b->flags&b_Colorset)
 		{
 			/* Set the back color of the buttons for shaped apps
 			 * (olicha 00-03-09) and also for transparent modules */
@@ -525,36 +516,82 @@ void RedrawButton(button_info *b, int draw, XEvent *pev)
 			int cs = buttonBGColorset(b);
 			cleaned = True;
 			XClearArea(Dpy, MyWindow, clip.x,
-				   clip.y, clip.width, clip.height,
-				   False);
+				clip.y, clip.width, clip.height,
+				False);
 			if (cs >= 0)
 			{
-				SetRectangleBackground(
-					Dpy, MyWindow, clip.x, clip.y,
-					clip.width, clip.height, &Colorset[cs],
+				SetRectangleBackground(Dpy, MyWindow,
+					clip.x, clip.y, clip.width,
+					clip.height, &Colorset[cs],
 					Pdepth, NormalGC);
 			}
 			else if (b->flags & b_Back &&
-				 !(UberButton->c->flags & b_Colorset))
+				!(UberButton->c->flags & b_Colorset))
 			{
 				gcv.background = b->bc;
 				XChangeGC(Dpy,NormalGC,GCBackground,
-					  &gcv);
+					&gcv);
 				XFillRectangle(Dpy, MyWindow, NormalGC,
-					       clip.x, clip.y, clip.width,
-					       clip.height);
+					clip.x, clip.y, clip.width,
+					clip.height);
+			}
+
+			/* b_TransBack is set when using "Pixmap none" -
+			   this uses the X11 non-rectangular window shape
+			   extension. Dynamically changing the window
+			   shape (due to ActiveIcon, etc.) can cause an
+			   infinite number of Enter/Leave-Notify events,
+			   so we need to be careful. Currently, to avoid this
+			   we ensure ActiveColorset is specified if
+			   ActiveIcon is used. */
+			if (UberButton->c->flags & b_TransBack &&
+				FShapesSupported)
+			{
+				int w = buttonWidth(b), h = buttonHeight(b);
+				FvwmPicture *icon = buttonIcon(b);
+				XGCValues gcv;
+				GC transGC = fvwmlib_XCreateGC(Dpy, shapeMask,
+					0, &gcv);
+
+				XSetClipMask(Dpy, transGC, None);
+				XSetForeground(Dpy, transGC, 0);
+				XFillRectangle(Dpy, shapeMask, transGC,x,y,w,h);
+				XSetForeground(Dpy, transGC, 1);
+
+				if (!icon || icon->mask == None || cs >= 0)
+				{
+					XFillRectangle(Dpy, shapeMask, transGC,
+						x, y, w, h);
+				}
+				else
+				{
+					int xx, yy, ww, hh;
+					GetIconPosition(b, buttonIconFlag(b),
+						icon, &xx, &yy, &ww, &hh);
+					XCopyArea(Dpy, icon->mask, shapeMask,
+						transGC, 0, 0, icon->width,
+						icon->height, xx, yy);
+				}
+				if (buttonTitle(b))
+				{
+					DrawTitle(b, shapeMask, transGC, NULL,
+						True);
+				}
+				FShapeCombineMask(Dpy, MyWindow, FShapeBounding,
+					0, 0, shapeMask, FShapeSet);
 			}
 		}
 	}
 
-/* ------------------------------------------------------------------ */
+	/* ------------------------------------------------------------------ */
 
-	if (cleaned && (b->flags & (b_Title|b_ActiveTitle|b_PressTitle)))
+	title = buttonTitle(b);
+	if (cleaned && title)
 	{
 		DrawTitle(b,MyWindow,NormalGC,pev,False);
 	}
 
-	if (buttonTitle(b) == NULL && (b->flags & b_Panel) &&
+	if (title == NULL && (b->flags & b_Panel) &&
 	    (b->panel_flags.panel_indicator))
 	{
 		XGCValues gcv;

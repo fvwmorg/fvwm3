@@ -460,148 +460,30 @@ char *GetButtonAction(button_info *b, int n)
 	return act;
 }
 
+Pixmap shapeMask = None;
 /**
 *** SetTransparentBackground()
 *** use the Shape extension to create a transparent background.
-***   Patrice Fortier
+***   Patrice Fortier & others.
 **/
 void SetTransparentBackground(button_info *ub,int w,int h)
 {
-  if (FShapesSupported)
-  {
-    Pixmap pmap_mask;
-    button_info *b;
-    Window root_return;
-    int x_return, y_return;
-    unsigned int width_return, height_return;
-    unsigned int border_width_return;
-    unsigned int depth_return;
-    int number, i;
-    FlocaleFont *Ffont;
-    Region shape_r;
-    static GC trans_gc = NULL;
-
-    pmap_mask = XCreatePixmap(Dpy,MyWindow,w,h,1);
-    if (pmap_mask == None)
-      return;
-    shape_r = XCreateRegion();
-    if (trans_gc == NULL)
-    {
-      XGCValues gcv;
-
-      /* create a GC for doing transparency */
-      trans_gc = fvwmlib_XCreateGC(Dpy,pmap_mask,(unsigned long)0,&gcv);
-      if (trans_gc == NULL)
-	return;
-    }
-    XSetClipMask(Dpy, trans_gc, None);
-    XSetForeground(Dpy, trans_gc, 0);
-    XFillRectangle(Dpy, pmap_mask, trans_gc, 0, 0, w, h);
-    XSetForeground(Dpy, trans_gc, 1);
-
-    /*
-     * if button has an icon, draw a rect with the same size as the icon
-     * (or the mask of the icon),
-     * else draw a rect with the same size as the button.
-     */
-
-    i = -1;
-    while (NextButton(&ub,&b,&i,0))
-    {
-      number=buttonNum(b);
-      if (b->flags&b_Icon &&
-	  XGetGeometry(Dpy,b->IconWin,&root_return,&x_return,&y_return,
-		       &width_return,&height_return,
-		       &border_width_return,&depth_return))
-      {
-	if (b->icon->mask == None)
+	fprintf(stderr, "SetTransparentBackground()\n");
+	if (FShapesSupported)
 	{
-	  XFillRectangle(Dpy,pmap_mask,trans_gc,x_return, y_return,
-			 b->icon->width,b->icon->height);
-	}
-	else
-	{
-	  XCopyArea(Dpy,b->icon->mask,pmap_mask,trans_gc,0,0,
-		    b->icon->width,b->icon->height,x_return,y_return);
-	}
-      }
-      else if (buttonSwallowCount(b) == 3 && (b->flags & b_Swallow))
-      {
-	Window swin = SwallowedWindow(b);
-	XRectangle *r;
-	int count;
-	int ordering;
-	XRectangle s;
-	Bool got_geometry = False;
+		button_info *b;
+		int i = -1;
 
-	if (XGetGeometry(
-	      Dpy, swin, &root_return, &x_return, &y_return, &width_return,
-	      &height_return, &border_width_return, &depth_return))
-	{
-	  got_geometry = True;
-	  s.x = x_return;
-	  s.y = y_return;
-	  s.width = width_return;
-	  s.height = height_return;
-	}
-	else
-	{
-	  s.x = buttonXPos(b, number);
-	  s.y = buttonYPos(b, number);
-	  s.width = buttonWidth(b);
-	  s.height = buttonHeight(b);
-	}
+		if (shapeMask != None)
+			XFreePixmap(Dpy, shapeMask);
+		shapeMask = XCreatePixmap(Dpy, MyWindow, w, h, 1);
 
-	/* get set of shape rectangles - this is all very inefficient, but I do
-	 * not see another way to do it properly */
-	if (got_geometry &&
-	    (r = FShapeGetRectangles(
-	      Dpy, swin, FShapeBounding, &count, &ordering)))
-	{
-	  int i;
-
-	  /* merge the rectangles with the shape region */
-	  for (i = 0; i < count ; i++)
-	  {
-	    r[i].x += s.x;
-	    r[i].y += s.y;
-	    XUnionRectWithRegion(&(r[i]), shape_r, shape_r);
-	  }
-	  XFree(r);
+		while (NextButton(&ub, &b, &i, 0))
+		{
+			RedrawButton(b, DRAW_FORCE, NULL);
+		}
+		XFlush(Dpy);
 	}
-	else
-	{
-	  XUnionRectWithRegion(&s, shape_r, shape_r);
-	  /* suppress compiler warning w/o shape extension */
-	  ordering = 0;
-	}
-      }
-      else
-      {
-	XFillRectangle(Dpy,pmap_mask,trans_gc,buttonXPos(b,number),
-		       buttonYPos(b,number),
-		       buttonWidth(b),buttonHeight(b));
-      }
-
-      /* handle button's title */
-      Ffont=buttonFont(b);
-      if(b->flags&b_Title && Ffont)
-      {
-	if (Ffont->font)
-	  XSetFont(Dpy,trans_gc,Ffont->font->fid);
-	DrawTitle(b,pmap_mask,trans_gc,NULL,True);
-      }
-    }
-    XSetRegion(Dpy, trans_gc, shape_r);
-    XFillRectangle(Dpy, pmap_mask, trans_gc, 0, 0, w, h);
-    FShapeCombineMask(
-      Dpy, MyWindow, FShapeBounding, 0, 0, pmap_mask, FShapeSet);
-    XFreePixmap(Dpy, pmap_mask);
-    XDestroyRegion(shape_r);
-    XFlush(Dpy);
-  }
-
-  return;
 }
 
 /**
@@ -790,6 +672,24 @@ int main(int argc, char **argv)
 
   /* parse module options */
   ParseConfiguration(UberButton);
+
+  /* To avoid an infinite loop of Enter/Leave-Notify events, if the user
+     uses ActiveIcon with "Pixmap none" they MUST specify ActiveColorset. */
+  if (FShapesSupported && (UberButton->c->flags & b_TransBack) &&
+    !(UberButton->c->flags & b_ActiveColorset))
+  {
+    i = -1;
+    ub=UberButton;
+    while (NextButton(&ub, &b, &i, 0))
+    {
+      if (b->flags & (b_ActiveIcon|b_ActiveTitle))
+      {
+        fprintf(stderr, "%s: Must specify ActiveColorset when using ActiveIcon or ActiveTitle with \"Pixmap none\".\n", MyName);
+	exit(0);
+      }
+    }
+  }
+
   /* we can't set the size if it was specified in pixels per button here;
    * delay until after call to RecursiveLoadData. */
   /* parse the geometry string */
@@ -1430,6 +1330,7 @@ void Loop(void)
 
       case MapNotify:
       case UnmapNotify:
+
 	ub=UberButton;
 	button=-1;
 	while(NextButton(&ub,&b,&button,0))
@@ -2236,13 +2137,13 @@ void CreateUberButtonWindow(button_info *ub,int maxx,int maxy)
       Dpy, MyWindow, mysizehints.width, mysizehints.height,
       &Colorset[ub->c->colorset], Pdepth, NormalGC, True);
   }
-  else if (ub->c->flags&b_IconBack && !(ub->c->flags&b_TransBack))
+  else if (ub->c->flags & b_IconBack && !(ub->c->flags & b_TransBack))
   {
     XSetWindowBackgroundPixmap(Dpy,MyWindow,ub->c->backicon->picture);
   }
   else
   {
-    XSetWindowBackground(Dpy,MyWindow,back_pix);
+	XSetWindowBackground(Dpy,MyWindow,back_pix);
   }
 
   free(myclasshints.res_class);
