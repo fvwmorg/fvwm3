@@ -5764,7 +5764,7 @@ slashes ('/').  The last style in these groups is the default.
 .IR BorderColorset ", " HilightBorderColorset ,
 .IR IconTitleColorset ", " HilightIconTitleColorset ,
 .IR IconBackgroundColorset ,
-.IR IconTitleRelief ", " IconBackgroundRelief ", " IconBackgroundPadding , 
+.IR IconTitleRelief ", " IconBackgroundRelief ", " IconBackgroundPadding ,
 .IR Font ,
 .IR IconFont ,
 .IR StartsOnDesk " / " StartsOnPage " / " StartsAnyWhere ,
@@ -6229,7 +6229,7 @@ takes one numeric argument that may be between -50 and +50 pixels and
 defines the thickness of the 3D relief drawn around the icon
 title. With negative values the icon title gets a pressed in look.
 The default is 2 and it is restored if the argument is omitted.
- 
+
 .IR IconBackgroundRelief
 takes one numeric argument that may be between -50 and +50 pixels and
 defines the thickness of the 3D relief drawn around the icon picture
@@ -6704,39 +6704,39 @@ style may screw up window dimensions for some applications.  Don't
 use this style in this case.
 
 .IR Closable
-enables the functions 
-.I Close, 
-.I Delete 
-and 
-.I Destroy 
+enables the functions
+.I Close,
+.I Delete
+and
+.I Destroy
 to be performed on the windows. This is on by default.
-The opposite, 
+The opposite,
 .IR !Closable
 ,inhibits the window to be closed.
 
 .IR Iconifiable
-enables the function 
-.I Iconify 
+enables the function
+.I Iconify
 to be performed on the windows.
 This is on by default.
-The opposite, 
+The opposite,
 .IR !Iconifiable
-,inhibits the window from being iconified. 
+,inhibits the window from being iconified.
 
 .IR Maximizable
-enables the function 
-.I Maximize 
+enables the function
+.I Maximize
 to be performed on the windows.
 This is on by default.
-The opposite, 
+The opposite,
 .IR !Maximizable
 ,inhibits the window from being maximized.
 
 .IR AllowMaximizeFixedSize
-enables the function 
+enables the function
 .I Maximize
 to be performed on windows that are not resizable, unless maximisation
-has been disabled either using the style 
+has been disabled either using the style
 .I Unmaximizable
 or throuth WM hints,
 This on by default.
@@ -9530,7 +9530,7 @@ exists.  Conditions are the same as for
 Returns 1 if no window matches the conditions and 0 otherwise.
 
 The
-.B Pick
+.B None
 command implies the conditions
 .IR CirculateHit ", " CirculateHitIcon " and " CirculateHitShaded .
 They can be turned off by specifying "!CirculateHit"
@@ -9711,7 +9711,7 @@ such menu is bound to window decorations.
 .BI "On [(" condition ")] " command
 Performs
 .I command
-if the all 
+if the all
 .I conditions
 are satisfied.
 The
