@@ -1,5 +1,9 @@
 2000-04-17  Dominik Vogt  <dominik.vogt@gmx.de>
 
+	* configure.in: changed version to 2.3.17
+
+2000-04-17  Dominik Vogt  <dominik.vogt@gmx.de>
+
 	* fvwm/style.c (remove_all_of_style_from_list):
 	fixed a core dump
 	(remove_all_of_style_from_list):
