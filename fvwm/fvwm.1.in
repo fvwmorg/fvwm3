@@ -56,6 +56,12 @@
 .\" arguments. use \f... formatting in that case.  See the lines
 .\" formatted with ".IP".
 .\"  dje 15/June/2001.
+.\" Note:  .IP does not work very well as it sometimes indents
+.\" from the right too.  Instead, begin these paragraphs with
+.\"   .TP
+.\"   .B text
+.\" This even saves the \fB...\fP pairs.
+.\"  dv 19-Jun-2003.
 .\"
 .\" @(#)@PACKAGE@-@VERSION@ @RELDATELONG@
 .de EX		\"Begin example
@@ -2220,10 +2226,11 @@ cannot destroy the default menu style.
 DestroyMenuStyle pixamp1
 .EE
 
-.IP "\fBMenu\fP \fImenu-name\fP \
-\fB[\fP\fIposition\fP\
-\fB] [\fP\fIdouble-click-action\fP\
-\fB]\fP"
+.TP
+.B "Menu \fImenu-name\fP \
+[\fIposition\fP\
+] [\fIdouble-click-action\fP\
+]"
 Causes a previously defined menu to be popped up in a sticky
 manner. That is, if the user invokes the menu with a click action
 instead of a drag action, the menu stays up.  The command
@@ -3413,13 +3420,14 @@ ColormapFocus FollowsFocus
 then the installed colormap is the one for the window that
 currently has the keyboard focus.
 
-.IP "\fBCursorStyle\fP \fIcontext\fP \fB[\fP\fInumber\fP\
-\fB|\fP \fIname\fP \
-\fB|\fP \fIxpm\fP \
-\fB|\fP \fINone\fP \
-\fB|\fP \fITiny\fP \
-\fB[\fP\fIfore back\fP\
-\fB]]\fP"
+.TP
+.B "CursorStyle \fIcontext\fP [\fInumber\fP\
+| \fIname\fP \
+| \fIxpm\fP \
+| \fINone\fP \
+| \fITiny\fP \
+[\fIfore back\fP\
+]]"
 Defines a new cursor for the specified context.  Note that this
 command can not control the shapes an applications uses, for
 example, to indicate that it is busy.  The various contexts are:
@@ -4120,11 +4128,12 @@ Style * Font fontname
 .EE
 instead.
 
-.IP "\fBWindowList [(\fP\fIconditions\fP\
-\fB)] [\fP\fIposition\fP\
-\fB] [\fP\fIoptions\fP\
-\fB] [\fP\fIdouble-click-action\fP\
-\fB]\fP"
+.TP
+.B "WindowList [(\fIconditions\fP\
+)] [\fIposition\fP\
+] [\fIoptions\fP\
+] [\fIdouble-click-action\fP\
+]"
 Generates a pop-up menu (and pops it up) in which the title and
 geometry of each of the windows currently on the desktop are
 shown.
@@ -4194,8 +4203,10 @@ The
 is useful to define a default window if you have bound the window
 list to a key (or button) like this:
 .EX
-# Here we call an existing function, but it may be different
-# See the default WindowListFunc definition earlier in this doc
+# Here we call an existing function, but
+# it may be different.  See the default
+# WindowListFunc definition earlier in this
+# man page.
 AddToFunc SwitchToWindow
 + I WindowListFunc
 
@@ -4434,17 +4445,18 @@ AddToFunc lower-to-bottom
  + I Lower
 .EE
 
-.IP "\fBMove [[\fP\fIw\fP\
-\fB | \fP\fIm\fP\
-\fB]\fP\fIx\fP\
-\fB[\fP\fIp\fP\
-\fB] [\fP\fIw\fP\
-\fB | \fP\fIm\fP\
-\fB]\fP\fIy\fP\
-\fB[\fP\fIp\fP\
-\fB] [\fP\fIWarp\fP\
-\fB]] | [\fP\fIpointer\fP\
-\fB]\fP"
+.TP
+.B "Move [[\fIw\fP\
+ | \fIm\fP\
+]\fIx\fP\
+[\fIp\fP\
+] [\fIw\fP\
+ | \fIm\fP\
+]\fIy\fP\
+[\fIp\fP\
+] [\fIWarp\fP\
+]] | [\fIpointer\fP\
+]"
 Allows the user to move a window.  If called from somewhere in a
 window or its border, then that window is moved.  If called from
 the root window then the user is allowed to select the target
@@ -4544,12 +4556,13 @@ to 3, which is now the default value.  If
 is negative or omitted the default value (which might be increased
 when 16000x9000 pixel displays become affordable) is restored.
 
-.IP "\fBMoveToPage [\fP\fIx\fP\
-\fB[\fP\fIp\fP\
-\fB]\fP \fIy\fP\
-\fB[\fP\fIp\fP\
-\fB]] | [\fIprev\fP\
-\fB]\fP"
+.TP
+.B "MoveToPage [\fIx\fP\
+[\fIp\fP\
+] \fIy\fP\
+[\fIp\fP\
+]] | [\fIprev\
+]"
 Moves the selected window to another page (x,y).  The upper left
 page is (0,0), the upper right is (M,0), where M is one less than
 the current number of horizontal pages specified in the
@@ -4654,15 +4667,16 @@ style is used; see
 .B Style
 command) otherwise it is lowered.
 
-.IP "\fBResize [[\fIframe\fP] \fIwidth\fP \
-\fB[\fP\fIp\fP \
-\fB|\fP \fIc\fP\
-\fB]\fP \fIheight\fP \
-\fB[\fP\fIp\fP \
-\fB|\fP \fIc\fP\
-\fB]] | [\fP\fIbottomright\fP \
-\fB|\fP \fIbr x y\fP\
-\fB]\fP"
+.TP
+.B "Resize [[\fIframe] \fIwidth\fP \
+[\fIp\fP \
+| \fIc\fP\
+] \fIheight\fP \
+[\fIp\fP \
+| \fIc\fP\
+]] | [\fIbottomright\fP \
+| \fIbr x y\fP\
+]"
 Allows for resizing a window.  If called from somewhere in a window
 or its border, then that window is resized.  If called from the
 root window then the user is allowed to select the target window.
@@ -4807,10 +4821,11 @@ motion appear more cartoonish, by briefly moving slightly in the
 opposite direction of the main motion.  The above settings are the
 default.
 
-.IP "\fBSnapAttraction [\fP\fIproximity\fP \
-\fB[\fP\fIbehavior\fP\
-\fB] [\fP\fIScreen\fP\
-\fB]]\fP"
+.TP
+.B "SnapAttraction [\fIproximity\fP \
+[\fIbehavior\fP\
+] [\fIScreen\fP\
+]]"
 If during an interactive move the window or icon comes within
 .I proximity
 pixels of another the window or icon, it is moved to make the
@@ -5051,13 +5066,13 @@ of "False".  Note that this syntax is obsolete, and will be removed
 in the future.
 
 .TP
-.IP "\fBMaximize [\fP\fIflags\fP\
-\fB] [\fP\fIbool\fP\
-\fB] [\fP\fIhorizontal\fP\
-\fB[\fP\fIp\fP\
-\fB]] [\fP\fIvertical\fP \
-\fB[\fP\fIp\fP\
-\fB]]\fP"
+.B "Maximize [\fIflags\fP\
+] [\fIbool\fP\
+] [\fIhorizontal\fP\
+[\fIp\fP\
+]] [\fIvertical\fP \
+[\fIp\fP\
+]]"
 Without its optional arguments (or if the
 .I bool
 bit has the value "toggle")
@@ -5234,7 +5249,8 @@ option of the
 .B Style
 command.  Examples:
 .EX
-Style * WindowShadeShrinks, WindowShadeSteps 20, WindowShadeLazy
+Style * WindowShadeShrinks, \\
+WindowShadeSteps 20, WindowShadeLazy
 Mouse 1 S - WindowShade North
 Mouse 1 S [ WindowShade West
 Mouse 1 S ] WindowShade E
@@ -6068,9 +6084,9 @@ command.
 
 The
 .IR FPSortWindowlistByFocus " and " !FPSortWindowlistByFocus
-styles control if the internal window list is sorted in the order
-the windows were focused or in the order they were created.  The
-latter is the default for
+styles control whether the internal window list is sorted in the
+order the windows were focused or in the order they were created.
+The latter is the default for
 .IR ClickToFocus " and " SloppyFocus .
 
 
@@ -6520,8 +6536,8 @@ Style * IconBox -80 240 -1 -1, \\
         IconBox 1000x70-1-1
 .EE
 A Style command with the IconBox option replaces any icon box
-previously defined for the same style.  Thats why the backslash in
-the previous example is required.
+defined previously by another Style command for the same style.
+Thats why the backslash in the previous example is required.
 
 Note: The geometry for the icon box command takes the additional
 screen specifier "@w" in case a Xinerama setup is used.  This
@@ -7022,19 +7038,22 @@ Style * DumbPlacement, ActivePlacement
   -->
 Style * ManualPlacement
 
-Style * SmartPlacement + RandomPlacement + CleverPlacementOff
+Style * SmartPlacement, \\
+RandomPlacement, CleverPlacementOff
   -->
 Style * TileCascadePlacement
 
-Style * SmartPlacement + ActivePlacement + CleverPlacementOff
+Style * SmartPlacement, \\
+ActivePlacement, CleverPlacementOff
   -->
 Style * TileManualPlacement
 
-Style * SmartPlacement + CleverPlacement
+Style * SmartPlacement, CleverPlacement
   -->
 Style * MinOverlapPlacement
 
-Style * SmartPlacement, ActivePlacement, CleverPlacement
+Style * SmartPlacement, \\
+ActivePlacement, CleverPlacement
   -->
 Style * MinOverlapPercentPlacement
 
@@ -7543,11 +7562,12 @@ Style FvwmPager Icon
 
 .SS OTHER COMMANDS CONTROLLING WINDOW STYLES
 
-.IP "\fBAddButtonStyle\fP \fIbutton\fP \
-\fB[\fP\fIstate\fP\
-\fB] [\fP\fIstyle\fP\
-\fB] [-- [!]\fP \fIflag\fP \
-\fB...]\fP"
+.TP
+.B "AddButtonStyle \fIbutton\fP \
+[\fIstate\fP\
+] [\fIstyle\fP\
+] [-- [!] \fIflag\fP \
+...]"
 
 Adds a button style to
 .IR button .
@@ -7612,10 +7632,11 @@ is used to place additional pixmaps for both "ActiveUp" and
 "ActiveDown" states and a vector button style is drawn on top of
 all state.
 
-.IP "\fBAddTitleStyle [\fP\fIstate\fP\
-\fB] [\fP\fIstyle\fP\
-\fB] [-- [!]\fP \fIflag\fP \
-\fB...]\fP"
+.TP
+.B "AddTitleStyle [\fIstate\fP\
+] [\fIstyle\fP\
+] [-- [!] \fIflag\fP \
+...]"
 Adds a title style to the title-bar.
 .I state
 can be "ActiveUp", "ActiveDown", "InactiveUp" or "InactiveDown",
@@ -7717,10 +7738,11 @@ and now apply the style again:
 Style xterm UseStyle FlatStyle
 .EE
 
-.IP "\fBBorderStyle [\fP\fIstate\fP\
-\fB] [\fP\fIstyle\fP\
-\fB] [-- [!]\fP \fIflag\fP \
-\fB...]\fP"
+.TP
+.B "BorderStyle [\fIstate\fP\
+] [\fIstyle\fP\
+] [-- [!] \fIflag\fP \
+...]"
 Defines a border style for windows.
 .I state
 can be either "Active" or "Inactive".  If
@@ -7792,9 +7814,10 @@ title-bar buttons can inherit the border style with the
 flag (see
 .BR ButtonStyle ).
 
-.IP "\fBButtonState [\fP\fIActiveDown\fP bool\fB]\
- [\fP\fIInactive\fP bool\fB]\
- [\fP\fIInactiveDown\fP bool\fB]\fP"
+.TP
+.B "ButtonState [\fIActiveDown\fP bool]\
+ [\fIInactive\fP bool]\
+ [\fIInactiveDown\fP bool]"
 The
 .B ButtonState
 command controls which states of the window titles and title
@@ -7827,11 +7850,12 @@ is "True"), the pressed titles and title buttons in non-focussed
 windows are drawn using "InactiveUp" or "ActiveUp" states
 depending on the values of the other key words.
 
-.IP "\fBButtonStyle\fP \fIbutton\fP \
-\fB[\fP\fIstate\fP\
-\fB] [\fP\fIstyle\fP\
-\fB] [-- [!]\fP \fIflag\fP \
-\fB...]\fP"
+.TP
+.B "ButtonStyle \fIbutton\fP \
+[\fIstate\fP\
+] [\fIstyle\fP\
+] [-- [!] \fIflag\fP \
+...]"
 Sets the button style for a title-bar button.
 .I button
 is the title-bar button number between 0 and 9, or one of "All",
@@ -8068,10 +8092,12 @@ pages for some examples with screenshots.
 A more complex example of
 .IR Vector :
 .EX
-ButtonStyle 8 Vector 10 45x65@2 45x75@3 20x75@3 20x50@3 \\
-  35x50@3 35x65@1 35x25@1 75x25@1 75x65@0 35x65@0
-ButtonStyle 0 Vector 10 45x65@2 45x75@0 20x75@0 20x50@1 \\
-  45x50@1 45x65@0 75x65@3 75x25@3 35x25@3 35x47@3
+ButtonStyle 8 Vector 10 45x65@2 45x75@3 \\
+  20x75@3 20x50@3 35x50@3 35x65@1 35x25@1 \\
+  75x25@1 75x65@0 35x65@0
+ButtonStyle 0 Vector 10 45x65@2 45x75@0 \\
+  20x75@0 20x50@1 45x50@1 45x65@0 75x65@3 \\
+  75x25@3 35x25@3 35x47@3
 .EE
 The
 .I ?Gradient
@@ -8090,10 +8116,11 @@ button number 4 all different pixmaps.
 .EX
 ButtonStyle 2 Pixmap my_pixmap.xpm
 ButtonStyle 4 \\
-    ActiveUp   (Pixmap activeup.xpm) \\
-    ActiveDown (Pixmap activedown.xpm) \\
-    Inactive   (Pixmap inactiveup.xpm)
-ButtonStyle 4 InactiveDown Pixmap inactivedown.xpm
+  ActiveUp   (Pixmap activeup.xpm) \\
+  ActiveDown (Pixmap activedown.xpm) \\
+  Inactive   (Pixmap inactiveup.xpm)
+ButtonStyle 4 \\
+  InactiveDown Pixmap inactivedown.xpm
 .EE
 The pixmap specification can be given as an absolute or relative
 pathname (see
@@ -8292,10 +8319,11 @@ is Example:
 TitleStyle LeftJustified Height 24
 .EE
 
-.IP "\fBTitleStyle [\fP\fIstate\fP\
-\fB] [\fP\fIstyle\fP\
-\fB] [-- [!]\fP \fIflag\fP \
-\fB...]\fP"
+.TP
+.B "TitleStyle [\fIstate\fP\
+] [\fIstyle\fP\
+] [-- [!] \fIflag\fP \
+...]"
 Sets the style for the title-bar.
 See also
 .BR AddTitleStyle " and " ButtonStyle .
@@ -8478,10 +8506,11 @@ does.
 
 .SS COMMANDS CONTROLLING THE VIRTUAL DESKTOP
 
-.IP "\fBDesk\fP \fIarg1\fP \
-\fB[\fP\fIarg2\fP\
-\fB] [\fP\fImin max\fP\
-\fB]\fP"
+.TP
+.B "Desk \fIarg1\fP \
+[\fIarg2\fP\
+] [\fImin max\fP\
+]"
 This command has been renamed.  Please see
 .B GotoDesk
 command.
@@ -8680,11 +8709,12 @@ or if
 is null.  Note that negative desktops are not supported by the
 ewmh specification.  The default is 4 0.
 
-.IP "\fBGotoDesk\fP \fIprev\fP \
-\fB|\fP \fIarg1\fP \
-\fB[\fP\fIarg2\fP\
-\fB] [\fP\fImin max\fP\
-\fB]\fP"
+.TP
+.B "GotoDesk \fIprev\fP \
+| \fIarg1\fP \
+[\fIarg2\fP\
+] [\fImin max\fP\
+]"
 Switches the current viewport to another desktop (workspace,
 room).
 
@@ -8742,12 +8772,13 @@ commands.  The new desk is
 and the new page is
 .RI ( xpage , ypage ).
 
-.IP "\fBGotoPage\fP \fIprev\fP \
-\fB|\fP \fIx\fP \
-\fB[\fP\fIp\fP\
-\fB]\fP \fIy\fP \
-\fB[\fP\fIp\fP\
-\fB]\fP"
+.TP
+.B "GotoPage \fIprev\fP \
+| \fIx\fP \
+[\fIp\fP\
+] \fIy\fP \
+[\fIp\fP\
+]"
 Moves the desktop viewport to page (x,y).  The upper left page is
 (0,0), the upper right is (M,0), where M is one less than the
 current number of horizontal pages specified in the
@@ -8781,11 +8812,12 @@ GotoPage prev
 GotoPage +2p -1p
 .EE
 
-.IP "\fBScroll\fP \fIhorizonal\fP \
-\fB[\fP\fIp\fP\
-\fB]\fP \fIvertical\fP \
-\fB[\fP\fIp\fP\
-\fB]\fP"
+.TP
+.B "Scroll \fIhorizonal\fP \
+[\fIp\fP\
+] \fIvertical\fP \
+[\fIp\fP\
+]"
 Scrolls the virtual desktop's viewport by
 .I horizontal
 pages in the x-direction and
@@ -8909,7 +8941,8 @@ the geometries make sense, so it is possible to define overlapping
 screens (with random results) or screens that are not visible at
 all.
 .EX
-XineramaSlsScreens 3 512x768+0+0 512x300+512+0 512 300 512 468
+XineramaSlsScreens 3 \\
+  512x768+0+0 512x300+512+0 512 300 512 468
 XineramaSlsOn
 XineramaPrimaryScreen 1
 XineramaOn
@@ -8918,13 +8951,14 @@ XineramaOn
 
 .SS COMMANDS FOR USER FUNCTIONS AND SHELL COMMANDS
 
-.IP "\fBAddToFunc [\fP\fIname\fP \
-\fB[\fP\fII\fP \
-\fB|\fP \fIM\fP \
-\fB|\fP \fIC\fP \
-\fB|\fP \fIH\fP \
-\fB|\fP \fID action\fP\
-\fB]]\fP"
+.TP
+.B "AddToFunc [\fIname\fP \
+[\fII\fP \
+| \fIM\fP \
+| \fIC\fP \
+| \fIH\fP \
+| \fID action\fP\
+]]"
 Begins or adds to a function definition.  Here is an example:
 .EX
 AddToFunc Move-or-Raise I Raise
@@ -9297,19 +9331,24 @@ command.
 
 .SS CONDITIONAL COMMANDS
 
-There are several commands that are only executed if certain
-conditions are met.  Most of the conditional commands described
-in this section work on windows, like
+Conditional command are command that are only executed if certain
+conditions are met.  Most conditional commands work on windows,
+like
 .BR Next ", " ThisWindow " or " All .
 There is one conditional command
 .B On
-that works on global topics unrelated to windows.
-The syntax of the conditions is described below.  All commands
-in this section (unless specifically stated for the command)
-also have a return code that can be 1 (if the condition was met)
-or 0 (if the condition was not met).  Some commands may return -1
-which means that an error occurred and the return code is useless.
-The return code is used by the commands
+that works on global conditions unrelated to windows.  The syntax
+of the conditions is described below.  For readability, the list
+of conditions is located at the end of this section.
+
+.SS Return Codes
+
+All commands in this
+section (unless specifically stated for the command) also have a
+return code that can be 1 (if the condition was met) or 0 (if the
+condition was not met).  Some commands may return -1 which means
+that an error occurred and the return code is useless. The return
+code is used by the commands
 .B Cond
 and
 .BR CondCase .
@@ -9322,21 +9361,35 @@ created with the
 .B AddToFunc
 command and are not inherited by sub functions.
 
+.SS The Ring of Windows
+
+Fvwm stores windows in a ring internally.  Think of the focused
+window as a cursor on the current position in the ring.  The
+.B Next
+command and many other command searche forwards through the ring
+for a matching window, and
+.B Prev
+searches backwards.  The windows in the ring are either ordered by
+creation time (if the
+.I FPSortWindowlistByFocus
+respecively
+.IR NeverFocus " or " MouseFocus
+styles are used) or by the last time they had the focus.
+
+.SS List of Conditional Commands
+
 .TP
 .BI "All [(" conditions ")] " command
-Execute.
+Execute
 .I command
-on all windows meeting the conditions.
-.I Conditions
-are used exactly as with the
-.B Current
-command.  Returns 1 if any window matches the condition and 0
-otherwise.
-The
-.B All
-command implies the conditions
+on all windows meeting the conditions.  It returns 1 if any window
+matches the condition and 0 otherwise.
+.RB "See " Conditions " section below for a list of contitions."
+
+This command implies the conditions
 .IR CirculateHit ", " CirculateHitIcon " and " CirculateHitShaded .
-They can be turned off by specifying "!CirculateHit"
+They can be turned off by specifying
+.I !CirculateHit
 etc. explicitly.
 
 .TP
@@ -9345,14 +9398,14 @@ Performs
 .I command
 if any window which satisfies all
 .I conditions
-exists.  Conditions are the same as for
-.BR Next .
+exists.  The command is run in the context of the root window.
+.RB "See " Conditions " section below for a list of contitions."
 
 .TP
 .BI "Break"
-When the break command is used in a function, function execution
-is terminated immediately.  Further commands of the function are
-not processed.  The
+If the break command is used in a function, function execution is
+terminated immediately.  Further commands of the function are not
+processed.  The
 .B Break
 command does not have a return code.  Example:
 .EX
@@ -9402,161 +9455,28 @@ Performs
 .I command
 on the currently focused window if it satisfies all
 .IR conditions .
-The
-.IR conditions
-are a list of keywords from the list below and are separated by
-commas or whitespace.  Conditions include
-"AcceptsFocus", "!AcceptsFocus",
-"Focused", "!Focused",
-"HasPointer", "!HasPointer",
-"Iconic", "!Iconic",
-"Visible", "!Visible",
-"Raised", "!Raised",
-"Layer [n]", "!Layer",
-"State n", "!State n",
-"Sticky", "!Sticky",
-"FixedSize", "!FixedSize",
-"HasHandles", "!HasHandles",
-"Closable", "!Closable",
-"Iconifiable", "!Iconifiable",
-"Maximizable", "!Maximizable",
-"StickyAcrossPages", "!StickyAcrossPages",
-"StickyAcrossDesks", "!StickyAcrossDesks",
-"Maximized", "!Maximized",
-"Shaded", "!Shaded",
-"Transient", "!Transient",
-"PlacedByButton3", "!PlacedByButton3",
-"PlacedByFvwm", "!PlacedByFvwm",
-"CurrentDesk", "!CurrentDesk",
-"CurrentPage", "!CurrentPage",
-"CurrentScreen","!CurrentScreen",
-"CurrentGlobalPage", "!CurrentGlobalPage",
-"CurrentPageAnyDesk", "!CurrentPageAnyDesk",
-"CurrentGlobalPageAnyDesk", "!CurrentGlobalPageAnyDesk",
-"CirculateHit", "!CirculateHit",
-"CirculateHitIcon", "!CirculateHitIcon",
-"CirculateHitShaded", and "!CirculateHitShaded".
-In addition, the
-.I condition
-may include one window name to match to.  The window name may
-include the wildcards '*' and '?'.  The window name, icon name,
-class, and resource are considered when attempting to find a
-match.  The window name can begin with '!' which prevents
-.I command
-if any of the window name, icon name, class or resource match.
+.RB "See " Conditions " section below for a list of contitions."
 
-All options can be negated by prepending an exclamation mark
-('!').  For the options beginning with "!Current" and "!Layer",
-this simply turns off the opposite option.  For example,
-"!CurrentPage" allows all windows to match not just those that are
-not on the current page.
-
-The "AcceptsFocus" condition excludes all windows that do not want
-the input focus (the application has set the "Input hints" for the
-window to False) and do not use the
-.I Lenience
-option of the
-.B Style
-command.  Also, all windows using the
-.I NeverFocus
-style are ignored.
-
-The "Focused" condition excludes all windows but the one that
-currently has the keyboard focus.  This is not useful for the
-.B Current
-command but can be used with the other conditional commands.
-
-The "HasPointer" condition excludes all windows that do not
-contain the pointer.
-
-The "CurrentDesk" condition excludes all window that are not on
-the current desk.
-
-The "CurrentPage" condition excludes all window that are not on
-the current desk or not on the current page. If Xinerama support
-is enabled, only windows on the screen that contains the mouse
-pointer are considered to match.
-
-The "CurrentGlobalPage" condition excludes all window that are not
-on the current desk or not on the current page. The screen does
-not matter if Xinerama support is enabled.
-
-The "CurrentScreen" and "CurrentPageAnyDesk" conditions exclude
-all window that are not on the current page but that may be on any
-desk.
-
-The "CurrentGlobalPage" condition excludes all window that are not
-on the current desk or not on the current page. If Xinerama
-support is enabled, only windows on the screen that contains the
-mouse pointer are considered to match.
-
-The "CurrentGlobalPageAnyDesk" condition excludes all window that
-are not on the current page but that may be on any desk.  The
-screen does not matter if Xinerama support is enabled.
-
-The "Layer" condition excludes all windows not in the specified
-layer.  The argument of the "Layer" condition defaults to the
-layer of the focus window.
-
-The "State" (or "!State") conditions include only windows with the
-specified integer state set or (or unset).  See the
-.B State
-command.  The argument may range from 0 to 31.
-
-The condition "FixedSize" excludes all windows that don't have a fixed
-size, either set through WM hints or the style option "FixedSize".
-
-The condition "HasHandles" excludes all windoows that don't have
-resize handles.
-
-The condition "Closable" excludes all windows that are not possible
-to close.
-
-The condition "Iconifiable" excludes all windows that are not possible
-to iconify.
-
-The condition "Maximizable" excludes all windows that are not possible
-to maximise.
-
-The "PlacedByButton3" condition is fulfilled if the last
-interactive motion of the window (with the
-.B Move
-command) was ended by pressing mouse button 3.  This is especially
-useful with the
-.I ManualPlacement
-option of the
-.B Style
-command.
-
-The "PlacedByFvwm" condition excludes all windows that have been
-placed manually or by using the user or program position hint.
-
-Note that earlier versions of fvwm required the conditions to be
-enclosed in brackets instead of parentheses (this is still
-supported for backward compatibility).
-
-The "CirculateHit" and "CirculateHitIcon" option override the
-.IB "CirculateSkip " Style
-attribute for normal or iconic windows.
-The "CirculateHitShaded" option overrides the
-.IB "CirculateSkipShaded " Style.  All three options are turned on
-by default for the
-.B Current
-command.  They can be turned off by specifying "!CirculateHit"
+This command implies the conditions
+.IR CirculateHit ", " CirculateHitIcon " and " CirculateHitShaded .
+They can be turned off by specifying
+.I !CirculateHit
 etc. explicitly.
 
 .TP
-.BI "Direction [" FromPointer "] " direction " [(" conditions ")] " command
+.B "Direction \
+[\fIFromPointer\fP] \
+\fIdirection\fP \
+[(\fIconditions\fP)] \
+\fIcommand\fP"
 Performs
 .I command
 (typically
 .BR Focus )
 on a window in the given direction which satisfies all
 .IR conditions .
-Conditions are the same as for
-.BR Current .
 Normally, the center of the currently focused window or the
-context window inwhich the command was invoked is taken as the
+context window in which the command was invoked is taken as the
 starting point.  Lacking such a window, or when the
 .I FromPointer
 option is given, the current position of the pointer is taken as
@@ -9571,6 +9491,7 @@ those farther away.  The
 .I Center
 direction simply selects the window closest to the starting point.
 Returns -1 if an invalid direction was given.
+.RB "See " Conditions " section below for a list of contitions."
 
 .TP
 .BI "Next [(" conditions ")] " command
@@ -9582,8 +9503,8 @@ on the next window which satisfies all
 .IR conditions .
 If the command is running in a window context, it starts looking
 for a matching window from there.  Otherwise it starts at the
-focused window.  Conditions are the same as for
-.BI Current .
+focused window.
+.RB "See " Conditions " section below for a list of contitions."
 
 .TP
 .BI "None [(" conditions ")] " command
@@ -9591,16 +9512,72 @@ Performs
 .I command
 if no window which satisfies all
 .I conditions
-exists.  Conditions are the same as for
-.BR Next .
+exists.  The command is run in the context of the root window.
 Returns 1 if no window matches the conditions and 0 otherwise.
+.RB "See " Conditions " section below for a list of contitions."
+
+This command implies the conditions
+.IR CirculateHit ", " CirculateHitIcon " and " CirculateHitShaded .
+They can be turned off by specifying
+.I !CirculateHit
+etc. explicitly.
+
+.TP
+.BI NoWindow " command"
+Performs
+.IR command ,
+but removes the window context if any.  This is not really a
+conditional command, but a prefix that may be useful in menu items
+that should operate without a window even if such menu is bound to
+window decorations.
+
+.TP
+.BI "On [(" on-conditions ")] " command
+Performs
+.I command
+if the all
+.I on-conditions
+are satisfied.  The
+.I on-conditions
+are a list of keywords with possible arguments from the list below
+and are separated by commas or whitespace.  They include
+.IR "Version pattern" ,
+.IR Start ,
+.IR Init ,
+.IR Restart ,
+.IR Exit ,
+.IR Quit and
+.IR ToRestart .
+An on-condition prefixed with "!" is reverted.
 
 The
-.B None
-command implies the conditions
-.IR CirculateHit ", " CirculateHitIcon " and " CirculateHitShaded .
-They can be turned off by specifying "!CirculateHit"
-etc. explicitly.
+.I "Version pattern"
+on-condition is fulfilled if the pattern matches the version
+number of the fvwm executable.  The wildcards '*' (any number of
+random characters) and '?' (one random character) may be used in
+the pattern.  The
+.I Start
+on-condition is the same as either
+.IR Init " or " Restart .
+It is only true on startup or restart prior and during
+.B StartFunction
+execution.
+The
+.I Exit
+on-condition is the same as either
+.IR Quit " or " ToRestart .
+It is only valid on shutdown during
+.B ExitFunction
+function execution.
+Example:
+.EX
+AddToFunc StartFunction I On (Init) Exec exec xterm
+
+AddToFunc VerifyVersion
++ I On (Version 2.5.*) Echo 2.5.x detected
++ I Cond (NoMatch) On (!Version 2.6.*) Echo Future version
++ I Cond (NoMatch) Echo 2.6.x is detected
+.EE
 
 .TP
 .BI "Pick [(" conditions ")] " command
@@ -9615,15 +9592,13 @@ in the context of that window.  This avoids annoying multiple
 selections with complex functions.  The command is executed only
 if the given
 .I conditions
-are met.  The conditions are the same as for
-.BR Next .
-Returns -1 if no window was selected.
+are met.  Returns -1 if no window was selected.
+.RB "See " Conditions " section below for a list of contitions."
 
-The
-.B Pick
-command implies the conditions
+This command implies the conditions
 .IR CirculateHit ", " CirculateHitIcon " and " CirculateHitShaded .
-They can be turned off by specifying "!CirculateHit"
+They can be turned off by specifying
+.I !CirculateHit
 etc. explicitly.
 
 .TP
@@ -9632,15 +9607,13 @@ Performs
 .I command
 if the window under the pointer satisfies all
 .IR conditions .
-exists.  Conditions are the same as for
-.BR Current .
 Returns -1 if there is no window under the pointer.
+.RB "See " Conditions " section below for a list of contitions."
 
-The
-.B PointerWindow
-command implies the conditions
+This command implies the conditions
 .IR CirculateHit ", " CirculateHitIcon " and " CirculateHitShaded .
-They can be turned off by specifying "!CirculateHit"
+They can be turned off by specifying
+.I !CirculateHit
 etc. explicitly.
 
 .TP
@@ -9653,25 +9626,22 @@ on the previous window which satisfies all
 .IR conditions .
 If the command is running in a window context, it starts looking
 for a matching window from there.  Otherwise it starts at the
-focused window.  Conditions are the same as for
-.B Current
-with the addition of "CirculateHit" which overrides the
-.IB "CirculateSkip " Style
-attribute, "CirculateHitIcon" which overrides the
-.IB "CirculateSkipIcon " Style
-attribute for iconified windows and "CirculateHitShaded" which
-does the same for shaded windows.
+focused window.
+.RB "See " Conditions " section below for a list of contitions."
 
 .TP
-.BI "ScanForWindow [" FromPointer "] " "direction direction2" " [(" conditions ")] " command
+.B "ScanForWindow \
+[\fIFromPointer\fP] \
+\fIdirection\fP \
+\fIdirection2\fP \
+[(\fIconditions\fP)] \
+\fIcommand\fP"
 Performs
 .I command
 (typically
 .BR Focus )
 on a window in the given direction which satisfies all
 .IR conditions .
-Conditions are the same as for
-.BR Current .
 Normally, the center of the currently focused window or the
 context window in which the command was invoked is taken as the
 starting point.  Lacking such a window, or when the
@@ -9693,12 +9663,13 @@ If
 .I direction2
 is not perfectly perpendicular to
 .IR direction ,
-ScanForWindow will return a failure.
-When using ScanForWindow repeatedly with the same arguments,
-it is guaranteed that all windows matching the conditions will eventually
-be found.  If the focus reaches a limit along the primary axis,
-it will wrap around to the opposite side.
-Returns -1 if an invalid direction was given.
+ScanForWindow will return a failure.  When using ScanForWindow
+repeatedly with the same arguments, it is guaranteed that all
+windows matching the conditions will eventually be found.  If the
+focus reaches a limit along the primary axis, it will wrap around
+to the opposite side.  Returns -1 if an invalid direction was
+given.
+.RB "See " Conditions " section below for a list of contitions."
 
 .TP
 .BI "ThisWindow [(" conditions ")] " command
@@ -9709,39 +9680,30 @@ in the context of the current operand window.  If there is no
 operand window (it is invoked in the root window), the command is
 ignored.
 .B ThisWindow
-is always non-interactive.  The command is executed only if the
-given
+is newver interactive.  The command is executed only if the given
 .I conditions
-are met.  The conditions are the same as for
-.BR Current .
-It returns -1 if used outside a window context.
+are met.  It returns -1 if used outside a window context.
+.RB "See " Conditions " section below for a list of contitions."
 
-The
-.B ThisWindow
-command implies the conditions
+This command implies the conditions
 .IR CirculateHit ", " CirculateHitIcon " and " CirculateHitShaded .
 They can be turned off by specifying "!CirculateHit"
 etc. explicitly.
 
-.IP "\fBWindowId [\fP\fIid\fP\
-\fB] [(\fP\fIconditions\fP\
-\fB)] | [\fP\fIroot\fP \
-\fB[\fP\fIscreen\fP\
-\fB]]\fP \fIcommand"
+.TP
+.B "WindowId [\fIid\fP\
+] [(\fIconditions\fP\
+)] | [\fIroot\fP \
+[\fIscreen\fP\
+]] \fIcommand"
 The
 .B WindowId
-function is similar to the
-.BR Next " and " Prev
-functions, except that it looks for a specific window
+command looks for a specific window
 .I id
 and runs the specified
 .I command
-on it.  The optional
-.I conditions
-are the same as for
-.BR Current .
-The second form of syntax retrieves the window id of the root
-window of the given
+on it.  The second form of syntax retrieves the window id of the
+root window of the given
 .IR screen .
 If no
 .I screen
@@ -9752,6 +9714,16 @@ different screen.  Although most commands can not operate on such
 windows, there are some exceptions, for example the
 .B WarpToWindow
 command.
+Returns -1 if no window with the given id exists.
+.RB "See " Conditions " section below for a list of contitions."
+
+This command implies the conditions
+.IR CirculateHit ", " CirculateHitIcon " and " CirculateHitShaded .
+They can be turned off by specifying
+.I !CirculateHit
+etc. explicitly.
+
+Examples:
 .EX
 WindowId 0x34567890 Raise
 WindowId root 1 WarpToWindow 50 50
@@ -9771,49 +9743,240 @@ proceeding.
 Pick SetEnv BOOKMARKED_WINDOW $[w.id]
 WindowId $[BOOKMARKED_WINDOW] WarpToWindow
 .EE
-Returns -1 if no window with the given id exists.
 
-.TP
-.BI NoWindow " command"
-Performs
-.IR command ,
-but removes the window context if any.
-This is not really a conditional command, but a prefix that may be
-useful in menu items that should operate without a window even if
-such menu is bound to window decorations.
+.SS Conditions
 
-.TP
-.BI "On [(" condition ")] " command
-Performs
-.I command
-if the all
-.I conditions
-are satisfied.
 The
 .I conditions
-are a list of keywords with possible arguments from the list below
-and are separated by commas or whitespace.  Conditions include
-"Version pattern",
-"Start", "Init", "Restart",
-"Exit", "Quit", ToRestart".
-A condition prefixed with "!" is reverted.
+that may be given as an argument to any conditional command are a
+list of keywords separated by commas or whitespace, enclosed in
+parentheses.  Unless stated otherwise, conditional commands accept
+all the conditions listed below.  Note that earlier versions of
+fvwm required the conditions to be enclosed in brackets instead of
+parentheses (this is still supported for backward compatibility).
 
-The "Start" condition is the same as either "Init" or "Restart",
-it is only valid on startup or restart prior and during
-.B StartFunction
-function execution.
-The "Exit" condition is the same as either "Quit" or "ToRestart",
-it is only valid on shutdown during
-.B ExitFunction
-function execution.
-.EX
-AddToFunc StartFunction I On (Init) Exec exec xterm
+In addition, the
+.I conditions
+may include one window name to match to.  The window name may
+include the wildcards '*' and '?'.  The window name, icon name,
+class, and resource are considered when attempting to find a
+match.  The window name can begin with '!' which prevents
+.I command
+if any of the window name, icon name, class or resource match.
 
-AddToFunc VerifyVersion
-+ I On (Version 2.5.*) Echo 2.5.x detected
-+ I Cond (NoMatch) On (!Version 2.6.*) Echo Future version
-+ I Cond (NoMatch) Echo 2.6.x is detected
-.EE
+Any condition can be negated by using a an exclamation mark ('!')
+directly in front of its name.  For the options beginning with
+"!Current" and "!Layer", this simply turns off the opposite
+option.  For example, "!CurrentPage" allows all windows to match
+not just those that are not on the current page.
+
+.IR AcceptsFocus ,
+.IR CirculateHit ,
+.IR CirculateHitIcon ,
+.IR CirculateHitShaded ,
+.IR Closable ,
+.IR CurrentDesk ,
+.IR CurrentGlobalPage ,
+.IR CurrentGlobalPageAnyDesk ,
+.IR CurrentPage ,
+.IR CurrentPageAnyDesk ,
+.IR CurrentScreen ,
+.IR FixedSize ,
+.IR Focused ,
+.IR HasHandles ,
+.IR HasPointer ,
+.IR Iconic ,
+.IR Iconifiable ,
+.IR "Layer [n]" ,
+.IR Maximizable ,
+.IR Maximized ,
+.IR PlacedByButton3 ,
+.IR PlacedByFvwm ,
+.IR Raised ,
+.IR Shaded ,
+.IR "State n" ,
+.IR Sticky ,
+.IR StickyAcrossDesks ,
+.IR StickyAcrossPages ,
+.IR Transient ,
+.IR Visible .
+
+The
+.I AcceptsFocus
+condition excludes all windows that do not want the input focus
+(the application has set the "Input hints" for the window to
+False) and do not use the
+.I Lenience
+option of the
+.B Style
+command.  Also, all windows using the
+.I NeverFocus
+style are ignored.
+
+The
+.IR CirculateHit " and " CirculateHitIcon
+options override the
+.I CirculateSkip
+.B Style
+attribute for normal or iconic windows.  The
+.I CirculateHitShaded
+option overrides the
+.I CirculateSkipShaded
+.B Style.
+All three options are turned on
+by default for the
+.B Current
+command.  They can be turned off by specifying
+.I !CirculateHit
+etc. explicitly.
+
+The
+.I Closable
+matches only windows that are allowed to be closed.
+
+The
+.I CurrentDesk
+contition matches only windows that are on the current desk.
+
+The
+.I CurrentGlobalPage
+condition matches only windows that are on the current page of the
+current desk, regardless of whether Xinerama support is enabled or
+not.  This conditions implicitly activates the
+.I CurrentDesk
+condition.
+
+The
+.I CurrentGlobalPageAnyDesk
+condition matches only windows that are on the current page of any
+desk, regardless of whether Xinerama support is enabled or not.
+
+The
+.I CurrentPage
+condition matches only windows that are on the current page of the
+current desk.  If Xinerama support is enabled, it only matches
+windows that are at least partially on the Xinerama screen
+containing the mouse pointer.  This conditions implicitly
+activates the
+.I CurrentDesk
+condition.
+
+The
+.IR CurrentPageAnyDesk " and " CurrentScreen
+conditions matche only windows that are on the current page of any
+desk.  If Xinerama support is enabled, they only match windows
+that are at least partially on the Xinerama screen containing the
+mouse pointer.
+
+The
+.I FixedSize
+condition excludes all windows that don't have a fixed size,
+either set through WM hints or the
+.B Style
+option
+.IR FixedSize .
+
+The
+.I Focused
+matches on the the window the currently has the keyboard focus.
+This is not useful for the
+.B Current
+command but can be used with the other conditional commands.
+
+The
+.I HasHandles
+condition excludes all windoows that don't have resize handles.
+
+The
+.I HasPointer
+condition excludes all windows that do not contain the pointer.
+
+The
+.I Iconic
+condition matches only iconic windows.
+
+The
+.I Iconifiable
+condition matches only windows that are allowed to be iconified.
+
+The
+.I "Layer [n]"
+condition matches only windows on the specified layer.  The
+optional argument of the
+.I Layer
+condition defaults to the layer of the focused window.  The
+negation
+.I !Layer
+switches off the
+.I Layer
+condition.
+
+The
+.I Maximizable
+condition matches only windows that are allowed to be maximized.
+
+The
+.I Maximized
+condition matches only maximized windows.
+
+The
+.I PlacedByButton3
+condition is fulfilled if the last interactive motion of the
+window (with the
+.B Move
+command) was ended by pressing mouse button 3.  This is especially
+useful with the
+.I ManualPlacement
+option of the
+.B Style
+command.
+
+The
+.I PlacedByFvwm
+condition excludes all windows that have been placed manually or
+by using the user or program position hint.
+
+The
+.I Raised
+conditions matches only windows that are fully visible on the
+current viewport and not overlapped by any other window.
+
+The
+.I Shaded
+conditions matches only shaded windows (see
+.B WindowShade
+command).
+
+The
+.IR "State n" " or " "!State n"
+conditions match only windows with the specified integer state set
+(or unset).  See the
+.B State
+command for details.  The argument may range from 0 to 31.
+
+The
+.IR Sticky ", " StickyAcrossDesks " and " StickyAcrossPages
+match only windows that are currently sticky, sticky across all
+desks or sticky across all pages.  Please refer to the
+.B Style
+options with the same name and the commands
+.BR Stick ", " StickAcrossDesks " and " StickAcrossPages
+for details.
+
+The
+.I Transient
+condition matches only windows that have the "transient"
+property set by the application.  This it usually the case for
+application popup menus and dialogs.  The
+.B FvwmIdent
+module can be used to find out whether a specific window is
+transient.
+
+The
+.I Visible
+conditions matches only windows that are at least partially
+visible on the current viewport and not completely overlapped by
+other windows.
 
 .SS MODULE COMMANDS
 
@@ -10113,8 +10276,10 @@ cases when 'Restart fvwm2' or 'Restart fvwm' cause troubles:
 .EX
 * running fvwm under a session manager
 * running fvwm with multi headed displays
-* having command line arguments, like -f themes-rc or -cmd
-* if the first fvwm2 in the $PATH is a different one
+* having command line arguments, like
+  -f themes-rc or -cmd
+* if the first fvwm2 in the $PATH is a
+  different one
 .EE
 This is why we are issuing a warning on an old usage. If you
 really want to restart to fvwm with no additional arguments, you
@@ -10243,7 +10408,8 @@ color.
 
 Example:
 .EX
-TitleStyle VGradient 20 rgb:b8/ce/bc rgb:5b/85/d0
+TitleStyle VGradient 20 \\
+rgb:b8/ce/bc rgb:5b/85/d0
 .EE
 
 .TP

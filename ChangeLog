@@ -1,3 +1,9 @@
+2003-06-19  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* fvwm/fvwm.1.in:
+	cleaned up documentation of conditional commands
+	general man page cleanup
+
 2003-06-17  Dan Espen  <dane@mk.telcordia.com>
 
 	* fvwm/builtins.c (ReadDecorFace): Off by one patch from

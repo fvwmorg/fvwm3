@@ -26,6 +26,7 @@ Volunteers needed for tasks: 2, 3, 4, (B)
 
 * = pending
 + = done
+- = skipped
 
 March
 
@@ -33,39 +34,39 @@ March
       + Finish the overall schedule.
       + Post first draft of logo competition rules on fvwm-workers.
   31st
-      * Agree on rules for the logo competition.
+      + Agree on rules for the logo competition.
 
 April
 
   10th
-      * Write a short announcement message for the 1st of June and discuss it on
+      + Write a short announcement message for the 1st of June and discuss it on
         fvwm-workers.
-      * Write the logo competition announcement message and discuss it on
+      + Write the logo competition announcement message and discuss it on
         fvwm-workers.
   15th   +++ First announcement day +++
-      * Announce the birthday celebrations and kick off the logo competition.
-      * Put the announcement on the web page.
-      * Put the announcement for the logo competition on the web site.
+      + Announce the birthday celebrations and kick off the logo competition.
+      + Put the announcement on the web page.
+      + Put the announcement for the logo competition on the web site.
 
 May
 
   15th
-      * Make a short term schedule for the week before and after the birthday.
+      - Make a short term schedule for the week before and after the birthday.
   20th
-      * Collect pictures of the developers.
-      * Write the long announcement for fvwm's birthday; also mention the logo
+      + Collect pictures of the developers.
+      + Write the long announcement for fvwm's birthday; also mention the logo
         competition.
   25th  +++ Second announcement day +++
-      * Send the birthday message.
-      * Make a shiny web page for the celebration and post it on fvwm-workers.
-      * Make a web page with the pictures of the developers.
+      - Send the birthday message.
+      + Make a shiny web page for the celebration and post it on fvwm-workers.
+      + Make a web page with the pictures of the developers.
   30th
-      * Upload the celebration page.
+      + Upload the celebration page.
 
 June
 
   1st (Sunday)   +++ 10th birthday +++
-      * Gather on #fvwm at irc.freenode.net around 17:00 GMT
+      + Gather on #fvwm at irc.freenode.net around 17:00 GMT
   30th
       * Remove the celebration page or keep the page but remove references to
         the birthday event.
@@ -188,7 +189,7 @@ August
        Goal: Competition for a new fvwm logo design; new fvwm logo.
        Priority: very high
        Responsible: volunteer needed, Dominik
-       Status: planning rules
+       Status: ongoing
 
        16-Mar
         * Write a draft of the logo competition rules and post it on
@@ -196,11 +197,11 @@ August
           [done]
        31-Mar
         * Agree on the final rules for the logo competition.
-          [pending]
+          [done]
        10-Apr
         * Write the logo competition announcement message and discuss it on
           fvwm-workers.
-          [pending]
+          [done]
        15-Apr
         * Make a web page for the logo competition.
         * Announce the logo competition.
@@ -222,36 +223,27 @@ August
 
   A. IRC chat
 
-       Priority: high
-       Responsible: developers and residents of fvwm-workers
-       Status: waiting for birthday
+       Status: done
 
        1-Jun
         * Gather on #fvwm at irc.freenode.net around 17:00 GMT
-        [pending until 1-Jun]
 
   B. Pictures of the developers
 
        Goal: Make a web page with pictures of the fvwm developers.
-       Priority: low, nice to have
-       Responsible: volunteer needed!
-       Status: planning schedule
+       Status: done
 
        Everybody who ever made a patch or helped designing any feature is
        welcome to provide a picture.
 
        20-May
         * Collect pictures of the developers.
-          [pending]
        25-May
         * Make a web page with the pictures of the developers.
-          [pending]
 
   C. Find Robert J. Nation
 
-       Priority: medium
-       Responsible: Dominik
-       Status: ongoing
+       Status: done
 
        Everybody is asked to help.  Hopefully we can find him, but we won't
        cancel the event if we do not.
