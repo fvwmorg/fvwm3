@@ -1127,7 +1127,8 @@ DestroyModuleConfig FvwmButtons: *
 
 # Pop up a module menu directly above the button.
 *FvwmButtons: (9x1+3+0, Padding 0, Title "Modules",   \\
-  Action `Menu Modulepopup rectangle $wx$h+$l+$t o+50 -100m`)
+  Action `Menu Modulepopup rectangle \\
+  $widthx$height+$lleft+$top o+50 -100m`)
 
 # first row of buttons from left to right:
 *FvwmButtons: (3x2+0+1, Icon my_lock.xpm, Action `Exec xlock`)

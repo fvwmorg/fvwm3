@@ -235,6 +235,9 @@ Steven M. Robbins:
 Autoconf & automake support, configuration & portability
 improvements, and general code gadfly a la Paul Smith.
 
+Chris Ross:
+Addition of ReliefThickness feature to FvwmIconMan.
+
 Paul D. Smith:
 Purify support (heap rot, array overwrites, memory stompage of all
 sorts). Some autoconf/automake/portability help.  Initial cut at a

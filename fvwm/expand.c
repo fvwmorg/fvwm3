@@ -24,6 +24,7 @@
 #include "cursor.h"
 #include "functions.h"
 #include "misc.h"
+#include "move_resize.h"
 #include "screen.h"
 #include "geometry.h"
 #include "read.h"
@@ -116,6 +117,7 @@ static char *function_vars[] =
 	"w.width",
 	"w.x",
 	"w.y",
+	"w.desk",
 	NULL
 };
 
@@ -183,7 +185,8 @@ enum
 	VAR_W_RESOURCE,
 	VAR_W_WIDTH,
 	VAR_W_X,
-	VAR_W_Y
+	VAR_W_Y,
+	VAR_W_DESK
 } extended_vars;
 
 /* ---------------------------- exported variables (globals) --------------- */
@@ -571,6 +574,21 @@ static signed int expand_vars_extended(
 			default:
 				return -1;
 			}
+		}
+		break;
+	case VAR_W_DESK:
+		if (!fw || IS_EWMH_DESKTOP(FW_W(fw)))
+		{
+			return -1;
+		}
+		is_numeric = True;
+		if (is_window_sticky_across_desks(fw))
+		{
+			val = Scr.CurrentDesk;
+		}
+		else
+		{
+			val = fw->Desk;
 		}
 		break;
 	case VAR_SCREEN:

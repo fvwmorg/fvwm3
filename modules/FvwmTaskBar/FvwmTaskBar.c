@@ -532,7 +532,6 @@ void ProcessMessage(unsigned long type,unsigned long *body)
 
 	win_border = nb;
 	win_width = nw;
-	win_height = nh;
 	win_has_title = nht;
 	win_title_dir = ntd;
 	win_title_height = nth;

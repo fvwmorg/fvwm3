@@ -937,9 +937,10 @@ static void setup_parent_window(FvwmWindow *fw)
 	size_borders b;
 
 	XSetWindowAttributes attributes;
-	int valuemask = CWBackingStore | CWBackPixmap | CWCursor | CWEventMask |
-		CWSaveUnder;
+	int valuemask;
 
+	valuemask = CWBackingStore | CWBackPixmap | CWCursor | CWEventMask |
+		CWSaveUnder;
 	attributes.backing_store = NotUseful;
 	attributes.background_pixmap = None;
 	attributes.cursor = Scr.FvwmCursors[CRS_DEFAULT];
@@ -1829,7 +1830,6 @@ void setup_placement_penalty(FvwmWindow *fw, window_style *pstyle)
 void setup_frame_attributes(
 	FvwmWindow *fw, window_style *pstyle)
 {
-	int i;
 	XSetWindowAttributes xswa;
 
 	/* Backing_store is controlled on the client, borders, title & buttons
@@ -1847,36 +1847,18 @@ void setup_frame_attributes(
 		xswa.backing_store = NotUseful;
 		break;
 	}
-	XChangeWindowAttributes(dpy, FW_W(fw), CWBackingStore, &xswa);
-	if (pstyle->flags.use_backing_store == BACKINGSTORE_OFF)
-	{
-		xswa.backing_store = NotUseful;
-	}
-	if (HAS_TITLE(fw))
-	{
-		XChangeWindowAttributes(
-			dpy, FW_W_TITLE(fw), CWBackingStore, &xswa);
-		for (i = 0; i < NUMBER_OF_BUTTONS; i++)
-		{
-			if (FW_W_BUTTON(fw, i))
-			{
-				XChangeWindowAttributes(
-					dpy, FW_W_BUTTON(fw, i),
-					CWBackingStore, &xswa);
-			}
-		}
-	}
-
 	/* parent_relative is applied to the frame and the parent */
 	xswa.background_pixmap = pstyle->flags.use_parent_relative
 		? ParentRelative : None;
-	XChangeWindowAttributes(dpy, FW_W_FRAME(fw), CWBackPixmap, &xswa);
-	XChangeWindowAttributes(dpy, FW_W_PARENT(fw), CWBackPixmap, &xswa);
-
 	/* Save_under is only useful on the frame */
 	xswa.save_under = pstyle->flags.do_save_under
 		? Scr.flags.do_save_under : NotUseful;
-	XChangeWindowAttributes(dpy, FW_W_FRAME(fw), CWSaveUnder, &xswa);
+	XChangeWindowAttributes(dpy, FW_W(fw), CWBackingStore, &xswa);
+	XChangeWindowAttributes(
+		dpy, FW_W_PARENT(fw), CWBackPixmap | CWBackingStore, &xswa);
+	XChangeWindowAttributes(
+		dpy, FW_W_FRAME(fw),
+		CWBackPixmap | CWBackingStore | CWSaveUnder, &xswa);
 
 	return;
 }

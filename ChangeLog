@@ -1,3 +1,12 @@
+2004-03-29  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* fvwm/add_window.c (setup_frame_attributes):
+	Hopefully fixed BackingStore code and removed now useless backing store
+	for decorations
+
+	* fvwm/expand.c (expand_vars_extended):
+	new extended variable $[w.desk]
+
 2004-03-19  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* NEWS:
@@ -48,6 +57,11 @@
 	(PlaceWindow):
 	(__place_window):
 	renamed function
+
+2004-03-15  Chris Ross  <cross+fvwm@distal.com>
+
+	* libs/Graphics.c (do_relieve_rectangle_with_rotation)
+	allow a negative line_width to invert the relief
 
 2004-03-06  Marcus Lundblad  <ml@update.uu.se>
 

@@ -1,7 +1,23 @@
-2004-03-19  Dominik Vogt  <dominik.vogt@gmx.de>
+2004-03-29  Dominik Vogt  <dominik.vogt@gmx.de>
 
-	* FvwmIconMan/FvwmIconMan.c:
-	applied inverted relief patch by Chris Ross
+	* FvwmTaskBar/FvwmTaskBar.c (ProcessMessage):
+	fixed multi line FvwmTaskBar race condition introduced in earlier patch
+
+	* FvwmButtons/FvwmButtons.1:
+	corrected example
+
+2004-03-15  Chris Ross  <cross+fvwm@distal.com>
+
+ 	* FvwmIconMan/FvwmIconMan.1:
+ 	* FvwmIconMan/FvwmIconMan.h:
+ 	* FvwmIconMan/globals.c (init_win_manager):
+ 	* FvwmIconMan/readconfig.c (read_in_resources):
+ 	* FvwmIconMan/xmanager.c (draw_3d_icon)
+ 	(draw_relief):
+ 	Added ReliefThickness option to FvwmIconMan to control
+ 	the width of the relief used for both icon manager buttons
+ 	and icons.  Works much the same as the Frame specification
+ 	of FvwmButtons.
 
 2004-03-15  Dominik Vogt  <dominik.vogt@gmx.de>
 

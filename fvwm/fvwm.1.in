@@ -1768,6 +1768,14 @@ or the window is iconified, the string is left as is.
 .in -.5i
 
 .in +.5i
+$[w.desk]
+.in +.3i
+The number of the desk on which the window is shown.  If the
+window is sticky the current desk number is used.
+.in -.3i
+.in -.5i
+
+.in +.5i
 $[cw.x]
 $[cw.y]
 $[cw.width]
@@ -7745,7 +7753,7 @@ style.
 .B Miscellaneous
 The
 .IR BackingStore ", " BackingStoreOff " and " BackingStoreWindowDefault
-determine if the X server uses backing storefor the window or
+determine if the X server uses backing store for the window or
 not.
 .I BackingStore
 means that the X server tries to keep the obscured parts of a

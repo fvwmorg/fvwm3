@@ -252,11 +252,13 @@ Works like plainbutton but uses colorsets instead.  The style setting can
 still only be applied with plainbutton.  See FvwmTheme.
 
 .IP "*FvwmIconMan: [id] ReliefThickness \fInum\fP"
-\fInum\fP is a positive integer specifying the number of pixels thick
-that the relief at the edge of non-flat buttons should be.  This has
-no effect on flat buttons.  In theory, you should be able to set this
-to a negative number and have it act like \fIReverse\fP, but negative
-numbers don't work.  This may change later.
+\fInum\fP is an integer specifying the number of pixels thick
+that the relief at the edge of non-flat buttons should be.  Setting
+this to 0 will produce flat buttons, as if the values for
+\fIFocusAndSelectButton\fP, \fIFocusButton\fP, \fIIconButton\fP,
+\fIPlainButton\fP, \fISelectButton\fP, and \fITitleButton\fP were
+all set to \fIflat\fP.  If \fInum\fP is negative, the button
+will be inverted as if you had used \fIReverse\fP for all classes.
 
 .IP "*FvwmIconMan: [id] Resolution \fIresolution\fP"
 Specifies when the manager will display an entry for a certain

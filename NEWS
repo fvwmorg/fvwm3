@@ -5,6 +5,8 @@ Note, the changes for the last STABLE release start with release
 
 Changes in alpha release 2.5.11 (not released yet)
 
+* New extended variable $[w.desk].
+
 -------------------------------------------------------------------
 
 Changes in alpha release 2.5.10 (19-Mar-2004)
@@ -13,7 +15,7 @@ Changes in alpha release 2.5.10 (19-Mar-2004)
 
 * New BugOpts option ExplainWindowPlacement.
 
-* Inverted button reliefs in FvwmIconMan.
+* Adjustable button reliefs in FvwmIconMan (option ReliefThickness).
 
 * Security patch in fvwm-bug.
   See http://securitytracker.com/alerts/2004/Jan/1008781.html
