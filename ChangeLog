@@ -1,3 +1,87 @@
+2002-02-24  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* fvwm/functions.c (execute_function):
+	(expand_extended_var):
+	(expand):
+	new variable cond.rc that returns the last return code of a conditinal
+	command
+
+2002-02-23  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* fvwm/conditional.c (CMD_Cond):
+	(CMD_CondCase):
+	(CMD_Break):
+	* fvwm/commands.h:
+	* fvwm/functions.h:
+	* fvwm/functions.c:
+	new conditional commands Cond, CondCase and Break
+
+	* fvwm/ewmh_events.c (ewmh_WMStateSticky):
+	(ewmh_WMStateShaded):
+	(ewmh_WMState):
+	(ewmh_MoveResize):
+	(ewmh_WMStateHidden):
+	(ewmh_WMDesktop):
+	(ewmh_CloseWindow):
+	(ewmh_ActiveWindow):
+	(ewmh_DesktopGeometry):
+	* fvwm/gnome.c (GNOME_HandlePropRequest):
+	* fvwm/windowlist.c (CMD_WindowList):
+	* fvwm/update.c (apply_window_updates):
+	* fvwm/conditional.c (CMD_Pick):
+	(CMD_Prev):
+	(CMD_Next):
+	(CMD_None):
+	(CMD_Any):
+	(CMD_Current):
+	(CMD_PointerWindow):
+	(CMD_This):
+	(CMD_All):
+	(CMD_Direction):
+	(CMD_WindowId):
+	* fvwm/read.c (run_command_stream):
+	* fvwm/fvwm.c (Done):
+	(SetRCDefaults):
+	(StartupStuff):
+	(main):
+	* fvwm/module_interface.c (ExecuteModuleCommand):
+	* fvwm/move_resize.c (handle_stick):
+	* fvwm/add_window.c (AddWindow):
+	* fvwm/events.c (HandleKeyPress):
+	(HandleButtonPress):
+	(HandleClientMessage):
+	(HandleButtonRelease):
+	(HandlePropertyNotify):
+	* fvwm/builtins.c (CMD_DestroyDecor):
+	(AddToDecor):
+	(CMD_StrokeFunc):
+	* fvwm/functions.h (func_type):
+	* fvwm/functions.c (old_execute_function):
+	(execute_function):
+	(execute_complex_function):
+
+	* fvwm/fvwm.h (fvwm_cond_func_rc):
+	inplemented return codes OK, NO_MATCH and ERROR for conditional commands
+
+	* fvwm/ConfigFvwmDefaults:
+	set some default styles for tear off menu windows
+
+	* fvwm/menus.c (menuShortcuts):
+	ignore actions that would normally close a menu if it's a tear off menu
+	<Backspace> creates a tear off menu
+	<Escape> closes a tear off menu
+
+	* fvwm/builtins.c (CMD_Delete):
+	(CMD_Destroy):
+	(CMD_Close):
+	* fvwm/menus.c (DestroyMenu):
+	(make_menu_window):
+	(MenuInteraction):
+	* fvwm/menus.h (MenuRootDynamic):
+	Each menu window is created with a unique display to prevent fvwm from
+	being killed when a tear off menu is destroyed.  Of course this is
+	inefficient, but still better than writing a menu module.
+
 2002-02-23  Mikhael Goikhman  <migo@homemail.com>
 
 	* configure.in:

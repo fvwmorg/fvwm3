@@ -25,6 +25,10 @@ Font loading and memory management has been improved in the multibyte case.
 
 * New conditional command This.
 
+* Conditional commands now have a return code (True, False or
+  Error).  This return code can be checked and tied to an action
+  with the new commands Cond and CondCase.
+
 Changes in beta release 2.5.0 (27-Jan-2002)
 
 * New commands ResizeMaximize and ResizeMoveMaximize that modify

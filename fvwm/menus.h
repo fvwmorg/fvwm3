@@ -44,17 +44,6 @@
 /**    OR PERFORMANCE OF THIS SOFTWARE.                                     **/
 /*****************************************************************************/
 
-
-/***********************************************************************
- *
- * $XConsortium: menus.h,v 1.24 89/12/10 17:46:26 jim Exp $
- *
- * twm menus include file
- *
- * 17-Nov-87 Thomas E. LaStrange		File created
- *
- ***********************************************************************/
-
 #ifndef _MENUS_
 #define _MENUS_
 
@@ -493,6 +482,10 @@ typedef struct MenuRootDynamic
    * selected is a popup menu item */
   struct MenuRoot *parent_menu; /* the menu that popped this up, if any */
   struct MenuItem *parent_item; /* the menu item that popped this up, if any */
+  Display *create_dpy;          /* the display used to create the menu.  Can't
+				 * use the normal display because 'xkill' would
+				 * kill the window manager if used on a tear off
+				 * menu. */
   Window window;                /* the window of the menu */
   MenuItem *selected_item;      /* the selected item in menu */
   MenuItem *submenu_item;       /* item that has it's submenu mapped */
@@ -525,6 +518,7 @@ typedef struct MenuRootDynamic
 #define MR_CONTINUATION_MENU(m)     ((m)->d->continuation_menu)
 #define MR_PARENT_MENU(m)           ((m)->d->parent_menu)
 #define MR_PARENT_ITEM(m)           ((m)->d->parent_item)
+#define MR_CREATE_DPY(m)            ((m)->d->create_dpy)
 #define MR_WINDOW(m)                ((m)->d->window)
 #define MR_SELECTED_ITEM(m)         ((m)->d->selected_item)
 #define MR_SUBMENU_ITEM(m)          ((m)->d->submenu_item)

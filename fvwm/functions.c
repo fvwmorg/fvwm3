@@ -107,6 +107,7 @@ static const func_type func_config[] =
   CMD_ENTRY("any", CMD_Any, F_ANY, 0),
   CMD_ENTRY("beep", CMD_Beep, F_BEEP, 0),
   CMD_ENTRY("borderstyle", CMD_BorderStyle, F_BORDERSTYLE, FUNC_DECOR),
+  CMD_ENTRY("break", CMD_Break, F_BREAK, 0),
   CMD_ENTRY("bugopts", CMD_BugOpts, F_BUG_OPTS, 0),
   CMD_ENTRY("busycursor", CMD_BusyCursor, F_BUSY_CURSOR, 0),
   CMD_ENTRY("buttonstate", CMD_ButtonState, F_BUTTON_STATE, 0),
@@ -120,6 +121,8 @@ static const func_type func_config[] =
   CMD_ENTRY("colorlimit", CMD_ColorLimit, F_COLOR_LIMIT, 0),
   CMD_ENTRY("colormapfocus", CMD_ColormapFocus, F_COLORMAP_FOCUS, 0),
   CMD_ENTRY("colorset", CMD_Colorset, F_NOP, 0),
+  CMD_ENTRY("cond", CMD_Cond, F_COND, 0),
+  CMD_ENTRY("condcase", CMD_CondCase, F_CONDCASE, 0),
   CMD_ENTRY("copymenustyle", CMD_CopyMenuStyle, F_COPY_MENU_STYLE, 0),
   CMD_ENTRY("current", CMD_Current, F_CURRENT, 0),
   CMD_ENTRY("cursormove", CMD_CursorMove, F_MOVECURSOR, 0),
@@ -349,11 +352,13 @@ static char *function_vars[] =
   "desk.name",
   "schedule.last",
   "schedule.next",
+  "cond.rc",
   NULL
 };
 
 static int expand_extended_var(
-  char *var_name, char *output, FvwmWindow *tmp_win)
+  char *var_name, char *output, FvwmWindow *tmp_win,
+  fvwm_cond_func_rc *cond_rc)
 {
   char *s;
   char *rest;
@@ -680,6 +685,24 @@ static int expand_extended_var(
     is_numeric = True;
     val = squeue_get_next_id();
     break;
+  case 36:
+    /* cond.rc */
+    if (cond_rc == NULL)
+    {
+      return 0;
+    }
+    switch (*cond_rc)
+    {
+    case COND_RC_OK:
+    case COND_RC_NO_MATCH:
+    case COND_RC_ERROR:
+      val = (int)(*cond_rc);
+      break;
+    default:
+      return 0;
+    }
+    is_numeric = True;
+    break;
   default:
     /* unknown variable - try to find it in the environment */
     s = getenv(var_name);
@@ -706,7 +729,8 @@ static int expand_extended_var(
 }
 
 static char *expand(
-  char *input, char *arguments[], FvwmWindow *tmp_win, Bool addto, Bool ismod)
+  char *input, char *arguments[], FvwmWindow *tmp_win, Bool addto, Bool ismod,
+  fvwm_cond_func_rc *cond_rc)
 {
   int l,i,l2,n,k,j,m;
   int xlen;
@@ -748,7 +772,7 @@ static char *expand(
 	  k = strlen(var);
 	  if (!addto)
 	  {
-	    xlen = expand_extended_var(var, NULL, tmp_win);
+	    xlen = expand_extended_var(var, NULL, tmp_win, cond_rc);
 	    if (xlen > 0)
 	      l2 += xlen - (k + 2);
 	  }
@@ -863,7 +887,7 @@ static char *expand(
 	  input[m] = 0;
 	  /* handle variable name */
 	  k = strlen(var);
-	  xlen = expand_extended_var(var, &out[j], tmp_win);
+	  xlen = expand_extended_var(var, &out[j], tmp_win, cond_rc);
 	  input[m] = ']';
 	  if (xlen > 0)
 	  {
@@ -1223,7 +1247,8 @@ void execute_function(exec_func_args_type *efa)
 
   function = PeekToken(taction, NULL);
   if (function)
-    function = expand(function, arguments, efa->tmp_win, False, False);
+    function = expand(
+     function, arguments, efa->tmp_win, False, False, efa->cond_rc);
   if (function && function[0] != '*')
   {
 #if 1
@@ -1264,7 +1289,8 @@ void execute_function(exec_func_args_type *efa)
   if (!(efa->flags.exec & FUNC_DONT_EXPAND_COMMAND))
   {
     expaction = expand(taction, arguments, efa->tmp_win,
-      (bif) ? !!(bif->flags & FUNC_ADD_TO) : False, taction[0] == '*');
+      (bif) ? !!(bif->flags & FUNC_ADD_TO) : False, (taction[0] == '*'),
+      efa->cond_rc);
     if (func_depth <= 1)
       must_free_string = set_repeat_data(expaction, REPEAT_COMMAND, bif);
     else
@@ -1302,7 +1328,9 @@ void execute_function(exec_func_args_type *efa)
     char *runaction;
 
     runaction = SkipNTokens(expaction, 1);
-    bif->action(efa->eventp,w,efa->tmp_win,efa->context,runaction,&efa->module);
+    bif->action(
+      efa->cond_rc, efa->eventp, w, efa->tmp_win, efa->context, runaction,
+      &efa->module);
   }
   else
   {
@@ -1320,13 +1348,13 @@ void execute_function(exec_func_args_type *efa)
     }
 
     execute_complex_function(
-      efa->eventp,w,efa->tmp_win,efa->context,runaction, &efa->module,
-      &desperate);
+      efa->cond_rc, efa->eventp, w, efa->tmp_win, efa->context, runaction,
+      &efa->module, &desperate);
     if (!bif && desperate)
     {
       if (executeModuleDesperate(
-	efa->eventp, w, efa->tmp_win, efa->context, runaction, &efa->module) ==
-	  -1 && *function != 0)
+	efa->cond_rc, efa->eventp, w, efa->tmp_win, efa->context, runaction,
+	&efa->module) == -1 && *function != 0)
       {
 	fvwm_msg(
 	  ERR, "execute_function", "No such command '%s'", function);
@@ -1358,22 +1386,24 @@ void execute_function(exec_func_args_type *efa)
 }
 
 void old_execute_function(
-  char *action, FvwmWindow *tmp_win, XEvent *eventp, unsigned long context,
-  int Module, FUNC_FLAGS_TYPE exec_flags, char *args[])
+	fvwm_cond_func_rc *cond_rc, char *action, FvwmWindow *tmp_win,
+	XEvent *eventp, unsigned long context, int Module,
+	FUNC_FLAGS_TYPE exec_flags, char *args[])
 {
-  exec_func_args_type efa;
+	exec_func_args_type efa;
 
-  memset(&efa, 0, sizeof(efa));
-  efa.eventp = eventp;
-  efa.tmp_win = tmp_win;
-  efa.action = action;
-  efa.args = args;
-  efa.context = context;
-  efa.module = Module;
-  efa.flags.exec = exec_flags;
-  execute_function(&efa);
+	memset(&efa, 0, sizeof(efa));
+	efa.cond_rc = cond_rc;
+	efa.eventp = eventp;
+	efa.tmp_win = tmp_win;
+	efa.action = action;
+	efa.args = args;
+	efa.context = context;
+	efa.module = Module;
+	efa.flags.exec = exec_flags;
+	execute_function(&efa);
 
-  return;
+	return;
 }
 
 
@@ -1769,6 +1799,7 @@ static void cf_cleanup(unsigned int *depth, char **arguments)
 
 static void execute_complex_function(F_CMD_ARGS, Bool *desperate)
 {
+  fvwm_cond_func_rc cond_func_rc = COND_RC_OK;
   cfunc_action_type type = CF_MOTION;
   char c;
   FunctionItem *fi;
@@ -1864,7 +1895,8 @@ static void execute_complex_function(F_CMD_ARGS, Bool *desperate)
     cf_cleanup(&depth, arguments);
     return;
   }
-  for (fi = func->first_item; fi != NULL; fi = fi->next_item)
+  for (fi = func->first_item; fi != NULL && cond_func_rc != COND_RC_BREAK;
+       fi = fi->next_item)
   {
     /* c is already lowercase here */
     c = fi->condition;
@@ -1876,7 +1908,7 @@ static void execute_complex_function(F_CMD_ARGS, Bool *desperate)
       else
 	w = None;
       old_execute_function(
-	fi->action, tmp_win, eventp, context, -1, 0, arguments);
+	&cond_func_rc, fi->action, tmp_win, eventp, context, -1, 0, arguments);
       break;
     case CF_DOUBLE_CLICK:
       HaveDoubleClick = True;
@@ -1892,7 +1924,7 @@ static void execute_complex_function(F_CMD_ARGS, Bool *desperate)
     }
   }
 
-  if(!Persist)
+  if(!Persist || cond_func_rc == COND_RC_BREAK)
   {
     func->use_depth--;
     cf_cleanup(&depth, arguments);
@@ -1941,7 +1973,7 @@ static void execute_complex_function(F_CMD_ARGS, Bool *desperate)
   {
     ev = &d;
     /* If it was a click, wait to see if its a double click */
-    if(HaveDoubleClick)
+    if (HaveDoubleClick)
     {
       type = CheckActionType(x, y, &d, True, False);
       switch (type)
@@ -1980,20 +2012,20 @@ static void execute_complex_function(F_CMD_ARGS, Bool *desperate)
    * select text. */
   UngrabEm(GRAB_NORMAL);
 #endif
-  while(fi != NULL)
+  while (fi != NULL)
   {
     /* make lower case */
     c = fi->condition;
-    if(isupper(c))
+    if (isupper(c))
       c=tolower(c);
-    if(c == type)
+    if (c == type)
     {
-      if(tmp_win)
+      if (tmp_win)
 	w = tmp_win->frame;
       else
 	w = None;
       old_execute_function(
-	fi->action, tmp_win, ev, context, -1, 0, arguments);
+	&cond_func_rc, fi->action, tmp_win, ev, context, -1, 0, arguments);
     }
     fi = fi->next_item;
   }

@@ -780,7 +780,7 @@ void menu_tear_off(MenuRoot *mr)
 	menuwmhints.input = False;
 	/* size hints */
 	menusizehints.flags =
-		PBaseSize | PMinSize | PMaxSize | USPosition;
+		PBaseSize | PMinSize | PMaxSize | PPosition;
 	menusizehints.base_width  = 0;
 	menusizehints.base_height = 0;
 	menusizehints.min_width = MR_WIDTH(mr);
@@ -1196,6 +1196,7 @@ void do_menu(MenuParameters *pmp, MenuReturn *pmret)
 
                                         indirect_depth++;
                                         memset(&efa, 0, sizeof(efa));
+					efa.cond_rc = NULL;
                                         efa.eventp = &Event;
                                         efa.tmp_win = pmp->button_window;
                                         efa.action = *(pmp->ret_paction);
@@ -1618,7 +1619,8 @@ static void menuShortcuts(
     break;
 
   case SA_LEAVE:
-    pmret->rc = MENU_POPDOWN;
+    pmret->rc =
+      (MR_IS_TEAR_OFF_MENU(mr)) ? MENU_NOP : MENU_POPDOWN;
     break;
 
   case SA_FIRST:
@@ -1732,12 +1734,13 @@ static void menuShortcuts(
     return;
 
   case SA_ABORT:
-    pmret->rc = MENU_ABORTED;
+    pmret->rc =
+      (MR_IS_TEAR_OFF_MENU(mr)) ? MENU_KILL_TEAR_OFF_MENU : MENU_ABORTED;
     return;
 
   case SA_TEAROFF:
     pmret->rc =
-      (MR_IS_TEAR_OFF_MENU(mr)) ? MENU_KILL_TEAR_OFF_MENU: MENU_TEAR_OFF;
+      (MR_IS_TEAR_OFF_MENU(mr)) ? MENU_NOP : MENU_TEAR_OFF;
     return;
 
   case SA_NONE:
@@ -1907,7 +1910,7 @@ static void MenuInteraction(
     } /* flags.do_recycle_event */
     else if (pmp->tear_off_root_menu_window != NULL &&
 	     XCheckTypedWindowEvent(
-	       dpy, pmp->tear_off_root_menu_window->w, ClientMessage,
+	       dpy, pmp->tear_off_root_menu_window->Parent, ClientMessage,
 	       &Event))
     {
       /* Got a ClientMessage for the tear out menu */
@@ -2281,7 +2284,7 @@ static void MenuInteraction(
       if (Event.xclient.format == 32 &&
 	  Event.xclient.data.l[0] == _XA_WM_DELETE_WINDOW &&
 	  pmp->tear_off_root_menu_window != NULL &&
-	  Event.xclient.window == pmp->tear_off_root_menu_window->w)
+	  Event.xclient.window == pmp->tear_off_root_menu_window->Parent)
       {
 	/* handle deletion of tear out menus */
 	pmret->rc = MENU_KILL_TEAR_OFF_MENU;
@@ -2591,6 +2594,7 @@ static void MenuInteraction(
 	    is_busy_grabbed = GrabEm(CRS_WAIT, GRAB_BUSYMENU);
 	  /* Execute the action */
 	  memset(&efa, 0, sizeof(efa));
+	  efa.cond_rc = NULL;
 	  efa.eventp = &Event;
 	  efa.tmp_win = *(pmp->pTmp_win);
 	  efa.action = action;
@@ -2899,6 +2903,17 @@ static void MenuInteraction(
     }
     break;
 
+  case MENU_TEAR_OFF:
+    if (MR_SELECTED_ITEM(pmp->menu))
+    {
+      select_menu_item(
+	pmp->menu, MR_SELECTED_ITEM(pmp->menu), False, (*pmp->pTmp_win));
+    }
+    MR_PARENT_MENU(pmp->menu) = NULL;
+    MR_PARENT_ITEM(pmp->menu) = NULL;
+    menu_tear_off(pmp->menu);
+    break;
+
   case MENU_ABORTED:
     if (!MR_IS_TEAR_OFF_MENU(pmp->menu))
     {
@@ -2971,12 +2986,6 @@ static void MenuInteraction(
       last_saved_pos_hints.pos_hints.screen_origin_x = pmp->screen_origin_x;
       last_saved_pos_hints.pos_hints.screen_origin_y = pmp->screen_origin_y;
     } /* a menu was selected */
-    break;
-
-  case MENU_TEAR_OFF:
-    MR_PARENT_MENU(pmp->menu) = NULL;
-    MR_PARENT_ITEM(pmp->menu) = NULL;
-    menu_tear_off(pmp->menu);
     break;
 
   default:
@@ -3119,6 +3128,7 @@ static int pop_menu_up(
       is_busy_grabbed = GrabEm(CRS_WAIT, GRAB_BUSYMENU);
     /* Execute the action */
     memset(&efa, 0, sizeof(efa));
+    efa.cond_rc = NULL;
     efa.eventp = &Event;
     efa.tmp_win = *pfw;
     efa.action = MR_POPUP_ACTION(mr);
@@ -3820,6 +3830,7 @@ static void pop_menu_down(MenuRoot **pmr, MenuParameters *pmp)
     t = lastTimestamp;
     /* Execute the action */
     memset(&efa, 0, sizeof(efa));
+    efa.cond_rc = NULL;
     efa.eventp = &Event;
     efa.tmp_win = (*pmp->pTmp_win);
     efa.action = MR_POPDOWN_ACTION(*pmr);
@@ -4056,7 +4067,7 @@ static void paint_item(MenuRoot *mr, MenuItem *mi, FvwmWindow *fw,
   /***************************************************************
    * Draw the item itself.
    ***************************************************************/
-  
+
   /* Calculate the separator offsets. */
   if (MST_HAS_LONG_SEPARATORS(mr))
   {
@@ -4881,8 +4892,16 @@ Bool DestroyMenu(MenuRoot *mr, Bool do_recreate, Bool is_command_request)
     Menus.all = MR_NEXT_MENU(mr);
   else
     MR_NEXT_MENU(prev) = MR_NEXT_MENU(mr);
-  XDestroyWindow(dpy,MR_WINDOW(mr));
-  XDeleteContext(dpy, MR_WINDOW(mr), MenuContext);
+  /* destroy the window and the display */
+  if (mr->d->create_dpy != NULL &&mr->d->create_dpy != dpy)
+  {
+    XCloseDisplay(mr->d->create_dpy);
+  }
+  if (MR_WINDOW(mr) != None)
+  {
+    XDestroyWindow(dpy, MR_WINDOW(mr));
+    XDeleteContext(dpy, MR_WINDOW(mr), MenuContext);
+  }
 
   if (MR_COPIES(mr) == 0)
   {
@@ -5647,6 +5666,7 @@ static void make_menu_window(MenuRoot *mr)
   XSetWindowAttributes attributes;
   unsigned int w;
   unsigned int h;
+  unsigned int evmask;
 
   valuemask = CWBackPixel | CWEventMask | CWCursor | CWColormap
     | CWBorderPixel | CWSaveUnder;
@@ -5654,7 +5674,8 @@ static void make_menu_window(MenuRoot *mr)
   attributes.colormap = Pcmap;
   attributes.background_pixel = (MST_HAS_MENU_CSET(mr)) ?
     Colorset[MST_CSET_MENU(mr)].bg : MST_MENU_COLORS(mr).back;
-  attributes.event_mask = XEVMASK_MENUW;
+  evmask = XEVMASK_MENUW;
+  attributes.event_mask = 0;
   attributes.cursor = Scr.FvwmCursors[CRS_MENU];
   attributes.save_under = True;
 
@@ -5666,10 +5687,34 @@ static void make_menu_window(MenuRoot *mr)
   h = MR_HEIGHT(mr);
   if (h == 0)
     h = 1;
-  MR_WINDOW(mr) = XCreateWindow(dpy, Scr.Root, 0, 0, w, h,
-				(unsigned int) 0, Pdepth, InputOutput,
-				Pvisual, valuemask, &attributes);
-  XSaveContext(dpy,MR_WINDOW(mr),MenuContext,(caddr_t)mr);
+
+  /* Create a display used to create the window.  Can't use the normal display
+   * because 'xkill' would  kill the window manager if used on a tear off menu.
+   * The display can't be deleted right now because that would either destroy
+   * the new window or leave it as an orphan if fvwm dies or is restarted. */
+  MR_CREATE_DPY(mr) = XOpenDisplay(display_name);
+  if (MR_CREATE_DPY(mr) == NULL)
+  {
+    /* Doh.  Use the standard display instead. */
+    MR_CREATE_DPY(mr) = dpy;
+  }
+  MR_WINDOW(mr) = XCreateWindow(
+    MR_CREATE_DPY(mr), Scr.Root, 0, 0, w, h, (unsigned int) 0, Pdepth,
+    InputOutput, Pvisual, valuemask, &attributes);
+  if (MR_CREATE_DPY(mr) != dpy)
+  {
+    /* We *must* synchronize the display here.  Otherwise the request will
+     * never be processed. */
+    XSync(MR_CREATE_DPY(mr), 1);
+  }
+  if (MR_WINDOW(mr) != None)
+  {
+    /* select events for the window from the standard display */
+    XSelectInput(dpy, MR_WINDOW(mr), evmask);
+  }
+  XSaveContext(dpy, MR_WINDOW(mr), MenuContext,(caddr_t)mr);
+
+  return;
 }
 
 

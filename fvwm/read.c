@@ -140,7 +140,8 @@ void run_command_stream( FILE* f, XEvent *eventp, FvwmWindow *tmp_win,
       fvwm_msg(DBG, "ReadSubFunc", "Module switch %d, about to exec: '%s'",
 	       Module, tline);
 
-    old_execute_function(tline, tmp_win, eventp, context, Module, 0, NULL);
+    old_execute_function(
+      NULL, tline, tmp_win, eventp, context, Module, 0, NULL);
     tline = fgets(line, (sizeof line) - 1, f);
   }
 }

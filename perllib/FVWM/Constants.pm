@@ -4,95 +4,9 @@
 #   use vars qw(@EXPORT);
 #   require FVWM::Constants;
 #
-use constant M_NEW_PAGE => (1);
-use constant M_NEW_DESK => (1<<1);
-use constant M_OLD_ADD_WINDOW => (1<<2);
-use constant M_RAISE_WINDOW => (1<<3);
-use constant M_LOWER_WINDOW => (1<<4);
-use constant M_OLD_CONFIGURE_WINDOW => (1<<5);
-use constant M_FOCUS_CHANGE => (1<<6);
-use constant M_DESTROY_WINDOW => (1<<7);
-use constant M_ICONIFY => (1<<8);
-use constant M_DEICONIFY => (1<<9);
-use constant M_WINDOW_NAME => (1<<10);
-use constant M_ICON_NAME => (1<<11);
-use constant M_RES_CLASS => (1<<12);
-use constant M_RES_NAME => (1<<13);
-use constant M_END_WINDOWLIST => (1<<14);
-use constant M_ICON_LOCATION => (1<<15);
-use constant M_MAP => (1<<16);
-use constant M_ERROR => (1<<17);
-use constant M_CONFIG_INFO => (1<<18);
-use constant M_END_CONFIG_INFO => (1<<19);
-use constant M_ICON_FILE => (1<<20);
-use constant M_DEFAULTICON => (1<<21);
-use constant M_STRING => (1<<22);
-use constant M_MINI_ICON => (1<<23);
-use constant M_WINDOWSHADE => (1<<24);
-use constant M_DEWINDOWSHADE => (1<<25);
-use constant M_VISIBLE_NAME => (1<<26);
-use constant M_SENDCONFIG => (1<<27);
-use constant M_RESTACK => (1<<28);
-use constant M_ADD_WINDOW => (1<<29);
-use constant M_CONFIGURE_WINDOW => (1<<30);
-use constant M_EXTENDED_MSG => (1<<31);
-use constant MX_VISIBLE_ICON_NAME => ((1<<0)|M_EXTENDED_MSG);
-use constant MX_ENTER_WINDOW => ((1<<1)|M_EXTENDED_MSG);
-use constant MX_LEAVE_WINDOW => ((1<<2)|M_EXTENDED_MSG);
-use constant MX_PROPERTY_CHANGE => ((1<<3)|M_EXTENDED_MSG);
-use constant MX_PROPERTY_CHANGE_NONE => 0;
-use constant MX_PROPERTY_CHANGE_BACKGROUND => 1;
-use constant MX_PROPERTY_CHANGE_SWALLOW => 2;
-use constant MAX_MSG_MASK => 0x7fffffff;
-use constant MAX_XMSG_MASK => 0x0000000f;
-use constant HEADER_SIZE => 4;
-use constant START_FLAG => 0xffffffff;
 use constant ON_EXIT => '1e20';
 use constant INTSIZE => 4;
 @EXPORT = qw(
-	M_NEW_PAGE
-	M_NEW_DESK
-	M_OLD_ADD_WINDOW
-	M_RAISE_WINDOW
-	M_LOWER_WINDOW
-	M_OLD_CONFIGURE_WINDOW
-	M_FOCUS_CHANGE
-	M_DESTROY_WINDOW
-	M_ICONIFY
-	M_DEICONIFY
-	M_WINDOW_NAME
-	M_ICON_NAME
-	M_RES_CLASS
-	M_RES_NAME
-	M_END_WINDOWLIST
-	M_ICON_LOCATION
-	M_MAP
-	M_ERROR
-	M_CONFIG_INFO
-	M_END_CONFIG_INFO
-	M_ICON_FILE
-	M_DEFAULTICON
-	M_STRING
-	M_MINI_ICON
-	M_WINDOWSHADE
-	M_DEWINDOWSHADE
-	M_VISIBLE_NAME
-	M_SENDCONFIG
-	M_RESTACK
-	M_ADD_WINDOW
-	M_CONFIGURE_WINDOW
-	M_EXTENDED_MSG
-	MX_VISIBLE_ICON_NAME
-	MX_ENTER_WINDOW
-	MX_LEAVE_WINDOW
-	MX_PROPERTY_CHANGE
-	MX_PROPERTY_CHANGE_NONE
-	MX_PROPERTY_CHANGE_BACKGROUND
-	MX_PROPERTY_CHANGE_SWALLOW
-	MAX_MSG_MASK
-	MAX_XMSG_MASK
-	HEADER_SIZE
-	START_FLAG
 	ON_EXIT
 	INTSIZE
 );

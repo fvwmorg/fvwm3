@@ -1667,7 +1667,7 @@ FvwmWindow *AddWindow(Window w, FvwmWindow *ReuseWin, Bool is_menu)
     if (!IsRectangleOnThisPage(&tmp_win->frame_g, Scr.CurrentDesk))
     {
       SET_STICKY(tmp_win, 0);
-      handle_stick(&Event, tmp_win->frame, tmp_win, C_FRAME, "", 0, 1);
+      handle_stick(NULL, &Event, tmp_win->frame, tmp_win, C_FRAME, "", 0, 1);
     }
   }
 
@@ -1686,7 +1686,7 @@ FvwmWindow *AddWindow(Window w, FvwmWindow *ReuseWin, Bool is_menu)
     Event.xbutton.y = (tmp_win->frame_g.height>>1);
     Event.xbutton.subwindow = None;
     Event.xany.window = tmp_win->w;
-    CMD_Resize(&Event , tmp_win->w, tmp_win, C_WINDOW, "", 0);
+    CMD_Resize(NULL, &Event , tmp_win->w, tmp_win, C_WINDOW, "", 0);
   }
 
   /****** window colormap ******/

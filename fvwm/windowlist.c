@@ -626,7 +626,7 @@ void CMD_WindowList(F_CMD_ARGS)
   DestroyMenu(mr, False, False);
   if (mret.rc == MENU_DOUBLE_CLICKED && default_action && *default_action)
     old_execute_function(
-      default_action, tmp_win, eventp, context, *Module, 0 , NULL);
+      cond_rc, default_action, tmp_win, eventp, context, *Module, 0 , NULL);
   if (default_action != NULL)
     free(default_action);
   if (use_condition)

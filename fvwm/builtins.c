@@ -672,38 +672,6 @@ void CMD_CursorMove(F_CMD_ARGS)
 }
 
 
-void CMD_Destroy(F_CMD_ARGS)
-{
-	if (DeferExecution(
-		    eventp, &w, &tmp_win, &context, CRS_DESTROY, ButtonRelease))
-	{
-		return;
-	}
-	if (!is_function_allowed(F_DESTROY, NULL, tmp_win, True, True))
-	{
-		XBell(dpy, 0);
-		return;
-	}
-	if (IS_TEAR_OFF_MENU(tmp_win))
-	{
-		/* 'soft' delete tear off menus */
-		CMD_Delete(F_PASS_ARGS);
-		return;
-	}
-	if (XGetGeometry(dpy, tmp_win->w, &JunkRoot, &JunkX, &JunkY,
-			 &JunkWidth, &JunkHeight, &JunkBW, &JunkDepth) == 0)
-	{
-		destroy_window(tmp_win);
-	}
-	else
-	{
-		XKillClient(dpy, tmp_win->w);
-	}
-	XSync(dpy,0);
-
-	return;
-}
-
 void CMD_Delete(F_CMD_ARGS)
 {
 	if (DeferExecution(
@@ -714,6 +682,17 @@ void CMD_Delete(F_CMD_ARGS)
 	if (!is_function_allowed(F_DELETE, NULL, tmp_win, True, True))
 	{
 		XBell(dpy, 0);
+		return;
+	}
+	if (IS_TEAR_OFF_MENU(tmp_win))
+	{
+		/* 'soft' delete tear off menus.  Note: we can't send the
+		 * message to the menu window directly because it was created
+		 * using a different display.  The client message would never
+		 * be read from there. */
+		send_clientmessage(
+			dpy, tmp_win->Parent, _XA_WM_DELETE_WINDOW,
+			CurrentTime);
 		return;
 	}
 	if (WM_DELETES_WINDOW(tmp_win))
@@ -731,8 +710,44 @@ void CMD_Delete(F_CMD_ARGS)
 	return;
 }
 
+void CMD_Destroy(F_CMD_ARGS)
+{
+	if (IS_TEAR_OFF_MENU(tmp_win))
+	{
+		CMD_Delete(F_PASS_ARGS);
+		return;
+	}
+	if (DeferExecution(
+		    eventp, &w, &tmp_win, &context, CRS_DESTROY, ButtonRelease))
+	{
+		return;
+	}
+	if (!is_function_allowed(F_DESTROY, NULL, tmp_win, True, True))
+	{
+		XBell(dpy, 0);
+		return;
+	}
+	if (XGetGeometry(dpy, tmp_win->w, &JunkRoot, &JunkX, &JunkY,
+			 &JunkWidth, &JunkHeight, &JunkBW, &JunkDepth) == 0)
+	{
+		destroy_window(tmp_win);
+	}
+	else
+	{
+		XKillClient(dpy, tmp_win->w);
+	}
+	XSync(dpy,0);
+
+	return;
+}
+
 void CMD_Close(F_CMD_ARGS)
 {
+	if (IS_TEAR_OFF_MENU(tmp_win))
+	{
+		CMD_Delete(F_PASS_ARGS);
+		return;
+	}
 	if (DeferExecution(eventp, &w, &tmp_win, &context, CRS_DESTROY,
 			   ButtonRelease))
 	{
@@ -741,12 +756,6 @@ void CMD_Close(F_CMD_ARGS)
 	if (!is_function_allowed(F_CLOSE, NULL, tmp_win, True, True))
 	{
 		XBell(dpy, 0);
-		return;
-	}
-	if (IS_TEAR_OFF_MENU(tmp_win))
-	{
-		/* 'soft' delete tear off menus */
-		CMD_Delete(F_PASS_ARGS);
 		return;
 	}
 	if (WM_DELETES_WINDOW(tmp_win))
@@ -2141,7 +2150,7 @@ void AddToDecor(FvwmDecor *decor, char *s)
   if (!*s)
     return;
   Scr.cur_decor = decor;
-  old_execute_function(s, NULL, &Event, C_ROOT, -1, 0, NULL);
+  old_execute_function(NULL, s, NULL, &Event, C_ROOT, -1, 0, NULL);
   Scr.cur_decor = NULL;
 }
 
@@ -2249,7 +2258,8 @@ void CMD_DestroyDecor(F_CMD_ARGS)
 	  fw->frame_g.height -= fw->decor->title_height;
 	  fw->decor = NULL;
 	  old_execute_function(
-	    "ChangeDecor Default", fw, eventp, C_WINDOW, *Module, 0, NULL);
+	    NULL, "ChangeDecor Default", fw, eventp, C_WINDOW, *Module, 0,
+	    NULL);
 	}
       }
     }
@@ -3639,7 +3649,8 @@ void CMD_StrokeFunc(F_CMD_ARGS)
       usleep(200000);
       UngrabEm(GRAB_BUSY);
     }
-    old_execute_function(stroke_action, tmp_win, eventp, context, -1, 0, NULL);
+    old_execute_function(
+      NULL, stroke_action, tmp_win, eventp, context, -1, 0, NULL);
   }
 
 }

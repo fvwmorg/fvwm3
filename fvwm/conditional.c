@@ -49,53 +49,55 @@
  **********************************************************************/
 char *CreateFlagString(char *string, char **restptr)
 {
-  char *retval;
-  char *c;
-  char *start;
-  char closeopt;
-  int length;
+	char *retval;
+	char *c;
+	char *start;
+	char closeopt;
+	int length;
 
-  c = string;
-  while (isspace((unsigned char)*c) && (*c != 0))
-    c++;
+	c = string;
+	while (isspace((unsigned char)*c) && (*c != 0))
+		c++;
 
-  if (*c == '[' || *c == '(')
-  {
-    /* Get the text between [ ] or ( ) */
-    if (*c == '[')
-      closeopt = ']';
-    else
-      closeopt = ')';
-    c++;
-    start = c;
-    length = 0;
-    while (*c != closeopt) {
-      if (*c == 0) {
-	fvwm_msg(ERR, "CreateFlagString",
-		 "Conditionals require closing parenthesis");
-	*restptr = NULL;
-	return NULL;
-      }
-      c++;
-      length++;
-    }
+	if (*c == '[' || *c == '(')
+	{
+		/* Get the text between [ ] or ( ) */
+		if (*c == '[')
+			closeopt = ']';
+		else
+			closeopt = ')';
+		c++;
+		start = c;
+		length = 0;
+		while (*c != closeopt)
+		{
+			if (*c == 0)
+			{
+				fvwm_msg(ERR, "CreateFlagString",
+					 "Conditionals require closing "
+					 "parenthesis");
+				*restptr = NULL;
+				return NULL;
+			}
+			c++;
+			length++;
+		}
 
-    /* We must allocate a new string because we null terminate the string
-     * between the [ ] or ( ) characters.
-     */
-    retval = safemalloc(length + 1);
-    strncpy(retval, start, length);
-    retval[length] = 0;
+		/* We must allocate a new string because we null terminate the
+		 * string between the [ ] or ( ) characters. */
+		retval = safemalloc(length + 1);
+		strncpy(retval, start, length);
+		retval[length] = 0;
 
-    *restptr = c + 1;
-  }
-  else
-  {
-    retval = NULL;
-    *restptr = c;
-  }
+		*restptr = c + 1;
+	}
+	else
+	{
+		retval = NULL;
+		*restptr = c;
+	}
 
-  return retval;
+	return retval;
 }
 
 /**********************************************************************
@@ -105,19 +107,23 @@ char *CreateFlagString(char *string, char **restptr)
  **********************************************************************/
 void FreeConditionMask(WindowConditionMask *mask)
 {
-  if (mask->my_flags.needs_name)
-    free(mask->name);
-  else if (mask->my_flags.needs_not_name)
-    free(mask->name - 1);
+	if (mask->my_flags.needs_name)
+	{
+		free(mask->name);
+	}
+	else if (mask->my_flags.needs_not_name)
+	{
+		free(mask->name - 1);
+	}
 }
 
 /* Assign the default values for the window mask
- * NOTE - exported via .h
- */
+ * NOTE - exported via .h */
 void DefaultConditionMask(WindowConditionMask *mask)
 {
-  memset(mask, 0, sizeof(WindowConditionMask));
-  mask->layer = -2; /* -2  means no layer condition, -1 means current */
+	memset(mask, 0, sizeof(WindowConditionMask));
+	/* -2  means no layer condition, -1 means current */
+	mask->layer = -2;
 }
 
 /**********************************************************************
@@ -127,212 +133,227 @@ void DefaultConditionMask(WindowConditionMask *mask)
  **********************************************************************/
 void CreateConditionMask(char *flags, WindowConditionMask *mask)
 {
-  char *condition;
-  char *prev_condition = NULL;
-  char *tmp;
-  unsigned int state;
+	char *condition;
+	char *prev_condition = NULL;
+	char *tmp;
+	unsigned int state;
 
-  if (flags == NULL)
-    return;
-
-  /* Next parse the flags in the string. */
-  tmp = flags;
-  tmp = GetNextSimpleOption(tmp, &condition);
-
-  while (condition)
-  {
-    if (StrEquals(condition,"AcceptsFocus"))
-    {
-      mask->my_flags.do_accept_focus = 1;
-      mask->my_flags.use_do_accept_focus = 1;
-    }
-    else if (StrEquals(condition,"!AcceptsFocus"))
-    {
-      mask->my_flags.do_accept_focus = 0;
-      mask->my_flags.use_do_accept_focus = 1;
-    }
-    else if (StrEquals(condition,"Focused"))
-    {
-      mask->my_flags.needs_focus = NEEDS_TRUE;
-    }
-    else if (StrEquals(condition,"!Focused"))
-    {
-      mask->my_flags.needs_focus = NEEDS_FALSE;
-    }
-    else if (StrEquals(condition,"HasPointer"))
-    {
-      mask->my_flags.needs_pointer = NEEDS_TRUE;
-    }
-    else if (StrEquals(condition,"!HasPointer"))
-    {
-      mask->my_flags.needs_pointer = NEEDS_FALSE;
-    }
-    else if (StrEquals(condition,"Iconic"))
-    {
-      SET_ICONIFIED(mask, 1);
-      SETM_ICONIFIED(mask, 1);
-    }
-    else if (StrEquals(condition,"!Iconic"))
-    {
-      SET_ICONIFIED(mask, 0);
-      SETM_ICONIFIED(mask, 1);
-    }
-    else if (StrEquals(condition,"Visible"))
-    {
-      SET_PARTIALLY_VISIBLE(mask, 1);
-      SETM_PARTIALLY_VISIBLE(mask, 1);
-    }
-    else if (StrEquals(condition,"!Visible"))
-    {
-      SET_PARTIALLY_VISIBLE(mask, 0);
-      SETM_PARTIALLY_VISIBLE(mask, 1);
-    }
-    else if (StrEquals(condition,"PlacedByButton3"))
-    {
-      SET_PLACED_WB3(mask, 1);
-      SETM_PLACED_WB3(mask, 1);
-    }
-    else if (StrEquals(condition,"!PlacedByButton3"))
-    {
-      SET_PLACED_WB3(mask, 0);
-      SETM_PLACED_WB3(mask, 1);
-    }
-    else if (StrEquals(condition,"Raised"))
-    {
-      SET_FULLY_VISIBLE(mask, 1);
-      SETM_FULLY_VISIBLE(mask, 1);
-    }
-    else if (StrEquals(condition,"!Raised"))
-    {
-      SET_FULLY_VISIBLE(mask, 0);
-      SETM_FULLY_VISIBLE(mask, 1);
-    }
-    else if (StrEquals(condition,"Sticky"))
-    {
-      SET_STICKY(mask, 1);
-      SETM_STICKY(mask, 1);
-    }
-    else if (StrEquals(condition,"!Sticky"))
-    {
-      SET_STICKY(mask, 0);
-      SETM_STICKY(mask, 1);
-    }
-    else if (StrEquals(condition,"Maximized"))
-    {
-      SET_MAXIMIZED(mask, 1);
-      SETM_MAXIMIZED(mask, 1);
-    }
-    else if (StrEquals(condition,"!Maximized"))
-    {
-      SET_MAXIMIZED(mask, 0);
-      SETM_MAXIMIZED(mask, 1);
-    }
-    else if (StrEquals(condition,"Shaded"))
-    {
-      SET_SHADED(mask, 1);
-      SETM_SHADED(mask, 1);
-    }
-    else if (StrEquals(condition,"!Shaded"))
-    {
-      SET_SHADED(mask, 0);
-      SETM_SHADED(mask, 1);
-    }
-    else if (StrEquals(condition,"Transient"))
-    {
-      SET_TRANSIENT(mask, 1);
-      SETM_TRANSIENT(mask, 1);
-    }
-    else if (StrEquals(condition,"!Transient"))
-    {
-      SET_TRANSIENT(mask, 0);
-      SETM_TRANSIENT(mask, 1);
-    }
-    else if (StrEquals(condition,"PlacedByFvwm"))
-    {
-      SET_PLACED_BY_FVWM(mask, 1);
-      SETM_PLACED_BY_FVWM(mask, 1);
-    }
-    else if (StrEquals(condition,"!PlacedByFvwm"))
-    {
-      SET_PLACED_BY_FVWM(mask, 0);
-      SETM_PLACED_BY_FVWM(mask, 1);
-    }
-    else if (StrEquals(condition,"CurrentDesk"))
-      mask->my_flags.needs_current_desk = 1;
-    else if (StrEquals(condition,"CurrentPage"))
-    {
-      mask->my_flags.needs_current_desk = 1;
-      mask->my_flags.needs_current_page = 1;
-    }
-    else if (StrEquals(condition,"CurrentGlobalPage"))
-    {
-      mask->my_flags.needs_current_desk = 1;
-      mask->my_flags.needs_current_global_page = 1;
-    }
-    else if (StrEquals(condition,"CurrentPageAnyDesk") ||
-	    StrEquals(condition,"CurrentScreen"))
-      mask->my_flags.needs_current_page = 1;
-    else if (StrEquals(condition,"CurrentGlobbalPageAnyDesk"))
-      mask->my_flags.needs_current_global_page = 1;
-    else if (StrEquals(condition,"CirculateHit"))
-      mask->my_flags.use_circulate_hit = 1;
-    else if (StrEquals(condition,"CirculateHitIcon"))
-      mask->my_flags.use_circulate_hit_icon = 1;
-    else if (StrEquals(condition,"CirculateHitShaded"))
-      mask->my_flags.use_circulate_hit_shaded = 1;
-    else if (StrEquals(condition,"State") || StrEquals(condition,"!State"))
-    {
-      if (sscanf(tmp, "%d", &state) && state >= 0 && state <= 31)
-      {
-	state = (1 << state);
-	if (StrEquals(condition,"State"))
+	if (flags == NULL)
 	{
-	  SET_USER_STATES(mask, state);
+		return;
 	}
-	else
+
+	/* Next parse the flags in the string. */
+	tmp = flags;
+	tmp = GetNextSimpleOption(tmp, &condition);
+
+	while (condition)
 	{
-	  CLEAR_USER_STATES(mask, state);
+		if (StrEquals(condition,"AcceptsFocus"))
+		{
+			mask->my_flags.do_accept_focus = 1;
+			mask->my_flags.use_do_accept_focus = 1;
+		}
+		else if (StrEquals(condition,"!AcceptsFocus"))
+		{
+			mask->my_flags.do_accept_focus = 0;
+			mask->my_flags.use_do_accept_focus = 1;
+		}
+		else if (StrEquals(condition,"Focused"))
+		{
+			mask->my_flags.needs_focus = NEEDS_TRUE;
+		}
+		else if (StrEquals(condition,"!Focused"))
+		{
+			mask->my_flags.needs_focus = NEEDS_FALSE;
+		}
+		else if (StrEquals(condition,"HasPointer"))
+		{
+			mask->my_flags.needs_pointer = NEEDS_TRUE;
+		}
+		else if (StrEquals(condition,"!HasPointer"))
+		{
+			mask->my_flags.needs_pointer = NEEDS_FALSE;
+		}
+		else if (StrEquals(condition,"Iconic"))
+		{
+			SET_ICONIFIED(mask, 1);
+			SETM_ICONIFIED(mask, 1);
+		}
+		else if (StrEquals(condition,"!Iconic"))
+		{
+			SET_ICONIFIED(mask, 0);
+			SETM_ICONIFIED(mask, 1);
+		}
+		else if (StrEquals(condition,"Visible"))
+		{
+			SET_PARTIALLY_VISIBLE(mask, 1);
+			SETM_PARTIALLY_VISIBLE(mask, 1);
+		}
+		else if (StrEquals(condition,"!Visible"))
+		{
+			SET_PARTIALLY_VISIBLE(mask, 0);
+			SETM_PARTIALLY_VISIBLE(mask, 1);
+		}
+		else if (StrEquals(condition,"PlacedByButton3"))
+		{
+			SET_PLACED_WB3(mask, 1);
+			SETM_PLACED_WB3(mask, 1);
+		}
+		else if (StrEquals(condition,"!PlacedByButton3"))
+		{
+			SET_PLACED_WB3(mask, 0);
+			SETM_PLACED_WB3(mask, 1);
+		}
+		else if (StrEquals(condition,"Raised"))
+		{
+			SET_FULLY_VISIBLE(mask, 1);
+			SETM_FULLY_VISIBLE(mask, 1);
+		}
+		else if (StrEquals(condition,"!Raised"))
+		{
+			SET_FULLY_VISIBLE(mask, 0);
+			SETM_FULLY_VISIBLE(mask, 1);
+		}
+		else if (StrEquals(condition,"Sticky"))
+		{
+			SET_STICKY(mask, 1);
+			SETM_STICKY(mask, 1);
+		}
+		else if (StrEquals(condition,"!Sticky"))
+		{
+			SET_STICKY(mask, 0);
+			SETM_STICKY(mask, 1);
+		}
+		else if (StrEquals(condition,"Maximized"))
+		{
+			SET_MAXIMIZED(mask, 1);
+			SETM_MAXIMIZED(mask, 1);
+		}
+		else if (StrEquals(condition,"!Maximized"))
+		{
+			SET_MAXIMIZED(mask, 0);
+			SETM_MAXIMIZED(mask, 1);
+		}
+		else if (StrEquals(condition,"Shaded"))
+		{
+			SET_SHADED(mask, 1);
+			SETM_SHADED(mask, 1);
+		}
+		else if (StrEquals(condition,"!Shaded"))
+		{
+			SET_SHADED(mask, 0);
+			SETM_SHADED(mask, 1);
+		}
+		else if (StrEquals(condition,"Transient"))
+		{
+			SET_TRANSIENT(mask, 1);
+			SETM_TRANSIENT(mask, 1);
+		}
+		else if (StrEquals(condition,"!Transient"))
+		{
+			SET_TRANSIENT(mask, 0);
+			SETM_TRANSIENT(mask, 1);
+		}
+		else if (StrEquals(condition,"PlacedByFvwm"))
+		{
+			SET_PLACED_BY_FVWM(mask, 1);
+			SETM_PLACED_BY_FVWM(mask, 1);
+		}
+		else if (StrEquals(condition,"!PlacedByFvwm"))
+		{
+			SET_PLACED_BY_FVWM(mask, 0);
+			SETM_PLACED_BY_FVWM(mask, 1);
+		}
+		else if (StrEquals(condition,"CurrentDesk"))
+			mask->my_flags.needs_current_desk = 1;
+		else if (StrEquals(condition,"CurrentPage"))
+		{
+			mask->my_flags.needs_current_desk = 1;
+			mask->my_flags.needs_current_page = 1;
+		}
+		else if (StrEquals(condition,"CurrentGlobalPage"))
+		{
+			mask->my_flags.needs_current_desk = 1;
+			mask->my_flags.needs_current_global_page = 1;
+		}
+		else if (StrEquals(condition,"CurrentPageAnyDesk") ||
+			 StrEquals(condition,"CurrentScreen"))
+			mask->my_flags.needs_current_page = 1;
+		else if (StrEquals(condition,"CurrentGlobbalPageAnyDesk"))
+			mask->my_flags.needs_current_global_page = 1;
+		else if (StrEquals(condition,"CirculateHit"))
+			mask->my_flags.use_circulate_hit = 1;
+		else if (StrEquals(condition,"CirculateHitIcon"))
+			mask->my_flags.use_circulate_hit_icon = 1;
+		else if (StrEquals(condition,"CirculateHitShaded"))
+			mask->my_flags.use_circulate_hit_shaded = 1;
+		else if (StrEquals(condition,"State") ||
+			 StrEquals(condition,"!State"))
+		{
+			if (sscanf(tmp, "%d", &state) &&
+			    state >= 0 && state <= 31)
+			{
+				state = (1 << state);
+				if (StrEquals(condition,"State"))
+				{
+					SET_USER_STATES(mask, state);
+				}
+				else
+				{
+					CLEAR_USER_STATES(mask, state);
+				}
+				SETM_USER_STATES(mask, state);
+				tmp = GetNextToken(tmp, &condition);
+			}
+		}
+		else if (StrEquals(condition, "Layer"))
+		{
+			if (sscanf(tmp,"%d",&mask->layer))
+			{
+				tmp = GetNextToken (tmp, &condition);
+				if (mask->layer < 0)
+				{
+					/* silently ignore invalid layers */
+					mask->layer = -2;
+				}
+			}
+			else
+			{
+				/* needs current layer */
+				mask->layer = -1;
+			}
+		}
+		else if (!mask->my_flags.needs_name &&
+			 !mask->my_flags.needs_not_name)
+		{
+			/* only 1st name to avoid mem leak */
+			mask->name = condition;
+			condition = NULL;
+			if (mask->name[0] == '!')
+			{
+				mask->my_flags.needs_not_name = 1;
+				mask->name++;
+			}
+			else
+			{
+				mask->my_flags.needs_name = 1;
+			}
+		}
+
+		if (prev_condition)
+		{
+			free(prev_condition);
+		}
+
+		prev_condition = condition;
+		tmp = GetNextSimpleOption(tmp, &condition);
 	}
-	SETM_USER_STATES(mask, state);
-	tmp = GetNextToken(tmp, &condition);
-      }
-    }
-    else if (StrEquals(condition, "Layer"))
-    {
-       if (sscanf(tmp,"%d",&mask->layer))
-       {
-	  tmp = GetNextToken (tmp, &condition);
-          if (mask->layer < 0)
-            mask->layer = -2; /* silently ignore invalid layers */
-       }
-       else
-       {
-          mask->layer = -1; /* needs current layer */
-       }
-    }
-    else if (!mask->my_flags.needs_name && !mask->my_flags.needs_not_name)
-    {
-      /* only 1st name to avoid mem leak */
-      mask->name = condition;
-      condition = NULL;
-      if (mask->name[0] == '!')
-      {
-	mask->my_flags.needs_not_name = 1;
-	mask->name++;
-      }
-      else
-	mask->my_flags.needs_name = 1;
-    }
 
-    if (prev_condition)
-      free(prev_condition);
-
-    prev_condition = condition;
-    tmp = GetNextSimpleOption(tmp, &condition);
-  }
-
-  if (prev_condition)
-    free(prev_condition);
+	if (prev_condition)
+	{
+		free(prev_condition);
+	}
 }
 
 /**********************************************************************
@@ -342,163 +363,163 @@ void CreateConditionMask(char *flags, WindowConditionMask *mask)
  **********************************************************************/
 Bool MatchesConditionMask(FvwmWindow *fw, WindowConditionMask *mask)
 {
-  Bool fMatchesName;
-  Bool fMatchesIconName;
-  Bool fMatchesClass;
-  Bool fMatchesResource;
-  Bool fMatches;
-  FvwmWindow *sf = get_focus_window();
+	Bool fMatchesName;
+	Bool fMatchesIconName;
+	Bool fMatchesClass;
+	Bool fMatchesResource;
+	Bool fMatches;
+	FvwmWindow *sf = get_focus_window();
 
-  if (!blockcmpmask((char *)&(fw->flags), (char *)&(mask->flags),
-                    (char *)&(mask->flag_mask), sizeof(fw->flags)))
-  {
-    return 0;
-  }
+	if (!blockcmpmask((char *)&(fw->flags), (char *)&(mask->flags),
+			  (char *)&(mask->flag_mask), sizeof(fw->flags)))
+	{
+		return False;
+	}
 
-  if (!mask->my_flags.use_circulate_hit && DO_SKIP_CIRCULATE(fw))
-  {
-    return 0;
-  }
+	if (!mask->my_flags.use_circulate_hit && DO_SKIP_CIRCULATE(fw))
+	{
+		return False;
+	}
 
-  if (!mask->my_flags.use_circulate_hit_icon && IS_ICONIFIED(fw) &&
-      DO_SKIP_ICON_CIRCULATE(fw))
-  {
-    return 0;
-  }
+	if (!mask->my_flags.use_circulate_hit_icon && IS_ICONIFIED(fw) &&
+	    DO_SKIP_ICON_CIRCULATE(fw))
+	{
+		return False;
+	}
 
-  if (!mask->my_flags.use_circulate_hit_shaded && IS_SHADED(fw) &&
-      DO_SKIP_SHADED_CIRCULATE(fw))
-  {
-    return 0;
-  }
+	if (!mask->my_flags.use_circulate_hit_shaded && IS_SHADED(fw) &&
+	    DO_SKIP_SHADED_CIRCULATE(fw))
+	{
+		return False;
+	}
 
-  if (IS_ICONIFIED(fw) && IS_TRANSIENT(fw) && IS_ICONIFIED_BY_PARENT(fw))
-  {
-    return 0;
-  }
+	if (IS_ICONIFIED(fw) && IS_TRANSIENT(fw) && IS_ICONIFIED_BY_PARENT(fw))
+	{
+		return False;
+	}
 
-  if (mask->my_flags.needs_current_desk && fw->Desk != Scr.CurrentDesk)
-  {
-    return 0;
-  }
-  if (mask->my_flags.needs_current_page)
-  {
-    if (FScreenIsEnabled())
-    {
-      if (!FScreenIsRectangleOnScreen(NULL, FSCREEN_CURRENT, &(fw->frame_g)))
-      {
-	return 0;
-      }
-    }
-    else
-    {
-      if (!IsRectangleOnThisPage(&(fw->frame_g), Scr.CurrentDesk))
-      {
-	return 0;
-      }
-    }
-  }
-  else if (mask->my_flags.needs_current_global_page)
-  {
-    if (!IsRectangleOnThisPage(&(fw->frame_g), Scr.CurrentDesk))
-    {
-      return 0;
-    }
-  }
+	if (mask->my_flags.needs_current_desk && fw->Desk != Scr.CurrentDesk)
+	{
+		return False;
+	}
+	if (mask->my_flags.needs_current_page)
+	{
+		if (FScreenIsEnabled())
+		{
+			if (!FScreenIsRectangleOnScreen(
+				    NULL, FSCREEN_CURRENT, &(fw->frame_g)))
+			{
+				return False;
+			}
+		}
+		else
+		{
+			if (!IsRectangleOnThisPage(
+				    &(fw->frame_g), Scr.CurrentDesk))
+			{
+				return False;
+			}
+		}
+	}
+	else if (mask->my_flags.needs_current_global_page)
+	{
+		if (!IsRectangleOnThisPage(&(fw->frame_g), Scr.CurrentDesk))
+		{
+			return False;
+		}
+	}
 
-  /* Yes, I know this could be shorter, but it's hard to understand then */
-  fMatchesName = matchWildcards(mask->name, fw->name);
-  fMatchesIconName = matchWildcards(mask->name, fw->icon_name);
-  fMatchesClass = (fw->class.res_class &&
-		   matchWildcards(mask->name,fw->class.res_class));
-  fMatchesResource = (fw->class.res_name &&
-		      matchWildcards(mask->name, fw->class.res_name));
-  fMatches = (fMatchesName || fMatchesIconName || fMatchesClass ||
-	      fMatchesResource);
+	/* Yes, I know this could be shorter, but it's hard to understand then
+	 */
+	fMatchesName = matchWildcards(mask->name, fw->name);
+	fMatchesIconName = matchWildcards(mask->name, fw->icon_name);
+	fMatchesClass = (fw->class.res_class &&
+			 matchWildcards(mask->name,fw->class.res_class));
+	fMatchesResource = (fw->class.res_name &&
+			    matchWildcards(mask->name, fw->class.res_name));
+	fMatches = (fMatchesName || fMatchesIconName || fMatchesClass ||
+		    fMatchesResource);
 
-  if (mask->my_flags.needs_name && !fMatches)
-  {
-    return 0;
-  }
+	if (mask->my_flags.needs_name && !fMatches)
+	{
+		return False;
+	}
+	if (mask->my_flags.needs_not_name && fMatches)
+	{
+		return False;
+	}
+	if ((mask->layer == -1) && (sf) && (fw->layer != sf->layer))
+	{
+		return False;
+	}
+	if ((mask->layer >= 0) && (fw->layer != mask->layer))
+	{
+		return False;
+	}
+	if (GET_USER_STATES(mask) !=
+	    (mask->flag_mask.user_states & GET_USER_STATES(fw)))
+	{
+		return False;
+	}
+	if (mask->my_flags.use_do_accept_focus)
+	{
+		Bool f;
 
-  if (mask->my_flags.needs_not_name && fMatches)
-  {
-    return 0;
-  }
+		f = do_accept_input_focus(fw);
+		if (fw && HAS_NEVER_FOCUS(fw))
+		{
+			f = 0;
+		}
+		else if (fw && IS_LENIENT(fw))
+		{
+			f = 1;
+		}
+		if (!f != !mask->my_flags.do_accept_focus)
+		{
+			return False;
+		}
+	}
+	if (mask->my_flags.needs_focus != NEEDS_ANY)
+	{
+		int is_focused;
 
-  if ((mask->layer == -1) && (sf) && (fw->layer != sf->layer))
-  {
-    return 0;
-  }
+		is_focused = (fw == get_focus_window());
+		if (!is_focused && mask->my_flags.needs_focus == NEEDS_TRUE)
+		{
+			return False;
+		}
+		else if (is_focused &&
+			 mask->my_flags.needs_focus == NEEDS_FALSE)
+		{
+			return False;
+		}
+	}
+	if (mask->my_flags.needs_pointer != NEEDS_ANY)
+	{
+		int has_pointer;
+		FvwmWindow *t;
 
-  if ((mask->layer >= 0) && (fw->layer != mask->layer))
-  {
-    return 0;
-  }
+		t = get_pointer_fvwm_window();
+		if (t != NULL && t == fw)
+		{
+			has_pointer = 1;
+		}
+		else
+		{
+			has_pointer = 0;
+		}
+		if (!has_pointer && mask->my_flags.needs_pointer == NEEDS_TRUE)
+		{
+			return False;
+		}
+		else if (has_pointer &&
+			 mask->my_flags.needs_pointer == NEEDS_FALSE)
+		{
+			return False;
+		}
+	}
 
-  if (GET_USER_STATES(mask) !=
-      (mask->flag_mask.user_states & GET_USER_STATES(fw)))
-  {
-    return 0;
-  }
-
-  if (mask->my_flags.use_do_accept_focus)
-  {
-    Bool f;
-
-    f = do_accept_input_focus(fw);
-    if (fw && HAS_NEVER_FOCUS(fw))
-    {
-      f = 0;
-    }
-    else if (fw && IS_LENIENT(fw))
-    {
-      f = 1;
-    }
-    if (!f != !mask->my_flags.do_accept_focus)
-    {
-      return 0;
-    }
-  }
-  if (mask->my_flags.needs_focus != NEEDS_ANY)
-  {
-    int is_focused;
-
-    is_focused = (fw == get_focus_window());
-    if (!is_focused && mask->my_flags.needs_focus == NEEDS_TRUE)
-    {
-      return 0;
-    }
-    else if (is_focused && mask->my_flags.needs_focus == NEEDS_FALSE)
-    {
-      return 0;
-    }
-  }
-  if (mask->my_flags.needs_pointer != NEEDS_ANY)
-  {
-    int has_pointer;
-    FvwmWindow *t;
-
-    t = get_pointer_fvwm_window();
-    if (t != NULL && t == fw)
-    {
-	    has_pointer = 1;
-    }
-    else
-    {
-	    has_pointer = 0;
-    }
-    if (!has_pointer && mask->my_flags.needs_pointer == NEEDS_TRUE)
-    {
-      return 0;
-    }
-    else if (has_pointer && mask->my_flags.needs_pointer == NEEDS_FALSE)
-    {
-      return 0;
-    }
-  }
-
-  return 1;
+	return True;
 }
 
 /**************************************************************************
@@ -510,148 +531,194 @@ Bool MatchesConditionMask(FvwmWindow *fw, WindowConditionMask *mask)
  **************************************************************************/
 static FvwmWindow *Circulate(char *action, int Direction, char **restofline)
 {
-  int pass = 0;
-  FvwmWindow *fw, *found = NULL;
-  FvwmWindow *sf;
-  WindowConditionMask mask;
-  char *flags;
+	int pass = 0;
+	FvwmWindow *fw, *found = NULL;
+	FvwmWindow *sf;
+	WindowConditionMask mask;
+	char *flags;
 
-  /* Create window mask */
-  flags = CreateFlagString(action, restofline);
-  DefaultConditionMask(&mask);
-  if (Direction == 0)
-  { /* override for Current [] */
-    mask.my_flags.use_circulate_hit = 1;
-    mask.my_flags.use_circulate_hit_icon = 1;
-  }
-  CreateConditionMask(flags, &mask);
-  if (flags)
-    free(flags);
-  sf = get_focus_window();
-  if (sf)
-  {
-    if (Direction > 0)
-      fw = sf->prev;
-    else if (Direction < 0)
-      fw = sf->next;
-    else
-      fw = sf;
-  }
-  else
-    fw = NULL;
-
-  for (pass = 0; pass < 3 && !found; pass++)
-  {
-    while (fw && !found && fw != &Scr.FvwmRoot)
-    {
-#ifdef FVWM_DEBUG_MSGS
-      fvwm_msg(DBG,"Circulate","Trying %s",fw->name);
-#endif /* FVWM_DEBUG_MSGS */
-      /* Make CirculateUp and CirculateDown take args. by Y.NOMURA */
-      if (MatchesConditionMask(fw, &mask))
-      {
-	found = fw;
-      }
-      else
-      {
-	if (Direction > 0)
-	  fw = fw->prev;
-	else
-	  fw = fw->next;
-      }
-      if (Direction == 0)
-      {
-	FreeConditionMask(&mask);
-        return found;
-      }
-    }
-    if (!fw || fw == &Scr.FvwmRoot)
-    {
-      if (Direction > 0)
-      {
-        /* Go to end of list */
-	for (fw = &Scr.FvwmRoot; fw && fw->next; fw = fw->next)
+	/* Create window mask */
+	flags = CreateFlagString(action, restofline);
+	DefaultConditionMask(&mask);
+	if (Direction == 0)
+	{ /* override for Current [] */
+		mask.my_flags.use_circulate_hit = 1;
+		mask.my_flags.use_circulate_hit_icon = 1;
+	}
+	CreateConditionMask(flags, &mask);
+	if (flags)
 	{
-	  /* nop */
-        }
-      }
-      else
-      {
-        /* Go to top of list */
-        fw = Scr.FvwmRoot.next;
-      }
-    }
-  }
-  FreeConditionMask(&mask);
+		free(flags);
+	}
+	sf = get_focus_window();
+	if (sf)
+	{
+		if (Direction > 0)
+		{
+			fw = sf->prev;
+		}
+		else if (Direction < 0)
+		{
+			fw = sf->next;
+		}
+		else
+		{
+			fw = sf;
+		}
+	}
+	else
+	{
+		fw = NULL;
+	}
 
-  return found;
+	for (pass = 0; pass < 3 && !found; pass++)
+	{
+		while (fw && !found && fw != &Scr.FvwmRoot)
+		{
+			/* Make CirculateUp and CirculateDown take args. by
+			 * Y.NOMURA */
+			if (MatchesConditionMask(fw, &mask))
+			{
+				found = fw;
+			}
+			else
+			{
+				if (Direction > 0)
+				{
+					fw = fw->prev;
+				}
+				else
+				{
+					fw = fw->next;
+				}
+			}
+			if (Direction == 0)
+			{
+				FreeConditionMask(&mask);
+				return found;
+			}
+		}
+		if (!fw || fw == &Scr.FvwmRoot)
+		{
+			if (Direction > 0)
+			{
+				/* Go to end of list */
+				for (fw = &Scr.FvwmRoot; fw && fw->next;
+				     fw = fw->next)
+				{
+					/* nop */
+				}
+			}
+			else
+			{
+				/* Go to top of list */
+				fw = Scr.FvwmRoot.next;
+			}
+		}
+	}
+	FreeConditionMask(&mask);
+
+	return found;
 }
 
 void CMD_Prev(F_CMD_ARGS)
 {
-  FvwmWindow *found;
-  char *restofline;
+	FvwmWindow *found;
+	char *restofline;
 
-  found = Circulate(action, -1, &restofline);
-  if(found && restofline)
-  {
-    old_execute_function(
-      restofline, found, eventp, C_WINDOW, *Module, 0, NULL);
-  }
+	found = Circulate(action, -1, &restofline);
+	if (cond_rc != NULL)
+	{
+		*cond_rc = (found == NULL) ? COND_RC_NO_MATCH : COND_RC_OK;
+	}
+	if (found && restofline)
+	{
+		old_execute_function(
+			NULL, restofline, found, eventp, C_WINDOW, *Module, 0,
+			NULL);
+	}
 
+	return;
 }
 
 void CMD_Next(F_CMD_ARGS)
 {
-  FvwmWindow *found;
-  char *restofline;
+	FvwmWindow *found;
+	char *restofline;
 
-  found = Circulate(action, 1, &restofline);
-  if(found && restofline)
-  {
-    old_execute_function(
-      restofline, found, eventp, C_WINDOW, *Module, 0, NULL);
-  }
+	found = Circulate(action, 1, &restofline);
+	if (cond_rc != NULL)
+	{
+		*cond_rc = (found == NULL) ? COND_RC_NO_MATCH : COND_RC_OK;
+	}
+	if (found && restofline)
+	{
+		old_execute_function(
+			NULL, restofline, found, eventp, C_WINDOW, *Module, 0,
+			NULL);
+	}
 
+	return;
 }
 
 void CMD_None(F_CMD_ARGS)
 {
-  FvwmWindow *found;
-  char *restofline;
+	FvwmWindow *found;
+	char *restofline;
 
-  found = Circulate(action, 1, &restofline);
-  if(!found && restofline)
-  {
-    old_execute_function(
-      restofline, NULL, eventp, C_ROOT, *Module, 0, NULL);
-  }
+	found = Circulate(action, 1, &restofline);
+	if (cond_rc != NULL)
+	{
+		*cond_rc = (found != NULL) ? COND_RC_NO_MATCH : COND_RC_OK;
+	}
+	if (!found && restofline)
+	{
+		old_execute_function(
+			NULL, restofline, NULL, eventp, C_ROOT, *Module, 0,
+			NULL);
+	}
+
+	return;
 }
 
 void CMD_Any(F_CMD_ARGS)
 {
-  FvwmWindow *found;
-  char *restofline;
+	FvwmWindow *found;
+	char *restofline;
 
-  found = Circulate(action, 1, &restofline);
-  if(found && restofline)
-  {
-    old_execute_function(
-      restofline, NULL, eventp, C_ROOT, *Module, 0, NULL);
-  }
+	found = Circulate(action, 1, &restofline);
+	if (cond_rc != NULL)
+	{
+		*cond_rc = (found == NULL) ? COND_RC_NO_MATCH : COND_RC_OK;
+	}
+	if (found && restofline)
+	{
+		old_execute_function(
+			NULL, restofline, NULL, eventp, C_ROOT, *Module, 0,
+			NULL);
+	}
+
+	return;
 }
 
 void CMD_Current(F_CMD_ARGS)
 {
-  FvwmWindow *found;
-  char *restofline;
+	FvwmWindow *found;
+	char *restofline;
 
-  found = Circulate(action, 0, &restofline);
-  if(found && restofline)
-  {
-    old_execute_function(
-      restofline, found, eventp, C_WINDOW, *Module, 0, NULL);
-  }
+	found = Circulate(action, 0, &restofline);
+	if (cond_rc != NULL)
+	{
+		*cond_rc = (found == NULL) ? COND_RC_NO_MATCH : COND_RC_OK;
+	}
+	if (found && restofline)
+	{
+		old_execute_function(
+			NULL, restofline, found, eventp, C_WINDOW, *Module, 0,
+			NULL);
+	}
+
+	return;
 }
 
 void CMD_PointerWindow(F_CMD_ARGS)
@@ -664,6 +731,10 @@ void CMD_PointerWindow(F_CMD_ARGS)
 	t = get_pointer_fvwm_window();
 	if (t == NULL)
 	{
+		if (cond_rc != NULL)
+		{
+			*cond_rc = COND_RC_ERROR;
+		}
 		return;
 	}
 	flags = CreateFlagString(action, &restofline);
@@ -677,8 +748,17 @@ void CMD_PointerWindow(F_CMD_ARGS)
 	mask.my_flags.use_circulate_hit_icon = 1;
 	if (MatchesConditionMask(t, &mask))
 	{
+		if (cond_rc != NULL)
+		{
+			*cond_rc = COND_RC_OK;
+		}
 		old_execute_function(
-			restofline, t, eventp, C_WINDOW, *Module, 0, NULL);
+			NULL, restofline, t, eventp, C_WINDOW, *Module, 0,
+			NULL);
+	}
+	else if (cond_rc != NULL)
+	{
+		*cond_rc = COND_RC_NO_MATCH;
 	}
 
 	FreeConditionMask(&mask);
@@ -693,9 +773,12 @@ void CMD_This(F_CMD_ARGS)
 
 	if (!tmp_win || IS_EWMH_DESKTOP(tmp_win->w))
 	{
+		if (cond_rc != NULL)
+		{
+			*cond_rc = COND_RC_ERROR;
+		}
 		return;
 	}
-
 	flags = CreateFlagString(action, &restofline);
 	DefaultConditionMask(&mask);
 	mask.my_flags.use_circulate_hit = 1;
@@ -708,8 +791,17 @@ void CMD_This(F_CMD_ARGS)
 
 	if (MatchesConditionMask(tmp_win, &mask) && restofline)
 	{
+		if (cond_rc != NULL)
+		{
+			*cond_rc = COND_RC_OK;
+		}
 		old_execute_function(
-			restofline, tmp_win, eventp, C_WINDOW, *Module, 0, NULL);
+			NULL, restofline, tmp_win, eventp, C_WINDOW, *Module,
+			0, NULL);
+	}
+	else if (cond_rc != NULL)
+	{
+		*cond_rc = COND_RC_NO_MATCH;
 	}
 
 	FreeConditionMask(&mask);
@@ -718,47 +810,54 @@ void CMD_This(F_CMD_ARGS)
 
 void CMD_All(F_CMD_ARGS)
 {
-  FvwmWindow *t, **g;
-  char *restofline;
-  WindowConditionMask mask;
-  char *flags;
-  int num, i;
+	FvwmWindow *t, **g;
+	char *restofline;
+	WindowConditionMask mask;
+	char *flags;
+	int num, i;
+	Bool does_any_window_match = False;
 
-  flags = CreateFlagString(action, &restofline);
-  DefaultConditionMask(&mask);
-  CreateConditionMask(flags, &mask);
-  if (flags)
-    free(flags);
-  mask.my_flags.use_circulate_hit = 1;
-  mask.my_flags.use_circulate_hit_icon = 1;
+	flags = CreateFlagString(action, &restofline);
+	DefaultConditionMask(&mask);
+	CreateConditionMask(flags, &mask);
+	if (flags)
+	{
+		free(flags);
+	}
+	mask.my_flags.use_circulate_hit = 1;
+	mask.my_flags.use_circulate_hit_icon = 1;
 
-  num = 0;
-  for (t = Scr.FvwmRoot.next; t; t = t->next)
-  {
-    num++;
-  }
+	num = 0;
+	for (t = Scr.FvwmRoot.next; t; t = t->next)
+	{
+		num++;
+	}
+	g = (FvwmWindow **) safemalloc (num * sizeof(FvwmWindow *));
+	num = 0;
+	for (t = Scr.FvwmRoot.next; t; t = t->next)
+	{
+		if (MatchesConditionMask(t, &mask))
+		{
+			g[num++] = t;
+			does_any_window_match = True;
+		}
+	}
+	for (i = 0; i < num; i++)
+	{
+		old_execute_function(
+			NULL, restofline, g[i], eventp, C_WINDOW, *Module, 0,
+			NULL);
+	}
+	if (cond_rc != NULL)
+	{
+		*cond_rc = (does_any_window_match == False) ?
+			COND_RC_NO_MATCH : COND_RC_OK;
+	}
 
-  g = (FvwmWindow **) safemalloc (num * sizeof(FvwmWindow *));
+	free(g);
+	FreeConditionMask(&mask);
 
-  num = 0;
-  for (t = Scr.FvwmRoot.next; t; t = t->next)
-  {
-    if (MatchesConditionMask(t, &mask))
-    {
-      g[num++] = t;
-    }
-  }
-
-  for (i = 0; i < num; i++)
-  {
-    old_execute_function(
-      restofline, g[i], eventp, C_WINDOW, *Module, 0, NULL);
-  }
-
-  free(g);
-  FreeConditionMask(&mask);
-
-  return;
+	return;
 }
 
 /**********************************************************************
@@ -767,164 +866,190 @@ void CMD_All(F_CMD_ARGS)
  **********************************************************************/
 void CMD_Direction(F_CMD_ARGS)
 {
-  static char *directions[] =
-  {
-    "North",
-    "East",
-    "South",
-    "West",
-    "NorthEast",
-    "SouthEast",
-    "SouthWest",
-    "NorthWest",
-    NULL
-  };
-  /* The rectangles are inteded for a future enhancement and are not used yet.
-   */
-  rectangle my_g;
-  rectangle his_g;
-  int my_cx;
-  int my_cy;
-  int his_cx;
-  int his_cy;
-  int offset = 0;
-  int distance = 0;
-  int score;
-  int best_score;
-  FvwmWindow *window;
-  FvwmWindow *best_window;
-  int dir;
-  char *flags;
-  char *restofline;
-  char *tmp;
-  WindowConditionMask mask;
+	static char *directions[] =
+		{
+			"North",
+			"East",
+			"South",
+			"West",
+			"NorthEast",
+			"SouthEast",
+			"SouthWest",
+			"NorthWest",
+			NULL
+		};
+	/* The rectangles are inteded for a future enhancement and are not used
+	 * yet. */
+	rectangle my_g;
+	rectangle his_g;
+	int my_cx;
+	int my_cy;
+	int his_cx;
+	int his_cy;
+	int offset = 0;
+	int distance = 0;
+	int score;
+	int best_score;
+	FvwmWindow *window;
+	FvwmWindow *best_window;
+	int dir;
+	char *flags;
+	char *restofline;
+	char *tmp;
+	WindowConditionMask mask;
 
-  /* Parse the direction. */
-  action = GetNextToken(action, &tmp);
-  dir = GetTokenIndex(tmp, directions, 0, NULL);
-  if (dir == -1)
-  {
-    fvwm_msg(ERR, "Direction", "Invalid direction %s", (tmp)? tmp : "");
-    if (tmp)
-      free(tmp);
-    return;
-  }
-  if (tmp)
-    free(tmp);
+	/* Parse the direction. */
+	action = GetNextToken(action, &tmp);
+	dir = GetTokenIndex(tmp, directions, 0, NULL);
+	if (dir == -1)
+	{
+		fvwm_msg(ERR, "Direction", "Invalid direction %s",
+			 (tmp)? tmp : "");
+		if (tmp)
+		{
+			free(tmp);
+		}
+		if (cond_rc != NULL)
+		{
+			*cond_rc = COND_RC_ERROR;
+		}
+		return;
+	}
+	if (tmp)
+		free(tmp);
 
-  /* Create the mask for flags */
-  flags = CreateFlagString(action, &restofline);
-  if (!restofline)
-  {
-    if (flags)
-      free(flags);
-    return;
-  }
-  DefaultConditionMask(&mask);
-  CreateConditionMask(flags, &mask);
-  if (flags)
-    free(flags);
+	/* Create the mask for flags */
+	flags = CreateFlagString(action, &restofline);
+	if (!restofline)
+	{
+		if (flags)
+		{
+			free(flags);
+		}
+		if (cond_rc != NULL)
+		{
+			*cond_rc = COND_RC_NO_MATCH;
+		}
+		return;
+	}
+	DefaultConditionMask(&mask);
+	CreateConditionMask(flags, &mask);
+	if (flags)
+	{
+		free(flags);
+	}
 
-  /* If there is a focused window, use that as a starting point.
-   * Otherwise we use the pointer as a starting point. */
-  if (tmp_win)
-  {
-    get_visible_window_or_icon_geometry(tmp_win, &my_g);
-    my_cx = my_g.x + my_g.width / 2;
-    my_cy = my_g.y + my_g.height / 2;
-  }
-  else
-  {
-    if (XQueryPointer(dpy, Scr.Root, &JunkRoot, &JunkChild,
-		      &my_g.x, &my_g.y, &JunkX, &JunkY, &JunkMask) == False)
-    {
-      /* pointer is on a different screen */
-      my_g.x = 0;
-      my_g.y = 0;
-    }
-    my_g.width = 1;
-    my_g.height = 1;
-    my_cx = my_g.x;
-    my_cy = my_g.y;
-  }
+	/* If there is a focused window, use that as a starting point.
+	 * Otherwise we use the pointer as a starting point. */
+	if (tmp_win)
+	{
+		get_visible_window_or_icon_geometry(tmp_win, &my_g);
+		my_cx = my_g.x + my_g.width / 2;
+		my_cy = my_g.y + my_g.height / 2;
+	}
+	else
+	{
+		if (XQueryPointer(
+			    dpy, Scr.Root, &JunkRoot, &JunkChild, &my_g.x,
+			    &my_g.y, &JunkX, &JunkY, &JunkMask) == False)
+		{
+			/* pointer is on a different screen */
+			my_g.x = 0;
+			my_g.y = 0;
+		}
+		my_g.width = 1;
+		my_g.height = 1;
+		my_cx = my_g.x;
+		my_cy = my_g.y;
+	}
 
-  /* Next we iterate through all windows and choose the closest one in
-   * the wanted direction.
-   */
-  best_window = NULL;
-  best_score = -1;
-  for (window = Scr.FvwmRoot.next; window; window = window->next)
-  {
-    /* Skip every window that does not match conditionals.
-     * Skip also currently focused window.  That would be too close. :)
-     */
-    if (window == tmp_win || !MatchesConditionMask(window, &mask))
-      continue;
+	/* Next we iterate through all windows and choose the closest one in
+	 * the wanted direction. */
+	best_window = NULL;
+	best_score = -1;
+	for (window = Scr.FvwmRoot.next; window; window = window->next)
+	{
+		/* Skip every window that does not match conditionals.  Also
+		 * skip the currently focused window.  That would be too
+		 * close. :) */
+		if (window == tmp_win || !MatchesConditionMask(window, &mask))
+		{
+			continue;
+		}
 
-    /* Calculate relative location of the window. */
-    get_visible_window_or_icon_geometry(window, &his_g);
-    his_g.x -= my_cx;
-    his_g.y -= my_cy;
-    his_cx = his_g.x + his_g.width / 2;
-    his_cy = his_g.y + his_g.height / 2;
+		/* Calculate relative location of the window. */
+		get_visible_window_or_icon_geometry(window, &his_g);
+		his_g.x -= my_cx;
+		his_g.y -= my_cy;
+		his_cx = his_g.x + his_g.width / 2;
+		his_cy = his_g.y + his_g.height / 2;
 
-    if (dir > 3)
-    {
-      int tx;
-      /* Rotate the diagonals 45 degrees counterclockwise. To do this,
-       * multiply the matrix /+h +h\ with the vector (x y).
-       *                     \-h +h/
-       * h = sqrt(0.5). We can set h := 1 since absolute distance doesn't
-       * matter here. */
-      tx = his_cx + his_cy;
-      his_cy = -his_cx + his_cy;
-      his_cx = tx;
-    }
-    /* Arrange so that distance and offset are positive in desired direction.
-     */
-    switch (dir)
-    {
-    case 0: /* N */
-    case 2: /* S */
-    case 4: /* NE */
-    case 6: /* SW */
-      offset = (his_cx < 0) ? -his_cx : his_cx;
-      distance = (dir == 0 || dir == 4) ? -his_cy : his_cy;
-      break;
-    case 1: /* E */
-    case 3: /* W */
-    case 5: /* SE */
-    case 7: /* NW */
-      offset = (his_cy < 0) ? -his_cy : his_cy;
-      distance = (dir == 3 || dir == 7) ? -his_cx : his_cx;
-      break;
-    }
+		if (dir > 3)
+		{
+			int tx;
+			/* Rotate the diagonals 45 degrees counterclockwise. To
+			 * do this, multiply the matrix /+h +h\ with the vector
+			 * (x y).                       \-h +h/
+			 * h = sqrt(0.5). We can set h := 1 since absolute
+			 * distance doesn't * matter here. */
+			tx = his_cx + his_cy;
+			his_cy = -his_cx + his_cy;
+			his_cx = tx;
+		}
+		/* Arrange so that distance and offset are positive in desired
+		 * direction. */
+		switch (dir)
+		{
+		case 0: /* N */
+		case 2: /* S */
+		case 4: /* NE */
+		case 6: /* SW */
+			offset = (his_cx < 0) ? -his_cx : his_cx;
+			distance = (dir == 0 || dir == 4) ? -his_cy : his_cy;
+			break;
+		case 1: /* E */
+		case 3: /* W */
+		case 5: /* SE */
+		case 7: /* NW */
+			offset = (his_cy < 0) ? -his_cy : his_cy;
+			distance = (dir == 3 || dir == 7) ? -his_cx : his_cx;
+			break;
+		}
 
-    /* Target must be in given direction. */
-    if (distance <= 0)
-      continue;
+		/* Target must be in given direction. */
+		if (distance <= 0)
+			continue;
 
-    /* Calculate score for this window.  The smaller the better. */
-    score = distance + offset;
-    /* windows more than 45 degrees off the direction are heavily penalized
-     * and will only be chosen if nothing else within a million pixels */
-    if (offset > distance)
-      score += 1000000;
-    if (best_score == -1 || score < best_score)
-    {
-      best_window = window;
-      best_score = score;
-    }
-  } /* for */
+		/* Calculate score for this window.  The smaller the better. */
+		score = distance + offset;
+		/* windows more than 45 degrees off the direction are heavily
+		 * penalized and will only be chosen if nothing else within a
+		 * million pixels */
+		if (offset > distance)
+			score += 1000000;
+		if (best_score == -1 || score < best_score)
+		{
+			best_window = window;
+			best_score = score;
+		}
+	} /* for */
 
-  if (best_window)
-  {
-    old_execute_function(
-      restofline, best_window, eventp, C_WINDOW, *Module, 0,
-      NULL);
-  }
+	if (best_window)
+	{
+		if (cond_rc != NULL)
+		{
+			*cond_rc = COND_RC_OK;
+		}
+		old_execute_function(
+			NULL, restofline, best_window, eventp, C_WINDOW,
+			*Module, 0, NULL);
+	}
+	else if (cond_rc != NULL)
+	{
+		*cond_rc = COND_RC_NO_MATCH;
+	}
 
-  FreeConditionMask(&mask);
+	FreeConditionMask(&mask);
 }
 
 /* A very simple function, but handy if you want to call
@@ -932,124 +1057,260 @@ void CMD_Direction(F_CMD_ARGS)
  * for every single function in it. */
 void CMD_Pick(F_CMD_ARGS)
 {
-  char *restofline;
-  char *flags;
-  WindowConditionMask mask;
+	char *restofline;
+	char *flags;
+	WindowConditionMask mask;
 
-  if (DeferExecution(eventp,&w,&tmp_win,&context, CRS_SELECT,ButtonRelease))
-    return;
+	if (DeferExecution(
+		    eventp, &w, &tmp_win, &context, CRS_SELECT, ButtonRelease))
+	{
+		if (cond_rc != NULL)
+		{
+			*cond_rc = COND_RC_ERROR;
+		}
+		return;
+	}
 
-  flags = CreateFlagString(action, &restofline);
-  DefaultConditionMask(&mask);
-  CreateConditionMask(flags, &mask);
-  if (flags)
-    free(flags);
-  if (MatchesConditionMask(tmp_win, &mask) && restofline)
-  {
-    old_execute_function(
-      restofline, tmp_win, eventp, C_WINDOW, *Module, 0, NULL);
-  }
+	flags = CreateFlagString(action, &restofline);
+	DefaultConditionMask(&mask);
+	CreateConditionMask(flags, &mask);
+	if (flags)
+	{
+		free(flags);
+	}
+	if (MatchesConditionMask(tmp_win, &mask) && restofline)
+	{
+		if (cond_rc != NULL)
+		{
+			*cond_rc = COND_RC_OK;
+		}
+		old_execute_function(
+			NULL, restofline, tmp_win, eventp, C_WINDOW, *Module,
+			0, NULL);
+	}
+	else if (cond_rc != NULL)
+	{
+		*cond_rc = COND_RC_NO_MATCH;
+	}
+
+	return;
 }
 
 void CMD_WindowId(F_CMD_ARGS)
 {
-  FvwmWindow *t;
-  char *token;
-  char *naction;
-  unsigned long win;
-  Bool use_condition = False;
-  Bool use_screenroot = False;
-  WindowConditionMask mask;
-  char *flags, *restofline;
+	FvwmWindow *t;
+	char *token;
+	char *naction;
+	unsigned long win;
+	Bool use_condition = False;
+	Bool use_screenroot = False;
+	WindowConditionMask mask;
+	char *flags, *restofline;
 
-  /* Get window ID */
-  action = GetNextToken(action, &token);
+	/* Get window ID */
+	action = GetNextToken(action, &token);
 
-  if (token && StrEquals(token, "root"))
-  {
-    int screen = Scr.screen;
+	if (token && StrEquals(token, "root"))
+	{
+		int screen = Scr.screen;
 
-    free(token);
-    token = PeekToken(action, &naction);
-    if (!token || GetIntegerArguments(token, NULL, &screen, 1) != 1)
-    {
-      screen = Scr.screen;
-    }
-    else
-    {
-      action = naction;
-    }
-    use_screenroot = True;
-    if (screen < 0 || screen >= Scr.NumberOfScreens)
-      screen = 0;
-    win = XRootWindow(dpy, screen);
-    if (win == None)
-      return;
-  }
-  else if (token)
-  {
-    /* SunOS doesn't have strtoul */
-    win = (unsigned long)strtol(token, NULL, 0);
-    free(token);
-  }
-  else
-  {
-    win = 0;
-  }
+		free(token);
+		token = PeekToken(action, &naction);
+		if (!token || GetIntegerArguments(token, NULL, &screen, 1) != 1)
+		{
+			screen = Scr.screen;
+		}
+		else
+		{
+			action = naction;
+		}
+		use_screenroot = True;
+		if (screen < 0 || screen >= Scr.NumberOfScreens)
+			screen = 0;
+		win = XRootWindow(dpy, screen);
+		if (win == None)
+		{
+			if (cond_rc != NULL)
+			{
+				*cond_rc = COND_RC_ERROR;
+			}
+			return;
+		}
+	}
+	else if (token)
+	{
+		/* SunOS doesn't have strtoul */
+		win = (unsigned long)strtol(token, NULL, 0);
+		free(token);
+	}
+	else
+	{
+		win = 0;
+	}
 
-  /* Look for condition - CreateFlagString returns NULL if no '(' or '[' */
-  if (!use_screenroot)
-  {
-    flags = CreateFlagString(action, &restofline);
-    if (flags)
-    {
-      /* Create window mask */
-      use_condition = True;
-      DefaultConditionMask(&mask);
+	/* Look for condition - CreateFlagString returns NULL if no '(' or '['
+	 */
+	if (!use_screenroot)
+	{
+		flags = CreateFlagString(action, &restofline);
+		if (flags)
+		{
+			/* Create window mask */
+			use_condition = True;
+			DefaultConditionMask(&mask);
 
-      /* override for Current [] */
-      mask.my_flags.use_circulate_hit = 1;
-      mask.my_flags.use_circulate_hit_icon = 1;
+			/* override for Current [] */
+			mask.my_flags.use_circulate_hit = 1;
+			mask.my_flags.use_circulate_hit_icon = 1;
 
-      CreateConditionMask(flags, &mask);
-      free(flags);
+			CreateConditionMask(flags, &mask);
+			free(flags);
 
-      /* Relocate action */
-      action = restofline;
-    }
-  }
+			/* Relocate action */
+			action = restofline;
+		}
+	}
 
-  /* Search windows */
-  for (t = Scr.FvwmRoot.next; t; t = t->next)
-  {
-    if (t->w == win)
-    {
-      /* do it if no conditions or the conditions match */
-      if (action && (!use_condition || MatchesConditionMask(t, &mask)))
-        old_execute_function(
-	  action, t, eventp, C_WINDOW, *Module, 0, NULL);
-      break;
-    }
-  }
-  if (!t && !use_condition && action)
-  {
-    exec_func_args_type efa;
+	/* Search windows */
+	for (t = Scr.FvwmRoot.next; t; t = t->next)
+	{
+		if (t->w == win)
+		{
+			/* do it if no conditions or the conditions match */
+			if (action && (!use_condition ||
+				       MatchesConditionMask(t, &mask)))
+			{
+				if (cond_rc != NULL)
+				{
+					*cond_rc = COND_RC_OK;
+				}
+				old_execute_function(
+					NULL, action, t, eventp, C_WINDOW,
+					*Module, 0, NULL);
+			}
+			else if (cond_rc != NULL)
+			{
+				*cond_rc = COND_RC_NO_MATCH;
+			}
+			break;
+		}
+	}
+	if (!t)
+	{
+		/* The window is not managed by fvwm. Still some functions may
+		 * work on it. */
+		if (use_condition)
+		{
+			if (cond_rc != NULL)
+			{
+				*cond_rc = COND_RC_ERROR;
+			}
+		}
+		else if (XGetGeometry(
+				 dpy, win, &JunkRoot, &JunkX, &JunkY,
+				 &JunkWidth, &JunkHeight, &JunkBW,
+				 &JunkDepth) != 0)
+		{
+			if (cond_rc != NULL)
+			{
+				*cond_rc = COND_RC_OK;
+			}
+			if (action != NULL)
+			{
+				exec_func_args_type efa;
 
-    /* The window is not managed by fvwm. Still some functions may work on it.
-     */
-    memset(&efa, 0, sizeof(efa));
-    efa.eventp = eventp;
-    efa.win = win;
-    efa.action = action;
-    efa.context = C_UNMANAGED;
-    efa.module = *Module;
-    efa.flags.is_window_unmanaged = 1;
-    execute_function(&efa);
-  }
+				memset(&efa, 0, sizeof(efa));
+				efa.cond_rc = NULL;
+				efa.eventp = eventp;
+				efa.action = action;
+  				efa.context = C_UNMANAGED;
+				efa.module = *Module;
+				efa.flags.is_window_unmanaged = 1;
+				execute_function(&efa);
+			}
+		}
+		else
+		{
+			/* window id does not exist */
+			if (cond_rc != NULL)
+			{
+				*cond_rc = COND_RC_ERROR;
+			}
+		}
+	}
 
-  /* Tidy up */
-  if (use_condition)
-  {
-    FreeConditionMask(&mask);
-  }
+	/* Tidy up */
+	if (use_condition)
+	{
+		FreeConditionMask(&mask);
+	}
+
+	return;
+}
+
+void CMD_Cond(F_CMD_ARGS)
+{
+	fvwm_cond_func_rc match_rc;
+	char *flags;
+	char *restofline;
+	int toggle;
+
+	if (cond_rc == NULL)
+	{
+		/* useless if no return code to compare to is given */
+		return;
+	}
+	/* Create window mask */
+	flags = CreateFlagString(action, &restofline);
+	if (flags == NULL)
+	{
+		match_rc = COND_RC_NO_MATCH;
+	}
+	else if ((toggle = ParseToggleArgument(flags, NULL, -1, 0)) != -1)
+	{
+		match_rc = (toggle == 1) ? COND_RC_OK : COND_RC_NO_MATCH;
+	}
+	else if (StrEquals(flags, "error") || StrEquals(flags, "-1"))
+	{
+		match_rc = COND_RC_ERROR;
+	}
+	else
+	{
+		match_rc = COND_RC_NO_MATCH;
+	}
+	if (*cond_rc == match_rc && restofline != NULL)
+	{
+		/* execute the command in root window context; overwrite the
+		 * return code with the return code of the command */
+		old_execute_function(
+			cond_rc, restofline, NULL, eventp, C_ROOT, *Module, 0,
+			NULL);
+
+	}
+	if (flags != NULL)
+	{
+		free(flags);
+	}
+
+	return;
+}
+
+void CMD_CondCase(F_CMD_ARGS)
+{
+	fvwm_cond_func_rc tmp_rc = COND_RC_OK;
+
+	/* same as Cond, but does not modify the return code */
+	CMD_Cond(&tmp_rc, eventp, w, tmp_win, context, action, Module);
+
+	return;
+}
+
+void CMD_Break(F_CMD_ARGS)
+{
+	if (cond_rc != NULL)
+	{
+		*cond_rc = COND_RC_BREAK;
+	}
+
+	return;
 }

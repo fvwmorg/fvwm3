@@ -18,34 +18,35 @@
 
 typedef struct FunctionItem
 {
-  struct FvwmFunction *func;       /* the function this item is in */
-  struct FunctionItem *next_item;  /* next function item */
-  char condition;                  /* the character string displayed on left*/
-  char *action;                    /* action to be performed */
-  short type;                      /* type of built in function */
-  FUNC_FLAGS_TYPE flags;
+	struct FvwmFunction *func;       /* the function this item is in */
+	struct FunctionItem *next_item;  /* next function item */
+	char condition;                  /* the character string displayed on
+					  * left*/
+	char *action;                    /* action to be performed */
+	short type;                      /* type of built in function */
+	FUNC_FLAGS_TYPE flags;
 } FunctionItem;
 
 typedef struct FvwmFunction
 {
-  struct FvwmFunction *next_func;  /* next in list of root menus */
-  FunctionItem *first_item;        /* first item in function */
-  FunctionItem *last_item;         /* last item in function */
-  char *name;                      /* function name */
-  unsigned int use_depth;
+	struct FvwmFunction *next_func;  /* next in list of root menus */
+	FunctionItem *first_item;        /* first item in function */
+	FunctionItem *last_item;         /* last item in function */
+	char *name;                      /* function name */
+	unsigned int use_depth;
 } FvwmFunction;
 
 /* used for parsing commands*/
 typedef struct
 {
-  char *keyword;
+	char *keyword;
 #ifdef __STDC__
-  void (*action)(XEvent *,Window,FvwmWindow *, unsigned long,char *, int *);
+	void (*action)(F_CMD_ARGS);
 #else
-  void (*action)();
+	void (*action)();
 #endif
-  short func_type;
-  FUNC_FLAGS_TYPE flags;
+	short func_type;
+	FUNC_FLAGS_TYPE flags;
 } func_type;
 
 /* Bits for the function flag byte. */
@@ -57,12 +58,12 @@ typedef struct
 /* Types of events for the FUNCTION builtin */
 typedef enum
 {
-  CF_IMMEDIATE =      'i',
-  CF_MOTION =         'm',
-  CF_HOLD =           'h',
-  CF_CLICK =          'c',
-  CF_DOUBLE_CLICK =   'd',
-  CF_TIMEOUT =        '-'
+	CF_IMMEDIATE =      'i',
+	CF_MOTION =         'm',
+	CF_HOLD =           'h',
+	CF_CLICK =          'c',
+	CF_DOUBLE_CLICK =   'd',
+	CF_TIMEOUT =        '-'
 } cfunc_action_type;
 
 /* for exec_flags parameter of ExecuteFunction */
@@ -72,176 +73,180 @@ void find_func_type(char *action, short *func_type, unsigned char *flags);
 FvwmFunction *FindFunction(const char *function_name);
 extern FvwmFunction *NewFvwmFunction(const char *name);
 void DestroyFunction(FvwmFunction *func);
-extern int DeferExecution(XEvent *, Window *,FvwmWindow **, unsigned long *,
-			  cursor_type, int);
+extern int DeferExecution(
+	XEvent *, Window *,FvwmWindow **, unsigned long *, cursor_type, int);
 void execute_function(exec_func_args_type *efa);
 void old_execute_function(
-  char *action, FvwmWindow *tmp_win, XEvent *eventp, unsigned long context,
-  int Module, FUNC_FLAGS_TYPE exec_flags, char *args[]);
+	fvwm_cond_func_rc *cond_rc, char *action, FvwmWindow *tmp_win,
+	XEvent *eventp, unsigned long context, int Module,
+	FUNC_FLAGS_TYPE exec_flags, char *args[]);
 void AddToFunction(FvwmFunction *func, char *action);
 
 
 enum
 {
-  F_UNDEFINED = -1,
+	F_UNDEFINED = -1,
 
-  /* functions that need no window */
-  F_NOP = 0,
-  F_ADDFUNC,
-  F_ADDMENU,
-  F_ADDMENU2,
-  F_ALL,
-  F_ANY,
-  F_BEEP,
-  F_BUG_OPTS,
-  F_BUSY_CURSOR,
-  F_BUTTON_STATE,
-  F_BUTTON_STYLE,
-  F_CHANGE_MENUSTYLE,
-  F_CIRCULATE_DOWN,
-  F_CIRCULATE_UP,
-  F_CLICK,
-  F_CLOSE,
-  F_COLORMAP_FOCUS,
-  F_CONFIG_LIST,
-  F_COPY_MENU_STYLE,
-  F_CURRENT,
-  F_CURSOR_STYLE,
-  F_DESCHEDULE,
-  F_DESKTOP_NAME,
-  F_DESTROY_FUNCTION,
-  F_DESTROY_MENU,
-  F_DESTROY_MENUSTYLE,
-  F_DESTROY_STYLE,
-  F_DFLT_COLORS,
-  F_DFLT_COLORSET,
-  F_DFLT_FONT,
-  F_DFLT_ICON,
-  F_DFLT_LAYERS,
-  F_DIRECTION,
-  F_EDGE_RES,
-  F_EDGE_SCROLL,
-  F_EMULATE,
-  F_ESCAPE_FUNC,
-  F_EWMH_BASE_STRUT,
-  F_EWMH_NUMBER_OF_DESKTOPS,
-  F_EXEC,
-  F_EXEC_SETUP,
-  F_FAKE_CLICK,
-  F_FUNCTION,
-  F_GLOBAL_OPTS,
-  F_GOTO_DESK,
-  F_GOTO_PAGE,
-  F_HICOLOR,
-  F_HICOLORSET,
-  F_HIDEGEOMWINDOW,
-  F_ICONFONT,
-  F_ICON_PATH,
-  F_IGNORE_MODIFIERS,
-  F_IMAGE_PATH,
-  F_KEY,
-  F_KILL_MODULE,
-  F_LAYER,
-  F_MENUSTYLE,
-  F_MODULE,
-  F_MODULE_PATH,
-  F_MODULE_SYNC,
-  F_MOUSE,
-  F_MOVECURSOR,
-  F_MOVE_TO_DESK,
-  F_NEXT,
-  F_NONE,
-  F_OPAQUE,
-  F_PICK,
-  F_PIXMAP_PATH,
-  F_POINTERKEY,
-  F_POINTERWINDOW,
-  F_POPUP,
-  F_PREV,
-  F_QUIT,
-  F_QUIT_SESSION,
-  F_QUIT_SCREEN,
-  F_READ,
-  F_RECAPTURE,
-  F_RECAPTURE_WINDOW,
-  F_REFRESH,
-  F_REPEAT,
-  F_RESTART,
-  F_SAVE_SESSION,
-  F_SAVE_QUIT_SESSION,
-  F_SCHEDULE,
-  F_SCROLL,
-  F_SETDESK,
-  F_SETENV,
-  F_SET_ANIMATION,
-  F_SET_MASK,
-  F_SET_NOGRAB_MASK,
-  F_SET_SYNC_MASK,
-  F_SHADE_ANIMATE,
-  F_SILENT,
-  F_SNAP_ATT,
-  F_SNAP_GRID,
-  F_STAYSUP,
-  STROKE_ARG(F_STROKE)
-  STROKE_ARG(F_STROKE_FUNC)
-  F_STYLE,
-  F_THIS,
-  F_TITLE,
-  F_TITLESTYLE,
-  F_TOGGLE_PAGE,
-  F_UPDATE_STYLES,
-  F_WAIT,
-  F_WINDOWFONT,
-  F_WINDOWLIST,
-  F_XINERAMA,
-  F_XINERAMAPRIMARYSCREEN,
-  F_XINERAMASLS,
-  F_XINERAMASLSSIZE,
-  F_XOR,
-  F_XSYNC,
-  F_XSYNCHRONIZE,
+	/* functions that need no window */
+	F_NOP = 0,
+	F_ADDFUNC,
+	F_ADDMENU,
+	F_ADDMENU2,
+	F_ALL,
+	F_ANY,
+	F_BEEP,
+	F_BREAK,
+	F_BUG_OPTS,
+	F_BUSY_CURSOR,
+	F_BUTTON_STATE,
+	F_BUTTON_STYLE,
+	F_CHANGE_MENUSTYLE,
+	F_CIRCULATE_DOWN,
+	F_CIRCULATE_UP,
+	F_CLICK,
+	F_CLOSE,
+	F_COLORMAP_FOCUS,
+	F_COND,
+	F_CONDCASE,
+	F_CONFIG_LIST,
+	F_COPY_MENU_STYLE,
+	F_CURRENT,
+	F_CURSOR_STYLE,
+	F_DESCHEDULE,
+	F_DESKTOP_NAME,
+	F_DESTROY_FUNCTION,
+	F_DESTROY_MENU,
+	F_DESTROY_MENUSTYLE,
+	F_DESTROY_STYLE,
+	F_DFLT_COLORS,
+	F_DFLT_COLORSET,
+	F_DFLT_FONT,
+	F_DFLT_ICON,
+	F_DFLT_LAYERS,
+	F_DIRECTION,
+	F_EDGE_RES,
+	F_EDGE_SCROLL,
+	F_EMULATE,
+	F_ESCAPE_FUNC,
+	F_EWMH_BASE_STRUT,
+	F_EWMH_NUMBER_OF_DESKTOPS,
+	F_EXEC,
+	F_EXEC_SETUP,
+	F_FAKE_CLICK,
+	F_FUNCTION,
+	F_GLOBAL_OPTS,
+	F_GOTO_DESK,
+	F_GOTO_PAGE,
+	F_HICOLOR,
+	F_HICOLORSET,
+	F_HIDEGEOMWINDOW,
+	F_ICONFONT,
+	F_ICON_PATH,
+	F_IGNORE_MODIFIERS,
+	F_IMAGE_PATH,
+	F_KEY,
+	F_KILL_MODULE,
+	F_LAYER,
+	F_MENUSTYLE,
+	F_MODULE,
+	F_MODULE_PATH,
+	F_MODULE_SYNC,
+	F_MOUSE,
+	F_MOVECURSOR,
+	F_MOVE_TO_DESK,
+	F_NEXT,
+	F_NONE,
+	F_OPAQUE,
+	F_PICK,
+	F_PIXMAP_PATH,
+	F_POINTERKEY,
+	F_POINTERWINDOW,
+	F_POPUP,
+	F_PREV,
+	F_QUIT,
+	F_QUIT_SESSION,
+	F_QUIT_SCREEN,
+	F_READ,
+	F_RECAPTURE,
+	F_RECAPTURE_WINDOW,
+	F_REFRESH,
+	F_REPEAT,
+	F_RESTART,
+	F_SAVE_SESSION,
+	F_SAVE_QUIT_SESSION,
+	F_SCHEDULE,
+	F_SCROLL,
+	F_SETDESK,
+	F_SETENV,
+	F_SET_ANIMATION,
+	F_SET_MASK,
+	F_SET_NOGRAB_MASK,
+	F_SET_SYNC_MASK,
+	F_SHADE_ANIMATE,
+	F_SILENT,
+	F_SNAP_ATT,
+	F_SNAP_GRID,
+	F_STAYSUP,
+	STROKE_ARG(F_STROKE)
+	STROKE_ARG(F_STROKE_FUNC)
+	F_STYLE,
+	F_THIS,
+	F_TITLE,
+	F_TITLESTYLE,
+	F_TOGGLE_PAGE,
+	F_UPDATE_STYLES,
+	F_WAIT,
+	F_WINDOWFONT,
+	F_WINDOWLIST,
+	F_XINERAMA,
+	F_XINERAMAPRIMARYSCREEN,
+	F_XINERAMASLS,
+	F_XINERAMASLSSIZE,
+	F_XOR,
+	F_XSYNC,
+	F_XSYNCHRONIZE,
 
-  /* functions that need a window to operate on */
-  F_ADD_BUTTON_STYLE,
-  F_ADD_DECOR,
-  F_ADD_TITLE_STYLE,
-  F_ANIMATED_MOVE,
-  F_BORDERSTYLE,
-  F_CHANGE_DECOR,
-  F_COLOR_LIMIT,
-  F_DELETE,
-  F_DESTROY,
-  F_DESTROY_DECOR,
-  F_DESTROY_MOD,
-  F_ECHO,
-  F_FLIP_FOCUS,
-  F_FOCUS,
-  F_ICONIFY,
-  F_LOWER,
-  F_MAXIMIZE,
-  F_MOVE,
-  F_MOVE_THRESHOLD,
-  F_MOVE_TO_PAGE,
-  F_MOVE_TO_SCREEN,
-  F_PLACEAGAIN,
-  F_RAISE,
-  F_RAISELOWER,
-  F_RESIZE,
-  F_RESIZE_MAXIMIZE,
-  F_RESIZEMOVE,
-  F_RESIZEMOVE_MAXIMIZE,
-  F_SEND_STRING,
-  F_STATE,
-  F_STICK,
-  F_UPDATE_DECOR,
-  F_WARP,
-  F_WINDOWID,
-  F_WINDOW_SHADE,
+	/* functions that need a window to operate on */
+	F_ADD_BUTTON_STYLE,
+	F_ADD_DECOR,
+	F_ADD_TITLE_STYLE,
+	F_ANIMATED_MOVE,
+	F_BORDERSTYLE,
+	F_CHANGE_DECOR,
+	F_COLOR_LIMIT,
+	F_DELETE,
+	F_DESTROY,
+	F_DESTROY_DECOR,
+	F_DESTROY_MOD,
+	F_ECHO,
+	F_FLIP_FOCUS,
+	F_FOCUS,
+	F_ICONIFY,
+	F_LOWER,
+	F_MAXIMIZE,
+	F_MOVE,
+	F_MOVE_THRESHOLD,
+	F_MOVE_TO_PAGE,
+	F_MOVE_TO_SCREEN,
+	F_PLACEAGAIN,
+	F_RAISE,
+	F_RAISELOWER,
+	F_RESIZE,
+	F_RESIZE_MAXIMIZE,
+	F_RESIZEMOVE,
+	F_RESIZEMOVE_MAXIMIZE,
+	F_SEND_STRING,
+	F_STATE,
+	F_STICK,
+	F_UPDATE_DECOR,
+	F_WARP,
+	F_WINDOWID,
+	F_WINDOW_SHADE,
 
-  F_END_OF_LIST = 999,
+	F_END_OF_LIST = 999,
 
-  /* Functions for use by modules only! */
-  F_SEND_WINDOW_LIST = 1000
+	/* Functions for use by modules only! */
+	F_SEND_WINDOW_LIST = 1000
 };
 
 #endif /* _FUNCTIONS_ */

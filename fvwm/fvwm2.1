@@ -995,6 +995,14 @@ evaluate to true while "no", "off", "false", "f" and "n" evaluate
 to false.  Some commands allow "toggle" too which means that the
 feature is disabled if it is currently enabled and vice versa.
 
+.SH CONDITIONAL COMMANDS AND RETURN CODES
+
+Fvwm recognizes a number of commands that are executed only if
+certain conditions are met.  For a complete description, please
+refer to the section
+.B CONDITIONAL COMMANDS
+below.
+
 .SH BUILT IN KEY AND MOUSE BINDINGS
 
 The following commands are built-in to fvwm:
@@ -1378,6 +1386,14 @@ $[schedule.next]
 This is replaced by the id the next command used with
 .B Schedule
 will get (unless a different id is specified explicitly).
+
+$[cond.rc]
+.in -.5i
+The return code of the last conditional command.  This variable is
+only valid inside a function and can not be used in a conditional
+command.  Please refer to the section
+.B CONDITIONAL COMMANDS
+in the command list.
 
 .in +.5i
 $[...]
@@ -7760,6 +7776,27 @@ command.
 
 .SS CONDITIONAL COMMANDS
 
+There are several commands that are only executed if certain
+conditions are met.  The syntax of the conditions is described
+below.  All commands (unless the specifically stated for the
+command) in this section also have a return code that can be 1
+(if a window matching all conditions was found) or 0 (if no such
+window was found)the condition was not met).  A few commands
+deviate slightly from this scheme or can even return -1 which
+means that an error occured and the return code is useless.
+The return code is used by the commands
+.B Cond
+and
+.BR CondCase .
+Please refer to the commands' description for examples.  The
+return code can also be accessed through the variable
+.IR $[cond.rc] .
+The default return code for non conditional commands is 0.
+Important note: Return codes are only defined inside functions
+created with the
+.B AddToFunc
+command and are not inherited by sub functions.
+
 .TP
 .BI "All [(" conditions ")] " command
 Execute.
@@ -7768,7 +7805,8 @@ on all windows meeting the conditions.
 .I Conditions
 are used exactly as with the
 .B Current
-command.
+command.  Returns 1 if any window matches the condition and 0
+otherwise.
 
 .TP
 .BI "Any [(" conditions ")] " command
@@ -7778,6 +7816,50 @@ if any window which satisfies all
 .I conditions
 exists.  Conditions are the same as for
 .BR Next .
+
+.TP
+.BI "Break"
+When the break command is used in a function, function execution
+is terminated immediately.  Further commands of the function are
+not processed.  The
+.B Break
+command does not have a return code.  Example:
+.EX
+AddToFunc PickWindowRaiseAndDeiconify
++ I Pick
++ I Cond (-1) Break
++ I Raise
++ I Iconify off
+.EE
+
+.TP
+.BI "Cond [(" returncode ")] " command
+Performs
+.I command
+if the last conditional command returned the boolean value
+.IR returncode .
+The values "error" or "-1" can also be used to check for an error
+condition (see description of the commands).  If no
+.I returncode
+is given, the default 0 is assumed.
+.B Cond
+command can only be used inside functions.  If the
+.I command
+is another conditional command, the previous return code is
+replaced by the new one.  Example:
+.EX
+AddToFunc ToggleXterm
++ I Any (my_xtermwindow) Close
++ I Cond (0) Exec xterm -T my_xtermwindow
+.EE
+
+.TP
+.BI "CondCase [(" returncode ")] " command
+works exactly like
+.B Cond
+except that the return code is not replaced by the return code of
+the
+.IR command.
 
 .TP
 .BI "Current [(" condition ... ")] " command
@@ -7893,7 +7975,7 @@ may be one of "North", "Northeast", "East", "Southeast", "South",
 .B Direction
 selects depends on angle and distance between the center points of
 the windows.  Closer windows are considered a better match than
-those farther away.
+those farther away.  Returns -1 if an invalid direction was given.
 
 .TP
 .BI "Next [(" conditions ")] " command
@@ -7920,6 +8002,7 @@ if no window which satisfies all
 .I conditions
 exists.  Conditions are the same as for
 .BR Next .
+Returns 1 if no window matches the conditions and 0 otherwise.
 
 .TP
 .BI "Pick [(" conditions ")] " command
@@ -7935,6 +8018,17 @@ if the given
 .I conditions
 are met.  The conditions are the same as for
 .BR Next .
+Returns -1 if no window was selected.
+
+.TP
+.BI "PointerWindow [(" conditions ")] " command
+Performs
+.I command
+if the window under the pointer satisfies all
+.IR conditions .
+exists.  Conditions are the same as for
+.BR Current .
+Returns -1 if there is no window under the pointer.
 
 .TP
 .BI "Prev [(" conditions ")] " command
@@ -7960,6 +8054,7 @@ The command is executed only if the given
 .I conditions
 are met.  The conditions are the same as for
 .BR Current .
+Returns -1 if used outside a window context.
 
 .IP "\fBWindowId [\fP \fIid\fP \
 \fB] [(\fP \fIconditions\fP \
@@ -7999,7 +8094,8 @@ Mostly this is useful for functions used with the
 .B WindowList
 built-in, or for selective processing of
 .B FvwmEvent
-calls (as in the last example).
+calls (as in the last example).  Returns -1 if no window with the
+given id exists.
 
 
 .SS MODULE COMMANDS

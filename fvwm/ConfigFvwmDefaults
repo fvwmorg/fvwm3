@@ -39,6 +39,8 @@ Style * GrabFocusTransient, LowerTransient, RaiseTransient, StackTransientParent
 Style * TileCascadePlacement, Title, MouseFocus, GrabFocusOff
 Style * UseIconPosition
 Style * EWMHPlacementUseDynamicWorkingArea, EWMHMaximizeUseDynamicWorkingArea
+# Default styles for tear off menus
+Style fvwm_menu NoPPosition, NeverFocus, NoLenience, WindowListSkip
 # Basic Mouse controls:
 Mouse 1 T  A FuncFvwmRaiseLowerX Move
 Mouse 1 FS A FuncFvwmRaiseLowerX Resize

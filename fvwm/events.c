@@ -295,7 +295,7 @@ void HandleKeyPress(void)
   if (action != NULL)
   {
     ButtonWindow = Tmp_win;
-    old_execute_function(action, Tmp_win, &Event, Context, -1, 0, NULL);
+    old_execute_function(NULL, action, Tmp_win, &Event, Context, -1, 0, NULL);
     ButtonWindow = NULL;
     return;
   }
@@ -576,14 +576,15 @@ ICON_DBG((stderr,"hpn: icon changed '%s'\n", Tmp_win->name));
 	(Tmp_win->wmhints->flags & XUrgencyHint))
     {
       old_execute_function(
-	"Function UrgencyFunc", Tmp_win, &Event, C_WINDOW, -1, 0, NULL);
+	NULL, "Function UrgencyFunc", Tmp_win, &Event, C_WINDOW, -1, 0, NULL);
     }
 
     if ((old_wmhints_flags & XUrgencyHint) &&
 	!(Tmp_win->wmhints->flags & XUrgencyHint))
     {
       old_execute_function(
-	"Function UrgencyDoneFunc", Tmp_win, &Event, C_WINDOW, -1, 0, NULL);
+	NULL, "Function UrgencyDoneFunc", Tmp_win, &Event, C_WINDOW, -1, 0,
+	NULL);
     }
     break;
   case XA_WM_NORMAL_HINTS:
@@ -734,12 +735,12 @@ void HandleClientMessage(void)
 
   DBUG("HandleClientMessage","Routine Entered");
 
-  /* Process GNOME Messages */
+  /* Process GNOME and EWMH Messages */
   if (GNOME_ProcessClientMessage(Tmp_win, &Event))
   {
     return;
   }
-  if (EWMH_ProcessClientMessage(Tmp_win, &Event))
+  else if (EWMH_ProcessClientMessage(Tmp_win, &Event))
   {
     return;
   }
@@ -766,7 +767,8 @@ void HandleClientMessage(void)
       button.xmotion.y_root = 0;
     }
     button.type = 0;
-    old_execute_function("Iconify", Tmp_win, &button, C_FRAME, -1, 0, NULL);
+    old_execute_function(
+      NULL, "Iconify", Tmp_win, &button, C_FRAME, -1, 0, NULL);
     return;
   }
 
@@ -1729,7 +1731,7 @@ void HandleButtonPress(void)
       /* release the pointer since it can't do harm over an icon */
       XAllowEvents(dpy, AsyncPointer, CurrentTime);
     }
-    old_execute_function(action, Tmp_win, &Event, Context, -1, 0, NULL);
+    old_execute_function(NULL, action, Tmp_win, &Event, Context, -1, 0, NULL);
     if (Context != C_WINDOW && Context != C_NO_CONTEXT)
     {
       WaitForButtonsUp(True);
@@ -1820,7 +1822,7 @@ void HandleButtonRelease()
    /* got a match, now process it */
    if (action != NULL && (action[0] != 0))
    {
-     old_execute_function(action, Tmp_win, &Event, Context, -1, 0, NULL);
+     old_execute_function(NULL, action, Tmp_win, &Event, Context, -1, 0, NULL);
      WaitForButtonsUp(True);
    }
    else
