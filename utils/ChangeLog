@@ -1,3 +1,12 @@
+2000-11-17  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* rebuild_dev.sh:
+	added script that reconfigures and rebuilds fvwm
+	* configure_dev.sh:
+	script that calls automake, autoconf and configure
+	* build_dev.sh:
+	script that rebuilds fvwm with -Wall and -Werror
+
 2000-11-13  Mikhael Goikhman  <migo@homemail.com>
 
 	* Makefile.am:
@@ -10,7 +19,7 @@
 
 2000-11-02  Dan Espen  <dane@mk.telcordia.com>
 
-	* fvwm24_convert.1: 
+	* fvwm24_convert.1:
 	* fvwm24_convert.in: Convert GlobalOpts to Style commands or BugOpts
 	as needed.
 
