@@ -1,3 +1,8 @@
+2002-12-17  Mikhael Goikhman  <migo@homemail.com>
+
+	* libs/FBidiJoin.c:
+	shape-and-join fixes from Nadim Shaikli (slightly modified)
+
 2002-12-16  olicha  <olivier.chapuis@free.fr>
 
 	* libs/PictureGraphics.h:

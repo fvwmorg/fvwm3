@@ -1,5 +1,5 @@
 /* -*-c-*- */
-/* Copyright (C) 2002  Nadim Shaikli
+/* Copyright (C) 2002  Nadim Shaikli (arabeyes.org)
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -37,26 +37,24 @@
 
 /* ---------------------------- local types --------------------------------- */
 
-#define ZERO_WIDTH_SPACE 0xFEFF
-
 typedef struct char_shaped
 {
-        FriBidiChar base;
+	FriBidiChar base;
 
-       /* The various Arabic shaped permutations */
-        FriBidiChar isolated;
-        FriBidiChar initial;
-        FriBidiChar medial;
-        FriBidiChar final;
+	/* The various Arabic shaped permutations */
+	FriBidiChar isolated;
+	FriBidiChar initial;
+	FriBidiChar medial;
+	FriBidiChar final;
 } char_shaped_t;
 
 typedef struct char_shaped_comb
 {
-        /* The Arabic exceptions - 2chars ==> 1char */
-        FriBidiChar first;
-        FriBidiChar second;
-        FriBidiChar comb_isolated;
-        FriBidiChar comb_joined;
+	/* The Arabic exceptions - 2chars ==> 1char */
+	FriBidiChar first;
+	FriBidiChar second;
+	FriBidiChar comb_isolated;
+	FriBidiChar comb_joined;
 } char_shaped_comb_t;
 
 /* ---------------------------- static variables ---------------------------- */
@@ -149,7 +147,7 @@ static const char_shaped_comb_t shaped_comb_table[] =
 	{ 0x0644, 0x0627, 0xFEFB, 0xFEFC, },          /* LAM_ALEF */
 };
 
-/* ---------------------------- local functions ----------------------------- */
+/* -------------------------- local functions ----------------------------- */
 
 static const char_shaped_t *
 get_shaped_entry(FriBidiChar ch)
@@ -172,8 +170,7 @@ get_shaped_entry(FriBidiChar ch)
 
 static FriBidiChar
 get_shaped_combined_char(
-	FriBidiChar ch_first, FriBidiChar ch_second,
-	Bool do_have_prev)
+	FriBidiChar ch_first, FriBidiChar ch_second, Bool do_have_initial)
 {
 	int count;
 	int table_size;
@@ -182,18 +179,20 @@ get_shaped_combined_char(
 
 	for (count = 0; count < table_size; count++)
 	{
+		/* Make sure we have the right combination of characters */
 		if (
 			ch_first  == shaped_comb_table[count].first
 			&&
 			ch_second == shaped_comb_table[count].second)
 		{
-			if (do_have_prev)
+			/* Find out how to shape the combined character */
+			if (do_have_initial)
 			{
-				return  shaped_comb_table[count].comb_joined;
+				return shaped_comb_table[count].comb_joined;
 			}
 			else
 			{
-				return  shaped_comb_table[count].comb_isolated;
+				return shaped_comb_table[count].comb_isolated;
 			}
 		}
 	}
@@ -201,12 +200,15 @@ get_shaped_combined_char(
 	return 0;
 }
 
-/* ---------------------------- interface functions ------------------------- */
+/* ------------------------- interface functions ------------------------- */
 
 int
-shape_n_join(FriBidiChar *str_visual, int str_len)
+shape_n_join(
+	FriBidiChar *str_visual, int str_len)
 {
-	int i;
+	int i;    /* counter of the input string */
+	int len;  /* counter and the final length of the shaped string */
+	FriBidiChar *orig_str;
 	const char_shaped_t **list;
 	const char_shaped_t *prev;
 	const char_shaped_t *curr;
@@ -215,6 +217,9 @@ shape_n_join(FriBidiChar *str_visual, int str_len)
 
 	list = (const char_shaped_t **)safemalloc(
 		(str_len + 2) * sizeof(char_shaped_t *));
+
+	orig_str = (FriBidiChar *)safemalloc(
+		(str_len + 1) * sizeof(FriBidiChar));
 
 	/* head is NULL */
 	*list = NULL;
@@ -229,8 +234,12 @@ shape_n_join(FriBidiChar *str_visual, int str_len)
 	/* tail is NULL */
 	list[i] = NULL;
 
-	/* Traverse the line backward (last is first) */
-	for (i = str_len-1; i >= 0; i--)
+	/* Store-off non-shaped characters; start with a clean slate */
+	memcpy(orig_str, str_visual, (str_len * sizeof(str_visual[0])));
+	memset(str_visual, 0, (str_len * sizeof(str_visual[0])));
+
+	/* Traverse the line & build new content */
+	for (i = 0, len = 0; i <= str_len - 1; i++, len++)
 	{
 		/* Get previous, current, and next characters */
 		prev = list[i + 1];
@@ -245,38 +254,34 @@ shape_n_join(FriBidiChar *str_visual, int str_len)
 				/* Deal with those pesky combinational
 				 * 2-characters that become 1 */
 				combined = get_shaped_combined_char(
-					curr->base, next->base,	prev != NULL);
+					curr->base, next->base,
+					(prev && prev->initial));
 
 				if (combined)
 				{
-					str_visual[i] = combined;
-					/* Skip the next char (& nullify it) */
-					/* NOTE: ZERO_WIDTH doesn't seem to
-					 * work, so consider completely
-					 * removing the character and making
-					 * the string length shorter by 1
-					 * - yuck */
-					i--;
-					str_visual[i] = ZERO_WIDTH_SPACE;
+					/* Skip current char (ie. nullify it)
+					 * and combo-shape the previous char */
+					len--;
+					str_visual[len] = combined;
 				}
 				else if (prev)
 				{
 					if (!prev->initial || !prev->medial)
 					{
-						str_visual[i] = curr->initial?
+						str_visual[len] = curr->initial?
 							curr->initial:
 							curr->isolated;
 					}
 					else
 					{
-						str_visual[i] = curr->medial?
+						str_visual[len] = curr->medial?
 							curr->medial:
 							curr->final;
 					}
 				}
 				else
 				{
-					str_visual[i] = curr->initial?
+					str_visual[len] = curr->initial?
 						curr->initial:
 						curr->isolated;
 				}
@@ -287,26 +292,33 @@ shape_n_join(FriBidiChar *str_visual, int str_len)
 				{
 					if (!prev->initial || !prev->medial)
 					{
-						str_visual[i] =
+						str_visual[len] =
 							curr->isolated;
 					}
 					else
 					{
-						str_visual[i] = curr->final?
+						str_visual[len] = curr->final?
 							curr->final:
 							curr->isolated;
 					}
 				}
 				else
 				{
-					str_visual[i] = curr->isolated;
+					str_visual[len] = curr->isolated;
 				}
 			}
+		}
+		else
+		{
+			str_visual[len] = orig_str[i];
 		}
 	}
 
 	free(list-1);
-	return str_len;
+	free(orig_str);
+
+	/* return the length of the new string */
+	return len;
 }
 
 #endif /* HAVE_BIDI */
