@@ -3089,17 +3089,70 @@ void swallow(unsigned long *body)
   }
 }
 
+
 /* SendToModule options */
-static void parse_title(char *line)
+static void change_title(button_info *b, char *line)
 {
+  if (!(b->flags & b_Title)) {
+    fprintf(stderr, "%s: cannot create a title, only change one\n", MyName);
+    return;
+  }
+  free(b->title);
+  CopyString(&b->title, line);
+  RedrawButton(b, 2);
+  return;
+}
+
+static void change_icon(button_info *b, char *line)
+{
+  Picture *new_icon;
+  int l;
+
+  if (line == NULL) {
+    return;
+  }
+  if (!(b->flags & b_Icon)) {
+    fprintf(stderr, "%s: cannot create an icon, only change one\n", MyName);
+    return;
+  }
+  l = strlen(line);
+  if (l > 0 && line[l - 1] == '\n') {
+    line[l - 1] = 0;
+  }
+  if (LoadIconFile(line, &new_icon) == 0) {
+    fprintf(stderr, "%s: cannot load icon %s\n", MyName, line);
+    return;
+  }
+  free(b->icon_file);
+  CopyString(&b->icon_file, line);
+  DestroyPicture(Dpy, b->icon);
+  XDestroyWindow(Dpy, b->IconWin);
+  b->IconWin = None;
+  b->icon = new_icon;
+  CreateIconWindow(b);
+  ConfigureIconWindow(b);
+  XMapWindow(Dpy, b->IconWin);
+  RedrawButton(b, 2);
+  return;
+}
+
+static char *message_options[] = {"Title", "Icon", NULL};
+
+void parse_message_line(char *line)
+{
+  char *rest;
+  int type;
   int n, count, i;
   button_info *b, *ub = UberButton;
 
-  /* find out which button */
-  if (GetIntegerArguments(line, &line, &n, 1) != 1)
+  type = GetTokenIndex(line, message_options, -1, &rest);
+  if (type == -1) {
+    fprintf(stderr, "%s: Message not understood: %s\n", MyName, line);
     return;
-  if (n < 0)
-  {
+  }
+
+  /* find out which button */
+  if (GetIntegerArguments(rest, &rest, &n, 1) != 1 || n < 0) {
     fprintf(stderr, "%s: button number must not be negative\n", MyName);
     return;
   }
@@ -3109,31 +3162,17 @@ static void parse_title(char *line)
     if (++count == n)
       break;
   }
-  if (count != n) {
+  if (count != n || b == NULL) {
     fprintf(stderr, "%s: button number %d not found\n", MyName, n);
     return;
   }
-  if (b) {
-    if (!b->flags & b_Title) {
-      fprintf(stderr, "%s: cannot create a title, only change one\n", MyName);
-      return;
-    }
-    free(b->title);
-    CopyString(&b->title, line);
-    RedrawButton(b, 2);
-  }
-  return;
-}
 
-static char *message_options[] = {"Title", NULL};
-
-void parse_message_line(char *line)
-{
-  char *rest;
-
-  switch(GetTokenIndex(line, message_options, -1, &rest)) {
+  switch(type) {
   case 0:
-    parse_title(rest);
+    change_title(b, rest);
+    break;
+  case 1:
+    change_icon(b, rest);
     break;
   }
 }
