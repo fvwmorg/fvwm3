@@ -1,5 +1,33 @@
 2001-01-12  Dominik Vogt  <dominik.vogt@gmx.de>
 
+	* fvwm/events.c (HandleFocusIn):
+	* fvwm/focus.c (DoSetFocus):
+	* fvwm/window_flags.h (SET_FOCUS_CHANGE_BROADCAST_PENDING):
+	* fvwm/fvwm.h:
+	send M_FOCUS_CHANGE packet if window was created under the pointer too
+	fixed focus in modules and FvwmAuto
+
+	* fvwm/menus.c (MenuInteraction):
+	cleaned up some code
+
+	* fvwm/windowlist.c (do_windowList):
+	fixed core dump
+
+	* fvwm/add_window.c (setup_icon):
+	(setup_window_name):
+	(get_name_property):
+	common code to fetch window and icon name properties handling I18N_MB
+	(free_window_names):
+	(free_text_property):
+	same for freeing the window and icon name
+	(AddWindow):
+	(free_window_names):
+	-Wall fix for I18N_MB
+
+
+	* fvwm/menus.c (CopyMenuStyle):
+	-Wall fix
+
 	* fvwm/borders.c (DrawButton):
 	Fixed clipping bug in tiled pixmap buttons
 

@@ -154,6 +154,7 @@ void HandleFocusIn(void)
   Pixel fc = 0;
   Pixel bc = 0;
   FvwmWindow *ffw_old = Scr.Focus;
+  Bool do_force_broadcast = False;
   static Window last_focus_w = None;
   static Window last_focus_fw = None;
   static Bool is_never_focused = True;
@@ -215,8 +216,11 @@ void HandleFocusIn(void)
 	    * a M_FOCUS_CHANGE packet after an unmanaged window was focused.
 	    * Otherwise fvwm would believe that Scr.Hilite was still focused and
 	    * not send any info to the modules. */
-	   || last_focus_fw == None)
+	   || last_focus_fw == None
+	   || IS_FOCUS_CHANGE_BROADCAST_PENDING(Tmp_win))
   {
+    do_force_broadcast = IS_FOCUS_CHANGE_BROADCAST_PENDING(Tmp_win);
+    SET_FOCUS_CHANGE_BROADCAST_PENDING(Tmp_win, 0);
     DrawDecorations(Tmp_win, DRAW_ALL, True, True, None);
     focus_w = Tmp_win->w;
     focus_fw = Tmp_win->frame;
@@ -240,7 +244,8 @@ void HandleFocusIn(void)
     return;
   }
   if (is_never_focused || last_focus_fw == None ||
-      focus_w != last_focus_w || focus_fw != last_focus_fw)
+      focus_w != last_focus_w || focus_fw != last_focus_fw ||
+      do_force_broadcast)
   {
     BroadcastPacket(M_FOCUS_CHANGE, 5, focus_w, focus_fw,
                     (unsigned long)IsLastFocusSetByMouse(), fc, bc);

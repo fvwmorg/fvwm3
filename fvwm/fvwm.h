@@ -255,6 +255,9 @@ typedef struct
 				      * but didn't receive a UnmapNotify yet.*/
   unsigned is_focused_on_other_desk : 1; /* window had the focus when the desk
 					  * was switched. */
+  /* set if the window was mapped and got focused but the focus change was not
+   * announced to the modules yet. */
+  unsigned is_focus_change_broadcast_pending : 1;
   unsigned is_fully_visible : 1; /* is the window fully visible */
   unsigned is_iconified : 1; /* is it an icon now? */
   unsigned is_iconified_by_parent : 1; /* To prevent iconified transients in a

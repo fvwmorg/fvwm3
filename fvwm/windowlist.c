@@ -514,6 +514,7 @@ void do_windowList(XEvent *eventp,Window w,FvwmWindow *tmp_win,
       XKeysymToKeycode(dpy, FvwmStringToKeysym(dpy, sor_keyname));
   }
 
+  memset(&mp, 0, sizeof(mp));
   mp.menu = mr;
   mp.parent_menu = NULL;
   mp.parent_item = NULL;
@@ -530,6 +531,7 @@ void do_windowList(XEvent *eventp,Window w,FvwmWindow *tmp_win,
   mp.eventp = teventp;
   mp.pops = &mops;
   mp.ret_paction = &ret_action;
+  mp.event_propagate_to_submenu = NULL;
 
   do_menu(&mp, &mret);
   /* Restore old menu style */

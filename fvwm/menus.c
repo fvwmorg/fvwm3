@@ -2203,37 +2203,38 @@ static void MenuInteraction(
       }
       if (flags.do_menu)
       {
-	MenuParameters mp;
-	XEvent e;
-
-	mp.menu = mrPopup;
-	mp.parent_menu = pmp->menu;
-	mp.parent_item = mi;
-	mp.pTmp_win = pmp->pTmp_win;
-	mp.button_window = pmp->button_window;
-	mp.pcontext = pmp->pcontext;
-	mp.flags.has_default_action = False;
-	mp.flags.is_menu_from_frame_or_window_or_titlebar = False;
-	mp.flags.is_sticky = False;
-	mp.flags.is_submenu = True;
-	mp.flags.is_already_mapped = flags.is_submenu_mapped;
-	mp.eventp = (flags.do_popup_and_warp) ? (XEvent *)1 : NULL;
-	mp.pops = &mops;
-	mp.ret_paction = pmp->ret_paction;
-	if (flags.do_propagate_event_into_submenu)
 	{
-	  memcpy(&e, &Event, sizeof(XEvent));
-	  mp.event_propagate_to_submenu = &e;
-	}
-	else
-	{
-	  mp.event_propagate_to_submenu = NULL;
+	  MenuParameters mp;
+	  XEvent e;
+
+	  mp.menu = mrPopup;
+	  mp.parent_menu = pmp->menu;
+	  mp.parent_item = mi;
+	  mp.pTmp_win = pmp->pTmp_win;
+	  mp.button_window = pmp->button_window;
+	  mp.pcontext = pmp->pcontext;
+	  mp.flags.has_default_action = False;
+	  mp.flags.is_menu_from_frame_or_window_or_titlebar = False;
+	  mp.flags.is_sticky = False;
+	  mp.flags.is_submenu = True;
+	  mp.flags.is_already_mapped = flags.is_submenu_mapped;
+	  mp.eventp = (flags.do_popup_and_warp) ? (XEvent *)1 : NULL;
+	  mp.pops = &mops;
+	  mp.ret_paction = pmp->ret_paction;
+	  if (flags.do_propagate_event_into_submenu)
+	  {
+	    memcpy(&e, &Event, sizeof(XEvent));
+	    mp.event_propagate_to_submenu = &e;
+	  }
+	  else
+	  {
+	    mp.event_propagate_to_submenu = NULL;
+	  }
+
+	  /* recursively do the new menu we've moved into */
+	  do_menu(&mp, pmret);
 	}
 
-	/* recursively do the new menu we've moved into */
-	do_menu(&mp, pmret);
-
-	mp.event_propagate_to_submenu = NULL;
 	flags.do_propagate_event_into_submenu = False;
 	if (pmret->rc == MENU_PROPAGATE_EVENT)
 	{
@@ -6689,9 +6690,9 @@ void CopyMenuStyle(F_CMD_ARGS)
     FreeFvwmFont(dpy, ST_PSTDFONT(destms));
     free(ST_PSTDFONT(destms));
   }
-  if (ST_PSTDFONT(origms) && ST_PSTDFONT(origms) != &Scr.DefaultFont) 
+  if (ST_PSTDFONT(origms) && ST_PSTDFONT(origms) != &Scr.DefaultFont)
   {
-    unsigned long *value;
+    unsigned long *value = NULL;
     char *orig_font_name;
     FvwmFont new_font;
     Bool loaded = 0;
@@ -6713,7 +6714,7 @@ void CopyMenuStyle(F_CMD_ARGS)
 	XFree(orig_font_name);
       }
     }
-    if (loaded) 
+    if (loaded)
     {
       ST_PSTDFONT(destms) = (FvwmFont *)safemalloc(sizeof(FvwmFont));
       *ST_PSTDFONT(destms) = new_font;
@@ -6738,7 +6739,7 @@ void CopyMenuStyle(F_CMD_ARGS)
     ST_FACE(destms).type = SolidMenu;
     break;
   case GradientMenu:
-    ST_FACE(destms).u.grad.pixels = 
+    ST_FACE(destms).u.grad.pixels =
       (Pixel *)safemalloc(sizeof(Pixel) * ST_FACE(origms).u.grad.npixels);
     memcpy(ST_FACE(destms).u.grad.pixels,ST_FACE(origms).u.grad.pixels,
 	   sizeof(Pixel) * ST_FACE(origms).u.grad.npixels);

@@ -267,6 +267,12 @@
 #define SETM_VIEWPORT_MOVED(fw,x) \
           (fw)->flag_mask.is_viewport_moved = !!(x)
 #define IS_VIEWPORT_MOVED(fw)  ((fw)->flags.is_viewport_moved)
+#define IS_FOCUS_CHANGE_BROADCAST_PENDING(fw) \
+          ((fw)->flags.is_focus_change_broadcast_pending)
+#define SET_FOCUS_CHANGE_BROADCAST_PENDING(fw,x) \
+          (fw)->flags.is_focus_change_broadcast_pending = !!(x)
+#define SETM_FOCUS_CHANGE_BROADCAST_PENDING(fw,x) \
+          (fw)->flag_mask.is_focus_change_broadcast_pending = !!(x)
 #define IS_FULLY_VISIBLE(fw)   ((fw)->flags.is_fully_visible)
 #define SET_FULLY_VISIBLE(fw,x) \
           (fw)->flags.is_fully_visible = !!(x)

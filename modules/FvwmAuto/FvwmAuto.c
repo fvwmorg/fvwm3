@@ -60,6 +60,7 @@
 #ifdef DEBUGTOFILE
 #define DEBUG
 #endif
+#define DEBUG
 #ifdef DEBUG
 #define myfprintf(X) \
   fprintf X;\

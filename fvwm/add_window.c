@@ -156,22 +156,25 @@ Bool setup_window_structure(
   return True;
 }
 
-void setup_window_name(FvwmWindow *tmp_win)
+#ifdef I18N_MB
+#define GET_NAME_PROPERTY(a, b, c, d) get_name_property(a, b, c, d)
+static void get_name_property(
+  Status (func)(Display *, Window, XTextProperty *), Window w, char **ret_name,
+  char ***ret_name_list)
 {
   XTextProperty text_prop;
-#ifdef I18N_MB
   char **list;
   int num;
 
-  if ( XGetWMName(dpy, tmp_win->w, &text_prop) != 0 )
+  if (func(dpy, w, &text_prop) != 0)
   {
     if (text_prop.value)
     {
       if (text_prop.encoding == XA_STRING)
       {
         /* STRING encoding, use this as it is */
-        tmp_win->name = (char *)text_prop.value;
-        tmp_win->name_list = NULL;
+        *ret_name = (char *)text_prop.value;
+        *ret_name_list = NULL;
       }
       else
       {
@@ -180,38 +183,55 @@ void setup_window_name(FvwmWindow *tmp_win)
             && num > 0 && *list)
 	{
           /* XXX: does not consider the conversion is REALLY succeeded */
-          XFree(text_prop.value); /* return of XGetWMName() */
-          tmp_win->name = *list;
-          tmp_win->name_list = list;
+          XFree(text_prop.value); /* return of XGetWM(Icon)Name() */
+          *ret_name = *list;
+          *ret_name_list = list;
         }
 	else
 	{
           if (list)
             XFreeStringList(list);
-          XFree(text_prop.value); /* return of XGetWMName() */
-	  if (XGetWMName(dpy, tmp_win->w, &text_prop))
+          XFree(text_prop.value); /* return of XGet(Icon)WMName() */
+	  if (func(dpy, w, &text_prop))
 	  {
-	    tmp_win->name = (char *)text_prop.value;
-	    tmp_win->name_list = NULL;
+	    *ret_name = (char *)text_prop.value;
+	    *ret_name_list = NULL;
 	  }
 	  else
 	  {
-	    tmp_win->name = NoName;
+	    *ret_name = NoName;
 	  }
         }
       }
     }
     else
     {
-      tmp_win->name = NoName;
+      *ret_name = NoName;
     }
   }
+
+  return;
+}
 #else
-  if ( XGetWMName(dpy, tmp_win->w, &text_prop) != 0 )
-    tmp_win->name = (char *)text_prop.value;
-#endif
+#define GET_NAME_PROPERTY(a, b, c, d) get_name_property(a, b, c)
+static void get_name_property(
+  Status (func)(Display *, Window, XTextProperty *), Window w, char **ret_name)
+{
+  XTextProperty text_prop;
+
+  if (func(dpy, w, &text_prop) != 0)
+    *ret_name = (char *)text_prop.value;
   else
-    tmp_win->name = NoName;
+    *ret_name = NoName;
+
+  return;
+}
+#endif
+
+void setup_window_name(FvwmWindow *tmp_win)
+{
+  GET_NAME_PROPERTY(XGetWMName, tmp_win->w, &(tmp_win->name),
+		    &(tmp_win->name_list));
   if (debugging)
     fvwm_msg(DBG,"setup_window_name","Assigned name %s'",tmp_win->name);
 }
@@ -975,8 +995,6 @@ void change_auxiliary_windows(FvwmWindow *tmp_win, short buttons)
 
 void setup_icon(FvwmWindow *tmp_win, window_style *pstyle)
 {
-  XTextProperty text_prop;
-
   /* find a suitable icon pixmap */
   if((tmp_win->wmhints) && (tmp_win->wmhints->flags & IconWindowHint))
   {
@@ -1006,15 +1024,9 @@ void setup_icon(FvwmWindow *tmp_win, window_style *pstyle)
   }
 
   /* icon name */
-  if (XGetWMIconName(dpy, tmp_win->w, &text_prop))
-  {
-    tmp_win->icon_name = (char *)text_prop.value;
-  }
-  else
-  {
-    tmp_win->icon_name = NULL;
-  }
-  if(tmp_win->icon_name==(char *)NULL)
+  GET_NAME_PROPERTY(XGetWMIconName, tmp_win->w, &(tmp_win->icon_name),
+		    &(tmp_win->icon_name_list));
+  if(tmp_win->icon_name == (char *)NULL)
     tmp_win->icon_name = tmp_win->name;
 
   /* wait until the window is iconified and the icon window is mapped
@@ -1178,10 +1190,6 @@ FvwmWindow *AddWindow(Window w, FvwmWindow *ReuseWin)
   short buttons;
   extern FvwmWindow *colormap_win;
   extern Bool PPosOverride;
-#ifdef I18N_MB
-  char **list;
-  int num;
-#endif
   int do_shade = 0;
   int do_maximize = 0;
   Bool used_sm = False;
@@ -1798,13 +1806,38 @@ void GetWindowSizeHints(FvwmWindow *tmp)
   }
 }
 
+#ifdef I18N_MB
+#define FREE_TEXT_PROPERTY(a, b) free_text_property(a, b)
+static void free_text_property(char **ptext, char ***ptext_list)
+{
+  if (*ptext_list != NULL)
+  {
+    XFreeStringList(*ptext_list);
+    *ptext_list = NULL;
+  }
+  else
+  {
+    XFree(*ptext);
+  }
+  *ptext = NULL;
+
+  return;
+}
+#else
+#define FREE_TEXT_PROPERTY(a, b) free_text_property(a)
+static void free_text_property(char **ptext)
+{
+  XFree(*ptext);
+  *ptext = NULL;
+}
+#endif
 
 /**************************************************************************
  *
  * Releases dynamically allocated space used to store window/icon names
  *
  **************************************************************************/
-void free_window_names (FvwmWindow *tmp, Bool nukename, Bool nukeicon)
+void free_window_names(FvwmWindow *tmp, Bool nukename, Bool nukeicon)
 {
   if (!tmp)
     return;
@@ -1812,34 +1845,12 @@ void free_window_names (FvwmWindow *tmp, Bool nukename, Bool nukeicon)
   if (nukename && tmp->name)
   {
     if (tmp->name != tmp->icon_name && tmp->name != NoName)
-#ifdef I18N_MB
-      if (tmp->name_list != NULL)
-      {
-	XFreeStringList(tmp->name_list);
-	tmp->name_list = NULL;
-      }
-      else
-	XFree(tmp->name);
-#else
-    XFree(tmp->name);
-#endif
-    tmp->name = NULL;
+      FREE_TEXT_PROPERTY(&(tmp->name), &(tmp->name_list));
   }
   if (nukeicon && tmp->icon_name)
   {
     if (tmp->name != tmp->icon_name && tmp->icon_name != NoName)
-#ifdef I18N_MB
-      if (tmp->icon_name_list != NULL)
-      {
-	XFreeStringList(tmp->icon_name_list);
-	tmp->icon_name_list = NULL;
-      }
-      else
-	XFree(tmp->icon_name);
-#else
-    XFree(tmp->icon_name);
-#endif
-    tmp->icon_name = NULL;
+      FREE_TEXT_PROPERTY(&(tmp->icon_name), &(tmp->icon_name_list));
   }
 
   return;

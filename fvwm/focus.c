@@ -206,6 +206,7 @@ static void DoSetFocus(Window w, FvwmWindow *Fw, Bool FocusByMouse, Bool NoWarp)
   {
     FOCUS_SET(w);
     Scr.Focus = Fw;
+    SET_FOCUS_CHANGE_BROADCAST_PENDING(Fw, 1);
     Scr.UnknownWinFocused = None;
   }
   else if (!Fw || !(Fw->wmhints) || !(Fw->wmhints->flags & InputHint) ||
@@ -214,6 +215,10 @@ static void DoSetFocus(Window w, FvwmWindow *Fw, Bool FocusByMouse, Bool NoWarp)
     /* Window will accept input focus */
     FOCUS_SET(w);
     Scr.Focus = Fw;
+    if (Fw)
+    {
+      SET_FOCUS_CHANGE_BROADCAST_PENDING(Fw, 1);
+    }
     Scr.UnknownWinFocused = None;
   }
   else if ((Scr.Focus)&&(Scr.Focus->Desk == Scr.CurrentDesk))
