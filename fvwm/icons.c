@@ -796,9 +796,10 @@ void DrawIconTitleWindow(
 	}
 	else
 	{
-		/* sometimes needed ... */
+		/* needed for first drawing */
 		if (x_title-ICON_RELIEF_WIDTH >= 1)
 		{
+			/* clear before the text */
 			XClearArea(
 				dpy, FW_W_ICON_TITLE(fw),
 				ICON_RELIEF_WIDTH, ICON_RELIEF_WIDTH,
@@ -807,6 +808,7 @@ void DrawIconTitleWindow(
 		}
 		if (is_sticky)
 		{
+			/* clear the sticky area after the text */
 			XClearArea(
 				dpy, FW_W_ICON_TITLE(fw),
 				w_title_w - x_stipple - w_stipple -1,
@@ -818,8 +820,9 @@ void DrawIconTitleWindow(
 
 	if (draw_string)
 	{
-		if (pev && (fw->icon_font->fftf.fftfont != NULL))
+		if (pev)
 		{
+			/* needed by xft font and at first drawing */
 			XClearArea(
 				dpy, FW_W_ICON_TITLE(fw),
 				clip.x, clip.y, clip.width, clip.height,

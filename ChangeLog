@@ -1,3 +1,8 @@
+2002-09-25  olicha  <olivier.chapuis@free.fr>
+
+	* fvwm/icons.c (DrawIconTitleWindow):
+	One more drawing fix
+	
 2002-09-24  olicha  <olivier.chapuis@free.fr>
 
 	* fvwm/icons.c (DrawIconTitleWindow):
