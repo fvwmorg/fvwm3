@@ -59,6 +59,7 @@
 #include "libs/fvwmlib.h"
 #include "libs/Picture.h"
 #include "libs/PictureGraphics.h"
+#include "libs/FRenderInit.h"
 #include "FvwmAnimate.h"
 
 #define AS_PI 3.14159265358979323846
@@ -815,6 +816,7 @@ int main(int argc, char **argv) {
   /* FvwmAnimate must use the root visuals so trash the fvwm one */
   putenv("FVWM_VISUALID=");
   PictureInitCMap(dpy);
+  FRenderInit(dpy);
   Scr.root = DefaultRootWindow(dpy);
   Scr.screen = DefaultScreen(dpy);
 

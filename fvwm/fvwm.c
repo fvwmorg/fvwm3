@@ -43,6 +43,7 @@
 #include "libs/FShape.h"
 #include "libs/Flocale.h"
 #include <libs/gravity.h>
+#include "libs/FRenderInit.h"
 #include "fvwm.h"
 #include "externs.h"
 #include "cursor.h"
@@ -534,6 +535,7 @@ int main(int argc, char **argv)
   PictureSaveFvwmVisual();
 
   FShapeInit(dpy);
+  FRenderInit(dpy);
   Scr.pscreen = XScreenOfDisplay(dpy, Scr.screen);
   Scr.use_backing_store = DoesBackingStore(Scr.pscreen);
   Scr.flags.do_save_under = DoesSaveUnders(Scr.pscreen);

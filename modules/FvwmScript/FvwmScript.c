@@ -27,7 +27,7 @@
 #include "libs/Picture.h"
 #include "libs/PictureGraphics.h"
 #include "libs/FRender.h"
-#include "libs/FRenderInterface.h"
+#include "libs/FRenderInit.h"
 
 #ifdef MEMDEBUG			/* For debugging */
 #include <unchecked.h>
@@ -320,6 +320,7 @@ void Xinit(int IsFather)
   FScreenInit(dpy);
   AllocColorset(0);
   FShapeInit(dpy);
+  FRenderInit(dpy);
   FlocaleAllocateWinString(&FwinString);
   XSetErrorHandler(myErrorHandler);
 

@@ -129,20 +129,25 @@ int main(int argc, char **argv)
 void SetRootWindow(char *tline)
 {
 
-	Pixmap shapeMask, temp_pix;
+	Pixmap shapeMask = None, temp_pix = None, alpha = None;
 	int w, h, depth;
 	FvwmPictureFlags fpf;
+	int nalloc_pixels = 0;
+	Pixel *alloc_pixels = NULL;
+	char *icon;
 
 	fpf.alloc_pixels = 0;
 	fpf.alpha = 0;
 	PictureInitCMap(dpy);
+	icon = PictureFindImageFile(tline, NULL, R_OK);
 	if (!PImageLoadPixmapFromFile(
-		dpy, root, tline, 0, &temp_pix, &shapeMask, NULL,
-		&w, &h, &depth, 0, NULL, fpf))
+		dpy, root, tline, 0, &temp_pix, &shapeMask, &alpha,
+		&w, &h, &depth, &nalloc_pixels, &alloc_pixels, fpf))
 	{
 		fprintf(
 			stderr,"[fvwm-root] failed to load image file '%s'\n",
 			tline);
+		return;
 	}
 	if (depth == Pdepth)
 	{

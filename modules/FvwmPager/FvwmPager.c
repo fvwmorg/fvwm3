@@ -46,6 +46,7 @@
 #include "libs/fvwmlib.h"
 #include "libs/FScreen.h"
 #include "libs/FShape.h"
+#include "libs/FRenderInit.h"
 #include "libs/Colorset.h"
 #include "libs/Flocale.h"
 #ifdef DEBUG
@@ -314,6 +315,7 @@ int main(int argc, char **argv)
   FScreenInit(dpy);
   AllocColorset(0);
   FShapeInit(dpy);
+  FRenderInit(dpy);
 
   Scr.screen = DefaultScreen(dpy);
   Scr.Root = RootWindow(dpy, Scr.screen);

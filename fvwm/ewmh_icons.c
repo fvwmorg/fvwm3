@@ -26,7 +26,7 @@
 #include "libs/PictureBase.h"
 #include "libs/Picture.h"
 #include "libs/PictureImageLoader.h"
-#include "libs/FRenderInterface.h"
+#include "libs/FRenderInit.h"
 #include "fvwm.h"
 #include "externs.h"
 #include "window_flags.h"
@@ -694,7 +694,7 @@ int EWMH_SetIconFromWMIcon(FvwmWindow *fwin, CARD32 *list, unsigned int size,
 
 	pixmap = XCreatePixmap(dpy, Scr.NoFocusWin, width, height, Pdepth);
 	mask = XCreatePixmap(dpy, Scr.NoFocusWin, width, height, 1);
-	if (XRenderSupport && FRenderGetExtensionSupported(dpy))
+	if (XRenderSupport && FRenderGetExtensionSupported())
 	{
 		alpha = XCreatePixmap(dpy, Scr.NoFocusWin, width, height, 8);
 	}

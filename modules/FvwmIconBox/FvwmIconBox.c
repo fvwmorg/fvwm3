@@ -47,8 +47,6 @@
 #include <stdlib.h>
 #include "libs/Module.h"
 #include "libs/fvwmsignal.h"
-#include "libs/FRender.h"
-#include "libs/FRenderInterface.h"
 
 #include <X11/Xlib.h>
 #include <X11/Xutil.h>
@@ -60,6 +58,9 @@
 #include "libs/fvwmlib.h"
 #include "libs/FScreen.h"
 #include "libs/FShape.h"
+#include "libs/FRender.h"
+#include "libs/FRenderInit.h"
+
 #include "libs/Colorset.h"
 #include "fvwm/fvwm.h"
 #include "libs/PictureGraphics.h"
@@ -276,6 +277,8 @@ int main(int argc, char **argv)
   FScreenInit(dpy);
   AllocColorset(0);
   FShapeInit(dpy);
+  FRenderInit(dpy);
+
   x_fd = XConnectionNumber(dpy);
 
   fd_width = GetFdWidth();

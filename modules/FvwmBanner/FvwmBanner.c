@@ -48,7 +48,7 @@
 #include <libs/Module.h>
 #include <libs/FScreen.h>
 #include <libs/FShape.h>
-
+#include <libs/FRenderInit.h>
 
 /* migo (16-Sep-1999): How about to do this configurable? */
 /*#include "fvwm-logo-old.xpm"*/
@@ -154,6 +154,7 @@ int main(int argc, char **argv)
   PictureInitCMap(dpy);
   FScreenInit(dpy);
   FShapeInit(dpy);
+  FRenderInit(dpy);
   parseOptions(fd);
 
   /* chick in the neck situation:

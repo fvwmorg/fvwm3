@@ -1,7 +1,7 @@
 2002-05-09  olicha  <olivier.chapuis@free.fr>
 
-	* Makefile.am:
-	temporary link fvwm-root to Xrender
+	* fvwm-root.c (SetRootWindow): 
+	A fix
 
 2002-04-25  Mikhael Goikhman  <migo@homemail.com>
 

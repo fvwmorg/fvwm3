@@ -62,6 +62,7 @@
 #include "libs/fvwmlib.h"
 #include "libs/FScreen.h"
 #include "libs/FShape.h"
+#include "libs/FRenderInit.h"
 #include "libs/Flocale.h"
 #include "libs/gravity.h"
 #include "libs/FRender.h"
@@ -1396,6 +1397,8 @@ void StartMeUp_I(void)
   FScreenInit(dpy);
   AllocColorset(0);
   FShapeInit(dpy);
+  FRenderInit(dpy);
+
   x_fd = XConnectionNumber(dpy);
   screen= DefaultScreen(dpy);
   Root = RootWindow(dpy, screen);

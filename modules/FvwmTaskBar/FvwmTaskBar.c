@@ -75,7 +75,7 @@
 #include "libs/Flocale.h"
 #include "libs/gravity.h"
 #include "libs/FRender.h"
-#include "libs/FRenderInterface.h"
+#include "libs/FRenderInit.h"
 
 #include "FvwmTaskBar.h"
 #include "ButtonArray.h"
@@ -1868,6 +1868,7 @@ void StartMeUp(void)
    }
    AllocColorset(0);
    FShapeInit(dpy);
+   FRenderInit(dpy);
    FlocaleAllocateWinString(&FwinString);
    x_fd = XConnectionNumber(dpy);
    screen= DefaultScreen(dpy);

@@ -1,5 +1,11 @@
 2002-05-09  olicha  <olivier.chapuis@free.fr>
 
+	* */*:
+	Call FRenderInit and include libs/FRenderInit.h in all modules which
+	are linked against Xrender
+
+2002-05-09  olicha  <olivier.chapuis@free.fr>
+
 	* FvwmScript/FvwmScript.c (myErrorHandler):
 	* FvwmIconBox/FvwmIconBox.c (myErrorHandler):
 	* FvwmButtons/FvwmButtons.c (myErrorHandler):

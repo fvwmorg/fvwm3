@@ -52,6 +52,7 @@
 #include "libs/fvwmlib.h"
 #include "libs/FScreen.h"
 #include "libs/FShape.h"
+#include "libs/FRenderInit.h"
 #include "libs/Grab.h"
 #include <libs/gravity.h>
 #include "fvwm/fvwm.h"
@@ -60,7 +61,6 @@
 #include "libs/Colorset.h"
 #include "libs/vpacket.h"
 #include "libs/FRender.h"
-#include "libs/FRenderInterface.h"
 
 #include "FvwmButtons.h"
 #include "misc.h" /* ConstrainSize() */
@@ -752,6 +752,7 @@ int main(int argc, char **argv)
   /* Initialise default colorset */
   AllocColorset(0);
   FShapeInit(Dpy);
+  FRenderInit(Dpy);
 
   x_fd=XConnectionNumber(Dpy);
   fd_width=GetFdWidth();

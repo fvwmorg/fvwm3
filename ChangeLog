@@ -1,5 +1,25 @@
 2002-05-09  olicha  <olivier.chapuis@free.fr>
 
+	* libs/Makefile.am:
+	* libs/XError.c (request_name):
+	* libs/PictureImageLoader.c (PImageLoadPng):
+	(PImageCreatePixmapFromArgbData):
+	* libs/PictureGraphics.c (PGraphicsTintRectangle):
+	(PGraphicsTileRectangle):
+	(PGraphicsCopyFvwmPicture):
+	* libs/FRenderInit.c (new file):
+	* libs/FRenderInit.h (new file):
+	* libs/FRenderInterface.h:
+	* libs/FRender.c (*):
+	* fvwm/colorset.c (parse_tint):
+	(parse_colorset):
+	* fvwm/fvwm.c (main):
+	* fvwm/events.c (HandlePropertyNotify):
+	Change the design of the previous commit. Now a module should call
+	FRenderInit when it wants to use a function which depends on XRender.
+
+2002-05-09  olicha  <olivier.chapuis@free.fr>
+
 	* fvwm/colorset.c:
 	A -Wall fix
 

@@ -73,6 +73,7 @@
 #include "libs/fvwmlib.h"
 #include "libs/FScreen.h"
 #include "libs/FShape.h"
+#include "libs/FRenderInit.h"
 #include "libs/Module.h"
 #include "libs/PictureBase.h"
 #include "libs/Colorset.h"
@@ -275,6 +276,7 @@ int main(int argc, char **argv)
   /* Initialise default colorset */
   AllocColorset(0);
   FShapeInit(dpy);
+  FRenderInit(dpy);
 
   x_fd = XConnectionNumber(dpy);
 

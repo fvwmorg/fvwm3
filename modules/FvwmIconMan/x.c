@@ -22,7 +22,7 @@
 #include "libs/FScreen.h"
 #include "libs/FShape.h"
 #include "libs/FRender.h"
-#include "libs/FRenderInterface.h"
+#include "libs/FRenderInit.h"
 
 #define GRAB_EVENTS (ButtonPressMask|ButtonReleaseMask|ButtonMotionMask|EnterWindowMask|LeaveWindowMask)
 
@@ -926,6 +926,8 @@ void init_display (void)
   FScreenInit(theDisplay);
   AllocColorset(0);
   FShapeInit(theDisplay);
+  FRenderInit(theDisplay);
+
   x_fd = XConnectionNumber (theDisplay);
   theScreen = DefaultScreen (theDisplay);
   theRoot = RootWindow (theDisplay, theScreen);

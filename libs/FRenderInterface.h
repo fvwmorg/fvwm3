@@ -19,11 +19,6 @@
 #ifndef F_RENDER_INTERFACE_H
 #define F_RENDER_INTERFACE_H
 
-int FRenderGetErrorCodeBase(void);
-int FRenderGetMajorOpCode(void);
-Bool FRenderGetErrorText(int code, char *msg);
-Bool FRenderGetExtensionSupported(Display *dpy);
-
 void FRenderCopyArea(Display *dpy, Pixmap pixmap, Pixmap mask, Pixmap alpha,
 		     Drawable d,
 		     int src_x, int src_y,

@@ -26,7 +26,7 @@
 #include <stdlib.h>
 #include <X11/Xlib.h>
 #include <fvwmlib.h>
-#include "FRenderInterface.h"
+#include "FRenderInit.h"
 
 #define USE_GET_ERROR_TEXT 1
 #ifndef USE_GET_ERROR_TEXT
