@@ -1,3 +1,57 @@
+Fri May  7 15:43:36 1999  DanEspen  <dje@blue>
+
+	* FvwmWinList/FvwmWinList.1: .TH line fixup.
+
+	* FvwmWharf/FvwmWharf.1: .TH line fixup.
+
+	* FvwmTaskBar/FvwmTaskBar.1: .TH line fixup.
+
+	* FvwmScroll/FvwmScroll.1: .TH line fixup.
+
+	* FvwmScript/FvwmScript.1: .TH line fixup.
+
+	* FvwmSaveDesk/FvwmSaveDesk.1: .TH line fixup.
+
+	* FvwmSave/FvwmSave.1: .TH line fixup.
+
+	* FvwmRearrange/FvwmRearrange.1: .TH line fixup.
+
+	* FvwmPager/FvwmPager.1: .TH line fixup.
+
+	* FvwmM4/FvwmM4.1: .TH line fixup.
+
+	* FvwmIdent/FvwmIdent.1: .TH line fixup.
+
+	* FvwmIconMan/FvwmIconMan.1: .TH line fixup.
+
+	* FvwmIconBox/FvwmIconBox.1: .TH line fixup.
+
+	* FvwmForm/FvwmForm.1: .TH line fixup.
+
+	* FvwmEvent/FvwmEvent.1: .TH line fixup.
+
+	* FvwmDebug/FvwmDebug.1: .TH line fixup.
+
+	* FvwmCpp/FvwmCpp.1: .TH line fixup.
+
+	* FvwmConsole/FvwmConsoleC.pl.1: .TH line fixup.
+
+	* FvwmConsole/FvwmConsole.1: .TH line fixup.
+
+	* FvwmCommand/FvwmCommand.1: .TH line fixup.
+
+	* FvwmBanner/FvwmBanner.1: .TH line fixup.
+
+	* FvwmButtons/FvwmButtons.1: .TH line fixup.
+
+	* FvwmBacker/FvwmBacker.1: .TH line fixup.
+
+	* FvwmAudio/FvwmAudio.1: .TH line fixup.
+
+	* FvwmAuto/FvwmAuto.1: .TH line fixup.
+
+	* FvwmAnimate/FvwmAnimate.1: .TH line fixup.
+
 Thu May  6 23:12:55 1999  Steve Robbins  <steve@nyongwa.montreal.qc.ca>
 
 	* FvwmEvent/Makefile.am (install-exec-local): make a symlink for

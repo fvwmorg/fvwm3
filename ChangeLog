@@ -1,5 +1,9 @@
 Fri May  7 13:30:06 1999  DanEspen  <dje@blue>
 
+	* utils/xpmroot.1: .TH line fixup.
+
+	* fvwm/fvwm2.1: .TH line fixup.
+
 	* AUTHORS: Added details for Albrech Kadlec.
 
 1999-05-07  Hippo
