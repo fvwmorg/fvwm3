@@ -63,6 +63,8 @@ NoReliefString		{ return NORELIEFSTRING; }
 ^{bl}+ChangeMinValue	{ return CHVALUEMIN; }
 GetTitle		{ return GETTITLE; }
 GetValue		{ return GETVALUE; }
+GetMinValue		{ return GETMINVALUE; }
+GetMaxValue		{ return GETMAXVALUE; }
 GetFore			{ return GETFORE; }
 GetBack			{ return GETBACK; }
 GetHilight		{ return GETHILIGHT; }

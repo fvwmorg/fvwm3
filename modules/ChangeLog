@@ -1,4 +1,12 @@
-2000-06-15  Mikhael Goikhman  <migo@homemail.com>
+2000-06-21  olicha  <olivier.chapuis@free.fr>
+
+	* FvwmScript/Instruction.c:
+	* FvwmScript/FvwmScript.1:
+	* FvwmScript/scanner.{c,l}:
+	* FvwmScript/script.{c,h,y}:
+	Added missing GetMinValue and GetMaxValue instruction	
+
+2000-06-20  Mikhael Goikhman  <migo@homemail.com>
 
 	* Enabled locking FvwmTheme config and messages.
 	Fixed 'ModuleSynchronous FvwmTheme' dead-lock.

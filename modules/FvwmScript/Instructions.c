@@ -20,7 +20,7 @@ extern int fd[2];
 extern Window ref;
 
 void (*TabCom[25]) (int NbArg,long *TabArg);
-char *(*TabFunc[20]) (int *NbArg, long *TabArg);
+char *(*TabFunc[22]) (int *NbArg, long *TabArg);
 int (*TabComp[7]) (char *arg1,char *arg2);
 
 extern Display *dpy;
@@ -140,6 +140,35 @@ static char *FuncGetValue(int *NbArg, long *TabArg)
  sprintf(tmp,"%d",tabxobj[TabIdObj[Id]]->value);
  return tmp;
 }
+
+static char *FuncGetMinValue(int *NbArg, long *TabArg)
+{
+ char *tmp;
+ long Id;
+
+ (*NbArg)++;			/* La fonction GetValue n'a qu'un seul argument */
+ tmp=CalcArg(TabArg,NbArg);
+ Id=atoi(tmp);
+ free(tmp);
+ tmp=(char*)calloc(1,sizeof(char)*10);
+ sprintf(tmp,"%d",tabxobj[TabIdObj[Id]]->value2);
+ return tmp;
+}
+
+static char *FuncGetMaxValue(int *NbArg, long *TabArg)
+{
+ char *tmp;
+ long Id;
+
+ (*NbArg)++;			/* La fonction GetValue n'a qu'un seul argument */
+ tmp=CalcArg(TabArg,NbArg);
+ Id=atoi(tmp);
+ free(tmp);
+ tmp=(char*)calloc(1,sizeof(char)*10);
+ sprintf(tmp,"%d",tabxobj[TabIdObj[Id]]->value3);
+ return tmp;
+}
+
 
 static char *FuncGetFore(int *NbArg, long *TabArg)
 {
@@ -1431,7 +1460,8 @@ void InitCom()
  TabFunc[17]=FuncGetBack;
  TabFunc[18]=FuncGetHili;
  TabFunc[19]=FuncGetShad;
-
+ TabFunc[20]=FuncGetMinValue;
+ TabFunc[21]=FuncGetMaxValue;
  /* Fonction de comparaison */
  TabComp[1]=Inf;
  TabComp[2]=InfEq;

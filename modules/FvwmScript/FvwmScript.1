@@ -238,6 +238,8 @@ List lets user to choose between various options.
 
 \fBValue\fP: specify which option is selected.
 
+\fBMinValue\fP: First visible option.
+
 \fBTitle\fP: title contains options displayed in the list. The syntax is the
 following: {Option 1|Option 2|...|Option N}. All menus are displayed at the top
 of window.
@@ -317,6 +319,10 @@ The text input field can be used to edit a single-line string.
 \fBTitle\fP: content of text field.
 
 \fBValue\fP: position of the insert point.
+
+\fBMinValue\fP: position of the end of the selection.
+
+\fBMaxValue\fP: first visible character of the title
 
 The height property is ignored, the width is made to be at least 40 pixels
 wider than the initial contents.
@@ -430,6 +436,12 @@ Return the title of the widget numbered \fIid\fP.
 
 .IP "(GetValue \fIid\fP)"
 Return the current value of the widget numbered \fIid\fP.
+
+.IP "(GetMinValue \fIid\fP)"
+Return the current Min value of the widget numbered \fIid\fP.
+
+.IP "(GetMaxValue \fIid\fP)"
+Return the current Max value of the widget numbered \fIid\fP.
 
 .IP "(GetFore \fIid\fP)"
 Return the current RGB foreground value of the widget numbered \fIid\fP in the
