@@ -536,7 +536,7 @@ static void __execute_function(
 	}
 
 #ifdef FVWM_COMMAND_LOG
-	fvwm_msg(INFO, "LOG", "%c: '%s'", (char)exc->type, expaction);
+	fvwm_msg(INFO, "LOG", "%c: %s", (char)exc->type, expaction);
 #endif
 
 	/* Note: the module config command, "*" can not be handled by the

@@ -1,9 +1,11 @@
-These are 4 small FVWM modules written in perl:
+These are 5 small FVWM modules written in Perl:
 
 * module-example:
-	Beeps, auto-raises and sends a command to terminate itself in
-	one minute.
+	Beeps, auto-raises, auto-iconifies and auto-exits in one minute.
 	
+* module-flash:
+	Shows a flash window on every page switch.
+
 * module-winlist:
 	Prints window names and ids to stderr and exits.
 	If -x flag is given, do this in xmessage instead of stderr.
@@ -17,7 +19,7 @@ These are 4 small FVWM modules written in perl:
 	shows only buttons, one per desk. Using Perl/Tk.
 
 You may just run these modules in FvwmConsole using their full path.
-The last 2 modules require extra perl packages from CPAN to be installed.
+The last 2 modules require extra Perl packages from CPAN to be installed.
 
 ----------------------------------------------------------------------------
 

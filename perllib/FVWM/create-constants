@@ -36,7 +36,7 @@ outfile=`dirname $0`/Constants.pm
 	>>$outfile
 
 ( \
-	grep constant $outfile | cut -d" " -f3 | awk '{ print "\t" $1 }'; \
+	grep constant $outfile | cut -d" " -f3 | awk '{ print "  " $1 }'; \
 ) \
 	>"$outfile.tmp"
 
@@ -59,14 +59,13 @@ FVWM::Constants - exports FVWM specific constants
 
 =head1 DESCRIPTION
 
-This pm may be used to load FVWM constants into your perl script or class.
+This class is used to load FVWM constants into your perl script or class.
 Note, if you use I<FVWM::Module> the constants are automatically exported.
-So usually you do not need to deal with this pm.
+So you usually do not need to include this class.
 
 =head1 USAGE
 
-  use vars qw(@EXPORT);
-  require FVWM::Constants;
+  use FVWM::Constants;
 
 =head1 SEE ALSO
 

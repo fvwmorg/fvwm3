@@ -28,12 +28,14 @@ my $versionInfo = "@VERSIONINFO@";
 my $pager = $ENV{PAGER} || "less -e";
 my $doMan = 0;
 my $doCat = 0;
+my $doRaw = 0;
 
 GetOptions(
 	"help"     => \&showHelp,
 	"version"  => \&showVersion,
 	"man"      => \$doMan,
 	"cat"      => \$doCat,
+	"raw"      => \$doRaw,
 	"dir"      => sub { print $perllibdir; exit(0); },
 ) || wrongUsage();
 
@@ -43,11 +45,14 @@ if ($ARGV[0] eq 'man') {
 } elsif ($ARGV[0] eq 'cat') {
 	$doCat = 1;
 	shift;
+} elsif ($ARGV[0] eq 'raw') {
+	$doRaw = 1;
+	shift;
 }
 
-wrongUsage() if !$doMan && !$doCat || @ARGV > 1;
+wrongUsage() if !$doMan && !$doCat && !$doRaw || @ARGV > 1;
 
-my $manOrCatStr = $doMan? "man": "cat";
+my $manOrCatStr = $doMan || $doRaw? "man": "cat";
 my $internalPods = {};
 
 $internalPods->{index} = qq{
@@ -60,7 +65,7 @@ $internalPods->{index} = qq{
 	Recent I<fvwm> versions install the Perl library that makes creating
 	FVWM modules in Perl possible and easy.
 
-	You may read the Perl library documentation by running:
+	You may read the Perl library documentation locally by running:
 
 	    % fvwm-perllib $manOrCatStr <topic>
 
@@ -79,7 +84,7 @@ $internalPods->{index} = qq{
 	Mikhael Goikhman <migo\@homemail.com>.
 };
 
-$internalPods->{tutorial} = qq{
+$internalPods->{tutorial} = q{
 	:head1 NAME
 
 	tutorial - common techniques for writting FVWM modules
@@ -95,7 +100,7 @@ $internalPods->{tutorial} = qq{
 
 	:head1 WHAT IS A MODULE
 
-	In the best unix traditions different functionality may be achieved
+	In the unix traditions different functionality may be implemented
 	by separate programs to reduce a bloat. A module is an optional
 	program that is intended to extend the window manager using a defined
 	module protocol.
@@ -103,10 +108,104 @@ $internalPods->{tutorial} = qq{
 	FVWM modules are spawned by the main I<fvwm> executable. They
 	usually listen to the window manager events, do some useful work and
 	send back commands for execution. There are transient modules that
-	exit immediately or after some short time and persistent modules
-	that exit together with a window manager or when a user requests.
-	Some modules may manage windows or other modules. Some modules may
-	supply a GUI, some may be non interactive.
+	exit immediately or shortly, and persistent modules that exit
+	together with a window manager or when a user requests.  Some
+	modules may control windows or other modules. Some modules may supply
+	a GUI, others may be non interactive.
+
+	:head1 CREATING A SIMPLE MODULE
+
+	Let's create a module that shows a flash window for one second when
+	you change pages. We will use xmessage with nifty options for our
+	flash purposes, but you may use your fantasy to do this better.
+
+	First, we should understand when our module works. Usually a module
+	does nothing (sleeps) and is awaken when something interesting
+	happens. This is achieved using events. A module defines events that
+	it is interesting to receive and set-ups event handlers (perl
+	functions) to be called when the event happens. Then a module enters
+	the event loop where it sleeps all the time until one or another
+	event happens. Most of the module work is done in the event
+	handlers. When an event is processed, the module enters the event
+	loop again.
+
+	In our case, we should listen to an FVWM event M_NEW_PAGE. The list
+	of all events may be found in L<FVWM::Constants>. When we receive
+	the event we want to get new page coordinates and display them
+	using our special xmessage window.
+
+	Now from theory to practice. The header of all modules written in
+	Perl is pretty standard:
+
+	    #!/usr/bin/perl -w
+
+	    use lib `fvwm-perllib dir`;
+	    use FVWM::Module;
+
+	Then create the actual module object:
+
+	    my $module = new FVWM::Module(
+	        Mask => M_NEW_PAGE | M_NEW_DESK,
+	        Debug => 1,
+	    );
+
+	The B<Debug> option tells to print the event names we receive to
+	help writing a module. The B<Mask> option tells which events a
+	module wants to receive. It is ok not to define any event handler
+	for I<M_NEW_DESK> and to define two event handlers for
+	I<M_NEW_PAGE>. But for our purposes one I<M_NEW_PAGE> would be more
+	than enough:
+
+	    $module->addHandler(M_NEW_PAGE, \&gotNewPage);
+
+	It is a time to implement our C<gotNewPage> function.
+
+	    sub gotNewPage {
+	        my ($module, $event) = @_;
+
+	        my $width  = $event->_vp_width;
+	        my $height = $event->_vp_height;
+
+	        if (!$width || !$height) {
+	            # this may happen when doing DeskTopSize 1x1 on page 2 2
+	            return;
+	        }
+	        my $page_nx = int($event->_vp_x / $width);
+	        my $page_ny = int($event->_vp_y / $height);
+
+		# actually show the flash
+	        $module->send("Exec xmessage -name FlashWindow \
+	            -bg cyan -fg white -center -timeout 1 -button '' \
+	            -xrm '*cursorName: none' -xrm '*borderWidth: 2' \
+	            -xrm '*borderColor: yellow' -xrm '*Margin: 12' \
+	            '($page_nx, $page_ny)'");
+	    }
+
+	All event handlers are called with 2 parameters, a module and an
+	event objects. The arguments of the event are described in
+	L<FVWM::EventNames>. Each event type has its own arguments. Our
+	I<M_NEW_PAGE> has 5 arguments: vp_x vp_y desk vp_width vp_height.
+	We should do some calculations to get the page numbers from viewport
+	coordinates.
+
+	It is good to set-up the FlashWindow specially:
+
+	    $module->send("Style FlashWindow StaysOnTop, NoTitle, NoHandles, \
+		BorderWidth 10, WindowListSkip, NeverFocus, UsePPosition");
+
+	The full module source that we just wrote is available at
+	ftp://ftp.fvwm.org/pub/fvwm/devel/sources/tests/perl/module-flash .
+	To run it execute this fvwm command:
+
+	    Module /path/to/module-flash
+
+	To kill the module, execute:
+
+	    KillModule /path/to/module-flash
+
+	:head1 CREATING MORE COMPLEX MODULES
+
+	This tutorial will be enhanced in the future.
 
 	:head1 EXAMPLES
 
@@ -115,7 +214,7 @@ $internalPods->{tutorial} = qq{
 
 	:head1 AUTHOR
 
-	Mikhael Goikhman <migo\@homemail.com>.
+	Mikhael Goikhman <migo@homemail.com>.
 };
 
 my $topic = $ARGV[0] || "index";
@@ -134,10 +233,11 @@ if (exists $internalPods->{$topic}) {
 	die "No $file found.\n" unless -f $file;
 }
 
+my $manConverter = $doMan? " | nroff -man | $pager": "";
 open(MANPIPE, $doCat? "| pod2text '$file' | $pager":
 	"| pod2man --section 3 --release 'FVWM $version$versionInfo'" .
 		" --center 'FVWM Perl library' '$file'" .
-		" | sed 's/<STANDARD INPUT>/perllib/ig' | nroff -man | $pager")
+		" | sed 's/<STANDARD INPUT>/perllib/ig'$manConverter")
 	or die "Can't open pipe to pod/man viewer\n";
 print MANPIPE $text
 	or die "Can't write to pod/man viewer\n";
@@ -149,7 +249,7 @@ sub showHelp {
 	print "Shows documentation of the supplied FVWM Perl library.\n\n";
 	print "Usage: fvwm-perllib man|cat\n";
 	print "\tAn introduction to the FVWM Perl library\n\n";
-	print "Usage: fvwm-perllib man|cat <Perl::Class>\n";
+	print "Usage: fvwm-perllib man|cat|raw <Perl::Class>\n";
 	print "\tManual page for <Perl::Class>, try: man FVWM::Module\n";
 	print "\t\$PAGER is used for a pager, the default is '$pager'\n\n";
 	print "Usage: fvwm-perllib dir\n";
@@ -186,6 +286,7 @@ B<fvwm-perllib>
 [ B<--version>|B<-v> ]
 [ B<man> [ I<Perl::Class> ] ]
 [ B<cat> [ I<Perl::Class> ] ]
+[ B<raw> [ I<Perl::Class> ] ]
 [ B<dir> ]
 
 =head1 DESCRIPTION
@@ -207,6 +308,9 @@ B<--man> or B<man> [ I<Perl::Class> ]
 
 B<--cat> or B<cat> [ I<Perl::Class> ]
     show manual page in plain text
+
+B<--raw> or B<raw> [ I<Perl::Class> ]
+    generate output in man format (not human readable)
 
 B<--dir> or B<dir>
     print perllib directory without a trailing end of line

@@ -460,7 +460,7 @@ FVWM::Module - the base class representing FVWM module
   use lib `fvwm-perllib dir`;
   use FVWM::Module;
 
-  my $module = new FVWM::Module;
+  my $module = new FVWM::Module(Mask => M_FOCUS_CHANGE);
 
   $module->send("Beep");
 
