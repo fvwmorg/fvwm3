@@ -1987,6 +1987,7 @@ Bool __move_loop(
 		int old_xl;
 		int old_yt;
 
+		e.type = 0;
 		old_xl = xl;
 		old_yt = yt;
 		/* wait until there is an interesting event */
@@ -1998,8 +1999,8 @@ Bool __move_loop(
 				ButtonMotionMask | ExposureMask, &e)))
 		{
 			rc = HandlePaging(
-				&e, dx, dy, &xl, &yt, &delta_x, &delta_y,
-				False, False, True);
+				(e.type != 0) ? &e : NULL, dx, dy, &xl, &yt,
+				&delta_x, &delta_y, False, False, True);
 			if (rc == 1)
 			{
 				/* Fake an event to force window reposition */
