@@ -1,5 +1,8 @@
 2004-01-04  Olivier Chapuis  <olivier.chapuis@free.fr>
 
+	* FvwmTheme/FvwmTheme.1:
+	Typo: WindowShadeScrools -> WindowShadeShrinks
+
 	* FvwmScript/FvwmScript.c (MainLoop):
 	Updated root transparent bg when we are (un)swallowed
 
