@@ -333,13 +333,10 @@ int main(int argc, char **argv)
       msg_bit = header[1];
       is_extended_msg = (msg_bit & M_EXTENDED_MSG);
       msg_bit &= ~M_EXTENDED_MSG;
-      if (msg_bit & M_EXTENDED_MSG)
+      while (msg_bit)
       {
-	while (msg_bit)
-	{
-	  event++;
-	  msg_bit >>= 1;
-	}
+	event++;
+	msg_bit >>= 1;
       }
       if (event == -1)
 	event = BUILTIN_UNKNOWN;
