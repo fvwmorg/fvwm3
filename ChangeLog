@@ -1,5 +1,20 @@
 1999-08-14  Dominik Vogt  <dominik_vogt@gmx.de>
 
+	* fvwm/icons.c (Iconify):
+	* fvwm/events.c (HandleUnmapNotify):
+	* fvwm/misc.c (UnmapIt):
+	* fvwm/fvwm.h (struct): new window flag 'is_deiconify_pending' to
+	handlethe case of deiconifying and immediately iconifying a window
+	again.
+
+	* fvwm/icons.c: reindented file
+
+	* fvwm/fvwm.c (Done): reindented function
+
+	* fvwm/menus.c (OldMenuStyle): removed fprintf
+	removed redundant #ifdef I18N_MB
+	I commited this a few days ago already. Why did the fix vanish again?
+
 	* fvwm/bindings.c (activate_binding):
 	* fvwm/add_window.c (AddWindow):
 	* fvwm/icons.c (CreateIconWindow): disabled root bindings fix for
@@ -27,7 +42,7 @@
 	* fvwm/fvwm2.1 (Current): clarified condition mask (application name)
 
 	* fvwm/menus.c (OldMenuStyle): removed fprintf
-	(OldMenuStyle): removed redundant #ifdef I18N_MB
+	removed redundant #ifdef I18N_MB
 
 1999-08-11  Mikhael Goikhman  <migo@homemail.com>
 

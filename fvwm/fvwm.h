@@ -174,7 +174,7 @@ typedef struct
 				      * when destroying/recapturing window. */
   unsigned has_border : 1; /* Is this decorated with border*/
   unsigned has_title : 1; /* Is this decorated with title */
-  unsigned is_mapped : 1; /* is it mapped? */
+  unsigned is_fully_visible : 1; /* is the window fully visible */
   unsigned is_iconified : 1; /* is it an icon now? */
   unsigned is_iconified_by_parent : 1; /* To prevent iconified transients in a
 					* parent icon from counting for Next */
@@ -184,17 +184,19 @@ typedef struct
   unsigned is_icon_moved : 1; /* has the icon been moved by the user? */
   unsigned is_icon_unmapped : 1; /* was the icon unmapped, even though the
 				  * window is still iconified (Transients) */
+  unsigned is_mapped : 1; /* is it mapped? */
   unsigned is_map_pending : 1; /* Sent an XMapWindow, but didn't receive a
 				* MapNotify yet.*/
   unsigned is_maximized : 1; /* is the window maximized? */
   unsigned is_name_changed : 1; /* Set if the client changes its WM_NAME.
 				 * The source of twm contains an explanation
 				 * why we need this information. */
+  unsigned is_partially_visible : 1; /* is the window partially visible */
   unsigned is_pixmap_ours : 1; /* is the icon pixmap ours to free? */
   unsigned is_transient : 1; /* is it a transient window? */
+  unsigned is_deiconify_pending : 1; /* Sent an XUnmapWindow for deiconifying,
+				      * but didn't receive a UnmapNotify yet.*/
   unsigned is_viewport_moved : 1; /* To prevent double move in MoveViewport.*/
-  unsigned is_fully_visible : 1; /* is the window fully visible */
-  unsigned is_partially_visible : 1; /* is the window partially visible */
   unsigned is_window_being_moved_opaque : 1;
   unsigned is_window_shaded : 1;
 } window_flags;

@@ -155,6 +155,10 @@
 #define IS_TRANSIENT(fw)       ((fw)->flags.is_transient)
 #define SET_TRANSIENT(fw,x)    (fw)->flags.is_transient = !!(x)
 #define SETM_TRANSIENT(fw,x)   (fw)->flag_mask.is_transient = !!(x)
+#define IS_DEICONIFY_PENDING(fw)     ((fw)->flags.is_deiconify_pending)
+#define SET_DEICONIFY_PENDING(fw,x)  (fw)->flags.is_deiconify_pending = !!(x)
+#define SETM_DEICONIFY_PENDING(fw,x) \
+                               (fw)->flag_mask.is_deiconify_pending = !!(x)
 #define IS_VIEWPORT_MOVED(fw)  ((fw)->flags.is_viewport_moved)
 #define SET_VIEWPORT_MOVED(fw,x) \
           (fw)->flags.is_viewport_moved = !!(x)

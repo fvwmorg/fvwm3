@@ -742,7 +742,7 @@ void HandlePropertyNotify(void)
 		  AutoPlaceIcon(Tmp_win);
 		  if(Tmp_win->Desk == Scr.CurrentDesk)
 		    {
-		       if(Tmp_win->icon_w)
+		      if(Tmp_win->icon_w)
 			 XMapWindow(dpy, Tmp_win->icon_w);
 		      if(Tmp_win->icon_pixmap_w != None)
 			XMapWindow(dpy, Tmp_win->icon_pixmap_w);
@@ -949,7 +949,7 @@ void HandleMapRequest(void)
    }
   HandleMapRequestKeepRaised(None, NULL);
 }
-void HandleMapRequestKeepRaised(Window KeepRaised,  FvwmWindow  *ReuseWin)
+void HandleMapRequestKeepRaised(Window KeepRaised, FvwmWindow *ReuseWin)
 {
   extern long isIconicState;
   extern Boolean PPosOverride;
@@ -1106,6 +1106,12 @@ void HandleMapNotify(void)
   if(Event.xmap.event != Event.xmap.window)
     return;
 
+  /* don't map if the event was caused by a de-iconify */
+  if (IS_DEICONIFY_PENDING(Tmp_win))
+  {
+    return;
+  }
+
   /*
       Make sure at least part of window is on this page
       before giving it focus...
@@ -1126,9 +1132,9 @@ void HandleMapNotify(void)
   XMapSubwindows(dpy, Tmp_win->frame);
 
   if(Tmp_win->Desk == Scr.CurrentDesk)
-    {
-      XMapWindow(dpy, Tmp_win->frame);
-    }
+  {
+    XMapWindow(dpy, Tmp_win->frame);
+  }
 
   if(IS_ICONIFIED(Tmp_win))
     BroadcastPacket(M_DEICONIFY, 3,
@@ -1174,17 +1180,18 @@ void HandleUnmapNotify(void)
   extern FvwmWindow *colormap_win;
   int    weMustUnmap;
   int    focus_grabbed = 0;
+  Bool must_return = False;
 
   DBUG("HandleUnmapNotify","Routine Entered");
 
   /*
    * Don't ignore events as described below.
    */
-  if((Event.xunmap.event != Event.xunmap.window) &&
+  if(Event.xunmap.event != Event.xunmap.window &&
      (Event.xunmap.event != Scr.Root || !Event.xunmap.send_event))
-    {
-      return;
-    }
+  {
+    must_return = True;
+  }
 
   /*
    * The July 27, 1988 ICCCM spec states that a client wishing to switch
@@ -1205,6 +1212,14 @@ void HandleUnmapNotify(void)
     }
 
   if(!Tmp_win)
+    return;
+
+  if (Event.xunmap.window == Tmp_win->frame)
+  {
+    SET_DEICONIFY_PENDING(Tmp_win , 0);
+  }
+
+  if (must_return)
     return;
 
   if(weMustUnmap)

@@ -204,6 +204,8 @@ int main(int argc, char **argv)
   if ( user_home_dir == NULL )
     user_home_dir = "."; /* give up and use current dir */
 
+fprintf(stderr,"\nargc = %d\n", argc);
+for (i = 1; i < argc; i++) fprintf(stderr, "argv[%d] = %s\n", i, argv[i]);
   for (i = 1; i < argc; i++)
   {
     if (strncasecmp(argv[i],"-debug",6)==0)
@@ -1658,7 +1660,8 @@ void Reborder(void)
     RBW - 05/15/1998
     Grab the last window and work backwards: preserve stacking order on restart.
 */
-  for (tmp = Scr.FvwmRoot.stack_prev; tmp != &Scr.FvwmRoot; tmp = tmp->stack_prev)
+  for (tmp = Scr.FvwmRoot.stack_prev; tmp != &Scr.FvwmRoot;
+       tmp = tmp->stack_prev)
   {
     RestoreWithdrawnLocation (tmp,True);
     XUnmapWindow(dpy,tmp->frame);
@@ -1696,13 +1699,14 @@ void Done(int restart, char *command)
   const char *exitFuncName;
 
   if (!restart)
-    {
-      MoveViewport(0,0,False);
-    }
+  {
+    MoveViewport(0,0,False);
+  }
 
   /* migo (03/Jul/1999): execute [Session]ExitFunction */
   exitFuncName = getInitFunctionName(2);
-  if (FindFunction(exitFuncName)) {
+  if (FindFunction(exitFuncName))
+  {
     char *action = strdup(CatString2("Function ", exitFuncName));
     ExecuteFunction(action, NULL, &Event, C_ROOT, -1, EXPAND_COMMAND);
     free(action);
@@ -1723,9 +1727,11 @@ void Done(int restart, char *command)
     Bool doPreserveState = True;
     SaveDesktopState();
 
-    if (command) {
+    if (command)
+    {
       while (isspace(command[0])) command++;
-      if (strncmp(command, "--dont-preserve-state", 21) == 0) {
+      if (strncmp(command, "--dont-preserve-state", 21) == 0)
+      {
         doPreserveState = False;
         command += 21;
         while (isspace(command[0])) command++;
@@ -1756,7 +1762,8 @@ void Done(int restart, char *command)
     sleep(1);
     ReapChildren();
 
-    if (command) {
+    if (command)
+    {
 #define MAX_ARG_SIZE 25
 #if 0
       /* This is not allowed by ANSI C! Must use a macro. */
@@ -1766,16 +1773,23 @@ void Done(int restart, char *command)
       const char *errorMsg;
       int n = parseCommandArgs(command, my_argv, MAX_ARG_SIZE, &errorMsg);
 
-      if (n <= 0) {
+      if (n <= 0)
+      {
         fvwm_msg(ERR, "Done", "Restart command parsing error in (%s): [%s]",
           command, errorMsg);
-
-      } else if (StrEquals(my_argv[0], "--pass-args")) {
-        if (n != 2) {
-          fvwm_msg(ERR, "Done", "Restart --pass-args: single name expected. (restarting '%s' instead)",
+      }
+      else if (StrEquals(my_argv[0], "--pass-args"))
+      {
+        if (n != 2)
+	{
+          fvwm_msg(ERR, "Done",
+		   "Restart --pass-args: single name expected. "
+		   "(restarting '%s' instead)",
             g_argv[0]);
 
-        } else {
+        }
+	else
+	{
           int i;
           my_argv[0] = my_argv[1];
           for (i = 1; i < g_argc && i < MAX_ARG_SIZE - 1; i++)
@@ -1789,7 +1803,9 @@ void Done(int restart, char *command)
           perror("  system error description");
         }
 
-      } else {
+      }
+      else
+      {
         execvp(my_argv[0], my_argv);
         fvwm_msg(ERR, "Done", "Call of '%s' failed! (restarting '%s' instead)",
           my_argv[0], g_argv[0]);
@@ -1947,14 +1963,14 @@ static int parseCommandArgs(
   int argc;
   char *aptr = argString;
   const char *cptr = command;
-  #define theChar (*cptr)
-  #define advChar (cptr++)
-  #define topChar (*cptr     == '\\'? *(cptr+1): *cptr)
-  #define popChar (*(cptr++) == '\\'? *(cptr++): *(cptr-1))
-  #define canAddArgChar (totalArgLen < MAX_TOTAL_ARG_LEN-1)
-  #define addArgChar(ch) (++totalArgLen, *(aptr++) = ch)
-  #define canAddArgStr(str) (totalArgLen < MAX_TOTAL_ARG_LEN-strlen(str))
-  #define addArgStr(str) {const char *tmp = str; while (*tmp) { addArgChar(*(tmp++)); }}
+#define theChar (*cptr)
+#define advChar (cptr++)
+#define topChar (*cptr     == '\\'? *(cptr+1): *cptr)
+#define popChar (*(cptr++) == '\\'? *(cptr++): *(cptr-1))
+#define canAddArgChar (totalArgLen < MAX_TOTAL_ARG_LEN-1)
+#define addArgChar(ch) (++totalArgLen, *(aptr++) = ch)
+#define canAddArgStr(str) (totalArgLen < MAX_TOTAL_ARG_LEN-strlen(str))
+#define addArgStr(str) {const char *tmp = str; while (*tmp) { addArgChar(*(tmp++)); }}
 
   *errorMsg = "";
   if (!command) { *errorMsg = "No command"; return -1; }
