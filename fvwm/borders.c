@@ -1443,14 +1443,9 @@ void draw_clipped_decorations(
   }
   else if (expose_win == t->title_w)
     is_title_redraw_allowed = True;
-  else if (expose_win == t->frame || expose_win == t->decor_w
-/* sides and corners are InputOnly and incapable of triggering Expose events
-           || (HAS_BORDER(t) &&
-            (expose_win == t->sides[0] || expose_win == t->corners[0] ||
-             expose_win == t->sides[1] || expose_win == t->corners[1] ||
-             expose_win == t->sides[2] || expose_win == t->corners[2] ||
-             expose_win == t->sides[3] || expose_win == t->corners[3])) */
-           )
+  else if (expose_win == t->frame || expose_win == t->decor_w)
+    /* sides and corners are InputOnly and incapable of triggering Expose events
+     */
   {
     is_frame_redraw_allowed = True;
   }
@@ -1501,8 +1496,7 @@ void draw_clipped_decorations(
   }
 
   get_common_decorations(
-    &cd, t, draw_parts, has_focus, force, expose_win, FALSE);
-
+    &cd, t, draw_parts, has_focus, force, expose_win, False);
   if ((draw_parts & DRAW_TITLE) && HAS_TITLE(t) && is_title_redraw_allowed)
     do_redraw_title = True;
   if (cd.flags.has_color_changed && HAS_TITLE(t))
@@ -1513,18 +1507,15 @@ void draw_clipped_decorations(
 	t->title_w, cd.notex_valuemask, &cd.notex_attributes);
     }
   }
-
   if ((draw_parts & DRAW_BUTTONS) && HAS_TITLE(t) && is_button_redraw_allowed)
     RedrawButtons(&cd, t, has_focus, force, expose_win, rclip);
   if (do_redraw_title)
     RedrawTitle(&cd, t, has_focus, rclip);
-  get_common_decorations(
-    &cd, t, draw_parts, has_focus, force, expose_win, TRUE);
   if (cd.flags.has_color_changed ||
       ((draw_parts & DRAW_FRAME) && (is_frame_redraw_allowed)))
   {
     get_common_decorations(
-      &cd, t, draw_parts, has_focus, force, expose_win, TRUE);
+      &cd, t, draw_parts, has_focus, force, expose_win, True);
     if (!rclip || !IS_WINDOW_BORDER_DRAWN(t))
     {
       change_window_background(t->decor_w, cd.valuemask, &cd.attributes);

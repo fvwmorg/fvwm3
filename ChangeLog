@@ -1,6 +1,9 @@
 2001-03-02  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* fvwm/borders.c (draw_clipped_decorations):
+	removed duplicate get_common_decorations call
+
+	* fvwm/borders.c (draw_clipped_decorations):
 	* fvwm/window_flags.h (SET_WINDOW_BORDER_DRAWN):
 	* fvwm/fvwm.h:
 	force resetting the window border background on initial border drawing
