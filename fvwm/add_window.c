@@ -2807,8 +2807,7 @@ static void do_recapture(F_CMD_ARGS, Bool fSingle)
 	XAllowEvents(dpy, AsyncPointer, CurrentTime);
 	discard_events(
 		ButtonPressMask|ButtonReleaseMask|ButtonMotionMask|\
-		PointerMotionMask|EnterWindowMask|LeaveWindowMask|\
-		KeyPressMask|KeyReleaseMask);
+		PointerMotionMask|KeyPressMask|KeyReleaseMask);
 #ifdef DEBUG_STACK_RING
 	verify_stack_ring_consistency();
 #endif

@@ -1879,6 +1879,7 @@ void HandleEnterNotify(void)
 
   DBUG("HandleEnterNotify","Routine Entered");
 
+fprintf(stderr,"entered 0x%08x '%s'\n", (int)Tmp_win, (Tmp_win)?Tmp_win->name:"");
   if (Scr.flags.is_wire_frame_displayed)
   {
     /* Ignore EnterNotify events while a window is resized or moved as a wire
@@ -2026,6 +2027,7 @@ void HandleEnterNotify(void)
     return;
   }
 
+fprintf(stderr,"got through\n");
   BroadcastPacket(
     MX_ENTER_WINDOW, 3, Tmp_win->w, Tmp_win->frame, (unsigned long)Tmp_win);
   sf = get_focus_window();

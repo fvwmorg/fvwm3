@@ -1,5 +1,8 @@
 2002-02-27  Dominik Vogt  <dominik.vogt@gmx.de>
 
+	* fvwm/add_window.c (CMD_Recapture):
+	fixed focus loss w/ SloppyFocus and MouseFocus after RecaptureWindow
+
 	* aclocal.m4 (smr_CHECK_LIB):
 	* acinclude.m4 (smr_CHECK_LIB):
 	disabled a destructing gnome_prefix logic again
