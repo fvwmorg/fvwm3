@@ -1,5 +1,8 @@
 2003-04-23  olicha  <olivier.chapuis@free.fr>
 
+	* fvwm/module_interface.c (CMD_KillModule):
+	Fixed a leak when we have an alias
+
 	* libs/Picture.c (PFreeFvwmPictureData):
 	* libs/Picture.h:
 	New interface function for just freeing the allocated data (not

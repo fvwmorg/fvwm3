@@ -852,7 +852,10 @@ void CMD_KillModule(F_CMD_ARGS)
 	GetNextToken(action, &alias);
 	KillModuleByName(module, alias);
 	free(module);
-
+	if (alias)
+	{
+		free(alias);
+	}
 	return;
 }
 
