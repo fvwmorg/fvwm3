@@ -404,7 +404,8 @@ void initialize_pager(void)
   back_pix = GetColor(PagerBack);
   hi_pix = GetColor(HilightC);
 
-  if (windowcolorset >= 0) {
+  if (windowcolorset >= 0)
+  {
     win_back_pix = Colorset[windowcolorset].bg;
     win_fore_pix = Colorset[windowcolorset].fg;
     win_pix_set = True;
@@ -484,8 +485,28 @@ void initialize_pager(void)
       Rows++;
   }
 
-  window_w = Columns * (Scr.VWidth / Scr.VScale + n) + Columns - 1;
-  window_h = Rows * (Scr.VHeight / Scr.VScale + m + label_h + 1) - 1;
+  sizehints.width_inc = Columns*(n+1);
+  sizehints.height_inc = Rows*(m+1);
+  sizehints.base_width = Columns * n + Columns - 1;
+  sizehints.base_height = Rows * (m + label_h + 1) - 1;
+  if (window_w > 0)
+  {
+    window_w = (window_w - sizehints.base_width) / sizehints.width_inc;
+    window_w = window_w * sizehints.width_inc + sizehints.base_width;
+  }
+  else
+  {
+    window_w = Columns * (Scr.VWidth / Scr.VScale + n) + Columns - 1;
+  }
+  if (window_h > 0)
+  {
+    window_h = (window_h - sizehints.base_height) / sizehints.height_inc;
+    window_h = window_h * sizehints.height_inc + sizehints.base_height;
+  }
+  else
+  {
+    window_h = Rows * (Scr.VHeight / Scr.VScale + m + label_h + 1) - 1;
+  }
 
   if (is_transient)
   {
@@ -500,13 +521,12 @@ void initialize_pager(void)
       yneg = 1;
     }
   }
-  if(xneg)
+  if (xneg)
   {
     sizehints.win_gravity = NorthEastGravity;
     window_x = Scr.MyDisplayWidth - window_w + window_x;
   }
-
-  if(yneg)
+  if (yneg)
   {
     window_y = Scr.MyDisplayHeight - window_h + window_y;
     if(sizehints.win_gravity == NorthEastGravity)
@@ -514,6 +534,10 @@ void initialize_pager(void)
     else
       sizehints.win_gravity = SouthWestGravity;
   }
+  sizehints.width = window_w;
+  sizehints.height = window_h;
+  sizehints.x = window_x;
+  sizehints.y = window_y;
 
   if(usposition)
     sizehints.flags |= USPosition;
@@ -523,14 +547,6 @@ void initialize_pager(void)
   attributes.border_pixel = 0;
   attributes.colormap = Pcmap;
   attributes.event_mask = (StructureNotifyMask);
-  sizehints.width = window_w;
-  sizehints.height = window_h;
-  sizehints.x = window_x;
-  sizehints.y = window_y;
-  sizehints.width_inc = Columns*(n+1);
-  sizehints.height_inc = Rows*(m+1);
-  sizehints.base_width = Columns * n + Columns - 1;
-  sizehints.base_height = Rows * (m + label_h + 1) - 1;
 
   /* destroy the temp window first, don't worry if it's the Root */
   if (Scr.Pager_w != Scr.Root)
@@ -1275,7 +1291,6 @@ void ReConfigure(void)
   sizehints.base_height = Rows*(m + label_h+1) - 1;
   sizehints.min_width = sizehints.base_width;
   sizehints.min_height = sizehints.base_height;
-
   if (window_w > 0)
   {
     window_w = (window_w - sizehints.base_width) / sizehints.width_inc;
