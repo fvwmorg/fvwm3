@@ -41,7 +41,7 @@
 /* Start of function prototype area. */
 
 Bool GrabEm(int cursor, int grab_context);
-void UngrabEm(int ungrab_context);
+Bool UngrabEm(int ungrab_context);
 
 int GetTwoArguments(char *action, int *val1, int *val2, int *val1_unit,
 		    int *val2_unit);

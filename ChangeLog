@@ -1,3 +1,15 @@
+2001-05-29  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* fvwm/add_window.c (destroy_window):
+	unmap the window immediately when it's going to be destroyed soo so that
+	it does not hang around during a wait
+
+	* fvwm/builtins.c (CMD_Wait):
+	fixed core dump
+
+	* fvwm/misc.c (UngrabEm):
+	workaround for wait hang caused "I" function patch
+
 2001-05-28  Dan Espen  <dane@mk.telcordia.com>
 
 	* INSTALL.fvwm: Identify LDFLAGS as a Makefile variable.

@@ -1940,6 +1940,19 @@ void destroy_window(FvwmWindow *tmp_win)
     /* this is necessary in case the application destroys the client window and
      * a new window is created with the saem window id */
     XDeleteContext(dpy, tmp_win->w, FvwmContext);
+    /* unmap the the window to fake that it was already removed */
+    if (IS_ICONIFIED(tmp_win))
+    {
+      if (tmp_win->icon_w)
+	XUnmapWindow(dpy, tmp_win->icon_w);
+      if(tmp_win->icon_pixmap_w != None)
+	XUnmapWindow(dpy, tmp_win->icon_pixmap_w);
+    }
+    else
+    {
+      XUnmapWindow(dpy, tmp_win->frame);
+    }
+
     return;
   }
 

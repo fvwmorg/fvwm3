@@ -200,19 +200,19 @@ print_grab_stats("grabbed");
  * UnGrab the pointer
  *
  ****************************************************************************/
-void UngrabEm(int ungrab_context)
+Bool UngrabEm(int ungrab_context)
 {
   if (ungrab_context <= GRAB_ALL || ungrab_context >= GRAB_MAXVAL)
   {
     fvwm_msg(
       ERR, "UngrabEm", "Bug: Called with illegal context %d", ungrab_context);
-    return;
+    return False;
   }
 
   if (grab_count[ungrab_context] == 0 || grab_count[GRAB_ALL] == 0)
   {
     /* context is not grabbed */
-    return;
+    return False;
   }
 
   XSync(dpy,0);
@@ -269,7 +269,7 @@ print_grab_stats("-ungrab");
   }
   XSync(dpy,0);
 
-  return;
+  return True;
 }
 
 #ifndef fvwm_msg /* Some ports (i.e. VMS) define their own version */

@@ -730,6 +730,7 @@ void CMD_Wait(F_CMD_ARGS)
 {
   Bool done = False;
   Bool redefine_cursor = False;
+  Bool is_ungrabbed;
   char *escape;
   Window nonewin = None;
   extern FvwmWindow *Tmp_win;
@@ -765,6 +766,7 @@ void CMD_Wait(F_CMD_ARGS)
     wait_string = safestrdup("");
   }
 
+  is_ungrabbed = UngrabEm(GRAB_NORMAL);
   while (!done && !isTerminated)
   {
     if (BUSY_WAIT & Scr.BusyCursor)
@@ -806,7 +808,11 @@ void CMD_Wait(F_CMD_ARGS)
   }
   if (redefine_cursor)
     XDefineCursor(dpy, Scr.Root, Scr.FvwmCursors[CRS_ROOT]);
-  Tmp_win = s_Tmp_win;
+  if (is_ungrabbed)
+  {
+    GrabEm(CRS_NONE, GRAB_NORMAL);
+  }
+  Tmp_win = (check_if_fvwm_window_exists(s_Tmp_win)) ? s_Tmp_win : NULL;
   free(wait_string);
 
   return;
