@@ -84,7 +84,7 @@ void CreateIconWindow(FvwmWindow *tmp_win, int def_x, int def_y)
   tmp_win->iconPixmap = None;
   tmp_win->iconDepth = 0;
 
-  if(IS_ICON_SUPPRESSED(tmp_win))
+  if (IS_ICON_SUPPRESSED(tmp_win))
     return;
 
   /* First, see if it was specified in the .fvwmrc */
@@ -92,24 +92,24 @@ void CreateIconWindow(FvwmWindow *tmp_win, int def_x, int def_y)
   tmp_win->icon_p_width = 0;
 
   /* First, check for a monochrome bitmap */
-  if(tmp_win->icon_bitmap_file != NULL)
+  if (tmp_win->icon_bitmap_file != NULL)
     GetBitmapFile(tmp_win);
 
 #ifdef XPM
   /* Next, check for a color pixmap */
-  if((tmp_win->icon_bitmap_file != NULL)&&
-     (tmp_win->icon_p_height == 0)&&(tmp_win->icon_p_width == 0))
+  if ((tmp_win->icon_bitmap_file != NULL) && (tmp_win->icon_p_height == 0)
+      && (tmp_win->icon_p_width == 0))
     GetXPMFile(tmp_win);
 #endif /* XPM */
 
   /* Next, See if the app supplies its own icon window */
-  if((tmp_win->icon_p_height == 0)&&(tmp_win->icon_p_width == 0)&&
-     (tmp_win->wmhints) && (tmp_win->wmhints->flags & IconWindowHint))
+  if ((tmp_win->icon_p_height == 0) && (tmp_win->icon_p_width == 0)
+      && (tmp_win->wmhints) && (tmp_win->wmhints->flags & IconWindowHint))
     GetIconWindow(tmp_win);
 
   /* Finally, try to get icon bitmap from the application */
-  if((tmp_win->icon_p_height == 0)&&(tmp_win->icon_p_width == 0)&&
-	  (tmp_win->wmhints)&&(tmp_win->wmhints->flags & IconPixmapHint))
+  if ((tmp_win->icon_p_height == 0) && (tmp_win->icon_p_width == 0)
+      && (tmp_win->wmhints) && (tmp_win->wmhints->flags & IconPixmapHint))
     GetIconBitmap(tmp_win);
 
   /* figure out the icon window size */
@@ -126,20 +126,24 @@ void CreateIconWindow(FvwmWindow *tmp_win, int def_x, int def_y)
       tmp_win->icon_w_height = 0;
     }
 
+  /* make space for relief to be drawn outside the icon */
+  /* this does not happen if fvwm is using a non-default visual (with
+     private colormap) and the client has supplied a pixmap (not a bitmap) */
   if ((IS_ICON_OURS(tmp_win)) && (tmp_win->icon_p_height > 0)
-      && ((tmp_win->iconDepth == 1) || (tmp_win->iconDepth == Scr.depth))) {
+      && (Scr.usingDefaultVisual || (tmp_win->iconDepth == 1)
+          || IS_PIXMAP_OURS(tmp_win))) {
     tmp_win->icon_p_width += 4;
     tmp_win->icon_p_height += 4;
   }
 
-  if(tmp_win->icon_p_width == 0)
-    tmp_win->icon_p_width = tmp_win->icon_t_width+6;
+  if (tmp_win->icon_p_width == 0)
+    tmp_win->icon_p_width = tmp_win->icon_t_width + 6;
   tmp_win->icon_w_width = tmp_win->icon_p_width;
 
   tmp_win->icon_x_loc = tmp_win->icon_xl_loc = def_x;
   tmp_win->icon_y_loc = def_y;
 
-  /* clip to fit on screen */
+  /* create the icon title window */
   valuemask = CWColormap | CWBorderPixel
               | CWBackPixel | CWCursor | CWEventMask;
   attributes.colormap = Scr.cmap;
@@ -158,10 +162,12 @@ void CreateIconWindow(FvwmWindow *tmp_win, int def_x, int def_y)
 				    InputOutput, Scr.viz, valuemask,
 				    &attributes);
 
+  /* create a window to hold the picture */
   if((IS_ICON_OURS(tmp_win)) && (tmp_win->icon_p_width > 0)
      && (tmp_win->icon_p_height > 0)) {
-      /* client supplied icon pixmaps use the default visual */
-      if ((tmp_win->iconDepth == 1) || (tmp_win->iconDepth == Scr.depth))
+      /* use fvwm's visuals in these cases */
+      if (Scr.usingDefaultVisual || (tmp_win->iconDepth == 1)
+          || IS_PIXMAP_OURS(tmp_win))
 	tmp_win->icon_pixmap_w = XCreateWindow(dpy, Scr.Root, def_x, def_y,
 					       tmp_win->icon_p_width,
 					       tmp_win->icon_p_height, 0,
@@ -186,25 +192,22 @@ void CreateIconWindow(FvwmWindow *tmp_win, int def_x, int def_y)
 					       valuemask, &attributes);
       }
     }
-  else
-    {
-      attributes.event_mask = (ButtonPressMask | ButtonReleaseMask |
-			       VisibilityChangeMask |
-			       KeyPressMask|EnterWindowMask |
-			       FocusChangeMask | LeaveWindowMask );
-
-      valuemask = CWEventMask;
-      XChangeWindowAttributes(dpy, tmp_win->icon_pixmap_w, valuemask,
-			      &attributes);
-    }
+  else {
+    /* client supplied icon window: select events on it */
+    attributes.event_mask = ButtonPressMask | ButtonReleaseMask | KeyPressMask
+			    | VisibilityChangeMask | FocusChangeMask
+			    | EnterWindowMask | LeaveWindowMask;
+    valuemask = CWEventMask;
+    XChangeWindowAttributes(dpy, tmp_win->icon_pixmap_w, valuemask,&attributes);
+  }
 
 
 #ifdef SHAPE
   if (ShapesSupported && IS_ICON_SHAPED(tmp_win)) {
   /* when fvwm is using the non-default visual client supplied icon pixmaps
    * are drawn in a window with no relief */
-    int off = ((tmp_win->iconDepth == 1) || (tmp_win->iconDepth == Scr.depth))
-	      ? 2 : 0;
+    int off = (Scr.usingDefaultVisual || (tmp_win->iconDepth == 1)
+   	       || IS_PIXMAP_OURS(tmp_win)) ? 2 : 0;
     XShapeCombineMask(dpy, tmp_win->icon_pixmap_w, ShapeBounding, off, off,
 		      tmp_win->icon_maskPixmap, ShapeSet);
   }
@@ -353,8 +356,10 @@ void DrawIconWindow(FvwmWindow *tmp_win)
 		tmp_win->icon_y_loc);
   }
 
-  if ((tmp_win->iconPixmap != None) && !(IS_ICON_SHAPED(tmp_win))
-      && ((tmp_win->iconDepth == 1) || (tmp_win->iconDepth == Scr.depth)))
+  /* only relieve unshaped icons that share fvwm's visual */
+  if ((tmp_win->iconPixmap != None) && !IS_ICON_SHAPED(tmp_win)
+      && (Scr.usingDefaultVisual || (tmp_win->iconDepth == 1)
+	  || IS_PIXMAP_OURS(tmp_win)))
     RelieveRectangle(dpy, tmp_win->icon_pixmap_w, 0, 0,
 		       tmp_win->icon_p_width - 1, tmp_win->icon_p_height - 1,
 	               Relief, Shadow, 2);
@@ -367,8 +372,8 @@ void DrawIconWindow(FvwmWindow *tmp_win)
 		 Scr.ScratchGC3, 0, 0, tmp_win->icon_p_width - 4,
 		 tmp_win->icon_p_height - 4, 2, 2, 1);
     } else {
-      if (tmp_win->iconDepth == Scr.depth) {
-        /* it's a pixmap */
+      if (Scr.usingDefaultVisual || IS_PIXMAP_OURS(tmp_win)) {
+        /* it's a pixmap that need copying */
 	XCopyArea(dpy, tmp_win->iconPixmap, tmp_win->icon_pixmap_w,
 		  Scr.ScratchGC3, 0, 0, tmp_win->icon_p_width - 4,
 		tmp_win->icon_p_height - 4, 2, 2);
@@ -731,16 +736,18 @@ static void GetBitmapFile(FvwmWindow *tmp_win)
 
   path = findImageFile(tmp_win->icon_bitmap_file, NULL, R_OK);
 
-  if(path == NULL)return;
-  if(XReadBitmapFile (dpy, Scr.Root, path,
+  if (path == NULL)
+    return;
+  if (XReadBitmapFile(dpy, Scr.Root, path,
 		      (unsigned int *)&tmp_win->icon_p_width,
 		      (unsigned int *)&tmp_win->icon_p_height,
-		      &tmp_win->iconPixmap,
-		      &HotX, &HotY) != BitmapSuccess)
-    {
-      tmp_win->icon_p_width = 0;
-      tmp_win->icon_p_height = 0;
-    }
+		      &tmp_win->iconPixmap, &HotX, &HotY) == BitmapSuccess) {
+    tmp_win->iconDepth = 1;
+    SET_PIXMAP_OURS(tmp_win, 1);
+  } else {
+    tmp_win->icon_p_width = 0;
+    tmp_win->icon_p_height = 0;
+  }
 
   free(path);
 }
