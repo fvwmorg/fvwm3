@@ -248,10 +248,10 @@ void initialize_viz_pager(void)
     Scr.Pager_w = XCreateWindow(dpy, Scr.Root, -10, -10, 10, 10, 0, Pdepth,
 				InputOutput, Pvisual,
 				CWBackPixmap|CWBorderPixel|CWColormap, &attr);
-    Scr.NormalGC = XCreateGC(dpy, Scr.Pager_w, 0, &xgcv);
+    Scr.NormalGC = fvwmlib_XCreateGC(dpy, Scr.Pager_w, 0, &xgcv);
   }
   xgcv.plane_mask = AllPlanes;
-  Scr.MiniIconGC = XCreateGC(dpy, Scr.Pager_w, GCPlaneMask, &xgcv);
+  Scr.MiniIconGC = fvwmlib_XCreateGC(dpy, Scr.Pager_w, GCPlaneMask, &xgcv);
   Scr.black = GetColor("Black");
 
   /* Transparent background are only allowed when the depth matched the root */
@@ -626,15 +626,15 @@ void initialize_pager(void)
   /* create the 3d bevel GC's if necessary */
   if (windowcolorset >= 0) {
     gcv.foreground = Colorset[windowcolorset].hilite;
-    Scr.whGC = XCreateGC(dpy, Scr.Pager_w, GCForeground, &gcv);
+    Scr.whGC = fvwmlib_XCreateGC(dpy, Scr.Pager_w, GCForeground, &gcv);
     gcv.foreground = Colorset[windowcolorset].shadow;
-    Scr.wsGC = XCreateGC(dpy, Scr.Pager_w, GCForeground, &gcv);
+    Scr.wsGC = fvwmlib_XCreateGC(dpy, Scr.Pager_w, GCForeground, &gcv);
   }
   if (activecolorset >= 0) {
     gcv.foreground = Colorset[activecolorset].hilite;
-    Scr.ahGC = XCreateGC(dpy, Scr.Pager_w, GCForeground, &gcv);
+    Scr.ahGC = fvwmlib_XCreateGC(dpy, Scr.Pager_w, GCForeground, &gcv);
     gcv.foreground = Colorset[activecolorset].shadow;
-    Scr.asGC = XCreateGC(dpy, Scr.Pager_w, GCForeground, &gcv);
+    Scr.asGC = fvwmlib_XCreateGC(dpy, Scr.Pager_w, GCForeground, &gcv);
   }
 
   for(i=0;i<ndesks;i++)
@@ -648,7 +648,7 @@ void initialize_pager(void)
     gcv.foreground = (Desks[i].colorset < 0) ? fore_pix
       : Colorset[Desks[i].colorset].fg;
     gcv.font = font->fid;
-    Desks[i].NormalGC = XCreateGC(dpy, Scr.Pager_w, GCForeground | GCFont,
+    Desks[i].NormalGC = fvwmlib_XCreateGC(dpy, Scr.Pager_w, GCForeground | GCFont,
 				  &gcv);
 
     /* create the active desk hilite GC */
@@ -657,7 +657,7 @@ void initialize_pager(void)
     else
       gcv.foreground = (Desks[i].highcolorset < 0) ? hi_pix
 	: Colorset[Desks[i].highcolorset].bg;
-    Desks[i].HiliteGC = XCreateGC(dpy, Scr.Pager_w, GCForeground, &gcv);
+    Desks[i].HiliteGC = fvwmlib_XCreateGC(dpy, Scr.Pager_w, GCForeground, &gcv);
 
     /* create the hilight desk title drawing GC */
     if ((Pdepth < 2) || (fore_pix == hi_pix))
@@ -666,13 +666,13 @@ void initialize_pager(void)
     else
       gcv.foreground = (Desks[i].highcolorset < 0) ? fore_pix
 	: Colorset[Desks[i].highcolorset].fg;
-    Desks[i].rvGC = XCreateGC(dpy, Scr.Pager_w, GCForeground | GCFont, &gcv);
+    Desks[i].rvGC = fvwmlib_XCreateGC(dpy, Scr.Pager_w, GCForeground | GCFont, &gcv);
 
     /* create the virtual page boundary GC */
     gcv.foreground = (Desks[i].colorset < 0) ? fore_pix
       : Colorset[Desks[i].colorset].fg;
     gcv.line_style = (use_dashed_separators) ? LineOnOffDash : LineSolid;
-    Desks[i].DashedGC = XCreateGC(dpy, Scr.Pager_w,
+    Desks[i].DashedGC = fvwmlib_XCreateGC(dpy, Scr.Pager_w,
 				  GCForeground | GCLineStyle, &gcv);
 
     valuemask = (CWBorderPixel | CWColormap | CWEventMask);
@@ -882,7 +882,7 @@ void initialize_pager(void)
 	? balloon_fore_pix
 	: Colorset[Desks[i].ballooncolorset].fg;
 
-      Desks[i].BalloonGC = XCreateGC(dpy, Desks[i].balloon.w,
+      Desks[i].BalloonGC = fvwmlib_XCreateGC(dpy, Desks[i].balloon.w,
 				     GCFont | GCForeground, &gcv);
 /* don't do this yet, wait for map since size will change
       if (Desks[i].ballooncolorset > -1 &&

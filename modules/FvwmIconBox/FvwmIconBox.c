@@ -1154,22 +1154,22 @@ void CreateWindow(void)
   gcm = GCForeground|GCBackground;
   gcv.foreground = hilite_pix;
   gcv.background = back_pix;
-  ReliefGC = XCreateGC(dpy, main_win, gcm, &gcv);
+  ReliefGC = fvwmlib_XCreateGC(dpy, main_win, gcm, &gcv);
 
   gcv.foreground = shadow_pix;
-  ShadowGC = XCreateGC(dpy, main_win, gcm, &gcv);
+  ShadowGC = fvwmlib_XCreateGC(dpy, main_win, gcm, &gcv);
 
   gcv.foreground = icon_hilite_pix;
   gcv.background = icon_back_pix;
-  IconReliefGC = XCreateGC(dpy, main_win, gcm, &gcv);
+  IconReliefGC = fvwmlib_XCreateGC(dpy, main_win, gcm, &gcv);
 
   gcv.foreground = icon_shadow_pix;
-  IconShadowGC = XCreateGC(dpy, main_win, gcm, &gcv);
+  IconShadowGC = fvwmlib_XCreateGC(dpy, main_win, gcm, &gcv);
 
   gcm = GCForeground|GCBackground|GCFont;
   gcv.foreground = icon_fore_pix;
   gcv.font =  font->fid;
-  NormalGC = XCreateGC(dpy, main_win, gcm, &gcv);
+  NormalGC = fvwmlib_XCreateGC(dpy, main_win, gcm, &gcv);
 
 
   /* icon_win's background */

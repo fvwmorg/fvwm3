@@ -984,8 +984,8 @@ void HandleMapRequestKeepRaised(Window KeepRaised, FvwmWindow *ReuseWin)
 #if 0
 	/* nope, this is forbidden by the ICCCM */
 	XMapWindow(dpy, Tmp_win->w);
-	SetMapStateProp(Tmp_win, NormalState);
 #endif
+	SetMapStateProp(Tmp_win, NormalState);
       }
       break;
 

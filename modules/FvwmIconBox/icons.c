@@ -383,7 +383,7 @@ void GetIconBitmap(struct icon_info *item)
 
   item->iconPixmap = XCreatePixmap(dpy, Root, item->icon_w,
                                    item->icon_h, depth);
-  gc = XCreateGC(dpy, item->iconPixmap, 0, NULL);
+  gc = fvwmlib_XCreateGC(dpy, item->iconPixmap, 0, NULL);
   XCopyArea(dpy, item->wmhints->icon_pixmap, item->iconPixmap,
                gc, 0, 0, item->icon_w, item->icon_h, 0, 0);
   XFreeGC(dpy, gc);

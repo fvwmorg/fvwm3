@@ -282,6 +282,9 @@ Pixmap CreateTiledPixmap(Display *dpy, Pixmap src, int src_width,
 			 int src_height, int dest_width,
 			 int dest_height, int depth, GC gc);
 
+GC fvwmlib_XCreateGC(
+  Display *display, Drawable drawable, unsigned long valuemask,
+  XGCValues *values);
 
 /**** gradient stuff ****/
 

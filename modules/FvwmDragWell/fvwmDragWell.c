@@ -531,15 +531,15 @@ void createBackground() {
 
   gcv.foreground = xg.hilite;
   gcv.background = xg.back;
-  xg.hiliteGC = XCreateGC(xg.dpy, xg.win, gcm, &gcv);
+  xg.hiliteGC = fvwmlib_XCreateGC(xg.dpy, xg.win, gcm, &gcv);
 
   gcv.foreground = xg.shadow;
   gcv.background = xg.back;
-  xg.shadowGC = XCreateGC(xg.dpy, xg.win, gcm, &gcv);
+  xg.shadowGC = fvwmlib_XCreateGC(xg.dpy, xg.win, gcm, &gcv);
 
   gcv.foreground = xg.fore;
   gcv.background = xg.back;
-  xg.buttonGC = XCreateGC(xg.dpy, xg.win, gcm, &gcv);
+  xg.buttonGC = fvwmlib_XCreateGC(xg.dpy, xg.win, gcm, &gcv);
 
   if (xg.colorset >=0) /*colorset*/
     SetWindowBackground(xg.dpy, xg.win, xg.w, xg.h, &Colorset[xg.colorset],

@@ -51,7 +51,7 @@ void InitRadioButton(struct XObj *xobj)
 		CopyFromParent,InputOutput,CopyFromParent,
 		mask,&Attr);
 
- xobj->gc=XCreateGC(dpy,xobj->win,0,NULL);
+ xobj->gc=fvwmlib_XCreateGC(dpy,xobj->win,0,NULL);
  XSetForeground(dpy,xobj->gc,xobj->TabColor[fore]);
 
  if ((xobj->xfont=XLoadQueryFont(dpy,xobj->font))==NULL)

@@ -1225,7 +1225,7 @@ static void CreateDrawGC(void) {
     gcv.tile = pixmap;
     gcv.fill_style = FillTiled;
   }
-  gc=XCreateGC(dpy, Scr.root, GCFunction | GCForeground | GCLineWidth
+  gc=fvwmlib_XCreateGC(dpy, Scr.root, GCFunction | GCForeground | GCLineWidth
 	       | GCSubwindowMode | (pixmap ? GCFillStyle | GCTile : 0), &gcv);
 }
 

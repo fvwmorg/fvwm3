@@ -1209,7 +1209,7 @@ void MakeMeWindow(void)
     gcval.background=back[i];
     gcval.font=ButtonFont->fid;
     gcmask=GCForeground|GCBackground|GCFont;
-    graph[i]=XCreateGC(dpy,win,gcmask,&gcval);
+    graph[i]=fvwmlib_XCreateGC(dpy,win,gcmask,&gcval);
 
     if(Pdepth < 2)
       gcval.foreground=GetShadow(fore[i]);
@@ -1220,7 +1220,7 @@ void MakeMeWindow(void)
 	gcval.foreground=Colorset[colorset[i]].shadow;
     gcval.background=back[i];
     gcmask=GCForeground|GCBackground;
-    shadow[i]=XCreateGC(dpy,win,gcmask,&gcval);
+    shadow[i]=fvwmlib_XCreateGC(dpy,win,gcmask,&gcval);
 
     if (colorset[i] < 0)
       gcval.foreground=GetHilite(back[i]);
@@ -1228,11 +1228,11 @@ void MakeMeWindow(void)
       gcval.foreground=Colorset[colorset[i]].hilite;
     gcval.background=back[i];
     gcmask=GCForeground|GCBackground;
-    hilite[i]=XCreateGC(dpy,win,gcmask,&gcval);
+    hilite[i]=fvwmlib_XCreateGC(dpy,win,gcmask,&gcval);
 
     gcval.foreground=back[i];
     gcmask=GCForeground;
-    background[i]=XCreateGC(dpy,win,gcmask,&gcval);
+    background[i]=fvwmlib_XCreateGC(dpy,win,gcmask,&gcval);
 
     if ((colorset[i] >= 0) && Colorset[colorset[i]].pixmap
         && Colorset[colorset[i]].pixmap != ParentRelative) {

@@ -392,7 +392,7 @@ static void RedrawBorder(
 
     xgcv.function = GXnoop;
     xgcv.plane_mask = 0;
-    tgc = XCreateGC(dpy, t->frame, GCFunction | GCPlaneMask, &xgcv);
+    tgc = fvwmlib_XCreateGC(dpy, t->frame, GCFunction | GCPlaneMask, &xgcv);
   }
   /*
    * draw the border; resize handles are InputOnly so draw in the decor_w and

@@ -3446,9 +3446,8 @@ void paint_menu(MenuRoot *mr, XEvent *pevent, FvwmWindow *fw)
   Pixmap pmap;
   GC pmapgc;
   XGCValues gcv;
-  unsigned long gcm = 0;
-  gcv.line_width=3;
-  gcm = GCLineWidth;
+  unsigned long gcm = GCLineWidth;
+  gcv.line_width = 3;
 
   if (MR_IS_PAINTED(mr) && pevent &&
       (pevent->xexpose.x >= MR_WIDTH(mr) - bw ||
@@ -3506,7 +3505,7 @@ void paint_menu(MenuRoot *mr, XEvent *pevent, FvwmWindow *fw)
 
 	  pmap = XCreatePixmap(dpy, MR_WINDOW(mr), MR_WIDTH(mr),
 			       GRADIENT_PIXMAP_THICKNESS, Pdepth);
-	  pmapgc = XCreateGC(dpy, pmap, gcm, &gcv);
+	  pmapgc = fvwmlib_XCreateGC(dpy, pmap, gcm, &gcv);
 	  dw = (float) (bounds.width / ST_FACE(ms).u.grad.npixels) + 1;
 	  for (i = 0; i < ST_FACE(ms).u.grad.npixels; i++)
 	  {
@@ -3542,7 +3541,7 @@ void paint_menu(MenuRoot *mr, XEvent *pevent, FvwmWindow *fw)
 	  }
 	  pmap = XCreatePixmap(dpy, MR_WINDOW(mr), best_tile_width,
 			       MR_HEIGHT(mr), Pdepth);
-	  pmapgc = XCreateGC(dpy, pmap, gcm, &gcv);
+	  pmapgc = fvwmlib_XCreateGC(dpy, pmap, gcm, &gcv);
 	  dh = (float) (bounds.height / ST_FACE(ms).u.grad.npixels) + 1;
 	  for (i = 0; i < ST_FACE(ms).u.grad.npixels; i++)
 	  {
@@ -3591,7 +3590,7 @@ void paint_menu(MenuRoot *mr, XEvent *pevent, FvwmWindow *fw)
 	  /* let library take care of all other gradients */
 	  pmap = XCreatePixmap(dpy, MR_WINDOW(mr), MR_WIDTH(mr), MR_HEIGHT(mr),
 			       Pdepth);
-	  pmapgc = XCreateGC(dpy, pmap, gcm, &gcv);
+	  pmapgc = fvwmlib_XCreateGC(dpy, pmap, gcm, &gcv);
 
 	  /* find out the size the pixmap should be */
 	  CalculateGradientDimensions(
@@ -4516,7 +4515,7 @@ static void make_menu_window(MenuRoot *mr)
   attributes.background_pixel = (MST_HAS_MENU_CSET(mr)) ?
     Colorset[MST_CSET_MENU(mr)].bg : MST_MENU_COLORS(mr).back;
   attributes.event_mask = (ExposureMask | EnterWindowMask);
-attributes.event_mask |= KeyPressMask|KeyReleaseMask;
+  attributes.event_mask |= KeyPressMask|KeyReleaseMask;
   attributes.cursor = Scr.FvwmCursors[CRS_MENU];
   attributes.save_under = True;
 
@@ -5496,7 +5495,7 @@ static void UpdateMenuStyle(MenuStyle *ms)
   if (ST_MENU_RELIEF_GC(ms))
     XChangeGC(dpy, ST_MENU_RELIEF_GC(ms), gcm, &gcv);
   else
-    ST_MENU_RELIEF_GC(ms) = XCreateGC(dpy, Scr.NoFocusWin, gcm, &gcv);
+    ST_MENU_RELIEF_GC(ms) = fvwmlib_XCreateGC(dpy, Scr.NoFocusWin, gcm, &gcv);
 
   /* update shadow gc */
   gcv.foreground = relief_back;
@@ -5504,7 +5503,7 @@ static void UpdateMenuStyle(MenuStyle *ms)
   if (ST_MENU_SHADOW_GC(ms))
     XChangeGC(dpy, ST_MENU_SHADOW_GC(ms), gcm, &gcv);
   else
-    ST_MENU_SHADOW_GC(ms) = XCreateGC(dpy, Scr.NoFocusWin, gcm, &gcv);
+    ST_MENU_SHADOW_GC(ms) = fvwmlib_XCreateGC(dpy, Scr.NoFocusWin, gcm, &gcv);
 
   /* update active gc */
   gcv.foreground = active_fore;
@@ -5512,7 +5511,7 @@ static void UpdateMenuStyle(MenuStyle *ms)
   if(ST_MENU_ACTIVE_GC(ms))
     XChangeGC(dpy, ST_MENU_ACTIVE_GC(ms), gcm, &gcv);
   else
-    ST_MENU_ACTIVE_GC(ms) = XCreateGC(dpy, Scr.NoFocusWin, gcm, &gcv);
+    ST_MENU_ACTIVE_GC(ms) = fvwmlib_XCreateGC(dpy, Scr.NoFocusWin, gcm, &gcv);
 
   /* update active relief gc */
   gcv.foreground = active_relief_fore;
@@ -5520,7 +5519,7 @@ static void UpdateMenuStyle(MenuStyle *ms)
   if(ST_MENU_ACTIVE_RELIEF_GC(ms))
     XChangeGC(dpy, ST_MENU_ACTIVE_RELIEF_GC(ms), gcm, &gcv);
   else
-    ST_MENU_ACTIVE_RELIEF_GC(ms) = XCreateGC(dpy, Scr.NoFocusWin, gcm, &gcv);
+    ST_MENU_ACTIVE_RELIEF_GC(ms) = fvwmlib_XCreateGC(dpy, Scr.NoFocusWin, gcm, &gcv);
 
   /* update active shadow gc */
   gcv.foreground = active_relief_back;
@@ -5528,7 +5527,7 @@ static void UpdateMenuStyle(MenuStyle *ms)
   if(ST_MENU_ACTIVE_SHADOW_GC(ms))
     XChangeGC(dpy, ST_MENU_ACTIVE_SHADOW_GC(ms), gcm, &gcv);
   else
-    ST_MENU_ACTIVE_SHADOW_GC(ms) = XCreateGC(dpy, Scr.NoFocusWin, gcm, &gcv);
+    ST_MENU_ACTIVE_SHADOW_GC(ms) = fvwmlib_XCreateGC(dpy, Scr.NoFocusWin, gcm, &gcv);
 
   /* update active back gc */
   gcv.foreground = active_back;
@@ -5536,7 +5535,7 @@ static void UpdateMenuStyle(MenuStyle *ms)
   if (ST_MENU_ACTIVE_BACK_GC(ms))
     XChangeGC(dpy, ST_MENU_ACTIVE_BACK_GC(ms), gcm, &gcv);
   else
-    ST_MENU_ACTIVE_BACK_GC(ms) = XCreateGC(dpy, Scr.NoFocusWin, gcm, &gcv);
+    ST_MENU_ACTIVE_BACK_GC(ms) = fvwmlib_XCreateGC(dpy, Scr.NoFocusWin, gcm, &gcv);
 
   /* update menu gc */
   gcv.foreground = menu_fore;
@@ -5544,7 +5543,7 @@ static void UpdateMenuStyle(MenuStyle *ms)
   if(ST_MENU_GC(ms))
     XChangeGC(dpy, ST_MENU_GC(ms), gcm, &gcv);
   else
-    ST_MENU_GC(ms) = XCreateGC(dpy, Scr.NoFocusWin, gcm, &gcv);
+    ST_MENU_GC(ms) = fvwmlib_XCreateGC(dpy, Scr.NoFocusWin, gcm, &gcv);
 
   /* update stipple gc */
   if(Pdepth < 2)
@@ -5566,7 +5565,7 @@ static void UpdateMenuStyle(MenuStyle *ms)
   if (ST_MENU_STIPPLE_GC(ms))
     XChangeGC(dpy, ST_MENU_STIPPLE_GC(ms), gcm, &gcv);
   else
-    ST_MENU_STIPPLE_GC(ms) = XCreateGC(dpy, Scr.NoFocusWin, gcm, &gcv);
+    ST_MENU_STIPPLE_GC(ms) = fvwmlib_XCreateGC(dpy, Scr.NoFocusWin, gcm, &gcv);
 }
 
 void UpdateAllMenuStyles(void)

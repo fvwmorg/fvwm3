@@ -52,7 +52,7 @@ void InitVDipstick(struct XObj *xobj)
 		xobj->x,xobj->y,xobj->width,xobj->height,0,
 		CopyFromParent,InputOutput,CopyFromParent,
 		mask,&Attr);
- xobj->gc=XCreateGC(dpy,xobj->win,0,NULL);
+ xobj->gc=fvwmlib_XCreateGC(dpy,xobj->win,0,NULL);
  if (xobj->colorset >= 0)
    SetWindowBackground(dpy, xobj->win, xobj->width, xobj->height,
 		       &Colorset[xobj->colorset], Pdepth,

@@ -495,7 +495,7 @@ void list_end(void)
   gcm = GCForeground|GCFont;
   gcv.foreground = fore_pix;
   gcv.font = font->fid;
-  gc = XCreateGC(dpy, main_win, gcm, &gcv);
+  gc = fvwmlib_XCreateGC(dpy, main_win, gcm, &gcv);
 
   if (colorset >= 0)
     SetWindowBackground(dpy, main_win, mysizehints.width, mysizehints.height,

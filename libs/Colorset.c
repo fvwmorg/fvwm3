@@ -220,7 +220,7 @@ Pixmap CreateBackgroundPixmap(Display *dpy, Window win, int width, int height,
       xgcv.foreground = 1;
       xgcv.background = 0;
       /* create a gc for 1 bit depth */
-      shape_gc = XCreateGC(dpy, win, GCForeground|GCBackground, &xgcv);
+      shape_gc = fvwmlib_XCreateGC(dpy, win, GCForeground|GCBackground, &xgcv);
     }
     gc = shape_gc;
     cs_width = colorset->shape_width;
@@ -236,7 +236,7 @@ Pixmap CreateBackgroundPixmap(Display *dpy, Window win, int width, int height,
     if (solid_gc == None)
     {
       /* create a gc for solid drawing */
-      solid_gc = XCreateGC(dpy, win, GCForeground, &xgcv);
+      solid_gc = fvwmlib_XCreateGC(dpy, win, GCForeground, &xgcv);
     }
     else
     {
@@ -342,7 +342,7 @@ void SetRectangleBackground(
   }
   if (last_gc == None)
   {
-    last_gc = XCreateGC(dpy, win, 0, &xgcv);
+    last_gc = fvwmlib_XCreateGC(dpy, win, 0, &xgcv);
   }
   draw_gc = last_gc;
   last_depth = depth;
@@ -358,7 +358,7 @@ void SetRectangleBackground(
       xgcv.clip_x_origin = x;
       xgcv.clip_y_origin = y;
       xgcv.clip_mask = clipmask;
-      clip_gc = XCreateGC(
+      clip_gc = fvwmlib_XCreateGC(
 	dpy, win, GCClipXOrigin|GCClipYOrigin|GCClipMask, &xgcv);
       draw_gc = clip_gc;
     }

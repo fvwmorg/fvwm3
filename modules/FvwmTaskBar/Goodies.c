@@ -126,7 +126,7 @@ static void CreateOrUpdateGoodyGC(void)
   if (statusgc)
     XChangeGC(dpy, statusgc, gcmask, &gcval);
   else
-    statusgc = XCreateGC(dpy, win, gcmask, &gcval);
+    statusgc = fvwmlib_XCreateGC(dpy, win, gcmask, &gcval);
 
   if (do_check_mail)
   {
@@ -515,7 +515,7 @@ void CreateTipWindow(int x, int y, int w, int h)
   if (tipsgc)
     XChangeGC(dpy, tipsgc, gcmask, &gcval);
   else
-    tipsgc = XCreateGC(dpy, Tip.win, gcmask, &gcval);
+    tipsgc = fvwmlib_XCreateGC(dpy, Tip.win, gcmask, &gcval);
 
   pmask = XCreatePixmap(dpy, Tip.win, w+4, h+4, 1);
   pclip = XCreatePixmap(dpy, Tip.win, w+4, h+4, 1);
@@ -532,7 +532,7 @@ void CreateTipWindow(int x, int y, int w, int h)
   if (cgc)
     XChangeGC(dpy, cgc, gcmask, &gcval);
   else
-    cgc = XCreateGC(dpy, pmask, gcmask, &gcval);
+    cgc = fvwmlib_XCreateGC(dpy, pmask, gcmask, &gcval);
 
   gcmask = GCForeground | GCBackground | GCGraphicsExposures | GCFillStyle;
   gcval.graphics_exposures = False;
@@ -542,14 +542,14 @@ void CreateTipWindow(int x, int y, int w, int h)
   if (gc0)
     XChangeGC(dpy, gc0, gcmask, &gcval);
   else
-    gc0 = XCreateGC(dpy, pmask, gcmask, &gcval);
+    gc0 = fvwmlib_XCreateGC(dpy, pmask, gcmask, &gcval);
 
   gcval.foreground = 1;
   gcval.background = 1;
   if (gc1)
     XChangeGC(dpy, gc1, gcmask, &gcval);
   else
-    gc1 = XCreateGC(dpy, pmask, gcmask, &gcval);
+    gc1 = fvwmlib_XCreateGC(dpy, pmask, gcmask, &gcval);
 
   XFillRectangle(dpy, pmask, gc0, 0, 0, w+4, h+4);
   XFillRectangle(dpy, pmask, cgc, 3, 3, w+4, h+4);

@@ -1,3 +1,39 @@
+2000-12-03  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* modules/FvwmAnimate/FvwmAnimate.c:
+	* modules/FvwmButtons/FvwmButtons.c:
+	* modules/FvwmDragWell/fvwmDragWell.c:
+	* modules/FvwmForm/FvwmForm.c:
+	* modules/FvwmIconBox/FvwmIconBox.c:
+	* modules/FvwmIconBox/icons.c:
+	* modules/FvwmIconMan/x.c:
+	* modules/FvwmIdent/FvwmIdent.c:
+	* modules/FvwmPager/x_pager.c:
+	* modules/FvwmScript/FvwmScript.c:
+	* modules/FvwmScript/Widgets/CheckBox.c:
+	* modules/FvwmScript/Widgets/HDipstick.c:
+	* modules/FvwmScript/Widgets/HScrollBar.c:
+	* modules/FvwmScript/Widgets/ItemDraw.c:
+	* modules/FvwmScript/Widgets/List.c:
+	* modules/FvwmScript/Widgets/Menu.c:
+	* modules/FvwmScript/Widgets/MiniScroll.c:
+	* modules/FvwmScript/Widgets/PopupMenu.c:
+	* modules/FvwmScript/Widgets/PushButton.c:
+	* modules/FvwmScript/Widgets/RadioButton.c:
+	* modules/FvwmScript/Widgets/Rectangle.c:
+	* modules/FvwmScript/Widgets/TextField.c:
+	* modules/FvwmScript/Widgets/VDipstick.c:
+	* modules/FvwmScript/Widgets/VScrollBar.c:
+	* modules/FvwmScroll/GrabWindow.c:
+	* modules/FvwmTaskBar/FvwmTaskBar.c:
+	* modules/FvwmTaskBar/Goodies.c:
+	* modules/FvwmTheme/FvwmTheme.c:
+	* modules/FvwmWharf/FvwmWharf.c:
+	* modules/FvwmWharf/icons.c:
+	* modules/FvwmWharf/stepgfx.c:
+	* modules/FvwmWinList/FvwmWinList.c:
+	use fvwmlib_XCreateGC instead of XCreateGC
+
 2000-11-26  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* FvwmWharf/FvwmWharf.c (ParseOptions):

@@ -1518,57 +1518,57 @@ static void CreateOrUpdateGCs(void)
    if (graph)
      XChangeGC(dpy,graph,gcmask,&gcval);
    else
-     graph = XCreateGC(dpy,win,gcmask,&gcval);
+     graph = fvwmlib_XCreateGC(dpy,win,gcmask,&gcval);
 
    /* iconified */
    gcval.foreground = piconfore;
    if (iconbackgraph)
      XChangeGC(dpy,icongraph,gcmask,&gcval);
    else
-     icongraph = XCreateGC(dpy,Root,gcmask,&gcval);
+     icongraph = fvwmlib_XCreateGC(dpy,Root,gcmask,&gcval);
 
    gcval.foreground = piconback;
    if (iconbackgraph)
      XChangeGC(dpy,iconbackgraph,gcmask,&gcval);
    else
-     iconbackgraph = XCreateGC(dpy,Root,gcmask,&gcval);
+     iconbackgraph = fvwmlib_XCreateGC(dpy,Root,gcmask,&gcval);
 
    gcval.foreground = piconshadow;
    if (iconshadow)
      XChangeGC(dpy,iconshadow,gcmask,&gcval);
    else
-     iconshadow = XCreateGC(dpy,win,gcmask,&gcval);
+     iconshadow = fvwmlib_XCreateGC(dpy,win,gcmask,&gcval);
 
    gcval.foreground = piconhilite;
    if (iconhilite)
      XChangeGC(dpy,iconhilite,gcmask,&gcval);
    else
-     iconhilite = XCreateGC(dpy,win,gcmask,&gcval);
+     iconhilite = fvwmlib_XCreateGC(dpy,win,gcmask,&gcval);
 
    /* focused */
    gcval.foreground = pfocusfore;
    if (focusbackgraph)
      XChangeGC(dpy,focusgraph,gcmask,&gcval);
    else
-     focusgraph = XCreateGC(dpy,Root,gcmask,&gcval);
+     focusgraph = fvwmlib_XCreateGC(dpy,Root,gcmask,&gcval);
 
    gcval.foreground = pfocusback;
       if (focusbackgraph)
      XChangeGC(dpy,focusbackgraph,gcmask,&gcval);
    else
-     focusbackgraph = XCreateGC(dpy,Root,gcmask,&gcval);
+     focusbackgraph = fvwmlib_XCreateGC(dpy,Root,gcmask,&gcval);
 
    gcval.foreground = pfocusshadow;
    if (focusshadow)
      XChangeGC(dpy,focusshadow,gcmask,&gcval);
    else
-     focusshadow = XCreateGC(dpy,win,gcmask,&gcval);
+     focusshadow = fvwmlib_XCreateGC(dpy,win,gcmask,&gcval);
 
    gcval.foreground = pfocushilite;
    if (focushilite)
      XChangeGC(dpy,focushilite,gcmask,&gcval);
    else
-     focushilite = XCreateGC(dpy,win,gcmask,&gcval);
+     focushilite = fvwmlib_XCreateGC(dpy,win,gcmask,&gcval);
 
    /* "normal" continued */
    gcmask = GCForeground | GCBackground | GCGraphicsExposures;
@@ -1576,25 +1576,25 @@ static void CreateOrUpdateGCs(void)
    if (shadow)
      XChangeGC(dpy,shadow,gcmask,&gcval);
    else
-     shadow = XCreateGC(dpy,win,gcmask,&gcval);
+     shadow = fvwmlib_XCreateGC(dpy,win,gcmask,&gcval);
 
    gcval.foreground = philite;
    if (hilite)
      XChangeGC(dpy,hilite,gcmask,&gcval);
    else
-     hilite = XCreateGC(dpy,win,gcmask,&gcval);
+     hilite = fvwmlib_XCreateGC(dpy,win,gcmask,&gcval);
 
    gcval.foreground = WhitePixel(dpy, screen);;
    if (whitegc)
      XChangeGC(dpy,whitegc,gcmask,&gcval);
    else
-     whitegc = XCreateGC(dpy,win,gcmask,&gcval);
+     whitegc = fvwmlib_XCreateGC(dpy,win,gcmask,&gcval);
 
    gcval.foreground = BlackPixel(dpy, screen);
    if (blackgc)
      XChangeGC(dpy,blackgc,gcmask,&gcval);
    else
-     blackgc = XCreateGC(dpy,win,gcmask,&gcval);
+     blackgc = fvwmlib_XCreateGC(dpy,win,gcmask,&gcval);
 
    /* brighting */
    gcmask = GCForeground | GCBackground | GCTile |
@@ -1611,7 +1611,7 @@ static void CreateOrUpdateGCs(void)
    if (checkered)
      XChangeGC(dpy, checkered, gcmask, &gcval);
    else
-     checkered = XCreateGC(dpy, win, gcmask, &gcval);
+     checkered = fvwmlib_XCreateGC(dpy, win, gcmask, &gcval);
 }
 
 static Bool change_colorset(int cset, Bool force)

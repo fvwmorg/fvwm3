@@ -975,3 +975,21 @@ void DrawTrianglePattern(
   return;
 }
 
+GC fvwmlib_XCreateGC(
+  Display *display, Drawable drawable, unsigned long valuemask,
+  XGCValues *values)
+{
+  GC gc;
+  Bool f = values->graphics_exposures;
+
+  if (!(valuemask & GCGraphicsExposures))
+  {
+    valuemask |= GCGraphicsExposures;
+    values->graphics_exposures = 0;
+  }
+  gc = XCreateGC(display, drawable, valuemask, values);
+  values->graphics_exposures = f;
+
+  return gc;
+}
+

@@ -783,6 +783,7 @@ static char *expand(
  * clicking, but is moving the cursor
  *
  ****************************************************************************/
+#define DEBUG_CAT 0
 static cfunc_action_type CheckActionType(
   int x, int y, XEvent *d, Bool may_time_out, Bool is_button_pressed)
 {
@@ -792,6 +793,12 @@ static cfunc_action_type CheckActionType(
   XEvent old_event;
   extern Time lastTimestamp;
   Bool do_sleep = False;
+#if DEBUG_CAT
+int cev = 0;
+int clp = 0;
+int csleep = 0;
+int cc[5] = {0,0,0,0,0};
+#endif
 
   xcurrent = x;
   ycurrent = y;
@@ -801,18 +808,30 @@ static cfunc_action_type CheckActionType(
   while ((total < Scr.ClickTime && lastTimestamp - t0 < Scr.ClickTime) ||
 	 !may_time_out)
   {
+#if DEBUG_CAT
+clp++;
+#endif
     if (!(x - xcurrent <= dist && xcurrent - x <= dist &&
 	  y - ycurrent <= dist && ycurrent - y <= dist))
     {
+#if DEBUG_CAT
+fprintf(stderr, "cat stats (1): clp: %d (%d/%d/%d/%d/%d)  cev: %d csleep: %d\n", clp, cc[0], cc[1], cc[2], cc[3], cc[4], cev, csleep);
+#endif
       return (is_button_pressed) ? CF_MOTION : CF_TIMEOUT;
     }
 
     if (do_sleep)
     {
+#if DEBUG_CAT
+csleep += 20000;
+#endif
       usleep(20000);
     }
     else
     {
+#if DEBUG_CAT
+csleep += 1;
+#endif
       usleep(1);
       do_sleep = 1;
     }
@@ -820,13 +839,23 @@ static cfunc_action_type CheckActionType(
     if (XCheckMaskEvent(dpy, ButtonReleaseMask|ButtonMotionMask|
 			PointerMotionMask|ButtonPressMask|ExposureMask, d))
     {
+#if DEBUG_CAT
+cev++;
+#endif
       do_sleep = 0;
       StashEventTime(d);
       switch (d->xany.type)
       {
       case ButtonRelease:
+#if DEBUG_CAT
+cc[0]++;
+fprintf(stderr, "cat stats (2): clp: %d (%d/%d/%d/%d/%d)  cev: %d csleep: %d\n", clp, cc[0], cc[1], cc[2], cc[3], cc[4], cev, csleep);
+#endif
 	return CF_CLICK;
       case MotionNotify:
+#if DEBUG_CAT
+cc[1]++;
+#endif
 	if ((d->xmotion.state & DEFAULT_ALL_BUTTONS_MASK) ||
             !is_button_pressed)
 	{
@@ -835,14 +864,23 @@ static cfunc_action_type CheckActionType(
 	}
         else
 	{
+#if DEBUG_CAT
+fprintf(stderr, "cat stats (3): clp: %d (%d/%d/%d/%d/%d)  cev: %d csleep: %d\n", clp, cc[0], cc[1], cc[2], cc[3], cc[4], cev, csleep);
+#endif
 	  return CF_CLICK;
 	}
 	break;
       case ButtonPress:
+#if DEBUG_CAT
+cc[2]++;
+#endif
 	if (may_time_out)
 	  is_button_pressed = True;
 	break;
       case Expose:
+#if DEBUG_CAT
+cc[3]++;
+#endif
 	/* must handle expose here so that raising a window with "I" works */
 	memcpy(&old_event, &Event, sizeof(XEvent));
 	memcpy(&Event, d, sizeof(XEvent));
@@ -850,12 +888,19 @@ static cfunc_action_type CheckActionType(
 	memcpy(&Event, &old_event, sizeof(XEvent));
 	break;
       default:
+#if DEBUG_CAT
+cc[4]++;
+fprintf(stderr,"%d ", d->xany.type);
+#endif
 	/* can't happen */
 	break;
       }
     }
   }
 
+#if DEBUG_CAT
+fprintf(stderr, "cat stats (4): clp: %d (%d/%d/%d/%d/%d)  cev: %d csleep: %d\n", clp, cc[0], cc[1], cc[2], cc[3], cc[4], cev, csleep);
+#endif
   return (is_button_pressed) ? CF_HOLD : CF_TIMEOUT;
 }
 

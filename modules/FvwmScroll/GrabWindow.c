@@ -166,9 +166,9 @@ void CreateWindow(int x,int y, int w, int h)
 
   gcm = GCForeground;
   gcv.foreground = hilite_pix;
-  hiliteGC = XCreateGC(dpy, holder_win, gcm, &gcv);
+  hiliteGC = fvwmlib_XCreateGC(dpy, holder_win, gcm, &gcv);
   gcv.foreground = shadow_pix;
-  shadowGC = XCreateGC(dpy, holder_win, gcm, &gcv);
+  shadowGC = fvwmlib_XCreateGC(dpy, holder_win, gcm, &gcv);
 
   if (colorset >= 0)
     SetWindowBackground(dpy, main_win, mysizehints.width, mysizehints.height,

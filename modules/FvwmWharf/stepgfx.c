@@ -167,8 +167,8 @@ int DrawDegradeRelief(Display *dpy, Drawable d, int x, int y, int w, int h,
       return 0;
 
     gcv.foreground = 1;
-    gc = XCreateGC(dpy, d, GCForeground, &gcv);
-    gc2 = XCreateGC(dpy, d, GCForeground, &gcv);
+    gc = fvwmlib_XCreateGC(dpy, d, GCForeground, &gcv);
+    gc2 = fvwmlib_XCreateGC(dpy, d, GCForeground, &gcv);
 
     dr = to[0] - from[0];
     dg = to[1] - from[1];
@@ -281,8 +281,8 @@ int DrawHGradient(Display *dpy, Drawable d, int x, int y, int w, int h,
       return 0;
 
     gcv.foreground = 1;
-    gc = XCreateGC(dpy, d, GCForeground, &gcv);
-    gc2 = XCreateGC(dpy, d, GCForeground, &gcv);
+    gc = fvwmlib_XCreateGC(dpy, d, GCForeground, &gcv);
+    gc2 = fvwmlib_XCreateGC(dpy, d, GCForeground, &gcv);
 
     dr = to[0] - from[0];
     dg = to[1] - from[1];
@@ -405,8 +405,8 @@ int DrawVGradient(Display *dpy, Drawable d, int x, int y, int w, int h,
       return 0;
 
     gcv.foreground = 1;
-    gc = XCreateGC(dpy, d, GCForeground, &gcv);
-    gc2 = XCreateGC(dpy, d, GCForeground, &gcv);
+    gc = fvwmlib_XCreateGC(dpy, d, GCForeground, &gcv);
+    gc2 = fvwmlib_XCreateGC(dpy, d, GCForeground, &gcv);
 
     dr = to[0] - from[0];
     dg = to[1] - from[1];
@@ -524,14 +524,14 @@ void DrawTexturedText(Display *dpy, Drawable d, XFontStruct *font,
 	gcv.foreground = 0;
 	gcv.function = GXcopy;
     gcv.font = font->fid;
-	gc = XCreateGC(dpy,mask,GCFunction|GCForeground|GCFont,&gcv);
+	gc = fvwmlib_XCreateGC(dpy,mask,GCFunction|GCForeground|GCFont,&gcv);
     XFillRectangle(dpy,mask,gc,0,0,w,h);
 	XSetForeground(dpy,gc,1);
     XDrawString(dpy,mask,gc,0,font->ascent,text,chars);
 	XFreeGC(dpy,gc);
 	/* draw the texture */
 	gcv.function=GXcopy;
-	gc = XCreateGC(dpy,d,GCFunction,&gcv);
+	gc = fvwmlib_XCreateGC(dpy,d,GCFunction,&gcv);
     XSetClipOrigin(dpy,gc,x,y);
     XSetClipMask(dpy,gc,mask);
     XCopyArea(dpy,gradient,d,gc,0,0,w,h,x,y);

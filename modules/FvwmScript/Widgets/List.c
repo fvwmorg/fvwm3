@@ -53,7 +53,7 @@ void InitList(struct XObj *xobj)
 		CopyFromParent,InputOutput,CopyFromParent,
 		mask,&Attr);
 
- xobj->gc=XCreateGC(dpy,xobj->win,0,NULL);
+ xobj->gc=fvwmlib_XCreateGC(dpy,xobj->win,0,NULL);
  XSetForeground(dpy,xobj->gc,xobj->TabColor[fore]);
  XSetLineAttributes(dpy,xobj->gc,1,LineSolid,CapRound,JoinMiter);
  if ((xobj->xfont=XLoadQueryFont(dpy,xobj->font))==NULL)

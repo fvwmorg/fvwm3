@@ -1603,13 +1603,13 @@ static void CreateGCs(void)
   gcv.function = GXcopy;
   gcv.line_width = 0;
 
-  Scr.ScratchGC1 = XCreateGC(dpy, Scr.NoFocusWin, gcm, &gcv);
-  Scr.ScratchGC2 = XCreateGC(dpy, Scr.NoFocusWin, gcm, &gcv);
-  Scr.TitleGC = XCreateGC(dpy, Scr.NoFocusWin, gcm, &gcv);
-  Scr.TransMaskGC = XCreateGC(dpy, Scr.NoFocusWin, gcm, &gcv);
+  Scr.ScratchGC1 = fvwmlib_XCreateGC(dpy, Scr.NoFocusWin, gcm, &gcv);
+  Scr.ScratchGC2 = fvwmlib_XCreateGC(dpy, Scr.NoFocusWin, gcm, &gcv);
+  Scr.TitleGC = fvwmlib_XCreateGC(dpy, Scr.NoFocusWin, gcm, &gcv);
+  Scr.TransMaskGC = fvwmlib_XCreateGC(dpy, Scr.NoFocusWin, gcm, &gcv);
   c.pixel = GetColor("Black");
   Scr.ScratchMonoPixmap = XCreatePixmap(dpy, Scr.Root, 1, 1, 1);
-  Scr.MonoGC = XCreateGC(dpy, Scr.ScratchMonoPixmap, gcm, &gcv);
+  Scr.MonoGC = fvwmlib_XCreateGC(dpy, Scr.ScratchMonoPixmap, gcm, &gcv);
 }
 
 /***********************************************************************

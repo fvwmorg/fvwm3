@@ -516,7 +516,7 @@ static void CheckAlloc(Item *this_item,DrawTable *dt)
     xgcv.foreground = dt->dt_colors[c_fg];
     xgcv.background = dt->dt_colors[c_bg];
     xgcv.font = dt->dt_font;
-    dt->dt_GC = XCreateGC(dpy, CF.frame, xgcv_mask, &xgcv);
+    dt->dt_GC = fvwmlib_XCreateGC(dpy, CF.frame, xgcv_mask, &xgcv);
 
     dt->dt_used = 1;                    /* fore/back font allocated */
   }
@@ -532,7 +532,7 @@ static void CheckAlloc(Item *this_item,DrawTable *dt)
   xgcv.foreground = dt->dt_colors[c_item_fg];
   xgcv.background = dt->dt_colors[c_item_bg];
   xgcv.font = dt->dt_font;
-  dt->dt_item_GC = XCreateGC(dpy, CF.frame, GCForeground | GCFont, &xgcv);
+  dt->dt_item_GC = fvwmlib_XCreateGC(dpy, CF.frame, GCForeground | GCFont, &xgcv);
   if (Pdepth < 2) {
     dt->dt_colors[c_itemlo] = BlackPixel(dpy, screen);
     dt->dt_colors[c_itemhi] = WhitePixel(dpy, screen);

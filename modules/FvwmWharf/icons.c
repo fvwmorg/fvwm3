@@ -400,7 +400,7 @@ int GetSolidXPM(int button, Pixel pixel)
     XGCValues gcv;
 
     gcv.foreground=pixel;
-    gc=XCreateGC(dpy,main_win,GCForeground, &gcv);
+    gc=fvwmlib_XCreateGC(dpy,main_win,GCForeground, &gcv);
     if (button==BACK_BUTTON) {
 	BUTTONWIDTH = 64;
 	BUTTONHEIGHT = 64;

@@ -1,5 +1,24 @@
 2000-12-03  Dominik Vogt  <dominik.vogt@gmx.de>
 
+	* fvwm/functions.c (CheckActionType):
+	added some debug code
+
+	* fvwm/borders.c:
+	* fvwm/builtins.c:
+	* fvwm/fvwm.c:
+	* fvwm/menus.c:
+	* fvwm/move_resize.c:
+	* libs/Colorset.c:
+	use fvwmlib_XCreateGC instead of XCreateGC; this seems to speed up
+	everything a lot, at least on XFree 3.3.6 and XFree 4.0
+
+	* libs/Graphics.c (fvwmlib_XCreateGC):
+	* libs/fvwmlib.h:
+	replacement for XCreateGC
+
+	* fvwm/events.c (HandleMapRequestKeepRaised):
+	Oops, commented one line too many
+
 	* fvwm/cursor.c (setBusyCursor):
 	* fvwm/cursor.h:
 	* fvwm/fvwm.c (Reborder):
@@ -12,10 +31,11 @@
 	(do_recapture):
 	* fvwm/fvwm.c (CaptureOneWindow):
 	(CaptureAllWindows):
-	Reinstated some kind of the old blackout window but do not draw anything
-	in it; hopefully this means that the old state of the desktop is visible
-	during a recapture. This way it is not necessary to unmap windows during
-	a recapture and thus applications like ddd do not iconify themselves.
+	Reinstated some kind of the old blackout window but do not draw
+	anything in it; hopefully this means that the old state of the desktop
+	is visible during a recapture. This way it is not necessary to unmap
+	windows during a recapture and thus applications like ddd do not
+	iconify themselves.
 	Removed the BUSY_RECAPTURE busy cursor context which is now obsolete.
 
 	* fvwm/fvwm.c (main):

@@ -1346,18 +1346,18 @@ void CreateShadowGC(void)
 
   gcv.foreground = fore_pix;
   gcv.background = back_pix;
-  NormalGC = XCreateGC(dpy, main_win, gcm, &gcv);
+  NormalGC = fvwmlib_XCreateGC(dpy, main_win, gcm, &gcv);
   gcv.foreground = back_pix;
   gcv.background = fore_pix;
-  HiReliefGC = XCreateGC(dpy, main_win, gcm, &gcv);
+  HiReliefGC = fvwmlib_XCreateGC(dpy, main_win, gcm, &gcv);
 
   gcv.foreground = light_grey;
   gcv.background = fore_pix;
-  HiInnerGC = XCreateGC(dpy, main_win, gcm, &gcv);
+  HiInnerGC = fvwmlib_XCreateGC(dpy, main_win, gcm, &gcv);
 
   gcm = GCForeground;
   gcv.foreground = fore_pix;
-  MaskGC = XCreateGC(dpy, main_win, gcm, &gcv);
+  MaskGC = fvwmlib_XCreateGC(dpy, main_win, gcm, &gcv);
 }
 
 /************************************************************************

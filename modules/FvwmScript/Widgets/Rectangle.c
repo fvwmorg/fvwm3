@@ -37,7 +37,7 @@ void InitRectangle(struct XObj *xobj)
   xobj->TabColor[shad] = GetColor(xobj->shadcolor);
  }
 
- xobj->gc=XCreateGC(dpy,*xobj->ParentWin,0,NULL);
+ xobj->gc=fvwmlib_XCreateGC(dpy,*xobj->ParentWin,0,NULL);
  XSetForeground(dpy,xobj->gc,xobj->TabColor[fore]);
  XSetBackground(dpy,xobj->gc,xobj->TabColor[back]);
  XSetLineAttributes(dpy,xobj->gc,1,LineSolid,CapRound,JoinMiter);

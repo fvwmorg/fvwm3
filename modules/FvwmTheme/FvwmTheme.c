@@ -132,12 +132,12 @@ int main(int argc, char **argv)
   xswa.background_pixmap = None;
   xswa.border_pixel = 0;
   xswa.colormap = Pcmap;
-  win = XCreateWindow(dpy, RootWindow(dpy, DefaultScreen(dpy)), -2, -2, 2, 2, 0,
-		      Pdepth, InputOutput, Pvisual,
+  win = XCreateWindow(dpy, RootWindow(dpy, DefaultScreen(dpy)), -2, -2, 2, 2,
+		      0, Pdepth, InputOutput, Pvisual,
 		      CWBackPixmap | CWBorderPixel | CWColormap, &xswa);
 
   /* create a GC */
-  gc = XCreateGC(dpy, win, 0, &xgcv);
+  gc = fvwmlib_XCreateGC(dpy, win, 0, &xgcv);
 
   /* die horribly if either win or gc could not be created */
   XSync(dpy, False);
@@ -551,8 +551,8 @@ static void parse_colorset(char *line)
 	      xgcv.foreground = 1;
 	      xgcv.background = 0;
 	      /* create a gc for 1 bit depth */
-	      mono_gc = XCreateGC(dpy, cs->mask, GCForeground | GCBackground,
-				  &xgcv);
+	      mono_gc = fvwmlib_XCreateGC(
+		dpy, cs->mask, GCForeground | GCBackground, &xgcv);
 	    }
 	    XCopyArea(dpy, cs->picture->mask, cs->mask, mono_gc, 0, 0,
 		      cs->width, cs->height, 0, 0);
@@ -623,7 +623,7 @@ static void parse_colorset(char *line)
 		xgcv.foreground = 1;
 		xgcv.background = 0;
 		/* create a gc for 1 bit depth */
-		mono_gc = XCreateGC(
+		mono_gc = fvwmlib_XCreateGC(
 		  dpy, picture->mask, GCForeground|GCBackground, &xgcv);
 	      }
 	      XCopyPlane(dpy, mask, cs->shape_mask, mono_gc, 0, 0,
@@ -659,7 +659,8 @@ static void parse_colorset(char *line)
        * but my tests (on exceed 6.2) show that only == depth is necessary */
       if (Pdepth != DefaultDepth(dpy, (DefaultScreen(dpy))))
       {
-	fprintf(stderr, "%s: can't do Transparent when root_depth != fvwm_depth\n",
+	fprintf(stderr,
+		"%s: can't do Transparent when root_depth != fvwm_depth\n",
 		name);
 	break;
       }

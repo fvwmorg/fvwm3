@@ -530,7 +530,7 @@ void SetTransparentBackground(button_info *ub,int w,int h)
     XGCValues gcv;
 
     /* create a GC for doing transparency */
-    trans_gc = XCreateGC(Dpy,pmap_mask,(unsigned long)0,&gcv);
+    trans_gc = fvwmlib_XCreateGC(Dpy,pmap_mask,(unsigned long)0,&gcv);
   }
 
   XSetForeground(Dpy,trans_gc,0);
@@ -1915,10 +1915,10 @@ void CreateUberButtonWindow(button_info *ub,int maxx,int maxy)
     gcv.font = ub->c->font->fid;
     gcm |= GCFont;
   }
-  NormalGC = XCreateGC(Dpy, MyWindow, gcm, &gcv);
+  NormalGC = fvwmlib_XCreateGC(Dpy, MyWindow, gcm, &gcv);
   gcv.foreground = shadow_pix;
   gcv.background = fore_pix;
-  ShadowGC = XCreateGC(Dpy, MyWindow, gcm, &gcv);
+  ShadowGC = fvwmlib_XCreateGC(Dpy, MyWindow, gcm, &gcv);
 
   if (ub->c->flags&b_Colorset)
   {

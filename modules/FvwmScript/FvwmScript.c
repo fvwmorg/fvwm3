@@ -379,7 +379,7 @@ void OpenWindow (void)
   x11base->win=XCreateWindow(
     dpy, x11base->root, x11base->size.x,x11base->size.y, x11base->size.width,
     x11base->size.height, 0, Pdepth, InputOutput, Pvisual, mask, &Attr);
-  x11base->gc=XCreateGC(dpy,x11base->win,0,NULL);
+  x11base->gc=fvwmlib_XCreateGC(dpy,x11base->win,0,NULL);
   if (x11base->colorset >= 0)
     SetWindowBackground(
       dpy, x11base->win, x11base->size.width, x11base->size.height,

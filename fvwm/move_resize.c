@@ -1717,7 +1717,7 @@ void SetXOR(F_CMD_ARGS)
   if (Scr.XorGC)
     XChangeGC(dpy, Scr.XorGC, gcm, &gcv);
   else
-    Scr.XorGC = XCreateGC(dpy, Scr.Root, gcm, &gcv);
+    Scr.XorGC = fvwmlib_XCreateGC(dpy, Scr.Root, gcm, &gcv);
 
   /* free up XorPixmap if neccesary */
   if (XorPixmap != None) {
@@ -1778,7 +1778,7 @@ void SetXORPixmap(F_CMD_ARGS)
   if (Scr.XorGC)
     XChangeGC(dpy, Scr.XorGC, gcm, &gcv);
   else
-    Scr.XorGC = XCreateGC(dpy, Scr.Root, gcm, &gcv);
+    Scr.XorGC = fvwmlib_XCreateGC(dpy, Scr.Root, gcm, &gcv);
 }
 
 

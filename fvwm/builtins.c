@@ -1063,7 +1063,7 @@ void ApplyDefaultFontAndColors(void)
   if(Scr.StdGC)
     XChangeGC(dpy, Scr.StdGC, gcm, &gcv);
   else
-    Scr.StdGC = XCreateGC(dpy, Scr.NoFocusWin, gcm, &gcv);
+    Scr.StdGC = fvwmlib_XCreateGC(dpy, Scr.NoFocusWin, gcm, &gcv);
 
   gcm = GCFunction|GCLineWidth|GCForeground;
   if (cset >= 0)
@@ -1073,7 +1073,7 @@ void ApplyDefaultFontAndColors(void)
   if(Scr.StdReliefGC)
     XChangeGC(dpy, Scr.StdReliefGC, gcm, &gcv);
   else
-    Scr.StdReliefGC = XCreateGC(dpy, Scr.NoFocusWin, gcm, &gcv);
+    Scr.StdReliefGC = fvwmlib_XCreateGC(dpy, Scr.NoFocusWin, gcm, &gcv);
 
   if (cset >= 0)
     gcv.foreground = Colorset[cset].shadow;
@@ -1082,7 +1082,7 @@ void ApplyDefaultFontAndColors(void)
   if(Scr.StdShadowGC)
     XChangeGC(dpy, Scr.StdShadowGC, gcm, &gcv);
   else
-    Scr.StdShadowGC = XCreateGC(dpy, Scr.NoFocusWin, gcm, &gcv);
+    Scr.StdShadowGC = fvwmlib_XCreateGC(dpy, Scr.NoFocusWin, gcm, &gcv);
 
   /* update the geometry window for move/resize */
   if(Scr.SizeWindow != None)
