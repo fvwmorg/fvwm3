@@ -1,99 +1,62 @@
-Fvwm is a powerful window manager.  Version 2.5.4 is an
-experimental unstable release that includes new features and
-improvements over unstable 2.5.3 and stable 2.4.12 versions.  You
-are welcome to upgrade and test the new features or help
-stabilizing the code.  Please be aware that any features
-introduced in the 2.5.x development versions may be renamed,
-changed or removed without notice before the next stable release.
+Fvwm is a powerful window manager.  Version 2.5.5 is an
+unstable release that includes new features and improvements over
+unstable 2.5.3 and stable 2.4.14 versions.  You are welcome to
+upgrade and test the new features or help stabilizing the code.
+Please be aware that any features introduced in the 2.5.x
+development versions may be renamed, changed or removed without
+notice before the next stable release.
 
 The release is available at the fvwm home page: http://www.fvwm.org/
 
 Fixed:
 ------
 
-* Fixed flickering in menus, icon title, FvwmButtons, FvwmIconMan
-  and FvwmPager when xft font is used.
+* Fixed flickering in FvwmTaskBar, FvwmWinList, FvwmIconBox, FvwmForm,
+  FvwmScript and FvwmScroll when xft fonts or icons with an alpha
+  channel is used.
 
-* FvwmIconMan options PlainColorset, IconColorset, FocusColorset
-  and SelectColorset are now strictly respected.
-
-* See ChangeLog for more fixes.
+* The MoveToPage command does nothing with sticky windows.
 
 Improved:
 ---------
 
-* Alpha blending rendering is supported even without XRender
-  support.
-
-* FvwmButtons redrawing improvement: colorsets are now usable with
-  containers.
-
-* The HilightBack and ActiveFore menu styles are independent of
-  each other.  HilightBack without using ActiveFore does no longer
-  hilight the item text.
-
-* Documentation.
+* The Next and Prev commands start looking for a matching window at
+  the context window if there is any.
 
 New features:
 -------------
 
-* FvwmTaskBar may now include mini launchbuttons using the Button
-  command.  Also has new options for spacing the buttons:
-  WindowButtonsLeftMargin, WindowButtonsRightMargin, and
-  StartButtonRightMargin.  See man page for details.
+* New experimental module FvwmProxy.
 
-* Style switches can be prefixed with '!' to inverse their meaning.
-  For example, "Style * Sticky" is the same as "Style * !Slippery".
-  This works *only* for pairs of styles that take no arguments and
-  for the Button and NoButton styles.
+* New command RestackTransients.
 
-* New button property Id in FvwmButtons.  FvwmButtons now accepts
-  dynamical actions using SendToModule, see the man page:
+* Added a pixel offset to vector button definitions.
 
-    ChangeButton <button-id> <properties-to-change>
-    ExpandButtonVars <button-id> <command-to-expand>
+* New command FocusStyle as a shorthand for setting the FP...
+  styles with the Style command.
 
-* New Colorset options bgTint, fgTint (which complete Tint), Alpha,
-  IconTint and IconAlpha.
+* New option Locale to PrintInfo command.
 
-* Enhanced commands [Add]ButtonStyle, [Add]TitleStyle. ButtonState.
-  Titles and buttons now have 4 main states instead of 3: ActiveUp,
-  ActiveDown, InactiveUp and InactiveDown, plus 4 Toggled variants.
-  Several shortcuts added: Active means ActiveUp + ActiveDown,
-  Inactive means InactiveUp + InactiveDown, similarly for shortcuts
-  ToggledActive and ToggledInactive.
+* New experimental module FvwmWindowLister, a WindowList
+  subtitute.
 
-* More shortcuts for button states added: AllNormal, AllToggled,
-  AllActive, AllInactive, AllUp, AllDown.  These six shortcuts are
-  actually different masks for 4 individual states (from 8 total).
+* Sticky windows can be sticky across pages, across desks or both.
+  Related to this are:
+   - New commands StickPage and StickDesk.
+   - New Style options StickyPage and StickyDesk.
+   - New conditional command options StickyPage and StickyDesk.
+   - New WindowList options NoStickyPage, NoStickyDesk, StickyPage,
+     StickyDesk, OnlyStickyPage, OnlyStickyDesk.
+   - New FvwmRearrange options -sp and -sd.
 
-* FPClickToFocus and FPClickToRaise work with any modifier by
-  default.
+* Key bindings can operate on the release of a key too.  Prefix the
+  key name with a '-' in the Key command.  Please read about the
+  caveats in the man page.
+  Note:  this feature is going to be removed again.
 
-* Perl library API regarding event handlers is changed, so personal
-  modules in Perl should be adjusted.
+* New Colorset option RootTransparent
 
-* Allow the use of mouse buttons other than the first in
-  FvwmWinList when invoked transient.
+* The Transparent Colorset option can be tinted under certain
+  conditions
 
-* ImagePath now supports directories in form "/some/directory;.png"
-  (where semicolon delimits a file extension that files in
-  /some/directory have.  This file extension replaces the original
-  image extension (if any) or it is added if there is no extension.
-  For example with: Style XTerm MiniIcon mini/xterm.xpm
-  the file /some/directory/mini/xterm.png is searched.
-
-* New graphical debugger module FvwmGtkDebug.
-
-* New command NoWindow for removing the window context.
-
-* New FvwmIconMan option ShowTransient.
-
-* All conditions have a negation.
-
-* New FvwmBacker option RetainPixmap.
-
-* New WindowList option SortByResource; the previously added
-  SortClassName option is renamed to SortByClass.
-
-* New command PrintInfo for debugging.
+* New MinHeight option to TitleStyle

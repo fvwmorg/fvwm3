@@ -3,7 +3,7 @@ _+_A HREF="#2.4.13"_-_2.4.13_+_/A_-_.
 
 -------------------------------------------------------------------
 
-Changes in developement release 2.5.5 (not released yet)
+Changes in developement release 2.5.5 (2-Dec-2002)
 
 * New experimental module FvwmProxy.
 
@@ -46,7 +46,7 @@ Changes in developement release 2.5.5 (not released yet)
   conditions
 
 * New MinHeight option to TitleStyle
- 
+
 -------------------------------------------------------------------
 
 Changes in alpha release 2.5.4 (20-Oct-2002)
