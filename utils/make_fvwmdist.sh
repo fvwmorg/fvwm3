@@ -97,28 +97,33 @@ if [ $IS_RELEASE = 0 ] ; then
   echo " . Upload the distribution to ftp://ftp.fvwm.org/pub/incoming/fvwm"
   echo " . Notify fvwm-owner@fvwm.org of the upload"
 else
+  echo updating NEWS file
+  NNEWS="new-NEWS"
+  perl -pe 's/^(.*) ('$VRELEASE.$VMAJOR.')('$VMINOR') (\(not released yet\))$/$1 $2@{[$3+1]} $4\n\n$1 $2$3 (@{[substr(`date +%Y-%m-%d`,0,10)]})/' \
+    < NEWS > $NNEWS || err_exit 12
+  mv $NNEWS NEWS || err_exit 13
   echo tagging CVS source
-  cvs tag version-${VRELEASE}_${VMAJOR}_$VMINOR || err_exit 13
+  cvs tag version-${VRELEASE}_${VMAJOR}_$VMINOR || err_exit 14
   echo increasing version number in configure.in
-  NCFG="configure.in.$RANDOM"
-  touch $NCFG || err_exit 17
+  NCFG="new-configure.in"
+  touch $NCFG || err_exit 15
   cat configure.in |
-  sed -e "s/$VRELEASE\.$VMAJOR\.$VMINOR/$VRELEASE\.$VMAJOR\.$[$VMINOR+1]/g" > \
-  $NCFG || err_exit 14
-  mv $NCFG configure.in || err_exit 19
+  sed -e "s/$VRELEASE\.$VMAJOR\.$VMINOR/$VRELEASE\.$VMAJOR\.$[$VMINOR+1]/g" \
+    > $NCFG || err_exit 16
+  mv $NCFG configure.in || err_exit 17
   echo generating ChangeLog entry ...
-  NCLOG="ChangeLog.$RANDOM"
+  NCLOG="new-ChangeLog"
   touch $NCLOG || err_exit 18
   echo `date +%Y-%m-%d`"  $FVWMRELNAME  <$FVWMRELEMAIL>" > $NCLOG
   echo >> $NCLOG
-  echo "	* configure.in: changed version to $VRELEASE.$VMAJOR.$[VMINOR + 1]" \
-    >> $NCLOG
+  echo "	* NEWS, configure.in:" >> $NCLOG
+  echo "	changed version to $VRELEASE.$VMAJOR.$[VMINOR + 1]" >> $NCLOG
   echo >> $NCLOG
   cat ChangeLog >> $NCLOG
-  mv $NCLOG ChangeLog || err_exit 20
+  mv $NCLOG ChangeLog || err_exit 19
   echo committing configure.in and ChangeLog
-  cvs commit -m "* Set development version to $VRELEASE.$VMAJOR.$VMINOR." \
-      configure.in ChangeLog || err_exit 15
+  cvs commit -m "* Set development version to $VRELEASE.$VMAJOR.$[VMINOR + 1]." \
+    NEWS configure.in ChangeLog || err_exit 20
   echo
   echo Then
   echo " . Upload the distribution to ftp://ftp.fvwm.org/pub/incoming/fvwm"
