@@ -219,11 +219,11 @@ void get_window_borders(
 	borders->bottom_right.height = tmp_win->boundary_width;
 	if (HAS_BOTTOM_TITLE(tmp_win))
 	{
-		borders->bottom_right.height = tmp_win->title_g.height;
+		borders->bottom_right.height += tmp_win->title_g.height;
 	}
 	else
 	{
-		borders->top_left.height = tmp_win->title_g.height;
+		borders->top_left.height += tmp_win->title_g.height;
 	}
 	borders->total_size.width =
 		borders->top_left.width + borders->bottom_right.width;

@@ -1,5 +1,8 @@
 2002-03-01  Dominik Vogt  <dominik.vogt@gmx.de>
 
+	* fvwm/geometry.c (get_window_borders):
+	fixed calculation of $[cw.y] and $[cw.height]
+
 	* fvwm/move_resize.c (resize_move_window):
 	windows are mo longer hilighted after ResizeMove or ResizeMoveMaximize
 
