@@ -61,6 +61,7 @@ static int edge_thickness = 2;
 static int last_edge_thickness = 2;
 static unsigned int prev_page_x = 0;
 static unsigned int prev_page_y = 0;
+static int prev_desk = 0;
 
 /**************************************************************************
  *
@@ -87,6 +88,11 @@ static int GetDeskNumber(char *action)
   int desk;
   int val[4];
   int min, max;
+
+  if (MatchToken(action, "prev"))
+  {
+    return prev_desk;
+  }
 
   n = GetIntegerArguments(action, NULL, &(val[0]), 4);
   if (n <= 0)
@@ -947,6 +953,7 @@ void changeDesks(int desk)
 */
   if (Scr.CurrentDesk != desk)
   {
+    prev_desk = Scr.CurrentDesk;
     UnmapDesk(Scr.CurrentDesk, True);
     Scr.CurrentDesk = desk;
     MapDesk(desk, True);
@@ -1113,7 +1120,13 @@ void gotoDeskAndPage_func(F_CMD_ARGS)
   int val[3];
   Bool is_new_desk;
 
-  if (GetIntegerArguments(action, NULL, val, 3) != 3)
+  if (MatchToken(action, "prev"))
+  {
+    val[0] = prev_desk;
+    val[1] = prev_page_x;
+    val[2] = prev_page_y;
+  }
+  else if (GetIntegerArguments(action, NULL, val, 3) != 3)
     return;
 
   is_new_desk = (Scr.CurrentDesk != val[0]);
@@ -1124,6 +1137,7 @@ void gotoDeskAndPage_func(F_CMD_ARGS)
   MoveViewport(val[1] * Scr.MyDisplayWidth, val[2] * Scr.MyDisplayHeight, True);
   if (is_new_desk)
   {
+    prev_desk = Scr.CurrentDesk;
     Scr.CurrentDesk = val[0];
     MapDesk(val[0], True);
   }

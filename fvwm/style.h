@@ -383,7 +383,7 @@
 void ProcessNewStyle(F_CMD_ARGS);
 void ProcessDestroyStyle(F_CMD_ARGS);
 void lookup_style(FvwmWindow *tmp_win, window_style *styles);
-int cmp_masked_flags(void *flags1, void *flags2, void *mask, int len);
+Bool blockcmpmask(char *blk1, char *blk2, char *mask, int length);
 void check_window_style_change(
   FvwmWindow *t, update_win *flags, window_style *ret_style);
 void reset_style_changes(void);

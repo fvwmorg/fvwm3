@@ -370,6 +370,7 @@ typedef struct ScreenInfo
   {
     Bool do_save_under : 1;
     unsigned do_need_window_update : 1;
+    unsigned do_need_style_list_update : 1;
     unsigned has_default_font_changed : 1;
     unsigned has_default_color_changed : 1;
     unsigned has_nr_buttons_changed : 1;
@@ -400,6 +401,8 @@ typedef struct ScreenInfo
 /* some protos for the decoration structures */
 void LoadDefaultButton(DecorFace *bf, int i);
 void ResetAllButtons(FvwmDecor *decor);
+
+void simplify_style_list(void);
 
 /*
  * Diverts a style definition to an FvwmDecor structure (veliaa@rpi.edu)

@@ -1,3 +1,28 @@
+2000-02-25  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* fvwm/style.c (simplify_style_list):
+	(add_style_to_list):
+	(ProcessDestroyStyle):
+	* fvwm/screen.h:
+	* fvwm/events.c (HandleEvents):
+	* fvwm/screen.h (ScreenInfo):
+	speed up style merging by waiting until fvwm has nothing else to do
+	before simplifying the style list
+
+	* fvwm/conditional.c (MatchesConditionMask):
+	* fvwm/style.c (blockcmpmask):
+	renamed cmp_maked_flags to blockcmpmask
+
+	* fvwm/fvwm2.1:
+	added missing description of gotodeskandpage command
+	removed references to obsolete Desk command; use GotoDesk instead
+
+	* fvwm/virtual.c (GetDeskNumber):
+	(gotoDeskAndPage_func):
+	(changeDesks):
+	gotodesk, gotodeskandpage and movetodesk accept 'prev' to indicate last
+	desk.
+
 2000-02-24  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* fvwm/style.c (simplify_style_list):

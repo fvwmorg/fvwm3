@@ -2995,10 +2995,10 @@ See also the
 command above.
 
 .TP
-.BI "MoveToDesk " arg1 " [" arg2 "] [" "min max" "]"
+.BI "MoveToDesk " prev " | " arg1 " [" arg2 "] [" "min max" "]"
 Moves the selected window to another desktop.  The arguments are the
 same as for the
-.B Desk
+.B GotoDesk
 command.
 .B MoveToDesk
 is a replacement for the old
@@ -3249,7 +3249,7 @@ Moves the selected window to another desktop.
 This command has been removed and must be replaced by
 .BR MoveToDesk ,
 the arguments for which are the same as for the
-.B Desk
+.B GotoDesk
 command.
 .B Important note:
 You cannot simply change the name of the command: the
@@ -4457,7 +4457,6 @@ disappeared to, because it got placed on a different desk or
 page.
 .I ActivePlacementHonorsStartsOnPage
 allows this to happen anyway.  The option has no effect if
-
 .I SkipMapping
 is not in effect, because fvwm will switch to the proper
 desk/page to perform interactive placement.  The default is
@@ -5594,7 +5593,7 @@ clicks on the window, near the edge of the screen are treated as
 clicks on the root window.
 
 .TP
-.BI "GotoDesk " arg1 " [" arg2 "] [" "min max" "]"
+.BI "GotoDesk " prev " | " arg1 " [" arg2 "] [" "min max" "]"
 Switches the current viewport to another desktop (workspace, room).
 
 The command takes 1, 2, 3, or 4 arguments.  A single argument
@@ -5602,7 +5601,10 @@ is interpreted as a relative desk number.  Two arguments are understood
 as a relative and an absolute desk number.  Three arguments specify
 a relative desk and the minimum and maximum of the allowable range.
 Four arguments specify the relative, absolute, minimum and maximum
-values.  (Desktop numbers can be negative.)
+values.  (Desktop numbers can be negative).  If a literal
+.I prev
+is given as the single argument, the last visited desk number is
+used.
 
 If
 .I arg1
@@ -5637,7 +5639,17 @@ active.  Desktop numbers must be between 2147483647 and -2147483648
 (is that enough?).
 
 .TP
-.BI "GotoPage  " x "[" p "] " y "[" p "]"
+.BI "GotoDeskAndPage " prev " | " "desk xpage ypage"
+Switches the current viewport to another desktop and page, similar
+to the
+.BR GotoDesk " and " GotoPage
+commands.  The new desk is
+.I desk
+and the new page is
+.RI ( xpage , ypage ).
+
+.TP
+.BI "GotoPage " prev " | " x "[" p "] " y "[" p "]"
 Moves the desktop viewport to page (x,y).  The upper left page is
 (0,0), the upper right is (M,0), where M is one less than the current
 number of horizontal pages specified in the

@@ -618,6 +618,7 @@ int main(int argc, char **argv)
   DBUG("main","Setting up rc file defaults...");
   SetRCDefaults();
   flush_window_updates();
+  simplify_style_list();
 
   DBUG("main","Running config_commands...");
   if (num_config_commands > 0)

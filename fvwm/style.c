@@ -66,6 +66,91 @@ static void remove_style_from_list(window_style *style, Bool do_free_style);
 #define SAFEFREE( p )  {if (p)  free(p);}
 
 
+/***********************************************************************
+ *
+ *  Procedure:
+ *      blockcmpmask - compare two flag structures passed as byte
+ *                     arrays. Only compare bits set in the mask.
+ *
+ *  Returned Value:
+ *      zero if the flags are the same
+ *      non-zero otherwise
+ *
+ *  Inputs:
+ *      flags1 - first byte array of flags to compare
+ *      flags2 - second byte array of flags to compare
+ *      mask   - byte array of flags to be considered for the comparison
+ *      len    - number of bytes to compare
+ *
+ ***********************************************************************/
+Bool blockcmpmask(char *blk1, char *blk2, char *mask, int length)
+{
+  int i;
+
+  for (i = 0; i < length; i++)
+  {
+    if ((blk1[i] & mask[i]) != (blk2[i] & mask[i]))
+      /* flags are not the same, return 1 */
+      return False;
+  }
+  return True;
+}
+
+static Bool blockor(char *dest, char *blk1, char *blk2, int length)
+{
+  int i;
+  char result = 0;
+
+  for (i = 0; i < length; i++)
+  {
+    dest[i] = (blk1[i] | blk2[i]);
+    result |= dest[i];
+  }
+
+  return (result) ? True : False;
+}
+
+static Bool blockand(char *dest, char *blk1, char *blk2, int length)
+{
+  int i;
+  char result = 0xff;
+
+  for (i = 0; i < length; i++)
+  {
+    dest[i] = (blk1[i] & blk2[i]);
+    result &= dest[i];
+  }
+
+  return (result) ? True : False;
+}
+
+static Bool blockunmask(char *dest, char *blk1, char *blk2, int length)
+{
+  int i;
+  char result = 0xff;
+
+  for (i = 0; i < length; i++)
+  {
+    dest[i] = (blk1[i] & ~blk2[i]);
+    result &= dest[i];
+  }
+
+  return (result) ? True : False;
+}
+
+static Bool blockissubset(char *sub, char *super, int length)
+{
+  int i;
+
+  for (i = 0; i < length; i++)
+  {
+    if ((sub[i] & super[i]) != sub[i])
+      return False;
+  }
+
+  return True;
+}
+
 void free_icon_boxes(icon_boxes *ib)
 {
   icon_boxes *temp;
@@ -392,48 +477,41 @@ static void free_style(window_style *style)
   return;
 }
 
-static Bool blockor(char *dest, char *blk1, char *blk2, int length)
+/* Frees only selected members of a style; adjusts the flag_mask and
+ * change_mask appropriately. */
+static void free_style_mask(window_style *style, style_flags *mask)
 {
-  int i;
-  char result = 0;
+  /* Free contents of style */
+  if (mask->has_color_back)
+    SAFEFREE(SGET_BACK_COLOR_NAME(*style));
+  if (mask->has_color_fore)
+    SAFEFREE(SGET_FORE_COLOR_NAME(*style));
+  if (mask->has_color_back_hi)
+    SAFEFREE(SGET_BACK_COLOR_NAME_HI(*style));
+  if (mask->has_color_fore_hi)
+    SAFEFREE(SGET_FORE_COLOR_NAME_HI(*style));
+  if (mask->has_decor)
+    SAFEFREE(SGET_DECOR_NAME(*style));
+  if (mask->common.has_icon_font)
+    SAFEFREE(SGET_ICON_FONT(*style));
+  if (mask->common.has_window_font)
+    SAFEFREE(SGET_WINDOW_FONT(*style));
+  if (mask->has_icon)
+    SAFEFREE(SGET_ICON_NAME(*style));
+  if (mask->has_mini_icon)
+    SAFEFREE(SGET_MINI_ICON_NAME(*style));
+  if (mask->has_icon_boxes)
+    free_icon_boxes(SGET_ICON_BOXES(*style));
+  /* remove styles from definitiion */
+  blockunmask((char *)&style->flag_mask, (char *)&style->flag_mask,
+              (char *)mask, sizeof(style_flags));
+  blockunmask((char *)&style->change_mask, (char *)&style->change_mask,
+              (char *)mask, sizeof(style_flags));
 
-  for (i = 0; i < length; i++)
-  {
-    dest[i] = (blk1[i] | blk2[i]);
-    result |= dest[i];
-  }
-
-  return (result) ? True : False;
+  return;
 }
 
-static Bool blockand(char *dest, char *blk1, char *blk2, int length)
-{
-  int i;
-  char result = 0xff;
-
-  for (i = 0; i < length; i++)
-  {
-    dest[i] = (blk1[i] & blk2[i]);
-    result &= dest[i];
-  }
-
-  return (result) ? True : False;
-}
-
-static Bool blockissubset(char *sub, char *super, int length)
-{
-  int i;
-
-  for (i = 0; i < length; i++)
-  {
-    if ((sub[i] & super[i]) != sub[i])
-      return False;
-  }
-
-  return True;
-}
-
-static void simplify_style_list(void)
+void simplify_style_list(void)
 {
   window_style *cur;
   window_style *cmp;
@@ -446,6 +524,7 @@ static void simplify_style_list(void)
   Bool is_merge_allowed;
   Bool has_styles_in_between;
 
+  Scr.flags.do_need_style_list_update = 0;
   /* repeat until nothing has been done for a complete pass */
   while (has_modified)
   {
@@ -483,8 +562,12 @@ fprintf(stderr,"subset: removing style %s\n", SGET_NAME(*cmp));
           }
           else
           {
+            /* remove all styles that are overridden later from the style */
+            free_style_mask(cmp, &sumflags);
+
             if (has_styles_in_between)
               is_merge_allowed = False;
+
             /* Add the style to the set */
             blockor((char *)&sumflags, (char *)&sumflags,
                     (char *)&cmp->flag_mask, sizeof(style_flags));
@@ -558,7 +641,7 @@ fprintf(stderr,"adding style '%s'\n", SGET_NAME(*new_style));
   SSET_PREV_STYLE(*new_style, last_style_in_list);
   SSET_NEXT_STYLE(*new_style, NULL);
   last_style_in_list = new_style;
-  simplify_style_list();
+  Scr.flags.do_need_style_list_update = 1;
 
   return;
 } /* end function */
@@ -633,7 +716,7 @@ void ProcessDestroyStyle(F_CMD_ARGS)
   /* Do it */
   remove_all_of_style_from_list(name);
   /* compact the current list of styles */
-  simplify_style_list();
+  Scr.flags.do_need_style_list_update = 1;
 }
 
 
@@ -695,36 +778,6 @@ fprintf(stderr,"n: merging style %s\n", SGET_NAME(*nptr));
   return;
 }
 
-/***********************************************************************
- *
- *  Procedure:
- *      cmp_masked_flags - compare two flag structures passed as byte
- *                         arrays. Only compare bits set in the mask.
- *
- *  Returned Value:
- *      zero if the flags are the same
- *      non-zero otherwise
- *
- *  Inputs:
- *      flags1 - first byte array of flags to compare
- *      flags2 - second byte array of flags to compare
- *      mask   - byte array of flags to be considered for the comparison
- *      len    - number of bytes to compare
- *
- ***********************************************************************/
-int cmp_masked_flags(void *flags1, void *flags2, void *mask, int len)
-{
-  int i;
-
-  for (i = 0; i < len; i++)
-  {
-    if ( (((char *)flags1)[i] & ((char *)mask)[i]) !=
-	 (((char *)flags2)[i] & ((char *)mask)[i]) )
-      /* flags are not the same, return 1 */
-      return 1;
-  }
-  return 0;
-}
 
 
 /* Process a style command.  First built up in a temp area.
