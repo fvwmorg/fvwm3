@@ -982,6 +982,8 @@ void SetHiColorset(F_CMD_ARGS)
   AllocColorset(cset);
   ApplyHilightColors(decor);
 #else
+  char *newaction;
+
 #ifdef USEDECOR
   if (cur_decor && cur_decor != &Scr.DefaultDecor)
   {
@@ -993,8 +995,6 @@ void SetHiColorset(F_CMD_ARGS)
     return;
   }
 #endif
-  char *newaction;
-
   if (action)
   {
     newaction = safemalloc(strlen(action) + 32);
