@@ -248,8 +248,10 @@ static int Get_TBLR(char *token, unsigned char *IconFill)
  *  Inputs:
  *      merged_style - style resulting from the merge
  *      add_style    - the style to be added into the merge_style
- *      do_free      - free allocated parts of merge_style that are replaced
- +                     from add_style
+ *      do_free_src_and_alloc_copy
+ *                   - free allocated parts of merge_style that are replaced
+ *                     from add_style.  Create a copy of of the replaced
+ *                     styles in allocated memory.
  *
  *  Note:
  *      The only trick here is that on and off flags/buttons are
@@ -258,7 +260,8 @@ static int Get_TBLR(char *token, unsigned char *IconFill)
  ***********************************************************************/
 
 static void merge_styles(
-  window_style *merged_style, window_style *add_style, Bool do_free)
+  window_style *merged_style, window_style *add_style,
+  Bool do_free_src_and_alloc_copy)
 {
   int i;
   char *merge_flags;
@@ -270,7 +273,7 @@ static void merge_styles(
 
   if (add_style->flag_mask.has_icon)
   {
-    if (do_free)
+    if (do_free_src_and_alloc_copy)
     {
       SAFEFREE(SGET_ICON_NAME(*merged_style));
       SSET_ICON_NAME(*merged_style, (SGET_ICON_NAME(*add_style)) ?
@@ -284,7 +287,7 @@ static void merge_styles(
 #ifdef MINI_ICONS
   if (add_style->flag_mask.has_mini_icon)
   {
-    if (do_free)
+    if (do_free_src_and_alloc_copy)
     {
       SAFEFREE(SGET_MINI_ICON_NAME(*merged_style));
       SSET_MINI_ICON_NAME(*merged_style, (SGET_MINI_ICON_NAME(*add_style)) ?
@@ -299,7 +302,7 @@ static void merge_styles(
 #ifdef USEDECOR
   if (add_style->flag_mask.has_decor)
   {
-    if (do_free)
+    if (do_free_src_and_alloc_copy)
     {
       SAFEFREE(SGET_DECOR_NAME(*merged_style));
       SSET_DECOR_NAME(*merged_style, (SGET_DECOR_NAME(*add_style)) ?
@@ -313,7 +316,7 @@ static void merge_styles(
 #endif
   if (SFHAS_ICON_FONT(*add_style))
   {
-    if (do_free)
+    if (do_free_src_and_alloc_copy)
     {
       SAFEFREE(SGET_ICON_FONT(*merged_style));
       SSET_ICON_FONT(*merged_style, (SGET_ICON_FONT(*add_style)) ?
@@ -326,7 +329,7 @@ static void merge_styles(
   }
   if (SFHAS_WINDOW_FONT(*add_style))
   {
-    if (do_free)
+    if (do_free_src_and_alloc_copy)
     {
       SAFEFREE(SGET_WINDOW_FONT(*merged_style));
       SSET_WINDOW_FONT(*merged_style, (SGET_WINDOW_FONT(*add_style)) ?
@@ -349,7 +352,7 @@ static void merge_styles(
   }
   if (add_style->flag_mask.has_color_fore)
   {
-    if (do_free)
+    if (do_free_src_and_alloc_copy)
     {
       SAFEFREE(SGET_FORE_COLOR_NAME(*merged_style));
       SSET_FORE_COLOR_NAME(*merged_style, (SGET_FORE_COLOR_NAME(*add_style)) ?
@@ -362,7 +365,7 @@ static void merge_styles(
   }
   if (add_style->flag_mask.has_color_back)
   {
-    if (do_free)
+    if (do_free_src_and_alloc_copy)
     {
       SAFEFREE(SGET_BACK_COLOR_NAME(*merged_style));
       SSET_BACK_COLOR_NAME(*merged_style, (SGET_BACK_COLOR_NAME(*add_style)) ?
@@ -375,11 +378,12 @@ static void merge_styles(
   }
   if (add_style->flag_mask.has_color_fore_hi)
   {
-    if (do_free)
+    if (do_free_src_and_alloc_copy)
     {
       SAFEFREE(SGET_FORE_COLOR_NAME_HI(*merged_style));
       SSET_FORE_COLOR_NAME_HI(
-	*merged_style, SGET_FORE_COLOR_NAME_HI(*add_style));
+        *merged_style, (SGET_FORE_COLOR_NAME_HI(*add_style)) ?
+        safestrdup(SGET_FORE_COLOR_NAME_HI(*add_style)) : NULL);
     }
     else
     {
@@ -389,11 +393,12 @@ static void merge_styles(
   }
   if (add_style->flag_mask.has_color_back_hi)
   {
-    if (do_free)
+    if (do_free_src_and_alloc_copy)
     {
       SAFEFREE(SGET_BACK_COLOR_NAME_HI(*merged_style));
       SSET_BACK_COLOR_NAME_HI(
-	*merged_style, SGET_BACK_COLOR_NAME_HI(*add_style));
+        *merged_style, (SGET_BACK_COLOR_NAME_HI(*add_style)) ?
+        safestrdup(SGET_BACK_COLOR_NAME_HI(*add_style)) : NULL);
     }
     else
     {
@@ -401,20 +406,20 @@ static void merge_styles(
 	*merged_style, SGET_BACK_COLOR_NAME_HI(*add_style));
     }
   }
-  if(add_style->flags.has_border_width)
+  if (add_style->flags.has_border_width)
   {
     SSET_BORDER_WIDTH(*merged_style, SGET_BORDER_WIDTH(*add_style));
   }
-  if(add_style->flags.has_handle_width)
+  if (add_style->flags.has_handle_width)
   {
     SSET_HANDLE_WIDTH(*merged_style, SGET_HANDLE_WIDTH(*add_style));
   }
-  if(add_style->flags.has_max_window_size)
+  if (add_style->flags.has_max_window_size)
   {
     SSET_MAX_WINDOW_WIDTH(*merged_style, SGET_MAX_WINDOW_WIDTH(*add_style));
     SSET_MAX_WINDOW_HEIGHT(*merged_style, SGET_MAX_WINDOW_HEIGHT(*add_style));
   }
-  if(add_style->flags.has_window_shade_steps)
+  if (add_style->flags.has_window_shade_steps)
   {
     SSET_WINDOW_SHADE_STEPS(*merged_style, SGET_WINDOW_SHADE_STEPS(*add_style));
   }
@@ -425,7 +430,7 @@ static void merge_styles(
   {
     /* If style has iconboxes */
     /* copy it */
-    if (do_free)
+    if (do_free_src_and_alloc_copy)
     {
       remove_icon_boxes_from_style(merged_style);
       copy_icon_boxes(
