@@ -264,14 +264,14 @@ smr_ARG_WITHLIB($1,$2,$3)
 if test "$with_$1" != no; then
     AC_CHECK_LIB(${smr_lib}, $4,
         smr_havelib=yes,
-        smr_havelib=no; problem_$1=": Can't find required lib$smr_lib",
+        smr_havelib=no; problem_$1=": Can't find working lib$smr_lib",
         ifelse($6, , ${$1_LIBS}, [${$1_LIBS} $6]))
     if test "$smr_havelib" = yes -a "$smr_header" != ""; then
         smr_ARG_WITHINCLUDES($1, $smr_header, $7)
         smr_safe=`echo "$smr_header" | sed 'y%./+-%__p_%'`
         if eval "test \"`echo '$ac_cv_header_'$smr_safe`\" != yes"; then
             smr_havelib=no
-            problem_$1=": Can't find required $smr_header"
+            problem_$1=": Can't find working $smr_header"
         fi
     fi
     if test "$smr_havelib" = yes; then
@@ -959,7 +959,7 @@ AC_DEFUN([GNOME_INIT_HOOK],[
 #
 AC_DEFUN([ICONV_SECOND_ARG],[
 	AC_MSG_CHECKING(check if second arg of iconv is const)
-        AC_TRY_COMPILE([
+	AC_TRY_COMPILE([
 #include <stdlib.h>
 #include <iconv.h>
 extern
@@ -969,9 +969,9 @@ size_t iconv (iconv_t cd, char * *inbuf, size_t *inbytesleft, char * *outbuf, si
 size_t iconv();
 #endif
 ], [], use_const=no, use_const=yes)
-        AC_MSG_RESULT($use_const)
+	AC_MSG_RESULT($use_const)
 	if test "x$use_const" = "xyes"; then
-	   AC_DEFINE(ICONV_ARG_USE_CONST)
+		AC_DEFINE(ICONV_ARG_USE_CONST)
 	fi
 ])
 

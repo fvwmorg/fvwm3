@@ -735,7 +735,7 @@ FVWM Configuration:
   Perl lib:    $my_plldir
 
   With Extended Window Manager Hints? $with_ewmh$problem_ewmh
-  With Bi-directional support?        $with_fribidi$problem_fribidi
+  With Bi-directional text support?   $with_fribidi$problem_fribidi
   With GNOME Window Manager Hints?    $with_gnomehints$problem_gnomehints
   With GTK support for FvwmGtk?       $with_gtk$problem_gtk$fvwmgtk_msg
   With Multibyte support?             $with_multibyte$problem_multibyte
