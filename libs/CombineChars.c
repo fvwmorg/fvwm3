@@ -1540,12 +1540,17 @@ convert_to_utf8(
 
 int
 CombineChars(
-	unsigned char *str_visual, int len, superimpose_char_t **comb_chars)
+	unsigned char *str_visual, int len, superimpose_char_t **comb_chars,
+	int **l_to_v)
 {
 	int i,j,k;  /* counters */
 	unsigned short int *source;
 	unsigned short int *dest;
+	int *source_v_to_l;
+	int *dest_v_to_l;
 	int str_len;
+	int in_str_len;
+	int out_str_len;
 	int comp_str_len = 0;
   	Bool has_changed;
 
@@ -1560,11 +1565,21 @@ CombineChars(
 		(len + 1) * sizeof(unsigned short int));
 	/* convert from UTF-8-encoded text to internal 16-bit encoding */
 	str_len = convert_to_ucs2(str_visual,source,len);
+	in_str_len = str_len;
 	/* we don't really need to NULL-terminate source, since we
 	   have string length */
 	/* be pessimistic, assume all characters are decomposed */
 	dest = (unsigned short int *)safemalloc(
 		(str_len + 1) * 2 * sizeof(unsigned short int));
+	/* use theese to keep track of the mapping of characters from
+	   logical to visual */
+	source_v_to_l = (int *)safemalloc(str_len * sizeof(int));
+	dest_v_to_l = (int *)safemalloc(str_len * 2 * sizeof(int));
+	/* setup initial mapping 1-to-1 */
+	for(i = 0 ; i < str_len ; i++)
+	{
+		source_v_to_l[i] = i;
+	}
 	do
 	{
 		has_changed = False;
@@ -1577,26 +1592,35 @@ CombineChars(
 			{
 				dest[j] = decomp->first;
 				dest[j+1] = decomp->second;
+				dest_v_to_l[j] = source_v_to_l[i];
+				dest_v_to_l[j+1] = source_v_to_l[i];
 				j += 2;
 				has_changed = True;
 			}
 			else /* leave it as is */
 			{
 				dest[j] = source[i];
+				dest_v_to_l[j] = source_v_to_l[i];
 				j++;
 			}
 		}
+
 		/* now swap */
 		free(source);
+		free(source_v_to_l);
 		source = dest;
+		source_v_to_l = dest_v_to_l;
 		str_len = j;
 		dest = (unsigned short int *)safemalloc(
 			(str_len + 1) * 2 * sizeof(unsigned short int));
+		dest_v_to_l = (int *)safemalloc(str_len * sizeof(int));
 	} while (has_changed);
 	/* source now holds decomposed string (got swapped before exiting
 	   loop, str_len holds string length */
 	/* we reuse dest for composing, can use existing string lengths
 	   since it will only get shorter */
+	/* source_v_to_l holds the mapping from positions in decomposed
+	   string to original string */
 
 	/* rearrange combining characters */
 	do
@@ -1611,8 +1635,11 @@ CombineChars(
 			if (c1 > c2 && c2 != 0)
 			{
 				unsigned short int temp = source[i];
+				int temp_v_to_l = source_v_to_l[i];
 				source[i] = source[i+1];
 				source[i+1] = temp;
+				source_v_to_l[i] = source_v_to_l[i+1];
+				source_v_to_l[i+1] = temp_v_to_l;
 				has_changed = True;
 			}
 		}
@@ -1622,13 +1649,16 @@ CombineChars(
 	do
 	{
 		unsigned short int *temp;
+		int *temp_v_to_l;
 		Bool last_changed = False;
 		has_changed = False;
 
 		for (i = 0, j = 0; i < str_len - 1; j++)
 		{
 			unsigned short int composed =
-				get_comb_entry_composed(source[i], source[i+1]);
+				get_comb_entry_composed(source[i], 
+							source[i+1]);
+			dest_v_to_l[j] = source_v_to_l[i];
 			if (composed != 0)
 			{
 				dest[j] = composed;
@@ -1649,6 +1679,9 @@ CombineChars(
 		temp = dest;
 		dest = source;
 		source = temp;
+		temp_v_to_l = dest_v_to_l;
+		dest_v_to_l = source_v_to_l;
+		source_v_to_l = temp_v_to_l;
 		/* fixup the last character, the loop above goes to second
 		   last, since it needs to look at 2 consecutive,
 		   if the last character is a non-combining character */
@@ -1657,6 +1690,7 @@ CombineChars(
 		if (!last_changed)
 		{
 			source[j] = dest[i];
+			source_v_to_l[j] = dest_v_to_l[i];
 			str_len = j+1;
 		}
 		else
@@ -1669,11 +1703,10 @@ CombineChars(
 
 	/* gather "uncomposed" combining characters here for rendering
 	  over normal characters later */
-
+	comp_str_len = 0;
 	if (comb_chars != NULL)
 	{
 		/* calculate number of combining characters left */
-		comp_str_len = 0;
 		for (i = 0 ; i < str_len ; i++)
 		{
 			if (get_combining_class(source[i]) != 0)
@@ -1695,6 +1728,7 @@ CombineChars(
 		if (get_combining_class(source[i]) == 0)
 		{
 			dest[j] = source[i];
+			dest_v_to_l[j] = source_v_to_l[i];
 			j++;
 		}
 		else
@@ -1718,11 +1752,40 @@ CombineChars(
 		(*comb_chars)[comp_str_len].c.byte2 = 0;
 	}
 	str_len = convert_to_utf8(dest,str_visual,j);
+	out_str_len = j;
 	str_visual[str_len] = 0;
+
+	if(l_to_v != NULL)
+	{
+		*l_to_v = (int *)safemalloc((in_str_len + 1) * sizeof(int));
+		/* map the visual to logical mapping obtained above into
+		   a logical to visual mapping */
+		/* setup the final mapping from logical to visual positions */
+		for(i = 0, j = 0 ; i < out_str_len ; i++)
+		{
+			/* for each element in mapping from visual string
+			   insert "backtracked" references from logical
+			   string by inserting consequitive entries, as many
+			   as the step in the mapping from visual to logical
+			*/
+			int step = (i == out_str_len - 1) ? 
+				    in_str_len - j :
+				    dest_v_to_l[i+1] - dest_v_to_l[i];
+			for(k = 0 ; k < step ; k++, j++)
+			{
+				(*l_to_v)[j] = i;
+			}
+		}
+		/* terminated it with -1, to avoid have to send around
+		   lenghts */
+		(*l_to_v)[in_str_len] = -1;
+	}
 
 	/* clean up */
 	free(source);
 	free(dest);
+	free(source_v_to_l);
+	free(dest_v_to_l);
 
 	return str_len;
 }

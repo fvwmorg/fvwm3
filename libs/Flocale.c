@@ -155,6 +155,7 @@ void FlocaleParseShadow(char *str, int *shadow_size, int *shadow_offset,
  * some simple converters
  */
 
+static
 int FlocaleChar2bOneCharToUtf8(XChar2b c, char *buf)
 {
         int len;
@@ -188,6 +189,7 @@ int FlocaleChar2bOneCharToUtf8(XChar2b c, char *buf)
 
 /* return number of bytes of character at current position
    (pointed to by str) */
+static
 int FlocaleStringNumberOfBytes(FlocaleFont *flf, const unsigned char *str)
 {
         int bytes = 0;
@@ -226,6 +228,49 @@ int FlocaleStringNumberOfBytes(FlocaleFont *flf, const unsigned char *str)
 	        bytes = 1;
 	}
 	return bytes;
+}
+
+
+/* given a string, font specifying its locale and a byte offset gives
+   character offset */
+static
+int FlocaleStringByteToCharOffset(FlocaleFont *flf, const unsigned char *str,
+				  int offset)
+{
+	const unsigned char *curr_ptr = str;
+	int i = 0;
+	int len = strlen(str);
+	int coffset = 0;
+	int curr_len;
+
+	for(i = 0 ; 
+	    i < offset && i < len ; 
+	    i += curr_len, curr_ptr += curr_len, coffset++)
+	{
+		curr_len = FlocaleStringNumberOfBytes(flf, curr_ptr);
+	}
+	return coffset;
+}
+
+/* like above but reversed, ie. return byte offset corresponding to given 
+   charater offset */
+static
+int FlocaleStringCharToByteOffset(FlocaleFont *flf, const unsigned char *str,
+				  int coffset)
+{
+	const unsigned char *curr_ptr = str;
+	int i;
+	int len = strlen(str);
+	int offset = 0;
+	int curr_len;
+
+	for(i = 0 ; 
+	    i < coffset && i < len ; 
+	    offset += curr_len, curr_ptr += curr_len, i++)
+	{
+		curr_len = FlocaleStringNumberOfBytes(flf, curr_ptr);
+	}
+	return offset;
 }
 
 static
@@ -365,7 +410,8 @@ XChar2b *FlocaleStringToString2b(
 static
 char *FlocaleEncodeString(
 	Display *dpy, FlocaleFont *flf, char *str, int *do_free, int len,
-	int *nl, int *is_rtl, superimpose_char_t **comb_chars)
+	int *nl, int *is_rtl, superimpose_char_t **comb_chars,
+	int **l_to_v)
 {
 	char *str1, *str2, *str3;
 	int len1 = len, len2;
@@ -398,7 +444,7 @@ char *FlocaleEncodeString(
 		{
 			/* do combining */
 			len = CombineChars(tmp_str,strlen(tmp_str),
-					    comb_chars);
+					    comb_chars, l_to_v);
 			/* returns the length of the resulting UTF-8 string */
 			/* convert back to current charset */
 			str1 = FiconvUtf8ToCharset(
@@ -450,16 +496,10 @@ char *FlocaleEncodeString(
 	if (FlocaleGetBidiCharset(dpy, flf->str_fc) != NULL &&
 	    (bidi_charset = FlocaleGetBidiCharset(dpy, flf->fc)) != NULL)
 	{
-	        if(comb_chars != NULL)
-		{
-		        str3 = FBidiConvert(str2, bidi_charset, len1, is_rtl,
-					    &len2, *comb_chars);
-		}
-		else
-		{
-		        str3 = FBidiConvert(str2, bidi_charset, len1, is_rtl,
-					    &len2, NULL);
-	        }
+		str3 = FBidiConvert(str2, bidi_charset, len1, 
+				    is_rtl, &len2, 
+				    comb_chars != NULL ? *comb_chars : NULL, 
+				    l_to_v != NULL ? *l_to_v : NULL);
 		if (str3 != NULL && str3  != str2)
 		{
 			if (*do_free)
@@ -475,9 +515,20 @@ char *FlocaleEncodeString(
 		else
 		{
 		        str1 = str2;
+			/* setup a trival logical to visual mapping in this
+			   case */
+			if(l_to_v != NULL)
+			{
+				int i;
+				*l_to_v = (int *)safemalloc(len * sizeof(int));
+				for(i = 0 ; i < len ; i++)
+				{
+					(*l_to_v)[i] = i;
+				}
+			}
 		}
 	}
-
+	
 	*nl = len1;
 	return str1;
 }
@@ -485,10 +536,11 @@ char *FlocaleEncodeString(
 static
 void FlocaleEncodeWinString(
 	Display *dpy, FlocaleFont *flf, FlocaleWinString *fws, int *do_free,
-	int *len, superimpose_char_t **comb_chars)
+	int *len, superimpose_char_t **comb_chars, int **l_to_v)
 {
 	fws->e_str = FlocaleEncodeString(
-		dpy, flf, fws->str, do_free, *len, len, NULL, comb_chars);
+		dpy, flf, fws->str, do_free, *len, len, NULL, comb_chars,
+		l_to_v);
 	fws->str2b = NULL;
 
 	if (flf->font != None)
@@ -1756,20 +1808,23 @@ void FlocaleDrawString(
 	}
 
 	/* encode the string */
-	FlocaleEncodeWinString(dpy, flf, fws, &do_free, &len, &comb_chars);
+	FlocaleEncodeWinString(dpy, flf, fws, &do_free, &len, &comb_chars,
+			       NULL);
 
 	/* for superimposition calculate the character positions in pixels */
 	if(comb_chars != NULL)
 	{
-		curr_str = fws->str;
 		char_len = 0;
 		i = 0;
-		while(fws->e_str[i] != 0 && i < len)
+		/* the second condition is actually redundant, but there
+		   for clarity, ending at 0 is what's expected in a correct
+		   string */
+		for(char_len = 0, i = 0 ;
+		    i < len && fws->e_str[i] != 0 ;
+		    char_len++, i += curr_len)
 		{
 		        curr_len = FlocaleStringNumberOfBytes(
-				flf, fws->str + i);
-			char_len++;
-			i += curr_len;
+						flf, fws->str + i);
 		}
 		pixel_pos = (int *)safemalloc(char_len * sizeof(int));
 		curr_str = fws->e_str;
@@ -1951,22 +2006,42 @@ void FlocaleDrawString(
 }
 
 void FlocaleDrawUnderline(
-	Display *dpy, FlocaleFont *flf, FlocaleWinString *fws, int coffset)
+	Display *dpy, FlocaleFont *flf, FlocaleWinString *fws, int offset)
 {
 	int off1, off2, y, x_s, x_e;
-	/*superimpose_char_t *comb_chars = NULL;*/
+	superimpose_char_t *comb_chars = NULL;
+	int *l_to_v = NULL;
+	Bool do_free = True;
+	int len = strlen(fws->str);
+	int l_coffset;
+	int v_coffset;
+	int voffset;
+
+	if (fws == NULL || fws->str == NULL)
+	{
+		return;
+	}
 
 	/* need to encode the string first to get BIDI and combining chars */
-	/*FlocaleEncodeWinString(dpy, flf, fws, &do_free, &len, &comb_chars);
-	 */
-
+	FlocaleEncodeWinString(dpy, flf, fws, &do_free, &len, &comb_chars, 
+			       &l_to_v);
+	
 	/* we don't need this, only interested in char mapping */
-	/*free(comb_chars);*/
+	free(comb_chars);
 
-	off1 = FlocaleTextWidth(flf, fws->str, coffset) +
-		((coffset == 0)?
+	/* now calculate char offset (in bytes) in visual string corresponding
+	   to coffset */
+	/* calculate absolute position in string (in characters) */
+	l_coffset = FlocaleStringByteToCharOffset(flf, fws->str, offset);
+	/* map to an offset in the visual string */
+	v_coffset = l_to_v[l_coffset];
+	/* calculate byte offset into visual string */
+	voffset = FlocaleStringCharToByteOffset(flf, fws->e_str, v_coffset);
+
+	off1 = FlocaleTextWidth(flf, fws->e_str, voffset) +
+		((voffset == 0)?
 		 FLF_SHADOW_LEFT_SIZE(flf) : - FLF_SHADOW_RIGHT_SIZE(flf) );
-	off2 = FlocaleTextWidth(flf, fws->str + coffset, 1) -
+	off2 = FlocaleTextWidth(flf, fws->e_str + voffset, 1) -
 		FLF_SHADOW_WIDTH(flf) - 1 + off1;
 	y = fws->y + 2;
 	x_s = fws->x + off1;
@@ -1974,6 +2049,9 @@ void FlocaleDrawUnderline(
 
 	/* No shadow */
 	XDrawLine(dpy, fws->win, fws->gc, x_s, y, x_e, y);
+
+	free(fws->e_str);
+	free(l_to_v);
 
 	return;
 }
@@ -1994,7 +2072,7 @@ int FlocaleTextWidth(FlocaleFont *flf, char *str, int sl)
 	}
 	/* FIXME */
 	tmp_str = FlocaleEncodeString(
-		Pdpy, flf, str, &do_free, sl, &new_l, NULL, NULL);
+		Pdpy, flf, str, &do_free, sl, &new_l, NULL, NULL, NULL);
 	if (FftSupport && flf->fftf.fftfont != NULL)
 	{
 		result = FftTextWidth(flf, tmp_str, new_l);

@@ -44,7 +44,8 @@ Bool FBidiIsApplicable(const char *charset)
 
 char *FBidiConvert(
 	const char *logical_str, const char *charset, int str_len,
-	Bool *is_rtl, int *out_len, superimpose_char_t *comb_chars)
+	Bool *is_rtl, int *out_len, superimpose_char_t *comb_chars,
+	int *l_to_v)
 {
 	char *visual_str;
 	FriBidiCharSet fribidi_charset;
@@ -97,17 +98,42 @@ char *FBidiConvert(
 	/* re-order combining characters */
 	if (comb_chars != NULL)
 	{
-	        i = 0;
-		while (comb_chars[i].c.byte1 != 0 ||
-		       comb_chars[i].c.byte2 != 0)
+		for(i = 0 ; 
+		    comb_chars[i].c.byte1 != 0 || comb_chars[i].c.byte2 != 0 ;
+		    i++)
 		{
 		        comb_chars[i].position =
 				pos_l_to_v[comb_chars[i].position];
-			i++;
 		}
 	}
 
+	/* remap mapping from logical to visual to "compensate" for BIDI */
+	if(l_to_v != NULL)
+	{
+		/* values in the previuos mapping gives the position of
+		   input characters after combining step */
+		/* mapping from BIDI conversion maps from the positions in
+		   the output from combining */
+		int orig_len;
+		int *l_to_v_temp;
+		i = 0;
+		for(i = 0 ; l_to_v[i] != -1 ; i++)
+		{
+		}
+		orig_len = i;
+		l_to_v_temp = (int *)safemalloc(orig_len * sizeof(int));
+		for(i = 0 ; i < orig_len ; i++)
+		{
+			l_to_v_temp[i] = pos_l_to_v[l_to_v[i]];
+		}
+		for(i = 0 ; i < orig_len ; i++)
+		{
+			l_to_v[i] = l_to_v_temp[i];
+		}
+		free(l_to_v_temp);
+	}
 	free(pos_l_to_v);
+
 
 	/* character shape/join - will get pulled into fribidi with time */
 	str_len = shape_n_join(visual_unicode_str, str_len);

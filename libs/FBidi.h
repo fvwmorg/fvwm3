@@ -80,7 +80,8 @@ Bool FBidiIsApplicable(const char *charset);
  */
 char *FBidiConvert(
 	const char *logical_str, const char *charset, int str_len, 
-	Bool *is_rtl, int *out_len, superimpose_char_t *comb_chars);
+	Bool *is_rtl, int *out_len, superimpose_char_t *comb_chars,
+	int *pos_l_to_v);
 
 #else /* !HAVE_BIDI */
 
