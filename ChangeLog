@@ -1,3 +1,8 @@
+2003-07-29  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* fvwm/module_interface.c (FlushMessageQueue):
+	retry writing pipe if write returns EINTR
+
 2003-07-28  olicha  <olivier.chapuis@free.fr>
 
 	* fvwm/events.c (events_handle_configure_request):
@@ -6,20 +11,20 @@
 	(__handle_cr_on_client):
 	* fvwm/ewmh.c (ewmh_atom_client_win):
 	* fvwm/ewmh_intern.h:
-	* fvwm/ewmh_events.c (ewmh_MoveResizeWindow): 
+	* fvwm/ewmh_events.c (ewmh_MoveResizeWindow):
 	(EWMH_ProcessClientMessage):
 	Implemented _NET_MOVERESIZE_WINDOW
-	
+
 	* fvwm/fvwm.c (main):
 	A -Wall fix
 
 2003-07-25  olicha  <olivier.chapuis@free.fr>
 
-	* fvwm/ewmh.c (ewmh_HandleWindowType): 
+	* fvwm/ewmh.c (ewmh_HandleWindowType):
 	Fixed handling of the _NET_WINDOW_TYPE prop when there are more
 	that one type and we do not support the first one.
 
-	* fvwm/expand.c (expand_vars_extended): 
+	* fvwm/expand.c (expand_vars_extended):
 	Fixed conflict between extended variables name (desk.name and
 	desk.n)
 
