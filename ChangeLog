@@ -1,3 +1,8 @@
+2001-03-03  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* fvwm/menus.c (MenuInteraction):
+	fixed busy wait with PopupDelay menu style
+
 2001-03-02  Dan Espen  <dane@mk.telcordia.com>
 
 	* AUTHORS: Added some nice background information for Chuck Hines.

@@ -1485,10 +1485,10 @@ static void MenuInteraction(
 	  {
 	    Bool is_popup_timed_out =
 	      (MST_POPUP_DELAY(pmp->menu) > 0 &&
-	       popup_delay_10ms++ > MST_POPUP_DELAY(pmp->menu));
+	       popup_delay_10ms++ == MST_POPUP_DELAY(pmp->menu) + 1);
 	    Bool is_popdown_timed_out =
 	      (MST_POPDOWN_DELAY(pmp->menu) > 0 && mrPopdown &&
-	       popdown_delay_10ms++ > MST_POPDOWN_DELAY(pmp->menu));
+	       popdown_delay_10ms++ == MST_POPDOWN_DELAY(pmp->menu) + 1);
 	    Bool do_fake_motion = False;
 
 	    if (flags.do_force_popup ||
