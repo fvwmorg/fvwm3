@@ -1,3 +1,11 @@
+1999-01-25  Dan Espen  <dane@mk.bellcore.com>
+
+	* libs/Grab.c: Make the grab count externally visible.
+
+	* fvwm/module.c (PositiveWrite): Don't send iconify message to
+	lock on send modules while fvwm2 has the server grabbed.  This
+	fixes an hang during recapture while FvwmAnimate is running.
+
 1999-01-23  Bob Woodside  <proteus@pcnet.com>
 
 	* fvwm/fvwm2.1: Update the section that said there was no way to

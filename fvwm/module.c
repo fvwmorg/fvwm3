@@ -625,11 +625,26 @@ void SendStrToModule(XEvent *eventp,Window junk,FvwmWindow *tmp_win,
 /* This used to be marked "fvwm_inline".  I removed this
    when I added the lockonsend logic.  The routine seems to big to
    want to inline.  dje 9/4/98 */
+extern int myxgrabcount;                /* defined in libs/Grab.c */
 int PositiveWrite(int module, unsigned long *ptr, int size)
 {
   if((pipeOn[module]<0)||(!((PipeMask[module]) & ptr[1])))
     return -1;
 
+  /*
+   * fvwm2  recapture has the x  server grabbed while  iconify events are
+   * simulated.  Right now (01/24/99), the only module using lock on send
+   * is FvwmAnimate which always  does  a grab of  its  own.  To avoid  a
+   * deadlock, iconify events are not sent to a lock on send module while
+   * the server is grabbed.   In the future, it might  make sense to send
+   * the fact that the server is  grabbed to the  lock on send module, or
+   * in some other way get finer control.
+   */
+  if ((PipeMask[module] & M_LOCKONSEND) /* module uses lock on send */
+      && (myxgrabcount != 0)            /* and server grabbed */
+      && (ptr[1] & M_ICONIFY)) {        /* and its an iconify event */
+    return -1;                          /* don't send it */
+  }
   AddToQueue(module,ptr,size,0);
   /* dje, from afterstep, for FvwmAnimate,
      allows the module to synchronize with fvwm.

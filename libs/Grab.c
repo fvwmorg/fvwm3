@@ -4,25 +4,26 @@
 
 #include <X11/Xlib.h>
 
-static int xgrabcount = 0;
+/* Made into global for module interface.  See module.c. */
+int myxgrabcount = 0;
 
 void MyXGrabServer(Display *disp)
 {
-  if (xgrabcount == 0)
+  if (myxgrabcount == 0)
   {
     XGrabServer(disp);
   }
-  ++xgrabcount;
+  ++myxgrabcount;
 }
 
 void MyXUngrabServer(Display *disp)
 {
-  if (--xgrabcount < 0) /* should never happen */
+  if (--myxgrabcount < 0) /* should never happen */
   {
     /* fvwm_msg(ERR,"MyXUngrabServer","too many ungrabs!\n"); */
-    xgrabcount = 0;
+    myxgrabcount = 0;
   }
-  if (xgrabcount == 0)
+  if (myxgrabcount == 0)
   {
     XUngrabServer(disp);
   }
