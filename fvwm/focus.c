@@ -713,10 +713,12 @@ static void __focus_grab_one_button(
 	do_grab = (grab_buttons & (1 << button));
 	if ((do_grab & (1 << button)) == (fw->grabbed_buttons & (1 << button)))
 	{
+fprintf(stderr,"nothing do_grab: %d, gb: %d'\n", do_grab, (fw->grabbed_buttons & (1 << button)));
 		return;
 	}
 	if (do_grab)
 	{
+fprintf(stderr,"grabbing %d on '%s'\n", button+1, fw->visible_name);
 		XGrabButton(
 			dpy, button + 1, AnyModifier, FW_W_PARENT(fw), True,
 			ButtonPressMask, GrabModeSync, GrabModeAsync, None,
@@ -726,6 +728,7 @@ static void __focus_grab_one_button(
 	}
 	else
 	{
+fprintf(stderr,"ungrabbing %d on '%s'\n", button+1, fw->visible_name);
 		XUngrabButton(dpy, button + 1, AnyModifier, FW_W_PARENT(fw));
 		fw->grabbed_buttons &= ~(1 << button);
 	}
@@ -850,9 +853,10 @@ static void __focus_grab_buttons(FvwmWindow *fw, Bool client_entered)
 	Bool do_grab_window = False;
 	int grab_buttons;
 
-	if (fw == NULL || IS_SCHEDULED_FOR_DESTROY(fw))
+	if (fw == NULL || IS_SCHEDULED_FOR_DESTROY(fw) || !IS_MAPPED(fw))
 	{
-		/* It's pointless to grab buttons on dying windows */
+		/* It is pointless to grab buttons on dying windows.  Buttons
+		 * can not be grabbed when the window is unmapped. */
 		return;
 	}
 	grab_buttons = Scr.buttons2grab;
