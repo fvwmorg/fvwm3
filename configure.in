@@ -506,12 +506,18 @@ if test "$with_bidi" != "no"; then
 	ac_save_LIBS="$LIBS"
 	CFLAGS="$CFLAGS $Bidi_CFLAGS"
 	LIBS="$LIBS $Bidi_LIBS"
-	AC_TRY_RUN([#include <fribidi/fribidi.h>
+	AC_TRY_RUN([#include <stdlib.h>
+#include <fribidi/fribidi.h>
 int main()
 {
-	return fribidi_parse_charset("utf-8") == FRIBIDI_CHARSET_UTF8 ? 0 : 1;
+	FriBidiChar *logical_unicode_str =
+		(FriBidiChar *)malloc((4 + 1) * sizeof(FriBidiChar));
+	fribidi_charset_to_unicode(
+		fribidi_parse_charset("iso8859-8"), "test", 4,
+		logical_unicode_str);
+	return 0;
 }
-], [:], [with_bidi=no; problem_bidi=": Bad headers or libs, see config.log"])
+], [:], [with_bidi=no; problem_bidi=": Bad fribidi version, see config.log"])
 	CFLAGS="$ac_save_CFLAGS"
 	LIBS="$ac_save_LIBS"
 fi
