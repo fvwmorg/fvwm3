@@ -534,9 +534,11 @@ int ewmh_WMStateFullScreen(EWMH_CMD_ARGS)
 				SET_HAS_EWMH_INIT_FULLSCREEN_STATE(
 					fwin, EWMH_STATE_NO_HINT);
 				SET_EWMH_FULLSCREEN(fwin, False);
-				border_draw_decorations(
-					fwin, PART_ALL, (fwin == Scr.Hilite),
-					True, CLEAR_ALL, NULL, NULL);
+				if (DO_EWMH_USE_STACKING_HINTS(fwin))
+				{
+					new_layer(fwin, fwin->ewmh_normal_layer);
+				}
+				apply_decor_change(fwin);
 				/* the client should resize itself */
 			}
 		}
