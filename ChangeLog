@@ -1,3 +1,12 @@
+1999-03-13  Steven Michael ROBBINS  <stever@jeff.cs.mcgill.ca>
+
+	* vms/*: updates from Fabien.
+
+1999-03-12  Steven Michael ROBBINS  <stever@jeff.cs.mcgill.ca>
+
+	* fvwm/borders.c (SetBorder): removed text following #endif, as it
+	violates the ANSI C standard (or so claims SGI cc).
+	
 1999-03-12  Dominik Vogt  <dominik_vogt@gmx.de>
 
 	* fvwm/menus.c (DoMenusOverlap): fixed menu animation bug

@@ -7,14 +7,15 @@
                Tested with Dec 5.7 on Alpha.
     Note     : this file can be edited to change some options.
     Modifs   :
-      25-JAN-1999  Fab  Version 2.1.10 de Fvwm. Autoconfig gives args types for select().
+      25-JAN-1999  Fab    Version 2.1.10 de Fvwm. Autoconfig gives args types for select().
+      11-MAR-1999  Steve  Add new symbols for systems that can't use autoconf.
 ----------------------------------------------------------------------------------------------------------------------------------*/
 /* --- Those defines were intialy in makefiles and command lines --- */
 #define FVWMRC "FvwmRc.Dat"
 #define FVWM_MODULEDIR "Fvwm$BaseDir:[Modules.Bin]"
 #define FVWM_CONFIGDIR "/Sys$Login"
 
-#include "VMS/vms.h"
+#include "libs/vms.h"
 
 /* - Replacement functions - */
 #define fork vfork
@@ -32,7 +33,7 @@
 #define DEBUG_MODULES                           /* --- Define to trace modules launching --- */
 
 #define PACKAGE "VMS port (25-JAN-1999)"
-#define VERSION "2.2"
+#define VERSION "2.3.0"
 
 /* Where to search for the fvwm icons.  */
 #define FVWM_IMAGEPATH "Sys$Login:"

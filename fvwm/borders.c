@@ -443,7 +443,7 @@ void SetBorder (FvwmWindow *t, Bool onoroff,Bool force,Bool Mapped,
         if ((t->flags & BORDER) && (t->boundary_width > 2))
 #ifdef BORDERSTYLE
         if (!(borderflags & HiddenHandles))
-#endif BORDERSTYLE
+#endif 
         {
           /* MWM border windows have thin 3d effects 
            * FvwmBorders have 3 pixels top/left, 2 bot/right so this makes

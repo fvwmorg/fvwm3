@@ -2,10 +2,13 @@
     Module    : vms.c for Fvwm on Open VMS
     Author    : Fabien Villard (Villard_F@Decus.Fr)
     Date      : 5-JAN-1999
-    Action    : special functions for running Fvwm with OpenVms.
+    Action    : special functions for running Fvwm with OpenVms. They can be helpfull for other VMS ports.
     Functions :
         internal functions : AttentionAST() and TimerAST()
         exported functions : VMS_msg(), VMS_SplitCommand() and VMS_select_pipes()
+    Copyright : Fabien Villard, 1999.  No guarantees or warantees are provided or implied in any way whatsoever. Use this program
+                at your own risk.  Permission to use, modify, and redistribute this program is hereby given, provided that this
+                copyright is kept intact.
 ----------------------------------------------------------------------------------------------------------------------------------*/
 #include "config.h"
 

@@ -1,8 +1,8 @@
-BaseDir = DISK$THOR:[THOR_USR.VILLARD_F.ARCHIVES.VMS.FVWM-2200.] 
-BaseDirFix = DISK$THOR:[THOR_USR.VILLARD_F.ARCHIVES.VMS.FVWM-2200]
-XpmInclude = DARC:[VMS.XPM34J.LIB]
-XpmLib = DARC:[VMS.XPM34J]LIBXPM.OLB_AXP
-CCCommand = Cc/Pref=All
+BaseDirFix = <Base dir path>              ! Ex Device:[Path]
+BaseDir = <Base dir path, pseudo device>  ! Ex Device:[Path.]
+XpmInclude = <XPM include files path>     ! If needed
+XpmLib = <XPM object library path>        ! If needed
+CCCommand = Cc/Pref=All/Nested_Include_Directory=Primary_File/Standard=Relaxed_Ansi89
 
 .First
   @ If F$Search("[.Libs]Libs.Olb") .Eqs. "" Then Write Sys$Output "Creating library [.Libs]Libs.Olb..."
@@ -13,6 +13,8 @@ CCCommand = Cc/Pref=All
   @ If F$Search("[.Modules]Bin.Dir") .Eqs. "" Then Cre/Dir [.Modules.Bin]
   @ Write Sys$Output "Redefining logical X11..."
   @ Assign/Job DECW$INCLUDE,$(XpmInclude) X11
+  @ Assign/Job $(BaseDir)[Libs] Libs
+  @ Assign/Job $(BaseDir)[Fvwm] Fvwm
 
 Fvwm : [.Fvwm]Fvwm.Exe, -
        [.Modules.Bin]FvwmWinList.Exe, -
@@ -39,7 +41,8 @@ Fvwm : [.Fvwm]Fvwm.Exe, -
 [.Libs]Libs.Olb : [.Libs]Vms.Obj, [.Libs]CLIENTMSG.Obj, [.Libs]COLORUTILS.Obj, -
                   [.Libs]DEBUG.Obj, [.Libs]ENVVAR.Obj, [.Libs]GETFONT.Obj, [.Libs]GETHOSTNAME.Obj, [.Libs]GRAB.Obj, -
                   [.Libs]MODPARSE.Obj, [.Libs]MODULE.Obj, [.Libs]PARSE.Obj, [.Libs]PICTURE.Obj, [.Libs]SAFEMALLOC.Obj, -
-                  [.Libs]STRINGS.Obj, [.Libs]SYSTEM.Obj, [.Libs]WILD.Obj, [.Libs]XRESOURCE.Obj
+                  [.Libs]STRINGS.Obj, [.Libs]SYSTEM.Obj, [.Libs]WILD.Obj, [.Libs]XRESOURCE.Obj, [.Libs]Graphics.Obj
+
   @ Continue
   
 !===================================================================================================================================
@@ -93,10 +96,7 @@ Fvwm : [.Fvwm]Fvwm.Exe, -
 
 [.Libs]MODULE.Obj : [.Libs]MODULE.C, Config.h
   @ Write Sys$Output "Compiling $(MMS$Source)..."
-  @ Set Def $(BaseDirFix)
-  @ Set Def [.Libs]
-  @ $(CCCommand) /Obj /inc=($(BaseDir)[000000],$(BaseDir)[fvwm],$(BaseDir)[libs]) MODULE.C
-  @ Set Def $(BaseDirFix)
+  @ $(CCCommand) /Obj=[.Libs] /inc=($(BaseDir)[000000],$(BaseDir)[fvwm],$(BaseDir)[libs]) $(MMS$Source)
   @ Lib/Rep/Obj [.Libs]Libs.Olb $(MMS$Target)
 
 [.Libs]PARSE.Obj : [.Libs]PARSE.C, Config.h
@@ -134,15 +134,20 @@ Fvwm : [.Fvwm]Fvwm.Exe, -
   @ $(CCCommand) /Obj=[.Libs] /inc=($(BaseDir)[000000],$(BaseDir)[fvwm],$(BaseDir)[libs]) $(MMS$Source)
   @ Lib/Rep/Obj [.Libs]Libs.Olb $(MMS$Target)
 
+[.Libs]Graphics.Obj : [.Libs]Graphics.C, Config.h
+  @ Write Sys$Output "Compiling $(MMS$Source)..."
+  @ $(CCCommand) /Obj=[.Libs] /inc=($(BaseDir)[000000],$(BaseDir)[fvwm],$(BaseDir)[libs]) $(MMS$Source)
+  @ Lib/Rep/Obj [.Libs]Libs.Olb $(MMS$Target)
+
 !===================================================================================================================================
 !    Directory [.Fvwm]
 !===================================================================================================================================
 
 [.Fvwm]Fvwm.Olb : [.Fvwm]FVWM.Obj, [.Fvwm]ADD_WINDOW.Obj, [.Fvwm]BINDINGS.Obj, [.Fvwm]BORDERS.Obj, [.Fvwm]BUILTINS.Obj, -
-                  [.Fvwm]COLORMAPS.Obj, [.Fvwm]COLORS.Obj, [.Fvwm]COMPLEX.Obj, [.Fvwm]DECORATIONS.Obj, [.Fvwm]EVENTS.Obj, -
+                  [.Fvwm]COLORMAPS.Obj, [.Fvwm]COLORS.Obj, [.Fvwm]DECORATIONS.Obj, [.Fvwm]EVENTS.Obj, -
                   [.Fvwm]FOCUS.Obj, [.Fvwm]FUNCTIONS.Obj, [.Fvwm]ICONS.Obj, [.Fvwm]MENUS.Obj, [.Fvwm]MISC.Obj, -
                   [.Fvwm]MODCONF.Obj, [.Fvwm]MODULE.Obj, [.Fvwm]MOVE.Obj, [.Fvwm]PLACEMENT.Obj, [.Fvwm]READ.Obj, -
-                  [.Fvwm]RESIZE.Obj, [.Fvwm]STYLE.Obj, [.Fvwm]VIRTUAL.Obj, [.Fvwm]WINDOWS.Obj
+                  [.Fvwm]RESIZE.Obj, [.Fvwm]STYLE.Obj, [.Fvwm]VIRTUAL.Obj, [.Fvwm]WINDOWS.Obj, [.Fvwm]IcccM2.Obj
   @ Continue
 
 [.Fvwm]FVWM.Obj : [.Fvwm]FVWM.C, Config.h
@@ -198,14 +203,6 @@ Fvwm : [.Fvwm]Fvwm.Exe, -
   @ Set Def $(BaseDirFix)
   @ Set Def [.Fvwm]
   @ $(CCCommand) /Obj /inc=($(BaseDir)[000000],$(BaseDir)[fvwm],$(BaseDir)[libs]) COLORS.C
-  @ Set Def $(BaseDirFix)
-  @ Lib/Rep/Obj [.Fvwm]Fvwm.Olb $(MMS$Target)
-
-[.Fvwm]COMPLEX.Obj : [.Fvwm]COMPLEX.C, Config.h
-  @ Write Sys$Output "Compiling $(MMS$Source)..."
-  @ Set Def $(BaseDirFix)
-  @ Set Def [.Fvwm]
-  @ $(CCCommand) /Obj /inc=($(BaseDir)[000000],$(BaseDir)[fvwm],$(BaseDir)[libs]) COMPLEX.C
   @ Set Def $(BaseDirFix)
   @ Lib/Rep/Obj [.Fvwm]Fvwm.Olb $(MMS$Target)
 
@@ -337,6 +334,14 @@ Fvwm : [.Fvwm]Fvwm.Exe, -
   @ Set Def $(BaseDirFix)
   @ Lib/Rep/Obj [.Fvwm]Fvwm.Olb $(MMS$Target)
 
+[.Fvwm]ICCCM2.Obj : [.Fvwm]ICCCM2.C, Config.h
+  @ Write Sys$Output "Compiling $(MMS$Source)..."
+  @ Set Def $(BaseDirFix)
+  @ Set Def [.Fvwm]
+  @ $(CCCommand) /Obj /inc=($(BaseDir)[000000],$(BaseDir)[fvwm],$(BaseDir)[libs]) ICCCM2.C
+  @ Set Def $(BaseDirFix)
+  @ Lib/Rep/Obj [.Fvwm]Fvwm.Olb $(MMS$Target)
+
 !===================================================================================================================================
 !    Module FvwmWinList
 !===================================================================================================================================
@@ -414,6 +419,7 @@ Fvwm : [.Fvwm]Fvwm.Exe, -
   @ Set Def $(BaseDirFix)
   @ Link/Exe=$(MMS$Target) [.Modules.FvwmPager]FvwmPager.Obj, [.Modules.FvwmPager]X_Pager.Obj, -
                            $(BaseDir)[Libs]Libs.Olb/Lib, -
+                           $(XpmLib)/Lib, -
                            $(BaseDir)[000000]Vms_Shareables.Opt/Opt
   @ Write Sys$Output ""
 
@@ -452,10 +458,14 @@ Fvwm : [.Fvwm]Fvwm.Exe, -
 !===================================================================================================================================
 !    Module FvwmForm
 !===================================================================================================================================
-[.Modules.Bin]FvwmForm.Exe : [.Modules.FvwmForm]FvwmForm.Obj
+[.Modules.Bin]FvwmForm.Exe : [.Modules.FvwmForm]FvwmForm.Obj, [.Modules.FvwmForm]DefineMe.Obj, -
+                             [.Modules.FvwmForm]ParseCommand.Obj, [.Modules.FvwmForm]ReadXServer.Obj
   @ Write Sys$Output "Creating image $(MMS$Target)..."
   @ Set Def $(BaseDirFix)
   @ Link/Exe=$(MMS$Target) [.Modules.FvwmForm]FvwmForm.Obj, -
+                           [.Modules.FvwmForm]DefineMe.Obj, -
+                           [.Modules.FvwmForm]ParseCommand.Obj, -
+                           [.Modules.FvwmForm]ReadXServer.Obj, -
                            $(BaseDir)[Libs]Libs.Olb/Lib, -
                            $(XpmLib)/Lib, -
                            $(BaseDir)[000000]Vms_Shareables.Opt/Opt
@@ -465,7 +475,28 @@ Fvwm : [.Fvwm]Fvwm.Exe, -
   @ Write Sys$Output "Compiling $(MMS$Source)..."
   @ Set Def $(BaseDirFix)
   @ Set Def [.Modules.FvwmForm]
-  @ $(CCCommand) /Obj=FvwmForm.Obj /inc=($(BaseDir)[000000],$(BaseDir)[fvwm],$(BaseDir)[libs]) FvwmForm.C
+  @ $(CCCommand) /Obj=FvwmForm.Obj /inc=([],$(BaseDir)[000000],$(BaseDir)[fvwm],$(BaseDir)[libs]) FvwmForm.C
+  @ Set Def $(BaseDirFix)
+
+[.Modules.FvwmForm]DefineMe.Obj : [.Modules.FvwmForm]DefineMe.C
+  @ Write Sys$Output "Compiling $(MMS$Source)..."
+  @ Set Def $(BaseDirFix)
+  @ Set Def [.Modules.FvwmForm]
+  @ $(CCCommand) /Obj=DefineMe.Obj /inc=([],$(BaseDir)[000000],$(BaseDir)[fvwm],$(BaseDir)[libs]) DefineMe.C
+  @ Set Def $(BaseDirFix)
+
+[.Modules.FvwmForm]ParseCommand.Obj : [.Modules.FvwmForm]ParseCommand.C
+  @ Write Sys$Output "Compiling $(MMS$Source)..."
+  @ Set Def $(BaseDirFix)
+  @ Set Def [.Modules.FvwmForm]
+  @ $(CCCommand) /Obj=ParseCommand.Obj /inc=([],$(BaseDir)[000000],$(BaseDir)[fvwm],$(BaseDir)[libs]) ParseCommand.C
+  @ Set Def $(BaseDirFix)
+
+[.Modules.FvwmForm]ReadXServer.Obj : [.Modules.FvwmForm]ReadXServer.C
+  @ Write Sys$Output "Compiling $(MMS$Source)..."
+  @ Set Def $(BaseDirFix)
+  @ Set Def [.Modules.FvwmForm]
+  @ $(CCCommand) /Obj=ReadXServer.Obj /inc=([],$(BaseDir)[000000],$(BaseDir)[fvwm],$(BaseDir)[libs]) ReadXServer.C
   @ Set Def $(BaseDirFix)
 
 !===================================================================================================================================
@@ -658,10 +689,10 @@ Fvwm : [.Fvwm]Fvwm.Exe, -
 !===================================================================================================================================
 !    Module FvwmEvent
 !===================================================================================================================================
-[.Modules.Bin]FvwmEvent.Exe : [.Modules.FvwmEvent]FvwmEvent.Obj, [.Modules.FvwmEvent]Parse.Obj
+[.Modules.Bin]FvwmEvent.Exe : [.Modules.FvwmEvent]FvwmEvent.Obj
   @ Write Sys$Output "Creating image $(MMS$Target)..."
   @ Set Def $(BaseDirFix)
-  @ Link/Exe=$(MMS$Target) [.Modules.FvwmEvent]FvwmEvent.Obj, [.Modules.FvwmEvent]Parse.Obj, -
+  @ Link/Exe=$(MMS$Target) [.Modules.FvwmEvent]FvwmEvent.Obj, -
                            $(BaseDir)[Libs]Libs.Olb/Lib, -
                            $(BaseDir)[000000]Vms_Shareables.Opt/Opt
   @ Write Sys$Output ""
@@ -671,13 +702,6 @@ Fvwm : [.Fvwm]Fvwm.Exe, -
   @ Set Def $(BaseDirFix)
   @ Set Def [.Modules.FvwmEvent]
   @ $(CCCommand) /Obj=FvwmEvent.Obj /inc=($(BaseDir)[000000],$(BaseDir)[fvwm],$(BaseDir)[libs]) FvwmEvent.C
-  @ Set Def $(BaseDirFix)
-
-[.Modules.FvwmEvent]Parse.Obj : [.Modules.FvwmEvent]Parse.C
-  @ Write Sys$Output "Compiling $(MMS$Source)..."
-  @ Set Def $(BaseDirFix)
-  @ Set Def [.Modules.FvwmEvent]
-  @ $(CCCommand) /Obj=Parse.Obj /inc=($(BaseDir)[000000],$(BaseDir)[fvwm],$(BaseDir)[libs]) Parse.C
   @ Set Def $(BaseDirFix)
 
 !===================================================================================================================================
