@@ -1,3 +1,7 @@
+1999-02-24  Hippo
+
+	* FvwmPager: Applied label formatting patch from Andreas Dischinger
+
 1999-02-14  Dominik Vogt  <dominik_vogt@hp.com>
 
 	* FvwmIconBox/FvwmIconBox.c (RelieveWindow):

@@ -55,6 +55,10 @@ typedef struct pager_window
   Window icon_w;
   Window icon_pixmap_w;
   char *icon_name;
+  char *window_name;
+  char *res_name;
+  char *res_class;
+  char *window_label; /* This is displayed inside the mini window */
   Picture mini_icon;
   int pager_view_width;
   int pager_view_height;
@@ -73,6 +77,7 @@ typedef struct balloon_window
   Window w;              /* ID of balloon window */
   PagerWindow *pw;       /* pager window it's associated with */
   XFontStruct *font;
+  char *label;           /* the label displayed inside the balloon */
   int height;            /* height of balloon window based on font */
   int border;            /* border width */
   int yoffset;           /* pixels above (<0) or below (>0) pager win */
@@ -126,7 +131,7 @@ void list_lower(unsigned long *body);
 void list_unknown(unsigned long *body);
 void list_iconify(unsigned long *body);
 void list_deiconify(unsigned long *body);
-void list_window_name(unsigned long *body);
+void list_window_name(unsigned long *body,unsigned long type);
 void list_icon_name(unsigned long *body);
 void list_class(unsigned long *body);
 void list_res_name(unsigned long *body);

@@ -170,6 +170,12 @@ background pattern instead of the normal background.
 Change the normal/highlight colors of the windows. \fIfore\fP and
 \fIhiFore\fP specify the colors as used for the font inside the windows.
 \fIback\fP and \fIhiBack\fP are used to fill the windows with.
+
+.IP "*FvwmPagerWindowLabelFormat \fIformat\fP"
+This specifies a printf() like format for the labels in the mini window.
+Possible flags are: %t, %i, %c, and %r for the window's title, icon, class,
+or resource name, respectively.  The default is "%i".
+
 .IP "*FvwmPagerLabel \fIdesk label\fP"
 Assigns the text \fIlabel\fP to desk \fIdesk\fP (or the current desk
 if desk is "*") in the pager window. Useful for assigning symbolic names
@@ -236,6 +242,9 @@ direct transit from pager window to balloon window, causing an event
 loop. Defaults to +2. The offset will change sign automatically, as needed,
 to keep the balloon on the screen.
 
+.IP "*FvwmPagerBalloonStringFormat \fTformat\fP"
+The same as \fI*FvwmPagerWindowLabelFormat\fP, it just specifies the string to
+display in the balloons.
 
 .SH AUTHOR
 Robert Nation 
