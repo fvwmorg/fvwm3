@@ -51,8 +51,9 @@ void resize_window(XEvent *eventp,Window w,FvwmWindow *tmp_win,
   int x,y,delta_x,delta_y,stashed_x,stashed_y;
   Window ResizeWindow;
   Bool flags;
+  Bool fButtonDown;
+  Bool fButtonAbort = False;
   int val1, val2, val1_unit,val2_unit,n;
-  unsigned int expect_button = ~0;
   unsigned int mask = 0;
 
   if (DeferExecution(eventp,&w,&tmp_win,&context, MOVE, ButtonPress))
@@ -61,7 +62,9 @@ void resize_window(XEvent *eventp,Window w,FvwmWindow *tmp_win,
   XQueryPointer( dpy, Scr.Root, &JunkRoot, &JunkChild,
 		 &JunkX, &JunkY, &JunkX, &JunkY, &mask);    
   if((mask&(Button1Mask|Button2Mask|Button3Mask|Button4Mask|Button5Mask))==0)
-    expect_button = 0;
+    fButtonDown = False;
+  else
+    fButtonDown = True;;
   if(check_allowed_function2(F_RESIZE,tmp_win) == 0
 #ifdef WINDOWSHADE
      || (tmp_win->buttons & WSHADE)
@@ -216,11 +219,16 @@ void resize_window(XEvent *eventp,Window w,FvwmWindow *tmp_win,
 	{
 	case ButtonPress:
 	  XAllowEvents(dpy,ReplayPointer,CurrentTime);
-	  if (expect_button != 0)
-	    expect_button = Event.xbutton.button;
+	  /* Abort the resize if
+	   *  - the move started with a pressed button and another button
+	   *    was pressed during the operation
+	   *  - no button was started at the beginning and any button
+	   *    except button 1 was pressed. */
+	  if (fButtonDown || (Event.xbutton.button != 1))
+	    fButtonAbort = TRUE;
 	case KeyPress:
 	  /* simple code to bag out of move - CKH */
-	  if (XLookupKeysym(&(Event.xkey),0) == XK_Escape)
+	  if (XLookupKeysym(&(Event.xkey),0) == XK_Escape || fButtonAbort)
 	    {
 	      abort = TRUE;
 	      finished = TRUE;
@@ -233,8 +241,6 @@ void resize_window(XEvent *eventp,Window w,FvwmWindow *tmp_win,
 	  break;
 
 	case ButtonRelease:
-	  if (expect_button != ~0 && Event.xbutton.button == expect_button)
-	    abort = TRUE;
 	  finished = TRUE;
 	  done = TRUE;
 	  break;

@@ -12,6 +12,11 @@ Changes in release 2.1.0
   define FVWM_MODULEDIR and FVWM_CONFIGDIR
 * FvwmAnimate added.
 
+Changes in release 2.1-pre-beta
+* The changes are too numerous to list here. There are lots of new features.
+  Please check the ChangeLog.
+* Brady Montz is no longer the maintainer. In the future fvwm is maintained
+  by the fvwm-workers mailing list.
 
 May 18, 1998
 

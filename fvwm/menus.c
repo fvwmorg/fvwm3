@@ -2077,6 +2077,9 @@ void scanForPixmap(char *instring, Picture **p, char identifier)
 #ifdef XPM
   extern char *PixmapPath;
 #endif
+#ifdef UGLY_WHEN_PIXMAPS_MISSING
+  char *save_instring;
+#endif
 
   if (!instring)
     {
@@ -2085,8 +2088,6 @@ void scanForPixmap(char *instring, Picture **p, char identifier)
     }
 
 #ifdef UGLY_WHEN_PIXMAPS_MISSING
-  char *save_instring;
-
   /* save instring in case can't find pixmap */
   save_instring = (char *)safemalloc(strlen(instring)+1);
   strcpy(save_instring,instring);
@@ -2130,17 +2131,13 @@ void scanForPixmap(char *instring, Picture **p, char identifier)
 	      *tstart++ = *txt++;
 	    }
 	  *tstart = 0;
-#ifdef UGLY_WHEN_PIXMAPS_MISSING
-          if(!pp)
-            strcpy(instring,save_instring);
-	  else
-	    *p=pp;
-#else
 	  if (pp)
-	      *p=pp;
-	  else {
+	    *p = pp;
+	  else
+#ifdef UGLY_WHEN_PIXMAPS_MISSING
+            strcpy(instring,save_instring);
+#else
   	    fvwm_msg(WARN,"scanForPixmap","Couldn't find pixmap %s",name);
-	  }
 #endif
 	  break;
 	}

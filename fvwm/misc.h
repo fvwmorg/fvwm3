@@ -186,7 +186,7 @@ extern void       GetWindowSizeHints(FvwmWindow *);
 extern void       SwitchPages(Bool,Bool);
 extern void       NextPage(void);
 extern void       PrevPage(void);
-extern void       moveLoop(FvwmWindow *, int, int, int,int, int *, int *,Bool,Bool, XEvent *);
+extern void       moveLoop(FvwmWindow *,int,int,int,int,int *,int *,Bool,Bool);
 
 extern void       Keyboard_shortcuts(XEvent *, int);
 extern void       RedoIconName(FvwmWindow *);

@@ -620,8 +620,7 @@ Bool PlaceWindow(FvwmWindow *tmp_win, unsigned long tflag,int Desk, int PageX, i
           DragHeight = tmp_win->frame_height;
           
           XMapRaised(dpy,Scr.SizeWindow);
-          moveLoop(tmp_win,0,0,DragWidth,DragHeight,
-                   &xl,&yt,False,True,NULL);
+          moveLoop(tmp_win,0,0,DragWidth,DragHeight,&xl,&yt,False,True);
           XUnmapWindow(dpy,Scr.SizeWindow);
           MyXUngrabServer(dpy);
           UngrabEm();

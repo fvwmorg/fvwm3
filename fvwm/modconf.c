@@ -188,7 +188,10 @@ void SendDataToModule(XEvent *eventp,Window w,FvwmWindow *tmp_win,
     free(message);
   }
 #endif
-  sprintf(msg2,"ClickTime %d\n",Scr.ClickTime);
+  /* Dominik Vogt (8-Nov-1998): Scr.ClickTime patch to set ClickTime to
+   * 'not at all' during InitFunction and RestartFunction. */
+  sprintf(msg2,"ClickTime %d\n", (Scr.ClickTime < 0) ?
+	  -Scr.ClickTime : Scr.ClickTime);
   SendName(*Module,M_CONFIG_INFO,0,0,0,msg2);
 
   t = modlistroot;

@@ -479,6 +479,10 @@ void StartupStuff(void)
   CaptureAllWindows();
   MakeMenus();
 
+  /* Dominik Vogt (8-Nov-1998): Scr.ClickTime patch to speed up InitFunction
+   * and RestartFunction (this can save quite a few seconds). */
+  if (Scr.ClickTime > 0)
+    Scr.ClickTime = -Scr.ClickTime;
   if(Restarting)
   {
     mr = FindPopup("RestartFunction");
@@ -491,6 +495,8 @@ void StartupStuff(void)
     if(mr != NULL)
       ExecuteFunction("Function InitFunction",NULL,&Event,C_ROOT,-1);
   }
+  if (Scr.ClickTime < 0)
+    Scr.ClickTime = -Scr.ClickTime;
 } /* StartupStuff */
 
 

@@ -239,7 +239,6 @@ void executeModule(XEvent *eventp,Window w,FvwmWindow *tmp_win,
 	  if(args[i] != 0)
 	    free(args[i]);
 	}
-
     }
   else if (val ==0)
     {

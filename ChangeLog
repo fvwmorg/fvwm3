@@ -1,3 +1,28 @@
+1998-11-09  Dominik Vogt  <dominik_vogt@hp.com>
+
+	* fvwm/fvwm2.1: updated and cleaned up the manpage, reformatted
+	examples to a consistent style
+
+1998-11-08  Dominik Vogt  <dominik_vogt@hp.com>
+
+	* fvwm/resize.c (resize_window): 
+	* fvwm/move.c (moveLoop): 
+	Cleaned up aborting with a mouse button:
+	If the move/resize started with a button down, pressing any button
+	aborts the operation. If no button was down, pressing button 1 confirms
+	the operation, any other button aborts.
+
+	* fvwm/builtins.c (SetClick):
+	* fvwm/modconf.c (SendDataToModule):
+	* fvwm/fvwm.c (StartupStuff): Patch to speed up (re)starting fvwm.
+	Scr.ClickTime is set to -Scr.Clicktime so functions that use this
+	value do not wait for user input. Saves some seconds during startup,
+	depending on the ClickTime value in the startup file.
+
+	* libs/Picture.c (CachePicture):
+	* fvwm/modules.c (executeModule):
+	fixed bugs introduced during the merge on saturday
+
 1998-11-08  Paul D. Smith  <psmith@gnu.org>
 
 	* fvwm/icons.c (GetXPMFile): Free pixmap after use.
@@ -9,9 +34,10 @@
 
 	* fvwm/windows.c: removed obsolete code, added safety checks
 
-	* libs/Picture.c (GetPicture): fixed memory leak
-	(CachePicture): fixed memory leaks
-	(findIconFile): fixed memory leak
+	* libs/Picture.c (GetPicture):
+	(CachePicture):
+	(findIconFile):
+	fixed memory leak
 
 	* fvwm/move.c (moveLoop): fixed move from button menu
 
@@ -29,7 +55,7 @@
 	* fvwm/style.c:
 	* modules/FvwmIconMan/readconfig.c:
 	* libs/Parse.c:
-	Changed behaviour of GetNextToken() to fix dozens of memory leaks.
+	Changed behaviour of GetNextToken() to fix memory leaks.
 	Some parsing stuff may be instable now (coredumps!)
 
 1998-11-06  Dominik Vogt  <dominik_vogt@hp.com>
@@ -303,27 +329,24 @@ Wed Nov  4 11:09:11 1998  Steve Robbins  <steve@nyongwa.montreal.qc.ca>
 
 Tue Nov  2 00:35:30 1998  Dominik Vogt  <dominik_vogt@hp.com>
 
-	* fvwm/builtins.c
-	* fvwm/complex.c
-	* fvwm/menus.c
-	* fvwm/move.c
-	* fvwm/placement.c
+	* fvwm/builtins.c:
+	* fvwm/complex.c:
+	* fvwm/menus.c:
+	* fvwm/move.c:
+	* fvwm/placement.c:
 	* fvwm/resize.c:
 	fixed XBell bug
 
-Tue Nov  2 00:35:30 1998  Dominik Vogt  <dominik_vogt@hp.com>
-
-	* modules/FvwmButtons/CHANGES
-	* modules/FvwmButtons/FvwmButtons.h
-	* modules/FvwmButtons/FvwmButtons.1
-	* modules/FvwmButtons/TODO
-	* modules/FvwmButtons/button.c
-	* modules/FvwmButtons/draw.c
+	* modules/FvwmButtons/CHANGES:
+	* modules/FvwmButtons/FvwmButtons.h:
+	* modules/FvwmButtons/FvwmButtons.1:
+	* modules/FvwmButtons/TODO:
+	* modules/FvwmButtons/button.c:
+	* modules/FvwmButtons/draw.c:
 	* modules/FvwmButtons/parse.c:
 	Left/Right/Center option for buttons, did some cleanup
 
-Tue Nov  2 00:35:30 1998  Dominik Vogt  <dominik_vogt@hp.com>
-
+	* ...:
 	cleaned up lots of files for lclint
 
 Sun Nov  1 12:52:59 1998  Steve Robbins  <steve@nyongwa.montreal.qc.ca>
@@ -363,9 +386,7 @@ Sat Oct 31 06:02:37 1998  Steve Robbins  <steve@nyongwa.montreal.qc.ca>
 	* modules/FvwmCpp:
 	* modules/FvwmM4: Changed FVWMDIR to FVWM_MODULEDIR.
 
-Hey XEmacs, this is -*-text-*- mode
-
-2.0.47
+2.1-pre-beta (former 2.0.47)
         1. FAQ updates
         2. Menu code & Move fixes & enhancements based on patch from
            Greg Badros [+ some bugfixes]
@@ -447,7 +468,7 @@ Hey XEmacs, this is -*-text-*- mode
 	50. Improved adding titles to menus.
 	51. Changed the syntax of Prev, Next, None and Current. The old
 	    syntax is still supported (but undocumented).
-
+	52. Renamed 2.0.47 to 2.1-pre-beta.
 
 2.0.46
        1. Patch to remove forgotten CLICKTORAISE #if check, from

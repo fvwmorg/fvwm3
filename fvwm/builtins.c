@@ -1227,7 +1227,10 @@ void SetClick(XEvent *eventp,Window w,FvwmWindow *tmp_win,
     return;
   }
 
-  Scr.ClickTime = val1;
+  if (val1 < 0)
+    Scr.ClickTime = 0;
+  else
+    Scr.ClickTime = val1;
 }
 
 void SetXOR(XEvent *eventp,Window w,FvwmWindow *tmp_win,

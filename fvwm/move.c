@@ -242,22 +242,20 @@ void move_window_to_page(XEvent *eventp,Window w,FvwmWindow *tmp_win,
  ****************************************************************************/
 void moveLoop(FvwmWindow *tmp_win, int XOffset, int YOffset, int Width,
 	      int Height, int *FinalX, int *FinalY,Bool opaque_move,
-	      Bool AddWindow, XEvent *eventp)
+	      Bool AddWindow)
 {
   Bool finished = False;
   Bool done;
+  Bool fButtonDown;
   int xl,yt,delta_x,delta_y,paged;
-  unsigned int expect_button;
   unsigned int mask = 0;
 
-  XQueryPointer( dpy, Scr.Root, &JunkRoot, &JunkChild,
-		 &JunkX, &JunkY, &JunkX, &JunkY, &mask);    
-  if((mask&(Button1Mask|Button2Mask|Button3Mask|Button4Mask|Button5Mask))==0)
-    expect_button = 0;
-  else
-    expect_button = ~0;
   XQueryPointer(dpy, Scr.Root, &JunkRoot, &JunkChild,&xl, &yt,
-		&JunkX, &JunkY, &JunkMask);
+		&JunkX, &JunkY, &mask);
+  if((mask&(Button1Mask|Button2Mask|Button3Mask|Button4Mask|Button5Mask))==0)
+    fButtonDown = False;
+  else
+    fButtonDown = True;;
   xl += XOffset;
   yt += YOffset;
 
@@ -314,7 +312,12 @@ void moveLoop(FvwmWindow *tmp_win, int XOffset, int YOffset, int Width,
 	    }
 	  else
 	    {
-	      if (expect_button == ~0)
+	      /* Abort the move if
+	       *  - the move started with a pressed button and another button
+	       *    was pressed during the operation
+	       *  - no button was started at the beginning and any button
+	       *    except button 1 was pressed. */
+	      if (fButtonDown || (Event.xbutton.button != 1))
 		{
 		  if(!opaque_move)
 		    MoveOutline(Scr.Root, 0, 0, 0, 0);
@@ -637,7 +640,7 @@ void InteractiveMove(Window *win, FvwmWindow *tmp_win, int *FinalX, int *FinalY,
   YOffset = origDragY - DragY;
   XMapRaised(dpy,Scr.SizeWindow);
   moveLoop(tmp_win, XOffset,YOffset,DragWidth,DragHeight, FinalX,FinalY,
-	   opaque_move,False,eventp);
+	   opaque_move,False);
 
   XUnmapWindow(dpy,Scr.SizeWindow);
   UninstallRootColormap();

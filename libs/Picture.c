@@ -24,7 +24,6 @@
  *
  */
 
-
 /****************************************************************************
  *
  * Routines to handle initialization, loading, and removing of xpm's or mono-
@@ -174,7 +173,8 @@ Picture *CachePicture(Display *dpy,Window Root,char *IconPath,char *PixmapPath,
       p->next=PictureList;
       PictureList=p;
     }
-  free(path);
+  else
+    free(path);
   return p;
 }
 

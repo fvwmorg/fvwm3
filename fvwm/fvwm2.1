@@ -1,5 +1,5 @@
 .\" t
-.\" @(#)fvwm2.1	5/27/96
+.\" @(#)fvwm2.1 8/11/1998
 .de EX		\"Begin example
 .ne 5
 .if n .sp 1
@@ -266,7 +266,7 @@ used in \fIfvwm\fP and most other window managers.
 The ICCCM states that windows possessing the property
 .EX
 WM_HINTS(WM_HINTS):
-                Client accepts input or input focus: False         
+    Client accepts input or input focus: False         
 .EE
 should not be given the keyboard input focus by the window manager.
 These windows can take the input focus by themselves, however.  A
@@ -368,7 +368,7 @@ replace the dash with a space, then you need quotes: Popup "Window
 Ops".
 
 
-.IP "AddButtonStyle \fIbutton\fP [ \fIstate\fP ] [ \fIstyle\fP ] [ -- \fI[!]flag ...\fP ]"
+.IP "AddButtonStyle \fIbutton\fP [ \fIstate\fP ] [ \fIstyle\fP ] [-- \fI[!]flag ...\fP]"
 Adds a button style to \fIbutton\fP.  \fIbutton\fP can be a button
 number, or one of "All," "Left," or "Right."  \fIstate\fP can be
 "ActiveUp," "ActiveDown" or "Inactive."  If \fIstate\fP is omitted,
@@ -383,10 +383,13 @@ clear the button style stack, change style flags, or for descriptions
 of available styles and flags, see the ButtonStyle command.  Examples:
 .EX
 ButtonStyle 1 Pixmap led.xpm -- Top Left
-ButtonStyle 1 ActiveDown HGradient 8 grey black
+ButtonStyle 1 ActiveDown HGradient 8 grey \\
+  black
 ButtonStyle All --  UseTitleStyle
-AddButtonStyle 1 ActiveUp (Pixmap a.xpm) ActiveDown (Pixmap b.xpm -- Top)
-AddButtonStyle 1 Vector 4 50x30@1 70x70@0 30x70@0 50x30@1
+AddButtonStyle 1 ActiveUp (Pixmap a.xpm)  \\
+  ActiveDown (Pixmap b.xpm -- Top)
+AddButtonStyle 1 Vector 4 50x30@1 70x70@0 \\
+  30x70@0 50x30@1
 .EE
 Initially for this example all button states are set to a pixmap.  The
 second line replaces the ActiveDown state with a gradient (it
@@ -436,11 +439,13 @@ The following example creates a decor and style, both named
 "flatness."  Despite having the same name, they are distinct entities:
 .EX
 AddToDecor flatness
-+ ButtonStyle All ActiveUp (-- flat) Inactive (-- flat)
-+ TitleStyle -- flat
-+ BorderStyle -- HiddenHandles NoInset
-+ HilightColor white navy
-Style "flatness" UseDecor flatness,Color white/grey40,HandleWidth 4
+ + ButtonStyle All ActiveUp (-- flat) \\
+   Inactive (-- flat)
+ + TitleStyle -- flat
+ + BorderStyle -- HiddenHandles NoInset
+ + HilightColor white navy
+Style "flatness" UseDecor flatness, \\
+  Color white/grey40,HandleWidth 4
 
 Style "xterm" UseStyle flatness
 .EE
@@ -454,14 +459,14 @@ instead).  A decor can be destroyed with DestroyDecor.
 .IP "AddToFunc"
 Begins or add to a function definition.  Here's an example:
 .EX
-AddToFunc Move-or-Raise         "I" Raise
-+                               "M" Move
-+                               "D" Lower         
+AddToFunc Move-or-Raise "I" Raise
+ + "M" Move
+ + "D" Lower         
 .EE
 The function name is Move-or-Raise, and could be invoked from a menu
 or a mouse binding or key binding:
 .EX
-Mouse 1 TS      A       Move-or-Raise
+Mouse 1 TS A Move-or-Raise
 .EE
 The quoted portion of the function tells what kind of action will
 trigger the command which follows it.  "I" stands for Immediate, and is
@@ -479,28 +484,32 @@ hex, i.e. 0x10023c) of the window for which the macro was called
 and $d is expanded to the current desk number. $0
 through $9 are the arguments to the macro, so if you call
 .EX
-Key F10	R	A	Function MailFunction xmh "-font fixed"
+Key F10 R A Function MailFunction \\
+  xmh "-font fixed"
 .EE
 and MailFunction is
 
 .EX
-AddToFunc MailFunction  "I" Next [$0] Iconify -1
-+                       "I" Next [$0] focus
-+                       "I" None [$0] Exec $0 $1
+AddToFunc MailFunction
+ + "I" Next [$0] Iconify -1
+ + "I" Next [$0] focus
+ + "I" None [$0] Exec $0 $1
 .EE
 Then the last line of the function becomes
 .EX
-+                       "I" None [xmh] Exec xmh -font fixed
+ + "I" None [xmh] Exec xmh -font fixed
 .EE
 The expansion is performed as the function is executed, so you can use the
 same function with all sorts of different arguments.  I could use
 .EX
-Key F11	R	A	Function MailFunction zmail "-bg pink"
+Key F11 R A Function MailFunction \\
+  zmail "-bg pink"
 .EE
 in the same .fvwm2rc, if I wanted.  An example of using $w is:
 .EX
-AddToFunc PrintFunction    "I" Raise
-+                          "I" Exec xdpr -id $w
+AddToFunc PrintFunction
+ + "I" Raise
+ + "I" Exec xdpr -id $w
 .EE
 Note that $$ is expanded to $.
 
@@ -509,28 +518,30 @@ Note that $$ is expanded to $.
 Begins or adds to a menu definition.  Typically a menu definition looks
 like this:
 .EX
-AddToMenu Utilities "Utilities"     Title
-+                   "Xterm"         Exec  xterm -e tcsh
-+                   "Rxvt"          Exec  rxvt
-+                   "Remote Logins" Popup Remote-Logins
-+                   "Top"           Exec  rxvt -T Top -n Top -e top
-+                   "Calculator"    Exec  xcalc
-+                   "Xman"          Exec  xman
-+                   "Xmag"          Exec  xmag
-+                   "emacs"         Exec  xemacs
-+                   "Mail"          MailFunction xmh "-font fixed"
-+                   ""              Nop
-+                   "Modules"       Popup Module-Popup
-+                   ""              Nop
-+                   "Exit Fvwm"     Popup Quit-Verify
+AddToMenu Utilities "Utilities" Title
+ + "Xterm"         Exec  xterm -e tcsh
+ + "Rxvt"          Exec  rxvt
+ + "Remote Logins" Popup Remote-Logins
+ + "Top"           Exec  rxvt -T Top -n \\
+                   Top -e top
+ + "Calculator"    Exec  xcalc
+ + "Xman"          Exec  xman
+ + "Xmag"          Exec  xmag
+ + "emacs"         Exec  xemacs
+ + "Mail"          MailFunction \\
+                   xmh "-font fixed"
+ + ""              Nop
+ + "Modules"       Popup Module-Popup
+ + ""              Nop
+ + "Exit Fvwm"     Popup Quit-Verify
 .EE
 The menu could be invoked via
 .EX
-Mouse 1 R       A       Menu Utilities Nop
+Mouse 1 R A Menu Utilities Nop
 .EE
 or
 .EX
-Mouse 1 R       A       Popup Utilities
+Mouse 1 R A Popup Utilities
 .EE
 There is no end-of-menu symbol.  Menus do not have to be defined in a
 contiguous region of the .fvwm2rc file.  The quoted portion in the
@@ -545,19 +556,19 @@ the keyword "Title", the title will be added to the top of the menu.
 If there was a title already, it is overwritten.
 
 .EX
-AddToMenu Utilities "Tools"     Title top
+AddToMenu Utilities "Tools" Title top
 .EE
 
 If the menu-label contains a sub-string which is set off by stars,
 then the text between the stars is expected to be the name of an
 xpm-icon or bitmap-file to insert in the menu.  For example
 .EX
-+		"Calculator*xcalc.xpm*"	Exec xcalc
+ + "Calculator*xcalc.xpm*" Exec xcalc
 .EE
 inserts a menu item labeled "calculator" with a picture of a
 calculator above it.  The following:
 .EX
-+		"*xcalc.xpm*" Exec xcalc
+ + "*xcalc.xpm*"           Exec xcalc
 .EE
 Omits the "Calculator" label, but leaves the picture.
 
@@ -565,12 +576,12 @@ If the menu-label contains a sub-string which is set off by percent signs,
 then the text between the percent signs is expected to be the name of an
 xpm-icon or bitmap-file to insert to the left of the menu label.  For example
 .EX
-+		"Calculator%xcalc.xpm%"	Exec xcalc
+ + "Calculator%xcalc.xpm%" Exec xcalc
 .EE
 inserts a menu item labeled "calculator" with a picture of a
 calculator to the left.  The following:
 .EX
-+		"%xcalc.xpm%" Exec xcalc
+ + "%xcalc.xpm%"           Exec xcalc
 .EE
 Omits the "Calculator" label, but leaves the picture.  The pictures
 used with this feature should be small (perhaps 16x16).
@@ -607,7 +618,7 @@ sense to have a user move the window interactively and animatedly.
   
 
 .IP "Beep"
-As might be expected, the makes the terminal beep.
+As might be expected, this makes the terminal beep.
 
 
 .IP "BorderStyle [ \fIstate\fP ] [ \fIstyle\fP ] [ -- \fI[!]flag ...\fP ]"
@@ -677,7 +688,8 @@ the primary button style without destroying the current style.
 Examples (each line should be considered independent):
 .EX
 ButtonStyle Left -- flat
-ButtonStyle All ActiveUp (-- flat) Inactive (-- flat)
+ButtonStyle All ActiveUp (-- flat) \\
+  Inactive (-- flat)
 .EE
 The first line sets every state of the left buttons to flat, while the
 second sets only the ActiveUp and Inactive states of every button to
@@ -761,7 +773,8 @@ The "Vector" style draws a line pattern.  Since this is a standard
 button style, the keyword "Vector" is optional.  The specification is
 a little cumbersome:
 .EX
-ButtonStyle 2 Vector 4 50x30@1 70x70@0 30x70@0 50x30@1
+ButtonStyle 2 Vector 4 50x30@1 70x70@0 \\
+  30x70@0 50x30@1
 .EE
 then the button 2 decoration will use a 4-point pattern consisting of
 a line from (x=50,y=30) to (70,70) in the shadow color (@0), and then
@@ -788,7 +801,8 @@ color of the last segment.  All of the percentages must add up to 100.
 
 Example:
 .EX
-TitleStyle VGradient 16 3 Red 20 Blue 30 Black 50 Grey
+TitleStyle VGradient 16 3 Red 20 Blue 30 \\
+  Black 50 Grey
 .EE
 The gradient styles are fully destructive.
 
@@ -798,7 +812,8 @@ pixmap for both states, and button 4 different pixmaps for the up,
 down and inactive states.
 .EX
 ButtonStyle 2 Pixmap my_pixmap.xpm
-ButtonStyle 4 ActiveUp (Pixmap up.xpm) ActiveDown (Pixmap down.xpm)
+ButtonStyle 4 ActiveUp (Pixmap up.xpm) \\
+  ActiveDown (Pixmap down.xpm)
 ButtonStyle 4 Inactive Pixmap inactive.xpm
 .EE
 The pixmap specification can be given as an absolute or relative
@@ -813,9 +828,9 @@ The "MiniIcon" style draws the window's miniature icon in the button,
 which is specified with the MiniIcon option of the Style command. This
 button style accepts no arguments.  Example:
 .EX
-Style "*"          MiniIcon mini-bx2.xpm
-Style "xterm"      MiniIcon mini-term.xpm
-Style "Emacs"      MiniIcon mini-doc.xpm
+Style "*"     MiniIcon mini-bx2.xpm
+Style "xterm" MiniIcon mini-term.xpm
+Style "Emacs" MiniIcon mini-doc.xpm
 
 ButtonStyle 1 MiniIcon
 .EE
@@ -861,7 +876,7 @@ the root window the user will be allowed to select the target window.
 ChangeDecor only affects attributes which can be set using the
 AddToDecor command.
 .EX
-	ChangeDecor "CustomDecor1"
+ChangeDecor "CustomDecor1"
 .EE
 
 
@@ -934,31 +949,99 @@ called from pop-up menus.
 .IP "CursorStyle \fIcontext cursornum\fP"
 Defines a new cursor for the specified context.  The various contexts
 are:
-.EX
-POSITION     - used when initially placing windows (XC_top_left_corner)
-TITLE        - used in a window title-bar (XC_top_left_arrow)
-DEFAULT      - used in windows that don't set their cursor (XC_top_left_arrow)
-SYS          - used in one of the title-bar buttons (XC_hand2)
-MOVE         - used when moving or resizing windows (XC_fleur)
-WAIT         - used during an EXEC builtin command (XC_watch)
-MENU         - used in menus (XC_sb_left_arrow)
-SELECT       - used for various builtin commands such as iconify (XC_dot)
-DESTROY      - used for DESTROY, CLOSE, and DELETE built-ins (XC_pirate)
-TOP          - used in the top side-bar of a window (XC_top_side)
-RIGHT        - used in the right side-bar of a window (XC_right_side)
-BOTTOM       - used in the bottom side-bar of a window (XC_bottom_side)
-LEFT         - used in the left side-bar of a window (XC_left_side)
-TOP_LEFT     - used in the top left corner of a window (XC_top_left_corner)
-TOP_RIGHT    - used in the top right corner of a window (XC_top_right_corner)
-BOTTOM_LEFT  - used in the bottom left corner of a window (XC_bottom_left_corner)
-BOTTOM_RIGHT - used in the bottom right corner of a window (XC_bottom_right_corner)
-.EE
+
+.in +.5i
+POSITION (XC_top_left_corner)
+.in +.3i
+used when initially placing windows
+.in -.3i
+
+TITLE (XC_top_left_arrow)
+.in +.3i
+used in a window title-bar
+.in -.3i
+
+DEFAULT (XC_top_left_arrow)
+.in +.3i
+used in windows that don't set their cursor
+.in -.3i
+
+SYS (XC_hand2)
+.in +.3i
+used in one of the title-bar buttons
+.in -.3i
+
+MOVE (XC_fleur)
+.in +.3i
+used when moving or resizing windows
+.in -.3i
+
+WAIT (XC_watch)
+.in +.3i
+used during an EXEC builtin command
+.in -.3i
+
+MENU (XC_sb_left_arrow)
+.in +.3i
+used in menus
+.in -.3i
+
+SELECT (XC_dot)
+.in +.3i
+used for various builtin commands such as iconify
+.in -.3i
+
+DESTROY (XC_pirate)
+.in +.3i
+used for DESTROY, CLOSE, and DELETE built-ins
+.in -.3i
+
+TOP (XC_top_side)
+.in +.3i
+used in the top side-bar of a window
+.in -.3i
+
+RIGHT (XC_right_side)
+.in +.3i
+used in the right side-bar of a window
+.in -.3i
+
+BOTTOM (XC_bottom_side)
+.in +.3i
+used in the bottom side-bar of a window
+.in -.3i
+
+LEFT (XC_left_side)
+.in +.3i
+used in the left side-bar of a window
+.in -.3i
+
+TOP_LEFT (XC_top_left_corner)
+.in +.3i
+used in the top left corner of a window
+.in -.3i
+
+TOP_RIGHT (XC_top_right_corner)
+.in +.3i
+used in the top right corner of a window
+.in -.3i
+
+BOTTOM_LEFT (XC_bottom_left_corner)
+.in +.3i
+used in the bottom left corner of a window
+.in -.3i
+
+BOTTOM_RIGHT (XC_bottom_right_corner)
+.in +.3i
+used in the bottom right corner of a window
+.in -.3i
+.in -.5i
 
 And the cursornum is the numeric value of the cursor as defined in the
 include file X11/cursorfont.h.  An example:
 .EX
-        # make the kill cursor be XC_gumby:
-        CursorStyle DESTROY 56
+# make the kill cursor be XC_gumby:
+CursorStyle DESTROY 56
 .EE
 The defaults are shown in parenthesis above.
 
@@ -1002,7 +1085,7 @@ references to it are no longer valid.  Windows using this \fIdecor\fP
 revert to the default fvwm decor.  The decor named "Default" cannot be
 destroyed.
 .EX
-	DestroyDecor "CustomDecor1"
+DestroyDecor "CustomDecor1"
 .EE
 
 
@@ -1011,7 +1094,7 @@ Deletes a function, so that subsequent references to it are no longer
 valid.  You can use this to change the contents of a function during an
 fvwm session.  The function can be rebuilt using AddToFunc.
 .EX
-	DestroyFunc "PrintFunction"
+DestroyFunc "PrintFunction"
 .EE
 
 
@@ -1020,7 +1103,7 @@ Deletes a menu, so that subsequent references to it are no longer
 valid.  You can use this to change the contents of a menu during an
 fvwm session.  The menu can be rebuilt using AddToMenu.
 .EX
-	DestroyMenu "Utilities"
+DestroyMenu "Utilities"
 .EE
 
 
@@ -1030,8 +1113,8 @@ may be entered instead.  You can use this to change the the way a
 module runs during an fvwm session without restarting.  Wildcards can
 be used for portions of the name as well.
 .EX
-	DestroyModuleConfig FvwmFormFore
-	DestroyModuleConfig FvwmButtons*
+DestroyModuleConfig FvwmFormFore
+DestroyModuleConfig FvwmButtons*
 .EE
 
 
@@ -1039,7 +1122,7 @@ be used for portions of the name as well.
 Prints a message to stderr.  Potentially useful for debugging things
 in your .fvwm2rc.
 .EX
-        Echo Beginning style defs...
+Echo Beginning style defs...
 .EE
 
 
@@ -1085,7 +1168,8 @@ The following example binds function key F1 in the root window, with
 no modifiers, to the exec function.  The program rxvt will be started
 with an assortment of options.
 .EX
-Key F1 R N Exec rxvt -fg yellow -bg blue -e /bin/tcsh
+Key F1 R N Exec rxvt -fg yellow -bg blue \\
+  -e /bin/tcsh
 .EE
 
 
@@ -1140,7 +1224,8 @@ RecaptureHonorsStartsOnPage/RecaptureIgnoresStartsOnPage,
 ActivePlacementHonorsStartsOnPage/ActivePlacementIgnoresStartsOnPage,
 NoStipledTitles/StipledTitles 
 .EX
-GlobalOpts ClickToFocusDoesntPassClick, ClickToFocusDoesntRaise
+GlobalOpts ClickToFocusDoesntPassClick, \\
+  ClickToFocusDoesntRaise
 .EE
 
 StartsOnPageModifiesUSPosition allows for a window with the StartsOnPage
@@ -1224,7 +1309,7 @@ binding.
 The following example binds the built in window list to pop up when
 Alt-Ctrl-Shift-F11 is hit, no matter where the mouse pointer is:
 .EX
-Key F11  A  SCM  WindowList
+Key F11 A SCM WindowList
 .EE
 
 Binding a key to a title-bar button will not cause that button to
@@ -1300,25 +1385,58 @@ arguments consist of several parts:
 [ [context-rectangle] x y ] [ special-options ]
 .EE
 The \fIcontext-rectangle\fP can be one of:
-.EX
-Root       the root window.
-Mouse      a 1x1 rectangle at the mouse position.
-Window     the window with the focus.
-Interior   the inside of the focused window.
-Title      the title of the focused window or icon.
-Button<n>  button #n of the focused window.
-Icon       the focused icon.
-Menu       the current menu.
-Item       the current menu item.
-Context    the current window, menu or icon.
-This       whatever widget the pointer is on
-           (e.g. a corner of a window or the root window).
+
+.in +.5i
+Root
+.in +.3i
+the root window.
+.in -.3i
+Mouse
+.in +.3i
+a 1x1 rectangle at the mouse position.
+.in -.3i
+Window
+.in +.3i
+the window with the focus.
+.in -.3i
+Interior
+.in +.3i
+the inside of the focused window.
+.in -.3i
+Title
+.in +.3i
+the title of the focused window or icon.
+.in -.3i
+Button<n>
+.in +.3i
+button #n of the focused window.
+.in -.3i
+Icon
+.in +.3i
+the focused icon.
+.in -.3i
+Menu
+.in +.3i
+the current menu.
+.in -.3i
+Item
+.in +.3i
+the current menu item.
+.in -.3i
+Context
+.in +.3i
+the current window, menu or icon.
+.in -.3i
+This
+.in +.3i
+whatever widget the pointer is on (e.g. a corner of a window or the root window).
+.in -.3i
 Rectangle <geometry>
-.in +11
-the rectangle defined by <\fIgeometry\fP> in X geometry
-format.  Width and height default to 1 if omitted.
-.in -11
-.EE
+.in +.3i
+the rectangle defined by <\fIgeometry\fP> in X geometry format.  Width and height default to 1 if omitted.
+.in -.3i
+.in -.5i
+
 If the context-rectangle is omitted "Mouse" is the default.
 Note that not all of these make sense under all circumstances
 (e.g. "Icon" if the pointer is on a menu).
@@ -1337,7 +1455,7 @@ other before the offset is applied.  Examples:
 # window list in the middle of the screen
 WindowList Root c c
 
-# popup 8 pixels above the mouse pointer
+# popup menu 8 pixels above the mouse pointer
 Popup name mouse c -8p
 
 # menu to the left of a window
@@ -1349,7 +1467,8 @@ Menu name rectangle 512x384+1+1 -0 -0
 # centered vertially around a menu item
 AddToMenu foobar-menu
  + "first item" Nop
- + "special item" Popup "another menu" item +100 c
+ + "special item" Popup "another menu" item \\
+                  +100 c
  + "last item" Nop
 
 # above the first menu item
@@ -1363,7 +1482,7 @@ direction of the submenu it will stay up.
 
 The \fIspecial-options\fP:
 
-.in +5
+.in +.5i
 The "animated" and "mwm" or "win" meny styles may move a menu somewhere
 else on the screen.  If you do not want this you can add \fIFixed\fP
 as an option. This might happen for example if you want the menu always
@@ -1383,7 +1502,7 @@ force (forbid) warping whenever the submenu is opened with the
 
 Note that the \fIspecial-options\fP do work with a normal menu that has
 no other position arguments.
-.in -5
+.in -.5i
 
 
 .IP "MenuStyle \fIforecolor backcolor shadecolor font style anim\fP"
@@ -1483,6 +1602,9 @@ window or its border, then that window will be moved.  If called from
 the root window then the user will be allowed to select the target
 window.
 
+The operation can be aborted with Escape or by pressing any mouse button
+(except button 1 which confirms the move).
+
 If the optional arguments x and y are provided, then the window will
 be moved immediately without user interaction.  Each argument can
 specify an absolute or relative position from either the left (top) or
@@ -1503,12 +1625,16 @@ Mouse 3 T A Move 10p 10p
 More complex examples (these can be bound as actions to keystrokes,
 etc.; only the command is shown, though):
 .EX
-# Move window so bottom right is at bottom right of screen
+# Move window so bottom right is at bottom
+# right of screen
 Move -0 -0
-# Move window 5% to the right, and to the middle vertically
+
+# Move window 5% to the right, and to the
+# middle vertically
 Move w+5 50
-# Move window up 10 pixels, and so left edge is at x=40
-# pixels
+
+# Move window up 10 pixels, and so left edge
+# is at x=40 pixels
 Move 40p w-10p
 .EE
 
@@ -1605,34 +1731,38 @@ sub-menu:
 The following example defines a sub menu, "Quit-Verify" and binds it into a
 main menu, called "RootMenu":
 .EX
-AddToMenu Quit-Verify   "Really Quit Fvwm?" Title
-+                       "Yes, Really Quit"  Quit
-+                       "Restart Fvwm2"     Restart fvwm2
-+                       "Restart Fvwm 1.xx" Restart fvwm
-+                       ""                  Nop
-+                       "No, Don't Quit"    Nop
+AddToMenu Quit-Verify
+ + "Really Quit Fvwm?" Title
+ + "Yes, Really Quit"  Quit
+ + "Restart Fvwm2"     Restart fvwm2
+ + "Restart Fvwm 1.xx" Restart fvwm
+ + ""                  Nop
+ + "No, Don't Quit"    Nop
 
-AddToMenu RootMenu      "Root Menu"         Title
-+ "Open an XTerm Window"  Popup NewWindowMenu
-+ "Login as Root"         Exec xterm -fg green -T Root -n Root -e su -
-+ "Login as Anyone"       Popup AnyoneMenu
-+ "Remote Hosts"          Popup HostMenu
-+ ""                      Nop
-+ "X utilities"           Popup Xutils
-+ ""                      Nop
-+ "Fvwm Modules"          Popup Module-Popup
-+ "Fvwm Window Ops"       Popup Window-Ops
-+ ""                      Nop
-+ "Previous Focus"        Prev [*] Focus
-+ "Next Focus"            Next [*] Focus
-+ ""                      Nop
-+ "Refresh screen"        Refresh
-+ "Recapture screen"      Recapture
-+ ""                      Nop
-+ "Reset X defaults"      Exec xrdb -load $HOME/.Xdefaults
-+ ""                      Nop
-+ ""                      Nop
-+ "Quit"                  Popup Quit-Verify
+AddToMenu RootMenu "Root Menu" Title
+ + "Open XTerm Window" Popup NewWindowMenu
+ + "Login as Root"     Exec xterm        \\
+                       -fg green -T Root \\
+                       -n Root -e su -
+ + "Login as Anyone"   Popup AnyoneMenu
+ + "Remote Hosts"      Popup HostMenu
+ + ""                  Nop
+ + "X utilities"       Popup Xutils
+ + ""                  Nop
+ + "Fvwm Modules"      Popup Module-Popup
+ + "Fvwm Window Ops"   Popup Window-Ops
+ + ""                  Nop
+ + "Previous Focus"    Prev [*] Focus
+ + "Next Focus"        Next [*] Focus
+ + ""                  Nop
+ + "Refresh screen"    Refresh
+ + "Recapture screen"  Recapture
+ + ""                  Nop
+ + "Reset X defaults"  Exec xrdb -load \\
+                       $HOME/.Xdefaults
+ + ""                  Nop
+ + ""                  Nop
+ + "Quit"              Popup Quit-Verify
 .EE
 .in -.25i
 .sp
@@ -1681,7 +1811,13 @@ Causes current (or chosen) window to redraw itself.
 
 
 .IP "Resize [ \fIx y\fP ]"
-Allows the user to resize a window.
+Allows the user to resize a window.  If called from somewhere in a
+window or its border, then that window will be resized.  If called from
+the root window then the user will be allowed to select the target
+window.
+
+The operation can be aborted with Escape or by pressing any mouse button
+(except button 1 which confirms the resize).
 
 If the optional arguments x and y are provided, then the window will
 be resized so that its dimensions are \fIx\fP by \fIy\fP).  The units
@@ -1723,7 +1859,8 @@ is altered.  The fractions-to-move-list specifies how far the window
 should be offset at each successive frame as a fraction of the difference
 between the starting location and the ending location.  e.g.:
 .EX
-SetAnimation 10 -.01 0 .01 .03 .08 .18 .3 .45 .6 .75 .85 .90 .94 .97 .99 1.0
+SetAnimation 10 -.01 0 .01 .03 .08 .18 .3 \\
+  .45 .6 .75 .85 .90 .94 .97 .99 1.0
 .EE
 
 Sets the delay between frames to 10ms, and sets the positions of the 16
@@ -1817,7 +1954,7 @@ bitmap or pixmap to use.
 
 IconBox takes four numeric arguments or an X11 geometry string:
 .EX
-IconBox	l t r b
+IconBox l t r b
 .EE
 or
 .EX
@@ -1829,7 +1966,7 @@ bottom. Negative coordinates indicate distance from the right or
 bottom of the screen.
 Perhaps easier to use is an X11 Geometry string:
 .EX
-IconBox	-80x200-1-1
+IconBox -80x200-1-1
 .EE
 Which would place an 80 by 240 pixel iconbox in the lower right hand
 corner of the screen.
@@ -1840,7 +1977,8 @@ Multiple icon boxes can be defined as overflow areas.  When the first
 icon box is filled, the second one is filled.  All the icon boxes for
 one style must be defined in one command.  For example:
 .EX
-Style "*" IconBox -80x200-1-1, IconBox 1000x70-1-1
+Style "*" IconBox -80x200-1-1, \\
+          IconBox 1000x70-1-1
 .EE
 
 IconGrid takes 2 numeric arguments greater than zero.
@@ -1998,39 +2136,49 @@ possible worlds use both RandomPlacement and SmartPlacement.
 
 An example:
 .EX
-# Change default fvwm behavior to no title-bars on windows!
-# Also define a default icon.
-Style "*" NoTitle,Icon unknown1.xpm, BorderWidth 4,HandleWidth 5
+# Change default fvwm behavior to no title-
+# bars on windows! Also define a default icon.
+Style "*"           NoTitle,                 \\
+                    Icon unknown1.xpm,       \\
+                    BorderWidth 4,           \\
+                    HandleWidth 5
 
 # now, window specific changes:
-Style "Fvwm*"     NoHandles,Sticky,WindowListSkip,BorderWidth 0
-Style "Fvwm Pager"                 StaysOnTop, BorderWidth 0
-Style "*lock"     NoHandles,Sticky,StaysOnTop,WindowListSkip
-Style "xbiff"               Sticky,           WindowListSkip
-Style "FvwmButtons" NoHandles,Sticky,WindowListSkip
-Style "sxpm"      NoHandles
+Style "Fvwm*"       NoHandles, Sticky,       \\
+                    WindowListSkip,          \\
+                    BorderWidth 0
+Style "Fvwm Pager"  StaysOnTop, BorderWidth 0
+Style "*lock"       NoHandles, Sticky,       \\
+                    StaysOnTop, WindowListSkip
+Style "xbiff"       Sticky, WindowListSkip
+Style "FvwmButtons" NoHandles, Sticky,       \\
+                    WindowListSkip
+Style "sxpm"        NoHandles
 Style "makerkit"  
 
 # Put title-bars back on xterms only!
 Style "xterm"     Title, Color black/grey
 
-Style "rxvt"      Icon term.xpm
-Style "xterm"     Icon rterm.xpm
-Style "xcalc"     Icon xcalc.xpm
-Style "xbiff"     Icon mail1.xpm
-Style "xmh"       Icon mail1.xpm, StartsOnDesk 2
-Style "xman"      Icon xman.xpm
-Style "matlab"    Icon math4.xpm, StartsOnDesk 3
-Style "xmag"      Icon magnifying_glass2.xpm
-Style "xgraph"    Icon graphs.xpm
+Style "rxvt"        Icon term.xpm
+Style "xterm"       Icon rterm.xpm
+Style "xcalc"       Icon xcalc.xpm
+Style "xbiff"       Icon mail1.xpm
+Style "xmh"         Icon mail1.xpm,         \\
+                    StartsOnDesk 2
+Style "xman"        Icon xman.xpm
+Style "matlab"      Icon math4.xpm,         \\
+                    StartsOnDesk 3
+Style "xmag"        Icon magnifying_glass2.xpm
+Style "xgraph"      Icon graphs.xpm
 Style "FvwmButtons" Icon toolbox.xpm
+Style "Maker"       StartsOnDesk 1
+Style "signal"      StartsOnDesk 3           
 
-Style "Maker"     StartsOnDesk 1
-Style "signal"    StartsOnDesk 3           
-
-# Fire up Netscape on the second desk, in the middle of my 3x3 virtual
-# desktop, and don't bother me with it...
-Style "Netscape*" SkipMapping, StartsOnPage 1 1 1
+# Fire up Netscape on the second desk, in the
+# middle of my 3x3 virtual desktop, and don't
+# bother me with it...
+Style "Netscape*" SkipMapping,              \\
+                  StartsOnPage 1 1 1
 .EE
 Note that all properties for a window will be OR'ed together.  In the
 above example "FvwmPager" gets the property StaysOnTop via an exact
@@ -2080,8 +2228,10 @@ are mutually exclusive).  The default is Raised.  See the note in
 ButtonStyle regarding the ActiveDown state.  Examples:
 .EX
 TitleStyle ActiveUp HGradient 16 navy black
-TitleStyle ActiveDown (Solid red -- flat) Inactive (TiledPixmap wood.xpm)
-TitleStyle ActiveUp (-- Flat) ActiveDown (-- Raised) Inactive (-- Flat)
+TitleStyle ActiveDown (Solid red -- flat) \\
+  Inactive (TiledPixmap wood.xpm)
+TitleStyle ActiveUp (-- Flat) ActiveDown  \\
+  (-- Raised) Inactive (-- Flat)
 .EE
 This sets the ActiveUp state to a horizontal gradient, the ActiveDown
 state to solid red, and the Inactive state to a tiled wood pixmap.
@@ -2095,7 +2245,8 @@ TitleStyle -- flat
 For a flattened look:
 .EX
 TitleStyle -- flat
-ButtonStyle All ActiveUp (-- flat) Inactive (-- flat)
+ButtonStyle All ActiveUp (-- flat) Inactive \\
+  (-- flat)
 .EE
 
 
@@ -2124,12 +2275,14 @@ causes execution of a function to pause until a new window name
 This is particularly useful in the InitFunction if you are trying to
 start windows on specific desktops:
 .EX
-AddToFunc InitFunction "I" exec xterm -geometry 80x64+0+0
-+                      "I" Wait xterm
-+                      "I" Desk	0 2
-+                      "I" Exec	xmh -font fixed -geometry 507x750+0+0
-+                      "I" Wait xmh
-+                      "I" Desk 0 0
+AddToFunc InitFunction
+ + "I" exec xterm -geometry 80x64+0+0
+ + "I" Wait xterm
+ + "I" Desk 0 2
+ + "I" Exec xmh -font fixed -geometry \\
+       507x750+0+0
+ + "I" Wait xmh
+ + "I" Desk 0 0
 .EE
 The above function starts an xterm on the current desk, waits for it
 to map itself, then switches to desk 2 and starts an xmh.  After the
@@ -2167,10 +2320,11 @@ interpreted function WindowListFunc to be run with the window id of
 that window passed in as $0.  By default the WindowListFunc looks like
 this:
 .EX
-AddToFunc WindowListFunc "I" WindowId $0 Iconify -1
-+                        "I" WindowId $0 Focus
-+                        "I" WindowId $0 Raise
-+                        "I" WindowId $0 WarpToWindow 5p 5p
+AddToFunc WindowListFunc
+ + "I" WindowId $0 Iconify -1
+ + "I" WindowId $0 Focus
+ + "I" WindowId $0 Raise
+ + "I" WindowId $0 WarpToWindow 5p 5p
 .EE
 You can Destroy the builtin WindowListFunc and create your own if
 these defaults do not suit you.
@@ -2184,7 +2338,7 @@ must be quoted if it consists of more than one word.
 The double-click-action is useful to define a default window if you
 have bound the window list to a key (or button) like this:
 .EX
-Key Tab	A	M	WindowList "Prev FlipFocus"
+Key Tab A M WindowList "Prev FlipFocus"
 .EE
 Hitting Alt-Tab once it brings up the window list, if you hit it
 twice the focus is flipped between the current and the last focused
@@ -2202,7 +2356,8 @@ If you pass in a function via "Function <funcname>", $0 is the window
 id:
 .EX
 AddToFunc IFunc "I" WindowId $0 Iconify
-WindowList Function IFunc, NoSticky, CurrentDesk, NoIcons
+WindowList Function IFunc, NoSticky, \\
+  CurrentDesk, NoIcons
 .EE
 
 If you wanted to use the WindowList as an icon manager, you could invoke
@@ -2267,17 +2422,17 @@ completely.
 
 
 .SH BUGS
-As of fvwm 0.99 there were exactly 39.342 unidentified bugs.
-Identified bugs have mostly been fixed, though.  Since then 9.34 bugs
+As of fvwm 2.1.2 there were exactly 46.144 unidentified bugs.
+Identified bugs have mostly been fixed, though.  Since then 12.25 bugs
 have been fixed.  Assuming that there are at least 10 unidentified
-bugs for every identified one, that leaves us with 39.342 - 9.32 + 10
-* 9.34 = 123.402 unidentified bugs.  If we follow this to its logical
+bugs for every identified one, that leaves us with 46.144 - 12.25 + 10
+* 12.25 = 156.395 unidentified bugs.  If we follow this to its logical
 conclusion we will have an infinite number of unidentified bugs before
 the number of bugs can start to diminish, at which point the program
 will be bug-free.  Since this is a computer program infinity =
 3.4028e+38 if you don't insist on double-precision.  At the current
 rate of bug discovery we should expect to achieve this point in
-3.37e+27 years.  I guess I better plan on passing this thing on to my
+4.27e+27 years.  I guess I better plan on passing this thing on to my
 children....
 
 Known bugs can be found in the BUGS file in the distribution, and in
@@ -2288,5 +2443,7 @@ Bug reports can be sent to the FVWM mailing list (see the FAQ).
 .SH AUTHOR
 Robert Nation with help from many people, based on \fItwm\fP code,
 which was written by Tom LaStrange.  After Robert Nation came Charles Hines,
-followed by the current maintainer Brady Montz.
+followed by Brady Montz. Currently fvwm is maintained by the fvwm-workers
+mailing list temporarily led by Dominik Vogt but with help from many people
+(Dan Espen, Steve Robbins, Paul Smith, Tim Phipps, Jason Tibbits and others).
 
