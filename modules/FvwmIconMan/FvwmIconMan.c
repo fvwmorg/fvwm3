@@ -13,7 +13,7 @@
 #endif
 
 static int fd_width;
-static char *VERSION = "1.3";
+static char *IM_VERSION = "1.3";
 
 static char const rcsid[] =
   "$Id$";
@@ -192,7 +192,7 @@ int main (int argc, char **argv)
 
   if((argc != 6) && (argc != 7)) {
     fprintf(stderr,"%s Version %s should only be executed by fvwm!\n",Module,
-      VERSION);
+      IM_VERSION);
     ShutMeDown (1);
   }
   if (argc == 7 && !strcasecmp (argv[6], "Transient"))
