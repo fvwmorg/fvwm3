@@ -235,6 +235,7 @@ Pixmap CreateGradientPixmap(Display *dpy, Drawable d, unsigned int depth, GC gc,
   register int i, j;
   XGCValues xgcv;
   XImage *image;
+  Pixel *imageData;
 
   /* translate the gradient string into an array of colors etc */
   if (0 == (ncolors = ParseGradient(action, &colors, &perc, &nsegs))) {
@@ -359,18 +360,26 @@ Pixmap CreateGradientPixmap(Display *dpy, Drawable d, unsigned int depth, GC gc,
       XDrawPoint(dpy, pixmap, gc, i, i);
       break;
     case 'C':
-      /* fixme: would be more efficient to create the image locally rather than
-       * copy an empty pixmap, Help! I don't know how to do this */
-      image = XGetImage(dpy, pixmap, 0, 0, width, width, AllPlanes, XYPixmap);
+      /* use the first one if the second fails */
+      imageData = (Pixel *)safemalloc(width * width * sizeof(Pixel));
+      image = XCreateImage(dpy, Scr.viz, Scr.depth, ZPixmap, 0,
+			   (char *)imageData, width, width, sizeof(Pixel) * 8,
+			   0);
       if (!image){
 	fvwm_msg(ERR, me, "%cGradient couldn't get image", type);
+	if (imageData)
+	  free(imageData);
 	break;
       }
+      fprintf(stderr, "byte_order=%d bitmap_unit=%d bitmap_bit_order=%d\n",
+	      image->byte_order, image->bitmap_unit, image->bitmap_bit_order);
+      fprintf(stderr, "bitmap_pad=%d bytes_per_line=%d bits_per_pixel=%d\n",
+	      image->bitmap_pad, image->bytes_per_line, image->bits_per_pixel);
       for (i = 0; i < width; i++)
 	for (j = 0; j < width; j++) {
 	  register int x = (i - width / 2), y = (j - width / 2);
-	  register long pixel = sqrt((x * x + y * y) / 2);
-	  XPutPixel(image, i, j, pixels[pixel]);
+	  register long pixel = ncolors - 1 - sqrt((x * x + y * y) / 2);
+	  imageData[i * width + j] = pixels[pixel];
 	}
       XPutImage(dpy, pixmap, gc, image, 0, 0, 0, 0, width, width);
       XDestroyImage(image);
