@@ -470,11 +470,11 @@ void MakeContainer(button_info *b)
   else /* This applies to the UberButton */
   {
     b->c->flags=b_Font|b_Padding|b_Frame|b_Back|b_Fore;
-    b->c->font_string=strdup("fixed");
+    b->c->font_string=safestrdup("fixed");
     b->c->xpad=2;
     b->c->ypad=4;
-    b->c->back=strdup("rgb:90/80/90");
-    b->c->fore=strdup("black");
+    b->c->back=safestrdup("rgb:90/80/90");
+    b->c->fore=safestrdup("black");
     b->c->framew=2;
   }
 

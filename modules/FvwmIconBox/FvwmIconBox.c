@@ -2896,7 +2896,7 @@ int LookInList(struct icon_info *item)
     {
       if (item->icon_file)
 	free(item->icon_file);
-      item->icon_file = strdup(FvwmDefaultIcon);
+      item->icon_file = safestrdup(FvwmDefaultIcon);
     }
     return 1;
   }
@@ -2930,7 +2930,7 @@ int LookInList(struct icon_info *item)
     if (item->icon_file)
       free(item->icon_file);
     if (value)
-      item->icon_file = strdup(value);
+      item->icon_file = safestrdup(value);
     else
       item->icon_file = NULL;
     item->extra_flags &= ~DEFAULTICON;
@@ -2941,13 +2941,13 @@ int LookInList(struct icon_info *item)
     {
       if (item->icon_file)
 	free(item->icon_file);
-      item->icon_file = strdup(DefaultIcon->iconfile);
+      item->icon_file = safestrdup(DefaultIcon->iconfile);
     }
     else if (FvwmDefaultIcon != NULL)
     {
       if (item->icon_file)
 	free(item->icon_file);
-      item->icon_file = strdup(FvwmDefaultIcon);
+      item->icon_file = safestrdup(FvwmDefaultIcon);
     }
   }
 

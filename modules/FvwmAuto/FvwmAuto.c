@@ -210,7 +210,7 @@ main(int argc, char **argv)
     {
       token = PeekToken(enter_fn, NULL);
       if (!StrEquals(token, "Silent"))
-        enter_fn = strdup(CatString2("Silent ", enter_fn));
+        enter_fn = safestrdup(CatString2("Silent ", enter_fn));
     }
     if (argv[8] && *argv[8] && !StrEquals(argv[8],"NOP"))
       /* leave function specified */
@@ -219,7 +219,7 @@ main(int argc, char **argv)
     {
       token = PeekToken(leave_fn, NULL);
       if (!StrEquals(token, "Silent"))
-        leave_fn = strdup(CatString2("Silent ", leave_fn));
+        leave_fn = safestrdup(CatString2("Silent ", leave_fn));
     }
   }
 
@@ -235,7 +235,7 @@ main(int argc, char **argv)
     m_mask |= M_RAISE_WINDOW | M_LOWER_WINDOW;
 
   /* migo (04/May/2000): It is simply incorrect to listen to raise/lower
-   * packages and change the state if the action itself has no raise/lower.
+   * packets and change the state if the action itself has no raise/lower.
    * Detecting whether to listen or not by the action name is good enough.
   m_mask = M_FOCUS_CHANGE | M_RAISE_WINDOW | M_LOWER_WINDOW;
    */

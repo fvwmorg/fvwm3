@@ -708,12 +708,12 @@ int main(int argc, char **argv)
     else if (!has_name) /* There is a naming argument here! */
     {
       free(MyName);
-      MyName=strdup(argv[i]);
+      MyName=safestrdup(argv[i]);
       has_name = 1;
     }
     else if (!has_file) /* There is a config file here! */
     {
-      config_file=strdup(argv[i]);
+      config_file=safestrdup(argv[i]);
       has_file = 1;
     }
   }
@@ -1884,8 +1884,8 @@ void CreateUberButtonWindow(button_info *ub,int maxx,int maxy)
 #endif
   XSetWMProtocols(Dpy,MyWindow,&_XA_WM_DEL_WIN,1);
 
-  myclasshints.res_name=strdup(MyName);
-  myclasshints.res_class=strdup("FvwmButtons");
+  myclasshints.res_name=safestrdup(MyName);
+  myclasshints.res_class=safestrdup("FvwmButtons");
 
   {
     XTextProperty mynametext;

@@ -1037,7 +1037,7 @@ char *makename(const char *string, Bool iconified)
   char *ptr;
 
   if (!iconified)
-    return strdup(string);
+    return safestrdup(string);
   ptr=safemalloc(strlen(string)+3);
   sprintf(ptr, "(%s)", string);
   return ptr;

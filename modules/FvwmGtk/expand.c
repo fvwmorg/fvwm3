@@ -53,7 +53,7 @@ split_string (char *val, str *pre)
 	  curr->next = (str *) safemalloc (sizeof (str));
 	  curr = curr->next;
 	  *s = '\0';
-	  curr->s = strdup (v);
+	  curr->s = safestrdup (v);
 	  curr->is_var = 0;
 	  *s = '$';
 
@@ -62,7 +62,7 @@ split_string (char *val, str *pre)
 	  curr = curr->next;
 	  curr->next = NULL;
 	  *t = '\0';
-	  curr->s = strdup (s + 2);
+	  curr->s = safestrdup (s + 2);
 	  curr->is_var = 1;
 	  *t = ')';
 
@@ -74,7 +74,7 @@ split_string (char *val, str *pre)
 	  curr->next = (str *) safemalloc (sizeof (str));
 	  curr = curr->next;
 	  curr->next = NULL;
-	  curr->s = strdup (v);
+	  curr->s = safestrdup (v);
 	  curr->is_var = 0;
 	  v = NULL;
 	}
@@ -115,7 +115,7 @@ recursive_replace (GtkWidget *d, char *val)
 
   head = (str *) safemalloc (sizeof (str));
   head->is_var = 0;
-  head->s = strdup("");
+  head->s = safestrdup("");
   head->next = NULL;
 
   split_string (val, head);

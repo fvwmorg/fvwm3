@@ -303,7 +303,7 @@ menu_item (int argc, char **argv)
   gtk_widget_show (item);
   gtk_signal_connect
     (GTK_OBJECT (item), "activate",
-     GTK_SIGNAL_FUNC (send_item), strdup (argv[1]));
+     GTK_SIGNAL_FUNC (send_item), safestrdup (argv[1]));
 }
 
 

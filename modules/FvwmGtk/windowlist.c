@@ -86,7 +86,7 @@ window_list (int argc, char **argv)
 	      i++;
 	      if (strcmp (argv[i], "") != 0)
 		{
-		  opts->title = strdup (argv[i]);
+		  opts->title = safestrdup (argv[i]);
 		}
 	    }
 	  if (i+1 < argc)
@@ -99,7 +99,7 @@ window_list (int argc, char **argv)
 	      i++;
 	      if (strcmp (argv[i], "") != 0)
 		{
-		  opts->title_icon = strdup (argv[i]);
+		  opts->title_icon = safestrdup (argv[i]);
 		}
 	    }
 	  if (i+1 < argc)
@@ -112,7 +112,7 @@ window_list (int argc, char **argv)
 	      i++;
 	      if (strcmp (argv[i], "") != 0)
 		{
-		  opts->right_title = strdup (argv[i]);
+		  opts->right_title = safestrdup (argv[i]);
 		}
 	    }
 	}
@@ -124,7 +124,7 @@ window_list (int argc, char **argv)
 		{
 		  free (opts->function);
 		}
-	      opts->function = strdup (argv[++i]);
+	      opts->function = safestrdup (argv[++i]);
 	    }
 	}
       else if (strcasecmp (argv[i], "NoDeskSort") == 0)
@@ -210,7 +210,7 @@ window_list (int argc, char **argv)
 	    {
 	      free (opts->pattern);
 	    }
-	  opts->pattern = strdup (argv[i]);
+	  opts->pattern = safestrdup (argv[i]);
 	}
     }
 

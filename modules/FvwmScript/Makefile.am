@@ -21,10 +21,16 @@ LDADD = Widgets/libWidgets.a -L$(top_builddir)/libs $(X_LIBS) -lfvwm \
 	$(xpm_LIBS) $(X_PRE_LIBS) -lXext -lX11 $(X_EXTRA_LIBS) -lm
 INCLUDES = -I$(top_srcdir) $(xpm_CFLAGS) $(X_CFLAGS)
 
-# Need this to get configdir into FvwmScript.c:
+# Need this to get datadir into FvwmScript.c:
 AM_CFLAGS = -DFVWM_DATADIR=\"$(FVWM_DATADIR)\"
 
 .PHONY: syntax
+
+# We don't autoconfigure lex/yacc, since these tools only needed for
+# developers that want to regenerate the FvwmScript syntax.
+# To override the default values use: make YACC="byson -y" syntax
+LEX = flex
+YACC = yacc
 
 syntax:
 	$(LEX) $(AM_LFLAGS) $(LFLAGS) scanner.l && mv lex.yy.c scanner.c

@@ -133,7 +133,7 @@ update_value (GtkWidget *w)
   if (val)
     {
       gtk_object_set_data_full (GTK_OBJECT (gtk_widget_get_toplevel (w)),
-				gtk_widget_get_name (w), strdup (val), free);
+	gtk_widget_get_name (w), safestrdup (val), free);
     }
 }
 
@@ -338,7 +338,7 @@ dialog_notebook (int argc, char **argv)
       free (notebook_label);
       notebook_label = NULL;
     }
-  notebook_label = strdup (argv[0]);
+  notebook_label = safestrdup (argv[0]);
 }
 
 
@@ -396,7 +396,7 @@ dialog_button (int argc, char **argv)
 	{
 	  break;
 	}
-      vals[i] = strdup(argv[i + 1]);
+      vals[i] = safestrdup(argv[i + 1]);
     }
   vals[i] = NULL;
   gtk_object_set_data (GTK_OBJECT (item), "return_values", vals);
@@ -417,8 +417,8 @@ dialog_checkbutton (int argc, char **argv)
 
   item = gtk_check_button_new_with_label (argv[1]);
   gtk_widget_set_name (item, argv[0]);
-  gtk_object_set_data (GTK_OBJECT (item), "on-value", strdup (argv[2]));
-  gtk_object_set_data (GTK_OBJECT (item), "off-value", strdup (argv[3]));
+  gtk_object_set_data (GTK_OBJECT (item), "on-value", safestrdup (argv[2]));
+  gtk_object_set_data (GTK_OBJECT (item), "off-value", safestrdup (argv[3]));
   if (argc >= 5 && strcasecmp (argv[4], "on") == 0)
     {
       gtk_toggle_button_set_state (GTK_TOGGLE_BUTTON (item), TRUE);
@@ -466,7 +466,7 @@ dialog_radiobutton (int argc, char **argv)
   item = gtk_radio_button_new_with_label (radio_group, argv[0]);
   radio_group = gtk_radio_button_group (GTK_RADIO_BUTTON (item));
   gtk_widget_set_name (item, group_name);
-  gtk_object_set_data (GTK_OBJECT (item), "on-value", strdup (argv[1]));
+  gtk_object_set_data (GTK_OBJECT (item), "on-value", safestrdup (argv[1]));
   if (argc >= 3 && strcasecmp (argv[2], "on") == 0)
     {
       gtk_toggle_button_set_state (GTK_TOGGLE_BUTTON (item), TRUE);
@@ -493,7 +493,7 @@ dialog_start_radiogroup (int argc, char **argv)
     {
       free (group_name);
     }
-  group_name = strdup (argv[0]);
+  group_name = safestrdup (argv[0]);
   radio_group = NULL;
 }
 
@@ -737,7 +737,7 @@ dialog_option_menu_item (int argc, char **argv)
 
   item = menu_item_new_with_pixmap_and_label ("", argv[0], NULL);
 
-  gtk_object_set_data (GTK_OBJECT (item), "value", strdup (argv[1]));
+  gtk_object_set_data (GTK_OBJECT (item), "value", safestrdup (argv[1]));
   gtk_widget_show (item);
 
   if (argc >= 3 && strcasecmp (argv[2], "on") == 0)

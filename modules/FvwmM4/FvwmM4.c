@@ -230,7 +230,7 @@ int main(int argc, char **argv)
     char *delete_file = tmp_file;
     if (tmp_file[0] != '/' && user_dir != NULL) 
     {
-      delete_file = strdup(CatString3(user_dir, "/", tmp_file));
+      delete_file = safestrdup(CatString3(user_dir, "/", tmp_file));
     }
     delete_string = CatString3("Exec exec /bin/rm '", delete_file, "'\n");
     SendText(fd, delete_string, 0);

@@ -254,7 +254,7 @@ int main(int argc, char **argv)
 	      (*s != '-' || s != argv[opt_num] || *(s+1) == 0))
 	  {
 	    free(MyName);
-	    MyName=strdup(argv[opt_num]);
+	    MyName=safestrdup(argv[opt_num]);
 	    opt_num++;
 	    break;
 	  }
@@ -359,34 +359,34 @@ int main(int argc, char **argv)
 #endif
 
   if (PagerFore == NULL)
-    PagerFore = strdup("black");
+    PagerFore = safestrdup("black");
 
   if (PagerBack == NULL)
-    PagerBack = strdup("white");
+    PagerBack = safestrdup("white");
 
   if (HilightC == NULL)
-    HilightC = strdup(PagerFore);
+    HilightC = safestrdup(PagerFore);
 
   if (WindowLabelFormat == NULL)
-    WindowLabelFormat = strdup("%i");
+    WindowLabelFormat = safestrdup("%i");
 
   if (font_string == NULL)
-    font_string = strdup("fixed");
+    font_string = safestrdup("fixed");
 
   if ((HilightC == NULL) && (HilightPixmap == NULL))
     HilightDesks = 0;
 
   if (BalloonFont == NULL)
-    BalloonFont = strdup("fixed");
+    BalloonFont = safestrdup("fixed");
 
   if (BalloonBorderColor == NULL)
-    BalloonBorderColor = strdup("black");
+    BalloonBorderColor = safestrdup("black");
 
   if (BalloonTypeString == NULL)
-    BalloonTypeString = strdup("%i");
+    BalloonTypeString = safestrdup("%i");
 
   if (BalloonFormatString == NULL)
-    BalloonFormatString = strdup("%i");
+    BalloonFormatString = safestrdup("%i");
 
   /* open a pager window */
   initialize_pager();

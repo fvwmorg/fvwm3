@@ -1222,7 +1222,7 @@ static void ParseButton(button_info **uberb,char *s)
       free(b->hangon);
     b->hangon=seekright(&s);
     if (!b->hangon)
-      b->hangon = strdup("");
+      b->hangon = safestrdup("");
     if (tolower(*s) == 's')
       b->flags |= b_Swallow | b_Hangon;
     else
@@ -1235,7 +1235,7 @@ static void ParseButton(button_info **uberb,char *s)
     {
       if(!(buttonSwallow(b)&b_UseOld))
 	SendText(fd,s,0);
-      b->spawn=strdup(s);
+      b->spawn=safestrdup(s);
     }
   }
   else if(*s)

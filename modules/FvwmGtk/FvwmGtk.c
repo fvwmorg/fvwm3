@@ -410,7 +410,7 @@ process_message (unsigned long type,
 	window_list_entry *wle = lookup_window_list_entry (body[0]);
 	if (wle->name)
 	  free(wle->name);
-	wle->name = strdup ((char*) (&body[3]));
+	wle->name = safestrdup ((char*) (&body[3]));
       }
       break;
     case M_ICON_NAME:
@@ -418,7 +418,7 @@ process_message (unsigned long type,
 	window_list_entry *wle = lookup_window_list_entry (body[0]);
 	if (wle->icon_name)
 	  free(wle->icon_name);
-	wle->icon_name = strdup ((char*) (&body[3]));
+	wle->icon_name = safestrdup ((char*) (&body[3]));
       }
       break;
     case M_MINI_ICON:
@@ -426,7 +426,7 @@ process_message (unsigned long type,
 	window_list_entry *wle = lookup_window_list_entry (body[0]);
 	if (wle->mini_icon)
 	  free(wle->mini_icon);
-	wle->mini_icon = strdup ((char*) (&body[8]));
+	wle->mini_icon = safestrdup ((char*) (&body[8]));
       }
       break;
     }

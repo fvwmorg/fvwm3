@@ -1093,7 +1093,7 @@ void ParseConfigLine(char *buf) {
         if ((strcasecmp(q,"None") != 0) /* If not color "none"  */
             && (strcasecmp(q,"Black^White") != 0)
             && (strcasecmp(q,"White^Black") != 0)) {
-          Animate.color = (char *)strdup(q); /* make copy of name */
+          Animate.color = (char *)safestrdup(q); /* make copy of name */
         }
         /* override the pixmap option */
         if (Animate.pixmap) {
@@ -1112,7 +1112,7 @@ void ParseConfigLine(char *buf) {
           Animate.pixmap = 0;          /* show its gone */
         }
         if (strcasecmp(q,"None") != 0) { /* If not pixmap "none"  */
-          Animate.pixmap = (char *)strdup(q); /* make copy of name */
+          Animate.pixmap = (char *)safestrdup(q); /* make copy of name */
         }
         if (pixmap) {
           XFreePixmap(dpy, pixmap);

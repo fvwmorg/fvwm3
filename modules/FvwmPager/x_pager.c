@@ -2770,7 +2770,7 @@ static void InsertExpand(char **dest, char *s)
    -- disching@fmi.uni-passau.de */
 char *GetBalloonLabel(const PagerWindow *pw,const char *fmt)
 {
-  char *dest = strdup("");
+  char *dest = safestrdup("");
   const char *pos = fmt;
   char buffer[2];
 

@@ -128,17 +128,17 @@ Else			{ return ELSE; }
                 }
 
 [\$]+{str}	{
-		  yylval.str=(char*) strdup(yytext+1);
+		  yylval.str=(char*) safestrdup(yytext+1);
 		  yylval.str[yyleng-1]='\0';
                   return VAR;
 		}
 {gstr}		{ /* Str entre "" */
-		  yylval.str=(char*) strdup(yytext+1);
+		  yylval.str=(char*) safestrdup(yytext+1);
 		  yylval.str[yyleng-2]='\0';
                   return GSTR;
 		}
 
-{str}		{ yylval.str=(char*) strdup(yytext);
+{str}		{ yylval.str=(char*) safestrdup(yytext);
 		  yylval.str[yyleng]='\0';
                   return STR;
 		}

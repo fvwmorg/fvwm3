@@ -1593,7 +1593,7 @@ case 94:
 YY_RULE_SETUP
 #line 130 "scanner.l"
 {
-		  yylval.str=(char*) strdup(yytext+1);
+		  yylval.str=(char*) safestrdup(yytext+1);
 		  yylval.str[yyleng-1]='\0';
                   return VAR;
 		}
@@ -1602,7 +1602,7 @@ case 95:
 YY_RULE_SETUP
 #line 135 "scanner.l"
 { /* Str entre "" */
-		  yylval.str=(char*) strdup(yytext+1);
+		  yylval.str=(char*) safestrdup(yytext+1);
 		  yylval.str[yyleng-2]='\0';
                   return GSTR;
 		}
@@ -1610,7 +1610,7 @@ YY_RULE_SETUP
 case 96:
 YY_RULE_SETUP
 #line 141 "scanner.l"
-{ yylval.str=(char*) strdup(yytext);
+{ yylval.str=(char*) safestrdup(yytext);
 		  yylval.str[yyleng]='\0';
                   return STR;
 		}

@@ -303,7 +303,7 @@ void Xinit(int IsFather)
 
   if (IsFather)
   {
-    name=(char*)calloc(sizeof(char),strlen("FvwmScript")+5);
+    name=(char*)safecalloc(sizeof(char),strlen("FvwmScript")+5);
     do
     {
       sprintf(name,"%c%xFvwmScript",161,i);
@@ -414,12 +414,12 @@ void OpenWindow (void)
   IndicWM->initial_state=NormalState;
   IndicWM->flags=InputHint|StateHint;
 
-  classHints.res_name = strdup(ScriptBaseName);
-  classHints.res_class = strdup(ModuleName);
+  classHints.res_name = safestrdup(ScriptBaseName);
+  classHints.res_class = safestrdup(ModuleName);
 
   XSetWMProperties(dpy,x11base->win,&Name,
 		   &Name,NULL,0,IndicNorm,IndicWM,&classHints);
-  Scrapt=(char*)calloc(sizeof(char),1);
+  Scrapt=(char*)safecalloc(sizeof(char),1);
 
   /* Construction des atomes pour la communication inter-application */
   propriete=XInternAtom(dpy,"Prop_selection",False);
@@ -500,7 +500,7 @@ void BuildGUI(int IsFather)
   nbobj++;
   for (i=0;i<nbobj;i++)
   {
-    tabxobj[i]=(struct XObj*)calloc(1,sizeof(struct XObj));
+    tabxobj[i]=(struct XObj*)safecalloc(1,sizeof(struct XObj));
     tabxobj[i]->id=(*tabobj)[i].id;
     tabxobj[i]->x=(*tabobj)[i].x;
     tabxobj[i]->y=(*tabobj)[i].y;
@@ -518,32 +518,32 @@ void BuildGUI(int IsFather)
     tabxobj[i]->swallow=(*tabobj)[i].swallow;
 
     if ((*tabobj)[i].title==NULL)
-      tabxobj[i]->title=(char*)calloc(1,200);
+      tabxobj[i]->title=(char*)safecalloc(1,200);
     else
       tabxobj[i]->title=(*tabobj)[i].title;
 
     if ((*tabobj)[i].font==NULL)
-      tabxobj[i]->font=(char*)strdup(x11base->font);
+      tabxobj[i]->font=(char*)safestrdup(x11base->font);
     else
       tabxobj[i]->font=(*tabobj)[i].font;
 
     if ((*tabobj)[i].forecolor==NULL)
-      tabxobj[i]->forecolor=(char*)strdup(x11base->forecolor);
+      tabxobj[i]->forecolor=(char*)safestrdup(x11base->forecolor);
     else
       tabxobj[i]->forecolor=(*tabobj)[i].forecolor;
 
     if ((*tabobj)[i].backcolor==NULL)
-      tabxobj[i]->backcolor=(char*)strdup(x11base->backcolor);
+      tabxobj[i]->backcolor=(char*)safestrdup(x11base->backcolor);
     else
       tabxobj[i]->backcolor=(*tabobj)[i].backcolor;
 
     if ((*tabobj)[i].shadcolor==NULL)
-      tabxobj[i]->shadcolor=(char*)strdup(x11base->shadcolor);
+      tabxobj[i]->shadcolor=(char*)safestrdup(x11base->shadcolor);
     else
       tabxobj[i]->shadcolor=(*tabobj)[i].shadcolor;
 
     if ((*tabobj)[i].hilicolor==NULL)
-      tabxobj[i]->hilicolor=strdup(x11base->hilicolor);
+      tabxobj[i]->hilicolor=safestrdup(x11base->hilicolor);
     else
       tabxobj[i]->hilicolor=(*tabobj)[i].hilicolor;
 
@@ -779,7 +779,7 @@ void ReadXServer (void)
       else break;
       if (i>0)
       {
-	Scrapt=(char*)realloc((void*)Scrapt,sizeof(char)*(i+1));
+	Scrapt=(char*)saferealloc((void*)Scrapt,sizeof(char)*(i+1));
 	Scrapt=strcpy(Scrapt,octet);
       }
       break;
@@ -893,7 +893,7 @@ void ReadFvwmScriptArg(int argc, char **argv,int IsFather)
   }
   else
   {				/* Cas du fils */
-    x11base->TabScriptId[0]=(char*)calloc(sizeof(char),strlen(argv[7]));
+    x11base->TabScriptId[0]=(char*)safecalloc(sizeof(char),strlen(argv[7]));
     x11base->TabScriptId[0]=strncpy(x11base->TabScriptId[0],argv[7],
 				    strlen(argv[7])-2);
     x11base->TabScriptId[1]=argv[7];
@@ -953,16 +953,16 @@ int main (int argc, char **argv)
 		 M_END_CONFIG_INFO| M_WINDOW_NAME | M_SENDCONFIG);
 
   /* Enregistrement des arguments du script */
-  x11base=(X11base*) calloc(1,sizeof(X11base));
+  x11base=(X11base*) safecalloc(1,sizeof(X11base));
   x11base->TabArg[0]=ModuleName;
   for (i=8-IsFather;i<argc;i++)
     x11base->TabArg[i-7+IsFather]=argv[i];
   /* Couleurs et fontes par defaut */
-  x11base->font=strdup("fixed");
-  x11base->forecolor=strdup("black");
-  x11base->backcolor=strdup("grey85");
-  x11base->shadcolor=strdup("grey55");
-  x11base->hilicolor=strdup("grey100");
+  x11base->font=safestrdup("fixed");
+  x11base->forecolor=safestrdup("black");
+  x11base->backcolor=safestrdup("grey85");
+  x11base->shadcolor=safestrdup("grey55");
+  x11base->hilicolor=safestrdup("grey100");
   x11base->colorset = -1;
 
   ParseOptions();

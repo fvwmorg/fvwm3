@@ -1,3 +1,18 @@
+2001-02-10  Mikhael Goikhman  <migo@homemail.com>
+
+	* {FvwmAnimate/FvwmAnimate,FvwmAuto/FvwmAuto}.c:
+	* FvwmButtons/{FvwmButtons,button,parse}.c:
+	* {FvwmCpp/FvwmCpp,FvwmForm/FvwmForm,FvwmForm/ReadXServer}.c:
+	* FvwmGtk/{FvwmGtk,dialog,expand,menu,windowlist}.c:
+	* {FvwmIconBox/FvwmIconBox,FvwmM4/FvwmM4}.c:
+	* FvwmPager/{FvwmPager,x_pager}.c:
+	* FvwmScript/{FvwmScript.c,Instructions.c,scanner.l,script.y}:
+	* FvwmWinList/FvwmWinList.c:
+	safestrdup and some safe*alloc replacements
+
+	* FvwmScript/{Makefile.am,scanner.c,script.c,script.h}:
+	fixed "make syntax" and regenerated syntax
+
 2001-02-07  Dan Espen  <dane@mk.telcordia.com>
 
 	* FvwmBacker/FvwmBacker.1: Add Exec to xpmroot example.

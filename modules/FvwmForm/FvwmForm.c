@@ -349,7 +349,7 @@ static void ct_Fore(char *cp)
 {
   if (color_names[c_fg])
     free(color_names[c_fg]);
-  color_names[c_fg] = strdup(cp);
+  color_names[c_fg] = safestrdup(cp);
   colorset = -1;
   myfprintf((stderr, "ColorFore: %s\n", color_names[c_fg]));
 }
@@ -357,12 +357,12 @@ static void ct_Back(char *cp)
 {
   if (color_names[c_bg])
     free(color_names[c_bg]);
-  color_names[c_bg] = strdup(cp);
+  color_names[c_bg] = safestrdup(cp);
   if (bg_state == 'd')
   {
     if (screen_background_color)
       free(screen_background_color);
-    screen_background_color = strdup(color_names[c_bg]);
+    screen_background_color = safestrdup(color_names[c_bg]);
     bg_state = 's';                     /* indicate set by command */
   }
   colorset = -1;
@@ -378,7 +378,7 @@ static void ct_ItemFore(char *cp)
 {
   if (color_names[c_item_fg])
     free(color_names[c_item_fg]);
-  color_names[c_item_fg] = strdup(cp);
+  color_names[c_item_fg] = safestrdup(cp);
   itemcolorset = -1;
   myfprintf((stderr, "ColorItemFore: %s\n", color_names[c_item_fg]));
 }
@@ -386,7 +386,7 @@ static void ct_ItemBack(char *cp)
 {
   if (color_names[c_item_bg])
     free(color_names[c_item_bg]);
-  color_names[c_item_bg] = strdup(cp);
+  color_names[c_item_bg] = safestrdup(cp);
   itemcolorset = -1;
   myfprintf((stderr, "ColorItemBack: %s\n", color_names[c_item_bg]));
 }
@@ -399,21 +399,21 @@ static void ct_Font(char *cp)
 {
   if (font_names[f_text])
     free(font_names[f_text]);
-  font_names[f_text] = strdup(cp);
+  font_names[f_text] = safestrdup(cp);
   myfprintf((stderr, "Font: %s\n", font_names[f_text]));
 }
 static void ct_ButtonFont(char *cp)
 {
   if (font_names[f_button])
     free(font_names[f_button]);
-  font_names[f_button] = strdup(cp);
+  font_names[f_button] = safestrdup(cp);
   myfprintf((stderr, "ButtonFont: %s\n", font_names[f_button]));
 }
 static void ct_InputFont(char *cp)
 {
   if (font_names[f_input])
     free(font_names[f_input]);
-  font_names[f_input] = strdup(cp);
+  font_names[f_input] = safestrdup(cp);
   myfprintf((stderr, "InputFont: %s\n", font_names[f_input]));
 }
 static void ct_Line(char *cp)
@@ -564,11 +564,11 @@ static void AssignDrawTable(Item *adt_item)
     last_dt->dt_next = new_dt;          /* link old to new */
   }
 
-  new_dt->dt_font_name = strdup(match_font);
-  new_dt->dt_color_names[c_fg]      = strdup(match_text_fore);
-  new_dt->dt_color_names[c_bg]      = strdup(match_text_back);
-  new_dt->dt_color_names[c_item_fg] = strdup(match_item_fore);
-  new_dt->dt_color_names[c_item_bg] = strdup(match_item_back);
+  new_dt->dt_font_name = safestrdup(match_font);
+  new_dt->dt_color_names[c_fg]      = safestrdup(match_text_fore);
+  new_dt->dt_color_names[c_bg]      = safestrdup(match_text_back);
+  new_dt->dt_color_names[c_item_fg] = safestrdup(match_item_fore);
+  new_dt->dt_color_names[c_item_bg] = safestrdup(match_item_back);
   new_dt->dt_used = 0;                  /* show nothing allocated */
   new_dt->dt_font_struct = GetFontOrFixed(dpy, new_dt->dt_font_name);
   new_dt->dt_font = new_dt->dt_font_struct->fid;
@@ -650,7 +650,7 @@ static void ct_Input(char *cp)
   item->input.size = atoi(cp);
   while (!isspace((unsigned char)*cp)) cp++;
   while (isspace((unsigned char)*cp)) cp++;
-  item->input.init_value = strdup("");          /* init */
+  item->input.init_value = safestrdup("");          /* init */
   if (*cp == '\"') {
     free(item->input.init_value);
     item->input.init_value = CopyQuotedString(++cp);
@@ -911,21 +911,21 @@ static void ct_Command(char *cp)
 			   sizeof(char *) *
 			   cur_button->button.button_array_size);
   }
-  cur_button->button.commands[cur_button->button.n++] = strdup(cp);
+  cur_button->button.commands[cur_button->button.n++] = safestrdup(cp);
 }
 
 /* End of ct_ routines */
 
 /* Init constants with values that can be freed later. */
 static void InitConstants () {
-  color_names[0]=strdup("Light Gray");
-  color_names[1]=strdup("Black");
-  color_names[2]=strdup("Gray50");
-  color_names[3]=strdup("Wheat");
-  font_names[0]=strdup("8x13bold");
-  font_names[1]=strdup("8x13bold");
-  font_names[2]=strdup("8x13bold");
-  screen_background_color=strdup("Light Gray");
+  color_names[0]=safestrdup("Light Gray");
+  color_names[1]=safestrdup("Black");
+  color_names[2]=safestrdup("Gray50");
+  color_names[3]=safestrdup("Wheat");
+  font_names[0]=safestrdup("8x13bold");
+  font_names[1]=safestrdup("8x13bold");
+  font_names[2]=safestrdup("8x13bold");
+  screen_background_color=safestrdup("Light Gray");
 }
 
 /* read the configuration file */
@@ -1089,7 +1089,7 @@ static void Restart ()
         if (item->input.value_history_ptr == 0) {  /* no history yet */
           item->input.value_history_ptr =
 	    (char **)safecalloc(sizeof(char *), 50);
-          item->input.value_history_ptr[0] = strdup(item->input.value);
+          item->input.value_history_ptr[0] = safestrdup(item->input.value);
           item->input.value_history_count = 1; /* next insertion point */
           myfprintf((stderr,"Initial save of %s in slot 0\n",
                      item->input.value_history_ptr[0]));
@@ -1113,7 +1113,7 @@ static void Restart ()
                          item->input.value_history_count));
             }
             item->input.value_history_ptr[item->input.value_history_count] =
-              strdup(item->input.value); /* save value ptr in array */
+              safestrdup(item->input.value); /* save value ptr in array */
             myfprintf((stderr,"Save of %s in slot %d\n",
                        item->input.value,
                        item->input.value_history_count));
