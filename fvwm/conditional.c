@@ -1286,8 +1286,9 @@ void CMD_Cond(F_CMD_ARGS)
 		/* execute the command in root window context; overwrite the
 		 * return code with the return code of the command */
 		old_execute_function(
-			cond_rc, restofline, NULL, eventp, C_ROOT, *Module, 0,
-			NULL);
+			cond_rc, restofline, tmp_win, eventp,
+			(tmp_win != NULL) ? C_WINDOW : C_ROOT, *Module,
+			0, NULL);
 
 	}
 	if (flags != NULL)

@@ -1,5 +1,8 @@
 2002-03-03  Dominik Vogt  <dominik.vogt@gmx.de>
 
+	* fvwm/conditional.c (CMD_Cond):
+	Fixed a problem w/ the window selection
+
 	* fvwm/menus.h:
 	* fvwm/menus.c:
 	* fvwm/menudim.h:
