@@ -4089,7 +4089,7 @@ style is used; see
 .B Style
 command) otherwise it is lowered.
 
-.IP "\fBResize [\fP \fIwidth\fP \
+.IP "\fBResize [ [\fIframe\fP] \fIwidth\fP \
 \fB[\fP \fIp\fP \
 \fB|\fP \fIc\fP \
 \fB]\fP \fIheight\fP \
@@ -4127,7 +4127,15 @@ characters. Both,
 .IR width " and " height
 can be negative.  In this case the new size is the screen size
 minus the given value.  If either value is "keep", the
-corresponding dimension of the window is left untouched.
+corresponding dimension of the window is left untouched.  The new
+size is the size of the client window, thus
+.EX
+Resize 100 100
+.EE
+may make the window bigger than the screen.  To base the new size
+on the size of the whole fvwm window, add the
+.I frame
+option after the command.
 
 An alternate syntax is used if the keyword
 .IR bottomright " or in short " br

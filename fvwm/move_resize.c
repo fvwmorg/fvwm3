@@ -302,8 +302,8 @@ static int ParseOneResizeArgument(
 	{
 	  /* account for base width and border size */
 	  *ret_size += base_size;
-	  *ret_size += add_size;
 	}
+        *ret_size += add_size;
       }
     }
   }
@@ -320,6 +320,8 @@ static int GetResizeArguments(
   char *token;
   char *s1;
   char *s2;
+  int w_add;
+  int h_add;
 
   if (!paction)
     return 0;
@@ -338,28 +340,38 @@ static int GetResizeArguments(
     *pFinalW = nx - x + 1;
     *pFinalH = ny - y + 1;
     *paction = naction;
+
+    return n;
+  }
+  if (StrEquals(token, "frame"))
+  {
+          w_add = 0;
+          h_add = 0;
+          naction = GetNextToken(naction, &s1);
   }
   else
   {
-    s1 = safestrdup(token);
-    naction = GetNextToken(naction, &s2);
-    if (!s2)
-    {
-      free(s1);
-      return 0;
-    }
-    *paction = naction;
-
-    n = 0;
-    n += ParseOneResizeArgument(
-      s1, Scr.MyDisplayWidth, w_base, w_inc, sb->total_size.width, pFinalW);
-    n += ParseOneResizeArgument(
-      s2, Scr.MyDisplayHeight, h_base, h_inc, sb->total_size.height, pFinalH);
-    free(s1);
-    free(s2);
-    if (n < 2)
-      n = 0;
+          w_add = sb->total_size.width;
+          h_add = sb->total_size.height;
+          s1 = safestrdup(token);
   }
+  naction = GetNextToken(naction, &s2);
+  if (!s2)
+  {
+    free(s1);
+    return 0;
+  }
+  *paction = naction;
+
+  n = 0;
+  n += ParseOneResizeArgument(
+    s1, Scr.MyDisplayWidth, w_base, w_inc, w_add, pFinalW);
+  n += ParseOneResizeArgument(
+    s2, Scr.MyDisplayHeight, h_base, h_inc, h_add, pFinalH);
+  free(s1);
+  free(s2);
+  if (n < 2)
+    n = 0;
 
   return n;
 }
