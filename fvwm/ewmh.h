@@ -59,6 +59,7 @@ int EWMH_GetIconGeometry(FvwmWindow *fwin, rectangle *icon_rect);
 
 void EWMH_GetStyle(FvwmWindow *fwin, window_style *style);
 void EWMH_WindowInit(FvwmWindow *fwin);
+void EWMH_RestoreInitialStates(FvwmWindow *fwin, int event_type);
 void EWMH_DestroyWindow(FvwmWindow *fwin);
 void EWMH_WindowDestroyed(void);
 
@@ -119,6 +120,7 @@ void EWMH_SetDesktopNames(void);
 
 #define EWMH_GetStyle(x,y)
 #define EWMH_WindowInit(x)
+#define EWMH_RestoreInitialStates(x,y)
 #define EWMH_DestroyWindow(x)
 #define EWMH_WindowDestroyed()
 #define EWMH_Init()

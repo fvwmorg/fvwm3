@@ -1011,45 +1011,44 @@ void MakeList(void)
 
   /* EWMH wm state */
   {
-    char *ewmh_init_state = "";
+    char ewmh_init_state[512] = "";
     Bool add_to_list = False;
 
-    ewmh_init_state = (char *)safemalloc(256*sizeof(char));
-    
+
     if (HAS_EWMH_INIT_FULLSCREEN_STATE(targ) == EWMH_STATE_HAS_HINT)
     {
-      sprintf(ewmh_init_state, "%sFullScreen ", ewmh_init_state);
+      strcat(ewmh_init_state, "FullScreen ");
       add_to_list = True;
     }
     if (HAS_EWMH_INIT_HIDDEN_STATE(targ) == EWMH_STATE_HAS_HINT)
     {
-      sprintf(ewmh_init_state, "%sIconic ", ewmh_init_state);
+      strcat(ewmh_init_state, "Iconic ");
       add_to_list = True;
     }
     if (HAS_EWMH_INIT_MAXHORIZ_STATE(targ) == EWMH_STATE_HAS_HINT)
     {
-      sprintf(ewmh_init_state, "%sMaxHoriz ", ewmh_init_state);
+      strcat(ewmh_init_state, "MaxHoriz ");
       add_to_list = True;
     }
     if (HAS_EWMH_INIT_MAXVERT_STATE(targ) == EWMH_STATE_HAS_HINT)
     {
-      sprintf(ewmh_init_state, "%sMaxVert ", ewmh_init_state);
+      strcat(ewmh_init_state, "MaxVert ");
       add_to_list = True;
     }
     if (HAS_EWMH_INIT_MODAL_STATE(targ) == EWMH_STATE_HAS_HINT)
     {
-      sprintf(ewmh_init_state, "%sModal ", ewmh_init_state);
+      strcat(ewmh_init_state, "Modal ");
       add_to_list = True;
     }
     if (HAS_EWMH_INIT_SHADED_STATE(targ)== EWMH_STATE_HAS_HINT)
     {
-      sprintf(ewmh_init_state, "%sShaded ", ewmh_init_state);
+      strcat(ewmh_init_state, "Shaded ");
       add_to_list = True;
     }
     if (HAS_EWMH_INIT_SKIP_PAGER_STATE(targ) == EWMH_STATE_HAS_HINT ||
 	HAS_EWMH_INIT_SKIP_TASKBAR_STATE(targ) == EWMH_STATE_HAS_HINT )
     {
-      sprintf(ewmh_init_state, "%sSkipList ", ewmh_init_state);
+      strcat(ewmh_init_state, "SkipList ");
       add_to_list = True;
     }
     if (HAS_EWMH_INIT_STICKY_STATE(targ) == EWMH_STATE_HAS_HINT ||
@@ -1057,18 +1056,19 @@ void MakeList(void)
 	(target.ewmh_hint_desktop == 0xFFFFFFFE ||
 	 target.ewmh_hint_desktop == 0xFFFFFFFF)))
     {
-      sprintf(ewmh_init_state, "%sSticky ", ewmh_init_state);
+      strcat(ewmh_init_state, "Sticky ");
       add_to_list = True;
     }
     if (target.ewmh_hint_layer > 0)
     {
-      sprintf(ewmh_init_state, "%sStaysOnTop ", ewmh_init_state);
+      strcat(ewmh_init_state, "StaysOnTop ");
       add_to_list = True;
     }
     if (HAS_EWMH_INIT_WM_DESKTOP(targ) == EWMH_STATE_HAS_HINT &&
 	target.ewmh_hint_desktop < 256)
     {
-      sprintf(ewmh_init_state, "%sStartOnDesk %lu",
+      strcat(ewmh_init_state, "StartOnDesk");
+      sprintf(ewmh_init_state, "%s %lu",
 	      ewmh_init_state, target.ewmh_hint_desktop);
       add_to_list = True;
     }

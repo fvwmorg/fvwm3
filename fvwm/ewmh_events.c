@@ -340,6 +340,14 @@ int ewmh_WMStateHidden(EWMH_CMD_ARGS)
 {
   if (ev == NULL && style == NULL)
   {
+    unsigned long do_restore = any;
+
+    if (do_restore)
+    {
+      if (HAS_EWMH_INIT_HIDDEN_STATE(fwin) == EWMH_STATE_HAS_HINT)
+	return True;
+      return False;
+    }
     return IS_ICONIFIED(fwin);
   }
 
@@ -545,6 +553,14 @@ int ewmh_WMStateShaded(EWMH_CMD_ARGS)
 
   if (ev == NULL && style == NULL)
   {
+    unsigned long do_restore = any;
+
+    if (do_restore)
+    {
+      if (HAS_EWMH_INIT_SHADED_STATE(fwin) == EWMH_STATE_HAS_HINT)
+	return True;
+      return False;
+    }
     return IS_SHADED(fwin);
   }
 
@@ -791,6 +807,14 @@ int ewmh_WMStateSticky(EWMH_CMD_ARGS)
 
   if (ev == NULL && style == NULL)
   {
+    unsigned long do_restore = any;
+
+    if (do_restore)
+    {
+      if (HAS_EWMH_INIT_STICKY_STATE(fwin) == EWMH_STATE_HAS_HINT)
+	return True;
+      return False;
+    }
     return IS_STICKY(fwin);
   }
 

@@ -1,3 +1,15 @@
+2002-02-10  olicha  <olivier.chapuis@free.fr>
+
+	* fvwm/ewmh.c (EWMH_RestoreInitialStates):
+	(EWMH_ExitStuff):
+	* fvwm/events.c (HandleUnmapNotify):
+	(HandleReparentNotify):
+	* fvwm/ewmh_events.c (ewmh_WMStateShaded):
+	(ewmh_WMStateSticky): 
+	(ewmh_WMStateHidden):
+	Restore various ewmh initial states when a window is  unmapped or
+	reparented
+
 2002-02-10  Mikhael Goikhman  <migo@homemail.com>
 
 	* Makefile.am:

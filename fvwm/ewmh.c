@@ -1223,7 +1223,25 @@ void EWMH_WindowInit(FvwmWindow *fwin)
   /*EWMH_DLOG("window 0x%lx initialised",fwin->w);*/
 }
 
-/* a window are going to be destroyed */
+/* unmap or reparent: restore state */
+void EWMH_RestoreInitialStates(FvwmWindow *fwin, int event_type)
+{
+  EWMH_SetWMState(fwin, True);
+  if (HAS_EWMH_INIT_WM_DESKTOP(fwin) == EWMH_STATE_HAS_HINT)
+  {
+    ewmh_ChangeProperty(fwin->w, "_NET_WM_DESKTOP", EWMH_ATOM_LIST_CLIENT_WIN,
+		      (unsigned char *)&(fwin->ewmh_hint_desktop), 1);
+  }
+  else
+  {
+    ewmh_DeleteProperty(fwin->w, "_NET_WM_DESKTOP", EWMH_ATOM_LIST_CLIENT_WIN);
+  }
+  if (HAS_EWMH_WM_ICON_HINT(fwin) == EWMH_FVWM_ICON)
+      EWMH_DeleteWmIcon(fwin, True, True);
+}
+
+/* a window are going to be destroyed (in the add_window.c destroy_window
+ * sens) */
 void EWMH_DestroyWindow(FvwmWindow *fwin)
 {
   if (IS_EWMH_DESKTOP(fwin->w))
@@ -1232,7 +1250,7 @@ void EWMH_DestroyWindow(FvwmWindow *fwin)
     ewmhc.NeedsToCheckDesk = True;
 }
 
-/* a window has been destroyed */
+/* a window has been destroyed (unmap/reparent/destroy) */
 void EWMH_WindowDestroyed(void)
 {
   EWMH_SetClientList();
@@ -1351,10 +1369,7 @@ void EWMH_ExitStuff(void)
 
   for (t = Scr.FvwmRoot.next; t != NULL; t = t->next)
   {
-    if (HAS_EWMH_WM_ICON_HINT(t) == EWMH_FVWM_ICON)
-      EWMH_DeleteWmIcon(t, True, True);
-    /* restore the wm_state */
-    EWMH_SetWMState(t, True);
+    EWMH_RestoreInitialStates(t, 0);
   }
 
 }

@@ -1406,6 +1406,7 @@ void HandleUnmapNotify(void)
 
     MyXGrabServer(dpy);
     SetMapStateProp (Tmp_win, WithdrawnState);
+    EWMH_RestoreInitialStates(Tmp_win, Event.type);
     if (XCheckTypedWindowEvent(dpy, Event.xunmap.window, ReparentNotify, &ev))
     {
       if (Tmp_win->old_bw)
@@ -1457,6 +1458,7 @@ void HandleReparentNotify(void)
   {
     /* window was reparented by someone else, destroy the frame */
     SetMapStateProp(Tmp_win, WithdrawnState);
+    EWMH_RestoreInitialStates(Tmp_win, Event.type);
     if (!IS_TEAR_OFF_MENU(Tmp_win))
     {
       XRemoveFromSaveSet(dpy, Event.xreparent.window);
@@ -1469,7 +1471,7 @@ void HandleReparentNotify(void)
     discard_events(XEVMASK_FRAMEW);
     destroy_window(Tmp_win);
     EWMH_ManageKdeSysTray(Event.xreparent.window, Event.type);
-    EWMH_WindowDestroyed(); /* olicha: is this needed? */
+    EWMH_WindowDestroyed();
   }
 
   return;

@@ -1,3 +1,8 @@
+2002-02-10  olicha  <olivier.chapuis@free.fr>
+
+	* FvwmIdent/FvwmIdent.c (MakeList):
+	Fixed an umr in the ewmh init state string
+
 2002-02-09  olicha  <olivier.chapuis@free.fr>
 
 	* FvwmCpp/FvwmCpp.c (cpp_defs):
