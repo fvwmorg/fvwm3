@@ -249,7 +249,7 @@ void FftGetFontWidths(
 {
 	FGlyphInfo extents;
 
-	/* FIXME:  max_char_width should not be use in the all fvwm !!!*/
+	/* FIXME:  max_char_width should not be use in the all fvwm! */
 	if (FftUtf8Support && FLC_ENCODING_TYPE_IS_UTF_8(flf->fc))
 	{
 		FftTextExtentsUtf8(fftdpy, flf->fftf.fftfont, "W", 1, &extents);
@@ -274,7 +274,7 @@ FftFontType *FftGetFont(Display *dpy, char *fontname, char *module)
 	FftResult result;
 
 	result = 0;
-	if (!FftSupport || !(FRenderGetExtensionSupported() || 1) )
+	if (!FftSupport || !(FRenderGetExtensionSupported() || 1))
 	{
 		return NULL;
 	}

@@ -159,7 +159,6 @@ void CMD_AddToMenu(F_CMD_ARGS)
 		return;
 	}
 	mr = menus_find_menu(token);
-/*!!!*/fprintf(stderr, "catm: '%s' '%s' 0x%08x\n", token, mr?MR_NAME(mr):"(null)",(int)mr);
 	if (mr && MR_MAPPED_COPIES(mr) != 0)
 	{
 		fvwm_msg(ERR,"add_item_to_menu", "menu %s is in use", token);
@@ -169,7 +168,6 @@ void CMD_AddToMenu(F_CMD_ARGS)
 	if (mr == NULL)
 	{
 		mr = NewMenuRoot(token);
-/*!!!*/fprintf(stderr, "catm: nmr '%s' 0x%08x\n", mr?MR_NAME(mr):"(null)",(int)mr);
 	}
 
 	/* Set + state to last menu */
