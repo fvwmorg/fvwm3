@@ -485,7 +485,7 @@ XColor *AllocAllGradientColors(
 	if (!xcs)
 	{
 		fprintf(stderr, "couldn't create gradient\n");
-		return None;
+		return NULL;
 	}
 
 	return xcs;
@@ -734,19 +734,16 @@ Drawable CreateGradientPixmap(
 	int t_y;
 	int t_width;
 	int t_height;
+	int ps;
 
-	if (d_pixels != NULL)
+	if (d_pixels != NULL && *d_pixels != NULL)
 	{
-		if (*d_pixels != NULL)
+		if (d_npixels != NULL && *d_npixels > 0)
 		{
-			if (d_npixels != NULL && d_npixels > 0)
-			{
-				PictureFreeColors(
-					dpy, Pcmap, *d_pixels, *d_npixels, 0,
-					False);
-			}
-			free(*d_pixels);
+			PictureFreeColors(
+				dpy, Pcmap, *d_pixels, *d_npixels, 0, False);
 		}
+		free(*d_pixels);
 		*d_pixels = NULL;
 	}
 	if (d_npixels != NULL)
@@ -794,6 +791,7 @@ Drawable CreateGradientPixmap(
 	{
 		pixels = (Pixel *)safemalloc(t_width * t_height * sizeof(Pixel));
 	}
+	ps = t_width * t_height;
 	/* now do the fancy drawing */
 	switch (type)
 	{
@@ -1033,14 +1031,22 @@ Drawable CreateGradientPixmap(
 		 * color */
 		memset(image->data, 0, image->bytes_per_line * t_height);
 		XAddPixel(image, xcs[0].pixel);
+		if (dither && PUseDynamicColors)
+		{
+			free(pixels);
+			pixels = (Pixel *)safemalloc(sizeof(Pixel));
+			pixels[0] = xcs[0].pixel;
+			ps = 1;
+		}
 		break;
 	}
 
 	if (dither && PUseDynamicColors)
 	{
-		if (d_pixels != NULL)
+		if (d_pixels != NULL && d_npixels != NULL)
 		{
 			*d_pixels = pixels;
+			*d_npixels = ps; 
 		}
 		else
 		{
@@ -1082,7 +1088,7 @@ Pixmap CreateGradientPixmapFromString(
 	Pixel **pixels_return, int *nalloc_pixels, int dither)
 {
 	Pixel *d_pixels = NULL;
-	unsigned int d_npixels; 
+	unsigned int d_npixels = 0; 
 	XColor *xcs = NULL;
 	unsigned int ncolors = 0;
 	char **colors;
@@ -1122,47 +1128,50 @@ Pixmap CreateGradientPixmapFromString(
 
 	/* if the caller has not asked for the pixels there is probably a leak
 	 */
-	if (!pixels_return && PUseDynamicColors)
+	if (PUseDynamicColors)
 	{
-		fprintf(stderr,
+		if (!(pixels_return && nalloc_pixels))
+		{
+			/* if the caller has not asked for the pixels there is
+			 * probably a leak */
+			fprintf(stderr,
 			"CreateGradient: potential color leak, losing track"
 			" of pixels\n");
-	}
-	else if (PUseDynamicColors)
-	{
-		if (!dither)
-		{
-			Pixel *pixels;
-			int i;
-
-			pixels = (Pixel *)safemalloc(ncolors * sizeof(Pixel));
-			for(i=0; i<ncolors; i++)
+			if (d_pixels != NULL)
 			{
-				pixels[i] = xcs[i].pixel;
+				free(d_pixels);
 			}
-			*pixels_return = pixels;
 		}
 		else
 		{
-			*pixels_return = d_pixels;
+			if (!dither)
+			{
+				Pixel *pixels;
+				int i;
+				
+				pixels = (Pixel *)safemalloc(
+					ncolors * sizeof(Pixel));
+				for(i=0; i<ncolors; i++)
+				{
+					pixels[i] = xcs[i].pixel;
+				}
+				*pixels_return = pixels;
+				*nalloc_pixels = ncolors;
+			}
+			else
+			{
+				*pixels_return = d_pixels;
+				*nalloc_pixels = d_npixels;
+			}
 		}
 	}
 	else if (d_pixels != NULL)
 	{
+		/* should not happen */
 		free(d_pixels);
 	}
 
-	if (nalloc_pixels && PUseDynamicColors)
-	{
-		if (dither == 0)
-		{
-			*nalloc_pixels = ncolors;
-		}
-		else
-		{
-			*nalloc_pixels = d_npixels;
-		}
-	}
+	free(xcs);
 
 	return pixmap;
 }

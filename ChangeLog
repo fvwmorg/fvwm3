@@ -1,3 +1,21 @@
+2002-10-05  olicha  <olivier.chapuis@free.fr>
+
+	* libs/PictureUtils.c (alloc_color_cube):
+	It si possible to enable "gamma correction" for colors cubes (disabled,
+	define USE_GAMMA_CORRECTION to 1 and set COLOR_GAMMA and GREY_GAMMA)
+
+	* libs/PictureUtils.c (get_color_index):
+	(create_mapping_table):
+	Use a more exact approximation of colors for pur cc without the big
+	16x16x16 cc
+
+	* libs/PictureUtils.c (PictureFreeColors):
+	Fixed a memory leak
+
+	* libs/Graphics.c (CreateGradientPixmap):
+	(CreateGradientPixmapFromString):
+	Cleanup
+
 2002-10-04  olicha  <olivier.chapuis@free.fr>
 
 	* libs/PictureUtils.c (*): 

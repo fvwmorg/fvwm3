@@ -26,6 +26,7 @@
 #include <signal.h>
 #include <ctype.h>
 #include <time.h>
+#include <math.h>
 
 #include <X11/Xlib.h>
 #include <X11/Xmd.h>
@@ -41,7 +42,7 @@
 #define PICTURE_DEBUG_COLORS_PRINT_CMAP    0
 #define PICTURE_DEBUG_COLORS_INFO          1
 
-/* for alloc_in_cmap from the xpm lib */
+/* form alloc_in_cmap from the xpm lib */
 #define XPM_DIST(r1,g1,b1,r2,g2,b2) (long)\
                           (3*(abs((long)r1-(long)r2) + \
 			      abs((long)g1-(long)g2) + \
@@ -71,6 +72,15 @@
 #define PICTURE_PStrictColorLimit   10000
 #define PICTURE_use_named           1000
 #define PICTURE_TABLETYPE_LENGHT    7
+
+/* humm ... dither is probably borken with gamma correction. Anyway I do
+ * do think that using gamma correction for the colors cubes is a good
+ * idea */
+#define USE_GAMMA_CORECTION 0
+/* 2.2 is recommanded by the Poynon colors FAQ, some others suggest 1.5 and 2 
+ * Use float constants!*/
+#define COLOR_GAMMA 1.5
+#define GREY_GAMMA  2.0
 
 /* ---------------------------- imports ------------------------------------- */
 
@@ -438,9 +448,26 @@ int get_color_index(int r, int g, int b, int is_8)
 	}
 	else
 	{
+#if 1
+		/* exact computation (linear dist) */
+		float fr,fg,fb;
+		int ir, ig, ib;
+
+		fr = ((float)r * (Pcsi.nr-1))/255;
+		fg = ((float)g * (Pcsi.ng-1))/255;
+		fb = ((float)b * (Pcsi.nb-1))/255;
+
+		ir = (int)fr + (fr - (int)fr > 0.5);
+		ig = (int)fg + (fg - (int)fg > 0.5);
+		ib = (int)fb + (fb - (int)fb > 0.5);
+
+		index = ir * Pcsi.ng*Pcsi.nb + ig * Pcsi.nb + ib;
+#else
+		/* approximation; faster */
 		index = ((r * Pcsi.nr)>>8) * Pcsi.ng*Pcsi.nb +
 			((g * Pcsi.ng)>>8) * Pcsi.nb +
 			((b * Pcsi.nb)>>8);
+#endif
 		if (PMappingTable != NULL)
 		{
 			index = PMappingTable[index];
@@ -599,6 +626,14 @@ PColor *alloc_color_cube(
 
 	i = 0;
 
+#if USE_GAMMA_CORECTION
+#define CG(x) 65535.0 * pow((x)/65535.0,1/COLOR_GAMMA)
+#define GG(x) 65535.0 * pow((x)/65535.0,1/GREY_GAMMA)
+#else
+#define CG(x) x
+#define GG(x) x
+#endif
+
 	if (nr > 0)
 	{
 		for (r = 0; r < nr; r++)
@@ -607,9 +642,9 @@ PColor *alloc_color_cube(
 			{
 				for (b = 0; b < nb; b++)
 				{
-					color.red = r * 65535 / (nr - 1);
-					color.green = g * 65535 / (ng - 1);
-					color.blue = b * 65535 / (nb - 1);
+					color.red = CG(r * 65535 / (nr - 1));
+					color.green = CG(g * 65535 / (ng - 1));
+					color.blue = CG(b * 65535 / (nb - 1));
 					if (do_allocate)
 					{
 						if (!XAllocColor(Pdpy, Pcmap,
@@ -642,7 +677,7 @@ PColor *alloc_color_cube(
 		for (grey = start_grey; grey < end_grey; grey++)
 		{
 			color.red = color.green = color.blue =
-				grey * 65535 / (ngrey - 1);
+				GG(grey * 65535 / (ngrey - 1));
 			if (do_allocate)
 			{
 				if (!XAllocColor(Pdpy, Pcmap, &color))
@@ -834,7 +869,10 @@ static
 void create_mapping_table(
 	int nr, int ng, int nb, int ngrey, int grey_bits, Bool use_named)
 {
-	Pcsi.d_nr = Pcsi.d_ng = Pcsi.d_nb = Pcsi.grey_bits = 0;
+
+	Pcsi.grey_bits = 0;
+
+	/* initialize dithering colors numbers */
 	if (!use_named)
 	{
 		/* */
@@ -846,6 +884,7 @@ void create_mapping_table(
 	else
 	{
 		/* dither table should be small */
+		Pcsi.grey_bits = 0;
 		if (PColorLimit <= 9)
 		{
 			Pcsi.d_nr = 3;
@@ -861,6 +900,8 @@ void create_mapping_table(
 		PDitherMappingTable = build_mapping_table(
 			Pcsi.d_nr, Pcsi.d_ng, Pcsi.d_nb);
 	}
+
+	/* initialize colors number fo index computation */
 	if (PColorLimit == 2)
 	{
 		/* ok */
@@ -876,7 +917,7 @@ void create_mapping_table(
 		Pcsi.nb = 0;
 		Pcsi.grey_bits = grey_bits;
 	}
-	else
+	else if (use_named || (ngrey > 0))
 	{
 		if (PColorLimit <= 9)
 		{
@@ -891,6 +932,13 @@ void create_mapping_table(
 			Pcsi.nb = 16;
 		}
 		PMappingTable = build_mapping_table(Pcsi.nr, Pcsi.ng, Pcsi.nb);
+	}
+	else
+	{
+		Pcsi.nr = nr;
+		Pcsi.ng = ng;
+		Pcsi.nb = nb;
+		Pcsi.grey_bits = 0;
 	}
 }
 
@@ -1170,6 +1218,7 @@ void PictureFreeColors(
 		{
 			XFreeColors(dpy, cmap, p, m, planes);
 		}
+		free(p);
 		return;
 	}
 	if ((Pct == NULL || no_limit) && Pdepth <= 8)
