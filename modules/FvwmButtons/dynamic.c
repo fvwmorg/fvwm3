@@ -17,9 +17,12 @@
 /* ---------------------------- included header files ----------------------- */
 
 #include "config.h"
+#include <stdarg.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <X11/Xdefs.h>
+#include <X11/Xlib.h>
+
 #include "libs/FShape.h"
 #include "libs/Module.h"
 #include "libs/Strings.h"
@@ -122,8 +125,8 @@ static module_expand_vars mev =
 	{ "title", "icon", }
 	/* array of values, void *, will be filled later */
 	{ NULL, NULL },
-	/* array of booleans, 1 if value, 0 if string */
-	{ 1, 0, },
+	/* array of booleans, 0 if string, 1 if int */
+	{ 0, 0, },
 };
 #endif
 

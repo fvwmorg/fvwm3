@@ -1,3 +1,8 @@
+2002-08-26  Mikhael Goikhman  <migo@homemail.com>
+
+	* FvwmButtons/dynamic.c:
+	added some includes
+
 2002-08-26  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* FvwmButtons/dynamic.c (parse_message_line):

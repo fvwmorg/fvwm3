@@ -1,5 +1,9 @@
 2002-08-26  Mikhael Goikhman  <migo@homemail.com>
 
+	* NEWS: mention new FvwmButtons additions and TitleStyle MultiPixmap
+
+2002-08-26  Mikhael Goikhman  <migo@homemail.com>
+
 	* configure.in:
 	fixed --disable-ewmh
 

@@ -4,45 +4,72 @@ that includes new features and improvements over beta 2.5.1 and stable
 
 The release is available at the fvwm home page: http://www.fvwm.org/
 
+Fixed:
+------
+
+* TitleStyle MultiPixmap now works once again.
+
+* Restored old way of handling clicks in windows with ClickToFocus
+  and ClickToFocusPassesClickOff.  This fixes a problem with
+  click+drag in an unfocused rxvt or aterm window.
+
+* Fixed interaction bug between CascadePlacement and StartsOnPage
+  - if the target page was at a negative x or y page displacement
+  from the current viewport, the window would be placed on the
+  wrong page.
+
+* Fixed wrong warp coordinates when WarpToWindow was used with two
+  arguments on an unmanaged window.
+
 New features:
 -------------
 
-* Fonts can have shadow effects, see the FONT SHADOW EFFECTS
-  section of fvwm manual page.
+* New Style option IconSize for restricting icon sizes.
 
-* New Colorset options: fgsh for shadow text and fg_alpha for
-  merging text with the background.
+* New WindowList options SortClassName, MaxLabelLength, NoLayer,
+  ShowScreen, ShowPage, ShowPageX and ShowPageY.
 
-* New module FvwmPerl adds perl scripting ability to fvwm commands.
+* Vastly improved FvwmEvent performance.
 
-* Provided powerful perl library for creating FVWM modules in perl.
+* FvwmAuto can operate on Enter and Leave events too.  This makes
+  it possible to have autoraising with ClickToFocus and
+  NeverFocus. See -menter and -menterleave options and examples in
+  the FvwmAuto man page.
 
-* New WindowList option IconifiedtAtEnd.
+* The "hangon" strings in FvwmButtons support wildcards.
 
-* Always display the current desk number in the FvwmPager window
-  title.
+* New option "Icon" to PlaceAgain command.
 
-* Allow to bind a function to the focus click and pass it to the
-  application at the same time.
+* New option "FromPointer" and direction "Center" to the Direction
+  command.
 
-* New styles NoBorder and Border to enable or disable window
-  borders.
+* The styles ClickToFocusRaises(Off) and
+  MouseFocusClickRaises(Off) are now different names for the same
+  style.  Configurations that used
 
-* Removed the --enable-multibyte configure option.  Multibyte
-  support is nor compiled in unconditionally.
+    Style * ClickToFocus, ClickToFocusRaises
+    Style * MouseFocusClickRaisesOff
 
-* New FvwmButtons option ActionOnPress enables execution of action
-  on press rather than on release for any specific button.
+  or vice versa no longer work as like before.  Remove the second
+  line to fix the problem.  ClickToFocusRaises now works only on
+  the client part of a window, not on the decorations as it did
+  before.
 
-* Improved CascadePlacement, the last used position is reused if
-  the last placed window does not exist any more.
+* New color limit method for screens that only display 256 colors
+  (or less).
 
-* FvwmIconMan may now change the resolution dynamically, just issue
-  "*FvwmIconMan: resolution page" while FvwmIconMan is running.
+* In depth less or equal to 16 image and gradient can be
+  dithered. This can be enabled/disabled by using the new
+  dither/nodither options to the Colorset command.
 
-* New command XineramaSlsScreens.
+* Many new focus policy styles "FP..." and "!FP...".
 
-* MoveToPage and MoveToDesk no longer unstick windows.
+Removed:
+--------
 
-* It is possible to specify a string encoding in a font name, see
-  the FONT AND STRING ENCODINGS section of fvwm manual page.
+* Removed the old module interface for ConfigureWindow
+  packets. External modules relying on this interface no longer
+  work.
+
+* Removed the styles MouseFocusClickIgnoreMotion and
+  MouseFocusClickIgnoreMotionOff again.

@@ -10,9 +10,17 @@ Changes in alpha release 2.5.4 (not released yet)
   This works *only* for pairs of styles that take no arguments and
   for the Button and NoButton styles.
 
+* New button property Id in FvwmButtons.  FvwmButtons now accepts
+  dynamical actions using SendToModule, see the man page:
+
+    ChangeButton <button-id> <properties-to-change>
+    ExpandButtonVars <button-id> <command-to-expand>
+
 -------------------------------------------------------------------
 
 Changes in alpha release 2.5.3 (25-Aug-2002)
+
+* TitleStyle MultiPixmap now works once again.
 
 * Removed the old module interface for ConfigureWindow
   packets. External modules relying on this interface no longer
