@@ -18,7 +18,7 @@
 #include "../../libs/fvwmlib.h"
 #endif
 
-#if defined ___AIX || defined _AIX || defined __QNX__ || defined ___AIXV3 || defined AIXV3 || defined _SEQUENT_
+#if HAVE_SYS_SELECT_H
 #include <sys/select.h>
 #endif
 
@@ -26,14 +26,6 @@
 
 #ifndef DEFAULT_ACTION
 #define DEFAULT_ACTION "Iconify"
-#endif
-
-#ifndef MAX
-#define MAX(a,b) ((a) > (b) ? (a) : (b))
-#endif
-
-#ifndef MIN
-#define MIN(a,b) ((a) > (b) ? (b) : (a))
 #endif
 
 #define RECTANGLES_INTERSECT(x1,y1,w1,h1,x2,y2,w2,h2) \
@@ -60,6 +52,7 @@ struct malloc_header {
 #endif
 
 #ifdef DMALLOC
+/*  What the heck is this??  */
 #include <dmalloc.h>
 #endif
 

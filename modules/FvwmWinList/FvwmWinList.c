@@ -35,11 +35,6 @@
 #define NO_CONSOLE
 #endif
 
-#ifndef min
-#define min(a,b) (((a)<(b)) ? (a) : (b))
-#define max(a,b) (((a)>(b)) ? (a) : (b))
-#endif
-
 #define YES "Yes"
 #define NO  "No"
 
@@ -52,14 +47,18 @@
 #include <sys/wait.h>
 #include <sys/time.h>
 #include <stdarg.h>
-#if defined ___AIX || defined _AIX || defined __QNX__ || defined ___AIXV3 || defined AIXV3 || defined _SEQUENT_
+
+#if HAVE_SYS_SELECT_H
 #include <sys/select.h>
 #endif
+
 #include <unistd.h>
 #include <ctype.h>
-#ifdef ISC /* Saul */
+
+#ifdef HAVE_SYS_BSDTYPES_H
 #include <sys/bsdtypes.h> /* Saul */
-#endif /* Saul */
+#endif
+
 #include <stdlib.h>
 #include <X11/Xlib.h>
 #include <X11/Xutil.h>
@@ -210,23 +209,15 @@ struct timeval tv;
     FD_SET(x_fd,&readset);
     tv.tv_sec=0;
     tv.tv_usec=0;
-#ifdef __hpux
-    if (!select(fd_width,(int *)&readset,NULL,NULL,&tv)) {
+
+    if (!select(fd_width,SELECT_TYPE_ARG234 &readset,NULL,NULL,&tv)) {
       XPending(dpy);
       FD_ZERO(&readset);
       FD_SET(Fvwm_fd[1],&readset);
       FD_SET(x_fd,&readset);
-      select(fd_width,(int *)&readset,NULL,NULL,NULL);
+      select(fd_width,SELECT_TYPE_ARG234 &readset,NULL,NULL,NULL);
     }
-#else
-    if (!select(fd_width,&readset,NULL,NULL,&tv)) {
-      XPending(dpy);
-      FD_ZERO(&readset);
-      FD_SET(Fvwm_fd[1],&readset);
-      FD_SET(x_fd,&readset);
-      select(fd_width,&readset,NULL,NULL,NULL);
-    }
-#endif
+
     if (FD_ISSET(x_fd,&readset)) LoopOnEvents();
     if (!FD_ISSET(Fvwm_fd[1],&readset)) continue;
     ReadFvwmPipe();

@@ -1,4 +1,4 @@
-# Makefile.in generated automatically by automake 1.3b from Makefile.am
+# Makefile.in generated automatically by automake 1.3d from Makefile.am
 
 # Copyright (C) 1994, 1995, 1996, 1997, 1998 Free Software Foundation, Inc.
 # This Makefile.in is free software; the Free Software Foundation
@@ -11,7 +11,7 @@
 # PARTICULAR PURPOSE.
 
 
-SHELL = /bin/sh
+SHELL = @SHELL@
 
 srcdir = @srcdir@
 top_srcdir = @top_srcdir@
@@ -83,39 +83,8 @@ rplay_LIBS = @rplay_LIBS@
 xpm_CFLAGS = @xpm_CFLAGS@
 xpm_LIBS = @xpm_LIBS@
 
-EXTRA_DIST = Jlock.xpm Jnews.xpm Jrecycle.xpm Jxlock.xpm Mosaic.xpm \
-	   README.mini arrdown2.xpm arrows2.xpm arrup2.xpm bomb.xpm \
-	   ccode.icon clamp.xpm colormap.xpm datebook.xpm default.xbm \
-	   desk.xpm dialog_box.xpm doomface.xpm editres.xpm eps.xpm \
-	   exit.xpm flow_chart.xpm folder2.xpm folders.xpm fvwm.bitmap \
-	   fvwm.xpm fvwm2.xpm fvwm2_big.xpm fvwm3.xpm gnu-animal.xpm \
-	   graphs.xpm hcode.icon jball.xpm jbomb.xpm jbook1.xpm \
-	   jbook2.xpm jcalc.xpm jclock.xpm jf.xpm jgraph.xpm jline.xpm \
-	   jlower.xpm jmag.xpm jmail.xpm jmove.xpm jpaint.xpm \
-	   jraise.xpm jresize.xpm jterm.xpm jwindow.xpm jx.xpm \
-	   mag_glass.xpm mail1.xpm mail2.xpm map.xpm math4.xpm \
-	   mini.audiovol.xpm mini.blah.xpm mini.bomb.xpm \
-	   mini.checkmark.xpm mini.cut.xpm mini.destroy.xpm \
-	   mini.directory.xpm mini.dirlink.xpm mini.excl.xpm \
-	   mini.exit.xpm mini.eye.xpm mini.file.xpm mini.filelink.xpm \
-	   mini.fvwm.xpm mini.iconify.xpm mini.letter.xpm \
-	   mini.lower.xpm mini.maximize-horiz.xpm \
-	   mini.maximize-vert.xpm mini.maximize.xpm mini.maximize2.xpm \
-	   mini.move.xpm mini.netscape.xpm mini.rainbow.xpm \
-	   mini.raise.xpm mini.refresh.xpm mini.resize.xpm \
-	   mini.resize2.xpm mini.stick.xpm mini.stick2.xpm \
-	   mini.stickpressed.xpm mini.winXX-close.xpm \
-	   mini.winXX-maximize.xpm mini.winXX-minimize.xpm \
-	   mini.xarchie.xpm mini.xbiff.xpm mini.xboing.xpm \
-	   mini.xlock.xpm mini.xmag.xpm mini.xman.xpm mini.xpaint.xpm \
-	   mini.xpm mini.xterm.xpm mini.zircon.xpm ocode.icon page.xpm \
-	   page2.xpm prog.icon ps.xpm question.xpm rbomb.xpm rcalc.xpm \
-	   rterm.xpm term.xpm tiff2.xpm toolbox.xpm unknown1.xpm \
-	   wierd_page3.xpm word_processor.xpm world.xpm xcalc.xpm \
-	   xemacs.xpm xlock.xpm xman.xpm xpaint.xpm xterm-axp.xpm \
-	   xterm-blank.xpm xterm-bsd.xpm xterm-dec.xpm xterm-linux.xpm \
-	   xterm-sgi.xpm xterm-sol.xpm xterm-sun.xpm xterm.xpm xv.xpm \
-	   xv2.xpm
+EXTRA_DIST = Jlock.xpm Jnews.xpm Jrecycle.xpm Jxlock.xpm Mosaic.xpm 	   README.mini arrdown2.xpm arrows2.xpm arrup2.xpm bomb.xpm 	   ccode.icon clamp.xpm colormap.xpm datebook.xpm default.xbm 	   desk.xpm dialog_box.xpm doomface.xpm editres.xpm eps.xpm 	   exit.xpm flow_chart.xpm folder2.xpm folders.xpm fvwm.bitmap 	   fvwm.xpm fvwm2.xpm fvwm2_big.xpm fvwm3.xpm gnu-animal.xpm 	   graphs.xpm hcode.icon jball.xpm jbomb.xpm jbook1.xpm 	   jbook2.xpm jcalc.xpm jclock.xpm jf.xpm jgraph.xpm jline.xpm 	   jlower.xpm jmag.xpm jmail.xpm jmove.xpm jpaint.xpm 	   jraise.xpm jresize.xpm jterm.xpm jwindow.xpm jx.xpm 	   mag_glass.xpm mail1.xpm mail2.xpm map.xpm math4.xpm 	   mini.audiovol.xpm mini.blah.xpm mini.bomb.xpm 	   mini.checkmark.xpm mini.cut.xpm mini.destroy.xpm 	   mini.directory.xpm mini.dirlink.xpm mini.excl.xpm 	   mini.exit.xpm mini.eye.xpm mini.file.xpm mini.filelink.xpm 	   mini.fvwm.xpm mini.iconify.xpm mini.letter.xpm 	   mini.lower.xpm mini.maximize-horiz.xpm 	   mini.maximize-vert.xpm mini.maximize.xpm mini.maximize2.xpm 	   mini.move.xpm mini.netscape.xpm mini.rainbow.xpm 	   mini.raise.xpm mini.refresh.xpm mini.resize.xpm 	   mini.resize2.xpm mini.stick.xpm mini.stick2.xpm 	   mini.stickpressed.xpm mini.winXX-close.xpm 	   mini.winXX-maximize.xpm mini.winXX-minimize.xpm 	   mini.xarchie.xpm mini.xbiff.xpm mini.xboing.xpm 	   mini.xlock.xpm mini.xmag.xpm mini.xman.xpm mini.xpaint.xpm 	   mini.xpm mini.xterm.xpm mini.zircon.xpm ocode.icon page.xpm 	   page2.xpm prog.icon ps.xpm question.xpm rbomb.xpm rcalc.xpm 	   rterm.xpm term.xpm tiff2.xpm toolbox.xpm unknown1.xpm 	   wierd_page3.xpm word_processor.xpm world.xpm xcalc.xpm 	   xemacs.xpm xlock.xpm xman.xpm xpaint.xpm xterm-axp.xpm 	   xterm-blank.xpm xterm-bsd.xpm xterm-dec.xpm xterm-linux.xpm 	   xterm-sgi.xpm xterm-sol.xpm xterm-sun.xpm xterm.xpm xv.xpm 	   xv2.xpm
+
 mkinstalldirs = $(SHELL) $(top_srcdir)/mkinstalldirs
 CONFIG_HEADER = ../config.h
 CONFIG_CLEAN_FILES = 
@@ -125,11 +94,10 @@ DIST_COMMON =  ChangeLog Makefile.am Makefile.in
 DISTFILES = $(DIST_COMMON) $(SOURCES) $(HEADERS) $(TEXINFOS) $(EXTRA_DIST)
 
 TAR = tar
-GZIP = --best
-all: Makefile
-
+GZIP_ENV = --best
+all: all-redirect
 .SUFFIXES:
-$(srcdir)/Makefile.in: Makefile.am $(top_srcdir)/configure.in $(ACLOCAL_M4)
+$(srcdir)/Makefile.in: Makefile.am $(top_srcdir)/configure.in $(ACLOCAL_M4) 
 	cd $(top_srcdir) && $(AUTOMAKE) --gnu icons/Makefile
 
 Makefile: $(srcdir)/Makefile.in  $(top_builddir)/config.status $(BUILT_SOURCES)
@@ -152,25 +120,35 @@ distdir: $(DISTFILES)
 	  && $(AUTOMAKE) --include-deps --build-dir=$$here --srcdir-name=$(top_srcdir) --output-dir=$$top_distdir --gnu icons/Makefile
 	@for file in $(DISTFILES); do \
 	  d=$(srcdir); \
-	  test -f $(distdir)/$$file \
-	  || ln $$d/$$file $(distdir)/$$file 2> /dev/null \
-	  || cp -p $$d/$$file $(distdir)/$$file; \
+	  if test -d $$d/$$file; then \
+	    cp -pr $$/$$file $(distdir)/$$file; \
+	  else \
+	    test -f $(distdir)/$$file \
+	    || ln $$d/$$file $(distdir)/$$file 2> /dev/null \
+	    || cp -p $$d/$$file $(distdir)/$$file; \
+	  fi; \
 	done
-info:
-dvi:
-check: all
-installcheck:
-install-exec: 
-	@$(NORMAL_INSTALL)
+info-am:
+info: info-am
+dvi-am:
+dvi: dvi-am
+check-am: all-am
+check: check-am
+installcheck-am:
+installcheck: installcheck-am
+install-exec-am:
+install-exec: install-exec-am
 
-install-data: 
-	@$(NORMAL_INSTALL)
+install-data-am:
+install-data: install-data-am
 
-install: install-exec install-data all
-	@:
-
-uninstall: 
-
+install-am: all-am
+	@$(MAKE) $(AM_MAKEFLAGS) install-exec-am install-data-am
+install: install-am
+uninstall-am:
+uninstall: uninstall-am
+all-am: Makefile
+all-redirect: all-am
 install-strip:
 	$(MAKE) $(AM_MAKEFLAGS) INSTALL_PROGRAM='$(INSTALL_PROGRAM) -s' INSTALL_SCRIPT='$(INSTALL_PROGRAM)' install
 installdirs:
@@ -185,21 +163,30 @@ distclean-generic:
 	-rm -f config.cache config.log stamp-h stamp-h[0-9]*
 
 maintainer-clean-generic:
-mostlyclean:  mostlyclean-generic
+mostlyclean-am:  mostlyclean-generic
 
-clean:  clean-generic mostlyclean
+mostlyclean: mostlyclean-am
 
-distclean:  distclean-generic clean
-	-rm -f config.status
+clean-am:  clean-generic mostlyclean-am
 
-maintainer-clean:  maintainer-clean-generic distclean
+clean: clean-am
+
+distclean-am:  distclean-generic clean-am
+
+distclean: distclean-am
+
+maintainer-clean-am:  maintainer-clean-generic distclean-am
 	@echo "This command is intended for maintainers to use;"
 	@echo "it deletes files that may require special tools to rebuild."
 
-.PHONY: tags distdir info dvi installcheck install-exec install-data \
-install uninstall all installdirs mostlyclean-generic distclean-generic \
-clean-generic maintainer-clean-generic clean mostlyclean distclean \
-maintainer-clean
+maintainer-clean: maintainer-clean-am
+
+.PHONY: tags distdir info-am info dvi-am dvi check check-am \
+installcheck-am installcheck install-exec-am install-exec \
+install-data-am install-data install-am install uninstall-am uninstall \
+all-redirect all-am all installdirs mostlyclean-generic \
+distclean-generic clean-generic maintainer-clean-generic clean \
+mostlyclean distclean maintainer-clean
 
 
 # Tell versions [3.59,3.63) of GNU make to not export all variables.

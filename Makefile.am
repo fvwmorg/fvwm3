@@ -3,7 +3,7 @@
 ## Make sure we have a current version of automake
 AUTOMAKE_OPTIONS = 1.3b
 
-SUBDIRS = libs fvwm modules @EXTRA_MODULES@ utils xpmroot \
+SUBDIRS = libs fvwm modules @EXTRA_MODULES@ utils \
 	docs icons sample.fvwmrc
 EXTRA_SUBDIRS = extras
 

@@ -163,19 +163,12 @@ struct timeval tv;
     FD_SET(Fvwm_fd[1],&readset);
     tv.tv_sec=0;
     tv.tv_usec=0;
-#ifdef __hpux
-    if (!select(fd_width,(int *)&readset,NULL,NULL,&tv)) {
+
+    if (!select(fd_width,SELECT_TYPE_ARG234 &readset,NULL,NULL,&tv)) {
       FD_ZERO(&readset);
       FD_SET(Fvwm_fd[1],&readset);
-      select(fd_width,(int *)&readset,NULL,NULL,NULL);
+      select(fd_width,SELECT_TYPE_ARG234 &readset,NULL,NULL,NULL);
     }
-#else
-    if (!select(fd_width,&readset,NULL,NULL,&tv)) {
-      FD_ZERO(&readset);
-      FD_SET(Fvwm_fd[1],&readset);
-      select(fd_width,&readset,NULL,NULL,NULL);
-    }
-#endif
 
     if (!FD_ISSET(Fvwm_fd[1],&readset)) continue;
     ReadFvwmPipe();

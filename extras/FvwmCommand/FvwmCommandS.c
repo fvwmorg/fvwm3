@@ -117,7 +117,7 @@ void server ( char *name ) {
     FD_SET(Ffdr, &fdset);
     FD_SET(Fd[1], &fdset);
 
-    if (_select(FD_SETSIZE,&fdset, 0, 0, NULL) < 0) {
+    if (select(FD_SETSIZE, SELECT_TYPE_ARG234 &fdset, 0, 0, NULL) < 0) {
       if (errno == EINTR) {
 	continue;
       }
@@ -388,7 +388,7 @@ int write_f (int fd, char *p, int len) {
 	continue;
       } else if (errno==EAGAIN ) {
 	if (again++ < 5) {
-	  _select(0, 0, 0, 0, &tv);
+	  select(0, 0, 0, 0, &tv);
 	  continue;
 	}else{
 	  if (giveup++ > 20) {

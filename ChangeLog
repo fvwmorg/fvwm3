@@ -7,6 +7,12 @@
 	* FVWM-managed windows from being raised above override_redirect
 	* windows.
 
+Sat Jan  9 08:20:08 1999  Steve Robbins  <steve@nyongwa.montreal.qc.ca>
+
+	* xpmroot/*: Moved into utils directory.
+	* utils/xpmroot.c: Removed dead code (yet another version of
+	strcasecmp).
+
 1999-01-07  Dominik Vogt  <dominik_vogt@hp.com>
 
 	* **/*: Applied tons of cosmetic fixes from the Red Hat patches

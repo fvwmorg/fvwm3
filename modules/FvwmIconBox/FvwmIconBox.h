@@ -176,11 +176,6 @@ extern int icon_relief;
 #define RESNAME    3
 #define RESCLASS   4
 
-#ifndef min
-#define min(a,b) (((a)<(b)) ? (a) : (b))
-#define max(a,b) (((a)>(b)) ? (a) : (b))
-#endif
-
 /* local flags */
 #define HIDE_H        (1<<0)
 #define HIDE_V        (1<<1)

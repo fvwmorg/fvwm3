@@ -1,3 +1,38 @@
+Sun Jan 10 15:14:22 1999  Steve Robbins  <steve@nyongwa.montreal.qc.ca>
+
+	* FvwmTaskBar/Colors.c: 
+	* FvwmGoodStuff/FvwmGoodStuff.c (GetHilite): Removed min & max
+	macros; they are already in config.h.
+
+Sun Jan 10 15:11:15 1999  Steve Robbins  <steve@nyongwa.montreal.qc.ca>
+
+	* FvwmCommand/FvwmCommand.c: 
+	* FvwmCommand/FvwmCommand.h: Replaced select() code conditional on
+	__hpux with code that uses SELECT_TYPE_ARG234.
+
+Sun Jan 10 15:08:43 1999  Steve Robbins  <steve@nyongwa.montreal.qc.ca>
+
+	* FvwmCommand/FvwmCommand.h: Replaced __linux with HAVE_GETOPT_H.
+
+Sun Jan 10 15:05:33 1999  Steve Robbins  <steve@nyongwa.montreal.qc.ca>
+
+	* FvwmWharf/icons.c: 
+	* FvwmGoodStuff/icons.c: Replaced NeXT with HAVE_FNCTL_H.
+
+Sun Jan 10 15:03:26 1999  Steve Robbins  <steve@nyongwa.montreal.qc.ca>
+
+	* FvwmGoodStuff/FvwmGoodStuff.c: 
+	* FvwmTaskBar/FvwmTaskBar.c: 
+	* FvwmWharf/FvwmWharf.c: Replaced messy set of symbols with
+	HAVE_SYS_SELECT_H. 
+
+Sun Jan 10 15:01:37 1999  Steve Robbins  <steve@nyongwa.montreal.qc.ca>
+
+	* FvwmWharf/FvwmWharf.c: 
+	* FvwmTaskBar/FvwmTaskBar.c: 
+	* FvwmGoodStuff/FvwmGoodStuff.c: Replaced symbol ISC with
+	HAVE_SYS_BSDTYPES_H.
+
 1999-01-08  Dominik Vogt  <dominik_vogt@hp.com>
 
 	* FvwmTaskBar/**: some general cleanup

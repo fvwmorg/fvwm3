@@ -12,7 +12,7 @@
 
 #include "config.h"
 
-#ifdef ISC
+#ifdef HAVE_SYS_BSDTYPES_H
 #include <sys/bsdtypes.h> /* Saul */
 #endif
 
@@ -22,9 +22,11 @@
 #include <string.h>
 #include <sys/wait.h>
 #include <sys/time.h>
-#if defined ___AIX || defined _AIX || defined __QNX__ || defined ___AIXV3 || defined AIXV3 || defined _SEQUENT_
+
+#if HAVE_SYS_SELECT_H
 #include <sys/select.h>
 #endif
+
 #include <unistd.h>
 #include <ctype.h>
 #include <stdlib.h>
@@ -987,11 +989,6 @@ Pixel GetHilite(Pixel background)
 
   white_p.pixel = GetColor("white");
   XQueryColor(dpy,attributes.colormap,&white_p);
-
-#ifndef min
-#define min(a,b) (((a)<(b)) ? (a) : (b))
-#define max(a,b) (((a)>(b)) ? (a) : (b))
-#endif
 
   bg_color.red = max((white_p.red/5), bg_color.red);
   bg_color.green = max((white_p.green/5), bg_color.green);

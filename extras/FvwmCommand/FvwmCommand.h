@@ -5,15 +5,6 @@
 #include <sys/select.h>
 #endif
 
-
-#ifdef __hpux
-#define  _select( s, fd, r, w, t ) \
-			select(s,(int *)fd, r, w, t)
-#else
-#define	 _select(s, fd, r, w, t) \
-			select(s, fd, r, w, t)
-#endif
-
 #include <unistd.h>
 #include <stdlib.h>
 #include <stdio.h>
@@ -23,7 +14,7 @@
 #include <sys/time.h>
 #include <sys/wait.h>
 
-#if defined __linux
+#if HAVE_GETOPT_H
 #include <getopt.h>
 #endif
 

@@ -14,7 +14,9 @@
 
 /* ------------------------------- includes -------------------------------- */
 
-#ifdef ISC
+#include "config.h"
+
+#ifdef HAVE_SYS_BSDTYPES_H
 #include <sys/bsdtypes.h> /* Saul */
 #endif
 

@@ -31,14 +31,18 @@
 #include <sys/time.h>
 #include <sys/stat.h>
 #include <stdarg.h>
-#if defined ___AIX || defined _AIX || defined __QNX__ || defined ___AIXV3 || defined AIXV3 || defined _SEQUENT_
+
+#if HAVE_SYS_SELECT_H
 #include <sys/select.h>
 #endif
+
 #include <unistd.h>
 #include <ctype.h>
-#ifdef ISC /* Saul */
+
+#ifdef HAVE_SYS_BSDTYPES_H
 #include <sys/bsdtypes.h> /* Saul */
 #endif /* Saul */
+
 #include <stdlib.h>
 #include <X11/Xlib.h>
 #include <X11/Xutil.h>

@@ -6,7 +6,7 @@
  ***************************************************************************/
 
 #include "config.h"
-#ifdef ISC
+#ifdef HAVE_SYS_BSDTYPES_H
 #include <sys/bsdtypes.h> /* Saul */
 #endif
 
@@ -210,11 +210,9 @@ int main(int argc, char **argv)
     FD_SET(x_fd,&in_fdset);
 
     if(!XPending(dpy))
-#ifdef __hpux
-      retval=select(fd_width,(int *)&in_fdset, 0, 0, &value);
-#else
-      retval=select(fd_width,&in_fdset, 0, 0, &value);
-#endif
+
+      retval=select(fd_width,SELECT_TYPE_ARG234 &in_fdset, 0, 0, &value);
+
     if (retval==0)
     {
       XDestroyWindow(dpy,win);

@@ -160,3 +160,14 @@
 #ifndef HAVE_MEMMOVE
 #  define memmove(_d,_s,_l) bcopy((_s),(_d),(_l))
 #endif
+
+#ifndef min
+#  define min(a,b) (((a)<(b)) ? (a) : (b))
+#endif
+#ifndef max
+#  define max(a,b) (((a)>(b)) ? (a) : (b))
+#endif
+#ifndef abs
+#  define abs(a) (((a)>=0)?(a):-(a))
+#endif
+

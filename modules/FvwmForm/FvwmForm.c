@@ -15,7 +15,8 @@
 #include <sys/types.h>
 #include <sys/time.h>
 #include <fcntl.h>
-#if defined ___AIX || defined _AIX || defined ___AIXV3
+
+#if HAVE_SYS_SELECT_H
 #include <sys/select.h>
 #endif
 

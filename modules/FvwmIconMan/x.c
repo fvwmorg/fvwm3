@@ -1,3 +1,4 @@
+#include "config.h"
 #include "FvwmIconMan.h"
 #include "readconfig.h"
 #include "x.h"
@@ -566,7 +567,7 @@ void X_init_manager (int man_id)
     if (val & WidthValue)
       man->geometry.boxwidth = width;
     if (val & HeightValue)
-      man->geometry.boxheight = MAX (man->geometry.boxheight, height);
+      man->geometry.boxheight = max (man->geometry.boxheight, height);
   }
   if (man->geometry_str) {
     geometry_mask = XParseGeometry (man->geometry_str, &man->geometry.x,

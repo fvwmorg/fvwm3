@@ -15,7 +15,7 @@
 /* ------------------------------- includes -------------------------------- */
 #include "config.h"
 
-#ifdef ISC
+#ifdef HAVE_SYS_BSDTYPES_H
 #include <sys/bsdtypes.h> /* Saul */
 #endif
 
@@ -29,7 +29,8 @@
 #include <sys/wait.h>
 #include <sys/time.h>
 #include <sys/stat.h>
-#if defined ___AIX || defined _AIX || defined __QNX__ || defined ___AIXV3 || defined AIXV3 || defined _SEQUENT_
+
+#if HAVE_SYS_SELECT_H
 #include <sys/select.h>
 #endif
 
@@ -1545,11 +1546,7 @@ int My_XNextEvent(Display *Dpy, XEvent *event)
   FD_SET(x_fd,&in_fdset);
   FD_SET(fd[1],&in_fdset);
 
-#ifdef __hpux
-  if (select(fd_width,(int *)&in_fdset, 0, 0, NULL) > 0)
-#else
-  if (select(fd_width,&in_fdset, 0, 0, NULL) > 0)
-#endif
+  if (select(fd_width,SELECT_TYPE_ARG234 &in_fdset, 0, 0, NULL) > 0)
   {
 
   if(FD_ISSET(x_fd, &in_fdset))

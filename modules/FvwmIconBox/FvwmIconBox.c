@@ -19,7 +19,7 @@
 
 #include "config.h"
 
-#ifdef ISC
+#ifdef HAVE_SYS_BSDTYPES_H
 #include <sys/bsdtypes.h> /* Saul */
 #endif
 
@@ -29,9 +29,11 @@
 #include <string.h>
 #include <sys/wait.h>
 #include <sys/time.h>
-#if defined ___AIX || defined _AIX || defined __QNX__ || defined ___AIXV3 || defined AIXV3 || defined _SEQUENT_
+
+#if HAVE_SYS_SELECT_H
 #include <sys/select.h>
 #endif
+
 #include <unistd.h>
 #include <ctype.h>
 #include <stdlib.h>
@@ -42,6 +44,7 @@
 #include <X11/Xproto.h>
 #include <X11/Xatom.h>
 #include <X11/Intrinsic.h>
+
 #ifdef SHAPE
 #include <X11/extensions/shape.h>
 #endif /* SHAPE */
@@ -1783,12 +1786,7 @@ int My_XNextEvent(Display *dpy, XEvent *event)
   FD_SET(x_fd,&in_fdset);
   FD_SET(fd[1],&in_fdset);
 
-#ifdef __hpux
-  select(fd_width,(int *)&in_fdset, 0, 0, NULL);
-#else
-  select(fd_width,&in_fdset, 0, 0, NULL);
-#endif
-
+  select(fd_width,SELECT_TYPE_ARG234 &in_fdset, 0, 0, NULL);
 
   if(FD_ISSET(x_fd, &in_fdset))
     {

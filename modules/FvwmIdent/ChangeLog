@@ -1,5 +1,0 @@
-Thu Nov 19 16:23:33 1998  DanEspen  <dje@blue>
-
-	* FvwmIdent.c (MakeList): Display min and max aspect ratios if the
- 	window has them.
-

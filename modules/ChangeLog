@@ -1,3 +1,58 @@
+Sun Jan 10 14:45:31 1999  Steve Robbins  <steve@nyongwa.montreal.qc.ca>
+
+	* FvwmIdent/ChangeLog: Removed and merged single entry into this file.
+
+Sun Jan 10 14:43:37 1999  Steve Robbins  <steve@nyongwa.montreal.qc.ca>
+
+	* FvwmWinList/FvwmWinList.c (EndLessLoop): 
+	* FvwmTalk/FvwmTalk.c (My_XNextEvent): 
+	* FvwmPager/FvwmPager.c (My_XNextEvent): 
+	* FvwmIconBox/FvwmIconBox.c (My_XNextEvent): 
+	* FvwmButtons/FvwmButtons.c (My_XNextEvent): 
+	* FvwmBanner/FvwmBanner.c (main): 
+	* FvwmBacker/FvwmBacker.c (EndLessLoop): Fixed select() call to
+	use SELECT_TYPE_ARG234; removed alternate code conditional on
+	__hpux symbol.
+
+Sun Jan 10 14:33:29 1999  Steve Robbins  <steve@nyongwa.montreal.qc.ca>
+
+	* FvwmAuto/FvwmAuto.c: Replaced HPUX_CAST with SELECT_TYPE_ARG234.
+
+Sun Jan 10 14:31:32 1999  Steve Robbins  <steve@nyongwa.montreal.qc.ca>
+
+	* FvwmForm/FvwmForm.c: 
+	* FvwmTalk/FvwmTalk.c: 
+	* FvwmScroll/GrabWindow.c: 
+	* FvwmIdent/FvwmIdent.c:
+	* FvwmIconBox/FvwmIconBox.c: 
+	* FvwmButtons/FvwmButtons.c: Replaced messy bunch of symbols with
+	HAVE_SYS_SELECT_H.
+
+Sun Jan 10 14:19:21 1999  Steve Robbins  <steve@nyongwa.montreal.qc.ca>
+
+	* FvwmIconBox/icons.c: 
+	* FvwmButtons/icons.c: Replaced NeXT with HAVE_FCNTL_H.
+
+Sat Jan  9 09:19:20 1999  Steve Robbins  <steve@nyongwa.montreal.qc.ca>
+
+	* FvwmWinList/FvwmWinList.c: 
+	* FvwmTalk/FvwmTalk.c: 
+	* FvwmScroll/GrabWindow.c: 
+	* FvwmRearrange/FvwmRearrange.c: 
+	* FvwmPager/FvwmPager.c: 
+	* FvwmIconBox/FvwmIconBox.c: 
+	* FvwmButtons/draw.c: 
+	* FvwmButtons/FvwmButtons.c: 
+	* FvwmBanner/FvwmBanner.c: Replaced ISC with HAVE_SYS_BSDTYPES_H.
+
+Sat Jan  9 08:52:19 1999  Steve Robbins  <steve@nyongwa.montreal.qc.ca>
+
+	* FvwmWinList/ButtonArray.c: 
+	* FvwmWinList/Colors.c: 
+	* FvwmWinList/FvwmWinList.c: 
+	* FvwmIconBox/FvwmIconBox.h: 
+	* FvwmButtons/FvwmButtons.h: Moved min/max/abs macros to acconfig.h.
+
 1999-01-08  Paul D. Smith  <psmith@gnu.org>
 
 	* FvwmPager/FvwmPager.c (main): Remove USE_POSIX/USE_BSD stuff;
@@ -241,6 +296,11 @@ Sun Jan  3 14:07:43 1999  Steve Robbins  <steve@nyongwa.montreal.qc.ca>
 
 	* FvwmButtons/FvwmButtons.1: Added BUGS section to point out frequent
 	problems with Swallow (action has to be quoted).
+
+Thu Nov 19 16:23:33 1998  DanEspen  <dje@blue>
+
+	* FvwmIdent/FvwmIdent.c (MakeList): Display min and max aspect
+	ratios if the window has them.
 
 1998-11-19  Dominik Vogt  <dominik_vogt@hp.com>
 

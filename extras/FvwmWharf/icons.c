@@ -31,7 +31,7 @@
 #include <X11/Xatom.h>
 #include <X11/Intrinsic.h>
 
-#ifdef NeXT
+#ifdef HAVE_FCNTL_H
 #include <fcntl.h>
 #endif
 

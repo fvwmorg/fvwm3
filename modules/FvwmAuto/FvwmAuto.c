@@ -44,11 +44,6 @@
 #include "../../fvwm/module.h"
 #include "../../libs/fvwmlib.h"
 
-#ifdef __hpux
-# define HPUX_CAST (int *)
-#else
-# define HPUX_CAST
-#endif
 
 /***********************************************************************
  *
@@ -134,7 +129,7 @@ int main(int argc, char **argv)
 	    delay->tv_sec = sec;
 	    delay->tv_usec = usec;
 	}
-	select(fd_width, HPUX_CAST &in_fdset, 0, 0,
+	select(fd_width, SELECT_TYPE_ARG234 &in_fdset, 0, 0,
 	       (focus_win == last_win) ? NULL : delay);
 #ifdef DEBUG
 	    fprintf(stderr,"[FvwmAuto]: after select:  focus_win: 0x%08lx, last_win: 0x%08lx\n",focus_win, last_win);

@@ -13,7 +13,7 @@
 
 #include "config.h"
 
-#ifdef ISC
+#ifdef HAVE_SYS_BSDTYPES_H
 #include <sys/bsdtypes.h> /* Saul */
 #endif
 
@@ -23,7 +23,8 @@
 #include <string.h>
 #include <sys/wait.h>
 #include <sys/time.h>
-#if defined ___AIX || defined _AIX || defined __QNX__ || defined ___AIXV3 || defined AIXV3 || defined _SEQUENT_
+
+#if HAVE_SYS_SELECT_H
 #include <sys/select.h>
 #endif
 #include <unistd.h>

@@ -21,11 +21,6 @@
 #include <X11/Xlib.h>
 #include "Colors.h"
 
-#ifndef min
-#define min(a,b) (((a)<(b)) ? (a) : (b))
-#define max(a,b) (((a)>(b)) ? (a) : (b))
-#endif
-
 extern Display *dpy;
 extern Window Root;
 extern char *Module;

@@ -1,4 +1,4 @@
-# Makefile.in generated automatically by automake 1.3b from Makefile.am
+# Makefile.in generated automatically by automake 1.3d from Makefile.am
 
 # Copyright (C) 1994, 1995, 1996, 1997, 1998 Free Software Foundation, Inc.
 # This Makefile.in is free software; the Free Software Foundation
@@ -11,7 +11,7 @@
 # PARTICULAR PURPOSE.
 
 
-SHELL = /bin/sh
+SHELL = @SHELL@
 
 srcdir = @srcdir@
 top_srcdir = @top_srcdir@
@@ -91,8 +91,8 @@ FvwmGoodStuff_DEPENDENCIES = $(top_builddir)/libs/libfvwm.a
 man_MANS = FvwmGoodStuff.1
 EXTRA_DIST = $(man_MANS)
 
-LDADD = -L$(top_builddir)/libs -lfvwm \
-	$(xpm_LIBS) $(X_LIBS) $(X_PRE_LIBS) -lXext -lX11 $(X_EXTRA_LIBS)
+LDADD = -L$(top_builddir)/libs -lfvwm 	$(xpm_LIBS) $(X_LIBS) $(X_PRE_LIBS) -lXext -lX11 $(X_EXTRA_LIBS)
+
 
 INCLUDES = -I$(top_srcdir)/libs $(X_CFLAGS) $(xpm_CFLAGS)
 mkinstalldirs = $(SHELL) $(top_srcdir)/mkinstalldirs
@@ -114,7 +114,8 @@ FvwmGoodStuff_LDADD = $(LDADD)
 FvwmGoodStuff_LDFLAGS = 
 CFLAGS = @CFLAGS@
 COMPILE = $(CC) $(DEFS) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS)
-LINK = $(CC) $(AM_CFLAGS) $(CFLAGS) $(LDFLAGS) -o $@
+CCLD = $(CC)
+LINK = $(CCLD) $(AM_CFLAGS) $(CFLAGS) $(LDFLAGS) -o $@
 man1dir = $(mandir)/man1
 MANS = $(man_MANS)
 
@@ -125,16 +126,15 @@ DIST_COMMON =  Makefile.am Makefile.in
 DISTFILES = $(DIST_COMMON) $(SOURCES) $(HEADERS) $(TEXINFOS) $(EXTRA_DIST)
 
 TAR = tar
-GZIP = --best
+GZIP_ENV = --best
 DEP_FILES =  .deps/FvwmGoodStuff.P .deps/icons.P
 SOURCES = $(FvwmGoodStuff_SOURCES)
 OBJECTS = $(FvwmGoodStuff_OBJECTS)
 
-all: Makefile $(PROGRAMS) $(MANS)
-
+all: all-redirect
 .SUFFIXES:
 .SUFFIXES: .S .c .o .s
-$(srcdir)/Makefile.in: Makefile.am $(top_srcdir)/configure.in $(ACLOCAL_M4)
+$(srcdir)/Makefile.in: Makefile.am $(top_srcdir)/configure.in $(ACLOCAL_M4) 
 	cd $(top_srcdir) && $(AUTOMAKE) --gnu extras/FvwmGoodStuff/Makefile
 
 Makefile: $(srcdir)/Makefile.in  $(top_builddir)/config.status $(BUILT_SOURCES)
@@ -263,9 +263,13 @@ distdir: $(DISTFILES)
 	  && $(AUTOMAKE) --include-deps --build-dir=$$here --srcdir-name=$(top_srcdir) --output-dir=$$top_distdir --gnu extras/FvwmGoodStuff/Makefile
 	@for file in $(DISTFILES); do \
 	  d=$(srcdir); \
-	  test -f $(distdir)/$$file \
-	  || ln $$d/$$file $(distdir)/$$file 2> /dev/null \
-	  || cp -p $$d/$$file $(distdir)/$$file; \
+	  if test -d $$d/$$file; then \
+	    cp -pr $$/$$file $(distdir)/$$file; \
+	  else \
+	    test -f $(distdir)/$$file \
+	    || ln $$d/$$file $(distdir)/$$file 2> /dev/null \
+	    || cp -p $$d/$$file $(distdir)/$$file; \
+	  fi; \
 	done
 
 DEPS_MAGIC := $(shell mkdir .deps > /dev/null 2>&1 || :)
@@ -283,29 +287,43 @@ maintainer-clean-depend:
 
 %.o: %.c
 	@echo '$(COMPILE) -c $<'; \
-	$(COMPILE) -Wp,-MD,.deps/$(*F).P -c $<
+	$(COMPILE) -Wp,-MD,.deps/$(*F).p -c $<
+	@-cp .deps/$(*F).p .deps/$(*F).P; \
+	tr '\\ ' '\n\n' < .deps/$(*F).p \
+	  | sed -e '/^$$/ d' -e '/:$$/ d' -e 's/$$/ :/' \
+	    >> .deps/$(*F).P; \
+	rm .deps/$(*F).p
 
 %.lo: %.c
 	@echo '$(LTCOMPILE) -c $<'; \
 	$(LTCOMPILE) -Wp,-MD,.deps/$(*F).p -c $<
-	@-sed -e 's/^\([^:]*\)\.o:/\1.lo \1.o:/' \
-	  < .deps/$(*F).p > .deps/$(*F).P
-	@-rm -f .deps/$(*F).p
-info:
-dvi:
-check: all
-installcheck:
-install-exec: 
-	@$(NORMAL_INSTALL)
+	@-sed -e 's/^\([^:]*\)\.o[ 	]*:/\1.lo \1.o :/' \
+	  < .deps/$(*F).p > .deps/$(*F).P; \
+	tr '\\ ' '\n\n' < .deps/$(*F).p \
+	  | sed -e '/^$$/ d' -e '/:$$/ d' -e 's/$$/ :/' \
+	    >> .deps/$(*F).P; \
+	rm -f .deps/$(*F).p
+info-am:
+info: info-am
+dvi-am:
+dvi: dvi-am
+check-am: all-am
+check: check-am
+installcheck-am:
+installcheck: installcheck-am
+install-exec-am:
+install-exec: install-exec-am
 
-install-data: install-modulePROGRAMS install-man
-	@$(NORMAL_INSTALL)
+install-data-am: install-modulePROGRAMS install-man
+install-data: install-data-am
 
-install: install-exec install-data all
-	@:
-
-uninstall: uninstall-modulePROGRAMS uninstall-man
-
+install-am: all-am
+	@$(MAKE) $(AM_MAKEFLAGS) install-exec-am install-data-am
+install: install-am
+uninstall-am: uninstall-modulePROGRAMS uninstall-man
+uninstall: uninstall-am
+all-am: Makefile $(PROGRAMS) $(MANS)
+all-redirect: all-am
 install-strip:
 	$(MAKE) $(AM_MAKEFLAGS) INSTALL_PROGRAM='$(INSTALL_PROGRAM) -s' INSTALL_SCRIPT='$(INSTALL_PROGRAM)' install
 installdirs:
@@ -321,22 +339,29 @@ distclean-generic:
 	-rm -f config.cache config.log stamp-h stamp-h[0-9]*
 
 maintainer-clean-generic:
-mostlyclean:  mostlyclean-modulePROGRAMS mostlyclean-compile \
+mostlyclean-am:  mostlyclean-modulePROGRAMS mostlyclean-compile \
 		mostlyclean-tags mostlyclean-depend mostlyclean-generic
 
-clean:  clean-modulePROGRAMS clean-compile clean-tags clean-depend \
-		clean-generic mostlyclean
+mostlyclean: mostlyclean-am
 
-distclean:  distclean-modulePROGRAMS distclean-compile distclean-tags \
-		distclean-depend distclean-generic clean
-	-rm -f config.status
+clean-am:  clean-modulePROGRAMS clean-compile clean-tags clean-depend \
+		clean-generic mostlyclean-am
 
-maintainer-clean:  maintainer-clean-modulePROGRAMS \
+clean: clean-am
+
+distclean-am:  distclean-modulePROGRAMS distclean-compile distclean-tags \
+		distclean-depend distclean-generic clean-am
+
+distclean: distclean-am
+
+maintainer-clean-am:  maintainer-clean-modulePROGRAMS \
 		maintainer-clean-compile maintainer-clean-tags \
 		maintainer-clean-depend maintainer-clean-generic \
-		distclean
+		distclean-am
 	@echo "This command is intended for maintainers to use;"
 	@echo "it deletes files that may require special tools to rebuild."
+
+maintainer-clean: maintainer-clean-am
 
 .PHONY: mostlyclean-modulePROGRAMS distclean-modulePROGRAMS \
 clean-modulePROGRAMS maintainer-clean-modulePROGRAMS \
@@ -345,10 +370,12 @@ distclean-compile clean-compile maintainer-clean-compile install-man1 \
 uninstall-man1 install-man uninstall-man tags mostlyclean-tags \
 distclean-tags clean-tags maintainer-clean-tags distdir \
 mostlyclean-depend distclean-depend clean-depend \
-maintainer-clean-depend info dvi installcheck install-exec install-data \
-install uninstall all installdirs mostlyclean-generic distclean-generic \
-clean-generic maintainer-clean-generic clean mostlyclean distclean \
-maintainer-clean
+maintainer-clean-depend info-am info dvi-am dvi check check-am \
+installcheck-am installcheck install-exec-am install-exec \
+install-data-am install-data install-am install uninstall-am uninstall \
+all-redirect all-am all installdirs mostlyclean-generic \
+distclean-generic clean-generic maintainer-clean-generic clean \
+mostlyclean distclean maintainer-clean
 
 
 # Tell versions [3.59,3.63) of GNU make to not export all variables.

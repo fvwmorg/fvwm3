@@ -12,11 +12,8 @@
 #include "x.h"
 #include "xmanager.h"
 
-#ifdef COMPILE_STANDALONE
-#include "module.h"
-#else
 #include "../../fvwm/module.h"
-#endif
+
 
 static int fd_width;
 static volatile sig_atomic_t isTerminated = False;

@@ -32,7 +32,7 @@
 
 #include "../../fvwm/module.h"
 
-#ifdef NeXT
+#ifdef HAVE_FCNTL_H
 #include <fcntl.h>
 #endif
 
@@ -41,6 +41,7 @@
 #ifdef XPM
 #include <X11/xpm.h>
 #endif /* XPM */
+
 #ifdef SHAPE
 #include <X11/extensions/shape.h>
 #endif /* SHAPE */
