@@ -210,8 +210,8 @@ void HandleFocusIn(void)
     }
     /* Not very useful if no window that fvwm and its modules know about has the
      * focus. */
-    fc = GetColor("White");
-    bc = GetColor("Black");
+    fc = GetColor(DEFAULT_FORE_COLOR);
+    bc = GetColor(DEFAULT_BACK_COLOR);
   }
   else if (Tmp_win != Scr.Hilite
 	   /* domivogt (16-May-2000): This check is necessary to force sending

@@ -1682,7 +1682,7 @@ static void CreateGCs(void)
   Scr.ScratchGC2 = fvwmlib_XCreateGC(dpy, Scr.NoFocusWin, gcm, &gcv);
   Scr.TitleGC = fvwmlib_XCreateGC(dpy, Scr.NoFocusWin, gcm, &gcv);
   Scr.TransMaskGC = fvwmlib_XCreateGC(dpy, Scr.NoFocusWin, gcm, &gcv);
-  c.pixel = GetColor("Black");
+  c.pixel = GetColor(DEFAULT_FORE_COLOR);
   Scr.ScratchMonoPixmap = XCreatePixmap(dpy, Scr.Root, 1, 1, 1);
   Scr.MonoGC = fvwmlib_XCreateGC(dpy, Scr.ScratchMonoPixmap, gcm, &gcv);
 }
@@ -1714,8 +1714,8 @@ static void InitVariables(void)
   AllocColorset(0);
   /* set up colorset 0 so that if FvwmTheme fails to start any modules
    * using colorsets don't appear black on black */
-  Colorset[0].fg = Scr.StdFore = GetColor("black");
-  Colorset[0].bg = Scr.StdBack = GetColor("gray");
+  Colorset[0].fg = Scr.StdFore = GetColor(DEFAULT_FORE_COLOR);
+  Colorset[0].bg = Scr.StdBack = GetColor(DEFAULT_BACK_COLOR);
   Colorset[0].hilite = Scr.StdHilite = GetHilite(Scr.StdBack);
   Colorset[0].shadow = Scr.StdShadow = GetShadow(Scr.StdBack);
   Scr.StdGC = 0;

@@ -459,8 +459,8 @@ void CursorStyle(F_CMD_ARGS)
 	  return;
 	}
 
-	colors[0].pixel = GetColor("Black");
-	colors[1].pixel = GetColor("White");
+	colors[0].pixel = GetColor(DEFAULT_CURSOR_FORE_COLOR);
+	colors[1].pixel = GetColor(DEFAULT_CURSOR_BACK_COLOR);
 	XQueryColors (dpy, Pcmap, colors, 2);
 
 	if (Scr.FvwmCursors[index])

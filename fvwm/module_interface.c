@@ -1531,8 +1531,8 @@ void send_list_func(XEvent *eventp, Window w, FvwmWindow *tmp_win,
       {
 	SendPacket(*Module, M_FOCUS_CHANGE, 5,
                    0, 0, (unsigned long)True,
-                   GetColor("White"),
-                   GetColor("Black"));
+                   GetColor(DEFAULT_FORE_COLOR),
+                   GetColor(DEFAULT_BACK_COLOR));
       }
       if (Scr.DefaultIcon != NULL)
 	SendName(*Module, M_DEFAULTICON, 0, 0, 0, Scr.DefaultIcon);
@@ -1582,8 +1582,8 @@ void send_list_func(XEvent *eventp, Window w, FvwmWindow *tmp_win,
       {
 	  BroadcastPacket(M_FOCUS_CHANGE, 5,
                           0, 0, (unsigned long)True,
-			  GetColor("White"),
-			  GetColor("Black"));
+			  GetColor(DEFAULT_FORE_COLOR),
+			  GetColor(DEFAULT_BACK_COLOR));
       }
       else
       {

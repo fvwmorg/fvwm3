@@ -51,11 +51,10 @@ void FreeColors(Pixel *pixels, int n)
 {
   int i;
 
-  /* We don't ever free "black" - dirty hack to allow freeing colours at all */
+  /* We don't ever free black - dirty hack to allow freeing colours at all */
   for (i = 0; i < n; i++)
   {
     if (pixels[i] != 0)
       XFreeColors(dpy, Pcmap, pixels + i, 1, 0);
   }
 }
-

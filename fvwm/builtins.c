@@ -1195,9 +1195,9 @@ void SetDefaultColors(F_CMD_ARGS)
   if (action)
     action = GetNextToken(action, &back);
   if (!back)
-    back = safestrdup("grey");
+    back = safestrdup(DEFAULT_BACK_COLOR);
   if (!fore)
-    fore = safestrdup("black");
+    fore = safestrdup(DEFAULT_FORE_COLOR);
 
   if (!StrEquals(fore, "-"))
   {

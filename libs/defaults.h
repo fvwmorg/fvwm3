@@ -99,6 +99,15 @@
 #define MENU_TAB_WIDTH                     8 /* spaces */
 
 
+/*** colours ***/
+
+#define DEFAULT_FORE_COLOR                "black"
+#define DEFAULT_BACK_COLOR                "gray"
+#define DEFAULT_HILIGHT_COLOR             "white"
+#define DEFAULT_SHADOW_COLOR              "black"
+#define DEFAULT_CURSOR_FORE_COLOR         "black"
+#define DEFAULT_CURSOR_BACK_COLOR         "white"
+
 /*** pager ***/
 #define DEFAULT_MOVE_THRESHOLD		   3 /* pixels */
 #define DEFAULT_PAGER_WINDOW_BORDER_WIDTH  1 /* pixels */

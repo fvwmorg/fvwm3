@@ -5824,8 +5824,8 @@ static void UpdateMenuStyle(MenuStyle *ms)
   else
   {
     /* black and white */
-    ST_MENU_RELIEF_COLORS(ms).back = GetColor("black");
-    ST_MENU_RELIEF_COLORS(ms).fore = GetColor("white");
+    ST_MENU_RELIEF_COLORS(ms).back = GetColor(DEFAULT_SHADOW_COLOR);
+    ST_MENU_RELIEF_COLORS(ms).fore = GetColor(DEFAULT_HILIGHT_COLOR);
   }
   ST_MENU_STIPPLE_COLORS(ms).back = ST_MENU_COLORS(ms).back;
 
@@ -6088,8 +6088,8 @@ static void NewMenuStyle(F_CMD_ARGS)
     if (!is_initialised)
     {
       /* some default configuration goes here for the new menu style */
-      ST_MENU_COLORS(tmpms).back = GetColor("grey");
-      ST_MENU_COLORS(tmpms).fore = GetColor("black");
+      ST_MENU_COLORS(tmpms).back = GetColor(DEFAULT_BACK_COLOR);
+      ST_MENU_COLORS(tmpms).fore = GetColor(DEFAULT_FORE_COLOR);
       ST_PSTDFONT(tmpms) = &Scr.DefaultFont;
       ST_FACE(tmpms).type = SimpleMenu;
       ST_HAS_ACTIVE_FORE(tmpms) = 0;
@@ -6206,7 +6206,7 @@ static void NewMenuStyle(F_CMD_ARGS)
       if (arg1)
 	ST_MENU_COLORS(tmpms).fore = GetColor(arg1);
       else
-	ST_MENU_COLORS(tmpms).fore = GetColor("black");
+	ST_MENU_COLORS(tmpms).fore = GetColor(DEFAULT_FORE_COLOR);
       has_gc_changed = True;
       break;
 
@@ -6215,7 +6215,7 @@ static void NewMenuStyle(F_CMD_ARGS)
       if (arg1)
 	ST_MENU_COLORS(tmpms).back = GetColor(arg1);
       else
-	ST_MENU_COLORS(tmpms).back = GetColor("grey");
+	ST_MENU_COLORS(tmpms).back = GetColor(DEFAULT_BACK_COLOR);
       has_gc_changed = True;
       break;
 
