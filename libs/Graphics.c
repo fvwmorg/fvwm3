@@ -320,12 +320,12 @@ Pixmap CreateRotatedPixmap(
 		{
 			switch(rotation)
 			{
-			case ROTATION_90:
+			case ROTATION_270:
 				XPutPixel(
 					fim->im, j, src_width - i - 1,
 					XGetPixel(src_fim->im, i, j));
 				break;
-			case ROTATION_270:
+			case ROTATION_90:
 				XPutPixel(
 					fim->im, src_height - j - 1, i,
 					XGetPixel(src_fim->im, i, j));

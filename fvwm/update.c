@@ -325,6 +325,7 @@ static void apply_window_updates(
 	{
 		if (t->title_text_rotation != ROTATION_0)
 		{
+			flags->do_setup_frame = True;
 			flags->do_redraw_decoration = True;
 		} 
 	}

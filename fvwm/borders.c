@@ -190,7 +190,6 @@ typedef struct
 
 typedef struct
 {
-	rectangle *title_g;
 	GC rgc;
 	GC sgc;
 	FlocaleWinString fstr;
@@ -222,10 +221,14 @@ typedef struct
 	int left_of_text_length;
 	int right_end_length;
 	int right_of_text_length;
+	rotation_type draw_rotation;
+	Bool is_rotated;
+	Bool has_been_saved;
 } titlebar_descr;
 
 /* ---------------------------- forward declarations ------------------------ */
-
+static void border_rotate_titlebar_descr(
+	FvwmWindow *fw, titlebar_descr *td);
 /* ---------------------------- local variables ----------------------------- */
 
 static const char ulgc[] = { 1, 0, 0, 0x7f, 2, 1, 1 };
@@ -2016,6 +2019,9 @@ static void border_mp_render_into_pixmap(
 			bg.pixmap.depth = src[part]->depth;
 			bg.pixmap.g.width = src[part]->width;
 			bg.pixmap.g.height = src[part]->height;
+			bg.pixmap.stretch_w = dest_g.width - dest_g.x;
+			bg.pixmap.stretch_h = dest_g.height - dest_g.y;
+				
 		}
 		if (bg.pixmap.p)
 		{
@@ -2597,6 +2603,7 @@ static void border_draw_decor_to_pixmap(
 	case MiniIconButton:
 	case PixmapButton:
 	case ShrunkPixmapButton:
+	case StretchedPixmapButton:
 		if (w_g->width - 2*border <= 0 || w_g->height - 2*border <= 0)
 		{
 			break;
@@ -2835,6 +2842,8 @@ static void border_draw_decor_to_pixmap(
 			bg.pixmap.depth = p->depth;
 			bg.pixmap.g.width = p->width;
 			bg.pixmap.g.height = p->height;
+			bg.pixmap.stretch_w = dest_g.width - dest_g.x;
+			bg.pixmap.stretch_h = dest_g.height - dest_g.y;
 		}
 		else
 		{
@@ -2917,7 +2926,7 @@ static void border_draw_decor_to_pixmap(
 		break;
 
 	default:
-		fvwm_msg(ERR, "DrawButton", "unknown button type");
+		fvwm_msg(ERR, "DrawButton", "unknown button type: %i", type);
 		break;
 	}
 
@@ -2925,7 +2934,7 @@ static void border_draw_decor_to_pixmap(
 }
 
 static void border_set_button_pixmap(
-	FvwmWindow *fw, titlebar_descr *td, int button, Pixmap dest_pix,
+	FvwmWindow *fw, titlebar_descr *td, int button, Pixmap *dest_pix,
 	Window w)
 {
 	pixmap_background_type bg;
@@ -2959,7 +2968,7 @@ static void border_set_button_pixmap(
 		pix_g.y = 0;
 		pix_g.width = button_g->width;
 		pix_g.height = button_g->height;
-		border_fill_pixmap_background(dest_pix,&pix_g, &bg, td->cd);
+		border_fill_pixmap_background(*dest_pix, &pix_g, &bg, td->cd);
 	}
 	else
 	{
@@ -2980,7 +2989,7 @@ static void border_set_button_pixmap(
 		pix_g.y = 0;
 		pix_g.width = button_g->width;
 		pix_g.height = button_g->height;
-		border_fill_pixmap_background(dest_pix, &pix_g, &bg, td->cd);
+		border_fill_pixmap_background(*dest_pix, &pix_g, &bg, td->cd);
 		if (free_bg_pixmap && bg.pixmap.p)
 		{
 			XFreePixmap(dpy, bg.pixmap.p);
@@ -2992,15 +3001,54 @@ static void border_set_button_pixmap(
 	{
 		/* draw background inherited from title style */
 		DecorFace *tsdf;
+		Pixmap tmp;
 
+		if (td->draw_rotation != ROTATION_0)
+		{
+			rotation_type rotation;
+			
+			if (td->draw_rotation == ROTATION_270)
+			{
+				rotation = ROTATION_90;
+			}
+			else if (td->draw_rotation == ROTATION_90)
+			{
+				rotation = ROTATION_270;
+			}
+			else
+			{
+				rotation = ROTATION_180;
+			}
+			tmp = CreateRotatedPixmap(
+				dpy, *dest_pix,
+				td->layout.button_g[button].width,
+				td->layout.button_g[button].height,
+				Pdepth, Scr.BordersGC, rotation);
+			XFreePixmap(dpy, *dest_pix);
+			*dest_pix = tmp;
+			border_rotate_titlebar_descr(fw, td);
+			button_g = &td->layout.button_g[button];
+		}
 		for (tsdf = &TB_STATE(GetDecor(fw, titlebar))[bs]; tsdf != NULL;
 		     tsdf = tsdf->next)
 		{
 			bg.pixel = tsdf->u.back;
 			border_draw_decor_to_pixmap(
-				fw, dest_pix, w, &bg, button_g, tsdf, td,
+				fw, *dest_pix, w, &bg, button_g, tsdf, td,
 				bs, True, (td->tbstate.toggled_bmask & mask),
 				is_left_button);
+		}
+		if (td->draw_rotation != ROTATION_0)
+		{
+			tmp = CreateRotatedPixmap(
+				dpy, *dest_pix,
+				td->layout.button_g[button].width,
+				td->layout.button_g[button].height,
+				Pdepth, Scr.BordersGC, td->draw_rotation);
+			XFreePixmap(dpy, *dest_pix);
+			*dest_pix = tmp;
+			border_rotate_titlebar_descr(fw, td);
+			button_g = &td->layout.button_g[button];
 		}
 	}
 	/* handle button style */
@@ -3009,7 +3057,7 @@ static void border_set_button_pixmap(
 		/* draw background from button style */
 		bg.pixel = df->u.back;
 		border_draw_decor_to_pixmap(
-			fw, dest_pix, w, &bg, button_g, df, td, bs, False,
+			fw, *dest_pix, w, &bg, button_g, df, td, bs, False,
 			(td->tbstate.toggled_bmask & mask), is_left_button);
 	}
 	/* draw the button relief */
@@ -3022,7 +3070,7 @@ static void border_set_button_pixmap(
 		/* fall through*/
 	case DFS_BUTTON_IS_UP:
 		do_relieve_rectangle(
-			dpy, dest_pix, 0, 0, button_g->width - 1,
+			dpy, *dest_pix, 0, 0, button_g->width - 1,
 			button_g->height - 1,
 			(do_reverse_relief) ? sgc : rgc,
 			(do_reverse_relief) ? rgc : sgc,
@@ -3047,9 +3095,10 @@ static void border_draw_one_button(
 	{
 		return;
 	}
+	
 	p = border_create_decor_pixmap(td->cd, &(td->layout.button_g[button]));
 	/* set the background tile */
-	border_set_button_pixmap(fw, td, button, p, FW_W_BUTTON(fw, button));
+	border_set_button_pixmap(fw, td, button, &p, FW_W_BUTTON(fw, button));
 	/* apply the pixmap and destroy it */
 	border_set_part_background(FW_W_BUTTON(fw, button), p);
 	XFreePixmap(dpy, p);
@@ -3277,7 +3326,14 @@ static void border_get_titlebar_draw_descr(
 	/* fetch the title string */
 	tdd->fstr.str = fw->visible_name;
 	tdd->fstr.win = dest_pix;
-	tdd->fstr.flags.text_rotation = fw->title_text_rotation;
+	if (td->is_rotated)
+	{
+		tdd->fstr.flags.text_rotation = ROTATION_0;
+	}
+	else
+	{
+		tdd->fstr.flags.text_rotation = fw->title_text_rotation;
+	}
 	if (td->has_vt)
 	{
 		tdd->fstr.y = td->offset;
@@ -3373,6 +3429,10 @@ static void border_draw_title(
 	{
 		return;
 	}
+	if (td->draw_rotation != ROTATION_0)
+	{
+		border_rotate_titlebar_descr(fw, td);
+	}
 	/* make a pixmap */
 	p = border_create_decor_pixmap(td->cd, &(td->layout.title_g));
 	/* set the background tile */
@@ -3380,6 +3440,18 @@ static void border_draw_title(
 	fprintf(stderr,"drawing title\n");
 #endif
 	border_set_title_pixmap(fw, td, p, FW_W_TITLE(fw));
+	if (td->draw_rotation != ROTATION_0)
+	{
+		Pixmap tmp;
+
+		tmp = CreateRotatedPixmap(
+			dpy, p, td->layout.title_g.width,
+			td->layout.title_g.height, Pdepth, Scr.BordersGC,
+			td->draw_rotation);
+		XFreePixmap(dpy, p);
+		p = tmp;
+		border_rotate_titlebar_descr(fw, td);
+	}
 	/* apply the pixmap and destroy it */
 	border_set_part_background(FW_W_TITLE(fw), p);
 	XFreePixmap(dpy, p);
@@ -3455,6 +3527,144 @@ static void border_setup_use_title_style(
 		}
 	}
 	return;
+}
+
+static void border_rotate_titlebar_descr(
+	FvwmWindow *fw, titlebar_descr *td)
+{
+	rotation_type rotation;
+	int i;
+	static titlebar_descr saved_td;
+
+	if (td->draw_rotation == ROTATION_0)
+	{
+		return;
+	}
+	if (!td->has_been_saved)
+	{
+		td->has_been_saved = True;
+		memcpy(&saved_td, td, sizeof(saved_td)); 
+	}
+	if (!td->is_rotated)
+	{
+		/* make the bar horizontal */
+		switch(td->draw_rotation)
+		{
+		case ROTATION_90: /* cw */
+			rotation = ROTATION_270;
+			break;
+		case ROTATION_270: /* ccw */
+			rotation = ROTATION_90;
+			break;
+		case ROTATION_180:
+			rotation = ROTATION_180;
+			break;
+		default:
+			return;
+		}
+		td->has_vt = 0;
+		td->is_rotated = 1;
+	}
+	else
+	{
+		/* restore */
+		memcpy(td, &saved_td, sizeof(td)); 
+		td->is_rotated = 0;
+		return;
+	}
+
+#define ROTATE_RECTANGLE(rot, r, vs_frame, vs_bar) \
+	{ \
+		rectangle tr; \
+		switch(rot) \
+		{ \
+		case ROTATION_270: /* ccw */ \
+			tr.x = r->y; \
+			if (vs_frame) \
+			{ \
+				tr.y = td->frame_g.width - (r->x+r->width); \
+			} \
+			if (vs_bar) \
+			{ \
+				tr.y = td->bar_g.width - (r->x+r->width); \
+			} \
+			else \
+			{ \
+				tr.y = r->x; \
+			} \
+			tr.width = r->height; \
+			tr.height = r->width; \
+			break; \
+		case ROTATION_90: /* cw */ \
+			if (vs_frame) \
+			{ \
+				tr.x = td->frame_g.height - (r->y+r->height); \
+			} \
+			else if (vs_bar) \
+			{ \
+				tr.x = td->bar_g.height - (r->y+r->height); \
+			} \
+			else \
+			{ \
+				tr.x = r->y; \
+			} \
+			tr.y = r->x; \
+			tr.width = r->height; \
+			tr.height = r->width; \
+			break; \
+		case ROTATION_180: \
+			tr.x = r->y; \
+			tr.y = r->x; \
+			tr.width = r->height; \
+			tr.height = r->width; \
+			break; \
+		default: \
+		} \
+		r->x = tr.x; \
+		r->y = tr.y; \
+		r->width = tr.width; \
+		r->height = tr.height; \
+	}
+
+	switch(rotation)
+	{
+	case ROTATION_90:
+		td->offset = td->layout.title_g.height - td->offset - td->length;
+		break;
+	case ROTATION_270:
+		break;
+	case ROTATION_180:
+		break;
+	default:
+	}
+
+	ROTATE_RECTANGLE(rotation, (&td->left_buttons_g), True, False)
+	ROTATE_RECTANGLE(rotation, (&td->right_buttons_g), True, False)
+	ROTATE_RECTANGLE(rotation, (&td->layout.title_g), True, False)
+	for (i=0; i < NUMBER_OF_BUTTONS; i++)
+	{
+		ROTATE_RECTANGLE(
+			rotation, (&td->layout.button_g[i]), True, False)
+	}
+	ROTATE_RECTANGLE(rotation, (&td->under_text_g), False, True)
+	ROTATE_RECTANGLE(rotation, (&td->left_main_g), False, True)
+	ROTATE_RECTANGLE(rotation, (&td->right_main_g), False, True)
+	ROTATE_RECTANGLE(rotation, (&td->full_left_main_g), True, False)
+	ROTATE_RECTANGLE(rotation, (&td->full_right_main_g), True, False)
+	ROTATE_RECTANGLE(rotation, (&td->bar_g), True, False)
+	ROTATE_RECTANGLE(rotation, (&td->frame_g), False, False);
+
+	switch(rotation)
+	{
+	case ROTATION_90:
+		break;
+	case ROTATION_270:
+		break;
+	case ROTATION_180:
+		break;
+	default:
+	}
+#undef ROTATE_RECTANGLE
 }
 
 static void border_get_titlebar_descr_state(
@@ -3538,7 +3748,10 @@ static window_parts border_get_titlebar_descr(
 	frame_get_titlebar_dimensions(fw, new_g, NULL, &ret_td->layout);
 
 	ret_td->has_vt = HAS_VERTICAL_TITLE(fw);
-
+	if (USE_TITLE_DECOR_ROTATION(fw))
+	{
+		ret_td->draw_rotation = fw->title_text_rotation;
+	}
 	/* geometry of the title bar title + buttons */
 	if (!ret_td->has_vt)
 	{

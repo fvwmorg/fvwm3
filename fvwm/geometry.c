@@ -233,6 +233,7 @@ void get_title_font_size_and_offset(
 	int font_size;
 	int min_offset;
 	Bool is_rotated_cw, is_rotated;
+	rotation_type draw_rotation;
 
 	/* adjust font offset according to height specified in title style */
 	decor_size = fw->decor->title_height;
@@ -267,8 +268,16 @@ void get_title_font_size_and_offset(
 		}
 		break;
 	}
+	if (USE_TITLE_DECOR_ROTATION(fw))
+	{
+		draw_rotation = ROTATION_0;
+	}
+	else
+	{
+		draw_rotation = fw->title_text_rotation;
+	}
 	min_offset =  FlocaleGetMinOffset(
-		fw->title_font, fw->title_text_rotation);
+		fw->title_font, draw_rotation);
 	extra_size = (decor_size > 0) ? decor_size - font_size : 0;
 	*offset = min_offset;
 	if (fw->decor->min_title_height > 0 &&

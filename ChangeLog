@@ -1,3 +1,19 @@
+2002-12-24  olicha  <olivier.chapuis@free.fr>
+
+	* fvwm/borders.c (border_mp_render_into_pixmap):
+	(border_fill_pixmap_background):
+	Some borders drawing fixes
+
+	* libs/Graphics.c (CreateRotatedPixmap):
+	* fvwm/geometry.c (get_title_font_size_and_offset):
+	* fvwm/update.c (apply_window_updates):
+	* fvwm/borders.c (border_set_button_pixmap): 
+	(border_get_titlebar_draw_descr):
+	(border_draw_title):
+	(border_rotate_titlebar_descr):
+	(border_get_titlebar_descr):
+	More UseTitleDecorRotation preparation
+
 2002-12-22  Dan Espen  <dane@mk.telcordia.com>
 
 	* fvwm/add_window.c (GetWindowSizeHints): Change hint warning message
