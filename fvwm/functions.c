@@ -359,6 +359,8 @@ static char *expand(char *input, char *arguments[], FvwmWindow *tmp_win,
   int xlen;
   char *out;
   char *var;
+  char *string = NULL;
+  Bool is_string = False;
 
   l = strlen(input);
   l2 = l;
@@ -424,20 +426,20 @@ static char *expand(char *input, char *arguments[], FvwmWindow *tmp_win,
 	if (tmp_win && tmp_win->class.res_class &&
 	    tmp_win->class.res_class[0])
 	{
-	  l2 += strlen(tmp_win->class.res_class) + 2;
+	  string = tmp_win->class.res_class;
 	}
 	break;
       case 'r':
 	if (tmp_win && tmp_win->class.res_name &&
 	    tmp_win->class.res_name[0])
 	{
-	  l2 += strlen(tmp_win->class.res_name) + 2;
+	  string = tmp_win->class.res_name;
 	}
 	break;
       case 'n':
 	if (tmp_win && tmp_win->name && tmp_win->name[0])
 	{
-	  l2 += strlen(tmp_win->name) + 2;
+	  string = tmp_win->name;
 	}
 	break;
       case 'v':
@@ -447,6 +449,16 @@ static char *expand(char *input, char *arguments[], FvwmWindow *tmp_win,
 	}
 	break;
       }
+      if (string)
+      {
+	for (k = 0; string[k] != 0; k++, l2++)
+	{
+	  if (string[k] == '\'')
+	    l2++;
+	}
+	string = NULL;
+      }
+
     }
     i++;
   }
@@ -545,49 +557,29 @@ static char *expand(char *input, char *arguments[], FvwmWindow *tmp_win,
 	sprintf(&out[j], "%d", Scr.Vy);
 	i++;
 	break;
+
       case 'c':
 	if (tmp_win && tmp_win->class.res_class &&
 	    tmp_win->class.res_class[0])
 	{
-	  out[j++] = '\'';
-	  for(k=0;tmp_win->class.res_class[k];k++)
-	    out[j++] = tmp_win->class.res_class[k];
-	  out[j++] = '\'';
-	  i++;
+	  string = tmp_win->class.res_class;
 	}
-	else
-	{
-	  out[j++] = '$';
-	}
+	is_string = True;
 	break;
       case 'r':
 	if (tmp_win && tmp_win->class.res_name &&
 	    tmp_win->class.res_name[0])
 	{
-	  out[j++] = '\'';
-	  for(k=0;tmp_win->class.res_name[k];k++)
-	    out[j++] = tmp_win->class.res_name[k];
-	  out[j++] = '\'';
-	  i++;
+	  string = tmp_win->class.res_name;
 	}
-	else
-	{
-	  out[j++] = '$';
-	}
+	is_string = True;
 	break;
       case 'n':
 	if (tmp_win && tmp_win->name && tmp_win->name[0])
 	{
-	  out[j++] = '\'';
-	  for(k=0;tmp_win->name[k];k++)
-	    out[j++] = tmp_win->name[k];
-	  out[j++] = '\'';
-	  i++;
+	  string = tmp_win->name;
 	}
-	else
-	{
-	  out[j++] = '$';
-	}
+	is_string = True;
 	break;
       case 'v':
 	sprintf(&out[j], "%s", (Fvwm_VersionInfo) ? Fvwm_VersionInfo : "");
@@ -601,6 +593,24 @@ static char *expand(char *input, char *arguments[], FvwmWindow *tmp_win,
 	out[j++] = input[i];
 	break;
       } /* switch */
+      if (string)
+      {
+	out[j++] = '\'';
+	for(k = 0; string[k]; k++)
+	{
+	  if (string[k] == '\'')
+	    out[j++] = '\\';
+	  out[j++] = string[k];
+	}
+	out[j++] = '\'';
+	is_string = False;
+	i++;
+      }
+      else if (is_string)
+      {
+	out[j++] = '$';
+	is_string = False;
+      }
     } /* if '$' */
     else
       out[j++] = input[i];

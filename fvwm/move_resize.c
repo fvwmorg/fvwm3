@@ -233,8 +233,6 @@ static void InteractiveMove(
     XQueryPointer(
       dpy, Scr.Root, &JunkRoot, &JunkChild, &DragX, &DragY, &JunkX, &JunkY,
       &JunkMask);
-    origDragX = DragX;
-    origDragY = DragY;
   }
   else
   {
@@ -249,11 +247,17 @@ static void InteractiveMove(
     return;
   }
 
-  if (!do_start_at_pointer)
+  if (!XGetGeometry(dpy, w, &JunkRoot, &origDragX, &origDragY,
+		    (unsigned int *)&DragWidth, (unsigned int *)&DragHeight,
+		    &JunkBW,  &JunkDepth))
   {
-    XGetGeometry(dpy, w, &JunkRoot, &origDragX, &origDragY,
-                 (unsigned int *)&DragWidth, (unsigned int *)&DragHeight,
-                 &JunkBW,  &JunkDepth);
+    XBell(dpy, 0);
+    return;
+  }
+  if (do_start_at_pointer)
+  {
+    origDragX = DragX;
+    origDragY = DragY;
   }
 
   if(DragWidth*DragHeight <
@@ -509,6 +513,20 @@ void move_window_doit(F_CMD_ARGS, Bool do_animate, Bool do_move_to_page)
 	       tmp_win->frame_g.width, tmp_win->frame_g.height, True);
     if (fWarp & !do_animate)
       XWarpPointer(dpy, None, None, 0, 0, 0, 0, FinalX - x, FinalY - y);
+    if (IS_MAXIMIZED(tmp_win))
+    {
+      tmp_win->max_g.x += dx;
+      tmp_win->max_g.y += dy;
+    }
+    else
+    {
+      tmp_win->normal_g.x += dx;
+      tmp_win->normal_g.y += dy;
+    }
+    update_absolute_geometry(tmp_win);
+    maximize_adjust_offset(tmp_win);
+    XSync(dpy, 0);
+    GNOME_SetWinArea(tmp_win);
   }
   else /* icon window */
   {
@@ -551,21 +569,8 @@ void move_window_doit(F_CMD_ARGS, Bool do_animate, Bool do_move_to_page)
       }
       XMapWindow(dpy,w);
     }
+    XSync(dpy, 0);
   }
-  if (IS_MAXIMIZED(tmp_win))
-  {
-    tmp_win->max_g.x += dx;
-    tmp_win->max_g.y += dy;
-  }
-  else
-  {
-    tmp_win->normal_g.x += dx;
-    tmp_win->normal_g.y += dy;
-  }
-  update_absolute_geometry(tmp_win);
-  maximize_adjust_offset(tmp_win);
-  XSync(dpy, 0);
-  GNOME_SetWinArea(tmp_win);
   return;
 }
 
@@ -881,6 +886,8 @@ Bool moveLoop(FvwmWindow *tmp_win, int XOffset, int YOffset, int Width,
   int x_bak;
   int y_bak;
   Window move_w = None;
+  int orig_icon_x = 0;
+  int orig_icon_y = 0;
 
   bad_window = None;
   if (IS_ICONIFIED(tmp_win))
@@ -896,6 +903,11 @@ Bool moveLoop(FvwmWindow *tmp_win, int XOffset, int YOffset, int Width,
   }
   XGetGeometry(dpy, move_w, &JunkRoot, &x_bak, &y_bak, &JunkWidth, &JunkHeight,
 	       &JunkBW,&JunkDepth);
+  if (IS_ICONIFIED(tmp_win))
+  {
+    orig_icon_x = tmp_win->icon_g.x;
+    orig_icon_y = tmp_win->icon_g.y;
+  }
 
   /* make a copy of the tmp_win structure for sending to the pager */
   memcpy(&tmp_win_copy, tmp_win, sizeof(FvwmWindow));
@@ -986,8 +998,8 @@ Bool moveLoop(FvwmWindow *tmp_win, int XOffset, int YOffset, int Width,
 	}
 	else
 	{
-	  *FinalX = tmp_win->icon_g.x;
-	  *FinalY = tmp_win->icon_g.y;
+	  *FinalX = orig_icon_x;
+	  *FinalY = orig_icon_y;
 	}
 	aborted = True;
 	finished = True;
@@ -1031,8 +1043,8 @@ Bool moveLoop(FvwmWindow *tmp_win, int XOffset, int YOffset, int Width,
 	  }
 	  else
 	  {
-	    *FinalX = tmp_win->icon_g.x;
-	    *FinalY = tmp_win->icon_g.y;
+	    *FinalX = orig_icon_x;
+	    *FinalY = orig_icon_y;
 	  }
 	  aborted = True;
 	  finished = True;

@@ -1178,6 +1178,7 @@ void Iconify(FvwmWindow *tmp_win, int def_x, int def_y)
   {
     if ((t==tmp_win)||((IS_TRANSIENT(t)) && (t->transientfor == tmp_win->w)))
     {
+      SET_ICON_ENTERED(t, 0);
       /*
        * Prevent the receipt of an UnmapNotify, since that would
        * cause a transition to the Withdrawn state.

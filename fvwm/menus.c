@@ -6397,7 +6397,7 @@ char *GetMenuOptions(char *action, Window w, FvwmWindow *tmp_win,
   int dummy_int;
   float dummy_float;
   Bool dummy_flag;
-  Window context_window = 0;
+  Window context_window = None;
   Bool fHasContext, fUseItemOffset, fRectangleContext;
   Bool fValidPosHints =
     last_saved_pos_hints.flags.is_last_menu_pos_hints_valid;
@@ -6512,7 +6512,7 @@ char *GetMenuOptions(char *action, Window w, FvwmWindow *tmp_win,
     }
     else if (StrEquals(tok,"mouse"))
     {
-      context_window = 0;
+      context_window = None;
     }
     else if (StrEquals(tok,"rectangle"))
     {
@@ -6546,8 +6546,11 @@ char *GetMenuOptions(char *action, Window w, FvwmWindow *tmp_win,
       context_window = w;
       if (XFindContext(dpy, w, MenuContext, (caddr_t *)&dummy_mr) != XCNOENT)
       {
-	pops->pos_hints.is_menu_relative = True;
-	pops->pos_hints.menu_width = MR_WIDTH(mr);
+	if (mr)
+	{
+	  pops->pos_hints.is_menu_relative = True;
+	  pops->pos_hints.menu_width = MR_WIDTH(mr);
+	}
       }
     }
     else

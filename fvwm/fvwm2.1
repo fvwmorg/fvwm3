@@ -548,8 +548,13 @@ AddToFunc UrgencyDoneFunc
 .EE
 
 .SH GNOME COMPLIANCE
-Fvwm attempts to be GNOME compliant.  Check http://www.gnome.org
-for what that may mean. GNOME support is an installation option.
+Fvwm attempts to be
+.SM GNOME
+compliant.  Check
+.B http://www.gnome.org
+for what that may mean.
+.SM GNOME
+support is a compile time option.
 
 .SH M4 PREPROCESSING
 .PP
@@ -690,7 +695,7 @@ a word enclosed in braces.  If fvwm encounters an unquoted
 parameter on the command line it expands it to a string indicated
 by the parameter name.  Unknown parameters are left untouched.
 Parameter expansion is performed before quoting.  To quote a
-'$' use '$$'.  Note that module configuration lines (i.e. lines
+'$' use "$$".  Note that module configuration lines (i.e. lines
 beginning with '*') are not subject to parameter expansion.  The
 parameters known by fvwm are:
 
@@ -1126,7 +1131,7 @@ is moved from the upper left corner of the rectangle.  The
 .I position
 arguments consist of several parts:
 .EX
-[[context-rectangle] x y] [special-options]
+. BI "[[context-rectangle] " "x y" " [" special-options "]"
 .EE
 The
 .I context-rectangle
@@ -1196,8 +1201,10 @@ and
 specify how far the menu is
 moved from it's default position. By default, the numeric value given
 is interpreted as a percentage of the context rectangle's width (height),
-but with a trailing "m" the menu's width (height) is used instead.
-Furthermore a trailing "p" changes the interpretation to mean "pixels".
+but with a trailing 'm' the menu's width (height) is used instead.
+Furthermore a trailing
+.RI ' p '
+changes the interpretation to mean "pixels".
 
 Instead of a single value you can use a list of values. All additional
 numbers after the first one are separated from their predecessor by
@@ -1251,7 +1258,7 @@ The
 
 .in +.5i
 The
-.IR animated " and " mwm " or " win
+.IR animated " and " Mwm " or " Win
 menu styles may move a menu somewhere else on the screen.  If you do
 not want this you can add
 .I Fixed
@@ -1273,7 +1280,7 @@ The pointer is warped to the title of a sub-menu whenever the pointer
 would be on an item when the sub-menu is popped up
 .RI ( fvwm
 menu style) or never warped to the title at all
-.RI ( mwm " or " win
+.RI ( Mwm " or " Win
 menu styles). You can force (forbid) warping whenever the
 sub-menu is opened with the
 .IR WarpTitle " (" NoWarp ") option."
@@ -1301,7 +1308,7 @@ When using monochrome color options are ignored.
 
 .I options
 is a comma separated list containing some of the
-keywords FVWM / MWM / WIN,
+keywords Fvwm / Mwm / Win,
 BorderWidth,
 Foreground,
 Background,
@@ -1338,40 +1345,43 @@ AutomaticHotkeys / AutomaticHotkeysOff.
 In the above list some options are listed as option pairs or triples
 with a / in between. These options exclude each other.
 
-.IR FVWM ", " MWM ", " WIN
+.IR Fvwm ", " Mwm ", " Win
 reset all options to the style with
-the same name in former versions of fvwm. The default for new menu
-styles is FVWM style. These options override all others except
-Foreground, Background, Greyed, HilightBack, HilightFore and
-PopupDelay, so they should be used only as the first option
-specified for a menu style or to reset the style to defined behavior.
-The same effect can be created by setting all the other options one
-by one.
+the same name in former versions of fvwm.  The default for new menu
+styles is
+.I Fvwm
+style. These options override all others except
+.IR Foreground ", " Background ", " Greyed ", " HilightBack ", "
+.IR HilightFore " and " PopupDelay ,
+so they should be used only as the first option specified for a
+menu style or to reset the style to defined behavior.  The same
+effect can be created by setting all the other options one by one.
 
-.IR MWM " and " WIN
+.IR Mwm " and " Win
 style menus popup sub-menus automatically.
-WIN menus indicate the current menu item by changing the
+.I Win
+menus indicate the current menu item by changing the
 background to dark.
-.I FVWM
+.I Fvwm
 sub-menus overlap the parent menu,
-.IR MWM " and " WIN
+.IR Mwm " and " Win
 style menus never overlap the parent menu.
 
-.I FVWM
+.I Fvwm
 style is equivalent to HilightBackOff, Hilight3DThin,
 ActiveForeOff, AnimationOff, Font, MenuFace, PopupOffset 0 67, TitleWarp,
 TitleUnderlines1, SeparatorsShort, TrianglesRelief, PopupDelayed,
 PopupAsSubmenu, HoldSubmenus, SubmenusRight, BorderWidth 2,
 AutomaticHotkeysOff.
 
-.I MWM
+.I Mwm
 style is equivalent to HilightBackOff, Hilight3DThick,
 ActiveForeOff, AnimationOff, Font, MenuFace, PopupOffset -3 100,
 TitleWarpOff, TitleUnderlines2, SeparatorsLong, TrianglesRelief,
 PopupImmediately, PopupAsSubmenu, HoldSubmenus, SubmenusRight,
 BorderWidth 2, AutomaticHotkeysOff.
 
-.I WIN
+.I Win
 style is equivalent to HilightBack, Hilight3DOff,
 ActiveForeOff, AnimationOff, Font, MenuFace, PopupOffset -5 100,
 TitleWarpOff, TitleUnderlines1, SeparatorsShort, TrianglesSolid,
@@ -1638,6 +1648,10 @@ The key name is a standard X11 key name as defined in
 with the leading "XK_" omitted.  To disable this behaviour, omit the
 key name.
 
+Note: Some X servers do not support KeyRelease events.
+.I SelectOnRelease
+does not work on such a machine.
+
 .I ItemFormat
 takes a special string as its argument that determines the layout
 of the menu items.  Think of the format string as if it were a
@@ -1788,7 +1802,7 @@ command.
 Examples:
 
 .EX
-MenuStyle * mwm
+MenuStyle * Mwm
 MenuStyle * Foreground Black, Background gray40
 MenuStyle * Greyed gray70, ActiveFore White
 MenuStyle * HilightBackOff, Hilight3DOff
@@ -1796,7 +1810,7 @@ MenuStyle * Font lucidasanstypewriter-14
 MenuStyle * MenuFace DGradient 64 darkgray \\
   MidnightBlue
 
-MenuStyle red mwm
+MenuStyle red Mwm
 MenuStyle red Foreground Yellow
 MenuStyle red Background Maroon
 MenuStyle red Greyed Red, ActiveFore Red
@@ -1807,7 +1821,6 @@ MenuStyle red MenuFace DGradient 64 Red Black
 
 Note that all style options could be placed on a single line for each
 style name.
-
 
 .TP
 .BI "MenuStyle " "forecolor backcolor shadecolor font style" " [" anim "]"
@@ -1822,16 +1835,16 @@ The
 is the one used to draw a menu-selection which is
 prohibited (or not recommended) by the mwm-hints which an application
 has specified.  The style option is either
-.IR fvwm ", " mwm " or " win ,
+.IR Fvwm ", " Mwm " or " Win ,
 which changes the appearance and operation of the menus.
 
-.IR mwm " and " win
+.IR Mwm " and " Win
 style menus popup sub-menus automatically.
 .I win
 menus indicate the current menu item by changing the background to black.
 .I fvwm
 sub-menus overlap the parent menu,
-.IR mwm " and " win
+.IR Mwm " and " win
 style menus never overlap the parent menu.
 
 When the
@@ -2131,7 +2144,6 @@ is 150 milliseconds.  Omitting the delay value resets the
 .B ClickTime
 to the default.
 
-
 .TP
 .BI "ColorLimit " limit
 Specifies a limit  on the colors used in  pixmaps used  by fvwm.
@@ -2174,7 +2186,6 @@ is in.  If you use
 .IR FollowsFocus ,
 then the installed colormap will be the one for the window that
 currently has the keyboard focus.
-
 
 .TP
 .BI "CursorStyle " context " [" number | name | xpm | None | Tiny " [" "fore back" "]]"
@@ -2340,7 +2351,6 @@ color name.  To revert to the builtin default colors omit both
 color names.  Note that the default colors are not used in menus,
 window titles or icon titles.
 
-
 .TP
 .BI "DefaultColorset [" num "]"
 .B DefaultColorset
@@ -2352,7 +2362,6 @@ sets the colorset used by the windows controlled by the
 or any variant of the
 .B DefaultColors
 command.
-
 
 .TP
 .BI "DefaultFont [" fontname "]"
@@ -2367,7 +2376,6 @@ or resize operation.  To override the default font in a specific
 context, use the
 .BR "Style * Font" ", " "Style * IconFont" ", or " MenuStyle commands.
 
-
 .TP
 .BI "DefaultIcon " filename
 sets the default icon which is used if a window has neither an
@@ -2377,14 +2385,12 @@ option of the
 .B Style
 command.
 
-
 .TP
 .BI "DefaultLayers " "bottom put top"
 changes the layers that are used for the
 .IR StaysOnBottom ", " StaysPut ", " StaysOnTop
 .B Style
 options.  Initially, the layers 2, 4 and 6 are used.
-
 
 .TP
 .BI "Emulate " Fvwm | Mwm | Win
@@ -2429,7 +2435,6 @@ used outside the
 .I Key
 command does nothing.
 
-
 .TP
 .BI "GlobalOpts [" options "]"
 This is a TEMPORARY command used to set some global options which will
@@ -2460,7 +2465,6 @@ GlobalOpts ClickToFocusDoesntPassClick, \\
   ClickToFocusDoesntRaise
 .EE
 
-
 .TP
 .BI "HilightColor " "textcolor backgroundcolor"
 This command is obsoleted by the
@@ -2473,9 +2477,8 @@ Style * HilightFore textcolor, \\
 .EE
 instead.
 
-
 .TP
-.B "HilightColorset [" num "]"
+.BI "HilightColorset [" num "]"
 This command is obsoleted by the
 .B Style
 option
@@ -2485,7 +2488,6 @@ Please use
 Style * HilightColorset num
 .EE
 instead.
-
 
 .TP
 .BI "IconFont [" fontname "]"
@@ -2499,13 +2501,11 @@ Style * IconFont fontname
 .EE
 instead.
 
-
 .TP
 .BI "IconPath " path
 This command is obsolete.  Please use
 .B ImagePath
 instead.
-
 
 .TP
 .BI "ImagePath " path
@@ -2550,34 +2550,38 @@ directives to have a prefix of "m4_" (see the
 .B FvwmM4
 man page).
 
+.TP
+.BI "PixmapPath " path
+This command is obsolete. Please use
+.B ImagePath
+instead.
 
 .TP
-.B "PixmapPath" "\fIpath\fP"
-This command is obsolete. Please use \fIImagePath\fP instead.
-
-
-.TP
-.B "WindowFont" "[\fIfontname\fP]"
-This command is obsoleted by the style option 'Font'.  Please use
+.BI "WindowFont [" fontname "]"
+This command is obsoleted by the
+.B Style
+option
+.IR Font .  Please use
 .EX
 Style * Font fontname
 .EE
 instead.
 
-
 .TP
-.B "WindowList" "[(\fIconditions\fP)] [\fIposition\fP] [\fIoptions\fP] [\fIdouble-click-action\fP]"
+.BI "WindowList [(" conditions ")] [" position "] [" options "] [" double-click-action "]"
 Generates a pop-up menu (and pops it up) in which the title and
-geometry of each of the windows currently on the desk top are shown.
+geometry of each of the windows currently on the desktop are shown.
 The format of the geometry part is:
-"\fIdesk\fP(\fIlayer\fP): \fIx-geometry\fP \fIsticky\fP", where
-\fIdesk\fP and \fIlayer\fP are the corresponding numbers and \fIsticky\fP
-is empty or a capital S.
-The geometry of iconified windows is shown in parenthesis.  Selecting
-an item from the window list pop-up menu will by default cause the
-interpreted function WindowListFunc to be run with the window id of
-that window passed in as $0.  By default the WindowListFunc looks like
-this:
+. IR desk ( layer "): " "x-geometry sticky" ,
+where
+.IR desk " and " layer
+are the corresponding numbers and
+.I sticky
+is empty or a capital S.  The geometry of iconified windows is
+shown in parenthesis.  Selecting an item from the window list
+pop-up menu will by default cause the interpreted function
+"WindowListFunc" to be run with the window id of that window passed
+in as $0.  By default the "WindowListFunc" looks like this:
 .EX
 AddToFunc WindowListFunc
  + I WindowId $0 Iconify off
@@ -2585,117 +2589,166 @@ AddToFunc WindowListFunc
  + I WindowId $0 Raise
  + I WindowId $0 WarpToWindow 5p 5p
 .EE
-You can Destroy the builtin WindowListFunc and create your own if
+You can destroy the builtin "WindowListFunc" and create your own if
 these defaults do not suit you.
 
-The window list menu uses the 'WindowList' menu style if it is
-defined (see \fIMenuStyle\fP command).  Otherwise the default
-menu style is used.  To switch back to the default menu style,
-issue the command 'DestroyMenuStyle WindowList'.
+The window list menu uses the "WindowList" menu style if it is
+defined (see
+.B MenuStyle
+command).  Otherwise the default menu style is used.  To switch back
+to the default menu style, issue the command
+.BR "DestroyMenuStyle WindowList" .
+Example:
 
 .EX
 MenuStyle WindowList SelectOnRelease Meta_L
 .EE
 
-The \fIconditions\fP can be used to exclude certain windows from
-the window list.  Please refer to the \fICurrent\fP command for
-details.  Only windows that match the given conditions are displayed
-in the window list.  The \fIoptions\fP below work vice versa:
-windows that would otherwise not be included in the window list
-can be selected with them.  The \fIconditions\fP always override
-the \fIoptions\fP.
+The
+.I conditions
+can be used to exclude certain windows from the window list.
+Please refer to the
+.B Current
+command for details.  Only windows that match the given conditions
+are displayed in the window list.  The
+.I options
+below work vice versa: windows that would otherwise not be included
+in the window list can be selected with them.  The
+.I conditions
+always override the
+.IR options .
 
-The \fIposition\fP arguments are the same as for \fIMenu\fP. The
-command \fIdouble-click-action\fP will be invoked if the user
-double-clicks (or hits the key rapidly twice if the menu is bound
-to a key) when bringing the window list.  The double-click-action
+
+The
+.I position
+arguments are the same as for
+.BR Menu .
+The command
+.I double-click-action
+will be invoked if the user double-clicks (or hits the key rapidly
+twice if the menu is bound to a key) when bringing the window list.  The
+.I double-click-action
 must be quoted if it consists of more than one word.
 
-The double-click-action is useful to define a default window if you
-have bound the window list to a key (or button) like this:
+The
+.I double-click-action
+is useful to define a default window if you have bound the window
+list to a key (or button) like this:
 .EX
 Key Tab A M WindowList "Prev FlipFocus"
 .EE
-Hitting Alt-Tab once it brings up the window list, if you hit it
-twice the focus is flipped between the current and the last focused
-window.
+Hitting
+.SM Alt-Tab
+once it brings up the window list, if you hit it twice the focus
+is flipped between the current and the last focused window.  With
+the proper
+.I SelectOnRelease
+menu style (see example above) a window is selected as soon as you
+release the
+.SM Alt
+key.
 
-The \fIoptions\fP passed to WindowList can be "NoGeometry",
-"NoGeometryWithInfo", "Function <funcname>", "Desk <desknum>",
-"CurrentDesk", "NoIcons", "Icons", "OnlyIcons", "NoNormal",
-"Normal", "OnlyNormal", "NoSticky", "Sticky", "OnlySticky",
-"NoOnTop", "OnTop", "OnlyOnTop", "Layer m [n]", "UseListSkip",
-"OnlyListSkip", "NoDeskSort", "UseIconName", "Alphabetic",
-"NotAlphabetic", "NoHotkeys".
+The
+.I options
+passed to WindowList can be
+.IR NoGeometry ,
+.IR NoGeometryWithInfo ,
+.IR Function funcname ,
+.IR Desk desknum ,
+.IR CurrentDesk ,
+.IR NoIcons " / " Icons " / " OnlyIcons ,
+.IR NoNormal " / " Normal " / " OnlyNormal ,
+.IR NoSticky " / " Sticky " / " OnlySticky ,
+.IR NoOnTop " / " OnTop " / " OnlyOnTop ,
+.IR NoOnBottom " / " OnBottom " / " OnlyOnBottom ,
+.IR "Layer m [n]" ,
+.IR UseListSkip " / " OnlyListSkip ,
+.IR NoDeskSort ,
+.IR UseIconName ,
+.IR Alphabetic " / " NotAlphabetic ,
+.IR NoHotkeys .
 
 (Note - normal means not iconic, sticky, or on top)
 
-If you pass in a function via "Function <funcname>", $0 is the window
-id:
+If you pass in a function via
+.IR "Function funcname" ,
+$0 is the window id:
 .EX
 AddToFunc IFunc I WindowId $0 Iconify toggle
 WindowList Function IFunc, NoSticky, \\
   CurrentDesk, NoIcons
 .EE
 
-If you use the Layer m [n] option, only windows in layers between
-m and n are displayed. n defaults to m.
+If you use the
+.I Layer m [n]
+option, only windows in layers between m and n are displayed.
+n defaults to m.
 
-If you wanted to use the WindowList as an icon manager, you could invoke
-the following:
+If you wanted to use the
+.B WindowList
+as an icon manager, you could invoke the following:
 .EX
 WindowList OnlyIcons, Sticky, OnTop, Geometry
 .EE
-(Note - the "Only" options essentially wipe out all other ones... but
-the "OnlyListSkip" option which just causes WindowList to only consider
-the windows with WindowListSkip style)
-
+(Note - the
+.I Only
+options essentially wipe out all other ones... but the
+.I OnlyListSkip
+option which just causes
+.B WindowList to only consider the windows with
+.I WindowListSkip
+style.)
 
 .TP
-.B "+"
+.BI "+"
 Used to continue adding to the last specified decor, function or menu.
-See the discussion for AddToDecor, AddToFunc, and AddToMenu.
+See the discussion for
+.BR AddToDecor ", " AddToFunc ", and " AddToMenu .
 
 
 .SS COMMANDS AFFECTING WINDOW MOVEMENT AND PLACEMENT
 
 .TP
-.B "AnimatedMove" "\fIx y\fP [\fIWarp\fP]"
-Move a window in an animated way. Similar to Move command, below.
-Options are the same, except they are required, since it doesn't make
-sense to have a user move the window interactively and animatedly. If
-the optional argument \fIWarp\fP is specified the pointer is warped with
-the window.
-
+.BI "AnimatedMove " x y " [" Warp "]"
+Move a window in an animated fashion.  Similar to
+.B Move command below.
+The options are the same, except they are required, since it doesn't make
+sense to have a user move the window interactively and animatedly.  If
+the optional argument
+.I Warp
+is specified the pointer is warped with the window.
 
 .TP
-.B "HideGeometryWindow" "[Never|Move|Resize]"
+.BI "HideGeometryWindow [" Never | Move | Resize "]"
 Hides the position or size window that is usually shown when a window
-is moved or resized interactively.  To switch it of only for move
-respectively resize operations the optional parameters \fIMove\fP and
-\fIResize\fP can be used.  To switch both on again use the \fINever\fP
+is moved or resized interactively.  To switch it off only for move
+respectively resize operations the optional parameters
+.IR Move " and " Resize
+can be used.  To switch both on again use the
+.I Never
 option.
 
+.TP
+.BI "Layer [" "arg1 arg2" "] | [" default "]"
+Puts the current window in a new layer.  If
+.I arg1
+is non zero then the next layer will be the current layer
+number plus
+.IR arg1 .  If
+.I arg1
+is zero then the new layer will be
+.IR arg2 .
+
+As a special case,
+.I default
+puts the window in its default layer, i.e. the layer it was
+initially in.  The same happens if no or invalid arguments
+are specified.
 
 .TP
-.B "Layer" "[[\fIarg1\fP|\fIdefault\fP [\fIarg2\fP]"
-Puts the current window in a new layer.
-
-If \fIarg1\fP is non zero then the next layer will be the
-current layer number plus \fIarg1\fP.
-
-If \fIarg1\fP is zero then the new layer will be \fIarg2\fP.
-(If \fIarg2\fP is not present, then the command has no effect.)
-
-As a special case, 'Layer default' puts the window in its default
-layer, i.e. the layer it was initially in. The same happens if no
-or invalid arguments are specified.
-
-
-.TP
-.B "Lower"
-Allows the user to lower a window. Note that this lowers a window
-only in its layer. To bring a window to the absolute bottom, use
+.BI "Lower"
+Allows the user to lower a window.  Note that this lowers a window
+only in its layer.  To bring a window to the absolute bottom, use
 .EX
 AddToFunc lower-to-bottom
  + I Layer 0 0
@@ -2703,29 +2756,40 @@ AddToFunc lower-to-bottom
 .EE
 
 .TP
-.B "Move" "[\fI[w|m]x [w|m]y\fP [\fIWarp\fP]] | [pointer]"
+.BI "Move [[" w | m ] x " [" w | m ] y " [" Warp "]] | [" pointer "]"
 Allows the user to move a window.  If called from somewhere in a
 window or its border, then that window will be moved.  If called from
 the root window then the user will be allowed to select the target
-window.  If the optional argument \fIWarp\fP is specified the pointer
-is warped with the window.  If the single argument \fIpointer\fP is
-given, the top left corner of the window window is moved to the pointer
-position before starting the operation; this is mainly intended for
-internal use by modules like FvwmPager.
+window.  If the optional argument
+.I Warp
+is specified the pointer is warped with the window.  If the single
+argument
+.I pointer
+is given, the top left corner of the window window is moved to the
+pointer position before starting the operation; this is mainly
+intended for internal use by modules like
+.BR FvwmPager .
 
 The operation can be aborted with Escape or by pressing any mouse button
 (except button 1 which confirms the move).
 
-If the optional arguments \fIx\fP and \fIy\fP are provided, then the
-window will be moved immediately without user interaction.
-Each argument can specify an absolute or relative position from either
-the left (top) or right (bottom) of the screen.  By default, the
-numeric value given is interpreted as a percentage of the screen
-width (height), but a trailing "p" changes the interpretation to
-mean "pixels".  To move the window relative to its current position,
-add the 'w' (for 'window') prefix before the x and/or y value.
-To move the window to a position relative to the current location
-of the pointer, add the 'm' (for 'mouse') prefix.
+If the optional arguments
+.IR x " and " y
+are provided, then the window will be moved immediately without
+user interaction.  Each argument can specify an absolute or
+relative position from either the left/top or right/bottom of the
+screen.  By default, the numeric value given is interpreted as a
+percentage of the screen width/height, but a trailing
+.RI ' p '
+changes the interpretation to mean pixels.  To move the window relative to
+its current position, add the
+.RI ' w '
+(for "window") prefix before the
+. IR x " and/or " y
+value.  To move the window to a position relative to the
+current location of the pointer, add the
+.RI ' m '
+(for "mouse") prefix.
 
 Simple Examples:
 .EX
@@ -2757,60 +2821,77 @@ Move 40p w-10p
 Move m+0 m+0
 .EE
 
-See also the "AnimatedMove" command, above.
-
-
-.TP
-.B "MoveToDesk" "\fIarg1\fP [\fIarg2\fP] [\fImin max\fP]"
-Moves the selected window to another desktop (workspace, room).
-
-The arguments are the same as for the \fIDesk\fP command. MoveToDesk
-is a replacement for the old WindowsDesk command, which can no longer
-be used.
-
+See also the
+.B AnimatedMove
+command above.
 
 .TP
-.B "MoveSmoothness" "[\fIvalue\fP]"
+.BI "MoveToDesk " arg1 " [" arg2 "] [" "min max" "]"
+Moves the selected window to another desktop.  The arguments are the
+same as for the
+.B Desk
+command.
+.B MoveToDesk
+is a replacement for the old
+.B WindowsDesk
+command, which can no longer be used.
+
+.TP
+.BI "MoveSmoothness [" value "]"
 When you move an opaque window with the mouse it has to be redrawn
 quite often.  Too much drawing may slow down your machine and the
 window will lag behind the mouse, but if the window is drawn too
-infrequently the movement looks jerky.  The \fIvalue\fP given
-determines how often the window is drawn.  With a value of one,
-every update is made on the screen, with two, three, ... the window
+infrequently the movement looks jerky.  The
+.I value
+given determines how often the window is drawn.  With a value of 1,
+every update is made on the screen, with 2, 3, ... the window
 is updated every second, third, ... time.  On a fast machine you can
-safely use one, on slower machines use higher values.  With zero
+safely use one, on slower machines use higher values.  With 0,
 windows are redrawn only if the X Server does not generate mouse
 movement events for a moment (which is equivalent to a very high
-positive number).  The default value is ten.  To reset the
-MoveSmoothness to the default value you can omit the parameter.
-
+positive number).  The default
+.I value
+is 10.  To reset the
+.B MoveSmoothness
+to the default value you can omit the parameter.
 
 .TP
-.B "MoveThreshold" "[\fIpixels\fP]"
+.BI "MoveThreshold [" pixels "]"
 When the user presses a mouse button upon an object fvwm
 waits to see if the action is a click or a drag.  If the mouse
-moves by more than \fIpixels\fP pixels it is assumed to be a drag.
+moves by more than
+.I pixels
+pixels it is assumed to be a drag.
 
-Previous versions of fvwm hardwired \fIpixels\fP to 3, which
-is now the default value. If \fIpixels\fP is negative or omitted the
-default value is restored.
-
+Previous versions of fvwm hardwired
+.I pixels
+to 3, which is now the default value.  If
+.I pixels
+is negative or omitted the default value (which might be increased
+when 16000x9000 pixel displays become affordable) is restored.
 
 .TP
-.B "MoveToPage" "[\fIx[p]\fP \fIy\fP[p]] | [\fIprev\fP]"
-Moves the selected window to another page (x,y). The upper left page is
+.BI "MoveToPage [" x "[" p "] " y "[" p "]] | [" prev "]"
+Moves the selected window to another page (x,y).  The upper left page is
 (0,0), the upper right is (M,0), where M is one less than the current
-number of horizontal pages specified in the DeskTopSize command.  The
-lower left page is (0,N), and the lower right page is (M,N), where N
-is the desktop's vertical size as specified in the DeskTopSize
-command. Negative page numbers refer to pages from the rightmost/lowest
-page.  If \fIx\fP and \fIy\fP are not given, the window is moved to
-the current page (a window that has the focus but is off-screen can
-be retrieved with this).  Moving windows to a page relative to the
-current one can be achieved by adding a trailing 'p' after any or
-both numerical arguments.  To move a window to the previous page use
-\fIprev\fP as the first argument.  Using MoveToPage on a sticky window
-makes the window non-sticky (see \fIStick\fP command).
+number of horizontal pages specified in the
+.B DeskTopSize
+command.  Similarly the lower left page is (0,N), and the lower right page
+is (M,N).  Negative page numbers refer to pages from the rightmost/lowest
+page.  If
+.IR x " and " y
+are not given, the window is moved to the current page (a window that
+has the focus but is off-screen can be retrieved with this).  Moving
+windows to a page relative to the current one can be achieved by
+adding a trailing
+.RI ' p '
+after any or both numerical arguments.  To move a window to the
+previous page use
+.I prev
+as the single argument.  Using MoveToPage on a sticky window
+makes the window non-sticky (see
+.B Stick
+command).
 
 Examples:
 .EX
@@ -2829,29 +2910,42 @@ MoveToPage +2p -1p
 .EE
 
 .TP
-.B "OpaqueMoveSize" "[\fIpercentage\fP]"
+.BI "OpaqueMoveSize [" percentage "]"
 Tells fvwm the maximum size window with which opaque window
 movement should be used.  The percentage is percent of the total
-screen area.  With "OpaqueMoveSize 0" all windows will be moved using the
-traditional rubber-band outline.  With "OpaqueMoveSize 100" all windows
-will be moved as solid windows.  The default is "OpaqueMoveSize 5", which
-allows small windows to be moved in an opaque manner but large windows
-are moved as rubber-bands.  If \fIpercentage\fP is omitted or invalid
-the default value is set.  To resize windows in an opaque manner you can
-use the 'ResizeOpaque' style.  See \fIStyle\fP command.
-
+screen area.  With
+.EX OpaqueMoveSize 0
+all windows will be moved using the traditional rubber-band outline.
+With
+.EX
+OpaqueMoveSize 100
+.EE
+all windows will be moved as solid windows.  The default is
+.EX
+OpaqueMoveSize 5
+.EE
+which allows small windows to be moved in an opaque manner but large
+windows are moved as rubber-bands.  If
+.I percentage
+is omitted or invalid the default value is set.  To resize windows
+in an opaque manner you can use the
+.I ResizeOpaque
+style.  See
+.B Style
+command.
 
 .TP
-.B "PlaceAgain" "[\fIAnim\fP]"
+.BI "PlaceAgain [" Anim "]"
 Causes the current window's position to be re-computed using the initial
 window placement logic.  The window is moved to where it would have
-been if it were a new window that had just appeared.  Most useful with Smart
-or Clever (ReallySmart) placement.  If the optional argument \fIAnim\fP is
-specified, an animated move is used to place the window in its new position.
-
+been if it were a new window that had just appeared.  Most useful with
+.IR Smart " or " Clever ( ReallySmart )
+placement.  If the optional argument
+.I Anim
+is specified, an animated move is used to place the window in its new position.
 
 .TP
-.B "Raise"
+.BI "Raise"
 Allows the user to raise a window. Note that this raises a window
 only in its layer. To bring a window to the absolute top, use
 .EX
@@ -2862,27 +2956,35 @@ AddToFunc raise-to-top
 where ontop is the highest layer used in your setup.
 
 .TP
-.B "RaiseLower"
+.BI "RaiseLower"
 Alternately raises and lowers a window.  The window is raised
 if it is obscured by any window (except for its own transients
-when RaiseTransient style is used) otherwise it is lowered.
-
+when
+.I RaiseTransient
+style is used; see
+.B Style
+command) otherwise it is lowered.
 
 .TP
-.B "Resize" "[\fIx y\fP]"
-Allows the user to resize a window.  If called from somewhere in a
-window or its border, then that window will be resized.  If called from
+.BI "Resize [" x [ p | c "] " y [ p | c "]]"
+Allows to resize a window.  If called from somewhere in a window
+or its border, then that window will be resized.  If called from
 the root window then the user will be allowed to select the target
 window.
 
 The operation can be aborted with Escape or by pressing any mouse button
-(except button 1 which confirms the resize).
+(except button 1 which confirms it).
 
-If the optional arguments x and y are provided, then the window will
-be resized so that its dimensions are \fIx\fP by \fIy\fP).  The units
-of x and y are percent-of-screen, unless a letter "p" is appended to
-each coordinate, in which case the location is specified in pixels.
-With a "c" suffix the unit defined by the client application (hence the
+If the optional arguments
+.IR x " and " y
+are provided, then the window will be resized so that its dimensions are
+.IR x " by " y .
+The units of x and y are percent-of-screen, unless a letter
+.RI ' p '
+is appended to one or both coordinates, in which case the location is
+specified in pixels.  With a
+.RI ' c '
+suffix the unit defined by the client application (hence the
 c) is used. So you can say
 
 .EX
@@ -2891,201 +2993,277 @@ Resize 80c 24c
 
 to make a terminal window just big enough for 80x24 characters.
 
-
 .TP
-.B "SetAnimation" "\fImilliseconds-delay\fP [\fifractions-to-move-list\fP]"
+.BI "SetAnimation " milliseconds-delay " [" fractions-to-move-list "]"
 Sets the time between frames and the list of fractional offsets to
-customize the animated moves of the \fIAnimatedMove\fP command and
-the animation of menus (if the menu style is set to animated).  If
-the \fIfractions-to-move-list\fP is omitted, only the time between frames
-is altered.  The fractions-to-move-list specifies how far the window
-should be offset at each successive frame as a fraction of the difference
-between the starting location and the ending location.  e.g.:
+customize the animated moves of the
+.B AnimatedMove command and the animation of menus (if the menu
+style is set to animated; see
+.B MenuStyle
+command).  If the
+.I fractions-to-move-list
+is omitted, only the time between frames is altered.  The
+.I fractions-to-move-list
+specifies how far the window should be offset at each successive frame
+as a fraction of the difference between the starting location and the
+ending location.  e.g.:
 .EX
 SetAnimation 10 -.01 0 .01 .03 .08 .18 .3 \\
   .45 .6 .75 .85 .90 .94 .97 .99 1.0
 .EE
 
-Sets the delay between frames to 10ms, and sets the positions of the 16
-frames of the animation motion.  Notice that negative values are allowed,
+Sets the delay between frames to 10 milliseconds, and sets the positions
+of the 16 frames of the animation motion.  Negative values are allowed,
 and in particular can be used to make the motion appear more cartoonish, by
 briefly moving slightly in the opposite direction of the main motion.  The
 above settings are the default.
 
 .TP
-.B "SnapAttraction" "[\fIproximity\fP [\fIbehavior\fP] [\fIScreen\fP]]"
-If during an interactive move the window (or icon) comes within \fIproximity\fP
-pixels of another the window (or icon) will be moved to make the borders
-adjoin. The default of -1 means that no snapping will happen.  A setting of
+.BI "SnapAttraction [" proximity " [" behavior "] [" Screen "]]"
+If during an interactive move the window or icon comes within
+.I proximity
+pixels of another the window or icon, it will be moved to make the borders
+adjoin.  The default of -1 means that no snapping will happen.  A setting of
 0 does indeed snap when the distance is zero pixels.  This is relevant when
-the \fISnapGrid\fP command is used. Calling this command without arguments
-reinstates the default settings.
+the
+.B SnapGrid
+command is used.  Calling this command without arguments reinstates
+the default settings.
 
-The \fIbehavior\fP argument is optional and may be set to one of the four
-following values:
+The
+.I behavior
+argument is optional and may be set to one of the four following values:
 
-With \fIAll\fP both icons and windows snap to other windows and other
-icons.
+With
+.I All
+both icons and windows snap to other windows and other icons.
+.I SameType
+lets snap windows only to other windows and icons only to other icons.
+With
+.I Windows
+windows snap only to other windows.  Icons do not snap.
+Similarly with
+.I Icons
+icons snap to only other icons and windows do not snap.
 
-\fISameType\fP lets snap windows only to other windows and icons
-only to other icons.
+If the
+.I Screen
+option is present windows and or icons are snapped to the screen edges too.
 
-With \fIWindows\fP windows snap only to other windows.  Icons do not
-snap.
-
-Similarly with \fIIcons\fP icons snap to only other icons and
-windows do not snap.
-
-If the \fIScreen\fP option is present windows and or icons are snapped
-to the screen edges too.
-
-The default SnapAttraction setting for behavior is "All".
+The default
+.B SnapAttraction
+setting for behavior is
+.IR All .
 
 .TP
-.B "SnapGrid" "[\fIx-grid-size y-grid-size\fP]"
-During an interactive move a window (or icon) will be positioned such that
+.BI "SnapGrid [" "x-grid-size y-grid-size" "]"
+During an interactive move a window or icon will be positioned such that
 its location (top left corner) will be coincident with the nearest grid point.
-The default \fIx-grid-size\fP and \fIy-grid-size\fP setting are both 1, which
-is effectively no grid all.  An interactive move with both \fISnapGrid\fP
-and \fISnapAttraction\fP in effect will result in the window being moved to be
-adjacent to the nearest window border (if within snap proximity) or grid
+The default
+.IR x-grid-size " and " y-grid-size
+setting are both 1, which is effectively no grid all.  An
+interactive move with both
+.BR SnapGrid " and " SnapAttraction
+in effect will result in the window being moved to be adjacent to
+the nearest window border (if within snap proximity) or grid
 position.  In other words, the window will move the shortest distance possible
-to satisfy both \fISnapGrid\fP and \fISnapAttraction\fP.  Note that the X and
-Y coordinates are not coupled.  For example, a window may snap to another
-window on the X axis while snapping to a grid point on the Y axis.
-Calling this command without arguments reinstates the default settings.
+to satisfy both
+.BR SnapGrid " and " SnapAttraction .
+Note that the x and y coordinates are not coupled.  For example,
+a window may snap to another window on the x axis while snapping
+to a grid point on the y axis.  Calling this command without
+arguments reinstates the default settings.
 
 .TP
-.B "WindowsDesk" "\fIarg1\fP [\fIarg2\fP]"
-Moves the selected window to another desktop (workspace, room).
+.BI "WindowsDesk " arg1 " [" arg2 "]"
+Moves the selected window to another desktop.
 
-This command has been removed and must be replaced by \fIMoveToDesk\fP,
-the arguments for which are the same as for the \fIDesk\fP command.
-\fINote:\fP You cannot simply change the name of the command: the
-syntax has changed. If you used "WindowsDesk n" to move a window to
-desk n, you will have to change it to "MoveToDesk 0 n".
-
+This command has been removed and must be replaced by
+.BR MoveToDesk ,
+the arguments for which are the same as for the
+.B Desk
+command.
+.B Important note:
+You cannot simply change the name of the command: the
+syntax has changed.  If you used
+.EX
+WindowsDesk n
+.EE
+to move a window to desk n, you will have to change
+it to
+.EX
+MoveToDesk 0 n
+.EE
 
 .TP
-.B "XORpixmap" "[\fIpixmap\fP]"
+.BI "XorPixmap [" pixmap "]"
 Selects the pixmap with which bits are XOR'ed when doing rubber-band
-window moving or resizing.  This has a better chance of making the rubber-band
-visible if \fIXORvalue\fP does not give good results.  An example pixmap
-\fIresize.rainbow.xpm\fP is provided with the source distribution.
-To turn the XorPixmap off again use the \fIXORvalue\fP command or omit
-the \fIpixmap\fP argument.
-
+window moving or resizing.  This has a better chance of making the
+rubber-band visible if
+.B XORvalue
+does not give good results.  An example pixmap
+.I resize.rainbow.xpm
+is provided with the icon distribution.  To turn the
+.B XorPixmap
+off again use the
+.B XorValue command or omit the
+.I pixmap
+argument.
 
 .TP
-.B "XORvalue" "[\fInumber\fP]"
+.BI "XORvalue [" number "]"
 Changes the value with which bits are XOR'ed when doing rubber-band
 window moving or resizing.  Setting this value is a trial-and-error
-process. The default value is 0. It is set if the given \fInumber\fP
+process.  The default value is 0.  It is set if the given
+.I number
 is omitted or invalid.
 
 
 .SS COMMANDS FOR FOCUS AND MOUSE MOVEMENT
 
 .TP
-.B "CursorMove" "\fIhorizontal vertical\fP"
-Moves the mouse pointer by \fIhorizontal\fP pages in the X direction
-and \fIvertical\fP pages in the Y direction.  Either or both entries
-may be negative.  Both horizontal and vertical values are expressed in
-percent of pages, so "CursorMove 100 100" means to move down and right
-by one full page.  "CursorMove 50 25" means to move right half a page
-and down a quarter of a page.  Alternatively, the distance can be
-specified in pixels by appending a 'p' to the horizontal and/or vertical
-specification.  For example "CursorMove -10p -10p" means move ten
-pixels up and ten pixels left.  The CursorMove function should not be
-called from pop-up menus.
+.BI "CursorMove " horizontal "[" p "] " vertical "[" p "]"
+Moves the mouse pointer by
+.I horizontal
+pages in the X direction and
+.I vertical
+pages in the Y direction.  Either or both entries may be negative.
+Both horizontal and vertical values are expressed in percent of
+pages, so
+
+.EX
+CursorMove 100 100
+.EE
+means to move down and right by one full page.
+
+.EX
+CursorMove 50 25
+.EE
+means to move right half a page and down a quarter of a page.
+Alternatively, the distance can be specified in pixels by
+appending a
+.RI ' p '
+to the horizontal and/or vertical specification.  For example
+
+.EX
+CursorMove -10p -10p
+.EE
+means move ten pixels up and ten pixels left.  The CursorMove
+function should not be called from pop-up menus.
 
 .TP
-.B "FlipFocus" "[\fINoWarp\fP]"
-Executes a \fIFocus\fP command as if the user had used the pointer to
-select the window.  This command alters the order of the WindowList in
-the same way as clicking in a window to focus, i.e. the target window is
-removed from the WindowList and placed at the start. This command is
-recommended for use with the \fIDirection\fP command and in the function
-invoked from \fIWindowList\fP.
-
+.BI "FlipFocus  [" NoWarp "]"
+Executes a
+.B Focus
+command as if the user had used the pointer to select the window.
+This command alters the order of the WindowList in the same way
+as clicking in a window to focus, i.e. the target window is removed
+from the
+.B WindowList
+and placed at the start. This command is recommended for use with the
+.B Direction
+command and in the function invoked from
+.BR WindowList .
 
 .TP
-.B "Focus" "[\fINoWarp\fP]"
-Sets the keyboard focus to the selected window. If the \fINoWarp\fP
-argument is given, this is all it does. Otherwise it also moves the
+.BI "Focus  [" NoWarp "]"
+Sets the keyboard focus to the selected window.  If the
+.I NoWarp
+argument is given, this is all it does.  Otherwise it also moves the
 viewport or window as needed to make the selected window visible and
 raises the window if needed to make it visible.  Does not warp the pointer
-into the selected window (see WarpToWindow function).  Does not de-iconify.
-This command does not alter the order of the WindowList, it rotates the
-WindowList around so that the target window is at the start.
+into the selected window (see
+.B WarpToWindow
+function).  Does not de-iconify.  This command does not alter the
+order of the
+.BR WindowList ,
+it rotates the
+.B WindowList
+around so that the target window is at the start.
 
-When the \fINoWarp\fP argument is given, Focus cannot transfer the
-keyboard focus to windows on other desks.
-
+When the
+.I NoWarp
+argument is given, Focus cannot transfer the keyboard focus to
+windows on other desks.
 
 .TP
-.B "WarpToWindow" "\fIx y\fP"
-Warps the cursor to the associated window.  The parameters x and y
+.BI "WarpToWindow " x "[" p "] " y "[" p "]"
+Warps the cursor to the associated window.  The parameters
+.IR x " and " y
 default to percentage of window down and in from the upper left hand
-corner (or number of pixels down and in if 'p' is appended to the
-numbers).
+corner (or number of pixels down and in if
+.RI ' p '
+is appended to the numbers).
 
 
 .SS COMMANDS CONTROLLING WINDOW STATE
 
 .TP
-.B "Close"
+.BI "Close"
 If the window accepts the delete window protocol a message is sent to
 the window asking it to gracefully remove itself.  If the window does
 not understand the delete window protocol then the window is
-destroyed.
-
+destroyed as with the
+.B Destroy
+command.
 
 .TP
-.B "Delete"
+.BI "Delete"
 Sends a message to a window asking that it remove itself, frequently
 causing the application to exit.
 
-
 .TP
-.B "Destroy"
+.BI "Destroy"
 Destroys an application window, which usually causes the application
 to crash and burn.
 
-
 .TP
-.B "Iconify" "[\fIbool\fP]"
+.BI "Iconify [" bool "]"
 Iconifies a window if it is not already iconified or de-iconifies it
-if it is already iconified.  The optional argument \fIbool\fP is a
-boolean argument. 'True' means only iconification will be allowed,
-while 'False' forces de-iconification.  Using 'toggle' switches
-between iconified and de-iconified states.
+if it is already iconified.  The optional argument
+.I bool
+is a boolean argument.  "True" means only iconification will be
+allowed, while "False" forces de-iconification.  Using "toggle"
+switches between iconified and de-iconified states.
+
+There are a number of
+.B Style
+options which influence the appearance and behavior of icons
+(e.g.
+.IR StickyIcon ", " NoIcon ).
 
 For backwards compatibility, the optional argument may also be a
-positive number to signify 'on', and negative to signify 'off'.
-Note that this syntax is obsolete, and will be removed in the future.
-
-There are a number of style options which influence the appearance and
-behavior of icons (e.g. \fIStickyIcon\fP, \fINoIcon\fP).
+positive number instead of "True", or a negative number instead of
+"False".  Note that this syntax is obsolete, and will be removed
+in the future.
 
 .TP
-.B "Maximize" "[\fIbool\fP] [\fIhorizontal vertical\fP]"
-Without its optional arguments (or if the \fIbool\fP bit has the
-value 'toggle') Maximize causes the window to alternately switch
-from a full-screen size to its normal size. To force a window into
-maximized (un-maximized) state you can use a 'True' ('False') value
-for the \fIbool\fP argument.
+.BI "Maximize  [" bool "] [" horizontal "[" p "] " vertical "[" p "]]"
+Without its optional arguments (or if the
+.I bool
+bit has the value "toggle")
+.B Maximize
+causes the window to alternately switch from a full-screen size to
+its normal size.  To force a window into maximized (normal) state
+you can use a "True" or "False" value for the
+.I bool
+argument.
 
-With the optional arguments horizontal and vertical, which are
-expressed as percentage of a full screen, the user can control the new
-size of the window.  An optional suffix 'p' can be used to indicate
-pixels instead of percents of the screen size.  If horizontal is greater
-than 0 then the horizontal dimension of the window will be set to
-horizontal*screen_width/100.  If the value is smaller than 0 the
-size is subtracted from the screen width, i.e. '-25' is the same
-as '75'. If horizontal is 'grow', it will maximize to
-current available space until finding any obstacle.  The vertical resizing
-is similar.  If both horizontal and vertical values are 'grow', it will expand
+With the optional arguments
+.IR horizontal " and " vertical ,
+which are expressed as percentage of a full screen, the user can
+control the new size of the window.  An optional suffix
+.RI ' p '
+can be used to indicate pixels instead of percents of the screen
+size.  If horizontal is greater than 0 then the horizontal
+dimension of the window will be set to
+.IR horizontal *screen_width/100.
+If the value is smaller than 0 the size is subtracted from the
+screen width, i.e. -25 is the same as 75.  If
+.I horizontal
+is "grow", it will maximize to current available space until
+finding any obstacle.  The vertical resizing is similar.  If both
+horizontal and vertical values are "grow", it will expand
 vertically first, then horizontally to find space.  For example, the
 following will add a title-bar button to switch a window to the full
 vertical size of the screen:
@@ -3112,105 +3290,136 @@ Mouse 0 4 A Maximize 100 -60p
 
 Values larger than 100 can be used with caution.
 
-If the letter "p" is appended to each coordinate (horizontal and/or
-vertical), then the scroll amount will be measured in pixels.
-
-
 .TP
-.B "Recapture"
+.BI "Recapture"
 Causes fvwm to recapture all of its windows.  This ensures that the
 latest style parameters will be used.  The recapture operation is
 visually disturbing.
 
-.TP
-.B "RecaptureWindow"
-Causes fvwm to recapture the current window.  This ensures that the
-latest style parameters will be used.  The recapture operation is
-visually disturbing.
+Since fvwm version 2.4 only very few
+.B Style
+options need a
+.B Recapture
+to take effect (e.g.
+.IR UseStyle).
+The
+.B Recapture
+command will become obsolete soon.
 
+.TP
+.BI "RecaptureWindow"
+Causes fvwm to recapture the chosen window.  See
+.B Recapture
+commadn above.
 
 .TP
-.B "Refresh"
+.BI "Refresh"
 Causes all windows on the screen to redraw themselves.
 
+.TP
+.BI "RefreshWindow"
+Causes the chosen window to redraw itself.
 
 .TP
-.B "RefreshWindow"
-Causes the current (or chosen) window to redraw itself.
-
+.B "Stick [" bool "]"
+If the
+.I bool
+argument is empty or "toggle", the
+.B Stick
+command makes a window sticky if it is not already sticky, or
+non-sticky if it is already sticky.  To make a window sticky
+regardless of its current state the
+.I bool
+argument must be "True".  To make it non-sticky use "False".
 
 .TP
-.B "Stick" "[\fIbool\fP]"
-If the \fIbool\fP argument is empty or 'toggle', the Stick command makes
-a window sticky if it is not already sticky, or non-sticky if it
-is already sticky. To make a window sticky regardless of its current
-state the \fIbool\fP argument must be 'True'. To make it non-sticky
-use 'False'.
-
-.TP
-.B "WindowShade" "[\fIbool\fP]"
+.BI "WindowShade [" bool "]"
 Toggles the window shade feature for titled windows.  Windows in the
-shaded state only display a title-bar.  If \fIbool\fP is not given or
-'toggle', the window shade state is toggled.  If \fIbool\fP is 'True',
-the window is forced to the shaded state. If \fIbool\fP is 'False',
-then the window is forced to the non-shaded state.  Windows without
-titles cannot be shaded. See also \fIWindowShadeAnimate\fP.
+shaded state only display a title-bar.  If
+.I bool
+is not given or "toggle", the window shade state is toggled.  If
+.I bool
+is "True", the window is forced to the shaded state. If
+.I bool
+is "False", then the window is forced to the non-shaded state.
+Windows without titles can be shaded too.  See also
+.B WindowShadeAnimate
+below.
 
-For backwards compatibility, the optional argument may also be '1'
-to signify 'on', and '2' to signify 'off'. Note that this syntax
+For backwards compatibility, the optional argument may also be 1
+to signify "on", and 2 to signify "off". Note that this syntax
 is obsolete, and will be removed in the future.
 
-
 .TP
-.B "WindowShadeAnimate" "[\fIsteps\fP]"
+.BI "WindowShadeAnimate  [" steps "[" p "]]"
 Selects the number of steps for animation when shading a window with
-\fIWindowShade\fP. If the number has a trailing "p" it sets the number of
-pixels to use as the step size instead of a fixed number of steps.
-0 disables the animation.  This happens too if the argument is omitted
-or invalid.
+.BR WindowShade .
+If the number has a trailing
+.I ' p '
+it sets the number of pixels to use as the step size instead of
+a fixed number of steps.  0 disables the animation.  This happens
+too if the argument is omitted or invalid.
 
 
 .SS COMMANDS FOR MOUSE, KEY AND STROKE BINDINGS
 
 .TP
-.B "IgnoreModifiers" "\fI[Modifiers]\fP"
-Tells FVWM which modifiers to ignore when matching Mouse or Key
-bindings. \fIIgnoreModifiers\fP affects the ClickToFocus style too.
-This command belongs into your
+.BI "IgnoreModifiers [" Modifiers "]"
+Tells fvwm which modifiers to ignore when matching Mouse or Key
+bindings.
+.B IgnoreModifiers
+affects the ClickToFocus style too.  This command belongs into your
 .IR .fvwm2rc .
-If you issue it when your
-fvwm session is already up and running the results are unpredictable.
-The should appear before any applications or modules are started in your
+If you issue it when your fvwm session is already up and running
+the results are unpredictable.  The should appear before any
+applications or modules are started in your
 .I .fvwm2rc
 file (e.g. with the
 .B Exec
 command).
 
-\fIModifiers\fP has the same syntax as in the Mouse or Key bindings,
-with the addition of L meaning caps lock. The default is 'L'.
-\fIModifiers\fP can be omitted, meaning no modifiers are ignored.
-This command comes in handy if the num-lock and scroll-lock keys
-interfere with your shortcuts. With XFree86 '2' usually is the
-num-lock modifiers and '5' refers to scroll-lock. To turn all these
-pesky modifiers off you can use this command:
+.I Modifiers
+has the same syntax as in the
+.BR Mouse " or " Key
+bindings, with the addition of 'L' meaning the
+.SM caps lock
+key.  The default is "L".
+.I Modifiers
+can be omitted, meaning no modifiers are ignored.  This command
+comes in handy if the
+.SM num-lock
+and
+.SM scroll-lock
+keys interfere with your shortcuts.  With XFree86 '2' usually is the
+.SM num-lock
+modifier and '5' refers to the
+.SM scroll-lock
+key. To turn all these pesky modifiers off you can use this command:
 
 .EX
 IgnoreModifiers L25
 .EE
 
-Important Note: This command creates a lot of extra network traffic,
-depending on your CPU, network connection, the number of \fIKey\fP
-or \fIMouse\fP commands in you configuration file and the number of
-modifiers you want to ignore. If you do not have a lightning fast
-machine ore very few bindings you should not ignore more than two
-modifiers. E.g. do not ignore scroll-lock if you have no problem with
-it. In the FAQ you will find a better solution of this problem.
-
+.I Important Note:
+This command creates a lot of extra network traffic, depending on
+your CPU, network connection, the number of
+.BR Key " or " Mouse
+commands in you configuration file and the number of modifiers
+you want to ignore.  If you do not have a lightning fast machine
+or very few bindings you should not ignore more than two modifiers.
+I.e. do not ignore
+.SM scroll-lock
+if you have no problem with it.  In the
+.B FAQ
+you will find a better solution of this problem.
 
 .TP
-.B "GnomeButton"
-Used in conjunction with Mouse to pass mouse button presses on the root
-window to a GNOME program (such as GMC).  The following example passes
+.BI "GnomeButton"
+Used in conjunction with
+.B Mouse
+to pass mouse button presses on the root window to a
+.SM GNOME
+program (such as GMC).  The following example passes
 presses of mouse buttons 1 and 3 to such a program.
 
 .EX
@@ -3218,59 +3427,83 @@ Mouse 1 R A GnomeButton
 Mouse 3 R A GnomeButton
 .EE
 
-
 .TP
-.B "Key" "\fIkeyname Context Modifiers Function\fP"
+.BI "Key " "Keyname Context Modifiers Function"
 Binds a keyboard key to a specified fvwm built-in function, or
-removes the binding if \fIFunction\fP is '-'.  Definition is the same
-as for a mouse binding except that the mouse button number is replaced
-with a key name.  The \fIkeyname\fP is one of the entries from
+removes the binding if
+.I Function
+is '-'.  The syntax is the same as for a
+.B Mouse
+binding except that the mouse button number is replaced with a
+.IR Keyname .
+The
+.I Keyname
+is one of the entries from
 .IR /usr/include/X11/keysymdef.h ,
-with the leading "XK_" omitted.  The
-\fIContext\fP and \fIModifiers\fP fields are defined as in the Mouse
-binding.  However, when you press a key the context window is the
-window that has the keyboard focus.  That is not necessarily the
-same as the window the pointer is over (with SloppyFocus or
-ClickToFocus).  Note that key bindings with the R (root window)
-context do not work properly with SloppyFocus and ClickToFocus.
-If you encounter problems, use the \fIPointerKey\fP command instead.
-If you want to bind keys to a window with SloppyFocus or
-ClickToFocus that are supposed to work when the pointer is
-not over the window, fvwm assumes the pointer is over the client
-window (i.e. you have to use the 'w' modifier).
+with the leading XK_ omitted.  The
+.IR Context " and " Modifiers
+fields are defined as in the Mouse binding.  However, when you
+press a key the context window is the window that has the keyboard
+focus.  That is not necessarily the same as the window the pointer
+is over (with
+.IR SloppyFocus " or " ClickToFocus ).
+Note that key bindings with the 'R' (root window) context do not
+work properly with
+.IR SloppyFocus " and " ClickToFocus .
+If you encounter problems, use the
+.B PointerKey
+command instead.  If you want to bind keys to a window with
+.IR SloppyFocus " or " ClickToFocus
+that are supposed to work when the pointer is not over the
+window, fvwm assumes the pointer is over the client window
+(i.e. you have to use the 'W' modifier).
 
 The following example binds the built in window list to pop up when
-Alt-Ctrl-Shift-F11 is hit, no matter where the mouse pointer is:
+.SM Alt-Ctrl-Shift-F11
+is hit, no matter where the mouse pointer is:
 .EX
 Key F11 A SCM WindowList
 .EE
 
 Binding a key to a title-bar button will cause that button to
-appear.  Please refer to the \fIMouse\fP command for details.
-
+appear.  Please refer to the
+.B Mouse
+command for details.
 
 .TP
-.B "Mouse" "\fIButton Context Modifiers Function\fP"
-Defines a mouse binding, or removes the binding if \fIFunction\fP is '-'.
-\fIButton\fP is the mouse button number.  If \fIButton\fP is
-zero then any button will perform the specified function.
-\fIContext\fP describes where the binding applies.  Valid contexts are
-R for the root window, W for an application window, T for a window
-title-bar, S for a window side, top, or bottom bar, F for a window
-frame (the corners), I for an Icon window, or 0 through 9 for
-title-bar buttons, or any combination of these letters.  A is for any
-context except for title-bar buttons.  For instance, a context of FST
+.BI "Mouse " "Button Context Modifiers Function"
+Defines a mouse binding, or removes the binding if
+.I Function
+is '-'.
+.I Button
+is the mouse button number.  If
+.I Button
+is zero then any button will perform the specified function.
+.I Context
+describes where the binding applies.  Valid contexts are 'R' for
+the root window, 'W' for an application window, 'T' for a window
+title-bar, 'S' for a window side, top, or bottom bar, 'F' for a window
+frame (the corners), 'I' for an Icon window, or '0' through '9' for
+title-bar buttons, or any combination of these letters.  'A' is for any
+context except for title-bar buttons.  For instance, a context of "FST"
 will apply when the mouse is anywhere in a window's border except the
-title-bar buttons.  Only S and W are valid for an undecorated window.
+title-bar buttons.  Only 'S' and 'W' are valid for an undecorated window.
 
-\fIModifiers\fP is any combination of N for no modifiers, C for
-control, S for shift, M for Meta, L for Caps-Lock or A for any modifier.
-For example, a modifier of SM will apply when both the Meta and Shift
+.I Modifiers
+is any combination of 'N' for no modifiers, 'C' for control, 'S' for
+shift, 'M' for Meta, 'L' for Caps-Lock or 'A' for any modifier.
+For example, a modifier of "SM" will apply when both the
+.SM Meta
+and
+.SM Shift
 keys are down.  X11 modifiers mod1 through mod5 are represented as the
-digits 1 through 5.  The modifier L is ignored by default.  To turn
-it on, use the \fIIgnoreModifiers\fP command.
+digits '1' through '5'.  The modifier 'L' is ignored by default.  To turn
+it on, use the
+.B IgnoreModifiers
+command.
 
-\fIFunction\fP is one of fvwm's built-in functions.
+.I Function
+is one of fvwm's built-in functions.
 
 The title-bar buttons are numbered with odd numbered buttons on the
 left side of the title-bar and even numbers on the right.
@@ -3286,15 +3519,17 @@ bar.  The highest even number determines the number or right side
 buttons which are drawn.  Actions can be bound to either mouse buttons
 or keyboard keys.
 
-
 .TP
-.B "PointerKey" "\fIkeyname Context Modifiers Function\fP"
-This command works exactly like the \fIKey\fP command.  The only
-difference is that the binding operates on the window under the
-pointer.  Normal key bindings operate on the focused window
-instead.  The \fIPointerKey\fP command can for example be used
-to bind keys to the root window if you are using SloppyFocus
-or ClickToFocus.
+.BI "PointerKey " "Keyname Context Modifiers Function"
+This command works exactly like the
+.B Key
+command.  The only difference is that the binding operates on
+the window under the pointer.  Normal key bindings operate on
+the focused window instead.  The
+.B PointerKey
+command can for example be used to bind keys to the root window
+if you are using
+.IR SloppyFocus " or " ClickToFocus .
 
 Example:
 .EX
@@ -3302,16 +3537,27 @@ Style * SloppyFocus
 PointerKey f1 a m Menu MainMenu
 .EE
 
-
 .TP
-.B "Stroke" "\fIsequence button Context Modifiers Function\fP"
+.BI "Stroke " "Sequence Button Context Modifiers Function"
 Binds a mouse stroke sequence to a specified fvwm built-in function,
-or removes the binding if \fIFunction\fP is '-'.  Definition is the same
-as for a mouse binding except that \fIsequence\fP is inserted in front of
-the button number and a value of 0 for \fIbutton\fP concerns the StrokeFunc
-command. The \fIContext\fP and \fIModifiers\fP fields are defined
-as in the mouse binding. However, only the R Context really works
-(if you want to use other contexts you need to use the StrokeFunc below).
+or removes the binding if
+.I Function
+is '-'.  The syntax is the same as for a
+.B Mouse
+binding except that
+.I Sequence
+is inserted in front of the button number and a value of 0 for
+.I Button
+concerns the
+.B StrokeFunc
+command.  The
+.IR Context " and " Modifiers
+fields are defined as in the
+.B mouse
+binding.  However, only the 'R' Context really works (if you want
+to use other contexts you need to use the
+.B StrokeFunc
+below).
 
 Strokes sequences are defined in a telephone grid like this:
 .EX
@@ -3330,11 +3576,12 @@ or in a numeric pad grid like this:
  1  2  3
 .EE
 The telephone grid is used by default, to use the numeric pad grid
-you should begin the sequence with a N. Note that a complex motion
+you should begin the sequence with a 'N'.  Note that a complex motion
 may gives several different sequences (see the "netscape" example
-below to handle such motion). Moreover, sequence are limited to
-20 elements (with the present version of libstroke), however,
-in practice it is preferable to use sequence with less than 12
+below to handle such motion).  Moreover, sequence are limited to
+20 elements (with the present version of
+.BR libstroke ),
+however, in practice it is preferable to use sequence with less than 12
 elements.
 
 Because of the default button menu in fvwm, you may need to remove
@@ -3342,12 +3589,12 @@ a mouse button binding (using an empty action) before using the stroke
 .EX
 Mouse 3 R N
 .EE
-Also, you can still use Stroke sequence 0 to simulate a click
+Also, you can still use the stroke "sequence 0" to simulate a click:
 .EX
 Stroke 0 3 R N Menu WindowList Nop
 .EE
-The following example start xterm when mouse drag in 'I' on the root
-window with button 3 pressed down:
+The following example starts xterm when the mouse drags an 'I' on
+the root window with button 3 pressed down:
 .EX
 Stroke 258  3  R  N  Exec exec xterm
 .EE
@@ -3365,156 +3612,217 @@ a grid on your machine. Here an example:
 Stroke N78963314   3  R  N  FvwmForm FormFvwmQuitVerify.
 Stroke N789633147  3  R  N  FvwmForm FormFvwmQuitVerify.
 .EE
-This example will start the QuitVerify form if you draw a box
-that begin in its top left corner.
+This example will start the "QuitVerify" form if you draw a box
+that begin in the top left corner.
 
-Note: You need LibStroke installed and fvwm compiled with stroke
-support. LibStroke can be obtained via anonymous ftp at
+Note: You need
+.B libstroke
+installed and fvwm compiled with stroke support.
+.B libstroke
+can be obtained via anonymous ftp at
 .EX
-http://www.etla.net/~willey/projects/libstroke/
+.B http://www.etla.net/~willey/projects/libstroke/
 .EE
 
 .TP
-.B "StrokeFunc [\fIOptions\fP]"
-Causes fvwm to record a mouse stroke sequence and to execute
-the corresponding action as defined in a Stroke command. The cursor
-is modified to the STROKE context of the CursorStyle command during
-recording. When the stroke is "finished" StrokeFunc looks for a Stroke
-binding of the form
+.BI "StrokeFunc [" Options "]"
+Causes fvwm to record a mouse stroke sequence and to execute the
+corresponding action as defined in a
+.B Stroke
+command.  The cursor is modified to the
+.I STROKE
+context of the
+.B CursorStyle
+command during recording.  When the stroke is finished
+.B StrokeFunc looks for a stroke binding of the form
 .EX
 Stroke sequence 0 Context Modifiers action
 .EE
-and executes the corresponding action (Note the 0). Normal use of this
-function is via a Mouse or Key command. Examples:
+and executes the corresponding action (Note the 0).  Normal use of this
+function is via a
+.BR Mouse " or " Key
+command.  Examples:
 .EX
 Mouse 3 A M StrokeFunc
 Key x R N StrokeFunc
 .EE
-If you press mouse button 3 and Alt anywhere (respectively, press the key
-x when the cursor is on the root window), then fvwm will record the
-mouse motions until the mouse button 3 (respectively, the x key) is
-released and then check if the recorded \fIsequence\fP corresponds
-to a Stroke binding of the form  "Stroke \fIsequence\fP 0 A M action"
-(respectively, "Stroke \fIsequence\fP 0 R N action"). Note that the
-\fIContext\fP and \fIModifiers\fP are taken at the beginning of the
-execution of the StrokeFunc command (so you can release the modifiers
-before the end of the stroke recording in the case of a mouse binding
-and if you used, say, a title-bar context the mouse motion can go through an
-application window). The keys Escape and Delete allow you to abort the command.
+If you press mouse button 3 and
+.SM Alt
+anywhere (respectively, press the key x when the cursor is on
+the root window), then fvwm will record the mouse motions until
+the mouse button 3 (respectively, the x key) is released and then
+check if the recorded
+.I sequence
+corresponds to a stroke binding of the form
+.EX
+.RI """Stroke " sequence " 0 A M " action """ \""
+.RI """Stroke " sequence " 0 R N " action """ \""
+.EE
+Note that the
+.IR Context " and " Modifiers
+are taken at the beginning of the execution of the
+.B StrokeFunc
+command (so you can release the modifiers before the end of the
+stroke recording in the case of a mouse binding and if you used,
+say, a title-bar context the mouse motion can go through an
+application window).  The keys
+.SM Escape
+and
+.SM Delete
+allow you to abort the command.
 
-The StrokeFunc command has four options \fINotStayPressed\fP,
-\fIEchoSequence\fP, \fIDrawMotion\fP and \fIFeedBack\fP. These options are
-disabled by default. \fIEchoSequence\fP causes fvwm to Echo the recorded
-stroke sequence. \fIDrawMotion\fP causes fvwm to draw the mouse motion on the
-screen. \fIFeedBack\fP causes fvwm to display during a fraction of second
-the cursor of the WAIT context of the CursorStyle command if the recorded
-stroke sequence corresponds to a Stroke binding.
+The
+.B StrokeFunc
+command has four options:
+.IR NotStayPressed ", " EchoSequence ", " DrawMotion " and " FeedBack .
+These options are disabled by default.
+.I EchoSequence
+causes fvwm to Echo the recorded stroke sequence.
+.I DrawMotion
+causes fvwm to draw the mouse motion on the screen.
+.I FeedBack
+causes fvwm to display during a fraction of second the cursor of the
+.I WAIT
+context of the
+.B CursorStyle
+command if the recorded stroke sequence corresponds to a stroke binding.
 
-\fINotStayPressed\fP works only if StrokeFunc is used via a Mouse
-or a Key command. This option removes the need to have a
-button or the key pressed during the stroke, but you have to do a
-mouse click or press the Return or Space key to finish the mouse motion
-recording (these keys also work without the \fINotStayPressed\fP option).
+.I NotStayPressed
+works only if
+.B StrokeFunc
+is used via a
+.BR Mouse
+or a
+.B Key
+command.  This option removes the need to have a button or the
+key pressed during the stroke, but you have to do a mouse click
+or press the
+.SM Return
+or
+.SM Space
+key to finish the mouse motion recording (these keys also work
+without the
+.I NotStayPressed
+option).
 
-You can use the StrokeFunc "alone". In this case it will work as above
-with the \fINotStayPressed\fP option enabled. However, \fIModifiers\fP
-will, in general, not work as expected (i.e., in this case use A or
-N as \fIModifiers\fP in the Stroke bindings).
+You can use the
+.B StrokeFunc
+"alone".  In this case it will work as above with the
+.I NotStayPressed
+option enabled.  However,
+.I Modifiers
+will, in general, not work as expected (i.e., in this case use
+'A' or 'N' as
+.I Modifiers
+in the stroke bindings).
 
-Note that some computers do not support key release events. If that is the
-case the StrokeFunc used via a Key command will work as if the
-\fINotStayPressed\fP option is enabled (I hope).
+Note that some computers do not support key release events.
+If that is the case the
+.B StrokeFunc
+used via a
+.B Key
+command will work as if the
+.I NotStayPressed
+option is enabled.
 
 
 .SS THE STYLE COMMAND (CONTROLLING WINDOW STYLES)
 
 .TP
-.B "Style" "\fIwindowname options\fP"
+.B "Style " "stylename options"
 This command is intended to replace the old fvwm 1.xx global commands
 NoBorder, NoTitle, StartsOnDesk, Sticky, StaysOnTop, Icon,
 WindowListSkip, CirculateSkip, SuppressIcons, BoundaryWidth,
 NoBoundaryWidth, StdForeColor, and StdBackColor with a single flexible
-and comprehensive window(s) specific command.  This command is used to
+and comprehensive window specific command.  This command is used to
 set attributes of a window to values other than the default or to set
 the window manager default styles.
 
-\fIwindowname\fP can be a window's name, class, or resource string.
-It can contain the wildcards * and/or ?, which are matched in the
-usual Unix filename manner.  They are searched in the reverse order
-stated, so that Style commands based on the name override or augment
-those based on the class, which override or augment those based on the
-resource string.
+.I stylename
+can be a window's name, class, or resource string.  It may contain
+the wildcards '*' and '?', which are matched in the usual Unix
+filename manner.  They are searched in the reverse order stated,
+so that
+.B Style
+commands based on the name override or augment those based on the
+class, which override or augment those based on the resource string.
+When two conflicting styles apply to the same window, the style
+that was changed las wins.
 
-Note - windows that have no name (WM_NAME) are given a name of
+Note: windows that have no name (WM_NAME) are given a name of
 "Untitled", and windows that don't have a class (WM_CLASS, res_class)
-are given Class = "NoClass" and those that don't have a resource
-(WM_CLASS, res_name) are given Resource = "NoResource".
+are given class "NoClass" and those that don't have a resource
+(WM_CLASS, res_name) are given resource "NoResource".
 
-\fIoptions\fP is a comma separated list containing one or more of the keywords
-BorderWidth, HandleWidth,
-NoIcon / Icon, MiniIcon,
-IconBox, IconGrid, IconFill,
-NoTitle / Title,
-TitleAtBottom / TitleAtTop,
-NoHandles / Handles,
-WindowListSkip / WindowListHit,
-CirculateSkip / CirculateHit,
-CirculateSkipShaded / CirculateHitShaded,
-Layer,
-StaysOnTop / StaysOnBottom / StaysPut,
-Sticky / Slippery,
-StartIconic / StartNormal,
-Color, ForeColor, BackColor, Colorset,
-HilightFore, HilightBack, HilightColorset,
-Font,
-IconFont,
-StartsOnDesk / StartsOnPage / StartsAnyWhere,
-ActivePlacementHonorsStartsOnPage / ActivePlacementIgnoresStartsOnPage,
-CaptureHonorsStartsOnPage / CaptureIgnoresStartsOnPage,
-RecaptureHonorsStartsOnPage / RecaptureIgnoresStartsOnPage,
-StartsOnPageIncludesTransients / StartsOnPageIgnoresTransients,
-IconTitle / NoIconTitle,
-MWMButtons / FvwmButtons,
-MWMBorder / FvwmBorder,
-MWMDecor / NoDecorHint,
-MWMFunctions / NoFuncHint,
-HintOverride / NoOverride,
-NoButton / Button,
-ResizeHintOverride / NoResizeOverride,
-OLDecor / NoOLDecor,
-StickyIcon / SlipperyIcon,
-SmartPlacement / DumbPlacement,
-RandomPlacement / ActivePlacement,
-DecorateTransient / NakedTransient,
-RaiseTransient / DontRaiseTransient,
-LowerTransient / DontLowerTransient,
-FlipTransient / DontFlipTransient,
-StackTransientParent / DontStackTransientParent,
-SkipMapping / ShowMapping,
-UseDecor,
-UseStyle,
-NoPPosition / UsePPosition,
-Lenience / NoLenience,
-ClickToFocus / SloppyFocus / MouseFocus|FocusFollowsMouse / NeverFocus,
-StartsLowered / StartsRaised,
-GrabFocus / GrabFocusOff,
-GrabFocusTransient / GrabFocusTransientOff,
-IgnoreRestack / AllowRestack,
-FixedPosition / VariablePosition,
-IconOverride / NoIconOverride / NoActiveIconOverride,
-DepressableBorder / FirmBorder,
-MaxWindowSize,
-ResizeOpaque / ResizeOutline,
-BackingStore / BackingStoreOff,
-SaveUnder / SaveUnderOff.
+.I options
+is a comma separated list containing one or more of the keywords
+.IR BorderWidth ", " HandleWidth ,
+.IR NoIcon " / " Icon ", " MiniIcon ,
+.IR IconBox ", " IconGrid ", " IconFill ,
+.IR NoTitle " / " Title ,
+.IR TitleAtBottom " / " TitleAtTop ,
+.IR NoHandles " / " Handles ,
+.IR WindowListSkip " / " WindowListHit ,
+.IR CirculateSkip " / " CirculateHit ,
+.IR CirculateSkipShaded " / " CirculateHitShaded ,
+.IR Layer ,
+.IR StaysOnTop " / " StaysOnBottom " / " StaysPut ,
+.IR Sticky " / " Slippery ,
+.IR StartIconic " / " StartNormal ,
+.IR Color ", " ForeColor ", " BackColor ", " Colorset ,
+.IR HilightFore ", " HilightBack ", " HilightColorset ,
+.IR Font ,
+.IR IconFont ,
+.IR StartsOnDesk " / " StartsOnPage " / " StartsAnyWhere ,
+.IR ActivePlacementHonorsStartsOnPage " / " ActivePlacementIgnoresStartsOnPage ,
+.IR CaptureHonorsStartsOnPage " / " CaptureIgnoresStartsOnPage ,
+.IR RecaptureHonorsStartsOnPage " / " RecaptureIgnoresStartsOnPage ,
+.IR StartsOnPageIncludesTransients " / " StartsOnPageIgnoresTransients ,
+.IR IconTitle " / " NoIconTitle ,
+.IR MwmButtons " / " FvwmButtons ,
+.IR MwmBorder " / " FvwmBorder ,
+.IR MwmDecor " / " NoDecorHint ,
+.IR MwmFunctions " / " NoFuncHint ,
+.IR HintOverride " / " NoOverride ,
+.IR NoButton " / " Button ,
+.IR ResizeHintOverride " / " NoResizeOverride ,
+.IR OLDecor " / " NoOLDecor ,
+.IR StickyIcon " / " SlipperyIcon ,
+.IR SmartPlacement " / " DumbPlacement ,
+.IR RandomPlacement " / " ActivePlacement ,
+.IR DecorateTransient " / " NakedTransient ,
+.IR RaiseTransient " / " DontRaiseTransient ,
+.IR LowerTransient " / " DontLowerTransient ,
+.IR FlipTransient " / " DontFlipTransient ,
+.IR StackTransientParent " / " DontStackTransientParent ,
+.IR SkipMapping " / " ShowMapping ,
+.IR UseDecor ,
+.IR UseStyle ,
+.IR NoPPosition " / " UsePPosition ,
+.IR Lenience " / " NoLenience ,
+.IR ClickToFocus " / " SloppyFocus " /"
+.IR MouseFocus | FocusFollowsMouse " / " NeverFocus ,
+.IR StartsLowered " / " StartsRaised ,
+.IR GrabFocus " / " GrabFocusOff ,
+.IR GrabFocusTransient " / " GrabFocusTransientOff ,
+.IR IgnoreRestack " / " AllowRestack ,
+.IR FixedPosition " / " VariablePosition ,
+.IR IconOverride " / " NoIconOverride " / " NoActiveIconOverride ,
+.IR DepressableBorder " / " FirmBorder ,
+.IR MaxWindowSize ,
+.IR ResizeOpaque " / " ResizeOutline ,
+.IR BackingStore " / " BackingStoreOff ,
+.IR SaveUnder " / " SaveUnderOff .
 
 In the above list some options are listed as
 style-option/opposite-style-option.  The opposite-style-option for
 entries that have them describes the fvwm default behavior and
 can be used if you want to change the fvwm default behavior.
 
-The \fITitle\fP and \fINoTitle\fP determine if the window has a title
-bar or not. By default all windows have a title-bar.
+The
+.IR Title " and " NoTitle
+options determine if the window has a title-bar or not.  By default
+all windows have a title-bar.
 
 Windows with the \fITitleAtBottom\fP style will have a title-bar
 below the window instead of above as usual. The \fITitleAtTop\fP
@@ -3776,7 +4084,7 @@ to place the window if it does have resize-handles.
 \fIMaxWindowSize\fP [\fIwidth\fP \fIheight\fP]
 Tells fvwm the maximum width and height of a window when it is
 initially created.  The values are the percentage of the total screen
-area.  If the letter "p" is appended to wither of the values, the
+area.  If the letter 'p' is appended to wither of the values, the
 numbers are interpreted as pixels. This command is useful to force
 large application windows to be fully visible.  Neither \fIheight\fP
 nor \fIwidth\fP may be less than 100 pixels.  If you omit the
@@ -3807,16 +4115,16 @@ number of the title-bar button which is to be included/omitted.
 \fIStickyIcon\fP makes the window sticky when its iconified.  It will
 de-iconify on top the active desktop.
 
-\fIMWMButtons\fP makes the Maximize button look pressed-in when the window
-is maximized.  See the MWMButton flag in ButtonStyle for more
+\fIMwmButtons\fP makes the Maximize button look pressed-in when the window
+is maximized.  See the MwmButton flag in ButtonStyle for more
 information.
 
-\fIMWMBorder\fP makes the 3-D bevel more closely match mwm's.
+\fIMwmBorder\fP makes the 3-D bevel more closely match mwm's.
 
-\fIMWMDecor\fP makes fvwm attempt to recognize and respect the mwm
+\fIMwmDecor\fP makes fvwm attempt to recognize and respect the mwm
 decoration hints that applications occasionally use.
 
-\fIMWMFunctions\fP makes fvwm attempt to recognize and respect the mwm
+\fIMwmFunctions\fP makes fvwm attempt to recognize and respect the mwm
 prohibited operations hints that applications occasionally use.
 HintOverride makes fvwm shade out operations that mwm would prohibit,
 but it lets you perform the operation anyway.
@@ -4034,7 +4342,6 @@ TitleStyle before drawing the buttons.  Finally, AddButtonStyle is
 used to place additional pixmaps for both ActiveUp and ActiveDown
 states and a Vector button style is drawn on top of all state.
 
-
 .TP
 .B "AddButtonStyle" "\fIbutton\fP [\fIstate\fP] [\fIstyle\fP] [-- \fI[!]flag ...\fP]"
 Adds a button style to \fIbutton\fP.  \fIbutton\fP can be a button
@@ -4056,7 +4363,6 @@ most recent TitleStyle, followed by those added with AddTitleStyle.
 To clear the title style stack, change style flags, or for the
 descriptions of available styles and flags, see the TitleStyle and
 ButtonStyle commands.
-
 
 .TP
 .B "AddToDecor" "\fIdecor\fP"
@@ -4187,7 +4493,6 @@ BorderStyle Inactive -- !NoInset
 title-bar buttons can inherit the border style with the UseBorderStyle
 flag (see ButtonStyle).
 
-
 .TP
 .B "ButtonState" "[\fIActiveDown\fP \fIbool\fP] [\fIinactive\fP \fIbool\fP]"
 The \fIButtonState\fP command controls which states of the window
@@ -4219,7 +4524,7 @@ are defined as follows: "ActiveUp" and "ActiveDown" refer to the
 un-pressed and pressed states for buttons on active windows; while the
 "Inactive" state denotes buttons on inactive windows. The "ToggledActiveUp",
 "ToggledActiveDown" and "ToggledInactive" states are used instead for buttons
-which have one of the MWMDecorMaximize, MWMDecorShade or MWMDecorStick
+which have one of the MwmDecorMaximize, MwmDecorShade or MwmDecorStick
 hints, if the window is maximized, shaded or sticky, respectively.
 .EX
 AddToDecor Default
@@ -4231,7 +4536,7 @@ AddToDecor Default
    Vector 4 50x75@0 85x25@1 15x25@0 50x75@0
  + ButtonStyle 6 ToggledInactive   \\
    Vector 4 50x75@0 85x25@1 15x25@0 50x75@0
- + ButtonStyle 6 - MWMDecorShade
+ + ButtonStyle 6 - MwmDecorShade
 Mouse 0 6 N WindowShade
 .EE
 If \fIstate\fP is ActiveUp, ActiveDown, Inactive, or a toggled variant,
@@ -4379,7 +4684,6 @@ The "TiledPixmap" style accepts a pixmap to be tiled as the button
 background.  One pixmap is specified as an argument.  Pixmap
 transparency is not used.  This style is fully destructive.
 
-
 .TP
 .B "ButtonStyle" "\fIbutton\fP - \fI[!]flag ...\fP"
 Sets state-independent flags for the specified \fIbutton\fP.
@@ -4389,35 +4693,34 @@ behavior is negated.  The special flag "Clear" clears any existing
 flags.
 
 The following flags are usually used to tell fvwm which buttons should
-be affected by MWM function hints.  This is not done automatically
+be affected by Mwm function hints.  This is not done automatically
 since you might have buttons bound to complex functions, for instance.
 
-"MWMDecorMenu" should be assigned to title-bar buttons which display a
+"MwmDecorMenu" should be assigned to title-bar buttons which display a
 menu.  The default assignment is the leftmost button.  When a window
-with the MWMFunctions Style option requests not to show this button,
+with the MwmFunctions Style option requests not to show this button,
 it will be hidden.
 
-"MWMDecorMin" should be assigned to title-bar buttons which minimize
+"MwmDecorMin" should be assigned to title-bar buttons which minimize
 or iconify the window.  The default assignment is the second button
-over from the rightmost button.  When a window with the MWMFunctions
+over from the rightmost button.  When a window with the MwmFunctions
 Style option requests not to show this button, it will be hidden.
 
-"MWMDecorMax" should be assigned to title-bar buttons which maximize
+"MwmDecorMax" should be assigned to title-bar buttons which maximize
 the window.  The default assignment is the rightmost button.  When a
-window with the MWMFunctions Style option requests not to show this
+window with the MwmFunctions Style option requests not to show this
 button, it will be hidden.  When the window is maximized, the vector
 pattern on the button looks pressed in.
 
-"MWMDecorShade" should be assigned to title-bar buttons which shade
+"MwmDecorShade" should be assigned to title-bar buttons which shade
 the window (see \fIWindowShade\fP command).  When a window with the
-MWMFunctions Style option requests not to show the minimize button,
+MwmFunctions Style option requests not to show the minimize button,
 this button will be hidden.  When the window is shaded, the vector
 pattern on the button looks pressed in.
 
-"MWMDecorStick" should be assigned to title-bar buttons which make
+"MwmDecorStick" should be assigned to title-bar buttons which make
 the window sticky.  When the window is sticky, the vector pattern on
 the button looks pressed in.
-
 
 .TP
 .B "ChangeDecor" "\fIdecor\fP"
@@ -4442,7 +4745,6 @@ destroyed.
 DestroyDecor CustomDecor1
 .EE
 
-
 .TP
 .B "DestroyStyle" "\fIstyle\fP"
 Deletes the style named "\fIstyle\fP". This will not affect currently visible
@@ -4460,7 +4762,6 @@ DestroyStyle Application*
 This will remove all settings for the style named "\fIApplication*\fP", NOT all
 styles starting with "Application".
 
-
 .TP
 .B "TitleStyle" "[\fIjustification\fP] [\fIheight\fP [\fInum\fP]]"
 Sets attributes for the title-bar.  Justifications can be "Centered",
@@ -4471,7 +4772,6 @@ omit the \fInum\fP argument after the 'height' keyword.  Example:
 .EX
 TitleStyle LeftJustified Height 24
 .EE
-
 
 .TP
 .B "TitleStyle" "[\fIstate\fP] [\fIstyle\fP] [-- \fI[!]flag ...\fP]"
@@ -4509,7 +4809,6 @@ ButtonStyle All ActiveUp (-- flat) Inactive \\
   (-- flat)
 .EE
 
-
 .TP
 .B "UpdateDecor" "[\fIdecor\fP]"
 Updates window decorations.  \fIdecor\fP is an optional argument which
@@ -4528,11 +4827,9 @@ window style options as Recapture does.
 .B "Desk" "\fIarg1\fP [\fIarg2\fP] [\fImin max\fP]"
 This command has been renamed. Please see \fIGotoDesk\fP command.
 
-
 .TP
 .B "DeskTopSize" "\fIHorizontal\fPx\fIVertical\fP"
 Defines the virtual desktop size in units of the physical screen size.
-
 
 .TP
 .B "EdgeResistance" "\fIscrolling moving\fP"
@@ -4561,7 +4858,7 @@ See also, EdgeThickness.
 .TP
 .B "EdgeScroll" "\fIhorizontal vertical\fP"
 Specifies the percentage of a page to scroll when the cursor hits the
-edge of a page.  A trailing "p" changes the interpretation to mean "pixels".
+edge of a page.  A trailing 'p' changes the interpretation to mean "pixels".
 If you don't want any paging or scrolling when you hit the edge of a
 page include "EdgeScroll 0 0" in your
 .I .fvwm2rc
@@ -4593,7 +4890,6 @@ if you drag a window over the edge of the screen, so that it straddles
 a pan frame, clicks on the window, near the edge of the screen are
 treated as clicks on the root window.
 
-
 .TP
 .B "GotoDesk" "\fIarg1\fP [\fIarg2\fP] [\fImin max\fP]"
 Switches the current viewport to another desktop (workspace, room).
@@ -4623,7 +4919,6 @@ The number of active desktops is determined dynamically.  Only
 desktops which contain windows or are currently being displayed are
 active.  Desktop numbers must be between 2147483647 and -2147483648
 (is that enough?).
-
 
 .TP
 .B "GotoPage" "\fIx y\fP"
@@ -4669,7 +4964,7 @@ scrolling will wrap around at the edge of the desktop.  If "Scroll
 desktop page on each execution and will wrap around at the edge of the
 desktop, so that every page is hit in turn.
 
-If the letter "p" is appended to each coordinate (horizontal and/or
+If the letter 'p' is appended to each coordinate (horizontal and/or
 vertical), then the scroll amount will be measured in pixels.
 
 
@@ -4689,12 +4984,12 @@ or a mouse binding or key binding:
 Mouse 1 TS A Move-or-Raise
 .EE
 The quoted portion of the function tells what kind of action will
-trigger the command which follows it.  "I" stands for Immediate, and is
-executed as soon as the function is invoked.  "M" stands for Motion, i.e.
-if the user starts moving the mouse.  "C" stands for Click, i.e., if the
-user presses and releases the mouse.  "H" stands for Hold, i.e. if the
+trigger the command which follows it.  'I' stands for Immediate, and is
+executed as soon as the function is invoked.  'M' stands for Motion, i.e.
+if the user starts moving the mouse.  'C' stands for Click, i.e., if the
+user presses and releases the mouse.  'H' stands for Hold, i.e. if the
 user presses a mouse button and holds it down for more that ClickTime
-milliseconds.  "D" stands for double-click. The action "I" will cause
+milliseconds.  'D' stands for double-click. The action 'I' will cause
 an action to be performed on the button-press, if the function is
 invoked with prior knowledge of which window to act on.
 
@@ -4746,11 +5041,9 @@ AddToFunc FuncIconifySameResource "I" \\
 Mouse 3 6 A FuncIconifySameResource
 .EE
 
-
 .TP
 .B "Beep"
 As might be expected, this makes the terminal beep.
-
 
 .TP
 .B "DestroyFunc" "\fIfunction\fP"
@@ -4761,7 +5054,6 @@ fvwm session.  The function can be rebuilt using AddToFunc.
 DestroyFunc PrintFunction
 .EE
 
-
 .TP
 .B "Echo" "\fIstring\fP"
 Prints a message to stderr.  Potentially useful for debugging things
@@ -4770,7 +5062,6 @@ in your
 .EX
 Echo Beginning style definitions...
 .EE
-
 
 .TP
 .B "Exec" "\fIcommand\fP"
@@ -4808,7 +5099,6 @@ ExecUseShell
 ExecUseShell /usr/local/bin/tcsh
 .EE
 
-
 .TP
 .B "Function" "\fIFunctionName\fP"
 Used to bind a previously defined function to a key or mouse button.
@@ -4824,14 +5114,12 @@ Mouse 1 T A Function Move-or-Raise
 The keyword "Function" may be omitted if "FunctionName" does not
 coincide with an fvwm built-in function name
 
-
 .TP
 .B "Nop"
 Does nothing.  This is used to insert a blank line or separator in a
 menu.  If the menu item specification is Nop " ", then a blank line is
 inserted.  If it looks like Nop "", then a separator line is inserted.
 Can also be used as the double-click action for Menu.
-
 
 .TP
 .B "PipeRead" "\fIcommand\fP [\fI quiet \fP]"
@@ -4849,7 +5137,6 @@ PipeRead 'for i in $HOME;
   do echo "+ $i Exec vi $i"; done'
 .EE
 
-
 .TP
 .B "Read" "\fIfilename\fP [\fI quiet \fP]"
 Causes fvwm to read commands from the file named \fIfilename\fP.
@@ -4861,7 +5148,6 @@ system configuration directory.
 The users configuration directory is $HOME.  $HOME can be overridden
 by exporting FVWM_USERHOME set to a directory.
 
-
 .TP
 .B "SetEnv" "\fIvarname stringvalue\fP"
 Set an environment variable to a new value, similar to shell's export
@@ -4871,7 +5157,6 @@ with the FvwmM4 module; e.g.  "SetEnv height HEIGHT" will make the FvwmM4-set
 variable "HEIGHT" usable by processes started by fvwm as the environment
 variable "$height".  If \fIstringvalue\fP includes whitespace, you should
 enclose it in quotes.
-
 
 .TP
 .B "Silent" "\fIcommand\fP"
@@ -4925,7 +5210,6 @@ command.
 Execute \fIcommand\fP on all windows meeting the conditions.
 Conditions are used exactly as with the Current command.
 
-
 .TP
 .B "Current" "[ (\fIconditions\fP) ] \fIcommand\fP"
 Performs \fIcommand\fP on the current window if it satisfies all
@@ -4947,7 +5231,6 @@ Note that earlier versions of fvwm required the conditions to be
 enclosed in brackets instead of parentheses (this is still supported
 for backwards compatibility).
 
-
 .TP
 .B "Direction" "\fIdirection\fP [ (\fIconditions\fP) ] \fIcommand\fP"
 Performs \fIcommand\fP (typically Focus) on a window in the given
@@ -4958,7 +5241,6 @@ Direction selects depends on angle and distance between the center points
 of the windows. Closer windows are considered a better match than
 those farther away.
 
-
 .TP
 .B "Next" "[ (\fIconditions\fP) ] \fIcommand\fP"
 Performs \fIcommand\fP (typically Focus) on the next window which
@@ -4968,12 +5250,10 @@ attribute, CirculateHitIcon which overrides the CirculateSkipIcon style
 attribute for iconified windows and CirculateHitShaded which does the
 same for shaded windows.
 
-
 .TP
 .B "None" "[ (\fIconditions\fP) ] \fIcommand\fP"
 Performs \fIcommand\fP if no window which satisfies all
 \fIconditions\fP exists.  Conditions are the same as for \fINext\fP.
-
 
 .TP
 .B "Pick" "[ (\fIconditions\fP) ] \fIcommand\fP"
@@ -4984,12 +5264,10 @@ annoying multiple selections with complex functions.  The command is
 executed only if the given \fIConditions\fP are met.  The Conditions
 are the same as for \fINext\fP.
 
-
 .TP
 .B "Prev" "[ (\fIconditions\fP) ] \fIcommand\fP"
 Performs \fIcommand\fP (typically Focus) on the previous window which
 satisfies all \fIconditions\fP.  Conditions are the same as for \fINext\fP.
-
 
 .TP
 .B "WindowId" "\fIid [ (\fIconditions\fP) ] func\fP"
@@ -5019,12 +5297,10 @@ DestroyModuleConfig FvwmFormFore
 DestroyModuleConfig FvwmButtons*
 .EE
 
-
 .TP
 .B "KillModule" "\fIname\fP"
 Causes the module which was invoked with name \fIname\fP to be killed.
 \fIname\fP may include wild-cards.
-
 
 .TP
 .B "Module" "\fIModuleName\fP"
@@ -5058,11 +5334,10 @@ possible.  See the introductory section on modules.  The keyword
 "module" may be omitted if \fIModuleName\fP is distinct from all
 built-in and function names.
 
-
 .TP
 .B "ModulePath \fIpath\fP"
 Specifies a colon separated list of directories in which to search for
-modules.  To find a module, \fIFVWM\fP searches each directory in turn
+modules.  To find a module, fvwm searches each directory in turn
 and uses the first file found.  Directory names on the list do not
 need trailing slashes.
 
@@ -5077,7 +5352,6 @@ ModulePath ${HOME}/lib/fvwm/modules:+
 
 The directory containing the standard modules is available via the
 environment variable $FVWM_MODULEDIR.
-
 
 .TP
 .B "ModuleSynchronous" "[\fIExpect string\fP] [\fITimeout seconds\fP] \fIModuleName\fP"
@@ -5100,7 +5374,6 @@ this may not be the case for third party modules. Moreover,
 you can try to escape from a locked ModuleSynchronous command by using
 the key sequence Ctrl-Alt-Escape (see the \fIEscapeFunc\fP).
 
-
 .TP
 .B "SendToModule" "\fImodulename string\fP"
 Sends an arbitrary string (no quotes required) to all modules matching
@@ -5116,11 +5389,9 @@ implementation of more complex commands in modules.
 .B "Quit"
 Exits fvwm, generally causing X to exit too.
 
-
 .TP
 .B "QuitScreen"
 Causes fvwm to stop managing the screen on which the command was issued.
-
 
 .TP
 .B "QuitSession"
@@ -5128,7 +5399,6 @@ Causes a session manager (if any) to shutdown the session.
 
 This command does not work for xsm, it seems that xsm didn't implement this
 functionality. Use unix signals to manage xsm remotely.
-
 
 .TP
 .B "Restart" "[\fIWindowManagerName\fP [\fIparams\fP]]"
@@ -5172,7 +5442,6 @@ Without this option, Restart command preserves most per-window state
 by writing it to a file named
 .I .fs-restart
 in the user's home directory.
-
 
 .TP
 .B "SaveSession"
@@ -5292,9 +5561,12 @@ on double-precision.  At the current rate of bug discovery we should
 expect to achieve this point in 4.27e+27 years.  I guess we better
 plan on passing this thing on to our children....
 
-Known bugs can be found in the BUGS file in the distribution, in
-the fvwm bug tracking system (accessible from the fvwm home page) and
-in the TO-DO list.
+Known bugs can be found in the fvwm bug tracking system (accessible
+from the fvwm home page) and in the
+.IR BUGS " or " TO-DO
+files in the distribution.  These files are no longer maintained
+and may be out of date.
 
-Bug reports can be sent to the FVWM workers' mailing list (see the FAQ).
+Bug reports can be sent to the fvwm workers' mailing list (see the
+.BR FAQ ).
 \"  LocalWords:  XTerm rc

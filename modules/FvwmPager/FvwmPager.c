@@ -158,7 +158,6 @@ void ExitPager(void);
  ***********************************************************************/
 int main(int argc, char **argv)
 {
-  char *temp, *s;
   char *display_name = NULL;
   int itemp,i;
   char line[100];
@@ -241,7 +240,7 @@ int main(int argc, char **argv)
 
   /* Check for an alias */
   if (argc >= opt_num + 1)
-    { 
+    {
       if (strspn(argv[opt_num], "0123456789") != strlen(argv[opt_num]) &&
 	  !StrEquals(argv[opt_num], "*"))
 	{
@@ -250,7 +249,7 @@ int main(int argc, char **argv)
 	  opt_num++;
 	}
     }
-      
+
   if (argc < opt_num + 1)
     {
       desk1 = Scr.CurrentDesk;
