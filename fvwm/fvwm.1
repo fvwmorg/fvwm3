@@ -8229,8 +8229,10 @@ If you want to
 something, but need the command to run sunchronously,
 you might do something like:
 .EX
-PipeRead 'command >/dev/null 2>&1'
+PipeRead 'command 1>&2'
 .EE
+The redirection causes any output from the program to go to stderr
+instead of being read as a sequence of commands by fvwm.
 
 .TP
 .BI "Read " filename " [" quiet "]"

@@ -2,6 +2,7 @@
 
 	* fvwm/fvwm.1 (Examples): Language check.
 	PipeRead as synchronous Exec.
+	Better example for PipeRead. 
 
 2002-06-21  olicha  <olivier.chapuis@free.fr>
 
