@@ -161,7 +161,7 @@ void HandleFocusIn(void)
   if (Event.xfocus.detail != NotifyPointer)
   /**/
     w= Event.xany.window;
-  while (XCheckTypedEvent(dpy,FocusIn,&d))
+  while (XCheckTypedEvent(dpy, FocusIn, &d))
   {
     /* dito */
     if (d.xfocus.detail != NotifyPointer)
@@ -980,6 +980,7 @@ static void fake_map_unmap_notify(FvwmWindow *tmp_win, int event_type)
  ************************************************************************/
 void HandleMapRequest(void)
 {
+XSynchronize(dpy,1);
   DBUG("HandleMapRequest","Routine Entered");
 
   if (fFvwmInStartup)
@@ -1005,10 +1006,15 @@ void HandleMapRequestKeepRaised(Window KeepRaised, FvwmWindow *ReuseWin)
 
   if (ReuseWin == NULL)
   {
-    if(XFindContext(dpy, Event.xany.window, FvwmContext,
-		    (caddr_t *)&Tmp_win)==XCNOENT)
+    if (XFindContext(dpy, Event.xany.window, FvwmContext,
+		     (caddr_t *)&Tmp_win)==XCNOENT)
     {
       Tmp_win = NULL;
+    }
+    else if (IS_MAP_PENDING(Tmp_win))
+    {
+      /* The window is already going to be mapped, no need to do that twice */
+      return;
     }
   }
   else
@@ -1062,15 +1068,15 @@ void HandleMapRequestKeepRaised(Window KeepRaised, FvwmWindow *ReuseWin)
   {
     int state;
 
-    if(Tmp_win->wmhints && (Tmp_win->wmhints->flags & StateHint))
+    if (Tmp_win->wmhints && (Tmp_win->wmhints->flags & StateHint))
       state = Tmp_win->wmhints->initial_state;
     else
       state = NormalState;
 
-    if(DO_START_ICONIC(Tmp_win))
+    if (DO_START_ICONIC(Tmp_win))
       state = IconicState;
 
-    if(isIconicState != DontCareState)
+    if (isIconicState != DontCareState)
       state = isIconicState;
 
     switch (state)
@@ -1320,6 +1326,26 @@ void HandleMapNotify(void)
 }
 
 
+Bool check_map_request(Display *display, XEvent *event, char *arg)
+{
+  unsigned long *rc;
+
+  if (event->type != MapRequest)
+  {
+    return False;
+  }
+  if (event->xmaprequest.window != *(unsigned long *)arg)
+  {
+    return False;
+  }
+  rc = (unsigned long *)arg;
+  (*arg)++;
+
+  /* Yes, it is correct that this function always returns False.  See
+   * comment below. */
+  return False;
+}
+
 /***********************************************************************
  *
  *  Procedure:
@@ -1371,8 +1397,34 @@ void HandleUnmapNotify(void)
   }
   if (must_return)
     return;
-  if(weMustUnmap)
-    XUnmapWindow(dpy, Event.xunmap.window);
+
+  if (weMustUnmap)
+  {
+    unsigned long win = (unsigned long)Event.xunmap.window;
+    Bool is_map_request_pending;
+
+    /* Using XCheckTypedWindowEvent() does not work here.  I don't have the
+     * slightest idea why, but using XCheckIfEvent() with the appropriate
+     * predicate procedure works fine. */
+    XCheckIfEvent(dpy, &dummy, check_map_request, (char *)&win);
+    /* Unfortunately, there is no procedure in X that simply tests if an
+     * event of a certain type in on the queue without waiting and without
+     * removing it from the queue.  XCheck...Event() does not wait but
+     * removes the event while XPeek...() does not remove the event but
+     * waits.  Now, this is a *real* hack:
+     *
+     * The predicate procedure used in the call always returns False.  Thus,
+     * no event is ever removed from the queue.  But when it is called with
+     * the correct event type and window, it adds one to the unsigned long
+     * pointer that was passed in as its last argument.  Of course this is
+     * using totally undocumented 'features' and may be very inefficient
+     * (im many events are pending). */
+    is_map_request_pending = (win != (unsigned long)Event.xunmap.window);
+    if (!is_map_request_pending)
+    {
+      XUnmapWindow(dpy, Event.xunmap.window);
+    }
+  }
   if(Tmp_win ==  Scr.Hilite)
   {
     Scr.Hilite = NULL;
@@ -1381,6 +1433,7 @@ void HandleUnmapNotify(void)
     ((!IS_TRANSIENT(Tmp_win) && DO_GRAB_FOCUS(Tmp_win)) ||
      (IS_TRANSIENT(Tmp_win) && DO_GRAB_FOCUS_TRANSIENT(Tmp_win)));
   restore_focus_after_unmap(Tmp_win, False);
+  SET_MAP_PENDING(Tmp_win, 0);
   if (!IS_MAPPED(Tmp_win) && !IS_ICONIFIED(Tmp_win))
   {
     return;
