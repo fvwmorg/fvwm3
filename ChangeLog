@@ -1,3 +1,21 @@
+1999-02-22  Dominik Vogt  <dominik_vogt@hp.com>
+
+	* fvwm/fvwm2.1 (WindowsDesk): some clarification that this command has
+	gone.
+	(QuitScreen): entry added.
+
+	* sample.fvwmrc/new-features: corrected module path
+
+	* fvwm/fvwm2.1 (Popup): Corrected typo (double-click-action ->
+	default-action).
+	(Read): Put braces around optional parameter
+	(SetAnimations): dito
+	(SnapAttraction): dito
+	(UpdateDecor): dito
+	(ColormapFocus): removed braces around required argument
+
+	* sample.fvwmrc/Makefile.am (EXTRA_DIST): added new-features
+
 1999-02-19  Dominik Vogt  <dominik_vogt@hp.com>
 
 	* configure.in: Updated for 2.2

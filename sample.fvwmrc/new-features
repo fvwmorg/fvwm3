@@ -16,7 +16,7 @@
 #
 IconPath	/usr/X11R6/include/X11/bitmaps/:$HOME/bitmaps
 PixmapPath	/usr/X11R6/include/X11/pixmaps/:$HOME/xpms:$HOME/pixmaps
-ModulePath	$HOME/bin/fvwm2
+ModulePath	$FVWM_MODULEDIR:$HOME/fvwm-modules
 
 # set XORvalue to something visible.  This sets the coloration of the 
 # 'rubber-band' window-borders when moving and resizing windows.

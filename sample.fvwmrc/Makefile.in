@@ -83,7 +83,7 @@ rplay_LIBS = @rplay_LIBS@
 xpm_CFLAGS = @xpm_CFLAGS@
 xpm_LIBS = @xpm_LIBS@
 
-EXTRA_DIST = decor_examples system.fvwm2rc 	   system.fvwm2rc-sample-1 system.fvwm2rc-sample-2
+EXTRA_DIST = decor_examples new-features system.fvwm2rc 	   system.fvwm2rc-sample-1 system.fvwm2rc-sample-2
 
 mkinstalldirs = $(SHELL) $(top_srcdir)/mkinstalldirs
 CONFIG_HEADER = ../config.h

@@ -943,7 +943,7 @@ Solid frame and title colors (including shadows and gradients) are not
 controlled by this command.
 
 
-.IP "ColormapFocus [ FollowsMouse | FollowsFocus ]"
+.IP "ColormapFocus \fIFollowsMouse\fP|\fIFollowsFocus\fP"
 By default, fvwm installs the colormap of the window that the cursor
 is in.  If you use ColormapFocus FollowsFocus, then the installed
 colormap will be the one for the window that currently has the
@@ -1245,7 +1245,7 @@ scrolling will wrap around at the edge of the desktop.  If "EdgeScroll
 100000 100000" is used \fIfvwm\fP will scroll by whole pages, wrapping
 around at the edge of the desktop.
 
-.IP "EdgeThickness \fI0 | 1 | 2\fP"
+.IP "EdgeThickness \fI0\fP|\fI1\fP|\fI2\fP"
 This is the width or height of the invisible window that fvwm2 creates
 on the edges of the screen that are used for the edgescrolling feature.
 
@@ -2075,7 +2075,7 @@ a slash.  Environment variables can be used here as well (i.e.  $HOME
 or ${HOME}).
 
 
-.IP "Popup \fIPopupName\fP [ \fIposition\fP ] [ \fIdouble-click-action\fP ]"
+.IP "Popup \fIPopupName\fP [ \fIposition\fP ] [ \fIdefault-action\fP ]"
 This built-in has two purposes: to bind a menu to a key or mouse
 button, and to bind a sub-menu into a menu.  The formats for the two
 purposes differ slightly.  The \fIposition\fP arguments are the same
@@ -2155,7 +2155,11 @@ satisfies all \fIconditions\fP.  Conditions are the same as for \fINext\fP.
 
 
 .IP "Quit"
-Exits \fIfvwm\fP, generally causing X to exit too.
+Exits fvwm, generally causing X to exit too.
+
+
+.IP "QuitScreen"
+Causes fvwm to stop managing the screen on which the command was issued.
 
 
 .IP "Raise"
@@ -2166,7 +2170,7 @@ Allows the user to raise a window.
 Alternately raises and lowers a window.
 
 
-.IP "Read \fIfilename option\fP"
+.IP "Read \fIfilename\fP [ \fIoption\fP ]"
 Causes fvwm to read commands from the file named \fIfilename\fP.
 If the option following the filename is "Quiet", no message is
 produced if the file is not found.
@@ -2244,7 +2248,7 @@ if the module is set up to understand and deal with these strings
 though...  Can be used for module to module communication, or
 implementation of more complex commands in modules.
 
-.IP "SetAnimation \fImilliseconds-delay fractions-to-move-list\fP"
+.IP "SetAnimation \fImilliseconds-delay\fP [ \fifractions-to-move-list\fP ]"
 Sets the time between frames and the list of fractional offsets to
 customize the animated moves of the \fIAnimatedMove\fP command and
 the animation of menus (if the menu style is set to animated).  If
@@ -2273,12 +2277,12 @@ variable "$height".  If \fIstringvalue\fP includes whitespace, you should
 enclose it in quotes.
 
 
-.IP "SnapAttraction \fIproximity behavior\fP"
+.IP "SnapAttraction \fIproximity\fP [ \fIbehavior\fP ]"
 If during an interactive move the window (or icon) comes within \fIproximity\fP
 pixels of another the window (or icon) will be moved to make the borders
 adjoin. The default of -1 means that no snapping will happen.  A setting of
 0 does indeed snap when the distance is zero pixels.  This is relevant when
-the \fISnapGrid\fP option is used.
+the \fISnapGrid\fP command is used.
 
 The \fIbehavior\fP argument is optional and may be set to one of the four
 following values:
@@ -2657,7 +2661,7 @@ ButtonStyle All ActiveUp (-- flat) Inactive \\
 .EE
 
 
-.IP "UpdateDecor \fIdecor\fP"
+.IP "UpdateDecor [ \fIdecor\fP ]"
 Updates window decorations.  \fIdecor\fP is an optional argument which
 specifies the \fIdecor\fP to update.  If given, only windows which are
 assigned to that particular \fIdecor\fP will be updated.  This command
@@ -2773,7 +2777,7 @@ WindowList OnlyIcons, Sticky, OnTop, Geometry
 .IP "WindowsDesk \fIarg1\fP [ \fIarg2\fP ]"
 Moves the selected window to another desktop (workspace, room).
 
-This command is obsolete, and must be replaced by \fIMoveToDesk\fP,
+This command has been removed and must be replaced by \fIMoveToDesk\fP,
 the arguments for which are the same as for the \fIDesk\fP command.
 \fINote:\fP You cannot simply change the name of the command: the
 syntax has changed. If you used "WindowsDesk n" to move a window to

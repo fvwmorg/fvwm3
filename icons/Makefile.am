@@ -1,6 +1,8 @@
 
-EXTRA_DIST = Jlock.xpm Jnews.xpm Jrecycle.xpm Jxlock.xpm Mosaic.xpm \
-	   README.mini arrdown2.xpm arrows2.xpm arrup2.xpm bomb.xpm \
+EXTRA_DIST = Jlock.xpm Jnews.xpm Jrecycle.xpm Jxlock.xpm Monitor.xpm \
+	   Mosaic.xpm README.mini arrdown2.xpm arrows2.xpm arrup2.xpm \
+	   bomb.xpm button-close.xpm button-max.xpm button.xpm \
+	   button-horiz.xpm button-vert.xpm \
 	   ccode.icon clamp.xpm colormap.xpm datebook.xpm default.xbm \
 	   desk.xpm dialog_box.xpm doomface.xpm editres.xpm eps.xpm \
 	   exit.xpm flow_chart.xpm folder2.xpm folders.xpm fvwm.bitmap \
@@ -26,7 +28,8 @@ EXTRA_DIST = Jlock.xpm Jnews.xpm Jrecycle.xpm Jxlock.xpm Mosaic.xpm \
 	   mini.xlock.xpm mini.xmag.xpm mini.xman.xpm mini.xpaint.xpm \
 	   mini.xpm mini.xterm.xpm mini.zircon.xpm ocode.icon page.xpm \
 	   page2.xpm prog.icon ps.xpm question.xpm rbomb.xpm rcalc.xpm \
-	   rterm.xpm term.xpm tiff2.xpm toolbox.xpm unknown1.xpm \
+	   rterm.xpm side.fvwm2.xpm term.xpm tiff2.xpm toolbox.xpm \
+	   unknown1.xpm \
 	   wierd_page3.xpm word_processor.xpm world.xpm xcalc.xpm \
 	   xemacs.xpm xlock.xpm xman.xpm xpaint.xpm xterm-axp.xpm \
 	   xterm-blank.xpm xterm-bsd.xpm xterm-dec.xpm xterm-linux.xpm \
