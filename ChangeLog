@@ -1,3 +1,11 @@
+2001-02-21  Mikhael Goikhman  <migo@homemail.com>
+
+	* fvwm/fvwm2.1:
+	minor typo; updated Focus description; added a link to www.fvwm.org
+
+	* INSTALL.fvwm:
+	clarified --enable-move-bug-workaround, --disable-modality
+
 2001-02-21  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* fvwm/borders.c (DrawButton):

@@ -2402,8 +2402,8 @@ conventions.
 .I FlickeringQtDialogsWorkaround
 suppresses flickering of the focused window in some modules when using
 KDE or Qt applications with application modal dialog windows.  By
-default this option is toruned on.  This option may be visually
-disturbing for other application windows using windows not managed
+default this option is turned on.  This option may be visually
+disturbing for other applications using windows not managed
 by fvwm.  Since these applications are rare it is most likely safe
 to leave this option at its default.
 
@@ -3650,9 +3650,9 @@ command and in the function invoked from
 Sets the keyboard focus to the selected window.  If the
 .I NoWarp
 argument is given, this is all it does.  Otherwise it also moves the
-viewport or window as needed to make the selected window visible and
-raises the window if needed to make it visible.  Does not warp the pointer
-into the selected window (see
+viewport or window as needed to make the selected window visible.
+This command does not automatically raise the window.
+Does not warp the pointer into the selected window (see
 .B WarpToWindow
 function).  Does not de-iconify.  This command does not alter the
 order of the
@@ -3665,6 +3665,17 @@ When the
 .I NoWarp
 argument is given, Focus cannot transfer the keyboard focus to
 windows on other desks.
+
+To raise and/or warp a pointer to a window together with
+.BR Focus " or " FlipFocus ,
+use a function, like:
+.EX
+AddToFunc SelectWindow
++ I Focus
++ I Iconify false
++ I Raise
++ I WarpToWindow 50 8p
+.EE
 
 .TP
 .BI "WarpToWindow " x "[" p "] " y "[" p "]"
@@ -7114,5 +7125,8 @@ and may be out of date.
 Bug reports can be sent to the fvwm-workers mailing list (see the
 .IR FAQ )
 or reported through the bug tracking system.
+
+The official FVWM homepage is
+.BR http://www.fvwm.org/ .
 
 \" LocalWords:  XTerm xterm rc fvwm fvwm2 Linux ICCCM ICCCM2 CDE XView
