@@ -177,7 +177,7 @@ typedef struct
 	int x;
 	int y;
 	int len;
-	Region	clip_region;
+	Region clip_region;
 	struct
 	{
 		unsigned text_rotation : 2;

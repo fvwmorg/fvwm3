@@ -1,11 +1,11 @@
 /*
-  Around 12/20/99 we did the 3rd rewrite of the shadow/hilite stuff.
-  (That I know about (dje).
-  The first stuff I saw just applied a percentage.
-  Then we got some code from SCWM.
-  This stuff comes from "Visual.c" which is part of Lesstif.
-  Here's their copyright:
-
+ * Around 12/20/99 we did the 3rd rewrite of the shadow/hilite stuff.
+ * (That I know about (dje).
+ * The first stuff I saw just applied a percentage.
+ * Then we got some code from SCWM.
+ * This stuff comes from "Visual.c" which is part of Lesstif.
+ * Here's their copyright:
+ *
  * Copyright (C) 1995 Free Software Foundation, Inc.
  *
  * This file is part of the GNU LessTif Library.
@@ -24,11 +24,11 @@
  * License along with this library; if not, write to the Free
  * Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
-
- The routine at the bottom "pixel_to_color_string" was not from Lesstif.
-
- Port by Dan Espen, no additional copyright
-*/
+ *
+ * The routine at the bottom "pixel_to_color_string" was not from Lesstif.
+ *
+ * Port by Dan Espen, no additional copyright
+ */
 
 #include "config.h"                     /* must be first */
 
@@ -72,196 +72,196 @@ static XColor color;
 #define SCALE 65535.0
 #define HALF_SCALE (SCALE / 2)
 typedef enum {
-  R_MAX_G_MIN, R_MAX_B_MIN,
-  G_MAX_B_MIN, G_MAX_R_MIN,
-  B_MAX_R_MIN, B_MAX_G_MIN
+	R_MAX_G_MIN, R_MAX_B_MIN,
+	G_MAX_B_MIN, G_MAX_R_MIN,
+	B_MAX_R_MIN, B_MAX_G_MIN
 } MinMaxState;
 static void
 color_mult (unsigned short *red,
 	    unsigned short *green,
 	    unsigned short *blue, double k)
 {
-  if (*red == *green && *red == *blue) {
-    double temp;
-    /* A shade of gray */
-    temp = k * (double) (*red);
-    if (temp > SCALE) {
-      temp = SCALE;
-    }
-    *red = (unsigned short)(temp);
-    *green = *red;
-    *blue = *red;
-  } else {
-    /* Non-zero saturation */
-    double r, g, b;
-    double min, max;
-    double a, l, s;
-    double delta;
-    double middle;
-    MinMaxState min_max_state;
-
-    r = (double) *red;
-    g = (double) *green;
-    b = (double) *blue;
-
-    if (r > g) {
-      if (r > b) {
-	max = r;
-	if (g < b) {
-	  min = g;
-	  min_max_state = R_MAX_G_MIN;
-	  a = b - g;
+	if (*red == *green && *red == *blue) {
+		double temp;
+		/* A shade of gray */
+		temp = k * (double) (*red);
+		if (temp > SCALE) {
+			temp = SCALE;
+		}
+		*red = (unsigned short)(temp);
+		*green = *red;
+		*blue = *red;
 	} else {
-	  min = b;
-	  min_max_state = R_MAX_B_MIN;
-	  a = g - b;
+		/* Non-zero saturation */
+		double r, g, b;
+		double min, max;
+		double a, l, s;
+		double delta;
+		double middle;
+		MinMaxState min_max_state;
+
+		r = (double) *red;
+		g = (double) *green;
+		b = (double) *blue;
+
+		if (r > g) {
+			if (r > b) {
+				max = r;
+				if (g < b) {
+					min = g;
+					min_max_state = R_MAX_G_MIN;
+					a = b - g;
+				} else {
+					min = b;
+					min_max_state = R_MAX_B_MIN;
+					a = g - b;
+				}
+			} else {
+				max = b;
+				min = g;
+				min_max_state = B_MAX_G_MIN;
+				a = r - g;
+			}
+		} else {
+			if (g > b) {
+				max = g;
+				if (b < r) {
+					min = b;
+					min_max_state = G_MAX_B_MIN;
+					a = r - b;
+				} else {
+					min = r;
+					min_max_state = G_MAX_R_MIN;
+					a = b - r;
+				}
+			} else {
+				max = b;
+				min = r;
+				min_max_state = B_MAX_R_MIN;
+				a = g - r;
+			}
+		}
+
+		delta = max - min;
+		a = a / delta;
+
+		l = (max + min) / 2;
+		if (l <= HALF_SCALE) {
+			s = max + min;
+		} else {
+			s = 2.0 * SCALE - (max + min);
+		}
+		s = delta/s;
+
+		l *= k;
+		if (l > SCALE) {
+			l = SCALE;
+		}
+		s *= k;
+		if (s > 1.0) {
+			s = 1.0;
+		}
+
+		if (l <= HALF_SCALE) {
+			max = l * (1 + s);
+		} else {
+			max = s * SCALE + l - s * l;
+		}
+
+		min = 2 * l - max;
+		delta = max - min;
+		middle = min + delta * a;
+
+		switch (min_max_state) {
+		case R_MAX_G_MIN:
+			r = max;
+			g = min;
+			b = middle;
+			break;
+		case R_MAX_B_MIN:
+			r = max;
+			g = middle;
+			b = min;
+			break;
+		case G_MAX_B_MIN:
+			r = middle;
+			g = max;
+			b = min;
+			break;
+		case G_MAX_R_MIN:
+			r = min;
+			g = max;
+			b = middle;
+			break;
+		case B_MAX_G_MIN:
+			r = middle;
+			g = min;
+			b = max;
+			break;
+		case B_MAX_R_MIN:
+			r = min;
+			g = middle;
+			b = max;
+			break;
+		}
+
+		*red = (unsigned short) r;
+		*green = (unsigned short) g;
+		*blue = (unsigned short) b;
 	}
-      } else {
-	max = b;
-	min = g;
-	min_max_state = B_MAX_G_MIN;
-	a = r - g;
-      }
-    } else {
-      if (g > b) {
-	max = g;
-	if (b < r) {
-	  min = b;
-	  min_max_state = G_MAX_B_MIN;
-	  a = r - b;
-	} else {
-	  min = r;
-	  min_max_state = G_MAX_R_MIN;
-	  a = b - r;
-	}
-      } else {
-	max = b;
-	min = r;
-	min_max_state = B_MAX_R_MIN;
-	a = g - r;
-      }
-    }
-
-    delta = max - min;
-    a = a / delta;
-
-    l = (max + min) / 2;
-    if (l <= HALF_SCALE) {
-      s = max + min;
-    } else {
-      s = 2.0 * SCALE - (max + min);
-    }
-    s = delta/s;
-
-    l *= k;
-    if (l > SCALE) {
-      l = SCALE;
-    }
-    s *= k;
-    if (s > 1.0) {
-      s = 1.0;
-    }
-
-    if (l <= HALF_SCALE) {
-      max = l * (1 + s);
-    } else {
-      max = s * SCALE + l - s * l;
-    }
-
-    min = 2 * l - max;
-    delta = max - min;
-    middle = min + delta * a;
-
-    switch (min_max_state) {
-    case R_MAX_G_MIN:
-      r = max;
-      g = min;
-      b = middle;
-      break;
-    case R_MAX_B_MIN:
-      r = max;
-      g = middle;
-      b = min;
-      break;
-    case G_MAX_B_MIN:
-      r = middle;
-      g = max;
-      b = min;
-      break;
-    case G_MAX_R_MIN:
-      r = min;
-      g = max;
-      b = middle;
-      break;
-    case B_MAX_G_MIN:
-      r = middle;
-      g = min;
-      b = max;
-      break;
-    case B_MAX_R_MIN:
-      r = min;
-      g = middle;
-      b = max;
-      break;
-    }
-
-    *red = (unsigned short) r;
-    *green = (unsigned short) g;
-    *blue = (unsigned short) b;
-  }
 }
 /**** End of original fvwm code. ****/
 
 static XColor *GetShadowOrHiliteColor(
-  Pixel background, float light, float dark, float factor)
+	Pixel background, float light, float dark, float factor)
 {
-  long brightness;
-  unsigned int red, green, blue;
+	long brightness;
+	unsigned int red, green, blue;
 
-  memset(&color, 0, sizeof(color));
-  color.pixel = background;
-  XQueryColor(Pdpy, Pcmap, &color);
-  red = color.red;
-  green = color.green;
-  blue = color.blue;
+	memset(&color, 0, sizeof(color));
+	color.pixel = background;
+	XQueryColor(Pdpy, Pcmap, &color);
+	red = color.red;
+	green = color.green;
+	blue = color.blue;
 
-  brightness = BRIGHTNESS(red, green, blue);
-  /* For "dark" backgrounds, make everything a fixed %age lighter */
-  if (brightness < XmDEFAULT_DARK_THRESHOLD * PCT_BRIGHTNESS)
-  {
-    color.red =
-      (unsigned short)(0xffff - ((0xffff - red) * dark + 50) / 100);
-    color.green =
-      (unsigned short)(0xffff - ((0xffff - green) * dark + 50) / 100);
-    color.blue =
-      (unsigned short)(0xffff - ((0xffff - blue) * dark + 50) / 100);
-  }
-  /* For "light" background, make everything a fixed %age darker */
-  else if (brightness > XmDEFAULT_LIGHT_THRESHOLD * PCT_BRIGHTNESS)
-  {
-    color.red =
-      (unsigned short)((red * light + 50) / 100);
-    color.green =
-      (unsigned short)((green * light + 50) / 100);
-    color.blue =
-      (unsigned short)((blue * light + 50) / 100);
-  }
-  /* For "medium" background, select is a fixed %age darker;
-   * top (lighter) and bottom (darker) are a variable %age
-   * based on the background's brightness
-   */
-  else
-  {
-    color_mult(&color.red, &color.green, &color.blue, factor);
-  }
-  return &color;
+	brightness = BRIGHTNESS(red, green, blue);
+	/* For "dark" backgrounds, make everything a fixed %age lighter */
+	if (brightness < XmDEFAULT_DARK_THRESHOLD * PCT_BRIGHTNESS)
+	{
+		color.red = (unsigned short)
+			(0xffff - ((0xffff - red) * dark + 50) / 100);
+		color.green = (unsigned short)
+			(0xffff - ((0xffff - green) * dark + 50) / 100);
+		color.blue = (unsigned short)
+			(0xffff - ((0xffff - blue) * dark + 50) / 100);
+	}
+	/* For "light" background, make everything a fixed %age darker */
+	else if (brightness > XmDEFAULT_LIGHT_THRESHOLD * PCT_BRIGHTNESS)
+	{
+		color.red =
+			(unsigned short)((red * light + 50) / 100);
+		color.green =
+			(unsigned short)((green * light + 50) / 100);
+		color.blue =
+			(unsigned short)((blue * light + 50) / 100);
+	}
+	/* For "medium" background, select is a fixed %age darker;
+	 * top (lighter) and bottom (darker) are a variable %age
+	 * based on the background's brightness
+	 */
+	else
+	{
+		color_mult(&color.red, &color.green, &color.blue, factor);
+	}
+	return &color;
 }
 
 
 XColor *GetShadowColor(Pixel background)
 {
-  return GetShadowOrHiliteColor(
-    background, PCT_LIGHT_BOTTOM, PCT_DARK_BOTTOM, DARKNESS_FACTOR);
+	return GetShadowOrHiliteColor(
+		background, PCT_LIGHT_BOTTOM, PCT_DARK_BOTTOM, DARKNESS_FACTOR);
 }
 
 Pixel GetShadow(Pixel background)
@@ -279,21 +279,21 @@ Pixel GetShadow(Pixel background)
 
 XColor *GetHiliteColor(Pixel background)
 {
-  return GetShadowOrHiliteColor(
-    background, PCT_LIGHT_TOP, PCT_DARK_TOP, BRIGHTNESS_FACTOR);
+	return GetShadowOrHiliteColor(
+		background, PCT_LIGHT_TOP, PCT_DARK_TOP, BRIGHTNESS_FACTOR);
 }
 
 Pixel GetHilite(Pixel background)
 {
-  XColor *colorp;
+	XColor *colorp;
 
-  colorp = GetHiliteColor(background);
-  PictureAllocColor(Pdpy, Pcmap, colorp, True);
-  if (colorp->pixel == background)
-  {
-	  colorp->pixel = PictureGetNextColor(colorp->pixel, -1);
-  }
-  return colorp->pixel;
+	colorp = GetHiliteColor(background);
+	PictureAllocColor(Pdpy, Pcmap, colorp, True);
+	if (colorp->pixel == background)
+	{
+		colorp->pixel = PictureGetNextColor(colorp->pixel, -1);
+	}
+	return colorp->pixel;
 }
 
 XColor *GetForeShadowColor(Pixel foreground, Pixel background)
@@ -340,15 +340,15 @@ XColor *GetForeShadowColor(Pixel foreground, Pixel background)
 
 Pixel GetForeShadow(Pixel foreground, Pixel background)
 {
-  XColor *colorp;
+	XColor *colorp;
 
-  colorp = GetForeShadowColor(foreground, background);
-  PictureAllocColor(Pdpy, Pcmap, colorp, True);
-  if (colorp->pixel == background)
-  {
-	  colorp->pixel = PictureGetNextColor(colorp->pixel, 1);
-  }
-  return colorp->pixel;
+	colorp = GetForeShadowColor(foreground, background);
+	PictureAllocColor(Pdpy, Pcmap, colorp, True);
+	if (colorp->pixel == background)
+	{
+		colorp->pixel = PictureGetNextColor(colorp->pixel, 1);
+	}
+	return colorp->pixel;
 }
 
 XColor *GetTintedColor(Pixel in, Pixel tint, int percent)
@@ -365,7 +365,8 @@ XColor *GetTintedColor(Pixel in, Pixel tint, int percent)
 	color.red = (unsigned short)
 		(((100-percent)*color.red + tint_color.red * percent) / 100);
 	color.green = (unsigned short)
-		(((100-percent)*color.green + tint_color.green * percent) / 100);
+		(((100-percent)*color.green + tint_color.green * percent) /
+		 100);
 	color.blue = (unsigned short)
 		(((100-percent)*color.blue + tint_color.blue * percent) / 100);
 	return &color;
@@ -373,11 +374,11 @@ XColor *GetTintedColor(Pixel in, Pixel tint, int percent)
 
 Pixel GetTintedPixel(Pixel in, Pixel tint, int percent)
 {
-  XColor *colorp;
+	XColor *colorp;
 
-  colorp = GetTintedColor(in, tint, percent);
-  PictureAllocColor(Pdpy, Pcmap, colorp, True);
-  return colorp->pixel;
+	colorp = GetTintedColor(in, tint, percent);
+	PictureAllocColor(Pdpy, Pcmap, colorp, True);
+	return colorp->pixel;
 }
 
 /* This function converts the colour stored in a colorcell (pixel) into the
@@ -389,29 +390,31 @@ Pixel GetTintedPixel(Pixel in, Pixel tint, int percent)
  * memory area pointed at by 'output' must be at least 64 bytes (in case of
  * future extensions and multibyte characters).*/
 int pixel_to_color_string(
-  Display *dpy, Colormap cmap, Pixel pixel, char *output, Bool use_hash)
+	Display *dpy, Colormap cmap, Pixel pixel, char *output, Bool use_hash)
 {
-  XColor color;
-  int n;
+	XColor color;
+	int n;
 
-  color.pixel = pixel;
-  color.red = 0;
-  color.green = 0;
-  color.blue = 0;
+	color.pixel = pixel;
+	color.red = 0;
+	color.green = 0;
+	color.blue = 0;
 
-  XQueryColor(dpy, cmap, &color);
-  if (!use_hash)
-  {
-    sprintf(output, "rgb:%04x/%04x/%04x%n", (int)color.red, (int)color.green,
-	    (int)color.blue, &n);
-  }
-  else
-  {
-    sprintf(output, "#%04x%04x%04x%n", (int)color.red, (int)color.green,
-	    (int)color.blue, &n);
-  }
+	XQueryColor(dpy, cmap, &color);
+	if (!use_hash)
+	{
+		sprintf(
+			output, "rgb:%04x/%04x/%04x%n", (int)color.red,
+			(int)color.green, (int)color.blue, &n);
+	}
+	else
+	{
+		sprintf(
+			output, "#%04x%04x%04x%n", (int)color.red,
+			(int)color.green, (int)color.blue, &n);
+	}
 
-  return n;
+	return n;
 }
 
 static char *colorset_names[] =

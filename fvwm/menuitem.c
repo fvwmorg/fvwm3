@@ -318,20 +318,10 @@ void menuitem_paint(
 	int y;
 	int lit_x_start;
 	int lit_x_end;
-#if 0
-	GC ShadowGC;
-	GC ReliefGC;
-	GC on_gc;
-	GC off_gc;
-	GC text_gc;
-	int on_cs = -1;
-	int off_cs = -1;
-#else
 	gc_quad_t gcs;
 	gc_quad_t off_gcs;
 	int cs = -1;
-	int offff_cs;
-#endif
+	int off_cs;
 	FvwmRenderAttributes fra;
 	/*Pixel fg, fgsh;*/
 	short relief_thickness = ST_RELIEF_THICKNESS(ms);
@@ -384,15 +374,7 @@ void menuitem_paint(
 		}
 	}
 
-	offff_cs = ST_CSET_MENU(ms);
-	if (is_item_selected)
-	{
-		cs = ST_CSET_ACTIVE(ms);
-	}
-	else
-	{
-		cs = offff_cs;
-	}
+	off_cs = ST_HAS_MENU_CSET(ms) ? ST_CSET_MENU(ms) : -1;
 	/* Note: it's ok to pass a NULL label to is_function_allowed. */
 	if (!IS_EWMH_DESKTOP_FW(mpip->fw) &&
 	    !is_function_allowed(
@@ -400,6 +382,7 @@ void menuitem_paint(
 	{
 		gcs = ST_MENU_STIPPLE_GCS(ms);
 		off_gcs = gcs;
+		off_cs = ST_HAS_GREYED_CSET(ms) ? ST_CSET_GREYED(ms) : -1;
 	}
 	else if (is_item_selected)
 	{
@@ -410,6 +393,14 @@ void menuitem_paint(
 	{
 		gcs = ST_MENU_INACTIVE_GCS(ms);
 		off_gcs = ST_MENU_INACTIVE_GCS(ms);
+	}
+	if (is_item_selected)
+	{
+		cs = (ST_HAS_ACTIVE_CSET(ms)) ? ST_CSET_ACTIVE(ms) : -1;
+	}
+	else
+	{
+		cs = off_cs;
 	}
 
 	/***************************************************************
@@ -606,17 +597,15 @@ void menuitem_paint(
 	}
 	fws->win = mpip->w;
 	fws->y = text_y;
-	fws->flags.has_colorset = False;
+	fws->flags.has_colorset = 0;
 	b.y = text_y - ST_PSTDFONT(ms)->ascent;
 	b.height = ST_PSTDFONT(ms)->height + 1; /* ? */
 	if (!item_cleared && mpip->ev)
 	{
 		int u,v;
 		if (!frect_get_seg_intersection(
-			mpip->ev->xexpose.y,
-			mpip->ev->xexpose.height,
-			b.y, b.height,
-			&u, &v))
+			mpip->ev->xexpose.y, mpip->ev->xexpose.height,
+			b.y, b.height, &u, &v))
 		{
 			/* empty intersection */
 			empty_inter = True;
@@ -644,12 +633,12 @@ void menuitem_paint(
 			{
 				/* label is in unhilighted area */
 				fws->gc = off_gcs.fore_gc;
-				tmp_cs = offff_cs;
+				tmp_cs = off_cs;
 			}
 			if (tmp_cs >= 0)
 			{
 				fws->colorset = &Colorset[tmp_cs];
-				fws->flags.has_colorset = True;
+				fws->flags.has_colorset = 1;
 			}
 			fws->str = MI_LABEL(mi)[i];
 			b.x = fws->x = MI_LABEL_OFFSET(mi)[i];
@@ -667,7 +656,8 @@ void menuitem_paint(
 					b.x = s_x;
 					b.width = s_w;
 					region = XCreateRegion();
-					XUnionRectWithRegion(&b, region, region);
+					XUnionRectWithRegion(
+						&b, region, region);
 					fws->flags.has_clip_region = True;
 					fws->clip_region = region;
 					draw_string = True;
@@ -684,10 +674,11 @@ void menuitem_paint(
 				if (!item_cleared && xft_clear)
 				{
 					clear_menu_item_background(
-						mpip,
-						b.x, b.y, b.width, b.height);
+						mpip, b.x, b.y, b.width,
+						b.height);
 				}
-				FlocaleDrawString(dpy, ST_PSTDFONT(ms), fws, 0);
+				FlocaleDrawString(
+					dpy, ST_PSTDFONT(ms), fws, 0);
 
 				/* hot key */
 				if (MI_HAS_HOTKEY(mi) && !MI_IS_TITLE(mi) &&
@@ -696,7 +687,7 @@ void menuitem_paint(
 				    MI_HOTKEY_COLUMN(mi) == i)
 				{
 					FlocaleDrawUnderline(
-						dpy, ST_PSTDFONT(ms),fws,
+						dpy, ST_PSTDFONT(ms), fws,
 						MI_HOTKEY_COFFSET(mi));
 				}
 			}
@@ -763,7 +754,7 @@ void menuitem_paint(
 		else
 		{
 			tmp_gc = off_gcs.fore_gc;
-			tmp_cs = offff_cs;
+			tmp_cs = off_cs;
 		}
 		fra.mask = FRAM_DEST_IS_A_WINDOW;
 		if (tmp_cs >= 0)
@@ -846,7 +837,7 @@ void menuitem_paint(
 			{
 				/* icon is in unhilighted area */
 				tmp_gc = off_gcs.fore_gc;
-				tmp_cs = offff_cs;
+				tmp_cs = off_cs;
 			}
 			fra.mask = FRAM_DEST_IS_A_WINDOW;
 			if (tmp_cs >= 0)

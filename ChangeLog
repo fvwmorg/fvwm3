@@ -1,3 +1,15 @@
+2003-05-24  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* libs/Flocale.c (FlocaleDrawString):
+	support font shadowing without colorsets
+	* libs/ColorUtils.c:
+	reformatted file
+	* fvwm/menuitem.c (menuitem_paint):
+	do not use colorsets in menus if they are not defined
+	* fvwm/menustyle.c (menustyle_parse_style):
+	fixed initialisation of MenuStyle colorsets when mwm/fvwm menu style is
+	issued again
+
 2003-05-23  olicha  <olivier.chapuis@free.fr>
 
 	* fvwm/bindings.c (ParseBinding):
@@ -10,7 +22,7 @@
 	* fvwm/colorset.c (parse_colorset):
 	Fixed an uninit mem
 
-	* fvwm/borders.c (border_fill_pixmap_background): 
+	* fvwm/borders.c (border_fill_pixmap_background):
 	Fixed problem with depth 1 pixmap
 
 	* fvwm/conditional.c (CMD_On):

@@ -771,8 +771,11 @@ void menustyle_parse_style(F_CMD_ARGS)
 
 			/* common settings */
 			ST_CSET_MENU(tmpms) = 0;
+			ST_HAS_MENU_CSET(tmpms) = 0;
 			ST_CSET_ACTIVE(tmpms) = 0;
+			ST_HAS_ACTIVE_CSET(tmpms) = 0;
 			ST_CSET_GREYED(tmpms) = 0;
+			ST_HAS_GREYED_CSET(tmpms) = 0;
 			ST_BORDER_WIDTH(tmpms) = DEFAULT_MENU_BORDER_WIDTH;
 			ST_ACTIVE_AREA_PERCENT(tmpms) =
 				DEFAULT_MENU_POPUP_NOW_RATIO;

@@ -383,10 +383,10 @@ void FlocaleEncodeWinString(
  * ***************************************************************************/
 
 static
-void FlocaleFontStructDrawString(Display *dpy, FlocaleFont *flf, Drawable d,
-				 GC gc, int x, int y, Pixel fg, Pixel fgsh,
-				 Bool has_fg_pixels, FlocaleWinString *fws,
-				 int len, Bool image)
+void FlocaleFontStructDrawString(
+	Display *dpy, FlocaleFont *flf, Drawable d, GC gc, int x, int y,
+	Pixel fg, Pixel fgsh, Bool has_fg_pixels, FlocaleWinString *fws,
+	int len, Bool image)
 {
 	int xt = x;
 	int yt = y;
@@ -684,7 +684,7 @@ char *FlocaleGetCharsetOfFontStruct(Display *dpy, XFontStruct *font)
 		}
 		i++;
 	}
-	
+
 	if (count != 13)
 	{
 		return NULL;
@@ -1551,6 +1551,21 @@ void FlocaleDrawString(
 		fgsh = fws->colorset->fgsh;
 		has_fg_pixels = True;
 	}
+	else if (flf->shadow_size != 0)
+	{
+		XGCValues xgcv;
+
+		if (XGetGCValues(dpy, fws->gc, GCForeground, &xgcv) != 0)
+		{
+			fg = xgcv.foreground;
+		}
+		else
+		{
+			fg = PictureBlackPixel();
+		}
+		fgsh = GetShadow(fg);
+		has_fg_pixels = True;
+	}
 
 	if (fws->flags.text_rotation != ROTATION_0 &&
 	    flf->fftf.fftfont == NULL)
@@ -1569,7 +1584,7 @@ void FlocaleDrawString(
 		int yt = fws->y;
 
 		FlocaleInitGstpArgs(&gstp_args, flf, fws, fws->x, fws->y);
-		if (flf->shadow_size != 0 && has_fg_pixels)
+		if (flf->shadow_size != 0)
 		{
 			XSetForeground(dpy, fws->gc, fgsh);
 			while (FlocaleGetShadowTextPosition(
@@ -1761,8 +1776,9 @@ void FlocaleGetNameProperty(
 	{
 		/* Does not consider the conversion is REALLY succeeded:
 		 * XmbTextPropertyToTextList return 0 (== Success) on success,
-		 * a negative int if it fails (and in this case we are not here),
-		 * the number of unconvertible char on "partial" success*/
+		 * a negative int if it fails (and in this case we are not
+		 * here), the number of unconvertible char on "partial"
+		 * success*/
 		XFree(text_prop.value); /* return of XGetWM(Icon)Name() */
 		ret_name->name = *list;
 		ret_name->name_list = list;
