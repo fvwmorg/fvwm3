@@ -1,3 +1,8 @@
+1999-07-02  Paul D. Smith  <psmith@gnu.org>
+
+	* configure.in: Don't look for a C++ compiler; we don't	need one
+	anymore and it causes lots of configure problems.
+
 1997-07-01  Hippo
 
 	* {fvwm,libs}/Makefile.am: Reordered .c file for faster parallel makes.
