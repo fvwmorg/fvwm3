@@ -1,3 +1,14 @@
+2002-09-13  Mikhael Goikhman  <migo@homemail.com>
+
+	* FVWM/Constants.pm:
+	* FVWM/Event.pm:
+	* FVWM/EventNames.pm:
+	* FVWM/Makefile.am:
+	* FVWM/Module.pm.in:
+	* FVWM/create-constants:
+	Implemented a new event handler API, now handlers receive only
+	one event object.
+
 2002-06-23  Mikhael Goikhman  <migo@homemail.com>
 
 	* FVWM/Module.pm.in:

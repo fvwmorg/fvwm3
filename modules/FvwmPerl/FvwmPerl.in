@@ -311,8 +311,8 @@ sub PreprocessNamespace::include ($) {
 # event handlers
 
 sub processMessage ($$$$$$) {
-	my $self = $_[0];
-	my $string = $_[5];
+	my $event = $_[1];
+	my $string = $event->_line;
 
 	$string =~ s/^\s+//;
 	return if $string eq "";

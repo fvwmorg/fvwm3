@@ -26,67 +26,22 @@ BEGIN {
 
 use lib "@FVWM_PERLLIBDIR@";
 use vars qw($VERSION @ISA @EXPORT $AUTOLOAD);
-@ISA = qw(Exporter);
+
 use FVWM::Constants;
+use FVWM::Event;
+
+use Exporter;
+@EXPORT = @FVWM::Constants::EXPORT;
+@ISA = qw(Exporter);
 
 # The major version part indicates major API changes
 $VERSION = '1.1';
 
-my $PACKET_TYPE_ARGS = {
-	&M_NEW_PAGE             => "l5",
-	&M_NEW_DESK             => "l",
-	&M_OLD_ADD_WINDOW       => "l24",
-	&M_RAISE_WINDOW         => "l3",
-	&M_LOWER_WINDOW         => "l3",
-	&M_OLD_CONFIGURE_WINDOW => "l24",
-	&M_FOCUS_CHANGE         => "l5",
-	&M_DESTROY_WINDOW       => "l3",
-	&M_ICONIFY              => "l7",
-	&M_DEICONIFY            => "l3",
-	&M_WINDOW_NAME          => "l3a*",
-	&M_ICON_NAME            => "l3a*",
-	&M_RES_CLASS            => "l3a*",
-	&M_RES_NAME             => "l3a*",
-	&M_END_WINDOWLIST       => "",
-	&M_ICON_LOCATION        => "l7",
-	&M_MAP                  => "l3",
-	&M_ERROR                => "l3a*",
-	&M_CONFIG_INFO          => "l3a*",
-	&M_END_CONFIG_INFO      => "",
-	&M_ICON_FILE            => "l3a*",
-	&M_DEFAULTICON          => "l3a*",
-	&M_STRING               => "l3a*",
-	&M_MINI_ICON            => "l8a*",
-	&M_WINDOWSHADE          => "l3",
-	&M_DEWINDOWSHADE        => "l3",
-	&M_VISIBLE_NAME         => "l3a*",
-#	&M_SENDCONFIG           => "",
-	&M_RESTACK              => "",  # ???
-	&M_ADD_WINDOW           => "l25",
-	&M_CONFIGURE_WINDOW     => "l25",
-#	&M_EXTENDED_MSG         => "",
-	&MX_VISIBLE_ICON_NAME   => "l3a*",
-	&MX_ENTER_WINDOW        => "l",
-	&MX_LEAVE_WINDOW        => "l",
-	&MX_PROPERTY_CHANGE     => "l3a*",
-};
-
-# will be filled on demand in getPacketName()
-my $PACKET_TYPE_NAMES = undef;
-
-my $TEXTBASED_PACKET_MASK = (
-	M_ERROR       | M_CONFIG_INFO | M_STRING      | M_WINDOW_NAME |
-	M_ICON_NAME   | M_RES_CLASS   | M_RES_NAME    | M_ICON_FILE   |
-	M_DEFAULTICON | M_MINI_ICON   | M_VISIBLE_NAME
-);
-
-my $TEXTBASED_PACKET_XMASK = (
-	MX_VISIBLE_ICON_NAME
-);
-
 # Set the FVWM search directories (used for non fully qualified file names)
-$General::FileSystem::SAVE_FILE_DIR = __PACKAGE__->userDataDir();
-$General::FileSystem::LOAD_FILE_DIRS = [ __PACKAGE__->searchDirs() ];
+$General::FileSystem::SAVE_FILE_DIR = $General::FileSystem::SAVE_FILE_DIR ||
+	__PACKAGE__->userDataDir();
+$General::FileSystem::LOAD_FILE_DIRS = $General::FileSystem::LOAD_FILE_DIRS ||
+	[ __PACKAGE__->searchDirs() ];
 
 sub internalDie ($$) {
 	my $self = shift;
@@ -104,41 +59,10 @@ sub debug ($$;$) {
 	print STDERR $self->name . ": $msg\n";
 }
 
-sub isPacketExtended ($$) {
+sub isEventExtended ($$) {
 	my $self = shift;
 	my $type = shift;
 	return $type & M_EXTENDED_MSG? 1: 0;
-}
-
-sub isPacketTextBased ($$) {
-	my $self = shift;
-	my $type = shift;
-	return $self->isPacketExtended($type)?
-		$type & $TEXTBASED_PACKET_XMASK? 1: 0:
-		$type & $TEXTBASED_PACKET_MASK? 1: 0;
-}
-
-sub getPacketArgs ($$) {
-	my $self = shift;
-	my $type = shift;
-	my $args = $PACKET_TYPE_ARGS->{$type};
-	$self->internalDie("Unsupported packet type ($type)")
-		unless defined $args;
-	return $args;
-}
-
-sub getPacketName ($$) {
-	my $self = shift;
-	my $type = shift;
-	if (!defined $PACKET_TYPE_NAMES) {
-		foreach (@EXPORT) {
-			next unless /^M_/ || /^MX_/;
-			no strict 'refs';
-			$PACKET_TYPE_NAMES->{&$_()} = $_;
-		}
-	}
-	my $name = $PACKET_TYPE_NAMES->{$type};
-	return defined $name? $name: "*unknown-packet-$type*";
 }
 
 sub new ($@) {
@@ -211,7 +135,7 @@ sub disconnect ($) {
 	return if $self->{disconnected};
 
 	$self->{disconnected} = 1;
-	$self->invokeHandler(ON_EXIT);
+	$self->invokeHandler(new FVWM::Event(ON_EXIT));
 
 	if (defined $self->{ostream} && $self->{ostream}->opened) {
 		$self->send("Nop", 0, 0);
@@ -238,7 +162,7 @@ sub mask ($;$) {
 	my $self = shift;
 	my $mask = shift;
 	if (defined $mask) {
-		my $maskId = $self->isPacketExtended($mask)? "xmask": "mask";
+		my $maskId = $self->isEventExtended($mask)? "xmask": "mask";
 		my $oldMask = $self->{$maskId};
 		return $oldMask
 			if $mask == M_EXTENDED_MSG;
@@ -254,7 +178,7 @@ sub syncMask ($;$) {
 	my $self = shift;
 	my $mask = shift;
 	if (defined $mask) {
-		my $maskId = $self->isPacketExtended($mask)? "sync_xmask": "sync_mask";
+		my $maskId = $self->isEventExtended($mask)? "sync_xmask": "sync_mask";
 		my $oldMask = $self->{$maskId};
 		return $oldMask
 			if $mask == M_EXTENDED_MSG;
@@ -269,7 +193,12 @@ sub syncMask ($;$) {
 # by default the version of a module is the FVWM version
 sub version ($) {
 	my $self = shift;
-	return "2.5.2";
+	return "@VERSION@";
+}
+
+sub versionInfo ($) {
+	my $self = shift;
+	return "@VERSIONINFO@";
 }
 
 sub argv ($) {
@@ -289,7 +218,7 @@ sub getHandlerCategory ($$) {
 	my $self = shift;
 	my $type = shift;
 	return "special" if $type =~ /e/i;
-	return "extended" if $self->isPacketExtended($type);
+	return "extended" if $self->isEventExtended($type);
 	return "regular";
 }
 
@@ -392,10 +321,10 @@ sub readPacket ($) {
 	return ($packet, $type);
 }
 
-sub invokeHandler ($$@) {
+sub invokeHandler ($$) {
 	my $self = shift;
-	my $type = shift;
-	my @args = @_;
+	my $event = shift;
+	my $type = $event->type;
 
 	my $category = $self->getHandlerCategory($type);
 	my @types = sort { $a <=> $b } keys %{$self->{handlers}->{$category}};
@@ -403,9 +332,10 @@ sub invokeHandler ($$@) {
 		if ($type eq $_ || $type & $_) {
 			my $handler;
 			for $handler (@{$self->{handlers}->{$category}->{$_}}) {
+				last unless $event->propogationAllowed;
 				next unless defined $handler;  # skip deleted ones
 
-				eval { &$handler($self, $type, @args); };
+				eval { &$handler($self, $event); };
 
 				if ($@) {
 					return 0 if $@ =~ /^!quit/i;
@@ -425,22 +355,20 @@ sub processPacket ($;$$) {
 	($packet, $type) = @{$self->{lastPacket}} unless defined $packet;
 	return undef unless defined $packet;
 
-	$type &= $self->isPacketExtended($type)?
-		(MAX_XMSG_MASK | M_EXTENDED_MSG): MAX_MSG_MASK;
-	my @args = unpack($self->getPacketArgs($type), $packet);
-	# strip everything past the first null (or newline) if needed
-	$args[@args - 1] =~ s/\n*\0.*//s if $self->isPacketTextBased($type);
+	my $event = eval { new FVWM::Event($type, $packet); };
+	$self->internalDie($@ || "Internal error") unless defined $event;
 
 	if ($self->{debug}) {
-		my $msg = "got " . $self->getPacketName($type);
-		$msg .= " [$args[@args - 1]]" if $self->isPacketTextBased($type);
+		my $msg = "got " . $event->name;
+		$msg .= " [" . $event->argValues->[-1] . "]"
+			if $event->isTextBased;
 		$self->debug($msg, 1);
 	}
 
 	$self->{shouldSendUnlock} = 1 if $type &
-		($self->isPacketExtended($type)? $self->{sync_xmask}: $self->{sync_mask});
+		($self->isEventExtended($type)? $self->{sync_xmask}: $self->{sync_mask});
 
-	my $continue = $self->invokeHandler($type, @args);
+	my $continue = $self->invokeHandler($event);
 
 	$self->sendUnlock if $self->{shouldSendUnlock};
 	return $continue;
@@ -563,6 +491,7 @@ The following methods are available:
 
 B<new>,
 B<version>,
+B<versionInfo>,
 B<argv>,
 B<send>,
 B<sendReady>,
@@ -591,10 +520,7 @@ B<readConfigInfo>
 
 These methods deal with a received packet (event):
 
-B<isPacketExtended>,
-B<isPacketTextBased>,
-B<getPacketArgs>,
-B<getPacketName>
+B<isEventExtended>
 
 These methods deal with configuration directories:
 
@@ -635,6 +561,11 @@ Example:
 =item B<version>
 
 Returns FVWM version string I<x.y.z>.
+
+=item B<versionInfo>
+
+Returns FVWM version info string, like " (from cvs)" or " (snap-YYYYMMDD)".
+This string is usually empty for the final version.
 
 =item B<argv>
 
@@ -708,15 +639,16 @@ primary because of technical reasons.
 
 The handler subroutine is called with these parameters:
 
-    ($self, $type, @args)
+    ($self, $event)
 
-where C<$self> is a module object, C<$type> is a single event type that is
-useful when the same event handler serves several events.
+where C<$self> is a module object, C<$event> is an event object.
 
 The handler may call C<$self-E<gt>terminate> to terminate the event loop
 completely or C<$self-E<gt>terminate("continue")> to terminate the current
 event handler only. The second form is useful when the handler subroutine
 calls other subroutines that need to terminate the primary one.
+
+If several event handlers are added for the same event type. 
 
 The return value from B<addHandler> is an identifier the only purpose of
 which is to be passed to B<deleteHandler> in case the newly defined handler
@@ -794,17 +726,16 @@ This is a blocking method that waits until there is a packet on the
 communication end from I<fvwm>. Then it returns a list of 2 values,
 packet type and packet data (packed).
 
-=item B<invokeHandler> type args...
+=item B<invokeHandler> event
 
-Dispatches the apropos event handlers with the packet data.
+Dispatches the apropos event handlers with the event data.
 This method is called automatically, so you usually should not worry about it.
 
 =item B<processPacket> [data type]
 
-This method does several things. Unpacks packet data to the normal perl list
-of arguments. Normalizes the string if the packet is text based. Prints debug
-info if requested. Calls B<invokeHandler> with the correct parameters.
-Finally calls B<sendUnlock> if needed.
+This method constructs the event object from the packet data and calls
+B<invokeHandler> with it. Prints debug info if requested. Finally calls
+B<sendUnlock> if needed.
 
 You should not really worry about this method, it is called automatically
 from the event loop.
@@ -813,36 +744,15 @@ from the event loop.
 
 Not implemented yet.
 
-=item B<isPacketExtended> type
+=item B<isEventExtended> type
 
-For technical reasons there are 2 categories of packets, regular and
-extended. This is done to enable more than 32 packets. With introdution of
-extended packets (the packets with the highest bit set) it is now possible
-to have 31+31=62 packets rather than 32. This is a good point, the bad point
-is that only packets of the same category may be masked (or-ed) together.
-This method returns 1 or 0 depending on whether the packet I<type> is
-extended or not.
-
-=item B<isPacketTextBased> type
-
-This method is called automatically when the packet is processed using
-B<processPacket>. The last argument of the text based packets is a text.
-For convenience, everything past the first null (or newline) is stripped
-from the text based packets, so the event handlers should not do this every
-time.
-
-=item B<getPacketArgs> type
-
-Returns a format string corresponding the given packet type that may be
-passed to C<unpack> (see `perldoc -f unpack`) to unpack the packet arguments.
-This method is called automatically, so you should not really worry about it,
-you get already unpacked arguments in the event handlers.
-
-=item B<getPacketName> type
-
-Returns a string representing a packet name (like "M_ADD_WINDOW") of the
-given packet type constant (like I<M_ADD_WINDOW>). May be (and in fact is)
-used for debugging.
+For technical reasons there are 2 categories of FVWM events, regular and
+extended. This is done to enable more events. With introdution of the
+extended event types (with the highest bit set) it is now possible to have
+31+31=62 different event types rather than 32. This is a good point, the bad
+point is that only event types of the same category may be masked (or-ed)
+together. This method returns 1 or 0 depending on whether the event I<type>
+is extended or not.
 
 =item B<userDataDir>
 

@@ -81,9 +81,9 @@ $button->signal_connect("clicked", sub { Gtk->main_quit; });
 $dialog->show_all;
 
 $module->addHandler(M_WINDOW_NAME, sub {
-	my ($self, $type, $winid, $frameid, $ptr, $name) = @_;
+	my ($self, $event) = @_;
 	return unless $creatingWindowList;
-	$clist->append(sprintf("0x%07lx", $winid), $name);
+	$clist->append(sprintf("0x%07lx", $event->_win_id), $event->_name);
 });
 
 $module->addHandler(M_END_WINDOWLIST, sub {
@@ -92,7 +92,7 @@ $module->addHandler(M_END_WINDOWLIST, sub {
 });
 
 $module->addHandler(M_STRING, sub {
-	my $string = $_[5];
+	my $string = $_[1]->_line;
 	my $winid = $dialog->window->XWINDOW();
 	if ($string =~ /^close|stop|quit|exit/i) {
 		Gtk->exit(0);

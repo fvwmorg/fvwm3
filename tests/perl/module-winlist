@@ -17,8 +17,8 @@ my $fh = $runXmessage?
 
 # Register the event handlers
 $module->addHandler(M_WINDOW_NAME, sub {
-	my ($self, $type, $winid, $frameid, $ptr, $name) = @_;
-	printf $fh " 0x%07lx | %s\n", $winid, $name;
+	my ($self, $event) = @_;
+	printf $fh " 0x%07lx | %s\n", $event->_win_id, $event->_name;
 });
 
 # This one signals that the module should be terminated

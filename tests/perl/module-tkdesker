@@ -39,7 +39,8 @@ $TOP->geometry($opts{Geometry}) if (defined $opts{Geometry});
 $frame->pack(-expand => 1, -fill => 'both', -anchor => 'nw');
 
 $desker->addHandler(M_NEW_DESK, sub {
-	my ($self, $type, $desk) = @_;
+	my ($self, $event) = @_;
+	my $desk = $event->_desk;
 
 	&unhilite($current_desk);
 	return if $desk < $opts{START} or $desk > $opts{'END'};
@@ -47,9 +48,9 @@ $desker->addHandler(M_NEW_DESK, sub {
 	&hilite($current_desk, $self);
 });
 $desker->addHandler(M_FOCUS_CHANGE, sub {
-	my ($self, $type, $id, $frameid, $ptr) = @_;
+	my ($self, $event) = @_;
 
-	$desk_focus[$current_desk] = $id;
+	$desk_focus[$current_desk] = $event->_win_id;
 });
 $desker->addDefaultErrorHandler;
 

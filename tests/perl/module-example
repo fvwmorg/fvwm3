@@ -9,12 +9,11 @@ use lib `fvwm-perllib dir`;
 use FVWM::Module;
 
 my $newWindowHandler = sub {
-	my ($self, $type, @args) = @_;
-	#$self->send("Echo M_ADD_WINDOW @args");
+	my ($self, $event) = @_;
+	#$self->send("Echo M_ADD_WINDOW " . join(", ", %{$event->args}));
 
 	# auto iconify all new windows
-	my $winId = $args[0];
-	$self->send("Iconify true", $winId);
+	$self->send("Iconify true", $event->_win_id);
 };
 
 my $module = new FVWM::Module(
@@ -36,7 +35,8 @@ alarm(60);
 # auto-iconify new windows
 $module->addHandler(M_ADD_WINDOW, $newWindowHandler);
 # auto-raise all windows
-$module->addHandler(M_FOCUS_CHANGE, sub { $_[0]->send("Raise", $_[2]) });
+$module->addHandler(M_FOCUS_CHANGE,
+	sub { $_[0]->send("Raise", $_[1]->_win_id) });
 # do a clean-up on exit
 $module->addHandler(ON_EXIT, $onExit);
 

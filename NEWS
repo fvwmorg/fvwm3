@@ -36,6 +36,9 @@ Changes in *unstable* development release 2.5.4 (not released yet)
 * FPClickToFocus and FPClickToRaise work with any modifier by
   default.
 
+* Perl library API regarding event handlers is changed, so personal
+  modules in Perl should be adjusted.
+
 -------------------------------------------------------------------
 
 Changes in alpha release 2.5.3 (25-Aug-2002)

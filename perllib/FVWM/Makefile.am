@@ -4,7 +4,7 @@ SUBDIRS = Module
 
 configdir = @FVWM_PERLLIBDIR@/FVWM
 
-config_DATA = Module.pm Constants.pm
+config_DATA = Module.pm Constants.pm EventNames.pm Event.pm
 
 EXTRA_DIST = create-constants Constants.pm
 
