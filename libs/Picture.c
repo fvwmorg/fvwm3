@@ -197,7 +197,7 @@ Picture *LoadPicture(Display *dpy, Window Root, char *path, int color_limit)
     color_reduce_pixmap(&my_image, color_limit);
     rc = XpmCreatePixmapFromXpmImage(dpy, Root, &my_image, &p->picture,
 				     &p->mask, &xpm_attributes);
-    fprintf("LoadPicture: XpmCreatePixmapFromXpmImage(%s) = %d\n", path, rc);
+    fprintf(stderr, "LoadPicture: XpmCreatePixmapFromXpmImage(%s) = %d\n", path, rc);
     if (rc == XpmSuccess) {
       p->width = my_image.width;
       p->height = my_image.height;
