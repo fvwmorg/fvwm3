@@ -17,7 +17,7 @@ typedef struct item
 {
   long id;
   char *name;
-  long flags;
+  window_flags flags;
   long desk;
   struct item *next;
 } Item;
@@ -31,21 +31,22 @@ typedef struct
 /* Function Prototypes */
 extern void InitList(List *list);
 extern void ReorderList(List *list, long id, long FlipFocus);
-extern void AddItem(List *list, long id, long flags, long desk);
+
+extern void AddItem(List *list, ConfigWinPacket *cfgpacket);
 extern int FindItem(List *list, long id);
 extern int FindItemDesk(List *list, long id, long desk);
 extern long ItemDesk(List *list, long id);
 extern int UpdateItemName(List *list, long id, char *string);
 extern int UpdateItemDesk(List *list, long id, long desk);
-extern int UpdateItemFlags(List *list, long id, long flags);
+
 extern void FreeItem(Item *ptr);
 extern int DeleteItem(List *list,long id);
 extern void FreeList(List *list);
 extern void PrintList(List *list);
 extern char *ItemName(List *list, int n);
-extern long ItemFlags(List *list, long id );
-extern long ItemFlags(List *list, long id );
-extern long XorFlags(List *list, int n, long value);
+
+extern Item *ItemFlags(List *list, long id );
+
 extern int ItemCount(List *list);
 extern int ItemCountDesk(List *list, long desk);
 extern long ItemID(List *list, int n);

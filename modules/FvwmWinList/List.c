@@ -35,14 +35,15 @@ void InitList(List *list)
 /******************************************************************************
   AddItem - Allocates spaces for and appends an item to the list
 ******************************************************************************/
-void AddItem(List *list, long id,long flags, long desk)
+/*void AddItem(List *list, long id,long flags, long desk)*/
+void AddItem(List *list, ConfigWinPacket *cfgpacket)
 {
 Item *new;
   new=(Item *)safemalloc(sizeof(Item));
-  new->id=id;
+  new->id=cfgpacket->w;
   new->name=NULL;
-  new->flags=flags;
-  new->desk=desk;
+  new->flags=cfgpacket->flags;
+  new->desk=cfgpacket->desk;
   new->next=NULL;
 
   if (list->tail==NULL) list->head=list->tail=new;
@@ -161,15 +162,6 @@ int UpdateItemDesk(List *list, long id, long desk)
   return 0;
 }
 
-int UpdateItemFlags(List *list, long id, long flags)
-{
-Item *temp;
-int i;
-  for(i=0,temp=list->head;temp!=NULL && id!=temp->id;i++,temp=temp->next);
-  if (temp==NULL) return -1;
-  if (flags!=-1) temp->flags=flags;
-  return i;
-}
   
 /******************************************************************************
   FreeItem - Frees allocated space for an Item
@@ -261,16 +253,18 @@ char *ItemName(List *list, int n)
 
 /******************************************************************************
   ItemFlags - Return the flags for an item
+  RBW - this is no longer appropriate since the Great Style Flag Rewrite, so
+  this function will just return the Item pointer. The GSFR macros know how
+  deal with that.
+  Function returns NULL if the item is not found.
 ******************************************************************************/
-long ItemFlags(List *list, long id)
+Item *ItemFlags(List *list, long id)
 {
   Item *temp;
 
   for(temp=list->head; temp != NULL && id!=temp->id; temp=temp->next);
-  if (temp==NULL)
-    return -1;
 
-  else return temp->flags;
+  return temp;
 }
 
 /******************************************************************************
@@ -287,21 +281,6 @@ long ItemDesk(List *list, long id)
 }
 
 
-/******************************************************************************
-  XorFlags - Exclusive of the flags with the specified value.
-******************************************************************************/
-long XorFlags(List *list, int n, long value)
-{
-  Item *temp;
-  int i;
-  long ret;
-
-  for(i=0,temp=list->head;temp!=NULL && i<n;i++,temp=temp->next)
-  if (temp==NULL) return -1;
-  ret=temp->flags;
-  temp->flags^=value;
-  return ret;
-}
 
 /******************************************************************************
   ItemCount - Return the number of items inthe list
@@ -354,10 +333,12 @@ void CopyItem(List *dest, List *source, int n)
 {
   Item *temp;
   int i;
+  ConfigWinPacket cfgpkt;
 
   for(i=0,temp=source->head;temp!=NULL && i<n;i++,temp=temp->next);
   if (temp==NULL) return;
-  AddItem(dest,temp->id,temp->flags, temp->desk);
+  memset(&cfgpkt, '\0', sizeof(cfgpkt));
+  AddItem(dest, &cfgpkt);
   UpdateItemName(dest,temp->id,temp->name);
   DeleteItem(source,temp->id);
 }

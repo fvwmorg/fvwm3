@@ -272,9 +272,10 @@ void ReadFvwmPipe(void)
 void ProcessMessage(unsigned long type,unsigned long *body)
 {
   int redraw=0,i;
-  long flags;
+  Item *flagitem;
   char *name,*string;
   static int current_focus=-1;
+  struct ConfigWinPacket  *cfgpacket;
 
   Picture p;
 
@@ -282,20 +283,21 @@ void ProcessMessage(unsigned long type,unsigned long *body)
   {
     case M_ADD_WINDOW:
     case M_CONFIGURE_WINDOW:
-      if ((i = FindItem(&windows,body[0]))!=-1)
+      cfgpacket = (void *) body;
+      if ((i = FindItem(&windows,cfgpacket->w))!=-1)
       {
-	if(UpdateItemDesk(&windows, i, body[7]) > 0)
+	if(UpdateItemDesk(&windows, i, cfgpacket->desk) > 0)
         {
           AdjustWindow();
           RedrawWindow(1);
         }
 	break;
       }
-      if (!(body[8]&WINDOWLISTSKIP) || !UseSkipList)
-        AddItem(&windows,body[0],body[8], body[7] /* desk */);
+      if (!(DO_SKIP_WINDOW_LIST(cfgpacket)) || !UseSkipList)
+        AddItem(&windows, cfgpacket);
       break;
     case M_DESTROY_WINDOW:
-      if ((i=DeleteItem(&windows,body[0]))==-1) break;
+      if ((i=DeleteItem(&windows,cfgpacket->w))==-1) break;
       RemoveButton(&buttons,i);
       if (WindowIsUp)
         AdjustWindow();
@@ -327,11 +329,13 @@ void ProcessMessage(unsigned long type,unsigned long *body)
           (type==M_WINDOW_NAME && UseIconNames)) break;
       if ((i=UpdateItemName(&windows,body[0],(char *)&body[3]))==-1) break;
       string=(char *)&body[3];
-      name=makename(string,ItemFlags(&windows,body[0]));
+      flagitem = ItemFlags(&windows,body[0]);
+      name=makename(string, (IS_ICONIFIED(flagitem)?True:False));
       if (UpdateButton(&buttons,i,name,-1)==-1)
       {
 	AddButton(&buttons, name, NULL, 1);
-	UpdateButtonSet(&buttons,i,ItemFlags(&windows,body[0])&ICONIFIED?1:0);
+        flagitem = ItemFlags(&windows,body[0]);
+	UpdateButtonSet(&buttons, i, (IS_ICONIFIED(flagitem)?1:0));
         UpdateButtonDesk(&buttons,i,ItemDesk(&windows, body[0]));
       }
       free(name);
@@ -341,24 +345,26 @@ void ProcessMessage(unsigned long type,unsigned long *body)
     case M_DEICONIFY:
     case M_ICONIFY:
       if ((i=FindItem(&windows,body[0]))==-1) break;
-      flags=ItemFlags(&windows,body[0]);
-      if (type==M_DEICONIFY && !(flags&ICONIFIED)) break;
-      if (type==M_ICONIFY && flags&ICONIFIED) break;
-      flags^=ICONIFIED;
-      UpdateItemFlags(&windows,body[0],flags);
+      flagitem=ItemFlags(&windows,body[0]);
+      if (type==M_DEICONIFY && !(IS_ICONIFIED(flagitem))) break;
+      if (type==M_ICONIFY && (IS_ICONIFIED(flagitem))) break;
+      SET_ICONIFIED(flagitem, (IS_ICONIFIED(flagitem)?False:True));
+
       string=ItemName(&windows,i);
-      name=makename(string,flags);
+      name=makename(string, (IS_ICONIFIED(flagitem)?True:False));
       if (UpdateButton(&buttons,i,name,-1)!=-1) redraw=1;
-      if (i!=current_focus||(flags&ICONIFIED))
-        if (UpdateButtonSet(&buttons,i,(flags&ICONIFIED) ? 1 : 0)!=-1) redraw=1;
+      if (i!=current_focus||(IS_ICONIFIED(flagitem)))
+        if (UpdateButtonSet(&buttons,i,(IS_ICONIFIED(flagitem)) ? 1 : 0)!=-1) redraw=1;
       free(name);
       break;
     case M_FOCUS_CHANGE:
       redraw = 1;
       if ((i=FindItem(&windows,body[0]))!=-1)
       {
+/* RBW- wait a minute! - this never did anything anyway...
         flags=ItemFlags(&windows,body[0]);
         UpdateItemFlags(&windows,body[0],flags);
+*/
         RadioButton(&buttons,i);
         if (Follow && i) { /* rearrange order */
           ReorderList(&windows,i,body[2]);
@@ -786,14 +792,14 @@ void AdjustWindow(void)
 /******************************************************************************
   makename - Based on the flags return me '(name)' or 'name'
 ******************************************************************************/
-char *makename(const char *string,long flags)
+char *makename(const char *string, Bool iconified)
 {
 char *ptr;
   ptr=safemalloc(strlen(string)+3);
   *ptr = '\0';
-  if (flags&ICONIFIED) strcpy(ptr,"(");
+  if (iconified) strcpy(ptr,"(");
   strcat(ptr,string);
-  if (flags&ICONIFIED) strcat(ptr,")");
+  if (iconified) strcat(ptr,")");
   return ptr;
 }
 

@@ -10,6 +10,7 @@
 
 #include <libs/fvwmlib.h>
 #include <fvwm/fvwm.h>
+#include <fvwm/vpacket.h>
 
 /* FvwmWinList Module for Fvwm. 
  *
@@ -95,7 +96,8 @@ int OpenConsole(void);
 void ParseConfig(void);
 void LoopOnEvents(void);
 void AdjustWindow(void);
-char *makename(const char *string,long flags);
+
+char *makename(const char *string, Bool iconified);
 void ChangeWindowName(char *str);
 void LinkAction(char *string);
 void AddToSkipList(char *string);
