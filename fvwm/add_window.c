@@ -423,9 +423,6 @@ void setup_style_and_decor(
 
 #ifdef USEDECOR
   /* search for a UseDecor tag in the style */
-#if 0
-  if (SGET_DECOR_NAME(*pstyle) != NULL)
-#endif
   {
     FvwmDecor *decor = &Scr.DefaultDecor;
 
@@ -433,8 +430,8 @@ void setup_style_and_decor(
     {
       if (StrEquals(SGET_DECOR_NAME(*pstyle), decor->tag))
       {
-	tmp_win->decor = decor;
-	break;
+        tmp_win->decor = decor;
+        break;
       }
     }
   }
