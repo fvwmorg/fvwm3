@@ -23,6 +23,7 @@
 #include <stdio.h>
 #include <X11/Xlib.h>
 
+static char *error_name(unsigned char code);
 static char *request_name(unsigned char code);
 
 void PrintXErrorAndCoredump(Display *dpy, XErrorEvent *error, char *MyName)
@@ -33,7 +34,8 @@ void PrintXErrorAndCoredump(Display *dpy, XErrorEvent *error, char *MyName)
 #endif
 
   fprintf(stderr,"%s: Cause of next X Error.\n", MyName);
-  fprintf(stderr, "   Error: %d\n", error->error_code);
+  fprintf(stderr, "   Error: %d (%s)\n",
+	  error->error_code, error_name(error->error_code));
   fprintf(stderr, "   Major opcode of failed request:  %d (%s)\n",
 	  error->request_code, request_name(error->request_code));
   fprintf(stderr, "   Minor opcode of failed request:  %d \n",
@@ -46,6 +48,35 @@ void PrintXErrorAndCoredump(Display *dpy, XErrorEvent *error, char *MyName)
   abort();
   /* exit if this fails */
   exit(99);
+}
+
+/* this comes out of X.h */
+static char *error_names[] = {
+  "BadRequest",
+  "BadValue",
+  "BadWindow",
+  "BadPixmap",
+  "BadAtom",
+  "BadCursor",
+  "BadFont",
+  "BadMatch",
+  "BadDrawable",
+  "BadAccess",
+  "BadAlloc",
+  "BadColor",
+  "BadGC",
+  "BadIDChoice",
+  "BadName",
+  "BadLength",
+  "BadImplementation"
+};
+
+
+static char *error_name(unsigned char code)
+{
+  if (code > (sizeof(error_names) / sizeof(char *)))
+    return "Unknown";
+  return error_names[code - 1];
 }
 
 /* this comes out of Xproto.h */
