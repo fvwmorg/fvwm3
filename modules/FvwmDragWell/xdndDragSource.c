@@ -79,11 +79,11 @@ void xdndSrcSendEnter(DragSource *ds, Window dstWin, Window srcWin, Atom * typel
 
   xevClientInit(&xevent,ds->display,dstWin,ds->atomSel->xdndEnter);
 
-  //data.l[0] : XID of source window
-  //data.l[1] : Bit 0 is set if source supports more than three types.
-  //            High byte is protocol version(min of source,target).  Version
-  //              is set in window property of target.
-  //data.l[2,3,4] : First three types.  Unused set to none.
+  /* data.l[0] : XID of source window
+     data.l[1] : Bit 0 is set if source supports more than three types.
+		 High byte is protocol version(min of source,target).  Version
+		 is set in window property of target.
+     data.l[2,3,4] : First three types.  Unused set to none. */
 
   xevent.xclient.data.l[0] = srcWin;
   if (nTypes>3) /*this should never happen for fvwmQFS*/
@@ -111,11 +111,11 @@ void xdndSrcSendPosition(DragSource *ds, Window dstWin, Window srcWin, short x,
 
   xevClientInit(&xevent,ds->display,dstWin,ds->atomSel->xdndPosition);
 
-  //data.l[0] : XID of source window
-  //data.l[1] : Reserved for future use.
-  //data.l[2] : Coordinates of mouse relative to root window(x<<16|y)
-  //data.l[3] : time stamp for retrieving data
-  //data.l[4] : action requested by user
+  /* data.l[0] : XID of source window
+     data.l[1] : Reserved for future use.
+     data.l[2] : Coordinates of mouse relative to root window(x<<16|y)
+     data.l[3] : time stamp for retrieving data
+     data.l[4] : action requested by user */
   xevent.xclient.data.l[0] = srcWin;
   xevent.xclient.data.l[2] = (x<<16) | y;
   xevent.xclient.data.l[3] = time;
@@ -211,8 +211,8 @@ void xdndSrcSendLeave(DragSource *ds, Window dstWin, Window srcWin) {
   XEvent xevent;
   xevClientInit(&xevent,ds->display,dstWin,ds->atomSel->xdndLeave);
 
-  //data.l[0] : XID of source window
-  //data.l[1] : Reserved for future use.
+  /* data.l[0] : XID of source window
+     data.l[1] : Reserved for future use. */
   xevent.xclient.data.l[0] = srcWin;
   XSendEvent(ds->display, dstWin, 0, 0, &xevent);
 }
@@ -229,9 +229,9 @@ void xdndSrcSendDrop(DragSource *ds, Window dstWin, Window srcWin, unsigned long
 
   xevClientInit(&xevent,ds->display,dstWin,ds->atomSel->xdndDrop);
 
-  //data.l[0] : XID of source window
-  //data.l[1] : Reserved for future use.
-  //data.l[2] : Time stamp for retrieving data
+  /* data.l[0] : XID of source window
+     data.l[1] : Reserved for future use.
+     data.l[2] : Time stamp for retrieving data */
   xevent.xclient.data.l[0] = srcWin;
   xevent.xclient.data.l[2] = time;
 
@@ -245,8 +245,8 @@ void xdndSrcSendDrop(DragSource *ds, Window dstWin, Window srcWin, unsigned long
  *   ds - the drag source struct
  *   xev - the finish event */
 void xdndSrcReceiveFinished(DragSource *ds, XEvent *xev) {
-  //data.l[0] : XID of target window
-  //data.l[1] : Reserved for future use.
+  /* data.l[0] : XID of target window
+     data.l[1] : Reserved for future use. */
   if (xev->xclient.data.l[0]!=ds->dropTargWin) {
     return;
   }

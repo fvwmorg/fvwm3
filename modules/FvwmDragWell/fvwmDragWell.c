@@ -60,6 +60,7 @@
 #include "fvwmDragWell.h"
 #include "dragSource.h"
 
+#define hostnameStrLen 64
 
 extern DragSource dsg;
 extern void xdndInit(Display *, Window);
@@ -298,7 +299,6 @@ void parseFvwmMessage(char *msg)
 {
   char *dragtype = NULL, *dragData = NULL;
   char *optString, *option, *args;
-  const int hostnameStrLen=64;
   char hostname[hostnameStrLen];
 
   /* parse line into comma separated pieces, set dragtype and dragdata */
@@ -487,11 +487,6 @@ void XStartup(char *appName)
   mg.typelist[2] = None;
   mg.typelist[3] = 0;
   xg.animationType = DEFAULT_ANIMATION;
-  /*
-  ** Now that we have finished initialising everything,
-  ** it is safe(r) to install the clean-up handlers ...
-  */
-  //atexit(deadPipe);
 
   /* tell fvwm we're running */
   SendFinishedStartupNotification(fd);
