@@ -1,5 +1,8 @@
 2002-03-06  Dominik Vogt  <dominik.vogt@gmx.de>
 
+	* fvwm/icccm2.c (SetupICCCM2):
+	removed debug fprintf
+
 	* fvwm/functions.c (expand_extended_var):
 	implemented new extended variables pointer.x, pointer.x, pointer.wx,
 	pointer.wy, pointer.cx and pointer.cy.
