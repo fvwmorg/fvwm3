@@ -47,6 +47,7 @@
 
 #include "libs/Module.h"
 #include "libs/fvwmlib.h"
+#include "libs/Colorset.h"
 #ifdef DEBUG
 #  define FVWM_DEBUG_MSGS   /* Do we need this? */
 #endif
@@ -127,7 +128,7 @@ Pixel win_fore_pix = -1;
 Pixel win_hi_back_pix = -1;
 Pixel win_hi_fore_pix = -1;
 char fAlwaysCurrentDesk = 0;
-PagerStringList string_list = { NULL, 0, NULL, NULL, NULL };
+PagerStringList string_list = { NULL, 0, -1, -1, -1, NULL, NULL, NULL };
 Bool is_transient = False;
 Bool do_ignore_next_button_release = False;
 Bool error_occured = False;
@@ -265,6 +266,9 @@ int main(int argc, char **argv)
       CopyString(&Desks[i].label,line);
       Desks[i].Dcolor = NULL;
       Desks[i].bgPixmap = NULL;
+      Desks[i].colorset = -1;
+      Desks[i].highcolorset = -1;
+      Desks[i].ballooncolorset = -1;
     }
 
   /* Initialize X connection */
@@ -276,6 +280,7 @@ int main(int argc, char **argv)
     }
   x_fd = XConnectionNumber(dpy);
   InitPictureCMap(dpy);
+  AllocColorset(0);
 
   Scr.screen = DefaultScreen(dpy);
   Scr.Root = RootWindow(dpy, Scr.screen);
@@ -489,6 +494,8 @@ void process_message( FvwmPacket* packet )
       break;
     case M_RESTACK:
       list_restack(body,length);
+    case M_CONFIG_INFO:
+      list_colorset(body);
     default:
       list_unknown(body);
       break;
@@ -1186,6 +1193,19 @@ void list_end(void)
 }
 
 
+void list_colorset(unsigned long *body)
+{
+  char *tline, *token;
+  int color;
+
+	tline = (char*)&(body[3]);
+	tline = GetNextToken(tline, &token);
+	if (StrEquals(token, "Colorset")) {
+    color = LoadColorset(tline);
+    change_colorset(color);
+  }
+	free(token);
+}
 
 
 /***************************************************************************
@@ -1310,6 +1330,11 @@ void ParseOptions(void)
 	}
 	continue;
       }
+    else if(StrEquals(token, "Colorset"))
+    {
+        LoadColorset(next);
+	      continue;
+    }
 
       tline2 = GetModuleResource(tline, &resource, MyName);
       if (!resource)
@@ -1327,7 +1352,115 @@ void ParseOptions(void)
 	  arg2[0] = 0;
 	}
 
-      if (StrEquals(resource, "Geometry"))
+      if(StrEquals(resource,"Colorset"))
+  {
+	  if (StrEquals(arg1, "*"))
+	    {
+	      desk = Scr.CurrentDesk;
+	    }
+	  else
+	    {
+	      desk = desk1;
+	      sscanf(arg1,"%d",&desk);
+	    }
+	  if (fAlwaysCurrentDesk)
+	    {
+	      PagerStringList *item;
+
+	      item = FindDeskStrings(desk);
+	      if (item->next != NULL)
+		    {
+          sscanf(arg2,"%d",&item->next->colorset);
+		    }
+	      else
+		    {
+		      /* new Dcolor and desktop */
+		      item = NewPagerStringItem(item, desk);
+          sscanf(arg2,"%d",&item->next->colorset);
+		    }
+	          if (desk == Scr.CurrentDesk)
+		    {
+          sscanf(arg2,"%d",&Desks[0].colorset);
+		    }
+	    }
+	  else if((desk >= desk1)&&(desk <=desk2))
+	    {
+        sscanf(arg2,"%d",&Desks[desk - desk1].colorset);
+	    }
+  }
+            else if(StrEquals(resource,"BalloonColorset"))
+  {
+	  if (StrEquals(arg1, "*"))
+	    {
+	      desk = Scr.CurrentDesk;
+	    }
+	  else
+	    {
+	      desk = desk1;
+	      sscanf(arg1,"%d",&desk);
+	    }
+	  if (fAlwaysCurrentDesk)
+	    {
+	      PagerStringList *item;
+
+	      item = FindDeskStrings(desk);
+	      if (item->next != NULL)
+		    {
+          sscanf(arg2,"%d",&item->next->ballooncolorset);
+		    }
+	      else
+		    {
+		      /* new Dcolor and desktop */
+		      item = NewPagerStringItem(item, desk);
+          sscanf(arg2,"%d",&item->next->ballooncolorset);
+		    }
+	          if (desk == Scr.CurrentDesk)
+		    {
+          sscanf(arg2,"%d",&Desks[0].ballooncolorset);
+		    }
+	    }
+	  else if((desk >= desk1)&&(desk <=desk2))
+	    {
+        sscanf(arg2,"%d",&Desks[desk - desk1].ballooncolorset);
+	    }
+  }
+                  else if(StrEquals(resource,"HilightColorset"))
+  {
+	  if (StrEquals(arg1, "*"))
+	    {
+	      desk = Scr.CurrentDesk;
+	    }
+	  else
+	    {
+	      desk = desk1;
+	      sscanf(arg1,"%d",&desk);
+	    }
+	  if (fAlwaysCurrentDesk)
+	    {
+	      PagerStringList *item;
+
+	      item = FindDeskStrings(desk);
+	      if (item->next != NULL)
+		    {
+          sscanf(arg2,"%d",&item->next->highcolorset);
+		    }
+	      else
+		    {
+		      /* new Dcolor and desktop */
+		      item = NewPagerStringItem(item, desk);
+          sscanf(arg2,"%d",&item->next->highcolorset);
+		    }
+	          if (desk == Scr.CurrentDesk)
+		    {
+          sscanf(arg2,"%d",&Desks[0].highcolorset);
+		    }
+	    }
+	  else if((desk >= desk1)&&(desk <=desk2))
+	    {
+        sscanf(arg2,"%d",&Desks[desk - desk1].highcolorset);
+	    }
+  }
+      else if (StrEquals(resource, "Geometry"))
 	{
 	  flags = XParseGeometry(arg1,&g_x,&g_y,&width,&height);
 	  if (flags & WidthValue)

@@ -1,3 +1,7 @@
+1999-07-29  Brad Giaccio
+
+	* module/FvwmPager/*: added colorset support
+
 1999-07-28  Hippo
 
 	* module/FvwmWinList/*: added colorset support

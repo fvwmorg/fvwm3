@@ -109,15 +109,29 @@ typedef struct desk_info
   Window w;
   Window title_w;
   Window CPagerWin;
+  BalloonWindow balloon;
   Picture *bgPixmap;		/* Pixmap used as background. */
+  int colorset;
+  int highcolorset;
+  int ballooncolorset;
   char *Dcolor;
   char *label;
+  GC NormalGC;
+  GC MiniIconGC;
+  GC StdGC;
+  GC DashedGC;
+  GC HiliteGC;
+  GC rvGC;
+  GC BalloonGC;
 } DeskInfo;
 
 typedef struct pager_string_list
 {
   struct pager_string_list *next;
   int desk;
+  int colorset;
+  int highcolorset;
+  int ballooncolorset;
   char *Dcolor;
   char *label;
   Picture *bgPixmap;		/* Pixmap used as background. */
@@ -138,6 +152,7 @@ void ParseOptions(void);
 
 void list_add(unsigned long *body);
 void list_configure(unsigned long *body);
+void list_colorset(unsigned long *body);
 void list_destroy(unsigned long *body);
 void list_focus(unsigned long *body);
 void list_toggle(unsigned long *body);
@@ -158,6 +173,7 @@ void list_end(void);
 int My_XNextEvent(Display *dpy, XEvent *event);
 
 /* Stuff in x_pager.c */
+void change_colorset(int colorset);
 void initialize_pager(void);
 void initialize_viz_pager(void);
 Pixel GetColor(char *name);
@@ -187,5 +203,5 @@ void IconMoveWindow(XEvent *Event,PagerWindow *t);
 void HandleExpose(XEvent *Event);
 void MoveStickyWindows(void);
 void MapBalloonWindow(XEvent *);
-void UnmapBalloonWindow(void);
-void DrawInBalloonWindow(void);
+void UnmapBalloonWindow();
+void DrawInBalloonWindow(int i);
