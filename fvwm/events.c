@@ -2440,7 +2440,7 @@ void HandlePropertyNotify(const evh_args_t *ea)
 	Bool has_icon_changed = False;
 	Bool has_icon_pixmap_hint_changed = False;
 	Bool has_icon_window_hint_changed = False;
-	FlocaleNameString new_name;
+	FlocaleNameString new_name = { NoName, NULL };
 	int old_wmhints_flags;
 	const XEvent *te = ea->exc->x.etrigger;
 	char *urgency_action = NULL;

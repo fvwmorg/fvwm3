@@ -1302,10 +1302,6 @@ void frame_get_titlebar_dimensions(
 		tb_w = tb_length;
 		tb_h = tb_thick;
 	}
-	title_layout->titlebar_g.x = tb_x;
-	title_layout->titlebar_g.y = tb_y;
-	title_layout->titlebar_g.width = tb_w;
-	title_layout->titlebar_g.height = tb_h;
 	/* configure left buttons */
 	for (i = 0; i < NUMBER_OF_BUTTONS; i += 2)
 	{

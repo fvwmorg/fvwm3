@@ -22,6 +22,17 @@
  *     copyright remains in the source code and all documentation
  ****************************************************************************/
 
+/* IMPORTANT NOTE:
+ *
+ * The functions in this module *must not* assume that the geometries in the
+ * FvwmWindow structure reflect the desired geometry of the window or its
+ * parts.  While the window is resized or shaded, they may hold the old
+ * geometry instead of the new one (but you can not rely on this).  Therefore,
+ * these geometries must not be accessed directly or indirectly (by the
+ * functions from geometry,c).  Use the geometries that are passed in via
+ * structure pointers, e.d. "td".
+ */
+
 /* ---------------------------- included header files ----------------------- */
 
 #include "config.h"
@@ -246,7 +257,7 @@ static int get_multipm_length(
  *
  ****************************************************************************/
 static void border_draw_multi_pixmap_titlebar(
-	FvwmWindow *fw, DecorFace *df, Pixmap dest_pix)
+	FvwmWindow *fw, titlebar_descr *td, DecorFace *df, Pixmap dest_pix)
 {
 	GC gc;
 	char *title;
@@ -264,21 +275,21 @@ static void border_draw_multi_pixmap_titlebar(
 	gc = Scr.TitleGC;
 	XSetClipMask(dpy, gc, None);
 	title = fw->visible_name;
-
-	tmp_g.width = 0;
-	tmp_g.height = 0;
-	get_title_geometry(fw, &tmp_g);
+	tmp_g.width = td->layout.title_g.width;
+	tmp_g.height = td->layout.title_g.height;
 	if (pm[TBP_MAIN])
 	{
 		border_render_into_pixmap(
-			gc, pm[TBP_MAIN], dest_pix, 0, 0, tmp_g.width,
-			tmp_g.height, (stretch_flags & (1 << TBP_MAIN)));
+			gc, pm[TBP_MAIN], dest_pix, 0, 0,
+			td->layout.title_g.width, td->layout.title_g.height,
+			(stretch_flags & (1 << TBP_MAIN)));
 	}
 	else if (!title)
 	{
 		border_render_into_pixmap(
-			gc, pm[TBP_LEFT_MAIN], dest_pix, 0, 0, tmp_g.width,
-			tmp_g.height, (stretch_flags & (1 << TBP_LEFT_MAIN)));
+			gc, pm[TBP_LEFT_MAIN], dest_pix, 0, 0,
+			td->layout.title_g.width, td->layout.title_g.height,
+			(stretch_flags & (1 << TBP_LEFT_MAIN)));
 	}
 
 	if (title)
@@ -2107,7 +2118,7 @@ static void border_set_title_pixmap(
 #ifdef FANCY_TITLEBARS
 	else if (tdd.df->style.face_type == MultiPixmap)
 	{
-		border_draw_multi_pixmap_titlebar(fw, tdd.df, dest_pix);
+		border_draw_multi_pixmap_titlebar(fw, td, tdd.df, dest_pix);
 	}
 #endif
 	else

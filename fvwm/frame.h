@@ -39,7 +39,6 @@ typedef enum
 
 typedef struct
 {
-	rectangle titlebar_g;
 	rectangle title_g;
 	rectangle button_g[NUMBER_OF_BUTTONS];
 } frame_title_layout_type;
