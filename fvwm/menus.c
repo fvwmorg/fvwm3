@@ -2971,7 +2971,8 @@ static void paint_item(MenuRoot *mr, MenuItem *mi, FvwmWindow *fw,
   /* Hilight 3D */
   if (is_item_selected && relief_thickness > 0)
   {
-    if (MST_HAS_MENU_CSET(mr)) {
+    if (MST_HAS_ACTIVE_CSET(mr))
+    {
       ReliefGC = MST_MENU_ACTIVE_RELIEF_GC(mr);
       ShadowGC = MST_MENU_ACTIVE_SHADOW_GC(mr);
     }
@@ -6007,14 +6008,12 @@ static void NewMenuStyle(F_CMD_ARGS)
       if (GetIntegerArguments(args, NULL, val, 1) == 0 || *val < 0)
       {
 	ST_HAS_ACTIVE_CSET(tmpms) = 0;
-        ST_DO_HILIGHT(tmpms) = 0;
       }
       else
       {
 	ST_HAS_ACTIVE_CSET(tmpms) = 1;
 	ST_CSET_ACTIVE(tmpms) = *val;
 	AllocColorset(*val);
-        ST_DO_HILIGHT(tmpms) = 1;
       }
       has_gc_changed = True;
       break;

@@ -44,6 +44,7 @@
 #include "move_resize.h"
 #include "virtual.h"
 #include "stack.h"
+#include "add_window.h"
 
 #ifndef MIN
 #define MIN(A,B) ((A)<(B)? (A):(B))
@@ -123,6 +124,8 @@ test_y = PageTop;
       test_window = Scr.FvwmRoot.next;
       while (test_window != NULL && loc_ok)
       {
+	if (t == test_window)
+	  continue;
         /*  RBW - account for sticky windows...  */
         if (test_window->Desk == t->Desk || IS_STICKY(test_window))
         {
@@ -874,12 +877,28 @@ Bool PlaceWindow(
 
 void PlaceAgain_func(F_CMD_ARGS)
 {
-  int x,y;
+  int x;
+  int y;
   char *token;
+#if 0
+  window_style style;
+#endif
 
   if (DeferExecution(eventp, &w, &tmp_win, &context, CRS_SELECT,
 		     ButtonRelease))
     return;
+
+#if 0
+  lookup_style(tmp_win, &style);
+  PlaceWindow(tmp_win, &style.flags, SGET_START_DESK(style),
+	      SGET_START_PAGE_X(style), SGET_START_PAGE_Y(style));
+  x = tmp_win->attr.x;
+  y = tmp_win->attr.y;
+
+  return PlaceWindow(tmp_win, &pstyle->flags, SGET_START_DESK(*pstyle),
+		     SGET_START_PAGE_X(*pstyle), SGET_START_PAGE_Y(*pstyle));
+  PlaceWindow(tmp_win, style_flags *sflags, int Desk, int PageX, int PageY)
+#endif
 
   /* Find new position for window */
   SmartPlacement(
@@ -888,11 +907,11 @@ void PlaceAgain_func(F_CMD_ARGS)
   /* Possibly animate the movement */
   token = PeekToken(action, NULL);
   if(token && StrEquals("ANIM", token))
-    AnimatedMoveFvwmWindow(tmp_win, tmp_win->frame, -1, -1, x, y, False, -1,
-			   NULL);
+    AnimatedMoveFvwmWindow(
+      tmp_win, tmp_win->frame, -1, -1, x, y, False, -1, NULL);
 
   SetupFrame(
-    tmp_win,x,y,tmp_win->frame_g.width, tmp_win->frame_g.height, False);
+    tmp_win, x, y, tmp_win->frame_g.width, tmp_win->frame_g.height, False);
 
   return;
 }

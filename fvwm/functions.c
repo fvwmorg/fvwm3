@@ -102,11 +102,11 @@ static const func_type func_config[] =
 {
   {"+",            add_another_item, F_ADDMENU2,             0},
 #ifdef MULTISTYLE
-  {"addbuttonstyle",AddButtonStyle,  F_ADD_BUTTON_STYLE,     0},
+  {"addbuttonstyle",AddButtonStyle,  F_ADD_BUTTON_STYLE,     FUNC_DECOR},
 #endif /* MULTISTYLE */
   {"addmoduleconfig",  AddModConfig, F_ADD_MOD,              0},
 #ifdef MULTISTYLE
-  {"addtitlestyle",AddTitleStyle,    F_ADD_TITLE_STYLE,      0},
+  {"addtitlestyle",AddTitleStyle,    F_ADD_TITLE_STYLE,      FUNC_DECOR},
 #endif /* MULTISTYLE */
 #ifdef USEDECOR
   {"addtodecor",   add_item_to_decor,F_ADD_DECOR,	     0},
@@ -116,13 +116,13 @@ static const func_type func_config[] =
   {"all",          AllFunc,          F_ALL,                  0},
   {"animatedmove", animated_move_window,F_ANIMATED_MOVE,     FUNC_NEEDS_WINDOW},
   {"beep",         Bell,             F_BEEP,                 0},
-  {"borderstyle",  SetBorderStyle,   F_BORDERSTYLE,          0},
+  {"borderstyle",  SetBorderStyle,   F_BORDERSTYLE,          FUNC_DECOR},
   {"bugopts",      SetBugOptions,    F_BUG_OPTS,             0},
 #ifdef BUSYCURSOR
   {"busycursor",   setBusyCursor,    F_BUSY_CURSOR,          0},
 #endif
   {"buttonstate",  cmd_button_state, F_BUTTON_STATE,         0},
-  {"buttonstyle",  ButtonStyle,      F_BUTTON_STYLE,         0},
+  {"buttonstyle",  ButtonStyle,      F_BUTTON_STYLE,         FUNC_DECOR},
 #ifdef USEDECOR
   {"changedecor",  ChangeDecor,      F_CHANGE_DECOR,         FUNC_NEEDS_WINDOW},
 #endif /* USEDECOR */
@@ -240,7 +240,7 @@ static const func_type func_config[] =
 #endif /* HAVE_STROKE */
   {"style",        ProcessNewStyle,  F_STYLE,                0},
   {"title",        Nop_func,         F_TITLE,                0},
-  {"titlestyle",   SetTitleStyle,    F_TITLESTYLE,           0},
+  {"titlestyle",   SetTitleStyle,    F_TITLESTYLE,           FUNC_DECOR},
   {"updatedecor",  UpdateDecor,      F_UPDATE_DECOR,         0},
   {"wait",         wait_func,        F_WAIT,                 0},
   {"warptowindow", warp_func,        F_WARP,                 FUNC_NEEDS_WINDOW},
@@ -742,6 +742,15 @@ void ExecuteFunction(char *Action, FvwmWindow *tmp_win, XEvent *eventp,
      the asterisk. */
   if (Action[0] == '*')
   {
+#ifdef USEDECOR
+    if (Scr.cur_decor && Scr.cur_decor != &Scr.DefaultDecor)
+    {
+      fvwm_msg(
+	WARN, "ExecuteFunction",
+	"Command can not be added to a decor; executing command now: '%s'",
+	Action);
+    }
+#endif
     /* a module config command */
     ModuleConfig(NULL,0,0,0,Action,0);  /* process the command */
     return;                             /* done */
@@ -776,36 +785,36 @@ void ExecuteFunction(char *Action, FvwmWindow *tmp_win, XEvent *eventp,
 
   set_silent = False;
   if (Action[0] == '-')
-    {
-      expand_cmd = DONT_EXPAND_COMMAND;
-      Action++;
-    }
+  {
+    expand_cmd = DONT_EXPAND_COMMAND;
+    Action++;
+  }
 
   taction = Action;
   /* parse prefixes */
   trash = PeekToken(taction, &trash2);
   while (trash)
+  {
+    if (StrEquals(trash, PRE_SILENT))
     {
-      if (StrEquals(trash, PRE_SILENT))
-	{
-	  if (Scr.flags.silent_functions == 0)
-	    {
-	      set_silent = 1;
-	      Scr.flags.silent_functions = 1;
-	    }
-	  taction = trash2;
-	  trash = PeekToken(taction, &trash2);
-	}
-      else
-	break;
+      if (Scr.flags.silent_functions == 0)
+      {
+	set_silent = 1;
+	Scr.flags.silent_functions = 1;
+      }
+      taction = trash2;
+      trash = PeekToken(taction, &trash2);
     }
+    else
+      break;
+  }
   if (taction == NULL)
-    {
-      if (set_silent)
-	Scr.flags.silent_functions = 0;
-      func_depth--;
-      return;
-    }
+  {
+    if (set_silent)
+      Scr.flags.silent_functions = 0;
+    func_depth--;
+    return;
+  }
   skip = taction - Action;
 
   GetNextToken(taction, &function);
@@ -813,11 +822,25 @@ void ExecuteFunction(char *Action, FvwmWindow *tmp_win, XEvent *eventp,
     function = strdup("");
   bif = FindBuiltinFunction(function);
 
+#ifdef USEDECOR
+  if (Scr.cur_decor && Scr.cur_decor != &Scr.DefaultDecor &&
+      !(bif->flags & FUNC_DECOR))
+  {
+    fvwm_msg(
+      ERR, "ExecuteFunction",
+      "Command can not be added to a decor; executing command now: '%s'",
+      Action);
+  }
+#endif
   if (expand_cmd == EXPAND_COMMAND)
+  {
     expaction = expand(Action, arguments, tmp_win,
 		       (bif) ? !!(bif->flags & FUNC_ADD_TO) : False);
+  }
   else
+  {
     expaction = Action;
+  }
   taction = expaction + skip;
   j = 0;
   action = SkipNTokens(taction, 1);

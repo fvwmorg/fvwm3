@@ -54,6 +54,7 @@ typedef struct
 #define FUNC_NEEDS_WINDOW 0x01
 #define FUNC_DONT_REPEAT  0x02
 #define FUNC_ADD_TO       0x04
+#define FUNC_DECOR        0x08
 
 /* Types of events for the FUNCTION builtin */
 typedef enum

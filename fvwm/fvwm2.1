@@ -4738,7 +4738,7 @@ commands.
 Add or divert commands to the decor named
 .IR decor .
 A decor is a name given to the set of commands which affect
-button styles, title-bar styles, border styles and window fonts.  If
+button styles, title-bar styles and border styles.  If
 .I decor
 does not exist it is created; otherwise the existing
 .I decor
@@ -4765,14 +4765,12 @@ is similar in usage to the
 commands, except that menus and functions are replaced by
 .BR ButtonStyle ", " AddButtonStyle ", " TitleStyle ", " AddTitleStyle " and "
 .B BorderStyle
-commands.
-Decors created with
+commands.  Decors created with
 .B AddToDecor
 can be manipulated with
 .BR ChangeDecor ", " DestroyDecor ", " UpdateDecor
 and the
-.I UseDecor
-.B Style
+.IB UseDecor Style
 option.
 
 The following example creates a decor "FlatDecor" and style
@@ -5324,36 +5322,48 @@ does.
 .SS COMMANDS CONTROLLING THE VIRTUAL DESKTOP
 
 .TP
-.B "Desk" "\fIarg1\fP [\fIarg2\fP] [\fImin max\fP]"
-This command has been renamed. Please see \fIGotoDesk\fP command.
+.BI "Desk " arg1 " [" arg2 "] [" "min max" "]"
+This command has been renamed.  Please see
+.B GotoDesk
+command.
 
 .TP
-.B "DeskTopSize" "\fIHorizontal\fPx\fIVertical\fP"
+.BI "DeskTopSize " Horizontal x Vertical
 Defines the virtual desktop size in units of the physical screen size.
 
 .TP
-.B "EdgeResistance" "\fIscrolling moving\fP"
+.BI "EdgeResistance " "scrolling moving"
 Tells how hard it should be to change the desktop viewport by moving
 the mouse over the edge of the screen and how hard it should be to
 move a window over the edge of the screen.
 
 The first parameter tells how many milliseconds the pointer must spend on
 the screen edge before fvwm will move the viewport.  This is
-intended for people who use "EdgeScroll 100 100" but find themselves
-accidentally flipping pages when they don't want to.
+intended for people who use
+.EX
+EdgeScroll 100 100
+.EE
+but find themselves accidentally flipping pages when they don't want to.
 
 The second parameter tells how many pixels over the edge of the screen
 a window's edge must move before it actually moves partially off the
-screen. By default the viewport is moved a full page in the requested
-direction, but if you used \fIEdgeScroll\fP and set any values other
-than zero they will be used instead.
+screen.  By default the viewport is moved a full page in the requested
+direction, but if you used
+.B EdgeScroll
+and set any values other than zero they will be used instead.
 
-Note that, with "EdgeScroll 0 0", it is still possible to move or
-resize windows across the edge of the current screen.  By making the
-first parameter to EdgeResistance 10000 this type of motion is
-impossible.  With EdgeResistance less than 10000 but greater than 0
-moving over pages becomes difficult but not impossible.
-See also, EdgeThickness.
+Note that, with
+.EX
+EdgeScroll 0 0
+.EE
+it is still possible to move or resize windows across the edge of
+the current screen.  By making the first parameter to
+.B EdgeResistance
+10000 this type of motion is impossible.  With
+.B EdgeResistance
+less than 10000 but greater than 0 moving over pages becomes
+difficult but not impossible.  See also
+.BR EdgeThickness .
 
 .TP
 .B "EdgeScroll" "\fIhorizontal vertical\fP"

@@ -64,7 +64,6 @@ extern int cpctMovementDefault;
 extern int cmsDelayDefault;
 
 char *ModulePath = FVWM_MODULEDIR;
-FvwmDecor *cur_decor = NULL;
 static char *exec_shell_name="/bin/sh";
 /* button state strings must match the enumerated states */
 static char  *button_states[MaxButtonState] =
@@ -853,11 +852,11 @@ void SetHiColor(F_CMD_ARGS)
   char *fore;
   char *back;
 #ifdef USEDECOR
-  if (cur_decor && cur_decor != &Scr.DefaultDecor)
+  if (Scr.cur_decor && Scr.cur_decor != &Scr.DefaultDecor)
   {
     fvwm_msg(
       ERR, "SetHiColor",
-      "Decors do not support the HilighColor command anymore."
+      "Decors do not support the HilightColor command anymore."
       " Please use 'Style <stylename> HilightFore <forecolor>' and"
       " 'Style <stylename> HilightBack <backcolor>' instead."
       " Sorry for the inconvenience.");
@@ -884,7 +883,7 @@ void SetHiColorset(F_CMD_ARGS)
   char *newaction;
 
 #ifdef USEDECOR
-  if (cur_decor && cur_decor != &Scr.DefaultDecor)
+  if (Scr.cur_decor && Scr.cur_decor != &Scr.DefaultDecor)
   {
     fvwm_msg(
       ERR, "SetHiColorset",
@@ -910,7 +909,7 @@ void do_title_style(F_CMD_ARGS, Bool do_add)
   char *parm;
   char *prev;
 #ifdef USEDECOR
-  FvwmDecor *decor = cur_decor ? cur_decor : &Scr.DefaultDecor;
+  FvwmDecor *decor = Scr.cur_decor ? Scr.cur_decor : &Scr.DefaultDecor;
 #else
   FvwmDecor *decor = &Scr.DefaultDecor;
 #endif
@@ -1172,7 +1171,7 @@ void LoadIconFont(F_CMD_ARGS)
   char *newaction;
 
 #ifdef USEDECOR
-  if (cur_decor && cur_decor != &Scr.DefaultDecor)
+  if (Scr.cur_decor && Scr.cur_decor != &Scr.DefaultDecor)
   {
     fvwm_msg(
       ERR, "LoadIconFont",
@@ -1196,7 +1195,7 @@ void LoadWindowFont(F_CMD_ARGS)
   char *newaction;
 
 #ifdef USEDECOR
-  if (cur_decor && cur_decor != &Scr.DefaultDecor)
+  if (Scr.cur_decor && Scr.cur_decor != &Scr.DefaultDecor)
   {
     fvwm_msg(
       ERR, "LoadWindowFont",
@@ -1720,9 +1719,9 @@ void AddToDecor(FvwmDecor *decor, char *s)
     ++s;
   if (!*s)
     return;
-  cur_decor = decor;
+  Scr.cur_decor = decor;
   ExecuteFunction(s,NULL,&Event,C_ROOT,-1,EXPAND_COMMAND);
-  cur_decor = NULL;
+  Scr.cur_decor = NULL;
 }
 
 /*****************************************************************************
@@ -2072,7 +2071,7 @@ static void do_button_style(F_CMD_ARGS, Bool do_add)
   char *parm = NULL;
   TitleButton *tb = NULL;
 #ifdef USEDECOR
-  FvwmDecor *decor = cur_decor ? cur_decor : &Scr.DefaultDecor;
+  FvwmDecor *decor = Scr.cur_decor ? Scr.cur_decor : &Scr.DefaultDecor;
 #else
   FvwmDecor *decor = &Scr.DefaultDecor;
 #endif

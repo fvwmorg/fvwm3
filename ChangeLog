@@ -1,5 +1,22 @@
 2000-02-09  Dominik Vogt  <dominik.vogt@gmx.de>
 
+	* fvwm/menus.c (paint_item):
+	(NewMenuStyle):
+	ActiveColorset doesn't force a hilit background anymore
+
+	* fvwm/borders.c:
+	* fvwm/builtins.c:
+	* fvwm/screen.h (ScreenInfo):
+	renamed global cur_decor to Scr.cur_decor
+
+	* fvwm/functions.h:
+	* fvwm/functions.c:
+	(ExecuteFunction):
+	issue a warning when trying to add illegal commands to a decor
+
+	* fvwm/builtins.c (SetHiColor):
+	fixed typo
+
 	* fvwm/fvwm2.1:
 	more work on man page rewrite
 

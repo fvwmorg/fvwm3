@@ -77,7 +77,6 @@ XGCValues Globalgcv;
 unsigned long Globalgcm;
 
 extern Window PressedW;
-extern FvwmDecor *cur_decor;
 
 static void change_window_background(
   Window w, unsigned long valuemask, XSetWindowAttributes *attributes)
@@ -1780,7 +1779,7 @@ void SetBorderStyle(F_CMD_ARGS)
   char *parm;
   char *prev;
 #ifdef USEDECOR
-  FvwmDecor *decor = cur_decor ? cur_decor : &Scr.DefaultDecor;
+  FvwmDecor *decor = Scr.cur_decor ? Scr.cur_decor : &Scr.DefaultDecor;
 #else
   FvwmDecor *decor = &Scr.DefaultDecor;
 #endif

@@ -293,6 +293,7 @@ typedef struct ScreenInfo
   int NoBoundaryWidth;	        /* frame width for decorated windows */
 
   FvwmDecor DefaultDecor;	/* decoration style(s) */
+  FvwmDecor *cur_decor;
 
   int nr_left_buttons;		/* number of left-side title-bar buttons */
   int nr_right_buttons;		/* number of right-side title-bar buttons */
