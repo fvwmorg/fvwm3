@@ -760,10 +760,24 @@ void LoopOnEvents(void)
           RedrawWindow(True);
         break;
       case ConfigureNotify:
-        /* if send_event is true it means the user has moved the window or
-	 * that winlist has mapped itself,
-         * take note of the new position. If it is false it comes from the
-         * Xserver and the coordinates are always (0,0) - ignore it */
+	{
+	  XEvent event;
+
+	/* Opaque moves cause lots of these to be sent which causes flickering
+	 * It's better to miss out on intermediate steps than to do them all
+	 * and take too long. Look down the event queue and do the last one */
+	  while (XCheckTypedWindowEvent(dpy, win, ConfigureNotify, &event))
+	  {
+	    /* if send_event is true it means the user has moved the window or
+	     * winlist has mapped itself, take note of the new position.
+	     * If it is false it comes from the Xserver and is bogus */
+	    if (!event.xconfigure.send_event)
+	      continue;
+	    Event.xconfigure.x = event.xconfigure.x;
+	    Event.xconfigure.y = event.xconfigure.y;
+	    Event.xconfigure.send_event = True;
+	  }
+	}
         if (Event.xconfigure.send_event) {
           int i;
           win_x = Event.xconfigure.x;
@@ -771,7 +785,8 @@ void LoopOnEvents(void)
           for (i = 0; i < MAX_COLOUR_SETS; i++)
             if (colorset[i] >= 0 && Colorset[colorset[i]].pixmap == ParentRelative)
             {
-              XClearArea(dpy, win, 0, 0, 0, 0, True);
+              RedrawWindow(True);
+              break;
             }
         }
         break;
