@@ -132,16 +132,16 @@ AC_DEFUN(smr_SWITCH, [
             [  --enable-[$1] substr([             ], len([$1])) enable [$2]]),
         [ if test "$enableval" = yes; then
             AC_MSG_RESULT(yes)
-            ifelse($4, , , AC_DEFINE($4))
+            ifelse($4, , , [AC_DEFINE($4)])
         else
             AC_MSG_RESULT(no)
-            ifelse($5, , , AC_DEFINE($5))
+            ifelse($5, , , [AC_DEFINE($5)])
         fi ],
         ifelse($3, on,
            [ AC_MSG_RESULT(yes)
-            ifelse($4, , , AC_DEFINE($4)) ],
+            ifelse($4, , , [AC_DEFINE($4)]) ],
            [ AC_MSG_RESULT(no)
-            ifelse($5, , , AC_DEFINE($5))]))])
+            ifelse($5, , , [AC_DEFINE($5)])]))])
 
 
 dnl Allow argument for optional libraries; wraps AC_ARG_WITH, to
