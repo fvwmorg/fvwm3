@@ -3942,20 +3942,6 @@ style.
 .I StipledTitleOff
 reverts back to normal titles.
 
-<<<<<<< fvwm2.1
-.I DecorateTransient
-causes transient windows, which are normally left undecorated, to
-be given the usual fvwm decorations (title bar, buttons, etc.).
-Note that some pop-up windows, such as the xterm menus, are not
-managed by the window manager and still do not receive decorations.
-.I NakedTransient
-(the default) causes transient windows not to be given the
-standard decorations.  You can only bind keys or mouse buttons to
-the sides and the client window of an undecorated window ('S' and 'W'
-contexts in bindings, see
-.BR Mouse " and " Key
-commands).
-=======
 .I Color
 takes two arguments.  The first is the window-label text color
 and the second is the window decoration's normal background color.
@@ -3963,34 +3949,14 @@ The two colors are separated with a slash.  If the use of a slash
 causes problems then the separate
 .IR ForeColor " and " BackColor
 options can be used.
->>>>>>> 1.264
 
-<<<<<<< fvwm2.1
-A window with the
-.I RaiseTransient
-style that has transient windows will raise all its transients
-when it is raised.  The
-.I DontRaiseTransient
-style disables this behavior.  All windows are then treated as
-if they had no transients.
-=======
 .I Colorset
 takes the colorset number as its sole argument and overrides the
 colors set by
 .IR Colors .
 Instead, the corresponding colors from the given colorset are
 used.  Note that all other features of a colorset are unsupported yet.
->>>>>>> 1.264
 
-<<<<<<< fvwm2.1
-A window with the
-.I LowerTransient
-style that has transient windows will lower all its transients
-when it is lowered.  The
-.I DontLowerTransient
-style disables this behavior.  All windows are then treated as
-if they had no transients.
-=======
 The
 .IR HilightFore ", " HilightBack " and " HilightColorset
 styles work exactly like
@@ -3998,48 +3964,7 @@ styles work exactly like
 but are used only if the window has the focus.  These styles
 replace the old commands
 .BR HilightColor " and " HilightColorset .
->>>>>>> 1.264
 
-<<<<<<< fvwm2.1
-The \fIFlipTransient\fP style augments \fIRaiseTransient\fP and
-\fILowerTransient\fP styles so that repeated raising or repeated lowering
-of the main window makes the transients flip above and below the main.
-Note that flipping only occurs at the top or bottom of the layer,
-and so a second raise or lower may be necessary to actually flip when the
-first has simply moved the window's position.
-The \fIDontFlipTransient\fP style disables this behavior so that the
-main window is always below its transients.
-\fI(Dont)FlipTransient\fP has no effect if \fIRaiseTransient\fP and
-\fILowerTransient\fP are not used.
-
-The \fIStackTransientParent\fP style augments \fIRaiseTransient\fP and
-\fILowerTransient\fP styles.  Raising a window with
-\fIStackTransientParent\fP style transfers the raise action to the
-main window if the window being raised is a transient and its main
-window has \fIRaiseTransient\fP style; this effect makes raise on a
-transient act just like raise on its main - the whole group is raised.
-Similar behavior holds for lowering a whole group of transients when
-the main has \fILowerTransient\fP style. \fIDontStackTransientParent\fP
-turns this behavior off. \fI(Dont)StackTransientParent\fP has no
-effect if \fIRaiseTransient\fP and \fILowerTransient\fP are not used.
-
-A reasonable emulation of Motif raise/lower on transients is possible like this
-.EX
-Style * RaiseTransient
-Style * LowerTransient
-Style * StackTransientParent
-Style * DontFlipTransient
-.EE
-
-\fIIcon\fP takes an (optional) unquoted string argument which is the icon
-bitmap or pixmap to use. Icons specified this way override pixmap icons, but
-not icon windows, provided by the client in the WM_HINTS property. The
-IconOverride style changes the behavior to override any client-provided
-icons; the NoIconOverride style changes the behavior to not override
-any client-provided icons; the default overriding behavior can be
-activated with the NoActiveIconOverride style.
-
-=======
 The
 .IR Font " and " IconFont
 options take the name of a font as their sole argument.
@@ -4104,7 +4029,6 @@ the default overriding behavior can be activated with the
 .I NoActiveIconOverride
 style.
 
->>>>>>> 1.264
 There is one exception to these rules, namely
 .EX
 Style * Icon unknown.xpm
@@ -4303,72 +4227,7 @@ Style * ResizeOpaque
 Style rxvt ResizeOutline
 Style emacs ResizeOutline
 .EE
-<<<<<<< fvwm2.1
 
-\fIButton\fP and \fINoButton\fP take a numeric argument which is the
-number of the title-bar button which is to be included/omitted.
-
-\fISticky\fP makes the window sticky, i.e. it will always be visible
-on each page and each desk.  \fISlippery\fP reverts back to the
-default.
-
-\fIStickyIcon\fP makes the window sticky when its iconified.  It will
-de-iconify on top the active desktop. \fISlipperIcon\fP reverts back to the
-default.
-
-\fIMwmButtons\fP makes the Maximize button look pressed-in when the window
-is maximized.  See the MwmButton flag in ButtonStyle for more
-information.
-
-\fIMwmBorder\fP makes the 3-D bevel more closely match mwm's.
-
-\fIMwmDecor\fP makes fvwm attempt to recognize and respect the mwm
-decoration hints that applications occasionally use.
-=======
->>>>>>> 1.264
-
-<<<<<<< fvwm2.1
-\fIMwmFunctions\fP makes fvwm attempt to recognize and respect the mwm
-prohibited operations hints that applications occasionally use.
-HintOverride makes fvwm shade out operations that mwm would prohibit,
-but it lets you perform the operation anyway.
-
-\fIResizeHintOverride\fP instructs fvwm to ignore the program supplied
-minimum and maximum size. This can be handy for broken applications that
-refuse to be resized. Don't use it if you don't need it.
-
-\fIOLDecor\fP makes fvwm attempt to recognize and respect the olwm and olvwm
-hints that many older XView and OLIT applications use.
-
-\fIColor\fP takes two arguments.  The first is the window-label text color
-and the second is the window decoration's normal background color.
-The two colors are separated with a slash.  If the use of a slash
-causes problems then the separate \fIForeColor\fP and \fIBackColor\fP
-options can be used.
-
-\fIColorset\fP takes the colorset number as its sole argument and
-overrides the colors set by \fIColors\fP.  Instead, the
-corresponding colors from the given colorset are used.  Note that all
-other features of a colorset are unsupported yet.
-
-The \fIHilightFore\fP, \fIHilightBack\fP and \fIHilightColorset\fP
-styles work exactly like \fIForeColor\fP, \fIBackColor\fP and
-\fIColorset\fP but are used only if the window has the focus.
-These styles replace the old commands HilightColor and HilightColorset.
-
-The \fIFont\fP and \fIIconFont\fP options take the name of a font
-as their sole argument.  This font is used in the window or icon title.
-By default the font given in the \fIDefaultFont\fP command is used.
-To revert back to the default, use the style without the name argument.
-These styles replace the older WindowFont and IconFont commands.
-
-\fIUseDecor\fP accepts one argument: the name of a decor created with
-AddToDecor.  If UseDecor is not specified, the "Default" decor is
-used.  Windows do not actually contain decors, but are always assigned
-to one.  If the decor is later modified with AddToDecor, the changes
-will be visible for all windows which are assigned to it.  The decor
-for a window can be reassigned with ChangeDecor.
-=======
 .I Sticky
 makes the window sticky, i.e. it will always be visible on each
 page and each desk.  The opposite style,
@@ -4392,7 +4251,6 @@ makes fvwm ignore attempts of the user to move the window.  To
 allow user movement of windows, use the
 .I VariablePosition
 style.
->>>>>>> 1.264
 
 .I ResizeHintOverride
 instructs fvwm to ignore the program supplied minimum and
@@ -4435,32 +4293,6 @@ the starting desk/page can also be specified via a resource
 .I StartsOnPage
 in conjunction with
 .I SkipMapping
-<<<<<<< fvwm2.1
-tells fvwm not to switch to the desk the window is on when
-it gets mapped initially (useful with
-.IR StartsOnDesk " or " StartsOnPage ).
-
-.I Lenience
-instructs fvwm to ignore the convention in the
-.SM ICCCM
-which states that if an application sets the input field of the wm_hints
-structure to False, then it never wants the window manager to give it
-the input focus.  The only application that we know of which needs this
-is sxpm, and that is a silly bug with a trivial fix and has no overall
-effect on the program anyway.  Rumor is that some older applications
-have problems too.
-
-\fIClickToFocus\fP instructs fvwm to give the focus to the window when it is
-clicked in.  The default \fIMouseFocus\fP (or its alias
-\fIFocusFollowsMouse\fP) tells fvwm to give the window the focus as soon as
-the pointer enters the window, and take it away when the pointer leaves the
-window. \fISloppyFocus\fP is similar, but doesn't give up the focus if the
-pointer leaves the window to pass over the root window or a ClickToFocus
-window (unless you click on it, that is), which makes it possible to
-move the mouse out of the way without losing focus. A window with the
-style \fINeverFocus\fP never receives the focus. This is useful for
-FvwmButtons, for example.
-=======
 is a useful technique when you want to start an app on some
 other page and continue with what you were doing, rather than
 waiting for it to appear.
@@ -4485,23 +4317,7 @@ disappeared to, because it got placed on a different desk or
 page.
 .I ActivePlacementHonorsStartsOnPage
 allows this to happen anyway.  The option has no effect if
->>>>>>> 1.264
 
-<<<<<<< fvwm2.1
-The focus model can be augmented with severa additional options.
-.IR ClickToFocusPassesClickOff " and " ClickToFocusPassesClick
-controls if a mouse click to focus a window using the
-.I ClickToFocus
-model is sent to the application or not.  Similarly,
-.IR ClickToFocusRaisesOff " and " ClickToFocusRaises
-control if the window is raised, while
-.IR MouseFocusClickRaises " and " MouseFocusClickRaisesOff
-are equivalent but apply only to windows using
-.IR SloppyFocus " or " MouseFocus .
-The defaults are
-.IR ClickToFocusPassesClick ,
-.IR ClickToFocusRaises and MouseFocusClickRaisesOff .
-=======
 .I SkipMapping
 is not in effect, because fvwm will switch to the proper
 desk/page to perform interactive placement.  The default is
@@ -4554,7 +4370,6 @@ puts the window in the bottom layer. This layer can be changed
 by the built-in command
 .BR DefaultLayers ;
 the default is 2.
->>>>>>> 1.264
 
 .I NoPPosition
 instructs fvwm to ignore the program specified position (PPosition hint)
@@ -4820,22 +4635,6 @@ allows only the FvwmPager module icon to exist:
 Style * NoIcon
 Style FvwmPager Icon
 .EE
-<<<<<<< fvwm2.1
-
-The \fIBackingStore\fP and \fISaveUnder\fP styles enable the corresponding
-window attributes in the X server.  BackingStore means that the X server
-tries to keep the obscured parts of a window in memory while windows
-with SaveUnder store the graphics below them.  Either option can speed
-up fvwm if the connection to the X server is slow (e.g. over a modem
-link).  By default both styles are turned off.  To switch them off
-explicitly you can use the \fIBackingStoreOff\fP and \fISaveUnderOff\fP
-styles.
-
-.IR WindowShadeShrinks " and " WindowShadeScrolls
-control if the contents of a window that is being shaded with the
-.B WindowShade
-command are scrolled (default) or if they stay in place.
-=======
 Note that all properties for a window will be or'ed together.  In the
 above example "FvwmPager" gets the property
 .I StaysOnTop
@@ -4863,7 +4662,6 @@ For example:
 .EX
 DestroyStyle Application*
 .EE
->>>>>>> 1.264
 
 This will remove all settings for the style named "Application*", NOT all
 styles starting with "Application".
@@ -5023,24 +4821,6 @@ Style xterm UseStyle FlatStyle
 .EE
 
 .TP
-<<<<<<< fvwm2.1
-.B "BorderStyle" "[\fIstate\fP] [\fIstyle\fP] [-- \fI[!]flag ...\fP]"
-Defines a border style for windows.  \fIstate\fP can be either
-"Active" or "Inactive."  If \fIstate\fP is omitted, then the style is
-set for both states.  If the style and flags are enclosed in
-parentheses, then multiple state definitions can be specified per
-line.
-
-\fIstyle\fP is a subset of the available button styles, and can only be
-TiledPixmap (uniform pixmaps which match the bevel colors work best
-this way).  If an "!"  is prefixed to any flag, flag behavior is
-negated.  If \fIstyle\fP is not specified, then one can change flags
-without resetting the style.
-
-The \fIHiddenHandles\fP flag hides the corner handle dividing lines on
-windows with handles (this option has no effect for NoHandle windows).
-By default, HiddenHandles is disabled.
-=======
 .BI "BorderStyle [" state "] [" style "] [-- [!]" flag " ...]"
 Defines a border style for windows.
 .I state
@@ -5063,13 +4843,7 @@ is prefixed to any
 the behavior is negated.  If
 .I style
 is not specified, then one can change flags without resetting the style.
->>>>>>> 1.264
 
-<<<<<<< fvwm2.1
-The \fINoInset\fP flag supplements HiddenHandles.  If given, the inner
-bevel around the window frame is not drawn.  If HiddenHandles is not
-specified, the frame will look a little strange.
-=======
 The
 .I HiddenHandles
 flag hides the corner handle dividing lines on windows with
@@ -5077,7 +4851,6 @@ handles (this option has no effect for NoHandle windows).  By
 default,
 .I HiddenHandles
 is disabled.
->>>>>>> 1.264
 
 The
 .I NoInset
@@ -5213,26 +4986,6 @@ button number 2:
 ButtonStyle 1 Default 2
 .EE
 
-<<<<<<< fvwm2.1
-"Raised" causes a raised relief pattern to be drawn.
-
-"Sunk" causes a sunken relief pattern to be drawn.
-
-"Flat" inhibits the relief pattern from being drawn.
-
-"UseTitleStyle" causes the given button state to render the current
-title style before rendering the button's own styles.  The Raised,
-Flat, and Sunk TitleStyle flags are ignored since they are redundant
-in this context.
-
-"UseBorderStyle" causes the button to inherit the decorated
-BorderStyle options.
-
-Raised, Sunk, and Flat are mutually exclusive, and can be specified
-for the initial ButtonStyle only.  UseTitleStyle and UseBorderStyle
-are also mutually exclusive (both can be off however).  The default is
-Raised with both UseBorderStyle and UseTitleStyle left unset.
-=======
 For any button, multiple
 .I state
 definitions can be given on one line by enclosing the
@@ -5291,44 +5044,7 @@ state you must specify the opposite of the desired relief (i.e.
 to obtain a pressed-in look which is raised, specify
 .I Sunk for "ActiveDown").  This behavior is consistent, but may
 seem confusing at first.  The same applies to the "Toggled" state.
->>>>>>> 1.264
 
-<<<<<<< fvwm2.1
-There is an \fBimportant note\fP for the ActiveDown state.  When a
-button is pressed, the relief is inverted.  Because of this, to obtain
-a sunken ActiveDown state you must specify the opposite of the desired
-relief (i.e. to obtain a pressed-in look which is raised, specify Sunk
-for ActiveDown).  This behavior is consistent, but may seem confusing
-at first.  The same applies to the toggled states.
-
-Button styles are classified as non-destructive, partially destructive,
-or fully destructive.  Non-destructive styles do not affect the image.
-Partially destructive styles can obscure some or all parts of the
-underlying image (i.e. Pixmap).  Fully destructive styles obscure the
-entire underlying image (i.e. Solid or one of the gradient styles).
-Thus, if stacking styles with AddButtonStyle (or AddTitleStyle for
-title-bars), use care in sequencing styles to minimize redraw.
-
-The available styles and their arguments now follow (depending on
-compilation options, some button styles may be unavailable).
-
-The "Simple" style does nothing.  There are no arguments, and this
-style is an example of a non-destructive button style.
-
-The "Default" style conditionally accepts one argument: a number which
-specifies the default button number to load.  If the style command
-given is ButtonStyle or AddButtonStyle, the argument is optional (if
-given, will override the current button).  If a command other than
-ButtonStyle or AddButtonStyle is used, the number must be specified.
-
-The "Solid" style fills the button with a solid color.  The relief
-border color is not affected.  The color should be specified as a
-single argument.  This style is fully destructive.
-
-The "Vector" style draws a line pattern.  Since this is a standard
-button style, the keyword "Vector" is optional.  The specification is
-a little cumbersome:
-=======
 Button styles are classified as non-destructive, partially destructive,
 or fully destructive.  Non-destructive styles do not affect the image.
 Partially destructive styles can obscure some or all parts of the
@@ -5371,7 +5087,6 @@ style draws a line pattern.  Since this is a standard button style,
 the keyword
 .I Vector
 is optional.  The specification is a little cumbersome:
->>>>>>> 1.264
 .EX
 ButtonStyle 2 Vector 4 50x30@1 70x70@0 \\
   30x70@0 50x30@1
@@ -5383,14 +5098,6 @@ highlight color (@1).  Is that too confusing?  See the fvwm web pages
 for a few examples.  You can use up to 32 points in a line pattern.
 This style is partially destructive.
 
-<<<<<<< fvwm2.1
-The "?Gradient" styles denote color gradients.  Fill in the question
-mark with any one of the defined gradient types.  Please refer to
-the \fICOLOR GRADIENTS\fP section below for a description of the
-gradient syntax.
-
-The gradient styles are fully destructive.
-=======
 The
 .I ?Gradient
 styles denote color gradients.  Fill in the question mark with any
@@ -5398,7 +5105,6 @@ one of the defined gradient types.  Please refer to the
 .B COLOR GRADIENTS
 sectionfor a description of the gradient syntax.  The gradient
 styles are fully destructive.
->>>>>>> 1.264
 
 The
 .I Pixmap
