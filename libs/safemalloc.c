@@ -81,7 +81,10 @@ char *saferealloc(char *src, int length)
 {
   char *ptr;
 
-  ptr = realloc((void *)src, length);
+  if (src)
+    ptr = realloc((void *)src, length);
+  else
+    ptr = malloc(length);
   if(ptr == (char *)0)
   {
     /* doesn't return */

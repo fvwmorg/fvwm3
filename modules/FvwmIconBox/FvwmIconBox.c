@@ -1376,7 +1376,7 @@ void MySendFvwmPipe(int *fd, char *message, unsigned long window)
     temp = strchr(hold, ',');
     if (temp != NULL)
     {
-      temp_msg = malloc(temp - hold + 1);
+      temp_msg = safemalloc(temp - hold + 1);
       strncpy(temp_msg, hold, temp - hold);
       temp_msg[temp - hold]='\0';
       hold = temp + 1;
@@ -1801,7 +1801,7 @@ void parseicon(char *tline)
   char *ptr, *start, *end;
 
   tmp = (struct iconfile *)safemalloc(sizeof(struct iconfile));
-
+  memset(tmp, 0, sizeof(struct iconfile));
 
    /* windowname */
    tmp->name = stripcpy2(tline);
@@ -1884,8 +1884,7 @@ void parsemouse(char *tline)
   char *ptr,*start,*end,*tmp;
 
   f = (struct mousefunc *)safemalloc(sizeof(struct mousefunc));
-  f->next = NULL;
-  f->mouse = 0;
+  memset(f, 0, sizeof(struct mousefunc));
 
   /* skip spaces */
   while(isspace((unsigned char)*tline)&&(*tline != '\n')&&(*tline != 0))
@@ -1994,6 +1993,7 @@ void parsekey(char *tline)
     if (XKeycodeToKeysym(dpy, i, 0) == keysym)
       {
 	k = (struct keyfunc *)safemalloc(sizeof(struct keyfunc));
+	memset(k, 0, sizeof(struct keyfunc));
 	k->name = nptr;
         k->keycode = i;
 	k->action = aptr;
@@ -2260,6 +2260,8 @@ void process_message(unsigned long type, unsigned long *body)
   case M_DEFAULTICON:
     str = (char *)safemalloc(strlen((char *)&body[3])+1);
     strcpy(str, (char *)&body[3]);
+    if (FvwmDefaultIcon)
+      free(FvwmDefaultIcon);
     FvwmDefaultIcon = str;
     break;
   case M_ICONIFY:
@@ -2439,26 +2441,13 @@ Bool AddItem(ConfigWinPacket *cfgpacket)
   }
 
   new = (struct icon_info *)safemalloc(sizeof(struct icon_info));
-  new->name = NULL;
-  new->window_name = NULL;
-  new->res_class = NULL;
-  new->res_name = NULL;
-  new->action = NULL;
-  new->icon_file = NULL;
-  new->icon_w = 0;
-  new->icon_h = 0;
-  new->IconWin = None;
-  new->iconPixmap = None;
-  new->icon_maskPixmap = None;
-  new->icon_pixmap_w = None;
-  new->icon_depth = 0;
+  memset(new, 0, sizeof(struct icon_info));
   new->desk = cfgpacket->desk;
   new->id = cfgpacket->w;
   new->extra_flags = DEFAULTICON;
   memcpy(&(new->flags), &(cfgpacket->flags), sizeof(new->flags));
   SET_ICON_OURS(new, True);
   SET_PIXMAP_OURS(new, True);
-  new->wmhints = NULL;
 
 /* add new item to the head of the list
 
@@ -2472,7 +2461,6 @@ Bool AddItem(ConfigWinPacket *cfgpacket)
 
 /* add new item to the tail of the list */
   new->prev = Tail;
-  new->next = NULL;
   if (Tail != NULL)
     Tail->next = new;
   else
@@ -2552,7 +2540,9 @@ struct icon_info *UpdateItem(unsigned long type, unsigned long id, char *item)
 	tmp->name = str;
 	return tmp;
       case M_ICON_FILE:
-	tmp->icon_file = str; /* FIXME : memory leak here */
+	if (tmp->icon_file)
+	  free(tmp->icon_file);
+	tmp->icon_file = str;
 	tmp->extra_flags &= ~DEFAULTICON;
 	return tmp;
       case M_WINDOW_NAME:
@@ -2903,7 +2893,11 @@ int LookInList(struct icon_info *item)
 
   if (IconListHead == NULL) {
     if ((item->extra_flags & DEFAULTICON) && (FvwmDefaultIcon != NULL))
-      item->icon_file = FvwmDefaultIcon;
+    {
+      if (item->icon_file)
+	free(item->icon_file);
+      item->icon_file = strdup(FvwmDefaultIcon);
+    }
     return 1;
   }
 
@@ -2931,14 +2925,30 @@ int LookInList(struct icon_info *item)
     }
   }
 
-  if (!isdefault){
-    item->icon_file = value;
+  if (!isdefault)
+  {
+    if (item->icon_file)
+      free(item->icon_file);
+    if (value)
+      item->icon_file = strdup(value);
+    else
+      item->icon_file = NULL;
     item->extra_flags &= ~DEFAULTICON;
-  }else if ((item->extra_flags & DEFAULTICON)){
+  }
+  else if ((item->extra_flags & DEFAULTICON))
+  {
     if (DefaultIcon != NULL)
-      item->icon_file = DefaultIcon->iconfile;
+    {
+      if (item->icon_file)
+	free(item->icon_file);
+      item->icon_file = strdup(DefaultIcon->iconfile);
+    }
     else if (FvwmDefaultIcon != NULL)
-      item->icon_file = FvwmDefaultIcon;
+    {
+      if (item->icon_file)
+	free(item->icon_file);
+      item->icon_file = strdup(FvwmDefaultIcon);
+    }
   }
 
   /* Icon is not shown if "-" is specified */

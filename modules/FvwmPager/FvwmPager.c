@@ -280,12 +280,11 @@ int main(int argc, char **argv)
   ndesks = desk2 - desk1 + 1;
 
   Desks = (DeskInfo *)safemalloc(ndesks*sizeof(DeskInfo));
+  memset(Desks, 0, ndesks * sizeof(DeskInfo));
   for(i=0;i<ndesks;i++)
     {
       sprintf(line,"Desk %d",i+desk1);
       CopyString(&Desks[i].label,line);
-      Desks[i].Dcolor = NULL;
-      Desks[i].bgPixmap = NULL;
       Desks[i].colorset = -1;
       Desks[i].highcolorset = -1;
       Desks[i].ballooncolorset = -1;
@@ -576,18 +575,7 @@ void list_add(unsigned long *body)
       i++;
     }
   *prev = (PagerWindow *)safemalloc(sizeof(PagerWindow));
-  (*prev)->next = NULL;
-  (*prev)->pager_view_width = 0;
-  (*prev)->pager_view_height = 0;
-  (*prev)->icon_view_width = 0;
-  (*prev)->icon_view_height = 0;
-  (*prev)->icon_name = NULL;
-  (*prev)->window_name = NULL;
-  (*prev)->res_name = NULL;
-  (*prev)->res_class = NULL;
-  (*prev)->window_label = NULL;
-  (*prev)->mini_icon.picture = 0;
-
+  memset(*prev, 0, sizeof(PagerWindow));
   (*prev)->w = cfgpacket->w;
   (*prev)->frame = cfgpacket->frame;
   (*prev)->t = (char *) cfgpacket->fvwmwin;
@@ -604,13 +592,13 @@ void list_add(unsigned long *body)
 
   if (win_pix_set)
   {
-        (*prev)->text = win_fore_pix;
-        (*prev)->back = win_back_pix;
+    (*prev)->text = win_fore_pix;
+    (*prev)->back = win_back_pix;
   }
   else
   {
-        (*prev)->text = body[22];
-        (*prev)->back = body[23];
+    (*prev)->text = body[22];
+    (*prev)->back = body[23];
   }
   AddNewWindow(*prev);
 }
@@ -717,7 +705,12 @@ void list_destroy(unsigned long *body)
       XDestroyWindow(dpy,t->IconView);
       if(FocusWin == t)
 	FocusWin = NULL;
-
+      if(t->res_class != NULL)
+	free(t->res_class);
+      if(t->res_name != NULL)
+	free(t->res_name);
+      if(t->window_name != NULL)
+	free(t->window_name);
       free(t);
     }
 }
@@ -2063,15 +2056,12 @@ PagerStringList *NewPagerStringItem(PagerStringList *last, int desk)
   PagerStringList *newitem;
 
   newitem = (PagerStringList *)safemalloc(sizeof(PagerStringList));
+  memset(newitem, 0, sizeof(PagerStringList));
   last->next = newitem;
   newitem->colorset = -1;
   newitem->highcolorset = -1;
   newitem->ballooncolorset = -1;
   newitem->desk = desk;
-  newitem->next = NULL;
-  newitem->label = NULL;
-  newitem->Dcolor = NULL;
-  newitem->bgPixmap = NULL;
 
   return newitem;
 }

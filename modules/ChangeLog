@@ -1,11 +1,27 @@
 2000-11-21  Dominik Vogt  <dominik.vogt@gmx.de>
 
-	* FvwmIconMan/winlist.c (new_windata):
-	* FvwmIconMan/readconfig.c (ParseMouseEntry):
-	(ParseKeyEntry):
-	(ParseSimpleEntry):
-	* FvwmIconMan/globals.c (init_win_manager):
-	simplified init code and safety patches
+	* FvwmPager/FvwmPager.c (main):
+	(list_add):
+	UMR fixes
+	(list_destroy):
+	fixed memory leaks
+	(NewPagerStringItem):
+	UMR safety patch
+
+	* FvwmIconBox/FvwmIconBox.c (parseicon):
+	(MySendFvwmPipe):
+	(parsekey):
+	UMR safety patches
+	(AddItem):
+	UMR fix
+	(MySendFvwmPipe):
+	use safemalloc instead of malloc
+	(process_message):
+	fixed memory leak
+	(LookInList):
+	fixed core dump and memory leaks
+	(UpdateItem):
+	fixed memory leak
 
 	* FvwmIconMan/xmanager.c (init_button_array):
 	(set_num_buttons):

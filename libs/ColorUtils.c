@@ -54,7 +54,7 @@
  * to red is twice as bright as blue and green is thrice blue.
  */
 
-#define	BRIGHTNESS ((int)red + (int)red + (int)green + (int)green + (int)green + (int)blue)
+#define	BRIGHTNESS(r,g,b) (2*(int)(r) + 3*(int)(g) + 1*(int)(b))
 
 /* From Xm.h on Solaris */
 #define XmDEFAULT_DARK_THRESHOLD        15
@@ -211,31 +211,33 @@ color_mult (unsigned short *red,
 }
 /**** End of original fvwm code. ****/
 
-XColor *GetShadowColor(Pixel background)
+static XColor *GetShadowOrHiliteColor(
+  Pixel background, float light, float dark, float factor)
 {
   long brightness;
   unsigned short red, green, blue;
 
+  memset(&color, 0, sizeof(color));
   color.pixel = background;
-  XQueryColor (Pdpy, Pcmap, &color);
+  XQueryColor(Pdpy, Pcmap, &color);
   red = color.red;
   green = color.green;
   blue = color.blue;
 
-  brightness = BRIGHTNESS;
+  brightness = BRIGHTNESS(red, green, blue);
   /* For "dark" backgrounds, make everything a fixed %age lighter */
   if (brightness < XmDEFAULT_DARK_THRESHOLD * PCT_BRIGHTNESS)
     {
-      color.red = 0xffff - ((0xffff - red) * PCT_DARK_BOTTOM + 50) / 100;
-      color.green = 0xffff - ((0xffff - green) * PCT_DARK_BOTTOM + 50) / 100;
-      color.blue = 0xffff - ((0xffff - blue) * PCT_DARK_BOTTOM + 50) / 100;
+      color.red = 0xffff - ((0xffff - red) * dark + 50) / 100;
+      color.green = 0xffff - ((0xffff - green) * dark + 50) / 100;
+      color.blue = 0xffff - ((0xffff - blue) * dark + 50) / 100;
     }
   /* For "light" background, make everything a fixed %age darker */
   else if (brightness > XmDEFAULT_LIGHT_THRESHOLD * PCT_BRIGHTNESS)
     {
-      color.red = (red * PCT_LIGHT_BOTTOM + 50) / 100;
-      color.green = (green * PCT_LIGHT_BOTTOM + 50) / 100;
-      color.blue = (blue * PCT_LIGHT_BOTTOM + 50) / 100;
+      color.red = (red * light + 50) / 100;
+      color.green = (green * light + 50) / 100;
+      color.blue = (blue * light + 50) / 100;
     }
   /* For "medium" background, select is a fixed %age darker;
    * top (lighter) and bottom (darker) are a variable %age
@@ -243,18 +245,16 @@ XColor *GetShadowColor(Pixel background)
    */
   else
     {
-#if 1
-      color_mult(&color.red, &color.green, &color.blue, DARKNESS_FACTOR);
-#else
-      brightness = (brightness + (PCT_BRIGHTNESS >> 1)) / PCT_BRIGHTNESS;
-      brightadj = PCT_MEDIUM_BOTTOM_BASE +
-        (brightness * PCT_MEDIUM_BOTTOM_RANGE + 50) / 100;
-      color.red = (red * brightadj + 50) / 100;
-      color.green = (green * brightadj + 50) / 100;
-      color.blue = (blue * brightadj + 50) / 100;
-#endif
+      color_mult(&color.red, &color.green, &color.blue, factor);
     }
   return &color;
+}
+
+
+XColor *GetShadowColor(Pixel background)
+{
+  return GetShadowOrHiliteColor(
+    background, PCT_DARK_BOTTOM, PCT_DARK_TOP, DARKNESS_FACTOR);
 }
 
 Pixel GetShadow(Pixel background)
@@ -268,48 +268,8 @@ Pixel GetShadow(Pixel background)
 
 XColor *GetHiliteColor(Pixel background)
 {
-  long brightness;
-  unsigned short red, green, blue;
-
-  color.pixel = background;
-  XQueryColor (Pdpy, Pcmap, &color);
-  red = color.red;
-  green = color.green;
-  blue = color.blue;
-
-  brightness = BRIGHTNESS;
-  /* For "dark" backgrounds, make everything a fixed %age lighter */
-  if (brightness < XmDEFAULT_DARK_THRESHOLD * PCT_BRIGHTNESS)
-    {
-      color.red = 0xffff - ((0xffff - red) * PCT_DARK_TOP + 50) / 100;
-      color.green = 0xffff - ((0xffff - green) * PCT_DARK_TOP + 50) / 100;
-      color.blue = 0xffff - ((0xffff - blue) * PCT_DARK_TOP + 50) / 100;
-    }
-  /* For "light" background, make everything a fixed %age darker */
-  else if (brightness > XmDEFAULT_LIGHT_THRESHOLD * PCT_BRIGHTNESS)
-    {
-      color.red = (red * PCT_LIGHT_TOP + 50) / 100;
-      color.green = (green * PCT_LIGHT_TOP + 50) / 100;
-      color.blue = (blue * PCT_LIGHT_TOP + 50) / 100;
-    }
-  /* For "medium" background, select is a fixed %age darker;
-   * top (lighter) and bottom (darker) are a variable %age
-   * based on the background's brightness
-   */
-  else
-    {
-#if 1
-      color_mult(&color.red, &color.green, &color.blue, BRIGHTNESS_FACTOR);
-#else
-      brightness = (brightness + (PCT_BRIGHTNESS >> 1)) / PCT_BRIGHTNESS;
-      brightadj = PCT_MEDIUM_TOP_BASE +
-        (brightness * PCT_MEDIUM_TOP_RANGE + 50) / 100;
-      color.red = 0xffff - ((0xffff - red) * brightadj + 50) / 100;
-      color.green = 0xffff - ((0xffff - green) * brightadj + 50) / 100;
-      color.blue = 0xffff - ((0xffff - blue) * brightadj + 50) / 100;
-#endif
-    }
-  return &color;
+  return GetShadowOrHiliteColor(
+    background, PCT_LIGHT_BOTTOM, PCT_LIGHT_BOTTOM, BRIGHTNESS_FACTOR);
 }
 
 Pixel GetHilite(Pixel background)

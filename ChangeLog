@@ -1,5 +1,21 @@
 2000-11-21  Dominik Vogt  <dominik.vogt@gmx.de>
 
+	* libs/ColorUtils.c (GetHiliteColor):
+	(GetShadowColor):
+	(BRIGHTNESS):
+	(GetShadowColor):
+	(GetHiliteColor):
+	(GetShadowColor):
+	(GetShadowOrHiliteColor):
+	UMR fixes and cleanup
+	removed old shadow/hilight calculations
+
+	* libs/Colorset.c (AllocColorset):
+	removed previous realloc safety patch
+
+	* libs/safemalloc.c (saferealloc):
+	NULL pointer safety patch
+
 	* fvwm/add_window.c (setup_window_font):
 	(setup_icon_font):
 	fixed memory leak and simplified logic
