@@ -1,10 +1,11 @@
 ## Process this file with automake to create Makefile.in
 
-bin_PROGRAMS = @XPMROOT@ xselection
+bin_PROGRAMS = @XPMROOT@
 bin_SCRIPTS = fvwm-config fvwmbug fvwm-menu-xlock fvwm-menu-directory \
 	fvwm-menu-desktop fvwm-menu-headlines fvwm24_convert
 
-EXTRA_PROGRAMS = xpmroot
+## Don't build and install xselection, there is a better xselection package.
+EXTRA_PROGRAMS = xpmroot xselection
 
 man_MANS = xpmroot.1 fvwmbug.1 fvwmrc_convert.1 fvwm24_convert.1 \
 	fvwm-menu-xlock.1 fvwm-menu-directory.1 \
@@ -59,4 +60,4 @@ fvwm24_convert: fvwm24_convert.in
 		$(top_srcdir)/utils/fvwm24_convert.in > $@
 	chmod a+rx $@
 
-CLEANFILES = $(bin_SCRIPTS)
+CLEANFILES = $(bin_SCRIPTS) $(bin_PROGRAMS)

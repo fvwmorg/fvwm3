@@ -240,9 +240,11 @@ void SetDeskPageBackground(const Command *c)
 
 /*
  * migo (23-Nov-1999): Maybe execute only first (or last?) matching command?
+ * migo (03-Apr-2001): Yes, execute only the last matching command.
  */
 void ExecuteMatchingCommands(int colorset)
 {
+  const Command *matching_command = NULL;
   const Command *command;
   for (command = commands->first; command; command = command->next)
   {
@@ -251,8 +253,10 @@ void ExecuteMatchingCommands(int colorset)
 	(command->y < 0 || command->y == current_y) &&
 	(colorset < 0 || (colorset == current_colorset &&
 			  colorset == command->colorset)))
-      SetDeskPageBackground(command);
+      matching_command = command;
   }
+  if (matching_command)
+    SetDeskPageBackground(matching_command);
 }
 
 /******************************************************************************
