@@ -616,6 +616,9 @@ void X_init_manager (int man_id)
     if (man->colorsets[i] >= 0) {
       man->backcolor[i] = Colorset[man->colorsets[i]].bg;
     }
+    else if (man->colorsets[i] == -2) {
+      man->backcolor[i] = Colorset[man->colorsets[DEFAULT]].bg;
+    }
     else if (man->backColorName[i]) {
       if (!lookup_color (man->backColorName[i], &man->backcolor[i])) {
 	if (!load_default_context_back (man, i)) {
@@ -631,6 +634,9 @@ void X_init_manager (int man_id)
 
     if (man->colorsets[i] >= 0) {
       man->forecolor[i] = Colorset[man->colorsets[i]].fg;
+    }
+    else if (man->colorsets[i] == -2) {
+      man->forecolor[i] = Colorset[man->colorsets[DEFAULT]].fg;
     }
     else if (man->foreColorName[i]) {
       if (!lookup_color (man->foreColorName[i], &man->forecolor[i])) {
@@ -649,6 +655,10 @@ void X_init_manager (int man_id)
       if (man->colorsets[i] >= 0) {
 	man->shadowcolor[i] = Colorset[man->colorsets[i]].shadow;
 	man->hicolor[i] = Colorset[man->colorsets[i]].hilite;
+      }
+      else if (man->colorsets[i] == -2) {
+	man->shadowcolor[i] = Colorset[man->colorsets[DEFAULT]].shadow;
+	man->hicolor[i] = Colorset[man->colorsets[DEFAULT]].hilite;
       }
       else
       {
@@ -916,51 +926,59 @@ void create_manager_window (int man_id)
   man->off_y = 0;
 
   for (i = 0; i < NUM_CONTEXTS; i++) {
-    man->backContext[i] =
-      fvwmlib_XCreateGC (theDisplay, man->theWindow, gcmask, &gcval);
-    XSetForeground (theDisplay, man->backContext[i], man->backcolor[i]);
-    XSetLineAttributes (theDisplay, man->backContext[i], line_width,
-			line_style, cap_style,
-			join_style);
+	  if (man->colorsets[i] != -2)
+	  {
+		  man->backContext[i] =
+			  fvwmlib_XCreateGC(
+				  theDisplay, man->theWindow, gcmask, &gcval);
+		  XSetForeground (
+			  theDisplay, man->backContext[i], man->backcolor[i]);
+		  XSetLineAttributes (
+			  theDisplay, man->backContext[i], line_width,
+			  line_style, cap_style,
+			  join_style);
+	  }
+	  man->hiContext[i] = fvwmlib_XCreateGC(
+		  theDisplay, man->theWindow, gcmask, &gcval);
+	  if (man->FButtonFont->font != NULL)
+		  XSetFont(
+			  theDisplay, man->hiContext[i],
+			  man->FButtonFont->font->fid);
+	  XSetForeground (theDisplay, man->hiContext[i], man->forecolor[i]);
 
-    man->hiContext[i] =
-      fvwmlib_XCreateGC (theDisplay, man->theWindow, gcmask, &gcval);
-    if (man->FButtonFont->font != NULL)
-      XSetFont (theDisplay, man->hiContext[i], man->FButtonFont->font->fid);
-    XSetForeground (theDisplay, man->hiContext[i], man->forecolor[i]);
+	  gcmask = GCForeground | GCBackground;
+	  gcval.foreground = man->backcolor[i];
+	  gcval.background = man->forecolor[i];
+	  man->flatContext[i] = fvwmlib_XCreateGC(
+		  theDisplay, man->theWindow, gcmask, &gcval);
+	  if (Pdepth > 2)
+	  {
+		  gcmask = GCForeground | GCBackground;
+		  gcval.foreground = man->hicolor[i];
+		  gcval.background = man->backcolor[i];
+		  man->reliefContext[i] = fvwmlib_XCreateGC (
+			  theDisplay, man->theWindow, gcmask, &gcval);
 
-    gcmask = GCForeground | GCBackground;
-    gcval.foreground = man->backcolor[i];
-    gcval.background = man->forecolor[i];
-    man->flatContext[i] = fvwmlib_XCreateGC (theDisplay, man->theWindow,
-						 gcmask, &gcval);
-    if (Pdepth > 2) {
-      gcmask = GCForeground | GCBackground;
-      gcval.foreground = man->hicolor[i];
-      gcval.background = man->backcolor[i];
-      man->reliefContext[i] = fvwmlib_XCreateGC (theDisplay, man->theWindow,
-						     gcmask, &gcval);
-
-      gcmask = GCForeground | GCBackground;
-      gcval.foreground = man->shadowcolor[i];
-      gcval.background = man->backcolor[i];
-      man->shadowContext[i] = fvwmlib_XCreateGC (theDisplay, man->theWindow,
-						     gcmask, &gcval);
-    }
-    if (man->colorsets[i] >= 0)
-    {
-	    recreate_background(man, i);
-    }
-    else
-    {
-      man->pixmap[i] = None;
-      XSetFillStyle(theDisplay, man->backContext[i], FillSolid);
-      if (i == DEFAULT)
-      {
-	      XSetWindowBackground (
-		      theDisplay, man->theWindow, man->backcolor[i]);
-      }
-    }
+		  gcmask = GCForeground | GCBackground;
+		  gcval.foreground = man->shadowcolor[i];
+		  gcval.background = man->backcolor[i];
+		  man->shadowContext[i] = fvwmlib_XCreateGC (
+			  theDisplay, man->theWindow, gcmask, &gcval);
+	  }
+	  if (man->colorsets[i] >= 0)
+	  {
+		  recreate_background(man, i);
+	  }
+	  else if (man->colorsets[i] != -2)
+	  {
+		  man->pixmap[i] = None;
+		  XSetFillStyle(theDisplay, man->backContext[i], FillSolid);
+		  if (i == DEFAULT)
+		  {
+			  XSetWindowBackground (
+				  theDisplay, man->theWindow, man->backcolor[i]);
+		  }
+	  }
   }
 
   set_window_properties (man->theWindow, man->titlename,
@@ -1080,7 +1098,9 @@ void change_colorset(int color)
 		man = &globals.managers[j];
 		for (i = 0; i < NUM_CONTEXTS; i++)
 		{
-			if(man->colorsets[i] != color)
+			if(man->colorsets[i] != color &&
+			   !(man->colorsets[i] == -2 &&
+			    man->colorsets[DEFAULT] == color))
 			{
 				continue;
 			}
@@ -1088,16 +1108,20 @@ void change_colorset(int color)
 			man->forecolor[i] = Colorset[color].fg;
 			man->shadowcolor[i] = Colorset[color].shadow;
 			man->hicolor[i] = Colorset[color].hilite;
-			if (!man->backContext[i] || !man->hiContext[i] ||
-			    !man->flatContext[i] || !man->reliefContext[i] ||
+			if (!man->hiContext[i] ||
+			    !man->flatContext[i] ||
+			    !man->reliefContext[i] ||
 			    !man->shadowContext[i])
 			{
 				/* colorset not properly defined yet, skip it */
 				continue;
 			}
-			XSetForeground(
-				theDisplay, man->backContext[i],
-				man->backcolor[i]);
+			if (man->backContext[i])
+			{
+				XSetForeground(
+					theDisplay, man->backContext[i],
+					man->backcolor[i]);
+			}
 			XSetForeground(
 				theDisplay, man->hiContext[i],
 				man->forecolor[i]);

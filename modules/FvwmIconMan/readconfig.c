@@ -1327,9 +1327,12 @@ void read_in_resources (char *file)
 	  continue;
 	}
 	for ( i = 0; i < NUM_CONTEXTS; i++ ) {
-	  SET_MANAGER(manager, colorsets[i], n);
-	  AllocColorset(n);
+		if (i != DEFAULT && i != TITLE_CONTEXT)
+			SET_MANAGER(manager, colorsets[i], -2);
+		else
+			SET_MANAGER(manager, colorsets[i], n);
 	}
+	AllocColorset(n);
       }
       else if (!strcasecmp (option1, "background")) {
 	p = read_next_cmd (READ_ARG);

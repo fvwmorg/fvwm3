@@ -1,5 +1,15 @@
 2002-10-15  olicha  <olivier.chapuis@free.fr>
 
+	* FvwmIconMan/xmanager.c (draw_button_background):
+	* FvwmIconMan/readconfig.c (read_in_resources):
+	* FvwmIconMan/x.c (change_colorset):
+	(create_manager_window):
+	(X_init_manager):
+	Fixed button colours when IconMan has a default colorset but no
+	button colorset
+
+2002-10-15  olicha  <olivier.chapuis@free.fr>
+
 	* FvwmAnimate/FvwmAnimate.c:
 	Updated PictureInitCMapRoot
 

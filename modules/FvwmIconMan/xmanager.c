@@ -1447,7 +1447,8 @@ static void draw_button_background(
 {
 	int cset = man->colorsets[button_state];
 
-	if (CSET_IS_TRANSPARENT_PR_PURE(cset))
+	if (CSET_IS_TRANSPARENT_PR_PURE(cset) ||
+	    man->backContext[button_state] == None)
 	{
 		XClearArea(
 			theDisplay, man->theWindow,
