@@ -1025,9 +1025,8 @@ static void ApplyDefaultFontAndColors(void)
 
   UpdateAllMenuStyles();
 
-/* inform modules of colorset change */
+  /* inform modules of colorset change */
   BroadcastColorset(0);
-
 }
 
 void HandleColorset(F_CMD_ARGS)
@@ -1041,10 +1040,14 @@ void HandleColorset(F_CMD_ARGS)
   if ((ret == 0) || (n < 0))
     return;
 
-  if (n) {
+  if (n)
+  {
     LoadColorset(action);
     BroadcastColorset(n);
-  } else {
+    UpdateMenuColorset(n);
+  }
+  else
+  {
     LoadColorsetAndFree(action);
     /* This broadcasts Colorset 0 */
     ApplyDefaultFontAndColors();

@@ -76,96 +76,105 @@
 
 typedef enum
 {
-    /* menu types */
-    SimpleMenu = 0,
+  /* menu types */
+  SimpleMenu = 0,
 #ifdef GRADIENT_BUTTONS
-    GradientMenu,
+  GradientMenu,
 #endif
 #ifdef PIXMAP_BUTTONS
-    PixmapMenu,
-    TiledPixmapMenu,
+  PixmapMenu,
+  TiledPixmapMenu,
 #endif
-    SolidMenu
-    /* max button is 8 (0x8) */
+  SolidMenu
+  /* max button is 8 (0x8) */
 } MenuFaceType;
 
 typedef struct MenuFeel
 {
-    struct
-    {
-      unsigned is_animated : 1;
-      unsigned do_popup_immediately : 1;
-      unsigned do_warp_to_title : 1;
-      unsigned do_popup_as_root_menu : 1;
-      unsigned do_unmap_submenu_on_popdown : 1;
-      unsigned use_left_submenus : 1;
-      unsigned use_automatic_hotkeys : 1;
-    } flags;
-    int PopupOffsetPercent;
-    int PopupOffsetAdd;
-    char *item_format;
+  struct
+  {
+    unsigned is_animated : 1;
+    unsigned do_popup_immediately : 1;
+    unsigned do_warp_to_title : 1;
+    unsigned do_popup_as_root_menu : 1;
+    unsigned do_unmap_submenu_on_popdown : 1;
+    unsigned use_left_submenus : 1;
+    unsigned use_automatic_hotkeys : 1;
+  } flags;
+  int PopupOffsetPercent;
+  int PopupOffsetAdd;
+  char *item_format;
 } MenuFeel;
 
 
 typedef struct MenuFace
 {
-    union
-    {
+  union
+  {
 #ifdef PIXMAP_BUTTONS
-        Picture *p;
+    Picture *p;
 #endif
-        Pixel back;
+    Pixel back;
 #ifdef GRADIENT_BUTTONS
-        struct
-	{
-            int npixels;
-            Pixel *pixels;
-        } grad;
+    struct
+    {
+      int npixels;
+      Pixel *pixels;
+    } grad;
 #endif
-    } u;
-    MenuFaceType type;
-    char gradient_type;
+  } u;
+  MenuFaceType type;
+  char gradient_type;
 } MenuFace;
 
 typedef struct MenuLook
 {
-    MenuFace face;
-    struct
-    {
-      unsigned do_hilight : 1;
-      unsigned has_active_fore : 1;
-      unsigned has_active_back : 1;
-      unsigned has_stipple_fore : 1;
-      unsigned has_long_separators : 1;
-      unsigned has_triangle_relief : 1;
-      unsigned has_side_color : 1;
-    } flags;
-    unsigned char ReliefThickness;
-    unsigned char TitleUnderlines;
-    unsigned char BorderWidth;
-    struct
-    {
-      signed char item_above;
-      signed char item_below;
-      signed char title_above;
-      signed char title_below;
-      signed char separator_above;
-      signed char separator_below;
-    } vertical_spacing;
-    Picture *side_picture;
-    Pixel side_color;
-    GC MenuGC;
-    GC MenuActiveGC;
-    GC MenuActiveBackGC;
-    GC MenuStippleGC;
-    GC MenuReliefGC;
-    GC MenuShadowGC;
-    ColorPair MenuColors;
-    ColorPair MenuActiveColors;
-    ColorPair MenuStippleColors;
-    ColorPair MenuReliefColors;
-    MyFont *pStdFont;
-    int FontHeight;              /* menu font height */
+  MenuFace face;
+  struct
+  {
+    unsigned do_hilight : 1;
+    unsigned has_active_fore : 1;
+    unsigned has_active_back : 1;
+    unsigned has_stipple_fore : 1;
+    unsigned has_long_separators : 1;
+    unsigned has_triangle_relief : 1;
+    unsigned has_side_color : 1;
+    unsigned has_menu_cset : 1;
+    unsigned has_active_cset : 1;
+    unsigned has_greyed_cset : 1;
+  } flags;
+  unsigned char ReliefThickness;
+  unsigned char TitleUnderlines;
+  unsigned char BorderWidth;
+  struct
+  {
+    signed char item_above;
+    signed char item_below;
+    signed char title_above;
+    signed char title_below;
+    signed char separator_above;
+    signed char separator_below;
+  } vertical_spacing;
+  struct
+  {
+    int menu;
+    int active;
+    int greyed;
+  } cset;
+  Picture *side_picture;
+  Pixel side_color;
+  GC MenuGC;
+  GC MenuActiveGC;
+  GC MenuActiveBackGC;
+  GC MenuStippleGC;
+  GC MenuReliefGC;
+  GC MenuShadowGC;
+  ColorPair MenuColors;
+  ColorPair MenuActiveColors;
+  ColorPair MenuStippleColors;
+  ColorPair MenuReliefColors;
+  MyFont *pStdFont;
+  int FontHeight;              /* menu font height */
 } MenuLook;
 
 typedef struct MenuStyle
@@ -207,6 +216,12 @@ typedef struct MenuStyle
 #define MST_HAS_TRIANGLE_RELIEF(m)    ((m)->s->ms->look.flags.has_triangle_relief)
 #define ST_HAS_SIDE_COLOR(s)          ((s)->look.flags.has_side_color)
 #define MST_HAS_SIDE_COLOR(m)         ((m)->s->ms->look.flags.has_side_color)
+#define ST_HAS_MENU_CSET(s)           ((s)->look.flags.has_menu_cset)
+#define MST_HAS_MENU_CSET(m)          ((m)->s->ms->look.flags.has_menu_cset)
+#define ST_HAS_ACTIVE_CSET(s)         ((s)->look.flags.has_active_cset)
+#define MST_HAS_ACTIVE_CSET(m)        ((m)->s->ms->look.flags.has_active_cset)
+#define ST_HAS_GREYED_CSET(s)         ((s)->look.flags.has_greyed_cset)
+#define MST_HAS_GREYED_CSET(m)        ((m)->s->ms->look.flags.has_greyed_cset)
 #define ST_RELIEF_THICKNESS(s)        ((s)->look.ReliefThickness)
 #define MST_RELIEF_THICKNESS(m)       ((m)->s->ms->look.ReliefThickness)
 #define ST_TITLE_UNDERLINES(s)        ((s)->look.TitleUnderlines)
@@ -225,6 +240,12 @@ typedef struct MenuStyle
 #define MST_SEPARATOR_GAP_ABOVE(m)    ((m)->s->ms->look.vertical_spacing.separator_above)
 #define ST_SEPARATOR_GAP_BELOW(s)     ((s)->look.vertical_spacing.separator_below)
 #define MST_SEPARATOR_GAP_BELOW(m)    ((m)->s->ms->look.vertical_spacing.separator_below)
+#define ST_CSET_MENU(s)               ((s)->look.cset.menu)
+#define MST_CSET_MENU(m)              ((m)->s->ms->look.cset.menu)
+#define ST_CSET_ACTIVE(s)             ((s)->look.cset.active)
+#define MST_CSET_ACTIVE(m)            ((m)->s->ms->look.cset.active)
+#define ST_CSET_GREYED(s)             ((s)->look.cset.greyed)
+#define MST_CSET_GREYED(m)            ((m)->s->ms->look.cset.greyed)
 #define ST_SIDEPIC(s)                 ((s)->look.side_picture)
 #define MST_SIDEPIC(m)                ((m)->s->ms->look.side_picture)
 #define ST_SIDE_COLOR(s)              ((s)->look.side_color)
@@ -637,6 +658,7 @@ void ChangeMenuStyle(F_CMD_ARGS);
 void DestroyMenuStyle(F_CMD_ARGS);
 void SetMenuStyle(F_CMD_ARGS);
 void UpdateAllMenuStyles(void);
+void UpdateMenuColorset(int cset);
 void SetMenuCursor(Cursor cursor);
 
 

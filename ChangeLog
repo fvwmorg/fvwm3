@@ -1,3 +1,14 @@
+1999-09-25  Dominik Vogt  <dominik_vogt@gmx.de>
+
+	* fvwm/builtins.c (HandleColorset):
+	* fvwm/menus.h (MenuLook):
+	* fvwm/menus.c (NewMenuStyle):
+	(make_menu_window):
+	(paint_menu):
+	(select_menu_item):
+	(UpdateMenuColorset):
+	implemented colour set support for menus
+
 1999-09-24  Paul D. Smith  <psmith@gnu.org>
 
 	* configure.in (perl): Make sure we have perl 5.002 or better for
@@ -23,7 +34,7 @@
 1999-09-23  Dominik Vogt  <dominik_vogt@gmx.de>
 
 	* fvwm/menus.c (paint_item):
-	(draw_triangle_pattern):
+	(draw_triangle_pattern): use new code in libs/Graphics.c
 
 	* libs/Graphics.c (DrawTrianglePattern): new service function
 
@@ -42,7 +53,7 @@
 
 1999-09-23  Dominik Vogt  <dominik_vogt@gmx.de>
 
-	* libs/WinMagic.c (GetTopAncestorWindow):
+	* libs/WinMagic.c (GetTopAncestorWindow): new function
 
 	* libs/Slide.c: file renamed to WinMagic.c
 

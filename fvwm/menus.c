@@ -73,6 +73,7 @@
 #include "colors.h"
 #include "colormaps.h"
 #include "decorations.h"
+#include "libs/Colorset.h"
 
 /* IMPORTANT NOTE: Do *not* use any constant numbers in this file. All values
  * have to be #defined in the section below to ensure full control over the
@@ -2367,69 +2368,72 @@ static void select_menu_item(MenuRoot *mr, MenuItem *mi, Bool select,
     MI_WAS_DESELECTED(mi) = True;
 
 #ifdef GRADIENT_BUTTONS
-  switch (MST_FACE(mr).type)
+  if (!MST_HAS_MENU_CSET(mr))
   {
-  case GradientMenu:
-    if (select == True)
+    switch (MST_FACE(mr).type)
     {
-      int iy;
-      int ih;
-      unsigned int mw;
-
-      if (!MR_IS_PAINTED(mr))
+    case GradientMenu:
+      if (select == True)
       {
-	paint_menu(mr, NULL, fw);
-	flush_expose(MR_WINDOW(mr));
-      }
-      iy = MI_Y_OFFSET(mi);
-      ih = MI_HEIGHT(mi) +
-	(MI_IS_SELECTABLE(mi) ? MST_RELIEF_THICKNESS(mr) : 0);
-      if (iy < 0)
-      {
-	ih += iy;
-	iy = 0;
-      }
-      mw = MR_WIDTH(mr) - 2 * MST_BORDER_WIDTH(mr);
-      if (iy + ih > MR_HEIGHT(mr))
-	ih = MR_HEIGHT(mr) - iy;
-      /* grab image */
-      MR_STORED_ITEM(mr).stored =
-	XCreatePixmap(dpy, Scr.NoFocusWin, mw, ih, Pdepth);
-      XCopyArea(
-	dpy, MR_WINDOW(mr), MR_STORED_ITEM(mr).stored,
-	MST_MENU_GC(mr), MST_BORDER_WIDTH(mr), iy, mw, ih, 0, 0);
-      MR_STORED_ITEM(mr).y = iy;
-      MR_STORED_ITEM(mr).width = mw;
-      MR_STORED_ITEM(mr).height = ih;
-    }
-    else if (select == False && MR_STORED_ITEM(mr).width != 0)
-    {
-      /* ungrab image */
-      XCopyArea(dpy, MR_STORED_ITEM(mr).stored, MR_WINDOW(mr),
-		MST_MENU_GC(mr), 0, 0,
-		MR_STORED_ITEM(mr).width, MR_STORED_ITEM(mr).height,
-		MST_BORDER_WIDTH(mr), MR_STORED_ITEM(mr).y);
+	int iy;
+	int ih;
+	unsigned int mw;
 
-      if (MR_STORED_ITEM(mr).stored != None)
-	XFreePixmap(dpy, MR_STORED_ITEM(mr).stored);
-      MR_STORED_ITEM(mr).stored = None;
-      MR_STORED_ITEM(mr).width = 0;
-      MR_STORED_ITEM(mr).height = 0;
-      MR_STORED_ITEM(mr).y = 0;
-    }
-    break;
-  default:
-    if (MR_STORED_ITEM(mr).width != 0)
-    {
-      if (MR_STORED_ITEM(mr).stored != None)
-	XFreePixmap(dpy, MR_STORED_ITEM(mr).stored);
-      MR_STORED_ITEM(mr).stored = None;
-      MR_STORED_ITEM(mr).width = 0;
-      MR_STORED_ITEM(mr).height = 0;
-      MR_STORED_ITEM(mr).y = 0;
-    }
-    break;
-  }
+	if (!MR_IS_PAINTED(mr))
+	{
+	  paint_menu(mr, NULL, fw);
+	  flush_expose(MR_WINDOW(mr));
+	}
+	iy = MI_Y_OFFSET(mi);
+	ih = MI_HEIGHT(mi) +
+	  (MI_IS_SELECTABLE(mi) ? MST_RELIEF_THICKNESS(mr) : 0);
+	if (iy < 0)
+	{
+	  ih += iy;
+	  iy = 0;
+	}
+	mw = MR_WIDTH(mr) - 2 * MST_BORDER_WIDTH(mr);
+	if (iy + ih > MR_HEIGHT(mr))
+	  ih = MR_HEIGHT(mr) - iy;
+	/* grab image */
+	MR_STORED_ITEM(mr).stored =
+	  XCreatePixmap(dpy, Scr.NoFocusWin, mw, ih, Pdepth);
+	XCopyArea(
+	  dpy, MR_WINDOW(mr), MR_STORED_ITEM(mr).stored,
+	  MST_MENU_GC(mr), MST_BORDER_WIDTH(mr), iy, mw, ih, 0, 0);
+	MR_STORED_ITEM(mr).y = iy;
+	MR_STORED_ITEM(mr).width = mw;
+	MR_STORED_ITEM(mr).height = ih;
+      }
+      else if (select == False && MR_STORED_ITEM(mr).width != 0)
+      {
+	/* ungrab image */
+	XCopyArea(dpy, MR_STORED_ITEM(mr).stored, MR_WINDOW(mr),
+		  MST_MENU_GC(mr), 0, 0,
+		  MR_STORED_ITEM(mr).width, MR_STORED_ITEM(mr).height,
+		  MST_BORDER_WIDTH(mr), MR_STORED_ITEM(mr).y);
+
+	if (MR_STORED_ITEM(mr).stored != None)
+	  XFreePixmap(dpy, MR_STORED_ITEM(mr).stored);
+	MR_STORED_ITEM(mr).stored = None;
+	MR_STORED_ITEM(mr).width = 0;
+	MR_STORED_ITEM(mr).height = 0;
+	MR_STORED_ITEM(mr).y = 0;
+      }
+      break;
+    default:
+      if (MR_STORED_ITEM(mr).width != 0)
+      {
+	if (MR_STORED_ITEM(mr).stored != None)
+	  XFreePixmap(dpy, MR_STORED_ITEM(mr).stored);
+	MR_STORED_ITEM(mr).stored = None;
+	MR_STORED_ITEM(mr).width = 0;
+	MR_STORED_ITEM(mr).height = 0;
+	MR_STORED_ITEM(mr).y = 0;
+      }
+      break;
+    } /* switch */
+  } /* if */
 #endif
 
   MR_SELECTED_ITEM(mr) = (select) ? mi : NULL;
@@ -2654,7 +2658,7 @@ static void paint_item(MenuRoot *mr, MenuItem *mi, FvwmWindow *fw,
   else if (MI_WAS_DESELECTED(mi) &&
 	   (relief_thickness > 0 || MST_DO_HILIGHT(mr))
 #ifdef GRADIENT_BUTTONS
-	   && MST_FACE(mr).type != GradientMenu
+	   && (MST_FACE(mr).type != GradientMenu || MST_HAS_MENU_CSET(mr))
 #endif
 	  )
   {
@@ -3048,6 +3052,16 @@ void paint_menu(MenuRoot *mr, XEvent *pevent, FvwmWindow *fw)
     return;
   }
   MR_IS_PAINTED(mr) = 1;
+  if (ms && ST_HAS_MENU_CSET(ms))
+  {
+    if (MR_IS_BACKGROUND_SET(mr) == False)
+    {
+      SetWindowBackground(
+	dpy, MR_WINDOW(mr), MR_WIDTH(mr), MR_HEIGHT(mr),
+	&Colorset[ST_CSET_MENU(ms) % nColorsets], Pdepth, ST_MENU_GC(ms));
+      MR_IS_BACKGROUND_SET(mr) = True;
+    }
+  }
   if (ms)
   {
     register int type;
@@ -3241,8 +3255,8 @@ void paint_menu(MenuRoot *mr, XEvent *pevent, FvwmWindow *fw)
      XClearWindow(dpy,MR_WINDOW(mr));
      break;
 #endif /* PIXMAP_BUTTONS */
-    }
-  }
+    } /* switch(type) */
+  } /* if (ms) */
 
   /* draw the relief */
   RelieveRectangle(dpy, MR_WINDOW(mr), 0, 0, MR_WIDTH(mr) - 1,
@@ -3256,7 +3270,8 @@ void paint_menu(MenuRoot *mr, XEvent *pevent, FvwmWindow *fw)
     /* be smart about handling the expose, redraw only the entries
      * that we need to */
     if((MST_FACE(mr).type != SolidMenu &&
-	MST_FACE(mr).type != SimpleMenu) ||
+	MST_FACE(mr).type != SimpleMenu &&
+	!MST_HAS_MENU_CSET(mr)) ||
        pevent == NULL ||
        (pevent->xexpose.y < (MI_Y_OFFSET(mi) + MI_HEIGHT(mi)) &&
 	(pevent->xexpose.y + pevent->xexpose.height) > MI_Y_OFFSET(mi)))
@@ -4085,7 +4100,8 @@ static void make_menu_window(MenuRoot *mr)
     | CWBorderPixel | CWSaveUnder;
   attributes.border_pixel = 0;
   attributes.colormap = Pcmap;
-  attributes.background_pixel = MST_MENU_COLORS(mr).back;
+  attributes.background_pixel = (MST_HAS_MENU_CSET(mr)) ?
+    Colorset[MST_CSET_MENU(mr) % nColorsets].bg : MST_MENU_COLORS(mr).back;
   attributes.event_mask = (ExposureMask | EnterWindowMask);
   attributes.cursor = Scr.FvwmCursors[CRS_MENU];
   attributes.save_under = True;
@@ -4981,6 +4997,15 @@ static void UpdateMenuStyle(MenuStyle *ms)
 {
   XGCValues gcv;
   unsigned long gcm;
+  Pixel menu_fore;
+  Pixel menu_back;
+  Pixel relief_fore;
+  Pixel relief_back;
+  Pixel active_fore;
+  Pixel active_back;
+  colorset_struct *menu_cs = &Colorset[ST_CSET_MENU(ms) % nColorsets];
+  colorset_struct *active_cs = &Colorset[ST_CSET_ACTIVE(ms) % nColorsets];
+  colorset_struct *greyed_cs = &Colorset[ST_CSET_GREYED(ms) % nColorsets];
 
   if (ST_USAGE_COUNT(ms) != 0)
   {
@@ -5000,7 +5025,7 @@ static void UpdateMenuStyle(MenuStyle *ms)
 
   /* calculate colors based on foreground */
   if (!ST_HAS_ACTIVE_FORE(ms))
-    ST_MENU_ACTIVE_COLORS(ms).fore=ST_MENU_COLORS(ms).fore;
+    ST_MENU_ACTIVE_COLORS(ms).fore = ST_MENU_COLORS(ms).fore;
 
   /* calculate colors based on background */
   if (!ST_HAS_ACTIVE_BACK(ms))
@@ -5008,16 +5033,46 @@ static void UpdateMenuStyle(MenuStyle *ms)
   if (!ST_HAS_STIPPLE_FORE(ms))
     ST_MENU_STIPPLE_COLORS(ms).fore = ST_MENU_COLORS(ms).back;
   if(Pdepth > 2)
-  {                 /* if not black and white */
+  {
+    /* if not black and white */
     ST_MENU_RELIEF_COLORS(ms).back = GetShadow(ST_MENU_COLORS(ms).back);
     ST_MENU_RELIEF_COLORS(ms).fore = GetHilite(ST_MENU_COLORS(ms).back);
   }
   else
-  {                              /* black and white */
+  {
+    /* black and white */
     ST_MENU_RELIEF_COLORS(ms).back = GetColor("black");
     ST_MENU_RELIEF_COLORS(ms).fore = GetColor("white");
   }
   ST_MENU_STIPPLE_COLORS(ms).back = ST_MENU_COLORS(ms).back;
+
+  /* calculate some pixel values for convenience reasons */
+  if (ST_HAS_MENU_CSET(ms))
+  {
+    menu_fore = menu_cs->fg;
+    menu_back = menu_cs->bg;
+    relief_fore = menu_cs->hilite;
+    relief_back = menu_cs->shadow;
+  }
+  else
+  {
+    menu_fore = ST_MENU_COLORS(ms).fore;
+    menu_back = ST_MENU_COLORS(ms).back;
+    relief_fore = ST_MENU_RELIEF_COLORS(ms).fore;
+    relief_back = ST_MENU_RELIEF_COLORS(ms).back;
+  }
+  if (ST_HAS_ACTIVE_CSET(ms))
+  {
+    active_fore = active_cs->fg;
+    active_back = active_cs->bg;
+  }
+  else
+  {
+    active_fore = (ST_HAS_ACTIVE_FORE(ms)) ?
+      ST_MENU_ACTIVE_COLORS(ms).fore : relief_fore;
+    active_back = (ST_HAS_ACTIVE_BACK(ms)) ?
+      ST_MENU_ACTIVE_COLORS(ms).back : relief_back;
+  }
 
   /* make GC's */
   gcm = GCFunction|GCFont|GCLineWidth|GCForeground|GCBackground;
@@ -5025,55 +5080,64 @@ static void UpdateMenuStyle(MenuStyle *ms)
   gcv.function = GXcopy;
   gcv.line_width = 0;
 
-  gcv.foreground = ST_MENU_RELIEF_COLORS(ms).fore;
-  gcv.background = ST_MENU_RELIEF_COLORS(ms).back;
-  if(ST_MENU_RELIEF_GC(ms))
+  /* update relief gc */
+  gcv.foreground = relief_fore;
+  gcv.background = relief_back;
+  if (ST_MENU_RELIEF_GC(ms))
     XChangeGC(dpy, ST_MENU_RELIEF_GC(ms), gcm, &gcv);
   else
     ST_MENU_RELIEF_GC(ms) = XCreateGC(dpy, Scr.NoFocusWin, gcm, &gcv);
 
-  gcv.foreground = ST_MENU_RELIEF_COLORS(ms).back;
-  gcv.background = ST_MENU_RELIEF_COLORS(ms).fore;
-  if(ST_MENU_SHADOW_GC(ms))
+  /* update shadow gc */
+  gcv.foreground = relief_back;
+  gcv.background = relief_fore;
+  if (ST_MENU_SHADOW_GC(ms))
     XChangeGC(dpy, ST_MENU_SHADOW_GC(ms), gcm, &gcv);
   else
     ST_MENU_SHADOW_GC(ms) = XCreateGC(dpy, Scr.NoFocusWin, gcm, &gcv);
 
-  gcv.foreground = (ST_HAS_ACTIVE_BACK(ms)) ?
-    ST_MENU_ACTIVE_COLORS(ms).back : ST_MENU_RELIEF_COLORS(ms).back;
-  gcv.background = (ST_HAS_ACTIVE_FORE(ms)) ?
-    ST_MENU_ACTIVE_COLORS(ms).fore : ST_MENU_RELIEF_COLORS(ms).fore;
-  if(ST_MENU_ACTIVE_BACK_GC(ms))
-    XChangeGC(dpy, ST_MENU_ACTIVE_BACK_GC(ms), gcm, &gcv);
-  else
-    ST_MENU_ACTIVE_BACK_GC(ms) = XCreateGC(dpy, Scr.NoFocusWin, gcm, &gcv);
-
-  gcv.foreground = ST_MENU_COLORS(ms).fore;
-  gcv.background = ST_MENU_COLORS(ms).back;
-  if(ST_MENU_GC(ms))
-    XChangeGC(dpy, ST_MENU_GC(ms), gcm, &gcv);
-  else
-    ST_MENU_GC(ms) = XCreateGC(dpy, Scr.NoFocusWin, gcm, &gcv);
-
-  gcv.foreground = ST_MENU_ACTIVE_COLORS(ms).fore;
-  gcv.background = ST_MENU_ACTIVE_COLORS(ms).back;
+  /* update active gc */
+  gcv.foreground = active_fore;
+  gcv.background = active_back;
   if(ST_MENU_ACTIVE_GC(ms))
     XChangeGC(dpy, ST_MENU_ACTIVE_GC(ms), gcm, &gcv);
   else
     ST_MENU_ACTIVE_GC(ms) = XCreateGC(dpy, Scr.NoFocusWin, gcm, &gcv);
 
+  /* update active back gc */
+  gcv.foreground = active_back;
+  gcv.background = active_fore;
+  if (ST_MENU_ACTIVE_BACK_GC(ms))
+    XChangeGC(dpy, ST_MENU_ACTIVE_BACK_GC(ms), gcm, &gcv);
+  else
+    ST_MENU_ACTIVE_BACK_GC(ms) = XCreateGC(dpy, Scr.NoFocusWin, gcm, &gcv);
+
+  /* update menu gc */
+  gcv.foreground = menu_fore;
+  gcv.background = menu_back;
+  if(ST_MENU_GC(ms))
+    XChangeGC(dpy, ST_MENU_GC(ms), gcm, &gcv);
+  else
+    ST_MENU_GC(ms) = XCreateGC(dpy, Scr.NoFocusWin, gcm, &gcv);
+
+  /* update stipple gc */
   if(Pdepth < 2)
   {
     gcv.fill_style = FillStippled;
     gcv.stipple = Scr.gray_bitmap;
     gcm|=GCStipple|GCFillStyle; /* no need to reset fg/bg, FillStipple wins */
   }
+  else if (ST_HAS_GREYED_CSET(ms))
+  {
+    gcv.foreground = greyed_cs->fg;
+    gcv.background = greyed_cs->bg;
+  }
   else
   {
     gcv.foreground = ST_MENU_STIPPLE_COLORS(ms).fore;
     gcv.background = ST_MENU_STIPPLE_COLORS(ms).back;
   }
-  if(ST_MENU_STIPPLE_GC(ms))
+  if (ST_MENU_STIPPLE_GC(ms))
     XChangeGC(dpy, ST_MENU_STIPPLE_GC(ms), gcm, &gcv);
   else
     ST_MENU_STIPPLE_GC(ms) = XCreateGC(dpy, Scr.NoFocusWin, gcm, &gcv);
@@ -5086,6 +5150,21 @@ void UpdateAllMenuStyles(void)
   for (ms = Menus.DefaultStyle; ms; ms = ST_NEXT_STYLE(ms))
   {
     UpdateMenuStyle(ms);
+  }
+}
+
+void UpdateMenuColorset(int cset)
+{
+  MenuStyle *ms;
+
+  for (ms = Menus.DefaultStyle; ms; ms = ST_NEXT_STYLE(ms))
+  {
+    if ((ST_HAS_MENU_CSET(ms) && ST_CSET_MENU(ms) == cset) ||
+	(ST_HAS_ACTIVE_CSET(ms) && ST_CSET_ACTIVE(ms) == cset) ||
+	(ST_HAS_GREYED_CSET(ms) && ST_CSET_GREYED(ms) == cset))
+    {
+      UpdateMenuStyle(ms);
+    }
   }
 }
 
@@ -5137,6 +5216,7 @@ static int GetMenuStyleIndex(char *option)
     "AutomaticHotkeys", "AutomaticHotkeysOff",
     "VerticalItemSpacing",
     "VerticalTitleSpacing",
+    "MenuColorset", "ActiveColorset", "GreyedColorset",
     NULL
   };
   return GetTokenIndex(option, optlist, 0, NULL);
@@ -5153,7 +5233,7 @@ static void NewMenuStyle(F_CMD_ARGS)
   MenuStyle *ms;
   MenuStyle *tmpms;
   Bool is_initialised = True;
-  Bool gc_changed = False;
+  Bool has_gc_changed = False;
   Bool is_default_style = False;
   int val[2];
   int n;
@@ -5207,7 +5287,7 @@ static void NewMenuStyle(F_CMD_ARGS)
       ST_HAS_ACTIVE_FORE(tmpms) = 0;
       ST_HAS_ACTIVE_BACK(tmpms) = 0;
       ST_DO_POPUP_AS_ROOT_MENU(tmpms) = 0;
-      gc_changed = True;
+      has_gc_changed = True;
       option = "fvwm";
     }
     else
@@ -5293,7 +5373,7 @@ static void NewMenuStyle(F_CMD_ARGS)
 	free(ST_PSTDFONT(tmpms));
       }
       ST_PSTDFONT(tmpms) = &Scr.StdFont;
-      gc_changed = True;
+      has_gc_changed = True;
       if (ST_HAS_SIDE_COLOR(tmpms) == 1)
       {
 	FreeColors(&ST_SIDE_COLOR(tmpms), 1);
@@ -5320,7 +5400,7 @@ static void NewMenuStyle(F_CMD_ARGS)
 	ST_MENU_COLORS(tmpms).fore = GetColor(arg1);
       else
 	ST_MENU_COLORS(tmpms).fore = GetColor("black");
-      gc_changed = True;
+      has_gc_changed = True;
       break;
 
     case 4: /* Background */
@@ -5329,7 +5409,7 @@ static void NewMenuStyle(F_CMD_ARGS)
 	ST_MENU_COLORS(tmpms).back = GetColor(arg1);
       else
 	ST_MENU_COLORS(tmpms).back = GetColor("grey");
-      gc_changed = True;
+      has_gc_changed = True;
       break;
 
     case 5: /* Greyed */
@@ -5344,7 +5424,7 @@ static void NewMenuStyle(F_CMD_ARGS)
 	ST_MENU_STIPPLE_COLORS(tmpms).fore = GetColor(arg1);
 	ST_HAS_STIPPLE_FORE(tmpms) = 1;
       }
-      gc_changed = True;
+      has_gc_changed = True;
       break;
 
     case 6: /* HilightBack */
@@ -5360,12 +5440,12 @@ static void NewMenuStyle(F_CMD_ARGS)
 	ST_HAS_ACTIVE_BACK(tmpms) = 1;
       }
       ST_DO_HILIGHT(tmpms) = 1;
-      gc_changed = True;
+      has_gc_changed = True;
       break;
 
     case 7: /* HilightBackOff */
       ST_DO_HILIGHT(tmpms) = 0;
-      gc_changed = True;
+      has_gc_changed = True;
       break;
 
     case 8: /* ActiveFore */
@@ -5380,12 +5460,12 @@ static void NewMenuStyle(F_CMD_ARGS)
 	ST_MENU_ACTIVE_COLORS(tmpms).fore = GetColor(arg1);
 	ST_HAS_ACTIVE_FORE(tmpms) = 1;
       }
-      gc_changed = True;
+      has_gc_changed = True;
       break;
 
     case 9: /* ActiveForeOff */
       ST_HAS_ACTIVE_FORE(tmpms) = 0;
-      gc_changed = True;
+      has_gc_changed = True;
       break;
 
     case 10: /* Hilight3DThick */
@@ -5455,7 +5535,7 @@ static void NewMenuStyle(F_CMD_ARGS)
 	ST_PSTDFONT(tmpms)->font = xfs;
 #endif
       }
-      gc_changed = True;
+      has_gc_changed = True;
       break;
 
     case 16: /* MenuFace */
@@ -5647,9 +5727,40 @@ static void NewMenuStyle(F_CMD_ARGS)
 	args, &ST_TITLE_GAP_ABOVE(tmpms), &ST_TITLE_GAP_BELOW(tmpms),
 	DEFAULT_TITLE_TEXT_Y_OFFSET, DEFAULT_TITLE_TEXT_Y_OFFSET2);
       break;
+    case 46: /* MenuColorset */
+      if (GetIntegerArguments(args, NULL, val, 1) == 0 || *val < 0)
+	ST_HAS_MENU_CSET(tmpms) = 0;
+      else
+      {
+	ST_HAS_MENU_CSET(tmpms) = 1;
+	ST_CSET_MENU(tmpms) = *val;
+      }
+      has_gc_changed = True;
+      break;
+    case 47: /* ActiveColorset */
+      if (GetIntegerArguments(args, NULL, val, 1) == 0 || *val < 0)
+	ST_HAS_ACTIVE_CSET(tmpms) = 0;
+      else
+      {
+	ST_HAS_ACTIVE_CSET(tmpms) = 1;
+	ST_CSET_ACTIVE(tmpms) = *val;
+      }
+      has_gc_changed = True;
+      break;
+    case 48: /* GreyedColorset */
+      if (GetIntegerArguments(args, NULL, val, 1) == 0 || *val < 0)
+	ST_HAS_GREYED_CSET(tmpms) = 0;
+      else
+      {
+	ST_HAS_GREYED_CSET(tmpms) = 1;
+	ST_CSET_GREYED(tmpms) = *val;
+      }
+      has_gc_changed = True;
+      break;
 
 #if 0
     case 99: /* PositionHints */
+      /* to be implemented */
       break;
 #endif
 
@@ -5672,10 +5783,10 @@ static void NewMenuStyle(F_CMD_ARGS)
     }
   } /* while */
 
-  if (gc_changed)
+  if (has_gc_changed)
   {
     UpdateMenuStyle(tmpms);
-  } /* if (gc_changed) */
+  } /* if (has_gc_changed) */
 
   if(Menus.DefaultStyle == NULL)
   {

@@ -2,14 +2,8 @@ To find out what should go in this file, see "Information For
 Maintainers of GNU Software" (maintain.texi), the section called
 "Recording Changes".
 
-Alan F. Ho:
-fvwm-logo-colorful.xpm, a prototype of a current default FvwmBanner logo.
-
-Olivier Chapuis:
-fvwm-menu-desktop script for GNOME and KDE desktop menus.
-
 Nagi Aboulenein:
-Original idea for 'previous page' parameter (MoveToPage and GotoPage)
+Original idea for 'previous page' parameter (MoveToPage and GotoPage).
 
 Greg J. Badros:
 Substantial rewrite of fvwm2.0 menuing code to support arbitrary depth
@@ -17,17 +11,16 @@ menus, animated menus, Win95 look, better logically-based shortcut keys,
 auto-splitting of long menus, check for re-used hot-keys, integrated
 LEFT_MENUS option.  Added primitives: animated-moves, SetEnv, fix to
 Echo. Improve modules: Make FvwmM4 pass args on to m4, font-related
-seg-fault bug fix in FvwmButtons
+seg-fault bug fix in FvwmButtons.
 
 Neil Bird:
 Add $c, $r, $n variables for Functions.
 Add Next/Prev conditions to WindowId and WindowList.
 Attempted fix of OLDecor hints use for decorations. Add DestroyStyle command.
 
-Mikhael Goikhman:
-Parsing Restart command, Session*Function and StartFunction special functions,
-{Save|Quit}Session commands, some work on restart logic and session stuff,
-FormFvwmRootCursor, fvwm-menu-* scripts, small fixes.
+Olivier Chapuis:
+fvwm-menu-desktop script for GNOME and KDE desktop menus. Rewrote -version
+command line option to print out configure options.
 
 Matthias Clasen:
 Session management, layered stacking order, maximized shaded windows,
@@ -48,6 +41,11 @@ $d, $x and $y macros for functions.
 Julian Gilbey:
 Fixes in the fvwmrc_convert script.
 
+Mikhael Goikhman:
+Parsing Restart command, Session*Function and StartFunction special functions,
+{Save|Quit}Session commands, some work on restart logic and session stuff,
+FormFvwmRootCursor, fvwm-menu-* scripts, small fixes.
+
 German Gomez Garcia:
 Named MenuStyles.
 
@@ -57,6 +55,9 @@ Private colormaps on subwindows.
 Mike Han:
 Multiple menu hotkeys.
 
+Alan F. Ho:
+fvwm-logo-colorful.xpm, a prototype of a current default FvwmBanner logo.
+
 Albrecht Kadlec:
 Code & manual cleanups, enhancements, Fixes and module-library which
 partially made it into fvwm2.0.42-47d.
@@ -65,6 +66,9 @@ Created FvwmEvent to supersede FvwmAudio (& FvwmAuto).
 
 Andrew Morton:
 MoveThreshold command.
+
+Robert Nation:
+The original author of fvwm.
 
 Tomas Ogren:
 Animated windowshading, "adaptive maximize", various bugfixes.
@@ -77,7 +81,7 @@ Patch fix MoveToPage command without arguments.
 
 Mark Rainford:
 Handling of transient windows in Raise/Lower: reasonable emulation of
-Motif group behaviour is now possible. $v in fvwm commands.
+Motif group behaviour is now possible. $v variable in fvwm commands.
 
 Chris Rankin:
 Rework of signal handlers (fvwm, FvwmButtons, FvwmIconMan, FvwmPager and
@@ -183,7 +187,6 @@ Makoto Matushita
 Grant McDorman
 Henry R. McTague
 Brady Montz
-Robert Nation
 Ludvig A. Norin
 Bill Oswald
 Carsten Paeth

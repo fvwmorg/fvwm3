@@ -953,6 +953,9 @@ Background,
 Greyed,
 HilightBack / HilightBackOff,
 ActiveFore / ActiveForeOff,
+MenuColorset,
+ActiveColorset,
+GreyedColorset,
 Hilight3DThick / Hilight3DThin / Hilight3DOff,
 Hilight3DThickness,
 Animation / AnimationOff,
@@ -1036,6 +1039,31 @@ of the selected menu item on and off. A specific foreground color
 may be used by providing the color name as an argument to
 ActiveFore. Omitting the color name has the same effet as
 using ActiveForeOff.
+
+\fIMenuColorset\fP controls if a colorset is used instead of the
+\fIForeground\fP, \fIBackground\fP and \fIMenuFace\fP menu styles.
+If the \fIMenuColorset\fP keyword is followed by a number equal to
+zero or greater, this number is taken as the number of the colorset
+to use.  If the number is omitted, the colorset is switched off and
+the regular menu styles are used again.  The foreground and
+background colors of the menu items are replaced by the colors from
+the colorset.  If the colorset has a pixmap defined, this pixmap
+is used as the background of the menu.  Note that the MenuFace
+menu style has been optimized for memory consumtion and may use
+less memory than the background from a colorset.  The shape mask
+from the colorset is used to shape the menu.  Please refer to the
+description of the \fIColorset\fP command and the documentation of
+the \fIFvwmTheme\fP module for details about colorsets.
+
+\fIActiveColorset\fP works exactly like \fIMenuColorset\fP, but the
+foreground from the colorset replaces the color given with the
+\fIActiveFore\fP menu style and the colorset's background color
+replaces the color given with the \fIHilightBack\fP command.  The
+pixmap and shape mask from the colorset are not used.
+
+\fIGreyedColorset\fP works exactly like \fIMenuColorset\fP, but the
+foreground from the colorset replaces the color given with the
+\fIGreyed\fP menu style.  No other parts of the colorset are used.
 
 \fIHilight3DThick\fP, \fIHilight3DThin\fP and \fIHilight3DOff\fP
 determine if the selected menu item is hilighted with a 3D relief.

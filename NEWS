@@ -1,5 +1,10 @@
 Changes in beta release 2.3.9
 
+* New function variable $v.
+
+* Menus can use colorsets with the new MenuStyle options MenuColorset,
+  ActiveColorset and GreyedColorset.
+
 Changes in beta release 2.3.8 (September 1999)
 
 * New Style options ResizeOpaque and ResizeOutline.
