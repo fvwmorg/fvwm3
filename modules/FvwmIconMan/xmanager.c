@@ -1512,13 +1512,12 @@ void draw_manager (WinManager *man)
     update_geometry = 1;
     force_draw = 1;
   }
-  if (force_draw || man->buttons.num_windows != 0)
-    clear_empty_region (man);
 
   if (redraw_all || (man->dirty_flags & MAPPING_CHANGED)) {
     force_draw = 1;
     ConsoleDebug (X11, "manager %s: mapping changed\n", man->titlename);
   }
+
   if (FShapesSupported && man->shaped)
   {
     if (redraw_all || (man->dirty_flags & SHAPE_CHANGED)) {
@@ -1532,6 +1531,7 @@ void draw_manager (WinManager *man)
       update_geometry = 1;
     }
   }
+
   if (redraw_all || (man->dirty_flags & GEOMETRY_CHANGED)) {
     ConsoleDebug (X11, "\tredrawing all buttons\n");
     update_geometry = 1;
@@ -1540,6 +1540,15 @@ void draw_manager (WinManager *man)
   if (update_geometry) {
     for (i = 0; i < man->buttons.num_windows; i++)
       set_button_geometry (man, man->buttons.buttons[i]);
+  }
+
+  if (force_draw || update_geometry)
+  {
+    clear_empty_region (man);
+    /* maybe not usefull but safe */
+    if (man->colorsets[DEFAULT] >= 0 &&
+	 Colorset[man->colorsets[DEFAULT]].pixmap == ParentRelative)
+      force_draw = True;
   }
 
   man->dirty_flags = 0;

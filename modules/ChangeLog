@@ -1,5 +1,11 @@
 2002-01-04  olicha  <olivier.chapuis@free.fr>
 
+	* FvwmIconMan/xmanager.c (draw_manager):
+	Fixed Transparency by reducing the number of full redraw.
+	A Transprent FvwmIconMan was almost always empty
+	
+2002-01-04  olicha  <olivier.chapuis@free.fr>
+
 	* FvwmTaskBar/FvwmTaskBar.c (LoopOnEvents):
 	Fixed moving a Transparent TaskBar. Eat up excess Expose events.
 	Fixed resizing an AutoHide TaskBar
