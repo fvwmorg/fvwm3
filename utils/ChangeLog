@@ -1,3 +1,13 @@
+2001-07-25  Mikhael Goikhman  <migo@homemail.com>
+
+	* fvwm-menu-headlines.in:
+	* fvwm-menu-headlines.1:
+	several improvements and enhancements: better comply with HTTP/1.1,
+	so AppWatch does not freeze the script and --buggyproxy is not needed,
+	fixed FreshMeat time format (they changed it), show network errors
+	in the menu with a possibility to reload when network returns instead
+	of dying AND added support for 7 more free software sites
+
 2001-07-22  Mikhael Goikhman  <migo@homemail.com>
 
 	* fvwm-config.in:

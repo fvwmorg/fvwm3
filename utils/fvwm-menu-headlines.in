@@ -6,6 +6,7 @@
 require 5.002;
 use strict;
 use vars qw($siteInfo @smonths @lmonths %smonthHash %lmonthHash);
+use vars qw($errorMenuContent);
 use Getopt::Long;
 use Socket;
 use POSIX qw(strftime);
@@ -46,7 +47,56 @@ local $siteInfo = {
 		'name' => "AppWatch",
 		'host' => "www.appwatch.com",
 		'path' => "/appwatch.rdf",
-		'func' => \&processAppWatch,
+		'func' => \&processPoorRdf,
+		'flds' => 'title, link, description',
+	},
+	'linuxapps' => {
+		'name' => "LinuxApps",
+		'host' => "www.linuxapps.com",
+		'path' => "/backend/linux_basic.txt",
+		'func' => \&processLinuxApps,
+		'flds' => 'headline, date, url',
+	},
+	'justlinux' => {
+		'name' => "JustLinux",
+		'host' => "www.justlinux.com",
+		'path' => "/backend/discussion.rdf",
+		'func' => \&processPoorRdf,
+		'flds' => 'title, link',
+	},
+	'daemonnews' => {
+		'name' => "DaemonNews",
+		'host' => "daily.daemonnews.org",
+		'path' => "/ddn.rdf.php3",
+		'func' => \&processPoorRdf,
+		'flds' => 'title, link',
+	},
+	'gnome-news' => {
+		'name' => "GNOME-News",
+		'host' => "news.gnome.org",
+		'path' => "/rdf",
+		'func' => \&process_GNOME_KDE_News,
+		'flds' => 'title, link',
+	},
+	'kde-news' => {
+		'name' => "KDE-News",
+		'host' => "news.kde.org",
+		'path' => "/rdf",
+		'func' => \&process_GNOME_KDE_News,
+		'flds' => 'title, link',
+	},
+	'freekde' => {
+		'name' => "FreeKDE",
+		'host' => "freekde.org",
+		'path' => "/freekdeorg.rdf",
+		'func' => \&processFreeKDE,
+		'flds' => 'title, link',
+	},
+	'rootprompt' => {
+		'name' => "RootPrompt",
+		'host' => "rootprompt.org",
+		'path' => "/rss/",
+		'func' => \&processRootPrompt,
 		'flds' => 'title, link, description',
 	},
 };
@@ -84,7 +134,7 @@ my $frontpage = undef;
 my @time  = localtime();
 my $menuFile = undef;
 my $fakeFile = undef;
-my $kick = "\n\n";
+my $endl = "\r\n";  # this is preferable for http sockets to "\n"
 
 GetOptions(
 	"help"     => \&showHelp,
@@ -101,7 +151,6 @@ GetOptions(
 	"icon-home=s"  => \$iconH,
 	"wm-icons" => \$wmIcons,
 	"proxy=s"  => \$proxy,
-	"buggyproxy"  => sub { $kick = "\r\n\r\n"; },
 	"frontpage:s" => \$frontpage,
 	"file:s"   => \$menuFile,
 	"fake:s"   => \$fakeFile,
@@ -125,11 +174,11 @@ if (defined $info) {
 }
 
 $site  ||= $defaultSite; $site = lc($site);
+die "Unsupported site '$site'; try --info.\n" unless exists $siteInfo->{$site};
 #$name ||= "MenuHeadlines$siteInfo->{$site}->{'name'}";
 $name  ||= $site;
 $title ||= "$siteInfo->{$site}->{'name'} Headlines";
 
-die "Unsupported site '$site'; try --info.\n" unless exists $siteInfo->{$site};
 my $siteName = $siteInfo->{$site}->{'name'};
 my $siteHost = $siteInfo->{$site}->{'host'};
 my $sitePath = $siteInfo->{$site}->{'path'};
@@ -172,6 +221,7 @@ my $content = "";
 
 $content .= qq(DestroyMenu $name\n);
 $content .= qq(AddToMenu $name "$iconTStr$title" Title\n);
+local $errorMenuContent = $content . "+ `<msg>` DestroyMenu $name\n";
 
 if (defined $frontpage && $frontpage !~ /^b/) {
 	my $cmd = expandAllWidthSpecifiers($commF, {'u' => "http://$siteHost/"});
@@ -182,20 +232,25 @@ if (defined $frontpage && $frontpage !~ /^b/) {
 unless (defined $fakeFile) {
 	# network connection portion is pretty much stolen from 'man perlipc'
 	my $host = $proxy || $siteHost;
-	my $iaddr = inet_aton($host) || dieSys("Can't resolve host $host");
+	my $iaddr = inet_aton($host) || dieNet("Can't resolve host $host");
 	my $paddr = sockaddr_in($port, $iaddr);
 	my $proto = getprotobyname('tcp');
 	socket(SOCK, PF_INET, SOCK_STREAM, $proto) &&
-		connect(SOCK, $paddr) || dieSys("Can't connect host $host");
+		connect(SOCK, $paddr) || dieNet("Can't connect host $host");
 	select(SOCK); $| = 1; select(STDOUT);
 
+	# do http request
+	my $httpHeaders = "$endl" .
+			"Host: $siteHost$endl" .
+			"Connection: close$endl" .
+			"User-Agent: fvwm-menu-headlines/$version$endl$endl";
 	if (defined $proxy) {
-		print SOCK "GET http://$siteHost$sitePath HTTP/1.1$kick";
+		print SOCK "GET http://$siteHost$sitePath HTTP/1.1$httpHeaders";
 	} else {
-		print SOCK "GET $sitePath HTTP/1.1\nHost: $siteHost:80$kick";
+		print SOCK "GET $sitePath HTTP/1.1$httpHeaders";
 	}
 
-	# skip http headers
+	# skip http response headers
 	while (<SOCK> !~ /^\r?\n$/s) {}
 } else {
 	if ($fakeFile) {
@@ -208,7 +263,7 @@ unless (defined $fakeFile) {
 
 my $entries = &$siteFunc;
 
-close(SOCK) || dieSys("Error closing socket");
+close(SOCK) || dieNet("Error closing socket");
 
 foreach (@$entries) {
 	$content .= qq(+ "$iconIStr) .
@@ -237,6 +292,35 @@ exit();
 
 # ---------------------------------------------------------------------------
 
+# make unix time from year (2001 or 101), mon (0..11), day, hour, min, sec
+sub makeTime {  # ($$$$$$$)
+	my ($year, $mon, $day, $hour, $min, $sec, $hourD) = @_;
+	$year = 1973 unless $year && $year > 0;  # it's my year :-)
+	$mon  = 0 unless $mon && $mon > 0 && $mon <= 11;
+	$day  = 1 unless $day && $day > 0 && $day <= 31;
+	$hour = 0 unless $hour && $hour >= 0 && $hour < 24;
+	$min  = 0 unless $min && $min >= 0 && $min < 60;
+	$sec  = 0 unless $sec && $sec >= 0 && $sec < 60;
+
+	return timegm($sec, $min, $hour, $day, $mon, $year) - $hourD * 60 * 60;
+}
+
+sub setEntryAliasesAndTime ($$$$) {
+	my $entry = shift;
+	my $aliases = shift;
+	my $timeSub = shift;
+	my $hOffset = shift;
+
+	my ($alias, $orig);
+	while (($alias, $orig) = each %$aliases) {
+		$entry->{$alias} = !$orig? "":
+			ref($orig) eq 'CODE'? &{$orig}($entry): $entry->{$orig};
+		$entry->{$alias} = "" unless defined $entry->{$alias};
+	}
+
+	$entry->{'_'} = makeTime(&{$timeSub}($entry->{'d'}), $hOffset);
+}
+
 sub processXml ($$$$) {
 	my $entryTag = shift;
 	my $aliases = shift;
@@ -257,13 +341,11 @@ sub processXml ($$$$) {
 			$entry->{$1} = $2;
 		}
 
-		my ($alias, $orig);
-		while (($alias, $orig) = each %$aliases) {
-			$entry->{$alias} = $orig? $entry->{$orig}: "";
-		}
-
-		$entry->{'_'} = makeTime(&{$timeSub}($entry->{'d'}), $hOffset);
-
+		setEntryAliasesAndTime($entry, $aliases, $timeSub, $hOffset);
+		$entry->{'h'} =~ s/&#(\d+);/chr($1)/ge;  # replace &#039; with '
+		$entry->{'h'} =~ s/&gt;/>/g;
+		$entry->{'h'} =~ s/&lt;/</g;
+		$entry->{'h'} =~ s/&amp;/&/g;
 		push @entries, $entry;
 	}
 	return \@entries;
@@ -296,13 +378,7 @@ sub processText ($$$$) {
 			$entry->{$_} = $line;
 		}
 
-		my ($alias, $orig);
-		while (($alias, $orig) = each %$aliases) {
-			$entry->{$alias} = $orig? $entry->{$orig}: "";
-		}
-
-		$entry->{'_'} = makeTime(&{$timeSub}($entry->{'d'}), $hOffset);
-
+		setEntryAliasesAndTime($entry, $aliases, $timeSub, $hOffset);
 		push @entries, $entry;
 	}
 	return \@entries;
@@ -324,7 +400,7 @@ sub processFreshMeat () {
 		[ qw( headline date url ) ],
 		{ 'h' => 'headline', 'u' => 'url', 'd' => 'date' },
 		sub ($) {
-			$_[0] =~ /^(\w+) (\d+)\w* (\d+), (\d+):(\d+)/;
+			$_[0] =~ /^(?:\w+, )?(\w+) (\d+)\w* (\d+),? (\d+):(\d+)/;
 			($3, $lmonthHash{$1}, $2, $4, $5, 0);
 		}, -5 + (abs((localtime())[4] - 5.5) < 3),
 	);
@@ -359,28 +435,65 @@ sub processSegfault () {
 	);
 }
 
-sub processAppWatch () {
+sub processPoorRdf () {
 	return processXml(
 		'item',
 		{ 'h' => 'title', 'u' => 'link', 'd' => undef },
 		sub ($) {
-			# appwatch does not supply the time, how weird...
+			# this site's rdf does not supply the time, how weird...
 			(gmtime())[5,4,3,2,1,0];
 		}, +0,
 	);
 }
 
-# make unix time from year (2001 or 101), mon (0..11), day, hour, min, sec
-sub makeTime ($$$$$$$) {
-	my ($year, $mon, $day, $hour, $min, $sec, $hourD) = @_;
-	$year = 1973 unless $year && $year > 0;  # it's my year :-)
-	$mon  = 0 unless $mon && $mon > 0 && $mon <= 11;
-	$day  = 1 unless $day && $day > 0 && $day <= 31;
-	$hour = 0 unless $hour && $hour >= 0 && $hour < 24;
-	$min  = 0 unless $min && $min >= 0 && $min < 60;
-	$sec  = 0 unless $sec && $sec >= 0 && $sec < 60;
+sub processLinuxApps () {
+	return processText(
+		[ qw( headline date url ) ],
+		{ 'h' => 'headline', 'u' => 'url', 'd' => 'date' },
+		sub ($) {
+			$_[0] =~ /(\w+) (\d+) (\d+):(\d+):(\d+) \w+ (\d+)/;
+			($6, $smonthHash{$1}, $2, $3, $4, $5);
+		}, -5,
+	);
+}
 
-	return timegm($sec, $min, $hour, $day, $mon, $year) - $hourD * 60 * 60;
+sub process_GNOME_KDE_News () {
+	my $linkToTime = sub ($) { $_[0]->{'link'} =~ m|/(\d+)/?$|; $1; };
+	return processXml(
+		'item',
+		{ 'h' => 'title', 'u' => 'link', 'd' => $linkToTime },
+		sub ($) {
+			(gmtime($_[0]))[5,4,3,2,1,0];
+		}, +0,
+	);
+}
+
+sub processFreeKDE () {
+	my $linkToDate = sub ($) {
+		$_[0]->{'link'} =~ m|/(\d\d/\d\d/\d\d)/|; $1? "20$1": '';
+	};
+	return processXml(
+		'item',
+		{ 'h' => 'title', 'u' => 'link', 'd' => $linkToDate },
+		sub ($) {
+			$_[0] =~ m|(\d+)/(\d+)/(\d+)|;
+			($1, ($2 || 0) - 1, $3);
+		}, +0,
+	);
+}
+
+sub processRootPrompt () {
+	my $descToDate = sub ($) {
+		$_[0]->{'description'} =~ /^(\d+ \w{3} \d{4}):/; $1;
+	};
+	return processXml(
+		'item',
+		{ 'h' => 'title', 'u' => 'link', 'd' => $descToDate },
+		sub ($) {
+			$_[0] =~ /(\d+) (\w+) (\d+)/;
+			($3, $smonthHash{$2}, $1);
+		}, +0,
+	);
 }
 
 # ---------------------------------------------------------------------------
@@ -393,6 +506,15 @@ sub dieSys ($) {
 #		# be quiet in non interactive shells?
 #		if ($ENV{'SHLVL'} || 0) == 1 || defined($ENV{'PS1'})
 		;
+	exit(-1);
+}
+
+sub dieNet ($) {
+	my $msg = shift;
+
+	#dieSys($msg);
+	$errorMenuContent =~ s/<msg>/$msg; check network connection/;
+	print $errorMenuContent;
 	exit(-1);
 }
 
@@ -453,7 +575,6 @@ sub showHelp {
 	print "\t--wm-icons       define icon names to use with wm-icons\n";
 	print "\t--frontpage[=V]  show frontpage item; values: top, bottom\n";
 	print "\t--proxy=host[:port] specify proxy host and port (80)\n";
-	print "\t--buggyproxy     try this if your proxy is not standard\n";
 	print "\t--file[=FILE]    menu file, default is $workHome/$site.menu\n";
 	print "\t--fake[=FILE]    don't connect, read input from file\n";
 	print "Short options are ok if not ambiguous: -h, -t.\n";
@@ -496,14 +617,19 @@ B<fvwm-menu-headlines>
 [ B<--wm-icons> ]
 [ B<--frontpage> [where] ]
 [ B<--proxy>|B<-p> host:port ]
-[ B<--buggyproxy>|B<-b> ]
 [ B<--file> [file] ]
 [ B<--fake> [file] ]
 
 =head1 DESCRIPTION
 
-A perl script which builds an fvwm menu definition for headlines of popular
-news web sites: FreshMeat, Slashdot, LinuxToday, Segfault and more.
+This configurable perl script builds an fvwm menu definition for headlines
+of popular news web sites: FreshMeat, Slashdot, LinuxToday, Segfault, AppWatch,
+LinuxApps, JustLinux, DaemonNews, GNOME-News, KDE-News, FreeKDE, RootPrompt
+and more.
+
+It is possible to specify a customized menu item format, change a command
+(usually launching a browser) and add menu icons (there is a support for
+the wm-icons package).
 
 =head1 OPTIONS
 
@@ -533,6 +659,7 @@ Format specifiers for a headline entry:
   %u - url
   %d - date in native format
   %[strftime-argument-string] - date, see strftime(3)
+    the date is represented accourding to the local time
   %{name} - site-specific-named-value
   %(text) - arbitrary text
 
@@ -564,8 +691,6 @@ value can be used to specify where this item will be placed in the menu -
 
 B<--proxy> host[:port] - define a proxy to use.
 Example: --proxy proxy.inter.net:3128
-
-B<--buggyproxy> - try this if your proxy requires non standard end-of-line.
 
 B<--file> [file] - write the menu output to specified file. If no filename is
 given with this option (or empty filename), the default filename
@@ -607,10 +732,10 @@ Then add these lines to your fvwm configuration file:
   + "FreshMeat"  Popup freshmeat
   + "LinuxToday" Popup linuxtoday
   + "Slashdot"   Popup slashdot
-  + "Segfault"   Popup segfault
 
 2. Another way to use this script (only if you have fast network/proxy) is to
 run it every time you want to open your Headlines submenus.
+(Note, the submenu that is once created is not reloaded, use "Reset all".)
 
 In this case your fvwm configuration lines could be:
 
@@ -626,15 +751,29 @@ In this case your fvwm configuration lines could be:
   + "LinuxToday" Popup linuxtoday
   + "Segfault"   Popup segfault
   + "AppWatch"   Popup appwatch
+  + "GNOME News" Popup gnome-news
+  + "KDE News"   Popup kde-news
+  + "" Nop
+  + "Reset all"  FuncResetHeadlines
 
-In the end add "Popup MenuHeadlines" somewhere.
+  DestroyFunc FuncResetHeadlines
+  AddToFunc   FuncResetHeadlines
+  + I DestroyMenu freshmeat
+  + I DestroyMenu linuxtoday
+  + I DestroyMenu slashdot
+  + I DestroyMenu segfault
+  + I DestroyMenu appwatch
+  + I DestroyMenu gnome-news
+  + I DestroyMenu kde-news
+
+And finally, add "Popup MenuHeadlines" somewhere.
 
 3. Here is a usual usage. Use FvwmConsole or FvwmCommand to run fvwm commands
 from a shell script. Every time you want headlines from some site, execute
 (give any additional options if you want):
 
   PipeRead "fvwm-menu-headlines --site segfault --name MenuHeadlinesSegfault"
-  # after several seconds
+  # this will take several seconds, you may use: BusyCursor Read true
   Popup MenuHeadlinesSegfault
 
 =head1 HOW TO ADD SITE HEADLINES
@@ -688,4 +827,4 @@ Report bugs to fvwm-bug@fvwm.org.
 
 =cut
 
-# ***************************************************************************
+# ===========================================================================
