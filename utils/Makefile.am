@@ -22,23 +22,25 @@ INCLUDES = -I$(top_srcdir) $(xpm_CFLAGS) $(X_CFLAGS)
 
 ## The long generation for *.1 is to make both pod2man and 'make -j' happy.
 
-fvwm-menu-xlock.1: fvwm-menu-xlock.in
+_fvwm-menu-xlock.1: fvwm-menu-xlock.in
 	@TMP=tmp-$$$$ && (\
 	mkdir $$TMP && \
 	cp fvwm-menu-xlock.in $$TMP/fvwm-menu-xlock && \
-	pod2man --center "Fvwm Utility" $$TMP/fvwm-menu-xlock >$$TMP/$@ 2>/dev/null && \
-	mv $$TMP/$@ .; \
+	pod2man --center "Fvwm Utility" $$TMP/fvwm-menu-xlock >$$TMP/fvwm-menu-xlock.1 2>/dev/null && \
+	mv $$TMP/fvwm-menu-xlock.1 .; \
 	rm -rf $$TMP)
 
-fvwm-menu-directory.1: fvwm-menu-directory.in
+_fvwm-menu-directory.1: fvwm-menu-directory.in
 	@TMP=tmp-$$$$ && (\
 	mkdir $$TMP && \
 	cp fvwm-menu-directory.in $$TMP/fvwm-menu-directory && \
-	pod2man --center "Fvwm Utility" $$TMP/fvwm-menu-directory >$$TMP/$@ 2>/dev/null && \
-	mv $$TMP/$@ .; \
+	pod2man --center "Fvwm Utility" $$TMP/fvwm-menu-directory >$$TMP/fvwm-menu-directory.1 2>/dev/null && \
+	mv $$TMP/fvwm-menu-directory.1 .; \
 	rm -rf $$TMP)
 
-fvwmbug: fvwmbug.sh FORCE
+pod2man: _fvwm-menu-xlock.1 _fvwm-menu-directory.1
+
+fvwmbug: fvwmbug.sh
 	@rm -f $@
 	BUILDER=$${USER-$${LOGNAME-`whoami`}} && \
 	sed -e 's,xCCx,$(CC),'  -e 's,xCFLAGSx,$(CFLAGS),' \
@@ -46,4 +48,4 @@ fvwmbug: fvwmbug.sh FORCE
 	    -e 's,xlibexecdirx,$(libexecdir),' -e "s,xBUILDERx,$$BUILDER," \
 	    fvwmbug.sh > $@
 
-FORCE: ;
+CLEANFILES = $(bin_SCRIPTS)

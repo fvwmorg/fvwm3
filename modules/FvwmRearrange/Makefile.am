@@ -8,20 +8,17 @@ module_PROGRAMS = FvwmRearrange
 ## Remove from fvwm distribution no later than October, 1999.
 module_SCRIPTS = FvwmCascade FvwmTile
 
-FvwmCascade: FORCE
+FvwmCascade:
 	echo "#!/bin/sh" > $@
 	echo 'modargs="$$1 $$2 $$3 $$4 $$5"' >> $@
 	echo 'shift;shift;shift;shift;shift' >> $@
 	echo exec ${moduledir}'/FvwmRearrange $$modargs -cascade $$@' >> $@
 
-FvwmTile: FORCE
+FvwmTile:
 	echo "#!/bin/sh" > $@
 	echo 'modargs="$$1 $$2 $$3 $$4 $$5"' >> $@
 	echo 'shift;shift;shift;shift;shift' >> $@
 	echo exec ${moduledir}'/FvwmRearrange $$modargs -tile $$@' >> $@
-
-# do nothing, just force the above rules that depend on it...
-FORCE:
 
 EXTRA_DIST = $(man_MANS)
 man_MANS = FvwmRearrange.1

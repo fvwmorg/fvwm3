@@ -10,11 +10,9 @@ man_MANS = FvwmForm.1
 ## This provides compatibility.
 module_SCRIPTS = FvwmTalk
 
-FvwmTalk: FORCE
+FvwmTalk:
 	echo "#!/bin/sh" > $@
 	echo exec ${moduledir}/FvwmForm '$$@' FormFvwmTalk.>> $@
-
-FORCE:
 
 ## NB: Neither _MANS nor _DATA are included by default in
 ## distributions!
@@ -55,4 +53,4 @@ FormFvwmSetup.: FormFvwmSetup.in
 	sed -e 's,xFVWM_CONFIGDIRx,$(FVWM_CONFIGDIR),' $(top_srcdir)/modules/FvwmForm/FormFvwmSetup.in > $@-t
 	mv $@-t $@
 
-CLEANFILES = FormFvwmSetup. FvwmTalk
+CLEANFILES = $(module_SCRIPTS) FormFvwmSetup.

@@ -64,4 +64,4 @@ DestroyModuleConfig         FormFvwmSetup.*
 *FormFvwmSetup.Command   $(TSK?!/bin/cp xFVWM_CONFIGDIRx/ConfigFvwmTaskBar ${FVWM_USERHOME})
 *FormFvwmSetup.Command   $(WIN?!/bin/cp xFVWM_CONFIGDIRx/ConfigFvwmWinList ${FVWM_USERHOME})
 *FormFvwmSetup.Button  quit    "F3 - Restart fvwm"
-*FormFvwmSetup.Command   Restart fvwm2
+*FormFvwmSetup.Command   Restart
