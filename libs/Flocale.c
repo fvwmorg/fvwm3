@@ -64,6 +64,10 @@
 
 /* ---------------------------- local macros -------------------------------- */
 
+#define FIfDrawString(use_16, dpy, d, gc, x, y, s1, s2, l) (use_16) ? \
+	XDrawString16(dpy, d, gc, x, y, s2, l) : \
+	XDrawString(dpy, d, gc, x, y, s1, l)
+
 /* ---------------------------- imports ------------------------------------- */
 
 /* ---------------------------- included code files ------------------------- */
@@ -251,7 +255,7 @@ XChar2b *FlocaleStringToString2b(
 			if (str[i] <= 0x7f)
 			{
 				/* we should convert to ascii */
-#if 0 
+#if 0
 				str2b[j].byte1 = 0xa2; /* magic number! */
 				str2b[j].byte2 = str[i++];
 #endif
@@ -346,7 +350,7 @@ void FlocaleEncodeWinString(
 	fws->e_str = FlocaleEncodeString(
 		dpy, flf, fws->str, do_free, *len, len, NULL);
 	fws->str2b = NULL;
-	
+
 	if (flf->font != None)
 	{
 		if (FLC_ENCODING_TYPE_IS_UTF_8(flf->fc))
@@ -366,7 +370,7 @@ void FlocaleEncodeWinString(
 				free(fws->e_str);
 			}
 			fws->e_str = NULL;
-			*do_free = True;        
+			*do_free = True;
 		}
 	}
 }
@@ -382,64 +386,47 @@ void FlocaleFontStructDrawString(Display *dpy, FlocaleFont *flf, Drawable d,
 				 int len, Bool image)
 {
 	int xt = x, yt = y, step = 0;
+	int is_string16;
 
-	if (FLC_ENCODING_TYPE_IS_UTF_8(flf->fc) || flf->flags.is_mb)
+	is_string16 = (FLC_ENCODING_TYPE_IS_UTF_8(flf->fc) || flf->flags.is_mb);
+	if (is_string16 && fws->str2b == NULL)
 	{
-		if (fws->str2b != NULL)
+		return;
+	}
+
+	if (image)
+	{
+		/* for rotated drawing */
+		if (is_string16)
 		{
-			if (image)
-			{
-				/* for rotated drawing */
-				XDrawImageString16(
-					dpy, d, gc, x, y, fws->str2b, len);
-			}
-			else
-			{
-				/* normal drawing */
-				if (flf->shadow_size != 0 && has_fg_pixels)
-				{
-					XSetForeground(dpy, fws->gc, fgsh);
-					while(FlocaleGetShadowTextPosition(
-						flf, fws, x, y, &xt, &yt, &step))
-					{
-						XDrawString16(
-							dpy, d, gc, xt, yt,
-							fws->str2b, len);
-					}
-					XSetForeground(dpy, gc, fg);
-				}
-				XDrawString16(
-					dpy, d, gc, xt,yt, fws->str2b, len);
-			}
+			XDrawImageString16(dpy, d, gc, x, y, fws->str2b, len);
+		}
+		else
+		{
+			XDrawImageString(dpy, d, gc, x, y, fws->e_str, len);
 		}
 	}
 	else
 	{
-		if (image)
+		/* normal drawing */
+		if (flf->shadow_size != 0 && has_fg_pixels)
 		{
-			/* for rotated drawing */
-			XDrawImageString(dpy, d, gc, x, y, fws->e_str, len);
-		}
-		else
-		{
-			/* normale drawing */
-			if (flf->shadow_size != 0 && has_fg_pixels)
+			XSetForeground(dpy, fws->gc, fgsh);
+			while(FlocaleGetShadowTextPosition(
+				      flf, fws, x, y, &xt, &yt, &step))
 			{
-				XSetForeground(dpy, fws->gc, fgsh);
-				while(FlocaleGetShadowTextPosition(
-						     flf, fws, x, y,
-						     &xt, &yt, &step))
-				{
-					XDrawString(
-						dpy, d, gc,
-						xt, yt,
-						fws->e_str, len);
-				}
-				XSetForeground(dpy, gc, fg);
+				FIfDrawString(
+					is_string16, dpy, d, gc, xt, yt,
+					fws->e_str, fws->str2b, len);
 			}
-			XDrawString(dpy, d, gc, xt, yt, fws->e_str, len);
+			XSetForeground(dpy, gc, fg);
 		}
+		FIfDrawString(
+			is_string16, dpy, d, gc, xt, yt, fws->e_str,
+			fws->str2b, len);
 	}
+
+	return;
 }
 
 /* ***************************************************************************
@@ -978,7 +965,7 @@ FlocaleFont *FlocaleLoadFont(Display *dpy, char *fontname, char *module)
 
 	/* But first see if we have a shadow relief and/or an encoding */
 	str = fontname;
-	while ((i = GetTokenIndex(str, prefix_list, -1, &str)) > -1) 
+	while ((i = GetTokenIndex(str, prefix_list, -1, &str)) > -1)
 	{
 		str = GetQuotedString(str, &opt_str, ":", NULL, NULL, NULL);
 		switch(i)
@@ -1523,7 +1510,7 @@ void FlocaleDrawString(
 	Bool do_free = False;
 	Pixel fg = 0, fgsh = 0;
 	Bool has_fg_pixels = False;
-	
+
 	if (!fws || !fws->str)
 	{
 		return;
@@ -1537,7 +1524,7 @@ void FlocaleDrawString(
 	{
 		len = strlen(fws->str);
 	}
-	
+
 	/* encode the string */
 	FlocaleEncodeWinString(dpy, flf, fws, &do_free, &len);
 
