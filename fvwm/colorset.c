@@ -273,7 +273,14 @@ void parse_colorset(int n, char *line)
 	XGCValues xgcv;
 	static char *name = "parse_colorset";
 	Window win = Scr.SizeWindow;
-	static GC gc = None;
+	static GC gc = None, monoGC = None;
+
+	/* initialize statucs */
+	if (gc == None)
+	{
+		gc = fvwmlib_XCreateGC(dpy, win, 0, &xgcv);
+		monoGC = fvwmlib_XCreateGC(dpy, Scr.ScratchMonoPixmap,0, &xgcv);
+	}
 
 	/* make sure it exists and has sensible contents */
 	if (nColorsets <= n) {
@@ -288,6 +295,7 @@ void parse_colorset(int n, char *line)
 	while (nColorsets <= n)
 	{
 		colorset_struct *ncs = &Colorset[nColorsets];
+
 		have_pixels_changed = True;
 		if (privateCells && XAllocColorCells(
 			/* grab four writeable cells */
@@ -317,34 +325,27 @@ void parse_colorset(int n, char *line)
 			/* grab four shareable colors */
 			if (Pdepth < 2) {
 				/* monochrome monitors get black on white */
-				/* FIXME: add a gray pixmap background */
-				Colorset[nColorsets].fg = GetColor(black);
-				Colorset[nColorsets].bg = GetColor(white);
-				Colorset[nColorsets].hilite = GetColor(white);
-				Colorset[nColorsets].shadow = GetColor(black);
+				/* FIXME: with a gray pixmap background */
+				ncs->fg = GetColor(black);
+				ncs->bg = GetColor(white);
+				ncs->hilite = GetColor(white);
+				ncs->shadow = GetColor(black);
 			}
 			else
 			{
-				Colorset[nColorsets].fg = GetColor(black);
-				Colorset[nColorsets].bg = GetColor(gray);
-				Colorset[nColorsets].hilite =
-					GetHilite(Colorset[nColorsets].bg);
-				Colorset[nColorsets].shadow =
-					GetShadow(Colorset[nColorsets].bg);
+				ncs->fg = GetColor(black);
+				ncs->bg = GetColor(gray);
+				ncs->hilite = GetHilite(ncs->bg);
+				ncs->shadow = GetShadow(ncs->bg);
 			}
 			/* set flags for fg contrast, bg average */
 			/* in case just a pixmap is given */
-			Colorset[nColorsets].color_flags =
-				FG_CONTRAST | BG_AVERAGE;
+			ncs->color_flags = FG_CONTRAST | BG_AVERAGE;
 		}
 		nColorsets++;
 	}
 
 	cs = &Colorset[n];
-	if (gc == None)
-	{
-		gc = fvwmlib_XCreateGC(dpy, win, 0, &xgcv);
-	}
 
 	/* ---------- Parse the options ---------- */
 	while (line && *line)
@@ -444,18 +445,18 @@ void parse_colorset(int n, char *line)
 					{
 						XCopyArea(
 							dpy, cs->picture->mask,
-							cs->mask, Scr.MonoGC,
+							cs->mask, monoGC,
 							0, 0,
 							cs->width, cs->height,
 							0, 0);
 						/* Invert the mask. We use it to draw the background. */
 						XSetFunction(
-							dpy, Scr.MonoGC, GXinvert);
+							dpy, monoGC, GXinvert);
 						XFillRectangle(
 							dpy, cs->mask,
-							Scr.MonoGC, 0, 0,
+							monoGC, 0, 0,
 							cs->width, cs->height);
-						XSetFunction(dpy, Scr.MonoGC, GXcopy);
+						XSetFunction(dpy, monoGC, GXcopy);
 					}
 				}
 			}
@@ -520,8 +521,8 @@ void parse_colorset(int n, char *line)
 								dpy, mask, picture->width, picture->height, 1);
 							if (cs->shape_mask != None)
 							{
-								XCopyPlane(dpy, mask, cs->shape_mask, Scr.MonoGC, 0, 0,
-								 picture->width, picture->height, 0, 0, 1);
+								XCopyPlane(dpy, mask, cs->shape_mask, monoGC, 0, 0,
+									picture->width, picture->height, 0, 0, 1);
 							}
 						}
 					}
@@ -655,10 +656,14 @@ void parse_colorset(int n, char *line)
 			}
 			else
 			{
-				/* look them all up, XQueryColors() can't handle more than 256 */
+				/* look them all up, XQueryColors() can't
+				 * handle more than 256 */
 				for (i = 0; i < k; i += 256)
-					XQueryColors(dpy, Pcmap, &colors[i], min(k - i, 256));
-				/* calculate average, ignore overflow: .red is short, red is long */
+					XQueryColors(
+						dpy, Pcmap, &colors[i],
+						min(k - i, 256));
+				/* calculate average, ignore overflow:
+				 * .red is short, red is long */
 				for (i = 0; i < k; i++)
 				{
 					red += colors[i].red;
@@ -950,29 +955,9 @@ void alloc_colorset(int n)
 	if (n < nColorsets)
 		return;
 
-	/* increment n to get the required array size, get a new array */
-	Colorset = (colorset_struct *)saferealloc(
-		(char *)Colorset, ++n * sizeof(colorset_struct));
-
-	/* zero out the new members */
-	memset(
-		&Colorset[nColorsets], 0,
-		(n - nColorsets) * sizeof(colorset_struct));
-
-	/* copy colorset 0 pixels into new members so that if undefined ones are
-	 * referenced at least they don't give black on black */
-	if (n > 1)
-	{
-		for ( ; nColorsets < n; nColorsets++)
-		{
-			Colorset[nColorsets].fg = Colorset[0].fg;
-			Colorset[nColorsets].bg = Colorset[0].bg;
-			Colorset[nColorsets].hilite = Colorset[0].hilite;
-			Colorset[nColorsets].shadow = Colorset[0].shadow;
-		}
-	}
-
-	nColorsets = n;
+	/* parse_colorset resizes the array if necessary
+	 * so just use it to get a sensible default */
+	parse_colorset(n, "");
 }
 
 /* ---------------------------- builtin commands ---------------------------- */

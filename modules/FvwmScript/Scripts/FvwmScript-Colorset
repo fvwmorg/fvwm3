@@ -2,7 +2,7 @@
 # I can't believe how big this is
 # I haven't got the energy to implement a Save button
 # Just goes to show that command lines are better
-# Don't switch on Dynamic update unless using *FvwmThemeReadWriteColors
+# Don't switch on Dynamic update unless using ReadWriteColors
 WindowTitle	{Colorset Editor}
 WindowSize	380 290
 Colorset 0
@@ -13,7 +13,7 @@ Init
   Set $Cset = 0
   Set $OldCset = 0
   Set $Color = (GetBack 1)
-  Do {SendToModule FvwmTheme Colorset } $Cset { Pixmap, Background #} $Color {, Foreground Contrast}
+  Do {Colorset } $Cset { Pixmap, Background #} $Color {, Foreground Contrast}
   # Sliders are initially hidden
   HideWidget 1
   HideWidget 2
@@ -183,10 +183,10 @@ Main
    End
   Else
    Begin
-    # I think ther might be a bug in FvwmTheme that resets a colrset to a copy of 0
+    # I think there might be a bug in Colorset that resets a colorset to a copy of 0
     # if {pixmap} is used to select a plain background
     Set $Color = (GetBack 1)
-    Do {SendToModule FvwmTheme Colorset } $Cset { Pixmap, Background #} $Color {, Foreground Contrast}
+    Do {Colorset } $Cset { Pixmap, Background #} $Color {, Foreground Contrast}
     Set $OldCset = $Cset
    End
  End
@@ -239,7 +239,7 @@ Main
   Set $Color = $Color {/} (NumToHex (GetValue 2) 2)
   Set $Color = $Color {/} (NumToHex (GetValue 3) 2)
   # pick the current colorset
-  Set $Command = {SendToModule FvwmTheme Colorset } $Cset
+  Set $Command = {Colorset } $Cset
   # pick the type to set
   If (GetValue 10) == 1 Then
    Set $Command = $Command { Foreground } $Color

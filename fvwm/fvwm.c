@@ -758,6 +758,10 @@ void StartupStuff(void)
 #define startFuncName "StartFunction"
   const char *initFuncName;
 
+  /* make sure colorset 0 exists in case modules get started that use colorsets
+   * and the startup files/commands have not created any */
+  alloc_colorset(0);
+
   CaptureAllWindows(False);
   /* Turn off the SM stuff after the initial capture so that new windows will
    * not be matched by accident. */
@@ -1390,13 +1394,7 @@ static void InitVariables(void)
   Scr.DefaultIcon = NULL;
 
   Scr.DefaultColorset = -1;
-  alloc_colorset(0);
-  /* set up colorset 0 so that if FvwmTheme fails to start any modules
-   * using colorsets don't appear black on black */
-  Colorset[0].fg = Scr.StdFore = GetColor(DEFAULT_FORE_COLOR);
-  Colorset[0].bg = Scr.StdBack = GetColor(DEFAULT_BACK_COLOR);
-  Colorset[0].hilite = Scr.StdHilite = GetHilite(Scr.StdBack);
-  Colorset[0].shadow = Scr.StdShadow = GetShadow(Scr.StdBack);
+
   Scr.StdGC = 0;
   Scr.StdReliefGC = 0;
   Scr.StdShadowGC = 0;
