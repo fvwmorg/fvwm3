@@ -697,8 +697,6 @@ Bool PlaceWindow(
 	PageRight  -= pdeltax;
 	PageTop    -= pdeltay;
 	PageBottom -= pdeltay;
-	screen_g.x -= pdeltax;
-	screen_g.y -= pdeltay;
       }
     }
   }
@@ -735,9 +733,9 @@ Bool PlaceWindow(
   {
     flags.do_not_use_wm_placement = True;
   }
-  else if (!((!(tmp_win->wmhints && (tmp_win->wmhints->flags & StateHint) &&
-                tmp_win->wmhints->initial_state == IconicState))
-             || flags.do_honor_starts_on_page))
+  else if (!flags.do_honor_starts_on_page &&
+	   tmp_win->wmhints && (tmp_win->wmhints->flags & StateHint) &&
+	   tmp_win->wmhints->initial_state == IconicState)
   {
     flags.do_forbid_manual_placement = True;
 #if 0

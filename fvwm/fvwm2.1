@@ -5224,8 +5224,8 @@ style used to handle the situation.
 .I CaptureHonorsStartsOnPage
 causes the initial capture (of an already existing window) at
 startup to place the window according to the
-.I StartsOnPage
-desk and page specification.
+.IR StartsOnPage " and " StartsOnScreen
+desk, page and Xinerama screen specification.
 .I CaptureIgnoresStartsOnPage
 causes fvwm to ignore these settings (including
 .IR StartsOnDesk )
@@ -5234,8 +5234,8 @@ on initial capture.  The default is
 
 .I RecaptureHonorsStartsOnPage
 causes a window to be placed according to, or revert to, the
-.I StartsOnPage
-desk and page specification on
+.IR StartsOnPage " and " StartsOnScreen
+desk, page and Xinerama screen specification on
 .BR Restart " or " Recapture .
 .I RecaptureIgnoresStartsOnPage
 causes fvwm to respect the current window position on

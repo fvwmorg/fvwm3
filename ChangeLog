@@ -1,3 +1,9 @@
+2001-08-10  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* fvwm/placement.c (PlaceWindow):
+	rewrote a condition to improve readability
+	fixed StartsOn... w/ SkipMapping
+
 2001-08-09  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* fvwm/session.c (MatchWinToSM):
