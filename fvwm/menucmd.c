@@ -84,7 +84,6 @@ static void menu_func(F_CMD_ARGS, Bool fStaysUp)
 	MenuReturn mret;
 	FvwmWindow *fw2;
 	int tc;
-	extern FvwmWindow *Fw;
 
 	memset(&mops, 0, sizeof(mops));
 	memset(&mret, 0, sizeof(MenuReturn));
@@ -127,16 +126,8 @@ static void menu_func(F_CMD_ARGS, Bool fStaysUp)
 
 	memset(&mp, 0, sizeof(mp));
 	mp.menu = menu;
-	if (*Module >= 0)
-	{
-		fw2 = NULL;
-		tc = C_ROOT;
-	}
-	else
-	{
-		fw2 = (fw != None) ? fw : Fw;
-		tc = context;
-	}
+	fw2 = fw;
+	tc = context;
 	mp.pfw = &fw2;
 	mp.pcontext = &tc;
 	MR_IS_TEAR_OFF_MENU(menu) = 0;
