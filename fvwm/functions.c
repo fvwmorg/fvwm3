@@ -265,10 +265,15 @@ static char *expand(char *input, char *arguments[], FvwmWindow *tmp_win)
 {
   int l,i,l2,n,k,j;
   char *out;
+  int addto = 0; /*special cas if doing addtofunc */
 
   l = strlen(input);
   l2 = l;
 
+  if(strncasecmp(input, "AddToFunc", 9) == 0 || input[0] == '+')
+  {
+    addto = 1;
+  }
   i=0;
   while(i<l)
     {
@@ -331,8 +336,16 @@ static char *expand(char *input, char *arguments[], FvwmWindow *tmp_win)
 		    out[j++] = arguments[n][k];
 		  i++;
 		}
-	      else
+            else if (addto == 1) 
+        {
 		out[j++] = '$';
+        }
+          else
+        {
+          i++;
+          if (isspace(input[i+1]))
+            i++; /*eliminates extra white space*/
+        }
 	      break;
 	    case 'w':
 	      if(tmp_win)
