@@ -531,8 +531,8 @@ void frame_init(void)
 	xswa.override_redirect = True;
 	xswa.backing_store = NotUseful;
 	xswa.save_under = False;
-	xswa.background_pixmap = None;
 	xswa.win_gravity = UnmapGravity;
+	xswa.background_pixmap = None;
 	valuemask = CWOverrideRedirect | CWSaveUnder | CWBackingStore |
 		CWBackPixmap | CWWinGravity;
 	hide_wins.parent = Scr.Root;
@@ -990,22 +990,22 @@ static void frame_hide_changing_window_parts(
 
 	/* cover top/left borders */
 	XMoveResizeWindow(
-		dpy, hide_wins.w[0], 0, 0, mra->next_g.width,
+		dpy, hide_wins.w[0], 0, 0, mra->current_g.width,
 		mra->b_g.top_left.height);
 	XMoveResizeWindow(
 		dpy, hide_wins.w[1], 0, 0, mra->b_g.top_left.width,
-		mra->next_g.height);
+		mra->current_g.height);
 	/* cover bottom/right borders and possibly part of the client */
 	x_add = (mra->dstep_g.width < 0) ? -mra->dstep_g.width : 0;
 	y_add = (mra->dstep_g.height < 0) ? -mra->dstep_g.height : 0;
 	XMoveResizeWindow(
 		dpy, hide_wins.w[2],
-		mra->next_g.width - mra->b_g.bottom_right.width - x_add, 0,
-		mra->next_g.width + x_add, mra->b_g.top_left.height);
+		0, mra->current_g.height - mra->b_g.bottom_right.height - y_add,
+		mra->current_g.width, mra->b_g.top_left.height + y_add);
 	XMoveResizeWindow(
-		dpy, hide_wins.w[3], 0,
-		mra->next_g.height - mra->b_g.bottom_right.height - y_add,
-		mra->b_g.top_left.width, mra->next_g.height + y_add);
+		dpy, hide_wins.w[3],
+		mra->current_g.width - mra->b_g.bottom_right.width - x_add, 0,
+		mra->b_g.top_left.width + x_add, mra->current_g.height);
 	for (i = 0; i < 4; i++)
 	{
 		XMapWindow(dpy, hide_wins.w[i]);

@@ -2,6 +2,8 @@
 
 	* fvwm/frame.c (frame_get_sidebar_geometry):
 	fixed layout of windows with a small height
+	(frame_hide_changing_window_parts):
+	fixed flickering
 
 	* fvwm/borders.c:
 	* fvwm/frame.c:
