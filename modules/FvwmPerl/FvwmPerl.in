@@ -1,0 +1,82 @@
+#!@PERL@
+
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+
+require 5.003;
+use strict;
+
+BEGIN {
+	use vars qw($prefix $datadir);
+	$prefix = "@prefix@";
+	$datadir = "@datadir@";
+}
+
+use lib "@FVWM_PERLLIBDIR@";
+use FVWM::Module;
+
+# ----------------------------------------------------------------------------
+# main
+
+my $options = {
+	# not yet
+};
+my $module = new FVWM::Module(
+	Name => "FvwmPerl",
+	Mask => M_STRING,
+	EnableOptions => $options,
+	EnableAlias => 1,
+);
+
+# ----------------------------------------------------------------------------
+# prepare the environment that may be used in the sent perl commands
+
+my $version = "@VERSION@";
+
+my ($a, $b, $c, $d, $e, $f, $g, $h) = ("", "", "", "", "", "", "", "");
+my (@a, @b, @c, @d, @e, @f, @g, @h);
+my (%a, %b, %c, %d, %e, %f, %g, %h);
+
+sub command ($) {
+	my $command = shift;
+	$module->sendText(0, $command);
+}
+
+# ----------------------------------------------------------------------------
+# handlers
+
+sub processString ($$$$$$) {
+	my $self = $_[0];
+	my $string = $_[5];
+
+	my ($command, $rest) = split(/ /, $string, 2);
+	$command = lc($command);
+
+	if ($command eq "eval") {
+		eval $rest;
+		if ($@) {
+			print STDERR "[", $self->name, "]: Error in eval: $@\n";
+		}
+	}
+	if ($command eq "load") {
+		# not yet
+	}
+	if ($command eq "stop") {
+		die "quit";
+	}
+}
+
+$module->addHandler(M_STRING, \&processString);
+
+$module->eventLoop;

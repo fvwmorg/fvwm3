@@ -662,6 +662,8 @@ modules/FvwmIconMan/Makefile
 modules/FvwmIdent/Makefile
 modules/FvwmM4/Makefile
 modules/FvwmPager/Makefile
+modules/FvwmPerl/Makefile
+modules/FvwmPerl/FvwmPerl
 modules/FvwmRearrange/Makefile
 modules/FvwmSave/Makefile
 modules/FvwmSaveDesk/Makefile

@@ -1,7 +1,8 @@
 ## Process this file with automake to create Makefile.in
 
-SUBDIRS = FvwmAnimate FvwmAuto FvwmBacker FvwmBanner FvwmButtons FvwmCommand \
-	  FvwmConsole FvwmCpp FvwmDebug FvwmDragWell FvwmEvent FvwmForm \
-	  FvwmGtk FvwmIconBox FvwmIconMan FvwmIdent FvwmM4 FvwmPager \
-	  FvwmRearrange FvwmSave FvwmSaveDesk FvwmScript FvwmScroll \
-	  FvwmTaskBar FvwmTheme FvwmWharf FvwmWinList
+SUBDIRS = \
+	FvwmAnimate FvwmAuto FvwmBacker FvwmBanner FvwmButtons FvwmCommand \
+	FvwmConsole FvwmCpp FvwmDebug FvwmDragWell FvwmEvent FvwmForm \
+	FvwmGtk FvwmIconBox FvwmIconMan FvwmIdent FvwmM4 FvwmPager \
+	FvwmPerl FvwmRearrange FvwmSave FvwmSaveDesk FvwmScript FvwmScroll \
+	FvwmTaskBar FvwmTheme FvwmWharf FvwmWinList
