@@ -60,6 +60,7 @@
 
 #include "libs/Module.h"
 #include "libs/fvwmlib.h"
+#include "libs/ModGraph.h"
 #include "FvwmButtons.h"
 #include "misc.h" /* ConstrainSize() */
 #include "parse.h" /* ParseOptions() */
@@ -120,11 +121,12 @@ void Slide(panel_info *, button_info *);
 
 Display *Dpy;
 Window Root;
+Graphics *G;
+GC trans_gc;
 Window MyWindow;
 char *MyName;
 XFontStruct *font;
 int screen;
-int d_depth;
 
 int x_fd,fd_width;
 
@@ -405,9 +407,6 @@ void SetTransparentBackground(button_info *ub,int w,int h)
 {
   Pixmap pmap_mask;
   button_info *b;
-  GC gc;
-  XGCValues gvals;
-  unsigned long gcm=0;
   Window root_return;
   int x_return, y_return;
   unsigned int width_return, height_return;
@@ -417,10 +416,9 @@ void SetTransparentBackground(button_info *ub,int w,int h)
   XFontStruct *font;
 
   pmap_mask = XCreatePixmap(Dpy,MyWindow,w,h,1);
-  gc = XCreateGC(Dpy,pmap_mask,(unsigned long)0,&gvals);
-  XSetForeground(Dpy,gc,0);
-  XFillRectangle(Dpy,pmap_mask,gc,0,0,w,h);
-  XSetForeground(Dpy,gc,1);
+  XSetForeground(Dpy,trans_gc,0);
+  XFillRectangle(Dpy,pmap_mask,trans_gc,0,0,w,h);
+  XSetForeground(Dpy,trans_gc,1);
 
   /*
    * if button has an icon, draw a rect with the same size as the icon
@@ -439,16 +437,16 @@ void SetTransparentBackground(button_info *ub,int w,int h)
 
 	  number=buttonNum(b);
 	  if (b->icon->mask == None)
-	    XFillRectangle(Dpy,pmap_mask,gc,x_return, y_return,
+	    XFillRectangle(Dpy,pmap_mask,trans_gc,x_return, y_return,
 			   b->icon->width,b->icon->height);
 	  else
-	    XCopyArea(Dpy,b->icon->mask,pmap_mask,gc,0,0,
+	    XCopyArea(Dpy,b->icon->mask,pmap_mask,trans_gc,0,0,
 		      b->icon->width,b->icon->height,x_return,y_return);
 	}
       else
 	{
 	  number=buttonNum(b);
-	  XFillRectangle(Dpy,pmap_mask,gc,buttonXPos(b,number),
+	  XFillRectangle(Dpy,pmap_mask,trans_gc,buttonXPos(b,number),
 			 buttonYPos(b,number),
 			 buttonWidth(b),buttonHeight(b));
 	}
@@ -457,14 +455,10 @@ void SetTransparentBackground(button_info *ub,int w,int h)
       font=buttonFont(b);
       if(b->flags&b_Title && font)
 	{
-	  gcm = GCForeground | GCFont;
-	  gvals.foreground=1;
-	  gvals.font = font->fid;
-	  XChangeGC(Dpy,gc,gcm,&gvals);
-	  DrawTitle(b,pmap_mask,gc);
+	  XSetFont(Dpy,trans_gc,font->fid);
+	  DrawTitle(b,pmap_mask,trans_gc);
 	}
     }
-  XFreeGC(Dpy,gc);
   XShapeCombineMask(Dpy,MyWindow,ShapeBounding,0,0,pmap_mask,ShapeSet);
 }
 #endif
@@ -494,7 +488,6 @@ int myErrorHandler(Display *dpy, XErrorEvent *event)
 **/
 int main(int argc, char **argv)
 {
-  char *display_name = NULL;
   int i;
   Window root;
   int x,y,maxx,maxy,border_width,depth;
@@ -555,12 +548,18 @@ int main(int argc, char **argv)
 
   fd[0]=atoi(argv[1]);
   fd[1]=atoi(argv[2]);
-  if (!(Dpy = XOpenDisplay(display_name)))
+  if (!(Dpy = XOpenDisplay(NULL)))
     {
       fprintf(stderr,"%s: Can't open display %s", MyName,
-	      XDisplayName(display_name));
+	      XDisplayName(NULL));
       exit (1);
     }
+  G = CreateGraphics();
+  G->create_foreGC = True;
+  G->create_reliefGC = True;
+  G->create_shadowGC = True;
+  InitGraphics(Dpy, G);
+  
   x_fd=XConnectionNumber(Dpy);
   fd_width=GetFdWidth();
 
@@ -571,7 +570,6 @@ int main(int argc, char **argv)
       fprintf(stderr,"%s: Screen %d is not valid\n",MyName,screen);
       exit(1);
     }
-  d_depth = DefaultDepth(Dpy, screen);
 
   oldErrorHandler=XSetErrorHandler(myErrorHandler);
 
@@ -597,6 +595,7 @@ int main(int argc, char **argv)
   UberButton->swallow = 1; /* the panel is shown */
 
   ParseOptions(UberButton);
+  SavePictureCMap(Dpy, G->viz, G->cmap, G->depth); /* store the cmap */
 
   for (CurrentPanel = MainPanel, LastPanel = NULL;
        CurrentPanel != NULL;
@@ -633,7 +632,6 @@ int main(int argc, char **argv)
 
     /* Load fonts and icons, calculate max buttonsize */
     maxx=0;maxy=0;
-    InitPictureCMap(Dpy,Root); /* store the root cmap */
     RecursiveLoadData(UberButton,&maxx,&maxy);
 
 # ifdef DEBUG_INIT
@@ -691,8 +689,9 @@ int main(int argc, char **argv)
   XMapSubwindows(Dpy,MyWindow);
   XMapWindow(Dpy,MyWindow);
 
-  SetMessageMask(fd, M_NEW_DESK | M_END_WINDOWLIST | M_MAP | M_WINDOW_NAME |
-		 M_RES_CLASS | M_CONFIG_INFO | M_END_CONFIG_INFO | M_RES_NAME);
+  SetMessageMask(fd, M_NEW_DESK | M_END_WINDOWLIST | M_MAP | M_WINDOW_NAME
+		 | M_RES_CLASS | M_CONFIG_INFO | M_END_CONFIG_INFO | M_RES_NAME
+		 | M_SENDCONFIG);
 
   /* request a window list, since this triggers a response which
    * will tell us the current desktop and paging status, needed to
@@ -1261,6 +1260,7 @@ void CreateWindow(button_info *ub,int maxx,int maxy)
   XGCValues gcv;
   unsigned long gcm;
   XClassHint myclasshints;
+  XSetWindowAttributes xswa;
 
   x = CurrentPanel->uber->x; /* Geometry x where to put the panel */
   y = CurrentPanel->uber->y; /* Geometry y where to put the panel */
@@ -1345,24 +1345,6 @@ void CreateWindow(button_info *ub,int maxx,int maxy)
   mysizehints.win_gravity = gravity;
 
 # ifdef DEBUG_INIT
-  fprintf(stderr,"colors...");
-# endif
-  if(d_depth < 2)
-    {
-      back_pix = GetColor("white");
-      fore_pix = GetColor("black");
-      hilite_pix = back_pix;
-      shadow_pix = fore_pix;
-    }
-  else
-    {
-      back_pix = GetColor(ub->c->back);
-      fore_pix = GetColor(ub->c->fore);
-      hilite_pix = GetHilite(back_pix);
-      shadow_pix = GetShadow(back_pix);
-    }
-
-# ifdef DEBUG_INIT
   if(mysizehints.flags&USPosition)
     fprintf(stderr,"create(%i,%i,%u,%u,1,%u,%u)...",
 	    mysizehints.x,mysizehints.y,
@@ -1374,11 +1356,41 @@ void CreateWindow(button_info *ub,int maxx,int maxy)
 	    (ushort)fore_pix,(ushort)back_pix);
 # endif
 
-  MyWindow = XCreateSimpleWindow(Dpy,Root,mysizehints.x,mysizehints.y,
-				 mysizehints.width,mysizehints.height,
-				 0,fore_pix,back_pix);
-  if(ub->c->flags&b_IconBack && !(ub->c->flags&b_TransBack))
-    XSetWindowBackgroundPixmap(Dpy,MyWindow,ub->c->backicon->picture);
+  xswa.colormap = G->cmap;
+  xswa.border_pixel = 0;
+  xswa.background_pixmap = None;
+  MyWindow = XCreateWindow(Dpy,Root,mysizehints.x,mysizehints.y,
+			   mysizehints.width,mysizehints.height,0,G->depth,
+			   InputOutput,G->viz,
+			   CWColormap|CWBackPixmap|CWBorderPixel,&xswa);
+  /* create a GC for doig transparency */
+  trans_gc = XCreateGC(Dpy,MyWindow,(unsigned long)0,&gcv);
+
+# ifdef DEBUG_INIT
+  fprintf(stderr,"colors...");
+# endif
+  if (!G->useFvwmLook) {
+    if(G->depth < 2) {
+      back_pix = GetColor("white");
+      fore_pix = GetColor("black");
+      hilite_pix = back_pix;
+      shadow_pix = fore_pix;
+    } else {
+      back_pix = GetColor(ub->c->back);
+      fore_pix = GetColor(ub->c->fore);
+      hilite_pix = GetHilite(back_pix);
+      shadow_pix = GetShadow(back_pix);
+    }
+    if(ub->c->flags&b_IconBack && !(ub->c->flags&b_TransBack)) {
+      XSetWindowBackgroundPixmap(Dpy,MyWindow,ub->c->backicon->picture);
+    } else {
+      XSetWindowBackground(Dpy,MyWindow,back_pix);
+    }
+  } else {
+    SetWindowBackground(Dpy,MyWindow,mysizehints.width,mysizehints.height,
+			&(G->bg), &(G->bgtype));
+  }
+
 
 
 # ifdef DEBUG_INIT
@@ -1431,7 +1443,7 @@ void CreateWindow(button_info *ub,int maxx,int maxy)
       gcv.font = ub->c->font->fid;
       gcm |= GCFont;
     }
-  NormalGC = XCreateGC(Dpy, Root, gcm, &gcv);
+  NormalGC = XCreateGC(Dpy, MyWindow, gcm, &gcv);
 
   free(myclasshints.res_class);
   free(myclasshints.res_name);
@@ -1460,8 +1472,11 @@ int PleaseAllocColor(XColor *color)
 
   sprintf(buf,"x c #%04x%04x%04x",color->red,color->green,color->blue);
   xpm[1]=buf;
-  attr.valuemask=XpmCloseness;
+  attr.valuemask=XpmCloseness|XpmVisual|XpmColormap|XpmDepth;
   attr.closeness=40000; /* value used by fvwm and fvwmlib */
+  attr.visual = G->viz;
+  attr.colormap = G->cmap;
+  attr.depth = G->depth;
 
   if(XpmCreateImageFromData(Dpy,xpm,&dummy1,&dummy2,&attr)!=XpmSuccess)
     {
@@ -1492,13 +1507,11 @@ void nocolor(const char *a, const char *b)
 Pixel GetColor(char *name)
 {
   XColor color;
-  XWindowAttributes attributes;
 
-  XGetWindowAttributes(Dpy,Root,&attributes);
   color.pixel = 0;
-  if (!XParseColor (Dpy, attributes.colormap, name, &color))
+  if (!XParseColor (Dpy, G->cmap, name, &color))
     nocolor("parse",name);
-  else if(!MyAllocColor(Dpy,attributes.colormap,&color))
+  else if(!MyAllocColor(Dpy,G->cmap,&color))
     nocolor("alloc",name);
   return color.pixel;
 }
@@ -1678,6 +1691,15 @@ void process_message(unsigned long type,unsigned long *body)
     case M_RES_CLASS:
     case M_WINDOW_NAME:
       CheckForHangon(body);
+      break;
+    case M_CONFIG_INFO:
+      { /* there's only one config line of interest at this point */
+	char *line = (char *)&body[3];
+	if (strncasecmp(line, DEFGRAPHSTR, DEFGRAPHLEN)==0)
+	  if (ParseGraphics(Dpy, line, G))
+	    SetWindowBackground(Dpy, MyWindow, Width, Height,
+				&(G->bg), &(G->bgtype));
+      }
       break;
     default:
       break;

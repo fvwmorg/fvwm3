@@ -50,6 +50,7 @@
 /* -------------------------------- more  ---------------------------------- */
 
 #include "libs/fvwmlib.h"
+#include "libs/ModGraph.h"
 #include "libs/Picture.h"
 
 
@@ -79,6 +80,7 @@
 				 * altered */
 #define b_PosFixed   0x00080000 /* User provided button position */
 #define b_SizeSmart  0x00100000 /* Improved button box sizing */
+#define b_FvwmLook   0x00200000	/* use fvwm default colors and font */
 
 /* Flags for b->swallow */
 #define b_Count       0x03 /* Init counter for swallowing */
@@ -196,6 +198,7 @@ char *mymalloc(int);
 
 extern Display *Dpy;
 extern Window Root;
+extern Graphics *G;
 extern Window MyWindow;
 extern char *MyName;
 extern button_info *UberButton,*CurrentButton;
@@ -205,7 +208,6 @@ extern char *imagePath;
 extern int fd[];
 
 extern int screen;
-extern int d_depth;
 extern int new_desk;
 extern GC  NormalGC;
 extern int x,y,xneg,yneg,w,h; /* Dirty... */

@@ -36,13 +36,9 @@
 
 #include <X11/Xlib.h>
 #include <X11/Intrinsic.h>
-/*
-#include <X11/Xutil.h>
-#include <X11/Xatom.h>
-#include <X11/Xproto.h>
-*/
 
-#include <libs/Module.h>
+#include "libs/ModGraph.h"
+#include "libs/Module.h"
 #include "FvwmButtons.h"
 #include "button.h"
 
@@ -301,9 +297,10 @@ void ParseContainer(char **ss,button_info *b)
 	case 2: /* Font */
 	  if (b->c->font_string) free(b->c->font_string);
 	  b->c->font_string=seekright(&s);
-	  if(b->c->font_string)
+	  if(b->c->font_string) {
 	    b->c->flags|=b_Font;
-	  else
+	    b->c->flags&=~b_FvwmLook;
+	  } else
 	    b->c->flags&=~b_Font;
 	  break;
 	case 3: /* Frame */
@@ -318,17 +315,19 @@ void ParseContainer(char **ss,button_info *b)
 	      b->c->flags|=b_IconBack;
 	  if (b->c->back) free(b->c->back);
 	  b->c->back=seekright(&s);
-	  if(b->c->back)
+	  if(b->c->back) {
 	    b->c->flags|=b_Back;
-	  else
+	    b->c->flags&=~b_FvwmLook;
+	  } else
 	    b->c->flags&=~(b_IconBack|b_Back);
 	  break;
 	case 5: /* Fore */
 	  if (b->c->fore) free(b->c->fore);
 	  b->c->fore=seekright(&s);
-	  if(b->c->fore)
+	  if(b->c->fore) {
 	    b->c->flags|=b_Fore;
-	  else
+	    b->c->flags&=~b_FvwmLook;
+	  } else
 	    b->c->flags&=~b_Fore;
 	  break;
 	case 6: /* Padding */
@@ -489,27 +488,30 @@ void match_string(button_info **uberb,char *s)
 		  b->flags|=b_IconBack;
 	      if(b->flags&b_Back && b->back) free(b->back);
 	      b->back=seekright(&s);
-	      if(b->back)
+	      if(b->back) {
 		b->flags|=b_Back;
-	      else
+		b->flags&=~b_FvwmLook;
+	      } else
 		b->flags&=~(b_IconBack|b_Back);
 	      break;
 
 	    case 1: /* Fore */
 	      if(b->flags&b_Fore && b->fore) free(b->fore);
 	      b->fore=seekright(&s);
-	      if(b->fore)
+	      if(b->fore) {
 		b->flags|=b_Fore;
-	      else
+		b->flags&=~b_FvwmLook;
+	      } else
 		b->flags&=~b_Fore;
 	      break;
 
 	    case 2: /* Font */
 	      if(b->flags&b_Font && b->font_string) free(b->font_string);
 	      b->font_string=seekright(&s);
-	      if(b->font_string)
+	      if(b->font_string) {
 		b->flags|=b_Font;
-	      else
+		b->flags&=~b_FvwmLook;
+	      } else
 		b->flags&=~b_Font;
 	      break;
 
@@ -899,6 +901,7 @@ void ParseConfigLine(button_info **ubb,char *s)
       }
     case 1:/* Font */
       CopyString(&ub->c->font_string,s);
+      ub->c->flags&=~b_FvwmLook;
       break;
     case 2:/* Padding */
       i=sscanf(s,"%d %d",&j,&k);
@@ -915,9 +918,11 @@ void ParseConfigLine(button_info **ubb,char *s)
       break;
     case 5:/* Back */
       CopyString(&(ub->c->back),s);
+      ub->c->flags&=~b_FvwmLook;
       break;
     case 6:/* Fore */
       CopyString(&(ub->c->fore),s);
+      ub->c->flags&=~b_FvwmLook;
       break;
     case 7:/* Frame */
       i=sscanf(s,"%d",&j);
@@ -936,6 +941,7 @@ void ParseConfigLine(button_info **ubb,char *s)
       else
         CopyString(&(ub->c->back_file),s);
       ub->c->flags|=b_IconBack;
+      G->useFvwmLook = False;
       break;
     case 10:/* Panel */
       s = trimleft(s);
@@ -1019,29 +1025,34 @@ extern int save_color_limit;            /* global for xpm color limiting */
 void ParseOptions(button_info *ub)
 {
   char *s;
-  char *items[]={"imagepath","colorlimit",NULL,NULL};
+  char *items[]={NULL,DEFGRAPHSTR,"imagepath","colorlimit",NULL};
 
-  items[2]=mymalloc(strlen(MyName)+2);
-  sprintf(items[2],"*%s",MyName);
+  items[0]=mymalloc(strlen(MyName)+2);
+  sprintf(items[0],"*%s",MyName);
 
   GetConfigLine(fd,&s);
   while(s && s[0])
     {
-      switch(GetTokenIndex(s,items,-1,&s))
+      char *rest;
+      switch(GetTokenIndex(s,items,-1,&rest))
 	{
 	case -1:
 	  break;
 	case 0:
-	  if (imagePath)
-	    free(imagePath);
-	  CopyString(&imagePath,s);
+	  if(rest && rest[0] && !config_file)
+	    ParseConfigLine(&ub,rest);
 	  break;
-	case 1:                         /* colorlimit */
-          sscanf(s,"%d",&save_color_limit);
+	case 1:
+	  ParseGraphics(Dpy, s, G);
 	  break;
 	case 2:
-	  if(s && s[0] && !config_file)
-	    ParseConfigLine(&ub,s);
+	  if (imagePath)
+	    free(imagePath);
+	  CopyString(&imagePath,rest);
+	  break;
+	case 3:                         /* colorlimit */
+          sscanf(rest,"%d",&save_color_limit);
+	  break;
 	}
       GetConfigLine(fd,&s);
     }
@@ -1049,6 +1060,6 @@ void ParseOptions(button_info *ub)
   if(config_file)
     ParseConfigFile(ub);
 
-  free(items[2]);
+  free(items[0]);
   return;
 }

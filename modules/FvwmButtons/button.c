@@ -160,6 +160,8 @@ int buttonYPad(button_info *b)
 **/
 XFontStruct *buttonFont(button_info *b)
 {
+  if (b->flags&b_FvwmLook)
+    return G->font;
   if(b->flags&b_Font)
     return b->font;
   while((b=b->parent))
@@ -353,6 +355,8 @@ button_info *alloc_button(button_info *ub,int num)
   b->h=1;
   b->bw=1;
 
+  if (ub->flags & b_FvwmLook)
+    b->flags|=b_FvwmLook;
   return(b);
 }
 
@@ -364,6 +368,8 @@ void MakeContainer(button_info *b)
 {
   b->c=(container_info*)mymalloc(sizeof(container_info));
   b->flags|=b_Container;
+  if (G->useFvwmLook)
+    b->flags|=b_FvwmLook;
   b->c->buttons=NULL;
   b->c->num_buttons=0;
   b->c->num_rows=0;
@@ -388,6 +394,7 @@ void MakeContainer(button_info *b)
       b->c->fore=strdup("black");
       b->c->framew=2;
     }
+
 }
 
 /* -------------------------- button administration ------------------------ */

@@ -84,8 +84,9 @@ void CreateIconWindow(button_info *b)
     }
 
   attributes.background_pixel = buttonBack(b);
+  attributes.background_pixmap = None;
   attributes.event_mask = ExposureMask;
-  valuemask =  CWEventMask | CWBackPixel;
+  valuemask =  CWEventMask | CWBackPixmap;
 
   if(b->icon->width<1 || b->icon->height<1)
     {
@@ -95,7 +96,9 @@ void CreateIconWindow(button_info *b)
   b->IconWin=XCreateWindow(Dpy,MyWindow,0,0,b->icon->width,b->icon->height,
 			   0, CopyFromParent, CopyFromParent,CopyFromParent,
 			   valuemask,&attributes);
-
+  if (attributes.background_pixel != None)
+    XSetWindowBackground(Dpy, b->IconWin, attributes.background_pixel);
+    
 #ifdef XPM
 #ifdef SHAPE
   if (b->icon->mask!=None)
@@ -120,8 +123,8 @@ void CreateIconWindow(button_info *b)
 			b->icon->picture,ShapeSet);
 #endif
 
-      temp = XCreatePixmap(Dpy,Root,b->icon->width,
-			   b->icon->height,d_depth);
+      temp = XCreatePixmap(Dpy,MyWindow,b->icon->width,
+			   b->icon->height,G->depth);
       XCopyPlane(Dpy,b->icon->picture,temp,NormalGC,
 		 0,0,b->icon->width,b->icon->height,0,0,1);
 

@@ -1,3 +1,7 @@
+1999-05-04  Hippo
+
+	* FvwmButtons/*.c: does dynamic color changing.
+
 1999-05-03  Dominik Vogt  <dominik_vogt@gmx.de>
 
 	* FvwmAudio/FvwmAudio.c (config): fixed coredump

@@ -51,6 +51,7 @@
 #include "icons.h" /* ConfigureIconWindow() */
 #include "button.h"
 #include "draw.h"
+#include "libs/ModGraph.h"
 
 /* ---------------- Functions that design and draw buttons ----------------- */
 
@@ -229,13 +230,29 @@ void RedrawButton(button_info *b,int clean)
 	    rev=1;
 	}
     }
-  RelieveButton(MyWindow,f,x,y,BW,BH,buttonHilite(b),buttonShadow(b),rev);
+
+  /* draw relief around button with lib functions if using fvwm graphics */
+  if (b->flags&b_FvwmLook) {
+    GC reliefGC = G->reliefGC;
+    GC shadowGC = G->shadowGC;
+    GC temp;
+    
+    if(f<0) {
+      f=-f;
+      temp=reliefGC;reliefGC=shadowGC;shadowGC=temp;
+    }
+    if(rev) {
+      temp=reliefGC;reliefGC=shadowGC;shadowGC=temp;
+    }
+    RelieveRectangle(Dpy, MyWindow, x, y, BW, BH, reliefGC, shadowGC, f);
+  } else
+    RelieveButton(MyWindow,f,x,y,BW,BH,buttonHilite(b),buttonShadow(b),rev);
 
   /* ----------------------------------------------------------------------- */
 
   f=abs(f);
 
-  if(clean && BW>2*f && BH>2*f)
+  if(clean && BW>2*f && BH>2*f && !(b->flags&b_FvwmLook))
     {
       gcm = GCForeground;
       gcv.foreground=buttonBack(b);
@@ -261,14 +278,17 @@ void RedrawButton(button_info *b,int clean)
 
   /* ----------------------------------------------------------------------- */
 
-  if(b->flags&b_Title && font)
-    {
+  if(b->flags&b_Title) {
+    if (!(b->flags&b_FvwmLook) && font) {
       gcm = GCForeground | GCFont;
       gcv.foreground=buttonFore(b);
       gcv.font = font->fid;
       XChangeGC(Dpy,NormalGC,gcm,&gcv);
       DrawTitle(b,MyWindow,NormalGC);
+    } else {
+      DrawTitle(b, MyWindow, G->foreGC);
     }
+  }
 }
 
 /**
