@@ -5,12 +5,12 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307	 USA
  */
 
 #include "config.h"
@@ -47,10 +47,10 @@ static void MapDesk(int desk, Bool grab);
  *
  * Allowed: 0,1,or 2 pixel pan frames.
  *
- * 0   completely disables mouse  edge scrolling,  even  while dragging a
+ * 0   completely disables mouse  edge scrolling,  even	 while dragging a
  * window.
  *
- * 1 gives the  smallest pan frames,  which seem to  work best  except on
+ * 1 gives the	smallest pan frames,  which seem to  work best	except on
  * some servers.
  *
  * 2 is the default.
@@ -65,14 +65,14 @@ static unsigned int prev_page_y = 0;
  * Parse arguments for "Desk" and "MoveToDesk" (formerly "WindowsDesk"):
  *
  * (nil)       : desk number = current desk
- * n           : desk number = current desk + n
- * 0 n         : desk number = n
- * n x         : desk number = current desk + n
+ * n	       : desk number = current desk + n
+ * 0 n	       : desk number = n
+ * n x	       : desk number = current desk + n
  * 0 n min max : desk number = n, but limit to min/max
  * n min max   : desk number = current desk + n, but wrap around at desk #min
- *               or desk #max
+ *		 or desk #max
  * n x min max : desk number = current desk + n, but wrap around at desk #min
- *               or desk #max
+ *		 or desk #max
  *
  * The current desk number is returned if not enough parameters could be
  * read (or if action is empty).
@@ -126,13 +126,13 @@ static int GetDeskNumber(char *action)
 	}
       else
 	{
-          /*  min > max is nonsense, so swap 'em.  */
+	  /*  min > max is nonsense, so swap 'em.  */
 	  min = val[m+1];
 	  max = val[m];
 	}
       if (desk < min)
 	{
-          /*  Relative move outside of range, wrap around.  */
+	  /*  Relative move outside of range, wrap around.  */
 	  if (val[0] < 0)
 	    desk = max;
 	  else
@@ -140,7 +140,7 @@ static int GetDeskNumber(char *action)
 	}
       else if (desk > max)
 	{
-          /*  Relative move outside of range, wrap around.  */
+	  /*  Relative move outside of range, wrap around.  */
 	  if (val[0] > 0)
 	    desk = min;
 	  else
@@ -213,12 +213,12 @@ void setEdgeThickness(F_CMD_ARGS)
   n = GetIntegerArguments(action, NULL, &val, 1);
   if(n != 1) {
     fvwm_msg(ERR,"setEdgeThickness",
-             "EdgeThickness requires 1 numeric argument, found %d args",n);
+	     "EdgeThickness requires 1 numeric argument, found %d args",n);
     return;
   }
-  if (val < 0 || val > 2) {             /* check range */
+  if (val < 0 || val > 2) {		/* check range */
     fvwm_msg(ERR,"setEdgeThickness",
-             "EdgeThickness arg must be between 0 and 2, found %d",val);
+	     "EdgeThickness arg must be between 0 and 2, found %d",val);
     return;
   }
   edge_thickness = val;
@@ -294,7 +294,7 @@ void SetDeskSize(F_CMD_ARGS)
   Scr.VxMax = (val[0] <= 0)? 0: val[0]*Scr.MyDisplayWidth-Scr.MyDisplayWidth;
   Scr.VyMax = (val[1] <= 0)? 0: val[1]*Scr.MyDisplayHeight-Scr.MyDisplayHeight;
   BroadcastPacket(M_NEW_PAGE, 5,
-                  Scr.Vx, Scr.Vy, Scr.CurrentDesk, Scr.VxMax, Scr.VyMax);
+		  Scr.Vx, Scr.Vy, Scr.CurrentDesk, Scr.VxMax, Scr.VyMax);
 
   checkPanFrames();
 
@@ -521,7 +521,7 @@ Bool HandlePaging(int HorWarpSize, int VertWarpSize, int *xl, int *yt,
   XWarpPointer(dpy,None,Scr.Root,0,0,0,0,*xl,*yt);
   MoveViewport(Scr.Vx + *delta_x,Scr.Vy + *delta_y,False);
   XQueryPointer(dpy, Scr.Root, &JunkRoot, &JunkChild,
-                xl, yt, &JunkX, &JunkY, &JunkMask);
+		xl, yt, &JunkX, &JunkY, &JunkMask);
   if(Grab)
     MyXUngrabServer(dpy);
 
@@ -581,11 +581,11 @@ void checkPanFrames(void)
     XResizeWindow (dpy, Scr.PanFrameLeft.win, edge_thickness,
 		   Scr.MyDisplayHeight);
     XMoveResizeWindow (dpy, Scr.PanFrameRight.win,
-                       Scr.MyDisplayWidth - edge_thickness, 0,
-                       edge_thickness, Scr.MyDisplayHeight);
+		       Scr.MyDisplayWidth - edge_thickness, 0,
+		       edge_thickness, Scr.MyDisplayHeight);
     XMoveResizeWindow (dpy, Scr.PanFrameBottom.win,
-                       0, Scr.MyDisplayHeight - edge_thickness,
-                       Scr.MyDisplayWidth, edge_thickness);
+		       0, Scr.MyDisplayHeight - edge_thickness,
+		       Scr.MyDisplayWidth, edge_thickness);
     last_edge_thickness = edge_thickness;
   }
 
@@ -766,148 +766,136 @@ void MoveViewport(int newx, int newy, Bool grab)
       Identify the bounding rectangle that will be moved into
       the viewport.
   */
-  PageBottom    =  Scr.MyDisplayHeight - deltay;
-  PageRight     =  Scr.MyDisplayWidth  - deltax;
-  PageTop       =  0 - deltay;
-  PageLeft      =  0 - deltax;
+  PageBottom	=  Scr.MyDisplayHeight - deltay;
+  PageRight	=  Scr.MyDisplayWidth  - deltax;
+  PageTop	=  0 - deltay;
+  PageLeft	=  0 - deltax;
 
   Scr.Vx = newx;
   Scr.Vy = newy;
   BroadcastPacket(M_NEW_PAGE, 5,
-                  Scr.Vx, Scr.Vy, Scr.CurrentDesk, Scr.VxMax, Scr.VyMax);
+		  Scr.Vx, Scr.Vy, Scr.CurrentDesk, Scr.VxMax, Scr.VyMax);
 
-if (deltax%Scr.MyDisplayWidth!=0 || deltay%Scr.MyDisplayHeight!=0)
-fprintf(stderr,"mv: dx=%d, dy=%d, px=%d, py=%d, nx=%d, ny=%d\n", deltax,deltay,prev_page_x,prev_page_y,newx,newy);
   if((deltax!=0)||(deltay!=0))
   {
 
-/*
- * RBW - 11/13/1998  - new:  chase the chain bidirectionally, all at once!
- * The idea is to move the windows that are moving out of the viewport from
- * the bottom of the stacking order up, to minimize the expose-redraw overhead.
- * Windows that will be moving into view will be moved top down, for the same
- * reason. Use the new  stacking-order chain, rather than the old
- * last-focussed chain.
- */
+    /*
+     * RBW - 11/13/1998	 - new:	 chase the chain bidirectionally, all at once!
+     * The idea is to move the windows that are moving out of the viewport from
+     * the bottom of the stacking order up, to minimize the expose-redraw
+     * overhead. Windows that will be moving into view will be moved top down,
+     * for the same reason. Use the new	 stacking-order chain, rather than the
+     * old last-focussed chain.
+     *
+     * domivogt (29-Nov-1999): It's faster to first map windows top to bottom
+     * and then unmap windows bottom up.
+     */
     t = Scr.FvwmRoot.stack_next;
-    t1 = Scr.FvwmRoot.stack_prev;
-    while (t != &Scr.FvwmRoot || t1 != &Scr.FvwmRoot)
+    while (t != &Scr.FvwmRoot)
     {
-      if (t != &Scr.FvwmRoot)
+      /*
+       * If the window is moving into the viewport...
+       */
+      txl = t->frame_g.x;
+      tyt = t->frame_g.y;
+      txr = t->frame_g.x + t->frame_g.width;
+      tyb = t->frame_g.y + t->frame_g.height;
+      if (IS_STICKY(t) && !IS_VIEWPORT_MOVED(t))
       {
-	/*
-	 * If the window is moving into the viewport...
-	 */
-	txl = t->frame_g.x;
-	tyt = t->frame_g.y;
-	txr = t->frame_g.x + t->frame_g.width;
-	tyb = t->frame_g.y + t->frame_g.height;
-	if (IS_STICKY(t) && !IS_VIEWPORT_MOVED(t) && !IS_VIEWPORT_MOVED(t))
+	/* the absolute position has changed */
+	t->normal_g.x -= deltax;
+	t->normal_g.y -= deltay;
+	t->max_g.x -= deltax;
+	t->max_g.y -= deltay;
+	SET_VIEWPORT_MOVED(t, 1); /*  Block double move.  */
+      }
+      if ((txr >= PageLeft && txl <= PageRight
+	   && tyb >= PageTop && tyt <= PageBottom)
+	  && !IS_VIEWPORT_MOVED(t)
+	  && !IS_WINDOW_BEING_MOVED_OPAQUE(t))
+      {
+	SET_VIEWPORT_MOVED(t, 1); /*  Block double move.  */
+	/* If the window is iconified, and sticky Icons is set,
+	 * then the window should essentially be sticky */
+	if(!(IS_ICONIFIED(t) && IS_ICON_STICKY(t)) && !IS_STICKY(t))
 	{
-	  /* the absolute position has changed */
-	  t->normal_g.x -= deltax;
-	  t->normal_g.y -= deltay;
-	  t->max_g.x -= deltax;
-	  t->max_g.y -= deltay;
-	  SET_VIEWPORT_MOVED(t, 1); /*  Block double move.  */
+	  if(!(IS_ICON_STICKY(t)))
+	  {
+	    t->icon_x_loc += deltax;
+	    t->icon_xl_loc += deltax;
+	    t->icon_y_loc += deltay;
+	    if(t->icon_pixmap_w != None)
+	      XMoveWindow(dpy,t->icon_pixmap_w,t->icon_x_loc,
+			  t->icon_y_loc);
+	    if(t->icon_w != None)
+	      XMoveWindow(dpy,t->icon_w,t->icon_x_loc,
+			  t->icon_y_loc+t->icon_p_height);
+	    if(!(IS_ICON_UNMAPPED(t)))
+	    {
+	      BroadcastPacket(M_ICON_LOCATION, 7,
+			      t->w, t->frame,
+			      (unsigned long)t,
+			      t->icon_x_loc, t->icon_y_loc,
+			      t->icon_p_width,
+			      t->icon_w_height+t->icon_p_height);
+	    }
+	  }
+	  SetupFrame(t, t->frame_g.x+ deltax, t->frame_g.y + deltay,
+		     t->frame_g.width, t->frame_g.height, False);
 	}
-	if (IS_STICKY(t1) && !IS_VIEWPORT_MOVED(t1) && !IS_VIEWPORT_MOVED(t1))
-	{
-	  /* the absolute position has changed */
-	  t1->normal_g.x -= deltax;
-	  t1->normal_g.y -= deltay;
-	  t1->max_g.x -= deltax;
-	  t1->max_g.y -= deltay;
-	  SET_VIEWPORT_MOVED(t1, 1); /*  Block double move.  */
-	}
-	if ((txr >= PageLeft && txl <= PageRight
+      }
+      /*  Bump to next win...	 */
+      t = t->stack_next;
+    }
+    t1 = Scr.FvwmRoot.stack_prev;
+    while (t1 != &Scr.FvwmRoot)
+    {
+      /*
+       *If the window is not moving into the viewport...
+       */
+      txl = t1->frame_g.x;
+      tyt = t1->frame_g.y;
+      txr = t1->frame_g.x + t1->frame_g.width;
+      tyb = t1->frame_g.y + t1->frame_g.height;
+      if (! (txr >= PageLeft && txl <= PageRight
 	     && tyb >= PageTop && tyt <= PageBottom)
-	    && !IS_VIEWPORT_MOVED(t)
-	    && !IS_WINDOW_BEING_MOVED_OPAQUE(t))
-	{
-	  SET_VIEWPORT_MOVED(t, 1); /*  Block double move.  */
-	  /* If the window is iconified, and sticky Icons is set,
-	   * then the window should essentially be sticky */
-	  if(!(IS_ICONIFIED(t) && IS_ICON_STICKY(t)) && !IS_STICKY(t))
-	  {
-	    if(!(IS_ICON_STICKY(t)))
-	    {
-	      t->icon_x_loc += deltax;
-	      t->icon_xl_loc += deltax;
-	      t->icon_y_loc += deltay;
-	      if(t->icon_pixmap_w != None)
-		XMoveWindow(dpy,t->icon_pixmap_w,t->icon_x_loc,
-			    t->icon_y_loc);
-	      if(t->icon_w != None)
-		XMoveWindow(dpy,t->icon_w,t->icon_x_loc,
-			    t->icon_y_loc+t->icon_p_height);
-	      if(!(IS_ICON_UNMAPPED(t)))
-	      {
-		BroadcastPacket(M_ICON_LOCATION, 7,
-				t->w, t->frame,
-				(unsigned long)t,
-				t->icon_x_loc, t->icon_y_loc,
-				t->icon_p_width,
-				t->icon_w_height+t->icon_p_height);
-	      }
-	    }
-	    SetupFrame(t, t->frame_g.x+ deltax, t->frame_g.y + deltay,
-		       t->frame_g.width, t->frame_g.height, False);
-	  }
-	}
-	/*  Bump to next win...    */
-	t = t->stack_next;
-      }
-      if (t1 != &Scr.FvwmRoot)
+	  && !IS_VIEWPORT_MOVED(t1)
+	  && !IS_WINDOW_BEING_MOVED_OPAQUE(t1))
       {
-	/*
-	 *If the window is not moving into the viewport...
-	 */
-	txl = t1->frame_g.x;
-	tyt = t1->frame_g.y;
-	txr = t1->frame_g.x + t1->frame_g.width;
-	tyb = t1->frame_g.y + t1->frame_g.height;
-	if (! (txr >= PageLeft && txl <= PageRight
-	       && tyb >= PageTop && tyt <= PageBottom)
-	    && !IS_VIEWPORT_MOVED(t1)
-	    && !IS_WINDOW_BEING_MOVED_OPAQUE(t1))
+	/* If the window is iconified, and sticky Icons is set,
+	 * then the window should essentially be sticky */
+	if (!(IS_ICONIFIED(t1) && IS_ICON_STICKY(t1)) && !IS_STICKY(t1))
 	{
-	  SET_VIEWPORT_MOVED(t1, 1); /* Block double move.*/
-	  /* If the window is iconified, and sticky Icons is set,
-	   * then the window should essentially be sticky */
-	  if (!(IS_ICONIFIED(t1) && IS_ICON_STICKY(t1)) && !IS_STICKY(t1))
+	  if (!IS_ICON_STICKY(t1))
 	  {
-	    if (!IS_ICON_STICKY(t1))
+	    t1->icon_x_loc += deltax;
+	    t1->icon_xl_loc += deltax;
+	    t1->icon_y_loc += deltay;
+	    if(t1->icon_pixmap_w != None)
+	      XMoveWindow(dpy,t1->icon_pixmap_w,
+			  t1->icon_x_loc,
+			  t1->icon_y_loc);
+	    if(t1->icon_w != None)
+	      XMoveWindow(dpy,t1->icon_w,t1->icon_x_loc,
+			  t1->icon_y_loc+t1->icon_p_height);
+	    if(!IS_ICON_UNMAPPED(t1))
 	    {
-	      t1->icon_x_loc += deltax;
-	      t1->icon_xl_loc += deltax;
-	      t1->icon_y_loc += deltay;
-	      if(t1->icon_pixmap_w != None)
-		XMoveWindow(dpy,t1->icon_pixmap_w,
-			    t1->icon_x_loc,
-			    t1->icon_y_loc);
-	      if(t1->icon_w != None)
-		XMoveWindow(dpy,t1->icon_w,t1->icon_x_loc,
-			    t1->icon_y_loc+t1->icon_p_height);
-	      if(!IS_ICON_UNMAPPED(t1))
-	      {
-		BroadcastPacket(M_ICON_LOCATION, 7,
-				t1->w, t1->frame,
-				(unsigned long)t1,
-				t1->icon_x_loc, t1->icon_y_loc,
-				t1->icon_p_width,
-				t1->icon_w_height +
-				t1->icon_p_height);
-	      }
+	      BroadcastPacket(M_ICON_LOCATION, 7,
+			      t1->w, t1->frame,
+			      (unsigned long)t1,
+			      t1->icon_x_loc, t1->icon_y_loc,
+			      t1->icon_p_width,
+			      t1->icon_w_height +
+			      t1->icon_p_height);
 	    }
-	    SetupFrame(t1, t1->frame_g.x+ deltax,
-		       t1->frame_g.y + deltay, t1->frame_g.width,
-		       t1->frame_g.height, False);
 	  }
+	  SetupFrame(t1, t1->frame_g.x+ deltax,
+		     t1->frame_g.y + deltay, t1->frame_g.width,
+		     t1->frame_g.height, False);
 	}
-	/*  Bump to next win...    */
-	t1 = t1->stack_prev;
       }
+      /*  Bump to next win...	 */
+      t1 = t1->stack_prev;
     }
     for (t = Scr.FvwmRoot.next; t != NULL; t = t->next)
     {
@@ -992,26 +980,26 @@ void UnmapDesk(int desk, Bool grab)
     if(!(IS_ICONIFIED(t) && IS_ICON_STICKY(t)) &&
        !(IS_STICKY(t)) && !IS_ICON_UNMAPPED(t))
       {
-        if(t->Desk == desk)
-        {
-         if (Scr.Focus == t)
+	if(t->Desk == desk)
+	{
+	 if (Scr.Focus == t)
 	   t->FocusDesk = desk;
-         else
+	 else
 	   t->FocusDesk = -1;
-         UnmapIt(t);
-        }
+	 UnmapIt(t);
+	}
       }
     else
       {
-        /*  If a sticky window has the focus,remember it.  */
-        if (Scr.Focus == t)
-          {
-            t->FocusDesk = desk;
-          }
-        else
-          {
-            t->FocusDesk = -1;
-          }
+	/*  If a sticky window has the focus,remember it.  */
+	if (Scr.Focus == t)
+	  {
+	    t->FocusDesk = desk;
+	  }
+	else
+	  {
+	    t->FocusDesk = -1;
+	  }
       }
   }
   if (grab)
@@ -1033,9 +1021,9 @@ return;
  *=======================================================================*/
 void MapDesk(int desk, Bool grab)
 {
-  FvwmWindow    *t;
-  FvwmWindow    *FocusWin = NULL;
-  FvwmWindow    *StickyWin = NULL;
+  FvwmWindow	*t;
+  FvwmWindow	*FocusWin = NULL;
+  FvwmWindow	*StickyWin = NULL;
 
   if (grab)
   {
@@ -1047,20 +1035,20 @@ void MapDesk(int desk, Bool grab)
     if(!(IS_ICONIFIED(t) && IS_ICON_STICKY(t)) &&
        !(IS_STICKY(t)) && !IS_ICON_UNMAPPED(t))
       {
-        if(t->Desk == desk)
-        {
-          MapIt(t);
-        }
+	if(t->Desk == desk)
+	{
+	  MapIt(t);
+	}
       }
     else
       {
-        /*  If window is sticky, just update its desk (it's still mapped).  */
-        t->Desk = desk;
-        if (Scr.Focus == t)
-          {
-            t->FocusDesk = desk;
-            StickyWin = t;
-          }
+	/*  If window is sticky, just update its desk (it's still mapped).  */
+	t->Desk = desk;
+	if (Scr.Focus == t)
+	  {
+	    t->FocusDesk = desk;
+	    StickyWin = t;
+	  }
       }
   }
   if (grab)
@@ -1081,10 +1069,10 @@ void MapDesk(int desk, Bool grab)
       {
 	AutoPlaceIcon(t);
       }
-    /*  Keep track of the last-focused window on the new desk.  */
+    /*	Keep track of the last-focused window on the new desk.	*/
     if (t->FocusDesk == desk)
       {
-        FocusWin = t;
+	FocusWin = t;
       }
   }
 
@@ -1228,14 +1216,14 @@ void scroll(F_CMD_ARGS)
       x %= xpixels;
       y += Scr.MyDisplayHeight * (1+((x-Scr.VxMax-1)/xpixels));
       if(y > Scr.VyMax)
-        y %= (Scr.VyMax / Scr.MyDisplayHeight + 1) * Scr.MyDisplayHeight;
+	y %= (Scr.VyMax / Scr.MyDisplayHeight + 1) * Scr.MyDisplayHeight;
     }
   if(((val1 <= -100000)||(val1 >= 100000))&&(x<0))
     {
       x = Scr.VxMax;
       y -= Scr.MyDisplayHeight;
       if(y < 0)
-        y=Scr.VyMax;
+	y=Scr.VyMax;
     }
   if(((val2 <= -100000)||(val2>= 100000))&&(y>Scr.VyMax))
     {
@@ -1244,14 +1232,14 @@ void scroll(F_CMD_ARGS)
       y %= ypixels;
       x += Scr.MyDisplayWidth * (1+((y-Scr.VyMax-1)/ypixels));
       if(x > Scr.VxMax)
-        x %= (Scr.VxMax / Scr.MyDisplayWidth + 1) * Scr.MyDisplayWidth;
+	x %= (Scr.VxMax / Scr.MyDisplayWidth + 1) * Scr.MyDisplayWidth;
     }
   if(((val2 <= -100000)||(val2>= 100000))&&(y<0))
     {
       y = Scr.VyMax;
       x -= Scr.MyDisplayWidth;
       if(x < 0)
-        x=Scr.VxMax;
+	x=Scr.VxMax;
     }
   MoveViewport(x,y,True);
 }

@@ -1,5 +1,10 @@
 1999-11-29  Dominik Vogt  <dominik.vogt@gmx.de>
 
+	* fvwm/virtual.c (MoveViewport):
+	improved page switching code to minimise redraws: map windows top down,
+	then unmap bottom up
+	removed debug code and duplicate if condition
+
 	* fvwm/add_window.c (AddWindow):
 	removed XSynchronize call :-)
 
