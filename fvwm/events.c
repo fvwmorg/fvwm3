@@ -1098,7 +1098,7 @@ void HandleConfigureRequest(void)
 		} /* while */
 #endif
 
-#if 0
+#if 1
 		fprintf(stderr,
 			"cre: %d(%d) %d(%d) %d(%d)x%d(%d) fw 0x%08x w 0x%08x "
                         "ew 0x%08x  '%s'\n",
@@ -2588,11 +2588,15 @@ ICON_DBG((stderr,"hpn: icon changed '%s'\n", Fw->name));
 		cie_args.do_return_true_cr = False;
 		cie_args.cr_value_mask = 0;
 		XCheckIfEvent(dpy, &e, test_resizing_event, (char *)&cie_args);
+#if 0
+                /* dv (7 May 2002): Must handle this immediately since xterm
+                 * relies on that behaviour. */
 		if (cie_args.ret_type == PropertyNotify)
 		{
 			/* do nothing */
 			break;
 		}
+#endif
 		was_size_inc_set = IS_SIZE_INC_SET(Fw);
 		old_width_inc = Fw->hints.width_inc;
 		old_height_inc = Fw->hints.height_inc;

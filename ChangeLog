@@ -1,5 +1,8 @@
 2002-05-07  Dominik Vogt  <dominik.vogt@gmx.de>
 
+	* fvwm/events.c (HandlePropertyNotify):
+	workaround for xterm resize problem
+
 	* fvwm/colorset.c (parse_colorset):
 	(free_colorset_background):
 	(parse_pixmap):
