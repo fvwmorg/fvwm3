@@ -1,3 +1,9 @@
+1999-04-26  Hippo
+
+	* libs/ModGraph.{h,c}: new functions InitGraphics/ParseGraphics for
+	modules to use to make sens of the Default_graphics config message
+	* fvwm/modconf.c: uses ModGraph.h
+
 1999-04-25  Matthias Clasen  <clasen@mathematik.uni-freiburg.de>
 
 	* fvwm/add_window.c (AddWindow): update not only the _WIN_STATE,

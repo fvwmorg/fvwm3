@@ -51,7 +51,8 @@
 #include "parse.h"
 #include "screen.h"
 #include "module.h"
-#include <libs/Picture.h>
+#include "libs/Picture.h"
+#include "libs/ModGraph.h"
 
 extern unsigned long *PipeMask;                /* in module.c */
 
@@ -210,11 +211,11 @@ void SendDataToModule(XEvent *eventp,Window w,FvwmWindow *tmp_win,
 
 char *make_look_packet()
 {
-  char *message = safemalloc(10 * (sizeof(long) * 2 + 1) + 18);
-  sprintf(message, "Default_graphics %lx %lx %x %lx %lx %lx %lx %lx %lx %lx\n",
+  char *b = safemalloc(DEFGRAPHNUM * (sizeof(long) * 2 + 1) + DEFGRAPHLEN + 2);
+  sprintf(b, "%s%lx %lx %lx %lx %lx %lx %lx %lx %lx\n",
+	  DEFGRAPHSTR,
  	  XVisualIDFromVisual(Scr.viz),
 	  Scr.cmap,
-	  Scr.depth,
 	  Scr.DrawGC ? XGContextFromGC(Scr.DrawGC) : 0,
 	  (long)0,
 	  Scr.StdColors.back,
@@ -222,7 +223,7 @@ char *make_look_packet()
 	  Scr.StdReliefGC ? XGContextFromGC(Scr.StdReliefGC) : 0,
 	  Scr.StdShadowGC ? XGContextFromGC(Scr.StdShadowGC) : 0,
 	  Scr.StdFont.font ? Scr.StdFont.font->fid : 0);
-  return message;
+  return b;
 }
 
 void SendLook(int module)
