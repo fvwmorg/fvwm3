@@ -1556,6 +1556,7 @@ void CMD_CopyMenuStyle(F_CMD_ARGS)
 	ST_POPUP_DELAY(destms) = ST_POPUP_DELAY(origms);
 	/* PopupOffset */
 	ST_POPUP_OFFSET_PERCENT(destms) = ST_POPUP_OFFSET_PERCENT(origms);
+	ST_POPUP_OFFSET_ADD(destms) = ST_POPUP_OFFSET_ADD(origms);
 	/* TitleWarp */
 	ST_DO_WARP_TO_TITLE(destms) = ST_DO_WARP_TO_TITLE(origms);
 	/* TitleUnderlines */

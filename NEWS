@@ -1,5 +1,5 @@
 Note, the changes for the last STABLE release start with release
-_+_A HREF="#2.4.7"_-_2.4.7_+_/A_-_.
+_+_A HREF="#2.4.8"_-_2.4.8_+_/A_-_.
 
 -------------------------------------------------------------------
 
@@ -223,9 +223,72 @@ Changes in alpha release 2.5.0 (27-Jan-2002)
 
 -------------------------------------------------------------------
 
-_+_A NAME="2.4.7"_-_
-Changes in stable release 2.4.7 (11-Apr-2002)
+_+_A NAME="2.4.8"_-_
+Changes in stable release 2.4.8 (11-Jun-2002)
 _+_/A_-_
+
+* A fix for switching between czech and us keyboard layout.
+
+* Remember the icon position when an icon is moved
+  non-interactively.
+
+* Setup "fvwm" and "fvwm-root" name symlinks for the executable and
+  the man page when installing, see INSTALL.fvwm.
+
+* Fixed another problem with the DeskOnly option and sticky icons
+  in FvwmTaskBar.
+
+* New FvwmIconMan configuration syntax now conforms to the syntax of
+  other modules, see the man page.
+
+* New WindowList option CurrentAtEnd.
+
+* Fixed maximal length of a named module packet
+
+* Fixed a crash on a config with a new 2.5.x Colorset command.
+
+* Always display the current desk number in the FvwmPager window
+  title.
+
+* Allow to bind a function to the focus click and pass it to the
+  application at the same time.
+
+* Fixed a problem with fvwm not accepting keyboard input when the
+  application with the focus vanished at the start of a session.
+
+* A small security patch regarding TMPDIR.
+
+* Fixed a problem with colormap transition when a transient window
+  died.
+
+* Fixed calculation of average bg colour in colour sets with large
+  pictures.
+
+* Fixed some minor problems regarding the multibyte patch.
+
+* Fixed selection in FvwmScript List widget.
+
+* fvwm-menu-headlines: updated the site data, added a configurable
+  timeout on socket reading (20 sec) to avoid fvwm hanging, new
+  --icon-error option.
+
+* Fixed a problem with ClickToFocus + ClickToFocusRaisesOff and
+  windows that are below others.
+
+* Fixed the ClickToFocusPassesClick style.
+
+* Fixed CascadePlacement for huge windows, so that the top-left
+  corner is always visible.
+
+* Fixed parsing of SendToModule with the first parameter quoted.
+
+* Fonts in double quotes now should work in module configurations.
+
+* Fixed copying PopupOffset values in CopyMenuStyle.
+
+-------------------------------------------------------------------
+
+Changes in stable release 2.4.7 (11-Apr-2002)
 
 * Fixed parsing of WindowList with conditions and a position at
   the same time that was broken in 2.4.6.

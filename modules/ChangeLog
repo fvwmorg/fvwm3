@@ -9,6 +9,7 @@
 	* FvwmIdent/FvwmIdent.c (main):
 	* FvwmForm/FvwmForm.c (ct_*Font):
 	* FvwmWinList/FvwmWinList.c (ParseConfigLine):
+	* FvwmScript/FvwmScript.c (ParseOptions):
 	fixed double quotes in *Font configuration options
 
 2002-06-08  Dominik Vogt  <dominik.vogt@gmx.de>

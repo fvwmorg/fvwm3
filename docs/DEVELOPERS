@@ -264,19 +264,24 @@ Update the release dates and numbers:
   Should something go wrong and you are not sure about the correct
   fixes, please ask on the fvwm-workers list for help.
 
-  Be sure to do the next two steps in that order, so you get the
+  Be sure to do the changes in that order, so you get the
   label on the right version of configure.in.
 
-  - Tag the CVS tree:
+  - Tag the CVS tree (replace x, y and z):
       cvs tag version-x_y_z
-  - Increase the version number in configure.in (see above) and
-    commit this change.
-  - Create an entry in the ChangeLog file indicating the release.
-    Commit this change.
-  - Create a new section for future changes in the NEWS file.
-    Commit this change.
 
-Update the development branch:
+Upload the release:
+
+  - Upload the files fvwm-x.y.z.tar.gz and fvwm-x.y.z.tar.bz2 to
+    ftp://ftp.fvwm.org/pub/incoming/fvwm
+  - Notify fvwm-owner@fvwm.org of the upload.
+
+Update the stable/development branch:
+
+  - Increase the version number in configure.in (see above)
+  - Create a new section for future changes in the NEWS file.
+  - Add ChangeLog entry indicating that a new version started.
+    Commit these 3 changes.
 
   - For a stable release, copy the NEWS from the stable branch to
     the development branch and update the link in the same
@@ -296,12 +301,6 @@ Update fvwm-web:
         ./txt2html.sh ../../fvwm/AUTHORS && \
         ./txt2html.sh ../../fvwm/docs/FAQ
     Commit these changes.
-
-Upload the release:
-
-  - Upload the files fvwm-x.y.z.tar.gz and fvwm-x.y.z.tar.bz2 to
-    ftp://ftp.fvwm.org/pub/incoming/fvwm
-  - Notify fvwm-owner@fvwm.org of the upload.
 
 Announce the release:
 

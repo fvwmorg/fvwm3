@@ -265,7 +265,7 @@ void ParseOptions(void)
         CopyString(&x11base->shadcolor,&tline[24]);
       }
       else if (strncasecmp(tline,"*FvwmScriptDefaultFont",22) == 0)
-	CopyString(&x11base->font,&tline[22]);
+	CopyStringWithQuotes(&x11base->font,&tline[22]);
       else if (strncasecmp(tline,"ColorLimit",10) == 0)
 	save_color_limit = atoi(&tline[10]);
       else if (strncasecmp(tline,"Colorset",8) == 0)

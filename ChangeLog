@@ -1,3 +1,11 @@
+2002-06-12  Mikhael Goikhman  <migo@homemail.com>
+
+	* fvwm/menustyle.c (CMD_CopyMenuStyle):
+	fixed copying PopupOffset values in CopyMenuStyle
+
+	* NEWS:
+	Copied 2.4.8 NEWS
+
 2002-06-10  Mikhael Goikhman  <migo@homemail.com>
 
 	* libs/Strings.[ch]:
