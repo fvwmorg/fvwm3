@@ -135,6 +135,12 @@ void SendText(int *fd, const char *message, unsigned long window);
  **************************************************************************/
 void SetMessageMask(int *fd, unsigned long mask);
 
+/***************************************************************************
+ *
+ * Sets the which-message-types-do-I-want to be lock on send for modules
+ *
+ **************************************************************************/
+void SetSyncMask(int *fd, unsigned long mask);
 
 /*
  * Used to ask for subset of module configuration lines.

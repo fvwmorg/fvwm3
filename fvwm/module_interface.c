@@ -58,6 +58,7 @@ char **pipeName;
 unsigned long junkzero = 0;
 
 unsigned long *PipeMask;
+unsigned long *SyncMask;
 struct queue_buff_struct **pipeQueue;
 
 extern fd_set init_fdset;
@@ -75,6 +76,7 @@ void initModules(void)
   readPipes = (int *)safemalloc(sizeof(int)*npipes);
   pipeOn = (int *)safemalloc(sizeof(int)*npipes);
   PipeMask = (unsigned long *)safemalloc(sizeof(unsigned long)*npipes);
+  SyncMask = (unsigned long *)safemalloc(sizeof(unsigned long)*npipes);
   pipeName = (char **)safemalloc(sizeof(char *)*npipes);
   pipeQueue=(struct queue_buff_struct **)
     safemalloc(sizeof(struct queue_buff_struct *)*npipes);
@@ -85,6 +87,7 @@ void initModules(void)
       readPipes[i]= -1;
       pipeOn[i] = -1;
       PipeMask[i] = MAX_MASK;
+      SyncMask[i] = 0; 
       pipeQueue[i] = (struct queue_buff_struct *)NULL;
       pipeName[i] = NULL;
     }
@@ -251,6 +254,7 @@ static int do_execute_module(F_CMD_ARGS, Bool desperate)
       readPipes[i] = app_to_fvwm[0];
       pipeOn[i] = -1;
       PipeMask[i] = MAX_MASK;
+      SyncMask[i] = 0;
       free(arg1);
       pipeQueue[i] = NULL;
       if (DoingCommandLine) {
@@ -1153,17 +1157,19 @@ int PositiveWrite(int module, unsigned long *ptr, int size)
 
   /* a dirty hack to prevent FvwmAnimate triggering during Recapture */
   /* would be better to send RecaptureStart and RecaptureEnd messages */
-  if ((PipeMask[module] & M_LOCKONSEND) /* module uses lock on send */
-      && (myxgrabcount != 0)            /* and server grabbed */
-      && (ptr[1] & M_ICONIFY)) {        /* and its an iconify event */
-    return -1;                          /* don't send it */
+  /* if module uses lock on send or lock on send for iconify and its an 
+   * iconify event and server grabbed, then return */
+  if (((PipeMask[module] & M_LOCKONSEND) || (SyncMask[module] & M_ICONIFY))
+      && (ptr[1] & M_ICONIFY) && (myxgrabcount != 0)) {
+    return -1;
   }
 
   AddToQueue(module,ptr,size,0);
 
   /* dje, from afterstep, for FvwmAnimate, allows modules to sync with fvwm. */
   /* this is disabled when the server is grabbed, otherwise deadlocks happen */
-  if ((PipeMask[module] & M_LOCKONSEND) && !myxgrabcount) {
+  if (((PipeMask[module] & M_LOCKONSEND) || (SyncMask[module] & ptr[1]))
+      && !myxgrabcount) {
     Window targetWindow;
     int e;
 
@@ -1353,11 +1359,18 @@ void send_list_func(XEvent *eventp, Window w, FvwmWindow *tmp_win,
     }
 }
 
-void set_mask_function(XEvent *eventp,Window w,FvwmWindow *tmp_win,
-		       unsigned long context, char *action,int* Module)
+void set_mask_function(F_CMD_ARGS)
 {
   int val = 0;
 
   GetIntegerArguments(action, NULL, &val, 1);
   PipeMask[*Module] = (unsigned long)val;
+}
+
+void setSyncMaskFunc(F_CMD_ARGS)
+{
+  int val = 0;
+
+  GetIntegerArguments(action, NULL, &val, 1);
+  SyncMask[*Module] = (unsigned long)val;
 }

@@ -99,5 +99,6 @@ void FlushQueue(int Module);
 int PositiveWrite(int module, unsigned long *ptr, int size);
 RETSIGTYPE DeadPipe(int nonsense);
 void set_mask_function(F_CMD_ARGS);
+void setSyncMaskFunc(F_CMD_ARGS);
 
 #endif /* MODULE_H */

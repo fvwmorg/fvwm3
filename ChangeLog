@@ -1,3 +1,23 @@
+1999-11-11 olicha <olivier.chapuis@free.fr>
+
+	* fvwm/module_interface.{c,h} (initModules):
+	(do_execute_module):
+	(PositiveWrite):
+	(setSyncMaskFunc):
+	* fvwm/function.{c,h} (functions):
+	* libs/Module.{c,h} (SetSyncMask):
+	Implemented a synchronous mask that lists the messages that fvwm 
+	will treat as synchronous. See FvwmWinList for an example.
+
+1999-11-11 olicha <olivier.chapuis@free.fr>
+	
+	* NEWS: New builtin function StrokeFunc
+	* fvwm/builtins.{c,h} (strokeFunc): New builtin function StrokeFunc
+	* fvwm/cursor.{c,h}: New context CRS_STROKE, default: XC_plus
+	* fvwm/functions.{c,h}: New builtin function StrokeFunc
+	* fvwm/fvwm2.1: StrokeFunc doc. Update CursorStyle and Stroke entries.
+	* libs/Bindings.c (CheckBinding): Check the button in Stroke bindings
+
 1999-11-11  Dan Espen  <dane@mk.telcordia.com>
 
 	* fvwm/fvwm2.1 (http): Rewording in Cursorstyle and StrokeFunc.

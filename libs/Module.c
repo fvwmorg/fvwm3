@@ -132,6 +132,13 @@ void SetMessageMask(int *fd, unsigned long mask)
   SendText(fd,set_mask_mesg,0);
 }
 
+void SetSyncMask(int *fd, unsigned long mask)
+{
+  char set_syncmask_mesg[50];
+
+  sprintf(set_syncmask_mesg,"SET_SYNC_MASK %lu\n",mask);
+  SendText(fd,set_syncmask_mesg,0);
+}
 
 /*
  * Optional routine that sets the matching criteria for config lines

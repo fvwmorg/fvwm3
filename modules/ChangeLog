@@ -1,3 +1,10 @@
+1999-11-11 olicha <olivier.chapuis@free.fr>
+
+	* FvwmWinList/FvwmWinList.c (main):
+	(ProcessMessage):
+	Use SetSyncMask in the place of M_LOCKONSEND for NoIconAction
+	configuration command
+	
 1999-11-09  olicha   <olivier.chapuis@free.fr>
 
 	* FvwmTaskBar/FvwmTaskBar.c (redraw_buttons):

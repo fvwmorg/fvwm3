@@ -160,7 +160,6 @@ int ItemCountD(List *list )
 int main(int argc, char **argv)
 {
   char *temp, *s;
-  unsigned long mask;
 #ifdef HAVE_SIGACTION
   struct sigaction  sigact;
 #endif
@@ -246,17 +245,14 @@ int main(int argc, char **argv)
 
   /* Request a list of all windows,
    * wait for ConfigureWindow packets */
-
-  mask =
+  SetMessageMask(Fvwm_fd,
 #ifdef MINI_ICONS
 		 M_MINI_ICON |
 #endif
 		 M_CONFIGURE_WINDOW | M_ADD_WINDOW | M_DESTROY_WINDOW |
 		 M_WINDOW_NAME | M_ICON_NAME | M_DEICONIFY | M_ICONIFY |
 		 M_END_WINDOWLIST | M_NEW_DESK | M_FOCUS_CHANGE |
-		 M_CONFIG_INFO | M_SENDCONFIG;
-
-  SetMessageMask(Fvwm_fd,mask);
+		 M_CONFIG_INFO | M_SENDCONFIG);
 
   SendFvwmPipe("Send_WindowList",0);
 
@@ -266,8 +262,8 @@ int main(int argc, char **argv)
   /* tell fvwm we're running */
   SendFinishedStartupNotification(Fvwm_fd);
 
-  /* Need to lock on send here because of ModuleSynchronous */
-  SetMessageMask(Fvwm_fd, mask | M_LOCKONSEND);
+  /* Lock on send only for iconify and deiconify (for NoIconAction) */
+  SetSyncMask(Fvwm_fd, M_DEICONIFY | M_ICONIFY);
 
   MainEventLoop();
 #ifdef FVWM_DEBUG_MSGS
@@ -337,20 +333,6 @@ void ProcessMessage(unsigned long type,unsigned long *body)
 #ifdef MINI_ICONS
   Picture p;
 #endif
-
-  /* only M_ICONIFY, M_DEICONIFY need synchronous behaviour so send unlock
-   * immediately for all other messages */
-  /* would be better to have a SetSyncMask like SetMessageMask that just lists
-   * the messages that fvwm will treat as synchronous */
-  switch(type)
-  {
-    case M_ICONIFY:
-    case M_DEICONIFY:
-      break;
-    default:
-      SendText(Fvwm_fd, "Unlock 1", 0);
-      break;
-  }
 
   switch(type)
   {
