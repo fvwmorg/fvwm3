@@ -175,6 +175,7 @@ Contents
           wrong?
      6.8  I just got a mouse with 57 buttons.  How do I make Fvwm
           use them?
+     6.9  Why does fvwm change my X Cursor theme?
 
 7. Hints and Examples from the Developers
 
@@ -2500,6 +2501,21 @@ A: Okay, we know you don't have 57 buttons, but we've seen reports
 
    The maximum possible number you can use is 31.  Any higher value
    will probably not work and possibly even crash fvwm or its modules.
+
+----------------------------------------------------------------------
+
+6.9  Why does fvwm change my X Cursor theme?
+
+A: It doesn't.  There is a standard set of cursors that should
+always be available to applications, such as crosshair, left_ptr,
+arrow, pencil, and so on.  Your theme should provide each of these
+cursors, but some don't.  When something (for example, an
+application or fvwm) requests a cursor that your theme does not
+provide, X falls back to the default.  If you are seeing fvwm
+using cursors that do not match your theme, you should use
+CursorStyle to change to a cursor that is available, or find a
+more complete theme.  Note that fvwm does not control what cursors
+your applications request.
 
 ======================================================================
               7 - Hints and Examples from the Developers
