@@ -184,8 +184,8 @@ Configuration tests:
 
   - Run
       automake --add-missing; autoreconf
-    If you checked out fresh sources in step 1, run the same line
-    again (automake generated a file that autoreconf needs and
+    If you checked out fresh sources in, run the same line again
+    (automake generated a file that autoreconf needs and
     autoreconf generates a file that automake needs.  If you fail
     to do so, the tarball may be screwed.)
       automake --add-missing; autoreconf
