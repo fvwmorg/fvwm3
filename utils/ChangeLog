@@ -1,3 +1,8 @@
+2001-08-15  Mikhael Goikhman  <migo@homemail.com>
+
+	* fvwm-config.in:
+	s/gnome-wm/gnome-hints/
+
 2001-07-30  Mikhael Goikhman  <migo@homemail.com>
 
 	* fvwm-menu-headlines.in:

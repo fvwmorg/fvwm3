@@ -233,7 +233,7 @@ listed.
 
 
   --disable-package-subdirs     don't create subdirs for modules and data
-  -------------------------
+  ~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Usually FVWM is installed to common places, like /usr or /usr/local/X11,
 in this case it is essential to create the package subdirectories for
@@ -255,7 +255,7 @@ If you switch this option between builds, you need "make clean"!
 
 
   --enable-debug-msgs           enable debugging messages
-  -------------------
+  ~~~~~~~~~~~~~~~~~~~
 
 If you would like to see lots of debug messages from FVWM, for
 debugging purposes, enable this option.  When reporting bugs, please
@@ -264,7 +264,7 @@ situation.
 
 
   --enable-command-log          enable command logging
-  -------------------
+  ~~~~~~~~~~~~~~~~~~~~
 
 If you would like to see all commands executed and their times, enable
 this option.  Remember, when using this, the command time offset is given
@@ -273,8 +273,8 @@ one batch; for example, after startup the command time offset may freely
 reach hours.
 
 
-  --disable-gnome               disable GNOME window manager hints
-  ---------------
+  --disable-gnome-hints         disable GNOME window manager hints
+  ~~~~~~~~~~~~~~~~~~~~~
 
 By default, FVWM supports GNOME hints regarding windows, desks, pages
 and more.  This turns this support off.  Note, you may turn it off
@@ -282,7 +282,7 @@ dynamically for all or individual windows by: Style * GNOMEUseHints false
 
 
   --disable-sm                  disable session management support
-  ------------
+  ~~~~~~~~~~~~
 
 FVWM has experimental session management support, which is autoconfigured
 by searching for SM library, which is often shipped together with your
@@ -292,7 +292,7 @@ This option disables session management support completely.
 
 
   --enable-multibyte            multibyte character support (experimental)
-  ------------------
+  ~~~~~~~~~~~~~~~~~~
 
 FVWM has limited support for multibyte charsets.  It is fully experimental
 and does not work in all places.  If you have access to a multibyte system
@@ -300,7 +300,7 @@ and want to extend this support, contact the fvwm-workers@fvwm.org list.
 
 
   --disable-shape               disable shape extensions
-  ---------------
+  ~~~~~~~~~~~~~~~
 
 Shaped window extensions are enabled by default; this option will
 disable them.  Shaped window extensions seem to increase the window
@@ -318,3 +318,16 @@ yourself.
 
 Note: if it is compiled in, run time detection is used to make sure
 that the currently running X server supports it.
+
+
+  --with-gnome                  no, yes or prefix for GNOME files (FvwmGtk only)
+  ~~~~~~~~~~~~
+
+FvwmGtk may be built as a GTK application or a GNOME application.
+This is autodetected and if GNOME libs found, they are used in FvwmGtk.
+You may also specify the location of GNOME headers and libs using
+--with-gnome-includes and --with-gnome-libs, but this is usually never
+needed, since all required info should be returned by gnome-config
+if GNOME is properly installed.  In case the GNOME installation works
+and you don't want to be dependant on GNOME, use --without-gnome.
+

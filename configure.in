@@ -89,8 +89,8 @@ if unset UNSET 2>/dev/null; then UNSET=unset; fi
 
 dnl ********* GNOME window manager hints
 dnl Note, no gnome headers or libs are needed for FVWM to be GNOME compliant.
-smr_SWITCH(gnome, GNOME window manager hints, on, GNOME)
-dnl AM_CONDITIONAL(GNOME, test "x$enable_gnome" != "xno")
+smr_SWITCH(gnome-hints, GNOME window manager hints, on, GNOME)
+dnl AM_CONDITIONAL(GNOME, test "x$enable_gnome_hints" != "xno")
 
 
 dnl ********* session management
@@ -492,13 +492,13 @@ fi
 GNOME_INIT_HOOK
 
 dnl Unfortunately we have 2 gnome supports: WM hints and gnome libs.
-dnl The $with_gnomewm below refers to the first, not GNOME_INIT_HOOK.
-if test "x$enable_gnome" != "xno"; then
-  with_gnomewm=yes
-  problem_gnomewm=""
+dnl The $with_gnomehints below refers to the first, not GNOME_INIT_HOOK.
+if test "x$enable_gnome_hints" != "xno"; then
+  with_gnomehints=yes
+  problem_gnomehints=""
 else
-  with_gnomewm=no
-  problem_gnomewm=": Explicitly disabled"
+  with_gnomehints=no
+  problem_gnomehints=": Explicitly disabled"
 fi
 
 
@@ -532,7 +532,7 @@ esac
 
 
 # mainly for fvwm-config
-AC_SUBST(with_gnomewm)
+AC_SUBST(with_gnomehints)
 AC_SUBST(with_gtk)
 AC_SUBST(with_gdkimlib)
 AC_SUBST(with_gnomelibs)
@@ -621,10 +621,10 @@ FVWM Configuration:
   Modules:     $my_moddir
   Data files:  $my_datdir
 
-  With GNOME Window Manager support? $with_gnomewm$problem_gnomewm
+  With GNOME Window Manager hints?   $with_gnomehints$problem_gnomehints
   With GTK support for FvwmGtk?      $with_gtk$problem_gtk$fvwmgtk_msg
   With Multibyte support?            $with_multibyte$problem_multibyte
-  With ReadLine support?             $with_readline$problem_readline
+  With ReadLine sup. in FvwmConsole? $with_readline$problem_readline
   With RPlay support in FvwmEvent?   $with_rplay$problem_rplay
   With Shaped window support?        $with_shape$problem_shape
   With Session Management support?   $with_sm$problem_sm

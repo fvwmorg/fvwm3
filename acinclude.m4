@@ -849,7 +849,7 @@ AC_DEFUN([GNOME_INIT_HOOK],[
 	])
 
 	AC_ARG_WITH(gnome,
-	[  --with-gnome            prefix for GNOME files (not needed for GNOME WM hints)],
+	[  --with-gnome            no, yes or prefix for GNOME files (FvwmGtk only)],
 		if test x$withval = xyes; then
 	    		with_gnomelibs=yes
 	    		dnl Note that an empty true branch is not

@@ -1,3 +1,11 @@
+2001-08-15  Mikhael Goikhman  <migo@homemail.com>
+
+	* configure.in:
+	* acinclude.m4:
+	* INSTALL INSTALL.fvwm:
+	renamed --disable-gnome to --disable-gnome-hints;
+	documented configure options --with-gnome*
+
 2001-08-14  Mikhael Goikhman  <migo@homemail.com>
 
 	* libs/Makefile.am:

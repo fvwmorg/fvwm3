@@ -126,7 +126,7 @@ Init
      Set $GnomePath = (GetOutput $CMD 1 -1)
      If $GnomePath <> {No} Then
        Set $GnomeY = 1
-     Set $CMD ={if fvwm-config --supports-gnome-wm; then echo "1"; else echo "0"; fi}
+     Set $CMD ={if fvwm-config --supports-gnome-hints; then echo "1"; else echo "0"; fi}
      Set $GnomeS = (GetOutput $CMD 1 -1)
      If $GnomeY == {0} Then
        Set $GnomeS = 0
@@ -903,7 +903,7 @@ Property
  Position 20 200
  Flags NoReliefString
  Type ItemDraw
- Title {Your version of FVWM is not compiled with support for GNOME}
+ Title {Your FVWM version is built without support for GNOME hints}
 Main
  Case message of
   SingleClic :

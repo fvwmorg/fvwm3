@@ -55,7 +55,7 @@ fvwm_imagepath="@FVWM_IMAGEPATH@"
 fvwm_userdir='$HOME/.fvwm'
 fvwm_exe='fvwm2'
 
-with_gnomewm=@with_gnomewm@
+with_gnomehints=@with_gnomehints@
 with_gtk=@with_gtk@
 with_gdkimlib=@with_gdkimlib@
 with_gnomelibs=@with_gnomelibs@
@@ -113,23 +113,24 @@ while test $# -gt 0; do
 			echo "$fvwm_exe" ;;
 
 		--supports|-supports|-s)
-			test "$with_gnomewm"   = "yes" && echo "gnome-wm"
-			test "$with_gtk"       = "yes" && echo "gtk"
-			test "$with_gdkimlib"  = "yes" && echo "gdk-imlib"
-			test "$with_gnomelibs" = "yes" && echo "gnome-libs"
-			test "$with_multibyte" = "yes" && echo "multibyte"
-			test "$with_readline"  = "yes" && echo "readline"
-			test "$with_rplay"     = "yes" && echo "rplay"
-			test "$with_shape"     = "yes" && echo "shape"
-			test "$with_sm"        = "yes" && echo "sm"
-			test "$with_stroke"    = "yes" && echo "stroke"
-			test "$with_xinerama"  = "yes" && echo "xinerama"
-			test "$with_xpm"       = "yes" && echo "xpm"
+			test "$with_gnomehints" = "yes" && echo "gnome-hints"
+			test "$with_gtk"        = "yes" && echo "gtk"
+			test "$with_gdkimlib"   = "yes" && echo "gdk-imlib"
+			test "$with_gnomelibs"  = "yes" && echo "gnome-libs"
+			test "$with_multibyte"  = "yes" && echo "multibyte"
+			test "$with_readline"   = "yes" && echo "readline"
+			test "$with_rplay"      = "yes" && echo "rplay"
+			test "$with_shape"      = "yes" && echo "shape"
+			test "$with_sm"         = "yes" && echo "sm"
+			test "$with_stroke"     = "yes" && echo "stroke"
+			test "$with_xinerama"   = "yes" && echo "xinerama"
+			test "$with_xpm"        = "yes" && echo "xpm"
 			;;
 
 		--supports-*)
 			feature=`echo "$1" | sed 's/^--supports-//'`
 			feature=`echo "$feature" | sed 's/[-_]//g'`
+			test "$feature" = "gnomewm" && feature="gnomehints"
 			with=`eval echo '$'with_"$feature"`
 			test "$with" = "yes" && exit 0
 			test "$with" = "no"  && exit 100
@@ -156,7 +157,7 @@ while test $# -gt 0; do
 			echo "	Default UserDir: $fvwm_userdir"
 			echo ""
 			echo "Support for features:"
-			echo "	gnome-wm (window manager hints): $with_gnomewm"
+			echo "	gnome-hints (window manager hints): $with_gnomehints"
 			echo "	gtk (FvwmGtk): $with_gtk"
 			echo "	gdk-imlib (in FvwmGtk): $with_gdkimlib"
 			echo "	gnome-libs (in FvwmGtk): $with_gnomelibs"
