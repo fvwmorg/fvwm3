@@ -408,7 +408,7 @@ FvwmWindow *AddWindow(Window w)
   Scr.FvwmRoot.stack_next = tmp_win;
 
 #ifdef SESSION
-  /* 
+  /*
       MatchWinToSM changes tmp_win->attr and tmp_win->stack_{prev,next}.
       Thus it is important have this call *after* PlaceWindow and the
       stacking order initialization.
@@ -426,7 +426,7 @@ FvwmWindow *AddWindow(Window w)
   ConstrainSize(tmp_win, &tmp_win->frame_width, &tmp_win->frame_height, False,
 		0, 0);
 
-  
+
   valuemask = CWCursor | CWEventMask;
   if(Scr.d_depth < 2)
     {
@@ -649,7 +649,7 @@ FvwmWindow *AddWindow(Window w)
   SetupFrame (tmp_win, tmp_win->frame_x, tmp_win->frame_y,width,height, True);
 
 #ifdef SESSION
-  if (do_maximize) { 
+  if (do_maximize) {
     /* This is essentially Maximize, only we want the given dimensions */
     tmp_win->flags |= MAXIMIZED;
     ConstrainSize (tmp_win, &w_max, &h_max, False, 0, 0);
@@ -658,13 +658,13 @@ FvwmWindow *AddWindow(Window w)
     SetBorder(tmp_win, Scr.Hilite == tmp_win, True, True, None);
     /* fix orig values to not change page on unmaximize  */
     if (tmp_win->orig_x >= Scr.MyDisplayWidth)
-      tmp_win->orig_x = tmp_win->orig_x % Scr.MyDisplayWidth; 
+      tmp_win->orig_x = tmp_win->orig_x % Scr.MyDisplayWidth;
     if (tmp_win->orig_y >= Scr.MyDisplayHeight)
-      tmp_win->orig_y = tmp_win->orig_y % Scr.MyDisplayHeight; 
+      tmp_win->orig_y = tmp_win->orig_y % Scr.MyDisplayHeight;
   }
 
 #ifdef WINDOWSHADE
-  if (do_shade) { 
+  if (do_shade) {
     WindowShade(&Event, tmp_win->w, tmp_win, C_WINDOW, "", 0);
   }
 #endif /* WINDOWSHADE */

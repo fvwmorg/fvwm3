@@ -140,7 +140,7 @@ void InitEventHandlerJumpTable(void)
     EventHandlerJumpTable[ShapeEventBase+ShapeNotify] = HandleShapeNotify;
 #endif /* SHAPE */
   EventHandlerJumpTable[SelectionClear]   = HandleSelectionClear;
-  EventHandlerJumpTable[SelectionRequest] = HandleSelectionRequest;  
+  EventHandlerJumpTable[SelectionRequest] = HandleSelectionRequest;
 }
 
 /***********************************************************************
@@ -529,7 +529,7 @@ void HandlePropertyNotify()
       break;
 
     case XA_WM_HINTS:
-      /* clasen@mathematik.uni-freiburg.de - 02/01/1998 - new - 
+      /* clasen@mathematik.uni-freiburg.de - 02/01/1998 - new -
 	 the urgency flag is an ICCCM 2.0 addition to the WM_HINTS. */
       was_urgent = 0;
       if (Tmp_win->wmhints) {
@@ -537,15 +537,15 @@ void HandlePropertyNotify()
 	XFree ((char *) Tmp_win->wmhints);
       }
       Tmp_win->wmhints = XGetWMHints(dpy, Event.xany.window);
-      
+
       if(Tmp_win->wmhints == NULL)
 	return;
-      
+
       if((Tmp_win->wmhints->flags & IconPixmapHint)||
 	 (Tmp_win->wmhints->flags & IconWindowHint))
 	if(Tmp_win->icon_bitmap_file == Scr.DefaultIcon)
 	  Tmp_win->icon_bitmap_file = (char *)0;
-      
+
       if((Tmp_win->wmhints->flags & IconPixmapHint)||
 	 (Tmp_win->wmhints->flags & IconWindowHint))
 	{
@@ -580,7 +580,7 @@ void HandlePropertyNotify()
 			      Tmp_win->icon_x_loc, Tmp_win->icon_y_loc,
 			      Tmp_win->icon_w_width, Tmp_win->icon_w_height);
 	      BroadcastConfig(M_CONFIGURE_WINDOW, Tmp_win);
-	      
+
 	      if (!(Tmp_win->flags & SUPPRESSICON))
 		{
 		  LowerWindow(Tmp_win);
@@ -598,8 +598,8 @@ void HandlePropertyNotify()
 	    }
 	}
 
-      /* clasen@mathematik.uni-freiburg.de - 02/01/1998 - new - 
-	 the urgency flag is an ICCCM 2.0 addition to the WM_HINTS. 
+      /* clasen@mathematik.uni-freiburg.de - 02/01/1998 - new -
+	 the urgency flag is an ICCCM 2.0 addition to the WM_HINTS.
 	 Treat urgency changes by calling user-settable functions.
 	 These could e.g. deiconify and raise the window or temporarily
 	 change the decor. */
@@ -608,7 +608,7 @@ void HandlePropertyNotify()
 	  ExecuteFunction("Function UrgencyFunc",
 			  Tmp_win,&Event,C_WINDOW,-1);
 	}
-      
+
       if (was_urgent && !(Tmp_win->wmhints->flags & XUrgencyHint))
 	{
 	  ExecuteFunction("Function UrgencyDoneFunc",
@@ -687,7 +687,7 @@ void HandleClientMessage()
     return;
   }
 
-  /* FIXME: Is this safe enough ? I guess if clients behave 
+  /* FIXME: Is this safe enough ? I guess if clients behave
      according to ICCCM and send these messages only if they
      when grabbed the pointer, it is OK */
   {
@@ -696,9 +696,9 @@ void HandleClientMessage()
     if (Event.xclient.message_type == _XA_WM_COLORMAP_NOTIFY) {
       client_controls_colormaps = Event.xclient.data.l[1];
       return;
-    }  
+    }
   }
-  
+
   /*
   ** CKH - if we get here, it was an unknown client message, so send
   ** it to the client if it was in a window we know about.  I'm not so
@@ -881,10 +881,10 @@ void HandleMapRequestKeepRaised(Window KeepRaised)
       DeIconify(Tmp_win);
     }
 
-#ifdef SESSION 
+#ifdef SESSION
   /* just to be on the safe side, we make sure that STARTICONIC
      can only influence the initial transition from withdrawn state */
-  Tmp_win->flags &= ~STARTICONIC; 
+  Tmp_win->flags &= ~STARTICONIC;
 #endif
 }
 
@@ -1131,8 +1131,7 @@ void HandleButtonPress()
 
   /* click to focus stuff goes here */
   if((Tmp_win)&&(Tmp_win->flags & ClickToFocus)&&(Tmp_win != Scr.Ungrabbed) &&
-     ((Event.xbutton.state&
-       (ControlMask|Mod1Mask|Mod2Mask|Mod3Mask|Mod4Mask|Mod5Mask)) == 0))
+     (Event.xbutton.state & mods_used == 0))
   {
     SetFocus(Tmp_win->w,Tmp_win,1);
 /* #ifdef CLICKY_MODE_1 */
@@ -1165,8 +1164,7 @@ void HandleButtonPress()
           Scr.MouseFocusClickRaises)
   {
     if (Tmp_win != Scr.LastWindowRaised &&
-        (Event.xbutton.state &
-         (ControlMask|Mod1Mask|Mod2Mask|Mod3Mask|Mod4Mask|Mod5Mask)) == 0 &&
+        (Event.xbutton.state & mods_used) == 0 &&
         GetContext(Tmp_win,&Event, &PressedW) == C_WINDOW)
     {
       RaiseWindow(Tmp_win);
@@ -1486,9 +1484,9 @@ void HandleConfigureRequest()
         ResyncFvwmStackRing();
       }
 
-     /* 
-         Let the modules know that Tmp_win changed its place 
-         in the stacking order 
+     /*
+         Let the modules know that Tmp_win changed its place
+         in the stacking order
       */
      BroadcastRestack (Tmp_win->stack_prev, Tmp_win->stack_next);
   }
@@ -1547,7 +1545,7 @@ void HandleConfigureRequest()
       Tmp_win->orig_ht = height;
       SetupFrame (Tmp_win, x, y, width, Tmp_win->frame_height,sendEvent);
     }
-  else 
+  else
 #endif
   if (!(Tmp_win->flags & MAXIMIZED))
     {
@@ -1616,7 +1614,7 @@ fd_set init_fdset;
 int My_XNextEvent(Display *dpy, XEvent *event)
 {
   extern int fd_width, x_fd;
-#ifdef SESSION 
+#ifdef SESSION
   extern int sm_fd;
 #endif
   fd_set in_fdset, out_fdset;
@@ -1650,7 +1648,7 @@ int My_XNextEvent(Display *dpy, XEvent *event)
       StartupStuff();
       timeoutP = NULL; /* set an infinite timeout to stop ticking */
     }
-  }  
+  }
 
   FD_ZERO(&in_fdset);
   FD_SET(x_fd,&in_fdset);

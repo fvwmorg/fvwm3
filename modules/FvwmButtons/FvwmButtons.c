@@ -368,6 +368,7 @@ void AddButtonAction(button_info *b,int n,char *action)
   memmove(t, action, l);
   t[l] = 0;
   b->action[n] = t;
+
 }
 
 /**

@@ -1,3 +1,8 @@
+1999-03-11  Dominik Vogt  <dominik_vogt@gmx.de>
+
+	* fvwm/events.c (HandleButtonPress): fixed bug with <shift> being
+	treated differently than the other modifiers when using ClickToFocus.
+
 1999-03-11  Hippo
 
 	* fvwm/borders.c (SetBorder): rewritten the frame drawing code to restore
@@ -74,7 +79,7 @@ Wed Mar 10 10:52:31 1999  Steve Robbins  <steve@nyongwa.montreal.qc.ca>
 	FORK_CREATES_CHILD, EXECUTABLE_EXTENSION, and
 	REMOVE_EXECUTABLE_EXTENSION to support the above.  All are set to
 	suitable values for unix semantics.
-	
+
 Tue Mar  9 22:14:25 1999  Steve ROBBINS  <stever@osric.bic.mni.mcgill.ca>
 
 	* extras: removed.  Copied former 'extra' modules FvwmCommand,
