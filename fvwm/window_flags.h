@@ -13,8 +13,8 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#ifndef _GSFR_
-#define _GSFR_
+#ifndef _WINDOW_FLAGS_
+#define _WINDOW_FLAGS_
 
 /* access to the common flags of a window */
 #define DO_GRAB_FOCUS(fw) \
@@ -180,4 +180,4 @@
 
 
 
-#endif /* _GSFR_ */
+#endif /* _WINDOW_FLAGS_ */

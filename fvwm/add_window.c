@@ -275,15 +275,21 @@ FvwmWindow *AddWindow(Window w, FvwmWindow *ReuseWin)
 
   memcpy(&(tmp_win->flags), sflags, sizeof(common_flags_type));
   /* find a suitable icon pixmap */
-  if(SHAS_ICON(sflags))
+  if((tmp_win->wmhints) && (tmp_win->wmhints->flags & IconWindowHint))
+    {
+      /* window has its own icon window - we're supposed to honour this
+       * because the client may want to draw into the icon window itself
+       * (e.g. xterm with active icon or a mail client). */
+      tmp_win->icon_bitmap_file = NULL;
+    }
+  else if(SHAS_ICON(sflags))
     {
       /* an icon was specified */
       tmp_win->icon_bitmap_file = SGET_ICON_NAME(style);
     }
-  else if((tmp_win->wmhints)
-	  &&(tmp_win->wmhints->flags & (IconWindowHint|IconPixmapHint)))
+  else if((tmp_win->wmhints) && (tmp_win->wmhints->flags & IconPixmapHint))
     {
-      /* window has its own icon */
+      /* window has its own icon pixmap */
       tmp_win->icon_bitmap_file = NULL;
     }
   else

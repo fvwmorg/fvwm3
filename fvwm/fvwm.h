@@ -59,10 +59,8 @@ unsigned long context,char *action, int *Module
 #include <X11/Xutil.h>
 #include <X11/cursorfont.h>
 #include <X11/Intrinsic.h>
-
 #include <libs/Picture.h>
-
-#include "gsfr.h"
+#include "window_flags.h"
 
 
 #ifndef WithdrawnState

@@ -404,7 +404,10 @@ RETSIGTYPE DeadPipe(int nonsense)
 
 void KillModule(int channel, int place)
 {
+#if 0
+  /* this causes a coredump (why?) */
   DBUG("KillModule %i\n", place);
+#endif
   close(readPipes[channel]);
   close(writePipes[channel]);
 

@@ -1,43 +1,56 @@
+1999-05-04  Dominik Vogt  <dominik_vogt@gmx.de>
+
+	* fvwm/events.c (HandleMapNotify): fixed focus policy (mouse focus)
+
+	* fvwm/Makefile.am (fvwm2_SOURCES):
+	* libs/vpacket.h:
+	* fvwm/fvwm.h:
+	* fvwm/window_flags.h: renamed gsfr.h
+
+	* fvwm/add_window.c (AddWindow): fixed xterm w/ active icon
+
+	* fvwm/events.c (HandlePropertyNotify): use IsWindowOnThisPage funtion
+
 Sun May  2 09:39:37 1999  DanEspen  <dje@blue>
 
 	* fvwm/ConfigFvwmDefaults: Alt-tab binding is now builtin.
 
 Sat May  1 10:43:55 1999  Steve Robbins  <steve@nyongwa.montreal.qc.ca>
 
-	* fvwm/Makefile.am (fvwm2_SOURCES): 
-	* libs/Makefile.am (libfvwm_a_SOURCES): 
+	* fvwm/Makefile.am (fvwm2_SOURCES):
+	* libs/Makefile.am (libfvwm_a_SOURCES):
 	* fvwm/vpacket.h: moved to libs/vpacket.h, since this file is
 	used only by modules.
 
 	* libs/*: include Module.h rather than fvwm/module.h.
 	* fvwm/*: include module_interface.h rather than module.h.
-	
-	* fvwm/Makefile.am (fvwm2_SOURCES): 
+
+	* fvwm/Makefile.am (fvwm2_SOURCES):
 	* fvwm/module.[ch]: renamed to module_interface.[ch], to avoid
  	confusion with libs/Module.[ch].
 
-	* libs/Makefile.am (libfvwm_a_SOURCES): 
+	* libs/Makefile.am (libfvwm_a_SOURCES):
 	* libs/Module.h: new file.  Everything a module needs to know in
  	order to talk to FVWM.
 
 Sat May  1 01:42:02 1999  Steve Robbins  <steve@nyongwa.montreal.qc.ca>
 
-	* fvwm/session.c (LoadGlobalState): fix scanf argument.  Removed 
+	* fvwm/session.c (LoadGlobalState): fix scanf argument.  Removed
 	unused variables.
 
 1999-04-29  Matthias Clasen  <clasen@mathematik.uni-freiburg.de>
 
-	* fvwm/session.h: 
-	* fvwm/session.c (set_sm_properties): 
+	* fvwm/session.h:
+	* fvwm/session.c (set_sm_properties):
 	(save_session_state): new functions split off from save_yourself2.
 	(RestartInSession): new function used to restart fvwm under SM.
 
 	* fvwm/fvwm.c (Done): rework how restarting is done under SM. The
 	new scheme should not leak files and should not introduce
-	unwanted checkpoints. 
+	unwanted checkpoints.
 
 	We do the following now:
- 
+
 	1) Change the current state in .fvwm_restart
            and add a pointer to the previous session save file
 	   to .fvwm_restart.
@@ -61,20 +74,20 @@ Sat May  1 01:42:02 1999  Steve Robbins  <steve@nyongwa.montreal.qc.ca>
 
 	* fvwm/session.c (callback_save_yourself2): set the
 	_GSM_Priority property used by the Gnome session manager.
-	Use SmLISTofARRAY8 for SmDiscardCommand as the protocol demands 
-	on POSIX systems, but leave the old code using SmARRAY8 in as a 
+	Use SmLISTofARRAY8 for SmDiscardCommand as the protocol demands
+	on POSIX systems, but leave the old code using SmARRAY8 in as a
 	hack for buggy xsm. Define XSM_BUGGY_DISCARD_COMMAND to use it.
 	(SaveWindowStates): save res_name under [RES_NAME], not res_class.
 
-	* fvwm/stack.c (LowerWindow): 
-	(RaiseWindow): 
+	* fvwm/stack.c (LowerWindow):
+	(RaiseWindow):
 	* fvwm/screen.h (ScreenInfo): remove LastWindowRaised.
 
-	* fvwm/stack.h: 
+	* fvwm/stack.h:
 	* fvwm/stack.c (CanBeRaised): new function to determine if
 	a window can be raised any further.
 
-	* fvwm/events.c (HandleButtonPress): 
+	* fvwm/events.c (HandleButtonPress):
 	* fvwm/builtins.c (raiselower_func): use CanBeRaised instead
 	of LastWindowRaised to determine if a window should be raised.
 

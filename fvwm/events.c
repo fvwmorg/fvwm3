@@ -464,7 +464,7 @@ void HandleKeyPress(void)
 void HandlePropertyNotify(void)
 {
   XTextProperty text_prop;
-  Boolean       OnThisPage    =  False;
+  Bool OnThisPage = False;
   int old_wmhints_flags;
 
   DBUG("HandlePropertyNotify","Routine Entered");
@@ -478,16 +478,7 @@ void HandlePropertyNotify(void)
       Make sure at least part of window is on this page
       before giving it focus...
   */
-  if ( (Tmp_win->Desk == Scr.CurrentDesk) &&
-       ( ((Tmp_win->frame_x + Tmp_win->frame_width) >= 0 &&
-          Tmp_win->frame_x < Scr.MyDisplayWidth) &&
-         ((Tmp_win->frame_y + Tmp_win->frame_height) >= 0 &&
-          Tmp_win->frame_y < Scr.MyDisplayHeight)
-       )
-     )
-    {
-      OnThisPage  =  True;
-    }
+  OnThisPage = IsWindowOnThisPage(Tmp_win);
 
   switch (Event.xproperty.atom)
     {
@@ -827,7 +818,7 @@ void HandleMapRequestKeepRaised(Window KeepRaised,  FvwmWindow  *ReuseWin)
 {
   extern long isIconicState;
   extern Boolean PPosOverride;
-  Boolean       OnThisPage    =  False;
+  Bool OnThisPage = False;
 
   Event.xany.window = Event.xmaprequest.window;
 
@@ -858,16 +849,7 @@ void HandleMapRequestKeepRaised(Window KeepRaised,  FvwmWindow  *ReuseWin)
       Make sure at least part of window is on this page
       before giving it focus...
   */
-  if ( (Tmp_win->Desk == Scr.CurrentDesk) &&
-       ( ((Tmp_win->frame_x + Tmp_win->frame_width) >= 0 &&
-          Tmp_win->frame_x < Scr.MyDisplayWidth) &&
-         ((Tmp_win->frame_y + Tmp_win->frame_height) >= 0 &&
-          Tmp_win->frame_y < Scr.MyDisplayHeight)
-       )
-     )
-    {
-      OnThisPage  =  True;
-    }
+  OnThisPage = IsWindowOnThisPage(Tmp_win);
 
   if(KeepRaised != None)
     XRaiseWindow(dpy,KeepRaised);
@@ -959,7 +941,7 @@ void HandleMapRequestKeepRaised(Window KeepRaised,  FvwmWindow  *ReuseWin)
  ***********************************************************************/
 void HandleMapNotify(void)
 {
-  Boolean       OnThisPage    =  False;
+  Bool OnThisPage = False;
 
   DBUG("HandleMapNotify","Routine Entered");
 
@@ -975,7 +957,7 @@ void HandleMapNotify(void)
     }
 
   /* Except for identifying over-ride redirect window mappings, we
-   * don't need or want windows associated with the sunstructurenotifymask */
+   * don't need or want windows associated with the substructurenotifymask */
   if(Event.xmap.event != Event.xmap.window)
     return;
 
@@ -983,16 +965,7 @@ void HandleMapNotify(void)
       Make sure at least part of window is on this page
       before giving it focus...
   */
-  if ( (Tmp_win->Desk == Scr.CurrentDesk) &&
-       ( ((Tmp_win->frame_x + Tmp_win->frame_width) >= 0 &&
-          Tmp_win->frame_x < Scr.MyDisplayWidth) &&
-         ((Tmp_win->frame_y + Tmp_win->frame_height) >= 0 &&
-          Tmp_win->frame_y < Scr.MyDisplayHeight)
-       )
-     )
-    {
-      OnThisPage  =  True;
-    }
+  OnThisPage = IsWindowOnThisPage(Tmp_win);
 
   /*
    * Need to do the grab to avoid race condition of having server send
@@ -1019,8 +992,7 @@ void HandleMapNotify(void)
     BroadcastPacket(M_MAP, 3,
                     Tmp_win->w,Tmp_win->frame, (unsigned long)Tmp_win);
 
-  if((!Scr.Focus) ||
-     (!IS_TRANSIENT(Tmp_win) && DO_GRAB_FOCUS(Tmp_win)) ||
+  if((!IS_TRANSIENT(Tmp_win) && DO_GRAB_FOCUS(Tmp_win)) ||
      (IS_TRANSIENT(Tmp_win) && DO_GRAB_FOCUS_TRANSIENT(Tmp_win)))
     {
       if (OnThisPage && !HAS_NEVER_FOCUS(Tmp_win))

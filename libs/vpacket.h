@@ -15,7 +15,7 @@
 
 #ifndef _VPACKET_
 #define _VPACKET_
-#include <fvwm/gsfr.h>
+#include <fvwm/window_flags.h>
 
 /*
     =====================================================================
@@ -44,8 +44,8 @@ unsigned long int  frame_y;
 unsigned long int  frame_width;
 unsigned long int  frame_height;
 unsigned long int  desk;
-/* 
-  Temp word for alignment - old flags used to be here. 
+/*
+  Temp word for alignment - old flags used to be here.
   - remove before next release.
 */
 unsigned long int  dummy;

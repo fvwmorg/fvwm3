@@ -13,12 +13,12 @@ fvwm2_SOURCES = add_window.c bindings.h bindings.c borders.c \
 	colormaps.c colors.c decorations.c defaults.h events.c events.h \
 	focus.c focus.h \
 	functions.c functions.h fvwm.c fvwm.h fvwmdebug.c fvwmdebug.h \
-	gnome.c gsfr.h icccm2.c icons.c icons.h menus.c menus.h misc.c \
+	gnome.c icccm2.c icons.c icons.h menus.c menus.h misc.c \
 	misc.h modconf.c module_interface.c module_interface.h \
 	move_resize.c move_resize.h \
 	parse.h placement.c read.c read.h repeat.h repeat.c screen.h \
 	session.c session.h stack.c stack.h \
-	style.c	style.h virtual.c windowlist.c
+	style.c	style.h virtual.c window_flags.h windowlist.c
 
 fvwm2_DEPENDENCIES = $(top_builddir)/libs/libfvwm.a
 
