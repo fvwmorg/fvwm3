@@ -1720,7 +1720,9 @@ void Done(int restart, char *command)
   /* Close all my pipes */
   ClosePipes();
 
-  Reborder ();
+  if (! restart)  {
+    Reborder ();
+    }
 
   CloseICCCM2();
 
@@ -1735,6 +1737,15 @@ void Done(int restart, char *command)
     if (native) {
       RestartInSession (filename); /* won't return under SM */
     }
+
+    /* 
+      RBW - 06/08/1999 - without this, windows will wander to other pages on
+      a Restart/Recapture because Restart gets the window position information
+      out of sync. There may be a better way to do this (i.e., adjust the
+      Restart code), but this works for now.
+    */
+    MoveViewport(0,0,False);
+    Reborder ();
 
     /* Really make sure that the connection is closed and cleared! */
     XSelectInput(dpy, Scr.Root, 0 );

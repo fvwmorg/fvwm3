@@ -1,3 +1,11 @@
+1999-06-09  Bob Woodside  <proteus@pcnet.com>
+
+	* fvwm/fvwm.c: Fixed the problem of windows wandering after a
+	Restart from a page other than 0,0, followed by a Recapture.
+	* fvwm/placement.c: Corrected my overzealous attempt to keep windows
+	from switching desktops on Rastart/Recapture, which broke a couple
+	of the StartsOnPage options.
+
 1999-06-09  Dominik Vogt  <dominik_vogt@gmx.de>
 
 	* fvwm/menus.c: increased item height by one pixel
