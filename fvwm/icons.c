@@ -316,9 +316,9 @@ void DrawIconWindow(FvwmWindow *Tmp_win)
     }
 
   if((Tmp_win->iconPixmap != None)&&(!(Tmp_win->flags & SHAPED_ICON)))
-    RelieveWindowGC(dpy,Tmp_win->icon_pixmap_w,0,0,
-		    Tmp_win->icon_p_width - 1, Tmp_win->icon_p_height - 1,
-		    Relief,Shadow,2);
+    RelieveRectangle(dpy,Tmp_win->icon_pixmap_w,0,0,
+	             Tmp_win->icon_p_width - 1, Tmp_win->icon_p_height - 1,
+	             Relief,Shadow,2);
 
   /* need to locate the icon pixmap */
   if(Tmp_win->iconPixmap != None)
@@ -343,8 +343,8 @@ void DrawIconWindow(FvwmWindow *Tmp_win)
                    Tmp_win->icon_w_height-Scr.IconFont.height+
 		   Scr.IconFont.y-3,
                    Tmp_win->icon_name, strlen(Tmp_win->icon_name));
-      RelieveWindowGC(dpy,Tmp_win->icon_w,0,0,Tmp_win->icon_w_width - 1,
-                      ICON_HEIGHT - 1,Relief,Shadow,2);
+      RelieveRectangle(dpy,Tmp_win->icon_w,0,0,Tmp_win->icon_w_width - 1,
+                       ICON_HEIGHT - 1,Relief,Shadow,2);
     }
 }
 

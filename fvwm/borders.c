@@ -281,15 +281,15 @@ void SetBorder (FvwmWindow *t, Bool onoroff,Bool force,Bool Mapped,
 
 		if (!(GetDecor(t,left_buttons[i].state[bs].style) & FlatButton)) {
 		    if (GetDecor(t,left_buttons[i].state[bs].style) & SunkButton)
-			RelieveWindowGC(dpy,t->left_w[i],0,0,
-				        t->title_height - 1, t->title_height - 1,
-				        (inverted ? ReliefGC : ShadowGC),
-				        (inverted ? ShadowGC : ReliefGC), rwidth);
+			RelieveRectangle(dpy,t->left_w[i],0,0,
+				         t->title_height - 1, t->title_height - 1,
+				         (inverted ? ReliefGC : ShadowGC),
+				         (inverted ? ShadowGC : ReliefGC), rwidth);
 		    else
-			RelieveWindowGC(dpy,t->left_w[i],0,0,
-				        t->title_height - 1, t->title_height - 1,
-				        (inverted ? ShadowGC : ReliefGC),
-				        (inverted ? ReliefGC : ShadowGC), rwidth);
+			RelieveRectangle(dpy,t->left_w[i],0,0,
+				         t->title_height - 1, t->title_height - 1,
+				         (inverted ? ShadowGC : ReliefGC),
+				         (inverted ? ReliefGC : ShadowGC), rwidth);
 		}
 	    }
 	}
@@ -342,15 +342,15 @@ void SetBorder (FvwmWindow *t, Bool onoroff,Bool force,Bool Mapped,
 
 		if (!(GetDecor(t,right_buttons[i].state[bs].style) & FlatButton)) {
 		    if (GetDecor(t,right_buttons[i].state[bs].style) & SunkButton)
-			RelieveWindowGC(dpy,t->right_w[i],0,0,
+			RelieveRectangle(dpy,t->right_w[i],0,0,
 				        t->title_height - 1, t->title_height - 1,
 				        (inverted ? ReliefGC : ShadowGC),
 				        (inverted ? ShadowGC : ReliefGC), rwidth);
 		    else
-			RelieveWindowGC(dpy,t->right_w[i],0,0,
-                                        t->title_height - 1, t->title_height - 1,
-				        (inverted ? ShadowGC : ReliefGC),
-				        (inverted ? ReliefGC : ShadowGC), rwidth);
+			RelieveRectangle(dpy,t->right_w[i],0,0,
+                                         t->title_height - 1, t->title_height - 1,
+				         (inverted ? ShadowGC : ReliefGC),
+				         (inverted ? ReliefGC : ShadowGC), rwidth);
 		}
 	    }
 	}
@@ -416,32 +416,32 @@ void SetBorder (FvwmWindow *t, Bool onoroff,Bool force,Bool Mapped,
           if (shaded) height += t->boundary_width;
 #endif        
           /* draw a single pixel band for MWMBorders and the top FvwmBorder line */
-          RelieveWindowGC(dpy, t->frame,
-                          t->boundary_width - 1, t->boundary_width - 1,
-                          t->frame_width - (t->boundary_width * 2 ) + 1,
-                          height,
-                          sgc, (t->flags & MWMBorders) ? rgc : sgc, 1);
+          RelieveRectangle(dpy, t->frame,
+                           t->boundary_width - 1, t->boundary_width - 1,
+                           t->frame_width - (t->boundary_width * 2 ) + 1,
+                           height,
+                           sgc, (t->flags & MWMBorders) ? rgc : sgc, 1);
           /* draw the rest of FvwmBorder Inset */
           if (!(t->flags & MWMBorders))
-            RelieveWindowGC(dpy, t->frame,
-                            t->boundary_width - 2, t->boundary_width - 2,
-                            t->frame_width - (t->boundary_width * 2) + 4,
-                            height + 3,
-                            sgc, rgc, 2);
+            RelieveRectangle(dpy, t->frame,
+                             t->boundary_width - 2, t->boundary_width - 2,
+                             t->frame_width - (t->boundary_width * 2) + 4,
+                             height + 3,
+                             sgc, rgc, 2);
         }
       
         /* draw the outside relief */
         if (t->flags & MWMBorders)
-          RelieveWindowGC(dpy, t->frame,
-                          0, 0, t->frame_width - 1, t->frame_height - 1,
-                          rgc, sgc, 2);
+          RelieveRectangle(dpy, t->frame,
+                           0, 0, t->frame_width - 1, t->frame_height - 1,
+                           rgc, sgc, 2);
         else { /* FVWMBorder style has an extra line of shadow on top and left */
-          RelieveWindowGC(dpy, t->frame,
-                          1, 1, t->frame_width - 2, t->frame_height - 2,
-                          rgc, sgc, 2);
-          RelieveWindowGC(dpy, t->frame,
-                          0, 0, t->frame_width - 1, t->frame_height - 1,
-                          sgc, sgc, 1);
+          RelieveRectangle(dpy, t->frame,
+                           1, 1, t->frame_width - 2, t->frame_height - 2,
+                           rgc, sgc, 2);
+          RelieveRectangle(dpy, t->frame,
+                           0, 0, t->frame_width - 1, t->frame_height - 1,
+                           sgc, sgc, 1);
         }
         
         /* draw the handles as eight marks rectangles around the border */
@@ -558,71 +558,71 @@ void SetBorder (FvwmWindow *t, Bool onoroff,Bool force,Bool Mapped,
         /* GSFR candidate */
         if((t->flags & BORDER) && !(t->flags & MWMButtons)) {
           if (PressedW == t->sides[0]) { /* top */
-            RelieveWindowGC(dpy, t->frame,
-                            t->corner_width, 1,
-                            t->frame_width - 2 * t->corner_width - 1,
-                            t->boundary_width - 2,
-                            sgc, rgc, rwidth);
+            RelieveRectangle(dpy, t->frame,
+                             t->corner_width, 1,
+                             t->frame_width - 2 * t->corner_width - 1,
+                             t->boundary_width - 2,
+                             sgc, rgc, rwidth);
           } else if (PressedW == t->sides[1]) { /* right */
-            RelieveWindowGC(dpy, t->frame,
-                            t->frame_width - t->boundary_width + rwidth - 1, t->corner_width,
-                            t->boundary_width - 2,
-                            t->frame_height - 2 * t->corner_width - 1,
-                            sgc, rgc, rwidth);
+            RelieveRectangle(dpy, t->frame,
+                             t->frame_width - t->boundary_width + rwidth - 1, t->corner_width,
+                             t->boundary_width - 2,
+                             t->frame_height - 2 * t->corner_width - 1,
+                             sgc, rgc, rwidth);
           } else if (PressedW == t->sides[2]) { /* bottom */
-            RelieveWindowGC(dpy, t->frame,
-                            t->corner_width, t->frame_height - t->boundary_width + rwidth - 1,
-                            t->frame_width - 2 * t->corner_width - 1,
-                            t->boundary_width - 2,
-                            sgc, rgc, rwidth);
+            RelieveRectangle(dpy, t->frame,
+                             t->corner_width, t->frame_height - t->boundary_width + rwidth - 1,
+                             t->frame_width - 2 * t->corner_width - 1,
+                             t->boundary_width - 2,
+                             sgc, rgc, rwidth);
           } else if (PressedW == t->sides[3]) { /* left */
-            RelieveWindowGC(dpy, t->frame,
-                            1, t->corner_width,
-                            t->boundary_width - 2,
-                            t->frame_height - 2 * t->corner_width - 1,
-                            sgc, rgc, rwidth);
+            RelieveRectangle(dpy, t->frame,
+                             1, t->corner_width,
+                             t->boundary_width - 2,
+                             t->frame_height - 2 * t->corner_width - 1,
+                             sgc, rgc, rwidth);
           } else if (PressedW == t->corners[0]) { /* top left */
             /* drawn as two relieved rectangles, this will have to change if the
                title bar and buttons ever get to be InputOnly windows */
-            RelieveWindowGC(dpy, t->frame,
-                            t->boundary_width - rwidth, t->boundary_width - rwidth,
-                            t->corner_width - t->boundary_width + rwidth,
-                            t->corner_width - t->boundary_width + rwidth,
-                            rgc, sgc, rwidth);
-            RelieveWindowGC(dpy, t->frame,
-                            1, 1,
-                            t->corner_width - 2, t->corner_width - 2,
-                            sgc, rgc, rwidth);
+            RelieveRectangle(dpy, t->frame,
+                             t->boundary_width - rwidth, t->boundary_width - rwidth,
+                             t->corner_width - t->boundary_width + rwidth,
+                             t->corner_width - t->boundary_width + rwidth,
+                             rgc, sgc, rwidth);
+            RelieveRectangle(dpy, t->frame,
+                             1, 1,
+                             t->corner_width - 2, t->corner_width - 2,
+                             sgc, rgc, rwidth);
           } else if (PressedW == t->corners[1]) { /* top right */
-            RelieveWindowGC(dpy, t->frame,
-                            t->frame_width - t->corner_width + rwidth - 2, t->boundary_width - rwidth,
-                            t->corner_width - t->boundary_width + rwidth,
-                            t->corner_width - t->boundary_width + rwidth,
-                            rgc, sgc, rwidth);
-            RelieveWindowGC(dpy, t->frame,
-                            t->frame_width - t->corner_width, 1,
-                            t->corner_width - 3 + rwidth, t->corner_width - 2,
-                            sgc, rgc, rwidth);
+            RelieveRectangle(dpy, t->frame,
+                             t->frame_width - t->corner_width + rwidth - 2, t->boundary_width - rwidth,
+                             t->corner_width - t->boundary_width + rwidth,
+                             t->corner_width - t->boundary_width + rwidth,
+                             rgc, sgc, rwidth);
+            RelieveRectangle(dpy, t->frame,
+                             t->frame_width - t->corner_width, 1,
+                             t->corner_width - 3 + rwidth, t->corner_width - 2,
+                             sgc, rgc, rwidth);
           } else if (PressedW == t->corners[2]) { /* bottom left */
-            RelieveWindowGC(dpy, t->frame,
-                            t->boundary_width - rwidth, t->frame_height - t->corner_width + rwidth -2,
-                            t->corner_width - t->boundary_width + rwidth,
-                            t->corner_width - t->boundary_width + rwidth,
-                            rgc, sgc, rwidth);
-            RelieveWindowGC(dpy, t->frame,
-                            1, t->frame_height - t->corner_width,
-                            t->corner_width - 2, t->corner_width - 3 + rwidth,
-                            sgc, rgc, rwidth);
+            RelieveRectangle(dpy, t->frame,
+                             t->boundary_width - rwidth, t->frame_height - t->corner_width + rwidth -2,
+                             t->corner_width - t->boundary_width + rwidth,
+                             t->corner_width - t->boundary_width + rwidth,
+                             rgc, sgc, rwidth);
+            RelieveRectangle(dpy, t->frame,
+                             1, t->frame_height - t->corner_width,
+                             t->corner_width - 2, t->corner_width - 3 + rwidth,
+                             sgc, rgc, rwidth);
           } else if (PressedW == t->corners[3]) { /* bottom right */
-            RelieveWindowGC(dpy, t->frame,
-                            t->frame_width - t->corner_width + rwidth - 2, t->frame_height - t->corner_width + rwidth - 2,
-                            t->corner_width - t->boundary_width + rwidth,
-                            t->corner_width - t->boundary_width + rwidth,
-                            rgc, sgc, rwidth);
-            RelieveWindowGC(dpy, t->frame,
-                            t->frame_width - t->corner_width, t->frame_height - t->corner_width,
-                            t->corner_width - 3 + rwidth, t->corner_width - 3 + rwidth,
-                            sgc, rgc, rwidth);
+            RelieveRectangle(dpy, t->frame,
+                             t->frame_width - t->corner_width + rwidth - 2, t->frame_height - t->corner_width + rwidth - 2,
+                             t->corner_width - t->boundary_width + rwidth,
+                             t->corner_width - t->boundary_width + rwidth,
+                             rgc, sgc, rwidth);
+            RelieveRectangle(dpy, t->frame,
+                             t->frame_width - t->corner_width, t->frame_height - t->corner_width,
+                             t->corner_width - 3 + rwidth, t->corner_width - 3 + rwidth,
+                             sgc, rgc, rwidth);
           }
         }    
       }
@@ -878,11 +878,11 @@ void SetTitleBar (FvwmWindow *t,Bool onoroff, Bool NewTitle)
    * title goes, so that its more legible. For color, no need */
   if(Scr.d_depth<2)
   {
-    RelieveWindowGC(dpy,t->title_w,0,0,hor_off-3,t->title_height - 1,
-                    ReliefGC, ShadowGC, rwidth);
-    RelieveWindowGC(dpy,t->title_w,hor_off+w+2,0,
-                    t->title_width - w - hor_off-3,t->title_height - 1,
-                    ReliefGC, ShadowGC, rwidth);
+    RelieveRectangle(dpy,t->title_w,0,0,hor_off-3,t->title_height - 1,
+                     ReliefGC, ShadowGC, rwidth);
+    RelieveRectangle(dpy,t->title_w,hor_off+w+2,0,
+                     t->title_width - w - hor_off-3,t->title_height - 1,
+                     ReliefGC, ShadowGC, rwidth);
     XFillRectangle(dpy,t->title_w,
                    (PressedW==t->title_w?ShadowGC:ReliefGC),
                    hor_off - 2, 0, w+4,t->title_height);
@@ -916,13 +916,13 @@ void SetTitleBar (FvwmWindow *t,Bool onoroff, Bool NewTitle)
 
       if (!(tb_style & FlatButton)) {
 	  if (tb_style & SunkButton)
-	      RelieveWindowGC(dpy,t->title_w,0,0,
-	                      t->title_width - 1,t->title_height - 1,
-			      ShadowGC, ReliefGC, rwidth);
+	      RelieveRectangle(dpy,t->title_w,0,0,
+	                       t->title_width - 1,t->title_height - 1,
+			       ShadowGC, ReliefGC, rwidth);
 	  else
-	      RelieveWindowGC(dpy,t->title_w,0,0,
-	                      t->title_width - 1,t->title_height - 1,
-	                      ReliefGC, ShadowGC, rwidth);
+	      RelieveRectangle(dpy,t->title_w,0,0,
+	                       t->title_width - 1,t->title_height - 1,
+	                       ReliefGC, ShadowGC, rwidth);
       }
 
       if(t->name != (char *)NULL)
@@ -939,12 +939,12 @@ void SetTitleBar (FvwmWindow *t,Bool onoroff, Bool NewTitle)
     int max = t->title_height / 2 + num * 2 - 3;
     for(i = min; i <= max; i += 4)
     {
-      RelieveWindowGC(dpy, t->title_w,
-                      4, i, hor_off - 10, 1,
-                      ShadowGC, ReliefGC, 1);
-      RelieveWindowGC(dpy, t->title_w,
-                      hor_off + w + 6, i, t->title_width - hor_off - w - 11, 1,
-                      ShadowGC, ReliefGC, 1);
+      RelieveRectangle(dpy, t->title_w,
+                       4, i, hor_off - 10, 1,
+                       ShadowGC, ReliefGC, 1);
+      RelieveRectangle(dpy, t->title_w,
+                       hor_off + w + 6, i, t->title_width - hor_off - w - 11, 1,
+                       ShadowGC, ReliefGC, 1);
     }
   }
 

@@ -803,20 +803,20 @@ void DisplayPosition (FvwmWindow *tmp_win, int x, int y,int Init)
   if(Init)
     {
       XClearWindow(dpy,Scr.SizeWindow);
-      if(Scr.d_depth >= 2)
-	RelieveWindowGC(dpy,Scr.SizeWindow,0,0,
-		        Scr.SizeStringWidth+ SIZE_HINDENT*2 - 1,
-                        Scr.StdFont.height + SIZE_VINDENT*2 - 1,
-		        Scr.StdReliefGC,
-		        Scr.StdShadowGC, 2);
-
     }
   else
-    {
-      XClearArea(dpy,Scr.SizeWindow,SIZE_HINDENT,SIZE_VINDENT,
-		 Scr.SizeStringWidth, Scr.StdFont.height,False);
+    { /* just clear indside the relief lines to reduce flicker */
+      XClearArea(dpy,Scr.SizeWindow,2,2,
+                 Scr.SizeStringWidth + SIZE_HINDENT*2 - 3,
+                 Scr.StdFont.height + SIZE_VINDENT*2 - 3,False);
     }
 
+  if(Scr.d_depth >= 2)
+    RelieveRectangle(dpy,Scr.SizeWindow,0,0,
+                     Scr.SizeStringWidth+ SIZE_HINDENT*2 - 1,
+                     Scr.StdFont.height + SIZE_VINDENT*2 - 1,
+                     Scr.StdReliefGC,
+                     Scr.StdShadowGC, 2);
   offset = (Scr.SizeStringWidth + SIZE_HINDENT*2
 	    - XTextWidth(Scr.StdFont.font,str,strlen(str)))/2;
   XDrawString (dpy, Scr.SizeWindow, Scr.StdGC,

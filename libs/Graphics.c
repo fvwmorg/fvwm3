@@ -13,8 +13,8 @@
  * This is so FvwmBorder windows have a correct bottom edge and the sticky lines
  * look like just lines
  ****************************************************************************/
-void RelieveWindowGC(Display *dpy, Window win, int x,int y,int w,int h,
-		     GC ReliefGC, GC ShadowGC, int line_width)
+void RelieveRectangle(Display *dpy, Window win, int x,int y,int w,int h,
+		      GC ReliefGC, GC ShadowGC, int line_width)
 {
   XSegment* seg = (XSegment*)safemalloc(sizeof(XSegment) * line_width);
   int i;

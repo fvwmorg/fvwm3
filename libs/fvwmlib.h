@@ -179,7 +179,7 @@ Bool GetResourceString(XrmDatabase db, const char *resource,
 
 
 /* things in Graphics.c */
-void RelieveWindowGC(Display *dpy, Window win, int x,int y,int w,int h,
-		     GC ReliefGC, GC ShadowGC, int line_width);
+void RelieveRectangle(Display *dpy, Window win, int x,int y,int w,int h,
+		      GC ReliefGC, GC ShadowGC, int line_width);
 
 #endif

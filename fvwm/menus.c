@@ -1548,21 +1548,6 @@ static void PopDownAndRepaintParent(MenuRoot *mr, Bool *fSubmenuOverlaps)
   return;
 }
 
-/***********************************************************************
- *
- *  Procedure:
- *	RelieveRectangle - add relief lines to a rectangular window
- *
- ***********************************************************************/
-static
-void RelieveRectangle(Window win,int x,int y,int w, int h,GC Hilite,GC Shadow)
-{
-  XDrawLine(dpy, win, Hilite, x, y, w+x-1, y);
-  XDrawLine(dpy, win, Hilite, x, y, x, h+y-1);
-
-  XDrawLine(dpy, win, Shadow, x, h+y-1, w+x-1, h+y-1);
-  XDrawLine(dpy, win, Shadow, w+x-1, y, w+x-1, h+y-1);
-}
 
 /***********************************************************************
  *
@@ -1685,18 +1670,18 @@ void PaintEntry(MenuItem *mi)
 
     if ((mi->state)&&(!mi->fIsSeparator)&&
 	(((*mi->item)!=0) || mi->picture || mi->lpicture)) {
-      RelieveRectangle(mr->w, mr->xoffset + th + 1, y_offset,
-		       mr->width - 2*(th + 1) - sw, mi->y_height,
-		       ReliefGC,ShadowGC);
+      RelieveRectangle(dpy,mr->w, mr->xoffset + th + 1, y_offset,
+		       mr->width - 2*(th + 1) - sw - 1, mi->y_height - 1,
+		       ReliefGC,ShadowGC,1);
       if (th == 2) {
-	RelieveRectangle(mr->w, mr->xoffset + 2, y_offset - 1,
-			 mr->width - 4 - sw, mi->y_height + 2,
-			 ReliefGC,ShadowGC);
+	RelieveRectangle(dpy,mr->w, mr->xoffset + 2, y_offset - 1,
+			 mr->width - 4 - sw - 1, mi->y_height + 2 - 1,
+			 ReliefGC,ShadowGC,1);
       }
     }
 
     RelieveHalfRectangle(mr->w, 0, y_offset - th + 1, mr->width,
-			 y_height + 2*(th - 1), ReliefGC, ShadowGC);
+			 y_height + 2*th - 1, ReliefGC, ShadowGC);
   }
 
 
@@ -1711,7 +1696,7 @@ void PaintEntry(MenuItem *mi)
   /* Botton of the menu */
   if(mi->next == NULL)
     DrawSeparator(mr->w,ShadowGC,ShadowGC,1,mr->height-2,
-                  mr->width-2, mr->height-2,1);
+                  mr->width-1, mr->height-2,1);
 
   if(IS_TITLE_MENU_ITEM(mi))
     {
