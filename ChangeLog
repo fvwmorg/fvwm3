@@ -1,5 +1,8 @@
 2003-03-12  Dominik Vogt  <dominik.vogt@gmx.de>
 
+	* fvwm/functions.c (DeferExecution):
+	action trigger fix
+
 	* todo-2.6 (todo):
 	closed some items
 

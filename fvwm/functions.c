@@ -122,6 +122,7 @@ static Bool DeferExecution(
 {
 	int done;
 	int finished = 0;
+	int just_waiting_for_finish = 0;
 	Window dummy;
 	Window original_w;
 	static XEvent e;
@@ -153,6 +154,7 @@ static Bool DeferExecution(
 			/* We are only waiting until the user releases the
 			 * button. Do not change the cursor. */
 			cursor = CRS_NONE;
+			just_waiting_for_finish = 1;
 		}
 	}
 	if (Scr.flags.silent_functions)
@@ -215,7 +217,10 @@ static Bool DeferExecution(
 	}
 	MyXUngrabKeyboard(dpy);
 	UngrabEm(GRAB_NORMAL);
-
+	if (just_waiting_for_finish)
+	{
+		return False;
+	}
 	w = e.xany.window;
 	ret_ecc->x.etrigger = &e;
 	*ret_mask |= ECC_ETRIGGER | ECC_W | ECC_WCONTEXT;
