@@ -1,5 +1,13 @@
 2002-05-09  olicha  <olivier.chapuis@free.fr>
 
+	* fvwm/colorset.c:
+	A -Wall fix
+
+	* libs/Flocale.h:
+	* libs/Fft.h:
+	Fixed Compilation
+	Include Fft.h include FRender.h as Xft.h include Xrender.h
+
 	* libs/FRenderInterface.h:
 	* libs/FRender.h:
 	* libs/FRender.c (FRenderInit):

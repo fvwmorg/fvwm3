@@ -26,6 +26,7 @@
 #include <X11/Xlocale.h>
 #include <X11/Xutil.h>
 
+#include "fvwmlib.h"
 #include "Fft.h"
 /* FlocaleCharset.h and Ficonv.h should not be included */
 

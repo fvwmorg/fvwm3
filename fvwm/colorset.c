@@ -39,6 +39,7 @@
 #include "libs/FShape.h"
 #include "libs/Picture.h"
 #include "libs/PictureGraphics.h"
+#include "libs/FRenderInterface.h"
 
 /* ---------------------------- local definitions --------------------------- */
 

@@ -25,6 +25,8 @@
 #undef Picture
 #endif
 
+#include "FRender.h"
+
 /* ---------------------------- global definitions -------------------------- */
 
 #ifdef HAVE_XFT
@@ -74,8 +76,7 @@ typedef struct
 	short y;
 	short xOff;
 	short yOff;
-} XGlyphInfo;
-typedef XGlyphInfo FGlyphInfo;
+} FGlyphInfo;
 typedef unsigned char FftChar8;
 typedef unsigned short FftChar16;
 typedef unsigned int FftChar32;
@@ -140,14 +141,6 @@ typedef struct
 	} u;
 } XftFont;
 typedef XftFont FftFont;
-typedef struct
-{
-	unsigned short red;
-	unsigned short green;
-	unsigned short blue;
-	unsigned short alpha;
-} XRenderColor;
-typedef XRenderColor FRenderColor;
 typedef struct
 {
 	unsigned long pixel;
