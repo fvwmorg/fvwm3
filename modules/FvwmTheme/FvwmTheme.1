@@ -46,8 +46,8 @@ FvwmTheme supports some configuration options.
 Will create or modify colorset \fIn\fP. Each colorset has four colors, an
 optional pixmap and an optional shape mask.  The four colors are used by
 modules as the foreground, background, highlight and shadow colors.  When
-a colorset is created the colors from colorset 0 are copied (these are,
-also controlled by the DefaultColors fvwm command).
+a colorset is created it defaults to a foreground of black and background of
+gray.
 
 Warning: The highest colorset number used determines memory consumption.
 Thus if you define 'Colorset 100000', the memory for 100001 colorsets will

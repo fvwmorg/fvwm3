@@ -50,7 +50,9 @@ static int color_limit = 0;
 static int fd[2];			/* communication pipes */
 static Bool privateCells = False;	/* set when read/write colors used */
 static Bool sharedCells = False;	/* set after a shared color is used */
-static int nSets = 0;			/* how many read/write sets allocated */
+static int nSets = 0;			/* how many color sets allocated */
+static char *black = "black";
+static char *gray = "gray";
 
 /* forward declarations */
 static RETSIGTYPE signal_handler(int signal);
@@ -159,12 +161,11 @@ static void main_loop(void)
 
 /* config options, the first NULL is replaced with *FvwmThemeColorset */
 /* the second NULL is replaced with *FvwmThemeReadWriteColors */
-/* the "Colorset" config option is what gets reflected by fvwm */
+/* FvwmTheme ignores any "colorset" lines since it causes them */
 static char *config_options[] =
 {
   "ImagePath",
   "ColorLimit",
-  "Colorset",
   NULL,
   NULL,
   NULL
@@ -182,18 +183,10 @@ static void parse_config_line(char *line)
   case 1: /* ColorLimit */
     sscanf(rest, "%d", &color_limit);
     break;
-  case 2: /* Colorset */
-    /* got a colorset config line from fvwm, this may be due to FvwmTheme
-     * sending one in or it may be another module (or fvwm itself)
-     * if using read/write cells ignore it so the pixels are not forgotten
-     * if not load the colorset and free any pixels/pixmaps that differ */
-    if (!privateCells)
-      LoadColorsetAndFree(rest);
-    break;
-  case 3: /* *FvwmThemColorset */
+  case 2: /* *FvwmThemColorset */
     parse_colorset(rest);
     break;
-  case 4: /* *FvwmThemeReadWriteColors */
+  case 3: /* *FvwmThemeReadWriteColors */
     if (sharedCells)
       fprintf(stderr, "%s: must come first, already allocated shared pixels\n",
 	      config_options[4]);
@@ -308,13 +301,32 @@ static void parse_colorset(char *line)
   }
   cs = AllocColorset(n);
 
-  /* grab cells */
-  if (privateCells) {
-    while (nSets <= n) {
-      have_pixels_changed = True;
+  /* if new colorsets are created initialize them to black on gray */
+  while (nSets <= n) {
+    have_pixels_changed = True;
+    if (privateCells) {
       XAllocColorCells(dpy, Pcmap, False, NULL, 0, &Colorset[nSets].fg, 4);
-      nSets++;
+      XParseColor(dpy, Pcmap, black, &color);
+      color.pixel = Colorset[nSets].fg;
+      XStoreColor(dpy, Pcmap, &color);
+      XParseColor(dpy, Pcmap, gray, &color);
+      color.pixel = Colorset[nSets].bg;
+      XStoreColor(dpy, Pcmap, &color);
+      color_mult(&color.red, &color.green, &color.blue, BRIGHTNESS_FACTOR);
+      color.pixel = Colorset[nSets].hilite;
+      XStoreColor(dpy, Pcmap, &color);
+      color.pixel = Colorset[nSets].bg;
+      XQueryColor(dpy, Pcmap, &color);
+      color_mult(&color.red, &color.green, &color.blue, DARKNESS_FACTOR);
+      color.pixel = Colorset[nSets].shadow;
+      XStoreColor(dpy, Pcmap, &color);
+    } else {
+      Colorset[nSets].fg = GetColor(black);
+      Colorset[nSets].bg = GetColor(gray);
+      Colorset[nSets].hilite = GetHilite(Colorset[nSets].bg);
+      Colorset[nSets].shadow = GetShadow(Colorset[nSets].bg);
     }
+  nSets++;
   }
 
   /* ---------- Parse the options ---------- */
@@ -561,7 +573,7 @@ static void parse_colorset(char *line)
   {
     Bool do_set_default_background = False;
 
-    has_bg_changed = 1;
+    has_bg_changed = True;
     if ((cs->color_flags & BG_AVERAGE) && cs->pixmap != None)
     {
       /* calculate average background color */
@@ -573,26 +585,18 @@ static void parse_colorset(char *line)
 
       /* create an array to store all the pixmap colors in */
       colors = (XColor *)safemalloc(cs->width * cs->height * sizeof(XColor));
-      /* get the pixmap into an image */
+      /* get the pixmap and mask into an image */
       image = XGetImage(dpy, cs->pixmap, 0, 0, cs->width, cs->height,
 			AllPlanes, ZPixmap);
-      /* get each pixel */
-      if (cs->mask == None)
-      {
-	for (i = 0; i < cs->width; i++)
-	  for (j = 0; j < cs->height; j++)
-	    colors[k++].pixel = XGetPixel(image, i, j);
-      }
-      else
-      {
+      if (cs->mask != None)
 	mask_image = XGetImage(dpy, cs->mask, 0, 0, cs->width, cs->height,
 			       AllPlanes, ZPixmap);
-	/* only fetch the pixels that are not transparent */
-	for (i = 0; i < cs->width; i++)
-	  for (j = 0; j < cs->height; j++)
-	    if (XGetPixel(mask_image, i, j) == 0)
-	      colors[k++].pixel = XGetPixel(image, i, j);
-      }
+      /* only fetch the pixels that are not transparent */
+      for (i = 0; i < cs->width; i++)
+	for (j = 0; j < cs->height; j++)
+	  if ((cs->mask == None) || (XGetPixel(mask_image, i, j) == 0))
+	    colors[k++].pixel = XGetPixel(image, i, j);
+
       XDestroyImage(image);
       if (mask_image != None)
 	XDestroyImage(mask_image);
@@ -605,8 +609,7 @@ static void parse_colorset(char *line)
 	/* look them all up, XQueryColors() can't handle more than 256 */
 	for (i = 0; i < k; i += 256)
 	  XQueryColors(dpy, Pcmap, &colors[i], min(k - i, 256));
-	/* calculate average, ignore overflow: .red is a short, red is a
-	 * long */
+	/* calculate average, ignore overflow: .red is short, red is long */
 	for (i = 0; i < k; i++) {
 	  red += colors[i].red;
 	  green += colors[i].green;
@@ -653,17 +656,13 @@ static void parse_colorset(char *line)
     } /* default */
     if (do_set_default_background)
     {
-      /* Have to guess a default color. The only certainty is that colorset 0
-       * is set up by fvwm so copy its background */
       if (privateCells) {
-        /* query it */
-        color.pixel = Colorset[0].bg;
-        XQueryColor(dpy, Pcmap, &color);
+        XParseColor(dpy, Pcmap, gray, &color);
         color.pixel = cs->bg;
         XStoreColor(dpy, Pcmap, &color);
       } else {
-        /* copy the pixel */
-        cs->bg = Colorset[0].bg;
+	XFreeColors(dpy, Pcmap, &cs->bg, 1, 0);
+	cs->bg = GetColor(gray);
         have_pixels_changed = True;
       }
     }
@@ -708,16 +707,15 @@ static void parse_colorset(char *line)
     } /* user specified */
     else if (fg == NULL)
     {
-      /* default, copy colorset 0 as it is the only thing guaranteed to exist */
+      /* default */
       if (privateCells) {
         /* query it */
-        color.pixel = Colorset[0].fg;
-        XQueryColor(dpy, Pcmap, &color);
+        XParseColor(dpy, Pcmap, black, &color);
         color.pixel = cs->fg;
         XStoreColor(dpy, Pcmap, &color);
       } else {
-        /* copy the pixel */
-        cs->fg = Colorset[0].fg;
+	XFreeColors(dpy, Pcmap, &cs->fg, 1, 0);
+	cs->fg = GetColor(black);
         have_pixels_changed = True;
       }
     }
@@ -753,6 +751,7 @@ static void parse_colorset(char *line)
 	color.pixel = cs->hilite;
 	XStoreColor(dpy, Pcmap, &color);
       } else {
+	XFreeColors(dpy, Pcmap, &cs->hilite, 1, 0);
         cs->hilite = GetHilite(cs->bg);
 	have_pixels_changed = True;
       }
@@ -787,6 +786,7 @@ static void parse_colorset(char *line)
 	color.pixel = cs->shadow;
 	XStoreColor(dpy, Pcmap, &color);
       } else {
+	XFreeColors(dpy, Pcmap, &cs->shadow, 1, 0);
         cs->shadow = GetShadow(cs->bg);
 	have_pixels_changed = True;
       }
@@ -853,10 +853,10 @@ static void parse_config(void)
   char *line;
 
   /* prepare the tokenizer array, [0,1] are ImagePath and ColorLimit */
-  config_options[3] = safemalloc(namelen + 10);
-  sprintf(config_options[3], "*%sColorset", name);
-  config_options[4] = safemalloc(namelen + 17);
-  sprintf(config_options[4], "*%sReadWriteColors", name);
+  config_options[2] = safemalloc(namelen + 10);
+  sprintf(config_options[2], "*%sColorset", name);
+  config_options[3] = safemalloc(namelen + 17);
+  sprintf(config_options[3], "*%sReadWriteColors", name);
 
   /* set a filter on the config lines sent */
   line = safemalloc(namelen + 2);
@@ -876,13 +876,7 @@ static void parse_config(void)
 
 static int error_handler(Display *d, XErrorEvent *e)
 {
-  /* Attempting to free colors or pixmaps that were not allocated by this
-   * module or were never allocated at all does not cause problems */
-  if (((X_FreeColors == e->request_code) && (BadAccess == e->error_code))
-      || ((X_FreePixmap == e->request_code) && (BadPixmap == e->error_code)))
-    return 0;
-
-  /* other errors cause diagnostic output and stop execution */
+  /* All errors cause diagnostic output and stop execution */
   PrintXErrorAndCoredump(d, e, name);
   return 0;
 }
