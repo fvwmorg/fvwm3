@@ -101,7 +101,6 @@ extern void MakeMeWindow(void);
 extern void WaitForExpose(void);
 extern void RedrawWindow(int force);
 extern void StartMeUp(void);
-extern void ShutMeDown(int exitstat);
 extern int OpenConsole(void);
 extern void ConsoleMessage(char *fmt,...);
 extern void LoopOnEvents(void);
@@ -122,7 +121,5 @@ extern void WarpTaskBar(int x);
 extern void PurgeConfigEvents(void);
 
 extern void Swallow(unsigned long *body);
-
-extern XErrorHandler ErrorHandler(Display *d, XErrorEvent *event);
 
 #endif

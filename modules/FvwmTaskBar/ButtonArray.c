@@ -19,6 +19,7 @@
 #include <X11/Xlib.h>
 
 #include "libs/fvwmlib.h"
+#include "libs/safemalloc.h"
 
 #include "ButtonArray.h"
 #include "Mallocs.h"
@@ -339,28 +340,30 @@ int UpdateButtonPicture(ButtonArray *array, int butnum, Picture *p)
    ------------------------------------------------------------------------- */
 void RemoveButton(ButtonArray *array, int butnum)
 {
-  Button *temp, *temp2;
+  Button *temp, *to_die;
 
   if (butnum == 0) {
-    temp2 = array->head;
+    to_die = array->head;
     temp = NULL;
   } else {
     temp = find_n(array, butnum-1);
-    if (temp == NULL) return;
-    temp2 = temp->next;
+    if ( !temp ) return;
+    to_die = temp->next;
   }
-  if (temp2 == NULL) return;
-  if (temp)
-    temp->next = temp2->next;
+  if ( !to_die ) return;
 
-  if (array->tail == temp2)
+  if (array->tail == to_die)
     array->tail = temp;
+  if ( !temp )
+    array->head = to_die->next;
+  else
+    temp->next = to_die->next;
 
-  ButtonDelete(temp2);
+  ButtonDelete(to_die);
   array->count--;
   if (temp && temp != array->head)
     temp = temp->next;
-  for (; temp!=NULL; temp=temp->next)
+  for (; temp; temp=temp->next)
     temp->needsupdate = 1;
 
   ArrangeButtonArray(array);

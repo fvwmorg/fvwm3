@@ -45,10 +45,6 @@
 #include <sys/stat.h>
 #include <stdarg.h>
 
-#if HAVE_SYS_SELECT_H
-#include <sys/select.h>
-#endif
-
 #include <unistd.h>
 #include <ctype.h>
 
@@ -60,6 +56,8 @@
 
 #include "libs/Module.h"
 #include "libs/fvwmlib.h"  /* for pixmaps routines */
+#include "libs/safemalloc.h"
+#include "libs/fvwmsignal.h"
 
 
 #include "FvwmTaskBar.h"
@@ -161,6 +159,9 @@ static Bool hide_taskbar_alarm = False;
 
 static void ParseConfig( void );
 static void ParseConfigLine(char *tline);
+static void ShutMeDown(void);
+static RETSIGTYPE TerminateHandler(int sig);
+static int ErrorHandler(Display*, XErrorEvent*);
 
 /******************************************************************************
   Main - Setup the XConnection,request the window list and loop forever
@@ -169,7 +170,8 @@ static void ParseConfigLine(char *tline);
 ******************************************************************************/
 int main(int argc, char **argv)
 {
-  char *temp, *s;
+  const char *temp;
+  char *s;
 
   /* Save the program name for error messages and config parsing */
   temp = argv[0];
@@ -199,8 +201,39 @@ int main(int argc, char **argv)
   Fvwm_fd[1] = atoi(argv[2]);
   fd_width = GetFdWidth();
 
-  signal (SIGPIPE, DeadPipe);
+#ifdef HAVE_SIGACTION
+  {
+    struct sigaction  sigact;
+
+    sigemptyset(&sigact.sa_mask);
+#ifdef SA_INTERRUPT
+    sigact.sa_flags = SA_INTERRUPT;
+#else
+    sigact.sa_flags = 0;
+#endif
+    sigact.sa_handler = Alarm;
+    sigaction(SIGALRM, &sigact, NULL);
+
+    sigaddset(&sigact.sa_mask, SIGPIPE);
+    sigaddset(&sigact.sa_mask, SIGTERM);
+    sigaddset(&sigact.sa_mask, SIGINT);
+    sigact.sa_handler = TerminateHandler;
+    sigaction(SIGPIPE, &sigact, NULL);
+    sigaction(SIGTERM, &sigact, NULL);
+    sigaction(SIGINT,  &sigact, NULL);
+  } 
+#else
+#ifdef USE_BSD_SIGNALS
+  fvwmSetSignalMask( sigmask(SIGTERM) | sigmask(SIGPIPE) | sigmask(SIGINT) );
+#endif
+  signal (SIGPIPE, TerminateHandler);
   signal (SIGALRM, Alarm);
+#ifdef HAVE_SIGINTERRUPT
+  siginterrupt(SIGPIPE, 1);
+  siginterrupt(SIGTERM, 1);
+  siginterrupt(SIGINT, 1);
+#endif
+#endif
 
   SetMessageMask(Fvwm_fd,M_ADD_WINDOW | M_CONFIGURE_WINDOW | M_DESTROY_WINDOW |
 		 M_WINDOW_NAME | M_ICON_NAME | M_RES_NAME | M_DEICONIFY |
@@ -221,7 +254,7 @@ int main(int argc, char **argv)
 
   /* Setup the XConnection */
   StartMeUp();
-  XSetErrorHandler((XErrorHandler) ErrorHandler);
+  XSetErrorHandler(ErrorHandler);
 
   InitPictureCMap(dpy, Root);
 
@@ -239,6 +272,10 @@ int main(int argc, char **argv)
 
   /* Receive all messages from Fvwm */
   EndLessLoop();
+  if ( isTerminated )
+  {
+    ConsoleMessage("Received signal: exiting...\n");
+  }
   return 0;
 }
 
@@ -251,7 +288,7 @@ void EndLessLoop()
   fd_set readset;
   struct timeval tv;
 
-  while(1) {
+  while( !isTerminated ) {
     FD_ZERO(&readset);
     FD_SET(Fvwm_fd[1], &readset);
     FD_SET(x_fd, &readset);
@@ -259,8 +296,8 @@ void EndLessLoop()
     tv.tv_sec  = 0;
     tv.tv_usec = 0;
 
-    if (!select(fd_width, SELECT_FD_SET_CAST &readset, NULL, NULL, &tv)) {
-      while(1) {
+    if ( !fvwmSelect(fd_width, &readset, NULL, NULL, &tv) ) {
+      for (;;) {
         FD_ZERO(&readset);
         FD_SET(Fvwm_fd[1], &readset);
         FD_SET(x_fd, &readset);
@@ -269,11 +306,11 @@ void EndLessLoop()
         tv.tv_sec  = UpdateInterval;
         tv.tv_usec = 0;
 
-        if (select(fd_width, SELECT_FD_SET_CAST &readset, NULL, NULL, &tv) <= 0)
-          DrawGoodies();
-        else
+        if (fvwmSelect(fd_width, &readset, NULL, NULL, &tv) > 0)
           break;
-      }
+        if ( isTerminated ) return;
+        DrawGoodies();
+      } /* for */
     }
 
     if (FD_ISSET(x_fd, &readset))
@@ -503,8 +540,19 @@ void SendFvwmPipe(char *message, unsigned long window)
  **********************************************************************/
 void DeadPipe(int nonsense)
 {
-  ConsoleMessage("received SIGPIPE signal: exiting...\n");
-  ShutMeDown(1);
+  exit(1);
+}
+
+/**********************************************************************
+  Reentrant signal handler that will tell the application to quit.
+    It is not safe to just call "exit()" here; instead we will
+    just set a flag that will break the event-loop when the
+    handler returns.
+ **********************************************************************/
+static RETSIGTYPE
+TerminateHandler(int sig)
+{
+  fvwmSetTerminate(sig);
 }
 
 /******************************************************************************
@@ -898,7 +946,7 @@ void LoopOnEvents()
 
       case ClientMessage:
         if ((Event.xclient.format==32) && (Event.xclient.data.l[0]==wm_del_win))
-          ShutMeDown(0);
+          exit(0);
         break;
 
       case EnterNotify:
@@ -1215,20 +1263,20 @@ void StartMeUp()
    ChangeWindowName(&Module[1]);
 
    InitGoodies();
-
+   atexit(ShutMeDown);
 }
 
 /******************************************************************************
   ShutMeDown - Do X client cleanup
 ******************************************************************************/
-void ShutMeDown(int exitstat)
+static void
+ShutMeDown(void)
 {
   FreeList(&windows);
   FreeAllButtons(&buttons);
   XFreeGC(dpy,graph);
   XDestroyWindow(dpy, win);
   XCloseDisplay(dpy);
-  exit(exitstat);
 }
 
 
@@ -1513,13 +1561,14 @@ void PurgeConfigEvents(void) {
 /************************************************************************
   X Error Handler
 ************************************************************************/
-XErrorHandler ErrorHandler(Display *d, XErrorEvent *event)
+static int
+ErrorHandler(Display *d, XErrorEvent *event)
 {
   char errmsg[256];
 
-  XGetErrorText(d, event->error_code, errmsg, 256);
+  XGetErrorText(d, event->error_code, errmsg, sizeof(errmsg));
   ConsoleMessage("%s failed request: %s\n", Module, errmsg);
   ConsoleMessage("Major opcode: 0x%x, resource id: 0x%x\n",
                   event->request_code, event->resourceid);
-  return NULL;
+  return 0;
 }

@@ -22,8 +22,7 @@
 #define _H_Mallocs
 
 /* Function Prototypes */
-char *safemalloc(int length);
-char *saferealloc(char *ptr, int length);
+char *saferealloc(char *ptr, size_t length);
 void UpdateString(char **string,char *value);
 
 #endif
