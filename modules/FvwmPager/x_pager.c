@@ -1255,6 +1255,7 @@ void MovePage(void)
     }
 #endif
     XSetWMIconName(dpy,Scr.Pager_w,&name);
+    XFree(name.value);
   }
 }
 
