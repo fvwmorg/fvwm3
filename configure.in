@@ -14,6 +14,12 @@ AC_SUBST(FVWM_CONFIGDIR)
 
 dnl Various configure-time options
 dnl
+
+AC_ARG_ENABLE(dmalloc,
+  [  --enable-dmalloc        Enable support for the dmalloc debugging library],
+  [ac_cv_dmalloc="$enableval"],
+  [ac_cv_dmalloc="no"])
+
 dnl NOTE: the disabled options will be removed in the near future for better
 dnl maintainability of the code.
 smr_SWITCH(debug-msgs, debugging messages, off, FVWM_DEBUG_MSGS)
@@ -335,6 +341,16 @@ AM_PATH_GDK_IMLIB(1.8.0, AC_DEFINE(IMLIB),)
 
 GNOME_INIT_HOOK
 
+dnl Allow building with dmalloc.  Do this last to avoid screwing up any
+dnl other checks above.
+
+case "$ac_cv_dmalloc" in
+  yes) AC_CHECK_HEADERS(dmalloc.h)
+       AC_CHECK_LIB(dmalloc, dmalloc_shutdown)
+       CPPFLAGS="$CPPFLAGS -DDMALLOC_FUNC_CHECK" ;;
+esac
+
+
 AC_OUTPUT(Makefile libs/Makefile fvwm/Makefile modules/Makefile
 utils/Makefile utils/fvwmbug.sh
 utils/fvwm-menu-xlock utils/fvwm-menu-directory utils/fvwm-menu-desktop
@@ -395,3 +411,7 @@ Configuration:
   Have XPM support? 	    $with_xpm$xpm_problem
   Have GTK support?         $with_gtk
 "
+
+case "$ac_cv_dmalloc" in
+  yes) echo "  DMALLOC heap debugging library enabled." ;;
+esac

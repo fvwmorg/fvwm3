@@ -42,4 +42,10 @@ void DB_WI_ALL(char *label, FvwmWindow *fw);
 #define DB_WI_ALL(x,y)
 #endif
 
+/* Set up heap debugging library dmalloc.  */
+
+#ifdef HAVE_DMALLOC_H
+#include <dmalloc.h>
+#endif
+
 #endif /* _DEBUG_ */

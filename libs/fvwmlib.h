@@ -406,4 +406,13 @@ void fvwmlib_get_target_window(
     Bool return_subwindow);
 
 Window fvwmlib_client_window(Display *dpy, Window input);
+
+
+/* Set up heap debugging library dmalloc.  */
+
+#ifdef HAVE_DMALLOC_H
+#include <dmalloc.h>
+#endif
+
+
 #endif

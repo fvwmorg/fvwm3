@@ -1,3 +1,12 @@
+1999-11-30  Paul D. Smith  <psmith@gnu.org>
+
+	* configure.in (dmalloc): Allow the user to add --enable-dmalloc
+	to enable the dmalloc heap debugging library.
+
+	* libs/fvwmlib.h: #include dmalloc.h if it exists and we're
+	building with dmalloc support.
+	* fvwm/fvwmdebug.h: Ditto.
+
 1999-11-30  Dominik Vogt  <dominik.vogt@gmx.de>
 
         * fvwm/borders.c (RedrawBorder):
