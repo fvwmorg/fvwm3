@@ -56,7 +56,6 @@ void err_quit( const char *msg );
 void sendit( char *cmd );
 void receive( void );
 static RETSIGTYPE sig_ttin(int);
-/* void sig_pipe( int ); */
 static RETSIGTYPE sig_quit(int);
 void usage(void);
 int  read_f(int fd, char *p, int len);
@@ -125,6 +124,7 @@ int main ( int argc, char *argv[])
     sigaction(SIGHUP, &sigact, NULL);
     sigaction(SIGQUIT, &sigact, NULL);
     sigaction(SIGTERM, &sigact, NULL);
+    sigaction(SIGPIPE, &sigact, NULL);
   }
 #else
 #ifdef USE_BSD_SIGNALS
@@ -135,6 +135,7 @@ int main ( int argc, char *argv[])
   signal(SIGHUP, sig_quit);
   signal(SIGQUIT, sig_quit);
   signal(SIGTERM, sig_quit);
+  signal(SIGPIPE, sig_quit);
   signal(SIGTTIN, sig_ttin);
   signal(SIGTTOU, sig_ttin);
 #ifdef HAVE_SIGINTERRUPT
@@ -142,6 +143,7 @@ int main ( int argc, char *argv[])
   siginterrupt(SIGHUP, 1);
   siginterrupt(SIGQUIT, 1);
   siginterrupt(SIGTERM, 1);
+  siginterrupt(SIGPIPE, 1);
   siginterrupt(SIGTTIN, 0);
   siginterrupt(SIGTTOU, 0);
 #endif
