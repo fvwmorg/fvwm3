@@ -2288,6 +2288,10 @@ FvwmWindow *AddWindow(
 	/****** grab keys and buttons ******/
 	setup_key_and_button_grabs(fw);
 
+	/****** inform modules of new window ******/
+	BroadcastConfig(M_ADD_WINDOW,fw);
+	BroadcastWindowIconNames(fw, True, False);
+
 	/****** place the window in the stack ring ******/
 	if (!position_new_window_in_stack_ring(fw, SDO_START_LOWERED(sflags)))
 	{
@@ -2297,10 +2301,6 @@ FvwmWindow *AddWindow(
 		XConfigureWindow(
 			dpy, FW_W_FRAME(fw), CWSibling|CWStackMode, &xwc);
 	}
-
-	/****** inform modules of new window ******/
-	BroadcastConfig(M_ADD_WINDOW,fw);
-	BroadcastWindowIconNames(fw, True, False);
 
 	/* these are sent and broadcast before res_{class,name} for the benefit
 	 * of FvwmIconBox which can't handle M_ICON_FILE after M_RES_NAME */

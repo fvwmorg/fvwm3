@@ -1,5 +1,9 @@
 2002-10-26  Dominik Vogt  <dominik.vogt@gmx.de>
 
+	* fvwm/add_window.c (AddWindow):
+	braodcast M_RESTACK_WINDOW after M_ADD_WINDOW to fix problem with
+	windows starting lowered or on other layers in FvwmPager
+
 	* fvwm/stack.c (restack_windows):
 	(__get_visible_window):
 	fixed a stacking problem with layers
