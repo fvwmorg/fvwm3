@@ -7173,8 +7173,8 @@ all state.
 \fB...]\fP"
 Adds a title style to the title-bar.
 .I state
-can be "ActiveUp", "ActiveDown", "InactiveUp" or "InactiveDown",   
-or "Active" (the same as both "ActiveUp" and "ActiveDown") 
+can be "ActiveUp", "ActiveDown", "InactiveUp" or "InactiveDown",
+or "Active" (the same as both "ActiveUp" and "ActiveDown")
 or "Inactive" (the same as both "InactiveUp" and "InactiveDown")
 or any of these 6 with "Toggled" prepended.  If
 .I state
@@ -7352,7 +7352,7 @@ flag (see
 
 .IP "\fBButtonState [\fP\fIActiveDown\fP bool\fB]\
  [\fP\fIInactive\fP bool\fB]\
- [\fP\fIInactiveDown\fP bool\fB]\fP
+ [\fP\fIInactiveDown\fP bool\fB]\fP"
 The
 .B ButtonState
 command controls which states of the window titles and title
