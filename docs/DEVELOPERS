@@ -160,7 +160,8 @@ Building a distribution
 
 By this, I mean the files "fvwm-x.y.z.tar.gz" and "fvwm-x.y.z.tar.bz2".
 
-Steps: 0. For a stable release, do change the date in docs/fvwm.lsm.in.
+Steps: 0. For a stable release, change the dates in docs/fvwm.lsm.in,
+          fvwm/fvwm2.1 and update docs/ANNOUNCE.  Commit these changes.
        1. When building a release, update the CVS sources first. For a
           stable release it is best to throw away the whole source tree
           and check it out from scratch to ensure all source files have
