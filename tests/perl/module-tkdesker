@@ -126,7 +126,7 @@ sub makeButtons ($$) {
 
 			$button = $frame->Label(-relief => 'raised');
 			$button->bind('<1>', sub {
-				$mod->sendText("Desk 0 $pos");
+				$mod->send("Desk 0 $pos");
 			});
 			$text = $labels[$pos] || "Desk $pos";
 			$button->configure('text' => "$text")
@@ -154,7 +154,7 @@ sub hilite ($$) {
 	} else {
 		$button->configure(-relief => 'sunken');
 	}
-	#$mod->sendText("Focus", $desk_focus[$desk])
+	#$mod->send("Focus", $desk_focus[$desk])
 	#	if (defined $desk_focus[$desk]);
 }
 
@@ -179,7 +179,7 @@ sub currentDesk ($) {
 	my $current = 0;
 
 #	my $old_mask = $mod->mask(M_CONFIGURE_WINDOW | M_END_WINDOWLIST);
-#	$mod->sendText("Send_WindowList");
+#	$mod->send("Send_WindowList");
 #	while (1) {
 #		($len, $packet, $type) = $mod->readPacket;
 #		last if ($type & M_END_WINDOWLIST);

@@ -63,7 +63,6 @@ with_gnomehints=@with_gnomehints@
 with_gtk=@with_gtk@
 with_gdkimlib=@with_gdkimlib@
 with_gnomelibs=@with_gnomelibs@
-with_multibyte=@with_multibyte@
 with_perllib=@with_perllib@
 with_readline=@with_readline@
 with_rplay=@with_rplay@
@@ -128,7 +127,6 @@ while test $# -gt 0; do
 			test "$with_gtk"        = "yes" && echo "gtk"
 			test "$with_gdkimlib"   = "yes" && echo "gdk-imlib"
 			test "$with_gnomelibs"  = "yes" && echo "gnome-libs"
-			test "$with_multibyte"  = "yes" && echo "multibyte"
 			test "$with_perllib"    = "yes" && echo "perllib"
 			test "$with_readline"   = "yes" && echo "readline"
 			test "$with_rplay"      = "yes" && echo "rplay"
@@ -177,7 +175,6 @@ while test $# -gt 0; do
 			echo "	gtk (required for FvwmGtk): $with_gtk"
 			echo "	gdk-imlib (in FvwmGtk): $with_gdkimlib"
 			echo "	gnome-libs (in FvwmGtk): $with_gnomelibs"
-			echo "	multibyte: $with_multibyte"
 			echo "	perllib (Perl library installed): $with_perllib"
 			echo "	readline: $with_readline"
 			echo "	rplay: $with_rplay"

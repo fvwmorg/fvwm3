@@ -47,28 +47,40 @@ sub eventLoop ($) {
 	$self->destroy;
 }
 
+sub openErrorDialog ($$) {
+	my $self = shift;
+	my $error = shift;
+
+	my $title = "FVWM Error";
+	my $dialog = new Gtk::Dialog;
+	$dialog->set_title($title);
+	$dialog->set_border_width(4);
+
+	my $label = new Gtk::Label $error;
+	$dialog->vbox->pack_start($label, 0, 1, 10);
+
+	my $button = new Gtk::Button "Close";
+	$dialog->action_area->pack_start($button, 1, 1, 0);
+	$button->signal_connect("clicked", sub { $dialog->destroy; });
+
+	$button = new Gtk::Button "Close All Errors";
+	$dialog->action_area->pack_start($button, 1, 1, 0);
+	$button->signal_connect("clicked",
+		sub { $self->send("All ('$title') Close"); });
+
+	$button = new Gtk::Button "Exit Module";
+	$dialog->action_area->pack_start($button, 1, 1, 0);
+	$button->signal_connect("clicked", sub { Gtk->main_quit; });
+
+	$dialog->show_all;
+}
+
 sub addDefaultErrorHandler ($) {
 	my $self = shift;
 
 	$self->addHandler(M_ERROR, sub {
 		my ($self, $type, @args) = @_;
-
-		my $dialog = new Gtk::Dialog;
-		$dialog->set_title("FVWM Error");
-		$dialog->set_border_width(4);
-
-		my $label = new Gtk::Label $args[3];
-		$dialog->vbox->pack_start($label, 0, 1, 10);
-
-		my $button = new Gtk::Button "Dismiss";
-		$dialog->action_area->pack_start($button, 1, 1, 0);
-		$button->signal_connect("clicked", sub { $dialog->destroy; });
-
-		$button = new Gtk::Button "Exit";
-		$dialog->action_area->pack_start($button, 1, 1, 0);
-		$button->signal_connect("clicked", sub { Gtk->main_quit; });
-
-		$dialog->show_all;
+		$self->openErrorDialog($args[3]);
 	});
 }
 
@@ -109,31 +121,36 @@ API itself, see L<FVWM::Module>.
 
 =head1 METHODS
 
-Only those methods that are not available in B<FVWM::Module>, or are overloaded
+Only those methods that are not available in B<FVWM::Module> or overloaded ones
 are covered here:
 
 =over 8
 
-=item eventLoop 
+=item eventLoop
 
 From outward appearances, this methods operates just as the parent
 B<eventLoop> does. It is worth mentioning, however, that this version
-enters into the B<Gtk->main> subroutine, ostensibly not to return.
+enters into the B<Gtk>->B<main> subroutine, ostensibly not to return.
+
+=item openErrorDialog
+
+This method creates a dialog box using the GTK+ widgets. The dialog has
+three buttons labeled "Close", "Close All Errors" and "Exit Module".
+Selecting the "Close" button closes the dialog. "Close All Errors" closes
+all error dialogs that may be open on the screen at that time.
+"Exit Module" terminates your entire module.
+
+Good for debugging a GTK+ based module.
 
 =item addDefaultErrorHandler
 
-This methods adds a M_ERROR handler that creates a dialog box using the GTK+
-widgets to notify you that an error has been reported by FVWM. The dialog
-has two buttons, labelled "Exit" and "Dismiss". Selecting the "Dismiss"
-button closes the dialog. Choosing the "Exit" button causes the termination
-of the running module. After exiting that window, the application will
-continue as if the "Dismiss" button had been pressed.
-
-=back
+This methods adds a M_ERROR handler to automatically notify you that an error
+has been reported by FVWM. The M_ERROR handler then calls C<openErrorDialog>()
+with the  received error text as parameter to show it in a window.
 
 =head1 BUGS
 
-Would not surprise me in the least.
+Awaiting for your reporting.
 
 =head1 CAVEATS
 

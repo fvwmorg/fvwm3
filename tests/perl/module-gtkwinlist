@@ -10,14 +10,14 @@ use FVWM::Module::Gtk;
 
 my $module = new FVWM::Module::Gtk(
 	Name => "FvwmPerlGtkWinList",
-	Mask => M_WINDOW_NAME | M_END_WINDOWLIST | M_ERROR,
+	Mask => M_WINDOW_NAME | M_END_WINDOWLIST | M_STRING | M_ERROR,
 );
 
 my $dialog = new Gtk::Dialog;
 $dialog->set_title("Window List");
 $dialog->set_border_width(4);
 
-my $smode = 'single';
+my $smode = 'single';  # initial selection mode, may be changed by user
 my $clist = new_with_titles Gtk::CList(" Id" . " " x 13, " Name" . " " x 20);
 $clist->set_selection_mode($smode);
 $clist->signal_connect("click_column", \&sortListByColumn);
@@ -28,13 +28,13 @@ sub requestWindowList () {
 	$creatingWindowList = 1;
 	$clist->freeze;
 	$clist->clear;
-	$module->sendText("Send_WindowList");
+	$module->send("Send_WindowList");
 }
 
 sub doCommand ($) {
 	my $command = shift;
 	foreach ($clist->selection) {
-		$module->sendText($command, hex($clist->get_text($_, 0)));
+		$module->send($command, hex($clist->get_text($_, 0)));
 	}
 }
 
@@ -89,6 +89,18 @@ $module->addHandler(M_WINDOW_NAME, sub {
 $module->addHandler(M_END_WINDOWLIST, sub {
 	$creatingWindowList = 0;
 	$clist->thaw;
+});
+
+$module->addHandler(M_STRING, sub {
+	my $string = $_[5];
+	my $winid = $dialog->window->XWINDOW();
+	if ($string =~ /^close|stop|quit|exit/i) {
+		Gtk->exit(0);
+	} elsif ($string =~ /^iconify|maximize|windowshade/i) {
+		$module->send($string, $winid)
+	} else {
+		$module->openErrorDialog("Unsupported message: $string");
+	}
 });
 
 $module->addDefaultErrorHandler;

@@ -8,27 +8,27 @@ my $newWindowHandler = sub {
 	my $self = shift;
 	my $type = shift;
 	my @args = @_;
-	#$self->sendText("Echo M_ADD_WINDOW @args");
+	#$self->send("Echo M_ADD_WINDOW @args");
 
 	# auto iconify all new windows
 	my $winId = $args[0];
-	$self->sendText("Iconify true", $winId);
+	$self->send("Iconify true", $winId);
 };
 
-my $onExit = sub { $_[0]->sendText("All (FvwmConsole) Iconify false") };
+my $onExit = sub { $_[0]->send("All (FvwmConsole) Iconify false") };
 
 my $module = new FVWM::Module(
 	Name => "FvwmPerlBasedExample",
 	Mask => M_ADD_WINDOW | M_FOCUS_CHANGE,
 );
-$module->sendText("Beep");
-$module->sendText("All (FvwmConsole) Iconify true");
-$module->sendText("Schedule 60000 KillModule $0");
+$module->send("Beep");
+$module->send("All (FvwmConsole) Iconify true");
+$module->send("Schedule 60000 KillModule $0");
 
 # auto-iconify new windows
 $module->addHandler(M_ADD_WINDOW, $newWindowHandler);
 # auto-raise windows
-$module->addHandler(M_FOCUS_CHANGE, sub { $_[0]->sendText("Raise", $_[2]) });
+$module->addHandler(M_FOCUS_CHANGE, sub { $_[0]->send("Raise", $_[2]) });
 # this would be our final song if only we were not killed by KillModule...
 $module->addHandler(ON_EXIT, $onExit);
 

@@ -21,7 +21,7 @@ use vars qw(@ISA @EXPORT);
 require Exporter;
 @ISA = qw(Exporter);
 @EXPORT = qw(
-	getToken cutToken eqi nei
+	getToken cutToken getTokens cutTokens eqi nei
 );
 
 # currently backslashes are ignored and this is a bit buggy
@@ -46,10 +46,29 @@ sub getToken ($) {
 
 # returns the next quoted token, modifies the parameter (ref to line)
 sub cutToken ($) {
-	my $line = shift;
-	my ($token, $rest) = getToken($$line);
-	$$line = $rest;
+	my $lineRef = shift;
+	my ($token, $rest) = getToken($$lineRef);
+	$$lineRef = $rest;
 	return $token;
+}
+
+sub cutTokens ($$) {
+	my $lineRef = shift;
+	my $limit = shift;
+	my @tokens = ();
+
+	$$lineRef =~ s/^\s+//;
+	while ($$lineRef ne "" && $limit-- > 0) {
+		push @tokens, cutToken($lineRef);
+	}
+	return wantarray? @tokens: \@tokens;
+}
+
+sub getTokens ($;$) {
+	my $line = shift;
+	my $limit = shift || 1000;
+
+	return cutTokens(\$line, $limit);
 }
 
 sub eqi ($$) {

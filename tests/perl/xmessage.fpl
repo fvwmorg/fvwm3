@@ -1,0 +1,50 @@
+# Usage: SendToModule FvwmPerl load xmessage.fpl
+
+package Test;
+no strict;
+
+($WIDTH, $HEIGHT) = `xdpyinfo | grep dimensions` =~ /(\d+)x(\d+)/;
+
+%windowSize = ( x => 300, y => 150 );
+$borderWidth = 8;
+$titleHeight = 20;  # several vertical points are not very important
+$pos_x = ($WIDTH - $windowSize{x}) / 2 - $borderWidth;
+$pos_y = ($HEIGHT - $windowSize{y} - $titleHeight) / 2 - $borderWidth;
+
+$shadeCommands = "
+All (MyXMessage) WindowShade ShadeAgain NE
+All (MyXMessage) WindowShade ShadeAgain N
+All (MyXMessage) WindowShade ShadeAgain E
+All (MyXMessage) WindowShade ShadeAgain SE
+All (MyXMessage) WindowShade ShadeAgain S
+All (MyXMessage) WindowShade ShadeAgain N
+All (MyXMessage) WindowShade Off
+All (MyXMessage) WindowShade ShadeAgain W
+All (MyXMessage) WindowShade ShadeAgain NW
+All (MyXMessage) WindowShade Off
+";
+$shadeFunction = "DestroyFunc ShadeMyXMessage\nAddToFunc ShadeMyXMessage\n";
+$shadeFunction .= "+ I None (MyXMessage) Wait MyXMessage\n";
+$shadeFunction .= join("\n+ I ", split(/\n/, $shadeCommands));
+
+::command(qq[
+	Style MyXMessage BorderWidth $borderWidth, NoHandles
+	Style MyXMessage WindowShadeShrinks, WindowShadeSteps 80
+
+	Exec xmessage -g $windowSize{x}x$windowSize{y}+$pos_x+$pos_y \\
+		-fg black -xrm "*textSink*font:lucidasans-18" \\
+		-xrm "*form*background:rgb:c0/c0/a0" \\
+		-xrm "*form*okay*background:rgb:90/90/7a" \\
+		-xrm "*form*message*background:rgb:f0/f0/c0" \\
+		-name MyXMessage -title "Testing FvwmPerl load" "Hello world!"
+]);
+
+# We are just asked to open a window, give fvwm a chance to do it
+::unlock();
+
+::command(qq[
+	# Wait only works in functions or "Read file", but not in command()!
+	# So do it in a function.
+	$shadeFunction
+	ShadeMyXMessage
+]);

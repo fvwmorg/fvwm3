@@ -1,3 +1,14 @@
+2002-05-28  Mikhael Goikhman  <migo@homemail.com>
+
+	* perllib/FVWM/Module.pm.in:
+	renamed sendText to send, support continuation lines
+
+	* perllib/FVWM/Module/Gtk.pm:
+	added openErrorDialog method, good for debugging
+
+	* perllib/General/Parse.pm:
+	added getTokens, cutTokens
+
 2002-04-30  Mikhael Goikhman  <migo@homemail.com>
 
 	* perllib/FVWM/Module.pm.in:

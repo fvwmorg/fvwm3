@@ -5,7 +5,9 @@ _+_A HREF="#2.4.7"_-_2.4.7_+_/A_-_.
 
 Changes in alpha release 2.5.2 (not released yet)
 
-* New module FvwmPerl to add perl scripting power to fvwm commands.
+* New module FvwmPerl adds perl scripting ability to fvwm commands.
+
+* Provided powerful perl library for creating FVWM modules in perl.
 
 * New WindowList option IconifiedtAtEnd.
 

@@ -1,3 +1,8 @@
+2002-05-28  Mikhael Goikhman  <migo@homemail.com>
+
+	* fvwm-config.in:
+	removed multibyte reporting
+
 2002-05-09  olicha  <olivier.chapuis@free.fr>
 
 	* fvwm-root.c (SetRootWindow): 

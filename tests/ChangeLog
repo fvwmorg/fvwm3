@@ -1,3 +1,16 @@
+2002-05-28  Mikhael Goikhman  <migo@homemail.com>
+
+	* perl/README:
+	* perl/module-example:
+	* perl/module-gtkwinlist:
+	* perl/module-tkdesker:
+	* perl/module-winlist:
+	* perl/xmessage.fpl:
+	* perl/xmessage.ppp:
+	updated test modules;
+	module-gtkwinlist now understands messages like iconify (itself)
+	added tests for FvwmPerl load and preprocess;
+
 2002-02-25  Mikhael Goikhman  <migo@homemail.com>
 
 	* perl/README:

@@ -33,7 +33,7 @@ print $fh " Window id | Name\n";
 print $fh "-----------+--------------------\n";
 
 # Ask FVWM to send us its list of windows
-$module->sendText("Send_WindowList"); 
+$module->send("Send_WindowList"); 
 
 # Enter the main loop
 $module->eventLoop;

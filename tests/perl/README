@@ -1,4 +1,4 @@
-These are 2 small FVWM modules written in perl:
+These are 4 small FVWM modules written in perl:
 
 * module-example:
 	Beeps, auto-raises and sends a command to terminate itself in
@@ -17,4 +17,16 @@ These are 2 small FVWM modules written in perl:
 	shows only buttons, one per desk. Using Perl/Tk.
 
 You may just run these modules in FvwmConsole using their full path.
-The last 2 modules require extra perl modules from CPAN to be installed.
+The last 2 modules require extra perl packages from CPAN to be installed.
+
+----------------------------------------------------------------------------
+
+Other files in this directory:
+
+* xmessage.fpl:
+	A test for the "FvwmPerl load" functionality.
+	SendToModule FvwmPerl load /path/to/xmessage.fpl
+
+* xmessage.ppp:
+	A test for the "FvwmPerl preprocess" functionality.
+	SendToModule FvwmPerl preprocess /path/to/xmessage.ppp

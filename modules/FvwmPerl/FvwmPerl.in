@@ -29,21 +29,31 @@ BEGIN {
 use lib "@FVWM_PERLLIBDIR@";
 use FVWM::Module;
 use General::FileSystem "-quiet";
+use General::Parse;
+use Getopt::Long;
 
 # ----------------------------------------------------------------------------
 # variables
 
 my $lineToEval = undef;
 my $fileToLoad = undef;
+my $preprocess = 0;
 # whether continue running after --eval, --load or --preprocess, default is no
 my $stay = 0;
 my $detached = 0;
+my $ppArgs = {};
+
+my $preprocessOptions = {
+	"command"     => \$ppArgs->{command},
+	"quote=s"     => \$ppArgs->{quote},
+};
 
 my $options = {
 	"eval=s"      => \$lineToEval,
 	"load=s"      => \$fileToLoad,
-	"preprocess"  => sub { die "preprocess will be implemented soon"; },
+	"preprocess"  => \$preprocess,
 	"stay!"       => \$stay,
+	%$preprocessOptions,
 };
 
 my $module = new FVWM::Module(
@@ -74,7 +84,7 @@ my (%a, %b, %c, %d, %e, %f, %g, %h, %i, %j, %k, %l, %m, %n, %o, %p);
 
 sub command ($) {
 	my $command = shift;
-	$module->sendText($command);
+	$module->send($command);
 }
 
 sub stop () {
@@ -83,7 +93,7 @@ sub stop () {
 }
 
 sub skip () {
-	# send a signal to the event loop terminate the current event handler
+	# send a signal to the event loop to terminate the current event handler
 	$module->terminate("continue");
 }
 
@@ -123,8 +133,76 @@ sub doEval ($) {
 	}
 }
 
-sub preprocess (@) {
+sub preprocess ($;$) {
+	my $args = shift;
+	my $data = shift;
 
+	unlock();
+
+	my $depth = $args->{depth};
+	$depth ||= 0;
+	if ($depth > 20) {
+		printActionError("preprocess", "Too deep include depth=$depth");
+		return;
+	}
+
+	my $command = $args->{command};
+	my $quote = $args->{quote} || '%';
+	my ($quote1, $quote2) = split(//, $quote, 2);
+	$quote2 ||= $quote1;
+
+	my $textRef = $command? \$data: loadFile($data);
+	unless (defined $textRef) {
+		printActionError("preprocess", "No file to preprocess ($data)");
+		return;
+	}
+
+	# there should be another way without running external programs
+	my @dimentions = `xdpyinfo | grep dimensions` =~ /(\d+)x(\d+)/;
+
+	{
+		package PreprocessNamespace;
+		no strict "vars";
+		# OR-ing is a work around for "used once" warning
+
+		$PPP_DEPTH = $depth;
+		$PPP_QUOTE = $quote;
+		$USER    = $USER    || $ENV{USER};
+		$DISPLAY = $DISPLAY || $ENV{DISPLAY};
+		$WIDTH   = $WIDTH   || $dimentions[0];
+		$HEIGHT  = $HEIGHT  || $dimentions[1];
+		$FVWM_VERSION = $FVWM_VERSION || $version;
+		$FVWM_MODULEDIR = $FVWM_MODULEDIR || $ENV{FVWM_MODULEDIR};
+		$FVWM_DATADIR = $FVWM_DATADIR || $module->siteDataDir;
+		$FVWM_USERDIR = $FVWM_USERDIR || $module->userDataDir;
+	}
+
+	$$textRef =~ s/\Q$quote1\E { ( .*? ) } \Q$quote2\E/
+		my $result = eval "
+			no strict;
+			package PreprocessNamespace;
+			$1
+		";
+		if ($@) {
+			printActionError("preprocess", $@);
+			$result = "";
+		}
+		$result;
+	/sgex;
+
+	my $tempFileName = $module->userDataDir . "/.FvwmPerl-preprocess-$$";
+	saveFile($tempFileName, $textRef);
+
+	$module->send("Read $tempFileName");
+	$module->send("Exec rm -f '$tempFileName'");
+}
+
+sub PreprocessNamespace::include ($) {
+	my $file = shift;
+	return ::preprocess({
+		depth => $PreprocessNamespace::PPP_DEPTH + 1,
+		quote => $PreprocessNamespace::PPP_QUOTE,
+	}, $file);
 }
 
 # ----------------------------------------------------------------------------
@@ -146,12 +224,15 @@ sub processMessage ($$$$$$) {
 
 	elsif ($action eq "load") {
 		return unless defined $rest;
-		load($rest);
+		load(getToken($rest));
 	}
 
 	elsif ($action eq "preprocess") {
-		# TODO
-		preprocess();
+		$ppArgs = {};
+		@ARGV = getTokens($rest);
+		GetOptions(%$preprocessOptions) || return;
+
+		preprocess($ppArgs, join(" ", @ARGV));
 	}
 
 	elsif ($action eq "stop") {
@@ -179,6 +260,11 @@ if (defined $lineToEval) {
 
 if (defined $fileToLoad) {
 	load($fileToLoad);
+	exit(0) unless $stay;
+}
+
+if ($preprocess) {
+	preprocess($ppArgs, join(" ", @ARGV));
 	exit(0) unless $stay;
 }
 
@@ -217,8 +303,8 @@ There are several command line switches:
 B<FvwmPerl>
 [ B<--eval> line ]
 [ B<--load> file ]
-[ B<--preprocess> [ B<--quote> char ] [ B<--command> line ] [ file ] ]
-[ B<--continue> ]
+[ B<--preprocess> [ B<--quote> char ] [ B<--command> ] [ line | file ] ]
+[ B<--stay> ]
 [ alias ]
 
 Long switches may be abbreviated to short one-letter switches.
@@ -266,29 +352,41 @@ back commands to fvwm.
 If perl code contains an error, it is printed to the standard error stream
 and prepended with the I<[FvwmPerl][load]:> header.
 
-=item B<preprocess> [-q|--quote char] [-c|--command command] [file]
+=item B<preprocess> [-q|--quote char] [-c|--command] [I<line> | I<file>]
 
-Preprocess fvwmrc I<file> or I<command> (one and only one of two should be
-given) that may contain specially preformatted perl code.
-Lines started with B<%%> are perl code.  Text enclosed in B<%{> ... B<}%>
-delimeters, that may start anywhere on the line and end anywhere on the same
-or an other line, is perl code.
+Preprocess fvwmrc I<file> or (if --command is given) I<line>.
+This file contains lines that are not touched (usually FVWM commands)
+and specially preformatted perl code that is processed and replaced.
+Text enclosed in B<%{> ... B<}%> delimeters, that may start anywhere
+on the line and end anywhere on the same or an other line, is perl code.
 
-The I<quote> parameter changes delimeters of perl code.  If a single char
-is given, like '@', the string B<@@> is used at the start of lines
-and B<@{> ... B<}@> anywhere.  If the given quote is 2 chars, like '<>',
-the quoting strings are <> and <{ ... }>.
+The I<quote> parameter changes perl code delimeters.  If a single char
+is given, like '@', the delimeters are B<@{> ... B<}@>.
+If the given quote is 2 chars, like '<>', the quotes are <{ ... }>.
 
-The perl code is replaced with the output of its running.  The output
-may be generated only using a special function B<command(>"output"B<)>.
+The perl code is substituted for the result of its evaluation.
+I.e. %{$a = "c"; ++$a}% is replaced with "d".
+
+The evaluation is unlike B<eval> and B<load> is done under the
+package PreprocessNamespace and without I<use strict>, so you are
+free to use any variable names without fear of conflicts. Just don't
+use uninitialized variables to mean undef or empty list (they may be in fact
+initialized by the previous preprocess action), and do a clean-up if needed.
+The variables and function in the I<main> package are still available,
+like ::command() or ::skip(), but it is just not a good idea to access them
+while preprocessing.
+
+There is a special function B>include>(I<file>) that loads a file,
+preprocesses it and returns the preprocessed result. Avoid recursion.
 
 If any embedded perl code contains an error, it is printed to the standard
 error stream and prepended with the I<[FvwmPerl][preprocess]:> header.
+The result of substitution is empty in this case.
 
 =back
 
-These actions may be requested by one of 3 ways: 1) in the command line when
-FvwmPerl is invoked (in this case FvwmPerl is short-lived unless B<--continue>
+These 3 actions may be requested in one of 3 ways: 1) in the command line when
+FvwmPerl is invoked (in this case FvwmPerl is short-lived unless B<--stay>
 is also given), 2) by sending the corresponding message in fvwmrc using
 SendToModule, 3) by calling the corresponding perl function in perl code.
 
@@ -330,14 +428,19 @@ There are several global variable that may be used in perl code:
     %a, %b, ... %h
 
 They all are initialized to the empty value and may be used to store a state
-between different calls to FvwmPerl actions.
+between different calls to FvwmPerl actions (B<eval> and B<load>).
 
 If you need more readable variable names, either write "no strict vars" at the
 start of every perl code or use a hash for this, like:
 
     $h{id} = $h{firstName} . " " . $h{secondName}
 
-There will be a configuration option to turn strictness on and off.
+or use a package name, like:
+
+    @MyMenu::terminals = qw( xterm rxvt );
+    $MyMenu::itemNum = @MyMenu::terminals;
+
+There may be a configuration option to turn strictness on and off.
 
 =head1 MESSAGES
 
@@ -353,10 +456,10 @@ A message B<dump> dumps the contents of the changed variables.
 A simple test:
 
     SendToModule FvwmPerl eval $h{dir} = $ENV{HOME}
-    SendToModule FvwmPerl eval load($h{dir} . "/test.pl")
-    SendToModule FvwmPerl load $[HOME]/test.pl
+    SendToModule FvwmPerl eval load($h{dir} . "/test.fpl")
+    SendToModule FvwmPerl load $[HOME]/test.fpl
     SendToModule FvwmPerl preprocess fvwmrc.ppp
-    SendToModule FvwmPerl dump %h @a
+    SendToModule FvwmPerl eval dump(\%h, @a);
     SendToModule FvwmPerl stop
 
 The following example handles root backgrounds in fvwmrc.
@@ -387,8 +490,30 @@ The following 2 lines in each pair are equivalent:
     SendToModule FvwmPerl eval $$d = "$[DISPLAY]"
     -SendToModule FvwmPerl eval $d = "$ENV{DISPLAY}"
 
-    SendToModule FvwmPerl eval command("Echo desk=$d, display=$$d")
-    SendToModule FvwmPerl preprocess -c Echo desk=%($d)%, display=%{$$d}%
+    SendToModule FvwmPerl eval \
+        command("Echo desk=$d, display=$$d")
+    SendToModule FvwmPerl preprocess -c \
+        Echo desk=%("$d")%, display=%{$$d}%
+
+Another solution to avoid escaping of special symbols like dollars
+and backslashes is to create a perl file in ~/.fvwm and then load it:
+
+    SendToModule FvwmPerl load build-menus.fpl
+
+If you need to preprocess one command starting with a dash, you should
+precede it using "--".
+
+    # this prints the current desk, i.e. "0"
+    SendToModule FvwmPerl preprocess -c Echo "$%{$a = "c"; ++$a}%"
+    # this prints "$d"
+    SendToModule FvwmPerl preprocess -c -- -Echo "$%{"d"}%"
+    # this prints "$d" (SendToModule expands $$ to $)
+    SendToModule FvwmPerl preprocess -c -- -Echo "$$%{"d"}%"
+    # this prints "$$d"
+    -SendToModule FvwmPerl preprocess -c -- -Echo "$$%{"d"}%"
+
+Again, it is suggested to put your command(s) into file and preprocess
+the file instead.
 
 =head1 CAVEATS
 
@@ -397,11 +522,11 @@ perl motto: "There's more than one way to do it", so the choice is yours.
 
 Here are more pairs of equivalent lines:
 
-    Module FvwmPerl --load "my.pl" --stay
-    Module FvwmPerl -e 'load("my.pl")' -s
+    Module FvwmPerl --load "my.fpl" --stay
+    Module FvwmPerl -e 'load("my.fpl")' -s
 
     SendToModule FvwmPerl preprocess my.ppp
-    SendToModule FvwmPerl eval preprocess("-c", loadFile(my.ppp));
+    SendToModule FvwmPerl eval preprocess("my.ppp");
 
 Warning, you may affect the way FvwmPerl works by evaluating approprite
 perl code, this is considered a feature not a bug.  But please don't do this,
@@ -412,7 +537,7 @@ write your own FVWM module in perl instead.
 The fvwm(1) man page describes all available commands.
 
 Basically, in your perl code you may use any function or class method from
-the perl library installed with FVWM, see tha man pages of perl packages
+the perl library installed with FVWM, see the man pages of perl packages
 B<General::FileSystem>, B<General::Parse> and B<FVWM::Module>.
 
 =head1 AUTHOR

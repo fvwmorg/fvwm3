@@ -131,14 +131,14 @@ sub new ($@) {
 	@ARGV >= 5 or die "$name should only be run by fvwm.\n";
 	my ($outFd, $inFd, $rcFile, $winId, $context) = splice(@ARGV, 0, 5);
 
+	if (@ARGV && $params{'EnableAlias'} && $ARGV[0] =~ /^\w[\w\d\.\/-]*/) {
+		$name = shift @ARGV;
+	}
 	if (@ARGV && ref($params{'EnableOptions'}) eq 'HASH') {
 		# save time by lazy loading Getopt::Long only if needed
 		eval "use Getopt::Long;"; die "$name: $@" if $@;
 		GetOptions(%{$params{'EnableOptions'}})
 			or die "$name: Incorrect options given.\n";
-	}
-	if (@ARGV && $params{'EnableAlias'} && $ARGV[0] =~ /^\w[\w\d\.\/-]*/) {
-		$name = shift @ARGV;
 	}
 	my @argv = @ARGV;
 
@@ -156,7 +156,8 @@ sub new ($@) {
 
 	$self->{lastPacket} = [];
 	$self->{handlers} = {};
-	$self->{shouldUnlock} = 0;
+	$self->{shouldSendUnlock} = 0;
+	$self->{shouldSendReady} = 1;
 
 	# bless here, so die above does not run DESTROY
 	bless $self, $class;
@@ -173,7 +174,7 @@ sub new ($@) {
 sub destroy ($) {
 	my $self = shift;
 	if (defined $self->{ostream}) {
-		$self->sendText("Nop", 0, 0);
+		$self->send("Nop", 0, 0);
 		close $self->{ostream};
 	}
 	if (defined $self->{istream}) {
@@ -201,7 +202,7 @@ sub mask ($;$) {
 		my $oldMask = $self->{$maskId};
 		return $oldMask
 			if $mask == M_EXTENDED_MSG;
-		$self->sendText("SET_MASK $mask")
+		$self->send("SET_MASK $mask")
 			unless defined $oldMask && $oldMask == $mask;
 		$self->{$maskId} = $mask;
 		return $oldMask;
@@ -217,7 +218,7 @@ sub syncMask ($;$) {
 		my $oldMask = $self->{$maskId};
 		return $oldMask
 			if $mask == M_EXTENDED_MSG;
-		$self->sendText("SET_SYNC_MASK $mask")
+		$self->send("SET_SYNC_MASK $mask")
 			unless defined $oldMask && $oldMask == $mask;
 		$self->{$maskId} = $mask;
 		return $oldMask;
@@ -253,19 +254,30 @@ sub getHandlerCategory ($$) {
 }
 
 # params: text, [winId], [continue=0/1]
-sub sendText ($$;$$) {
+sub send ($$;$$) {
 	my $self = shift;
 	my $text = shift;
 	my $winId = shift || 0;
 	my $continue = @_? shift(): 1;
 
-	$self->internalDie("sendText requires at least text param")
+	$self->internalDie("send requires at least text param")
 		unless defined $text;
 
 	my @lines = split(/\n/s, $text);
 
 	my $line;
+	my $lastLine = "";
 	for $line (@lines) {
+		# support continuation lines
+		$line = "$lastLine$line" if $lastLine ne "";
+		if ($line =~ /^(.*)\\$/) {
+			$lastLine = $1;
+			next;
+		} else {
+			$lastLine = "";
+		}
+		next if $line =~ /^\s*$/;
+
 		my $len = length $line;
 		$self->{ostream}->print(
 			pack("lla${len}l", $winId, $len, $line, $continue)
@@ -273,10 +285,16 @@ sub sendText ($$;$$) {
 	}
 }
 
+sub sendReady ($) {
+	my $self = shift;
+	$self->send(RESPONSE_READY) if $self->{shouldSendReady};
+	$self->{shouldSendReady} = 0;
+}
+
 sub sendUnlock ($) {
 	my $self = shift;
-	$self->sendText(RESPONSE_UNLOCK) if $self->{shouldUnlock};
-	$self->{shouldUnlock} = 0;
+	$self->send(RESPONSE_UNLOCK) if $self->{shouldSendUnlock};
+	$self->{shouldSendUnlock} = 0;
 }
 
 sub terminate ($;$) {
@@ -367,12 +385,12 @@ sub processPacket ($;$$) {
 	# strip everything past the first null (or newline) if needed
 	$args[@args - 1] =~ s/\n*\0.*//s if $self->isPacketTextBased($type);
 
-	$self->{shouldUnlock} = 1 if $type &
+	$self->{shouldSendUnlock} = 1 if $type &
 		($self->isExtended($type)? $self->{sync_xmask}: $self->{sync_mask});
 
 	my $continue = $self->invokeHandler($type, @args);
 
-	$self->sendUnlock if $self->{shouldUnlock};
+	$self->sendUnlock if $self->{shouldSendUnlock};
 	return $continue;
 }
 
@@ -380,7 +398,7 @@ sub eventLoop ($) {
 	my $self = shift;
 	my $continue = 1;
 
-	$self->sendText(RESPONSE_READY);
+	$self->sendReady;
 
 	while (1) {
 		$self->processPacket($self->readPacket) || last;
@@ -424,7 +442,7 @@ sub addDefaultErrorHandler ($) {
 		my ($self, $type, @args) = @_;
 		my $error = $args[3];
 		print STDERR "[", $self->name, "]: got FVWM error: $error\n";
-		#die "quit";
+		#$self->terminate;
 	});
 }
 
