@@ -15,7 +15,6 @@
 
 #include "Tools.h"
 
-
 /***********************************************/
 /* Fonction for TextField                      */
 /***********************************************/
@@ -62,6 +61,8 @@ void InitTextField(struct XObj *xobj)
  if (xobj->value>strlen(xobj->title))
   xobj->value=strlen(xobj->title);
  xobj->value2=xobj->value;
+ /* left position of the visible title */
+ xobj->value3=0;
 
  /* Redimensionnement du widget */
  XTextExtents(xobj->xfont,"lp",strlen("lp"),&dir,&asc,&desc,&struc);
@@ -94,7 +95,8 @@ void DrawPointTxt(struct XObj *xobj,unsigned int pixel)
  XCharStruct struc;
 
  XTextExtents(xobj->xfont,"lp",strlen("lp"),&dir,&asc,&desc,&struc);
- x=XTextWidth(xobj->xfont,xobj->title,xobj->value)+5;
+ x=XTextWidth(xobj->xfont, xobj->title + xobj->value3, 
+	      xobj->value - xobj->value3)+5;
  y=asc+5;
 
  segm[0].x1=x;
@@ -116,6 +118,8 @@ void DrawTextField(struct XObj *xobj)
  int x2,l;
  int desc,dir,asc;
  XCharStruct struc;
+ int nl=0;
+ int right=0;
 
  l=strlen(xobj->title);
  if (xobj->value>l)
@@ -126,23 +130,42 @@ void DrawTextField(struct XObj *xobj)
  XClearArea(dpy,xobj->win,2,2,xobj->width-4,xobj->height-4,False);
  XSetForeground(dpy,xobj->gc,xobj->TabColor[fore]);
  XTextExtents(xobj->xfont,"lp",strlen("lp"),&dir,&y1,&desc,&struc);
+ /* calcul du premier caractere visible */
+ while (l-nl >= 1 &&
+	 XTextWidth(xobj->xfont,xobj->title + nl,
+		    xobj->value - nl) > (xobj->width-10))
+   { nl++; }
+ if (nl>xobj->value3) { xobj->value3 = nl; }
+ else if (xobj->value3>xobj->value) { xobj->value3--; }
+ /* calcul de la longueur du titre visible */
+ while ( l-xobj->value3-right >= 1 && 
+	 XTextWidth(xobj->xfont,xobj->title + xobj->value3,
+		    l - xobj->value3 - right) > (xobj->width-10))
+ { right++; }
 #ifdef I18N_MB
- XmbDrawString(dpy,xobj->win,xobj->xfontset,xobj->gc,5,y1+5,xobj->title,strlen(xobj->title));
+ XmbDrawString(dpy,xobj->win,xobj->xfontset,xobj->gc,5,y1+5,
+	       xobj->title + xobj->value3,
+	       strlen(xobj->title) - xobj->value3-right);
 #else
- XDrawString(dpy,xobj->win,xobj->gc,5,y1+5,xobj->title,strlen(xobj->title));
+ XDrawString(dpy,xobj->win,xobj->gc,5,y1+5,xobj->title+xobj->value3,
+	     strlen(xobj->title) - xobj->value3-right);
 #endif
 
  /* Dessin de la zone selectionnee */
  XSetFunction(dpy,xobj->gc,GXinvert);
  if (xobj->value2>xobj->value)		/* Curseur avant la souris */
  {
-  x1=XTextWidth(xobj->xfont,&xobj->title[0],xobj->value);
-  x2=XTextWidth(xobj->xfont,&xobj->title[xobj->value],xobj->value2-xobj->value);
+  x1=XTextWidth(xobj->xfont,&xobj->title[xobj->value3],
+		xobj->value - xobj->value3);
+  x2=XTextWidth(xobj->xfont,&xobj->title[xobj->value],
+		xobj->value2 - xobj->value);
  }
  else		/* Curseur apres la souris */
  {
-  x1=XTextWidth(xobj->xfont,&xobj->title[0],xobj->value2);
-  x2=XTextWidth(xobj->xfont,&xobj->title[xobj->value2],xobj->value-xobj->value2);
+  x1=XTextWidth(xobj->xfont,&xobj->title[xobj->value3],
+		xobj->value2 - xobj->value3);
+  x2=XTextWidth(xobj->xfont,&xobj->title[xobj->value2],
+		xobj->value - xobj->value2);
  }
  XTextExtents(xobj->xfont,"lp",strlen("lp"),&dir,&asc,&desc,&struc);
  XFillRectangle(dpy,xobj->win,xobj->gc,x1+5,7,x2,y1+desc-2);
@@ -177,11 +200,12 @@ void EvtMouseTextField(struct XObj *xobj,XButtonEvent *EvtButton)
     XQueryPointer(dpy,*xobj->ParentWin,&Win1,&Win2,&x1,&y1,&x2,&y2,&modif);
     x2=x2-xobj->x;
     PosCurs=0;
-    while ((PosCurs<strlen(xobj->title))&&(x2>XTextWidth(xobj->xfont,xobj->title,PosCurs)+8))
+    while ((PosCurs<strlen(xobj->title+xobj->value3))&&
+	   (x2>XTextWidth(xobj->xfont,xobj->title+xobj->value3,PosCurs)+8))
      PosCurs++;
     DrawPointTxt(xobj,xobj->TabColor[back]);
-    xobj->value=PosCurs;
-    xobj->value2=PosCurs;
+    xobj->value=PosCurs+xobj->value3;
+    xobj->value2=PosCurs+xobj->value3;
     DrawPointTxt(xobj,xobj->TabColor[fore]);
     DrawTextField(xobj);
 
@@ -194,26 +218,29 @@ void EvtMouseTextField(struct XObj *xobj,XButtonEvent *EvtButton)
        XQueryPointer(dpy,*xobj->ParentWin,&Win1,&Win2,&x1,&y1,&x2,&y2,&modif);
        x2=x2-xobj->x;
        PosCurs=0;
-       while ((PosCurs<strlen(xobj->title))&&(x2>XTextWidth(xobj->xfont,xobj->title,PosCurs)+8))
+       while ((PosCurs<strlen(xobj->title+xobj->value3))&&
+	      (x2>XTextWidth(xobj->xfont,xobj->title+xobj->value3,PosCurs)+8))
      	PosCurs++;
        /* Limitation de la zone de dessin */
        if (PosCurs>xobj->value2)
        {
-        rect.x=XTextWidth(xobj->xfont,xobj->title,xobj->value2);
+        rect.x=XTextWidth(xobj->xfont,xobj->title+xobj->value3,xobj->value2);
         rect.y=0;
-        rect.width=XTextWidth(xobj->xfont,xobj->title,PosCurs+1)-rect.x+1;
+        rect.width=XTextWidth(xobj->xfont,xobj->title+xobj->value3,PosCurs+1)
+	  -rect.x+1;
         rect.height=xobj->height;
-        xobj->value2=PosCurs;
+        xobj->value2=PosCurs+xobj->value3;
         DrawTextField(xobj);
        }
        else
        if (PosCurs<xobj->value2)
        {
-        rect.x=XTextWidth(xobj->xfont,xobj->title,PosCurs)-1;
+        rect.x=XTextWidth(xobj->xfont,xobj->title+xobj->value3,PosCurs)-1;
         rect.y=0;
-        rect.width=XTextWidth(xobj->xfont,xobj->title,xobj->value2+1)-rect.x+2;
+        rect.width=XTextWidth(xobj->xfont,xobj->title+xobj->value3,
+			      xobj->value2+1) - rect.x+2;
         rect.height=xobj->height;
-        xobj->value2=PosCurs;
+        xobj->value2=PosCurs+xobj->value3;
         DrawTextField(xobj);
        }
 
@@ -252,14 +279,16 @@ void EvtMouseTextField(struct XObj *xobj,XButtonEvent *EvtButton)
      if (event.xselection.property!=None)
       if (event.xselection.selection==XA_PRIMARY)
       {
-       XGetWindowProperty(dpy,event.xselection.requestor,event.xselection.property,0,
-      		8192,False,event.xselection.target,&type,&format,&longueur,&octets_restant,
-      		&donnees);
+       XGetWindowProperty(dpy,event.xselection.requestor,
+			  event.xselection.property,0,8192,False,
+			  event.xselection.target,&type,&format,
+			  &longueur,&octets_restant,&donnees);
        if (longueur>0)
        {
         Scrapt=(char*)realloc((void*)Scrapt,(longueur+1)*sizeof(char));
         Scrapt=strcpy(Scrapt,(char *)donnees);
-        XDeleteProperty(dpy,event.xselection.requestor,event.xselection.property);
+        XDeleteProperty(dpy,event.xselection.requestor,
+			event.xselection.property);
         XFree(donnees);
        }
       }
@@ -282,13 +311,13 @@ void EvtMouseTextField(struct XObj *xobj,XButtonEvent *EvtButton)
     x2=x2-xobj->x;
     PosCurs=0;
     while ((PosCurs<strlen(xobj->title))&&
- 		(x2>XTextWidth(xobj->xfont,xobj->title,PosCurs)+8))
+	   (x2>XTextWidth(xobj->xfont,xobj->title+xobj->value3,PosCurs)+8))
      PosCurs++;
     if ((PosCurs<xobj->value) && (xobj->value<xobj->value2))
       xobj->value=xobj->value2;
     if ((PosCurs>xobj->value) && (xobj->value>xobj->value2))
       xobj->value=xobj->value2;
-    xobj->value2=PosCurs;
+    xobj->value2=PosCurs+xobj->value3;
     DrawTextField(xobj);
 
     while (ButPress)
@@ -299,13 +328,15 @@ void EvtMouseTextField(struct XObj *xobj,XButtonEvent *EvtButton)
       case MotionNotify:
        XQueryPointer(dpy,*xobj->ParentWin,&Win1,&Win2,&x1,&y1,&x2,&y2,&modif);
        x2=x2-xobj->x;
-       while ((PosCurs<strlen(xobj->title))&&(x2>XTextWidth(xobj->xfont,xobj->title,PosCurs)+8))
+       while ((PosCurs<strlen(xobj->title))&&
+	      (x2>XTextWidth(xobj->xfont,xobj->title+xobj->value3,PosCurs)+8))
      	PosCurs++;
        if (PosCurs>xobj->value2)
        {
-        rect.x=XTextWidth(xobj->xfont,xobj->title,xobj->value2);
+        rect.x=XTextWidth(xobj->xfont,xobj->title+xobj->value3,xobj->value2);
         rect.y=0;
-        rect.width=XTextWidth(xobj->xfont,xobj->title,PosCurs+1)-rect.x+1;
+        rect.width=XTextWidth(xobj->xfont,xobj->title+xobj->value3,PosCurs+1)
+	  -rect.x+1;
         rect.height=xobj->height;
         xobj->value2=PosCurs;
         DrawTextField(xobj);
@@ -313,11 +344,12 @@ void EvtMouseTextField(struct XObj *xobj,XButtonEvent *EvtButton)
        else
        if (PosCurs<xobj->value2)
        {
-        rect.x=XTextWidth(xobj->xfont,xobj->title,PosCurs)-1;
+        rect.x=XTextWidth(xobj->xfont,xobj->title+xobj->value3,PosCurs)-1;
         rect.y=0;
-        rect.width=XTextWidth(xobj->xfont,xobj->title,xobj->value2+1)-rect.x+2;
+        rect.width=XTextWidth(xobj->xfont,xobj->title+xobj->value3,
+			      xobj->value2+1)-rect.x+2;
         rect.height=xobj->height;
-        xobj->value2=PosCurs;
+        xobj->value2=PosCurs+xobj->value3;
         DrawTextField(xobj);
        }
        PosCurs=0;
@@ -408,7 +440,8 @@ void EvtKeyTextField(struct XObj *xobj,XKeyEvent *EvtKey)
  {
   XSetForeground(dpy,xobj->gc,xobj->TabColor[back]);
   x2=XTextWidth(xobj->xfont,xobj->title,strlen(xobj->title));
-  XFillRectangle(dpy,xobj->win,xobj->gc,x2+4,4,xobj->width-x2-8,xobj->height-8);
+  XFillRectangle(dpy,xobj->win,xobj->gc,x2+4,4,xobj->width-x2-8,
+		 xobj->height-8);
   xobj->value=NewPos;
   xobj->value2=NewPos;
   DrawPointTxt(xobj,xobj->TabColor[fore]);

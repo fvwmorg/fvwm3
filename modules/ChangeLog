@@ -1,19 +1,22 @@
 2000-05-17  olicha <olivier.chapuis@free.fr>
 
-	* FvwmScript/Scripts/ScriptFvwmBaseConfig
+	* FvwmScript/Scripts/Widgets/TextField.c (*):
+	Fixed long text input
+
+2000-05-17  olicha <olivier.chapuis@free.fr>
+
+	* FvwmScript/Scripts/ScriptFvwmBaseConfig:
 	Replace MoveSmoothness by MoveThreshold
 	
 2000-05-17  olicha <olivier.chapuis@free.fr>
 
-	* FvwmScript/Scripts/ScriptFileBrowser
-	A Clean up
+	* FvwmScript/Scripts/ScriptFileBrowser: A Clean up
 
-	* FvwmScript/Scripts/ScriptFvwmSetup95.in
-	* FvwmScript/Scripts/script-fvwm-setup95.pl
+	* FvwmScript/Scripts/ScriptFvwmSetup95.in:
+	* FvwmScript/Scripts/script-fvwm-setup95.pl:
 	Some Clean up
 
-	* FvwmScript/FvwmScript.c
-	Removed some bad debug code
+	* FvwmScript/FvwmScript.c: Removed some bad debug code
 	
 2000-05-14  Dominik Vogt  <dominik.vogt@gmx.de>
 
