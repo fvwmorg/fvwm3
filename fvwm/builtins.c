@@ -353,7 +353,7 @@ void MaximizeHeight(FvwmWindow *win, int win_width, int win_x, int *win_height,
   new_y1 = 0;
   new_y2 = Scr.MyDisplayHeight;
 
-  for (cwin = Scr.FvwmRoot.next; cwin != NULL; cwin = cwin->next) {
+  for (cwin = Scr.FvwmRoot.next; cwin; cwin = cwin->next) {
     if ((cwin == win) ||
 	((cwin->Desk != win->Desk) && (!(cwin->flags & STICKY)))) {
       continue;
@@ -400,7 +400,7 @@ void MaximizeWidth(FvwmWindow *win, int *win_width, int *win_x, int win_height,
   new_x1 = 0;
   new_x2 = Scr.MyDisplayWidth;
 
-  for (cwin = Scr.FvwmRoot.next; cwin != NULL; cwin = cwin->next) {
+  for (cwin = Scr.FvwmRoot.next; cwin; cwin = cwin->next) {
     if ((cwin == win) ||
 	((cwin->Desk != win->Desk) && (!(cwin->flags & STICKY)))) {
       continue;
@@ -453,7 +453,7 @@ void MaximizeWidth(FvwmWindow *win, int *win_width, int *win_x, int win_height,
 void WindowShade(F_CMD_ARGS)
 {
   int h, y, step=1, old_h;
-  int new_x, new_y, new_width, new_height;
+  int new_x, new_y, new_height;
   int toggle;
 
   if (DeferExecution(eventp,&w,&tmp_win,&context, SELECT,ButtonRelease))
@@ -496,14 +496,14 @@ void WindowShade(F_CMD_ARGS)
     tmp_win->buttons &= ~WSHADE;
     new_x = tmp_win->frame_x;
     new_y = tmp_win->frame_y;
-    new_width = tmp_win->frame_width;
     if (tmp_win->flags & MAXIMIZED)
       new_height = tmp_win->maximized_ht;
     else
       new_height = tmp_win->orig_ht;
 
     /* this is necessary if the maximized state has changed while shaded */
-    SetupFrame(tmp_win, new_x, new_y, new_width, new_height, True, True);
+    SetupFrame(tmp_win, new_x, new_y, tmp_win->frame_width, new_height,
+               True, True);
 
     if (shade_anim_steps != 0) {
       h = tmp_win->title_height+tmp_win->boundary_width;
@@ -512,9 +512,9 @@ void WindowShade(F_CMD_ARGS)
       y = h - new_height;
       old_h = tmp_win->frame_height;
       while (h < new_height) {
-        XResizeWindow(dpy, tmp_win->frame, new_width, h);
+        XResizeWindow(dpy, tmp_win->frame, tmp_win->frame_width, h);
         XResizeWindow(dpy, tmp_win->Parent,
-                      new_width - 2 * tmp_win->boundary_width,
+                      tmp_win->frame_width - 2 * tmp_win->boundary_width,
                       max(h - 2 * tmp_win->boundary_width 
                           - tmp_win->title_height, 1));
         if (Scr.go.WindowShadeScrolls)
@@ -532,7 +532,8 @@ void WindowShade(F_CMD_ARGS)
       tmp_win->frame_height = old_h;
       XMoveWindow(dpy, tmp_win->w, 0, 0);
     }
-    SetupFrame(tmp_win, new_x, new_y, new_width, new_height, True, False);
+    SetupFrame(tmp_win, new_x, new_y, tmp_win->frame_width, new_height,
+               True, False);
     BroadcastPacket(M_DEWINDOWSHADE, 3, tmp_win->w, tmp_win->frame,
                     (unsigned long)tmp_win);
   }
@@ -551,7 +552,7 @@ void WindowShade(F_CMD_ARGS)
         XMoveWindow(dpy, tmp_win->w, 0, y);
         XResizeWindow(dpy, tmp_win->frame, tmp_win->frame_width, h);
         XResizeWindow(dpy, tmp_win->Parent,
-                      new_width - 2 * tmp_win->boundary_width,
+                      tmp_win->frame_width - 2 * tmp_win->boundary_width,
                       max(h - 2 * tmp_win->boundary_width 
                           - tmp_win->title_height, 1));
         tmp_win->frame_height = h;
@@ -636,7 +637,7 @@ void add_another_item(F_CMD_ARGS)
   MenuRoot *mrPrior;
   char *rest,*item;
 
-  if (last_menu != NULL) {
+  if (last_menu) {
     mr = FollowMenuContinuations(last_menu,&mrPrior);
     if(mr == NULL)
       return;
@@ -646,11 +647,11 @@ void add_another_item(F_CMD_ARGS)
       free(item);
     MakeMenu(mr);
   }
-  else if (last_func != NULL) {
+  else if (last_func) {
     AddToFunction(last_func, action);
   }
 #ifdef USEDECOR
-  else if (last_decor != NULL) {
+  else if (last_decor) {
     FvwmDecor *tmp = &Scr.DefaultDecor;
     for (; tmp; tmp = tmp->next)
       if (tmp == last_decor)
@@ -827,7 +828,7 @@ void PlaceAgain_func(F_CMD_ARGS)
 
   /* Possibly animate the movement */
   GetNextToken(action, &token);
-  if(token!=NULL && StrEquals("ANIM", token))
+  if(token && StrEquals("ANIM", token))
     AnimatedMoveOfWindow(tmp_win->frame, -1, -1, x, y, FALSE, -1, NULL);
 
   SetupFrame(tmp_win,x,y,tmp_win->frame_width, tmp_win->frame_height, FALSE,
@@ -1204,14 +1205,14 @@ static void menu_func(F_CMD_ARGS, Bool fStaysUp)
   menu = FindPopup(menu_name);
   if(menu == NULL)
   {
-    if(menu_name != NULL)
+    if(menu_name)
     {
       fvwm_msg(ERR,"menu_func","No such menu %s",menu_name);
       free(menu_name);
     }
     return;
   }
-  if(menu_name != NULL)
+  if(menu_name)
     free(menu_name);
   menuFromFrameOrWindowOrTitlebar = FALSE;
 
@@ -1484,10 +1485,10 @@ void SetXOR(F_CMD_ARGS)
   gcv.subwindow_mode = IncludeInferiors;
 
   /* modify DrawGC, only create once */
-  if (!Scr.DrawGC)
-    Scr.DrawGC = XCreateGC(dpy, Scr.Root, gcm, &gcv);
-  else
+  if (Scr.DrawGC)
     XChangeGC(dpy, Scr.DrawGC, gcm, &gcv);
+  else
+    Scr.DrawGC = XCreateGC(dpy, Scr.Root, gcm, &gcv);
 
   /* free up XORPixmap if possible */
   if (Scr.DrawPicture) {
@@ -1533,10 +1534,10 @@ void SetXORPixmap(F_CMD_ARGS)
   gcv.fill_style = FillTiled;
   gcv.subwindow_mode = IncludeInferiors;
   /* modify DrawGC, only create once */
-  if (!Scr.DrawGC)
-    Scr.DrawGC = XCreateGC(dpy, Scr.Root, gcm, &gcv);
-  else
+  if (Scr.DrawGC)
     XChangeGC(dpy, Scr.DrawGC, gcm, &gcv);
+  else
+    Scr.DrawGC = XCreateGC(dpy, Scr.Root, gcm, &gcv);
 }
 
 void SetOpaque(F_CMD_ARGS)
@@ -1636,11 +1637,11 @@ void SetHiColor(F_CMD_ARGS)
   GetNextToken(action,&hiback);
   if(Scr.d_depth > 2)
   {
-    if(hifore != NULL)
+    if(hifore)
     {
 	fl->HiColors.fore = GetColor(hifore);
     }
-    if(hiback != NULL)
+    if(hiback)
     {
 	fl->HiColors.back = GetColor(hiback);
     }
@@ -1656,30 +1657,24 @@ void SetHiColor(F_CMD_ARGS)
   }
   if (hifore) free(hifore);
   if (hiback) free(hiback);
-  gcm = GCFunction|GCPlaneMask|GCGraphicsExposures|GCLineWidth|GCForeground|
-    GCBackground;
+  gcm = GCFunction|GCLineWidth|GCForeground|GCBackground;
   gcv.foreground = fl->HiRelief.fore;
   gcv.background = fl->HiRelief.back;
-  gcv.fill_style = FillSolid;
-  gcv.plane_mask = AllPlanes;
   gcv.function = GXcopy;
-  gcv.graphics_exposures = False;
   gcv.line_width = 0;
-  if(fl->HiReliefGC != NULL)
-  {
-    XFreeGC(dpy,fl->HiReliefGC);
-  }
-  fl->HiReliefGC = XCreateGC(dpy, Scr.Root, gcm, &gcv);
+  if(fl->HiReliefGC)
+    XChangeGC(dpy, fl->HiReliefGC, gcm, &gcv);
+  else
+    fl->HiReliefGC = XCreateGC(dpy, Scr.NoFocusWin, gcm, &gcv);
 
   gcv.foreground = fl->HiRelief.back;
   gcv.background = fl->HiRelief.fore;
-  if(fl->HiShadowGC != NULL)
-  {
-    XFreeGC(dpy,fl->HiShadowGC);
-  }
-  fl->HiShadowGC = XCreateGC(dpy, Scr.Root, gcm, &gcv);
+  if(fl->HiShadowGC)
+    XChangeGC(dpy, fl->HiShadowGC, gcm, &gcv);
+  else
+    fl->HiShadowGC = XCreateGC(dpy, Scr.NoFocusWin, gcm, &gcv);
 
-  if((Scr.flags.windows_captured)&&(Scr.Hilite != NULL))
+  if(Scr.flags.windows_captured && Scr.Hilite)
   {
     hilight = Scr.Hilite;
     SetBorder(Scr.Hilite,False,True,True,None);
@@ -1816,7 +1811,7 @@ void CursorStyle(F_CMD_ARGS)
 
   /* redefine all the windows using cursors */
   fw = Scr.FvwmRoot.next;
-  while(fw != NULL)
+  while(fw)
   {
     for (i=0;i<4;i++)
     {
@@ -1837,7 +1832,7 @@ void CursorStyle(F_CMD_ARGS)
 
   /* Do the menus for good measure */
   mr = Scr.menus.all;
-  while(mr != NULL)
+  while(mr)
   {
     SafeDefineCursor(mr->w,Scr.FvwmCursors[MENU]);
     mr = mr->next;
@@ -1848,7 +1843,7 @@ static MenuStyle *FindMenuStyle(char *name)
 {
   MenuStyle *ms = Scr.menus.DefaultStyle;
 
-  while(ms != NULL )
+  while(ms)
   {
      if(strcasecmp(ms->name,name)==0)
        return ms;
@@ -1865,7 +1860,7 @@ static void FreeMenuStyle(MenuStyle *ms)
   if (!ms)
     return;
   mr = Scr.menus.all;
-  while(mr != NULL)
+  while(mr)
   {
     if(mr->ms == ms)
       mr->ms = Scr.menus.DefaultStyle;
@@ -1922,7 +1917,7 @@ void DestroyMenuStyle(F_CMD_ARGS)
     MakeMenus();
   }
   free(name);
-  for (mr = Scr.menus.all; mr != NULL; mr = mr->next)
+  for (mr = Scr.menus.all; mr; mr = mr->next)
   {
     if (mr->ms == ms)
       mr->ms = Scr.menus.DefaultStyle;
@@ -1935,7 +1930,7 @@ static void UpdateMenuStyle(MenuStyle *ms)
   XGCValues gcv;
   unsigned long gcm;
 
-  if (ms->look.pStdFont != NULL && ms->look.pStdFont != &Scr.StdFont)
+  if (ms->look.pStdFont && ms->look.pStdFont != &Scr.StdFont)
     {
       ms->look.pStdFont->y = ms->look.pStdFont->font->ascent;
       ms->look.pStdFont->height =
@@ -1964,67 +1959,63 @@ static void UpdateMenuStyle(MenuStyle *ms)
   ms->look.MenuStippleColors.back = ms->look.MenuColors.back;
 
   /* make GC's */
-  gcm = GCFunction|GCPlaneMask|GCFont|GCGraphicsExposures|
-    GCLineWidth|GCForeground|GCBackground;
-  gcv.fill_style = FillSolid;
+  gcm = GCFunction|GCFont|GCLineWidth|GCForeground|GCBackground;
   gcv.font = ms->look.pStdFont->font->fid;
-  gcv.plane_mask = AllPlanes;
   gcv.function = GXcopy;
-  gcv.graphics_exposures = False;
   gcv.line_width = 0;
 
   gcv.foreground = ms->look.MenuRelief.fore;
   gcv.background = ms->look.MenuRelief.back;
-  if(ms->look.MenuReliefGC != NULL)
-    XFreeGC(dpy,ms->look.MenuReliefGC);
-  ms->look.MenuReliefGC = XCreateGC(dpy, Scr.Root, gcm, &gcv);
+  if(ms->look.MenuReliefGC)
+    XChangeGC(dpy, ms->look.MenuReliefGC, gcm, &gcv);
+  else
+    ms->look.MenuReliefGC = XCreateGC(dpy, Scr.NoFocusWin, gcm, &gcv);
 
   gcv.foreground = ms->look.MenuRelief.back;
   gcv.background = ms->look.MenuRelief.fore;
-  if(ms->look.MenuShadowGC != NULL)
-    XFreeGC(dpy,ms->look.MenuShadowGC);
-  ms->look.MenuShadowGC = XCreateGC(dpy, Scr.Root, gcm, &gcv);
+  if(ms->look.MenuShadowGC)
+    XChangeGC(dpy, ms->look.MenuShadowGC, gcm, &gcv);
+  else
+    ms->look.MenuShadowGC = XCreateGC(dpy, Scr.NoFocusWin, gcm, &gcv);
 
   gcv.foreground = (ms->look.f.hasActiveBack) ?
     ms->look.MenuActiveColors.back : ms->look.MenuRelief.back;
   gcv.background = (ms->look.f.hasActiveFore) ?
     ms->look.MenuActiveColors.fore : ms->look.MenuRelief.fore;
-  if(ms->look.MenuActiveBackGC != NULL)
-    XFreeGC(dpy,ms->look.MenuActiveBackGC);
-  ms->look.MenuActiveBackGC = XCreateGC(dpy, Scr.Root, gcm, &gcv);
+  if(ms->look.MenuActiveBackGC)
+    XChangeGC(dpy, ms->look.MenuActiveBackGC, gcm, &gcv);
+  else
+    ms->look.MenuActiveBackGC = XCreateGC(dpy, Scr.NoFocusWin, gcm, &gcv);
 
   gcv.foreground = ms->look.MenuColors.fore;
   gcv.background = ms->look.MenuColors.back;
-  if(ms->look.MenuGC != NULL)
-    XFreeGC(dpy,ms->look.MenuGC);
-  ms->look.MenuGC = XCreateGC(dpy, Scr.Root, gcm, &gcv);
+  if(ms->look.MenuGC)
+    XChangeGC(dpy, ms->look.MenuGC, gcm, &gcv);
+  else
+    ms->look.MenuGC = XCreateGC(dpy, Scr.NoFocusWin, gcm, &gcv);
 
   gcv.foreground = ms->look.MenuActiveColors.fore;
   gcv.background = ms->look.MenuActiveColors.back;
-  if(ms->look.MenuActiveGC != NULL)
-    XFreeGC(dpy,ms->look.MenuActiveGC);
-  ms->look.MenuActiveGC = XCreateGC(dpy, Scr.Root, gcm, &gcv);
+  if(ms->look.MenuActiveGC)
+    XChangeGC(dpy, ms->look.MenuActiveGC, gcm, &gcv);
+  else
+    ms->look.MenuActiveGC = XCreateGC(dpy, Scr.NoFocusWin, gcm, &gcv);
 
-  if(ms->look.MenuStippleGC != NULL)
-    XFreeGC(dpy,ms->look.MenuStippleGC);
   if(Scr.d_depth < 2)
   {
     gcv.fill_style = FillStippled;
     gcv.stipple = Scr.gray_bitmap;
-    gcm=GCFunction|GCPlaneMask|GCGraphicsExposures|GCLineWidth|
-      GCForeground|GCBackground|GCFont|GCStipple|GCFillStyle;
-    ms->look.MenuStippleGC = XCreateGC(dpy, Scr.Root, gcm, &gcv);
-
-    gcm=GCFunction|GCPlaneMask|GCGraphicsExposures|GCLineWidth|
-      GCForeground|GCBackground|GCFont;
-    gcv.fill_style = FillSolid;
+    gcm|=GCStipple|GCFillStyle; /* no need to reset fg/bg, FillStipple wins */
   }
   else
   {
     gcv.foreground = ms->look.MenuStippleColors.fore;
     gcv.background = ms->look.MenuStippleColors.back;
-    ms->look.MenuStippleGC = XCreateGC(dpy, Scr.Root, gcm, &gcv);
   }
+  if(ms->look.MenuStippleGC)
+    XChangeGC(dpy, ms->look.MenuStippleGC, gcm, &gcv);
+  else
+    ms->look.MenuStippleGC = XCreateGC(dpy, Scr.NoFocusWin, gcm, &gcv);
 }
 
 
@@ -2081,7 +2072,7 @@ static void NewMenuStyle(F_CMD_ARGS)
   tmpms = (MenuStyle *)safemalloc(sizeof(MenuStyle));
   memset(tmpms, 0, sizeof(MenuStyle));
   ms = FindMenuStyle(name);
-  if (ms != NULL)
+  if (ms)
     {
       /* copy the structure over our temporary menu face. */
       memcpy(tmpms, ms, sizeof(MenuStyle));
@@ -2291,7 +2282,7 @@ static void NewMenuStyle(F_CMD_ARGS)
 	break;
 
       case 15: /* Font */
-	if (arg1 != NULL && (xfs = GetFontOrFixed(dpy, arg1)) == NULL)
+	if (arg1 && (xfs = GetFontOrFixed(dpy, arg1)) == NULL)
 	{
 	  fvwm_msg(ERR,"NewMenuStyle",
 		   "Couldn't load font '%s' or 'fixed'\n", arg1);
@@ -2299,7 +2290,7 @@ static void NewMenuStyle(F_CMD_ARGS)
 	}
 	if (tmpms->look.pStdFont && tmpms->look.pStdFont != &Scr.StdFont)
 	{
-	  if (tmpms->look.pStdFont->font != NULL)
+	  if (tmpms->look.pStdFont->font)
 	    XFreeFont(dpy, tmpms->look.pStdFont->font);
 	  free(tmpms->look.pStdFont);
 	}
@@ -2414,7 +2405,7 @@ static void NewMenuStyle(F_CMD_ARGS)
 	  DestroyPicture(dpy, tmpms->look.sidePic);
 	  tmpms->look.sidePic = NULL;
 	}
-	if (arg1 != NULL)
+	if (arg1)
 	{
 	    tmpms->look.sidePic = CachePicture(dpy, Scr.Root, NULL,
 					       arg1, Scr.ColorLimit);
@@ -2429,7 +2420,7 @@ static void NewMenuStyle(F_CMD_ARGS)
 	  FreeColors(&tmpms->look.sideColor, 1);
 	  tmpms->look.f.hasSideColor = 0;
 	}
-	if (arg1 != NULL)
+	if (arg1)
 	{
 	  tmpms->look.sideColor = GetColor(arg1);
 	  tmpms->look.f.hasSideColor = 1;
@@ -2479,7 +2470,7 @@ static void NewMenuStyle(F_CMD_ARGS)
       Scr.menus.DefaultStyle = tmpms;
       tmpms->next = NULL;
     }
-  else if (ms != NULL)
+  else if (ms)
     {
       /* copy our new menu face over the old one */
       memcpy(ms, tmpms, sizeof(MenuStyle));
@@ -2491,7 +2482,7 @@ static void NewMenuStyle(F_CMD_ARGS)
 
       /* add a new menu face to list */
       tmpms->next = NULL;
-      while(before->next != NULL)
+      while(before->next)
 	before = before->next;
       before->next = tmpms;
     }
@@ -2523,23 +2514,23 @@ static void OldMenuStyle(F_CMD_ARGS)
       sprintf(buffer,
 	      "* %s, Foreground %s, Background %s, Greyed %s, Font %s, %s",
 	      style, fore, back, stipple, font,
-	      (animated != NULL && StrEquals(animated, "anim")) ?
+	      (animated && StrEquals(animated, "anim")) ?
 	        "Animation" : "AnimationOff");
       NewMenuStyle(eventp, w, tmp_win, context, buffer, Module);
       free(buffer);
     }
 
-  if(fore != NULL)
+  if(fore)
     free(fore);
-  if(back != NULL)
+  if(back)
     free(back);
-  if(stipple != NULL)
+  if(stipple)
     free(stipple);
-  if(font != NULL)
+  if(font)
     free(font);
-  if(style != NULL)
+  if(style)
     free(style);
-  if(animated != NULL)
+  if(animated)
     free(animated);
 }
 
@@ -2583,7 +2574,7 @@ void ChangeMenuStyle(F_CMD_ARGS)
   free(name);
 
   action = GetNextToken(action,&menuname);
-  while(menuname != NULL && *menuname)
+  while(menuname && *menuname)
   {
     mr = FindPopup(menuname);
     if(mr == NULL)
@@ -2775,7 +2766,7 @@ void SetTitleStyle(F_CMD_ARGS)
 
 	    tmp = Scr.FvwmRoot.next;
 	    hi = Scr.Hilite;
-	    while(tmp != NULL)
+	    while(tmp)
 	    {
 		if (!(tmp->flags & TITLE)
 #ifdef USEDECOR
@@ -2838,32 +2829,31 @@ static void ApplyDefaultFontAndColors(void)
   Scr.StdFont.height = Scr.StdFont.font->ascent + Scr.StdFont.font->descent;
 
   /* make GC's */
-  gcm = GCFunction|GCPlaneMask|GCFont|GCGraphicsExposures|
-    GCLineWidth|GCForeground|GCBackground;
-  gcv.fill_style = FillSolid;
-  gcv.font = Scr.StdFont.font->fid;
-  gcv.plane_mask = AllPlanes;
+  gcm = GCFunction|GCFont|GCLineWidth|GCForeground|GCBackground;
   gcv.function = GXcopy;
-  gcv.graphics_exposures = False;
+  gcv.font = Scr.StdFont.font->fid;
   gcv.line_width = 0;
 
   gcv.foreground = Scr.StdColors.fore;
   gcv.background = Scr.StdColors.back;
-  if(Scr.StdGC != NULL)
-    XFreeGC(dpy, Scr.StdGC);
-  Scr.StdGC = XCreateGC(dpy, Scr.Root, gcm, &gcv);
+  if(Scr.StdGC)
+    XChangeGC(dpy, Scr.StdGC, gcm, &gcv);
+  else
+    Scr.StdGC = XCreateGC(dpy, Scr.NoFocusWin, gcm, &gcv);
 
   gcv.foreground = Scr.StdRelief.fore;
   gcv.background = Scr.StdRelief.back;
-  if(Scr.StdReliefGC != NULL)
-    XFreeGC(dpy, Scr.StdReliefGC);
-  Scr.StdReliefGC = XCreateGC(dpy, Scr.Root, gcm, &gcv);
+  if(Scr.StdReliefGC)
+    XChangeGC(dpy, Scr.StdReliefGC, gcm, &gcv);
+  else
+    Scr.StdReliefGC = XCreateGC(dpy, Scr.NoFocusWin, gcm, &gcv);
 
   gcv.foreground = Scr.StdRelief.back;
   gcv.background = Scr.StdRelief.fore;
-  if(Scr.StdShadowGC != NULL)
-    XFreeGC(dpy, Scr.StdShadowGC);
-  Scr.StdShadowGC = XCreateGC(dpy, Scr.Root, gcm, &gcv);
+  if(Scr.StdShadowGC)
+    XChangeGC(dpy, Scr.StdShadowGC, gcm, &gcv);
+  else
+    Scr.StdShadowGC = XCreateGC(dpy, Scr.NoFocusWin, gcm, &gcv);
 
   /* update the geometry window for move/resize */
   if(Scr.SizeWindow != None)
@@ -2896,7 +2886,7 @@ static void ApplyDefaultFontAndColors(void)
     ApplyWindowFont(&Scr.DefaultDecor);
   }
 
-  for (ms = Scr.menus.DefaultStyle; ms != NULL; ms = ms->next)
+  for (ms = Scr.menus.DefaultStyle; ms; ms = ms->next)
   {
     if (ms->look.pStdFont == &Scr.StdFont)
       ms->look.EntryHeight = Scr.StdFont.height + HEIGHT_EXTRA;
@@ -2961,7 +2951,7 @@ void LoadDefaultFont(F_CMD_ARGS)
       return;
   }
   free(font);
-  if (Scr.StdFont.font != NULL)
+  if (Scr.StdFont.font)
     XFreeFont(dpy, Scr.StdFont.font);
   Scr.StdFont.font = xfs;
 
@@ -2976,7 +2966,7 @@ static void ApplyIconFont(void)
   Scr.IconFont.y = Scr.IconFont.font->ascent;
 
   tmp = Scr.FvwmRoot.next;
-  while(tmp != NULL)
+  while(tmp)
   {
     RedoIconName(tmp);
 
@@ -3007,9 +2997,9 @@ void LoadIconFont(F_CMD_ARGS)
     return;
   }
 
-  if ((newfont = GetFontOrFixed(dpy, font))!=NULL)
+  if ((newfont = GetFontOrFixed(dpy, font)))
   {
-    if (Scr.IconFont.font != NULL && Scr.flags.has_icon_font == 1)
+    if (Scr.IconFont.font && Scr.flags.has_icon_font == 1)
       XFreeFont(dpy, Scr.IconFont.font);
     Scr.flags.has_icon_font = 1;
     Scr.IconFont.font = newfont;
@@ -3036,7 +3026,7 @@ static void ApplyWindowFont(FvwmDecor *fl)
 
   tmp = Scr.FvwmRoot.next;
   hi = Scr.Hilite;
-  while(tmp != NULL)
+  while(tmp)
   {
     if (!(tmp->flags & TITLE)
 #ifdef USEDECOR
@@ -3087,9 +3077,9 @@ void LoadWindowFont(F_CMD_ARGS)
     return;
   }
 
-  if ((newfont = GetFontOrFixed(dpy, font))!=NULL)
+  if ((newfont = GetFontOrFixed(dpy, font)))
   {
-    if (fl->WindowFont.font != NULL &&
+    if (fl->WindowFont.font &&
 	(fl != &Scr.DefaultDecor || Scr.flags.has_window_font == 1))
       XFreeFont(dpy, fl->WindowFont.font);
     if (fl == &Scr.DefaultDecor)
@@ -3969,7 +3959,7 @@ void DestroyDecor(F_CMD_ARGS)
 
     if (found && (found != &Scr.DefaultDecor)) {
 	FvwmWindow *fw = Scr.FvwmRoot.next;
-	while(fw != NULL)
+	while(fw)
 	{
 	    if (fw->fl == found)
 	      ExecuteFunction("ChangeDecor Default",fw,eventp,
@@ -4054,7 +4044,7 @@ void UpdateDecor(F_CMD_ARGS)
     }
 #endif
 
-    for (; fw != NULL; fw = fw->next)
+    for (; fw; fw = fw->next)
     {
 #ifdef USEDECOR
 	/* update specific decor, or all */
@@ -4538,7 +4528,7 @@ void CreateConditionMask(char *flags, WindowConditionMask *mask)
     tmp = GetNextToken(tmp, &condition);
   }
 
-  if(prev_condition != NULL)
+  if(prev_condition)
     free(prev_condition);
 }
 
@@ -4632,7 +4622,7 @@ FvwmWindow *Circulate(char *action, int Direction, char **restofline)
   if (flags)
     free(flags);
 
-  if(Scr.Focus != NULL)
+  if(Scr.Focus)
   {
     if(Direction == 1)
       fw = Scr.Focus->prev;
@@ -4646,7 +4636,7 @@ FvwmWindow *Circulate(char *action, int Direction, char **restofline)
 
   while((pass < 3)&&(found == NULL))
   {
-    while((fw != NULL)&&(found==NULL)&&(fw != &Scr.FvwmRoot))
+    while((fw)&&(found==NULL)&&(fw != &Scr.FvwmRoot))
     {
 #ifdef FVWM_DEBUG_MSGS
       fvwm_msg(DBG,"Circulate","Trying %s",fw->name);
@@ -4673,7 +4663,7 @@ FvwmWindow *Circulate(char *action, int Direction, char **restofline)
       {
         /* Go to end of list */
         fw = &Scr.FvwmRoot;
-        while((fw) && (fw->next != NULL))
+        while(fw && fw->next)
         {
           fw = fw->next;
         }
@@ -4696,7 +4686,7 @@ void PrevFunc(F_CMD_ARGS)
   char *restofline;
 
   found = Circulate(action, -1, &restofline);
-  if(found != NULL && restofline != NULL)
+  if(found && restofline)
   {
     ExecuteFunction(restofline,found,eventp,C_WINDOW,*Module);
   }
@@ -4709,7 +4699,7 @@ void NextFunc(F_CMD_ARGS)
   char *restofline;
 
   found = Circulate(action, 1, &restofline);
-  if(found != NULL && restofline != NULL)
+  if(found && restofline)
   {
     ExecuteFunction(restofline,found,eventp,C_WINDOW,*Module);
   }
@@ -4722,7 +4712,7 @@ void NoneFunc(F_CMD_ARGS)
   char *restofline;
 
   found = Circulate(action, 1, &restofline);
-  if(found == NULL && restofline != NULL)
+  if(!found && restofline)
   {
     ExecuteFunction(restofline,NULL,eventp,C_ROOT,*Module);
   }
@@ -4734,7 +4724,7 @@ void CurrentFunc(F_CMD_ARGS)
   char *restofline;
 
   found = Circulate(action, 0, &restofline);
-  if(found != NULL && restofline != NULL)
+  if(found && restofline)
   {
     ExecuteFunction(restofline,found,eventp,C_WINDOW,*Module);
   }
@@ -4755,7 +4745,7 @@ void AllFunc(F_CMD_ARGS)
   mask.useCirculateHitIcon = 1;
 
   num = 0;
-  for (t = Scr.FvwmRoot.next; t != NULL; t = t->next)
+  for (t = Scr.FvwmRoot.next; t; t = t->next)
     {
        num++;
     }
@@ -4763,7 +4753,7 @@ void AllFunc(F_CMD_ARGS)
   g = (FvwmWindow **) malloc (num * sizeof(FvwmWindow *));
 
   num = 0;
-  for (t = Scr.FvwmRoot.next; t != NULL; t = t->next)
+  for (t = Scr.FvwmRoot.next; t; t = t->next)
     {
       if (MatchesConditionMask(t, &mask))
 	{
@@ -4846,7 +4836,7 @@ void DirectionFunc(F_CMD_ARGS)
 
   /* If there is a focused window, use that as a starting point.
    * Otherwise we use the pointer as a starting point. */
-  if (tmp_win != NULL)
+  if (tmp_win)
   {
     GetDirectionReference(tmp_win, &my_x, &my_y);
   }
@@ -4859,7 +4849,7 @@ void DirectionFunc(F_CMD_ARGS)
    */
   best_window = NULL;
   best_score = -1;
-  for (window = Scr.FvwmRoot.next; window != NULL; window = window->next) {
+  for (window = Scr.FvwmRoot.next; window; window = window->next) {
     /* Skip every window that does not match conditionals.
      * Skip also currently focused window.  That would be too close. :)
      */
@@ -4914,7 +4904,7 @@ void DirectionFunc(F_CMD_ARGS)
     }
   } /* for */
 
-  if (best_window != NULL)
+  if (best_window)
     ExecuteFunction(restofline, best_window, eventp, C_WINDOW, *Module);
 
   FreeConditionMask(&mask);
@@ -4953,7 +4943,7 @@ void WindowIdFunc(F_CMD_ARGS)
 
   /* Look for condition - CreateFlagString returns NULL if no '(' or '[' */
   flags = CreateFlagString(action, &restofline);
-  if (flags != NULL)
+  if (flags)
     {
     /* Create window mask */
     use_condition = True;
@@ -4971,7 +4961,7 @@ void WindowIdFunc(F_CMD_ARGS)
     }
 
   /* Search windows */
-  for (t = Scr.FvwmRoot.next; t != NULL; t = t->next)
+  for (t = Scr.FvwmRoot.next; t; t = t->next)
     if (t->w == win) {
       /* do it if no conditions or the conditions match */
       if (!use_condition || MatchesConditionMask(t, &mask))

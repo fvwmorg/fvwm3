@@ -16,7 +16,6 @@
 #include <X11/Xproto.h>
 #include <X11/Xatom.h>
 
-Window manager_win = None;
 Time managing_since;
 
 Atom _XA_WIN_SX;
@@ -63,24 +62,23 @@ SetupICCCM2 ()
     XChangeWindowAttributes (dpy, running_wm_win, CWEventMask, &attr);
   } 
 
+  /* add PropChange to NoFocusWin events */
   attr.event_mask = PropertyChangeMask;
-  manager_win = XCreateWindow (dpy, Scr.Root, 0, 0, 1, 1, 0,
-			       CopyFromParent, CopyFromParent, 
-			       CopyFromParent, CWEventMask, &attr);
+  XChangeWindowAttributes (dpy, Scr.NoFocusWin, CWEventMask, &attr);
 
   /* We are not yet in the event loop, thus lastTimestamp will not
      be ready. Have to get a timestamp manually by provoking a 
      PropertyNotify. */ 
-  XChangeProperty (dpy, manager_win, XA_WM_CLASS, XA_STRING, 8,
+  XChangeProperty (dpy, Scr.NoFocusWin, XA_WM_CLASS, XA_STRING, 8,
 		   PropModeAppend, NULL, 0);
-  XWindowEvent (dpy, manager_win, PropertyChangeMask, &xev);
+  XWindowEvent (dpy, Scr.NoFocusWin, PropertyChangeMask, &xev);
   attr.event_mask = 0L;
-  XChangeWindowAttributes (dpy, manager_win, CWEventMask, &attr);
+  XChangeWindowAttributes (dpy, Scr.NoFocusWin, CWEventMask, &attr);
 
   managing_since = xev.xproperty.time;
 
-  XSetSelectionOwner (dpy, _XA_WIN_SX, manager_win, managing_since);
-  if (XGetSelectionOwner (dpy, _XA_WIN_SX) != manager_win) {
+  XSetSelectionOwner (dpy, _XA_WIN_SX, Scr.NoFocusWin, managing_since);
+  if (XGetSelectionOwner (dpy, _XA_WIN_SX) != Scr.NoFocusWin) {
     fvwm_msg (ERR, "SetupICCCM2", "failed to acquire selection ownership");
     exit (1);
   } 
@@ -102,6 +100,10 @@ SetupICCCM2 ()
       XWindowEvent (dpy, running_wm_win, StructureNotifyMask, &xev);
     } while (xev.type != DestroyNotify);
   }
+
+  /* restore NoFocusWin event mask */
+  attr.event_mask = KeyPressMask|FocusChangeMask;
+  XChangeWindowAttributes (dpy, Scr.NoFocusWin, CWEventMask, &attr);
 }
 
 /* We must make sure that we have released SubstructureRedirect
@@ -113,7 +115,6 @@ CloseICCCM2 ()
   DBUG("CloseICCCM2", "good luck, new wm");
   XSelectInput(dpy, Scr.Root, 0 );
   XSync(dpy, 0);
-  XDestroyWindow (dpy, manager_win);
 }
 
 /* FIXME: property change actually succeeded */

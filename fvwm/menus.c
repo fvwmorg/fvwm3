@@ -2043,7 +2043,7 @@ void PaintMenu(MenuRoot *mr, XEvent *pevent)
 	  register int i = 0;
 	  register int dw;
 
-             pmap = XCreatePixmap(dpy, Scr.Root, mr->width, 5, Scr.d_depth);
+             pmap = XCreatePixmap(dpy, mr->w, mr->width, 5, Scr.d_depth);
 	     pmapgc = XCreateGC(dpy, pmap, gcm, &gcv);
 
 	     bounds.width = mr->width;
@@ -2071,7 +2071,7 @@ void PaintMenu(MenuRoot *mr, XEvent *pevent)
 	  register int i = 0;
 	  register int dh = bounds.height / ms->look.face.u.grad.npixels + 1;
 
-             pmap = XCreatePixmap(dpy, Scr.Root, 5, mr->height, Scr.d_depth);
+             pmap = XCreatePixmap(dpy, mr->w, 5, mr->height, Scr.d_depth);
 	     pmapgc = XCreateGC(dpy, pmap, gcm, &gcv);
 
 	  while (i < ms->look.face.u.grad.npixels)

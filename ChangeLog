@@ -1,3 +1,10 @@
+1999-03-29  Hippo
+
+	* fvwm/{builtins,colors,fvwm,icccm2,menus}.c: All GC's are now created
+	from Scr.NoFocusWin which could have a non-default Visual is somebody
+	coded a -visual option.  ICCCM2 stuff uses NoFocusWin rather than
+	creating another hidden window.
+
 1999-03-29  Dominik Vogt  <dominik_vogt@gmx.de>
 
 	* fvwm/fvwm.c (SetRCDefaults): changed back to MouseFocus as default

@@ -423,6 +423,26 @@ int main(int argc, char **argv)
   XChangeProperty (dpy, Scr.Root, _XA_MIT_PRIORITY_COLORS,
                    XA_CARDINAL, 32, PropModeReplace, NULL, 0);
 
+  /* create a window which will accept the keyboard focus when no other
+     windows have it */
+  /* do this before any RC parsing as some GC's are created from this window
+   * rather than the root window */
+  attributes.event_mask = KeyPressMask|FocusChangeMask;
+  attributes.override_redirect = True;
+  Scr.NoFocusWin=XCreateWindow(dpy,Scr.Root,-20, -20, 10, 10, 0, 0,
+                               InputOutput,Scr.viz,
+                               CWEventMask|CWOverrideRedirect,
+                               &attributes);
+  XMapWindow(dpy, Scr.NoFocusWin);
+
+  SetMWM_INFO(Scr.NoFocusWin);
+
+  XSetInputFocus (dpy, Scr.NoFocusWin, RevertToParent, CurrentTime);
+
+  XSync(dpy, 0);
+  if(debugging)
+    XSynchronize(dpy,1);
+
   SetupICCCM2 ();
 
   XSetErrorHandler(CatchRedirectError);
@@ -491,24 +511,7 @@ int main(int argc, char **argv)
                                   Scr.d_depth);
   }
 
-  /* create a window which will accept the keyboard focus when no other
-     windows have it */
-  attributes.event_mask = KeyPressMask|FocusChangeMask;
-  attributes.override_redirect = True;
-  Scr.NoFocusWin=XCreateWindow(dpy,Scr.Root,-10, -10, 10, 10, 0, 0,
-                               InputOnly,CopyFromParent,
-                               CWEventMask|CWOverrideRedirect,
-                               &attributes);
-  XMapWindow(dpy, Scr.NoFocusWin);
-
-  SetMWM_INFO(Scr.NoFocusWin);
-
-  XSetInputFocus (dpy, Scr.NoFocusWin, RevertToParent, CurrentTime);
-
-  XSync(dpy, 0);
-  if(debugging)
-    XSynchronize(dpy,1);
-
+  /* create the move/resize feedback window */
   Scr.SizeStringWidth = XTextWidth (Scr.StdFont.font,
                                     " +8888 x +8888 ", 15);
   attributes.background_pixel = Scr.StdColors.back;
