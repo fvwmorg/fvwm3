@@ -146,10 +146,10 @@ static void setup_icon_title_size(FvwmWindow *fw)
 				fw->icon_g.title_text_width +
 				2 * (ICON_TITLE_TEXT_GAP_COLLAPSED +
 				     ICON_RELIEF_WIDTH);
-			if (IS_STICKY_ON_PAGE(fw) ||
-			    IS_ICON_STICKY_ON_PAGE(fw) ||
-			    IS_STICKY_ON_DESK(fw) ||
-			    IS_ICON_STICKY_ON_DESK(fw))
+			if (IS_STICKY_ACROSS_PAGES(fw) ||
+			    IS_ICON_STICKY_ACROSS_PAGES(fw) ||
+			    IS_STICKY_ACROSS_DESKS(fw) ||
+			    IS_ICON_STICKY_ACROSS_DESKS(fw))
 			{
 				fw->icon_g.title_w_g.width +=
 					2 * (ICON_TITLE_TO_STICK_EXTRA_GAP +
@@ -707,8 +707,10 @@ void DrawIconTitleWindow(
 	int use_unexpanded_size = 1;
 	Bool draw_string = True;
 
-	is_sticky = (IS_STICKY_ON_PAGE(fw) || IS_ICON_STICKY_ON_PAGE(fw));
-	is_sticky |= (IS_STICKY_ON_DESK(fw) || IS_ICON_STICKY_ON_DESK(fw));
+	is_sticky =
+		(IS_STICKY_ACROSS_PAGES(fw) || IS_ICON_STICKY_ACROSS_PAGES(fw));
+	is_sticky |=
+		(IS_STICKY_ACROSS_DESKS(fw) || IS_ICON_STICKY_ACROSS_DESKS(fw));
 	if (is_expanded && FW_W_ICON_PIXMAP(fw) != None)
 	{
 		int sx;
@@ -1391,11 +1393,11 @@ void AutoPlaceIcon(
   /* New! Put icon in same page as the center of the window */
   /* Not a good idea for StickyIcons. Neither for icons of windows that are
    * visible on the current page. */
-  if (IS_ICON_STICKY_ON_DESK(t) || IS_STICKY_ON_DESK(t))
+  if (IS_ICON_STICKY_ACROSS_DESKS(t) || IS_STICKY_ACROSS_DESKS(t))
   {
     t->Desk = Scr.CurrentDesk;
   }
-  if (IS_ICON_STICKY_ON_PAGE(t) || IS_STICKY_ON_PAGE(t))
+  if (IS_ICON_STICKY_ACROSS_PAGES(t) || IS_STICKY_ACROSS_PAGES(t))
   {
     base_x = 0;
     base_y = 0;
@@ -2342,7 +2344,7 @@ void Iconify(FvwmWindow *fw, initial_window_options_type *win_opts)
 	{
 		LowerWindow(fw);
 	}
-	if (IS_ICON_STICKY_ON_DESK(fw) || IS_STICKY_ON_DESK(fw))
+	if (IS_ICON_STICKY_ACROSS_DESKS(fw) || IS_STICKY_ACROSS_DESKS(fw))
 	{
 		fw->Desk = Scr.CurrentDesk;
 	}

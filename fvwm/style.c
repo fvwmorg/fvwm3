@@ -3131,33 +3131,33 @@ static Bool style_parse_one_style_option(
 		}
 		else if (StrEquals(token, "StickyIcon"))
 		{
-			S_SET_IS_ICON_STICKY_ON_PAGE(SCF(*ps), on);
-			S_SET_IS_ICON_STICKY_ON_PAGE(SCM(*ps), 1);
-			S_SET_IS_ICON_STICKY_ON_PAGE(SCC(*ps), 1);
-			S_SET_IS_ICON_STICKY_ON_DESK(SCF(*ps), on);
-			S_SET_IS_ICON_STICKY_ON_DESK(SCM(*ps), 1);
-			S_SET_IS_ICON_STICKY_ON_DESK(SCC(*ps), 1);
+			S_SET_IS_ICON_STICKY_ACROSS_PAGES(SCF(*ps), on);
+			S_SET_IS_ICON_STICKY_ACROSS_PAGES(SCM(*ps), 1);
+			S_SET_IS_ICON_STICKY_ACROSS_PAGES(SCC(*ps), 1);
+			S_SET_IS_ICON_STICKY_ACROSS_DESKS(SCF(*ps), on);
+			S_SET_IS_ICON_STICKY_ACROSS_DESKS(SCM(*ps), 1);
+			S_SET_IS_ICON_STICKY_ACROSS_DESKS(SCC(*ps), 1);
 		}
-		else if (StrEquals(token, "StickyPageIcon"))
+		else if (StrEquals(token, "StickyAcrossPagesIcon"))
 		{
-			S_SET_IS_ICON_STICKY_ON_PAGE(SCF(*ps), on);
-			S_SET_IS_ICON_STICKY_ON_PAGE(SCM(*ps), 1);
-			S_SET_IS_ICON_STICKY_ON_PAGE(SCC(*ps), 1);
+			S_SET_IS_ICON_STICKY_ACROSS_PAGES(SCF(*ps), on);
+			S_SET_IS_ICON_STICKY_ACROSS_PAGES(SCM(*ps), 1);
+			S_SET_IS_ICON_STICKY_ACROSS_PAGES(SCC(*ps), 1);
 		}
-		else if (StrEquals(token, "StickyDeskIcon"))
+		else if (StrEquals(token, "StickyAcrossDesksIcon"))
 		{
-			S_SET_IS_ICON_STICKY_ON_DESK(SCF(*ps), on);
-			S_SET_IS_ICON_STICKY_ON_DESK(SCM(*ps), 1);
-			S_SET_IS_ICON_STICKY_ON_DESK(SCC(*ps), 1);
+			S_SET_IS_ICON_STICKY_ACROSS_DESKS(SCF(*ps), on);
+			S_SET_IS_ICON_STICKY_ACROSS_DESKS(SCM(*ps), 1);
+			S_SET_IS_ICON_STICKY_ACROSS_DESKS(SCC(*ps), 1);
 		}
 		else if (StrEquals(token, "SlipperyIcon"))
 		{
-			S_SET_IS_ICON_STICKY_ON_PAGE(SCF(*ps), !on);
-			S_SET_IS_ICON_STICKY_ON_PAGE(SCM(*ps), 1);
-			S_SET_IS_ICON_STICKY_ON_PAGE(SCC(*ps), 1);
-			S_SET_IS_ICON_STICKY_ON_DESK(SCF(*ps), !on);
-			S_SET_IS_ICON_STICKY_ON_DESK(SCM(*ps), 1);
-			S_SET_IS_ICON_STICKY_ON_DESK(SCC(*ps), 1);
+			S_SET_IS_ICON_STICKY_ACROSS_PAGES(SCF(*ps), !on);
+			S_SET_IS_ICON_STICKY_ACROSS_PAGES(SCM(*ps), 1);
+			S_SET_IS_ICON_STICKY_ACROSS_PAGES(SCC(*ps), 1);
+			S_SET_IS_ICON_STICKY_ACROSS_DESKS(SCF(*ps), !on);
+			S_SET_IS_ICON_STICKY_ACROSS_DESKS(SCM(*ps), 1);
+			S_SET_IS_ICON_STICKY_ACROSS_DESKS(SCC(*ps), 1);
 		}
 		else if (StrEquals(token, "SloppyFocus"))
 		{
@@ -3201,33 +3201,33 @@ static Bool style_parse_one_style_option(
 		}
 		else if (StrEquals(token, "Sticky"))
 		{
-			S_SET_IS_STICKY_ON_PAGE(SCF(*ps), on);
-			S_SET_IS_STICKY_ON_PAGE(SCM(*ps), 1);
-			S_SET_IS_STICKY_ON_PAGE(SCC(*ps), 1);
-			S_SET_IS_STICKY_ON_DESK(SCF(*ps), on);
-			S_SET_IS_STICKY_ON_DESK(SCM(*ps), 1);
-			S_SET_IS_STICKY_ON_DESK(SCC(*ps), 1);
+			S_SET_IS_STICKY_ACROSS_PAGES(SCF(*ps), on);
+			S_SET_IS_STICKY_ACROSS_PAGES(SCM(*ps), 1);
+			S_SET_IS_STICKY_ACROSS_PAGES(SCC(*ps), 1);
+			S_SET_IS_STICKY_ACROSS_DESKS(SCF(*ps), on);
+			S_SET_IS_STICKY_ACROSS_DESKS(SCM(*ps), 1);
+			S_SET_IS_STICKY_ACROSS_DESKS(SCC(*ps), 1);
 		}
-		else if (StrEquals(token, "StickyPage"))
+		else if (StrEquals(token, "StickyAcrossPages"))
 		{
-			S_SET_IS_STICKY_ON_PAGE(SCF(*ps), on);
-			S_SET_IS_STICKY_ON_PAGE(SCM(*ps), 1);
-			S_SET_IS_STICKY_ON_PAGE(SCC(*ps), 1);
+			S_SET_IS_STICKY_ACROSS_PAGES(SCF(*ps), on);
+			S_SET_IS_STICKY_ACROSS_PAGES(SCM(*ps), 1);
+			S_SET_IS_STICKY_ACROSS_PAGES(SCC(*ps), 1);
 		}
-		else if (StrEquals(token, "StickyDesk"))
+		else if (StrEquals(token, "StickyAcrossDesks"))
 		{
-			S_SET_IS_STICKY_ON_DESK(SCF(*ps), on);
-			S_SET_IS_STICKY_ON_DESK(SCM(*ps), 1);
-			S_SET_IS_STICKY_ON_DESK(SCC(*ps), 1);
+			S_SET_IS_STICKY_ACROSS_DESKS(SCF(*ps), on);
+			S_SET_IS_STICKY_ACROSS_DESKS(SCM(*ps), 1);
+			S_SET_IS_STICKY_ACROSS_DESKS(SCC(*ps), 1);
 		}
 		else if (StrEquals(token, "Slippery"))
 		{
-			S_SET_IS_STICKY_ON_PAGE(SCF(*ps), !on);
-			S_SET_IS_STICKY_ON_PAGE(SCM(*ps), 1);
-			S_SET_IS_STICKY_ON_PAGE(SCC(*ps), 1);
-			S_SET_IS_STICKY_ON_DESK(SCF(*ps), !on);
-			S_SET_IS_STICKY_ON_DESK(SCM(*ps), 1);
-			S_SET_IS_STICKY_ON_DESK(SCC(*ps), 1);
+			S_SET_IS_STICKY_ACROSS_PAGES(SCF(*ps), !on);
+			S_SET_IS_STICKY_ACROSS_PAGES(SCM(*ps), 1);
+			S_SET_IS_STICKY_ACROSS_PAGES(SCC(*ps), 1);
+			S_SET_IS_STICKY_ACROSS_DESKS(SCF(*ps), !on);
+			S_SET_IS_STICKY_ACROSS_DESKS(SCM(*ps), 1);
+			S_SET_IS_STICKY_ACROSS_DESKS(SCC(*ps), 1);
 		}
 		else if (StrEquals(token, "STARTSONDESK"))
 		{
@@ -3959,18 +3959,18 @@ void check_window_style_change(
 	 * is_sticky
 	 * is_icon_sticky
 	 */
-	if (S_IS_STICKY_ON_PAGE(SCC(*ret_style)) ||
-	    S_IS_STICKY_ON_DESK(SCC(*ret_style)))
+	if (S_IS_STICKY_ACROSS_PAGES(SCC(*ret_style)) ||
+	    S_IS_STICKY_ACROSS_DESKS(SCC(*ret_style)))
 	{
 		flags->do_update_stick = True;
 	}
-	else if (S_IS_ICON_STICKY_ON_PAGE(SCC(*ret_style)) && IS_ICONIFIED(t) &&
-	    !IS_STICKY_ON_PAGE(t))
+	else if (S_IS_ICON_STICKY_ACROSS_PAGES(SCC(*ret_style)) &&
+		 IS_ICONIFIED(t) && !IS_STICKY_ACROSS_PAGES(t))
 	{
 		flags->do_update_stick_icon = True;
 	}
-	else if (S_IS_ICON_STICKY_ON_DESK(SCC(*ret_style)) && IS_ICONIFIED(t) &&
-	    !IS_STICKY_ON_DESK(t))
+	else if (S_IS_ICON_STICKY_ACROSS_DESKS(SCC(*ret_style)) &&
+		 IS_ICONIFIED(t) && !IS_STICKY_ACROSS_DESKS(t))
 	{
 		flags->do_update_stick_icon = True;
 	}

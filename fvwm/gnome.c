@@ -498,7 +498,7 @@ GNOME_SetHints(FvwmWindow *fwin)
 	atom_set = XInternAtom(dpy, XA_WIN_STATE, False);
 	val = 0;
 
-	if (IS_STICKY_ON_PAGE(fwin) && IS_STICKY_ON_DESK(fwin))
+	if (IS_STICKY_ACROSS_PAGES(fwin) && IS_STICKY_ACROSS_DESKS(fwin))
 	{
 		val |= WIN_STATE_STICKY;
 	}
@@ -567,12 +567,12 @@ GNOME_GetStyle (FvwmWindow *fwin, window_style *style)
 	{
 		if (*(int*)retval & WIN_STATE_STICKY)
 		{
-			S_SET_IS_STICKY_ON_PAGE(SCF(*style), 1);
-			S_SET_IS_STICKY_ON_PAGE(SCM(*style), 1);
-			S_SET_IS_STICKY_ON_PAGE(SCC(*style), 1);
-			S_SET_IS_STICKY_ON_DESK(SCF(*style), 1);
-			S_SET_IS_STICKY_ON_DESK(SCM(*style), 1);
-			S_SET_IS_STICKY_ON_DESK(SCC(*style), 1);
+			S_SET_IS_STICKY_ACROSS_PAGES(SCF(*style), 1);
+			S_SET_IS_STICKY_ACROSS_PAGES(SCM(*style), 1);
+			S_SET_IS_STICKY_ACROSS_PAGES(SCC(*style), 1);
+			S_SET_IS_STICKY_ACROSS_DESKS(SCF(*style), 1);
+			S_SET_IS_STICKY_ACROSS_DESKS(SCM(*style), 1);
+			S_SET_IS_STICKY_ACROSS_DESKS(SCC(*style), 1);
 		}
 
 		if (*(int*)retval & WIN_STATE_SHADED)
@@ -1048,13 +1048,13 @@ void GNOME_HandlePropRequest(
 	{
 		if (prop & WIN_STATE_STICKY)
 		{
-			SET_STICKY_ON_PAGE(fwin, 1);
-			SET_STICKY_ON_DESK(fwin, 1);
+			SET_STICKY_ACROSS_PAGES(fwin, 1);
+			SET_STICKY_ACROSS_DESKS(fwin, 1);
 		}
 		else
 		{
-			SET_STICKY_ON_PAGE(fwin, 0);
-			SET_STICKY_ON_DESK(fwin, 0);
+			SET_STICKY_ACROSS_PAGES(fwin, 0);
+			SET_STICKY_ACROSS_DESKS(fwin, 0);
 		}
 		border_draw_decorations(
 			fwin, PART_TITLE, (Scr.Hilite==fwin), True, CLEAR_ALL,

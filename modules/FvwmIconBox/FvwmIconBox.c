@@ -365,7 +365,7 @@ void Loop(void)
 		Event.xexpose.x = ex;
 		Event.xexpose.y = ey;
 		Event.xexpose.width = ex2 - ex;
-		Event.xexpose.height = ey2 - ey;  
+		Event.xexpose.height = ey2 - ey;
 		if (Event.xany.window == main_win)
 		{
 			RedrawWindow(&Event);
@@ -806,7 +806,7 @@ void RedrawIcon(struct icon_info *item, int f, XEvent *evp)
 			if (evp)
 			{
 				if (!frect_get_intersection(
-					evp->xexpose.x, evp->xexpose.y, 
+					evp->xexpose.x, evp->xexpose.y,
 					evp->xexpose.width, evp->xexpose.height,
 					hr, hr, item->icon_w, item->icon_h,
 					&inter))
@@ -842,7 +842,7 @@ void RedrawIcon(struct icon_info *item, int f, XEvent *evp)
 						XClearArea(
 							dpy, item->icon_pixmap_w,
 							evp->xexpose.x,
-							evp->xexpose.y, 
+							evp->xexpose.y,
 							evp->xexpose.width,
 							evp->xexpose.height,
 							False);
@@ -962,7 +962,7 @@ void RedrawIcon(struct icon_info *item, int f, XEvent *evp)
 			{
 				XClearArea(
 					dpy, item->IconWin,
-					evp->xexpose.x, evp->xexpose.y, 
+					evp->xexpose.x, evp->xexpose.y,
 					evp->xexpose.width, evp->xexpose.height,
 					False);
 			}
@@ -985,7 +985,7 @@ void RedrawIcon(struct icon_info *item, int f, XEvent *evp)
 			{
 				XClearArea(
 					dpy, item->IconWin,
-					evp->xexpose.x, evp->xexpose.y, 
+					evp->xexpose.x, evp->xexpose.y,
 					evp->xexpose.width, evp->xexpose.height,
 					False);
 			}
@@ -2431,7 +2431,7 @@ void process_message(unsigned long type, unsigned long *body)
 	    SET_DO_SKIP_WINDOW_LIST(tmp,DO_SKIP_WINDOW_LIST(cfgpacket));
 	  }
 	  if ((local_flags & CURRENT_ONLY) &&
-	      tmp->desk != cfgpacket->desk && !IS_STICKY_ON_DESK(tmp))
+	      tmp->desk != cfgpacket->desk && !IS_STICKY_ACROSS_DESKS(tmp))
 	  {
 	    olddesk = tmp->desk;
 	    tmp->desk = cfgpacket->desk;
@@ -2444,12 +2444,12 @@ void process_message(unsigned long type, unsigned long *body)
 	      else
 		remove = 1;
 	    }
-	  }else if ((IS_STICKY_ON_DESK(cfgpacket)) &&
-		    !(IS_STICKY_ON_DESK(tmp))) /* stick */
-	    SET_STICKY_ON_DESK(tmp, True);
-	  else if (!(IS_STICKY_ON_DESK(cfgpacket)) &&
-		   (IS_STICKY_ON_DESK(tmp))){ /* unstick */
-	    SET_STICKY_ON_DESK(tmp, False);
+	  }else if ((IS_STICKY_ACROSS_DESKS(cfgpacket)) &&
+		    !(IS_STICKY_ACROSS_DESKS(tmp))) /* stick */
+	    SET_STICKY_ACROSS_DESKS(tmp, True);
+	  else if (!(IS_STICKY_ACROSS_DESKS(cfgpacket)) &&
+		   (IS_STICKY_ACROSS_DESKS(tmp))){ /* unstick */
+	    SET_STICKY_ACROSS_DESKS(tmp, False);
 	    tmp->desk = cfgpacket->desk;
 	  }
 	  if ((add && window_cond(tmp)) || remove) {
@@ -2746,7 +2746,7 @@ int AdjustIconWindows(void)
 int window_cond(struct icon_info *item)
 {
   if ((!(local_flags & CURRENT_ONLY) ||
-      (IS_STICKY_ON_DESK(item)) || (item->desk == CurrentDesk)) &&
+      (IS_STICKY_ACROSS_DESKS(item)) || (item->desk == CurrentDesk)) &&
       IS_ICON_SUPPRESSED(item) &&
       (!DO_SKIP_WINDOW_LIST(item) || !UseSkipList))
     return 1;

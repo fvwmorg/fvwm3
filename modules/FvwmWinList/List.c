@@ -384,7 +384,7 @@ void CopyItem(List *dest, List *source, int n)
 int IsItemVisible(Item *temp)
 {
   if ((!ShowCurrentDesk || temp->desk == CurrentDesk ||
-       IS_STICKY_ON_DESK(temp)) &&
+       IS_STICKY_ACROSS_DESKS(temp)) &&
       (!DO_SKIP_WINDOW_LIST(temp) || !UseSkipList))
     return 1;
   else

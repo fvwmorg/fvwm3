@@ -380,8 +380,8 @@ void process_message(
 			wle->desk = cfg->desk;
 			wle->layer = 0;
 			wle->iconified = IS_ICONIFIED(cfg);
-			wle->sticky = (IS_STICKY_ON_PAGE(cfg) ||
-				       IS_STICKY_ON_DESK(cfg));
+			wle->sticky = (IS_STICKY_ACROSS_PAGES(cfg) ||
+				       IS_STICKY_ACROSS_DESKS(cfg));
 			wle->skip = DO_SKIP_WINDOW_LIST(cfg);
 			wle->x = cfg->frame_x;
 			wle->y = cfg->frame_y;

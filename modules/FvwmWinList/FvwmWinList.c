@@ -437,12 +437,13 @@ void ProcessMessage(unsigned long type,unsigned long *body)
       {
 	flagitem=ItemFlags(&windows,cfgpacket->w);
 	if(UpdateItemDesk(&windows, cfgpacket) > 0 ||
-	   IS_STICKY_ON_DESK(cfgpacket) != IS_STICKY_ON_DESK(flagitem) ||
+	   IS_STICKY_ACROSS_DESKS(cfgpacket) !=
+	   IS_STICKY_ACROSS_DESKS(flagitem) ||
 	   DO_SKIP_WINDOW_LIST(cfgpacket) != DO_SKIP_WINDOW_LIST(flagitem))
 	{
 	  UpdateItemGSFRFlags(&windows, cfgpacket);
 	  UpdateButtonDeskFlags(&buttons, i, cfgpacket->desk,
-				IS_STICKY_ON_DESK(cfgpacket),
+				IS_STICKY_ACROSS_DESKS(cfgpacket),
 				DO_SKIP_WINDOW_LIST(cfgpacket));
 	  AdjustWindow(False);
 	  RedrawWindow(True, True, NULL);
@@ -497,7 +498,7 @@ void ProcessMessage(unsigned long type,unsigned long *body)
 	AddButton(&buttons, name, NULL, 1);
 	UpdateButtonSet(&buttons, i, (IS_ICONIFIED(flagitem)?1:0));
 	UpdateButtonDeskFlags(&buttons,i,ItemDesk(&windows, body[0]),
-			      IS_STICKY_ON_DESK(flagitem),
+			      IS_STICKY_ACROSS_DESKS(flagitem),
 			      DO_SKIP_WINDOW_LIST(flagitem));
       }
       free(name);

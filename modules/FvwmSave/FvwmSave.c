@@ -320,7 +320,7 @@ void do_save(void)
     dwidth /= t->width_inc;
     dheight /= t->height_inc;
 
-    if (IS_STICKY_ON_PAGE(t))
+    if (IS_STICKY_ACROSS_PAGES(t))
     {
       tVx = 0;
       tVy = 0;

@@ -107,9 +107,9 @@ static int SmartPlacement(
 	  continue;
 
 	/*  RBW - account for sticky windows...  */
-	if (test_fw->Desk == t->Desk || IS_STICKY_ON_DESK(test_fw))
+	if (test_fw->Desk == t->Desk || IS_STICKY_ACROSS_DESKS(test_fw))
 	{
-	  if (IS_STICKY_ON_PAGE(test_fw))
+	  if (IS_STICKY_ACROSS_PAGES(test_fw))
 	  {
 	    stickyx = pdeltax;
 	    stickyy = pdeltay;
@@ -251,11 +251,13 @@ static int get_next_x(
   /* Test the values of the right edges of every window */
   for (testw = Scr.FvwmRoot.next ; testw != NULL ; testw = testw->next)
   {
-    if (testw == t || (testw->Desk != t->Desk && !IS_STICKY_ON_DESK(testw)) ||
+    if (testw == t ||
+	(testw->Desk != t->Desk && !IS_STICKY_ACROSS_DESKS(testw)) ||
 	IS_EWMH_DESKTOP(FW_W(testw)))
+    {
       continue;
-
-    if (IS_STICKY_ON_PAGE(testw))
+    }
+    if (IS_STICKY_ACROSS_PAGES(testw))
     {
       stickyx = pdeltax;
       stickyy = pdeltay;
@@ -265,7 +267,6 @@ static int get_next_x(
       stickyx = 0;
       stickyy = 0;
     }
-
     if (IS_ICONIFIED(testw))
     {
       rc = get_visible_icon_geometry(testw, &g);
@@ -347,11 +348,11 @@ static int get_next_y(
   /* Test the values of the bottom edge of every window */
   for (testw = Scr.FvwmRoot.next ; testw != NULL ; testw = testw->next)
   {
-    if (testw == t || (testw->Desk != t->Desk && !IS_STICKY_ON_DESK(testw))
+    if (testw == t || (testw->Desk != t->Desk && !IS_STICKY_ACROSS_DESKS(testw))
 	|| IS_EWMH_DESKTOP(FW_W(testw)))
       continue;
 
-    if (IS_STICKY_ON_PAGE(testw))
+    if (IS_STICKY_ACROSS_PAGES(testw))
     {
       stickyy = pdeltay;
     }
@@ -437,11 +438,11 @@ static float test_fit(
     return -2;
   for (testw = Scr.FvwmRoot.next ; testw != NULL ; testw = testw->next)
   {
-    if (testw == t || (testw->Desk != t->Desk && !IS_STICKY_ON_DESK(testw))
+    if (testw == t || (testw->Desk != t->Desk && !IS_STICKY_ACROSS_DESKS(testw))
 	|| IS_EWMH_DESKTOP(FW_W(testw)))
        continue;
 
-    if (IS_STICKY_ON_PAGE(testw))
+    if (IS_STICKY_ACROSS_PAGES(testw))
     {
       stickyx = pdeltax;
       stickyy = pdeltay;
@@ -472,7 +473,7 @@ static float test_fit(
 	avoidance_factor = ONTOP_PLACEMENT_PENALTY(testw);
       else if(compare_window_layers(testw, t) < 0)
 	avoidance_factor = BELOW_PLACEMENT_PENALTY(testw);
-      else if(IS_STICKY_ON_PAGE(testw) || IS_STICKY_ON_DESK(testw))
+      else if(IS_STICKY_ACROSS_PAGES(testw) || IS_STICKY_ACROSS_DESKS(testw))
 	avoidance_factor = STICKY_PLACEMENT_PENALTY(testw);
       else
 	avoidance_factor = NORMAL_PLACEMENT_PENALTY(testw);
@@ -618,7 +619,7 @@ Bool PlaceWindow(
     {
       flags.do_honor_starts_on_page = False;
       fvwm_msg(WARN, "PlaceWindow",
-	       "illegal style combination used: StartsOnPage/StartsOnDesk"
+	       "invalid style combination used: StartsOnPage/StartsOnDesk"
 	       " and SkipMapping don't work with ManualPlacement and"
 	       " TileManualPlacement. Putting window on current page,"
 	       " please use an other placement style or"
@@ -670,7 +671,7 @@ Bool PlaceWindow(
   {
     fw->Desk = Scr.CurrentDesk;
   }
-  if (S_IS_STICKY_ON_DESK(SFC(*sflags)))
+  if (S_IS_STICKY_ACROSS_DESKS(SFC(*sflags)))
     fw->Desk = Scr.CurrentDesk;
   else if (SUSE_START_ON_DESK(sflags) && Desk && flags.do_honor_starts_on_page)
     fw->Desk = (Desk > -1) ? Desk - 1 : Desk;
@@ -747,8 +748,7 @@ Bool PlaceWindow(
    * adjust the coordinates later. Otherwise, just switch to the target
    * page - it's ever so much simpler.
    */
-  if (!S_IS_STICKY_ON_DESK(SFC(*sflags)) &&
-      !S_IS_STICKY_ON_PAGE(SFC(*sflags)) && SUSE_START_ON_DESK(sflags))
+  if (!S_IS_STICKY_ACROSS_PAGES(SFC(*sflags)) && SUSE_START_ON_DESK(sflags))
   {
     if (PageX && PageY)
     {

@@ -334,7 +334,7 @@ static void UnmapDesk(int desk, Bool grab)
 	     t != &Scr.FvwmRoot; t = get_prev_window_in_stack_ring(t))
 	{
 		/* Only change mapping for non-sticky windows */
-		if (!is_window_sticky_on_desk(t) && !IS_ICON_UNMAPPED(t))
+		if (!is_window_sticky_across_desks(t) && !IS_ICON_UNMAPPED(t))
 		{
 			if (t->Desk == desk)
 			{
@@ -388,7 +388,7 @@ static void MapDesk(int desk, Bool grab)
 	     t != &Scr.FvwmRoot; t = get_next_window_in_stack_ring(t))
 	{
 		/* Only change mapping for non-sticky windows */
-		if (!is_window_sticky_on_desk(t) && !IS_ICON_UNMAPPED(t))
+		if (!is_window_sticky_across_desks(t) && !IS_ICON_UNMAPPED(t))
 		{
 			if (t->Desk == desk)
 			{
@@ -417,7 +417,7 @@ static void MapDesk(int desk, Bool grab)
 		  Autoplace any sticky icons, so that sticky icons from the old
 		  desk don't land on top of stationary ones on the new desk.
 		*/
-		if (is_window_sticky_on_desk(t) && IS_ICONIFIED(t) &&
+		if (is_window_sticky_across_desks(t) && IS_ICONIFIED(t) &&
 		    !IS_ICON_MOVED(t) && !IS_ICON_UNMAPPED(t))
 		{
 			AutoPlaceIcon(t, NULL, True);
@@ -1119,7 +1119,7 @@ void MoveViewport(int newx, int newy, Bool grab)
 			tyt = t->frame_g.y;
 			txr = t->frame_g.x + t->frame_g.width - 1;
 			tyb = t->frame_g.y + t->frame_g.height - 1;
-			if (is_window_sticky_on_page(t) &&
+			if (is_window_sticky_across_pages(t) &&
 			    !IS_VIEWPORT_MOVED(t))
 			{
 				/* the absolute position has changed */
@@ -1140,7 +1140,7 @@ void MoveViewport(int newx, int newy, Bool grab)
 				/* If the window is iconified, and sticky
 				 * Icons is set, then the window should
 				 * essentially be sticky */
-				if (!is_window_sticky_on_page(t))
+				if (!is_window_sticky_across_pages(t))
 				{
 					if (IS_ICONIFIED(t))
 					{
@@ -1179,7 +1179,7 @@ void MoveViewport(int newx, int newy, Bool grab)
 				/* If the window is iconified, and sticky
 				 * Icons is set, then the window should
 				 * essentially be sticky */
-				if (!is_window_sticky_on_page(t1))
+				if (!is_window_sticky_across_pages(t1))
 				{
 					if (IS_ICONIFIED(t1))
 					{
@@ -1210,8 +1210,9 @@ void MoveViewport(int newx, int newy, Bool grab)
 			/* If its an icon, and its sticking, autoplace it so
 			 * that it doesn't wind up on top a a stationary
 			 * icon */
-			if (is_window_sticky_on_page(t) && IS_ICONIFIED(t) &&
-			    !IS_ICON_MOVED(t) && !IS_ICON_UNMAPPED(t))
+			if (is_window_sticky_across_pages(t) &&
+			    IS_ICONIFIED(t) && !IS_ICON_MOVED(t) &&
+			    !IS_ICON_UNMAPPED(t))
 			{
 				AutoPlaceIcon(t, NULL, True);
 			}
@@ -1286,7 +1287,7 @@ void do_move_window_to_desk(FvwmWindow *fw, int desk)
 	 * Set the window's desktop, and map or unmap it as needed.
 	 */
 	/* Only change mapping for non-sticky windows */
-	if (!is_window_sticky_on_desk(fw) /*&& !IS_ICON_UNMAPPED(fw)*/)
+	if (!is_window_sticky_across_desks(fw) /*&& !IS_ICON_UNMAPPED(fw)*/)
 	{
 		if (fw->Desk == Scr.CurrentDesk)
 		{

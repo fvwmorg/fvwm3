@@ -492,7 +492,7 @@ static Bool is_button_toggled(
 		return True;
 	}
 	if ((mf & MWM_DECOR_STICK) &&
-	    (IS_STICKY_ON_PAGE(fw) || IS_STICKY_ON_DESK(fw)))
+	    (IS_STICKY_ACROSS_PAGES(fw) || IS_STICKY_ACROSS_DESKS(fw)))
 	{
 		return True;
 	}
@@ -588,7 +588,7 @@ static void get_common_decorations(
 			cd->bg_border_cs = GetDecor(
 				t, BorderStyle.inactive.u.acs.cs);
 		}
-		if (IS_STICKY_ON_PAGE(t) || IS_STICKY_ON_DESK(t))
+		if (IS_STICKY_ACROSS_PAGES(t) || IS_STICKY_ACROSS_DESKS(t))
 		{
 			cd->back_pixmap = Scr.sticky_gray_pixmap;
 		}
@@ -2234,7 +2234,7 @@ static void border_set_button_pixmap(
 			&bg, td->cd, button_g, &relative_g, &free_bg_pixmap, w);
 		bg.pixmap.g.x = 0;
 		bg.pixmap.g.y = 0;
-		/* set the geometry for drawing the Tiled pixmap; 
+		/* set the geometry for drawing the Tiled pixmap;
 		 * FIXME: maybe add the relief as offset? */
 		pix_g.x = 0;
 		pix_g.y = 0;
@@ -2252,7 +2252,7 @@ static void border_set_button_pixmap(
 	{
 		/* draw background inherited from title style */
 		DecorFace *tsdf;
-		
+
 		for (tsdf = &TB_STATE(GetDecor(fw, titlebar))[bs]; tsdf != NULL;
 		     tsdf = tsdf->next)
 		{
@@ -2334,7 +2334,7 @@ static void border_draw_title_stick_lines(
 	int right_x;
 	int right_w;
 
-	if (!IS_STICKY_ON_PAGE(fw) && !IS_STICKY_ON_DESK(fw) &&
+	if (!IS_STICKY_ACROSS_PAGES(fw) && !IS_STICKY_ACROSS_DESKS(fw) &&
 	    !HAS_STIPPLED_TITLE(fw))
 	{
 		return;
@@ -2598,7 +2598,7 @@ static void border_set_title_pixmap(
 			&free_bg_pixmap, w);
 		bg.pixmap.g.x = 0;
 		bg.pixmap.g.y = 0;
-		/* set the geometry for drawing the Tiled pixmap; 
+		/* set the geometry for drawing the Tiled pixmap;
 		 * FIXME: maybe add the relief as offset? */
 		pix_g.x = 0;
 		pix_g.y = 0;
@@ -2814,7 +2814,7 @@ static window_parts border_get_titlebar_descr(
 	}
 	ret_td->bar_g.y = fw->boundary_width;
 	ret_td->bar_g.x = fw->boundary_width;
- 
+
 	/* initialise flags */
 	border_get_titlebar_descr_state(
 		fw, pressed_parts, pressed_button, clear_parts, do_hilight,

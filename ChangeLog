@@ -1,3 +1,81 @@
+2002-12-08  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* fvwm/placement.c (PlaceWindow):
+	fixed StickyAcrossDesks w/ StartsOnPage
+
+	* fvwm/functable.c:
+	* fvwm/commands.h:
+	* fvwm/ewmh_conf.c (set_state_workaround):
+	* fvwm/update.c (apply_window_updates):
+	* fvwm/windowlist.c (CMD_WindowList):
+	* fvwm/ewmh_events.c (ewmh_WMDesktop):
+	(ewmh_WMStateSticky):
+	* fvwm/conditional.c (CreateConditionMask):
+	* fvwm/gnome.c (GNOME_SetHints):
+	(GNOME_GetStyle):
+	(GNOME_HandlePropRequest):
+	* fvwm/placement.c (SmartPlacement):
+	(get_next_x):
+	(get_next_y):
+	(test_fit):
+	(PlaceWindow):
+	* fvwm/session.c (SaveWindowStates):
+	(MatchWinToSM):
+	(MatchWinToSM):
+	* fvwm/ewmh.c (check_desk):
+	(EWMH_SetWMDesktop):
+	(ewmh_ComputeAndSetWorkArea):
+	(ewmh_HandleDynamicWorkArea):
+	(ewmh_HandleDesktop):
+	(ewmh_HandleDock):
+	(ewmh_HandleMenu):
+	(ewmh_HandleToolBar):
+	* fvwm/virtual.c (UnmapDesk):
+	(MapDesk):
+	(MoveViewport):
+	(do_move_window_to_desk):
+	* fvwm/icons.c (setup_icon_title_size):
+	(DrawIconTitleWindow):
+	(AutoPlaceIcon):
+	(Iconify):
+	* fvwm/borders.c (is_button_toggled):
+	(get_common_decorations):
+	(border_draw_title_stick_lines):
+	* fvwm/add_window.c (AddWindow):
+	* fvwm/move_resize.c (__move_window):
+	(__move_window):
+	(is_window_sticky_across_pages):
+	(is_window_sticky_across_desks):
+	(MaximizeHeight):
+	(MaximizeWidth):
+	(stick_page):
+	(stick_desk):
+	(CMD_Stick):
+	(CMD_StickAcrossPages):
+	(CMD_StickAcrossDesks):
+	(stick_across_pages):
+	(stick_across_desks):
+	(handle_stick_across_desks):
+	(handle_stick_across_pages):
+	(handle_stick):
+	* fvwm/fvwm.h (struct):
+	* fvwm/style.c (style_parse_one_style_option):
+	(check_window_style_change):
+	* fvwm/style.h:
+	* fvwm/window_flags.h:
+	renamed Stick[y]{Desk,Page} to Stick[y]Across{Desks,Pages} everywhere
+
+	* fvwm/focus.c (CMD_Focus):
+	(CMD_FlipFocus):
+	(__activate_window_by_command):
+	(__update_windowlist):
+	(__set_focus_to_fwin):
+	(_SetFocusWindow):
+	(_ReturnFocusWindow):
+	(_DeleteFocus):
+	(_ForceDeleteFocus):
+	fixed window list ordering with FlipFocus command
+
 2002-12-08  Mikhael Goikhman  <migo@homemail.com>
 
 	* AUTHORS:
@@ -12,7 +90,7 @@
 	* configure.in:
 	Added ar to ALL_LINGUAS
 
-	
+
 2002-12-05  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* fvwm/move_resize.c (__resize_window):

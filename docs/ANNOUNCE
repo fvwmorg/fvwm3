@@ -42,11 +42,13 @@ New features:
 
 * Sticky windows can be sticky across pages, across desks or both.
   Related to this are:
-   - New commands StickPage and StickDesk.
-   - New Style options StickyPage and StickyDesk.
-   - New conditional command options StickyPage and StickyDesk.
-   - New WindowList options NoStickyPage, NoStickyDesk, StickyPage,
-     StickyDesk, OnlyStickyPage, OnlyStickyDesk.
+   - New commands StickAcrossPages and StickAcrossDesks.
+   - New Style options StickyAcrossPages and StickyAcrossDesks.
+   - New conditional command options StickyAcrossPages and
+     StickyAcrossDesks.
+   - New WindowList options NoStickyAcrossPages,
+     NoStickyAcrossDesks, StickyAcrossPages, StickyAcrossDesks,
+     OnlyStickyAcrossPages, OnlyStickyAcrossDesks.
    - New FvwmRearrange options -sp and -sd.
 
 * Key bindings can operate on the release of a key too.  Prefix the

@@ -2338,8 +2338,8 @@ FvwmWindow *AddWindow(
 		int stick_page;
 		int stick_desk;
 
-		stick_page = is_window_sticky_on_page(fw);
-		stick_desk = is_window_sticky_on_page(fw);
+		stick_page = is_window_sticky_across_pages(fw);
+		stick_desk = is_window_sticky_across_pages(fw);
 		if ((stick_page &&
 		     !IsRectangleOnThisPage(&fw->frame_g, Scr.CurrentDesk)) ||
 		    (stick_desk && fw->Desk != Scr.CurrentDesk))
@@ -2355,8 +2355,8 @@ FvwmWindow *AddWindow(
 			ecc.w.wcontext = C_FRAME;
 			exc2 = exc_clone_context(
 				exc, &ecc, ECC_FW | ECC_W | ECC_WCONTEXT);
-			SET_STICKY_ON_PAGE(fw, 0);
-			SET_STICKY_ON_DESK(fw, 0);
+			SET_STICKY_ACROSS_PAGES(fw, 0);
+			SET_STICKY_ACROSS_DESKS(fw, 0);
 			handle_stick(
 				NULL, exc2, "", stick_page, stick_desk, 1, 0);
 			exc_destroy_context(exc2);

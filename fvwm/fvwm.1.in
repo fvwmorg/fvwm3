@@ -4147,8 +4147,8 @@ passed to WindowList can be
 .IR NoIcons " / " Icons " / " OnlyIcons ,
 .IR NoNormal " / " Normal " / " OnlyNormal ,
 .IR NoSticky " / " Sticky " / " OnlySticky ,
-.IR NoStickyPage " / " StickyPage " / " OnlyStickyPage ,
-.IR NoStickyDesk " / " StickyDesk " / " OnlyStickyDesk ,
+.IR NoStickyAcrossPages " / " StickyAcrossPages " / " OnlyStickyAcrossPages ,
+.IR NoStickyAcrossDesks " / " StickyAcrossDesks " / " OnlyStickyAcrossDesks ,
 .IR NoOnTop " / " OnTop " / " OnlyOnTop ,
 .IR NoOnBottom " / " OnBottom " / " OnlyOnBottom ,
 .IR "Layer m [n]" ,
@@ -5136,13 +5136,13 @@ regardless of its current state the
 argument must be "True".  To make it non-sticky use "False".
 
 .TP
-.BI "StickPage [" bool "]"
+.BI "StickAcrossPages [" bool "]"
 Works like
 .B Stick
 but only sticks a window across pages, not across desks.
 
 .TP
-.BI "StickDesk [" bool "]"
+.BI "StickAcrossDesks [" bool "]"
 Works like
 .B Stick
 but only sticks a window across desks, not across pages.
@@ -5769,8 +5769,8 @@ slashes ('/').  The last style in these groups is the default.
 .IR Layer ,
 .IR StaysOnTop " / " StaysOnBottom " / " StaysPut ,
 .IR Sticky " / " Slippery ,
-.IR StickyPage " / " !StickyPage ,
-.IR StickyDesk " / " !StickyDesk ,
+.IR StickyAcrossPages " / " !StickyAcrossPages ,
+.IR StickyAcrossDesks " / " !StickyAcrossDesks ,
 .IR StartIconic " / " StartNormal ,
 .IR Color ", " ForeColor ", " BackColor ", " Colorset ,
 .IR HilightFore ", " HilightBack ", " HilightColorset ,
@@ -5794,8 +5794,8 @@ slashes ('/').  The last style in these groups is the default.
 .IR OLDecor " / " NoOLDecor ,
 .IR GNOMEUseHints " / " GNOMEIgnoreHints ,
 .IR StickyIcon " / " SlipperyIcon ,
-.IR StickyPageIcon " / " !StickyPageIcon ,
-.IR StickyDeskIcon " / " !StickyDeskIcon ,
+.IR StickyAcrossPagesIcon " / " !StickyAcrossPagesIcon ,
+.IR StickyAcrossDesksIcon " / " !StickyAcrossDesksIcon ,
 .IR ManualPlacement " / " CascadePlacement " / " MinOverlapPlacement " / "
 .IR MinOverlapPercentPlacement " / " TileManualPlacement " / "
 .IR TileCascadePlacement ,
@@ -6156,7 +6156,7 @@ With the
 .I StippledTitle
 style, titles are drawn with the same effect that is usually reserved for
 windows with the
-.IR Sticky ", " StickyPage " or " StickyDesk
+.IR Sticky ", " StickyAcrossPages " or " StickyAcrossDesks
 style.
 .I StippledTitleOff
 reverts back to normal titles.
@@ -6607,11 +6607,11 @@ and each desk.  The opposite style,
 .I Slippery
 reverts back to the default.
 
-.I StickyPage
+.I StickyAcrossPages
 works like
 .IR Sticky ,
 but sticks the window only across pages, not desks while
-.I StickyDesk
+.I StickyAcrossDesks
 works the other way round.
 
 .I StickyIcon
@@ -9200,8 +9200,8 @@ commas or whitespace.  Conditions include
 "Layer [n]", "!Layer",
 "State n", "!State n",
 "Sticky", "!Sticky",
-"StickyPage", "!StickyPage",
-"StickyDesk", "!StickyDesk",
+"StickyAcrossPages", "!StickyAcrossPages",
+"StickyAcrossDesks", "!StickyAcrossDesks",
 "Maximized", "!Maximized",
 "Shaded", "!Shaded",
 "Transient", "!Transient",

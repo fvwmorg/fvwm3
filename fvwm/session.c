@@ -376,7 +376,7 @@ SaveWindowStates(FILE *f)
 	     ewin != &Scr.FvwmRoot;
 	     ewin = get_next_window_in_stack_ring(ewin))
 	{
-		Bool is_icon_sticky_on_page;
+		Bool is_icon_sticky_across_pages;
 
 		if (!XGetGeometry(
 			    dpy, FW_W(ewin), &JunkRoot, &JunkX, &JunkY,
@@ -386,7 +386,8 @@ SaveWindowStates(FILE *f)
 			 * (i.e. modules)! */
 			continue;
 		}
-		is_icon_sticky_on_page = is_window_sticky_on_page(ewin);
+		is_icon_sticky_across_pages =
+			is_window_sticky_across_pages(ewin);
 		fprintf(f, "[CLIENT] %lx\n", FW_W(ewin));
 
 		client_id = GetClientID(FW_W(ewin));
@@ -446,7 +447,7 @@ SaveWindowStates(FILE *f)
 		gravity_get_naked_geometry(
 			ewin->hints.win_gravity, ewin, &save_g,
 			&ewin->normal_g);
-		if (IS_STICKY_ON_PAGE(ewin))
+		if (IS_STICKY_ACROSS_PAGES(ewin))
 		{
 			save_g.x -= Scr.Vx;
 			save_g.y -= Scr.Vy;
@@ -459,8 +460,8 @@ SaveWindowStates(FILE *f)
 			ewin->max_g.x, ewin->max_g.y, ewin->max_g.width,
 			ewin->max_g.height, ewin->max_g_defect.width,
 			ewin->max_g_defect.height,
-			ig.x + ((!is_icon_sticky_on_page) ? Scr.Vx : 0),
-			ig.y + ((!is_icon_sticky_on_page) ? Scr.Vy : 0),
+			ig.x + ((!is_icon_sticky_across_pages) ? Scr.Vx : 0),
+			ig.y + ((!is_icon_sticky_across_pages) ? Scr.Vy : 0),
 			ewin->hints.win_gravity,
 			ewin->max_offset.x, ewin->max_offset.y);
 		fprintf(f, "  [DESK] %i\n", ewin->Desk);
@@ -1298,12 +1299,12 @@ MatchWinToSM(
 					FW_FOCUS_POLICY(ewin),
 					FP_IS_LENIENT(FW_FOCUS_POLICY(
 							      &(matches[i]))));
-				SET_ICON_STICKY_ON_PAGE(
-					ewin,
-					IS_ICON_STICKY_ON_PAGE(&(matches[i])));
-				SET_ICON_STICKY_ON_DESK(
-					ewin,
-					IS_ICON_STICKY_ON_DESK(&(matches[i])));
+				SET_ICON_STICKY_ACROSS_PAGES(
+					ewin, IS_ICON_STICKY_ACROSS_PAGES(
+						&(matches[i])));
+				SET_ICON_STICKY_ACROSS_DESKS(
+					ewin, IS_ICON_STICKY_ACROSS_DESKS(
+						&(matches[i])));
 				SET_DO_SKIP_ICON_CIRCULATE(
 					ewin, DO_SKIP_ICON_CIRCULATE(
 						&(matches[i])));
@@ -1343,9 +1344,10 @@ MatchWinToSM(
 				win_opts->flags.use_initial_icon_xy = 1;
 				win_opts->initial_icon_x = matches[i].icon_x;
 				win_opts->initial_icon_y = matches[i].icon_y;
-				if (!IS_STICKY_ON_PAGE(&(matches[i])) &&
+				if (!IS_STICKY_ACROSS_PAGES(&(matches[i])) &&
 				    !(IS_ICONIFIED(&(matches[i])) &&
-				      IS_ICON_STICKY_ON_PAGE(&(matches[i]))))
+				      IS_ICON_STICKY_ACROSS_PAGES(
+					      &(matches[i]))))
 				{
 					win_opts->initial_icon_x -= Scr.Vx;
 					win_opts->initial_icon_y -= Scr.Vy;
@@ -1364,11 +1366,11 @@ MatchWinToSM(
 				matches[i].height_defect_max;
 			ewin->max_offset.x = matches[i].max_x_offset;
 			ewin->max_offset.y = matches[i].max_y_offset;
-			SET_STICKY_ON_PAGE(
-				ewin, IS_STICKY_ON_PAGE(&(matches[i])));
-			SET_STICKY_ON_DESK(
-				ewin, IS_STICKY_ON_DESK(&(matches[i])));
-			ewin->Desk = (IS_STICKY_ON_DESK(ewin)) ?
+			SET_STICKY_ACROSS_PAGES(
+				ewin, IS_STICKY_ACROSS_PAGES(&(matches[i])));
+			SET_STICKY_ACROSS_DESKS(
+				ewin, IS_STICKY_ACROSS_DESKS(&(matches[i])));
+			ewin->Desk = (IS_STICKY_ACROSS_DESKS(ewin)) ?
 				Scr.CurrentDesk : matches[i].desktop;
 			set_layer(ewin, matches[i].layer);
 			/* Note: the Modal, skip pager, skip taskbar and

@@ -699,10 +699,10 @@ void list_configure(unsigned long *body)
   if (Opt_flags == 2)
   {
     printf( "Packet flags\n" );
-    printf( "is_sticky_on_page: %d\n",
-	    IS_STICKY_ON_PAGE( cfgpacket ) );
-    printf( "is_sticky_on_desk: %d\n",
-	    IS_STICKY_ON_DESK( cfgpacket ) );
+    printf( "is_sticky_across_pages: %d\n",
+	    IS_STICKY_ACROSS_PAGES( cfgpacket ) );
+    printf( "is_sticky_across_desks: %d\n",
+	    IS_STICKY_ACROSS_DESKS( cfgpacket ) );
     printf( "has_icon_font: %d\n",
 	    HAS_ICON_FONT( cfgpacket ) );
     printf( "has_window_font: %d\n",
@@ -751,10 +751,10 @@ void list_configure(unsigned long *body)
 	    HAS_STIPPLED_TITLE( cfgpacket ) );
     printf( "is_fixed: %d\n",
 	    IS_FIXED( cfgpacket ) );
-    printf( "is_icon_sticky_on_page: %d\n",
-	    IS_ICON_STICKY_ON_PAGE( cfgpacket ) );
-    printf( "is_icon_sticky_on_desk: %d\n",
-	    IS_ICON_STICKY_ON_DESK( cfgpacket ) );
+    printf( "is_icon_sticky_across_pages: %d\n",
+	    IS_ICON_STICKY_ACROSS_PAGES( cfgpacket ) );
+    printf( "is_icon_sticky_across_desks: %d\n",
+	    IS_ICON_STICKY_ACROSS_DESKS( cfgpacket ) );
     printf( "is_icon_suppressed: %d\n",
 	    IS_ICON_SUPPRESSED( cfgpacket ) );
     printf( "is_lenient: %d\n",

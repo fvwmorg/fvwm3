@@ -2125,8 +2125,8 @@ void MoveStickyWindows(void)
   t = Start;
   while(t!= NULL)
   {
-    if(((IS_ICONIFIED(t))&&(IS_ICON_STICKY_ON_DESK(t)))||
-       (IS_STICKY_ON_DESK(t)))
+    if(((IS_ICONIFIED(t))&&(IS_ICON_STICKY_ACROSS_DESKS(t)))||
+       (IS_STICKY_ACROSS_DESKS(t)))
     {
       if(t->desk != Scr.CurrentDesk)
       {
@@ -2157,7 +2157,7 @@ void Hilight(PagerWindow *t, int on)
     }
     else
     {
-      if(IS_STICKY_ON_DESK(t) || IS_STICKY_ON_PAGE(t))
+      if(IS_STICKY_ACROSS_DESKS(t) || IS_STICKY_ACROSS_PAGES(t))
       {
 	if(t->PagerView != None)
 	  XSetWindowBackgroundPixmap(dpy,t->PagerView,
@@ -2468,7 +2468,8 @@ void MoveWindow(XEvent *Event)
       x = Scr.VWidth - Scr.Vx - 1;
     if (y + Scr.Vy >= Scr.VHeight)
       y = Scr.VHeight - Scr.Vy - 1;
-    if((IS_ICONIFIED(t) && IS_ICON_STICKY_ON_DESK(t)) || (IS_STICKY_ON_DESK(t)))
+    if((IS_ICONIFIED(t) && IS_ICON_STICKY_ACROSS_DESKS(t)) ||
+       (IS_STICKY_ACROSS_DESKS(t)))
     {
       NewDesk = Scr.CurrentDesk - desk1;
       if (x > Scr.MyDisplayWidth - 16)
@@ -2482,8 +2483,8 @@ void MoveWindow(XEvent *Event)
     }
     if(NewDesk + desk1 != t->desk)
     {
-      if((IS_ICONIFIED(t) && IS_ICON_STICKY_ON_DESK(t)) ||
-	 (IS_STICKY_ON_DESK(t)))
+      if((IS_ICONIFIED(t) && IS_ICON_STICKY_ACROSS_DESKS(t)) ||
+	 (IS_STICKY_ACROSS_DESKS(t)))
       {
 	NewDesk = Scr.CurrentDesk - desk1;
 	if(t->desk != Scr.CurrentDesk)
@@ -2868,7 +2869,8 @@ void IconMoveWindow(XEvent *Event,PagerWindow *t)
       x = Scr.VWidth - Scr.Vx - 1;
     if (y + Scr.Vy >= Scr.VHeight)
       y = Scr.VHeight - Scr.Vy - 1;
-    if((IS_ICONIFIED(t) && IS_ICON_STICKY_ON_DESK(t)) || IS_STICKY_ON_DESK(t))
+    if((IS_ICONIFIED(t) && IS_ICON_STICKY_ACROSS_DESKS(t)) ||
+       IS_STICKY_ACROSS_DESKS(t))
     {
       if (x > Scr.MyDisplayWidth - 16)
 	x = Scr.MyDisplayWidth - 16;

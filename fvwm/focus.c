@@ -60,7 +60,7 @@ typedef struct
 	unsigned do_allow_force_broadcast : 1;
 	unsigned do_forbid_warp : 1;
 	unsigned do_force : 1;
-	unsigned is_focus_by_focus_cmd : 1;
+	unsigned is_focus_by_flip_focus_cmd : 1;
 	unsigned client_entered : 1;
 	fpol_set_focus_by_t set_by;
 } sftfwin_args_t;
@@ -166,9 +166,10 @@ static Bool __check_allow_focus(
 }
 
 static void __update_windowlist(
-	FvwmWindow *fw, fpol_set_focus_by_t set_by, int is_focus_by_focus_cmd)
+	FvwmWindow *fw, fpol_set_focus_by_t set_by,
+	int is_focus_by_flip_focus_cmd)
 {
-	lastFocusType = !is_focus_by_focus_cmd;
+	lastFocusType = (is_focus_by_flip_focus_cmd) ? True : False;
 	if (fw == NULL || focus_is_focused(fw) || fw == &Scr.FvwmRoot)
 	{
 		return;
@@ -180,9 +181,8 @@ static void __update_windowlist(
 
 	/* pluck window from list and deposit at top */
 
-	if (is_focus_by_focus_cmd ||
-	    FP_DO_SORT_WINDOWLIST_BY(FW_FOCUS_POLICY(fw)) ==
-	    FPOL_SORT_WL_BY_OPEN)
+	if (FP_DO_SORT_WINDOWLIST_BY(FW_FOCUS_POLICY(fw)) ==
+	    FPOL_SORT_WL_BY_OPEN && !is_focus_by_flip_focus_cmd)
 	{
 		/* move the windowlist around so that fw is at the top
 		 */
@@ -280,7 +280,7 @@ static void __set_focus_to_fwin(
 	{
 		return;
 	}
-	__update_windowlist(fw, args->set_by, args->is_focus_by_focus_cmd);
+	__update_windowlist(fw, args->set_by, args->is_focus_by_flip_focus_cmd);
 	if (__try_other_screen_focus(fw) == True)
 	{
 		return;
@@ -611,7 +611,7 @@ static FvwmWindow *__restore_focus_after_unmap(
  *
  *************************************************************************/
 static void __activate_window_by_command(
-	F_CMD_ARGS, Bool is_focus_by_focus_cmd)
+	F_CMD_ARGS, int is_focus_by_flip_focus_cmd)
 {
 	int dx;
 	int dy;
@@ -622,7 +622,7 @@ static void __activate_window_by_command(
 	FvwmWindow * const fw = exc->w.fw;
 
 	sf_args.do_allow_force_broadcast = 1;
-	sf_args.is_focus_by_focus_cmd = !!is_focus_by_focus_cmd;
+	sf_args.is_focus_by_flip_focus_cmd = is_focus_by_flip_focus_cmd;
 	sf_args.set_by = FOCUS_SET_BY_FUNCTION;
         sf_args.client_entered = 0;
 	if (fw == NULL || !FP_DO_FOCUS_BY_FUNCTION(FW_FOCUS_POLICY(fw)))
@@ -920,7 +920,7 @@ void _SetFocusWindow(
 	sftfwin_args_t sf_args;
 
 	sf_args.do_allow_force_broadcast = !!do_allow_force_broadcast;
-	sf_args.is_focus_by_focus_cmd = 0;
+	sf_args.is_focus_by_flip_focus_cmd = 0;
 	sf_args.do_forbid_warp = 0;
 	sf_args.do_force = 1;
 	sf_args.set_by = set_by;
@@ -942,7 +942,7 @@ void _ReturnFocusWindow(FvwmWindow *fw)
 	sftfwin_args_t sf_args;
 
 	sf_args.do_allow_force_broadcast = 1;
-	sf_args.is_focus_by_focus_cmd = 0;
+	sf_args.is_focus_by_flip_focus_cmd = 0;
 	sf_args.do_forbid_warp = 1;
         sf_args.client_entered = 0;
 	sf_args.do_force = 0;
@@ -957,7 +957,7 @@ void _DeleteFocus(Bool do_allow_force_broadcast)
 	sftfwin_args_t sf_args;
 
 	sf_args.do_allow_force_broadcast = !!do_allow_force_broadcast;
-	sf_args.is_focus_by_focus_cmd = 0;
+	sf_args.is_focus_by_flip_focus_cmd = 0;
 	sf_args.do_forbid_warp = 0;
         sf_args.client_entered = 0;
 	sf_args.do_force = 0;
@@ -972,7 +972,7 @@ void _ForceDeleteFocus(void)
 	sftfwin_args_t sf_args;
 
 	sf_args.do_allow_force_broadcast = 1;
-	sf_args.is_focus_by_focus_cmd = 0;
+	sf_args.is_focus_by_flip_focus_cmd = 0;
 	sf_args.do_forbid_warp = 0;
         sf_args.client_entered = 0;
 	sf_args.do_force = 1;
@@ -1159,14 +1159,14 @@ void refresh_focus(const FvwmWindow *fw)
 void CMD_FlipFocus(F_CMD_ARGS)
 {
 	/* Reorder the window list */
-	__activate_window_by_command(F_PASS_ARGS, False);
+	__activate_window_by_command(F_PASS_ARGS, 1);
 
 	return;
 }
 
 void CMD_Focus(F_CMD_ARGS)
 {
-	__activate_window_by_command(F_PASS_ARGS, True);
+	__activate_window_by_command(F_PASS_ARGS, 0);
 
 	return;
 }

@@ -50,8 +50,8 @@
 #define SHOW_ALLDESKS		(1<<1)
 #define SHOW_NORMAL		(1<<2)
 #define SHOW_ICONIC		(1<<3)
-#define SHOW_STICKY_ON_PAGE	(1<<4)
-#define SHOW_STICKY_ON_DESK	(1<<5)
+#define SHOW_STICKY_ACROSS_PAGES (1<<4)
+#define SHOW_STICKY_ACROSS_DESKS (1<<5)
 #define NO_DESK_SORT		(1<<6)
 #define SHOW_ICONNAME		(1<<7)
 #define SHOW_ALPHABETIC		(1<<8)
@@ -68,7 +68,7 @@
 #define NO_LAYER		(1<<19)
 #define SHOW_SCREEN		(1<<20)
 #define SHOW_DEFAULT (SHOW_GEOMETRY | SHOW_ALLDESKS | SHOW_NORMAL | \
-	SHOW_ICONIC | SHOW_STICKY_ON_PAGE | SHOW_STICKY_ON_DESK)
+	SHOW_ICONIC | SHOW_STICKY_ACROSS_PAGES | SHOW_STICKY_ACROSS_DESKS)
 
 static char *get_desk_title(int desk, unsigned long flags, Bool is_top_title)
 {
@@ -394,42 +394,42 @@ void CMD_WindowList(F_CMD_ARGS)
 			}
 			else if (StrEquals(tok,"NoSticky"))
 			{
-				flags &= ~(SHOW_STICKY_ON_PAGE);
-				flags &= ~(SHOW_STICKY_ON_DESK);
+				flags &= ~(SHOW_STICKY_ACROSS_PAGES);
+				flags &= ~(SHOW_STICKY_ACROSS_DESKS);
 			}
 			else if (StrEquals(tok,"NoStickyPage"))
 			{
-				flags &= ~(SHOW_STICKY_ON_PAGE);
+				flags &= ~(SHOW_STICKY_ACROSS_PAGES);
 			}
 			else if (StrEquals(tok,"NoStickyDesk"))
 			{
-				flags &= ~(SHOW_STICKY_ON_DESK);
+				flags &= ~(SHOW_STICKY_ACROSS_DESKS);
 			}
 			else if (StrEquals(tok,"Sticky"))
 			{
-				flags |= SHOW_STICKY_ON_PAGE;
-				flags |= SHOW_STICKY_ON_DESK;
+				flags |= SHOW_STICKY_ACROSS_PAGES;
+				flags |= SHOW_STICKY_ACROSS_DESKS;
 			}
 			else if (StrEquals(tok,"StickyPage"))
 			{
-				flags |= SHOW_STICKY_ON_PAGE;
+				flags |= SHOW_STICKY_ACROSS_PAGES;
 			}
 			else if (StrEquals(tok,"StickyDesk"))
 			{
-				flags |= SHOW_STICKY_ON_DESK;
+				flags |= SHOW_STICKY_ACROSS_DESKS;
 			}
 			else if (StrEquals(tok,"OnlySticky"))
 			{
-				flags = SHOW_STICKY_ON_PAGE;
-				flags = SHOW_STICKY_ON_DESK;
+				flags = SHOW_STICKY_ACROSS_PAGES;
+				flags = SHOW_STICKY_ACROSS_DESKS;
 			}
 			else if (StrEquals(tok,"OnlyStickyPage"))
 			{
-				flags = SHOW_STICKY_ON_PAGE;
+				flags = SHOW_STICKY_ACROSS_PAGES;
 			}
 			else if (StrEquals(tok,"OnlyStickyDesk"))
 			{
-				flags = SHOW_STICKY_ON_DESK;
+				flags = SHOW_STICKY_ACROSS_DESKS;
 			}
 			else if (StrEquals(tok,"UseListSkip"))
 			{
@@ -752,22 +752,22 @@ void CMD_WindowList(F_CMD_ARGS)
 					/* don't want icons - skip */
 					continue;
 				}
-				if (!(flags & SHOW_STICKY_ON_PAGE) &&
-				    (IS_STICKY_ON_PAGE(t)))
+				if (!(flags & SHOW_STICKY_ACROSS_PAGES) &&
+				    (IS_STICKY_ACROSS_PAGES(t)))
 				{
 					/* don't want sticky ones - skip */
 					continue;
 				}
-				if (!(flags & SHOW_STICKY_ON_DESK) &&
-				    (IS_STICKY_ON_DESK(t)))
+				if (!(flags & SHOW_STICKY_ACROSS_DESKS) &&
+				    (IS_STICKY_ACROSS_DESKS(t)))
 				{
 					/* don't want sticky ones - skip */
 					continue;
 				}
 				if (!(flags & SHOW_NORMAL) &&
 				    !(IS_ICONIFIED(t) ||
-				      IS_STICKY_ON_PAGE(t) ||
-				      IS_STICKY_ON_DESK(t)))
+				      IS_STICKY_ACROSS_PAGES(t) ||
+				      IS_STICKY_ACROSS_DESKS(t)))
 				{
 					/* don't want "normal" ones - skip */
 					continue;
@@ -982,8 +982,8 @@ void CMD_WindowList(F_CMD_ARGS)
 					}
 					strcat(tname, loc);
 
-					if (IS_STICKY_ON_PAGE(t) ||
-					    IS_STICKY_ON_DESK(t))
+					if (IS_STICKY_ACROSS_PAGES(t) ||
+					    IS_STICKY_ACROSS_DESKS(t))
 					{
 						strcat(tname, " S");
 					}

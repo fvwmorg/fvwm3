@@ -1,10 +1,32 @@
+2002-12-08  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* FvwmWinList/List.c (IsItemVisible):
+	* FvwmWinList/FvwmWinList.c (ProcessMessage):
+	* FvwmTaskBar/List.c (IsItemIndexSticky):
+	* FvwmTaskBar/FvwmTaskBar.c (redraw_buttons):
+	* FvwmSaveDesk/FvwmSaveDesk.c (do_save_command):
+	* FvwmSave/FvwmSave.c (do_save):
+	* FvwmRearrange/FvwmRearrange.c (is_suitable_window):
+	* FvwmPager/x_pager.c (MoveStickyWindows):
+	(Hilight):
+	(MoveWindow):
+	(IconMoveWindow):
+	* FvwmIdent/FvwmIdent.c (MakeList):
+	* FvwmIconMan/fvwm.c (count_nonsticky_in_hashtab):
+	(win_in_viewport):
+	* FvwmIconBox/FvwmIconBox.c (process_message):
+	(window_cond):
+	* FvwmGtk/FvwmGtk.c (process_message):
+	* FvwmCommand/FvwmCommand.c (list_configure):
+	adapted to new STICKY... macros
+
 2002-12-02  olicha  <olivier.chapuis@free.fr>
 
 	* FvwmIconMan/fvwm.c (win_in_viewport):
 	Do not use the icon position to decide whether a window is managed or
 	not when IS_ICON_SUPPRESSED
 
-	* FvwmIconMan/xmanager.c (draw_button_background): 
+	* FvwmIconMan/xmanager.c (draw_button_background):
 	(iconify_box):
 	(draw_button):
 	(draw_empty_manager):

@@ -88,18 +88,18 @@
 	(fw)->flags.common.s.icon_override = ((x) & ICON_OVERRIDE_MASK)
 #define SETM_ICON_OVERRIDE_MODE(fw,x) \
 	(fw)->flag_mask.common.s.icon_override = ((x) ? ICON_OVERRIDE_MASK : 0)
-#define IS_ICON_STICKY_ON_PAGE(fw) \
-	((fw)->flags.common.s.is_icon_sticky_on_page)
-#define SET_ICON_STICKY_ON_PAGE(fw,x) \
-	(fw)->flags.common.s.is_icon_sticky_on_page = !!(x)
-#define SETM_ICON_STICKY_ON_PAGE(fw,x) \
-	(fw)->flag_mask.common.s.is_icon_sticky_on_page = !!(x)
-#define IS_ICON_STICKY_ON_DESK(fw) \
-	((fw)->flags.common.s.is_icon_sticky_on_desk)
-#define SET_ICON_STICKY_ON_DESK(fw,x) \
-	(fw)->flags.common.s.is_icon_sticky_on_desk = !!(x)
-#define SETM_ICON_STICKY_ON_DESK(fw,x) \
-	(fw)->flag_mask.common.s.is_icon_sticky_on_desk = !!(x)
+#define IS_ICON_STICKY_ACROSS_PAGES(fw) \
+	((fw)->flags.common.s.is_icon_sticky_across_pages)
+#define SET_ICON_STICKY_ACROSS_PAGES(fw,x) \
+	(fw)->flags.common.s.is_icon_sticky_across_pages = !!(x)
+#define SETM_ICON_STICKY_ACROSS_PAGES(fw,x) \
+	(fw)->flag_mask.common.s.is_icon_sticky_across_pages = !!(x)
+#define IS_ICON_STICKY_ACROSS_DESKS(fw) \
+	((fw)->flags.common.s.is_icon_sticky_across_desks)
+#define SET_ICON_STICKY_ACROSS_DESKS(fw,x) \
+	(fw)->flags.common.s.is_icon_sticky_across_desks = !!(x)
+#define SETM_ICON_STICKY_ACROSS_DESKS(fw,x) \
+	(fw)->flag_mask.common.s.is_icon_sticky_across_desks = !!(x)
 #define USE_ICON_POSITION_HINT(fw) \
 	((fw)->flags.common.s.use_icon_position_hint)
 #define SET_USE_ICON_POSITION_HINT(fw,x) \
@@ -174,18 +174,18 @@
 	(fw)->flags.common.s.is_icon_suppressed = !!(x)
 #define SETM_ICON_SUPPRESSED(fw,x) \
 	(fw)->flag_mask.common.s.is_icon_suppressed = !!(x)
-#define IS_STICKY_ON_PAGE(fw) \
-	((fw)->flags.common.is_sticky_on_page)
-#define SET_STICKY_ON_PAGE(fw,x) \
-	(fw)->flags.common.is_sticky_on_page = !!(x)
-#define SETM_STICKY_ON_PAGE(fw,x) \
-	(fw)->flag_mask.common.is_sticky_on_page = !!(x)
-#define IS_STICKY_ON_DESK(fw) \
-	((fw)->flags.common.is_sticky_on_desk)
-#define SET_STICKY_ON_DESK(fw,x) \
-	(fw)->flags.common.is_sticky_on_desk = !!(x)
-#define SETM_STICKY_ON_DESK(fw,x) \
-	(fw)->flag_mask.common.is_sticky_on_desk = !!(x)
+#define IS_STICKY_ACROSS_PAGES(fw) \
+	((fw)->flags.common.is_sticky_across_pages)
+#define SET_STICKY_ACROSS_PAGES(fw,x) \
+	(fw)->flags.common.is_sticky_across_pages = !!(x)
+#define SETM_STICKY_ACROSS_PAGES(fw,x) \
+	(fw)->flag_mask.common.is_sticky_across_pages = !!(x)
+#define IS_STICKY_ACROSS_DESKS(fw) \
+	((fw)->flags.common.is_sticky_across_desks)
+#define SET_STICKY_ACROSS_DESKS(fw,x) \
+	(fw)->flags.common.is_sticky_across_desks = !!(x)
+#define SETM_STICKY_ACROSS_DESKS(fw,x) \
+	(fw)->flag_mask.common.is_sticky_across_desks = !!(x)
 #define HAS_ICON_FONT(fw) \
 	((fw)->flags.common.has_icon_font)
 #define SET_HAS_ICON_FONT(fw,x) \

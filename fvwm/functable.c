@@ -255,9 +255,9 @@ const func_type func_table[] =
 		FUNC_NEEDS_WINDOW, CRS_SELECT, ButtonRelease),
 	CMD_ENT("stick", CMD_Stick, F_STICK,
 		FUNC_NEEDS_WINDOW, CRS_SELECT, ButtonRelease),
-	CMD_ENT("stickdesk", CMD_StickDesk, F_STICKDESK,
+	CMD_ENT("stickacrossdesks", CMD_StickAcrossDesks, F_STICKACROSSDESKS,
 		FUNC_NEEDS_WINDOW, CRS_SELECT, ButtonRelease),
-	CMD_ENT("stickpage", CMD_StickPage, F_STICKPAGE,
+	CMD_ENT("stickacrosspages", CMD_StickAcrossPages, F_STICKACROSSPAGES,
 		FUNC_NEEDS_WINDOW, CRS_SELECT, ButtonRelease),
 #ifdef HAVE_STROKE
 	CMD_ENT("stroke", CMD_Stroke, F_STROKE, 0, 0, 0),

@@ -187,8 +187,8 @@ enum
 	F_SEND_STRING,
 	F_STATE,
 	F_STICK,
-	F_STICKDESK,
-	F_STICKPAGE,
+	F_STICKACROSSDESKS,
+	F_STICKACROSSPAGES,
 	F_UPDATE_DECOR,
 	F_WARP,
 	F_WINDOWID,
@@ -360,8 +360,8 @@ void CMD_SnapAttraction(F_CMD_ARGS);
 void CMD_SnapGrid(F_CMD_ARGS);
 void CMD_State(F_CMD_ARGS);
 void CMD_Stick(F_CMD_ARGS);
-void CMD_StickDesk(F_CMD_ARGS);
-void CMD_StickPage(F_CMD_ARGS);
+void CMD_StickAcrossDesks(F_CMD_ARGS);
+void CMD_StickAcrossPages(F_CMD_ARGS);
 #ifdef HAVE_STROKE
 void CMD_Stroke(F_CMD_ARGS);
 void CMD_StrokeFunc(F_CMD_ARGS);

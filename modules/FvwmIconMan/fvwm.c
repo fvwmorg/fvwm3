@@ -87,7 +87,7 @@ static int count_nonsticky_in_hashtab (void *arg)
   WinData *win = (WinData *)arg;
   WinManager *man = the_manager;
 
-  if (!(IS_STICKY_ON_DESK(win) || IS_STICKY_ON_PAGE(win)) &&
+  if (!(IS_STICKY_ACROSS_DESKS(win) || IS_STICKY_ACROSS_PAGES(win)) &&
       win->complete && win->manager == man)
     return 1;
   return 0;
@@ -170,7 +170,7 @@ int win_in_viewport (WinData *win)
     reverse = 1;
     /* fall through to next case */
   case SHOW_DESKTOP:
-    if (IS_STICKY_ON_PAGE(win) || win->desknum == globals.desknum)
+    if (IS_STICKY_ACROSS_PAGES(win) || win->desknum == globals.desknum)
       flag = 1;
     break;
 
@@ -178,7 +178,7 @@ int win_in_viewport (WinData *win)
     reverse = 1;
     /* fall through to next case */
   case SHOW_PAGE:
-    if (IS_STICKY_ON_PAGE(win)) {
+    if (IS_STICKY_ACROSS_PAGES(win)) {
       flag = 1;
     } else if (win->desknum == globals.desknum) {
       /* win and screen intersect if they are not disjoint in x and y */

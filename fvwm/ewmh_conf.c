@@ -50,7 +50,7 @@ void set_state_workaround(void)
 	for (t = Scr.FvwmRoot.next; t != NULL; t = t->next)
 	{
 		if ((t->Desk != Scr.CurrentDesk) &&
-		    (!is_window_sticky_on_desk(t) && !IS_ICON_UNMAPPED(t)))
+		    (!is_window_sticky_across_desks(t) && !IS_ICON_UNMAPPED(t)))
 		{
 			if (Scr.bo.EWMHIconicStateWorkaround)
 			{

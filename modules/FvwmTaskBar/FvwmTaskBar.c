@@ -904,8 +904,8 @@ void redraw_buttons()
 
   for (item=windows.head; item; item=item->next)
   {
-    if ((DeskNumber == item->Desk || IS_STICKY_ON_DESK(item) ||
-	 (IS_ICONIFIED(item) && IS_ICON_STICKY_ON_DESK(item))) &&
+    if ((DeskNumber == item->Desk || IS_STICKY_ACROSS_DESKS(item) ||
+	 (IS_ICONIFIED(item) && IS_ICON_STICKY_ACROSS_DESKS(item))) &&
 	(!DO_SKIP_WINDOW_LIST(item) || !UseSkipList))
     {
       AddButton(&buttons, item->name, &(item->p), BUTTON_UP, item->count,
