@@ -52,9 +52,10 @@ typedef enum
 typedef enum
 {
 	CLEAR_NONE     = 0x0,
-	CLEAR_TITLE    = 0x1,
-	CLEAR_BUTTONS  = 0x2,
-	CLEAR_ALL      = 0x3
+	CLEAR_FRAME    = 0x1,
+	CLEAR_TITLE    = 0x2,
+	CLEAR_BUTTONS  = 0x4,
+	CLEAR_ALL      = 0x7
 } clear_window_parts;
 
 /* ---------------------------- exported variables (globals) ---------------- */

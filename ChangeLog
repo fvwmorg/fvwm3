@@ -1,4 +1,22 @@
+2002-03-18  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* fvwm/borders.c (border_draw_one_part):
+	(border_draw_border_parts):
+	(border_draw_all_parts):
+	(draw_clipped_decorations_with_geom):
+	performance enhancement
+
 2002-03-17  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* fvwm/frame.c (frame_move_resize_step):
+	force setting up the border when function is called with FRAME_MR_SETUP
+	(frame_setup_window_internal):
+	removed duplicate frame setup
+
+	* fvwm/borders.c (border_get_parts_and_pos_to_draw):
+	fixed logic bug
+	(draw_clipped_decorations_with_geom):
+	do not flush the X queue after drawing; let the caller do it
 
 	* fvwm/frame.c (frame_get_sidebar_geometry):
 	fixed layout of windows with a small height

@@ -465,10 +465,6 @@ static void frame_setup_window_internal(
 			fw, FRAME_MR_SETUP, NULL, &new_g, 0);
 		frame_move_resize(fw, mr_args);
 		frame_free_move_resize_args(mr_args);
-		/*!!!*/
-		frame_setup_title_bar(
-			fw, &new_g, PART_FRAME | PART_BUTTONS, NULL);
-		frame_setup_border(fw, &new_g, PART_FRAME, NULL);
 		fw->frame_g = *frame_g;
 		if (FShapesSupported && fw->wShaped)
 		{
@@ -498,23 +494,6 @@ static void frame_setup_window_internal(
 	XFlush(dpy);
 	/* inform the modules of the change */
 	BroadcastConfig(M_CONFIGURE_WINDOW,fw);
-
-#if 0
-	fprintf(stderr, "sf: window '%s'\n", fw->name);
-	fprintf(stderr, "    frame:  %5d %5d, %4d x %4d\n", fw->frame_g.x,
-		fw->frame_g.y, fw->frame_g.width,
-		fw->frame_g.height);
-	fprintf(stderr, "    normal: %5d %5d, %4d x %4d\n",
-		fw->normal_g.x, fw->normal_g.y,
-		fw->normal_g.width, fw->normal_g.height);
-	if (IS_MAXIMIZED(fw))
-	{
-		fprintf(stderr, "    max:    %5d %5d, %4d x %4d, %5d %5d\n",
-			fw->max_g.x, fw->max_g.y,
-			fw->max_g.width, fw->max_g.height,
-			fw->max_offset.x, fw->max_offset.y);
-	}
-#endif
 
 	return;
 }
@@ -1075,8 +1054,15 @@ static void frame_move_resize_step(
 	draw_clipped_decorations_with_geom(
 		fw, PART_FRAME, (mra->w_with_focus != None) ? True : False,
 		False, None, NULL, CLEAR_NONE, &mra->current_g, &mra->next_g);
-	setup_parts = frame_get_changed_border_parts(
-		&mra->curr_sidebar_g, &mra->next_sidebar_g);
+	if (mra->mode == FRAME_MR_SETUP)
+	{
+		setup_parts = PART_FRAME;
+	}
+	else
+	{
+		setup_parts = frame_get_changed_border_parts(
+			&mra->curr_sidebar_g, &mra->next_sidebar_g);
+	}
 	frame_setup_border(fw, &mra->next_g, setup_parts, &mra->dstep_g);
 	/* setup the title bar */
 	setup_parts = PART_TITLE;

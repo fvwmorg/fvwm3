@@ -1385,7 +1385,7 @@ static int border_get_parts_and_pos_to_draw(
 	{
 		old_g = &fw->frame_g;
 	}
-	if (draw_parts == PART_FRAME)
+	if ((draw_parts & PART_FRAME) == PART_FRAME)
 	{
 		draw_parts |= PART_FRAME;
 		return draw_parts;
@@ -1920,7 +1920,8 @@ inline static void border_set_part_background(
 static void border_draw_one_part(
 	common_decorations_type *cd, FvwmWindow *fw, rectangle *sidebar_g,
 	rectangle *frame_g, border_relief_descr *br, window_parts part,
-	window_parts draw_handles, Bool is_inverted, Bool do_hilight)
+	window_parts draw_handles, Bool is_inverted, Bool do_hilight,
+	Bool do_clear)
 {
 	rectangle part_g;
 	Pixmap p;
@@ -1943,10 +1944,11 @@ static void border_draw_one_part(
 	}
 	/* apply the pixmap and destroy it */
 	border_set_part_background(w, p);
+	if (do_clear == True)
+	{
+		XClearWindow(dpy,w);
+	}
 	XFreePixmap(dpy, p);
-#if 1
-	XClearWindow(dpy, w); /*!!! remove this later when the border gets automatically exposed */
-#endif
 
 	return;
 }
@@ -1954,7 +1956,7 @@ static void border_draw_one_part(
 static void border_draw_all_parts(
         common_decorations_type *cd, FvwmWindow *fw, border_relief_descr *br,
 	rectangle *frame_g, window_parts draw_parts,
-	window_parts pressed_parts, Bool do_hilight)
+	window_parts pressed_parts, Bool do_hilight, Bool do_clear)
 {
 	window_parts part;
 	window_parts draw_handles;
@@ -1975,7 +1977,7 @@ fprintf(stderr, "drawing border parts 0x%04x\n", draw_parts);
 				cd, fw, &br->sidebar_g, frame_g, br, part,
 				draw_handles,
 				(pressed_parts & part) ? True : False,
-				do_hilight);
+				do_hilight, do_clear);
 		}
 	}
 	/* update the border states */
@@ -1998,10 +2000,12 @@ fprintf(stderr, "drawing border parts 0x%04x\n", draw_parts);
 static void border_draw_border_parts(
 	common_decorations_type *cd, FvwmWindow *fw,
 	window_parts pressed_parts, window_parts force_draw_parts,
-	rectangle *old_g, rectangle *new_g, Bool do_hilight)
+	clear_window_parts clear_parts, rectangle *old_g, rectangle *new_g,
+	Bool do_hilight)
 {
 	border_relief_descr br;
 	window_parts draw_parts;
+	Bool do_clear;
 
 	if (!HAS_BORDER(fw))
 	{
@@ -2011,6 +2015,7 @@ static void border_draw_border_parts(
 		fw->border_state.parts_inverted = 0;
 		return;
 	}
+	do_clear = (clear_parts & CLEAR_FRAME) ? True : False;
 	/* determine the parts to draw and the position to place them */
 	if (HAS_DEPRESSABLE_BORDER(fw))
 	{
@@ -2029,7 +2034,7 @@ static void border_draw_border_parts(
 	{
 		border_draw_all_parts(
 			cd, fw, &br, new_g, draw_parts, pressed_parts,
-			do_hilight);
+			do_hilight, do_clear);
 	}
 
 	return;
@@ -2257,12 +2262,9 @@ void draw_clipped_decorations_with_geom(
 		pressed_parts = border_context_to_parts(context);
 		force_parts = (force) ? (draw_parts & PART_FRAME) : PART_NONE;
 		border_draw_border_parts(
-			&cd, t, pressed_parts, force_parts, old_g, new_g,
-			has_focus);
+			&cd, t, pressed_parts, force_parts, clear_parts, old_g,
+			new_g, has_focus);
 	}
-
-	/* Sync to make the change look fast! */
-	XFlush(dpy);
 
 	return;
 }
@@ -2355,7 +2357,6 @@ void CMD_ButtonState(F_CMD_ARGS)
 
 	return;
 }
-
 
 /****************************************************************************
  *
