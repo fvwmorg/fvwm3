@@ -35,13 +35,10 @@
 #include "virtual.h"
 #include "gnome.h"
 
-#define DV_PATCH
 /* ----------------------------- stack ring code --------------------------- */
 
-#ifdef DV_PATCH
 static void RaiseOrLowerWindow(
-  FvwmWindow *t, Bool do_lower, Bool allow_recursion, Bool adding_window);
-#endif
+  FvwmWindow *t, Bool do_lower, Bool allow_recursion, Bool is_new_window);
 
 /* Remove a window from the stack ring */
 void remove_window_from_stack_ring(FvwmWindow *t)
@@ -80,22 +77,7 @@ Bool position_new_window_in_stack_ring(FvwmWindow *t, Bool do_lower)
      * on this. */
     return False;
   /* RaiseWindow/LowerWindow will put the window in its layer */
-  if (do_lower)
-  {
-#ifndef DV_PATCH
-    LowerWindow(t);
-#else
-    RaiseOrLowerWindow(t, True, False, True);
-#endif
-  }
-  else
-  {
-#ifndef DV_PATCH
-    RaiseWindow(t);
-#else
-    RaiseOrLowerWindow(t, False, False, True);
-#endif
-  }
+  RaiseOrLowerWindow(t, do_lower, False, True);
   return True;
 }
 
@@ -281,13 +263,8 @@ static Bool must_move_transients(
   return False;
 }
 
-#ifndef DV_PATCH
 static void RaiseOrLowerWindow(
-  FvwmWindow *t, Bool do_lower, Bool allow_recursion)
-#else
-static void RaiseOrLowerWindow(
-  FvwmWindow *t, Bool do_lower, Bool allow_recursion, Bool adding_window)
-#endif
+  FvwmWindow *t, Bool do_lower, Bool allow_recursion, Bool is_new_window)
 {
   FvwmWindow *s, *r, *t2, *next, tmp_r;
   unsigned int flags;
@@ -300,7 +277,13 @@ static void RaiseOrLowerWindow(
   Bool flip_at_bottom=False;
   int test_layer;
 
-  if (allow_recursion)
+  /* New windows are simply raised/lowered without touching the transientfor
+   * at first.  Then, further down in the code, RaiseOrLowerWindow() is called
+   * again to raise/lower the transientfor if necessary.  We can not do the
+   * recursion stuff for new windows because the must_move_transients() call
+   * needs a properly ordered stack ring - but the new window is still at the
+   * front of the stack ring. */
+  if (allow_recursion && !is_new_window)
   {
     /*
      * This part makes Raise/Lower on a Transient act on its Main and sibling
@@ -323,56 +306,53 @@ static void RaiseOrLowerWindow(
           if ((!do_lower && DO_RAISE_TRANSIENT(t2)) ||
               (do_lower && DO_LOWER_TRANSIENT(t2))  )
           {
-#ifndef DV_PATCH
-              RaiseOrLowerWindow(t2,do_lower,False);
-#else
-              RaiseOrLowerWindow(t2,do_lower,False,False);
-#endif
-              return;
+	    RaiseOrLowerWindow(t2,do_lower,False,False);
+	    return;
           }
         }
       }
     }
   }
 
-  do_move_transients = must_move_transients(t, do_lower, &found_transient);
-
-  /*
-   * This part implements (Dont)FlipTransient style.
-   *
-   * must_move_transients() believes that main should always be below
-   * its transients. Therefore if it finds a transient but does not wish
-   * move it, this means main and its superior transients are already
-   * in the correct position at the top or bottom of the layer - depending
-   * on do_lower.
-   */
-  no_movement = found_transient && !do_move_transients;
-
-  /*
-   * FlipTransient style may flip from this no_movement state
-   * by moving the main above the transients anyway.
-   * The next Raise/Lower naturally moves main back below its transients.
-   */
-  if (no_movement && DO_FLIP_TRANSIENT(t) &&
-      ((do_lower && DO_LOWER_TRANSIENT(t)) ||
-       (!do_lower && DO_RAISE_TRANSIENT(t))))
+  if (is_new_window)
   {
     no_movement = False;
-    if ( do_lower )
+    do_move_transients = False;
+  }
+  else
+  {
+    do_move_transients = must_move_transients(t, do_lower, &found_transient);
+
+    /*
+     * This part implements (Dont)FlipTransient style.
+     *
+     * must_move_transients() believes that main should always be below
+     * its transients. Therefore if it finds a transient but does not wish
+     * move it, this means main and its superior transients are already
+     * in the correct position at the top or bottom of the layer - depending
+     * on do_lower.
+     */
+    no_movement = found_transient && !do_move_transients;
+
+    /*
+     * FlipTransient style may flip from this no_movement state
+     * by moving the main above the transients anyway.
+     * The next Raise/Lower naturally moves main back below its transients.
+     */
+    if (no_movement && DO_FLIP_TRANSIENT(t) &&
+	((do_lower && DO_LOWER_TRANSIENT(t)) ||
+	 (!do_lower && DO_RAISE_TRANSIENT(t))))
     {
-      flip_at_bottom = True;
-      do_move_transients = True;
+      no_movement = False;
+      if ( do_lower )
+      {
+	flip_at_bottom = True;
+	do_move_transients = True;
+      }
     }
   }
 
-#ifdef DV_PATCH
-  if (adding_window)
-  {
-    no_movement = False;
-  }
-#endif
-
-  if ( ! no_movement )
+  if (!no_movement)
   {
     /* detach t, so it doesn't make trouble in the loops */
     remove_window_from_stack_ring(t);
@@ -411,15 +391,17 @@ static void RaiseOrLowerWindow(
 	    tmp_r.stack_prev = t2;
 	}
       }
-    }
-    if (do_move_transients && tmp_r.stack_next == &tmp_r)
-    {
+      if (tmp_r.stack_next == &tmp_r)
+      {
 	do_move_transients = False;
+      }
     }
 
     test_layer = t->layer;
     if (do_lower)
-	test_layer--;
+    {
+      test_layer--;
+    }
     /* now find the place to reinsert t and friends */
     for (s = Scr.FvwmRoot.stack_next; s != &Scr.FvwmRoot; s = s->stack_next)
     {
@@ -466,37 +448,47 @@ static void RaiseOrLowerWindow(
       if (IS_ICONIFIED(t2) && !IS_ICON_SUPPRESSED(t2))
       {
 	if(t2->icon_w != None)
-	    wins[i++] = t2->icon_w;
+	  wins[i++] = t2->icon_w;
 	if(t2->icon_pixmap_w != None)
-	    wins[i++] = t2->icon_pixmap_w;
+	  wins[i++] = t2->icon_pixmap_w;
       }
     }
 
-    changes.sibling = s->frame;
-    if (changes.sibling != None)
+    if (is_new_window && IS_TRANSIENT(t) && DO_STACK_TRANSIENT_PARENT(t))
     {
-      changes.stack_mode = Above;
-      flags = CWSibling|CWStackMode;
+      /* now that the new transient is properly positioned in the stack ring,
+       * raise/lower it again so that its parent is raised/lowered too */
+      RaiseOrLowerWindow(t, do_lower, True, False);
+      return;
     }
     else
     {
-      changes.stack_mode = Below;
-      flags = CWStackMode;
+      changes.sibling = s->frame;
+      if (changes.sibling != None)
+      {
+	changes.stack_mode = Above;
+	flags = CWSibling|CWStackMode;
+      }
+      else
+      {
+	changes.stack_mode = Below;
+	flags = CWStackMode;
+      }
+
+      XConfigureWindow (dpy, r->stack_next->frame, flags, &changes);
+      XRestackWindows (dpy, wins, count);
+
+      /* send out (one or more) M_RESTACK packets for windows between r and s */
+      BroadcastRestack (r, s);
+      if (do_move_transients && tmp_r.stack_next != &tmp_r)
+      {
+	/* send out M_RESTACK for all windows, to make sure we don't forget
+	 * anything. */
+	BroadcastRestack (Scr.FvwmRoot.stack_next, Scr.FvwmRoot.stack_prev);
+      }
+
+      free (wins);
     }
-
-    XConfigureWindow (dpy, r->stack_next->frame, flags, &changes);
-    XRestackWindows (dpy, wins, count);
-
-    /* send out (one or more) M_RESTACK packets for windows between r and s */
-    BroadcastRestack (r, s);
-    if (do_move_transients && tmp_r.stack_next != &tmp_r)
-    {
-      /* send out M_RESTACK for all windows, to make sure we don't forget
-       * anything. */
-      BroadcastRestack (Scr.FvwmRoot.stack_next, Scr.FvwmRoot.stack_prev);
-    }
-
-    free (wins);
   }
 
   if (!do_lower)
@@ -562,21 +554,13 @@ static void RaiseOrLowerWindow(
 */
 void RaiseWindow(FvwmWindow *t)
 {
-#ifndef DV_PATCH
-  RaiseOrLowerWindow(t, False, True);
-#else
   RaiseOrLowerWindow(t, False, True, False);
-#endif
   return;
 }
 
 void LowerWindow(FvwmWindow *t)
 {
-#ifndef DV_PATCH
-  RaiseOrLowerWindow(t, True, True);
-#else
   RaiseOrLowerWindow(t, True, True, False);
-#endif
   return;
 }
 

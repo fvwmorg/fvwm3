@@ -3,6 +3,8 @@ _+_A HREF="#2.2.4"_-_2.2.4_+_/A_-_.
 
 Changes in beta release 2.3.18 (not released yet)
 
+* Removed MoveSmoothness command.
+
 Changes in beta release 2.3.17 (May 2000)
 
 * The commands Refresh and RefreshWindow apply all outstanding visual

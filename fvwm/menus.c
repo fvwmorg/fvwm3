@@ -1059,9 +1059,9 @@ static void menuShortcuts(MenuRoot *mr, MenuReturn *pmret, XEvent *event,
       saction = SA_FIRST;
       break;
     }
-    else if (fControlKey && fMetaKey)
-      items_to_move = -5;
     else if (fControlKey)
+      items_to_move = -5;
+    else if (fMetaKey)
     {
       items_to_move = -1;
       fSkipSection = True;
@@ -1080,9 +1080,9 @@ static void menuShortcuts(MenuRoot *mr, MenuReturn *pmret, XEvent *event,
       saction = SA_LAST;
       break;
     }
-    else if (fControlKey && fMetaKey)
-      items_to_move = 5;
     else if (fControlKey)
+      items_to_move = 5;
+    else if (fMetaKey)
     {
       items_to_move = 1;
       fSkipSection = True;

@@ -1,6 +1,14 @@
 2000-05-15  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* fvwm/stack.c:
+	stack ring fix, final version
+
+	* fvwm/menus.c (menuShortcuts):
+	fixed meta-up/down and ctrl-up/down menu key shortcuts
+
+2000-05-15  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* fvwm/stack.c:
 	experimental 'fix' for stack ring problem.
 
 2000-05-14  Mikhael Goikhman  <migo@homemail.com>
