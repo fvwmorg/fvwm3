@@ -129,9 +129,20 @@ Bool ParseGraphics(Display *dpy, char *line, Graphics *G) {
 /***************************************************************************
  * sets a window background according to the back_bits flags
  **************************************************************************/
-void SetWindowBackground(Display *dpy, Window win, BG *bg, BGtype *bgtype)
+void SetWindowBackground(Display *dpy, Window win, int width, int height,
+			 BG *bg, BGtype *bgtype)
 {
   /* only does pixel type backgrounds as yet */
-  XSetWindowBackground(dpy, win, bg->pixel);
-  XClearArea(dpy, win, 0, 0, 0, 0, True);
+  if (!bgtype->bits.is_pixmap)
+    XSetWindowBackground(dpy, win, bg->pixel);
+  else if (!bgtype->bits.stretch_h && !bgtype->bits.stretch_v)
+    XSetWindowBackgroundPixmap(dpy, win, bg->pixmap);
+  else if (!bgtype->bits.stretch_h)
+    fprintf(stderr, "Can't do VGradient yet\n");
+  else if (!bgtype->bits.stretch_v)
+    fprintf(stderr, "Can't do HGradient yet\n");
+  else
+    fprintf(stderr, "Can't do stretch pixmap or B/DGradient yet\n");
+
+  XClearArea(dpy, win, 0, 0, width, height, True);
 }

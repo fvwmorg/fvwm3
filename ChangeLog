@@ -1,3 +1,7 @@
+1999-04-28  Hippo
+
+	* libs/ModGraph.{h,c}: SetWindowBackground takes width/height of window
+
 1999-04-28  Dominik Vogt  <dominik_vogt@gmx.de>
 
 	* fvwm/module.c:

@@ -60,6 +60,7 @@ typedef struct GraphicsThing {
 
 void InitGraphics(Display *dpy, Graphics *graphics);
 Bool ParseGraphics(Display *dpy, char * line, Graphics *graphics);
-void SetWindowBackground(Display *dpy, Window win, BG *bg, BGtype *bgtype);
+void SetWindowBackground(Display *dpy, Window win, int width, int height,
+			 BG *bg, BGtype *bgtype);
 
 #endif
