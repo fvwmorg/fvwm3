@@ -68,6 +68,11 @@ AC_SUBST(FVWMWORKERSLISTLONG)
 AM_INIT_AUTOMAKE(fvwm, ${version})
 AM_CONFIG_HEADER(config.h)
 
+if test ! x"$CFLAGS" = x; then
+	AC_MSG_ERROR(
+		[configure must not be run with the CFLAGS variable set!]);
+fi
+
 dnl installation paths
 FVWM_MODULESUBDIR=/${PACKAGE}/${VERSION}
 FVWM_DATASUBDIR=/${PACKAGE}

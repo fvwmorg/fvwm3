@@ -128,6 +128,7 @@ static void schedule(
 	{
 		return;
 	}
+fprintf(stderr,"scheduling: %6d %10d %s\n", pid?*pid:0, (int)time_to_execute, command);
 	/* create the new object */
 	new_obj = (sq_object_type *)safemalloc(sizeof(sq_object_type));
 	memset(new_obj, 0, sizeof(sq_object_type));
@@ -172,6 +173,7 @@ static int execute_obj_func(void *object, void *args)
 			exec_context_change_mask_t mask =
 				ECC_TYPE | ECC_WCONTEXT;
 
+fprintf(stderr,"executing: %6d %10d (%10d) %s\n", obj->id, (int)obj->time_to_execute, (int)(*ptime), obj->command);
 			ecc.type = EXCT_SCHEDULE;
 			ecc.w.wcontext = C_ROOT;
 			if (XFindContext(

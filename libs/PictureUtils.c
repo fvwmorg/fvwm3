@@ -22,6 +22,7 @@
 #include "config.h"
 
 #include <stdio.h>
+#include <stdlib.h>
 #include <signal.h>
 #include <ctype.h>
 #include <time.h>
@@ -124,7 +125,7 @@ static short *PMappingTable = NULL;
 static short *PDitherMappingTable = NULL;
 static Bool PStrictColorLimit = 0;
 static Bool PAllocTable = 0;
-static PColorsInfo Pcsi = { 
+static PColorsInfo Pcsi = {
 	0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, NULL, NULL, NULL};
 
 /* ---------------------------- exported variables (globals) ---------------- */
@@ -188,7 +189,7 @@ int alloc_color_in_cmap(XColor *c, Bool force)
 		{
 			colors[i].pixel = i;
 		}
-		XQueryColors(Pdpy, Pcmap, colors, map_entries);	
+		XQueryColors(Pdpy, Pcmap, colors, map_entries);
 	}
 	for(i = 0; i < map_entries; i++)
 	{
@@ -206,7 +207,7 @@ int alloc_color_in_cmap(XColor *c, Bool force)
 	i = 0;
 	j = closenesses[i].cols_index;
 	while (force ||
-	       (abs((long)c->red - (long)colors[j].red) <= 
+	       (abs((long)c->red - (long)colors[j].red) <=
 		PICTURE_COLOR_CLOSENESS &&
 		abs((long)c->green - (long)colors[j].green) <=
 		PICTURE_COLOR_CLOSENESS &&
@@ -308,7 +309,7 @@ int my_dither_depth_15_16_init(void)
 	};
 	int y,x,i;
 	int rm = 0xf8, re = 0x7, gm = 0xfc, ge = 0x3, bm = 0xf8, be = 0x7;
-	
+
 	if (Pdepth == 16 && (Pvisual->red_mask == 0xf800) &&
 	    (Pvisual->green_mask == 0x7e0) &&
 	    (Pvisual->blue_mask == 0x1f))
@@ -385,7 +386,7 @@ int my_dither_depth_15_16_init(void)
 }
 
 /* ***************************************************************************
- * Color allocation in the "palette" (depth <= 8) 
+ * Color allocation in the "palette" (depth <= 8)
  * ***************************************************************************/
 static
 int alloc_color_in_pct(XColor *c, int index)
@@ -444,7 +445,7 @@ int get_color_index(int r, int g, int b, int is_8)
 }
 
 /* ***************************************************************************
- * local function for building the palette (depth <= 8) 
+ * local function for building the palette (depth <= 8)
  * ***************************************************************************/
 static
 XColor *build_mapping_colors(int nr, int ng, int nb)
@@ -499,7 +500,7 @@ short *build_mapping_table(int nr, int ng, int nb)
 			{
 				mindst=dst;
 				minind=j;
-			} 
+			}
 		}
 		Table[i] = minind;
 	}
@@ -614,10 +615,10 @@ PColor *alloc_color_cube(
 		}
 	}
 	else /*grey_bits > 0 */
-	{	
+	{
 		for (grey = 0; grey < size; grey++)
 		{
-			color.red = color.green = color.blue = 
+			color.red = color.green = color.blue =
 				grey * 65535 / (size - 1);
 			if (do_allocate)
 			{
@@ -873,7 +874,7 @@ void finish_ct_init(
 	if (call_type == PICTURE_CALLED_BY_FVWM)
 	{
 		char *env;
-		
+
 		if (PAllocTable)
 		{
 			ctt = PICTURE_PAllocTable + ctt;
@@ -1288,7 +1289,7 @@ int PictureAllocColorTable(char *opt, int call_type)
 #endif
 
 	/* called by a module "allocate" directly */
-	if (call_type == PICTURE_CALLED_BY_MODULE && 
+	if (call_type == PICTURE_CALLED_BY_MODULE &&
 	     (envp = getenv("FVWM_COLORTABLE_TYPE")) != NULL)
 	{
 		int nr = 0, ng = 0, nb = 0, grey_bits = 0;
@@ -1346,7 +1347,7 @@ int PictureAllocColorTable(char *opt, int call_type)
 	if ((envp = opt) != NULL || (envp = getenv("FVWM_COLORLIMIT")) != NULL)
 	{
 		char *rest, *l;
- 
+
 		rest = GetQuotedString(envp, &l, ":", NULL, NULL, NULL);
 		if (l && *l != '\0' && (color_limit = atoi(l)) >= 0)
 		{
@@ -1425,7 +1426,7 @@ int PictureAllocColorTable(char *opt, int call_type)
 #endif
 
 	/* first try to see if we have a "pre-allocated" color cube.
-	 * The bultin RENDER X extension pre-allocate a color cube plus 
+	 * The bultin RENDER X extension pre-allocate a color cube plus
 	 * some grey's (xc/programs/Xserver/render/miindex)
 	 * See gdk/gdkrgb.c for the cubes used by gtk+-2, 666 is the default,
 	 * 555 is the minimal cc (this may change): if gtk cannot allocate
@@ -1433,7 +1434,7 @@ int PictureAllocColorTable(char *opt, int call_type)
 	 * for qt-3: see src/kernel/{qapplication.cpp,qimage.cpp,qcolor_x11.c}
 	 * the 666 cube is used by default (with approx in the cmap if some
 	 * color allocation fail), and some qt app may accept an
-	 * --ncols option to limit the nbr of colors, then some "2:3:1" 
+	 * --ncols option to limit the nbr of colors, then some "2:3:1"
 	 * proportions color cube are used (222, 232, ..., 252, 342, ..., 362,
 	 * 452, ...,693, ...)
 	 * imlib2 try to allocate the 666 cube if this fail it try more
@@ -1452,7 +1453,7 @@ int PictureAllocColorTable(char *opt, int call_type)
 		}
 		if (Pct != NULL)
 		{
-			if (free_colors <= 
+			if (free_colors <=
 			    get_nbr_of_free_colors(map_entries))
 			{
 				/* done */
