@@ -48,6 +48,7 @@
 typedef struct kst_item
 {
   Window w;
+  int any;
   struct  kst_item *next;
 } KstItem;
 
@@ -657,7 +658,7 @@ void EWMH_GetWorkAreaIntersection(FvwmWindow *fwin,
     default:
       break;
   }
-  
+
   if (is_dynamic)
   {
     area_x = Scr.dyn_work_area.x;
@@ -932,12 +933,10 @@ void EWMH_WindowInit(FvwmWindow *fwin)
   if (ksmserver_workarround(fwin))
     return;
   ewmh_WMIcon(fwin, NULL, NULL);
-  
   /* EWMH_DLOG("window 0x%lx initialised",fwin->w);*/
 }
 
 /* a window are going to be destroyed */
-
 void EWMH_DestroyWindow(FvwmWindow *fwin)
 {
   if (IS_EWMH_DESKTOP(fwin->w))
