@@ -1,5 +1,11 @@
 2002-01-16  Dominik Vogt  <dominik.vogt@gmx.de>
 
+	* fvwm/commands.h:
+	* fvwm/functions.c (func_config):
+	* libs/Module.c (SetMessageMask2):
+	(SetNoGrabMask2):
+	* libs/Module.h:
+
 	* configure.in:
 	fixed building with libstroke-0.5.1 on Solaris8
 

@@ -65,7 +65,7 @@ creating a symlink) enables FvwmAudio compatibility mode.
 
 .SH CONFIGURATION OPTIONS
 \fIFvwmEvent\fP gets config info from \fBfvwm\fP's module configuration
-database (see 
+database (see
 .IR fvwm2 (1),
 section
 .BR "MODULE COMMANDS" ),
@@ -159,6 +159,7 @@ e.g. for audio-events:
 	*FvwmEvent: deiconify ploop.au
 	*FvwmEvent: window_name huh.au
 	*FvwmEvent: icon_name beep.au
+	*FvwmEvent: visible_icon_name beep.au
 	*FvwmEvent: res_class beep.au
 	*FvwmEvent: res_name beep.au
 	*FvwmEvent: end_windowlist twang.au
@@ -201,7 +202,7 @@ disables the Event delay.
 .IP "*FvwmEvent: StartDelay \fIdelay\fP"
 Specifies that an event-action will only be executed if it occurs at
 least \fIdelay\fP seconds after the startup event. Events that occur during
-the delay period are ignored.  This option is useful when \fIfvwm\fP 
+the delay period are ignored.  This option is useful when \fIfvwm\fP
 starts and restarts using an audio player.  The default delay is 0.
 
 .SH RPLAY OPTIONS
