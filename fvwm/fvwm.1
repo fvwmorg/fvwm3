@@ -1036,10 +1036,10 @@ then, if either loading the Xft font fails or fvwm has no Xft support,
 fvwm loads the font "-adobe-courier-bold-r-normal--14-*". This
 allows for writting portable configuration files.
 
-.SH FONT AND STRING ENCODINGS
+.SH FONT AND STRING ENCODING
 
 Once a font is loaded, FVWM finds its encoding (or charset) using its
-name (the last two fields of the name). Then, FVWM assumes that the strings
+name (the last two fields of the name). FVWM assumes that the strings
 which are displayed with this font use this encoding (an exception is
 that if an iso10646-1 font is loaded, then UTF-8 is assumed for string
 encoding).
@@ -1048,29 +1048,29 @@ In a normal situation,
 (ii) the encoding of the loaded font is the locale encoding, and then
 (iii) the strings in the FVWM configuration files should use the locale
 encoding as well as the window and icon name.
-With xft the situation is bit different as Xft supports only iso10646-1
-and iso8859-1. If you do not specify one of these encodings in the xft font
-name, then FVWM ensure itself strings conversion for respecting (iii). 
-Note that with a multibyte font (and in particular with "CJK" fonts) for
+With Xft the situation is bit different as Xft supports only iso10646-1
+and iso8859-1. If you do not specify one of these encodings in the Xft font
+name, then FVWM does strings conversion using (iii). 
+Note that with multibyte fonts (and in particular with "CJK" fonts) for
 good text rendering, the locale encoding should be the charset of the font.
 
-To override the previous logics, it is possible to specify the string encoding
+To override the previous rules, it is possible to specify the string encoding
 in the beginning of a font description as follow:
 .EX
 StringEncoding=enc:_full_font_name_
 .EE
 where
 .B enc
-is an encoding supported by FVWM (usual font name charset plus some
+is an encoding supported by FVWM (usually font name charset plus some
 unicode encodings: UTF-8, USC-2, USC-4 and UTF-16).
 
-Let us give some examples.
-You may use an iso8859-1 locale charset and have an FvwmForm in Russian using
+For example,
+you may use an iso8859-1 locale charset and have an FvwmForm in Russian using
 koi8-r encoding. In this case, you just have to ask FvwmForm to load
 a koi8-r font by specifying the encoding in the font name.
 With a multibyte language,
-as multibyte font works well only if the locale encoding is the
-charset of the font you should use an iso10646-1 font:
+(as multibyte font works well only if the locale encoding is the
+charset of the font), you should use an iso10646-1 font:
 .EX
 StringEncoding=jisx0208.1983-0:-*-fixed-medium-r-*-ja-*-iso10646-1
 .EE
@@ -1078,7 +1078,7 @@ or
 .EX
 "StringEncoding=jisx0208.1983-0:xft:Bitstream Cyberbit"
 .EE
-if your FvwmForm configuration use jisx0208.1983-0 encoding. Another
+if your FvwmForm configuration uses jisx0208.1983-0 encoding. Another
 possibility is to use UTF-8 encoding for your FvwmForm configuration and use
 an iso10646-1 font:
 .EX
@@ -1092,8 +1092,8 @@ or equivalently
 .EX
 "xft:Bitstream Cyberbit:encoding=iso10646-1"
 .EE
-In general iso10646-1 fonts together with UTF-8 string encoding allows to
-display any characters in a given menu, FvwmForm ...etc.
+In general iso10646-1 fonts together with UTF-8 string encoding allows the
+display of any characters in a given menu, FvwmForm ...etc.
 
 More and more, unicode is used and text files use UTF-8 encoding.
 However, in practice the characters used range over your locale charset
@@ -1119,7 +1119,7 @@ For example:
 MenuStyle * Font -misc-fixed-*--20-*-my_utf8-36/iso10646-1
 .EE
 If FVWM finds an encoding, FVWM uses the iconv system functions to do
-conversion between encoding.
+conversion between encodings.
 Unfortunately, there are no standards. For conversion between
 iso8859-1 and UTF-8: a GNU system uses "ISO-8859-1" and other
 systems use "iso881" to define the converters (these two names are
@@ -1139,8 +1139,9 @@ encoding from the end of the font name. Use:
 .EX
 Style * Font -misc-fixed-*--14-*-local8859-6/iso8859-6/local_iso8859_6_iconv
 .EE
-to force FVWM to use the font with iso8859-6 as the encoding (this is useful for
-bi-directionality) and to use local_iso8859_6_iconv for defining the converters.
+to force FVWM to use the font with iso8859-6 as the encoding
+(this is useful for bi-directionality)
+and to use local_iso8859_6_iconv for defining the converters.
 
 .SH FONT SHADOW EFFECTS
 
@@ -8144,7 +8145,11 @@ to complete, so things like:
 Exec "echo AddToMenu ... > /tmp/file"
 Read /tmp/file
 .EE
-do not work reliably.
+do not work reliably
+(see the
+.I PipeRead
+command).
+
 
 .TP
 .BI "ExecUseShell [" shell "]"
@@ -8214,6 +8219,17 @@ Example:
 AddToMenu HomeDirMenu
 PipeRead 'for i in $HOME/*; \\
   do echo "+ $i Exec xterm -e vi $i"; done'
+.EE
+
+The
+.I PipeRead
+command executes synchronously.
+If you want to
+.I Exec
+something, but need the command to run sunchronously,
+you might do something like:
+.EX
+PipeRead 'command >/dev/null 2>&1'
 .EE
 
 .TP
