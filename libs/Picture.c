@@ -86,7 +86,16 @@ void InitPictureCMap(Display *dpy,Window Root)
   PictureCMap = root_attr.colormap;
   PictureDepth = root_attr.depth;
 }
-
+/* This is an alternative used by modules that have got the information
+ * from the Default_Graphics config line sent by fvwm */
+void SavePictureCMap(Display *dpy, Visual *viz, Colormap cmap, int depth)
+{
+  PictureSaveDisplay = dpy;                       /* save for later */
+  PictureVisual = viz;
+  PictureCMap = cmap;
+  PictureDepth = depth;
+}
+  
 
 static char* imagePath = FVWM_IMAGEPATH;
 

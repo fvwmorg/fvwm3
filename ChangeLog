@@ -1,6 +1,7 @@
 1999-04-29  Hippo
 
-	* lib/ModGraph.{h,c}: new function (Graphics *)CreateGraphics(void);
+	* libs/ModGraph.{h,c}: new function (Graphics *)CreateGraphics(void);
+	* libs/Picture.{h,c}: new function (void)SavePictureCMap.
 
 1999-04-28  Matthias Clasen  <clasen@mathematik.uni-freiburg.de>
 
