@@ -678,15 +678,15 @@ Bool PlaceWindow(
       else
       {
         /* place window in a random location */
-        if ((Scr.randomx += tmp_win->decor->title_height) >
+        if ((Scr.randomx += tmp_win->title_g.height) >
 	    Scr.MyDisplayWidth / 2)
 	{
-          Scr.randomx = tmp_win->decor->title_height;
+          Scr.randomx = tmp_win->title_g.height;
 	}
-        if ((Scr.randomy += 2 * tmp_win->decor->title_height) >
+        if ((Scr.randomy += 2 * tmp_win->title_g.height) >
 	    Scr.MyDisplayHeight / 2)
 	{
-          Scr.randomy = 2 * tmp_win->decor->title_height;
+          Scr.randomy = 2 * tmp_win->title_g.height;
 	}
         tmp_win->attr.x = Scr.randomx - pdeltax;
         tmp_win->attr.y = Scr.randomy - pdeltay;

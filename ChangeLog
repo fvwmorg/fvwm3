@@ -1,5 +1,8 @@
 2000-03-17  Dominik Vogt  <dominik.vogt@gmx.de>
 
+	* fvwm/placement.c (PlaceWindow):
+	fixed random placement offsets
+
 	* fvwm/add_window.c (GetWindowSizeHints):
 	suppress broken size hints warning with zero size increment and
 	identical max and min values
