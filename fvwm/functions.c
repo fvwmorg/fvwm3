@@ -808,8 +808,8 @@ static cfunc_action_type CheckActionType(
 
     usleep(20000);
     total+=20;
-    if(XCheckMaskEvent(dpy, ButtonReleaseMask|ButtonMotionMask|
-		       PointerMotionMask|ButtonPressMask|ExposureMask, d))
+    if (XCheckMaskEvent(dpy, ButtonReleaseMask|ButtonMotionMask|
+			PointerMotionMask|ButtonPressMask|ExposureMask, d))
     {
       StashEventTime(d);
       switch (d->xany.type)
@@ -1058,23 +1058,19 @@ void execute_function(exec_func_args_type *efa)
     }
 
     execute_complex_function(
-      efa->eventp,w,efa->tmp_win,efa->context,runaction, &efa->module, &desperate);
+      efa->eventp,w,efa->tmp_win,efa->context,runaction, &efa->module,
+      &desperate);
     if (!bif && desperate)
     {
       if (executeModuleDesperate(
-	efa->eventp, w, efa->tmp_win, efa->context, runaction, &efa->module) == -1&&
-	  *function != 0)
+	efa->eventp, w, efa->tmp_win, efa->context, runaction, &efa->module) ==
+	  -1 && *function != 0)
       {
 	fvwm_msg(
 	  ERR, "ExecuteFunction", "No such command '%s'", function);
       }
     }
   }
-
-  /* Only wait for an all-buttons-up condition after calls from
-   * regular built-ins, not from complex-functions, menus or modules. */
-  if (efa->module == -1 && (efa->flags.exec & FUNC_DO_SYNC_BUTTONS))
-    WaitForButtonsUp(True);
 
   if (set_silent)
     Scr.flags.silent_functions = 0;
@@ -1192,13 +1188,11 @@ int DeferExecution(
     }
     switch (eventp->type)
     {
-    case ButtonPress:
-      XAllowEvents(dpy,ReplayPointer,CurrentTime);
-      /* fall through */
     case KeyPress:
       if (eventp->type != FinishEvent)
 	original_w = eventp->xany.window;
       /* fall through */
+    case ButtonPress:
     case ButtonRelease:
       done = 1;
       break;
@@ -1467,8 +1461,6 @@ static void cf_cleanup(unsigned int *depth, char **arguments)
   int i;
 
   (*depth)--;
-  if (*depth == 0)
-    WaitForButtonsUp(False);
   for (i = 0; i < 11; i++)
     if(arguments[i] != NULL)
       free(arguments[i]);

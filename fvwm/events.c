@@ -856,12 +856,12 @@ void HandleMapRequest(void)
   DBUG("HandleMapRequest","Routine Entered");
 
   if (fFvwmInStartup)
-   {
-      /* Just map the damn thing, decorations are added later
-       * in CaptureAllWindows. */
-      XMapWindow (dpy, Event.xmaprequest.window);
-      return;
-   }
+  {
+    /* Just map the damn thing, decorations are added later
+     * in CaptureAllWindows. */
+    XMapWindow (dpy, Event.xmaprequest.window);
+    return;
+  }
   HandleMapRequestKeepRaised(None, NULL);
 }
 void HandleMapRequestKeepRaised(Window KeepRaised, FvwmWindow *ReuseWin)
@@ -936,6 +936,8 @@ void HandleMapRequestKeepRaised(Window KeepRaised, FvwmWindow *ReuseWin)
 	XMapWindow(dpy, Tmp_win->frame);
 	SET_MAP_PENDING(Tmp_win, 1);
 	SetMapStateProp(Tmp_win, NormalState);
+	if (Scr.flags.is_map_desk_in_progress)
+	  do_grab_focus = False;
 	if (!OnThisPage)
 	  do_grab_focus = True;
 	else if (DO_GRAB_FOCUS(Tmp_win) &&
@@ -964,6 +966,15 @@ void HandleMapRequestKeepRaised(Window KeepRaised, FvwmWindow *ReuseWin)
 	if (do_grab_focus)
 	{
 	  SetFocusWindow(Tmp_win, 1);
+	}
+	else
+	{
+	  /* make sure the old focused window still has grabbed all necessary
+	   * buttons. */
+	  if (Scr.Focus)
+	  {
+	    focus_grab_buttons(Scr.Focus, True);
+	  }
 	}
       }
       else
@@ -1206,13 +1217,19 @@ void HandleUnmapNotify(void)
   if((Tmp_win == Scr.Focus)&&(HAS_CLICK_FOCUS(Tmp_win)))
   {
     if(Tmp_win->next)
+    {
       SetFocusWindow(Tmp_win->next, 1);
+    }
     else
+    {
       DeleteFocus(1);
+    }
   }
 
   if(Scr.Focus == Tmp_win)
+  {
     DeleteFocus(1);
+  }
 
   if(Tmp_win == Scr.pushed_window)
     Scr.pushed_window = NULL;
@@ -1298,15 +1315,21 @@ void HandleButtonPress(void)
   char *action;
   Window OldPressedW;
   Window eventw;
+  Bool do_regrab_buttons = False;
+  Bool do_pass_click;
 
   DBUG("HandleButtonPress","Routine Entered");
 
+  GrabEm(CRS_NONE, GRAB_PASSIVE);
   if (!Tmp_win && Event.xany.window != Scr.Root)
   {
     /* event in unmanaged window or subwindow of a client */
+    /* DV: of course we should never have got an event in this case since the
+     * button should not be grabbed. */
     XSync(dpy,0);
     XAllowEvents(dpy,ReplayPointer,CurrentTime);
     XSync(dpy,0);
+    UngrabEm(GRAB_PASSIVE);
     return;
   }
   if (Event.xbutton.subwindow != None &&
@@ -1325,6 +1348,7 @@ void HandleButtonPress(void)
     XSync(dpy,0);
     XAllowEvents(dpy,ReplayPointer,CurrentTime);
     XSync(dpy,0);
+    UngrabEm(GRAB_PASSIVE);
     return;
   }
   if (Tmp_win && HAS_NEVER_FOCUS(Tmp_win))
@@ -1337,7 +1361,8 @@ void HandleButtonPress(void)
   /* click to focus stuff goes here */
   if((Tmp_win)&&(HAS_CLICK_FOCUS(Tmp_win))&&(Tmp_win != Scr.Ungrabbed))
   {
-    SetFocusWindow(Tmp_win, 1);
+    if (Tmp_win != Scr.Focus)
+      SetFocusWindow(Tmp_win, 1);
     /* RBW - 12/09/.1999- I'm not sure we need to check both cases, but
        I'll leave this as is for now.  */
     if (!DO_NOT_RAISE_CLICK_FOCUS_CLICK(Tmp_win)
@@ -1354,10 +1379,11 @@ void HandleButtonPress(void)
       )
     {
       /* We can't raise the window immediately because the action bound to the
-       * click might be "Lower" or "RaiseLower". So mark the window as scheduled
-       * to be raised after the binding is executed. Functions that modify the
-       * stacking order will reset this flag. */
+       * click might be "Lower" or "RaiseLower". So mark the window as
+       * scheduled to be raised after the binding is executed. Functions that
+       * modify the stacking order will reset this flag. */
       SET_SCHEDULED_FOR_RAISE(Tmp_win, 1);
+      do_regrab_buttons = True;
     }
 
     Context = GetContext(Tmp_win,&Event, &PressedW);
@@ -1368,9 +1394,11 @@ void HandleButtonPress(void)
 	RaiseWindow(Tmp_win);
 	SET_SCHEDULED_FOR_RAISE(Tmp_win, 0);
       }
+      if (do_regrab_buttons)
+	focus_grab_buttons(Tmp_win, (Tmp_win == Scr.Focus));
       XSync(dpy,0);
-      /* pass click event to just clicked to focus window? Do not swallow the
-       * click if the window didn't accept the focus */
+      /* Pass click event to just clicked to focus window? Do not swallow the
+       * click if the window didn't accept the focus. */
       if (!DO_NOT_PASS_CLICK_FOCUS_CLICK(Tmp_win) || Scr.Focus != Tmp_win)
       {
 	XAllowEvents(dpy,ReplayPointer,CurrentTime);
@@ -1380,6 +1408,7 @@ void HandleButtonPress(void)
 	XAllowEvents(dpy,AsyncPointer,CurrentTime);
       }
       XSync(dpy,0);
+      UngrabEm(GRAB_PASSIVE);
       return;
     }
     if (!IS_ICONIFIED(Tmp_win))
@@ -1410,15 +1439,12 @@ void HandleButtonPress(void)
       XSync(dpy,0);
       XAllowEvents(dpy,ReplayPointer,CurrentTime);
       XSync(dpy,0);
+      UngrabEm(GRAB_PASSIVE);
       return;
     }
     focus_grab_buttons(Tmp_win, True);
     Scr.Ungrabbed = tmp;
   }
-
-  XSync(dpy,0);
-  XAllowEvents(dpy,ReplayPointer,CurrentTime);
-  XSync(dpy,0);
 
   Context = GetContext(Tmp_win, &Event, &PressedW);
   LocalContext = Context;
@@ -1447,20 +1473,30 @@ void HandleButtonPress(void)
   action = CheckBinding(Scr.AllBindings, STROKE_ARG(0) Event.xbutton.button,
 			Event.xbutton.state, GetUnusedModifiers(), Context,
 			MOUSE_BINDING);
-  if (action != NULL && (action[0] != 0))
+  do_pass_click = True;
+  if (action && *action)
   {
-    old_execute_function(
-      action, Tmp_win, &Event, Context, -1, FUNC_DO_SYNC_BUTTONS, NULL);
+    old_execute_function(action, Tmp_win, &Event, Context, -1, 0, NULL);
+    if (Context != C_WINDOW && Context != C_NO_CONTEXT)
+    {
+      WaitForButtonsUp(True);
+      do_pass_click = False;
+    }
   }
-  else
+  else if (Scr.Root == Event.xany.window)
   {
     /*
      * do gnome buttonpress forwarding if win == root
      */
-    if (Scr.Root == Event.xany.window)
-    {
-      GNOME_ProxyButtonEvent(&Event);
-    }
+    GNOME_ProxyButtonEvent(&Event);
+    do_pass_click = False;
+  }
+
+  if (do_pass_click)
+  {
+    XSync(dpy,0);
+    XAllowEvents(dpy,ReplayPointer,CurrentTime);
+    XSync(dpy,0);
   }
 
   if (ButtonWindow && IS_SCHEDULED_FOR_RAISE(ButtonWindow))
@@ -1469,6 +1505,10 @@ void HandleButtonPress(void)
      */
     RaiseWindow(ButtonWindow);
     SET_SCHEDULED_FOR_RAISE(ButtonWindow, 0);
+  }
+  if (do_regrab_buttons)
+  {
+    focus_grab_buttons(Tmp_win, (Tmp_win == Scr.Focus));
   }
 
   OldPressedW = PressedW;
@@ -1488,8 +1528,7 @@ void HandleButtonPress(void)
         HAS_DEPRESSABLE_BORDER(ButtonWindow), None);
   }
   ButtonWindow = NULL;
-  /* Release any automatic or passive grabs */
-  XUngrabPointer(dpy, CurrentTime);
+  UngrabEm(GRAB_PASSIVE);
 }
 
 #ifdef HAVE_STROKE
@@ -1524,8 +1563,8 @@ void HandleButtonRelease()
    /* got a match, now process it */
    if (action != NULL && (action[0] != 0))
    {
-     old_execute_function(
-       action, Tmp_win, &Event, Context, -1, FUNC_DO_SYNC_BUTTONS, NULL);
+     old_execute_function(action, Tmp_win, &Event, Context, -1, 0, NULL);
+     WaitForButtonsUp(True);
    }
    else
    {
@@ -1590,34 +1629,24 @@ void HandleEnterNotify(void)
     }
   }
 
-  /* an EnterEvent in one of the PanFrameWindows activates the Paging */
-  if (ewp->window==Scr.PanFrameTop.win
-      || ewp->window==Scr.PanFrameLeft.win
-      || ewp->window==Scr.PanFrameRight.win
-      || ewp->window==Scr.PanFrameBottom.win )
-  {
-    int delta_x=0, delta_y=0;
-    /* this was in the HandleMotionNotify before, HEDU */
-    HandlePaging(Scr.EdgeScrollX,Scr.EdgeScrollY,
-                 &ewp->x_root,&ewp->y_root,
-                 &delta_x,&delta_y,True,True,False);
-    return;
-  }
-
   if (ewp->window == Scr.Root)
   {
     if (!Scr.flags.is_pointer_on_this_screen)
     {
       Scr.flags.is_pointer_on_this_screen = 1;
-      if (Scr.LastScreenFocus &&
+      if (Scr.LastScreenFocus && Scr.LastScreenFocus != &Scr.FvwmRoot &&
 	  (HAS_SLOPPY_FOCUS(Scr.LastScreenFocus) ||
 	   HAS_CLICK_FOCUS(Scr.LastScreenFocus)))
       {
 	SetFocusWindow(Scr.LastScreenFocus, 1);
       }
-      else
+      else if (Scr.LastScreenFocus != &Scr.FvwmRoot)
       {
 	ForceDeleteFocus(1);
+      }
+      else
+      {
+	/* This was the first EnterNotify event for the root window - ignore */
       }
       Scr.LastScreenFocus = NULL;
     }
@@ -1629,6 +1658,26 @@ void HandleEnterNotify(void)
     {
       InstallWindowColormaps(NULL);
     }
+    return;
+  }
+  else
+  {
+    Scr.flags.is_pointer_on_this_screen = 1;
+  }
+
+  /* an EnterEvent in one of the PanFrameWindows activates the Paging */
+  if (ewp->window==Scr.PanFrameTop.win
+      || ewp->window==Scr.PanFrameLeft.win
+      || ewp->window==Scr.PanFrameRight.win
+      || ewp->window==Scr.PanFrameBottom.win )
+  {
+    int delta_x=0, delta_y=0;
+
+    /* this was in the HandleMotionNotify before, HEDU */
+    Scr.flags.is_pointer_on_this_screen = 1;
+    HandlePaging(Scr.EdgeScrollX,Scr.EdgeScrollY,
+                 &ewp->x_root,&ewp->y_root,
+                 &delta_x,&delta_y,True,True,False);
     return;
   }
 
@@ -1722,7 +1771,9 @@ void HandleLeaveNotify(void)
 	Scr.flags.is_pointer_on_this_screen = 0;
 	Scr.LastScreenFocus = Scr.Focus;
 	if (Scr.Focus != NULL)
+	{
 	  DeleteFocus(1);
+	}
 	if (Scr.Hilite != NULL)
 	  DrawDecorations(Scr.Hilite, DRAW_ALL, False, True, None);
       }
@@ -2737,4 +2788,70 @@ void CoerceEnterNotifyOnCurrentWindow(void)
     HandleEnterNotify();
     Tmp_win = None;
   }
+}
+
+/* This function discards all queued up ButtonPress, ButtonRelease and
+ * ButtonMotion events. */
+int discard_events(long event_mask)
+{
+  XEvent e;
+  int count;
+
+  XSync(dpy, 0);
+  for (count = 0; XCheckMaskEvent(dpy, event_mask, &e); count++)
+  {
+    StashEventTime(&e);
+  }
+
+  return count;
+}
+
+/***************************************************************************
+ *
+ * Wait for all mouse buttons to be released
+ * This can ease some confusion on the part of the user sometimes
+ *
+ * Discard superflous button events during this wait period.
+ *
+ ***************************************************************************/
+void WaitForButtonsUp(Bool do_handle_expose)
+{
+  unsigned int mask;
+  long evmask = ButtonPressMask|ButtonReleaseMask|ButtonMotionMask|
+    KeyPressMask|KeyReleaseMask;
+
+  if (do_handle_expose)
+    evmask |= ExposureMask;
+  MyXGrabServer(dpy);
+  XSync(dpy, 0);
+  mask = DEFAULT_ALL_BUTTONS_MASK;
+  while (mask & (DEFAULT_ALL_BUTTONS_MASK))
+  {
+    /* handle expose events */
+    if (XCheckMaskEvent(dpy, evmask, &Event))
+    {
+      switch (Event.type)
+      {
+      case ButtonReleaseMask:
+	mask = Event.xbutton.state;
+	break;
+      case Expose:
+	DispatchEvent(True);
+	break;
+      default:
+	break;
+      }
+    }
+    else
+    {
+      /* although this should never happen, a bit of additional safety does not
+       * hurt. */
+      XQueryPointer(dpy, Scr.Root, &JunkRoot, &JunkChild, &JunkX, &JunkY,
+		    &JunkX, &JunkY, &mask);
+    }
+  }
+  XSync(dpy, 0);
+  MyXUngrabServer(dpy);
+
+  return;
 }

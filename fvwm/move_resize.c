@@ -476,17 +476,10 @@ static void InteractiveMove(
     GetLocationFromEventOrQuery(dpy, Scr.Root, &Event, &DragX, &DragY);
   }
 
-  if(!GrabEm(CRS_MOVE, GRAB_NORMAL))
-  {
-    XBell(dpy, 0);
-    return;
-  }
-
   if (!XGetGeometry(dpy, w, &JunkRoot, &origDragX, &origDragY,
 		    (unsigned int *)&DragWidth, (unsigned int *)&DragHeight,
 		    &JunkBW,  &JunkDepth))
   {
-    UngrabEm(GRAB_NORMAL);
     return;
   }
   if (do_start_at_pointer)
@@ -500,6 +493,12 @@ static void InteractiveMove(
     do_move_opaque = True;
   else if (IS_ICONIFIED(tmp_win))
     do_move_opaque = True;
+
+  if (do_move_opaque)
+  {
+    XGrabKeyboard(
+      dpy, Scr.Root, False, GrabModeAsync, GrabModeAsync, CurrentTime);
+  }
   else
   {
     Scr.flags.is_wire_frame_displayed = True;
@@ -522,15 +521,15 @@ static void InteractiveMove(
 
   if(!do_move_opaque)
   {
-    XEvent event;
     /* Throw away some events that dont interest us right now. */
-      while (XCheckMaskEvent(dpy, EnterWindowMask|LeaveWindowMask,
-                             &event) != False)
-        ;
+    discard_events(EnterWindowMask|LeaveWindowMask);
     Scr.flags.is_wire_frame_displayed = False;
     MyXUngrabServer(dpy);
   }
-  UngrabEm(GRAB_NORMAL);
+  else
+  {
+    XUngrabKeyboard(dpy, CurrentTime);
+  }
 }
 
 
@@ -732,7 +731,6 @@ void move_window_doit(F_CMD_ARGS, Bool do_animate, Bool do_move_to_page)
       page_x = Scr.Vx;
       page_y = Scr.Vy;
     }
-#if 1
     r.x = x;
     r.y = y;
     r.width = width;
@@ -744,30 +742,6 @@ void move_window_doit(F_CMD_ARGS, Bool do_animate, Bool do_move_to_page)
     move_into_rectangle(&r, &s);
     FinalX = r.x;
     FinalY = r.y;
-#else
-    if (!IntersectsInterval(x, width, page_x - Scr.Vx, Scr.MyDisplayWidth))
-    {
-      FinalX = x % Scr.MyDisplayWidth;
-      if(FinalX < 0)
-        FinalX += Scr.MyDisplayWidth;
-      FinalX += page_x - Scr.Vx;
-    }
-    else
-    {
-      FinalX = x;
-    }
-    if (!IntersectsInterval(y, height, page_y - Scr.Vy, Scr.MyDisplayHeight))
-    {
-      FinalY = y % Scr.MyDisplayHeight;
-      if(FinalY < 0)
-        FinalY += Scr.MyDisplayHeight;
-      FinalY += page_y - Scr.Vy;
-    }
-    else
-    {
-      FinalY = y;
-    }
-#endif
   }
   else
   {
@@ -1177,6 +1151,12 @@ Bool moveLoop(FvwmWindow *tmp_win, int XOffset, int YOffset, int Width,
   int orig_icon_x = 0;
   int orig_icon_y = 0;
 
+  if(!GrabEm(CRS_MOVE, GRAB_NORMAL))
+  {
+    XBell(dpy, 0);
+    return False;
+  }
+
   if (!IS_MAPPED(tmp_win) && !IS_ICONIFIED(tmp_win))
     do_move_opaque = False;
 
@@ -1302,7 +1282,7 @@ Bool moveLoop(FvwmWindow *tmp_win, int XOffset, int YOffset, int Width,
       done = True;
       break;
     case ButtonPress:
-      XAllowEvents(dpy,ReplayPointer,CurrentTime);
+      XAllowEvents(dpy, AsyncPointer, CurrentTime);
       if (Event.xbutton.button <= NUMBER_OF_MOUSE_BUTTONS &&
 	  ((Button1Mask << (Event.xbutton.button - 1)) & button_mask))
       {
@@ -1497,6 +1477,7 @@ Bool moveLoop(FvwmWindow *tmp_win, int XOffset, int YOffset, int Width,
   {
     SET_ICON_MOVED(tmp_win, 1);
   }
+  UngrabEm(GRAB_NORMAL);
   if (!do_resize_too)
   {
     /* Don't wait for buttons to come up when user is placing a new window
@@ -1922,6 +1903,11 @@ void resize_window(F_CMD_ARGS)
     Scr.flags.is_wire_frame_displayed = True;
     MyXGrabServer(dpy);
   }
+  else
+  {
+    XGrabKeyboard(
+      dpy, Scr.Root, False, GrabModeAsync, GrabModeAsync, CurrentTime);
+  }
 
   /* handle problems with edge-wrapping while resizing */
   edge_wrap_x = Scr.flags.edge_wrap_x;
@@ -2160,6 +2146,7 @@ void resize_window(F_CMD_ARGS)
     StashEventTime(&Event);
 
     if (Event.type == MotionNotify)
+    {
       /* discard any extra motion events before a release */
       while(XCheckMaskEvent(dpy, ButtonMotionMask | PointerMotionMask |
 			    ButtonReleaseMask | ButtonPressMask, &Event))
@@ -2168,6 +2155,7 @@ void resize_window(F_CMD_ARGS)
 	if (Event.type == ButtonRelease || Event.type == ButtonPress)
 	  break;
       }
+    }
 
     done = False;
     /* Handle a limited number of key press events to allow mouseless
@@ -2177,7 +2165,7 @@ void resize_window(F_CMD_ARGS)
     switch(Event.type)
     {
     case ButtonPress:
-      XAllowEvents(dpy,ReplayPointer,CurrentTime);
+      XAllowEvents(dpy, AsyncPointer, CurrentTime);
       done = True;
       if (Event.xbutton.button <= NUMBER_OF_MOUSE_BUTTONS &&
 	  ((Button1Mask << (Event.xbutton.button - 1)) & button_mask))
@@ -2326,13 +2314,14 @@ void resize_window(F_CMD_ARGS)
   ResizeWindow = None;
   if (!do_resize_opaque)
   {
-    XEvent event;
     /* Throw away some events that dont interest us right now. */
-      while (XCheckMaskEvent(dpy, EnterWindowMask|LeaveWindowMask,
-                             &event) != False)
-        ;
+    discard_events(EnterWindowMask|LeaveWindowMask);
     Scr.flags.is_wire_frame_displayed = False;
     MyXUngrabServer(dpy);
+  }
+  else
+  {
+    XUngrabKeyboard(dpy, CurrentTime);
   }
   xmotion = 0;
   ymotion = 0;

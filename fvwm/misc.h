@@ -33,7 +33,9 @@
 #define GRAB_MENU     3       /* a menus.c grabing */
 #define GRAB_BUSY     4       /* BusyCursor stuff */
 #define GRAB_BUSYMENU 5       /* Allows menus.c to regrab the cursor */
-#define GRAB_MAXVAL   6       /* last GRAB macro + 1 */
+#define GRAB_PASSIVE  6       /* Override of passive grab, only prevents grab
+			       * to be released too early */
+#define GRAB_MAXVAL   7       /* last GRAB macro + 1 */
 
 
 /* Start of function prototype area. */
@@ -41,7 +43,6 @@
 Bool GrabEm(int cursor, int grab_context);
 void UngrabEm(int ungrab_context);
 
-void WaitForButtonsUp(Bool do_handle_expose);
 int GetTwoArguments(char *action, int *val1, int *val2, int *val1_unit,
 		    int *val2_unit);
 void NewFontAndColor(Font newfont, Pixel color, Pixel backcolor);

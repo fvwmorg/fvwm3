@@ -371,6 +371,7 @@ typedef struct ScreenInfo
     unsigned has_default_color_changed : 1;
     unsigned has_mouse_binding_changed : 1;
     unsigned has_nr_buttons_changed : 1;
+    unsigned is_map_desk_in_progress : 1;
     unsigned is_pointer_on_this_screen : 1;
     unsigned is_single_screen : 1;
     unsigned is_wire_frame_displayed : 1;

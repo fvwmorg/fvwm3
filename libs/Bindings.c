@@ -33,6 +33,7 @@ struct charstring
   int  value;
 };
 
+static Bool is_grabbing_everything = False;
 
 /* The keys must be in lower case! */
 static struct charstring win_contexts[]=
@@ -499,6 +500,8 @@ void GrabWindowKey(Display *dpy, Window w, Binding *binding,
 		     w);
       }
     }
+    if (!is_grabbing_everything)
+      XSync(dpy, 0);
   }
   return;
 }
@@ -508,10 +511,12 @@ void GrabAllWindowKeys(Display *dpy, Window w, Binding *blist,
 		       Bool fGrab)
 {
   MyXGrabServer(dpy);
+  is_grabbing_everything = True;
   for ( ; blist != NULL; blist = blist->NextBinding)
     GrabWindowKey(dpy, w, blist, contexts, dead_modifiers, fGrab);
-  MyXUngrabServer(dpy);
+  is_grabbing_everything = False;
   XSync(dpy, 0);
+  MyXUngrabServer(dpy);
   return;
 }
 
@@ -540,7 +545,7 @@ void GrabWindowButton(Display *dpy, Window w, Binding *binding,
       if (fGrab)
 	XGrabButton(dpy, button, binding->Modifier, w,
 		    True, ButtonPressMask | ButtonReleaseMask,
-		    GrabModeAsync, GrabModeAsync, None, cursor);
+		    GrabModeSync, GrabModeAsync, None, cursor);
       else
 	XUngrabButton(dpy, button, binding->Modifier, w);
       if(binding->Modifier != AnyModifier && dead_modifiers != 0)
@@ -560,11 +565,13 @@ void GrabWindowButton(Display *dpy, Window w, Binding *binding,
 	  if (fGrab)
 	    XGrabButton(dpy, button, mods|binding->Modifier, w, True,
 			ButtonPressMask | ButtonReleaseMask,
-			GrabModeAsync, GrabModeAsync, None, cursor);
+			GrabModeSync, GrabModeAsync, None, cursor);
 	  else
 	    XUngrabButton(dpy, button, mods|binding->Modifier, w);
 	}
       } /* if */
+      if (!is_grabbing_everything)
+	XSync(dpy, 0);
     } /* for */
   } /* if */
   return;
@@ -575,11 +582,12 @@ void GrabAllWindowButtons(Display *dpy, Window w, Binding *blist,
 			  Cursor cursor, Bool fGrab)
 {
   MyXGrabServer(dpy);
+  is_grabbing_everything = True;
   for ( ; blist != NULL; blist = blist->NextBinding)
     GrabWindowButton(dpy, w, blist, contexts, dead_modifiers, cursor, fGrab);
+  is_grabbing_everything = False;
   XSync(dpy, 0);
   MyXUngrabServer(dpy);
-  XSync(dpy, 0);
   return;
 }
 
@@ -589,6 +597,7 @@ void GrabAllWindowKeysAndButtons(Display *dpy, Window w, Binding *blist,
 				 Cursor cursor, Bool fGrab)
 {
   MyXGrabServer(dpy);
+  is_grabbing_everything = True;
   for ( ; blist != NULL; blist = blist->NextBinding)
   {
     if (blist->Context & contexts)
@@ -608,8 +617,9 @@ void GrabAllWindowKeysAndButtons(Display *dpy, Window w, Binding *blist,
       }
     }
   }
-  MyXUngrabServer(dpy);
+  is_grabbing_everything = False;
   XSync(dpy, 0);
+  MyXUngrabServer(dpy);
   return;
 }
 

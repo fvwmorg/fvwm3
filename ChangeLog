@@ -1,3 +1,93 @@
+2000-11-28  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* fvwm/menus.c (do_menu):
+	handle expose in WaitForButtonsUp
+
+	* fvwm/move_resize.c (InteractiveMove):
+	(resize_window):
+	if we don't grab the keyboard during opaque move/resize operations,
+	keyboard events may get through to the application
+
+	* fvwm/events.c (WaitForButtonsUp):
+	reduced network traffic
+	also eat up keyboard events in case of moving windows with the keyboard
+
+	* fvwm/move_resize.c (moveLoop):
+	(InteractiveMove):
+	properly handle Expose events after an interactive move has been
+	aborted and is now waiting for the last button to be released
+
+	* fvwm/misc.c (GrabEm):
+	(UngrabEm):
+	* fvwm/misc.h (GRAB_PASSIVE):
+	new kind of grab context that does not grab but delays the following
+	ungrab
+
+	* fvwm/functions.h:
+	* fvwm/events.c (HandleButtonRelease):
+	(HandleButtonPress):
+	* fvwm/functions.c (execute_function):
+	(cf_cleanup):
+	do not wait for buttons to become unpressed; do this in the caller's
+	code instead.
+
+	* libs/Bindings.c (GrabWindowButton):
+	grab buttons synchronously
+
+	* fvwm/move_resize.c (moveLoop):
+	(resize_window):
+	* fvwm/functions.c (DeferExecution):
+	removed calls to XAllowEvents()
+
+	* fvwm/events.c (WaitForButtonsUp):
+	* fvwm/builtins.c (do_recapture):
+	* fvwm/move_resize.c (InteractiveMove):
+	(resize_window):
+	use discard_events()
+
+	* fvwm/events.c (discard_events):
+	new function
+	(WaitForButtonsUp):
+	moved from misc.c to events.c where it logically belongs
+
+	* fvwm/events.c (HandleButtonPress):
+	* fvwm/focus.c (focus_grab_buttons):
+	improved focus grabbing for ClickToFocus windows
+	general fixes to button event propagation
+
+	* fvwm/misc.c (WaitForButtonsUp):
+	don't let pointer events pass to other clients
+
+	* fvwm/events.c (HandleMapRequestKeepRaised):
+	regrab buttons on focused window
+
+	* libs/Bindings.c (GrabWindowButton):
+	(GrabAllWindowKeys):
+	(GrabAllWindowButtons):
+	(GrabAllWindowKeysAndButtons):
+	* fvwm/focus.c (focus_grab_buttons):
+	button grabs become active immediately by calling XSync; otherwise the
+	server does not yet know that a button is grabbed when it it pressed.
+	reduced X server communication
+
+	* fvwm/events.c (HandleEnterNotify):
+	correctly set initial value of Scr.flags.is_pointer_on_this_screen which
+	lead to a ClickToFocus problem
+
+	* fvwm/virtual.c (map_window):
+	ignore MapRequest events as a result of desk switching; another desk
+	switch focus fix.
+
+	* fvwm/screen.h (ScreenInfo):
+	* fvwm/virtual.c (MapDesk):
+	(UnmapDesk):
+	* fvwm/fvwm.h:
+	repaired code that remembers focus between desk switches; could not
+	properly handle desk -1
+
+	* fvwm/virtual.c:
+	reindented file
+
 2000-11-26  Chris Rankin  <rankinc@zipworld.com.au>
 
 	* fvwm/fvwm.c (InstallSignals)
@@ -21,7 +111,7 @@
 
 	* fvwm/menus.c (FreeMenuStyle):
 	Fixed a LEAK_FREE
-	
+
 2000-11-26  olicha  <olivier.chapuis@free.fr>
 
 	* fvwm/builtins.c (strokeFunc):

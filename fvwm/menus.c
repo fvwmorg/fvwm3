@@ -867,7 +867,7 @@ void do_menu(MenuParameters *pmp, MenuReturn *pmret)
   if(!pmp->flags.is_submenu)
   {
     UngrabEm(GRAB_MENU);
-    WaitForButtonsUp(False);
+    WaitForButtonsUp(True);
     if (pmret->rc == MENU_DONE)
     {
       if (pmp->ret_paction && *(pmp->ret_paction))

@@ -512,7 +512,8 @@ void focus_grab_buttons(FvwmWindow *tmp_win, Bool is_focused)
     grab_buttons = ((1 << NUMBER_OF_MOUSE_BUTTONS) - 1);
     do_grab_all = True;
   }
-  else if (HAS_CLICK_FOCUS(tmp_win) && !is_focused &&
+  else if (HAS_CLICK_FOCUS(tmp_win) &&
+	   (!is_focused || !is_on_top_of_layer(tmp_win)) &&
 	   (!DO_NOT_RAISE_CLICK_FOCUS_CLICK(tmp_win) || accepts_input_focus))
   {
     grab_buttons = ((1 << NUMBER_OF_MOUSE_BUTTONS) - 1);
@@ -523,9 +524,8 @@ void focus_grab_buttons(FvwmWindow *tmp_win, Bool is_focused)
   {
     Bool do_grab;
 
+    MyXGrabServer (dpy);
     Scr.Ungrabbed = (do_grab_all) ? NULL : tmp_win;
-    if (do_grab_all)
-      XSync(dpy, 0);
     for (i = 0; i < NUMBER_OF_MOUSE_BUTTONS; i++)
     {
       if ((grab_buttons & (1 << i)) == (tmp_win->grabbed_buttons & (1 << i)))
@@ -560,6 +560,8 @@ void focus_grab_buttons(FvwmWindow *tmp_win, Bool is_focused)
       }
     } /* for */
     tmp_win->grabbed_buttons = grab_buttons;
+    XSync(dpy, 0);
+    MyXUngrabServer (dpy);
   }
 
   return;

@@ -1148,7 +1148,7 @@ InstallSignals(void)
    * signals can be delivered until the SIGCHLD handler completes,
    * and this is a Good Thing because the terminate handlers
    * might exit abruptly via "siglongjmp". This could potentially
-   * leave SIGCHLD handler with unfinished business ...  
+   * leave SIGCHLD handler with unfinished business ...
    *
    * NOTE: We could still receive SIGPIPE signals within the
    *       SIGCHLD handler, but the SIGPIPE handler has the
@@ -1607,7 +1607,9 @@ static void InitVariables(void)
   Scr.Hilite = NULL;
   Scr.Focus = NULL;
   Scr.PreviousFocus = NULL;
-  Scr.LastScreenFocus = NULL;
+  /* this indicates that the root window was never entered since the startup of
+   * fvwm. */
+  Scr.LastScreenFocus = &Scr.FvwmRoot;
   Scr.Ungrabbed = NULL;
 
   Scr.DefaultFont.font = NULL;

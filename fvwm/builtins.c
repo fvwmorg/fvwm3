@@ -2409,7 +2409,6 @@ void UnsetEnv(F_CMD_ARGS)
 
 static void do_recapture(F_CMD_ARGS, Bool fSingle)
 {
-  XEvent event;
   Bool need_ungrab = False;
 
   if (fSingle)
@@ -2427,7 +2426,6 @@ static void do_recapture(F_CMD_ARGS, Bool fSingle)
   }
   XSync(dpy,0);
   MyXGrabServer(dpy);
-  XSync(dpy,0);
   if (fSingle)
     CaptureOneWindow(tmp_win, tmp_win->w);
   else
@@ -2435,11 +2433,9 @@ static void do_recapture(F_CMD_ARGS, Bool fSingle)
   /* Throw away queued up events. We don't want user input during a
    * recapture. The window the user clicks in might disapper at the very same
    * moment and the click goes through to the root window. Not good */
-  while (XCheckMaskEvent(dpy, ButtonPressMask|ButtonReleaseMask|
-			 ButtonMotionMask|PointerMotionMask|EnterWindowMask|
-			 LeaveWindowMask|KeyPressMask|KeyReleaseMask,
-			 &event) != False)
-    ;
+  discard_events(
+    ButtonPressMask|ButtonReleaseMask|ButtonMotionMask|PointerMotionMask|
+    EnterWindowMask|LeaveWindowMask|KeyPressMask|KeyReleaseMask);
   MyXUngrabServer(dpy);
   if (need_ungrab)
     UngrabEm(GRAB_BUSY);
@@ -3107,7 +3103,7 @@ void strokeFunc(F_CMD_ARGS)
     switch (eventp->type)
     {
     case MotionNotify:
-      if (eventp->xany.window != Scr.Root) 
+      if (eventp->xany.window != Scr.Root)
       {
 	XQueryPointer(dpy, Scr.Root, &JunkRoot, &JunkChild, &tmpx, &tmpy,
 		&JunkX, &JunkY, &JunkMask);

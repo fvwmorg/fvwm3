@@ -103,57 +103,57 @@ static int GetDeskNumber(char *action)
   m = 0;
 
   if (val[0] == 0)
-    {
-      /* absolute desk number */
-      desk = val[1];
-    }
+  {
+    /* absolute desk number */
+    desk = val[1];
+  }
   else
-    {
-      /* relative desk number */
-      desk += val[0];
-    }
+  {
+    /* relative desk number */
+    desk += val[0];
+  }
 
   if (n == 3)
-    {
-      m = 1;
-    }
+  {
+    m = 1;
+  }
   if (n == 4)
-    {
-      m = 2;
-    }
+  {
+    m = 2;
+  }
 
 
   if (n > 2)
+  {
+    /* handle limits */
+    if (val[m] <= val[m+1])
     {
-      /* handle limits */
-      if (val[m] <= val[m+1])
-	{
-	  min = val[m];
-	  max = val[m+1];
-	}
-      else
-	{
-	  /*  min > max is nonsense, so swap 'em.  */
-	  min = val[m+1];
-	  max = val[m];
-	}
-      if (desk < min)
-	{
-	  /*  Relative move outside of range, wrap around.  */
-	  if (val[0] < 0)
-	    desk = max;
-	  else
-	    desk = min;
-	}
-      else if (desk > max)
-	{
-	  /*  Relative move outside of range, wrap around.  */
-	  if (val[0] > 0)
-	    desk = min;
-	  else
-	    desk = max;
-	}
+      min = val[m];
+      max = val[m+1];
     }
+    else
+    {
+      /*  min > max is nonsense, so swap 'em.  */
+      min = val[m+1];
+      max = val[m];
+    }
+    if (desk < min)
+    {
+      /*  Relative move outside of range, wrap around.  */
+      if (val[0] < 0)
+	desk = max;
+      else
+	desk = min;
+    }
+    else if (desk > max)
+    {
+      /*  Relative move outside of range, wrap around.  */
+      if (val[0] > 0)
+	desk = min;
+      else
+	desk = max;
+    }
+  }
 
   return desk;
 }
@@ -178,6 +178,7 @@ static void unmap_window(FvwmWindow *t)
   if (ret)
   {
     eventMask = winattrs.your_event_mask;
+    /* suppress UnmapRequest event */
     XSelectInput(dpy, t->w, eventMask & ~StructureNotifyMask);
   }
   if(IS_ICONIFIED(t))
@@ -191,12 +192,14 @@ static void unmap_window(FvwmWindow *t)
   {
     XUnmapWindow(dpy,t->frame);
     /* this is required by the ICCCM2 */
-    XUnmapWindow(dpy,t->w);
+    XUnmapWindow(dpy, t->w);
   }
   if (ret)
   {
     XSelectInput(dpy, t->w, eventMask);
   }
+
+  return;
 }
 
 /**************************************************************************
@@ -206,6 +209,21 @@ static void unmap_window(FvwmWindow *t)
  *************************************************************************/
 static void map_window(FvwmWindow *t)
 {
+  XWindowAttributes winattrs;
+  unsigned long eventMask = 0;
+  Status ret;
+
+  /*
+   * Prevent the receipt of an UnmapNotify, since that would
+   * cause a transition to the Withdrawn state.
+   */
+  ret = XGetWindowAttributes(dpy, t->w, &winattrs);
+  if (ret)
+  {
+    eventMask = winattrs.your_event_mask;
+    /* suppress MapRequest event */
+    XSelectInput(dpy, t->w, eventMask & ~StructureNotifyMask);
+  }
   if(IS_ICONIFIED(t))
   {
     if(t->icon_pixmap_w != None)
@@ -218,8 +236,15 @@ static void map_window(FvwmWindow *t)
     XMapWindow(dpy, t->frame);
     XMapWindow(dpy, t->Parent);
     XMapWindow(dpy, t->decor_w);
+    /* this is required by the ICCCM2 */
     XMapWindow(dpy, t->w);
   }
+  if (ret)
+  {
+    XSelectInput(dpy, t->w, eventMask);
+  }
+
+  return;
 }
 
 
@@ -351,86 +376,86 @@ Bool HandlePaging(int HorWarpSize, int VertWarpSize, int *xl, int *yt,
 
   if((Scr.ScrollResistance >= 10000)||
      ((HorWarpSize ==0)&&(VertWarpSize==0)))
-    {
-      is_timestamp_valid = False;
-      add_time = 0;
-      return False;
-    }
+  {
+    is_timestamp_valid = False;
+    add_time = 0;
+    return False;
+  }
 
   /* need to move the viewport */
   if(Scr.VxMax == 0 && Scr.VyMax == 0)
+  {
+    is_timestamp_valid = False;
+    add_time = 0;
+    return False;
+  }
+
+  if (!is_timestamp_valid)
+  {
+    is_timestamp_valid = True;
+    my_timestamp = lastTimestamp;
+    is_last_position_valid = False;
+    add_time = 0;
+    last_x = -1;
+    last_y = -1;
+  }
+  else if (my_last_timestamp != lastTimestamp)
+  {
+    add_time = 0;
+  }
+  my_last_timestamp = lastTimestamp;
+
+  do
+  {
+    if(XPending(dpy) > 0 &&
+       (XCheckWindowEvent(
+	 dpy, Scr.PanFrameTop.win, LeaveWindowMask, &Event) ||
+	XCheckWindowEvent(
+	  dpy, Scr.PanFrameBottom.win, LeaveWindowMask, &Event) ||
+	XCheckWindowEvent(
+	  dpy, Scr.PanFrameLeft.win, LeaveWindowMask, &Event) ||
+	XCheckWindowEvent(
+	  dpy, Scr.PanFrameRight.win, LeaveWindowMask, &Event)))
+    {
+      StashEventTime(&Event);
+      is_timestamp_valid = False;
+      add_time = 0;
+      return False;
+    }
+    /* get pointer location */
+    GetLocationFromEventOrQuery(dpy, Scr.Root, &Event, &x, &y);
+    /* check actual pointer location since PanFrames can get buried under
+       a window being moved or resized - mab */
+    if(( x >= edge_thickness )&&( x < Scr.MyDisplayWidth-edge_thickness )&&
+       ( y >= edge_thickness )&&( y < Scr.MyDisplayHeight-edge_thickness ))
     {
       is_timestamp_valid = False;
       add_time = 0;
       return False;
     }
-
-  if (!is_timestamp_valid)
+    if (!fLoop && is_last_position_valid &&
+	((x - last_x) > MAX_PAGING_MOVE_DISTANCE ||
+	 (x - last_x) < -MAX_PAGING_MOVE_DISTANCE ||
+	 (y - last_y) > MAX_PAGING_MOVE_DISTANCE ||
+	 (y - last_y) < -MAX_PAGING_MOVE_DISTANCE))
     {
+      /* The pointer is moving too fast, prevent paging until it slows
+       * down. Don't prevent paging when fLoop is set since we can't be
+       * sure that HandlePaging will be called again. */
       is_timestamp_valid = True;
       my_timestamp = lastTimestamp;
-      is_last_position_valid = False;
       add_time = 0;
-      last_x = -1;
-      last_y = -1;
-    }
-  else if (my_last_timestamp != lastTimestamp)
-    {
-      add_time = 0;
-    }
-  my_last_timestamp = lastTimestamp;
-
-  do
-    {
-      if(XPending(dpy) > 0 &&
-	 (XCheckWindowEvent(
-	    dpy, Scr.PanFrameTop.win, LeaveWindowMask, &Event) ||
-	  XCheckWindowEvent(
-	    dpy, Scr.PanFrameBottom.win, LeaveWindowMask, &Event) ||
-	  XCheckWindowEvent(
-	    dpy, Scr.PanFrameLeft.win, LeaveWindowMask, &Event) ||
-	  XCheckWindowEvent(
-	    dpy, Scr.PanFrameRight.win, LeaveWindowMask, &Event)))
-	{
-	  StashEventTime(&Event);
-	  is_timestamp_valid = False;
-	  add_time = 0;
-	  return False;
-	}
-      /* get pointer location */
-      GetLocationFromEventOrQuery(dpy, Scr.Root, &Event, &x, &y);
-      /* check actual pointer location since PanFrames can get buried under
-	 a window being moved or resized - mab */
-      if(( x >= edge_thickness )&&( x < Scr.MyDisplayWidth-edge_thickness )&&
-	 ( y >= edge_thickness )&&( y < Scr.MyDisplayHeight-edge_thickness ))
-      {
-	is_timestamp_valid = False;
-	add_time = 0;
-	return False;
-      }
-      if (!fLoop && is_last_position_valid &&
-	  ((x - last_x) > MAX_PAGING_MOVE_DISTANCE ||
-	   (x - last_x) < -MAX_PAGING_MOVE_DISTANCE ||
-	   (y - last_y) > MAX_PAGING_MOVE_DISTANCE ||
-	   (y - last_y) < -MAX_PAGING_MOVE_DISTANCE))
-	{
-	  /* The pointer is moving too fast, prevent paging until it slows
-	   * down. Don't prevent paging when fLoop is set since we can't be
-	   * sure that HandlePaging will be called again. */
-	  is_timestamp_valid = True;
-	  my_timestamp = lastTimestamp;
-	  add_time = 0;
-	  last_x = x;
-	  last_y = y;
-	  return False;
-	}
       last_x = x;
       last_y = y;
-      is_last_position_valid = True;
-      usleep(10000);
-      add_time += 10;
-    } while (fLoop &&
-	     lastTimestamp - my_timestamp + add_time < Scr.ScrollResistance);
+      return False;
+    }
+    last_x = x;
+    last_y = y;
+    is_last_position_valid = True;
+    usleep(10000);
+    add_time += 10;
+  } while (fLoop &&
+	   lastTimestamp - my_timestamp + add_time < Scr.ScrollResistance);
 
   if (lastTimestamp - my_timestamp + add_time < Scr.ScrollResistance)
     return False;
@@ -456,60 +481,60 @@ Bool HandlePaging(int HorWarpSize, int VertWarpSize, int *xl, int *yt,
 
   /* Ouch! lots of bounds checking */
   if(Scr.Vx + *delta_x < 0)
+  {
+    if (!(Scr.flags.edge_wrap_x))
     {
-      if (!(Scr.flags.edge_wrap_x))
-	{
-	  *delta_x = -Scr.Vx;
-	  *xl = x - *delta_x;
-	}
-      else
-	{
-	  *delta_x += Scr.VxMax + Scr.MyDisplayWidth;
-	  *xl = x + *delta_x % Scr.MyDisplayWidth + HorWarpSize;
-	}
+      *delta_x = -Scr.Vx;
+      *xl = x - *delta_x;
     }
+    else
+    {
+      *delta_x += Scr.VxMax + Scr.MyDisplayWidth;
+      *xl = x + *delta_x % Scr.MyDisplayWidth + HorWarpSize;
+    }
+  }
   else if(Scr.Vx + *delta_x > Scr.VxMax)
+  {
+    if (!(Scr.flags.edge_wrap_x))
     {
-      if (!(Scr.flags.edge_wrap_x))
-	{
-	  *delta_x = Scr.VxMax - Scr.Vx;
-	  *xl = x - *delta_x;
-	}
-      else
-	{
-	  *delta_x -= Scr.VxMax +Scr.MyDisplayWidth;
-	  *xl = x + *delta_x % Scr.MyDisplayWidth - HorWarpSize;
-	}
+      *delta_x = Scr.VxMax - Scr.Vx;
+      *xl = x - *delta_x;
     }
+    else
+    {
+      *delta_x -= Scr.VxMax +Scr.MyDisplayWidth;
+      *xl = x + *delta_x % Scr.MyDisplayWidth - HorWarpSize;
+    }
+  }
   else
     *xl = x - *delta_x;
 
   if(Scr.Vy + *delta_y < 0)
+  {
+    if (!(Scr.flags.edge_wrap_y))
     {
-      if (!(Scr.flags.edge_wrap_y))
-	{
-	  *delta_y = -Scr.Vy;
-	  *yt = y - *delta_y;
-	}
-      else
-	{
-	  *delta_y += Scr.VyMax + Scr.MyDisplayHeight;
-	  *yt = y + *delta_y % Scr.MyDisplayHeight + VertWarpSize;
-	}
+      *delta_y = -Scr.Vy;
+      *yt = y - *delta_y;
     }
+    else
+    {
+      *delta_y += Scr.VyMax + Scr.MyDisplayHeight;
+      *yt = y + *delta_y % Scr.MyDisplayHeight + VertWarpSize;
+    }
+  }
   else if(Scr.Vy + *delta_y > Scr.VyMax)
+  {
+    if (!(Scr.flags.edge_wrap_y))
     {
-      if (!(Scr.flags.edge_wrap_y))
-	{
-	  *delta_y = Scr.VyMax - Scr.Vy;
-	  *yt = y - *delta_y;
-	}
-      else
-	{
-	  *delta_y -= Scr.VyMax + Scr.MyDisplayHeight;
-	  *yt = y + *delta_y % Scr.MyDisplayHeight - VertWarpSize;
-	}
+      *delta_y = Scr.VyMax - Scr.Vy;
+      *yt = y - *delta_y;
     }
+    else
+    {
+      *delta_y -= Scr.VyMax + Scr.MyDisplayHeight;
+      *yt = y + *delta_y % Scr.MyDisplayHeight - VertWarpSize;
+    }
+  }
   else
     *yt = y - *delta_y;
 
@@ -524,9 +549,9 @@ Bool HandlePaging(int HorWarpSize, int VertWarpSize, int *xl, int *yt,
   is_timestamp_valid = False;
   add_time = 0;
   if ((*delta_x == 0)&&(*delta_y == 0))
-    {
-      return False;
-    }
+  {
+    return False;
+  }
 
   if(Grab)
     MyXGrabServer(dpy);
@@ -552,7 +577,7 @@ Bool HandlePaging(int HorWarpSize, int VertWarpSize, int *xl, int *yt,
  * eat all mouse events.
  *
  * Hermann Dunkel, HEDU, dunkel@cul-ipn.uni-kiel.de 1/94
-*/
+ */
 
 /***************************************************************************
  * checkPanFrames hides PanFrames if they are on the very border of the
@@ -606,70 +631,70 @@ void checkPanFrames(void)
   /* Remove Pan frames if paging by edge-scroll is permanently or
    * temporarily disabled */
   if(Scr.EdgeScrollY == 0)
-    {
-      XUnmapWindow(dpy,Scr.PanFrameTop.win);
-      Scr.PanFrameTop.isMapped=False;
-      XUnmapWindow (dpy,Scr.PanFrameBottom.win);
-      Scr.PanFrameBottom.isMapped=False;
-    }
+  {
+    XUnmapWindow(dpy,Scr.PanFrameTop.win);
+    Scr.PanFrameTop.isMapped=False;
+    XUnmapWindow (dpy,Scr.PanFrameBottom.win);
+    Scr.PanFrameBottom.isMapped=False;
+  }
   if(Scr.EdgeScrollX == 0)
-    {
-      XUnmapWindow(dpy,Scr.PanFrameLeft.win);
-      Scr.PanFrameLeft.isMapped=False;
-      XUnmapWindow (dpy,Scr.PanFrameRight.win);
-      Scr.PanFrameRight.isMapped=False;
-    }
+  {
+    XUnmapWindow(dpy,Scr.PanFrameLeft.win);
+    Scr.PanFrameLeft.isMapped=False;
+    XUnmapWindow (dpy,Scr.PanFrameRight.win);
+    Scr.PanFrameRight.isMapped=False;
+  }
   if((Scr.EdgeScrollX == 0)&&(Scr.EdgeScrollY == 0))
     return;
 
   /* LEFT, hide only if EdgeWrap is off */
   if (Scr.Vx==0 && Scr.PanFrameLeft.isMapped && (!wrapX))
-    {
-      XUnmapWindow(dpy,Scr.PanFrameLeft.win);
-      Scr.PanFrameLeft.isMapped=False;
-    }
+  {
+    XUnmapWindow(dpy,Scr.PanFrameLeft.win);
+    Scr.PanFrameLeft.isMapped=False;
+  }
   else if ((Scr.Vx > 0 || wrapX) && Scr.PanFrameLeft.isMapped==False
 	   && Scr.EdgeScrollX)
-    {
-      XMapRaised(dpy,Scr.PanFrameLeft.win);
-      Scr.PanFrameLeft.isMapped=True;
-    }
+  {
+    XMapRaised(dpy,Scr.PanFrameLeft.win);
+    Scr.PanFrameLeft.isMapped=True;
+  }
   /* RIGHT, hide only if EdgeWrap is off */
   if (Scr.Vx == Scr.VxMax && Scr.PanFrameRight.isMapped && (!wrapX))
-    {
-      XUnmapWindow (dpy,Scr.PanFrameRight.win);
-      Scr.PanFrameRight.isMapped=False;
-    }
+  {
+    XUnmapWindow (dpy,Scr.PanFrameRight.win);
+    Scr.PanFrameRight.isMapped=False;
+  }
   else if ((Scr.Vx < Scr.VxMax || wrapX) && Scr.PanFrameRight.isMapped==False
 	   && Scr.EdgeScrollX)
-    {
-      XMapRaised(dpy,Scr.PanFrameRight.win);
-      Scr.PanFrameRight.isMapped=True;
-    }
+  {
+    XMapRaised(dpy,Scr.PanFrameRight.win);
+    Scr.PanFrameRight.isMapped=True;
+  }
   /* TOP, hide only if EdgeWrap is off */
   if (Scr.Vy==0 && Scr.PanFrameTop.isMapped && (!wrapY))
-    {
-      XUnmapWindow(dpy,Scr.PanFrameTop.win);
-      Scr.PanFrameTop.isMapped=False;
-    }
+  {
+    XUnmapWindow(dpy,Scr.PanFrameTop.win);
+    Scr.PanFrameTop.isMapped=False;
+  }
   else if ((Scr.Vy > 0 || wrapY) && Scr.PanFrameTop.isMapped==False
 	   && Scr.EdgeScrollY)
-    {
-      XMapRaised(dpy,Scr.PanFrameTop.win);
-      Scr.PanFrameTop.isMapped=True;
-    }
+  {
+    XMapRaised(dpy,Scr.PanFrameTop.win);
+    Scr.PanFrameTop.isMapped=True;
+  }
   /* BOTTOM, hide only if EdgeWrap is off */
   if (Scr.Vy == Scr.VyMax && Scr.PanFrameBottom.isMapped && (!wrapY))
-    {
-      XUnmapWindow (dpy,Scr.PanFrameBottom.win);
-      Scr.PanFrameBottom.isMapped=False;
-    }
+  {
+    XUnmapWindow (dpy,Scr.PanFrameBottom.win);
+    Scr.PanFrameBottom.isMapped=False;
+  }
   else if ((Scr.Vy < Scr.VyMax || wrapY) && Scr.PanFrameBottom.isMapped==False
 	   && Scr.EdgeScrollY)
-    {
-      XMapRaised(dpy,Scr.PanFrameBottom.win);
-      Scr.PanFrameBottom.isMapped=True;
-    }
+  {
+    XMapRaised(dpy,Scr.PanFrameBottom.win);
+    Scr.PanFrameBottom.isMapped=True;
+  }
 }
 
 /****************************************************************************
@@ -695,7 +720,7 @@ void raisePanFrames(void)
  ****************************************************************************/
 void initPanFrames(void)
 {
-  XSetWindowAttributes attributes;    /* attributes for create */
+  XSetWindowAttributes attributes;
   unsigned long valuemask;
   int saved_thickness;
 
@@ -710,7 +735,8 @@ void initPanFrames(void)
   valuemask=  (CWEventMask | CWCursor );
 
   attributes.cursor = Scr.FvwmCursors[CRS_TOP_EDGE];
-  /* I know these overlap, it's useful when at (0,0) and the top one is unmapped */
+  /* I know these overlap, it's useful when at (0,0) and the top one is
+   * unmapped */
   Scr.PanFrameTop.win =
     XCreateWindow (dpy, Scr.Root,
 		   0, 0,
@@ -781,8 +807,8 @@ void MoveViewport(int newx, int newy, Bool grab)
   deltay = Scr.Vy - newy;
   deltax = Scr.Vx - newx;
   /*
-      Identify the bounding rectangle that will be moved into
-      the viewport.
+    Identify the bounding rectangle that will be moved into
+    the viewport.
   */
   PageBottom    =  Scr.MyDisplayHeight - deltay - 1;
   PageRight     =  Scr.MyDisplayWidth  - deltax - 1;
@@ -962,31 +988,29 @@ static void UnmapDesk(int desk, Bool grab)
   }
   for (t = Scr.FvwmRoot.stack_prev; t != &Scr.FvwmRoot; t = t->stack_prev)
   {
-  /* Only change mapping for non-sticky windows */
+    /* Only change mapping for non-sticky windows */
     if(!(IS_ICONIFIED(t) && IS_ICON_STICKY(t)) &&
        !(IS_STICKY(t)) && !IS_ICON_UNMAPPED(t))
+    {
+      if (t->Desk == desk)
       {
-	if(t->Desk == desk)
-	{
-          if (Scr.Focus == t)
-            t->FocusDesk = desk;
-          else
-            t->FocusDesk = -1;
-          unmap_window(t);
-	}
-      }
-    else
-      {
-	/*  If a sticky window has the focus,remember it.  */
 	if (Scr.Focus == t)
-	  {
-	    t->FocusDesk = desk;
-	  }
+	{
+	  t->flags.is_focused_on_other_desk = 1;
+	  t->FocusDesk = desk;
+	  DeleteFocus(1);
+	}
 	else
-	  {
-	    t->FocusDesk = -1;
-	  }
+	{
+	  t->flags.is_focused_on_other_desk = 0;
+	}
+	unmap_window(t);
       }
+    }
+    else
+    {
+      t->flags.is_focused_on_other_desk = 0;
+    }
   }
   if (grab)
   {
@@ -1011,6 +1035,7 @@ static void MapDesk(int desk, Bool grab)
   FvwmWindow *FocusWin = NULL;
   FvwmWindow *StickyWin = NULL;
 
+  Scr.flags.is_map_desk_in_progress = 1;
   if (grab)
   {
     MyXGrabServer(dpy);
@@ -1032,7 +1057,6 @@ static void MapDesk(int desk, Bool grab)
       t->Desk = desk;
       if (Scr.Focus == t)
       {
-	t->FocusDesk = desk;
 	StickyWin = t;
       }
     }
@@ -1041,7 +1065,6 @@ static void MapDesk(int desk, Bool grab)
   {
     MyXUngrabServer(dpy);
   }
-
 
   for (t = Scr.FvwmRoot.next; t != NULL; t = t->next)
   {
@@ -1056,8 +1079,9 @@ static void MapDesk(int desk, Bool grab)
       AutoPlaceIcon(t);
     }
     /*	Keep track of the last-focused window on the new desk.	*/
-    if (t->FocusDesk == desk)
+    if (t->flags.is_focused_on_other_desk && t->FocusDesk == desk)
     {
+      t->flags.is_focused_on_other_desk = 0;
       FocusWin = t;
     }
   }
@@ -1066,7 +1090,7 @@ static void MapDesk(int desk, Bool grab)
   if (!StickyWin)
   {
     /*  Otherwise, handle remembering the last-focused clicky window.  */
-    if(FocusWin && HAS_CLICK_FOCUS(FocusWin))
+    if (FocusWin && (HAS_CLICK_FOCUS(FocusWin) || HAS_SLOPPY_FOCUS(FocusWin)))
     {
       SetFocusWindow(FocusWin, 1);
     }
@@ -1075,6 +1099,7 @@ static void MapDesk(int desk, Bool grab)
       DeleteFocus(1);
     }
   }
+  Scr.flags.is_map_desk_in_progress = 0;
 
   return;
 }
@@ -1093,10 +1118,10 @@ void goto_desk_func(F_CMD_ARGS)
 void goto_desk(int desk)
 {
 
-/*
-  RBW - the unmapping operations are now removed to their own functions so
-  they can also be used by the new GoToDeskAndPage command.
-*/
+  /*
+    RBW - the unmapping operations are now removed to their own functions so
+    they can also be used by the new GoToDeskAndPage command.
+  */
   if (Scr.CurrentDesk != desk)
   {
     prev_desk = Scr.CurrentDesk;
@@ -1267,36 +1292,36 @@ void scroll(F_CMD_ARGS)
     y = Scr.Vy + (val2/1000)*val2_unit/100;
 
   if(((val1 <= -100000)||(val1 >= 100000))&&(x>Scr.VxMax))
-    {
-      int xpixels = (Scr.VxMax / Scr.MyDisplayWidth + 1) * Scr.MyDisplayWidth;
-      x %= xpixels;
-      y += Scr.MyDisplayHeight * (1+((x-Scr.VxMax-1)/xpixels));
-      if(y > Scr.VyMax)
-	y %= (Scr.VyMax / Scr.MyDisplayHeight + 1) * Scr.MyDisplayHeight;
-    }
+  {
+    int xpixels = (Scr.VxMax / Scr.MyDisplayWidth + 1) * Scr.MyDisplayWidth;
+    x %= xpixels;
+    y += Scr.MyDisplayHeight * (1+((x-Scr.VxMax-1)/xpixels));
+    if(y > Scr.VyMax)
+      y %= (Scr.VyMax / Scr.MyDisplayHeight + 1) * Scr.MyDisplayHeight;
+  }
   if(((val1 <= -100000)||(val1 >= 100000))&&(x<0))
-    {
-      x = Scr.VxMax;
-      y -= Scr.MyDisplayHeight;
-      if(y < 0)
-	y=Scr.VyMax;
-    }
+  {
+    x = Scr.VxMax;
+    y -= Scr.MyDisplayHeight;
+    if(y < 0)
+      y=Scr.VyMax;
+  }
   if(((val2 <= -100000)||(val2>= 100000))&&(y>Scr.VyMax))
-    {
-      int ypixels = (Scr.VyMax / Scr.MyDisplayHeight + 1) *
-	Scr.MyDisplayHeight;
-      y %= ypixels;
-      x += Scr.MyDisplayWidth * (1+((y-Scr.VyMax-1)/ypixels));
-      if(x > Scr.VxMax)
-	x %= (Scr.VxMax / Scr.MyDisplayWidth + 1) * Scr.MyDisplayWidth;
-    }
+  {
+    int ypixels = (Scr.VyMax / Scr.MyDisplayHeight + 1) *
+      Scr.MyDisplayHeight;
+    y %= ypixels;
+    x += Scr.MyDisplayWidth * (1+((y-Scr.VyMax-1)/ypixels));
+    if(x > Scr.VxMax)
+      x %= (Scr.VxMax / Scr.MyDisplayWidth + 1) * Scr.MyDisplayWidth;
+  }
   if(((val2 <= -100000)||(val2>= 100000))&&(y<0))
-    {
-      y = Scr.VyMax;
-      x -= Scr.MyDisplayWidth;
-      if(x < 0)
-	x=Scr.VxMax;
-    }
+  {
+    y = Scr.VyMax;
+    x -= Scr.MyDisplayWidth;
+    if(x < 0)
+      x=Scr.VxMax;
+  }
   MoveViewport(x,y,True);
 }
 
@@ -1311,45 +1336,45 @@ Bool get_page_arguments(char *action, int *page_x, int *page_y)
 
   taction = GetNextToken(action, &token);
   if (token == NULL)
+  {
+    *page_x = Scr.Vx;
+    *page_y = Scr.Vy;
+    return True;
+  }
+  if (StrEquals(token, "prev"))
+  {
+    /* last page selected */
+    *page_x = prev_page_x;
+    *page_y = prev_page_y;
+    free(token);
+    return True;
+  }
+  if (StrEquals(token, "xwrap"))
+  {
+    xwrap = True;
+  }
+  else if (StrEquals(token, "ywrap"))
+  {
+    ywrap = True;
+  }
+  else if (StrEquals(token, "xywrap"))
+  {
+    xwrap = True;
+    ywrap = True;
+  }
+  free(token);
+  if (xwrap || ywrap)
+  {
+    GetNextToken(taction, &token);
+    if (token == NULL)
     {
       *page_x = Scr.Vx;
       *page_y = Scr.Vy;
       return True;
     }
-  if (StrEquals(token, "prev"))
-    {
-      /* last page selected */
-      *page_x = prev_page_x;
-      *page_y = prev_page_y;
-      free(token);
-      return True;
-    }
-  if (StrEquals(token, "xwrap"))
-    {
-      xwrap = True;
-    }
-  else if (StrEquals(token, "ywrap"))
-    {
-      ywrap = True;
-    }
-  else if (StrEquals(token, "xywrap"))
-    {
-      xwrap = True;
-      ywrap = True;
-    }
-  free(token);
-  if (xwrap || ywrap)
-    {
-      GetNextToken(taction, &token);
-      if (token == NULL)
-	{
-	  *page_x = Scr.Vx;
-	  *page_y = Scr.Vy;
-	  return True;
-	}
-      action = taction;
-      free(token);
-    }
+    action = taction;
+    free(token);
+  }
 
   if (GetSuffixedIntegerArguments(action, NULL, val, 2, "p", suffix) != 2)
     return False;

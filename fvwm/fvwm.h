@@ -248,6 +248,8 @@ typedef struct
   unsigned has_title : 1; /* Is this decorated with title */
   unsigned is_deiconify_pending : 1; /* Sent an XUnmapWindow for deiconifying,
 				      * but didn't receive a UnmapNotify yet.*/
+  unsigned is_focused_on_other_desk : 1; /* window had the focus when the desk
+					  * was switched. */
   unsigned is_fully_visible : 1; /* is the window fully visible */
   unsigned is_iconified : 1; /* is it an icon now? */
   unsigned is_iconified_by_parent : 1; /* To prevent iconified transients in a

@@ -49,7 +49,7 @@
 #include "events.h"
 #include "focus.h"
 
-static unsigned int grab_count[GRAB_MAXVAL] = { 1, 1, 0, 0, 0, 0 };
+static unsigned int grab_count[GRAB_MAXVAL] = { 1, 1, 0, 0, 0, 0, 0 };
 #define GRAB_EVMASK (ButtonPressMask | ButtonReleaseMask | ButtonMotionMask | PointerMotionMask | EnterWindowMask | LeaveWindowMask)
 
 
@@ -61,43 +61,6 @@ int GetTwoArguments(char *action, int *val1, int *val2, int *val1_unit,
   return GetTwoPercentArguments(action, val1, val2, val1_unit, val2_unit);
 }
 
-/***************************************************************************
- *
- * Wait for all mouse buttons to be released
- * This can ease some confusion on the part of the user sometimes
- *
- * Discard superflous button events during this wait period.
- *
- ***************************************************************************/
-void WaitForButtonsUp(Bool do_handle_expose)
-{
-  Bool AllUp = False;
-  XEvent JunkEvent;
-  unsigned int mask;
-
-  while (!AllUp)
-  {
-    XAllowEvents(dpy,AsyncPointer,CurrentTime);
-    XQueryPointer(dpy, Scr.Root, &JunkRoot, &JunkChild, &JunkX, &JunkY, &JunkX,
-		  &JunkY, &mask);
-    if(!(mask&(DEFAULT_ALL_BUTTONS_MASK)))
-      AllUp = True;
-    /* handle expose events */
-    if (do_handle_expose && XPending(dpy) &&
-	XCheckMaskEvent(dpy, ExposureMask, &Event))
-    {
-      DispatchEvent(True);
-    }
-  }
-  XSync(dpy,0);
-  while(XCheckMaskEvent(dpy,
-			ButtonPressMask|ButtonReleaseMask|ButtonMotionMask,
-			&JunkEvent))
-  {
-    StashEventTime (&JunkEvent);
-    XAllowEvents(dpy,ReplayPointer,CurrentTime);
-  }
-}
 
 /*****************************************************************************
  * Change the appearance of the grabbed cursor.
@@ -113,10 +76,27 @@ static void change_grab_cursor(int cursor)
 
 /*****************************************************************************
  * Grab the pointer.
- * grab_context: GRAB_NORMAL, GRAB_BUSY, GRAB_MENU, GRAB_BUSYMENU.
+ * grab_context: GRAB_NORMAL, GRAB_BUSY, GRAB_MENU, GRAB_BUSYMENU,
+ * GRAB_PASSIVE.
  * GRAB_STARTUP and GRAB_NONE are used at startup but are not made
  * to be grab_context.
+ * GRAB_PASSIVE does not actually grab, but only delays the following ungrab
+ * until the GRAB_PASSIVE is released too.
  ****************************************************************************/
+#undef DEBUG_GRAB
+#ifdef DEBUG_GRAB
+void print_grab_stats(char *text)
+{
+  int i;
+
+  fprintf(stderr,"grab_stats (%s):", text);
+  for (i = 0; i < GRAB_MAXVAL; i++)
+    fprintf(stderr," %d", grab_count[i]);
+  fprintf(stderr," \n");
+
+  return;
+}
+#endif
 Bool GrabEm(int cursor, int grab_context)
 {
   int i = 0;
@@ -131,13 +111,22 @@ Bool GrabEm(int cursor, int grab_context)
     return False;
   }
 
-  if (grab_count[GRAB_ALL] != 0)
+  if (grab_context == GRAB_PASSIVE)
+  {
+    grab_count[grab_context]++;
+    grab_count[GRAB_ALL]++;
+    return True;
+  }
+
+  if (grab_count[GRAB_ALL] > grab_count[GRAB_PASSIVE])
   {
     /* already grabbed, just change the grab cursor */
     grab_count[grab_context]++;
     grab_count[GRAB_ALL]++;
     if (grab_context != GRAB_BUSY || grab_count[GRAB_STARTUP] == 0)
+    {
       change_grab_cursor(cursor);
+    }
     return True;
   }
 
@@ -154,6 +143,9 @@ Bool GrabEm(int cursor, int grab_context)
     /* retry to grab the busy cursor only once */
     rep = 2;
     break;
+  case GRAB_PASSIVE:
+    /* cannot happen */
+    return False;
   default:
     if (!Scr.Focus || do_accept_input_focus(Scr.Focus))
     {
@@ -196,13 +188,16 @@ Bool GrabEm(int cursor, int grab_context)
   XSync(dpy,0);
 
   /* If we fall out of the loop without grabbing the pointer, its
-     time to give up */
+   * time to give up */
   if (val != GrabSuccess)
   {
     return False;
   }
   grab_count[grab_context]++;
   grab_count[GRAB_ALL]++;
+#ifdef DEBUG_GRAB
+print_grab_stats("grabbed");
+#endif
   return True;
 }
 
@@ -227,9 +222,9 @@ void UngrabEm(int ungrab_context)
     return;
   }
 
+  XSync(dpy,0);
   grab_count[ungrab_context]--;
   grab_count[GRAB_ALL]--;
-  XSync(dpy,0);
   if (grab_count[GRAB_ALL] > 0)
   {
     int new_cursor = None;
@@ -264,10 +259,19 @@ void UngrabEm(int ungrab_context)
       new_cursor = None;
       break;
     }
-    change_grab_cursor(new_cursor);
+    if (grab_count[GRAB_ALL] > grab_count[GRAB_PASSIVE])
+    {
+#ifdef DEBUG_GRAB
+print_grab_stats("-restore");
+#endif
+      change_grab_cursor(new_cursor);
+    }
   }
   else
   {
+#ifdef DEBUG_GRAB
+print_grab_stats("-ungrab");
+#endif
     XUngrabPointer(dpy, CurrentTime);
     if (Scr.PreviousFocus && ungrab_context != GRAB_BUSY)
     {
