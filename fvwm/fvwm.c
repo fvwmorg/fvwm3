@@ -1268,7 +1268,7 @@ void InitVariables(void)
   Scr.StipledTitles = False;
 
   /*  RBW - 11/02/1998    */
-  Scr.ModifyUSP                          =  False;
+  Scr.ModifyUSP                          =  True;
   Scr.CaptureHonorsStartsOnPage          =  True;
   Scr.RecaptureHonorsStartsOnPage        =  False;
   Scr.ActivePlacementHonorsStartsOnPage  =  False;
