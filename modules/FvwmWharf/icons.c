@@ -18,6 +18,7 @@
  ***********************************************************************/
 
 #include "config.h"
+/**#include "libs/fvwmlib.h"**/
 
 #include <stdio.h>
 #include <unistd.h>
