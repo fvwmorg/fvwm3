@@ -3,6 +3,12 @@ _+_A HREF="#2.4.12"_-_2.4.12_+_/A_-_.
 
 -------------------------------------------------------------------
 
+Changes in developement release 2.5.5 (not released yet)
+
+* New experimental module FvwmProxy.
+
+-------------------------------------------------------------------
+
 Changes in alpha release 2.5.4 (20-Oct-2002)
 
 * FvwmTaskBar may now include mini launchbuttons using the Button

@@ -1,6 +1,15 @@
 2002-10-29  Mikhael Goikhman  <migo@homemail.com>
 
 	* configure.in:
+	* NEWS:
+	switched to 2.5.5
+
+	* configure.in:
+	include FvwmProxy to build
+
+2002-10-29  Mikhael Goikhman  <migo@homemail.com>
+
+	* configure.in:
 	exclude FvwmProxy from build
 
 	* configure.in:
