@@ -55,6 +55,7 @@
 #include "libs/Colorset.h"
 #include "libs/Picture.h"
 #include "libs/fvwmsignal.h"
+#include "libs/XineramaSupport.h"
 
 
 #include "fvwmDragWell.h"
@@ -421,6 +422,7 @@ void XStartup(char *appName)
 #endif
 #endif
 
+  memset(&xg, 0, sizeof(xg));
   if (!(xg.dpy = XOpenDisplay (NULL))) {
     fprintf (stderr, "%s: can't open display %s",xg.appName,
 	     XDisplayName (NULL));
@@ -437,6 +439,7 @@ void XStartup(char *appName)
   xg.appName = (char *) malloc(sizeof(char) * (strlen(appNameStart)+1));
   strcpy(xg.appName,appNameStart); /*save the name of the application*/
   InitPictureCMap(xg.dpy);
+  XineramaSupportInit(xg.dpy);
   AllocColorset(0);
 
   /*get X stuff*/
@@ -565,20 +568,23 @@ void parseOptions(void)
       if (StrEquals(token, "Colorset")) {
 	LoadColorset(next);
       }
+      else if (StrEquals(token, XINERAMA_CONFIG_STRING)) {
+	XineramaSupportConfigureModule(next);
+      }
       continue;
     }
     tline2 = GetNextToken(tline2, &arg1);
     if (!arg1)
-      {
-	arg1 = (char *)safemalloc(1);
-	arg1[0] = 0;
-      }
+    {
+      arg1 = (char *)safemalloc(1);
+      arg1[0] = 0;
+    }
     tline2 = GetNextToken(tline2, &arg2);
     if (!arg2)
-      {
-	arg2 = (char *)safemalloc(1);
-	arg2[0] = 0;
-      }
+    {
+      arg2 = (char *)safemalloc(1);
+      arg2[0] = 0;
+    }
 
 
     if (StrEquals(resource, "ExportAsURL")) {
@@ -602,7 +608,7 @@ void parseOptions(void)
     } else if (StrEquals(resource, "Geometry")) {
       int g_x,g_y,flags;
       unsigned width,height;
-      flags = XParseGeometry(arg1,&g_x,&g_y,&width,&height);
+      flags = XineramaSupportParseGeometry(arg1,&g_x,&g_y,&width,&height);
       if (flags & WidthValue) {
 	xg.w = width;
       }
@@ -621,13 +627,12 @@ void parseOptions(void)
 	xg.xneg = 1;
       }
       if (flags & YNegative) {
-	xg.y = g_y;
 	xg.yneg = 1;
       }
     } else if (StrEquals(resource, "DragWellGeometry")) {
       int g_x,g_y,flags;
       unsigned width,height;
-      flags = XParseGeometry(arg1,&g_x,&g_y,&width,&height);
+      flags = XineramaSupportParseGeometry(arg1,&g_x,&g_y,&width,&height);
       if (flags & WidthValue) {
 	xg.dbw = width;
       }
@@ -775,11 +780,16 @@ int myXNextEvent(XEvent *event, char *fvwmMessage)
           {
 	    tline = (char*)&(packet->body[3]);
 	    token = PeekToken(tline, &tline);
-	    if (StrEquals(token, "Colorset"))/*colorset packet*/
+	    if (StrEquals(token, "Colorset"))
             {
+	      /*colorset packet*/
 	      colorset = LoadColorset(tline);
               change_colorset(colorset);
             }
+	    else if (StrEquals(token, XINERAMA_CONFIG_STRING))
+	    {
+	      XineramaSupportConfigureModule(tline);
+	    }
 	    return FOUND_FVWM_NON_MESSAGE;
 	  }
           else if (packet->type==M_STRING)
@@ -835,6 +845,34 @@ void createWindow()
   unsigned long valuemask;
   XSetWindowAttributes attributes;
 
+  xg.sizehints.min_width = 1;
+  xg.sizehints.min_height = 1;
+  xg.sizehints.width_inc = 1;
+  xg.sizehints.height_inc = 1;
+  xg.sizehints.base_width = xg.w;
+  xg.sizehints.base_height = xg.h;
+  xg.sizehints.win_gravity = NorthWestGravity;
+  xg.sizehints.flags = (PMinSize | PResizeInc | PBaseSize | PWinGravity);
+  if (xg.xneg)
+  {
+    xg.sizehints.win_gravity = NorthEastGravity;
+    xg.x = xg.dpyWidth - xg.x - xg.w;
+  }
+  if (xg.yneg)
+  {
+    xg.y = xg.dpyHeight - xg.y - xg.h;
+    if(xg.sizehints.win_gravity == NorthEastGravity)
+      xg.sizehints.win_gravity = SouthEastGravity;
+    else
+      xg.sizehints.win_gravity = SouthWestGravity;
+  }
+  if (xg.usposition)
+  {
+    xg.sizehints.flags |= USPosition;
+    xg.sizehints.x = xg.x;
+    xg.sizehints.y = xg.y;
+  }
+
   valuemask = (CWBackPixmap | CWBorderPixel| CWColormap);
   attributes.background_pixel = xg.back;
   attributes.border_pixel = xg.fore;
@@ -850,36 +888,6 @@ void createWindow()
   xg.wmAtomDelWin = XInternAtom(xg.dpy,"WM_DELETE_WINDOW",False);
   XSetWMProtocols(xg.dpy,xg.win,&xg.wmAtomDelWin,1);
 
-
-  xg.sizehints.min_width = 1;
-  xg.sizehints.min_height = 1;
-  xg.sizehints.width_inc = 1;
-  xg.sizehints.height_inc = 1;
-  xg.sizehints.base_height = xg.h;
-  xg.sizehints.base_width = xg.w;
-  xg.sizehints.win_gravity = NorthWestGravity;
-  xg.sizehints.flags = (PMinSize | PResizeInc | PBaseSize | PWinGravity);
-
-  if(xg.xneg)
-    {
-      xg.sizehints.win_gravity = NorthEastGravity;
-      xg.x = xg.dpyWidth - xg.w -2;
-    }
-
-  if(xg.yneg)
-    {
-      xg.y = xg.dpyWidth - xg.h -2;
-      if(xg.sizehints.win_gravity == NorthEastGravity)
-	xg.sizehints.win_gravity = SouthEastGravity;
-      else
-	xg.sizehints.win_gravity = SouthWestGravity;
-    }
-
-  if(xg.usposition) {
-    xg.sizehints.flags |= USPosition;
-    xg.sizehints.x = xg.x;
-    xg.sizehints.y = xg.y;
-  }
   XSetWMNormalHints(xg.dpy,xg.win,&xg.sizehints);
 
   changeWindowName(xg.win, xg.appName);

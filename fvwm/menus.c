@@ -7478,7 +7478,7 @@ char *get_menu_options(
 	}
 	return action;
       }
-      flags = XParseGeometry(tok, &x, &y, &width, &height);
+      flags = XineramaSupportParseGeometry(tok, &x, &y, &width, &height);
       if ((flags & (XValue | YValue)) != (XValue | YValue))
       {
 	free(tok);

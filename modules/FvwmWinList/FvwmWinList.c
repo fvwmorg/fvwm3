@@ -59,6 +59,8 @@
 
 #include "libs/Module.h"
 #include "libs/fvwmsignal.h"
+#include "libs/fvwmlib.h"
+#include "libs/XineramaSupport.h"
 
 #include "FvwmWinList.h"
 #include "ButtonArray.h"
@@ -1096,9 +1098,9 @@ void MakeMeWindow(void)
 
   if (geometry!= NULL)
   {
-    ret=XParseGeometry(geometry,&x,&y,&dummy1,&dummy2);
+    ret=XineramaSupportParseGeometry(geometry,&x,&y,&dummy1,&dummy2);
 
-    if (ret&XValue && ret&YValue)
+    if ((ret&XValue) && (ret&YValue))
     {
       hints.x=x;
       if (ret&XNegative)
@@ -1113,13 +1115,17 @@ void MakeMeWindow(void)
 
     if (ret&XNegative)
     {
-      if (ret&YNegative) hints.win_gravity=SouthEastGravity;
-      else  hints.win_gravity=NorthEastGravity;
+      if (ret&YNegative)
+	hints.win_gravity=SouthEastGravity;
+      else
+	hints.win_gravity=NorthEastGravity;
     }
     else
     {
-      if (ret&YNegative) hints.win_gravity=SouthWestGravity;
-      else  hints.win_gravity=NorthWestGravity;
+      if (ret&YNegative)
+	hints.win_gravity=SouthWestGravity;
+      else
+	hints.win_gravity=NorthWestGravity;
     }
 
 #ifndef COMPLEX_WINDOW_PLACEMENT
@@ -1321,6 +1327,7 @@ void StartMeUp(void)
     exit (1);
   }
   InitPictureCMap(dpy);
+  XineramaSupportInit(dpy);
   AllocColorset(0);
   x_fd = XConnectionNumber(dpy);
   screen= DefaultScreen(dpy);

@@ -71,6 +71,7 @@
 #include <ctype.h>
 #include <stdlib.h>
 #include "libs/fvwmlib.h"
+#include "libs/XineramaSupport.h"
 #include "libs/Module.h"
 #include "libs/Picture.h"
 #include "libs/Colorset.h"
@@ -268,6 +269,7 @@ int main(int argc, char **argv)
     exit (1);
   }
   InitPictureCMap(dpy);
+  XineramaSupportInit(dpy);
   /* Initialise default colorset */
   AllocColorset(0);
 
@@ -1572,7 +1574,7 @@ void ParseOptions(char *filename)
 	if (isspace(tmp[strlen(tmp)-1]))
 	  tmp[strlen(tmp)-1] = 0;
 
-	flags = XParseGeometry(tmp,&g_x,&g_y,&width,&height);
+	flags = XineramaSupportParseGeometry(tmp,&g_x,&g_y,&width,&height);
 	if (flags & WidthValue)
 	  w = width;
 	if (flags & HeightValue)

@@ -343,6 +343,12 @@ void CMD_XineramaDisable(F_CMD_ARGS)
 
 void CMD_XineramaEnable(F_CMD_ARGS)
 {
+  int val;
+
+  if (GetIntegerArguments(action, NULL, &val, 1) == 1)
+  {
+    XineramaSupportSetPrimaryScreen(val);
+  }
   XineramaSupportEnable();
   broadcast_xinerama_state();
 }

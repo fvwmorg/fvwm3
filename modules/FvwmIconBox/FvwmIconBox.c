@@ -63,8 +63,9 @@
 
 #include "libs/defaults.h"
 #include "libs/fvwmlib.h"
-#include "fvwm/fvwm.h"
+#include "libs/XineramaSupport.h"
 #include "libs/Colorset.h"
+#include "fvwm/fvwm.h"
 #include "FvwmIconBox.h"
 
 
@@ -274,6 +275,7 @@ int main(int argc, char **argv)
       exit (1);
     }
   InitPictureCMap(dpy);
+  XineramaSupportInit(dpy);
   AllocColorset(0);
   x_fd = XConnectionNumber(dpy);
 
@@ -1635,7 +1637,7 @@ void ParseOptions(void)
 	  while(((isspace((unsigned char)*tmp))&&(*tmp != '\n'))&&(*tmp != 0))
 	    tmp++;
 	  tmp[strlen(tmp)] = 0;
-	  flags = XParseGeometry(tmp,&g_x,&g_y,&width,&height);
+	  flags = XineramaSupportParseGeometry(tmp,&g_x,&g_y,&width,&height);
 	  if (flags & WidthValue)
 	    num_columns = width;
 	  if (flags & HeightValue)
@@ -1655,7 +1657,7 @@ void ParseOptions(void)
 	    tmp++;
 	  tmp[strlen(tmp)] = 0;
 
-	  flags = XParseGeometry(tmp,&g_x,&g_y,&width,&height);
+	  flags = XineramaSupportParseGeometry(tmp,&g_x,&g_y,&width,&height);
 	  if (flags & WidthValue)
 	    max_icon_width = width;
 	  if (flags & HeightValue)

@@ -1,5 +1,16 @@
 2001-08-02  Dominik Vogt  <dominik.vogt@gmx.de>
 
+	* libs/XineramaSupport.c (XineramaSupportParseGeometry):
+	handle Xinerama screens
+
+	* fvwm/style.c (CMD_Style):
+	* fvwm/menus.c (get_menu_options):
+	cope with Xinerama like geometries with screen info
+
+	* fvwm/virtual.c (CMD_XineramaEnable):
+	XineramaEnable optionally takes the number of the primary screen as its
+	argument
+
 	* fvwm/events.c (GetContext):
 	reindented code
 

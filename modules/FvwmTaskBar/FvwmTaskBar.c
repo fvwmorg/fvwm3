@@ -70,6 +70,7 @@
 
 #include "libs/Module.h"
 #include "libs/fvwmlib.h"  /* for pixmaps routines */
+#include "libs/XineramaSupport.h"
 #include "libs/safemalloc.h"
 #include "libs/fvwmsignal.h"
 #include "libs/Colorset.h"
@@ -1672,6 +1673,7 @@ void StartMeUp(void)
       exit (1);
    }
    InitPictureCMap(dpy);
+   XineramaSupportInit(dpy);
    AllocColorset(0);
    x_fd = XConnectionNumber(dpy);
    screen= DefaultScreen(dpy);
@@ -1689,7 +1691,7 @@ void StartMeUp(void)
 #ifdef STRICTLY_FIXED
      if ((ButtonFontset=XCreateFontSet(dpy,"fixed",&ml,&mc,&ds)) == NULL) {
 #else
-     if ((ButtonFontset=XCreateFontSet(dpy,"-*-fixed-medium-r-normal-*-14-*-*-*-*-*-*-*",&ml,&mc,&ds)) == NULL) { 
+     if ((ButtonFontset=XCreateFontSet(dpy,"-*-fixed-medium-r-normal-*-14-*-*-*-*-*-*-*",&ml,&mc,&ds)) == NULL) {
 #endif
        fprintf(stderr, "%s: Couldn't load fixed font. Exiting!\n",Module);
        exit(1);
@@ -1734,9 +1736,9 @@ void StartMeUp(void)
 
    if (geometry == NULL)
      UpdateString(&geometry, "+0-0");
-   ret = XParseGeometry(geometry, &hints.x, &hints.y,
-	 	        (unsigned int *)&hints.width,
-		        (unsigned int *)&hints.height);
+   ret = XineramaSupportParseGeometry(geometry, &hints.x, &hints.y,
+				      (unsigned int *)&hints.width,
+				      (unsigned int *)&hints.height);
 
    if (ret & YNegative)
    {

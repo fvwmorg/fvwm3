@@ -173,6 +173,7 @@ static void ct_ItemBack(char *);
 static void ct_ItemFore(char *);
 static void ct_Line(char *);
 static void ct_Message(char *);
+static void ct_Geometry(char *);
 static void ct_Position(char *);
 static void ct_Read(char *);
 static void ct_Selection(char *);
@@ -195,6 +196,7 @@ static struct CommandTable ct_table[] =
   {"Command",ct_Command},
   {"Font",ct_Font},
   {"Fore",ct_Fore},
+  {"Geometry",ct_Geometry},
   {"GrabServer",ct_GrabServer},
   {"Input",ct_Input},
   {"InputFont",ct_InputFont},
@@ -282,8 +284,7 @@ static void ParseConfigLine(char *buf)
   if (strncasecmp(buf, XINERAMA_CONFIG_STRING,
 		  strlen(XINERAMA_CONFIG_STRING)) == 0)
   {
-    int i = atoi(buf + strlen(XINERAMA_CONFIG_STRING));
-    XineramaSupportConfigureModule(i);
+    XineramaSupportConfigureModule(buf + strlen(XINERAMA_CONFIG_STRING));
     return;
   }
   if (strncasecmp(buf, "Colorset", 8) == 0) {
@@ -348,10 +349,48 @@ static void ct_Position(char *cp)
 {
   CF.have_geom = 1;
   CF.gx = atoi(cp);
+  CF.xneg = 0;
+  if (CF.gx < 0)
+  {
+    CF.gx = -1 - CF.gx;
+    CF.xneg = 1;
+  }
   while (!isspace((unsigned char)*cp)) cp++;
   while (isspace((unsigned char)*cp)) cp++;
   CF.gy = atoi(cp);
-  myfprintf((stderr, "Position @ (%d, %d)\n", CF.gx, CF.gy));
+  CF.yneg = 0;
+  if (CF.gy < 0)
+  {
+    CF.gy = -1 - CF.gy;
+    CF.yneg = 1;
+  }
+  myfprintf((stderr, "Position @ (%c%d%c%d)\n",
+	     (CF.xneg)?'-':'+',CF.gx, (CF.yneg)?'-':'+',CF.gy));
+}
+static void ct_Geometry(char *cp)
+{
+  int x = 0;
+  int y = 0;
+  int flags;
+  unsigned int dummy;
+
+  while (isspace(*cp))
+    cp++;
+  flags = XineramaSupportParseGeometry(cp, &x, &y, &dummy, &dummy);
+  if (flags&XValue)
+  {
+    CF.have_geom = 1;
+    CF.gx = x;
+    CF.xneg = (flags&XNegative);
+  }
+  if (flags&YValue)
+  {
+    CF.have_geom = 1;
+    CF.gy = y;
+    CF.yneg = (flags&YNegative);
+  }
+  myfprintf((stderr, "Geometry @ (%c%d%c%d)\n",
+	     (CF.xneg)?'-':'+',CF.gx, (CF.yneg)?'-':'+',CF.gy));
 }
 static void ct_Fore(char *cp)
 {
@@ -1448,11 +1487,13 @@ void DoCommand (Item *cmd)
 static void OpenWindows ()
 {
   int x, y;
+  int gravity = NorthWestGravity;
   Item *item;
   static XColor xcf, xcb;
   static XSetWindowAttributes xswa;
   static XWMHints wmh = { InputHint, True };
-  static XSizeHints sh = { PPosition | PSize | USPosition | USSize };
+  static XSizeHints sh =
+    { PPosition | PSize | USPosition | USSize | PWinGravity};
   XClassHint myclasshints;
 
   xc_ibeam = XCreateFontCursor(dpy, XC_xterm);
@@ -1466,15 +1507,30 @@ static void OpenWindows ()
   XRecolorCursor(dpy, xc_ibeam, &xcf, &xcb);
 
   /* the frame window first */
-  if (CF.have_geom) {
-    if (CF.gx >= 0)
+  if (CF.have_geom)
+  {
+    if (CF.xneg)
+    {
+      x = DisplayWidth(dpy, screen) - CF.max_width - CF.gx;
+      gravity = NorthEastGravity;
+    }
+    else
+    {
       x = CF.gx;
+    }
+    if (CF.yneg)
+    {
+      y = DisplayHeight(dpy, screen) - CF.total_height - CF.gy;
+      gravity = SouthWestGravity;
+    }
     else
-      x = DisplayWidth(dpy, screen) - CF.max_width + CF.gx;
-    if (CF.gy >= 0)
+    {
       y = CF.gy;
-    else
-      y = DisplayHeight(dpy, screen) - CF.total_height + CF.gy;
+    }
+    if (CF.xneg && CF.yneg)
+    {
+      gravity = SouthEastGravity;
+    }
   } else {
     XineramaSupportCenterCurrent(NULL, &x, &y, CF.max_width, CF.total_height);
   }
@@ -1496,8 +1552,11 @@ static void OpenWindows ()
   myclasshints.res_name = MyName+1;
   myclasshints.res_class = "FvwmForm";
   XSetClassHint(dpy,CF.frame,&myclasshints);
-  sh.x = x, sh.y = y;
-  sh.width = CF.max_width, sh.height = CF.total_height;
+  sh.x = x;
+  sh.y = y;
+  sh.width = CF.max_width;
+  sh.height = CF.total_height;
+  sh.win_gravity = gravity;
   XSetWMNormalHints(dpy, CF.frame, &sh);
 
   for (item = root_item_ptr; item != 0;
@@ -1689,6 +1748,11 @@ static void ParseActiveMessage(char *buf)
     }
     return;
   } /* end colorset command */
+  if (strncasecmp(buf, XINERAMA_CONFIG_STRING, strlen(XINERAMA_CONFIG_STRING))
+      == 0) {
+    XineramaSupportConfigureModule(buf + strlen(XINERAMA_CONFIG_STRING));
+    return;
+  }
   if (strncasecmp(buf, MyName, MyNameLen) != 0) {/* If its not for me */
     return;
   } /* Now I know its for me. */

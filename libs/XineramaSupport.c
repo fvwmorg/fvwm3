@@ -334,8 +334,11 @@ void XineramaSupportSetPrimaryScreen(int scr)
 
 /* Intended to be called by modules.  Simply pass in the parameter from the
  * config string sent by fvwm. */
-void XineramaSupportConfigureModule(int screen)
+void XineramaSupportConfigureModule(char *args)
 {
+  int screen = 0;
+
+  GetIntegerArguments(args, NULL, &screen, 1);
   if (screen < 0)
   {
     screen = -1;
@@ -434,7 +437,8 @@ int XineramaSupportClipToScreen(
 }
 
 /* Exists almost exclusively for FvwmForm's "Position" statement */
-void XineramaSupportPositionCurrent(int *x, int *y, int px, int py, int w, int h)
+void XineramaSupportPositionCurrent(
+  int *x, int *y, int px, int py, int w, int h)
 {
   int  scr_x, scr_y, scr_w, scr_h;
 
@@ -675,10 +679,73 @@ int XineramaSupportParseGeometry(
   char *parsestring, int *x_return, int *y_return, unsigned int *width_return,
   unsigned int *height_return)
 {
-  int t;
+  int scr;
+  int rc;
+  int mx;
+  int my;
 
-  return XineramaSupportParseGeometryWithScreen(
-    parsestring, x_return, y_return, width_return, height_return, &t);
+  rc = XineramaSupportParseGeometryWithScreen(
+    parsestring, x_return, y_return, width_return, height_return, &scr);
+  switch (scr)
+  {
+  case GEOMETRY_SCREEN_GLOBAL:
+    scr = 0;
+    break;
+  case GEOMETRY_SCREEN_CURRENT:
+    GetMouseXY(NULL, &mx, &my);
+    scr = FindScreenOfXY(mx, my);
+    break;
+  case GEOMETRY_SCREEN_PRIMARY:
+    scr = primary_scr;
+    break;
+  default:
+    scr++;
+    break;
+  }
+  if (scr <= 0 || scr > last_to_check)
+  {
+    scr = 0;
+  }
+  else
+  {
+    /* adapt geometry to selected screen */
+    if (rc & XValue)
+    {
+      if (rc & XNegative)
+      {
+	*x_return +=
+	  (screens[0].width - screens[scr].width - screens[scr].x_org);
+      }
+      else
+      {
+	*x_return += screens[scr].x_org;
+      }
+    }
+    if (rc & YValue)
+    {
+      if (rc & YNegative)
+      {
+	*y_return +=
+	  (screens[0].height - screens[scr].height - screens[scr].y_org);
+      }
+      else
+      {
+	*y_return += screens[scr].y_org;
+      }
+    }
+  }
+#if DEBUG_PRINTS
+  fprintf(stderr, "*** xpg: x=%d, y=%d, w=%d, h=%d, flags:%s%s%s%s%s%s\n",
+	  *x_return, *y_return, *width_return, *height_return,
+	  rc&XValue?      " XValue":"",
+	  rc&YValue?      " YValue":"",
+	  rc&WidthValue?  " WidthValue":"",
+	  rc&HeightValue? " HeightValue":"",
+	  rc&XNegative?   " XNegative":"",
+	  rc&YNegative?   " YNegative":"");
+#endif
+
+  return rc;
 }
 
 

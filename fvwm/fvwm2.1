@@ -6482,8 +6482,14 @@ then the scroll amount is measured in pixels.
 Diables Xinerama support.
 
 .TP
-.BI XineramaEnable
-Enbles Xinerama support.
+.BI "XineramaEnable [ " primary-screen " ]"
+Enables Xinerama support.  The
+.I primary-screen
+argument is an integer that indicates the number of the Xinerama
+screen that is to be used as the primary screen.  The primary
+screen is the preferred screen to place windows.  Any number that
+is zero or more is taken as the primary screen's number.  Any
+negative value disables the primary screen feature.
 
 
 .SS COMMANDS FOR USER FUNCTIONS AND SHELL COMMANDS

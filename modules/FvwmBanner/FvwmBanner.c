@@ -312,7 +312,6 @@ static void parseOptions(int fd[2])
 {
   char *tline= NULL;
   char *tok;
-  int i;
 
   InitGetConfigLine(fd,MyName);
   while (GetConfigLine (fd, &tline),tline != NULL)
@@ -322,8 +321,7 @@ static void parseOptions(int fd[2])
       tok = PeekToken(tline, &tline);
       if (StrEquals(tok, XINERAMA_CONFIG_STRING))
       {
-	i = atoi(tline);
-	XineramaSupportConfigureModule(i);
+	XineramaSupportConfigureModule(tline);
 	continue;
       }
       if (StrEquals(tok, "ImagePath"))

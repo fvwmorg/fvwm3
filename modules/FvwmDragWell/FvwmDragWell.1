@@ -17,7 +17,7 @@ drops of type "text/uri-list".
 .SH INITIALIZATION
 During initialization, \fIFvwmDragWell\fP will search a configuration
 file which is the same file that fvwm used during initialization.  If
-the FvwmDragWell executable is linked to another name, ie ln -s
+the FvwmDragWell executable is linked to another name, i.e. ln -s
 FvwmDragWell OtherDragWell, then another module called OtherDragWell
 can be started, with a completely different configuration than
 FvwmDragWell, simply by changing the keyword FvwmDragWell to
@@ -46,12 +46,12 @@ prepended to the data, and the data is exported as type
 Examples:
 .nf
 .sp
-SendToModule FvwmDragWell dragdata /usr/local/libexec/fvwm/2.3.8
+SendToModule FvwmDragWell dragdata /usr/local/libexec/fvwm/2.4.0
 .sp
 .fi
 
 On hostname saturn, the drag well will convert the data to
-"file://saturn/usr/local/libexec/fvwm/2.3.8"
+"file://saturn/usr/local/libexec/fvwm/2.4.0"
 and will export the data as type "text/uri-list".  The long form of
 this command would be
 .nf

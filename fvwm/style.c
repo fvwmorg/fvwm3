@@ -39,6 +39,7 @@
 #include <stdio.h>
 
 #include "libs/fvwmlib.h"
+#include "libs/XineramaSupport.h"
 #include "fvwm.h"
 #include "externs.h"
 #include "cursor.h"
@@ -1596,12 +1597,9 @@ void CMD_Style(F_CMD_ARGS)
 	    l = strlen(token);
 	    if (l > 0 && l < 24) {
 	      /* if word found, not too long */
-              geom_flags=XParseGeometry(token,
-                                        &IconBoxes->IconBox[0],
-					/* x/y */
-                                        &IconBoxes->IconBox[1],
-					/* width/ht */
-                                        &width, &height);
+              geom_flags = XineramaSupportParseGeometry(
+		token, &IconBoxes->IconBox[0], &IconBoxes->IconBox[1],
+		&width, &height);
               if (width == 0) {
 		/* zero width is invalid */
                 fvwm_msg(ERR,"CMD_Style",

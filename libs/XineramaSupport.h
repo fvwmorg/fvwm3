@@ -10,7 +10,7 @@ void XineramaSupportDisable(void);
 void XineramaSupportEnable(void);
 /* Intended to be called by modules.  Simply pass in the parameter from the
  * config string sent by fvwm. */
-void XineramaSupportConfigureModule(int screen);
+void XineramaSupportConfigureModule(char *args);
 void XineramaSupportDisableRandR(void);
 
 int XineramaSupportGetPrimaryScreen(void);

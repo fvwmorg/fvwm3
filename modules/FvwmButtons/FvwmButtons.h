@@ -233,6 +233,7 @@ char *mymalloc(int);
 #else
 #define mymalloc(a) safemalloc(a)
 #endif
+void handle_xinerama_string(char *args);
 
 /* ----------------------------- global variables -------------------------- */
 

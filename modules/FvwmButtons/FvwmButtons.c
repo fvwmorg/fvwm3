@@ -1,3 +1,4 @@
+
 /*
  * FvwmButtons, copyright 1996, Jarl Totland
  *
@@ -59,6 +60,7 @@
 
 #include "libs/defaults.h"
 #include "libs/fvwmlib.h"
+#include "libs/XineramaSupport.h"
 #include "libs/Grab.h"
 #include "fvwm/fvwm.h"
 #include "libs/Module.h"
@@ -796,6 +798,7 @@ int main(int argc, char **argv)
     exit (1);
   }
   InitPictureCMap(Dpy);
+  XineramaSupportInit(Dpy);
   /* Initialise default colorset */
   AllocColorset(0);
 
@@ -1975,14 +1978,14 @@ void CreateUberButtonWindow(button_info *ub,int maxx,int maxy)
   {
     if (xneg)
     {
-      mysizehints.x = DisplayWidth(Dpy,screen) + x - mysizehints.width;
+      mysizehints.x = DisplayWidth(Dpy,screen) - x - mysizehints.width;
       gravity = NorthEastGravity;
     }
     else
       mysizehints.x = x;
     if (yneg)
     {
-      mysizehints.y = DisplayHeight(Dpy,screen) + y - mysizehints.height;
+      mysizehints.y = DisplayHeight(Dpy,screen) - y - mysizehints.height;
       gravity = SouthWestGravity;
     }
     else
@@ -2395,7 +2398,7 @@ static void change_colorset(int colorset)
   return;
 }
 
-static void handle_colorset_packet(unsigned long *body)
+static void handle_config_info_packet(unsigned long *body)
 {
   char *tline, *token;
   int colorset;
@@ -2406,6 +2409,10 @@ static void handle_colorset_packet(unsigned long *body)
   {
     colorset = LoadColorset(tline);
     change_colorset(colorset);
+  }
+  else if (StrEquals(token, XINERAMA_CONFIG_STRING))
+  {
+    XineramaSupportConfigureModule(tline);
   }
 
   return;
@@ -2441,7 +2448,7 @@ void process_message(unsigned long type,unsigned long *body)
     CheckForHangon(body);
     break;
   case M_CONFIG_INFO:
-    handle_colorset_packet((unsigned long*)body);
+    handle_config_info_packet((unsigned long*)body);
     break;
   case M_ADD_WINDOW:
   case M_CONFIGURE_WINDOW:

@@ -12,6 +12,8 @@ Changes in beta release 2.4.1 (not released yet)
 * New conditions CurrentGlobalPage and CurrentGlobalPageAnyDesk for
   conditional commands.
 
+* New Geometry option for FvwmForm.
+
 * Enhancements in fvwm-menu-headlines and support for 10 more sites.
 
 * Color enhancements in button vectors: @2 is bg color, @3 is fg color.
@@ -48,6 +50,10 @@ Changes in beta release 2.4.1 (not released yet)
   libstroke-0.5, autoconf-2.50, bogus gnome-config and imlib-config.
 
 * Fixed drawing of title bar buttons with MWMDecorStick.
+
+* Fixed missing button or key events over the pan frames.
+
+* Fixed placement of the FvwmDragWell, FvwmButtons and FvwmForm modules.
 
 _+_A NAME="2.4.0"_-_
 Changes in stable release 2.4.0 (1-Jul-2001)

@@ -37,6 +37,8 @@
 #include <X11/Xlib.h>
 #include <X11/Intrinsic.h>
 
+#include "libs/fvwmlib.h"
+#include "libs/XineramaSupport.h"
 #include "libs/Module.h"
 #include "libs/Colorset.h"
 #include "FvwmButtons.h"
@@ -1631,7 +1633,7 @@ void parse_window_geometry(char *geom)
   unsigned int width;
   unsigned int height;
 
-  flags = XParseGeometry(geom,&g_x,&g_y,&width,&height);
+  flags = XineramaSupportParseGeometry(geom,&g_x,&g_y,&width,&height);
   UberButton->w = 0;
   UberButton->h = 0;
   if (flags&WidthValue)
@@ -1664,6 +1666,7 @@ void ParseConfiguration(button_info *ub)
     "imagepath",
     "colorlimit",
     "colorset",
+    XINERAMA_CONFIG_STRING,
     NULL
   };
 
@@ -1694,6 +1697,10 @@ void ParseConfiguration(button_info *ub)
     case 3:
       /* store colorset sent by fvwm */
       LoadColorset(rest);
+      break;
+    case 4:
+      /* Xinerama state */
+      XineramaSupportConfigureModule(rest);
       break;
     }
     GetConfigLine(fd,&s);

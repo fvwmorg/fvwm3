@@ -47,6 +47,7 @@
 
 #include "libs/Module.h"
 #include "libs/fvwmlib.h"
+#include "libs/XineramaSupport.h"
 #include "libs/Colorset.h"
 #ifdef DEBUG
 #  define FVWM_DEBUG_MSGS   /* Do we need this? */
@@ -309,6 +310,7 @@ int main(int argc, char **argv)
     }
   x_fd = XConnectionNumber(dpy);
   InitPictureCMap(dpy);
+  XineramaSupportInit(dpy);
   AllocColorset(0);
 
   Scr.screen = DefaultScreen(dpy);
@@ -1567,7 +1569,7 @@ void ParseOptions(void)
       xneg = 0;
       yneg = 0;
       usposition = 0;
-      flags = XParseGeometry(arg1,&g_x,&g_y,&width,&height);
+      flags = XineramaSupportParseGeometry(arg1,&g_x,&g_y,&width,&height);
       if (flags & WidthValue)
       {
 	window_w = width;
@@ -1603,7 +1605,7 @@ void ParseOptions(void)
       icon_y = -10000;
       icon_xneg = 0;
       icon_yneg = 0;
-      flags = XParseGeometry(arg1,&g_x,&g_y,&width,&height);
+      flags = XineramaSupportParseGeometry(arg1,&g_x,&g_y,&width,&height);
       if (flags & WidthValue)
 	icon_w = width;
       if (flags & HeightValue)

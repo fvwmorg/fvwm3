@@ -1,3 +1,61 @@
+2001-08-03  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* FvwmForm/FvwmForm.1:
+	* FvwmForm/FvwmForm.c (ParseActiveMessage):
+	(def_table):
+	(ct_Geometry):
+	(ct_Position):
+	(OpenWindows):
+	honour Xinerama settings from the start
+	added new option "Geometry" that is meant to replace the old "Position"
+	option; "Geometry" also supports Xinerama
+	fixed placement with negative x/y coordinates
+
+	* FvwmDragWell/fvwmDragWell.c (createWindow):
+	* FvwmDragWell/fvwmDragWell.c (parseOptions):
+	added Xinerama support
+	fixed placement w/ geometry string
+	fixed placement w/ negative x/y coordinate
+
+	* FvwmForm/FvwmForm.c (ParseConfigLine):
+	* FvwmBanner/FvwmBanner.c (parseOptions):
+	rewrote Xinerama support
+
+	* FvwmButtons/parse.c (ParseConfiguration):
+	* FvwmButtons/FvwmButtons.c (handle_xinerama_string):
+	(CreateUberButtonWindow):
+	fixed placement with negative x/y coordinate
+	added Xinerama support
+
+	* FvwmWinList/FvwmWinList.c (MakeMeWindow):
+	geometry parsing fix
+
+	* FvwmWinList/FvwmWinList.c (StartMeUp):
+	* FvwmWharf/FvwmWharf.c (main):
+	* FvwmTaskBar/FvwmTaskBar.c:
+	* FvwmPager/FvwmPager.c (main):
+	* FvwmIconMan/x.c (init_display):
+	* FvwmIconBox/FvwmIconBox.c (main):
+	init Xinerama support
+
+	* FvwmButtons/Makefile.am (LDADD):
+	* FvwmButtons/parse.c (parse_window_geometry):
+	* FvwmDragWell/Makefile.am (LDADD):
+	* FvwmDragWell/fvwmDragWell.c (parseOptions):
+	* FvwmIconBox/Makefile.am (LDADD):
+	* FvwmIconBox/FvwmIconBox.c (ParseOptions):
+	* FvwmIconMan/Makefile.am (LDADD):
+	* FvwmIconMan/x.c (X_init_manager):
+	* FvwmPager/Makefile.am (LDADD):
+	* FvwmPager/FvwmPager.c (ParseOptions):
+	* FvwmTaskBar/Makefile.am (LDADD):
+	* FvwmTaskBar/FvwmTaskBar.c:
+	* FvwmWharf/Makefile.am (LDADD):
+	* FvwmWharf/FvwmWharf.c (ParseOptions):
+	* FvwmWinList/Makefile.am (LDADD):
+	* FvwmWinList/FvwmWinList.c (MakeMeWindow):
+	use Xinerama style geometries
+
 2001-07-30  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* FvwmButtons/draw.c (RedrawButton):

@@ -167,6 +167,7 @@ typedef struct _form {
   int grab_server;                      /* set during parse used on display */
   int server_grabbed;                   /* first time switch */
   int gx, gy, have_geom;
+  int xneg, yneg;
   int warp_pointer;
   int max_width, total_height;          /* frame size */
   unsigned long screen_background;
