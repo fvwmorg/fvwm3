@@ -866,8 +866,10 @@ void MapIt(FvwmWindow *t)
 /* send RESTACK packets for all windows between s1 and s2 */
 void BroadcastRestack (FvwmWindow *s1, FvwmWindow *s2)
 {
-  FvwmWindow *t, *b[8];
-  int r;
+  FvwmWindow *t, *t2;
+  int num, i;
+  unsigned long *body, *bp, length;
+  extern Time lastTimestamp;
 
   if (s1 == &Scr.FvwmRoot)
    {
@@ -877,6 +879,7 @@ void BroadcastRestack (FvwmWindow *s1, FvwmWindow *s2)
       BroadcastPacket (M_RAISE_WINDOW, 3, t->w, t->frame, (unsigned long)t); 
       if (t->stack_next == s2) 
         {
+          /* avoid sending empty RESTACK packet */ 
           return;
         }
    }
@@ -884,78 +887,26 @@ void BroadcastRestack (FvwmWindow *s1, FvwmWindow *s2)
    {
       t = s1;
    }
-  r = 0;
-  while (1) 
+  for (t2 = t, num = 1 ; t2 != s2; t2 = t2->stack_next, num++) ;
+  
+  length = HEADER_SIZE + 3*num;
+  body = (unsigned long *) safemalloc (length*sizeof(unsigned long)); 
+
+  bp = body;
+  *(bp++) = START_FLAG;
+  *(bp++) = M_RESTACK;
+  *(bp++) = length;
+  *(bp++) = lastTimestamp;
+  for (t2 = t; t2 != s2; t2 = t2->stack_next) 
    {
-     b[r++] = t;
-     t = t->stack_next;
-     if (r == 8 || t == s2)
-      {
-        switch (r) {
-        case 2:
-          BroadcastPacket (M_RESTACK, 6, 
-                           b[0]->w, b[0]->frame, (unsigned long)b[0], 
-                           b[1]->w, b[1]->frame, (unsigned long)b[1]);
-          break;
-        case 3:
-          BroadcastPacket (M_RESTACK, 9, 
-                           b[0]->w, b[0]->frame, (unsigned long)b[0], 
-                           b[1]->w, b[1]->frame, (unsigned long)b[1], 
-                           b[2]->w, b[2]->frame, (unsigned long)b[2]); 
-          break;
-        case 4:
-          BroadcastPacket (M_RESTACK, 12, 
-                           b[0]->w, b[0]->frame, (unsigned long)b[0], 
-                           b[1]->w, b[1]->frame, (unsigned long)b[1], 
-                           b[2]->w, b[2]->frame, (unsigned long)b[2], 
-                           b[3]->w, b[3]->frame, (unsigned long)b[3]); 
-          break;
-        case 5:
-          BroadcastPacket (M_RESTACK, 15, 
-                           b[0]->w, b[0]->frame, (unsigned long)b[0], 
-                           b[1]->w, b[1]->frame, (unsigned long)b[1], 
-                           b[2]->w, b[2]->frame, (unsigned long)b[2], 
-                           b[3]->w, b[3]->frame, (unsigned long)b[3], 
-                           b[4]->w, b[4]->frame, (unsigned long)b[4]); 
-          break;
-        case 6:
-          BroadcastPacket (M_RESTACK, 18, 
-                           b[0]->w, b[0]->frame, (unsigned long)b[0], 
-                           b[1]->w, b[1]->frame, (unsigned long)b[1], 
-                           b[2]->w, b[2]->frame, (unsigned long)b[2], 
-                           b[3]->w, b[3]->frame, (unsigned long)b[3], 
-                           b[4]->w, b[4]->frame, (unsigned long)b[4], 
-                           b[5]->w, b[5]->frame, (unsigned long)b[5]); 
-          break;
-        case 7:
-          BroadcastPacket (M_RESTACK, 21, 
-                           b[0]->w, b[0]->frame, (unsigned long)b[0], 
-                           b[1]->w, b[1]->frame, (unsigned long)b[1], 
-                           b[2]->w, b[2]->frame, (unsigned long)b[2], 
-                           b[3]->w, b[3]->frame, (unsigned long)b[3], 
-                           b[4]->w, b[4]->frame, (unsigned long)b[4], 
-                           b[5]->w, b[5]->frame, (unsigned long)b[5], 
-                           b[6]->w, b[6]->frame, (unsigned long)b[6]); 
-          break;
-        case 8:
-          BroadcastPacket (M_RESTACK, 24, 
-                           b[0]->w, b[0]->frame, (unsigned long)b[0], 
-                           b[1]->w, b[1]->frame, (unsigned long)b[1], 
-                           b[2]->w, b[2]->frame, (unsigned long)b[2], 
-                           b[3]->w, b[3]->frame, (unsigned long)b[3], 
-                           b[4]->w, b[4]->frame, (unsigned long)b[4], 
-                           b[5]->w, b[5]->frame, (unsigned long)b[5], 
-                           b[6]->w, b[6]->frame, (unsigned long)b[6], 
-                           b[7]->w, b[7]->frame, (unsigned long)b[7]); 
-          break;
-	default: 
-          fvwm_msg(ERR, "BroadcastRestack", "restacking %i windows ?", r);
-        }
-        if (t == s2) break;
-        t = t->stack_prev; /* we need an overlap for successive RESTACKs */
-        r = 0;
-      }
+      *(bp++) = t2->w;
+      *(bp++) = t2->frame;
+      *(bp++) = (unsigned long)t2;
    }
+   for (i = 0; i < npipes; i++) 
+     PositiveWrite(i, body, length*sizeof(unsigned long));
+
+   free (body);
 }
 
 /* 

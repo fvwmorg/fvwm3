@@ -1,3 +1,13 @@
+1999-03-07  Matthias Clasen  <clasen@mathematik.uni-freiburg.de>
+
+	* fvwm/add_window.c (merge_styles): fix Layer option handling.
+	
+	* fvwm/misc.c (BroadcastRestack): Reworked to send just one
+	variable-size packet containing all windows. This is necessary
+	to make the pager work properly. It seems ok to send packets
+	larger than MAX_BODY_SIZE, since M_WINDOWNAME has to potential
+	to do so too.
+
 1999-03-06  Tomas Ogren  <stric@ing.umu.se>
 
 	* fvwm/fvwm2.1: Reformatted 2 paragraphs.. 'tr in the beginning of a

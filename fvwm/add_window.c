@@ -1154,9 +1154,6 @@ static void merge_styles(name_list *styles, name_list *nptr) {
   if(nptr->IconBoxes != NULL) {         /* If style has iconboxes */
     styles->IconBoxes = nptr->IconBoxes; /* copy it */
   }
-  /* FIXME: must have a flag */
- if (nptr->layer >= 0) {
-   styles->layer = nptr->layer;
- }
+  styles->layer = nptr->layer;
   return;                               /* return */
 }
