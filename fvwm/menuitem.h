@@ -138,7 +138,7 @@ typedef struct
 MenuItem *menuitem_clone(MenuItem *mi);
 MenuItem *menuitem_create(void);
 void menuitem_free(MenuItem *mi);
-void menuitem_get_size(
+void menuitem_get_item_size(
 	MenuItem *mi, MenuItemPartSizes *mips, FlocaleFont *font,
 	Bool do_reverse_icon_order);
 void menuitem_paint(
