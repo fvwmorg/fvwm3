@@ -12,6 +12,15 @@ wrong_dir=0
 
 if [ "$1" = -r ] ; then
   IS_RELEASE=1
+  echo "Your name and email address will show up in the ChangeLog."
+  if [ -z "$FVWMRELNAME" ] ; then
+    echo "Please enter your name (set the FVWMRELNAME variable to avoid this)"
+    read FVWMRELNAME
+  fi
+  if [ -z "$FVWMRELEMAIL" ] ; then
+    echo "Please enter your name (set the FVWMRELEMAIL variable to avoid this)"
+    read FVWMRELEMAIL
+  fi
 else
   IS_RELEASE=0
 fi
@@ -79,7 +88,7 @@ make distcheck 2>&1 | grep "$VERSION_STRING$READY_STRING" || err_exit 11
 echo
 echo "distribution file is ready"
 echo
-if [ $IS_RELEASE = 0] ; then
+if [ $IS_RELEASE = 0 ] ; then
   echo "If this is to be an official release:"
   echo " . Tag the source tree:"
   echo "     cvs tag version-x_y_z"
@@ -92,23 +101,24 @@ else
   cvs tag version-$VRELEASE_$VMAJOR_VMINOR || err_exit 13
   echo increasing version number in configure.in
   NCFG="configure.in.$RANDOM"
+  touch $NCFG || err_exit 17
   cat configure.in |
-  sed -e "s/$VRELEASE\.$VMAJOR\.$VMINOR/$VRELEASE\.$VMAJOR\.$[$VMINOR+1]/g" >
-  $NCFG |
-  err_exit 14
-  mv $NCFG configure.in
-  echo committing configure.in
+  sed -e "s/$VRELEASE\.$VMAJOR\.$VMINOR/$VRELEASE\.$VMAJOR\.$[$VMINOR+1]/g" > \
+  $NCFG || err_exit 14
+  mv $NCFG configure.in || err_exit 19
+  echo generating ChangeLog entry ...
+  NCLOG="ChangeLog.$RANDOM"
+  touch $NCLOG || err_exit 18
+  echo `date +%Y-%m-%d`"  $FVWMRELNAME  <$FVWMRELEMAIL>" > $NCLOG
+  echo >> $NCLOG
+  echo "	* configure.in: changed version to $VRELEASE.$VMAJOR.$VMINOR" \
+    >> $NCLOG
+  echo >> $NCLOG
+  cat ChangeLog >> $NCLOG
+  mv $NCLOG ChangeLog || err_exit 20
+  echo committing configure.in and ChangeLog
   cvs commit -m "* Set development version to $VRELEASE.$VMAJOR.$VMINOR." \
-      configure.in || err_exit 15
-  echo
-  echo
-  echo "Please put this in the ChangeLog and create an entry in the NEWS file."
-  echo "------------------------------ snip ---------------------------------"
-  echo "yyyy-mm-dd  Your name  <your@email.address>"
-  echo
-  echo "	* configure.in: changed version to $VRELEASE.$VMAJOR.$VMINOR"
-  echo
-  echo "------------------------------ snip ---------------------------------"
+      configure.in ChangeLog || err_exit 15
   echo
   echo Then
   echo " . Upload the distribution to ftp://ftp.fvwm.org/pub/incoming/fvwm"
