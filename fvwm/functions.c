@@ -243,6 +243,7 @@ static const func_type func_config[] =
   CMD_ENTRY(PRE_SILENT, CMD_Silent, F_SILENT, 0),
   CMD_ENTRY("snapattraction", CMD_SnapAttraction, F_SNAP_ATT, 0),
   CMD_ENTRY("snapgrid", CMD_SnapGrid, F_SNAP_GRID, 0),
+  CMD_ENTRY("state", CMD_State, F_STATE, FUNC_NEEDS_WINDOW),
   CMD_ENTRY("stick", CMD_Stick, F_STICK, FUNC_NEEDS_WINDOW),
 #ifdef HAVE_STROKE
   CMD_ENTRY("stroke", CMD_Stroke, F_STROKE, 0),

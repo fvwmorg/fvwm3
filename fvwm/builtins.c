@@ -3606,3 +3606,43 @@ void CMD_StrokeFunc(F_CMD_ARGS)
 
 }
 #endif /* HAVE_STROKE */
+
+void CMD_State(F_CMD_ARGS)
+{
+	unsigned int state;
+	int toggle;
+	int n;
+
+	if (DeferExecution(eventp, &w, &tmp_win, &context, CRS_SELECT,
+			   ButtonRelease))
+	{
+		return;
+	}
+	n = GetIntegerArguments(action, &action, &state, 1);
+	if (n <= 0)
+	{
+		return;
+	}
+	if (state < 0 || state > 31)
+	{
+		fvwm_msg(ERR, "CMD_State", "Illegal state %d\n", state);
+		return;
+	}
+	toggle = ParseToggleArgument(action, NULL, -1, 0);
+	state = (1 << state);
+	switch (toggle)
+	{
+	case -1:
+		TOGGLE_USER_STATES(tmp_win, state);
+		break;
+	case 0:
+		CLEAR_USER_STATES(tmp_win, state);
+		break;
+	case 1:
+	default:
+		SET_USER_STATES(tmp_win, state);
+		break;
+	}
+
+	return;
+}

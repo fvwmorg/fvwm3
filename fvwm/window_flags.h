@@ -452,61 +452,71 @@
 #define SET_HAS_EWMH_INIT_FULLSCREEN_STATE(fw,x) \
           (fw)->flags.has_ewmh_init_fullscreen_state = (x)
 #define SETM_HAS_EWMH_INIT_FULLSCREEN_STATE(fw,x) \
-          (fw)->flags_mask.has_ewmh_init_fullscreen_state = (x)
+          (fw)->flag_mask.has_ewmh_init_fullscreen_state = (x)
 #define HAS_EWMH_INIT_FULLSCREEN_STATE(fw) \
           ((fw)->flags.has_ewmh_init_fullscreen_state)
 #define SET_HAS_EWMH_INIT_HIDDEN_STATE(fw,x) \
           (fw)->flags.has_ewmh_init_hidden_state = (x)
 #define SETM_HAS_EWMH_INIT_HIDDEN_STATE(fw,x) \
-          (fw)->flags_mask.has_ewmh_init_hidden_state = (x)
+          (fw)->flag_mask.has_ewmh_init_hidden_state = (x)
 #define HAS_EWMH_INIT_HIDDEN_STATE(fw) \
           ((fw)->flags.has_ewmh_init_hidden_state)
 #define SET_HAS_EWMH_INIT_MAXHORIZ_STATE(fw,x) \
           (fw)->flags.has_ewmh_init_maxhoriz_state = (x)
 #define SETM_HAS_EWMH_INIT_MAXHORIZ_STATE(fw,x) \
-          (fw)->flags_mask.has_ewmh_init_maxhoriz_state = (x)
+          (fw)->flag_mask.has_ewmh_init_maxhoriz_state = (x)
 #define HAS_EWMH_INIT_MAXHORIZ_STATE(fw) \
           ((fw)->flags.has_ewmh_init_maxhoriz_state)
 #define SET_HAS_EWMH_INIT_MAXVERT_STATE(fw,x) \
           (fw)->flags.has_ewmh_init_maxvert_state = (x)
 #define SETM_HAS_EWMH_INIT_MAXVERT_STATE(fw,x) \
-          (fw)->flags_mask.has_ewmh_init_maxvert_state = (x)
+          (fw)->flag_mask.has_ewmh_init_maxvert_state = (x)
 #define HAS_EWMH_INIT_MAXVERT_STATE(fw) \
           ((fw)->flags.has_ewmh_init_fullscreen_state)
 #define SET_HAS_EWMH_INIT_MODAL_STATE(fw,x) \
           (fw)->flags.has_ewmh_init_modal_state = (x)
 #define SETM_HAS_EWMH_INIT_MODAL_STATE(fw,x) \
-          (fw)->flags_mask.has_ewmh_init_modal_state = (x)
+          (fw)->flag_mask.has_ewmh_init_modal_state = (x)
 #define HAS_EWMH_INIT_MODAL_STATE(fw) \
           ((fw)->flags.has_ewmh_init_modal_state)
 #define SET_HAS_EWMH_INIT_SHADED_STATE(fw,x) \
           (fw)->flags.has_ewmh_init_shaded_state = (x)
 #define SETM_HAS_EWMH_INIT_SHADED_STATE(fw,x) \
-          (fw)->flags_mask.has_ewmh_init_shaded_state = (x)
+          (fw)->flag_mask.has_ewmh_init_shaded_state = (x)
 #define HAS_EWMH_INIT_SHADED_STATE(fw) \
           ((fw)->flags.has_ewmh_init_shaded_state)
 #define SET_HAS_EWMH_INIT_SKIP_PAGER_STATE(fw,x) \
           (fw)->flags.has_ewmh_init_skip_pager_state = (x)
 #define SETM_HAS_EWMH_INIT_SKIP_PAGER_STATE(fw,x) \
-          (fw)->flags_mask.has_ewmh_init_skip_pager_state = (x)
+          (fw)->flag_mask.has_ewmh_init_skip_pager_state = (x)
 #define HAS_EWMH_INIT_SKIP_PAGER_STATE(fw) \
           ((fw)->flags.has_ewmh_init_skip_pager_state)
 #define SET_HAS_EWMH_INIT_SKIP_TASKBAR_STATE(fw,x) \
           (fw)->flags.has_ewmh_init_skip_taskbar_state = (x)
 #define SETM_HAS_EWMH_INIT_SKIP_TASKBAR_STATE(fw,x) \
-          (fw)->flags_mask.has_ewmh_init_skip_taskbar_state = (x)
+          (fw)->flag_mask.has_ewmh_init_skip_taskbar_state = (x)
 #define HAS_EWMH_INIT_SKIP_TASKBAR_STATE(fw) \
           ((fw)->flags.has_ewmh_init_skip_taskbar_state)
 #define SET_HAS_EWMH_INIT_STICKY_STATE(fw,x) \
           (fw)->flags.has_ewmh_init_sticky_state = (x)
 #define SETM_HAS_EWMH_INIT_STICKY_STATE(fw,x) \
-          (fw)->flags_mask.has_ewmh_init_sticky_state = (x)
+          (fw)->flag_mask.has_ewmh_init_sticky_state = (x)
 #define HAS_EWMH_INIT_STICKY_STATE(fw) \
           ((fw)->flags.has_ewmh_init_sticky_state)
 #define SET_HAS_EWMH_INIT_WM_DESKTOP(fw,x) \
           (fw)->flags.has_ewmh_init_wm_desktop = (x)
 #define SETM_HAS_EWMH_INIT_WM_DESKTOP(fw,x) \
-          (fw)->flags_mask.has_ewmh_init_wm_desktop = (x)
+          (fw)->flag_mask.has_ewmh_init_wm_desktop = (x)
 #define HAS_EWMH_INIT_WM_DESKTOP(fw) \
           ((fw)->flags.has_ewmh_init_wm_desktop)
+#define SET_USER_STATES(fw, mask) \
+          (fw)->flags.user_states |= (mask)
+#define CLEAR_USER_STATES(fw, mask) \
+          (fw)->flags.user_states &= ~(mask)
+#define TOGGLE_USER_STATES(fw, mask) \
+          (fw)->flags.user_states ^= (mask)
+#define SETM_USER_STATES(fw, mask) \
+          (fw)->flag_mask.user_states |= (mask)
+#define GET_USER_STATES(fw) \
+          ((fw)->flags.user_states)
 #endif /* _WINDOW_FLAGS_ */

@@ -130,6 +130,7 @@ void CreateConditionMask(char *flags, WindowConditionMask *mask)
   char *condition;
   char *prev_condition = NULL;
   char *tmp;
+  unsigned int state;
 
   if (flags == NULL)
     return;
@@ -279,6 +280,23 @@ void CreateConditionMask(char *flags, WindowConditionMask *mask)
       mask->my_flags.use_circulate_hit_icon = 1;
     else if (StrEquals(condition,"CirculateHitShaded"))
       mask->my_flags.use_circulate_hit_shaded = 1;
+    else if (StrEquals(condition,"State") || StrEquals(condition,"!State"))
+    {
+      if (sscanf(tmp, "%d", &state) && state >= 0 && state <= 31)
+      {
+	state = (1 << state);
+	if (StrEquals(condition,"State"))
+	{
+	  SET_USER_STATES(mask, state);
+	}
+	else
+	{
+	  CLEAR_USER_STATES(mask, state);
+	}
+	SETM_USER_STATES(mask, state);
+	tmp = GetNextToken(tmp, &condition);
+      }
+    }
     else if (StrEquals(condition, "Layer"))
     {
        if (sscanf(tmp,"%d",&mask->layer))
@@ -414,6 +432,12 @@ Bool MatchesConditionMask(FvwmWindow *fw, WindowConditionMask *mask)
   }
 
   if ((mask->layer >= 0) && (fw->layer != mask->layer))
+  {
+    return 0;
+  }
+
+  if (GET_USER_STATES(mask) !=
+      (mask->flag_mask.user_states & GET_USER_STATES(fw)))
   {
     return 0;
   }

@@ -5,6 +5,8 @@ Changes in beta release 2.5.1 (not released yet)
 
 * New commands Schedule and Deschedule.
 
+* New command State,  New conditions State and !State.
+
 Changes in beta release 2.5.0 (27-Jan-2002)
 
 * New commands ResizeMaximize and ResizeMoveMaximize that modify

@@ -337,6 +337,7 @@ typedef struct
   unsigned has_ewmh_init_skip_taskbar_state : 2;
   unsigned has_ewmh_init_sticky_state : 2;
   unsigned has_ewmh_init_wm_desktop : 2;
+  unsigned user_states : 32;
 } window_flags;
 
 /* Window mask for Circulate and Direction functions */

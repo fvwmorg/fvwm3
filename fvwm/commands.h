@@ -156,6 +156,7 @@ void CMD_SetEnv(F_CMD_ARGS);
 void CMD_Silent(F_CMD_ARGS);
 void CMD_SnapAttraction(F_CMD_ARGS);
 void CMD_SnapGrid(F_CMD_ARGS);
+void CMD_State(F_CMD_ARGS);
 void CMD_Stick(F_CMD_ARGS);
 #ifdef HAVE_STROKE
 void CMD_Stroke(F_CMD_ARGS);

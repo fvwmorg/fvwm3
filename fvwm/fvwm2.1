@@ -3382,6 +3382,23 @@ necessary to quote the parts of the command that must not be
 expanded twice.
 
 .TP
+.BI "State " state " [" bool "]"
+Sets, clears or toggles one of the 32 user defined states which
+are associated with each window.  The
+.I state
+is a number ranging from 0 to 31.  The states have no meaning in
+fvwm, but they can be checked in conditional commands like
+.B Next
+with the
+.I State
+condition.  The optional argument
+.I bool
+is a boolean argument.  "True" sets the given state, while "False"
+clears it.  Using "toggle" switches to the opposite state.  If the
+.I bool
+argument is not given, the state is toggled.
+
+.TP
 .BI "WindowFont [" fontname "]"
 This command is obsoleted by the
 .B Style
