@@ -52,56 +52,19 @@
 #include "defaults.h"
 
 /* IMPORTANT NOTE: Do *not* use any constant numbers in this file. All values
- * have to be #defined in the section below to ensure full control over the
- * menus. */
+ * have to be #defined in the section below or defaults.h to ensure full
+ * control over the menus. */
 
 /***************************************************************
  * These values may be adjusted to fine tune the menu looks.
  ***************************************************************/
 
-/* prevent core dumping */
-#define MAX_MENU_COPIES		    10
-#define MAX_ITEM_LABELS		     3
-
-/* Default item formats for left and right submenus. */
-#define DEFAULT_ITEM_FORMAT	     "%s%.1|%.5i%.5l%.5l%.5r%.5i%2.3>%1|"
-#define DEFAULT_LEFT_ITEM_FORMAT     "%.1|%3.2<%5i%5l%5l%5r%5i%1|%s"
-
 /* This is the tile width or height for V and H gradients. I guess this should
  * better be a power of two. A value of 5 definitely causes XFree 3.3.3.1 to
  * screw up the V_GRADIENT on an 8 bit display, but 4, 6, 7 etc. work well. */
-#define GRADIENT_PIXMAP_THICKNESS    4
+#define DEFAULT_GRADIENT_PIXMAP_THICKNESS    4
 
-#define DEFAULT_MENU_BORDER_WIDTH    2
-#define MAX_MENU_BORDER_WIDTH	     50
-#define MAX_ITEM_RELIEF_THICKNESS    50
-
-
-#define POPUP_NOW_RATIO		     0.75
-
-#define PARENT_MENU_FORCE_VISIBLE_WIDTH 20
-
-/* Size of the submenu triangle. */
-#define TRIANGLE_WIDTH		     5
-#define TRIANGLE_HEIGHT		     9
-
-#define UNDERLINE_THICKNESS	  1
-#define UNDERLINE_GAP		  1
-#define UNDERLINE_HEIGHT	  (UNDERLINE_THICKNESS + UNDERLINE_GAP)
-
-#define SEPARATOR_SHORT_X_OFFSET  5
-#define SEPARATOR_Y_OFFSET	  2
-#define SEPARATOR_HEIGHT	  2
-#define SEPARATOR_TOTAL_HEIGHT	  (SEPARATOR_HEIGHT + SEPARATOR_Y_OFFSET)
-
-/* gap above item text */
-#define DEFAULT_ITEM_TEXT_Y_OFFSET	 1
-/* gap below item text */
-#define DEFAULT_ITEM_TEXT_Y_OFFSET2	 2
-/* same for titles */
-#define DEFAULT_TITLE_TEXT_Y_OFFSET	 DEFAULT_ITEM_TEXT_Y_OFFSET
-#define DEFAULT_TITLE_TEXT_Y_OFFSET2	 DEFAULT_ITEM_TEXT_Y_OFFSET2
-
+/* used in float to int arithmetic */
 #define ROUNDING_ERROR_TOLERANCE  0.005
 
 /***************************************************************
@@ -165,9 +128,10 @@ static void MenuInteraction(
   Bool *pdo_warp_to_item);
 static int pop_menu_up(
   MenuRoot **pmenu, MenuParameters *pmp, MenuRoot *parent_menu,
+  MenuItem *parent_item,
   FvwmWindow **pfw, int *pcontext, int x, int y, Bool prefer_left_submenu,
   Bool do_warp_to_item, MenuOptions *pops, Bool *ret_overlap,
-  Bool *pdo_warp_to_title);
+  Bool *pdo_warp_to_title, Window popdown_window);
 static void pop_menu_down(MenuRoot **pmr, MenuParameters *pmp);
 static void pop_menu_down_and_repaint_parent(
   MenuRoot **pmr, Bool *fSubmenuOverlaps, MenuParameters *pmp);
@@ -175,8 +139,8 @@ static void get_popup_options(MenuRoot *mr, MenuItem *mi, MenuOptions *pops);
 static void paint_item(MenuRoot *mr, MenuItem *mi, FvwmWindow *fw,
 		       Bool do_redraw_menu_border);
 static void paint_menu(MenuRoot *, XEvent *, FvwmWindow *fw);
-static void select_menu_item(MenuRoot *mr, MenuItem *mi, Bool select,
-			     FvwmWindow *fw);
+static void select_menu_item(
+  MenuRoot *mr, MenuItem *mi, Bool select, FvwmWindow *fw);
 static MenuRoot *copy_menu_root(MenuRoot *mr);
 static void make_menu(MenuRoot *mr);
 static void make_menu_window(MenuRoot *mr);
@@ -215,12 +179,12 @@ static Bool pointer_in_active_item_area(int x_offset, MenuRoot *mr)
   {
     return (x_offset <=
 	    MR_ITEM_X_OFFSET(mr) + MR_ITEM_WIDTH(mr) -
-	    MR_ITEM_WIDTH(mr) * POPUP_NOW_RATIO);
+	    MR_ITEM_WIDTH(mr) * MENU_POPUP_NOW_RATIO);
   }
   else
   {
     return (x_offset >=
-	    MR_ITEM_X_OFFSET(mr) + MR_ITEM_WIDTH(mr) * POPUP_NOW_RATIO);
+	    MR_ITEM_X_OFFSET(mr) + MR_ITEM_WIDTH(mr) * MENU_POPUP_NOW_RATIO);
   }
 }
 
@@ -229,13 +193,13 @@ static Bool pointer_in_passive_item_area(int x_offset, MenuRoot *mr)
   if (MST_USE_LEFT_SUBMENUS(mr))
   {
     return (x_offset >=
-	    MR_ITEM_X_OFFSET(mr) + MR_ITEM_WIDTH(mr) * POPUP_NOW_RATIO);
+	    MR_ITEM_X_OFFSET(mr) + MR_ITEM_WIDTH(mr) * MENU_POPUP_NOW_RATIO);
   }
   else
   {
     return (x_offset <=
 	    MR_ITEM_X_OFFSET(mr) + MR_ITEM_WIDTH(mr) -
-	    MR_ITEM_WIDTH(mr) * POPUP_NOW_RATIO);
+	    MR_ITEM_WIDTH(mr) * MENU_POPUP_NOW_RATIO);
   }
 }
 
@@ -394,6 +358,7 @@ static MenuItem *find_entry(
   if (pmr)
     *pmr = NULL;
 
+XSync(dpy, 0);
   XQueryPointer(dpy, Scr.Root, &JunkRoot, &Child,
 		&root_x,&root_y, &JunkX, &JunkY, &JunkMask);
   if (XFindContext(dpy, Child, MenuContext, (caddr_t *)&mr) == XCNOENT)
@@ -764,9 +729,10 @@ void do_menu(MenuParameters *pmp, MenuReturn *pmret)
 
     /* pop_menu_up may move the x,y to make it fit on screen more nicely */
     /* it might also move parent_menu out of the way */
-    if (!pop_menu_up(&(pmp->menu), pmp, pmp->parent_menu, pmp->pTmp_win,
-		     pmp->pcontext, x, y, prefer_left_submenus,
-		     key_press /*warp*/, pmp->pops, NULL, &do_warp_to_title))
+    if (!pop_menu_up(
+      &(pmp->menu), pmp, pmp->parent_menu, NULL, pmp->pTmp_win, pmp->pcontext,
+      x, y, prefer_left_submenus, key_press /*warp*/, pmp->pops, NULL,
+      &do_warp_to_title, None))
     {
       fFailedPopup = True;
       XBell(dpy, 0);
@@ -1396,15 +1362,20 @@ static void MenuInteraction(
   extern XEvent Event;
   MenuItem *mi = NULL;
   MenuItem *tmi;
+  MenuItem *miSelect = NULL;
+  MenuItem *miUnselect = NULL;
   MenuRoot *mrMi = NULL;
   MenuRoot *tmrMi = NULL;
   MenuRoot *mrPopup = NULL;
   MenuRoot *mrMiPopup = NULL;
   MenuRoot *mrNeedsPainting = NULL;
+  MenuRoot *mrPopdown = NULL;
+
   int x_init = 0;
   int y_init = 0;
   int x_offset = 0;
-  int c10msDelays = 0;
+  int popdown_delay_10ms = 0;
+  int popup_delay_10ms = 0;
   Time t0 = lastTimestamp;
   MenuOptions mops;
   exec_func_args_type efa;
@@ -1413,17 +1384,19 @@ static void MenuInteraction(
     unsigned do_popup_immediately : 1;
     /* used for delay popups, to just popup the menu */
     unsigned do_popup_now : 1;
+    unsigned do_popdown_now : 1;
     /* used for keystrokes, to popup and move to that menu */
     unsigned do_popup_and_warp : 1;
-    unsigned is_key_press : 1;
     unsigned do_force_reposition : 1;
-    unsigned is_off_menu_allowed : 1;
     unsigned do_force_popup : 1;
     unsigned do_popdown : 1;
     unsigned do_popup : 1;
     unsigned do_menu : 1;
     unsigned do_recycle_event : 1;
     unsigned has_mouse_moved : 1;
+    unsigned is_off_menu_allowed : 1;
+    unsigned is_key_press : 1;
+    unsigned is_item_entered_by_key_press : 1;
     unsigned is_motion_faked : 1;
     unsigned is_popped_up_by_timeout : 1;
     unsigned is_motion_first : 1;
@@ -1432,15 +1405,12 @@ static void MenuInteraction(
   } flags;
   /* Can't make this a member of the flags as we have to take its address. */
   Bool does_submenu_overlap = False;
+  Bool does_popdown_submenu_overlap = False;
 
   pmret->rc = MENU_NOP;
   memset(&flags, 0, sizeof(flags));
   flags.do_force_reposition = 1;
-
   memset(&mops, 0, sizeof(mops));
-  flags.do_popup_immediately =
-    (MST_DO_POPUP_IMMEDIATELY(pmp->menu) && MST_POPUP_DELAY(pmp->menu) > 0);
-
   /* remember where the pointer was so we can tell if it has moved */
   XQueryPointer(dpy, Scr.Root, &JunkRoot, &JunkChild,
 		&x_init, &y_init, &JunkX, &JunkY, &JunkMask);
@@ -1449,6 +1419,7 @@ static void MenuInteraction(
   {
     flags.do_popup_and_warp = False;
     flags.do_popup_now = False;
+    flags.do_popdown_now = False;
     flags.is_key_press = False;
     if (flags.do_recycle_event)
     {
@@ -1492,17 +1463,45 @@ static void MenuInteraction(
 		   ButtonMotionMask,
 		   &Event))
 	  {
+	    Bool is_popup_timed_out =
+	      (MST_POPUP_DELAY(pmp->menu) > 0 &&
+	       popup_delay_10ms++ > MST_POPUP_DELAY(pmp->menu));
+	    Bool is_popdown_timed_out =
+	      (MST_POPDOWN_DELAY(pmp->menu) > 0 && mrPopdown &&
+	       popdown_delay_10ms++ > MST_POPDOWN_DELAY(pmp->menu));
+	    Bool do_fake_motion = False;
+
 	    if (flags.do_force_popup ||
-		c10msDelays++ > MST_POPUP_DELAY(pmp->menu))
+		(is_popup_timed_out &&
+		 (is_popdown_timed_out || flags.is_item_entered_by_key_press ||
+		  !mrPopdown || MST_DO_POPDOWN_IMMEDIATELY(pmp->menu))))
+	    {
+	      flags.do_popup_now = True;
+	      flags.do_force_popup = False;
+	      do_fake_motion = True;
+	      flags.is_popped_up_by_timeout = True;
+	      is_popdown_timed_out = True;
+	    }
+	    if ((mrPopdown || mrPopup) &&
+		(is_popdown_timed_out || MST_DO_POPDOWN_IMMEDIATELY(pmp->menu)))
+	    {
+	      flags.do_popdown_now = True;
+	      do_fake_motion = True;
+	      if (!MST_DO_POPUP_IMMEDIATELY(pmp->menu) &&
+		  !MST_DO_POPDOWN_IMMEDIATELY(pmp->menu) &&
+		  MST_POPUP_DELAY(pmp->menu) <= MST_POPDOWN_DELAY(pmp->menu))
+	      {
+		flags.do_popup_now = True;
+		flags.is_popped_up_by_timeout = True;
+	      }
+	    }
+	    if (do_fake_motion)
 	    {
 	      DBUG("MenuInteraction","Faking motion");
 	      /* fake a motion event, and set flags.do_popup_now */
 	      Event.type = MotionNotify;
 	      Event.xmotion.time = lastTimestamp;
 	      flags.is_motion_faked = True;
-	      flags.is_popped_up_by_timeout = True;
-	      flags.do_popup_now = True;
-	      flags.do_force_popup = False;
 	      break;
 	    }
 	    usleep(10000 /* 10 ms*/);
@@ -1573,10 +1572,13 @@ static void MenuInteraction(
       {
 	pmret->rc = MENU_POST;
 	pmret->flags.is_menu_posted = 1;
-	pmret->flags.is_menu_pinned = 0;
 	pmret->menu = NULL;
 	pmret->parent_menu = pmp->menu;
 	flags.do_popup_now = True;
+	if (mrPopup && mi != MR_SELECTED_ITEM(pmp->menu))
+	{
+	  flags.do_popdown_now = True;
+	}
 	break;
       }
       pdkp->timestamp = 0;
@@ -1635,13 +1637,13 @@ static void MenuInteraction(
       }
       switch (pmret->rc)
       {
-	case MENU_SELECTED:
-	  if (mi && MI_IS_POPUP(mi) && !MST_DO_POPUP_AS_ROOT_MENU(pmp->menu))
-	  {
-	    pmret->rc = MENU_POPUP;
-	    break;
-	  }
-	  goto DO_RETURN;
+      case MENU_SELECTED:
+	if (mi && MI_IS_POPUP(mi) && !MST_DO_POPUP_AS_ROOT_MENU(pmp->menu))
+	{
+	  pmret->rc = MENU_POPUP;
+	  break;
+	}
+	goto DO_RETURN;
       case MENU_POPDOWN:
       case MENU_ABORTED:
       case MENU_DOUBLE_CLICKED:
@@ -1736,8 +1738,7 @@ static void MenuInteraction(
     {
       /* we're on a menu item */
       flags.is_off_menu_allowed = False;
-      mrMiPopup = mr_popup_for_mi(pmp->menu, mi);
-      if (mrMi != pmp->menu && mrMi != mrPopup)
+      if (mrMi != pmp->menu && mrMi != mrPopup && mrMi != mrPopdown)
       {
 	/* we're on an item from a prior menu */
 	if (mrMi != MR_PARENT_MENU(pmp->menu))
@@ -1757,28 +1758,54 @@ static void MenuInteraction(
       /* see if we're on a new item of this menu */
       if (mi != MR_SELECTED_ITEM(pmp->menu) && mrMi == pmp->menu)
       {
-	c10msDelays = 0;
+	flags.is_item_entered_by_key_press = flags.is_key_press;
+	popup_delay_10ms = 0;
 	/* we're on the same menu, but a different item,
 	 * so we need to unselect the old item */
 	if (MR_SELECTED_ITEM(pmp->menu))
 	{
 	  /* something else was already selected on this menu */
-	  if (mrPopup)
-	  {
-	    pop_menu_down_and_repaint_parent(
-	      &mrPopup, &does_submenu_overlap, pmp);
-	    mrPopup = NULL;
-	  }
 	  /* We have to pop down the menu before unselecting the item in case
 	   * we are using gradient menus. The recalled image would paint over
 	   * the submenu. */
-	  select_menu_item(pmp->menu, MR_SELECTED_ITEM(pmp->menu), False,
-			   (*pmp->pTmp_win));
+	  if (mrPopup)
+	  {
+	    mrPopdown = mrPopup;
+	    popdown_delay_10ms = 0;
+	    does_popdown_submenu_overlap = does_submenu_overlap;
+	    mrPopup = NULL;
+	    miUnselect = MR_SELECTED_ITEM(pmp->menu);
+	  }
+	  else if (mrPopdown)
+	  {
+	    miUnselect = MR_SELECTED_ITEM(pmp->menu);
+	  }
+	  else
+	  {
+	    select_menu_item(pmp->menu, MR_SELECTED_ITEM(pmp->menu), False,
+			     (*pmp->pTmp_win));
+	  }
 	}
-	/* do stuff to highlight the new item; this
-	 * sets MR_SELECTED_ITEM(pmp->menu), too */
-	select_menu_item(pmp->menu, mi, True, (*pmp->pTmp_win));
+	if (miUnselect)
+	{
+	  miSelect = mi;
+	}
+	else
+	{
+	  /* highlight the new item; sets MR_SELECTED_ITEM(pmp->menu), too */
+	  select_menu_item(pmp->menu, mi, True, (*pmp->pTmp_win));
+	}
       } /* new item of the same menu */
+      else if (mi != MR_SELECTED_ITEM(pmp->menu) && mrMi && mrMi == mrPopdown)
+      {
+	/* we're on the popup menu of a different menu item of this menu */
+	mi = MR_PARENT_ITEM(mrPopdown);
+	mrPopup = mrPopdown;
+	mrPopdown = NULL;
+	does_submenu_overlap = does_popdown_submenu_overlap;
+	select_menu_item(pmp->menu, mi, True, (*pmp->pTmp_win));
+      }
+      mrMiPopup = mr_popup_for_mi(pmp->menu, mi);
 
       /* check what has to be done with the item */
       flags.do_popdown = False;
@@ -1815,10 +1842,22 @@ static void MenuInteraction(
 	  pmret->rc = MENU_DOUBLE_CLICKED;
 	  goto DO_RETURN;
 	}
-	else
+	else if (!mrPopup || mrPopup != mrMiPopup || flags.do_popup_and_warp)
 	{
-	  if (flags.do_popup_now || flags.do_popup_immediately ||
-	      pointer_in_active_item_area(x_offset, mrMi))
+	  Bool do_it_now = False;
+
+	  if (flags.do_popup_now)
+	    do_it_now = True;
+	  else if (MST_DO_POPUP_IMMEDIATELY(pmp->menu) ||
+		   pointer_in_active_item_area(x_offset, mrMi))
+	  {
+	    if (flags.is_key_press ||
+		MST_DO_POPDOWN_IMMEDIATELY(pmp->menu) || !mrPopdown)
+	    {
+	      do_it_now = True;
+	    }
+	  }
+	  if (do_it_now)
 	  {
 	    /* must create a new menu or popup */
 	    if (mrPopup == NULL || mrPopup != mrMiPopup)
@@ -1838,21 +1877,53 @@ static void MenuInteraction(
 	  }
 	}
       } /* else if (mi && MI_IS_POPUP(mi)) */
-      if (flags.do_popup && mrPopup && mrPopup != mrMiPopup)
+      if (flags.do_popdown_now)
       {
-	/* must remove previous popup first */
 	flags.do_popdown = True;
+	flags.do_popdown_now = False;
       }
-
-      if (flags.do_popdown)
+      else if (flags.do_popup)
+      {
+	if (mrPopup && mrPopup != mrMiPopup)
+	{
+	  flags.do_popdown = True;
+	  mrPopdown = mrPopup;
+	  popdown_delay_10ms = 0;
+	  does_popdown_submenu_overlap = does_submenu_overlap;
+	}
+	else if (mrPopdown && mrPopdown != mrMiPopup)
+	{
+	  flags.do_popdown = True;
+	}
+	else if (mrPopdown && mrPopdown == mrMiPopup)
+	{
+	  mrPopup = mrPopdown;
+	  does_submenu_overlap = does_popdown_submenu_overlap;
+	  mrPopdown = NULL;
+	  flags.do_popup = False;
+	  flags.do_popdown = False;
+	}
+      }
+      if (flags.do_popdown && !flags.do_popup)
       {
 	DBUG("MenuInteraction","Popping down");
 	/* popdown previous popup */
-	if (mrPopup)
+	if (mrPopdown)
 	{
 	  pop_menu_down_and_repaint_parent(
-	    &mrPopup, &does_submenu_overlap, pmp);
-	  mrPopup = NULL;
+	    &mrPopdown, &does_popdown_submenu_overlap, pmp);
+	  if (miUnselect)
+	  {
+	    select_menu_item(pmp->menu, MR_SELECTED_ITEM(pmp->menu), False,
+			     (*pmp->pTmp_win));
+	    miUnselect = NULL;
+	  }
+	  if (miSelect)
+	  {
+	    select_menu_item(pmp->menu, mi, True, (*pmp->pTmp_win));
+	    miSelect = NULL;
+	  }
+	  mrPopdown = NULL;
 	}
 	flags.do_popdown = False;
       }
@@ -1934,7 +2005,6 @@ static void MenuInteraction(
 	if (!mrPopup)
 	{
 	  flags.do_menu = False;
-	  flags.do_popdown = False;
 	  pmret->flags.is_menu_posted = 0;
 	}
 	else
@@ -1956,9 +2026,11 @@ static void MenuInteraction(
 	      pmp->menu, mrPopup, &x, &y, &prefer_left_submenus);
 	    /* Note that we don't care if popping up the menu works. If it
 	     * doesn't we'll catch it below. */
-	    pop_menu_up(&mrPopup, pmp, pmp->menu, pmp->pTmp_win, pmp->pcontext,
-			x, y, prefer_left_submenus, flags.do_popup_and_warp,
-			&mops, &does_submenu_overlap, pdo_warp_to_title);
+	    pop_menu_up(
+	      &mrPopup, pmp, pmp->menu, mi, pmp->pTmp_win, pmp->pcontext, x, y,
+	      prefer_left_submenus, flags.do_popup_and_warp, &mops,
+	      &does_submenu_overlap, pdo_warp_to_title,
+	      (mrPopdown) ? MR_WINDOW(mrPopdown) : None);
 	    if (mrPopup == NULL)
 	    {
 	      /* the menu deleted itself when execution the dynamic popup
@@ -1966,6 +2038,27 @@ static void MenuInteraction(
 	      pmret->rc = MENU_ERROR;
 	      goto DO_RETURN;
 	    }
+	  }
+	  if (flags.do_popdown)
+	  {
+	    if (mrPopdown)
+	    {
+	      pop_menu_down_and_repaint_parent(
+		&mrPopdown, &does_popdown_submenu_overlap, pmp);
+	      if (miUnselect)
+	      {
+		select_menu_item(pmp->menu, MR_SELECTED_ITEM(pmp->menu), False,
+				 (*pmp->pTmp_win));
+		miUnselect = NULL;
+	      }
+	      if (miSelect)
+	      {
+		select_menu_item(pmp->menu, mi, True, (*pmp->pTmp_win));
+		miSelect = NULL;
+	      }
+	      mrPopdown = NULL;
+	    }
+	    flags.do_popdown = False;
 	  }
 	  if (MR_PARENT_MENU(mrPopup) == pmp->menu)
 	  {
@@ -2037,7 +2130,7 @@ static void MenuInteraction(
 	}
 	if (pmret->rc == MENU_POPDOWN)
 	{
-	  c10msDelays = 0;
+	  popup_delay_10ms = 0;
 	  flags.do_force_reposition = True;
 	}
       } /* if (flags.do_menu) */
@@ -2069,9 +2162,10 @@ static void MenuInteraction(
     else
     {
       /* moved off menu, deselect selected item... */
-      if (MR_SELECTED_ITEM(pmp->menu))
+      if (MR_SELECTED_ITEM(pmp->menu) &&
+	  flags.is_off_menu_allowed == False && !pmret->flags.is_menu_posted)
       {
-	if (mrPopup && flags.is_off_menu_allowed == False)
+	if (mrPopup)
 	{
 	  int x, y, mx, my;
 	  unsigned int mw, mh;
@@ -2100,8 +2194,8 @@ static void MenuInteraction(
 	    /* Pointer is still in the menu. Postpone the decision if we have
 	     * to pop down. */
 	  }
-	} /* if (mrPopup && flags.is_off_menu_allowed == False) */
-	else if (flags.is_off_menu_allowed == False)
+	} /* if (mrPopup) */
+	else
 	{
 	  select_menu_item(pmp->menu, MR_SELECTED_ITEM(pmp->menu), False,
 			   (*pmp->pTmp_win));
@@ -2112,6 +2206,11 @@ static void MenuInteraction(
   } /* while (True) */
 
   DO_RETURN:
+  if (mrPopdown)
+  {
+    pop_menu_down_and_repaint_parent(
+      &mrPopdown, &does_popdown_submenu_overlap, pmp);
+  }
   if (pmret->rc == MENU_SELECTED &&
       is_double_click(t0, mi, pmp, pmret, pdkp, flags.has_mouse_moved))
   {
@@ -2142,6 +2241,7 @@ static void MenuInteraction(
 	{
 	  /* Warping didn't take us to the correct menu, i.e. the spot we want
 	   * to warp to is obscured. So raise our window first. */
+fprintf(stderr,"wrong menu: '%s' expected '%s'\n", tmrMi?MR_NAME(tmrMi):"", MR_NAME(pmp->parent_menu));
 	  XRaiseWindow(dpy, MR_WINDOW(pmp->parent_menu));
 	}
       }
@@ -2280,9 +2380,10 @@ static int do_menus_overlap(
  ***********************************************************************/
 static int pop_menu_up(
   MenuRoot **pmenu, MenuParameters *pmp, MenuRoot *parent_menu,
+  MenuItem *parent_item,
   FvwmWindow **pfw, int *pcontext, int x, int y, Bool prefer_left_submenu,
   Bool do_warp_to_item, MenuOptions *pops, Bool *ret_overlap,
-  Bool *pdo_warp_to_title)
+  Bool *pdo_warp_to_title, Window popdown_window)
 {
   Bool do_warp_to_title = False;
   int x_overlap = 0;
@@ -2409,7 +2510,7 @@ static int pop_menu_up(
    ***************************************************************/
 
   MR_PARENT_MENU(mr) = parent_menu;
-  MR_PARENT_ITEM(mr) = (parent_menu) ? MR_SELECTED_ITEM(parent_menu) : NULL;
+  MR_PARENT_ITEM(mr) = parent_item;
   MR_IS_PAINTED(mr) = 0;
   MR_IS_LEFT(mr) = 0;
   MR_IS_RIGHT(mr) = 0;
@@ -2668,6 +2769,8 @@ static int pop_menu_up(
 
   XMoveWindow(dpy, MR_WINDOW(mr), x, y);
   XMapRaised(dpy, MR_WINDOW(mr));
+  if (popdown_window)
+    XUnmapWindow(dpy, popdown_window);
   XFlush(dpy);
   MR_MAPPED_COPIES(mr)++;
   MST_USAGE_COUNT(mr)++;
@@ -2730,12 +2833,14 @@ static int pop_menu_up(
 }
 
 /* Set the selected-ness state of the menuitem passed in */
-static void select_menu_item(MenuRoot *mr, MenuItem *mi, Bool select,
-			     FvwmWindow *fw)
+static void select_menu_item(
+  MenuRoot *mr, MenuItem *mi, Bool select, FvwmWindow *fw)
 {
   if (select == True && MR_SELECTED_ITEM(mr) != NULL &&
       MR_SELECTED_ITEM(mr) != mi)
+  {
     select_menu_item(mr, MR_SELECTED_ITEM(mr), False, fw);
+  }
   else if (select == False && MR_SELECTED_ITEM(mr) == NULL)
     return;
   else if (select == True && MR_SELECTED_ITEM(mr) == mi)
@@ -2756,6 +2861,7 @@ static void select_menu_item(MenuRoot *mr, MenuItem *mi, Bool select,
 	int iy;
 	int ih;
 	unsigned int mw;
+	XEvent e;
 
 	if (!MR_IS_PAINTED(mr))
 	{
@@ -2776,12 +2882,29 @@ static void select_menu_item(MenuRoot *mr, MenuItem *mi, Bool select,
 	/* grab image */
 	MR_STORED_ITEM(mr).stored =
 	  XCreatePixmap(dpy, Scr.NoFocusWin, mw, ih, Pdepth);
+	XSetGraphicsExposures(dpy, MST_MENU_GC(mr), True);
+	XSync(dpy, 0);
+	while (XCheckTypedEvent(dpy, NoExpose, &e))
+	  ;
 	XCopyArea(
 	  dpy, MR_WINDOW(mr), MR_STORED_ITEM(mr).stored,
 	  MST_MENU_GC(mr), MST_BORDER_WIDTH(mr), iy, mw, ih, 0, 0);
-	MR_STORED_ITEM(mr).y = iy;
-	MR_STORED_ITEM(mr).width = mw;
-	MR_STORED_ITEM(mr).height = ih;
+	XSync(dpy, 0);
+	if (XCheckTypedEvent(dpy, NoExpose, &e))
+	{
+	  MR_STORED_ITEM(mr).y = iy;
+	  MR_STORED_ITEM(mr).width = mw;
+	  MR_STORED_ITEM(mr).height = ih;
+	}
+	else
+	{
+	  XFreePixmap(dpy, MR_STORED_ITEM(mr).stored);
+	  MR_STORED_ITEM(mr).stored = None;
+	  MR_STORED_ITEM(mr).width = 0;
+	  MR_STORED_ITEM(mr).height = 0;
+	  MR_STORED_ITEM(mr).y = 0;
+	}
+	XSetGraphicsExposures(dpy, MST_MENU_GC(mr), False);
       }
       else if (select == False && MR_STORED_ITEM(mr).width != 0)
       {
@@ -2798,6 +2921,32 @@ static void select_menu_item(MenuRoot *mr, MenuItem *mi, Bool select,
 	MR_STORED_ITEM(mr).height = 0;
 	MR_STORED_ITEM(mr).y = 0;
       }
+      else if (select == False &&
+	       (MST_FACE(mr).gradient_type == D_GRADIENT ||
+		MST_FACE(mr).gradient_type == B_GRADIENT))
+      {
+	XEvent e;
+	Picture *sidePic = NULL;
+
+	e.type = Expose;
+	e.xexpose.x = MST_BORDER_WIDTH(mr);
+	e.xexpose.y = MI_Y_OFFSET(mi);
+	e.xexpose.width = MR_WIDTH(mr) - 2 * MST_BORDER_WIDTH(mr);
+	e.xexpose.height = MI_HEIGHT(mi) +
+	  (MI_IS_SELECTABLE(mi) ? MST_RELIEF_THICKNESS(mr) : 0);;
+	if (MR_SIDEPIC(mr))
+	  sidePic = MR_SIDEPIC(mr);
+	else if (MST_SIDEPIC(mr))
+	  sidePic = MST_SIDEPIC(mr);
+	if (sidePic)
+	{
+	  e.xexpose.width -= sidePic->width;
+	  if (MR_SIDEPIC_X_OFFSET(mr) == MST_BORDER_WIDTH(mr))
+	    e.xexpose.x += sidePic->width;
+	}
+	MR_SELECTED_ITEM(mr) = (select) ? mi : NULL;
+	paint_menu(mr, &e, fw);
+      }
       break;
     default:
       if (MR_STORED_ITEM(mr).width != 0)
@@ -2813,9 +2962,9 @@ static void select_menu_item(MenuRoot *mr, MenuItem *mi, Bool select,
     } /* switch */
   } /* if */
 
-  MR_SELECTED_ITEM(mr) = (select) ? mi : NULL;
   if (fw && !check_if_fvwm_window_exists(fw))
     fw = NULL;
+  MR_SELECTED_ITEM(mr) = (select) ? mi : NULL;
   paint_item(mr, mi, fw, False);
 }
 
@@ -2843,7 +2992,6 @@ static void pop_menu_down(MenuRoot **pmr, MenuParameters *pmp)
   XUnmapWindow(dpy, MR_WINDOW(*pmr));
   MR_MAPPED_COPIES(*pmr)--;
   MST_USAGE_COUNT(*pmr)--;
-
   UninstallFvwmColormap();
   XFlush(dpy);
   if (*(pmp->pcontext) & (C_WINDOW | C_FRAME | C_TITLE | C_SIDEBAR))
@@ -3019,7 +3167,7 @@ static void paint_item(MenuRoot *mr, MenuItem *mi, FvwmWindow *fw,
   {
     text_y += MI_PICTURE(mi)->height;
   }
-  for (i = 0; i < MAX_MINI_ICONS; i++)
+  for (i = 0; i < MAX_MENU_ITEM_MINI_ICONS; i++)
   {
     y = 0;
     if (MI_MINI_ICON(mi)[i])
@@ -3116,9 +3264,10 @@ static void paint_item(MenuRoot *mr, MenuItem *mi, FvwmWindow *fw,
   }
   else
   {
-    sx1 = MR_ITEM_X_OFFSET(mr) + relief_thickness + SEPARATOR_SHORT_X_OFFSET;
+    sx1 = MR_ITEM_X_OFFSET(mr) + relief_thickness +
+      MENU_SEPARATOR_SHORT_X_OFFSET;
     sx2 = MR_ITEM_X_OFFSET(mr) + MR_ITEM_WIDTH(mr) - 1 -
-      relief_thickness - SEPARATOR_SHORT_X_OFFSET;
+      relief_thickness - MENU_SEPARATOR_SHORT_X_OFFSET;
   }
   if (MI_IS_SEPARATOR(mi))
   {
@@ -3126,8 +3275,8 @@ static void paint_item(MenuRoot *mr, MenuItem *mi, FvwmWindow *fw,
     {
       /* It's a separator. */
       draw_separator(MR_WINDOW(mr), ShadowGC, ReliefGC,
-		     sx1, y_offset + y_height - SEPARATOR_HEIGHT,
-		     sx2, y_offset + y_height - SEPARATOR_HEIGHT, 1);
+		     sx1, y_offset + y_height - MENU_SEPARATOR_HEIGHT,
+		     sx2, y_offset + y_height - MENU_SEPARATOR_HEIGHT, 1);
       /* Nothing else to do. */
     }
     return;
@@ -3137,7 +3286,7 @@ static void paint_item(MenuRoot *mr, MenuItem *mi, FvwmWindow *fw,
     /* Separate the title. */
     if (MST_TITLE_UNDERLINES(mr) > 0 && mi != MR_FIRST_ITEM(mr))
     {
-      text_y += SEPARATOR_HEIGHT + relief_thickness;
+      text_y += MENU_SEPARATOR_HEIGHT + relief_thickness;
       y = y_offset + relief_thickness;
       if (sx1 < sx2)
         draw_separator(MR_WINDOW(mr), ShadowGC, ReliefGC, sx1, y, sx2, y, 1);
@@ -3150,14 +3299,14 @@ static void paint_item(MenuRoot *mr, MenuItem *mi, FvwmWindow *fw,
     case 1:
       if(MI_NEXT_ITEM(mi) != NULL)
       {
-	y = y_offset + y_height - SEPARATOR_HEIGHT;
+	y = y_offset + y_height - MENU_SEPARATOR_HEIGHT;
 	draw_separator(MR_WINDOW(mr), ShadowGC, ReliefGC, sx1, y, sx2, y, 1);
       }
       break;
     default:
       for (i = MST_TITLE_UNDERLINES(mr); i-- > 0; )
       {
-	y = y_offset + y_height - 1 - i * UNDERLINE_HEIGHT;
+	y = y_offset + y_height - 1 - i * MENU_UNDERLINE_HEIGHT;
 	XDrawLine(dpy, MR_WINDOW(mr), ShadowGC, sx1, y, sx2, y);
       }
       break;
@@ -3190,7 +3339,7 @@ static void paint_item(MenuRoot *mr, MenuItem *mi, FvwmWindow *fw,
    * Draw the labels.
    ***************************************************************/
 
-  for (i = MAX_ITEM_LABELS; i-- > 0; )
+  for (i = MAX_MENU_ITEM_LABELS; i-- > 0; )
   {
     if (MI_LABEL(mi)[i] && *(MI_LABEL(mi)[i]))
     {
@@ -3221,11 +3370,11 @@ static void paint_item(MenuRoot *mr, MenuItem *mi, FvwmWindow *fw,
 
   if(MI_IS_POPUP(mi))
   {
-    y = y_offset + (y_height - TRIANGLE_HEIGHT + relief_thickness) / 2;
+    y = y_offset + (y_height - MENU_TRIANGLE_HEIGHT + relief_thickness) / 2;
     DrawTrianglePattern(
       dpy, MR_WINDOW(mr),
       ReliefGC, ShadowGC, (is_item_selected) ? ReliefGC : MST_MENU_GC(mr),
-      MR_TRIANGLE_X_OFFSET(mr), y, TRIANGLE_WIDTH, TRIANGLE_HEIGHT, 0,
+      MR_TRIANGLE_X_OFFSET(mr), y, MENU_TRIANGLE_WIDTH, MENU_TRIANGLE_HEIGHT, 0,
       (MR_IS_LEFT_TRIANGLE(mr)) ? 'l' : 'r',
       MST_HAS_TRIANGLE_RELIEF(mr), !MST_HAS_TRIANGLE_RELIEF(mr),
       is_item_selected);
@@ -3264,13 +3413,13 @@ static void paint_item(MenuRoot *mr, MenuItem *mi, FvwmWindow *fw,
   * Draw the mini icons.
   ***************************************************************/
 
-  for (i = 0; i < MAX_MINI_ICONS; i++)
+  for (i = 0; i < MAX_MENU_ITEM_MINI_ICONS; i++)
   {
     int k;
 
     /* We need to reverse the mini icon order for left submenu style. */
     k = (MST_USE_LEFT_SUBMENUS(mr)) ?
-      MAX_MINI_ICONS - 1 - i : i;
+      MAX_MENU_ITEM_MINI_ICONS - 1 - i : i;
 
     if (MI_MINI_ICON(mi)[i])
     {
@@ -3434,7 +3583,7 @@ static void draw_separator(Window w, GC TopGC, GC BottomGC, int x1, int y1,
  *	paint_menu - draws the entire menu
  *
  ***********************************************************************/
-void paint_menu(MenuRoot *mr, XEvent *pevent, FvwmWindow *fw)
+static void paint_menu(MenuRoot *mr, XEvent *pevent, FvwmWindow *fw)
 {
   MenuItem *mi;
   MenuStyle *ms = MR_STYLE(mr);
@@ -3505,7 +3654,7 @@ void paint_menu(MenuRoot *mr, XEvent *pevent, FvwmWindow *fw)
 	  register int dw;
 
 	  pmap = XCreatePixmap(dpy, MR_WINDOW(mr), MR_WIDTH(mr),
-			       GRADIENT_PIXMAP_THICKNESS, Pdepth);
+			       DEFAULT_GRADIENT_PIXMAP_THICKNESS, Pdepth);
 	  pmapgc = fvwmlib_XCreateGC(dpy, pmap, gcm, &gcv);
 	  dw = (float) (bounds.width / ST_FACE(ms).u.grad.npixels) + 1;
 	  for (i = 0; i < ST_FACE(ms).u.grad.npixels; i++)
@@ -3513,7 +3662,7 @@ void paint_menu(MenuRoot *mr, XEvent *pevent, FvwmWindow *fw)
 	    unsigned short x = i * bounds.width/ST_FACE(ms).u.grad.npixels;
 	    XSetForeground(dpy, pmapgc, ST_FACE(ms).u.grad.pixels[i]);
 	    XFillRectangle(dpy, pmap, pmapgc, x, 0, dw,
-			   GRADIENT_PIXMAP_THICKNESS);
+			   DEFAULT_GRADIENT_PIXMAP_THICKNESS);
 	  }
 	  XSetWindowBackgroundPixmap(dpy, MR_WINDOW(mr), pmap);
 	  XFreeGC(dpy,pmapgc);
@@ -3532,12 +3681,12 @@ void paint_menu(MenuRoot *mr, XEvent *pevent, FvwmWindow *fw)
 
 	  if (best_tile_width == 0)
 	  {
-	    if (!XQueryBestTile(dpy, Scr.screen, GRADIENT_PIXMAP_THICKNESS,
-				GRADIENT_PIXMAP_THICKNESS,
-				&best_tile_width, &junk))
+	    if (!XQueryBestTile(
+	      dpy, Scr.screen, DEFAULT_GRADIENT_PIXMAP_THICKNESS,
+	      DEFAULT_GRADIENT_PIXMAP_THICKNESS, &best_tile_width, &junk))
 	    {
 	      /* call failed, use default and risk a screwed up tile */
-	      best_tile_width = GRADIENT_PIXMAP_THICKNESS;
+	      best_tile_width = DEFAULT_GRADIENT_PIXMAP_THICKNESS;
 	    }
 	  }
 	  pmap = XCreatePixmap(dpy, MR_WINDOW(mr), best_tile_width,
@@ -3562,8 +3711,36 @@ void paint_menu(MenuRoot *mr, XEvent *pevent, FvwmWindow *fw)
 	{
 	  register int i = 0, numLines;
 	  int cindex = -1;
+	  XRectangle r;
+	  Picture *sidePic = NULL;
+	  int bw = MST_BORDER_WIDTH(mr);
 
-	  XSetClipMask(dpy, Scr.TransMaskGC, None);
+	  if (MR_SIDEPIC(mr))
+	    sidePic = MR_SIDEPIC(mr);
+	  else if (MST_SIDEPIC(mr))
+	    sidePic = MST_SIDEPIC(mr);
+	  if (pevent)
+	  {
+
+	    r.x = pevent->xexpose.x;
+	    r.y = pevent->xexpose.y;
+	    r.width = pevent->xexpose.width;
+	    r.height = pevent->xexpose.height;
+	  }
+	  else
+	  {
+	    r.x = bw;
+	    r.y = bw;
+	    r.width = MR_WIDTH(mr) - 2 * bw;
+	    r.height = MR_HEIGHT(mr) - 2 * bw;
+	    if (sidePic)
+	    {
+	      r.width -= sidePic->width;
+	      if (MR_SIDEPIC_X_OFFSET(mr) == bw)
+		r.x += sidePic->width;
+	    }
+	  }
+	  XSetClipRectangles(dpy, Scr.TransMaskGC, 0, 0, &r, 1, Unsorted);
 	  numLines = MR_WIDTH(mr) + MR_HEIGHT(mr) - 2 * bw;
 	  for(i = 0; i < numLines; i++)
 	  {
@@ -3581,6 +3758,7 @@ void paint_menu(MenuRoot *mr, XEvent *pevent, FvwmWindow *fw)
 			0, MR_HEIGHT(mr) - 1 - i, i, MR_HEIGHT(mr) - 1);
 	  }
 	}
+	XSetClipMask(dpy, Scr.TransMaskGC, None);
 	break;
       default:
 	if (MR_IS_BACKGROUND_SET(mr) == False)
@@ -3703,7 +3881,7 @@ static void FreeMenuItem(MenuItem *mi)
 
   if (!mi)
     return;
-  for (i = 0; i < MAX_ITEM_LABELS; i++)
+  for (i = 0; i < MAX_MENU_ITEM_LABELS; i++)
   {
     if (MI_LABEL(mi)[i] != NULL)
       free(MI_LABEL(mi)[i]);
@@ -3712,7 +3890,7 @@ static void FreeMenuItem(MenuItem *mi)
     free(MI_ACTION(mi));
   if(MI_PICTURE(mi))
     DestroyPicture(dpy,MI_PICTURE(mi));
-  for (i = 0; i < MAX_MINI_ICONS; i++)
+  for (i = 0; i < MAX_MENU_ITEM_MINI_ICONS; i++)
   {
     if(MI_MINI_ICON(mi)[i])
       DestroyPicture(dpy, MI_MINI_ICON(mi)[i]);
@@ -3809,7 +3987,7 @@ void DestroyMenu(MenuRoot *mr, Bool recreate)
   }
 
   /* unlink menu from list */
-  if(prev == NULL)
+  if (prev == NULL)
     Menus.all = MR_NEXT_MENU(mr);
   else
     MR_NEXT_MENU(prev) = MR_NEXT_MENU(mr);
@@ -3904,9 +4082,9 @@ static void size_menu_horizontally(MenuRoot *mr)
   MenuItem *mi;
   struct
   {
-    unsigned short label_width[MAX_ITEM_LABELS];
+    unsigned short label_width[MAX_MENU_ITEM_LABELS];
     unsigned short sidepic_width;
-    unsigned short icon_width[MAX_MINI_ICONS];
+    unsigned short icon_width[MAX_MENU_ITEM_MINI_ICONS];
     unsigned short picture_width;
     unsigned short triangle_width;
     unsigned short title_width;
@@ -3916,13 +4094,13 @@ static void size_menu_horizontally(MenuRoot *mr)
   int sidepic_space = 0;
   int relief_gap = 0;
   unsigned short w;
-  unsigned short label_offset[MAX_ITEM_LABELS];
-  char lcr_column[MAX_ITEM_LABELS];
+  unsigned short label_offset[MAX_MENU_ITEM_LABELS];
+  char lcr_column[MAX_MENU_ITEM_LABELS];
   int i;
   int j;
   int d;
   short relief_thickness = MST_RELIEF_THICKNESS(mr);
-  unsigned short *item_order[MAX_ITEM_LABELS + MAX_MINI_ICONS +
+  unsigned short *item_order[MAX_MENU_ITEM_LABELS + MAX_MENU_ITEM_MINI_ICONS +
 			    1 /* triangle */ + 2 /* relief markers */];
   short used_objects = 0;
   short left_objects = 0;
@@ -3931,7 +4109,7 @@ static void size_menu_horizontally(MenuRoot *mr)
 
   memset(&max, 0, sizeof(max));
   memset(item_order, 0, sizeof(item_order));
-  for (i = 0; i < MAX_ITEM_LABELS; i++)
+  for (i = 0; i < MAX_MENU_ITEM_LABELS; i++)
     lcr_column[i] = 'l';
 
   /* Calculate the widths for all columns of all items. */
@@ -3939,7 +4117,7 @@ static void size_menu_horizontally(MenuRoot *mr)
   {
     if(MI_IS_POPUP(mi))
     {
-      max.triangle_width = TRIANGLE_WIDTH;
+      max.triangle_width = MENU_TRIANGLE_WIDTH;
     }
     else if (MI_IS_TITLE(mi) && !MI_HAS_PICTURE(mi))
     {
@@ -3947,7 +4125,7 @@ static void size_menu_horizontally(MenuRoot *mr)
 
       /* titles stretch over the whole menu width, so count the maximum
        * separately if the title is unformatted. */
-      for (j = 1; j < MAX_ITEM_LABELS; j++)
+      for (j = 1; j < MAX_MENU_ITEM_LABELS; j++)
       {
 	if (MI_LABEL(mi)[j] != NULL)
 	{
@@ -3974,7 +4152,7 @@ static void size_menu_horizontally(MenuRoot *mr)
     }
 
 
-    for (i = 0; i < MAX_ITEM_LABELS; i++)
+    for (i = 0; i < MAX_MENU_ITEM_LABELS; i++)
     {
       if (MI_LABEL(mi)[i])
       {
@@ -3990,13 +4168,13 @@ static void size_menu_horizontally(MenuRoot *mr)
     {
       max.picture_width = MI_PICTURE(mi)->width;
     }
-    for (i = 0; i < MAX_MINI_ICONS; i++)
+    for (i = 0; i < MAX_MENU_ITEM_MINI_ICONS; i++)
     {
       int k;
 
       /* We need to reverse the mini icon order for left submenu style. */
       k = (MST_USE_LEFT_SUBMENUS(mr)) ?
-	MAX_MINI_ICONS - 1 - i : i;
+	MAX_MENU_ITEM_MINI_ICONS - 1 - i : i;
 
       if(MI_MINI_ICON(mi)[i] && max.icon_width[k] < MI_MINI_ICON(mi)[i]->width)
       {
@@ -4034,11 +4212,11 @@ static void size_menu_horizontally(MenuRoot *mr)
     if (!format)
     {
       format = (MST_USE_LEFT_SUBMENUS(mr)) ?
-	DEFAULT_LEFT_ITEM_FORMAT : DEFAULT_ITEM_FORMAT;
+	DEFAULT_LEFT_MENU_ITEM_FORMAT : DEFAULT_MENU_ITEM_FORMAT;
     }
     /* Place the individual items off the menu in case they are not set in the
      * format string. */
-    for (i = 0; i < MAX_ITEM_LABELS; i++)
+    for (i = 0; i < MAX_MENU_ITEM_LABELS; i++)
     {
       label_offset[i] = 2 * Scr.MyDisplayWidth;
     }
@@ -4077,7 +4255,7 @@ static void size_menu_horizontally(MenuRoot *mr)
 	case 'c':
 	case 'r':
 	  /* A left, center or right aligned column. */
-	  if (columns_placed < MAX_ITEM_LABELS)
+	  if (columns_placed < MAX_MENU_ITEM_LABELS)
 	  {
 	    if (max.label_width[columns_placed] > 0)
 	    {
@@ -4128,7 +4306,7 @@ static void size_menu_horizontally(MenuRoot *mr)
 	  break;
 	case 'i':
 	  /* a mini icon */
-	  if (icons_placed < MAX_MINI_ICONS)
+	  if (icons_placed < MAX_MENU_ITEM_MINI_ICONS)
 	  {
 	    if (max.icon_width[icons_placed] > 0)
 	    {
@@ -4224,7 +4402,7 @@ static void size_menu_horizontally(MenuRoot *mr)
     {
       MR_SIDEPIC_X_OFFSET(mr) = 2 * Scr.MyDisplayWidth;
     }
-    for (i = icons_placed; i < MAX_MINI_ICONS; i++)
+    for (i = icons_placed; i < MAX_MENU_ITEM_MINI_ICONS; i++)
     {
       MR_ICON_X_OFFSET(mr)[i] = 2 * Scr.MyDisplayWidth;
     }
@@ -4278,7 +4456,7 @@ static void size_menu_horizontally(MenuRoot *mr)
   /* Now calculate the offsets for the individual labels. */
   for (mi = MR_FIRST_ITEM(mr); mi != NULL; mi = MI_NEXT_ITEM(mi))
   {
-    for (i = 0; i < MAX_ITEM_LABELS; i++)
+    for (i = 0; i < MAX_MENU_ITEM_LABELS; i++)
     {
       if (MI_LABEL(mi)[i])
       {
@@ -4346,7 +4524,7 @@ static void size_menu_vertically(MenuRoot *mr)
     Bool has_mini_icon = False;
 
     separator_height = (last_item_has_relief) ?
-      SEPARATOR_HEIGHT + relief_thickness : SEPARATOR_TOTAL_HEIGHT;
+      MENU_SEPARATOR_HEIGHT + relief_thickness : MENU_SEPARATOR_TOTAL_HEIGHT;
 
     MI_Y_OFFSET(mi) = y;
     if(MI_IS_TITLE(mi))
@@ -4368,12 +4546,12 @@ static void size_menu_vertically(MenuRoot *mr)
 	if(MI_NEXT_ITEM(mi) != NULL)
 	{
 	  /* Space to draw the separator */
-	  MI_HEIGHT(mi) += SEPARATOR_HEIGHT;
+	  MI_HEIGHT(mi) += MENU_SEPARATOR_HEIGHT;
 	}
 	break;
       default:
 	/* Space to draw n underlines. */
-	MI_HEIGHT(mi) += UNDERLINE_HEIGHT * MST_TITLE_UNDERLINES(mr);
+	MI_HEIGHT(mi) += MENU_UNDERLINE_HEIGHT * MST_TITLE_UNDERLINES(mr);
 	if (last_item_has_relief)
 	  MI_HEIGHT(mi) += relief_thickness;
 	break;
@@ -4397,7 +4575,7 @@ static void size_menu_vertically(MenuRoot *mr)
 	  relief_thickness;
       }
     }
-    for (i = 0; i < MAX_MINI_ICONS; i++)
+    for (i = 0; i < MAX_MENU_ITEM_MINI_ICONS; i++)
     {
       if (MI_MINI_ICON(mi)[i])
 	has_mini_icon = True;
@@ -4868,12 +5046,12 @@ void AddToMenu(MenuRoot *mr, char *item, char *action, Bool fPixmapsOk,
 
   start = item;
   end = item;
-  for (i = 0; i < MAX_ITEM_LABELS; i++, start = end)
+  for (i = 0; i < MAX_MENU_ITEM_LABELS; i++, start = end)
   {
     /* Read label up to next tab. */
     if (*end)
     {
-      if (i < MAX_ITEM_LABELS - 1)
+      if (i < MAX_MENU_ITEM_LABELS - 1)
       {
 	while (*end && *end != '\t')
 	  /* seek next tab or end of string */
@@ -4914,7 +5092,7 @@ void AddToMenu(MenuRoot *mr, char *item, char *action, Bool fPixmapsOk,
 	  if (scanForPixmap(MI_LABEL(tmp)[i], &MI_PICTURE(tmp), '*'))
 	    MI_HAS_PICTURE(tmp) = True;
 	}
-	while (current_mini_icon < MAX_MINI_ICONS)
+	while (current_mini_icon < MAX_MENU_ITEM_MINI_ICONS)
 	{
 	  if (scanForPixmap(
 	    MI_LABEL(tmp)[i], &(MI_MINI_ICON(tmp)[current_mini_icon]), '%'))
@@ -5646,6 +5824,8 @@ static int GetMenuStyleIndex(char *option)
     "VerticalTitleSpacing",
     "MenuColorset", "ActiveColorset", "GreyedColorset",
     "SelectOnRelease",
+    "PopdownImmediately", "PopdownDelayed",
+    "PopdownDelay",
     NULL
   };
   return GetTokenIndex(option, optlist, 0, NULL);
@@ -5715,6 +5895,7 @@ static void NewMenuStyle(F_CMD_ARGS)
       ST_DO_POPUP_AS_ROOT_MENU(tmpms) = 0;
       ST_DOUBLE_CLICK_TIME(tmpms) = DEFAULT_MENU_CLICKTIME;
       ST_POPUP_DELAY(tmpms) = DEFAULT_POPUP_DELAY;
+      ST_POPDOWN_DELAY(tmpms) = DEFAULT_POPDOWN_DELAY;
       has_gc_changed = True;
       option = "fvwm";
     }
@@ -5782,10 +5963,10 @@ static void NewMenuStyle(F_CMD_ARGS)
 
       /* common settings */
       ST_BORDER_WIDTH(tmpms) = DEFAULT_MENU_BORDER_WIDTH;
-      ST_ITEM_GAP_ABOVE(tmpms) = DEFAULT_ITEM_TEXT_Y_OFFSET;
-      ST_ITEM_GAP_BELOW(tmpms) = DEFAULT_ITEM_TEXT_Y_OFFSET2;
-      ST_TITLE_GAP_ABOVE(tmpms) = DEFAULT_TITLE_TEXT_Y_OFFSET;
-      ST_TITLE_GAP_BELOW(tmpms) = DEFAULT_TITLE_TEXT_Y_OFFSET2;
+      ST_ITEM_GAP_ABOVE(tmpms) = DEFAULT_MENU_ITEM_TEXT_Y_OFFSET;
+      ST_ITEM_GAP_BELOW(tmpms) = DEFAULT_MENU_ITEM_TEXT_Y_OFFSET2;
+      ST_TITLE_GAP_ABOVE(tmpms) = DEFAULT_MENU_TITLE_TEXT_Y_OFFSET;
+      ST_TITLE_GAP_BELOW(tmpms) = DEFAULT_MENU_TITLE_TEXT_Y_OFFSET2;
       ST_USE_LEFT_SUBMENUS(tmpms) = 0;
       ST_IS_ANIMATED(tmpms) = 0;
       ST_USE_AUTOMATIC_HOTKEYS(tmpms) = 0;
@@ -6089,6 +6270,8 @@ static void NewMenuStyle(F_CMD_ARGS)
         {
           ST_IS_ITEM_RELIEF_REVERSED(tmpms) = 0;
         }
+	if (*val > MAX_MENU_ITEM_RELIEF_THICKNESS)
+	  *val = MAX_MENU_ITEM_RELIEF_THICKNESS;
 	ST_RELIEF_THICKNESS(tmpms) = *val;
       }
       break;
@@ -6116,13 +6299,13 @@ static void NewMenuStyle(F_CMD_ARGS)
     case 44: /* VerticalItemSpacing */
       parse_vertical_spacing_line(
 	args, &ST_ITEM_GAP_ABOVE(tmpms), &ST_ITEM_GAP_BELOW(tmpms),
-	DEFAULT_ITEM_TEXT_Y_OFFSET, DEFAULT_ITEM_TEXT_Y_OFFSET2);
+	DEFAULT_MENU_ITEM_TEXT_Y_OFFSET, DEFAULT_MENU_ITEM_TEXT_Y_OFFSET2);
       break;
 
     case 45: /* VerticalTitleSpacing */
       parse_vertical_spacing_line(
 	args, &ST_TITLE_GAP_ABOVE(tmpms), &ST_TITLE_GAP_BELOW(tmpms),
-	DEFAULT_TITLE_TEXT_Y_OFFSET, DEFAULT_TITLE_TEXT_Y_OFFSET2);
+	DEFAULT_MENU_TITLE_TEXT_Y_OFFSET, DEFAULT_MENU_TITLE_TEXT_Y_OFFSET2);
       break;
     case 46: /* MenuColorset */
       if (GetIntegerArguments(args, NULL, val, 1) == 0 || *val < 0)
@@ -6148,6 +6331,7 @@ static void NewMenuStyle(F_CMD_ARGS)
       }
       has_gc_changed = True;
       break;
+
     case 48: /* GreyedColorset */
       if (GetIntegerArguments(args, NULL, val, 1) == 0 || *val < 0)
 	ST_HAS_GREYED_CSET(tmpms) = 0;
@@ -6159,6 +6343,7 @@ static void NewMenuStyle(F_CMD_ARGS)
       }
       has_gc_changed = True;
       break;
+
     case 49: /* SelectOnRelease */
       keycode = 0;
       if (arg1)
@@ -6166,6 +6351,21 @@ static void NewMenuStyle(F_CMD_ARGS)
 	keycode = XKeysymToKeycode(dpy, FvwmStringToKeysym(dpy, arg1));
       }
       ST_SELECT_ON_RELEASE_KEY(tmpms) = keycode;
+      break;
+
+    case 50: /* PopdownImmediately */
+      ST_DO_POPDOWN_IMMEDIATELY(tmpms) = 1;
+      break;
+
+    case 51: /* PopdownDelayed */
+      ST_DO_POPDOWN_IMMEDIATELY(tmpms) = 0;
+      break;
+
+    case 52: /* PopdownDelay */
+      if (GetIntegerArguments(args, NULL, val, 1) == 0 || *val < 0)
+	ST_POPDOWN_DELAY(tmpms) = DEFAULT_POPDOWN_DELAY;
+      else
+	ST_POPDOWN_DELAY(tmpms) = (*val+9)/10;
       break;
 
 #if 0

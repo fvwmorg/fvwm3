@@ -446,7 +446,7 @@ SaveWindowStates(FILE *f)
 }
 
 void
-DisableSM(void)
+DisableRestoringState(void)
 {
   num_match = 0;
   return;

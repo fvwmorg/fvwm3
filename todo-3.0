@@ -33,3 +33,6 @@ In no particular order and maybe best to do in parts (3.0, 3.2 ...)
  29) Tear off menus.
  30) New placement code.
  31) Pie menus?
+ 32) Key/Button dependent bindings in menus.
+ 33) Pressing the submenu trinagle may have a different effect than pressing the
+     main body of the item (like icewm).

@@ -1,3 +1,42 @@
+2001-01-06  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* fvwm/menus.c:
+	renamed some macros and moved them to defaults.h
+	(NewMenuStyle):
+	fixed maximum item relief thickness
+	(pop_menu_up):
+	(MenuInteraction):
+	delay popping down a menu to next loop pass so that the background does
+	not shine through if the area is immediately covered again
+	(NewMenuStyle):
+	new menu styles PopdownImmediately/PopdownDelayed which is a trivial
+	byproduct of above fixes; also introduced PopdownDelay
+	(MenuInteraction):
+	posted menus are not unmapped when the pointer enters the root window
+	(MenuInteraction):
+	fixed a popup logic bug
+	(select_menu_item):
+	(paint_menu):
+	reduced redrawing with D/B gradients
+
+	* fvwm/events.c (flush_accumulate_expose):
+	fixed logic in vertical direction; cures menu redraw problem
+
+	* fvwm/virtual.c (HandlePaging):
+	reindented some code
+
+	* libs/defaults.h:
+	tuning parameters for keyboard shortcut handling go here
+
+	* libs/Target.c (fvwmlib_keyboard_shortcuts):
+	do generate MotionNotify events even if the pointer did not move because
+	it hit the screen edge
+
+2001-01-05  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* fvwm/session.c (DisableRestoringState):
+	renamed
+
 2001-01-04  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* fvwm/icons.c (CreateIconWindow):
@@ -324,7 +363,7 @@
 	* fvwm/menus.c (pop_menu_down_and_repaint_parent):
 	(MenuInteraction):
 	* fvwm/events.c (flush_accumulate_expose):
-	fixed redrawing of grandparent menus, PopupImmediately take effect only
+	fixed redrawing of grandparent menus, PopupImmediately takes effect only
 	after one pass through the loop, so there is a chance to handle events
 	first and thus leave the popup item before the sub menu is popped up
 
@@ -4201,7 +4240,7 @@
 	fixed complex function when the last item requires no function
 
 	* fvwm/move_resize.c (GetOnePositionArgument):
-	fixed megative offsets from mouse position
+	fixed negative offsets from mouse position
 	(DoResize):
 	removed screwed patch to reduce function overhead
 

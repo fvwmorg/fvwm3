@@ -1651,6 +1651,7 @@ TitleUnderlines0 / TitleUnderlines1 / TitleUnderlines2,
 SeparatorsLong / SeparatorsShort,
 TrianglesSolid / TrianglesRelief,
 PopupImmediately / PopupDelayed,
+PopdownImmediately / PopdownDelayed,
 DoubleClickTime,
 SidePic,
 SideColor,
@@ -1690,21 +1691,21 @@ style menus never overlap the parent menu.
 style is equivalent to HilightBackOff, Hilight3DThin,
 ActiveForeOff, AnimationOff, Font, MenuFace, PopupOffset 0 67, TitleWarp,
 TitleUnderlines1, SeparatorsShort, TrianglesRelief, PopupDelayed,
-PopupAsSubmenu, HoldSubmenus, SubmenusRight, BorderWidth 2,
+PopdownDelayed, PopupAsSubmenu, HoldSubmenus, SubmenusRight, BorderWidth 2,
 AutomaticHotkeysOff.
 
 .I Mwm
 style is equivalent to HilightBackOff, Hilight3DThick,
 ActiveForeOff, AnimationOff, Font, MenuFace, PopupOffset -3 100,
 TitleWarpOff, TitleUnderlines2, SeparatorsLong, TrianglesRelief,
-PopupImmediately, PopupAsSubmenu, HoldSubmenus, SubmenusRight,
+PopupImmediately, PopdownDelayed, PopupAsSubmenu, HoldSubmenus, SubmenusRight,
 BorderWidth 2, AutomaticHotkeysOff.
 
 .I Win
 style is equivalent to HilightBack, Hilight3DOff,
 ActiveForeOff, AnimationOff, Font, MenuFace, PopupOffset -5 100,
 TitleWarpOff, TitleUnderlines1, SeparatorsShort, TrianglesSolid,
-PopupImmediately, PopupAsSubmenu, RemoveSubmenus, SubmenusRight,
+PopupImmediately, PopdownDelayed, PopupAsSubmenu, RemoveSubmenus, SubmenusRight,
 BorderWidth 2, AutomaticHotkeysOff.
 
 .I BorderWidth
@@ -1869,6 +1870,32 @@ is ignored then.  If
 is used fvwm looks at the
 .I PopupDelay
 option if or when this automatic popup happens.
+
+.I PopdownDelay
+works exactly like
+.I PopupDelay
+but determines the timeout of the
+.I PopupDelayed
+style.
+
+.I PopdownImmediately
+makes sub-menus vanish as soon as the pointer leaves the sub-menu
+and the correspondent item in the parent menu.  With the opposite
+option
+.I PopdownDelayed
+the sub-menu will only pop down after the time specified with the
+.I PopdownDelay
+option.  This comes handy when the pointer often strays off the
+menu item when trying to move into the sub-menu.  Whenever there
+is a conflict between the
+.IR PopupImmediately ", " PopupDelayed ", " PopupDelay
+styles and the
+.IR PopdownImmediately ", " PopdownDelayed ", " PopdownDelay
+styles, the
+.I Popup...
+styles win when using mouse navigation and the
+.I Popdown...
+styles win when navigating with the keyboard.
 
 .I PopupOffset
 requires two integer arguments.  Both values affect
@@ -2052,18 +2079,21 @@ pixels after it.  You may leave out the
 or the
 .I .right
 parts if you don't need them.  All values between zero (not
-very useful) and your screen width are allowed.
+very useful) and the screen width are allowed.  The
+.B p
+may be replaced with any other formatting directives described
+above.
 
 Note: Only items defined in the format string are visible in the menus.
-I.e. if you don't put a
+So if you do not put a
 .B %s
-in there you will not see a side picture, even if you use one.
+in there you will not see a side picture, even if one is specified.
 
 Note: The
 .I SubmenusLeft
 style changes the default
 .I ItemFormat
-string, but if you set one manually it is not modified.
+string, but if it was set manually it is not modified.
 
 Examples:
 .EX
@@ -2071,9 +2101,9 @@ MenuStyle * ItemFormat \\
   "%.4s%.1|%.5i%.5l%.5l%.5r%.5i%2.3>%1|"
 .EE
 Is the default string used by fvwm: (side picture + 4 pixels gap)
-(begin of the hilighted area + 1 pixel gap) (mini icon + 5p)
+(beginning of the hilighted area + 1 pixel gap) (mini icon + 5p)
 (first column left aligned + 5p) (second column left aligned + 5p)
-(third column right aligned) (second mini icon + 5p)
+(third column right aligned + 5p) (second mini icon + 5p)
 (2p + sub-menu triangle + 3p) (1p + end of hilighted area).
 .EX
 MenuStyle * ItemFormat \\

@@ -61,10 +61,6 @@ Highlights:
  ** New module FvwmGtk for Gtk style menus and dialogs.
 
  ** VMS port.
-%% domivogt: we should definitely try it out first!
-%% migo: especially FVWM_DATADIR/FVWM_USERDIR stuff, or it is hopeless?
-%% dane: its hopeless and not important, it was working on VMS, if we
-%% broke something, we'll fix it in 2.4.1. I'll remove this next time around.
 
  ** Animated window shading with the WindowShadeAnimate command.
 

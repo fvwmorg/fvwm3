@@ -780,7 +780,7 @@ void StartupStuff(void)
   /* Turn off the SM stuff after the initial capture so that new windows will
    * not be matched by accident. */
   if (Restarting)
-    DisableSM();
+    DisableRestoringState();
   /* Have to do this here too because preprocessor modules have not run to the
    * end when HandleEvents is entered from the main loop. */
   checkPanFrames();

@@ -63,9 +63,6 @@
 #define MENU_IS_UP    0x04
 #define MENU_IS_DOWN  0x08
 
-#define MAX_ITEM_LABELS  3
-#define MAX_MINI_ICONS   2
-
 /*************************
  * MENU STYLE STRUCTURES *
  *************************/
@@ -87,6 +84,7 @@ typedef struct MenuFeel
   struct
   {
     unsigned is_animated : 1;
+    unsigned do_popdown_immediately : 1;
     unsigned do_popup_immediately : 1;
     unsigned do_warp_to_title : 1;
     unsigned do_popup_as_root_menu : 1;
@@ -94,6 +92,7 @@ typedef struct MenuFeel
     unsigned use_left_submenus : 1;
     unsigned use_automatic_hotkeys : 1;
   } flags;
+  int PopdownDelay10ms;
   int PopupOffsetPercent;
   int PopupOffsetAdd;
   int PopupDelay10ms;
@@ -282,6 +281,9 @@ typedef struct MenuStyle
 #define ST_DO_POPUP_IMMEDIATELY(s)    ((s)->feel.flags.do_popup_immediately)
 #define MST_DO_POPUP_IMMEDIATELY(m) \
         ((m)->s->ms->feel.flags.do_popup_immediately)
+#define ST_DO_POPDOWN_IMMEDIATELY(s)    ((s)->feel.flags.do_popdown_immediately)
+#define MST_DO_POPDOWN_IMMEDIATELY(m) \
+        ((m)->s->ms->feel.flags.do_popdown_immediately)
 #define ST_DO_WARP_TO_TITLE(s)        ((s)->feel.flags.do_warp_to_title)
 #define MST_DO_WARP_TO_TITLE(m)       ((m)->s->ms->feel.flags.do_warp_to_title)
 #define ST_DO_POPUP_AS_ROOT_MENU(s)   ((s)->feel.flags.do_popup_as_root_menu)
@@ -303,6 +305,8 @@ typedef struct MenuStyle
 #define MST_POPUP_OFFSET_PERCENT(m)   ((m)->s->ms->feel.PopupOffsetPercent)
 #define ST_POPUP_OFFSET_ADD(s)        ((s)->feel.PopupOffsetAdd)
 #define MST_POPUP_OFFSET_ADD(m)       ((m)->s->ms->feel.PopupOffsetAdd)
+#define ST_POPDOWN_DELAY(s)           ((s)->feel.PopdownDelay10ms)
+#define MST_POPDOWN_DELAY(m)          ((m)->s->ms->feel.PopdownDelay10ms)
 #define ST_POPUP_DELAY(s)             ((s)->feel.PopupDelay10ms)
 #define MST_POPUP_DELAY(m)            ((m)->s->ms->feel.PopupDelay10ms)
 #define ST_DOUBLE_CLICK_TIME(s)       ((s)->feel.DoubleClickTime)
@@ -329,12 +333,12 @@ typedef struct MenuItem
     struct MenuItem *next;	/* next menu item */
     struct MenuItem *prev;	/* prev menu item */
 
-    char *label[MAX_ITEM_LABELS]; /* the strings displayed in the item */
-    unsigned short label_offset[MAX_ITEM_LABELS]; /* witdh of label[i] */
-    unsigned short label_strlen[MAX_ITEM_LABELS]; /* strlen(label[i]) */
+    char *label[MAX_MENU_ITEM_LABELS]; /* the strings displayed in the item */
+    unsigned short label_offset[MAX_MENU_ITEM_LABELS]; /* witdh of label[i] */
+    unsigned short label_strlen[MAX_MENU_ITEM_LABELS]; /* strlen(label[i]) */
 
     Picture *picture;           /* Pixmap to show above label*/
-    Picture *lpicture[MAX_MINI_ICONS]; /* Pics to show left/right of label */
+    Picture *lpicture[MAX_MENU_ITEM_MINI_ICONS]; /* Pics to show left/right of label */
 
     short y_offset;		/* y offset for item */
     short height;		/* y height for item */
@@ -407,7 +411,8 @@ typedef struct MenuRootStatic
   unsigned short height;      /* height of the menu */
   unsigned short item_width;          /* width of the actual menu item */
   unsigned short sidepic_x_offset;    /* offset of the sidepic */
-  unsigned short icon_x_offset[MAX_MINI_ICONS]; /* offsets of the mini icons */
+  unsigned short icon_x_offset[MAX_MENU_ITEM_MINI_ICONS];
+                              /* offsets of the mini icons */
   unsigned short triangle_x_offset;   /* offset of the submenu triangle col */
   unsigned short item_text_x_offset;  /* offset of the actual menu item */
   unsigned short item_text_y_offset;  /* y offset for item text. */
@@ -624,7 +629,6 @@ typedef struct
   {
     unsigned is_first_item_selected : 1;
     unsigned is_key_press : 1;
-    unsigned is_menu_pinned : 1;
     unsigned is_menu_posted : 1;
   } flags;
 } MenuReturn;

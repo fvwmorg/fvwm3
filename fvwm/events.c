@@ -2778,7 +2778,7 @@ int flush_accumulate_expose(Window w, XEvent *e)
   int x1 = e->xexpose.x;
   int y1 = e->xexpose.y;
   int x2 = x1 + e->xexpose.width;
-  int y2 = x2 + e->xexpose.height;
+  int y2 = y1 + e->xexpose.height;
 
   while (XCheckTypedWindowEvent(dpy, w, Expose, &dummy))
   {

@@ -376,16 +376,14 @@ Bool HandlePaging(int HorWarpSize, int VertWarpSize, int *xl, int *yt,
     return False;
   }
 
-  if((Scr.ScrollResistance >= 10000)||
-     ((HorWarpSize ==0)&&(VertWarpSize==0)))
+  if (Scr.ScrollResistance >= 10000 || (HorWarpSize == 0 && VertWarpSize==0))
   {
     is_timestamp_valid = False;
     add_time = 0;
     return False;
   }
 
-  /* need to move the viewport */
-  if(Scr.VxMax == 0 && Scr.VyMax == 0)
+  if (Scr.VxMax == 0 && Scr.VyMax == 0)
   {
     is_timestamp_valid = False;
     add_time = 0;
@@ -409,7 +407,7 @@ Bool HandlePaging(int HorWarpSize, int VertWarpSize, int *xl, int *yt,
 
   do
   {
-    if(XPending(dpy) > 0 &&
+    if (XPending(dpy) > 0 &&
        (XCheckWindowEvent(
 	 dpy, Scr.PanFrameTop.win, LeaveWindowMask, &Event) ||
 	XCheckWindowEvent(
@@ -428,8 +426,8 @@ Bool HandlePaging(int HorWarpSize, int VertWarpSize, int *xl, int *yt,
     GetLocationFromEventOrQuery(dpy, Scr.Root, &Event, &x, &y);
     /* check actual pointer location since PanFrames can get buried under
        a window being moved or resized - mab */
-    if(( x >= edge_thickness )&&( x < Scr.MyDisplayWidth-edge_thickness )&&
-       ( y >= edge_thickness )&&( y < Scr.MyDisplayHeight-edge_thickness ))
+    if (x >= edge_thickness && x < Scr.MyDisplayWidth-edge_thickness &&
+        y >= edge_thickness && y < Scr.MyDisplayHeight-edge_thickness)
     {
       is_timestamp_valid = False;
       add_time = 0;
@@ -440,10 +438,10 @@ Bool HandlePaging(int HorWarpSize, int VertWarpSize, int *xl, int *yt,
       return False;
     }
     if (!fLoop && is_last_position_valid &&
-	((x - last_x) > MAX_PAGING_MOVE_DISTANCE ||
-	 (x - last_x) < -MAX_PAGING_MOVE_DISTANCE ||
-	 (y - last_y) > MAX_PAGING_MOVE_DISTANCE ||
-	 (y - last_y) < -MAX_PAGING_MOVE_DISTANCE))
+	(x - last_x > MAX_PAGING_MOVE_DISTANCE ||
+	 x - last_x < -MAX_PAGING_MOVE_DISTANCE ||
+	 y - last_y > MAX_PAGING_MOVE_DISTANCE ||
+	 y - last_y < -MAX_PAGING_MOVE_DISTANCE))
     {
       /* The pointer is moving too fast, prevent paging until it slows
        * down. Don't prevent paging when fLoop is set since we can't be
@@ -547,16 +545,18 @@ Bool HandlePaging(int HorWarpSize, int VertWarpSize, int *xl, int *yt,
     *yt = y - *delta_y;
 
   /* make sure the pointer isn't warped into the panframes */
-  if(*xl < edge_thickness) *xl = edge_thickness;
-  if(*yt < edge_thickness) *yt = edge_thickness;
-  if(*xl >= Scr.MyDisplayWidth - edge_thickness)
+  if (*xl < edge_thickness)
+    *xl = edge_thickness;
+  if (*yt < edge_thickness)
+    *yt = edge_thickness;
+  if (*xl >= Scr.MyDisplayWidth - edge_thickness)
     *xl = Scr.MyDisplayWidth - edge_thickness -1;
-  if(*yt >= Scr.MyDisplayHeight - edge_thickness)
+  if (*yt >= Scr.MyDisplayHeight - edge_thickness)
     *yt = Scr.MyDisplayHeight - edge_thickness -1;
 
   is_timestamp_valid = False;
   add_time = 0;
-  if ((*delta_x == 0)&&(*delta_y == 0))
+  if (*delta_x == 0 && *delta_y == 0)
   {
     return False;
   }

@@ -35,7 +35,7 @@ void LoadGlobalState(char *filename);
 /*
 **  Turn off SM for new windows
 */
-void DisableSM(void);
+void DisableRestoringState(void);
 
 /*
 **  Load and save window states.

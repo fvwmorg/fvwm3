@@ -1377,8 +1377,8 @@ Bool moveLoop(FvwmWindow *tmp_win, int XOffset, int YOffset, int Width,
 
       /* check Paging request once and only once after outline redrawn */
       /* redraw after paging if needed - mab */
-      paged=0;
-      while(paged<=1)
+      paged = 0;
+      while (paged <= 1)
       {
 	if(!do_move_opaque)
 	  MoveOutline(xl, yt, Width - 1, Height - 1);
@@ -1404,7 +1404,7 @@ Bool moveLoop(FvwmWindow *tmp_win, int XOffset, int YOffset, int Width,
 	DisplayPosition(tmp_win,xl,yt,False);
 
 	/* prevent window from lagging behind mouse when paging - mab */
-	if(paged==0)
+	if (paged == 0)
 	{
 	  xl = Event.xmotion.x_root;
 	  yt = Event.xmotion.y_root;
@@ -1414,7 +1414,7 @@ Bool moveLoop(FvwmWindow *tmp_win, int XOffset, int YOffset, int Width,
 	  yt += YOffset;
 	  DoSnapAttract(tmp_win, Width, Height, &xl, &yt);
 	  if (!delta_x && !delta_y)
-	    /* break from while (paged)*/
+	    /* break from while (paged <= 1) */
 	    break;
 	}
 	paged++;

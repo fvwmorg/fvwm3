@@ -318,14 +318,13 @@ void initialize_pager(void)
   Pixel balloon_border_pix;
   Pixel balloon_back_pix;
   Pixel balloon_fore_pix;
+  char dash_list[2];
 
-#if 1
   /* I don't think that this is necessary - just let pager die */
   /* domivogt (07-mar-1999): But it is! A window being moved in the pager
    * might die at any moment causing the Xlib calls to generate BadMatch
    * errors. Without an error handler the pager will die! */
   XSetErrorHandler(FvwmErrorHandler);
-#endif /* 1 */
 
   wm_del_win = XInternAtom(dpy,"WM_DELETE_WINDOW",False);
 
@@ -691,9 +690,17 @@ void initialize_pager(void)
     Desks[i].DashedGC =
       fvwmlib_XCreateGC(
 	dpy, Scr.Pager_w, GCForeground | GCLineStyle | GCLineWidth, &gcv);
+    if (use_dashed_separators)
+    {
+      /* Although this should already be the default for a freshly created GC,
+       * some X servers do not draw properly dashed lines if the dash style is
+       * not set explicitly. */
+      dash_list[0] = 4;
+      dash_list[1] = 4;
+      XSetDashes(dpy, Desks[i].DashedGC, 0, dash_list, 2);
+    }
 
     valuemask = (CWBorderPixel | CWColormap | CWEventMask);
-
     if (Desks[i].colorset >= 0 && Colorset[Desks[i].colorset].pixmap)
     {
         valuemask |= CWBackPixmap;

@@ -47,14 +47,14 @@ void fvwmlib_keyboard_shortcuts(
   Window JunkRoot;
   unsigned int JunkMask;
 
-  if (y_move_size < 5)
-    y_move_size = 5;
-  if (x_move_size < 5)
-    x_move_size = 5;
-  if(Event->xkey.state & ControlMask)
-    x_move_size = y_move_size = 1;
-  if(Event->xkey.state & ShiftMask)
-    x_move_size = y_move_size = 100;
+  if (y_move_size < DEFAULT_KDB_SHORTCUT_MOVE_DISTANCE)
+    y_move_size = DEFAULT_KDB_SHORTCUT_MOVE_DISTANCE;
+  if (x_move_size < DEFAULT_KDB_SHORTCUT_MOVE_DISTANCE)
+    x_move_size = DEFAULT_KDB_SHORTCUT_MOVE_DISTANCE;
+  if (Event->xkey.state & ControlMask)
+    x_move_size = y_move_size = KDB_SHORTCUT_MOVE_DISTANCE_SMALL;
+  if (Event->xkey.state & ShiftMask)
+    x_move_size = y_move_size = KDB_SHORTCUT_MOVE_DISTANCE_BIG;
 
   keysym = XLookupKeysym(&Event->xkey,0);
 
@@ -119,21 +119,21 @@ void fvwmlib_keyboard_shortcuts(
   }
   XQueryPointer(dpy, RootWindow(dpy, screen), &JunkRoot, &Event->xany.window,
 		&x_root, &y_root, &x, &y, &JunkMask);
-
-  if (x + x_move < 0)
-    x_move = -x;
-  else if (x + x_move >= DisplayWidth(dpy, DefaultScreen(dpy)))
-    x_move = DisplayWidth(dpy, DefaultScreen(dpy)) - x - 1;
-  if (y + y_move < 0)
-    y_move = -y;
-  else if (y + y_move >= DisplayHeight(dpy, DefaultScreen(dpy)))
-    y_move = DisplayHeight(dpy, DefaultScreen(dpy)) - y - 1;
   if (x_move || y_move)
   {
-    /* beat up the event */
-    XWarpPointer(dpy, None, RootWindow(dpy, screen), 0, 0, 0, 0,
-		 x_root+x_move, y_root+y_move);
-
+    if (x + x_move < 0)
+      x_move = -x;
+    else if (x + x_move >= DisplayWidth(dpy, DefaultScreen(dpy)))
+      x_move = DisplayWidth(dpy, DefaultScreen(dpy)) - x - 1;
+    if (y + y_move < 0)
+      y_move = -y;
+    else if (y + y_move >= DisplayHeight(dpy, DefaultScreen(dpy)))
+      y_move = DisplayHeight(dpy, DefaultScreen(dpy)) - y - 1;
+    if (x_move || y_move)
+    {
+      XWarpPointer(dpy, None, RootWindow(dpy, screen), 0, 0, 0, 0,
+		   x_root + x_move, y_root + y_move);
+    }
     /* beat up the event */
     Event->type = MotionNotify;
     Event->xkey.x += x_move;
