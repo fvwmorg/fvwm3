@@ -572,7 +572,7 @@ void list_config_info(unsigned long *body)
  * Process X Events
  *
  ************************************************************************/
-void ProcessXEvent(int x, int y)
+int ProcessXEvent(int x, int y)
 {
 	XEvent Event,event;
 	static int is_key_pressed = 0;
@@ -632,14 +632,14 @@ void ProcessXEvent(int x, int y)
 					 * button 2 is pressed */
 					SetMessageMask(
 						fd, M_CONFIGURE_WINDOW   |
-							M_WINDOW_NAME    |
-							M_ICON_NAME      |
-							M_RES_CLASS      |
-							M_RES_NAME       |
-							M_END_WINDOWLIST |
-							M_CONFIG_INFO    |
-							M_END_CONFIG_INFO|
-							M_SENDCONFIG);
+						M_WINDOW_NAME    |
+						M_ICON_NAME      |
+						M_RES_CLASS      |
+						M_RES_NAME       |
+						M_END_WINDOWLIST |
+						M_CONFIG_INFO    |
+						M_END_CONFIG_INFO|
+						M_SENDCONFIG);
 					SendText(fd, "Send_WindowList", 0);
 					XDestroyWindow(dpy, main_win);
 					DestroyList();
@@ -647,7 +647,7 @@ void ProcessXEvent(int x, int y)
 						dpy, screen, MyName, &app_win,
 						True);
 					found = 0;
-					return;
+					return 1;
 				}
 				else
 				{
@@ -715,6 +715,8 @@ void ProcessXEvent(int x, int y)
 		}
 	}
 	XFlush (dpy);
+
+	return 0;
 }
 
 /*************************************************************************
@@ -885,7 +887,10 @@ void list_end(void)
 		FD_SET(x_fd, &fdset);
 
 		/* process all X events first */
-		ProcessXEvent(x,y);
+		if (ProcessXEvent(x,y) == 1)
+		{
+			return;
+		}
 
 		/* wait for X-event or config line */
 		select(fd_width, SELECT_FD_SET_CAST &fdset, NULL, NULL, NULL );

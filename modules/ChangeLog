@@ -5,6 +5,9 @@
 	ConfigureNotify comes in remove
 	Expose: removed the Event.xexpose.count handling as it can cause drawing
 	problems
+	(list_end):
+	(ProcessXEvent):
+	fixed spawning new FvwmIdent windows
 
 2002-09-23  Dan Espen  <dane@mk.telcordia.com>
 
