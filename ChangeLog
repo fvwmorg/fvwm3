@@ -1,5 +1,8 @@
 1999-10-14  Dominik Vogt  <dominik.vogt@gmx.de>
 
+	* fvwm/style.c (handle_window_style_change): handle 'StickyIcon' and
+	'SlipperyIcon' style changes
+
 	* fvwm/session.c (SaveWindowStates):
 	(matchWin): fixed several session management bugs:
 	SM tried to remember states of modules (which is impossible since the

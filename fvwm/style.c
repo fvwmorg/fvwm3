@@ -1820,7 +1820,6 @@ static void handle_window_style_change(FvwmWindow *t)
   char *wf;
   char *sf;
   char *sc;
-  Bool need_desk_change = False;
 
   lookup_style(t, &style);
   if (style.has_style_changed == 0)
@@ -1838,24 +1837,25 @@ static void handle_window_style_change(FvwmWindow *t)
   /* copy the static common window flags */
   for (i = 0; i < sizeof(style.flags.common.s); i++)
   {
-      wf[i] = (wf[i] & ~sc[i]) | (sf[i] & sc[i]);
+    wf[i] = (wf[i] & ~sc[i]) | (sf[i] & sc[i]);
   }
 
   if (style.change_mask.common.is_sticky)
   {
-      handle_stick(&Event, t->frame, t, C_FRAME, "", 0,
-                   style.flags.common.is_sticky);
+    handle_stick(&Event, t->frame, t, C_FRAME, "", 0,
+                 style.flags.common.is_sticky);
   }
   if (style.change_mask.common.s.is_icon_sticky)
   {
-      need_desk_change = True;
+    if (IS_ICONIFIED(t) && !IS_STICKY(t))
+    {
+      /* stick and unstick the window to force the icon on the current page */
+      handle_stick(&Event, t->frame, t, C_FRAME, "", 0, 1);
+      handle_stick(&Event, t->frame, t, C_FRAME, "", 0, 0);
+    }
   }
 
-  if (need_desk_change)
-  {
-  }
 fprintf(stderr,"updated style for window %s\n", t->name);
-
   return;
 }
 
