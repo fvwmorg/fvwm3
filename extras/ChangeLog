@@ -1,3 +1,12 @@
+1998-12-02  Dan Espen  <dane@mk.bellcore.com>
+
+	* FvwmTaskBar/FvwmTaskBar.h: Update prototype for ParseConfig.
+
+	* FvwmTaskBar/FvwmTaskBar.1: Update config file reading note, bugs info,
+	and remove references to fvwm95.
+
+	* FvwmTaskBar/FvwmTaskBar.c: Use GetConfigLine to read the config.
+
 1998-11-24  Paul D. Smith  <psmith@gnu.org>
 
 	* FvwmScript/types.h: Remove headers that are duplicated (and

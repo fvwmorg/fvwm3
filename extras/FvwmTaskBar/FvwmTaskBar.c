@@ -143,6 +143,8 @@ Colormap PictureCMap;
 char *IconPath   = NULL,
      *PixmapPath = NULL;
 
+static void ParseConfigLine(unsigned char *tline); /* prototype */
+
 /******************************************************************************
   Main - Setup the XConnection,request the window list and loop forever
     Based on main() from FvwmIdent:
@@ -186,7 +188,7 @@ int main(int argc, char **argv)
   SetMessageMask(Fvwm_fd,M_ADD_WINDOW | M_CONFIGURE_WINDOW | M_DESTROY_WINDOW |
 		 M_WINDOW_NAME | M_ICON_NAME | M_RES_NAME | M_DEICONIFY | M_ICONIFY |
 		 M_END_WINDOWLIST | M_FOCUS_CHANGE |
-		M_CONFIG_INFO
+		M_CONFIG_INFO | M_END_CONFIG_INFO
 #ifdef FVWM95
 		| M_FUNCTION_END |
 		M_SCROLLREGION
@@ -198,7 +200,8 @@ int main(int argc, char **argv)
 
   /* Parse the config file */
   InitList(&swallowed);
-  ParseConfig(argv[3]);
+
+  ParseConfig();
 
   /* Setup the XConnection */
   StartMeUp();
@@ -562,120 +565,106 @@ int OpenConsole()
   return 1;
 }
 
-/******************************************************************************
-  ParseConfig - Parse the configuration file fvwm to us to use
-    Based on part of main() from FvwmIdent:
-      Copyright 1994, Robert Nation and Nobutaka Suzuki.
-******************************************************************************/
-void ParseConfig(char *file)
-{
+void ParseConfig() {
+  char *buf;
+  while (GetConfigLine(Fvwm_fd,&buf), buf != NULL) {
+    ParseConfigLine(buf);
+  } /* end config lines */
+} /* end function */
+
+static void ParseConfigLine(unsigned char *tline) {
   char line[256];
-  char *tline;
   char *str;
-  FILE *ptr;
   int i, j;
-   
-  ptr = fopen(file,"r");
-  if (ptr == (FILE *)NULL) {
-    ConsoleMessage("Couldn't read configuration file (%s)...\n", file);
-    return;
-  }
 
-  tline = fgets(line,(sizeof line)-1,ptr);
-
-  while (tline != (char *)0) {
-    while (isspace(*tline))tline++;
-    if (strlen(tline)>1 && tline[0] != '#') {
-      if(strncasecmp(tline, CatString3(Module, "Font",""),Clength+4)==0)
-	CopyString(&font_string,&tline[Clength+4]);
-      else if(strncasecmp(tline, CatString3(Module, "SelFont",""),Clength+7)==0)
-	CopyString(&selfont_string,&tline[Clength+7]);
-      else if(strncasecmp(tline,CatString3(Module,"Fore",""), Clength+4)==0)
-	CopyString(&ForeColor,&tline[Clength+4]);
-      else if(strncasecmp(tline,CatString3(Module, "Geometry",""), Clength+8)==0) {
-	str = &tline[Clength+9];
-	while(((isspace(*str))&&(*str != '\n'))&&(*str != 0))	str++;
-	str[strlen(str)-1] = 0;
-	UpdateString(&geometry,str);
-      } else if(strncasecmp(tline,CatString3(Module, "Back",""), Clength+4)==0)
-	CopyString(&BackColor,&tline[Clength+4]);
-      else if(strncasecmp(tline,CatString3(Module, "Action",""), Clength+6)==0)
-	LinkAction(&tline[Clength+6]);
-      else if(strncasecmp(tline,CatString3(Module, "UseSkipList",""),
-			    Clength+11)==0) UseSkipList=True;
-      else if(strncasecmp(tline,CatString3(Module, "AutoStick",""),
-			    Clength+9)==0) AutoStick=True;
-      else if(strncasecmp(tline,CatString3(Module, "AutoHide",""),
-                            Clength+4)==0) { AutoHide=True; AutoStick=True; }
-      else if(strncasecmp(tline,CatString3(Module, "UseIconNames",""),
-			    Clength+12)==0) UseIconNames=True;
-      else if(strncasecmp(tline,CatString3(Module, "ShowTransients",""),
-			    Clength+14)==0) ShowTransients=True;
-      else if(strncasecmp(tline,CatString3(Module, "UpdateInterval",""),
-                            Clength+14)==0)
-                               UpdateInterval=atoi(&tline[Clength+14]);
-      else if(strncasecmp(tline,CatString3(Module, "HighlightFocus",""),
-                            Clength+14)==0) HighlightFocus=True;
-      else if(strncasecmp(tline,CatString3(Module, "SwallowModule",""),
-			    Clength+13)==0) {
+  while (isspace(*tline))tline++;
+  if(strncasecmp(tline, CatString3(Module, "Font",""),Clength+4)==0)
+    CopyString(&font_string,&tline[Clength+4]);
+  else if(strncasecmp(tline, CatString3(Module, "SelFont",""),Clength+7)==0)
+    CopyString(&selfont_string,&tline[Clength+7]);
+  else if(strncasecmp(tline,CatString3(Module,"Fore",""), Clength+4)==0) {
+    CopyString(&ForeColor,&tline[Clength+4]);
+  } else if(strncasecmp(tline,CatString3(Module, "Geometry",""), Clength+8)==0) {
+    str = &tline[Clength+9];
+    while(((isspace(*str))&&(*str != '\n'))&&(*str != 0))	str++;
+    str[strlen(str)-1] = 0;
+    UpdateString(&geometry,str);
+  } else if(strncasecmp(tline,CatString3(Module, "Back",""), Clength+4)==0)
+    CopyString(&BackColor,&tline[Clength+4]);
+  else if(strncasecmp(tline,CatString3(Module, "Action",""), Clength+6)==0)
+    LinkAction(&tline[Clength+6]);
+  else if(strncasecmp(tline,CatString3(Module, "UseSkipList",""),
+                      Clength+11)==0) UseSkipList=True;
+  else if(strncasecmp(tline,CatString3(Module, "AutoStick",""),
+                      Clength+9)==0) AutoStick=True;
+  else if(strncasecmp(tline,CatString3(Module, "AutoHide",""),
+                      Clength+4)==0) { AutoHide=True; AutoStick=True; }
+  else if(strncasecmp(tline,CatString3(Module, "UseIconNames",""),
+                      Clength+12)==0) UseIconNames=True;
+  else if(strncasecmp(tline,CatString3(Module, "ShowTransients",""),
+                      Clength+14)==0) ShowTransients=True;
+  else if(strncasecmp(tline,CatString3(Module, "UpdateInterval",""),
+                      Clength+14)==0)
+    UpdateInterval=atoi(&tline[Clength+14]);
+  else if(strncasecmp(tline,CatString3(Module, "HighlightFocus",""),
+                      Clength+14)==0) HighlightFocus=True;
+  else if(strncasecmp(tline,CatString3(Module, "SwallowModule",""),
+                      Clength+13)==0) {
 	
-	/* tell fvwm to launch the module for us */
-	str = safemalloc(strlen(&tline[Clength+13]) + 6);
-	sprintf(str, "Module %s",&tline[Clength+13]);
-	ConsoleMessage("Trying to: %s", str);
-	SendFvwmPipe(str, 0);
+    /* tell fvwm to launch the module for us */
+    str = safemalloc(strlen(&tline[Clength+13]) + 6);
+    sprintf(str, "Module %s",&tline[Clength+13]);
+    ConsoleMessage("Trying to: %s", str);
+    SendFvwmPipe(str, 0);
 	
 	/* Remember the anticipated window's name for swallowing */
-	i = 4;	      
-	while((str[i] != 0)&&
-	      (str[i] != '"'))
-	  i++;
-	j = ++i;
-	while((str[i] != 0)&&
-	      (str[i] != '"'))
-	  i++;
-	if (i > j) {
-	  str[i] = 0;
-	  ConsoleMessage("Looking for window: [%s]\n", &str[j]);
-	  AddItemName(&swallowed, &str[j], F_NOT_SWALLOWED);
-	}	
-	free(str);
-      } else if(strncasecmp(tline,CatString3(Module, "Swallow",""),
-			      Clength+7)==0) {
+    i = 4;	      
+    while((str[i] != 0)&&
+          (str[i] != '"'))
+      i++;
+    j = ++i;
+    while((str[i] != 0)&&
+          (str[i] != '"'))
+      i++;
+    if (i > j) {
+      str[i] = 0;
+      ConsoleMessage("Looking for window: [%s]\n", &str[j]);
+      AddItemName(&swallowed, &str[j], F_NOT_SWALLOWED);
+    }	
+    free(str);
+  } else if(strncasecmp(tline,CatString3(Module, "Swallow",""),
+                        Clength+7)==0) {
 	
-	/* tell fvwm to Exec the process for us */
-	str = safemalloc(strlen(&tline[Clength+7]) + 6);
-	sprintf(str, "Exec %s",&tline[Clength+7]);
-	ConsoleMessage("Trying to: %s", str);
-	SendFvwmPipe(str, 0);
+    /* tell fvwm to Exec the process for us */
+    str = safemalloc(strlen(&tline[Clength+7]) + 6);
+    sprintf(str, "Exec %s",&tline[Clength+7]);
+    ConsoleMessage("Trying to: %s", str);
+    SendFvwmPipe(str, 0);
 	
 	/* Remember the anticipated window's name for swallowing */
-	i = 4;	      
-	while((str[i] != 0)&&
-	      (str[i] != '"'))
-	  i++;
-	j = ++i;
-	while((str[i] != 0)&&
-	      (str[i] != '"'))
-	  i++;
-	if (i > j) {
-	  str[i] = 0;
-	  ConsoleMessage("Looking for window: [%s]\n", &str[j]);
-	  AddItemName(&swallowed, &str[j], F_NOT_SWALLOWED);
-	}	
-	free(str);
-      } else if(strncasecmp(tline,"ButtonWidth",11) == 0) {
-	button_width = atoi(&tline[11]);
-      } else if(strncasecmp(tline,"IconPath",8) == 0) {
-	CopyString(&IconPath, &tline[8]);
-      } else if(strncasecmp(tline,"PixmapPath",10) == 0) {
-	CopyString(&PixmapPath, &tline[10]);
-      } else {
-	GoodiesParseConfig(tline, Module);
-	StartButtonParseConfig(tline, Module);
-      }
-      }
-    tline = fgets(line,(sizeof line)-1,ptr);
+    i = 4;	      
+    while((str[i] != 0)&&
+          (str[i] != '"'))
+      i++;
+    j = ++i;
+    while((str[i] != 0)&&
+          (str[i] != '"'))
+      i++;
+    if (i > j) {
+      str[i] = 0;
+      ConsoleMessage("Looking for window: [%s]\n", &str[j]);
+      AddItemName(&swallowed, &str[j], F_NOT_SWALLOWED);
+    }	
+    free(str);
+  } else if(strncasecmp(tline,"ButtonWidth",11) == 0) {
+    button_width = atoi(&tline[11]);
+  } else if(strncasecmp(tline,"IconPath",8) == 0) {
+    CopyString(&IconPath, &tline[8]);
+  } else if(strncasecmp(tline,"PixmapPath",10) == 0) {
+    CopyString(&PixmapPath, &tline[10]);
+  } else {
+    GoodiesParseConfig(tline, Module);
+    StartButtonParseConfig(tline, Module);
   }
 }
 

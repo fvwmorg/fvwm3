@@ -38,19 +38,19 @@ You may freely use this module or any portion of it for any purpose as long
 as the copyright is kept intact. 
 
 .SH INITIALIZATION
-During initialization, \fIFvwmTaskBar\fP will scan the same configuration
-file that FVWM used during startup to find the options that pertain to it. 
+During initialization, \fIFvwmTaskBar\fP gets configuration information
+from FVWM to find the options that pertain to it. 
 These options are discussed in a later section. 
 
 .SH INVOCATION
 FvwmTaskBar can be invoked by fvwm during initialization by inserting the
-line 'Module FvwmTaskBar' in the .fvwmrc file. 
+line 'Module FvwmTaskBar' in the .fvwm2rc file. 
 
 FvwmTaskBar must reside in a directory that is listed in the ModulePath 
 option of FVWM for it to be executed by FVWM.
 
 .SH CONFIGURATION OPTIONS
-The following options can be placed in the .fvwmrc file
+The following options can be placed in the .fvwm2rc file
 
 .IP "*FvwmTaskBarGeometry \fI{+-}<X>x{+-}<Y>\fP"
 Specifies the location and gravity of the FvwmTaskBar window.  At the
@@ -156,7 +156,7 @@ By default it is \fI/var/spool/mail/$USER_LOGIN\fP.
 A value of 'None' instructs the module not to have a mail indicator.
 
 .IP "*FvwmTaskBarMailCommand \fIcommand\fP"
-Specifies a \fIfvwm95\fP command to be executed when double-clicking
+Specifies a \fIfvwm\fP command to be executed when double-clicking
 on the mail icon.
 
 .IP "*FvwmTaskBarIgnoreOldMail"
@@ -179,7 +179,7 @@ This option specifies the name of the icon to display at the left of the Start
 button.
 
 .SH SAMPLE CONFIGURATION
-The following are excepts from a .fvwm2rc95 file which describe FvwmTaskBar
+The following are excepts from a .fvwm2rc file which describe FvwmTaskBar
 initialization commands:
 
 .nf
@@ -233,7 +233,8 @@ StaysOnTop,WindowSkipList,CirculateSkip
 .fi
 
 .SH BUGS
-At present the \fIFvwmTaskBar\fP works only with \fIfvwm95-2\fP.
+There is a bug report that FvwmTaskBar doesn't work well with
+Autohide turned on.
 
 .SH AUTHOR
 David Barth (barth@di.epfl.ch)

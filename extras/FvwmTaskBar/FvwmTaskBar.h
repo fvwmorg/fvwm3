@@ -90,7 +90,7 @@ void StartMeUp(void);
 void ShutMeDown(int exitstat);
 void ConsoleMessage(char *fmt,...);
 int OpenConsole(void);
-void ParseConfig(char *file);
+static void ParseConfig();
 void LoopOnEvents(void);
 void AdjustWindow(int width, int height);
 char *makename(char *string,long flags);
