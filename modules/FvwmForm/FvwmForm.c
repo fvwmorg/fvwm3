@@ -365,16 +365,16 @@ static void ct_Message(char *cp) {
      to the correct DrawTable. */
   AssignDrawTable(item);
   item->header.name = "FvwmMessage";    /* whats this for? dje */
-  item->text.value = malloc(70);        /* point at last error recvd */
-  item->text.n = 70;
-  memset(item->text.value,'M',70);      /* for font width calc */
+  item->text.value = malloc(80);        /* point at last error recvd */
+  item->text.n = 80;
+  memset(item->text.value,'M',80);      /* for font width calc */
   item->header.size_x = XTextWidth(item->header.dt_ptr->dt_font_struct,
                                    item->text.value,
                                    item->text.n) + 2 * TEXT_SPC;
   item->header.size_y = FontHeight(item->header.dt_ptr->dt_font_struct)
     + CF.padVText;
 
-  memset(item->text.value,' ',70);      /* Clear it out */
+  memset(item->text.value,' ',80);      /* Clear it out */
   myfprintf((stderr, "Message area [%d, %d]\n",
              item->header.size_x, item->header.size_y));
   AddToLine(item);
@@ -1101,6 +1101,10 @@ void DoCommand (Item *cmd)
   }
 
   /* post-command */
+  if (CF.last_error) {                  /* if form has last_error field */
+    memset(CF.last_error->text.value, ' ', CF.last_error->text.n); /* clear */
+    RedrawText(CF.last_error);          /* update display */
+  } /* end form has last_error field */
   if (cmd->button.key == IB_QUIT) {
     if (CF.grab_server)
       XUngrabServer(dpy);
@@ -1166,7 +1170,8 @@ static void OpenWindows ()
              screen_background_color));
   CF.frame = XCreateSimpleWindow(dpy, root, x, y, CF.max_width, CF.total_height,
 			      0, BlackPixel(dpy, screen), CF.screen_background);
-  XSelectInput(dpy, CF.frame, KeyPressMask | ExposureMask);
+  XSelectInput(dpy, CF.frame,
+               KeyPressMask | ExposureMask | StructureNotifyMask);
   XStoreName(dpy, CF.frame, MyName+1);
   XSetWMHints(dpy, CF.frame, &wmh);
   sh.x = x, sh.y = y;
@@ -1262,13 +1267,24 @@ static void process_message(unsigned long *header, unsigned long *body) {
     break;
   case M_ERROR:
   case M_STRING:
-    if (CF.last_error) {
-      strncpy(CF.last_error->text.value,(char *)(&body[3]),
+    if (CF.last_error) {                /* if form has message area */
+      /* ignore form size, its OK to write outside the window boundary */
+      int msg_len;
+      char *msg_ptr;
+      msg_ptr = (char *)&body[3];
+      msg_len = strlen(msg_ptr);
+      if (msg_ptr[msg_len-1] == '\n') { /* line ends w newline */
+        msg_ptr[msg_len-1] = '\0'; /* strip off \n */
+      }
+      if (CF.last_error->text.n <= msg_len) { /* if message wont fit */
+        CF.last_error->text.value = realloc(CF.last_error->text.value,
+                                            msg_len * 2);
+        CF.last_error->text.n = msg_len * 2;
+      }
+      strncpy(CF.last_error->text.value,msg_ptr,
               CF.last_error->text.n);
       CF.last_error->text.value[CF.last_error->text.n] = 0;
       RedrawText(CF.last_error);
-      fprintf(stderr,"Put message %s (len %d) into form\n",
-              CF.last_error->text.value, CF.last_error->text.n);
       break;
     } /* module has last_error field */
   } /* end switch header */
@@ -1422,7 +1438,7 @@ int main (int argc, char **argv)
   ReadConfig();                         /* get config from fvwm */
 
   /* Now tell fvwm we want *Alias commands in real time */
-  sprintf(mask_mesg,"SET_MASK %lu\n",(unsigned long)
+  sprintf(mask_mesg,"SETMASK %lu\n",(unsigned long)
           (M_SENDCONFIG|M_CONFIG_INFO|M_ERROR|M_STRING));
   SendInfo(Channel, mask_mesg, 0);      /* tell fvwm about our mask */
 

@@ -1,0 +1,22 @@
+# FormFvwmTalk. - Basic replacement for FvwmTalk
+DestroyModuleConfig         FormFvwmTalk.*
+*FormFvwmTalk.WarpPointer
+# Layout
+*FormFvwmTalk.Line         center
+*FormFvwmTalk.Text         "Talk to Fvwm"
+*FormFvwmTalk.Line         left
+*FormFvwmTalk.Text         "Command:"
+*FormFvwmTalk.Input        Command 80 ""
+*FormFvwmTalk.Line         left
+*FormFvwmTalk.Text         "Msg:"
+*FormFvwmTalk.Message
+*FormFvwmTalk.Line         center
+# Buttons
+*FormFvwmTalk.Button       continue    "Return - Execute"         ^M
+*FormFvwmTalk.Command        $(Command)
+*FormFvwmTalk.Button       continue    "F1 - Help" F1
+*FormFvwmTalk.Command        Module FvwmForm FormFvwmTalkHelp.
+*FormFvwmTalk.Button       restart     "F3 - Reset input" F3
+*FormFvwmTalk.Command        Nop
+*FormFvwmTalk.Button       quit        "F4 - Dismiss"  F4
+*FormFvwmTalk.Command        Nop

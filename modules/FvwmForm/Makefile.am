@@ -14,7 +14,8 @@ FvwmForm_SOURCES = FvwmForm.c FvwmForm.h DefineMe.c ReadXServer.c \
  ParseCommand.c
 FvwmForm_DEPENDENCIES = $(top_builddir)/libs/libfvwm.a
 
-config_DATA = .FormFvwmCapture .FormFvwmRlogin .FormFvwmQuitVerify
+config_DATA = .FormFvwmCapture .FormFvwmRlogin .FormFvwmQuitVerify \
+ .FormFvwmTalk. .FormFvwmTalkHelp.
 
 ## Xpm note: while this module may not depend on Xpm explicitly,
 ## there are sometimes dependencies through functions in libfvwm

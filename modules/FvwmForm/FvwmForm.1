@@ -140,8 +140,49 @@ by sending the command "*FvwmFormDefaultRead x". With "x" set to "y" or
 .SH CONFIGURATION
 The following commands can be set in the .fvwm2rc file or thru
 any of the other ways that fvwm2 can accept commands.
-Note that the string "FvwmForm" should be changed if FvwmForm is
-invoked with an alias.
+The simplest technique is to create a file in the read-only architecture-independent data directory,
+[PREFIX/share] or your home directory that starts with a period ('.')
+and matches the form alias.
+
+In the following paragraphs the string "FvwmForm"
+would normally be the form alias.
+
+FvwmForm reads commands before the form is ever displayed,
+and while the form is being displayed.
+
+The following commands are accepted before the form is displayed:
+.EX
+*FvwmFormBack
+*FvwmFormButton
+*FvwmFormButtonFont
+*FvwmFormChoice
+*FvwmFormCommand
+*FvwmFormFont
+*FvwmFormFore
+*FvwmFormGrabServer
+*FvwmFormInput
+*FvwmFormInputFont
+*FvwmFormItemBack
+*FvwmFormItemFore
+*FvwmFormLine
+*FvwmFormMessage
+*FvwmFormPadVText
+*FvwmFormPosition
+*FvwmFormSelection
+*FvwmFormText
+*FvwmFormWarpPointer
+.EE
+
+The following commands are accepted while the form is displayed:
+.EX
+*FvwmFormMap
+*FvwmFormStop
+*FvwmFormUnMap
+.EE
+
+The "Map", "UnMap" and "Stop" facility is under development
+and is currently not explained in this document, since it is likely
+to change.
 
 The order of the options DOES matter.
 The first background text color, "*FvwmFormBack",
@@ -229,6 +270,28 @@ Items are placed in the center of the window.
 If there is only one item in the line, the item is centered in the window.
 If two or more items are present, they are spreaded to fill the whole
 width of the window.
+.TP 4
+.B *FvwmFormMessage
+Defines a text area on the form that contains the last error message
+from fvwm2.  For purposes of determining form size, the message area
+is considered to be 80 bytes long.  Its actual length is the same as
+the message received.  If the message exceeds 80 bytes, you can see the
+rest of the message by resizing the form.
+
+You should not attempt to put any text, buttons or input fields on the
+same line after a message field.  Messages greater than 80 bytes will overlay
+the remainder of the line.
+.TP 4
+.B *FvwmFormPadVText "\fIPixels\fP" 
+The number of pixels used as vertical padding between text items, line
+to line.  The default is 6 which looks good on lines containing text
+intermixed with input boxes, choices or buttons.
+
+For straight text, such as might appear on a help form, padding of
+zero looks better.
+
+(There are lots of other padding values used in form layout
+which can't currently be changed with commands.)
 .TP 4
 .B *FvwmFormText "\fIstring\fP"
 Displays \fIstring\fP as plain text.
@@ -335,14 +398,18 @@ If the choice is not selected, the result is empty.
 The same as the above, except that the converse conditions are taken.
 
 .SH EXAMPLES
-The following examples are automatically defined.
-Use the following commands to create a menu to invoke
-these examples:
+All of the following "examples" are installed in the 
+read-only architecture-independent data directory,
+[PREFIX/share], during fvwm2 installation.
+
+The following commands create a menu to invoke the examples:
 
 .EX
-AddToMenu Forms "QuitVerify" 	Module FvwmForm FormFvwmQuitVerify
-AddToMenu Forms "Capture"    	Module FvwmForm FormFvwmCapture
-AddToMenu Forms "Rlogin"     	Module FvwmForm FormFvwmRlogin
+DestroyMenu Forms
+AddToMenu Forms "&Q. QuitVerify" Module FvwmForm FormFvwmQuitVerify
+AddToMenu Forms "&C. Capture" Module FvwmForm FormFvwmCapture
+AddToMenu Forms "&R. Rlogin" Module FvwmForm FormFvwmRlogin
+AddToMenu Forms "&T. Talk Form" Module FvwmForm FormFvwmTalk.
 .EE
 .SH EXAMPLE 1 - QuitVerify
 This example simulates the mwm way of confirming logout.
@@ -417,12 +484,77 @@ DestroyModuleConfig        FormFvwmCapture*
 *FormFvwmCaptureCommand    Exec exec xpr -device $(PtrType) $(file) | lpr -P $(printer) &
 *FormFvwmCaptureButton     quit            "Quit"
 .EE
+.SH EXAMPLE 4 - Talk Form
+This example provides a replacement for the module FvwmTalk.
+There are 2 forms, "FormFvwmTalk." which executes commands,
+or sends commands to fvwm2 for execution, and "FormFvwmTalkHelp."
+which is a help form.  
+
+These 2 forms have names ending in a special character.  This is
+one way to make sure that commands being sent to modules are
+unique.
+
+In the help form, notice how vertical line
+spacing is changed.  Normal FvwmForm line spacing assumes text is
+intermixed with buttons, help forms require different spacing.
+
+.EX
+# FormFvwmTalk. - Replacement for FvwmTalk
+DestroyModuleConfig         FormFvwmTalk.*
+*FormFvwmTalk.WarpPointer
+# Layout
+*FormFvwmTalk.Line         center
+*FormFvwmTalk.Text         "Talk to Fvwm"
+*FormFvwmTalk.Line         left
+*FormFvwmTalk.Text         "Command:"
+*FormFvwmTalk.Input        Command 80 ""
+*FormFvwmTalk.Line         left
+*FormFvwmTalk.Text         "Msg:"
+*FormFvwmTalk.Message
+*FormFvwmTalk.Line         center
+# Buttons
+*FormFvwmTalk.Button       continue    "Return - Execute"         ^M
+*FormFvwmTalk.Command        $(Command)
+*FormFvwmTalk.Button       continue    "F1 - Help" F1
+*FormFvwmTalk.Command        Module FvwmForm FormFvwmTalkHelp.
+*FormFvwmTalk.Button       restart     "F3 - Reset input" F3
+*FormFvwmTalk.Command        Nop
+*FormFvwmTalk.Button       quit        "F4 - Dismiss"  F4
+*FormFvwmTalk.Command        Nop
+.EE
+.EX
+# FormFvwmTalkHelp. - Help Text for FormFvwmTalk
+DestroyModuleConfig         FormFvwmTalkHelp.*
+*FormFvwmTalkHelp.WarpPointer
+# Layout
+*FormFvwmTalkHelp.Line    center
+*FormFvwmTalkHelp.Text    "Talk to Fvwm - Help"
+*FormFvwmTalkHelp.Line    left
+*FormFvwmTalkHelp.Text    " "
+*FormFvwmTalkHelp.Line    left
+*FormFvwmTalkHelp.PadVText 0
+*FormFvwmTalkHelp.Text    "Enter commands in the \"Command:\" input field."
+*FormFvwmTalkHelp.Line    left
+*FormFvwmTalkHelp.Text    "Commands beginning with \"!\" are executed by the"
+*FormFvwmTalkHelp.Line    left
+*FormFvwmTalkHelp.Text    "shell as a sub-process of the form."
+*FormFvwmTalkHelp.Line    left
+*FormFvwmTalkHelp.Text    "All other commands are sent to fvwm2 for execution."
+*FormFvwmTalkHelp.Line    left
+*FormFvwmTalkHelp.Text    ""
+*FormFvwmTalkHelp.Line    left
+*FormFvwmTalkHelp.Text    "Fvwm2 error messages are shown on the \"Msg:\" line."
+*FormFvwmTalkHelp.Line    left
+*FormFvwmTalkHelp.Text    ""
+# Buttons
+*FormFvwmTalkHelp.Line    center
+*FormFvwmTalkHelp.Button  quit    "Return - Dismiss"         ^M
+*FormFvwmTalkHelp.Command   Nop
+.EE
 .SH BUGS AND LIMITATIONS
 FvwmForm is a fairly simple method of providing input.
 There is no input validation facility.
-There is no builtin way of seeing errors generated by the commands
-executed or sent to fvwm.  Depending on your setup, you would normally
-find errors on your console.
+FvwmForm has no way of dealing with lists.
 
 Report bugs to the fvwm-workers list.
 .SH COPYRIGHT

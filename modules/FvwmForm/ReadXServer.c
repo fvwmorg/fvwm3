@@ -20,6 +20,7 @@
 #include <FvwmForm.h>
 
 static void ToggleChoice (Item *item);
+static void ResizeFrame (void);
 
 /* read an X event */
 void ReadXServer ()
@@ -37,6 +38,18 @@ void ReadXServer ()
     XNextEvent(dpy, &event);
     if (event.xany.window == CF.frame) {
       switch (event.type) {
+      case ConfigureNotify:             /* has window be reconfigured */
+        ResizeFrame();                  /* adjust yourself... */
+        break;
+      case SelectionClear:
+/*         selection_clear (); */
+        break;
+      case SelectionNotify:
+/*  selection_paste (ev.xselection.requestor, ev.xselection.property, True); */
+        break;
+      case SelectionRequest:
+/*         selection_send (&(ev.xselectionrequest)); */
+        break;
       case Expose:
 	RedrawFrame();
 	if (CF.grab_server && !CF.server_grabbed) {
@@ -421,4 +434,34 @@ static void ToggleChoice (Item *item)
     item->choice.on = !item->choice.on;
     RedrawItem(item, 0);
   }
+}
+static void ResizeFrame (void) {
+#if 0
+  /* unfinished dje. */
+  Window root;
+  XEvent dummy;
+  int x, y;
+  unsigned int border, depth, width, height;
+  /* get anything queued */
+  while (XCheckTypedWindowEvent(dpy, CF.frame, ConfigureNotify, &dummy));
+  XGetGeometry(dpy, CF.frame, &root, &x, &y, &width, &height, &border, &depth);
+  if (width != CF.max_width) {
+    if (CF.last_error != 0) {           /* if form has message area */
+      fprintf(stderr, "Frame was %d, is %d\n",CF.max_width,width);
+      /* RedrawText sets x = item->header.pos_x + TEXT_SPC;
+         MassageConfig does :
+           line->size_x += (line->n + 1) * ITEM_HSPC; =(10)=
+           if (line->size_x > CF.max_width)
+             CF.max_width = line->size_x;
+           (70 + 1) * 10 = 700??
+      */
+      int delta;
+      int curr_x;
+      delta = width - CF.max_width;     /* new width - curr width */
+      curr_x = CF.last_error->header.pos_x + TEXT_SPC;
+      curr_end = curr_x + CF.last_error->size_x;
+         
+    }
+  }
+#endif
 }

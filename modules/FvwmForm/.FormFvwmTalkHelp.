@@ -1,0 +1,27 @@
+# FormFvwmTalkHelp. - Help Text for FormFvwmTalk
+DestroyModuleConfig         FormFvwmTalkHelp.*
+*FormFvwmTalkHelp.WarpPointer
+# Layout
+*FormFvwmTalkHelp.Line    center
+*FormFvwmTalkHelp.Text    "Talk to Fvwm - Help"
+*FormFvwmTalkHelp.Line    left
+*FormFvwmTalkHelp.Text    " "
+*FormFvwmTalkHelp.Line    left
+*FormFvwmTalkHelp.PadVText 0
+*FormFvwmTalkHelp.Text    "Enter commands in the \"Command:\" input field."
+*FormFvwmTalkHelp.Line    left
+*FormFvwmTalkHelp.Text    "Commands beginning with \"!\" are executed by the"
+*FormFvwmTalkHelp.Line    left
+*FormFvwmTalkHelp.Text    "shell as a sub-process of the form."
+*FormFvwmTalkHelp.Line    left
+*FormFvwmTalkHelp.Text    "All other commands are sent to fvwm2 for execution."
+*FormFvwmTalkHelp.Line    left
+*FormFvwmTalkHelp.Text    ""
+*FormFvwmTalkHelp.Line    left
+*FormFvwmTalkHelp.Text    "Fvwm2 error messages are shown on the \"Msg:\" line."
+*FormFvwmTalkHelp.Line    left
+*FormFvwmTalkHelp.Text    ""
+# Buttons
+*FormFvwmTalkHelp.Line    center
+*FormFvwmTalkHelp.Button  quit    "Return - Dismiss"         ^M
+*FormFvwmTalkHelp.Command   Nop
