@@ -981,7 +981,7 @@ static void UnmapDesk(int desk, Bool grab)
     MyXUngrabServer(dpy);
   }
 
-return;
+  return;
 }
 
 

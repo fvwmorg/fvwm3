@@ -1,5 +1,18 @@
 2000-04-27  Dominik Vogt  <dominik.vogt@gmx.de>
 
+	* fvwm/menus.c (MenuInteraction):
+	fixed bug: pressing 'right' when a menu is posted but nothing in it
+	selected sometimes closed all open menus instead of entering the submenu
+
+	* fvwm/menus.c (do_menu):
+	(pop_menu_up):
+	(MenuInteraction):
+	(pop_menu_up):
+	(do_menu):
+	* fvwm/menus.h:
+	some minor position hint fixes
+	fixed previous position hint patch
+
 	* fvwm/menus.c (GetMenuOptions):
 	fixed typos
 	(MenuInteraction):

@@ -185,9 +185,10 @@ static void MenuInteraction(
   MenuParameters *pmp, MenuReturn *pmret, double_keypress *pdkp,
   Bool *pdo_warp_to_item);
 static int pop_menu_up(
-  MenuRoot **pmenu, MenuRoot *parent_menu, FvwmWindow **pfw, int *pcontext,
-  int x, int y, Bool prefer_left_submenu, Bool do_warp_to_item,
-  MenuOptions *pops, Bool *ret_overlap, Bool *pdo_warp_to_title);
+  MenuRoot **pmenu, MenuParameters *pmp, MenuRoot *parent_menu,
+  FvwmWindow **pfw, int *pcontext, int x, int y, Bool prefer_left_submenu,
+  Bool do_warp_to_item, MenuOptions *pops, Bool *ret_overlap,
+  Bool *pdo_warp_to_title);
 static void pop_menu_down(MenuRoot **pmr, MenuParameters *pmp);
 static void pop_menu_down_and_repaint_parent(
   MenuRoot **pmr, Bool *fSubmenuOverlaps, MenuParameters *pmp);
@@ -665,7 +666,7 @@ void do_menu(MenuParameters *pmp, MenuReturn *pmret)
   static Bool do_warp_to_title = False;
   /* don't save these ones, we want them to work even within recursive menus
    * popped up by dynamic actions. */
-  static int cindirectDeep = 0;
+  static int indirect_depth = 0;
   static int x_start;
   static int y_start;
   static Bool has_mouse_moved = False;
@@ -694,8 +695,13 @@ void do_menu(MenuParameters *pmp, MenuReturn *pmret)
   if (!pmp->flags.is_submenu)
   {
     pmp->flags.is_invoked_by_key_press = key_press;
+    pmp->flags.is_first_root_menu = !indirect_depth;
   }
-  if (!pmp->flags.is_submenu && cindirectDeep == 0)
+  else
+  {
+    pmp->flags.is_first_root_menu = 0;
+  }
+  if (!pmp->flags.is_submenu && indirect_depth == 0)
   {
     if (key_press)
     {
@@ -740,7 +746,7 @@ void do_menu(MenuParameters *pmp, MenuReturn *pmret)
 
     /* pop_menu_up may move the x,y to make it fit on screen more nicely */
     /* it might also move parent_menu out of the way */
-    if (!pop_menu_up(&(pmp->menu), pmp->parent_menu, pmp->pTmp_win,
+    if (!pop_menu_up(&(pmp->menu), pmp, pmp->parent_menu, pmp->pTmp_win,
 		     pmp->pcontext, x, y, prefer_left_submenus,
 		     key_press /*warp*/, pmp->pops, NULL, &do_warp_to_title))
     {
@@ -812,14 +818,19 @@ void do_menu(MenuParameters *pmp, MenuReturn *pmret)
     {
       if (pmp->ret_paction && *(pmp->ret_paction))
       {
-	cindirectDeep++;
+	indirect_depth++;
 	ExecuteFunctionSaveTmpWin(
 	  *(pmp->ret_paction), pmp->button_window,
 	  &Event, *(pmp->pcontext), -1, EXPAND_COMMAND);
-	cindirectDeep--;
+	indirect_depth--;
 	free(*(pmp->ret_paction));
 	*(pmp->ret_paction) = NULL;
       }
+      last_saved_pos_hints.flags.do_ignore_pos_hints = False;
+      last_saved_pos_hints.flags.is_last_menu_pos_hints_valid = False;
+    }
+    if (indirect_depth == 0)
+    {
       last_saved_pos_hints.flags.do_ignore_pos_hints = False;
       last_saved_pos_hints.flags.is_last_menu_pos_hints_valid = False;
     }
@@ -1580,10 +1591,11 @@ static void MenuInteraction(
 #endif
 	goto DO_RETURN;
       case MENU_NEWITEM:
+      case MENU_POPUP:
 	if (mrMi == NULL)
 	{
 	  /* Set the MenuRoot of the current item in case we have just warped to
-	   * the menu from the void. */
+	   * the menu from the void or unposted a popup menu. */
 	  mrMi = pmp->menu;
 	}
 	break;
@@ -1877,8 +1889,8 @@ static void MenuInteraction(
 	      pmp->menu, mrPopup, &x, &y, &prefer_left_submenus);
 	    /* Note that we don't care if popping up the menu works. If it
 	     * doesn't we'll catch it below. */
-	    pop_menu_up(&mrPopup, pmp->menu, pmp->pTmp_win, pmp->pcontext, x,
-			y, prefer_left_submenus, flags.do_popup_and_warp,
+	    pop_menu_up(&mrPopup, pmp, pmp->menu, pmp->pTmp_win, pmp->pcontext,
+			x, y, prefer_left_submenus, flags.do_popup_and_warp,
 			&mops, &does_submenu_overlap, pdo_warp_to_title);
 	    if (mrPopup == NULL)
 	    {
@@ -2081,15 +2093,10 @@ static void MenuInteraction(
     if (pmp->ret_paction)
       *pmp->ret_paction = (mi) ? strdup(MI_ACTION(mi)) : NULL;
     pmret->rc = MENU_DONE;
-    if (pmp->ret_paction && *pmp->ret_paction && mi && MI_IS_MENU(mi))
+    if (pmp->ret_paction && *pmp->ret_paction && mi && MI_IS_POPUP(mi))
     {
       get_popup_options(pmp->menu, mi, &mops);
-      if (mops.flags.has_poshints && !MI_IS_POPUP(mi))
-      {
-	/* position hints are always used for 'Menu' command */
-	last_saved_pos_hints.pos_hints = mops.pos_hints;
-      }
-      else if (mops.flags.do_select_in_place)
+      if (mops.flags.do_select_in_place)
       {
 	MenuRoot *submenu;
 	XWindowAttributes win_attribs;
@@ -2209,10 +2216,11 @@ static int do_menus_overlap(
  *	pops	  - pointer to the menu options for new menu
  *
  ***********************************************************************/
-static Bool pop_menu_up(
-  MenuRoot **pmenu, MenuRoot *parent_menu, FvwmWindow **pfw, int *pcontext,
-  int x, int y, Bool prefer_left_submenu, Bool do_warp_to_item,
-  MenuOptions *pops, Bool *ret_overlap, Bool *pdo_warp_to_title)
+static int pop_menu_up(
+  MenuRoot **pmenu, MenuParameters *pmp, MenuRoot *parent_menu,
+  FvwmWindow **pfw, int *pcontext, int x, int y, Bool prefer_left_submenu,
+  Bool do_warp_to_item, MenuOptions *pops, Bool *ret_overlap,
+  Bool *pdo_warp_to_title)
 {
   Bool do_warp_to_title = False;
   int x_overlap = 0;
@@ -2347,7 +2355,8 @@ static Bool pop_menu_up(
    * or the title bar itself. Position hints override this.
    ***************************************************************/
 
-  if (!pops->flags.has_poshints && fw && parent_menu == NULL)
+  if (!pops->flags.has_poshints && fw && parent_menu == NULL &&
+      pmp->flags.is_first_root_menu)
   {
     int old_y = y;
 

@@ -584,6 +584,7 @@ typedef struct
     unsigned is_sticky : 1;
     unsigned is_submenu : 1;
     unsigned is_already_mapped : 1;
+    unsigned is_first_root_menu : 1;
   } flags;
 } MenuParameters;
 

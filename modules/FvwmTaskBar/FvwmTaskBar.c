@@ -153,7 +153,7 @@ int  win_width    = 5,
      ButPressed   = -1,
      ButReleased  = -1,
      Checked      = 0,
-     WindowState  = -2, /* -2 unmaped, 1 not hidden, -1 hidden, 
+     WindowState  = -2, /* -2 unmaped, 1 not hidden, -1 hidden,
 			 *  0 hidden -> not hidden (for the events loop) */
      FocusInWin = 0;    /* 1 if the Taskbar has the focus */
 
@@ -384,7 +384,7 @@ void EndLessLoop(void)
       if (FD_ISSET(Fvwm_fd[1], &readset))
         ReadFvwmPipe();
     }
-    
+
     DoAlarmAction();
 
     DrawGoodies();
@@ -437,7 +437,7 @@ void ProcessMessage(unsigned long type,unsigned long *body)
       ButReleased = -1;
       redraw = 0;
       FocusInWin = 0;
-    } else 
+    } else
       FocusInWin = 1;
     break;
 
@@ -453,8 +453,8 @@ void ProcessMessage(unsigned long type,unsigned long *body)
        Not exactly: users cannot modify the win_width of the taskbar (see
        the hints in StartMeup; it is a good idea). So "we have to" modify
        the win_width here by modifying the WMNormalHints. Moreover, 1. we want
-       that the TaskBar width with its border is execately the screen width 
-       2. be carful with dynamic border width change (olicha Nov 22, 99) */ 
+       that the TaskBar width with its border is execately the screen width
+       2. be carful with dynamic border width change (olicha Nov 22, 99) */
     if (cfgpacket->w == win)
     {
       if (win_border != (int)cfgpacket->border_width)
@@ -464,7 +464,7 @@ void ProcessMessage(unsigned long type,unsigned long *body)
 
 	win_border = (int)cfgpacket->border_width;
 	win_width = ScreenWidth-(win_border<<1);
-       
+
 	if (AutoStick)
 	{
 	  win_x = win_border;
@@ -614,10 +614,10 @@ void ProcessMessage(unsigned long type,unsigned long *body)
       if (temp)
       {
 	/* Seems that we cannot use IS_ICON_SUPPRESSED on the cfgpacket.
-	 * Sometimes we've got no or double animation after a Style  
+	 * Sometimes we've got no or double animation after a Style
 	 * (No)Icon command because fvwm2 does not warn about this.
 	 * are these bugs? */
-	if (AnimCommand && (AnimCommand[0] != 0) 
+	if (AnimCommand && (AnimCommand[0] != 0)
 	    && IsItemIndexIconSuppressed(&windows,i))
 	{
 	  char buff[MAX_MODULE_INPUT_TEXT_LEN];
@@ -659,7 +659,7 @@ void ProcessMessage(unsigned long type,unsigned long *body)
     XMapRaised(dpy, win);
     if (AutoHide)
       WindowState = -1;
-    else 
+    else
       WindowState = 1;
     break;
 
@@ -1112,7 +1112,7 @@ DoAlarmAction(void)
       int abs_x, abs_y, pos_x, pos_y;
       unsigned int dummy;
       XEvent sevent;
-      
+
       /* We are now "sure" that the TaskBar is not hidden for the
 	 Event loop. We send a motion notify for activating tips */
       WindowState = 1;
@@ -1236,7 +1236,7 @@ void LoopOnEvents(void)
             y = win_y - ScreenHeight;
           }
           sprintf(tmp,"Popup %s %d %d", StartPopup, x, y);
-          SendFvwmPipe(Fvwm_fd, tmp, ItemID(&windows, num));
+          SendFvwmPipe(Fvwm_fd, tmp, None);
         } else {
 	  StartButtonUpdate(NULL, BUTTON_UP);
 	  if (MouseInMail(Event.xbutton.x, Event.xbutton.y)) {
@@ -1246,16 +1246,8 @@ void LoopOnEvents(void)
 	    UpdateButton(&buttons, num, NULL, (ButPressed == num) ?
 			 BUTTON_BRIGHT : BUTTON_DOWN);
 
-    /*	    UpdateButton(&buttons, num, NULL, BUTTON_DOWN);*/
 	    ButPressed = num;
-	}
-/*      else { / * Move taskbar * /
-
-          XUngrabPointer(dpy, CurrentTime);
-          SendFvwmPipe("Move", win);
-
-        }
-*/
+	  }
 	}
         redraw = 0;
         break;
@@ -1296,7 +1288,7 @@ void LoopOnEvents(void)
           if (num != -1 && num != ButPressed)
             SendFvwmPipe(Fvwm_fd, "Focus 0", ItemID(&windows, num));
         }
-	
+
 	CheckForTip(Event.xmotion.x, Event.xmotion.y);
         break;
 
@@ -1305,7 +1297,7 @@ void LoopOnEvents(void)
         if (Tip.open)
 	  ShowTipWindow(0);
 
-        if (AutoHide) 
+        if (AutoHide)
 	  SetAlarm(HIDE_TASK_BAR);
 
         if (Event.xcrossing.mode != NotifyNormal)
@@ -1350,7 +1342,7 @@ void LoopOnEvents(void)
           }
         } else if (num != -1 && num != ButPressed)
 	  SendFvwmPipe(Fvwm_fd, "Focus 0", ItemID(&windows, num));
-	
+
 	CheckForTip(Event.xmotion.x, Event.xmotion.y);
         break;
 
@@ -1374,7 +1366,7 @@ void LoopOnEvents(void)
 	    XSync(dpy,0);
 	    hide_taskbar_alarm = False;
 	    WindowState = -1;
-	  } 
+	  }
 	  else if (AutoStick)
 	    WarpTaskBar(win_y, 1);
 	  redraw = 1;
@@ -1658,7 +1650,7 @@ static Bool change_colorset(int cset, Bool force)
 
   if (cset < 0)
     return False;
-  if (force || cset == colorset || cset == iconcolorset || 
+  if (force || cset == colorset || cset == iconcolorset ||
       cset == focuscolorset)
   {
     CreateOrUpdateGCs();
@@ -1760,7 +1752,7 @@ void StartMeUp(void)
 	 	        (unsigned int *)&hints.width,
 		        (unsigned int *)&hints.height);
 
-   if (ret & YNegative) 
+   if (ret & YNegative)
    {
      if (AutoStick)
      {
@@ -2094,7 +2086,7 @@ void ConstrainSize (XSizeHints *hints, int *widthp, int *heightp)
  ***********************************************************************/
 void WarpTaskBar(int y, Bool force)
 {
-  /* The tests on y are really useful ! */ 
+  /* The tests on y are really useful ! */
   if (!AutoHide && ((y != (int)ScreenHeight - win_height - win_border &&
       y !=  win_border) || force)) {
     if (y > Midline)
@@ -2167,7 +2159,7 @@ void HideTaskBar()
   {
     XQueryPointer(dpy, win, &d_rt,&d_ch, &d_x, &d_y,
 		  &wx, &wy, &mask);
-    if (wy >= -win_border && wy < win_height + win_border) 
+    if (wy >= -win_border && wy < win_height + win_border)
     {
       if (wy < 0 || wy >= win_height || wx < 0 || wx >= win_width)
 	SetAlarm(HIDE_TASK_BAR);
