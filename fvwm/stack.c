@@ -635,7 +635,7 @@ static void RaiseOrLowerWindow(
     if (do_move_transients && tmp_r.stack_next != &tmp_r)
     {
       /* insert all transients between r and s. */
-      add_windowlist_to_stack_ring_after(&tmp_r, s);
+      add_windowlist_to_stack_ring_after(&tmp_r, r);
     }
 
     /*

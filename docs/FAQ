@@ -1506,9 +1506,9 @@ A: Because they are treated as modifiers. You can use the
 
    This command creates a lot of extra network traffic, depending
    on your CPU, network connection, the number of Key Mouse commands
-   in you configuration file and the number of modifiers you want to
+   in your configuration file and the number of modifiers you want to
    ignore. If you do not have a lightning fast machine or very few
-   bindings you should not ignore more than two modifiers. E.g. do
+   bindings you should not ignore more than two modifiers. So do
    not ignore scroll-lock if you have no problem with it.
 
    A better way to solve this problem is to modify the keyboard

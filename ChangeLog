@@ -1,7 +1,24 @@
+2000-12-17  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* fvwm/builtins.c (wait_func):
+	wait function preserves the Tmp_win so that further commands in a
+	complex function do not crash or operate on a different window
+
+	* fvwm/add_window.c (destroy_window):
+	fixed close/delete problem
+
+	* fvwm/stack.c (RaiseOrLowerWindow):
+	fixed stack ring problem
+
+	* fvwm/events.c (HandleMapRequestKeepRaised):
+	(HandleReparentNotify):
+	fake a MAP packet when a window is created on a different desk to allow
+	FvwmButtons to swallow it
+
 2000-12-17  Dan Espen  <dane@mk.telcordia.com>
 
-	* fvwm/add_window.c (AddWindow/destroy_window): 
-	* fvwm/events.c (HandleMapRequestKeepRaised): 
+	* fvwm/add_window.c (AddWindow/destroy_window):
+	* fvwm/events.c (HandleMapRequestKeepRaised):
 	* fvwm/placement.c (PlaceWindow): Fix inconsistent declaration of
 	PPosOverride as both Bool and Boolean.  Fixes fvwm doing interactive
 	placement during startup and recapture.

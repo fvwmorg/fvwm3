@@ -712,6 +712,7 @@ void wait_func(F_CMD_ARGS)
   Window nonewin = None;
   extern FvwmWindow *Tmp_win;
   char *wait_string, *rest;
+  FvwmWindow *s_Tmp_win = Tmp_win;
 
   /* try to get a single token */
   rest = GetNextToken(action, &wait_string);
@@ -783,8 +784,10 @@ void wait_func(F_CMD_ARGS)
   }
   if (redefine_cursor)
     XDefineCursor(dpy, Scr.Root, Scr.FvwmCursors[CRS_ROOT]);
-
+  Tmp_win = s_Tmp_win;
   free(wait_string);
+
+  return;
 }
 
 void quit_func(F_CMD_ARGS)

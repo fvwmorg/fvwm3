@@ -12,10 +12,11 @@ Instructions:
    lower right edge of the screen; the windows redraw and the setup halts;
    now press mouse button 2 to proceed.
  - whenever fvwm expects user input, press mouse button 1
- - the script will ternimate itself
+ - the script will terminate fvwm after completion
 
 NOTE: you can safely ignore all error messages, beeps, ...
 
+NOTE: This README was last updated for fvwm-2.2 and may be severly outdated.
 
 
 commands tested:

@@ -973,6 +973,9 @@ void HandleMapRequestKeepRaised(Window KeepRaised, FvwmWindow *ReuseWin)
 	 */
 	SET_MAPPED(Tmp_win, 1);
 	SetMapStateProp(Tmp_win, IconicState);
+	/* fake that the window was mapped to allow modules to swallow it */
+	BroadcastPacket(
+	  M_MAP, 3, Tmp_win->w,Tmp_win->frame, (unsigned long)Tmp_win);
 #endif
       }
       break;
@@ -1275,6 +1278,29 @@ void HandleUnmapNotify(void)
     CoerceEnterNotifyOnCurrentWindow();
   }
   GNOME_SetClientList();
+}
+
+
+/***********************************************************************
+ *
+ *  Procedure:
+ *	HandleReparentNotify - ReparentNotify event handler
+ *
+ ************************************************************************/
+void HandleReparentNotify(void)
+{
+  if (!Tmp_win)
+    return;
+  if (Event.xreparent.parent != Tmp_win->frame)
+  {
+    /* window was reparented by someone else, destroy the frame */
+    SetMapStateProp(Tmp_win, WithdrawnState);
+    XRemoveFromSaveSet(dpy, Event.xreparent.window);
+    XSelectInput (dpy, Event.xreparent.window, NoEventMask);
+    destroy_window(Tmp_win);
+  }
+
+  return;
 }
 
 
@@ -2456,6 +2482,7 @@ void InitEventHandlerJumpTable(void)
 #endif /* SHAPE */
   EventHandlerJumpTable[SelectionClear]   = HandleSelectionClear;
   EventHandlerJumpTable[SelectionRequest] = HandleSelectionRequest;
+  EventHandlerJumpTable[ReparentNotify] = HandleReparentNotify;
   STROKE_CODE(EventHandlerJumpTable[ButtonRelease] =    HandleButtonRelease);
   STROKE_CODE(EventHandlerJumpTable[MotionNotify] =     HandleMotionNotify);
 #ifdef MOUSE_DROPPINGS
