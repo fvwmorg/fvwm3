@@ -409,8 +409,8 @@ A: Sure - here's one from Graeme McCaffery:
 
      Then you have to set two resources in .Xdefaults:
 
-       *wmStartupCommand: /home/orion/spxgm/bin/Fvwm
-       *waitWmTimeout: 1
+       Dtsession*wmStartupCommand: /home/orion/spxgm/bin/Fvwm
+       Dtsession*waitWmTimeout: 1
 
      In this case I run fvwm from a shell script so that library
      variables etc are set properly for everyone.  The waitWmTimeout
