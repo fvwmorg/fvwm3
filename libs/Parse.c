@@ -272,70 +272,12 @@ char *DoGetNextToken(char *indata, char **token, char *spaces, char *delims,
   char *end;
 
   end = DoPeekToken(indata, &tmptok, spaces, delims, out_delim);
-	  t++;
-	  while((*t != c)&&(*t != 0))
-	    {
-	      /* Skip over escaped text, ie \quote */
-	      if((*t == '\\')&&(*(t+1) != 0))
-		t++;
-	      t++;
-	    }
-	  if(*t == c)
-	    t++;
-	}
-      else
-	{
-	  /* Skip over escaped text, ie \" or \space */
-	  if((*t == '\\')&&(*(t+1) != 0))
-	    t++;
-	  t++;
-	}
-    }
-  end = t;
-  if (out_delim)
-    *out_delim = *end;
 
-  text = safemalloc(end-start+1);
-  *token = text;
   if (tmptok == NULL)
     *token = NULL;
   else
     *token = strdup(tmptok);
-  /* copy token */
-  while(start < end)
-    {
-      /* Check for qouted text */
-      if(IsQuote(*start))
-	{
-	  char c = *start;
-	  start++;
-	  while((*start != c)&&(*start != 0))
-	    {
-	      /* Skip over escaped text, ie \" or \space */
-	      if((*start == '\\')&&(*(start+1) != 0))
-		start++;
-	      *text++ = *start++;
-	    }
-	  if(*start == c)
-	    start++;
-	}
-      else
-	{
-	  /* Skip over escaped text, ie \" or \space */
-	  if((*start == '\\')&&(*(start+1) != 0))
-	    start++;
-	  *text++ = *start++;
-	}
-    }
-  *text = 0;
-  if(*end != 0)
-    end++;
 
-  if (**token == 0)
-    {
-      free(*token);
-      *token = NULL;
-    }
   return end;
 }
 
@@ -418,9 +360,11 @@ int GetSuffixedIntegerArguments(char *action, char **ret_action, int retvals[],
   int suffixes;
 
   suffixes = 0;                         /* initialize */
-  if (suffixlist != 0) {                /* if given a suffix list */
-    suffixes = strlen(suffixlist);      /* save length of suffix list */
+  if (suffixlist != 0) {                /* if passed a suffixlist */
+    suffixes = strlen(suffixlist);      /* save its length */
   }
+
+  suffixes = (suffixlist != NULL) ? strlen(suffixlist) : 0;
   for (i = 0; i < num && action; i++)
   {
     action = GetNextToken(action, &token);
