@@ -21,11 +21,48 @@
 
 /* ---------------------------- global definitions -------------------------- */
 
+#define DEBUG_FOCUS 0
+
 /* ---------------------------- global macros ------------------------------- */
 
 #define FOCUS_SET(w) XSetInputFocus(dpy, w, RevertToParent, CurrentTime)
 #define FOCUS_RESET() \
 	XSetInputFocus(dpy, PointerRoot, RevertToPointerRoot, CurrentTime)
+
+#if DEBUG_FOCUS
+#define SetFocusWindow(a, b, c) \
+{ \
+	FvwmWindow *_fw; \
+	_fw = (a); \
+	fprintf(stderr, "sfw: %s:%d 0x%08x '%s'\n", __FILE__, __LINE__, \
+		(int)_fw, (_fw) ? _fw->visible_name : "(null)"); \
+	_SetFocusWindow(_fw, b, c); \
+}
+#define ReturnFocusWindow(a) \
+{ \
+	FvwmWindow *_fw; \
+	_fw = (a); \
+	fprintf(stderr, "rfw: %s:%d 0x%08x '%s'\n", __FILE__, __LINE__, \
+		(int)_fw, (_fw) ? _fw->visible_name : "(null)"); \
+	_ReturnFocusWindow(_fw); \
+}
+#define DeleteFocus(a) \
+{ \
+	fprintf(stderr, "df: %s:%d\n", __FILE__, __LINE__); \
+	_DeleteFocus(a); \
+}
+#define ForceDeleteFocus() \
+{ \
+	fprintf(stderr, "fdf: %s:%d\n", __FILE__, __LINE__); \
+	_ForceDeleteFocus(); \
+}
+#else
+#define SetFocusWindow(a, b, c) _SetFocusWindow(a, b, c);
+#define ReturnFocusWindow(a) _ReturnFocusWindow(a);
+#define DeleteFocus(a) _DeleteFocus(a);
+#define ForceDeleteFocus() _ForceDeleteFocus();
+#endif
+
 
 /* ---------------------------- type definitions ---------------------------- */
 
@@ -40,12 +77,12 @@
  * Sets/deletes the input focus to the indicated window.
  *
  **********************************************************************/
-void SetFocusWindow(
+void _SetFocusWindow(
 	FvwmWindow *fw, Bool do_allow_force_broadcast,
 	fpol_set_focus_by_t set_by);
-void ReturnFocusWindow(FvwmWindow *Fw);
-void DeleteFocus(Bool do_allow_force_broadcast);
-void ForceDeleteFocus(void);
+void _ReturnFocusWindow(FvwmWindow *Fw);
+void _DeleteFocus(Bool do_allow_force_broadcast);
+void _ForceDeleteFocus(void);
 void restore_focus_after_unmap(
 	FvwmWindow *fw, Bool do_skip_marked_transients);
 

@@ -940,7 +940,7 @@ void focus_grab_buttons_all(void)
 	return;
 }
 
-void SetFocusWindow(
+void _SetFocusWindow(
 	FvwmWindow *fw, Bool do_allow_force_broadcast,
 	fpol_set_focus_by_t set_by)
 {
@@ -956,7 +956,7 @@ void SetFocusWindow(
 	return;
 }
 
-void ReturnFocusWindow(FvwmWindow *fw)
+void _ReturnFocusWindow(FvwmWindow *fw)
 {
 	sftfwin_args_t sf_args;
 
@@ -970,7 +970,7 @@ void ReturnFocusWindow(FvwmWindow *fw)
 	return;
 }
 
-void DeleteFocus(Bool do_allow_force_broadcast)
+void _DeleteFocus(Bool do_allow_force_broadcast)
 {
 	sftfwin_args_t sf_args;
 
@@ -984,7 +984,7 @@ void DeleteFocus(Bool do_allow_force_broadcast)
 	return;
 }
 
-void ForceDeleteFocus(void)
+void _ForceDeleteFocus(void)
 {
 	sftfwin_args_t sf_args;
 

@@ -26,7 +26,7 @@
 	EnterWindowMask | LeaveWindowMask)
 #define XEVMASK_TITLEW \
 	(ButtonPressMask | ButtonReleaseMask | \
-	OwnerGrabButtonMask | ButtonMotionMask | PointerMotionMask | \
+	OwnerGrabButtonMask | /*ButtonMotionMask | PointerMotionMask | */\
 	EnterWindowMask | LeaveWindowMask)
 #define XEVMASK_BUTTONW \
 	XEVMASK_TITLEW

@@ -1422,7 +1422,7 @@ void HandleEnterNotify(void)
 	Bool is_tear_off_menu;
 
 	DBUG("HandleEnterNotify","Routine Entered");
-ENTER_DBG((stderr, "++++++++ en (%d): 0x%08x mode 0x%x detail 0x%x '%s'\n", ++ecount, (int)Fw, ewp->mode, ewp->detail, Fw?Fw->visible_name:"(none)"));
+ENTER_DBG((stderr, "++++++++ en (%d): fw 0x%08x w 0x%08x sw 0x%08xmode 0x%x detail 0x%x '%s'\n", ++ecount, (int)Fw, (int)ewp->window, (int)ewp->subwindow, ewp->mode, ewp->detail, Fw?Fw->visible_name:"(none)"));
 
 	if (ewp->window == Scr.Root && ewp->subwindow == None &&
 	    ewp->detail == NotifyInferior && ewp->mode == NotifyNormal)
@@ -1534,7 +1534,21 @@ ENTER_DBG((stderr, "en: exit: NU: last grab window = NULL\n"));
 					xcrossing_last_grab_window = NULL;
 				}
 				focus_grab_buttons(Fw);
+
 				return;
+			}
+			else if (Fw)
+			{
+				if (Event.xcrossing.window != FW_W_FRAME(Fw) &&
+				    Event.xcrossing.window !=
+				    FW_W_ICON_TITLE(Fw) &&
+				    Event.xcrossing.window !=
+				    FW_W_ICON_PIXMAP(Fw))
+				{
+ENTER_DBG((stderr, "en: exit: NU: not frame window\n"));
+					focus_grab_buttons(Fw);
+					return;
+				}
 			}
 		}
 	}
@@ -1985,7 +1999,7 @@ void HandleLeaveNotify(void)
 {
 	DBUG("HandleLeaveNotify","Routine Entered");
 
-ENTER_DBG((stderr, "-------- ln (%d): 0x%08x mode 0x%x detail 0x%x '%s'\n", ++ecount, (int)Fw, Event.xcrossing.mode, Event.xcrossing.detail, Fw?Fw->visible_name:"(none)"));
+ENTER_DBG((stderr, "-------- ln (%d): fw 0x%08x w 0x%08x sw 0x%08x mode 0x%x detail 0x%x '%s'\n", ++ecount, (int)Fw, (int)Event.xcrossing.window, (int)Event.xcrossing.subwindow, Event.xcrossing.mode, Event.xcrossing.detail, Fw?Fw->visible_name:"(none)"));
 	/* Ignore LeaveNotify events while a window is resized or moved as a
 	 * wire frame; otherwise the window list may be screwed up. */
 	if (Scr.flags.is_wire_frame_displayed)
