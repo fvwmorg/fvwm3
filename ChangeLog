@@ -1,5 +1,16 @@
 2003-01-02  olicha  <olivier.chapuis@free.fr>
 
+	* fvwm/fvwm.1.in:
+	Documented  the new icon style options
+		
+	* fvwm/fvwm.h:
+	* fvwm/icons.h:
+	* fvwm/icons.c (DrawIconTitleWindow):
+	(DrawIconPixmapWindow):
+	(setup_icon_title_size):
+	* fvwm/style.c (style_parse_one_style_option):
+	Fixed Icon{Title,Background}Relief arguments
+
 	* fvwm/icons.c (GetIconPicture):
 	(SetIconPixmapSize):
 	Fixed IconSize style for non shaped depth > 1 pixmaps

@@ -5758,6 +5758,7 @@ slashes ('/').  The last style in these groups is the default.
 .IR RightTitleRotatedCCW " / " RightTitleRotatedCW,
 .IR TopTitleRotated " / " TopTitleNotRotated,
 .IR BottomTitleRotated " / " BottomTitleNotRotated,
+.IR !UseTitleDecorRotation " / " UseTitleDecorRotation,
 .IR StippledTitle " / " StippledTitleOff ,
 .IR IndexedWindowName " / " ExactWindowName ,
 .IR IndexedIconName " / " ExactIconName ,
@@ -5775,6 +5776,9 @@ slashes ('/').  The last style in these groups is the default.
 .IR Color ", " ForeColor ", " BackColor ", " Colorset ,
 .IR HilightFore ", " HilightBack ", " HilightColorset ,
 .IR BorderColorset ", " HilightBorderColorset ,
+.IR IconTitleColorset ", " HilightIconTitleColorset ,
+.IR IconBackgroundColorset ,
+.IR IconTitleRelief ", " IconBackgroundRelief ", " IconBackgroundPadding , 
 .IR Font ,
 .IR IconFont ,
 .IR StartsOnDesk " / " StartsOnPage " / " StartsAnyWhere ,
@@ -6178,9 +6182,15 @@ takes the colorset number as its sole argument and overrides the
 colors set by
 .IR Color .
 Instead, the corresponding colors from the given colorset are
-used.  Note that all other features of a colorset are unsupported
-yet. To stop using the colorset, the colorset number can be
-omitted.
+used.  Note that all other features of a colorset are not used.
+.\"needs_lang_check
+You should use the
+.I Colorset
+decoration style in the
+.BR TitleStyle " and " ButtonStyle
+command for that.
+.\"end
+To stop using the colorset, the colorset number can be omitted.
 
 The
 .IR HilightFore ", " HilightBack " and " HilightColorset
@@ -6202,6 +6212,45 @@ The
 style option works similarly to
 .IR BorderColorset
 but is used when the window has the focus.
+
+.\"needs_lang_check
+.IR IconTitleColorset
+takes the colorset number as its sole argument and overrides the
+colors set by
+.IR Color " or " Colorset .
+To stop using this colorset, the argument can be omitted.
+
+.IR HilightIconTitleColorset
+takes the colorset number as its sole argument and overrides the
+colors set by
+.IR HilightColor " or " HilightColorset .
+To stop using this colorset, the argument can be omitted.
+
+.IR IconBackgroundColorset
+takes the colorset number as its sole argument and use it to set
+a background for the icon picture. By default the icon picture is not
+drawn onto a background image. To restore the default, the argument can
+be omitted.
+
+.IR IconTitleRelief
+takes one numeric argument that may be between -50 and +50 pixels and
+defines the thickness of the 3D relief drawn around the icon
+title. With negative values the icon title gets a pressed in look.
+The default is 2 and it is restored if the argument is omitted.
+ 
+.IR IconBackgroundRelief
+takes one numeric argument that may be between -50 and +50 pixels and
+defines the thickness of the 3D relief drawn around the icon picture
+background (if any). With negative values the icon background gets a
+pressed in look.  The default is 2 and it is restored if the argument
+is omitted.
+
+.IR IconBackgroundPadding
+takes one numeric argument that may be between 0 and 50 pixels and
+defines the amount of free space between the relief of the icon background
+picture (if any) and the icon picture. The default is 2 and it is restored if
+the argument is omitted.
+.\"end
 
 The
 .IR Font " and " IconFont

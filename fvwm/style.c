@@ -2572,9 +2572,9 @@ static Bool style_parse_one_style_option(
 			{
 				*val = 0;
 			}
-			else if (*val > 255)
+			else if (*val > 50)
 			{
-				*val = 255;
+				*val = 50;
 			}
 			SSET_ICON_BACKGROUND_PADDING(*ps, (unsigned char)*val);
 			ps->flags.has_icon_background_padding = 1;
@@ -2585,13 +2585,13 @@ static Bool style_parse_one_style_option(
 		{
 			*val = ICON_RELIEF_WIDTH;
 			GetIntegerArguments(rest, NULL, val, 1);
-			if (*val < 0)
+			if (*val < -50)
 			{
-				*val = 0;
+				*val = -50;
 			}
-			else if (*val > 255)
+			else if (*val > 50)
 			{
-				*val = 255;
+				*val = 50;
 			}
 			SSET_ICON_BACKGROUND_RELIEF(*ps, (unsigned char)*val);
 			ps->flags.has_icon_background_relief = 1;
@@ -2640,13 +2640,13 @@ static Bool style_parse_one_style_option(
 		{
 			*val = ICON_RELIEF_WIDTH;
 			GetIntegerArguments(rest, NULL, val, 1);
-			if (*val < 0)
+			if (*val < -50)
 			{
-				*val = 0;
+				*val = -50;
 			}
-			else if (*val > 255)
+			else if (*val > 50)
 			{
-				*val = 255;
+				*val = 50;
 			}
 			SSET_ICON_TITLE_RELIEF(*ps, (unsigned char)*val);
 			ps->flags.has_icon_title_relief = 1;

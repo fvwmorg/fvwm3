@@ -145,7 +145,7 @@ void setup_icon_title_size(FvwmWindow *fw)
 			fw->icon_g.title_w_g.width =
 				fw->icon_g.title_text_width +
 				2 * (ICON_TITLE_TEXT_GAP_COLLAPSED +
-				     fw->icon_title_relief);
+				     abs(fw->icon_title_relief));
 			if (IS_STICKY_ACROSS_PAGES(fw) ||
 			    IS_ICON_STICKY_ACROSS_PAGES(fw) ||
 			    IS_STICKY_ACROSS_DESKS(fw) ||
@@ -584,9 +584,11 @@ void CreateIconWindow(FvwmWindow *fw, int def_x, int def_y)
 	if ((IS_ICON_OURS(fw)) && (fw->icon_g.picture_w_g.height > 0)
 	    && (Pdefault || (fw->iconDepth == 1) || IS_PIXMAP_OURS(fw)))
 	{
-		fw->icon_g.picture_w_g.width += 2 * fw->icon_background_relief
+		fw->icon_g.picture_w_g.width +=
+			2 * abs(fw->icon_background_relief)
 			+ 2 * fw->icon_background_padding;
-		fw->icon_g.picture_w_g.height += 2 * fw->icon_background_relief
+		fw->icon_g.picture_w_g.height +=
+			2 * abs(fw->icon_background_relief)
 			+ 2 * fw->icon_background_padding;
 	}
 
@@ -740,7 +742,7 @@ void CreateIconWindow(FvwmWindow *fw, int def_x, int def_y)
 			if (Pdefault || (fw->iconDepth == 1) ||
 			    IS_PIXMAP_OURS(fw))
 			{
-				off = fw->icon_background_relief +
+				off = abs(fw->icon_background_relief) +
 					fw->icon_background_padding;
 			}
 			FShapeCombineMask(
@@ -813,12 +815,13 @@ void DrawIconTitleWindow(
 	FlocaleWinString fstr;
 	Region region = None;
 	XRectangle clip, r;
+	int relief = abs(fw->icon_title_relief);
 	int x_title;
 	int x_title_min = 0;
 	int w_title = fw->icon_g.title_text_width;
 	int x_title_w = fw->icon_g.picture_w_g.x;
 	int w_title_w = fw->icon_g.picture_w_g.width;
-	int x_stipple = fw->icon_title_relief;
+	int x_stipple = relief;
 	int w_title_text_gap = 0;
 	int w_stipple = 0;
 	int is_sticky;
@@ -838,7 +841,7 @@ void DrawIconTitleWindow(
 
 		use_unexpanded_size = 0;
 		w_title_text_gap = ICON_TITLE_TEXT_GAP_EXPANDED;
-		x_title_min = w_title_text_gap + fw->icon_title_relief;
+		x_title_min = w_title_text_gap + relief;
 		if (is_sticky)
 		{
 			w_stipple = ICON_TITLE_STICK_MIN_WIDTH;
@@ -886,7 +889,7 @@ void DrawIconTitleWindow(
 	if (use_unexpanded_size)
 	{
 		w_title_text_gap = ICON_TITLE_TEXT_GAP_COLLAPSED;
-		x_title_min = w_title_text_gap + fw->icon_title_relief;
+		x_title_min = w_title_text_gap + relief;
 		/* resize the icon name window */
 		if (FW_W_ICON_PIXMAP(fw) != None)
 		{
@@ -937,9 +940,9 @@ void DrawIconTitleWindow(
 		x_title = x_title_min;
 	/* text rectangle */
 	r.x = x_title;
-	r.y = fw->icon_title_relief;
-	r.width = w_title_w - x_title - fw->icon_title_relief;
-	r.height = ICON_HEIGHT(fw) - 2*fw->icon_title_relief;
+	r.y = relief;
+	r.width = w_title_w - x_title - relief;
+	r.height = ICON_HEIGHT(fw) - 2*relief;
 	if (is_sticky)
 	{
 		if (w_stipple == 0)
@@ -997,34 +1000,30 @@ void DrawIconTitleWindow(
 	}
 	if (!pev)
 	{
-		clip.x = fw->icon_title_relief;
-		clip.y = fw->icon_title_relief;
-		clip.width = w_title_w - 2*fw->icon_title_relief;
-		clip.height = ICON_HEIGHT(fw) - 2*fw->icon_title_relief;
+		clip.x = relief;
+		clip.y = relief;
+		clip.width = w_title_w - 2*relief;
+		clip.height = ICON_HEIGHT(fw) - 2*relief;
 		XClearWindow(dpy, FW_W_ICON_TITLE(fw));
 	}
 	else
 	{
 		/* needed for first drawing */
-		if (x_title - fw->icon_title_relief >= 1)
+		if (x_title - relief >= 1)
 		{
 			/* clear before the text */
 			XClearArea(
 				dpy, FW_W_ICON_TITLE(fw),
-				fw->icon_title_relief, fw->icon_title_relief,
-				x_title - fw->icon_title_relief,
-				ICON_HEIGHT(fw) - 2*fw->icon_title_relief,
-				False);
+				relief, relief, x_title - relief,
+				ICON_HEIGHT(fw) - 2*relief, False);
 		}
 		if (is_sticky)
 		{
 			/* clear the sticky area after the text */
 			XClearArea(
 				dpy, FW_W_ICON_TITLE(fw),
-				w_title_w - x_stipple - w_stipple -1,
-				fw->icon_title_relief,
-				w_stipple + 2,
-				ICON_HEIGHT(fw) - 2*fw->icon_title_relief,
+				w_title_w - x_stipple - w_stipple -1, relief,
+				w_stipple + 2, ICON_HEIGHT(fw) - 2*relief,
 				False);
 		}
 	}
@@ -1053,7 +1052,7 @@ void DrawIconTitleWindow(
 			fstr.flags.has_colorset = 1;
 		}
 		fstr.x = x_title;
-		fstr.y = fw->icon_g.title_w_g.height - fw->icon_title_relief
+		fstr.y = fw->icon_g.title_w_g.height - relief
 			- fw->icon_font->height + fw->icon_font->ascent;
 		FlocaleDrawString(dpy, fw->icon_font, &fstr, 0);
 		if (pev || is_sticky)
@@ -1067,11 +1066,13 @@ void DrawIconTitleWindow(
 	}
 	RelieveRectangle(
 		dpy, FW_W_ICON_TITLE(fw), 0, 0, w_title_w - 1,
-		ICON_HEIGHT(fw) - 1, Relief, Shadow, fw->icon_title_relief);
+		ICON_HEIGHT(fw) - 1,
+		(fw->icon_title_relief > 0)? Relief:Shadow,
+		(fw->icon_title_relief > 0)? Shadow:Relief, relief);
 	if (is_sticky)
 	{
 		/* an odd number of lines every 4 pixels */
-		int pseudo_height = ICON_HEIGHT(fw)- 2*fw->icon_title_relief + 2;
+		int pseudo_height = ICON_HEIGHT(fw)- 2*relief + 2;
 		int num = (pseudo_height /
 			   ICON_TITLE_STICK_VERT_DIST / 2) * 2 - 1;
 		int min = ICON_HEIGHT(fw) / 2 -
@@ -1134,13 +1135,13 @@ void DrawIconPixmapWindow(
 				fra.mask |= FRAM_HAVE_ICON_CSET;
 				fra.colorset = &Colorset[cs];
 			}
-			r.x = r.y = fw->icon_background_relief +
+			r.x = r.y = abs(fw->icon_background_relief) +
 				fw->icon_background_padding;
 			r.width = fw->icon_g.picture_w_g.width -
-				2 * (fw->icon_background_relief +
+				2 * (abs(fw->icon_background_relief) +
 				     fw->icon_background_padding);
 			r.height = fw->icon_g.picture_w_g.height -
-				2 * (fw->icon_background_relief +
+				2 * (abs(fw->icon_background_relief) +
 				     fw->icon_background_padding);
 			if (pev)
 			{
@@ -1211,7 +1212,9 @@ void DrawIconPixmapWindow(
 			dpy, FW_W_ICON_PIXMAP(fw), 0, 0,
 			fw->icon_g.picture_w_g.width - 1,
 			fw->icon_g.picture_w_g.height - 1,
-			Relief, Shadow, fw->icon_background_relief);
+			(fw->icon_background_relief > 0)? Relief:Shadow,
+			(fw->icon_background_relief > 0)? Shadow:Relief,
+			abs(fw->icon_background_relief));
 	}
 
 }
