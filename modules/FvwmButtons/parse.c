@@ -751,8 +751,7 @@ static void ParseContainer(char **ss,button_info *b)
 
     default:
       t=seekright(&s);
-      fprintf(stderr,"%s: Illegal container option \"%s\"\n",MyName,
-	      (t)?t:"");
+      fprintf(stderr,"%s: Illegal container option \"%s\"\n",MyName, (t)?t:"");
       if (t)
 	free(t);
     }
@@ -803,6 +802,8 @@ static void ParseButton(button_info **uberb,char *s)
       "colorset",
       "action",
       "id",
+      "hovericon",
+      "hovertitle",
       NULL
     };
     s = trimleft(s);
@@ -937,7 +938,6 @@ static void ParseButton(button_info **uberb,char *s)
 	    if (b->icon_file)
 	      free(b->icon_file);
 	    b->icon_file=t;
-	    b->IconWin=None;
 	    b->flags|=b_Icon;
 	  }
 	}
@@ -1251,6 +1251,69 @@ static void ParseButton(button_info **uberb,char *s)
 	}
 	break;
 
+	/* ---------------------------- HoverIcon ------------------------- */
+	case 21: /* HoverIcon */
+		t=seekright(&s);
+		if(t && *t && (t[0] != '-' || t[1] != 0))
+		{
+			if (b->flags & b_Swallow)
+			{
+				fprintf(stderr,"%s: a button can not have a "
+					"hover icon and a swallowed window at "
+					"the same time. Ignoring hover icon.",
+					MyName);
+			}
+			else
+			{
+				if (b->hover_icon_file)
+					free(b->hover_icon_file);
+				b->hover_icon_file = t;
+				b->flags |= b_HoverIcon;
+			}
+		}
+		else
+		{
+			fprintf(stderr,"%s: Missing hover icon argument\n",
+				MyName);
+			if(t)
+			{
+				free(t);
+			}
+		}
+		break;
+
+	/* ------------------------- HoverTitle ------------------------- */
+	case 22: /* HoverTitle */
+		s = trimleft(s);
+		if (*s=='(')
+		{
+			fprintf(stderr,"%s: justification not allowed for "
+				"HoverTitle.\n", MyName);
+		}
+		t = seekright(&s);
+		if(t && *t && (t[0] != '-' || t[1] != 0))
+		{
+			if (b->hoverTitle)
+			{
+				free(b->hoverTitle);
+			}
+			b->hoverTitle = t;
+#ifdef DEBUG_PARSER
+			fprintf(stderr,"PARSE: HoverTitle \"%s\"\n", b->hoverTitle);
+#endif
+			b->flags |= b_HoverTitle;
+		}
+		else
+		{
+			fprintf(stderr,"%s: Missing HoverTitle argument\n",MyName);
+			if (t)
+			{
+				free(t);
+			}
+		}
+		break;
+
+	/* ------------------------- ------------------------- */
       default:
 	t=seekright(&s);
 	fprintf(stderr,"%s: Illegal button option \"%s\"\n",MyName,
@@ -1292,7 +1355,6 @@ static void ParseButton(button_info **uberb,char *s)
        ((b->icon_file)[0]!='-'||(b->icon_file)[1]!=0))
     {
       b->flags|=b_Icon;
-      b->IconWin=None;
     }
     else
       if(b->icon_file)free(b->icon_file);
@@ -1370,6 +1432,7 @@ static void ParseConfigLine(button_info **ubb,char *s)
     "pixmap",
     "boxsize",
     "colorset",
+    "hovercolorset",
     NULL
   };
   int i,j,k;
@@ -1468,6 +1531,20 @@ static void ParseConfigLine(button_info **ubb,char *s)
       ub->c->flags &= ~b_Colorset;
     }
     break;
+  case 13: /* HoverColorset */
+    i = sscanf(s, "%d", &j);
+    if (i > 0)
+    {
+      ub->c->hoverColorset = j;
+      ub->c->flags |= b_HoverColorset;
+      AllocColorset(j);
+    }
+    else
+    {
+      ub->c->flags &= ~b_HoverColorset;
+    }
+    break;
+
   default:
     s = trimleft(s);
     ParseButton(ubb,s);

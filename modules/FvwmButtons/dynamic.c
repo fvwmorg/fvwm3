@@ -73,16 +73,12 @@ static void show_error(const char *msg, ...)
 
 static void change_button_title(button_info *b, const char *text)
 {
-	if (!(b->flags & b_Title))
-	{
-		show_error("Cannot create a title, only change one\n");
-		return;
-	}
 	if (text == NULL)
 	{
 		show_error("No title to change specified, unsupported\n");
 		return;
 	}
+	b->flags |= b_Title;
 	free(b->title);
 	CopyString(&b->title, text);
 	return;
@@ -92,11 +88,6 @@ static void change_button_icon(button_info *b, const char *file)
 {
 	FvwmPicture *new_icon;
 
-	if (!(b->flags & b_Icon))
-	{
-		show_error("Cannot create an icon, only change one\n");
-		return;
-	}
 	if (file == NULL)
 	{
 		show_error("No icon to change specified, unsupported\n");
@@ -107,22 +98,12 @@ static void change_button_icon(button_info *b, const char *file)
 		show_error("Cannot load icon %s\n", file);
 		return;
 	}
+	b->flags |= b_Icon;
 	free(b->icon_file);
 	PDestroyFvwmPicture(Dpy, b->icon);
-	DestroyIconWindow(b);
 	b->icon = new_icon;
 	CopyString(&b->icon_file, file);
-	CreateIconWindow(b);
-	if (b->flags&b_IconAlpha)
-	{
-		RedrawButton(b, DRAW_FORCE, NULL);
-	}
-	else
-	{
-		ConfigureIconWindow(b, NULL);
-		XMapWindow(Dpy, b->IconWin);
-	}
-	return;
+	RedrawButton(b, DRAW_FORCE, NULL);
 }
 
 #if 0
@@ -250,6 +231,8 @@ static char *actions[] =
 {
 	"Silent", "ChangeButton", "ExpandButtonVars", NULL
 };
+
+/* TODO: Should probably allow the HoverIcon & HoverTitle to change one day. */
 static char *button_options[] =
 {
 	"Title", "Icon", NULL

@@ -139,11 +139,6 @@ void MakeButton(button_info *b)
   /* At this point iw,ih,ix and iy should be correct. Now all we have to do is
      place title and iconwin in their proper positions */
 
-  /* For now, use the old routine in icons.h for buttons with icons */
-  if(b->flags&b_Icon && !(b->flags&b_IconAlpha))
-  {
-    ConfigureIconWindow(b, NULL);
-  }
   /* For now, hardcoded window centered, title bottom centered, below window */
   if(buttonSwallowCount(b)==3 && (b->flags & b_Swallow))
   {
@@ -188,13 +183,13 @@ void MakeButton(button_info *b)
 *** draw can be:
 *** DRAW_RELIEF: draw only the relief
 *** DRAW_CLEAN:  draw the relief, the foreground bg if any and if this
-*** the case draw the title and the icon if b_IconAlpha. This is safe
+*** the case draw the title and the icon if b_Icon. This is safe
 *** but the button background may be not repaint (if the bg of the button
 *** come from a parent button).
-*** DRAW_ALL: as above but draw the title and the icon if b_IconAlpha in
-*** any case. WARRNING: the title and the icon (b_IconAlpha) must be cleaned:
+*** DRAW_ALL: as above but draw the title and the icon if b_Icon in
+*** any case. WARRNING: the title and the icon (b_Icon) must be cleaned:
 *** if the button has a bg this is the case, but if the bg of the button
-*** come from a parent button this is not the case and xft title and alpha
+*** come from a parent button this is not the case and xft title and
 *** icons will be not draw correctly.
 *** So DRAW_ALL is ok only when you draw buttons recursively.
 *** DRAW_FORCE: draw the button and its parent fg bg. Use this only if
@@ -222,6 +217,9 @@ void RedrawButton(button_info *b, int draw, XEvent *pev)
 	Bool clean = False;
 	Bool cleaned = False;
 	Bool clear_bg = False;
+	unsigned long iconFlag, otherIconFlag;
+	Bool has_title;
+	FvwmPicture *pic;
 
 	cset = buttonColorset(b);
 	if (cset >= 0)
@@ -246,8 +244,8 @@ void RedrawButton(button_info *b, int draw, XEvent *pev)
 
 	/* This probably isn't the place for this, but it seems to work here
 	 * and not elsewhere, so... */
-	if((b->flags & b_Swallow) && (buttonSwallowCount(b)==3) &&
-	   b->IconWin!=None)
+	if ((b->flags & b_Swallow) && (buttonSwallowCount(b) == 3) &&
+		b->IconWin != None)
 	{
 		XSetWindowBorderWidth(Dpy,b->IconWin,0);
 	}
@@ -356,6 +354,28 @@ void RedrawButton(button_info *b, int draw, XEvent *pev)
 	/* ------------------------------------------------------------------ */
 	of = f;
 	f=abs(f);
+
+	iconFlag = b_Icon;
+	otherIconFlag = b_HoverIcon;
+	has_title = (b->flags & b_Title ? True : False);
+	pic = b->icon;
+	if (b == HoverButton)
+	{
+		/* If no HoverIcon is specified, we use Icon (if there is
+		   one). */
+		if (b->flags & b_HoverIcon)
+		{
+			iconFlag = b_HoverIcon;
+			otherIconFlag = b_Icon;
+			pic = b->hovericon;
+		}
+		/* If no HoverTitle is specified, we use Title (if there is
+		   one). */
+		if (b->flags & b_HoverTitle)
+		{
+			has_title = True;
+		}
+	}
 
 	if (draw == DRAW_CLEAN)
 	{
@@ -498,39 +518,60 @@ void RedrawButton(button_info *b, int draw, XEvent *pev)
 			if (do_draw)
 			{
 				cleaned = True;
-				XFillRectangle(
-					Dpy,MyWindow,NormalGC,
-					clip.x,clip.y,clip.width,clip.height);
+				if (b == HoverButton &&
+					UberButton->c->flags & b_HoverColorset)
+				{
+					SetRectangleBackground(Dpy, MyWindow,
+						clip.x, clip.y, clip.width,
+						clip.height,
+						&Colorset[UberButton->c->hoverColorset],
+						Pdepth, NormalGC);
+				}
+				else
+				{
+					XFillRectangle(Dpy, MyWindow, NormalGC,
+						clip.x, clip.y, clip.width,
+						clip.height);
+				}
 			}
 		}
 		else if (clear_bg ||
 			 (pev && !buttonBackgroundButton(b,NULL) &&
 			  ((b->flags&b_Title && Ffont && Ffont->fftf.fftfont) ||
-			   (b->flags&b_Icon && b->flags&b_IconAlpha))))
+			   (b->flags&b_Icon))))
 		{
 			/* some times we need to clear the real bg.
 			 * The pev expose rectangle can be bigger than the real
 			 * exposed part (as we rectangle flush and pev can
 			 * be a fake event) so we need to clear with xft font
-			 * and icons with alpha */
+			 * and icons. */
 			if (do_draw)
 			{
 				cleaned = True;
-				XClearArea(
-					Dpy, MyWindow, clip.x, clip.y,
-					clip.width, clip.height, False);
+				XClearArea(Dpy, MyWindow, clip.x,
+					clip.y, clip.width, clip.height,
+					False);
+				if (b == HoverButton &&
+					UberButton->c->flags & b_HoverColorset)
+				{
+					SetRectangleBackground(Dpy, MyWindow,
+						clip.x, clip.y, clip.width,
+						clip.height,
+						&Colorset[UberButton->c->hoverColorset],
+						Pdepth, NormalGC);
+				}
 			}
 		}
 	}
 
 	/* ------------------------------------------------------------------ */
 
-	if(cleaned && (b->flags&b_Title))
+	if (cleaned && (b->flags & (b_Title|b_HoverTitle)))
 	{
 		DrawTitle(b,MyWindow,NormalGC,pev,False);
 	}
 
-	if (!(b->flags&b_Title) && (b->flags & b_Panel) &&
+	if (!has_title && (b->flags & b_Panel) &&
 	    (b->panel_flags.panel_indicator))
 	{
 		XGCValues gcv;
@@ -612,10 +653,13 @@ void RedrawButton(button_info *b, int draw, XEvent *pev)
 		}
 	} /* panel indicator */
 
-	/* redraw icons with alpha because there are drawn on the foreground */
-	if(cleaned && (b->flags&b_Icon) && (b->flags & b_IconAlpha))
+	if (cleaned)
 	{
-		DrawForegroundIcon(b, pev);
+		if (b->flags & iconFlag)
+		{
+			/* draw icon */
+			DrawForegroundIcon(b, pev);
+		}
 	}
 
 	/* relief */
@@ -633,13 +677,26 @@ void DrawTitle(
 	FlocaleFont *Ffont=buttonFont(b);
 	int justify=buttonJustify(b);
 	int l,i,xpos;
-	char *s;
+	char *s = NULL;
 	int just=justify&b_TitleHoriz; /* Left, center, right */
 	XGCValues gcv;
 	unsigned long gcm;
 	int cset;
 	XRectangle clip;
 	Region region = None;
+	FvwmPicture *pic = b->icon;
+	unsigned long iconFlag = b_Icon;
+
+	if (b == HoverButton)
+	{
+		/* If no HoverIcon is specified, we use Icon (if there is
+		   one). */
+		if (b->flags & b_HoverIcon)
+		{
+			pic = b->hovericon;
+			iconFlag = b_HoverIcon;
+		}
+	}
 
 	BH = buttonHeight(b);
 
@@ -647,7 +704,18 @@ void DrawTitle(
 
 	/* ------------------------------------------------------------------ */
 
-	if(!(b->flags&b_Title) || !Ffont)
+	/* If this is the current hover button but no explicit HoverTitle was
+	   specified, use the Title (if there is one). */
+	if (b == HoverButton && b->flags & b_HoverTitle)
+	{
+		s = b->hoverTitle;
+	}
+	else if (b->flags & b_Title)
+	{
+		s = b->title;
+	}
+
+	if (!s || !Ffont)
 	{
 		return;
 	}
@@ -676,10 +744,10 @@ void DrawTitle(
 	/* If a title is to be shown, truncate it until it fits */
 	if(justify&b_Horizontal && !(b->flags & b_Right))
 	{
-		if(b->flags&b_Icon)
+		if (b->flags & iconFlag)
 		{
-			ix+=b->icon->width+buttonXPad(b);
-			iw-=b->icon->width+buttonXPad(b);
+			ix += pic->width+buttonXPad(b);
+			iw -= pic->width+buttonXPad(b);
 		}
 		else if ((b->flags & b_Swallow) && buttonSwallowCount(b)==3)
 		{
@@ -688,7 +756,6 @@ void DrawTitle(
 		}
 	}
 
-	s = b->title;
 	l = strlen(s);
 	i = FlocaleTextWidth(Ffont,s,l);
 
@@ -740,7 +807,7 @@ void DrawTitle(
 		FwinString.x = xpos;
 		/* If there is more than the title, put it at the bottom */
 		/* Unless stack flag is set, put it to the right of icon */
-		if((b->flags&b_Icon ||
+		if ((b->flags & iconFlag ||
 		    ((buttonSwallowCount(b)==3) && (b->flags&b_Swallow))) &&
 		   !(justify&b_Horizontal))
 		{

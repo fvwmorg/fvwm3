@@ -74,7 +74,9 @@
 #define b_ActionOnPress \
 		     0x02000000 /* By default this only done on Popup */
 #define b_Id         0x04000000 /* Has a user defined id for referencing */
-#define b_IconAlpha  0x08000000 /* Icon has an alpha chanel */
+#define b_HoverIcon  0x08000000 /* Contains HoverIcon */
+#define b_HoverColorset  0x10000000 /* Use alternate colorset for button on hover*/
+#define b_HoverTitle  0x20000000 /* Use alternate Title text on hover*/
 
 /* Flags for b->swallow */
 #define b_Count       0x0003 /* Init counter for swallowing */
@@ -121,6 +123,7 @@ struct container_info_struct
   char *back_file;         /* b_Back && b_IconBack */
   char *fore;              /* b_Fore */
   int colorset;            /* b_Colorset */
+  int hoverColorset;       /* b_HoverColorset */
   Pixel fc;                /* b_Fore */
   Pixel bc,hc,sc;          /* b_Back && !b_IconBack */
   FvwmPicture *backicon;   /* b_Back && b_IconBack */
@@ -161,15 +164,18 @@ struct button_info_struct
   byte justify_mask;       /* b_Justify */
   container_info *c;       /* b_Container */
   char *title;             /* b_Title */
+  char *hoverTitle;        /* b_HoverTitle */
   char **action;           /* b_Action */
   char *icon_file;         /* b_Icon */
+  char *hover_icon_file;   /* b_HoverIcon */
   char *hangon;            /* b_Hangon || b_Swallow */
   Pixel fc;                /* b_Fore */
   Pixel bc,hc,sc;          /* b_Back && !b_IconBack */
   ushort minx,miny;        /* b_Size */
   FvwmPicture *icon;       /* b_Icon */
   FvwmPicture *backicon;   /* b_Back && b_IconBack */
-  Window IconWin;          /* b_Icon || b_Swallow */
+  FvwmPicture *hovericon;  /* b_HoverIcon */
+  Window IconWin;          /* b_Swallow */
   Window PanelWin;         /* b_Panel */
   Window BackIconWin;      /* b_Back && b_IconBack */
 
@@ -233,7 +239,7 @@ extern Display *Dpy;
 extern Window Root;
 extern Window MyWindow;
 extern char *MyName;
-extern button_info *UberButton,*CurrentButton;
+extern button_info *UberButton, *CurrentButton, *HoverButton;
 extern Bool is_pointer_in_current_button;
 
 extern char *imagePath;

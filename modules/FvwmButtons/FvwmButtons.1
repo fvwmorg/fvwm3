@@ -117,6 +117,11 @@ Tells the module to use colorset \fIcolorset\fP for the window
 background.  Refer to the FvwmTheme man page
 for details about colorsets.
 
+.IP "*FvwmButtons: HoverColorset \fIcolorset\fP"
+Tells the module to use colorset \fIcolorset\fP for the background
+color/image and/or title color of a button when the mouse is hovering
+above a button.
+
 .IP "*FvwmButtons: Columns \fIcolumns\fP"
 Specifies the number of columns of buttons to be created. If
 unspecified, the number of columns is set to the number of buttons
@@ -340,10 +345,15 @@ inverted. This makes the button sunken normally and raised when
 activated.
 
 .IP "Icon \fIfilename\fP"
-The name of an X11 bitmap file or XPM color icon file, containing
-the icon to display on the button. FvwmButtons searches through
-the path specified in the fvwm ImagePath configuration item to
-find the icon file.
+The name of an image file, containing the icon to display on the button.
+FvwmButtons searches through the path specified in the fvwm ImagePath
+configuration item to find the icon file.
+
+.IP "HoverIcon \fIfilename\fP"
+The name of an image file, containing an alternative icon to display
+on the button when the mouse is hovering above the button. If no
+HoverIcon is specified, the image specified by Icon is displayed
+(if there is one).
 
 .IP "Id \fIid\fP"
 The id to be used to identify this button.
@@ -603,6 +613,11 @@ Side - Causes the title to appear on the right hand side of any
 icon or swallowed window, instead of below which is the
 default. If you use small icons, and combine this with the "Left"
 or "Right" option, you can get a look similar to fvwm's menus.
+
+.IP "HoverTitle \fIname\fP"
+Specifies the title to be written on the button when the mouse is
+hovering above the button. If no HoverTitle is specified, the text
+specified by Title is displayed (if there is any).
 
 .IP "Legacy fields [\fItitle icon command\fP]"
 These fields are kept for compatibility with previous versions of

@@ -34,6 +34,8 @@ Changes in alpha release 2.5.11 (not released yet)
 
 * Enhanced "Test (Version >= x.y.z)" option to allow version comparisons.
 
+* New FvwmButtons options: HoverColorset, HoverIcon & HoverTitle.
+
 -------------------------------------------------------------------
 
 Changes in alpha release 2.5.10 (19-Mar-2004)

@@ -67,7 +67,6 @@
 #include "FvwmButtons.h"
 #include "misc.h" /* ConstrainSize() */
 #include "parse.h" /* ParseConfiguration(), parse_window_geometry() */
-#include "icons.h" /* CreateIconWindow(), ConfigureIconWindow() */
 #include "draw.h"
 #include "dynamic.h"
 
@@ -75,6 +74,7 @@
 #define MW_EVENTS   (ExposureMask |\
 		     StructureNotifyMask |\
 		     ButtonReleaseMask | ButtonPressMask |\
+		     LeaveWindowMask | PointerMotionMask |\
 		     KeyReleaseMask | KeyPressMask | ButtonMotionMask)
 /* SW_EVENTS are for swallowed windows... */
 #define SW_EVENTS   (PropertyChangeMask | StructureNotifyMask |\
@@ -162,7 +162,9 @@ Bool has_button_geometry = 0;
 Bool is_transient = 0;
 Bool is_transient_panel = 0;
 
-button_info *CurrentButton = NULL;
+/* $CurrentButton is set on ButtonPress, $HoverButton is set whenever the
+   mouse is over a button that is redrawn specially. */
+button_info *CurrentButton = NULL, *HoverButton = NULL;
 Bool is_pointer_in_current_button = False;
 int fd[2];
 
@@ -842,27 +844,6 @@ int main(int argc, char **argv)
 
   CreateUberButtonWindow(UberButton,maxx,maxy);
 
-#ifdef DEBUG_INIT
-  fprintf(stderr,"OK\n%s: Creating icon windows...",MyName);
-#endif
-
-  i=-1;
-  ub=UberButton;
-  while(NextButton(&ub,&b,&i,0))
-  {
-    if(b->flags&b_Icon)
-    {
-#ifdef DEBUG_INIT
-      fprintf(stderr,"0x%06x...",(ushort)b);
-#endif
-      CreateIconWindow(b);
-    }
-  }
-
-#ifdef DEBUG_INIT
-  fprintf(stderr,"OK\n%s: Configuring windows...",MyName);
-#endif
-
   if (!XGetGeometry(
     Dpy, MyWindow, &root, &x, &y, (unsigned int *)&Width,
     (unsigned int *)&Height, (unsigned int *)&border_width, &depth))
@@ -873,8 +854,6 @@ int main(int argc, char **argv)
   SetButtonSize(UberButton,Width,Height);
   i=-1;
   ub=UberButton;
-  while(NextButton(&ub,&b,&i,0))
-    ConfigureIconWindow(b, NULL);
 
   if (FShapesSupported)
   {
@@ -920,6 +899,30 @@ int main(int argc, char **argv)
   Loop();
 
   return 0;
+}
+
+/* We get LeaveNotify events when the mouse enters a swallowed window of
+   FvwmButtons, but we're not interested in these situations. */
+static Bool reallyLeaveWindow (const int x, const int y,
+		const Window win, const button_info *b)
+{
+	if (x < 0 || x >= Width || y < 0 || y >= Height)
+	{
+		return True;
+	}
+
+	if (b == NULL)
+	{
+		b = select_button(UberButton, x, y);
+	}
+
+	/* TODO: fix situation when mouse enters window overlapping
+	   with a b_Swallow button. */
+	if (b->flags & b_Swallow)
+	{
+		return False;
+	}
+	return True;
 }
 
 /* -------------------------------- Main Loop -------------------------------*/
@@ -1075,20 +1078,68 @@ void Loop(void)
       }
       break;
 
-      case MotionNotify:
+	case MotionNotify:
 	{
-	  Bool f = is_pointer_in_current_button;
+		Bool f = is_pointer_in_current_button, redraw_relief = False;
+		if (Event.xmotion.x < 0 || Event.xmotion.x >= Width ||
+			Event.xmotion.y < 0 || Event.xmotion.y >= Height)
+		{
+			/* cursor is outside of FvwmButtons window. */
+			break;
+		}
 
-	  is_pointer_in_current_button =
-	    (CurrentButton && CurrentButton ==
-	     select_button(UberButton, Event.xmotion.x, Event.xmotion.y));
-	  if (CurrentButton && is_pointer_in_current_button != f)
-	  {
-	    RedrawButton(b, DRAW_RELIEF, NULL);
-	  }
+		/* find out which button the cursor is in now. */
+		b = select_button(UberButton, Event.xmotion.x, Event.xmotion.y);
+
+		is_pointer_in_current_button =
+			(CurrentButton && CurrentButton == b);
+		if (CurrentButton && is_pointer_in_current_button != f)
+		{
+			redraw_relief = True;
+		}
+
+		if (b != HoverButton)
+		{
+			if (HoverButton)
+			{
+				button_info *tmp = HoverButton;
+				HoverButton = b;
+				RedrawButton(tmp, DRAW_FORCE, NULL);
+			}
+			if (b->flags & (b_HoverIcon | b_HoverTitle) ||
+				UberButton->c->flags & b_HoverColorset)
+			{
+				HoverButton = b;
+				RedrawButton(b, DRAW_FORCE, NULL);
+				redraw_relief = False;
+			}
+		}
+
+		if (redraw_relief)
+		{
+			RedrawButton(b, DRAW_RELIEF, NULL);
+		}
 	}
 	break;
 
+	case LeaveNotify:
+	{
+		if (reallyLeaveWindow(Event.xcrossing.x, Event.xcrossing.y,
+			Event.xcrossing.window, NULL))
+		{
+			if (HoverButton)
+			{
+				b = HoverButton;
+				HoverButton = NULL;
+				RedrawButton(b, DRAW_FORCE, NULL);
+			}
+			if (CurrentButton)
+			{
+				RedrawButton(b, DRAW_RELIEF, NULL);
+			}
+		}
+		break;
+	}
       case KeyPress:
 	XLookupString(&Event.xkey,buffer,10,&keysym,0);
 	if(keysym!=XK_Return && keysym!=XK_KP_Enter && keysym!=XK_Linefeed)
@@ -1159,8 +1210,11 @@ void Loop(void)
       case ButtonRelease:
 	if (CurrentButton == NULL || !is_pointer_in_current_button)
 	{
-	  CurrentButton = NULL;
-	  break;
+		if (CurrentButton)
+			RedrawButton(CurrentButton, DRAW_RELIEF, NULL);
+
+		CurrentButton = NULL;
+		break;
 	}
 	if (Event.xbutton.window == MyWindow)
 	{
@@ -1502,7 +1556,7 @@ int LoadIconFile(const char *s, FvwmPicture **p, int cset)
 **/
 void RecursiveLoadData(button_info *b,int *maxx,int *maxy)
 {
-  int i,j,x=0,y=0;
+  int i, x=0, y=0, ix, iy, tx, ty, hix, hiy, htx, hty;
   FlocaleFont *Ffont;
 
   if (!b)
@@ -1665,9 +1719,14 @@ void RecursiveLoadData(button_info *b,int *maxx,int *maxy)
     b->c->height=y;
   }
 
+  /* $ix & $iy are dimensions of Icon
+     $tx & $ty are dimensions of Title
+     $hix & $hiy are dimensions of HoverIcon
+     $htx & $hty are dimensions of HoverTitle
 
-  i=0;
-  j=0;
+     Note that if No HoverIcon is specified, Icon is displayed during hover.
+     Similarly for HoverTitle. */
+  ix = iy = tx = ty = hix = hiy = htx = hty = 0;
 
   /* Load the icon */
   if(b->flags&b_Icon && LoadIconFile(b->icon_file,&b->icon, buttonColorset(b)))
@@ -1675,11 +1734,30 @@ void RecursiveLoadData(button_info *b,int *maxx,int *maxy)
 #ifdef DEBUG_LOADDATA
     fprintf(stderr,", icon \"%s\"",b->icon_file);
 #endif
-    i=b->icon->width;
-    j=b->icon->height;
+    ix = b->icon->width;
+    iy = b->icon->height;
   }
   else
     b->flags&=~b_Icon;
+
+  /* load the hover icon. */
+  if (b->flags & b_HoverIcon &&
+      LoadIconFile(b->hover_icon_file, &b->hovericon, buttonColorset(b)))
+  {
+#ifdef DEBUG_LOADDATA
+    fprintf(stderr,", hover icon \"%s\"", b->hover_icon_file);
+#endif
+
+    hix = b->hovericon->width;
+    hiy = b->hovericon->height;
+  }
+  else
+  {
+    hix = ix;
+    hiy = iy;
+    b->flags&=~b_HoverIcon;
+  }
+
 
   if(b->flags&b_Title && (Ffont = buttonFont(b)))
   {
@@ -1688,18 +1766,41 @@ void RecursiveLoadData(button_info *b,int *maxx,int *maxy)
 #endif
     if(buttonJustify(b)&b_Horizontal)
     {
-      i+=buttonXPad(b)+FlocaleTextWidth(Ffont,b->title,strlen(b->title));
-      j=max(j,Ffont->height);
+      tx = buttonXPad(b) + FlocaleTextWidth(Ffont, b->title, strlen(b->title));
+      ty = Ffont->height;
     }
     else
     {
-      i=max(i,FlocaleTextWidth(Ffont,b->title,strlen(b->title)));
-      j+=Ffont->height;
+      tx = FlocaleTextWidth(Ffont,b->title,strlen(b->title));
+      ty = Ffont->height;
     }
   }
 
-  x+=i;
-  y+=j;
+  if (b->flags & b_HoverTitle && (Ffont = buttonFont(b)))
+  {
+#ifdef DEBUG_LOADDATA
+    fprintf(stderr,", title \"%s\"",b->title);
+#endif
+    if (buttonJustify(b) & b_Horizontal)
+    {
+      htx = buttonXPad(b) + FlocaleTextWidth(Ffont, b->hoverTitle,
+	      strlen(b->hoverTitle));
+      hty = Ffont->height;
+    }
+    else
+    {
+      htx = FlocaleTextWidth(Ffont,b->hoverTitle,strlen(b->hoverTitle));
+      hty = Ffont->height;
+    }
+  }
+  else
+  {
+    htx = tx;
+    hty = ty;
+  }
+
+  x += max(max(ix, tx), max(hix, htx));
+  y += max(iy + ty, hiy + hty);
 
   if(b->flags&b_Size)
   {
@@ -2405,21 +2506,6 @@ static void recursive_change_colorset(
 		}
 		else
 		{
-			if (Event == NULL && b->flags&b_Icon)
-			{
-				/* FIXME do that only if we have an icon
-				 * colorset */
-				DestroyIconWindow(b);
-				CreateIconWindow(b);
-				if (b->flags&b_Icon)
-				{
-					if (!(b->flags&b_IconAlpha))
-					{
-						ConfigureIconWindow(b, NULL);
-						XMapWindow(Dpy,b->IconWin);
-					}
-				}
-			}
 			RedrawButton(b, DRAW_ALL, NULL);
 		}
 	}
@@ -2463,32 +2549,12 @@ static void change_colorset(int colorset, XEvent *Event)
 						b, True);
 				}
 			}
-			else if (Event == NULL && b->flags&b_Icon &&
-				 buttonColorset(b) == colorset)
-			{
-				/* FIXME do that only if we have an icon
-				 * colorset */
-				DestroyIconWindow(b);
-				CreateIconWindow(b);
-				if (b->flags&b_Icon)
-				{
-					if (!(b->flags&b_IconAlpha))
-					{
-						ConfigureIconWindow(b, NULL);
-						XMapWindow(Dpy,b->IconWin);
-					}
-				}
-			}
 		}
-
 		return;
 	}
 
 	recursive_change_colorset(
 		UberButton->c, colorset, Event);
-
-
-	return;
 }
 
 static void handle_config_info_packet(unsigned long *body)

@@ -46,6 +46,14 @@
 	* acinclude.m4 (ICONV_SECOND_ARG):
 	rewrote iconf configure test to save an ifdef
 
+2004-07-07  Scott Smedley  <scottie7@tpg.com.au>
+	* fvwm/fvwm.1.in:
+	* libs/Bindings.h:
+	* libs/Bindings.c:
+	* fvwm/bindings.c:
+	Allow user to specify window-specific bindings that should NOT be
+	intercepted by FVWM. This is accomplished with an '--' binding action.
+
 2004-07-06  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* fvwm/move_resize.c (__resize_window):
