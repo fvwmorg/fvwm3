@@ -71,6 +71,9 @@ Changes in beta release 2.4.1 (not released yet)
 
 * Fixed some exotic problems with window gravity and resizing windows.
 
+* Fixed a problem with maximizing windows with the vieport not starting
+  on a page boundary.
+
 _+_A NAME="2.4.0"_-_
 Changes in stable release 2.4.0 (1-Jul-2001)
 _+_/A_-_

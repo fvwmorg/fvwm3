@@ -1,5 +1,9 @@
 2001-08-16  Dominik Vogt  <dominik.vogt@gmx.de>
 
+	* fvwm/move_resize.c (CMD_Maximize):
+	keep window on correct page when viewport does not start on a page
+	boundary
+
 	* libs/XError.c (error_name):
 	(request_name):
 	fixed core dump in error handling

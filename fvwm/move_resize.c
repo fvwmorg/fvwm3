@@ -3203,19 +3203,22 @@ void CMD_Maximize(F_CMD_ARGS)
     new_g.height = tmp_win->frame_g.height;
     if (IsRectangleOnThisPage(&tmp_win->frame_g, tmp_win->Desk))
     {
-      /* maximize on visible page */
+      /* maximize on visible page if any part of the window is visible */
       page_x = 0;
       page_y = 0;
     }
     else
     {
+      int xoff = Scr.Vx % Scr.MyDisplayWidth;
+      int yoff = Scr.Vy % Scr.MyDisplayHeight;
+
       /* maximize on the page where the center of the window is */
       page_x = truncate_to_multiple(
-	tmp_win->frame_g.x + tmp_win->frame_g.width / 2,
-	Scr.MyDisplayWidth);
+	tmp_win->frame_g.x + tmp_win->frame_g.width / 2 + xoff,
+	Scr.MyDisplayWidth) - xoff;
       page_y = truncate_to_multiple(
-	tmp_win->frame_g.y + tmp_win->frame_g.height / 2,
-	Scr.MyDisplayHeight);
+	tmp_win->frame_g.y + tmp_win->frame_g.height / 2 + yoff,
+	Scr.MyDisplayHeight) - yoff;
     }
 
     /* handle command line arguments */
