@@ -4043,7 +4043,7 @@ Bool DestroyMenu(MenuRoot *mr, Bool do_recreate, Bool is_command_request)
     /* find a new 'original' menu */
     for (m = Menus.all, new_orig = NULL; m; m = MR_NEXT_MENU(m))
     {
-      if (m != mr)
+      if (m != mr && MR_ORIGINAL_MENU(m) == mr)
       {
 	if (new_orig == NULL)
 	{

@@ -1,3 +1,8 @@
+2001-04-05  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* fvwm/menus.c (DestroyMenu):
+	fixed menus being overwritten by copies of other menus
+
 2001-04-04  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* fvwm/virtual.c (MoveViewport):
