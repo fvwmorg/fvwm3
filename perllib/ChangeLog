@@ -1,8 +1,11 @@
 2003-05-30  Mikhael Goikhman  <migo@homemail.com>
 
-	* perllib/FVWM/Tracker.pm:
-	* perllib/FVWM/Tracker/*.pm:
-	documented trackers
+	* FVWM/Tracker.pm:
+	* FVWM/Tracker/*.pm:
+	documented Tracker superclass and 6 tracker subclasses
+
+	* FVWM/Tracker/Makefile.pm:
+	fixed dist
 
 2003-05-22  Mikhael Goikhman  <migo@homemail.com>
 

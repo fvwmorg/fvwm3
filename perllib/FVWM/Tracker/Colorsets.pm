@@ -110,12 +110,8 @@ Using B<FVWM::Module> $module object:
 
     my $csTracker = $module->track("Colorsets");
     my $csHash = $csTracker->data;
-    my $cs2_fg = $csHash('fg') || 'black';
-
-or:
-
-    my $csTracker = $module->track("Colorsets");
-    my $cs2_fg = $csTracker->data(2)->{'fg'} || 'black';
+    my $cs2_fg = $csHash->{2}->{fg} || 'black';
+    my $cs5_bg = $csTracker->data(5)->{bg} || 'gray';
 
 =head1 OVERRIDDEN METHODS
 

@@ -152,7 +152,7 @@ Using B<FVWM::Module> $module object:
 
     my $configTracker = $module->track("ModuleConfig");
     my $configHash = $configTracker->data;
-    my $font = $configHash('Font') || 'fixed';
+    my $font = $configHash->{Font} || 'fixed';
 
 or:
 

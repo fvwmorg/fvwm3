@@ -106,7 +106,7 @@ Using B<FVWM::Module> $module object:
 
     my $configTracker = $module->track("GlobalConfig");
     my $configHash = $configTracker->data;
-    my $xineramaInfo = $configHash->{'Xinerama'};
+    my $xineramaInfo = $configHash->{'ImagePath'};
 
 or:
 
