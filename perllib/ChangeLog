@@ -1,3 +1,8 @@
+2002-10-14  Mikhael Goikhman  <migo@homemail.com>
+
+	* FVWM/Module.pm.in:
+	fixed handling of synchronized events
+
 2002-10-03  Mikhael Goikhman  <migo@homemail.com>
 
 	* FVWM/Event.pm:

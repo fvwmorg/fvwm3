@@ -312,7 +312,7 @@ sub PreprocessNamespace::include ($) {
 # ----------------------------------------------------------------------------
 # event handlers
 
-sub processMessage ($$$$$$) {
+sub processMessage ($$) {
 	my $event = $_[1];
 	my $string = $event->_text;
 

@@ -243,7 +243,7 @@ sub syncXMask ($;$) {
 sub isInSyncMask ($$) {
 	my $self = shift;
 	my $type = shift;
-	my $mask = ($type & M_EXTENDED_MSG)? $self->{syncMask}: $self->{syncXMask};
+	my $mask = ($type & M_EXTENDED_MSG)? $self->{syncXMask}: $self->{syncMask};
 	return $type & ($mask || 0);
 }
 
@@ -374,8 +374,8 @@ sub readPacket ($) {
 			if $off != $len;
 	}
 
-	$self->{lastPacket} = [$packet, $type];
-	return ($packet, $type);
+	$self->{lastPacket} = [$type, $packet];
+	return ($type, $packet);
 }
 
 sub invokeHandler ($$) {
@@ -407,9 +407,9 @@ sub invokeHandler ($$) {
 
 sub processPacket ($;$$) {
 	my $self = shift;
-	my ($packet, $type) = @_;
+	my ($type, $packet) = @_;
 
-	($packet, $type) = @{$self->{lastPacket}} unless defined $packet;
+	($type, $packet) = @{$self->{lastPacket}} unless defined $packet;
 	return undef unless defined $packet;
 
 	my $event = eval { new FVWM::Event($type, $packet); };
