@@ -199,7 +199,7 @@ int main(int argc, char **argv)
 
   if (!noread)
   {
-    char *read_string = CatString3("Read '", tmp_file, "'\n");
+    char *read_string = CatString3("Read '", tmp_file, "'");
     SendText(fd, read_string, 0);
   }
 
@@ -217,7 +217,7 @@ int main(int argc, char **argv)
     {
       delete_file = safestrdup(CatString3(user_dir, "/", tmp_file));
     }
-    delete_string = CatString3("Exec exec /bin/rm '", delete_file, "'\n");
+    delete_string = CatString3("Exec exec /bin/rm '", delete_file, "'");
     SendText(fd, delete_string, 0);
   }
 

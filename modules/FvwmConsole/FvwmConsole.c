@@ -258,6 +258,7 @@ void server ( void )
       }
 
       if (FD_ISSET(Ns, &fdset)){
+	  int len;
 	  if( recv( Ns, buf, MAX_COMMAND_SIZE,0 ) == 0 ) {
 	    /* client is terminated */
 	    close(Ns);
@@ -266,6 +267,11 @@ void server ( void )
 	  }
 
 	  /* process the own unique commands */
+	  len = strlen(buf);
+	  if (len > 0 && buf[len - 1] == '\n')
+	  {
+	    buf[len - 1] = '\0';
+	  }
 	  SendText(Fd,buf,0); /* send command */
       }
   }

@@ -1,3 +1,12 @@
+2002-09-14  Mikhael Goikhman  <migo@homemail.com>
+
+	* FVWM/Event.pm:
+	* FVWM/EventNames.pm:
+	some documentation
+
+	* FVWM/Module.pm.in:
+	fixed bad typo
+
 2002-09-13  Mikhael Goikhman  <migo@homemail.com>
 
 	* FVWM/Constants.pm:

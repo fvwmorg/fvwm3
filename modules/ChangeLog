@@ -1,4 +1,11 @@
-2002-09-15 Ben Mathews <benmathews@adelphia.net>
+2002-09-16  Mikhael Goikhman  <migo@homemail.com>
+
+	* FvwmConsole/FvwmConsole.c:
+	* FvwmCpp/FvwmCpp.c:
+	* FvwmM4/FvwmM4.c:
+	don't send end-of-line in SendText
+
+2002-09-15  Ben Mathews  <benmathews@adelphia.net>
 
 	* FvwmTaskBar/Start.h:
 	* FvwmTaskBar/Start.c:

@@ -30,6 +30,9 @@
 #include <stdarg.h>
 
 #include "libs/ftime.h"
+#ifdef FVWM_DEBUG_TIME
+#include <sys/times.h>
+#endif
 #include "fvwm.h"
 #include "externs.h"
 #include "execcontext.h"
@@ -333,19 +336,22 @@ Bool UngrabEm(int ungrab_context)
 ** id -> name of function, or other identifier
 */
 static char *fvwm_msg_strings[] =
-{ "<<DEBUG>>", "", "", "<<WARNING>>", "<<DEPRECATED>>", "<<ERROR>>" };
+{
+	"<<DEBUG>> ", "", "", "<<WARNING>> ", "<<DEPRECATED>> ", "<<ERROR>> "
+};
+
 void fvwm_msg(fvwm_msg_type type, char *id, char *msg, ...)
 {
 	va_list args;
+	char fvwm_id[20];
+	char time_str[40] = "\0";
 #ifdef FVWM_DEBUG_TIME
 	clock_t time_val, time_taken;
 	static clock_t start_time = 0;
 	static clock_t prev_time = 0;
 	struct tms not_used_tms;
-	char buffer[200];                     /* oversized */
 	time_t mytime;
 	struct tm *t_ptr;
-	static int counter = 0;
 #endif
 
 #ifdef FVWM_DEBUG_TIME
@@ -359,34 +365,18 @@ void fvwm_msg(fvwm_msg_type type, char *id, char *msg, ...)
 	time_val = (unsigned int)times(&not_used_tms); /* get clock ticks */
 	time_taken = time_val - prev_time;
 	prev_time = time_val;
-	sprintf(buffer, "%.2d:%.2d:%.2d %6ld",
+	sprintf(time_str, "%.2d:%.2d:%.2d%7ld ",
 		t_ptr->tm_hour, t_ptr->tm_min, t_ptr->tm_sec, time_taken);
 #endif
 
+	strcpy(fvwm_id, "FVWM");
 	if (Scr.NumberOfScreens > 1)
 	{
-		fprintf(stderr,"[FVWM.%d][%s]: "
-#ifdef FVWM_DEBUG_TIME
-			"%s "
-#endif
-			"%s ",(int)Scr.screen,id,
-#ifdef FVWM_DEBUG_TIME
-			buffer,
-#endif
-			fvwm_msg_strings[(int)type]);
+		sprintf(&fvwm_id[strlen(fvwm_id)], ".%d", (int)Scr.screen);
 	}
-	else
-	{
-		fprintf(stderr,"[FVWM][%s]: "
-#ifdef FVWM_DEBUG_TIME
-			"%s "
-#endif
-			"%s ",id,
-#ifdef FVWM_DEBUG_TIME
-			buffer,
-#endif
-			fvwm_msg_strings[(int)type]);
-	}
+
+	fprintf(stderr, "%s[%s][%s]: %s",
+		time_str, fvwm_id, id, fvwm_msg_strings[(int)type]);
 
 	if (type == ECHO)
 	{
@@ -395,27 +385,28 @@ void fvwm_msg(fvwm_msg_type type, char *id, char *msg, ...)
 	}
 	else
 	{
-		va_start(args,msg);
+		va_start(args, msg);
 		vfprintf(stderr, msg, args);
 		va_end(args);
 	}
-	fprintf(stderr,"\n");
+	fprintf(stderr, "\n");
 
 	if (type == ERR)
 	{
 		/* I hate to use a fixed length but this will do for now */
 		char tmp[2 * MAX_TOKEN_LENGTH];
-		sprintf(tmp,"[FVWM][%s]: %s ",id, fvwm_msg_strings[(int)type]);
-		va_start(args,msg);
-		vsprintf(tmp+strlen(tmp), msg, args);
+		sprintf(tmp, "[%s][%s]: %s",
+			fvwm_id, id, fvwm_msg_strings[(int)type]);
+		va_start(args, msg);
+		vsprintf(tmp + strlen(tmp), msg, args);
 		va_end(args);
-		tmp[strlen(tmp)+1]='\0';
-		tmp[strlen(tmp)]='\n';
+		tmp[strlen(tmp) + 1] = '\0';
+		tmp[strlen(tmp)] = '\n';
 		if (strlen(tmp) >= MAX_MODULE_INPUT_TEXT_LEN)
 		{
 			sprintf(tmp + MAX_MODULE_INPUT_TEXT_LEN - 5, "...\n");
 		}
-		BroadcastName(M_ERROR,0,0,0,tmp);
+		BroadcastName(M_ERROR, 0, 0, 0, tmp);
 	}
 
 } /* fvwm_msg */
