@@ -1295,6 +1295,7 @@ void FreeDecorFace(Display *dpy, DecorFace *df)
     break;
 
   case VectorButton:
+  case DefaultVectorButton:
     if (df->u.vector.x)
       free (df->u.vector.x);
     if (df->u.vector.y)
@@ -1722,24 +1723,59 @@ static char *ReadTitleButton(
 #ifdef MULTISTYLE
     if (append)
     {
-      DecorFace *tail = &TB_STATE(*tb)[b];
+      DecorFace *head = &TB_STATE(*tb)[b];
+      DecorFace *tail = head;
+      DecorFace *next;
+
       while (tail->next)
+      {
 	tail = tail->next;
+      }
       tail->next = (DecorFace *)safemalloc(sizeof(DecorFace));
       memcpy(tail->next, &tmpdf, sizeof(DecorFace));
+      if (DFS_FACE_TYPE(tail->next->style) == VectorButton &&
+	  DFS_FACE_TYPE((&TB_STATE(*tb)[b])->style) == DefaultVectorButton)
+      {
+	/* override the default vector style */
+	memcpy(&tail->next->style, &head->style, sizeof(DecorFaceStyle));
+	DFS_FACE_TYPE(tail->next->style) = VectorButton;
+	next = head->next;
+	head->next = NULL;
+	FreeDecorFace(dpy, head);
+	memcpy(head, next, sizeof(DecorFace));
+	free(next);
+      }
       if (all)
       {
 	for (i = 1; i < MaxButtonState; ++i)
 	{
-	  tail = &TB_STATE(*tb)[i];
+	  if (i == b)
+	    /* already done above */
+	    continue;
+	  head = &TB_STATE(*tb)[i];
+	  tail = head;
 	  while (tail->next)
+	  {
 	    tail = tail->next;
+	  }
 	  tail->next = (DecorFace *)safemalloc(sizeof(DecorFace));
 	  memset(&DFS_FLAGS(tail->next->style), 0,
 		 sizeof(DFS_FLAGS(tail->next->style)));
 	  DFS_FACE_TYPE(tail->next->style) = SimpleButton;
 	  tail->next->next = NULL;
 	  ReadDecorFace(spec, tail->next, button, False);
+	  if (DFS_FACE_TYPE(tail->next->style) == VectorButton &&
+	      DFS_FACE_TYPE((&TB_STATE(*tb)[i])->style) == DefaultVectorButton)
+	  {
+	    /* override the default vector style */
+	    memcpy(&tail->next->style, &head->style, sizeof(DecorFaceStyle));
+	    DFS_FACE_TYPE(tail->next->style) = VectorButton;
+	    next = head->next;
+	    head->next = NULL;
+	    FreeDecorFace(dpy, head);
+	    memcpy(head, next, sizeof(DecorFace));
+	    free(next);
+	  }
 	}
       }
     }

@@ -1,5 +1,14 @@
 2000-11-28  Dominik Vogt  <dominik.vogt@gmx.de>
 
+	* fvwm/builtins.c (FreeDecorFace):
+	(ReadTitleButton):
+	* fvwm/borders.c (DrawButton):
+	* fvwm/fvwm.c (LoadDefaultLeftButton):
+	(LoadDefaultRightButton):
+	* fvwm/screen.h (enum):
+	when a vector button is applied to a button/title style it erases the
+	default vector first.
+
 	* fvwm/borders.c (DrawButton):
 	TiledPixmapButton works in window titles and buttons; heck, has this
 	*ever* been tested?

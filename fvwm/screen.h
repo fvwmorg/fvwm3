@@ -64,6 +64,7 @@ typedef struct
 typedef enum
 {
     /* button types */
+    DefaultVectorButton         ,
     VectorButton                ,
     SimpleButton                ,
     GradientButton              ,

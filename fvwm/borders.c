@@ -177,6 +177,7 @@ static void DrawButton(FvwmWindow *t, Window win, int w, int h,
       break;
 
     case VectorButton:
+    case DefaultVectorButton:
       if(HAS_MWM_BUTTONS(t) &&
 	 ((stateflags & MWM_DECOR_MAXIMIZE && IS_MAXIMIZED(t)) ||
 	  (stateflags & MWM_DECOR_SHADE && IS_SHADED(t)) ||
@@ -254,7 +255,7 @@ static void DrawButton(FvwmWindow *t, Window win, int w, int h,
 	{
 	  for (xi = border; xi < width; xi += p->width)
 	  {
-	    int lw = width - - x - p->width;
+	    int lw = width - x - p->width;
 	    int lh = height - y - p->height;
 
 	    if (lw > p->width)

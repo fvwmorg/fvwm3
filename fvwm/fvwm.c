@@ -1269,7 +1269,7 @@ static void LoadDefaultLeftButton(DecorFace *df, int i)
   struct vector_coords *v = &df->u.vector;
 
   memset(&df->style, 0, sizeof(df->style));
-  DFS_FACE_TYPE(df->style) = VectorButton;
+  DFS_FACE_TYPE(df->style) = DefaultVectorButton;
   switch (i % 5)
   {
   case 0:
@@ -1362,7 +1362,7 @@ static void LoadDefaultRightButton(DecorFace *df, int i)
   struct vector_coords *v = &df->u.vector;
 
   memset(&df->style, 0, sizeof(df->style));
-  DFS_FACE_TYPE(df->style) = VectorButton;
+  DFS_FACE_TYPE(df->style) = DefaultVectorButton;
   switch (i % 5)
   {
   case 0:
