@@ -208,14 +208,8 @@ typedef struct MenuRootDynamic
 
 typedef struct MenuRoot
 {
-int magic1;
-MenuRootStatic *s2;
-int magic2;
 	MenuRootStatic *s;
 	MenuRootDynamic *d;
-int magic3;
-MenuRootStatic *s3;
-int magic4;
 } MenuRoot;
 /* don't forget to initialise new members in NewMenuRoot()! */
 

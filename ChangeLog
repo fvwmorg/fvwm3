@@ -1,3 +1,11 @@
+2002-07-29  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* fvwm/events.c (addkbsubinstoarray):
+	disabled experimental pointer warping code
+
+	* fvwm/menus.c:
+	removed menu crash debug code
+
 2002-07-26  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* fvwm/menus.c:

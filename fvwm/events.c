@@ -3949,6 +3949,8 @@ void CMD_XSynchronize(F_CMD_ARGS)
 	return;
 }
 
+#if 0
+/* experimental code */
 int addkbsubinstoarray(Window parentw, Window *winlist, int offset)
 {
 	Window *children;
@@ -4144,11 +4146,11 @@ fprintf(stderr," %d (%d %d %dx%d)\n", i, x,y,wid,hei);
 
 	return;
 }
+#endif
 
 void CMD_XSync(F_CMD_ARGS)
 {
 	XSync(dpy, 0);
-getkbsubwins(F_PASS_ARGS);
 
 	return;
 }
