@@ -1,5 +1,9 @@
 2004-10-13  Dominik Vogt  <dominik.vogt@gmx.de>
 
+	* fvwm/move_resize.c (__move_loop):
+	(__resize_window):
+	fixed overwriting the initial button_mask during move/resize
+
 	* fvwm/menus.c (__mloop_handle_action_with_mi):
 	do not "post" a submenu menu item it the submenu does not exist
 

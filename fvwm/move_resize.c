@@ -2147,8 +2147,7 @@ Bool __move_loop(
 			 * This *is* necessary. */
 			if (FQueryPointer(
 				    dpy, Scr.Root, &JunkRoot, &JunkChild, &x,
-				    &y, &JunkX, &JunkY, &button_mask) ==
-			    True)
+				    &y, &JunkX, &JunkY, &JunkMask) == True)
 			{
 				fev_make_null_event(&e2, dpy);
 				e2.type = MotionNotify;
@@ -2247,7 +2246,9 @@ Bool __move_loop(
 				if (button_mask || (e.xbutton.button != 1))
 				{
 					if (!do_move_opaque)
+					{
 						switch_move_resize_grid(False);
+					}
 					if (!IS_ICONIFIED(fw))
 					{
 						*FinalX = fw->frame_g.x;
@@ -3447,8 +3448,7 @@ static Bool __resize_window(F_CMD_ARGS)
 			 * This *is* necessary. */
 			if (FQueryPointer(
 				    dpy, Scr.Root, &JunkRoot, &JunkChild, &x,
-				    &y, &JunkX, &JunkY, &button_mask) ==
-			    True)
+				    &y, &JunkX, &JunkY, &JunkMask) == True)
 			{
 				fev_make_null_event(&e2, dpy);
 				e2.type = MotionNotify;
