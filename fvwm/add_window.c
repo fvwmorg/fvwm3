@@ -1471,7 +1471,7 @@ void GetWindowSizeHints(FvwmWindow *tmp)
     if (tmp->hints.width_inc <= 0)
     {
       tmp->hints.width_inc = 1;
-      broken_cause = "windth_inc";
+      broken_cause = "width_inc";
     }
     if (tmp->hints.height_inc <= 0)
     {
