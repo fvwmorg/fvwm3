@@ -1373,9 +1373,9 @@ void HandleConfigureRequest()
   /* override even if border change */
 
   if (cre->value_mask & CWX)
-    x = cre->x - Tmp_win->boundary_width - Tmp_win->bw;
+    x = cre->x - Tmp_win->boundary_width;
   if (cre->value_mask & CWY)
-    y = cre->y - Tmp_win->boundary_width - Tmp_win->title_height - Tmp_win->bw;
+    y = cre->y - Tmp_win->boundary_width - Tmp_win->title_height;
   if (cre->value_mask & CWWidth)
     width = cre->width + 2*Tmp_win->boundary_width;
   if (cre->value_mask & CWHeight)
