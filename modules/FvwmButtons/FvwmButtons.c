@@ -558,12 +558,12 @@ void SetTransparentBackground(button_info *ub,int w,int h)
   i = -1;
   while (NextButton(&ub,&b,&i,0))
   {
+    number=buttonNum(b);
     if (b->flags&b_Icon &&
 	XGetGeometry(Dpy,b->IconWin,&root_return,&x_return,&y_return,
 		     &width_return,&height_return,
 		     &border_width_return,&depth_return))
     {
-      number=buttonNum(b);
       if (b->icon->mask == None)
       {
 	XFillRectangle(Dpy,pmap_mask,trans_gc,x_return, y_return,
@@ -626,7 +626,6 @@ void SetTransparentBackground(button_info *ub,int w,int h)
     }
     else
     {
-      number=buttonNum(b);
       XFillRectangle(Dpy,pmap_mask,trans_gc,buttonXPos(b,number),
 		     buttonYPos(b,number),
 		     buttonWidth(b),buttonHeight(b));

@@ -1,5 +1,8 @@
 2001-03-02  Dominik Vogt  <dominik.vogt@gmx.de>
 
+	* FvwmButtons/FvwmButtons.c (SetTransparentBackground):
+	fixed uninitialised variable
+
 	* FvwmScript/FvwmScript.c (BuildGUI):
 	fixed core dump when WindowSize option was not used
 
