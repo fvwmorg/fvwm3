@@ -117,7 +117,7 @@
    . copied into items during parse
    . displayed in the customization dialog
    */
-static int colorset = 0;
+static int colorset = -1;
 static int itemcolorset = 0;
 
 /* prototypes */
