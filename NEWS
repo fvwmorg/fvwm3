@@ -1,5 +1,8 @@
 Changes in alpha release 2.3.0 (February 1999)
 
+* New utility xselection which can be used with PipeRead to feed the 
+  content of the X Selection as commands to fvwm.
+
 * Fvwm2 can now "take over" from a running (ICCCM 2 compliant) wm.
 * FvwmPager can now handle pixmaps as desk backgrounds.
 

@@ -4,6 +4,10 @@
 	windows which broke the shade/maximize "cooperation".
 
 1999-03-05  Matthias Clasen  <clasen@mathematik.uni-freiburg.de>
+        
+	* utils/xselection.c: new utility for using the X Selection
+	as commands to fvwm. 
+	* utils/Makefile.am (bin_PROGRAMS): add xselection.
 
 	* fvwm/session.c (SaveGlobalState): 
 	(LoadGlobalState): 

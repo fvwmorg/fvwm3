@@ -1,7 +1,7 @@
 ## Process this file with automake to create Makefile.in
 
-bin_PROGRAMS = @XPMROOT@
-EXTRA_PROGRAMS = xpmroot
+bin_PROGRAMS = @XPMROOT@ xselection
+EXTRA_PROGRAMS = xpmroot 
 
 man_MANS = xpmroot.1
 EXTRA_DIST = BuildXLockMenu fvwmrc_convert quantize_pixmaps $(man_MANS)
