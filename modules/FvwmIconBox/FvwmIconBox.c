@@ -894,7 +894,7 @@ void RedrawIcon(struct icon_info *item, int f, XEvent *evp)
 		{
 			if (item->icon_w > 0 && item->icon_h > 0)
 				RelieveRectangle(dpy, item->icon_pixmap_w,
-						 0, 0, 
+						 0, 0,
 						 item->icon_w + icon_relief - 1,
 						 item->icon_h + icon_relief - 1,
 						 IconReliefGC,
@@ -921,7 +921,7 @@ void RedrawIcon(struct icon_info *item, int f, XEvent *evp)
 			        sprintf(label, "(%s)", item->name);
 			else
 			        strcpy(label, item->name);
-		    
+
 		}
 		else
 		{
@@ -929,10 +929,10 @@ void RedrawIcon(struct icon_info *item, int f, XEvent *evp)
 		}
 
 		/* calculate the actual relief thickness */
-		title_relief = IS_ICONIFIED(item) ? 
+		title_relief = IS_ICONIFIED(item) ?
 			                iconified_title_relief :
 			                normal_title_relief;
-		
+
 
 		if (evp)
 		{
@@ -960,7 +960,7 @@ void RedrawIcon(struct icon_info *item, int f, XEvent *evp)
 		FwinString->gc =  NormalGC;
 		FwinString->x = lm;
 		FwinString->y = 1 + max(normal_title_relief,
-					iconified_title_relief) + 
+					iconified_title_relief) +
 		                Ffont->ascent;
 		if (cs >= 0)
 		{
@@ -971,19 +971,19 @@ void RedrawIcon(struct icon_info *item, int f, XEvent *evp)
 		{
 			FwinString->flags.has_colorset = False;
 		}
-		
 
-		
+
+
 		if (Hilite == item)
 		{
 			XRaiseWindow(dpy, item->IconWin);
 			XMoveResizeWindow(dpy, item->IconWin,
 					  item->x + min(0, (diff - 8))/2,
 					  item->y + h,
-					  max(tw + 4 + 2 * title_relief, w), 
-					  2 + 
+					  max(tw + 4 + 2 * title_relief, w),
+					  2 +
 					  2 * max(iconified_title_relief,
-						  normal_title_relief) + 
+						  normal_title_relief) +
 					  Ffont->height);
 			if (evp)
 			{
@@ -999,35 +999,35 @@ void RedrawIcon(struct icon_info *item, int f, XEvent *evp)
 			}
 			FlocaleDrawString(dpy, Ffont, FwinString, 0);
 
-			if((IS_ICONIFIED(item) && 
+			if((IS_ICONIFIED(item) &&
 			    !iconified_title_inverted_relief) ||
 			   (!IS_ICONIFIED(item) &&
 			    !normal_title_inverted_relief))
 			{
 			        RelieveRectangle(dpy, item->IconWin, 0, 0,
 						 max(tw + 4 + 2 * title_relief,
-						     w) 
+						     w)
 						 - 1,
-						 2 + 
-						 2 * 
+						 2 +
+						 2 *
 						 max(iconified_title_relief,
-						     normal_title_relief) + 
+						     normal_title_relief) +
 						 Ffont->height - 1,
-						 IconReliefGC, IconShadowGC, 
+						 IconReliefGC, IconShadowGC,
 						 title_relief);
 			}
 			else
 			{
 			         RelieveRectangle(dpy, item->IconWin, 0, 0,
 						 max(tw + 4 + 2 * title_relief,
-						     w) 
+						     w)
 						 - 1,
-						 2 + 
-						 2 * 
+						 2 +
+						 2 *
 						 max(iconified_title_relief,
-						     normal_title_relief) + 
+						     normal_title_relief) +
 						 Ffont->height - 1,
-						 IconShadowGC, IconReliefGC, 
+						 IconShadowGC, IconReliefGC,
 						 title_relief);
 			}
 		}
@@ -1036,10 +1036,10 @@ void RedrawIcon(struct icon_info *item, int f, XEvent *evp)
 		{
 			XMoveResizeWindow(dpy, item->IconWin,
 					  item->x, item->y + h,
-					  w, 
-					  2 + 
+					  w,
+					  2 +
 					  2 * max(iconified_title_relief,
-						  normal_title_relief) + 
+						  normal_title_relief) +
 					  Ffont->height);
 			if (evp)
 			{
@@ -1054,18 +1054,18 @@ void RedrawIcon(struct icon_info *item, int f, XEvent *evp)
 				XClearWindow(dpy, item->IconWin);
 			}
 			FlocaleDrawString(dpy, Ffont, FwinString, 0);
-			
-			if((IS_ICONIFIED(item) && 
+
+			if((IS_ICONIFIED(item) &&
 			    !iconified_title_inverted_relief) ||
 			   (!IS_ICONIFIED(item) &&
 			    !normal_title_inverted_relief))
 			{
 			        RelieveRectangle(dpy, item->IconWin, 0, 0,
 						 w - 1,
-						 2 + 
-						 2 * 
+						 2 +
+						 2 *
 						 max(iconified_title_relief,
-						     normal_title_relief) + 
+						     normal_title_relief) +
 						 Ffont->height - 1,
 						 IconReliefGC, IconShadowGC,
 						 title_relief );
@@ -1074,15 +1074,15 @@ void RedrawIcon(struct icon_info *item, int f, XEvent *evp)
 			{
 			        RelieveRectangle(dpy, item->IconWin, 0, 0,
 						 w - 1,
-						 2 + 
-						 2 * 
+						 2 +
+						 2 *
 						 max(iconified_title_relief,
-						     normal_title_relief) + 
+						     normal_title_relief) +
 						 Ffont->height - 1,
 						 IconShadowGC, IconReliefGC,
 						 title_relief );
 			}
-			
+
 		}
 		if (region)
 		{
@@ -1297,6 +1297,8 @@ void CreateWindow(void)
   XSizeHints mysizehints;
   XTextProperty name;
   XClassHint class_hints;
+  int wx = 0;
+  int wy = 0;
 
   h_margin = margin1*2 + bar_width + margin2 + 8;
   v_margin = margin1*2 + bar_width + margin2 + 8;
@@ -1319,8 +1321,9 @@ void CreateWindow(void)
 
   /* calculate the (maximal) width and height of an icon */
   UWidth = max_icon_width + icon_relief + interval;
-  UHeight = Ffont->height + 2 + 2 * max(normal_title_relief,iconified_title_relief) + 
-            max_icon_height + icon_relief + interval;
+  UHeight = Ffont->height + 2 +
+	  2 * max(normal_title_relief,iconified_title_relief) +
+	  max_icon_height + icon_relief + interval;
   Width = UWidth * num_columns + interval -1;
   Height = UHeight * num_rows + interval -1;
 
@@ -1338,21 +1341,21 @@ void CreateWindow(void)
   {
     if (xneg)
     {
-      mysizehints.x = DisplayWidth(dpy,screen) + geom_x - mysizehints.width;
+      wx = DisplayWidth(dpy,screen) + geom_x - mysizehints.width;
       gravity = NorthEastGravity;
     }
     else
     {
-      mysizehints.x = geom_x;
+      wx = geom_x;
     }
     if (yneg)
     {
-      mysizehints.y = DisplayHeight(dpy,screen) + geom_y - mysizehints.height;
+      wy = DisplayHeight(dpy,screen) + geom_y - mysizehints.height;
       gravity = SouthWestGravity;
     }
     else
     {
-      mysizehints.y = geom_y;
+      wy = geom_y;
     }
 
     if (xneg && yneg)
@@ -1361,6 +1364,8 @@ void CreateWindow(void)
     }
 
     mysizehints.flags |= USPosition;
+    /* hack to prevent mapping on wrong screen with StartsOnScreen */
+    FScreenMangleScreenIntoUSPosHints(FSCREEN_XYPOS, &mysizehints);
   }
 
   mysizehints.win_gravity = gravity;
@@ -1401,7 +1406,7 @@ void CreateWindow(void)
   attributes.background_pixel = back_pix;
   attributes.border_pixel = 0;
   attributes.colormap = Pcmap;
-  main_win = XCreateWindow(dpy, Root, mysizehints.x, mysizehints.y,
+  main_win = XCreateWindow(dpy, Root, wx, wy,
 			   mysizehints.width, mysizehints.height, 0, Pdepth,
 			   InputOutput, Pvisual,
 			   CWBackPixel | CWBorderPixel | CWColormap,
@@ -2012,8 +2017,8 @@ void ParseOptions(void)
 			   Clength+18) == 0)
       {
 	normal_title_relief = atoi(&tline[Clength+18]);
-      }	
-      
+      }
+
       else if (strncasecmp(tline, CatString3(
 			   "*", MyName, "IconifiedTitleRelief"),
 			   Clength+21) == 0)

@@ -48,6 +48,7 @@
 #include "libs/fvwmlib.h"
 #include "libs/Colorset.h"
 #include "libs/PictureBase.h"
+#include "libs/FScreen.h"
 
 #include "FvwmScroll.h"
 
@@ -89,6 +90,8 @@ void CreateWindow(int x,int y, int w, int h)
   XGCValues gcv;
   unsigned long gcm;
   XSetWindowAttributes attributes;
+  int wx;
+  int wy;
 
   wm_del_win = XInternAtom(dpy,"WM_DELETE_WINDOW",False);
   _XA_WM_PROTOCOLS = XInternAtom (dpy, "WM_PROTOCOLS", False);
@@ -127,8 +130,8 @@ void CreateWindow(int x,int y, int w, int h)
   target_height = h;
   mysizehints.width = Width;
   mysizehints.height = Height;
-  mysizehints.x = x;
-  mysizehints.y = y;
+  wx = x;
+  wy = y;
   mysizehints.max_width = w + BAR_WIDTH + PAD_WIDTH3;
   mysizehints.max_height = h + BAR_WIDTH + PAD_WIDTH3;
 
@@ -139,7 +142,7 @@ void CreateWindow(int x,int y, int w, int h)
     : Colorset[colorset].bg;
   attributes.border_pixel = 0;
   attributes.colormap = Pcmap;
-  main_win = XCreateWindow(dpy, Root, mysizehints.x, mysizehints.y,
+  main_win = XCreateWindow(dpy, Root, wx, wy,
 			   mysizehints.width, mysizehints.height, 0, Pdepth,
 			   InputOutput, Pvisual, CWBackingStore | CWBackPixel
 			   | CWBorderPixel | CWColormap, &attributes);
@@ -151,6 +154,8 @@ void CreateWindow(int x,int y, int w, int h)
 
   XSetWMProtocols(dpy,main_win,&wm_del_win,1);
 
+  /* hack to prevent mapping on wrong screen with StartsOnScreen */
+  FScreenMangleScreenIntoUSPosHints(FSCREEN_XYPOS, &mysizehints);
   XSetWMNormalHints(dpy,main_win,&mysizehints);
   XSelectInput(dpy,main_win,MW_EVENTS);
   change_window_name(MyName);
@@ -295,7 +300,7 @@ void LoopOnEvents(Window target)
 				exposed = 2;
 				RedrawWindow(target);
 			}
-			else if((Event.xbutton.y > Height - BAR_WIDTH - 
+			else if((Event.xbutton.y > Height - BAR_WIDTH -
 				 SCROLL_BAR_WIDTH-2) &&
 				(Event.xbutton.y < Height-BAR_WIDTH)&&
 				(Event.xbutton.x > Width-BAR_WIDTH))
@@ -311,7 +316,7 @@ void LoopOnEvents(Window target)
 				target_y_offset=
 					(Event.xbutton.y - PAD_WIDTH3-
 					 SCROLL_BAR_WIDTH)* target_height/
-					(Height-BAR_WIDTH-PAD_WIDTH3 - 
+					(Height-BAR_WIDTH-PAD_WIDTH3 -
 					 2*SCROLL_BAR_WIDTH);
 				if(target_y_offset+Height-BAR_WIDTH -PAD_WIDTH3 >
 				   target_height)
@@ -339,7 +344,7 @@ void LoopOnEvents(Window target)
 
 				if(target_x_offset + Width -BAR_WIDTH-PAD_WIDTH3>
 				   target_width)
-					target_x_offset = 
+					target_x_offset =
 						target_width - Width + BAR_WIDTH+
 						PAD_WIDTH3;
 				XMoveWindow(
@@ -530,7 +535,7 @@ void LoopOnEvents(Window target)
 
 				if(target_x_offset + Width-BAR_WIDTH-PAD_WIDTH3>
 				   target_width)
-					target_x_offset = 
+					target_x_offset =
 						target_width - Width + BAR_WIDTH+
 						PAD_WIDTH3;
 				XMoveWindow(
@@ -586,7 +591,7 @@ void LoopOnEvents(Window target)
 			}
 			else if (Event.xproperty.atom == _XA_WM_COLORMAP_WINDOWS)
 			{
-				/* ignore colormap stuff. The FvwmScroll window 
+				/* ignore colormap stuff. The FvwmScroll window
 				 * may have a different visual to the client and
 				 so cannot pass this on */
 			}

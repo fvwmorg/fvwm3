@@ -1,4 +1,14 @@
+2003-03-14  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* libs/FScreen.c:
+	removed debug output
+
 2003-03-13  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* libs/FScreen.c (FScreenMangleScreenIntoUSPosHints):
+	(FScreenFetchMangledScreenFromUSPosHints):
+	two functions to allow USPosition hints from modules and StartsOnScreen
+	work at the same time
 
 	* fvwm/conditional.c (direction_cmd):
 	Some fixes, reformatting and improvements.

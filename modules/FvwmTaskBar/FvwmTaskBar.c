@@ -558,6 +558,8 @@ void ProcessMessage(unsigned long type,unsigned long *body)
 	hints.base_width  = win_width;
 	hints.max_width   = win_width;
 
+	/* hack to prevent mapping on wrong screen with StartsOnScreen */
+	FScreenMangleScreenIntoUSPosHints(fscreen, &hints);
 	XSetWMNormalHints(dpy,win,&hints);
 
 	if (AutoStick)
@@ -2046,6 +2048,8 @@ void StartMeUp(void)
    int ret;
    int i;
    XSetWindowAttributes attr;
+   int wx;
+   int wy;
 
    if (!(dpy = XOpenDisplay(""))) {
      fprintf(stderr,"%s: can't open display %s", Module,
@@ -2071,7 +2075,7 @@ void StartMeUp(void)
      UpdateString(&geometry, "+0-0");
    /* evaluate further down */
    ret = FScreenParseGeometryWithScreen(
-     geometry, &hints.x, &hints.y, (unsigned int *)&hints.width,
+     geometry, &wx, &wy, (unsigned int *)&hints.width,
      (unsigned int *)&hints.height, &fscreen);
    FScreenGetScrRect(
      NULL, fscreen,
@@ -2114,24 +2118,24 @@ void StartMeUp(void)
    {
      if (AutoStick)
      {
-       if (-hints.y < Midline)
-	 hints.y = screen_g.height - (AutoHide ? VISIBLE_PIXELS() : win_height);
+       if (-wy < Midline)
+	 wy = screen_g.height - (AutoHide ? VISIBLE_PIXELS() : win_height);
        else
-	 hints.y = AutoHide ? VISIBLE_PIXELS() - win_height : 0;
-       hints.y += screen_g.y;
+	 wy = AutoHide ? VISIBLE_PIXELS() - win_height : 0;
+       wy += screen_g.y;
      }
      else
      {
-       hints.y += screen_g.height - win_height;
+       wy += screen_g.height - win_height;
      }
    }
    else if (AutoStick)
    {
-     if (hints.y < Midline)
-       hints.y = AutoHide ? VISIBLE_PIXELS() - win_height : 0;
+     if (wy < Midline)
+       wy = AutoHide ? VISIBLE_PIXELS() - win_height : 0;
      else
-       hints.y = screen_g.height - (AutoHide ? VISIBLE_PIXELS() : win_height);
-     hints.y += screen_g.y;
+       wy = screen_g.height - (AutoHide ? VISIBLE_PIXELS() : win_height);
+     wy += screen_g.y;
    }
 
    if (ret & XNegative)
@@ -2151,7 +2155,7 @@ void StartMeUp(void)
 
    hints.flags=USPosition|PPosition|USSize|PSize|PResizeInc|
      PWinGravity|PMinSize|PMaxSize|PBaseSize;
-   hints.x           = screen_g.x;
+   wx           = screen_g.x;
    hints.width       = win_width;
    hints.height      = win_height;
    hints.width_inc   = 1;
@@ -2163,8 +2167,8 @@ void StartMeUp(void)
    hints.base_width  = win_width;
    hints.base_height = RowHeight;
 
-   win_x = hints.x + win_border;
-   win_y = hints.y;
+   win_x = wx + win_border;
+   win_y = wy;
 
    if(Pdepth < 2) {
      back = PictureWhitePixel();
@@ -2192,7 +2196,7 @@ void StartMeUp(void)
      (colorset >= 0) ? Colorset[colorset].bg : back;
    attr.border_pixel = 0;
    attr.colormap = Pcmap;
-   win=XCreateWindow(dpy,Root,hints.x,hints.y,hints.width,hints.height,0,Pdepth,
+   win=XCreateWindow(dpy,Root,wx,wy,hints.width,hints.height,0,Pdepth,
 		     InputOutput,Pvisual,CWBackPixel|CWBorderPixel|CWColormap,
 		     &attr);
 
@@ -2212,6 +2216,8 @@ void StartMeUp(void)
       fprintf(stderr,"%s: Failed to convert name to XText\n",Module);
       exit(1);
     }
+    /* hack to prevent mapping on wrong screen with StartsOnScreen */
+    FScreenMangleScreenIntoUSPosHints(fscreen, &hints);
     XSetWMProperties(dpy,win,&nametext,&nametext,
 		     NULL,0,&hints,NULL,&classhints);
     XFree(nametext.value);

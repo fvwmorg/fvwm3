@@ -98,10 +98,6 @@ typedef struct
 #endif
 #endif
 
-#ifndef DEBUG_PRINTS
-/* #define DEBUG_PRINTS 1 */
-#endif
-
 enum
 {
 	/* Replace with FSCREEN_GLOBAL to restore default behaviour */
@@ -686,7 +682,7 @@ static int FindScreenOfXY(int x, int y)
 }
 
 static int FindScreen(
-	fscreen_scr_arg *arg, int screen)
+	fscreen_scr_arg *arg, fscreen_scr_t screen)
 {
 	fscreen_scr_arg tmp;
 
@@ -753,7 +749,8 @@ static int FindScreen(
  * one screen is configured.  Otherwise it returns True.
  */
 Bool FScreenGetScrRect(
-	fscreen_scr_arg *arg, int screen, int *x, int *y, int *w, int *h)
+	fscreen_scr_arg *arg, fscreen_scr_t screen, int *x, int *y, int *w,
+	int *h)
 {
 	screen = FindScreen(arg, screen);
 	if (screen < first_to_check || screen > last_to_check)
@@ -782,7 +779,7 @@ Bool FScreenGetScrRect(
 
 /* returns the screen id */
 Bool FScreenGetScrId(
-	fscreen_scr_arg *arg, int screen)
+	fscreen_scr_arg *arg, fscreen_scr_t screen)
 {
 	screen = FindScreen(arg, screen);
 	if (screen < 0)
@@ -797,8 +794,8 @@ Bool FScreenGetScrId(
  * screen_src to coordinates on the screen specified by arg_dest and
  * screen_dest. (see FScreenGetScrRect for more details). */
 void FScreenTranslateCoordinates(
-	fscreen_scr_arg *arg_src, int screen_src,
-	fscreen_scr_arg *arg_dest, int screen_dest,
+	fscreen_scr_arg *arg_src, fscreen_scr_t screen_src,
+	fscreen_scr_arg *arg_dest, fscreen_scr_t screen_dest,
 	int *x, int *y)
 {
 	int x_src;
@@ -823,7 +820,8 @@ void FScreenTranslateCoordinates(
 
 /* Arguments work exactly like for FScreenGetScrRect() */
 int FScreenClipToScreen(
-	fscreen_scr_arg *arg, int screen, int *x, int *y, int w, int h)
+	fscreen_scr_arg *arg, fscreen_scr_t screen, int *x, int *y, int w,
+	int h)
 {
 	int sx;
 	int sy;
@@ -869,7 +867,8 @@ int FScreenClipToScreen(
 
 /* Arguments work exactly like for FScreenGetScrRect() */
 void FScreenCenterOnScreen(
-	fscreen_scr_arg *arg, int screen, int *x, int *y, int w, int h)
+	fscreen_scr_arg *arg, fscreen_scr_t screen, int *x, int *y, int w,
+	int h)
 {
 	int sx;
 	int sy;
@@ -942,7 +941,7 @@ void FScreenGetResistanceRect(int wx, int wy, int ww, int wh,
 
 /* Arguments work exactly like for FScreenGetScrRect() */
 Bool FScreenIsRectangleOnScreen(
-	fscreen_scr_arg *arg, int screen, rectangle *rec)
+	fscreen_scr_arg *arg, fscreen_scr_t screen, rectangle *rec)
 {
 	int sx;
 	int sy;
@@ -1010,7 +1009,7 @@ static int FScreenParseScreenBit(char *scr_spec, char default_screen)
 	return scr;
 }
 
-int FScreenGetScreenArgument(char *scr_spec, char default_screen)
+int FScreenGetScreenArgument(char *scr_spec, fscreen_scr_spec_t default_screen)
 {
 	while (scr_spec && isspace(*scr_spec))
 	{
@@ -1025,7 +1024,7 @@ int FScreenGetScreenArgument(char *scr_spec, char default_screen)
  *     Does the same as XParseGeometry, but handles additional "@scr".
  *     Since it isn't safe to define "ScreenValue" constant (actual values
  *     of other "XXXValue" are specified in Xutil.h, not by us, so there can
- *     be a clash), the screen value is always returned, event if it wasn't
+ *     be a clash), the screen value is always returned, even if it wasn't
  *     present in `parse_string' (set to default in that case).
  *
  */
@@ -1049,26 +1048,13 @@ int FScreenParseGeometryWithScreen(
 	memcpy(copy, parsestring, s_size);
 	scr_p = strchr(copy, '@');
 	if (scr_p != NULL)
+	{
 		*scr_p++ = '\0';
+	}
 
 	/* Do the parsing */
 	ret = XParseGeometry(
 		copy, x_return, y_return, width_return, height_return);
-
-#if DEBUG_PRINTS
-	fprintf(stderr,
-		"copy=%s, scr_p=%s, x=%d, y=%d, w=%d, h=%d,"
-		" flags:%s%s%s%s%s%s\n",
-		copy, (scr_p)?scr_p:"(null)", *x_return, *y_return,
-		*width_return,
-		*height_return,
-		ret&XValue?      " XValue":"",
-		ret&YValue?      " YValue":"",
-		ret&WidthValue?  " WidthValue":"",
-		ret&HeightValue? " HeightValue":"",
-		ret&XNegative?   " XNegative":"",
-		ret&YNegative?   " YNegative":"");
-#endif
 
 	/* Parse the "@scr", if any */
 	scr = FScreenParseScreenBit(scr_p, FSCREEN_SPEC_PRIMARY);
@@ -1146,16 +1132,6 @@ int FScreenParseGeometry(
 			}
 		}
 	}
-#if DEBUG_PRINTS
-	fprintf(stderr, "*** xpg: x=%d, y=%d, w=%d, h=%d, flags:%s%s%s%s%s%s\n",
-		*x_return, *y_return, *width_return, *height_return,
-		rc&XValue?      " XValue":"",
-		rc&YValue?      " YValue":"",
-		rc&WidthValue?  " WidthValue":"",
-		rc&HeightValue? " HeightValue":"",
-		rc&XNegative?   " XNegative":"",
-		rc&YNegative?   " YNegative":"");
-#endif
 
 	return rc;
 }
@@ -1231,11 +1207,6 @@ int FScreenGetGeometry(
 		scr_h = screens[scr].height;
 	}
 
-#if DEBUG_PRINTS
-	fprintf(stderr, "scr=%d, (%d,%d,%d,%d)\n", scr, scr_x, scr_y, scr_w,
-		scr_h);
-#endif
-
 	/* III. Interpret and fill in the values */
 
 	/* Fill in dimensions for future negative calculations if
@@ -1266,17 +1237,6 @@ int FScreenGetGeometry(
 			h = 0;
 		}
 	}
-
-#if DEBUG_PRINTS
-	fprintf(stderr, "PRE: x=%d, y=%d, w=%d, h=%d, flags:%s%s%s%s%s%s\n",
-		x, y, w, h,
-		ret&XValue?      " XValue":"",
-		ret&YValue?      " YValue":"",
-		ret&WidthValue?  " WidthValue":"",
-		ret&HeightValue? " HeightValue":"",
-		ret&XNegative?   " XNegative":"",
-		ret&YNegative?   " YNegative":"");
-#endif
 
 	/* Advance coords to the screen... */
 	x += scr_x;
@@ -1351,18 +1311,60 @@ int FScreenGetGeometry(
 	if (hints != NULL  &&  ret & XValue  &&  ret & YValue)
 		hints->flags |= USPosition;
 
-#if DEBUG_PRINTS
-	fprintf(stderr, "x=%d, y=%d, w=%d, h=%d, flags:%s%s%s%s%s%s\n",
-		x, y, w, h,
-		ret&XValue?      " XValue":"",
-		ret&YValue?      " YValue":"",
-		ret&WidthValue?  " WidthValue":"",
-		ret&HeightValue? " HeightValue":"",
-		ret&XNegative?   " XNegative":"",
-		ret&YNegative?   " YNegative":"");
-#endif
-
 	return ret;
+}
+
+/*  FScreenMangleScreenIntoUSPosHints
+ *      A hack to mangle the screen number into the XSizeHints structure.
+ *      If the USPosition flag is set, hints->x is set to the magic number and
+ *      hints->y is set to the screen number.  If the USPosition flag is clear,
+ *      x and y are set to zero.
+ *
+ *  Note:  This is a *hack* to allow modules to specify the target screen for
+ *  their windows and have the StartsOnScreen style set for them at the same
+ *  time.  Do *not* rely on the mechanism described above.
+ */
+void FScreenMangleScreenIntoUSPosHints(fscreen_scr_t screen, XSizeHints *hints)
+{
+	if (hints->flags & USPosition)
+	{
+		hints->x = FSCREEN_MANGLE_USPOS_HINTS_MAGIC;
+		hints->y = (short)screen;
+	}
+	else
+	{
+		hints->x = 0;
+		hints->y = 0;
+	}
+
+	return;
+}
+
+/*  FScreenMangleScreenIntoUSPosHints
+ *      A hack to mangle the screen number into the XSizeHints structure.
+ *      If the USPosition flag is set, hints->x is set to the magic number and
+ *      hints->y is set to the screen spec.  If the USPosition flag is clear,
+ *      x and y are set to zero.
+ *
+ *  Note:  This is a *hack* to allow modules to specify the target screen for
+ *  their windows and have the StartsOnScreen style set for them at the same
+ *  time.  Do *not* rely on the mechanism described above.
+ */
+fscreen_scr_t FScreenFetchMangledScreenFromUSPosHints(XSizeHints *hints)
+{
+	fscreen_scr_t screen;
+
+	if ((hints->flags & USPosition) &&
+	    hints->x == FSCREEN_MANGLE_USPOS_HINTS_MAGIC)
+	{
+		screen = (fscreen_scr_t)(hints->y);
+	}
+	else
+	{
+		screen = FSCREEN_GLOBAL;
+	}
+
+	return screen;
 }
 
 
@@ -1417,15 +1419,6 @@ Bool FScreenHandleRandrEvent(
 	*new_w = nw;
 	screens[0].height = nh;
 	*new_h = nh;
-
-#ifdef DEBUG_PRINTS
-	fprintf(stderr, "HandleRandrEvent(): rot=%d, old=%d*%d, new=%d*%d,"
-		" d=%d*%d\n",
-		ev->rotation,
-		*old_w, *old_h, *new_w, *new_h,
-		DisplayWidth(disp, DefaultScreen(disp)),
-		DisplayHeight(disp, DefaultScreen(disp)));
-#endif
 
 	return (nw != *old_w  ||  nh != *old_h);
 #endif

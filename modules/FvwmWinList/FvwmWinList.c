@@ -93,8 +93,6 @@ Display *dpy;
 Window Root;
 Window  win;
 int screen;
-XSizeHints g_hints;
-int g_hints_rc;
 int fscreen;
 rectangle screen_g;
 Pixel back[MAX_COLOUR_SETS];
@@ -1187,6 +1185,8 @@ void MakeMeWindow(void)
   unsigned long gcmask;
   unsigned int dummy1, dummy2;
   int x, y, ret, count;
+  int wx;
+  int wy;
   Window dummyroot, dummychild;
   int i;
   XSetWindowAttributes attr;
@@ -1207,35 +1207,35 @@ void MakeMeWindow(void)
     fscreen_scr_arg fscr;
 
     if (FQueryPointer(
-	  dpy, Root, &dummyroot, &dummychild, &hints.x, &hints.y, &x, &y,
+	  dpy, Root, &dummyroot, &dummychild, &wx, &wy, &x, &y,
 	  &dummy1) == False)
     {
       /* pointer is on a different screen */
-      hints.x = 0;
-      hints.y = 0;
+      wx = 0;
+      wy = 0;
     }
-    fscr.xypos.x = hints.x;
-    fscr.xypos.y = hints.y;
+    fscr.xypos.x = wx;
+    fscr.xypos.y = wy;
     FScreenGetScrRect(
       &fscr, FSCREEN_XYPOS,
       &screen_g.x, &screen_g.y, &screen_g.width, &screen_g.height);
-    hints.x -= hints.width / 2;
-    hints.y -= buttonheight / 2;
-    if (hints.x + hints.width > screen_g.x + screen_g.width)
+    wx -= hints.width / 2;
+    wy -= buttonheight / 2;
+    if (wx + hints.width > screen_g.x + screen_g.width)
     {
-      hints.x = screen_g.x + screen_g.width - hints.width;
+      wx = screen_g.x + screen_g.width - hints.width;
     }
-    if (hints.x < screen_g.x)
+    if (wx < screen_g.x)
     {
-      hints.x = screen_g.x;
+      wx = screen_g.x;
     }
-    if (hints.y + hints.height > screen_g.y + screen_g.height)
+    if (wy + hints.height > screen_g.y + screen_g.height)
     {
-      hints.y = screen_g.y + screen_g.height - hints.height;
+      wy = screen_g.y + screen_g.height - hints.height;
     }
-    if (hints.y < screen_g.y)
+    if (wy < screen_g.y)
     {
-      hints.y = screen_g.y;
+      wy = screen_g.y;
     }
     hints.win_gravity = NorthWestGravity;
     hints.flags |= USPosition;
@@ -1247,16 +1247,16 @@ void MakeMeWindow(void)
     hints.win_gravity=NorthWestGravity;
     if ((ret & XValue) && (ret & YValue))
     {
-      hints.x = x;
-      hints.y = y;
+      wx = x;
+      wy = y;
       if (ret & XNegative)
       {
-	hints.x += XDisplayWidth(dpy,screen) - win_width;
+	wx += XDisplayWidth(dpy,screen) - win_width;
 	hints.win_gravity=NorthEastGravity;
       }
       if (ret & YNegative)
       {
-	hints.y += XDisplayHeight(dpy,screen) - win_height;
+	wy += XDisplayHeight(dpy,screen) - win_height;
 	if (ret & XNegative)
 	{
 	  hints.win_gravity=SouthEastGravity;
@@ -1280,8 +1280,8 @@ void MakeMeWindow(void)
 #endif
   }
 
-  win_x = hints.x;
-  win_y = hints.y;
+  win_x = wx;
+  win_y = wy;
   win_grav = hints.win_gravity;
 
 
@@ -1318,7 +1318,7 @@ void MakeMeWindow(void)
   attr.background_pixmap = win_bg;
   attr.border_pixel = 0;
   attr.colormap = Pcmap;
-  win=XCreateWindow(dpy, Root, hints.x, hints.y, hints.width, hints.height, 0,
+  win=XCreateWindow(dpy, Root, wx, wy, hints.width, hints.height, 0,
 		    Pdepth, InputOutput, Pvisual,
 		    CWBackPixmap | CWBorderPixel | CWColormap, &attr);
   if (Transient)
@@ -1455,14 +1455,6 @@ void MakeMeWindow(void)
       fprintf(stderr,"failed to grab pointer\n");
       exit(1);
     }
-    if (FQueryPointer(
-	  dpy, Root, &dummyroot, &dummychild, &hints.x, &hints.y, &x, &y,
-	  &dummy1) == False)
-    {
-      /* pointer is on a different screen */
-      hints.x = 0;
-      hints.y = 0;
-    }
     Pressed = !!SomeButtonDown(dummy1);
   }
 }
@@ -1478,7 +1470,6 @@ void StartMeUp_I(void)
       XDisplayName(""));
     exit (1);
   }
-XSynchronize(dpy, 1);
   PictureInitCMap(dpy);
   FScreenInit(dpy);
   AllocColorset(0);
@@ -1494,6 +1485,8 @@ XSynchronize(dpy, 1);
 
 void StartMeUp_II(void)
 {
+  XSizeHints g_hints;
+  int g_hints_rc;
 
   if (geometry == NULL)
     UpdateString(&geometry, "");

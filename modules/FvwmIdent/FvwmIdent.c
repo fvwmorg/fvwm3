@@ -815,8 +815,6 @@ void list_end(void)
 				mysizehints.win_gravity = NorthEastGravity;
 		}
 	}
-	mysizehints.x = x;
-	mysizehints.y = y;
 
 	if (Pdepth < 2)
 	{
@@ -841,6 +839,8 @@ void list_end(void)
 	wm_del_win = XInternAtom(dpy,"WM_DELETE_WINDOW",False);
 	XSetWMProtocols(dpy,main_win,&wm_del_win,1);
 
+	/* hack to prevent mapping on wrong screen with StartsOnScreen */
+	FScreenMangleScreenIntoUSPosHints(FSCREEN_XYPOS, &mysizehints);
 	XSetWMNormalHints(dpy,main_win,&mysizehints);
 	/* have to ask for configure events when transparent */
 	if (CSET_IS_TRANSPARENT(colorset))

@@ -1032,11 +1032,19 @@ Bool PlaceWindow(
 
     if (SUSE_START_ON_SCREEN(sflags) && flags.do_honor_starts_on_screen)
     {
+      fscreen_scr_t mangle_screen;
+
       /*
        * If StartsOnScreen has been given for a window, translate its
        * USPosition so that it is relative to that particular screen.
        * If we don't do this, then a geometry would completely cancel
        * the effect of the StartsOnScreen style.
+       *
+       * However, some applications try to remember their position.  This would
+       * break if these were translated to screen coordinates.  There is no
+       * reliable way to do it.  Currently, if the desired place does not
+       * intersect the target screen, we assume the window position must be
+       * adjusted to the screen origin.
        *
        * So there are two ways to get a window to pop up on a particular
        * Xinerama screen.  1: The intuitive way giving a geometry hint
@@ -1046,8 +1054,24 @@ Bool PlaceWindow(
        * the geometry hint in terms of the global screen.
        */
 
-      FScreenTranslateCoordinates(
-	NULL, XineramaScreen, NULL, FSCREEN_GLOBAL, &attr_g->x, &attr_g->y);
+      mangle_screen = FScreenFetchMangledScreenFromUSPosHints(&(fw->hints));
+      if (mangle_screen != FSCREEN_GLOBAL)
+      {
+	/* whoever set this hint knew exactly what he was doing; so ignore the
+	 * StartsOnScreen style */
+	flags.do_honor_starts_on_screen = 0;
+      }
+      else if (attr_g->x + attr_g->width < screen_g.x ||
+	  attr_g->x >= screen_g.x + screen_g.width ||
+	  attr_g->y + attr_g->height < screen_g.y ||
+	  attr_g->y >= screen_g.y + screen_g.height)
+      {
+	/* desired coordinates do not intersect the target screen.  Let's
+	 * assume the application specified global coordinates and translate
+	 * them to the screen. */
+	FScreenTranslateCoordinates(
+	  NULL, XineramaScreen, NULL, FSCREEN_GLOBAL, &attr_g->x, &attr_g->y);
+      }
     }
 
     /*

@@ -8,6 +8,14 @@ Changes in development release 2.5.7 (not released yet)
 * In FvwmIconMan, windows can move from one manager to another
   acoording to the managers' Resolution options.
 
+* In order to fix a problem with StartsOnScreen and applications
+  that set a user specified position hint, the StartsOnScreen style
+  no longer works for the following modules:  FvwmBanner,
+  FvwmButtons, FvwmDragWell, FvwmIconBox, FvwmIconMan, FvwmIdent,
+  FvwmPager, FvwmScroll, FvwmTaskBar, FvwmWharf, FvwmWinList.  Use
+  the '@<screen>' bit in the module geometry specification where
+  applicable.
+
 -------------------------------------------------------------------
 
 Changes in development release 2.5.6 (28-Feb-2003)

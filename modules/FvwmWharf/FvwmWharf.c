@@ -1410,6 +1410,8 @@ void CreateWindow(void)
 {
   int first_avail_button,i;
   XSetWindowAttributes attr;
+  int wx = 0;
+  int wy = 0;
 
   _XA_WM_DEL_WIN = XInternAtom(dpy,"WM_DELETE_WINDOW",False);
   _XA_WM_PROTOCOLS = XInternAtom (dpy, "WM_PROTOCOLS", False);
@@ -1454,21 +1456,21 @@ void CreateWindow(void)
   {
     if (flags & XNegative)
     {
-      mysizehints.x = DisplayWidth(dpy,screen) + x - mysizehints.width;
+      wx = DisplayWidth(dpy,screen) + x - mysizehints.width;
       gravity = NorthEastGravity;
     }
     else
     {
-      mysizehints.x = x;
+      wx = x;
     }
     if (flags & YNegative)
     {
-      mysizehints.y = DisplayHeight(dpy,screen) + y - mysizehints.height;
+      wy = DisplayHeight(dpy,screen) + y - mysizehints.height;
       gravity = SouthWestGravity;
     }
     else
     {
-      mysizehints.y = y;
+      wy = y;
     }
 
     if ((flags & XNegative) && (flags & YNegative))
@@ -1484,7 +1486,7 @@ void CreateWindow(void)
   attr.border_pixel = 0;
   attr.colormap = Pcmap;
   XDestroyWindow(dpy, main_win);
-  main_win = XCreateWindow(dpy,Root,mysizehints.x,mysizehints.y,
+  main_win = XCreateWindow(dpy,Root,wx,wy,
 			   mysizehints.width,mysizehints.height,
 			   0,Pdepth,InputOutput,Pvisual,
 			   CWBackPixel|CWBorderPixel|CWColormap,&attr);
@@ -1510,6 +1512,8 @@ void CreateWindow(void)
 				   BUTTONHEIGHT*Folders[i].cols,0,Pdepth,
 				   InputOutput,Pvisual,
 				   CWBackPixel|CWBorderPixel|CWColormap,&attr);
+    /* hack to prevent mapping on wrong screen with StartsOnScreen */
+    FScreenMangleScreenIntoUSPosHints(FSCREEN_XYPOS, &mysizehints);
     XSetWMNormalHints(dpy,Folders[i].win,&mysizehints);
     XSelectInput(dpy, Folders[i].win, MW_EVENTS);
   }

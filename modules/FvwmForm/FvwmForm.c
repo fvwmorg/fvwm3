@@ -1498,7 +1498,7 @@ void RedrawFrame(XEvent *pev)
 	if (pev)
 	{
 		XRectangle r;
-	
+
 		r.x = pev->xexpose.x;
 		r.y =  pev->xexpose.y;
 		r.width = pev->xexpose.width;
@@ -2082,6 +2082,7 @@ static void OpenWindows ()
   static XSizeHints sh =
     { PPosition | PSize | USPosition | USSize | PWinGravity};
   XClassHint myclasshints;
+  fscreen_scr_t scr;
 
   if (!CF.pointer[input_pointer]) {
     CF.pointer[input_pointer] = XCreateFontCursor(dpy, XC_xterm);
@@ -2155,10 +2156,14 @@ static void OpenWindows ()
     {
       gravity = SouthEastGravity;
     }
+    scr = FSCREEN_XYPOS;
   } else {
     FScreenCenterOnScreen(
       NULL, FSCREEN_CURRENT, &x, &y, CF.max_width, CF.total_height);
+    scr = FSCREEN_CURRENT;
   }
+  /* hack to prevent mapping on wrong screen with StartsOnScreen */
+  FScreenMangleScreenIntoUSPosHints(FSCREEN_CURRENT, &sh);
   xswa.background_pixel = CF.screen_background;
   xswa.border_pixel = 0;
   xswa.colormap = Pcmap;
@@ -2181,8 +2186,6 @@ static void OpenWindows ()
   myclasshints.res_name = MyName+1;
   myclasshints.res_class = "FvwmForm";
   XSetClassHint(dpy,CF.frame,&myclasshints);
-  sh.x = x;
-  sh.y = y;
   sh.width = CF.max_width;
   sh.height = CF.total_height;
   sh.win_gravity = gravity;

@@ -111,6 +111,8 @@ int main(int argc, char **argv)
   struct timeval value;
   int fd[2];
   XSetWindowAttributes attr;
+  int wx;
+  int wy;
 
   /* Save our program  name - for error messages */
   string = strrchr (argv[0], '/');
@@ -211,8 +213,8 @@ int main(int argc, char **argv)
   mysizehints.win_gravity = NorthWestGravity;
 
   FScreenCenterOnScreen(
-    NULL, FSCREEN_PRIMARY, &mysizehints.x, &mysizehints.y,
-    view.width, view.height);
+    NULL, FSCREEN_PRIMARY, &wx, &wy, view.width, view.height);
+  FScreenMangleScreenIntoUSPosHints(FSCREEN_PRIMARY, &mysizehints);
 
   wm_del_win = XInternAtom(dpy,"WM_DELETE_WINDOW",False);
   XSetWMProtocols(dpy,win,&wm_del_win,1);
@@ -220,8 +222,7 @@ int main(int argc, char **argv)
   XSetWMNormalHints(dpy,win,&mysizehints);
   change_window_name("FvwmBanner");
 
-  XMoveResizeWindow(dpy, win, mysizehints.x, mysizehints.y, mysizehints.width,
-		    mysizehints.height);
+  XMoveResizeWindow(dpy, win, wx, wy, mysizehints.width, mysizehints.height);
 
   if (FHaveShapeExtension && view.mask != None)
     FShapeCombineMask(dpy, win, FShapeBounding, 0, 0, view.mask, FShapeSet);

@@ -3,21 +3,21 @@
 
 /* needs X11/Xlib.h and X11/Xutil.h */
 
-enum
+typedef enum
 {
 	FSCREEN_GLOBAL  = -1,
 	FSCREEN_CURRENT = -2,
 	FSCREEN_PRIMARY = -3,
 	FSCREEN_XYPOS   = -4
-};
+} fscreen_scr_t;
 
-enum
+typedef enum
 {
 	FSCREEN_SPEC_GLOBAL = 'g',
 	FSCREEN_SPEC_CURRENT = 'c',
 	FSCREEN_SPEC_PRIMARY = 'p',
 	FSCREEN_SPEC_WINDOW = 'w'
-};
+} fscreen_scr_spec_t;
 
 typedef union
 {
@@ -28,6 +28,9 @@ typedef union
 		int y;
 	} xypos;
 } fscreen_scr_arg;
+
+#define FSCREEN_MANGLE_USPOS_HINTS_MAGIC ((short)-32109)
+
 
 /* Control */
 Bool FScreenIsEnabled(void);
@@ -47,26 +50,29 @@ void FScreenSetPrimaryScreen(int scr);
 
 /* Screen info */
 Bool FScreenGetScrRect(
-	fscreen_scr_arg *arg, int screen, int *x, int *y, int *w, int *h);
+	fscreen_scr_arg *arg, fscreen_scr_t screen, int *x, int *y, int *w,
+	int *h);
 Bool FScreenGetScrId(
-	fscreen_scr_arg *arg, int screen);
+	fscreen_scr_arg *arg, fscreen_scr_t screen);
 void FScreenTranslateCoordinates(
-	fscreen_scr_arg *arg_src, int screen_src,
-	fscreen_scr_arg *arg_dest, int screen_dest,
+	fscreen_scr_arg *arg_src, fscreen_scr_t screen_src,
+	fscreen_scr_arg *arg_dest, fscreen_scr_t screen_dest,
 	int *x, int *y);
 void FScreenGetResistanceRect(
 	int wx, int wy, int ww, int wh, int *x0, int *y0, int *x1, int *y1);
 Bool FScreenIsRectangleOnScreen(
-	fscreen_scr_arg *arg, int screen, rectangle *rec);
+	fscreen_scr_arg *arg, fscreen_scr_t screen, rectangle *rec);
 
 /* Clipping/positioning */
 int FScreenClipToScreen(
-	fscreen_scr_arg *arg, int screen, int *x, int *y, int w, int h);
+	fscreen_scr_arg *arg, fscreen_scr_t screen, int *x, int *y, int w,
+	int h);
 void FScreenCenterOnScreen(
-	fscreen_scr_arg *arg, int screen, int *x, int *y, int w, int h);
+	fscreen_scr_arg *arg, fscreen_scr_t screen, int *x, int *y, int w,
+	int h);
 
 /* Geometry management */
-int FScreenGetScreenArgument(char *scr_spec, char default_screen);
+int FScreenGetScreenArgument(char *scr_spec, fscreen_scr_spec_t default_screen);
 int FScreenParseGeometryWithScreen(
 	char *parsestring, int *x_return, int *y_return,
 	unsigned int *width_return, unsigned int *height_return,
@@ -77,6 +83,8 @@ int FScreenParseGeometry(
 int  FScreenGetGeometry(
 	char *parsestring, int *x_return, int *y_return,
 	int *width_return, int *height_return, XSizeHints *hints, int flags);
+void FScreenMangleScreenIntoUSPosHints(fscreen_scr_t screen, XSizeHints *hints);
+fscreen_scr_t FScreenFetchMangledScreenFromUSPosHints(XSizeHints *hints);
 
 /* RandR support */
 int  FScreenGetRandrEventType(void);

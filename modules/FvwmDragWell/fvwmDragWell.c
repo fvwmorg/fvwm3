@@ -902,8 +902,8 @@ void createWindow()
   if (xg.usposition)
   {
     xg.sizehints.flags |= USPosition;
-    xg.sizehints.x = xg.x;
-    xg.sizehints.y = xg.y;
+    /* hack to prevent mapping on wrong screen with StartsOnScreen */
+    FScreenMangleScreenIntoUSPosHints(FSCREEN_XYPOS, &xg.sizehints);
   }
 
   valuemask = (CWBackPixmap | CWBorderPixel| CWColormap);

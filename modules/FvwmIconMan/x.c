@@ -301,7 +301,7 @@ void xevent_loop (void)
 	      if (globals.transient) {
 		      grab_pointer (man);
 	      }
-	      
+
 	      ex = ey = 10000;
 	      ex2 = ey2 = 0;
       }
@@ -387,7 +387,7 @@ void xevent_loop (void)
 	      if (man->geometry.dir & GROW_FIXED)
 	      {
 		      man->geometry.rows =
-			      theEvent.xconfigure.height / 
+			      theEvent.xconfigure.height /
 			      man->geometry.boxheight;
 		      if (man->geometry.rows < 1)
 		      {
@@ -413,7 +413,7 @@ void xevent_loop (void)
 	      }
 	      else
 	      {
-		      recreate_bg = False; 
+		      recreate_bg = False;
 	      }
       }
 
@@ -825,6 +825,7 @@ void create_manager_window (int man_id)
   int join_style = JoinRound;
   int i;
   WinManager *man;
+  fscreen_scr_t scr;
   ConsoleDebug (X11, "In create_manager_window\n");
 
   man = &globals.managers[man_id];
@@ -891,6 +892,7 @@ void create_manager_window (int man_id)
       &fscr, FSCREEN_XYPOS,
       &man->managed_g.x, &man->managed_g.y,
       &man->managed_g.width, &man->managed_g.height);
+    scr = FSCREEN_XYPOS;
   }
   else
   {
@@ -898,12 +900,15 @@ void create_manager_window (int man_id)
       NULL, FSCREEN_GLOBAL,
       &man->managed_g.x, &man->managed_g.y,
       &man->managed_g.width, &man->managed_g.height);
+    scr = FSCREEN_GLOBAL;
   }
 
   man->theWindow = XCreateWindow(theDisplay, theRoot, sizehints.x, sizehints.y,
 				 man->geometry.width, man->geometry.height,
 				 0, Pdepth, InputOutput, Pvisual, winattrmask,
 				 &winattr);
+  /* hack to prevent mapping on wrong screen with StartsOnScreen */
+  FScreenMangleScreenIntoUSPosHints(scr, &sizehints);
   XSetWMNormalHints(theDisplay, man->theWindow, &sizehints);
   FShapeSelectInput (theDisplay, man->theWindow, FShapeNotifyMask);
   if (globals.transient)

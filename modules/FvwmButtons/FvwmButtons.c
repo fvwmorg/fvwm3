@@ -1761,8 +1761,8 @@ static void HandlePanelPress(button_info *b)
     mysizehints.flags = 0;
     XGetWMNormalHints(Dpy, b->PanelWin, &mysizehints, &supplied);
     mysizehints.flags |= USPosition;
-    mysizehints.x = 32767;
-    mysizehints.y = 32767;
+    /* hack to prevent mapping panels on wrong screen with StartsOnScreen */
+    FScreenMangleScreenIntoUSPosHints(FSCREEN_XYPOS, &mysizehints);
     XSetWMNormalHints(Dpy, b->PanelWin, &mysizehints);
     /* make sure its not mapped as an icon */
     wmhints.flags = StateHint;
@@ -1896,6 +1896,8 @@ void CreateUberButtonWindow(button_info *ub,int maxx,int maxy)
   XGCValues gcv;
   unsigned long gcm;
   XClassHint myclasshints;
+  int wx;
+  int wy;
 
   x = UberButton->x; /* Geometry x where to put the panel */
   y = UberButton->y; /* Geometry y where to put the panel */
@@ -1937,34 +1939,36 @@ void CreateUberButtonWindow(button_info *ub,int maxx,int maxy)
 #ifdef DEBUG_INIT
   fprintf(stderr,"gravity...");
 #endif
-  mysizehints.x=0;
-  mysizehints.y=0;
+  wx=0;
+  wy=0;
   if(x > -100000)
   {
     if (xneg)
     {
-      mysizehints.x = DisplayWidth(Dpy,screen) + x - mysizehints.width;
+      wx = DisplayWidth(Dpy,screen) + x - mysizehints.width;
       gravity = NorthEastGravity;
     }
     else
-      mysizehints.x = x;
+      wx = x;
     if (yneg)
     {
-      mysizehints.y = DisplayHeight(Dpy,screen) + y - mysizehints.height;
+      wy = DisplayHeight(Dpy,screen) + y - mysizehints.height;
       gravity = SouthWestGravity;
     }
     else
-      mysizehints.y = y;
+      wy = y;
     if(xneg && yneg)
       gravity = SouthEastGravity;
     mysizehints.flags |= USPosition;
+    /* hack to prevent mapping panels on wrong screen with StartsOnScreen */
+    FScreenMangleScreenIntoUSPosHints(FSCREEN_XYPOS, &mysizehints);
   }
   mysizehints.win_gravity = gravity;
 
 #ifdef DEBUG_INIT
   if(mysizehints.flags&USPosition)
     fprintf(stderr,"create(%i,%i,%u,%u,1,%u,%u)...",
-	    mysizehints.x,mysizehints.y,
+	    wx,wy,
 	    mysizehints.width,mysizehints.height,
 	    (ushort)fore_pix,(ushort)back_pix);
   else
@@ -1973,7 +1977,7 @@ void CreateUberButtonWindow(button_info *ub,int maxx,int maxy)
 	    (ushort)fore_pix,(ushort)back_pix);
 #endif
 
-  XMoveResizeWindow(Dpy, MyWindow, mysizehints.x, mysizehints.y,
+  XMoveResizeWindow(Dpy, MyWindow, wx, wy,
 	      mysizehints.width, mysizehints.height);
 
   XSetWMNormalHints(Dpy,MyWindow,&mysizehints);

@@ -619,8 +619,6 @@ void initialize_pager(void)
   }
   sizehints.width = window_w;
   sizehints.height = window_h;
-  sizehints.x = window_x;
-  sizehints.y = window_y;
 
   if(usposition)
     sizehints.flags |= USPosition;
@@ -638,6 +636,8 @@ void initialize_pager(void)
 			       window_h, 0, Pdepth, InputOutput, Pvisual,
 			       valuemask, &attributes);
   XSetWMProtocols(dpy,Scr.Pager_w,&wm_del_win,1);
+  /* hack to prevent mapping on wrong screen with StartsOnScreen */
+  FScreenMangleScreenIntoUSPosHints(FSCREEN_XYPOS, &sizehints);
   XSetWMNormalHints(dpy,Scr.Pager_w,&sizehints);
   if (is_transient)
   {
@@ -2254,7 +2254,7 @@ void Scroll(int window_w, int window_h, int x, int y, int Desk,
 	{
 		y = 0;
 	}
-	
+
 	if(x > window_w-adjx)
 	{
 		x = window_w-adjx;
