@@ -85,6 +85,7 @@ static GC hi_gc;
 static GC sh_gc;
 static GC miniIconGC;
 static Window rootWindow;
+static Window focusWindow;
 static FILE *errorFile;
 static XTextProperty windowName;
 static int deskNumber=0;
@@ -274,11 +275,14 @@ static Bool parse_options(void)
 			continue;
 		}
 
+		/* dump leading whitespace */
+		while(*tline==' ' || *tline=='\t')
+			tline++;
 #if STARTUP_DEBUG
 		strcat(startupText,resource);
-		strcat(startupText,"| ");
+		strcat(startupText," |");
 		strcat(startupText,tline);
-		strcat(startupText,"\n");
+		strcat(startupText,"|\n");
 #endif
 		if(!strncasecmp(resource,"Action",6))
 		{
@@ -651,6 +655,7 @@ static void OpenWindows(void)
 		OpenOneWindow(proxy);
 	}
 
+	selectProxy = NULL;
 	return;
 }
 
@@ -958,8 +963,10 @@ static void StartProxies(void)
 	{
 		return;
 	}
-	selectProxy=NULL;
+
 	enterProxy=NULL;
+	selectProxy=NULL;
+
 	send_command_to_fvwm(ClickAction[PROXY_ACTION_SHOW], None);
 	are_windows_shown = 1;
 	CloseWindows();
@@ -1015,7 +1022,7 @@ static void SelectProxy(void)
 	ProxyWindow *proxy;
 
 	HideProxies();
-	if(selectProxy && selectProxy->desk==deskNumber)
+	if(selectProxy)
 		send_command_to_fvwm(ClickAction[PROXY_ACTION_SELECT],
 				selectProxy->window);
 
@@ -1108,7 +1115,7 @@ static void ProcessMessage(FvwmPacket* packet)
 		}
 		break;
 	case M_NEW_DESK:
-		if(deskNumber!=body[0] && are_windows_shown)
+		if(deskNumber!=body[0])
 		{
 			deskNumber=body[0];
 			if(are_windows_shown)
@@ -1135,6 +1142,11 @@ static void ProcessMessage(FvwmPacket* packet)
 			UpdateOneWindow(proxy);
 		}
 		break;
+	case M_FOCUS_CHANGE:
+	{
+		focusWindow=bh->w;
+		fprintf(errorFile,"M_FOCUS_CHANGE 0x%x\n",(int)focusWindow);
+	}
 	case M_STRING:
 	{
 		char *message=(char*)&body[3];
@@ -1150,6 +1162,11 @@ static void ProcessMessage(FvwmPacket* packet)
 			ProxyWindow *lastSelect=selectProxy;
 			ProxyWindow *newSelect=selectProxy;
 			ProxyWindow *first=prev? lastProxy: firstProxy;
+
+			/* auto-show if not already shown */
+			if (!are_windows_shown)
+				StartProxies();
+
 			if(startProxy && startProxy->desk==deskNumber)
 			{
 				newSelect=startProxy;
@@ -1182,13 +1199,17 @@ static void ProcessMessage(FvwmPacket* packet)
 		}
 		else if(StrEquals(token, "Circulate"))
 		{
-			Window w=(selectProxy)? selectProxy->window: None;
+			/* auto-show if not already shown */
+			if (!are_windows_shown)
+				StartProxies();
+
+			Window w=(selectProxy)? selectProxy->window:focusWindow;
 
 			strcpy(commandBuffer,next);
 			strcat(commandBuffer," SendToModule FvwmProxy Mark");
 
-			fprintf(errorFile, "0x%x Circulate \"%s\"\n",
-				(int)w,commandBuffer);
+			fprintf(errorFile, "0x%x:0x%x Circulate \"%s\"\n",
+				(int)selectProxy,(int)w,commandBuffer);
 			if(next)
 				SendFvwmPipe(fd,commandBuffer,w);
 		}
@@ -1220,6 +1241,7 @@ static void ProcessMessage(FvwmPacket* packet)
 			else
 */
 			{
+				focusWindow=bh->w;
 				proxy = FindProxy(bh->w);
 				fprintf(errorFile,
 					"Mark proxy 0x%x win 0x%x\n",
@@ -1449,7 +1471,7 @@ int main(int argc, char **argv)
 	fd_width = GetFdWidth();
 
 	SetMessageMask(
-		fd, M_STRING| M_CONFIGURE_WINDOW| M_ADD_WINDOW|
+		fd, M_STRING| M_CONFIGURE_WINDOW| M_ADD_WINDOW| M_FOCUS_CHANGE|
 		M_DESTROY_WINDOW| M_NEW_DESK| M_NEW_PAGE| M_ICON_NAME|
 		M_WINDOW_NAME| M_MINI_ICON| M_ICONIFY| M_DEICONIFY|
 		M_CONFIG_INFO| M_END_CONFIG_INFO);
@@ -1462,6 +1484,7 @@ int main(int argc, char **argv)
 	errorFile=fopen(logfilename,"a");
 
 	fprintf(errorFile,"FvwmProxy >>>>>>>>> STARTUP\n");
+	fflush(errorFile);
 #if STARTUP_DEBUG
 	fprintf(errorFile,"startup:\n%s-----\n",startupText);
 #endif

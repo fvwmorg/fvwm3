@@ -865,13 +865,9 @@ void CMD_All(F_CMD_ARGS)
 	return;
 }
 
-/**********************************************************************
- * Execute a function to the closest window in the given
- * direction.
- **********************************************************************/
-void CMD_Direction(F_CMD_ARGS)
+static void direction_cmd(F_CMD_ARGS,Bool is_scan)
 {
-	/* The rectangles are inteded for a future enhancement and are not used
+	/* The rectangles are intended for a future enhancement and are not used
 	 * yet. */
 	rectangle my_g;
 	rectangle his_g;
@@ -891,6 +887,8 @@ void CMD_Direction(F_CMD_ARGS)
 	FvwmWindow *window;
 	FvwmWindow *best_window;
 	int dir;
+	int dir2;
+	Bool right_handed=False;
 	char *flags;
 	char *restofline;
 	char *tmp;
@@ -911,11 +909,6 @@ void CMD_Direction(F_CMD_ARGS)
 	{
 		is_pointer_relative = False;
 	}
-	if(!strncmp(tmp,"Cycle",5))
-	{
-		cycle=True;
-		tmp+=5;
-	}
 	dir = gravity_parse_dir_argument(tmp, NULL, -1);
 	if (dir == -1 || dir > DIR_ALL_MASK)
 	{
@@ -926,6 +919,28 @@ void CMD_Direction(F_CMD_ARGS)
 			*cond_rc = COND_RC_ERROR;
 		}
 		return;
+	}
+	if(is_scan)
+	{
+		cycle=True;
+		tmp = PeekToken(action, &action);
+		dir2 = gravity_parse_dir_argument(tmp, NULL, -1);
+		/* if enum direction_type changes, this is trashed. */
+		if (dir2 == -1 || dir2 > DIR_NW ||
+			(dir<4) != (dir2<4) || (abs(dir-dir2)&1)!=1)
+		{
+			fvwm_msg(ERR, "Direction", "Invalid minor direction %s",
+				(tmp) ? tmp : "");
+			if (cond_rc != NULL)
+			{
+				*cond_rc = COND_RC_ERROR;
+			}
+			return;
+		}
+		else if(dir2-dir==1 || dir2-dir== -3)
+		{
+			right_handed=True;
+		}
 	}
 
 	/* Create the mask for flags */
@@ -1015,7 +1030,7 @@ void CMD_Direction(F_CMD_ARGS)
 			forward=True;
 		case DIR_N:
 		case DIR_NE:
-			cross = his_cx;
+			cross = -his_cx;
 			offset = (his_cx < 0) ? -his_cx : his_cx;
 			distance = (dir == DIR_N || dir == DIR_NE) ? -his_cy : his_cy;
 			break;
@@ -1038,17 +1053,21 @@ void CMD_Direction(F_CMD_ARGS)
 
 		if(cycle)
 			offset=0;
-		else if (distance <= 0)		/* Target must be in given direction. */
+		else if (distance <= 0)	/* Target must be in given direction. */
 			continue;
 
 		/* Calculate score for this window.  The smaller the better. */
 		score = distance + offset;
 
+		if(!right_handed)
+			cross= -cross;
+
 		if(cycle)
 		{
 			int ordered=(forward == (cross<best_cross));
 
-			if (distance<0 && best_score == -1 && (score < worst_score ||
+			if (distance<0 && best_score == -1 &&
+				(score < worst_score ||
 				(score==worst_score && ordered)))
 			{
 				best_window = window;
@@ -1059,7 +1078,8 @@ void CMD_Direction(F_CMD_ARGS)
 			if(score==0 && forward==(cross<0))
 				continue;
 
-			if (distance>=0 && (best_score == -1 || score < best_score ||
+			if (distance>=0 &&
+				(best_score == -1 || score < best_score ||
 				(score==best_score && ordered)))
 			{
 				best_window = window;
@@ -1100,6 +1120,20 @@ void CMD_Direction(F_CMD_ARGS)
 	FreeConditionMask(&mask);
 
 	return;
+}
+
+/**********************************************************************
+ * Execute a function to the closest window in the given
+ * direction.
+ **********************************************************************/
+void CMD_Direction(F_CMD_ARGS)
+{
+	direction_cmd(F_PASS_ARGS,False);
+}
+
+void CMD_ScanWindow(F_CMD_ARGS)
+{
+	direction_cmd(F_PASS_ARGS,True);
 }
 
 void CMD_WindowId(F_CMD_ARGS)

@@ -1,3 +1,14 @@
+2002-12-11  Jason Weber <baboon@imonk.com>
+
+	* fvwm/fvwm.1.in: Added ScanWindow
+
+	* fvwm/conditional.c (CMD_Direction CMD_ScanWindow direction_cmd):
+	* fvwm/commands.h:
+	* fvwm/functable.c:
+		Generalized CMD_Direction into direction_cmd.
+		Pipe CMD_Direction and CMD_ScanWindow into direction_cmd.
+		Replace Cycle prefix with secondary direction argument.
+
 2002-12-10  Dan Espen  <dane@mk.telcordia.com>
 
 	* fvwm/fvwm.1.in: Applied Mikhaels quote fix.
