@@ -1021,7 +1021,6 @@ InstallSignals(void)
   sigaddset(&sigact.sa_mask, SIGHUP);
   sigaddset(&sigact.sa_mask, SIGQUIT);
   sigaddset(&sigact.sa_mask, SIGTERM);
-  sigaddset(&sigact.sa_mask, SIGPIPE);
   sigaddset(&sigact.sa_mask, SIGUSR1);
 
 #ifdef SA_RESTART
@@ -1047,8 +1046,7 @@ InstallSignals(void)
   sigaction(SIGTERM, &sigact, NULL);
 #else
 #ifdef USE_BSD_SIGNALS
-  fvwmSetSignalMask( sigmask(SIGPIPE) |
-                     sigmask(SIGUSR1) |
+  fvwmSetSignalMask( sigmask(SIGUSR1) |
                      sigmask(SIGINT)  |
                      sigmask(SIGHUP)  |
                      sigmask(SIGQUIT) |
