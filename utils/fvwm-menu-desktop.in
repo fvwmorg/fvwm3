@@ -157,11 +157,18 @@ my $timelimit = 15;                    # limit runing time for the script
 my $LANG      = $ENV{LANG} || "";      # Internationalization support :o)
 my $UTF8      = 0;                     # KDE2 use UTF-8
 my $UTF8_TR   = "";                    # charset type for UTF-8 translation
+my $UNICONV   = "";                    # use a convert tool for UTF8 tr
+my $UNICONV_EXEC = "iconv";            # iconv or uniconv
 my @PATH_DIRS = split(':',$ENV{PATH}); # for checking if applications exist
 my $CHECK     = 1;                     # we check by default
 my $MENU_DESTROY = '';
 my $DESC_DIR = '';
 my $SUBMENUS_PREFIX = '';
+
+# Menu Style options: experimental and not documented ...
+my $MENU_STYLE = "";
+my $FONT = "";
+my @menusForStyle = ();
 
 my $name = "";
 my $l = "";
@@ -182,37 +189,41 @@ my $add = 1;
 # Read the options
 
 GetOptions(
-	"help" => \&showHelp,
-	"version" => \&showVersion,
-	"install-prefix:s" => $OPT_INSTALL_PREFIX,
-	"desktop:s" => \$MENU_NAME,
-	"type:s" => \$MENU_TYPE,
-	"fvwmgtk-alias=s" => \$fvwmGtkName,
-	"title:s" => \$OPT_MENU_TITLE,
-	"name:s" => \$OPT_MENU_NAME,
-	"enable-mini-icons" => \$MINI_ICONS,
-	"enable-tran-mini-icons" => \$TRAN,
-	"mini-icons-path:s" => \$MINI_ICONS_DIR,
-	"png-icons-path:s"=> \$PNG_ICONS,
-	"tran-mini-icons-path:s" => \$TRAN_MINI_ICONS,
-	"icon-toptitle:s" => \$DI{"fvwm_toptitle"},
-	"icon-title:s" => \$DI{"fvwm_title"},
-	"icon-folder:s" => \$DI{"fvwm_folder"},
-	"icon-app:s" => \$DI{"fvwm_app"},
-	"enable-style" => \$STYLE,
-	"enable-tran-style" => \$TRAN_STYLE,
-	"icon-style:s" => \$ICON_STYLE,
-	"icons-path:s" => \$ICONS_DIR,
-	"tran-icons-path:s" => \$TRAN_ICONS,
-	"submenu-name-prefix:s"  => \$SUBMENUS_PREFIX,
-	"dir:s" => \$DESC_DIR,
-	"destroy-type:s" => \$MENU_DESTROY,
-	"xterm:s" => \$TERM_CMD,
-	"lang:s" => \$LANG,
-	"utf8"   => \$UTF8,
-	"check-app!" => \$CHECK,
-	"wm-icons" => \$wmIcons,
-	"time-limit=s" => \$timelimit,
+	"help"                     => \&showHelp,
+	"version"                  => \&showVersion,
+	"install-prefix:s"         => $OPT_INSTALL_PREFIX,
+	"desktop:s"                => \$MENU_NAME,
+	"type:s"                   => \$MENU_TYPE,
+	"fvwmgtk-alias=s"          => \$fvwmGtkName,
+	"title:s"                  => \$OPT_MENU_TITLE,
+	"name:s"                   => \$OPT_MENU_NAME,
+	"enable-mini-icons"        => \$MINI_ICONS,
+	"enable-tran-mini-icons"   => \$TRAN,
+	"mini-icons-path:s"        => \$MINI_ICONS_DIR,
+	"png-icons-path:s"         => \$PNG_ICONS,
+	"tran-mini-icons-path:s"   => \$TRAN_MINI_ICONS,
+	"icon-toptitle:s"          => \$DI{"fvwm_toptitle"},
+	"icon-title:s"             => \$DI{"fvwm_title"},
+	"icon-folder:s"            => \$DI{"fvwm_folder"},
+	"icon-app:s"               => \$DI{"fvwm_app"},
+	"enable-style"             => \$STYLE,
+	"enable-tran-style"        => \$TRAN_STYLE,
+	"icon-style:s"             => \$ICON_STYLE,
+	"icons-path:s"             => \$ICONS_DIR,
+	"tran-icons-path:s"        => \$TRAN_ICONS,
+	"submenu-name-prefix:s"    => \$SUBMENUS_PREFIX,
+	"dir:s"                    => \$DESC_DIR,
+	"destroy-type:s"           => \$MENU_DESTROY,
+	"xterm:s"                  => \$TERM_CMD,
+	"lang:s"                   => \$LANG,
+	"utf8"                     => \$UTF8,
+	"uniconv=s"                => \$UNICONV,
+	"uniconv-exec=s"           => \$UNICONV_EXEC,
+	"menu-style=s"             => \$MENU_STYLE,
+	"font=s"                   => \$FONT,
+	"check-app!"               => \$CHECK,
+	"wm-icons"                 => \$wmIcons,
+	"time-limit=s"             => \$timelimit,
 ) || wrongUsage();
 wrongUsage() if @ARGV;
 
@@ -428,6 +439,23 @@ if ($UTF8) {
 	}
 }
 
+if ($UNICONV ne "") {
+	if ($UNICONV_EXEC eq "iconv") {
+		die "iconv not found in your path\n" 
+			unless check_app("iconv");
+		$UTF8_TR = "open(U,\"echo '\$label' | iconv -f UTF8 -t $UNICONV |\"); "
+			. "while(<U>) {chomp; \$label = \$_}; close(U)";
+	} elsif ($UNICONV_EXEC eq "uniconv") {
+		die "uniconv not found in your path\n" 
+			unless check_app("uniconv");
+		$UTF8_TR = "open(U,\"echo '\$label' | uniconv -I UTF8 -O $UNICONV |\");"
+			. " while(<U>) {chomp; \$label = \$_}; close(U)";	
+	} else {
+		die "--uniconv argument must be iconv or uniconv\n";
+	}
+	$UTF8 = 1;
+}
+
 #----------------
 # "Main" variable: contains the directories to look at.
 # + is the "level" separator, the menu is builded level by level
@@ -530,6 +558,15 @@ while( $Rec_Dir_List[0] ne '+') {
 # output the style
 print "$STYLEOUTPUT" if ( $STYLE );
 
+# output the menu style
+if ($MENU_STYLE ne "") {
+	print "MenuStyle " . '"' . $MENU_STYLE . '"' . " font  $FONT\n"
+		if $FONT ne "";
+	foreach (@menusForStyle) {
+		print "ChangeMenuStyle " . '"' . $MENU_STYLE . '"' . " $_\n";
+	}
+}
+
 # end of main
 #----------------------------------------------------------------------------
 #----------------------------------------------------------------------------
@@ -608,7 +645,7 @@ sub build_a_level {
 		}
 		print "AddToMenu \"$name$spic{\"$flag$titletype\"}" .
 			"$scolor{\"$flag$titletype\"}\" \"$label$mini_icon\" Title\n";
-
+		push @menusForStyle, $name;
 	}
 
 	# Items of the menu
@@ -681,6 +718,9 @@ sub get_info {
 				if ($UTF8_TR ne "") { eval $UTF8_TR; } 
 				else { $label = ""; }
 			}
+			#$label =~ s/%/%%/g;
+			#$label =~ s/&/&&/g;
+			#$label =~ s/\*/\*\*/g;
 		}
 
 		if (/^Name=(.*)$/) { $deflabel = $1 }
@@ -944,7 +984,9 @@ Options:
 	--xterm CMD               complete terminal command to run applications
 		in it, default is 'xterm -e'
 	--lang NAME               language, default is \$LANG
-   --utf8                    For desktop entries coded in UTF-8 (KDE2)
+	--utf8                    For desktop entries coded in UTF-8 (KDE2)
+	--uniconv                 Use (un)iconv for UTF-8 translation
+	--uniconv-exec            uniconv or iconv (default)
 	--[no]check-app           [do not] check that apps are in your path
 	--time-limit NUM          limit script running time to NUM seconds
 Short options are ok if not ambiguous: -h, -x, -icon-a.

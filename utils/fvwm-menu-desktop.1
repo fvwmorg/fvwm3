@@ -53,6 +53,8 @@ fvwm-menu-desktop
 [ \fB\-\-xterm\fR \fICMD\fR ]
 [ \fB\-\-lang\fR \fINAME\fR ]
 [ \fB\-\-utf8\fR ]
+[ \fB\-\-uniconv\fR \fIcharset\fR ]
+[ \fB\-\-uniconv-exec\fR \fIexec\fR ]
 [ \fB\-\-no\-check\-app\fR ]
 [ \fB\-\-time\-limit\fR \fINUM\fR ]
 
@@ -75,7 +77,7 @@ AddToMenu Utilities "KDE System Menu" Popup kde\-sys
  ...
 PipeRead 'fvwm-menu-desktop --desktop kde-sys'
 .EE
-For KDE2 you may have to add --utf8 (see below).
+For KDE2 you may have to add --utf8 or --uniconv "charset" (see below).
 If you use KDE version 1 (see below for KDE2) and you want mini\-icons 
 in the menu and if the KDE mini\-icons are in "mini/"
 relative to your FVWM ImagePath add the option \-\-enable-mini\-icons.
@@ -397,8 +399,23 @@ language. Also useful if fvwm-menu-desktop gives bad result with your language.
 Assume that the desktop entries used UTF-8 encoding. This is the case
 with KDE version 2 and will be probably the case with GNOME version 2.
 At the present time this option work only if you have perl version 5.6 
-or better and if your laguage use latin-1 font. If one of the above conditions
-is not satisfied, then this option is equivalent to --lang en.
+or better and if your language use latin-1 font. If one of the above conditions
+is not satisfied, then this option is equivalent to \-\-lang en. For others,
+languages/charsets use the \-\-uniconv option. The avantage of this option
+against the next option is that it is fast.
+.IP "\fB\-\-uniconv\fR \fIcharset\fR"
+Use iconv (default) or uniconv to translate utf8 desktop entries into an
+appropriate "charset". You can choose between one of these tools with the
+\-\-uniconv-exec option. iconv comes with glibc >= 2.1.1 and uniconv comes with
+the utf8 editor yudit. Type "iconv --list" or "man uniconv" for the list
+of supported charsets. Of course you must also use the appropriate font using 
+the MenuStyle command. Also, $LANG (or --lang xx) must be compatible with the
+charset. Note that with this option fvwm-menu-desktop is very slow: 
+you probably need to use the --time-limit option and you should redirect 
+the result into a file and read this file in your FVWM configuration.
+.IP "\fB\-\-uniconv-exec\fR \fIexec\fR"
+Where exec is either iconv or uniconv. Allows to choose the program which 
+perform the UTF8 translation in the case of the \-\-uniconv option.
 .IP "\fB\-\-[no]check-app\fR"
 Either check or don't check that applications to execute are in your path.
 Default is \-\-check-app.
@@ -411,7 +428,8 @@ to cut mistakes with the \-\-dir or \-\-install\-path options.
 This script needs more testing to see if all options work well
 (note that the script does not check for inconsistency of the given options).
 If Desktop menu hints are changed the script may not work as
-expected. I have tested the script with gnome-core-1.0.3 and kde-1.1.
+expected. I have tested the script with gnome-core-1.0.3, kde-1.1, kde-1.2
+and kde-2.0.
 
 .SH AUTHORS
 Olivier Chapuis <olivier.chapuis@free.fr>

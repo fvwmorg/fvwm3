@@ -1,3 +1,9 @@
+2000-12-12  olicha  <olivier.chapuis@free.fr>
+
+	* fvwm-menu-desktop.in:
+	* fvwm-menu-desktop.1:
+	New option --uniconv and --uniconv-exec for UTF8 encoding
+
 2000-12-09  olicha  <olivier.chapuis@free.fr>
 
 	* fvwm-menu-desktop.in:
