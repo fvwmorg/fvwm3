@@ -444,6 +444,18 @@ else
 fi
 
 
+dnl Define some compatibility macros needed for acconfig.h.
+mg_DEFINE_IF_NOT([#include <X11/keysym.h>],
+  [defined XK_Page_Up && defined XK_Page_Down],
+  [COMPAT_OLD_KEYSYMDEF], [$X_CFLAGS])
+
+if test "$with_stroke" = yes; then
+  mg_DEFINE_IF_NOT([#include <stroke.h>],
+    [defined STROKE_MAX_SEQUENCE],
+    [COMPAT_OLD_LIBSTROKE], [$stroke_CFLAGS])
+fi
+
+
 dnl Allow building with dmalloc.  Do this last to avoid screwing up any
 dnl other checks above.
 

@@ -29,10 +29,6 @@
 #include "focus.h"
 #ifdef HAVE_STROKE
 #include "stroke.h"
-/* migo (15-Jul-2001): libstroke <= 0.4 does not use STROKE_ prefix */
-#ifndef STROKE_MAX_SEQUENCE
-#  define STROKE_MAX_SEQUENCE MAX_SEQUENCE
-#endif
 #endif /* HAVE_STROKE */
 
 static void activate_binding(

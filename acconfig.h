@@ -116,6 +116,24 @@
 #endif
 
 
+/* Old AIX systems (3.2.5) don't define some common keysyms. */
+#undef COMPAT_OLD_KEYSYMDEF
+
+#ifdef COMPAT_OLD_KEYSYMDEF
+#  define XK_Page_Up   XK_Prior
+#  define XK_Page_Down XK_Next
+#endif
+
+
+/* Old libstroke <= 0.4 does not use STROKE_ prefix for constants. */
+#undef COMPAT_OLD_LIBSTROKE
+
+#ifdef COMPAT_OLD_LIBSTROKE
+/* currently we only use one constant */
+#  define STROKE_MAX_SEQUENCE MAX_SEQUENCE
+#endif
+
+
 /**
  * The next few defines are options that are only changed from their values
  * shown here on systems that _don't_ use the configure script.

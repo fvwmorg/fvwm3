@@ -287,8 +287,41 @@ else
 fi])
 
 
-dnl contents of gtk.m4
+dnl Defines a boolean variable good for acconfig.h depending on a condition.
+dnl
+dnl Usage:
+dnl mg_DEFINE_IF_NOT(c-code, cpp-if-cond, var-name, extra-flags)
+dnl
+dnl c-code       the first code part inside main()
+dnl cpp-if-cond  boolean preprocessor condition
+dnl var-name     this variable will be defined if the given condition is false
+dnl extra-flags  (optional) extra flags for compiling, typically more -I glags
+dnl
+dnl Example:
+dnl mg_DEFINE_IF_NOT([#include <features.h>], [defined __USE_BSD], [NON_BSD])
+dnl
+AC_DEFUN(mg_DEFINE_IF_NOT, [
+mg_save_CPPFLAGS="$CPPFLAGS"
+ifelse($4, , , CPPFLAGS="$CPPFLAGS [$4]")
 
+AC_TRY_RUN([
+#include <stdio.h>
+int main(int c, char **v) {
+$1
+#if $2
+  return 0;
+#else
+  return 1;
+#endif
+}
+], [:], [AC_DEFINE($3)])
+
+CPPFLAGS="$mg_save_CPPFLAGS"
+])
+
+
+dnl --------------------------------------------------------------------------
+dnl contents of gtk.m4
 
 # Configure paths for GTK+
 # Owen Taylor     97-11-3
@@ -477,6 +510,7 @@ main ()
 ])
 
 
+dnl --------------------------------------------------------------------------
 dnl contents of imlib.m4
 dnl modified by migo - write diagnostics to >&5 (i.e. config.log) not stdout
 
@@ -786,6 +820,8 @@ int main ()
   rm -f conf.gdkimlibtest
 ])
 
+
+dnl --------------------------------------------------------------------------
 dnl from gnome.m4, modified by migo
 
 dnl
