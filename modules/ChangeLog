@@ -1,3 +1,11 @@
+2002-10-09  olicha  <olivier.chapuis@free.fr>
+
+	* FvwmButtons/FvwmButtons.c (LoadIconFile):
+	(main):
+	(CreateUberButtonWindow):
+	Image should be loaded with the module main window not the root
+	window! 
+
 2002-10-08  olicha  <olivier.chapuis@free.fr>
 
 	* FvwmTaskBar/Goodies.c (DrawGoodies):

@@ -636,6 +636,7 @@ int main(int argc, char **argv)
   unsigned int depth;
   button_info *b,*ub;
   int geom_option_argc = 0;
+  XSetWindowAttributes xswa;
 
   FlocaleInit(LC_CTYPE, "", "", "FvwmButtons");
 
@@ -805,6 +806,16 @@ int main(int argc, char **argv)
   NumberButtons(UberButton);
 
 #ifdef DEBUG_INIT
+  fprintf(stderr,"OK\n%s: Creating Main Window ...",MyName);
+#endif
+
+  xswa.colormap = Pcmap;
+  xswa.border_pixel = 0;
+  xswa.background_pixmap = None;
+  MyWindow = XCreateWindow(Dpy, Root, 0,0,1,1,0, Pdepth, InputOutput, Pvisual,
+			   CWColormap|CWBackPixmap|CWBorderPixel, &xswa);
+
+#ifdef DEBUG_INIT
   fprintf(stderr,"OK\n%s: Loading data...\n",MyName);
 #endif
 
@@ -821,7 +832,7 @@ int main(int argc, char **argv)
   }
 
 #ifdef DEBUG_INIT
-  fprintf(stderr,"%s: Creating main window...",MyName);
+  fprintf(stderr,"%s: Configuring main window...",MyName);
 #endif
 
   CreateUberButtonWindow(UberButton,maxx,maxy);
@@ -1472,7 +1483,7 @@ int LoadIconFile(const char *s, FvwmPicture **p, int cset)
 	{
 		fpa.mask |= FPAM_NO_ALPHA;
 	}
-	*p = PCacheFvwmPicture(Dpy, Root, imagePath, s, fpa);
+	*p = PCacheFvwmPicture(Dpy, MyWindow, imagePath, s, fpa);
 	if (*p)
 	{
 		return 1;
@@ -1884,7 +1895,6 @@ void CreateUberButtonWindow(button_info *ub,int maxx,int maxy)
   XGCValues gcv;
   unsigned long gcm;
   XClassHint myclasshints;
-  XSetWindowAttributes xswa;
 
   x = UberButton->x; /* Geometry x where to put the panel */
   y = UberButton->y; /* Geometry y where to put the panel */
@@ -1962,13 +1972,11 @@ void CreateUberButtonWindow(button_info *ub,int maxx,int maxy)
 	    (ushort)fore_pix,(ushort)back_pix);
 #endif
 
-  xswa.colormap = Pcmap;
-  xswa.border_pixel = 0;
-  xswa.background_pixmap = None;
-  MyWindow = XCreateWindow(Dpy,Root,mysizehints.x,mysizehints.y,
-			   mysizehints.width,mysizehints.height,0,Pdepth,
-			   InputOutput,Pvisual,
-			   CWColormap|CWBackPixmap|CWBorderPixel,&xswa);
+  XMoveResizeWindow(Dpy, MyWindow, mysizehints.x, mysizehints.y,
+	      mysizehints.width, mysizehints.height);
+
+  XSetWMNormalHints(Dpy,MyWindow,&mysizehints);
+
   if (is_transient)
   {
     XSetTransientForHint(Dpy, MyWindow, Root);
