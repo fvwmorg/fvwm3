@@ -49,6 +49,8 @@ typedef void *frame_move_resize_args;
 /* ---------------------------- interface functions ------------------------- */
 
 void frame_init(void);
+Bool is_frame_hide_window(
+	Window w);
 void frame_destroyed_frame(
 	Window frame_w);
 frame_move_resize_args frame_create_move_resize_args(
@@ -64,8 +66,6 @@ void frame_get_title_bar_dimensions(
 void frame_get_sidebar_geometry(
 	FvwmWindow *fw, DecorFaceStyle *borderstyle, rectangle *frame_g,
 	rectangle *ret_g, Bool *ret_has_x_marks, Bool *ret_has_y_marks);
-window_parts frame_get_changed_border_parts(
-	rectangle *old_sidebar_g, rectangle *new_sidebar_g);
 int frame_window_id_to_context(
 	FvwmWindow *fw, Window w, int *ret_num);
 void frame_move_resize(

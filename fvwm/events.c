@@ -1526,6 +1526,14 @@ void HandleButtonPress(void)
   {
     eventw = Event.xany.window;
   }
+  if (is_frame_hide_window(eventw) || (Fw != NULL && eventw == FW_W_FRAME(Fw)))
+  {
+    /* ignore it */
+    XAllowEvents(dpy,ReplayPointer,CurrentTime);
+    XFlush(dpy);
+    UngrabEm(GRAB_PASSIVE);
+    return;
+  }
   if (!XGetGeometry(dpy, eventw, &JunkRoot, &JunkX, &JunkY,
 		    &JunkWidth, &JunkHeight, &JunkBW, &JunkDepth))
   {
@@ -2937,48 +2945,60 @@ void InitEventHandlerJumpTable(void)
  ************************************************************************/
 void DispatchEvent(Bool preserve_Fw)
 {
-  Window w = Event.xany.window;
-  FvwmWindow *s_Fw = NULL;
+	Window w = Event.xany.window;
+	FvwmWindow *s_Fw = NULL;
 
-  DBUG("DispatchEvent","Routine Entered");
+	DBUG("DispatchEvent","Routine Entered");
 
-  if (preserve_Fw)
-    s_Fw = Fw;
-  StashEventTime(&Event);
-
-  XFlush(dpy);
-  if (XFindContext (dpy, w, FvwmContext, (caddr_t *) &Fw) == XCNOENT)
-  {
-    Fw = NULL;
-  }
-  last_event_type = Event.type;
-  last_event_window = w;
-
-  if (EventHandlerJumpTable[Event.type])
-  {
-    (*EventHandlerJumpTable[Event.type])();
-  }
+	if (preserve_Fw)
+	{
+		s_Fw = Fw;
+	}
+	StashEventTime(&Event);
+	XFlush(dpy);
+	if (w == Scr.Root)
+	{
+		if ((Event.type == ButtonPress || Event.type == ButtonRelease)
+		    && Event.xbutton.subwindow != None)
+		{
+			w = Event.xbutton.subwindow;
+		}
+	}
+	if (w == Scr.Root ||
+	    XFindContext(dpy, w, FvwmContext, (caddr_t *) &Fw) == XCNOENT)
+	{
+		Fw = NULL;
+	}
+	last_event_type = Event.type;
+	last_event_window = w;
+	if (EventHandlerJumpTable[Event.type])
+	{
+		(*EventHandlerJumpTable[Event.type])();
+	}
 
 #ifdef C_ALLOCA
-  /* If we're using the C version of alloca, see if anything needs to be
-   * freed up.
-   */
-  alloca(0);
+	/* If we're using the C version of alloca, see if anything needs to be
+	 * freed up.
+	 */
+	alloca(0);
 #endif
+	if (preserve_Fw)
+	{
+		/* Just to be safe, check if the saved window still exists.
+		 *  Since this is only used with Expose events we should be
+		 * safe anyway, but a bit of security does not hurt. */
+		if (check_if_fvwm_window_exists(s_Fw))
+		{
+			Fw = s_Fw;
+		}
+		else
+		{
+			Fw = NULL;
+		}
+	}
+	DBUG("DispatchEvent","Leaving Routine");
 
-  if (preserve_Fw)
-  {
-    /* Just to be safe, check if the saved window still exists.  Since this is
-     * only used with Expose events we should be safe anyway, but a bit of
-     * security does not hurt. */
-    if (check_if_fvwm_window_exists(s_Fw))
-      Fw = s_Fw;
-    else
-      Fw = NULL;
-  }
-
-  DBUG("DispatchEvent","Leaving Routine");
-  return;
+	return;
 }
 
 

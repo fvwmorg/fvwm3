@@ -1,3 +1,4 @@
+/* -*-c-*- */
 /* This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 2 of the License, or
@@ -5,30 +6,16 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307	 USA
  */
 
-/****************************************************************************
- * Changed 10/06/97 by dje:
- * Change single IconBox into chain of IconBoxes.
- * Allow IconBox to be specified using X Geometry string.
- * Parse optional IconGrid.
- * Parse optional IconFill.
- * Use macros to make parsing more uniform, and easier to read.
- * Rewrote AddToList without tons of arg passing and merging.
- * Added a few comments.
-  ****************************************************************************/
+/* ---------------------------- included header files ----------------------- */
 
-/***********************************************************************
- *
- * code for parsing the fvwm style command
- *
- ***********************************************************************/
 #include "config.h"
 #include <stdio.h>
 
@@ -58,6 +45,26 @@
 #include "module_interface.h"
 #include "focus.h"
 #include "stack.h"
+
+/* ---------------------------- local definitions --------------------------- */
+
+/* ---------------------------- local macros -------------------------------- */
+
+/* ---------------------------- imports ------------------------------------- */
+
+/* ---------------------------- included code files ------------------------- */
+
+/* ---------------------------- local types --------------------------------- */
+
+/* ---------------------------- forward declarations ------------------------ */
+
+/* ---------------------------- local variables ----------------------------- */
+
+/* ---------------------------- exported variables (globals) ---------------- */
+
+/* ---------------------------- local functions ----------------------------- */
+
+/* ---------------------------- interface functions ------------------------- */
 
 static void init_style(
 	FvwmWindow *old_t, FvwmWindow *t, window_style *pstyle,
@@ -312,16 +319,22 @@ static void apply_window_updates(
 	if (flags->do_setup_frame)
 	{
 		setup_title_geometry(t, pstyle);
+		/* frame_force_setup_window needs to know if the window is
+		 * hilighted */
+		set_focus_window(focus_w);
 		frame_force_setup_window(
 			t, frame_g.x, frame_g.y, frame_g.width, frame_g.height,
                         True);
+		set_focus_window(NULL);
 		GNOME_SetWinArea(t);
 		EWMH_SetFrameStrut(t);
 	}
 	if (flags->do_update_window_color)
 	{
 		if (focus_w != t)
+		{
 			flags->do_redraw_decoration = True;
+		}
 		update_window_color_style(t, pstyle);
 		if (t != Scr.Hilite)
 		{
@@ -341,7 +354,11 @@ static void apply_window_updates(
 	}
 	if (flags->do_redraw_decoration)
 	{
-		RedrawDecorations(t);
+		/* frame_redraw_decorations needs to know if the window is
+		 * hilighted */
+		set_focus_window(focus_w);
+		border_redraw_decorations(t);
+		set_focus_window(NULL);
 	}
 	if (flags->do_update_icon_font)
 	{
@@ -450,7 +467,9 @@ static void apply_window_updates(
 	return;
 }
 
-/* similar, but takes only care of destroying windows that have to go away. */
+/* ---------------------------- builtin commands ---------------------------- */
+
+/* takes only care of destroying windows that have to go away. */
 void destroy_scheduled_windows(void)
 {
 	FvwmWindow *t;
@@ -478,7 +497,9 @@ void destroy_scheduled_windows(void)
 	}
 	MyXUngrabServer(dpy);
 	if (do_need_ungrab)
+	{
 		UngrabEm(GRAB_BUSY);
+	}
 
 	return;
 }
@@ -496,6 +517,8 @@ void apply_decor_change(FvwmWindow *fw)
 	flags.do_update_window_font_height = True;
 	apply_window_updates(fw, &flags, &style, get_focus_window());
 	Scr.flags.do_need_window_update = 1;
+
+	return;
 }
 
 /* Check and apply new style to each window if the style has changed. */
@@ -589,7 +612,9 @@ void flush_window_updates(void)
 
 	MyXUngrabServer(dpy);
 	if (do_need_ungrab)
+	{
 		UngrabEm(GRAB_BUSY);
+	}
 
 	return;
 }

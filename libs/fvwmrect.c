@@ -23,6 +23,7 @@
 /* ---------------------------- included header files ----------------------- */
 
 #include "config.h"
+#include <X11/Xlib.h>
 #include "fvwmrect.h"
 
 /* ---------------------------- local definitions --------------------------- */
@@ -40,6 +41,12 @@
 /* ---------------------------- local variables ----------------------------- */
 
 /* ---------------------------- local functions ----------------------------- */
+
+static int fvwmrect_do_intervals_intersect(
+	int x1, int width1, int x2, int width2)
+{
+	return !(x1 + width1 <= x2 || x2 + width2 <= x1);
+}
 
 /* ---------------------------- interface functions ------------------------- */
 
@@ -98,4 +105,59 @@ int fvwmrect_rectangles_equal(
 	}
 
 	return 0;
+}
+
+int fvwmrect_move_into_rectangle(rectangle *move_rec, rectangle *target_rec)
+{
+	int has_changed = 0;
+
+	if (!fvwmrect_do_intervals_intersect(
+		    move_rec->x, move_rec->width, target_rec->x,
+		    target_rec->width))
+	{
+		move_rec->x = move_rec->x % target_rec->width;
+		if (move_rec->x < 0)
+		{
+			move_rec->x += target_rec->width;
+		}
+		move_rec->x += target_rec->x;
+		has_changed = 1;
+	}
+	if (!fvwmrect_do_intervals_intersect(
+		    move_rec->y, move_rec->height, target_rec->y,
+		    target_rec->height))
+	{
+		move_rec->y = move_rec->y % target_rec->height;
+		if (move_rec->y < 0)
+		{
+			move_rec->y += target_rec->height;
+		}
+		move_rec->y += target_rec->y;
+		has_changed = 1;
+	}
+
+	return has_changed;
+}
+
+int fvwmrect_intersect_xrectangles(
+	XRectangle *r1, XRectangle *r2)
+{
+	int x1 = max(r1->x, r2->x);
+	int y1 = max(r1->y, r2->y);
+	int x2 = min(r1->x + r1->width, r2->x + r2->width);
+	int y2 = min(r1->y + r1->height, r2->y + r2->height);
+
+	r1->x = x1;
+	r1->y = y1;
+	r1->width = x2 - x1;
+	r1->height = y2 - y1;
+
+	if (x2 > x1 && y2 > y1)
+	{
+		return 1;
+	}
+	else
+	{
+		return 0;
+	}
 }

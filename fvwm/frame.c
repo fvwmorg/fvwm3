@@ -220,9 +220,13 @@ static void frame_setup_border(
 	}
 	frame_get_sidebar_geometry(
 		fw, NULL, frame_g, &sidebar_g, &dummy, &dummy);
-	for (part = PART_BORDER_N; (part & setup_parts & PART_FRAME);
+	for (part = PART_BORDER_N; (part & PART_FRAME);
 	     part <<= 1)
 	{
+		if ((part & PART_FRAME & setup_parts) == PART_NONE)
+		{
+			continue;
+		}
 		border_get_part_geometry(fw, part, &sidebar_g, &part_g, &w);
 		if (part_g.width <= 0 || part_g.height <= 0)
 		{
@@ -757,7 +761,7 @@ static void frame_move_resize_step(
                 grav.client_grav = StaticGravity;
                 frame_set_decor_gravities(fw, &grav);
         }
-	/* setup the title bar */
+	/* setup the title bar and the border */
 	setup_parts = PART_TITLE;
 	if (mra->curr_titlebar_compression != mra->next_titlebar_compression ||
             mra->mode == FRAME_MR_FORCE_SETUP)
@@ -765,17 +769,7 @@ static void frame_move_resize_step(
 		setup_parts |= PART_BUTTONS;
 	}
 	frame_setup_title_bar(fw, &mra->next_g, setup_parts, &mra->dstep_g);
-	/* setup the border */
-	if (mra->mode == FRAME_MR_SETUP || mra->mode == FRAME_MR_FORCE_SETUP)
-	{
-		setup_parts = PART_ALL;
-	}
-	else
-	{
-		setup_parts = frame_get_changed_border_parts(
-			&mra->curr_sidebar_g, &mra->next_sidebar_g);
-	}
-	frame_setup_border(fw, &mra->next_g, setup_parts, &mra->dstep_g);
+	frame_setup_border(fw, &mra->next_g, PART_ALL, &mra->dstep_g);
 	/* draw the border and the titlebar */
 	border_draw_decorations(
 		fw, PART_ALL, (mra->w_with_focus != None) ? True : False,
@@ -904,6 +898,26 @@ void frame_init(void)
 	}
 
 	return;
+}
+
+Bool is_frame_hide_window(
+	Window w)
+{
+	int i;
+
+	if (w == None)
+	{
+		return False;
+	}
+	for (i = 0; i < 4; i++)
+	{
+		if (w == hide_wins.w[i])
+		{
+			return True;
+		}
+	}
+
+	return False;
 }
 
 void frame_destroyed_frame(
@@ -1175,42 +1189,6 @@ void frame_get_sidebar_geometry(
 	ret_g->height = frame_g->height - 2 * ret_g->y;
 
 	return;
-}
-
-window_parts frame_get_changed_border_parts(
-	rectangle *old_sidebar_g, rectangle *new_sidebar_g)
-{
-	window_parts changed_parts;
-
-	changed_parts = PART_NONE;
-	if (old_sidebar_g->x != new_sidebar_g->x)
-	{
-		changed_parts |= (PART_FRAME & (~PART_BORDER_W));
-	}
-	if (old_sidebar_g->y != new_sidebar_g->y)
-	{
-		changed_parts |= (PART_FRAME & (~PART_BORDER_N));
-	}
-	if (old_sidebar_g->width != new_sidebar_g->width)
-	{
-		changed_parts |=
-			PART_BORDER_N |
-			PART_BORDER_NE |
-			PART_BORDER_E |
-			PART_BORDER_SE |
-			PART_BORDER_S;
-	}
-	if (old_sidebar_g->height != new_sidebar_g->height)
-	{
-		changed_parts |=
-			PART_BORDER_W |
-			PART_BORDER_SW |
-			PART_BORDER_S |
-			PART_BORDER_SE |
-			PART_BORDER_E;
-	}
-
-	return changed_parts;
 }
 
 int frame_window_id_to_context(

@@ -661,6 +661,46 @@ int border_context_to_parts(
 	return PART_NONE;
 }
 
+static window_parts border_get_changed_border_parts(
+	FvwmWindow *fw, rectangle *old_sidebar_g, rectangle *new_sidebar_g)
+{
+	window_parts changed_parts;
+
+	changed_parts = PART_NONE;
+	if (old_sidebar_g->x != new_sidebar_g->x)
+	{
+		changed_parts |= (PART_FRAME & (~PART_BORDER_W));
+	}
+	if (old_sidebar_g->y != new_sidebar_g->y)
+	{
+		changed_parts |= (PART_FRAME & (~PART_BORDER_N));
+	}
+	if (old_sidebar_g->width != new_sidebar_g->width)
+	{
+		changed_parts |=
+			PART_BORDER_N | PART_BORDER_S;
+		if (DFS_FACE_TYPE(GetDecor(fw, BorderStyle.active.style)) ==
+		    TiledPixmapButton)
+		{
+			changed_parts |=
+				PART_BORDER_NE | PART_BORDER_E | PART_BORDER_SE;
+		}
+	}
+	if (old_sidebar_g->height != new_sidebar_g->height)
+	{
+		changed_parts |=
+			PART_BORDER_W | PART_BORDER_E;
+		if (DFS_FACE_TYPE(GetDecor(fw, BorderStyle.active.style)) ==
+		    TiledPixmapButton)
+		{
+			changed_parts |=
+				PART_BORDER_SW | PART_BORDER_S | PART_BORDER_SE;
+		}
+	}
+
+	return changed_parts;
+}
+
 static int border_get_parts_and_pos_to_draw(
 	common_decorations_type *cd, FvwmWindow *fw,
 	window_parts pressed_parts, window_parts force_draw_parts,
@@ -726,8 +766,8 @@ static int border_get_parts_and_pos_to_draw(
 	{
 		draw_parts |= (PART_FRAME & (~(PART_BORDER_W | PART_BORDER_E)));
 	}
-	draw_parts |= frame_get_changed_border_parts(
-		&sidebar_g_old, &br->sidebar_g);
+	draw_parts |= border_get_changed_border_parts(
+		fw, &sidebar_g_old, &br->sidebar_g);
 	draw_parts &= (PART_FRAME | PART_HANDLES);
 
 	return draw_parts;
@@ -1503,7 +1543,10 @@ static void border_draw_all_border_parts(
 	draw_parts &= (PART_FRAME | PART_HANDLES);
 	draw_handles = (draw_parts & PART_HANDLES);
 #if 0
-fprintf(stderr, "drawing border parts 0x%04x\n", draw_parts);
+{
+static int count = 0;
+fprintf(stderr, "drawing border parts 0x%04x %d\n", draw_parts, count++);
+}
 #endif
 	for (part = PART_BORDER_N; (part & PART_FRAME); part <<= 1)
 	{
@@ -2567,7 +2610,8 @@ void border_draw_decorations(
  *  redraw the decoration when style change
  *
  ****************************************************************************/
-void RedrawDecorations(FvwmWindow *fw)
+void border_redraw_decorations(
+	FvwmWindow *fw)
 {
 	FvwmWindow *u = Scr.Hilite;
 

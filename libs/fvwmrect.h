@@ -66,5 +66,9 @@ void fvwmrect_subtract_rectangles(
 /* Returns 1 is the rectangles are identical and 0 if not */
 int fvwmrect_rectangles_equal(
 	rectangle *r1, rectangle *r2);
+int fvwmrect_move_into_rectangle(
+	rectangle *move_rec, rectangle *target_rec);
+int fvwmrect_intersect_xrectangles(
+	XRectangle *r1, XRectangle *r2);
 
 #endif /* FVWMRECT_H */

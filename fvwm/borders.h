@@ -76,6 +76,7 @@ int get_button_number(int context);
 void border_draw_decorations(
 	FvwmWindow *t, window_parts draw_parts, Bool has_focus, int force,
 	clear_window_parts clear_parts, rectangle *old_g, rectangle *new_g);
-void RedrawDecorations(FvwmWindow *fw);
+void border_redraw_decorations(
+	FvwmWindow *fw);
 
 #endif /* _BORDERS_H */

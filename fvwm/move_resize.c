@@ -1048,7 +1048,7 @@ static void move_window_doit(F_CMD_ARGS, Bool do_animate, int mode)
     s.y = page_y - Scr.Vy;
     s.width = Scr.MyDisplayWidth;
     s.height = Scr.MyDisplayHeight;
-    move_into_rectangle(&r, &s);
+    fvwmrect_move_into_rectangle(&r, &s);
     FinalX = r.x;
     FinalY = r.y;
   }
@@ -1075,9 +1075,9 @@ static void move_window_doit(F_CMD_ARGS, Bool do_animate, int mode)
     p.width = Scr.MyDisplayWidth;
     p.height = Scr.MyDisplayHeight;
     /* move to page first */
-    move_into_rectangle(&r, &p);
+    fvwmrect_move_into_rectangle(&r, &p);
     /* then move to screen */
-    move_into_rectangle(&r, &s);
+    fvwmrect_move_into_rectangle(&r, &s);
     FinalX = r.x;
     FinalY = r.y;
   }

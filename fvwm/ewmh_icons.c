@@ -766,7 +766,7 @@ int EWMH_SetIconFromWMIcon(FvwmWindow *fwin, CARD32 *list, unsigned int size,
 			fwin->mini_icon->picture,
 			fwin->mini_icon->mask,
 			fwin->mini_pixmap_file);
-      RedrawDecorations(fwin);
+      border_redraw_decorations(fwin);
     }
   }
   if (!is_mini_icon)
