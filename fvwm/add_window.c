@@ -341,8 +341,8 @@ void setup_visible_name(FvwmWindow *tmp_win, Bool is_icon)
     count = 998;
 
   if (count != 0 &&
-      ((is_icon && USE_EXTENDED_ICON_NAME(tmp_win)) ||
-       (!is_icon && USE_EXTENDED_WINDOW_NAME(tmp_win))))
+      ((is_icon && USE_INDEXED_ICON_NAME(tmp_win)) ||
+       (!is_icon && USE_INDEXED_WINDOW_NAME(tmp_win))))
   {
     len = strlen(name);
     count++;

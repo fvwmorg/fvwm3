@@ -1,3 +1,19 @@
+2001-12-08  olicha  <olivier.chapuis@free.fr>
+
+	* fvwm/style.{c,h}:
+	* fvwm/fvwm.h:
+	* fvwm/update.{c,h}:
+	* fvwm/window_flags.h:
+	* fvwm/fvwm2.1:
+	s/extended_window_name/indexed_window_name/i
+	s/extended_icon_name/indexed_icon_name/i
+	s/do_update_window_name/do_update_visible_window_name/
+	s/do_update_icon_name/do_update_visible_icon_name/
+
+	* fvwm/style.{c,h} (CMD_Style):
+	(parse_and_set_window_style):
+	Split CMD_Style into CMD_Style and parse_and_set_window_style
+
 2001-12-06  olicha  <olivier.chapuis@free.fr>
 	
 	* fvwm/add_window.c (setup_window_name_count):

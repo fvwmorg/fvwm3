@@ -113,18 +113,18 @@
           (fw)->flags.common.s.use_icon_position_hint = !!(x)
 #define SETM_USE_ICON_POSITION_HINT(fw,x) \
           (fw)->flag_mask.common.s.use_icon_position_hint = !!(x)
-#define USE_EXTENDED_WINDOW_NAME(fw) \
-          ((fw)->flags.common.s.use_extended_window_name)
-#define SET_USE_EXTENDED_WINDOW_NAME(fw,x) \
-          (fw)->flags.common.s.use_extended_window_name = !!(x)
-#define SETM_USE_EXTENDED_WINDOW_NAME(fw,x) \
-          (fw)->flag_mask.common.s.use_extended_window_name = !!(x)
-#define USE_EXTENDED_ICON_NAME(fw) \
-          ((fw)->flags.common.s.use_extended_icon_name)
-#define SET_USE_EXTENDED_ICON_NAME(fw,x) \
-          (fw)->flags.common.s.use_extended_icon_name = !!(x)
-#define SETM_USE_EXTENDED_ICON_NAME(fw,x) \
-          (fw)->flag_mask.common.s.use_extended_icon_name = !!(x)
+#define USE_INDEXED_WINDOW_NAME(fw) \
+          ((fw)->flags.common.s.use_indexed_window_name)
+#define SET_USE_INDEXED_WINDOW_NAME(fw,x) \
+          (fw)->flags.common.s.use_indexed_window_name = !!(x)
+#define SETM_USE_INDEXED_WINDOW_NAME(fw,x) \
+          (fw)->flag_mask.common.s.use_indexed_window_name = !!(x)
+#define USE_INDEXED_ICON_NAME(fw) \
+          ((fw)->flags.common.s.use_indexed_icon_name)
+#define SET_USE_INDEXED_ICON_NAME(fw,x) \
+          (fw)->flags.common.s.use_indexed_icon_name = !!(x)
+#define SETM_USE_INDEXED_ICON_NAME(fw,x) \
+          (fw)->flag_mask.common.s.use_indexed_icon_name = !!(x)
 #define DO_EWMH_MINI_ICON_OVERRIDE(fw) \
           ((fw)->flags.common.s.do_ewmh_mini_icon_override)
 #define SET_DO_EWMH_MINI_ICON_OVERRIDE(fw,x) \

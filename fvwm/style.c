@@ -826,28 +826,17 @@ void lookup_style(FvwmWindow *tmp_win, window_style *styles)
   return;
 }
 
-
-
-/* Process a style command.  First built up in a temp area.
- * If valid, added to the list in a malloced area.
- *
- *
- *                    *** Important note ***
- *
- * Remember that *all* styles need a flag, flag_mask and change_mask.
- * It is not enough to add the code for new styles in this function.
- * There *must* be corresponding code in handle_new_window_style()
- * and merge_styles() too.  And don't forget that allocated memory
- * must be freed in ProcessDestroyStyle().
+/*
  *
  */
-void CMD_Style(F_CMD_ARGS)
+static
+void parse_and_set_window_style(char *action, window_style *ptmpstyle)
 {
+  window_style *add_style;
   char *line;
   char *option;
   char *token;
   char *rest;
-  window_style *add_style;
   /* work area for button number */
   int butt;
   int num;
@@ -855,36 +844,10 @@ void CMD_Style(F_CMD_ARGS)
   int tmpno[3] = { -1, -1, -1 };
   int val[4];
   int spargs = 0;
-  Bool found;
-  /* temp area to build name list */
-  window_style *ptmpstyle;
+  Bool found = False;
   /* which current boxes to chain to */
   icon_boxes *which = NULL;
 
-  ptmpstyle = (window_style *)safemalloc(sizeof(window_style));
-  /* init temp window_style area */
-  memset(ptmpstyle, 0, sizeof(window_style));
-  /* mark style as changed */
-  ptmpstyle->has_style_changed = 1;
-  /* set global flag */
-  Scr.flags.do_need_window_update = 1;
-  /* default StartsOnPage behavior for initial capture */
-  ptmpstyle->flags.capture_honors_starts_on_page = 1;
-
-  /* parse style name */
-  action = GetNextToken(action, &SGET_NAME(*ptmpstyle));
-  /* in case there was no argument! */
-  if(SGET_NAME(*ptmpstyle) == NULL)
-  {
-    free(ptmpstyle);
-    return;
-  }
-  if(action == NULL)
-  {
-    free(SGET_NAME(*ptmpstyle));
-    free(ptmpstyle);
-    return;
-  }
   while (isspace((unsigned char)*action))
     action++;
   line = action;
@@ -1276,19 +1239,19 @@ void CMD_Style(F_CMD_ARGS)
         break;
 
       case 'e':
-	if (StrEquals(token, "ExtendedWindowName"))
+	if (StrEquals(token, "ExactWindowName"))
         {
 	  found = True;
-	  SFSET_USE_EXTENDED_WINDOW_NAME(*ptmpstyle, 1);
-	  SMSET_USE_EXTENDED_WINDOW_NAME(*ptmpstyle, 1);
-	  SCSET_USE_EXTENDED_WINDOW_NAME(*ptmpstyle, 1);
+	  SFSET_USE_INDEXED_WINDOW_NAME(*ptmpstyle, 0);
+	  SMSET_USE_INDEXED_WINDOW_NAME(*ptmpstyle, 1);
+	  SCSET_USE_INDEXED_WINDOW_NAME(*ptmpstyle, 1);
         }
-	else if (StrEquals(token, "ExtendedIconName"))
+	else if (StrEquals(token, "ExactIconName"))
         {
 	  found = True;
-	  SFSET_USE_EXTENDED_ICON_NAME(*ptmpstyle, 1);
-	  SMSET_USE_EXTENDED_ICON_NAME(*ptmpstyle, 1);
-	  SCSET_USE_EXTENDED_ICON_NAME(*ptmpstyle, 1);
+	  SFSET_USE_INDEXED_ICON_NAME(*ptmpstyle, 0);
+	  SMSET_USE_INDEXED_ICON_NAME(*ptmpstyle, 1);
+	  SCSET_USE_INDEXED_ICON_NAME(*ptmpstyle, 1);
         }
 	else
 	{
@@ -1811,6 +1774,20 @@ void CMD_Style(F_CMD_ARGS)
 	  SMSET_DO_ICONIFY_WINDOW_GROUPS(*ptmpstyle, 1);
 	  SCSET_DO_ICONIFY_WINDOW_GROUPS(*ptmpstyle, 1);
 	}
+	else if (StrEquals(token, "IndexedWindowName"))
+        {
+	  found = True;
+	  SFSET_USE_INDEXED_WINDOW_NAME(*ptmpstyle, 1);
+	  SMSET_USE_INDEXED_WINDOW_NAME(*ptmpstyle, 1);
+	  SCSET_USE_INDEXED_WINDOW_NAME(*ptmpstyle, 1);
+        }
+	else if (StrEquals(token, "IndexedIconName"))
+        {
+	  found = True;
+	  SFSET_USE_INDEXED_ICON_NAME(*ptmpstyle, 1);
+	  SMSET_USE_INDEXED_ICON_NAME(*ptmpstyle, 1);
+	  SCSET_USE_INDEXED_ICON_NAME(*ptmpstyle, 1);
+        }
         break;
 
       case 'j':
@@ -2584,20 +2561,6 @@ void CMD_Style(F_CMD_ARGS)
 	  SMSET_DO_USE_WINDOW_GROUP_HINT(*ptmpstyle, 1);
 	  SCSET_DO_USE_WINDOW_GROUP_HINT(*ptmpstyle, 1);
 	}
-	else if (StrEquals(token, "SimpleWindowName"))
-        {
-	  found = True;
-	  SFSET_USE_EXTENDED_WINDOW_NAME(*ptmpstyle, 0);
-	  SMSET_USE_EXTENDED_WINDOW_NAME(*ptmpstyle, 1);
-	  SCSET_USE_EXTENDED_WINDOW_NAME(*ptmpstyle, 1);
-        }
-	else if (StrEquals(token, "SimpleIconName"))
-        {
-	  found = True;
-	  SFSET_USE_EXTENDED_ICON_NAME(*ptmpstyle, 0);
-	  SMSET_USE_EXTENDED_ICON_NAME(*ptmpstyle, 1);
-	  SCSET_USE_EXTENDED_ICON_NAME(*ptmpstyle, 1);
-        }
         break;
 
       case 't':
@@ -2809,6 +2772,54 @@ void CMD_Style(F_CMD_ARGS)
     }
     free(option);
   } /* end while still stuff on command */
+
+}
+
+/* Process a style command.  First built up in a temp area.
+ * If valid, added to the list in a malloced area.
+ *
+ *
+ *                    *** Important note ***
+ *
+ * Remember that *all* styles need a flag, flag_mask and change_mask.
+ * It is not enough to add the code for new styles in this function.
+ * There *must* be corresponding code in handle_new_window_style()
+ * and merge_styles() too.  And don't forget that allocated memory
+ * must be freed in ProcessDestroyStyle().
+ *
+ */
+
+void CMD_Style(F_CMD_ARGS)
+{
+  /* temp area to build name list */
+  window_style *ptmpstyle;
+
+  ptmpstyle = (window_style *)safemalloc(sizeof(window_style));
+  /* init temp window_style area */
+  memset(ptmpstyle, 0, sizeof(window_style));
+  /* mark style as changed */
+  ptmpstyle->has_style_changed = 1;
+  /* set global flag */
+  Scr.flags.do_need_window_update = 1;
+  /* default StartsOnPage behavior for initial capture */
+  ptmpstyle->flags.capture_honors_starts_on_page = 1;
+
+  /* parse style name */
+  action = GetNextToken(action, &SGET_NAME(*ptmpstyle));
+  /* in case there was no argument! */
+  if(SGET_NAME(*ptmpstyle) == NULL)
+  {
+    free(ptmpstyle);
+    return;
+  }
+  if(action == NULL)
+  {
+    free(SGET_NAME(*ptmpstyle));
+    free(ptmpstyle);
+    return;
+  }
+
+  parse_and_set_window_style(action, ptmpstyle);
 
   /* capture default icons */
   if (StrEquals(SGET_NAME(*ptmpstyle), "*"))
@@ -3189,23 +3200,23 @@ void check_window_style_change(
   }
 
   /*
-   *  use_extended_window_name
+   *  use_indexed_window_name
    */
-  if (SCUSE_EXTENDED_WINDOW_NAME(*ret_style))
+  if (SCUSE_INDEXED_WINDOW_NAME(*ret_style))
   {
-    flags->do_update_window_name = True;
+    flags->do_update_visible_window_name = True;
     flags->do_redecorate = True;
   }
 
   /*
-   *  use_extended_icon_name
+   *  use_indexed_icon_name
    */
-  if (SCUSE_EXTENDED_ICON_NAME(*ret_style))
+  if (SCUSE_INDEXED_ICON_NAME(*ret_style))
   {
-    flags->do_update_icon_name = True;
+    flags->do_update_visible_icon_name = True;
     flags->do_update_icon_title = True;
   }
-  
+
   return;
 }
 

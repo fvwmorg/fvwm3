@@ -4611,8 +4611,8 @@ is a comma separated list containing one or more of the keywords
 .IR NoTitle " / " Title ,
 .IR TitleAtBottom " / " TitleAtTop ,
 .IR StippledTitle " / " StippledTitleOff ,
-.IR ExtendedWindowName " / " SimpleWindowName ,
-.IR ExtendedIconName " / " SimpleIconName ,
+.IR IndexedWindowName " / " ExactWindowName ,
+.IR IndexedIconName " / " ExactIconName ,
 .IR NoHandles " / " Handles ,
 .IR WindowListSkip " / " WindowListHit ,
 .IR CirculateSkip " / " CirculateHit ,
@@ -4845,7 +4845,7 @@ without the name argument.  These styles replace the older
 commands.
 
 The
-.I ExtendedWindowName
+.I IndexedWindowName
 style cause fvwm to use as window title name a string of the form
 .EX
 .IR name " (" i ") "
@@ -4859,15 +4859,15 @@ is an integer which intends to represent the
 window with
 .I name
 as window name.
-.I SimpleWindowName
+.I ExactWindowName
 restor the default which is to use the exact window name.
-.I ExtendedIconName
+.I IndexedIconName
 and
-.I SimpleIconName
+.I ExactIconName
 work exactly as the
-.I ExtendedIconName
+.I IndexedWindowName
 and
-.I SimpleIconName
+.I ExactWindowName
 styles but for the icons titles.
 
 .\" +++++++++++++++ styles affecting title buttons
