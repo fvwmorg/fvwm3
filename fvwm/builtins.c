@@ -4244,40 +4244,56 @@ void change_layer(F_CMD_ARGS)
 
 void SetDefaultLayers(F_CMD_ARGS)
 {
-  char *tok = NULL;
+  char *bot = NULL;
+  char *def = NULL;
+  char *top = NULL;
   int i;
 
-  action = GetNextToken(action, &tok);
-
-  if (tok)
+  action = GetNextToken(action, &bot);
+  if (bot)
     {
-       i = atoi (tok);
+       i = atoi (bot);
        if (i < 0)
          {
            fvwm_msg(ERR,"DefaultLayers", "Layer must be non-negative." );
          }
        else
          {
-           Scr.OnTopLayer = i;
+           Scr.BottomLayer = i;
          }
-       free (tok);
-       tok = NULL;
+       free (bot);
     }
 
-  action = GetNextToken(action, &tok);
-
-  if (tok)
+  action = GetNextToken(action, &def);
+  if (def)
     {
-       i = atoi (tok);
+       i = atoi (def);
        if (i < 0)
          {
-            fvwm_msg(ERR,"DefaultLayers", "Layer must be non-negative." );
+           fvwm_msg(ERR,"DefaultLayers", "Layer must be non-negative." );
          }
        else
          {
-            Scr.StaysPutLayer = i;
+           Scr.DefaultLayer = i;
          }
-       free (tok);
-       tok = NULL;
+       free (def);
+    }
+
+  action = GetNextToken(action, &top);
+  if (top)
+    {
+       i = atoi (top);
+       if (i < 0)
+         {
+           fvwm_msg(ERR,"DefaultLayers", "Layer must be non-negative." );
+         }
+       else
+         {
+           Scr.TopLayer = i;
+         }
+       free (top);
     }
 }
+
+
+
