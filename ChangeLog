@@ -1,3 +1,14 @@
+2003-07-01  Marcus Lundblad  <ml@update.uu.se>
+
+	* libs/Flocale.c (FlocaleDrawString):
+	(FlocaleRotateDrawString):
+	* libs/FBidi.h:
+	* libs/FBidi.c (FBidiConvert):
+	* libs/FBidiJoin.c:
+	* libs/FCombineChars.h:
+	* libs/FCombineChars.c (FCombineChars):
+	Added support for drawing superimposed combining characters
+ 
 2003-07-01  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* fvwm/commands.h:

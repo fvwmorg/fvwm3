@@ -67,6 +67,7 @@
 
 #include "config.h"
 #include <X11/Xlib.h>
+#include "FCombineChars.h"
 
 #if HAVE_BIDI
 /*
@@ -78,8 +79,8 @@ Bool FBidiIsApplicable(const char *charset);
  * Converts the given logical string to visual string for the given charset.
  */
 char *FBidiConvert(
-	const char *logical_str, const char *charset, int str_len,
-	Bool *is_rtl, int *out_len);
+	const char *logical_str, const char *charset, int str_len, 
+	Bool *is_rtl, int *out_len, superimpose_char_t *comb_chars);
 
 #else /* !HAVE_BIDI */
 

@@ -15,8 +15,9 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include "config.h"
 
+#include "FCombineChars.h"
+#include "config.h"
 #include <X11/Xlib.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -1382,6 +1383,13 @@ static const char_comb_t comb_table[] =
 	{ 0x1D1BE, 0x1D1BC, 0x1D16E },
 	{ 0x1D1BF, 0x1D1BB, 0x1D16F },
 	{ 0x1D1C0, 0x1D1BC, 0x1D16F }, */
+	/* special hack, treat Arabic ligatures as combining characters */
+	/* combine them to the isolated presentation form, then let
+	   the shaping and joining take care of it */
+	{ 0xFEF5, 0x0644, 0x0622 }, /* LAM_ALEF_MADDA */
+	{ 0xFEF7, 0x0644, 0x0623 },          /* LAM_ALEF_HAMZA_ABOVE */
+	{ 0xFEF9, 0x0644, 0x0625 },          /* LAM_ALEF_HAMZA_BELOW */
+	{ 0xFEFB, 0x0644, 0x0627 }           /* LAM_ALEF */
 };
 
 /* -------------------------- local functions ------------------------------ */
@@ -1528,12 +1536,14 @@ convert_to_utf8(const unsigned short int *str_ucs2, unsigned char *str_utf8,
 
 
 int
-FCombineChars(unsigned char *str_visual, int len)
+FCombineChars(unsigned char *str_visual, int len, 
+	      superimpose_char_t **comb_chars)
 {
-        int i,j;  /* counters */
+        int i,j,k;  /* counters */
         unsigned short int *source;
 	unsigned short int *dest;
 	int str_len;
+	int comp_str_len = 0;
   	Bool has_changed;
 
 	/* if input has zero length, return immediatly */
@@ -1549,7 +1559,6 @@ FCombineChars(unsigned char *str_visual, int len)
 	str_len = convert_to_ucs2(str_visual,source,len);
 	/* we don't really need to NULL-terminate source, since we
 	   have string length */
-
 	/* be pessimistic, assume all characters are decomposed */
 	dest = (unsigned short int *)safemalloc( (str_len + 1) * 2 *
 					   sizeof(unsigned short int));
@@ -1654,7 +1663,58 @@ FCombineChars(unsigned char *str_visual, int len)
 	} while(has_changed);
 
 	/* source contains composed string */
-	str_len = convert_to_utf8(source,str_visual,str_len);
+	
+	/* gather "uncomposed" combining characters here for rendering
+	  over normal characters later */
+
+	if(comb_chars != NULL)
+	{
+	        /* calculate number of combining characters left */
+	        comp_str_len = 0;
+		for(i = 0 ; i < str_len ; i++)
+		{
+		        if(get_combining_class(source[i]) != 0)
+			{
+			        comp_str_len++;
+			}
+		}
+		/* allocate storage for combining characters */
+		*comb_chars = (superimpose_char_t *)
+		           safemalloc((comp_str_len + 1) *
+				      sizeof(superimpose_char_t));
+	}
+	for(i = 0,j = 0,k = 0 ; i < str_len ; i++)
+	{
+	        /* if character is non-combining, 
+		   just copy it over to output */
+	        /* if first character is a combing character, just output
+		   it as if it where a base character */
+	        if(get_combining_class(source[i]) == 0)
+		{
+		        dest[j] = source[i];
+			j++;
+		}
+		else
+		{
+		        if(comb_chars != NULL)
+			{
+			        /* store composing character as associated 
+				   with last base charcter */
+			        (*comb_chars)[k].position = j == 0 ? 0 : j-1;
+				(*comb_chars)[k].c.byte1 = source[i] >> 8;
+				(*comb_chars)[k].c.byte2 = source[i] & 0xff;
+				k++;
+			}
+		}
+	}
+	/* terminate */
+	if(comb_chars != NULL)
+	{
+	        (*comb_chars)[comp_str_len].position = 0;
+		(*comb_chars)[comp_str_len].c.byte1 = 0;
+		(*comb_chars)[comp_str_len].c.byte2 = 0;
+	}
+	str_len = convert_to_utf8(dest,str_visual,j);
 	str_visual[str_len] = 0;
 
 	/* clean up */

@@ -9,9 +9,17 @@
 #ifndef FCOMBINECHARS_H
 #define FCOMBINECHARS_H
 
-# include "config.h"
+#include "config.h"
+#include <X11/Xutil.h>
+
+typedef struct
+{
+  int position;  /* position in the string */
+  XChar2b c;     /* UCS-2 character */
+} superimpose_char_t;
 
 int
-FCombineChars(unsigned char *str_visual, int str_len);
+FCombineChars(unsigned char *str_visual, int str_len, 
+	      superimpose_char_t **comb_chars);
 
 #endif /* FCOMBINECHARS_H */

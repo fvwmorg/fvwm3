@@ -138,6 +138,11 @@ static const char_shaped_t shaped_table[] =
 	{ 0x06D0, 0xFBE4, 0xFBE6, 0xFBE7, 0xFBE5, },
 	{ 0x06D2, 0xFBAE, 0x0000, 0x0000, 0xFBAF, },
 	{ 0x06D3, 0xFBB0, 0x0000, 0x0000, 0xFBB1, },
+	/* special treatment for ligatures from combining phase */
+	{ 0xFEF5, 0xFEF5, 0x0000, 0x0000, 0xFEF6, }, /* LAM_ALEF_MADDA */
+	{ 0xFEF7, 0xFEF7, 0x0000, 0x0000, 0xFEF8, }, /* LAM_ALEF_HAMZA_ABOVE */
+	{ 0xFEF9, 0xFEF9, 0x0000, 0x0000, 0xFEFA, }, /* LAM_ALEF_HAMZA_BELOW */
+	{ 0xFEFB, 0xFEFB, 0x0000, 0x0000, 0xFEFC, }, /* LAM_ALEF */
 };
 
 static const char_shaped_comb_t shaped_comb_table[] =
@@ -254,18 +259,19 @@ shape_n_join(
 			{
 				/* Deal with those pesky combinational
 				 * 2-characters that become 1 */
-				combined = get_shaped_combined_char(
+				/*combined = get_shaped_combined_char(
 					curr->base, next->base,
 					(prev && prev->initial));
 
 				if (combined)
-				{
+				{*/ 
 					/* Skip current char (ie. nullify it)
 					 * and combo-shape the previous char */
-					len--;
+				/*len--;
 					str_visual[len] = combined;
 				}
-				else if (prev)
+			        else */
+			       if (prev)
 				{
 					if (!prev->initial || !prev->medial)
 					{
