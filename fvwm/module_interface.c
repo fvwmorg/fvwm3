@@ -470,7 +470,7 @@ void executeModuleSync(F_CMD_ARGS)
       timeout.tv_usec = 1;  /* use 1 usec timeout in select */
       num_fd = fvwmSelect(fd_width, &in_fdset, &out_fdset, 0, &timeout);
     }
-    while (num_fd < 0);
+    while ( (num_fd < 0) && !isTerminated );
 
     /* Exit if we have received a "terminate" signal */
     if ( isTerminated ) break;
@@ -1299,18 +1299,21 @@ void PositiveWrite(int module, unsigned long *ptr, int size)
 
       do
       {
-	timeout.tv_sec = moduleTimeout;
-	timeout.tv_usec = 0;
-	FD_ZERO(&readSet);
-	FD_SET(channel, &readSet);
+        timeout.tv_sec = moduleTimeout;
+        timeout.tv_usec = 0;
+        FD_ZERO(&readSet);
+        FD_SET(channel, &readSet);
 
-	/* Wait for input to arrive on just one descriptor, with a timeout */
-	/* (fvwmSelect <= 0) or read() returning wrong size is bad news */
-	rc = fvwmSelect(channel + 1, &readSet, NULL, NULL, &timeout);
-	/* retry if select() failed with EINTR */
-      } while (rc < 0 && errno == EINTR);
+        /* Wait for input to arrive on just one descriptor, with a timeout */
+        /* (fvwmSelect <= 0) or read() returning wrong size is bad news */
+        rc = fvwmSelect(channel + 1, &readSet, NULL, NULL, &timeout);
+        /* retry if select() failed with EINTR */
+      } while ((rc < 0) && !isTerminated && (errno == EINTR));
+
+      if ( isTerminated ) break;
+
       if (rc <= 0 || read(channel, &targetWindow, sizeof(targetWindow))
-	  != sizeof(targetWindow))
+           != sizeof(targetWindow))
       {
         /* Doh! Something has gone wrong - get rid of the offender!! */
         fvwm_msg(ERR, "PositiveWrite",

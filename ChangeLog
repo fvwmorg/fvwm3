@@ -1,3 +1,13 @@
+2001-01-18  Chris Rankin <rankinc@zipworld.com.au>
+
+    * lib/fvwmsignal.c (fvwmSelect):
+    Always return -1 on failure; returning 0 means "timeout". Make
+    sure that errno is always set correctly on failure instead.
+
+    * fvwm.module_interface.c (PositiveWrite):
+    Don't retry the select() if we received a "terminate" signal,
+    because this is the reason we have fvwmSelect().
+
 2001-01-17  Dan Espen  <dane@mk.telcordia.com>
 
 	* fvwm/add_window.c (increase_icon_hint_count): 

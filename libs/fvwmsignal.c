@@ -80,7 +80,7 @@ fvwmSetTerminate(int sig)
   if (canJump)
   {
     canJump = false;
-    errno = EINTR;
+
     /*
      * This non-local jump is safe ONLY because we haven't called
      * any non-reentrant functions in the short period where the
@@ -108,7 +108,20 @@ fvwmSelect(fd_set_size_t nfds,
            fd_set *readfds, fd_set *writefds, fd_set *exceptfds,
            struct timeval *timeout)
 {
-  volatile int iRet = 0;  /* This variable MUST NOT be in a register */
+  volatile int iRet = -1;  /* This variable MUST NOT be in a register */
+
+  /*
+   * Yes, we trash errno here, but you're only supposed to check
+   * errno immediately after a function fails anyway. If we fail,
+   * then it's because we received a signal. If we succeed, we
+   * shouldn't be checking errno. And if somebody calls us expecting
+   * us to preserve errno then that's their bug.
+   *
+   * NOTE: We mustn't call any function that might trash errno
+   *       ourselves, except select() itself of course. I believe
+   *       that sigsetjmp() does NOT trash errno.
+   */
+  errno = EINTR;
 
   /*
    * Now initialise the non-local jump. Between here and the end of
