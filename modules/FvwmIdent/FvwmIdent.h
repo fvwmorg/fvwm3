@@ -34,6 +34,7 @@ struct target_struct
   long width_inc;
   long height_inc;
   long desktop;
+  long layer;
   unsigned long gravity;
   window_flags flags;
   long title_h;

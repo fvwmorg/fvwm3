@@ -97,7 +97,7 @@ static int ListSize=0;
 static struct Item* itemlistRoot = NULL;
 static int max_col1, max_col2;
 static char id[15], desktop[10], swidth[10], sheight[10], borderw[10];
-static char geometry[30], mymin_aspect[11], max_aspect[11];
+static char geometry[30], mymin_aspect[11], max_aspect[11], layer[10];
 
 /***********************************************************************
  *
@@ -299,6 +299,7 @@ struct ConfigWinPacket  *cfgpacket = (void *) body;
       target.frame_w = body[5];
       target.frame_h = body[6];
       target.desktop = body[7];
+      target.layer = body[8];
 /*      target.flags = body[8];  */
       memcpy(&target.flags, &(cfgpacket->flags), sizeof(cfgpacket->flags));
       target.title_h = body[9];
@@ -690,6 +691,7 @@ void MakeList(void)
   height = target.frame_h - target.title_h - bw;
 
   sprintf(desktop, "%ld",  target.desktop);
+  sprintf(layer,   "%ld",  target.layer);
   sprintf(id,      "0x%x", (unsigned int)target.id);
   sprintf(swidth,  "%d",   width);
   sprintf(sheight, "%d",   height);
@@ -703,6 +705,7 @@ void MakeList(void)
   AddToList("Resource:",      target.res);
   AddToList("Window ID:",     id);
   AddToList("Desk:",          desktop);
+  AddToList("Layer:",         layer);
   AddToList("Width:",         swidth);
   AddToList("Height:",        sheight);
   AddToList("X (current page):",   xstr);
@@ -710,14 +713,6 @@ void MakeList(void)
   AddToList("Boundary Width:", borderw);
 
   AddToList("Sticky:",        (IS_STICKY(targ)    ? yes : no));
-/*
-    RBW - not sure how to translate ONTOP into layer terms yet...
-    I think we'd need to see the default_layer field from the FvwmWindow,
-    and that's not broadcast currently.
-    But, then, it's been removed from the display...I suppose for the same
-    reason.
-*/
-/*  AddToList("Ontop:",         (target.flags & ONTOP  	? yes : no));  */
   AddToList("NoTitle:",       (HAS_TITLE(targ)    ? no : yes));
   AddToList("Iconified:",     (IS_ICONIFIED(targ) ? yes : no));
   AddToList("Transient:",     (IS_TRANSIENT(targ) ? yes : no));
@@ -793,24 +788,6 @@ void MakeList(void)
     sprintf(loc,"+%d",y1);
   strcat(geometry, loc);
   AddToList("Geometry:", geometry);
-
-#if 0
-  {
-    char tmp[20], *foo;
-    sprintf(tmp,"%d", target.base_w);
-    foo = strdup(tmp);
-    AddToList("  - base_w:", foo);
-    sprintf(tmp,"%d", target.width_inc);
-    foo = strdup(tmp);
-    AddToList("  - width_inc:", foo);
-    sprintf(tmp,"%d", target.base_h);
-    foo = strdup(tmp);
-    AddToList("  - base_h:", foo);
-    sprintf(tmp,"%d", target.height_inc);
-    foo = strdup(tmp);
-    AddToList("  - height_inc:", foo);
-  }
-#endif
 
   {
     Atom *protocols = NULL, *ap;

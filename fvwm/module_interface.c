@@ -61,8 +61,6 @@ int *readPipes;
 int *writePipes;
 int *pipeOn;
 char **pipeName;
-/*  RBW - hack for gsfr new config args  */
-unsigned long junkzero = 0;
 
 unsigned long *PipeMask;
 unsigned long *SyncMask;
@@ -928,11 +926,8 @@ static void BroadcastNewPacket(unsigned long event_type,
             &(*(_t))->frame_g.height,\
 	    (unsigned long)(sizeof(unsigned long)),\
             &(*(_t))->Desk,\
- \
-/* RBW - temp hack to preserve old alignment */ \
 	    (unsigned long)(sizeof(unsigned long)),\
-            (void *) &junkzero,\
- \
+            &(*(_t))->layer,\
 	    (unsigned long)(sizeof(unsigned long)),\
             &(*(_t))->title_g.height,\
 	    (unsigned long)(sizeof(unsigned long)),\
