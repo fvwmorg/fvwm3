@@ -4,7 +4,7 @@
 	* libs/Colorset.h:
 	* libs/colorset.c (parse_colorset):
 	* libs/PictureGraphics.c (PGrabXImage):
-	(PCreateRenderPixmap):
+	(PCreateRenderPixmap):sx
 	(PGraphicsCreateTransprency):
 	* libs/PictureGraphics.h:
 	An experimental implementation of ParentalRelative tinted background
