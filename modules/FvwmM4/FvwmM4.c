@@ -53,7 +53,7 @@
 #include "libs/fvwmlib.h"
 #include <X11/StringDefs.h>
 #include <X11/Shell.h>
-#define Resolution(pixels, mm) ((((pixels) * 100000 / (mm)) + 50) / 100)
+#define Resolution(pixels, mm) ((((pixels) * 2000 / (mm)) + 1) / 2)
 
 char *MyName;
 int fd[2];
@@ -94,6 +94,7 @@ int main(int argc, char **argv)
   int lock = 0;
   int noread = 0;
   char *user_dir;
+  char *m4path;
 
   /* Figure out the working directory and go to it */
   user_dir = getenv("FVWM_USERDIR");
@@ -107,8 +108,27 @@ int main(int argc, char **argv)
   m4_enable = True;
   m4_prefix = False;
   m4_prefix_defines = False;
-  sprintf(m4_options, "-I '%s' ", FVWM_DATADIR);
+  sprintf(m4_options, " ");
   m4_default_quotes = 1;
+  /* add FVWM_DATADIR to the include path.  Can't use the -I option here because
+   * it is incompatible with the System V version of m4.  Instead, append it to
+   * the front of the M4PATH environment variable. */
+  m4path = getenv("M4PATH");
+  if (m4path == NULL)
+  {
+    m4path = safemalloc(sizeof("M4PATH=") + strlen(FVWM_DATADIR) + 1);
+    sprintf(m4path, "M4PATH=%s", FVWM_DATADIR);
+  }
+  else
+  {
+    char *s;
+
+    s = safemalloc(
+      sizeof("M4PATH=") + strlen(FVWM_DATADIR) + strlen(m4path) + 2);
+    sprintf(s, "M4PATH=%s:%s", FVWM_DATADIR, m4path);
+    m4path = s;
+  }
+  putenv(m4path);
 
   /* Record the program name for error messages */
   temp = argv[0];
@@ -234,7 +254,7 @@ int main(int argc, char **argv)
   {
     char *delete_string;
     char *delete_file = tmp_file;
-    if (tmp_file[0] != '/' && user_dir != NULL) 
+    if (tmp_file[0] != '/' && user_dir != NULL)
     {
       delete_file = safestrdup(CatString3(user_dir, "/", tmp_file));
     }
@@ -247,7 +267,8 @@ int main(int argc, char **argv)
 
 
 
-static char *m4_defs(Display *display, const char *host, char *m4_options, char *config_file)
+static char *m4_defs(
+  Display *display, const char *host, char *m4_options, char *config_file)
 {
   Screen *screen;
   Visual *visual;
@@ -314,7 +335,7 @@ static char *m4_defs(Display *display, const char *host, char *m4_options, char 
     perror("Cannot open pipe to m4");
     exit(0377);
   }
-  
+
   gethostname(client,MAXHOSTNAME);
 
   getostype  (ostype, sizeof ostype);
@@ -449,7 +470,7 @@ static char *m4_defs(Display *display, const char *host, char *m4_options, char 
   strcat(options, "XPM ");
 #endif
 #ifdef  I18N_MB
-    strcat(options, "I18N_MB ");
+  strcat(options, "I18N_MB ");
 #endif
 
   strcat(options, "M4 ");

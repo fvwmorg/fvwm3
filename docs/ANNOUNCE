@@ -114,6 +114,10 @@ New features and improvements:
 ** Work around a key binding problem with keys that generate the same
    symbol with more than one key code (e.g. Shift-F1 = F11).
 
+** The SetEnv command without a value for a variable is the same as
+   UnsetEnv.
+
+
 Bug fixes:
 ----------
 
@@ -210,3 +214,9 @@ Bug fixes:
 ** Fixed vanishing windows when mapping/unmapping too fast.
 
 ** Fixed prev option of the GotoDeskAndPage command.
+
+** Fixed calculations of X_RESOLUTION and Y_RESOLUTION for screen dimmensions
+   larger than 2147.
+
+** Fixed compatibility of the FvwmM4 modules on platforms that have
+   a System V implementation of m4 (Solaris 2.6).

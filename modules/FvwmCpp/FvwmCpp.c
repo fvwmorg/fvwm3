@@ -53,7 +53,7 @@
 #include "libs/Picture.h"
 #include <X11/StringDefs.h>
 #include <X11/Shell.h>
-#define Resolution(pixels, mm)  ((((pixels) * 100000 / (mm)) + 50) / 100)
+#define Resolution(pixels, mm) ((((pixels) * 2000 / (mm)) + 1) / 2)
 
 char *MyName;
 int fd[2];
@@ -213,7 +213,7 @@ int main(int argc, char **argv)
   {
     char *delete_string;
     char *delete_file = tmp_file;
-    if (tmp_file[0] != '/' && user_dir != NULL) 
+    if (tmp_file[0] != '/' && user_dir != NULL)
     {
       delete_file = safestrdup(CatString3(user_dir, "/", tmp_file));
     }

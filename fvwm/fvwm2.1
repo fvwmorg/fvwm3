@@ -6878,8 +6878,8 @@ It can be overridden by exporting
 set to any other directory.
 
 .TP
-.BI "SetEnv " "variable value"
-Set an environment variable to a new value, similar to shell's
+.BI "SetEnv " "variable [value]"
+Set an environment variable to a new value, similar to the shell's
 export or setenv command.  The
 .I variable
 and its
@@ -6887,7 +6887,7 @@ and its
 are inherited by processes started directly by fvwm.  This can be
 especially useful in conjunction with the
 .B FvwmM4
-module; e.g.
+module.  For example:
 .EX
 SetEnv height HEIGHT
 .EE
@@ -6897,7 +6897,13 @@ usable by processes started by fvwm as the environment variable
 .IR $height .
 If
 .I value
-includes whitespace, you should enclose it in quotes.
+includes whitespace, you should enclose it in quotes.  If no
+.I value
+is given, the
+.I variable
+is deleted from the environment as if
+.B UnsetEnv
+had been called.
 
 .TP
 .BI "Silent " command

@@ -2475,6 +2475,8 @@ void CMD_SetEnv(F_CMD_ARGS)
   action = GetNextToken(action,&szValue);
   if (!szValue)
   {
+    /* no value, treat as unset */
+    CMD_UnsetEnv(F_PASS_ARGS);
     free(szVar);
     return;
   }

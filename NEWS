@@ -120,6 +120,15 @@ Changes in beta release 2.4.1 (not released yet)
 
 * Fixed prev option of the GotoDeskAndPage command.
 
+* Fixed calculations of X_RESOLUTION and Y_RESOLUTION for screen
+  dimmensions larger than 2147.
+
+* Fixed compatibility of the FvwmM4 modules on platforms that have
+  a System V implementation of m4 (Solaris 2.6).
+
+* The SetEnv command without a value for a variable is the same as
+  UnsetEnv.
+
 _+_A NAME="2.4.0"_-_
 Changes in stable release 2.4.0 (1-Jul-2001)
 _+_/A_-_
