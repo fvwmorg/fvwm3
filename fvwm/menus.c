@@ -6911,6 +6911,8 @@ char *get_menu_options(
 		last_saved_pos_hints.flags.is_last_menu_pos_hints_valid;
 	Bool is_action_empty = False;
 	Bool once_more = True;
+	Bool is_icon_context;
+	rectangle icon_g;
 
 	/* If this is set we may want to reverse the position hints, so don't
 	 * sum up the totals right now. This is useful for the SubmenusLeft
@@ -6953,6 +6955,7 @@ char *get_menu_options(
 		fUseItemOffset = False;
 		fHasContext = True;
 		fRectangleContext = False;
+		is_icon_context = False;
 		if (StrEquals(tok, "context"))
 		{
 			if (mi && mr)
@@ -6963,8 +6966,9 @@ char *get_menu_options(
 			{
 				if (IS_ICONIFIED(fw))
 				{
-					context_window =
-						FW_W_ICON_PIXMAP(fw);
+					is_icon_context = True;
+					get_icon_geometry(fw, &icon_g);
+					context_window = None;
 				}
 				else
 				{
@@ -7000,7 +7004,9 @@ char *get_menu_options(
 		{
 			if (fw && IS_ICONIFIED(fw))
 			{
-				context_window = FW_W_ICON_PIXMAP(fw);
+				is_icon_context = True;
+				get_icon_geometry(fw, &icon_g);
+				context_window = None;
 			}
 		}
 		else if (StrEquals(tok,"window"))
@@ -7175,13 +7181,15 @@ char *get_menu_options(
 			}
 			/* nothing else to do */
 		}
-		else if (!fHasContext || !context_window ||
-			 !XGetGeometry(
-				 dpy, context_window, &JunkRoot, &JunkX, &JunkY,
-				 &width, &height, &JunkBW, &JunkDepth) ||
-			 !XTranslateCoordinates(
-				 dpy, context_window, Scr.Root, 0, 0, &x, &y,
-				 &JunkChild))
+		else if (!is_icon_context &&
+			 (!fHasContext || !context_window ||
+			  !XGetGeometry(
+				  dpy, context_window, &JunkRoot, &JunkX,
+				  &JunkY, &width, &height, &JunkBW,
+				  &JunkDepth) ||
+			  !XTranslateCoordinates(
+				  dpy, context_window, Scr.Root, 0, 0, &x, &y,
+				  &JunkChild)))
 		{
 			/* no window or could not get geometry */
 			if (XQueryPointer(
@@ -7205,6 +7213,13 @@ char *get_menu_options(
 		}
 		else
 		{
+			if (is_icon_context)
+			{
+				x = icon_g.x;
+				y = icon_g.y;
+				width = icon_g.width;
+				height = icon_g.height;
+			}
 			/* we have a context window */
 			if (fUseItemOffset)
 			{
