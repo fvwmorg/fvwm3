@@ -1,3 +1,9 @@
+2004-06-02  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* fvwm/functions.c (execute_complex_function):
+	(CheckActionType):
+	fixed double click patch
+
 2004-06-01  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* fvwm/ewmh.c (EWMH_SetWMDesktop):
