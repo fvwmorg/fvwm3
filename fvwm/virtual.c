@@ -1918,7 +1918,22 @@ void CMD_GotoPage(F_CMD_ARGS)
 			"GotoPage: invalid arguments: %s", action);
 		return;
 	}
-
+	if (x < 0)
+	{
+		x = 0;
+	}
+	if (x > Scr.VxMax)
+	{
+		x = Scr.VxMax;
+	}
+	if (y < 0)
+	{
+		y = 0;
+	}
+	if (y > Scr.VyMax)
+	{
+		y = Scr.VyMax;
+	}
 	MoveViewport(x,y,True);
 
 	return;
