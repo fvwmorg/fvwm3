@@ -1379,7 +1379,7 @@ void LoopOnEvents(void)
 	    }
 	    else
 	    {
-	      tmp = (char *)safemalloc(100 * sizeof(char));  // fix this later
+	      tmp = (char *)safemalloc(100 * sizeof(char)); /* fix this later */
 	      getButtonCommand(whichButton, tmp);
 	      SendText(Fvwm_fd, tmp, 0);
 	      free(tmp);
