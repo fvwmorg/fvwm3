@@ -331,6 +331,10 @@ typedef struct ScreenInfo
   int ClickToFocusRaises;
   int MouseFocusClickRaises;
   int StipledTitles;
+  Bool ModifyUSP;                          /* - RBW - 11/02/1998  */
+  Bool CaptureHonorsStartsOnPage;          /* - RBW - 11/02/1998  */
+  Bool RecaptureHonorsStartsOnPage;        /* - RBW - 11/02/1998  */
+  Bool ActivePlacementHonorsStartsOnPage;  /* - RBW - 11/02/1998  */
 
 } ScreenInfo;
 

@@ -94,6 +94,10 @@ void ProcessNewStyle(XEvent *eventp,
   name_list *nptr;
   int butt;                             /* work area for button number */
   int num,i;
+  /*  RBW - 11/02/1998  */
+  int tmpno1 = -1, tmpno2 = -1, tmpno3 = -1, spargs = 0;
+  /**/
+
   name_list tname;                      /* temp area to build name list */
   int len = 0;
   icon_boxes *which = 0;                /* which current boxes to chain to */
@@ -674,11 +678,72 @@ void ProcessNewStyle(XEvent *eventp,
         {
           SKIP("STARTSONDESK");
           tname.off_flags |= STARTSONDESK_FLAG;
-          sscanf(restofline,"%d",&tname.Desk);
-          GETWORD;
+          /*  RBW - 11/02/1998  */
+          spargs = sscanf(restofline,"%d",&tmpno1);
+          if (spargs == 1)
+            {
+              tname.Desk = tmpno1 + 1;
+              GETWORD;
+            }
+          else
+	    {
+              tname.off_flags &= ~STARTSONDESK_FLAG;
+              fvwm_msg(ERR,"ProcessNewStyle",
+                       "bad StartsOnDesk arg: %s", restofline);
+	    }
+	  /**/
           restofline = tmp;
           SKIPSPACE;
         }
+       /*  RBW - 11/02/1998 
+           StartsOnPage is like StartsOnDesk-Plus
+       */
+       else if(ITIS("STARTSONPAGE"))
+         {
+           SKIP("STARTSONPAGE");
+           tname.off_flags |= STARTSONDESK_FLAG;
+           spargs = sscanf(restofline,"%d %d %d", &tmpno1, &tmpno2, &tmpno3);
+
+          if (spargs == 1 || spargs == 3)
+            {
+            /*  We have a desk no., with or without page.  */
+              tname.Desk = tmpno1 + 1;        /*  Desk is now actual + 1  */
+              /*  Bump past desk no.    */
+	      GETWORD;
+              restofline = tmp;
+              SKIPSPACE;
+            }
+
+          if (spargs == 2 || spargs == 3)
+            {
+              if (spargs == 3)
+                {
+                  tname.PageX = tmpno2 + 1;
+                  tname.PageY = tmpno3 + 1;
+                }
+              else
+                {
+                  tname.PageX       =  tmpno1 + 1;
+                  tname.PageY       =  tmpno2 + 1;
+                }
+              /*  Bump past next 2 args.    */
+	      GETWORD;
+              restofline = tmp;
+              SKIPSPACE;
+	      GETWORD;
+              restofline = tmp;
+              SKIPSPACE;
+
+            }
+          if (spargs < 1 || spargs > 3)
+            {
+              tname.off_flags &= ~STARTSONDESK_FLAG;
+              fvwm_msg(ERR,"ProcessNewStyle",
+                       "bad StartsOnPage args: %s", restofline);
+            }
+
+	 }
+       /**/
         else if(ITIS("STARTSANYWHERE"))
         {
           SKIP("STARTSANYWHERE");
@@ -741,7 +806,13 @@ void ProcessNewStyle(XEvent *eventp,
                   if(nptr->Decor) tname.Decor = nptr->Decor;
 #endif
                   if(nptr->off_flags & STARTSONDESK_FLAG)
-                    tname.Desk = nptr->Desk;
+		    /*  RBW - 11/02/1998  */
+		    {
+                      tname.Desk = nptr->Desk;
+                      tname.PageX = nptr->PageX;
+                      tname.PageY = nptr->PageY;
+		    }
+		    /**/
                   if(nptr->off_flags & BW_FLAG)
                     tname.border_width = nptr->border_width;
                   if(nptr->off_flags & NOBW_FLAG)

@@ -3346,6 +3346,39 @@ void SetGlobalOptions(XEvent *eventp,Window junk,FvwmWindow *tmp_win,
     {
       Scr.StipledTitles = True;
     }
+         /*  RBW - 11/02/1998  */
+    else if (StrEquals(opt,"STARTSONPAGEMODIFIESUSPOSITION"))
+    {
+      Scr.ModifyUSP = True;
+    }
+    else if (StrEquals(opt,"STARTSONPAGEHONORSUSPOSITION"))
+    {
+      Scr.ModifyUSP = False;
+    }
+    else if (StrEquals(opt,"CAPTUREHONORSSTARTSONPAGE"))
+    {
+      Scr.CaptureHonorsStartsOnPage = True;
+    }
+    else if (StrEquals(opt,"CAPTUREIGNORESSTARTSONPAGE"))
+    {
+      Scr.CaptureHonorsStartsOnPage = False;
+    }
+    else if (StrEquals(opt,"RECAPTUREHONORSSTARTSONPAGE"))
+    {
+      Scr.RecaptureHonorsStartsOnPage = True;
+    }
+    else if (StrEquals(opt,"RECAPTUREIGNORESSTARTSONPAGE"))
+    {
+      Scr.RecaptureHonorsStartsOnPage = False;
+    }
+    else if (StrEquals(opt,"ACTIVEPLACEMENTHONORSSTARTSONPAGE"))
+    {
+      Scr.ActivePlacementHonorsStartsOnPage = True;
+    }
+    else if (StrEquals(opt,"ACTIVEPLACEMENTIGNORESSTARTSONPAGE"))
+    {
+      Scr.ActivePlacementHonorsStartsOnPage = False;
+    }
     else
       fvwm_msg(ERR,"GlobalOpts","Unknown Global Option '%s'",opt);
     if (opt) /* should never be null, but checking anyways... */

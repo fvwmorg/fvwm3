@@ -97,6 +97,9 @@ FvwmWindow *AddWindow(Window w)
   name_list styles;                     /* area for merged styles */
   int i,width,height;
   int a,b;
+/*  RBW - 11/02/1998  */
+  int tmpno1 = -1, tmpno2 = -1, tmpno3 = -1, spargs = 0;
+/**/
   extern Bool NeedToResizeToo;
   extern FvwmWindow *colormap_win;
   int client_argc;
@@ -258,13 +261,52 @@ FvwmWindow *AddWindow(Window w)
                                &str_type, &rm_value);
       if ((status == True) && (rm_value.size != 0)) {
           styles.Desk = atoi(rm_value.addr);
+          /*  RBW - 11/02/1998  */
+          styles.Desk++;
+          /**/
 	  styles.on_flags |= STARTSONDESK_FLAG;
       }
+/*  RBW - 11/02/1998  */
+      /*  Handle the X Resource equivalent of StartsOnPage.  */
+      status = XrmGetResource (db, "fvwm.page", "Fvwm.Page", &str_type, &rm_value);
+      if ((status == True) && (rm_value.size != 0)) {
+          spargs = sscanf (rm_value.addr, "%d %d %d", &tmpno1, &tmpno2, &tmpno3);
+          switch (spargs)
+            {
+            case 1:
+              {
+                styles.on_flags |= STARTSONDESK_FLAG;
+                styles.Desk     =  tmpno1 + 1;
+                break;
+              }
+            case 2:
+              {
+                styles.on_flags |= STARTSONDESK_FLAG;
+                styles.PageX    =  tmpno1 + 1;
+                styles.PageY    =  tmpno2 + 1;
+                break;
+              }
+            case 3:
+              {
+                styles.on_flags |= STARTSONDESK_FLAG;
+                styles.Desk     =  tmpno1 + 1;
+                styles.PageX    =  tmpno2 + 1;
+                styles.PageY    =  tmpno3 + 1;
+                break;
+              }
+            default:
+              {
+                break;
+              }
+            }
+      }
+/**/
       XrmDestroyDatabase (db);
       db = NULL;
   }
 
-  if(!PlaceWindow(tmp_win, styles.on_flags, styles.Desk))
+/*  RBW - 11/02/1998  */
+  if(!PlaceWindow(tmp_win, styles.on_flags, styles.Desk, styles.PageX, styles.PageY))
     return NULL;
 
   /*
@@ -1044,7 +1086,12 @@ static void merge_styles(name_list *styles, name_list *nptr) {
   if (nptr->Decor != NULL) styles->Decor = nptr->Decor;
 #endif
   if(nptr->off_flags & STARTSONDESK_FLAG)
-    styles->Desk = nptr->Desk;
+    /*  RBW - 11/02/1998  */
+    {
+      styles->Desk = nptr->Desk;
+      styles->PageX = nptr->PageX;
+      styles->PageY = nptr->PageY;
+    }
   if(nptr->off_flags & BW_FLAG)
     styles->border_width = nptr->border_width;
   if(nptr->off_flags & FORE_COLOR_FLAG)

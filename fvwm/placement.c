@@ -28,10 +28,12 @@
 #define MAX(A,B) ((A)>(B)? (A):(B))
 #endif
 
-int get_next_x(FvwmWindow *t, int x, int y);
-int get_next_y(FvwmWindow *t, int y);
-int test_fit(FvwmWindow *t, int test_x, int test_y, int aoimin);
-void CleverPlacement(FvwmWindow *t, int *x, int *y);
+/*  RBW - 11/02/1998  */
+int get_next_x(FvwmWindow *t, int x, int y, int pdeltax, int pdeltay);
+int get_next_y(FvwmWindow *t, int y, int pdeltay);
+int test_fit(FvwmWindow *t, int test_x, int test_y, int aoimin, int pdeltax, int pdeltay);
+void CleverPlacement(FvwmWindow *t, int *x, int *y, int pdeltax, int pdeltay);
+/**/
 
 /* The following factors represent the amount of area that these types of
  * windows are counted as.  For example, by default the area of ONTOP windows
@@ -52,8 +54,21 @@ void CleverPlacement(FvwmWindow *t, int *x, int *y);
 #define AVOIDICON 10    /*  Try hard no to place windows over icons */
 #endif
 
-void SmartPlacement(FvwmWindow *t, int width, int height, int *x, int *y)
+/*  RBW - 11/02/1998  */
+int SmartPlacement(FvwmWindow *t, 
+                    int width, 
+                    int height, 
+                    int *x, 
+                    int *y,
+                    int pdeltax,
+                    int pdeltay)
 {
+  int PageBottom    =  Scr.MyDisplayHeight - pdeltay;
+  int PageRight     =  Scr.MyDisplayWidth - pdeltax;
+  int PageTop       =  0 - pdeltay;
+  int PageLeft      =  0 - pdeltax;
+  int rc            =  True;
+/**/
   int temp_h,temp_w;
   int test_x = 0,test_y = 0;
   int loc_ok = False, tw,tx,ty,th;
@@ -61,23 +76,30 @@ void SmartPlacement(FvwmWindow *t, int width, int height, int *x, int *y)
 
   if (Scr.SmartPlacementIsClever) /* call clever placement instead? */
   {
-    CleverPlacement(t,x,y);
-    return;
+/*  RBW - 11/02/1998  */
+    CleverPlacement(t,x,y,pdeltax,pdeltay);
+/**/
+    return rc;
   }
+/*  RBW - 11/02/1998  */
+test_x = PageLeft;
+test_y = PageTop;
+/**/
 
   temp_h = height;
   temp_w = width;
       
-  while(((test_y + temp_h) < (Scr.MyDisplayHeight))&&(!loc_ok))
+/*  RBW - 11/02/1998  */
+  while(((test_y + temp_h) < (PageBottom))&&(!loc_ok))
   {
-    test_x = 0;
-    while(((test_x + temp_w) < (Scr.MyDisplayWidth))&&(!loc_ok))
+    test_x = PageLeft;
+    while(((test_x + temp_w) < (PageRight))&&(!loc_ok))
     {
       loc_ok = True;
       test_window = Scr.FvwmRoot.next;
       while((test_window != (FvwmWindow *)0)&&(loc_ok == True))
       {	
-        if(test_window->Desk == Scr.CurrentDesk)
+        if(test_window->Desk == t->Desk)
         {
 #ifndef NO_STUBBORN_PLACEMENT
           if((test_window->flags & ICONIFIED)&&
@@ -119,14 +141,16 @@ void SmartPlacement(FvwmWindow *t, int width, int height, int *x, int *y)
     }
     test_y +=1;
   }
+  /*  RBW - 11/02/1998  */
   if(loc_ok == False)
   {
-    *x = -1;
-    *y = -1;
-    return;
+    rc  =  False;
+    return rc;
   }
   *x = test_x;
   *y = test_y;
+  return rc;
+  /**/
 }
 
 
@@ -135,13 +159,22 @@ void SmartPlacement(FvwmWindow *t, int width, int height, int *x, int *y)
  * of interference with other windows.  If it can place a window without any
  * interference, fine.  Otherwise, it places it so that the area of of
  * interference between the new window and the other windows is minimized */
-void CleverPlacement(FvwmWindow *t, int *x, int *y)
+/*  RBW - 11/02/1998  */
+void CleverPlacement(FvwmWindow *t, int *x, int *y, int pdeltax, int pdeltay)
 {
+/**/
   int test_x = 0,test_y = 0;
   int xbest, ybest;
   int aoi, aoimin;       /* area of interference */
   
-  aoi = aoimin = test_fit(t, test_x, test_y, -1);
+/*  RBW - 11/02/1998  */
+  int PageTop       =  0 - pdeltay;
+  int PageLeft      =  0 - pdeltax;
+
+  test_x -= PageLeft;
+  test_y -= PageTop;
+  aoi = aoimin = test_fit(t, test_x, test_y, -1, pdeltax, pdeltay);
+/**/
   xbest = test_x;
   ybest = test_y;
 
@@ -149,14 +182,14 @@ void CleverPlacement(FvwmWindow *t, int *x, int *y)
   {
     if(aoi > 0) /* Windows interfere.  Try next x. */
     {
-      test_x = get_next_x(t, test_x, test_y);
+      test_x = get_next_x(t, test_x, test_y, pdeltax, pdeltay);
     }
     else /* Out of room in x direction. Try next y. Reset x.*/
     {
-      test_x = 0;
-      test_y = get_next_y(t, test_y);
+      test_x = PageLeft;
+      test_y = get_next_y(t, test_y, pdeltay);
     }
-    aoi = test_fit(t, test_x, test_y, aoimin);
+    aoi = test_fit(t, test_x, test_y, aoimin, pdeltax, pdeltay);
     if((aoi >= 0) && (aoi < aoimin))
     {
       xbest = test_x;
@@ -168,21 +201,27 @@ void CleverPlacement(FvwmWindow *t, int *x, int *y)
   *y = ybest;
 }
 
-int get_next_x(FvwmWindow *t, int x, int y)
+/*  RBW - 11/02/1998  */
+int get_next_x(FvwmWindow *t, int x, int y, int pdeltax, int pdeltay)
 {
+/**/
   int xnew;
   int xtest;
   FvwmWindow *testw;
+  int PageBottom    =  Scr.MyDisplayHeight - pdeltay;
+  int PageRight     =  Scr.MyDisplayWidth - pdeltax;
   
   /* Test window at far right of screen */
-  xnew = Scr.MyDisplayWidth;
-  xtest = Scr.MyDisplayWidth - (t->frame_width  + 2 * t->bw);
+/*  RBW - 11/02/1998  */
+  xnew = (Scr.MyDisplayWidth - pdeltax);
+  xtest = (Scr.MyDisplayWidth - pdeltax) - (t->frame_width  + 2 * t->bw);
+/**/
   if(xtest > x)
     xnew = MIN(xnew, xtest);
   /* Test the values of the right edges of every window */
   for(testw = Scr.FvwmRoot.next ; testw != NULL ; testw = testw->next)
   {
-    if((testw->Desk != Scr.CurrentDesk) || (testw == t))
+    if((testw->Desk != t->Desk) || (testw == t))
       continue;
     if(testw->flags & ICONIFIED)
     {
@@ -210,21 +249,26 @@ int get_next_x(FvwmWindow *t, int x, int y)
   }
   return xnew;
 }
-int get_next_y(FvwmWindow *t, int y)
+/*  RBW - 11/02/1998  */
+int get_next_y(FvwmWindow *t, int y, int pdeltay)
 {
+/**/
   int ynew;
   int ytest;
   FvwmWindow *testw;
+  int PageBottom    =  Scr.MyDisplayHeight - pdeltay;
   
   /* Test window at far bottom of screen */
-  ynew = Scr.MyDisplayHeight;
-  ytest = Scr.MyDisplayHeight - (t->frame_height + 2 * t->bw);
+/*  RBW - 11/02/1998  */
+  ynew = PageBottom;
+  ytest = PageBottom - (t->frame_height + 2 * t->bw);
+/**/
   if(ytest > y)
     ynew = MIN(ynew, ytest);
   /* Test the values of the bottom edge of every window */
   for(testw = Scr.FvwmRoot.next ; testw != NULL ; testw = testw->next)
   {
-    if((testw->Desk != Scr.CurrentDesk) || (testw == t))
+    if((testw->Desk != t->Desk) || (testw == t))
       continue;
     if(testw->flags & ICONIFIED)
     {
@@ -248,8 +292,10 @@ int get_next_y(FvwmWindow *t, int y)
   return ynew;
 }
 
-int test_fit(FvwmWindow *t, int x11, int y11, int aoimin)
+/*  RBW - 11/02/1998  */
+int test_fit(FvwmWindow *t, int x11, int y11, int aoimin, int pdeltax, int pdeltay)
 {
+/**/
   FvwmWindow *testw;
   int x12, x21, x22;
   int y12, y21, y22;
@@ -257,17 +303,19 @@ int test_fit(FvwmWindow *t, int x11, int y11, int aoimin)
   int aoi = 0;	    /* area of interference */
   int anew;
   int avoidance_factor;
+  int PageBottom    =  Scr.MyDisplayHeight - pdeltay;
+  int PageRight     =  Scr.MyDisplayWidth - pdeltax;
   
   x12 = x11 + t->frame_width  + 2 * t->bw;
   y12 = y11 + t->frame_height + 2 * t->bw;
   
-  if(y12 > Scr.MyDisplayHeight) /* No room in y direction */
+  if (y12 > PageBottom) /* No room in y direction */
     return -1;
-  if(x12 > Scr.MyDisplayWidth) /* No room in x direction */
+  if (x12 > PageRight) /* No room in x direction */
     return -2;
   for(testw = Scr.FvwmRoot.next ; testw != NULL ; testw = testw->next)
   {
-    if((testw == t) || (testw->Desk != Scr.CurrentDesk))
+    if((testw == t) || (testw->Desk != t->Desk))
        continue;
     if((testw->flags & ICONIFIED)&&
        (testw->icon_w))
@@ -319,11 +367,21 @@ int test_fit(FvwmWindow *t, int x11, int y11, int aoimin)
  * Returns False in the event of a lost window.
  *
  **************************************************************************/
-Bool PlaceWindow(FvwmWindow *tmp_win, unsigned long tflag,int Desk)
+/*  RBW - 11/02/1998  */
+Bool PlaceWindow(FvwmWindow *tmp_win, unsigned long tflag,int Desk, int PageX, int PageY)
 {
+/**/
   FvwmWindow *t;
   int xl = -1,yt,DragWidth,DragHeight;
   int gravx, gravy;			/* gravity signs for positioning */
+/*  RBW - 11/02/1998  */
+  int px = 0, py = 0, pdeltax = 0, pdeltay = 0, pdesk = 0;
+  int a,b;
+  int PageRight = Scr.MyDisplayWidth, PageBottom = Scr.MyDisplayHeight;
+  int smartlyplaced       =  False;
+  Bool HonorStartsOnPage  =  False;
+  extern Bool Restarting;
+/**/
   extern Boolean PPosOverride;
   
   GetGravityOffsets (tmp_win, &gravx, &gravy);
@@ -336,11 +394,52 @@ Bool PlaceWindow(FvwmWindow *tmp_win, unsigned long tflag,int Desk)
    * 4. Transients go on the same desk as their parents.
    * 5. Window groups stay together (completely untested)
    */
+
+/*  RBW - 11/02/1998  */
+/*
+    Let's get the StartsOnDesk/Page tests out of the way first.
+*/
+  if (tflag & STARTSONDESK_FLAG)
+    {
+      HonorStartsOnPage  =  True;
+      /*
+          Honor the flag unless...
+          it's a restart or recapture, and that option's disallowed...
+      */
+      if (PPosOverride && (Restarting || (Scr.flags & WindowsCaptured)) && !Scr.RecaptureHonorsStartsOnPage)
+        {
+          HonorStartsOnPage  =  False;
+        }
+     /*
+          it's a cold start window capture, and that's disallowed...
+      */
+      if (PPosOverride && (!Restarting && !(Scr.flags & WindowsCaptured)) && !Scr.CaptureHonorsStartsOnPage)
+        {
+          HonorStartsOnPage  =  False;
+        }
+      /*
+          we have a USPosition, and overriding it is disallowed...
+      */
+      if (!PPosOverride && (USPosition && !Scr.ModifyUSP))
+        {
+          HonorStartsOnPage  =  False;
+        }
+      /*
+          it's ActivePlacement and SkipMapping, and that's disallowed.
+      */
+      if (!PPosOverride && ((tmp_win->flags & SHOW_ON_MAP) && 
+          (!(tflag & RANDOM_PLACE_FLAG)) && !Scr.ActivePlacementHonorsStartsOnPage))
+        {
+          HonorStartsOnPage  =  False;
+        }
+    }
+/**/
+
   tmp_win->Desk = Scr.CurrentDesk;
   if (tflag & STICKY_FLAG)
     tmp_win->Desk = Scr.CurrentDesk;
-  else if (tflag & STARTSONDESK_FLAG)
-    tmp_win->Desk = Desk;
+  else if ((tflag & STARTSONDESK_FLAG) && Desk && HonorStartsOnPage)
+    tmp_win->Desk = Desk - 1;    /*  RBW - 11/02/1998    */
   else
   {
     Atom atype;
@@ -387,7 +486,43 @@ Bool PlaceWindow(FvwmWindow *tmp_win, unsigned long tflag,int Desk)
   /* I think it would be good to switch to the selected desk
    * whenever a new window pops up, except during initialization */
   if((!PPosOverride)&&(!(tmp_win->flags & SHOW_ON_MAP)))
-    changeDesks(tmp_win->Desk);  
+/*  RBW - 11/02/1998  --  I dont. */
+    {
+      changeDesks(tmp_win->Desk);  
+    }
+
+/*  
+    Don't move viewport if SkipMapping, or if recapturing the window,
+    adjust the coordinates later. Otherwise, just switch to the target 
+    page - it's ever so much simpler.
+*/
+    if (!(tflag & STICKY_FLAG) && (tflag & STARTSONDESK_FLAG))
+      {
+        if (PageX && PageY)
+        {
+          px  =  PageX - 1;
+          py  =  PageY -1 ;
+          px  *= Scr.MyDisplayWidth;
+          py  *= Scr.MyDisplayHeight;
+          if ( (!PPosOverride) && (!(tmp_win->flags & SHOW_ON_MAP)) )
+            {
+              MoveViewport(px,py,True);
+            }
+          else
+            {
+              if (HonorStartsOnPage)
+                {
+                  /*  Save the delta from current page */
+                  pdeltax       =  Scr.Vx - px;
+                  pdeltay       =  Scr.Vy - py;
+                  PageRight    -=  pdeltax;
+                  PageBottom   -=  pdeltay;
+                }
+            }
+        }
+      }
+
+/**/
 
 
   /* Desk has been selected, now pick a location for the window */
@@ -415,18 +550,18 @@ Bool PlaceWindow(FvwmWindow *tmp_win, unsigned long tflag,int Desk)
     if(tflag & RANDOM_PLACE_FLAG)
     {
       if(tflag & SMART_PLACE_FLAG)
-        SmartPlacement(tmp_win,tmp_win->frame_width+2*tmp_win->bw,
-                       tmp_win->frame_height+2*tmp_win->bw, 
-                       &xl,&yt);
-      if(xl < 0)
+        smartlyplaced = SmartPlacement(tmp_win,tmp_win->frame_width+2*tmp_win->bw,
+                                       tmp_win->frame_height+2*tmp_win->bw, 
+                                       &xl,&yt, pdeltax, pdeltay);
+      if(! smartlyplaced)
       {
-        /* plase window in a random location */
+        /* place window in a random location */
         if ((Scr.randomx += GetDecor(tmp_win,TitleHeight)) > Scr.MyDisplayWidth / 2)
           Scr.randomx = GetDecor(tmp_win,TitleHeight);
         if ((Scr.randomy += 2*GetDecor(tmp_win,TitleHeight)) > Scr.MyDisplayHeight / 2)
           Scr.randomy = 2 * GetDecor(tmp_win,TitleHeight);
-        tmp_win->attr.x = Scr.randomx - tmp_win->old_bw;
-        tmp_win->attr.y = Scr.randomy - tmp_win->old_bw;
+        tmp_win->attr.x = (Scr.randomx - pdeltax) - tmp_win->old_bw;
+        tmp_win->attr.y = (Scr.randomy - pdeltay) - tmp_win->old_bw;
       }
       else
       {
@@ -439,16 +574,16 @@ Bool PlaceWindow(FvwmWindow *tmp_win, unsigned long tflag,int Desk)
       tmp_win->frame_y = tmp_win->attr.y + tmp_win->old_bw - tmp_win->bw;
       
       if(tmp_win->frame_x + tmp_win->frame_width +
-         2*tmp_win->boundary_width> Scr.MyDisplayWidth)
+         2*tmp_win->boundary_width> PageRight)
       {
-        tmp_win->attr.x = Scr.MyDisplayWidth -tmp_win->attr.width
+        tmp_win->attr.x = PageRight -tmp_win->attr.width
           - tmp_win->old_bw +tmp_win->bw - 2*tmp_win->boundary_width;
         Scr.randomx = 0;
       }
       if(tmp_win->frame_y + 2*tmp_win->boundary_width+tmp_win->title_height
-         + tmp_win->frame_height > Scr.MyDisplayHeight)
+         + tmp_win->frame_height > PageBottom)
       {
-        tmp_win->attr.y = Scr.MyDisplayHeight -tmp_win->attr.height
+        tmp_win->attr.y = PageBottom -tmp_win->attr.height
           - tmp_win->old_bw +tmp_win->bw - tmp_win->title_height -
           2*tmp_win->boundary_width;;
         Scr.randomy = 0;
@@ -459,13 +594,14 @@ Bool PlaceWindow(FvwmWindow *tmp_win, unsigned long tflag,int Desk)
     }
     else
     {	  
+      /*  Must be ActivePlacement  */
       xl = -1;
       yt = -1;
       if(tflag & SMART_PLACE_FLAG)
-        SmartPlacement(tmp_win,tmp_win->frame_width+2*tmp_win->bw,
-                       tmp_win->frame_height+2*tmp_win->bw, 
-                       &xl,&yt);
-      if(xl < 0)
+        smartlyplaced = SmartPlacement(tmp_win,tmp_win->frame_width+2*tmp_win->bw,
+                                       tmp_win->frame_height+2*tmp_win->bw, 
+                                       &xl,&yt, pdeltax, pdeltay);
+      if(! smartlyplaced)
       {
         if(GrabEm(POSITION))
         {
@@ -498,6 +634,13 @@ Bool PlaceWindow(FvwmWindow *tmp_win, unsigned long tflag,int Desk)
           yt = 0;
         }
       }
+      /* RBW - 11/02/1998  */
+      if (HonorStartsOnPage)
+      {
+        xl -= pdeltax;
+        yt -= pdeltay;
+      }
+      /**/
       tmp_win->attr.y = yt - tmp_win->old_bw + tmp_win->bw;
       tmp_win->attr.x = xl - tmp_win->old_bw + tmp_win->bw;	      
       tmp_win->xdiff = xl ;
@@ -509,6 +652,59 @@ Bool PlaceWindow(FvwmWindow *tmp_win, unsigned long tflag,int Desk)
     /* the USPosition was specified, or the window is a transient, 
      * or it starts iconic so place it automatically */
     
+/*  RBW - 11/02/1998  */
+/*  
+    If SkipMapping, and other legalities are observed, adjust for StartsOnPage.
+*/
+
+      if ( ( (tmp_win->flags & SHOW_ON_MAP) && HonorStartsOnPage )  &&
+
+           ( !(tmp_win->flags & TRANSIENT) && 
+
+             ((tflag & NO_PPOSITION_FLAG) ||
+              !(tmp_win->hints.flags & PPosition)) &&
+
+             !((tmp_win->wmhints) &&
+               (tmp_win->wmhints->flags & StateHint) &&
+               (tmp_win->wmhints->initial_state == IconicState)) ) ) 
+        {
+        /*
+            We're placing a SkipMapping window - either capturing one that's
+            previously been mapped, or overriding USPosition - so what we
+            have here is its actual untouched coordinates. In case it was
+            a StartsOnPage window, we have to 1) convert the existing x,y 
+            offsets relative to the requested page (i.e., as though there 
+            were only one page, no virtual desktop), then 2) readjust 
+            relative to the current page.
+        */
+
+
+          if (tmp_win->attr.x < 0)
+            {
+              tmp_win->attr.x  =  ((Scr.MyDisplayWidth + tmp_win->attr.x) % Scr.MyDisplayWidth);
+            }
+          else
+            {
+            tmp_win->attr.x  =  tmp_win->attr.x % Scr.MyDisplayWidth;
+            }
+/*
+    Noticed a quirk here. With some apps (e.g., xman), we find the 
+    placement has moved 1 pixel away from where we originally put it when we
+    come through here. Why is this happening?
+*/
+          if (tmp_win->attr.y < 0)
+            {
+              tmp_win->attr.y  =  ((Scr.MyDisplayHeight + tmp_win->attr.y) % Scr.MyDisplayHeight);
+            }
+          else
+            {
+              tmp_win->attr.y  =  tmp_win->attr.y % Scr.MyDisplayHeight;
+            }
+          tmp_win->attr.x  -=  pdeltax;
+          tmp_win->attr.y  -=  pdeltay;
+        }
+/**/
+
     tmp_win->xdiff = tmp_win->attr.x; 
     tmp_win->ydiff =  tmp_win->attr.y;
     /* put it where asked, mod title bar */

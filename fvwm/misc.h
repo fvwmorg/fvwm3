@@ -31,6 +31,10 @@ typedef struct name_list_struct
   char *Decor;
 #endif
   int Desk;                        /* Desktop number */
+/* RBW - 11/02/1998 - page x,y numbers */
+  int PageX;
+  int PageY;
+/**/
   unsigned long on_flags; 
   unsigned long off_flags; 
   int border_width;
@@ -246,7 +250,9 @@ extern void       GetBitmapFile(FvwmWindow *tmp_win);
 extern void       GetXPMFile(FvwmWindow *tmp_win);
 extern void       GetIconWindow(FvwmWindow *tmp_win);
 extern void       GetIconBitmap(FvwmWindow *tmp_win);
-extern void SmartPlacement(FvwmWindow *t, int width, int height,int *x,int *y);
+/*  RBW - 11/02/1998  */
+extern int SmartPlacement(FvwmWindow *t, int width, int height,int *x,int *y, int pdeltax, int pdeltay);
+/**/
 extern void usage(void);
 void Broadcast_v(unsigned long event_type, unsigned long num_datum,...);
 void Broadcast(unsigned long event_type, unsigned long num_datum,
@@ -299,7 +305,9 @@ void show_panner(void);
 void WaitForButtonsUp(void);
 void FocusOn(FvwmWindow *t,int DeIconifyOnly);
 void WarpOn(FvwmWindow *t,int warp_x, int x_unit, int warp_y, int y_unit);
-Bool PlaceWindow(FvwmWindow *tmp_win, unsigned long flags,int Desk);
+/*  RBW - 11/02/1998  */
+Bool PlaceWindow(FvwmWindow *tmp_win, unsigned long flags,
+                 int Desk, int PageX, int PageY);
 void free_window_names (FvwmWindow *tmp, Bool nukename, Bool nukeicon);
 
 MenuStatus do_menu (MenuRoot *menu,MenuRoot *menuPrior,

@@ -1126,8 +1126,42 @@ SmartPlacementIsReallySmart/SmartPlacementIsNormal,
 ClickToFocusDoesntPassClick/ClickToFocusPassesClick,
 ClickToFocusDoesntRaise/ClickToFocusRaises,
 MouseFocusClickDoesntRaise/MouseFocusClickRaises,
-NoStipledTitles/StipledTitles GlobalOpts ClickToFocusDoesntPassClick,
-ClickToFocusDoesntRaise
+StartsOnPageModifiesUSPosition/StartsOnPageHonorsUSPosition,
+CaptureHonorsStartsOnPage/CaptureIgnoresStartsOnPage,
+RecaptureHonorsStartsOnPage/RecaptureIgnoresStartsOnPage,
+ActivePlacementHonorsStartsOnPage/ActivePlacementIgnoresStartsOnPage,
+NoStipledTitles/StipledTitles 
+.EX
+GlobalOpts ClickToFocusDoesntPassClick, ClickToFocusDoesntRaise
+.EE
+
+StartsOnPageModifiesUSPosition allows for a window with the StartsOnPage
+style and a command line geometry argument to have the geometry x and
+y positions adjusted relative to the page specified in the style.
+StartsOnPageHonorsUSPosition renders StartsOnPage inoperative for such
+windows. The default is StartsOnPageHonorsUSPosition.
+
+RecaptureHonorsStartsOnPage causes a window to be placed according to, or
+revert to, the StartsOnPage desk and page specification on Restart or
+Recapture. RecaptureIgnoresStartsOnPage causes fvwm to respect the current
+window position on Restart or Recapture. The default is
+RecaptureIgnoresStartsOnPage.
+
+CaptureHonorsStartsOnPage causes the initial capture (of an already
+existing window) at startup to place the window according to the
+StartsOnPage desk and page specification. CaptureIgnoresStartsOnPage
+causes fvwm to ignore these settings (including StartsOnDesk) on
+initial capture. The default is CaptureHonorsStartsOnPage.
+
+ActivePlacementIgnoresStartsOnPage suppresses StartsOnPage or StartsOnDesk
+placement in the event that both ActivePlacement and SkipMapping are in
+effect when a window is created. This prevents you from interactively
+placing a window and then wondering where it disappeared to, because it got
+placed on a different desk or page. Specify ActivePlacementHonorsStartsOnPage
+to allow this to happen anyway, which was the old way that StartsOnDesk
+worked. This has no effect if SkipMapping is not in effect, because fvwm
+will switch to the proper desk/page to perform interactive placement. The
+default is ActivePlacementIgnoresStartsOnPage.
 
 .IP "GotoPage x y"
 Moves the desktop viewport to page (x,y).  The upper left page is
@@ -1754,7 +1788,7 @@ IconGrid, IconFill,
 NoTitle/Title, NoHandles/Handles, WindowListSkip/WindowListHit,
 CirculateSkip/CirculateHit, StaysOnTop/StaysPut, Sticky/Slippery,
 StartIconic/StartNormal, Color, ForeColor, BackColor,
-StartsOnDesk/StartsAnyWhere, IconTitle/NoIconTitle,
+StartsOnDesk/StartsOnPage/StartsAnyWhere, IconTitle/NoIconTitle,
 MWMButtons/FvwmButtons, MWMBorder/FvwmBorder, MWMDecor/NoDecorHint,
 MWMFunctions/NoFuncHint, HintOverride/NoOverride, NoButton/Button,
 OLDecor/NoOLDecor, StickyIcon/SlipperyIcon,
@@ -1845,6 +1879,24 @@ StartsOnDesk takes a numeric argument which is the desktop number on
 which the window should be initially placed.  Note that standard Xt
 programs can also specify this via a resource (e.g. "-xrm '*Desk: 1'").
 
+StartsOnPage takes 1, 2, or 3 numeric arguments. If one or three arguments
+are givem, the first (or only) argument is the desktop number.  If three
+arguments are given, the 2nd and 3rd arguments identify the x,y page position
+on the virtual window. If two arguments are given, they specify the page
+position, and indicate no desk preference. If only one argument is given,
+StartsOnPage functions exactly like StartsOnDesk. For those standard Xt
+programs which understand this usage, the starting desk/page can also be
+specified via a resource (e.g., "-xrm 'Fvwm.Page: 1 0 2'").
+
+StartsOnPage in conjunction with SkipMapping is a useful technique when you
+want to start an app on some other page and continue with what you were
+doing, rather than waiting for it to appear. However, there are a few things
+to be aware of in this version of StartsOnPage.
+The page position will have no effect if the app was started with a command
+line geometry argument specifying x,y coordinates, unless you have also
+specified GlobalOpts StartsOnPageModifiesUSPosition; if you have, the
+geometry position will be adjusted relative to the target page. 
+
 StaysOnTop makes the window always try to stay on top of the other
 windows.  This might be handy for clocks or mailboxes that you would
 always like to be visible.  If the window is explicitly lowered it
@@ -1899,7 +1951,7 @@ you can have unrelated window names easily inherit similar traits
 without retyping.  For example: 'Style "rxvt" UseStyle "XTerm"'.
 
 SkipMapping tells fvwm not to switch to the desk the window is on when
-it gets mapped initially (useful with StartsOnDesk).
+it gets mapped initially (useful with StartsOnDesk or StartsOnPage).
 
 Lenience instructs fvwm to ignore the convention in the ICCCM which
 states that if an application sets the input field of the wm_hints
@@ -1965,6 +2017,10 @@ Style "FvwmButtons" Icon toolbox.xpm
 
 Style "Maker"     StartsOnDesk 1
 Style "signal"    StartsOnDesk 3           
+
+# Fire up Netscape on the second desk, in the middle of my 3x3 virtual
+# desktop, and don't bother me with it...
+Style "Netscape*" SkipMapping, StartsOnPage 1 1 1
 .EE
 Note that all properties for a window will be OR'ed together.  In the
 above example "FvwmPager" gets the property StaysOnTop via an exact

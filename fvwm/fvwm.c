@@ -1245,6 +1245,12 @@ void InitVariables(void)
   Scr.MouseFocusClickRaises = False;
   Scr.StipledTitles = False;
 
+  /*  RBW - 11/02/1998    */
+  Scr.ModifyUSP                          =  False;
+  Scr.CaptureHonorsStartsOnPage          =  True;
+  Scr.RecaptureHonorsStartsOnPage        =  False;
+  Scr.ActivePlacementHonorsStartsOnPage  =  False;
+
   /* Not the right place for this, should only be called once somewhere .. */
   InitPictureCMap(dpy,Scr.Root);
 
