@@ -21,6 +21,8 @@ FvwmCommand.pm: findcmd.pl
 		< $(top_srcdir)/fvwm/functions.c > $@;				\
 	else echo Did not find perl during FVWM install > $@; fi
 
+CLEANFILES = FvwmCommand.sh FvwmCommand.pm
+
 FvwmCommandS_DEPENDENCIES = $(top_builddir)/libs/libfvwm.a
 FvwmCommand_DEPENDENCIES = $(top_builddir)/libs/libfvwm.a
 

@@ -11,6 +11,8 @@ noinst_SCRIPTS = ex-auto ex-cascade ex-grpmv focus-Netscape	\
 EXTRA_DIST = ex-auto.pl ex-cascade.pl ex-grpmv.pl focus-Netscape.pl	\
 	focus-link.pl push-away.pl test1.pl focus-link.1 test2.sh
 
+CLEANFILES = $(noinst_SCRIPTS)
+
 SUFFIXES = .pl
 .pl:
 	@rm -f $@

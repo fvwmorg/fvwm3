@@ -1,5 +1,9 @@
 1999-09-28  Paul D. Smith  <psmith@gnu.org>
 
+	* FvwmForm/Makefile.am: Add CLEANFILES to remove some extra stuff.
+	* FvwmCommand/Makefile.am: Ditto.
+	* FvwmCommand/scripts/Makefile.am: Ditto.
+
 	Patch from Harald Dunkel <harri@Synopsys.COM>.
 
 	* FvwmButtons/FvwmButtons.h: Removed unneeded declarations of
