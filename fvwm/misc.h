@@ -62,6 +62,7 @@ int GetTwoArguments(char *action, int *val1, int *val2, int *val1_unit,
 		    int *val2_unit);
 void NewFontAndColor(Font newfont, Pixel color, Pixel backcolor);
 Bool IsRectangleOnThisPage(rectangle *rec, int desk);
+Bool IntersectsInterval(int x1, int width1, int x2, int width2);
 void Keyboard_shortcuts(XEvent *, FvwmWindow*, int);
 Bool check_if_fvwm_window_exists(FvwmWindow *fw);
 int truncate_to_multiple (int x, int m);

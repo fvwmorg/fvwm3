@@ -708,17 +708,34 @@ void move_window_doit(F_CMD_ARGS, Bool do_animate, Bool do_move_to_page)
   if (do_move_to_page)
   {
     do_animate = False;
-    FinalX = x % Scr.MyDisplayWidth;
-    FinalY = y % Scr.MyDisplayHeight;
-    if(FinalX < 0)
-      FinalX += Scr.MyDisplayWidth;
-    if(FinalY < 0)
-      FinalY += Scr.MyDisplayHeight;
-    if (get_page_arguments(action, &page_x, &page_y))
+    SET_STICKY(tmp_win, 0);
+
+    if (!get_page_arguments(action, &page_x, &page_y))
     {
-      SET_STICKY(tmp_win, 0);
+      page_x = Scr.Vx;
+      page_y = Scr.Vy;
+    }
+    if (!IntersectsInterval(x, width, page_x - Scr.Vx, Scr.MyDisplayWidth))
+    {
+      FinalX = x % Scr.MyDisplayWidth;
+      if(FinalX < 0)
+        FinalX += Scr.MyDisplayWidth;
       FinalX += page_x - Scr.Vx;
+    }
+    else
+    {
+      FinalX = x;
+    }
+    if (!IntersectsInterval(y, height, page_y - Scr.Vy, Scr.MyDisplayHeight))
+    {
+      FinalY = y % Scr.MyDisplayHeight;
+      if(FinalY < 0)
+        FinalY += Scr.MyDisplayHeight;
       FinalY += page_y - Scr.Vy;
+    }
+    else
+    {
+      FinalY = y;
     }
   }
   else
