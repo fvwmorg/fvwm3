@@ -69,11 +69,6 @@ void do_relieve_rectangle(
 
 	if (w <= 0 || h <= 0)
 	{
-		if (w < 0 || h < 0)
-		{
-			fprintf(stderr, "RelieveRectangle:"
-				" called with w = %d, h = %d\n", w, h);
-		}
 		return;
 	}
 	seg = (XSegment*)alloca((sizeof(XSegment) * line_width) * 2);
@@ -425,9 +420,13 @@ XColor *AllocNonlinearGradient(
 		int skip_first_color = (curpixel != 0);
 
 		if (i == 0)
+		{
 			n = seg_end_colors[0] + 1;
+		}
 		else
+		{
 			n = seg_end_colors[i] - seg_end_colors[i - 1] + 1;
+		}
 
 		if (n > 1)
 		{
@@ -440,8 +439,9 @@ XColor *AllocNonlinearGradient(
 				return NULL;
 			}
 			for (j = skip_first_color; j < n; ++j)
+			{
 				xcs[curpixel + j] = c[j];
-			
+			}
 			curpixel += n - 1;
 		}
 		if (c)
@@ -478,7 +478,9 @@ XColor *AllocAllGradientColors(
 	for (i = 0; i <= nsegs; i++)
 	{
 		if (color_names[i])
+		{
 			free(color_names[i]);
+		}
 	}
 	free(color_names);
 	free(perc);
@@ -850,7 +852,7 @@ Drawable CreateGradientPixmap(
 				if (dither)
 				{
 					PictureAllocColorAllProp(
-						dpy, Pcmap, &c, i,j, False, 
+						dpy, Pcmap, &c, i,j, False,
 						False,True);
 					if (PUseDynamicColors)
 						pixels[k++] = c.pixel;
@@ -867,7 +869,7 @@ Drawable CreateGradientPixmap(
 		{
 			for (j = 0; j < t_height; j++)
 			{
-				c = xcs[(i + (t_height - j - 1)) * ncolors / 
+				c = xcs[(i + (t_height - j - 1)) * ncolors /
 				       t_scale];
 				if (dither)
 				{
@@ -925,7 +927,7 @@ Drawable CreateGradientPixmap(
 				if (dither)
 				{
 					PictureAllocColorAllProp(
-						dpy, Pcmap, &c, i,j, False, 
+						dpy, Pcmap, &c, i,j, False,
 						False,True);
 					if (PUseDynamicColors)
 						pixels[k++] = c.pixel;
@@ -1046,7 +1048,7 @@ Drawable CreateGradientPixmap(
 		if (d_pixels != NULL && d_npixels != NULL)
 		{
 			*d_pixels = pixels;
-			*d_npixels = ps; 
+			*d_npixels = ps;
 		}
 		else
 		{
@@ -1088,7 +1090,7 @@ Pixmap CreateGradientPixmapFromString(
 	Pixel **pixels_return, int *nalloc_pixels, int dither)
 {
 	Pixel *d_pixels = NULL;
-	unsigned int d_npixels = 0; 
+	unsigned int d_npixels = 0;
 	XColor *xcs = NULL;
 	unsigned int ncolors = 0;
 	char **colors;
@@ -1148,7 +1150,7 @@ Pixmap CreateGradientPixmapFromString(
 			{
 				Pixel *pixels;
 				int i;
-				
+
 				pixels = (Pixel *)safemalloc(
 					ncolors * sizeof(Pixel));
 				for(i=0; i<ncolors; i++)
@@ -1325,7 +1327,9 @@ GC fvwmlib_XCreateGC(
 	XGCValues gcv;
 
 	if (!values)
+	{
 		values = &gcv;
+	}
 	f = values->graphics_exposures;
 	if (!(valuemask & GCGraphicsExposures))
 	{

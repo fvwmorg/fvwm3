@@ -1,3 +1,13 @@
+2002-10-06  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* libs/Graphics.c (do_relieve_rectangle):
+	removed debug message
+
+	* fvwm/focus.c (__update_windowlist):
+	(__set_focus_to_fwin):
+	fixed reversal of __update_windowlist arguments causing FlipFocus to
+	break [and maybe other things]
+
 2002-10-05  olicha  <olivier.chapuis@free.fr>
 
 	* libs/PictureUtils.c (alloc_color_cube):
@@ -18,13 +28,13 @@
 
 2002-10-04  olicha  <olivier.chapuis@free.fr>
 
-	* libs/PictureUtils.c (*): 
+	* libs/PictureUtils.c (*):
 	Used a better color approximation for color cube when we do not dither.
 	Added some new colors tables: color cube with some grey colors.
 	Change the default to a 4x4x3 cc with 6 grey (54 colors).
 	Some visual fixes.
 
-	* fvwm/fvwm.c (main): 
+	* fvwm/fvwm.c (main):
 	Fixed the visual option
 
 2002-10-03  Mikhael Goikhman  <migo@homemail.com>
@@ -37,12 +47,12 @@
 	* libs/PictureUtils.c (USED_DIST):
 	Used the euclidian distance for colors distance
 
-	* libs/Fft.c (FftGetFont): 
+	* libs/Fft.c (FftGetFont):
 	Disable Xft if the Xserver does not support XRender
 
 2002-10-01  olicha  <olivier.chapuis@free.fr>
 
-	* libs/Fft.c (FftGetFont): 
+	* libs/Fft.c (FftGetFont):
 	Disable Xft if the Xserver does not support XRender
 
 	* libs/FRender.c (FRenderRender):
@@ -53,7 +63,7 @@
 	(SetClippedRectangleBackground):
 	* libs/Colorset.h:
 	New interface function for drawing a subset of a colorset rectangle
-	
+
 2002-09-26  olicha  <olivier.chapuis@free.fr>
 
 	* fvwm/update.c (apply_window_updates):
@@ -61,7 +71,7 @@
 
 	* libs/FRender.c (FRenderRender):
 	Fixed bitmap rendering
-	
+
 	* fvwm/update.c (apply_window_updates):
 	* fvwm/geometry.c (move_icon_to_position):
 	* fvwm/events.c (HandleEnterNotify):
@@ -80,7 +90,7 @@
 
 	* fvwm/icons.c (DrawIconTitleWindow):
 	One more drawing fix
-	
+
 2002-09-24  olicha  <olivier.chapuis@free.fr>
 
 	* fvwm/icons.c (DrawIconTitleWindow):

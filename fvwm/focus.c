@@ -166,8 +166,7 @@ static Bool __check_allow_focus(
 }
 
 static void __update_windowlist(
-	FvwmWindow *fw, fpol_set_focus_by_t set_by,
-	int is_focus_by_focus_cmd)
+	FvwmWindow *fw, fpol_set_focus_by_t set_by, int is_focus_by_focus_cmd)
 {
 	lastFocusType = !is_focus_by_focus_cmd;
 	if (fw == NULL || focus_is_focused(fw) || fw == &Scr.FvwmRoot)
@@ -281,7 +280,7 @@ static void __set_focus_to_fwin(
 	{
 		return;
 	}
-	__update_windowlist(fw, args->is_focus_by_focus_cmd, args->set_by);
+	__update_windowlist(fw, args->set_by, args->is_focus_by_focus_cmd);
 	if (__try_other_screen_focus(fw) == True)
 	{
 		return;
