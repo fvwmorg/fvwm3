@@ -18,7 +18,7 @@ Changes in beta release 2.4.1 (not released yet)
 
 * New Geometry option for FvwmForm.
 
-* New Screen resolution option for FvwmIconMan.
+* New Screen resolution and ShowOnlyIcons options for FvwmIconMan.
 
 * New options PageOnly and ScreenOnly for FvwmTaskBar.
 
