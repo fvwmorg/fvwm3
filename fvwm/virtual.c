@@ -566,14 +566,6 @@ int HandlePaging(
 		{
 			is_timestamp_valid = False;
 			add_time = 0;
-			discard_window_events(
-				Scr.PanFrameTop.win, LeaveWindowMask);
-			discard_window_events(
-				Scr.PanFrameBottom.win, LeaveWindowMask);
-			discard_window_events(
-				Scr.PanFrameLeft.win, LeaveWindowMask);
-			discard_window_events(
-				Scr.PanFrameRight.win, LeaveWindowMask);
 			return 0;
 		}
 		if (!fLoop && is_last_position_valid &&
@@ -607,6 +599,14 @@ int HandlePaging(
 		return 0;
 	}
 
+	/* Get the latest pointer position.  This is necessary as XFree 4.1.0.1
+	 * sometimes does not report mouse movement when it should. */
+	if (FQueryPointer(
+		    dpy, Scr.Root, &JunkRoot, &JunkChild, &x, &y, &JunkX,
+		    &JunkY, &JunkMask) == False)
+	{
+		/* pointer is on a different screen - ignore */
+	}
 	/* Move the viewport */
 	/* and/or move the cursor back to the approximate correct location */
 	/* that is, the same place on the virtual desktop that it */
@@ -1051,7 +1051,6 @@ void MoveViewport(int newx, int newy, Bool grab)
 	int PageTop, PageLeft;
 	int PageBottom, PageRight;
 	int txl, txr, tyt, tyb;
-	XEvent e;
 
 	if (grab)
 	{
@@ -1228,11 +1227,19 @@ void MoveViewport(int newx, int newy, Bool grab)
 	/* regrab buttons in case something got obscured or unobscured */
 	focus_grab_buttons_all();
 
+#if 0
+	/* dv (2004-07-01): I don't think that's a good idea.  We could eat too
+	 * many events. */
 	/* do this with PanFrames too ??? HEDU */
-	while (FCheckTypedEvent(dpy, MotionNotify, &e))
 	{
-		/* nothing */
+		XEvent e;
+
+		while (FCheckTypedEvent(dpy, MotionNotify, &e))
+		{
+			/* nothing */
+		}
 	}
+#endif
 	if (grab)
 	{
 		MyXUngrabServer(dpy);

@@ -2008,8 +2008,11 @@ Bool __move_loop(
 				KeyPressMask | PointerMotionMask |
 				ButtonMotionMask | ExposureMask, &e)))
 		{
+			XEvent le;
+
+			fev_get_last_event(&le);
 			rc = HandlePaging(
-				&e, dx, dy, &xl, &yt, &delta_x, &delta_y,
+				&le, dx, dy, &xl, &yt, &delta_x, &delta_y,
 				False, False, True);
 			if (rc == 1)
 			{
@@ -2018,68 +2021,73 @@ Bool __move_loop(
 				{
 					x_virtual_offset = 0;
 				}
-				if (XOffset)
-				{
-					xl += XOffset;
-				}
+				xl += XOffset;
 				if (delta_y)
 				{
 					y_virtual_offset = 0;
 				}
-				if (YOffset)
-				{
-					yt += YOffset;
-				}
+				yt += YOffset;
 				if (do_snap)
 				{
 					DoSnapAttract(
-						fw, Width, Height, &xl,
-						&yt);
+						fw, Width, Height, &xl, &yt);
 				}
+				fev_make_null_event(&e, dpy);
 				e.type = MotionNotify;
 				e.xmotion.time = fev_get_evtime();
 				e.xmotion.x_root = xl - XOffset;
 				e.xmotion.y_root = yt - YOffset;
 				e.xmotion.same_screen = True;
-				fev_fake_event(&e);
 				break;
 			}
 		}
 		if (rc == -1)
 		{
 			/* block until an event arrives */
+			/* dv (2004-07-01): With XFree 4.1.0.1, some Mouse
+			 * events are not reported to fvwm when the pointer
+			 * moves very fast and suddenly stops in the corner of
+			 * the screen.  Handle EnterNotify/LeaveNotify events
+			 * too to get an idea where the pointer might be. */
 			FMaskEvent(
 				dpy, ButtonPressMask | ButtonReleaseMask |
 				KeyPressMask | PointerMotionMask |
-				ButtonMotionMask | ExposureMask, &e);
+				ButtonMotionMask | ExposureMask |
+				EnterWindowMask | LeaveWindowMask, &e);
 		}
 
-		/* discard any extra motion events before a logical release */
-		if (e.type == MotionNotify)
+		/* discard extra events before a logical release */
+		if (e.type == MotionNotify ||
+		    e.type == EnterNotify || e.type == LeaveNotify)
 		{
-			XEvent new_event;
-
-			/*** logic borrowed from icewm ***/
 			while (FPending(dpy) > 0 &&
 			       FCheckMaskEvent(
 				       dpy, ButtonMotionMask |
 				       PointerMotionMask | ButtonPressMask |
-				       ButtonRelease | KeyPressMask,
-				       &new_event))
+				       ButtonRelease | KeyPressMask |
+				       EnterWindowMask | LeaveWindowMask, &e))
 			{
-				if (e.type != new_event.type)
+				if (e.type == ButtonPress ||
+				    e.type == ButtonRelease ||
+				    e.type == KeyPress)
 				{
-					FPutBackEvent(dpy, &new_event);
 					break;
 				}
-				else
-				{
-					e = new_event;
-				}
 			}
-			/*** end of code borrowed from icewm ***/
+		}
+		if (e.type == EnterNotify || e.type == LeaveNotify)
+		{
+			XEvent e2;
 
-		} /* if (e.type == MotionNotify) */
+			fev_make_null_event(&e2, dpy);
+			e2.type = MotionNotify;
+			e2.xmotion.time = fev_get_evtime();
+			e2.xmotion.x_root = e.xcrossing.x_root;
+			e2.xmotion.y_root = e.xcrossing.y_root;
+			e2.xmotion.same_screen = e.xcrossing.same_screen;
+			e = e2;
+			fev_fake_event(&e);
+		}
 
 		/* Handle a limited number of key press events to allow
 		 * mouseless operation */
@@ -2201,8 +2209,7 @@ Bool __move_loop(
 				if (do_snap)
 				{
 					DoSnapAttract(
-						fw, Width, Height, &xl,
-						&yt);
+						fw, Width, Height, &xl, &yt);
 				}
 			}
 
@@ -2251,18 +2258,18 @@ Bool __move_loop(
 			/* check Paging request once and only once after
 			 * outline redrawn
 			 * redraw after paging if needed - mab */
-			paged = 0;
-			while (paged <= 1)
+			for (paged = 0; paged <= 1; paged++)
 			{
 				if (!do_move_opaque)
+				{
 					draw_move_resize_grid(
 						xl, yt, Width - 1, Height - 1);
+				}
 				else
 				{
 					if (IS_ICONIFIED(fw))
 					{
-						set_icon_position(
-							fw, xl, yt);
+						set_icon_position(fw, xl, yt);
 						move_icon_to_position(fw);
 						broadcast_icon_geometry(
 							fw, False);
@@ -2270,8 +2277,8 @@ Bool __move_loop(
 					else
 					{
 						XMoveWindow(
-							dpy, FW_W_FRAME(fw), xl,
-							yt);
+							dpy, FW_W_FRAME(fw),
+							xl, yt);
 					}
 				}
 				DisplayPosition(fw, &e, xl, yt, False);
@@ -2280,27 +2287,25 @@ Bool __move_loop(
 				 * when paging - mab */
 				if (paged == 0)
 				{
+					XEvent le;
+
 					xl = e.xmotion.x_root;
 					yt = e.xmotion.y_root;
+					fev_get_last_event(&le);
 					HandlePaging(
-						&e, dx, dy, &xl, &yt, &delta_x,
-						&delta_y, False, False, False);
+						&le, dx, dy, &xl, &yt,
+						&delta_x, &delta_y, False,
+						False, False);
 					if (delta_x)
 					{
 						x_virtual_offset = 0;
 					}
-					if (XOffset)
-					{
-						xl += XOffset;
-					}
+					xl += XOffset;
 					if (delta_y)
 					{
 						y_virtual_offset = 0;
 					}
-					if (YOffset)
-					{
-						yt += YOffset;
-					}
+					yt += YOffset;
 					if (do_snap)
 					{
 						DoSnapAttract(
@@ -2314,8 +2319,7 @@ Bool __move_loop(
 						break;
 					}
 				}
-				paged++;
-			}  /* end while (paged) */
+			}
 			break;
 
 		case Expose:
@@ -3212,22 +3216,48 @@ static Bool __resize_window(F_CMD_ARGS)
 		}
 		if (rc == -1)
 		{
-			FMaskEvent(dpy, evmask, &ev);
+			FMaskEvent(
+				dpy, evmask | EnterNotify | LeaveNotify, &ev);
 		}
-		if (ev.type == MotionNotify)
+		if (ev.type == MotionNotify ||
+		    ev.type == EnterNotify || ev.type == LeaveNotify)
 		{
+			XEvent new_event;
+			Bool is_motion;
+
+			is_motion = (ev.type == MotionNotify) ? True : False;
 			/* discard any extra motion events before a release */
+			/* dv (2004-07-01): With XFree 4.1.0.1, some Mouse
+			 * events are not reported to fvwm when the pointer
+			 * moves very fast and suddenly stops in the corner of
+			 * the screen.  Handle EnterNotify/LeaveNotify events
+			 * too to get an idea where the pointer might be. */
 			while (FCheckMaskEvent(
 				       dpy, ButtonMotionMask |
 				       PointerMotionMask | ButtonReleaseMask |
-				       ButtonPressMask, &ev))
+				       ButtonPressMask  | EnterNotify |
+				       LeaveNotify, &new_event))
 			{
 				if (ev.type == ButtonRelease ||
-				    ev.type == ButtonPress)
+				    ev.type == ButtonPress ||
+				    ev.type == KeyPress)
 				{
 					break;
 				}
 			}
+		}
+		if (ev.type == EnterNotify || ev.type == LeaveNotify)
+		{
+			XEvent e2;
+
+			fev_make_null_event(&e2, dpy);
+			e2.type = MotionNotify;
+			e2.xmotion.time = fev_get_evtime();
+			e2.xmotion.x_root = ev.xcrossing.x_root;
+			e2.xmotion.y_root = ev.xcrossing.y_root;
+			e2.xmotion.same_screen = ev.xcrossing.same_screen;
+			ev = e2;
+			fev_fake_event(&ev);
 		}
 
 		is_done = False;

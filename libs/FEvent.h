@@ -27,8 +27,7 @@ XEvent *fev_get_last_event_address(void);
 /* get the latest event time */
 Time fev_get_evtime(void);
 
-/*
- * This function determines the location of the mouse pointer from the event
+/* This function determines the location of the mouse pointer from the event
  * if possible, if not it queries the X server. Returns False if it had to
  * query the server and the call failed because the pointer was on a
  * different screen. */
@@ -50,6 +49,9 @@ void fev_restore_event(void *ev);
 
 /* fill the event structure *ev with a dummy event of no particular type */
 void fev_make_null_event(XEvent *ev, Display *dpy);
+
+/* return a copy of the last XEVent in *ev */
+void fev_get_last_event(XEvent *ev);
 
 /* ---------------------------- X event replacements ----------------------- */
 
