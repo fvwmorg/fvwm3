@@ -1,3 +1,9 @@
+1999-03-31  Matthias Clasen  <clasen@mathematik.uni-freiburg.de>
+
+	* fvwm/virtual.c (MoveViewport): fix a typo: there was a 
+	reference to t left in the t1-part of the double loop. This
+	caused strange behaviour when moving across page boundaries.
+
 1999-03-30  Tomas Ogren  <stric@ing.umu.se>
 
 	* fvwm/gnome.c: Missing file from the Gnome patch...
