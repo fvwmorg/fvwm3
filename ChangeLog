@@ -1,3 +1,9 @@
+2003-11-01  Mikhael Goikhman  <migo@homemail.com>
+
+	* NEWS:
+	* configure.in:
+	increase version to 2.5.9
+
 2003-10-31  Mikhael Goikhman  <migo@homemail.com>
 
 	* Makefile.am:
