@@ -1545,13 +1545,13 @@ static void MenuInteraction(
 	      {
 		flags.do_popdown_now = True;
 		do_fake_motion = True;
-                if (MST_DO_POPUP_IMMEDIATELY(pmp->menu))
-                {
+		if (MST_DO_POPUP_IMMEDIATELY(pmp->menu))
+		{
 		  flags.do_popup_now = True;
 		  flags.is_popped_up_by_timeout = True;
-                }
+		}
 		else if (!MST_DO_POPUP_IMMEDIATELY(pmp->menu) &&
-                         flags.is_pointer_in_active_item_area)
+			 flags.is_pointer_in_active_item_area)
 		{
 		  flags.do_popup_now = True;
 		  flags.is_popped_up_by_timeout = True;
@@ -1872,9 +1872,9 @@ static void MenuInteraction(
 	  find_entry(pmp, NULL, &tmrMi, None, -1, -1) == NULL &&
 	  tmrMi == NULL)
       {
-        /* handle deletion of tear out menus */
-        pmret->rc = MENU_ABORTED;
-        goto DO_RETURN;
+	/* handle deletion of tear out menus */
+	pmret->rc = MENU_ABORTED;
+	goto DO_RETURN;
       }
       /* ignore it */
       continue;
@@ -2028,7 +2028,7 @@ static void MenuInteraction(
 	    do_it_now = True;
 	  }
 	  else if (MST_DO_POPUP_IMMEDIATELY(pmp->menu) &&
-                   mi != miRemovedSubmenu)
+		   mi != miRemovedSubmenu)
 	  {
 	    if (flags.is_key_press ||
 		MST_DO_POPDOWN_IMMEDIATELY(pmp->menu) || !mrPopdown)
@@ -2704,7 +2704,9 @@ static int pop_menu_up(
 		f = *pdo_warp_to_title;
 		t = lastTimestamp;
 		if (Scr.BusyCursor & BUSY_DYNAMICMENU)
+		{
 			is_busy_grabbed = GrabEm(CRS_WAIT, GRAB_BUSYMENU);
+		}
 		/* Execute the action */
 		memset(&efa, 0, sizeof(efa));
 		efa.cond_rc = NULL;
@@ -2717,7 +2719,9 @@ static int pop_menu_up(
 		efa.flags.exec = FUNC_DONT_EXPAND_COMMAND;
 		execute_function(&efa);
 		if (is_busy_grabbed)
+		{
 			UngrabEm(GRAB_BUSYMENU);
+		}
 		/* restore the stuff we saved */
 		lastTimestamp = t;
 		*pdo_warp_to_title = f;
@@ -3638,7 +3642,7 @@ static void pop_menu_down_and_repaint_parent(
  *
  *  Procedure:
  *	get_menu_paint_item_parameters - prepares the parameters to be
- *      passed to menuitem_paint().
+ *	passed to menuitem_paint().
  *
  *	mr - the menu instance that holds the menu item
  *	mi - the menu item to redraw
@@ -4841,7 +4845,7 @@ static Bool size_menu_vertically(MenuSizingParameters *msp)
 			strcat(tempname, "$\"");
 			free(t);
 			/* NewMenuRoot inserts at the head of the list of menus
-			   but, we need it at the end.  (Give it just the name,
+			   but, we need it at the end.	(Give it just the name,
 			   * which is 6 chars past the action since
 			   * strlen("Popup ")==6 ) */
 			t = (char *)safemalloc(strlen(MR_NAME(msp->menu)) + 2);
@@ -4942,16 +4946,16 @@ static void make_menu_window(MenuRoot *mr)
 		attributes.cursor = Scr.FvwmCursors[CRS_MENU];
 		attributes.save_under = True;
 
-		/* Create a display used to create the window.  Can't use the
-		 * normal display because 'xkill' would  kill the window
-		 * manager if used on a tear off menu.  The display can't be
+		/* Create a display used to create the window.	Can't use the
+		 * normal display because 'xkill' would	 kill the window
+		 * manager if used on a tear off menu.	The display can't be
 		 * deleted right now because that would either destroy the new
 		 * window or leave it as an orphan if fvwm dies or is
 		 * restarted. */
 		MR_CREATE_DPY(mr) = XOpenDisplay(display_name);
 		if (MR_CREATE_DPY(mr) == NULL)
 		{
-			/* Doh.  Use the standard display instead. */
+			/* Doh.	 Use the standard display instead. */
 			MR_CREATE_DPY(mr) = dpy;
 		}
 		MR_WINDOW(mr) = XCreateWindow(
@@ -5100,7 +5104,7 @@ static void scanForColor(
 		{
 			continue;
 		}
-		/* Just an escaped '^'  */
+		/* Just an escaped '^'	*/
 		if (s[1] != identifier)
 		{
 			/* found the identifier */
@@ -5241,7 +5245,7 @@ static void unlink_item_from_menu(
 	return;
 }
 
-/* Add the given menu item to the menu.  If the first item of the menu is a
+/* Add the given menu item to the menu.	 If the first item of the menu is a
  * title, and the do_replace_title flag is True, the old title is deleted and
  * replaced by the new item.  Otherwise the item is appended at the end of the
  * menu. */
@@ -5325,7 +5329,7 @@ static MenuRoot *copy_menu_root(MenuRoot *mr)
  *
  *  Procedure:
  *	clone_menu - duplicates an existing menu in newly allocated
-        memory.  The new menu is independent of the original.
+	memory.	 The new menu is independent of the original.
  *
  *  Returned Value:
  *	(MenuRoot *)
@@ -5837,329 +5841,329 @@ void menu_close_tear_off_menu(FvwmWindow *fw)
  ***************************************************************************/
 void do_menu(MenuParameters *pmp, MenuReturn *pmret)
 {
-        extern XEvent Event;
+	extern XEvent Event;
 
-        int x;
-        int y;
-        Bool fWasAlreadyPopped = False;
-        Bool key_press;
-        Bool is_pointer_grabbed = False;
-        Bool is_pointer_ungrabbed = False;
-        Bool do_menu_interaction;
-        Bool do_check_pop_down;
-        Time t0 = lastTimestamp;
-        XEvent tmpevent;
-        double_keypress dkp;
-        /* must be saved before launching parallel menus (by using the dynamic
-         * actions). */
-        static Bool do_warp_to_title = False;
-        /* don't save these ones, we want them to work even within recursive
-         * menus popped up by dynamic actions. */
-        static int indirect_depth = 0;
-        static int x_start;
-        static int y_start;
-        static Bool has_mouse_moved = False;
-        int scr_x, scr_y, scr_w, scr_h;
+	int x;
+	int y;
+	Bool fWasAlreadyPopped = False;
+	Bool key_press;
+	Bool is_pointer_grabbed = False;
+	Bool is_pointer_ungrabbed = False;
+	Bool do_menu_interaction;
+	Bool do_check_pop_down;
+	Time t0 = lastTimestamp;
+	XEvent tmpevent;
+	double_keypress dkp;
+	/* must be saved before launching parallel menus (by using the dynamic
+	 * actions). */
+	static Bool do_warp_to_title = False;
+	/* don't save these ones, we want them to work even within recursive
+	 * menus popped up by dynamic actions. */
+	static int indirect_depth = 0;
+	static int x_start;
+	static int y_start;
+	static Bool has_mouse_moved = False;
+	int scr_x, scr_y, scr_w, scr_h;
 
-        pmret->rc = MENU_NOP;
-        if (pmp->flags.is_sticky && !pmp->flags.is_submenu)
-        {
-                XCheckTypedEvent(dpy, ButtonPressMask, &tmpevent);
-        }
-        if (pmp->menu == NULL)
-        {
-                pmret->rc = MENU_ERROR;
-                return;
-        }
-        key_press = (pmp->eventp && (pmp->eventp == (XEvent *)1 ||
-                                     pmp->eventp->type == KeyPress));
+	pmret->rc = MENU_NOP;
+	if (pmp->flags.is_sticky && !pmp->flags.is_submenu)
+	{
+		XCheckTypedEvent(dpy, ButtonPressMask, &tmpevent);
+	}
+	if (pmp->menu == NULL)
+	{
+		pmret->rc = MENU_ERROR;
+		return;
+	}
+	key_press = (pmp->eventp && (pmp->eventp == (XEvent *)1 ||
+				     pmp->eventp->type == KeyPress));
 
-        /* Try to pick a root-relative optimal x,y to
-         * put the mouse right on the title w/o warping */
-        if (XQueryPointer(dpy, Scr.Root, &JunkRoot, &JunkChild,
-                          &x, &y, &JunkX, &JunkY, &JunkMask) == False)
-        {
-                /* pointer is on a different screen */
-                x = 0;
-                y = 0;
-        }
-        /* Save these-- we want to warp back here if this is a top level
-         * menu brought up by a keystroke */
-        if (!pmp->flags.is_submenu)
-        {
-                pmp->flags.is_invoked_by_key_press = key_press;
-                pmp->flags.is_first_root_menu = !indirect_depth;
-        }
-        else
-        {
-                pmp->flags.is_first_root_menu = 0;
-        }
-        if (!pmp->flags.is_submenu && indirect_depth == 0)
-        {
-                if (key_press)
-                {
-                        x_start = x;
-                        y_start = y;
-                }
-                else
-                {
-                        x_start = -1;
-                        y_start = -1;
-                }
-                pmp->screen_origin_x = pmp->pops->pos_hints.screen_origin_x;
-                pmp->screen_origin_y = pmp->pops->pos_hints.screen_origin_y;
-        }
-        /* Figure out where we should popup, if possible */
-        if (!pmp->flags.is_already_mapped)
-        {
-                Bool prefer_left_submenus = False;
-                /* Make sure we are using the latest style and menu layout. */
-                update_menu(pmp->menu, pmp);
+	/* Try to pick a root-relative optimal x,y to
+	 * put the mouse right on the title w/o warping */
+	if (XQueryPointer(dpy, Scr.Root, &JunkRoot, &JunkChild,
+			  &x, &y, &JunkX, &JunkY, &JunkMask) == False)
+	{
+		/* pointer is on a different screen */
+		x = 0;
+		y = 0;
+	}
+	/* Save these-- we want to warp back here if this is a top level
+	 * menu brought up by a keystroke */
+	if (!pmp->flags.is_submenu)
+	{
+		pmp->flags.is_invoked_by_key_press = key_press;
+		pmp->flags.is_first_root_menu = !indirect_depth;
+	}
+	else
+	{
+		pmp->flags.is_first_root_menu = 0;
+	}
+	if (!pmp->flags.is_submenu && indirect_depth == 0)
+	{
+		if (key_press)
+		{
+			x_start = x;
+			y_start = y;
+		}
+		else
+		{
+			x_start = -1;
+			y_start = -1;
+		}
+		pmp->screen_origin_x = pmp->pops->pos_hints.screen_origin_x;
+		pmp->screen_origin_y = pmp->pops->pos_hints.screen_origin_y;
+	}
+	/* Figure out where we should popup, if possible */
+	if (!pmp->flags.is_already_mapped)
+	{
+		Bool prefer_left_submenus = False;
+		/* Make sure we are using the latest style and menu layout. */
+		update_menu(pmp->menu, pmp);
 
-                if (pmp->flags.is_submenu)
-                {
-                        /* this is a submenu popup */
-                        get_prefered_popup_position(
-                                pmp->parent_menu, pmp->menu, &x, &y,
-                                &prefer_left_submenus);
-                }
-                else
-                {
-                        fscreen_scr_arg fscr;
+		if (pmp->flags.is_submenu)
+		{
+			/* this is a submenu popup */
+			get_prefered_popup_position(
+				pmp->parent_menu, pmp->menu, &x, &y,
+				&prefer_left_submenus);
+		}
+		else
+		{
+			fscreen_scr_arg fscr;
 
-                        /* we're a top level menu */
-                        has_mouse_moved = False;
-                        if (!GrabEm(CRS_MENU, GRAB_MENU))
-                        {
-                                /* GrabEm specifies the cursor to use */
-                                XBell(dpy, 0);
-                                pmret->rc = MENU_ABORTED;
-                                return;
-                        }
-                        is_pointer_grabbed = True;
-                        /* Make the menu appear under the pointer rather than
-                         * warping */
-                        fscr.xypos.x = x;
-                        fscr.xypos.y = y;
-                        FScreenGetScrRect(
-                                &fscr, FSCREEN_XYPOS, &scr_x, &scr_y, &scr_w,
-                                &scr_h);
-                        x -= menudim_middle_x_offset(&MR_DIM(pmp->menu));
-                        y -= menuitem_middle_y_offset(
-                                MR_FIRST_ITEM(pmp->menu), MR_STYLE(pmp->menu));
-                        if (x < scr_x)
-                        {
-                                x = scr_x;
-                        }
-                        if (y < scr_y)
-                        {
-                                y = scr_y;
-                        }
-                }
+			/* we're a top level menu */
+			has_mouse_moved = False;
+			if (!GrabEm(CRS_MENU, GRAB_MENU))
+			{
+				/* GrabEm specifies the cursor to use */
+				XBell(dpy, 0);
+				pmret->rc = MENU_ABORTED;
+				return;
+			}
+			is_pointer_grabbed = True;
+			/* Make the menu appear under the pointer rather than
+			 * warping */
+			fscr.xypos.x = x;
+			fscr.xypos.y = y;
+			FScreenGetScrRect(
+				&fscr, FSCREEN_XYPOS, &scr_x, &scr_y, &scr_w,
+				&scr_h);
+			x -= menudim_middle_x_offset(&MR_DIM(pmp->menu));
+			y -= menuitem_middle_y_offset(
+				MR_FIRST_ITEM(pmp->menu), MR_STYLE(pmp->menu));
+			if (x < scr_x)
+			{
+				x = scr_x;
+			}
+			if (y < scr_y)
+			{
+				y = scr_y;
+			}
+		}
 
-                /* pop_menu_up may move the x,y to make it fit on screen more
-                 * nicely. It might also move parent_menu out of the way. */
-                if (!pop_menu_up(
-                            &(pmp->menu), pmp, pmp->parent_menu, NULL,
-                            pmp->pfw, pmp->pcontext, x, y,
-                            prefer_left_submenus, key_press /*warp*/,
-                            pmp->pops, NULL, &do_warp_to_title, None))
-                {
-                        XBell(dpy, 0);
-                        UngrabEm(GRAB_MENU);
-                        pmret->rc = MENU_ERROR;
-                        return;
-                }
-        }
-        else
-        {
-                fWasAlreadyPopped = True;
-                if (pmp->tear_off_root_menu_window != NULL)
-                {
-                        if (!GrabEm(CRS_MENU, GRAB_MENU))
-                        {
-                                /* GrabEm specifies the cursor to use */
-                                XBell(dpy, 0);
-                                pmret->rc = MENU_ABORTED;
-                                return;
-                        }
-                        is_pointer_grabbed = True;
-                }
-                if (key_press)
-                {
-                        warp_pointer_to_item(
-                                pmp->menu, MR_FIRST_ITEM(pmp->menu),
-                                True /* skip Title */);
-                }
-        }
-        do_warp_to_title = False;
+		/* pop_menu_up may move the x,y to make it fit on screen more
+		 * nicely. It might also move parent_menu out of the way. */
+		if (!pop_menu_up(
+			    &(pmp->menu), pmp, pmp->parent_menu, NULL,
+			    pmp->pfw, pmp->pcontext, x, y,
+			    prefer_left_submenus, key_press /*warp*/,
+			    pmp->pops, NULL, &do_warp_to_title, None))
+		{
+			XBell(dpy, 0);
+			UngrabEm(GRAB_MENU);
+			pmret->rc = MENU_ERROR;
+			return;
+		}
+	}
+	else
+	{
+		fWasAlreadyPopped = True;
+		if (pmp->tear_off_root_menu_window != NULL)
+		{
+			if (!GrabEm(CRS_MENU, GRAB_MENU))
+			{
+				/* GrabEm specifies the cursor to use */
+				XBell(dpy, 0);
+				pmret->rc = MENU_ABORTED;
+				return;
+			}
+			is_pointer_grabbed = True;
+		}
+		if (key_press)
+		{
+			warp_pointer_to_item(
+				pmp->menu, MR_FIRST_ITEM(pmp->menu),
+				True /* skip Title */);
+		}
+	}
+	do_warp_to_title = False;
 
-        /* Remember the key that popped up the root menu. */
-        if (pmp->flags.is_submenu)
-        {
-                dkp.timestamp = 0;
-        }
-        else
-        {
-                if (pmp->eventp && pmp->eventp != (XEvent *)1)
-                {
-                        /* we have a real key event */
-                        dkp.keystate = pmp->eventp->xkey.state;
-                        dkp.keycode = pmp->eventp->xkey.keycode;
-                }
-                dkp.timestamp =
-                        (key_press && pmp->flags.has_default_action) ? t0 : 0;
-        }
-        if (!pmp->flags.is_submenu && indirect_depth == 0)
-        {
-                /* we need to grab the keyboard so we are sure no key presses
-                 * are lost */
-                MyXGrabKeyboard(dpy);
-        }
-        do_menu_interaction = True;
-        /* This may loop for tear off menus */
-        while (do_menu_interaction)
-        {
-                if (is_pointer_ungrabbed && !GrabEm(CRS_MENU, GRAB_MENU))
-                {
-                        /* re-grab the pointer in this cycle */
-                        XBell(dpy, 0);
-                        pmret->rc = MENU_ABORTED;
-                        break;
-                }
-                do_menu_interaction = False;
-                if (!pmp->flags.is_submenu)
-                {
-                        XSelectInput(dpy, Scr.NoFocusWin, XEVMASK_MENUNFW);
-                }
-                MenuInteraction(pmp, pmret, &dkp, &do_warp_to_title);
-                if (!pmp->flags.is_submenu)
-                {
-                        XSelectInput(dpy, Scr.NoFocusWin, XEVMASK_NOFOCUSW);
-                }
-                do_check_pop_down = False;
-                switch (pmret->rc)
-                {
-                case MENU_TEAR_OFF:
+	/* Remember the key that popped up the root menu. */
+	if (pmp->flags.is_submenu)
+	{
+		dkp.timestamp = 0;
+	}
+	else
+	{
+		if (pmp->eventp && pmp->eventp != (XEvent *)1)
+		{
+			/* we have a real key event */
+			dkp.keystate = pmp->eventp->xkey.state;
+			dkp.keycode = pmp->eventp->xkey.keycode;
+		}
+		dkp.timestamp =
+			(key_press && pmp->flags.has_default_action) ? t0 : 0;
+	}
+	if (!pmp->flags.is_submenu && indirect_depth == 0)
+	{
+		/* we need to grab the keyboard so we are sure no key presses
+		 * are lost */
+		MyXGrabKeyboard(dpy);
+	}
+	do_menu_interaction = True;
+	/* This may loop for tear off menus */
+	while (do_menu_interaction)
+	{
+		if (is_pointer_ungrabbed && !GrabEm(CRS_MENU, GRAB_MENU))
+		{
+			/* re-grab the pointer in this cycle */
+			XBell(dpy, 0);
+			pmret->rc = MENU_ABORTED;
+			break;
+		}
+		do_menu_interaction = False;
+		if (!pmp->flags.is_submenu)
+		{
+			XSelectInput(dpy, Scr.NoFocusWin, XEVMASK_MENUNFW);
+		}
+		MenuInteraction(pmp, pmret, &dkp, &do_warp_to_title);
+		if (!pmp->flags.is_submenu)
+		{
+			XSelectInput(dpy, Scr.NoFocusWin, XEVMASK_NOFOCUSW);
+		}
+		do_check_pop_down = False;
+		switch (pmret->rc)
+		{
+		case MENU_TEAR_OFF:
 			menu_tear_off(pmp->menu);
 			pop_menu_down(&pmp->menu, pmp);
-                        break;
-                case MENU_KILL_TEAR_OFF_MENU:
-                        if (MR_IS_TEAR_OFF_MENU(pmp->menu))
-                        {
-                                /* kill the menu */
-                                pop_menu_down(&pmp->menu, pmp);
-                                pmret->rc = MENU_ABORTED;
-                                discard_window_events(
-                                        MR_WINDOW(pmp->menu), EnterWindowMask);
-                        }
-                        else
-                        {
-                                /* pass return code up to the torn off menu */
-                        }
-                        break;
-                case MENU_DOUBLE_CLICKED:
-                case MENU_DONE:
-                        if (MR_IS_TEAR_OFF_MENU(pmp->menu))
-                        {
-                                do_menu_interaction = True;
-                        }
-                        else
-                        {
-                                do_check_pop_down = True;
-                        }
-                        break;
-                case MENU_SUBMENU_TORN_OFF:
-                        pmret->rc = MENU_ABORTED;
-                        do_check_pop_down = True;
-                        break;
-                default:
-                        do_check_pop_down = True;
-                        break;
-                }
-                if (do_check_pop_down == True)
-                {
-                        /* popping down may destroy the menu via the dynamic
-                         * popdown action! */
-                        if (!MR_IS_TEAR_OFF_MENU(pmp->menu) &&
-                            fWasAlreadyPopped == False)
-                        {
-                                pop_menu_down(&pmp->menu, pmp);
-                        }
-                }
-                pmp->flags.is_menu_from_frame_or_window_or_titlebar = False;
-                XFlush(dpy);
+			break;
+		case MENU_KILL_TEAR_OFF_MENU:
+			if (MR_IS_TEAR_OFF_MENU(pmp->menu))
+			{
+				/* kill the menu */
+				pop_menu_down(&pmp->menu, pmp);
+				pmret->rc = MENU_ABORTED;
+				discard_window_events(
+					MR_WINDOW(pmp->menu), EnterWindowMask);
+			}
+			else
+			{
+				/* pass return code up to the torn off menu */
+			}
+			break;
+		case MENU_DOUBLE_CLICKED:
+		case MENU_DONE:
+			if (MR_IS_TEAR_OFF_MENU(pmp->menu))
+			{
+				do_menu_interaction = True;
+			}
+			else
+			{
+				do_check_pop_down = True;
+			}
+			break;
+		case MENU_SUBMENU_TORN_OFF:
+			pmret->rc = MENU_ABORTED;
+			do_check_pop_down = True;
+			break;
+		default:
+			do_check_pop_down = True;
+			break;
+		}
+		if (do_check_pop_down == True)
+		{
+			/* popping down may destroy the menu via the dynamic
+			 * popdown action! */
+			if (!MR_IS_TEAR_OFF_MENU(pmp->menu) &&
+			    fWasAlreadyPopped == False)
+			{
+				pop_menu_down(&pmp->menu, pmp);
+			}
+		}
+		pmp->flags.is_menu_from_frame_or_window_or_titlebar = False;
+		XFlush(dpy);
 
-                if (!pmp->flags.is_submenu && x_start >= 0 && y_start >= 0 &&
-                    pmret->flags.is_key_press && pmret->rc != MENU_TEAR_OFF)
-                {
-                        /* warp pointer back to where invoked if this was
-                         * brought up with a keypress and we're returning from
-                         * a top level menu, and a button release event didn't
-                         * end it */
-                        XWarpPointer(dpy, 0, Scr.Root, 0, 0, Scr.MyDisplayWidth,
-                                     Scr.MyDisplayHeight, x_start, y_start);
-                        if (Event.type == KeyPress)
-                        {
-                                Event.xkey.x_root = x_start;
-                                Event.xkey.y_root = y_start;
-                        }
-                }
-                if (pmret->rc == MENU_TEAR_OFF)
-                {
-                        pmret->rc = MENU_SUBMENU_TORN_OFF;
-                }
+		if (!pmp->flags.is_submenu && x_start >= 0 && y_start >= 0 &&
+		    pmret->flags.is_key_press && pmret->rc != MENU_TEAR_OFF)
+		{
+			/* warp pointer back to where invoked if this was
+			 * brought up with a keypress and we're returning from
+			 * a top level menu, and a button release event didn't
+			 * end it */
+			XWarpPointer(dpy, 0, Scr.Root, 0, 0, Scr.MyDisplayWidth,
+				     Scr.MyDisplayHeight, x_start, y_start);
+			if (Event.type == KeyPress)
+			{
+				Event.xkey.x_root = x_start;
+				Event.xkey.y_root = y_start;
+			}
+		}
+		if (pmret->rc == MENU_TEAR_OFF)
+		{
+			pmret->rc = MENU_SUBMENU_TORN_OFF;
+		}
 
-                dkp.timestamp = 0;
-                if (is_pointer_grabbed)
-                {
-                        UngrabEm(GRAB_MENU);
-                        WaitForButtonsUp(True);
-                        is_pointer_ungrabbed = True;
-                }
-                if (!pmp->flags.is_submenu)
-                {
-                        if (pmret->rc == MENU_DONE)
-                        {
-                                if (pmp->ret_paction && *(pmp->ret_paction))
-                                {
-                                        exec_func_args_type efa;
+		dkp.timestamp = 0;
+		if (is_pointer_grabbed)
+		{
+			UngrabEm(GRAB_MENU);
+			WaitForButtonsUp(True);
+			is_pointer_ungrabbed = True;
+		}
+		if (!pmp->flags.is_submenu)
+		{
+			if (pmret->rc == MENU_DONE)
+			{
+				if (pmp->ret_paction && *(pmp->ret_paction))
+				{
+					exec_func_args_type efa;
 
-                                        indirect_depth++;
-                                        memset(&efa, 0, sizeof(efa));
+					indirect_depth++;
+					memset(&efa, 0, sizeof(efa));
 					efa.cond_rc = NULL;
-                                        efa.eventp = &Event;
-                                        efa.fw = pmp->button_window;
-                                        efa.action = *(pmp->ret_paction);
-                                        efa.context = *(pmp->pcontext);
-                                        efa.module = -1;
-                                        efa.flags.do_save_tmpwin = 1;
-                                        execute_function(&efa);
-                                        indirect_depth--;
-                                        free(*(pmp->ret_paction));
-                                        *(pmp->ret_paction) = NULL;
-                                }
-                                last_saved_pos_hints.flags.
-                                        do_ignore_pos_hints = False;
-                                last_saved_pos_hints.flags.
-                                        is_last_menu_pos_hints_valid = False;
-                        }
-                        if (indirect_depth == 0)
-                        {
-                                last_saved_pos_hints.flags.
-                                        do_ignore_pos_hints = False;
-                                last_saved_pos_hints.flags.
-                                        is_last_menu_pos_hints_valid = False;
-                        }
-                }
-        }
-        if (!pmp->flags.is_submenu && indirect_depth == 0)
-        {
-                /* release the keyboard when the last menu closes */
-                MyXUngrabKeyboard(dpy);
-        }
+					efa.eventp = &Event;
+					efa.fw = pmp->button_window;
+					efa.action = *(pmp->ret_paction);
+					efa.context = *(pmp->pcontext);
+					efa.module = -1;
+					efa.flags.do_save_tmpwin = 1;
+					execute_function(&efa);
+					indirect_depth--;
+					free(*(pmp->ret_paction));
+					*(pmp->ret_paction) = NULL;
+				}
+				last_saved_pos_hints.flags.
+					do_ignore_pos_hints = False;
+				last_saved_pos_hints.flags.
+					is_last_menu_pos_hints_valid = False;
+			}
+			if (indirect_depth == 0)
+			{
+				last_saved_pos_hints.flags.
+					do_ignore_pos_hints = False;
+				last_saved_pos_hints.flags.
+					is_last_menu_pos_hints_valid = False;
+			}
+		}
+	}
+	if (!pmp->flags.is_submenu && indirect_depth == 0)
+	{
+		/* release the keyboard when the last menu closes */
+		MyXUngrabKeyboard(dpy);
+	}
 
-        return;
+	return;
 }
 
 void menu_expose(XEvent *event, FvwmWindow *fw)
@@ -6181,9 +6185,9 @@ void menu_expose(XEvent *event, FvwmWindow *fw)
  *
  *  Procedure:
  *	ParentalMenuRePaint - repaint the menu background if it is tranparent
- *        (ParentRelative) during an animated move.
- *        Called in move_resize.c (AnimatedMoveAnyWindow)
- *      Performance improvement Welcome!
+ *	  (ParentRelative) during an animated move.
+ *	  Called in move_resize.c (AnimatedMoveAnyWindow)
+ *	Performance improvement Welcome!
  *
  ***********************************************************************/
 void ParentalMenuRePaint(MenuRoot *mr)

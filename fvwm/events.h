@@ -42,7 +42,7 @@
   (ButtonPressMask | ButtonReleaseMask | ExposureMask | KeyReleaseMask | \
    KeyPressMask | VisibilityChangeMask | ButtonMotionMask | PointerMotionMask)
 #define XEVMASK_TEAR_OFF_MENU \
-  (XEVMASK_MENU | LeaveWindowMask)
+  (XEVMASK_MENU | LeaveWindowMask | EnterWindowMask)
 #define XEVMASK_MENUW \
   (ExposureMask | KeyPressMask | KeyReleaseMask)
 #define XEVMASK_TEAR_OFF_MENUW \

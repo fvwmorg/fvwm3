@@ -1,3 +1,8 @@
+2002-04-25  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* fvwm/events.h:
+	fixed leaving tear off menus
+
 2002-04-24  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* fvwm/borders.c (border_draw_part_relief):
