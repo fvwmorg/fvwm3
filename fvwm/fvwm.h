@@ -720,10 +720,6 @@ typedef struct FvwmWindow
 	void *pscratch;
 } FvwmWindow;
 
-/* include this down here because FvwmWindows must be defined when including
- * this header file. */
-#include "fvwmdebug.h"
-
 void SetMWM_INFO(Window window);
 
 #endif /* _FVWM_ */
