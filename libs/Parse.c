@@ -58,6 +58,7 @@ static char *CopyToken(
 	char *out_delim)
 {
 	int len = 0;
+	char *t;
 
 	while (*src != 0 && !(isspace((unsigned char)*src) ||
 			      (snum && strchr(spaces, *src)) ||
@@ -114,6 +115,11 @@ static char *CopyToken(
 		*out_delim = *src;
 	}
 	*dest = 0;
+	t = SkipSpaces(src, spaces, snum);
+	if (*t != 0 && dnum && strchr(delims, *t) != NULL)
+	{
+		src = t + 1;
+	}
 	if (*src != 0)
 	{
 		src++;

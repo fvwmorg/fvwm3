@@ -1,3 +1,9 @@
+2004-10-09  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* libs/Parse.c (CopyToken):
+	skip any whitespace before a delimiter; this allows to have spaces
+	before the commas in an option list
+
 2004-10-08  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* fvwm/frame.c (frame_reshape_border):
@@ -948,7 +954,7 @@
 
 	* libs/defaults.h (DEF_FP_SORT_WINDOWLIST_BY):
 	* fvwm/style.c (style_set_old_focus_policy):
-	fixed default window list ordering with ClickToFocus
+	fixed default window list order with ClickToFocus
 
 2004-02-04  Marcus Lundblad  <ml@update.uu.se>
 
@@ -2609,7 +2615,7 @@
 	fixed double key presses to choose default menu action
 
 	* fvwm/focus.c (__update_windowlist):
-	fixed ordering of window list with SloopyFocus when using the Focus
+	fixed order of window list with SloopyFocus when using the Focus
 	command
 
 2003-03-22  Mikhael Goikhman  <migo@homemail.com>
@@ -3400,7 +3406,7 @@
 	(_ReturnFocusWindow):
 	(_DeleteFocus):
 	(_ForceDeleteFocus):
-	fixed window list ordering with FlipFocus command
+	fixed window list order with FlipFocus command
 
 2002-12-08  Mikhael Goikhman  <migo@homemail.com>
 
