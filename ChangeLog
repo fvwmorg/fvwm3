@@ -1,3 +1,11 @@
+Wed Feb 17 08:24:46 1999  Steve Robbins  <steve@nyongwa.montreal.qc.ca>
+
+	* configure.in: Clear cache variables relating to
+	--with-{xpm,rplay,readline}-* options so the presence of these
+	libraries will always be recomputed.  This avoids the problem of
+	not finding the library (or finding the wrong one) if configure is
+	re-run with different options.
+
 1999-02-17  Dominik Vogt  <dominik_vogt@hp.com>
 
 	* configure.in: updated for 2.1.14

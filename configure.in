@@ -178,6 +178,8 @@ fi
 dnl Checking for optional libraries
 dnl Default is to use them if found; can be disable using --without
 
+unset ac_cv_header_X11_xpm_h
+unset ac_cv_lib_Xpm_XpmReadFileToXpmImage
 smr_CHECK_LIB(xpm, Xpm, for coloured or shaped icons,
     XpmReadFileToXpmImage, X11/xpm.h,
     [$X_LIBS $X_PRE_LIBS -lX11 $X_EXTRA_LIBS], $X_CFLAGS)
@@ -233,6 +235,8 @@ fi
 AC_SUBST(xpm_LIBS)
 AC_SUBST(xpm_CFLAGS)
 
+unset ac_cv_header_rplay_h
+unset ac_cv_lib_rplay_rplay_create
 dnl Add in X_EXTRA_LIBS here to get things like connect().
 smr_CHECK_LIB(rplay, , adds audio capability, rplay_create, rplay.h,
 	      $X_EXTRA_LIBS)
@@ -243,7 +247,7 @@ AC_SUBST(rplay_CFLAGS)
 
 dnl FIXME: should compute availability of termcap
 dnl Forget cached values, so user can re-run configure
-unset ac_cv_header_readline_readline
+unset ac_cv_header_readline_readline_h
 unset ac_cv_lib_readline_readline
 smr_CHECK_LIB(readline, , , readline, readline/readline.h, -ltermcap)
 if test "$readline_LIBS"; then
@@ -254,7 +258,7 @@ else
   dnl FIXME: should compute availability of ncurses
   dnl also: doesn't this seem a hacky way to do this??
   dnl unset cached values from last check...
-  unset ac_cv_header_readline_readline
+  unset ac_cv_header_readline_readline_h
   unset ac_cv_lib_readline_readline
   smr_CHECK_LIB(readline, , , readline, readline/readline.h, -lncurses)
   if test "$readline_LIBS"; then
