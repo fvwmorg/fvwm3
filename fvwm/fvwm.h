@@ -280,7 +280,6 @@ typedef struct
 		unsigned do_use_window_group_hint : 1;
 		unsigned do_lower_transient : 1;
 		unsigned do_not_show_on_map : 1;
-		unsigned do_not_pass_click_focus_click : 1;
 		unsigned do_raise_transient : 1;
 		unsigned do_resize_opaque : 1;
 		unsigned do_shrink_windowshade : 1;

@@ -30,12 +30,6 @@
 	((fw)->flags.common.s.do_lower_transient)
 #define DO_NOT_SHOW_ON_MAP(fw) \
 	((fw)->flags.common.s.do_not_show_on_map)
-#define DO_NOT_PASS_CLICK_FOCUS_CLICK(fw) \
-	((fw)->flags.common.s.do_not_pass_click_focus_click)
-#define SET_DO_NOT_PASS_CLICK_FOCUS_CLICK(fw,x) \
-	(fw)->flags.common.s.do_not_pass_click_focus_click = !!(x)
-#define SETM_DO_NOT_PASS_CLICK_FOCUS_CLICK(fw,x) \
-	(fw)->flag_mask.common.s.do_not_pass_click_focus_click = !!(x)
 #define DO_RAISE_TRANSIENT(fw) \
 	((fw)->flags.common.s.do_raise_transient)
 #define DO_RESIZE_OPAQUE(fw) \

@@ -569,7 +569,7 @@ static FvwmWindow *__restore_focus_after_unmap(
 	t = get_transientfor_fvwmwindow(fw);
 	if (t != NULL &&
 	    FP_DO_RELEASE_FOCUS_TRANSIENT(FW_FOCUS_POLICY(fw)) &&
-	    !FP_DO_OVERRIDE_RELEASE_FOCUS(FW_FOCUS_POLICY(fw)) &&
+	    !FP_DO_OVERRIDE_RELEASE_FOCUS(FW_FOCUS_POLICY(t)) &&
 	    t->Desk == fw->Desk &&
 	    (!do_skip_marked_transients || !IS_IN_TRANSIENT_SUBTREE(t)))
 	{
@@ -581,7 +581,7 @@ static FvwmWindow *__restore_focus_after_unmap(
 		     t = t->next)
 		{
 			if (!FP_DO_OVERRIDE_RELEASE_FOCUS(
-				    FW_FOCUS_POLICY(fw)) &&
+				    FW_FOCUS_POLICY(t)) &&
 			    t->Desk == fw->Desk && !DO_SKIP_CIRCULATE(t) &&
 			    !(DO_SKIP_ICON_CIRCULATE(t) && IS_ICONIFIED(t)) &&
 			    (!do_skip_marked_transients ||

@@ -1,5 +1,15 @@
 2002-08-11  Dominik Vogt  <dominik.vogt@gmx.de>
 
+	* fvwm/style.c (merge_styles):
+	fixed style defaults != 0
+
+	* fvwm/focus.c (__restore_focus_after_unmap):
+	fixed a bug w/ reverting the focus from transients to the parent
+
+	* fvwm/ewmh.c (ewmh_HandleDesktop):
+	* fvwm/style.c (style_parse_one_style_option):
+	fixed defaults for various focus styles
+
 	* NEWS:
 	updated for 2.4.9
 

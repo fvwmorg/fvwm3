@@ -579,7 +579,7 @@ void list_configure(const unsigned long *body)
     fprintf(output,"\t\tdo_lower_transient: %d\n", DO_LOWER_TRANSIENT(p));
     fprintf(output,"\t\tdo_not_show_on_map: %d\n", DO_NOT_SHOW_ON_MAP(p));
     fprintf(output,"\t\tdo_not_pass_click_focus_click: %d\n",
-	    DO_NOT_PASS_CLICK_FOCUS_CLICK(p));
+	    FP_DO_PASS_FOCUS_CLICK( FW_FOCUS_POLICY(p) ) );
     fprintf(output,"\t\tdo_raise_transient: %d\n", DO_RAISE_TRANSIENT(p));
     fprintf(output,"\t\tdo_resize_opaque: %d\n", DO_RESIZE_OPAQUE(p));
     fprintf(output,"\t\tdo_shrink_windowshade: %d\n", DO_SHRINK_WINDOWSHADE(p));

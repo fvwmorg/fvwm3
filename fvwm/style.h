@@ -286,20 +286,6 @@
 	((st).flag_mask.common.s.do_not_show_on_map = !!(x))
 #define SCSET_DO_NOT_SHOW_ON_MAP(st,x) \
 	((st).change_mask.common.s.do_not_show_on_map = !!(x))
-#define SDO_NOT_PASS_CLICK_FOCUS_CLICK(sf) \
-	((sf).common.s.do_not_pass_click_focus_click)
-#define SFDO_NOT_PASS_CLICK_FOCUS_CLICK(st) \
-	((st).flags.common.s.do_not_pass_click_focus_click)
-#define SMDO_NOT_PASS_CLICK_FOCUS_CLICK(st) \
-	((st).flag_mask.common.s.do_not_pass_click_focus_click)
-#define SCDO_NOT_PASS_CLICK_FOCUS_CLICK(st) \
-	((st).change_mask.common.s.do_not_pass_click_focus_click)
-#define SFSET_DO_NOT_PASS_CLICK_FOCUS_CLICK(st,x) \
-	((st).flags.common.s.do_not_pass_click_focus_click = !!(x))
-#define SMSET_DO_NOT_PASS_CLICK_FOCUS_CLICK(st,x) \
-	((st).flag_mask.common.s.do_not_pass_click_focus_click = !!(x))
-#define SCSET_DO_NOT_PASS_CLICK_FOCUS_CLICK(st,x) \
-	((st).change_mask.common.s.do_not_pass_click_focus_click = !!(x))
 #define SDO_RAISE_TRANSIENT(sf) \
 	((sf).common.s.do_raise_transient)
 #define SFDO_RAISE_TRANSIENT(st) \
