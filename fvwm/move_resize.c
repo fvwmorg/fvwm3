@@ -2383,7 +2383,7 @@ static void MaximizeWidth(FvwmWindow *win, unsigned int *win_width, int *win_x,
     if (is_sticky)
     {
       move_sticky_window_to_same_page(
-	&new_x1, &new_x2, &y21, &y21, x11, x12, y11, y12);
+	&new_x1, &new_x2, &y21, &y22, x11, x12, y11, y12);
     }
 
     /* Are they in the same Y space? */

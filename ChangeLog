@@ -1,5 +1,8 @@
 1999-08-18  Dominik Vogt  <dominik_vogt@gmx.de>
 
+	* fvwm/move_resize.c (MaximizeWidth): fixed 'maximize grow 100' with
+	sticky windows
+
 	* fvwm/fvwm2.1: man page for ModuleSynchronous
 
 	* fvwm/events.c:
