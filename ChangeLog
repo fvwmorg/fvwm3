@@ -1,3 +1,7 @@
+2001-05-28  Dan Espen  <dane@mk.telcordia.com>
+
+	* INSTALL.fvwm: Identify LDFLAGS as a Makefile variable.
+
 2001-05-27  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* fvwm/focus.c (focus_grab_buttons_on_pointer_window):
@@ -18,7 +22,7 @@
 
 2001-05-27  Dan Espen  <dane@mk.telcordia.com>
 
-	* INSTALL.fvwm (Note): Remove information about obsolete
+	* INSTALL.fvwm: Remove information about obsolete
 	--disable-modality, --enable-move-bug-workaround.
 	Supplement LDFLAGS with flags for other platforms.
 

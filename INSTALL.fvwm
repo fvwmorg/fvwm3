@@ -204,7 +204,7 @@ installed the optional libraries in places not normally searched (e.g.,
 not in /usr/lib, /lib or similar), you may need to specify the runtime
 path separately; the above options won't add it for you.
 
-A good way to do this is set the LDFLAGS variable before configure
+A good way to do this is set the Makefile LDFLAGS variable before configure
 runs to contain the -R option.  For example:
 
   $ LDFLAGS="-L/opt/xpm -R/opt/xpm" ./configure \
@@ -212,9 +212,6 @@ runs to contain the -R option.  For example:
       --with-xpm-includes=/opt/xpm/include
 
 In the future, FVWM's configuration may perform this step automatically.
-The actual environment variable differs depending on the platform.
-On Solaris 2.6 and later, its LD_OPTIONS, on HPUX11 and later its
-LDOPTS.  Check your "ld" man page for more information.
 
 Compile-time Options
 ====================
