@@ -1,3 +1,9 @@
+1999-07-04  Dominik Vogt  <dominik_vogt@gmx.de>
+
+	* DEVELOPERS: updated realese building procedure
+
+	* Makefile.am: removed references to removed web pages
+
 Thu Jul  1 22:32:28 1999  DanEspen  <dje@blue>
 
 	* Moved web stuff into fvwm-web.

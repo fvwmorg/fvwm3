@@ -1081,6 +1081,9 @@ static void execute_complex_function(F_CMD_ARGS, Bool *desperate,
 	  case CF_TIMEOUT:
 	    type = CF_CLICK;
 	    break;
+	  default:
+	    /* can't happen */
+	    break;
 	  }
 	}
     }

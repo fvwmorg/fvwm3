@@ -80,7 +80,7 @@ Development Rules of the Road
 Dealing with CVS
 ----------------
 
-All details about dealing with CVS should be found in cvs.html.  
+All details about dealing with CVS should be found in cvs.html.
 Go look there!
 
 
@@ -152,18 +152,23 @@ Building a distribution
 
 By this, I mean the file "fvwm-x.y.z.tar.gz".
 
-Steps: 1. make sure you have XPM and a C++ compiler
-       2. make
-       3. make distcheck
-       4. ensure that you see the message
+Steps: 1. make sure you have XPM, the strokes library and a X server with
+          the shape extension
+       2. configure --enable-gnome
+       3. make clean
+       4. double check that you get no warnings during the build (the
+          options for compilers other than gcc may be different):
+          make CFLAGS="-g -O2 -Wall -Werror"
+       5. make distcheck
+       6. ensure that you see the message
           "fvwm-x.y.z.tar.gz ready for distribution"
 
 Note that you need to have actually build everything before packing
 the distribution, hence step 2.  Among other things, this generates
 the proper dependency information for insertion into Makefile.in's
-generated in step 3.
+generated in step 5.
 
-Step 3 will create the tar file, then unpack it and attempt a build &
+Step 5 will create the tar file, then unpack it and attempt a build &
 install (to a scratch directory, not /usr/local).  This makes sure
 that you really DID include all the files necessary to build the
 package into the tar file. It may be hard to appreciate how useful
@@ -175,13 +180,13 @@ some day!
 If this is to be an "official", labeled release, then do also the
 following:
 
-       5. tag the CVS tree:
+       7. tag the CVS tree:
           cvs tag version-x_y_z
-       6. increase the version number in configure.in (see above)
+       8. increase the version number in configure.in (see above)
           and `cvs commit' this change
-       7. upload the file fvwm-x.y.z.tar.gz to
+       9. upload the file fvwm-x.y.z.tar.gz to
 	  ftp://ftp.fvwm.org/pub/incoming/fvwm
-       8. notify fvwm-owner@fvwm.org of the upload
+      10. notify fvwm-owner@fvwm.org of the upload
 
-Be sure to do steps 5 and 6 in that order, so you get the label on the
+Be sure to do steps 7 and 8 in that order, so you get the label on the
 right version of configure.in.

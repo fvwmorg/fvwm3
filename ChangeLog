@@ -1,5 +1,13 @@
 1999-07-04  Dominik Vogt  <dominik_vogt@gmx.de>
 
+	* fvwm/functions.c (execute_complex_function): -Wall fix
+
+	* fvwm/misc.c (Destroy):
+	(StashEventTime): Removed FocusOnNextTimeStamp (no longer used)
+
+	* fvwm/misc.c (Destroy):
+	* fvwm/events.c (HandleUnmapNotify): fixed focus setting
+
 	* fvwm/gnome.c (GNOME_GetStyle): Fixed desk handling in GNOME apps.
 
 1999-07-03  Dominik Vogt  <dominik_vogt@gmx.de>

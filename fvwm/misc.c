@@ -45,8 +45,6 @@
 #include "Module.h"
 #include "focus.h"
 
-static FvwmWindow *FocusOnNextTimeStamp = NULL;
-
 char NoName[] = "Untitled"; /* name if no name in XA_WM_NAME */
 char NoClass[] = "NoClass"; /* Class if no res_class in class hints */
 char NoResource[] = "NoResource"; /* Class if no res_name in class hints */
@@ -161,18 +159,13 @@ void Destroy(FvwmWindow *Tmp_win)
       if((Tmp_win == Scr.Focus)&&(HAS_CLICK_FOCUS(Tmp_win)))
 	{
 	  if(Tmp_win->next)
-	    {
-	      SetFocus(Tmp_win->next, Tmp_win, 1);
-	    }
+	    SetFocus(Tmp_win->next->w, Tmp_win->next, 1);
 	  else
 	    SetFocus(Scr.NoFocusWin, NULL,1);
 	}
       else if(Scr.Focus == Tmp_win)
 	SetFocus(Scr.NoFocusWin, NULL,1);
     }
-
-  if(Tmp_win == FocusOnNextTimeStamp)
-    FocusOnNextTimeStamp = NULL;
 
   if(Tmp_win == Scr.Ungrabbed)
     Scr.Ungrabbed = NULL;
@@ -418,11 +411,6 @@ Bool StashEventTime (XEvent *ev)
    * old one (in which case the system clock may have changed) */
   if((NewTimestamp > lastTimestamp)||((lastTimestamp - NewTimestamp) > 30000))
     lastTimestamp = NewTimestamp;
-  if(FocusOnNextTimeStamp)
-    {
-      SetFocus(FocusOnNextTimeStamp->w,FocusOnNextTimeStamp,1);
-      FocusOnNextTimeStamp = NULL;
-    }
   return True;
 }
 

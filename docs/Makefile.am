@@ -3,8 +3,8 @@
 
 EXTRA_DIST = ANNOUNCE BUGS DEVELOPERS FAQ TODO Y2K-Compliance \
 	color_combos error_codes fvwm.lsm	\
-	m4_hacks black-stone1.jpg fvwm.gif fvwm_smaller.gif	\
-	run_man2html.sh txt2html.sh $(HTML)
+	m4_hacks \
+	run_man2html.sh txt2html.sh
 
 HTML = cvs.html docs.html download.html features.html ftp.html index.html \
 	links.html mailinglist.html			  		  \

@@ -1210,9 +1210,7 @@ void HandleUnmapNotify(void)
   if((Tmp_win == Scr.Focus)&&(HAS_CLICK_FOCUS(Tmp_win)))
     {
       if(Tmp_win->next)
-	{
-	  SetFocus(Tmp_win->next, Tmp_win, 1);
-	}
+	SetFocus(Tmp_win->next->w, Tmp_win->next, 1);
       else
 	SetFocus(Scr.NoFocusWin,NULL,1);
     }
@@ -1572,9 +1570,7 @@ void HandleLeaveNotify(void)
 	  if (Event.xcrossing.detail != NotifyInferior)
 	    {
 	      if(Scr.Focus != NULL)
-		{
-		  SetFocus(Scr.NoFocusWin,NULL,1);
-		}
+		SetFocus(Scr.NoFocusWin,NULL,1);
 	      if(Scr.Hilite != NULL)
 		SetBorder(Scr.Hilite,False,True,True,None);
 	    }
