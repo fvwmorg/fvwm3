@@ -41,14 +41,18 @@ This 2.4 version includes new features like colorsets, ICCCM2 and GNOME
 compliance, session management, improvements in all modules, several
 new modules, revised menu code, stroke support and much more.
 
-### to be translated
 %description -l fr
-FVWM est un powerful ICCCM-compliant multiple virtual desktop window manager
-for the X Window System.
+FVWM est un gestionnaire de fenêtres puissant et extrêmement configurable
+pour le système X Window.
 
-This 2.4 version contient des new features like colorsets, ICCCM2 and GNOME
-compliance, session management, improvements in all modules, several
-new modules, revised menu code, stroke support and much more.
+La version 2.4 contient un grand nombre de nouvelles fonctionnalités.
+Voici quelques exemples:
+gestion des ensembles de couleurs (colorset),
+respect de l'ICCCM2 et du protocole GNOME,
+support pour les gestionnaires de sessions,
+amélioration des modules ainsi que de nouveaux modules,
+le code pour les menus a été entièrement refondu, 
+les mouvements de souris peuvent être liés à des actions (stroke).
 
 %description -l ru
 FVWM Ñ×ÌÑÅÔÓÑ ÍÏİÎÙÍ ÏËÏÎÎÙÍ ÍÅÎÅÄÖÅÒÏÍ ÄÌÑ X Window System, ÓÏÏÔ×ÅÔÓÔ×ÕÀİÉÍ
