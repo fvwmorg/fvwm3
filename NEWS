@@ -3,6 +3,11 @@ _+_A HREF="#2.4.0"_-_2.4.0_+_/A_-_.
 
 Changes in beta release 2.4.1 (not released yet)
 
+* Added Xinerama support.
+
+* Fixed the CirculateSkipIcon and CirculateSkipShaded options in
+  conditional commands.
+
 _+_A NAME="2.4.0"_-_
 Changes in stable release 2.4.0 (1-Jul-2001)
 _+_/A_-_

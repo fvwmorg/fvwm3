@@ -397,6 +397,28 @@ or
 XTerm*Page: 3 2 1
 .EE
 
+
+.SH THE VIRTUAL DESKTOP
+
+Fvwm supports the Xinerama extension of newer X servers which
+is similar to multi head support (multiple screens) but allows to
+move windows between screens.  If Xinerama support has been
+compiled into fvwm, it is used whenever fvwm runs on an X server
+that supports and uses multiple screens via Xinerama.  Without
+this option, the whole desktop is treated as one big screen.  For
+example, menus might pop up right between two screens.  The
+.BI EdgeResistance
+command allows to specify an explicit resistance value for moving
+windows over the screen edge between two Xinerama screens.
+Xinerama support can be enabled or disabled on the fly or from the
+configuration file with
+.BI XineramaDisable " or " XineramaEnable .
+Xinerama support does not work too well if the involved screens
+use different resolutions.  In this situation, windows may get
+stuck in the portion of the whole desktop that belongs to neither
+screen.
+
+
 .SH INITIALIZATION
 
 During initialization, fvwm searches for a configuration file

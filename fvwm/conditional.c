@@ -232,6 +232,8 @@ void CreateConditionMask(char *flags, WindowConditionMask *mask)
       mask->my_flags.use_circulate_hit = 1;
     else if(StrEquals(condition,"CirculateHitIcon"))
       mask->my_flags.use_circulate_hit_icon = 1;
+    else if(StrEquals(condition,"CirculateHitShaded"))
+      mask->my_flags.use_circulate_hit_shaded = 1;
     else if (StrEquals(condition, "Layer"))
     {
        if (sscanf(tmp,"%d",&mask->layer))
@@ -299,13 +301,11 @@ Bool MatchesConditionMask(FvwmWindow *fw, WindowConditionMask *mask)
   if (!mask->my_flags.use_circulate_hit && DO_SKIP_CIRCULATE(fw))
     return 0;
 
-  /* This logic looks terribly wrong to me, but it was this way before so I
-   * did not change it (domivogt (24-Dec-1998)) */
-  if (!DO_SKIP_ICON_CIRCULATE(mask) && IS_ICONIFIED(fw) &&
+  if (!mask->my_flags.use_circulate_hit_icon && IS_ICONIFIED(fw) &&
       DO_SKIP_ICON_CIRCULATE(fw))
     return 0;
 
-  if (!DO_SKIP_SHADED_CIRCULATE(mask) && IS_SHADED(fw) &&
+  if (!mask->my_flags.use_circulate_hit_shaded && IS_SHADED(fw) &&
       DO_SKIP_SHADED_CIRCULATE(fw))
     return 0;
 

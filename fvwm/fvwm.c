@@ -1960,6 +1960,9 @@ static void setVersionInfo(void)
 #ifdef I18N_MB
   strcat(support_str, " Multibyte,");
 #endif
+#ifdef HAS_XINERAMA
+  strcat(support_str, " Xinerama,");
+#endif
 
   support_len = strlen(support_str);
   if (support_len > 0)

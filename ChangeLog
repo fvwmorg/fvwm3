@@ -1,6 +1,22 @@
 2001-07-21  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* fvwm/fvwm2.1:
+	Added Xinerama introduction
+
+	* fvwm/fvwm.c (setVersionInfo):
+	print xinerama support
+
+	* fvwm/conditional.c (CreateConditionMask):
+	added CirculateHitShaded option for conditional commands that was
+	described in the man page but not implemented
+
+	* fvwm/fvwm.h (WindowConditionMask):
+	removed unused flags
+
+	* fvwm/conditional.c (MatchesConditionMask):
+	fixed CirculateHitIcon option in conditional commands
+
+	* fvwm/fvwm2.1:
 	reformatted man page source to improve readability
 	fixed some source formatting bugs
 
