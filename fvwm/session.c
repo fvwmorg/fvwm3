@@ -38,11 +38,12 @@ typedef struct _match
 }
 Match;
 
-static char        *sm_client_id = NULL;
 int                 sm_fd = -1;
+
+static char         *sm_client_id = NULL;
 static int          num_match = 0;
-Match              *matches = NULL;
-static Bool sent_save_done = 0;
+static Match        *matches = NULL;
+static Bool         sent_save_done = 0;
 
 static
 char *duplicate(char *s)
@@ -99,8 +100,7 @@ LoadGlobalState(char *filename)
   char                s[4096], s1[4096];
   int i1, i2, i3, i4, i5, i6, i7, i8, i9;
 
-  f = fopen(filename, "r");
-  if (f)
+  if (filename && (f = fopen(filename, "r")))
     {
       while (fgets(s, sizeof(s), f))
 	{
@@ -302,8 +302,7 @@ LoadWindowStates(char *filename)
   int i, pos;
   unsigned long w;
 
-  f = fopen(filename, "r");
-  if (f)
+  if (filename && (f = fopen (filename, "r")))
     {
       while (fgets(s, sizeof(s), f))
 	{
@@ -801,13 +800,39 @@ callback_shutdown_cancelled(SmcConn sm_conn, SmPointer client_data)
     }
 }
 
-static void InstallIOErrorHandler(void);
+/* the following is taken from xsm */
+
+static IceIOErrorHandler prev_handler;
+
+void
+MyIoErrorHandler (ice_conn)
+
+  IceConn ice_conn;
+
+{
+  if (prev_handler)
+    (*prev_handler) (ice_conn);
+}
+
+static void
+InstallIOErrorHandler (void)
+
+{
+  IceIOErrorHandler default_handler;
+
+  prev_handler = IceSetIOErrorHandler (NULL);
+  default_handler = IceSetIOErrorHandler (MyIoErrorHandler);
+  if (prev_handler == default_handler)
+    prev_handler = NULL;
+}
 
 SmcConn sm_conn = NULL;
+#endif /* SESSION */
 
 void
 SessionInit(char *previous_client_id)
 {
+#ifdef SESSION
   char                error_string_ret[4096] = "";
   static SmPointer    context;
   SmcCallbacks        callbacks;
@@ -848,11 +873,13 @@ SessionInit(char *previous_client_id)
     {
       sm_fd = IceConnectionNumber(SmcGetIceConnection(sm_conn));
     }
+#endif
 }
 
 void
 ProcessICEMsgs(void)
 {
+#ifdef SESSION
   IceProcessMessagesStatus status;
 
   if (sm_fd < 0)
@@ -865,33 +892,6 @@ ProcessICEMsgs(void)
       sm_conn = NULL;
       sm_fd = -1;
     }
+#endif
 }
 
-/* the following is taken from xsm */
-
-static IceIOErrorHandler prev_handler;
-
-void
-MyIoErrorHandler (ice_conn)
-
-  IceConn ice_conn;
-
-{
-  if (prev_handler)
-    (*prev_handler) (ice_conn);
-}
-
-static void
-InstallIOErrorHandler (void)
-
-{
-  IceIOErrorHandler default_handler;
-
-  prev_handler = IceSetIOErrorHandler (NULL);
-  default_handler = IceSetIOErrorHandler (MyIoErrorHandler);
-  if (prev_handler == default_handler)
-    prev_handler = NULL;
-}
-
-
-#endif /* SESSION */

@@ -515,8 +515,7 @@ int main(int argc, char **argv)
      This should be done early enough to have the window states loaded
      before the first call to AddWindow.
    */
-  if (restore_filename)
-    LoadWindowStates(restore_filename);
+  LoadWindowStates(restore_filename);
 
   BlackoutScreen(); /* if they want to hide the capture/startup */
 
@@ -686,8 +685,7 @@ void StartupStuff(void)
      This should be done after the initialization is finished, since
      it directly changes the global state.
    */
-  if (restore_filename)
-    LoadGlobalState(restore_filename);
+  LoadGlobalState(restore_filename);
 
 } /* StartupStuff */
 
@@ -1664,14 +1662,29 @@ void Done(int restart, char *command)
       if(strstr(command,"fvwm")!= NULL)
         my_argv[i++] = "-s";
 
-      my_argv[i++] = "-restore";
-      my_argv[i++] = filename;
-
+      for (j = i - 1; j >= 0; j--)
+        {
+           if (strcmp (my_argv[j], "-restore") == 0)
+             break;
+        }
+      if (j >= 0)
+        {
+          my_argv[j + 1] = filename;
+        }
+      else 
+        { 
+          my_argv[i++] = "-restore";
+          my_argv[i++] = filename;
+        }
       while(i<10)
         my_argv[i++] = NULL;
 
+      for (i = 0; i < 10; i++)
+	fprintf (stderr, "%s ", my_argv[i]);
+      fprintf(stderr, "\n");
       /* really need to destroy all windows, explicitly,
        * not sleep, but this is adequate for now */
+
       sleep(1);
       ReapChildren();
       if (command)

@@ -63,6 +63,7 @@
 #include <X11/extensions/shape.h>
 #endif /* SHAPE */
 #include "module.h"
+#include "session.h"
 
 #ifndef XUrgencyHint
 #define XUrgencyHint            (1L << 8)
@@ -325,7 +326,7 @@ void HandleFocusIn(void)
   Window w;
 
   DBUG("HandleFocusIn","Routine Entered");
-
+  
   w= Event.xany.window;
   while(XCheckTypedEvent(dpy,FocusIn,&d))
     {
@@ -1649,9 +1650,6 @@ fd_set init_fdset;
 int My_XNextEvent(Display *dpy, XEvent *event)
 {
   extern int fd_width, x_fd;
-#ifdef SESSION
-  extern int sm_fd;
-#endif
   fd_set in_fdset, out_fdset;
   Window targetWindow;
   int i;

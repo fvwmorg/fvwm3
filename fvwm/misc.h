@@ -407,15 +407,6 @@ void SetDefaultLayers(F_CMD_ARGS);
 #define ERR  2
 void fvwm_msg(int type,char *id,char *msg,...);
 
-#ifdef SESSION
-/* session management adapted from enlightenment */
-void SessionInit(char *client_id);
-void ProcessICEMsgs(void);
-#endif
-void MatchWinToSM(FvwmWindow *t, int *, int *, int *, int *, int *, int *);
-void LoadWindowStates(char *filename);
-void LoadGlobalState(char *filename);
-
 #ifdef GNOME
 /* GNOME window manager hints support */
 

@@ -52,7 +52,7 @@
 #include <X11/Xresource.h>
 #endif /* SHAPE */
 #include "module.h"
-#include "bindings.h"
+#include "session.h"
 
 
 /* Used to parse command line of clients for specific desk requests. */
