@@ -1,3 +1,14 @@
+1999-04-01  Dominik Vogt  <dominik_vogt@gmx.de>
+
+	* fvwm/resize.c (resize_window): experimental patch: warp pointer to
+	the sides/corners when pressed near the edge (within 20 pixels)
+
+	* fvwm/events.c (HandleButtonPress): clicktofocusdoesntpassclick works
+	with no-input windows now
+
+	* fvwm/builtins.c (Maximize): consider desk number when checking if
+	window is on current page
+
 1999-04-01  Andrew T. Veliath  <andrewtv@usa.net>
 
 	* fvwm/builtins.c (SetDeskSize): Call GNOME_SetAreaCount.
@@ -59,24 +70,24 @@ Wed Mar 31 20:32:27 1999  Steve ROBBINS  <stever@bottom.bic.mni.mcgill.ca (Steve
 
 1999-03-31  Matthias Clasen  <clasen@mathematik.uni-freiburg.de>
 
-	* fvwm/fvwm.h: 
+	* fvwm/fvwm.h:
 	* fvwm/icccm2.c (SetupICCCM2): add parameter replace_wm.
 	Don't replace running wm unless replace_wm is nonzero.
 
 	* fvwm/fvwm.c (main): call SetupICCCM2 with a boolean parameter
 	which is set if the command line argument "-replace" is given.
 
-	* fvwm/fvwm.c (usage): add -replace, -clientId and -restore. 
+	* fvwm/fvwm.c (usage): add -replace, -clientId and -restore.
 
 	* NEWS:
-	* fvwm/fvwm2.1 (ICCCM COMPLIANCE): 
+	* fvwm/fvwm2.1 (ICCCM COMPLIANCE):
 	* fvwm/fvwm2.1 (OPTIONS): document -replace and possible problems.
 
 	* fvwm/move.c (moveLoop): only set window_being_moved for
 	opaque moves, since setting it for rubberband moves makes
 	the window behave like a sticky window.
 
-	* fvwm/virtual.c (MoveViewport): fix a typo: there was a 
+	* fvwm/virtual.c (MoveViewport): fix a typo: there was a
 
 1999-03-31  Dominik Vogt  <dominik_vogt@gmx.de>
 

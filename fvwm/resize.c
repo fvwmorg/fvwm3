@@ -62,6 +62,8 @@ void resize_window(F_CMD_ARGS)
   int was_maximized;
   unsigned edge_wrap_x;
   unsigned edge_wrap_y;
+  int px;
+  int py;
 
   if (DeferExecution(eventp,&w,&tmp_win,&context, MOVE, ButtonPress))
     return;
@@ -69,8 +71,9 @@ void resize_window(F_CMD_ARGS)
   if (tmp_win == NULL)
     return;
 
-  XQueryPointer( dpy, Scr.Root, &JunkRoot, &JunkChild,
-		 &JunkX, &JunkY, &JunkX, &JunkY, &button_mask);
+  ResizeWindow = tmp_win->frame;
+  XQueryPointer( dpy, ResizeWindow, &JunkRoot, &JunkChild,
+		 &JunkX, &JunkY, &px, &py, &button_mask);
   button_mask &= Button1Mask|Button2Mask|Button3Mask|Button4Mask|Button5Mask;
 
   if(check_if_function_allowed(F_RESIZE,tmp_win,True,NULL) == 0)
@@ -86,8 +89,6 @@ void resize_window(F_CMD_ARGS)
   /* can't resize icons */
   if(tmp_win->flags & ICONIFIED)
     return;
-
-  ResizeWindow = tmp_win->frame;
 
   if(n == 2)
     {
@@ -161,9 +162,9 @@ void resize_window(F_CMD_ARGS)
   XMapRaised(dpy, Scr.SizeWindow);
   DisplaySize(tmp_win, orig->width, orig->height,True,True);
 
-  /* Get the current position to determine which border to resize */
   if((PressedW != Scr.Root)&&(PressedW != None))
     {
+      /* Get the current position to determine which border to resize */
       if(PressedW == tmp_win->sides[0])   /* top */
 	ymotion = 1;
       if(PressedW == tmp_win->sides[1])  /* right */
@@ -193,6 +194,103 @@ void resize_window(F_CMD_ARGS)
 	  xmotion = -1;
 	}
     }
+#ifndef NO_EXPERIMENTAL_RESIZE
+  if((PressedW != Scr.Root)&&(xmotion == 0)&&(ymotion == 0))
+    {
+      int dx = orig->width - px;
+      int dy = orig->height - py;
+      int wx = -1;
+      int wy = -1;
+      int tx;
+      int ty;
+
+      tx = orig->width / 20 - 1;
+      if (tx < 20)
+      {
+	tx = orig->width / 4 - 1;
+	if (tx > 20)
+	  tx = 20;
+      }
+      ty = orig->height / 20 - 1;
+      if (ty < 20)
+      {
+	ty = orig->height / 4 - 1;
+	if (ty > 20)
+	  ty = 20;
+      }
+      if (px >= 0 && dx >= 0 && py >= 0 && dy >= 0)
+      {
+	if (px < tx)
+	{
+	  if (py < ty)
+	  {
+	    xmotion = 1;
+	    ymotion = 1;
+	    wx = 0;
+	    wy = 0;
+	  }
+	  else if (dy < ty)
+	  {
+	    xmotion = 1;
+	    ymotion = -1;
+	    wx = 0;
+	    wy = orig->height -1;
+	  }
+	  else
+	  {
+	    xmotion = 1;
+	    wx = 0;
+	    wy = orig->height/2;
+	  }
+	}
+	else if (dx < tx)
+	{
+	  if (py < ty)
+	  {
+	    xmotion = -1;
+	    ymotion = 1;
+	    wx = orig->width - 1;
+	    wy = 0;
+	  }
+	  else if (dy < ty)
+	  {
+	    xmotion = -1;
+	    ymotion = -1;
+	    wx = orig->width - 1;
+	    wy = orig->height -1;
+	  }
+	  else
+	  {
+	    xmotion = -1;
+	    wx = orig->width - 1;
+	    wy = orig->height/2;
+	  }
+	}
+	else
+	{
+	  if (py < ty)
+	  {
+	    ymotion = 1;
+	    wx = orig->width/2;
+	    wy = 0;
+	  }
+	  else if (dy < ty)
+	  {
+	    ymotion = -1;
+	    wx = orig->width/2;
+	    wy = orig->height -1;
+	  }
+	}
+      }
+
+      if (wx != -1)
+	{
+	  XWarpPointer(dpy, None, ResizeWindow, 0, 0, 1, 1, wx, wy);
+	  XFlush(dpy);
+	}
+    }
+#endif
+
   /* draw the rubber-band window */
   MoveOutline (Scr.Root, drag->x, drag->y,
 	       drag->width - 1,

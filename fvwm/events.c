@@ -1194,13 +1194,12 @@ void HandleButtonPress()
       RaiseWindow(Tmp_win);
     }
 
-    /* Why is this here? Seems to cause breakage with
-     * non-focusing windows! */
     if(!(Tmp_win->flags & ICONIFIED))
     {
       XSync(dpy,0);
-      /* pass click event to just clicked to focus window? */
-      if (Scr.go.ClickToFocusPassesClick)
+      /* pass click event to just clicked to focus window? Do not swallow the
+       * click if the window didn't accept the focus */
+      if (Scr.go.ClickToFocusPassesClick || Scr.Focus != Tmp_win)
 	XAllowEvents(dpy,ReplayPointer,CurrentTime);
       else /* don't pass click to just focused window */
 	XAllowEvents(dpy,AsyncPointer,CurrentTime);
