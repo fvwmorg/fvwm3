@@ -30,7 +30,11 @@
 #include <X11/Xproto.h>
 #include <X11/cursorfont.h>
 #include <X11/Xatom.h>
+
+#ifdef XPM
 #include <X11/xpm.h>
+#endif
+
 #include <X11/X.h>
 
 
