@@ -1568,8 +1568,7 @@ static void ApplyDefaultFontAndColors(void)
     Scr.SizeStringWidth = XTextWidth(Scr.StdFont.font, " +8888 x +8888 ", 15);
     wid = Scr.SizeStringWidth + 2 * SIZE_HINDENT;
     hei = Scr.StdFont.height + 2 * SIZE_VINDENT;
-    SetWindowBackground(dpy, Scr.SizeWindow, wid, hei,
-			Scr.bg, Pdepth, Scr.StdGC);
+    XSetWindowBackground(dpy, Scr.SizeWindow, Scr.StdColors.back);
     if(Scr.gs.EmulateMWM)
     {
       XMoveResizeWindow(dpy,Scr.SizeWindow,
@@ -1617,90 +1616,6 @@ void SetDefaultIcon(F_CMD_ARGS)
   GetNextToken(action, &Scr.DefaultIcon);
 }
 
-
-void SetDefaultBackground(F_CMD_ARGS)
-{
-  char *type = NULL;
-
-  action = GetNextToken(action, &type);
-
-  /* no args mean restore what was set with DefaultColors */
-  if (!type) {
-    if (Scr.bg->type.bits.is_pixmap)
-      XFreePixmap(dpy, Scr.bg->pixmap);
-    Scr.bg->pixmap = (Pixmap)Scr.StdColors.back;
-    Scr.bg->type.word = 0;
-  } else {
-
-    if (StrEquals(type, "TiledPixmap") || StrEquals(type, "Pixmap")) {
-      Picture *pic;
-      char *name;
-
-      action = GetNextToken(action, &name);
-      if (!name) {
-        fvwm_msg(ERR, "DefaultBackground", "%s: No pixmap specified", type);
-        free(type);
-        return;
-      }
-
-      pic = CachePicture(dpy, Scr.NoFocusWin, NULL, name, Scr.ColorLimit);
-
-      if (pic && pic->depth == Pdepth) {
-	Pixmap pixmap = XCreatePixmap(dpy, Scr.NoFocusWin, pic->width,
-				      pic->height, Pdepth);
-
-	XCopyArea(dpy, pic->picture, pixmap, Scr.StdGC, 0, 0, pic->width,
-		  pic->height, 0, 0);
-	if (Scr.bg->type.bits.is_pixmap)
-	  XFreePixmap(dpy, Scr.bg->pixmap);
-	Scr.bg->pixmap = pixmap;
-	Scr.bg->type.bits.w = pic->width;
-	Scr.bg->type.bits.h = pic->height;
-	Scr.bg->type.bits.is_pixmap = True;
-	if (StrEquals(type, "Pixmap"))
-	  Scr.bg->type.bits.stretch_h = Scr.bg->type.bits.stretch_v = True;
-	else
-	  Scr.bg->type.bits.stretch_h = Scr.bg->type.bits.stretch_v = False;
-      } else {
-        fvwm_msg(ERR, "DefaultBackground", "Couldn't load pixmap %s\n", name);
-      }
-      if (pic) DestroyPicture(dpy, pic);
-
-#ifdef GRADIENT_BUTTONS
-    } else if (StrEquals(type + 1, "Gradient")) {
-      unsigned int width, height;
-      char vtype = type[0];
-      Pixmap pixmap = CreateGradientPixmap(dpy, Scr.NoFocusWin, Scr.ScratchGC3,
-					   vtype, action, Scr.bestTileWidth,
-					   Scr.bestTileHeight, &width, &height);
-      if (pixmap) {
-	if (Scr.bg->type.bits.is_pixmap)
-	  XFreePixmap(dpy, Scr.bg->pixmap);
-	Scr.bg->pixmap = pixmap;
-	Scr.bg->type.bits.w = width;
-	Scr.bg->type.bits.h = height;
-	Scr.bg->type.bits.is_pixmap = True;
-	Scr.bg->type.bits.stretch_h = Scr.bg->type.bits.stretch_v = True;
-	if ((vtype == 'H') || (vtype == 'h'))
-	  Scr.bg->type.bits.stretch_v = False;
-	else if ((vtype == 'V') || (vtype == 'v'))
-	  Scr.bg->type.bits.stretch_h = False;
-      }
-
-
-#endif
-    } else {
-      fvwm_msg(ERR, "DefaultBackground", "unknown type %s %s", type,
-	       action ? action : "");
-    }
-
-    free(type);
-  }
-
-  ApplyDefaultFontAndColors();
-}
-
-
 void SetDefaultColors(F_CMD_ARGS)
 {
   char *fore = NULL;
@@ -1727,8 +1642,6 @@ void SetDefaultColors(F_CMD_ARGS)
       Scr.StdColors.back = GetColor(back);
       Scr.StdRelief.fore = GetHilite(Scr.StdColors.back);
       Scr.StdRelief.back = GetShadow(Scr.StdColors.back);
-      if (!Scr.bg->type.bits.is_pixmap)
-        Scr.bg->pixmap = (Pixmap)Scr.StdColors.back;
     }
   free(fore);
   free(back);

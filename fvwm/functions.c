@@ -123,7 +123,6 @@ static const struct functions func_config[] =
   {"current",      CurrentFunc,      F_CURRENT,             0},
   {"cursormove",   movecursor,       F_MOVECURSOR,          0},
   {"cursorstyle",  CursorStyle,      F_CURSOR_STYLE,        0},
-  {"defaultbackground",SetDefaultBackground, F_DFLT_BACK,   0},
   {"defaultcolors",SetDefaultColors, F_DFLT_COLORS,         0},
   {"defaultfont",  LoadDefaultFont,  F_DFLT_FONT,           0},
   {"defaulticon",  SetDefaultIcon,   F_DFLT_ICON,           0},

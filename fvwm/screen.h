@@ -261,11 +261,6 @@ typedef struct ScreenInfo
   GC StdGC;
   GC StdReliefGC;
   GC StdShadowGC;
-  unsigned int bestTileWidth;
-  unsigned int bestTileHeight;
-  /* this structure defines the default background, used by modules that have
-   * been converted to share fvwm's visuals. see libs/ModGraph.h */
-  Background *bg;
 
   GC DrawGC;			/* GC to draw lines for move and resize */
   Picture *DrawPicture;

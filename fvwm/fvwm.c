@@ -438,9 +438,6 @@ int main(int argc, char **argv)
                None, cursor, CurrentTime);
   }
 
-  /* create the Scr.bg structure (required for the following visual stuff) */
-  Scr.bg = (Background *)safemalloc(sizeof(Background));
-
   if (visualClass != -1) {
     /* grab the best visual of the required class */
     XVisualInfo template, *vizinfo;
@@ -1542,10 +1539,6 @@ static void InitVariables(void)
   Scr.StdShadowGC = 0;
   Scr.DrawGC = 0;
   Scr.DrawPicture = NULL;
-  Scr.bg->pixmap = (Pixmap)0;
-  Scr.bg->type.word = 0;
-  XQueryBestTile(dpy, Scr.NoFocusWin, 0, 0,
-		 &Scr.bestTileWidth, &Scr.bestTileHeight);
 
   /* zero all flags */
   memset(&Scr.flags, 0, sizeof(Scr.flags));

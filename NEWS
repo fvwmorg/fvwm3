@@ -1,5 +1,8 @@
 Changes in beta release 2.3.6 (July 1999)
 
+* New module FvwmTheme for creating Colorsets that can be shared with
+  fvwm2 and other modules when they have been modified.
+
 * If you never define an iconbox, or you fill all the iconboxes, fvwm2
   has a default icon box that covers the screen, it filled top to bottom,
   then left to right, and has an 80x80 pixel grid.

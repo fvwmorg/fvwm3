@@ -187,25 +187,8 @@ Bool GetResourceString(XrmDatabase db, const char *resource,
  * Stuff for Graphics.c and ModGraph.c
  ***********************************************************************/
 
-typedef struct _Background {
-  union {
-    unsigned long word;
-    struct {
-      unsigned int is_pixmap : 1;
-      unsigned int stretch_h : 1;
-      unsigned int stretch_v : 1;
-      unsigned int w : 12;
-      unsigned int h : 12;
-    } bits;
-  } type;
-  Pixmap pixmap;
-} Background;
-
 void RelieveRectangle(Display *dpy, Drawable d, int x,int y,int w,int h,
 		      GC ReliefGC, GC ShadowGC, int line_width);
-
-void SetWindowBackground(Display *dpy, Window win, int width, int height,
-			 Background *background, unsigned int depth, GC gc);
 
 Pixmap CreateStretchXPixmap(Display *dpy, Pixmap src, unsigned int src_width,
 			    unsigned int src_height, unsigned int src_depth,
@@ -219,6 +202,19 @@ Pixmap CreateStretchPixmap(Display *dpy, Pixmap src, unsigned int src_width,
 			    unsigned int src_height, unsigned int src_depth,
 			    unsigned int dest_width, unsigned int dest_height,
 			    GC gc);
+
+Pixel *AllocLinearGradient(char *s_from, char *s_to, int npixels);
+
+Pixel *AllocNonlinearGradient(char *s_colors[], int clen[],
+			      int nsegs, int npixels);
+
+unsigned int ParseGradient(char *gradient, char ***colors_return,
+			   int **perc_return, int *nsegs_return);
+
+Pixmap CreateGradientPixmap(Display *dpy, Drawable d, GC gc, int type,
+			    char *action, unsigned int *width_return,
+			    unsigned int *height_return);
+
 
 /***********************************************************************
  * Key and mouse bindings

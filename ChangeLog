@@ -1,3 +1,19 @@
+1999-07-16  Hippo
+
+	* configure.in: New module FvwmTheme.
+	* libs/Colorset.{h,c}: New lib functions for Colorset handling.
+	* fvwm/add_window.c: added backing_store = NotUseful hint to the
+	  client parent (not the border though that may be worth doing).
+	* fvwm/builtins.c: removed DefaultBackground command.
+	* fvwm/colors.c: moved AllocGradient and CreateGradientPixmap to libs/
+	* fvwm/functions.{c,h}: removed DefaultBackground command.
+	* fvwm/{fvwm.c, screen.h}: removed DefaultBackground structure.
+	* fvwm/fvwm2.1: removed DefaultBackground command.
+	* libs/Graphics.c: moved SetWindowBackground to libs/Colorset.c,
+	  Added AllocGradient() & CreateGradientPixmap().
+	* modules/*/Makefile.am added -lm to LADADD to satisfy linker.
+	* modules/FvwmTheme: new module
+
 1999-07-11  Dominik Vogt  <dominik_vogt@gmx.de>
 
 	* fvwm/borders.c (RedrawBorder): Prevent NeverFocus windows from being

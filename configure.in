@@ -359,6 +359,7 @@ modules/FvwmScript/Scripts/some_nice_icons/Makefile
 modules/FvwmScript/Widgets/Makefile
 modules/FvwmScroll/Makefile
 modules/FvwmTaskBar/Makefile
+modules/FvwmTheme/Makefile
 modules/FvwmWharf/Makefile
 modules/FvwmWinList/Makefile
 modules/FvwmGtk/Makefile

@@ -686,10 +686,12 @@ FvwmWindow *AddWindow(Window w, FvwmWindow *ReuseWin)
   /* make sure this does not have a BackPixel or BackPixmap so that
      that when the client dies there is no flash of BackPixel/BackPixmap */
   /* may look odd with shaped windows if fvwm has shapes disabled */
-  valuemask = CWCursor|CWColormap|CWBorderPixel|CWBackPixmap|CWEventMask;
-  attributes.cursor = Scr.FvwmCursors[CRS_DEFAULT];
-  attributes.colormap = Pcmap;
+  valuemask = CWBackingStore | CWBackPixmap | CWBorderPixel | CWColormap
+	      | CWCursor | CWEventMask;
+  attributes.backing_store = NotUseful;
   attributes.background_pixmap = None;
+  attributes.colormap = Pcmap;
+  attributes.cursor = Scr.FvwmCursors[CRS_DEFAULT];
   attributes.event_mask = SubstructureRedirectMask;
   tmp_win->Parent = XCreateWindow (dpy, tmp_win->frame,
 				   tmp_win->boundary_width,
@@ -720,7 +722,7 @@ FvwmWindow *AddWindow(Window w, FvwmWindow *ReuseWin)
   XRaiseWindow(dpy, tmp_win->Parent);
   XReparentWindow(dpy, tmp_win->w, tmp_win->Parent, 0, 0);
 
-  valuemask = (CWEventMask | CWDontPropagate);
+  valuemask = CWEventMask | CWDontPropagate;
   attributes.event_mask = (StructureNotifyMask | PropertyChangeMask |
 			   EnterWindowMask | LeaveWindowMask |
 			   ColormapChangeMask | FocusChangeMask);

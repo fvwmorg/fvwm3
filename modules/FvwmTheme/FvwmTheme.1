@@ -1,0 +1,90 @@
+.\" t
+.\" @(#)FvwmTheme.1  7/20/1999
+.TH FvwmTheme 1 "20 July 1999"
+.UC
+
+.SH NAME
+FvwmTheme \- an FVWM modules for managing the appearance of FVWM and its modules
+
+.SH SYNOPSIS
+FvwmTheme is spawned by fvwm, so no command line invocation will work.
+
+.SH COPYRIGHT
+Copyright (C) 1999 Joey Shutup.  No guarantees or warranties or anything are
+provided or implied in any way whatsoever.  Use this program at your own risk.
+Permission to use this program for any purpose is given, as long as the
+copyright is kept intact.
+
+.SH DESCRIPTION
+FvwmTheme creates appearance resources that may be shared by FVWM and other
+modules.  It reads an initial configuration and also reacts to configuration
+commands and mesages sent from FVWM so that the resources can be dynamically
+changed.
+
+.SH INVOCATION
+FvwmTheme must be spawned as a module by fvwm.
+.PP
+FvwmTheme can be invoked by inserting the line 'Module FvwmTheme' in
+the .fvwm2rc file.  This can be placed on a line by itself, if
+FvwmTheme is to be spawned during fvwm's initialization, or can be
+bound to a menu or mouse button or keystroke to invoke it later.  Fvwm
+will search directory specified in the ModulePath configuration option
+to attempt to locate FvwmTheme. It is pointless to run more than one
+FvwmTheme so there is no provision for using an alias name.
+
+.SH CONFIGURATION OPTIONS
+FvwmTheme supports only one configuration option.
+
+.IP "*FvwmThemeColorset \fIn\fP \fIfg\fP \fIbg\fP [ \fIoption\fP... ]"
+Will create or modify colorset \fIn\fP. Each colorset has a foreground and
+background color specified by \fIfg\fP and \fIbg\fP respectively.  If
+either \fIfg\fP or \fIbg\fP is specified as \fI"-"\fP it is not altered.
+Colors may be specified by name e.g. Liver or "Fava bean" or as an
+RGB hexadecimal triplet "#RRGGBB" e.g. "#551111" for a nice Chianti.
+
+Each colorset may also have a pixmap associated with it as an adjunct to the
+background color.  This may be used instead of the background color and should
+have roughly the same avarage color as the background so that any 3D bevels
+(which are calculated from the background color) don't look strange.
+
+The optional pixmap may be specified as "TiledPixmap \fIxpm\fP",
+"Pixmap \fIxpm\fP", "AspectPixmap \fIxpm\fP" or "\fI?Gradient...\fP". \fIxpm\fP
+is the filename of an XPM format file. FvwmTheme will search the current
+\fIImagePath\fP for the file. \fITiledPixmap\fP causes the pixmap to be tiled
+onto the background, \fIPixmap\fP will stretch the pixmap to the size of the
+window and \fIAspectPixmap\fP will stretch the pixmap whilst preserving the
+aspect ratio.
+
+\fI?Gradient ...\fP will create a pixmap and stretch it to fit the window.
+\fI?Gradient\fP may be one of HGradient, VGradient, DGradient, BGradient,
+SGradient, CGradient, RGradient or YGradient.  The gradient types are as
+follows:  H is horizontal; V is vertical; D is diagonal from top left to bottom
+right; B is a backwards diagonal from bottom left to top right; S is concentric
+squares; C is con-centric circles; R is a radar like pattern and Y is a Yin Yang
+style (but without the dots).  See the \fIButtonStyle\fP command of \fIfvwm2\fP
+for the syntax of gradients.
+
+.SH COMMANDS
+The following FVWM command may be executed at any time to alter the colorsets.
+It may be bound to a menu item or typed into a module such as FvwmTalk.
+
+.IP "SendToModule FvwmTheme Colorset \fIn\fP \fIfg\fP \fIbg\fP [ \fIoption\fP... ]"
+The syntax is the same as the configuration option.
+
+.SH EXAMPLES
+
+*FvwmThemeColorset 3 black gray
+
+If necessary this will create colorsets 0, 1, 2 and 3 and then change colorset
+3 to have a foreground of black, a background of gray and delete the optional
+pixmap.
+
+*FvwmThemeColorset 3 - "navy blue" -
+
+Will change the background color of colorset 3 to navy blue. The foreground and
+pixmap will be unchanged.
+
+*FvwmThemeColorset 3 - - YGradient 200 3 blue 49 navy 1 blue 50 navy
+
+Will add a Yin Yang gradient background pixmap to colorset 3.
+
