@@ -1101,6 +1101,8 @@ void HandleConfigureRequest(void)
 		args.do_return_true_cr = True;
 		args.cr_value_mask =
 			(CWX | CWY | CWWidth | CWHeight | CWBorderWidth);
+		args.ret_does_match = False;
+		args.ret_type = 0;
 #if 0
 		/* free some CPU */
 		/* dv (7 May 2002): No, it's better to not reschedule processes
@@ -2752,6 +2754,8 @@ ICON_DBG((stderr,"hpn: icon changed '%s'\n", Fw->name));
 		cie_args.do_return_true = False;
 		cie_args.do_return_true_cr = False;
 		cie_args.cr_value_mask = 0;
+		cie_args.ret_does_match = False;
+		cie_args.ret_type = 0;
 		XCheckIfEvent(dpy, &e, test_resizing_event, (char *)&cie_args);
 #if 0
 		/* dv (7 May 2002): Must handle this immediately since xterm
@@ -3989,6 +3993,8 @@ Bool is_resizing_event_pending(
 	args.do_return_true = False;
 	args.do_return_true_cr = False;
 	args.cr_value_mask = 0;
+	args.ret_does_match = False;
+	args.ret_type = 0;
 	XCheckIfEvent(dpy, &e, test_resizing_event, (char *)&args);
 
 	return args.ret_does_match;
