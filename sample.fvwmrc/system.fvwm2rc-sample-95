@@ -8,39 +8,39 @@
 #
 #		env FVWM_USERHOME=~/.fvwm fvwm2
 #
-# Then, run the "Setup 95 Script" from the root menu. This will creates 
+# Then, run the "Setup 95 Script" from the root menu. This creates 
 # and installs the following configuration files: .fvwm2rc, bindings, 
 # decorations, desktop, functions, menus, modules, startup, styles,
 # iconstyles. 
 # If perl is not installed on your machine (my god), only one file is 
 # installed: .fvwm2rc (and this configuration should work). Some instructions 
-# are given below for a first editing of this file. May be the first thing 
+# are given below for a first editing of this file. Maybe the first thing 
 # to do in this case is to segment this file. For that, you can move the
 # parts of this file between the marks "#SEG foo" and "#SEG xyz" into a
 # file foo and add "Read foo" to this file (until the "#SEG END" mark). 
 #
 # You "need" the FVWM_icons distribution installed in the FVWM image path.
-# If they are installed in an other directory use the ImagePath command 
+# If they are installed in another directory use the ImagePath command 
 # below or set this directory via the Setup95 Script.
 #
-# For the "sound effects" to work without much effort you need the
+# For the "sound effects" to work you need the
 # FVWM_sounds distribution installed and an .au player. The Setup95 Script
 # allows you to set the installation directory of this distribution as
 # your sound player (if not, manually edit the *FvwmEvent commands). 
 # Note that if you use rplay, the rplayd daemon must be run.
 #
-# The Setup95 Script ask you to choose between two looks, one is close
-# to Windows and the other one is more close to a "classical" FVWM look.
-# For switching from the windows look to the FVWM one by hands, comment the
+# The Setup95 Script asks you to choose between two looks, one is close
+# to Windows and the other one is close to a "classical" FVWM look.
+# For switching from the windows look to the FVWM one by hand, comment the
 # x lines that follow the #WIN x lines and uncomment the x lines that
 # follow the #FVWM x lines.
 #
 # I've tried to use very common apps (like Gimp or Netscape) so that this
 # configuration file is as universal as possible. For menus, the Setup 95 
-# Script start with a big menu and comment the menu entries that correspond
+# Script starts with a big menu.  Comment the menu entries that correspond
 # to applications not in your path. Moreover, the Setup95 Script asks you 
 # to set your preferred terminal, editor and file manager (#PREF). However, 
-# you surely need to edit the menus definitions and the BarButtons 
+# you surely need to edit the menu definitions and the BarButtons 
 # configuration to get your preferred applications.
 #
 # I have a laptop so I have added one laptop option. If you answer yes
@@ -62,19 +62,19 @@
 # set if you ask for FvwmGtk menus (#G_M_G).
 # 
 # GNOME session: This configuration can be used under gnome-session. In
-# this case almost no module are started (for a first installation). 
+# this case almost no modules are started (for a first installation). 
 # However, you may use more modules: this depends on your gnome panel 
-# configuration. Moreover, if Setup95 build a configuration to be used 
+# configuration. If Setup95 builds a configuration to be used 
 # under gnome-session, the lines which follow #G_SESSION will be uncommented. 
 # The panel stays put option  (the line which follow #G_PANEL) try to put 
-# the panel in the same layers than the other windows.
+# the panel in the same layers as the other windows.
 # Note that it safe to "Build a config for gnome-session" for using with
 # a normal FVWM session.
 #
 # CDE: There is an elementary support for CDE (lines which follow #CDE).
 # 
 # Note: for saving its state (the changes you do via settings-->* up to the
-# first separator) Sample-95 use some files $FVWM_USERHOME/.start-* (see 
+# first separator) Sample-95 uses some files $FVWM_USERHOME/.start-* (see 
 # section 5), $FVWM_USERHOME/.fvwm-layers (see section 6) and the usual FVWM 
 # config files: .FvwmAnimate, .FvwmForm, ~/.xinitrc-fvwm, .FvwmBaseConfig
 # 
@@ -83,12 +83,12 @@
 # sample-95 MINI-FAQ that you can find at the end of this file.
 #
 #!D For the fvwm-workers. These lines will not appear if the Setup95 Script
-#!D is used to install this file. I hope that the above lines give enought
-#!D informations for editing this file at a devel level. Be sure to take a 
+#!D is used to install this file. I hope that the above lines give enough
+#!D information for editing this file at a devel level. Be sure to take a 
 #!D look to the perl script script-fvwm-setup95.pl and to ScriptFvwmSetup95. 
-#!D More informations are given here.
+#!D More information is given here.
 #!D If you add entries to the menus which contains Exec and exec then
-#!D script-fvwm-setup95.pl will check if the application runed is in 
+#!D script-fvwm-setup95.pl will check if the application run is in 
 #!D the path. Supported format is
 #!D Exec exec app [options]
 #!D Exec cd path; /.app [options] (to run path/app in path)
@@ -152,9 +152,9 @@
 #SEG decorations
 #=============================================================================#
 #
-# 2. Root cursor, Windows Decoration and Menus Style: 
-#   Default fonts, colors, Border, Title, Button Styles, Menus Style
-#   windows buttons bindings.
+# 2. Root cursor, Windows Decoration and Menu Styles:
+#   Default fonts, colors, Border, Title, Button Styles, Menu Styles
+#   window button bindings.
 #   (this section may be the theme part of the config, but you need to use
 #    FvwmTheme to define and propagate the colors)
 #=============================================================================#
@@ -180,14 +180,14 @@ Style * IconFont	fixed
 # Set the default window colors. 
 #------------------------------------------------------------------------------
 
-# Text and background color for the title bar (over read in the WIN case), 
+# Text and background color for the title bar (overridden in the WIN case), 
 # and the border of the inactive window (also used by icon title)
 #WIN 1
 Style * ForeColor #c3c3c3, BackColor #c3c3c3
 #FVWM 1
 #Style * ForeColor #c3c3c3, BackColor grey51
 
-# Text and background color for the title bar (over read in the WIN case), 
+# Text and background color for the title bar (overriden in the WIN case), 
 # and the border of the active (selected) window (also used by icon title).
 #WIN 1
 Style * HilightFore white, HilightBack #c3c3c3
@@ -270,13 +270,13 @@ MenuStyle winops VerticalItemSpacing 1 2, VerticalTitleSpacing 1 2
 
 # WARNING!!!!!
 # If you use Settings-->FVWM Config-->Base Config to configure your
-# major operating modes then all the commands of this section is
-# over read via the last line of this section. So, either comment the
+# major operating modes then all the commands in this section are
+# overridden by the last line of this section. So, either comment the
 # last line of this section or you can remove all the lines of this
 # section but the last one.
 # If you use Base Config and application dependent styles that are set in
 # this section use the styles file to define these applications dependent 
-# styles. This way Base Config will not destroy your applications specific
+# styles. This way Base Config will not destroy your application specific
 # styles when you use it.
 
 #WIN 1  To have more WIN-like behavior
@@ -319,7 +319,7 @@ Style * MouseFocusClickRaises
 # RandomPlacement prevents user interaction while placing windows
 # SmartPlacement attempts to place windows 'intelligently'
 # Using both can be interesting. The CleverPlacement style option 
-# tell FVWM to be  extra smart :-)
+# tells FVWM to be  extra smart :-)
 #
 Style * RandomPlacement, SmartPlacement
 Style * CleverPlacement
@@ -333,14 +333,14 @@ Style * NoPPosition
 
 Style * GrabFocusOff
 
-# If you have use Base Config, then the next line over read this section 
+# If you have use Base Config, then the next line overrides this section 
 # with the setting you define! In this case you can replace the next line
 # by "Read .FvwmBaseConfig" and remove all the other lines of this section.
 PipeRead 'F=$FVWM_USERHOME; [ -n "$FVWM_USERHOME" ] || F=$HOME; [ ! -f $F/.FvwmBaseConfig ] || echo Read .FvwmBaseConfig'
 
 #============================================================================#
 #
-# 4. Miscenallous Major operating mode
+# 4. Miscellaneous Major operating mode
 #
 #============================================================================#
 
@@ -365,8 +365,8 @@ BusyCursor DynamicMenu True, Read True
 #------------------------------------------------------------------------------
 
 # You can do a lot of things with transient windows. However, you may
-# want to set transient style applications by applications.
-# Here one example:
+# want to set transient style by application.
+# Heres one example:
 #
 # If you want to decorate transient windows:
 #Style * DecorateTransient
@@ -395,7 +395,7 @@ BusyCursor DynamicMenu True, Read True
 
 # Defines the background
 Read .start-Background
-# This file define which applications manager we start: TaskBarGlobal, 
+# This file defines which applications manager we start: TaskBarGlobal, 
 # TaskBarDesk, IconBoxGlobal, IconBoxDesk, ...etc.
 Read .start-apps-man
 # This one decides which big buttons we start BarButtons, Wharf or None
@@ -416,7 +416,7 @@ Read .start-FvwmBanner
 Read .start-FvwmEvent
 
 # The StartFunction is used at start and restart with or without a Session
-# Manager. The above file .start-* define this function. Moreover, if
+# Manager. The above file .start-* defines this function. If
 # we want Gtk menus and dialog (defined in the modules section) we start 
 # FvwmGtk.
 
@@ -452,7 +452,7 @@ AddToFunc SessionRestartFunction
 #SEG styles
 #=============================================================================#
 #
-# 6. Set applications dependent styles
+# 6. Set application dependent styles
 #
 # Order is important!
 # If compatible styles are set for a single window in multiple Style
@@ -2459,7 +2459,7 @@ DestroyModuleConfig BarButtons*
 *BarButtonsFont -adobe-helvetica-bold-r-*-*-10-*-*-*-*-*-*-*
 # Geometry - really likes to pick its own size, but giving a position is OK
 # Warning: I've added a size geometry to avoid pbs if the fvwm_icons are
-# not in the image path ! Remove the size in this geometry espesially if
+# not in the image path ! Remove the size in this geometry especially if
 # you add buttons
 *BarButtonsGeometry 120x445-5-84
 # Layout: specify rows or columns, not both
@@ -2924,7 +2924,7 @@ DestroyModuleConfig FvwmWinList*
 #                         -- Sample-95 MINI-FAQ --
 #
 #
-# * Why this FAQ does not contain my question?
+# * Why doesn't this FAQ contain my question?
 # * What are the default bindings?
 # * Some (mini-)icons are missing in menus and in some buttons!
 # * Does Sample-95 support themes?
@@ -2935,9 +2935,9 @@ DestroyModuleConfig FvwmWinList*
 #
 # ----------------------------------------------------------------------------
 #
-# * Why this FAQ does not contain my question?
+# * Why doesn't this FAQ contain my question?
 #
-# May be because the answer is in the beginning of the configuration file 
+# Maybe because the answer is in the beginning of the configuration file 
 # (i.e., this file!), in the FVWM FAQ or in the FVWM man pages.
 # 
 #                  ----------------------------------------
@@ -2950,12 +2950,12 @@ DestroyModuleConfig FvwmWinList*
 # Mouse 1 on the root window:	 main menu
 # Mouse 2 on the root window:	 window operations menu
 # Mouse 3 on the root window:	 Window List of all normal applications
-# Ctrl-Mouse 3 on the root window: Window List of all skiped applications
+# Ctrl-Mouse 3 on the root window: Window List of all skipped applications
 #
 # Alt-Mouse x inside a window: as Mouse x on the root window
 # Shift-Alt-Mouse 3 inside a window: Raise or Lower
 
-# If you have build the config for gnome-session:
+# If you have built the config for gnome-session:
 # Mouse x on the root window gives the corresponding "GNOME button"
 
 # Mouse 1 on the title: Raise, Move for a drag, shade for a double click
@@ -3023,7 +3023,7 @@ DestroyModuleConfig FvwmWinList*
 # You need to have FVWM compiled with stroke support (these bindings 
 # are defined only in this case) and libstroke installed.
 # Mouse button 3 is used (this button must be pressed during the stroke),
-# no modifier are needed when you start your mouse motion on the root
+# no modifiers are needed when you start your mouse motion on the root
 # window and you must use the Alt modifier if you start your mouse motion
 # on a window (you cannot start your motion on a window title bar or frame).
 # The mouses motion:
@@ -3042,10 +3042,10 @@ DestroyModuleConfig FvwmWinList*
 # * Some (mini-)icons are missing in menus and in buttons!
 #
 # If you have no mini(-icons) then either your ImagePath does not contain
-# the directory of the FVWM_icons or you use a RedHat/Mandrake/... rpm
+# the directory of the FVWM_icons or you are using a RedHat/Mandrake/... rpm
 # version of fvwm-icons which uses mini- in the place of mini. for 
-# mini-icons name. If only some mini(-icons) are missing, then you use
-# a to old version of FVWM_icons.
+# mini-icons name. If only some mini(-icons) are missing, then you are using
+# a too old version of FVWM_icons.
 #
 #                  ----------------------------------------
 #
@@ -3142,10 +3142,10 @@ DestroyModuleConfig FvwmWinList*
 #
 # * Who wrote this configuration file?
 #
-# The starting point is "the" fvwm95 configuration file. Then, domivogt do
-# some work on it and in particular do so that it works fine with fvwm-2.4.x.
+# The starting point is "the" fvwm95 configuration file. Then, domivogt did
+# some work on it and in particular did so that it works fine with fvwm-2.4.x.
 # Then, olicha did a lot of work on it and in particular wrote the Setup95
 # Script and rewrote all the "Settings" stuff. Some ideas came from
 # fvwm-themes (thanks to the fvww-themes workers, and in particular migo).
-# Probably, some others fvwm-workers have added improvement but do not take
+# Probably, some others fvwm-workers have added improvement but did not take
 # the time to update this answer.
