@@ -280,11 +280,10 @@ static void ParseConfigLine(char *buf)
     buf[strlen(buf)-1] = '\0';	/* strip off \n */
   }
 
-  /* This used to be case sensitive */
   if (strncasecmp(buf, XINERAMA_CONFIG_STRING,
-		  strlen(XINERAMA_CONFIG_STRING)) == 0)
+		  sizeof(XINERAMA_CONFIG_STRING)-1) == 0)
   {
-    XineramaSupportConfigureModule(buf + strlen(XINERAMA_CONFIG_STRING));
+    XineramaSupportConfigureModule(buf + sizeof(XINERAMA_CONFIG_STRING)-1);
     return;
   }
   if (strncasecmp(buf, "Colorset", 8) == 0) {
@@ -1749,9 +1748,9 @@ static void ParseActiveMessage(char *buf)
     }
     return;
   } /* end colorset command */
-  if (strncasecmp(buf, XINERAMA_CONFIG_STRING, strlen(XINERAMA_CONFIG_STRING))
+  if (strncasecmp(buf, XINERAMA_CONFIG_STRING, sizeof(XINERAMA_CONFIG_STRING)-1)
       == 0) {
-    XineramaSupportConfigureModule(buf + strlen(XINERAMA_CONFIG_STRING));
+    XineramaSupportConfigureModule(buf + sizeof(XINERAMA_CONFIG_STRING)-1);
     return;
   }
   if (strncasecmp(buf, MyName, MyNameLen) != 0) {/* If its not for me */
