@@ -16,7 +16,7 @@
 #ifndef _VIRTUAL_
 #define _VIRTUAL_
 
-Bool HandlePaging(int, int, int *, int *, int *, int *, Bool, Bool, Bool);
+int HandlePaging(int, int, int *, int *, int *, int *, Bool, Bool, Bool);
 void checkPanFrames(void);
 void raisePanFrames(void);
 void initPanFrames(void);

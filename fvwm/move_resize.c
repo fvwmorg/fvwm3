@@ -1603,13 +1603,17 @@ Bool moveLoop(FvwmWindow *tmp_win, int XOffset, int YOffset, int Width,
 
   while (!finished && bad_window != tmp_win->w)
   {
+    int rc = 0;
+
     /* wait until there is an interesting event */
-    while (!XPending(dpy) ||
+    while (rc != -1 && (!XPending(dpy) ||
 	   !XCheckMaskEvent(dpy, ButtonPressMask | ButtonReleaseMask |
 			    KeyPressMask | PointerMotionMask |
-			    ButtonMotionMask | ExposureMask, &Event))
+			    ButtonMotionMask | ExposureMask, &Event)))
     {
-      if (HandlePaging(dx, dy, &xl,&yt, &delta_x,&delta_y, False, False, True))
+      rc = HandlePaging(
+	      dx, dy, &xl, &yt, &delta_x, &delta_y, False, False, True);
+      if (rc == 1)
       {
 	/* Fake an event to force window reposition */
 	if (delta_x)
@@ -1638,6 +1642,13 @@ Bool moveLoop(FvwmWindow *tmp_win, int XOffset, int YOffset, int Width,
 	Event.xmotion.y_root = yt - YOffset;
 	break;
       }
+    }
+    if (rc == -1)
+    {
+      /* block until an event arrives */
+      XMaskEvent(dpy, ButtonPressMask | ButtonReleaseMask |
+		 KeyPressMask | PointerMotionMask |
+		 ButtonMotionMask | ExposureMask, &Event);
     }
     StashEventTime(&Event);
 
@@ -1834,7 +1845,7 @@ Bool moveLoop(FvwmWindow *tmp_win, int XOffset, int YOffset, int Width,
 	  xl = Event.xmotion.x_root;
 	  yt = Event.xmotion.y_root;
 	  HandlePaging(
-	    dx, dy, &xl, &yt, &delta_x, &delta_y, False, False, False);
+		  dx, dy, &xl, &yt, &delta_x, &delta_y, False, False, False);
 	  if (delta_x)
 	  {
 	    x_virtual_offset = 0;
@@ -2540,13 +2551,18 @@ static Bool resize_window(F_CMD_ARGS)
   /* loop to resize */
   while(!finished && bad_window != tmp_win->w)
   {
+    int rc = 0;
+
     /* block until there is an interesting event */
-    while (!XCheckMaskEvent(dpy, ButtonPressMask | ButtonReleaseMask |
-			    KeyPressMask | PointerMotionMask |
-			    ButtonMotionMask | ExposureMask, &Event))
+    while (rc != -1 &&
+	   (!XCheckMaskEvent(dpy, ButtonPressMask | ButtonReleaseMask |
+			     KeyPressMask | PointerMotionMask |
+			     ButtonMotionMask | ExposureMask, &Event)))
     {
-      if (HandlePaging(Scr.EdgeScrollX, Scr.EdgeScrollY, &x, &y,
-		       &delta_x, &delta_y, False, False, True))
+      rc = HandlePaging(
+	      Scr.EdgeScrollX, Scr.EdgeScrollY, &x, &y, &delta_x, &delta_y,
+	      False, False, True);
+      if (rc == 1)
       {
 	/* Fake an event to force window reposition */
 	Event.type = MotionNotify;
@@ -2554,6 +2570,12 @@ static Bool resize_window(F_CMD_ARGS)
 	fForceRedraw = True;
 	break;
       }
+    }
+    if (rc == -1)
+    {
+      XMaskEvent(dpy, ButtonPressMask | ButtonReleaseMask |
+		 KeyPressMask | PointerMotionMask |
+		 ButtonMotionMask | ExposureMask, &Event);
     }
     StashEventTime(&Event);
 

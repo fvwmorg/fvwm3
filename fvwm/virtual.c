@@ -446,10 +446,16 @@ void CMD_DesktopSize(F_CMD_ARGS)
  *
  * Check to see if the pointer is on the edge of the screen, and scroll/page
  * if needed
+ *
+ * Returns
+ *  0: no paging
+ *  1: paging occured
+ * -1: no need to call the function again before a new event arrives
  ***************************************************************************/
-Bool HandlePaging(int HorWarpSize, int VertWarpSize, int *xl, int *yt,
-		  int *delta_x, int *delta_y, Bool Grab, Bool fLoop,
-		  Bool do_continue_previous)
+int HandlePaging(
+	int HorWarpSize, int VertWarpSize, int *xl, int *yt,
+	int *delta_x, int *delta_y, Bool Grab, Bool fLoop,
+	Bool do_continue_previous)
 {
   static unsigned int add_time = 0;
   int x,y;
@@ -463,30 +469,38 @@ Bool HandlePaging(int HorWarpSize, int VertWarpSize, int *xl, int *yt,
 
   *delta_x = 0;
   *delta_y = 0;
-
-  /* Only continue to count the time, but do not start counting from
-   * scratch. */
   if (!is_timestamp_valid && do_continue_previous)
   {
-    /* Free some CPU */
-    usleep(10000);
-    return False;
+    /* don't call me again until something has happened */
+    return -1;
   }
-
+  if (!is_timestamp_valid && Event.type == MotionNotify)
+  {
+    x = Event.xmotion.x_root;
+    y = Event.xmotion.y_root;
+    /* need to move the viewport */
+    if ((Scr.VxMax == 0 ||
+	 (x >= edge_thickness &&
+	  x < Scr.MyDisplayWidth  - edge_thickness)) &&
+	(Scr.VyMax == 0 ||
+	 (y >= edge_thickness &&
+	  y < Scr.MyDisplayHeight - edge_thickness)))
+    {
+      return -1;
+    }
+  }
   if (Scr.ScrollResistance >= 10000 || (HorWarpSize == 0 && VertWarpSize==0))
   {
     is_timestamp_valid = False;
     add_time = 0;
-    return False;
+    return 0;
   }
-
   if (Scr.VxMax == 0 && Scr.VyMax == 0)
   {
     is_timestamp_valid = False;
     add_time = 0;
-    return False;
+    return 0;
   }
-
   if (!is_timestamp_valid)
   {
     is_timestamp_valid = True;
@@ -517,14 +531,14 @@ Bool HandlePaging(int HorWarpSize, int VertWarpSize, int *xl, int *yt,
       StashEventTime(&Event);
       is_timestamp_valid = False;
       add_time = 0;
-      return False;
+      return 0;
     }
     else if (XCheckMaskEvent(dpy, ButtonPressMask | ButtonReleaseMask, &e))
     {
       XPutBackEvent(dpy, &e);
       is_timestamp_valid = False;
       add_time = 0;
-      return False;
+      return 0;
     }
     /* get pointer location */
     GetLocationFromEventOrQuery(dpy, Scr.Root, &Event, &x, &y);
@@ -539,7 +553,7 @@ Bool HandlePaging(int HorWarpSize, int VertWarpSize, int *xl, int *yt,
       discard_window_events(Scr.PanFrameBottom.win, LeaveWindowMask);
       discard_window_events(Scr.PanFrameLeft.win, LeaveWindowMask);
       discard_window_events(Scr.PanFrameRight.win, LeaveWindowMask);
-      return False;
+      return 0;
     }
     if (!fLoop && is_last_position_valid &&
 	(x - last_x > MAX_PAGING_MOVE_DISTANCE ||
@@ -555,7 +569,7 @@ Bool HandlePaging(int HorWarpSize, int VertWarpSize, int *xl, int *yt,
       add_time = 0;
       last_x = x;
       last_y = y;
-      return False;
+      return 0;
     }
     last_x = x;
     last_y = y;
@@ -567,7 +581,7 @@ Bool HandlePaging(int HorWarpSize, int VertWarpSize, int *xl, int *yt,
 
   if (lastTimestamp - my_timestamp + add_time < Scr.ScrollResistance)
   {
-    return False;
+    return 0;
   }
 
   /* Move the viewport */
@@ -662,7 +676,7 @@ Bool HandlePaging(int HorWarpSize, int VertWarpSize, int *xl, int *yt,
   add_time = 0;
   if (*delta_x == 0 && *delta_y == 0)
   {
-    return False;
+    return 0;
   }
 
   if(Grab)
@@ -682,7 +696,7 @@ Bool HandlePaging(int HorWarpSize, int VertWarpSize, int *xl, int *yt,
   if(Grab)
     MyXUngrabServer(dpy);
 
-  return True;
+  return 1;
 }
 
 
@@ -1533,7 +1547,7 @@ Bool get_page_arguments(char *action, int *page_x, int *page_y)
   }
 
   if (GetSuffixedIntegerArguments(action, NULL, val, 2, "p", suffix) != 2)
-    return False;
+    return 0;
 
   if (val[0] >= 0 || suffix[0] == 1)
     *page_x = val[0] * Scr.MyDisplayWidth;
