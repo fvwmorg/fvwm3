@@ -2,9 +2,6 @@
 VMS users: ignore this file, and follow the instructions in vms/README
 instead.
 
-Cygwin users: try "make -i -k" and "make -i -k install" to work around the
-Cygwin problem, not supporting POSIX's mkfifo; FvwmCommand will be skipped.
-
 This file details only configuration options peculiar to FVWM.  Please
 read the generic instructions in INSTALL first.
 

@@ -7,7 +7,7 @@
 %define m_p CFLAGS="-O2"
 
 # Different distributions expect sources to be in different places;
-# the following solves this problem, but makes it hardier to reuse .src.rpm
+# the following solves this problem, but makes it harder to reuse .src.rpm
 %define _sourcedir /tmp
 
 Summary:   F(?) Virtual Window Manager

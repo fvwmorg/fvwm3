@@ -1,3 +1,11 @@
+2001-05-20  Mikhael Goikhman  <migo@homemail.com>
+
+	* INSTALL.fvwm: remove a note about the old Cygwin (hopefully fixed)
+	* configure.in: say that rplay is needed for FvwmEvent only
+	* fvwm/fvwm2.1: several typos and corrections
+	* fvwm/gnome.c: use True/False instead of On/Off in WindowShade
+	* README: s/2.3.0/2.4.0/
+
 2001-05-19  olicha  <olivier.chapuis@free.fr>
 
 	* fvwm/gnome.c (GNOME_HandlePropRequest):

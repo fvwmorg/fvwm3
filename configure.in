@@ -550,12 +550,12 @@ FVWM Configuration:
   Data files:  $my_datdir
 
   Have ReadLine support?             $with_readline$problem_readline
-  Have RPlay support?                $with_rplay$problem_rplay
+  Have RPlay support in FvwmEvent?   $with_rplay$problem_rplay
   Have Stroke support?               $with_stroke$problem_stroke
   Have XPM support?                  $with_xpm$problem_xpm
   Have GNOME Window Manager support? $with_gnomewm$problem_gnomewm
   Have Session Management support?   $with_sm$problem_sm
-  Have GTK support, FvwmGtk?         $with_gtk$problem_gtk$fvwmgtk_msg
+  Have GTK support for FvwmGtk?      $with_gtk$problem_gtk$fvwmgtk_msg
   Have Multibyte support?            $with_multibyte$problem_multibyte
 "
 case "$ac_cv_dmalloc" in

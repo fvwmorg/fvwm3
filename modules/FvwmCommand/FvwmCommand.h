@@ -48,3 +48,7 @@ extern char *sys_errlist[];
 #define FARGS 6
 
 #define SOL  sizeof( unsigned long )
+
+#ifndef HAVE_MKFIFO
+#define mkfifo(path, mode) ((errno = ENOSYS) - ENOSYS - 1)
+#endif

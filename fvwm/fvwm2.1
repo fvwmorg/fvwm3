@@ -35,7 +35,7 @@
 .\" a non-american person simply can't parse such sequence of digits.
 .\" Please use 3-Feb-2001 or 2001-02-03 forms.  migo 16/May/2001.
 .\"
-.\" @(#)fvwm-2.3 24 March 2001
+.\" @(#)fvwm-2.4 20 May 2001
 .de EX		\"Begin example
 .ne 5
 .if n .sp 1
@@ -50,7 +50,7 @@
 .if t .sp .5
 ..
 .ta .3i .6i .9i 1.2i 1.5i 1.8i
-.TH FVWM2 1 "10 February 2000"
+.TH FVWM2 1 "20 May 2001"
 .UC
 .SH NAME
 
@@ -4502,14 +4502,14 @@ options can be used.
 .I Colorset
 takes the colorset number as its sole argument and overrides the
 colors set by
-.IR Colors .
+.IR Color .
 Instead, the corresponding colors from the given colorset are
 used.  Note that all other features of a colorset are unsupported yet.
 To stop using the colorset, the colorset number can be omitted.
 
 The
 .IR HilightFore ", " HilightBack " and " HilightColorset
-styles work exactly like
+style options work exactly like
 .IR ForeColor ", " BackColor " and " Colorset
 but are used only if the window has the focus.  These styles
 replace the old commands
@@ -4518,15 +4518,15 @@ replace the old commands
 .IR BorderColorset
 takes the colorset number as its sole argument and overrides the
 colors set by
-.IR Colors " or " Colorset .
+.IR Color " or " Colorset .
 for the window border.  To stop using a colorset, the argument can be
 omitted.
 
 The
 .IR HilightBorderColorset
-styles work exactly like
+style option works similarly to
 .IR BorderColorset
-but is used only if the window has the focus.
+but is used when the window has the focus.
 
 The
 .IR Font " and " IconFont
@@ -5690,7 +5690,7 @@ causes the button to inherit the decorated
 .B BorderStyle
 options.
 
-.I Raised ", " Sunk " and " Flat
+.IR Raised ", " Sunk " and " Flat
 are mutually exclusive, and can be specified for the initial
 .B ButtonStyle
 only.

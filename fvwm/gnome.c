@@ -984,13 +984,13 @@ void GNOME_HandlePropRequest(unsigned int propm,
     {
       /* shade up */
       old_execute_function(
-	"WindowShade On", fwin, ev, C_WINDOW, -1, 0, NULL);
+	"WindowShade True", fwin, ev, C_WINDOW, -1, 0, NULL);
     }
     else
     {
       /* shade down */
       old_execute_function(
-	"WindowShade Off", fwin, ev, C_WINDOW, -1, 0, NULL);
+	"WindowShade False", fwin, ev, C_WINDOW, -1, 0, NULL);
 
     }
   }
