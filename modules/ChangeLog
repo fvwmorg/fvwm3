@@ -1,3 +1,8 @@
+1999-04-26  Matthias Clasen  <clasen@pong.mathematik.uni-freiburg.de>
+
+	* FvwmGtk/FvwmGtk.c (menu_item_new_with_pixmap_and_label): 
+	dont use accel labels, since accelerators won't work anyway.
+
 Fri Apr 23 13:22:14 1999  Steve Robbins  <steve@nyongwa.montreal.qc.ca>
 
 	* FvwmWinList/List.c (PrintList): fix up printing of flags.  This

@@ -957,10 +957,10 @@ open_menu (int argc, char **argv)
 }
 
 GtkWidget *
-menu_item_new_with_pixmap_and_label (char *file, char *label)
+menu_item_new_with_pixmap_and_label (char *file, char *_label)
 {
   GtkWidget *item;
-  GtkWidget *accel_label;
+  GtkWidget *label;
   GtkWidget *icon;
   GdkPixmap *pixmap;
   GdkBitmap *mask;
@@ -983,11 +983,10 @@ menu_item_new_with_pixmap_and_label (char *file, char *label)
       free (path);
     }
 
-  accel_label = gtk_accel_label_new (label);
-  gtk_misc_set_alignment (GTK_MISC (accel_label), 0.0, 0.5);
-  gtk_container_add (GTK_CONTAINER (item), accel_label);
-  gtk_accel_label_set_accel_widget (GTK_ACCEL_LABEL (accel_label), item);
-  gtk_widget_show (accel_label);
+  label = gtk_label_new (_label);
+  gtk_misc_set_alignment (GTK_MISC (label), 0.0, 0.5);
+  gtk_container_add (GTK_CONTAINER (item), label);
+  gtk_widget_show (label);
   
   return item;
 }
