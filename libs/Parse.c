@@ -272,8 +272,6 @@ char *DoGetNextToken(char *indata, char **token, char *spaces, char *delims,
   char *end;
 
   end = DoPeekToken(indata, &tmptok, spaces, delims, out_delim);
-
-<<<<<<< Parse.c
 	  t++;
 	  while((*t != c)&&(*t != 0))
 	    {
@@ -299,14 +297,10 @@ char *DoGetNextToken(char *indata, char **token, char *spaces, char *delims,
 
   text = safemalloc(end-start+1);
   *token = text;
-=======
   if (tmptok == NULL)
     *token = NULL;
   else
     *token = strdup(tmptok);
->>>>>>> 1.17
-
-<<<<<<< Parse.c
   /* copy token */
   while(start < end)
     {
@@ -342,8 +336,6 @@ char *DoGetNextToken(char *indata, char **token, char *spaces, char *delims,
       free(*token);
       *token = NULL;
     }
-=======
->>>>>>> 1.17
   return end;
 }
 
@@ -425,9 +417,9 @@ int GetSuffixedIntegerArguments(char *action, char **ret_action, int retvals[],
   char *token;
   int suffixes;
 
-  suffixes = 0;
-  if (suffixlist != 0) {
-    suffixes = strlen(suffixlist);
+  suffixes = 0;                         /* initialize */
+  if (suffixlist != 0) {                /* if given a suffix list */
+    suffixes = strlen(suffixlist);      /* save length of suffix list */
   }
   for (i = 0; i < num && action; i++)
   {
