@@ -607,7 +607,6 @@ int main(int argc, char **argv)
       }
     }
   }
-
   restart_state_filename =
     safestrdup(
       CatString3(fvwm_userdir, "/.fs-restart-", getenv("HOSTDISPLAY")));

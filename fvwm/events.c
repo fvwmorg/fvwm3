@@ -1304,6 +1304,13 @@ void HandleEnterNotify(void)
 
 	DBUG("HandleEnterNotify","Routine Entered");
 
+	if (Scr.focus_in_pending_window != NULL)
+	{
+		/* Ignore EnterNotify event while we are waiting for a window to
+		 * receive focus via Focus or FlipFocus commands. */
+
+		return;
+	}
 	if (Scr.flags.is_wire_frame_displayed)
 	{
 		/* Ignore EnterNotify events while a window is resized or moved
@@ -1389,8 +1396,8 @@ void HandleEnterNotify(void)
 	    XCheckTypedWindowEvent(dpy, ewp->window, LeaveNotify, &d))
 	{
 		StashEventTime(&d);
-		if ((d.xcrossing.mode==NotifyNormal)&&
-		   (d.xcrossing.detail!=NotifyInferior))
+		if (d.xcrossing.mode == NotifyNormal &&
+		    d.xcrossing.detail!=NotifyInferior)
 		{
 			return;
 		}
@@ -1442,47 +1449,51 @@ void HandleEnterNotify(void)
 	    || ewp->window==Scr.PanFrameBottom.win)
 	{
 
-	  /* check for edge commands */
-	  if (ewp->window == Scr.PanFrameTop.win &&
-	       Scr.PanFrameTop.command != NULL)
-	  {
-		  old_execute_function(
-			  NULL, Scr.PanFrameTop.command, Fw, &Event,
-			  C_WINDOW, -1, 0, NULL);
-	  }
-	  else if (ewp->window == Scr.PanFrameBottom.win &&
-		    Scr.PanFrameBottom.command != NULL)
-	  {
-		  old_execute_function(
-			  NULL, Scr.PanFrameBottom.command, Fw, &Event,
-			  C_WINDOW, -1, 0, NULL);
-	  }
-	  else if (ewp->window == Scr.PanFrameLeft.win &&
-		    Scr.PanFrameLeft.command != NULL)
-	  {
-		  old_execute_function(
-			  NULL, Scr.PanFrameLeft.command, Fw, &Event,
-			  C_WINDOW, -1, 0, NULL);
-	  }
-	  else if (ewp->window == Scr.PanFrameRight.win &&
-		    Scr.PanFrameRight.command != NULL)
-	  {
-		  old_execute_function(
-			  NULL, Scr.PanFrameRight.command, Fw, &Event,
-			  C_WINDOW, -1, 0, NULL);
-	  }
-	  else {
-	    /* no edge command for this pan frame - so we do HandlePaging */
+		/* check for edge commands */
+		if (ewp->window == Scr.PanFrameTop.win &&
+		    Scr.PanFrameTop.command != NULL)
+		{
+			old_execute_function(
+				NULL, Scr.PanFrameTop.command, Fw, &Event,
+				C_WINDOW, -1, 0, NULL);
+		}
+		else if (ewp->window == Scr.PanFrameBottom.win &&
+			 Scr.PanFrameBottom.command != NULL)
+		{
+			old_execute_function(
+				NULL, Scr.PanFrameBottom.command, Fw, &Event,
+				C_WINDOW, -1, 0, NULL);
+		}
+		else if (ewp->window == Scr.PanFrameLeft.win &&
+			 Scr.PanFrameLeft.command != NULL)
+		{
+			old_execute_function(
+				NULL, Scr.PanFrameLeft.command, Fw, &Event,
+				C_WINDOW, -1, 0, NULL);
+		}
+		else if (ewp->window == Scr.PanFrameRight.win &&
+			 Scr.PanFrameRight.command != NULL)
+		{
+			old_execute_function(
+				NULL, Scr.PanFrameRight.command, Fw, &Event,
+				C_WINDOW, -1, 0, NULL);
+		}
+		else
+		{
+			/* no edge command for this pan frame - so we do
+			 * HandlePaging */
 
-		int delta_x=0, delta_y=0;
+			int delta_x = 0;
+			int delta_y = 0;
 
-		/* this was in the HandleMotionNotify before, HEDU */
-		Scr.flags.is_pointer_on_this_screen = 1;
-		HandlePaging(Scr.EdgeScrollX,Scr.EdgeScrollY,
-			     &ewp->x_root,&ewp->y_root,
-			     &delta_x,&delta_y,True,True,False);
-		return;
-	  }
+			/* this was in the HandleMotionNotify before, HEDU */
+			Scr.flags.is_pointer_on_this_screen = 1;
+			HandlePaging(
+				Scr.EdgeScrollX,Scr.EdgeScrollY, &ewp->x_root,
+				&ewp->y_root, &delta_x, &delta_y, True, True,
+				False);
+			return;
+		}
 	}
 	/* make sure its for one of our windows */
 	if (!Fw)
@@ -1619,16 +1630,21 @@ void HandleFocusIn(void)
 
 	DBUG("HandleFocusIn","Routine Entered");
 
+	Scr.focus_in_pending_window = NULL;
 	/* This is a hack to make the PointerKey command work */
 	if (Event.xfocus.detail != NotifyPointer)
+	{
 		/**/
-		w= Event.xany.window;
+		w = Event.xany.window;
+	}
 	while (XCheckTypedEvent(dpy, FocusIn, &d))
 	{
 		/* dito */
 		if (d.xfocus.detail != NotifyPointer)
+		{
 			/**/
 			w = d.xany.window;
+		}
 	}
 	/* dito */
 	if (w == None)
@@ -1732,6 +1748,8 @@ void HandleFocusIn(void)
 		focus_grab_buttons(sf, True);
 		focus_grab_buttons(ffw_old, False);
 	}
+
+	return;
 }
 
 void HandleFocusOut(void)
@@ -1823,7 +1841,7 @@ void HandleLeaveNotify(void)
 		 * grabbing the focus.	This will interfere with functions that
 		 * transferred the focus to a different window. */
 		if (Event.xcrossing.mode == NotifyGrab && Fw &&
-		    (Event.xcrossing.window == FW_W(Fw) ||
+		    (Event.xcrossing.window == FW_W_FRAME(Fw) ||
 		     Event.xcrossing.window == FW_W_ICON_TITLE(Fw) ||
 		     Event.xcrossing.window == FW_W_ICON_PIXMAP(Fw)))
 		{
@@ -1850,11 +1868,11 @@ void HandleLeaveNotify(void)
 	 * another screen on a multiple screen display, and we
 	 * need to de-focus and unhighlight to make sure that we
 	 * don't end up with more than one highlighted window at a time */
-	if (Event.xcrossing.window == Scr.Root
+	if (Event.xcrossing.window == Scr.Root &&
 	   /* domivogt (16-May-2000): added this test because somehow fvwm
 	    * sometimes gets a LeaveNotify on the root window although it is
 	    * single screen. */
-	   && Scr.NumberOfScreens > 1)
+	    Scr.NumberOfScreens > 1)
 	{
 		if (Event.xcrossing.mode == NotifyNormal)
 		{
@@ -1969,20 +1987,9 @@ void HandleMapNotify(void)
 			SetFocusWindow(Fw, True, True);
 		}
 	}
-	if (!HAS_BORDER(Fw) && !HAS_TITLE(Fw) &&
-	    is_window_border_minimal(Fw))
-	{
-		border_draw_decorations(
-			Fw, PART_ALL, False, True, CLEAR_ALL, NULL, NULL);
-	}
-	else if (Fw == get_focus_window() && Fw != Scr.Hilite)
-	{
-		/* BUG 679: must redraw decorations here to make sure the
-		 * window is properly hilighted after being de-iconified by a
-		 * key press. */
-		border_draw_decorations(
-			Fw, PART_ALL, True, True, CLEAR_ALL, NULL, NULL);
-	}
+	border_draw_decorations(
+		Fw, PART_ALL, (Fw == get_focus_window()) ? True : False, True,
+		CLEAR_ALL, NULL, NULL);
 	MyXUngrabServer (dpy);
 	SET_MAPPED(Fw, 1);
 	SET_ICONIFIED(Fw, 0);

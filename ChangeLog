@@ -1,9 +1,26 @@
+2002-05-26  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* fvwm/events.c (HandleFocusIn):
+	* fvwm/add_window.c (adjust_fvwm_internal_windows):
+	* fvwm/screen.h (ScreenInfo):
+	* fvwm/focus.c (FocusOn):
+	ignore EnterNotify events while a window is waiting to receive focus
+	from the Focus or FlipFocus commands; should prevent plenty of race
+	contidions caused by executing complex functions by a key press, button
+	press or from a menu; fixes Alt-Tab problem
+
+	* fvwm/events.c (HandleMapNotify):
+	immediately draw window decorations when window is mapped; the new frame
+	drawing code takes care of suppressing unnecessary redraws
+	(HandleLeaveNotify):
+	fixed a bug w/ LeaveNotify event with NotifyGrab
+
 2002-05-22  olicha  <olivier.chapuis@free.fr>
 
 	* libs/Flocale.h:
 	* libs/Fft.c (FftDrawString):
 	* libs/Flocale.c (FlocaleFontStructDrawString):
-	(FlocaleRotateDrawString): 
+	(FlocaleRotateDrawString):
 	(FlocaleLoadFont):
 	(FlocaleGetShadowTextPosition):
 	(FlocaleDrawString):

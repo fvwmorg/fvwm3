@@ -615,6 +615,10 @@ static void adjust_fvwm_internal_windows(FvwmWindow *fw)
 	{
 		Scr.StolenFocusWin = None;
 	}
+	if (Scr.focus_in_pending_window == fw)
+	{
+		Scr.focus_in_pending_window = NULL;
+	}
 
 	return;
 }

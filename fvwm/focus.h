@@ -5,12 +5,12 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307	 USA
  */
 
 #ifndef _FOCUS_
@@ -18,7 +18,7 @@
 
 #define FOCUS_SET(w) XSetInputFocus(dpy, w, RevertToParent, CurrentTime);
 #define FOCUS_RESET() \
-  XSetInputFocus(dpy, PointerRoot, RevertToPointerRoot, CurrentTime);
+	XSetInputFocus(dpy, PointerRoot, RevertToPointerRoot, CurrentTime);
 
 /********************************************************************
  *
@@ -26,12 +26,12 @@
  *
  **********************************************************************/
 void SetFocusWindow(
-  FvwmWindow *Fw, Bool FocusByMouse, Bool do_allow_force_broadcast);
+	FvwmWindow *Fw, Bool FocusByMouse, Bool do_allow_force_broadcast);
 void ReturnFocusWindow(FvwmWindow *Fw, Bool FocusByMouse);
 void DeleteFocus(Bool FocusByMouse, Bool do_allow_force_broadcast);
 void ForceDeleteFocus(Bool FocusByMouse);
 void restore_focus_after_unmap(
-  FvwmWindow *fw, Bool do_skip_marked_transients);
+	FvwmWindow *fw, Bool do_skip_marked_transients);
 
 
 /**************************************************************************
