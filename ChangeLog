@@ -1,3 +1,18 @@
+2002-03-24  Mikhael Goikhman  <migo@homemail.com>
+
+	* acconfig.h:
+	* configure.in:
+	renamed HAVE_FRIBIDI to HAVE_BIDI
+
+	* libs/FBidi.c:
+	* libs/FBidi.h:
+	added more comments
+
+	* fvwm/Makefile.am:
+	* libs/Flocale.c:
+	* libs/Makefile.am:
+	added a dummy call to FBidi to test linking against bidi libs
+
 2002-03-24  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* fvwm/windowshade.c (CMD_WindowShade):

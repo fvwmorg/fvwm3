@@ -76,7 +76,7 @@
 #undef SHAPE
 
 /* Define if fribidi library is used.  */
-#undef HAVE_FRIBIDI
+#undef HAVE_BIDI
 
 /* Enables the "MiniIcon" Style option to specify a small pixmap which
  * can be used as one of the title-bar buttons, shown in window list,

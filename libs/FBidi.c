@@ -18,11 +18,12 @@
 
 /*
  * FBidi.c - interface to Bidi, we use fribidi implementation here.
+ * See FBidi.h for some comments on this interface.
  */
 
 #include "FBidi.h"
 
-#if HAVE_FRIBIDI
+#if HAVE_BIDI
 
 #include <fribidi/fribidi.h>
 
@@ -35,7 +36,7 @@ Bool FBidiIsApplicable(const char *charset)
 	return True;
 }
 
-char *FBidiConvert(const char *logical_str, const char *charset, Bool *rtl_dir)
+char *FBidiConvert(const char *logical_str, const char *charset, Bool *is_rtl)
 {
 	int str_len = strlen(logical_str);
 	char *visual_str;
@@ -45,7 +46,10 @@ char *FBidiConvert(const char *logical_str, const char *charset, Bool *rtl_dir)
 	FriBidiChar *visual_unicode_str;
 	FriBidiCharType pbase_dir = FRIBIDI_TYPE_ON;
 
-	*rtl_dir = False;
+	if (is_rtl != NULL)
+	{
+		*is_rtl = False;
+	}
 
 	fribidi_charset = fribidi_parse_charset((char *)charset);
 	if (fribidi_charset == FRIBIDI_CHARSET_NOT_FOUND)
@@ -76,9 +80,9 @@ char *FBidiConvert(const char *logical_str, const char *charset, Bool *rtl_dir)
 		fribidi_charset, visual_unicode_str, str_len,
 		visual_str);
 
-	if (pbase_dir == FRIBIDI_TYPE_RTL)
+	if (is_rtl != NULL && pbase_dir == FRIBIDI_TYPE_RTL)
 	{
-		*rtl_dir = True;
+		*is_rtl = True;
 	}
 
 	free(logical_unicode_str);

@@ -59,6 +59,7 @@
 #include "Strings.h"
 #include "Parse.h"
 #include "Picture.h"
+#include "FBidi.h"
 
 /* ---------------------------- local definitions --------------------------- */
 
@@ -738,6 +739,8 @@ void FlocaleDrawString(
 	unsigned long flags)
 {
 	int len;
+	char *str1 = NULL, *str2;
+	Bool is_rtl;
 
 	if (!fstring || !fstring->str)
 		return;
@@ -750,13 +753,21 @@ void FlocaleDrawString(
 	{
 		len = strlen(fstring->str);
 	}
+
+	/* TO FIX: should use charset from font structure */
+	str2 = FBidiConvert(fstring->str, "iso8859-1", &is_rtl);
+	if (str2)
+	{
+		str1 = fstring->str;
+		fstring->str = str2;
+	}
+
 	if (fstring->flags.text_rotation != TEXT_ROTATED_0 &&
 	    flf->fftf.fftfont == NULL)
 	{
 		FlocaleRotateDrawString(dpy, flf, fstring, len);
-		return;
 	}
-	if (FftSupport && flf->fftf.fftfont != NULL)
+	else if (FftSupport && flf->fftf.fftfont != NULL)
 	{
 		int x,y;
 		switch(fstring->flags.text_rotation)
@@ -775,20 +786,23 @@ void FlocaleDrawString(
 		FftDrawString(
 			dpy, fstring->win, &flf->fftf, fstring->gc, x, y,
 			fstring->str, len, fstring->flags.text_rotation);
-		return;
 	}
-	if (FlocaleMultibyteSupport && flf->fontset != None)
+	else if (FlocaleMultibyteSupport && flf->fontset != None)
 	{
 		XmbDrawString(dpy, fstring->win, flf->fontset,
 			      fstring->gc, fstring->x, fstring->y,
 			      fstring->str, len);
-		return;
 	}
-	if (flf->font != None)
+	else if (flf->font != None)
 	{
 		XDrawString(dpy, fstring->win, fstring->gc, fstring->x,
 			    fstring->y, fstring->str, len);
-		return;
+	}
+
+	if (str2)
+	{
+		fstring->str = str1;
+		free(str2);
 	}
 
 	return;
@@ -801,7 +815,7 @@ int FlocaleTextWidth(FlocaleFont *flf, char *str, int sl)
 
 	if (sl < 0)
 	{
-		/* a vertical string: noting todo! */
+		/* a vertical string: nothing to do! */
 		sl = -sl;
 	}
 	if (FftSupport && flf->fftf.fftfont != NULL)
