@@ -1096,33 +1096,10 @@ static void get_default_window_attributes(
 	FvwmWindow *fw, unsigned long *pvaluemask,
 	XSetWindowAttributes *pattributes)
 {
-#if 0
-	if (Pdepth < 2)
-	{
-		*pvaluemask = CWBackPixmap;
-		if (IS_STICKY(fw))
-		{
-			pattributes->background_pixmap = Scr.sticky_gray_pixmap;
-		}
-		else
-		{
-			pattributes->background_pixmap = Scr.light_gray_pixmap;
-		}
-	}
-	else
-	{
-		*pvaluemask = CWBackPixel;
-		pattributes->background_pixel = fw->colors.back;
-		pattributes->background_pixmap = None;
-	}
-#else
-	*pvaluemask = CWBackPixmap;
+	*pvaluemask |= CWBackingStore | CWCursor | CWSaveUnder | CWBorderPixel |
+		CWColormap | CWBackPixmap;
 	pattributes->background_pixel = 0;
 	pattributes->background_pixmap = None;
-#endif
-
-	*pvaluemask |= CWBackingStore | CWCursor | CWSaveUnder | CWBorderPixel |
-		CWColormap;
 	pattributes->backing_store = NotUseful;
 	pattributes->cursor = Scr.FvwmCursors[CRS_DEFAULT];
 	pattributes->save_under = False;

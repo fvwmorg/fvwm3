@@ -2249,7 +2249,7 @@ void CMD_PrintInfo(F_CMD_ARGS)
 {
 	int verbose;
 	char *rest,*subject;
-	
+
 	rest = GetNextToken(action, &subject);
 	if (!rest || GetIntegerArguments(rest, NULL, &verbose, 1) != 1)
 	{
@@ -2666,7 +2666,6 @@ void CMD_ChangeDecor(F_CMD_ARGS)
 {
 	char *item;
 	int old_height;
-	int extra_height;
 	FvwmDecor *decor = &Scr.DefaultDecor;
 	FvwmDecor *found = NULL;
 	FvwmWindow * const fw = exc->w.fw;
@@ -2694,13 +2693,6 @@ void CMD_ChangeDecor(F_CMD_ARGS)
 	old_height = (fw->decor) ? fw->decor->title_height : 0;
 	fw->decor = found;
 	apply_decor_change(fw);
-	extra_height = (HAS_TITLE(fw) && old_height) ?
-		(old_height - fw->decor->title_height) : 0;
-	frame_force_setup_window(
-		fw, fw->frame_g.x, fw->frame_g.y, fw->frame_g.width,
-		fw->frame_g.height - extra_height, True);
-	border_draw_decorations(
-		fw, PART_ALL, (Scr.Hilite == fw), 2, CLEAR_ALL, NULL, NULL);
 
 	return;
 }

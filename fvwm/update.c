@@ -386,14 +386,17 @@ static void apply_window_updates(
 	}
 	if (flags->do_setup_frame)
 	{
+		FvwmWindow *tmp;
+
 		setup_title_geometry(t, pstyle);
 		/* frame_force_setup_window needs to know if the window is
 		 * hilighted */
+		tmp = get_focus_window();
 		set_focus_window(focus_w);
 		frame_force_setup_window(
 			t, frame_g.x, frame_g.y, frame_g.width, frame_g.height,
 			True);
-		set_focus_window(NULL);
+		set_focus_window(tmp);
 		GNOME_SetWinArea(t);
 		EWMH_SetFrameStrut(t);
 	}
@@ -424,8 +427,11 @@ static void apply_window_updates(
 	}
 	if (flags->do_redraw_decoration)
 	{
+		FvwmWindow *tmp;
+
 		/* frame_redraw_decorations needs to know if the window is
 		 * hilighted */
+		tmp = get_focus_window();
 		set_focus_window(focus_w);
 		if (IS_ICONIFIED(t))
 		{
@@ -435,7 +441,7 @@ static void apply_window_updates(
 		{
 			border_redraw_decorations(t);
 		}
-		set_focus_window(NULL);
+		set_focus_window(tmp);
 	}
 	if (flags->do_update_icon_size_limits)
 	{
@@ -607,7 +613,6 @@ void apply_decor_change(FvwmWindow *fw)
 	flags.do_redecorate = True;
 	flags.do_update_window_font_height = True;
 	apply_window_updates(fw, &flags, &style, get_focus_window());
-	Scr.flags.do_need_window_update = 1;
 
 	return;
 }
