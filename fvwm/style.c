@@ -2227,7 +2227,7 @@ void handle_style_changes(void)
   /* This is necessary in case the focus policy changes. With ClickToFocus some
    * buttons have to be grabbed/ungrabbed. */
   focus_fw = Scr.Focus;
-  focus_w = (focus_fw) ? focus_fw->w : None;
+  focus_w = (focus_fw) ? focus_fw->w : Scr.NoFocusWin;
   SetFocus(Scr.NoFocusWin, NULL, 1);
   /* update styles for all windows */
   for (t = Scr.FvwmRoot.next; t != NULL; t = t->next)

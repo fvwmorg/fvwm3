@@ -698,6 +698,7 @@ MatchWinToSM(FvwmWindow *ewin, int *do_shade, int *do_max)
       ewin->max_offset.x = matches[i].max_x_offset;
       ewin->max_offset.y = matches[i].max_y_offset;
       SET_STICKY(ewin, IS_STICKY(&(matches[i])));
+      ewin->Desk = matches[i].desktop;
       set_layer(ewin, matches[i].layer);
 
       /* this is not enough to fight fvwms attempts to

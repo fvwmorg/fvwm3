@@ -279,7 +279,7 @@ int GetContext(FvwmWindow *t, XEvent *e, Window *w)
     {
       if (*w == t->title_w)
 	Context = C_TITLE;
-      else if ((*w == t->w)||(*w == t->Parent))
+      else if (*w == t->w || *w == t->Parent || *w == t->frame)
 	Context = C_WINDOW;
       else if (*w == t->icon_w || *w == t->icon_pixmap_w)
 	Context = C_ICON;

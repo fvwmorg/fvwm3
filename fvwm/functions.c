@@ -1270,7 +1270,8 @@ static void execute_complex_function(F_CMD_ARGS, Bool *desperate,
     {
       /* c is already lowercase here */
       c = fi->condition;
-      NeedsTarget = (fi->flags & FUNC_NEEDS_WINDOW) ? True : False;
+      if (fi->flags & FUNC_NEEDS_WINDOW)
+	NeedsTarget = True;
       switch (c)
       {
       case CF_IMMEDIATE:

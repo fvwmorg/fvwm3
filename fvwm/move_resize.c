@@ -90,14 +90,6 @@ static int GetOnePositionArgument(
     factor = 1;  /* Use pixels, so don't multiply by factor */
     s1[cch-1] = '\0';
   }
-  if (*s1 == 'm')
-  {
-    add_pointer_position = True;
-    s1++;
-    /* 'mw' is not allowed */
-    if (*s1 == 'w')
-      return 0;
-  }
   if (strcmp(s1,"w") == 0)
   {
     *pFinalX = x;
@@ -109,6 +101,16 @@ static int GetOnePositionArgument(
   else if (sscanf(s1,"w+%d",&val) == 1 || sscanf(s1,"w%d",&val) == 1 )
   {
     *pFinalX = x+(val*factor);
+  }
+  else if (sscanf(s1,"m-%d",&val) == 1)
+  {
+    add_pointer_position = True;
+    *pFinalX = -val*factor;
+  }
+  else if (sscanf(s1,"m+%d",&val) == 1 || sscanf(s1,"m%d",&val) == 1 )
+  {
+    add_pointer_position = True;
+    *pFinalX = val*factor;
   }
   else if (sscanf(s1,"-%d",&val) == 1)
   {
@@ -422,7 +424,7 @@ void move_window_doit(F_CMD_ARGS, Bool do_animate, Bool do_move_to_page)
 #if 0
 fprintf(stderr,"move window '%s'\n", tmp_win->name);
 #endif
-  if (IS_FIXED (tmp_win))
+  if (IS_FIXED(tmp_win))
     return;
 
   /* gotta have a window */
@@ -1946,7 +1948,7 @@ fprintf(stderr,"resize window '%s'\n", tmp_win->name);
 		     &delta_x, &delta_y, False, False, False);
       }
       /* redraw outline if we paged - mab */
-      if ( (delta_x != 0) || (delta_y != 0) )
+      if (delta_x != 0 || delta_y != 0)
       {
 	orig->x -= delta_x;
 	orig->y -= delta_y;
@@ -2117,20 +2119,14 @@ static void DoResize(
     if (*ymotionp == 1)
       drag->y = orig->y + orig->height - drag->height;
 
-    if (drag->x != tmp_win->frame_g.x ||
-	drag->y != tmp_win->frame_g.y ||
-	drag->width != tmp_win->frame_g.width ||
-	drag->height != tmp_win->frame_g.height)
+    if(!do_resize_opaque)
     {
-      if(!do_resize_opaque)
-      {
-	MoveOutline(drag->x, drag->y, drag->width - 1, drag->height - 1);
-      }
-      else
-      {
-	SetupFrame(
-	  tmp_win, drag->x, drag->y, drag->width, drag->height, False);
-      }
+      MoveOutline(drag->x, drag->y, drag->width - 1, drag->height - 1);
+    }
+    else
+    {
+      SetupFrame(
+	tmp_win, drag->x, drag->y, drag->width, drag->height, False);
     }
   }
   DisplaySize(tmp_win, drag->width, drag->height,False,False);

@@ -1,3 +1,36 @@
+1999-11-23  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* fvwm/menus.c (do_menu):
+	modify KeyPress so that the final press appears at the position where
+	the pointer is warped to
+
+	* fvwm/session.c (MatchWinToSM):
+	read desk from SM too
+
+	* fvwm/style.c (handle_style_changes):
+	fixed focus going down the dumps when styles change while no window is
+	focused; e.g. when restarting
+
+	* fvwm/events.c (GetContext):
+	An event on the frame now has 'C_WINDOW' context. Since the decor_w
+	covers the whole frame this can only happen when the click was inside
+	the client/parent window but button events were not selected for them.
+
+	* fvwm/functions.c (execute_complex_function):
+	fixed complex function when the last item requires no function
+
+	* fvwm/move_resize.c (GetOnePositionArgument):
+	fixed megative offsets from mouse position
+	(DoResize):
+	removed screwed patch to reduce function overhead
+
+	* fvwm/fvwm.c (main):
+	SIGUSR1 restarts correctly as if 'Restart' without arguments was
+	called. Otherwise it doesn't work with the preprocessor.
+
+	* fvwm/virtual.c (MoveViewport):
+	removed debug output
+
 1999-11-23  Dan Espen  <dane@mk.telcordia.com>
 
 	* fvwm/fvwm2.1 (DestroyStyle): Removed duplicated section.

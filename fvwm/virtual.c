@@ -760,7 +760,6 @@ void MoveViewport(int newx, int newy, Bool grab)
 
   deltay = Scr.Vy - newy;
   deltax = Scr.Vx - newx;
-fprintf(stderr,"mv: new vp = %d %d, vp = %d %d\n", newx, newy, Scr.Vx, Scr.Vy);
   /*
       Identify the bounding rectangle that will be moved into
       the viewport.

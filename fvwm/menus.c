@@ -788,7 +788,12 @@ void do_menu(MenuParameters *pmp, MenuReturn *pmret)
      * with a keypress and we're returning from a top level menu,
      * and a button release event didn't end it */
     XWarpPointer(dpy, 0, Scr.Root, 0, 0, Scr.MyDisplayWidth,
-		 Scr.MyDisplayHeight,x_start, y_start);
+		 Scr.MyDisplayHeight, x_start, y_start);
+    if (Event.type == KeyPress)
+    {
+      Event.xkey.x_root = x_start;
+      Event.xkey.y_root = y_start;
+    }
   }
 
   if (lastTimestamp-t0 < Menus.DoubleClickTime && !has_mouse_moved &&

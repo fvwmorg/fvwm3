@@ -722,7 +722,7 @@ int main(int argc, char **argv)
     Done(0, NULL);     /* does not return */
 
   case FVWM_RESTART:
-    Done(1, *g_argv);  /* does not return */
+    Done(1, "");       /* does not return */
 
   default:
     DBUG("main","Unknown FVWM run-state");

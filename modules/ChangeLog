@@ -8,7 +8,7 @@
 
 	* FvwmTaskBar/FvwmTaskBar.c (LoopOnEvents):
 	Fixed an AutoHide bug: no hide after a "StartMenu" Popup
-	
+
 1999-11-22  olicha   <olivier.chapuis@free.fr>
 
 	* FvwmTaskBar/FvwmTaskBar.c (ProcessMessage):
@@ -34,7 +34,7 @@
 	(ParseConfigLine):
 	(LoopOnEvents):
 	(StartMeUp):
-	Fixed TaskBar so that it works with dynamic change of the frame width.
+	Fixed TaskBar so that it works with dynamic change of the frame width.y
 	Did so that the TaskBar is always the full width of the screen, even
 	if the border width is not 4.
 	Removed some forgeted debug code.
