@@ -1,4 +1,37 @@
 /*
+ * The following GPL code from scwm  implements a good, fast 3D-shadowing
+ * algorithm. It   converts  the color  from  RGB   to  HLS  space,  then
+ * multiplies both the  luminosity   and the saturation by  a   specified
+ * factor (clipping at the  extremes). Then it  converts back to  RGB and
+ * creates a color. The guts of it, i.e.  the `color_mult' routine, looks
+ * a bit longish, but this  is only because  there are 6-way conditionals
+ * at the begining and end; it actually runs quite fast. The algorithm is
+ * the same  as Gtk's,  but  the  implemenation  is independent and  more
+ * streamlined.
+ *
+ * Calling `adjust_pixel_brightness' with  a `factor' of 1.3 for hilights
+ * and 0.7 for  shadows exactly emulates  Gtk's shadowing, which is,  IMO
+ * the most visually pleasing shadowing of any widget  set; using 1.2 and
+ * 0.5  respectively gives something closer to  the "classic" fvwm effect
+ * with deeper shadows and more subtle hilights, but still (IMO) smoother
+ * and more attractive than fvwm.
+ *
+ * The only color these  routines do not  usefully handle is black; black
+ * will be returned even  for a factor  greater than 1.0, when  optimally
+ * one  would like  to  see a  very dark  gray.  This could   possibly be
+ * addressed by  adding   a  small   additive factor  when    brightening
+ * colors. If anyone adds that feature, please feed it upstream to me.
+ *
+ * Feel free to use this code in fvwm2, of course.
+ *
+ * - Maciej Stachowiak
+ *
+ * And, of course, history shows, we took him up on the offer.
+ * Integrated into fvwm2 by Dan Espen, 11/13/98.
+ */
+
+
+/*
  * Copyright (C) 1997, 1998, Maciej Stachowiak and Greg J. Badros
  *
  * This program is free software; you can redistribute it and/or modify
@@ -17,10 +50,12 @@
  * Boston, MA 02111-1307 USA
  *
  */
-#include <X11/Intrinsic.h>              /* needed for Pixel defn */
 
+#include "config.h"                     /* must be first */
 
-/* The hilight/shadow stuff should maybe be in a separate relief.c? */
+#include <stdio.h>
+#include <X11/Xproto.h>                 /* for X functions in general */
+#include "fvwmlib.h"                    /* prototype GetShadow GetHilit */
 
 #define SCALE 65535.0
 #define HALF_SCALE (SCALE / 2)
@@ -38,7 +73,7 @@ typedef enum {
 
 /* FIXMS: This can probably be optimized more, examine later. */
 
-void 
+static void 
 color_mult (unsigned short *red, 
 	    unsigned short *green, 
 	    unsigned short *blue, double k)
@@ -173,24 +208,54 @@ color_mult (unsigned short *red,
   }
 }
 
-
-Pixel
+/*
+ * This  routine  uses PictureSaveDisplay  and PictureCMap  which must be
+ * created by InitPictureCMAP in Picture.c.
+ *
+ * If you  attempt to use GetShadow  and GetHilit, make  sure your module
+ * calls InitPictureCMAP first.
+ */
+static Pixel
 adjust_pixel_brightness(Pixel pixel, double factor)
 {
-  XColor c;
   extern Colormap PictureCMap;
   extern Display *PictureSaveDisplay;
+  XColor c;
   c.pixel = pixel;
-  
   XQueryColor (PictureSaveDisplay, PictureCMap, &c);
   color_mult(&c.red, &c.green, &c.blue, factor);
   XAllocColor (PictureSaveDisplay, PictureCMap, &c);
 
   return c.pixel;
 }
+
+/*
+ * These  are  the original fvwm2  APIs, one  for highlights  and one for
+ * shadows.   Together, if  used  in a frame    around a rectangle,  they
+ * produce a 3d appearance.
+ *
+ * The  input  pixel,   is normally  the  background   color used in  the
+ * rectangle.  One would  hope, when the  user selects to color something
+ * with a multi-color pixmap, they will have the insight to also assign a
+ * background color to the pixmaped  area  that approximates the  average
+ * color of the pixmap.
+ *
+ * Currently callers handle monochrome before calling  this routine.  The
+ * next logical enhancement is for that logic to be moved here.  Probably
+ * a  new   API   that  deals   with  foreground/background/hilite/shadow
+ * allocation all in 1 call is the next logical extenstion.
+ *
+ * Color  allocation  is also a  good   candidate for becoming  a library
+ * routine.  The color   allocation  logic in FvwmButtons using   the XPM
+ * library closeness stuff may be the ideal model.
+ * (dje 11/15/98)
+ */
+#define DARKNESS_FACTOR 0.5
 Pixel GetShadow(Pixel background) {
- return adjust_pixel_brightness(background, 0.7);
+  return adjust_pixel_brightness(background, DARKNESS_FACTOR);
 }
+
+#define BRIGHTNESS_FACTOR 1.4
 Pixel GetHilite(Pixel background) {
- return adjust_pixel_brightness(background, 1.3);
+  return adjust_pixel_brightness(background, BRIGHTNESS_FACTOR);
 }
