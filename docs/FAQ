@@ -188,7 +188,7 @@ A: New main distribution site (official + beta code):
                 ftp://ftp.loria.fr/pub/unix/fvwm/
 
    BTW, 1.24r was the last released version of the 1.xx series and the
-   first official release of 2.xx will be 2.2.  As of 2.2, an odd second
+   first official release of 2.xx is 2.2.  As of 2.2, an odd second
    digit denotes development releases and even numbers denote stable
    releases.
 
@@ -286,7 +286,6 @@ A: A lot.  To name a few general ones:
           global options now operate on a per window group level
           instead.
         - More and better modules.
-        - OpaqueResize is gone (fear not, it may come back).
         - M4 preprocessing is no longer part of the fvwm exec, but
           rather has been moved to a module.  There is also a module
           to use cpp too.  See the FvwmM4 and FvwmCpp man pages.
@@ -418,7 +417,7 @@ A: FVWM uses the XPM (X PixMap) library to provide support for colored
    INSTALL.fvwm).  Typically configure will say "Xpm library or header
    not found" if this is the problem.
 
-   Second, your version of XPM may be too old.  FVWM requires XPM 3.4f
+   Second, your version of XPM may be too old.  FVWM requires XPM 3.4g
    or better.  Typically configure will say "Xpm library version is too
    old!" if this is the problem.  In that case, you'll need to install a
    newer version.
@@ -1189,6 +1188,10 @@ A: Please enter a DETAILED description of your problem in our web-based
    By detailed we mean more than just "my window isn't behaving right" or
    "I found a bug":
 
+        - First of all: use our bug tracking system! You will find
+          a link to it on our main web page (see Q1.3).  If for some
+          reason the bug tracking system doesn't work for you, please
+          use the fvwmbug.sh shell script that comes with fvwm.
         - Describe the problem as best you can, preferably with
           suggestions on how to reproduce it easily
         - If applicable, include information from:
@@ -1196,14 +1199,14 @@ A: Please enter a DETAILED description of your problem in our web-based
                 xprop
                 FvwmIdent
                 xdpyinfo (maybe)
+        - What exact version of FVWM you are running.
         - What OS & version you are running under
         - What version of X11 are you running under, and is it an MIT
-          server or a vendor specific server (ex the OpenWindow X
+          server or a vendor specific server (e.g. the OpenWindow X
           server under SunOS)
-        - What exact version of FVWM you are running.
         - How was FVWM compiled (compiler & version, options, etc)
         - What settings do you have in your .fvwm2rc that may be
-          pertinent
+          pertinent.
 
 ----------------------------------------------------------------------
 
