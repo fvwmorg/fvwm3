@@ -1,3 +1,10 @@
+2001-08-20  Bob Woodside  <proteus@pcnet.com>
+
+	* fvwm/focus.c (MoveFocus, focus_grab_buttons): Fixed passive button
+        grab synchronization so apps using XtTranslations to catch double-
+        clicks don't get confused by extraneous Leave/EnterNotify events.
+        This fixes the "xfm/moxfm don't see double-clicks" problem.
+
 2001-08-20  Dan Espen  <dane@mk.telcordia.com>
 
 	* fvwm/icons.c (AutoPlaceIcon): Fix bug.

@@ -250,12 +250,20 @@ static void MoveFocus(
 {
   FvwmWindow *ffw_old = get_focus_window();
   Bool accepts_input_focus = do_accept_input_focus(Fw);
+  FvwmWindow *ffw_new;
 
   if (!do_force && Fw == ffw_old)
   {
     if (ffw_old)
     {
-      focus_grab_buttons(ffw_old, True);
+      /*
+          RBW - 2001/08/17 - For a MouseFocusClickRaises win, we must not drop
+          the grab, since the (potential) click hasn't happened yet.
+      */
+      if (!((HAS_SLOPPY_FOCUS(ffw_old) || HAS_MOUSE_FOCUS(ffw_old))
+          && DO_RAISE_MOUSE_FOCUS_CLICK(ffw_old)))  {
+        focus_grab_buttons(ffw_old, True);
+        }
     }
     return;
   }
@@ -264,7 +272,12 @@ static void MoveFocus(
   {
     if (accepts_input_focus)
     {
-      focus_grab_buttons(get_focus_window(), True);
+      /*  RBW - Ibid.  */
+      ffw_new = get_focus_window();
+      if (ffw_new && !((HAS_SLOPPY_FOCUS(ffw_new) || HAS_MOUSE_FOCUS(ffw_new))
+          && DO_RAISE_MOUSE_FOCUS_CLICK(ffw_new)))  {
+      focus_grab_buttons(ffw_new, True);
+        }
     }
     focus_grab_buttons(ffw_old, False);
   }
@@ -593,7 +606,6 @@ void focus_grab_buttons(FvwmWindow *tmp_win, Bool is_focused)
   accepts_input_focus = do_accept_input_focus(tmp_win);
   if ((HAS_SLOPPY_FOCUS(tmp_win) || HAS_MOUSE_FOCUS(tmp_win) ||
        HAS_NEVER_FOCUS(tmp_win)) &&
-      DO_RAISE_MOUSE_FOCUS_CLICK(tmp_win) &&
       (!is_focused || !is_on_top_of_layer(tmp_win)))
   {
     grab_buttons = ((1 << NUMBER_OF_MOUSE_BUTTONS) - 1);
@@ -607,17 +619,28 @@ void focus_grab_buttons(FvwmWindow *tmp_win, Bool is_focused)
     do_grab_all = True;
   }
 
-  if (grab_buttons != tmp_win->grabbed_buttons)
+  /*
+      RBW - If we've come here to grab and all buttons are already grabbed,
+      or to ungrab and none is grabbed, then we've nothing to do.
+  */
+  if ((!is_focused && grab_buttons == tmp_win->grabbed_buttons) ||
+     (is_focused && (tmp_win->grabbed_buttons & grab_buttons == 0)))  {
+    return;
+    }
+
   {
     Bool do_grab;
 
     MyXGrabServer (dpy);
-    Scr.Ungrabbed = (do_grab_all) ? NULL : tmp_win;
+    Scr.Ungrabbed = (!is_focused) ? NULL : tmp_win;
     for (i = 0; i < NUMBER_OF_MOUSE_BUTTONS; i++)
     {
-      if ((grab_buttons & (1 << i)) == (tmp_win->grabbed_buttons & (1 << i)))
-	continue;
-      do_grab = !!(grab_buttons & (1 << i));
+      /*  RBW - Set flag for grab or ungrab according to how we were called. */
+      if (!is_focused)  {
+        do_grab = !!(grab_buttons & (1 << i));
+        }  else  {
+        do_grab = !(grab_buttons & (1 << i));
+        }
 
       {
 	register unsigned int mods;
@@ -637,17 +660,20 @@ void focus_grab_buttons(FvwmWindow *tmp_win, Bool is_focused)
 	      XGrabButton(
 		dpy, i + 1, mods, tmp_win->Parent, True, ButtonPressMask,
 		GrabModeSync, GrabModeAsync, None, None);
+              /*  Set each FvwmWindow flag accordingly, as we grab or ungrab. */
+              tmp_win->grabbed_buttons |= (1<<i);
 	    }
 	    else
 	    {
 	      XUngrabButton(dpy, (i+1), mods, tmp_win->Parent);
+              tmp_win->grabbed_buttons &= !(1<<i);
 	    }
 	  }
 	} /* for */
       }
     } /* for */
-    tmp_win->grabbed_buttons = grab_buttons;
     MyXUngrabServer (dpy);
+
   }
 
   return;
