@@ -125,7 +125,7 @@
 #define FLOCALE_MB_FALLBACK_FONT \
 	"-*-fixed-medium-r-semicondensed-*-13-*-*-*-*-*-*-*," \
 	"-*-fixed-medium-r-normal-*-14-*-*-*-*-*-*-*," \
-	"-*-*-medium-r-normal-*-16-*-*-*-*-*-*-*-*"
+	"-*-*-medium-r-normal-*-16-*-*-*-*-*-*-*"
 /* rationale: -*-fixed-medium-r-semicondensed-*-13-* should gives "fixed" in
    most non multibyte charset (?).
    -*-fixed-medium-r-normal-*-14-* is ok for jsx
