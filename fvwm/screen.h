@@ -225,8 +225,12 @@ typedef struct FvwmDecor
   MyFont WindowFont;          /* font structure for window titles */
 
   /* titlebar buttons */
+#if 0
   TitleButton left_buttons[5];
   TitleButton right_buttons[5];
+#else
+  TitleButton buttons[NUMBER_OF_BUTTONS];
+#endif
   TitleButton titlebar;
   struct BorderStyle
   {
@@ -421,8 +425,6 @@ typedef struct ScreenInfo
 #endif
 
 /* some protos for the decoration structures */
-void LoadDefaultLeftButton(DecorFace *bf, int i);
-void LoadDefaultRightButton(DecorFace *bf, int i);
 void LoadDefaultButton(DecorFace *bf, int i);
 void ResetAllButtons(FvwmDecor *decor);
 

@@ -22,17 +22,14 @@ extern char NoResource[];
 
 void setup_focus_policy(FvwmWindow *tmp_win);
 void setup_style_and_decor(
-  FvwmWindow *tmp_win, window_style *pstyle, char *left_buttons,
-  char *right_buttons);
+  FvwmWindow *tmp_win, window_style *pstyle, short *buttons);
 void setup_auxiliary_windows(
-  FvwmWindow *tmp_win, Bool setup_frame_and_parent, char left_buttons,
-  char right_buttons);
+  FvwmWindow *tmp_win, Bool setup_frame_and_parent, short buttons);
 void setup_frame_attributes(
   FvwmWindow *tmp_win, window_style *pstyle);
 void destroy_auxiliary_windows(
   FvwmWindow *Tmp_win, Bool destroy_frame_and_parent);
-void change_auxiliary_windows(
-  FvwmWindow *tmp_win, char left_buttons, char right_buttons);
+void change_auxiliary_windows(FvwmWindow *tmp_win, short buttons);
 void setup_key_and_button_grabs(FvwmWindow *tmp_win);
 void setup_frame_geometry(FvwmWindow *tmp_win);
 void setup_frame_size_limits(FvwmWindow *tmp_win, window_style *pstyle);

@@ -85,8 +85,7 @@ static void apply_window_updates(
 #endif
   if (flags->do_redecorate)
   {
-    char left_buttons;
-    char right_buttons;
+    short buttons;
     FvwmWindow old_t;
     rectangle naked_g;
     rectangle *new_g;
@@ -95,10 +94,10 @@ static void apply_window_updates(
     memcpy(&old_t, t, sizeof(FvwmWindow));
 
     /* determine level of decoration */
-    setup_style_and_decor(t, pstyle, &left_buttons, &right_buttons);
+    setup_style_and_decor(t, pstyle, &buttons);
 
     /* redecorate */
-    change_auxiliary_windows(t, left_buttons, right_buttons);
+    change_auxiliary_windows(t, buttons);
 
     /* calculate the new offsets */
     gravity_get_naked_geometry(

@@ -442,32 +442,17 @@ int ButtonPosition(int context, FvwmWindow * t)
   int i;
   int buttons = -1;
 
-  if (context&C_RALL)
+  for (i = 0; i < NUMBER_OF_BUTTONS; i++)
   {
-    for(i=0;i<Scr.nr_right_buttons;i++)
+    if (t->button_w[i])
     {
-      if(t->right_w[i])
-      {
-	buttons++;
-      }
-      /* is this the button ? */
-      if (((1<<i)*C_R1) & context)
-	return(buttons);
+      buttons++;
     }
+    /* is this the button ? */
+    if (((1 << i) * C_L1) & context)
+      return(buttons);
   }
-  else
-  {
-    for(i=0;i<Scr.nr_left_buttons;i++)
-    {
-      if(t->left_w[i])
-      {
-	buttons++;
-      }
-      /* is this the button ? */
-      if (((1<<i)*C_L1) & context)
-	return(buttons);
-    }
-  }
+
   /* you never know... */
   return 0;
 }

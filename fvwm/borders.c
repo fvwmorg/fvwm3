@@ -679,39 +679,38 @@ static void RedrawButtons(
   int i;
 
   /*
-   * draw left buttons
+   * draw buttons
    */
 
-  for (i = 0; i < Scr.nr_left_buttons; i++)
+  for (i = 0; i < NUMBER_OF_BUTTONS; i++)
   {
-    if (t->left_w[i] != None)
+    if (HAS_BUTTON(t, i))
     {
       mwm_flags stateflags =
-	TB_MWM_DECOR_FLAGS(GetDecor(t, left_buttons[i]));
+	TB_MWM_DECOR_FLAGS(GetDecor(t, buttons[i]));
       Bool toggled =
 	(HAS_MWM_BUTTONS(t) &&
 	 ((stateflags & MWM_DECOR_MAXIMIZE && IS_MAXIMIZED(t)) ||
 	  (stateflags & MWM_DECOR_SHADE && IS_SHADED(t)) ||
 	  (stateflags & MWM_DECOR_STICK && IS_STICKY(t))));
       enum ButtonState bs =
-	get_button_state(has_focus, toggled, t->left_w[i]);
-      DecorFace *df =
-	&TB_STATE(GetDecor(t, left_buttons[i]))[bs];
-      if(flush_expose(t->left_w[i]) || expose_win == t->left_w[i] ||
+	get_button_state(has_focus, toggled, t->button_w[i]);
+      DecorFace *df = &TB_STATE(GetDecor(t, buttons[i]))[bs];
+      if(flush_expose(t->button_w[i]) || expose_win == t->button_w[i] ||
 	 expose_win == None || cd->flags.has_color_changed)
       {
-	int inverted = PressedW == t->left_w[i];
+	int inverted = PressedW == t->button_w[i];
 	if (DFS_USE_BORDER_STYLE(df->style))
 	{
 	  XChangeWindowAttributes(
-	    dpy, t->left_w[i], cd->valuemask, &cd->attributes);
+	    dpy, t->button_w[i], cd->valuemask, &cd->attributes);
 	}
 	else
 	{
 	  XChangeWindowAttributes(
-	    dpy, t->left_w[i], cd->notex_valuemask, &cd->notex_attributes);
+	    dpy, t->button_w[i], cd->notex_valuemask, &cd->notex_attributes);
 	}
-	XClearWindow(dpy, t->left_w[i]);
+	XClearWindow(dpy, t->button_w[i]);
 	if (DFS_USE_TITLE_STYLE(df->style))
 	{
 	  DecorFace *tsdf = &TB_STATE(GetDecor(t, titlebar))[bs];
@@ -719,31 +718,31 @@ static void RedrawButtons(
 	  for (; tsdf; tsdf = tsdf->next)
 #endif
 	  {
-	    DrawButton(t, t->left_w[i], t->title_g.height, t->title_g.height,
+	    DrawButton(t, t->button_w[i], t->title_g.height, t->title_g.height,
 		       tsdf, cd->relief_gc, cd->shadow_gc, inverted,
-		       TB_MWM_DECOR_FLAGS(GetDecor(t,left_buttons[i])), 1);
+		       TB_MWM_DECOR_FLAGS(GetDecor(t, buttons[i])), 1);
 	  }
 	}
 #ifdef MULTISTYLE
 	for (; df; df = df->next)
 #endif
 	{
-	  DrawButton(t, t->left_w[i], t->title_g.height, t->title_g.height,
+	  DrawButton(t, t->button_w[i], t->title_g.height, t->title_g.height,
 		     df, cd->relief_gc, cd->shadow_gc, inverted,
-		     TB_MWM_DECOR_FLAGS(GetDecor(t, left_buttons[i])), 1);
+		     TB_MWM_DECOR_FLAGS(GetDecor(t, buttons[i])), 1);
 	}
 
 	{
 	  Bool reverse = inverted;
 
 	  switch (DFS_BUTTON_RELIEF(
-	    TB_STATE(GetDecor(t, left_buttons[i]))[bs].style))
+	    TB_STATE(GetDecor(t, buttons[i]))[bs].style))
 	  {
 	  case DFS_BUTTON_IS_SUNK:
 	    reverse = !inverted;
 	  case DFS_BUTTON_IS_UP:
 	    RelieveRectangle(
-	      dpy, t->left_w[i], 0, 0, t->title_g.height - 1,
+	      dpy, t->button_w[i], 0, 0, t->title_g.height - 1,
 	      t->title_g.height - 1, (reverse ? cd->shadow_gc : cd->relief_gc),
 	      (reverse ? cd->relief_gc : cd->shadow_gc), cd->relief_width);
 	    break;
@@ -753,81 +752,7 @@ static void RedrawButtons(
 	  }
 	}
       }
-    }
-  } /* for */
-
-  /*
-   * draw right buttons
-   */
-
-  for(i = 0; i < Scr.nr_right_buttons; i++)
-  {
-    if(t->right_w[i] != None)
-    {
-      mwm_flags stateflags =
-	TB_MWM_DECOR_FLAGS(GetDecor(t, right_buttons[i]));
-      Bool toggled =
-	(HAS_MWM_BUTTONS(t) &&
-	 ((stateflags & MWM_DECOR_MAXIMIZE && IS_MAXIMIZED(t)) ||
-	  (stateflags & MWM_DECOR_SHADE && IS_SHADED(t)) ||
-	  (stateflags & MWM_DECOR_STICK && IS_STICKY(t))));
-      enum ButtonState bs =
-	get_button_state(has_focus, toggled, t->right_w[i]);
-      DecorFace *df =
-	&TB_STATE(GetDecor(t,right_buttons[i]))[bs];
-      if(flush_expose(t->right_w[i]) || expose_win==t->right_w[i] ||
-	 expose_win == None || cd->flags.has_color_changed)
-      {
-	int inverted = PressedW == t->right_w[i];
-	if (DFS_USE_BORDER_STYLE(df->style))
-	  XChangeWindowAttributes(
-	    dpy, t->right_w[i], cd->valuemask, &cd->attributes);
-	else
-	  XChangeWindowAttributes(
-	    dpy, t->right_w[i], cd->notex_valuemask, &cd->notex_attributes);
-	XClearWindow(dpy, t->right_w[i]);
-	if (DFS_USE_TITLE_STYLE(df->style))
-	{
-	  DecorFace *tsdf = &TB_STATE(GetDecor(t, titlebar))[bs];
-#ifdef MULTISTYLE
-	  for (; tsdf; tsdf = tsdf->next)
-#endif
-	  {
-	    DrawButton(t, t->right_w[i], t->title_g.height, t->title_g.height,
-		       tsdf, cd->relief_gc, cd->shadow_gc, inverted,
-		       TB_MWM_DECOR_FLAGS(GetDecor(t,right_buttons[i])), 1);
-	  }
-	}
-#ifdef MULTISTYLE
-	for (; df; df = df->next)
-#endif
-	{
-	  DrawButton(t, t->right_w[i], t->title_g.height, t->title_g.height,
-		     df, cd->relief_gc, cd->shadow_gc, inverted,
-		     TB_MWM_DECOR_FLAGS(GetDecor(t,right_buttons[i])), 1);
-	}
-
-	{
-	  Bool reverse = inverted;
-
-	  switch (DFS_BUTTON_RELIEF(
-	    TB_STATE(GetDecor(t, right_buttons[i]))[bs].style))
-	  {
-	  case DFS_BUTTON_IS_SUNK:
-	    reverse = !inverted;
-	  case DFS_BUTTON_IS_UP:
-	    RelieveRectangle(
-	      dpy,t->right_w[i], 0, 0, t->title_g.height - 1,
-	      t->title_g.height - 1, (reverse ? cd->shadow_gc : cd->relief_gc),
-	      (reverse ? cd->relief_gc : cd->shadow_gc), cd->relief_width);
-	    break;
-	  default:
-	    /* flat */
-	    break;
-	  }
-	}
-      }
-    }
+    } /* if (HAS_BUTTON(i))*/
   } /* for */
 }
 
@@ -1052,36 +977,38 @@ void SetupTitleBar(FvwmWindow *tmp_win, int w, int h)
   xwc.height = tmp_win->title_g.height;
   xwc.width = tmp_win->title_g.height;
   xwc.y = tmp_win->title_g.y;
+
+  /* left */
   xwc.x = tmp_win->boundary_width;
   for(i = 0; i < Scr.nr_left_buttons; i++)
   {
-    if(tmp_win->left_w[i] != None)
+    if(tmp_win->button_w[i] != None)
     {
       if(xwc.x + tmp_win->title_g.height < w-tmp_win->boundary_width)
       {
-	XConfigureWindow(dpy, tmp_win->left_w[i], xwcm, &xwc);
+	XConfigureWindow(dpy, tmp_win->button_w[i], xwcm, &xwc);
 	xwc.x += tmp_win->title_g.height;
       }
       else
       {
 	xwc.x = -tmp_win->title_g.height;
-	XConfigureWindow(dpy, tmp_win->left_w[i], xwcm, &xwc);
+	XConfigureWindow(dpy, tmp_win->button_w[i], xwcm, &xwc);
       }
     }
   }
-
-  xwc.x=w-tmp_win->boundary_width;
-  for(i = 0 ; i < Scr.nr_right_buttons; i++)
+  /* right */
+  xwc.x = w - tmp_win->boundary_width;
+  for(i = NR_LEFT_BUTTONS ; i < Scr.nr_right_buttons + NR_LEFT_BUTTONS; i++)
   {
-    if(tmp_win->right_w[i] != None)
+    if(tmp_win->button_w[i] != None)
     {
       xwc.x -= tmp_win->title_g.height;
-      if(xwc.x > tmp_win->boundary_width)
-	XConfigureWindow(dpy, tmp_win->right_w[i], xwcm, &xwc);
+      if (xwc.x > tmp_win->boundary_width)
+	XConfigureWindow(dpy, tmp_win->button_w[i], xwcm, &xwc);
       else
       {
 	xwc.x = -tmp_win->title_g.height;
-	XConfigureWindow(dpy, tmp_win->right_w[i], xwcm, &xwc);
+	XConfigureWindow(dpy, tmp_win->button_w[i], xwcm, &xwc);
       }
     }
   }
@@ -1702,16 +1629,12 @@ void set_decor_gravity(
     }
     xcwa.win_gravity = left_gravity;
     XChangeWindowAttributes(dpy, tmp_win->title_w, valuemask, &xcwa);
-    for (i = 4; i >= 0; i--)
+    for (i = 0; i < NUMBER_OF_BUTTONS; i++)
     {
-      if (tmp_win->left_w[i])
-	XChangeWindowAttributes(dpy, tmp_win->left_w[i], valuemask, &xcwa);
-    }
-    xcwa.win_gravity = right_gravity;
-    for (i = 4; i >= 0; i--)
-    {
-      if (tmp_win->right_w[i])
-	XChangeWindowAttributes(dpy, tmp_win->right_w[i], valuemask, &xcwa);
+      if (i == NR_LEFT_BUTTONS)
+	xcwa.win_gravity = right_gravity;
+      if (tmp_win->button_w[i])
+	XChangeWindowAttributes(dpy, tmp_win->button_w[i], valuemask, &xcwa);
     }
   }
 }

@@ -226,8 +226,7 @@ void setup_wm_hints(FvwmWindow *tmp_win)
 }
 
 void setup_style_and_decor(
-  FvwmWindow *tmp_win, window_style *pstyle, char *left_buttons,
-  char *right_buttons)
+  FvwmWindow *tmp_win, window_style *pstyle, short *buttons)
 {
 #ifdef SHAPE
   if (ShapesSupported)
@@ -275,7 +274,7 @@ void setup_style_and_decor(
 
   tmp_win->buttons = SIS_BUTTON_DISABLED(&pstyle->flags);
   SelectDecor(tmp_win, &pstyle->flags, SGET_BORDER_WIDTH(*pstyle),
-	      SGET_HANDLE_WIDTH(*pstyle), left_buttons, right_buttons);
+	      SGET_HANDLE_WIDTH(*pstyle), buttons);
 
 #ifdef SHAPE
   /* set boundary width to zero for shaped windows */
@@ -475,6 +474,7 @@ void setup_frame_window(
   pattributes->event_mask =
     (ExposureMask | VisibilityChangeMask | ButtonPressMask |
      ButtonReleaseMask);
+  pattributes->event_mask |= KeyPressMask;
   /* decor window, parent of all decorative subwindows */
   tmp_win->decor_w = XCreateWindow(dpy, tmp_win->frame, 0, 0,
 				   tmp_win->frame_g.width,
@@ -541,9 +541,10 @@ void change_title_window(
 
 void setup_button_windows(
   FvwmWindow *tmp_win, int valuemask, XSetWindowAttributes *pattributes,
-  char left_buttons, char right_buttons)
+  short buttons)
 {
   int i;
+  Bool has_button;
 
   /* restore valuemask to remember background */
   valuemask |=
@@ -555,51 +556,29 @@ void setup_button_windows(
 			   | EnterWindowMask | LeaveWindowMask
 			   | ExposureMask);
 
-  for(i = 4; i >= 0; i--)
+  for (i = 0; i < NUMBER_OF_BUTTONS; i++)
   {
-    if(tmp_win->right_w[i] == None && i < Scr.nr_right_buttons &&
-       (right_buttons & (1 << i)))
+    has_button = ((i < Scr.nr_left_buttons ||
+		  (i >= NR_LEFT_BUTTONS &&
+		   i < Scr.nr_right_buttons + NR_LEFT_BUTTONS)) &&
+		  (buttons & (1 << i)));
+    if (tmp_win->button_w[i] == None && has_button)
     {
-      tmp_win->right_w[i] = XCreateWindow(dpy, tmp_win->decor_w,
-					  tmp_win->title_g.width
-					  - tmp_win->title_g.height * (i+1),
-					  0, tmp_win->title_g.height,
-					  tmp_win->title_g.height, 0,
-					  CopyFromParent, InputOutput,
-					  CopyFromParent, valuemask,
-					  pattributes);
-      XSaveContext(dpy, tmp_win->right_w[i], FvwmContext, (caddr_t) tmp_win);
+      tmp_win->button_w[i] =
+	XCreateWindow(
+	  dpy, tmp_win->decor_w, (i < NR_LEFT_BUTTONS) ?
+	  (tmp_win->title_g.height * i) :
+	  (tmp_win->title_g.width - tmp_win->title_g.height * (i+1)),
+	  0, tmp_win->title_g.height, tmp_win->title_g.height, 0,
+	  CopyFromParent, InputOutput, CopyFromParent, valuemask, pattributes);
+      XSaveContext(dpy, tmp_win->button_w[i], FvwmContext, (caddr_t) tmp_win);
     }
-    else if (tmp_win->right_w[i] != None && (!(right_buttons & (1 << i)) ||
-					     i >= Scr.nr_right_buttons))
+    else if (tmp_win->button_w[i] != None && !has_button)
     {
       /* destroy the current button window */
-      XDestroyWindow(dpy, tmp_win->right_w[i]);
-      XDeleteContext(dpy, tmp_win->right_w[i], FvwmContext);
-      tmp_win->right_w[i] = None;
-    }
-  }
-  for(i = 4; i >= 0; i--)
-  {
-    if(tmp_win->left_w[i] == None && i < Scr.nr_left_buttons &&
-       (left_buttons & (1 << i)))
-    {
-      tmp_win->left_w[i] = XCreateWindow(dpy, tmp_win->decor_w,
-					 tmp_win->title_g.height * i, 0,
-					 tmp_win->title_g.height,
-					 tmp_win->title_g.height, 0,
-					 CopyFromParent, InputOutput,
-					 CopyFromParent, valuemask,
-					 pattributes);
-      XSaveContext(dpy, tmp_win->left_w[i], FvwmContext, (caddr_t) tmp_win);
-    }
-    else if (tmp_win->left_w[i] != None && (!(left_buttons & (1 << i)) ||
-					    i >= Scr.nr_left_buttons))
-    {
-      /* destroy the current button window */
-      XDestroyWindow(dpy, tmp_win->left_w[i]);
-      XDeleteContext(dpy, tmp_win->left_w[i], FvwmContext);
-      tmp_win->left_w[i] = None;
+      XDestroyWindow(dpy, tmp_win->button_w[i]);
+      XDeleteContext(dpy, tmp_win->button_w[i], FvwmContext);
+      tmp_win->button_w[i] = None;
     }
   }
 }
@@ -608,35 +587,25 @@ void destroy_button_windows(FvwmWindow *tmp_win, Bool do_only_delete_context)
 {
   int i;
 
-  for(i = Scr.nr_left_buttons - 1; i >= 0; i--)
+  for(i = 0; i < NUMBER_OF_BUTTONS; i++)
   {
-    if(tmp_win->left_w[i] != None)
+    if(tmp_win->button_w[i] != None)
     {
       if (!do_only_delete_context)
-	XDestroyWindow(dpy, tmp_win->left_w[i]);
-      XDeleteContext(dpy, tmp_win->left_w[i], FvwmContext);
-      tmp_win->left_w[i] = None;
-    }
-  }
-  for(i = Scr.nr_right_buttons - 1; i >= 0; i--)
-  {
-    if(tmp_win->right_w[i] != None)
-    {
-      if (!do_only_delete_context)
-	XDestroyWindow(dpy, tmp_win->right_w[i]);
-      XDeleteContext(dpy, tmp_win->right_w[i], FvwmContext);
-      tmp_win->right_w[i] = None;
+	XDestroyWindow(dpy, tmp_win->button_w[i]);
+      XDeleteContext(dpy, tmp_win->button_w[i], FvwmContext);
+      tmp_win->button_w[i] = None;
     }
   }
 }
 
 void change_button_windows(
   FvwmWindow *tmp_win, int valuemask, XSetWindowAttributes *pattributes,
-  char left_buttons, char right_buttons)
+  short buttons)
 {
   if (HAS_TITLE(tmp_win))
     setup_button_windows(
-      tmp_win, valuemask, pattributes, left_buttons, right_buttons);
+      tmp_win, valuemask, pattributes, buttons);
   else
     destroy_button_windows(tmp_win, False);
 }
@@ -747,8 +716,7 @@ void setup_frame_stacking(FvwmWindow *tmp_win)
 }
 
 void setup_auxiliary_windows(
-  FvwmWindow *tmp_win, Bool setup_frame_and_parent, char left_buttons,
-  char right_buttons)
+  FvwmWindow *tmp_win, Bool setup_frame_and_parent, short buttons)
 {
   unsigned long valuemask_save = 0;
   XSetWindowAttributes attributes;
@@ -764,7 +732,7 @@ void setup_auxiliary_windows(
   {
     setup_title_window(tmp_win, valuemask_save, &attributes);
     setup_button_windows(
-      tmp_win, valuemask_save, &attributes, left_buttons, right_buttons);
+      tmp_win, valuemask_save, &attributes, buttons);
     XLowerWindow(dpy, tmp_win->title_w);
   }
 
@@ -814,16 +782,14 @@ void destroy_auxiliary_windows(FvwmWindow *tmp_win,
     destroy_resize_handle_windows(tmp_win, True);
 }
 
-void change_auxiliary_windows(
-  FvwmWindow *tmp_win, char left_buttons, char right_buttons)
+void change_auxiliary_windows(FvwmWindow *tmp_win, short buttons)
 {
   unsigned long valuemask_save = 0;
   XSetWindowAttributes attributes;
 
   get_default_window_background(tmp_win, &valuemask_save, &attributes);
   change_title_window(tmp_win, valuemask_save, &attributes);
-  change_button_windows(tmp_win, valuemask_save, &attributes, left_buttons,
-			right_buttons);
+  change_button_windows(tmp_win, valuemask_save, &attributes, buttons);
   change_resize_handle_windows(tmp_win);
   setup_frame_stacking(tmp_win);
 }
@@ -1027,7 +993,7 @@ void setup_focus_policy(FvwmWindow *tmp_win)
  ***********************************************************************/
 void regrab_focus_win()
 {
-int i;
+  int i;
 
   if (Scr.go.MouseFocusClickRaises
       && Scr.Ungrabbed != NULL
@@ -1050,7 +1016,7 @@ void setup_key_and_button_grabs(FvwmWindow *tmp_win)
 {
   GrabAllWindowKeysAndButtons(dpy, tmp_win->Parent, Scr.AllBindings,
 			      C_WINDOW, GetUnusedModifiers(), None, True);
-  GrabAllWindowKeys(dpy, tmp_win->decor_w, Scr.AllBindings,
+  GrabAllWindowKeys(dpy, tmp_win->frame, Scr.AllBindings,
 		    C_TITLE|C_RALL|C_LALL|C_SIDEBAR,
 		    GetUnusedModifiers(), True);
   setup_focus_policy(tmp_win);
@@ -1077,8 +1043,7 @@ FvwmWindow *AddWindow(Window w, FvwmWindow *ReuseWin)
   window_style style;
   /* used for faster access */
   style_flags *sflags;
-  char left_buttons;
-  char right_buttons;
+  short buttons;
   extern FvwmWindow *colormap_win;
   extern Boolean PPosOverride;
 #ifdef I18N_MB
@@ -1119,7 +1084,7 @@ FvwmWindow *AddWindow(Window w, FvwmWindow *ReuseWin)
   /* get merged styles */
   lookup_style(tmp_win, &style);
   sflags = SGET_FLAGS_POINTER(style);
-  setup_style_and_decor(tmp_win, &style, &left_buttons, &right_buttons);
+  setup_style_and_decor(tmp_win, &style, &buttons);
   memcpy(&(FW_COMMON_FLAGS(tmp_win)), &(sflags->common),
 	 sizeof(common_flags_type));
 
@@ -1268,7 +1233,7 @@ FvwmWindow *AddWindow(Window w, FvwmWindow *ReuseWin)
   }
 
   /****** auxiliary window setup ******/
-  setup_auxiliary_windows(tmp_win, True, left_buttons, right_buttons);
+  setup_auxiliary_windows(tmp_win, True, buttons);
 
   /****** 'backing store' and 'save under' window setup ******/
   setup_frame_attributes(tmp_win, &style);

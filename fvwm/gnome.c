@@ -896,20 +896,20 @@ GNOME_ProcessClientMessage(FvwmWindow *fwin, XEvent *ev)
   a = XInternAtom(dpy, XA_WIN_STATE, False);
   if (ev->xclient.message_type == a && fwin)
     {
-      HandleGnomePropRequest(ev->xclient.data.l[0],
-			     ev->xclient.data.l[1],
-			     ev->xclient.window,
-			     ev);
+      GNOME_HandlePropRequest(ev->xclient.data.l[0],
+			      ev->xclient.data.l[1],
+			      ev->xclient.window,
+			      ev);
       return 1;
     }
 
   return 0;
 }
 
-void HandleGnomePropRequest(unsigned int propm,
-			    unsigned int prop,
-			    Window win,
-			    XEvent *ev)
+void GNOME_HandlePropRequest(unsigned int propm,
+			     unsigned int prop,
+			     Window win,
+			     XEvent *ev)
 {
   Atom atype;
   Atom a;

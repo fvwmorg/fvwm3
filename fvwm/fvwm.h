@@ -346,8 +346,16 @@ typedef struct FvwmWindow
   Window corners[4];          /* Corner pieces */
   int nr_left_buttons;
   int nr_right_buttons;
-  Window left_w[5];
-  Window right_w[5];
+#if 0
+  Window left_w[NR_LEFT_BUTTONS];
+  Window right_w[NR_RIGHT_BUTTONS];
+#else
+  Window button_w[NUMBER_OF_BUTTONS];
+#define LEFT_W(i) button_w(i)
+#define RIGHT_W(i) button_w((i) + NR_LEFT_BUTTONS)
+#define BUTTON_INDEX(i) (((i) == 0) ? (NUMBER_OF_BUTTONS - 1) : ((i) / 2 + ((!((i) & 1)) ? NR_LEFT_BUTTONS - 1 : 0)))
+#define HAS_BUTTON(t, i) ((t)->button_w[i] && (((i) < NR_LEFT_BUTTONS && (i) < Scr.nr_left_buttons)||((i) >= NR_LEFT_BUTTONS && (i) - NR_LEFT_BUTTONS < Scr.nr_right_buttons)))
+#endif
 #ifdef USEDECOR
   struct FvwmDecor *decor;
 #endif
@@ -439,20 +447,6 @@ typedef struct WindowConditionMask {
   char *name;
   int layer;
 } WindowConditionMask;
-
-
-/* flags to suppress/enable title bar buttons */
-#define BUTTON1     1
-#define BUTTON2     2
-#define BUTTON3     4
-#define BUTTON4     8
-#define BUTTON5    16
-#define BUTTON6    32
-#define BUTTON7    64
-#define BUTTON8   128
-#define BUTTON9   256
-#define BUTTON10  512
-
 
 RETSIGTYPE SigDone(int);
 RETSIGTYPE Restart(int nonsense);

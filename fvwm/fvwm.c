@@ -1183,7 +1183,7 @@ RETSIGTYPE Restart(int sig)
  *
  ************************************************************************/
 
-void LoadDefaultLeftButton(DecorFace *df, int i)
+static void LoadDefaultLeftButton(DecorFace *df, int i)
 {
     struct vector_coords *v = &df->u.vector;
 
@@ -1276,7 +1276,7 @@ void LoadDefaultLeftButton(DecorFace *df, int i)
  *		assumes associated button memory is already free
  *
  ************************************************************************/
-void LoadDefaultRightButton(DecorFace *df, int i)
+static void LoadDefaultRightButton(DecorFace *df, int i)
 {
     struct vector_coords *v = &df->u.vector;
 
@@ -1372,12 +1372,10 @@ void LoadDefaultRightButton(DecorFace *df, int i)
  ************************************************************************/
 void LoadDefaultButton(DecorFace *df, int i)
 {
-    int n = i / 2;
-    if ((n * 2) == i) {
-	if (--n < 0) n = 4;
-	LoadDefaultRightButton(df, n);
-    } else
-	LoadDefaultLeftButton(df, n);
+  if (i >= NR_LEFT_BUTTONS)
+    LoadDefaultRightButton(df, i - NR_LEFT_BUTTONS);
+  else
+    LoadDefaultLeftButton(df, i);
 }
 
 extern void FreeDecorFace(Display *dpy, DecorFace *df);
@@ -1390,43 +1388,30 @@ extern void FreeDecorFace(Display *dpy, DecorFace *df);
  ************************************************************************/
 void ResetAllButtons(FvwmDecor *decor)
 {
-    TitleButton *leftp, *rightp;
-    int i=0;
+  TitleButton *tbp;
+  DecorFace *face;
+  int i;
+  int j;
 
-    for (leftp=decor->left_buttons, rightp=decor->right_buttons;
-         i < 5;
-         ++i, ++leftp, ++rightp) {
-      DecorFace *lface, *rface;
-      int j;
-
-      memset(&TB_FLAGS(*leftp), 0, sizeof(TB_FLAGS(*leftp)));
-      TB_JUSTIFICATION(*leftp) = JUST_CENTER;
-      memset(&TB_FLAGS(*rightp), 0, sizeof(TB_FLAGS(*rightp)));
-      TB_JUSTIFICATION(*rightp) = JUST_CENTER;
-
-      lface = TB_STATE(*leftp);
-      rface = TB_STATE(*rightp);
-
-      FreeDecorFace(dpy, lface);
-      FreeDecorFace(dpy, rface);
-
-      LoadDefaultLeftButton(lface++, i);
-      LoadDefaultRightButton(rface++, i);
-
-      for (j = 1; j < MaxButtonState; ++j, ++lface, ++rface) {
-        FreeDecorFace(dpy, lface);
-        FreeDecorFace(dpy, rface);
-
-	LoadDefaultLeftButton(lface, i);
-	LoadDefaultRightButton(rface, i);
-      }
+  for (tbp = decor->buttons, i = 0; i < NUMBER_OF_BUTTONS; ++i, ++tbp)
+  {
+    memset(&TB_FLAGS(*tbp), 0, sizeof(TB_FLAGS(*tbp)));
+    TB_JUSTIFICATION(*tbp) = JUST_CENTER;
+    face = TB_STATE(*tbp);
+    FreeDecorFace(dpy, face);
+    LoadDefaultButton(face++, i);
+    for (j = 1; j < MaxButtonState; ++j, ++face)
+    {
+      FreeDecorFace(dpy, face);
+      LoadDefaultButton(face, i);
     }
+  }
 
-    /* standard MWM decoration hint assignments (veliaa@rpi.edu)
-       [Menu]  - Title Bar - [Minimize] [Maximize] */
-    TB_MWM_DECOR_FLAGS(decor->left_buttons[0]) |= MWMDecorMenu;
-    TB_MWM_DECOR_FLAGS(decor->right_buttons[1]) |= MWMDecorMinimize;
-    TB_MWM_DECOR_FLAGS(decor->right_buttons[0]) |= MWMDecorMaximize;
+  /* standard MWM decoration hint assignments (veliaa@rpi.edu)
+     [Menu]  - Title Bar - [Minimize] [Maximize] */
+  TB_MWM_DECOR_FLAGS(decor->buttons[0]) |= MWMDecorMenu;
+  TB_MWM_DECOR_FLAGS(decor->buttons[NR_LEFT_BUTTONS + 1]) |= MWMDecorMinimize;
+  TB_MWM_DECOR_FLAGS(decor->buttons[NR_LEFT_BUTTONS]) |= MWMDecorMaximize;
 }
 
 /***********************************************************************

@@ -261,13 +261,24 @@ int GetContext(FvwmWindow *t, XEvent *e, Window *w)
     return C_ROOT;
 
   Context = C_NO_CONTEXT;
+
+  if (e->type == KeyPress && e->xkey.window == t->frame &&
+      e->xkey.subwindow == t->decor_w)
+  {
+    /* We can't get keyboard events on the decor_w directly beacause it is a
+     * sibling of the parent window which gets all keyboard input. So we have to
+     * grab keys on the frame and then translate the coordinates to find out in
+     * which subwindow of the decor_w the event occured. */
+    e->xkey.window = e->xkey.subwindow;
+    XTranslateCoordinates(dpy, t->frame, t->decor_w, e->xkey.x, e->xkey.y,
+			  &JunkX, &JunkY, &(e->xkey.subwindow));
+  }
   *w= e->xany.window;
 
-  if(*w == Scr.NoFocusWin)
+  if (*w == Scr.NoFocusWin)
     return C_ROOT;
-  if(e->xkey.subwindow != None && e->xany.window != t->w)
+  if (e->xkey.subwindow != None && e->xany.window != t->w)
     *w = e->xkey.subwindow;
-
   if (*w == Scr.Root)
     return C_ROOT;
   if (t)
@@ -299,29 +310,21 @@ int GetContext(FvwmWindow *t, XEvent *e, Window *w)
 	  Button = i;
 	else
 	  {
-	    for(i=0;i<Scr.nr_left_buttons;i++)
+	    for (i = 0; i < NUMBER_OF_BUTTONS; i++)
+	    {
+	      if (*w == t->button_w[i])
 	      {
-		if(*w == t->left_w[i])
-		  {
-		    Context = (1<<i)*C_L1;
-		    break;
-		  }
+		if ((i < NR_LEFT_BUTTONS && i < Scr.nr_left_buttons) ||
+		    (i >= NR_LEFT_BUTTONS &&
+		     i - NR_LEFT_BUTTONS < Scr.nr_right_buttons))
+		{
+		  Context = (1<<i)*C_L1;
+		  Button = i;
+		  break;
+		}
 	      }
-	    if (i < Scr.nr_left_buttons)
-	      Button = i;
-	    else
-	      {
-		for(i=0;i<Scr.nr_right_buttons;i++)
-		  {
-		    if(*w == t->right_w[i])
-		      {
-			Context = (1<<i)*C_R1;
-			Button = i;
-			break;
-		      }
-		  }
-	      }
-	  } /* if (i < 4) */
+	    }
+	  }
       } /* else */
     } /* if (t) */
   return Context;
@@ -461,7 +464,7 @@ void HandleKeyPress(void)
 
   DBUG("HandleKeyPress","Routine Entered");
 
-  Context = GetContext(Tmp_win,&Event, &PressedW);
+  Context = GetContext(Tmp_win, &Event, &PressedW);
   PressedW = None;
 
   /* Here's a real hack - some systems have two keys with the

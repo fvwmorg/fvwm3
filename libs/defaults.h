@@ -62,13 +62,19 @@
 #define DEFAULT_TOP_LAYER                 6
 #define DEFAULT_ROOT_WINDOW_LAYER        -1
 
+/* decorations */
+#define NR_LEFT_BUTTONS                   5
+#define NR_RIGHT_BUTTONS                  5
+#define NUMBER_OF_BUTTONS                 (NR_LEFT_BUTTONS + NR_RIGHT_BUTTONS)
+
+/* misc */
 #define DEFAULT_EMULATE_MWM               False
 #define DEFAULT_EMULATE_WIN               False
 
 #define DEFAULT_USE_ACTIVE_DOWN_BUTTONS   True
 #define DEFAULT_USE_INACTIVE_BUTTONS      True
 
-/* Tunable parameters. */
+/* Gradients */
 #define MAX_GRADIENT_SEGMENTS          1000
 #define MAX_GRADIENT_COLORS            10000
 

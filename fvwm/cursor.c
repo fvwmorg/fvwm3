@@ -505,11 +505,12 @@ void CursorStyle(F_CMD_ARGS)
     }
     for (i=0;i<Scr.nr_left_buttons;i++)
     {
-      SafeDefineCursor(fw->left_w[i],Scr.FvwmCursors[CRS_SYS]);
+      SafeDefineCursor(fw->button_w[i],Scr.FvwmCursors[CRS_SYS]);
     }
     for (i=0;i<Scr.nr_right_buttons;i++)
     {
-      SafeDefineCursor(fw->right_w[i],Scr.FvwmCursors[CRS_SYS]);
+      SafeDefineCursor(fw->button_w[i + NR_LEFT_BUTTONS],
+		       Scr.FvwmCursors[CRS_SYS]);
     }
     SafeDefineCursor(fw->title_w, Scr.FvwmCursors[CRS_TITLE]);
     fw = fw->next;

@@ -259,7 +259,7 @@ void GetOlHints(FvwmWindow *t)
  *
  *****************************************************************************/
 void SelectDecor(FvwmWindow *t, style_flags *sflags, int border_width,
-		 int handle_width, char * left_buttons, char *right_buttons)
+		 int handle_width, short *buttons)
 {
   int decor,i;
   PropMwmHints *prop;
@@ -270,8 +270,7 @@ void SelectDecor(FvwmWindow *t, style_flags *sflags, int border_width,
   if(!SHAS_HANDLE_WIDTH(sflags))
     handle_width = Scr.BoundaryWidth;
 
-  *left_buttons = 0x1f;
-  *right_buttons = 0x1f;
+  *buttons = 0x3ff;
 
   decor = MWM_DECOR_ALL;
   t->functions = MWM_FUNC_ALL;
@@ -433,11 +432,10 @@ void SelectDecor(FvwmWindow *t, style_flags *sflags, int border_width,
        * window gets 1 pixel wide black border */
       /* disable any buttons with the MWMDecorMenu flag */
       int i;
-      for (i = 0; i < 5; ++i) {
-	if (TB_HAS_MWM_DECOR_MENU(GetDecor(t,left_buttons[i])))
-          *left_buttons &= ~(1 << i);
-	if (TB_HAS_MWM_DECOR_MENU(GetDecor(t,right_buttons[i])))
-          *right_buttons &= ~(1 << i);
+      for (i = 0; i < NUMBER_OF_BUTTONS; ++i)
+      {
+	if (TB_HAS_MWM_DECOR_MENU(GetDecor(t, buttons[i])))
+          *buttons &= ~(1 << i);
       }
     }
   if(!(decor & MWM_DECOR_MINIMIZE))
@@ -446,13 +444,11 @@ void SelectDecor(FvwmWindow *t, style_flags *sflags, int border_width,
        * window gets 1 pixel wide black border */
       /* disable any buttons with the MWMDecorMinimize/MWMDecorShaded flag */
       int i;
-      for (i = 0; i < 5; ++i) {
-	if (TB_HAS_MWM_DECOR_MINIMIZE(GetDecor(t,left_buttons[i])) ||
-	    TB_HAS_MWM_DECOR_SHADE(GetDecor(t,left_buttons[i])))
-          *left_buttons &= ~(1 << i);
-	if (TB_HAS_MWM_DECOR_MINIMIZE(GetDecor(t,right_buttons[i])) ||
-	    TB_HAS_MWM_DECOR_SHADE(GetDecor(t,right_buttons[i])))
-          *right_buttons &= ~(1 << i);
+      for (i = 0; i < NUMBER_OF_BUTTONS; ++i)
+      {
+	if (TB_HAS_MWM_DECOR_MINIMIZE(GetDecor(t, buttons[i])) ||
+	    TB_HAS_MWM_DECOR_SHADE(GetDecor(t, buttons[i])))
+          *buttons &= ~(1 << i);
       }
     }
   if(!(decor & MWM_DECOR_MAXIMIZE))
@@ -461,45 +457,35 @@ void SelectDecor(FvwmWindow *t, style_flags *sflags, int border_width,
        * window has 1 pixel wide black border */
       /* disable any buttons with the MWMDecorMaximize flag */
       int i;
-      for (i = 0; i < 5; ++i) {
-	if (TB_HAS_MWM_DECOR_MAXIMIZE(GetDecor(t,left_buttons[i])))
-          *left_buttons &= ~(1 << i);
-	if (TB_HAS_MWM_DECOR_MAXIMIZE(GetDecor(t,right_buttons[i])))
-          *right_buttons &= ~(1 << i);
+      for (i = 0; i < NUMBER_OF_BUTTONS; ++i)
+      {
+	if (TB_HAS_MWM_DECOR_MAXIMIZE(GetDecor(t, buttons[i])))
+          *buttons &= ~(1 << i);
       }
     }
-  if (t->buttons & BUTTON1)
-    *left_buttons &= ~(1 << 0);
-  if (t->buttons & BUTTON3)
-    *left_buttons &= ~(1 << 1);
-  if (t->buttons & BUTTON5)
-    *left_buttons &= ~(1 << 2);
-  if (t->buttons & BUTTON7)
-    *left_buttons &= ~(1 << 3);
-  if (t->buttons & BUTTON9)
-    *left_buttons &= ~(1 << 4);
-
-  if (t->buttons & BUTTON2)
-    *right_buttons &= ~(1 << 0);
-  if (t->buttons & BUTTON4)
-    *right_buttons &= ~(1 << 1);
-  if (t->buttons & BUTTON6)
-    *right_buttons &= ~(1 << 2);
-  if (t->buttons & BUTTON8)
-    *right_buttons &= ~(1 << 3);
-  if (t->buttons & BUTTON10)
-    *right_buttons &= ~(1 << 4);
+  for (i = (1 << (NUMBER_OF_BUTTONS - 1)); i; i >>= 1)
+  {
+    if (t->buttons & i)
+      *buttons &= ~i;
+  }
 
   t->nr_left_buttons = Scr.nr_left_buttons;
   t->nr_right_buttons = Scr.nr_right_buttons;
 
-  for(i=0;i<Scr.nr_left_buttons;i++)
-    if((*left_buttons & (1 << i)) == 0)
-      t->nr_left_buttons--;
+  for (i = 0; i < NUMBER_OF_BUTTONS; ++i)
+  {
+  }
 
-  for(i=0;i<Scr.nr_right_buttons;i++)
-    if((*right_buttons & (1 << i)) == 0)
+  for (i = 0; i < Scr.nr_left_buttons; i++)
+  {
+    if((*buttons & (1 << i)) == 0)
+      t->nr_left_buttons--;
+  }
+  for (i = 0; i < Scr.nr_right_buttons; i++)
+  {
+    if((*buttons & (1 << (i + NR_LEFT_BUTTONS))) == 0)
       t->nr_right_buttons--;
+  }
 
   if(t->boundary_width <= 0)
     {

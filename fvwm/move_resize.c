@@ -1730,11 +1730,10 @@ fprintf(stderr,"resize window '%s'\n", tmp_win->name);
   }
   else
   {
-    for (i = 5; i--; )
+    for (i = NUMBER_OF_BUTTONS; i--; )
     {
       /* see if the title button was pressed to that the resize */
-      if ((tmp_win->left_w[i] != None && PressedW == tmp_win->left_w[i]) ||
-	  (tmp_win->right_w[i] != None && PressedW == tmp_win->right_w[i]))
+      if (tmp_win->button_w[i] != None && PressedW == tmp_win->button_w[i])
       {
 	/* yes */
 	called_from_title = True;

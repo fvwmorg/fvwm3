@@ -275,11 +275,7 @@ int ParseBinding(Display *dpy, Binding **pblist, char *tline,
     }
     return 0;
   }
-
-  if (type == MOUSE_BINDING)
-  {
-    update_nr_buttons(contexts, nr_left_buttons, nr_right_buttons);
-  }
+  update_nr_buttons(contexts, nr_left_buttons, nr_right_buttons);
 
   if((mods & AnyModifier)&&(mods&(~AnyModifier)))
   {

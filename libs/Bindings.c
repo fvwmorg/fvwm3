@@ -406,6 +406,7 @@ Bool MatchBinding(Display *dpy, Binding *b,
  *                             in blist
  *	GrabWindowButton     - same for mouse buttons
  *	GrabAllWindowButtons - same for mouse buttons
+ *	GrabAllWindowKeysAndButtons - both of the above
  *
  *  Inputs:
  *   w              - the window to use (the frame window)
@@ -545,14 +546,15 @@ void GrabAllWindowKeysAndButtons(Display *dpy, Window w, Binding *blist,
 {
   MyXGrabServer(dpy);
   for ( ; blist != NULL; blist = blist->NextBinding)
+  {
     if (blist->Context & contexts)
     {
       switch (blist->type)
       {
       case MOUSE_BINDING:
       STROKE_CODE(case STROKE_BINDING:)
-	GrabWindowButton(dpy, w, blist, contexts, dead_modifiers, cursor,
-			 fGrab);
+	GrabWindowButton(
+	  dpy, w, blist, contexts, dead_modifiers, cursor, fGrab);
 	break;
       case KEY_BINDING:
 	GrabWindowKey(dpy, w, blist, contexts, dead_modifiers, fGrab);
@@ -561,6 +563,7 @@ void GrabAllWindowKeysAndButtons(Display *dpy, Window w, Binding *blist,
 	break;
       }
     }
+  }
   MyXUngrabServer(dpy);
   XSync(dpy, 0);
   return;

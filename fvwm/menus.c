@@ -6488,12 +6488,7 @@ char *GetMenuOptions(char *action, Window w, FvwmWindow *tmp_win,
       }
       else if (tmp_win)
       {
-	if (button == 0)
-	  button = 10;
-	if (button & 0x01)
-	  context_window = tmp_win->left_w[button/2];
-	else
-	  context_window = tmp_win->right_w[button/2-1];
+	context_window = tmp_win->button_w[BUTTON_INDEX(button)];
       }
     }
     else if (StrEquals(tok,"root"))
