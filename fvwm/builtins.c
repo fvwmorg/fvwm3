@@ -2314,6 +2314,57 @@ void AddButtonStyle(F_CMD_ARGS)
 #endif /* MULTISTYLE */
 
 
+/* add_to_env_list
+ *   This function keeps a list of all strings that were set in the environment
+ *   via SetEnv or UnsetEnv. If a variable is written again, the old memory is
+ *   freed. */
+typedef struct
+{
+  char *var;
+  char *env;
+} env_list_item;
+#define ENV_LIST_INC 10
+static void add_to_env_list(char *var, char *env)
+{
+  unsigned int env_len = 0;
+  env_list_item *env_list = NULL;
+  unsigned int i;
+
+  /* find string in list */
+  if (env_list && env_len)
+  {
+    for (i = 0; i < env_len; i++)
+    {
+      if (strcmp(var, env_list[i].var) == 0)
+      {
+	/* found it - replace old string */
+	free(env_list[i].var);
+	free(env_list[i].env);
+	env_list[i].var = var;
+	env_list[i].env = env;
+	return;
+      }
+    }
+    /* not found, add to list */
+    if (env_len % ENV_LIST_INC == 0)
+    {
+      /* need more memory */
+      env_list = (env_list_item *)saferealloc(
+	(void *)env_list, (env_len + ENV_LIST_INC) * sizeof(env_list_item));
+    }
+  }
+  else if (env_list == NULL)
+  {
+    /* list is still empty */
+    env_list = (env_list_item *)safemalloc(env_len * sizeof(env_list_item));
+  }
+  env_list[env_len].var = var;
+  env_list[env_len].env = env;
+  env_len++;
+
+  return;
+}
+
 void SetEnv(F_CMD_ARGS)
 {
   char *szVar = NULL;
@@ -2333,7 +2384,9 @@ void SetEnv(F_CMD_ARGS)
   szPutenv = safemalloc(strlen(szVar)+strlen(szValue)+2);
   sprintf(szPutenv,"%s=%s",szVar,szValue);
   putenv(szPutenv);
-  free(szVar);
+  add_to_env_list(szVar, szPutenv);
+  /* szVar is stored in the env list. do not free it */
+  /*free(szVar);*/
   free(szValue);
 }
 
@@ -2348,7 +2401,9 @@ void UnsetEnv(F_CMD_ARGS)
 
   szPutenv = stripcpy(szVar);
   putenv(szPutenv);
-  free(szVar);
+  add_to_env_list(szVar, szPutenv);
+  /* szVar is stored in the env list. do not free it */
+  /*free(szVar);*/
 }
 
 static void do_recapture(F_CMD_ARGS, Bool fSingle)

@@ -1,5 +1,32 @@
 2000-11-21  Dominik Vogt  <dominik.vogt@gmx.de>
 
+	* fvwm/add_window.c (setup_window_font):
+	(setup_icon_font):
+	fixed memory leak and simplified logic
+
+	* fvwm/update.c (apply_window_updates):
+	do not access window/icon font here
+
+	* libs/Picture.c (DestroyPicture):
+	fixed xpm memory leak (?)
+
+	* fvwm/add_window.c (destroy_window):
+	fixed icon font memory leak
+
+	* fvwm/builtins.c (SetEnv):
+	(UnsetEnv):
+	(add_to_env_list):
+	fixed the setenv memory leak; I wonder if this is worth the trouble
+
+	* fvwm/menus.c (AddToMenu):
+	fixed free memory read "title top" menu items
+
+	* fvwm/fvwm.c (ResetOrDestroyAllButtons):
+	fixed another memory leak
+
+	* fvwm/module_interface.c (do_execute_module):
+	fixed memory leak
+
 	* libs/Colorset.c (AllocColorset):
 	fixed malloc call
 

@@ -200,6 +200,7 @@ static int do_execute_module(F_CMD_ARGS, Bool desperate)
       fvwm_msg(ERR,"executeModule",
 	       "No such module '%s' in ModulePath '%s'",cptr,ModulePath);
     }
+    free(args);
     free(cptr);
     return -1;
   }

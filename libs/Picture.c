@@ -292,8 +292,12 @@ void DestroyPicture(Display *dpy, Picture *p)
     return;
 
   /* Let it fly */
-  if (p->nalloc_pixels != 0) {
-    XFreeColors(dpy, Pcmap, p->alloc_pixels, p->nalloc_pixels, 0);
+  if (p->alloc_pixels != NULL)
+  {
+    if (p->nalloc_pixels != 0)
+    {
+      XFreeColors(dpy, Pcmap, p->alloc_pixels, p->nalloc_pixels, 0);
+    }
     free(p->alloc_pixels);
   }
   if(p->name!=NULL)
@@ -307,12 +311,12 @@ void DestroyPicture(Display *dpy, Picture *p)
   if(p==q) /* in head? simple */
     PictureList=p->next;
   else
-    {
-      while(q && q->next!=p) /* fast forward until end or found */
-	q=q->next;
-      if(q) /* not end? means we found it in there, possibly at end */
-	q->next=p->next; /* link around it */
-    }
+  {
+    while(q && q->next!=p) /* fast forward until end or found */
+      q=q->next;
+    if(q) /* not end? means we found it in there, possibly at end */
+      q->next=p->next; /* link around it */
+  }
   free(p);
 }
 

@@ -4507,7 +4507,7 @@ attributes.event_mask |= KeyPressMask|KeyReleaseMask;
  ****************************************************************************/
 static void make_menu(MenuRoot *mr)
 {
-  if(!Scr.flags.windows_captured)
+  if (!Scr.flags.windows_captured)
     return;
 
   merge_continuation_menus(mr);
@@ -4728,7 +4728,6 @@ void AddToMenu(MenuRoot *mr, char *item, char *action, Bool fPixmapsOk,
   char *start;
   char *end;
   char *token = NULL;
-  char *token2 = NULL;
   char *option = NULL;
   int i;
   short current_mini_icon = 0;
@@ -4794,28 +4793,25 @@ void AddToMenu(MenuRoot *mr, char *item, char *action, Bool fPixmapsOk,
   {
     MR_FIRST_ITEM(mr) = tmp;
     MR_LAST_ITEM(mr) = tmp;
+    MI_NEXT_ITEM(tmp) = NULL;
     MI_PREV_ITEM(tmp) = NULL;
   }
   else if (StrEquals(token, "title") && option && StrEquals(option, "top"))
   {
-    if (MI_ACTION(MR_FIRST_ITEM(mr)))
+    if (MI_IS_TITLE(MR_FIRST_ITEM(mr)))
     {
-      GetNextToken(MI_ACTION(MR_FIRST_ITEM(mr)), &token2);
-    }
-    if (StrEquals(token2, "title"))
-    {
+      if (MR_FIRST_ITEM(mr) == MR_LAST_ITEM(mr))
+	MR_LAST_ITEM(mr) = tmp;
+      MI_PREV_ITEM(MI_NEXT_ITEM(MR_FIRST_ITEM(mr))) = tmp;
       MI_NEXT_ITEM(tmp) = MI_NEXT_ITEM(MR_FIRST_ITEM(mr));
       FreeMenuItem(MR_FIRST_ITEM(mr));
     }
     else
     {
+      MI_PREV_ITEM(MR_FIRST_ITEM(mr)) = tmp;
       MI_NEXT_ITEM(tmp) = MR_FIRST_ITEM(mr);
     }
-    if (token2)
-      free(token2);
     MI_PREV_ITEM(tmp) = NULL;
-    if (MR_FIRST_ITEM(mr) == NULL)
-      MR_LAST_ITEM(mr) = tmp;
     MR_FIRST_ITEM(mr) = tmp;
   }
   else

@@ -1416,7 +1416,8 @@ static void ResetOrDestroyAllButtons(FvwmDecor *decor, Bool do_free_only)
     TB_JUSTIFICATION(*tbp) = JUST_CENTER;
     face = TB_STATE(*tbp);
     FreeDecorFace(dpy, face);
-    LoadDefaultButton(face++, i);
+    if (!do_free_only)
+      LoadDefaultButton(face++, i);
     for (j = 1; j < MaxButtonState; ++j, ++face)
     {
       FreeDecorFace(dpy, face);

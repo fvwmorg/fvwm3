@@ -119,8 +119,7 @@ static void apply_window_updates(
       init_style(&old_t, t, pstyle, &buttons);
       is_style_initialised = True;
     }
-    setup_window_font(
-      t, pstyle, (flags->do_update_window_font && HAS_WINDOW_FONT(t)));
+    setup_window_font(t, pstyle, flags->do_update_window_font);
     flags->do_redecorate = True;
   }
   if (flags->do_redecorate ||
@@ -238,8 +237,7 @@ static void apply_window_updates(
       init_style(&old_t, t, pstyle, &buttons);
       is_style_initialised = True;
     }
-    setup_icon_font(
-      t, pstyle, (flags->do_update_icon_font && HAS_ICON_FONT(t)));
+    setup_icon_font(t, pstyle, flags->do_update_icon_font);
     flags->do_update_icon_title = True;
   }
   if (flags->do_update_icon_boxes)

@@ -250,56 +250,35 @@ static void destroy_window_font(FvwmWindow *tmp_win)
 void setup_window_font(
   FvwmWindow *tmp_win, window_style *pstyle, Bool do_destroy)
 {
-  Bool has_font = SFHAS_WINDOW_FONT(*pstyle);
-  Bool is_font_destroyed = False;
   int height;
   int old_height = 0;
-
-#if 0
-  if (!HAS_TITLE(tmp_win))
-  {
-    tmp_win->title_g.height = 0;
-    if (IS_WINDOW_FONT_LOADED(tmp_win))
-    {
-      destroy_window_font(tmp_win);
-      SET_WINDOW_FONT_LOADED(tmp_win, 0);
-    }
-    return;
-  }
-#endif
 
   if (!IS_WINDOW_FONT_LOADED(tmp_win))
   {
     old_height = tmp_win->title_g.height;
   }
-
+  /* get rid of old font */
   if (do_destroy)
   {
     destroy_window_font(tmp_win);
-    is_font_destroyed = True;
+    /* destroy_window_font resets the IS_WINDOW_FONT_LOADED flag */
   }
-  if (has_font)
+  /* load new font */
+  if (!IS_WINDOW_FONT_LOADED(tmp_win))
   {
-    is_font_destroyed = False;
-    if (!SGET_WINDOW_FONT(*pstyle))
+    if (SFHAS_WINDOW_FONT(*pstyle) && SGET_WINDOW_FONT(*pstyle) &&
+	LoadFvwmFont(dpy, SGET_WINDOW_FONT(*pstyle), &(tmp_win->title_font)))
     {
-      has_font = False;
+      SET_HAS_WINDOW_FONT(tmp_win, 1);
     }
-    else if (!IS_WINDOW_FONT_LOADED(tmp_win) || do_destroy)
+    else
     {
-      if (!LoadFvwmFont(dpy, SGET_WINDOW_FONT(*pstyle), &(tmp_win->title_font)))
-      {
-	has_font = False;
-      }
-    } /* if (do_destroy) */
-  } /* if (SFHAS_WINDOW_FONT(*pstyle)) */
-  if (!has_font || is_font_destroyed)
-  {
-    /* no explicit font, use default font instead */
-    tmp_win->title_font = Scr.DefaultFont;
-    has_font = False;
+      /* no explicit font or failed to load, use default font instead */
+      tmp_win->title_font = Scr.DefaultFont;
+      SET_HAS_WINDOW_FONT(tmp_win, 0);
+    }
+    SET_WINDOW_FONT_LOADED(tmp_win, 1);
   }
-  SET_HAS_WINDOW_FONT(tmp_win, has_font);
 
   /* adjust font offset according to height specified in title style */
   if (tmp_win->decor->title_height)
@@ -328,8 +307,6 @@ void setup_window_font(
     tmp_win->title_g.height = 0;
   }
 
-  SET_WINDOW_FONT_LOADED(tmp_win, 1);
-
   return;
 }
 
@@ -346,47 +323,37 @@ static void destroy_icon_font(FvwmWindow *tmp_win)
 void setup_icon_font(
   FvwmWindow *tmp_win, window_style *pstyle, Bool do_destroy)
 {
-  Bool has_font = SFHAS_ICON_FONT(*pstyle);
-  Bool is_font_destroyed = False;
-
   if (IS_ICON_SUPPRESSED(tmp_win) || HAS_NO_ICON_TITLE(tmp_win))
   {
     if (IS_ICON_FONT_LOADED(tmp_win))
     {
       destroy_icon_font(tmp_win);
-      SET_ICON_FONT_LOADED(tmp_win, 0);
+      /* destroy_icon_font resets the IS_ICON_FONT_LOADED flag */
     }
     return;
   }
-
+  /* get rid of old font */
   if (do_destroy)
   {
     destroy_icon_font(tmp_win);
-    is_font_destroyed = True;
+    /* destroy_icon_font resets the IS_ICON_FONT_LOADED flag */
   }
-  if (has_font)
+  /* load new font */
+  if (!IS_ICON_FONT_LOADED(tmp_win))
   {
-    is_font_destroyed = False;
-    if (!SGET_ICON_FONT(*pstyle))
+    if (SFHAS_ICON_FONT(*pstyle) && SGET_ICON_FONT(*pstyle) &&
+	LoadFvwmFont(dpy, SGET_ICON_FONT(*pstyle), &(tmp_win->title_font)))
     {
-      has_font = False;
+      SET_HAS_ICON_FONT(tmp_win, 1);
     }
-    else if (!IS_ICON_FONT_LOADED(tmp_win) || do_destroy)
+    else
     {
-      if (!LoadFvwmFont(dpy, SGET_ICON_FONT(*pstyle), &(tmp_win->icon_font)))
-      {
-	has_font = False;
-      }
-    } /* if (do_destroy) */
-  } /* if (SFHAS_ICON_FONT(*pstyle)) */
-  if (!has_font || is_font_destroyed)
-  {
-    /* no explicit font, use default font instead */
-    tmp_win->icon_font = Scr.DefaultFont;
-    has_font = False;
+      /* no explicit font or failed to load, use default font instead */
+      tmp_win->title_font = Scr.DefaultFont;
+      SET_HAS_ICON_FONT(tmp_win, 0);
+    }
+    SET_ICON_FONT_LOADED(tmp_win, 1);
   }
-  SET_HAS_ICON_FONT(tmp_win, has_font);
-  SET_ICON_FONT_LOADED(tmp_win, 1);
 
   return;
 }
@@ -1973,6 +1940,7 @@ void destroy_window(FvwmWindow *tmp_win)
   /****** free fonts ******/
 
   destroy_window_font(tmp_win);
+  destroy_icon_font(tmp_win);
 
   /****** free wmhints ******/
 
