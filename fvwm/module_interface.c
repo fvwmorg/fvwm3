@@ -1671,9 +1671,9 @@ void CMD_set_nograb_mask(F_CMD_ARGS)
  */
 char *skipModuleAliasToken(const char *string)
 {
-#define is_valid_first_alias_char(ch) (isalpha(ch))
+#define is_valid_first_alias_char(ch) (isalpha(ch) || (ch) == '/')
 #define is_valid_alias_char(ch) (is_valid_first_alias_char(ch) \
-    || isalnum(ch) || (ch) == '-' || (ch) == '.')
+    || isalnum(ch) || (ch) == '-' || (ch) == '.' || (ch) == '/')
 
   if (is_valid_first_alias_char(*string))
   {

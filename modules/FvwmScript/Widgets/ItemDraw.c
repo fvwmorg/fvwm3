@@ -15,6 +15,9 @@
 
 #include "Tools.h"
 
+/* left, center and right offsets */
+#define ITEM_DRAW_LCR_OFFSETS 1,0,1
+
 /***************************************************/
 /* Fonction pour ItemDraw / functions for ItemDraw */
 /***************************************************/
@@ -140,7 +143,7 @@ void DrawItemDraw(struct XObj *xobj)
 {
   XClearArea(dpy,xobj->win,0,0,xobj->width,xobj->height,False);
   XClearWindow(dpy,xobj->win);
-  DrawIconStr(0,xobj,False);
+  DrawIconStr(0,xobj,False,ITEM_DRAW_LCR_OFFSETS);
 }
 
 void EvtMouseItemDraw(struct XObj *xobj,XButtonEvent *EvtButton)

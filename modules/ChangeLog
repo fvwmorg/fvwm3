@@ -1,3 +1,21 @@
+001-10-28  olicha  <olivier.chapuis@free.fr>
+
+	* FvwmScript/FvwmScript.c:
+	* FvwmScript/FvwmScript.1:
+	* FvwmScript/script.y:
+	* FvwmScript/scanner.l:
+	* FvwmScript/script.c:
+	* FvwmScript/scanner.c:
+	* FvwmScript/types.h:
+	* FvwmScript/Widgets/Tools.{c,h}:
+	* FvwmScript/Widgets/ItemDraw.c:
+	* FvwmScript/Widgets/Menu.c:
+	* FvwmScript/Widgets/PopupMenu.c:
+	* FvwmScript/Widgets/PushButton.c:
+	* FvwmScript/Widgets/List.c:
+	New flags Left, Right and Center for text position.
+	Some code aeration.
+
 2001-10-26  Dan Espen  <dane@mk.telcordia.com>
 
 	* FvwmForm/FvwmForm.1: 

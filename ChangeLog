@@ -1,3 +1,11 @@
+2001-10-28  olicha  <olivier.chapuis@free.fr>
+
+	* fvwm/module_interface.c (skipModuleAliasToken):
+	Allows '/' as alias character
+
+	* NEWS
+	Script news
+
 2001-10-27  Mikhael Goikhman  <migo@homemail.com>
 
 	* configure.in:

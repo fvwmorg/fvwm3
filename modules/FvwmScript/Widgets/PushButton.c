@@ -15,6 +15,9 @@
 
 #include "Tools.h"
 
+/* left, center and right offsets */
+#define PUSH_BUTTON_LCR_OFFSETS 4,0,4
+
 /***********************************************/
 /***********************************************/
 /* Fonction pour PushButton                    */
@@ -129,7 +132,7 @@ void DestroyPushButton(struct XObj *xobj)
 void DrawPushButton(struct XObj *xobj)
 {
   DrawReliefRect(0, 0, xobj->width, xobj->height, xobj, hili, shad);
-  DrawIconStr(0, xobj, True);
+  DrawIconStr(0, xobj, True, PUSH_BUTTON_LCR_OFFSETS);
 }
 
 void EvtMousePushButton(struct XObj *xobj, XButtonEvent *EvtButton)
@@ -168,7 +171,7 @@ void EvtMousePushButton(struct XObj *xobj, XButtonEvent *EvtButton)
 	{
 	  WinBut = Win2;
 	  DrawReliefRect(0, 0, xobj->width, xobj->height, xobj, shad, hili);
-	  DrawIconStr(1, xobj, True);
+	  DrawIconStr(1, xobj, True, PUSH_BUTTON_LCR_OFFSETS);
 	  In = 1;
 	}
 	else
@@ -176,14 +179,14 @@ void EvtMousePushButton(struct XObj *xobj, XButtonEvent *EvtButton)
 	  if (Win2 == WinBut)
 	  {
 	    DrawReliefRect(0, 0, xobj->width, xobj->height, xobj, shad, hili);
-	    DrawIconStr(1, xobj, True);
+	    DrawIconStr(1, xobj, True, PUSH_BUTTON_LCR_OFFSETS);
 	    In = 1;
 	  }
 	  else if (In)
 	  {
 	    In = 0;
 	    DrawReliefRect(0, 0, xobj->width, xobj->height, xobj, hili, shad);
-	    DrawIconStr(0, xobj, True);
+	    DrawIconStr(0, xobj, True, PUSH_BUTTON_LCR_OFFSETS);
 	  }
 	}
 	break;
@@ -194,19 +197,19 @@ void EvtMousePushButton(struct XObj *xobj, XButtonEvent *EvtButton)
 	{
 	  In = 1;
 	  DrawReliefRect(0, 0, xobj->width, xobj->height, xobj, shad, hili);
-	  DrawIconStr(1, xobj, True);
+	  DrawIconStr(1, xobj, True, PUSH_BUTTON_LCR_OFFSETS);
 	}
 	else if (In)
 	{
 	  DrawReliefRect(0, 0, xobj->width, xobj->height, xobj, hili, shad);
-	  DrawIconStr(0, xobj, True);
+	  DrawIconStr(0, xobj, True, PUSH_BUTTON_LCR_OFFSETS);
 	  In = 0;
 	}
 	break;
       case ButtonRelease:
 	End = 0;
 	DrawReliefRect(0, 0, xobj->width, xobj->height, xobj, hili, shad);
-	DrawIconStr(0, xobj, True);
+	DrawIconStr(0, xobj, True, PUSH_BUTTON_LCR_OFFSETS);
 	if (In)
 	{
 	  /* Envoie d'un message vide de type SingleClic pour un clique souris */

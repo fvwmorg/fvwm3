@@ -52,6 +52,15 @@
 #define IS_HIDDEN(x) (x->flags[0])
 #define HAS_NO_RELIEF_STRING(x) (x->flags[1])
 #define HAS_NO_FOCUS(x) (x->flags[2])
+#define TEXT_POS_DEFAULT 0
+#define TEXT_POS_CENTER  1
+#define TEXT_POS_LEFT    2
+#define TEXT_POS_RIGHT   3
+#define IS_TEXT_POS_DEFAULT(x) (x->flags[3] == TEXT_POS_DEFAULT)
+#define GET_TEXT_POS(x) (x->flags[3])
+#define IS_TEXT_CENTER(x) (x->flags[3] == TEXT_POS_CENTER)
+#define IS_TEXT_LEFT(x)   (x->flags[3] == TEXT_POS_LEFT)
+#define IS_TEXT_RIGHT(x)  (x->flags[3] == TEXT_POS_RIGHT)
 
 #include <X11/keysymdef.h>
 #include <X11/keysym.h>

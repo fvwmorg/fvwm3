@@ -21,10 +21,11 @@ Changes in beta 2.5.0 (not released yet)
 
 * Mouse bindings are activated without a recapture.
 
-* FvwmScript: new keyboard bindings. New flags NoFocus. Amelioration of the
-  Menu and PopupMenu Widgets. New functions GetPid, Parse, SendMsgAndGet
-  and LastString. New instruction Key for key bindings. New command
-  SendToModule ScriptName SendString.
+* FvwmScript: new keyboard bindings. New flags NoFocus and Left, Center,
+  and Right for text position. Amelioration of the Menu and PopupMenu
+  Widgets. New functions GetPid, Parse, SendMsgAndGet and LastString.
+  New instruction Key for key bindings. New command SendToModule ScriptName
+  SendString.
 
 * Command "Silent" when precedes "Key", "Mouse" and "PointerKey"
   disables warning messages.

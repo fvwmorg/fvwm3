@@ -280,7 +280,8 @@ static int myErrorHandler(Display *dpy, XErrorEvent *event)
 {
   /* some errors are acceptable, mostly they're caused by
    * trying to use a deleted pixmap */
-  if((event->error_code == BadDrawable) || (event->error_code == BadPixmap))
+  if((event->error_code == BadDrawable) || (event->error_code == BadPixmap) ||
+     (event->error_code == BadWindow))
     return 0;
 
   PrintXErrorAndCoredump(dpy, event, x11base->title);
@@ -542,6 +543,7 @@ void BuildGUI(int IsFather)
     tabxobj[i]->flags[0] = (*tabobj)[i].flags[0];
     tabxobj[i]->flags[1] = (*tabobj)[i].flags[1];
     tabxobj[i]->flags[2] = (*tabobj)[i].flags[2];
+    tabxobj[i]->flags[3] = (*tabobj)[i].flags[3];
     tabxobj[i]->icon = (*tabobj)[i].icon;
     tabxobj[i]->swallow = (*tabobj)[i].swallow;
 

@@ -51,6 +51,9 @@ void DrawString(Display *dpy,struct XObj *xobj,Window win,int x,int y,char *str,
 		unsigned long BackC,int WithRelief);
 #endif
 
+int GetXTextPosition(struct XObj *xobj, int obj_width, int str_len, 
+		     int left_offset, int center_offset, int right_offset);
+
 char* GetMenuTitle(char *str,int id);
 
 void DrawPMenu(struct XObj *xobj,Window WinPop,int h,int StrtOpt);
@@ -61,7 +64,8 @@ void SelectMenu(struct XObj *xobj,Window WinPop,int hOpt,int value);
 
 int CountOption(char *str);
 
-void DrawIconStr(int offset,struct XObj *xobj,int DoRedraw);
+void DrawIconStr(int offset, struct XObj *xobj, int DoRedraw,
+		 int l_offset, int c_offset, int r_offset);
 
 void DrawReliefRect(int x,int y,int width,int height,struct XObj *xobj,
 		unsigned int LiC, unsigned int ShadC);

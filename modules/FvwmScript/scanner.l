@@ -54,6 +54,9 @@ get		=
 Hidden			{ return HIDDEN; }
 NoFocus			{ return NOFOCUS; }
 NoReliefString		{ return NORELIEFSTRING; }
+Center			{ return CENTER; }
+Left			{ return LEFT; }
+Right			{ return RIGHT; }
 
 ^{bl}+Do		{ return EXEC; }
 ^{bl}+HideWidget	{ return HIDE; }

@@ -15,6 +15,8 @@
 
 #include "Tools.h"
 
+/* left, center and right offsets for title 0 (not very usefull here) */
+#define MENU_LCR_OFFSETS 0,0,0
 
 /***********************************************/
 /* Fonction pour Menu / Functions for the Menu */
@@ -117,7 +119,7 @@ void DrawMenu(struct XObj *xobj)
   int i;
 
   /* Si c'est le premier menu, on dessine la bar de menu */
-  /* if it is the first menu we draw the bar */
+  /* if it is the first menu we draw the menu bar */
   if (xobj->x == 2)
   {
     for (i = 0;i<2;i++)
@@ -147,7 +149,7 @@ void DrawMenu(struct XObj *xobj)
       XDrawSegments(dpy, x11base->win, xobj->gc, segm, 2);
     }
   }
-  DrawIconStr(0, xobj, True);
+  DrawIconStr(0, xobj, True, MENU_LCR_OFFSETS);
 }
 
 void EvtMouseMenu(struct XObj *xobj, XButtonEvent *EvtButton)

@@ -185,7 +185,7 @@ All messages are identified by a number.
 The message "UserAction" is sent to a widget when the user operates the widget.
 The syntax for the first part is:
 .EX
-Widget		id	# A number between 1 and 99 inclusive
+Widget		id	# A number between 1 and 999 inclusive
 Property
  Type		string
  Size width	height
@@ -200,14 +200,30 @@ Property
  HilightColor	{ color }
  ShadowColor	{ color }
  Colorset	int
- Flags		Hidden and/or NoReliefString and/or NoFocus
+ Flags		flagsOpt
 .EE
-The option 'Flags` Hidden is used to specify if the widget is hidden.
-NoReliefString specifies if strings are drawn with relief or not.
-NoFocus specifies if the widget can get the keyboard focus or not.
+The flagsOpt option to Flags is a space separated list containing one or
+more  of  the  keywords
+.IR "Hidden" ,
+.IR "NoReliefString" ,
+.IR "NoFocus" ,
+.IR Left " / " Center " / " Right "."
+.I Hidden
+is used to specify if the widget is hidden at startup.
+.I NoReliefString
+specifies if strings are drawn with relief or not.
+.I NoFocus
+specifies if the widget can get the keyboard focus or not.
 By default all widgets take focus, except Rectangle, HDipstick and VDipstick
 which cannot. Moreover, the NoFocus widgets are skipped when you 
 circulate around the widgets with the (Shift-)Tab short cut.
+.IR Left " / " Center " / " Right
+specifies the text position. These apply only to ItemDraw, List, Menu,
+PopupMenu and PushButton. The default is
+.I Center
+for ItemDraw and PushButton and
+.I Left
+for the others widgets.
 
 The position of every widget must be specified.
 

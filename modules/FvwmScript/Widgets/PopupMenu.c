@@ -22,8 +22,6 @@
 /******************************************************/
 /******************************************************/
 
-
-
 void InitPopupMenu(struct XObj *xobj)
 {
   unsigned long mask;
@@ -154,8 +152,10 @@ void DrawPopupMenu(struct XObj *xobj)
   
   /* Dessin du titre du popup menu */
   str = (char*)GetMenuTitle(xobj->title, xobj->value);
-  x = 25;
   y = asc + 5;
+  x = GetXTextPosition(xobj,xobj->width,
+		       XTextWidth(xobj->xfont,str,strlen(str)),
+		       25,8,8);
   DrawString(dpy, xobj, xobj->win, x, y, str, strlen(str), fore, hili, back,
 	     !xobj->flags[1]);
   

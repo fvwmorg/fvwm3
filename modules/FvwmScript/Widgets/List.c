@@ -163,7 +163,7 @@ void DrawCellule(struct XObj *xobj, int NbCell, int NbVisCell, int HeightCell,
 
   r.x = 4 + BdWidth;
   r.y = r.x;
-  r.width = xobj->width - r.x - 10 - 2*BdWidth - SbWidth;
+  r.width =  xobj->width - 16 - SbWidth - BdWidth;
   r.height = xobj->height -r.y - 4 - 2*BdWidth;
 
   /* Dessin des cellules / Draw the cells */
@@ -173,23 +173,26 @@ void DrawCellule(struct XObj *xobj, int NbCell, int NbVisCell, int HeightCell,
     Title = (char*)GetMenuTitle(xobj->title, i);
     if (strlen(Title)!=0)
     {
+      int x = GetXTextPosition(xobj, r.width, 
+			       XTextWidth(xobj->xfont,Title,strlen(Title)),
+			       5 + r.x, 0, 0);
       if (xobj->value == i)
       {
 	/* hili is better than shad.*/
 	XSetForeground(dpy, xobj->gc, xobj->TabColor[hili]);
-	XFillRectangle(dpy, xobj->win, xobj->gc, r.x + 2,  
+	XFillRectangle(dpy, xobj->win, xobj->gc, r.x+2,  
 		       r.y +(i - xobj->value2)*HeightCell + 2,
-		       xobj->width - 16 - SbWidth - BdWidth, HeightCell-2);
-	DrawString(dpy, xobj, xobj->win, 5 + r.x,
+		       r.width, HeightCell-2);
+	DrawString(dpy, xobj, xobj->win, x,
 		   (i - xobj->value2) * HeightCell + asc + 2 + r.y, Title,
 		   strlen(Title), fore, back, shad, !xobj->flags[1]);
       }
       else
       {
-	XClearArea(dpy, xobj->win, r.x+2,
+	XClearArea(dpy, xobj->win, r.x,
 		   r.y + (i-xobj->value2)*HeightCell + 2,
-		   xobj->width - 16 - SbWidth - BdWidth, HeightCell-2, False);
-	DrawString(dpy, xobj, xobj->win, 5 + r.x,
+		   r.width, HeightCell-2, False);
+	DrawString(dpy, xobj, xobj->win, x,
 		   (i - xobj->value2) * HeightCell + asc + 2 + r.y, Title,
 		   strlen(Title), fore, hili, back, !xobj->flags[1]);
       }
@@ -197,7 +200,7 @@ void DrawCellule(struct XObj *xobj, int NbCell, int NbVisCell, int HeightCell,
     else
     {
       XClearArea(dpy, xobj->win, r.x + 2, r.y +(i - xobj->value2)*HeightCell +2,
-		 xobj->width - 16 - SbWidth - BdWidth, HeightCell - 2, False);
+		 r.width, HeightCell - 2, False);
     }
     if (Title != NULL)
       free(Title);
