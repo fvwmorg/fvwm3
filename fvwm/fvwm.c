@@ -582,11 +582,9 @@ void CaptureAllWindows(void)
       }
     }
     Scr.flags |= WindowsCaptured;
-fprintf(stderr,"done\n");
   }
   else /* must be recapture */
   {
-fprintf(stderr,"recapturing\n");
     /* reborder all windows */
     tmp = Scr.FvwmRoot.next;
     for(i=0;i<nchildren;i++)
