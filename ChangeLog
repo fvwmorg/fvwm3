@@ -1,3 +1,7 @@
+1999-03-12  Dominik Vogt  <dominik_vogt@gmx.de>
+
+	* fvwm/menus.c (DoMenusOverlap): fixed menu animation bug
+
 1999-03-11  Dominik Vogt  <dominik_vogt@gmx.de>
 
 	* fvwm/events.c (HandleButtonPress): fixed bug with <shift> being
@@ -5,10 +9,10 @@
 
 1999-03-11  Hippo
 
-	* fvwm/borders.c (SetBorder): rewritten the frame drawing code to restore
-	FvwmBorder style look.  Resize handles are now InputOnly windows and all
-	border drawing happens in FvwmWindow->frame. Less code and makes
-	"BorderStyle DGradient" feasible.
+	* fvwm/borders.c (SetBorder): rewritten the frame drawing code to
+	restore FvwmBorder style look.  Resize handles are now InputOnly
+	windows and all border drawing happens in FvwmWindow->frame. Less code
+	and makes "BorderStyle DGradient" feasible.
 	* libs/Graphics.c: fixed memory leak
 
 Fri Mar 12 08:51:09 1999  Steve Robbins  <steve@nyongwa.montreal.qc.ca>
