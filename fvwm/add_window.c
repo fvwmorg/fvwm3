@@ -179,7 +179,7 @@ FvwmWindow *AddWindow(Window w, FvwmWindow *ReuseWin)
   FetchWmProtocols (tmp_win);
   FetchWmColormapWindows (tmp_win);
   if(!(XGetWindowAttributes(dpy,tmp_win->w,&(tmp_win->attr))))
-    tmp_win->attr.colormap = Scr.FvwmRoot.attr.colormap;
+    tmp_win->attr.colormap = PictureCMap;
 
   tmp_win->wmhints = XGetWMHints(dpy, tmp_win->w);
 
@@ -385,8 +385,8 @@ FvwmWindow *AddWindow(Window w, FvwmWindow *ReuseWin)
   if(styles.ForeColor != NULL) {
     XColor color;
 
-    if((XParseColor (dpy, Scr.FvwmRoot.attr.colormap, styles.ForeColor, &color))
-       &&(XAllocColor (dpy, Scr.FvwmRoot.attr.colormap, &color)))
+    if((XParseColor (dpy, PictureCMap, styles.ForeColor, &color))
+       &&(XAllocColor (dpy, PictureCMap, &color)))
       {
         tmp_win->TextPixel = color.pixel;
       }
@@ -394,8 +394,8 @@ FvwmWindow *AddWindow(Window w, FvwmWindow *ReuseWin)
   if(styles.BackColor != NULL) {
     XColor color;
 
-    if((XParseColor (dpy, Scr.FvwmRoot.attr.colormap,styles.BackColor, &color))
-       &&(XAllocColor (dpy, Scr.FvwmRoot.attr.colormap, &color)))
+    if((XParseColor (dpy, PictureCMap, styles.BackColor, &color))
+       &&(XAllocColor (dpy, PictureCMap, &color)))
 
       {
         tmp_win->BackPixel = color.pixel;
@@ -484,7 +484,7 @@ FvwmWindow *AddWindow(Window w, FvwmWindow *ReuseWin)
   tmp_win->frame =
     XCreateWindow (dpy, Scr.Root, tmp_win->frame_x,tmp_win->frame_y,
 		   tmp_win->frame_width, tmp_win->frame_height,
-		   0,CopyFromParent, InputOutput,
+		   0,Scr.depth, InputOutput,
 		   Scr.viz,
 		   valuemask,
 		   &attributes);
@@ -811,7 +811,7 @@ FvwmWindow *AddWindow(Window w, FvwmWindow *ReuseWin)
   FetchWmProtocols (tmp_win);
   FetchWmColormapWindows (tmp_win);
   if(!(XGetWindowAttributes(dpy,tmp_win->w,&(tmp_win->attr))))
-    tmp_win->attr.colormap = Scr.FvwmRoot.attr.colormap;
+    tmp_win->attr.colormap = PictureCMap;
   if(NeedToResizeToo)
     {
       XWarpPointer(dpy, Scr.Root, Scr.Root, 0, 0, Scr.MyDisplayWidth,

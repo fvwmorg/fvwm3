@@ -1780,7 +1780,7 @@ void CursorStyle(F_CMD_ARGS)
 
       colors[0].pixel = BlackPixel(dpy, Scr.screen);
       colors[1].pixel = WhitePixel(dpy, Scr.screen);
-      XQueryColors (dpy, Scr.FvwmRoot.attr.colormap, colors, 2);
+      XQueryColors (dpy, PictureCMap, colors, 2);
 
       if (Scr.FvwmCursors[index]) XFreeCursor (dpy, Scr.FvwmCursors[index]);
       Scr.FvwmCursors[index] =
@@ -1805,7 +1805,7 @@ void CursorStyle(F_CMD_ARGS)
     {
       colors[0].pixel = GetColor (fore);
       colors[1].pixel = GetColor (back);
-      XQueryColors (dpy, Scr.FvwmRoot.attr.colormap, colors, 2);
+      XQueryColors (dpy, PictureCMap, colors, 2);
       XRecolorCursor (dpy, Scr.FvwmCursors[index], &(colors[0]), &(colors[1]));
     }
 
@@ -3104,7 +3104,7 @@ void FreeButtonFace(Display *dpy, ButtonFace *bf)
     case VGradButton:
 	/* - should we check visual is not TrueColor before doing this?
 
-	   XFreeColors(dpy, Scr.FvwmRoot.attr.colormap,
+	   XFreeColors(dpy, PictureCMap,
 		    bf->u.grad.pixels, bf->u.grad.npixels,
 		    AllPlanes); */
 	free(bf->u.grad.pixels);
@@ -3627,7 +3627,7 @@ static void FreeMenuFace(Display *dpy, MenuFace *mf)
   case DGradMenu:
     /* - should we check visual is not TrueColor before doing this?
      *
-     *            XFreeColors(dpy, Scr.FvwmRoot.attr.colormap,
+     *            XFreeColors(dpy, PictureCMap,
      *                        ms->u.grad.pixels, ms->u.grad.npixels,
      *                        AllPlanes); */
     free(mf->u.grad.pixels);

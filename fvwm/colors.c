@@ -69,11 +69,11 @@ Pixel GetColor(char *name)
   XColor color;
 
   color.pixel = 0;
-  if (!XParseColor (dpy, Scr.FvwmRoot.attr.colormap, name, &color))
+  if (!XParseColor (dpy, PictureCMap, name, &color))
     {
       nocolor("parse",name);
     }
-  else if(!XAllocColor (dpy, Scr.FvwmRoot.attr.colormap, &color))
+  else if(!XAllocColor (dpy, PictureCMap, &color))
     {
       nocolor("alloc",name);
     }
@@ -93,7 +93,7 @@ void FreeColors(Pixel *pixels, int n)
   for (i = 0; i < n; i++)
   {
     if (pixels[i] != 0)
-      XFreeColors(dpy, Scr.FvwmRoot.attr.colormap, pixels + i, 1, 0);
+      XFreeColors(dpy, PictureCMap, pixels + i, 1, 0);
   }
 }
 
@@ -155,12 +155,12 @@ Pixel *AllocLinearGradient(char *s_from, char *s_to, int npixels)
                npixels);
       return NULL;
     }
-    if (!s_from || !XParseColor(dpy, Scr.FvwmRoot.attr.colormap, s_from,
+    if (!s_from || !XParseColor(dpy, PictureCMap, s_from,
 				&from)) {
 	nocolor("parse", s_from);
 	return NULL;
     }
-    if (!s_to || !XParseColor(dpy, Scr.FvwmRoot.attr.colormap, s_to, &to)) {
+    if (!s_to || !XParseColor(dpy, PictureCMap, s_to, &to)) {
 	nocolor("parse", s_to);
 	return NULL;
     }
@@ -172,7 +172,7 @@ Pixel *AllocLinearGradient(char *s_from, char *s_to, int npixels)
     c.flags = DoRed | DoGreen | DoBlue;
     for (; i < npixels; ++i)
     {
-	if (!XAllocColor(dpy, Scr.FvwmRoot.attr.colormap, &c))
+	if (!XAllocColor(dpy, PictureCMap, &c))
 	    got_all = 0;
 	pixels[ i ] = c.pixel;
 	c.red = (unsigned short) (r += dr);

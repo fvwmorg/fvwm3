@@ -156,6 +156,7 @@ int main(int argc, char **argv)
   Bool single = False;
   Bool option_error = FALSE;
   int x, y;
+  XVisualInfo vizinfo;
 
 
   g_argv = argv;
@@ -411,7 +412,19 @@ int main(int argc, char **argv)
     exit(1);
   }
 
-  Scr.viz = DefaultVisual(dpy, Scr.screen);
+#ifdef PICK_TRUECOLOR
+  /* grab a TrueColor visual */
+  if (XMatchVisualInfo(dpy, Scr.screen, DefaultDepth(dpy, Scr.screen),
+                       TrueColor, &vizinfo)) {
+    Scr.viz = vizinfo.visual;
+    Scr.depth = vizinfo.depth;
+  }
+  else
+#endif
+  {
+    Scr.viz = DefaultVisual(dpy, Scr.screen);
+    Scr.depth = DefaultDepth(dpy, Scr.screen);
+  }
 
 #ifdef SHAPE
   ShapesSupported=XShapeQueryExtension(dpy, &ShapeEventBase, &ShapeErrorBase);
@@ -429,10 +442,9 @@ int main(int argc, char **argv)
    * rather than the root window */
   attributes.event_mask = KeyPressMask|FocusChangeMask;
   attributes.override_redirect = True;
-  Scr.NoFocusWin=XCreateWindow(dpy,Scr.Root,-20, -20, 10, 10, 0, 0,
-                               InputOutput,Scr.viz,
-                               CWEventMask|CWOverrideRedirect,
-                               &attributes);
+  Scr.NoFocusWin=XCreateWindow(dpy, Scr.Root, -10, -10, 10, 10, 0, Scr.depth,
+                               InputOutput, Scr.viz,
+                               CWEventMask | CWOverrideRedirect, &attributes);
   XMapWindow(dpy, Scr.NoFocusWin);
 
   SetMWM_INFO(Scr.NoFocusWin);
@@ -532,9 +544,8 @@ int main(int argc, char **argv)
 						 SIZE_HINDENT*2),
 				  (unsigned int) (Scr.StdFont.height +
 						  SIZE_VINDENT*2),
-				  (unsigned int) 0, 0,
-				  (unsigned int) CopyFromParent,
-				  Scr.viz,
+				  (unsigned int) 0, Scr.depth,
+				  InputOutput, Scr.viz,
 				  valuemask, &attributes);
 
 #ifndef NON_VIRTUAL
@@ -1474,7 +1485,7 @@ void InitVariables(void)
   Scr.gs.EmulateMWM = False;
   Scr.gs.EmulateWIN = False;
   /* Not the right place for this, should only be called once somewhere .. */
-  InitPictureCMap(dpy,Scr.Root);
+  InitPictureCMap(dpy,Scr.NoFocusWin);
 
   return;
 }

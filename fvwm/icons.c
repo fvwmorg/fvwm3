@@ -139,17 +139,16 @@ void CreateIconWindow(FvwmWindow *tmp_win, int def_x, int def_y)
   if (!(tmp_win->flags & NOICON_TITLE)||(tmp_win->icon_p_height == 0))
     tmp_win->icon_w =
       XCreateWindow(dpy, Scr.Root, final_x, final_y+tmp_win->icon_p_height,
-                    tmp_win->icon_w_width, tmp_win->icon_w_height,0,
-                    CopyFromParent,
-                    CopyFromParent,Scr.viz,valuemask,&attributes);
+                    tmp_win->icon_w_width, tmp_win->icon_w_height,0,Scr.depth,
+                    InputOutput,Scr.viz,valuemask,&attributes);
 
   if((tmp_win->flags & ICON_OURS)&&(tmp_win->icon_p_width>0)&&
      (tmp_win->icon_p_height>0))
     {
       tmp_win->icon_pixmap_w =
 	XCreateWindow(dpy, Scr.Root, final_x, final_y, tmp_win->icon_p_width,
-		      tmp_win->icon_p_height, 0, CopyFromParent,
-		      CopyFromParent,Scr.viz,valuemask,&attributes);
+		      tmp_win->icon_p_height, 0, Scr.depth,
+		      InputOutput,Scr.viz,valuemask,&attributes);
     }
   else
     {
@@ -641,7 +640,6 @@ static void GetBitmapFile(FvwmWindow *tmp_win)
 static void GetXPMFile(FvwmWindow *tmp_win)
 {
 #ifdef XPM
-  XWindowAttributes root_attr;
   XpmAttributes xpm_attributes;
   char *path = NULL;
   XpmImage my_image;
@@ -650,8 +648,7 @@ static void GetXPMFile(FvwmWindow *tmp_win)
   path = findImageFile(tmp_win->icon_bitmap_file, NULL, R_OK);
   if(path == NULL)return;
 
-  XGetWindowAttributes(dpy,Scr.Root,&root_attr);
-  xpm_attributes.colormap = root_attr.colormap;
+  xpm_attributes.colormap = PictureCMap;
   xpm_attributes.closeness = 40000; /* Allow for "similar" colors */
   xpm_attributes.valuemask = XpmSize|XpmReturnPixels|XpmColormap|XpmCloseness;
 
