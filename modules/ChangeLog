@@ -1,3 +1,11 @@
+Mon May 24 21:27:48 1999  DanEspen  <dje@blue>
+
+	* FvwmIconMan/readconfig.c (init_config_file): Use InitGetConfigLine to
+	reduce pipe traffic.
+
+	* FvwmWharf/FvwmWharf.c (ParseOptions): Use InitGetConfigLine to
+	reduce pipe traffic.
+
 1999-05-24  Bob Woodside <proteus@pcnet.com>
 
 	* FvwmPager/x_pager.c: Changed to use the new GoToDeskAndPage command.

@@ -175,10 +175,13 @@ New stuff:
     way for giving extra info to modules through style commands?
 
   - Make GetConfigLine be more intelligent, to filter out what gets
-    sent (for instance, pass module prefix to look for) and be able to
-    ask for ImagePath, etc instead of sending those w/ all the config
-    info, so only the modules that need it could ask for it.
+    sent (for instance, pass module prefix to look for [ Note 2])
+    and be able to ask for ImagePath, etc instead of sending those
+    with all the config info, so only the modules that need it could
+    ask for it.
     (Note there is some functionality in libs/Parse.c to allow this).
+    Note 2:  The part about "passing module prefixes" was done during
+    release 2.3.3.
 
   - Allow Resize to have units of "what the window resizes by"
   - Bug in:

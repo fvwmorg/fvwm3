@@ -1527,6 +1527,7 @@ void ParseOptions(char *filename)
   char *tline,*orig_tline,*tmp;
   int Clength, len;
 
+  InitGetConfigLine(fd,CatString3("*",MyName,0)); /* speedup */
   GetConfigLine(fd, &tline);
   orig_tline = tline;
   Clength = strlen(MyName);

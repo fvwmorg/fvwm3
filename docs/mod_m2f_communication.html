@@ -48,7 +48,7 @@ which can be used instead of the function name SentText.
 
 <H2> <font color="turquoise">Module information requests</font></h2>
 There are special built-in functions, SendWindowList and
-SendConfigInfo.
+Send_ConfigInfo.
 SendWindowList causes fvwm to transmit everything that it is
 currently thinking about to the module which requests the information.
 This information contains the paging status (enabled/disabled),
@@ -60,12 +60,14 @@ all current windows.  The would ask fvwm for this information like this:
 <font color="yellow"><pre>
 SendText(Channel,"SendWindowList",0);
 </pre></font>
-SendConfigInfo causes fvwm to send the module a list of all
-commands it has received which start with a ``*'', as well as the
+Send_ConfigInfo causes fvwm to send the module a list of all
+some or all
+commands it has received which start with a ``*'',
+as well as the
 ImagePath, ColorLimit, and ClickTime commands that fvwm is
 currently using.
 This is implemented in fvwm/modconf.c.
-Note that "SendConfigInfo" is sort of a memory dump type request,
+Note that "Send_ConfigInfo" is sort of a memory dump type request,
 and the number of commands a module might get from this request
 may change over time.  The module should be prepared to ignore commands
 it is not interested in without generating a warning or error.
@@ -76,11 +78,25 @@ Here is an example from FvwmAnimate.c:
 <font color="yellow"><pre>
 static void ParseOptions() {
   char *buf;
+  InitGetConfigInfo(Channel,MyName);  /* char *MyName = "*FvwmAnimate" */
   while (GetConfigLine(Channel,&buf), buf != NULL) {
     ParseConfigLine(buf);
   } /* end config lines */
 } /* end function */
 </pre></font>
+The call to "InitGetConfigInfo" is optional.  If a module wants all
+the module commands (commands starting with ``*''), there is no
+need to use this command.  Most modules only want module commands for
+the module itself.
+As shown in the example above, the second argument includes the
+leading asterisk.  The match is caseless.
+<p>
+InitGetConfigInfo improves performance.  Since
+the command matching is done in fvwm2, time is saved in both fvwm2 and
+the module.
+Remember that the module still has to name match if it wants to
+find its own configuration lines since other kinds of commands are
+sent along with module configuration lines.
 
 <H2>   <font  color="turquoise">Controlling   information  sent     to
 modules</font></h2>

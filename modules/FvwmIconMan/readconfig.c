@@ -325,6 +325,8 @@ static int init_config_file (char *file)
     ConsoleMessage ("Couldn't open file: %s\n", file);
     return 0;
   }
+#else
+  InitGetConfigLine(Fvwm_fd,Module);         /* speed up */
 #endif
   return 1;
 }
