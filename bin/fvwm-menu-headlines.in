@@ -314,7 +314,9 @@ unless (defined $fakeFile) {
 	my $iaddr = inet_aton($host) || dieNet("Can't resolve host $host");
 	my $paddr = sockaddr_in($port, $iaddr);
 	my $proto = getprotobyname('tcp');
+	my $redirectDepth = 0;
 
+HTTP_CONNECTION:
 	local $SIG{ALRM} = sub { die "timeout\n"; };
 	alarm($timeout);
 	eval {
@@ -335,11 +337,27 @@ unless (defined $fakeFile) {
 		print SOCK "GET $sitePath HTTP/1.1$httpHeaders";
 	}
 
-	dieNet("Unexpected HTTP response from http://$siteHost$sitePath", 0)
-		if readLine() !~ m{HTTP/1\.\d 200 OK}i;
+	unless (readLine() =~ m{HTTP/1\.\d (\d+) \w+}) {
+		dieNet("Invalid HTTP response from http://$siteHost$sitePath", 0);
+	}
+	my $status = $1;
+	if ($status eq "302" && ++$redirectDepth < 5) {
+		# redirection
+		while (1) {
+			my $line = readLine();
+			$line =~ s/[\n\r]+$//s;
+			last unless $line;
+			if ($line =~ m{Location: http://\Q$siteHost\E(/.*)}i) {
+				$sitePath = $1;
+				goto HTTP_CONNECTION;
+			}
+		}
+	}
+	dieNet("Unexpected HTTP response $status from http://$siteHost$sitePath", 0)
+		unless $status eq "200";
 
 	# skip http response headers
-	while (readLine() !~ /^\r?\n$/s) {}
+	while (readLine() !~ /^\r?\n?$/s) {}
 } else {
 	if ($fakeFile) {
 		$fakeFile =~ s:^~(/|$):$home$1:;
@@ -718,15 +736,15 @@ sub processCNN () {
 sub processBBC () {
 	my $contents = readAllLines();
 	$contents =~ s!\r\n...\r\n!!sg;  # they insert this randomly!
-	$contents =~ s!\s*<(br|/h3|h3|img [^>]+)>[ \t\r]*\n?!!sig;
+	$contents =~ s!\s*<(br|/h3|h3|span[^>]*|/span|img [^>]+)>[ \t\r]*\n?!!sig;
 	my @entries = ();
 
-	$contents =~ s{\t<a href="(/[^"]+?)">\s*([^\s][^<]+?)\s*</a>\s*([^<]+?)\s*\n}{
+	$contents =~ s{\s+<a href="(/[^"]+?)">\s*([^\s][^<]+?)\s*</a>\s*([^<]+?)\s*(?:\n|<br )}{
 		my $entry = {};
 		my $path = $1;
       $entry->{'headline'} = $2;
       $entry->{'abstract'} = $3;
-		$path =~ s|^/low/|/hi/|;
+		$path =~ s|^(/\d+)?/low/|$1/hi/|;
 		$entry->{'url'} = "http://news.bbc.co.uk$path";
 		setEntryAliasesAndTime(
 			$entry,
