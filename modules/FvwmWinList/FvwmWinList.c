@@ -411,7 +411,7 @@ void ProcessMessage(unsigned long type,unsigned long *body)
 				IS_STICKY_ON_DESK(cfgpacket),
 				DO_SKIP_WINDOW_LIST(cfgpacket));
 	  AdjustWindow(False);
-	  RedrawWindow(True, True);
+	  RedrawWindow(True, True, NULL);
 	}
 	else
 	  UpdateItemGSFRFlags(&windows, cfgpacket);
@@ -538,14 +538,14 @@ void ProcessMessage(unsigned long type,unsigned long *body)
       if(ShowCurrentDesk)
       {
 	AdjustWindow(False);
-	RedrawWindow(True, True);
+	RedrawWindow(True, True, NULL);
       }
       break;
   case MX_PROPERTY_CHANGE:
     if (body[0] == MX_PROPERTY_CHANGE_BACKGROUND && body[2] == 0 &&
 	WindowState &&  win_bg == ParentRelative)
     {
-      RedrawWindow(True, True);
+      RedrawWindow(True, True, NULL);
     }
     break;
     case M_CONFIG_INFO:
@@ -553,16 +553,16 @@ void ProcessMessage(unsigned long type,unsigned long *body)
       break;
   }
 
-  if (redraw && WindowState==1) RedrawWindow(False, True);
+  if (redraw && WindowState==1) RedrawWindow(False, True, NULL);
 }
 
 
 /******************************************************************************
   RedrawWindow - Update the needed lines and erase any old ones
 ******************************************************************************/
-void RedrawWindow(Bool force, Bool clear_bg)
+void RedrawWindow(Bool force, Bool clear_bg, XEvent *evp)
 {
-  DrawButtonArray(&buttons, force, clear_bg);
+  DrawButtonArray(&buttons, force, clear_bg, evp);
   XFlush(dpy); /** Put here for VMS; ifdef if causes performance problem **/
   if (FQLength(dpy) && !force) LoopOnEvents();
 }
@@ -746,16 +746,17 @@ ParseConfigLine(char *tline)
 	/* set the window background */
 	win_bg = None;
 	for (i = 0; i != MAX_COLOUR_SETS; i++)
-	    if (colorset[i] >= 0 &&
-		Colorset[colorset[i]].pixmap == ParentRelative)
+	{
+	    if (CSET_IS_TRANSPARENT_PR(colorset[i]))
 	      win_bg = ParentRelative;
+	}
 	if (old_win_bg != win_bg)
 	  XSetWindowBackgroundPixmap(dpy, win, win_bg);
 	/* refresh if this colorset is used */
 	for (i = 0; i != MAX_COLOUR_SETS; i++) {
 	  if (colorset[i] == cset) {
 	    AdjustWindow(True);
-	    RedrawWindow(True, True);
+	    RedrawWindow(True, True, NULL);
 	    break;
 	  }
 	}
@@ -845,15 +846,25 @@ void LoopOnEvents(void)
 	Pressed=1;
 	break;
       case Expose:
-	/* have to clear each button with its background,
-	 * let the server compute the intersections */
-	do
-	  ExposeAllButtons(&buttons, &Event);
-	while (FCheckTypedWindowEvent(dpy, win, Expose, &Event));
-	/* No more expose events in the queue draw all icons,
-	 * text and shadows, but not the background */
-	RedrawWindow(True, False);
-	break;
+      {
+	      int ex = Event.xexpose.x;
+	      int ey = Event.xexpose.y;
+	      int ex2 = Event.xexpose.x + Event.xexpose.width;
+	      int ey2 = Event.xexpose.y + Event.xexpose.height;
+	      while (FCheckTypedWindowEvent(dpy, win, Expose, &Event))
+	      {
+		      ex = min(ex, Event.xexpose.x);
+		      ey = min(ey, Event.xexpose.y);
+		      ex2 = max(ex2, Event.xexpose.x + Event.xexpose.width);
+		      ey2 = max(ey2 , Event.xexpose.y + Event.xexpose.height);
+	      }
+	      Event.xexpose.x = ex;
+	      Event.xexpose.y = ey;
+	      Event.xexpose.width = ex2 - ex;
+	      Event.xexpose.height = ey2 - ey;
+	      RedrawWindow(True, True, &Event);
+	      break;
+      }
       case ConfigureNotify:
 	{
 	  XEvent event;
@@ -872,13 +883,14 @@ void LoopOnEvents(void)
 	    Event.xconfigure.y = event.xconfigure.y;
 	    Event.xconfigure.send_event = True;
 	  }
-	}
-	if (Event.xconfigure.send_event && (win_x != Event.xconfigure.x
-	    || win_y != Event.xconfigure.y || win_bg == ParentRelative)) {
-	  win_x = Event.xconfigure.x;
-	  win_y = Event.xconfigure.y;
-	  if (win_bg == ParentRelative)
-	    RedrawWindow(True, True);
+	  if (Event.xconfigure.send_event &&
+	      (win_x != Event.xconfigure.x ||
+	       win_y != Event.xconfigure.y || win_bg == ParentRelative))
+	  {
+		  win_x = Event.xconfigure.x;
+		  win_y = Event.xconfigure.y;
+		  DrawTransparentButtonArray(&buttons);
+	  }
 	}
 	break;
       case KeyPress:
@@ -1001,12 +1013,23 @@ void AdjustWindow(Bool force)
       if (cset >= 0) {
 	if (pixmap[i])
 	  XFreePixmap(dpy, pixmap[i]);
-	if (Colorset[cset].pixmap) {
-	  pixmap[i] = CreateBackgroundPixmap(dpy, win, new_width, buttonheight,
-					     &Colorset[cset], Pdepth,
-					     background[i], False);
-	  XSetTile(dpy, background[i], pixmap[i]);
-	  XSetFillStyle(dpy, background[i], FillTiled);
+	if (Colorset[cset].pixmap && !CSET_IS_TRANSPARENT_PR(cset)) {
+		if (CSET_IS_TRANSPARENT_ROOT(cset))
+		{
+			pixmap[i] = CreateBackgroundPixmap(
+				dpy, win, new_width, win_height,
+				&Colorset[cset], Pdepth,
+				background[i], False);
+		}
+		else
+		{
+			pixmap[i] = CreateBackgroundPixmap(
+				dpy, win, win_width, buttonheight,
+				&Colorset[cset], Pdepth,
+				background[i], False);
+		}
+		XSetTile(dpy, background[i], pixmap[i]);
+		XSetFillStyle(dpy, background[i], FillTiled);
 	} else {
 	  pixmap[i] = None;
 	  XSetFillStyle(dpy, background[i], FillSolid);
@@ -1237,11 +1260,13 @@ void MakeMeWindow(void)
    * the colorsets is transparent which requires help from the server */
   win_bg = None;
   for (i = 0; i != MAX_COLOUR_SETS; i++)
-    if (colorset[i] >= 0 && Colorset[colorset[i]].pixmap == ParentRelative)
-    {
-      win_bg = ParentRelative;
-      break;
-    }
+  {
+	  if (CSET_IS_TRANSPARENT_PR(colorset[i]))
+	  {
+		  win_bg = ParentRelative;
+		  break;
+	  }
+  }
   attr.background_pixmap = win_bg;
   attr.border_pixel = 0;
   attr.colormap = Pcmap;
@@ -1329,13 +1354,25 @@ void MakeMeWindow(void)
     gcmask=GCForeground;
     background[i]=fvwmlib_XCreateGC(dpy,win,gcmask,&gcval);
 
-    if ((colorset[i] >= 0) && Colorset[colorset[i]].pixmap
-	&& Colorset[colorset[i]].pixmap != ParentRelative) {
-      pixmap[i] = CreateBackgroundPixmap(dpy, win, win_width, buttonheight,
-					 &Colorset[colorset[i]], Pdepth,
-					 background[i], False);
-      XSetTile(dpy, background[i], pixmap[i]);
-      XSetFillStyle(dpy, background[i], FillTiled);
+    if ((colorset[i] >= 0) && Colorset[colorset[i]].pixmap &&
+	!CSET_IS_TRANSPARENT_PR(colorset[i]))
+    {
+	    if (CSET_IS_TRANSPARENT_ROOT(colorset[i]))
+	    {
+		    pixmap[i] = CreateBackgroundPixmap(
+			    dpy, win, win_width, win_height,
+			    &Colorset[colorset[i]], Pdepth,
+			    background[i], False);
+	    }
+	    else
+	    {
+		    pixmap[i] = CreateBackgroundPixmap(
+			    dpy, win, win_width, buttonheight,
+			    &Colorset[colorset[i]], Pdepth,
+			    background[i], False);
+	    }
+	    XSetTile(dpy, background[i], pixmap[i]);
+	    XSetFillStyle(dpy, background[i], FillTiled);
     }
   }
   AdjustWindow(True);

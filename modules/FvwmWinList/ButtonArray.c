@@ -56,6 +56,7 @@
 #include "ButtonArray.h"
 #include "Mallocs.h"
 #include "libs/PictureGraphics.h"
+#include "libs/Rectangles.h"
 
 extern FlocaleFont *FButtonFont;
 extern FlocaleWinString *FwinString;
@@ -66,6 +67,8 @@ extern GC graph[MAX_COLOUR_SETS],background[MAX_COLOUR_SETS];
 extern int colorset[MAX_COLOUR_SETS];
 extern Pixmap pixmap[MAX_COLOUR_SETS];
 extern int LeftJustify, TruncateLeft, ShowFocus;
+extern int win_width;
+extern int win_height;
 
 extern long CurrentDesk;
 extern int ShowCurrentDesk;
@@ -382,7 +385,8 @@ Button *temp,*temp2;
 /******************************************************************************
   DoButton - Draw the specified button.  (Used internally)
 ******************************************************************************/
-void DoButton(Button *button, int x, int y, int w, int h, Bool clear_bg)
+void DoButton(
+	Button *button, int x, int y, int w, int h, Bool clear_bg, XEvent *evp)
 {
 	int up,Fontheight,newx,set,len;
 	GC topgc;
@@ -392,10 +396,30 @@ void DoButton(Button *button, int x, int y, int w, int h, Bool clear_bg)
 	unsigned long gcm;
 	FlocaleFont *Ffont;
 	FvwmRenderAttributes fra;
+	XRectangle rect,inter;
+	Region t_region;
 
 	/* The margin we want between the relief/text/pixmaps */
 #define INNER_MARGIN 2
 
+	if (evp)
+	{
+		if (!frect_get_intersection(
+			x, y, w, h,
+			evp->xexpose.x, evp->xexpose.y,
+			evp->xexpose.width, evp->xexpose.height,
+			&rect))
+		{
+			return;
+		}
+	}
+	else
+	{
+		rect.x = x;
+		rect.y = y;
+		rect.width = w;
+		rect.height = h;
+	}
 	up=button->up;
 	set=button->set;
 	topgc = up ? hilite[set] : shadow[set];
@@ -423,14 +447,24 @@ void DoButton(Button *button, int x, int y, int w, int h, Bool clear_bg)
 	 * background */
 	if (clear_bg)
 	{
-		if (colorset[set] >= 0 &&
-		    Colorset[colorset[set]].pixmap == ParentRelative)
+		if (CSET_IS_TRANSPARENT_PR_PURE(colorset[set]))
 		{
-			XClearArea(dpy,win,x,y,w,h+1, False);
+			XClearArea(
+				dpy, win, rect.x, rect.y, rect.width,
+				rect.height, False);
+		}
+		else if (CSET_IS_TRANSPARENT_PR_TINT(colorset[set]))
+		{
+			SetRectangleBackground(
+				dpy, win, rect.x, rect.y, rect.width,
+				rect.height, &Colorset[colorset[set]], Pdepth,
+				background[set]);
 		}
 		else
 		{
-			XFillRectangle(dpy,win,background[set],x,y,w,h+1);
+			XFillRectangle(
+				dpy, win, background[set],
+				rect.x, rect.y, rect.width, rect.height);
 		}
 	}
 
@@ -447,12 +481,20 @@ void DoButton(Button *button, int x, int y, int w, int h, Bool clear_bg)
 			fra.mask |= FRAM_HAVE_ICON_CSET;
 			fra.colorset = &Colorset[colorset[set]];
 		}
-		PGraphicsRenderPicture(
-			dpy, win, &(button->p), &fra,
-			win, graph[set], None, None,
-			0, 0, button->p.width, height,
-			x + 2 + button->reliefwidth, y+offset, 0, 0,
-			False);
+		if (frect_get_intersection(
+			rect.x, rect.y, rect.width, rect.height,
+			x + 2 + button->reliefwidth, y+offset,
+			button->p.width, height, &inter))
+		{
+			PGraphicsRenderPicture(
+				dpy, win, &(button->p), &fra,
+				win, graph[set], None, None,
+				inter.x - (x + 2 + button->reliefwidth),
+				inter.y - (y+offset),
+				inter.width, inter.height,
+				inter.x, inter.y, inter.width, inter.height,
+				False);
+		}
 		newx = button->p.width+2*INNER_MARGIN;
 	}
 	else
@@ -525,6 +567,10 @@ void DoButton(Button *button, int x, int y, int w, int h, Bool clear_bg)
 	FwinString->x = x+newx+button->reliefwidth;
 	FwinString->y = y+1+button->reliefwidth+FButtonFont->ascent;
 	FwinString->gc = graph[set];
+	t_region = XCreateRegion();
+	XUnionRectWithRegion (&rect, t_region, t_region);
+	FwinString->flags.has_clip_region = True;
+	FwinString->clip_region = t_region;
 	FwinString->flags.has_colorset = False;
 	if (colorset[set] >= 0)
 	{
@@ -532,6 +578,8 @@ void DoButton(Button *button, int x, int y, int w, int h, Bool clear_bg)
 		FwinString->flags.has_colorset = True;
 	}
 	FlocaleDrawString(dpy, FButtonFont, FwinString, FWS_HAVE_LENGTH);
+	FwinString->flags.has_clip_region = False;
+	XDestroyRegion(t_region);
 
 	/* Draw relief last */
 	RelieveRectangle(dpy,win,x,y,w-1,h,topgc,bottomgc,button->reliefwidth);
@@ -542,7 +590,8 @@ void DoButton(Button *button, int x, int y, int w, int h, Bool clear_bg)
 /******************************************************************************
   DrawButtonArray - Draw the whole array (all=1), or only those that need.
 ******************************************************************************/
-void DrawButtonArray(ButtonArray *barray, Bool all, Bool clear_bg)
+void DrawButtonArray(
+	ButtonArray *barray, Bool all, Bool clear_bg, XEvent *evp)
 {
   Button *btn;
   int i = 0;            /* buttons displayed */
@@ -552,44 +601,51 @@ void DrawButtonArray(ButtonArray *barray, Bool all, Bool clear_bg)
     {
       if (all || btn->needsupdate)
 	DoButton(btn, barray->x, barray->y + (i * (barray->h + 1)),
-		 barray->w, barray->h, clear_bg);
+		 barray->w, barray->h, clear_bg, evp);
       i++;
     }
 }
 
 /******************************************************************************
-  ExposeAllButtons - Draw all button backgrounds intersectingwith the event
+  DrawButtonArray - Draw the whole array (all=1), or only those that need.
 ******************************************************************************/
-void ExposeAllButtons(ButtonArray *barray, XEvent *eventp)
+void DrawTransparentButtonArray(ButtonArray *barray)
 {
-  Button *btn;
-  int i, set;
-  XRectangle rect;
+	Button *btn;
+	int i = 0;            /* buttons displayed */
 
-  rect.x = eventp->xexpose.x;
-  rect.y = eventp->xexpose.y;
-  rect.width = eventp->xexpose.width;
-  rect.height = eventp->xexpose.height;
+	for (i = 0; i != MAX_COLOUR_SETS; i++)
+	{
+		int cset = colorset[i];
 
-  /* only fill the area exposed */
-  for (i = 0; i != MAX_COLOUR_SETS; i++)
-    XSetClipRectangles(dpy, background[i], 0, 0, &rect, 1, Unsorted);
+		if (!CSET_IS_TRANSPARENT_ROOT(cset))
+		{
+			continue;
+		}
+		if (pixmap[i])
+			XFreePixmap(dpy, pixmap[i]);
+		pixmap[i] = CreateBackgroundPixmap(
+			dpy, win, win_width, win_height,
+			&Colorset[cset], Pdepth,
+			background[i], False);
+		XSetTile(dpy, background[i], pixmap[i]);
+	}
 
-  i = 0;
-  for (btn = barray->head; btn != NULL; btn = btn->next)
-    if (IsButtonVisible(btn))
-    {
-      set = btn->set;
-      if (colorset[set] < 0 || Colorset[colorset[set]].pixmap != ParentRelative)
-	XFillRectangle(dpy, win, background[set],
-		       barray->x, barray->y + (i * (barray->h + 1)),
-		       barray->w, barray->h + 1);
-      i++;
-    }
-
-  /* clear the clipping */
-  for (i = 0; i != MAX_COLOUR_SETS; i++)
-    XSetClipMask(dpy, background[i], None);
+	i = 0;
+	for(btn = barray->head; btn != NULL; btn = btn->next)
+	{
+		if (IsButtonVisible(btn))
+		{
+			if (CSET_IS_TRANSPARENT(colorset[btn->set]))
+			{
+				DoButton(
+					btn, barray->x,
+					barray->y + (i * (barray->h + 1)),
+					barray->w, barray->h, True, NULL);
+			}
+			i++;
+		}
+	}
 }
 /******************************************************************************
   SwitchButton - Alternate the state of a button
@@ -603,7 +659,7 @@ void SwitchButton(ButtonArray *array, int butnum)
   {
     btn->up =!btn->up;
     btn->needsupdate=1;
-    DrawButtonArray(array, False, True);
+    DrawButtonArray(array, False, True, NULL);
   }
 }
 

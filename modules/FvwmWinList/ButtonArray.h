@@ -71,9 +71,11 @@ extern void RemoveButton(ButtonArray *array, int butnum);
 extern Button *find_n(ButtonArray *array, int n);
 extern void FreeButton(Button *ptr);
 extern void FreeAllButtons(ButtonArray *array);
-extern void DoButton(Button *ptr, int x, int y, int w, int h, Bool clear_bg);
-extern void DrawButtonArray(ButtonArray *array, Bool all, Bool clear_bg);
-extern void ExposeAllButtons(ButtonArray *array, XEvent *eventp);
+extern void DoButton(
+	Button *ptr, int x, int y, int w, int h, Bool clear_bg, XEvent *evp);
+extern void DrawButtonArray(
+	ButtonArray *array, Bool all, Bool clear_bg, XEvent *evp);
+extern void DrawTransparentButtonArray(ButtonArray *barray);
 extern void SwitchButton(ButtonArray *array,int butnum);
 extern int WhichButton(ButtonArray *array,int x, int y);
 extern char *ButtonName(ButtonArray *array, int butnum);
