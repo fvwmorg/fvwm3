@@ -1,3 +1,8 @@
+2002-04-15  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* FvwmIconMan/readconfig.h:
+	safety patch for future modifier confusion
+
 2002-04-14  Mikhael Goikhman  <migo@homemail.com>
 
 	* FvwmConsole/FvwmConsole.c:
@@ -16,7 +21,7 @@
 
 2002-04-06  Uwe Pross  <uwe.pross@gmx.net>
 
-	* FvwmAuto/FvwmAuto.1: 
+	* FvwmAuto/FvwmAuto.1:
 	Added hint to builtin command EdgeCommand
 
 2002-04-07  Mikhael Goikhman  <migo@homemail.com>
@@ -39,7 +44,7 @@
 
 2002-04-05  olicha  <olivier.chapuis@free.fr>
 
-	* FvwmTaskBar/FvwmTaskBar.c (LoopOnEvents): 
+	* FvwmTaskBar/FvwmTaskBar.c (LoopOnEvents):
 	Fixed a core dump
 
 	* FvwmScript/FvwmScript (LoadIcon):
@@ -85,7 +90,7 @@
 	* FvwmWharf/stepgfx.c:
 	* FvwmWharf/Makefile.am:
 	* FvwmTaskBar/Start.c:
-	* FvwmTaskBar/ButtonArray.h: 
+	* FvwmTaskBar/ButtonArray.h:
 	* FvwmTaskBar/Makefile.am:
 	* FvwmIconBox/icons.c:
 	* FvwmIconBox/Makefile.am:
@@ -98,20 +103,20 @@
 
 	* FvwmIconMan/Makefile.am:
 	* FvwmGtk/Makefile.am:
-	* FvwmGtk/menu.c: 
+	* FvwmGtk/menu.c:
 	* FvwmWinList/Makefile.am:
 	* FvwmForm/Makefile.am:
 	* FvwmForm/FvwmForm.c:
 	* FvwmDragWell/Makefile.am:
 	* FvwmDragWell/fvwmDragWell.c:
-	* FvwmRearrange/Makefile.am: 
+	* FvwmRearrange/Makefile.am:
 	* FvwmSave/Makefile.am:
 	* FvwmSaveDesk/Makefile.am:
 	* FvwmEvent/Makefile.am:
 	* FvwmScroll/FvwmScroll.c:
 	* FvwmScroll/Makefile.am:
-	* FvwmM4/Makefile.am: 
-	* FvwmM4/FvwmM4.c: 
+	* FvwmM4/Makefile.am:
+	* FvwmM4/FvwmM4.c:
 	* FvwmCpp/Makefile.am:
 	* FvwmCpp/FvwmCpp.c:
 	* FvwmAuto/Makefile.am:
