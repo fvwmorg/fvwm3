@@ -68,6 +68,7 @@ static void __exc_change_context(
 		{
 			exc->private_data.te = *ecc->x.etrigger;
 		}
+		exc->x.etrigger = &(exc->private_data.te);
 	}
 	if (mask & ECC_FW)
 	{

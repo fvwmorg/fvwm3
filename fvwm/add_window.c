@@ -3145,13 +3145,11 @@ void RestoreWithdrawnLocation(
 		return;
 	}
 
-	if (HAS_NEW_WM_NORMAL_HINTS(fw))
-	{
-		/* get the latest size hints */
-		XSync(dpy, 0);
-		GetWindowSizeHints(fw);
-		SET_HAS_NEW_WM_NORMAL_HINTS(fw, 0);
-	}
+	/* always get the latest size hints in case the application changed
+	 * the gravity and we do not yet know about it */
+	XSync(dpy, 0);
+	GetWindowSizeHints(fw);
+	SET_HAS_NEW_WM_NORMAL_HINTS(fw, 0);
 	get_unshaded_geometry(fw, &unshaded_g);
 	gravity_get_naked_geometry(
 		fw->hints.win_gravity, fw, &naked_g, &unshaded_g);

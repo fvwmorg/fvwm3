@@ -1,5 +1,19 @@
 2004-07-08  Dominik Vogt  <dominik.vogt@gmx.de>
 
+	* fvwm/execcontext.c (__exc_change_context):
+	fixed handling of etrigger event, fixing a problem with PropertyNotify
+	events during resizing and possibly other problems too
+
+	* fvwm/add_window.c (RestoreWithdrawnLocation):
+	fixed traveling windows if application changed gravity hint before
+	recapture
+
+	* fvwm/frame.c (combine_decor_gravities):
+	(combine_gravities):
+	renamed
+	(frame_restore_client_gravities):
+	fixed window gravity after resize
+
 	* libs/FEvent.c (FPeekEvent):
 	(FPeekIfEvent):
 	(FCheckPeekIfEvent):

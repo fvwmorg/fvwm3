@@ -141,29 +141,23 @@ static void print_g(char *text, rectangle *g)
 }
 #endif
 
-static void combine_decor_gravities(
+static void combine_gravities(
 	frame_decor_gravities_type *ret_grav,
 	frame_decor_gravities_type *grav_x,
 	frame_decor_gravities_type *grav_y)
 {
-	ret_grav->decor_grav =
-		gravity_combine_xy_grav(grav_x->decor_grav,
-					grav_y->decor_grav);
-	ret_grav->title_grav =
-		gravity_combine_xy_grav(grav_x->title_grav,
-					grav_y->title_grav);
-	ret_grav->lbutton_grav =
-		gravity_combine_xy_grav(grav_x->lbutton_grav,
-					grav_y->lbutton_grav);
-	ret_grav->rbutton_grav =
-		gravity_combine_xy_grav(grav_x->rbutton_grav,
-					grav_y->rbutton_grav);
-	ret_grav->parent_grav =
-		gravity_combine_xy_grav(grav_x->parent_grav,
-					grav_y->parent_grav);
-	ret_grav->client_grav =
-		gravity_combine_xy_grav(grav_x->client_grav,
-					grav_y->client_grav);
+	ret_grav->decor_grav = gravity_combine_xy_grav(
+		grav_x->decor_grav, grav_y->decor_grav);
+	ret_grav->title_grav = gravity_combine_xy_grav(
+			grav_x->title_grav, grav_y->title_grav);
+	ret_grav->lbutton_grav = gravity_combine_xy_grav(
+		grav_x->lbutton_grav, grav_y->lbutton_grav);
+	ret_grav->rbutton_grav = gravity_combine_xy_grav(
+		grav_x->rbutton_grav, grav_y->rbutton_grav);
+	ret_grav->parent_grav = gravity_combine_xy_grav(
+		grav_x->parent_grav, grav_y->parent_grav);
+	ret_grav->client_grav = gravity_combine_xy_grav(
+		grav_x->client_grav, grav_y->client_grav);
 
 	return;
 }
@@ -535,7 +529,7 @@ static void frame_get_resize_decor_gravities(
 		&grav_x, title_dir_x, rmode, DIR_W, DIR_E, (delta_g->x != 0));
 	get_resize_decor_gravities_one_axis(
 		&grav_y, title_dir_y, rmode, DIR_N, DIR_S, (delta_g->y != 0));
-	combine_decor_gravities(ret_grav, &grav_x, &grav_y);
+	combine_gravities(ret_grav, &grav_x, &grav_y);
 
 	return;
 }
@@ -634,7 +628,7 @@ static void frame_restore_client_gravities(FvwmWindow *fw)
 	{
 		fw->attr_backup.is_bit_gravity_stored = 0;
 		xcwa.bit_gravity = fw->attr_backup.bit_gravity;
-		valuemask = CWBitGravity;
+		valuemask |= CWBitGravity;
 	}
 	xcwa.win_gravity = fw->hints.win_gravity;
 	XChangeWindowAttributes(dpy, FW_W(fw), valuemask, &xcwa);

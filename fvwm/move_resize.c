@@ -818,7 +818,7 @@ static void DisplaySize(
 	dwidth /= tmp_win->hints.width_inc;
 	dheight /= tmp_win->hints.height_inc;
 
-	(void) sprintf (str, GEOMETRY_WINDOW_SIZE_STRING, dwidth, dheight);
+	(void)sprintf(str, GEOMETRY_WINDOW_SIZE_STRING, dwidth, dheight);
 	if (Init)
 	{
 		XClearWindow(dpy,Scr.SizeWindow);
