@@ -266,84 +266,84 @@ AddToFunc ChangeDefaultFocus I Style * $0
 +                            I Recapture
 
 ################## FvwmButtons button-bar ################################
-*FvwmButtonsGeometry 520x100-1-1
-*FvwmButtonsBack bisque3
-*FvwmButtons(Frame 2 Padding 2 2 Container(Rows 2 Columns 5 Frame 1 \
-                                           Padding 10 0))
-*FvwmButtons(3x2 Frame 2 Swallow "FvwmIconMan" "Module FvwmIconMan")
-*FvwmButtons(1x2 Frame 2 Swallow(UseOld) "FvwmPager" "Module FvwmPager 0 0")
-*FvwmButtons(1x2 Frame 0 Container(Rows 2 Columns 2 Frame 0))
-*FvwmButtons(Frame 2 Swallow(UseOld,NoHints,Respawn) "xbiff" `Exec exec xbiff -bg bisque3`)
-*FvwmButtons(Frame 3 Swallow(UseOld,NoHints,Respawn) "xclock" `Exec exec xclock -bg bisque3 -fg black -hd black -hl black -padding 0 -update 1`)
-*FvwmButtons(2x1 Frame 2 Swallow(UseOld,NoHints,Respawn) "xload" `Exec exec xload -bg bisque3 -fg black -update 5 -nolabel`)
-*FvwmButtons(End)
-*FvwmButtons(End)
+*FvwmButtons: Geometry 520x100-1-1
+*FvwmButtons: Back bisque3
+*FvwmButtons: (Frame 2 Padding 2 2 Container(Rows 2 Columns 5 Frame 1 \
+                                             Padding 10 0))
+*FvwmButtons: (3x2 Frame 2 Swallow "FvwmIconMan" "Module FvwmIconMan")
+*FvwmButtons: (1x2 Frame 2 Swallow(UseOld) "FvwmPager" "Module FvwmPager 0 0")
+*FvwmButtons: (1x2 Frame 0 Container(Rows 2 Columns 2 Frame 0))
+*FvwmButtons: (Frame 2 Swallow(UseOld,NoHints,Respawn) "xbiff" `Exec exec xbiff -bg bisque3`)
+*FvwmButtons: (Frame 3 Swallow(UseOld,NoHints,Respawn) "xclock" `Exec exec xclock -bg bisque3 -fg black -hd black -hl black -padding 0 -update 1`)
+*FvwmButtons: (2x1 Frame 2 Swallow(UseOld,NoHints,Respawn) "xload" `Exec exec xload -bg bisque3 -fg black -update 5 -nolabel`)
+*FvwmButtons: (End)
+*FvwmButtons: (End)
 
 ########################## Icon Manager ####################################
 # this FvwmIconMan setup is for swallowing in above button bar example
-*FvwmIconMan*numManagers 1
-*FvwmIconMan*Resolution  page
-*FvwmIconMan*background  bisque3
-*FvwmIconMan*foreground  black
-*FvwmIconMan*font        7x13bold
-*FvwmIconMan*format      "%t"
-*FvwmIconMan*action      Mouse   1 N sendcommand Focus, sendcommand "Iconify"
-*FvwmIconMan*action      Mouse   2 N sendcommand "Iconify 1"
-*FvwmIconMan*action      Mouse   3 N sendcommand "FvwmIdent"
-*FvwmIconMan*followfocus true
-*FvwmIconMan*sort        name
-*FvwmIconMan*plainbutton          up black bisque3
-*FvwmIconMan*selectbutton         down black bisque3
-*FvwmIconMan*focusbutton          up yellow firebrick
-*FvwmIconMan*focusandselectButton down yellow firebrick
-*FvwmIconMan*dontshow icon=Untitled title=Untitled
-#*FvwmIconMan*drawicons true
-*FvwmIconMan*buttongeometry  300x0
-*FvwmIconMan*managergeometry 1x5
+*FvwmIconMan: numManagers 1
+*FvwmIconMan: Resolution  page
+*FvwmIconMan: background  bisque3
+*FvwmIconMan: foreground  black
+*FvwmIconMan: font        7x13bold
+*FvwmIconMan: format      "%t"
+*FvwmIconMan: action      Mouse   1 N sendcommand Focus, sendcommand "Iconify"
+*FvwmIconMan: action      Mouse   2 N sendcommand "Iconify 1"
+*FvwmIconMan: action      Mouse   3 N sendcommand "FvwmIdent"
+*FvwmIconMan: followfocus true
+*FvwmIconMan: sort        name
+*FvwmIconMan: plainbutton          up black bisque3
+*FvwmIconMan: selectbutton         down black bisque3
+*FvwmIconMan: focusbutton          up yellow firebrick
+*FvwmIconMan: focusandselectButton down yellow firebrick
+*FvwmIconMan: dontshow icon=Untitled title=Untitled
+#*FvwmIconMan: drawicons true
+*FvwmIconMan: buttongeometry  300x0
+*FvwmIconMan: managergeometry 1x5
 
 ########################## Window-Identifier ###############################
 # Just choose colors and a fonts
-*FvwmIdentBack MidnightBlue
-*FvwmIdentFore Yellow
-*FvwmIdentFont -adobe-helvetica-medium-r-*-*-12-*-*-*-*-*-*-*
+*FvwmIdent: Back MidnightBlue
+*FvwmIdent: Fore Yellow
+*FvwmIdent: Font -adobe-helvetica-medium-r-*-*-12-*-*-*-*-*-*-*
 
 ########################### Pager #########################################
-*FvwmPagerBack #908090
-*FvwmPagerFore #484048
-#*FvwmPagerFont -adobe-helvetica-bold-r-*-*-10-*-*-*-*-*-*-*
+*FvwmPager: Back #908090
+*FvwmPager: Fore #484048
+#*FvwmPager: Font -adobe-helvetica-bold-r-*-*-10-*-*-*-*-*-*-*
 # turn off desktop names for swallowing in above button bar example:
-*FvwmPagerFont none
-*FvwmPagerHilight #cab3ca
-*FvwmPagerGeometry -1-1
-*FvwmPagerLabel 0 Misc
-*FvwmPagerLabel 1 Maker
-*FvwmPagerLabel 2 Mail
-*FvwmPagerLabel 3 Matlab
-*FvwmPagerSmallFont 5x8
-*FvwmPagerBalloons            All
-*FvwmPagerBalloonBack         Yellow
-*FvwmPagerBalloonFore         Black
-*FvwmPagerBalloonFont         lucidasanstypewriter-12
-*FvwmPagerBalloonYOffset      +2
-*FvwmPagerBalloonBorderWidth  1
-*FvwmPagerBalloonBorderColor  Black
+*FvwmPager: Font none
+*FvwmPager: Hilight #cab3ca
+*FvwmPager: Geometry -1-1
+*FvwmPager: Label 0 Misc
+*FvwmPager: Label 1 Maker
+*FvwmPager: Label 2 Mail
+*FvwmPager: Label 3 Matlab
+*FvwmPager: SmallFont 5x8
+*FvwmPager: Balloons            All
+*FvwmPager: BalloonBack         Yellow
+*FvwmPager: BalloonFore         Black
+*FvwmPager: BalloonFont         lucidasanstypewriter-12
+*FvwmPager: BalloonYOffset      +2
+*FvwmPager: BalloonBorderWidth  1
+*FvwmPager: BalloonBorderColor  Black
 
 ##########################FvwmWinList##################################
-*FvwmWinListBack #908090
-*FvwmWinListFore Black
-*FvwmWinListFont -adobe-helvetica-bold-r-*-*-10-*-*-*-*-*-*-*
-*FvwmWinListAction Click1 Iconify -1,Focus
-*FvwmWinListAction Click2 Iconify
-*FvwmWinListAction Click3 Module "FvwmIdent" FvwmIdent
-*FvwmWinListUseSkipList
-*FvwmWinListGeometry +0-1
+*FvwmWinList: Back #908090
+*FvwmWinList: Fore Black
+*FvwmWinList: Font -adobe-helvetica-bold-r-*-*-10-*-*-*-*-*-*-*
+*FvwmWinList: Action Click1 Iconify -1,Focus
+*FvwmWinList: Action Click2 Iconify
+*FvwmWinList: Action Click3 Module "FvwmIdent" FvwmIdent
+*FvwmWinList: UseSkipList
+*FvwmWinList: Geometry +0-1
 
 
-*FvwmBackerDesk 0 -solid steelblue
-*FvwmBackerDesk 1 -solid midnightblue
+*FvwmBacker: Desk 0 -solid steelblue
+*FvwmBacker: Desk 1 -solid midnightblue
 
-*FvwmScrollBack grey40
-*FvwmScrollFore green
+*FvwmScroll: Back grey40
+*FvwmScroll: Fore green
 
 ############################################################
 ############################################################
@@ -352,37 +352,37 @@ AddToFunc ChangeDefaultFocus I Style * $0
 #Style     *  NoIcon
 
 ############################################################
-*FvwmIconBoxIconBack    #cfcfcf
-*FvwmIconBoxIconHiFore  black
-*FvwmIconBoxIconHiBack  LightSkyBlue
-*FvwmIconBoxBack        #5f9ea0
-#*FvwmIconBoxFore       blue
-*FvwmIconBoxGeometry    5x1+0+0
-*FvwmIconBoxMaxIconSize 64x38
-*FvwmIconBoxFont        -adobe-helvetica-medium-r-*-*-12-*-*-*-*-*-*-*
-*FvwmIconBoxSortIcons   IconName
-*FvwmIconBoxPadding     4
-*FvwmIconBoxLines       10
-*FvwmIconBoxSBWidth     11
-*FvwmIconBoxPlacement   Left Top
-*FvwmIconBoxPixmap      fvwm.xpm
-#*FvwmIconBoxHideSC Horizontal
-*FvwmIconBoxSetWMIconSize
-*FvwmIconBoxHilightFocusWin
-#*FvwmIconBoxResolution          Desk
-*FvwmIconBoxMouse       1       Click           RaiseLower
-*FvwmIconBoxMouse       1       DoubleClick     Iconify
-*FvwmIconBoxMouse       2       Click           Iconify -1, Focus
-*FvwmIconBoxMouse       3       Click           Module FvwmIdent
-*FvwmIconBoxKey         r       RaiseLower
-*FvwmIconBoxKey         space   Iconify
-*FvwmIconBoxKey         d       Close
-*FvwmIconBoxKey         n       Next
-*FvwmIconBoxKey         p       Prev
-*FvwmIconBoxKey         h       Left
-*FvwmIconBoxKey         j       Down
-*FvwmIconBoxKey         k       Up
-*FvwmIconBoxKey         l       Right
+*FvwmIconBox: IconBack    #cfcfcf
+*FvwmIconBox: IconHiFore  black
+*FvwmIconBox: IconHiBack  LightSkyBlue
+*FvwmIconBox: Back        #5f9ea0
+#*FvwmIconBox: Fore       blue
+*FvwmIconBox: Geometry    5x1+0+0
+*FvwmIconBox: MaxIconSize 64x38
+*FvwmIconBox: Font        -adobe-helvetica-medium-r-*-*-12-*-*-*-*-*-*-*
+*FvwmIconBox: SortIcons   IconName
+*FvwmIconBox: Padding     4
+*FvwmIconBox: Lines       10
+*FvwmIconBox: SBWidth     11
+*FvwmIconBox: Placement   Left Top
+*FvwmIconBox: Pixmap      fvwm.xpm
+#*FvwmIconBo: xHideSC Horizontal
+*FvwmIconBox: SetWMIconSize
+*FvwmIconBox: HilightFocusWin
+#*FvwmIconBox: Resolution          Desk
+*FvwmIconBox: Mouse       1       Click           RaiseLower
+*FvwmIconBox: Mouse       1       DoubleClick     Iconify
+*FvwmIconBox: Mouse       2       Click           Iconify -1, Focus
+*FvwmIconBox: Mouse       3       Click           Module FvwmIdent
+*FvwmIconBox: Key         r       RaiseLower
+*FvwmIconBox: Key         space   Iconify
+*FvwmIconBox: Key         d       Close
+*FvwmIconBox: Key         n       Next
+*FvwmIconBox: Key         p       Prev
+*FvwmIconBox: Key         h       Left
+*FvwmIconBox: Key         j       Down
+*FvwmIconBox: Key         k       Up
+*FvwmIconBox: Key         l       Right
 #
 # Icon file specifications
 #
@@ -392,103 +392,103 @@ AddToFunc ChangeDefaultFocus I Style * $0
 *FvwmIconBox            "Fvwm*"         -
 
 # FvwmForm alias - rlogin or telnet to host via xterm
-*RloginWarpPointer
-*RloginFont         *helvetica*m*r*n*12*
-*RloginButtonFont   *helvetica*m*o*n*12*
-*RloginInputFont    *cour*m*r*n*12*
-*RloginFore         Black
-*RloginBack         Light Gray
-*RloginItemFore          Wheat
-*RloginItemBack          Gray50
+*Rlogin: WarpPointer
+*Rlogin: Font         *helvetica*m*r*n*12*
+*Rlogin: ButtonFont   *helvetica*m*o*n*12*
+*Rlogin: InputFont    *cour*m*r*n*12*
+*Rlogin: Fore         Black
+*Rlogin: Back         Light Gray
+*Rlogin: ItemFore          Wheat
+*Rlogin: ItemBack          Gray50
 # begin items
-*RloginLine         center
-*RloginText         "Login to Remote Host"
-*RloginLine         center
-*RloginText         "Host:"
-*RloginInput        HostName  30   ""
-*RloginLine         center
-*RloginSelection    meth single
-*RloginChoice       TN TN off "telnet"
-*RloginChoice       RL RL on "rlogin"
-*RloginSelection    UserSel   single
-#*RloginChoice       Default   Default   on   "same user"
-#*RloginChoice       Custom    Custom    off  "user:"
-*RloginText         "(Userid:"
-*RloginInput        UserName  10   ""
-*RloginText         ")"
-*RloginLine         center
-*RloginText         "FG:"
-*RloginInput        FgColor 15 ""
-*RloginText         "BG:"
-*RloginInput        BgColor 15 ""
-*RloginLine         expand
-*RloginButton       quit "Login" ^M
-*RloginCommand Exec xterm  $(FgColor?-fg $(FgColor)) $(BgColor?-bg $(BgColor)) -T xterm@$(HostName) -e $(RL?rlogin) $(TN?telnet) $(HostName) $(RL?-8 $(UserName?-l $(UserName)))
-*RloginButton       restart   "Clear"
-*RloginCommand Beep
-*RloginButton       quit "Cancel"
-*RloginCommand Nop
+*Rlogin: Line         center
+*Rlogin: Text         "Login to Remote Host"
+*Rlogin: Line         center
+*Rlogin: Text         "Host:"
+*Rlogin: Input        HostName  30   ""
+*Rlogin: Line         center
+*Rlogin: Selection    meth single
+*Rlogin: Choice       TN TN off "telnet"
+*Rlogin: Choice       RL RL on "rlogin"
+*Rlogin: Selection    UserSel   single
+#*Rlogin: Choice       Default   Default   on   "same user"
+#*Rlogin: Choice       Custom    Custom    off  "user:"
+*Rlogin: Text         "(Userid:"
+*Rlogin: Input        UserName  10   ""
+*Rlogin: Text         ")"
+*Rlogin: Line         center
+*Rlogin: Text         "FG:"
+*Rlogin: Input        FgColor 15 ""
+*Rlogin: Text         "BG:"
+*Rlogin: Input        BgColor 15 ""
+*Rlogin: Line         expand
+*Rlogin: Button       quit "Login" ^M
+*Rlogin: Command Exec xterm  $(FgColor?-fg $(FgColor)) $(BgColor?-bg $(BgColor)) -T xterm@$(HostName) -e $(RL?rlogin) $(TN?telnet) $(HostName) $(RL?-8 $(UserName?-l $(UserName)))
+*Rlogin: Button       restart   "Clear"
+*Rlogin: Command Beep
+*Rlogin: Button       quit "Cancel"
+*Rlogin: Command Nop
 
 # FvwmForm alias - query exit ala mwm
-*QuitVerifyGrabServer
-*QuitVerifyWarpPointer
-*QuitVerifyFont          *helvetica*m*r*n*14*
-#*QuitVerifyButtonFont    *helvetica*m*o*n*14*
-*QuitVerifyButtonFont    7x13bold
-*QuitVerifyFore          Black
-*QuitVerifyBack          Light Gray
-*QuitVerifyItemFore Wheat
-*QuitVerifyItemBack Gray50
+*QuitVerify: GrabServer
+*QuitVerify: WarpPointer
+*QuitVerify: Font          *helvetica*m*r*n*14*
+#*QuitVerify: ButtonFont    *helvetica*m*o*n*14*
+*QuitVerify: ButtonFont    7x13bold
+*QuitVerify: Fore          Black
+*QuitVerify: Back          Light Gray
+*QuitVerify: ItemFore Wheat
+*QuitVerify: ItemBack Gray50
 # begin items
-*QuitVerifyLine          center
-*QuitVerifyText          "Do you really want to exit FVWM?"
-*QuitVerifyLine          expand
-*QuitVerifyButton   quit      " Exit "
-*QuitVerifyCommand  Quit
-*QuitVerifyButton   quit      "Cancel"
-*QuitVerifyCommand  Nop
+*QuitVerify: Line          center
+*QuitVerify: Text          "Do you really want to exit FVWM?"
+*QuitVerify: Line          expand
+*QuitVerify: Button   quit      " Exit "
+*QuitVerify: Command  Quit
+*QuitVerify: Button   quit      "Cancel"
+*QuitVerify: Command  Nop
 
 # MyTalk & MyFvwmTalk from Dave Goldberg
 # MyTalk Form - dissappears after use
-*MyTalkWarpPointer
-*MyTalkFont *helvetica*m*r*n*14*
-*MyTalkButtonFont *helvetica*m*o*n*14*
-*MyTalkInputFont *cour*m*r*n*14*
-*MyTalkFore Red
-*MyTalkBack Gray
-*MyTalkItemFore Blue
-*MyTalkItemBack Gray
-*MyTalkLine center
-*MyTalkText "Fvwm Function"
-*MyTalkInput Func 40 ""
-*MyTalkLine expand
-*MyTalkButton quit "Run" ^M
-*MyTalkCommand $(Func)
-*MyTalkButton restart "Clear" ^R
-*MyTalkButton quit "Cancel" ^C
-*MyTalkCommand Nop
+*MyTalk: WarpPointer
+*MyTalk: Font *helvetica*m*r*n*14*
+*MyTalk: ButtonFont *helvetica*m*o*n*14*
+*MyTalk: InputFont *cour*m*r*n*14*
+*MyTalk: Fore Red
+*MyTalk: Back Gray
+*MyTalk: ItemFore Blue
+*MyTalk: ItemBack Gray
+*MyTalk: Line center
+*MyTalk: Text "Fvwm Function"
+*MyTalk: Input Func 40 ""
+*MyTalk: Line expand
+*MyTalk: Button quit "Run" ^M
+*MyTalk: Command $(Func)
+*MyTalk: Button restart "Clear" ^R
+*MyTalk: Button quit "Cancel" ^C
+*MyTalk: Command Nop
 # MyFvwmTalk Form - sticks around
-*MyFvwmTalkWarpPointer
-*MyFvwmTalkFont *helvetica*m*r*n*14*
-*MyFvwmTalkButtonFont *helvetica*m*o*n*14*
-*MyFvwmTalkInputFont *cour*m*r*n*14*
-*MyFvwmTalkFore Red
-*MyFvwmTalkBack Gray
-*MyFvwmTalkItemFore Blue
-*MyFvwmTalkItemBack Gray
-*MyFvwmTalkLine center
-*MyFvwmTalkText "Fvwm Function"
-*MyFvwmTalkInput Func 40 ""
-*MyFvwmTalkLine expand
-*MyFvwmTalkButton restart "Run" ^M
-*MyFvwmTalkCommand $(Func)
-*MyFvwmTalkButton restart "Clear" ^R
-*MyFvwmTalkCommand Nop
-*MyFvwmTalkButton restart "Iconify" ^Z
-*MyFvwmTalkCommand Next [MyFvwmTalk] Iconify
-*MyFvwmTalkButton quit "Quit" ^C
-*MyFvwmTalkCommand Nop
+*MyFvwmTalk: WarpPointer
+*MyFvwmTalk: Font *helvetica*m*r*n*14*
+*MyFvwmTalk: ButtonFont *helvetica*m*o*n*14*
+*MyFvwmTalk: InputFont *cour*m*r*n*14*
+*MyFvwmTalk: Fore Red
+*MyFvwmTalk: Back Gray
+*MyFvwmTalk: ItemFore Blue
+*MyFvwmTalk: ItemBack Gray
+*MyFvwmTalk: Line center
+*MyFvwmTalk: Text "Fvwm Function"
+*MyFvwmTalk: Input Func 40 ""
+*MyFvwmTalk: Line expand
+*MyFvwmTalk: Button restart "Run" ^M
+*MyFvwmTalk: Command $(Func)
+*MyFvwmTalk: Button restart "Clear" ^R
+*MyFvwmTalk: Command Nop
+*MyFvwmTalk: Button restart "Iconify" ^Z
+*MyFvwmTalk: Command Next [MyFvwmTalk] Iconify
+*MyFvwmTalk: Button quit "Quit" ^C
+*MyFvwmTalk: Command Nop
 
 # to change banner pixmap
-#*FvwmBannerPixmap fvwm3.xpm
-#*FvwmBannerTimeout 2
+#*FvwmBanner: Pixmap fvwm3.xpm
+#*FvwmBanner: Timeout 2

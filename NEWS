@@ -1,6 +1,8 @@
 Note, the changes for the last STABLE release start with release
 _+_A HREF="#2.4.6"_-_2.4.6_+_/A_-_.
 
+---------------------------------------------------------------------
+
 Changes in alpha release 2.5.1 (not released yet)
 
 * FvwmForm can automatically run commands after a timeout interval.
@@ -74,6 +76,11 @@ Changes in alpha release 2.5.1 (not released yet)
 * New option MinimalLayer for FvwmIdent to control window layer.
 
 * Added support for loading image in PNG format.
+
+* New FvwmIconMan configuration syntax now conforms to the syntax of
+  other modules, see the man page.
+
+---------------------------------------------------------------------
 
 Changes in alpha release 2.5.0 (27-Jan-2002)
 
@@ -150,6 +157,8 @@ Changes in alpha release 2.5.0 (27-Jan-2002)
 * New conditional commands Any and PointerWindow.
 
 * New conditions Focused, !Focused, HasPointer and !HasPointer.
+
+---------------------------------------------------------------------
 
 _+_A NAME="2.4.6"_-_
 Changes in stable release 2.4.6 (10-Mar-2002)

@@ -1,3 +1,16 @@
+2002-04-07  Mikhael Goikhman  <migo@homemail.com>
+
+	* INSTALL.fvwm:
+	minor wording fixes
+
+	* NEWS:
+	mention a new FvwmIconMan syntax
+
+	* sample.fvwmrc/new-features:
+	* sample.fvwmrc/system.fvwm2rc:
+	* sample.fvwmrc/system.fvwm2rc-sample-95:
+	use a new module syntax
+
 2002-04-06  olicha  <olivier.chapuis@free.fr>
 
 	* fvwm/fvwm2.1:

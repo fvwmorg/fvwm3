@@ -209,49 +209,49 @@ Style "*Download" WindowListSkip,NoTitle
 # Resources for Modules
 #
 # Resources are usually of the form
-# *ModulenameOption value
+# *Modulename: Option value
 #
 # Resources are used to configure fvwm modules. See the man page for each
 # module to find out what resources you can set
 #
 # FvwmPager
 
-*FvwmPagerBack #150525
-*FvwmPagerFore #484058
-*FvwmPagerFont -adobe-helvetica-bold-r-*-*-10-*-*-*-*-*-*-*
-*FvwmPagerHilight #908090
-*FvwmPagerDeskTopScale 64
-*FvwmPagerGeometry -0-0
-*FvwmPagerLabel 0 Pager
-*FvwmPagerSmallFont 5x8
-*FvwmPagerColumns 1
-*FvwmPagerLabel 0 All
-*FvwmPagerLabel 1 Work
-*FvwmPagerLabel 2 No
-*FvwmPagerLabel 3 Play
-*FvwmPagerBalloons Pager
-*FvwmPagerBalloonfore white
+*FvwmPager: Back #150525
+*FvwmPager: Fore #484058
+*FvwmPager: Font -adobe-helvetica-bold-r-*-*-10-*-*-*-*-*-*-*
+*FvwmPager: Hilight #908090
+*FvwmPager: DeskTopScale 64
+*FvwmPager: Geometry -0-0
+*FvwmPager: Label 0 Pager
+*FvwmPager: SmallFont 5x8
+*FvwmPager: Columns 1
+*FvwmPager: Label 0 All
+*FvwmPager: Label 1 Work
+*FvwmPager: Label 2 No
+*FvwmPager: Label 3 Play
+*FvwmPager: Balloons Pager
+*FvwmPager: Balloonfore white
 
 # FvwmForm
 # options for the FvwmForm module which we specify as 'Ssh' later on
-*SshFore		#dfdfdf
-*SshBack		#303030
-*SshItemBack	black
-*SshItemFore	#ffffff
-*SshFont		-*-lucidatypewriter-medium-r-*-*-14-*-*-*-m-*-*-*
-*SshButtonFont	-*-lucidatypewriter-medium-r-*-*-14-*-*-*-m-*-*-*
-*SshInputFont	-*-lucidatypewriter-medium-r-*-*-14-*-*-*-m-*-*-*
-*SshLine		Left
-*SshText		"Host"
-*SshInput	Host 30
-*SshLine		Left
-*SshText		"User"
-*SshInput	User 30
-*SshLine		Center
-*SshButton	quit "OK"	^M
-*SshCommand	Exec exec xterm -sl 1024 -cr white -fg white -bg black -T "\"$(Host)\"" -e ssh $(Host) -l $(User) &
-*SshButton	quit "Cancel"	^[
-*SshCommand	Nop
+*Ssh: Fore		#dfdfdf
+*Ssh: Back		#303030
+*Ssh: ItemBack	black
+*Ssh: ItemFore	#ffffff
+*Ssh: Font		-*-lucidatypewriter-medium-r-*-*-14-*-*-*-m-*-*-*
+*Ssh: ButtonFont	-*-lucidatypewriter-medium-r-*-*-14-*-*-*-m-*-*-*
+*Ssh: InputFont		-*-lucidatypewriter-medium-r-*-*-14-*-*-*-m-*-*-*
+*Ssh: Line	Left
+*Ssh: Text	"Host"
+*Ssh: Input	Host 30
+*Ssh: Line	Left
+*Ssh: Text	"User"
+*Ssh: Input	User 30
+*Ssh: Line	Center
+*Ssh: Button	quit "OK"	^M
+*Ssh: Command	Exec exec xterm -sl 1024 -cr white -fg white -bg black -T "\"$(Host)\"" -e ssh $(Host) -l $(User) &
+*Ssh: Button	quit "Cancel"	^[
+*Ssh: Command	Nop
 
 # Function definitions
 #

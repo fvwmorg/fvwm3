@@ -1085,19 +1085,19 @@ AddToFunc TaskBarGlobalAutoHide
 DestroyFunc IconManGlobal
 AddToFunc IconManGlobal
 + I Style * NoIcon
-+ I *FvwmIconMan: *Resolution global
++ I *FvwmIconMan: Resolution global
 + I Module FvwmIconMan
 
 DestroyFunc IconManDesk
 AddToFunc IconManDesk
 + I Style * NoIcon
-+ I *FvwmIconMan: *Resolution desk
++ I *FvwmIconMan: Resolution desk
 + I Module FvwmIconMan
 
 DestroyFunc IconManPage
 AddToFunc IconManPage
 + I Style * NoIcon
-+ I *FvwmIconMan: *Resolution page
++ I *FvwmIconMan: Resolution page
 + I Module FvwmIconMan
 
 DestroyFunc IconBoxDesk
@@ -2777,52 +2777,52 @@ Style "FvwmIconMan"   NoTitle, NoHandles, Sticky, WindowListSkip, CirculateSkip
 DestroyModuleConfig FvwmIconMan: *
 
 # nbr de manager
-*FvwmIconMan: *nummanagers 2
+*FvwmIconMan: nummanagers 2
 #global, desk, or page
-#*FvwmIconMan: *Resolution page
-*FvwmIconMan: *Resolution global
-#*FvwmIconMan: *Resolution desk
-*FvwmIconMan: *background  #c0c0c0
-*FvwmIconMan: *foreground Black
-*FvwmIconMan: *plainbutton up Black #c0c0c0
-*FvwmIconMan: *selectbutton down  Black #c0c0c0
+#*FvwmIconMan: Resolution page
+*FvwmIconMan: Resolution global
+#*FvwmIconMan: Resolution desk
+*FvwmIconMan: background  #c0c0c0
+*FvwmIconMan: foreground Black
+*FvwmIconMan: plainbutton up Black #c0c0c0
+*FvwmIconMan: selectbutton down  Black #c0c0c0
 #WIN 2
-*FvwmIconMan: *focusbutton up white Blue4
-*FvwmIconMan: *focusandselectbutton down white Blue4
+*FvwmIconMan: focusbutton up white Blue4
+*FvwmIconMan: focusandselectbutton down white Blue4
 #FVWM 2
-#*FvwmIconMan: *focusbutton up white SlateBlue
-#*FvwmIconMan: *focusandselectbutton down white SlateBlue
-*FvwmIconMan: *iconbutton down Black grey51
-*FvwmIconMan: *font  -adobe-times-bold-r-*-*-12-*-*-*-*-*-*-*-
-*FvwmIconMan: *followfocus true
-*FvwmIconMan: *usewinlist true
-*FvwmIconMan: *sort name
-*FvwmIconMan: *drawicons always
-*FvwmIconMan: *2*title           "Icon Man"
+#*FvwmIconMan: focusbutton up white SlateBlue
+#*FvwmIconMan: focusandselectbutton down white SlateBlue
+*FvwmIconMan: iconbutton down Black grey51
+*FvwmIconMan: font  -adobe-times-bold-r-*-*-12-*-*-*-*-*-*-*-
+*FvwmIconMan: followfocus true
+*FvwmIconMan: usewinlist true
+*FvwmIconMan: sort name
+*FvwmIconMan: drawicons always
+*FvwmIconMan: 2 title           "Icon Man"
 #PREF 4
-*FvwmIconMan: *1*title           " emacs windows"
-*FvwmIconMan: *1*iconname        "FvwmIconMan: emacs"
-*FvwmIconMan: *1*format          "%i"
-*FvwmIconMan: *1*show            resource=*macs
-*FvwmIconMan: *2*managergeometry 1x0+0-0
-*FvwmIconMan: *1*managergeometry 1x0+260-0
-*FvwmIconMan: *1*buttongeometry 200x20
-*FvwmIconMan: *2*buttongeometry 250x20
+*FvwmIconMan: 1 title           " emacs windows"
+*FvwmIconMan: 1 iconname        "FvwmIconMan: emacs"
+*FvwmIconMan: 1 format          "%i"
+*FvwmIconMan: 1 show            resource=*macs
+*FvwmIconMan: 2 managergeometry 1x0+0-0
+*FvwmIconMan: 1 managergeometry 1x0+260-0
+*FvwmIconMan: 1 buttongeometry 200x20
+*FvwmIconMan: 2 buttongeometry 250x20
 # action
-*FvwmIconMan: *action    Mouse    1 N sendcommand DeiconifyFocusAndRaise
-*FvwmIconMan: *action    Mouse    2 N sendcommand Iconify
-*FvwmIconMan: *action    Mouse    3 N sendcommand "Menu Window-Ops3 c+0 -101m "
-*FvwmIconMan: *action    Key    Left N gotobutton Left, select
-*FvwmIconMan: *action    Key    Right N gotobutton Right, select
-*FvwmIconMan: *action    Key    Up N gotobutton Up, select
-*FvwmIconMan: *action    Key    Down N gotobutton Down, select
-*FvwmIconMan: *action    Key    q A quit
-*FvwmIconMan: *action    Key    i A sendcommand Iconify
-*FvwmIconMan: *action    Key    g A sendcommand IconManGlobal
-*FvwmIconMan: *action    Key    p A sendcommand IconManPage
-*FvwmIconMan: *action    Key    d A sendcommand IconManDesk
+*FvwmIconMan: action    Mouse    1 N sendcommand DeiconifyFocusAndRaise
+*FvwmIconMan: action    Mouse    2 N sendcommand Iconify
+*FvwmIconMan: action    Mouse    3 N sendcommand "Menu Window-Ops3 c+0 -101m "
+*FvwmIconMan: action    Key    Left N gotobutton Left, select
+*FvwmIconMan: action    Key    Right N gotobutton Right, select
+*FvwmIconMan: action    Key    Up N gotobutton Up, select
+*FvwmIconMan: action    Key    Down N gotobutton Down, select
+*FvwmIconMan: action    Key    q A quit
+*FvwmIconMan: action    Key    i A sendcommand Iconify
+*FvwmIconMan: action    Key    g A sendcommand IconManGlobal
+*FvwmIconMan: action    Key    p A sendcommand IconManPage
+*FvwmIconMan: action    Key    d A sendcommand IconManDesk
 # animation
-*FvwmIconMan: *NoIconAction "SendToModule FvwmAnimate animate"
+*FvwmIconMan: NoIconAction "SendToModule FvwmAnimate animate"
 
 #------------------------------------------------------------------------------
 #------------------ Identify

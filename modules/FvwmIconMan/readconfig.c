@@ -934,7 +934,8 @@ static char *read_next_cmd (ReadOption flag)
 {
   static ReadOption status;
   static char *buffer;
-  static char *retstring, displaced, *cur_pos;
+  static char *retstring, *cur_pos;
+  char *end_pos;
 
   retstring = NULL;
   if (flag != READ_LINE && !(flag & status))
@@ -948,13 +949,13 @@ static char *read_next_cmd (ReadOption flag)
       if (!strncasecmp (Module, cur_pos, ModuleLen)) {
         retstring = cur_pos;
         cur_pos += ModuleLen;
-        displaced = *cur_pos;
-        if (displaced == '*')
+
+        if (*cur_pos == '*')
+          cur_pos++;
+        skip_space(&cur_pos);
+
+        if (isalnum(*cur_pos))
           status = READ_OPTION;
-        else if (displaced == '\0')
-          status = READ_LINE;
-        else if (iswhite (displaced))
-          status = READ_ARG;
         else
           status = READ_LINE;
         break;
@@ -963,42 +964,43 @@ static char *read_next_cmd (ReadOption flag)
     break;
 
   case READ_OPTION:
-    *cur_pos = displaced;
-    retstring = ++cur_pos;
+    retstring = cur_pos;
     while (*cur_pos != '*' && !iswhite (*cur_pos))
       cur_pos++;
-    displaced = *cur_pos;
-    *cur_pos = '\0';
-    if (displaced == '*')
+    end_pos = cur_pos;
+
+    if (*cur_pos == '*')
+      cur_pos++;
+    skip_space(&cur_pos);
+
+    if (!*cur_pos)
+      status = READ_LINE;
+    else if (isdigit(*retstring) || !strncmp(retstring, "transient", 9))
       status = READ_OPTION;
-    else if (displaced == '\0')
-      status = READ_LINE;
-    else if (iswhite (displaced))
+    else if (*cur_pos)
       status = READ_ARG;
-    else
-      status = READ_LINE;
+
+    *end_pos = '\0';
     break;
 
   case READ_ARG:
-    *cur_pos = displaced;
-    skip_space (&cur_pos);
     retstring = cur_pos;
     while (!iswhite (*cur_pos))
       cur_pos++;
-    displaced = *cur_pos;
-    *cur_pos = '\0';
-    if (displaced == '\0')
-      status = READ_LINE;
-    else if (iswhite (displaced))
+    end_pos = cur_pos;
+
+    skip_space(&cur_pos);
+
+    if (*cur_pos)
       status = READ_ARG;
     else
       status = READ_LINE;
+
+    *end_pos = '\0';
     break;
 
   case READ_REST_OF_LINE:
     status = READ_LINE;
-    *cur_pos = displaced;
-    skip_space (&cur_pos);
     retstring = cur_pos;
     break;
   }

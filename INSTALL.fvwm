@@ -381,15 +381,15 @@ that the currently running X server supports it.
 The bi-directional text support is used to properly handle right-to-left
 languages, like Hebrew and Arabic.  By default, fribidi library is probed
 and this support is enabled if fribidi works.  This option explicitly
-disable the bi-directional text support.
+disables the bi-directional text support.
 
 
   --with-fribidi-bindir         directory of fribidi-config if not in PATH
   ~~~~~~~~~~~~~~~~~~~~~
 
 The location of fribidi libraries and headers (needed for Bidi support)
-are determined using fribidi-config utility.  This option specifies a
-directory where fribidi-config is installed, it it is not in your $PATH.
+is determined using fribidi-config utility.  This option specifies a
+directory where fribidi-config is installed if it is not in the $PATH.
 
 
   --disable-perllib             disable installing FVWM perl library
