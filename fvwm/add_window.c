@@ -992,7 +992,7 @@ void setup_focus_policy(FvwmWindow *tmp_win)
 
 void setup_key_and_button_grabs(FvwmWindow *tmp_win)
 {
-  GrabAllWindowKeysAndButtons(dpy, tmp_win->w, Scr.AllBindings,
+  GrabAllWindowKeysAndButtons(dpy, tmp_win->Parent, Scr.AllBindings,
 			      C_WINDOW, GetUnusedModifiers(),
 			      /*!!!*/None, True);
   GrabAllWindowKeys(dpy, tmp_win->decor_w, Scr.AllBindings,

@@ -1423,8 +1423,10 @@ void HandleButtonPress(void)
   {
     SetFocus(Tmp_win->w,Tmp_win,1);
     if (Scr.go.ClickToFocusRaises ||
-	(Event.xany.window != Tmp_win->w &&
-	 Event.xbutton.subwindow != Tmp_win->w))
+	((Event.xany.window != Tmp_win->w)&&
+	 (Event.xbutton.subwindow != Tmp_win->w)&&
+	 (Event.xany.window != Tmp_win->Parent)&&
+	 (Event.xbutton.subwindow != Tmp_win->Parent)))
     {
       RaiseWindow(Tmp_win);
     }
@@ -1452,7 +1454,9 @@ void HandleButtonPress(void)
     }
   }
   else if ((Tmp_win) && !(HAS_CLICK_FOCUS(Tmp_win)) &&
-           (Event.xbutton.window == Tmp_win->w) &&
+           (Event.xbutton.window == Tmp_win->w ||
+            Event.xbutton.window == Tmp_win->Parent ||
+            Event.xbutton.window == Tmp_win->frame) &&
 	   Scr.go.MouseFocusClickRaises)
   {
     if (((DO_RAISE_TRANSIENT(Tmp_win) && DO_FLIP_TRANSIENT(Tmp_win)) ||

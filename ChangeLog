@@ -1,3 +1,9 @@
+1999-12-09  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* fvwm/events.c (HandleButtonPress):
+	* fvwm/add_window.c (setup_key_and_button_grabs):
+	switched back to grabbing keys on parent window
+
 1999-12-09  Mikhael Goikhman  <migo@homemail.com>
 
 	* NEWS:
