@@ -3,6 +3,8 @@
 	* fvwm/menus.c (MenuInteraction):
 	fixed PopdownDelay when entering a menu item with a non existent sub
 	menu
+	(MenuInteraction):
+	fixed core dump and screwed up warping w/ animated menus
 
 	* fvwm/virtual.c (MapDesk):
 	return focus to window on other desk when switching desks

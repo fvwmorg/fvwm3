@@ -1206,6 +1206,8 @@ void check_in_window (WinData *win)
 	create_manager_window (win->manager->index);
     }
     else if (win->button && !in_viewport) {
+      if (win->button->drawn_state.display_string)
+	Free(win->button->drawn_state.display_string);
       delete_windows_button (win);
     }
   }

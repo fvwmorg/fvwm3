@@ -1736,16 +1736,15 @@ static void MenuInteraction(
 	   * the menu from the void or unposted a popup menu. */
 	  mrMi = pmp->menu;
 	}
+	/*tmrMi = mrMi;*/
 	break;
       default:
 	break;
       }
-      /* now warp to the new menu-item, if any */
-      if (mi && (pmp->menu != tmrMi || mi != find_entry(NULL, &tmrMi)))
+      /* now warp to the new menu item, if any */
+      if (pmret->rc == MENU_NEWITEM && mi)
       {
-	if (tmrMi == NULL)
-	  tmrMi = pmp->menu;
-	warp_pointer_to_item(tmrMi, mi, False);
+	warp_pointer_to_item(mrMi, mi, False);
       }
       if (pmret->rc == MENU_POPUP && mi && MI_IS_POPUP(mi))
       {
