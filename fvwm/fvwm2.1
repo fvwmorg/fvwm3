@@ -2894,9 +2894,13 @@ before the end of the stroke recording in the case of a mouse binding
 and if you used, say, a title bar context the mouse motion can go through an
 application window). The keys Escape and Delete allow you to abort the command.
 
-The StrokeFunc command has two options \fINotStayPressed\fP and
-\fIEchoSequence\fP. These options are disabled by default.
-\fIEchoSequence\fP causes fvwm to Echo the recorded stroke sequence.
+The StrokeFunc command has four options \fINotStayPressed\fP, 
+\fIEchoSequence\fP, \fIDrawMotion\fP and \fIFeedBack\fP. These options are 
+disabled by default. \fIEchoSequence\fP causes fvwm to Echo the recorded 
+stroke sequence. \fIDrawMotion\fP causes fvwm to draw the mouse motion on the
+screen. \fIFeedBack\fP causes fvwm to display during a fraction of second 
+the cursor of the WAIT context of the CursorStyle command if the recorded
+stroke sequence corresponds to a Stroke binding.
 
 \fINotStayPressed\fP works only if StrokeFunc is used via a Mouse
 or a Key command. This option removes the need to have a

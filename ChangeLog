@@ -1,3 +1,9 @@
+1999-11-28  olicha   <olivier.chapuis@free.fr>
+
+	* fvwm/builtins.c (strokeFunc):
+	* fvwm/fvwm2.1:
+	New options DrawMotion and FeedBack to the StrokeFunc
+
 1999-11-27  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* fvwm/borders.c (RedrawBorder):

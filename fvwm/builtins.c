@@ -3033,6 +3033,7 @@ void setShadeAnim(F_CMD_ARGS)
 
 /* A function to handle stroke (olicha Nov 11, 1999) */
 #ifdef HAVE_STROKE
+#define MAX_DRAWING_LINES 120
 void strokeFunc(F_CMD_ARGS)
 {
   int finished = 0;
@@ -3040,13 +3041,20 @@ void strokeFunc(F_CMD_ARGS)
   int modifiers = eventp->xbutton.state;
   int start_event_type = eventp->type;
   char sequence[MAX_SEQUENCE+1];
+  char *stroke_action;
   int stroke;
+  char *opt = NULL;
   Bool finish_on_release = True;
   KeySym keysym;
   Bool restor_repeat = False;
   Bool echo_sequence = False;
-  char *opt = NULL;
-  char *stroke_action;
+  Bool draw_motion = False;
+  int i = 0;
+  int x[MAX_DRAWING_LINES+1], y[MAX_DRAWING_LINES+1];
+  Window JunkRoot, JunkChild;
+  int JunkX, JunkY;
+  unsigned int JunkMask;
+  Bool feed_back = False;
 
   if(!GrabEm(CRS_STROKE, GRAB_NORMAL))
   {
@@ -3068,6 +3076,10 @@ void strokeFunc(F_CMD_ARGS)
       finish_on_release = False;
     else if (StrEquals("EchoSequence",opt))
       echo_sequence = True;
+    else if (StrEquals("DrawMotion",opt))
+      draw_motion = True;
+    else if (StrEquals("FeedBack",opt))
+      feed_back = True;
     else
       fvwm_msg(WARN,"StrokeFunc","Unknown option %s", opt);
     /* Programming is not Mathematics ... */
@@ -3098,12 +3110,19 @@ void strokeFunc(F_CMD_ARGS)
   /* be ready to get a stroke sequence */
   stroke_init();
 
+  if (draw_motion) 
+  {
+    MyXGrabServer(dpy);
+    XQueryPointer(dpy, Scr.Root, &JunkRoot, &JunkChild, &x[0], &y[0],
+		&JunkX, &JunkY, &JunkMask);
+    XSetLineAttributes(dpy,Scr.XorGC,1,LineSolid,CapButt,JoinMiter);
+  }
+
   while (!finished && !abort)
   {
-    /* block until there is an event */
+    /* block until there is an event EnterWindowMask | LeaveWindowMask*/
     XMaskEvent(dpy,  ButtonPressMask | ButtonReleaseMask | KeyPressMask |
-	       KeyReleaseMask | ButtonMotionMask | PointerMotionMask |
-	       EnterWindowMask | LeaveWindowMask, eventp);
+	       KeyReleaseMask | ButtonMotionMask | PointerMotionMask, eventp);
     /* Records the time */
     StashEventTime(eventp);
 
@@ -3111,6 +3130,17 @@ void strokeFunc(F_CMD_ARGS)
     {
     case MotionNotify:
       stroke_record(eventp->xmotion.x,eventp->xmotion.y);
+      if (draw_motion)
+      {
+	if ((x[i] != eventp->xmotion.x || y[i] != eventp->xmotion.y) && 
+	    i < MAX_DRAWING_LINES)
+	{
+	  i++;
+	  x[i] = eventp->xmotion.x;
+	  y[i] = eventp->xmotion.y;
+	  XDrawLine(dpy, Scr.Root, Scr.XorGC, x[i-1], y[i-1], x[i], y[i]);
+	}
+      }
       break;
     case ButtonRelease:
       if (finish_on_release && start_event_type == ButtonPress)
@@ -3140,7 +3170,17 @@ void strokeFunc(F_CMD_ARGS)
     }
   }
 
-  if ( start_event_type == KeyPress && finish_on_release)
+  if (draw_motion) 
+  {
+    while (i > 0)
+    {
+      XDrawLine(dpy, Scr.Root, Scr.XorGC, x[i-1], y[i-1], x[i], y[i]);
+      i--;
+    }
+    XSetLineAttributes(dpy,Scr.XorGC,0,LineSolid,CapButt,JoinMiter);
+    MyXUngrabServer(dpy);
+  }
+  if (start_event_type == KeyPress && finish_on_release)
     XUngrabKeyboard(dpy, CurrentTime);
   UngrabEm(GRAB_NORMAL);
 
@@ -3162,8 +3202,16 @@ void strokeFunc(F_CMD_ARGS)
 
   /* execute the action */
   if (stroke_action != NULL)
+  {
+    if (feed_back && stroke != 0)
+    {
+      GrabEm(CRS_WAIT, GRAB_BUSY);
+      usleep(200000);
+      UngrabEm(GRAB_BUSY);
+    }
     ExecuteFunction(stroke_action, tmp_win, eventp, context, -1,
 		    EXPAND_COMMAND);
+  }
 
 }
 #endif /* HAVE_STROKE */
