@@ -68,11 +68,11 @@ an alias representing the name of a form, its configuration commands and
 configuration file.
 For example, the command "Module FvwmForm Rlogin" uses configuration
 commands starting with "*Rlogin", and reads the optional configuration file
-".Rlogin".
+"Rlogin".
 
 All forms, regardless of alias,  scan first for configuration commands
 that start with  "*FvwmFormDefault".   These  commands  normally come
-from the builtin form "FormFvwmForm" which saves commands to the file
+from the builtin form "FormFvwmForm." which saves commands to the file
 ".FvwmForm".
 
 The physical reading of the optional input file, ".FvwmForm",
@@ -82,16 +82,18 @@ is done only the first time FvwmForm is invoked, or after
 When the file ".FvwmForm" is read,  it is done  by sending the command
 "Read .FvwmForm  Quiet"   to fvwm.  Because of  the   way the  "read"
 command works, the file can  reside in your  home directory, or be  in
-the fvwm configuration directory.
+the fvwm configuration directory.  See the description of the read
+command in the fvwm2 man page for more information about the environment
+variable $FVWMUSER_HOME.
 
 Then FvwmForm reads the rest of the configuration fvwm has stored
 up.  Fvwm stores configuration on an ongoing basis.  The initial
 configuration comes from the .fvwm2rc file.  Other sources,
 including "Read" commands can define a form.
 
-When letting FvwmForm and fvwm read files, remember that these
-files contain commands that can do things, so you should be careful
-about setting permissions on these files.
+When letting  FvwmForm and fvwm  read files, remember that these files
+contain commands  that can  execute shell commands,  so  you should be
+careful about setting permissions on these files.
 
 When FvwmForm is invoked with a window context, e.g. from a window menu,
 all commands it sends to Fvwm will have that window context.
@@ -110,18 +112,17 @@ The default creating form would normally be invoked from a "module menu".
 For example, if you call your module menu "Module-Popup", you would
 add the line:
 .EX
-AddToMenu "Module-Popup" "FvwmForm Defaults" FvwmForm FormFvwmForm
+AddToMenu "Module-Popup" "FvwmForm Defaults" FvwmForm FormFvwmForm.
 .EE
-When you select "FvwmForm Defaults" from you module menu,
+When you select "FvwmForm Defaults" from your module menu,
 a form is displayed that shows the current defaults and allows you
 to change them.  If you activate the "Save Restart Me" button,
-the ".FvwmForm" file is written and "FormFvwmForm" exits and restarts
+the ".FvwmForm" file is written and "FormFvwmForm." exits and restarts
 to show the new defaults.
 
 An example of what this file might contain after a save is:
 .EX
-  # This file created by FvwmForm
-
+  # This file last created by FormFvwmForm on Sun Nov 28 11:18:26 EST 1999.
   *FvwmFormDefaultFont 10x20
   *FvwmFormDefaultInputFont 8x13bold
   *FvwmFormDefaultButtonFont 10x20
@@ -136,7 +137,7 @@ The commands in this file are just like any other FvwmForm
 command except that they start with "*FvwmFormDefault".
 
 FvwmForm only reads the file ".FvwmForm" the first time it is started
-or after the file is changed by "FormFvwmForm".  It does so
+or after the file is changed by "FormFvwmForm.".  It does so
 by sending the command "*FvwmFormDefaultRead x". With "x" set to "y" or
 "n".  "n" makes FvwmForm send a "read .FvwmForm quiet" command to fvwm.
 
@@ -160,12 +161,15 @@ Before *MyForm.Text "$TITLE, Home Directory $HOME, Going to $ACTION"
 After  *MyForm.TEXT "Browse Form, Home Directory /home/me, Going to Browse"
 .EE
 
+Using this facility should make it possible for one form to be used for
+different sets of input data.
+
 .SH CONFIGURATION
 The following commands can be set in the .fvwm2rc file or thru
 any of the other ways that fvwm can accept commands.
-The simplest technique is to create a file in the read-only architecture-independent data directory,
-[PREFIX/etc/fvwm] or your home directory that starts with a period ('.')
-and matches the form alias.
+The simplest technique is to create a file in the read-only
+architecture-independent data directory,
+[PREFIX/etc/fvwm] or your home directory that matches the form alias.
 
 In the following paragraphs the string "FvwmForm"
 would normally be the form alias.
@@ -649,5 +653,6 @@ During the fall of 1998, Dan Espen removed all form size limits,
 added unlimited font and color changing, form spacing control,
 configuration file reading, global control of appearance,
 synchronous command execution, Error message display,
+variable substitution,
 and lots of other damage.
 No additional copyright is imposed.
