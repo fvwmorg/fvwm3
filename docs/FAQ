@@ -2,7 +2,7 @@
                    FVWM Frequently Asked Questions
 ======================================================================
 
-Last updated 7 Sept 2000 for release 2.3.22
+Last updated 9 Oct 2000 for release 2.3.22
 
 Contents
 
@@ -36,6 +36,7 @@ Contents
      2.6  I'm a sysadmin, and if I wanted fvwm to look for all of
           its rc files in a hidden directory, say ~/.fvwm, much like
           CDE does, how could I do that?
+     2.7  How can I use FVWM with GNOME?
 
 3. Features, Configuration, Functions & Commands
 
@@ -66,8 +67,12 @@ Contents
     3.15  I don't like the gaps in my icon box when I de-iconify an
           application. Is there some kind of auto arrange function?
     3.16  How do I set up a fvwm menu item that shuts down my Linux machine?
-    3.17  Although the Recapture commands is obsolete, I still need it to
-          apply certain style changes.
+    3.17  Although the Recapture commands is obsolete, do I still need it to
+          apply certain style changes?
+    3.18  When my specific window (or all windows) pops up, I want it to
+          get focus/be moved/be resized/be closed/be shaded...  How?
+    3.19  When my specific window (or all windows) is closed, I want to
+          switch desks/wrap to my app X/popup a menu/start app X...  How?
 
 4. Modules
 
@@ -460,7 +465,7 @@ A: Well, you could probably do something like this:
 
         - have the first line of everyone's .fvwm2rc be 'Read
           global.fvwm2rc' and have global.fvwm2rc reside in your
-          defined "sysconfdir" (from the ./configure step).
+          defined "datadir"/fvwm (from the ./configure step).
 
 ----------------------------------------------------------------------
 
@@ -468,20 +473,57 @@ A: Well, you could probably do something like this:
      files in a hidden directory, say ~/.fvwm, much like CDE does, how
      could I do that?
 
-A: This could be probably done similarly to Q2.5 above.  The system rc
-   file in the "sysconfdir" could do something like:
+A: FVWM now supports ~/.fvwm search directory by default.
 
-        Read .fvwm/Init      quiet
-        Read .fvwm/Decors    quiet
-        Read .fvwm/Styles    quiet
-        Read .fvwm/Functions quiet
-        Read .fvwm/Menus     quiet
-        Read .fvwm/Keys      quiet
-        Read .fvwm/Modules   quiet
+   This could be probably done similarly to Q2.5 above.  The system rc
+   file "sysconfdir"/system.fvwm2rc (or "datadir"/fvwm/system.fvwm2rc)
+   could do something like:
+
+        Read Init      quiet
+        Read Decors    quiet
+        Read Styles    quiet
+        Read Functions quiet
+        Read Menus     quiet
+        Read Keys      quiet
+        Read Modules   quiet
 
    or whatever breakdown you deemed appropriate, and you would have
-   default versions of these in {"sysconfdir"}/.fvwm/ that it could find in
+   default versions of these in {"datadir"}/fvwm/ that it could find in
    case the user was missing one of them and you wanted to supply defaults.
+
+----------------------------------------------------------------------
+
+2.7  How can I use FVWM with GNOME?
+
+A: Since the latest fvwm versions are mostly GNOME compliant, you may
+   simply run GNOME applications, like panel, gmc, gnome-terminal and
+   all others on top of the pure FVWM.
+
+   The included fvwm-menu-desktop script with a massive man page may
+   help you build a list of gnome applications in fvwm menus.
+
+   To ensure you will run FVWM and not gnome-session, create .Xclients
+   file in your home directory and put a call to fvwm2 in it.
+   The file ~/.xinitrc can be used for the similar purposes if you want
+   to bypass any system-wide logic put by your distributor or sysadmin.
+
+   An alternative solution is to run FVWM on top of gnome-session.
+   From the gnome foot menu in the gnome panel, choose
+
+     System menus / Settings / Desktop / Window Manager
+
+   and create an entry for FVWM.  FVWM supports session management.
+
+
+   Here are examples of the GNOME Window Manager hints support in FVWM:
+
+   o If you run gnome panel inside fvwm without GNOME support, you can't
+     fully use GNOME pager applets (if at all); with such support you can
+     see right pages/desks and move windows between them inside applets. 
+     You can also use Tasklist applet and manage your windows using it.
+
+   o If you run gmc and bind GnomeButton (see the man page), you can pass
+     root clicks to a gnome application (i.e. to gmc in this case).
 
 
 ======================================================================
@@ -1006,8 +1048,8 @@ A: Write a little shell script to run the shutdown command.
 
 ----------------------------------------------------------------------
 
-3.17  Although the Recapture commands is obsolete, I still need it to
-      apply certain style changes.
+3.17  Although the Recapture commands is obsolete, do I still need it to
+      apply certain style changes?
 
 A: Excerpt from the man page:
 
@@ -1018,8 +1060,112 @@ A: Excerpt from the man page:
    or module input is pending.  Specifically, new Style options that
    are set in a function are not applied until after the function has
    completed.  This can sometimes lead to unwanted effects. To force
-   that all pending changes are applied immediately, use the Refresh
-   or RefreshWindow commands.
+   that all pending changes are applied immediately, use the UpdateStyles,
+   Refresh or RefreshWindow commands.
+
+----------------------------------------------------------------------
+
+3.18  When my specific window (or all windows) pops up, I want it to
+      get focus/be moved/be resized/be closed/be shaded...  How?
+
+A: The following discusses a general solution, you should substitute
+   application names used in examples as well as fvwm commands (Move,
+   Iconify, Close) with the ones you need.  To get resource names of
+   an application you want to catch, use FvwmIdent module.
+
+   The first possible approach to achieve what you want is to have a
+   separate function to start your application, like:
+
+     DestroyFunc StartKedit
+     AddToFunc   StartKedit
+     + I Exec kedit
+     + I Wait kedit
+     + I Next (kedit) Resize 100p 200p
+
+   This approach has 3 problems:
+     1) You need to use StartKedit function to start your application,
+        this will not work if you start it from the command line.
+     2) If for some reason the application is not started, FVWM will
+        wait for it in Wait, you will need to press Ctrl-Alt-Esc.
+     3) If you have more than one kedit window, it is not guaranteed
+        that the right one will be used.
+
+   But this approach has one plus - it also enables any fvwm commands
+   that you may want to issue before executing your command.  For example,
+   to start kedit window iconic, but not affect its subwindows, you can use:
+
+     DestroyFunc StartAppIconic
+     AddToFunc   StartAppIconic
+     + I Style $0 StartIconic
+     + I Exec exec $0 $1
+     + I Wait $0
+     + I Style $0 StartNormal
+
+     StartAppIconic kedit /tmp/my.txt
+
+
+   The second approach is to use FvwmEvent, this solves the first two
+   problems (in 2.2) or all three problems (in 2.3 and 2.4).
+
+   The sample to use with fvwm 2.2.3+ versions (this resizes the newly
+   created window "My Window", supposing you have only one such window):
+
+     DestroyModuleConfig FvwmEvent*
+     *FvwmEvent add_window SetGeometryForMyWindow
+
+     DestroyFunc SetGeometryForMyWindow
+     AddToFunc   SetGeometryForMyWindow
+     + I Next ("My Window") Move +10p +10p
+     + I Next ("My Window") Resize 100p 200p
+
+     AddToFunc StartFunction I Module FvwmEvent
+
+   The sample to use with fvwm 2.3.19+ versions (this moves a newly
+   created window "My Window" only, and switches to all new windows):
+
+     *FvwmEvent-NewWindow: Cmd
+     *FvwmEvent-NewWindow: PassId
+     *FvwmEvent-NewWindow: add_window FuncFocusWindow
+
+     DestroyFunc FuncFocusWindow
+     AddToFunc   FuncFocusWindow
+     + I WindowId $0 ("My Window") Move 200p 100p
+     + I WindowId $0 Focus
+     + I WindowId $0 WarpToWindow
+
+     AddToFunc StartFunction I FvwmEvent FvwmEvent-NewWindow
+
+----------------------------------------------------------------------
+
+3.19  When my specific window (or all windows) is closed, I want to
+      switch desks/wrap to my app X/popup a menu/start app X...  How?
+
+A: Please read the answer to the previous question to understand better.
+
+   Again, there are two approaches.  The first is good in one kind of
+   situations, bad in others:
+
+     DestroyFunc StartKedit
+     AddToFunc   StartKedit
+     + I Exec kedit; xmessage -name DummyWindow -g +10000+10000 "dummy"
+     + I Wait DummyWindow
+     + I Exec xmessage -timeout 10 "Sorry, you can't close kedit"
+     + I StartKedit
+
+   The second approach is to use FvwmEvent:
+
+     *FvwmEvent-OldWindow: Cmd
+     *FvwmEvent-OldWindow: PassId
+     *FvwmEvent-OldWindow: destroy_window FuncPopupMyMenu
+
+     DestroyFunc FuncPopupMyMenu
+     AddToFunc   FuncPopupMyMenu
+     # go to the desk 0 when any window is closed
+     + I GotoDesk 0
+     # popup my menu when "panel" is closed
+     + I WindowId $0 ("panel") Popup MenuFvwmRoot
+
+     AddToFunc StartFunction I FvwmEvent FvwmEvent-OldWindow
 
 
 ======================================================================
@@ -1609,6 +1755,10 @@ A: Our naming convention is sometimes a source of confusion, and when
 A: This is not our primary mission, but we think fvwm does a pretty
    good job of producing these appearances.
 
+   You may want to take a look at the
+   _+_A HREF="http://fvwm-themes.sourceforge.net/"_-_fvwm-themes_+_/A_-_
+   package.
+
 ----------------------------------------------------------------------
 
 6.3  Where can I get more XPMs for icons?
@@ -1623,6 +1773,9 @@ A: If you want more color icons, grab the ones out of the ctwm
    set of icons available at the fvwm web site.  You might find some
    links at the fvwm web site to other sources of icons.
 
+   You may want to take a look at the
+   _+_A HREF="http://wm-icons.sourceforge.net/"_-_wm-icons_+_/A_-_
+   package.
 
 ----------------------------------------------------------------------
 
