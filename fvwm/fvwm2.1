@@ -2437,32 +2437,51 @@ command does nothing.
 
 .TP
 .BI "GlobalOpts [" options "]"
-This is a TEMPORARY command used to set some global options which will
-later be handled as Style parameters (or options to Style parameters).  It
-currently handles the following:
-.IR SmartPlacementIsReallySmart " / " SmartPlacementIsNormal ,
-.IR ClickToFocusDoesntPassClick " / " ClickToFocusPassesClick ,
-.IR ClickToFocusDoesntRaise " / " ClickToFocusRaises ,
-.IR MouseFocusClickDoesntRaise " / " MouseFocusClickRaises ,
-.IR NoStipledTitles " / " StipledTitles ,
-.IR WindowShadeScrolls " / " WindowShadeShrinks .
+As announced in the past, this command has been removed.  Please replace
+the global options in your configuration file according to thie
+following table:
 
-As announced above, the former options
-.IR CaptureHonorsStartsOnPage " / " CaptureIgnoresStartsOnPage ,
-.IR RecaptureHonorsStartsOnPage " / " RecaptureIgnoresStartsOnPage ,
-.IR ActivePlacementHonorsStartsOnPage " / " ActivePlacementIgnoresStartsOnPage
-have been replaced with the same options to the
-.B Style
-command, and the
-.IR RaiseOverNativeWindows " / " IgnoreNativeWindows
-have been replaced with options to the
-.B BugOpts
-command.
-
-Example:
 .EX
-GlobalOpts ClickToFocusDoesntPassClick, \\
-  ClickToFocusDoesntRaise
+WindowShadeShrinks
+  --> Style * WindowShadeShrinks
+WindowShadeScrolls
+  --> Style * WindowShadeScrolls
+SmartPlacementIsReallySmart
+  --> Style * CleverPlacement
+SmartPlacementIsNormal
+  --> Style * SmartPlacement
+ClickToFocusDoesntPassClick
+  --> Style * ClickToFocusPassesClickOff
+ClickToFocusPassesClick
+  --> Style * ClickToFocusPassesClick
+ClickToFocusDoesntRaise
+  --> Style * ClickToFocusRaisesOff
+ClickToFocusRaises
+  --> Style * ClickToFocusRaises
+MouseFocusClickDoesntRaise
+  --> Style * MouseFocusClickRaisesOff
+MouseFocusClickRaises
+  --> Style * MouseFocusClickRaises
+NoStipledTitles
+  --> Style * StipledTitleOff
+StipledTitles
+  --> Style * StipledTitle
+CaptureHonorsStartsOnPage
+  --> Style * CaptureHonorsStartsOnPage
+CaptureIgnoresStartsOnPage
+  --> Style * CaptureIgnoresStartsOnPage
+RecaptureHonorsStartsOnPage
+  --> Style * RecaptureHonorsStartsOnPage
+RecaptureIgnoresStartsOnPage
+  --> Style * RecaptureIgnoresStartsOnPage
+ActivePlacementHonorsStartsOnPage
+  --> Style * ActivePlacementHonorsStartsOnPage
+ActivePlacementIgnoresStartsOnPage
+  --> Style * ActivePlacementIgnoresStartsOnPage
+RaiseOverNativeWindows
+  --> BugOpts RaiseOverNativeWindows on
+IgnoreNativeWindows
+  --> BugOpts RaiseOverNativeWindows off
 .EE
 
 .TP
@@ -3343,8 +3362,10 @@ is "True", the window is forced to the shaded state. If
 .I bool
 is "False", then the window is forced to the non-shaded state.
 Windows without titles can be shaded too.  See also
-.B WindowShadeAnimate
-below.
+.I WindowShadeSteps
+option of the
+.B Style
+command.
 
 For backwards compatibility, the optional argument may also be 1
 to signify "on", and 2 to signify "off". Note that this syntax
@@ -3352,13 +3373,11 @@ is obsolete, and will be removed in the future.
 
 .TP
 .BI "WindowShadeAnimate  [" steps "[" p "]]"
-Selects the number of steps for animation when shading a window with
-.BR WindowShade .
-If the number has a trailing
-.I ' p '
-it sets the number of pixels to use as the step size instead of
-a fixed number of steps.  0 disables the animation.  This happens
-too if the argument is omitted or invalid.
+This command is obsolete.  Please use the
+.I WindowShadeSteps
+option of the
+.B Style
+command instead.
 
 
 .SS COMMANDS FOR MOUSE, KEY AND STROKE BINDINGS
@@ -3761,6 +3780,7 @@ is a comma separated list containing one or more of the keywords
 .IR IconBox ", " IconGrid ", " IconFill ,
 .IR NoTitle " / " Title ,
 .IR TitleAtBottom " / " TitleAtTop ,
+.IR StipledTitle " / " StipledTitleOff ,
 .IR NoHandles " / " Handles ,
 .IR WindowListSkip " / " WindowListHit ,
 .IR CirculateSkip " / " CirculateHit ,
@@ -3788,7 +3808,7 @@ is a comma separated list containing one or more of the keywords
 .IR ResizeHintOverride " / " NoResizeOverride ,
 .IR OLDecor " / " NoOLDecor ,
 .IR StickyIcon " / " SlipperyIcon ,
-.IR SmartPlacement " / " DumbPlacement ,
+.IR SmartPlacement " / " CleverPlacement " / " DumbPlacement ,
 .IR RandomPlacement " / " ActivePlacement ,
 .IR DecorateTransient " / " NakedTransient ,
 .IR RaiseTransient " / " DontRaiseTransient ,
@@ -3802,6 +3822,9 @@ is a comma separated list containing one or more of the keywords
 .IR Lenience " / " NoLenience ,
 .IR ClickToFocus " / " SloppyFocus " /"
 .IR MouseFocus | FocusFollowsMouse " / " NeverFocus ,
+.IR ClickToFocusPassesClickOff " / " ClickToFocusPassesClick ,
+.IR ClickToFocusRaisesOff " / " ClickToFocusRaises ,
+.IR MouseFocusClickRaises " / " MouseFocusClickRaisesOff ,
 .IR StartsLowered " / " StartsRaised ,
 .IR GrabFocus " / " GrabFocusOff ,
 .IR GrabFocusTransient " / " GrabFocusTransientOff ,
@@ -3812,7 +3835,9 @@ is a comma separated list containing one or more of the keywords
 .IR MaxWindowSize ,
 .IR ResizeOpaque " / " ResizeOutline ,
 .IR BackingStore " / " BackingStoreOff ,
-.IR SaveUnder " / " SaveUnderOff .
+.IR SaveUnder " / " SaveUnderOff ,
+.IR WindowShadeShrinks " / " WindowShadeScrolls ,
+.IR WindowShadeSteps.
 
 In the above list some options are listed as
 style-option/opposite-style-option.  The opposite-style-option for
@@ -3828,6 +3853,15 @@ Windows with the \fITitleAtBottom\fP style will have a title-bar
 below the window instead of above as usual. The \fITitleAtTop\fP
 style restores the default placement. Even if the window has the
 \fINoTitle\fP style set, this affects the \fIWindowShade\fP command.
+
+With the
+.I StipledTitle
+style, are drawn with the same effect that is usually reserved for
+windows with the
+.I Sticky
+style.
+.I StipledTitleOff
+reverts back to normal titles.
 
 \fIDecorateTransient\fP causes transient windows, which are normally
 left undecorated, to be given the usual fvwm decorations (title
@@ -4112,6 +4146,10 @@ Style emacs ResizeOutline
 \fIButton\fP and \fINoButton\fP take a numeric argument which is the
 number of the title-bar button which is to be included/omitted.
 
+\fISticky\fP makes the window sticky, i.e. it will always be visible
+on each page and each desk.  \fISlippery\fP reverst back to the
+default.
+
 \fIStickyIcon\fP makes the window sticky when its iconified.  It will
 de-iconify on top the active desktop.
 
@@ -4194,6 +4232,20 @@ window (unless you click on it, that is), which makes it possible to
 move the mouse out of the way without losing focus. A window with the
 style \fINeverFocus\fP never receives the focus. This is useful for
 FvwmButtons, for example.
+
+The focus model can be augmented with severa additional options.
+.IR ClickToFocusPassesClickOff " and " ClickToFocusPassesClick
+controls if a mouse click to focus a window using the
+.I ClickToFocus
+model is sent to the application or not.  Similarly,
+.IR ClickToFocusRaisesOff " and " ClickToFocusRaises
+control if the window is raised, while
+.IR MouseFocusClickRaises " and " MouseFocusClickRaisesOff
+are equivalent but apply only to windows using
+.IR SloppyFocus " or " MouseFocus .
+The defaults are
+.IR ClickToFocusPassesClick ,
+.IR ClickToFocusRaises and MouseFocusClickRaisesOff .
 
 \fINoPPosition\fP instructs fvwm to ignore the PPosition field when adding
 new windows.  Adherence to the PPosition field is required for some
@@ -4304,6 +4356,21 @@ up fvwm if the connection to the X server is slow (e.g. over a modem
 link).  By default both styles are turned off.  To switch them off
 explicitly you can use the \fIBackingStoreOff\fP and \fISaveUnderOff\fP
 styles.
+
+.IR WindowShadeShrinks " and " WindowShadeScrolls
+control if the contents of a window that is being shaded with the
+.B WindowShade
+command are scrolled (default) or if they stay in place.
+
+The
+.I WindowShadeSteps
+option elects the number of steps for animation when shading a window with
+.BR WindowShade .
+It takes one number as its argument.  If the number has a trailing
+.I ' p '
+it sets the number of pixels to use as the step size instead of
+a fixed number of steps.  0 disables the animation.  This happens
+too if the argument is omitted or invalid.
 
 
 .SS OTHER COMMANDS CONTROLLING WINDOW STYLES

@@ -1522,8 +1522,6 @@ static void InitVariables(void)
 
   Scr.Vx = Scr.Vy = 0;
 
-  Scr.shade_anim_steps = 0;
-
   Scr.SizeWindow = None;
 
   /* Sets the current desktop number to zero */
@@ -1555,18 +1553,6 @@ static void InitVariables(void)
   Scr.DefaultDecor.tag = "Default";
 #endif
 
-  Scr.go.WindowShadeScrolls = True;
-  Scr.go.SmartPlacementIsClever = False;
-  Scr.go.ClickToFocusPassesClick = True;
-  Scr.go.ClickToFocusRaises = True;
-  Scr.go.MouseFocusClickRaises = False;
-  Scr.go.StipledTitles = False;
-
-  /*  RBW - 11/02/1998    */
-  Scr.go.ModifyUSP                          =  True;
-  Scr.go.CaptureHonorsStartsOnPage          =  True;
-  Scr.go.RecaptureHonorsStartsOnPage        =  False;
-  Scr.go.ActivePlacementHonorsStartsOnPage  =  False;
   /* Initialize RaiseHackNeeded by identifying X servers
      possibly running under NT. This is probably not an
      ideal solution, since eg NCD also produces X servers

@@ -115,17 +115,9 @@ SaveGlobalState(FILE *f)
 	  !!(Scr.flags.edge_wrap_x), !!(Scr.flags.edge_wrap_y));
   fprintf(f, "  [SNAP] %i %i %i %i\n",
 	  Scr.SnapAttraction, Scr.SnapMode, Scr.SnapGridX, Scr.SnapGridY);
-  fprintf(f, "  [MISC] %i %i %i %i %i %i %i %i %i\n",
-	  Scr.ClickTime, Scr.ColormapFocus,
-	  Scr.ColorLimit, Scr.go.SmartPlacementIsClever,
-	  Scr.go.ClickToFocusPassesClick, Scr.go.ClickToFocusRaises,
-	  Scr.go.MouseFocusClickRaises, Scr.go.StipledTitles,
-	  Scr.go.WindowShadeScrolls);
-  fprintf(f, "  [STYLE] %i %i %i %i %i %i\n",
-	  Scr.go.ModifyUSP, Scr.go.CaptureHonorsStartsOnPage,
-	  Scr.go.RecaptureHonorsStartsOnPage,
-	  Scr.go.ActivePlacementHonorsStartsOnPage,
-          Scr.gs.EmulateMWM, Scr.gs.EmulateWIN);
+  fprintf(f, "  [MISC] %i %i %i\n",
+	  Scr.ClickTime, Scr.ColormapFocus, Scr.ColorLimit);
+  fprintf(f, "  [STYLE] %i %i\n", Scr.gs.EmulateMWM, Scr.gs.EmulateWIN);
   return 1;
 }
 
@@ -171,7 +163,7 @@ LoadGlobalState(char *filename)
   FILE               *f;
   char                s[4096], s1[4096];
   /* char s2[256]; */
-  int i1, i2, i3, i4, i5, i6, i7, i8, i9;
+  int i1, i2, i3, i4, i5, i6;
 
   if (!filename || !*filename) return;
   if ((f = fopen(filename, "r")) == NULL) return;
@@ -179,7 +171,6 @@ LoadGlobalState(char *filename)
   while (fgets(s, sizeof(s), f))
   {
     i1 = 0; i2 = 0; i3 = 0; i4 = 0; i5 = 0; i6 = 0;
-    i7 = 0; i8 = 0;
     sscanf(s, "%4000s", s1);
 #ifdef SESSION
     /* If we are restarting, [REAL_STATE_FILENAME] points
@@ -241,28 +232,16 @@ LoadGlobalState(char *filename)
       }
       else if (!strcmp(s1, "[MISC]"))
       {
-        sscanf(s, "%*s %i %i %i %i %i %i %i %i %i",
-               &i1, &i2, &i3, &i4,
-               &i5, &i6, &i7, &i8, &i9);
+        sscanf(s, "%*s %i %i %i", &i1, &i2, &i3);
         Scr.ClickTime = i1;
         Scr.ColormapFocus = i2;
         Scr.ColorLimit = i3;
-        Scr.go.SmartPlacementIsClever = i4;
-        Scr.go.ClickToFocusPassesClick = i5;
-        Scr.go.ClickToFocusRaises = i6;
-        Scr.go.MouseFocusClickRaises = i7;
-        Scr.go.StipledTitles = i8;
-        Scr.go.WindowShadeScrolls = i9;
       }
       else if (!strcmp(s1, "[STYLE]"))
       {
-        sscanf(s, "%*s %i %i %i %i %i %i", &i1, &i2, &i3, &i4, &i5, &i6);
-        Scr.go.ModifyUSP = i1;
-        Scr.go.CaptureHonorsStartsOnPage = i2;
-        Scr.go.RecaptureHonorsStartsOnPage = i3;
-        Scr.go.ActivePlacementHonorsStartsOnPage = i4;
-        Scr.gs.EmulateMWM = i5;
-        Scr.gs.EmulateWIN = i6;
+        sscanf(s, "%*s %i %i", &i1, &i2);
+        Scr.gs.EmulateMWM = i1;
+        Scr.gs.EmulateWIN = i2;
       }
     }
   }

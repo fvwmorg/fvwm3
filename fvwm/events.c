@@ -1467,7 +1467,7 @@ void HandleButtonPress(void)
     SetFocus(Tmp_win->w,Tmp_win,1);
     /* RBW - 12/09/.1999- I'm not sure we need to check both cases, but
        I'll leave this as is for now.  */
-    if (Scr.go.ClickToFocusRaises ||
+    if (!DO_NOT_RAISE_CLICK_FOCUS_CLICK(Tmp_win) ||
 	((Event.xany.window != Tmp_win->w)&&
 	 (Event.xbutton.subwindow != Tmp_win->w)&&
 	 (Event.xany.window != Tmp_win->Parent)&&
@@ -1482,7 +1482,7 @@ void HandleButtonPress(void)
       XSync(dpy,0);
       /* pass click event to just clicked to focus window? Do not swallow the
        * click if the window didn't accept the focus */
-      if (Scr.go.ClickToFocusPassesClick || Scr.Focus != Tmp_win)
+      if (!DO_NOT_PASS_CLICK_FOCUS_CLICK(Tmp_win) || Scr.Focus != Tmp_win)
       {
 	XAllowEvents(dpy,ReplayPointer,CurrentTime);
       }
@@ -1506,7 +1506,7 @@ void HandleButtonPress(void)
 	    || Event.xbutton.window == Tmp_win->frame
 	    */
 	    ) &&
-	   Scr.go.MouseFocusClickRaises)
+	   DO_RAISE_MOUSE_FOCUS_CLICK(Tmp_win))
   {
       /*
           RBW - Release the Parent grab here (whether we raise or not). We

@@ -159,7 +159,8 @@ static void DoSetFocus(Window w, FvwmWindow *Fw, Bool FocusByMouse, Bool NoWarp)
       the newly-focused window is ungrabbed in events.c (HandleButtonPress).
   */
   if ((Scr.Ungrabbed != NULL)&&
-      (HAS_CLICK_FOCUS(Scr.Ungrabbed) || Scr.go.MouseFocusClickRaises) &&
+      (HAS_CLICK_FOCUS(Scr.Ungrabbed) ||
+       DO_RAISE_MOUSE_FOCUS_CLICK(Scr.Ungrabbed)) &&
       (Scr.Ungrabbed != Fw))
     {
       /* need to grab all buttons for window that we are about to

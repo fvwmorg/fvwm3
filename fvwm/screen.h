@@ -318,7 +318,6 @@ typedef struct ScreenInfo
   int VyMax;
   int Vx;                       /* Current loc for top left of virt desk */
   int Vy;
-  int shade_anim_steps;
 
   int ClickTime;               /*Max button-click delay for Function built-in*/
   int ScrollResistance;        /* resistance to scrolling in desktop */
@@ -342,19 +341,13 @@ typedef struct ScreenInfo
   ** some additional global options which will probably become window
   ** specific options later on:
   */
+#if 0
+  /* Scr.go.ModifyUSP was always 1.  How is it supposed to be set? */
   struct
   {
     unsigned ModifyUSP : 1;                          /* - RBW - 11/02/1998  */
-    unsigned CaptureHonorsStartsOnPage : 1;          /* - RBW - 11/02/1998  */
-    unsigned RecaptureHonorsStartsOnPage : 1;        /* - RBW - 11/02/1998  */
-    unsigned ActivePlacementHonorsStartsOnPage : 1;  /* - RBW - 11/02/1998  */
-    unsigned SmartPlacementIsClever : 1;
-    unsigned ClickToFocusPassesClick : 1;
-    unsigned ClickToFocusRaises : 1;
-    unsigned MouseFocusClickRaises : 1;
-    unsigned StipledTitles : 1;
-    unsigned WindowShadeScrolls : 1;
   } go; /* global options */
+#endif
   struct
   {
     unsigned ModalityIsEvil : 1;

@@ -159,15 +159,15 @@ void WindowShade(F_CMD_ARGS)
   bh = bht + bhb;
   cw = big_g.width - bw;
   ch = big_g.height - bh;
-  do_scroll = Scr.go.WindowShadeScrolls;
+  do_scroll = !DO_SHRINK_WINDOWSHADE(tmp_win);
   /* calcuate the step size */
-  if (Scr.shade_anim_steps > 0)
-    step = big_g.height / Scr.shade_anim_steps;
-  else if (Scr.shade_anim_steps < 0) /* if it's -ve it means pixels */
-    step = -Scr.shade_anim_steps;
+  if (tmp_win->shade_anim_steps > 0)
+    step = big_g.height / tmp_win->shade_anim_steps;
+  else if (tmp_win->shade_anim_steps < 0) /* if it's -ve it means pixels */
+    step = -tmp_win->shade_anim_steps;
   if (step <= 0)  /* We don't want an endless loop, do we? */
     step = 1;
-  if (Scr.shade_anim_steps)
+  if (tmp_win->shade_anim_steps)
   {
     grav = (HAS_BOTTOM_TITLE(tmp_win)) ? SouthEastGravity : NorthWestGravity;
     if (!do_scroll)
@@ -184,7 +184,7 @@ void WindowShade(F_CMD_ARGS)
     /* unshade window */
     SET_SHADED(tmp_win, 0);
 
-    if (Scr.shade_anim_steps != 0)
+    if (tmp_win->shade_anim_steps != 0)
     {
       XMoveResizeWindow(dpy, tmp_win->Parent, bwl, bht, cw, 1);
       XMoveWindow(dpy, tmp_win->w, 0,
@@ -287,7 +287,7 @@ void WindowShade(F_CMD_ARGS)
     /* shade window */
     SET_SHADED(tmp_win, 1);
     get_shaded_geometry(tmp_win, &small_g, &big_g);
-    if (Scr.shade_anim_steps != 0)
+    if (tmp_win->shade_anim_steps != 0)
     {
       parent_g.x = bwl;
       parent_g.y = bht;
@@ -2323,6 +2323,10 @@ void RecaptureWindow(F_CMD_ARGS)
 void SetGlobalOptions(F_CMD_ARGS)
 {
   char *opt;
+  char *replace;
+  Bool is_bugopt;
+
+  fvwm_msg(ERR, "SetGlobalOptions", "The GlobalOpts command is obsolete.");
 
   /* fvwm_msg(DBG,"SetGlobalOptions","init action == '%s'\n",action); */
   for (action = GetNextSimpleOption(action, &opt); opt;
@@ -2331,122 +2335,111 @@ void SetGlobalOptions(F_CMD_ARGS)
     /* fvwm_msg(DBG,"SetGlobalOptions"," opt == '%s'\n",opt); */
     /* fvwm_msg(DBG,"SetGlobalOptions"," remaining == '%s'\n",
        action?action:"(NULL)"); */
+    replace = NULL;
+    is_bugopt = False;
     if (StrEquals(opt,"WINDOWSHADESHRINKS"))
     {
-      Scr.go.WindowShadeScrolls = False;
+      replace = "* WindowShadeShrinks";
     }
     else if (StrEquals(opt,"WINDOWSHADESCROLLS"))
     {
-      Scr.go.WindowShadeScrolls = True;
+      replace = "* WindowShadeScrolls";
     }
     else if (StrEquals(opt,"SMARTPLACEMENTISREALLYSMART"))
     {
-      Scr.go.SmartPlacementIsClever = True;
+      replace = "* CleverPlacement";
     }
     else if (StrEquals(opt,"SMARTPLACEMENTISNORMAL"))
     {
-      Scr.go.SmartPlacementIsClever = False;
+      replace = "* SmartPlacement";
     }
     else if (StrEquals(opt,"CLICKTOFOCUSDOESNTPASSCLICK"))
     {
-      Scr.go.ClickToFocusPassesClick = False;
+      replace = "* ClickToFocusPassesClickOff";
     }
     else if (StrEquals(opt,"CLICKTOFOCUSPASSESCLICK"))
     {
-      Scr.go.ClickToFocusPassesClick = True;
+      replace = "* ClickToFocusPassesClick";
     }
-    else if (StrEquals(opt,"CLICKTOFOCUSDOESNTRAISE"))
+    else if (StrEquals(opt,"clicktofocusdoesntraise"))
     {
-      Scr.go.ClickToFocusRaises = False;
+      replace = "* ClickToFocusRaisesOff";
     }
     else if (StrEquals(opt,"CLICKTOFOCUSRAISES"))
     {
-      Scr.go.ClickToFocusRaises = True;
+      replace = "* ClickToFocusRaises";
     }
     else if (StrEquals(opt,"MOUSEFOCUSCLICKDOESNTRAISE"))
     {
-      Scr.go.MouseFocusClickRaises = False;
+      replace = "* MouseFocusClickRaisesOff";
     }
     else if (StrEquals(opt,"MOUSEFOCUSCLICKRAISES"))
     {
-      Scr.go.MouseFocusClickRaises = True;
+      replace = "* MouseFocusClickRaises";
     }
     else if (StrEquals(opt,"NOSTIPLEDTITLES"))
     {
-      Scr.go.StipledTitles = False;
+      replace = "* StipledTitleOff";
     }
     else if (StrEquals(opt,"STIPLEDTITLES"))
     {
-      Scr.go.StipledTitles = True;
+      replace = "* StipledTitle";
     }
     else if (StrEquals(opt,"CAPTUREHONORSSTARTSONPAGE"))
     {
-      ProcessNewStyle(eventp, w, tmp_win, context,
-		      "* CaptureHonorsStartsOnPage", Module);
-      fvwm_msg(ERR,"SetGlobalOptions",
-	       "Global Option '%s' is obsolete -\n"
-	       "     use the style option instead.",opt);
+      replace = "* CaptureHonorsStartsOnPage";
     }
     else if (StrEquals(opt,"CAPTUREIGNORESSTARTSONPAGE"))
     {
-      ProcessNewStyle(eventp, w, tmp_win, context,
-		      "* CAPTUREIGNORESSTARTSONPAGE", Module);
-      fvwm_msg(ERR,"SetGlobalOptions",
-	       "Global Option '%s' is obsolete -\n"
-	       "     use the style option instead.",opt);
+      replace = "* CaptureIgnoresStartsOnPage";
     }
     else if (StrEquals(opt,"RECAPTUREHONORSSTARTSONPAGE"))
     {
-      ProcessNewStyle(eventp, w, tmp_win, context,
-		      "* RECAPTUREHONORSSTARTSONPAGE", Module);
-      fvwm_msg(ERR,"SetGlobalOptions",
-	       "Global Option '%s' is obsolete -\n"
-	       "     use the style option instead.",opt);
+      replace = "* RecaptureHonorsStartsOnPage";
     }
     else if (StrEquals(opt,"RECAPTUREIGNORESSTARTSONPAGE"))
     {
-      ProcessNewStyle(eventp, w, tmp_win, context,
-		      "* RECAPTUREIGNORESSTARTSONPAGE", Module);
-      fvwm_msg(ERR,"SetGlobalOptions",
-	       "Global Option '%s' is obsolete -\n"
-	       "     use the style option instead.",opt);
+      replace = "* RecaptureIgnoresStartsOnPage";
     }
     else if (StrEquals(opt,"ACTIVEPLACEMENTHONORSSTARTSONPAGE"))
     {
-      ProcessNewStyle(eventp, w, tmp_win, context,
-		      "* ACTIVEPLACEMENTHONORSSTARTSONPAGE", Module);
-      fvwm_msg(ERR,"SetGlobalOptions",
-	       "Global Option '%s' is obsolete -\n"
-	       "     use the style option instead.",opt);
+      replace = "* ActivePlacementHonorsStartsOnPage";
     }
     else if (StrEquals(opt,"ACTIVEPLACEMENTIGNORESSTARTSONPAGE"))
     {
-      ProcessNewStyle(eventp, w, tmp_win, context,
-		      "* ACTIVEPLACEMENTIGNORESSTARTSONPAGE", Module);
-      fvwm_msg(ERR,"SetGlobalOptions",
-	       "Global Option '%s' is obsolete -\n"
-	       "     use the style option instead.",opt);
+      replace = "* ActivePlacementIgnoresStartsOnPage";
     }
     else if (StrEquals(opt,"RAISEOVERNATIVEWINDOWS"))
     {
-      SetBugOptions(eventp, w, tmp_win, context,
-		    "RaiseOverNativeWindows on", Module);
-      fvwm_msg(ERR, "SetGlobalOptions",
-	       "Global Option '%s' is obsolete -\n"
-	       "     use the \"BugOpts RaiseOverNativeWindows on\" instead.",
-	       opt);
+      is_bugopt = True;
+      replace = "RaiseOverNativeWindows on";
     }
     else if (StrEquals(opt,"IGNORENATIVEWINDOWS"))
     {
-      SetBugOptions(eventp, w, tmp_win, context,
-		    "RaiseOverNativeWindows off", Module);
-      fvwm_msg(ERR, "SetGlobalOptions",
-	       "Global Option '%s' is obsolete -\n"
-	       "     use the \"BugOpts RaiseOverNativeWindows off\" instead.",
-	       opt);
+      is_bugopt = True;
+      replace = "RaiseOverNativeWindows off";
     }
     else
+    {
       fvwm_msg(ERR,"SetGlobalOptions","Unknown Global Option '%s'",opt);
+    }
+    if (replace)
+    {
+      char *cmd;
+      if (!is_bugopt)
+      {
+        ProcessNewStyle(eventp, w, tmp_win, context, replace, Module);
+        cmd = "Style";
+      }
+      else
+      {
+        SetBugOptions(eventp, w, tmp_win, context, replace, Module);
+        cmd = "BugOpts";
+      }
+      fvwm_msg(
+        ERR, "SetGlobalOptions",
+        "Please replace 'GlobalOpts %s with '%s %s'.", opt, cmd, replace);
+    }
     /* should never be null, but checking anyways... */
     if (opt)
       free(opt);
@@ -2685,20 +2678,17 @@ void set_animation(F_CMD_ARGS)
 /* set the number or size of shade animation steps, N => steps, Np => pixels */
 void setShadeAnim(F_CMD_ARGS)
 {
-  int n = 0;
-  int val = 0;
-  int unit = 0;
+  char *buf;
 
-  n = GetOnePercentArgument(action, &val, &unit);
-  if (n != 1)
-  {
-    Scr.shade_anim_steps = 0;
-    return;
-  }
-
-  /* we have a 'pixel' suffix if unit != 0; negative values mean pixels */
-  Scr.shade_anim_steps = (unit != 0) ? -val : val;
-
+  if (!action)
+    action = "";
+  fvwm_msg(
+    ERR, "setShadeAnim", "The WindowshadeAnimate command is obsolete. "
+    "Please use 'Style * WindowshadeAnimate %s' instead.", action);
+  buf = safemalloc(strlen(action + 3));
+  sprintf(buf, "* %s", action);
+  ProcessNewStyle(eventp, w, tmp_win, context, buf, Module);
+  free(buf);
   return;
 }
 

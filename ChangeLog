@@ -1,5 +1,14 @@
 2000-01-31  Dominik Vogt  <dominik.vogt@gmx.de>
 
+	* fvwm/placement.c (PlaceWindow):
+	* fvwm/session.c (SaveGlobalState):
+	(LoadGlobalState):
+	* fvwm/borders.c (RedrawTitle):
+	* fvwm/add_window.c (setup_focus_policy):
+	(regrab_focus_win):
+	* fvwm/events.c (HandleButtonPress):
+	* fvwm/builtins.c (SetGlobalOptions):
+
 	* fvwm/add_window.c (AddWindow):
 	fixed placement to honouring the layer
 

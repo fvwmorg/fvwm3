@@ -886,30 +886,30 @@ void ProcessNewStyle(XEvent *eventp, Window w, FvwmWindow *tmp_win,
         else if(StrEquals(token, "ClickToFocusPassesClick"))
         {
 	  found = True;
-	  SFSET_DO_PASS_CLICK_FOCUS_CLICK(*ptmpstyle, 1);
-	  SMSET_DO_PASS_CLICK_FOCUS_CLICK(*ptmpstyle, 1);
-	  SCSET_DO_PASS_CLICK_FOCUS_CLICK(*ptmpstyle, 1);
+	  SFSET_DO_NOT_PASS_CLICK_FOCUS_CLICK(*ptmpstyle, 0);
+	  SMSET_DO_NOT_PASS_CLICK_FOCUS_CLICK(*ptmpstyle, 1);
+	  SCSET_DO_NOT_PASS_CLICK_FOCUS_CLICK(*ptmpstyle, 1);
         }
         else if(StrEquals(token, "ClickToFocusPassesClickOff"))
         {
 	  found = True;
-	  SFSET_DO_PASS_CLICK_FOCUS_CLICK(*ptmpstyle, 0);
-	  SMSET_DO_PASS_CLICK_FOCUS_CLICK(*ptmpstyle, 1);
-	  SCSET_DO_PASS_CLICK_FOCUS_CLICK(*ptmpstyle, 1);
+	  SFSET_DO_NOT_PASS_CLICK_FOCUS_CLICK(*ptmpstyle, 1);
+	  SMSET_DO_NOT_PASS_CLICK_FOCUS_CLICK(*ptmpstyle, 1);
+	  SCSET_DO_NOT_PASS_CLICK_FOCUS_CLICK(*ptmpstyle, 1);
         }
         else if(StrEquals(token, "ClickToFocusClickRaises"))
         {
 	  found = True;
-	  SFSET_DO_RAISE_CLICK_FOCUS_CLICK(*ptmpstyle, 1);
-	  SMSET_DO_RAISE_CLICK_FOCUS_CLICK(*ptmpstyle, 1);
-	  SCSET_DO_RAISE_CLICK_FOCUS_CLICK(*ptmpstyle, 1);
+	  SFSET_DO_NOT_RAISE_CLICK_FOCUS_CLICK(*ptmpstyle, 0);
+	  SMSET_DO_NOT_RAISE_CLICK_FOCUS_CLICK(*ptmpstyle, 1);
+	  SCSET_DO_NOT_RAISE_CLICK_FOCUS_CLICK(*ptmpstyle, 1);
         }
         else if(StrEquals(token, "ClickToFocusClickRaisesOff"))
         {
 	  found = True;
-	  SFSET_DO_RAISE_CLICK_FOCUS_CLICK(*ptmpstyle, 0);
-	  SMSET_DO_RAISE_CLICK_FOCUS_CLICK(*ptmpstyle, 1);
-	  SCSET_DO_RAISE_CLICK_FOCUS_CLICK(*ptmpstyle, 1);
+	  SFSET_DO_NOT_RAISE_CLICK_FOCUS_CLICK(*ptmpstyle, 1);
+	  SMSET_DO_NOT_RAISE_CLICK_FOCUS_CLICK(*ptmpstyle, 1);
+	  SCSET_DO_NOT_RAISE_CLICK_FOCUS_CLICK(*ptmpstyle, 1);
         }
         else if(StrEquals(token, "CirculateSkip"))
         {
@@ -2069,19 +2069,35 @@ void ProcessNewStyle(XEvent *eventp, Window w, FvwmWindow *tmp_win,
 	  SMSET_DO_WINDOW_LIST_SKIP(*ptmpstyle, 1);
 	  SCSET_DO_WINDOW_LIST_SKIP(*ptmpstyle, 1);
         }
+	else if(StrEquals(token, "WindowshadeSteps"))
+        {
+          int n = 0;
+          int val = 0;
+          int unit = 0;
+
+          n = GetOnePercentArgument(rest, &val, &unit);
+          if (n != 1)
+          {
+            val = 0;
+          }
+          /* we have a 'pixel' suffix if unit != 0; negative values mean
+           * pixels */
+          val = (unit != 0) ? -val : val;
+          SSET_WINDOW_SHADE_STEPS(*ptmpstyle, val);
+        }
 	else if(StrEquals(token, "WindowShadeScrolls"))
 	{
 	  found = True;
-	  SFSET_DO_SCROLL_WINDOWSHADE(*ptmpstyle, 1);
-	  SMSET_DO_SCROLL_WINDOWSHADE(*ptmpstyle, 1);
-	  SCSET_DO_SCROLL_WINDOWSHADE(*ptmpstyle, 1);
+	  SFSET_DO_SHRINK_WINDOWSHADE(*ptmpstyle, 0);
+	  SMSET_DO_SHRINK_WINDOWSHADE(*ptmpstyle, 1);
+	  SCSET_DO_SHRINK_WINDOWSHADE(*ptmpstyle, 1);
 	}
 	else if(StrEquals(token, "WindowScadeShrinks"))
 	{
 	  found = True;
-	  SFSET_DO_SCROLL_WINDOWSHADE(*ptmpstyle, 0);
-	  SMSET_DO_SCROLL_WINDOWSHADE(*ptmpstyle, 1);
-	  SCSET_DO_SCROLL_WINDOWSHADE(*ptmpstyle, 1);
+	  SFSET_DO_SHRINK_WINDOWSHADE(*ptmpstyle, 1);
+	  SMSET_DO_SHRINK_WINDOWSHADE(*ptmpstyle, 1);
+	  SCSET_DO_SHRINK_WINDOWSHADE(*ptmpstyle, 1);
 	}
         break;
 
@@ -2176,10 +2192,15 @@ void check_window_style_change(
 
   /*
    * focus
-   * do_pass_click_focus_click
+   * do_not_pass_click_focus_click
+   * do_not_raise_click_focus_click
+   * do_raise_mouse_focus_click
    */
   if (SCFOCUS_MODE(*ret_style) ||
-      SCDO_PASS_CLICK_FOCUS_CLICK(*ret_style))
+      !SCDO_NOT_PASS_CLICK_FOCUS_CLICK(*ret_style) ||
+      !SCDO_NOT_RAISE_CLICK_FOCUS_CLICK(*ret_style) ||
+      SCDO_RAISE_MOUSE_FOCUS_CLICK(*ret_style)
+      )
   {
     flags->do_setup_focus_policy = True;
   }

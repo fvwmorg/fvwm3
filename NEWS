@@ -3,6 +3,13 @@ _+_A HREF="#2.2.4"_-_2.2.4_+_/A_-_.
 
 Changes in beta release 2.3.14 (not released yet)
 
+* The GlobalOpts command was removed in favour of individual
+  window styles.  Please look for GlobalOpts in the man page to
+  find out how to get the old functionality.
+
+* The WindowshadeAnimate command was replaced with the
+  WindowshadeSteps window style.
+
 * New MenuStyle option SelectOnRelease to better emulate Alt-Tab.
 
 Changes in beta release 2.3.13 (January 2000)
@@ -15,28 +22,29 @@ Changes in beta release 2.3.13 (January 2000)
 
 Changes in beta release 2.3.12 (December 1999)
 
-* New command PointerKey.  Similar to 'Key' command but binds keystrokes
-  to the window under the pointer instead of the window that has
-  the keyboard focus.
+* New command PointerKey.  Similar to 'Key' command but binds
+  keystrokes to the window under the pointer instead of the window
+  that has the keyboard focus.
 
 * New WindowList options NoOnBottom, OnBottom and OnlyOnBottom.
 
 * New FvwmTheme colorset options 'Plain' and 'NoShape'.
 
-* New window styles HilightFore, HilightBack and HilightColorset replace
-  the old commands HilightColor and HilightColorset.
+* New window styles HilightFore, HilightBack and HilightColorset
+  replace the old commands HilightColor and HilightColorset.
 
 * The ButtonStyle, TitleStyle and BorderStyle commands take effect
   immediately, without a Recapture.
 
-* The WindowList menu uses the WindowList menu style if it is defined.
+* The WindowList menu uses the WindowList menu style if it is
+  defined.
 
-* The CursorStyle command accepts two new cursors: 'None' for no cursor and
-  'Tiny' for a single pixel cursor.
+* The CursorStyle command accepts two new cursors: 'None' for no
+  cursor and 'Tiny' for a single pixel cursor.
 
-* A new configurable script fvwm-menu-headlines to show headlines of some
-  popular web sites in your fvwm menus. Supported sites: FreshMeat, LinuxToday,
-  Slashdot, Segfault and more to come.
+* A new configurable script fvwm-menu-headlines to show headlines
+  of some popular web sites in your fvwm menus. Supported sites:
+  FreshMeat, LinuxToday, Slashdot, Segfault and more to come.
 
 Changes in beta release 2.3.11 (December 1999)
 

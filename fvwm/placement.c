@@ -105,13 +105,6 @@ static int SmartPlacement(FvwmWindow *t,
   FvwmWindow *test_window;
   int stickyx, stickyy;
 
-  if (Scr.go.SmartPlacementIsClever) /* call clever placement instead? */
-  {
-/*  RBW - 11/02/1998  */
-    CleverPlacement(t,x,y,pdeltax,pdeltay);
-/**/
-    return rc;
-  }
 /*  RBW - 11/02/1998  */
 test_x = PageLeft;
 test_y = PageTop;
@@ -492,8 +485,7 @@ Bool PlaceWindow(
      * it's a restart or recapture, and that option's disallowed...
      */
     if (PPosOverride && (Restarting || (Scr.flags.windows_captured)) &&
-	(!Scr.go.RecaptureHonorsStartsOnPage &&
-	 !SRECAPTURE_HONORS_STARTS_ON_PAGE(sflags)))
+	!SRECAPTURE_HONORS_STARTS_ON_PAGE(sflags))
     {
       HonorStartsOnPage  =  False;
     }
@@ -501,26 +493,27 @@ Bool PlaceWindow(
      * it's a cold start window capture, and that's disallowed...
      */
     if (PPosOverride && (!Restarting && !(Scr.flags.windows_captured)) &&
-	(!Scr.go.CaptureHonorsStartsOnPage &&
-	 !SCAPTURE_HONORS_STARTS_ON_PAGE(sflags)))
+	!SCAPTURE_HONORS_STARTS_ON_PAGE(sflags))
     {
       HonorStartsOnPage  =  False;
     }
     /*
      * we have a USPosition, and overriding it is disallowed...
      */
+#if 0
+    /* Scr.go.ModifyUSP was always 1.  How is it supposed to be set? */
     if (!PPosOverride && (USPosition && !Scr.go.ModifyUSP))
     {
       HonorStartsOnPage  =  False;
     }
+#endif
     /*
      * it's ActivePlacement and SkipMapping, and that's disallowed.
      */
     if (!PPosOverride &&
 	(DO_NOT_SHOW_ON_MAP(tmp_win) &&
 	 !(SPLACEMENT_MODE(sflags) & PLACE_RANDOM) &&
-	 (!Scr.go.ActivePlacementHonorsStartsOnPage &&
-	  !SACTIVE_PLACEMENT_HONORS_STARTS_ON_PAGE(sflags))))
+         !SACTIVE_PLACEMENT_HONORS_STARTS_ON_PAGE(sflags)))
     {
       HonorStartsOnPage  =  False;
       fvwm_msg(WARN, "PlaceWindow",
@@ -653,11 +646,20 @@ Bool PlaceWindow(
     /* Get user's window placement, unless RandomPlacement is specified */
     if (SPLACEMENT_MODE(sflags) & PLACE_RANDOM)
     {
-      if (SPLACEMENT_MODE(sflags) & (PLACE_SMART | PLACE_CLEVER))
+      if (SPLACEMENT_MODE(sflags) & PLACE_SMART)
       {
-        is_smartly_placed =
-	  SmartPlacement(tmp_win, tmp_win->frame_g.width,
-			 tmp_win->frame_g.height, &xl, &yt, pdeltax, pdeltay);
+        if (SPLACEMENT_MODE(sflags) & PLACE_CLEVER)
+        {
+          CleverPlacement(tmp_win, &xl, &yt, pdeltax, pdeltay);
+          is_smartly_placed = True;
+        }
+        else
+        {
+          is_smartly_placed =
+            SmartPlacement(
+                tmp_win, tmp_win->frame_g.width, tmp_win->frame_g.height,
+                &xl, &yt, pdeltax, pdeltay);
+        }
       }
       if (is_smartly_placed)
       {
@@ -704,11 +706,21 @@ Bool PlaceWindow(
       /*  Must be ActivePlacement  */
       xl = -1;
       yt = -1;
-      if (SPLACEMENT_MODE(sflags) & (PLACE_SMART | PLACE_CLEVER))
+
+      if (SPLACEMENT_MODE(sflags) & PLACE_SMART)
       {
-        is_smartly_placed =
-	  SmartPlacement(tmp_win, tmp_win->frame_g.width,
-			 tmp_win->frame_g.height, &xl, &yt, pdeltax, pdeltay);
+        if (SPLACEMENT_MODE(sflags) & PLACE_CLEVER)
+        {
+          CleverPlacement(tmp_win, &xl, &yt, pdeltax, pdeltay);
+          is_smartly_placed = True;
+        }
+        else
+        {
+          is_smartly_placed =
+            SmartPlacement(
+                tmp_win, tmp_win->frame_g.width, tmp_win->frame_g.height,
+                &xl, &yt, pdeltax, pdeltay);
+        }
       }
       if (!is_smartly_placed)
       {

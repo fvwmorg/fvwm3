@@ -175,12 +175,12 @@ typedef struct
     unsigned do_ignore_restack : 1;
     unsigned do_lower_transient : 1;
     unsigned do_not_show_on_map : 1;
-    unsigned do_pass_click_focus_click : 1;
-    unsigned do_raise_click_focus_click : 1;
+    unsigned do_not_pass_click_focus_click : 1;
+    unsigned do_not_raise_click_focus_click : 1;
     unsigned do_raise_mouse_focus_click : 1;
     unsigned do_raise_transient : 1;
     unsigned do_resize_opaque : 1;
-    unsigned do_scroll_windowshade : 1;
+    unsigned do_shrink_windowshade : 1;
     unsigned do_stack_transient_parent : 1;
     unsigned do_start_iconic : 1;
     unsigned do_window_list_skip : 1;
@@ -290,6 +290,7 @@ typedef struct
   unsigned has_icon : 1;
   unsigned has_icon_boxes : 1;
   unsigned has_max_window_size : 1;
+  unsigned has_window_shade_steps : 1;
 #ifdef MINI_ICONS
   unsigned has_mini_icon : 1;
 #endif
@@ -350,6 +351,7 @@ typedef struct window_style
   int start_page_y;
   int max_window_width;
   int max_window_height;
+  int shade_anim_steps;
   icon_boxes *icon_boxes;
   style_flags flags;
   style_flags flag_mask;
@@ -451,6 +453,7 @@ typedef struct FvwmWindow
   int layer;
   int max_window_width;
   int max_window_height;
+  int shade_anim_steps;
 } FvwmWindow;
 
 /* include this down here because FvwmWindows must be defined when including

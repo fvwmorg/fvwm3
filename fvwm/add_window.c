@@ -1093,7 +1093,7 @@ void change_mini_icon(FvwmWindow *tmp_win, window_style *pstyle)
 
 void setup_focus_policy(FvwmWindow *tmp_win)
 {
-  if(HAS_CLICK_FOCUS(tmp_win) || Scr.go.MouseFocusClickRaises)
+  if(HAS_CLICK_FOCUS(tmp_win) || DO_RAISE_MOUSE_FOCUS_CLICK(tmp_win))
   {
     int button;
 
@@ -1142,8 +1142,8 @@ void regrab_focus_win()
 {
   int i;
 
-  if (Scr.go.MouseFocusClickRaises
-      && Scr.Ungrabbed != NULL
+  if (Scr.Ungrabbed != NULL
+      && DO_RAISE_MOUSE_FOCUS_CLICK(Scr.Ungrabbed)
       && Scr.Ungrabbed == Scr.Focus
       && ! HAS_CLICK_FOCUS(Scr.Ungrabbed)
       && ! is_on_top_of_layer(Scr.Ungrabbed))

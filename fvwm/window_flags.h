@@ -29,32 +29,32 @@
 #define DO_LOWER_TRANSIENT(fw) ((fw)->flags.common.s.do_lower_transient)
 #define DO_NOT_SHOW_ON_MAP(fw)  \
           ((fw)->flags.common.s.do_not_show_on_map)
-#define DO_PASS_CLICK_FOCUS_CLICK(fw)  \
-          ((fw)->flags.common.s.do_pass_click_focus_click)
-#define SET_DO_PASS_CLICK_FOCUS_CLICK(fw,x) \
-          (fw)->flags.common.s.do_pass_click_focus_click = !!(x)
-#define SETM_DO_PASS_CLICK_FOCUS_CLICK(fw,x) \
-          (fw)->flag_mask.common.s.do_pass_click_focus_click = !!(x)
-#define DO_RAISE_CLICK_FOCUS_CLICK(fw)  \
-          ((fw)->flags.common.s.do_raise_click_focus_click)
-#define SET_DO_RAISE_CLICK_FOCUS_CLICK(fw,x) \
-          (fw)->flags.common.s.do_raise_click_focus_click = !!(x)
-#define SETM_DO_RAISE_CLICK_FOCUS_CLICK(fw,x) \
-          (fw)->flag_mask.common.s.do_raise_click_focus_click = !!(x)
-#define DO_RAISE_CLICK_MOUSE_CLICK(fw)  \
-          ((fw)->flags.common.s.do_raise_click_mouse_click)
-#define SET_DO_RAISE_CLICK_MOUSE_CLICK(fw,x) \
-          (fw)->flags.common.s.do_raise_click_mouse_click = !!(x)
-#define SETM_DO_RAISE_CLICK_MOUSE_CLICK(fw,x) \
-          (fw)->flag_mask.common.s.do_raise_click_mouse_click = !!(x)
+#define DO_NOT_PASS_CLICK_FOCUS_CLICK(fw)  \
+          ((fw)->flags.common.s.do_not_pass_click_focus_click)
+#define SET_DO_NOT_PASS_CLICK_FOCUS_CLICK(fw,x) \
+          (fw)->flags.common.s.do_not_pass_click_focus_click = !!(x)
+#define SETM_DO_NOT_PASS_CLICK_FOCUS_CLICK(fw,x) \
+          (fw)->flag_mask.common.s.do_not_pass_click_focus_click = !!(x)
+#define DO_NOT_RAISE_CLICK_FOCUS_CLICK(fw)  \
+          ((fw)->flags.common.s.do_not_raise_click_focus_click)
+#define SET_DO_NOT_RAISE_CLICK_FOCUS_CLICK(fw,x) \
+          (fw)->flags.common.s.do_not_raise_click_focus_click = !!(x)
+#define SETM_DO_NOT_RAISE_CLICK_FOCUS_CLICK(fw,x) \
+          (fw)->flag_mask.common.s.do_not_raise_click_focus_click = !!(x)
+#define DO_RAISE_MOUSE_FOCUS_CLICK(fw)  \
+          ((fw)->flags.common.s.do_raise_mouse_focus_click)
+#define SET_DO_RAISE_MOUSE_FOCUS_CLICK(fw,x) \
+          (fw)->flags.common.s.do_raise_mouse_focus_click = !!(x)
+#define SETM_DO_RAISE_MOUSE_FOCUS_CLICK(fw,x) \
+          (fw)->flag_mask.common.s.do_raise_mouse_focus_click = !!(x)
 #define DO_RAISE_TRANSIENT(fw) ((fw)->flags.common.s.do_raise_transient)
 #define DO_RESIZE_OPAQUE(fw)   ((fw)->flags.common.s.do_resize_opaque)
-#define DO_SCROLL_WINDOWSHADE(fw)  \
-          ((fw)->flags.common.s.do_scroll_windowshade)
-#define SET_DO_SCROLL_WINDOWSHADE(fw,x) \
-          (fw)->flags.common.s.do_scroll_windowshade = !!(x)
-#define SETM_DO_SCROLL_WINDOWSHADE(fw,x) \
-          (fw)->flag_mask.common.s.do_scroll_windowshade = !!(x)
+#define DO_SHRINK_WINDOWSHADE(fw)  \
+          ((fw)->flags.common.s.do_shrink_windowshade)
+#define SET_DO_SHRINK_WINDOWSHADE(fw,x) \
+          (fw)->flags.common.s.do_shrink_windowshade = !!(x)
+#define SETM_DO_SHRINK_WINDOWSHADE(fw,x) \
+          (fw)->flag_mask.common.s.do_shrink_windowshade = !!(x)
 #define DO_SKIP_CIRCULATE(fw)  \
           ((fw)->flags.common.s.do_circulate_skip)
 #define SET_DO_SKIP_CIRCULATE(fw,x) \

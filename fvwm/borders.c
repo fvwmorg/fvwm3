@@ -979,7 +979,7 @@ void RedrawTitle(common_decorations_type *cd, FvwmWindow *t, Bool has_focus)
    * draw the 'sticky' lines
    */
 
-  if (IS_STICKY(t) || Scr.go.StipledTitles)
+  if (IS_STICKY(t) || HAS_STIPLED_TITLE(t))
   {
     /* an odd number of lines every 4 pixels */
     int num = (int)(t->title_g.height / 8) * 2 - 1;
