@@ -1122,7 +1122,7 @@ void SetupTitleBar(FvwmWindow *tmp_win, int w, int h)
   bw = xwc.width;
 
   /* title */
-  if (tmp_win->title_g.width <= 0 || ww <= 0)
+  if (tmp_win->title_g.width <= 0 || ww < 0)
     tmp_win->title_g.x = -10;
   xwc.x = tmp_win->title_g.x;
   xwc.width = tmp_win->title_g.width;

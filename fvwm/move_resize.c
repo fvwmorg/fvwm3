@@ -369,10 +369,7 @@ void resize_move_window(F_CMD_ARGS)
 
   if (DeferExecution(eventp,&w,&tmp_win,&context, CRS_RESIZE, ButtonPress))
     return;
-  if (tmp_win == NULL)
-    return;
-  /* can't resize icons */
-  if(IS_ICONIFIED(tmp_win))
+  if (tmp_win == NULL || IS_ICONIFIED(tmp_win))
     return;
   if (IS_FIXED(tmp_win))
     return;
@@ -1828,8 +1825,7 @@ void resize_window(F_CMD_ARGS)
   bad_window = False;
   if (DeferExecution(eventp,&w,&tmp_win,&context, CRS_RESIZE, ButtonPress))
     return;
-
-  if (tmp_win == NULL)
+  if (tmp_win == NULL || IS_ICONIFIED(tmp_win))
     return;
 
   ResizeWindow = tmp_win->frame;
@@ -1852,10 +1848,6 @@ void resize_window(F_CMD_ARGS)
     DrawDecorations(
       tmp_win, DRAW_BUTTONS, (tmp_win == Scr.Hilite), True, None);
   }
-
-  /* can't resize icons */
-  if(IS_ICONIFIED(tmp_win))
-    return;
 
   if (IS_SHADED(tmp_win) || !IS_MAPPED(tmp_win))
     do_resize_opaque = False;
@@ -2771,11 +2763,10 @@ void Maximize(F_CMD_ARGS)
 
   if (DeferExecution(eventp,&w,&tmp_win,&context, CRS_SELECT,ButtonRelease))
     return;
-
-  if(tmp_win == NULL)
+  if (tmp_win == NULL || IS_ICONIFIED(tmp_win))
     return;
 
-  if(check_if_function_allowed(F_MAXIMIZE,tmp_win,True,NULL) == 0)
+  if (check_if_function_allowed(F_MAXIMIZE,tmp_win,True,NULL) == 0)
   {
     XBell(dpy, 0);
     return;

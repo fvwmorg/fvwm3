@@ -120,7 +120,7 @@ void WindowShade(F_CMD_ARGS)
 
   if (DeferExecution(eventp,&w,&tmp_win,&context, CRS_SELECT,ButtonRelease))
     return;
-  if (tmp_win == NULL)
+  if (tmp_win == NULL || IS_ICONIFIED(tmp_win))
     return;
 
   /* parse arguments */
