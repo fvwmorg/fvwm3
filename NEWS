@@ -10,3 +10,294 @@ Changes in release 2.1.0
 * system configure (system.fvwm2rc) searched for in ${sysconfdir}
 * FvwmCpp and FvwmM4 no longer define FVWMDIR variable; instead they
   define FVWM_MODULEDIR and FVWM_CONFIGDIR
+
+May 18, 1998
+
+Yes, things have been slow.  But things are about to pick up again; Chuck
+has passed the role of development coordinator to Brady Montz.  Brady must
+finish other pressing business, adjust the source tree to his liking and
+then development will begin again in earnest.  Check back here for info as
+it happens.
+
+
+------------------------------------------------
+
+
+Aug 20, 1997
+
+Version 2.0.46 is now available, at long last...  Doesn't have all of
+the stuff that I wanted to get in there, but it was taking WAY too
+long for me to put it together, so the rest will have to wait until
+2.0.47.  Namely, if you were looking for the animated menus patch or
+the colorlimiting patch, some variation of each of those will most
+likely appear in 2.0.47.  The march towards 2.1.0 continues...
+
+
+
+Also, PLEASE be sure to read the ChangeLog entries each time you
+upgrade to make sure you don't miss anything that might require you to
+change something in your .fvwm2rc, etc.
+
+
+------------------------------------------------
+
+
+Jan 22, 1997
+
+Version 2.0.45 is now available.  Ok, 2.0.44 had a few flaws in
+there... :)  This is essentially a quick bugfix release.
+
+
+------------------------------------------------
+
+
+Jan 15, 1997 (figured I should start putting dates in here...)
+
+Version 2.0.44 has finially been released, with lots of fixes, and
+some new stuff that I finially gave in on.  For all you fans of the
+various fvwm hacks that keep showing up (fvwm95, fvwm-xpm, etc) be
+sure to check out the new optional at compile time
+BorderStyle/TitleStyle/UseDecor stuff...  I'm looking for good
+examples for them to put in the sample fvwm2rc files.  If anyone comes
+up with some that they might like to contribute, feel free to mail
+them to the fvwm mailing list.
+
+
+------------------------------------------------
+
+
+Figures...I just finish uploading 2.0.43 and I realize I forgot to
+update the man page to go with the changes in the -f parameter
+behavoir: 
+
+--- fvwm2.man~  Wed Jun 19 22:55:43 1996
++++ fvwm2.man   Mon Jul  8 14:23:25 1996
+@@ -276,7 +276,7 @@
+ your .fvwm2rc file (if it appears at all), and start fvwm with the
+ command 
+ .EX
+-fvwm -f "FvwmM4 .fvwm2rc"
++fvwm -cmd "FvwmM4 .fvwm2rc"
+ .EE
+ 
+ .SH CPP PREPROCESSING
+@@ -293,7 +293,10 @@
+ 
+ .SH OPTIONS
+ These are the command line options that are recognized by \fIfvwm\fP:
+-.IP "\fB-f\fP \fIconfig_command\fP"
++.IP "\fB-f\fP \fIconfig_file\fP"
++Causes \fIfvwm\fP to Read \fIconfig_file\fP instead of ".fvwm2rc" 
++as its initialization file.
++.IP "\fB-cmd\fP \fIconfig_command\fP"
+ Causes \fIfvwm\fP to use \fIconfig_command\fP instead of "Read .fvwm2rc" 
+ as its initialization command.
+ .IP "\fB-debug\fP"
+
+
+------------------------------------------------
+
+
+Version 2.0.42 has a problem linking under SunOS 4.1.x.  'strerror' is
+undefined.  Just change the call to strerror(errno) in builtins.c to be
+sys_errlist[errno] instead, for the time being.
+
+
+
+There is also a problem with starting up without an rc file (and it
+currently doesn't look for a global one either) where no borders or
+menus appear.  Both will be fixed in the next release, but here's a
+patch for the lockup if no ~/.fvwm2rc problem though: 
+
+--- ../../fvwm-2.0.42/fvwm/fvwm.c       Thu Apr 11 10:52:19 1996
++++ ./fvwm.c    Thu Apr 25 13:47:06 1996
+@@ -124,6 +124,7 @@
+   char message[255];
+   Bool single = False;
+   Bool option_error = FALSE;
++  MenuRoot *mr;
+
+   g_argv = argv;
+   g_argc = argc;
+@@ -355,6 +356,22 @@
+   DBUG("main","Running config_command...");
+   ExecuteFunction(config_command, NULL,&amp;Event,C_ROOT,-1);
+   DBUG("main","Done running config_command");
++
++  CaptureAllWindows();
++  MakeMenus();
++
++  if(Restarting)
++  {
++    mr = FindPopup("RestartFunction");
++    if(mr != NULL)
++      ExecuteFunction("Function RestartFunction",NULL,&amp;Event,C_ROOT,-1);
++  }
++  else
++  {
++    mr = FindPopup("InitFunction");
++    if(mr != NULL)
++      ExecuteFunction("Function InitFunction",NULL,&amp;Event,C_ROOT,-1);
++  }
+
+   if(Scr.d_depth&lt;2)
+   {
+
+--- ../../fvwm-2.0.42/fvwm/read.c       Fri Mar 22 15:33:21 1996
++++ ./read.c    Thu Apr 25 13:46:48 1996
+@@ -42,7 +42,6 @@
+   FILE *fd;
+   int thisfileno;
+   extern Bool Restarting;
+-  MenuRoot *mr;
+   extern XEvent Event;
+
+   thisfileno = numfilesread;
+@@ -123,24 +122,6 @@
+       tline = fgets(line,(sizeof line)-1,fd);
+     }
+   fclose(fd);
+-  if(thisfileno == 0)
+-    {
+-      CaptureAllWindows();
+-      MakeMenus();
+-
+-      if(Restarting)
+-       {
+-         mr = FindPopup("RestartFunction");
+-         if(mr != NULL)
+-           ExecuteFunction("Function RestartFunction",NULL,&amp;Event,C_ROOT,-1);
+-       }
+-      else
+-       {
+-         mr = FindPopup("InitFunction");
+-         if(mr != NULL)
+-           ExecuteFunction("Function InitFunction",NULL,&amp;Event,C_ROOT,-1);
+-       }
+-    }
+ }
+
+
+There is also a problem with a change I made to how Exec works in
+certain cases.  If you have any compound statements being run, you'll
+need to do something like the following until I think of a good way to
+resolve the problem:
+
+
+
+Exec /bin/sh -c "cd foo;foobar"
+
+
+There is one other minor problem with the Fvwm.tmpl file.  If you use
+the FvwmCompilerFlags define in there, PixmapPath won't work.  Silly
+little mistake on my part:
+
+
+
+
+--- ../fvwm-2.0.42/Fvwm.tmpl    Mon Apr  8 10:59:50 1996
++++ ./Fvwm.tmpl Thu Apr 25 09:36:16 1996
+@@ -249,7 +249,9 @@
+         CC = FvwmCompiler
+ #endif
+ #ifdef FvwmCompilerFlags
+-        CFLAGS = FvwmCompilerFlags
++XCOMM   CFLAGS = FvwmCompilerFlags
++XCOMM   CCOPTIONS = FvwmCompilerFlags
++        CDEBUGFLAGS = FvwmCompilerFlags
+ #endif
+ 
+ #ifdef FvwmBinDir
+@@ -301,7 +303,8 @@
+ #endif /* HPArchitecture */
+ #endif /* AlphaArchitecture */
+ 
+-  FVWM_LIBS = -L$(FVWM_SRCDIR)/libs -l$(LIB) $(XPM_LIBRARIES) $(KLUDGE_LIBS)
++XCOMM  FVWM_LIBS = -L$(FVWM_SRCDIR)/libs -l$(LIB) $(XPM_LIBRARIES) $(KLUDGE_LIBS)
++  FVWM_LIBS = $(FVWM_SRCDIR)/libs/lib$(LIB).a $(XPM_LIBRARIES) $(KLUDGE_LIBS)
+ FVWM_DEPLIB = $(FVWM_SRCDIR)/libs/lib$(LIB).a
+ 
+     DEFINES = $(OPTION_DEFINES) $(XPM_DEFINES) $(AUDIO_DEFINES)
+
+
+
+------------------------------------------------
+
+
+Version 2.0.41 uses a jump table (array of pointers) in place of a
+switch statement to handle events.  I forgot to account for the event
+numbers of the SHAPE extension, so you may get coredumps on some
+platforms when using SHAPEd programs.  The following patch fixes it:
+
+
+--- ../../fvwm-2.0.41/fvwm/events.c     Sun Feb 18 19:08:36 1996
++++ ./events.c  Wed Mar 13 14:36:31 1996
+@@ -87,9 +87,12 @@
+ Window PressedW;
+ 
+ /*
+-** number of X events defined - it should be defined in X.h (to be
+-** like 35), but just in case...
++** LASTEvent is the number of X events defined - it should be defined
++** in X.h (to be like 35), but since extension (eg SHAPE) events are
++** numbered beyond LASTEvent, we need to use a bigger number than the
++** default, so let's undefine the default and use 256 instead.
+ */
++#undef LASTEvent
+ #ifndef LASTEvent
+ #define LASTEvent 256
+ #endif /* !LASTEvent */
+
+
+
+------------------------------------------------
+
+
+Version 2.0.40 has a problem linking on some platforms.  It may
+complain about XLoadQueryFont not being defined.  Apply this patch to
+makefile.h if you need to:
+
+
+
+
+*** makefile.h.orig	Wed Oct 18 20:10:19 1995
+--- makefile.h	Thu Dec 21 12:07:26 1995
+***************
+*** 58,70 ****
+
+  #ifdef AlphaArchitecture
+! LOCAL_LIBRARIES = XPM_LIBRARIES $(ADD_LIB) $(XLIB) -ldnet_stub -L$(FVWM_SRCDIR)/libs -l$(LIB)
+  #else
+  #ifdef HPArchitecture
+! LOCAL_LIBRARIES = XPM_LIBRARIES $(ADD_LIB) $(XLIB) -lV3 -L$(FVWM_SRCDIR)/libs -l$(LIB)
+  #else
+  #ifdef i386SVR4Architecture
+! LOCAL_LIBRARIES = XPM_LIBRARIES $(ADD_LIB) $(XLIB) -lnsl -lsocket -L$(FVWM_SRCDIR)/libs -l$(LIB)
+  #else
+! LOCAL_LIBRARIES = XPM_LIBRARIES $(ADD_LIB) $(XLIB) $(FVWM_SRCDIR)/libs/lib$(LIB).a
+  #endif /* i386SVR4Architecture */
+  #endif /* HPArchitecture */
+--- 58,70 ----
+
+  #ifdef AlphaArchitecture
+! LOCAL_LIBRARIES = -L$(FVWM_SRCDIR)/libs -l$(LIB) XPM_LIBRARIES $(ADD_LIB) $(XLIB) -ldnet_stub
+  #else
+  #ifdef HPArchitecture
+! LOCAL_LIBRARIES = -L$(FVWM_SRCDIR)/libs -l$(LIB) XPM_LIBRARIES $(ADD_LIB) $(XLIB) -lV3
+  #else
+  #ifdef i386SVR4Architecture
+! LOCAL_LIBRARIES = -L$(FVWM_SRCDIR)/libs -l$(LIB) XPM_LIBRARIES $(ADD_LIB) $(XLIB) -lnsl -lsocket
+  #else
+! LOCAL_LIBRARIES = $(FVWM_SRCDIR)/libs/lib$(LIB).a XPM_LIBRARIES $(ADD_LIB) $(XLIB)
+  #endif /* i386SVR4Architecture */
+  #endif /* HPArchitecture */
+
+
+
+------------------------------------------------
+
+
+Version 2.0.39 has an unresolved reference 'basename' on some
+platforms.  Just edit fvwm.c and remove the call to basename() if you
+need to, or figure out what extra library needs to be linked in on
+your system, or grab a newer version instead (RECOMMENDED).

@@ -1,0 +1,50 @@
+Dan Espen, November 1, 1998.  No particular copyright attached.
+
+This directory contains some of the fvwm2 documentation, including the
+web pages that normally reside at the fvwm hosting site.
+
+Unless you don't  have internet access, there  is no reason to install
+these files at your site.
+
+In this directory is the shell, txt2html.ksh.  This is normally run
+to take text files from the fvwm source distribution and turn them
+into HTML.
+
+As a release is shipped, this would normally be run in the directory
+where the resulting html is wanted.
+
+This shell would be run for the files, NEWS, TODO, and FAQ.
+
+This is  a description  of the  files  in this directory,  showing the
+heirarchical structure of the web  pages.  Cross-reference type  links
+from one page to another are not shown.
+
+
+ README - This file
+ black-stone1.jpg - Background for all the pages
+ index.html - main page
+   fvwm.gif - image, only used on index page
+   download.html
+   features.html
+   mailinglist.html
+   (mail archive not here, tool generated)
+   docs.html
+     (FAQ.html - txt2html.ksh generated)
+     (mail archive not here, tool generated)
+     (TODO.html - txt2html.ksh generated)
+     (manual pages not here, tool generated)
+     modules.html
+       mod_changes.html
+       mod_concept.html
+       mod_security.html
+       mod_initialization.html
+       mod_m2f_communication.html
+       mod_f2m_communication.html
+   links.html
+   (news.html - txt2html.ksh generated)
+ txt2html.ksh - shell for converting text to html
+
+Generated files:
+ NEWS.html
+ TODO.html
+ FAQ.html

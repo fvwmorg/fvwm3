@@ -1,0 +1,13 @@
+1998-11-04  Dan Espen  <dane@mk.bellcore.com>
+
+	*   Added  README,     black-stone1.jpg, index.html,     fvwm.gif,
+ 	download.html      features.html,   mailinglist.html,   docs.html,
+ 	modules.html,           mod_changes.html,        mod_concept.html,
+ 	mod_security.html,                        mod_initialization.html,
+ 	mod_m2f_communication.html,            mod_f2m_communication.html,
+ 	links.html, txt2html.ksh.
+
+	The main docs come from the web site, the module docs are restructured,
+	and updated.
+
+

@@ -1,3 +1,9 @@
+1998-11-04  Dan Espen  <dane@mk.bellcore.com>
+
+	* TODO: Renamed TO-DO to standard name TODO
+
+	* NEWS: Added web docs.html to end of NEWS file.
+
 Wed Nov  4 11:09:11 1998  Steve Robbins  <steve@nyongwa.montreal.qc.ca>
 
 	* added some files to cvs: modules/ChangeLog, extras/ChangeLog,
