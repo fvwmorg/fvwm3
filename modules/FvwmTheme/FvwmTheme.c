@@ -173,19 +173,25 @@ static void parse_config_line(char *line)
 static char *pixmap_options[] =
 {
   "TiledPixmap",
-  "ShapedTiledPixmap",
   "Pixmap",
-  "ShapedPixmap",
   "AspectPixmap",
-  "ShapedAspectPixmap",
   NULL
 };
+static char *shape_options[] =
+{
+  "Shape",
+  "TiledShape",
+  "AspectShape",
+  NULL
+};
+
 static char *dash = "-";
 
 /* translate a colorset spec into a colorset structure */
 static void parse_colorset(char *line)
 {
   int n, ret;
+  int i;
   colorset_struct *cs;
   char *token, *fg, *bg;
   Picture *picture;
@@ -236,11 +242,20 @@ static void parse_colorset(char *line)
     cs->shape_mask = None;
   }
 
-  if (StrEquals(token, "Shape") || StrEquals(token, "Shaped"))
+  i = GetTokenIndex(token, shape_options, 0, NULL);
+  if (i != -1)
   {
     /* read filename */
     token = PeekToken(line, &line);
 #ifdef SHAPE
+    /* set the flags */
+    cs->shape_tile = 0;
+    cs->shape_keep_aspect = 0;
+    if (i == 1)
+      cs->shape_tile = 1;
+    else if (i == 2)
+      cs->shape_keep_aspect = 1;
+
     /* try to load the shape mask */
     if (token && !ret)
     {

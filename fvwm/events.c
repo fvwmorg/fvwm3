@@ -1530,8 +1530,13 @@ void HandleEnterNotify(void)
   }
 
   /* make sure its for one of our windows */
-  if (!Tmp_win)
+  if (!Tmp_win) {
+  /* SUBWINDOW COLORMAP PATCH BY RANDY FRANK, RSI INC., BOULDER, COLORADO, USA */
+/* handle a subwindow cmap */
+    EnterSubWindowColormap(Event.xany.window);  
+  /* END PATCH */
     return;
+  }
 
   if(HAS_MOUSE_FOCUS(Tmp_win) || HAS_SLOPPY_FOCUS(Tmp_win))
   {
@@ -1592,7 +1597,12 @@ void HandleLeaveNotify(void)
 		SetBorder(Scr.Hilite,False,True,True,None);
 	    }
 	}
-    }
+  /* SUBWINDOW COLORMAP PATCH BY RANDY FRANK, RSI INC., BOULDER, COLORADO, USA */
+    } else {
+      /* handle a subwindow cmap */
+        LeaveSubWindowColormap(Event.xany.window); 
+   }
+  /* END PATCH */
 }
 
 

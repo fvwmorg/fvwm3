@@ -847,6 +847,7 @@ static void ParseButton(button_info **uberb,char *s)
 	{
 	  b->colorset = i;
 	  b->flags |= b_Colorset;
+	  s=t;
 	}
 	else
 	{
@@ -1211,43 +1212,43 @@ char *expand_action(char *in_action, button_info *b)
 	break;
       case 3: /* left */
 	val = x;
-	is_value = True; 
+	is_value = True;
 	break;
       case 4: /* -left */
 	val = dpw - x - 1;
-	is_value = True; 
+	is_value = True;
 	break;
       case 5: /* right */
 	val = x + w;
-	is_value = True; 
+	is_value = True;
 	break;
       case 6: /* -right */
 	val = dpw - x - w - 1;
-	is_value = True; 
+	is_value = True;
 	break;
       case 7: /* top */
 	val = y;
-	is_value = True; 
+	is_value = True;
 	break;
       case 8: /* -top */
 	val = dph - y - 1;
-	is_value = True; 
+	is_value = True;
 	break;
       case 9: /* bottom */
 	val = y + h;
-	is_value = True; 
+	is_value = True;
 	break;
       case 10: /* -bottom */
 	val = dph - y - h - 1;
-	is_value = True; 
+	is_value = True;
 	break;
       case 11: /* width */
 	val = w;
-	is_value = True; 
+	is_value = True;
 	break;
       case 12: /* height */
 	val = h;
-	is_value = True; 
+	is_value = True;
 	break;
       deafult: /* unknown */
 	src--;

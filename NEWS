@@ -1,13 +1,16 @@
 Changes in beta release 2.3.7 (August 1999)
 
-* New menu generating scripts fvwm-menu-directory, fvwm-menu-desktop
-  and fvwm-menu-xlock (was BuildXLockMenu). There are man pages and --help
-  option for all fvwm-menu scripts.
+* Subwindows can have a private colormap too.
+
+* FvwmButtons uses variables in actions and when swallowing
+  applications ($left, $right, $top, $bottom, $width, $height,
+  $fg, $bg). See man page for details.
+
+* New menu generating scripts fvwm-menu-directory,
+  fvwm-menu-desktop and fvwm-menu-xlock (was BuildXLockMenu).
+  There are man pages and --help option for all fvwm-menu scripts.
 
 * Geometry (-g) command line option to FvwmButtons.
-
-* FvwmButtons parses action strings for certain variables that describe the
-  geometry of the depressed button: $l, $r, $t, $b, $w and $h.
 
 * *FvwmPagerSloppyFocus option: To focus a window, simply move the
   pointer over the window's mini window in the pager.
@@ -16,19 +19,20 @@ Changes in beta release 2.3.6 (August 1999)
 
 * New function variables $c, $r, $n.
 
-* The new commands QuitSession, SaveSession, SaveQuitSession allow to
-  manage the session from the window manager.
+* The new commands QuitSession, SaveSession, SaveQuitSession allow
+  to manage the session from the window manager.
 
 * If you use xsm session manager, which has buggy discard command
   implementation, set environment $SESSION_MANAGER_NAME to "xsm".
-  If you use another SM, unset this variable or set to something else.
+  If you use another SM, unset this variable or set to something
+  else.
 
-* New module FvwmTheme for creating Colorsets that can be shared with
-  fvwm and other modules when they have been modified.
+* New module FvwmTheme for creating Colorsets that can be shared
+  with fvwm and other modules when they have been modified.
 
-* If you never define an iconbox, or you fill all the iconboxes, fvwm
-  has a default icon box that covers the screen, it filled top to bottom,
-  then left to right, and has an 80x80 pixel grid.
+* If you never define an iconbox, or you fill all the iconboxes,
+  fvwm has a default icon box that covers the screen, it filled
+  top to bottom, then left to right, and has an 80x80 pixel grid.
 
 * The new styles LowerTransient and DontLowerTransient allow to control if the
   transients of a window are lowered when the window itself is lowered

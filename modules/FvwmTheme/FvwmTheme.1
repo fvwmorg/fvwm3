@@ -35,10 +35,10 @@ FvwmTheme so there is no provision for using an alias name.
 .SH CONFIGURATION OPTIONS
 FvwmTheme supports only one configuration option.
 
-.IP "*FvwmThemeColorset \fIn\fP \fIfg\fP \fIbg\fP [ \fIoption\fP... ]"
+.B "*FvwmThemeColorset" "\fIn\fP \fIfg\fP \fIbg\fP [\fIshape option\fP] [\fIpixmap option\fP]"
 Will create or modify colorset \fIn\fP. Each colorset has a foreground and
 background color specified by \fIfg\fP and \fIbg\fP respectively.  If
-either \fIfg\fP or \fIbg\fP is specified as \fI"-"\fP it is not altered.
+either \fIfg\fP or \fIbg\fP is specified as "-" it is not altered.
 Colors may be specified by name e.g. Liver or "Fava bean" or as an
 RGB hexadecimal triplet "#RRGGBB" e.g. "#551111" for a nice Chianti.
 
@@ -46,6 +46,7 @@ Each colorset may also have a pixmap associated with it as an adjunct to the
 background color.  This may be used instead of the background color and should
 have roughly the same avarage color as the background so that any 3D bevels
 (which are calculated from the background color) don't look strange.
+The background color is used for the transparent parts of the pixmap.
 
 The optional pixmap may be specified as "TiledPixmap \fIxpm\fP",
 "Pixmap \fIxpm\fP", "AspectPixmap \fIxpm\fP" or "\fI?Gradient...\fP". \fIxpm\fP
@@ -54,6 +55,16 @@ is the filename of an XPM format file. FvwmTheme will search the current
 onto the background, \fIPixmap\fP will stretch the pixmap to the size of the
 window and \fIAspectPixmap\fP will stretch the pixmap whilst preserving the
 aspect ratio.
+
+An optional shape pixmap can be used to shape the background of the
+window it is applied to and thus the window itself. "Shape \fIpicture\fP",
+"TiledShape \fIpicture\fP" and "AspectShape \fIpicture\fP" do roughly
+the same as the pixmap options above. One difference is that only the
+mask of a xpm picture is used, i.e. all pixels that are transparent in
+the xpm will be transparent in the window. If the picture is a bitmap
+with only two colors, this bitmap is used as the mask. Note that the
+shape will create holes in the window it is applied to. The masked
+parts are not simply transparent.
 
 \fI?Gradient ...\fP will create a pixmap and stretch it to fit the window.
 \fI?Gradient\fP may be one of HGradient, VGradient, DGradient, BGradient,

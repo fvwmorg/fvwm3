@@ -1,6 +1,21 @@
+1999-08-15 Udo Grabowski <udo.grabowski@imk.fzk.de>
+
+	* fvwm/events.c (HandleEnterNotify, HandleLeaveNotify):
+	* fvwm/colormaps.c (FetchWmColormapWindows):
+	added colormap installation for subwindows in window hierarchies with
+	a patch developed by Randy Frank as employee of RSI, Boulder, Colorado
+	(patch is public). New Routines: EnterSubWindowColormap,
+	LeaveSubWindowColormap in colormaps.c
+
+1999-08-16  Dominik Vogt  <dominik_vogt@gmx.de>
+
+	* libs/Colorset.c (DumpColorset):
+	(LoadColorsetConditional):
+	(CreateBackgroundPixmap): handle tiled and aspect shapes
+
 1999-08-16  Dominik Vogt  <domivogt@bvstp038.bbn.hp.com>
 
-	* fvwm/module_interface.c (HandleModuleInput): 
+	* fvwm/module_interface.c (HandleModuleInput):
 	* libs/fvwmlib.h: constant for max. module input text length
 
 	* fvwm/menus.c (menuShortcuts): insert enters current submenu if no
@@ -542,7 +557,7 @@ Sun Jul 11 11:16:15 1999  DanEspen  <dje@blue>
 
 1999-07-01  Paul D. Smith  <psmith@gnu.org>
 
-	* libs/fvwmlib.h (Background):  Change Bool type to unsigned for
+	* libs/fvwmlib.h (Background): Change Bool type to unsigned for
 	bitfields.
 
 	* fvwm/screen.h (ScreenInfo): Change Bool type to unsigned for

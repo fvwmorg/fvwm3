@@ -628,8 +628,17 @@ void set_win_picture (WinData *win, Pixmap picture, Pixmap mask,
 
 void set_win_iconified (WinData *win, int iconified)
 {
+#if 0
   if (win->button && win->iconified != iconified)
     win->button->drawn_state.dirty_flags |= ICON_STATE_CHANGED;
+#else
+  /* This change has become necessary because with colorsets we don't know
+   * the background colour of the button (gradient background). Thus the button
+   * has to be redrawn completely, we can not just draw the square in the
+   * background colour. */
+  if (win->button && win->iconified != iconified)
+    win->button->drawn_state.dirty_flags |= STATE_CHANGED;
+#endif
   win->iconified = iconified;
 }
 
@@ -1021,6 +1030,7 @@ static void draw_3d_icon (WinManager *man, int box, ButtonGeometry *g,
 			  int iconified, int dir, Contexts contextId)
 {
   if (iconified == 0) {
+    return;
     draw_3d_square (man, g->icon_x, g->icon_y, g->icon_w, g->icon_h,
 		    man->flatContext[contextId],
 		    man->flatContext[contextId]);
@@ -1042,8 +1052,8 @@ static void draw_3d_icon (WinManager *man, int box, ButtonGeometry *g,
 
   /* this routine should only be called from draw_button() */
 static void iconify_box (WinManager *man, WinData *win, int box,
-			 ButtonGeometry *g, int iconified,
-                         Contexts contextId, int button_already_cleared)
+			 ButtonGeometry *g, int iconified, Contexts contextId,
+			 int button_already_cleared)
 {
 #ifdef MINI_ICONS
   XGCValues gcv;
@@ -1170,6 +1180,8 @@ static void draw_relief (WinManager *man, int button_state, ButtonGeometry *g,
   int state;
   state = man->buttonState[button_state];
 
+  if (state == BUTTON_FLAT)
+    return;
   if (state == BUTTON_EDGEUP || state == BUTTON_EDGEDOWN) {
     draw_3d_square (man, g->button_x, g->button_y, g->button_w, g->button_h,
 		    context1, context2);

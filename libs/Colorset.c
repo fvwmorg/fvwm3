@@ -74,11 +74,12 @@ char *DumpColorset(unsigned int n)
 {
   colorset_struct *cs = &Colorset[n];
 
-  sprintf(csetbuf, "Colorset %x %lx %lx %lx %lx %lx %lx %lx %x %x %x %x %x",
+  sprintf(csetbuf,
+	  "Colorset %x %lx %lx %lx %lx %lx %lx %lx %x %x %x %x %x %x %x",
 	  n, cs->fg,
 	  cs->bg, cs->hilite, cs->shadow, cs->pixmap, cs->mask, cs->shape_mask,
 	  cs->width, cs->height, cs->stretch_x, cs->stretch_y,
-	  cs->keep_aspect);
+	  cs->keep_aspect, cs->shape_tile, cs->shape_keep_aspect);
   return csetbuf;
 }
 
@@ -94,15 +95,17 @@ static int LoadColorsetConditional(char *line, Bool free)
   Pixmap mask;
   Pixmap shape_mask;
   unsigned int width, height, stretch_x, stretch_y, keep_aspect;
+  unsigned int shape_tile, shape_keep_aspect;
 
   if (line == NULL)
     return -1;
   if (sscanf(line, "%x%n", &n, &chars) != 1)
     return -1;
   line += chars;
-  if (sscanf(line, "%lx %lx %lx %lx %lx %lx %lx %x %x %x %x %x", &fg, &bg,
-	     &hilite, &shadow, &pixmap, &mask, &shape_mask, &width, &height,
-	     &stretch_x, &stretch_y, &keep_aspect) != 12)
+  if (sscanf(line, "%lx %lx %lx %lx %lx %lx %lx %x %x %x %x %x %x %x",
+	     &fg, &bg, &hilite, &shadow, &pixmap, &mask, &shape_mask, &width,
+	     &height, &stretch_x, &stretch_y, &keep_aspect, &shape_tile,
+	     &shape_keep_aspect) != 14)
     return -1;
   AllocColorset(n);
   cs = &Colorset[n];
@@ -137,6 +140,8 @@ static int LoadColorsetConditional(char *line, Bool free)
   cs->stretch_x = stretch_x;
   cs->stretch_y = stretch_y;
   cs->keep_aspect = keep_aspect;
+  cs->shape_tile = shape_tile;
+  cs->shape_keep_aspect = shape_keep_aspect;
   return n;
 }
 inline int LoadColorset(char *line)
@@ -200,12 +205,18 @@ Pixmap CreateBackgroundPixmap(Display *dpy, Window win, int width, int height,
   static GC shape_gc = None;
   int cs_width;
   int cs_height;
+  unsigned int cs_keep_aspect;
+  unsigned int cs_stretch_x;
+  unsigned int cs_stretch_y;
 
   if (!is_shape_mask)
   {
     cs_pixmap = colorset->pixmap;
     cs_width = colorset->width;
     cs_height = colorset->height;
+    cs_keep_aspect = colorset->keep_aspect;
+    cs_stretch_x = colorset->stretch_x;
+    cs_stretch_y = colorset->stretch_y;
   }
   else
   {
@@ -231,9 +242,12 @@ Pixmap CreateBackgroundPixmap(Display *dpy, Window win, int width, int height,
     {
       return None;
     }
+    cs_keep_aspect = colorset->shape_keep_aspect;
+    cs_stretch_x = !(colorset->shape_tile);
+    cs_stretch_y = !(colorset->shape_tile);
   }
 
-  if (colorset->keep_aspect) {
+  if (cs_keep_aspect) {
     Bool trim_side;
     int big_width, big_height;
     Pixmap big_pixmap;
@@ -258,7 +272,7 @@ Pixmap CreateBackgroundPixmap(Display *dpy, Window win, int width, int height,
       XCopyArea(dpy, big_pixmap, pixmap, gc, x, y, width, height, 0, 0);
     if (big_pixmap)
       XFreePixmap(dpy, big_pixmap);
-  } else if (!colorset->stretch_x && !colorset->stretch_y) {
+  } else if (!cs_stretch_x && !cs_stretch_y) {
     /* it's a tiled pixmap, create an unstretched one */
     if (!is_shape_mask)
     {
@@ -275,11 +289,11 @@ Pixmap CreateBackgroundPixmap(Display *dpy, Window win, int width, int height,
       pixmap = CreateTiledMaskPixmap(
 	dpy, cs_pixmap, cs_width, cs_height, width, height, gc);
     }
-  } else if (!colorset->stretch_x) {
+  } else if (!cs_stretch_x) {
     /* it's an HGradient */
     pixmap = CreateStretchYPixmap(dpy, cs_pixmap, cs_width,
 				  cs_height, depth, height, gc);
-  } else if (!colorset->stretch_y) {
+  } else if (!cs_stretch_y) {
     /* it's a VGradient */
     pixmap = CreateStretchXPixmap(dpy, cs_pixmap, cs_width,
 				  cs_height, depth, width, gc);

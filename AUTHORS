@@ -35,6 +35,9 @@ Fixes in the fvwmrc_convert script.
 German Gomez Garcia:
 Named MenuStyles.
 
+Udo Grabowski:
+Private colormaps on subwindows.
+
 Mike Han:
 Multiple menu hotkeys.
 
@@ -92,7 +95,8 @@ BorderWidth, ItemFormat, VerticalItemSpacing, VerticalTitleSpacing,
 Hilight3DThickness and SubmenusLeft, major clean up of the menu code,
 improved transient FvwmPager, mproved transient window handling, MaxWindowSize
 style, Improved(?) mouse paging, RaiseTransient and LowerTransient styles,
-nicer cursors.
+nicer cursors, helped with colorset implementation, variables for FvwmButtons
+actions.
 
 A.J. Weber:
 SnapAttraction patch.

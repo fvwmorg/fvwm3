@@ -2,8 +2,12 @@
 ''' $RCSfile$$Revision$$Date$
 '''
 ''' $Log$
-''' Revision 1.2  1999/08/16 09:07:13  domivogt
-''' * Use FVWM instead of F{ine,antastic,eline} V W M.
+''' Revision 1.3  1999/08/17 00:32:44  domivogt
+''' * Pager balloons are updated whenever the name changes.
+''' * Fixed some small problems with in IconMan.
+''' * Documented FvwmButtons action variables.
+''' * Implemented and documented Shape, AspectShape and TiledShape for colour sets.
+''' * Applied patch: private colormaps for subwindows.
 '''
 ''' Revision 1.8  1999/08/23 20:37:24  migo
 ''' * fixed bad allocation and fvwm hang for menu labels with more than two TABs
@@ -191,7 +195,7 @@
 .	ds th \o'bp'
 .	ds Th \o'LP'
 .	ds ae ae
-fvwm-menu-directory \- builds a directory browsing menu for \fBFVWM\fR
+fvwm-menu-directory \- builds a directory browsing menu for Feline Virtual Window Manager
 .	ds oe oe
 .	ds Oe OE
 .\}

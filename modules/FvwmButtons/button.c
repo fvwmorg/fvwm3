@@ -417,7 +417,7 @@ void MakeContainer(button_info *b)
     b->c->font_string=strdup("fixed");
     b->c->xpad=2;
     b->c->ypad=4;
-    b->c->back=strdup("#908090");
+    b->c->back=strdup("rgb:90/80/90");
     b->c->fore=strdup("black");
     b->c->framew=2;
   }

@@ -1,3 +1,33 @@
+1999-08-17  Dominik Vogt  <dominik_vogt@gmx.de>
+
+	* FvwmPager/FvwmPager.c (list_window_name):
+	* FvwmPager/x_pager.c (MapBalloonWindow):
+	(UnmapBalloonWindow):
+	Pager updates balloon windows while they are mapped and does not map
+	empty balloons (e.g. after startup).
+
+	* FvwmIconMan/fvwm.c (ProcessMessage): update focused window on page
+	changes
+
+	* FvwmIconMan/xmanager.c (set_win_iconified): fixed icon relief with
+	gradient/pixmap backgrounds from colorsets.
+
+1999-08-16  Dominik Vogt  <dominik_vogt@gmx.de>
+
+	* FvwmIconMan/xmanager.c (draw_relief): fixed flat buttons with
+	gradient background.
+
+	* FvwmButtons/FvwmButtons.1: documented $[-]left, $[-]right, $[-]top,
+ 	$[-]bottom, $width, $height, $bg, $fg
+
+	* FvwmButtons/button.c (MakeContainer): use 'rgb:' syntax for default
+	colours
+
+	* FvwmTheme/FvwmTheme.1: documented Shape, AspectShape and TiledShape
+
+	* FvwmTheme/FvwmTheme.c (parse_colorset): impelemnted TiledShape and
+	AspectShape
+
 1999-08-16  Hippo
 
 	* FvwmPager/*: new option *FvwmPagerWindow3dBorders set the pager

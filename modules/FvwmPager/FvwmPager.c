@@ -114,6 +114,7 @@ char *BalloonBorderColor = NULL;
 char *BalloonFormatString = NULL;
 int BalloonBorderWidth = 1;
 int BalloonYOffset = 2;
+Window BalloonView = None;
 
 int window_w=0, window_h=0, window_x=0, window_y=0;
 int icon_x=-10000, icon_y=-10000, icon_w=0, icon_h=0;
@@ -1062,6 +1063,20 @@ void list_window_name(unsigned long *body,unsigned long type)
 	  XClearArea(dpy, t->PagerView, 0, 0, 0, 0, True);
 	if (t->IconView);
 	  XClearArea(dpy, t->IconView, 0, 0, 0, 0, True);
+      }
+      if (ShowBalloons && BalloonView)
+      {
+	/* update balloons */
+	if (BalloonView == t->PagerView)
+	{
+	  UnmapBalloonWindow();
+	  MapBalloonWindow(t, False);
+	}
+	else if (BalloonView == t->IconView)
+	{
+	  UnmapBalloonWindow();
+	  MapBalloonWindow(t, True);
+	}
       }
     }
 }

@@ -69,6 +69,7 @@ extern char *BalloonFormatString;
 extern char *WindowLabelFormat;
 extern char *PagerFore, *PagerBack, *HilightC;
 extern char *BalloonFore, *BalloonBack, *BalloonBorderColor;
+extern Window BalloonView;
 extern unsigned int WindowBorderWidth;
 extern unsigned int MinSize;
 extern Bool WindowBorders3d;
@@ -2548,6 +2549,8 @@ void MapBalloonWindow(PagerWindow *t, Bool is_icon_view)
     view_height = t->icon_view_height;
   }
 
+  BalloonView = view;
+
   /* associate balloon with its pager window */
   i = t->desk;
   Desks[i].balloon.pw = t;
@@ -2557,6 +2560,12 @@ void MapBalloonWindow(PagerWindow *t, Bool is_icon_view)
     free(Desks[i].balloon.label);
   Desks[i].balloon.label = GetBalloonLabel(Desks[i].balloon.pw,
 					   BalloonFormatString);
+
+#if 0
+  if (*Desks[i].balloon.label == 0)
+    /* dont draw empty labels */
+    return;
+#endif
 
   { /* calculate window width to accommodate string */
     window_changes.width = 4 + XTextWidth(Desks[i].balloon.font,
@@ -2698,6 +2707,7 @@ void UnmapBalloonWindow ()
   {
     XUnmapWindow(dpy, Desks[i].balloon.w);
   }
+  BalloonView = None;
 }
 
 

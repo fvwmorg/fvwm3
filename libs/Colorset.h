@@ -35,6 +35,8 @@ typedef struct {
   unsigned int stretch_x : 1;
   unsigned int stretch_y : 1;
   unsigned int keep_aspect : 1;
+  unsigned int shape_tile : 1;
+  unsigned int shape_keep_aspect : 1;
 } colorset_struct;
 
 /* colorsets are stored as an array of structs to permit fast dereferencing */

@@ -2133,6 +2133,16 @@ void swallow(unsigned long *body)
       }
       XMapWindow(Dpy,b->IconWin);
       MakeButton(b);
+if (b->flags&b_Colorset)
+{
+fprintf(stderr,"applying cs %d to window 0x%x and 0x%x\n", b->colorset % nColorsets, b->IconWin, b->IconWinParent);
+  SetWindowBackground(
+    Dpy, b->IconWin, buttonWidth(b), buttonHeight(b),
+    &Colorset[b->colorset % nColorsets], Pdepth, NormalGC);
+  SetWindowBackground(
+    Dpy, b->IconWin+1, buttonWidth(b), buttonHeight(b),
+    &Colorset[b->colorset % nColorsets], Pdepth, NormalGC);
+}
       RedrawButton(b,1);
       break;
     }

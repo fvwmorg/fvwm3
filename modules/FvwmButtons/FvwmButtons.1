@@ -151,17 +151,29 @@ FvwmButton exits with an error message.
 .IP "  Action [(\fIoptions\fP)] \fIcommand\fP"
 Specifies an fvwm command to be executed when the button is activated
 by pressing return or a mouse button. The \fIcommand\fP needs to be
-quoted if it contains a comma or a closing parenthesis. Within the
-command '$l', '$r', '$t', '$b' are replaced with the left, right, top
-and bottom coordinates of the button pressed. If the letter after the '$'
-is preceded by a '-', the coordinates are calculated from the
-bottom or the right edge of the screen instead. '$w' and '$h' are
-replaced by the width or height of the button. This is done regardless
-of any quoting characters. Up to 16 such variables are allowed.
-To get a literal '$' use the string '$$'. See the
-\fICREATING SUBPANELS\fP section for an example usage.
+quoted if it contains a comma or a closing parenthesis. You can use a
+number of predefined variables: \fI$left\fP, \fI$right\fP, \fI$top\fP
+and \fI$bottom\fP are substituted by the left, right, top and bottom
+coordinates of the button pressed. \fI$-left\fP, \fI$-right\fP,
+\fI$-top\fP and\fI$-bottom\fP are substituted likewise, but the
+coordinates are calculated from the bottom or the
+right edge of the screen instead (for a button that is 5 pixels away
+from the right screen border, $-right will be 5). \fI$width\fP
+and \fI$height\fP are replaced by the width or height of the button.
+The variables \fI$fg\fP and \fI$bg\fP are replaced with the name
+of the foreground or background colour set with the \fIBack\fP
+or \fIFore\fP option (see below). All this is done regardless of
+any quoting characters. To get a literal '$' use the string '$$'.
+Example:
 
-The current options of the \fAction\fP are:
+.nf
+.sp
+  *FvwmButtons(Swallow xload \\
+    `Exec exec xload -fg $fg -bg $bg`)
+.sp
+.fi
+
+The current options of the \fIAction\fP are:
 
 Mouse \fIn\fP - this action is only executed for mouse button \fIn\fP.
 One actions can be defined for each mouse button, in addition to the
@@ -270,6 +282,10 @@ larger sizes.
 .IP "  Swallow [(\fIflags\fP)] \fIhangon\fP \fIcommand\fP"
 Causes FvwmButtons to execute \fIcommand\fP, and when a window matching the
 name \fIhangon\fP appears, it is captured and swallowed into this button.
+Swallow replaces the variables \fI$fg\fP and \fI$bg\fP as described
+above for the \fIAction\fP option (but if you use the Useold and NoClose
+options the application will not be restarted when FvwmButtons is restarted
+and thus will not get the new colors - if you changed them).
 An example:
 .nf
 .sp
