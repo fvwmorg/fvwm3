@@ -7155,7 +7155,7 @@ static char *get_one_menu_position_argument(
   {
     if (sscanf(token,"%d%n", &val, &chars) >= 1)
     {
-      fval = val;
+      fval = (float)val;
       token += chars;
       if (sscanf(token,"%c", &c) == 1)
       {

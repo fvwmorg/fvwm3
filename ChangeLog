@@ -1,5 +1,15 @@
 2001-04-15  Dominik Vogt  <dominik.vogt@gmx.de>
 
+	* fvwm/menus.c (get_one_menu_position_argument):
+	warning fixes
+
+	* libs/Parse.c (GetSuffixedIntegerArguments):
+	(SuffixToPercentValue):
+	(GetTokenIndex):
+	(GetNextTokenIndex):
+	use pointers instead of arrays as function parameters to suppress some
+	warnings
+
 	* fvwm/functions.c (DeferExecution):
 	grab keyboard when selecting a window to fix similar problem
 

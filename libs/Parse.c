@@ -463,8 +463,9 @@ char *GetModuleResource(char *indata, char **resource, char *module_name)
  * ret_suffixnum (0 = no suffix, 1 = first suffix in suffixlist ...).
  *
  **************************************************************************/
-int GetSuffixedIntegerArguments(char *action, char **ret_action, int retvals[],
-				int num, char *suffixlist, int ret_suffixnum[])
+int GetSuffixedIntegerArguments(
+  char *action, char **ret_action, int *retvals, int num, char *suffixlist,
+  int *ret_suffixnum)
 {
   int i;
   int j;
@@ -526,7 +527,7 @@ int GetSuffixedIntegerArguments(char *action, char **ret_action, int retvals[],
  * it is big enough before calling this function.
  *
  **************************************************************************/
-int SuffixToPercentValue(int value, int suffix, int unit_table[])
+int SuffixToPercentValue(int value, int suffix, int *unit_table)
 {
   return (value * unit_table[suffix]) / 100;
 }
@@ -538,10 +539,10 @@ int SuffixToPercentValue(int value, int suffix, int unit_table[])
  * If ret_action is non-NULL, a pointer to the next token is returned there.
  *
  **************************************************************************/
-int GetIntegerArguments(char *action, char **ret_action, int retvals[],int num)
+int GetIntegerArguments(char *action, char **ret_action, int *retvals,int num)
 {
-  return GetSuffixedIntegerArguments(action, ret_action, retvals, num, NULL,
-				     NULL);
+  return GetSuffixedIntegerArguments(
+    action, ret_action, retvals, num, NULL, NULL);
 }
 
 
@@ -559,7 +560,7 @@ int GetIntegerArguments(char *action, char **ret_action, int retvals[],int num)
  * in token after the match.
  *
  **************************************************************************/
-int GetTokenIndex(char *token, char *list[], int len, char **next)
+int GetTokenIndex(char *token, char **list, int len, char **next)
 {
   int i;
   int l;
@@ -598,7 +599,7 @@ int GetTokenIndex(char *token, char *list[], int len, char **next)
  * token (just like the return value of GetNextToken).
  *
  **************************************************************************/
-char *GetNextTokenIndex(char *action, char *list[], int len, int *index)
+char *GetNextTokenIndex(char *action, char **list, int len, int *index)
 {
   char *token;
   char *next;
@@ -706,8 +707,8 @@ int GetTwoPercentArguments(char *action, int *val1, int *val2, int *val1_unit,
  * token matches none of these strings the default_ret value is returned and
  * the action itself is passed back in ret_action. If the no_toggle flag is
  * non-zero, the "toggle" string is handled as no match. */
-int ParseToggleArgument(char *action, char **ret_action, int default_ret,
-			char no_toggle)
+int ParseToggleArgument(
+  char *action, char **ret_action, int default_ret, char no_toggle)
 {
   int index;
   int rc;
