@@ -1,3 +1,8 @@
+2002-11-20  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* FvwmProxy/ConfigFvwmProxyDefaults:
+	adjusted default functions
+
 2002-11-20  Mikhael Goikhman  <migo@homemail.com>
 
 	* FvwmDebug/FvwmGtkDebug.in:
