@@ -1,0 +1,37 @@
+Style  "FvwmButtons"    NoTitle, Sticky, WindowListSkip
+*FvwmButtonsFont        6x13
+*FvwmButtonsFore        black
+*FvwmButtonsBack        rgb:b0/b0/b0
+
+*FvwmButtonsGeometry    1000x70+0-0
+*FvwmButtonsColumns     51
+*FvwmButtonsRows        13
+*FvwmButtonsBoxSize     fixed
+
+# desktop container
+*FvwmButtons(15x11+18+1,Container(Columns 11, Rows 12, BoxSize fixed, Fore white), Frame 1)
+*FvwmButtons(4x5+1+1, Title "One", Action "Desk 0 0", Back rgb:80/40/40)
+*FvwmButtons(4x5+6+1, Title "Two", Action "Desk 0 1", Back rgb:40/80/40)
+*FvwmButtons(4x5+1+7, Title "Three", Action "Desk 0 2", Back rgb:40/40/80)
+*FvwmButtons(4x5+6+7, Title "Four", Action "Desk 0 3", Back rgb:80/40/00)
+*FvwmButtons(End)
+
+# normal buttons (fixed)
+*FvwmButtons(4x7+3+4, Title "Button 1", Action Recapture)
+*FvwmButtons(4x7+8+4, Title "Button 2", Action Recapture)
+*FvwmButtons(4x7+13+4, Title "Button 3", Action Recapture)
+*FvwmButtons(4x7+34+4, Title "Button 4", Action Recapture)
+*FvwmButtons(4x7+39+4, Title "Button 5", Action Recapture)
+*FvwmButtons(4x7+44+4, Title "Button 6", Action Recapture)
+
+# floating buttons
+*FvwmButtons(3x4, Title "Move", Action Move)
+*FvwmButtons(3x4, Title "Quit", Action QuitSave)
+
+# popup buttons
+*FvwmButtons(4x3+3+0, Title "popup 1", Action Nop, Frame 1)
+*FvwmButtons(4x3+8+0, Title "popup 2", Action Nop, Frame 1)
+*FvwmButtons(4x3+13+0, Title "popup 3", Action Nop, Frame 1)
+*FvwmButtons(4x3+34+0, Title "popup 4", Action Nop, Frame 1)
+*FvwmButtons(4x3+39+0, Title "popup 5", Action Nop, Frame 1)
+*FvwmButtons(4x3+44+0, Title "popup 6", Action Nop, Frame 1)
