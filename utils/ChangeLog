@@ -1,7 +1,7 @@
-2001-05-06  Mikhael Goikhman  <migo@homemail.com>
+2001-07-22  Mikhael Goikhman  <migo@homemail.com>
 
 	* fvwm-config.in:
-	added xinerama support
+	added xinerama and shape support; resorting
 
 2001-07-10  Mikhael Goikhman  <migo@homemail.com>
 

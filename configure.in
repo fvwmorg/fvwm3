@@ -160,6 +160,8 @@ fi
 
 
 dnl ********* xinerama
+problem_xinerama=""
+
 AC_ARG_ENABLE(xinerama,
   [  --disable-xinerama       disable Xinerama multi screen support],
   [ if test "$enableval" = yes; then
@@ -174,13 +176,14 @@ AC_ARG_ENABLE(xinerama,
 if test "$with_xinerama" != "no"; then
   $UNSET ac_cv_lib_Xinerama_XineramaIsActive
   AC_CHECK_LIB(Xinerama, XineramaIsActive,
-               with_xinerama=yes; AC_DEFINE(XINERAMA),
-               with_xinerama=no;
-               problem_xinerama=": Failed to detect libXinerama",
-               [$X_LIBS $X_PRE_LIBS -lXext -lX11 $X_EXTRA_LIBS])
+    with_xinerama=yes; Xinerama_LIBS=-lXinerama; AC_DEFINE(HAVE_XINERAMA),
+    with_xinerama=no; Xinerama_LIBS=
+    problem_xinerama=": Failed to detect libXinerama",
+    [$X_LIBS $X_PRE_LIBS -lXext -lX11 $X_EXTRA_LIBS])
 fi
 AC_SUBST(Xinerama_LIBS)
 AC_SUBST(Xinerama_CFLAGS)
+
 
 dnl ********* xinerama-emulation
 smr_SWITCH(xinerama-emulation, Xinerama emulation on one screen, off,
@@ -529,17 +532,18 @@ esac
 
 
 # mainly for fvwm-config
-AC_SUBST(with_readline)
-AC_SUBST(with_rplay)
-AC_SUBST(with_stroke)
-AC_SUBST(with_xpm)
 AC_SUBST(with_gnomewm)
-AC_SUBST(with_sm)
 AC_SUBST(with_gtk)
 AC_SUBST(with_gdkimlib)
 AC_SUBST(with_gnomelibs)
 AC_SUBST(with_multibyte)
+AC_SUBST(with_readline)
+AC_SUBST(with_rplay)
+AC_SUBST(with_shape)
+AC_SUBST(with_sm)
+AC_SUBST(with_stroke)
 AC_SUBST(with_xinerama)
+AC_SUBST(with_xpm)
 
 AC_OUTPUT(Makefile libs/Makefile fvwm/Makefile modules/Makefile
 utils/Makefile utils/fvwm-config
@@ -602,8 +606,8 @@ eval my_datdir="`eval echo ${FVWM_DATADIR}`"
 
 case "$with_gtk" in
   yes) fvwmgtk_msg="
-  Have GDK Imlib support in FvwmGtk? $with_gdkimlib$problem_gdkimlib
-  Have GNOME support in FvwmGtk?     $with_gnomelibs$problem_gnomelibs" ;;
+  With GDK Imlib support in FvwmGtk? $with_gdkimlib$problem_gdkimlib
+  With GNOME support in FvwmGtk?     $with_gnomelibs$problem_gnomelibs" ;;
   no) fvwmgtk_msg="" ;;
 esac
 
@@ -619,14 +623,14 @@ FVWM Configuration:
 
   With GNOME Window Manager support? $with_gnomewm$problem_gnomewm
   With GTK support for FvwmGtk?      $with_gtk$problem_gtk$fvwmgtk_msg
+  With Multibyte support?            $with_multibyte$problem_multibyte
   With ReadLine support?             $with_readline$problem_readline
   With RPlay support in FvwmEvent?   $with_rplay$problem_rplay
-  With Shaped window support         $with_shape$problem_shape
+  With Shaped window support?        $with_shape$problem_shape
   With Session Management support?   $with_sm$problem_sm
   With Stroke support?               $with_stroke$problem_stroke
   With Xinerama support?             $with_xinerama$problem_xinerama
   With XPM support?                  $with_xpm$problem_xpm
-  With Multibyte support?            $with_multibyte$problem_multibyte
 "
 case "$with_xinerama_emulation" in
   yes) echo "  Xinerama emulation enabled." ;;

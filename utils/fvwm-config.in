@@ -55,17 +55,18 @@ fvwm_imagepath="@FVWM_IMAGEPATH@"
 fvwm_userdir='$HOME/.fvwm'
 fvwm_exe='fvwm2'
 
-with_readline=@with_readline@
-with_rplay=@with_rplay@
-with_stroke=@with_stroke@
-with_xpm=@with_xpm@
 with_gnomewm=@with_gnomewm@
-with_sm=@with_sm@
 with_gtk=@with_gtk@
 with_gdkimlib=@with_gdkimlib@
 with_gnomelibs=@with_gnomelibs@
 with_multibyte=@with_multibyte@
+with_readline=@with_readline@
+with_rplay=@with_rplay@
+with_shape=@with_shape@
+with_sm=@with_sm@
+with_stroke=@with_stroke@
 with_xinerama=@with_xinerama@
+with_xpm=@with_xpm@
 
 while test $# -gt 0; do
 	case "$1" in
@@ -112,17 +113,18 @@ while test $# -gt 0; do
 			echo "$fvwm_exe" ;;
 
 		--supports|-supports|-s)
-			test "$with_readline"  = "yes" && echo "readline"
-			test "$with_rplay"     = "yes" && echo "rplay"
-			test "$with_stroke"    = "yes" && echo "stroke"
-			test "$with_xpm"       = "yes" && echo "xpm"
 			test "$with_gnomewm"   = "yes" && echo "gnome-wm"
-			test "$with_sm"        = "yes" && echo "sm"
 			test "$with_gtk"       = "yes" && echo "gtk"
 			test "$with_gdkimlib"  = "yes" && echo "gdk-imlib"
 			test "$with_gnomelibs" = "yes" && echo "gnome-libs"
 			test "$with_multibyte" = "yes" && echo "multibyte"
+			test "$with_readline"  = "yes" && echo "readline"
+			test "$with_rplay"     = "yes" && echo "rplay"
+			test "$with_shape"     = "yes" && echo "shape"
+			test "$with_sm"        = "yes" && echo "sm"
+			test "$with_stroke"    = "yes" && echo "stroke"
 			test "$with_xinerama"  = "yes" && echo "xinerama"
+			test "$with_xpm"       = "yes" && echo "xpm"
 			;;
 
 		--supports-*)
@@ -154,17 +156,18 @@ while test $# -gt 0; do
 			echo "	Default UserDir: $fvwm_userdir"
 			echo ""
 			echo "Support for features:"
-			echo "	readline: $with_readline"
-			echo "	rplay: $with_rplay"
-			echo "	stroke: $with_stroke"
-			echo "	xpm: $with_xpm"
 			echo "	gnome-wm (window manager hints): $with_gnomewm"
-			echo "	sm (session management): $with_sm"
 			echo "	gtk (FvwmGtk): $with_gtk"
 			echo "	gdk-imlib (in FvwmGtk): $with_gdkimlib"
 			echo "	gnome-libs (in FvwmGtk): $with_gnomelibs"
 			echo "	multibyte: $with_multibyte"
+			echo "	readline: $with_readline"
+			echo "	rplay: $with_rplay"
+			echo "	shape (shaped windows): $with_shape"
+			echo "	sm (session management): $with_sm"
+			echo "	stroke: $with_stroke"
 			echo "	xinerama: $with_xinerama"
+			echo "	xpm: $with_xpm"
 			;;
 
 		*)

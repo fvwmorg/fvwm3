@@ -1,3 +1,10 @@
+2001-07-22  Mikhael Goikhman  <migo@homemail.com>
+
+	* configure.in:
+	* libs/Makefile.am:
+	s/XINERAMA/HAVE_XINERAMA/, now #ifdef'd xinerama code is finally ever
+	compiled in; fixed linking by adding -lXinerama; small corrections
+
 2001-07-22  Dan Espen  <dane@mk.telcordia.com>
 
 	* fvwm/fvwm2.1: Remove some test code, fix remaining .IP commands.
