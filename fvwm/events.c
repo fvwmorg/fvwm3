@@ -732,7 +732,6 @@ void HandleExpose()
 	{
 	  SetBorder(Tmp_win,(Scr.Hilite == Tmp_win),True,True,
 		    Event.xany.window);
-	  flush_expose(Event.xany.window);
 	}
     }
   return;

@@ -505,7 +505,8 @@ FvwmWindow *AddWindow(Window w, FvwmWindow *ReuseWin)
   /* make sure this does not have a BackPixel or BackPixmap so that
      that when the window dies there is no flash of BackPixel/BackPixmap */
   valuemask_save = valuemask;
-  valuemask = valuemask & ~CWBackPixel & ~CWBackPixmap;
+  valuemask &= ~CWBackPixel & ~CWBackPixmap;
+  attributes.event_mask &= ~ExposureMask;
   tmp_win->Parent =
     XCreateWindow (dpy, tmp_win->frame,
 		   tmp_win->boundary_width,
@@ -518,6 +519,7 @@ FvwmWindow *AddWindow(Window w, FvwmWindow *ReuseWin)
   /* create the resize handles */
   /* sides and corners are input only */
   /* title and buttons maybe one day */
+  valuemask |= CWEventMask;
   attributes.event_mask = (ButtonPressMask|ButtonReleaseMask
 			   |EnterWindowMask|LeaveWindowMask);
   tmp_win->title_x = tmp_win->title_y = 0;
@@ -546,7 +548,7 @@ FvwmWindow *AddWindow(Window w, FvwmWindow *ReuseWin)
 
     }
 
-  /* restore valuemask to rmemeber background */
+  /* restore valuemask to remember background */
   valuemask = valuemask_save;
   attributes.event_mask = (ButtonPressMask|ButtonReleaseMask
 			   |EnterWindowMask|LeaveWindowMask|ExposureMask);
