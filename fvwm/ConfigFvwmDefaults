@@ -23,3 +23,5 @@ AddToFunc UrgencyFunc I Iconify -1
 + I Raise
 + I WarpToWindow 5p 5p
 AddToFunc UrgencyDoneFunc I Nop
+# Alt-Tab:
+Key Tab A M WindowList Root c c NoDeskSort

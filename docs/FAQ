@@ -498,6 +498,8 @@ A: The built in command WindowList provides a very close approximation
 
       Key Tab A M WindowList Root c c NoDeskSort
 
+   Starting with release 2.3.2, the above keybinding is built-in.
+
    Hitting Alt-Tab will pop up the WindowList menu.  Unlike another GUI
    you should not keep the Alt key held down, the menu will stay up
    until you hit Return/Enter or Escape.  You can change focus to a
