@@ -1,5 +1,8 @@
 2001-08-16  Dominik Vogt  <dominik.vogt@gmx.de>
 
+	* libs/Parse.c (SkipQuote):
+	fixed a bug in handling of caller specified quote pairs
+
 	* fvwm/move_resize.c (CMD_Maximize):
 	keep window on correct page when viewport does not start on a page
 	boundary

@@ -1077,7 +1077,7 @@ static void ParseButton(button_info **uberb,char *s)
           char *r;
           char *u = s;
 
-          s = GetQuotedString(s, &t, ",)", NULL, NULL, NULL);
+          s = GetQuotedString(s, &t, ",)", NULL, "(", ")");
           r = s;
           if (t && r > u + 1)
           {

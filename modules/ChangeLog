@@ -1,3 +1,8 @@
+2001-08-16  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* FvwmButtons/parse.c (ParseButton):
+	fixed handling of parentheses in button actions
+
 2001-08-15  Mikhael Goikhman  <migo@homemail.com>
 
 	* FvwmScript/Scripts/FvwmScript-Setup95.in:

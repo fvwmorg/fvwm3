@@ -98,31 +98,31 @@ char *SkipQuote(char *s, const char *qlong, const char *qstart,
   if (*s == '\\' && s[1] != 0)
     return s+2;
   else if (*qlong && (t = strchr(qlong, *s)))
-    {
-      char c = *t;
+  {
+    char c = *t;
 
-      s++;
-      while(*s && *s != c)
-	{
-	  /* Skip over escaped text, ie \quote */
-	  if(*s == '\\' && *(s+1) != 0)
-	    s++;
-	  s++;
-	}
-      if(*s == c)
+    s++;
+    while(*s && *s != c)
+    {
+      /* Skip over escaped text, ie \quote */
+      if(*s == '\\' && *(s+1) != 0)
 	s++;
-      return s;
+      s++;
     }
+    if(*s == c)
+      s++;
+    return s;
+  }
   else if (*qstart && (t = strchr(qstart, *s)))
-    {
-      char c = *((t - qstart) + qend);
+  {
+    char c = *((t - qstart) + qend);
 
-      while (*s && *s != c)
-	s = SkipQuote(s, qlong, "", "");
-      return (*s == *t) ? ++s : s;
-    }
-  else
-    return ++s;
+    while (*s && *s != c)
+      s = SkipQuote(s, qlong, "", "");
+    return (*s == c) ? ++s : s;
+  }
+
+  return ++s;
 }
 
 /* Returns a string up to the first character from the string delims in a
