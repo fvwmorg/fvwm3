@@ -3814,6 +3814,12 @@ static Bool style_parse_one_style_option(
 					"UseStyle: %s style not found", token);
 			}
 		}
+		else if (StrEquals(token, "Unmanaged"))
+		{
+			ps->flags.is_unmanaged = on;
+			ps->flag_mask.is_unmanaged = 1;
+			ps->change_mask.is_unmanaged = 1;
+		}
 		else
 		{
 			found = False;

@@ -926,7 +926,7 @@ static inline int __handle_cr_on_client(
 	{
 		/* nothing */
 	}
-	else if ((force_use_grav || 
+	else if ((force_use_grav ||
 		  CR_MOTION_METHOD(fw) == CR_MOTION_METHOD_USE_GRAV) &&
 		 fw->hints.win_gravity != StaticGravity)
 	{
@@ -2631,8 +2631,13 @@ void HandleMapRequestKeepRaised(
 	{
 		/* Add decorations. */
 		fw = AddWindow(ea->exc, ReuseWin, win_opts);
-		if (fw == NULL)
+		if (fw == AW_NO_WINDOW)
 		{
+			return;
+		}
+		else if (fw == AW_UNMANAGED)
+		{
+			XMapWindow(dpy, ew);
 			return;
 		}
 		is_new_window = True;
@@ -2847,7 +2852,7 @@ void HandlePropertyNotify(const evh_args_t *ea)
 			int b_cs = t->icon_background_cs;
 			Bool draw_picture = False;
 			Bool draw_title = False;
-			
+
 			/* redraw ParentRelative tear-off menu */
 			menu_redraw_transparent_tear_off_menu(t, True);
 

@@ -1,5 +1,11 @@
 2004-02-16  Dominik Vogt  <dominik.vogt@gmx.de>
 
+	* fvwm/style.c (style_parse_one_style_option):
+	* fvwm/fvwm.h:
+	* fvwm/style.h (SIS_UNMANAGED):
+	* fvwm/add_window.c (AddWindow):
+	New style Unmanaged
+
 	* fvwm/expand.c (expand_vars_extended):
 	new variables $[w.iconfile] and $[w.miniiconfile]
 

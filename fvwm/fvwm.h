@@ -503,6 +503,7 @@ typedef struct
 	unsigned has_condition_mask : 1;
 #endif
 	unsigned is_button_disabled : NUMBER_OF_BUTTONS;
+	unsigned is_unmanaged : 1;
 #define BACKINGSTORE_DEFAULT 0
 #define BACKINGSTORE_ON      1
 #define BACKINGSTORE_OFF     2

@@ -3511,7 +3511,9 @@ makes fvwm try to raise the windows it manages over
 override_redirect windows.  This is used to cope with ill-mannered
 applications that use long-lived windows of this sort, contrary to
 .SM ICCCM
-conventions.
+conventions.  It is usefull with the
+.I Unmanaged
+style option too.
 
 .I FlickeringQtDialogsWorkaround
 suppresses flickering of the focused window in some modules when
@@ -5732,7 +5734,7 @@ title-bar, 'S' for a window side, top, or bottom bar, '[', ']',
 \'-' and '_' for the left, right, top or bottom side only, 'F' for
 a window frame (the corners), '<', '^', '>' and 'v' for the top
 left, top right, bottom right or bottom left corner, 'I' for an
-Icon window, or '0' through '9' for title-bar buttons, or any
+icon window, or '0' through '9' for title-bar buttons, or any
 combination of these letters.  'A' is for any context.  For
 instance, a context of "FST" applies when the mouse is anywhere in
 a window's border except the title-bar buttons.  Only 'S' and 'W'
@@ -6217,7 +6219,8 @@ slashes ('/').  The last style in these groups is the default.
 .IR EWMHMaximizeUseDynamicWorkingArea ,
 .IR EWMHPlacementIgnoreWorkingArea " / " EWMHPlacementUseWorkingArea
 .IR EWMHPlacementUseDynamicWorkingArea ,
-.IR MoveByProgramMethod .
+.IR MoveByProgramMethod ,
+.IR Unmanaged .
 
 .\" +++++++++++++++ general notes
 In the above list some options are listed as
@@ -7789,6 +7792,19 @@ the parent styles are changed, the derived style is not
 modified. To achieve this you have to issue the
 .I UseStyle
 line again.
+
+.I Unmanaged
+Windows with the
+.I Unmanaged
+style option are ignored by fvwm.  They are not decorated, can not
+be moved or resized, etc.  You probably want to use
+.B Bugopts RaiseOverUnmanaged
+too.  This option can be turned off with the
+.IR !Unmanaged style .
+However, windows that are already ignored at the time when the
+option is set must be recaptured with the
+.B Recapture
+command in order to become managed.
 
 .\" +++++++++++++++ styles affecting window selection
 

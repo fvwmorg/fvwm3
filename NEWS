@@ -11,6 +11,11 @@ Changes in development release 2.5.9 (not released yet)
 
 * New extended variables $[w.iconfile] and $[w.miniiconfile].
 
+* New Style option Unmanaged.  Such windows are not managed by
+  fvwm.
+
+* New binding context 'U' for unmanaged windows, similar to 'R'oot.
+
 -------------------------------------------------------------------
 
 Changes in development release 2.5.8 (31-Oct-2003)

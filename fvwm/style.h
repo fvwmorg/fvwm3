@@ -49,6 +49,8 @@
 	((sf)->has_ol_decor)
 #define SIS_BUTTON_DISABLED(sf) \
 	((sf)->is_button_disabled)
+#define SIS_UNMANAGED(sf) \
+	((sf)->is_unmanaged)
 #define SPLACEMENT_MODE(sf) \
 	((sf)->placement_mode)
 #define SEWMH_PLACEMENT_MODE(sf) \

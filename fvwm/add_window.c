@@ -2169,6 +2169,20 @@ FvwmWindow *AddWindow(
 	/****** window name ******/
 	setup_window_name(fw);
 	setup_class_and_resource(fw);
+
+	/****** style setup ******/
+	/* get merged styles */
+	lookup_style(fw, &style);
+	sflags = SGET_FLAGS_POINTER(style);
+	if (SIS_UNMANAGED(sflags))
+	{
+		free_window_names(fw, True, True);
+		free(fw);
+		MyXUngrabServer(dpy);
+		return AW_UNMANAGED;
+	}
+
+	/****** window attributes and hints ******/
 	setup_window_attr(fw, &wattr);
 	setup_wm_hints(fw);
 
@@ -2176,9 +2190,6 @@ FvwmWindow *AddWindow(
 	/* If the window is in the NoTitle list, or is a transient, dont
 	 * decorate it.  If its a transient, and DecorateTransients was
 	 * specified, decorate anyway. */
-	/* get merged styles */
-	lookup_style(fw, &style);
-	sflags = SGET_FLAGS_POINTER(style);
 	setup_transientfor(fw);
 	if (win_opts->flags.is_menu)
 	{
