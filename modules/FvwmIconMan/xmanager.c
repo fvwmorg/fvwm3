@@ -735,9 +735,10 @@ void set_win_displaystring (WinData *win)
 
 static void clear_empty_region (WinManager *man)
 {
-  XRectangle rects[2];
+  XRectangle rects[3];
   int num_rects = 0, n = man->buttons.num_windows, cols = man->geometry.cols;
   int rows = man->geometry.rows;
+  int boxwidth = man->geometry.boxwidth;
   int boxheight = man->geometry.boxheight;
 
   if (man->shaped)
@@ -745,23 +746,27 @@ static void clear_empty_region (WinManager *man)
 
   rects[1].x = rects[1].y = rects[1].width = rects[1].height = 0;
 
-  if (n == 0 || rows * cols == 0 /* just be to safe */) {
+  if (n == 0 || rows * cols == 0 /* just be to safe */)
+  {
     rects[0].x = 0;
     rects[0].y = 0;
     rects[0].width = man->geometry.width;
     rects[0].height = man->geometry.height;
     num_rects = 1;
   }
-  else if (man->geometry.dir & GROW_DOWN) {
+  else if (man->geometry.dir & GROW_DOWN)
+  {
     assert (cols);
-    if (n % cols == 0) {
+    if (n % cols == 0)
+    {
       rects[0].x = 0;
       rects[0].y = num_visible_rows (n, cols) * man->geometry.boxheight;
       rects[0].width = man->geometry.width;
       rects[0].height = man->geometry.height - rects[0].y;
       num_rects = 1;
     }
-    else {
+    else
+    {
       rects[0].x = (n % cols) * man->geometry.boxwidth;
       rects[0].y = (num_visible_rows (n, cols) - 1) * man->geometry.boxheight;
       rects[0].width = man->geometry.width - rects[0].y;
@@ -773,17 +778,20 @@ static void clear_empty_region (WinManager *man)
       num_rects = 2;
     }
   }
-  else {
+  else
+  {
     assert (cols);
     /* for shaped windows, we won't see this part of the window */
-    if (n % cols == 0) {
+    if (n % cols == 0)
+    {
       rects[0].x = 0;
       rects[0].y = 0;
       rects[0].width = man->geometry.width;
       rects[0].height = top_y_coord (man);
       num_rects = 1;
     }
-    else {
+    else
+    {
       rects[0].x = 0;
       rects[0].y = 0;
       rects[0].width = man->geometry.width;
@@ -795,6 +803,16 @@ static void clear_empty_region (WinManager *man)
       num_rects = 2;
     }
   }
+
+  if (n != 0 && rows * cols != 0)
+  {
+    rects[num_rects].x = cols * boxwidth;
+    rects[num_rects].y = 0;
+    rects[num_rects].width = man->geometry.width - cols * boxwidth;
+    rects[num_rects].height = man->geometry.height;
+    num_rects++;
+  }
+
 
   ConsoleDebug (X11, "Clearing: %d: (%d, %d, %d, %d) + (%d, %d, %d, %d)\n",
 		num_rects,

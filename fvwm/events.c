@@ -86,6 +86,7 @@
 #include "colormaps.h"
 #include "add_window.h"
 #include "icccm2.h"
+#include "placement.h"
 #ifdef HAVE_STROKE
 #include <errno.h>
 #include "stroke.h"
@@ -760,32 +761,58 @@ void HandlePropertyNotify(void)
       old_height_inc = Tmp_win->hints.height_inc;
       old_base_width = Tmp_win->hints.base_width;
       old_base_height = Tmp_win->hints.base_height;
-      GetWindowSizeHints (Tmp_win);
-      if (IS_MAXIMIZED(Tmp_win) &&
-	  (old_width_inc != Tmp_win->hints.width_inc ||
-	   old_height_inc != Tmp_win->hints.height_inc))
+      GetWindowSizeHints(Tmp_win);
+      if (old_width_inc != Tmp_win->hints.width_inc ||
+	  old_height_inc != Tmp_win->hints.height_inc)
       {
 	int units_w;
 	int units_h;
+	int wdiff;
+	int hdiff;
+	int new_w;
+	int new_h;
 
 	/* we have to resize the unmaximized window to keep the size in resize
 	 * increments constant */
-	units_w = Tmp_win->orig_g.width - 2 * Tmp_win->boundary_width -
+	units_w = Tmp_win->normal_g.width - 2 * Tmp_win->boundary_width -
 	  old_base_width;
-        units_h = Tmp_win->orig_g.height - Tmp_win->title_g.height -
+        units_h = Tmp_win->normal_g.height - Tmp_win->title_g.height -
 	  2 * Tmp_win->boundary_width - old_base_height;
 	units_w /= old_width_inc;
 	units_h /= old_height_inc;
 
 	/* update the 'invisible' geometry */
-	Tmp_win->orig_g.width +=
-	  units_w * (Tmp_win->hints.width_inc - old_width_inc) +
+	wdiff = units_w * (Tmp_win->hints.width_inc - old_width_inc) +
 	  (Tmp_win->hints.base_width - old_base_width);
-	Tmp_win->orig_g.height +=
-	  units_h * (Tmp_win->hints.height_inc - old_height_inc) +
+	hdiff = units_h * (Tmp_win->hints.height_inc - old_height_inc) +
 	  (Tmp_win->hints.base_height - old_base_height);
-	ConstrainSize(Tmp_win, &Tmp_win->orig_g.width, &Tmp_win->orig_g.height,
-		      0, 0, False);
+	gravity_resize(
+	  Tmp_win->hints.win_gravity, &Tmp_win->normal_g, wdiff, hdiff);
+	new_w = Tmp_win->normal_g.width;
+	new_h = Tmp_win->normal_g.height;
+	ConstrainSize(Tmp_win, &Tmp_win->normal_g.width,
+		      &Tmp_win->normal_g.height, 0, 0, False);
+	wdiff = new_w - Tmp_win->normal_g.width;
+	hdiff = new_h - Tmp_win->normal_g.height;
+	Tmp_win->normal_g.width += wdiff;
+	Tmp_win->normal_g.height += hdiff;
+	gravity_resize(
+	  Tmp_win->hints.win_gravity, &Tmp_win->normal_g, wdiff, hdiff);
+	if (!IS_MAXIMIZED(Tmp_win))
+	{
+	  rectangle new_g;
+
+	  get_relative_geometry(&new_g, &Tmp_win->normal_g);
+	  if (IS_SHADED(Tmp_win))
+	    get_shaded_geometry(Tmp_win, &new_g, &new_g);
+	  ForceSetupFrame(
+	    Tmp_win, new_g.x, new_g.y, new_g.width, new_g.height, False,
+	    False);
+	}
+	else
+	{
+	  maximize_adjust_offset(Tmp_win);
+	}
       }
       BroadcastConfig(M_CONFIGURE_WINDOW,Tmp_win);
       break;
@@ -1648,11 +1675,9 @@ void HandleLeaveNotify(void)
  ************************************************************************/
 void HandleConfigureRequest(void)
 {
+  rectangle new_g;
   XWindowChanges xwc;
   unsigned long xwcm;
-  int x, y;
-  unsigned int width, height;
-  int h;
   XConfigureRequestEvent *cre = &Event.xconfigurerequest;
   Bool do_send_event = False;
 
@@ -1723,7 +1748,8 @@ void HandleConfigureRequest(void)
         XConfigureWindow(dpy, Tmp_win->icon_w, xwcm, &xwc);
       }
     }
-    if (!Tmp_win) return;
+    if (!Tmp_win)
+      return;
   }
 
 #ifdef SHAPE
@@ -1742,16 +1768,16 @@ void HandleConfigureRequest(void)
   if (cre->window == Tmp_win->w)
   {
     /* Don't modify frame_XXX fields before calling SetupWindow! */
-    x = Tmp_win->frame_g.x;
-    y = Tmp_win->frame_g.y;
-    width = Tmp_win->frame_g.width;
+    new_g.x = Tmp_win->frame_g.x;
+    new_g.y = Tmp_win->frame_g.y;
+    new_g.width = Tmp_win->frame_g.width;
     if (IS_SHADED(Tmp_win))
     {
-      height = Tmp_win->orig_g.height;
+      new_g.height = Tmp_win->normal_g.height;
     }
     else
     {
-      height = Tmp_win->frame_g.height;
+      new_g.height = Tmp_win->frame_g.height;
     }
 
     /* for restoring */
@@ -1762,26 +1788,27 @@ void HandleConfigureRequest(void)
     /* override even if border change */
 
     if (cre->value_mask & CWX)
-      x = cre->x - Tmp_win->boundary_width;
+      new_g.x = cre->x - Tmp_win->boundary_width;
     if (cre->value_mask & CWY)
-      y = cre->y - Tmp_win->boundary_width -
+      new_g.y = cre->y - Tmp_win->boundary_width -
 	((HAS_BOTTOM_TITLE(Tmp_win)) ? 0 : Tmp_win->title_g.height);
     if (cre->value_mask & CWWidth)
-      width = cre->width + 2*Tmp_win->boundary_width;
+      new_g.width = cre->width + 2*Tmp_win->boundary_width;
 
     if (cre->value_mask & CWHeight)
     {
       if (cre->height < (WINDOW_FREAKED_OUT_HEIGHT - Tmp_win->title_g.height -
 			 2 * Tmp_win->boundary_width))
       {
-	height = cre->height+Tmp_win->title_g.height+2*Tmp_win->boundary_width;
+	new_g.height =
+	  cre->height+Tmp_win->title_g.height+2*Tmp_win->boundary_width;
       }
       else
       {
 	/* patch to ignore height changes to astronomically large windows
 	 * (needed for XEmacs 20.4); don't care if the window is shaded here -
 	 * we won't use 'height' in this case anyway */
-	height = Tmp_win->frame_g.height;
+	new_g.height = Tmp_win->frame_g.height;
 	/* inform the buggy app about the size that *we* want */
 	do_send_event = True;
       }
@@ -1794,16 +1821,20 @@ void HandleConfigureRequest(void)
      * requested client window width; the inner height is the same as the
      * requested client window height plus any title bar slop.
      */
-    ConstrainSize(Tmp_win, &width, &height, 0, 0, False);
-    h = (IS_SHADED(Tmp_win)) ? Tmp_win->frame_g.height : height;
+    ConstrainSize(Tmp_win, &new_g.width, &new_g.height, 0, 0, False);
     /* dont allow clients to resize maximized windows */
-    if (!IS_MAXIMIZED(Tmp_win) || (width == Tmp_win->frame_g.width &&
-				   height == Tmp_win->frame_g.height))
+    if (!IS_MAXIMIZED(Tmp_win) || (new_g.width == Tmp_win->frame_g.width &&
+				   new_g.height == Tmp_win->frame_g.height))
     {
-      SetupFrame (Tmp_win, x, y, width, h, False, False);
+      if (IS_SHADED(Tmp_win))
+	get_shaded_geometry(Tmp_win, &new_g, &new_g);
+      SetupFrame(
+	Tmp_win, new_g.x, new_g.y, new_g.width, new_g.height, False, False);
     }
-    if (IS_SHADED(Tmp_win))
-      Tmp_win->orig_g.height = height;
+    /* make sure the window structure has the new position */
+    update_absolute_geometry(Tmp_win);
+    if (IS_MAXIMIZED(Tmp_win))
+      maximize_adjust_offset(Tmp_win);
   }
 
   /*  Stacking order change requested...  */
@@ -1916,10 +1947,10 @@ void HandleConfigureRequest(void)
       client_event.xconfigure.y =
 	Tmp_win->frame_g.y + Tmp_win->boundary_width +
 	((HAS_BOTTOM_TITLE(Tmp_win)) ? 0 : Tmp_win->title_g.height);
-      client_event.xconfigure.width = width-2*Tmp_win->boundary_width;
-      client_event.xconfigure.height = height-2*Tmp_win->boundary_width -
-	Tmp_win->title_g.height;
-
+      client_event.xconfigure.width =
+	new_g.width - 2 * Tmp_win->boundary_width;
+      client_event.xconfigure.height =
+	new_g.height - 2 * Tmp_win->boundary_width - Tmp_win->title_g.height;
       client_event.xconfigure.border_width = cre->border_width;
       /* Real ConfigureNotify events say we're above title window, so ...
          what if we don't have a title ?????

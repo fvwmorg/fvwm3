@@ -44,6 +44,8 @@
 #include "borders.h"
 #include "colormaps.h"
 #include "decorations.h"
+#include "placement.h"
+#include "gnome.h"
 
 /* ----- move globals ----- */
 extern XEvent Event;
@@ -75,31 +77,61 @@ static void DisplaySize(FvwmWindow *, int, int, Bool, Bool);
 
 /* The vars are named for the x-direction, but this is used for both x and y */
 static int GetOnePositionArgument(
-  char *s1,int x,int w,int *pFinalX,float factor, int max)
+  char *s1,int x,int w,int *pFinalX,float factor, int max, Bool is_x)
 {
   int val;
   int cch = strlen(s1);
+  Bool add_pointer_position = False;
 
   if (cch == 0)
     return 0;
-  if (s1[cch-1] == 'p') {
+  if (s1[cch-1] == 'p')
+  {
     factor = 1;  /* Use pixels, so don't multiply by factor */
     s1[cch-1] = '\0';
   }
-  if (strcmp(s1,"w") == 0) {
+  if (*s1 == 'm')
+  {
+    add_pointer_position = True;
+    s1++;
+    /* 'mw' is not allowed */
+    if (*s1 == 'w')
+      return 0;
+  }
+  if (strcmp(s1,"w") == 0)
+  {
     *pFinalX = x;
-  } else if (sscanf(s1,"w-%d",&val) == 1) {
+  }
+  else if (sscanf(s1,"w-%d",&val) == 1)
+  {
     *pFinalX = x-(val*factor);
-  } else if (sscanf(s1,"w+%d",&val) == 1) {
+  }
+  else if (sscanf(s1,"w+%d",&val) == 1 || sscanf(s1,"w%d",&val) == 1 )
+  {
     *pFinalX = x+(val*factor);
-  } else if (sscanf(s1,"-%d",&val) == 1) {
+  }
+  else if (sscanf(s1,"-%d",&val) == 1)
+  {
     *pFinalX = max-w - val*factor;
-  } else if (sscanf(s1,"%d",&val) == 1) {
+  }
+  else if (sscanf(s1,"%d",&val) == 1)
+  {
     *pFinalX = val*factor;
-  } else {
+  }
+  else
+  {
     return 0;
   }
-  /* DEBUG_FPRINTF((stderr,"Got %d\n",*pFinalX)); */
+  if (add_pointer_position)
+  {
+    int x = 0;
+    int y = 0;
+
+    XQueryPointer(
+      dpy, Scr.Root, &JunkRoot, &JunkChild, &JunkX, &JunkY, &x, &y, &JunkMask);
+    *pFinalX += (is_x) ? x : y;
+  }
+
   return 1;
 }
 
@@ -110,6 +142,7 @@ static int GetOnePositionArgument(
  *   10p 5p          Absolute pixel position
  *   10p -0p         Absolute pixel position, from bottom
  *  w+5  w-10p       Relative position, right 5%, up ten pixels
+ *  w+5  w-10p       Pointer relative position, right 5%, up ten pixels
  * Returns 2 when x & y have parsed without error, 0 otherwise
  */
 static int GetMoveArguments(char *action, int x, int y, int w, int h,
@@ -127,8 +160,10 @@ static int GetMoveArguments(char *action, int x, int y, int w, int h,
 
   if (s1 != NULL && s2 != NULL)
   {
-    if (GetOnePositionArgument(s1,x,w,pFinalX,(float)scrWidth/100,scrWidth) &&
-        GetOnePositionArgument(s2,y,h,pFinalY,(float)scrHeight/100,scrHeight))
+    if (GetOnePositionArgument(s1, x, w, pFinalX, (float)scrWidth/100,
+			       scrWidth, True) &&
+        GetOnePositionArgument(s2, y, h, pFinalY, (float)scrHeight/100,
+			       scrHeight, False))
       retval = 2;
     else
       *fWarp = False; /* make sure warping is off for interactive moves */
@@ -310,11 +345,13 @@ static void AnimatedMoveAnyWindow(FvwmWindow *tmp_win, Window w, int startX,
     {
       tmp_win->frame_g.x = currentX;
       tmp_win->frame_g.y = currentY;
+      update_absolute_geometry(tmp_win);
+      maximize_adjust_offset(tmp_win);
       BroadcastConfig(M_CONFIGURE_WINDOW, tmp_win);
       FlushOutputQueues();
     }
 
-    usleep(cmsDelay*1000); /* usleep takes microseconds */
+    usleep(cmsDelay * 1000); /* usleep takes microseconds */
     /* this didn't work for me -- maybe no longer necessary since
      * we warn the user when they use > .5 seconds as a between-frame delay
      * time.
@@ -364,7 +401,7 @@ void AnimatedMoveFvwmWindow(FvwmWindow *tmp_win, Window w, int startX,
  * Start a window move operation
  *
  ****************************************************************************/
-void move_window_doit(F_CMD_ARGS, Bool fAnimated, Bool fMoveToPage)
+void move_window_doit(F_CMD_ARGS, Bool do_animate, Bool do_move_to_page)
 {
   int FinalX, FinalY;
   int n;
@@ -372,14 +409,19 @@ void move_window_doit(F_CMD_ARGS, Bool fAnimated, Bool fMoveToPage)
   unsigned int width, height;
   int page_x, page_y;
   Bool fWarp = False;
+  int dx;
+  int dy;
 
   if (DeferExecution(eventp,&w,&tmp_win,&context,
-		     (fMoveToPage) ? CRS_SELECT : CRS_MOVE, ButtonPress))
+		     (do_move_to_page) ? CRS_SELECT : CRS_MOVE, ButtonPress))
     return;
 
   if (tmp_win == NULL)
     return;
 
+#if 0
+fprintf(stderr,"move window '%s'\n", tmp_win->name);
+#endif
   if (IS_FIXED (tmp_win))
     return;
 
@@ -398,9 +440,9 @@ void move_window_doit(F_CMD_ARGS, Bool fAnimated, Bool fMoveToPage)
 
   XGetGeometry(dpy, w, &JunkRoot, &x, &y,
 	       &width, &height, &JunkBW, &JunkDepth);
-  if (fMoveToPage)
+  if (do_move_to_page)
   {
-    fAnimated = False;
+    do_animate = False;
     FinalX = x % Scr.MyDisplayWidth;
     FinalY = y % Scr.MyDisplayHeight;
     if(FinalX < 0)
@@ -421,15 +463,17 @@ void move_window_doit(F_CMD_ARGS, Bool fAnimated, Bool fMoveToPage)
       InteractiveMove(&w,tmp_win,&FinalX,&FinalY,eventp);
   }
 
+  dx = FinalX - tmp_win->frame_g.x;
+  dy = FinalY - tmp_win->frame_g.y;
   if (w == tmp_win->frame)
   {
-    if (fAnimated)
+    if (do_animate)
     {
       AnimatedMoveFvwmWindow(tmp_win,w,-1,-1,FinalX,FinalY,fWarp,-1,NULL);
     }
     SetupFrame(tmp_win, FinalX, FinalY,
 	       tmp_win->frame_g.width, tmp_win->frame_g.height,True,False);
-    if (fWarp & !fAnimated)
+    if (fWarp & !do_animate)
       XWarpPointer(dpy, None, None, 0, 0, 0, 0, FinalX - x, FinalY - y);
   }
   else /* icon window */
@@ -445,7 +489,7 @@ void move_window_doit(F_CMD_ARGS, Bool fAnimated, Bool fMoveToPage)
 		    tmp_win->icon_x_loc, tmp_win->icon_y_loc,
 		    tmp_win->icon_p_width,
 		    tmp_win->icon_w_height + tmp_win->icon_p_height);
-    if (fAnimated)
+    if (do_animate)
     {
       AnimatedMoveOfWindow(tmp_win->icon_w,-1,-1,tmp_win->icon_xl_loc,
 			   FinalY+tmp_win->icon_p_height, fWarp,-1,NULL);
@@ -460,7 +504,7 @@ void move_window_doit(F_CMD_ARGS, Bool fAnimated, Bool fMoveToPage)
     if(tmp_win->icon_pixmap_w != None)
     {
       XMapWindow(dpy,tmp_win->icon_w);
-      if (fAnimated)
+      if (do_animate)
       {
 	AnimatedMoveOfWindow(tmp_win->icon_pixmap_w, -1,-1,
 			     tmp_win->icon_x_loc,FinalY,fWarp,-1,NULL);
@@ -473,7 +517,19 @@ void move_window_doit(F_CMD_ARGS, Bool fAnimated, Bool fMoveToPage)
       }
       XMapWindow(dpy,w);
     }
-
+  }
+  if (IS_MAXIMIZED(tmp_win))
+  {
+    tmp_win->max_g.x += dx;
+    tmp_win->max_g.y += dy;
+    update_absolute_geometry(tmp_win);
+    maximize_adjust_offset(tmp_win);
+  }
+  else
+  {
+    tmp_win->normal_g.x += dx;
+    tmp_win->normal_g.y += dy;
+    update_absolute_geometry(tmp_win);
   }
 
   return;
@@ -1489,6 +1545,9 @@ void resize_window(F_CMD_ARGS)
   if (tmp_win == NULL)
     return;
 
+#if 0
+fprintf(stderr,"resize window '%s'\n", tmp_win->name);
+#endif
   ResizeWindow = tmp_win->frame;
   XQueryPointer( dpy, ResizeWindow, &JunkRoot, &JunkChild,
 		 &JunkX, &JunkY, &px, &py, &button_mask);
@@ -1502,6 +1561,13 @@ void resize_window(F_CMD_ARGS)
 
   was_maximized = IS_MAXIMIZED(tmp_win);
   SET_MAXIMIZED(tmp_win, 0);
+  if (was_maximized)
+  {
+    /* must redraw the buttons now so that the 'maximize' button does not stay
+     * depressed. */
+    DrawDecorations(
+      tmp_win, DRAW_BUTTONS, (tmp_win == Scr.Hilite), True, None);
+  }
 
   /* can't resize icons */
   if(IS_ICONIFIED(tmp_win))
@@ -1541,20 +1607,17 @@ void resize_window(F_CMD_ARGS)
 		  False);
     if (IS_SHADED(tmp_win))
     {
-#if 0
-      if (HAS_BOTTOM_TITLE(tmp_win))
-	tmp_win->orig_g.y = tmp_win->frame_g.y - drag->height + tmp_win->frame_g.height;
-#endif
-      tmp_win->orig_g.width = drag->width;
-      tmp_win->orig_g.height = drag->height;
       SetupFrame(tmp_win, tmp_win->frame_g.x, tmp_win->frame_g.y,
 		 drag->width, tmp_win->frame_g.height,False,False);
     }
     else
+    {
       SetupFrame(tmp_win, tmp_win->frame_g.x, tmp_win->frame_g.y,
 		 drag->width, drag->height,False,False);
+    }
     DrawDecorations(tmp_win, DRAW_ALL, True, True, None);
-
+    update_absolute_geometry(tmp_win);
+    maximize_adjust_offset(tmp_win);
     ResizeWindow = None;
     return;
   }
@@ -1586,9 +1649,9 @@ void resize_window(F_CMD_ARGS)
     else
     {
       if (was_maximized)
-	drag->height = tmp_win->maximized_g.height;
+	drag->height = tmp_win->max_g.height;
       else
-	drag->height = tmp_win->orig_g.height;
+	drag->height = tmp_win->normal_g.height;
     }
     drag->x = tmp_win->frame_g.x;
     drag->y = tmp_win->frame_g.y;
@@ -1928,8 +1991,8 @@ void resize_window(F_CMD_ARGS)
   if(!abort && bad_window != tmp_win->w)
   {
     /* size will be >= to requested */
-    ConstrainSize(tmp_win, &drag->width, &drag->height, xmotion, ymotion,
-		  True);
+    ConstrainSize(
+      tmp_win, &drag->width, &drag->height, xmotion, ymotion, True);
     if (IS_SHADED(tmp_win))
     {
       if (HAS_BOTTOM_TITLE(tmp_win))
@@ -1942,12 +2005,21 @@ void resize_window(F_CMD_ARGS)
 	SetupFrame(tmp_win, drag->x, drag->y,
 		   drag->width, tmp_win->frame_g.height, False, False);
       }
-      tmp_win->orig_g.height = drag->height;
+      tmp_win->normal_g.height = drag->height;
     }
     else
       SetupFrame(tmp_win, drag->x, drag->y, drag->width, drag->height,
 		 False, False);
   }
+  if (abort && was_maximized)
+  {
+    /* since we aborted the resize, the window is still maximized */
+    SET_MAXIMIZED(tmp_win, 1);
+    /* force redraw */
+    DrawDecorations(
+      tmp_win, DRAW_BUTTONS, (tmp_win == Scr.Hilite), True, None);
+  }
+
   if (bad_window == tmp_win->w)
   {
     XUnmapWindow(dpy, tmp_win->frame);
@@ -1967,6 +2039,8 @@ void resize_window(F_CMD_ARGS)
   UngrabEm(GRAB_NORMAL);
   Scr.flags.edge_wrap_x = edge_wrap_x;
   Scr.flags.edge_wrap_y = edge_wrap_y;
+  update_absolute_geometry(tmp_win);
+  maximize_adjust_offset(tmp_win);
 
   return;
 }
@@ -2591,6 +2665,37 @@ static void MaximizeWidth(FvwmWindow *win, unsigned int *win_width, int *win_x,
   *win_x = new_x1;
 }
 
+/* make sure a maximized window and it's normal version are never a page or
+ * more apart. */
+void maximize_adjust_offset(FvwmWindow *tmp_win)
+{
+  int off_x;
+  int off_y;
+
+  off_x = tmp_win->normal_g.x - tmp_win->max_g.x - tmp_win->max_offset.x;
+  off_y = tmp_win->normal_g.y - tmp_win->max_g.y - tmp_win->max_offset.y;
+  if (off_x >= Scr.MyDisplayWidth)
+  {
+    tmp_win->normal_g.x -=
+      (off_x / Scr.MyDisplayWidth) * Scr.MyDisplayWidth;
+  }
+  else if (off_x <= Scr.MyDisplayWidth)
+  {
+    tmp_win->normal_g.x +=
+      ((-off_x) / Scr.MyDisplayWidth) * Scr.MyDisplayWidth;
+  }
+  if (off_y >= Scr.MyDisplayHeight)
+  {
+    tmp_win->normal_g.y -=
+      (off_y / Scr.MyDisplayHeight) * Scr.MyDisplayHeight;
+  }
+  else if (off_y <= Scr.MyDisplayHeight)
+  {
+    tmp_win->normal_g.y +=
+      ((-off_y) / Scr.MyDisplayHeight) * Scr.MyDisplayHeight;
+  }
+}
+
 /***********************************************************************
  *
  *  Procedure:
@@ -2599,8 +2704,6 @@ static void MaximizeWidth(FvwmWindow *win, unsigned int *win_width, int *win_x,
  ***********************************************************************/
 void Maximize(F_CMD_ARGS)
 {
-  unsigned int new_width, new_height;
-  int new_x,new_y;
   int page_x, page_y;
   int val1, val2, val1_unit, val2_unit;
   int toggle;
@@ -2608,6 +2711,7 @@ void Maximize(F_CMD_ARGS)
   char *taction;
   Bool grow_x = False;
   Bool grow_y = False;
+  rectangle new_g;
 
   if (DeferExecution(eventp,&w,&tmp_win,&context, CRS_SELECT,ButtonRelease))
     return;
@@ -2692,44 +2796,29 @@ void Maximize(F_CMD_ARGS)
 
   if (IS_MAXIMIZED(tmp_win))
   {
+#if 0
+fprintf(stderr,"normalize window '%s'\n", tmp_win->name);
+#endif
     SET_MAXIMIZED(tmp_win, 0);
-    /* Unmaximizing is slightly tricky since we want the window to
-     * stay on the same page, even if we have moved to a different page
-     * in the meantime. The orig values are absolute! */
-    if (IsRectangleOnThisPage(&(tmp_win->frame_g), tmp_win->Desk))
-    {
-      /* Make sure we keep it on screen while unmaximizing. Since
-	 orig_g is in absolute coords, we need to extract the
-	 page-relative coords. This doesn't work well if the page
-	 has been moved by a fractional part of the page size
-	 between maximizing and unmaximizing. */
-      new_x = tmp_win->orig_g.x -
-	truncate_to_multiple(tmp_win->orig_g.x,Scr.MyDisplayWidth);
-      new_y = tmp_win->orig_g.y -
-	truncate_to_multiple(tmp_win->orig_g.y,Scr.MyDisplayHeight);
-    }
-    else
-    {
-      new_x = tmp_win->orig_g.x - Scr.Vx;
-      new_y = tmp_win->orig_g.y - Scr.Vy;
-    }
-    new_width = tmp_win->orig_g.width;
+    get_relative_geometry(&tmp_win->frame_g, &tmp_win->normal_g);
     if (IS_SHADED(tmp_win))
-      new_height = tmp_win->title_g.height + 2 * tmp_win->boundary_width;
-    else
-      new_height = tmp_win->orig_g.height;
-    SetupFrame(tmp_win, new_x, new_y, new_width, new_height, True, False);
+      get_shaded_geometry(tmp_win, &tmp_win->frame_g, &tmp_win->frame_g);
+    ForceSetupFrame(
+      tmp_win, tmp_win->frame_g.x, tmp_win->frame_g.y, tmp_win->frame_g.width,
+      tmp_win->frame_g.height, True, False);
     DrawDecorations(tmp_win, DRAW_ALL, True, True, None);
   }
   else /* maximize */
   {
-    if (IS_SHADED(tmp_win))
-      new_height = tmp_win->orig_g.height;
-    else
-      new_height = tmp_win->frame_g.height;
-    new_width = tmp_win->frame_g.width;
-
-    if (IsRectangleOnThisPage(&(tmp_win->frame_g), tmp_win->Desk))
+#if 0
+fprintf(stderr,"maximize window '%s'\n", tmp_win->name);
+#endif
+    /* find the new page and geometry */
+    new_g.x = tmp_win->frame_g.x;
+    new_g.y = tmp_win->frame_g.y;
+    new_g.width = tmp_win->frame_g.width;
+    new_g.height = tmp_win->frame_g.height;
+    if (IsRectangleOnThisPage(&tmp_win->frame_g, tmp_win->Desk))
     {
       /* maximize on visible page */
       page_x = 0;
@@ -2739,51 +2828,112 @@ void Maximize(F_CMD_ARGS)
     {
       /* maximize on the page where the center of the window is */
       page_x = truncate_to_multiple(
-	(tmp_win->frame_g.x + tmp_win->frame_g.width-1) / 2,
+	tmp_win->frame_g.x + tmp_win->frame_g.width / 2,
 	Scr.MyDisplayWidth);
       page_y = truncate_to_multiple(
-	(tmp_win->frame_g.y + tmp_win->frame_g.height-1) / 2,
+	tmp_win->frame_g.y + tmp_win->frame_g.height / 2,
 	Scr.MyDisplayHeight);
     }
 
-    new_x = tmp_win->frame_g.x;
-    new_y = tmp_win->frame_g.y;
-
+    /* handle command line arguments */
     if (grow_y)
     {
-      MaximizeHeight(tmp_win, new_width, new_x, &new_height, &new_y);
+      MaximizeHeight(tmp_win, new_g.width, new_g.x, &new_g.height, &new_g.y);
     }
     else if(val2 > 0)
     {
-      new_height = val2 * val2_unit / 100;
-      new_y = page_y;
+      new_g.height = val2 * val2_unit / 100;
+      new_g.y = page_y;
     }
     if (grow_x)
     {
-      MaximizeWidth(tmp_win, &new_width, &new_x, new_height, new_y);
+      MaximizeWidth(tmp_win, &new_g.width, &new_g.x, new_g.height, new_g.y);
     }
     else if(val1 >0)
     {
-      new_width = val1 * val1_unit / 100;
-      new_x = page_x;
+      new_g.width = val1 * val1_unit / 100;
+      new_g.x = page_x;
     }
-    if((val1==0)&&(val2==0))
+    if(val1 ==0 && val2==0)
     {
-      new_x = page_x;
-      new_y = page_y;
-      new_height = Scr.MyDisplayHeight;
-      new_width = Scr.MyDisplayWidth;
+      new_g.x = page_x;
+      new_g.y = page_y;
+      new_g.height = Scr.MyDisplayHeight;
+      new_g.width = Scr.MyDisplayWidth;
     }
+    /* now maximize it */
     SET_MAXIMIZED(tmp_win, 1);
-
-    ConstrainSize(tmp_win, &new_width, &new_height, 0, 0, False);
-    tmp_win->maximized_g.x = new_x;
-    tmp_win->maximized_g.y = new_y;
-    tmp_win->maximized_g.width = new_width;
-    tmp_win->maximized_g.height = new_height;
+    ConstrainSize(tmp_win, &new_g.width, &new_g.height, 0, 0, False);
+    tmp_win->max_g = new_g;
     if (IS_SHADED(tmp_win))
-      new_height = tmp_win->frame_g.height;
-    SetupFrame(tmp_win,new_x,new_y,new_width,new_height,True,False);
+      get_shaded_geometry(tmp_win, &new_g, &tmp_win->max_g);
+    SetupFrame(
+      tmp_win, new_g.x, new_g.y, new_g.width, new_g.height, True, False);
     DrawDecorations(tmp_win, DRAW_ALL, (Scr.Hilite == tmp_win), True, None);
+    /* remember the offset between old and new position in case the maximized
+     * window is moved more than the screen width/height. */
+    update_absolute_geometry(tmp_win);
+    tmp_win->max_offset.x = tmp_win->normal_g.x - tmp_win->max_g.x;
+    tmp_win->max_offset.y = tmp_win->normal_g.y - tmp_win->max_g.y;
+#if 0
+fprintf(stderr,"%d %d %d %d, max_offset.x = %d, max_offset.y = %d\n", tmp_win->max_g.x, tmp_win->max_g.y, tmp_win->max_g.width, tmp_win->max_g.height, tmp_win->max_offset.x, tmp_win->max_offset.y);
+#endif
   }
+}
+
+/* ----------------------------- stick code -------------------------------- */
+
+void handle_stick(F_CMD_ARGS, int toggle)
+{
+  if ((toggle == 1 && IS_STICKY(tmp_win)) ||
+      (toggle == 0 && !IS_STICKY(tmp_win)))
+    return;
+
+  if(IS_STICKY(tmp_win))
+  {
+#if 0
+fprintf(stderr,"unstick window '%s'\n", tmp_win->name);
+#endif
+    SET_STICKY(tmp_win, 0);
+    update_absolute_geometry(tmp_win);
+    tmp_win->Desk = Scr.CurrentDesk;
+#ifdef GNOME
+    GNOME_SetDeskCount();
+    GNOME_SetDesk(tmp_win);
+#endif
+  }
+  else
+  {
+#if 0
+fprintf(stderr,"stick window '%s'\n", tmp_win->name);
+#endif
+    if (tmp_win->Desk != Scr.CurrentDesk)
+      do_move_window_to_desk(tmp_win, Scr.CurrentDesk);
+    SET_STICKY(tmp_win, 1);
+    if (!IsRectangleOnThisPage(&tmp_win->frame_g, Scr.CurrentDesk))
+    {
+      move_window_doit(eventp, w, tmp_win, context, "", Module, FALSE, TRUE);
+      /* move_window_doit resets the STICKY flag, so we must set it after the
+       * call! */
+      SET_STICKY(tmp_win, 1);
+    }
+  }
+  BroadcastConfig(M_CONFIGURE_WINDOW,tmp_win);
+  DrawDecorations(tmp_win, DRAW_TITLE, (Scr.Hilite==tmp_win), True, None);
+
+#ifdef GNOME
+  GNOME_SetHints (tmp_win);
+#endif
+}
+
+void stick_function(F_CMD_ARGS)
+{
+  int toggle;
+
+  if (DeferExecution(eventp,&w,&tmp_win,&context,CRS_SELECT,ButtonRelease))
+    return;
+
+  toggle = ParseToggleArgument(action, &action, -1, 0);
+
+  handle_stick(eventp, w, tmp_win, context, action, Module, toggle);
 }

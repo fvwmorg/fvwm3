@@ -391,9 +391,11 @@ static void new_window (FvwmPacketBody *body)
 {
   WinData *win;
 
+sleep(1);
   win = new_windata();
   memcpy(&(win->flags), &(body->add_config_data.flags), sizeof(win->flags));
-  if (!(IS_TRANSIENT(win))) {
+  if (!(IS_TRANSIENT(win)))
+  {
     win->app_id = body->add_config_data.app_id;
     win->app_id_set = 1;
     set_win_configuration (win, body);
@@ -401,10 +403,11 @@ static void new_window (FvwmPacketBody *body)
     insert_win_hashtab (win);
     check_win_complete (win);
     check_in_window (win);
-    }  else  {
+  }
+  else
+  {
     free(win);
-    }
-
+  }
 }
 
 static void destroy_window (FvwmPacketBody *body)

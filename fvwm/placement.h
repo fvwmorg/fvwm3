@@ -21,4 +21,18 @@ int PlaceWindow(FvwmWindow *tmp_win, style_flags *sflag, int Desk, int PageX,
 		 int PageY);
 void PlaceAgain_func(F_CMD_ARGS);
 
+void gravity_move(int gravity, rectangle *rect, int xdiff, int ydiff);
+void gravity_resize(int gravity, rectangle *rect, int wdiff, int hdiff);
+void gravity_get_naked_geometry(
+  int gravity, FvwmWindow *t, rectangle *save_g, rectangle *orig_g);
+void gravity_add_decoration(
+  int gravity, FvwmWindow *t, rectangle *dest_g, rectangle *orig_g);
+void get_relative_geometry(rectangle *rel_g, rectangle *abs_g);
+void gravity_translate_to_northwest_geometry(
+  int gravity, FvwmWindow *t, rectangle *dest_g, rectangle *orig_g);
+void gravity_translate_to_northwest_geometry_no_bw(
+  int gravity, FvwmWindow *t, rectangle *dest_g, rectangle *orig_g);
+void get_shaded_geometry(
+  FvwmWindow *tmp_win, rectangle *small_g, rectangle *big_g);
+
 #endif /* PLACEMENT_H */

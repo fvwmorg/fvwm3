@@ -27,6 +27,9 @@ typedef enum
 void SetupTitleBar(FvwmWindow *tmp_win, int w, int h);
 void SetupFrame(FvwmWindow *, int, int, int, int, Bool, Bool);
 void ForceSetupFrame(FvwmWindow *, int, int, int, int, Bool, Bool);
+void update_absolute_geometry(FvwmWindow *tmp_win);
+void set_decor_gravity(
+  FvwmWindow *tmp_win, int gravity, int parent_gravity, int client_gravity);
 void SetShape(FvwmWindow *, int);
 void cmd_button_state(F_CMD_ARGS);
 void SetBorderStyle(F_CMD_ARGS);

@@ -375,6 +375,7 @@ void ProcessMessage(unsigned long type,unsigned long *body)
       p.mask = body[7];
 
       UpdateButtonPicture(&buttons, i, &p);
+      AdjustWindow(True);
       redraw = 1;
     }
     break;
@@ -383,7 +384,8 @@ void ProcessMessage(unsigned long type,unsigned long *body)
     case M_WINDOW_NAME:
     case M_ICON_NAME:
       if ((type==M_ICON_NAME && !UseIconNames) ||
-          (type==M_WINDOW_NAME && UseIconNames)) break;
+          (type==M_WINDOW_NAME && UseIconNames))
+	break;
       /* We get the win_borders only when WinList  map it self, this is ok
        *  since we need it only after an unmap */
       if (!strcmp((char *)&body[3],&Module[1]))
@@ -749,7 +751,7 @@ void LoopOnEvents(void)
           num=WhichButton(&buttons,Event.xbutton.x,Event.xbutton.y);
           if (num!=-1)
           {
-            SendFvwmPipe(Fvwm_fd, 
+            SendFvwmPipe(Fvwm_fd,
 			 ClickAction[(Transient) ? 0:Event.xbutton.button-1],
 			 ItemID(&windows,num));
             SwitchButton(&buttons,num);
@@ -854,10 +856,12 @@ void AdjustWindow(Bool force)
   {
     if(ButtonPicture(&buttons,i)->picture != None)
     {
-	base_miw = 14; /* for title icon */ /* Magic Number */
-        break;
+      if (ButtonPicture(&buttons,i)->width > base_miw)
+	base_miw = ButtonPicture(&buttons,i)->width;
+      break;
     }
   }
+  base_miw += 2;
 #endif
   for(i=0;i<total;i++)
   {
@@ -867,7 +871,7 @@ void AdjustWindow(Bool force)
 	tw = 8 + XTextWidth(ButtonFont,temp,strlen(temp));
 	tw += XTextWidth(ButtonFont,"()",2);
 #ifdef MINI_ICONS
-	tw+=base_miw;
+	tw += base_miw;
 #endif
 	new_width=max(new_width,tw);
     }

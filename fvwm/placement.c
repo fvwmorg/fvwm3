@@ -53,7 +53,7 @@ static int test_fit(
   FvwmWindow *t, int test_x, int test_y, int aoimin, int pdeltax, int pdeltay);
 static void CleverPlacement(
   FvwmWindow *t, int *x, int *y, int pdeltax, int pdeltay);
-static void GetGravityOffsets (FvwmWindow *tmp,int *xp,int *yp);
+static void gravity_get_offsets(int grav, int *xp, int *yp);
 
 /**/
 
@@ -448,7 +448,7 @@ static int test_fit(FvwmWindow *t, int x11, int y11, int aoimin, int pdeltax,
  **************************************************************************/
 /*  RBW - 11/02/1998  */
 int PlaceWindow(FvwmWindow *tmp_win, style_flags *sflags, int Desk, int PageX,
-		 int PageY)
+		int PageY)
 {
 /**/
   FvwmWindow *t;
@@ -466,7 +466,7 @@ int PlaceWindow(FvwmWindow *tmp_win, style_flags *sflags, int Desk, int PageX,
 
   yt = 0;
 
-  GetGravityOffsets (tmp_win, &gravx, &gravy);
+  gravity_get_offsets(tmp_win->hints.win_gravity, &gravx, &gravy);
 
   /* Select a desk to put the window on (in list of priority):
    * 1. Sticky Windows stay on the current desk.
@@ -692,17 +692,6 @@ int PlaceWindow(FvwmWindow *tmp_win, style_flags *sflags, int Desk, int PageX,
           2*tmp_win->boundary_width;
         Scr.randomy = 0;
       }
-
-      tmp_win->xdiff = tmp_win->attr.x;
-      tmp_win->ydiff = tmp_win->attr.y;
-      /* put it where asked, mod title bar */
-      /* if the gravity is towards the top, move it by the title height */
-      tmp_win->ydiff -= gravy*tmp_win->old_bw;
-      tmp_win->xdiff -= gravx*tmp_win->old_bw;
-      if(gravy > 0)
-        tmp_win->ydiff += 2*tmp_win->boundary_width + tmp_win->title_g.height;
-      if(gravx > 0)
-        tmp_win->xdiff += 2*tmp_win->boundary_width;
     }
     else
     {
@@ -759,8 +748,6 @@ int PlaceWindow(FvwmWindow *tmp_win, style_flags *sflags, int Desk, int PageX,
       /**/
       tmp_win->attr.y = yt - tmp_win->old_bw;
       tmp_win->attr.x = xl - tmp_win->old_bw;
-      tmp_win->xdiff = xl ;
-      tmp_win->ydiff = yt ;
     }
   }
   else
@@ -829,16 +816,14 @@ int PlaceWindow(FvwmWindow *tmp_win, style_flags *sflags, int Desk, int PageX,
         }
 /**/
 
-    tmp_win->xdiff = tmp_win->attr.x;
-    tmp_win->ydiff = tmp_win->attr.y;
     /* put it where asked, mod title bar */
     /* if the gravity is towards the top, move it by the title height */
-    tmp_win->attr.y += gravy*tmp_win->old_bw;
-    tmp_win->attr.x += gravx*tmp_win->old_bw;
+    tmp_win->attr.y += gravy * tmp_win->old_bw;
+    tmp_win->attr.x += gravx * tmp_win->old_bw;
     if(gravy > 0)
-      tmp_win->attr.y -= 2*tmp_win->boundary_width + tmp_win->title_g.height;
+      tmp_win->attr.y -= 2 * tmp_win->boundary_width + tmp_win->title_g.height;
     if(gravx > 0)
-      tmp_win->attr.x -= 2*tmp_win->boundary_width;
+      tmp_win->attr.x -= 2 * tmp_win->boundary_width;
   }
   return rc;
 }
@@ -854,8 +839,8 @@ void PlaceAgain_func(F_CMD_ARGS)
     return;
 
   /* Find new position for window */
-  SmartPlacement(tmp_win,tmp_win->frame_g.width,tmp_win->frame_g.height, &x, &y,
-		 0,0);
+  SmartPlacement(
+    tmp_win, tmp_win->frame_g.width, tmp_win->frame_g.height, &x, &y, 0, 0);
 
   /* Possibly animate the movement */
   token = PeekToken(action, NULL);
@@ -873,7 +858,7 @@ void PlaceAgain_func(F_CMD_ARGS)
 /************************************************************************
  *
  *  Procedure:
- *	GetGravityOffsets - map gravity to (x,y) offset signs for adding
+ *	gravity_get_offsets - map gravity to (x,y) offset signs for adding
  *		to x and y when window is mapped to get proper placement.
  *
  ************************************************************************/
@@ -882,7 +867,7 @@ struct _gravity_offset
   int x, y;
 };
 
-static void GetGravityOffsets (FvwmWindow *tmp,int *xp,int *yp)
+static void gravity_get_offsets(int grav, int *xp,int *yp)
 {
   static struct _gravity_offset gravity_offsets[11] =
   {
@@ -898,14 +883,116 @@ static void GetGravityOffsets (FvwmWindow *tmp,int *xp,int *yp)
     {  1,  1 },			/* SouthEastGravity */
     {  0,  0 },			/* StaticGravity */
   };
-  register int g = tmp->hints.win_gravity;
 
-  if (g < ForgetGravity || g > StaticGravity)
+  if (grav < ForgetGravity || grav > StaticGravity)
     *xp = *yp = 0;
   else
   {
-    *xp = (int)gravity_offsets[g].x;
-    *yp = (int)gravity_offsets[g].y;
+    *xp = (int)gravity_offsets[grav].x;
+    *yp = (int)gravity_offsets[grav].y;
   }
   return;
+}
+
+void gravity_move(int gravity, rectangle *rect, int xdiff, int ydiff)
+{
+  int xoff;
+  int yoff;
+
+  gravity_get_offsets(gravity, &xoff, &yoff);
+  rect->x -= xoff * xdiff;
+  rect->y -= yoff * ydiff;
+
+  return;
+}
+
+void gravity_resize(int gravity, rectangle *rect, int wdiff, int hdiff)
+{
+  int xoff;
+  int yoff;
+
+  gravity_get_offsets(gravity, &xoff, &yoff);
+  rect->x -= (wdiff * (xoff + 1)) / 2;
+  rect->width += wdiff;
+  rect->y -= (hdiff * (yoff + 1)) / 2;
+  rect->height += hdiff;
+
+  return;
+}
+
+void gravity_get_naked_geometry(
+  int gravity, FvwmWindow *t, rectangle *dest_g, rectangle *orig_g)
+{
+  int xoff;
+  int yoff;
+
+  gravity_get_offsets(gravity, &xoff, &yoff);
+  dest_g->x = orig_g->x + ((xoff + 1) * (orig_g->width - 1)) / 2;
+  dest_g->y = orig_g->y + ((yoff + 1) * (orig_g->height - 1)) / 2;
+  dest_g->width = orig_g->width - 2 * t->boundary_width;
+  dest_g->height = orig_g->height - 2 * t->boundary_width - t->title_g.height;
+
+  return;
+}
+
+void gravity_add_decoration(
+  int gravity, FvwmWindow *t, rectangle *dest_g, rectangle *orig_g)
+{
+  *dest_g = *orig_g;
+  gravity_resize(
+    gravity, dest_g, 2 * t->boundary_width,
+    2 * t->boundary_width + t->title_g.height);
+
+  return;
+}
+
+void get_relative_geometry(rectangle *rel_g, rectangle *abs_g)
+{
+  rel_g->x = abs_g->x - Scr.Vx;
+  rel_g->y = abs_g->y - Scr.Vy;
+  rel_g->width = abs_g->width;
+  rel_g->height = abs_g->height;
+}
+
+void gravity_translate_to_northwest_geometry(
+  int gravity, FvwmWindow *t, rectangle *dest_g, rectangle *orig_g)
+{
+  int xoff;
+  int yoff;
+
+  gravity_get_offsets(gravity, &xoff, &yoff);
+  dest_g->x =
+    orig_g->x - ((xoff + 1) * (orig_g->width - 1 + 2 * t->old_bw)) / 2;
+  dest_g->y =
+    orig_g->y - ((yoff + 1) * (orig_g->height - 1 + 2 * t->old_bw)) / 2;
+  dest_g->width = orig_g->width;
+  dest_g->height = orig_g->height;
+
+  return;
+}
+
+void gravity_translate_to_northwest_geometry_no_bw(
+  int gravity, FvwmWindow *t, rectangle *dest_g, rectangle *orig_g)
+{
+  int bw = t->old_bw;
+
+  t->old_bw = 0;
+  gravity_translate_to_northwest_geometry(gravity, t, dest_g, orig_g);
+  t->old_bw = bw;
+
+  return;
+}
+
+void get_shaded_geometry(
+  FvwmWindow *tmp_win, rectangle *small_g, rectangle *big_g)
+{
+  /* this variable is necessary so the function can be called with
+   * small_g == big_g */
+  int big_height = big_g->height;
+
+  small_g->width = big_g->width;
+  small_g->height = 2 * tmp_win->boundary_width + tmp_win->title_g.height;
+  small_g->x = big_g->x;
+  small_g->y = big_g->y + ((HAS_BOTTOM_TITLE(tmp_win)) ?
+			   (big_height - small_g->height) : 0);
 }

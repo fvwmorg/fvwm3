@@ -64,14 +64,14 @@ The actual width of the taskbar is always the full width of the screen
 and the height is controlled by the *FvwmTaskBarRows option.
 
 If the AutoStick option
-is specified, the taskbar automatically "sticks" to the top or 
+is specified, the taskbar automatically "sticks" to the top or
 the bottom of the screen, whichever is closest to the geometry specification.
 
 To position the taskbar at the bottom of the screen, use a geometry of
 "+0-1".
 
 .IP  "*FvwmTaskBarRows r"
-Specifies the initial number in rows of the FvwmTaskBar window. Default 
+Specifies the initial number in rows of the FvwmTaskBar window. Default
 is 1 and the maximum is 8.
 
 .IP "*FvwmTaskBarFont \fIfont\fP"
@@ -111,25 +111,25 @@ buttons of iconified windows.  Please refer to the man page of
 the FvwmTheme module for details about colorsets.
 
 .IP "*FvwmTaskBarFocusFore \fIcolor\fP"
-Specifies the color to use for the button name which represents the window
-with the focus. If not specified the color specified by *FvwmTaskBarFore or 
+Specifies the color to use for the button which represents the window
+with the focus.  If not specified the color specified by *FvwmTaskBarFore or
 *FvwmTaskBarColorset is used.
 
 .IP "*FvwmTaskBarFocusBack \fIcolor\fP"
 Specifies the color to use for the button which represents the window
-with the focus. If not specified the color specified by  *FvwmTaskBarBack or 
+with the focus. If not specified the color specified by  *FvwmTaskBarBack or
 *FvwmTaskBarColorset is used. Note that the button which represents the window
 with the focus is also highlighted.  See "*FvwmTaskNoBrightFocus".
 
 .IP "*FvwmTaskFocusColorset \fIcolorset\fP"
-Tells the module to use colorset \fIcolorset\fP for the button 
+Tells the module to use colorset \fIcolorset\fP for the button
 which represents the window with the focus. Please refer to the man page of
 the FvwmTheme module for details about colorsets.
 
 .IP "*FvwmTaskNoBrightFocus"
-By default the button which represents the window with the focus is highlighted.
-This option disables this feature.  \fINote:\fP you will want this option 
-if you use a pixmap (via FvwmTheme) for the background.
+By default the button which represents the window with the focus is
+highlighted. This option disables this feature.  \fINote:\fP uou will
+want this option if you use a pixmap (via FvwmTheme) for the background.
 
 .IP "*FvwmTaskBarTipsFore \fIcolor\fP"
 Specifies the color to be used for the text in the tips windows.

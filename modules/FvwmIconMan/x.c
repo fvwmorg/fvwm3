@@ -186,6 +186,7 @@ static void reparentnotify_event (WinManager *man, XEvent *ev)
 void xevent_loop (void)
 {
   XEvent theEvent;
+  XEvent saveEvent;
   unsigned int modifier;
   Binding *key;
   Button *b;
@@ -283,9 +284,6 @@ void xevent_loop (void)
       break;
 
     case ConfigureNotify:
-      ConsoleDebug (X11, "XEVENT: Configure Notify: %d %d %d %d\n",
-		    theEvent.xconfigure.x, theEvent.xconfigure.y,
-		    theEvent.xconfigure.width, theEvent.xconfigure.height);
       ConsoleDebug (X11, "\tcurrent geometry: %d %d %d %d\n",
 		    man->geometry.x, man->geometry.y,
 		    man->geometry.width, man->geometry.height);
@@ -293,10 +291,26 @@ void xevent_loop (void)
 		    theEvent.xconfigure.border_width);
       ConsoleDebug (X11, "\tsendevent = %d\n", theEvent.xconfigure.send_event);
 
+      saveEvent = theEvent;
       /* eat up all but last ConfigureNotify events */
       while (XPending(theDisplay) &&
 	     XCheckMaskEvent(theDisplay, ConfigureNotify, &theEvent))
-	;
+      {
+	if (theEvent.type != ConfigureNotify)
+	{
+	  /* I can't fathom how this could ever happen.  I wouldn't believe it
+	   * if I hadn't seen it with my own eyes: instead of a ConfigureNotify
+	   * I sometimes get an EnterNotify event instead. Sounds like a broken
+	   * X server. */
+	  XPutBackEvent(theDisplay, &theEvent);
+	  break;
+	}
+	else
+	{
+	  saveEvent = theEvent;
+	}
+      }
+      theEvent = saveEvent;
 
       if (man->geometry.dir & GROW_FIXED)
       {
@@ -952,7 +966,8 @@ void init_display (void)
   ConsoleDebug (X11, "screen height: %ld\n", globals.screeny);
 }
 
-void change_colorset(int color) {
+void change_colorset(int color)
+{
   WinManager *man;
   int i,j;
 

@@ -49,12 +49,13 @@
 #include "misc.h"
 #include "screen.h"
 #include "gnome.h"
-#include "builtins.h"
+#include "move_resize.h"
 #include "libs/Colorset.h"
 #include "borders.h"
 #include "add_window.h"
 #include "focus.h"
 #include "icons.h"
+#include "placement.h"
 
 /* list of window names with attributes */
 static window_style *all_styles = NULL;
@@ -351,7 +352,7 @@ static void add_style_to_list(window_style *new_style)
    * anything.  I don't see why we should bother. dje.
    *
    * used to merge duplicate entries, but that is no longer
-   * appropriate since conficting styles are possible, and the
+   * appropriate since conflicting styles are possible, and the
    * last match should win! */
 
   if(last_style_in_list != NULL)
@@ -2112,6 +2113,12 @@ static void handle_window_style_change(FvwmWindow *t)
   {
     char left_buttons;
     char right_buttons;
+    FvwmWindow old_t;
+    rectangle naked_g;
+    rectangle *new_g;
+
+    /* copy window structure because we still need some old values */
+    memcpy(&old_t, t, sizeof(FvwmWindow));
 
     /* determine level of decoration */
     setup_style_and_decor(t, &style, &left_buttons, &right_buttons);
@@ -2119,34 +2126,29 @@ static void handle_window_style_change(FvwmWindow *t)
     /* redecorate */
     change_auxiliary_windows(t, left_buttons, right_buttons);
 
-#if 0
-    /*!!! calculate new size and position of frame */
+    /* calculate the new offsets */
+    gravity_get_naked_geometry(
+      old_t.hints.win_gravity, &old_t, &naked_g, &t->normal_g);
+    gravity_translate_to_northwest_geometry_no_bw(
+      old_t.hints.win_gravity, &old_t, &naked_g, &naked_g);
+    gravity_add_decoration(
+      old_t.hints.win_gravity, t, &t->normal_g, &naked_g);
+    if (IS_MAXIMIZED(t))
     {
-      int a,b;
-      unsigned int mask;
-      XWindowChanges xwc;
-
-      if (XGetGeometry(dpy, t->w, &JunkRoot, &(t->attr.x), &(t->attr.y),
-		       &width, &height, &JunkBW, &JunkDepth))
-      {
-	XTranslateCoordinates(dpy, t->frame, Scr.Root, t->attr.x, t->attr.y,
-			      &a,&b,&JunkChild);
-	xwc.x = a + t->xdiff;
-	xwc.y = b + t->ydiff;
-	xwc.border_width = t->old_bw;
-	mask = (CWX | CWY| CWBorderWidth);
-	/*
-	  XConfigureWindow (dpy, t->w, mask, &xwc);
-	*/
-      }
-      else
-      {
-	xwc.x = t->attr.x;
-	xwc.y = t->attr.y;
-      }
+      /* maximized windows are always considered to have NorthWestGravity */
+      gravity_get_naked_geometry(
+	NorthWestGravity, &old_t, &naked_g, &t->max_g);
+      gravity_translate_to_northwest_geometry_no_bw(
+	NorthWestGravity, &old_t, &naked_g, &naked_g);
+      gravity_add_decoration(
+	NorthWestGravity, t, &t->max_g, &naked_g);
+      new_g = &t->max_g;
     }
-    setup_frame_geometry(t);
-#endif
+    else
+    {
+      new_g = &t->normal_g;
+    }
+    get_relative_geometry(&t->frame_g, new_g);
 
     do_setup_frame = True;
     do_redraw_decoration = True;
@@ -2168,7 +2170,8 @@ static void handle_window_style_change(FvwmWindow *t)
 
     if (IS_SHADED(t))
       XRaiseWindow(dpy, t->decor_w);
-    DrawDecorations(t, DRAW_ALL, (Scr.Hilite == t), 2, None);
+    if (IsRectangleOnThisPage(&t->frame_g, Scr.CurrentDesk))
+      DrawDecorations(t, DRAW_ALL, (Scr.Hilite == t), 2, None);
     Scr.Hilite = u;
   }
   if (do_update_icon)

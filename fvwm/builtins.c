@@ -54,10 +54,10 @@
 #include "stroke.h"
 #endif /* HAVE_STROKE */
 #include "add_window.h"
-
+#include "placement.h"
 
 static void ApplyIconFont(void);
-static void ApplyWindowFont(FvwmDecor *fl);
+static void ApplyWindowFont(FvwmDecor *decor);
 
 static char *exec_shell_name="/bin/sh";
 /* button state strings must match the enumerated states */
@@ -91,16 +91,25 @@ static char  *button_states[MaxButtonState] =
  ***********************************************************************/
 void WindowShade(F_CMD_ARGS)
 {
-  int h;
-  int ph;
-  int y;
-  int fy;
-  int dy = 0;
+  int bwl;
+  int bwr;
+  int bw;
+  int bht;
+  int bhb;
+  int bh;
+  int cw;
+  int ch;
   int step = 1;
-  int old_h;
-  int new_y;
-  int new_height;
   int toggle;
+  int grav = 0;
+  int client_grav = 0;
+  int move_parent_too = False;
+  rectangle frame_g;
+  rectangle parent_g;
+  rectangle diff;
+  rectangle pdiff;
+  rectangle big_g;
+  rectangle small_g;
   Bool do_scroll;
 
   if (DeferExecution(eventp,&w,&tmp_win,&context, CRS_SELECT,ButtonRelease))
@@ -108,9 +117,7 @@ void WindowShade(F_CMD_ARGS)
   if (tmp_win == NULL)
     return;
 
-  do_scroll = Scr.go.WindowShadeScrolls;
-  if (HAS_BOTTOM_TITLE(tmp_win))
-    do_scroll ^= True;
+  /* parse arguments */
   toggle = ParseToggleArgument(action, NULL, -1, 0);
   if (toggle == -1)
   {
@@ -127,143 +134,197 @@ void WindowShade(F_CMD_ARGS)
   if (toggle == -1)
     toggle = (IS_SHADED(tmp_win)) ? 0 : 1;
 
+  /* prepare some convenience variables */
+  frame_g = tmp_win->frame_g;
+  big_g = (IS_MAXIMIZED(tmp_win)) ? tmp_win->max_g : tmp_win->normal_g;
+  get_relative_geometry(&big_g, &big_g);
+  bwl = tmp_win->boundary_width;
+  bwr = tmp_win->boundary_width;
+  bw = bwl + bwr;
+  bht = tmp_win->boundary_width;
+  bhb = tmp_win->boundary_width;
+  if (HAS_BOTTOM_TITLE(tmp_win))
+    bhb += tmp_win->title_g.height;
+  else
+    bht += tmp_win->title_g.height;
+  bh = bht + bhb;
+  cw = big_g.width - bw;
+  ch = big_g.height - bh;
+  do_scroll = Scr.go.WindowShadeScrolls;
   /* calcuate the step size */
   if (Scr.shade_anim_steps > 0)
-    step = tmp_win->orig_g.height/Scr.shade_anim_steps;
+    step = big_g.height / Scr.shade_anim_steps;
   else if (Scr.shade_anim_steps < 0) /* if it's -ve it means pixels */
     step = -Scr.shade_anim_steps;
   if (step <= 0)  /* We don't want an endless loop, do we? */
     step = 1;
-
-  if ((IS_SHADED(tmp_win)) && toggle == 0)
+  if (Scr.shade_anim_steps)
   {
+    grav = (HAS_BOTTOM_TITLE(tmp_win)) ? SouthWestGravity : NorthWestGravity;
+    if (!do_scroll)
+      client_grav = grav;
+    else
+      client_grav =
+	(HAS_BOTTOM_TITLE(tmp_win)) ? NorthWestGravity : SouthWestGravity;
+    set_decor_gravity(tmp_win, grav, grav, client_grav);
+    move_parent_too = HAS_BOTTOM_TITLE(tmp_win);
+  }
+
+  if (IS_SHADED(tmp_win) && toggle == 0)
+  {
+    XMoveResizeWindow(dpy, tmp_win->Parent, bwl, bht, cw, 1);
+    XMoveWindow(dpy, tmp_win->w, 0,
+      (client_grav == SouthWestGravity) ? -ch + 1 : 0);
     XLowerWindow(dpy, tmp_win->decor_w);
     /* unshade window */
     SET_SHADED(tmp_win, 0);
-    if (IS_MAXIMIZED(tmp_win))
-      new_height = tmp_win->maximized_g.height;
-    else
-      new_height = tmp_win->orig_g.height;
-    new_y = tmp_win->frame_g.y;
-    if (HAS_BOTTOM_TITLE(tmp_win))
-      new_y += (tmp_win->frame_g.height - new_height);
-
-    /* this is necessary if the maximized state has changed while shaded */
-    SetupFrame(tmp_win, tmp_win->frame_g.x, new_y, tmp_win->frame_g.width,
-	       new_height, True, True);
 
     if (Scr.shade_anim_steps != 0)
     {
-      if (HAS_BOTTOM_TITLE(tmp_win))
+      parent_g.x = bwl;
+      parent_g.y = bht - step;
+      parent_g.width = cw;
+      parent_g.height = 0;
+      pdiff.x = 0;
+      pdiff.y = 0;
+      pdiff.width = 0;
+      pdiff.height = step;
+      diff.x = 0;
+      diff.y = HAS_BOTTOM_TITLE(tmp_win) ? -step : 0;;
+      diff.width = 0;
+      diff.height = step;
+
+      /* This causes a ConfigureNotify if the client size has changed while
+       * the window was shaded. */
+      XResizeWindow(dpy, tmp_win->w, cw, ch);
+      while (frame_g.height + diff.height < big_g.height)
       {
-	dy = tmp_win->frame_g.height - new_height;
-	XResizeWindow(dpy, tmp_win->Parent,
-		      tmp_win->frame_g.width - 2 * tmp_win->boundary_width, 1);
-	XMoveResizeWindow(
-	  dpy, tmp_win->decor_w, 0, dy, tmp_win->frame_g.width, new_height);
-	SetupTitleBar(tmp_win, tmp_win->frame_g.width, new_height);
-	DrawDecorations(tmp_win, DRAW_FRAME, tmp_win->frame_g.width > 0, True,
-			None);
-      }
-      h = tmp_win->title_g.height+tmp_win->boundary_width;
-      ph = 0;
-      if (do_scroll)
-        XMoveWindow(dpy, tmp_win->w, 0, - (new_height-h));
-      y = h - new_height;
-      fy = tmp_win->frame_g.y;
-      old_h = tmp_win->frame_g.height;
-      while (h < new_height)
-      {
-        XMoveResizeWindow(
-	  dpy, tmp_win->frame, tmp_win->frame_g.x, fy, tmp_win->frame_g.width,
-	  h + ((HAS_BOTTOM_TITLE(tmp_win)) ? tmp_win->boundary_width : 0));
-	if (HAS_BOTTOM_TITLE(tmp_win))
-	  XMoveWindow(dpy, tmp_win->decor_w, 0, dy);
+	parent_g.x += pdiff.x;
+	parent_g.y += pdiff.y;
+	parent_g.width += pdiff.width;
+	parent_g.height += pdiff.height;
+	frame_g.x += diff.x;
+	frame_g.y += diff.y;
+	frame_g.width += diff.width;
+	frame_g.height += diff.height;
+	if (move_parent_too)
+	{
+	  XMoveResizeWindow(
+	    dpy, tmp_win->Parent, parent_g.x, parent_g.y, parent_g.width,
+	    parent_g.height);
+	  XMoveResizeWindow(
+	    dpy, tmp_win->frame, frame_g.x, frame_g.y, frame_g.width,
+	    frame_g.height);
+	}
 	else
-	  XResizeWindow(dpy, tmp_win->decor_w, tmp_win->frame_g.width, h);
-        XResizeWindow(dpy, tmp_win->Parent,
-		      tmp_win->frame_g.width - 2 * tmp_win->boundary_width,
-                      max(ph, 1));
-        if (do_scroll)
-          XMoveWindow(dpy, tmp_win->w, 0, y);
-        tmp_win->frame_g.height = h;
+	{
+	  XResizeWindow(dpy, tmp_win->Parent, parent_g.width, parent_g.height);
+	  XMoveResizeWindow(
+	    dpy, tmp_win->frame, frame_g.x, frame_g.y, frame_g.width,
+	    frame_g.height);
+	}
         FlushOutputQueues();
         XSync(dpy, 0);
-        h += step;
-	ph += step;
-        y += step;
-	dy += step;
-	if (HAS_BOTTOM_TITLE(tmp_win))
-	  fy -= step;
       }
-      tmp_win->frame_g.height = old_h;
-      XMoveWindow(dpy, tmp_win->w, 0, 0);
-      if (HAS_BOTTOM_TITLE(tmp_win))
-	XMoveWindow(dpy, tmp_win->decor_w, 0, 0);
     }
-    SetupFrame(tmp_win, tmp_win->frame_g.x, new_y, tmp_win->frame_g.width,
-	       new_height, True, False);
-    tmp_win->frame_g.y = new_y;
-    tmp_win->frame_g.height = new_height;
+    if (Scr.shade_anim_steps != 0)
+    {
+      if (client_grav == SouthWestGravity && move_parent_too)
+      {
+	/* We must finish above loop to the very end for this special case.
+	 * Otherwise there is a visible jump of the client window. */
+	XMoveResizeWindow(
+	  dpy, tmp_win->Parent, parent_g.x,
+	  bht - (big_g.height - frame_g.height), parent_g.width, ch);
+	XMoveResizeWindow(
+	  dpy, tmp_win->frame, big_g.x, big_g.y, big_g.width, big_g.height);
+      }
+      else
+      {
+	XMoveWindow(dpy, tmp_win->w, 0, 0);
+      }
+      XMoveWindow(dpy, tmp_win->decor_w, 0, 0);
+      set_decor_gravity(
+	tmp_win, NorthWestGravity, NorthWestGravity, NorthWestGravity);
+    }
+    tmp_win->frame_g = big_g;
+    update_absolute_geometry(tmp_win);
+    ForceSetupFrame(
+      tmp_win, big_g.x, big_g.y, big_g.width, big_g.height, True, False);
     BroadcastConfig(M_CONFIGURE_WINDOW, tmp_win);
     BroadcastPacket(M_DEWINDOWSHADE, 3, tmp_win->w, tmp_win->frame,
                     (unsigned long)tmp_win);
   }
   else if (!IS_SHADED(tmp_win) && toggle == 1)
   {
+
     /* shade window */
     SET_SHADED(tmp_win, 1);
-    if (HAS_BOTTOM_TITLE(tmp_win))
-      new_y = tmp_win->frame_g.y + tmp_win->frame_g.height -
-	tmp_win->title_g.height - 2 * tmp_win->boundary_width;
-    else
-      new_y = tmp_win->frame_g.y;
-    new_height =
-      tmp_win->title_g.height + 2 * tmp_win->boundary_width;
-
+    get_shaded_geometry(tmp_win, &small_g, &big_g);
     if (Scr.shade_anim_steps != 0)
     {
-      h = tmp_win->frame_g.height;
-      ph = h - new_height;
-      y = 0;
-      old_h = tmp_win->frame_g.height;
-      while (h > tmp_win->title_g.height + 2 * tmp_win->boundary_width)
+      parent_g.x = bwl;
+      parent_g.y = bht;
+      parent_g.width = cw;
+      parent_g.height = frame_g.height - bh;
+      pdiff.x = 0;
+      pdiff.y = 0;
+      pdiff.width = 0;
+      pdiff.height = -step;
+      diff.x = 0;
+      diff.y = HAS_BOTTOM_TITLE(tmp_win) ? step : 0;
+      diff.width = 0;
+      diff.height = -step;
+
+      while (frame_g.height + diff.height > small_g.height)
       {
-	if (do_scroll)
-	  XMoveWindow(dpy, tmp_win->w, 0, y);
-        XResizeWindow(dpy, tmp_win->Parent,
-                      tmp_win->frame_g.width - 2 * tmp_win->boundary_width,
-                      max(ph, 1));
-	if (HAS_BOTTOM_TITLE(tmp_win))
-	  XMoveWindow(dpy, tmp_win->decor_w, 0, y);
-        XMoveResizeWindow(
-	  dpy, tmp_win->frame, tmp_win->frame_g.x,
-	  tmp_win->frame_g.y - ((HAS_BOTTOM_TITLE(tmp_win)) ? y : 0),
-	  tmp_win->frame_g.width, h);
-        tmp_win->frame_g.height = h;
+	parent_g.x += pdiff.x;
+	parent_g.y += pdiff.y;
+	parent_g.width += pdiff.width;
+	parent_g.height += pdiff.height;
+	frame_g.x += diff.x;
+	frame_g.y += diff.y;
+	frame_g.width += diff.width;
+	frame_g.height += diff.height;
+	if (move_parent_too)
+	{
+	  XMoveResizeWindow(
+	    dpy, tmp_win->frame, frame_g.x, frame_g.y, frame_g.width,
+	    frame_g.height);
+	  XMoveResizeWindow(
+	    dpy, tmp_win->Parent, parent_g.x, parent_g.y, parent_g.width,
+	    parent_g.height);
+	}
+	else
+	{
+	  XResizeWindow(dpy, tmp_win->Parent, parent_g.width, parent_g.height);
+	  XMoveResizeWindow(
+	    dpy, tmp_win->frame, frame_g.x, frame_g.y, frame_g.width,
+	    frame_g.height);
+	}
         FlushOutputQueues();
         XSync(dpy, 0);
-	ph -= step;
-        h -= step;
-        y -= step;
       }
-      tmp_win->frame_g.height = old_h;
-      if (do_scroll)
-        XMoveWindow(dpy, tmp_win->w, 0, 0);
-      if (HAS_BOTTOM_TITLE(tmp_win))
-	XMoveWindow(dpy, tmp_win->decor_w, 0, 0);
     }
-    SetupFrame(tmp_win, tmp_win->frame_g.x, new_y, tmp_win->frame_g.width,
-	       new_height, False, False);
-    XResizeWindow(dpy, tmp_win->Parent,
-		  tmp_win->frame_g.width - 2 * tmp_win->boundary_width,
-		  1);
+    XResizeWindow(dpy, tmp_win->Parent, cw, 1);
+    if (Scr.shade_anim_steps != 0)
+    {
+      XMoveResizeWindow(
+	dpy, tmp_win->frame, small_g.x, small_g.y, small_g.width,
+	small_g.height);
+      XMoveWindow(dpy, tmp_win->decor_w, 0, 0);
+      set_decor_gravity(
+	tmp_win, NorthWestGravity, NorthWestGravity, NorthWestGravity);
+    }
+    tmp_win->frame_g = small_g;
+    update_absolute_geometry(tmp_win);
+    ForceSetupFrame(
+      tmp_win, small_g.x, small_g.y, small_g.width, small_g.height, False,
+      False);
     XRaiseWindow(dpy, tmp_win->decor_w);
-    tmp_win->frame_g.y = new_y;
-    tmp_win->frame_g.height = new_height;
     BroadcastConfig(M_CONFIGURE_WINDOW, tmp_win);
-    BroadcastPacket(M_WINDOWSHADE, 3, tmp_win->w, tmp_win->frame,
-                    (unsigned long)tmp_win);
+    BroadcastPacket(
+      M_WINDOWSHADE, 3, tmp_win->w, tmp_win->frame, (unsigned long)tmp_win);
   }
   DrawDecorations(tmp_win, DRAW_FRAME, (Scr.Hilite == tmp_win), True, None);
   FlushOutputQueues();
@@ -612,51 +673,6 @@ void refresh_win_function(F_CMD_ARGS)
 }
 
 
-void handle_stick(F_CMD_ARGS, int toggle)
-{
-  if ((toggle == 1 && IS_STICKY(tmp_win)) ||
-      (toggle == 0 && !IS_STICKY(tmp_win)))
-    return;
-
-  if(IS_STICKY(tmp_win))
-  {
-    SET_STICKY(tmp_win, 0);
-    tmp_win->Desk = Scr.CurrentDesk;
-#ifdef GNOME
-    GNOME_SetDeskCount();
-    GNOME_SetDesk(tmp_win);
-#endif
-  }
-  else
-  {
-    if (tmp_win->Desk != Scr.CurrentDesk)
-      do_move_window_to_desk(tmp_win, Scr.CurrentDesk);
-    SET_STICKY(tmp_win, 1);
-    move_window_doit(eventp, w, tmp_win, context, "", Module, FALSE, TRUE);
-    /* move_window_doit resets the STICKY flag, so we must set it after the
-     * call! */
-    SET_STICKY(tmp_win, 1);
-  }
-  BroadcastConfig(M_CONFIGURE_WINDOW,tmp_win);
-  DrawDecorations(tmp_win, DRAW_TITLE, (Scr.Hilite==tmp_win), True, None);
-
-#ifdef GNOME
-  GNOME_SetHints (tmp_win);
-#endif
-}
-
-void stick_function(F_CMD_ARGS)
-{
-  int toggle;
-
-  if (DeferExecution(eventp,&w,&tmp_win,&context,CRS_SELECT,ButtonRelease))
-    return;
-
-  toggle = ParseToggleArgument(action, &action, -1, 0);
-
-  handle_stick(eventp, w, tmp_win, context, action, Module, toggle);
-}
-
 void wait_func(F_CMD_ARGS)
 {
   Bool done = False;
@@ -827,9 +843,9 @@ void SetHiColor(F_CMD_ARGS)
   char *hifore=NULL, *hiback=NULL;
   FvwmWindow *hilight;
 #ifdef USEDECOR
-  FvwmDecor *fl = cur_decor ? cur_decor : &Scr.DefaultDecor;
+  FvwmDecor *decor = cur_decor ? cur_decor : &Scr.DefaultDecor;
 #else
-  FvwmDecor *fl = &Scr.DefaultDecor;
+  FvwmDecor *decor = &Scr.DefaultDecor;
 #endif
 
   action = GetNextToken(action,&hifore);
@@ -838,40 +854,40 @@ void SetHiColor(F_CMD_ARGS)
   {
     if(hifore)
     {
-	fl->HiColors.fore = GetColor(hifore);
+	decor->HiColors.fore = GetColor(hifore);
     }
     if(hiback)
     {
-	fl->HiColors.back = GetColor(hiback);
+	decor->HiColors.back = GetColor(hiback);
     }
-    fl->HiRelief.back  = GetShadow(fl->HiColors.back);
-    fl->HiRelief.fore  = GetHilite(fl->HiColors.back);
+    decor->HiRelief.back  = GetShadow(decor->HiColors.back);
+    decor->HiRelief.fore  = GetHilite(decor->HiColors.back);
   }
   else
   {
-    fl->HiColors.back  = GetColor("white");
-    fl->HiColors.fore  = GetColor("black");
-    fl->HiRelief.back  = GetColor("black");
-    fl->HiRelief.fore  = GetColor("white");
+    decor->HiColors.back  = GetColor("white");
+    decor->HiColors.fore  = GetColor("black");
+    decor->HiRelief.back  = GetColor("black");
+    decor->HiRelief.fore  = GetColor("white");
   }
   if (hifore) free(hifore);
   if (hiback) free(hiback);
   gcm = GCFunction|GCLineWidth|GCForeground|GCBackground;
-  gcv.foreground = fl->HiRelief.fore;
-  gcv.background = fl->HiRelief.back;
+  gcv.foreground = decor->HiRelief.fore;
+  gcv.background = decor->HiRelief.back;
   gcv.function = GXcopy;
   gcv.line_width = 0;
-  if(fl->HiReliefGC)
-    XChangeGC(dpy, fl->HiReliefGC, gcm, &gcv);
+  if(decor->HiReliefGC)
+    XChangeGC(dpy, decor->HiReliefGC, gcm, &gcv);
   else
-    fl->HiReliefGC = XCreateGC(dpy, Scr.NoFocusWin, gcm, &gcv);
+    decor->HiReliefGC = XCreateGC(dpy, Scr.NoFocusWin, gcm, &gcv);
 
-  gcv.foreground = fl->HiRelief.back;
-  gcv.background = fl->HiRelief.fore;
-  if(fl->HiShadowGC)
-    XChangeGC(dpy, fl->HiShadowGC, gcm, &gcv);
+  gcv.foreground = decor->HiRelief.back;
+  gcv.background = decor->HiRelief.fore;
+  if(decor->HiShadowGC)
+    XChangeGC(dpy, decor->HiShadowGC, gcm, &gcv);
   else
-    fl->HiShadowGC = XCreateGC(dpy, Scr.NoFocusWin, gcm, &gcv);
+    decor->HiShadowGC = XCreateGC(dpy, Scr.NoFocusWin, gcm, &gcv);
 
   if(Scr.flags.windows_captured && Scr.Hilite)
   {
@@ -893,9 +909,9 @@ char *ReadTitleButton(char *s, TitleButton *tb, Boolean append, int button);
 void AddTitleStyle(F_CMD_ARGS)
 {
 #ifdef USEDECOR
-    FvwmDecor *fl = cur_decor ? cur_decor : &Scr.DefaultDecor;
+    FvwmDecor *decor = cur_decor ? cur_decor : &Scr.DefaultDecor;
 #else
-    FvwmDecor *fl = &Scr.DefaultDecor;
+    FvwmDecor *decor = &Scr.DefaultDecor;
 #endif
     char *parm=NULL;
 
@@ -905,7 +921,7 @@ void AddTitleStyle(F_CMD_ARGS)
     while (parm)
     {
       free(parm);
-      if ((action = ReadTitleButton(action, &fl->titlebar, True, -1)) == NULL)
+      if ((action = ReadTitleButton(action, &decor->titlebar, True, -1)) == NULL)
         break;
       GetNextToken(action, &parm);
     }
@@ -916,9 +932,9 @@ void SetTitleStyle(F_CMD_ARGS)
 {
   char *parm=NULL, *prev = action;
 #ifdef USEDECOR
-  FvwmDecor *fl = cur_decor ? cur_decor : &Scr.DefaultDecor;
+  FvwmDecor *decor = cur_decor ? cur_decor : &Scr.DefaultDecor;
 #else
-  FvwmDecor *fl = &Scr.DefaultDecor;
+  FvwmDecor *decor = &Scr.DefaultDecor;
 #endif
 
   action = GetNextToken(action,&parm);
@@ -926,15 +942,15 @@ void SetTitleStyle(F_CMD_ARGS)
   {
     if (StrEquals(parm,"centered"))
     {
-      TB_JUSTIFICATION(fl->titlebar) = JUST_CENTER;
+      TB_JUSTIFICATION(decor->titlebar) = JUST_CENTER;
     }
     else if (StrEquals(parm,"leftjustified"))
     {
-      TB_JUSTIFICATION(fl->titlebar) = JUST_LEFT;
+      TB_JUSTIFICATION(decor->titlebar) = JUST_LEFT;
     }
     else if (StrEquals(parm,"rightjustified"))
     {
-      TB_JUSTIFICATION(fl->titlebar) = JUST_RIGHT;
+      TB_JUSTIFICATION(decor->titlebar) = JUST_RIGHT;
     }
     else if (StrEquals(parm,"height"))
     {
@@ -946,20 +962,20 @@ void SetTitleStyle(F_CMD_ARGS)
 	int x,y,w,h,extra_height;
 	FvwmWindow *tmp = Scr.FvwmRoot.next, *hi = Scr.Hilite;
 
-	extra_height = fl->TitleHeight;
-	fl->TitleHeight = height;
-	extra_height -= fl->TitleHeight;
+	extra_height = decor->TitleHeight;
+	decor->TitleHeight = height;
+	extra_height -= decor->TitleHeight;
 
 #ifdef I18N_MB
-	fl->WindowFont.y = fl->WindowFont.font->ascent
-	  + (height - (fl->WindowFont.height + 3)) / 2;
+	decor->WindowFont.y = decor->WindowFont.font->ascent
+	  + (height - (decor->WindowFont.height + 3)) / 2;
 #else
-	fl->WindowFont.y = fl->WindowFont.font->ascent
-	  + (height - (fl->WindowFont.font->ascent
-		       + fl->WindowFont.font->descent + 3)) / 2;
+	decor->WindowFont.y = decor->WindowFont.font->ascent
+	  + (height - (decor->WindowFont.font->ascent
+		       + decor->WindowFont.font->descent + 3)) / 2;
 #endif
-	if (fl->WindowFont.y < fl->WindowFont.font->ascent)
-	  fl->WindowFont.y = fl->WindowFont.font->ascent;
+	if (decor->WindowFont.y < decor->WindowFont.font->ascent)
+	  decor->WindowFont.y = decor->WindowFont.font->ascent;
 
 	tmp = Scr.FvwmRoot.next;
 	hi = Scr.Hilite;
@@ -967,7 +983,7 @@ void SetTitleStyle(F_CMD_ARGS)
 	{
 	  if (!HAS_TITLE(tmp)
 #ifdef USEDECOR
-	      || (tmp->fl != fl)
+	      || (tmp->decor != decor)
 #endif
 	    ) {
 	    tmp = tmp->next;
@@ -995,7 +1011,7 @@ void SetTitleStyle(F_CMD_ARGS)
     }
     else
     {
-      if (!(action = ReadTitleButton(prev, &fl->titlebar, False, -1)))
+      if (!(action = ReadTitleButton(prev, &decor->titlebar, False, -1)))
       {
 	free(parm);
 	break;
@@ -1321,52 +1337,44 @@ void LoadIconFont(F_CMD_ARGS)
   free(font);
 }
 
-static void ApplyWindowFont(FvwmDecor *fl)
+static void ApplyWindowFont(FvwmDecor *decor)
 {
   FvwmWindow *tmp;
-  FvwmWindow *hi;
-  int x,y,w,h,extra_height;
+  rectangle new_g;
+  int extra_height;
 
 #ifndef I18N_MB
-  fl->WindowFont.height =
-    fl->WindowFont.font->ascent+fl->WindowFont.font->descent;
+  decor->WindowFont.height =
+    decor->WindowFont.font->ascent+decor->WindowFont.font->descent;
 #endif
-  fl->WindowFont.y = fl->WindowFont.font->ascent;
-  extra_height = fl->TitleHeight;
+  decor->WindowFont.y = decor->WindowFont.font->ascent;
+  extra_height = decor->TitleHeight;
 #ifdef I18N_MB
-  fl->TitleHeight = fl->WindowFont.height+3;
+  decor->TitleHeight = decor->WindowFont.height+3;
 #else
-  fl->TitleHeight = fl->WindowFont.font->ascent+fl->WindowFont.font->descent+3;
+  decor->TitleHeight =
+    decor->WindowFont.font->ascent + decor->WindowFont.font->descent + 3;
 #endif
-  extra_height -= fl->TitleHeight;
+  extra_height -= decor->TitleHeight;
 
   tmp = Scr.FvwmRoot.next;
-  hi = Scr.Hilite;
   while(tmp)
   {
     if (!HAS_TITLE(tmp)
 #ifdef USEDECOR
-	|| (tmp->fl != fl)
+	|| (tmp->decor != decor)
 #endif
       )
     {
       tmp = tmp->next;
       continue;
     }
-    x = tmp->frame_g.x;
-    y = tmp->frame_g.y;
-    w = tmp->frame_g.width;
-    h = tmp->frame_g.height-extra_height;
-    tmp->frame_g.x = 0;
-    tmp->frame_g.y = 0;
-    tmp->frame_g.height = 0;
-    tmp->frame_g.width = 0;
-    SetupFrame(tmp,x,y,w,h,True,False);
-    DrawDecorations(tmp, DRAW_TITLE, True, True, None);
-    DrawDecorations(tmp, DRAW_TITLE, False, True, None);
+    new_g = tmp->frame_g;
+    gravity_resize(tmp->hints.win_gravity, &new_g, 0, -extra_height);
+    SetupFrame(tmp, new_g.x, new_g.y, new_g.width, new_g.height, True, False);
+    DrawDecorations(tmp, DRAW_ALL, (tmp == Scr.Hilite), True, None);
     tmp = tmp->next;
   }
-  DrawDecorations(hi, DRAW_TITLE, True, True, None);
 }
 
 void LoadWindowFont(F_CMD_ARGS)
@@ -1378,9 +1386,9 @@ void LoadWindowFont(F_CMD_ARGS)
   XFontStruct *newfont;
 #endif
 #ifdef USEDECOR
-  FvwmDecor *fl = cur_decor ? cur_decor : &Scr.DefaultDecor;
+  FvwmDecor *decor = cur_decor ? cur_decor : &Scr.DefaultDecor;
 #else
-  FvwmDecor *fl = &Scr.DefaultDecor;
+  FvwmDecor *decor = &Scr.DefaultDecor;
 #endif
 
   action = GetNextToken(action,&font);
@@ -1392,10 +1400,10 @@ void LoadWindowFont(F_CMD_ARGS)
       XFreeFont(dpy, Scr.DefaultDecor.WindowFont.font);
       Scr.flags.has_window_font = 0;
 #ifdef I18N_MB
-      fl->WindowFont.fontset = Scr.StdFont.fontset;
-      fl->WindowFont.height = Scr.StdFont.height;
+      decor->WindowFont.fontset = Scr.StdFont.fontset;
+      decor->WindowFont.height = Scr.StdFont.height;
 #endif
-      fl->WindowFont.font = Scr.StdFont.font;
+      decor->WindowFont.font = Scr.StdFont.font;
       ApplyWindowFont(&Scr.DefaultDecor);
     }
     return;
@@ -1408,29 +1416,29 @@ void LoadWindowFont(F_CMD_ARGS)
     XFontStruct **fs_list;
     char **ml;
 
-    if (fl->WindowFont.fontset != NULL &&
-	(fl != &Scr.DefaultDecor || Scr.flags.has_window_font == 1))
-      XFreeFontSet(dpy, fl->WindowFont.fontset);
-    if (fl == &Scr.DefaultDecor)
+    if (decor->WindowFont.fontset != NULL &&
+	(decor != &Scr.DefaultDecor || Scr.flags.has_window_font == 1))
+      XFreeFontSet(dpy, decor->WindowFont.fontset);
+    if (decor == &Scr.DefaultDecor)
       Scr.flags.has_window_font = 1;
-    fl->WindowFont.fontset = newfontset;
+    decor->WindowFont.fontset = newfontset;
 
     /* backward compatiblity setup */
     XFontsOfFontSet(newfontset, &fs_list, &ml);
-    fl->WindowFont.font = fs_list[0];
+    decor->WindowFont.font = fs_list[0];
     fset_extents = XExtentsOfFontSet(newfontset);
-    fl->WindowFont.height = fset_extents->max_logical_extent.height;
+    decor->WindowFont.height = fset_extents->max_logical_extent.height;
 #else
   if ((newfont = GetFontOrFixed(dpy, font)))
   {
-    if (fl->WindowFont.font &&
-	(fl != &Scr.DefaultDecor || Scr.flags.has_window_font == 1))
-      XFreeFont(dpy, fl->WindowFont.font);
-    if (fl == &Scr.DefaultDecor)
+    if (decor->WindowFont.font &&
+	(decor != &Scr.DefaultDecor || Scr.flags.has_window_font == 1))
+      XFreeFont(dpy, decor->WindowFont.font);
+    if (decor == &Scr.DefaultDecor)
       Scr.flags.has_window_font = 1;
-    fl->WindowFont.font = newfont;
+    decor->WindowFont.font = newfont;
 #endif
-    ApplyWindowFont(fl);
+    ApplyWindowFont(decor);
   }
   else
   {
@@ -1932,7 +1940,7 @@ char *ReadTitleButton(char *s, TitleButton *tb, Boolean append, int button)
  * Diverts a style definition to an FvwmDecor structure (veliaa@rpi.edu)
  *
  ****************************************************************************/
-void AddToDecor(FvwmDecor *fl, char *s)
+void AddToDecor(FvwmDecor *decor, char *s)
 {
   if (!s)
     return;
@@ -1940,7 +1948,7 @@ void AddToDecor(FvwmDecor *fl, char *s)
     ++s;
   if (!*s)
     return;
-  cur_decor = fl;
+  cur_decor = decor;
   ExecuteFunction(s,NULL,&Event,C_ROOT,-1,EXPAND_COMMAND);
   cur_decor = NULL;
 }
@@ -1954,7 +1962,7 @@ void ChangeDecor(F_CMD_ARGS)
 {
     char *item;
     int x,y,width,height,old_height,extra_height;
-    FvwmDecor *fl = &Scr.DefaultDecor, *found = NULL;
+    FvwmDecor *decor = &Scr.DefaultDecor, *found = NULL;
     if (DeferExecution(eventp,&w,&tmp_win,&context, CRS_SELECT,ButtonRelease))
 	return;
     action = GetNextToken(action, &item);
@@ -1965,10 +1973,10 @@ void ChangeDecor(F_CMD_ARGS)
 	return;
       }
     /* search for tag */
-    for (; fl; fl = fl->next)
-	if (fl->tag)
-	    if (StrEquals(item, fl->tag)) {
-		found = fl;
+    for (; decor; decor = decor->next)
+	if (decor->tag)
+	    if (StrEquals(item, decor->tag)) {
+		found = decor;
 		break;
 	    }
     free(item);
@@ -1976,10 +1984,10 @@ void ChangeDecor(F_CMD_ARGS)
 	XBell(dpy, 0);
 	return;
     }
-    old_height = tmp_win->fl->TitleHeight;
-    tmp_win->fl = found;
+    old_height = tmp_win->decor->TitleHeight;
+    tmp_win->decor = found;
     extra_height = (HAS_TITLE(tmp_win)) ?
-      (old_height - tmp_win->fl->TitleHeight) : 0;
+      (old_height - tmp_win->decor->TitleHeight) : 0;
     x = tmp_win->frame_g.x;
     y = tmp_win->frame_g.y;
     width = tmp_win->frame_g.width;
@@ -2000,7 +2008,7 @@ void ChangeDecor(F_CMD_ARGS)
 void DestroyDecor(F_CMD_ARGS)
 {
     char *item;
-    FvwmDecor *fl = Scr.DefaultDecor.next;
+    FvwmDecor *decor = Scr.DefaultDecor.next;
     FvwmDecor *prev = &Scr.DefaultDecor, *found = NULL;
 
     action = GetNextToken(action, &item);
@@ -2012,13 +2020,13 @@ void DestroyDecor(F_CMD_ARGS)
       }
 
     /* search for tag */
-    for (; fl; fl = fl->next) {
-	if (fl->tag)
-	    if (StrEquals(item, fl->tag)) {
-		found = fl;
+    for (; decor; decor = decor->next) {
+	if (decor->tag)
+	    if (StrEquals(item, decor->tag)) {
+		found = decor;
 		break;
 	    }
-	prev = fl;
+	prev = decor;
     }
     free(item);
 
@@ -2026,7 +2034,7 @@ void DestroyDecor(F_CMD_ARGS)
 	FvwmWindow *fw = Scr.FvwmRoot.next;
 	while(fw)
 	{
-	    if (fw->fl == found)
+	    if (fw->decor == found)
 	      ExecuteFunction("ChangeDecor Default",fw,eventp,
 			      C_WINDOW,*Module,EXPAND_COMMAND);
 	    fw = fw->next;
@@ -2044,7 +2052,7 @@ void DestroyDecor(F_CMD_ARGS)
  ****************************************************************************/
 void add_item_to_decor(F_CMD_ARGS)
 {
-    FvwmDecor *fl, *found = NULL;
+    FvwmDecor *decor, *found = NULL;
     char *item = NULL, *s = action;
 
     s = GetNextToken(s, &item);
@@ -2057,10 +2065,10 @@ void add_item_to_decor(F_CMD_ARGS)
 	return;
       }
     /* search for tag */
-    for (fl = &Scr.DefaultDecor; fl; fl = fl->next)
-	if (fl->tag)
-	    if (StrEquals(item, fl->tag)) {
-		found = fl;
+    for (decor = &Scr.DefaultDecor; decor; decor = decor->next)
+	if (decor->tag)
+	    if (StrEquals(item, decor->tag)) {
+		found = decor;
 		break;
 	    }
     if (!found) { /* then make a new one */
@@ -2068,9 +2076,9 @@ void add_item_to_decor(F_CMD_ARGS)
 	InitFvwmDecor(found);
 	found->tag = item; /* tag it */
 	/* add it to list */
-	for (fl = &Scr.DefaultDecor; fl->next; fl = fl->next)
+	for (decor = &Scr.DefaultDecor; decor->next; decor = decor->next)
 	  ;
-	fl->next = found;
+	decor->next = found;
     } else
 	free(item);
 
@@ -2093,18 +2101,18 @@ void UpdateDecor(F_CMD_ARGS)
 {
   FvwmWindow *fw = Scr.FvwmRoot.next;
 #ifdef USEDECOR
-  FvwmDecor *fl = &Scr.DefaultDecor, *found = NULL;
+  FvwmDecor *decor = &Scr.DefaultDecor, *found = NULL;
   FvwmWindow *hilight = Scr.Hilite;
   char *item = NULL;
   action = GetNextToken(action, &item);
   if (item)
   {
     /* search for tag */
-    for (; fl; fl = fl->next)
-      if (fl->tag)
-	if (strcasecmp(item, fl->tag)==0)
+    for (; decor; decor = decor->next)
+      if (decor->tag)
+	if (strcasecmp(item, decor->tag)==0)
 	{
-	  found = fl;
+	  found = decor;
 	  break;
 	}
     free(item);
@@ -2117,7 +2125,7 @@ void UpdateDecor(F_CMD_ARGS)
     /* update specific decor, or all */
     if (found)
     {
-      if (fw->fl == found)
+      if (fw->decor == found)
       {
 	DrawDecorations(fw, DRAW_ALL, True, True, None);
 	DrawDecorations(fw, DRAW_ALL, False, True, None);
@@ -2140,7 +2148,7 @@ void UpdateDecor(F_CMD_ARGS)
  *
  ****************************************************************************/
 static void SetMWMButtonFlag(
-  mwm_flags flag, int multi, int set, FvwmDecor *fl, TitleButton *tb)
+  mwm_flags flag, int multi, int set, FvwmDecor *decor, TitleButton *tb)
 {
   int i;
 
@@ -2151,9 +2159,9 @@ static void SetMWMButtonFlag(
       for (i = 0; i < 5; ++i)
       {
 	if (set)
-	  TB_MWM_DECOR_FLAGS(fl->left_buttons[i]) |= flag;
+	  TB_MWM_DECOR_FLAGS(decor->left_buttons[i]) |= flag;
 	else
-	  TB_MWM_DECOR_FLAGS(fl->left_buttons[i]) &= ~flag;
+	  TB_MWM_DECOR_FLAGS(decor->left_buttons[i]) &= ~flag;
       }
     }
     if (multi & 2)
@@ -2161,9 +2169,9 @@ static void SetMWMButtonFlag(
       for (i = 0; i < 5; ++i)
       {
 	if (set)
-	  TB_MWM_DECOR_FLAGS(fl->right_buttons[i]) |= flag;
+	  TB_MWM_DECOR_FLAGS(decor->right_buttons[i]) |= flag;
 	else
-	  TB_MWM_DECOR_FLAGS(fl->right_buttons[i]) &= ~flag;
+	  TB_MWM_DECOR_FLAGS(decor->right_buttons[i]) &= ~flag;
       }
     }
   }
@@ -2186,9 +2194,9 @@ void ButtonStyle(F_CMD_ARGS)
   char *parm = NULL;
   TitleButton *tb = NULL;
 #ifdef USEDECOR
-  FvwmDecor *fl = cur_decor ? cur_decor : &Scr.DefaultDecor;
+  FvwmDecor *decor = cur_decor ? cur_decor : &Scr.DefaultDecor;
 #else
-  FvwmDecor *fl = &Scr.DefaultDecor;
+  FvwmDecor *decor = &Scr.DefaultDecor;
 #endif
 
   text = GetNextToken(text, &parm);
@@ -2216,7 +2224,7 @@ void ButtonStyle(F_CMD_ARGS)
       /* we're either resetting buttons or
 	 an invalid button set was specified */
       if (StrEquals(parm,"reset"))
-	ResetAllButtons(fl);
+	ResetAllButtons(decor);
       else
 	fvwm_msg(ERR,"ButtonStyle","Bad button style (2) in line %s",
 		 action);
@@ -2237,12 +2245,12 @@ void ButtonStyle(F_CMD_ARGS)
       /* right */
       n = n - 1;
       if(n<0)n=4;
-      tb = &fl->right_buttons[n];
+      tb = &decor->right_buttons[n];
     }
     else
     {
       /* left */
-      tb = &fl->left_buttons[n];
+      tb = &decor->left_buttons[n];
     }
   }
 
@@ -2273,10 +2281,10 @@ void ButtonStyle(F_CMD_ARGS)
 	    {
 	      for (i=0; i<5; ++i)
 	      {
-		TB_JUSTIFICATION(fl->left_buttons[i]) =
+		TB_JUSTIFICATION(decor->left_buttons[i]) =
 		  (set) ? JUST_CENTER : JUST_RIGHT;
-		memset(&TB_FLAGS(fl->left_buttons[i]), (set) ? 0 : 0xff,
-		       sizeof(TB_FLAGS(fl->left_buttons[i])));
+		memset(&TB_FLAGS(decor->left_buttons[i]), (set) ? 0 : 0xff,
+		       sizeof(TB_FLAGS(decor->left_buttons[i])));
 		/* ? not very useful if set == 0 ? */
 	      }
 	    }
@@ -2284,10 +2292,10 @@ void ButtonStyle(F_CMD_ARGS)
 	    {
 	      for (i=0; i<5; ++i)
 	      {
-		TB_JUSTIFICATION(fl->right_buttons[i]) =
+		TB_JUSTIFICATION(decor->right_buttons[i]) =
 		  (set) ? JUST_CENTER : JUST_RIGHT;
-		memset(&TB_FLAGS(fl->right_buttons[i]), (set) ? 0 : 0xff,
-		       sizeof(TB_FLAGS(fl->right_buttons[i])));
+		memset(&TB_FLAGS(decor->right_buttons[i]), (set) ? 0 : 0xff,
+		       sizeof(TB_FLAGS(decor->right_buttons[i])));
 		/* ? not very useful if set == 0 ? */
 	      }
 	    }
@@ -2301,23 +2309,23 @@ void ButtonStyle(F_CMD_ARGS)
 	}
 	else if (StrEquals(tok, "MWMDecorMenu"))
 	{
-	  SetMWMButtonFlag(MWM_DECOR_MENU, multi, set, fl, tb);
+	  SetMWMButtonFlag(MWM_DECOR_MENU, multi, set, decor, tb);
 	}
 	else if (StrEquals(tok, "MWMDecorMin"))
 	{
-	  SetMWMButtonFlag(MWM_DECOR_MINIMIZE, multi, set, fl, tb);
+	  SetMWMButtonFlag(MWM_DECOR_MINIMIZE, multi, set, decor, tb);
 	}
 	else if (StrEquals(tok, "MWMDecorMax"))
 	{
-	  SetMWMButtonFlag(MWM_DECOR_MAXIMIZE, multi, set, fl, tb);
+	  SetMWMButtonFlag(MWM_DECOR_MAXIMIZE, multi, set, decor, tb);
 	}
 	else if (StrEquals(tok, "MWMDecorShade"))
 	{
-	  SetMWMButtonFlag(MWM_DECOR_SHADE, multi, set, fl, tb);
+	  SetMWMButtonFlag(MWM_DECOR_SHADE, multi, set, decor, tb);
 	}
 	else if (StrEquals(tok, "MWMDecorStick"))
 	{
-	  SetMWMButtonFlag(MWM_DECOR_STICK, multi, set, fl, tb);
+	  SetMWMButtonFlag(MWM_DECOR_STICK, multi, set, decor, tb);
 	}
 	else
 	{
@@ -2341,11 +2349,11 @@ void ButtonStyle(F_CMD_ARGS)
 	int i;
 	if (multi&1)
 	  for (i=0;i<5;++i)
-	    text = ReadTitleButton(prev, &fl->left_buttons[i],
+	    text = ReadTitleButton(prev, &decor->left_buttons[i],
 				   False, i*2+1);
 	if (multi&2)
 	  for (i=0;i<5;++i)
-	    text = ReadTitleButton(prev, &fl->right_buttons[i],
+	    text = ReadTitleButton(prev, &decor->right_buttons[i],
 				   False, i*2);
       }
       else if (!(text = ReadTitleButton(prev, tb, False, button)))
@@ -2374,9 +2382,9 @@ void AddButtonStyle(F_CMD_ARGS)
   char *parm = NULL;
   TitleButton *tb = NULL;
 #ifdef USEDECOR
-  FvwmDecor *fl = cur_decor ? cur_decor : &Scr.DefaultDecor;
+  FvwmDecor *decor = cur_decor ? cur_decor : &Scr.DefaultDecor;
 #else
-  FvwmDecor *fl = &Scr.DefaultDecor;
+  FvwmDecor *decor = &Scr.DefaultDecor;
 #endif
 
   text = GetNextToken(text, &parm);
@@ -2401,7 +2409,7 @@ void AddButtonStyle(F_CMD_ARGS)
       /* we're either resetting buttons or
 	 an invalid button set was specified */
       if (StrEquals(parm,"reset"))
-	ResetAllButtons(fl);
+	ResetAllButtons(decor);
       else
 	fvwm_msg(ERR,"ButtonStyle","Bad button style (2) in line %s",
 		 action);
@@ -2420,11 +2428,11 @@ void AddButtonStyle(F_CMD_ARGS)
       /* right */
       n = n - 1;
       if(n<0)n=4;
-      tb = &fl->right_buttons[n];
+      tb = &decor->right_buttons[n];
     }
     else {
       /* left */
-      tb = &fl->left_buttons[n];
+      tb = &decor->left_buttons[n];
     }
   }
 
@@ -2436,11 +2444,11 @@ void AddButtonStyle(F_CMD_ARGS)
       int i;
       if (multi&1)
 	for (i=0;i<5;++i)
-	  text = ReadTitleButton(prev, &fl->left_buttons[i], True,
+	  text = ReadTitleButton(prev, &decor->left_buttons[i], True,
 				 i*2+1);
       if (multi&2)
 	for (i=0;i<5;++i)
-	  text = ReadTitleButton(prev, &fl->right_buttons[i], True,
+	  text = ReadTitleButton(prev, &decor->right_buttons[i], True,
 				 i*2);
     }
     else if (!(text = ReadTitleButton(prev, tb, True, button))) {

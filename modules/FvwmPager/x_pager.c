@@ -1511,11 +1511,23 @@ void SwitchToDeskAndPage(int Desk, XEvent *Event)
   }
   else
   {
-    sprintf(command,"GotoPage %d %d\n",
-	    Event->xbutton.x*(Scr.VxMax+Scr.MyDisplayWidth)/
-	    (desk_w*Scr.MyDisplayWidth),
-	    Event->xbutton.y*(Scr.VyMax+Scr.MyDisplayHeight)/
-	    (desk_h*Scr.MyDisplayHeight));
+    int x = Event->xbutton.x * (Scr.VxMax+Scr.MyDisplayWidth) /
+      (desk_w * Scr.MyDisplayWidth);
+    int y = Event->xbutton.y * (Scr.VyMax+Scr.MyDisplayHeight) /
+      (desk_h * Scr.MyDisplayHeight);
+
+    /* Fix for buggy XFree86 servers that report button release events
+     * incorrectly when moving fast. Not perfect, but should at least prevent
+     * that we get a random page. */
+    if (x < 0)
+      x = 0;
+    if (y < 0)
+      y = 0;
+    if (x * Scr.MyDisplayWidth > Scr.VxMax)
+      x = Scr.VxMax / Scr.MyDisplayWidth;
+    if (y * Scr.MyDisplayHeight > Scr.VyMax)
+      y = Scr.VyMax / Scr.MyDisplayHeight;
+    sprintf(command,"GotoPage %d %d\n", x, y);
     SendInfo(fd,command,0);
   }
   Wait = 1;
@@ -2043,15 +2055,14 @@ void MoveWindow(XEvent *Event)
 	KeepMoving = 1;
 	finished = 1;
       }
-      XMoveWindow(dpy,t->PagerView, x - (x1),
-		  y - (y1));
+      XMoveWindow(dpy, t->PagerView, x - (x1), y - (y1));
     }
     else if(Event->type == ButtonRelease)
     {
       XTranslateCoordinates(dpy, Event->xany.window, Scr.Pager_w,
 			    Event->xbutton.x, Event->xbutton.y, &x, &y,
 			    &dumwin);
-      XMoveWindow(dpy,t->PagerView, x - x1, y - y1);
+      XMoveWindow(dpy, t->PagerView, x - x1, y - y1);
       finished = 1;
     }
     else if (Event->type == Expose)

@@ -16,6 +16,7 @@
 #include "FvwmIconMan.h"
 #include "readconfig.h"
 #include "xmanager.h"
+#include "libs/Module.h"
 
 static char const rcsid[] =
   "$Id$";

@@ -1,7 +1,38 @@
+1999-11-20  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* FvwmIconMan/x.c (xevent_loop):
+	workaround for a possible bug in XFree86; an EnterNotify event slipped
+	into the loop body that was supposed to select only ConfigureNotify
+
+	* FvwmCommand/FvwmCommandS.c:
+	* FvwmCommand/FvwmCommand.c:
+	fixed pipe names if DISPLAY is 'unix:0.0' under X, but ':0.0' on the
+	console, i.e. 'unix' is removed and thus the hostname is used
+
+	* FvwmIconMan/xmanager.c (clear_empty_region):
+	fixed a minor redrawing bug when the width of the manager was not a
+	multiple of the button width
+
+	* FvwmWinList/FvwmWinList.c (AdjustWindow):
+	fixed picture width calculation
+	(ProcessMessage):
+	mini icon changes change the window size too
+
+	* FvwmPager/x_pager.c (SwitchToDeskAndPage):
+	workaround for buggy XFree86
+
+	* FvwmIconMan/functions.c:
+	-Wall fix
+
+1999-11-17  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* FvwmTaskBar/FvwmTaskBar.1:
+	Fixed a typo.
+
 1999-11-19  Dan Espen  <dane@mk.telcordia.com>
 
-	* FvwmTaskBar/FvwmTaskBar.1: Some adjustment and hopefully clarification
-	on the geometry specification.
+	* FvwmTaskBar/FvwmTaskBar.1: Some adjustment and hopefully
+	clarification on the geometry specification.
 
 1999-11-18  olicha <olivier.chapuis@free.fr>
 
@@ -21,7 +52,7 @@
 	(StartMeUp):
 	* FvwmTaskBar/FvwmTaskBar.1:
 	New configuration option FvwmTaskBarRows
-	
+
 1999-11-17  Mikhael Goikhman  <migo@homemail.com>
 
 	* FvwmForm/Makefile.am: removed FORCE from FvwmTalk
@@ -44,12 +75,12 @@
 	(ButtonDraw):
 	New configuration options: FocusFore, FocusBack, FocusColorset,
 	NoBrightFocus, 3Dfvwm. Fixed drawing of buttons.
-	
+
 1999-11-16  olicha  <olivier.chapuis@free.fr>
 
 	* FvwmTaskBar/ButtonArray.c (DoButton):
 	Fixed drawing out of a button
-	
+
 1999-11-15  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* FvwmButtons/FvwmButtons.c (GetPanelGeometry):

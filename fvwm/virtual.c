@@ -775,134 +775,140 @@ void MoveViewport(int newx, int newy, Bool grab)
                   Scr.Vx, Scr.Vy, Scr.CurrentDesk, Scr.VxMax, Scr.VyMax);
 
   if((deltax!=0)||(deltay!=0))
-    {
+  {
 
 /*
-    RBW - 11/13/1998  - new:  chase the chain bidirectionally, all at once!
-    The idea is to move the windows that are moving out of the viewport from
-    the bottom of the stacking order up, to minimize the expose-redraw overhead.
-    Windows that will be moving into view will be moved top down, for the same
-    reason. Use the new  stacking-order chain, rather than the old
-    last-focussed chain.
-*/
-
-      t = Scr.FvwmRoot.stack_next;
-      t1 = Scr.FvwmRoot.stack_prev;
+ * RBW - 11/13/1998  - new:  chase the chain bidirectionally, all at once!
+ * The idea is to move the windows that are moving out of the viewport from
+ * the bottom of the stacking order up, to minimize the expose-redraw overhead.
+ * Windows that will be moving into view will be moved top down, for the same
+ * reason. Use the new  stacking-order chain, rather than the old
+ * last-focussed chain.
+ */
+    t = Scr.FvwmRoot.stack_next;
+    t1 = Scr.FvwmRoot.stack_prev;
     while (t != &Scr.FvwmRoot || t1 != &Scr.FvwmRoot)
+    {
+      if (t != &Scr.FvwmRoot)
       {
-        if (t != &Scr.FvwmRoot)
-          {
-	    /*
-	        If the window is moving into the viewport...
-	    */
-            txl = t->frame_g.x;
-            tyt = t->frame_g.y;
-	    txr = t->frame_g.x + t->frame_g.width;
-	    tyb = t->frame_g.y + t->frame_g.height;
-	    if ((txr >= PageLeft && txl <= PageRight
-	        && tyb >= PageTop && tyt <= PageBottom)
-	        && !IS_VIEWPORT_MOVED(t)
-		&& !IS_WINDOW_BEING_MOVED_OPAQUE(t))
-	      {
-		SET_VIEWPORT_MOVED(t, 1); /*  Block double move.  */
-	        /* If the window is iconified, and sticky Icons is set,
-	         * then the window should essentially be sticky */
-	        if(!((IS_ICONIFIED(t))&&(IS_ICON_STICKY(t))) &&
-	           (!(IS_STICKY(t))))
-	          {
-                    if(!(IS_ICON_STICKY(t)))
-	             {
-	               t->icon_x_loc += deltax;
-		       t->icon_xl_loc += deltax;
-		       t->icon_y_loc += deltay;
-		       if(t->icon_pixmap_w != None)
-		         XMoveWindow(dpy,t->icon_pixmap_w,t->icon_x_loc,
-			        t->icon_y_loc);
-                       if(t->icon_w != None)
-                         XMoveWindow(dpy,t->icon_w,t->icon_x_loc,
-                                t->icon_y_loc+t->icon_p_height);
-		       if(!(IS_ICON_UNMAPPED(t)))
-                        {
-		         BroadcastPacket(M_ICON_LOCATION, 7,
-                                         t->w, t->frame,
-                                         (unsigned long)t,
-                                         t->icon_x_loc, t->icon_y_loc,
-                                         t->icon_p_width,
-                                         t->icon_w_height+t->icon_p_height);
-                        }
-		     }
-	           SetupFrame (t, t->frame_g.x+ deltax, t->frame_g.y + deltay,
-		          t->frame_g.width, t->frame_g.height,FALSE, False);
-	         }
-	      }
-            /*  Bump to next win...    */
-            t = t->stack_next;
-          }
-        if (t1 != &Scr.FvwmRoot)
-          {
-	    /*
-	        If the window is not moving into the viewport...
-	    */
-            txl = t1->frame_g.x;
-            tyt = t1->frame_g.y;
-            txr = t1->frame_g.x + t1->frame_g.width;
-            tyb = t1->frame_g.y + t1->frame_g.height;
-            if (! (txr >= PageLeft && txl <= PageRight
-                && tyb >= PageTop && tyt <= PageBottom)
-                && !IS_VIEWPORT_MOVED(t1)
-		&& !IS_WINDOW_BEING_MOVED_OPAQUE(t1))
-	      {
-		SET_VIEWPORT_MOVED(t1, 1); /* Block double move.*/
-		/* If the window is iconified, and sticky Icons is set,
-		 * then the window should essentially be sticky */
-		if(!(IS_ICONIFIED(t1) && IS_ICON_STICKY(t1)) &&
-		   (!IS_STICKY(t1)))
-		  {
-		    if(!IS_ICON_STICKY(t1))
-		      {
-			t1->icon_x_loc += deltax;
-			t1->icon_xl_loc += deltax;
-			t1->icon_y_loc += deltay;
-			if(t1->icon_pixmap_w != None)
-			  XMoveWindow(dpy,t1->icon_pixmap_w,
-				      t1->icon_x_loc,
-				      t1->icon_y_loc);
-			if(t1->icon_w != None)
-			  XMoveWindow(dpy,t1->icon_w,t1->icon_x_loc,
-				      t1->icon_y_loc+t1->icon_p_height);
-			if(!IS_ICON_UNMAPPED(t1))
-			  {
-			    BroadcastPacket(M_ICON_LOCATION, 7,
-					    t1->w, t1->frame,
-					    (unsigned long)t1,
-					    t1->icon_x_loc, t1->icon_y_loc,
-					    t1->icon_p_width,
-					    t1->icon_w_height +
-					    t1->icon_p_height);
-			  }
-		      }
-		    SetupFrame (t1, t1->frame_g.x+ deltax,
-				t1->frame_g.y + deltay, t1->frame_g.width,
-				t1->frame_g.height,FALSE, False);
-		  }
-	      }
-            /*  Bump to next win...    */
-            t1 = t1->stack_prev;
-          }
-      }
-      for (t = Scr.FvwmRoot.next; t != NULL; t = t->next)
+	/*
+	 * If the window is moving into the viewport...
+	 */
+	txl = t->frame_g.x;
+	tyt = t->frame_g.y;
+	txr = t->frame_g.x + t->frame_g.width;
+	tyb = t->frame_g.y + t->frame_g.height;
+	if (IS_STICKY(t) && !IS_VIEWPORT_MOVED(t))
 	{
-	  SET_VIEWPORT_MOVED(t, 0); /* Clear double move blocker. */
-	  /* If its an icon, and its sticking, autoplace it so
-	   * that it doesn't wind up on top a a stationary
-	   * icon */
-	  if((IS_STICKY(t) || IS_ICON_STICKY(t)) &&
-	     IS_ICONIFIED(t) && !IS_ICON_MOVED(t) &&
-	     !IS_ICON_UNMAPPED(t))
-	    AutoPlaceIcon(t);
+	  /* the absolute position has changed */
+	  t->normal_g.x -= deltax;
+	  t->normal_g.y -= deltay;
+	  t->max_g.x -= deltax;
+	  t->max_g.y -= deltay;
+	  SET_VIEWPORT_MOVED(t, 1); /*  Block double move.  */
 	}
-
+	if ((txr >= PageLeft && txl <= PageRight
+	     && tyb >= PageTop && tyt <= PageBottom)
+	    && !IS_VIEWPORT_MOVED(t)
+	    && !IS_WINDOW_BEING_MOVED_OPAQUE(t))
+	{
+	  SET_VIEWPORT_MOVED(t, 1); /*  Block double move.  */
+	  /* If the window is iconified, and sticky Icons is set,
+	   * then the window should essentially be sticky */
+	  if(!(IS_ICONIFIED(t) && IS_ICON_STICKY(t)) && !IS_STICKY(t))
+	  {
+	    if(!(IS_ICON_STICKY(t)))
+	    {
+	      t->icon_x_loc += deltax;
+	      t->icon_xl_loc += deltax;
+	      t->icon_y_loc += deltay;
+	      if(t->icon_pixmap_w != None)
+		XMoveWindow(dpy,t->icon_pixmap_w,t->icon_x_loc,
+			    t->icon_y_loc);
+	      if(t->icon_w != None)
+		XMoveWindow(dpy,t->icon_w,t->icon_x_loc,
+			    t->icon_y_loc+t->icon_p_height);
+	      if(!(IS_ICON_UNMAPPED(t)))
+	      {
+		BroadcastPacket(M_ICON_LOCATION, 7,
+				t->w, t->frame,
+				(unsigned long)t,
+				t->icon_x_loc, t->icon_y_loc,
+				t->icon_p_width,
+				t->icon_w_height+t->icon_p_height);
+	      }
+	    }
+	    SetupFrame (t, t->frame_g.x+ deltax, t->frame_g.y + deltay,
+			t->frame_g.width, t->frame_g.height,FALSE, False);
+	  }
+	}
+	/*  Bump to next win...    */
+	t = t->stack_next;
+      }
+      if (t1 != &Scr.FvwmRoot)
+      {
+	/*
+	 *If the window is not moving into the viewport...
+	 */
+	txl = t1->frame_g.x;
+	tyt = t1->frame_g.y;
+	txr = t1->frame_g.x + t1->frame_g.width;
+	tyb = t1->frame_g.y + t1->frame_g.height;
+	if (! (txr >= PageLeft && txl <= PageRight
+	       && tyb >= PageTop && tyt <= PageBottom)
+	    && !IS_VIEWPORT_MOVED(t1)
+	    && !IS_WINDOW_BEING_MOVED_OPAQUE(t1))
+	{
+	  SET_VIEWPORT_MOVED(t1, 1); /* Block double move.*/
+	  /* If the window is iconified, and sticky Icons is set,
+	   * then the window should essentially be sticky */
+	  if (!(IS_ICONIFIED(t1) && IS_ICON_STICKY(t1)) && !IS_STICKY(t1))
+	  {
+	    if (!IS_ICON_STICKY(t1))
+	    {
+	      t1->icon_x_loc += deltax;
+	      t1->icon_xl_loc += deltax;
+	      t1->icon_y_loc += deltay;
+	      if(t1->icon_pixmap_w != None)
+		XMoveWindow(dpy,t1->icon_pixmap_w,
+			    t1->icon_x_loc,
+			    t1->icon_y_loc);
+	      if(t1->icon_w != None)
+		XMoveWindow(dpy,t1->icon_w,t1->icon_x_loc,
+			    t1->icon_y_loc+t1->icon_p_height);
+	      if(!IS_ICON_UNMAPPED(t1))
+	      {
+		BroadcastPacket(M_ICON_LOCATION, 7,
+				t1->w, t1->frame,
+				(unsigned long)t1,
+				t1->icon_x_loc, t1->icon_y_loc,
+				t1->icon_p_width,
+				t1->icon_w_height +
+				t1->icon_p_height);
+	      }
+	    }
+	    SetupFrame(t1, t1->frame_g.x+ deltax,
+		       t1->frame_g.y + deltay, t1->frame_g.width,
+		       t1->frame_g.height,FALSE, False);
+	  }
+	}
+	/*  Bump to next win...    */
+	t1 = t1->stack_prev;
+      }
     }
+    for (t = Scr.FvwmRoot.next; t != NULL; t = t->next)
+    {
+      SET_VIEWPORT_MOVED(t, 0); /* Clear double move blocker. */
+      /* If its an icon, and its sticking, autoplace it so
+       * that it doesn't wind up on top a a stationary
+       * icon */
+      if((IS_STICKY(t) || IS_ICON_STICKY(t)) &&
+	 IS_ICONIFIED(t) && !IS_ICON_MOVED(t) &&
+	 !IS_ICON_UNMAPPED(t))
+	AutoPlaceIcon(t);
+    }
+
+  }
   checkPanFrames();
 
   /* do this with PanFrames too ??? HEDU */

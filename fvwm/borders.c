@@ -1161,6 +1161,7 @@ void DrawDecorations(
   if (cd.flags.has_color_changed)
   {
     change_window_background(t->decor_w, cd.valuemask, &cd.attributes);
+    change_window_background(t->frame, cd.valuemask, &cd.attributes);
     if (HAS_TITLE(t))
     {
       change_window_background(
@@ -1221,17 +1222,6 @@ void SetupFrame(FvwmWindow *tmp_win,int x,int y,int w,int h,Bool sendEvent,
            "Routine Entered (x == %d, y == %d, w == %d, h == %d)",
            x, y, w, h);
 #endif
-
-  /* if windows is not being maximized, save size in case of maximization */
-  if (!IS_MAXIMIZED(tmp_win))
-  {
-    /* store orig values in absolute coords */
-    tmp_win->orig_g.x = x + Scr.Vx;
-    tmp_win->orig_g.y = y + Scr.Vy;
-    tmp_win->orig_g.width = w;
-    if (!shaded)
-      tmp_win->orig_g.height = h;
-  }
 
   if((w != tmp_win->frame_g.width) || (h != tmp_win->frame_g.height))
     Resized = True;
@@ -1364,7 +1354,8 @@ void SetupFrame(FvwmWindow *tmp_win,int x,int y,int w,int h,Bool sendEvent,
     frame_wc.height = tmp_win->frame_g.height = h;
     frame_mask = (CWX | CWY | CWWidth | CWHeight);
     XConfigureWindow(dpy, tmp_win->frame, frame_mask, &frame_wc);
-    frame_mask = (CWWidth | CWHeight);
+    frame_wc.x = 0;
+    frame_wc.y = 0;
     XConfigureWindow(dpy, tmp_win->decor_w, frame_mask, &frame_wc);
   }
 #ifdef FVWM_DEBUG_MSGS
@@ -1424,12 +1415,18 @@ void SetupFrame(FvwmWindow *tmp_win,int x,int y,int w,int h,Bool sendEvent,
   }
 
   XSync(dpy,0);
-
   BroadcastConfig(M_CONFIGURE_WINDOW,tmp_win);
+#if 0
+fprintf(stderr,"sf: window '%s'\n", tmp_win->name);
+fprintf(stderr,"    frame:  %5d %5d, %4d x %4d\n", tmp_win->frame_g.x, tmp_win->frame_g.y, tmp_win->frame_g.width, tmp_win->frame_g.height);
+fprintf(stderr,"    normal: %5d %5d, %4d x %4d\n", tmp_win->normal_g.x, tmp_win->normal_g.y, tmp_win->normal_g.width, tmp_win->normal_g.height);
+if (IS_MAXIMIZED(tmp_win))
+fprintf(stderr,"    max:    %5d %5d, %4d x %4d, %5d %5d\n", tmp_win->max_g.x, tmp_win->max_g.y, tmp_win->max_g.width, tmp_win->max_g.height, tmp_win->max_offset.x, tmp_win->max_offset.y);
+#endif
 }
 
 void ForceSetupFrame(
-  FvwmWindow *tmp_win,int x,int y,int w,int h,Bool sendEvent,
+  FvwmWindow *tmp_win,int x,int y,int w,int h, Bool sendEvent,
   Bool curr_shading)
 {
   tmp_win->frame_g.x = x + 1;
@@ -1437,6 +1434,58 @@ void ForceSetupFrame(
   tmp_win->frame_g.width = 0;
   tmp_win->frame_g.height = 0;
   SetupFrame(tmp_win, x, y, w, h, sendEvent, curr_shading);
+}
+
+void update_absolute_geometry(FvwmWindow *tmp_win)
+{
+  rectangle *dest_g;
+
+#if 0
+fprintf(stderr,"uag: called for window '%s'\n", tmp_win->name);
+#endif
+  /* store orig values in absolute coords */
+  dest_g = (IS_MAXIMIZED(tmp_win)) ? &tmp_win->max_g : &tmp_win->normal_g;
+  dest_g->x = tmp_win->frame_g.x + Scr.Vx;
+  dest_g->y = tmp_win->frame_g.y + Scr.Vy;
+  dest_g->width = tmp_win->frame_g.width;
+  if (!IS_SHADED(tmp_win))
+    dest_g->height = tmp_win->frame_g.height;
+  else if (HAS_BOTTOM_TITLE(tmp_win))
+  {
+    dest_g->y += tmp_win->frame_g.height - dest_g->height;
+  }
+#if 0
+fprintf(stderr,"     frame:  %5d %5d, %4d x %4d\n", tmp_win->frame_g.x, tmp_win->frame_g.y, tmp_win->frame_g.width, tmp_win->frame_g.height);
+fprintf(stderr,"     normal: %5d %5d, %4d x %4d\n", tmp_win->normal_g.x, tmp_win->normal_g.y, tmp_win->normal_g.width, tmp_win->normal_g.height);
+if (IS_MAXIMIZED(tmp_win))
+fprintf(stderr,"     max:    %5d %5d, %4d x %4d, %5d %5d\n", tmp_win->max_g.x, tmp_win->max_g.y, tmp_win->max_g.width, tmp_win->max_g.height, tmp_win->max_offset.x, tmp_win->max_offset.y);
+#endif
+}
+
+void set_decor_gravity(
+  FvwmWindow *tmp_win, int gravity, int parent_gravity, int client_gravity)
+{
+  int valuemask = CWWinGravity;
+  XSetWindowAttributes xcwa;
+  int i;
+
+  xcwa.win_gravity = client_gravity;
+  XChangeWindowAttributes(dpy, tmp_win->w, valuemask, &xcwa);
+  xcwa.win_gravity = parent_gravity;
+  XChangeWindowAttributes(dpy, tmp_win->Parent, valuemask, &xcwa);
+  xcwa.win_gravity = gravity;
+  XChangeWindowAttributes(dpy, tmp_win->decor_w, valuemask, &xcwa);
+  if (HAS_TITLE(tmp_win))
+  {
+    XChangeWindowAttributes(dpy, tmp_win->title_w, valuemask, &xcwa);
+    for (i = 4; i >= 0; i--)
+    {
+      if (tmp_win->left_w[i])
+	XChangeWindowAttributes(dpy, tmp_win->left_w[i], valuemask, &xcwa);
+      if (tmp_win->right_w[i])
+	XChangeWindowAttributes(dpy, tmp_win->right_w[i], valuemask, &xcwa);
+    }
+  }
 }
 
 

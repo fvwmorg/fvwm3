@@ -84,37 +84,41 @@ static struct charstring key_modifiers[]=
 static Bool find_context( const char *string, int *output,
 			  struct charstring *table )
 {
-    int i;
-    int len = strlen( string );
-    Bool error = False;
+  int i;
+  int len = strlen( string );
+  Bool error = False;
 
-    *output=0;
+  *output=0;
 
-    for ( i = 0; i < len; ++i ) {
-	int j = 0, matched = 0;
-	char c = string[i];
+  for ( i = 0; i < len; ++i )
+  {
+    int j = 0, matched = 0;
+    char c = string[i];
 
-	/* The following comment strikes me as unlikely, but I leave it (and
-	   the code) intact.  -- Steve Robbins, 28-mar-1999 */
-	/* in some BSD implementations, tolower(c) is not defined
-	 * unless isupper(c) is true */
-	if ( isupper(c) )
-	    c = tolower( c );
+    /* The following comment strikes me as unlikely, but I leave it (and
+       the code) intact.  -- Steve Robbins, 28-mar-1999 */
+    /* in some BSD implementations, tolower(c) is not defined
+     * unless isupper(c) is true */
+    if ( isupper(c) )
+      c = tolower( c );
 
-	while ( table[j].key != 0 ) {
-	    if ( table[j].key == c ) {
-		*output |= table[j].value;
-		matched = 1;
-		break;
-	    }
-	    ++j;
-	}
-	if (!matched) {
-	    fprintf( stderr, "find_context: bad context or modifier %c\n", c );
-	    error = True;
-	}
+    while ( table[j].key != 0 )
+    {
+      if ( table[j].key == c )
+      {
+	*output |= table[j].value;
+	matched = 1;
+	break;
+      }
+      ++j;
     }
-    return error;
+    if (!matched)
+    {
+      fprintf( stderr, "find_context: bad context or modifier %c\n", c );
+      error = True;
+    }
+  }
+  return error;
 }
 
 /* Converts the input string into a mask with bits for the contexts */

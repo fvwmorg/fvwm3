@@ -87,7 +87,7 @@ void initModules(void)
       readPipes[i]= -1;
       pipeOn[i] = -1;
       PipeMask[i] = MAX_MASK;
-      SyncMask[i] = 0; 
+      SyncMask[i] = 0;
       pipeQueue[i] = (struct queue_buff_struct *)NULL;
       pipeName[i] = NULL;
     }
@@ -522,7 +522,7 @@ int HandleModuleInput(Window w, int channel, char *expect)
   if(n < sizeof(cont))
     {
       fvwm_msg(ERR, "HandleModuleInput",
-               "Module %i, Size Problems (read: %d, size: %d)", 
+               "Module %i, Size Problems (read: %d, size: %d)",
 	       channel, n, sizeof(cont));
       KillModule(channel);
       return 0;
@@ -573,6 +573,11 @@ int HandleModuleInput(Window w, int channel, char *expect)
 	  w = None;
 	}
 
+#if 0
+      /* With this you can't start a move from the WindowList module (or any
+       * other module. The move code expects the location from the event to
+       * be related to the real pointer position, otherwise the window will
+       * appear somewhere, but not where we want. */
       if(tmp_win)
 	{
 	  if (!IS_ICONIFIED(tmp_win))
@@ -591,6 +596,10 @@ int HandleModuleInput(Window w, int channel, char *expect)
           XQueryPointer(dpy, Scr.Root, &JunkRoot, &JunkChild, &JunkX,&JunkY,
                         &Event.xbutton.x_root,&Event.xbutton.y_root,&JunkMask);
 	}
+#else
+      XQueryPointer(dpy, Scr.Root, &JunkRoot, &JunkChild, &JunkX,&JunkY,
+		    &Event.xbutton.x_root,&Event.xbutton.y_root,&JunkMask);
+#endif
       Event.xbutton.button = 1;
       Event.xbutton.x = 0;
       Event.xbutton.y = 0;
@@ -1168,7 +1177,7 @@ int PositiveWrite(int module, unsigned long *ptr, int size)
 
   /* a dirty hack to prevent FvwmAnimate triggering during Recapture */
   /* would be better to send RecaptureStart and RecaptureEnd messages. */
-  /* If module is lock on send for iconify message and its an 
+  /* If module is lock on send for iconify message and its an
    * iconify event and server grabbed, then return */
   if ((SyncMask[module] & M_ICONIFY & ptr[1]) && (myxgrabcount != 0)) {
     return -1;
@@ -1177,9 +1186,9 @@ int PositiveWrite(int module, unsigned long *ptr, int size)
   AddToQueue(module,ptr,size,0);
 
   /* dje, from afterstep, for FvwmAnimate, allows modules to sync with fvwm.
-   * this is disabled when the server is grabbed, otherwise deadlocks happen. 
-   * M_LOCKONSEND has been replaced by a separated mask which defines on 
-   * which messages the fvwm-to-module communication need to be lock 
+   * this is disabled when the server is grabbed, otherwise deadlocks happen.
+   * M_LOCKONSEND has been replaced by a separated mask which defines on
+   * which messages the fvwm-to-module communication need to be lock
    * on send. olicha Nov 13, 1999 */
   if ((SyncMask[module] & ptr[1]) && !myxgrabcount) {
     Window targetWindow;

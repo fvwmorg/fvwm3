@@ -38,6 +38,7 @@
 #include "stack.h"
 #include "gnome.h"
 #include "icccm2.h"
+#include "placement.h"
 
 extern int master_pid;
 
@@ -54,9 +55,11 @@ typedef struct _match
   char               **wm_command;
   int                 x, y, w, h, icon_x, icon_y;
   int                 x_max, y_max, w_max, h_max;
+  int                 max_x_offset, max_y_offset;
   int                 desktop;
   int                 layer;
   int                 used;
+  int                 gravity;
   window_flags        flags;
 }
 Match;
@@ -312,6 +315,7 @@ SaveWindowStates(FILE *f)
   char **wm_command;
   int wm_command_count;
   FvwmWindow *ewin;
+  rectangle save_g;
   int i;
 
   for (ewin = Scr.FvwmRoot.stack_next; ewin != &Scr.FvwmRoot;
@@ -366,19 +370,21 @@ SaveWindowStates(FILE *f)
 	    }
 	} /* !window_role */
 
-      /* It seems we have to subtract the bw here, since it
-       * is added again in AddWindow */
-      fprintf(f, "  [GEOMETRY] %i %i %i %i %i %i %i %i %i %i\n",
-	      ewin->orig_g.x - ewin->old_bw,
-              ewin->orig_g.y - ewin->old_bw,
-	      ewin->orig_g.width - 2*ewin->boundary_width ,
-	      ewin->orig_g.height -2*ewin->boundary_width-ewin->title_g.height,
-              ewin->maximized_g.x + ((!IS_STICKY(ewin)) ? Scr.Vx : 0),
-              ewin->maximized_g.y + ((!IS_STICKY(ewin)) ? Scr.Vy : 0),
-              ewin->maximized_g.width,
-              ewin->maximized_g.height,
-	      ewin->icon_x_loc + ((!is_icon_sticky) ? Scr.Vx : 0),
-	      ewin->icon_y_loc + ((!is_icon_sticky) ? Scr.Vy : 0));
+      gravity_get_naked_geometry(
+	ewin->hints.win_gravity, ewin, &save_g, &ewin->normal_g);
+      if (IS_STICKY(ewin))
+      {
+	save_g.x -= Scr.Vx;
+	save_g.y -= Scr.Vy;
+      }
+      fprintf(
+	f, "  [GEOMETRY] %i %i %i %i %i %i %i %i %i %i %i %i %i\n",
+	save_g.x, save_g.y, save_g.width, save_g.height,
+	ewin->max_g.x, ewin->max_g.y, ewin->max_g.width, ewin->max_g.height,
+	ewin->icon_x_loc + ((!is_icon_sticky) ? Scr.Vx : 0),
+	ewin->icon_y_loc + ((!is_icon_sticky) ? Scr.Vy : 0),
+	ewin->hints.win_gravity,
+	ewin->max_offset.x, ewin->max_offset.y);
       fprintf(f, "  [DESK] %i\n", ewin->Desk);
       fprintf(f, "  [LAYER] %i\n", get_layer(ewin));
       fprintf(f, "  [FLAGS] ");
@@ -455,7 +461,7 @@ LoadWindowStates(char *filename)
     }
     else if (!strcmp(s1, "[GEOMETRY]"))
     {
-      sscanf(s, "%*s %i %i %i %i %i %i %i %i %i %i",
+      sscanf(s, "%*s %i %i %i %i %i %i %i %i %i %i %i %i %i",
 	     &(matches[num_match - 1].x),
 	     &(matches[num_match - 1].y),
 	     &(matches[num_match - 1].w),
@@ -465,7 +471,10 @@ LoadWindowStates(char *filename)
 	     &(matches[num_match - 1].w_max),
 	     &(matches[num_match - 1].h_max),
 	     &(matches[num_match - 1].icon_x),
-	     &(matches[num_match - 1].icon_y));
+	     &(matches[num_match - 1].icon_y),
+	     &(matches[num_match - 1].gravity),
+	     &(matches[num_match - 1].max_x_offset),
+	     &(matches[num_match - 1].max_y_offset));
     }
     else if (!strcmp(s1, "[DESK]"))
     {
@@ -633,119 +642,107 @@ static Bool matchWin(FvwmWindow *w, Match *m)
   desired stacking order. It expects the stacking order
   to be set up correctly beforehand!
 */
-void
-MatchWinToSM(FvwmWindow *ewin,
-             int *x_max, int *y_max, unsigned int *w_max, unsigned int *h_max,
-             int *do_shade, int *do_max)
+Bool
+MatchWinToSM(FvwmWindow *ewin, int *do_shade, int *do_max)
 {
   int i;
 
   for (i = 0; i < num_match; i++)
+  {
+    if (!matches[i].used && matchWin(ewin, &matches[i]))
     {
-      if (!matches[i].used && matchWin(ewin, &matches[i]))
-	{
+      matches[i].used = 1;
+      if (!Restarting)
+      {
+	/* We don't want to restore too much state if
+	   we are restarting, since that would make restarting
+	   useless for rereading changed rc files. */
+	SET_DO_SKIP_WINDOW_LIST(
+	  ewin, DO_SKIP_WINDOW_LIST(&(matches[i])));
+	SET_ICON_SUPPRESSED(ewin, IS_ICON_SUPPRESSED(&(matches[i])));
+	SET_HAS_NO_ICON_TITLE(ewin, HAS_NO_ICON_TITLE(&(matches[i])));
+	SET_LENIENT(ewin, IS_LENIENT(&(matches[i])));
+	SET_ICON_STICKY(ewin, IS_ICON_STICKY(&(matches[i])));
+	SET_DO_SKIP_ICON_CIRCULATE(
+	  ewin, DO_SKIP_ICON_CIRCULATE(&(matches[i])));
+	SET_DO_SKIP_SHADED_CIRCULATE(
+	  ewin, DO_SKIP_SHADED_CIRCULATE(&(matches[i])));
+	SET_DO_SKIP_CIRCULATE(ewin, DO_SKIP_CIRCULATE(&(matches[i])));
+	SET_FOCUS_MODE(ewin, GET_FOCUS_MODE(&(matches[i])));
+	ewin->name = matches[i].wm_name;
+      }
+      *do_shade = IS_SHADED(&(matches[i]));
+      *do_max = IS_MAXIMIZED(&(matches[i]));
+      if (IS_ICONIFIED(&(matches[i])))
+      {
+	/*
+	  ICON_MOVED is necessary to make fvwm use icon_[xy]_loc
+	  for icon placement
+	*/
+	SET_DO_START_ICONIC(ewin, 1);
+	SET_ICON_MOVED(ewin, 1);
+      }
+      else
+      {
+	SET_DO_START_ICONIC(ewin, 0);
+      }
 
-	  matches[i].used = 1;
-	  if (!Restarting)
-	    {
- 	      /* We don't want to restore too much state if
-		 we are restarting, since that would make restarting
-		 useless for rereading changed rc files. */
-	      SET_DO_SKIP_WINDOW_LIST(ewin, DO_SKIP_WINDOW_LIST(&(matches[i])));
-	      SET_ICON_SUPPRESSED(ewin, IS_ICON_SUPPRESSED(&(matches[i])));
-	      SET_HAS_NO_ICON_TITLE(ewin, HAS_NO_ICON_TITLE(&(matches[i])));
-	      SET_LENIENT(ewin, IS_LENIENT(&(matches[i])));
-	      SET_ICON_STICKY(ewin, IS_ICON_STICKY(&(matches[i])));
-	      SET_DO_SKIP_ICON_CIRCULATE(ewin,
-					 DO_SKIP_ICON_CIRCULATE(&(matches[i])));
-	      SET_DO_SKIP_SHADED_CIRCULATE(
-		ewin, DO_SKIP_SHADED_CIRCULATE(&(matches[i])));
-	      SET_DO_SKIP_CIRCULATE(ewin, DO_SKIP_CIRCULATE(&(matches[i])));
-	      SET_FOCUS_MODE(ewin, GET_FOCUS_MODE(&(matches[i])));
-	      ewin->name = matches[i].wm_name;
-	    }
-	  *do_shade = IS_SHADED(&(matches[i]));
-	  *do_max = IS_MAXIMIZED(&(matches[i]));
-	  if (IS_ICONIFIED(&(matches[i]))) {
-	    /*
-	      ICON_MOVED is necessary to make fvwm use icon_[xy]_loc
-	      for icon placement
-	    */
-	    SET_DO_START_ICONIC(ewin, 1);
-	    SET_ICON_MOVED(ewin, 1);
-	  } else {
-	    SET_DO_START_ICONIC(ewin, 0);
-	  }
-	  /* this doesn't work very well if Vx/Vy is not on
-	     a page boundary */
-	  ewin->attr.x = matches[i].x;
-	  ewin->attr.y = matches[i].y;
-	  ewin->attr.width = matches[i].w;
-	  ewin->attr.height = matches[i].h;
-	  *x_max = matches[i].x_max;
-	  *y_max = matches[i].y_max;
-	  *w_max = matches[i].w_max;
-	  *h_max = matches[i].h_max;
-	  SET_STICKY(ewin, IS_STICKY(&(matches[i])));
+      ewin->normal_g.x = matches[i].x;
+      ewin->normal_g.y = matches[i].y;
+      ewin->normal_g.width = matches[i].w;
+      ewin->normal_g.height = matches[i].h;
+      ewin->max_g.x = matches[i].x_max;
+      ewin->max_g.y = matches[i].y_max;
+      ewin->max_g.width = matches[i].w_max;
+      ewin->max_g.height = matches[i].h_max;
+      ewin->max_offset.x = matches[i].max_x_offset;
+      ewin->max_offset.y = matches[i].max_y_offset;
+      SET_STICKY(ewin, IS_STICKY(&(matches[i])));
+      set_layer(ewin, matches[i].layer);
 
-	  if (!IS_STICKY(ewin))
-	  {
-	    *x_max -= Scr.Vx;
-	    *y_max -= Scr.Vy;
-	    ewin->attr.x -= Scr.Vx;
-	    ewin->attr.y -= Scr.Vy;
-	    ewin->Desk = matches[i].desktop;
-	  }
-	  else
-	  {
-	    /* original window position on same page as frame */
-	    ewin->attr.x += truncate_to_multiple(*x_max - ewin->attr.x,
-						 Scr.MyDisplayWidth);
-	    ewin->attr.y += truncate_to_multiple(*y_max - ewin->attr.y,
-						 Scr.MyDisplayHeight);
-	  }
-
-	  set_layer(ewin, matches[i].layer);
-
-	  /* this is not enough to fight fvwms attempts to
-	     put icons on the current page */
-	  ewin->icon_x_loc = matches[i].icon_x;
-	  ewin->icon_y_loc = matches[i].icon_y;
-	  if (!IS_STICKY(&(matches[i])) &&
-	      !(IS_ICONIFIED(&(matches[i])) && IS_ICON_STICKY(&(matches[i]))))
-	  {
-	    ewin->icon_x_loc -= Scr.Vx;
-	    ewin->icon_y_loc -= Scr.Vy;
-	  }
+      /* this is not enough to fight fvwms attempts to
+	 put icons on the current page */
+      ewin->icon_x_loc = matches[i].icon_x;
+      ewin->icon_y_loc = matches[i].icon_y;
+      if (!IS_STICKY(&(matches[i])) &&
+	  !(IS_ICONIFIED(&(matches[i])) && IS_ICON_STICKY(&(matches[i]))))
+      {
+	ewin->icon_x_loc -= Scr.Vx;
+	ewin->icon_y_loc -= Scr.Vy;
+      }
 
 #if 0
-	  /* Find the window to stack this one below. */
-	  for (j = i-1; j >= 0; j--) {
+      /* Find the window to stack this one below. */
+      for (j = i-1; j >= 0; j--) {
 
-	    /* matches are sorted in stacking order */
-	    if (matches[j].used) {
+	/* matches are sorted in stacking order */
+	if (matches[j].used) {
 
-	      for (t = Scr.FvwmRoot.next; t != NULL; t = t->next) {
+	  for (t = Scr.FvwmRoot.next; t != NULL; t = t->next)
+	  {
 #ifdef FVWM_DEBUG_DEVEL
-		fprintf(stderr, "[S]");
+	    fprintf(stderr, "[S]");
 #endif
-		if (matchWin(t, &matches[j])) {
-		  ewin->stack_next->stack_prev = ewin->stack_prev;
-		  ewin->stack_prev->stack_next = ewin->stack_next;
+	    if (matchWin(t, &matches[j]))
+	    {
+	      ewin->stack_next->stack_prev = ewin->stack_prev;
+	      ewin->stack_prev->stack_next = ewin->stack_next;
 
-		  ewin->stack_prev = t;
-		  ewin->stack_next = t->stack_next;
-		  ewin->stack_prev->stack_next = ewin;
-		  ewin->stack_next->stack_prev = ewin;
-		  return;
-		}
-	      }
+	      ewin->stack_prev = t;
+	      ewin->stack_next = t->stack_next;
+	      ewin->stack_prev->stack_next = ewin;
+	      ewin->stack_next->stack_prev = ewin;
+	      return True;
 	    }
 	  }
-#endif
-	  return;
 	}
+      }
+#endif
+      return True;
     }
+  }
+
+  return False;
 }
 
 static int saveStateFile(char *filename)
@@ -753,8 +750,10 @@ static int saveStateFile(char *filename)
   FILE *f;
   int success;
 
-  if (!filename || !*filename) return 0;
-  if ((f = fopen(filename, "w")) == NULL) return 0;
+  if (!filename || !*filename)
+    return 0;
+  if ((f = fopen(filename, "w")) == NULL)
+    return 0;
 
   fprintf(f, "# This file is generated by fvwm. It stores global and window states.\n");
   fprintf(f, "# Normally, you must never delete this file, it will be auto-deleted.\n\n");
@@ -770,7 +769,8 @@ static int saveStateFile(char *filename)
     SaveWindowStates(f) && SaveGlobalState(f):
     1;
   doPreserveState = True;
-  if (fclose(f) != 0) return 0;
+  if (fclose(f) != 0)
+    return 0;
 
 #ifdef FVWM_DEBUG_DEVEL
   system(CatString3("mkdir -p /tmp/fs-save; cp ", filename, " /tmp/fs-save"));

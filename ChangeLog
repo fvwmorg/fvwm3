@@ -1,8 +1,71 @@
+1999-11-20  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* fvwm/style.c (handle_window_style_change):
+	handle borderwidth/handlewidth changes without recapture
+
+	* fvwm/module_interface.c (HandleModuleInput):
+	module commands don't fake a ButtonPress with the frame location;
+	XQueryPointer is always used.
+
+	* fvwm/move_resize.c (GetMoveArguments):
+	A 'm' before the move arguments denotes movement relative to current
+	mouse position.
+
+	* fvwm/builtins.c (ApplyWindowFont):
+	changing the window font now honours the gravity
+
+	* fvwm/session.c:
+	hopefully fixed all 'sticky window' bugs once and for all
+
+	* fvwm/builtins.c (WindowShade):
+	shading/unshading is perfectly smooth now, even with bottom titles
+	(stick_function):
+	(handle_stick):
+	functions moved to move_resize.c
+
+	* fvwm/move_resize.c (Maximize):
+	maximize on pages other than 0-0, 0-1, 1-0 and 1-1 didn't work if the
+	window was not visible
+
+	* fvwm/*.[ch]:
+	nearly a complete rewrite of the sizing and positioning bits in the
+	FvwmWindow structure. Had to touch many, many files and functions, but
+	I hope the benefit is that all calculations are much easier now.
+	Perhaps the most important change is that the normal_g/max_g members
+	now are the authorative source of the window position. Whenever the
+	frame is moved, the 'update_absolute_geometry' function has to be
+	called to re-adjust the appropriate values. Even if the window is
+	maximized the code moves the normal geometry if the maximized window
+	gets too far away from its unmaximized version, i.e. if the maximized
+	window is moved by more than a page width or height. This may cause
+	that a window in unmaximized off screen if the viewport is not at a
+	page boundary, but at least it's consistent. The absolute geometry of
+	sticky windows is updated when the viewport is moved. Thus, sticking
+	a window now is as easy as resetting the flag.
+	I have scrapped the xdiff/ydiff members of the FvwmWindow structure.
+	There are now some functions for decorating, moveing, resizing, etc.
+	a window while taking gravity into account.
+
+1999-11-17  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* fvwm/add_window.c (setup_style_and_decor):
+	* fvwm/events.c (HandleFocusIn):
+	* fvwm/screen.h:
+	* fvwm/fvwm.h (FvwmWindow):
+	* fvwm/builtins.c (*):
+	renamed all occurences of 'fl' to 'decor'
+
+	* vms/config.h:
+	* configure.in (FVWM_CONFIGDIR):
+	* acconfig.h:
+	removed GRADIENT_BUTTONS, PIXMAP_BUTTONS, VECTOR_BUTTONS, BORDERSTYLE,
+	EXTENDED_TITLESTYLE, ACTIVEDOWN_BTNS and INACTIVE_BTNS options
+
 1999-11-18  olicha   <olivier.chapuis@free.fr>
 
 	* libs/Module.{c,h} (SendFvwmPipe): Added SendFvwmPipe form
 	FvwmIconMan
-	
+
 1999-11-17  Mikhael Goikhman  <migo@homemail.com>
 
 	* fvwm/menu.c (pop_menu_up): fixed y-location of title menu for
@@ -13,7 +76,7 @@
 	* fvwm/module_interface.c (HandleModuleInput):
 	Added some ERR fvwm_msg to indicate that fvwm2 decides to kill
 	a module because of a communication problem.
-	
+
 1999-11-16  Dan Espen  <dane@mk.telcordia.com>
 
 	* fvwm/fvwm2.1: Minor adjustment to man page.
@@ -23,7 +86,7 @@
 	* fvwm/event.c (HandleButtonRelease):
 	* fvwm/fvwm2.1:
 	Did so that Modifiers work with Stroke
-	
+
 1999-11-16  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* fvwm/events.c (HandleButtonPress):

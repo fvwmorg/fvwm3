@@ -42,8 +42,6 @@ void exec_function(F_CMD_ARGS);
 void exec_setup(F_CMD_ARGS);
 void refresh_function(F_CMD_ARGS);
 void refresh_win_function(F_CMD_ARGS);
-void handle_stick(F_CMD_ARGS, int toggle);
-void stick_function(F_CMD_ARGS);
 void wait_func(F_CMD_ARGS);
 void quit_func(F_CMD_ARGS);
 void quit_screen_func(F_CMD_ARGS);

@@ -109,6 +109,12 @@ typedef struct
   int height;
 } rectangle;
 
+typedef struct
+{
+  int x;
+  int y;
+} position;
+
 /*
   For 1 style statement, there can be any number of IconBoxes.
   The name list points at the first one in the chain.
@@ -303,98 +309,101 @@ typedef struct window_style
  */
 typedef struct FvwmWindow
 {
-    struct FvwmWindow *next;	/* next fvwm window */
-    struct FvwmWindow *prev;	/* prev fvwm window */
-    struct FvwmWindow *stack_next; /* next (lower) fvwm window in stacking
-				    * order*/
-    struct FvwmWindow *stack_prev; /* prev (higher) fvwm window in stacking
-				    * order */
-    Window w;			/* the child window */
-    int old_bw;			/* border width before reparenting */
-    Window frame;		/* the frame window */
-    Window decor_w;		/* parent of decoration windows */
-    Window Parent;              /* Ugly Ugly Ugly - it looks like you
-				 * HAVE to reparent the app window into
-				 * a window whose size = app window,
-				 * or else you can't keep xv and matlab
-				 * happy at the same time! */
-    Window title_w;		/* the title bar window */
-    Window sides[4];
-    Window corners[4];          /* Corner pieces */
-    int nr_left_buttons;
-    int nr_right_buttons;
-    Window left_w[5];
-    Window right_w[5];
+  struct FvwmWindow *next;    /* next fvwm window */
+  struct FvwmWindow *prev;    /* prev fvwm window */
+  struct FvwmWindow *stack_next; /* next (lower) fvwm window in stacking
+				  * order*/
+  struct FvwmWindow *stack_prev; /* prev (higher) fvwm window in stacking
+				  * order */
+  Window w;                   /* the child window */
+  int old_bw;                 /* border width before reparenting */
+  Window frame;               /* the frame window */
+  Window decor_w;             /* parent of decoration windows */
+  Window Parent;              /* Ugly Ugly Ugly - it looks like you
+			       * HAVE to reparent the app window into
+			       * a window whose size = app window,
+			       * or else you can't keep xv and matlab
+			       * happy at the same time! */
+  Window title_w;             /* the title bar window */
+  Window sides[4];
+  Window corners[4];          /* Corner pieces */
+  int nr_left_buttons;
+  int nr_right_buttons;
+  Window left_w[5];
+  Window right_w[5];
 #ifdef USEDECOR
-    struct FvwmDecor *fl;
+  struct FvwmDecor *decor;
 #endif
-    Window icon_w;		/* the icon window */
-    Window icon_pixmap_w;	/* the icon window */
+  Window icon_w;              /* the icon window */
+  Window icon_pixmap_w;       /* the icon window */
 #ifdef SHAPE
-    int wShaped;               /* is this a shaped window */
+  int wShaped;               /* is this a shaped window */
 #endif
 
-    rectangle frame_g;
+  int boundary_width;
+  int corner_width;
 
-    int boundary_width;
-    int corner_width;
-
-    rectangle title_g;
-
-    int icon_x_loc;		/* icon window x coordinate */
-    int icon_xl_loc;		/* icon label window x coordinate */
-    int icon_y_loc;		/* icon window y coordiante */
-    int icon_w_width;		/* width of the icon window */
-    int icon_w_height;		/* height of the icon window */
-    int icon_t_width;		/* width of the icon title window */
-    int icon_p_width;		/* width of the icon pixmap window */
-    int icon_p_height;		/* height of the icon pixmap window */
-    Pixmap iconPixmap;		/* pixmap for the icon */
-    int iconDepth;		/* Drawable depth for the icon */
-    Pixmap icon_maskPixmap;	/* pixmap for the icon mask */
-    char *name;			/* name of the window */
-    char *icon_name;		/* name of the icon */
+  rectangle title_g;
+#if 0
+  rectangle icon_g;
+#else
+  int icon_x_loc;             /* icon window x coordinate */
+  int icon_y_loc;             /* icon window y coordiante */
+  int icon_w_width;           /* width of the icon window */
+  int icon_w_height;          /* height of the icon window */
+#endif
+  int icon_xl_loc;            /* icon label window x coordinate */
+  int icon_t_width;           /* width of the icon title window */
+  int icon_p_width;           /* width of the icon pixmap window */
+  int icon_p_height;          /* height of the icon pixmap window */
+  Pixmap iconPixmap;          /* pixmap for the icon */
+  int iconDepth;              /* Drawable depth for the icon */
+  Pixmap icon_maskPixmap;     /* pixmap for the icon mask */
+  char *name;                 /* name of the window */
+  char *icon_name;            /* name of the icon */
 #ifdef I18N_MB
-    char **name_list;		/* window name list */
-    char **icon_name_list;	/* icon name list */
+  char **name_list;           /* window name list */
+  char **icon_name_list;      /* icon name list */
 #endif
-    XWindowAttributes attr;	/* the child window attributes */
-    XSizeHints hints;		/* normal hints */
-    XWMHints *wmhints;		/* WM hints */
-    XClassHint class;
-    int Desk;                   /* Tells which desktop this window is on */
-    int FocusDesk;		/* Where (if at all) was it focussed */
-    int DeIconifyDesk;          /* Desk to deiconify to, for StubbornIcons */
-    Window transientfor;
+  XWindowAttributes attr;     /* the child window attributes */
+  XSizeHints hints;           /* normal hints */
+  XWMHints *wmhints;          /* WM hints */
+  XClassHint class;
+  int Desk;                   /* Tells which desktop this window is on */
+  int FocusDesk;              /* Where (if at all) was it focussed */
+  int DeIconifyDesk;          /* Desk to deiconify to, for StubbornIcons */
+  Window transientfor;
 
-    window_flags flags;
+  window_flags flags;
 
 #ifdef MINI_ICONS
-    char *mini_pixmap_file;
-    Picture *mini_icon;
+  char *mini_pixmap_file;
+  Picture *mini_icon;
 #endif
-    char *icon_bitmap_file;
+  char *icon_bitmap_file;
 
-    rectangle orig_g;
-    rectangle maximized_g;      /* maximized window geometry */
+  rectangle frame_g;
+  rectangle normal_g;         /* absolute geometry when not maximized */
+  rectangle max_g;            /* maximized window geometry */
+  position max_offset;        /* original delta between normalized and
+			       * maximized window, used to keep unmaximized
+			       * window at same screen position */
+  int *mwm_hints;
+  int ol_hints;
+  int functions;
+  Window *cmap_windows;       /* Colormap windows property */
+  int number_cmap_windows;    /* Should generally be 0 */
+  Pixel ReliefPixel;
+  Pixel ShadowPixel;
+  Pixel TextPixel;
+  Pixel BackPixel;
+  unsigned long buttons;
+  icon_boxes *IconBoxes;              /* zero or more iconboxes */
 
-    int xdiff,ydiff;            /* used to restore window position on exit*/
-    int *mwm_hints;
-    int ol_hints;
-    int functions;
-    Window *cmap_windows;       /* Colormap windows property */
-    int number_cmap_windows;    /* Should generally be 0 */
-    Pixel ReliefPixel;
-    Pixel ShadowPixel;
-    Pixel TextPixel;
-    Pixel BackPixel;
-    unsigned long buttons;
-    icon_boxes *IconBoxes;              /* zero or more iconboxes */
-
-    int default_layer;
-    int layer;
-    int max_window_width;
-    int max_window_height;
+  int default_layer;
+  int layer;
+  int max_window_width;
+  int max_window_height;
 } FvwmWindow;
 
 /* Window mask for Circulate and Direction functions */

@@ -55,9 +55,7 @@ void RestartInSession (char *filename, Bool isNative, Bool doPreserveState);
 **  The dimensions returned in x, y, w, h should be used when the
 **  window is to be maximized.
  */
-void MatchWinToSM(FvwmWindow *ewin,
-		  int *x, int *y, unsigned int *w, unsigned int *h,
-		  int *shade, int *maximize);
+Bool MatchWinToSM(FvwmWindow *ewin, int *do_shade, int *do_max);
 
 /*
 **  Try to open a connection to the session manager. If non-NULL,

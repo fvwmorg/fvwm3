@@ -395,7 +395,7 @@ typedef struct ScreenInfo
    the UseDecor mechanism.
  */
 #ifdef USEDECOR
-#define GetDecor(window,part) ((window)->fl->part)
+#define GetDecor(window,part) ((window)->decor->part)
 #else
 #define GetDecor(window,part) (Scr.DefaultDecor.part)
 #endif
@@ -404,14 +404,14 @@ typedef struct ScreenInfo
 void LoadDefaultLeftButton(DecorFace *bf, int i);
 void LoadDefaultRightButton(DecorFace *bf, int i);
 void LoadDefaultButton(DecorFace *bf, int i);
-void ResetAllButtons(FvwmDecor *fl);
-void InitFvwmDecor(FvwmDecor *fl);
-void DestroyFvwmDecor(FvwmDecor *fl);
+void ResetAllButtons(FvwmDecor *decor);
+void InitFvwmDecor(FvwmDecor *decor);
+void DestroyFvwmDecor(FvwmDecor *decor);
 
 /*
  * Diverts a style definition to an FvwmDecor structure (veliaa@rpi.edu)
  */
-void AddToDecor(FvwmDecor *fl, char *s);
+void AddToDecor(FvwmDecor *decor, char *s);
 
 extern ScreenInfo Scr;
 

@@ -66,43 +66,13 @@
  * Note: if it is compiled in, run time detection is used to make sure that the currently running X server supports it.  */
 #undef SHAPE
 
-/* Enables the ActiveDown button state.  This allows different button styles for pressed down buttons on active windows (also
- * for the title-bar if EXTENDED_TITLESTYLE is enabled below).  The man page refers to this button state as "ActiveDown."  If
- * not defined, the "ActiveUp" state is used instead.  Disabling this reduces memory usage.  */
-#define ACTIVEDOWN_BTNS
-
-/* Enables the Inactive button state.  This allows different button styles for inactive windows (also for the title-bar if
- * EXTENDED_TITLESTYLE is enabled below).  The man page refers to this button state as "Inactive."  If not defined, the "ActiveUp"
- * state is used instead.  Disabling this reduces memory usage.  */
-#define INACTIVE_BTNS
-
 /* Enables the "MiniIcon" Style option to specify a small pixmap which can be used as one of the title-bar buttons, shown in
  * window list, utilized by modules, etc.  Requires PIXMAP_BUTTONS to be defined (see below).  */
 #define MINI_ICONS
 
-/* Enables the vector button style.  This button type is considered "standard," so it is recommended that you leave it in.  */
-#define VECTOR_BUTTONS
-
-/* Enables the pixmap button style.  You must have Xpm support to use color pixmaps.  See the man page button style entries for
- * "Pixmap" and "TiledPixmap" for usage information.  */
-#define PIXMAP_BUTTONS
-
-/* Enables the gradient button style.  See the man page button style entries for "HGradient" and "VGradient" for usage
- * information.  */
-#define GRADIENT_BUTTONS
-
-/* Enables stacked button styles (also for the title-bar if EXTENDED_TITLESTYLE is enabled below).  There is a slight memory
+/* Enables stacked button styles.  There is a slight memory
  * penalty for each additional style. See the man page entries for AddButtonStyle and AddTitleStyle for usage information.  */
 #define MULTISTYLE
-
-/* Enables styled title-bars (specified with the TitleStyle command in a similar fashion to the ButtonStyle command).
- * It also compiles in support to change the title-bar height.  */
-#define EXTENDED_TITLESTYLE
-
-/* Enables the BorderStyle command.  Not all button styles are available.  See the man page entry for BorderStyle for usage
- * information.  If you are also using PIXMAP_BUTTONS, you can also texture your borders with tiled pixmaps. The BorderStyle
- * command has Active and Inactive states, regardless of the -DACTIVEDOWN_BTNS and -DINACTIVE_BTNS defines.  */
-#define BORDERSTYLE
 
 /* Enables tagged general decoration styles which can be assigned to windows using the UseDecor Style option, or dynamically
  * updated with ChangeDecor.  To create and destroy "decor" definitions, see the man page entries for AddToDecor and DestroyDecor.

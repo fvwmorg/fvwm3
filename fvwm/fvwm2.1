@@ -2234,22 +2234,29 @@ AddToFunc lower-to-bottom
 .EE
 
 .TP
-.B "Move" "[\fIx y\fP [\fIWarp\fP]]"
+.B "Move" "[\fI[w|m]x [w|m]y\fP [\fIWarp\fP]]|[pointer]"
 Allows the user to move a window.  If called from somewhere in a
 window or its border, then that window will be moved.  If called from
 the root window then the user will be allowed to select the target
-window. If the optional argument \fIWarp\fP is specified the pointer is warped
-with the window.
+window.  If the optional argument \fIWarp\fP is specified the pointer
+is warped with the window.
+
+  The single argument \fImouse\fP indicated
+that the top left corner of the window
 
 The operation can be aborted with Escape or by pressing any mouse button
 (except button 1 which confirms the move).
 
-If the optional arguments x and y are provided, then the window will
-be moved immediately without user interaction.  Each argument can
-specify an absolute or relative position from either the left (top) or
-right (bottom) of the screen.  By default, the numeric value given is
-interpreted as a percentage of the screen width (height), but a trailing
-"p" changes the interpretation to mean "pixels".
+If the optional arguments \fIx\fP and \fIy\fP are provided, then the
+window will be moved immediately without user interaction.
+Each argument can specify an absolute or relative position from either
+the left (top) or right (bottom) of the screen.  By default, the
+numeric value given is interpreted as a percentage of the screen
+width (height), but a trailing "p" changes the interpretation to
+mean "pixels".  To move the window relative to its current position,
+add the 'w' (for 'window') prefix before the x and/or y value.
+To move the window to a position relative to the current location
+of the pointer, add the 'm' (for 'mouse') prefix.
 
 Simple Examples:
 .EX
@@ -2275,6 +2282,10 @@ Move w+5 50
 # Move window up 10 pixels, and so left edge
 # is at x=40 pixels
 Move 40p w-10p
+
+# Move window to the mouse pointer location
+#
+Move m+0 m+0
 .EE
 
 See also the "AnimatedMove" command, above.

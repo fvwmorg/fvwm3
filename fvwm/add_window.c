@@ -209,10 +209,9 @@ void setup_class_and_resource(FvwmWindow *tmp_win)
     tmp_win->class.res_name = NoResource;
   if (tmp_win->class.res_class == NULL)
     tmp_win->class.res_class = NoClass;
-
   FetchWmProtocols (tmp_win);
   FetchWmColormapWindows (tmp_win);
-  if(!(XGetWindowAttributes(dpy,tmp_win->w,&(tmp_win->attr))))
+  if(!(XGetWindowAttributes(dpy, tmp_win->w, &(tmp_win->attr))))
     tmp_win->attr.colormap = Pcmap;
 }
 
@@ -246,25 +245,25 @@ void setup_style_and_decor(
 
 #ifdef USEDECOR
   /* search for a UseDecor tag in the style */
-  tmp_win->fl = NULL;
+  tmp_win->decor = NULL;
   if (SGET_DECOR_NAME(*pstyle) != NULL)
   {
-    FvwmDecor *fl = &Scr.DefaultDecor;
+    FvwmDecor *decor = &Scr.DefaultDecor;
 
-    for (; fl; fl = fl->next)
+    for (; decor; decor = decor->next)
     {
-      if (strcasecmp(SGET_DECOR_NAME(*pstyle), fl->tag) == 0)
+      if (strcasecmp(SGET_DECOR_NAME(*pstyle), decor->tag) == 0)
       {
-	tmp_win->fl = fl;
+	tmp_win->decor = decor;
 	break;
       }
     }
   }
-  if (tmp_win->fl == NULL)
-    tmp_win->fl = &Scr.DefaultDecor;
+  if (tmp_win->decor == NULL)
+    tmp_win->decor = &Scr.DefaultDecor;
 #endif
 
-  tmp_win->title_g.height = GetDecor(tmp_win,TitleHeight);
+  tmp_win->title_g.height = GetDecor(tmp_win, TitleHeight);
 
   GetMwmHints(tmp_win);
   GetOlHints(tmp_win);
@@ -277,6 +276,9 @@ void setup_style_and_decor(
   if (tmp_win->wShaped)
     tmp_win->boundary_width = 0;
 #endif /* SHAPE */
+
+  /****** window colors ******/
+  update_window_color_style(tmp_win, pstyle);
 }
 
 void setup_icon_boxes(FvwmWindow *tmp_win, window_style *pstyle)
@@ -328,13 +330,6 @@ void setup_layer(FvwmWindow *tmp_win, window_style *pstyle)
 
 void setup_frame_size_limits(FvwmWindow *tmp_win, window_style *pstyle)
 {
-  GetWindowSizeHints (tmp_win);
-
-  /* Tentative size estimate */
-  tmp_win->frame_g.width = tmp_win->attr.width+2*tmp_win->boundary_width;
-  tmp_win->frame_g.height = tmp_win->attr.height + tmp_win->title_g.height+
-    2*tmp_win->boundary_width;
-
   if (SHAS_MAX_WINDOW_SIZE(&pstyle->flags))
   {
     tmp_win->max_window_width = SGET_MAX_WINDOW_WIDTH(*pstyle);
@@ -359,11 +354,6 @@ int setup_window_placement(FvwmWindow *tmp_win, window_style *pstyle)
 /*  RBW - 11/02/1998  */
   int tmpno1 = -1, tmpno2 = -1, tmpno3 = -1, spargs = 0;
 /**/
-
-  /****** border width ******/
-
-  tmp_win->old_bw = tmp_win->attr.border_width;
-  XSetWindowBorderWidth (dpy, tmp_win->w,0);
 
   /* Find out if the client requested a specific desk on the command line. */
   /*  RBW - 11/20/1998 - allow a desk of -1 to work.  */
@@ -421,23 +411,6 @@ int setup_window_placement(FvwmWindow *tmp_win, window_style *pstyle)
 		     SGET_START_PAGE_X(*pstyle), SGET_START_PAGE_Y(*pstyle));
 }
 
-void setup_frame_geometry(FvwmWindow *tmp_win)
-{
-  /* set up geometry */
-  tmp_win->frame_g.x = tmp_win->attr.x + tmp_win->old_bw;
-  tmp_win->frame_g.y = tmp_win->attr.y + tmp_win->old_bw;
-  tmp_win->frame_g.width = tmp_win->attr.width+2*tmp_win->boundary_width;
-  tmp_win->frame_g.height = tmp_win->attr.height + tmp_win->title_g.height
-			  + 2 * tmp_win->boundary_width;
-  ConstrainSize(tmp_win, &tmp_win->frame_g.width, &tmp_win->frame_g.height,
-		0, 0, False);
-  tmp_win->title_g.x = tmp_win->title_g.y = 0;
-  tmp_win->title_w = 0;
-  tmp_win->title_g.width = tmp_win->frame_g.width - 2*tmp_win->boundary_width;
-  if(tmp_win->title_g.width < 1)
-    tmp_win->title_g.width = 1;
-}
-
 void get_default_window_background(
   FvwmWindow *tmp_win, unsigned long *pvaluemask,
   XSetWindowAttributes *pattributes)
@@ -490,6 +463,7 @@ void setup_frame_window(
     pattributes->background_pixmap = TexturePixmap;
     valuemask = (valuemask & ~CWBackPixel) | CWBackPixmap;
   }
+
   pattributes->event_mask =
     (ExposureMask | VisibilityChangeMask | ButtonPressMask |
      ButtonReleaseMask);
@@ -508,7 +482,17 @@ void setup_frame_window(
 void setup_title_window(
   FvwmWindow *tmp_win, int valuemask, XSetWindowAttributes *pattributes)
 {
-  valuemask |= CWCursor|CWColormap|CWBorderPixel|CWEventMask;
+  /* set up the title geometry - the height is already known from the decor */
+  tmp_win->title_g.x = 0;
+  tmp_win->title_g.y = 0;
+  tmp_win->title_w = None;
+  tmp_win->title_g.width = tmp_win->frame_g.width - 2*tmp_win->boundary_width;
+  if(tmp_win->title_g.width < 1)
+    tmp_win->title_g.width = 1;
+
+  /* create the title window */
+  valuemask |=
+    CWCursor | CWColormap | CWBorderPixel | CWEventMask;
   pattributes->cursor = Scr.FvwmCursors[CRS_DEFAULT];
   pattributes->colormap = Pcmap;
   pattributes->border_pixel = 0;
@@ -554,7 +538,8 @@ void setup_button_windows(
   int i;
 
   /* restore valuemask to remember background */
-  valuemask |= CWCursor|CWColormap|CWBorderPixel|CWEventMask;
+  valuemask |=
+    CWCursor | CWColormap | CWBorderPixel | CWEventMask;
   pattributes->cursor = Scr.FvwmCursors[CRS_SYS];
   pattributes->colormap = Pcmap;
   pattributes->border_pixel = 0;
@@ -583,7 +568,9 @@ void setup_button_windows(
       XDeleteContext(dpy, tmp_win->left_w[i], FvwmContext);
       tmp_win->left_w[i] = None;
     }
-
+  }
+  for(i = 4; i >= 0; i--)
+  {
     if(tmp_win->right_w[i] == None && i < Scr.nr_right_buttons &&
        (right_buttons & (1 << i)))
     {
@@ -757,10 +744,6 @@ void setup_auxiliary_windows(
   XSetWindowAttributes attributes;
 
   get_default_window_background(tmp_win, &valuemask_save, &attributes);
-
-  /****** geometry ******/
-  if (setup_frame_and_parent)
-    setup_frame_geometry(tmp_win);
 
   /****** frame window ******/
   if (setup_frame_and_parent)
@@ -1034,7 +1017,6 @@ FvwmWindow *AddWindow(Window w, FvwmWindow *ReuseWin)
   style_flags *sflags;
   char left_buttons;
   char right_buttons;
-  int a,b;
   extern FvwmWindow *colormap_win;
   extern Boolean PPosOverride;
 #ifdef I18N_MB
@@ -1043,18 +1025,15 @@ FvwmWindow *AddWindow(Window w, FvwmWindow *ReuseWin)
 #endif
   int do_shade = 0;
   int do_maximize = 0;
-  int x_max, y_max;
-  unsigned int w_max, h_max;
+  Bool used_sm = False;
   Bool do_resize_too = False;
 
   /****** init window structure ******/
-
   if (!setup_window_structure(&tmptmp_win, w, ReuseWin))
     return NULL;
   tmp_win = tmptmp_win;
 
   /****** safety check ******/
-
   if(!PPosOverride &&
      XGetGeometry(dpy, tmp_win->w, &JunkRoot, &JunkX, &JunkY,
 		  &JunkWidth, &JunkHeight, &JunkBW, &JunkDepth) == 0)
@@ -1064,28 +1043,14 @@ FvwmWindow *AddWindow(Window w, FvwmWindow *ReuseWin)
   }
 
   /****** window name ******/
-
   setup_window_name(tmp_win);
-
-  /****** window class and resource ******/
-
   setup_class_and_resource(tmp_win);
-
-  /****** WM hints ******/
-
   setup_wm_hints(tmp_win);
 
-  /****** transient ******/
-
-  SET_TRANSIENT(tmp_win, !!XGetTransientForHint(dpy, tmp_win->w,
-						&tmp_win->transientfor));
-
   /****** basic style and decor ******/
-
   /* If the window is in the NoTitle list, or is a transient, dont decorate it.
    * If its a transient, and DecorateTransients was specified, decorate anyway.
    */
-
   /* get merged styles */
   lookup_style(tmp_win, &style);
   sflags = SGET_FLAGS_POINTER(style);
@@ -1093,49 +1058,11 @@ FvwmWindow *AddWindow(Window w, FvwmWindow *ReuseWin)
   memcpy(&(FW_COMMON_FLAGS(tmp_win)), &(sflags->common),
 	 sizeof(common_flags_type));
 
-  /****** icon boxes ******/
-
-  setup_icon_boxes(tmp_win, &style);
-
-  /****** disabled buttons ******/
-
-  tmp_win->buttons = SIS_BUTTON_DISABLED(sflags);
-
-  /****** layer ******/
-
-  setup_layer(tmp_win, &style);
-
-  /****** calculate frame size ******/
-
-  setup_frame_size_limits(tmp_win, &style);
-
-  /****** window placement ******/
-
-  switch (setup_window_placement(tmp_win, &style))
-  {
-  case 0:
-    /* failed */
-    return NULL;
-  case 1:
-    /* ok */
-    do_resize_too = False;
-    break;
-  case 2:
-  default:
-    /* resize window too */
-    do_resize_too = True;
-    break;
-  }
-
-  /****** safety check ******/
-
-  /*
-   * Make sure the client window still exists.  We don't want to leave an
+  /****** Make sure the client window still exists.  We don't want to leave an
    * orphan frame window if it doesn't.  Since we now have the server
    * grabbed, the window can't disappear later without having been
    * reparented, so we'll get a DestroyNotify for it.  We won't have
-   * gotten one for anything up to here, however.
-   */
+   * gotten one for anything up to here, however. ******/
   MyXGrabServer(dpy);
   if(XGetGeometry(dpy, w, &JunkRoot, &JunkX, &JunkY,
 		  &JunkWidth, &JunkHeight,
@@ -1147,7 +1074,10 @@ FvwmWindow *AddWindow(Window w, FvwmWindow *ReuseWin)
   }
 
   /****** state setup ******/
-
+  SET_TRANSIENT(
+    tmp_win, !!XGetTransientForHint(dpy, tmp_win->w, &tmp_win->transientfor));
+  setup_icon_boxes(tmp_win, &style);
+  tmp_win->buttons = SIS_BUTTON_DISABLED(sflags);
   SET_ICONIFIED(tmp_win, 0);
   SET_ICON_UNMAPPED(tmp_win, 0);
   SET_MAXIMIZED(tmp_win, 0);
@@ -1159,12 +1089,7 @@ FvwmWindow *AddWindow(Window w, FvwmWindow *ReuseWin)
    */
   SET_MAPPED(tmp_win, 0);
 
-  /****** window colors ******/
-
-  update_window_color_style(tmp_win, &style);
-
-  /****** window list ******/
-
+  /****** window list and stack ring ******/
   /* add the window to the end of the fvwm list */
   tmp_win->next = Scr.FvwmRoot.next;
   tmp_win->prev = &Scr.FvwmRoot;
@@ -1176,88 +1101,134 @@ FvwmWindow *AddWindow(Window w, FvwmWindow *ReuseWin)
   /* tmp_win->prev points to the last window in the list, tmp_win->next is
    * NULL. Now fix the last window to point to tmp_win */
   tmp_win->prev->next = tmp_win;
-
-  /****** stacking order ******/
-
   /*
-      RBW - 11/13/1998 - add it into the stacking order chain also.
-      This chain is anchored at both ends on Scr.FvwmRoot, there are
-      no null pointers.
-  */
+   * RBW - 11/13/1998 - add it into the stacking order chain also.
+   * This chain is anchored at both ends on Scr.FvwmRoot, there are
+   * no null pointers.
+   */
   add_window_to_stack_ring_after(tmp_win, &Scr.FvwmRoot);
 
-  /****** session management ******/
+  /****** calculate frame size ******/
+  GetWindowSizeHints(tmp_win);
+
+  /****** border width ******/
+  tmp_win->old_bw = tmp_win->attr.border_width;
+  XSetWindowBorderWidth (dpy, tmp_win->w,0);
 
   /*
-      MatchWinToSM changes tmp_win->attr and the stacking order.
-      Thus it is important have this call *after* PlaceWindow and the
-      stacking order initialization.
-  */
-  MatchWinToSM(tmp_win, &x_max, &y_max, &w_max, &h_max, &do_shade,
-	       &do_maximize);
+   * MatchWinToSM changes tmp_win->attr and the stacking order.
+   * Thus it is important have this call *after* PlaceWindow and the
+   * stacking order initialization.
+   */
+  used_sm = MatchWinToSM(tmp_win, &do_shade, &do_maximize);
+  if (used_sm)
+  {
+    /* read the requested absolute geometry */
+    gravity_translate_to_northwest_geometry_no_bw(
+      tmp_win->hints.win_gravity, tmp_win, &tmp_win->normal_g,
+      &tmp_win->normal_g);
+    gravity_resize(
+      tmp_win->hints.win_gravity, &tmp_win->normal_g,
+      2 * tmp_win->boundary_width,
+      2 * tmp_win->boundary_width + tmp_win->title_g.height);
+    tmp_win->frame_g = tmp_win->normal_g;
+    tmp_win->frame_g.x -= Scr.Vx;
+    tmp_win->frame_g.y -= Scr.Vy;
+
+    /****** calculate frame size ******/
+    setup_frame_size_limits(tmp_win, &style);
+
+    /****** maximize ******/
+    if (do_maximize)
+    {
+      get_relative_geometry(&tmp_win->frame_g, &tmp_win->max_g);
+      ConstrainSize(tmp_win, &tmp_win->frame_g.width, &tmp_win->frame_g.height,
+		    0, 0, False);
+      tmp_win->max_g.width = tmp_win->frame_g.width;
+      tmp_win->max_g.height = tmp_win->frame_g.height;
+      SET_MAXIMIZED(tmp_win, 1);
+    }
+    else
+    {
+      get_relative_geometry(&tmp_win->frame_g, &tmp_win->normal_g);
+    }
+  }
+  else
+  {
+    /* Tentative size estimate */
+    tmp_win->frame_g.width = tmp_win->attr.width + 2 * tmp_win->boundary_width;
+    tmp_win->frame_g.height = tmp_win->attr.height + tmp_win->title_g.height +
+      2 * tmp_win->boundary_width;
+
+    /****** calculate frame size ******/
+    setup_frame_size_limits(tmp_win, &style);
+
+    /****** window placement ******/
+    switch (setup_window_placement(tmp_win, &style))
+    {
+    case 0:
+      /* failed */
+      return NULL;
+    case 1:
+      /* ok */
+      do_resize_too = False;
+      break;
+    case 2:
+    default:
+      /* resize window too */
+      do_resize_too = True;
+    break;
+    }
+
+    /* set up geometry */
+    tmp_win->frame_g.x = tmp_win->attr.x + tmp_win->old_bw;
+    tmp_win->frame_g.y = tmp_win->attr.y + tmp_win->old_bw;
+    tmp_win->frame_g.width = tmp_win->attr.width+2*tmp_win->boundary_width;
+    tmp_win->frame_g.height = tmp_win->attr.height + tmp_win->title_g.height
+      + 2 * tmp_win->boundary_width;
+    ConstrainSize(tmp_win, &tmp_win->frame_g.width, &tmp_win->frame_g.height,
+		  0, 0, False);
+    update_absolute_geometry(tmp_win);
+
+    /****** layer ******/
+    setup_layer(tmp_win, &style);
+  }
 
   /****** auxiliary window setup ******/
-
   setup_auxiliary_windows(tmp_win, True, left_buttons, right_buttons);
 
   /****** reparent the window ******/
-
   XReparentWindow(dpy, tmp_win->w, tmp_win->Parent, 0, 0);
 
   /****** select events ******/
-
   valuemask = CWEventMask | CWDontPropagate;
   attributes.event_mask = (StructureNotifyMask | PropertyChangeMask |
 			   EnterWindowMask | LeaveWindowMask |
 			   ColormapChangeMask | FocusChangeMask);
-
   attributes.do_not_propagate_mask = ButtonPressMask | ButtonReleaseMask;
-
   XChangeWindowAttributes(dpy, tmp_win->w, valuemask, &attributes);
-
   /******  ******/
-
   XAddToSaveSet(dpy, tmp_win->w);
 
-  /****** setup the frame and subwindows ******/
-
+  /****** arrange the frame ******/
   ForceSetupFrame(tmp_win, tmp_win->frame_g.x, tmp_win->frame_g.y,
 		  tmp_win->frame_g.width, tmp_win->frame_g.height,
 		  True, False);
 
-  /****** maximize ******/
-
-  if (do_maximize)
-  {
-    /* This is essentially Maximize, only we want the given dimensions */
-    SET_MAXIMIZED(tmp_win, 1);
-    ConstrainSize(tmp_win, &w_max, &h_max, 0, 0, False);
-    tmp_win->maximized_g.x = 0;
-    tmp_win->maximized_g.y = 0;
-    tmp_win->maximized_g.width = w_max;
-    tmp_win->maximized_g.height = h_max;
-    SetupFrame(tmp_win, x_max, y_max, w_max, h_max, TRUE, False);
-    DrawDecorations(tmp_win, DRAW_ALL, (Scr.Hilite == tmp_win), True, None);
-    /* fix orig values to not change page on unmaximize  */
-    if (tmp_win->orig_g.x >= Scr.MyDisplayWidth)
-      tmp_win->orig_g.x = tmp_win->orig_g.x % Scr.MyDisplayWidth;
-    if (tmp_win->orig_g.y >= Scr.MyDisplayHeight)
-      tmp_win->orig_g.y = tmp_win->orig_g.y % Scr.MyDisplayHeight;
-  }
-
   /****** windowshade ******/
-
   if (do_shade)
   {
+    int t = Scr.shade_anim_steps;
+
+    Scr.shade_anim_steps= 0;
     WindowShade(&Event, tmp_win->w, tmp_win, C_WINDOW, "", 0);
+    Scr.shade_anim_steps = t;
   }
 
   /****** grab keys and buttons ******/
-
   setup_key_and_button_grabs(tmp_win);
 
-  /******  ******/
-
+  /****** place the window in the stack ring ******/
   if (!position_new_window_in_stack_ring(tmp_win, SDO_START_LOWERED(sflags)))
   {
     XWindowChanges xwc;
@@ -1266,21 +1237,10 @@ FvwmWindow *AddWindow(Window w, FvwmWindow *ReuseWin)
     XConfigureWindow(dpy, tmp_win->frame, CWSibling|CWStackMode, &xwc);
   }
 
-  /******  ******/
-
+  /****** now we can sefely ungrab the server ******/
   MyXUngrabServer(dpy);
 
-  /****** store window offset caused by decorating ******/
-
-  XGetGeometry(dpy, tmp_win->w, &JunkRoot, &JunkX, &JunkY,
-		   &JunkWidth, &JunkHeight, &JunkBW, &JunkDepth);
-  XTranslateCoordinates(dpy,tmp_win->frame,Scr.Root,JunkX,JunkY,
-			&a,&b,&JunkChild);
-  tmp_win->xdiff -= a;
-  tmp_win->ydiff -= b;
-
   /****** inform modules of new window ******/
-
   BroadcastConfig(M_ADD_WINDOW,tmp_win);
   BroadcastName(M_WINDOW_NAME,tmp_win->w,tmp_win->frame,
 		(unsigned long)tmp_win,tmp_win->name);
@@ -1289,18 +1249,28 @@ FvwmWindow *AddWindow(Window w, FvwmWindow *ReuseWin)
   BroadcastName(M_RES_NAME,tmp_win->w,tmp_win->frame,
 		(unsigned long)tmp_win,tmp_win->class.res_name);
 
-  /****** icon ******/
-
+  /****** icon and mini icon ******/
   setup_icon(tmp_win, &style);
-
-  /****** mini icon ******/
-
 #ifdef MINI_ICONS
   setup_mini_icon(tmp_win, &style);
 #endif
 
-  /****** resize window ******/
+  /****** stick window ******/
+  if (IS_STICKY(tmp_win) && (!(tmp_win->hints.flags & USPosition) || used_sm))
+  {
+    /* If it's sticky and the user didn't ask for an explicit position, force
+     * it on screen now.  Don't do that with USPosition because we have to
+     * assume the user knows what he is doing.  This is necessary e.g. if we
+     * want a sticky 'panel' in FvwmButtons but don't want to see when it's
+     * mapped in the void. */
+    if (!IsRectangleOnThisPage(&tmp_win->frame_g, Scr.CurrentDesk))
+    {
+      SET_STICKY(tmp_win, 0);
+      handle_stick(&Event, tmp_win->frame, tmp_win, C_FRAME, "", 0, 1);
+    }
+  }
 
+  /****** resize window ******/
   if(do_resize_too)
   {
     XWarpPointer(dpy, Scr.Root, Scr.Root, 0, 0, Scr.MyDisplayWidth,
@@ -1319,12 +1289,10 @@ FvwmWindow *AddWindow(Window w, FvwmWindow *ReuseWin)
   }
 
   /****** window colormap ******/
-
   InstallWindowColormaps(colormap_win);
 
-  /****** gnome setup ******/
-
 #ifdef GNOME
+  /****** gnome setup ******/
   /* set GNOME hints on the window from flags set on tmp_win */
   GNOME_SetHints(tmp_win);
   GNOME_SetLayer(tmp_win);
@@ -1859,78 +1827,77 @@ void destroy_window(FvwmWindow *tmp_win)
  ************************************************************************/
 void RestoreWithdrawnLocation (FvwmWindow *tmp, Bool restart)
 {
-  int a,b,w2,h2;
+  int w2,h2;
   unsigned int mask;
   XWindowChanges xwc;
+  rectangle naked_g;
 
   if(!tmp)
     return;
 
-  if (XGetGeometry (dpy, tmp->w, &JunkRoot, &xwc.x, &xwc.y,
-		    &JunkWidth, &JunkHeight, &JunkBW, &JunkDepth))
+  gravity_get_naked_geometry(
+    tmp->hints.win_gravity, tmp, &naked_g, &tmp->frame_g);
+  gravity_translate_to_northwest_geometry(
+    tmp->hints.win_gravity, tmp, &naked_g, &naked_g);
+  xwc.x = naked_g.x;
+  xwc.y = naked_g.y;
+  xwc.border_width = tmp->old_bw;
+  mask = (CWX | CWY| CWBorderWidth);
+
+  /* We can not assume that the window is currently on the screen.
+   * Although this is normally the case, it is not always true.  The
+   * most common example is when the user does something in an
+   * application which will, after some amount of computational delay,
+   * cause the window to be unmapped, but then switches screens before
+   * this happens.  The XTranslateCoordinates call above will set the
+   * window coordinates to either be larger than the screen, or negative.
+   * This will result in the window being placed in odd, or even
+   * unviewable locations when the window is remapped.  The following code
+   * forces the "relative" location to be within the bounds of the display.
+   *
+   * gpw -- 11/11/93
+   *
+   * Unfortunately, this does horrendous things during re-starts,
+   * hence the "if(restart)" clause (RN)
+   *
+   * Also, fixed so that it only does this stuff if a window is more than
+   * half off the screen. (RN)
+   */
+
+  if(!restart)
+  {
+    /* Don't mess with it if its partially on the screen now */
+    if((tmp->frame_g.x < 0)||(tmp->frame_g.y<0)||
+       (tmp->frame_g.x >= Scr.MyDisplayWidth)||
+       (tmp->frame_g.y >= Scr.MyDisplayHeight))
     {
-      XTranslateCoordinates(dpy,tmp->frame,Scr.Root,xwc.x,xwc.y,
-			    &a,&b,&JunkChild);
-      xwc.x = a + tmp->xdiff;
-      xwc.y = b + tmp->ydiff;
-      xwc.border_width = tmp->old_bw;
-      mask = (CWX | CWY| CWBorderWidth);
-
-      /* We can not assume that the window is currently on the screen.
-       * Although this is normally the case, it is not always true.  The
-       * most common example is when the user does something in an
-       * application which will, after some amount of computational delay,
-       * cause the window to be unmapped, but then switches screens before
-       * this happens.  The XTranslateCoordinates call above will set the
-       * window coordinates to either be larger than the screen, or negative.
-       * This will result in the window being placed in odd, or even
-       * unviewable locations when the window is remapped.  The followin code
-       * forces the "relative" location to be within the bounds of the display.
-       *
-       * gpw -- 11/11/93
-       *
-       * Unfortunately, this does horrendous things during re-starts,
-       * hence the "if(restart)" clause (RN)
-       *
-       * Also, fixed so that it only does this stuff if a window is more than
-       * half off the screen. (RN)
-       */
-
-      if(!restart)
-	{
-	  /* Don't mess with it if its partially on the screen now */
-	  if((tmp->frame_g.x < 0)||(tmp->frame_g.y<0)||
-	     (tmp->frame_g.x >= Scr.MyDisplayWidth)||
-	     (tmp->frame_g.y >= Scr.MyDisplayHeight))
-	    {
-	      w2 = (tmp->frame_g.width>>1);
-	      h2 = (tmp->frame_g.height>>1);
-	      if (( xwc.x < -w2) || (xwc.x > (Scr.MyDisplayWidth-w2 )))
-		{
-		  xwc.x = xwc.x % Scr.MyDisplayWidth;
-		  if ( xwc.x < -w2 )
-		    xwc.x += Scr.MyDisplayWidth;
-		}
-	      if ((xwc.y < -h2) || (xwc.y > (Scr.MyDisplayHeight-h2 )))
-		{
-		  xwc.y = xwc.y % Scr.MyDisplayHeight;
-		  if ( xwc.y < -h2 )
-		    xwc.y += Scr.MyDisplayHeight;
-		}
-	    }
-	}
-      XReparentWindow (dpy, tmp->w,Scr.Root,xwc.x,xwc.y);
-
-      if(IS_ICONIFIED(tmp) && !IS_ICON_SUPPRESSED(tmp))
-	{
-	  if (tmp->icon_w)
-	    XUnmapWindow(dpy, tmp->icon_w);
-	  if (tmp->icon_pixmap_w)
-	    XUnmapWindow(dpy, tmp->icon_pixmap_w);
-	}
-
-      XConfigureWindow (dpy, tmp->w, mask, &xwc);
-      if(!restart)
-	XSync(dpy,0);
+      w2 = (tmp->frame_g.width>>1);
+      h2 = (tmp->frame_g.height>>1);
+      if (( xwc.x < -w2) || (xwc.x > (Scr.MyDisplayWidth-w2 )))
+      {
+	xwc.x = xwc.x % Scr.MyDisplayWidth;
+	if ( xwc.x < -w2 )
+	  xwc.x += Scr.MyDisplayWidth;
+      }
+      if ((xwc.y < -h2) || (xwc.y > (Scr.MyDisplayHeight-h2 )))
+      {
+	xwc.y = xwc.y % Scr.MyDisplayHeight;
+	if ( xwc.y < -h2 )
+	  xwc.y += Scr.MyDisplayHeight;
+      }
     }
+  }
+  XReparentWindow (dpy, tmp->w, Scr.Root, xwc.x, xwc.y);
+
+  if(IS_ICONIFIED(tmp) && !IS_ICON_SUPPRESSED(tmp))
+  {
+    if (tmp->icon_w)
+      XUnmapWindow(dpy, tmp->icon_w);
+    if (tmp->icon_pixmap_w)
+      XUnmapWindow(dpy, tmp->icon_pixmap_w);
+  }
+
+  XConfigureWindow (dpy, tmp->w, mask, &xwc);
+  if(!restart)
+    XSync(dpy,0);
 }
