@@ -647,8 +647,8 @@ static cfunc_action_type CheckActionType(
   while ((total < Scr.ClickTime && lastTimestamp - t0 < Scr.ClickTime) ||
 	 !may_time_out)
   {
-    if (!(x - xcurrent < dist && xcurrent - x < dist &&
-	  y - ycurrent < dist && ycurrent - y < dist))
+    if (!(x - xcurrent <= dist && xcurrent - x <= dist &&
+	  y - ycurrent <= dist && ycurrent - y <= dist))
     {
       return (is_button_pressed) ? CF_MOTION : CF_TIMEOUT;
     }
