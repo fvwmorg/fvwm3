@@ -229,7 +229,6 @@ static int func_comp(const void *a, const void *b)
 
 static const struct functions *FindBuiltinFunction(char *func)
 {
-  static int func_config_size=0;
   struct functions *ret_func;
   char *temp;
   char *s;
@@ -238,7 +237,7 @@ static const struct functions *FindBuiltinFunction(char *func)
     return NULL;
 
   /* since a lot of lines in a typical rc are probably menu/func continues: */
-  if (func[0]=='+' || func[0] == ' ' && func[1] == '+')
+  if (func[0]=='+' || (func[0] == ' ' && func[1] == '+'))
     return &(func_config[0]);
 
   if (!(temp = strdup(func)))
@@ -431,7 +430,6 @@ void ExecuteFunction(char *Action, FvwmWindow *tmp_win, XEvent *eventp,
   char *function;
   char *action;
   char *taction;
-  char *t2action;
   char *trash;
   char *trash2;
   char *expaction = NULL;

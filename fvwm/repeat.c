@@ -87,9 +87,6 @@ FvwmWindow *repeat_last_fvwm_window = NULL;
 Bool set_repeat_data(void *data, repeat_type type,
 		     const struct functions *builtin)
 {
-  char **pdest;
-  char *trash = NULL;
-
   /* No history recording during startup. */
   if (fFvwmInStartup)
     return True;
@@ -139,9 +136,10 @@ void repeat_function(F_CMD_ARGS)
   {
   case 0: /* command */
   default:
-fprintf(stderr,"repeating 0x%x, %s\n",last.command,last.command);
-    ExecuteFunction(last.command, tmp_win, eventp, context, *Module,
-		    DONT_EXPAND_COMMAND);
+      fprintf( stderr, "repeating 0x%lx, %s\n", 
+	       (unsigned long) last.command, last.command);
+      ExecuteFunction(last.command, tmp_win, eventp, context, *Module,
+		      DONT_EXPAND_COMMAND);
     break;
   }
   repeat_depth--;
