@@ -38,7 +38,6 @@ void fqueue_init(fqueue *fq)
 	return;
 }
 
-#if 0
 unsigned int fqueue_get_length(fqueue *fq)
 {
 	unsigned int len;
@@ -51,13 +50,11 @@ unsigned int fqueue_get_length(fqueue *fq)
 
 	return len;
 }
-#endif
 
 /*
  * Add record to queue
  */
 
-#if 0
 void fqueue_add_at_front(
 	fqueue *fq, void *object)
 {
@@ -70,7 +67,6 @@ void fqueue_add_at_front(
 
 	return;
 }
-#endif
 
 void fqueue_add_at_end(
 	fqueue *fq, void *object)
@@ -94,7 +90,7 @@ void fqueue_add_at_end(
 }
 
 void fqueue_add_inside(
-	fqueue *fq, void *object, cmp_objects_type cmp_objects, void *cmp_args)
+	fqueue *fq, void *object, cmp_objects_t cmp_objects, void *cmp_args)
 {
 	fqueue_record *rec;
 	fqueue_record *p;
@@ -157,7 +153,8 @@ int fqueue_get_first(
  * is NULL or returns 1, the record is removed from the queue.  The object of
  * the queue record must have been freed in operate_func. */
 void fqueue_remove_or_operate_from_front(
-	fqueue *fq, operate_fqueue_object_type operate_func, void *operate_args)
+	fqueue *fq, check_fqueue_object_t check_func,
+	operate_fqueue_object_t operate_func, void *operate_args)
 {
 	fqueue_record *t;
 
@@ -165,12 +162,14 @@ void fqueue_remove_or_operate_from_front(
 	{
 		return;
 	}
-	if (operate_func == NULL ||
-	    operate_func(fq->first->object, operate_args) == 1)
+	/* remove object from queue */
+	if (check_func == NULL ||
+	    check_func(fq->first->object, operate_args) == 1)
 	{
 		/* must free the record */
 		t = fq->first;
 		fq->first = fq->first->next;
+		t->next = NULL;
 		if (fq->first == NULL)
 		{
 			fq->last = NULL;
@@ -179,33 +178,38 @@ void fqueue_remove_or_operate_from_front(
 		{
 			fq->last = fq->first;
 		}
+		if (operate_func != NULL)
+		{
+			operate_func(t->object, operate_args);
+		}
 		free(t);
 	}
 
 	return;
 }
 
-#if 0
 /* Same as above but operates on last record in queue */
 void fqueue_remove_or_operate_from_end(
-	fqueue *fq, operate_fqueue_object_type operate_func, void *operate_args)
+	fqueue *fq, check_fqueue_object_t check_func,
+	operate_fqueue_object_t operate_func, void *operate_args)
 {
+	fqueue_record *l;
 	fqueue_record *t;
 
 	if (fq->first == NULL)
 	{
 		return;
 	}
-	if (operate_func == NULL ||
-	    operate_func(fq->last->object, operate_args) == 1)
+	if (check_func == NULL ||
+	    check_func(fq->last->object, operate_args) == 1)
 	{
 		/* must free this record */
+		l = fq->last;
 		/* seek next to last item in queue */
 		for (t = fq->first; t->next != NULL; t = t->next)
 		{
 			/* nothing to do here */
 		}
-		free(fq->last);
 		if (t->next == NULL)
 		{
 			/* only one item in queue */
@@ -217,15 +221,20 @@ void fqueue_remove_or_operate_from_end(
 			t->next = NULL;
 			fq->last = t;
 		}
+		if (operate_func != NULL)
+		{
+			operate_func(l->object, operate_args);
+		}
+		free(l);
 	}
 
 	return;
 }
-#endif
 
 /* Same as above but operates on all records in the queue. */
 void fqueue_remove_or_operate_all(
-	fqueue *fq, operate_fqueue_object_type operate_func, void *operate_args)
+	fqueue *fq, check_fqueue_object_t check_func,
+	operate_fqueue_object_t operate_func, void *operate_args)
 {
 	fqueue_record *t;
 	fqueue_record *n;
@@ -239,8 +248,8 @@ void fqueue_remove_or_operate_all(
 	/* search record(s) to remove */
 	for (n = NULL, l = NULL, t = fq->first; t != NULL; t = n)
 	{
-		if (operate_func == NULL ||
-		    operate_func(t->object, operate_args))
+		if (check_func == NULL ||
+		    check_func(t->object, operate_args) == 1)
 		{
 			/* must free record */
 			if (l == NULL)
@@ -252,6 +261,11 @@ void fqueue_remove_or_operate_all(
 				l->next = t->next;
 			}
 			n = t->next;
+			t->next = NULL;
+			if (operate_func != NULL)
+			{
+				operate_func(t->object, operate_args);
+			}
 			free(t);
 		}
 		else

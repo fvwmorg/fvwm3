@@ -29,8 +29,10 @@ typedef struct
 
 
 
-typedef int (*operate_fqueue_object_type)(void *object, void *operate_args);
-typedef int (*cmp_objects_type)(void *object1, void *object2, void *args);
+typedef int (*check_fqueue_object_t)(void *object, void *operate_args);
+typedef void (*operate_fqueue_object_t)(void *object, void *operate_args);
+typedef int (*cmp_objects_t)(void *object1, void *object2, void *args);
+typedef void *(*copy_fqueue_object_t)(void *object);
 
 /*
  * Basic queue management
@@ -39,6 +41,7 @@ typedef int (*cmp_objects_type)(void *object1, void *object2, void *args);
 void fqueue_init(fqueue *fq);
 unsigned int fqueue_get_length(fqueue *fq);
 #define FQUEUE_IS_EMPTY(fq) ((fq)->first == NULL)
+fqueue *fqueue_copy_queue(fqueue *fq, copy_fqueue_object_t copy_obj_func);
 
 /*
  * Add record to queue
@@ -47,7 +50,7 @@ unsigned int fqueue_get_length(fqueue *fq);
 void fqueue_add_at_front(fqueue *fq, void *object);
 void fqueue_add_at_end(fqueue *fq, void *object);
 void fqueue_add_inside(
-	fqueue *fq, void *object, cmp_objects_type cmp_objects, void *cmp_args);
+	fqueue *fq, void *object, cmp_objects_t cmp_objects, void *cmp_args);
 
 /*
  * Fetch queue objects
@@ -60,13 +63,19 @@ int fqueue_get_first(fqueue *fq, void **ret_object);
  */
 
 void fqueue_remove_or_operate_from_front(
-	fqueue *fq, operate_fqueue_object_type operate_func,
+	fqueue *fq,
+	check_fqueue_object_t check_func,
+	operate_fqueue_object_t operate_func,
 	void *operate_args);
 void fqueue_remove_or_operate_from_end(
-	fqueue *fq, operate_fqueue_object_type operate_func,
+	fqueue *fq,
+	check_fqueue_object_t check_func,
+	operate_fqueue_object_t operate_func,
 	void *operate_args);
 void fqueue_remove_or_operate_all(
-	fqueue *fq, operate_fqueue_object_type operate_func,
+	fqueue *fq,
+	check_fqueue_object_t check_func,
+	operate_fqueue_object_t operate_func,
 	void *operate_args);
 
 #endif /* QUEUE_H */

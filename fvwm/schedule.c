@@ -76,23 +76,43 @@ static int cmp_object_time(void *object1, void *object2, void *args)
 	return cmp_times(so1->time_to_execute, so2->time_to_execute);
 }
 
-static int deschedule_obj_func(void *object, void *args)
+static int check_deschedule_obj_func(void *object, void *args)
 {
 	sq_object_type *obj = object;
 
-	if (obj->id == *(int *)args &&
-	    !obj->flags.is_scheduled_for_destruction)
+	return (obj->id == *(int *)args &&
+		!obj->flags.is_scheduled_for_destruction);
+}
+
+static void destroy_obj_func(void *object, void *args)
+{
+	sq_object_type *obj = object;
+
+	if (obj->command != NULL)
 	{
-		if (obj->command != NULL)
-		{
-			free(obj->command);
-		}
-		free(obj);
-		return 1;
+		free(obj->command);
+	}
+	free(obj);
+
+	return;
+}
+
+#if 0
+static void *copy_obj_func(void *object)
+{
+	sq_object_type *obj = object;
+	sq_object_type *new_obj;
+
+	new_obj = (sq_object_type *)safemalloc(sizeof(sq_object_type));
+	new_obj = obj;
+	if (obj->command != NULL)
+	{
+		new_obj->command = safestrdup(obj->command);
 	}
 
-	return 0;
+	return new_obj;
 }
+#endif
 
 static void deschedule(int *pid)
 {
@@ -112,7 +132,8 @@ static void deschedule(int *pid)
 		id = last_schedule_id;
 	}
 	/* deschedule matching jobs */
-	fqueue_remove_or_operate_all(&sq, deschedule_obj_func, (void *)&id);
+	fqueue_remove_or_operate_all(
+		&sq, check_deschedule_obj_func, destroy_obj_func, (void *)&id);
 
 	return;
 }
@@ -154,55 +175,71 @@ static void schedule(
 	return;
 }
 
-static int execute_obj_func(void *object, void *args)
+static int check_execute_obj_func(void *object, void *args)
 {
 	sq_object_type *obj = object;
 	Time *ptime = (Time *)args;
 
-	if (cmp_times(*ptime, obj->time_to_execute) >= 0)
+	return (cmp_times(*ptime, obj->time_to_execute) >= 0);
+}
+
+static void execute_obj_func(void *object, void *args)
+{
+	sq_object_type *obj = object;
+
+	if (obj->command != NULL)
 	{
-		if (obj->command != NULL)
+		/* execute the command */
+		fvwm_cond_func_rc cond_rc;
+		const exec_context_t *exc;
+		exec_context_changes_t ecc;
+		exec_context_change_mask_t mask =
+			ECC_TYPE | ECC_WCONTEXT;
+
+		ecc.type = EXCT_SCHEDULE;
+		ecc.w.wcontext = C_ROOT;
+		if (XFindContext(
+			    dpy, obj->window, FvwmContext,
+			    (caddr_t *)&ecc.w.fw) != XCNOENT)
 		{
-			/* execute the command */
-			fvwm_cond_func_rc cond_rc;
-			const exec_context_t *exc;
-			exec_context_changes_t ecc;
-			exec_context_change_mask_t mask =
-				ECC_TYPE | ECC_WCONTEXT;
-
-			ecc.type = EXCT_SCHEDULE;
-			ecc.w.wcontext = C_ROOT;
-			if (XFindContext(
-				    dpy, obj->window, FvwmContext,
-				    (caddr_t *)&ecc.w.fw) != XCNOENT)
-			{
-				ecc.w.wcontext = C_WINDOW;
-				mask |= ECC_FW;
-			}
-			exc = exc_create_context(&ecc, mask);
-			execute_function(&cond_rc, exc, obj->command, 0);
-			free(obj->command);
-			exc_destroy_context(exc);
+			ecc.w.wcontext = C_WINDOW;
+			mask |= ECC_FW;
 		}
-		free(obj);
-		XFlush(dpy);
-		return 1;
+		exc = exc_create_context(&ecc, mask);
+		execute_function(&cond_rc, exc, obj->command, 0);
+		free(obj->command);
+		exc_destroy_context(exc);
 	}
-
-	return 0;
+	free(obj);
+	XFlush(dpy);
+	return;
 }
 
 /* executes all scheduled commands that are due for execution */
 void squeue_execute(void)
 {
 	Time current_time;
+#if 0
+	fqueue *sq_copy;
+#endif
 
 	if (FQUEUE_IS_EMPTY(&sq))
 	{
 		return;
 	}
 	current_time = get_server_time();
-	fqueue_remove_or_operate_all(&sq, execute_obj_func, &current_time);
+
+#if 0
+	sq_copy = fqueue_copy_queue(&sq, copy_obj_func);
+	fqueue_remove_or_operate_all(
+		sq_copy, check_execute_obj_func, execute_obj_func,
+		&current_time);
+	fqueue_remove_or_operate_all(sq_copy, NULL, destroy_obj_func, NULL);
+	free(sq_copy);
+#else
+	fqueue_remove_or_operate_all(
+		&sq, check_execute_obj_func, execute_obj_func, &current_time);
+#endif
 
 	return;
 }
