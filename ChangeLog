@@ -1,3 +1,8 @@
+2004-08-06  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* fvwm/decorations.c (struct):
+	MWM hints on 64 bit machines fix
+
 2004-07-20  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* fvwm/fvwm.1.in (Note):

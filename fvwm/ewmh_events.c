@@ -866,6 +866,12 @@ int ewmh_WMStateShaded(EWMH_CMD_ARGS)
 				fwin, EWMH_STATE_NO_HINT);
 			return 0;
 		}
+		if (has_hint && HAS_EWMH_INIT_SHADED_STATE(fwin) ==
+		    EWMH_STATE_NO_HINT)
+		{
+			return 0;
+		}
+
 		SET_SHADED(fwin, 1);
 		SET_SHADED_DIR(fwin, GET_TITLE_DIR(fwin));
 		SET_HAS_EWMH_INIT_SHADED_STATE(fwin, EWMH_STATE_HAS_HINT);
