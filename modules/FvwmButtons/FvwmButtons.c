@@ -767,12 +767,14 @@ int main(int argc, char **argv)
       }
     }
     else if (!is_transient && !is_transient_panel &&
-	     strcmp(argv[i], "-transient") == 0)
+	     (strcmp(argv[i], "-transient") == 0 ||
+	      strcmp(argv[i], "transient") == 0))
     {
       is_transient = 1;
     }
     else if (!is_transient && !is_transient_panel &&
-	     strcmp(argv[i], "-transientpanel") == 0)
+	     (strcmp(argv[i], "-transientpanel") == 0 ||
+	      strcmp(argv[i], "transientpanel") == 0))
     {
       is_transient_panel = 1;
     }
@@ -1165,7 +1167,7 @@ void Loop(void)
 	  HandlePanelPress(b);
 	  if (b->newflags.panel_mapped == 0)
 	  {
-	    if(is_transient)
+	    if (is_transient)
 	    {
 	      /* terminate if transient and panel has been unmapped */
 	      exit(0);

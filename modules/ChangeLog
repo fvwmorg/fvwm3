@@ -1,3 +1,34 @@
+2001-08-11  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* FvwmIconMan/x.c (create_manager_window):
+	(init_display):
+	(X_init_manager):
+	* FvwmIconMan/globals.c (print_managers):
+	(init_globals):
+	* FvwmIconMan/fvwm.c (win_in_viewport):
+	* FvwmIconMan/FvwmIconMan.h:
+	* FvwmIconMan/readconfig.c (read_in_resources):
+	added "screen" resolution option
+
+	* FvwmIdent/FvwmIdent.c (list_end):
+	removed unused code
+
+	* FvwmWinList/FvwmWinList.c (main):
+	* FvwmButtons/FvwmButtons.c:
+	* FvwmIconMan/FvwmIconMan.c (main):
+	* FvwmPager/FvwmPager.c:
+	allow both, "Fvwm... transient" and "Fvwm... -transient"
+
+	* FvwmPager/x_pager.c (initialize_pager):
+	Fixed placement of transient pager
+
+	* FvwmWinList/FvwmWinList.c (ParseConfigLine):
+	(main):
+	(StartMeUp_I):
+	(StartMeUp_II):
+	(MakeMeWindow):
+	Added Xinerama support
+
 2001-08-07  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* FvwmForm/ReadXServer.c (ReadXServer):

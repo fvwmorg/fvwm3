@@ -235,12 +235,13 @@ int main(int argc, char **argv)
   fd_width = GetFdWidth();
 
   opt_num = 6;
-  if (argc >= 7 && StrEquals(argv[opt_num], "-transient"))
-    {
-      opt_num++;
-      is_transient = True;
+  if (argc >= 7 && (StrEquals(argv[opt_num], "-transient") ||
+		    StrEquals(argv[opt_num], "transient")))
+  {
+    opt_num++;
+    is_transient = True;
       do_ignore_next_button_release = True;
-    }
+  }
 
   /* Check for an alias */
   if (argc >= opt_num + 1)

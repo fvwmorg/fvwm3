@@ -41,6 +41,7 @@
 #endif
 
 #include "libs/fvwmlib.h"
+#include "libs/XineramaSupport.h"
 #include <libs/Module.h>
 #include "libs/Colorset.h"
 #include "fvwm/fvwm.h"
@@ -510,14 +511,19 @@ void initialize_pager(void)
 
   if (is_transient)
   {
-    if (window_w + window_x > Scr.MyDisplayWidth)
+    rectangle screen_g;
+
+    XineramaSupportGetScrRect(
+      window_x, window_y,
+      &screen_g.x, &screen_g.y, &screen_g.width, &screen_g.height);
+    if (window_w + window_x > screen_g.x + screen_g.width)
     {
-      window_x = 0;
+      window_x = screen_g.x + screen_g.width - Scr.MyDisplayWidth;
       xneg = 1;
     }
-    if (window_h + window_y > Scr.MyDisplayHeight)
+    if (window_h + window_y > screen_g.y + screen_g.height)
     {
-      window_y = 0;
+      window_y = screen_g.y + screen_g.height - Scr.MyDisplayHeight;
       yneg = 1;
     }
   }

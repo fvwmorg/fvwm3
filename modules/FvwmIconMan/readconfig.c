@@ -1483,10 +1483,14 @@ void read_in_resources (char *file)
 	  r = SHOW_DESKTOP;
 	else if (!strcasecmp (p, "page"))
 	  r = SHOW_PAGE;
+	else if (!strcasecmp (p, "screen"))
+	  r = SHOW_SCREEN;
 	else if (!strcasecmp (p, "!desk"))
 	  r = NO_SHOW_DESKTOP;
 	else if (!strcasecmp (p, "!page"))
 	  r = NO_SHOW_PAGE;
+	else if (!strcasecmp (p, "!screen"))
+	  r = NO_SHOW_SCREEN;
 	else {
 	  ConsoleMessage ("Bad line: %s\n", current_line);
 	  ConsoleMessage ("What kind of resolution is this?\n");

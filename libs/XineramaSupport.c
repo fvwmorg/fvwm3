@@ -129,6 +129,7 @@ static int                 total_screens     = 0;
 static int                 first_to_check    = 0;
 static int                 last_to_check     = 0;
 static int                 primary_scr       = DEFAULT_PRIMARY_SCREEN + 1;
+static int                 default_geometry_scr = GEOMETRY_SCREEN_PRIMARY;
 
 #if 0
 #ifdef HAVE_RANDR
@@ -142,6 +143,8 @@ static int                 randr_error_base  = -1;
 #ifdef USE_XINERAMA_EMULATION
 static Window blank_w, vert_w;
 #endif
+
+static int XineramaSupportParseScreenBit(char *arg, char default_screen);
 
 Bool XineramaSupportIsEnabled(void)
 {
@@ -355,6 +358,15 @@ void XineramaSupportConfigureModule(char *args)
 
   return;
 }
+
+/* Sets the default screen for ...ParseGeometry if no screen spec is given.
+ * Usually this is 'p', but this won't allow modules to appear under the
+ * pointer. */
+void XineramaSupportSetDefaultModuleScreen(char *arg)
+{
+  default_geometry_scr = XineramaSupportParseScreenBit(arg, 'p');
+}
+
 
 static int FindScreenOfXY(int x, int y)
 {
@@ -639,7 +651,7 @@ Bool XineramaSupportIsRectangleOnThisScreen(
 
 static int XineramaSupportParseScreenBit(char *arg, char default_screen)
 {
-  int scr = DEFAULT_GEOMETRY_SCREEN;
+  int scr = default_geometry_scr;
   char c;
 
   c = (arg) ? tolower(*arg) : tolower(default_screen);
@@ -850,7 +862,7 @@ int XineramaSupportGetGeometry(
   int   saved;
   int   x, y, w=0, h=0;
   int   grav, x_grav, y_grav;
-  int   scr = DEFAULT_GEOMETRY_SCREEN;
+  int   scr = default_geometry_scr;
   int   scr_x, scr_y, scr_w, scr_h;
 
   /* I. Do the parsing and strip off extra bits */

@@ -83,7 +83,6 @@
 #define GRAB_EVENTS (ButtonPressMask|ButtonReleaseMask|ButtonMotionMask|EnterWindowMask|LeaveWindowMask)
 
 #define SomeButtonDown(a) ((a) & DEFAULT_ALL_BUTTONS_MASK)
-#define COMPLEX_WINDOW_PLACEMENT
 
 /* File type information */
 FILE *console;
@@ -96,8 +95,10 @@ Display *dpy;
 Window Root;
 Window  win;
 int screen;
-int ScreenWidth;
-int ScreenHeight;
+XSizeHints g_hints;
+int g_hints_rc;
+int xi_screen;
+rectangle screen_g;
 Pixel back[MAX_COLOUR_SETS];
 Pixel fore[MAX_COLOUR_SETS];
 GC graph[MAX_COLOUR_SETS];
@@ -215,7 +216,8 @@ int main(int argc, char **argv)
   }
 
   opt_num = 6;
-  if ((argc==7)&&(!strcasecmp(argv[6],"Transient")))
+  if (argc == 7 && (strcasecmp(argv[6],"Transient") == 0 ||
+		    strcasecmp(argv[6],"-Transient") == 0))
   {
     Transient=1;
     opt_num++;
@@ -279,11 +281,12 @@ int main(int argc, char **argv)
   colorset[2] = colorset[3] = 1;
   AllocColorset(1);
 
+  /* Setup the XConnection */
+  StartMeUp_I();
   /* Parse the config file */
   ParseConfig();
-
-  /* Setup the XConnection */
-  StartMeUp();
+  /* more initialisations */
+  StartMeUp_II();
   XSetErrorHandler(ErrorHandler);
 
   InitArray(&buttons,0,0,win_width, fontheight+2, ReliefWidth);
@@ -599,10 +602,10 @@ void ParseConfig(void)
   InitGetConfigLine(Fvwm_fd,Module);
   GetConfigLine(Fvwm_fd,&tline);
   while(tline != (char *)0)
-    {
-      ParseConfigLine(tline);
-      GetConfigLine(Fvwm_fd,&tline);
-    }
+  {
+    ParseConfigLine(tline);
+    GetConfigLine(Fvwm_fd,&tline);
+  }
 }
 
 void
@@ -749,6 +752,10 @@ ParseConfigLine(char *tline)
 	  }
 	}
       }
+    }
+    else if (strncasecmp(tline, XINERAMA_CONFIG_STRING,
+			 strlen(XINERAMA_CONFIG_STRING)) == 0) {
+      XineramaSupportConfigureModule(tline + strlen(XINERAMA_CONFIG_STRING));
     }
   }
 }
@@ -1110,36 +1117,61 @@ void MakeMeWindow(void)
   hints.win_gravity=NorthWestGravity;
   hints.flags=PSize|PWinGravity;
 
-  if (geometry!= NULL)
+  if (Transient)
   {
-    ret=XineramaSupportParseGeometry(geometry,&x,&y,&dummy1,&dummy2);
-
-    if ((ret&XValue) && (ret&YValue))
+    XQueryPointer(dpy,Root,&dummyroot,&dummychild,&hints.x,&hints.y,&x,&y,
+		  &dummy1);
+    XineramaSupportGetScrRect(
+      hints.x, hints.y,
+      &screen_g.x, &screen_g.y, &screen_g.width, &screen_g.height);
+    hints.x -= hints.width / 2;
+    hints.y -= buttonheight / 2;
+    if (hints.x + hints.width > screen_g.x + screen_g.width)
     {
-      hints.x=x;
-      if (ret&XNegative)
-        hints.x+=XDisplayWidth(dpy,screen)-win_width;
-
-      hints.y=y;
-      if (ret&YNegative)
-        hints.y+=XDisplayHeight(dpy,screen)-win_height;
-
-      hints.flags|=USPosition;
+      hints.x = screen_g.x + screen_g.width - hints.width;
     }
-
-    if (ret&XNegative)
+    if (hints.x < screen_g.x)
     {
-      if (ret&YNegative)
-	hints.win_gravity=SouthEastGravity;
-      else
+      hints.x = screen_g.x;
+    }
+    if (hints.y + hints.height > screen_g.y + screen_g.height)
+    {
+      hints.y = screen_g.y + screen_g.height - hints.height;
+    }
+    if (hints.y < screen_g.y)
+    {
+      hints.y = screen_g.y;
+    }
+    hints.win_gravity = NorthWestGravity;
+    hints.flags |= USPosition;
+  }
+  else if (geometry!= NULL)
+  {
+    /* now evaluate the geometry parsed above */
+    ret = XineramaSupportParseGeometry(geometry, &x, &y, &dummy1, &dummy2);
+    hints.win_gravity=NorthWestGravity;
+    if ((ret & XValue) && (ret & YValue))
+    {
+      hints.x = x;
+      hints.y = y;
+      if (ret & XNegative)
+      {
+	hints.x += XDisplayWidth(dpy,screen) - win_width;
 	hints.win_gravity=NorthEastGravity;
-    }
-    else
-    {
-      if (ret&YNegative)
-	hints.win_gravity=SouthWestGravity;
-      else
-	hints.win_gravity=NorthWestGravity;
+      }
+      if (ret & YNegative)
+      {
+	hints.y += XDisplayHeight(dpy,screen) - win_height;
+	if (ret & XNegative)
+	{
+	  hints.win_gravity=SouthEastGravity;
+	}
+	else
+	{
+	  hints.win_gravity=SouthWestGravity;
+	}
+      }
+      hints.flags |= USPosition;
     }
 
 #ifndef COMPLEX_WINDOW_PLACEMENT
@@ -1153,31 +1185,6 @@ void MakeMeWindow(void)
 #endif
   }
 
-  if (Transient)
-  {
-    XQueryPointer(dpy,Root,&dummyroot,&dummychild,&hints.x,&hints.y,&x,&y,
-		  &dummy1);
-    hints.x -= hints.width / 2;
-    hints.y -= buttonheight / 2;
-    if (hints.x + hints.width > ScreenWidth)
-    {
-      hints.x = ScreenWidth - hints.width;
-    }
-    if (hints.x < 0)
-    {
-      hints.x = 0;
-    }
-    if (hints.y + hints.height > ScreenHeight)
-    {
-      hints.y = ScreenHeight - hints.height;
-    }
-    if (hints.y < 0)
-    {
-      hints.y = 0;
-    }
-    hints.win_gravity = NorthWestGravity;
-    hints.flags |= USPosition;
-  }
   win_x = hints.x;
   win_y = hints.y;
   win_grav = hints.win_gravity;
@@ -1226,7 +1233,7 @@ void MakeMeWindow(void)
     XTextProperty nametext;
     char *list[]={NULL,NULL};
     list[0] = Module+1;
- 
+
     classhints.res_name=safestrdup(Module+1);
     classhints.res_class=safestrdup("FvwmWinList");
 
@@ -1339,15 +1346,8 @@ void MakeMeWindow(void)
 /******************************************************************************
   StartMeUp - Do X initialization things
 ******************************************************************************/
-void StartMeUp(void)
+void StartMeUp_I(void)
 {
-#ifdef I18N_MB
-  char **ml;
-  int mc;
-  char *ds;
-  XFontStruct **fs_list;
-#endif
-
   if (!(dpy = XOpenDisplay("")))
   {
     fprintf(stderr,"%s: can't open display %s", Module,
@@ -1361,8 +1361,26 @@ void StartMeUp(void)
   screen= DefaultScreen(dpy);
   Root = RootWindow(dpy, screen);
 
-  ScreenHeight = DisplayHeight(dpy,screen);
-  ScreenWidth = DisplayWidth(dpy,screen);
+  return;
+}
+
+void StartMeUp_II(void)
+{
+#ifdef I18N_MB
+  char **ml;
+  int mc;
+  char *ds;
+  XFontStruct **fs_list;
+#endif
+
+  if (geometry == NULL)
+    UpdateString(&geometry, "");
+  /* evaluate further down */
+  g_hints_rc = XineramaSupportParseGeometryWithScreen(
+    geometry, &g_hints.x, &g_hints.y, (unsigned int *)&g_hints.width,
+    (unsigned int *)&g_hints.height, &xi_screen);
+  XineramaSupportGetNumberedScreenRect(
+    xi_screen, &screen_g.x, &screen_g.y, &screen_g.width, &screen_g.height);
 
 #ifdef I18N_MB
   if ((ButtonFontset=XCreateFontSet(dpy,font_string,&ml,&mc,&ds)) == NULL) {

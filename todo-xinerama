@@ -4,6 +4,63 @@ Possible things to do for perfect(?) Xinerama support:
  2) Icon placement:
     a) place icons on Xinerama screens
     b) prevent icons from being placed in the void
+ 6) Commands and styles:
+    a) EdgeResistance
+    b) Move/Resize/Resizemove
+    c) MoveToScreen
+    d) Maximize
+    e) Move/SnapAttraction: Limit SnapAttraction to windows on
+       same screen.
+       [not useful, EdgeResistance is good enough]
+    f) MaxWindowSize
+    g) General X geometry replacement (WxH+X+Y@Screen)?
+    h) Like g, but for X resource strings?
+    i) StartsOnScreen style?
+    j) Adapt conditional commands and add new conditions
+    k) WindowList command.
+       [does not need new conditions]
+ 8) General/Performance:
+    a) Introduce libs/Screen.c or something like that w/o Xinerama
+       in the name.
+       [replaced by 8f]
+    b) Reduce number of XQueryPointer calls as much as possible.
+    c) Use the Screen library always when screen dimensions are
+       needed.
+       [replaced by 8f]
+    d) "Primary screen" concept
+    e) Add additional pan frames?  If some screens have different
+       sizes, part of a pan frame may be in the void and some
+       screen edges won't allow paging.
+    f) Clean up Xinerama library.
+
+Minimal set of Xinerama features:
+---------------------------------
+
+1b, 2b, 3 a b c, 4a, 5 a e (placement only), 6d, 7a, 8b
+
+Still to do:
+------------
+
+6 d
+
+Optional to do:
+---------------
+2 a
+6 b f
+8 f
+
+Already done:
+-------------
+ 1) Window placement:
+    a) place windows on Xinerama screens
+    b) prevent windows from being placed in the void
+2 b
+ 3) Menus:
+    a) Place menus on Xinerama screens
+    b) Resize menus to fit Xinerama screens
+    c) Adapt position hints to Xinerama screens
+ 4) Geometry window:
+    a) Place on proper Xinerama screen
  5) Modules:
     a) FvwmForm
     b) FvwmIconMan
@@ -18,63 +75,7 @@ Possible things to do for perfect(?) Xinerama support:
     k) FvwmIconBox
     l) FvwmScript
     m) FvwmIdent
- 6) Commands and styles:
-    a) EdgeResistance
-    b) Move/Resize/Resizemove
-    c) MoveToPage/MoveToScreen
-    d) Maximize
-    e) Move/SnapAttraction: Limit SnapAttraction to windows on
-       same screen.
-       [not useful, EdgeResistance is good enough]
-    f) MaxWindowSize
-    g) General X geometry replacement (WxH+X+Y@Screen)?
-    h) Like g, but for X resource strings?
-    i) StartsOnScreen style?
-    j) Adapt conditional commands and add new conditions
-    k) WindowList command.
- 8) General/Performance:
-    a) Introduce libs/Screen.c or something like that w/o Xinerama
-       in the name.
-    b) Reduce number of XQueryPointer calls as much as possible.
-    c) Use the Screen library always when screen dimensions are
-       needed.
-    d) "Primary screen" concept
-    e) Add additional pan frames?  If some screens have different
-       sizes, part of a pan frame may be in the void and some
-       screen edges won't allow paging.
-
-Minimal set of Xinerama features:
----------------------------------
-
-1b, 2b, 3 a b c, 4a, 5 a e (placement only), 6d, 7a, 8b
-
-Still to do:
-------------
-
-5e (placement only)
-6d
-
-Optional to do:
----------------
-2 a
-5 b e
-6 b f k
-8 a c
-
-Already done:
--------------
- 1) Window placement:
-    a) place windows on Xinerama screens
-    b) prevent windows from being placed in the void
-2 b
- 3) Menus:
-    a) Place menus on Xinerama screens
-    b) Resize menus to fit Xinerama screens
-    c) Adapt position hints to Xinerama screens
- 4) Geometry window:
-    a) Place on proper Xinerama screen
-5 a c d f g h i j k l m
-6 a c g i j
+6 a c g i j k
  7) Control:
     a) Enable and Disable Xinerama on the fly (including modules)
 8 b d

@@ -21,18 +21,21 @@ FvwmIconMan \- an Fvwm Icon Manager
 FvwmIconMan is spawned by fvwm, so no command line invocation will work.
 
 .SH DESCRIPTION
-FvwmIconMan is an icon manager modeled after the TWM icon manager.  The user
-may have multiple icon managers, each of which armed with a list of window
-types which it manages. For example, the user may have one manager which lists
-only emacs windows, and another which lists everything else. You may also
-specify what resolution each icon manager uses, for example, one icon manager
-may manage windows on all desks, and another may manage only those on the
-current desk, or page. FvwmIconMan can display the miniature icons provided
-by fvwm for its managed windows. The managers may have a maximum number
-of columns (and so grows vertically), a maximum number of rows (and then
-grows horizontally), or stay at a fixed size, and adjust the size of the
-window buttons to fit (think win95's Taskbar). And when support is compiled
-in for the X Shape extension, then the manager windows may be shaped.
+FvwmIconMan is an icon manager modeled after the TWM icon manager.
+The user may have multiple icon managers, each of which armed with
+a list of window types which it manages. For example, the user may
+have one manager which lists only emacs windows, and another which
+lists everything else. You may also specify what resolution each
+icon manager uses, for example, one icon manager may manage
+windows on all desks, and another may manage only those on the
+current desk, page or screen. FvwmIconMan can display the
+miniature icons provided by fvwm for its managed windows. The
+managers may have a maximum number of columns (and so grows
+vertically), a maximum number of rows (and then grows
+horizontally), or stay at a fixed size, and adjust the size of the
+window buttons to fit (think win95's Taskbar). And when support is
+compiled in for the X Shape extension, then the manager windows
+may be shaped.
 
 You can specify actions to be run when mouse, or key events are received. For
 example, you could bind the first mouse button to iconify the selected window,
@@ -71,9 +74,10 @@ manager window. Use the manager id 'transient' to specify options for this
 manager window.
 
 .SH CONFIGURATION OPTIONS REFERENCE CHART
-FvwmIconMan has acquired quite a few options. I assume others share my dislike
-of paging though a long man page, so here is a terse reference chart describing
-the available options. They are described in more detail in the next section.
+FvwmIconMan has acquired quite a few options. I assume others
+share my dislike of paging though a long man page, so here is a
+terse reference chart describing the available options. They are
+described in more detail in the next section.
 
 .ft C                   \" Courier
 .nf
@@ -102,7 +106,7 @@ managergeometry size of manager in buttons 0x1
 noiconaction    animate iconification      NOP
 plainbutton     style for normal buttons   up black grey
 plaincolorset
-resolution      global, desk, or page      global
+resolution      global/desk/page/screen    global
 reverse         normal, icon or none	   none
 selectbutton    style for selected buttons flat black grey
 selectcolorset
@@ -239,13 +243,19 @@ still only be applied with plainbutton.  See FvwmTheme.
 
 .IP "*FvwmIconMan*[id*]resolution \fIresolution\fP"
 Specifies when the manager will display an entry for a certain
-window. \fIresolution\fP may take one of the following values: global, desk,
-page, !desk, or !page. If global, then all windows of the appropriate type
-(see the show and dontshow options below) will be shown. If desk, then only
-those windows on the current desk will be down. If page, then only those
-windows on the current page will be shown. !desk reverses the sense of desk,
-displaying only those windows not on the current desk. Likewise, !page shows
-only those windows not on the current page. The default is global.
+window. \fIresolution\fP may take one of the following values:
+global, desk, page, screen, !desk, !page, or !screen. If global,
+then all windows of the appropriate type (see the show and
+dontshow options below) will be shown. If desk, then only those
+windows on the current desk are down. If page, then only those
+windows on the current page are shown. If screen, then only those
+windows on the current Xinerama screen are shown. !desk reverses
+the sense of desk, displaying only those windows not on the
+current desk. Likewise, !page shows only those windows not on the
+current page and !screen shows only those windows not on the
+current Xinerama screen. The default is global. If Xinerama is not
+active or only a single screen is used, page and screen are
+equivalent.
 
 .IP "*FvwmIconMan*[id*]reverse \fIclass\fP"
 Causes certain classes of buttons to have their relief lines reversed so that

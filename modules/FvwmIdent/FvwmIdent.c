@@ -507,7 +507,6 @@ void list_end(void)
       y = 0;
     }
 
-    XineramaSupportGetCurrentScrRect(NULL, &sx, &sy, &sw, &sh);
     XineramaSupportGetScrRect(x, y, &sx, &sy, &sw, &sh);
     if (y + height + 100 > sy + sh)
     {

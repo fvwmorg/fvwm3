@@ -515,8 +515,6 @@ void X_init_manager (int man_id)
 
   man->geometry.cols = DEFAULT_NUM_COLS;
   man->geometry.rows = DEFAULT_NUM_ROWS;
-  man->geometry.x = 0;
-  man->geometry.y = 0;
   man->gravity = NorthWestGravity;
 
   man->select_button = NULL;
@@ -642,11 +640,20 @@ void X_init_manager (int man_id)
         man->geometry.boxheight = height;
     }
   }
+  XineramaSupportGetPrimaryScrRect(
+    &man->managed_g.x, &man->managed_g.y,
+    &man->managed_g.width, &man->managed_g.height);
+  man->geometry.x = man->managed_g.x;
+  man->geometry.y = man->managed_g.y;
   if (man->geometry_str) {
-    geometry_mask = XineramaSupportParseGeometry(
-      man->geometry_str, &man->geometry.x,
-      &man->geometry.y, &man->geometry.cols,
-      &man->geometry.rows);
+    int scr;
+
+    geometry_mask = XineramaSupportParseGeometryWithScreen(
+      man->geometry_str, &man->geometry.x, &man->geometry.y,
+      &man->geometry.cols, &man->geometry.rows, &scr);
+    XineramaSupportGetNumberedScreenRect(
+      scr, &man->managed_g.x, &man->managed_g.y,
+      &man->managed_g.width, &man->managed_g.height);
 
     if ((geometry_mask & XValue) || (geometry_mask & YValue)) {
       man->sizehints_flags |= USPosition;
@@ -685,9 +692,11 @@ void X_init_manager (int man_id)
   man->geometry.height = man->geometry.rows * man->geometry.boxheight;
 
   if ((geometry_mask & XValue) && (geometry_mask & XNegative))
-    man->geometry.x += globals.screenx - man->geometry.width;
+    man->geometry.x +=
+      globals.screen_g.x + globals.screen_g.width - man->geometry.width;
   if ((geometry_mask & YValue) && (geometry_mask & YNegative))
-    man->geometry.y += globals.screeny - man->geometry.height;
+    man->geometry.y +=
+      globals.screen_g.y + globals.screen_g.height - man->geometry.height;
 
   if (globals.transient) {
     Window dummyroot, dummychild;
@@ -695,8 +704,11 @@ void X_init_manager (int man_id)
     unsigned int ujunk;
 
     XQueryPointer(theDisplay, theRoot, &dummyroot, &dummychild,
-		  &man->geometry.x,
-		  &man->geometry.y, &junk, &junk, &ujunk);
+		  &man->geometry.x, &man->geometry.y, &junk, &junk, &ujunk);
+    XineramaSupportGetScrRect(
+      man->geometry.x, man->geometry.y,
+      &man->managed_g.x, &man->managed_g.y,
+      &man->managed_g.width, &man->managed_g.height);
     man->geometry.dir |= GROW_DOWN | GROW_RIGHT;
     man->sizehints_flags |= USPosition;
   }
@@ -758,11 +770,11 @@ void create_manager_window (int man_id)
   sizehints.height = man->geometry.height;
   sizehints.base_width = sizehints.min_width = 0;
   sizehints.base_height = 0;
-  sizehints.max_width = globals.screenx;
+  sizehints.max_width = man->managed_g.width;
   if (man->geometry.dir & GROW_FIXED)
   {
     sizehints.min_height = man->geometry.boxheight;
-    sizehints.max_height = globals.screeny;
+    sizehints.max_height = man->managed_g.height;
   }
   else
   {
@@ -798,6 +810,20 @@ void create_manager_window (int man_id)
     winattr.event_mask |= ButtonReleaseMask;
   else
     winattr.event_mask |= ButtonPressMask;
+
+  if (man->res == SHOW_SCREEN || man->res == NO_SHOW_SCREEN)
+  {
+    XineramaSupportGetScrRect(
+      sizehints.x, sizehints.y,
+      &man->managed_g.x, &man->managed_g.y,
+      &man->managed_g.width, &man->managed_g.height);
+  }
+  else
+  {
+    XineramaSupportGetGlobalScrRect(
+      &man->managed_g.x, &man->managed_g.y,
+      &man->managed_g.width, &man->managed_g.height);
+  }
 
   man->theWindow = XCreateWindow(theDisplay, theRoot, sizehints.x, sizehints.y,
 				 man->geometry.width, man->geometry.height,
@@ -914,16 +940,14 @@ void init_display (void)
 #ifdef TEST_MONO
   Pdepth = 2;
 #endif
-  globals.screenx = DisplayWidth (theDisplay, theScreen);
-  globals.screeny = DisplayHeight (theDisplay, theScreen);
 
 #ifdef SHAPE
   globals.shapes_supported = XShapeQueryExtension (theDisplay, &shapeEventBase,
 						   &shapeErrorBase);
 #endif
 
-  ConsoleDebug (X11, "screen width: %ld\n", globals.screenx);
-  ConsoleDebug (X11, "screen height: %ld\n", globals.screeny);
+  ConsoleDebug (X11, "screen width: %d\n", globals.screen_g.width);
+  ConsoleDebug (X11, "screen height: %d\n", globals.screen_g.height);
 }
 
 void change_colorset(int color)

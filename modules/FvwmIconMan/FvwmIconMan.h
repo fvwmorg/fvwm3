@@ -84,11 +84,13 @@ typedef unsigned char Uchar;
 typedef signed char Schar;
 
 typedef enum {
-  SHOW_GLOBAL = 0,
-  SHOW_DESKTOP = 1,
-  SHOW_PAGE = 2,
-  NO_SHOW_DESKTOP = 3,	/* "!desk" Show windows not on the current desk */
-  NO_SHOW_PAGE = 4	/* "!page" Show windows not on the current page */
+  SHOW_GLOBAL,
+  SHOW_DESKTOP,
+  SHOW_PAGE,
+  SHOW_SCREEN,
+  NO_SHOW_DESKTOP,      /* "!desk" Show windows not on the current desk */
+  NO_SHOW_PAGE,         /* "!page" Show windows not on the current page */
+  NO_SHOW_SCREEN        /* "!screen" Show windows not on the current screen */
 } Resolution;
 
 typedef enum {
@@ -314,6 +316,7 @@ typedef struct win_manager {
   Uchar usewinlist;
   SortType sort;
   char *AnimCommand;
+  rectangle managed_g;    /* dimensions of managed screen portion */
 
   /* X11 state */
   Window theWindow, theFrame;
@@ -345,7 +348,7 @@ typedef struct win_manager {
 typedef struct {
   Ulong desknum;
   Ulong x, y;             /* of the view window */
-  long screenx, screeny;  /* screen dimensions */
+  rectangle screen_g;     /* screen dimensions */
   WinManager *managers;
   int num_managers;
   int transient;

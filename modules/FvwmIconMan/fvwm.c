@@ -148,6 +148,7 @@ int win_in_viewport (WinData *win)
 {
   WinManager *manager = win->manager;
   int flag = 0;
+  int reverse = 0;
 
   assert (manager);
 
@@ -156,35 +157,44 @@ int win_in_viewport (WinData *win)
     flag = 1;
     break;
 
+  case NO_SHOW_DESKTOP:
+    reverse = 1;
+    /* fall through to next case */
   case SHOW_DESKTOP:
-    if ((IS_STICKY(win)) || win->desknum == globals.desknum)
+    if (IS_STICKY(win) || win->desknum == globals.desknum)
       flag = 1;
     break;
 
+  case NO_SHOW_PAGE:
+    reverse = 1;
+    /* fall through to next case */
   case SHOW_PAGE:
     if (IS_STICKY(win)) {
       flag = 1;
     } else if (win->desknum == globals.desknum) {
       /* win and screen intersect if they are not disjoint in x and y */
-      flag = RECTANGLES_INTERSECT (win->x, win->y, win->width, win->height,
-				   0, 0, globals.screenx, globals.screeny);
+      flag = RECTANGLES_INTERSECT(
+	win->x, win->y, win->width, win->height,
+	manager->managed_g.x, manager->managed_g.y,
+	manager->managed_g.width, manager->managed_g.height);
     }
     break;
 
-  case NO_SHOW_DESKTOP:
-    /* Show the window if it's not on the current desk */
-    if (!(IS_STICKY(win)) && win->desknum != globals.desknum)
-      flag = 1;
+  case NO_SHOW_SCREEN:
+    reverse = 1;
+    /* fall through to next case */
+  case SHOW_SCREEN:
+    if (win->desknum == globals.desknum) {
+      /* win and screen intersect if they are not disjoint in x and y */
+      flag = RECTANGLES_INTERSECT(
+	win->x, win->y, win->width, win->height,
+	manager->managed_g.x, manager->managed_g.y,
+	manager->managed_g.width, manager->managed_g.height);
+    }
     break;
-
-  case NO_SHOW_PAGE:
-    /* Show the window if it's not in the viewport (on the page) */
-    if (!(IS_STICKY(win)) &&
-	 ( win->desknum != globals.desknum ||
-	   !(RECTANGLES_INTERSECT (win->x, win->y, win->width, win->height,
-      				   0, 0, globals.screenx, globals.screeny))))
-      flag = 1;
   }
+  flag ^= reverse;
+
   return flag;
 }
 
