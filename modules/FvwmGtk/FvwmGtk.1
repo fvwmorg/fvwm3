@@ -76,7 +76,7 @@ in the same way fvwm does for its menus.
 Instructs \fBFvwmGtk\fP to append subsequent items to the menu named
 by the argument. Note that you can "reopen" a menu and continue to append
 to it. It is also possible to redefine a menu from scratch, see
-"*FvwmGtk: Destroy".
+*FvwmGtk: Destroy.
 
 .IP "*FvwmGtk: Title \fBlabel\fP [ \fBicon\fP [ \fBr_label\fP ] ]"
 Appends a title to the currently open menu. If the optional argument
@@ -141,9 +141,9 @@ and end of the list of child widgets. Atomic widgets are defined by
 single commands. Some widgets request data from the user. These are
 all given names which can be used to refer to the data.
 
-The commands for widgets have the common form
+The commands for widgets have the common form:
 
-"*FvwmGtk: \fIWidget\fP \fIwidget-specific args\fP [ -- \fIgeneral args\fP ]"
+*FvwmGtk: \fIWidget\fP \fIwidget-specific args\fP [ -- \fIgeneral-args\fP ]
 
 where the following arguments may be specified after the double hyphen:
 can-default, default, focus, expand, fill and an integer argument padding.

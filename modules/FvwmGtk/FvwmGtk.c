@@ -423,12 +423,20 @@ process_message (unsigned long type,
       break;
     case M_MINI_ICON:
       {
+/*
 	MiniIconPacket *mip = (MiniIconPacket *) body;
 	window_list_entry *wle = lookup_window_list_entry (mip->w);
 
 	if (wle->mini_icon)
 	  free(wle->mini_icon);
 	wle->mini_icon = safestrdup (mip->name);
+*/
+
+        window_list_entry *wle = lookup_window_list_entry (body[0]);
+
+        if (wle->mini_icon)
+          free(wle->mini_icon);
+        wle->mini_icon = safestrdup ((char*) (&body[8]));
       }
       break;
     }

@@ -1,3 +1,8 @@
+2002-05-19  Mikhael Goikhman  <migo@homemail.com>
+
+	* FvwmGtk/FvwmGtk.c (process_message):
+	currently restore the previous M_MINI_ICON code to avoid crash
+
 2002-05-16  olicha  <olivier.chapuis@free.fr>
 
 	* FvwmTaskBar/Goodies.c (RedrawTipWindow):
