@@ -21,6 +21,7 @@
 
 #include "types.h"
 #include "libs/fvwmlib.h"
+#include "libs/fvwmsignal.h"
 #include "libs/Picture.h"
 
 
@@ -52,7 +53,7 @@ extern int __bounds_debug_no_checking;
 
 /* Variables globales */
 char *ScriptName;		/* Nom du fichier contenat le script decrivant le GUI */
-char *ScriptPath;
+char *ScriptPath = "";
 char *ModuleName;
 int fd[2]; 			/* pipe pair */
 int fd_err;
@@ -72,9 +73,69 @@ static Atom wm_del_win;
 char *imagePath = NULL;
 int save_color_limit = 0;                   /* color limit from config */
 
-extern void InitCom();
+extern void InitCom(void);
 
-void Debug()
+
+/* Exit procedure - called whenever we call exit(), or when main() ends */
+static void
+ShutdownX(void)
+{
+ int i;
+ static XEvent event;
+ fd_set in_fdset;
+ extern int x_fd;
+ Atom MyAtom;
+ int NbEssai=0;
+ struct timeval tv;
+
+#ifdef DEBUG			/* For debugging */
+  XSync(x11base->display,0);
+#endif
+
+ /* On cache la fenetre */
+ XUnmapWindow(x11base->display,x11base->win);
+ XFlush(x11base->display);
+
+ /* Le script ne possede plus la propriete */
+ MyAtom=XInternAtom(x11base->display,x11base->TabScriptId[1],False);
+ XSetSelectionOwner(x11base->display,MyAtom,x11base->root,CurrentTime);
+
+ /* On verifie si tous les messages ont ete envoyes */
+ while( !isTerminated && (BuffSend.NbMsg>0) && (NbEssai<10000) )
+ {
+  tv.tv_sec = 1;
+  tv.tv_usec = 0;
+  FD_ZERO(&in_fdset);
+  FD_SET(x_fd,&in_fdset);
+  if ( fvwmSelect(x_fd+1, &in_fdset, NULL, NULL, &tv) > 0 )
+  {
+    if (FD_ISSET(x_fd, &in_fdset))
+    {
+     if (XCheckTypedEvent(x11base->display,SelectionRequest,&event))
+      SendMsgToScript(event);
+     else
+      NbEssai++;
+    }
+  }
+ }
+ XFlush(x11base->display);
+
+ /* Attente de deux secondes afin d'etre sur que tous */
+ /* les messages soient arrives a destination         */
+ /* On quitte proprement le serveur X */
+ for (i=0;i<nbobj;i++)
+  tabxobj[i]->DestroyObj(tabxobj[i]);
+ XFlush(x11base->display);
+/* XSync(x11base->display,True);*/
+ sleep(2);
+ XFreeGC(x11base->display,x11base->gc);
+ XFreeColormap(x11base->display,x11base->colormap);
+ XDestroyWindow(x11base->display,x11base->win);
+ XCloseDisplay(x11base->display);
+}
+
+
+void Debug(void)
 {
  int i,j;
 
@@ -88,17 +149,17 @@ void Debug()
 
 }
 
-/* Lecture du fichier contenant le scipt */
+/* Lecture du fichier contenant le script */
 void ReadConfig (char *ScriptName)
 {
   extern FILE *yyin;
-  char s[255];
+  char s[FILENAME_MAX];
 
-  sprintf(s,"%s/%s",ScriptPath,ScriptName);
+  sprintf(s,"%s%s%s",ScriptPath,(!*ScriptPath ? "" : "/"),ScriptName);
   yyin=fopen(s,"r");
   if (yyin == NULL)
   {
-   fprintf(stderr,"Can't open the script %s",s);
+   fprintf(stderr,"Can't open the script %s\n",s);
    exit(1);
   }
   /* On ne redefini pas yyout qui est la sortie standard */
@@ -189,6 +250,9 @@ void Xinit(int IsFather)
  x11base->colormap = DefaultColormap(x11base->display,x11base->screen);
  x11base->root = RootWindow(x11base->display,x11base->screen);
  x_fd = XConnectionNumber(x11base->display);
+
+ /* install exit procedure to close X down again */
+ atexit(ShutdownX);
 }
 
 /***********************/
@@ -226,21 +290,17 @@ int MyAllocNamedColor(Display *display,Colormap colormap,char* colorname,XColor*
  {
   if (XParseColor(display,colormap,colorname,color))
    return XAllocColor(display,colormap,color);
-  else
-   return 0;
  }
  else
  {
   if (XLookupColor(display,colormap,colorname,&TempColor,color))
    return XAllocColor(display,colormap,color);
-  else
-   return 0;
  }
  return 0;
 }
 
 /* Ouvre une fenetre pour l'affichage du GUI */
-void OpenWindow ()
+void OpenWindow (void)
 {
  XTextProperty Name;
  XWMHints *IndicWM;
@@ -454,7 +514,6 @@ void BuildGUI(int IsFather)
  for (i=0;i<nbobj;i++)
   if (tabxobj[i]->flags[0]!=True)
    XMapWindow(x11base->display,tabxobj[i]->win);
-
 }
 
 
@@ -523,7 +582,7 @@ void SendMsgToScript(XEvent event)
 }
 
 /* read an X event */
-void ReadXServer ()
+void ReadXServer (void)
 {
  static XEvent event,evnt_sel;
  int i;
@@ -630,15 +689,20 @@ void ReadXServer ()
   }
 }
 
+
 /* main event loop */
-void MainLoop ()
+void MainLoop (void)
 {
  fd_set in_fdset;
  int i;
  struct timeval tv;
- int res;
+ struct timeval *ptv;
 
- while (1)
+ fd_set_size_t fd_width = fd[1];
+ if (x_fd > fd_width) fd_width = x_fd;
+ ++fd_width;
+
+ while ( !isTerminated )
  {
   FD_ZERO(&in_fdset);
   FD_SET(x_fd,&in_fdset);
@@ -649,12 +713,10 @@ void MainLoop ()
   tv.tv_sec = 1;
   tv.tv_usec = 0;
 
-  if (x11base->periodictasks!=NULL)
-   res=select(32, SELECT_FD_SET_CAST &in_fdset, NULL, NULL, &tv);
-  else
-   res=select(32, SELECT_FD_SET_CAST &in_fdset, NULL, NULL, NULL);
-
-  if (res > 0)
+  ptv = NULL;
+  if (x11base->periodictasks != NULL)
+    ptv = &tv;
+  if (fvwmSelect(fd_width, &in_fdset, NULL, NULL, ptv) > 0)
   {
    if (FD_ISSET(x_fd, &in_fdset))
     ReadXServer();
@@ -663,12 +725,12 @@ void MainLoop ()
    {
        FvwmPacket* packet = ReadFvwmPacket(fd[1]);
        if ( packet == NULL )
-	   DeadPipe(0);
+	   exit(0);
        for (i=0; i<nbobj; i++)
 	   tabxobj[i]->ProcessMsg(tabxobj[i], packet->type, packet->body);
    }
   }
-  if (x11base->periodictasks!=NULL)
+  if (!isTerminated && x11base->periodictasks!=NULL)
     /* Execution des taches periodics */
     ExecBloc(x11base->periodictasks);
  }
@@ -702,6 +764,15 @@ void ReadFvwmScriptArg(int argc, char **argv,int IsFather)
  }
 }
 
+
+/* signal handler to close down the module */
+static RETSIGTYPE
+TerminateHandler(int sig)
+{
+  fvwmSetTerminate(sig);
+}
+
+
 /* main procedure */
 int main (int argc, char **argv)
 {
@@ -714,48 +785,38 @@ int main (int argc, char **argv)
 
   ModuleName = GetFileNameFromPath(argv[0]);
 
-  /* On determine si le script a un pere */
-  if (argc>=8)
-   IsFather=(argv[7][0]!=(char)161);
-  else
-   IsFather=1;
-
-
-  signal (SIGPIPE, DeadPipe);
-  signal (SIGINT, DeadPipe);  /* cleanup on other ways of closing too */
-  signal (SIGHUP, DeadPipe);
-  signal (SIGQUIT, DeadPipe);
-  signal (SIGTERM, DeadPipe);
-
   if (argc < 6)
   {
     fprintf(stderr,"%s must be started by Fvwm.\n", ModuleName);
     exit(1);
   }
- else
-  if(argc>=7)
-  {
-   ScriptName = argv[6];
-   ref = strtol(argv[4], NULL, 16);
-   if (ref == 0) ref = None;
-   fd[0] = atoi(argv[1]);
-   fd[1] = atoi(argv[2]);
-   SetMessageMask(fd, M_NEW_DESK | M_END_WINDOWLIST|
-		 M_MAP|  M_RES_NAME| M_RES_CLASS| M_CONFIG_INFO|
-		 M_END_CONFIG_INFO| M_WINDOW_NAME);
 
-   /* Enregistrement des arguments du script */
-   x11base=(X11base*) calloc(1,sizeof(X11base));
-   x11base->TabArg[0]=ModuleName;
-   for (i=8-IsFather;i<argc;i++)
-    x11base->TabArg[i-7+IsFather]=argv[i];
-
-  }
-  else
+  if (argc == 6)
   {
     fprintf(stderr,"%s requires only the path of the script.\n", ModuleName);
     exit(1);
   }
+
+  /* On determine si le script a un pere */
+  if (argc>=8)
+   IsFather=(argv[7][0] != (char)161);
+  else
+   IsFather=1;
+
+  ScriptName = argv[6];
+  ref = strtol(argv[4], NULL, 16);
+  if (ref == 0) ref = None;
+  fd[0] = atoi(argv[1]);
+  fd[1] = atoi(argv[2]);
+  SetMessageMask(fd, M_NEW_DESK | M_END_WINDOWLIST|
+		 M_MAP|  M_RES_NAME| M_RES_CLASS| M_CONFIG_INFO|
+		 M_END_CONFIG_INFO| M_WINDOW_NAME);
+
+  /* Enregistrement des arguments du script */
+  x11base=(X11base*) calloc(1,sizeof(X11base));
+  x11base->TabArg[0]=ModuleName;
+  for (i=8-IsFather;i<argc;i++)
+    x11base->TabArg[i-7+IsFather]=argv[i];
 
  ParseOptions();
 
@@ -764,6 +825,50 @@ int main (int argc, char **argv)
  ReadConfig(ScriptName);	/* Lecture et analyse du script */
 
  InitCom();			/* Fonction d'initialisation de TabCom et TabFunc   */
+
+#ifdef HAVE_SIGACTION
+  {
+    struct sigaction  sigact;
+
+    sigemptyset(&sigact.sa_mask);
+    sigaddset(&sigact.sa_mask, SIGPIPE);
+    sigaddset(&sigact.sa_mask, SIGINT);
+    sigaddset(&sigact.sa_mask, SIGHUP);
+    sigaddset(&sigact.sa_mask, SIGTERM);
+    sigaddset(&sigact.sa_mask, SIGQUIT);
+#ifdef SA_INTERRUPT
+    sigact.sa_flags = SA_INTERRUPT;
+#else
+    sigact.sa_flags = 0;
+#endif
+    sigact.sa_handler = TerminateHandler;
+    sigaction(SIGPIPE, &sigact, NULL);
+    sigaction(SIGINT,  &sigact, NULL);
+    sigaction(SIGHUP,  &sigact, NULL);
+    sigaction(SIGTERM, &sigact, NULL);
+    sigaction(SIGQUIT, &sigact, NULL);
+  }
+#else
+#ifdef USE_BSD_SIGNALS
+  fvwmSetSignalMask( sigmask(SIGPIPE) |
+                     sigmask(SIGINT) |
+                     sigmask(SIGHUP) |
+                     sigmask(SIGTERM) |
+                     sigmask(SIGQUIT) );
+#endif
+  signal (SIGPIPE, TerminateHandler);
+  signal (SIGINT, TerminateHandler);  /* cleanup on other ways of closing too */
+  signal (SIGHUP, TerminateHandler);
+  signal (SIGQUIT, TerminateHandler);
+  signal (SIGTERM, TerminateHandler);
+#ifdef HAVE_SIGINTERRUPT
+  siginterrupt(SIGPIPE, 1);
+  siginterrupt(SIGINT,  1);
+  siginterrupt(SIGHUP,  1);
+  siginterrupt(SIGQUIT, 1);
+  siginterrupt(SIGTERM, 1);
+#endif
+#endif
 
  BuildGUI(IsFather);			/* Construction des boutons et de la fenetre */
 

@@ -1,3 +1,12 @@
+1999-07-04  Chris Rankin  <rankinc@zipworld.com.au>
+
+    * FvwmScript/FvwmScript.c : Added new signal handling (sigaction),
+    installed an exit-procedure to close down X and used fvwmSelect()
+    instead of raw select(). First parameter of select is now
+    guaranteed to be correct. Added GNU "noreturn" attribute to Quit().
+    ScriptPath variable is now handled correctly from FvwmTalk, assuming
+    that ScriptPath is not already defined.
+
 1999-07-01  Paul D. Smith  <psmith@gnu.org>
 
 	* FvwmGtk/menu.c (menu_submenu): Remove unused variable.

@@ -14,6 +14,7 @@
  */
 
 #include "types.h"
+#include "libs/fvwmsignal.h"
 
 extern int fd[2];
 extern Window ref;
@@ -936,56 +937,6 @@ void WarpPointer(int NbArg,long *TabArg)
 
 void Quit (int NbArg,long *TabArg)
 {
- int i;
- static XEvent event;
- fd_set in_fdset;
- extern int x_fd;
- Atom MyAtom;
- int NbEssai=0;
- struct timeval tv;
-
-#ifdef DEBUG			/* For debugging */
-  XSync(x11base->display,0);
-#endif
-
- /* On cache la fenetre */
- XUnmapWindow(x11base->display,x11base->win);
- XFlush(x11base->display);
-
- /* Le script ne possede plus la propriete */
- MyAtom=XInternAtom(x11base->display,x11base->TabScriptId[1],False);
- XSetSelectionOwner(x11base->display,MyAtom,x11base->root,CurrentTime);
-
- /* On verifie si tous les messages ont ete envoyes */
- while((BuffSend.NbMsg>0)&&(NbEssai<10000))
- {
-  tv.tv_sec = 1;
-  tv.tv_usec = 0;
-  FD_ZERO(&in_fdset);
-  FD_SET(x_fd,&in_fdset);
-  select(32, SELECT_FD_SET_CAST &in_fdset, NULL, NULL, &tv);
-  if (FD_ISSET(x_fd, &in_fdset))
-  {
-   if (XCheckTypedEvent(x11base->display,SelectionRequest,&event))
-    SendMsgToScript(event);
-   else
-    NbEssai++;
-  }
- }
- XFlush(x11base->display);
-
- /* Attente de deux secondes afin d'etre sur que tous */
- /* les messages soient arrives a destination         */
- /* On quitte proprement le serveur X */
- for (i=0;i<nbobj;i++)
-  tabxobj[i]->DestroyObj(tabxobj[i]);
- XFlush(x11base->display);
-/* XSync(x11base->display,True);*/
- sleep(2);
- XFreeGC(x11base->display,x11base->gc);
- XFreeColormap(x11base->display,x11base->colormap);
- XDestroyWindow(x11base->display,x11base->win);
- XCloseDisplay(x11base->display);
  exit(0);
 }
 

@@ -34,10 +34,6 @@
 #include <sys/bsdtypes.h> /* Saul */
 #endif
 
-#if HAVE_SYS_SELECT_H
-#include <sys/select.h>
-#endif
-
 #ifdef I18N_MB
 #include <X11/Xlocale.h>
 #ifdef __STDC__
@@ -253,6 +249,6 @@ void UnselectAllTextField(struct XObj **xobj);
 
 int MyAllocNamedColor(Display *display,Colormap colormap,char* colorname,XColor* color);
 
-void Quit (int NbArg,long *TabArg);
+void Quit (int NbArg,long *TabArg) __attribute__((noreturn));
 
 void SendMsgToScript(XEvent event);
