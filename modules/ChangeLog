@@ -1,3 +1,11 @@
+1999-08-21  Dominik Vogt  <dominik_vogt@gmx.de>
+
+	* FvwmTheme/FvwmTheme.1: point to COLOR GRADIENTS section in fvwm2 man
+	page
+
+	* FvwmIconMan/fvwm.c (ProcessMessage):
+	(focus_change): fixed IconMan not displaying focus after page switches
+
 1999-08-20  Dominik Vogt  <dominik_vogt@gmx.de>
 
 	* FvwmTheme/FvwmTheme.c (parse_colorset): use gradient type macros

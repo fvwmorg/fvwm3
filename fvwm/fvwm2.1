@@ -540,6 +540,7 @@ order of usefulness to the newcomer.
 - Conditional commands
 - Module commands
 - Quit, restart and session management commands
+- Color gradients
 .EE
 
 .SS COMMANDS FOR MENUS
@@ -1044,9 +1045,9 @@ exists it is used for the text of all menu items. If it does not
 exist or if the name is left blank the built in default is used.
 
 \fIMenuFace\fP enforces a fancy background upon the menus. You can
-use the same options for MenuFace as for ButtonStyle plus DGradient,
-(top-left to down-right) and BGradient (down-left to top-right). See
-\fIButtonStyle\fP for more info. If you use MenuFace without arguments
+use the same options for MenuFace as for ButtonStyle. See description
+of \fIButtonStyle\fP command and the \fICOLOR GRADIENTS\fP sections
+for more information.  If you use MenuFace without arguments
 the style is reverted back to normal.
 
 Some examples of MenuFaces are:
@@ -1060,22 +1061,26 @@ MenuFace HGradient 128 2 Red 40 Maroon 60 \\
 MenuFace Solid Maroon
 .EE
 
-If you encounter performance problems with gradient backgrounds
-you can try one or all of the following:
+Note: The gradient styles H, V, B and D are optimized for high
+speed and low memory consumtion in menus.  This is not the case
+for all the other gradient styles.  They may be slow and consume
+huge amounts of memory, so if you encounter performance problems
+with them you may be better off by not using them. To improve
+performance you can try one or all of the following:
 
 Turn Hilighting of the active menu item other than foreground color
 off:
 
 .EX
 MenuStyle <style> Hilight3DOff, HilightBackOff
-MenuStyle ActiveFore <preferred color>
+MenuStyle <style> ActiveFore <preferred color>
 .EE
 
 Make sure submenus do not overlap the parent menu. This can prevent
 menus being redrawn every time a submenu pops up or down.
 
 .EX
-MenuStyle <stylename> PopupOffset 1 100
+MenuStyle <style> PopupOffset 1 100
 .EE
 
 Run you X server with backing storage. If your Xserver is started
@@ -2777,38 +2782,11 @@ highlight color (@1).  Is that too confusing? See the sample .fvwm2rc
 for a few examples.  You can use up to 32 points in a line pattern.
 This style is partially destructive.
 
-The "VGradient" and "HGradient" styles denote gradient styles.  The H
-and V prefixes denote both horizontal and vertical directions.
+The "?Gradient" styles denote color gradients.  Fill in the question
+mark with any one of the defined gradient types.  Please refer to
+the \fICOLOR GRADIENTST\fP section below for a description of the
+gradient syntax.
 
-This style has two forms:
-
-.in +2
-The first form specifies a linear gradient.  Arguments: total number
-of colors to allocate (between 2 and 1000), the initial color, and the
-final color.
-
-The second form specifies a nonlinear gradient.  Arguments: total
-number of colors to allocate (between 2 and 1000), then the number of
-segments.  For each segment, specify the starting color, a relative
-length, then the ending color.  Each subsequent segment begins with the
-color of the last segment.  The lengths may be any non-negative integers.
-The length of one segment divided by the sum of all segment's lengths
-is the fraction of the total number of colors available that are used
-for the segment
-.in -2
-
-Examples:
-.EX
-# 20% gradient from red to blue,
-# 30% from blue to black,
-# 50% from black to grey
-TitleStyle VGradient 16 3 Red 20 Blue 30 \\
-  Black 50 Grey
-
-# 50% from blue to green, then
-# 50% from yellow to red
-TitleStyle HGradient 128 3 Blue 1000 Green 1 Yellow 1000 Red
-.EE
 The gradient styles are fully destructive.
 
 The "Pixmap" style displays a pixmap.  A pixmap should be specified as
@@ -4050,6 +4028,61 @@ Causes a session manager (if any) to save and then shutdown the session.
 
 This command does not work for xsm, it seems that xsm didn't implement this
 functionality. Use unix signals to manage xsm remotely.
+
+
+.SS COLOR GRADIENTS
+
+A color gradient is a background that changes its color gradually
+from one hue to a different one.  Color gradients can be used by
+various commands and modules of fvwm.  There are eight types of
+gradients: HGradient is a horizontal gradient; VGradient is vertical;
+DGradient is diagonal from top left to bottom right; BGradient is
+backwards diagonal from bottom left to top right; SGradient is
+concentric squares; CGradient is con-centric circles; RGradient is
+a radar like pattern and YGradient is a Yin Yang style (but without
+the dots).
+
+The color gradient syntax has two forms:
+
+.TP
+.B "?Gradient" "\fIcolors start-color end-color\fP"
+This form specifies a linear gradient.  The arguments denote the
+total number of \fIcolors\fP to allocate (between 2 and 1000), the
+initial color and the final color.
+
+Example:
+.EX
+TitleStyle VGradient 20 rgb:b8/ce/bc rgb:5b/85/d0
+.EE
+
+.TP
+.B "?Gradient" "\fIcolors segments color length color\fP [\fIlength color\fP] ..."
+The second form specifies a nonlinear gradient.  The arguments are:
+the total number of \fIcolors\fP to allocate (between 2 and 1000),
+then the number of \fIsegments\fP.  For each segment, specify the
+starting \fIcolor\fP, a relative \fIlength\fP, then the ending
+color.  Each subsequent segment begins with the second color of
+the last segment.  The lengths may be any non-negative integers.
+The length of one segment divided by the sum of all segment's lengths
+is the fraction of the colors that are used for the segment.
+.in -2
+
+Examples:
+.EX
+MenuStyle * MenuFace DGradient \\
+  128 2 lightgrey 50 blue 50 white
+
+# 20% gradient from red to blue,
+# 30% from blue to black,
+# 50% from black to grey
+MenuStyle * DGradient 100 3 Red 20 Blue 30 \\
+  Black 50 Grey
+
+# 50% from blue to green, then
+# 50% from yellow to red
+*FvwmThemeColorset 0 Blue Red HGradient \\
+  128 3 Blue 1000 Green 1 Yellow 1000 Red
+.EE
 
 
 .SH ENVIRONMENT

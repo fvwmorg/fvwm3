@@ -1,5 +1,9 @@
 Changes in beta release 2.3.7 (August 1999)
 
+* Six new color gradients can be used in TitleStyle, BorderStyle,
+  ButtonStyle and MenuStyle commands (BGradient, DGradient,
+  SGradient, CGradient, RGradient and YGradient).
+
 * MoveSmoothness command allows to tune smoothness of window
   moves. Use lower values on fast machines, higher values on
   slow machines.

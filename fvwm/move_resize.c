@@ -164,7 +164,6 @@ static void InteractiveMove(Window *win, FvwmWindow *tmp_win, int *FinalX,
   int origDragX,origDragY,DragX, DragY, DragWidth, DragHeight;
   int XOffset, YOffset;
   Window w;
-  XEvent my_event;
   Bool opaque_move = False;
 
   w = *win;

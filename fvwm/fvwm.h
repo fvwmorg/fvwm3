@@ -193,6 +193,7 @@ typedef struct
   unsigned is_partially_visible : 1; /* is the window partially visible */
   unsigned is_pixmap_ours : 1; /* is the icon pixmap ours to free? */
   unsigned is_transient : 1; /* is it a transient window? */
+  unsigned is_window_drawn_once : 1;
   unsigned is_deiconify_pending : 1; /* Sent an XUnmapWindow for deiconifying,
 				      * but didn't receive a UnmapNotify yet.*/
   unsigned is_viewport_moved : 1; /* To prevent double move in MoveViewport.*/

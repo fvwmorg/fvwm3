@@ -252,9 +252,13 @@ Bool CalculateGradientDimensions(Display *dpy, Drawable d, int ncolors,
 				 char type, unsigned int *width_ret,
 				 unsigned int *height_ret);
 
-Pixmap CreateGradientPixmap(Display *dpy, Drawable d, GC gc,
-			    int type, unsigned width, unsigned height,
-			    int ncolors, Pixel *pixels);
+Drawable CreateGradientPixmap(Display *dpy, Drawable d, GC gc,
+			      int type, unsigned g_width, unsigned g_height,
+			      int ncolors, Pixel *pixels,
+			      Drawable in_drawable,
+			      int d_x, int d_y,
+			      unsigned int d_width,
+			      unsigned int d_height);
 
 Pixmap CreateGradientPixmapFromString(Display *dpy, Drawable d, GC gc,
 				      int type, char *action,

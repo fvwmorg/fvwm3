@@ -531,88 +531,143 @@ Bool CalculateGradientDimensions(
   return True;
 }
 
-
-Pixmap CreateGradientPixmap(Display *dpy, Drawable d, GC gc,
-			    int type, unsigned width, unsigned height,
-			    int ncolors, Pixel *pixels)
+/* Does the actual drawing of the pixmap. If the in_drawable argument is None,
+ * a new pixmap of the given depth, width and height is created. If it is not
+ * None the gradient is drawn into it. The d_width, d_height, d_x and d_y
+ * describe the traget rectangle within the drawable. */
+Drawable CreateGradientPixmap(Display *dpy, Drawable d, GC gc,
+			      int type, unsigned g_width, unsigned g_height,
+			      int ncolors, Pixel *pixels,
+			      Drawable in_drawable,
+			      int d_x, int d_y,
+			      unsigned int d_width,
+			      unsigned int d_height)
 {
-  Pixmap pixmap;
+  Pixmap pixmap = None;
   XImage *image;
   register int i, j;
   XGCValues xgcv;
+  Drawable target;
+  int t_x;
+  int t_y;
+  unsigned int t_width;
+  unsigned int t_height;
 
-  /* create a pixmap to use */
-  pixmap = XCreatePixmap(dpy, d, width, height, Pdepth);
-  if (pixmap == None)
-    return None;
+  if (in_drawable == None)
+  {
+    /* create a pixmap to use */
+    pixmap = XCreatePixmap(dpy, d, g_width, g_height, Pdepth);
+    if (pixmap == None)
+      return None;
+    target = pixmap;
+    t_x = 0;
+    t_y = 0;
+    t_width = g_width;
+    t_height = g_height;
+  }
+  else
+  {
+    target = in_drawable;
+    t_x = d_x;
+    t_y = d_y;
+    t_width = d_width;
+    t_height = d_height;
+  }
+
   /* create an XImage structure */
-  image = XCreateImage(dpy, Pvisual, Pdepth, ZPixmap, 0, 0, width, height,
+  image = XCreateImage(dpy, Pvisual, Pdepth, ZPixmap, 0, 0, t_width, t_height,
                        Pdepth > 16 ? 32 : (Pdepth > 8 ? 16 : 8), 0);
-  if (!image){
+  if (!image)
+  {
     fprintf(stderr, "%cGradient couldn't get image\n", type);
-    XFreePixmap(dpy, pixmap);
+    if (pixmap != None)
+      XFreePixmap(dpy, pixmap);
     return None;
   }
   /* create space for drawing the image locally */
-  image->data = safemalloc(image->bytes_per_line * height);
+  image->data = safemalloc(image->bytes_per_line * t_height);
   /* now do the fancy drawing */
   /* draw one pixel further than expected in case line style is CapNotLast */
-  switch (type) {
+  switch (type)
+  {
     case H_GRADIENT:
-      for (i = 0; i < width; i++) {
-        register Pixel p = pixels[i];
-        for (j = 0; j < height; j++)
-          XPutPixel(image, i, j, p);
+      {
+	for (i = 0; i < t_width; i++) {
+	  register Pixel p = pixels[i * ncolors / t_width];
+	  for (j = 0; j < t_height; j++)
+	    XPutPixel(image, i, j, p);
+	}
       }
       break;
     case V_GRADIENT:
-      for (j = 0; j < height; j++) {
-        register Pixel p = pixels[j];
-        for (i = 0; i < width; i++)
-          XPutPixel(image, i, j, p);
+      {
+	for (j = 0; j < t_height; j++) {
+	  register Pixel p = pixels[j * ncolors / t_height];
+	  for (i = 0; i < t_width; i++)
+	    XPutPixel(image, i, j, p);
+	}
+	break;
       }
-      break;
     case D_GRADIENT:
-      for (i = 0; i < width; i++) {
-        for (j = 0; j < height; j++)
-          XPutPixel(image, i, j, pixels[i + j]);
+      {
+	register int t_scale = t_width + t_height - 1;
+	for (i = 0; i < t_width; i++) {
+	  for (j = 0; j < t_height; j++)
+	    XPutPixel(image, i, j, pixels[(i + j) * ncolors / t_scale]);
+	}
+	break;
       }
-      break;
     case B_GRADIENT:
-      for (i = 0; i < width; i++) {
-        for (j = 0; j < height; j++)
-          XPutPixel(image, i, j, pixels[i + ncolors / 2 - j]);
+      {
+	register int t_scale = t_width + t_height - 1;
+	for (i = 0; i < t_width; i++) {
+	  for (j = 0; j < t_height; j++)
+	    XPutPixel(image, i, j,
+		      pixels[(i + (t_height - j - 1)) * ncolors / t_scale]);
+	}
+	break;
       }
-      break;
     case S_GRADIENT:
       {
-        /* width == height so only reference one */
-        register int w = width - 1;
+        register int w = t_width - 1;
+        register int h = t_height - 1;
+	register int t_scale = t_width * t_height;
+	register int myncolors = ncolors * 2;
         for (i = 0; i <= w; i++) {
-          register int pi = min(i, w - i);
-          for (j = 0; j <= w; j++) {
-            register int pj = min(j, w - j);
-            XPutPixel(image, i, j, pixels[min(pi, pj)]);
+          register int pi = min(i, w - i) * h;
+          for (j = 0; j <= h; j++) {
+            register int pj = min(j, h - j) * w;
+            XPutPixel(image, i, j,
+		      pixels[min(pi, pj) * myncolors / t_scale]);
           }
         }
       }
       break;
     case C_GRADIENT:
-      /* width == height */
-      for (i = 0; i < width; i++)
-        for (j = 0; j < width; j++) {
-          register int x = (i - width / 2), y = (j - width / 2);
-          register int pixel = ncolors - 1 - sqrt((x * x + y * y) / 2);
-          XPutPixel(image, i, j, pixels[pixel]);
-        }
-      break;
+      {
+	register int w = t_width - 1;
+	register int h = t_height - 1;
+	register int t_scale = sqrt(t_width*t_width/2 * t_height*t_height/2);
+	for (i = 0; i <= w; i++)
+	  for (j = 0; j <= h; j++) {
+	    register int x = (i - t_width / 2) * h / 2;
+	    register int y = (j - t_height / 2) * w / 2;
+	    register int rad = sqrt(x*x + y*y);
+	    XPutPixel(image, i, j, pixels[rad * ncolors / t_scale]);
+	  }
+	break;
+      }
     case R_GRADIENT:
       {
-        register int r = (width - 1) / 2;
-        /* width == height, both are odd, therefore x can be 0.0 */
-        for (i = 0; i < width; i++) {
-          for (j = 0; j < width; j++) {
-            register double x = (i - r), y = (r - j);
+	register int w = t_width - 1;
+	register int h = t_height - 1;
+        register int rx = w / 2;
+        register int ry = h / 2;
+        /* g_width == g_height, both are odd, therefore x can be 0.0 */
+        for (i = 0; i <= w; i++) {
+          for (j = 0; j <= h; j++) {
+            register double x = (i - rx) * h / 2;
+	    register double y = (ry - j) * w / 2;
             /* angle ranges from -pi/2 to +pi/2 */
             register double angle;
             if (x != 0.0) {
@@ -641,12 +696,15 @@ Pixmap CreateGradientPixmap(Display *dpy, Drawable d, GC gc,
  * ************************************************************************/
     case Y_GRADIENT:
       {
-        register int r = (width - 1) / 2;
-        /* width == height, both are odd, therefore x can be 0.0 */
-        for (i = 0; i < width; i++) {
-          for (j = 0; j < width; j++) {
-            register double x = (i - r), y = (r - j);
-            register double dist = sqrt(x * x + y * y);
+	register int w = t_width - 1;
+	register int h = t_height - 1;
+        register int r = sqrt(w*w * h*h) / 4;
+        /* g_width == g_height, both are odd, therefore x can be 0.0 */
+        for (i = 0; i <= w; i++) {
+          for (j = 0; j <= h; j++) {
+            register double x = (i - w / 2) * h / 2;
+            register double y = (h / 2 - j) * w / 2;
+            register double rad = sqrt(x * x + y * y);
             /* angle ranges from -pi/2 to +pi/2 */
             register double angle;
             if (x != 0.0) {
@@ -658,8 +716,8 @@ Pixmap CreateGradientPixmap(Display *dpy, Drawable d, GC gc,
             if (x < 0)
               angle += M_PI;
             /* warp the angle within the yinyang circle */
-            if (dist <= r) {
-              angle -= acos(dist / r);
+            if (rad <= r) {
+              angle -= acos(rad / r);
             }
             /* move range from -pi/2:3*pi/2 to 0:2*pi */
             if (angle < 0.0)
@@ -672,7 +730,7 @@ Pixmap CreateGradientPixmap(Display *dpy, Drawable d, GC gc,
       break;
     default:
       /* placeholder function, just fills the pixmap with the first color */
-      memset(image->data, 0, image->bytes_per_line * width);
+      memset(image->data, 0, image->bytes_per_line * g_width);
       XAddPixel(image, pixels[0]);
       break;
   }
@@ -684,9 +742,9 @@ Pixmap CreateGradientPixmap(Display *dpy, Drawable d, GC gc,
   xgcv.clip_mask = None;
   XChangeGC(dpy, gc, GCFunction|GCPlaneMask|GCFillStyle|GCClipMask, &xgcv);
   /* copy the image to the server */
-  XPutImage(dpy, pixmap, gc, image, 0, 0, 0, 0, width, height);
+  XPutImage(dpy, target, gc, image, 0, 0, t_x, t_y, t_width, t_height);
   XDestroyImage(image);
-  return pixmap;
+  return target;
 }
 
 
@@ -723,5 +781,5 @@ Pixmap CreateGradientPixmapFromString(Display *dpy, Drawable d, GC gc,
     return None;
 
   return CreateGradientPixmap(dpy, d, gc, type, *width_return, *height_return,
-			      ncolors, pixels);
+			      ncolors, pixels, None, 0, 0, 0, 0);
 }

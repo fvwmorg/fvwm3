@@ -1,5 +1,15 @@
 1999-08-21  Dominik Vogt  <dominik_vogt@gmx.de>
 
+	* fvwm/fvwm2.1: added COLOR GRADIENTS section
+
+	* fvwm/menus.c (paint_item):
+	(paint_menu):
+	* fvwm/borders.c (DrawButton): Menus and window decorations can use
+	all eight kinds of gradients
+
+	* libs/Graphics.c (CreateGradientPixmap): Function can draw into a
+	given drawable.
+
 	* fvwm/fvwm.c (main): removed save_under attribute for feedback window.
 	It actually slow things down instead of speeding them up.
 

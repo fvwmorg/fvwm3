@@ -2509,9 +2509,6 @@ static void paint_item(MenuRoot *mr, MenuItem *mi, FvwmWindow *fw,
   int y;
   GC ShadowGC, ReliefGC, currentGC;
   short relief_thickness = MST_RELIEF_THICKNESS(mr);
-#ifdef GRADIENT_BUTTONS
-  Bool is_gradient_menu;
-#endif
   Bool is_item_selected;
   int i;
   int sx1;
@@ -2520,18 +2517,6 @@ static void paint_item(MenuRoot *mr, MenuItem *mi, FvwmWindow *fw,
   if (!mi)
     return;
   is_item_selected = (mi == MR_SELECTED_ITEM(mr));
-
-#ifdef GRADIENT_BUTTONS
-  switch (MST_FACE(mr).type)
-  {
-  case GradientMenu:
-    is_gradient_menu = True;
-    break;
-  default:
-    is_gradient_menu = False;
-    break;
-  }
-#endif
 
   y_offset = MI_Y_OFFSET(mi);
   y_height = MI_HEIGHT(mi);
@@ -2587,7 +2572,7 @@ static void paint_item(MenuRoot *mr, MenuItem *mi, FvwmWindow *fw,
   else if (MI_WAS_DESELECTED(mi) &&
 	   (relief_thickness > 0 || MST_DO_HILIGHT(mr))
 #ifdef GRADIENT_BUTTONS
-	   && !is_gradient_menu
+	   && MST_FACE(mr).type != GradientMenu
 #endif
 	  )
   {
@@ -3077,8 +3062,10 @@ void paint_menu(MenuRoot *mr, XEvent *pevent, FvwmWindow *fw)
       bounds.width = MR_WIDTH(mr) - bw;
       bounds.height = MR_HEIGHT(mr) - bw;
 
-      if (ST_FACE(ms).gradient_type == H_GRADIENT)
+      /* H, V, D and B gradients are optimized and have their own code here. */
+      switch (ST_FACE(ms).gradient_type)
       {
+      case H_GRADIENT:
 	if (MR_IS_BACKGROUND_SET(mr) == False)
 	{
 	  register int i;
@@ -3101,9 +3088,8 @@ void paint_menu(MenuRoot *mr, XEvent *pevent, FvwmWindow *fw)
 	  MR_IS_BACKGROUND_SET(mr) = True;
 	}
 	XClearWindow(dpy, MR_WINDOW(mr));
-      }
-      else if (ST_FACE(ms).gradient_type == V_GRADIENT)
-      {
+	break;
+      case V_GRADIENT:
 	if (MR_IS_BACKGROUND_SET(mr) == False)
 	{
 	  register int i;
@@ -3137,29 +3123,60 @@ void paint_menu(MenuRoot *mr, XEvent *pevent, FvwmWindow *fw)
 	  MR_IS_BACKGROUND_SET(mr) = True;
 	}
 	XClearWindow(dpy, MR_WINDOW(mr));
-      }
-      else /* D or B_GRADIENT */
-      {
-	register int i = 0, numLines;
-	int cindex = -1;
-
-	XSetClipMask(dpy, Scr.TransMaskGC, None);
-	numLines = MR_WIDTH(mr) + MR_HEIGHT(mr) - 2 * bw;
-	for(i = 0; i < numLines; i++)
+	break;
+      case D_GRADIENT:
+      case B_GRADIENT:
         {
-	  if((int)(i * ST_FACE(ms).u.grad.npixels / numLines) > cindex)
-          {
-	    /* pick the next colour (skip if necc.) */
-	    cindex = i * ST_FACE(ms).u.grad.npixels / numLines;
-	    XSetForeground(dpy, Scr.TransMaskGC,
-			   ST_FACE(ms).u.grad.pixels[cindex]);
+	  register int i = 0, numLines;
+	  int cindex = -1;
+
+	  XSetClipMask(dpy, Scr.TransMaskGC, None);
+	  numLines = MR_WIDTH(mr) + MR_HEIGHT(mr) - 2 * bw;
+	  for(i = 0; i < numLines; i++)
+	  {
+	    if((int)(i * ST_FACE(ms).u.grad.npixels / numLines) > cindex)
+	    {
+	      /* pick the next colour (skip if necc.) */
+	      cindex = i * ST_FACE(ms).u.grad.npixels / numLines;
+	      XSetForeground(dpy, Scr.TransMaskGC,
+			     ST_FACE(ms).u.grad.pixels[cindex]);
+	    }
+	    if (ST_FACE(ms).gradient_type == D_GRADIENT)
+	      XDrawLine(dpy, MR_WINDOW(mr), Scr.TransMaskGC, 0, i, i, 0);
+	    else /* B_GRADIENT */
+	      XDrawLine(dpy, MR_WINDOW(mr), Scr.TransMaskGC,
+			0, MR_HEIGHT(mr) - 1 - i, i, MR_HEIGHT(mr) - 1);
 	  }
-	  if (ST_FACE(ms).gradient_type == D_GRADIENT)
-	    XDrawLine(dpy, MR_WINDOW(mr), Scr.TransMaskGC, 0, i, i, 0);
-	  else /* B_GRADIENT */
-	    XDrawLine(dpy, MR_WINDOW(mr), Scr.TransMaskGC,
-		      0, MR_HEIGHT(mr) - 1 - i, i, MR_HEIGHT(mr) - 1);
 	}
+	break;
+      default:
+	if (MR_IS_BACKGROUND_SET(mr) == False)
+        {
+	  unsigned int g_width;
+	  unsigned int g_height;
+
+	  /* let library take care of all other gradients */
+	  pmap = XCreatePixmap(dpy, MR_WINDOW(mr), MR_WIDTH(mr), MR_HEIGHT(mr),
+			       Pdepth);
+	  pmapgc = XCreateGC(dpy, pmap, gcm, &gcv);
+
+	  /* find out the size the pixmap should be */
+	  CalculateGradientDimensions(
+	    dpy, MR_WINDOW(mr), ST_FACE(ms).u.grad.npixels,
+	    ST_FACE(ms).gradient_type, &g_width, &g_height);
+	  /* draw the gradient directly into the window */
+	  CreateGradientPixmap(
+	    dpy, MR_WINDOW(mr), pmapgc, ST_FACE(ms).gradient_type,
+	    g_width, g_height, ST_FACE(ms).u.grad.npixels,
+	    ST_FACE(ms).u.grad.pixels, pmap,
+	    bw, bw, MR_WIDTH(mr) - bw, MR_HEIGHT(mr) - bw);
+	  XSetWindowBackgroundPixmap(dpy, MR_WINDOW(mr), pmap);
+	  XFreeGC(dpy, pmapgc);
+	  XFreePixmap(dpy, pmap);
+	  MR_IS_BACKGROUND_SET(mr) = True;
+	}
+	XClearWindow(dpy, MR_WINDOW(mr));
+	break;
       }
       break;
 #endif  /* GRADIENT_BUTTONS */

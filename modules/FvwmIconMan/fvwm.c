@@ -24,6 +24,8 @@
 static char const rcsid[] =
   "$Id$";
 
+static WinData *fvwm_focus_win = NULL;
+
 typedef struct {
   Ulong paging_enabled;
 } m_toggle_paging_data;
@@ -271,6 +273,7 @@ static void focus_change (FvwmPacketBody *body)
   }
 
   globals.focus_win = win;
+  fvwm_focus_win = win;
   ConsoleDebug (FVWM, "leaving focus_change\n");
 }
 
@@ -561,9 +564,11 @@ static void ProcessMessage (Ulong type, FvwmPacketBody *body)
     globals.x = body->new_page_data.x;
     globals.y = body->new_page_data.y;
     globals.desknum = body->new_page_data.desknum;
-    if (globals.focus_win)
+    if (fvwm_focus_win)
+    {
       /* need to set the focus on a page change */
-      add_win_state (globals.focus_win, FOCUS_CONTEXT);
+      add_win_state (fvwm_focus_win, FOCUS_CONTEXT);
+    }
     for (i = 0; i < globals.num_managers; i++) {
       set_draw_mode (&globals.managers[i], 0);
     }
