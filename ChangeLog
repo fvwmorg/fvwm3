@@ -4,6 +4,13 @@
 	fixed problem when switching pages that caused windows to move off the
 	current page although sticky.
 
+1999-11-23  Hippo
+
+        * Fvwm/add_window.c: chnaged order of message when a window
+        is created so that FvwmIconBox gets the correct icon. M_ICON_FILE
+        is sent before M_RES_NAME & M_RES_CLASS
+        * libs/Xerror.c: added error code names
+
 1999-11-22  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* fvwm/add_window.c (setup_window_structure):

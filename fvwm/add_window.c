@@ -1240,16 +1240,19 @@ FvwmWindow *AddWindow(Window w, FvwmWindow *ReuseWin)
   BroadcastConfig(M_ADD_WINDOW,tmp_win);
   BroadcastName(M_WINDOW_NAME,tmp_win->w,tmp_win->frame,
 		(unsigned long)tmp_win,tmp_win->name);
-  BroadcastName(M_RES_CLASS,tmp_win->w,tmp_win->frame,
-		(unsigned long)tmp_win,tmp_win->class.res_class);
-  BroadcastName(M_RES_NAME,tmp_win->w,tmp_win->frame,
-		(unsigned long)tmp_win,tmp_win->class.res_name);
 
+  /* these are sent and broadcast before res_{class,name} for the benefit
+   * of FvwmIconBox which can't handle M_ICON_FILE after M_RES_NAME */
   /****** icon and mini icon ******/
   setup_icon(tmp_win, &style);
 #ifdef MINI_ICONS
   setup_mini_icon(tmp_win, &style);
 #endif
+
+  BroadcastName(M_RES_CLASS,tmp_win->w,tmp_win->frame,
+		(unsigned long)tmp_win,tmp_win->class.res_class);
+  BroadcastName(M_RES_NAME,tmp_win->w,tmp_win->frame,
+		(unsigned long)tmp_win,tmp_win->class.res_name);
 
   /****** stick window ******/
   if (IS_STICKY(tmp_win) && (!(tmp_win->hints.flags & USPosition) || used_sm))
