@@ -5,6 +5,11 @@ _+_A HREF="#2.4.8"_-_2.4.8_+_/A_-_.
 
 Changes in alpha release 2.5.3 (not released yet)
 
+* Fixed interaction bug between CascadePlacement and StartsOnPage -
+  if the target page was at a negative x or y page displacement
+  from the current viewport, the window would be placed on the
+  wrong page.
+
 * New Style option IconSize for restricting icon sizes.
 
 * New WindowList option SortClassName.
