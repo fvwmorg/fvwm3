@@ -82,9 +82,9 @@ static void menu_func(F_CMD_ARGS, Bool fStaysUp)
 	XEvent *teventp;
 	MenuParameters mp;
 	MenuReturn mret;
-	FvwmWindow *fw;
+	FvwmWindow *fw2;
 	int tc;
-	extern FvwmWindow *Tmp_win;
+	extern FvwmWindow *Fw;
 	extern FvwmWindow *ButtonWindow;
 	extern int Context;
 
@@ -92,7 +92,7 @@ static void menu_func(F_CMD_ARGS, Bool fStaysUp)
 	memset(&mret, 0, sizeof(MenuReturn));
 	action = GetNextToken(action,&menu_name);
 	action = get_menu_options(
-		action, w, tmp_win, eventp, NULL, NULL, &mops);
+		action, w, fw, eventp, NULL, NULL, &mops);
 	while (action && *action && isspace((unsigned char)*action))
 	{
 		action++;
@@ -129,8 +129,8 @@ static void menu_func(F_CMD_ARGS, Bool fStaysUp)
 
 	memset(&mp, 0, sizeof(mp));
 	mp.menu = menu;
-	fw = (tmp_win != None) ? tmp_win : Tmp_win;
-	mp.pTmp_win = &fw;
+	fw2 = (fw != None) ? fw : Fw;
+	mp.pfw = &fw2;
 	mp.button_window = ButtonWindow;
 	MR_IS_TEAR_OFF_MENU(menu) = 0;
 	tc = Context;

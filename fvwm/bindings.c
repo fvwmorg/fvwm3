@@ -344,45 +344,43 @@ static void activate_binding(
   /* grab keys immediately */
   for (t = Scr.FvwmRoot.next; t != NULL; t = t->next)
   {
-    if (!IS_EWMH_DESKTOP(t->w) && (binding->Context & C_WINDOW) &&
+    if (!IS_EWMH_DESKTOP(FW_W(t)) && (binding->Context & C_WINDOW) &&
 	(binding->type == MOUSE_BINDING
 	 STROKE_CODE(|| binding->type == STROKE_BINDING)))
     {
       GrabWindowButton(
-	dpy, t->Parent, binding,
-	C_WINDOW,
-	GetUnusedModifiers(), None, do_grab);
+	dpy, FW_W_PARENT(t), binding, C_WINDOW, GetUnusedModifiers(), None,
+	do_grab);
     }
-    if (!IS_EWMH_DESKTOP(t->w) &&
+    if (!IS_EWMH_DESKTOP(FW_W(t)) &&
 	(binding->Context & (C_WINDOW|C_TITLE|C_RALL|C_LALL|C_SIDEBAR))
 	&& binding->type == KEY_BINDING)
     {
       GrabWindowKey(
-	dpy, t->frame, binding,
+	dpy, FW_W_FRAME(t), binding,
 	C_WINDOW|C_TITLE|C_RALL|C_LALL|C_SIDEBAR,
 	GetUnusedModifiers(), do_grab);
     }
     if (binding->Context & C_ICON)
     {
-      if(t->icon_title_w != None)
+      if (FW_W_ICON_TITLE(t) != None)
       {
         GrabWindowKeyOrButton(
-	  dpy, t->icon_title_w, binding, C_ICON, GetUnusedModifiers(), None,
+	  dpy, FW_W_ICON_TITLE(t), binding, C_ICON, GetUnusedModifiers(), None,
 	  do_grab);
       }
-      if(t->icon_pixmap_w != None)
+      if (FW_W_ICON_PIXMAP(t) != None)
       {
 	GrabWindowKeyOrButton(
-	  dpy, t->icon_pixmap_w, binding, C_ICON, GetUnusedModifiers(),
+	  dpy, FW_W_ICON_PIXMAP(t), binding, C_ICON, GetUnusedModifiers(),
 	  None, do_grab);
       }
     }
-    if (IS_EWMH_DESKTOP(t->w) && (binding->Context & C_EWMH_DESKTOP))
+    if (IS_EWMH_DESKTOP(FW_W(t)) && (binding->Context & C_EWMH_DESKTOP))
     {
       GrabWindowKeyOrButton(
-	dpy, t->Parent, binding,
-	C_EWMH_DESKTOP,
-	GetUnusedModifiers(), None, do_grab);
+	dpy, FW_W_PARENT(t), binding, C_EWMH_DESKTOP, GetUnusedModifiers(),
+	None, do_grab);
     }
   }
 

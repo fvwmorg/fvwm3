@@ -29,61 +29,61 @@ void gravity_translate_to_northwest_geometry(
 void gravity_translate_to_northwest_geometry_no_bw(
   int gravity, FvwmWindow *t, rectangle *dest_g, rectangle *orig_g);
 void get_title_geometry(
-	FvwmWindow *tmp_win, rectangle *ret_g);
+	FvwmWindow *fw, rectangle *ret_g);
 int get_title_gravity(
-	FvwmWindow *tmp_win);
+	FvwmWindow *fw);
 void get_title_gravity_factors(
-	FvwmWindow *tmp_win, int *ret_fx, int *ret_fy);
+	FvwmWindow *fw, int *ret_fx, int *ret_fy);
 Bool get_title_button_geometry(
-	FvwmWindow *tmp_win, rectangle *ret_g, int context);
+	FvwmWindow *fw, rectangle *ret_g, int context);
 void get_title_font_size_and_offset(
-	FvwmWindow *tmp_win, direction_type title_dir,
+	FvwmWindow *fw, direction_type title_dir,
 	text_direction_type text_dir, int *size, int *offset);
 void get_icon_corner(
-	FvwmWindow *tmp_win, rectangle *ret_g);
+	FvwmWindow *fw, rectangle *ret_g);
 void get_shaded_geometry(
-	FvwmWindow *tmp_win, rectangle *small_g, rectangle *big_g);
+	FvwmWindow *fw, rectangle *small_g, rectangle *big_g);
 void get_unshaded_geometry(
-	FvwmWindow *tmp_win, rectangle *ret_g);
+	FvwmWindow *fw, rectangle *ret_g);
 void get_shaded_client_window_pos(
-	FvwmWindow *tmp_win, rectangle *ret_g);
+	FvwmWindow *fw, rectangle *ret_g);
 void get_client_geometry(
-	FvwmWindow *tmp_win, rectangle *ret_g);
+	FvwmWindow *fw, rectangle *ret_g);
 void get_window_borders(
-	FvwmWindow *tmp_win, size_borders *borders);
+	FvwmWindow *fw, size_borders *borders);
 void get_window_borders_no_title(
-	FvwmWindow *tmp_win, size_borders *borders);
+	FvwmWindow *fw, size_borders *borders);
 void set_window_border_size(
-	FvwmWindow *tmp_win, short used_width);
+	FvwmWindow *fw, short used_width);
 Bool is_window_border_minimal(
-	FvwmWindow *tmp_win);
-void update_relative_geometry(FvwmWindow *tmp_win);
-void update_absolute_geometry(FvwmWindow *tmp_win);
-void maximize_adjust_offset(FvwmWindow *tmp_win);
+	FvwmWindow *fw);
+void update_relative_geometry(FvwmWindow *fw);
+void update_absolute_geometry(FvwmWindow *fw);
+void maximize_adjust_offset(FvwmWindow *fw);
 void constrain_size(
-	FvwmWindow *tmp_win, unsigned int *widthp, unsigned int *heightp,
+	FvwmWindow *fw, unsigned int *widthp, unsigned int *heightp,
 	int xmotion, int ymotion, int flags);
 void gravity_constrain_size(
   int gravity, FvwmWindow *t, rectangle *rect, int flags);
 Bool get_visible_window_or_icon_geometry(
-	FvwmWindow *tmp_win, rectangle *ret_g);
+	FvwmWindow *fw, rectangle *ret_g);
 Bool get_visible_icon_geometry(
-	FvwmWindow *tmp_win, rectangle *ret_g);
+	FvwmWindow *fw, rectangle *ret_g);
 Bool get_icon_geometry(
-	FvwmWindow *tmp_win, rectangle *ret_g);
+	FvwmWindow *fw, rectangle *ret_g);
 Bool get_visible_icon_title_geometry(
-	FvwmWindow *tmp_win, rectangle *ret_g);
+	FvwmWindow *fw, rectangle *ret_g);
 Bool get_icon_title_geometry(
-	FvwmWindow *tmp_win, rectangle *ret_g);
+	FvwmWindow *fw, rectangle *ret_g);
 Bool get_visible_icon_picture_geometry(
-	FvwmWindow *tmp_win, rectangle *ret_g);
+	FvwmWindow *fw, rectangle *ret_g);
 Bool get_icon_picture_geometry(
-	FvwmWindow *tmp_win, rectangle *ret_g);
-void broadcast_icon_geometry(FvwmWindow *tmp_win, Bool do_force);
-void move_icon_to_position(FvwmWindow *tmp_win);
-void modify_icon_position(FvwmWindow *tmp_win, int dx, int dy);
-void set_icon_position(FvwmWindow *tmp_win, int x, int y);
-void set_icon_picture_size(FvwmWindow *tmp_win, int w, int h);
-void resize_icon_title_height(FvwmWindow *tmp_win, int dh);
+	FvwmWindow *fw, rectangle *ret_g);
+void broadcast_icon_geometry(FvwmWindow *fw, Bool do_force);
+void move_icon_to_position(FvwmWindow *fw);
+void modify_icon_position(FvwmWindow *fw, int dx, int dy);
+void set_icon_position(FvwmWindow *fw, int x, int y);
+void set_icon_picture_size(FvwmWindow *fw, int w, int h);
+void resize_icon_title_height(FvwmWindow *fw, int dh);
 
 #endif /* PLACEMENT_H */

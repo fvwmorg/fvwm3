@@ -77,7 +77,7 @@ extern int DeferExecution(
 	XEvent *, Window *,FvwmWindow **, unsigned long *, cursor_type, int);
 void execute_function(exec_func_args_type *efa);
 void old_execute_function(
-	fvwm_cond_func_rc *cond_rc, char *action, FvwmWindow *tmp_win,
+	fvwm_cond_func_rc *cond_rc, char *action, FvwmWindow *fw,
 	XEvent *eventp, unsigned long context, int Module,
 	FUNC_FLAGS_TYPE exec_flags, char *args[]);
 void AddToFunction(FvwmFunction *func, char *action);

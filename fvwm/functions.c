@@ -56,7 +56,7 @@
 #include "schedule.h"
 
 extern XEvent Event;
-extern FvwmWindow *Tmp_win;
+extern FvwmWindow *Fw;
 extern char const * const Fvwm_VersionInfo;
 
 /* forward declarations */
@@ -369,7 +369,7 @@ static char *function_vars[] =
 };
 
 static int expand_extended_var(
-  char *var_name, char *output, FvwmWindow *tmp_win,
+  char *var_name, char *output, FvwmWindow *fw,
   fvwm_cond_func_rc *cond_rc)
 {
   char *s;
@@ -506,14 +506,14 @@ static int expand_extended_var(
   case 13:
   case 14:
   case 15:
-    if (!tmp_win || IS_ICONIFIED(tmp_win) || IS_EWMH_DESKTOP(tmp_win->w))
+    if (!fw || IS_ICONIFIED(fw) || IS_EWMH_DESKTOP(FW_W(fw)))
       return 0;
     else
     {
       rectangle g;
 
       is_numeric = True;
-      get_unshaded_geometry(tmp_win, &g);
+      get_unshaded_geometry(fw, &g);
       switch (i)
       {
       case 12:
@@ -541,14 +541,14 @@ static int expand_extended_var(
   case 17:
   case 18:
   case 19:
-    if (!tmp_win || IS_ICONIFIED(tmp_win) || IS_EWMH_DESKTOP(tmp_win->w))
+    if (!fw || IS_ICONIFIED(fw) || IS_EWMH_DESKTOP(FW_W(fw)))
       return 0;
     else
     {
       rectangle g;
 
       is_numeric = True;
-      get_client_geometry(tmp_win, &g);
+      get_client_geometry(fw, &g);
       switch (i)
       {
       case 16:
@@ -576,13 +576,13 @@ static int expand_extended_var(
   case 21:
   case 22:
   case 23:
-    if (!tmp_win || IS_EWMH_DESKTOP(tmp_win->w))
+    if (!fw || IS_EWMH_DESKTOP(FW_W(fw)))
       return 0;
     else
     {
       rectangle g;
 
-      if (get_visible_icon_title_geometry(tmp_win, &g) == False)
+      if (get_visible_icon_title_geometry(fw, &g) == False)
       {
 	return 0;
       }
@@ -614,13 +614,13 @@ static int expand_extended_var(
   case 25:
   case 26:
   case 27:
-    if (!tmp_win || IS_EWMH_DESKTOP(tmp_win->w))
+    if (!fw || IS_EWMH_DESKTOP(FW_W(fw)))
       return 0;
     else
     {
       rectangle g;
 
-      if (get_visible_icon_picture_geometry(tmp_win, &g) == False)
+      if (get_visible_icon_picture_geometry(fw, &g) == False)
       {
 	return 0;
       }
@@ -652,13 +652,13 @@ static int expand_extended_var(
   case 29:
   case 30:
   case 31:
-    if (!tmp_win || IS_EWMH_DESKTOP(tmp_win->w))
+    if (!fw || IS_EWMH_DESKTOP(FW_W(fw)))
       return 0;
     else
     {
       rectangle g;
 
-      if (get_visible_icon_geometry(tmp_win, &g) == False)
+      if (get_visible_icon_geometry(fw, &g) == False)
       {
 	return 0;
       }
@@ -733,12 +733,12 @@ static int expand_extended_var(
     /* pointer.wx and pointer.wy */
     if (is_numeric == False)
     {
-      if (!tmp_win || IS_ICONIFIED(tmp_win) || IS_EWMH_DESKTOP(tmp_win->w))
+      if (!fw || IS_ICONIFIED(fw) || IS_EWMH_DESKTOP(FW_W(fw)))
       {
         return 0;
       }
       is_numeric = True;
-      context_w = tmp_win->frame;
+      context_w = FW_W_FRAME(fw);
     }
     /* fall through */
   case 41:
@@ -746,13 +746,13 @@ static int expand_extended_var(
     /* pointer.cx and pointer.cy */
     if (is_numeric == False)
     {
-      if (!tmp_win || IS_ICONIFIED(tmp_win) || IS_SHADED(tmp_win) ||
-          IS_EWMH_DESKTOP(tmp_win->w))
+      if (!fw || IS_ICONIFIED(fw) || IS_SHADED(fw) ||
+          IS_EWMH_DESKTOP(FW_W(fw)))
       {
         return 0;
       }
       is_numeric = True;
-      context_w = tmp_win->w;
+      context_w = FW_W(fw);
     }
     is_x = (i & 1) ? True : False;
     if (XQueryPointer(dpy, context_w, &JunkRoot, &JunkChild,
@@ -789,7 +789,7 @@ static int expand_extended_var(
 }
 
 static char *expand(
-  char *input, char *arguments[], FvwmWindow *tmp_win, Bool addto, Bool ismod,
+  char *input, char *arguments[], FvwmWindow *fw, Bool addto, Bool ismod,
   fvwm_cond_func_rc *cond_rc)
 {
   int l,i,l2,n,k,j,m;
@@ -832,7 +832,7 @@ static char *expand(
 	  k = strlen(var);
 	  if (!addto)
 	  {
-	    xlen = expand_extended_var(var, NULL, tmp_win, cond_rc);
+	    xlen = expand_extended_var(var, NULL, fw, cond_rc);
 	    if (xlen > 0)
 	      l2 += xlen - (k + 2);
 	  }
@@ -874,26 +874,26 @@ static char *expand(
       case 'c':
       case 'r':
       case 'n':
-	if (tmp_win && !IS_EWMH_DESKTOP(tmp_win->w))
+	if (fw && !IS_EWMH_DESKTOP(FW_W(fw)))
 	{
 	  switch(input[i+1])
 	  {
 	  case 'c':
-	    if (tmp_win->class.res_class && tmp_win->class.res_class[0])
+	    if (fw->class.res_class && fw->class.res_class[0])
 	    {
-	      string = tmp_win->class.res_class;
+	      string = fw->class.res_class;
 	    }
 	    break;
 	  case 'r':
-	    if (tmp_win->class.res_name && tmp_win->class.res_name[0])
+	    if (fw->class.res_name && fw->class.res_name[0])
 	    {
-	      string = tmp_win->class.res_name;
+	      string = fw->class.res_name;
 	    }
 	    break;
 	  case 'n':
-	    if (tmp_win->name.name && tmp_win->name.name[0])
+	    if (fw->name.name && fw->name.name[0])
 	    {
-	      string = tmp_win->name.name;
+	      string = fw->name.name;
 	    }
 	    break;
 	  }
@@ -947,7 +947,7 @@ static char *expand(
 	  input[m] = 0;
 	  /* handle variable name */
 	  k = strlen(var);
-	  xlen = expand_extended_var(var, &out[j], tmp_win, cond_rc);
+	  xlen = expand_extended_var(var, &out[j], fw, cond_rc);
 	  input[m] = ']';
 	  if (xlen > 0)
 	  {
@@ -1009,8 +1009,8 @@ static char *expand(
 	is_string = True;
 	break;
       case 'w':
-	if(tmp_win && !IS_EWMH_DESKTOP(tmp_win->w))
-	  sprintf(&out[j],"0x%x",(unsigned int)tmp_win->w);
+	if(fw && !IS_EWMH_DESKTOP(FW_W(fw)))
+	  sprintf(&out[j],"0x%x",(unsigned int)FW_W(fw));
 	else
 	  sprintf(&out[j],"$w");
 	j += strlen(&out[j]);
@@ -1035,26 +1035,26 @@ static char *expand(
       case 'c':
       case 'r':
       case 'n':
-	if (tmp_win && !IS_EWMH_DESKTOP(tmp_win->w))
+	if (fw && !IS_EWMH_DESKTOP(FW_W(fw)))
 	{
 	  switch(input[i+1])
 	  {
 	  case 'c':
-	    if (tmp_win->class.res_class && tmp_win->class.res_class[0])
+	    if (fw->class.res_class && fw->class.res_class[0])
 	    {
-	      string = tmp_win->class.res_class;
+	      string = fw->class.res_class;
 	    }
 	    break;
 	  case 'r':
-	    if (tmp_win->class.res_name && tmp_win->class.res_name[0])
+	    if (fw->class.res_name && fw->class.res_name[0])
 	    {
-	      string = tmp_win->class.res_name;
+	      string = fw->class.res_name;
 	    }
 	    break;
 	  case 'n':
-	    if (tmp_win->name.name && tmp_win->name.name[0])
+	    if (fw->name.name && fw->name.name[0])
 	    {
-	      string = tmp_win->name.name;
+	      string = fw->name.name;
 	    }
 	    break;
 	  }
@@ -1175,7 +1175,7 @@ static cfunc_action_type CheckActionType(
 	/* must handle expose here so that raising a window with "I" works */
 	memcpy(&old_event, &Event, sizeof(XEvent));
 	memcpy(&Event, d, sizeof(XEvent));
-	/* note: handling Expose events will never modify the global Tmp_win */
+	/* note: handling Expose events will never modify the global Fw */
 	DispatchEvent(True);
 	memcpy(&Event, &old_event, sizeof(XEvent));
 	break;
@@ -1197,7 +1197,7 @@ static cfunc_action_type CheckActionType(
  *
  *  Inputs:
  *	Action	- the action to execute
- *	tmp_win	- the fvwm window structure
+ *	fw	- the fvwm window structure
  *	eventp	- pointer to the event that caused the function
  *	context - the context in which the button was pressed
  *
@@ -1205,7 +1205,7 @@ static cfunc_action_type CheckActionType(
 void execute_function(exec_func_args_type *efa)
 {
   static unsigned int func_depth = 0;
-  FvwmWindow *s_Tmp_win = Tmp_win;
+  FvwmWindow *s_Fw = Fw;
   Window w;
   int j;
   char *function;
@@ -1249,7 +1249,7 @@ void execute_function(exec_func_args_type *efa)
       arguments[j] = NULL;
   }
 
-  if (efa->tmp_win == NULL || IS_EWMH_DESKTOP(efa->tmp_win->w))
+  if (efa->fw == NULL || IS_EWMH_DESKTOP(FW_W(efa->fw)))
   {
     if (efa->flags.is_window_unmanaged)
       w = efa->win;
@@ -1268,7 +1268,7 @@ void execute_function(exec_func_args_type *efa)
     }
     else
     {
-      w = efa->tmp_win->w;
+      w = FW_W(efa->fw);
     }
   }
 
@@ -1308,7 +1308,7 @@ void execute_function(exec_func_args_type *efa)
   function = PeekToken(taction, NULL);
   if (function)
     function = expand(
-     function, arguments, efa->tmp_win, False, False, efa->cond_rc);
+     function, arguments, efa->fw, False, False, efa->cond_rc);
   if (function && function[0] != '*')
   {
 #if 1
@@ -1348,7 +1348,7 @@ void execute_function(exec_func_args_type *efa)
 
   if (!(efa->flags.exec & FUNC_DONT_EXPAND_COMMAND))
   {
-    expaction = expand(taction, arguments, efa->tmp_win,
+    expaction = expand(taction, arguments, efa->fw,
       (bif) ? !!(bif->flags & FUNC_ADD_TO) : False, (taction[0] == '*'),
       efa->cond_rc);
     if (func_depth <= 1)
@@ -1389,7 +1389,7 @@ void execute_function(exec_func_args_type *efa)
 
     runaction = SkipNTokens(expaction, 1);
     bif->action(
-      efa->cond_rc, efa->eventp, w, efa->tmp_win, efa->context, runaction,
+      efa->cond_rc, efa->eventp, w, efa->fw, efa->context, runaction,
       &efa->module);
   }
   else
@@ -1408,12 +1408,12 @@ void execute_function(exec_func_args_type *efa)
     }
 
     execute_complex_function(
-      efa->cond_rc, efa->eventp, w, efa->tmp_win, efa->context, runaction,
+      efa->cond_rc, efa->eventp, w, efa->fw, efa->context, runaction,
       &efa->module, &desperate);
     if (!bif && desperate)
     {
       if (executeModuleDesperate(
-	efa->cond_rc, efa->eventp, w, efa->tmp_win, efa->context, runaction,
+	efa->cond_rc, efa->eventp, w, efa->fw, efa->context, runaction,
 	&efa->module) == -1 && *function != 0)
       {
 	fvwm_msg(
@@ -1435,10 +1435,10 @@ void execute_function(exec_func_args_type *efa)
   }
   if (efa->flags.do_save_tmpwin)
   {
-    if (check_if_fvwm_window_exists(s_Tmp_win))
-      Tmp_win = s_Tmp_win;
+    if (check_if_fvwm_window_exists(s_Fw))
+      Fw = s_Fw;
     else
-      Tmp_win = NULL;
+      Fw = NULL;
   }
   func_depth--;
 
@@ -1446,7 +1446,7 @@ void execute_function(exec_func_args_type *efa)
 }
 
 void old_execute_function(
-	fvwm_cond_func_rc *cond_rc, char *action, FvwmWindow *tmp_win,
+	fvwm_cond_func_rc *cond_rc, char *action, FvwmWindow *fw,
 	XEvent *eventp, unsigned long context, int Module,
 	FUNC_FLAGS_TYPE exec_flags, char *args[])
 {
@@ -1455,7 +1455,7 @@ void old_execute_function(
 	memset(&efa, 0, sizeof(efa));
 	efa.cond_rc = cond_rc;
 	efa.eventp = eventp;
-	efa.tmp_win = tmp_win;
+	efa.fw = fw;
 	efa.action = action;
 	efa.args = args;
 	efa.context = context;
@@ -1476,7 +1476,7 @@ void old_execute_function(
  *  Inputs:
  *      eventp  - pointer to XEvent to patch up
  *      w       - pointer to Window to patch up
- *      tmp_win - pointer to FvwmWindow Structure to patch up
+ *      fw - pointer to FvwmWindow Structure to patch up
  *	context	- the context in which the mouse button was pressed
  *	func	- the function to defer
  *	cursor	- the cursor to display while waiting
@@ -1485,7 +1485,7 @@ void old_execute_function(
  *
  ***********************************************************************/
 int DeferExecution(
-  XEvent *eventp, Window *w,FvwmWindow **tmp_win, unsigned long *context,
+  XEvent *eventp, Window *w,FvwmWindow **fw, unsigned long *context,
   cursor_type cursor, int FinishEvent)
 {
   int done;
@@ -1495,7 +1495,7 @@ int DeferExecution(
 
   original_w = *w;
 
-  if((*context != C_ROOT)&&(*context != C_NO_CONTEXT)&&(*tmp_win != NULL)
+  if((*context != C_ROOT)&&(*context != C_NO_CONTEXT)&&(*fw != NULL)
      && *context != C_EWMH_DESKTOP)
   {
     if((FinishEvent == ButtonPress)||((FinishEvent == ButtonRelease) &&
@@ -1581,21 +1581,21 @@ int DeferExecution(
     XBell(dpy, 0);
     return TRUE;
   }
-  if (XFindContext (dpy, *w, FvwmContext, (caddr_t *)tmp_win) == XCNOENT)
+  if (XFindContext (dpy, *w, FvwmContext, (caddr_t *)fw) == XCNOENT)
   {
-    *tmp_win = NULL;
+    *fw = NULL;
     XBell(dpy, 0);
     return (TRUE);
   }
 
-  if(*w == (*tmp_win)->Parent)
+  if(*w == FW_W_PARENT(*fw))
   {
-    *w = (*tmp_win)->w;
+    *w = FW_W(*fw);
   }
 
-  if(original_w == (*tmp_win)->Parent)
+  if(original_w == FW_W_PARENT(*fw))
   {
-    original_w = (*tmp_win)->w;
+    original_w = FW_W(*fw);
   }
 
   /* this ugly mess attempts to ensure that the release and press
@@ -1604,7 +1604,7 @@ int DeferExecution(
      original_w != None && original_w != Scr.NoFocusWin &&
      !IS_EWMH_DESKTOP(original_w))
   {
-    if (*w != (*tmp_win)->frame || original_w != (*tmp_win)->w)
+    if (*w != FW_W_FRAME(*fw) || original_w != FW_W(*fw))
     {
       *context = C_ROOT;
       XBell(dpy, 0);
@@ -1612,14 +1612,14 @@ int DeferExecution(
     }
   }
 
-  if (IS_EWMH_DESKTOP((*tmp_win)->w))
+  if (IS_EWMH_DESKTOP(FW_W(*fw)))
   {
     *context = C_ROOT;
     XBell(dpy, 0);
     return TRUE;
   }
 
-  *context = GetContext(*tmp_win,eventp,&dummy);
+  *context = GetContext(*fw,eventp,&dummy);
 
   return FALSE;
 }
@@ -1936,7 +1936,7 @@ static void execute_complex_function(F_CMD_ARGS, Bool *desperate)
 
   if(ImmediateNeedsTarget)
   {
-    if (DeferExecution(eventp,&w,&tmp_win,&context, CRS_SELECT,ButtonPress))
+    if (DeferExecution(eventp,&w,&fw,&context, CRS_SELECT,ButtonPress))
     {
       func->use_depth--;
       cf_cleanup(&depth, arguments);
@@ -1963,12 +1963,12 @@ static void execute_complex_function(F_CMD_ARGS, Bool *desperate)
     switch (c)
     {
     case CF_IMMEDIATE:
-      if (tmp_win)
-	w = tmp_win->frame;
+      if (fw)
+	w = FW_W_FRAME(fw);
       else
 	w = None;
       old_execute_function(
-	&cond_func_rc, fi->action, tmp_win, eventp, context, -1, 0, arguments);
+	&cond_func_rc, fi->action, fw, eventp, context, -1, 0, arguments);
       break;
     case CF_DOUBLE_CLICK:
       HaveDoubleClick = True;
@@ -1996,7 +1996,7 @@ static void execute_complex_function(F_CMD_ARGS, Bool *desperate)
    * a window to operate on */
   if(NeedsTarget)
   {
-    if (DeferExecution(eventp,&w,&tmp_win,&context, CRS_SELECT,ButtonPress))
+    if (DeferExecution(eventp,&w,&fw,&context, CRS_SELECT,ButtonPress))
     {
       func->use_depth--;
       cf_cleanup(&depth, arguments);
@@ -2080,12 +2080,12 @@ static void execute_complex_function(F_CMD_ARGS, Bool *desperate)
       c=tolower(c);
     if (c == type)
     {
-      if (tmp_win)
-	w = tmp_win->frame;
+      if (fw)
+	w = FW_W_FRAME(fw);
       else
 	w = None;
       old_execute_function(
-	&cond_func_rc, fi->action, tmp_win, ev, context, -1, 0, arguments);
+	&cond_func_rc, fi->action, fw, ev, context, -1, 0, arguments);
     }
     fi = fi->next_item;
   }

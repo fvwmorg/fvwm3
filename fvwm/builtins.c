@@ -248,30 +248,30 @@ void CMD_CursorMove(F_CMD_ARGS)
 void CMD_Delete(F_CMD_ARGS)
 {
 	if (DeferExecution(
-		    eventp, &w, &tmp_win, &context, CRS_DESTROY, ButtonRelease))
+		    eventp, &w, &fw, &context, CRS_DESTROY, ButtonRelease))
 	{
 		return;
 	}
-	if (!is_function_allowed(F_DELETE, NULL, tmp_win, True, True))
+	if (!is_function_allowed(F_DELETE, NULL, fw, True, True))
 	{
 		XBell(dpy, 0);
 		return;
 	}
-	if (IS_TEAR_OFF_MENU(tmp_win))
+	if (IS_TEAR_OFF_MENU(fw))
 	{
 		/* 'soft' delete tear off menus.  Note: we can't send the
 		 * message to the menu window directly because it was created
 		 * using a different display.  The client message would never
 		 * be read from there. */
 		send_clientmessage(
-			dpy, tmp_win->Parent, _XA_WM_DELETE_WINDOW,
+			dpy, FW_W_PARENT(fw), _XA_WM_DELETE_WINDOW,
 			CurrentTime);
 		return;
 	}
-	if (WM_DELETES_WINDOW(tmp_win))
+	if (WM_DELETES_WINDOW(fw))
 	{
 		send_clientmessage(
-			dpy, tmp_win->w, _XA_WM_DELETE_WINDOW, CurrentTime);
+			dpy, FW_W(fw), _XA_WM_DELETE_WINDOW, CurrentTime);
 		return;
 	}
 	else
@@ -286,28 +286,28 @@ void CMD_Delete(F_CMD_ARGS)
 void CMD_Destroy(F_CMD_ARGS)
 {
 	if (DeferExecution(
-		    eventp, &w, &tmp_win, &context, CRS_DESTROY, ButtonRelease))
+		    eventp, &w, &fw, &context, CRS_DESTROY, ButtonRelease))
 	{
 		return;
 	}
-	if (IS_TEAR_OFF_MENU(tmp_win))
+	if (IS_TEAR_OFF_MENU(fw))
 	{
 		CMD_Delete(F_PASS_ARGS);
 		return;
 	}
-	if (!is_function_allowed(F_DESTROY, NULL, tmp_win, True, True))
+	if (!is_function_allowed(F_DESTROY, NULL, fw, True, True))
 	{
 		XBell(dpy, 0);
 		return;
 	}
-	if (XGetGeometry(dpy, tmp_win->w, &JunkRoot, &JunkX, &JunkY,
+	if (XGetGeometry(dpy, FW_W(fw), &JunkRoot, &JunkX, &JunkY,
 			 &JunkWidth, &JunkHeight, &JunkBW, &JunkDepth) == 0)
 	{
-		destroy_window(tmp_win);
+		destroy_window(fw);
 	}
 	else
 	{
-		XKillClient(dpy, tmp_win->w);
+		XKillClient(dpy, FW_W(fw));
 	}
 	XSync(dpy,0);
 
@@ -316,36 +316,36 @@ void CMD_Destroy(F_CMD_ARGS)
 
 void CMD_Close(F_CMD_ARGS)
 {
-	if (DeferExecution(eventp, &w, &tmp_win, &context, CRS_DESTROY,
+	if (DeferExecution(eventp, &w, &fw, &context, CRS_DESTROY,
 			   ButtonRelease))
 	{
 		return;
 	}
-	if (IS_TEAR_OFF_MENU(tmp_win))
+	if (IS_TEAR_OFF_MENU(fw))
 	{
 		CMD_Delete(F_PASS_ARGS);
 		return;
 	}
-	if (!is_function_allowed(F_CLOSE, NULL, tmp_win, True, True))
+	if (!is_function_allowed(F_CLOSE, NULL, fw, True, True))
 	{
 		XBell(dpy, 0);
 		return;
 	}
-	if (WM_DELETES_WINDOW(tmp_win))
+	if (WM_DELETES_WINDOW(fw))
 	{
 		send_clientmessage(
-			dpy, tmp_win->w, _XA_WM_DELETE_WINDOW, CurrentTime);
+			dpy, FW_W(fw), _XA_WM_DELETE_WINDOW, CurrentTime);
 		return;
 	}
 	else if (XGetGeometry(
-			 dpy, tmp_win->w, &JunkRoot, &JunkX, &JunkY, &JunkWidth,
-			 &JunkHeight, &JunkBW, &JunkDepth) == 0)
+			 dpy, FW_W(fw), &JunkRoot, &JunkX, &JunkY,
+			 &JunkWidth, &JunkHeight, &JunkBW, &JunkDepth) == 0)
 	{
-		destroy_window(tmp_win);
+		destroy_window(fw);
 	}
 	else
 	{
-		XKillClient(dpy, tmp_win->w);
+		XKillClient(dpy, FW_W(fw));
 	}
 	XSync(dpy,0);
 
@@ -470,9 +470,10 @@ void CMD_Refresh(F_CMD_ARGS)
 
 void CMD_RefreshWindow(F_CMD_ARGS)
 {
-  if (DeferExecution(eventp,&w,&tmp_win,&context,CRS_SELECT,ButtonRelease))
+  if (DeferExecution(eventp,&w,&fw,&context,CRS_SELECT,ButtonRelease))
     return;
-  refresh_window((context == C_ICON)? tmp_win->icon_title_w : tmp_win->frame);
+  refresh_window(
+	  (context == C_ICON) ? FW_W_ICON_TITLE(fw) : FW_W_FRAME(fw));
 }
 
 
@@ -483,9 +484,9 @@ void CMD_Wait(F_CMD_ARGS)
   Bool is_ungrabbed;
   char *escape;
   Window nonewin = None;
-  extern FvwmWindow *Tmp_win;
+  extern FvwmWindow *Fw;
   char *wait_string, *rest;
-  FvwmWindow *s_Tmp_win = Tmp_win;
+  FvwmWindow *s_Fw = Fw;
 
   /* try to get a single token */
   rest = GetNextToken(action, &wait_string);
@@ -531,13 +532,13 @@ void CMD_Wait(F_CMD_ARGS)
       {
         if (!*wait_string)
           done = True;
-        if((Tmp_win)&&(matchWildcards(wait_string, Tmp_win->name.name)==True))
+        if((Fw)&&(matchWildcards(wait_string, Fw->name.name)==True))
           done = True;
-        else if((Tmp_win)&&(Tmp_win->class.res_class)&&
-           (matchWildcards(wait_string, Tmp_win->class.res_class)==True))
+        else if((Fw)&&(Fw->class.res_class)&&
+           (matchWildcards(wait_string, Fw->class.res_class)==True))
           done = True;
-        else if((Tmp_win)&&(Tmp_win->class.res_name)&&
-           (matchWildcards(wait_string, Tmp_win->class.res_name)==True))
+        else if((Fw)&&(Fw->class.res_name)&&
+           (matchWildcards(wait_string, Fw->class.res_name)==True))
           done = True;
       }
       else if (Event.type == KeyPress)
@@ -546,7 +547,7 @@ void CMD_Wait(F_CMD_ARGS)
                               STROKE_ARG(0)
                               Event.xkey.keycode,
                               Event.xkey.state, GetUnusedModifiers(),
-                              GetContext(Tmp_win,&Event,&nonewin),
+                              GetContext(Fw,&Event,&nonewin),
                               KEY_BINDING);
         if (escape != NULL)
         {
@@ -562,7 +563,7 @@ void CMD_Wait(F_CMD_ARGS)
   {
     GrabEm(CRS_NONE, GRAB_NORMAL);
   }
-  Tmp_win = (check_if_fvwm_window_exists(s_Tmp_win)) ? s_Tmp_win : NULL;
+  Fw = (check_if_fvwm_window_exists(s_Fw)) ? s_Fw : NULL;
   free(wait_string);
 
   return;
@@ -1740,7 +1741,7 @@ void CMD_ChangeDecor(F_CMD_ARGS)
   FvwmDecor *decor = &Scr.DefaultDecor;
   FvwmDecor *found = NULL;
 
-  if (DeferExecution(eventp,&w,&tmp_win,&context, CRS_SELECT,ButtonRelease))
+  if (DeferExecution(eventp,&w,&fw,&context, CRS_SELECT,ButtonRelease))
     return;
   item = PeekToken(action, &action);
   if (!action || !item)
@@ -1762,17 +1763,17 @@ void CMD_ChangeDecor(F_CMD_ARGS)
     XBell(dpy, 0);
     return;
   }
-  SET_DECOR_CHANGED(tmp_win, 1);
-  old_height = (tmp_win->decor) ? tmp_win->decor->title_height : 0;
-  tmp_win->decor = found;
-  apply_decor_change(tmp_win);
-  extra_height = (HAS_TITLE(tmp_win) && old_height) ?
-    (old_height - tmp_win->decor->title_height) : 0;
+  SET_DECOR_CHANGED(fw, 1);
+  old_height = (fw->decor) ? fw->decor->title_height : 0;
+  fw->decor = found;
+  apply_decor_change(fw);
+  extra_height = (HAS_TITLE(fw) && old_height) ?
+    (old_height - fw->decor->title_height) : 0;
   frame_force_setup_window(
-    tmp_win, tmp_win->frame_g.x, tmp_win->frame_g.y, tmp_win->frame_g.width,
-    tmp_win->frame_g.height - extra_height, True);
+    fw, fw->frame_g.x, fw->frame_g.y, fw->frame_g.width,
+    fw->frame_g.height - extra_height, True);
   DrawDecorations(
-    tmp_win, DRAW_ALL, (Scr.Hilite == tmp_win), 2, None, CLEAR_ALL);
+    fw, DRAW_ALL, (Scr.Hilite == fw), 2, None, CLEAR_ALL);
 }
 
 /*****************************************************************************
@@ -1818,20 +1819,20 @@ void CMD_DestroyDecor(F_CMD_ARGS)
 
   if (found && (found != &Scr.DefaultDecor || do_recreate))
   {
-    FvwmWindow *fw;
+    FvwmWindow *fw2;
 
     if (!do_recreate)
     {
-      for (fw = Scr.FvwmRoot.next; fw; fw = fw->next)
+      for (fw2 = Scr.FvwmRoot.next; fw2; fw2 = fw2->next)
       {
-	if (fw->decor == found)
+	if (fw2->decor == found)
 	{
 	  /* remove the extra title height now because we delete the current
 	   * decor before calling ChangeDecor(). */
-	  fw->frame_g.height -= fw->decor->title_height;
-	  fw->decor = NULL;
+	  fw2->frame_g.height -= fw2->decor->title_height;
+	  fw2->decor = NULL;
 	  old_execute_function(
-	    NULL, "ChangeDecor Default", fw, eventp, C_WINDOW, *Module, 0,
+	    NULL, "ChangeDecor Default", fw2, eventp, C_WINDOW, *Module, 0,
 	    NULL);
 	}
       }
@@ -1990,7 +1991,7 @@ void CMD_AddToDecor(F_CMD_ARGS)
  ****************************************************************************/
 void CMD_UpdateDecor(F_CMD_ARGS)
 {
-  FvwmWindow *fw;
+  FvwmWindow *fw2;
 #ifdef USEDECOR
   FvwmDecor *decor, *found = NULL;
   FvwmWindow *hilight = Scr.Hilite;
@@ -2014,23 +2015,23 @@ void CMD_UpdateDecor(F_CMD_ARGS)
   }
 #endif
 
-  for (fw = Scr.FvwmRoot.next; fw; fw = fw->next)
+  for (fw2 = Scr.FvwmRoot.next; fw2; fw2 = fw2->next)
   {
 #ifdef USEDECOR
     /* update specific decor, or all */
     if (found)
     {
-      if (fw->decor == found)
+      if (fw2->decor == found)
       {
-	DrawDecorations(fw, DRAW_ALL, True, True, None, CLEAR_ALL);
-	DrawDecorations(fw, DRAW_ALL, False, True, None, CLEAR_ALL);
+	DrawDecorations(fw2, DRAW_ALL, True, True, None, CLEAR_ALL);
+	DrawDecorations(fw2, DRAW_ALL, False, True, None, CLEAR_ALL);
       }
     }
     else
 #endif
     {
-      DrawDecorations(fw, DRAW_ALL, True, True, None, CLEAR_ALL);
-      DrawDecorations(fw, DRAW_ALL, False, True, None, CLEAR_ALL);
+      DrawDecorations(fw2, DRAW_ALL, True, True, None, CLEAR_ALL);
+      DrawDecorations(fw2, DRAW_ALL, False, True, None, CLEAR_ALL);
     }
   }
   DrawDecorations(hilight, DRAW_ALL, True, True, None, CLEAR_ALL);
@@ -3205,7 +3206,7 @@ void CMD_StrokeFunc(F_CMD_ARGS)
       UngrabEm(GRAB_BUSY);
     }
     old_execute_function(
-      NULL, stroke_action, tmp_win, eventp, context, -1, 0, NULL);
+      NULL, stroke_action, fw, eventp, context, -1, 0, NULL);
   }
 
 }
@@ -3217,7 +3218,7 @@ void CMD_State(F_CMD_ARGS)
 	int toggle;
 	int n;
 
-	if (DeferExecution(eventp, &w, &tmp_win, &context, CRS_SELECT,
+	if (DeferExecution(eventp, &w, &fw, &context, CRS_SELECT,
 			   ButtonRelease))
 	{
 		return;
@@ -3237,14 +3238,14 @@ void CMD_State(F_CMD_ARGS)
 	switch (toggle)
 	{
 	case -1:
-		TOGGLE_USER_STATES(tmp_win, state);
+		TOGGLE_USER_STATES(fw, state);
 		break;
 	case 0:
-		CLEAR_USER_STATES(tmp_win, state);
+		CLEAR_USER_STATES(fw, state);
 		break;
 	case 1:
 	default:
-		SET_USER_STATES(tmp_win, state);
+		SET_USER_STATES(fw, state);
 		break;
 	}
 

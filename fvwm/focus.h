@@ -31,7 +31,7 @@ void ReturnFocusWindow(FvwmWindow *Fw, Bool FocusByMouse);
 void DeleteFocus(Bool FocusByMouse, Bool do_allow_force_broadcast);
 void ForceDeleteFocus(Bool FocusByMouse);
 void restore_focus_after_unmap(
-  FvwmWindow *tmp_win, Bool do_skip_marked_transients);
+  FvwmWindow *fw, Bool do_skip_marked_transients);
 
 
 /**************************************************************************
@@ -45,9 +45,9 @@ void FocusOn(FvwmWindow *t, Bool FocusByMouse, char *action);
  * These need documentation
  **/
 Bool IsLastFocusSetByMouse(void);
-void focus_grab_buttons(FvwmWindow *tmp_win, Bool is_focused);
+void focus_grab_buttons(FvwmWindow *fw, Bool is_focused);
 void focus_grab_buttons_on_pointer_window(void);
-Bool do_accept_input_focus(FvwmWindow *tmp_win);
+Bool do_accept_input_focus(FvwmWindow *fw);
 
 FvwmWindow *get_focus_window(void);
 void set_focus_window(FvwmWindow *fw);

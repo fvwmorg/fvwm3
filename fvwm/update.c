@@ -108,9 +108,11 @@ static void apply_window_updates(
 			/* stick and unstick the window to force the icon on
 			 * the current page */
 			handle_stick(
-				NULL, &Event, t->frame, t, C_FRAME, "", 0, 1);
+				NULL, &Event, FW_W_FRAME(t), t, C_FRAME, "", 0,
+				1);
 			handle_stick(
-				NULL, &Event, t->frame, t, C_FRAME, "", 0, 0);
+				NULL, &Event, FW_W_FRAME(t), t, C_FRAME, "", 0,
+				0);
 		}
 		else
 		{
@@ -120,7 +122,7 @@ static void apply_window_updates(
 	else if (flags->do_update_stick)
 	{
 		handle_stick(
-			NULL, &Event, t->frame, t, C_FRAME, "", 0,
+			NULL, &Event, FW_W_FRAME(t), t, C_FRAME, "", 0,
 			SFIS_STICKY(*pstyle));
 	}
 #ifdef MINI_ICONS
@@ -146,7 +148,7 @@ static void apply_window_updates(
 	if (flags->do_update_visible_window_name)
 	{
 		setup_visible_name(t, False);
-		BroadcastName(M_VISIBLE_NAME,t->w,t->frame,
+		BroadcastName(M_VISIBLE_NAME,FW_W(t),FW_W_FRAME(t),
 			      (unsigned long)t,t->visible_name);
 		EWMH_SetVisibleName(t, False);
 	}
@@ -154,7 +156,7 @@ static void apply_window_updates(
 	if (flags->do_update_visible_icon_name)
 	{
 		setup_visible_name(t, True);
-		BroadcastName(MX_VISIBLE_ICON_NAME,t->w,t->frame,
+		BroadcastName(MX_VISIBLE_ICON_NAME,FW_W(t),FW_W_FRAME(t),
 			      (unsigned long)t,t->visible_icon_name);
 		EWMH_SetVisibleName(t, True);
 	}
@@ -431,8 +433,8 @@ static void apply_window_updates(
 			fprintf(stderr, "fc broadcast 0x%08x '%s'\n",
 				(int)Scr.Hilite, Scr.Hilite->name.name);
 			BroadcastPacket(
-				M_FOCUS_CHANGE, 5, Scr.Hilite->w,
-				Scr.Hilite->frame, 0,
+				M_FOCUS_CHANGE, 5, FW_W(Scr.Hilite),
+				FW_W_FRAME(Scr.Hilite), 0,
 				Scr.Hilite->hicolors.fore,
 				Scr.Hilite->hicolors.back);
 		}
@@ -477,16 +479,16 @@ void destroy_scheduled_windows(void)
 
 /* similar to the flush_window_updates() function, but does only the updates
  * for a single window whose decor has been changed. */
-void apply_decor_change(FvwmWindow *tmp_win)
+void apply_decor_change(FvwmWindow *fw)
 {
 	window_style style;
 	update_win flags;
 
-	lookup_style(tmp_win, &style);
+	lookup_style(fw, &style);
 	memset(&flags, 0, sizeof(flags));
 	flags.do_redecorate = True;
 	flags.do_update_window_font_height = True;
-	apply_window_updates(tmp_win, &flags, &style, get_focus_window());
+	apply_window_updates(fw, &flags, &style, get_focus_window());
 	Scr.flags.do_need_window_update = 1;
 }
 

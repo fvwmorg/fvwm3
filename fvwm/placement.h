@@ -32,7 +32,7 @@
 #define PERCENTAGE_75_PENALTY(fw) (fw->placement_percentage_penalty[3])
 
 Bool PlaceWindow(
-  FvwmWindow *tmp_win, style_flags *sflags,
+  FvwmWindow *fw, style_flags *sflags,
   int Desk, int PageX, int PageY, int XineramaScreen, int mode);
 
 #endif /* PLACEMENT_H */

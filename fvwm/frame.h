@@ -27,10 +27,10 @@
 
 typedef enum
 {
-	RESIZE_MODE_SETUP,
-	RESIZE_MODE_RESIZE,
-	RESIZE_MODE_SHRINK,
-	RESIZE_MODE_SCROLL
+	FRAME_RESIZE_SETUP,
+	FRAME_RESIZE_OPAQUE,
+	FRAME_RESIZE_SHRINK,
+	FRAME_RESIZE_SCROLL
 } resize_mode_type;
 
 typedef struct
@@ -48,20 +48,20 @@ typedef struct
 /* ---------------------------- interface functions ------------------------- */
 
 void frame_resize(
-	FvwmWindow *tmp_win, rectangle *start_g, rectangle *end_g,
+	FvwmWindow *fw, rectangle *start_g, rectangle *end_g,
 	resize_mode_type mode_x, resize_mode_type mode_y, int anim_steps);
 void frame_get_resize_decor_gravities(
 	decor_gravities_type *ret_grav, direction_type title_dir,
 	resize_mode_type mode_x, resize_mode_type mode_y);
 void frame_set_decor_gravities(
-	FvwmWindow *tmp_win, decor_gravities_type *grav);
+	FvwmWindow *fw, decor_gravities_type *grav);
 void frame_setup_window(
-	FvwmWindow *tmp_win, int x, int y, int w, int h,
+	FvwmWindow *fw, int x, int y, int w, int h,
 	Bool do_send_configure_notify);
 void frame_force_setup_window(
-	FvwmWindow *tmp_win, int x, int y, int w, int h,
+	FvwmWindow *fw, int x, int y, int w, int h,
 	Bool do_send_configure_notify);
 void frame_setup_shape(
-	FvwmWindow *tmp_win, int w, int h);
+	FvwmWindow *fw, int w, int h);
 
 #endif /* FRAME_H */

@@ -618,7 +618,7 @@ int main(int argc, char **argv)
   InitVariables();
   if (visualClass != -1 || visualId != -1) {
     /* this is so that menus use the (non-default) fvwm colormap */
-    Scr.FvwmRoot.w = Scr.NoFocusWin;
+    FW_W(&Scr.FvwmRoot) = Scr.NoFocusWin;
     Scr.FvwmRoot.number_cmap_windows = 1;
     Scr.FvwmRoot.cmap_windows = &Scr.NoFocusWin;
   }
@@ -1409,7 +1409,7 @@ static void InitVariables(void)
     /* a number > than the builtin table! */
     Scr.ColorLimit = 255;
   }
-  Scr.FvwmRoot.w = Scr.Root;
+  FW_W(&Scr.FvwmRoot) = Scr.Root;
   Scr.FvwmRoot.next = 0;
 
   init_stack_and_layers();
@@ -1772,7 +1772,7 @@ void SaveDesktopState()
   for (t = Scr.FvwmRoot.next; t != NULL; t = t->next)
   {
     data[0] = (unsigned long) t->Desk;
-    XChangeProperty (dpy, t->w, _XA_WM_DESKTOP, _XA_WM_DESKTOP, 32,
+    XChangeProperty (dpy, FW_W(t), _XA_WM_DESKTOP, _XA_WM_DESKTOP, 32,
                      PropModeReplace, (unsigned char *) data, 1);
   }
 

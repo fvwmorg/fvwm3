@@ -34,7 +34,7 @@
 #endif
 #define SHAS_MWM_DECOR(sf)            ((sf)->has_mwm_decor)
 #define SHAS_MWM_FUNCTIONS(sf)        ((sf)->has_mwm_functions)
-#define SHAS_NO_BORDER(sf)            ((sf)->has_no_border)
+#define SHAS_NO_HANDLES(sf)           ((sf)->has_no_handles)
 #define SHAS_NO_TITLE(sf)             ((sf)->has_no_title)
 #define SHAS_OL_DECOR(sf)             ((sf)->has_ol_decor)
 #define SIS_BUTTON_DISABLED(sf)       ((sf)->is_button_disabled)
@@ -545,14 +545,14 @@
                                     ((s).placement_percentage_penalty[3] = (x))
 
 /* function prototypes */
-void lookup_style(FvwmWindow *tmp_win, window_style *styles);
+void lookup_style(FvwmWindow *fw, window_style *styles);
 Bool blockcmpmask(char *blk1, char *blk2, char *mask, int length);
 void check_window_style_change(
   FvwmWindow *t, update_win *flags, window_style *ret_style);
 void reset_style_changes(void);
 void update_style_colorset(int colorset);
-void update_window_color_style(FvwmWindow *tmp_win, window_style *style);
-void update_window_color_hi_style(FvwmWindow *tmp_win, window_style *style);
+void update_window_color_style(FvwmWindow *fw, window_style *style);
+void update_window_color_hi_style(FvwmWindow *fw, window_style *style);
 void free_icon_boxes(icon_boxes *ib);
 
 #endif /* _STYLE_ */

@@ -52,7 +52,7 @@ int ewmh_WMIcon(EWMH_CMD_ARGS)
     return 0;
   }
 
-  list = ewmh_AtomGetByName(fwin->w,"_NET_WM_ICON",
+  list = ewmh_AtomGetByName(FW_W(fwin),"_NET_WM_ICON",
 			    EWMH_ATOM_LIST_PROPERTY_NOTIFY, &size);
 
   if (list != NULL && HAS_EWMH_WM_ICON_HINT(fwin) == EWMH_NO_ICON)
@@ -138,7 +138,7 @@ void EWMH_DoUpdateWmIcon(FvwmWindow *fwin, Bool mini_icon, Bool icon)
   if ((mini_icon && DO_EWMH_DONATE_MINI_ICON(fwin)) ||
       (icon && DO_EWMH_DONATE_ICON(fwin)))
   {
-    list = ewmh_AtomGetByName(fwin->w,"_NET_WM_ICON",
+    list = ewmh_AtomGetByName(FW_W(fwin),"_NET_WM_ICON",
 			    EWMH_ATOM_LIST_PROPERTY_NOTIFY, &size);
   }
   else
@@ -158,9 +158,9 @@ void EWMH_DoUpdateWmIcon(FvwmWindow *fwin, Bool mini_icon, Bool icon)
 #ifdef MINI_ICONS
   if (mini_icon && DO_EWMH_DONATE_MINI_ICON(fwin))
   {
-    if ((dummy = ewmh_SetWmIconFromPixmap(fwin,
-					  (new_list != NULL)? new_list : list,
-					  &size, True)) != NULL)
+    if ((dummy = ewmh_SetWmIconFromPixmap(
+		 fwin, (new_list != NULL)? new_list : list, &size, True)) !=
+	NULL)
     {
       SET_HAS_EWMH_WM_ICON_HINT(fwin, EWMH_FVWM_ICON);
       free(dummy);
@@ -226,7 +226,7 @@ CARD32 *ewmh_SetWmIconFromPixmap(FvwmWindow *fwin,
     save_icon_depth = fwin->iconDepth;
     save_icon_pixmap = fwin->iconPixmap;
     save_icon_mask = fwin->icon_maskPixmap;
-    save_icon_pixmap_w =  fwin->icon_pixmap_w;
+    save_icon_pixmap_w =  FW_W_ICON_PIXMAP(fwin);
     is_pixmap_ours = IS_PIXMAP_OURS(fwin);
     is_icon_ours = IS_ICON_OURS(fwin);
     is_icon_shaped = IS_ICON_SHAPED(fwin);
@@ -243,7 +243,7 @@ CARD32 *ewmh_SetWmIconFromPixmap(FvwmWindow *fwin,
     fwin->iconDepth = save_icon_depth;
     fwin->iconPixmap = save_icon_pixmap;
     fwin->icon_maskPixmap = save_icon_mask;
-    fwin->icon_pixmap_w = save_icon_pixmap_w; 
+    FW_W_ICON_PIXMAP(fwin) = save_icon_pixmap_w;
     SET_ICON_OURS(fwin, is_icon_ours);
     SET_PIXMAP_OURS(fwin, is_pixmap_ours);
     SET_ICON_SHAPED(fwin, is_icon_shaped);
@@ -437,7 +437,7 @@ CARD32 *ewmh_SetWmIconFromPixmap(FvwmWindow *fwin,
     fwin->ewmh_icon_height = height;
   }
 
-  ewmh_ChangeProperty(fwin->w,"_NET_WM_ICON",
+  ewmh_ChangeProperty(FW_W(fwin),"_NET_WM_ICON",
 		      EWMH_ATOM_LIST_PROPERTY_NOTIFY,
 		      (unsigned char *)new_icon,
 		      height*width + 2 + keep_length);
@@ -468,7 +468,8 @@ void EWMH_DeleteWmIcon(FvwmWindow *fwin, Bool mini_icon, Bool icon)
 
   if (mini_icon && icon)
   {
-    ewmh_DeleteProperty(fwin->w, "_NET_WM_ICON", EWMH_ATOM_LIST_PROPERTY_NOTIFY);
+    ewmh_DeleteProperty(
+	    FW_W(fwin), "_NET_WM_ICON", EWMH_ATOM_LIST_PROPERTY_NOTIFY);
     fwin->ewmh_mini_icon_width = 0;
     fwin->ewmh_mini_icon_height = 0;
     fwin->ewmh_icon_width = 0;
@@ -477,7 +478,7 @@ void EWMH_DeleteWmIcon(FvwmWindow *fwin, Bool mini_icon, Bool icon)
     return;
   }
 
-  list = ewmh_AtomGetByName(fwin->w,"_NET_WM_ICON",
+  list = ewmh_AtomGetByName(FW_W(fwin),"_NET_WM_ICON",
 			    EWMH_ATOM_LIST_PROPERTY_NOTIFY, &s);
   if (list == NULL)
     return;
@@ -524,7 +525,7 @@ void EWMH_DeleteWmIcon(FvwmWindow *fwin, Bool mini_icon, Bool icon)
 
   if (new_list != NULL)
   {
-    ewmh_ChangeProperty(fwin->w,"_NET_WM_ICON",
+    ewmh_ChangeProperty(FW_W(fwin),"_NET_WM_ICON",
 			EWMH_ATOM_LIST_PROPERTY_NOTIFY,
 			(unsigned char *)new_list,
 			keep_length);
@@ -532,7 +533,7 @@ void EWMH_DeleteWmIcon(FvwmWindow *fwin, Bool mini_icon, Bool icon)
   else
   {
     /*SET_HAS_EWMH_WM_ICON_HINT(fwin, EWMH_NO_ICON);*/
-    ewmh_DeleteProperty(fwin->w, "_NET_WM_ICON", EWMH_ATOM_LIST_PROPERTY_NOTIFY);
+    ewmh_DeleteProperty(FW_W(fwin), "_NET_WM_ICON", EWMH_ATOM_LIST_PROPERTY_NOTIFY);
   }
 
   if (mini_icon)
@@ -722,7 +723,7 @@ int EWMH_SetIconFromWMIcon(FvwmWindow *fwin, CARD32 *list, unsigned int size,
   if (list == NULL)
   {
     /* we are called from icons.c or update.c */
-    list = ewmh_AtomGetByName(fwin->w,"_NET_WM_ICON",
+    list = ewmh_AtomGetByName(FW_W(fwin),"_NET_WM_ICON",
 			      EWMH_ATOM_LIST_PROPERTY_NOTIFY, &size);
     free_list = True;
     if (list == NULL)
@@ -785,7 +786,7 @@ int EWMH_SetIconFromWMIcon(FvwmWindow *fwin, CARD32 *list, unsigned int size,
     {
       fwin->mini_pixmap_file = name;
       BroadcastMiniIcon(M_MINI_ICON,
-			fwin->w, fwin->frame, (unsigned long)fwin,
+			FW_W(fwin), FW_W_FRAME(fwin), (unsigned long)fwin,
 			fwin->mini_icon->width,
 			fwin->mini_icon->height,
 			fwin->mini_icon->depth,

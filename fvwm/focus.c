@@ -55,10 +55,10 @@ static FvwmWindow *ScreenFocus = NULL;
 /* Window which had focus before the pointer moved to a different screen. */
 static FvwmWindow *LastScreenFocus = NULL;
 
-Bool do_accept_input_focus(FvwmWindow *tmp_win)
+Bool do_accept_input_focus(FvwmWindow *fw)
 {
-  return (!tmp_win || !tmp_win->wmhints ||
-	  !(tmp_win->wmhints->flags & InputHint) || tmp_win->wmhints->input);
+  return (!fw || !fw->wmhints ||
+	  !(fw->wmhints->flags & InputHint) || fw->wmhints->input);
 }
 
 /********************************************************************
@@ -67,19 +67,19 @@ Bool do_accept_input_focus(FvwmWindow *tmp_win)
  *
  **********************************************************************/
 static void DoSetFocus(
-  Window w, FvwmWindow *Fw, Bool FocusByMouse, Bool NoWarp,
+  Window w, FvwmWindow *fw, Bool FocusByMouse, Bool NoWarp,
   Bool do_allow_force_broadcast)
 {
   extern Time lastTimestamp;
   FvwmWindow *sf;
 
-  if (Fw && WM_TAKES_FOCUS(Fw))
+  if (fw && WM_TAKES_FOCUS(fw))
   {
     send_clientmessage(dpy, w, _XA_WM_TAKE_FOCUS, lastTimestamp);
   }
-  if (Fw && HAS_NEVER_FOCUS(Fw))
+  if (fw && HAS_NEVER_FOCUS(fw))
   {
-    if (WM_TAKES_FOCUS(Fw))
+    if (WM_TAKES_FOCUS(fw))
     {
       /* give it a chance to take the focus itself */
       XSync(dpy, 0);
@@ -87,68 +87,68 @@ static void DoSetFocus(
     else
     {
       /* make sure the window is not hilighted */
-      DrawDecorations(Fw, DRAW_ALL, False, False, None, CLEAR_ALL);
+      DrawDecorations(fw, DRAW_ALL, False, False, None, CLEAR_ALL);
     }
     return;
   }
-  if (Fw && !IS_LENIENT(Fw) &&
-      Fw->wmhints && (Fw->wmhints->flags & InputHint) && !Fw->wmhints->input &&
+  if (fw && !IS_LENIENT(fw) &&
+      fw->wmhints && (fw->wmhints->flags & InputHint) && !fw->wmhints->input &&
       (sf = get_focus_window()) && sf->Desk == Scr.CurrentDesk)
   {
     return;
   }
   /* ClickToFocus focus queue manipulation - only performed for
    * Focus-by-mouse type focus events */
-  /* Watch out: Fw may not be on the windowlist and the windowlist may be
+  /* Watch out: fw may not be on the windowlist and the windowlist may be
    * empty */
-  if (Fw && Fw != get_focus_window() && Fw != &Scr.FvwmRoot)
+  if (fw && fw != get_focus_window() && fw != &Scr.FvwmRoot)
   {
     if (FocusByMouse) /* pluck window from list and deposit at top */
     {
-      /* remove Fw from list */
-      if (Fw->prev)
-	Fw->prev->next = Fw->next;
-      if (Fw->next)
-	Fw->next->prev = Fw->prev;
+      /* remove fw from list */
+      if (fw->prev)
+	fw->prev->next = fw->next;
+      if (fw->next)
+	fw->next->prev = fw->prev;
 
-      /* insert Fw at start */
-      Fw->next = Scr.FvwmRoot.next;
+      /* insert fw at start */
+      fw->next = Scr.FvwmRoot.next;
       if (Scr.FvwmRoot.next)
-	Scr.FvwmRoot.next->prev = Fw;
-      Scr.FvwmRoot.next = Fw;
-      Fw->prev = &Scr.FvwmRoot;
+	Scr.FvwmRoot.next->prev = fw;
+      Scr.FvwmRoot.next = fw;
+      fw->prev = &Scr.FvwmRoot;
     }
     else
     {
-      /* move the windowlist around so that Fw is at the top */
-      FvwmWindow *tmp_win;
+      /* move the windowlist around so that fw is at the top */
+      FvwmWindow *fw2;
 
       /* find the window on the windowlist */
-      tmp_win = &Scr.FvwmRoot;
-      while (tmp_win && tmp_win != Fw)
-        tmp_win = tmp_win->next;
+      fw2 = &Scr.FvwmRoot;
+      while (fw2 && fw2 != fw)
+        fw2 = fw2->next;
 
-      if (tmp_win) /* the window is on the (non-zero length) windowlist */
+      if (fw2) /* the window is on the (non-zero length) windowlist */
       {
-        /* make tmp_win point to the last window on the list */
-        while (tmp_win->next)
-          tmp_win = tmp_win->next;
+        /* make fw2 point to the last window on the list */
+        while (fw2->next)
+          fw2 = fw2->next;
 
         /* close the ends of the windowlist */
-        tmp_win->next = Scr.FvwmRoot.next;
-        Scr.FvwmRoot.next->prev = tmp_win;
+        fw2->next = Scr.FvwmRoot.next;
+        Scr.FvwmRoot.next->prev = fw2;
 
-        /* make Fw the new start of the list */
-        Scr.FvwmRoot.next = Fw;
+        /* make fw the new start of the list */
+        Scr.FvwmRoot.next = fw;
         /* open the closed loop windowlist */
-        Fw->prev->next = NULL;
-        Fw->prev = &Scr.FvwmRoot;
+        fw->prev->next = NULL;
+        fw->prev = &Scr.FvwmRoot;
       }
     }
   }
   lastFocusType = FocusByMouse;
 
-  if (!Fw && !Scr.flags.is_pointer_on_this_screen)
+  if (!fw && !Scr.flags.is_pointer_on_this_screen)
   {
     focus_grab_buttons(Scr.Ungrabbed, False);
     set_focus_window(NULL);
@@ -158,23 +158,23 @@ static void DoSetFocus(
     return;
   }
 
-  if (Fw && !NoWarp)
+  if (fw && !NoWarp)
   {
-    if (IS_ICONIFIED(Fw))
+    if (IS_ICONIFIED(fw))
     {
       rectangle r;
       Bool rc;
 
-      rc = get_visible_icon_geometry(Fw, &r);
-      if (!rc || !IsRectangleOnThisPage(&r, Fw->Desk))
+      rc = get_visible_icon_geometry(fw, &r);
+      if (!rc || !IsRectangleOnThisPage(&r, fw->Desk))
       {
-        Fw = NULL;
+        fw = NULL;
         w = Scr.NoFocusWin;
       }
     }
-    else if (!IsRectangleOnThisPage(&(Fw->frame_g),Fw->Desk))
+    else if (!IsRectangleOnThisPage(&(fw->frame_g),fw->Desk))
     {
-      Fw = NULL;
+      fw = NULL;
       w = Scr.NoFocusWin;
     }
   }
@@ -185,56 +185,56 @@ static void DoSetFocus(
       window here, or we'll never catch the raise click. For this special case,
       the newly-focused window is ungrabbed in events.c (HandleButtonPress).
   */
-  if (Scr.Ungrabbed != Fw)
+  if (Scr.Ungrabbed != fw)
   {
     /* need to grab all buttons for window that we are about to unfocus */
     focus_grab_buttons(Scr.Ungrabbed, False);
   }
   /* if we do click to focus, remove the grab on mouse events that
    * was made to detect the focus change */
-  if (Fw && HAS_CLICK_FOCUS(Fw))
+  if (fw && HAS_CLICK_FOCUS(fw))
   {
-    focus_grab_buttons(Fw, True);
+    focus_grab_buttons(fw, True);
   }
   /* RBW - allow focus to go to a NoIconTitle icon window so
    * auto-raise will work on it... */
-  if (Fw && IS_ICONIFIED(Fw))
+  if (fw && IS_ICONIFIED(fw))
   {
     Bool is_window_selected = False;
 
-    if (Fw->icon_title_w)
+    if (FW_W_ICON_TITLE(fw))
     {
-      w = Fw->icon_title_w;
+      w = FW_W_ICON_TITLE(fw);
       is_window_selected = True;
     }
-    if ((!is_window_selected || WAS_ICON_HINT_PROVIDED(Fw)) &&
-	Fw->icon_pixmap_w)
+    if ((!is_window_selected || WAS_ICON_HINT_PROVIDED(fw)) &&
+	FW_W_ICON_PIXMAP(fw))
     {
-      w = Fw->icon_pixmap_w;
+      w = FW_W_ICON_PIXMAP(fw);
     }
   }
 
-  if (Fw && IS_LENIENT(Fw))
+  if (fw && IS_LENIENT(fw))
   {
     FOCUS_SET(w);
-    set_focus_window(Fw);
+    set_focus_window(fw);
     if (do_allow_force_broadcast)
     {
-      SET_FOCUS_CHANGE_BROADCAST_PENDING(Fw, 1);
+      SET_FOCUS_CHANGE_BROADCAST_PENDING(fw, 1);
     }
     Scr.UnknownWinFocused = None;
   }
-  else if (!Fw || !(Fw->wmhints) || !(Fw->wmhints->flags & InputHint) ||
-           Fw->wmhints->input != False)
+  else if (!fw || !(fw->wmhints) || !(fw->wmhints->flags & InputHint) ||
+           fw->wmhints->input != False)
   {
     /* Window will accept input focus */
     FOCUS_SET(w);
-    set_focus_window(Fw);
-    if (Fw)
+    set_focus_window(fw);
+    if (fw)
     {
       if (do_allow_force_broadcast)
       {
-	SET_FOCUS_CHANGE_BROADCAST_PENDING(Fw, 1);
+	SET_FOCUS_CHANGE_BROADCAST_PENDING(fw, 1);
       }
     }
     Scr.UnknownWinFocused = None;
@@ -242,7 +242,7 @@ static void DoSetFocus(
   else if ((sf = get_focus_window()) && sf->Desk == Scr.CurrentDesk)
   {
     /* Window doesn't want focus. Leave focus alone */
-    /* FOCUS_SET(Scr.Hilite->w);*/
+    /* FOCUS_SET(FW_W(Scr.Hilite));*/
   }
   else
   {
@@ -255,16 +255,16 @@ static void DoSetFocus(
 }
 
 static void MoveFocus(
-  Window w, FvwmWindow *Fw, Bool FocusByMouse, Bool NoWarp, Bool do_force,
+  Window w, FvwmWindow *fw, Bool FocusByMouse, Bool NoWarp, Bool do_force,
   Bool do_allow_force_broadcast)
 {
   FvwmWindow *ffw_old = get_focus_window();
-  Bool accepts_input_focus = do_accept_input_focus(Fw);
+  Bool accepts_input_focus = do_accept_input_focus(fw);
 #if 0
   FvwmWindow *ffw_new;
 #endif
 
-  if (!do_force && Fw == ffw_old)
+  if (!do_force && fw == ffw_old)
   {
     if (ffw_old)
     {
@@ -284,7 +284,7 @@ static void MoveFocus(
     }
     return;
   }
-  DoSetFocus(w, Fw, FocusByMouse, NoWarp, do_allow_force_broadcast);
+  DoSetFocus(w, fw, FocusByMouse, NoWarp, do_allow_force_broadcast);
   if (get_focus_window() != ffw_old)
   {
     if (accepts_input_focus)
@@ -309,14 +309,14 @@ static void MoveFocus(
 }
 
 void SetFocusWindow(
-  FvwmWindow *Fw, Bool FocusByMouse, Bool do_allow_force_broadcast)
+  FvwmWindow *fw, Bool FocusByMouse, Bool do_allow_force_broadcast)
 {
-  MoveFocus(Fw->w, Fw, FocusByMouse, False, False, do_allow_force_broadcast);
+  MoveFocus(FW_W(fw), fw, FocusByMouse, False, False, do_allow_force_broadcast);
 }
 
-void ReturnFocusWindow(FvwmWindow *Fw, Bool FocusByMouse)
+void ReturnFocusWindow(FvwmWindow *fw, Bool FocusByMouse)
 {
-  MoveFocus(Fw->w, Fw, FocusByMouse, True, False, True);
+  MoveFocus(FW_W(fw), fw, FocusByMouse, True, False, True);
 }
 
 void DeleteFocus(Bool FocusByMouse, Bool do_allow_force_broadcast)
@@ -333,20 +333,20 @@ void ForceDeleteFocus(Bool FocusByMouse)
 /* When a window is unmapped (or destroyed) this function takes care of
  * adjusting the focus window appropriately. */
 void restore_focus_after_unmap(
-  FvwmWindow *tmp_win, Bool do_skip_marked_transients)
+  FvwmWindow *fw, Bool do_skip_marked_transients)
 {
   extern FvwmWindow *colormap_win;
   FvwmWindow *t = NULL;
   FvwmWindow *set_focus_to = NULL;
 
-  if (tmp_win == get_focus_window())
+  if (fw == get_focus_window())
   {
-    if (tmp_win->transientfor != None && tmp_win->transientfor != Scr.Root)
+    if (FW_W_TRANSIENTFOR(fw) != None && FW_W_TRANSIENTFOR(fw) != Scr.Root)
     {
       for (t = Scr.FvwmRoot.next; t != NULL; t = t->next)
       {
-	if (t->w == tmp_win->transientfor &&
-	    t->Desk == tmp_win->Desk &&
+	if (FW_W(t) == FW_W_TRANSIENTFOR(fw) &&
+	    t->Desk == fw->Desk &&
 	    (!do_skip_marked_transients || !IS_IN_TRANSIENT_SUBTREE(t)))
 	{
 	  set_focus_to = t;
@@ -355,11 +355,11 @@ void restore_focus_after_unmap(
       }
     }
     if (!set_focus_to &&
-	(HAS_CLICK_FOCUS(tmp_win) || HAS_SLOPPY_FOCUS(tmp_win)))
+	(HAS_CLICK_FOCUS(fw) || HAS_SLOPPY_FOCUS(fw)))
     {
-      for (t = tmp_win->next; t != NULL; t = t->next)
+      for (t = fw->next; t != NULL; t = t->next)
       {
-	if (t->Desk == tmp_win->Desk &&
+	if (t->Desk == fw->Desk &&
 	    !DO_SKIP_CIRCULATE(t) &&
 	    !(DO_SKIP_ICON_CIRCULATE(t) && IS_ICONIFIED(t)) &&
 	    (!do_skip_marked_transients || !IS_IN_TRANSIENT_SUBTREE(t)))
@@ -370,20 +370,20 @@ void restore_focus_after_unmap(
 	}
       }
     }
-    if (set_focus_to && set_focus_to != tmp_win &&
-	set_focus_to->Desk == tmp_win->Desk)
+    if (set_focus_to && set_focus_to != fw &&
+	set_focus_to->Desk == fw->Desk)
     {
       /* Don't transfer focus to windows on other desks */
       SetFocusWindow(set_focus_to, True, True);
     }
-    if (tmp_win == get_focus_window())
+    if (fw == get_focus_window())
     {
       DeleteFocus(True, True);
     }
   }
-  if (tmp_win == Scr.pushed_window)
+  if (fw == Scr.pushed_window)
     Scr.pushed_window = NULL;
-  if (tmp_win == colormap_win)
+  if (fw == colormap_win)
     colormap_win = NULL;
 
   return;
@@ -425,7 +425,7 @@ void FocusOn(FvwmWindow *t, Bool FocusByMouse, char *action)
     if (t)
     {
       /* give the window a chance to take the focus itself */
-      MoveFocus(t->w, t, FocusByMouse, True, False, True);
+      MoveFocus(FW_W(t), t, FocusByMouse, True, False, True);
     }
     return;
   }
@@ -475,7 +475,7 @@ void FocusOn(FvwmWindow *t, Bool FocusByMouse, char *action)
   UngrabEm(GRAB_NORMAL);
   if (t->Desk == Scr.CurrentDesk)
   {
-    MoveFocus(t->w, t, FocusByMouse, do_not_warp, False, True);
+    MoveFocus(FW_W(t), t, FocusByMouse, do_not_warp, False, True);
   }
 
   return;
@@ -493,7 +493,7 @@ static void warp_to_fvwm_window(
   int cx,cy;
   int x,y;
 
-  if(t == (FvwmWindow *)0 || (IS_ICONIFIED(t) && t->icon_title_w == None))
+  if(t == (FvwmWindow *)0 || (IS_ICONIFIED(t) && FW_W_ICON_TITLE(t) == None))
     return;
 
   if(t->Desk != Scr.CurrentDesk)
@@ -577,19 +577,19 @@ static void warp_to_fvwm_window(
 
 void CMD_FlipFocus(F_CMD_ARGS)
 {
-  if (DeferExecution(eventp,&w,&tmp_win,&context,CRS_SELECT,ButtonRelease))
+  if (DeferExecution(eventp,&w,&fw,&context,CRS_SELECT,ButtonRelease))
     return;
 
   /* Reorder the window list */
-  FocusOn(tmp_win, TRUE, action);
+  FocusOn(fw, TRUE, action);
 }
 
 void CMD_Focus(F_CMD_ARGS)
 {
-  if (DeferExecution(eventp,&w,&tmp_win,&context,CRS_SELECT,ButtonRelease))
+  if (DeferExecution(eventp,&w,&fw,&context,CRS_SELECT,ButtonRelease))
     return;
 
-  FocusOn(tmp_win, FALSE, action);
+  FocusOn(fw, FALSE, action);
 }
 
 void CMD_WarpToWindow(F_CMD_ARGS)
@@ -600,12 +600,12 @@ void CMD_WarpToWindow(F_CMD_ARGS)
   n = GetTwoArguments(action, &val1, &val2, &val1_unit, &val2_unit);
   if (context != C_UNMANAGED)
   {
-    if (DeferExecution(eventp,&w,&tmp_win,&context,CRS_SELECT,ButtonRelease))
+    if (DeferExecution(eventp,&w,&fw,&context,CRS_SELECT,ButtonRelease))
       return;
     if (n == 2)
-      warp_to_fvwm_window(eventp, tmp_win, val1, val1_unit, val2, val2_unit);
+      warp_to_fvwm_window(eventp, fw, val1, val1_unit, val2, val2_unit);
     else
-      warp_to_fvwm_window(eventp, tmp_win, 0, 0, 0, 0);
+      warp_to_fvwm_window(eventp, fw, 0, 0, 0, 0);
   }
   else
   {
@@ -643,29 +643,29 @@ Bool IsLastFocusSetByMouse(void)
   return lastFocusType;
 }
 
-void focus_grab_buttons(FvwmWindow *tmp_win, Bool is_focused)
+void focus_grab_buttons(FvwmWindow *fw, Bool is_focused)
 {
   int i;
   Bool accepts_input_focus;
   Bool do_grab_window = False;
   unsigned char grab_buttons = Scr.buttons2grab;
 
-  if (!tmp_win)
+  if (!fw)
   {
     return;
   }
-  accepts_input_focus = do_accept_input_focus(tmp_win);
-  if ((HAS_SLOPPY_FOCUS(tmp_win) || HAS_MOUSE_FOCUS(tmp_win) ||
-       HAS_NEVER_FOCUS(tmp_win)) &&
-      DO_RAISE_MOUSE_FOCUS_CLICK(tmp_win) &&
-      (!is_focused || !is_on_top_of_layer(tmp_win)))
+  accepts_input_focus = do_accept_input_focus(fw);
+  if ((HAS_SLOPPY_FOCUS(fw) || HAS_MOUSE_FOCUS(fw) ||
+       HAS_NEVER_FOCUS(fw)) &&
+      DO_RAISE_MOUSE_FOCUS_CLICK(fw) &&
+      (!is_focused || !is_on_top_of_layer(fw)))
   {
     grab_buttons = (char)(DEFAULT_ALL_BUTTONS_MOTION_MASK / Button1Mask);
     do_grab_window = True;
   }
-  else if (HAS_CLICK_FOCUS(tmp_win) &&
-	   (!is_focused || !is_on_top_of_layer(tmp_win)) &&
-	   (!DO_NOT_RAISE_CLICK_FOCUS_CLICK(tmp_win) || accepts_input_focus))
+  else if (HAS_CLICK_FOCUS(fw) &&
+	   (!is_focused || !is_on_top_of_layer(fw)) &&
+	   (!DO_NOT_RAISE_CLICK_FOCUS_CLICK(fw) || accepts_input_focus))
   {
     grab_buttons = (char)(DEFAULT_ALL_BUTTONS_MOTION_MASK / Button1Mask);
     do_grab_window = True;
@@ -676,19 +676,19 @@ void focus_grab_buttons(FvwmWindow *tmp_win, Bool is_focused)
       RBW - If we've come here to grab and all buttons are already grabbed,
       or to ungrab and none is grabbed, then we've nothing to do.
   */
-  if ((!is_focused && grab_buttons == tmp_win->grabbed_buttons) ||
-     (is_focused && ((tmp_win->grabbed_buttons & grab_buttons) == 0)))
+  if ((!is_focused && grab_buttons == fw->grabbed_buttons) ||
+     (is_focused && ((fw->grabbed_buttons & grab_buttons) == 0)))
   {
     return;
   }
 #else
-  if (grab_buttons != tmp_win->grabbed_buttons)
+  if (grab_buttons != fw->grabbed_buttons)
 #endif
   {
     Bool do_grab;
 
     MyXGrabServer(dpy);
-    Scr.Ungrabbed = (do_grab_window) ? NULL : tmp_win;
+    Scr.Ungrabbed = (do_grab_window) ? NULL : fw;
     for (i = 0; i < NUMBER_OF_MOUSE_BUTTONS; i++)
     {
 #if 0
@@ -702,7 +702,7 @@ void focus_grab_buttons(FvwmWindow *tmp_win, Bool is_focused)
         do_grab = !(grab_buttons & (1 << i));
       }
 #else
-      if ((grab_buttons & (1 << i)) == (tmp_win->grabbed_buttons & (1 << i)))
+      if ((grab_buttons & (1 << i)) == (fw->grabbed_buttons & (1 << i)))
 	continue;
       do_grab = !!(grab_buttons & (1 << i));
 #endif
@@ -723,15 +723,15 @@ void focus_grab_buttons(FvwmWindow *tmp_win, Bool is_focused)
 	    if (do_grab)
 	    {
 	      XGrabButton(
-		      dpy, i + 1, mods, tmp_win->Parent, True, ButtonPressMask,
+		      dpy, i + 1, mods, FW_W_PARENT(fw), True, ButtonPressMask,
 		      GrabModeSync, GrabModeAsync, None, None);
               /*  Set each FvwmWindow flag accordingly, as we grab or ungrab. */
-              tmp_win->grabbed_buttons |= (1<<i);
+              fw->grabbed_buttons |= (1<<i);
 	    }
 	    else
 	    {
-	      XUngrabButton(dpy, (i+1), mods, tmp_win->Parent);
-              tmp_win->grabbed_buttons &= !(1<<i);
+	      XUngrabButton(dpy, (i+1), mods, FW_W_PARENT(fw));
+              fw->grabbed_buttons &= !(1<<i);
 	    }
 	  }
 	} /* for */
@@ -748,7 +748,7 @@ void focus_grab_buttons(FvwmWindow *tmp_win, Bool is_focused)
 void focus_grab_buttons_on_pointer_window(void)
 {
   Window w;
-  FvwmWindow *tmp_win;
+  FvwmWindow *fw;
 
   if (!XQueryPointer(
 	dpy, Scr.Root, &JunkRoot, &w, &JunkX, &JunkY, &JunkX, &JunkY,
@@ -757,12 +757,12 @@ void focus_grab_buttons_on_pointer_window(void)
     /* pointer is not on this screen */
     return;
   }
-  if (XFindContext(dpy, w, FvwmContext, (caddr_t *) &tmp_win) == XCNOENT)
+  if (XFindContext(dpy, w, FvwmContext, (caddr_t *) &fw) == XCNOENT)
   {
     /* pointer is not over a window */
     return;
   }
-  focus_grab_buttons(tmp_win, (tmp_win == get_focus_window()));
+  focus_grab_buttons(fw, (fw == get_focus_window()));
 
   return;
 }
@@ -861,11 +861,11 @@ void refresh_focus(FvwmWindow *fw)
     XWindowAttributes winattrs;
 
     MyXGrabServer(dpy);
-    if (XGetWindowAttributes(dpy, fw->w, &winattrs))
+    if (XGetWindowAttributes(dpy, FW_W(fw), &winattrs))
     {
-      XSelectInput(dpy, fw->w, winattrs.your_event_mask & ~FocusChangeMask);
-      FOCUS_SET(fw->w);
-      XSelectInput(dpy, fw->w, winattrs.your_event_mask);
+      XSelectInput(dpy, FW_W(fw), winattrs.your_event_mask & ~FocusChangeMask);
+      FOCUS_SET(FW_W(fw));
+      XSelectInput(dpy, FW_W(fw), winattrs.your_event_mask);
     }
     MyXUngrabServer(dpy);
   }

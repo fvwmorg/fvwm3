@@ -1,3 +1,8 @@
+2002-03-15  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* FvwmIconMan/xmanager.c (draw_empty_manager):
+	fixed problem with transparent colour sets in an empty manager
+
 2002-03-13  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* FvwmWharf/icons.c (GetXPMData):

@@ -1,3 +1,82 @@
+2002-03-15  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* fvwm/add_window.c (setup_parent_window):
+	(setup_resize_handle_cursors):
+	(setup_resize_handle_windows):
+	(resize_resize_handle_windows):
+	(change_resize_handle_windows):
+
+	* fvwm/windowlist.h:
+	* fvwm/virtual.h:
+	* fvwm/update.h:
+	* fvwm/style.h:
+	* fvwm/read.h:
+	* fvwm/placement.h:
+	* fvwm/menus.h:
+	* fvwm/move_resize.h:
+	* fvwm/icons.h:
+	* fvwm/geometry.h:
+	* fvwm/frame.h:
+	* fvwm/focus.h:
+	* fvwm/events.h:
+	* fvwm/borders.h:
+	* fvwm/add_window.h:
+	* fvwm/ewmh_names.c:
+	* fvwm/ewmh_icons.c:
+	* fvwm/ewmh_events.c:
+	* fvwm/ewmh.c:
+	* fvwm/frame.c:
+	* fvwm/menucmd.c:
+	* fvwm/schedule.c:
+	* fvwm/geometry.c:
+	* fvwm/gnome.c:
+	* fvwm/windowlist.c:
+	* fvwm/cursor.c:
+	* fvwm/update.c:
+	* fvwm/bindings.c:
+	* fvwm/colormaps.c:
+	* fvwm/decorations.c:
+	* fvwm/conditional.c:
+	* fvwm/misc.c:
+	* fvwm/read.c:
+	* fvwm/placement.c:
+	* fvwm/fvwm.c:
+	* fvwm/virtual.c:
+	* fvwm/session.c:
+	* fvwm/functions.c:
+	* fvwm/stack.c:
+	* fvwm/icons.c:
+	* fvwm/module_interface.c:
+	* fvwm/style.c:
+	* fvwm/add_window.c:
+	* fvwm/events.c:
+	* fvwm/builtins.c:
+	* fvwm/move_resize.c:
+	* fvwm/borders.c:
+	* fvwm/menus.c:
+	* fvwm/fvwm.h (FvwmWindow):
+	moved all windows into a separate sub structure and wrot access macros
+	renamed FvwmWindow argument to builtin commands to "fw"
+	renamed tmp_win to fw everywhere
+
+	* fvwm/borders.c (RedrawBorder):
+	* fvwm/decorations.c (SelectDecor):
+	* fvwm/add_window.c (setup_style_and_decor):
+	(setup_resize_handle_cursors):
+	* fvwm/window_flags.h:
+	* fvwm/fvwm.h (struct):
+	added new member has_handles and new macro HAS_HANDLES
+
+	* fvwm/decorations.c (SelectDecor):
+	fixed the NoHandles style
+
+	* fvwm/decorations.c (SelectDecor):
+	* fvwm/style.c (check_window_style_change):
+	(parse_and_set_window_style):
+	* fvwm/style.h:
+	* fvwm/fvwm.h (struct):
+	renamed has_no_handles to has_no_border
+
 2002-03-15  olicha  <olivier.chapuis@free.fr>
 
 	* libs/Flocale.h:
@@ -15,14 +94,14 @@
 	(FlocaleUnloadFont):
 	(FlocaleDrawString):
 	(FlocaleTextWidth):
-	* libs/Fft.h: 
-	* libs/Fft.c (FftGetRotatedFont): 
+	* libs/Fft.h:
+	* libs/Fft.c (FftGetRotatedFont):
 	(FftGetFont):
 	(FftDrawString):
 	(FftTextWidth):
 	* fvwm/borders.c (DrawMultiPixmapTitlebar):
-	(RedrawTitle): 
-	* fvwm/geometry.c (get_title_font_size_and_offset): 
+	(RedrawTitle):
+	* fvwm/geometry.c (get_title_font_size_and_offset):
 	* fvwm/style.c (parse_and_set_window_style):
 	(check_window_style_change):
 	* fvwm/update.c (apply_window_updates):

@@ -107,7 +107,7 @@ const char *get_current_read_dir(void)
 /**
  * Read and execute each line from stream.
  **/
-void run_command_stream( FILE* f, XEvent *eventp, FvwmWindow *tmp_win,
+void run_command_stream( FILE* f, XEvent *eventp, FvwmWindow *fw,
 			 unsigned long context, int Module )
 {
   char *tline;
@@ -141,7 +141,7 @@ void run_command_stream( FILE* f, XEvent *eventp, FvwmWindow *tmp_win,
 	       Module, tline);
 
     old_execute_function(
-      NULL, tline, tmp_win, eventp, context, Module, 0, NULL);
+      NULL, tline, fw, eventp, context, Module, 0, NULL);
     tline = fgets(line, (sizeof line) - 1, f);
   }
 }
@@ -188,7 +188,7 @@ static int parse_filename(
 /**
  * Returns FALSE if file not found
  **/
-int run_command_file( char* filename, XEvent *eventp, FvwmWindow *tmp_win,
+int run_command_file( char* filename, XEvent *eventp, FvwmWindow *fw,
 		      unsigned long context, int Module )
 {
   char *full_filename;
@@ -215,7 +215,7 @@ int run_command_file( char* filename, XEvent *eventp, FvwmWindow *tmp_win,
   if (push_read_file(full_filename) == FALSE)
     return FALSE;
 
-  run_command_stream( f, eventp, tmp_win, context, Module );
+  run_command_stream( f, eventp, fw, context, Module );
   fclose( f );
 
   pop_read_file();
@@ -267,7 +267,7 @@ void CMD_Read(F_CMD_ARGS)
   if ( !parse_filename( "Read", action, &filename, &read_quietly ) )
     return;
   cursor_control(True);
-  if ( !run_command_file( filename, eventp, tmp_win, context, *Module ) &&
+  if ( !run_command_file( filename, eventp, fw, context, *Module ) &&
        !read_quietly )
   {
     if (filename[0] == '/')
@@ -312,7 +312,7 @@ void CMD_PipeRead(F_CMD_ARGS)
   }
   free(command);
 
-  run_command_stream(f, eventp, tmp_win, context, *Module);
+  run_command_stream(f, eventp, fw, context, *Module);
   pclose(f);
   cursor_control(False);
 }

@@ -99,7 +99,7 @@ int ewmh_CloseWindow(EWMH_CMD_ARGS)
   if (ev == NULL)
     return 0;
 
-  CMD_Close(NULL, ev, fwin->w, fwin, C_WINDOW, "", NULL);
+  CMD_Close(NULL, ev, FW_W(fwin), fwin, C_WINDOW, "", NULL);
   return 0;
 }
 
@@ -114,12 +114,12 @@ int ewmh_WMDesktop(EWMH_CMD_ARGS)
     *  however KDE use 0xFFFFFFFE :o) */
     if (d == 0xFFFFFFFE || d == 0xFFFFFFFF)
     {
-      CMD_Stick(NULL, ev, fwin->w, fwin, C_WINDOW, "On", NULL);
+      CMD_Stick(NULL, ev, FW_W(fwin), fwin, C_WINDOW, "On", NULL);
     }
     else if (d >= 0)
     {
       if (IS_STICKY(fwin))
-	 CMD_Stick(NULL, ev, fwin->w, fwin, C_WINDOW, "Off", NULL);
+	 CMD_Stick(NULL, ev, FW_W(fwin), fwin, C_WINDOW, "Off", NULL);
       if (fwin->Desk != d)
 	do_move_window_to_desk(fwin, (int)d);
     }
@@ -135,7 +135,7 @@ int ewmh_WMDesktop(EWMH_CMD_ARGS)
     if (HAS_EWMH_INIT_WM_DESKTOP(fwin) != EWMH_STATE_UNDEFINED_HINT)
       return 0;
 
-    val = ewmh_AtomGetByName(fwin->w,
+    val = ewmh_AtomGetByName(FW_W(fwin),
 			     "_NET_WM_DESKTOP",
 			     EWMH_ATOM_LIST_CLIENT_WIN,
 			     &size);
@@ -147,7 +147,7 @@ int ewmh_WMDesktop(EWMH_CMD_ARGS)
     }
 #if DEBUG_EWMH_INIT_STATE
     fprintf(stderr,"ewmh WM_DESKTOP hint for window 0x%lx  (%i,%lu,%lu)\n",
-	    fwin->w, HAS_EWMH_INIT_WM_DESKTOP(fwin),
+	    FW_W(fwin), HAS_EWMH_INIT_WM_DESKTOP(fwin),
 	    fwin->ewmh_hint_desktop, val[0]);
 #endif
     if (!DO_EWMH_IGNORE_STATE_HINTS(style))
@@ -217,11 +217,11 @@ int ewmh_MoveResize(EWMH_CMD_ARGS)
 	break;
     }
     sprintf(cmd,"%i %i",x_warp,y_warp);
-    CMD_WarpToWindow(NULL, ev, fwin->w, fwin, C_WINDOW, cmd, NULL);
+    CMD_WarpToWindow(NULL, ev, FW_W(fwin), fwin, C_WINDOW, cmd, NULL);
     if (move)
-      CMD_Move(NULL, ev, fwin->w, fwin, C_WINDOW, "", NULL);
+      CMD_Move(NULL, ev, FW_W(fwin), fwin, C_WINDOW, "", NULL);
     else
-      CMD_Resize(NULL, ev, fwin->w, fwin, C_WINDOW, "", NULL);
+      CMD_Resize(NULL, ev, FW_W(fwin), fwin, C_WINDOW, "", NULL);
 
     return 0;
   }
@@ -258,7 +258,7 @@ int ewmh_WMState(EWMH_CMD_ARGS)
     ewmh_atom *list = ewmh_atom_wm_state;
     int has_hint = 0;
 
-    val = ewmh_AtomGetByName(fwin->w,
+    val = ewmh_AtomGetByName(FW_W(fwin),
 			     "_NET_WM_STATE",
 			     EWMH_ATOM_LIST_CLIENT_WIN,
 			     &size);
@@ -268,7 +268,7 @@ int ewmh_WMState(EWMH_CMD_ARGS)
 
 #if DEBUG_EWMH_INIT_STATE
     if (size != 0)
-      fprintf(stderr,"Window 0x%lx has an init _NET_WM_STATE hint\n",fwin->w);
+      fprintf(stderr,"Window 0x%lx has an init _NET_WM_STATE hint\n",FW_W(fwin));
 #endif
     while(list->name != NULL)
     {
@@ -296,7 +296,7 @@ int ewmh_WMState(EWMH_CMD_ARGS)
       sprintf(cmd,"%s", "Off");
     else
       sprintf(cmd,"%s %i %i", "On", max_horiz, max_vert);
-    CMD_Maximize(NULL, ev, fwin->w, fwin, C_WINDOW, cmd, NULL);
+    CMD_Maximize(NULL, ev, FW_W(fwin), fwin, C_WINDOW, cmd, NULL);
   }
   return 0;
 }
@@ -394,7 +394,7 @@ int ewmh_WMStateHidden(EWMH_CMD_ARGS)
       /* deiconify */
       sprintf(cmd,"%s", "Off");
     }
-    CMD_Iconify(NULL, ev, fwin->w, fwin, C_WINDOW, cmd, NULL);
+    CMD_Iconify(NULL, ev, FW_W(fwin), fwin, C_WINDOW, cmd, NULL);
   }
   return 0;
 }
@@ -595,11 +595,11 @@ int ewmh_WMStateShaded(EWMH_CMD_ARGS)
     if ((bool_arg == NET_WM_STATE_TOGGLE && !IS_SHADED(fwin)) ||
 	bool_arg == NET_WM_STATE_ADD)
     {
-      CMD_WindowShade(NULL, ev, fwin->w, fwin, C_WINDOW, "True", NULL);
+      CMD_WindowShade(NULL, ev, FW_W(fwin), fwin, C_WINDOW, "True", NULL);
     }
     else
     {
-      CMD_WindowShade(NULL, ev, fwin->w, fwin, C_WINDOW, "False", NULL);
+      CMD_WindowShade(NULL, ev, FW_W(fwin), fwin, C_WINDOW, "False", NULL);
     }
   }
   return 0;
@@ -851,11 +851,11 @@ int ewmh_WMStateSticky(EWMH_CMD_ARGS)
     if ((bool_arg == NET_WM_STATE_TOGGLE && !IS_STICKY(fwin)) ||
 	bool_arg == NET_WM_STATE_ADD)
     {
-      CMD_Stick(NULL, ev, fwin->w, fwin, C_WINDOW, "On", NULL);
+      CMD_Stick(NULL, ev, FW_W(fwin), fwin, C_WINDOW, "On", NULL);
     }
     else
     {
-      CMD_Stick(NULL, ev, fwin->w, fwin, C_WINDOW, "Off", NULL);
+      CMD_Stick(NULL, ev, FW_W(fwin), fwin, C_WINDOW, "Off", NULL);
     }
   }
   return 0;
@@ -873,7 +873,7 @@ int ewmh_WMIconGeometry(EWMH_CMD_ARGS)
   /* FIXME: After a (un)silde of kicker the geometry are wrong (not because
    * we set the geometry just after the property notify). This does
    * not happen with kwin */
-  val = ewmh_AtomGetByName(fwin->w, "_NET_WM_ICON_GEOMETRY",
+  val = ewmh_AtomGetByName(FW_W(fwin), "_NET_WM_ICON_GEOMETRY",
 			   EWMH_ATOM_LIST_PROPERTY_NOTIFY, &size);
 
   if (val == NULL)
@@ -923,7 +923,7 @@ int ewmh_WMStrut(EWMH_CMD_ARGS)
     fwin->dyn_strut.bottom = fwin->strut.bottom = 0;
   }
 
-  val = ewmh_AtomGetByName(fwin->w, "_NET_WM_STRUT",
+  val = ewmh_AtomGetByName(FW_W(fwin), "_NET_WM_STRUT",
 			   EWMH_ATOM_LIST_PROPERTY_NOTIFY, &size);
 
   if (val == NULL)
@@ -999,7 +999,7 @@ void EWMH_ProcessPropertyNotify(FvwmWindow *fwin, XEvent *ev)
   {
     if (ewmh_a->action != None)
     {
-      flush_property_notify(ewmh_a->atom, fwin->w);
+      flush_property_notify(ewmh_a->atom, FW_W(fwin));
       ewmh_a->action(fwin, ev, NULL, 0);
     }
   }

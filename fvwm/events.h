@@ -57,7 +57,7 @@
           STROKE_CODE(ButtonMotionMask | DEFAULT_ALL_BUTTONS_MOTION_MASK |) \
           ButtonPressMask | ButtonReleaseMask)
 
-void DispatchEvent(Bool preserve_Tmp_win);
+void DispatchEvent(Bool preserve_fw);
 int GetContext(FvwmWindow *, XEvent *, Window *dummy);
 int My_XNextEvent(Display *dpy, XEvent *event);
 int flush_expose(Window w);
@@ -85,7 +85,7 @@ void HandleEnterNotify(void);
 void HandleLeaveNotify(void);
 void HandleConfigureRequest(void);
 void SendConfigureNotify(
-  FvwmWindow *tmp_win, int x, int y, unsigned int w, unsigned int h, int bw,
+  FvwmWindow *fw, int x, int y, unsigned int w, unsigned int h, int bw,
   Bool send_for_frame_too);
 void HandleClientMessage(void);
 void HandlePropertyNotify(void);

@@ -197,8 +197,8 @@ static int do_execute_module(F_CMD_ARGS, Bool desperate)
     return -1;
   }
 
-  if(tmp_win)
-    win = tmp_win->w;
+  if(fw)
+    win = FW_W(fw);
   else
     win = None;
 
@@ -421,7 +421,7 @@ void CMD_ModuleSynchronous(F_CMD_ARGS)
   Bool need_ungrab = False;
   char *escape = NULL;
   XEvent tmpevent;
-  extern FvwmWindow *Tmp_win;
+  extern FvwmWindow *Fw;
 
   if (!action)
     return;
@@ -544,7 +544,7 @@ void CMD_ModuleSynchronous(F_CMD_ARGS)
                             STROKE_ARG(0)
                             tmpevent.xkey.keycode,
                             tmpevent.xkey.state, GetUnusedModifiers(),
-                            GetContext(Tmp_win, &tmpevent, &targetWindow),
+                            GetContext(Fw, &tmpevent, &targetWindow),
                             KEY_BINDING);
       if (escape != NULL)
       {
@@ -640,11 +640,11 @@ void ExecuteModuleCommand(Window w, int module, char *text)
 {
   extern FvwmWindow *ButtonWindow;
   extern int Context;
-  FvwmWindow *tmp_win;
+  FvwmWindow *fw;
 
-  if (XFindContext (dpy, w, FvwmContext, (caddr_t *) &tmp_win) == XCNOENT)
+  if (XFindContext (dpy, w, FvwmContext, (caddr_t *) &fw) == XCNOENT)
   {
-    tmp_win = NULL;
+    fw = NULL;
     w = None;
   }
 
@@ -660,7 +660,7 @@ void ExecuteModuleCommand(Window w, int module, char *text)
     Event.xbutton.window = Scr.Root;
     Event.xbutton.button = 1;
     Event.xbutton.subwindow = None;
-    tmp_win = NULL;
+    fw = NULL;
     ButtonWindow = NULL;
   }
   else
@@ -668,8 +668,8 @@ void ExecuteModuleCommand(Window w, int module, char *text)
     Event.xbutton.window = w;
     Event.xbutton.button = 1;
     Event.xbutton.subwindow = None;
-    Context = GetContext(tmp_win,&Event,&w);
-    ButtonWindow = tmp_win;
+    Context = GetContext(fw,&Event,&w);
+    ButtonWindow = fw;
   }
   /* If a module does XUngrabPointer(), it can now get proper Popups */
   if(StrEquals(text, "popup"))
@@ -678,8 +678,8 @@ void ExecuteModuleCommand(Window w, int module, char *text)
     Event.xbutton.type = ButtonRelease;
   Event.xbutton.x = 0;
   Event.xbutton.y = 0;
-  Context = GetContext(tmp_win,&Event,&w);
-  old_execute_function(NULL, text, tmp_win, &Event, Context, module, 0, NULL);
+  Context = GetContext(fw,&Event,&w);
+  old_execute_function(NULL, text, fw, &Event, Context, module, 0, NULL);
   ButtonWindow = NULL;
 }
 
@@ -907,8 +907,8 @@ static void BroadcastNewPacket(unsigned long event_type,
 
 /* this is broken, the flags may not fit in a word */
 #define CONFIGARGS(_t) 27,\
-            (_t)->w,\
-            (_t)->frame,\
+            FW_W(_t),\
+            FW_W_FRAME(_t),\
             (unsigned long)(_t),\
             (_t)->frame_g.x,\
             (_t)->frame_g.y,\
@@ -926,8 +926,8 @@ static void BroadcastNewPacket(unsigned long event_type,
             (_t)->hints.min_height,\
             (_t)->hints.max_width,\
             (_t)->hints.max_height,\
-            (_t)->icon_title_w,\
-            (_t)->icon_pixmap_w,\
+            FW_W_ICON_TITLE(_t),\
+            FW_W_ICON_PIXMAP(_t),\
             (_t)->hints.win_gravity,\
             (_t)->colors.fore,\
             (_t)->colors.back,\
@@ -937,8 +937,8 @@ static void BroadcastNewPacket(unsigned long event_type,
 
 #ifndef DISABLE_MBC
 #define OLDCONFIGARGS(_t) 27,\
-            (_t)->w,\
-            (_t)->frame,\
+            FW_W(_t),\
+            FW_W_FRAME(_t),\
             (unsigned long)(_t),\
             (_t)->frame_g.x,\
             (_t)->frame_g.y,\
@@ -956,8 +956,8 @@ static void BroadcastNewPacket(unsigned long event_type,
             (_t)->hints.min_height,\
             (_t)->hints.max_width,\
             (_t)->hints.max_height,\
-            (_t)->icon_title_w,\
-            (_t)->icon_pixmap_w,\
+            FW_W_ICON_TITLE(_t),\
+            FW_W_ICON_PIXMAP(_t),\
             (_t)->hints.win_gravity,\
             (_t)->colors.fore,\
             (_t)->colors.back,\
@@ -1015,9 +1015,9 @@ static void BroadcastNewPacket(unsigned long event_type,
 *****************************************************************/
 #define CONFIGARGSNEW(_t) 28,\
 	    (unsigned long)(sizeof(unsigned long)),\
-            &(*(_t))->w,\
+            &FW_W(*(_t)),\
 	    (unsigned long)(sizeof(unsigned long)),\
-            &(*(_t))->frame,\
+            &FW_W_FRAME(*(_t)),\
 	    (unsigned long)(sizeof(unsigned long)),\
             &(_t),\
 	    (unsigned long)(0),\
@@ -1053,9 +1053,9 @@ static void BroadcastNewPacket(unsigned long event_type,
 	    (unsigned long)(0),\
             &(*(_t))->hints.max_height,\
 	    (unsigned long)(0),\
-            &(*(_t))->icon_title_w,\
+            &FW_W_ICON_TITLE(*(_t)),\
 	    (unsigned long)(sizeof(unsigned long)),\
-            &(*(_t))->icon_pixmap_w,\
+            &FW_W_ICON_PIXMAP(*(_t)),\
 	    (unsigned long)(0),\
             &(*(_t))->hints.win_gravity,\
 	    (unsigned long)(sizeof(unsigned long)),\
@@ -1184,18 +1184,26 @@ BroadcastName(unsigned long event_type,
 void
 BroadcastWindowIconNames(FvwmWindow *t, Bool window, Bool icon)
 {
-  if (window)
-  {
-    BroadcastName(M_WINDOW_NAME,t->w,t->frame,(unsigned long)t,t->name.name);
-    BroadcastName(M_VISIBLE_NAME,t->w,t->frame,(unsigned long)t,
-		  t->visible_name);
-  }
-  if (icon)
-  {
-    BroadcastName(M_ICON_NAME,t->w,t->frame,(unsigned long)t,t->icon_name.name);
-    BroadcastName(MX_VISIBLE_ICON_NAME,t->w,t->frame,
-		  (unsigned long)t,t->visible_icon_name);
-  }
+	if (window)
+	{
+		BroadcastName(
+			M_WINDOW_NAME,FW_W(t), FW_W_FRAME(t), (unsigned long)t,
+			t->name.name);
+		BroadcastName(
+			M_VISIBLE_NAME,FW_W(t),FW_W_FRAME(t),(unsigned long)t,
+			t->visible_name);
+	}
+	if (icon)
+	{
+		BroadcastName(
+			M_ICON_NAME, FW_W(t), FW_W_FRAME(t), (unsigned long)t,
+			t->icon_name.name);
+		BroadcastName(
+			MX_VISIBLE_ICON_NAME,FW_W(t),FW_W_FRAME(t),
+			(unsigned long)t, t->visible_icon_name);
+	}
+
+	return;
 }
 
 #ifdef MINI_ICONS
@@ -1332,11 +1340,11 @@ void CMD_SendToModule(F_CMD_ARGS)
     return;
   str = safestrdup(action + strlen(module) + 1);
 
-  if (tmp_win) {
+  if (fw) {
     /* Modules may need to know which window this applies to */
-    data0 = tmp_win->w;
-    data1 = tmp_win->frame;
-    data2 = (unsigned long)tmp_win;
+    data0 = FW_W(fw);
+    data1 = FW_W_FRAME(fw);
+    data2 = (unsigned long)fw;
   } else {
     data0 = 0;
     data1 = 0;
@@ -1658,8 +1666,8 @@ void CMD_Send_WindowList(F_CMD_ARGS)
       if(Scr.Hilite != NULL)
       {
 	SendPacket(*Module, M_FOCUS_CHANGE, 5,
-                   Scr.Hilite->w,
-                   Scr.Hilite->frame,
+                   FW_W(Scr.Hilite),
+                   FW_W_FRAME(Scr.Hilite),
 		   (unsigned long)True,
 		   Scr.Hilite->hicolors.fore,
 		   Scr.Hilite->hicolors.back);
@@ -1677,22 +1685,22 @@ void CMD_Send_WindowList(F_CMD_ARGS)
       for (t = Scr.FvwmRoot.next; t != NULL; t = t->next)
 	{
 	  SendConfig(*Module,M_CONFIGURE_WINDOW,t);
-	  SendName(*Module,M_WINDOW_NAME,t->w,t->frame,
+	  SendName(*Module,M_WINDOW_NAME,FW_W(t),FW_W_FRAME(t),
 		   (unsigned long)t,t->name.name);
-	  SendName(*Module,M_ICON_NAME,t->w,t->frame,
+	  SendName(*Module,M_ICON_NAME,FW_W(t),FW_W_FRAME(t),
 		   (unsigned long)t,t->icon_name.name);
-	  SendName(*Module,M_VISIBLE_NAME,t->w,t->frame,
+	  SendName(*Module,M_VISIBLE_NAME,FW_W(t),FW_W_FRAME(t),
 		   (unsigned long)t,t->visible_name);
-	  SendName(*Module,MX_VISIBLE_ICON_NAME,t->w,t->frame,
+	  SendName(*Module,MX_VISIBLE_ICON_NAME,FW_W(t),FW_W_FRAME(t),
 		   (unsigned long)t,t->visible_icon_name);
           if (t->icon_bitmap_file != NULL
               && t->icon_bitmap_file != Scr.DefaultIcon)
-            SendName(*Module,M_ICON_FILE,t->w,t->frame,
+            SendName(*Module,M_ICON_FILE,FW_W(t),FW_W_FRAME(t),
                      (unsigned long)t,t->icon_bitmap_file);
 
-	  SendName(*Module,M_RES_CLASS,t->w,t->frame,
+	  SendName(*Module,M_RES_CLASS,FW_W(t),FW_W_FRAME(t),
 		   (unsigned long)t,t->class.res_class);
-	  SendName(*Module,M_RES_NAME,t->w,t->frame,
+	  SendName(*Module,M_RES_NAME,FW_W(t),FW_W_FRAME(t),
 		   (unsigned long)t,t->class.res_name);
 
 	  if((IS_ICONIFIED(t))&&(!IS_ICON_UNMAPPED(t)))
@@ -1703,19 +1711,19 @@ void CMD_Send_WindowList(F_CMD_ARGS)
 	    rc = get_visible_icon_geometry(t, &r);
 	    if (rc == True)
 	    {
-	      SendPacket(*Module, M_ICONIFY, 7, t->w, t->frame,
+	      SendPacket(*Module, M_ICONIFY, 7, FW_W(t), FW_W_FRAME(t),
 			 (unsigned long)t, r.x, r.y, r.width, r.height);
 	    }
 	  }
 
 	  if((IS_ICONIFIED(t))&&(IS_ICON_UNMAPPED(t)))
-	    SendPacket(*Module, M_ICONIFY, 7, t->w, t->frame,
+	    SendPacket(*Module, M_ICONIFY, 7, FW_W(t), FW_W_FRAME(t),
 		       (unsigned long)t,
                        0, 0, 0, 0);
 #ifdef MINI_ICONS
 	  if (t->mini_icon != NULL)
             SendMiniIcon(*Module, M_MINI_ICON,
-                         t->w, t->frame, (unsigned long)t,
+                         FW_W(t), FW_W_FRAME(t), (unsigned long)t,
                          t->mini_icon->width,
                          t->mini_icon->height,
                          t->mini_icon->depth,
@@ -1735,8 +1743,8 @@ void CMD_Send_WindowList(F_CMD_ARGS)
       else
       {
 	  BroadcastPacket(M_FOCUS_CHANGE, 5,
-                          Scr.Hilite->w,
-                          Scr.Hilite->frame,
+                          FW_W(Scr.Hilite),
+                          FW_W(Scr.Hilite),
                           (unsigned long)True,
                           Scr.Hilite->hicolors.fore,
                           Scr.Hilite->hicolors.back);

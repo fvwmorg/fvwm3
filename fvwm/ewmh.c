@@ -444,7 +444,7 @@ void EWMH_SetWMDesktop(FvwmWindow *fwin)
     ewmhc.NeedsToCheckDesk = True;
     EWMH_SetNumberOfDesktops();
   }
-  ewmh_ChangeProperty(fwin->w, "_NET_WM_DESKTOP", EWMH_ATOM_LIST_CLIENT_WIN,
+  ewmh_ChangeProperty(FW_W(fwin), "_NET_WM_DESKTOP", EWMH_ATOM_LIST_CLIENT_WIN,
 		      (unsigned char *)&desk, 1);
 }
 
@@ -466,10 +466,10 @@ void EWMH_SetWMState(FvwmWindow *fwin, Bool do_restore)
   }
 
   if (i > 0)
-    ewmh_ChangeProperty(fwin->w, "_NET_WM_STATE", EWMH_ATOM_LIST_CLIENT_WIN,
+    ewmh_ChangeProperty(FW_W(fwin), "_NET_WM_STATE", EWMH_ATOM_LIST_CLIENT_WIN,
 			(unsigned char *)wm_state, i);
   else
-    ewmh_DeleteProperty(fwin->w, "_NET_WM_STATE", EWMH_ATOM_LIST_CLIENT_WIN);
+    ewmh_DeleteProperty(FW_W(fwin), "_NET_WM_STATE", EWMH_ATOM_LIST_CLIENT_WIN);
 }
 
 /* ************************************************************************* *
@@ -563,7 +563,7 @@ void ewmh_AddToKdeSysTray(FvwmWindow *fwin)
   Atom *val;
   KstItem *t;
 
-  val = ewmh_AtomGetByName(fwin->w, "_KDE_NET_WM_SYSTEM_TRAY_WINDOW_FOR",
+  val = ewmh_AtomGetByName(FW_W(fwin), "_KDE_NET_WM_SYSTEM_TRAY_WINDOW_FOR",
 			   EWMH_ATOM_LIST_FIXED_PROPERTY, &size);
 
   if (val == NULL)
@@ -571,13 +571,13 @@ void ewmh_AddToKdeSysTray(FvwmWindow *fwin)
   free(val);
 
   t = ewmh_KstWinList;
-  while(t != NULL && t->w != fwin->w)
+  while(t != NULL && t->w != FW_W(fwin))
     t = t->next;
 
   if (t != NULL)
     return; /* already in the list */
 
-  add_kst_item(fwin->w);
+  add_kst_item(FW_W(fwin));
   set_kde_sys_tray();
 }
 
@@ -673,7 +673,7 @@ void EWMH_SetClientList()
   {
     wl = (Window *)safemalloc(sizeof (Window) * nbr);
     for (t = Scr.FvwmRoot.next; t != NULL; t = t->next)
-      wl[i++] = t->w;
+      wl[i++] = FW_W(t);
   }
   ewmh_ChangeProperty(Scr.Root,"_NET_CLIENT_LIST", EWMH_ATOM_LIST_FVWM_ROOT,
 		      (unsigned char *)wl, nbr);
@@ -695,7 +695,7 @@ void EWMH_SetClientListStacking()
   {
     wl = (Window *)safemalloc(sizeof (Window) * nbr);
     for (t = Scr.FvwmRoot.stack_next; t != &Scr.FvwmRoot; t = t->stack_next)
-      wl[i--] = t->w;
+      wl[i--] = FW_W(t);
   }
   ewmh_ChangeProperty(Scr.Root,"_NET_CLIENT_LIST_STACKING",
 		      EWMH_ATOM_LIST_FVWM_ROOT, (unsigned char *)wl, nbr);
@@ -927,7 +927,7 @@ void EWMH_SetFrameStrut(FvwmWindow *fwin)
   /* bottom */
   val[3] = b.top_left.height;
 
-  ewmh_ChangeProperty(fwin->w, "_KDE_NET_WM_FRAME_STRUT",
+  ewmh_ChangeProperty(FW_W(fwin), "_KDE_NET_WM_FRAME_STRUT",
 		      EWMH_ATOM_LIST_FVWM_WIN, (unsigned char *)&val, 4);
 }
 
@@ -973,10 +973,10 @@ void EWMH_SetAllowedActions(FvwmWindow *fwin)
   }
 
   if (i > 0)
-    ewmh_ChangeProperty(fwin->w, "_NET_WM_ALLOWED_ACTIONS",
+    ewmh_ChangeProperty(FW_W(fwin), "_NET_WM_ALLOWED_ACTIONS",
 		 EWMH_ATOM_LIST_FVWM_WIN, (unsigned char *)wm_actions, i);
   else
-    ewmh_DeleteProperty(fwin->w, "_NET_WM_ALLOWED_ACTIONS",
+    ewmh_DeleteProperty(FW_W(fwin), "_NET_WM_ALLOWED_ACTIONS",
 		 EWMH_ATOM_LIST_FVWM_WIN);
 }
 
@@ -986,11 +986,11 @@ void EWMH_SetAllowedActions(FvwmWindow *fwin)
 
 int ewmh_HandleDesktop(EWMH_CMD_ARGS)
 {
-  if (Scr.EwmhDesktop != NULL && Scr.EwmhDesktop->w != fwin->w)
+  if (Scr.EwmhDesktop != NULL && FW_W(Scr.EwmhDesktop) != FW_W(fwin))
   {
     fvwm_msg(WARN,"ewmh_HandleDesktop",
 	"An Desktop application (0x%lx) already run! This can cause problem\n",
-	 Scr.EwmhDesktop->w);
+	 FW_W(Scr.EwmhDesktop));
     /* what to do ? */
   }
 
@@ -1149,7 +1149,7 @@ void ewmh_HandleWindowType(FvwmWindow *fwin, window_style *style)
   unsigned int size = 0;
 
   fwin->ewmh_window_type = 0;
-  val = ewmh_AtomGetByName(fwin->w, "_NET_WM_WINDOW_TYPE",
+  val = ewmh_AtomGetByName(FW_W(fwin), "_NET_WM_WINDOW_TYPE",
 			   EWMH_ATOM_LIST_FIXED_PROPERTY, &size);
 
   if (val == NULL)
@@ -1209,7 +1209,7 @@ void EWMH_GetStyle(FvwmWindow *fwin, window_style *style)
 /* see also EWMH_WMName and EWMH_WMIconName in add_window */
 void EWMH_WindowInit(FvwmWindow *fwin)
 {
-  /*EWMH_DLOG("Init window 0x%lx",fwin->w);*/
+  /*EWMH_DLOG("Init window 0x%lx",FW_W(fwin));*/
   EWMH_SetWMState(fwin, False);
   EWMH_SetWMDesktop(fwin);
   EWMH_SetFrameStrut(fwin);
@@ -1217,12 +1217,12 @@ void EWMH_WindowInit(FvwmWindow *fwin)
   ewmh_WMStrut(fwin, NULL, NULL, 0);
   ewmh_WMIconGeometry(fwin, NULL, NULL, 0);
   ewmh_AddToKdeSysTray(fwin);
-  if (IS_EWMH_DESKTOP(fwin->w))
+  if (IS_EWMH_DESKTOP(FW_W(fwin)))
     return;
   if (ksmserver_workarround(fwin))
     return;
   ewmh_WMIcon(fwin, NULL, NULL, 0);
-  /*EWMH_DLOG("window 0x%lx initialised",fwin->w);*/
+  /*EWMH_DLOG("window 0x%lx initialised",FW_W(fwin));*/
 }
 
 /* unmap or reparent: restore state */
@@ -1231,12 +1231,13 @@ void EWMH_RestoreInitialStates(FvwmWindow *fwin, int event_type)
   EWMH_SetWMState(fwin, True);
   if (HAS_EWMH_INIT_WM_DESKTOP(fwin) == EWMH_STATE_HAS_HINT)
   {
-    ewmh_ChangeProperty(fwin->w, "_NET_WM_DESKTOP", EWMH_ATOM_LIST_CLIENT_WIN,
-		      (unsigned char *)&(fwin->ewmh_hint_desktop), 1);
+    ewmh_ChangeProperty(FW_W(fwin), "_NET_WM_DESKTOP",
+			EWMH_ATOM_LIST_CLIENT_WIN,
+			(unsigned char *)&(fwin->ewmh_hint_desktop), 1);
   }
   else
   {
-    ewmh_DeleteProperty(fwin->w, "_NET_WM_DESKTOP", EWMH_ATOM_LIST_CLIENT_WIN);
+    ewmh_DeleteProperty(FW_W(fwin), "_NET_WM_DESKTOP", EWMH_ATOM_LIST_CLIENT_WIN);
   }
   if (HAS_EWMH_WM_ICON_HINT(fwin) == EWMH_FVWM_ICON)
       EWMH_DeleteWmIcon(fwin, True, True);
@@ -1246,7 +1247,7 @@ void EWMH_RestoreInitialStates(FvwmWindow *fwin, int event_type)
  * sens) */
 void EWMH_DestroyWindow(FvwmWindow *fwin)
 {
-  if (IS_EWMH_DESKTOP(fwin->w))
+  if (IS_EWMH_DESKTOP(FW_W(fwin)))
     Scr.EwmhDesktop = NULL;
   if (fwin->Desk >= ewmhc.NumberOfDesktops)
     ewmhc.NeedsToCheckDesk = True;

@@ -222,7 +222,7 @@ void EWMH_SetVisibleName(FvwmWindow *fwin, Bool is_icon_name)
 	!HAS_EWMH_WM_ICON_NAME(fwin) && !HAS_EWMH_WM_NAME(fwin))
     {
       ewmh_DeleteProperty(
-	fwin->w, "_NET_WM_ICON_VISIBLE_NAME", EWMH_ATOM_LIST_FVWM_WIN);
+	FW_W(fwin), "_NET_WM_ICON_VISIBLE_NAME", EWMH_ATOM_LIST_FVWM_WIN);
       return;
     }
     tmp_str = fwin->visible_icon_name;
@@ -233,7 +233,7 @@ void EWMH_SetVisibleName(FvwmWindow *fwin, Bool is_icon_name)
 	!HAS_EWMH_WM_NAME(fwin) && !HAS_EWMH_WM_ICON_NAME(fwin))
     {
       ewmh_DeleteProperty(
-	fwin->w, "_NET_WM_VISIBLE_NAME", EWMH_ATOM_LIST_FVWM_WIN);
+	FW_W(fwin), "_NET_WM_VISIBLE_NAME", EWMH_ATOM_LIST_FVWM_WIN);
       return;
     }
     tmp_str = fwin->visible_name;
@@ -249,13 +249,13 @@ void EWMH_SetVisibleName(FvwmWindow *fwin, Bool is_icon_name)
 
   if (is_icon_name)
   {
-    ewmh_ChangeProperty(fwin->w, "_NET_WM_ICON_VISIBLE_NAME",
+    ewmh_ChangeProperty(FW_W(fwin), "_NET_WM_ICON_VISIBLE_NAME",
 			EWMH_ATOM_LIST_FVWM_WIN,
 			(unsigned char *)val, strlen(val));
   }
   else
   {
-    ewmh_ChangeProperty(fwin->w, "_NET_WM_VISIBLE_NAME",
+    ewmh_ChangeProperty(FW_W(fwin), "_NET_WM_VISIBLE_NAME",
 			EWMH_ATOM_LIST_FVWM_WIN,
 			(unsigned char *)val, strlen(val));
   }
@@ -271,7 +271,7 @@ int EWMH_WMIconName(EWMH_CMD_ARGS)
   CARD32 *val;
   char *tmp_str;
 
-  val = ewmh_AtomGetByName(fwin->w, "_NET_WM_ICON_NAME",
+  val = ewmh_AtomGetByName(FW_W(fwin), "_NET_WM_ICON_NAME",
 			   EWMH_ATOM_LIST_PROPERTY_NOTIFY, &size);
 
   if (val == NULL)
@@ -321,7 +321,7 @@ int EWMH_WMName(EWMH_CMD_ARGS)
   CARD32 *val;
   char *tmp_str;
 
-  val = ewmh_AtomGetByName(fwin->w, "_NET_WM_NAME",
+  val = ewmh_AtomGetByName(FW_W(fwin), "_NET_WM_NAME",
 			   EWMH_ATOM_LIST_PROPERTY_NOTIFY, &size);
 
   if (val == NULL)

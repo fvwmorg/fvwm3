@@ -403,7 +403,7 @@ SaveWindowStates(FILE *f)
   {
     Bool is_icon_sticky;
 
-    if (!XGetGeometry(dpy, ewin->w, &JunkRoot, &JunkX, &JunkY, &JunkWidth,
+    if (!XGetGeometry(dpy, FW_W(ewin), &JunkRoot, &JunkX, &JunkY, &JunkWidth,
 		      &JunkHeight, &JunkBW, &JunkDepth))
     {
       /* Don't save the state of windows that already died (i.e. modules)!
@@ -412,16 +412,16 @@ SaveWindowStates(FILE *f)
     }
     is_icon_sticky = (IS_STICKY(ewin) ||
 		     (IS_ICONIFIED(ewin) && IS_ICON_STICKY(ewin)));
-    fprintf(f, "[CLIENT] %lx\n", ewin->w);
+    fprintf(f, "[CLIENT] %lx\n", FW_W(ewin));
 
-    client_id = GetClientID(ewin->w);
+    client_id = GetClientID(FW_W(ewin));
     if (client_id)
     {
       fprintf(f, "  [CLIENT_ID] %s\n", client_id);
       XFree(client_id);
     }
 
-    window_role = GetWindowRole(ewin->w);
+    window_role = GetWindowRole(FW_W(ewin));
     if (window_role)
     {
       fprintf(f, "  [WINDOW_ROLE] %s\n", window_role);
@@ -438,7 +438,7 @@ SaveWindowStates(FILE *f)
 
       wm_command = NULL;
       wm_command_count = 0;
-      if (XGetCommand(dpy, ewin->w, &wm_command, &wm_command_count) &&
+      if (XGetCommand(dpy, FW_W(ewin), &wm_command, &wm_command_count) &&
 	  wm_command && wm_command_count > 0)
       {
         fprintf(f, "  [WM_COMMAND] %i", wm_command_count);
@@ -671,14 +671,14 @@ static Bool matchWin(FvwmWindow *w, Match *m)
   int found;
 
   found = 0;
-  client_id = GetClientID(w->w);
+  client_id = GetClientID(FW_W(w));
 
   if (xstreq(client_id, m->client_id))
   {
 
     /* client_id's match */
 
-    window_role = GetWindowRole(w->w);
+    window_role = GetWindowRole(FW_W(w));
 
     if (window_role || m->window_role)
     {
@@ -706,7 +706,7 @@ static Bool matchWin(FvwmWindow *w, Match *m)
         {
           /* for non-SM-aware clients we also compare WM_COMMAND */
 
-	  if (!XGetCommand (dpy, w->w, &wm_command, &wm_command_count))
+	  if (!XGetCommand (dpy, FW_W(w), &wm_command, &wm_command_count))
 	  {
 	    wm_command = NULL;
 	    wm_command_count = 0;
@@ -722,7 +722,7 @@ static Bool matchWin(FvwmWindow *w, Match *m)
             if (i == wm_command_count)
             {
               /* migo (21/Oct/1999): on restarts compare window ids too */
-              if (!Restarting || w->w == m->win)
+              if (!Restarting || FW_W(w) == m->win)
                 found = 1;
             }
           } /* if (wm_command_count ==... */

@@ -115,11 +115,10 @@ typedef PropMotifWmHints        PropMwmHints;
 #define OL_DECOR_RESIZEH              (1L << 1)
 #define OL_DECOR_HEADER               (1L << 2)
 #define OL_DECOR_ICON_NAME            (1L << 3)
-#define OL_DECOR_ALL                  (OL_DECOR_CLOSE | OL_DECOR_RESIZEH | OL_DECOR_HEADER | OL_DECOR_ICON_NAME)
+#define OL_DECOR_ALL                  \
+  (OL_DECOR_CLOSE | OL_DECOR_RESIZEH | OL_DECOR_HEADER | OL_DECOR_ICON_NAME)
 /* indicates if there are any OL hints */
 #define OL_ANY_HINTS                  (1L << 7)
-
-extern FvwmWindow *Tmp_win;
 
 /****************************************************************************
  *
@@ -137,7 +136,7 @@ void GetMwmHints(FvwmWindow *t)
     XFree((char *)t->mwm_hints);
     t->mwm_hints = NULL;
   }
-  if(XGetWindowProperty (dpy, t->w, _XA_MwmAtom, 0L, 20L, False,
+  if(XGetWindowProperty (dpy, FW_W(t), _XA_MwmAtom, 0L, 20L, False,
 			 _XA_MwmAtom, &actual_type, &actual_format, &nitems,
 			 &bytesafter,(unsigned char **)&t->mwm_hints)==Success)
   {
@@ -188,7 +187,7 @@ void GetOlHints(FvwmWindow *t)
 
   t->ol_hints = OL_DECOR_ALL;
 
-  if (XGetWindowProperty (dpy, t->w, _XA_OL_WIN_ATTR, 0L, 20L, False,
+  if (XGetWindowProperty (dpy, FW_W(t), _XA_OL_WIN_ATTR, 0L, 20L, False,
                           _XA_OL_WIN_ATTR, &actual_type, &actual_format,
 			  &nitems, &bytesafter,
 			  (unsigned char **)&hints)==Success)
@@ -226,7 +225,7 @@ void GetOlHints(FvwmWindow *t)
       XFree (hints);
   }
 
-  if(XGetWindowProperty (dpy, t->w, _XA_OL_DECOR_ADD, 0L, 20L, False,
+  if(XGetWindowProperty (dpy, FW_W(t), _XA_OL_DECOR_ADD, 0L, 20L, False,
 			 XA_ATOM, &actual_type, &actual_format, &nitems,
 			 &bytesafter,(unsigned char **)&hints)==Success)
   {
@@ -246,7 +245,7 @@ void GetOlHints(FvwmWindow *t)
       XFree (hints);
   }
 
-  if(XGetWindowProperty (dpy, t->w, _XA_OL_DECOR_DEL, 0L, 20L, False,
+  if(XGetWindowProperty (dpy, FW_W(t), _XA_OL_DECOR_DEL, 0L, 20L, False,
 			 XA_ATOM, &actual_type, &actual_format, &nitems,
 			 &bytesafter,(unsigned char **)&hints)==Success)
   {
@@ -422,7 +421,7 @@ void SelectDecor(FvwmWindow *t, window_style *pstyle, short *buttons)
       (!SDO_DECORATE_TRANSIENT(sflags) && IS_TRANSIENT(t)))
     decor &= ~MWM_DECOR_TITLE;
 
-  if (SHAS_NO_BORDER(sflags) ||
+  if (SHAS_NO_HANDLES(sflags) ||
       (!SDO_DECORATE_TRANSIENT(sflags) && IS_TRANSIENT(t)))
     decor &= ~MWM_DECOR_RESIZEH;
 
@@ -439,6 +438,7 @@ void SelectDecor(FvwmWindow *t, window_style *pstyle, short *buttons)
   /* Assume no decorations, and build up */
   SET_HAS_TITLE(t, 0);
   SET_HAS_BORDER(t, 0);
+  SET_HAS_HANDLES(t, 0);
 
   used_width = 0;
   if(decor & MWM_DECOR_BORDER)
@@ -447,6 +447,7 @@ void SelectDecor(FvwmWindow *t, window_style *pstyle, short *buttons)
      * (2 shadow) */
     used_width = border_width;
   }
+  SET_HAS_BORDER(t, used_width);
   if(decor & MWM_DECOR_TITLE)
   {
     /*  A title bar with no buttons in it
@@ -457,9 +458,11 @@ void SelectDecor(FvwmWindow *t, window_style *pstyle, short *buttons)
   {
     /* A wide border, with corner tiles is desplayed
      * (10 pixels - 2 relief, 2 shadow) */
-    SET_HAS_BORDER(t, 1);
-    used_width = handle_width;
+    SET_HAS_HANDLES(t, 1);
   }
+  SET_HAS_BORDER(t, used_width);
+  SET_HAS_HANDLES(t, (HAS_BORDER(t) && HAS_HANDLES(t)));
+  set_window_border_size(t, used_width);
   if(!(decor & MWM_DECOR_MENU))
   {
     /*  title-bar menu button omitted
@@ -521,9 +524,6 @@ void SelectDecor(FvwmWindow *t, window_style *pstyle, short *buttons)
     if((*buttons & (1 << i)) == 0)
       t->nr_right_buttons--;
   }
-
-  set_window_border_size(t, used_width);
-  SET_HAS_BORDER(t, used_width);
 
   return;
 }

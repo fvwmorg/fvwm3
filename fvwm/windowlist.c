@@ -48,7 +48,7 @@
 #include "virtual.h"
 #include "geometry.h"
 
-extern FvwmWindow *Tmp_win;
+extern FvwmWindow *Fw;
 extern FvwmWindow *ButtonWindow;
 
 #define SHOW_GEOMETRY           (1<<0)
@@ -180,7 +180,7 @@ void CMD_WindowList(F_CMD_ARGS)
       CreateConditionMask(cond_flags, &mask);
       free(cond_flags);
     }
-    opts = get_menu_options(action, w, tmp_win, eventp, NULL, NULL, &mops);
+    opts = get_menu_options(action, w, fw, eventp, NULL, NULL, &mops);
     was_get_menu_opts_called = True;
 
     /* parse options */
@@ -335,7 +335,7 @@ void CMD_WindowList(F_CMD_ARGS)
   }
   if (was_get_menu_opts_called == False)
   {
-    opts = get_menu_options(action, w, tmp_win, eventp, NULL, NULL, &mops);
+    opts = get_menu_options(action, w, fw, eventp, NULL, NULL, &mops);
   }
   globalFlags = flags;
 
@@ -552,12 +552,12 @@ void CMD_WindowList(F_CMD_ARGS)
         if (!func)
         {
           tfunc = safemalloc(40);
-          sprintf(tfunc,"WindowListFunc %lu", t->w);
+          sprintf(tfunc,"WindowListFunc %lu", FW_W(t));
         }
         else
 	{
           tfunc = safemalloc(strlen(func) + 32);
-          sprintf(tfunc,"%s %lu", func, t->w);
+          sprintf(tfunc,"%s %lu", func, FW_W(t));
 	}
         AddToMenu(mr, t_hot, tfunc, FALSE, FALSE);
         free(tfunc);
@@ -613,8 +613,8 @@ void CMD_WindowList(F_CMD_ARGS)
 
   memset(&mp, 0, sizeof(mp));
   mp.menu = mr;
-  t = Tmp_win;
-  mp.pTmp_win = &t;
+  t = Fw;
+  mp.pfw = &t;
   mp.button_window = ButtonWindow;
   tc = context;
   mp.pcontext = &tc;
@@ -635,7 +635,7 @@ void CMD_WindowList(F_CMD_ARGS)
   DestroyMenu(mr, False, False);
   if (mret.rc == MENU_DOUBLE_CLICKED && default_action && *default_action)
     old_execute_function(
-      cond_rc, default_action, tmp_win, eventp, context, *Module, 0 , NULL);
+      cond_rc, default_action, fw, eventp, context, *Module, 0 , NULL);
   if (default_action != NULL)
     free(default_action);
   if (use_condition)

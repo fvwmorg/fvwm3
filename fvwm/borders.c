@@ -478,13 +478,13 @@ static void RenderIntoWindow(GC gc, Picture *src, Window dest, int x_start,
 }
 
 static int get_multipm_length(
-	FvwmWindow *tmp_win, Picture **pm, int part)
+	FvwmWindow *fw, Picture **pm, int part)
 {
 	if (pm[part] == NULL)
 	{
 		return 0;
 	}
-	else if (HAS_VERTICAL_TITLE(tmp_win))
+	else if (HAS_VERTICAL_TITLE(fw))
 	{
 		return pm[part]->height;
 	}
@@ -500,7 +500,7 @@ static int get_multipm_length(
  *
  ****************************************************************************/
 #define SWAP_ARGS(f,a1,a2) (f)?(a2):(a1),(f)?(a1):(a2)
-static void DrawMultiPixmapTitlebar(FvwmWindow *tmp_win, DecorFace *df)
+static void DrawMultiPixmapTitlebar(FvwmWindow *fw, DecorFace *df)
 {
 	Window title_win;
 	GC gc;
@@ -512,18 +512,18 @@ static void DrawMultiPixmapTitlebar(FvwmWindow *tmp_win, DecorFace *df)
 	int size;
 	FlocaleWinString fstr;
 	rectangle tmp_g;
-	Bool has_vt = HAS_VERTICAL_TITLE(tmp_win);
+	Bool has_vt = HAS_VERTICAL_TITLE(fw);
 
 	pm = df->u.multi_pixmaps;
 	stretch_flags = df->u.multi_stretch_flags;
 	gc = Scr.TitleGC;
 	XSetClipMask(dpy, gc, None);
-	title_win = tmp_win->title_w;
-	title = tmp_win->visible_name;
+	title_win = FW_W_TITLE(fw);
+	title = fw->visible_name;
 
 	tmp_g.width = 0;
 	tmp_g.height = 0;
-	get_title_geometry(tmp_win, &tmp_g);
+	get_title_geometry(fw, &tmp_g);
 	if (pm[TBP_MAIN])
 	{
 		RenderIntoWindow(
@@ -545,38 +545,38 @@ static void DrawMultiPixmapTitlebar(FvwmWindow *tmp_win, DecorFace *df)
 		{
 			len = -len;
 		}
-		text_length = FlocaleTextWidth(tmp_win->title_font, title, len);
-		if (text_length > tmp_win->title_length)
+		text_length = FlocaleTextWidth(fw->title_font, title, len);
+		if (text_length > fw->title_length)
 		{
-			text_length = tmp_win->title_length;
+			text_length = fw->title_length;
 		}
-		switch (TB_JUSTIFICATION(GetDecor(tmp_win, titlebar)))
+		switch (TB_JUSTIFICATION(GetDecor(fw, titlebar)))
 		{
 		case JUST_LEFT:
 			text_pos = TITLE_PADDING;
 			text_pos += get_multipm_length(
-				tmp_win, pm, TBP_LEFT_OF_TEXT);
+				fw, pm, TBP_LEFT_OF_TEXT);
 			text_pos += get_multipm_length(
-				tmp_win, pm, TBP_LEFT_END);
-			if (text_pos > tmp_win->title_length - text_length)
+				fw, pm, TBP_LEFT_END);
+			if (text_pos > fw->title_length - text_length)
 			{
-				text_pos = tmp_win->title_length - text_length;
+				text_pos = fw->title_length - text_length;
 			}
 			break;
 		case JUST_RIGHT:
-			text_pos = tmp_win->title_length - text_length -
+			text_pos = fw->title_length - text_length -
 				TITLE_PADDING;
 			text_pos -= get_multipm_length(
-				tmp_win, pm, TBP_RIGHT_OF_TEXT);
+				fw, pm, TBP_RIGHT_OF_TEXT);
 			text_pos -= get_multipm_length(
-				tmp_win, pm, TBP_RIGHT_END);
+				fw, pm, TBP_RIGHT_END);
 			if (text_pos < 0)
 			{
 				text_pos = 0;
 			}
 			break;
 		default:
-			text_pos = (tmp_win->title_length - text_length) / 2;
+			text_pos = (fw->title_length - text_length) / 2;
 			break;
 		}
 
@@ -590,12 +590,12 @@ static void DrawMultiPixmapTitlebar(FvwmWindow *tmp_win, DecorFace *df)
 			under_width += TITLE_PADDING;
 		}
 		if (under_offset + under_width + TITLE_PADDING <=
-		    tmp_win->title_length)
+		    fw->title_length)
 		{
 			under_width += TITLE_PADDING;
 		}
 		before_space = under_offset;
-		after_space = tmp_win->title_length - before_space -
+		after_space = fw->title_length - before_space -
 			under_width;
 
 		if (pm[TBP_LEFT_MAIN] && before_space > 0)
@@ -603,7 +603,7 @@ static void DrawMultiPixmapTitlebar(FvwmWindow *tmp_win, DecorFace *df)
 			RenderIntoWindow(
 				gc, pm[TBP_LEFT_MAIN], title_win, 0, 0,
 				SWAP_ARGS(has_vt, before_space,
-					  tmp_win->title_thickness),
+					  fw->title_thickness),
 				(stretch_flags & (1 << TBP_LEFT_MAIN)));
 		}
 		if (pm[TBP_RIGHT_MAIN] && after_space > 0)
@@ -613,7 +613,7 @@ static void DrawMultiPixmapTitlebar(FvwmWindow *tmp_win, DecorFace *df)
 				SWAP_ARGS(has_vt, under_offset + under_width,
 					  0),
 				SWAP_ARGS(has_vt, after_space,
-					  tmp_win->title_thickness),
+					  fw->title_thickness),
 				(stretch_flags & (1 << TBP_RIGHT_MAIN)));
 		}
 		if (pm[TBP_UNDER_TEXT] && under_width > 0)
@@ -622,10 +622,10 @@ static void DrawMultiPixmapTitlebar(FvwmWindow *tmp_win, DecorFace *df)
 				gc, pm[TBP_UNDER_TEXT], title_win,
 				SWAP_ARGS(has_vt, under_offset, 0),
 				SWAP_ARGS(has_vt, under_width,
-					  tmp_win->title_thickness),
+					  fw->title_thickness),
 				(stretch_flags & (1 << TBP_UNDER_TEXT)));
 		}
-		size = get_multipm_length(tmp_win, pm, TBP_LEFT_OF_TEXT);
+		size = get_multipm_length(fw, pm, TBP_LEFT_OF_TEXT);
 		if (size > 0 && size <= before_space)
 		{
 
@@ -633,28 +633,28 @@ static void DrawMultiPixmapTitlebar(FvwmWindow *tmp_win, DecorFace *df)
 				dpy, pm[TBP_LEFT_OF_TEXT]->picture, title_win,
 				gc, 0, 0,
 				SWAP_ARGS(has_vt, size,
-					  tmp_win->title_thickness),
+					  fw->title_thickness),
 				SWAP_ARGS(has_vt, under_offset - size, 0));
 			before_space -= size;
 		}
-		size = get_multipm_length(tmp_win, pm, TBP_RIGHT_OF_TEXT);
+		size = get_multipm_length(fw, pm, TBP_RIGHT_OF_TEXT);
 		if (size > 0 && size <= after_space)
 		{
 			XCopyArea(
 				dpy, pm[TBP_RIGHT_OF_TEXT]->picture, title_win,
 				gc, 0, 0,
 				SWAP_ARGS(has_vt, size,
-					  tmp_win->title_thickness),
+					  fw->title_thickness),
 				SWAP_ARGS(has_vt, under_offset + under_width,
 					  0));
 			after_space -= size;
 		}
 
 		get_title_font_size_and_offset(
-			tmp_win, GET_TITLE_DIR(tmp_win),
-			GET_TITLE_TEXT_DIR_MODE(tmp_win), &size, &text_offset);
+			fw, GET_TITLE_DIR(fw),
+			GET_TITLE_TEXT_DIR_MODE(fw), &size, &text_offset);
 		memset(&fstr, 0, sizeof(fstr));
-		fstr.str = tmp_win->visible_name;
+		fstr.str = fw->visible_name;
 		fstr.win = title_win;
 		if (has_vt)
 		{
@@ -667,30 +667,30 @@ static void DrawMultiPixmapTitlebar(FvwmWindow *tmp_win, DecorFace *df)
 			fstr.x = text_pos;
 		}
 		fstr.gc = gc;
-		fstr.flags.text_direction = tmp_win->title_text_dir;
-		FlocaleDrawString(dpy, tmp_win->title_font, &fstr, 0);
+		fstr.flags.text_direction = fw->title_text_dir;
+		FlocaleDrawString(dpy, fw->title_font, &fstr, 0);
 	}
 	else
 	{
-		before_space = tmp_win->title_length / 2;
-		after_space = tmp_win->title_length / 2;
+		before_space = fw->title_length / 2;
+		after_space = fw->title_length / 2;
 	}
 
-	size = get_multipm_length(tmp_win, pm, TBP_LEFT_END);
+	size = get_multipm_length(fw, pm, TBP_LEFT_END);
 	if (size > 0 && size <= before_space)
 	{
 		XCopyArea(
 			dpy, pm[TBP_LEFT_END]->picture, title_win, gc, 0, 0,
-			SWAP_ARGS(has_vt, size, tmp_win->title_thickness),
+			SWAP_ARGS(has_vt, size, fw->title_thickness),
 			0, 0);
 	}
-	size = get_multipm_length(tmp_win, pm, TBP_RIGHT_END);
+	size = get_multipm_length(fw, pm, TBP_RIGHT_END);
 	if (size > 0 && size <= after_space)
 	{
 		XCopyArea(
 			dpy, pm[TBP_RIGHT_END]->picture, title_win, gc, 0, 0,
-			SWAP_ARGS(has_vt, size, tmp_win->title_thickness),
-			tmp_win->title_length - size, 0);
+			SWAP_ARGS(has_vt, size, fw->title_thickness),
+			fw->title_length - size, 0);
 	}
 
 	return;
@@ -806,7 +806,7 @@ static void RedrawBorder(
 
     xgcv.function = GXnoop;
     xgcv.plane_mask = 0;
-    tgc = fvwmlib_XCreateGC(dpy, t->frame, GCFunction | GCPlaneMask, &xgcv);
+    tgc = fvwmlib_XCreateGC(dpy, FW_W_FRAME(t), GCFunction | GCPlaneMask, &xgcv);
   }
   /*
    * draw the border; resize handles are InputOnly so draw in the decor_w and
@@ -1006,8 +1006,7 @@ static void RedrawBorder(
    */
 
   /* draw the handles as eight marks around the border */
-  if (HAS_BORDER(t) && (t->boundary_width > 1) &&
-      !DFS_HAS_HIDDEN_HANDLES(*borderstyle))
+  if (HAS_BORDER(t) && !DFS_HAS_HIDDEN_HANDLES(*borderstyle))
   {
     /* MWM border windows have thin 3d effects
      * FvwmBorders have 3 pixels top/left, 2 bot/right so this makes
@@ -1147,13 +1146,13 @@ static void RedrawBorder(
 
   /* a bit hacky to draw twice but you should see the code it replaces, never
    * mind the esoterics, feel the thin-ness */
-  if ((HAS_BORDER(t) || PressedW == t->decor_w || PressedW == t->frame) &&
+  if ((HAS_BORDER(t) || PressedW == t->decor_w || PressedW == FW_W_FRAME(t)) &&
       HAS_DEPRESSABLE_BORDER(t))
   {
     XRectangle r;
     Bool is_pressed = False;
 
-    if (PressedW == t->sides[0])
+    if (PressedW == FW_W_SIDE(t, 0))
     {
       /* top */
       r.x = t->visual_corner_width;
@@ -1162,7 +1161,7 @@ static void RedrawBorder(
       r.height = t->boundary_width - 1;
       is_pressed = True;
     }
-    else if (PressedW == t->sides[1])
+    else if (PressedW == FW_W_SIDE(t, 1))
     {
       /* right */
       if (!IS_SHADED(t))
@@ -1174,7 +1173,7 @@ static void RedrawBorder(
 	is_pressed = True;
       }
     }
-    else if (PressedW == t->sides[2])
+    else if (PressedW == FW_W_SIDE(t, 2))
     {
       /* bottom */
       r.x = t->visual_corner_width;
@@ -1183,7 +1182,7 @@ static void RedrawBorder(
       r.height = t->boundary_width - 1;
       is_pressed = True;
     }
-    else if (PressedW == t->sides[3])
+    else if (PressedW == FW_W_SIDE(t, 3))
     {
       /* left */
       if (!IS_SHADED(t))
@@ -1195,7 +1194,7 @@ static void RedrawBorder(
 	is_pressed = True;
       }
     }
-    else if (PressedW == t->corners[0])
+    else if (PressedW == FW_W_CORNER(t, 0))
     {
       /* top left */
       r.x = 1;
@@ -1204,7 +1203,7 @@ static void RedrawBorder(
       r.height = t->visual_corner_width - 1;
       is_pressed = True;
     }
-    else if (PressedW == t->corners[1])
+    else if (PressedW == FW_W_CORNER(t, 1))
     {
       /* top right */
       r.x = t->frame_g.width - t->visual_corner_width;
@@ -1213,7 +1212,7 @@ static void RedrawBorder(
       r.height = t->visual_corner_width - 1;
       is_pressed = True;
     }
-    else if (PressedW == t->corners[2])
+    else if (PressedW == FW_W_CORNER(t, 2))
     {
       /* bottom left */
       r.x = 1;
@@ -1222,7 +1221,7 @@ static void RedrawBorder(
       r.height = t->visual_corner_width - 1;
       is_pressed = True;
     }
-    else if (PressedW == t->corners[3])
+    else if (PressedW == FW_W_CORNER(t, 3))
     {
       /* bottom right */
       r.x = t->frame_g.width - t->visual_corner_width;
@@ -1231,7 +1230,7 @@ static void RedrawBorder(
       r.height = t->visual_corner_width - 1;
       is_pressed = True;
     }
-    else if (PressedW == t->decor_w || PressedW == t->frame)
+    else if (PressedW == t->decor_w || PressedW == FW_W_FRAME(t))
     {
       /* whole border */
       r.x = 1;
@@ -1294,7 +1293,7 @@ static void RedrawButtons(
   for (i = 0; i < NUMBER_OF_BUTTONS; i++)
   {
     left1right0 = !(i&1);
-    if (t->button_w[i] != None &&
+    if (FW_W_BUTTON(t, i) != None &&
         ((!left1right0 && i/2 < Scr.nr_right_buttons) ||
          (left1right0  && i/2 < Scr.nr_left_buttons)))
     {
@@ -1306,17 +1305,17 @@ static void RedrawButtons(
 	  (stateflags & MWM_DECOR_SHADE && IS_SHADED(t)) ||
 	  (stateflags & MWM_DECOR_STICK && IS_STICKY(t))));
       enum ButtonState bs =
-	get_button_state(has_focus, toggled, t->button_w[i]);
+	get_button_state(has_focus, toggled, FW_W_BUTTON(t, i));
       DecorFace *df = &TB_STATE(GetDecor(t, buttons[i]))[bs];
-      if(flush_expose(t->button_w[i]) || expose_win == t->button_w[i] ||
+      if(flush_expose(FW_W_BUTTON(t, i)) || expose_win == FW_W_BUTTON(t, i) ||
 	 expose_win == None || cd->flags.has_color_changed)
       {
-	int is_inverted = (PressedW == t->button_w[i]);
+	int is_inverted = (PressedW == FW_W_BUTTON(t, i));
 
 	if (DFS_USE_BORDER_STYLE(df->style))
 	{
 	  XChangeWindowAttributes(
-	    dpy, t->button_w[i], cd->valuemask, &cd->attributes);
+	    dpy, FW_W_BUTTON(t, i), cd->valuemask, &cd->attributes);
 	  if (df->u.p)
 	  {
 	    t->button_background_pixmap[i] = df->u.p->picture;
@@ -1333,11 +1332,11 @@ static void RedrawButtons(
 	else
 	{
 	  XChangeWindowAttributes(
-	    dpy, t->button_w[i], cd->notex_valuemask, &cd->notex_attributes);
+	    dpy, FW_W_BUTTON(t, i), cd->notex_valuemask, &cd->notex_attributes);
 	  t->button_background_pixmap[i] = None;
 	  pass_bg_pixmap = &t->button_background_pixmap[i];
 	}
-	XClearWindow(dpy, t->button_w[i]);
+	XClearWindow(dpy, FW_W_BUTTON(t, i));
 	if (DFS_USE_TITLE_STYLE(df->style))
 	{
 	  DecorFace *tsdf = &TB_STATE(GetDecor(t, titlebar))[bs];
@@ -1346,7 +1345,7 @@ static void RedrawButtons(
 	  for (; tsdf; tsdf = tsdf->next)
 	  {
 	    DrawButton(
-		    t, t->button_w[i], t->title_thickness, t->title_thickness,
+		    t, FW_W_BUTTON(t, i), t->title_thickness, t->title_thickness,
 		    tsdf, cd->relief_gc, cd->shadow_gc,
 		    cd->fore_color, cd->back_color, is_lowest,
 		    TB_MWM_DECOR_FLAGS(GetDecor(t, buttons[i])),
@@ -1359,7 +1358,7 @@ static void RedrawButtons(
 	is_lowest = True;
 	for (; df; df = df->next)
 	{
-	  DrawButton(t, t->button_w[i], t->title_thickness, t->title_thickness,
+	  DrawButton(t, FW_W_BUTTON(t, i), t->title_thickness, t->title_thickness,
   		     df, cd->relief_gc, cd->shadow_gc,
   		     cd->fore_color, cd->back_color, is_lowest,
  		     TB_MWM_DECOR_FLAGS(GetDecor(t, buttons[i])),
@@ -1379,7 +1378,7 @@ static void RedrawButtons(
 	    reverse = !is_inverted;
 	  case DFS_BUTTON_IS_UP:
 	    RelieveRectangle2(
-	      dpy, t->button_w[i], 0, 0, t->title_thickness - 1,
+	      dpy, FW_W_BUTTON(t, i), 0, 0, t->title_thickness - 1,
 	      t->title_thickness - 1, (reverse ? cd->shadow_gc : cd->relief_gc),
 	      (reverse ? cd->relief_gc : cd->shadow_gc), cd->relief_width);
 	    break;
@@ -1420,7 +1419,7 @@ static void RedrawTitle(
       (TB_HAS_MWM_DECOR_SHADE(GetDecor(t, titlebar)) && IS_SHADED(t)) ||
       (TB_HAS_MWM_DECOR_STICK(GetDecor(t, titlebar)) && IS_STICKY(t))));
 
-  if (PressedW == t->title_w)
+  if (PressedW == FW_W_TITLE(t))
   {
     GC tgc;
 
@@ -1429,7 +1428,7 @@ static void RedrawTitle(
     rgc = tgc;
   }
 #if 0
-  flush_expose(t->title_w);
+  flush_expose(FW_W_TITLE(t));
 #endif
 
   if (t->visible_name != (char *)NULL)
@@ -1447,7 +1446,7 @@ static void RedrawTitle(
     length = 0;
   }
 
-  title_state = get_button_state(has_focus, toggled, t->title_w);
+  title_state = get_button_state(has_focus, toggled, FW_W_TITLE(t));
   tb_style = &TB_STATE(GetDecor(t, titlebar))[title_state].style;
   switch (TB_JUSTIFICATION(GetDecor(t, titlebar)))
   {
@@ -1475,7 +1474,7 @@ static void RedrawTitle(
 	DFS_FACE_TYPE(df->style) == TiledPixmapButton &&
 	df->u.p)
     {
-      XSetWindowBackgroundPixmap(dpy, t->title_w, df->u.p->picture);
+      XSetWindowBackgroundPixmap(dpy, FW_W_TITLE(t), df->u.p->picture);
       t->title_background_pixmap = df->u.p->picture;
       pass_bg_pixmap = NULL;
     }
@@ -1484,7 +1483,7 @@ static void RedrawTitle(
       pass_bg_pixmap = &t->title_background_pixmap;
     }
   }
-  ClipClear(t->title_w, rclip, False);
+  ClipClear(FW_W_TITLE(t), rclip, False);
   if (rclip)
   {
     XSetClipRectangles(dpy, rgc, 0, 0, rclip, 1, Unsorted);
@@ -1498,7 +1497,7 @@ static void RedrawTitle(
    */
   memset(&fstr, 0, sizeof(fstr));
   fstr.str = t->visible_name;
-  fstr.win = t->title_w;
+  fstr.win = FW_W_TITLE(t);
   fstr.flags.text_direction = t->title_text_dir;
   if (HAS_VERTICAL_TITLE(t))
   {
@@ -1516,7 +1515,7 @@ static void RedrawTitle(
   if (Pdepth < 2)
   {
     XFillRectangle(
-      dpy, t->title_w, ((PressedW == t->title_w) ? sgc : rgc), offset - 2, 0,
+      dpy, FW_W_TITLE(t), ((PressedW == FW_W_TITLE(t)) ? sgc : rgc), offset - 2, 0,
       length+4, t->title_thickness);
     if(t->visible_name != (char *)NULL)
     {
@@ -1525,17 +1524,17 @@ static void RedrawTitle(
     /* for mono, we clear an area in the title bar where the window
      * title goes, so that its more legible. For color, no need */
     RelieveRectangle(
-      dpy, t->title_w, 0, 0,
+      dpy, FW_W_TITLE(t), 0, 0,
       SWAP_ARGS(has_vt, offset - 3, t->title_thickness - 1),
       rgc, sgc, cd->relief_width);
     RelieveRectangle(
-      dpy, t->title_w,
+      dpy, FW_W_TITLE(t),
       SWAP_ARGS(has_vt, offset + length + 2, 0),
       SWAP_ARGS(has_vt, t->title_length - length - offset - 3,
 		t->title_thickness - 1),
       rgc, sgc, cd->relief_width);
     XDrawLine(
-      dpy, t->title_w, sgc,
+      dpy, FW_W_TITLE(t), sgc,
       SWAP_ARGS(has_vt, 0, offset + length + 1),
       SWAP_ARGS(has_vt, offset + length + 1, t->title_thickness));
   }
@@ -1550,12 +1549,12 @@ static void RedrawTitle(
       DrawMultiPixmapTitlebar(t, df);
     else
 #endif
-    if (PressedW == t->title_w)
+    if (PressedW == FW_W_TITLE(t))
     {
       for (; df; df = df->next)
       {
 	DrawButton(
-	  t, t->title_w,
+	  t, FW_W_TITLE(t),
 	  SWAP_ARGS(has_vt, t->title_length, t->title_thickness),
 	  df, sgc, rgc, cd->fore_color, cd->back_color, is_lowest, 0, 0, 0, 1,
 	  rclip, pass_bg_pixmap);
@@ -1567,7 +1566,7 @@ static void RedrawTitle(
       for (; df; df = df->next)
       {
 	DrawButton(
-	  t, t->title_w,
+	  t, FW_W_TITLE(t),
 	  SWAP_ARGS(has_vt, t->title_length, t->title_thickness),
 	  df, rgc, sgc, cd->fore_color, cd->back_color, is_lowest, 0, 0, 0,
           1, rclip, pass_bg_pixmap);
@@ -1592,7 +1591,7 @@ static void RedrawTitle(
       reverse = 1;
     case DFS_BUTTON_IS_UP:
       RelieveRectangle2(
-	dpy, t->title_w, 0, 0,
+	dpy, FW_W_TITLE(t), 0, 0,
 	SWAP_ARGS(has_vt, t->title_length - 1, t->title_thickness - 1),
 	(reverse) ? sgc : rgc, (reverse) ? rgc : sgc, cd->relief_width);
       break;
@@ -1634,7 +1633,7 @@ static void RedrawTitle(
       if (left_w > 0)
       {
 	RelieveRectangle(
-          dpy, t->title_w,
+          dpy, FW_W_TITLE(t),
 	  SWAP_ARGS(has_vt, left_x, i),
 	  SWAP_ARGS(has_vt, left_w, 1),
 	  sgc, rgc, 1);
@@ -1642,7 +1641,7 @@ static void RedrawTitle(
       if (right_w > 0)
       {
 	RelieveRectangle(
-          dpy, t->title_w,
+          dpy, FW_W_TITLE(t),
 	  SWAP_ARGS(has_vt, right_x, i),
 	  SWAP_ARGS(has_vt, right_w, 1),
 	  sgc, rgc, 1);
@@ -1768,9 +1767,9 @@ void draw_clipped_decorations(
     is_button_redraw_allowed = True;
     is_title_redraw_allowed = True;
   }
-  else if (expose_win == t->title_w)
+  else if (expose_win == FW_W_TITLE(t))
     is_title_redraw_allowed = True;
-  else if (expose_win == t->frame || expose_win == t->decor_w)
+  else if (expose_win == FW_W_FRAME(t) || expose_win == t->decor_w)
     /* sides and corners are InputOnly and incapable of triggering Expose events
      */
   {
@@ -1844,7 +1843,7 @@ void draw_clipped_decorations(
       if (t->title_background_pixmap == None || force)
       {
 	change_window_background(
-	  t->title_w, cd.notex_valuemask, &cd.notex_attributes);
+	  FW_W_TITLE(t), cd.notex_valuemask, &cd.notex_attributes);
 	t->title_background_pixmap = None;
       }
     }
@@ -1858,7 +1857,7 @@ void draw_clipped_decorations(
     RedrawTitle(&cd, t, has_focus, rclip);
   }
   if (cd.flags.has_color_changed ||
-      ((draw_parts & DRAW_FRAME) && (is_frame_redraw_allowed)))
+      ((draw_parts & DRAW_FRAME) && is_frame_redraw_allowed))
   {
     get_common_decorations(
       &cd, t, draw_parts, has_focus, force, expose_win, True, True);
@@ -2033,16 +2032,20 @@ void CMD_BorderStyle(F_CMD_ARGS)
  *  redraw the decoration when style change
  *
  ****************************************************************************/
-void RedrawDecorations(FvwmWindow *tmp_win)
+void RedrawDecorations(FvwmWindow *fw)
 {
-  FvwmWindow *u = Scr.Hilite;
+	FvwmWindow *u = Scr.Hilite;
 
-  if (IS_SHADED(tmp_win))
-    XRaiseWindow(dpy, tmp_win->decor_w);
-  /* domivogt (6-Jun-2000): Don't check if the window is visible here.  If we
-   * do, some updates are not applied and when the window becomes visible
-   * again, the X Server may not redraw the window. */
-  DrawDecorations(
-    tmp_win, DRAW_ALL, (Scr.Hilite == tmp_win), 2, None, CLEAR_ALL);
-  Scr.Hilite = u;
+	if (IS_SHADED(fw))
+	{
+		XRaiseWindow(dpy, fw->decor_w);
+	}
+	/* domivogt (6-Jun-2000): Don't check if the window is visible here.
+	 * If we do, some updates are not applied and when the window becomes
+	 * visible again, the X Server may not redraw the window. */
+	DrawDecorations(
+		fw, DRAW_ALL, (Scr.Hilite == fw), 2, None, CLEAR_ALL);
+	Scr.Hilite = u;
+
+	return;
 }

@@ -1,3 +1,4 @@
+/* -*-c-*- */
 /* This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 2 of the License, or
@@ -5,17 +6,13 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307	 USA
  */
-
-#ifndef FVWM_H
-#define FVWM_H
-
 /****************************************************************************
  * This module is based on Twm, but has been siginificantly modified
  * by Rob Nation
@@ -47,16 +44,10 @@
 /**    OR PERFORMANCE OF THIS SOFTWARE.                                     **/
 /*****************************************************************************/
 
+#ifndef FVWM_H
+#define FVWM_H
 
-/***********************************************************************
- * fvwm include file
- ***********************************************************************/
-
-/*
- * Fvwm trivia: There were 97 commands in the fvwm command table
- * when the F_CMD_ARGS macro was written.
- * dje 12/19/98.
- */
+/* ---------------------------- included header files ----------------------- */
 
 #include <X11/Xlib.h>
 #include <X11/Xutil.h>
@@ -66,49 +57,7 @@
 #include <libs/Flocale.h>
 #include "window_flags.h"
 
-/* Macro for args passed to fvwm commands... */
-#define F_CMD_ARGS fvwm_cond_func_rc *cond_rc, XEvent *eventp, Window w, \
-	FvwmWindow *tmp_win, unsigned long context,char *action, int *Module
-#define F_PASS_ARGS cond_rc, eventp, w, tmp_win, context, action, Module
-#define F_EXEC_ARGS fvwm_cond_func_rc *cond_rc, char *action, \
-	FvwmWindow *tmp_win, XEvent *eventp, unsigned long context, int Module
-#define F_PASS_EXEC_ARGS cond_rc, action, tmp_win, eventp, context, *Module
-#define FUNC_FLAGS_TYPE unsigned char
-
-typedef enum
-{
-	COND_RC_BREAK = -2,
-	COND_RC_ERROR = -1,
-	COND_RC_NO_MATCH = 0,
-	COND_RC_OK = 1
-} fvwm_cond_func_rc;
-
-typedef struct
-{
-	/* return code for conditional commands only */
-	fvwm_cond_func_rc *cond_rc;
-	/* pointer to the event that caused the function */
-	XEvent *eventp;
-	/* the fvwm window structure */
-	struct FvwmWindow *tmp_win;
-	/* the action to execute */
-	char *action;
-	char **args;
-	/* the context in which the button was pressed */
-	unsigned long context;
-	int module;
-	/* If tmp_win is NULL, the is_window_unmanaged flag may be set along
-	 * with this field to indicate the function should run with an
-	 * unmanaged window. */
-	Window win;
-	struct
-	{
-		FUNC_FLAGS_TYPE exec;
-		unsigned do_save_tmpwin : 1;
-		unsigned is_window_unmanaged : 1;
-	} flags;
-} exec_func_args_type;
-
+/* ---------------------------- global definitions -------------------------- */
 
 /* Allow GCC extensions to work, if you have GCC */
 
@@ -141,6 +90,79 @@ typedef struct
 #endif
 
 #define NULLSTR ((char *) NULL)
+
+/* ---------------------------- global macros ------------------------------- */
+
+/*
+ * Fvwm trivia: There were 97 commands in the fvwm command table
+ * when the F_CMD_ARGS macro was written.
+ * dje 12/19/98.
+ */
+
+/* Macro for args passed to fvwm commands... */
+#define F_CMD_ARGS fvwm_cond_func_rc *cond_rc, XEvent *eventp, Window w, \
+	FvwmWindow *fw, unsigned long context,char *action, int *Module
+#define F_PASS_ARGS cond_rc, eventp, w, fw, context, action, Module
+#define F_EXEC_ARGS fvwm_cond_func_rc *cond_rc, char *action, \
+	FvwmWindow *fw, XEvent *eventp, unsigned long context, int Module
+#define F_PASS_EXEC_ARGS cond_rc, action, fw, eventp, context, *Module
+#define FUNC_FLAGS_TYPE unsigned char
+
+/* access macros */
+#define FW_W_FRAME(fw)        ((fw)->wins.frame)
+#define FW_W_PARENT(fw)       ((fw)->wins.parent)
+#define FW_W_CLIENT(fw)       ((fw)->wins.client)
+#define FW_W(fw)              FW_W_CLIENT(fw)
+#define FW_W_TITLE(fw)        ((fw)->wins.title)
+#define FW_W_BUTTON(fw,i)     ((fw)->wins.button_w[(i)])
+#define FW_W_SIDE(fw,i)       ((fw)->wins.sides[(i)])
+#define FW_W_CORNER(fw,i)     ((fw)->wins.corners[(i)])
+#define FW_W_ICON_TITLE(fw)   ((fw)->wins.icon_title_w)
+#define FW_W_ICON_PIXMAP(fw)  ((fw)->wins.icon_pixmap_w)
+#define FW_W_TRANSIENTFOR(fw) ((fw)->wins.transientfor)
+
+/* ---------------------------- forward declarations ------------------------ */
+
+#ifdef USEDECOR
+/* definition in screen.h */
+struct FvwmDecor;
+#endif
+
+/* ---------------------------- type definitions ---------------------------- */
+
+typedef enum
+{
+	COND_RC_BREAK = -2,
+	COND_RC_ERROR = -1,
+	COND_RC_NO_MATCH = 0,
+	COND_RC_OK = 1
+} fvwm_cond_func_rc;
+
+typedef struct
+{
+	/* return code for conditional commands only */
+	fvwm_cond_func_rc *cond_rc;
+	/* pointer to the event that caused the function */
+	XEvent *eventp;
+	/* the fvwm window structure */
+	struct FvwmWindow *fw;
+	/* the action to execute */
+	char *action;
+	char **args;
+	/* the context in which the button was pressed */
+	unsigned long context;
+	int module;
+	/* If fw is NULL, the is_window_unmanaged flag may be set along
+	 * with this field to indicate the function should run with an
+	 * unmanaged window. */
+	Window win;
+	struct
+	{
+		FUNC_FLAGS_TYPE exec;
+		unsigned do_save_tmpwin : 1;
+		unsigned is_window_unmanaged : 1;
+	} flags;
+} exec_func_args_type;
 
 /*
   For 1 style statement, there can be any number of IconBoxes.
@@ -184,11 +206,6 @@ typedef struct
 	int top;
 	int bottom;
 } ewmh_strut;
-
-#ifdef USEDECOR
-/* definition in screen.h */
-struct FvwmDecor;
-#endif
 
 typedef struct
 {
@@ -274,8 +291,10 @@ typedef struct
 	/* Reuse this struct, don't free it, when destroying/recapturing
 	 * window. */
 	unsigned do_reuse_destroyed : 1;
-	/* Is this decorated with border*/
+	/* Is the window decorated with a border? */
 	unsigned has_border : 1;
+	/* Does it have resize handles? */
+	unsigned has_handles : 1;
 	/* Icon change is pending */
 	unsigned has_icon_changed : 1;
 	/* Is this decorated with title */
@@ -462,7 +481,7 @@ typedef struct
 #endif
 	unsigned has_mwm_decor : 1;
 	unsigned has_mwm_functions : 1;
-	unsigned has_no_border : 1;
+	unsigned has_no_handles : 1;
 	unsigned has_no_title : 1;
 	unsigned has_ol_decor : 1;
 #if 0
@@ -562,35 +581,39 @@ typedef struct FvwmWindow
 	struct FvwmWindow *stack_next;
 	/* prev (higher) fvwm window in stacking order */
 	struct FvwmWindow *stack_prev;
-	/* the child window */
-	Window w;
 	/* border width before reparenting */
 	int old_bw;
-	/* the frame window */
-	Window frame;
-	/* parent of decoration windows */
-	Window decor_w;
-	/* Ugly Ugly Ugly - it looks like you HAVE to reparent the app window
-	 * into a window whose size = app window, or else you can't keep xv
-	 * and matlab happy at the same time! */
-	Window Parent;
-	/* the title bar window */
-	Window title_w;
-	Window sides[4];
-	/* Corner pieces */
-	Window corners[4];
+	struct
+	{
+		/* the frame window */
+		Window frame;
+		/* It looks like you HAVE to reparent the app window into a
+		 * window whose size = app window, or else you can't keep xv
+		 * and matlab happy at the same time! */
+		Window parent;
+		/* the child window */
+		Window client;
+		/* the title bar window and button windows */
+		Window title;
+		Window button_w[NUMBER_OF_BUTTONS];
+		/* sides of the border */
+		Window sides[4];
+		/* corner pieces */
+		Window corners[4];
+		/* icon title window */
+		Window icon_title_w;
+		/* icon picture window */
+		Window icon_pixmap_w;
+		Window transientfor;
+	} wins;
+Window decor_w;
 	window_flags flags;
 	int nr_left_buttons;
 	int nr_right_buttons;
-	Window button_w[NUMBER_OF_BUTTONS];
 #define BUTTON_INDEX(b) (((b) == 0) ? (NUMBER_OF_BUTTONS - 1) : ((b) - 1))
 #ifdef USEDECOR
 	struct FvwmDecor *decor;
 #endif
-	/* icon title window */
-	Window icon_title_w;
-	/* icon picture window */
-	Window icon_pixmap_w;
 	/* is this a shaped window */
 	int wShaped;
 	Pixmap title_background_pixmap;
@@ -638,7 +661,6 @@ typedef struct FvwmWindow
 	int FocusDesk;
 	/* Desk to deiconify to, for StubbornIcons */
 	int DeIconifyDesk;
-	Window transientfor;
 
 #ifdef MINI_ICONS
 	char *mini_pixmap_file;
@@ -722,6 +744,10 @@ typedef struct FvwmWindow
 	void *pscratch;
 } FvwmWindow;
 
+/* ---------------------------- exported variables (globals) ---------------- */
+
+/* ---------------------------- interface functions ------------------------- */
+
 void SetMWM_INFO(Window window);
 
-#endif /* _FVWM_ */
+#endif /* FVWM_H */

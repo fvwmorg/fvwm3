@@ -112,7 +112,7 @@ int Context = C_NO_CONTEXT;		/* current button press context */
 static int Button = 0;
 FvwmWindow *ButtonWindow = NULL;	/* button press window structure */
 XEvent Event;				/* the current event */
-FvwmWindow *Tmp_win = NULL;		/* the current fvwm window */
+FvwmWindow *Fw = NULL;		/* the current fvwm window */
 
 int last_event_type=0;
 static Window last_event_window=0;
@@ -179,12 +179,12 @@ void HandleFocusIn(void)
     return;
   }
   /**/
-  if (XFindContext(dpy, w, FvwmContext, (caddr_t *) &Tmp_win) == XCNOENT)
+  if (XFindContext(dpy, w, FvwmContext, (caddr_t *) &Fw) == XCNOENT)
   {
-    Tmp_win = NULL;
+    Fw = NULL;
   }
 
-  if (!Tmp_win)
+  if (!Fw)
   {
     if (w != Scr.NoFocusWin)
     {
@@ -212,25 +212,25 @@ void HandleFocusIn(void)
     fc = GetColor(DEFAULT_FORE_COLOR);
     bc = GetColor(DEFAULT_BACK_COLOR);
   }
-  else if (Tmp_win != Scr.Hilite
+  else if (Fw != Scr.Hilite
 	   /* domivogt (16-May-2000): This check is necessary to force sending
 	    * a M_FOCUS_CHANGE packet after an unmanaged window was focused.
 	    * Otherwise fvwm would believe that Scr.Hilite was still focused and
 	    * not send any info to the modules. */
 	   || last_focus_fw == None
-	   || IS_FOCUS_CHANGE_BROADCAST_PENDING(Tmp_win))
+	   || IS_FOCUS_CHANGE_BROADCAST_PENDING(Fw))
   {
-    do_force_broadcast = IS_FOCUS_CHANGE_BROADCAST_PENDING(Tmp_win);
-    SET_FOCUS_CHANGE_BROADCAST_PENDING(Tmp_win, 0);
-    if (Tmp_win != Scr.Hilite)
+    do_force_broadcast = IS_FOCUS_CHANGE_BROADCAST_PENDING(Fw);
+    SET_FOCUS_CHANGE_BROADCAST_PENDING(Fw, 0);
+    if (Fw != Scr.Hilite)
     {
-      DrawDecorations(Tmp_win, DRAW_ALL, True, True, None, CLEAR_ALL);
+      DrawDecorations(Fw, DRAW_ALL, True, True, None, CLEAR_ALL);
     }
-    focus_w = Tmp_win->w;
-    focus_fw = Tmp_win->frame;
-    fc = Tmp_win->hicolors.fore;
-    bc = Tmp_win->hicolors.back;
-    set_focus_window(Tmp_win);
+    focus_w = FW_W(Fw);
+    focus_fw = FW_W_FRAME(Fw);
+    fc = Fw->hicolors.fore;
+    bc = Fw->hicolors.back;
+    set_focus_window(Fw);
     if (Scr.ColormapFocus == COLORMAP_FOLLOWS_FOCUS)
     {
       if((Scr.Hilite)&&(!IS_ICONIFIED(Scr.Hilite)))
@@ -281,7 +281,7 @@ void HandleKeyPress(void)
 
   DBUG("HandleKeyPress","Routine Entered");
 
-  Context = GetContext(Tmp_win, &Event, &PressedW);
+  Context = GetContext(Fw, &Event, &PressedW);
   PressedW = None;
 
   /* Here's a real hack - some systems have two keys with the
@@ -296,8 +296,8 @@ void HandleKeyPress(void)
 			KEY_BINDING);
   if (action != NULL)
   {
-    ButtonWindow = Tmp_win;
-    old_execute_function(NULL, action, Tmp_win, &Event, Context, -1, 0, NULL);
+    ButtonWindow = Fw;
+    old_execute_function(NULL, action, Fw, &Event, Context, -1, 0, NULL);
     ButtonWindow = NULL;
     return;
   }
@@ -306,15 +306,15 @@ void HandleKeyPress(void)
    * to the client if it was in a window we know about.
    */
   sf = get_focus_window();
-  if (sf && Event.xkey.window != sf->w)
+  if (sf && Event.xkey.window != FW_W(sf))
   {
-    Event.xkey.window = sf->w;
-    XSendEvent(dpy, sf->w, False, KeyPressMask, &Event);
+    Event.xkey.window = FW_W(sf);
+    XSendEvent(dpy, FW_W(sf), False, KeyPressMask, &Event);
   }
-  else if (Tmp_win && Event.xkey.window != Tmp_win->w)
+  else if (Fw && Event.xkey.window != FW_W(Fw))
   {
-    Event.xkey.window = Tmp_win->w;
-    XSendEvent(dpy, Tmp_win->w, False, KeyPressMask, &Event);
+    Event.xkey.window = FW_W(Fw);
+    XSendEvent(dpy, FW_W(Fw), False, KeyPressMask, &Event);
   }
 }
 
@@ -356,11 +356,11 @@ void HandlePropertyNotify(void)
     return;
   }
 
-  if (!Tmp_win)
+  if (!Fw)
   {
     return;
   }
-  if (XGetGeometry(dpy, Tmp_win->w, &JunkRoot, &JunkX, &JunkY,
+  if (XGetGeometry(dpy, FW_W(Fw), &JunkRoot, &JunkX, &JunkY,
 		   &JunkWidth, &JunkHeight, &JunkBW, &JunkDepth) == 0)
   {
     return;
@@ -370,109 +370,109 @@ void HandlePropertyNotify(void)
    * Make sure at least part of window is on this page
    * before giving it focus...
    */
-  OnThisPage = IsRectangleOnThisPage(&(Tmp_win->frame_g), Tmp_win->Desk);
+  OnThisPage = IsRectangleOnThisPage(&(Fw->frame_g), Fw->Desk);
 
   switch (Event.xproperty.atom)
   {
   case XA_WM_TRANSIENT_FOR:
-    flush_property_notify(XA_WM_TRANSIENT_FOR, Tmp_win->w);
-    if(XGetTransientForHint(dpy, Tmp_win->w, &Tmp_win->transientfor))
+    flush_property_notify(XA_WM_TRANSIENT_FOR, FW_W(Fw));
+    if(XGetTransientForHint(dpy, FW_W(Fw), &FW_W_TRANSIENTFOR(Fw)))
     {
-      SET_TRANSIENT(Tmp_win, 1);
-      RaiseWindow(Tmp_win);
+      SET_TRANSIENT(Fw, 1);
+      RaiseWindow(Fw);
     }
     else
     {
-      SET_TRANSIENT(Tmp_win, 0);
+      SET_TRANSIENT(Fw, 0);
     }
   break;
 
   case XA_WM_NAME:
-    flush_property_notify(XA_WM_NAME, Tmp_win->w);
-    if (HAS_EWMH_WM_NAME(Tmp_win))
+    flush_property_notify(XA_WM_NAME, FW_W(Fw));
+    if (HAS_EWMH_WM_NAME(Fw))
       return;
-    FlocaleGetNameProperty(XGetWMName, dpy, Tmp_win->w, &new_name);
+    FlocaleGetNameProperty(XGetWMName, dpy, FW_W(Fw), &new_name);
     if (new_name.name == NULL)
     {
       return;
     }
 
-    free_window_names (Tmp_win, True, False);
-    Tmp_win->name = new_name;
-    if (Tmp_win->name.name && strlen(Tmp_win->name.name) > MAX_WINDOW_NAME_LEN)
-      (Tmp_win->name.name)[MAX_WINDOW_NAME_LEN] = 0;
+    free_window_names (Fw, True, False);
+    Fw->name = new_name;
+    if (Fw->name.name && strlen(Fw->name.name) > MAX_WINDOW_NAME_LEN)
+      (Fw->name.name)[MAX_WINDOW_NAME_LEN] = 0;
 
-    SET_NAME_CHANGED(Tmp_win, 1);
+    SET_NAME_CHANGED(Fw, 1);
 
-    if (Tmp_win->name.name == NULL)
-      Tmp_win->name.name = NoName; /* must not happen */
+    if (Fw->name.name == NULL)
+      Fw->name.name = NoName; /* must not happen */
 
-    setup_visible_name(Tmp_win, False);
-    BroadcastWindowIconNames(Tmp_win, True, False);
+    setup_visible_name(Fw, False);
+    BroadcastWindowIconNames(Fw, True, False);
 
     /* fix the name in the title bar */
-    if(!IS_ICONIFIED(Tmp_win))
+    if(!IS_ICONIFIED(Fw))
       DrawDecorations(
-	Tmp_win, DRAW_TITLE, (Scr.Hilite == Tmp_win), True, None, CLEAR_ALL);
+	Fw, DRAW_TITLE, (Scr.Hilite == Fw), True, None, CLEAR_ALL);
 
-    EWMH_SetVisibleName(Tmp_win, False);
+    EWMH_SetVisibleName(Fw, False);
     /*
      * if the icon name is NoName, set the name of the icon to be
      * the same as the window
      */
-    if (!WAS_ICON_NAME_PROVIDED(Tmp_win))
+    if (!WAS_ICON_NAME_PROVIDED(Fw))
     {
-      Tmp_win->icon_name = Tmp_win->name;
-      setup_visible_name(Tmp_win, True);
-      BroadcastWindowIconNames(Tmp_win, False, True);
-      RedoIconName(Tmp_win);
+      Fw->icon_name = Fw->name;
+      setup_visible_name(Fw, True);
+      BroadcastWindowIconNames(Fw, False, True);
+      RedoIconName(Fw);
     }
     break;
 
   case XA_WM_ICON_NAME:
-    flush_property_notify(XA_WM_ICON_NAME, Tmp_win->w);
-    if (HAS_EWMH_WM_ICON_NAME(Tmp_win))
+    flush_property_notify(XA_WM_ICON_NAME, FW_W(Fw));
+    if (HAS_EWMH_WM_ICON_NAME(Fw))
       return;
-    FlocaleGetNameProperty(XGetWMIconName, dpy, Tmp_win->w, &new_name);
+    FlocaleGetNameProperty(XGetWMIconName, dpy, FW_W(Fw), &new_name);
     if (new_name.name == NULL)
     {
       return;
     }
 
-    free_window_names(Tmp_win, False, True);
-    Tmp_win->icon_name = new_name;
-    if (Tmp_win->icon_name.name && strlen(Tmp_win->icon_name.name) >
+    free_window_names(Fw, False, True);
+    Fw->icon_name = new_name;
+    if (Fw->icon_name.name && strlen(Fw->icon_name.name) >
 	MAX_ICON_NAME_LEN)
     {
       /* limit to prevent hanging X server */
-      (Tmp_win->icon_name.name)[MAX_ICON_NAME_LEN] = 0;
+      (Fw->icon_name.name)[MAX_ICON_NAME_LEN] = 0;
     }
 
-    SET_WAS_ICON_NAME_PROVIDED(Tmp_win, 1);
-    if (Tmp_win->icon_name.name == NULL)
+    SET_WAS_ICON_NAME_PROVIDED(Fw, 1);
+    if (Fw->icon_name.name == NULL)
     {
-      Tmp_win->icon_name .name= Tmp_win->name.name;
-      SET_WAS_ICON_NAME_PROVIDED(Tmp_win, 0);
+      Fw->icon_name .name= Fw->name.name;
+      SET_WAS_ICON_NAME_PROVIDED(Fw, 0);
     }
-    setup_visible_name(Tmp_win, True);
+    setup_visible_name(Fw, True);
 
-    BroadcastWindowIconNames(Tmp_win, False, True);
-    RedoIconName(Tmp_win);
-    EWMH_SetVisibleName(Tmp_win, True);
+    BroadcastWindowIconNames(Fw, False, True);
+    RedoIconName(Fw);
+    EWMH_SetVisibleName(Fw, True);
     break;
 
   case XA_WM_HINTS:
-    flush_property_notify(XA_WM_HINTS, Tmp_win->w);
+    flush_property_notify(XA_WM_HINTS, FW_W(Fw));
     /* clasen@mathematik.uni-freiburg.de - 02/01/1998 - new -
        the urgency flag is an ICCCM 2.0 addition to the WM_HINTS. */
     old_wmhints_flags = 0;
-    if (Tmp_win->wmhints)
+    if (Fw->wmhints)
     {
-      old_wmhints_flags = Tmp_win->wmhints->flags;
-      XFree ((char *) Tmp_win->wmhints);
+      old_wmhints_flags = Fw->wmhints->flags;
+      XFree ((char *) Fw->wmhints);
     }
-    setup_wm_hints(Tmp_win);
-    if (Tmp_win->wmhints == NULL)
+    setup_wm_hints(Fw);
+    if (Fw->wmhints == NULL)
     {
       return;
     }
@@ -481,87 +481,87 @@ void HandlePropertyNotify(void)
      * rebuild icon if the client either provides an icon
      * pixmap or window or has reset the hints to `no icon'.
      */
-    if ((Tmp_win->wmhints->flags & IconPixmapHint) ||
+    if ((Fw->wmhints->flags & IconPixmapHint) ||
 	(old_wmhints_flags       & IconPixmapHint))
     {
-ICON_DBG((stderr,"hpn: iph changed (%d) '%s'\n", !!(int)(Tmp_win->wmhints->flags & IconPixmapHint), Tmp_win->name));
+ICON_DBG((stderr,"hpn: iph changed (%d) '%s'\n", !!(int)(Fw->wmhints->flags & IconPixmapHint), Fw->name));
       has_icon_pixmap_hint_changed = True;
     }
-    if ((Tmp_win->wmhints->flags & IconWindowHint) ||
+    if ((Fw->wmhints->flags & IconWindowHint) ||
 	(old_wmhints_flags       & IconWindowHint))
     {
-ICON_DBG((stderr,"hpn: iwh changed (%d) '%s'\n", !!(int)(Tmp_win->wmhints->flags & IconWindowHint), Tmp_win->name));
+ICON_DBG((stderr,"hpn: iwh changed (%d) '%s'\n", !!(int)(Fw->wmhints->flags & IconWindowHint), Fw->name));
       has_icon_window_hint_changed = True;
-      SET_USE_EWMH_ICON(Tmp_win, False);
+      SET_USE_EWMH_ICON(Fw, False);
     }
-    increase_icon_hint_count(Tmp_win);
+    increase_icon_hint_count(Fw);
     if (has_icon_window_hint_changed || has_icon_pixmap_hint_changed)
     {
-      if (ICON_OVERRIDE_MODE(Tmp_win) == ICON_OVERRIDE)
+      if (ICON_OVERRIDE_MODE(Fw) == ICON_OVERRIDE)
       {
-ICON_DBG((stderr,"hpn: icon override '%s'\n", Tmp_win->name));
+ICON_DBG((stderr,"hpn: icon override '%s'\n", Fw->name));
 	has_icon_changed = False;
       }
-      else if (ICON_OVERRIDE_MODE(Tmp_win) == NO_ACTIVE_ICON_OVERRIDE)
+      else if (ICON_OVERRIDE_MODE(Fw) == NO_ACTIVE_ICON_OVERRIDE)
       {
 	if (has_icon_pixmap_hint_changed)
 	{
-	  if (WAS_ICON_HINT_PROVIDED(Tmp_win) == ICON_HINT_MULTIPLE)
+	  if (WAS_ICON_HINT_PROVIDED(Fw) == ICON_HINT_MULTIPLE)
 	  {
-ICON_DBG((stderr,"hpn: using further iph '%s'\n", Tmp_win->name));
+ICON_DBG((stderr,"hpn: using further iph '%s'\n", Fw->name));
 	    has_icon_changed = True;
 	  }
-	  else  if (Tmp_win->icon_bitmap_file == NULL ||
-		    Tmp_win->icon_bitmap_file == Scr.DefaultIcon)
+	  else  if (Fw->icon_bitmap_file == NULL ||
+		    Fw->icon_bitmap_file == Scr.DefaultIcon)
 	  {
-ICON_DBG((stderr,"hpn: using first iph '%s'\n", Tmp_win->name));
+ICON_DBG((stderr,"hpn: using first iph '%s'\n", Fw->name));
 	    has_icon_changed = True;
 	  }
 	  else
 	  {
 	    /* ignore the first icon pixmap hint if the application did not
 	     * provide it from the start */
-ICON_DBG((stderr,"hpn: first iph ignored '%s'\n", Tmp_win->name));
+ICON_DBG((stderr,"hpn: first iph ignored '%s'\n", Fw->name));
 	    has_icon_changed = False;
 	  }
 	}
 	else if (has_icon_window_hint_changed)
 	{
-	  ICON_DBG((stderr,"hpn: using iwh '%s'\n", Tmp_win->name));
+	  ICON_DBG((stderr,"hpn: using iwh '%s'\n", Fw->name));
 	  has_icon_changed = True;
 	}
 	else
 	{
-ICON_DBG((stderr,"hpn: iwh not changed, hint ignored '%s'\n", Tmp_win->name));
+ICON_DBG((stderr,"hpn: iwh not changed, hint ignored '%s'\n", Fw->name));
 	  has_icon_changed = False;
 	}
       }
       else /* NO_ICON_OVERRIDE */
       {
-ICON_DBG((stderr,"hpn: using hint '%s'\n", Tmp_win->name));
+ICON_DBG((stderr,"hpn: using hint '%s'\n", Fw->name));
 	has_icon_changed = True;
       }
 
-      if (USE_EWMH_ICON(Tmp_win))
+      if (USE_EWMH_ICON(Fw))
 	has_icon_changed = False;
 
       if (has_icon_changed)
       {
-ICON_DBG((stderr,"hpn: icon changed '%s'\n", Tmp_win->name));
+ICON_DBG((stderr,"hpn: icon changed '%s'\n", Fw->name));
 	/* Okay, the icon hint has changed and style options tell us to honour
 	 * this change.  Now let's see if we have to use the application
 	 * provided pixmap or window (if any), the icon file provided by the
 	 * window's style or the default style's icon. */
-	if (Tmp_win->icon_bitmap_file == Scr.DefaultIcon)
-	  Tmp_win->icon_bitmap_file = NULL;
-	if (!Tmp_win->icon_bitmap_file &&
-	    !(Tmp_win->wmhints->flags&(IconPixmapHint|IconWindowHint)))
+	if (Fw->icon_bitmap_file == Scr.DefaultIcon)
+	  Fw->icon_bitmap_file = NULL;
+	if (!Fw->icon_bitmap_file &&
+	    !(Fw->wmhints->flags&(IconPixmapHint|IconWindowHint)))
 	{
-	  Tmp_win->icon_bitmap_file =
+	  Fw->icon_bitmap_file =
 	    (Scr.DefaultIcon) ? Scr.DefaultIcon : NULL;
 	}
-	Tmp_win->iconPixmap = (Window)NULL;
-	ChangeIconPixmap(Tmp_win);
+	Fw->iconPixmap = (Window)NULL;
+	ChangeIconPixmap(Fw);
       }
     }
 
@@ -571,30 +571,30 @@ ICON_DBG((stderr,"hpn: icon changed '%s'\n", Tmp_win->name));
        These could e.g. deiconify and raise the window or temporarily
        change the decor. */
     if (!(old_wmhints_flags & XUrgencyHint) &&
-	(Tmp_win->wmhints->flags & XUrgencyHint))
+	(Fw->wmhints->flags & XUrgencyHint))
     {
       old_execute_function(
-	NULL, "Function UrgencyFunc", Tmp_win, &Event, C_WINDOW, -1, 0, NULL);
+	NULL, "Function UrgencyFunc", Fw, &Event, C_WINDOW, -1, 0, NULL);
     }
 
     if ((old_wmhints_flags & XUrgencyHint) &&
-	!(Tmp_win->wmhints->flags & XUrgencyHint))
+	!(Fw->wmhints->flags & XUrgencyHint))
     {
       old_execute_function(
-	NULL, "Function UrgencyDoneFunc", Tmp_win, &Event, C_WINDOW, -1, 0,
+	NULL, "Function UrgencyDoneFunc", Fw, &Event, C_WINDOW, -1, 0,
 	NULL);
     }
     break;
   case XA_WM_NORMAL_HINTS:
-    was_size_inc_set = IS_SIZE_INC_SET(Tmp_win);
-    old_width_inc = Tmp_win->hints.width_inc;
-    old_height_inc = Tmp_win->hints.height_inc;
-    old_base_width = Tmp_win->hints.base_width;
-    old_base_height = Tmp_win->hints.base_height;
+    was_size_inc_set = IS_SIZE_INC_SET(Fw);
+    old_width_inc = Fw->hints.width_inc;
+    old_height_inc = Fw->hints.height_inc;
+    old_base_width = Fw->hints.base_width;
+    old_base_height = Fw->hints.base_height;
     XSync(dpy, 0);
-    GetWindowSizeHints(Tmp_win);
-    if (old_width_inc != Tmp_win->hints.width_inc ||
-	old_height_inc != Tmp_win->hints.height_inc)
+    GetWindowSizeHints(Fw);
+    if (old_width_inc != Fw->hints.width_inc ||
+	old_height_inc != Fw->hints.height_inc)
     {
       int units_w;
       int units_h;
@@ -612,41 +612,41 @@ ICON_DBG((stderr,"hpn: icon changed '%s'\n", Tmp_win->name));
       {
 	size_borders b;
 
-	get_window_borders(Tmp_win, &b);
+	get_window_borders(Fw, &b);
 	/* we have to resize the unmaximized window to keep the size in
 	 * resize increments constant */
-	units_w = Tmp_win->normal_g.width - b.total_size.width - old_base_width;
-	units_h = Tmp_win->normal_g.height - b.total_size.height -
+	units_w = Fw->normal_g.width - b.total_size.width - old_base_width;
+	units_h = Fw->normal_g.height - b.total_size.height -
 		old_base_height;
 	units_w /= old_width_inc;
 	units_h /= old_height_inc;
 
 	/* update the 'invisible' geometry */
-	wdiff = units_w * (Tmp_win->hints.width_inc - old_width_inc) +
-	  (Tmp_win->hints.base_width - old_base_width);
-	hdiff = units_h * (Tmp_win->hints.height_inc - old_height_inc) +
-	  (Tmp_win->hints.base_height - old_base_height);
+	wdiff = units_w * (Fw->hints.width_inc - old_width_inc) +
+	  (Fw->hints.base_width - old_base_width);
+	hdiff = units_h * (Fw->hints.height_inc - old_height_inc) +
+	  (Fw->hints.base_height - old_base_height);
 	gravity_resize(
-	  Tmp_win->hints.win_gravity, &Tmp_win->normal_g, wdiff, hdiff);
+	  Fw->hints.win_gravity, &Fw->normal_g, wdiff, hdiff);
       }
       gravity_constrain_size(
-	Tmp_win->hints.win_gravity, Tmp_win, &Tmp_win->normal_g, 0);
-      if (!IS_MAXIMIZED(Tmp_win))
+	Fw->hints.win_gravity, Fw, &Fw->normal_g, 0);
+      if (!IS_MAXIMIZED(Fw))
       {
 	rectangle new_g;
 
-	get_relative_geometry(&new_g, &Tmp_win->normal_g);
-	if (IS_SHADED(Tmp_win))
-	  get_shaded_geometry(Tmp_win, &new_g, &new_g);
+	get_relative_geometry(&new_g, &Fw->normal_g);
+	if (IS_SHADED(Fw))
+	  get_shaded_geometry(Fw, &new_g, &new_g);
 	frame_setup_window(
-	  Tmp_win, new_g.x, new_g.y, new_g.width, new_g.height, False);
+	  Fw, new_g.x, new_g.y, new_g.width, new_g.height, False);
       }
       else
       {
 	int w;
 	int h;
 
-	maximize_adjust_offset(Tmp_win);
+	maximize_adjust_offset(Fw);
 	/* domivogt (07-Apr-2000): as terrible hack to work around a xterm
 	 * bug: when the font size is changed in a xterm, xterm simply assumes
 	 * that the wm will grant its new size.  Of course this is wrong if
@@ -656,67 +656,67 @@ ICON_DBG((stderr,"hpn: icon changed '%s'\n", Tmp_win->name));
 	 * the font multiple times will cause the xterm to shrink because
 	 * gravity_constrain_size doesn't know about the initially requested
 	 * dimensions. */
-	w = Tmp_win->max_g.width;
-	h = Tmp_win->max_g.height;
+	w = Fw->max_g.width;
+	h = Fw->max_g.height;
 	gravity_constrain_size(
-	  Tmp_win->hints.win_gravity, Tmp_win, &Tmp_win->max_g,
+	  Fw->hints.win_gravity, Fw, &Fw->max_g,
 	  CS_UPDATE_MAX_DEFECT);
-	if (w != Tmp_win->max_g.width ||
-	    h != Tmp_win->max_g.height)
+	if (w != Fw->max_g.width ||
+	    h != Fw->max_g.height)
 	{
 	  rectangle new_g;
 
 	  /* This is in case the size_inc changed and the old dimensions are
 	   * not multiples of the new values. */
-	  get_relative_geometry(&new_g, &Tmp_win->max_g);
-	  if (IS_SHADED(Tmp_win))
-	    get_shaded_geometry(Tmp_win, &new_g, &new_g);
+	  get_relative_geometry(&new_g, &Fw->max_g);
+	  if (IS_SHADED(Fw))
+	    get_shaded_geometry(Fw, &new_g, &new_g);
 	  frame_setup_window(
-	    Tmp_win, new_g.x, new_g.y, new_g.width, new_g.height, False);
+	    Fw, new_g.x, new_g.y, new_g.width, new_g.height, False);
 	}
 	else
 	{
 	  SendConfigureNotify(
-	    Tmp_win, Tmp_win->frame_g.x, Tmp_win->frame_g.y,
-	    Tmp_win->frame_g.width, Tmp_win->frame_g.height+1, 0, False);
+	    Fw, Fw->frame_g.x, Fw->frame_g.y,
+	    Fw->frame_g.width, Fw->frame_g.height+1, 0, False);
 	  XSync(dpy, 0);
 	  /* free some CPU */
 	  usleep(1);
 	  SendConfigureNotify(
-	    Tmp_win, Tmp_win->frame_g.x, Tmp_win->frame_g.y,
-	    Tmp_win->frame_g.width, Tmp_win->frame_g.height, 0, False);
+	    Fw, Fw->frame_g.x, Fw->frame_g.y,
+	    Fw->frame_g.width, Fw->frame_g.height, 0, False);
 	  XSync(dpy, 0);
 	}
       }
-      GNOME_SetWinArea(Tmp_win);
+      GNOME_SetWinArea(Fw);
     }
-    EWMH_SetAllowedActions(Tmp_win);
-    BroadcastConfig(M_CONFIGURE_WINDOW,Tmp_win);
+    EWMH_SetAllowedActions(Fw);
+    BroadcastConfig(M_CONFIGURE_WINDOW,Fw);
     break;
 
   default:
     if(Event.xproperty.atom == _XA_WM_PROTOCOLS)
-      FetchWmProtocols (Tmp_win);
+      FetchWmProtocols (Fw);
     else if (Event.xproperty.atom == _XA_WM_COLORMAP_WINDOWS)
     {
-      FetchWmColormapWindows (Tmp_win);	/* frees old data */
+      FetchWmColormapWindows (Fw);	/* frees old data */
       ReInstallActiveColormap();
     }
     else if (Event.xproperty.atom == _XA_WM_STATE)
     {
-      if (Tmp_win && HAS_CLICK_FOCUS(Tmp_win) &&
-	  Tmp_win == get_focus_window())
+      if (Fw && HAS_CLICK_FOCUS(Fw) &&
+	  Fw == get_focus_window())
       {
 	if (OnThisPage)
 	{
 	  set_focus_window(NULL);
-	  SetFocusWindow(Tmp_win, False, True);
+	  SetFocusWindow(Fw, False, True);
 	}
       }
     }
     else
     {
-      EWMH_ProcessPropertyNotify(Tmp_win, &Event);
+      EWMH_ProcessPropertyNotify(Fw, &Event);
     }
     break;
   }
@@ -736,26 +736,26 @@ void HandleClientMessage(void)
   DBUG("HandleClientMessage","Routine Entered");
 
   /* Process GNOME and EWMH Messages */
-  if (GNOME_ProcessClientMessage(Tmp_win, &Event))
+  if (GNOME_ProcessClientMessage(Fw, &Event))
   {
     return;
   }
-  else if (EWMH_ProcessClientMessage(Tmp_win, &Event))
+  else if (EWMH_ProcessClientMessage(Fw, &Event))
   {
     return;
   }
 
   /* handle deletion of tear out menus */
-  if (Tmp_win && IS_TEAR_OFF_MENU(Tmp_win) && Event.xclient.format == 32 &&
+  if (Fw && IS_TEAR_OFF_MENU(Fw) && Event.xclient.format == 32 &&
       Event.xclient.data.l[0] == _XA_WM_DELETE_WINDOW)
   {
-    menu_close_tear_off_menu(Tmp_win);
+    menu_close_tear_off_menu(Fw);
     return;
   }
 
   if ((Event.xclient.message_type == _XA_WM_CHANGE_STATE)&&
-      (Tmp_win)&&(Event.xclient.data.l[0]==IconicState)&&
-      !IS_ICONIFIED(Tmp_win))
+      (Fw)&&(Event.xclient.data.l[0]==IconicState)&&
+      !IS_ICONIFIED(Fw))
   {
     if (XQueryPointer(dpy, Scr.Root, &JunkRoot, &JunkChild,
 		      &(button.xmotion.x_root),
@@ -768,7 +768,7 @@ void HandleClientMessage(void)
     }
     button.type = 0;
     old_execute_function(
-      NULL, "Iconify", Tmp_win, &button, C_FRAME, -1, 0, NULL);
+      NULL, "Iconify", Fw, &button, C_FRAME, -1, 0, NULL);
     return;
   }
 
@@ -790,12 +790,12 @@ void HandleClientMessage(void)
   ** I've looked at doesn't.  But it might be handy for a free drag and
   ** drop setup being developed for Linux.
   */
-  if (Tmp_win)
+  if (Fw)
   {
-    if(Event.xclient.window != Tmp_win->w)
+    if(Event.xclient.window != FW_W(Fw))
     {
-      Event.xclient.window = Tmp_win->w;
-      XSendEvent(dpy, Tmp_win->w, False, NoEventMask, &Event);
+      Event.xclient.window = FW_W(Fw);
+      XSendEvent(dpy, FW_W(Fw), False, NoEventMask, &Event);
     }
   }
 }
@@ -823,7 +823,7 @@ void HandleExpose(void)
 #else
 	flush_accumulate_expose(Event.xexpose.window, &Event);
 #endif
-	if (Tmp_win == NULL)
+	if (Fw == NULL)
 	{
 		return;
 	}
@@ -831,18 +831,18 @@ void HandleExpose(void)
 	r.y = Event.xexpose.y;
 	r.width = Event.xexpose.width;
 	r.height = Event.xexpose.height;
-	if (IS_TEAR_OFF_MENU(Tmp_win) && Event.xany.window == Tmp_win->w)
+	if (IS_TEAR_OFF_MENU(Fw) && Event.xany.window == FW_W(Fw))
 	{
 		/* refresh the contents of the torn out menu */
 		menu_expose(&Event, NULL);
 	}
 	/* redraw the decorations */
-	if (Event.xany.window == Tmp_win->title_w)
+	if (Event.xany.window == FW_W_TITLE(Fw))
 	{
 		draw_parts = DRAW_TITLE;
 	}
-	else if (Event.xany.window == Tmp_win->decor_w ||
-		 Event.xany.window == Tmp_win->frame)
+	else if (Event.xany.window == Fw->decor_w ||
+		 Event.xany.window == FW_W_FRAME(Fw))
 	{
 		draw_parts = DRAW_FRAME;
 	}
@@ -850,17 +850,17 @@ void HandleExpose(void)
 	{
 		draw_parts = DRAW_BUTTONS;
 	}
-	if (FftSupport && Tmp_win->title_font &&
-	    Tmp_win->title_font->fftf.fftfont != NULL &&
+	if (FftSupport && Fw->title_font &&
+	    Fw->title_font->fftf.fftfont != NULL &&
 	    draw_parts == DRAW_TITLE)
 	{
 	  draw_clipped_decorations(
-		Tmp_win, draw_parts, (Scr.Hilite == Tmp_win), True,
+		Fw, draw_parts, (Scr.Hilite == Fw), True,
 		Event.xany.window, NULL, CLEAR_ALL);
 	  return;
 	}
 	draw_clipped_decorations(
-		Tmp_win, draw_parts, (Scr.Hilite == Tmp_win), True,
+		Fw, draw_parts, (Scr.Hilite == Fw), True,
 		Event.xany.window, &r, CLEAR_ALL);
 	return;
 }
@@ -877,7 +877,7 @@ void HandleDestroyNotify(void)
 {
   DBUG("HandleDestroyNotify","Routine Entered");
 
-  destroy_window(Tmp_win);
+  destroy_window(Fw);
   EWMH_ManageKdeSysTray(Event.xdestroywindow.window, Event.type);
   EWMH_WindowDestroyed();
   GNOME_SetClientList();
@@ -900,16 +900,16 @@ static void fake_map_unmap_notify(FvwmWindow *tmp_win, int event_type)
   XEvent client_event;
   XWindowAttributes winattrs = {0};
 
-  if (!XGetWindowAttributes(dpy, tmp_win->w, &winattrs))
+  if (!XGetWindowAttributes(dpy, FW_W(tmp_win), &winattrs))
   {
     return;
   }
   XSelectInput(
-    dpy, tmp_win->w, winattrs.your_event_mask & ~StructureNotifyMask);
+    dpy, FW_W(tmp_win), winattrs.your_event_mask & ~StructureNotifyMask);
   client_event.type = event_type;
   client_event.xmap.display = dpy;
-  client_event.xmap.event = tmp_win->w;
-  client_event.xmap.window = tmp_win->w;
+  client_event.xmap.event = FW_W(tmp_win);
+  client_event.xmap.window = FW_W(tmp_win);
   switch (event_type)
   {
     case MapNotify:
@@ -922,8 +922,8 @@ static void fake_map_unmap_notify(FvwmWindow *tmp_win, int event_type)
       /* not possible if called correctly */
       break;
   }
-  XSendEvent(dpy, tmp_win->w, False, StructureNotifyMask, &client_event);
-  XSelectInput(dpy, tmp_win->w, winattrs.your_event_mask);
+  XSendEvent(dpy, FW_W(tmp_win), False, StructureNotifyMask, &client_event);
+  XSelectInput(dpy, FW_W(tmp_win), winattrs.your_event_mask);
 
   return;
 }
@@ -963,11 +963,11 @@ void HandleMapRequestKeepRaised(
   if (ReuseWin == NULL)
   {
     if (XFindContext(dpy, Event.xany.window, FvwmContext,
-		     (caddr_t *)&Tmp_win)==XCNOENT)
+		     (caddr_t *)&Fw)==XCNOENT)
     {
-      Tmp_win = NULL;
+      Fw = NULL;
     }
-    else if (IS_MAP_PENDING(Tmp_win))
+    else if (IS_MAP_PENDING(Fw))
     {
       /* The window is already going to be mapped, no need to do that twice */
       return;
@@ -975,10 +975,10 @@ void HandleMapRequestKeepRaised(
   }
   else
   {
-    Tmp_win = ReuseWin;
+    Fw = ReuseWin;
   }
 
-  if (Tmp_win == NULL && EWMH_IsKdeSysTrayWindow(Event.xany.window))
+  if (Fw == NULL && EWMH_IsKdeSysTrayWindow(Event.xany.window))
   {
     /* This means that the window is swallowed by kicker and that
      * kicker restart or exit. As we should assume that kicker restart
@@ -991,11 +991,11 @@ void HandleMapRequestKeepRaised(
   }
 
   /* If the window has never been mapped before ... */
-  if (!Tmp_win || (Tmp_win && DO_REUSE_DESTROYED(Tmp_win)))
+  if (!Fw || (Fw && DO_REUSE_DESTROYED(Fw)))
   {
     /* Add decorations. */
-    Tmp_win = AddWindow(Event.xany.window, ReuseWin, is_menu);
-    if (Tmp_win == NULL)
+    Fw = AddWindow(Event.xany.window, ReuseWin, is_menu);
+    if (Fw == NULL)
       return;
     is_new_window = True;
   }
@@ -1003,33 +1003,33 @@ void HandleMapRequestKeepRaised(
    * Make sure at least part of window is on this page
    * before giving it focus...
    */
-  is_on_this_page = IsRectangleOnThisPage(&(Tmp_win->frame_g), Tmp_win->Desk);
+  is_on_this_page = IsRectangleOnThisPage(&(Fw->frame_g), Fw->Desk);
   if(KeepRaised != None)
   {
     XRaiseWindow(dpy, KeepRaised);
   }
   /* If it's not merely iconified, and we have hints, use them. */
 
-  if (IS_ICONIFIED(Tmp_win))
+  if (IS_ICONIFIED(Fw))
   {
     /* If no hints, or currently an icon, just "deiconify" */
-    DeIconify(Tmp_win);
+    DeIconify(Fw);
   }
-  else if (IS_MAPPED(Tmp_win))
+  else if (IS_MAPPED(Fw))
   {
     /* the window is already mapped - fake a MapNotify event */
-    fake_map_unmap_notify(Tmp_win, MapNotify);
+    fake_map_unmap_notify(Fw, MapNotify);
   }
   else
   {
     int state;
 
-    if (Tmp_win->wmhints && (Tmp_win->wmhints->flags & StateHint))
-      state = Tmp_win->wmhints->initial_state;
+    if (Fw->wmhints && (Fw->wmhints->flags & StateHint))
+      state = Fw->wmhints->initial_state;
     else
       state = NormalState;
 
-    if (DO_START_ICONIC(Tmp_win))
+    if (DO_START_ICONIC(Fw))
       state = IconicState;
 
     if (isIconicState != DontCareState)
@@ -1042,45 +1042,47 @@ void HandleMapRequestKeepRaised(
     case InactiveState:
     default:
       MyXGrabServer(dpy);
-      if (Tmp_win->Desk == Scr.CurrentDesk)
+      if (Fw->Desk == Scr.CurrentDesk)
       {
 	Bool do_grab_focus;
 
-	XMapWindow(dpy, Tmp_win->frame);
-	XMapWindow(dpy, Tmp_win->w);
-	SET_MAP_PENDING(Tmp_win, 1);
-	SetMapStateProp(Tmp_win, NormalState);
+	XMapWindow(dpy, FW_W_FRAME(Fw));
+	XMapWindow(dpy, FW_W(Fw));
+	SET_MAP_PENDING(Fw, 1);
+	SetMapStateProp(Fw, NormalState);
 	if (Scr.flags.is_map_desk_in_progress)
 	  do_grab_focus = False;
 	else if (!is_on_this_page)
 	  do_grab_focus = False;
-	else if (DO_GRAB_FOCUS(Tmp_win) &&
-		 (!IS_TRANSIENT(Tmp_win) || Tmp_win->transientfor == Scr.Root))
+	else if (DO_GRAB_FOCUS(Fw) &&
+		 (!IS_TRANSIENT(Fw) ||
+		  FW_W_TRANSIENTFOR(Fw) == Scr.Root))
 	{
 	  do_grab_focus = True;
 	}
-	else if (IS_TRANSIENT(Tmp_win) && DO_GRAB_FOCUS_TRANSIENT(Tmp_win) &&
+	else if (IS_TRANSIENT(Fw) && DO_GRAB_FOCUS_TRANSIENT(Fw) &&
 		 (sf = get_focus_window()) &&
-		 sf->w == Tmp_win->transientfor)
+		 FW_W(sf) == FW_W_TRANSIENTFOR(Fw))
 	{
 	  /* it's a transient and its transientfor currently has focus. */
 	  do_grab_focus = True;
 	}
-	else if (IS_TRANSIENT(Tmp_win) && DO_GRAB_FOCUS(Tmp_win) &&
-		 !(XGetGeometry(dpy, Tmp_win->transientfor, &JunkRoot, &JunkX,
-				&JunkY, &JunkWidth, &JunkHeight, &JunkBW,
-				&JunkDepth)))
+	else if (IS_TRANSIENT(Fw) && DO_GRAB_FOCUS(Fw) &&
+		 !(XGetGeometry(
+			   dpy, FW_W_TRANSIENTFOR(Fw), &JunkRoot, &JunkX,
+			   &JunkY, &JunkWidth, &JunkHeight, &JunkBW,
+			   &JunkDepth)))
 	{
 	  /* Gee, the transientfor does not exist! These evil application
 	   * programmers must hate us a lot ;-) */
-	  Tmp_win->transientfor = Scr.Root;
+	  FW_W_TRANSIENTFOR(Fw) = Scr.Root;
 	  do_grab_focus = True;
 	}
 	else
 	  do_grab_focus = False;
 	if (do_grab_focus)
 	{
-	  SetFocusWindow(Tmp_win, True, True);
+	  SetFocusWindow(Fw, True, True);
 	}
 	else
 	{
@@ -1096,16 +1098,16 @@ void HandleMapRequestKeepRaised(
       {
 #ifndef ICCCM2_UNMAP_WINDOW_PATCH
 	/* nope, this is forbidden by the ICCCM2 */
-	XMapWindow(dpy, Tmp_win->w);
-	SetMapStateProp(Tmp_win, NormalState);
+	XMapWindow(dpy, FW_W(Fw));
+	SetMapStateProp(Fw, NormalState);
 #else
 	/* Since we will not get a MapNotify, set the IS_MAPPED flag manually.
 	 */
-	SET_MAPPED(Tmp_win, 1);
-	SetMapStateProp(Tmp_win, IconicState);
+	SET_MAPPED(Fw, 1);
+	SetMapStateProp(Fw, IconicState);
 	/* fake that the window was mapped to allow modules to swallow it */
 	BroadcastPacket(
-	  M_MAP, 3, Tmp_win->w,Tmp_win->frame, (unsigned long)Tmp_win);
+	  M_MAP, 3, FW_W(Fw),FW_W_FRAME(Fw), (unsigned long)Fw);
 #endif
       }
       MyXUngrabServer(dpy);
@@ -1113,43 +1115,43 @@ void HandleMapRequestKeepRaised(
 
     case IconicState:
       if (isIconifiedByParent ||
-	  ((tmp = get_transientfor_fvwmwindow(Tmp_win)) && IS_ICONIFIED(tmp)))
+	  ((tmp = get_transientfor_fvwmwindow(Fw)) && IS_ICONIFIED(tmp)))
       {
 	isIconifiedByParent = False;
-	SET_ICONIFIED_BY_PARENT(Tmp_win, 1);
+	SET_ICONIFIED_BY_PARENT(Fw, 1);
       }
-      if (USE_ICON_POSITION_HINT(Tmp_win) && Tmp_win->wmhints &&
-	  (Tmp_win->wmhints->flags & IconPositionHint))
+      if (USE_ICON_POSITION_HINT(Fw) && Fw->wmhints &&
+	  (Fw->wmhints->flags & IconPositionHint))
       {
-	Iconify(Tmp_win, Tmp_win->wmhints->icon_x,
-		Tmp_win->wmhints->icon_y);
+	Iconify(Fw, Fw->wmhints->icon_x,
+		Fw->wmhints->icon_y);
       }
       else
       {
-	Iconify(Tmp_win, 0, 0);
+	Iconify(Fw, 0, 0);
       }
       if (is_new_window)
       {
 	/* the window will not be mapped - fake an UnmapNotify event */
-	fake_map_unmap_notify(Tmp_win, UnmapNotify);
+	fake_map_unmap_notify(Fw, UnmapNotify);
       }
       break;
     }
   }
-  if (IS_SHADED(Tmp_win))
+  if (IS_SHADED(Fw))
   {
-    BroadcastPacket(M_WINDOWSHADE, 3, Tmp_win->w, Tmp_win->frame,
-                    (unsigned long)Tmp_win);
+    BroadcastPacket(M_WINDOWSHADE, 3, FW_W(Fw), FW_W_FRAME(Fw),
+                    (unsigned long)Fw);
   }
 
-  if (!IS_ICONIFIED(Tmp_win) && (sf = get_focus_window()) &&
-      sf != Tmp_win && !is_on_top_of_layer(sf))
+  if (!IS_ICONIFIED(Fw) && (sf = get_focus_window()) &&
+      sf != Fw && !is_on_top_of_layer(sf))
   {
-    if (Tmp_win->Desk == Scr.CurrentDesk &&
-	Tmp_win->frame_g.x + Tmp_win->frame_g.width > sf->frame_g.x &&
-	sf->frame_g.x + sf->frame_g.width > Tmp_win->frame_g.x &&
-	Tmp_win->frame_g.y + Tmp_win->frame_g.height > sf->frame_g.y &&
-	sf->frame_g.y + sf->frame_g.height > Tmp_win->frame_g.y)
+    if (Fw->Desk == Scr.CurrentDesk &&
+	Fw->frame_g.x + Fw->frame_g.width > sf->frame_g.x &&
+	sf->frame_g.x + sf->frame_g.width > Fw->frame_g.x &&
+	Fw->frame_g.y + Fw->frame_g.height > sf->frame_g.y &&
+	sf->frame_g.y + sf->frame_g.height > Fw->frame_g.y)
     {
       /* The newly mapped window overlaps the focused window. Make sure
        * ClickToFocusRaises and MouseFocusClickRaises work again.
@@ -1162,17 +1164,17 @@ void HandleMapRequestKeepRaised(
   }
   if (is_menu)
   {
-    SET_MAPPED(Tmp_win, 1);
-    SET_MAP_PENDING(Tmp_win, 0);
+    SET_MAPPED(Fw, 1);
+    SET_MAP_PENDING(Fw, 0);
   }
 
   /* Just to be on the safe side, we make sure that STARTICONIC
      can only influence the initial transition from withdrawn state. */
-  SET_DO_START_ICONIC(Tmp_win, 0);
-  if (DO_DELETE_ICON_MOVED(Tmp_win))
+  SET_DO_START_ICONIC(Fw, 0);
+  if (DO_DELETE_ICON_MOVED(Fw))
   {
-    SET_DELETE_ICON_MOVED(Tmp_win, 0);
-    SET_ICON_MOVED(Tmp_win, 0);
+    SET_DELETE_ICON_MOVED(Fw, 0);
+    SET_ICON_MOVED(Fw, 0);
   }
   /* Clean out the global so that it isn't used on additional map events. */
   isIconicState = DontCareState;
@@ -1181,7 +1183,7 @@ void HandleMapRequestKeepRaised(
 #if 0
 {void setup_window_name(FvwmWindow *tmp_win);
 usleep(200000);
-setup_window_name(Tmp_win);}
+setup_window_name(Fw);}
 fprintf(stderr,"-----\n");
 #endif
 }
@@ -1199,7 +1201,7 @@ void HandleMapNotify(void)
 
   DBUG("HandleMapNotify","Routine Entered");
 
-  if (!Tmp_win)
+  if (!Fw)
   {
     if((Event.xmap.override_redirect == True)&&
        (Event.xmap.window != Scr.NoFocusWin))
@@ -1215,9 +1217,9 @@ void HandleMapNotify(void)
   if(Event.xmap.event != Event.xmap.window)
     return;
 
-  SET_MAP_PENDING(Tmp_win, 0);
+  SET_MAP_PENDING(Fw, 0);
   /* don't map if the event was caused by a de-iconify */
-  if (IS_DEICONIFY_PENDING(Tmp_win))
+  if (IS_DEICONIFY_PENDING(Fw))
   {
     return;
   }
@@ -1226,7 +1228,7 @@ void HandleMapNotify(void)
       Make sure at least part of window is on this page
       before giving it focus...
   */
-  is_on_this_page = IsRectangleOnThisPage(&(Tmp_win->frame_g), Tmp_win->Desk);
+  is_on_this_page = IsRectangleOnThisPage(&(Fw->frame_g), Fw->Desk);
 
   /*
    * Need to do the grab to avoid race condition of having server send
@@ -1235,56 +1237,56 @@ void HandleMapNotify(void)
    * when it really isn't.
    */
   MyXGrabServer (dpy);
-  if (Tmp_win->icon_title_w)
-    XUnmapWindow(dpy, Tmp_win->icon_title_w);
-  if(Tmp_win->icon_pixmap_w != None)
-    XUnmapWindow(dpy, Tmp_win->icon_pixmap_w);
-  XMapSubwindows(dpy, Tmp_win->frame);
-  XMapSubwindows(dpy, Tmp_win->decor_w);
-  if (Tmp_win->Desk == Scr.CurrentDesk)
+  if (FW_W_ICON_TITLE(Fw))
+    XUnmapWindow(dpy, FW_W_ICON_TITLE(Fw));
+  if (FW_W_ICON_PIXMAP(Fw) != None)
+    XUnmapWindow(dpy, FW_W_ICON_PIXMAP(Fw));
+  XMapSubwindows(dpy, FW_W_FRAME(Fw));
+  XMapSubwindows(dpy, Fw->decor_w);
+  if (Fw->Desk == Scr.CurrentDesk)
   {
-    XMapWindow(dpy, Tmp_win->frame);
+    XMapWindow(dpy, FW_W_FRAME(Fw));
   }
-  if(IS_ICONIFIED(Tmp_win))
+  if(IS_ICONIFIED(Fw))
     BroadcastPacket(M_DEICONIFY, 3,
-                    Tmp_win->w, Tmp_win->frame, (unsigned long)Tmp_win);
+                    FW_W(Fw), FW_W_FRAME(Fw), (unsigned long)Fw);
   else
     BroadcastPacket(M_MAP, 3,
-                    Tmp_win->w,Tmp_win->frame, (unsigned long)Tmp_win);
+                    FW_W(Fw),FW_W_FRAME(Fw), (unsigned long)Fw);
 
-  if((!IS_TRANSIENT(Tmp_win) && DO_GRAB_FOCUS(Tmp_win)) ||
-     (IS_TRANSIENT(Tmp_win) && DO_GRAB_FOCUS_TRANSIENT(Tmp_win) &&
+  if((!IS_TRANSIENT(Fw) && DO_GRAB_FOCUS(Fw)) ||
+     (IS_TRANSIENT(Fw) && DO_GRAB_FOCUS_TRANSIENT(Fw) &&
       get_focus_window() &&
-      get_focus_window()->w == Tmp_win->transientfor))
+      FW_W(get_focus_window()) == FW_W_TRANSIENTFOR(Fw)))
   {
     if (is_on_this_page)
     {
-      SetFocusWindow(Tmp_win, True, True);
+      SetFocusWindow(Fw, True, True);
     }
   }
-  if (!HAS_BORDER(Tmp_win) && !HAS_TITLE(Tmp_win) &&
-      is_window_border_minimal(Tmp_win))
+  if (!HAS_BORDER(Fw) && !HAS_TITLE(Fw) &&
+      is_window_border_minimal(Fw))
   {
     DrawDecorations(
-      Tmp_win, DRAW_ALL, False, True, Tmp_win->decor_w, CLEAR_ALL);
+      Fw, DRAW_ALL, False, True, Fw->decor_w, CLEAR_ALL);
   }
-  else if (Tmp_win == get_focus_window() && Tmp_win != Scr.Hilite)
+  else if (Fw == get_focus_window() && Fw != Scr.Hilite)
   {
     /* BUG 679: must redraw decorations here to make sure the window is properly
      * hilighted after being de-iconified by a key press. */
     DrawDecorations(
-      Tmp_win, DRAW_ALL, True, True, None, CLEAR_ALL);
+      Fw, DRAW_ALL, True, True, None, CLEAR_ALL);
   }
   MyXUngrabServer (dpy);
-  SET_MAPPED(Tmp_win, 1);
-  SET_ICONIFIED(Tmp_win, 0);
-  SET_ICON_UNMAPPED(Tmp_win, 0);
-  if (DO_ICONIFY_AFTER_MAP(Tmp_win))
+  SET_MAPPED(Fw, 1);
+  SET_ICONIFIED(Fw, 0);
+  SET_ICON_UNMAPPED(Fw, 0);
+  if (DO_ICONIFY_AFTER_MAP(Fw))
   {
     /* finally, if iconification was requested before the window was mapped,
      * request it now. */
-    Iconify(Tmp_win, 0, 0);
-    SET_ICONIFY_AFTER_MAP(Tmp_win, 0);
+    Iconify(Fw, 0, 0);
+    SET_ICONIFY_AFTER_MAP(Fw, 0);
   }
 }
 
@@ -1344,20 +1346,20 @@ void HandleUnmapNotify(void)
    * field also.
    */
   weMustUnmap = 0;
-  if (!Tmp_win)
+  if (!Fw)
   {
     Event.xany.window = Event.xunmap.window;
     weMustUnmap = 1;
     if (XFindContext(dpy, Event.xany.window,
-		     FvwmContext, (caddr_t *)&Tmp_win) == XCNOENT)
+		     FvwmContext, (caddr_t *)&Fw) == XCNOENT)
     {
-      Tmp_win = NULL;
+      Fw = NULL;
       return;
     }
   }
-  if (Event.xunmap.window == Tmp_win->frame)
+  if (Event.xunmap.window == FW_W_FRAME(Fw))
   {
-    SET_DEICONIFY_PENDING(Tmp_win , 0);
+    SET_DEICONIFY_PENDING(Fw , 0);
   }
   if (must_return)
     return;
@@ -1389,15 +1391,15 @@ void HandleUnmapNotify(void)
       XUnmapWindow(dpy, Event.xunmap.window);
     }
   }
-  if(Tmp_win ==  Scr.Hilite)
+  if(Fw ==  Scr.Hilite)
   {
     Scr.Hilite = NULL;
   }
-  focus_grabbed = (Tmp_win == get_focus_window()) &&
-    ((!IS_TRANSIENT(Tmp_win) && DO_GRAB_FOCUS(Tmp_win)) ||
-     (IS_TRANSIENT(Tmp_win) && DO_GRAB_FOCUS_TRANSIENT(Tmp_win)));
-  restore_focus_after_unmap(Tmp_win, False);
-  if (!IS_MAPPED(Tmp_win) && !IS_ICONIFIED(Tmp_win))
+  focus_grabbed = (Fw == get_focus_window()) &&
+    ((!IS_TRANSIENT(Fw) && DO_GRAB_FOCUS(Fw)) ||
+     (IS_TRANSIENT(Fw) && DO_GRAB_FOCUS_TRANSIENT(Fw)));
+  restore_focus_after_unmap(Fw, False);
+  if (!IS_MAPPED(Fw) && !IS_ICONIFIED(Fw))
   {
     return;
   }
@@ -1417,21 +1419,21 @@ void HandleUnmapNotify(void)
     XEvent ev;
 
     MyXGrabServer(dpy);
-    SetMapStateProp (Tmp_win, WithdrawnState);
-    EWMH_RestoreInitialStates(Tmp_win, Event.type);
+    SetMapStateProp (Fw, WithdrawnState);
+    EWMH_RestoreInitialStates(Fw, Event.type);
     if (XCheckTypedWindowEvent(dpy, Event.xunmap.window, ReparentNotify, &ev))
     {
-      if (Tmp_win->old_bw)
-	XSetWindowBorderWidth (dpy, Event.xunmap.window, Tmp_win->old_bw);
-      if((!IS_ICON_SUPPRESSED(Tmp_win))&&
-	 (Tmp_win->wmhints && (Tmp_win->wmhints->flags & IconWindowHint)))
-	XUnmapWindow (dpy, Tmp_win->wmhints->icon_window);
+      if (Fw->old_bw)
+	XSetWindowBorderWidth (dpy, Event.xunmap.window, Fw->old_bw);
+      if((!IS_ICON_SUPPRESSED(Fw))&&
+	 (Fw->wmhints && (Fw->wmhints->flags & IconWindowHint)))
+	XUnmapWindow (dpy, Fw->wmhints->icon_window);
     }
     else
     {
-      RestoreWithdrawnLocation (Tmp_win, False, Scr.Root);
+      RestoreWithdrawnLocation (Fw, False, Scr.Root);
     }
-    if (!IS_TEAR_OFF_MENU(Tmp_win))
+    if (!IS_TEAR_OFF_MENU(Fw))
     {
       XRemoveFromSaveSet (dpy, Event.xunmap.window);
       XSelectInput (dpy, Event.xunmap.window, NoEventMask);
@@ -1439,7 +1441,7 @@ void HandleUnmapNotify(void)
     XSync(dpy, 0);
     MyXUngrabServer(dpy);
   }
-  destroy_window(Tmp_win);		/* do not need to mash event before */
+  destroy_window(Fw);		/* do not need to mash event before */
   if (focus_grabbed)
   {
     CoerceEnterNotifyOnCurrentWindow();
@@ -1458,7 +1460,7 @@ void HandleUnmapNotify(void)
  ************************************************************************/
 void HandleReparentNotify(void)
 {
-  if (!Tmp_win)
+  if (!Fw)
     return;
   if (Event.xreparent.parent == Scr.Root)
   {
@@ -1466,12 +1468,12 @@ void HandleReparentNotify(void)
      * selected although the window is no longer managed. */
     return;
   }
-  if (Event.xreparent.parent != Tmp_win->frame)
+  if (Event.xreparent.parent != FW_W_FRAME(Fw))
   {
     /* window was reparented by someone else, destroy the frame */
-    SetMapStateProp(Tmp_win, WithdrawnState);
-    EWMH_RestoreInitialStates(Tmp_win, Event.type);
-    if (!IS_TEAR_OFF_MENU(Tmp_win))
+    SetMapStateProp(Fw, WithdrawnState);
+    EWMH_RestoreInitialStates(Fw, Event.type);
+    if (!IS_TEAR_OFF_MENU(Fw))
     {
       XRemoveFromSaveSet(dpy, Event.xreparent.window);
       XSelectInput (dpy, Event.xreparent.window, NoEventMask);
@@ -1481,7 +1483,7 @@ void HandleReparentNotify(void)
       XSelectInput (dpy, Event.xreparent.window, XEVMASK_MENUW);
     }
     discard_events(XEVMASK_FRAMEW);
-    destroy_window(Tmp_win);
+    destroy_window(Fw);
     EWMH_ManageKdeSysTray(Event.xreparent.window, Event.type);
     EWMH_WindowDestroyed();
   }
@@ -1509,7 +1511,7 @@ void HandleButtonPress(void)
   DBUG("HandleButtonPress","Routine Entered");
 
   GrabEm(CRS_NONE, GRAB_PASSIVE);
-  if (!Tmp_win &&
+  if (!Fw &&
       Event.xbutton.window != Scr.PanFrameTop.win &&
       Event.xbutton.window != Scr.PanFrameBottom.win &&
       Event.xbutton.window != Scr.PanFrameLeft.win &&
@@ -1524,7 +1526,7 @@ void HandleButtonPress(void)
     return;
   }
   if (Event.xbutton.subwindow != None &&
-      (Tmp_win == None || Event.xany.window != Tmp_win->w))
+      (Fw == None || Event.xany.window != FW_W(Fw)))
   {
     eventw = Event.xbutton.subwindow;
   }
@@ -1542,32 +1544,32 @@ void HandleButtonPress(void)
     UngrabEm(GRAB_PASSIVE);
     return;
   }
-  if (Tmp_win && HAS_NEVER_FOCUS(Tmp_win))
+  if (Fw && HAS_NEVER_FOCUS(Fw))
   {
     /* It might seem odd to try to focus a window that never is given focus by
      * fvwm, but the window might want to take focus itself, and SetFocus will
      * tell it to do so in this case instead of giving it focus. */
-    SetFocusWindow(Tmp_win, True, True);
+    SetFocusWindow(Fw, True, True);
   }
   /* click to focus stuff goes here */
-  if((Tmp_win)&&(HAS_CLICK_FOCUS(Tmp_win))&&(Tmp_win != Scr.Ungrabbed))
+  if((Fw)&&(HAS_CLICK_FOCUS(Fw))&&(Fw != Scr.Ungrabbed))
   {
-    if (Tmp_win != get_focus_window())
+    if (Fw != get_focus_window())
     {
-      SetFocusWindow(Tmp_win, True, True);
+      SetFocusWindow(Fw, True, True);
     }
     /* RBW - 12/09/.1999- I'm not sure we need to check both cases, but
        I'll leave this as is for now.  */
-    if (!DO_NOT_RAISE_CLICK_FOCUS_CLICK(Tmp_win)
+    if (!DO_NOT_RAISE_CLICK_FOCUS_CLICK(Fw)
 #if 0
 	/* DV - this forces that every focus click on the decorations raises
 	 * the window.  This somewhat negates the ClickToFocusRaisesOff style.
 	 */
 	||
-	((Event.xany.window != Tmp_win->w)&&
-	 (Event.xbutton.subwindow != Tmp_win->w)&&
-	 (Event.xany.window != Tmp_win->Parent)&&
-	 (Event.xbutton.subwindow != Tmp_win->Parent))
+	((Event.xany.window != FW_W(Fw))&&
+	 (Event.xbutton.subwindow != FW_W(Fw))&&
+	 (Event.xany.window != FW_W_PARENT(Fw))&&
+	 (Event.xbutton.subwindow != FW_W_PARENT(Fw)))
 #endif
       )
     {
@@ -1575,25 +1577,25 @@ void HandleButtonPress(void)
        * click might be "Lower" or "RaiseLower". So mark the window as
        * scheduled to be raised after the binding is executed. Functions that
        * modify the stacking order will reset this flag. */
-      SET_SCHEDULED_FOR_RAISE(Tmp_win, 1);
+      SET_SCHEDULED_FOR_RAISE(Fw, 1);
       do_regrab_buttons = True;
     }
 
-    Context = GetContext(Tmp_win, &Event, &PressedW);
-    if (!IS_ICONIFIED(Tmp_win) && Context == C_WINDOW)
+    Context = GetContext(Fw, &Event, &PressedW);
+    if (!IS_ICONIFIED(Fw) && Context == C_WINDOW)
     {
-      if (Tmp_win && IS_SCHEDULED_FOR_RAISE(Tmp_win))
+      if (Fw && IS_SCHEDULED_FOR_RAISE(Fw))
       {
-	RaiseWindow(Tmp_win);
-	SET_SCHEDULED_FOR_RAISE(Tmp_win, 0);
+	RaiseWindow(Fw);
+	SET_SCHEDULED_FOR_RAISE(Fw, 0);
       }
       if (do_regrab_buttons)
-	focus_grab_buttons(Tmp_win, (Tmp_win == get_focus_window()));
+	focus_grab_buttons(Fw, (Fw == get_focus_window()));
       XSync(dpy,0);
       /* Pass click event to just clicked to focus window? Do not swallow the
        * click if the window didn't accept the focus. */
-      if (!DO_NOT_PASS_CLICK_FOCUS_CLICK(Tmp_win) ||
-	  get_focus_window() != Tmp_win)
+      if (!DO_NOT_PASS_CLICK_FOCUS_CLICK(Fw) ||
+	  get_focus_window() != Fw)
       {
 	XAllowEvents(dpy,ReplayPointer,CurrentTime);
 	/*	return;*/
@@ -1604,15 +1606,15 @@ void HandleButtonPress(void)
       }
       UngrabEm(GRAB_PASSIVE);
     }
-    if (!IS_ICONIFIED(Tmp_win))
+    if (!IS_ICONIFIED(Fw))
     {
-      DrawDecorations(Tmp_win, DRAW_ALL, True, True, PressedW, CLEAR_ALL);
+      DrawDecorations(Fw, DRAW_ALL, True, True, PressedW, CLEAR_ALL);
     }
   }
-  else if (Tmp_win && Event.xbutton.window == Tmp_win->Parent &&
-	   (HAS_SLOPPY_FOCUS(Tmp_win) || HAS_MOUSE_FOCUS(Tmp_win) ||
-	    HAS_NEVER_FOCUS(Tmp_win)) &&
-	   DO_RAISE_MOUSE_FOCUS_CLICK(Tmp_win))
+  else if (Fw && Event.xbutton.window == FW_W_PARENT(Fw) &&
+	   (HAS_SLOPPY_FOCUS(Fw) || HAS_MOUSE_FOCUS(Fw) ||
+	    HAS_NEVER_FOCUS(Fw)) &&
+	   DO_RAISE_MOUSE_FOCUS_CLICK(Fw))
   {
     FvwmWindow *tmp = Scr.Ungrabbed;
 
@@ -1623,14 +1625,14 @@ void HandleButtonPress(void)
       Scr.Ungrabbed should always be NULL here. I don't know anything
       useful we could do if it's not, other than ignore this window.
     */
-    if (!is_on_top_of_layer(Tmp_win) &&
+    if (!is_on_top_of_layer(Fw) &&
         MaskUsedModifiers(Event.xbutton.state) == 0)
     {
-      if (!DO_IGNORE_MOUSE_FOCUS_CLICK_MOTION(Tmp_win))
+      if (!DO_IGNORE_MOUSE_FOCUS_CLICK_MOTION(Fw))
       {
 	/* raise immediately and pass the click to the application */
-	RaiseWindow(Tmp_win);
-	focus_grab_buttons(Tmp_win, True);
+	RaiseWindow(Fw);
+	focus_grab_buttons(Fw, True);
 	Scr.Ungrabbed = tmp;
 	XSync(dpy,0);
 	XAllowEvents(dpy,ReplayPointer,CurrentTime);
@@ -1678,8 +1680,8 @@ void HandleButtonPress(void)
 	if (is_done == False || is_click == True)
 	{
 	  /* raise the window and exit */
-	  RaiseWindow(Tmp_win);
-	  focus_grab_buttons(Tmp_win, True);
+	  RaiseWindow(Fw);
+	  focus_grab_buttons(Fw, True);
 	  Scr.Ungrabbed = tmp;
 	  XSync(dpy,0);
 	  UngrabEm(GRAB_PASSIVE);
@@ -1691,11 +1693,11 @@ void HandleButtonPress(void)
 	}
       }
     }
-    focus_grab_buttons(Tmp_win, True);
+    focus_grab_buttons(Fw, True);
     Scr.Ungrabbed = tmp;
   }
 
-  Context = GetContext(Tmp_win, &Event, &PressedW);
+  Context = GetContext(Fw, &Event, &PressedW);
   LocalContext = Context;
   STROKE_CODE(stroke_init());
   STROKE_CODE(send_motion = TRUE);
@@ -1708,40 +1710,40 @@ void HandleButtonPress(void)
     has_binding = True;
   }
 
-  if (Tmp_win && has_binding)
+  if (Fw && has_binding)
   {
     if (Context == C_TITLE)
     {
       DrawDecorations(
-        Tmp_win, DRAW_TITLE, (Scr.Hilite == Tmp_win), True, PressedW,
+        Fw, DRAW_TITLE, (Scr.Hilite == Fw), True, PressedW,
 	CLEAR_ALL);
     }
     else if (Context & (C_LALL | C_RALL))
     {
       DrawDecorations(
-        Tmp_win, DRAW_BUTTONS, (Scr.Hilite == Tmp_win),
+        Fw, DRAW_BUTTONS, (Scr.Hilite == Fw),
 	True, PressedW, CLEAR_ALL);
     }
     else
     {
       DrawDecorations(
-        Tmp_win, DRAW_FRAME, (Scr.Hilite == Tmp_win),
-        (HAS_DEPRESSABLE_BORDER(Tmp_win) && PressedW != None),
+        Fw, DRAW_FRAME, (Scr.Hilite == Fw),
+        (HAS_DEPRESSABLE_BORDER(Fw) && PressedW != None),
 	PressedW, CLEAR_ALL);
     }
   }
 
   /* we have to execute a function or pop up a menu */
-  ButtonWindow = Tmp_win;
+  ButtonWindow = Fw;
   do_pass_click = True;
   if (action && *action)
   {
-    if (Tmp_win && IS_ICONIFIED(Tmp_win))
+    if (Fw && IS_ICONIFIED(Fw))
     {
       /* release the pointer since it can't do harm over an icon */
       XAllowEvents(dpy, AsyncPointer, CurrentTime);
     }
-    old_execute_function(NULL, action, Tmp_win, &Event, Context, -1, 0, NULL);
+    old_execute_function(NULL, action, Fw, &Event, Context, -1, 0, NULL);
     if (Context != C_WINDOW && Context != C_NO_CONTEXT)
     {
       WaitForButtonsUp(True);
@@ -1773,7 +1775,7 @@ void HandleButtonPress(void)
   }
   if (do_regrab_buttons)
   {
-    focus_grab_buttons(Tmp_win, (Tmp_win == get_focus_window()));
+    focus_grab_buttons(Fw, (Fw == get_focus_window()));
   }
 
   OldPressedW = PressedW;
@@ -1820,7 +1822,7 @@ void HandleButtonRelease()
 
    DBUG("HandleButtonRelease",sequence);
 
-   Context = GetContext(Tmp_win,&Event, &dummy);
+   Context = GetContext(Fw,&Event, &dummy);
 
    /*  Allows modifier to work (Only R context works here). */
    real_modifier = Event.xbutton.state - (1 << (7 + Event.xbutton.button));
@@ -1832,7 +1834,7 @@ void HandleButtonRelease()
    /* got a match, now process it */
    if (action != NULL && (action[0] != 0))
    {
-     old_execute_function(NULL, action, Tmp_win, &Event, Context, -1, 0, NULL);
+     old_execute_function(NULL, action, Fw, &Event, Context, -1, 0, NULL);
      WaitForButtonsUp(True);
    }
    else
@@ -1887,12 +1889,12 @@ void HandleEnterNotify(void)
     return;
   }
 
-  if (Tmp_win)
+  if (Fw)
   {
-    if (ewp->window != Tmp_win->frame && ewp->window != Tmp_win->Parent &&
-        ewp->window != Tmp_win->w && ewp->window != Tmp_win->decor_w &&
-	ewp->window != Tmp_win->icon_title_w &&
-	ewp->window != Tmp_win->icon_pixmap_w)
+    if (ewp->window != FW_W_FRAME(Fw) && ewp->window != FW_W_PARENT(Fw) &&
+        ewp->window != FW_W(Fw) && ewp->window != Fw->decor_w &&
+	ewp->window != FW_W_ICON_TITLE(Fw) &&
+	ewp->window != FW_W_ICON_PIXMAP(Fw))
     {
       /* Ignore EnterNotify that received by any of the sub windows
        * that don't handle this event.  unclutter triggers these
@@ -1914,7 +1916,7 @@ void HandleEnterNotify(void)
        * dialog subwindows has the focus after popping up a selection list
        * several times (ddd, netscape). I'm not convinced that this does not
        * break something else. */
-      refresh_focus(Tmp_win);
+      refresh_focus(Fw);
     }
   }
   else if (ewp->mode == NotifyUngrab)
@@ -1934,15 +1936,15 @@ void HandleEnterNotify(void)
 	  ewp->subwindow != None)
       {
 	/* see comment above */
-	refresh_focus(Tmp_win);
+	refresh_focus(Fw);
       }
-      if (Tmp_win && Tmp_win == xcrossing_last_grab_window)
+      if (Fw && Fw == xcrossing_last_grab_window)
       {
 	return;
       }
     }
   }
-  if (Tmp_win)
+  if (Fw)
   {
     is_initial_ungrab_pending = False;
   }
@@ -1955,7 +1957,7 @@ void HandleEnterNotify(void)
    * Ignore LeaveNotify events for tear out menus - handled by menu code
    */
   is_tear_off_menu =
-    (Tmp_win && IS_TEAR_OFF_MENU(Tmp_win) && ewp->window == Tmp_win->w);
+    (Fw && IS_TEAR_OFF_MENU(Fw) && ewp->window == FW_W(Fw));
   if (!fFvwmInStartup && !is_tear_off_menu &&
       XCheckTypedWindowEvent(dpy, ewp->window, LeaveNotify, &d))
   {
@@ -2020,7 +2022,7 @@ void HandleEnterNotify(void)
     return;
   }
   /* make sure its for one of our windows */
-  if (!Tmp_win)
+  if (!Fw)
   {
     /* handle a subwindow cmap */
     EnterSubWindowColormap(Event.xany.window);
@@ -2028,39 +2030,39 @@ void HandleEnterNotify(void)
   }
 
   BroadcastPacket(
-    MX_ENTER_WINDOW, 3, Tmp_win->w, Tmp_win->frame, (unsigned long)Tmp_win);
+    MX_ENTER_WINDOW, 3, FW_W(Fw), FW_W_FRAME(Fw), (unsigned long)Fw);
   sf = get_focus_window();
-  if (sf && Tmp_win != sf && HAS_MOUSE_FOCUS(sf))
+  if (sf && Fw != sf && HAS_MOUSE_FOCUS(sf))
   {
     DeleteFocus(True, True);
   }
-  if (HAS_MOUSE_FOCUS(Tmp_win) || HAS_SLOPPY_FOCUS(Tmp_win))
+  if (HAS_MOUSE_FOCUS(Fw) || HAS_SLOPPY_FOCUS(Fw))
   {
-    SetFocusWindow(Tmp_win, True, True);
+    SetFocusWindow(Fw, True, True);
   }
-  else if (HAS_NEVER_FOCUS(Tmp_win))
+  else if (HAS_NEVER_FOCUS(Fw))
   {
     /* Give the window a chance to grab the buttons needed for raise-on-click */
-    if (sf != Tmp_win)
+    if (sf != Fw)
     {
-      focus_grab_buttons(Tmp_win, False);
+      focus_grab_buttons(Fw, False);
       focus_grab_buttons(sf, True);
     }
   }
-  else if (HAS_CLICK_FOCUS(Tmp_win) && Tmp_win == get_focus_window() &&
-	   do_accept_input_focus(Tmp_win))
+  else if (HAS_CLICK_FOCUS(Fw) && Fw == get_focus_window() &&
+	   do_accept_input_focus(Fw))
   {
     /* We have to refresh the focus window here in case we left the focused
      * fvwm window.  Motif apps may lose the input focus otherwise.  But do not
      * try to refresh the focus of applications that want to handle it
      * themselves. */
-    FOCUS_SET(Tmp_win->w);
+    FOCUS_SET(FW_W(Fw));
   }
   if (Scr.ColormapFocus == COLORMAP_FOLLOWS_MOUSE)
   {
-    if((!IS_ICONIFIED(Tmp_win))&&(Event.xany.window == Tmp_win->w))
+    if((!IS_ICONIFIED(Fw))&&(Event.xany.window == FW_W(Fw)))
     {
-      InstallWindowColormaps(Tmp_win);
+      InstallWindowColormaps(Fw);
     }
     else
     {
@@ -2070,15 +2072,15 @@ void HandleEnterNotify(void)
   /* We get an EnterNotify with mode == UnGrab when fvwm releases
      the grab held during iconification. We have to ignore this,
      or icon title will be initially raised. */
-  if (IS_ICONIFIED(Tmp_win) && (ewp->mode == NotifyNormal))
+  if (IS_ICONIFIED(Fw) && (ewp->mode == NotifyNormal))
   {
-    SET_ICON_ENTERED(Tmp_win,1);
-    DrawIconWindow(Tmp_win);
+    SET_ICON_ENTERED(Fw,1);
+    DrawIconWindow(Fw);
   }
   /* Check for tear off menus */
   if (is_tear_off_menu)
   {
-    menu_enter_tear_off_menu(Tmp_win);
+    menu_enter_tear_off_menu(Fw);
   }
 
   return;
@@ -2107,29 +2109,29 @@ void HandleLeaveNotify(void)
      * there is no way to prevent the ckient application from handling this
      * event and, for example, grabbing the focus.  This will interfere with
      * functions that transferred the focus to a different window. */
-    if (Event.xcrossing.mode == NotifyGrab && Tmp_win &&
-	(Event.xcrossing.window == Tmp_win->decor_w ||
-	 Event.xcrossing.window == Tmp_win->w ||
-	 Event.xcrossing.window == Tmp_win->icon_title_w ||
-	 Event.xcrossing.window == Tmp_win->icon_pixmap_w))
+    if (Event.xcrossing.mode == NotifyGrab && Fw &&
+	(Event.xcrossing.window == Fw->decor_w ||
+	 Event.xcrossing.window == FW_W(Fw) ||
+	 Event.xcrossing.window == FW_W_ICON_TITLE(Fw) ||
+	 Event.xcrossing.window == FW_W_ICON_PIXMAP(Fw)))
     {
-      xcrossing_last_grab_window = Tmp_win;
+      xcrossing_last_grab_window = Fw;
     }
 #ifdef FOCUS_EXPANDS_TITLE
-    if (Tmp_win && IS_ICONIFIED(Tmp_win))
+    if (Fw && IS_ICONIFIED(Fw))
     {
-      SET_ICON_ENTERED(Tmp_win, 0);
-      DrawIconWindow(Tmp_win);
+      SET_ICON_ENTERED(Fw, 0);
+      DrawIconWindow(Fw);
     }
 #endif
     return;
   }
   /* CDE-like behaviour of raising the icon title if the icon
      gets the focus (in particular if the cursor is over the icon) */
-  if (Tmp_win && IS_ICONIFIED(Tmp_win))
+  if (Fw && IS_ICONIFIED(Fw))
   {
-    SET_ICON_ENTERED(Tmp_win,0);
-    DrawIconWindow (Tmp_win);
+    SET_ICON_ENTERED(Fw,0);
+    DrawIconWindow (Fw);
   }
 
   /* If we leave the root window, then we're really moving
@@ -2163,10 +2165,10 @@ void HandleLeaveNotify(void)
     /* handle a subwindow cmap */
     LeaveSubWindowColormap(Event.xany.window);
   }
-  if (Tmp_win != NULL)
+  if (Fw != NULL)
   {
     BroadcastPacket(
-      MX_LEAVE_WINDOW, 3, Tmp_win->w, Tmp_win->frame, (unsigned long)Tmp_win);
+      MX_LEAVE_WINDOW, 3, FW_W(Fw), FW_W_FRAME(Fw), (unsigned long)Fw);
   }
 
   return;
@@ -2199,13 +2201,13 @@ void HandleConfigureRequest(void)
   DBUG("HandleConfigureRequest","Routine Entered");
 
   /*
-   * Event.xany.window is Event.xconfigurerequest.parent, so Tmp_win will
+   * Event.xany.window is Event.xconfigurerequest.parent, so Fw will
    * be wrong
    */
   Event.xany.window = cre->window;	/* mash parent field */
-  if (XFindContext (dpy, cre->window, FvwmContext, (caddr_t *) &Tmp_win) ==
+  if (XFindContext (dpy, cre->window, FvwmContext, (caddr_t *) &Fw) ==
       XCNOENT)
-    Tmp_win = NULL;
+    Fw = NULL;
 
 #define NO_EXPERIMENTAL_ANTI_RACE_CONDITION_CODE
   /* This is not a good idea because this interferes with changes in the size
@@ -2216,7 +2218,7 @@ void HandleConfigureRequest(void)
    * the ConfigureRequest calculations. */
 #ifdef EXPERIMENTAL_ANTI_RACE_CONDITION_CODE
   /* merge all pending ConfigureRequests for the window into a single event */
-  if (Tmp_win)
+  if (Fw)
   {
     XEvent e;
     XConfigureRequestEvent *ecre;
@@ -2273,7 +2275,7 @@ void HandleConfigureRequest(void)
 	cre->detail = ecre->detail;
 	/* srt (28-Apr-2001): Tk needs a ConfigureNotify event after a raise,
 	 * otherwise it would hang for two seconds */
-	new_g = Tmp_win->frame_g;
+	new_g = Fw->frame_g;
 	do_send_event = True;
       }
     } /* while */
@@ -2286,23 +2288,23 @@ void HandleConfigureRequest(void)
    * Instead, we'll read the current geometry.  Therefore, we should respond
    * to configuration requests for windows which have never been mapped.
    */
-  if (!Tmp_win || cre->window == Tmp_win->icon_title_w ||
-      cre->window == Tmp_win->icon_pixmap_w)
+  if (!Fw || cre->window == FW_W_ICON_TITLE(Fw) ||
+      cre->window == FW_W_ICON_PIXMAP(Fw))
   {
     xwcm = cre->value_mask &
       (CWX | CWY | CWWidth | CWHeight | CWBorderWidth);
     xwc.x = cre->x;
     xwc.y = cre->y;
-    if (Tmp_win && Tmp_win->icon_pixmap_w == cre->window)
+    if (Fw && FW_W_ICON_PIXMAP(Fw) == cre->window)
     {
       set_icon_picture_size(
-	Tmp_win, cre->width + 2 * cre->border_width,
+	Fw, cre->width + 2 * cre->border_width,
 	cre->height + 2 * cre->border_width);
     }
-    if (Tmp_win)
+    if (Fw)
     {
-      set_icon_position(Tmp_win, cre->x, cre->y);
-      broadcast_icon_geometry(Tmp_win, False);
+      set_icon_position(Fw, cre->x, cre->y);
+      broadcast_icon_geometry(Fw, False);
     }
     xwc.width = cre->width;
     xwc.height = cre->height;
@@ -2310,31 +2312,31 @@ void HandleConfigureRequest(void)
 
     XConfigureWindow(dpy, Event.xany.window, xwcm, &xwc);
 
-    if(Tmp_win)
+    if(Fw)
     {
-      if (cre->window != Tmp_win->icon_pixmap_w &&
-	  Tmp_win->icon_pixmap_w != None)
+      if (cre->window != FW_W_ICON_PIXMAP(Fw) &&
+	  FW_W_ICON_PIXMAP(Fw) != None)
       {
 	rectangle g;
 
-	get_icon_picture_geometry(Tmp_win, &g);
+	get_icon_picture_geometry(Fw, &g);
 	xwc.x = g.x;
 	xwc.x = g.y;
 	xwcm = cre->value_mask & (CWX | CWY);
-	XConfigureWindow(dpy, Tmp_win->icon_pixmap_w, xwcm, &xwc);
+	XConfigureWindow(dpy, FW_W_ICON_PIXMAP(Fw), xwcm, &xwc);
       }
-      if(Tmp_win->icon_title_w != None)
+      if(FW_W_ICON_TITLE(Fw) != None)
       {
 	rectangle g;
 
-	get_icon_title_geometry(Tmp_win, &g);
+	get_icon_title_geometry(Fw, &g);
 	xwc.x = g.x;
 	xwc.x = g.y;
 	xwcm = cre->value_mask & (CWX | CWY);
-        XConfigureWindow(dpy, Tmp_win->icon_title_w, xwcm, &xwc);
+        XConfigureWindow(dpy, FW_W_ICON_TITLE(Fw), xwcm, &xwc);
       }
     }
-    if (!Tmp_win)
+    if (!Fw)
       return;
   }
 
@@ -2351,17 +2353,18 @@ void HandleConfigureRequest(void)
     b = False;
 
     if (FShapeQueryExtents(
-	  dpy, Tmp_win->w, &boundingShaped, &i, &i, &u, &u, &b, &i, &i, &u, &u))
+	  dpy, FW_W(Fw), &boundingShaped, &i, &i, &u, &u, &b, &i, &i, &u,
+	  &u))
     {
-      Tmp_win->wShaped = boundingShaped;
+      Fw->wShaped = boundingShaped;
     }
     else
     {
-      Tmp_win->wShaped = 0;
+      Fw->wShaped = 0;
     }
   }
 
-  if (cre->window == Tmp_win->w)
+  if (cre->window == FW_W(Fw))
   {
     size_borders b;
 #if 0
@@ -2370,7 +2373,7 @@ fprintf(stderr, "cre: %d(%d) %d(%d) %d(%d)x%d(%d) w 0x%08x '%s'\n",
         cre->y, (int)(cre->value_mask & CWY),
         cre->width, (int)(cre->value_mask & CWWidth),
         cre->height, (int)(cre->value_mask & CWHeight),
-	(int)Tmp_win->w, (Tmp_win->name) ? Tmp_win->name : "");
+	(int)FW_W(Fw), (Fw->name) ? Fw->name : "");
 #endif
     /* Don't modify frame_XXX fields before calling SetupWindow! */
     dx = 0;
@@ -2378,14 +2381,14 @@ fprintf(stderr, "cre: %d(%d) %d(%d) %d(%d)x%d(%d) w 0x%08x '%s'\n",
     dw = 0;
     dh = 0;
 
-    if (IS_SHADED(Tmp_win) ||
-        !is_function_allowed(F_MOVE, NULL, Tmp_win, False, False))
+    if (IS_SHADED(Fw) ||
+        !is_function_allowed(F_MOVE, NULL, Fw, False, False))
     {
       /* forbid shaded applications to move their windows */
       cre->value_mask &= ~(CWX | CWY);
     }
-    if (IS_MAXIMIZED(Tmp_win) ||
-        !is_function_allowed(F_RESIZE, NULL, Tmp_win, False, False))
+    if (IS_MAXIMIZED(Fw) ||
+        !is_function_allowed(F_RESIZE, NULL, Fw, False, False))
     {
       /* dont allow clients to resize maximized windows */
       cre->value_mask &= ~(CWWidth | CWHeight);
@@ -2394,19 +2397,19 @@ fprintf(stderr, "cre: %d(%d) %d(%d) %d(%d)x%d(%d) w 0x%08x '%s'\n",
     /* for restoring */
     if (cre->value_mask & CWBorderWidth)
     {
-      Tmp_win->old_bw = cre->border_width;
+      Fw->old_bw = cre->border_width;
     }
     /* override even if border change */
-    get_window_borders(Tmp_win, &b);
+    get_window_borders(Fw, &b);
     if (cre->value_mask & CWX)
-      dx = cre->x - Tmp_win->frame_g.x - b.top_left.width;
+      dx = cre->x - Fw->frame_g.x - b.top_left.width;
     if (cre->value_mask & CWY)
-      dy = cre->y - Tmp_win->frame_g.y - b.top_left.height;
+      dy = cre->y - Fw->frame_g.y - b.top_left.height;
     if (cre->value_mask & CWHeight)
     {
       if (cre->height < (WINDOW_FREAKED_OUT_SIZE - b.total_size.height))
       {
-	dh = cre->height - (Tmp_win->frame_g.height - b.total_size.height);
+	dh = cre->height - (Fw->frame_g.height - b.total_size.height);
       }
       else
       {
@@ -2421,7 +2424,7 @@ fprintf(stderr, "cre: %d(%d) %d(%d) %d(%d)x%d(%d) w 0x%08x '%s'\n",
     {
       if (cre->width < (WINDOW_FREAKED_OUT_SIZE - b.total_size.width))
       {
-	dw = cre->width - (Tmp_win->frame_g.width - b.total_size.width);
+	dw = cre->width - (Fw->frame_g.width - b.total_size.width);
       }
       else
       {
@@ -2438,64 +2441,64 @@ fprintf(stderr, "cre: %d(%d) %d(%d) %d(%d)x%d(%d) w 0x%08x '%s'\n",
      * requested client window width; the inner height is the same as the
      * requested client window height plus any title bar slop.
      */
-    new_g = Tmp_win->frame_g;
-    if (IS_SHADED(Tmp_win))
+    new_g = Fw->frame_g;
+    if (IS_SHADED(Fw))
     {
-      new_g.width = Tmp_win->normal_g.width;
-      new_g.height = Tmp_win->normal_g.height;
+      new_g.width = Fw->normal_g.width;
+      new_g.height = Fw->normal_g.height;
     }
     oldnew_w = new_g.width + dw;
     oldnew_h = new_g.height + dh;
     constr_w = oldnew_w;
     constr_h = oldnew_h;
     constrain_size(
-      Tmp_win, (unsigned int *)&constr_w, (unsigned int *)&constr_h, 0, 0, 0);
+      Fw, (unsigned int *)&constr_w, (unsigned int *)&constr_h, 0, 0, 0);
     dw += (constr_w - oldnew_w);
     dh += (constr_h - oldnew_h);
     if ((cre->value_mask & CWX) && dw)
     {
-      new_g.x = Tmp_win->frame_g.x + dx;
-      new_g.width = Tmp_win->frame_g.width + dw;
+      new_g.x = Fw->frame_g.x + dx;
+      new_g.width = Fw->frame_g.width + dw;
     }
     else if ((cre->value_mask & CWX) && !dw)
     {
-      new_g.x = Tmp_win->frame_g.x + dx;
+      new_g.x = Fw->frame_g.x + dx;
     }
     else if (!(cre->value_mask & CWX) && dw)
     {
-      gravity_resize(Tmp_win->hints.win_gravity, &new_g, dw, 0);
+      gravity_resize(Fw->hints.win_gravity, &new_g, dw, 0);
     }
     if ((cre->value_mask & CWY) && dh)
     {
-      new_g.y = Tmp_win->frame_g.y + dy;
-      new_g.height = Tmp_win->frame_g.height + dh;
+      new_g.y = Fw->frame_g.y + dy;
+      new_g.height = Fw->frame_g.height + dh;
     }
     else if ((cre->value_mask & CWY) && !dh)
     {
-      new_g.y = Tmp_win->frame_g.y + dy;
+      new_g.y = Fw->frame_g.y + dy;
     }
     else if (!(cre->value_mask & CWY) && dh)
     {
-      gravity_resize(Tmp_win->hints.win_gravity, &new_g, 0, dh);
+      gravity_resize(Fw->hints.win_gravity, &new_g, 0, dh);
     }
 
     if ((cre->value_mask & CWX) || (cre->value_mask & CWY) || dw || dh)
     {
-      if (IS_SHADED(Tmp_win))
-	get_shaded_geometry(Tmp_win, &new_g, &new_g);
+      if (IS_SHADED(Fw))
+	get_shaded_geometry(Fw, &new_g, &new_g);
       frame_setup_window(
-	Tmp_win, new_g.x, new_g.y, new_g.width, new_g.height, False);
+	Fw, new_g.x, new_g.y, new_g.width, new_g.height, False);
       /* make sure the window structure has the new position */
-      update_absolute_geometry(Tmp_win);
-      maximize_adjust_offset(Tmp_win);
-      GNOME_SetWinArea(Tmp_win);
+      update_absolute_geometry(Fw);
+      maximize_adjust_offset(Fw);
+      GNOME_SetWinArea(Fw);
     }
   }
 
   /*  Stacking order change requested...  */
   /*  Handle this *after* geometry changes, since we need the new
       geometry in occlusion calculations */
-  if ( (cre->value_mask & CWStackMode) && !DO_IGNORE_RESTACK(Tmp_win) )
+  if ( (cre->value_mask & CWStackMode) && !DO_IGNORE_RESTACK(Fw) )
   {
     FvwmWindow *otherwin = NULL;
 
@@ -2506,89 +2509,89 @@ fprintf(stderr, "cre: %d(%d) %d(%d) %d(%d)x%d(%d) w 0x%08x '%s'\n",
       {
 	otherwin = NULL;
       }
-      if (otherwin == Tmp_win)
+      if (otherwin == Fw)
       {
 	otherwin = NULL;
       }
     }
     if ((cre->detail != Above) && (cre->detail != Below))
     {
-      HandleUnusualStackmodes (cre->detail, Tmp_win, cre->window,
+      HandleUnusualStackmodes (cre->detail, Fw, cre->window,
 			       otherwin, cre->above);
     }
     /* only allow clients to restack windows within their layer */
-    else if (!otherwin || compare_window_layers(otherwin, Tmp_win) != 0)
+    else if (!otherwin || compare_window_layers(otherwin, Fw) != 0)
     {
       switch (cre->detail)
       {
       case Above:
-	RaiseWindow(Tmp_win);
+	RaiseWindow(Fw);
 	break;
       case Below:
-	LowerWindow(Tmp_win);
+	LowerWindow(Fw);
 	break;
       }
     }
     else
     {
-      xwc.sibling = otherwin->frame;
+      xwc.sibling = FW_W_FRAME(otherwin);
       xwc.stack_mode = cre->detail;
       xwcm = CWSibling | CWStackMode;
-      XConfigureWindow (dpy, Tmp_win->frame, xwcm, &xwc);
+      XConfigureWindow (dpy, FW_W_FRAME(Fw), xwcm, &xwc);
 
       /* Maintain the condition that icon windows are stacked
 	 immediately below their frame */
-      /* 1. for Tmp_win */
-      xwc.sibling = Tmp_win->frame;
+      /* 1. for Fw */
+      xwc.sibling = FW_W_FRAME(Fw);
       xwc.stack_mode = Below;
       xwcm = CWSibling | CWStackMode;
-      if (Tmp_win->icon_title_w != None)
+      if (FW_W_ICON_TITLE(Fw) != None)
       {
-	XConfigureWindow(dpy, Tmp_win->icon_title_w, xwcm, &xwc);
+	XConfigureWindow(dpy, FW_W_ICON_TITLE(Fw), xwcm, &xwc);
       }
-      if (Tmp_win->icon_pixmap_w != None)
+      if (FW_W_ICON_PIXMAP(Fw) != None)
       {
-	XConfigureWindow(dpy, Tmp_win->icon_pixmap_w, xwcm, &xwc);
+	XConfigureWindow(dpy, FW_W_ICON_PIXMAP(Fw), xwcm, &xwc);
       }
 
       /* 2. for otherwin */
       if (cre->detail == Below)
       {
-	xwc.sibling = otherwin->frame;
+	xwc.sibling = FW_W_FRAME(otherwin);
 	xwc.stack_mode = Below;
 	xwcm = CWSibling | CWStackMode;
-	if (otherwin->icon_title_w != None)
+	if (FW_W_ICON_TITLE(otherwin) != None)
 	{
-	  XConfigureWindow(dpy, otherwin->icon_title_w, xwcm, &xwc);
+	  XConfigureWindow(dpy, FW_W_ICON_TITLE(otherwin), xwcm, &xwc);
 	}
-	if (otherwin->icon_pixmap_w != None)
+	if (FW_W_ICON_PIXMAP(otherwin) != None)
 	{
-	  XConfigureWindow(dpy, otherwin->icon_pixmap_w, xwcm, &xwc);
+	  XConfigureWindow(dpy, FW_W_ICON_PIXMAP(otherwin), xwcm, &xwc);
 	}
       }
 
       /* Maintain the stacking order ring */
       if (cre->detail == Above)
       {
-	remove_window_from_stack_ring(Tmp_win);
+	remove_window_from_stack_ring(Fw);
 	add_window_to_stack_ring_after(
-	  Tmp_win, get_prev_window_in_stack_ring(otherwin));
+	  Fw, get_prev_window_in_stack_ring(otherwin));
       }
       else /* cre->detail == Below */
       {
-	remove_window_from_stack_ring(Tmp_win);
-	add_window_to_stack_ring_after(Tmp_win, otherwin);
+	remove_window_from_stack_ring(Fw);
+	add_window_to_stack_ring_after(Fw, otherwin);
       }
 
       /*
-	Let the modules know that Tmp_win changed its place
+	Let the modules know that Fw changed its place
 	in the stacking order
       */
-      BroadcastRestackThisWindow(Tmp_win);
+      BroadcastRestackThisWindow(Fw);
     }
     /* srt (28-Apr-2001): Tk needs a ConfigureNotify event after a raise,
      * otherwise it would hang for two seconds */
-    new_g = Tmp_win->frame_g;
+    new_g = Fw->frame_g;
     do_send_event = True;
   }
 
@@ -2600,7 +2603,7 @@ fprintf(stderr, "cre: %d(%d) %d(%d) %d(%d)x%d(%d) w 0x%08x '%s'\n",
   if (do_send_event)
   {
     SendConfigureNotify(
-      Tmp_win, Tmp_win->frame_g.x, Tmp_win->frame_g.y,
+      Fw, Fw->frame_g.x, Fw->frame_g.y,
       new_g.width, new_g.height, cre->border_width, True);
     XSync(dpy,0);
   }
@@ -2627,26 +2630,26 @@ void SendConfigureNotify(
     return;
   client_event.type = ConfigureNotify;
   client_event.xconfigure.display = dpy;
-  client_event.xconfigure.event = tmp_win->w;
-  client_event.xconfigure.window = tmp_win->w;
+  client_event.xconfigure.event = FW_W(tmp_win);
+  client_event.xconfigure.window = FW_W(tmp_win);
   get_window_borders(tmp_win, &b);
   client_event.xconfigure.x = x + b.top_left.width;
   client_event.xconfigure.y = y + b.top_left.height;
   client_event.xconfigure.width = w - b.total_size.width;
   client_event.xconfigure.height = h - b.total_size.height;
   client_event.xconfigure.border_width = bw;
-  client_event.xconfigure.above = tmp_win->frame;
+  client_event.xconfigure.above = FW_W_FRAME(tmp_win);
   client_event.xconfigure.override_redirect = False;
-  XSendEvent(dpy, tmp_win->w, False, StructureNotifyMask, &client_event);
+  XSendEvent(dpy, FW_W(tmp_win), False, StructureNotifyMask, &client_event);
   if (send_for_frame_too)
   {
     /* This is for buggy tk, which waits for the real ConfigureNotify
      * on frame instead of the synthetic one on w. The geometry data
      * in the event will not be correct for the frame, but tk doesn't
      * look at that data anyway. */
-    client_event.xconfigure.event = tmp_win->frame;
-    client_event.xconfigure.window = tmp_win->frame;
-    XSendEvent(dpy, tmp_win->frame, False,StructureNotifyMask,&client_event);
+    client_event.xconfigure.event = FW_W_FRAME(tmp_win);
+    client_event.xconfigure.window = FW_W_FRAME(tmp_win);
+    XSendEvent(dpy, FW_W_FRAME(tmp_win), False,StructureNotifyMask,&client_event);
   }
 
   return;
@@ -2666,7 +2669,7 @@ void HandleShapeNotify (void)
 	{
 		FShapeEvent *sev = (FShapeEvent *) &Event;
 
-		if (!Tmp_win)
+		if (!Fw)
 		{
 			return;
 		}
@@ -2674,10 +2677,10 @@ void HandleShapeNotify (void)
 		{
 			return;
 		}
-		Tmp_win->wShaped = sev->shaped;
+		Fw->wShaped = sev->shaped;
 		frame_setup_shape(
-			Tmp_win, Tmp_win->frame_g.width,
-			Tmp_win->frame_g.height);
+			Fw, Fw->frame_g.width,
+			Fw->frame_g.height);
 	}
 
 	return;
@@ -2696,22 +2699,22 @@ void HandleVisibilityNotify(void)
 
   DBUG("HandleVisibilityNotify","Routine Entered");
 
-  if(Tmp_win && Tmp_win->frame == last_event_window)
+  if(Fw && FW_W_FRAME(Fw) == last_event_window)
   {
     if(vevent->state == VisibilityUnobscured)
     {
-      SET_FULLY_VISIBLE(Tmp_win, 1);
-      SET_PARTIALLY_VISIBLE(Tmp_win, 1);
+      SET_FULLY_VISIBLE(Fw, 1);
+      SET_PARTIALLY_VISIBLE(Fw, 1);
     }
     else if (vevent->state == VisibilityPartiallyObscured)
     {
-      SET_FULLY_VISIBLE(Tmp_win, 0);
-      SET_PARTIALLY_VISIBLE(Tmp_win, 1);
+      SET_FULLY_VISIBLE(Fw, 0);
+      SET_PARTIALLY_VISIBLE(Fw, 1);
     }
     else
     {
-      SET_FULLY_VISIBLE(Tmp_win, 0);
-      SET_PARTIALLY_VISIBLE(Tmp_win, 0);
+      SET_FULLY_VISIBLE(Fw, 0);
+      SET_PARTIALLY_VISIBLE(Fw, 0);
     }
   }
 }
@@ -2955,21 +2958,21 @@ void InitEventHandlerJumpTable(void)
  *	DispatchEvent - handle a single X event stored in global var Event
  *
  ************************************************************************/
-void DispatchEvent(Bool preserve_Tmp_win)
+void DispatchEvent(Bool preserve_Fw)
 {
   Window w = Event.xany.window;
-  FvwmWindow *s_Tmp_win = NULL;
+  FvwmWindow *s_Fw = NULL;
 
   DBUG("DispatchEvent","Routine Entered");
 
-  if (preserve_Tmp_win)
-    s_Tmp_win = Tmp_win;
+  if (preserve_Fw)
+    s_Fw = Fw;
   StashEventTime(&Event);
 
   XFlush(dpy);
-  if (XFindContext (dpy, w, FvwmContext, (caddr_t *) &Tmp_win) == XCNOENT)
+  if (XFindContext (dpy, w, FvwmContext, (caddr_t *) &Fw) == XCNOENT)
   {
-    Tmp_win = NULL;
+    Fw = NULL;
   }
   last_event_type = Event.type;
   last_event_window = w;
@@ -2986,15 +2989,15 @@ void DispatchEvent(Bool preserve_Tmp_win)
   alloca(0);
 #endif
 
-  if (preserve_Tmp_win)
+  if (preserve_Fw)
   {
     /* Just to be safe, check if the saved window still exists.  Since this is
      * only used with Expose events we should be safe anyway, but a bit of
      * security does not hurt. */
-    if (check_if_fvwm_window_exists(s_Tmp_win))
-      Tmp_win = s_Tmp_win;
+    if (check_if_fvwm_window_exists(s_Fw))
+      Fw = s_Fw;
     else
-      Tmp_win = NULL;
+      Fw = NULL;
   }
 
   DBUG("DispatchEvent","Leaving Routine");
@@ -3055,22 +3058,22 @@ int GetContext(FvwmWindow *t, XEvent *e, Window *w)
       dpy, Scr.Root, e->xkey.subwindow, e->xkey.x, e->xkey.y, &(e->xkey.x),
       &(e->xkey.y), &(e->xkey.subwindow));
     XFindContext(dpy, e->xkey.window, FvwmContext, (caddr_t *) &t);
-    Tmp_win = t;
+    Fw = t;
   }
-  if (e->type == ButtonPress && t && e->xkey.window == t->frame &&
+  if (e->type == ButtonPress && t && e->xkey.window == FW_W_FRAME(t) &&
       e->xkey.subwindow != None)
   {
     /* Translate frame coordinates into subwindow coordinates. */
     e->xkey.window = e->xkey.subwindow;
     XTranslateCoordinates(
-      dpy, t->frame, e->xkey.subwindow, e->xkey.x, e->xkey.y, &(e->xkey.x),
+      dpy, FW_W_FRAME(t), e->xkey.subwindow, e->xkey.x, e->xkey.y, &(e->xkey.x),
       &(e->xkey.y), &(e->xkey.subwindow));
-    if (e->xkey.window == t->Parent)
+    if (e->xkey.window == FW_W_PARENT(t))
     {
       e->xkey.window = e->xkey.subwindow;
       XTranslateCoordinates(
-	dpy, t->Parent, e->xkey.subwindow, e->xkey.x, e->xkey.y, &(e->xkey.x),
-	&(e->xkey.y), &(e->xkey.subwindow));
+	dpy, FW_W_PARENT(t), e->xkey.subwindow, e->xkey.x, e->xkey.y,
+	&(e->xkey.x), &(e->xkey.y), &(e->xkey.subwindow));
     }
   }
   if (!t)
@@ -3078,7 +3081,7 @@ int GetContext(FvwmWindow *t, XEvent *e, Window *w)
     return C_ROOT;
   }
 
-  if (e->type == KeyPress && e->xkey.window == t->frame &&
+  if (e->type == KeyPress && e->xkey.window == FW_W_FRAME(t) &&
       e->xkey.subwindow == t->decor_w)
   {
     /* We can't get keyboard events on the decor_w directly because it is a
@@ -3086,7 +3089,7 @@ int GetContext(FvwmWindow *t, XEvent *e, Window *w)
      * to grab keys on the frame and then translate the coordinates to find out
      * in which subwindow of the decor_w the event occured. */
     e->xkey.window = e->xkey.subwindow;
-    XTranslateCoordinates(dpy, t->frame, t->decor_w, e->xkey.x, e->xkey.y,
+    XTranslateCoordinates(dpy, FW_W_FRAME(t), t->decor_w, e->xkey.x, e->xkey.y,
 			  &JunkX, &JunkY, &(e->xkey.subwindow));
   }
   *w= e->xany.window;
@@ -3095,7 +3098,7 @@ int GetContext(FvwmWindow *t, XEvent *e, Window *w)
   {
     return C_ROOT;
   }
-  if (e->type == KeyPress && e->xkey.window == t->frame &&
+  if (e->type == KeyPress && e->xkey.window == FW_W_FRAME(t) &&
       e->xkey.subwindow == t->decor_w)
   {
     /* We can't get keyboard events on the decor_w directly because it is a
@@ -3103,7 +3106,7 @@ int GetContext(FvwmWindow *t, XEvent *e, Window *w)
      * to grab keys on the frame and then translate the coordinates to find out
      * in which subwindow of the decor_w the event occured. */
     e->xkey.window = e->xkey.subwindow;
-    XTranslateCoordinates(dpy, t->frame, t->decor_w, e->xkey.x, e->xkey.y,
+    XTranslateCoordinates(dpy, FW_W_FRAME(t), t->decor_w, e->xkey.x, e->xkey.y,
 			  &JunkX, &JunkY, &(e->xkey.subwindow));
   }
   *w= e->xany.window;
@@ -3113,7 +3116,7 @@ int GetContext(FvwmWindow *t, XEvent *e, Window *w)
     return C_ROOT;
   }
   if (e->xkey.subwindow != None &&
-      (e->xkey.window == t->decor_w || e->xkey.window == t->Parent))
+      (e->xkey.window == t->decor_w || e->xkey.window == FW_W_PARENT(t)))
   {
     *w = e->xkey.subwindow;
   }
@@ -3127,54 +3130,55 @@ int GetContext(FvwmWindow *t, XEvent *e, Window *w)
   }
   if (t)
   {
-    if (*w == t->title_w)
+    if (*w == FW_W_TITLE(t))
       Context = C_TITLE;
     else if (Scr.EwmhDesktop &&
-	     (*w == Scr.EwmhDesktop->w || *w == Scr.EwmhDesktop->Parent ||
-	      *w == Scr.EwmhDesktop->frame))
+	     (*w == FW_W(Scr.EwmhDesktop) ||
+	      *w == FW_W_PARENT(Scr.EwmhDesktop) ||
+	      *w == FW_W_FRAME(Scr.EwmhDesktop)))
       Context = C_EWMH_DESKTOP;
-    else if (*w == t->w || *w == t->Parent || *w == t->frame)
+    else if (*w == FW_W(t) || *w == FW_W_PARENT(t) || *w == FW_W_FRAME(t))
       Context = C_WINDOW;
-    else if (*w == t->icon_title_w || *w == t->icon_pixmap_w)
+    else if (*w == FW_W_ICON_TITLE(t) || *w == FW_W_ICON_PIXMAP(t))
       Context = C_ICON;
     else if (*w == t->decor_w)
       Context = C_SIDEBAR;
-    else if (*w == t->corners[0])
+    else if (*w == FW_W_CORNER(t, 0))
     {
       Context = C_F_TOPLEFT;
       Button = 0;
     }
-    else if (*w == t->corners[1])
+    else if (*w == FW_W_CORNER(t, 1))
     {
       Context = C_F_TOPRIGHT;
       Button = 1;
     }
-    else if (*w == t->corners[2])
+    else if (*w == FW_W_CORNER(t, 2))
     {
       Context = C_F_BOTTOMLEFT;
       Button = 2;
     }
-    else if (*w == t->corners[3])
+    else if (*w == FW_W_CORNER(t, 3))
     {
       Context = C_F_BOTTOMRIGHT;
       Button = 3;
     }
-    else if (*w == t->sides[0])
+    else if (*w == FW_W_SIDE(t, 0))
     {
       Context = C_SB_TOP;
       Button = 0;
     }
-    else if (*w == t->sides[1])
+    else if (*w == FW_W_SIDE(t, 1))
     {
       Context = C_SB_RIGHT;
       Button = 1;
     }
-    else if (*w == t->sides[2])
+    else if (*w == FW_W_SIDE(t, 2))
     {
       Context = C_SB_BOTTOM;
       Button = 2;
     }
-    else if (*w == t->sides[3])
+    else if (*w == FW_W_SIDE(t, 3))
     {
       Context = C_SB_LEFT;
       Button = 3;
@@ -3183,7 +3187,7 @@ int GetContext(FvwmWindow *t, XEvent *e, Window *w)
     {
       for (i = 0; i < NUMBER_OF_BUTTONS; i++)
       {
-        if (*w == t->button_w[i])
+        if (*w == FW_W_BUTTON(t, i))
         {
           if ((!(i & 1) && i / 2 < Scr.nr_left_buttons) ||
               ( (i & 1) && i / 2 < Scr.nr_right_buttons))
@@ -3255,7 +3259,7 @@ void handle_all_expose(void)
   XPending(dpy);
   while (XCheckMaskEvent(dpy, ExposureMask, &Event))
   {
-    /* note: handling Expose events will never modify the global Tmp_win */
+    /* note: handling Expose events will never modify the global Fw */
     DispatchEvent(True);
   }
   memcpy(&Event, &old_event, sizeof(XEvent));
@@ -3323,7 +3327,7 @@ Bool StashEventTime (XEvent *ev)
  * that behaviour is correct and desirable. --11/08/97 gjb */
 void CoerceEnterNotifyOnCurrentWindow(void)
 {
-  extern FvwmWindow *Tmp_win; /* from events.c */
+  extern FvwmWindow *Fw; /* from events.c */
   Window child, root;
   int root_x, root_y;
   int win_x, win_y;
@@ -3332,10 +3336,10 @@ void CoerceEnterNotifyOnCurrentWindow(void)
 
   if (f && child != None) {
     Event.xany.window = child;
-    if (XFindContext(dpy, child, FvwmContext, (caddr_t *) &Tmp_win) == XCNOENT)
-      Tmp_win = NULL;
+    if (XFindContext(dpy, child, FvwmContext, (caddr_t *) &Fw) == XCNOENT)
+      Fw = NULL;
     HandleEnterNotify();
-    Tmp_win = None;
+    Fw = None;
   }
 }
 
@@ -3421,7 +3425,7 @@ void WaitForButtonsUp(Bool do_handle_expose)
 	mask = Event.xbutton.state;
 	break;
       case Expose:
-	/* note: handling Expose events will never modify the global Tmp_win */
+	/* note: handling Expose events will never modify the global Fw */
 	DispatchEvent(True);
 	break;
       default:

@@ -442,7 +442,8 @@ typedef struct ScreenInfo
 } ScreenInfo;
 
 /* A macro to to simplify he "ewmh desktop code" */
-#define IS_EWMH_DESKTOP(win) (Scr.EwmhDesktop && win == Scr.EwmhDesktop->w)
+#define IS_EWMH_DESKTOP(win) \
+  (Scr.EwmhDesktop && win == Scr.EwmhDesktop->wins.client)
 
 /*
    Macro which gets specific decor or default decor.

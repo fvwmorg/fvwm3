@@ -119,11 +119,11 @@ static void print_g(char *text, rectangle *g)
 	}
 }
 
-static Bool is_hidden(FvwmWindow *tmp_win, rectangle *g)
+static Bool is_hidden(FvwmWindow *fw, rectangle *g)
 {
 	size_borders b;
 
-	get_window_borders(tmp_win, &b);
+	get_window_borders(fw, &b);
 	if (g->width <= b.total_size.width || g->height <= b.total_size.height)
 	{
 		return True;
@@ -188,12 +188,12 @@ static void get_resize_decor_gravities_one_axis(
 	ret_grav->parent_grav = neg_grav;
 	switch (axis_mode)
 	{
-	case RESIZE_MODE_SCROLL:
+	case FRAME_RESIZE_SCROLL:
 		ret_grav->client_grav = pos_grav;
 		break;
-	case RESIZE_MODE_SHRINK:
-	case RESIZE_MODE_RESIZE:
-	case RESIZE_MODE_SETUP:
+	case FRAME_RESIZE_SHRINK:
+	case FRAME_RESIZE_OPAQUE:
+	case FRAME_RESIZE_SETUP:
 	default:
 		ret_grav->client_grav = neg_grav;
 		break;
@@ -203,107 +203,107 @@ static void get_resize_decor_gravities_one_axis(
 }
 
 static void execute_one_resize_action(
-	FvwmWindow *tmp_win, resize_action_type action, rectangle *new_g,
+	FvwmWindow *fw, resize_action_type action, rectangle *new_g,
 	rectangle *old_g, rectangle *client_g, size_borders *b)
 {
 	switch (action)
 	{
 	case RA_FIRST_RAISE_PARENT:
-		XRaiseWindow(dpy, tmp_win->Parent);
+		XRaiseWindow(dpy, FW_W_PARENT(fw));
 		break;
 	case RA_X_RESIZE_TITLE:
-		if (!HAS_VERTICAL_TITLE(tmp_win))
+		if (!HAS_VERTICAL_TITLE(fw))
 		{
 			XResizeWindow(
-				dpy, tmp_win->title_w,
+				dpy, FW_W_TITLE(fw),
 				new_g->width - b->total_size.width,
-				tmp_win->title_thickness);
+				fw->title_thickness);
 		}
 		break;
 	case RA_Y_RESIZE_TITLE:
-		if (HAS_VERTICAL_TITLE(tmp_win))
+		if (HAS_VERTICAL_TITLE(fw))
 		{
 			XResizeWindow(
-				dpy, tmp_win->title_w, tmp_win->title_thickness,
+				dpy, FW_W_TITLE(fw), fw->title_thickness,
 				new_g->height - b->total_size.height);
 		}
 		break;
 	case RA_X_RESIZE_DECORW:
 		XResizeWindow(
-			dpy, tmp_win->decor_w, new_g->width, old_g->height);
+			dpy, fw->decor_w, new_g->width, old_g->height);
 		break;
 	case RA_Y_RESIZE_DECORW:
 		XResizeWindow(
-			dpy, tmp_win->decor_w, old_g->width, new_g->height);
+			dpy, fw->decor_w, old_g->width, new_g->height);
 		break;
 	case RA_RESIZE_DECORW:
 		XResizeWindow(
-			dpy, tmp_win->decor_w, new_g->width, new_g->height);
+			dpy, fw->decor_w, new_g->width, new_g->height);
 		break;
 	case RA_X_RESIZE_CLIENT:
 		XResizeWindow(
-			dpy, tmp_win->w,
+			dpy, FW_W(fw),
 			max(new_g->width - b->total_size.width, 1),
 			max(old_g->height - b->total_size.height, 1));
 		XFlush(dpy);
 		break;
 	case RA_Y_RESIZE_CLIENT:
 		XResizeWindow(
-			dpy, tmp_win->w,
+			dpy, FW_W(fw),
 			max(old_g->width - b->total_size.width, 1),
 			max(new_g->height - b->total_size.height, 1));
 		XFlush(dpy);
 		break;
 	case RA_RESIZE_CLIENT:
 		XResizeWindow(
-			dpy, tmp_win->w,
+			dpy, FW_W(fw),
 			max(new_g->width - b->total_size.width, 1),
 			max(new_g->height - b->total_size.height, 1));
 		XFlush(dpy);
 		break;
 	case RA_X_RESIZE_PARENT:
 		XResizeWindow(
-			dpy, tmp_win->Parent,
+			dpy, FW_W_PARENT(fw),
 			max(new_g->width - b->total_size.width, 1),
 			max(old_g->height - b->total_size.height, 1));
 		break;
 	case RA_Y_RESIZE_PARENT:
 		XResizeWindow(
-			dpy, tmp_win->Parent,
+			dpy, FW_W_PARENT(fw),
 			max(old_g->width - b->total_size.width, 1),
 			max(new_g->height - b->total_size.height, 1));
 		break;
 	case RA_RESIZE_PARENT:
 		XResizeWindow(
-			dpy, tmp_win->Parent,
+			dpy, FW_W_PARENT(fw),
 			max(new_g->width - b->total_size.width, 1),
 			max(new_g->height - b->total_size.height, 1));
 		break;
 	case RA_MOVERESIZE_FRAME:
 		XMoveResizeWindow(
-			dpy, tmp_win->frame, new_g->x, new_g->y, new_g->width,
+			dpy, FW_W_FRAME(fw), new_g->x, new_g->y, new_g->width,
 			new_g->height);
 		*old_g = *new_g;
 		break;
 	case RA_LAST_RESTORE_FOCUS:
-		FOCUS_SET(tmp_win->w);
+		FOCUS_SET(FW_W(fw));
 		break;
 	case RA_LAST_LOWER_PARENT:
-		XLowerWindow(dpy, tmp_win->Parent);
+		XLowerWindow(dpy, FW_W_PARENT(fw));
 		break;
 	case RA_FIRST_SETUP_HIDDEN:
 	case RA_LAST_SETUP_HIDDEN:
 #if 0
-		tmp_g = (IS_MAXIMIZED(tmp_win)) ?
-			tmp_win->max_g : tmp_win->normal_g;
+		tmp_g = (IS_MAXIMIZED(fw)) ?
+			fw->max_g : fw->normal_g;
 		tmp_g.width -= b->total_size.width;
 		tmp_g.height -= b->total_size.height;
 
 		XMoveResizeWindow(
-			dpy, tmp_win->Parent, ?, ?, client_g->width,
+			dpy, FW_W_PARENT(fw), ?, ?, client_g->width,
 			client_g->height);
 		XMoveResizeWindow(
-			dpy, tmp_win->w, 0, 0, client_g->width,
+			dpy, FW_W(fw), 0, 0, client_g->width,
 			client_g->height);
 #endif
 		/*!!!*/
@@ -317,7 +317,7 @@ static void execute_one_resize_action(
 }
 
 static void execute_resize_actions(
-	FvwmWindow *tmp_win, resize_action_type *action, rectangle *new_g,
+	FvwmWindow *fw, resize_action_type *action, rectangle *new_g,
 	rectangle *old_g, rectangle *client_g, Bool is_first_step,
 	Bool is_last_step)
 {
@@ -325,7 +325,7 @@ static void execute_resize_actions(
 	size_borders b;
 	rectangle old_g2;
 
-	get_window_borders(tmp_win, &b);
+	get_window_borders(fw, &b);
 	old_g2 = *old_g;
 	for (i = 0; action[i] != RA_DONE; i++)
 	{
@@ -348,7 +348,7 @@ static void execute_resize_actions(
 			continue;
 		}
 		execute_one_resize_action(
-			tmp_win, action[i], new_g, &old_g2, client_g, &b);
+			fw, action[i], new_g, &old_g2, client_g, &b);
 	}
 
 	return;
@@ -362,7 +362,7 @@ static void get_resize_action_order(
 	int n = 0;
 	Bool is_resizing;
 
-	if (is_hidden_at_start && mode_x != RESIZE_MODE_RESIZE)
+	if (is_hidden_at_start && mode_x != FRAME_RESIZE_OPAQUE)
 	{
 		if ((delta_g->width != 0 && delta_g->height != 0) ||
 		    !is_hidden_at_end)
@@ -374,7 +374,7 @@ static void get_resize_action_order(
 		}
 	}
 
-	is_resizing = (mode_x == RESIZE_MODE_RESIZE) ? True : False;
+	is_resizing = (mode_x == FRAME_RESIZE_OPAQUE) ? True : False;
 	if (delta_g->width >= 0 && delta_g->height >= 0)
 	{
 		action[n++] = RA_X_RESIZE_TITLE;
@@ -435,7 +435,7 @@ static void get_resize_action_order(
 		action[n++] = RA_Y_RESIZE_TITLE;
 		action[n++] = RA_X_RESIZE_TITLE;
 	}
-	if (is_hidden_at_end && mode_x != RESIZE_MODE_RESIZE)
+	if (is_hidden_at_end && mode_x != FRAME_RESIZE_OPAQUE)
 	{
 		action[n++] = RA_LAST_LOWER_PARENT;
 	}
@@ -454,31 +454,31 @@ static void get_resize_action_order(
 }
 
 static void frame_setup_border(
-	FvwmWindow *tmp_win, int w, int h)
+	FvwmWindow *fw, int w, int h)
 {
 	int add;
 	int i;
-	int is_shaded = IS_SHADED(tmp_win);
+	int is_shaded = IS_SHADED(fw);
 	XWindowChanges xwc;
 	unsigned long xwcm;
 	int xwidth;
 	int ywidth;
 
-	if (!HAS_BORDER(tmp_win))
+	if (!HAS_BORDER(fw))
 	{
 		return;
 	}
-	tmp_win->visual_corner_width = tmp_win->corner_width;
-	if (w < 2*tmp_win->corner_width)
+	fw->visual_corner_width = fw->corner_width;
+	if (w < 2*fw->corner_width)
 	{
-		tmp_win->visual_corner_width = w / 3;
+		fw->visual_corner_width = w / 3;
 	}
-	if (h < 2*tmp_win->corner_width && !is_shaded)
+	if (h < 2*fw->corner_width && !is_shaded)
 	{
-		tmp_win->visual_corner_width = h / 3;
+		fw->visual_corner_width = h / 3;
 	}
-	xwidth = w - 2 * tmp_win->visual_corner_width;
-	ywidth = h - 2 * tmp_win->visual_corner_width;
+	xwidth = w - 2 * fw->visual_corner_width;
+	ywidth = h - 2 * fw->visual_corner_width;
 	xwcm = CWWidth | CWHeight | CWX | CWY;
 	if (xwidth<2)
 	{
@@ -491,7 +491,7 @@ static void frame_setup_border(
 
 	if (is_shaded)
 	{
-		add = tmp_win->visual_corner_width / 3;
+		add = fw->visual_corner_width / 3;
 	}
 	else
 	{
@@ -501,15 +501,15 @@ static void frame_setup_border(
 	{
 		if (i == 0)
 		{
-			xwc.x = tmp_win->visual_corner_width;
+			xwc.x = fw->visual_corner_width;
 			xwc.y = 0;
-			xwc.height = tmp_win->boundary_width;
+			xwc.height = fw->boundary_width;
 			xwc.width = xwidth;
 		}
 		else if (i == 1)
 		{
-			xwc.x = w - tmp_win->boundary_width;
-			xwc.y = tmp_win->visual_corner_width;
+			xwc.x = w - fw->boundary_width;
+			xwc.y = fw->visual_corner_width;
 			if (is_shaded)
 			{
 				xwc.y /= 3;
@@ -519,20 +519,20 @@ static void frame_setup_border(
 			{
 				xwc.height = ywidth;
 			}
-			xwc.width = tmp_win->boundary_width;
+			xwc.width = fw->boundary_width;
 
 		}
 		else if (i == 2)
 		{
-			xwc.x = tmp_win->visual_corner_width;
-			xwc.y = h - tmp_win->boundary_width;
-			xwc.height = tmp_win->boundary_width;
+			xwc.x = fw->visual_corner_width;
+			xwc.y = h - fw->boundary_width;
+			xwc.height = fw->boundary_width;
 			xwc.width = xwidth;
 		}
 		else
 		{
 			xwc.x = 0;
-			xwc.y = tmp_win->visual_corner_width;
+			xwc.y = fw->visual_corner_width;
 			if (is_shaded)
 			{
 				xwc.y /= 3;
@@ -542,21 +542,20 @@ static void frame_setup_border(
 			{
 				xwc.height = ywidth;
 			}
-			xwc.width = tmp_win->boundary_width;
+			xwc.width = fw->boundary_width;
 		}
 		XConfigureWindow(
-			dpy, tmp_win->sides[i], xwcm, &xwc);
+			dpy, FW_W_SIDE(fw, i), xwcm, &xwc);
 	}
 
 	xwcm = CWX|CWY|CWWidth|CWHeight;
-	xwc.width = tmp_win->visual_corner_width;
-	xwc.height = tmp_win->visual_corner_width;
+	xwc.width = fw->visual_corner_width;
+	xwc.height = fw->visual_corner_width;
 	for (i = 0; i < 4; i++)
 	{
 		if (i & 0x1)
 		{
-			xwc.x = w -
-				tmp_win->visual_corner_width;
+			xwc.x = w - fw->visual_corner_width;
 		}
 		else
 		{
@@ -565,23 +564,21 @@ static void frame_setup_border(
 
 		if (i & 0x2)
 		{
-			xwc.y = h + add -
-				tmp_win->visual_corner_width;
+			xwc.y = h + add - fw->visual_corner_width;
 		}
 		else
 		{
 			xwc.y = -add;
 		}
 
-		XConfigureWindow(
-			dpy, tmp_win->corners[i], xwcm, &xwc);
+		XConfigureWindow(dpy, FW_W_CORNER(fw, i), xwcm, &xwc);
 	}
 
 	return;
 }
 
 static void frame_setup_title_bar(
-	FvwmWindow *tmp_win, int w, int h)
+	FvwmWindow *fw, int w, int h)
 {
 	XWindowChanges xwc;
 	unsigned long xwcm;
@@ -600,13 +597,13 @@ static void frame_setup_title_bar(
 	rectangle tmp_g;
 	size_borders b;
 
-	if (!HAS_TITLE(tmp_win))
+	if (!HAS_TITLE(fw))
 	{
 		return;
 	}
 
-	get_window_borders(tmp_win, &b);
-	if (HAS_VERTICAL_TITLE(tmp_win))
+	get_window_borders(fw, &b);
+	if (HAS_VERTICAL_TITLE(fw))
 	{
 		space = h;
 		px = &xwc.y;
@@ -614,7 +611,7 @@ static void frame_setup_title_bar(
 		pwidth = &xwc.height;
 		pheight = &xwc.width;
 		bsize = b.total_size.height;
-		wsize = tmp_win->frame_g.height - bsize;
+		wsize = fw->frame_g.height - bsize;
 	}
 	else
 	{
@@ -624,26 +621,26 @@ static void frame_setup_title_bar(
 		pwidth = &xwc.width;
 		pheight = &xwc.height;
 		bsize = b.total_size.width;
-		wsize = tmp_win->frame_g.width - bsize;
+		wsize = fw->frame_g.width - bsize;
 	}
-	tmp_win->title_length = space -
-		(tmp_win->nr_left_buttons + tmp_win->nr_right_buttons) *
-		tmp_win->title_thickness - bsize;
-	if (tmp_win->title_length < 1)
+	fw->title_length = space -
+		(fw->nr_left_buttons + fw->nr_right_buttons) *
+		fw->title_thickness - bsize;
+	if (fw->title_length < 1)
 	{
-		tmp_win->title_length = 1;
+		fw->title_length = 1;
 	}
 	tmp_g.width = w;
 	tmp_g.height = h;
-	get_title_geometry(tmp_win, &tmp_g);
+	get_title_geometry(fw, &tmp_g);
 	xwcm = CWX | CWY | CWHeight | CWWidth;
 	xwc.x = tmp_g.x;
 	xwc.y = tmp_g.y;
-	xwc.width = tmp_win->title_thickness;
-	xwc.height = tmp_win->title_thickness;
+	xwc.width = fw->title_thickness;
+	xwc.height = fw->title_thickness;
 	for (i = 0; i < NUMBER_OF_BUTTONS; i++)
 	{
-		if (tmp_win->button_w[i])
+		if (FW_W_BUTTON(fw, i))
 			buttons++;
 	}
 	if (wsize < buttons * *pwidth)
@@ -651,8 +648,8 @@ static void frame_setup_title_bar(
 		*pwidth = wsize / buttons;
 		if (*pwidth < 1)
 			*pwidth = 1;
-		if (*pwidth > tmp_win->title_thickness)
-			*pwidth = tmp_win->title_thickness;
+		if (*pwidth > fw->title_thickness)
+			*pwidth = fw->title_thickness;
 		rest = wsize - buttons * *pwidth;
 		if (rest > 0)
 			(*pwidth)++;
@@ -661,20 +658,20 @@ static void frame_setup_title_bar(
 	title_off = *px;
 	for (i = 0; i < NUMBER_OF_BUTTONS; i += 2)
 	{
-		if (tmp_win->button_w[i] != None)
+		if (FW_W_BUTTON(fw, i) != None)
 		{
-			if (*px + *pwidth < space - tmp_win->boundary_width)
+			if (*px + *pwidth < space - fw->boundary_width)
 			{
 				XConfigureWindow(
-					dpy, tmp_win->button_w[i], xwcm, &xwc);
+					dpy, FW_W_BUTTON(fw, i), xwcm, &xwc);
 				*px += *pwidth;
 				title_off += *pwidth;
 			}
 			else
 			{
-				*px = -tmp_win->title_thickness;
+				*px = -fw->title_thickness;
 				XConfigureWindow(
-					dpy, tmp_win->button_w[i], xwcm, &xwc);
+					dpy, FW_W_BUTTON(fw, i), xwcm, &xwc);
 			}
 			rest--;
 			if (rest == 0)
@@ -686,30 +683,30 @@ static void frame_setup_title_bar(
 	bw = *pwidth;
 
 	/* title */
-	if (tmp_win->title_length <= 0 || wsize < 0)
+	if (fw->title_length <= 0 || wsize < 0)
 		title_off = -10;
 	*px = title_off;
-	*pwidth = tmp_win->title_length;
-	XConfigureWindow(dpy, tmp_win->title_w, xwcm, &xwc);
+	*pwidth = fw->title_length;
+	XConfigureWindow(dpy, FW_W_TITLE(fw), xwcm, &xwc);
 
 	/* right */
 	*pwidth = bw;
-	*px = space - tmp_win->boundary_width - *pwidth;
+	*px = space - fw->boundary_width - *pwidth;
 	for (i = 1 ; i < NUMBER_OF_BUTTONS; i += 2)
 	{
-		if (tmp_win->button_w[i] != None)
+		if (FW_W_BUTTON(fw, i) != None)
 		{
-			if (*px > tmp_win->boundary_width)
+			if (*px > fw->boundary_width)
 			{
 				XConfigureWindow(
-					dpy, tmp_win->button_w[i], xwcm, &xwc);
+					dpy, FW_W_BUTTON(fw, i), xwcm, &xwc);
 				*px -= *pwidth;
 			}
 			else
 			{
-				*px = -tmp_win->title_thickness;
+				*px = -fw->title_thickness;
 				XConfigureWindow(
-					dpy, tmp_win->button_w[i], xwcm, &xwc);
+					dpy, FW_W_BUTTON(fw, i), xwcm, &xwc);
 			}
 			rest--;
 			if (rest == 0)
@@ -724,23 +721,23 @@ static void frame_setup_title_bar(
 }
 
 static void frame_setup_frame(
-	FvwmWindow *tmp_win, rectangle *new_g)
+	FvwmWindow *fw, rectangle *new_g)
 {
 	size_borders b;
 
-	get_window_borders(tmp_win, &b);
-	tmp_win->attr.width = new_g->width - b.total_size.width;
-	tmp_win->attr.height = new_g->height - b.total_size.height;
+	get_window_borders(fw, &b);
+	fw->attr.width = new_g->width - b.total_size.width;
+	fw->attr.height = new_g->height - b.total_size.height;
 	frame_resize(
-		tmp_win, &tmp_win->frame_g, new_g, RESIZE_MODE_RESIZE,
-		RESIZE_MODE_RESIZE, 0);
-	tmp_win->frame_g = *new_g;
+		fw, &fw->frame_g, new_g, FRAME_RESIZE_OPAQUE,
+		FRAME_RESIZE_OPAQUE, 0);
+	fw->frame_g = *new_g;
 
 	return;
 }
 
 void frame_setup_window_internal(
-	FvwmWindow *tmp_win, int x, int y, int w, int h,
+	FvwmWindow *fw, int x, int y, int w, int h,
 	Bool do_send_configure_notify, Bool do_force)
 {
 	Bool is_resized = False;
@@ -758,11 +755,11 @@ void frame_setup_window_internal(
 	}
 	/* set some flags */
 	if (do_force ||
-	    w != tmp_win->frame_g.width || h != tmp_win->frame_g.height)
+	    w != fw->frame_g.width || h != fw->frame_g.height)
 	{
 		is_resized = True;
 	}
-	if (do_force || x != tmp_win->frame_g.x || y != tmp_win->frame_g.y)
+	if (do_force || x != fw->frame_g.x || y != fw->frame_g.y)
 	{
 		is_moved = True;
 	}
@@ -771,14 +768,14 @@ void frame_setup_window_internal(
 	new_g.y = y;
 	new_g.width = w;
 	new_g.height = h;
-	frame_setup_frame(tmp_win, &new_g);
+	frame_setup_frame(fw, &new_g);
 	if (is_resized)
 	{
-		frame_setup_title_bar(tmp_win, w, h);
-		frame_setup_border(tmp_win, w, h);
-		if (FShapesSupported && tmp_win->wShaped)
+		frame_setup_title_bar(fw, w, h);
+		frame_setup_border(fw, w, h);
+		if (FShapesSupported && fw->wShaped)
 		{
-			frame_setup_shape(tmp_win, w, h);
+			frame_setup_shape(fw, w, h);
 		}
 	}
 	/* inform the application of the change
@@ -792,29 +789,29 @@ void frame_setup_window_internal(
 	}
 	/* must not send events to shaded windows because this might cause them
 	 * to look at their current geometry */
-	if (do_send_configure_notify && !IS_SHADED(tmp_win))
+	if (do_send_configure_notify && !IS_SHADED(fw))
 	{
-		SendConfigureNotify(tmp_win, x, y, w, h, 0, True);
+		SendConfigureNotify(fw, x, y, w, h, 0, True);
 	}
 	/* get things updated */
 	XSync(dpy, 0);
 	/* inform the modules of the change */
-	BroadcastConfig(M_CONFIGURE_WINDOW,tmp_win);
+	BroadcastConfig(M_CONFIGURE_WINDOW,fw);
 
 #if 0
-	fprintf(stderr, "sf: window '%s'\n", tmp_win->name);
-	fprintf(stderr, "    frame:  %5d %5d, %4d x %4d\n", tmp_win->frame_g.x,
-		tmp_win->frame_g.y, tmp_win->frame_g.width,
-		tmp_win->frame_g.height);
+	fprintf(stderr, "sf: window '%s'\n", fw->name);
+	fprintf(stderr, "    frame:  %5d %5d, %4d x %4d\n", fw->frame_g.x,
+		fw->frame_g.y, fw->frame_g.width,
+		fw->frame_g.height);
 	fprintf(stderr, "    normal: %5d %5d, %4d x %4d\n",
-		tmp_win->normal_g.x, tmp_win->normal_g.y,
-		tmp_win->normal_g.width, tmp_win->normal_g.height);
-	if (IS_MAXIMIZED(tmp_win))
+		fw->normal_g.x, fw->normal_g.y,
+		fw->normal_g.width, fw->normal_g.height);
+	if (IS_MAXIMIZED(fw))
 	{
 		fprintf(stderr, "    max:    %5d %5d, %4d x %4d, %5d %5d\n",
-			tmp_win->max_g.x, tmp_win->max_g.y,
-			tmp_win->max_g.width, tmp_win->max_g.height,
-			tmp_win->max_offset.x, tmp_win->max_offset.y);
+			fw->max_g.x, fw->max_g.y,
+			fw->max_g.width, fw->max_g.height,
+			fw->max_offset.x, fw->max_offset.y);
 	}
 #endif
 
@@ -824,7 +821,7 @@ void frame_setup_window_internal(
 /* ---------------------------- interface functions ------------------------- */
 
 void frame_resize(
-	FvwmWindow *tmp_win, rectangle *start_g, rectangle *end_g,
+	FvwmWindow *fw, rectangle *start_g, rectangle *end_g,
 	resize_mode_type mode_x, resize_mode_type mode_y, int anim_steps)
 {
 	rectangle client_g;
@@ -853,7 +850,7 @@ void frame_resize(
 print_g("start", start_g);
 print_g("end  ", end_g);
 	/* prepare a shape window if necessary */
-	if (FShapesSupported && shape_w == None && tmp_win->wShaped)
+	if (FShapesSupported && shape_w == None && fw->wShaped)
 	{
 		XSetWindowAttributes attributes;
 		unsigned long valuemask;
@@ -874,12 +871,12 @@ print_g("end  ", end_g);
 	{
 		end_g->height = 1;
 	}
-	if (mode_x == RESIZE_MODE_RESIZE || mode_y == RESIZE_MODE_RESIZE)
+	if (mode_x == FRAME_RESIZE_OPAQUE || mode_y == FRAME_RESIZE_OPAQUE)
 	{
 		/* no animated resizing */
 		anim_steps = 0;
-		mode_x = RESIZE_MODE_RESIZE;
-		mode_y = RESIZE_MODE_RESIZE;
+		mode_x = FRAME_RESIZE_OPAQUE;
+		mode_y = FRAME_RESIZE_OPAQUE;
 	}
 	/* calculate diff of size and position */
 	delta_g.x = end_g->x - start_g->x;
@@ -891,7 +888,7 @@ print_g("end  ", end_g);
 		int whdiff;
 
 		whdiff = max(abs(delta_g.width), abs(delta_g.height));
-		if (whdiff == 0 && mode_x != RESIZE_MODE_RESIZE)
+		if (whdiff == 0 && mode_x != FRAME_RESIZE_OPAQUE)
 		{
 			return;
 		}
@@ -907,28 +904,28 @@ print_g("end  ", end_g);
 	}
 	/* set gravities for the window parts */
 	frame_get_resize_decor_gravities(
-		&grav, GET_TITLE_DIR(tmp_win), mode_x, mode_y);
-	frame_set_decor_gravities(tmp_win, &grav);
+		&grav, GET_TITLE_DIR(fw), mode_x, mode_y);
+	frame_set_decor_gravities(fw, &grav);
 #if 0
 	if (anim_steps > 1)
 	{
-		move_parent_too = HAS_TITLE_DIR(tmp_win, DIR_S);
+		move_parent_too = HAS_TITLE_DIR(fw, DIR_S);
 	}
 #endif
 	/* calculate order in which to do things */
 	sf = get_focus_window();
 	get_resize_action_order(
 		&(action[0]), &delta_g, mode_x, mode_y,
-		is_hidden(tmp_win, start_g), is_hidden(tmp_win, end_g),
-		(sf == tmp_win) ? True : False);
+		is_hidden(fw, start_g), is_hidden(fw, end_g),
+		(sf == fw) ? True : False);
 	/* prepare some convenience variables */
 #if 0
-	frame_g = tmp_win->frame_g;
+	frame_g = fw->frame_g;
 #endif
-	get_client_geometry(tmp_win, &client_g);
+	get_client_geometry(fw, &client_g);
 
 	/* animation */
-	for (nstep = 1, current_g = tmp_win->frame_g; nstep <= anim_steps;
+	for (nstep = 1, current_g = fw->frame_g; nstep <= anim_steps;
 	     nstep++, current_g = next_g)
 	{
 		next_g = *start_g;
@@ -937,7 +934,7 @@ print_g("end  ", end_g);
 		next_g.width += (delta_g.width * nstep) / anim_steps;
 		next_g.height += (delta_g.height * nstep) / anim_steps;
 		execute_resize_actions(
-			tmp_win, &(action[0]), &next_g, &current_g, &client_g,
+			fw, &(action[0]), &next_g, &current_g, &client_g,
 			(nstep == 1) ? True : False,
 			(nstep == anim_steps) ? True : False);
 	}
@@ -956,61 +953,61 @@ print_g("end  ", end_g);
 		/*!!! unshade*/
 		{
 			XMoveResizeWindow(
-				dpy, tmp_win->w, 0, 0, client_g.width,
+				dpy, FW_W(fw), 0, 0, client_g.width,
 				client_g.height);
 			if (delta_g.x > 0)
 			{
 				XMoveResizeWindow(
-					dpy, tmp_win->Parent, b.top_left.width,
+					dpy, FW_W_PARENT(fw), b.top_left.width,
 					b.top_left.height - client_g.height + 1,
 					client_g.width, client_g.height);
 #if 0
 				frame_set_decor_gravities(
-					tmp_win, SouthEastGravity,
+					fw, SouthEastGravity,
 					SouthEastGravity, NorthWestGravity);
 #endif
 			}
 			else
 			{
 				XMoveResizeWindow(
-					dpy, tmp_win->Parent, b.top_left.width,
+					dpy, FW_W_PARENT(fw), b.top_left.width,
 					b.top_left.height, client_g.width,
 					client_g.height);
 #if 0
 				set_decor_gravity(
-					tmp_win, NorthWestGravity,
+					fw, NorthWestGravity,
 					NorthWestGravity, NorthWestGravity);
 #endif
 			}
-			XLowerWindow(dpy, tmp_win->decor_w);
+			XLowerWindow(dpy, fw->decor_w);
 			XMoveResizeWindow(
-				dpy, tmp_win->frame, end_g->x, end_g->y,
+				dpy, FW_W_FRAME(fw), end_g->x, end_g->y,
 				end_g->width, end_g->height);
-			tmp_win->frame_g.height = end_g->height + 1;
+			fw->frame_g.height = end_g->height + 1;
 		}
 		/*!!! shade*/
 		{
 			/* All this stuff is necessary to prevent flickering */
 #if 0
 			set_decor_gravity(
-				tmp_win, title_grav, UnmapGravity, client_grav);
+				fw, title_grav, UnmapGravity, client_grav);
 #endif
 			XMoveResizeWindow(
-				dpy, tmp_win->frame, end_g->x, end_g->y,
+				dpy, FW_W_FRAME(fw), end_g->x, end_g->y,
 				end_g->width, end_g->height);
-			XResizeWindow(dpy, tmp_win->Parent, client_g.width, 1);
-			XMoveWindow(dpy, tmp_win->decor_w, 0, 0);
-			XRaiseWindow(dpy, tmp_win->decor_w);
-			XMapWindow(dpy, tmp_win->Parent);
+			XResizeWindow(dpy, FW_W_PARENT(fw), client_g.width, 1);
+			XMoveWindow(dpy, fw->decor_w, 0, 0);
+			XRaiseWindow(dpy, fw->decor_w);
+			XMapWindow(dpy, FW_W_PARENT(fw));
 
 			if (delta_g.x > 0)
 			{
-				XMoveWindow(dpy, tmp_win->w, 0,
+				XMoveWindow(dpy, FW_W(fw), 0,
 					    1 - client_g.height);
 			}
 			else
 			{
-				XMoveWindow(dpy, tmp_win->w, 0, 0);
+				XMoveWindow(dpy, FW_W(fw), 0, 0);
 			}
 
 			/* domivogt (28-Dec-1999): For some reason the
@@ -1019,9 +1016,9 @@ print_g("end  ", end_g);
 			 * but if we explicitly restore the focus here
 			 * everything works fine.
 			 */
-			if (sf == tmp_win)
+			if (sf == fw)
 			{
-				FOCUS_SET(tmp_win->w);
+				FOCUS_SET(FW_W(fw));
 			}
 		}
 	}
@@ -1031,27 +1028,27 @@ print_g("end  ", end_g);
 
 
 	/*  post animation actions */
-	if (IS_SHADED(tmp_win) && mode_x != RESIZE_MODE_RESIZE)
+	if (IS_SHADED(fw) && mode_x != FRAME_RESIZE_OPAQUE)
 	{
 		/* hide the parent window below the decor window */
-		XLowerWindow(dpy, tmp_win->Parent);
+		XLowerWindow(dpy, FW_W_PARENT(fw));
 	}
 #if 0
 	set_decor_gravity(
-		tmp_win, NorthWestGravity, NorthWestGravity, NorthWestGravity);
+		fw, NorthWestGravity, NorthWestGravity, NorthWestGravity);
 	/* Finally let frame_setup_window take care of the window */
 	frame_setup_window(
-		tmp_win, end_g->x, end_g->y, end_g->width, end_g->height, True);
+		fw, end_g->x, end_g->y, end_g->width, end_g->height, True);
 #endif
-	tmp_win->frame_g = *end_g;
+	fw->frame_g = *end_g;
 	/* clean up */
-	update_absolute_geometry(tmp_win);
+	update_absolute_geometry(fw);
 	if (delta_g.width != 0 || delta_g.height != 0 ||
-	    mode_x != RESIZE_MODE_RESIZE)
+	    mode_x != FRAME_RESIZE_OPAQUE)
 	{
 		DrawDecorations(
-			tmp_win, DRAW_FRAME | DRAW_BUTTONS,
-			(Scr.Hilite == tmp_win), True, None, CLEAR_NONE);
+			fw, DRAW_FRAME | DRAW_BUTTONS,
+			(Scr.Hilite == fw), True, None, CLEAR_NONE);
 	}
 
 	return;
@@ -1088,40 +1085,48 @@ void frame_get_resize_decor_gravities(
 
 /* sets the gravity for the various parts of the window */
 void frame_set_decor_gravities(
-	FvwmWindow *tmp_win, decor_gravities_type *grav)
+	FvwmWindow *fw, decor_gravities_type *grav)
 {
-	int valuemask = CWWinGravity;
+	int valuemask;
+	int valuemask2;
 	XSetWindowAttributes xcwa;
 	int i;
 
+	/* using bit gravity can reduce redrawing dramatically */
+	valuemask = CWWinGravity;
+	valuemask2 = CWWinGravity | CWBitGravity;
 	xcwa.win_gravity = grav->client_grav;
-	XChangeWindowAttributes(dpy, tmp_win->w, valuemask, &xcwa);
+	xcwa.bit_gravity = grav->client_grav;
+	XChangeWindowAttributes(dpy, FW_W(fw), valuemask2, &xcwa);
 	xcwa.win_gravity = grav->parent_grav;
-	XChangeWindowAttributes(dpy, tmp_win->Parent, valuemask, &xcwa);
+	xcwa.bit_gravity = grav->parent_grav;
+	XChangeWindowAttributes(dpy, FW_W_PARENT(fw), valuemask, &xcwa);
 	xcwa.win_gravity = grav->decor_grav;
-	XChangeWindowAttributes(dpy, tmp_win->decor_w, valuemask, &xcwa);
-	if (!HAS_TITLE(tmp_win))
+	XChangeWindowAttributes(dpy, fw->decor_w, valuemask, &xcwa);
+	valuemask = CWWinGravity;
+	if (!HAS_TITLE(fw))
 	{
 		return;
 	}
 	xcwa.win_gravity = grav->title_grav;
-	XChangeWindowAttributes(dpy, tmp_win->title_w, valuemask, &xcwa);
+	xcwa.win_gravity = grav->title_grav;
+	XChangeWindowAttributes(dpy, FW_W_TITLE(fw), valuemask2, &xcwa);
 	xcwa.win_gravity = grav->lbutton_grav;
 	for (i = 0; i < NUMBER_OF_BUTTONS; i += 2)
 	{
-		if (tmp_win->button_w[i])
+		if (FW_W_BUTTON(fw, i))
 		{
 			XChangeWindowAttributes(
-				dpy, tmp_win->button_w[i], valuemask, &xcwa);
+				dpy, FW_W_BUTTON(fw, i), valuemask, &xcwa);
 		}
 	}
 	xcwa.win_gravity = grav->rbutton_grav;
 	for (i = 1; i < NUMBER_OF_BUTTONS; i += 2)
 	{
-		if (tmp_win->button_w[i])
+		if (FW_W_BUTTON(fw, i))
 		{
 			XChangeWindowAttributes(
-				dpy, tmp_win->button_w[i], valuemask, &xcwa);
+				dpy, FW_W_BUTTON(fw, i), valuemask, &xcwa);
 		}
 	}
 
@@ -1134,7 +1139,7 @@ void frame_set_decor_gravities(
  *      frame_setup_window - set window sizes
  *
  *  Inputs:
- *      tmp_win - the FvwmWindow pointer
+ *      fw - the FvwmWindow pointer
  *      x       - the x coordinate of the upper-left outer corner of the frame
  *      y       - the y coordinate of the upper-left outer corner of the frame
  *      w       - the width of the frame window w/o border
@@ -1144,7 +1149,7 @@ void frame_set_decor_gravities(
  *      This routine will check to make sure the window is not completely
  *      off the display, if it is, it'll bring some of it back on.
  *
- *      The tmp_win->frame_XXX variables should NOT be updated with the
+ *      The fw->frame_XXX variables should NOT be updated with the
  *      values of x,y,w,h prior to calling this routine, since the new
  *      values are compared against the old to see whether a synthetic
  *      ConfigureNotify event should be sent.  (It should be sent if the
@@ -1152,21 +1157,21 @@ void frame_set_decor_gravities(
  *
  ************************************************************************/
 void frame_setup_window(
-	FvwmWindow *tmp_win, int x, int y, int w, int h,
+	FvwmWindow *fw, int x, int y, int w, int h,
 	Bool do_send_configure_notify)
 {
 	frame_setup_window_internal(
-		tmp_win, x, y, w, h, do_send_configure_notify, False);
+		fw, x, y, w, h, do_send_configure_notify, False);
 
 	return;
 }
 
 void frame_force_setup_window(
-	FvwmWindow *tmp_win, int x, int y, int w, int h,
+	FvwmWindow *fw, int x, int y, int w, int h,
 	Bool do_send_configure_notify)
 {
 	frame_setup_window_internal(
-		tmp_win, x, y, w, h, do_send_configure_notify, True);
+		fw, x, y, w, h, do_send_configure_notify, True);
 
 	return;
 }
@@ -1176,7 +1181,7 @@ void frame_force_setup_window(
  * Sets up the shaped window borders
  *
  ****************************************************************************/
-void frame_setup_shape(FvwmWindow *tmp_win, int w, int h)
+void frame_setup_shape(FvwmWindow *fw, int w, int h)
 {
 	XRectangle rect;
 	rectangle r;
@@ -1186,30 +1191,30 @@ void frame_setup_shape(FvwmWindow *tmp_win, int w, int h)
 	{
 		return;
 	}
-	if (!tmp_win->wShaped)
+	if (!fw->wShaped)
 	{
 		/* unset shape */
 		FShapeCombineMask(
-			dpy, tmp_win->frame, FShapeBounding, 0, 0, None,
+			dpy, FW_W_FRAME(fw), FShapeBounding, 0, 0, None,
 			FShapeSet);
 	}
 	/* shape the window */
-	get_window_borders(tmp_win, &b);
+	get_window_borders(fw, &b);
 	FShapeCombineShape(
-		dpy, tmp_win->frame, FShapeBounding, b.top_left.width,
-		b.top_left.height, tmp_win->w, FShapeBounding, FShapeSet);
-	if (tmp_win->title_w)
+		dpy, FW_W_FRAME(fw), FShapeBounding, b.top_left.width,
+		b.top_left.height, FW_W(fw), FShapeBounding, FShapeSet);
+	if (FW_W_TITLE(fw))
 	{
 		/* windows w/ titles */
 		r.width = w;
 		r.height = h;
-		get_title_geometry(tmp_win, &r);
+		get_title_geometry(fw, &r);
 		rect.x = r.x;
 		rect.y = r.y;
 		rect.width = r.width;
 		rect.height = r.height;
 		FShapeCombineRectangles(
-			dpy, tmp_win->frame, FShapeBounding, 0, 0, &rect, 1,
+			dpy, FW_W_FRAME(fw), FShapeBounding, 0, 0, &rect, 1,
 			FShapeUnion, Unsorted);
 	}
 
@@ -1247,11 +1252,11 @@ void frame_setup_shape(FvwmWindow *tmp_win, int w, int h)
 		/*!!! unshade*/
 		{
 			XMoveResizeWindow(
-				dpy, tmp_win->Parent, b.top_left.width, b.top_left.height, client_g.width, 1);
+				dpy, FW_W_PARENT(fw), b.top_left.width, b.top_left.height, client_g.width, 1);
 			XMoveWindow(
-				dpy, tmp_win->w, 0,
+				dpy, FW_W(fw), 0,
 				(client_grav == SouthEastGravity) ? -client_g.height + 1 : 0);
-			XLowerWindow(dpy, tmp_win->decor_w);
+			XLowerWindow(dpy, fw->decor_w);
 			parent_g.x = b.top_left.width;
 			parent_g.y = b.top_left.height +
 				((delta_g.x > 0) ? -step : 0);
@@ -1282,23 +1287,23 @@ void frame_setup_shape(FvwmWindow *tmp_win, int w, int h)
 
 			/* This causes a ConfigureNotify if the client size has changed while
 			 * the window was shaded. */
-			XResizeWindow(dpy, tmp_win->w, client_g.width, client_g.height);
+			XResizeWindow(dpy, FW_W(fw), client_g.width, client_g.height);
 			/* make the decor window the full size before the animation unveils it */
 			XMoveResizeWindow(
-				dpy, tmp_win->decor_w, 0, (delta_g.x > 0) ?
+				dpy, fw->decor_w, 0, (delta_g.x > 0) ?
 				frame_g.height - end_g->height : 0, end_g->width, end_g->height);
-			tmp_win->frame_g.width = end_g->width;
-			tmp_win->frame_g.height = end_g->height;
+			fw->frame_g.width = end_g->width;
+			fw->frame_g.height = end_g->height;
 			/* draw the border decoration iff backing store is on */
 			if (Scr.use_backing_store != NotUseful)
 			{ /* eek! fvwm doesn't know the backing_store setting for windows */
 				XWindowAttributes xwa;
 
-				if (XGetWindowAttributes(dpy, tmp_win->decor_w, &xwa)
+				if (XGetWindowAttributes(dpy, fw->decor_w, &xwa)
 				    && xwa.backing_store != NotUseful)
 				{
 					DrawDecorations(
-						tmp_win, DRAW_FRAME, sf == tmp_win, True, None, CLEAR_ALL);
+						fw, DRAW_FRAME, sf == fw, True, None, CLEAR_ALL);
 				}
 			}
 			while (frame_g.height + diff.height < end_g->height)
@@ -1313,12 +1318,12 @@ void frame_setup_shape(FvwmWindow *tmp_win, int w, int h)
 				frame_g.y += diff.y;
 				frame_g.width += diff.width;
 				frame_g.height += diff.height;
-				if (FShapesSupported && tmp_win->wShaped && shape_w)
+				if (FShapesSupported && fw->wShaped && shape_w)
 				{
 					FShapeCombineShape(
-						dpy, shape_w, FShapeBounding, shape_g.x, shape_g.y, tmp_win->w,
+						dpy, shape_w, FShapeBounding, shape_g.x, shape_g.y, FW_W(fw),
 						FShapeBounding, FShapeSet);
-					if (tmp_win->title_w)
+					if (FW_W_TITLE(fw))
 					{
 						XRectangle rect;
 
@@ -1327,7 +1332,7 @@ void frame_setup_shape(FvwmWindow *tmp_win, int w, int h)
 						rect.y = (delta_g.x > 0) ?
 							frame_g.height - b.bottom_right.height : 0;
 						rect.width = frame_g.width - b.total_size.width;
-						rect.height = tmp_win->title_thickness;
+						rect.height = fw->title_thickness;
 						FShapeCombineRectangles(
 							dpy, shape_w, FShapeBounding, 0, 0, &rect, 1, FShapeUnion,
 							Unsorted);
@@ -1335,31 +1340,31 @@ void frame_setup_shape(FvwmWindow *tmp_win, int w, int h)
 				}
 				if (move_parent_too)
 				{
-					if (FShapesSupported && tmp_win->wShaped && shape_w)
+					if (FShapesSupported && fw->wShaped && shape_w)
 					{
 						FShapeCombineShape(
-							dpy, tmp_win->frame, FShapeBounding, 0, 0, shape_w,
+							dpy, FW_W_FRAME(fw), FShapeBounding, 0, 0, shape_w,
 							FShapeBounding, FShapeUnion);
 					}
 					XMoveResizeWindow(
-						dpy, tmp_win->Parent, parent_g.x, parent_g.y, parent_g.width,
+						dpy, FW_W_PARENT(fw), parent_g.x, parent_g.y, parent_g.width,
 						parent_g.height);
 				}
 				else
 				{
-					XResizeWindow(dpy, tmp_win->Parent, parent_g.width, parent_g.height);
+					XResizeWindow(dpy, FW_W_PARENT(fw), parent_g.width, parent_g.height);
 				}
 				XMoveResizeWindow(
-					dpy, tmp_win->frame, frame_g.x, frame_g.y, frame_g.width,
+					dpy, FW_W_FRAME(fw), frame_g.x, frame_g.y, frame_g.width,
 					frame_g.height);
-				if (FShapesSupported && tmp_win->wShaped && shape_w)
+				if (FShapesSupported && fw->wShaped && shape_w)
 				{
 					FShapeCombineShape(
-						dpy, tmp_win->frame, FShapeBounding, 0, 0, shape_w, FShapeBounding,
+						dpy, FW_W_FRAME(fw), FShapeBounding, 0, 0, shape_w, FShapeBounding,
 						FShapeSet);
 				}
 				DrawDecorations(
-					tmp_win, DRAW_FRAME, sf == tmp_win, True, None, CLEAR_NONE);
+					fw, DRAW_FRAME, sf == fw, True, None, CLEAR_NONE);
 				FlushAllMessageQueues();
 				XSync(dpy, 0);
 			}
@@ -1368,21 +1373,21 @@ void frame_setup_shape(FvwmWindow *tmp_win, int w, int h)
 				/* We must finish above loop to the very end for this special case.
 				 * Otherwise there is a visible jump of the client window. */
 				XMoveResizeWindow(
-					dpy, tmp_win->Parent, parent_g.x,
+					dpy, FW_W_PARENT(fw), parent_g.x,
 					b.top_left.height - (end_g->height - frame_g.height), parent_g.width,
 					client_g.height);
 				XMoveResizeWindow(
-					dpy, tmp_win->frame, end_g->x, end_g->y, end_g->width, end_g->height);
+					dpy, FW_W_FRAME(fw), end_g->x, end_g->y, end_g->width, end_g->height);
 			}
 			else
 			{
-				XMoveWindow(dpy, tmp_win->w, 0, 0);
+				XMoveWindow(dpy, FW_W(fw), 0, 0);
 			}
 			if (sf)
 			{
 				focus_grab_buttons(sf, True);
 			}
-			tmp_win->frame_g.height = end_g->height + 1;
+			fw->frame_g.height = end_g->height + 1;
 		}
 		/*!!! shade*/
 		{
@@ -1414,15 +1419,15 @@ void frame_setup_shape(FvwmWindow *tmp_win, int w, int h)
 				frame_g.y += diff.y;
 				frame_g.width += diff.width;
 				frame_g.height += diff.height;
-				if (FShapesSupported && tmp_win->wShaped &&
+				if (FShapesSupported && fw->wShaped &&
 				    shape_w)
 				{
 					FShapeCombineShape(
 						dpy, shape_w, FShapeBounding,
 						shape_g.x, shape_g.y,
-						tmp_win->w, FShapeBounding,
+						FW_W(fw), FShapeBounding,
 						FShapeSet);
-					if (tmp_win->title_w)
+					if (FW_W_TITLE(fw))
 					{
 						XRectangle rect;
 
@@ -1436,7 +1441,7 @@ void frame_setup_shape(FvwmWindow *tmp_win, int w, int h)
 							start_g->width -
 							b.total_size.width;
 						rect.height =
-							tmp_win->title_thickness;
+							fw->title_thickness;
 						FShapeCombineRectangles(
 							dpy, shape_w,
 							FShapeBounding, 0, 0,
@@ -1447,20 +1452,20 @@ void frame_setup_shape(FvwmWindow *tmp_win, int w, int h)
 				if (move_parent_too)
 				{
 					if (FShapesSupported &&
-					    tmp_win->wShaped && shape_w)
+					    fw->wShaped && shape_w)
 					{
 						FShapeCombineShape(
-							dpy, tmp_win->frame,
+							dpy, FW_W_FRAME(fw),
 							FShapeBounding, 0, 0,
 							shape_w, FShapeBounding,
 							FShapeUnion);
 					}
 					XMoveResizeWindow(
-						dpy, tmp_win->frame,
+						dpy, FW_W_FRAME(fw),
 						frame_g.x, frame_g.y,
 						frame_g.width, frame_g.height);
 					XMoveResizeWindow(
-						dpy, tmp_win->Parent,
+						dpy, FW_W_PARENT(fw),
 						parent_g.x, parent_g.y,
 						parent_g.width,
 						parent_g.height);
@@ -1468,19 +1473,19 @@ void frame_setup_shape(FvwmWindow *tmp_win, int w, int h)
 				else
 				{
 					XResizeWindow(
-						dpy, tmp_win->Parent,
+						dpy, FW_W_PARENT(fw),
 						parent_g.width,
 						parent_g.height);
 					XMoveResizeWindow(
-						dpy, tmp_win->frame, frame_g.x,
+						dpy, FW_W_FRAME(fw), frame_g.x,
 						frame_g.y, frame_g.width,
 						frame_g.height);
 				}
-				if (FShapesSupported && tmp_win->wShaped &&
+				if (FShapesSupported && fw->wShaped &&
 				    shape_w)
 				{
 					FShapeCombineShape(
-						dpy, tmp_win->frame,
+						dpy, FW_W_FRAME(fw),
 						FShapeBounding, 0, 0, shape_w,
 						FShapeBounding, FShapeSet);
 				}
@@ -1489,24 +1494,24 @@ void frame_setup_shape(FvwmWindow *tmp_win, int w, int h)
 			}
 			/* All this stuff is necessary to prevent flickering */
 			set_decor_gravity(
-				tmp_win, title_grav, UnmapGravity, client_grav);
+				fw, title_grav, UnmapGravity, client_grav);
 			XMoveResizeWindow(
-				dpy, tmp_win->frame, end_g->x, end_g->y,
+				dpy, FW_W_FRAME(fw), end_g->x, end_g->y,
 				end_g->width, end_g->height);
-			XResizeWindow(dpy, tmp_win->Parent, client_g.width, 1);
-			XMoveWindow(dpy, tmp_win->decor_w, 0, 0);
-			XRaiseWindow(dpy, tmp_win->decor_w);
-			XMapWindow(dpy, tmp_win->Parent);
+			XResizeWindow(dpy, FW_W_PARENT(fw), client_g.width, 1);
+			XMoveWindow(dpy, fw->decor_w, 0, 0);
+			XRaiseWindow(dpy, fw->decor_w);
+			XMapWindow(dpy, FW_W_PARENT(fw));
 
 			if (delta_g.x > 0)
 			{
 				XMoveWindow(
-					dpy, tmp_win->w, 0,
+					dpy, FW_W(fw), 0,
 					1 - client_g.height);
 			}
 			else
 			{
-				XMoveWindow(dpy, tmp_win->w, 0, 0);
+				XMoveWindow(dpy, FW_W(fw), 0, 0);
 			}
 
 			/* domivogt (28-Dec-1999): For some reason the
@@ -1514,9 +1519,9 @@ void frame_setup_shape(FvwmWindow *tmp_win, int w, int h)
 			 * focus from the client window.  I have no idea why,
 			 * but if we explicitly restore the focus here
 			 * everything works fine. */
-			if (sf == tmp_win)
+			if (sf == fw)
 			{
-				FOCUS_SET(tmp_win->w);
+				FOCUS_SET(FW_W(fw));
 			}
 		} /* shade */
 	}

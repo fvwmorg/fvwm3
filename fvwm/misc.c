@@ -138,7 +138,7 @@ Bool GrabEm(int cursor, int grab_context)
   {
   case GRAB_BUSY:
     if ( Scr.Hilite != NULL )
-      grab_win = Scr.Hilite->w;
+      grab_win = FW_W(Scr.Hilite);
     else
       grab_win = Scr.Root;
     /* retry to grab the busy cursor only once */

@@ -12,11 +12,11 @@ extern const char *get_current_read_dir(void);
 /**
  * Read and execute each line from stream.
  *
- * Parameters eventp, tmp_win, context, and Module supply the context
+ * Parameters eventp, fw, context, and Module supply the context
  * for executing the commands.
  **/
 extern void run_command_stream( FILE* f,
-				XEvent *eventp, FvwmWindow *tmp_win,
+				XEvent *eventp, FvwmWindow *fw,
 				unsigned long context, int Module );
 
 
@@ -28,7 +28,7 @@ extern void run_command_stream( FILE* f,
  * if the file was found and executed.
  **/
 extern int run_command_file( char* filename,
-			     XEvent *eventp, FvwmWindow *tmp_win,
+			     XEvent *eventp, FvwmWindow *fw,
 			     unsigned long context, int Module );
 
 #endif

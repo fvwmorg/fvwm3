@@ -126,33 +126,33 @@ void gravity_translate_to_northwest_geometry_no_bw(
 }
 
 void get_title_geometry(
-	FvwmWindow *tmp_win, rectangle *ret_g)
+	FvwmWindow *fw, rectangle *ret_g)
 {
 	size_borders b;
 	size_borders nt;
 	int w;
 	int h;
 
-	get_window_borders(tmp_win, &b);
-	get_window_borders_no_title(tmp_win, &nt);
-	w = (ret_g->width > 0) ? ret_g->width : tmp_win->frame_g.width;
-	h = (ret_g->height > 0) ? ret_g->height : tmp_win->frame_g.height;
+	get_window_borders(fw, &b);
+	get_window_borders_no_title(fw, &nt);
+	w = (ret_g->width > 0) ? ret_g->width : fw->frame_g.width;
+	h = (ret_g->height > 0) ? ret_g->height : fw->frame_g.height;
 	ret_g->x = nt.top_left.width;
 	ret_g->y = nt.top_left.height;
-	switch (GET_TITLE_DIR(tmp_win))
+	switch (GET_TITLE_DIR(fw))
 	{
 	case DIR_S:
 		ret_g->y = h - b.bottom_right.height;
 		/* fall through */
 	case DIR_N:
 		ret_g->width = w - b.total_size.width;
-		ret_g->height = tmp_win->title_thickness;
+		ret_g->height = fw->title_thickness;
 		break;
 	case DIR_E:
 		ret_g->x = w - b.bottom_right.width;
 		/* fall through */
 	case DIR_W:
-		ret_g->width = tmp_win->title_thickness;
+		ret_g->width = fw->title_thickness;
 		ret_g->height = h - b.total_size.height;
 		break;
 	default:
@@ -163,9 +163,9 @@ void get_title_geometry(
 }
 
 void get_title_gravity_factors(
-	FvwmWindow *tmp_win, int *ret_fx, int *ret_fy)
+	FvwmWindow *fw, int *ret_fx, int *ret_fy)
 {
-	switch (GET_TITLE_DIR(tmp_win))
+	switch (GET_TITLE_DIR(fw))
 	{
 	case DIR_N:
 		*ret_fx = 0;
@@ -189,7 +189,7 @@ void get_title_gravity_factors(
 }
 
 Bool get_title_button_geometry(
-	FvwmWindow *tmp_win, rectangle *ret_g, int context)
+	FvwmWindow *fw, rectangle *ret_g, int context)
 {
 	int bnum;
 
@@ -197,56 +197,56 @@ Bool get_title_button_geometry(
 	{
 		ret_g->width = 0;
 		ret_g->height = 0;
-		get_title_geometry(tmp_win, ret_g);
+		get_title_geometry(fw, ret_g);
 
 		return True;
 
 	}
 	bnum = get_button_number(context);
-	if (bnum < 0 || tmp_win->button_w[bnum] == None)
+	if (bnum < 0 || FW_W_BUTTON(fw, bnum) == None)
 	{
 		return False;
 	}
 	if (XGetGeometry(
-		dpy, tmp_win->button_w[bnum], &JunkRoot, &ret_g->x, &ret_g->y,
+		dpy, FW_W_BUTTON(fw, bnum), &JunkRoot, &ret_g->x, &ret_g->y,
 		&ret_g->width, &ret_g->height, &JunkBW, &JunkDepth) == 0)
 	{
 		return False;
 	}
 	XTranslateCoordinates(
-		dpy, tmp_win->decor_w, Scr.Root, ret_g->x, ret_g->y, &ret_g->x,
+		dpy, fw->decor_w, Scr.Root, ret_g->x, ret_g->y, &ret_g->x,
 		&ret_g->y, &JunkChild);
 
 	return True;
 }
 
 void get_title_font_size_and_offset(
-	FvwmWindow *tmp_win, direction_type title_dir,
+	FvwmWindow *fw, direction_type title_dir,
 	text_direction_type text_dir, int *size, int *offset)
 {
 	int decor_size;
 	int extra_size;
 	int font_size;
 	int min_offset;
-	
+
 	/* adjust font offset according to height specified in title style */
-	decor_size = tmp_win->decor->title_height;
-	font_size = tmp_win->title_font->height + EXTRA_TITLE_FONT_HEIGHT;
+	decor_size = fw->decor->title_height;
+	font_size = fw->title_font->height + EXTRA_TITLE_FONT_HEIGHT;
 	switch (title_dir)
 	{
 	case DIR_W:
 		switch(text_dir)
 		{
 		case TEXT_DIR_TOP_TO_BOTTOM:
-			tmp_win->title_text_dir = TEXT_DIR_TOP_TO_BOTTOM;
-			min_offset = tmp_win->title_font->height -
-				tmp_win->title_font->ascent;
+			fw->title_text_dir = TEXT_DIR_TOP_TO_BOTTOM;
+			min_offset = fw->title_font->height -
+				fw->title_font->ascent;
 			break;
 		case TEXT_DIR_LEFT_TO_RIGHT:
 		case TEXT_DIR_BOTTOM_TO_TOP:
 		default:
-			tmp_win->title_text_dir = TEXT_DIR_BOTTOM_TO_TOP;
-			min_offset = tmp_win->title_font->ascent;
+			fw->title_text_dir = TEXT_DIR_BOTTOM_TO_TOP;
+			min_offset = fw->title_font->ascent;
 			break;
 		}
 		break;
@@ -254,23 +254,23 @@ void get_title_font_size_and_offset(
 		switch(text_dir)
 		{
 		case TEXT_DIR_BOTTOM_TO_TOP:
-			tmp_win->title_text_dir = TEXT_DIR_BOTTOM_TO_TOP;
-			min_offset = tmp_win->title_font->ascent;
+			fw->title_text_dir = TEXT_DIR_BOTTOM_TO_TOP;
+			min_offset = fw->title_font->ascent;
 			break;
 		case TEXT_DIR_LEFT_TO_RIGHT:
 		case TEXT_DIR_TOP_TO_BOTTOM:
 		default:
-			tmp_win->title_text_dir =  TEXT_DIR_TOP_TO_BOTTOM;
-			min_offset = tmp_win->title_font->height -
-				tmp_win->title_font->ascent;
+			fw->title_text_dir =  TEXT_DIR_TOP_TO_BOTTOM;
+			min_offset = fw->title_font->height -
+				fw->title_font->ascent;
 			break;
 		}
 		break;
 	case DIR_N:
 	case DIR_S:
 	default:
-		tmp_win->title_text_dir =  TEXT_DIR_LEFT_TO_RIGHT;
-		min_offset = tmp_win->title_font->ascent;
+		fw->title_text_dir =  TEXT_DIR_LEFT_TO_RIGHT;
+		min_offset = fw->title_font->ascent;
 		break;
 	}
 	extra_size = (decor_size > 0) ? decor_size - font_size : 0;
@@ -284,24 +284,24 @@ void get_title_font_size_and_offset(
 }
 
 void get_icon_corner(
-	FvwmWindow *tmp_win, rectangle *ret_g)
+	FvwmWindow *fw, rectangle *ret_g)
 {
-	switch (GET_TITLE_DIR(tmp_win))
+	switch (GET_TITLE_DIR(fw))
 	{
 	case DIR_N:
 	case DIR_W:
-		ret_g->x = tmp_win->frame_g.x;
-		ret_g->y = tmp_win->frame_g.y;
+		ret_g->x = fw->frame_g.x;
+		ret_g->y = fw->frame_g.y;
 		break;
 	case DIR_S:
-		ret_g->x = tmp_win->frame_g.x;
-		ret_g->y = tmp_win->frame_g.y + tmp_win->frame_g.height -
+		ret_g->x = fw->frame_g.x;
+		ret_g->y = fw->frame_g.y + fw->frame_g.height -
 			ret_g->height;
 		break;
 	case DIR_E:
-		ret_g->x = tmp_win->frame_g.x + tmp_win->frame_g.width -
+		ret_g->x = fw->frame_g.x + fw->frame_g.width -
 			ret_g->width;
-		ret_g->y = tmp_win->frame_g.y;
+		ret_g->y = fw->frame_g.y;
 		break;
 	}
 
@@ -309,7 +309,7 @@ void get_icon_corner(
 }
 
 void get_shaded_geometry(
-	FvwmWindow *tmp_win, rectangle *small_g, rectangle *big_g)
+	FvwmWindow *fw, rectangle *small_g, rectangle *big_g)
 {
 	size_borders b;
 	/* this variable is necessary so the function can be called with
@@ -317,9 +317,9 @@ void get_shaded_geometry(
 	int big_width = big_g->width;
 	int big_height = big_g->height;
 
-	get_window_borders(tmp_win, &b);
+	get_window_borders(fw, &b);
 	*small_g = *big_g;
-	switch (SHADED_DIR(tmp_win))
+	switch (SHADED_DIR(fw))
 	{
 	case DIR_S:
 	case DIR_SW:
@@ -334,7 +334,7 @@ void get_shaded_geometry(
 	default:
 		break;
 	}
-	switch (SHADED_DIR(tmp_win))
+	switch (SHADED_DIR(fw))
 	{
 	case DIR_E:
 	case DIR_NE:
@@ -354,38 +354,38 @@ void get_shaded_geometry(
 }
 
 void get_unshaded_geometry(
-	FvwmWindow *tmp_win, rectangle *ret_g)
+	FvwmWindow *fw, rectangle *ret_g)
 {
-	if (IS_SHADED(tmp_win))
+	if (IS_SHADED(fw))
 	{
-		if (IS_MAXIMIZED(tmp_win))
+		if (IS_MAXIMIZED(fw))
 		{
-			*ret_g = tmp_win->max_g;
+			*ret_g = fw->max_g;
 		}
 		else
 		{
-			*ret_g = tmp_win->normal_g;
+			*ret_g = fw->normal_g;
 		}
 		get_relative_geometry(ret_g, ret_g);
 	}
 	else
 	{
-		*ret_g = tmp_win->frame_g;
+		*ret_g = fw->frame_g;
 	}
 
 	return;
 }
 
 void get_shaded_client_window_pos(
-	FvwmWindow *tmp_win, rectangle *ret_g)
+	FvwmWindow *fw, rectangle *ret_g)
 {
 	rectangle big_g;
 	size_borders b;
 
-	get_window_borders(tmp_win, &b);
-	big_g = (IS_MAXIMIZED(tmp_win)) ? tmp_win->max_g : tmp_win->normal_g;
+	get_window_borders(fw, &b);
+	big_g = (IS_MAXIMIZED(fw)) ? fw->max_g : fw->normal_g;
 	get_relative_geometry(&big_g, &big_g);
-	switch (SHADED_DIR(tmp_win))
+	switch (SHADED_DIR(fw))
 	{
 	case DIR_S:
 	case DIR_SW:
@@ -396,7 +396,7 @@ void get_shaded_client_window_pos(
 		ret_g->y = 0;
 		break;
 	}
-	switch (SHADED_DIR(tmp_win))
+	switch (SHADED_DIR(fw))
 	{
 	case DIR_E:
 	case DIR_NE:
@@ -413,25 +413,25 @@ void get_shaded_client_window_pos(
 
 /* returns the dimensions of the borders */
 void get_window_borders(
-	FvwmWindow *tmp_win, size_borders *borders)
+	FvwmWindow *fw, size_borders *borders)
 {
-	borders->top_left.width = tmp_win->boundary_width;
-	borders->bottom_right.width = tmp_win->boundary_width;
-	borders->top_left.height = tmp_win->boundary_width;
-	borders->bottom_right.height = tmp_win->boundary_width;
-	switch (GET_TITLE_DIR(tmp_win))
+	borders->top_left.width = fw->boundary_width;
+	borders->bottom_right.width = fw->boundary_width;
+	borders->top_left.height = fw->boundary_width;
+	borders->bottom_right.height = fw->boundary_width;
+	switch (GET_TITLE_DIR(fw))
 	{
 	case DIR_N:
-		borders->top_left.height += tmp_win->title_thickness;
+		borders->top_left.height += fw->title_thickness;
 		break;
 	case DIR_S:
-		borders->bottom_right.height += tmp_win->title_thickness;
+		borders->bottom_right.height += fw->title_thickness;
 		break;
 	case DIR_W:
-		borders->top_left.width += tmp_win->title_thickness;
+		borders->top_left.width += fw->title_thickness;
 		break;
 	case DIR_E:
-		borders->bottom_right.width += tmp_win->title_thickness;
+		borders->bottom_right.width += fw->title_thickness;
 		break;
 	}
 	borders->total_size.width =
@@ -444,12 +444,12 @@ void get_window_borders(
 
 /* returns the dimensions of the borders without the title */
 void get_window_borders_no_title(
-	FvwmWindow *tmp_win, size_borders *borders)
+	FvwmWindow *fw, size_borders *borders)
 {
-	borders->top_left.width = tmp_win->boundary_width;
-	borders->bottom_right.width = tmp_win->boundary_width;
-	borders->top_left.height = tmp_win->boundary_width;
-	borders->bottom_right.height = tmp_win->boundary_width;
+	borders->top_left.width = fw->boundary_width;
+	borders->bottom_right.width = fw->boundary_width;
+	borders->top_left.height = fw->boundary_width;
+	borders->bottom_right.height = fw->boundary_width;
 	borders->total_size.width =
 		borders->top_left.width + borders->bottom_right.width;
 	borders->total_size.height =
@@ -459,15 +459,15 @@ void get_window_borders_no_title(
 }
 
 void set_window_border_size(
-	FvwmWindow *tmp_win, short used_width)
+	FvwmWindow *fw, short used_width)
 {
 	if (used_width <= 0)
 	{
-		tmp_win->boundary_width = 0;
+		fw->boundary_width = 0;
 	}
 	else
 	{
-		tmp_win->boundary_width = used_width;
+		fw->boundary_width = used_width;
 	}
 
 	return;
@@ -475,11 +475,11 @@ void set_window_border_size(
 
 /* Returns True if all window borders are only 1 pixel thick (or less). */
 Bool is_window_border_minimal(
-	FvwmWindow *tmp_win)
+	FvwmWindow *fw)
 {
 	size_borders nt;
 
-	get_window_borders_no_title(tmp_win, &nt);
+	get_window_borders_no_title(fw, &nt);
 	if (nt.top_left.width > 1 || nt.top_left.height > 1 ||
 	    nt.bottom_right.width > 1 || nt.bottom_right.height > 1)
 	{
@@ -493,12 +493,12 @@ Bool is_window_border_minimal(
 /* This function returns the geometry of the client window.  If the window is
  * shaded, the unshaded geometry is used instead. */
 void get_client_geometry(
-	FvwmWindow *tmp_win, rectangle *ret_g)
+	FvwmWindow *fw, rectangle *ret_g)
 {
 	size_borders borders;
 
-	get_unshaded_geometry(tmp_win, ret_g);
-	get_window_borders(tmp_win, &borders);
+	get_unshaded_geometry(fw, ret_g);
+	get_window_borders(fw, &borders);
 	ret_g->x += borders.top_left.width;
 	ret_g->y += borders.top_left.height;
 	ret_g->width -= borders.total_size.width;
@@ -509,37 +509,37 @@ void get_client_geometry(
 
 /* update the frame_g according to the window's normal_g or max_g and shaded
  * state */
-void update_relative_geometry(FvwmWindow *tmp_win)
+void update_relative_geometry(FvwmWindow *fw)
 {
 	get_relative_geometry(
-		&tmp_win->frame_g,
-		(IS_MAXIMIZED(tmp_win)) ? &tmp_win->max_g : &tmp_win->normal_g);
-	if (IS_SHADED(tmp_win))
+		&fw->frame_g,
+		(IS_MAXIMIZED(fw)) ? &fw->max_g : &fw->normal_g);
+	if (IS_SHADED(fw))
 	{
 		get_shaded_geometry(
-			tmp_win, &tmp_win->frame_g, &tmp_win->frame_g);
+			fw, &fw->frame_g, &fw->frame_g);
 	}
 
 	return;
 }
 
 /* update the normal_g or max_g according to the window's current position */
-void update_absolute_geometry(FvwmWindow *tmp_win)
+void update_absolute_geometry(FvwmWindow *fw)
 {
 	rectangle *dest_g;
 
 	/* store orig values in absolute coords */
-	dest_g = (IS_MAXIMIZED(tmp_win)) ? &tmp_win->max_g : &tmp_win->normal_g;
-	dest_g->x = tmp_win->frame_g.x + Scr.Vx;
-	dest_g->y = tmp_win->frame_g.y + Scr.Vy;
-	dest_g->width = tmp_win->frame_g.width;
-	if (!IS_SHADED(tmp_win))
+	dest_g = (IS_MAXIMIZED(fw)) ? &fw->max_g : &fw->normal_g;
+	dest_g->x = fw->frame_g.x + Scr.Vx;
+	dest_g->y = fw->frame_g.y + Scr.Vy;
+	dest_g->width = fw->frame_g.width;
+	if (!IS_SHADED(fw))
 	{
-		dest_g->height = tmp_win->frame_g.height;
+		dest_g->height = fw->frame_g.height;
 	}
-	else if (SHADED_DIR(tmp_win) == DIR_S)
+	else if (SHADED_DIR(fw) == DIR_S)
 	{
-		dest_g->y += tmp_win->frame_g.height - dest_g->height;
+		dest_g->y += fw->frame_g.height - dest_g->height;
 	}
 
 	return;
@@ -547,36 +547,36 @@ void update_absolute_geometry(FvwmWindow *tmp_win)
 
 /* make sure a maximized window and it's normal version are never a page or
  * more apart. */
-void maximize_adjust_offset(FvwmWindow *tmp_win)
+void maximize_adjust_offset(FvwmWindow *fw)
 {
 	int off_x;
 	int off_y;
 
-	if (!IS_MAXIMIZED(tmp_win))
+	if (!IS_MAXIMIZED(fw))
 	{
 		/* otherwise we might corrupt the normal_g */
 		return;
 	}
-	off_x = tmp_win->normal_g.x - tmp_win->max_g.x - tmp_win->max_offset.x;
-	off_y = tmp_win->normal_g.y - tmp_win->max_g.y - tmp_win->max_offset.y;
+	off_x = fw->normal_g.x - fw->max_g.x - fw->max_offset.x;
+	off_y = fw->normal_g.y - fw->max_g.y - fw->max_offset.y;
 	if (off_x >= Scr.MyDisplayWidth)
 	{
-		tmp_win->normal_g.x -=
+		fw->normal_g.x -=
 			(off_x / Scr.MyDisplayWidth) * Scr.MyDisplayWidth;
 	}
 	else if (off_x <= -Scr.MyDisplayWidth)
 	{
-		tmp_win->normal_g.x +=
+		fw->normal_g.x +=
 			((-off_x) / Scr.MyDisplayWidth) * Scr.MyDisplayWidth;
 	}
 	if (off_y >= Scr.MyDisplayHeight)
 	{
-		tmp_win->normal_g.y -=
+		fw->normal_g.y -=
 			(off_y / Scr.MyDisplayHeight) * Scr.MyDisplayHeight;
 	}
 	else if (off_y <= -Scr.MyDisplayHeight)
 	{
-		tmp_win->normal_g.y +=
+		fw->normal_g.y +=
 			((-off_y) / Scr.MyDisplayHeight) * Scr.MyDisplayHeight;
 	}
 
@@ -595,7 +595,7 @@ void maximize_adjust_offset(FvwmWindow *tmp_win)
 ***********************************************************************/
 #define MAKEMULT(a,b) ((b==1) ? (a) : (((int)((a)/(b))) * (b)) )
 void constrain_size(
-	FvwmWindow *tmp_win, unsigned int *widthp, unsigned int *heightp,
+	FvwmWindow *fw, unsigned int *widthp, unsigned int *heightp,
 	int xmotion, int ymotion, int flags)
 {
 	int minWidth, minHeight, maxWidth, maxHeight, xinc, yinc, delta;
@@ -607,38 +607,38 @@ void constrain_size(
 	int old_h = 0;
 	size_borders b;
 
-	if (IS_MAXIMIZED(tmp_win) && (flags & CS_UPDATE_MAX_DEFECT))
+	if (IS_MAXIMIZED(fw) && (flags & CS_UPDATE_MAX_DEFECT))
 	{
-		*widthp += tmp_win->max_g_defect.width;
-		*heightp += tmp_win->max_g_defect.height;
+		*widthp += fw->max_g_defect.width;
+		*heightp += fw->max_g_defect.height;
 		old_w = *widthp;
 		old_h = *heightp;
 	}
-	get_window_borders(tmp_win, &b);
+	get_window_borders(fw, &b);
 	dwidth -= b.total_size.width;
 	dheight -= b.total_size.height;
 
-	minWidth = tmp_win->hints.min_width;
-	minHeight = tmp_win->hints.min_height;
+	minWidth = fw->hints.min_width;
+	minHeight = fw->hints.min_height;
 
-	maxWidth = tmp_win->hints.max_width;
-	maxHeight =  tmp_win->hints.max_height;
+	maxWidth = fw->hints.max_width;
+	maxHeight =  fw->hints.max_height;
 
-	if (maxWidth > tmp_win->max_window_width - b.total_size.width)
+	if (maxWidth > fw->max_window_width - b.total_size.width)
 	{
-		maxWidth = tmp_win->max_window_width - b.total_size.width;
+		maxWidth = fw->max_window_width - b.total_size.width;
 	}
-	if (maxHeight > tmp_win->max_window_height - b.total_size.height)
+	if (maxHeight > fw->max_window_height - b.total_size.height)
 	{
 		maxHeight =
-			tmp_win->max_window_height - b.total_size.height;
+			fw->max_window_height - b.total_size.height;
 	}
 
-	baseWidth = tmp_win->hints.base_width;
-	baseHeight = tmp_win->hints.base_height;
+	baseWidth = fw->hints.base_width;
+	baseHeight = fw->hints.base_height;
 
-	xinc = tmp_win->hints.width_inc;
-	yinc = tmp_win->hints.height_inc;
+	xinc = fw->hints.width_inc;
+	yinc = fw->hints.height_inc;
 
 	/*
 	 * First, clamp to min and max values
@@ -730,10 +730,10 @@ void constrain_size(
 	/*
 	 * Third, adjust for aspect ratio
 	 */
-#define maxAspectX tmp_win->hints.max_aspect.x
-#define maxAspectY tmp_win->hints.max_aspect.y
-#define minAspectX tmp_win->hints.min_aspect.x
-#define minAspectY tmp_win->hints.min_aspect.y
+#define maxAspectX fw->hints.max_aspect.x
+#define maxAspectY fw->hints.max_aspect.y
+#define minAspectX fw->hints.min_aspect.x
+#define minAspectY fw->hints.min_aspect.y
 	/*
 	 * The math looks like this:
 	 *
@@ -749,10 +749,10 @@ void constrain_size(
 	 *
 	 */
 
-	if (tmp_win->hints.flags & PAspect)
+	if (fw->hints.flags & PAspect)
 	{
 
-		if (tmp_win->hints.flags & PBaseSize)
+		if (fw->hints.flags & PBaseSize)
 		{
 			/*
 			 * ICCCM 2 demands that aspect ratio should apply
@@ -831,7 +831,7 @@ void constrain_size(
 			}
 		}
 
-		if (tmp_win->hints.flags & PBaseSize)
+		if (fw->hints.flags & PBaseSize)
 		{
 			dwidth += baseWidth;
 			dheight += baseHeight;
@@ -844,11 +844,11 @@ void constrain_size(
 	 */
 	*widthp = dwidth + b.total_size.width;
 	*heightp = dheight + b.total_size.height;
-	if (IS_MAXIMIZED(tmp_win) && (flags & CS_UPDATE_MAX_DEFECT))
+	if (IS_MAXIMIZED(fw) && (flags & CS_UPDATE_MAX_DEFECT))
 	{
 		/* update size defect for maximized window */
-		tmp_win->max_g_defect.width = old_w - *widthp;
-		tmp_win->max_g_defect.height = old_h - *heightp;
+		fw->max_g_defect.width = old_w - *widthp;
+		fw->max_g_defect.height = old_h - *heightp;
 	}
 
 	return;
@@ -895,82 +895,82 @@ void gravity_constrain_size(
 
 /* returns the icon title geometry if it is visible */
 Bool get_visible_icon_title_geometry(
-	FvwmWindow *tmp_win, rectangle *ret_g)
+	FvwmWindow *fw, rectangle *ret_g)
 {
-	if (HAS_NO_ICON_TITLE(tmp_win) || IS_ICON_UNMAPPED(tmp_win) ||
-	    !IS_ICONIFIED(tmp_win))
+	if (HAS_NO_ICON_TITLE(fw) || IS_ICON_UNMAPPED(fw) ||
+	    !IS_ICONIFIED(fw))
 	{
 		memset(ret_g, 0, sizeof(*ret_g));
 		return False;
 	}
-	*ret_g = tmp_win->icon_g.title_w_g;
+	*ret_g = fw->icon_g.title_w_g;
 
 	return True;
 }
 
 /* returns the icon title geometry if it the icon title window exists */
 Bool get_icon_title_geometry(
-	FvwmWindow *tmp_win, rectangle *ret_g)
+	FvwmWindow *fw, rectangle *ret_g)
 {
-	if (HAS_NO_ICON_TITLE(tmp_win))
+	if (HAS_NO_ICON_TITLE(fw))
 	{
 		memset(ret_g, 0, sizeof(*ret_g));
 		return False;
 	}
-	*ret_g = tmp_win->icon_g.title_w_g;
+	*ret_g = fw->icon_g.title_w_g;
 
 	return True;
 }
 
 /* returns the icon picture geometry if it is visible */
 Bool get_visible_icon_picture_geometry(
-	FvwmWindow *tmp_win, rectangle *ret_g)
+	FvwmWindow *fw, rectangle *ret_g)
 {
-	if (tmp_win->icon_g.picture_w_g.width == 0 ||
-	    IS_ICON_UNMAPPED(tmp_win) || !IS_ICONIFIED(tmp_win))
+	if (fw->icon_g.picture_w_g.width == 0 ||
+	    IS_ICON_UNMAPPED(fw) || !IS_ICONIFIED(fw))
 	{
 		memset(ret_g, 0, sizeof(*ret_g));
 		return False;
 	}
-	*ret_g = tmp_win->icon_g.picture_w_g;
+	*ret_g = fw->icon_g.picture_w_g;
 
 	return True;
 }
 
 /* returns the icon picture geometry if it is exists */
 Bool get_icon_picture_geometry(
-	FvwmWindow *tmp_win, rectangle *ret_g)
+	FvwmWindow *fw, rectangle *ret_g)
 {
-	if (tmp_win->icon_g.picture_w_g.width == 0)
+	if (fw->icon_g.picture_w_g.width == 0)
 	{
 		memset(ret_g, 0, sizeof(*ret_g));
 		return False;
 	}
-	*ret_g = tmp_win->icon_g.picture_w_g;
+	*ret_g = fw->icon_g.picture_w_g;
 
 	return True;
 }
 
 /* returns the icon geometry (unexpanded title plus pixmap) if it is visible */
 Bool get_visible_icon_geometry(
-	FvwmWindow *tmp_win, rectangle *ret_g)
+	FvwmWindow *fw, rectangle *ret_g)
 {
-	if (IS_ICON_UNMAPPED(tmp_win) || !IS_ICONIFIED(tmp_win))
+	if (IS_ICON_UNMAPPED(fw) || !IS_ICONIFIED(fw))
 	{
 		memset(ret_g, 0, sizeof(*ret_g));
 		return False;
 	}
-	if (tmp_win->icon_g.picture_w_g.width > 0)
+	if (fw->icon_g.picture_w_g.width > 0)
 	{
-		*ret_g = tmp_win->icon_g.picture_w_g;
-		if (!HAS_NO_ICON_TITLE(tmp_win))
+		*ret_g = fw->icon_g.picture_w_g;
+		if (!HAS_NO_ICON_TITLE(fw))
 		{
-			ret_g->height += tmp_win->icon_g.title_w_g.height;
+			ret_g->height += fw->icon_g.title_w_g.height;
 		}
 	}
-	else if (!HAS_NO_ICON_TITLE(tmp_win))
+	else if (!HAS_NO_ICON_TITLE(fw))
 	{
-		*ret_g = tmp_win->icon_g.title_w_g;
+		*ret_g = fw->icon_g.title_w_g;
 	}
 	else
 	{
@@ -983,19 +983,19 @@ Bool get_visible_icon_geometry(
 
 /* returns the icon geometry (unexpanded title plus pixmap) if it exists */
 Bool get_icon_geometry(
-	FvwmWindow *tmp_win, rectangle *ret_g)
+	FvwmWindow *fw, rectangle *ret_g)
 {
-	if (tmp_win->icon_g.picture_w_g.width > 0)
+	if (fw->icon_g.picture_w_g.width > 0)
 	{
-		*ret_g = tmp_win->icon_g.picture_w_g;
-		if (!HAS_NO_ICON_TITLE(tmp_win))
+		*ret_g = fw->icon_g.picture_w_g;
+		if (!HAS_NO_ICON_TITLE(fw))
 		{
-			ret_g->height += tmp_win->icon_g.title_w_g.height;
+			ret_g->height += fw->icon_g.title_w_g.height;
 		}
 	}
-	else if (!HAS_NO_ICON_TITLE(tmp_win))
+	else if (!HAS_NO_ICON_TITLE(fw))
 	{
-		*ret_g = tmp_win->icon_g.title_w_g;
+		*ret_g = fw->icon_g.title_w_g;
 	}
 	else
 	{
@@ -1009,50 +1009,50 @@ Bool get_icon_geometry(
 /* Returns the visible geometry of a window or icon.  This can be used to test
  * if this region overlaps other windows. */
 Bool get_visible_window_or_icon_geometry(
-	FvwmWindow *tmp_win, rectangle *ret_g)
+	FvwmWindow *fw, rectangle *ret_g)
 {
-	if (IS_ICONIFIED(tmp_win))
+	if (IS_ICONIFIED(fw))
 	{
-		return get_visible_icon_geometry(tmp_win, ret_g);
+		return get_visible_icon_geometry(fw, ret_g);
 	}
-	*ret_g = tmp_win->frame_g;
+	*ret_g = fw->frame_g;
 
 	return True;
 }
 
 void move_icon_to_position(
-	FvwmWindow *tmp_win)
+	FvwmWindow *fw)
 {
-	if (tmp_win->icon_g.picture_w_g.width > 0)
+	if (fw->icon_g.picture_w_g.width > 0)
 	{
 		XMoveWindow(
-			dpy, tmp_win->icon_pixmap_w,
-			tmp_win->icon_g.picture_w_g.x,
-			tmp_win->icon_g.picture_w_g.y);
+			dpy, FW_W_ICON_PIXMAP(fw),
+			fw->icon_g.picture_w_g.x,
+			fw->icon_g.picture_w_g.y);
 	}
-	if (!HAS_NO_ICON_TITLE(tmp_win))
+	if (!HAS_NO_ICON_TITLE(fw))
 	{
 		XMoveWindow(
-			dpy, tmp_win->icon_title_w,
-			tmp_win->icon_g.title_w_g.x,
-			tmp_win->icon_g.title_w_g.y);
+			dpy, FW_W_ICON_TITLE(fw),
+			fw->icon_g.title_w_g.x,
+			fw->icon_g.title_w_g.y);
 	}
 
 	return;
 }
 
 void broadcast_icon_geometry(
-	FvwmWindow *tmp_win, Bool do_force)
+	FvwmWindow *fw, Bool do_force)
 {
 	rectangle g;
 	Bool rc;
 
-	rc = get_visible_icon_geometry(tmp_win, &g);
-	if (rc == True && (!IS_ICON_UNMAPPED(tmp_win) || do_force == True))
+	rc = get_visible_icon_geometry(fw, &g);
+	if (rc == True && (!IS_ICON_UNMAPPED(fw) || do_force == True))
 	{
 		BroadcastPacket(
-			M_ICON_LOCATION, 7, tmp_win->w, tmp_win->frame,
-			(unsigned long)tmp_win,
+			M_ICON_LOCATION, 7, FW_W(fw), FW_W_FRAME(fw),
+			(unsigned long)fw,
 			g.x, g.y, g.width, g.height);
 	}
 
@@ -1060,17 +1060,17 @@ void broadcast_icon_geometry(
 }
 
 void modify_icon_position(
-	FvwmWindow *tmp_win, int dx, int dy)
+	FvwmWindow *fw, int dx, int dy)
 {
-	if (tmp_win->icon_g.picture_w_g.width > 0)
+	if (fw->icon_g.picture_w_g.width > 0)
 	{
-		tmp_win->icon_g.picture_w_g.x += dx;
-		tmp_win->icon_g.picture_w_g.y += dy;
+		fw->icon_g.picture_w_g.x += dx;
+		fw->icon_g.picture_w_g.y += dy;
 	}
-	if (!HAS_NO_ICON_TITLE(tmp_win))
+	if (!HAS_NO_ICON_TITLE(fw))
 	{
-		tmp_win->icon_g.title_w_g.x += dx;
-		tmp_win->icon_g.title_w_g.y += dy;
+		fw->icon_g.title_w_g.x += dx;
+		fw->icon_g.title_w_g.y += dy;
 	}
 
 	return;
@@ -1079,63 +1079,63 @@ void modify_icon_position(
 /* set the icon position to the specified value. take care of the actual icon
  * layout */
 void set_icon_position(
-	FvwmWindow *tmp_win, int x, int y)
+	FvwmWindow *fw, int x, int y)
 {
-	if (tmp_win->icon_g.picture_w_g.width > 0)
+	if (fw->icon_g.picture_w_g.width > 0)
 	{
-		tmp_win->icon_g.picture_w_g.x = x;
-		tmp_win->icon_g.picture_w_g.y = y;
+		fw->icon_g.picture_w_g.x = x;
+		fw->icon_g.picture_w_g.y = y;
 	}
 	else
 	{
-		tmp_win->icon_g.picture_w_g.x = 0;
-		tmp_win->icon_g.picture_w_g.y = 0;
+		fw->icon_g.picture_w_g.x = 0;
+		fw->icon_g.picture_w_g.y = 0;
 	}
-	if (!HAS_NO_ICON_TITLE(tmp_win))
+	if (!HAS_NO_ICON_TITLE(fw))
 	{
-		tmp_win->icon_g.title_w_g.x = x;
-		tmp_win->icon_g.title_w_g.y = y;
+		fw->icon_g.title_w_g.x = x;
+		fw->icon_g.title_w_g.y = y;
 	}
 	else
 	{
-		tmp_win->icon_g.title_w_g.x = 0;
-		tmp_win->icon_g.title_w_g.y = 0;
+		fw->icon_g.title_w_g.x = 0;
+		fw->icon_g.title_w_g.y = 0;
 	}
-	if (tmp_win->icon_g.picture_w_g.width > 0 &&
-	    !HAS_NO_ICON_TITLE(tmp_win))
+	if (fw->icon_g.picture_w_g.width > 0 &&
+	    !HAS_NO_ICON_TITLE(fw))
 	{
-		tmp_win->icon_g.title_w_g.x -=
-			(tmp_win->icon_g.title_w_g.width -
-			 tmp_win->icon_g.picture_w_g.width) / 2;
-		tmp_win->icon_g.title_w_g.y +=
-			tmp_win->icon_g.picture_w_g.height;
+		fw->icon_g.title_w_g.x -=
+			(fw->icon_g.title_w_g.width -
+			 fw->icon_g.picture_w_g.width) / 2;
+		fw->icon_g.title_w_g.y +=
+			fw->icon_g.picture_w_g.height;
 	}
 
 	return;
 }
 
 void set_icon_picture_size(
-	FvwmWindow *tmp_win, int w, int h)
+	FvwmWindow *fw, int w, int h)
 {
-	if (tmp_win->icon_g.picture_w_g.width > 0)
+	if (fw->icon_g.picture_w_g.width > 0)
 	{
-		tmp_win->icon_g.picture_w_g.width = w;
-		tmp_win->icon_g.picture_w_g.height = h;
+		fw->icon_g.picture_w_g.width = w;
+		fw->icon_g.picture_w_g.height = h;
 	}
 	else
 	{
-		tmp_win->icon_g.picture_w_g.width = 0;
-		tmp_win->icon_g.picture_w_g.height = 0;
+		fw->icon_g.picture_w_g.width = 0;
+		fw->icon_g.picture_w_g.height = 0;
 	}
 
 	return;
 }
 
-void resize_icon_title_height(FvwmWindow *tmp_win, int dh)
+void resize_icon_title_height(FvwmWindow *fw, int dh)
 {
-	if (!HAS_NO_ICON_TITLE(tmp_win))
+	if (!HAS_NO_ICON_TITLE(fw))
 	{
-		tmp_win->icon_g.title_w_g.height += dh;
+		fw->icon_g.title_w_g.height += dh;
 	}
 
 	return;

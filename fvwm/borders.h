@@ -53,6 +53,6 @@ void draw_clipped_decorations(
 void DrawDecorations(
 	FvwmWindow *t, draw_window_parts draw_parts, Bool has_focus, int force,
 	Window expose_win, clear_window_parts clear_parts);
-void RedrawDecorations(FvwmWindow *tmp_win);
+void RedrawDecorations(FvwmWindow *fw);
 
 #endif /* _BORDERS_H */

@@ -113,11 +113,11 @@ void CMD_WindowShade(F_CMD_ARGS)
 
 fprintf(stderr,"toggle: %s\n", (action) ? action : "default");
 	if (DeferExecution(
-		    eventp,&w,&tmp_win,&context, CRS_SELECT,ButtonRelease))
+		    eventp,&w,&fw,&context, CRS_SELECT,ButtonRelease))
 	{
 		return;
 	}
-	if (tmp_win == NULL || IS_ICONIFIED(tmp_win))
+	if (fw == NULL || IS_ICONIFIED(fw))
 	{
 		return;
 	}
@@ -128,8 +128,8 @@ fprintf(stderr,"toggle: %s\n", (action) ? action : "default");
 	shade_dir = ParseDirectionArgument(action, NULL, -1);
 	if (shade_dir != -1)
 	{
-		toggle = (!IS_SHADED(tmp_win) ||
-			  SHADED_DIR(tmp_win) != shade_dir);
+		toggle = (!IS_SHADED(fw) ||
+			  SHADED_DIR(fw) != shade_dir);
 	}
 	else
 	{
@@ -152,29 +152,29 @@ fprintf(stderr,"toggle: %s\n", (action) ? action : "default");
 		}
 		if (toggle == -1)
 		{
-			toggle = !(IS_SHADED(tmp_win));
+			toggle = !(IS_SHADED(fw));
 		}
-		if (!IS_SHADED(tmp_win) && toggle == 1)
+		if (!IS_SHADED(fw) && toggle == 1)
 		{
-			shade_dir = GET_TITLE_DIR(tmp_win);
+			shade_dir = GET_TITLE_DIR(fw);
 		}
-		else if (IS_SHADED(tmp_win) && toggle == 0)
+		else if (IS_SHADED(fw) && toggle == 0)
 		{
-			shade_dir = SHADED_DIR(tmp_win);
+			shade_dir = SHADED_DIR(fw);
 		}
 		else
 		{
 			shade_dir = -1;
 		}
 	}
-fprintf(stderr, "toggle %d (%s) state %d (%s) title dir %s\n", toggle, get_dir_string(shade_dir), IS_SHADED(tmp_win), get_dir_string((IS_SHADED(tmp_win))?SHADED_DIR(tmp_win):-1), get_dir_string(GET_TITLE_DIR(tmp_win)));
-	if (!IS_SHADED(tmp_win) && toggle == 0)
+fprintf(stderr, "toggle %d (%s) state %d (%s) title dir %s\n", toggle, get_dir_string(shade_dir), IS_SHADED(fw), get_dir_string((IS_SHADED(fw))?SHADED_DIR(fw):-1), get_dir_string(GET_TITLE_DIR(fw)));
+	if (!IS_SHADED(fw) && toggle == 0)
 	{
 		/* nothing to do */
 		return;
 	}
-	if (IS_SHADED(tmp_win) && toggle == 1 &&
-	    shade_dir == SHADED_DIR(tmp_win))
+	if (IS_SHADED(fw) && toggle == 1 &&
+	    shade_dir == SHADED_DIR(fw))
 	{
 		/* nothing to do */
 		return;
@@ -183,39 +183,39 @@ fprintf(stderr, "toggle %d (%s) state %d (%s) title dir %s\n", toggle, get_dir_s
 	/*
 	 * calculate start and end geometries
 	 */
-	start_g = tmp_win->frame_g;
-	get_unshaded_geometry(tmp_win, &end_g);
+	start_g = fw->frame_g;
+	get_unshaded_geometry(fw, &end_g);
 print_g("end1 ", &end_g);
-	SET_SHADED(tmp_win, toggle);
+	SET_SHADED(fw, toggle);
 	if (toggle == 1)
 	{
-		SET_SHADED_DIR(tmp_win, shade_dir);
-		get_shaded_geometry(tmp_win, &end_g, &end_g);
+		SET_SHADED_DIR(fw, shade_dir);
+		get_shaded_geometry(fw, &end_g, &end_g);
 print_g("end2 ", &end_g);
 	}
 
 	/*
 	 * do the animation
 	 */
-	resize_mode_x = (DO_SHRINK_WINDOWSHADE(tmp_win)) ?
-		RESIZE_MODE_SHRINK : RESIZE_MODE_SCROLL;
+	resize_mode_x = (DO_SHRINK_WINDOWSHADE(fw)) ?
+		FRAME_RESIZE_SHRINK : FRAME_RESIZE_SCROLL;
 	resize_mode_y = resize_mode_x;
 	frame_resize(
-		tmp_win, &start_g, &end_g, resize_mode_x, resize_mode_y,
-		tmp_win->shade_anim_steps);
+		fw, &start_g, &end_g, resize_mode_x, resize_mode_y,
+		fw->shade_anim_steps);
 
 	/*
 	 * update hints and inform modules
 	 */
-	BroadcastConfig(M_CONFIGURE_WINDOW, tmp_win);
+	BroadcastConfig(M_CONFIGURE_WINDOW, fw);
 	BroadcastPacket(
-		(toggle == 1) ? M_WINDOWSHADE : M_DEWINDOWSHADE, 3, tmp_win->w,
-		tmp_win->frame, (unsigned long)tmp_win);
+		(toggle == 1) ? M_WINDOWSHADE : M_DEWINDOWSHADE, 3, FW_W(fw),
+		FW_W_FRAME(fw), (unsigned long)fw);
 	FlushAllMessageQueues();
 	XSync(dpy, 0);
-	EWMH_SetWMState(tmp_win, False);
-	GNOME_SetHints(tmp_win);
-	GNOME_SetWinArea(tmp_win);
+	EWMH_SetWMState(fw, False);
+	GNOME_SetHints(fw);
+	GNOME_SetWinArea(fw);
 
 	return;
 }

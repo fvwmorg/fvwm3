@@ -1488,22 +1488,27 @@ static void draw_empty_manager (WinManager *man)
   clear_empty_region (man);
   get_title_geometry (man, &g);
 
-  if (len > 0)
-    XFillRectangle (theDisplay, man->theWindow, man->backContext[state],
-                    g.button_x, g.button_y, g.button_w, g.button_h);
+  if (len > 0) {
+    if (man->colorsets[state] >= 0
+        && Colorset[man->colorsets[state]].pixmap == ParentRelative) {
+      XClearArea (theDisplay, man->theWindow, g.button_x, g.button_y,
+                  g.button_w, g.button_h, False);
+    } else {
+      XFillRectangle (theDisplay, man->theWindow, man->backContext[state],
+                      g.button_x, g.button_y, g.button_w, g.button_h);
+    }
+  }
   if (Pdepth > 2) {
     get_gcs (man, state, 0, &context1, &context2);
     draw_relief (man, state, &g, context1, context2);
   }
-  else {
-  }
   ClipRectangle (man, state, g.text_x, g.text_y, g.text_w, g.text_h);
-  FwinString->str =  man->titlename;
+  FwinString->str = man->titlename;
   FwinString->win = man->theWindow;
   FwinString->gc = man->hiContext[state];
   FwinString->x = g.text_x;
   FwinString->y = g.text_base;
-  FlocaleDrawString(theDisplay, man->FButtonFont, FwinString, 0);
+  FlocaleDrawString (theDisplay, man->FButtonFont, FwinString, 0);
   XSetClipMask (theDisplay, man->hiContext[state], None);
 }
 

@@ -304,7 +304,7 @@ GNOME_GetHintIcons(FvwmWindow *fwin)
   Pixmap	       mask;
 
   atom_get = XInternAtom(dpy, XA_WIN_ICONS, False);
-  retval = AtomGet(fwin->w, atom_get, XA_PIXMAP, &size);
+  retval = AtomGet(FW_W(fwin), atom_get, XA_PIXMAP, &size);
   if (retval)
   {
     for (i = 0; i < (size / (sizeof(CARD32))); i += 2)
@@ -324,7 +324,7 @@ GNOME_GetHintLayer(FvwmWindow *fwin)
   int size;
 
   atom_get = XInternAtom(dpy, XA_WIN_LAYER, False);
-  retval = AtomGet(fwin->w, atom_get, XA_CARDINAL, &size);
+  retval = AtomGet(FW_W(fwin), atom_get, XA_CARDINAL, &size);
   if (retval)
   {
     set_layer(fwin, *retval);
@@ -340,7 +340,7 @@ GNOME_GetHintState(FvwmWindow *fwin)
   int size;
 
   atom_get = XInternAtom(dpy, XA_WIN_STATE, False);
-  retval = AtomGet(fwin->w, atom_get, XA_CARDINAL, &size);
+  retval = AtomGet(FW_W(fwin), atom_get, XA_CARDINAL, &size);
   if (retval)
   {
     if (*retval & WIN_STATE_STICKY)
@@ -369,7 +369,7 @@ GNOME_GetHintAppState(FvwmWindow *fwin)
 
   /* have nothing interesting to do with an app state (lamp) right now */
   atom_get = XInternAtom(dpy, XA_WIN_APP_STATE, False);
-  retval = AtomGet(fwin->w, atom_get, XA_CARDINAL, &size);
+  retval = AtomGet(FW_W(fwin), atom_get, XA_CARDINAL, &size);
   if (retval)
   {
     free(retval);
@@ -385,7 +385,7 @@ GNOME_GetHintDesktop(FvwmWindow *fwin)
   int *desk;
 
   atom_get = XInternAtom(dpy, XA_WIN_WORKSPACE, False);
-  retval = AtomGet(fwin->w, atom_get, XA_CARDINAL, &size);
+  retval = AtomGet(FW_W(fwin), atom_get, XA_CARDINAL, &size);
   if (retval)
   {
     desk = (int *)retval;
@@ -405,7 +405,7 @@ GNOME_GetHint(FvwmWindow *fwin)
   int size;
 
   atom_get = XInternAtom(dpy, XA_WIN_HINTS, False);
-  retval = AtomGet(fwin->w, atom_get, XA_CARDINAL, &size);
+  retval = AtomGet(FW_W(fwin), atom_get, XA_CARDINAL, &size);
   if (retval)
   {
     if (*retval & WIN_HINTS_SKIP_WINLIST)
@@ -435,7 +435,7 @@ GNOME_GetExpandedSize(FvwmWindow *fwin)
   int expanded_x, expanded_y, expanded_width, expanded_height;
 
   atom_get = XInternAtom(dpy, XA_WIN_EXPANDED_SIZE, False);
-  retval = AtomGet(fwin->w, atom_get, XA_CARDINAL, &size);
+  retval = AtomGet(FW_W(fwin), atom_get, XA_CARDINAL, &size);
   if (retval)
   {
     expanded_x = retval[0];
@@ -477,7 +477,7 @@ GNOME_SetHints(FvwmWindow *fwin)
   if (!is_function_allowed(F_MOVE, NULL, fwin, True, False))
     val |= WIN_STATE_FIXED_POSITION;
 
-  XChangeProperty(dpy, fwin->w, atom_set, XA_CARDINAL, 32,
+  XChangeProperty(dpy, FW_W(fwin), atom_set, XA_CARDINAL, 32,
 		  PropModeReplace, (unsigned char *)&val, 1);
 }
 
@@ -496,7 +496,7 @@ GNOME_GetStyle (FvwmWindow *fwin, window_style *style)
     return;
   /* Desktop */
   atom_get = XInternAtom(dpy, XA_WIN_WORKSPACE, False);
-  retval = AtomGet(fwin->w, atom_get, XA_CARDINAL, &size);
+  retval = AtomGet(FW_W(fwin), atom_get, XA_CARDINAL, &size);
   if (retval)
   {
     SSET_START_DESK(*style, *(int*)retval);
@@ -512,7 +512,7 @@ GNOME_GetStyle (FvwmWindow *fwin, window_style *style)
 
   /* Layer */
   atom_get = XInternAtom(dpy, XA_WIN_LAYER, False);
-  retval = AtomGet(fwin->w, atom_get, XA_CARDINAL, &size);
+  retval = AtomGet(FW_W(fwin), atom_get, XA_CARDINAL, &size);
   if (retval)
   {
     SSET_LAYER(*style, *(int*)retval);
@@ -523,7 +523,7 @@ GNOME_GetStyle (FvwmWindow *fwin, window_style *style)
 
   /* State */
   atom_get = XInternAtom(dpy, XA_WIN_STATE, False);
-  retval = AtomGet(fwin->w, atom_get, XA_CARDINAL, &size);
+  retval = AtomGet(FW_W(fwin), atom_get, XA_CARDINAL, &size);
   if (retval)
   {
     if (*(int*)retval & WIN_STATE_STICKY)
@@ -555,7 +555,7 @@ GNOME_GetStyle (FvwmWindow *fwin, window_style *style)
 
   /* Hints */
   atom_get = XInternAtom(dpy, XA_WIN_HINTS, False);
-  retval = AtomGet(fwin->w, atom_get, XA_CARDINAL, &size);
+  retval = AtomGet(FW_W(fwin), atom_get, XA_CARDINAL, &size);
   if (retval)
   {
     if (*retval & WIN_HINTS_SKIP_WINLIST)
@@ -585,7 +585,7 @@ GNOME_SetDesk(FvwmWindow *fwin)
   {
     GNOME_SetDeskCount();
   }
-  XChangeProperty(dpy, fwin->w, atom_set, XA_CARDINAL, 32,
+  XChangeProperty(dpy, FW_W(fwin), atom_set, XA_CARDINAL, 32,
 		  PropModeReplace, (unsigned char *)&val, 1);
 }
 
@@ -598,7 +598,7 @@ GNOME_SetLayer(FvwmWindow *fwin)
 
   atom_set = XInternAtom(dpy, XA_WIN_LAYER, False);
   val = get_layer(fwin);
-  XChangeProperty(dpy, fwin->w, atom_set, XA_CARDINAL, 32,
+  XChangeProperty(dpy, FW_W(fwin), atom_set, XA_CARDINAL, 32,
 		  PropModeReplace, (unsigned char *)&val, 1);
 }
 
@@ -726,7 +726,7 @@ GNOME_SetClientList(void)
   {
     if (!DO_SKIP_WINDOW_LIST(t))
     {
-      wl[i++] = t->w;
+      wl[i++] = FW_W(t);
     }
   }
 
@@ -766,7 +766,7 @@ GNOME_SetWinArea(FvwmWindow *w)
       if (val[1] < 0 && w->frame_g.y + Scr.Vy + w->frame_g.height > 0)
         val[1] = 0;
     }
-    XChangeProperty(dpy, w->w, atom_set, XA_CARDINAL, 32,
+    XChangeProperty(dpy, FW_W(w), atom_set, XA_CARDINAL, 32,
 		    PropModeReplace, (unsigned char *)val, 2);
   }
 }
@@ -931,7 +931,7 @@ void GNOME_HandlePropRequest(unsigned int propm,
 
   for (fwin = Scr.FvwmRoot.next; fwin; fwin = fwin->next)
   {
-    if (fwin->w == win)
+    if (FW_W(fwin) == win)
       break;
   }
 /*-----------------------------------------------------------------------
@@ -939,7 +939,7 @@ void GNOME_HandlePropRequest(unsigned int propm,
     somthing.
  -----------------------------------------------------------------------*/
 #ifdef FVWM_DEBUG_MSGS
-  fvwm_msg(DBG, "HandleGnomePropRequest", "window is %d", fwin->w);
+  fvwm_msg(DBG, "HandleGnomePropRequest", "window is %d", FW_W(fwin));
 #endif
   if (fwin == NULL)
     return;
@@ -950,14 +950,14 @@ void GNOME_HandlePropRequest(unsigned int propm,
   fvwm_msg(DBG, "HandleGnomePropRequest", "prop req is %d", prop);
   fvwm_msg(DBG, "HandleGnomePropRequest", "propm req is %d", propm);
 #endif
-  XGetWindowProperty(dpy, fwin->w, a, 0L, 3L, False, a,
+  XGetWindowProperty(dpy, FW_W(fwin), a, 0L, 3L, False, a,
 		     &atype, &aformat, &nitems, &bytes_remain, &indi);
   oldprop &= ~(propm);
   oldprop |= (propm & prop);
 #ifdef FVWM_DEBUG_MSGS
   fvwm_msg(DBG, "HandleGnomePropRequest", "oldprop req is %d", oldprop);
 #endif
-  XChangeProperty(dpy, fwin->w, a, XA_CARDINAL, 32,
+  XChangeProperty(dpy, FW_W(fwin), a, XA_CARDINAL, 32,
 		  PropModeReplace, (unsigned char *)&oldprop, 1);
 
 /*-----------------------------------------------------------------------

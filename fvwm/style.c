@@ -790,11 +790,11 @@ void CMD_DestroyStyle(F_CMD_ARGS)
  *      merged matching styles in callers window_style.
  *
  *  Inputs:
- *      tmp_win - FvwWindow structure to match against
+ *      fw     - FvwmWindow structure to match against
  *      styles - callers return area
  *
  ***********************************************************************/
-void lookup_style(FvwmWindow *tmp_win, window_style *styles)
+void lookup_style(FvwmWindow *fw, window_style *styles)
 {
   window_style *nptr;
 
@@ -805,30 +805,30 @@ void lookup_style(FvwmWindow *tmp_win, window_style *styles)
   for (nptr = all_styles; nptr != NULL; nptr = SGET_NEXT_STYLE(*nptr))
   {
     /* If name/res_class/res_name match, merge */
-    if (matchWildcards(SGET_NAME(*nptr),tmp_win->class.res_class) == TRUE)
+    if (matchWildcards(SGET_NAME(*nptr),fw->class.res_class) == TRUE)
     {
       merge_styles(styles, nptr, False);
     }
-    else if (matchWildcards(SGET_NAME(*nptr),tmp_win->class.res_name) == TRUE)
+    else if (matchWildcards(SGET_NAME(*nptr),fw->class.res_name) == TRUE)
     {
       merge_styles(styles, nptr, False);
     }
-    else if (matchWildcards(SGET_NAME(*nptr),tmp_win->name.name) == TRUE)
+    else if (matchWildcards(SGET_NAME(*nptr),fw->name.name) == TRUE)
     {
       merge_styles(styles, nptr, False);
     }
   }
-  if (!DO_IGNORE_GNOME_HINTS(tmp_win))
+  if (!DO_IGNORE_GNOME_HINTS(fw))
   {
     window_style gnome_style;
 
     /* use GNOME hints if not overridden by user with GNOMEIgnoreHitns */
     memset(&gnome_style, 0, sizeof(window_style));
-    GNOME_GetStyle(tmp_win, &gnome_style);
+    GNOME_GetStyle(fw, &gnome_style);
     merge_styles(&gnome_style, styles, False);
     memcpy(styles, &gnome_style, sizeof(window_style));
   }
-  EWMH_GetStyle(tmp_win, styles);
+  EWMH_GetStyle(fw, styles);
   return;
 }
 
@@ -1424,9 +1424,9 @@ void parse_and_set_window_style(char *action, window_style *ptmpstyle)
         else if (StrEquals(token, "Handles"))
         {
 	  found = True;
-          ptmpstyle->flags.has_no_border = 0;
-          ptmpstyle->flag_mask.has_no_border = 1;
-          ptmpstyle->change_mask.has_no_border = 1;
+          ptmpstyle->flags.has_no_handles = 0;
+          ptmpstyle->flag_mask.has_no_handles = 1;
+          ptmpstyle->change_mask.has_no_handles = 1;
         }
         else if (StrEquals(token, "HandleWidth"))
         {
@@ -2155,9 +2155,9 @@ void parse_and_set_window_style(char *action, window_style *ptmpstyle)
         else if (StrEquals(token, "NOHANDLES"))
         {
 	  found = True;
-          ptmpstyle->flags.has_no_border = 1;
-          ptmpstyle->flag_mask.has_no_border = 1;
-          ptmpstyle->change_mask.has_no_border = 1;
+          ptmpstyle->flags.has_no_handles = 1;
+          ptmpstyle->flag_mask.has_no_handles = 1;
+          ptmpstyle->change_mask.has_no_handles = 1;
         }
         else if (StrEquals(token, "NOLENIENCE"))
         {
@@ -3273,14 +3273,14 @@ void check_window_style_change(
    * has_handle_width
    * has_mwm_decor
    * has_mwm_functions
-   * has_no_border
+   * has_no_handles
    * is_button_disabled
    */
   if (ret_style->change_mask.has_border_width ||
       ret_style->change_mask.has_handle_width ||
       ret_style->change_mask.has_mwm_decor ||
       ret_style->change_mask.has_mwm_functions ||
-      ret_style->change_mask.has_no_border ||
+      ret_style->change_mask.has_no_handles ||
       ret_style->change_mask.is_button_disabled)
   {
     flags->do_redecorate = True;
@@ -3415,7 +3415,7 @@ void update_style_colorset(int colorset)
 }
 
 /* Update fore and back colours for a specific window */
-void update_window_color_style(FvwmWindow *tmp_win, window_style *pstyle)
+void update_window_color_style(FvwmWindow *fw, window_style *pstyle)
 {
   int cs = Scr.DefaultColorset;
 
@@ -3425,40 +3425,40 @@ void update_window_color_style(FvwmWindow *tmp_win, window_style *pstyle)
   }
   if(SGET_FORE_COLOR_NAME(*pstyle) != NULL && !SUSE_COLORSET(&pstyle->flags))
   {
-    tmp_win->colors.fore = GetColor(SGET_FORE_COLOR_NAME(*pstyle));
+    fw->colors.fore = GetColor(SGET_FORE_COLOR_NAME(*pstyle));
   }
   else
   {
-    tmp_win->colors.fore = Colorset[cs].fg;
+    fw->colors.fore = Colorset[cs].fg;
   }
   if(SGET_BACK_COLOR_NAME(*pstyle) != NULL && !SUSE_COLORSET(&pstyle->flags))
   {
-    tmp_win->colors.back = GetColor(SGET_BACK_COLOR_NAME(*pstyle));
-    tmp_win->colors.shadow = GetShadow(tmp_win->colors.back);
-    tmp_win->colors.hilight = GetHilite(tmp_win->colors.back);
+    fw->colors.back = GetColor(SGET_BACK_COLOR_NAME(*pstyle));
+    fw->colors.shadow = GetShadow(fw->colors.back);
+    fw->colors.hilight = GetHilite(fw->colors.back);
   }
   else
   {
-    tmp_win->colors.hilight = Colorset[cs].hilite;
-    tmp_win->colors.shadow = Colorset[cs].shadow;
-    tmp_win->colors.back = Colorset[cs].bg;
+    fw->colors.hilight = Colorset[cs].hilite;
+    fw->colors.shadow = Colorset[cs].shadow;
+    fw->colors.back = Colorset[cs].bg;
   }
   if (SUSE_BORDER_COLORSET(&pstyle->flags))
   {
     cs = SGET_BORDER_COLORSET(*pstyle);
-    tmp_win->border_colors.hilight = Colorset[cs].hilite;
-    tmp_win->border_colors.shadow = Colorset[cs].shadow;
-    tmp_win->border_colors.back = Colorset[cs].bg;
+    fw->border_colors.hilight = Colorset[cs].hilite;
+    fw->border_colors.shadow = Colorset[cs].shadow;
+    fw->border_colors.back = Colorset[cs].bg;
   }
   else
   {
-    tmp_win->border_colors.hilight = tmp_win->colors.hilight;
-    tmp_win->border_colors.shadow = tmp_win->colors.shadow;
-    tmp_win->border_colors.back = tmp_win->colors.back;
+    fw->border_colors.hilight = fw->colors.hilight;
+    fw->border_colors.shadow = fw->colors.shadow;
+    fw->border_colors.back = fw->colors.back;
   }
 }
 
-void update_window_color_hi_style(FvwmWindow *tmp_win, window_style *pstyle)
+void update_window_color_hi_style(FvwmWindow *fw, window_style *pstyle)
 {
   int cs = Scr.DefaultColorset;
 
@@ -3469,36 +3469,36 @@ void update_window_color_hi_style(FvwmWindow *tmp_win, window_style *pstyle)
   if(SGET_FORE_COLOR_NAME_HI(*pstyle) != NULL &&
      !SUSE_COLORSET_HI(&pstyle->flags))
   {
-    tmp_win->hicolors.fore = GetColor(SGET_FORE_COLOR_NAME_HI(*pstyle));
+    fw->hicolors.fore = GetColor(SGET_FORE_COLOR_NAME_HI(*pstyle));
   }
   else
   {
-    tmp_win->hicolors.fore = Colorset[cs].fg;
+    fw->hicolors.fore = Colorset[cs].fg;
   }
   if(SGET_BACK_COLOR_NAME_HI(*pstyle) != NULL &&
      !SUSE_COLORSET_HI(&pstyle->flags))
   {
-    tmp_win->hicolors.back = GetColor(SGET_BACK_COLOR_NAME_HI(*pstyle));
-    tmp_win->hicolors.shadow = GetShadow(tmp_win->hicolors.back);
-    tmp_win->hicolors.hilight = GetHilite(tmp_win->hicolors.back);
+    fw->hicolors.back = GetColor(SGET_BACK_COLOR_NAME_HI(*pstyle));
+    fw->hicolors.shadow = GetShadow(fw->hicolors.back);
+    fw->hicolors.hilight = GetHilite(fw->hicolors.back);
   }
   else
   {
-    tmp_win->hicolors.hilight = Colorset[cs].hilite;
-    tmp_win->hicolors.shadow = Colorset[cs].shadow;
-    tmp_win->hicolors.back = Colorset[cs].bg;
+    fw->hicolors.hilight = Colorset[cs].hilite;
+    fw->hicolors.shadow = Colorset[cs].shadow;
+    fw->hicolors.back = Colorset[cs].bg;
   }
   if (SUSE_BORDER_COLORSET_HI(&pstyle->flags))
   {
     cs = SGET_BORDER_COLORSET_HI(*pstyle);
-    tmp_win->border_hicolors.hilight = Colorset[cs].hilite;
-    tmp_win->border_hicolors.shadow = Colorset[cs].shadow;
-    tmp_win->border_hicolors.back = Colorset[cs].bg;
+    fw->border_hicolors.hilight = Colorset[cs].hilite;
+    fw->border_hicolors.shadow = Colorset[cs].shadow;
+    fw->border_hicolors.back = Colorset[cs].bg;
   }
   else
   {
-    tmp_win->border_hicolors.hilight = tmp_win->hicolors.hilight;
-    tmp_win->border_hicolors.shadow = tmp_win->hicolors.shadow;
-    tmp_win->border_hicolors.back = tmp_win->hicolors.back;
+    fw->border_hicolors.hilight = fw->hicolors.hilight;
+    fw->border_hicolors.shadow = fw->hicolors.shadow;
+    fw->border_hicolors.back = fw->hicolors.back;
   }
 }

@@ -65,7 +65,7 @@ static void dump_stack_ring(void)
   for (t1 = Scr.FvwmRoot.stack_next; t1 != &Scr.FvwmRoot; t1 = t1->stack_next)
   {
     fprintf(stderr,"    l=%d fw=0x%08x f=0x%08x '%s'\n", t1->layer,
-	    (int)t1, (int)t1->frame, t1->name.name);
+	    (int)t1, (int)FW_W_FRAME(t1), t1->name.name);
   }
 
   return;
@@ -129,18 +129,19 @@ void verify_stack_ring_consistency(void)
   for (t1 = Scr.FvwmRoot.stack_next; t1 != &Scr.FvwmRoot; t1 = t1->stack_next)
   {
     /* find window in window list */
-    for (i = 0; i < nchildren && t1->frame != children[i]; i++)
+    for (i = 0; i < nchildren && FW_W_FRAME(t1) != children[i]; i++)
       ;
     if (i == nchildren)
     {
       fprintf(stderr,"vsrc: window already died: fw=0x%08x w=0x%08x '%s'\n",
-	      (int)t1, (int)t1->frame, t1->name.name);
+	      (int)t1, (int)FW_W_FRAME(t1), t1->name.name);
     }
     else if (i >= last_index)
     {
       fprintf(
 	stderr, "vsrc: window is at wrong position in stack ring: "
-	"fw=0x%08x f=0x%08x '%s'\n", (int)t1, (int)t1->frame, t1->name.name);
+	"fw=0x%08x f=0x%08x '%s'\n", (int)t1, (int)FW_W_FRAME(t1),
+	t1->name.name);
       dump_stack_ring();
       fprintf(stderr,"dumping X stacking order:\n");
       for (i = nchildren; i-- > 0; )
@@ -149,7 +150,7 @@ void verify_stack_ring_consistency(void)
 	     t1 = t1->stack_next)
 	{
 	  /* only dump frame windows */
-	  if (t1->frame == children[i])
+	  if (FW_W_FRAME(t1) == children[i])
 	  {
 	    fprintf(stderr,"  f=0x%08x\n", (int)children[i]);
 	    break;
@@ -231,12 +232,12 @@ FvwmWindow *get_transientfor_fvwmwindow(FvwmWindow *t)
 {
   FvwmWindow *s;
 
-  if (!t || !IS_TRANSIENT(t) || t->transientfor == Scr.Root ||
-      t->transientfor == None)
+  if (!t || !IS_TRANSIENT(t) || FW_W_TRANSIENTFOR(t) == Scr.Root ||
+      FW_W_TRANSIENTFOR(t) == None)
     return NULL;
   for (s = Scr.FvwmRoot.next; s != NULL; s = s->next)
   {
-    if (s->w == t->transientfor)
+    if (FW_W(s) == FW_W_TRANSIENTFOR(t))
     {
       return (s == t) ? NULL : s;
     }
@@ -304,7 +305,7 @@ static void raise_over_unmanaged(FvwmWindow *t)
    * Locate the highest override_redirect window above our target, and
    * the highest of our windows below it.
    ********************************************************************/
-  for (i = 0; i < num && tops[i] != t->frame; i++)
+  for (i = 0; i < num && tops[i] != FW_W_FRAME(t); i++)
   {
     /* look for target window in list */
   }
@@ -345,16 +346,16 @@ static void raise_over_unmanaged(FvwmWindow *t)
       for (i = 0, t2 = Scr.FvwmRoot.stack_next; t2 != &Scr.FvwmRoot;
 	   t2 = t2->stack_next)
       {
-	wins[i++] = t2->frame;
+	wins[i++] = FW_W_FRAME(t2);
 	if (IS_ICONIFIED(t2) && ! IS_ICON_SUPPRESSED(t2))
 	{
-	  if (t2->icon_title_w != None)
+	  if (FW_W_ICON_TITLE(t2) != None)
 	  {
-	    wins[i++] = t2->icon_title_w;
+	    wins[i++] = FW_W_ICON_TITLE(t2);
           }
-	  if (t2->icon_pixmap_w != None)
+	  if (FW_W_ICON_PIXMAP(t2) != None)
 	  {
-	    wins[i++] = t2->icon_pixmap_w;
+	    wins[i++] = FW_W_ICON_PIXMAP(t2);
           }
         }
 	if (t2 == t)
@@ -368,7 +369,7 @@ static void raise_over_unmanaged(FvwmWindow *t)
       changes.stack_mode = Above;
       flags = CWSibling|CWStackMode;
 
-      XConfigureWindow (dpy, t->frame/*topwin*/, flags, &changes);
+      XConfigureWindow (dpy, FW_W_FRAME(t)/*topwin*/, flags, &changes);
       XRestackWindows (dpy, wins, i);
       free (wins);
     }
@@ -412,7 +413,7 @@ static Bool must_move_transients(
 	/* We found our window. All further transients are below it. */
 	scanning_above_window = False;
       }
-      else if (IS_TRANSIENT(q) && (q->transientfor == t->w))
+      else if (IS_TRANSIENT(q) && (FW_W_TRANSIENTFOR(q) == FW_W(t)))
       {
 	/* found a transient */
 	*found_transient = True;
@@ -466,17 +467,17 @@ static void restack_windows(
       fvwm_msg (ERR, "restack_windows", "more transients than expected");
       break;
     }
-    wins[i++] = t->frame;
+    wins[i++] = FW_W_FRAME(t);
     if (IS_ICONIFIED(t) && !IS_ICON_SUPPRESSED(t))
     {
-      if(t->icon_title_w != None)
-	wins[i++] = t->icon_title_w;
-      if(t->icon_pixmap_w != None)
-	wins[i++] = t->icon_pixmap_w;
+      if(FW_W_ICON_TITLE(t) != None)
+	wins[i++] = FW_W_ICON_TITLE(t);
+      if(FW_W_ICON_PIXMAP(t) != None)
+	wins[i++] = FW_W_ICON_PIXMAP(t);
     }
   }
 
-  changes.sibling = s->frame;
+  changes.sibling = FW_W_FRAME(s);
   if (changes.sibling != None)
   {
     changes.stack_mode = Above;
@@ -487,7 +488,7 @@ static void restack_windows(
     changes.stack_mode = Below;
     flags = CWStackMode;
   }
-  XConfigureWindow (dpy, r->stack_next->frame, flags, &changes);
+  XConfigureWindow (dpy, FW_W_FRAME(r->stack_next), flags, &changes);
   XRestackWindows (dpy, wins, count);
   free(wins);
 
@@ -546,7 +547,7 @@ static void RaiseOrLowerWindow(
       for (t2 = Scr.FvwmRoot.stack_next; t2 != &Scr.FvwmRoot;
 	   t2 = t2->stack_next)
       {
-        if (t2->w == t->transientfor)
+        if (FW_W(t2) == FW_W_TRANSIENTFOR(t))
         {
 	  if (IS_ICONIFIED(t2))
 	  {
@@ -600,7 +601,7 @@ static void RaiseOrLowerWindow(
       for (t2 = Scr.FvwmRoot.stack_next; t2 != &Scr.FvwmRoot; t2 = next)
       {
 	next = t2->stack_next;
-	if ((IS_TRANSIENT(t2)) && (t2->transientfor == t->w) &&
+	if ((IS_TRANSIENT(t2)) && (FW_W_TRANSIENTFOR(t2) == FW_W(t)) &&
 	    (t2->layer == t->layer) && !IS_ICONIFIED(t2))
 	{
 	  /* t2 is a transient to lower */
@@ -692,10 +693,10 @@ static void RaiseOrLowerWindow(
       /* get *all* toplevels (even including override_redirects) */
       XQueryTree(dpy, Scr.Root, &junk, &junk, &tops, &num);
 
-      /* raise from tmp_win upwards to get them above NT windows */
+      /* raise from fw upwards to get them above NT windows */
       for (i = 0; i < num; i++)
       {
-        if (tops[i] == t->frame)
+        if (tops[i] == FW_W_FRAME(t))
 	  found = True;
         if (found)
 	  XRaiseWindow (dpy, tops[i]);
@@ -704,7 +705,7 @@ static void RaiseOrLowerWindow(
 #endif
       for (t2 = t; t2 != &Scr.FvwmRoot; t2 = t2->stack_prev)
       {
-        XRaiseWindow (dpy, t2->frame);
+        XRaiseWindow (dpy, FW_W_FRAME(t2));
       }
     }
 
@@ -729,7 +730,7 @@ static void RaiseOrLowerWindow(
 */
 void RaiseWindow(FvwmWindow *t)
 {
-  BroadcastPacket(M_RAISE_WINDOW, 3, t->w, t->frame, (unsigned long)t);
+  BroadcastPacket(M_RAISE_WINDOW, 3, FW_W(t), FW_W_FRAME(t), (unsigned long)t);
   RaiseOrLowerWindow(t, False, True, False);
   focus_grab_buttons_on_pointer_window();
 #ifdef DEBUG_STACK_RING
@@ -740,7 +741,7 @@ void RaiseWindow(FvwmWindow *t)
 
 void LowerWindow(FvwmWindow *t)
 {
-  BroadcastPacket(M_LOWER_WINDOW, 3, t->w, t->frame, (unsigned long)t);
+  BroadcastPacket(M_LOWER_WINDOW, 3, FW_W(t), FW_W_FRAME(t), (unsigned long)t);
   RaiseOrLowerWindow(t, True, True, False);
   focus_grab_buttons_on_pointer_window();
 #ifdef DEBUG_STACK_RING
@@ -796,8 +797,8 @@ HandleUnusualStackmodes(unsigned int stack_mode, FvwmWindow *r, Window rw,
 
 /*  DBUG("HandleUnusualStackmodes", "called with %d, %lx\n", stack_mode, s);*/
 
-  if (((rw != r->w) ^ IS_ICONIFIED(r)) ||
-      (s && (((sw != s->w) ^ IS_ICONIFIED(s)) || (r->Desk != s->Desk))))
+  if (((rw != FW_W(r)) ^ IS_ICONIFIED(r)) ||
+      (s && (((sw != FW_W(s)) ^ IS_ICONIFIED(s)) || (r->Desk != s->Desk))))
   {
     /* one of the relevant windows is unmapped */
     return 0;
@@ -876,14 +877,15 @@ static void ResyncFvwmStackRing (void)
     {
       if (IS_ICONIFIED(t1) && !IS_ICON_SUPPRESSED(t1))
       {
-	if (t1->icon_title_w == children[i] || t1->icon_pixmap_w == children[i])
+	if (FW_W_ICON_TITLE(t1) == children[i] ||
+	    FW_W_ICON_PIXMAP(t1) == children[i])
 	{
 	  break;
 	}
       }
       else
       {
-	if (t1->frame == children[i])
+	if (FW_W_FRAME(t1) == children[i])
 	{
 	  break;
 	}
@@ -932,13 +934,13 @@ static void ResyncXStackingOrder(void)
 
     for (i = 0, t = Scr.FvwmRoot.stack_next; count--; t = t->stack_next)
     {
-      wins[i++] = t->frame;
+      wins[i++] = FW_W_FRAME(t);
       if (IS_ICONIFIED(t) && !IS_ICON_SUPPRESSED(t))
       {
-	if (t->icon_title_w != None)
-	  wins[i++] = t->icon_title_w;
-	if (t->icon_pixmap_w != None)
-	  wins[i++] = t->icon_pixmap_w;
+	if (FW_W_ICON_TITLE(t) != None)
+	  wins[i++] = FW_W_ICON_TITLE(t);
+	if (FW_W_ICON_PIXMAP(t) != None)
+	  wins[i++] = FW_W_ICON_PIXMAP(t);
       }
     }
     XRestackWindows(dpy, wins, i);
@@ -970,7 +972,8 @@ static void BroadcastRestack(FvwmWindow *s1, FvwmWindow *s2)
     if (t == &Scr.FvwmRoot)
       return;
     /* t has been moved to the top of stack */
-    BroadcastPacket (M_RAISE_WINDOW, 3, t->w, t->frame, (unsigned long)t);
+    BroadcastPacket(
+	    M_RAISE_WINDOW, 3, FW_W(t), FW_W_FRAME(t), (unsigned long)t);
     if (t->stack_next == s2)
     {
       /* avoid sending empty RESTACK packet */
@@ -999,8 +1002,8 @@ static void BroadcastRestack(FvwmWindow *s1, FvwmWindow *s2)
   *(bp++) = lastTimestamp;
   for (t2 = t; num != 0; num--, t2 = t2->stack_next)
   {
-    *(bp++) = t2->w;
-    *(bp++) = t2->frame;
+    *(bp++) = FW_W(t2);
+    *(bp++) = FW_W_FRAME(t2);
     *(bp++) = (unsigned long)t2;
   }
   for (i = 0; i < npipes; i++)
@@ -1123,7 +1126,7 @@ void mark_transient_subtree(
       if (DO_ICONIFY_WINDOW_GROUPS(s) && s->wmhints &&
 	  (s->wmhints->flags & WindowGroupHint) &&
 	  (s->wmhints->window_group != None) &&
-	  (s->wmhints->window_group != s->w) &&
+	  (s->wmhints->window_group != FW_W(s)) &&
 	  (s->wmhints->window_group != Scr.Root))
       {
 	use_group_hint = True;
@@ -1151,7 +1154,7 @@ void mark_transient_subtree(
       {
 	for (u = start; u != end; u = u->stack_next)
 	{
-	  if (u->w == s->wmhints->window_group ||
+	  if (FW_W(u) == s->wmhints->window_group ||
 	      (u->wmhints && (u->wmhints->flags & WindowGroupHint) &&
 	       u->wmhints->window_group == s->wmhints->window_group))
 	  {
@@ -1198,7 +1201,7 @@ static int collect_transients_recursive(
   return count;
 }
 
-void new_layer(FvwmWindow *tmp_win, int layer)
+void new_layer(FvwmWindow *fw, int layer)
 {
   FvwmWindow *s;
   FvwmWindow *target;
@@ -1207,13 +1210,13 @@ void new_layer(FvwmWindow *tmp_win, int layer)
   int add_after_layer;
   int count;
 
-  tmp_win = get_transientfor_top_fvwmwindow(tmp_win);
-  if (layer == tmp_win->layer)
+  fw = get_transientfor_top_fvwmwindow(fw);
+  if (layer == fw->layer)
     return;
   list_head.stack_next = &list_head;
   list_head.stack_prev = &list_head;
   count = collect_transients_recursive(
-    tmp_win, &list_head, tmp_win->layer, (layer < tmp_win->layer));
+    fw, &list_head, fw->layer, (layer < fw->layer));
   if (count == 0)
   {
     /* no windows to move */
@@ -1221,7 +1224,7 @@ void new_layer(FvwmWindow *tmp_win, int layer)
   }
 
   add_after_layer = layer;
-  if (layer < tmp_win->layer)
+  if (layer < fw->layer)
   {
     /* lower below the windows in the new (lower) layer */
     add_after_layer = layer;
@@ -1250,10 +1253,10 @@ void new_layer(FvwmWindow *tmp_win, int layer)
     s->layer = layer;
     /* redraw title and buttons to update layer buttons */
     DrawDecorations(
-      s, DRAW_TITLE | DRAW_BUTTONS, (Scr.Hilite == tmp_win), True, None,
+      s, DRAW_TITLE | DRAW_BUTTONS, (Scr.Hilite == fw), True, None,
       CLEAR_NONE);
-    GNOME_SetLayer(tmp_win);
-    EWMH_SetWMState(tmp_win, False);
+    GNOME_SetLayer(fw);
+    EWMH_SetWMState(fw, False);
   }
   /* move the windows without modifying their stacking order */
   restack_windows(list_head.stack_next->stack_prev, target, count, (count > 1));
@@ -1297,7 +1300,7 @@ static Bool is_on_top_of_layer_ignore_rom(FvwmWindow *fw)
      * windows, but on top of its layer, it would be considered on top. */
     if (Scr.bo.RaiseOverUnmanaged || overlap(fw, t))
     {
-      if (!IS_TRANSIENT(t) || t->transientfor != fw->w ||
+      if (!IS_TRANSIENT(t) || FW_W_TRANSIENTFOR(t) != FW_W(fw) ||
 	  !DO_RAISE_TRANSIENT(fw))
       {
 	ontop = False;
@@ -1322,36 +1325,36 @@ Bool is_on_top_of_layer(FvwmWindow *fw)
 
 void CMD_Raise(F_CMD_ARGS)
 {
-  if (DeferExecution(eventp,&w,&tmp_win,&context, CRS_SELECT,ButtonRelease))
+  if (DeferExecution(eventp,&w,&fw,&context, CRS_SELECT,ButtonRelease))
     return;
 
-  RaiseWindow(tmp_win);
+  RaiseWindow(fw);
 }
 
 void CMD_Lower(F_CMD_ARGS)
 {
-  if (DeferExecution(eventp,&w,&tmp_win,&context, CRS_SELECT, ButtonRelease))
+  if (DeferExecution(eventp,&w,&fw,&context, CRS_SELECT, ButtonRelease))
     return;
 
-  LowerWindow(tmp_win);
+  LowerWindow(fw);
 }
 
 void CMD_RaiseLower(F_CMD_ARGS)
 {
   Bool ontop;
 
-  if (DeferExecution(eventp,&w,&tmp_win,&context, CRS_SELECT,ButtonRelease))
+  if (DeferExecution(eventp,&w,&fw,&context, CRS_SELECT,ButtonRelease))
   {
 #ifdef DEBUG_STACK_RING
     dump_stack_ring();
 #endif
     return;
   }
-  ontop = is_on_top_of_layer_ignore_rom(tmp_win);
+  ontop = is_on_top_of_layer_ignore_rom(fw);
   if (ontop)
-    LowerWindow(tmp_win);
+    LowerWindow(fw);
   else
-    RaiseWindow(tmp_win);
+    RaiseWindow(fw);
 
   return;
 }
@@ -1361,22 +1364,22 @@ void CMD_Layer(F_CMD_ARGS)
   int n, layer, val[2];
   char *token;
 
-  if (DeferExecution(eventp,&w,&tmp_win,&context, CRS_SELECT,ButtonRelease))
+  if (DeferExecution(eventp,&w,&fw,&context, CRS_SELECT,ButtonRelease))
     return;
 
-  if(tmp_win == NULL)
+  if(fw == NULL)
     return;
 
   token = PeekToken(action, NULL);
   if (StrEquals("default", token))
   {
-    layer = tmp_win->default_layer;
+    layer = fw->default_layer;
   }
   else
   {
     n = GetIntegerArguments(action, NULL, val, 2);
 
-    layer = tmp_win->layer;
+    layer = fw->layer;
     if ((n == 1) ||
 	((n == 2) && (val[0] != 0)))
     {
@@ -1388,14 +1391,14 @@ void CMD_Layer(F_CMD_ARGS)
     }
     else
     {
-      layer = tmp_win->default_layer;
+      layer = fw->default_layer;
     }
   }
   if (layer < 0)
   {
     layer = 0;
   }
-  new_layer(tmp_win, layer);
+  new_layer(fw, layer);
 
 #ifdef DEBUG_STACK_RING
   verify_stack_ring_consistency();

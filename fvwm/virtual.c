@@ -182,33 +182,33 @@ static void unmap_window(FvwmWindow *t)
    * Prevent the receipt of an UnmapNotify, since that would
    * cause a transition to the Withdrawn state.
    */
-  ret = XGetWindowAttributes(dpy, t->w, &winattrs);
+  ret = XGetWindowAttributes(dpy, FW_W(t), &winattrs);
   if (ret)
   {
     eventMask = winattrs.your_event_mask;
     /* suppress UnmapRequest event */
-    XSelectInput(dpy, t->w, eventMask & ~StructureNotifyMask);
+    XSelectInput(dpy, FW_W(t), eventMask & ~StructureNotifyMask);
   }
   if (IS_ICONIFIED(t))
   {
-    if (t->icon_pixmap_w != None)
-      XUnmapWindow(dpy,t->icon_pixmap_w);
-    if (t->icon_title_w != None)
-      XUnmapWindow(dpy,t->icon_title_w);
+    if (FW_W_ICON_PIXMAP(t) != None)
+      XUnmapWindow(dpy,FW_W_ICON_PIXMAP(t));
+    if (FW_W_ICON_TITLE(t) != None)
+      XUnmapWindow(dpy,FW_W_ICON_TITLE(t));
   }
   else
   {
-    XUnmapWindow(dpy,t->frame);
+    XUnmapWindow(dpy,FW_W_FRAME(t));
 #ifdef ICCCM2_UNMAP_WINDOW_PATCH
     /* this is required by the ICCCM2 */
-    XUnmapWindow(dpy, t->w);
+    XUnmapWindow(dpy, FW_W(t));
 #endif
     if (!Scr.bo.EWMHIconicStateWorkaround)
       SetMapStateProp(t, IconicState);
   }
   if (ret)
   {
-    XSelectInput(dpy, t->w, eventMask);
+    XSelectInput(dpy, FW_W(t), eventMask);
   }
 
   return;
@@ -233,35 +233,35 @@ static void map_window(FvwmWindow *t)
    * Prevent the receipt of an UnmapNotify, since that would
    * cause a transition to the Withdrawn state.
    */
-  ret = XGetWindowAttributes(dpy, t->w, &winattrs);
+  ret = XGetWindowAttributes(dpy, FW_W(t), &winattrs);
   if (ret)
   {
     eventMask = winattrs.your_event_mask;
     /* suppress MapRequest event */
-    XSelectInput(dpy, t->w, eventMask & ~StructureNotifyMask);
+    XSelectInput(dpy, FW_W(t), eventMask & ~StructureNotifyMask);
   }
   if(IS_ICONIFIED(t))
   {
-    if(t->icon_pixmap_w != None)
-      XMapWindow(dpy,t->icon_pixmap_w);
-    if(t->icon_title_w != None)
-      XMapWindow(dpy,t->icon_title_w);
+    if(FW_W_ICON_PIXMAP(t) != None)
+      XMapWindow(dpy,FW_W_ICON_PIXMAP(t));
+    if(FW_W_ICON_TITLE(t) != None)
+      XMapWindow(dpy,FW_W_ICON_TITLE(t));
   }
   else if(IS_MAPPED(t))
   {
-    XMapWindow(dpy, t->frame);
-    XMapWindow(dpy, t->Parent);
+    XMapWindow(dpy, FW_W_FRAME(t));
+    XMapWindow(dpy, FW_W_PARENT(t));
     XMapWindow(dpy, t->decor_w);
 #ifdef ICCCM2_UNMAP_WINDOW_PATCH
     /* this is required by the ICCCM2 */
-    XMapWindow(dpy, t->w);
+    XMapWindow(dpy, FW_W(t));
 #endif
     if (!Scr.bo.EWMHIconicStateWorkaround)
       SetMapStateProp(t, NormalState);
   }
   if (ret)
   {
-    XSelectInput(dpy, t->w, eventMask);
+    XSelectInput(dpy, FW_W(t), eventMask);
   }
 
   return;
@@ -1390,45 +1390,45 @@ void CMD_GotoPage(F_CMD_ARGS)
  * Move a window to a new desktop
  *
  *************************************************************************/
-void do_move_window_to_desk(FvwmWindow *tmp_win, int desk)
+void do_move_window_to_desk(FvwmWindow *fw, int desk)
 {
-  if (tmp_win == NULL)
+  if (fw == NULL)
     return;
 
   /*
    * Set the window's desktop, and map or unmap it as needed.
    */
   /* Only change mapping for non-sticky windows */
-  if (!(IS_ICONIFIED(tmp_win) && IS_ICON_STICKY(tmp_win)) &&
-      !IS_STICKY(tmp_win) /*&& !IS_ICON_UNMAPPED(tmp_win)*/)
+  if (!(IS_ICONIFIED(fw) && IS_ICON_STICKY(fw)) &&
+      !IS_STICKY(fw) /*&& !IS_ICON_UNMAPPED(fw)*/)
   {
-    if (tmp_win->Desk == Scr.CurrentDesk)
+    if (fw->Desk == Scr.CurrentDesk)
     {
-      tmp_win->Desk = desk;
-      if (tmp_win == get_focus_window())
+      fw->Desk = desk;
+      if (fw == get_focus_window())
       {
 	DeleteFocus(False, True);
       }
-      unmap_window(tmp_win);
+      unmap_window(fw);
     }
     else if(desk == Scr.CurrentDesk)
     {
-      tmp_win->Desk = desk;
+      fw->Desk = desk;
       /* If its an icon, auto-place it */
-      if (IS_ICONIFIED(tmp_win))
-	AutoPlaceIcon(tmp_win);
-      map_window(tmp_win);
+      if (IS_ICONIFIED(fw))
+	AutoPlaceIcon(fw);
+      map_window(fw);
     }
     else
     {
-      tmp_win->Desk = desk;
+      fw->Desk = desk;
     }
-    BroadcastConfig(M_CONFIGURE_WINDOW,tmp_win);
+    BroadcastConfig(M_CONFIGURE_WINDOW,fw);
   }
-  EWMH_SetWMDesktop(tmp_win);
+  EWMH_SetWMDesktop(fw);
   GNOME_SetDeskCount();
-  GNOME_SetDesk(tmp_win);
-  GNOME_SetWinArea(tmp_win);
+  GNOME_SetDesk(fw);
+  GNOME_SetWinArea(fw);
 }
 
 /* function with parsing of command line */
@@ -1437,20 +1437,20 @@ void CMD_MoveToDesk(F_CMD_ARGS)
 	int desk;
 
 	if (DeferExecution(
-		    eventp, &w, &tmp_win, &context, CRS_SELECT, ButtonRelease))
+		    eventp, &w, &fw, &context, CRS_SELECT, ButtonRelease))
 	{
 		return;
 	}
 	desk = GetDeskNumber(action);
-	if (IS_STICKY(tmp_win))
+	if (IS_STICKY(fw))
 	{
 		handle_stick(F_PASS_ARGS, 0);
 	}
-	if (desk == tmp_win->Desk)
+	if (desk == fw->Desk)
 	{
 		return;
 	}
-	do_move_window_to_desk(tmp_win, desk);
+	do_move_window_to_desk(fw, desk);
 
 	return;
 }

@@ -174,7 +174,7 @@ static int execute_obj_func(void *object, void *args)
 			memset(&efa, 0, sizeof(efa));
 			memset(&ev, 0, sizeof(ev));
 			efa.eventp = &ev;
-			efa.tmp_win = NULL;
+			efa.fw = NULL;
 			efa.action = obj->command;
 			efa.args = NULL;
 			if (XFindContext(dpy, obj->window, FvwmContext,
@@ -295,9 +295,9 @@ void CMD_Schedule(F_CMD_ARGS)
 		pid = NULL;
 	}
 	/* get the window to operate on */
-	if (tmp_win != NULL)
+	if (fw != NULL)
 	{
-		xw = tmp_win->w;
+		xw = FW_W(fw);
 	}
 	else
 	{

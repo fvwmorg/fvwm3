@@ -641,7 +641,7 @@ static void circulate_cmd(
 	{
 		old_execute_function(
 			NULL, restofline,
-			(do_use_found) ? found : tmp_win, eventp,
+			(do_use_found) ? found : fw, eventp,
 			context, *Module, 0, NULL);
 	}
 
@@ -683,7 +683,7 @@ static void select_cmd(F_CMD_ARGS)
 	char *flags;
 	WindowConditionMask mask;
 
-	if (!tmp_win || IS_EWMH_DESKTOP(tmp_win->w))
+	if (!fw || IS_EWMH_DESKTOP(FW_W(fw)))
 	{
 		if (cond_rc != NULL)
 		{
@@ -700,14 +700,14 @@ static void select_cmd(F_CMD_ARGS)
 	{
 		free(flags);
 	}
-	if (MatchesConditionMask(tmp_win, &mask) && restofline)
+	if (MatchesConditionMask(fw, &mask) && restofline)
 	{
 		if (cond_rc != NULL)
 		{
 			*cond_rc = COND_RC_OK;
 		}
 		old_execute_function(
-			NULL, restofline, tmp_win, eventp, C_WINDOW, *Module,
+			NULL, restofline, fw, eventp, C_WINDOW, *Module,
 			0, NULL);
 	}
 	else if (cond_rc != NULL)
@@ -721,7 +721,7 @@ static void select_cmd(F_CMD_ARGS)
 
 void CMD_PointerWindow(F_CMD_ARGS)
 {
-	tmp_win = get_pointer_fvwm_window();
+	fw = get_pointer_fvwm_window();
 	select_cmd(F_PASS_ARGS);
 
 	return;
@@ -737,7 +737,7 @@ void CMD_ThisWindow(F_CMD_ARGS)
 void CMD_Pick(F_CMD_ARGS)
 {
 	DeferExecution(
-		eventp, &w, &tmp_win, &context, CRS_SELECT, ButtonRelease);
+		eventp, &w, &fw, &context, CRS_SELECT, ButtonRelease);
 	select_cmd(F_PASS_ARGS);
 
 	return;
@@ -866,9 +866,9 @@ void CMD_Direction(F_CMD_ARGS)
 
 	/* If there is a focused window, use that as a starting point.
 	 * Otherwise we use the pointer as a starting point. */
-	if (tmp_win)
+	if (fw)
 	{
-		get_visible_window_or_icon_geometry(tmp_win, &my_g);
+		get_visible_window_or_icon_geometry(fw, &my_g);
 		my_cx = my_g.x + my_g.width / 2;
 		my_cy = my_g.y + my_g.height / 2;
 	}
@@ -897,7 +897,7 @@ void CMD_Direction(F_CMD_ARGS)
 		/* Skip every window that does not match conditionals.  Also
 		 * skip the currently focused window.  That would be too
 		 * close. :) */
-		if (window == tmp_win || !MatchesConditionMask(window, &mask))
+		if (window == fw || !MatchesConditionMask(window, &mask))
 		{
 			continue;
 		}
@@ -1055,7 +1055,7 @@ void CMD_WindowId(F_CMD_ARGS)
 	/* Search windows */
 	for (t = Scr.FvwmRoot.next; t; t = t->next)
 	{
-		if (t->w == win)
+		if (FW_W(t) == win)
 		{
 			/* do it if no conditions or the conditions match */
 			if (action && (!use_condition ||
@@ -1168,7 +1168,7 @@ void CMD_Cond(F_CMD_ARGS)
 		/* execute the command in root window context; overwrite the
 		 * return code with the return code of the command */
 		old_execute_function(
-			cond_rc, restofline, tmp_win, eventp, context, *Module,
+			cond_rc, restofline, fw, eventp, context, *Module,
 			0, NULL);
 
 	}
@@ -1186,7 +1186,7 @@ void CMD_CondCase(F_CMD_ARGS)
 
 	/* same as Cond, but does not modify the return code */
         tmp_rc = (cond_rc != NULL) ? *cond_rc : COND_RC_OK;
-	CMD_Cond(&tmp_rc, eventp, w, tmp_win, context, action, Module);
+	CMD_Cond(&tmp_rc, eventp, w, fw, context, action, Module);
 
 	return;
 }

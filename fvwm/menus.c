@@ -482,10 +482,10 @@ static MenuItem *find_entry(
 	}
 	/* find out the menu the pointer is in */
 	if (pmp->tear_off_root_menu_window != NULL &&
-	    Child == pmp->tear_off_root_menu_window->frame)
+	    Child == FW_W_FRAME(pmp->tear_off_root_menu_window))
 	{
 		/* we're in the top level torn off menu */
-		Child = pmp->tear_off_root_menu_window->w;
+		Child = FW_W(pmp->tear_off_root_menu_window);
 	}
 	if (XFindContext(dpy, Child, MenuContext, (caddr_t *)&mr) == XCNOENT)
 	{
@@ -1474,7 +1474,7 @@ static void MenuInteraction(
     } /* flags.do_recycle_event */
     else if (pmp->tear_off_root_menu_window != NULL &&
 	     XCheckTypedWindowEvent(
-	       dpy, pmp->tear_off_root_menu_window->Parent, ClientMessage,
+	       dpy, FW_W_PARENT(pmp->tear_off_root_menu_window), ClientMessage,
 	       &Event))
     {
       /* Got a ClientMessage for the tear out menu */
@@ -1844,11 +1844,11 @@ static void MenuInteraction(
 
     case Expose:
       /* grab our expose events, let the rest go through */
-      menu_expose(&Event, (*pmp->pTmp_win));
+      menu_expose(&Event, (*pmp->pfw));
       /* we want to dispatch this too so window decorations get redrawn
        * after being obscured by menus. */
-      /* We need to preserve the Tmp_win here! Note that handling an Expose
-       * event will never invalidate the Tmp_win. */
+      /* We need to preserve the Fw here! Note that handling an Expose
+       * event will never invalidate the Fw. */
       DispatchEvent(True);
       continue;
 
@@ -1856,7 +1856,7 @@ static void MenuInteraction(
       if (Event.xclient.format == 32 &&
 	  Event.xclient.data.l[0] == _XA_WM_DELETE_WINDOW &&
 	  pmp->tear_off_root_menu_window != NULL &&
-	  Event.xclient.window == pmp->tear_off_root_menu_window->Parent)
+	  Event.xclient.window == FW_W_PARENT(pmp->tear_off_root_menu_window))
       {
 	/* handle deletion of tear out menus */
 	pmret->rc = MENU_KILL_TEAR_OFF_MENU;
@@ -1883,7 +1883,7 @@ static void MenuInteraction(
     case UnmapNotify:
       /* should never happen, but does not hurt */
       if (pmp->tear_off_root_menu_window != NULL &&
-	  Event.xunmap.window == pmp->tear_off_root_menu_window->w)
+	  Event.xunmap.window == FW_W(pmp->tear_off_root_menu_window))
       {
 	/* handle deletion of tear out menus */
 	pmret->rc = MENU_KILL_TEAR_OFF_MENU;
@@ -1958,10 +1958,10 @@ static void MenuInteraction(
 	    mrPopup = NULL;
 	  }
 	  select_menu_item(pmp->menu, MR_SELECTED_ITEM(pmp->menu), False,
-			   (*pmp->pTmp_win));
+			   (*pmp->pfw));
 	}
 	/* highlight the new item; sets MR_SELECTED_ITEM(pmp->menu), too */
-	select_menu_item(pmp->menu, mi, True, (*pmp->pTmp_win));
+	select_menu_item(pmp->menu, mi, True, (*pmp->pfw));
       } /* new item of the same menu */
       else if (mi != MR_SELECTED_ITEM(pmp->menu) && mrMi && mrMi == mrPopdown)
       {
@@ -1970,7 +1970,7 @@ static void MenuInteraction(
 	mrPopup = mrPopdown;
 	mrPopdown = NULL;
 	does_submenu_overlap = does_popdown_submenu_overlap;
-	select_menu_item(pmp->menu, mi, True, (*pmp->pTmp_win));
+	select_menu_item(pmp->menu, mi, True, (*pmp->pfw));
       }
       mrMiPopup = mr_popup_for_mi(pmp->menu, mi);
 
@@ -2118,7 +2118,7 @@ static void MenuInteraction(
 	{
 	  /* draw the parent menu if it is not already drawn */
 	  flush_expose(MR_WINDOW(pmp->menu));
-	  paint_menu(pmp->menu, NULL, (*pmp->pTmp_win));
+	  paint_menu(pmp->menu, NULL, (*pmp->pfw));
 	}
 	/* get pos hints for item's action */
 	get_popup_options(pmp, mi, &mops);
@@ -2168,7 +2168,7 @@ static void MenuInteraction(
 	  memset(&efa, 0, sizeof(efa));
 	  efa.cond_rc = NULL;
 	  efa.eventp = &Event;
-	  efa.tmp_win = *(pmp->pTmp_win);
+	  efa.fw = *(pmp->pfw);
 	  efa.action = action;
 	  efa.context = *(pmp->pcontext);
 	  efa.module = -2;
@@ -2182,9 +2182,9 @@ static void MenuInteraction(
 	  /* restore the stuff we saved */
 	  lastTimestamp = t;
 	  *pdo_warp_to_title = f;
-	  if (!check_if_fvwm_window_exists(*(pmp->pTmp_win)))
+	  if (!check_if_fvwm_window_exists(*(pmp->pfw)))
 	  {
-	    *(pmp->pTmp_win) = NULL;
+	    *(pmp->pfw) = NULL;
 	    *(pmp->pcontext) = 0;
 	  }
 	  /* Let's see if the menu exists now. */
@@ -2216,7 +2216,7 @@ static void MenuInteraction(
 	    /* Note that we don't care if popping up the menu works. If it
 	     * doesn't we'll catch it below. */
 	    pop_menu_up(
-	      &mrPopup, pmp, pmp->menu, mi, pmp->pTmp_win, pmp->pcontext, x, y,
+	      &mrPopup, pmp, pmp->menu, mi, pmp->pfw, pmp->pcontext, x, y,
 	      prefer_left_submenus, flags.do_popup_and_warp, &mops,
 	      &does_submenu_overlap, pdo_warp_to_title,
 	      (mrPopdown) ? MR_WINDOW(mrPopdown) : None);
@@ -2287,7 +2287,7 @@ static void MenuInteraction(
 	  mp.menu = mrPopup;
 	  mp.parent_menu = pmp->menu;
 	  mp.parent_item = mi;
-	  mp.pTmp_win = pmp->pTmp_win;
+	  mp.pfw = pmp->pfw;
 	  mp.button_window = pmp->button_window;
 	  mp.tear_off_root_menu_window = pmp->tear_off_root_menu_window;
 	  MR_IS_TEAR_OFF_MENU(mrPopup) = 0;
@@ -2353,7 +2353,7 @@ static void MenuInteraction(
 	  (tmi = find_entry(pmp, NULL, &tmrMi, None, -1, -1))  &&
 	  (tmi == MR_SELECTED_ITEM(pmp->menu) || tmrMi != pmp->menu))
       {
-	animated_move_back(mrPopup, False, (*pmp->pTmp_win));
+	animated_move_back(mrPopup, False, (*pmp->pfw));
       }
       /* now check whether we should animate the current real menu
        * over to the right to unobscure the prior menu; only a very
@@ -2363,7 +2363,7 @@ static void MenuInteraction(
 	  pointer_in_passive_item_area(x_offset, mrMi))
       {
 	/* we have to see if we need menu to be moved */
-	animated_move_back(pmp->menu, True, (*pmp->pTmp_win));
+	animated_move_back(pmp->menu, True, (*pmp->pfw));
 	  if (mrPopdown)
 	  {
 	    if (mrPopdown != mrPopup)
@@ -2405,7 +2405,7 @@ static void MenuInteraction(
 	       (!MR_IS_DOWN(mrPopup)  && y > my + mh)))
 	  {
 	    select_menu_item(
-	      pmp->menu, MR_SELECTED_ITEM(pmp->menu), False, (*pmp->pTmp_win));
+	      pmp->menu, MR_SELECTED_ITEM(pmp->menu), False, (*pmp->pfw));
 	    pop_menu_down_and_repaint_parent(
 	      &mrPopup, &does_submenu_overlap, pmp);
 	    mi_with_popup = NULL;
@@ -2428,7 +2428,7 @@ static void MenuInteraction(
 	else
 	{
 	  select_menu_item(pmp->menu, MR_SELECTED_ITEM(pmp->menu), False,
-			   (*pmp->pTmp_win));
+			   (*pmp->pfw));
 	}
       } /* if (MR_SELECTED_ITEM(mpmp->enu)) */
     } /* else (!mi) */
@@ -2460,7 +2460,7 @@ static void MenuInteraction(
   case MENU_DOUBLE_CLICKED:
     if (MR_SELECTED_ITEM(pmp->menu))
       select_menu_item(pmp->menu, MR_SELECTED_ITEM(pmp->menu), False,
-		       (*pmp->pTmp_win));
+		       (*pmp->pfw));
     if (flags.is_key_press && pmret->rc != MENU_DOUBLE_CLICKED)
     {
       if (!pmp->flags.is_submenu)
@@ -2487,7 +2487,7 @@ static void MenuInteraction(
     if (MR_SELECTED_ITEM(pmp->menu))
     {
       select_menu_item(
-	pmp->menu, MR_SELECTED_ITEM(pmp->menu), False, (*pmp->pTmp_win));
+	pmp->menu, MR_SELECTED_ITEM(pmp->menu), False, (*pmp->pfw));
     }
     break;
 
@@ -2501,7 +2501,7 @@ static void MenuInteraction(
     if (MR_SELECTED_ITEM(pmp->menu))
     {
       select_menu_item(
-	pmp->menu, MR_SELECTED_ITEM(pmp->menu), False, (*pmp->pTmp_win));
+	pmp->menu, MR_SELECTED_ITEM(pmp->menu), False, (*pmp->pfw));
     }
     break;
 
@@ -2710,7 +2710,7 @@ static int pop_menu_up(
 		memset(&efa, 0, sizeof(efa));
 		efa.cond_rc = NULL;
 		efa.eventp = &Event;
-		efa.tmp_win = *pfw;
+		efa.fw = *pfw;
 		efa.action = MR_POPUP_ACTION(mr);
 		efa.context = *pcontext;
 		efa.module = -2;
@@ -3045,8 +3045,8 @@ static int pop_menu_up(
 					int cx;
 					int cy;
 
-					w = pmp->tear_off_root_menu_window->
-						frame;
+					w = FW_W_FRAME(
+						pmp->tear_off_root_menu_window);
 					if (XGetGeometry(
 						    dpy, w, &JunkRoot, &cx, &cy,
 						    &JunkWidth, &JunkHeight,
@@ -3481,7 +3481,7 @@ static void pop_menu_down(MenuRoot **pmr, MenuParameters *pmp)
 		pmp->flags.is_menu_from_frame_or_window_or_titlebar = False;
 	if ((mi = MR_SELECTED_ITEM(*pmr)) != NULL)
 	{
-		select_menu_item(*pmr, mi, False, (*pmp->pTmp_win));
+		select_menu_item(*pmr, mi, False, (*pmp->pfw));
 	}
 
 	if (MR_COPIES(*pmr) > 1)
@@ -3505,7 +3505,7 @@ static void pop_menu_down(MenuRoot **pmr, MenuParameters *pmp)
 		memset(&efa, 0, sizeof(efa));
 		efa.cond_rc = NULL;
 		efa.eventp = &Event;
-		efa.tmp_win = (*pmp->pTmp_win);
+		efa.fw = (*pmp->pfw);
 		efa.action = MR_POPDOWN_ACTION(*pmr);
 		efa.context = *(pmp->pcontext);
 		efa.module = -2;
@@ -3515,9 +3515,9 @@ static void pop_menu_down(MenuRoot **pmr, MenuParameters *pmp)
 		/* restore the stuff we saved */
 		last_saved_pos_hints = pos_hints;
 		lastTimestamp = t;
-		if (!check_if_fvwm_window_exists(*(pmp->pTmp_win)))
+		if (!check_if_fvwm_window_exists(*(pmp->pfw)))
 		{
-			*(pmp->pTmp_win) = NULL;
+			*(pmp->pfw) = NULL;
 			*(pmp->pcontext) = 0;
 		}
 	}
@@ -3565,7 +3565,7 @@ static void pop_menu_down_and_repaint_parent(
 			    &parent_width, &parent_height, &JunkBW, &JunkDepth))
 		{
 			pop_menu_down(pmr, pmp);
-			paint_menu(parent, NULL, (*pmp->pTmp_win));
+			paint_menu(parent, NULL, (*pmp->pfw));
 		}
 		else
 		{
@@ -3597,7 +3597,7 @@ static void pop_menu_down_and_repaint_parent(
 					parent_height - event.xexpose.y;
 			}
 			flush_accumulate_expose(MR_WINDOW(parent), &event);
-			paint_menu(parent, &event, (*pmp->pTmp_win));
+			paint_menu(parent, &event, (*pmp->pfw));
 		}
 	}
 	else
@@ -5733,10 +5733,10 @@ static void menu_tear_off(MenuRoot *mr_to_copy)
 	return;
 }
 
-void menu_enter_tear_off_menu(FvwmWindow *tmp_win)
+void menu_enter_tear_off_menu(FvwmWindow *fw)
 {
 	MenuRoot *mr;
-	FvwmWindow *fw;
+	FvwmWindow *fw2;
 	int context;
 	char *ret_action = NULL;
 	MenuOptions mops;
@@ -5744,7 +5744,7 @@ void menu_enter_tear_off_menu(FvwmWindow *tmp_win)
 	MenuReturn mret;
 
 	if (XFindContext(
-		    dpy, tmp_win->w, MenuContext, (caddr_t *)&mr) == XCNOENT)
+		    dpy, FW_W(fw), MenuContext, (caddr_t *)&mr) == XCNOENT)
 	{
 		return;
 	}
@@ -5752,9 +5752,9 @@ void menu_enter_tear_off_menu(FvwmWindow *tmp_win)
 	memset(&mret, 0, sizeof(MenuReturn));
 	memset(&mp, 0, sizeof(mp));
 	mp.menu = mr;
-	fw = NULL;
-	mp.pTmp_win = &fw;
-	mp.tear_off_root_menu_window = tmp_win;
+	fw2 = NULL;
+	mp.pfw = &fw2;
+	mp.tear_off_root_menu_window = fw;
 	MR_IS_TEAR_OFF_MENU(mr) = 1;
 	context = C_ROOT;
 	mp.pcontext = &context;
@@ -5771,7 +5771,7 @@ void menu_enter_tear_off_menu(FvwmWindow *tmp_win)
 	return;
 }
 
-void menu_close_tear_off_menu(FvwmWindow *tmp_win)
+void menu_close_tear_off_menu(FvwmWindow *fw)
 {
 	MenuRoot *mr;
 	MenuParameters mp;
@@ -5779,13 +5779,13 @@ void menu_close_tear_off_menu(FvwmWindow *tmp_win)
 	int context = C_ROOT;
 
 	if (XFindContext(
-		    dpy, tmp_win->w, MenuContext, (caddr_t *)&mr) == XCNOENT)
+		    dpy, FW_W(fw), MenuContext, (caddr_t *)&mr) == XCNOENT)
 	{
 		return;
 	}
 	memset(&mp, 0, sizeof(mp));
 	mp.menu = mr;
-	mp.pTmp_win = &t;
+	mp.pfw = &t;
 	mp.pcontext = &context;
 	pop_menu_down(&mr, &mp);
 	DestroyMenu(mr, False, False);
@@ -5935,7 +5935,7 @@ void do_menu(MenuParameters *pmp, MenuReturn *pmret)
                  * nicely. It might also move parent_menu out of the way. */
                 if (!pop_menu_up(
                             &(pmp->menu), pmp, pmp->parent_menu, NULL,
-                            pmp->pTmp_win, pmp->pcontext, x, y,
+                            pmp->pfw, pmp->pcontext, x, y,
                             prefer_left_submenus, key_press /*warp*/,
                             pmp->pops, NULL, &do_warp_to_title, None))
                 {
@@ -6103,7 +6103,7 @@ void do_menu(MenuParameters *pmp, MenuReturn *pmret)
                                         memset(&efa, 0, sizeof(efa));
 					efa.cond_rc = NULL;
                                         efa.eventp = &Event;
-                                        efa.tmp_win = pmp->button_window;
+                                        efa.fw = pmp->button_window;
                                         efa.action = *(pmp->ret_paction);
                                         efa.context = *(pmp->pcontext);
                                         efa.module = -1;
@@ -6170,7 +6170,7 @@ void ParentalMenuRePaint(FvwmWindow *fw)
 	int e_h = 0;
 
 	/* find the menu root for the window */
-	for (mr = Menus.all; mr != NULL && fw->w == MR_WINDOW(mr);
+	for (mr = Menus.all; mr != NULL && FW_W(fw) == MR_WINDOW(mr);
 	     mr = MR_NEXT_MENU(mr))
 	{
 		/* nothing to do here */
@@ -6846,7 +6846,7 @@ void add_another_menu_item(char *action)
  * See documentation for a detailed description.
  ****************************************************************************/
 char *get_menu_options(
-	char *action, Window w, FvwmWindow *tmp_win, XEvent *e, MenuRoot *mr,
+	char *action, Window w, FvwmWindow *fw, XEvent *e, MenuRoot *mr,
 	MenuItem *mi, MenuOptions *pops)
 {
 	char *tok = NULL;
@@ -6915,15 +6915,17 @@ char *get_menu_options(
 			{
 				context_window = MR_WINDOW(mr);
 			}
-			else if (tmp_win)
+			else if (fw)
 			{
-				if (IS_ICONIFIED(tmp_win))
+				if (IS_ICONIFIED(fw))
 				{
-					context_window = tmp_win->icon_pixmap_w;
+					context_window =
+						FW_W_ICON_PIXMAP(fw);
 				}
 				else
 				{
-					context_window = tmp_win->frame;
+					context_window =
+						FW_W_FRAME(fw);
 				}
 			}
 			else
@@ -6952,27 +6954,38 @@ char *get_menu_options(
 		}
 		else if (StrEquals(tok,"icon"))
 		{
-			if (tmp_win && IS_ICONIFIED(tmp_win))
-				context_window = tmp_win->icon_pixmap_w;
+			if (fw && IS_ICONIFIED(fw))
+			{
+				context_window = FW_W_ICON_PIXMAP(fw);
+			}
 		}
 		else if (StrEquals(tok,"window"))
 		{
-			if (tmp_win && !IS_ICONIFIED(tmp_win))
-				context_window = tmp_win->frame;
+			if (fw && !IS_ICONIFIED(fw))
+			{
+				context_window = FW_W_FRAME(fw);
+			}
 		}
 		else if (StrEquals(tok,"interior"))
 		{
-			if (tmp_win && !IS_ICONIFIED(tmp_win))
-				context_window = tmp_win->w;
+			if (fw && !IS_ICONIFIED(fw))
+			{
+				context_window = FW_W(fw);
+			}
 		}
 		else if (StrEquals(tok,"title"))
 		{
-			if (tmp_win)
+			if (fw)
 			{
-				if (IS_ICONIFIED(tmp_win))
-					context_window = tmp_win->icon_title_w;
+				if (IS_ICONIFIED(fw))
+				{
+					context_window =
+						FW_W_ICON_TITLE(fw);
+				}
 				else
-					context_window = tmp_win->title_w;
+				{
+					context_window = FW_W_TITLE(fw);
+				}
 			}
 		}
 		else if (strncasecmp(tok,"button",6) == 0)
@@ -6983,10 +6996,10 @@ char *get_menu_options(
 			{
 				fHasContext = False;
 			}
-			else if (tmp_win && !IS_ICONIFIED(tmp_win))
+			else if (fw && !IS_ICONIFIED(fw))
 			{
 				button = BUTTON_INDEX(button);
-				context_window = tmp_win->button_w[button];
+				context_window = FW_W_BUTTON(fw, button);
 			}
 		}
 		else if (StrEquals(tok,"root"))

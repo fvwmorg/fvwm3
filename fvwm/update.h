@@ -55,7 +55,7 @@ typedef struct
 } update_win;
 
 void destroy_scheduled_windows(void);
-void apply_decor_change(FvwmWindow *tmp_win);
+void apply_decor_change(FvwmWindow *fw);
 void flush_window_updates(void);
 
 #endif /* _UPDATE_ */
