@@ -616,8 +616,29 @@ which should be executed if the user selects that menu item.  An empty
 menu-label ("") and the Nop function can be used to insert a separator
 into the menu.
 
-Titles can be used within the menu. If you add the option "top" behind
-the keyword "Title", the title will be added to the top of the menu.
+The keywords \fIDynamicPopupAction\fP and \fIDynamicPopdownAction\fP
+have a special meaning when used as the name of a menu item. The action
+following the keyword is executed whenever the menu is popped up or
+down. This way you can implement dynamic menus. It is even possible for
+the menu to destroy itself with \fIDestroyMenu\fP and the rebuild from
+scratch. When the menu has been destroyed (unless you used the
+"recreate" option when destroying the menu), do not forget to add the
+dynamic action again. Example:
+
+.EX
+AddToMenu dynamicmenu "Dynamic menu" title
++ dynamicpopupaction Function makedynamicmenu
++ dynamicpopidownaction Beep
+
+AddToFunc makedynamicmenu
++ i destroymenu dynamicmenu
++ i addtomenu dynamicmenu "Dynamic menu" title
++ i addtomenu dynamicmenu dynamicpopupaction Function makedynamicmenu
++ I PipeRead 'for i in `/bin/ls -F $HOME/dynamic`; do echo -e AddToMenu dynamicmenu "$i" Exec xterm -e vi "$i"; done'
+.EE
+
+Titles can be used within the menu. If you add the option \fItop\fP behind
+the keyword \fITitle\fP, the title will be added to the top of the menu.
 If there was a title already, it is overwritten.
 
 .EX
@@ -1248,7 +1269,7 @@ DestroyDecor CustomDecor1
 .EE
 
 
-.IP "DestroyFunc"
+.IP "DestroyFunc \fIfunction\fP"
 Deletes a function, so that subsequent references to it are no longer
 valid.  You can use this to change the contents of a function during an
 fvwm2 session.  The function can be rebuilt using AddToFunc.
@@ -1257,10 +1278,12 @@ DestroyFunc PrintFunction
 .EE
 
 
-.IP "DestroyMenu"
+.IP "DestroyMenu [ \fIrecreate\fP ] \fImenu\fP"
 Deletes a menu, so that subsequent references to it are no longer
 valid.  You can use this to change the contents of a menu during an
-fvwm2 session.  The menu can be rebuilt using AddToMenu.
+fvwm2 session.  The menu can be rebuilt using AddToMenu. The optional
+parameter \fIrecreate\fP tells fvwm not to throw away the menu completely
+but to throw away all the menu items (including the title).
 .EX
 DestroyMenu Utilities
 .EE
@@ -1272,7 +1295,7 @@ this style to the default style, you cannot destroy the default menu.
 DestroyMenuStyle pixamp1
 .EE
 
-.IP "DestroyModuleConfig"
+.IP "DestroyModuleConfig \fImodule\fP"
 Deletes module configuration entries, so that new configuration lines
 may be entered instead.  You can use this to change the the way a
 module runs during an fvwm2 session without restarting.  Wildcards can

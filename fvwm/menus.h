@@ -232,6 +232,11 @@ typedef struct MenuRoot
 	unsigned is_down : 1;
       } f;
     } flags;
+    struct
+    {
+      char *popup_action;
+      char *popdown_action;
+    } dynamic;
     int xanimation;      /* x distance window was moved by animation     */
 } MenuRoot;
 /* don't forget to initialise new members in NewMenuRoot()! */
@@ -324,7 +329,7 @@ MenuStatus do_menu (MenuRoot *menu,MenuRoot *menuPrior,
 MenuRoot *FindPopup(char *popup_name);
 char *GetMenuOptions(char *action, Window w, FvwmWindow *tmp_win,
 		     MenuItem *mi, MenuOptions *pops);
-void DestroyMenu(MenuRoot *mr);
+void DestroyMenu(MenuRoot *mr, Bool recreate);
 void MakeMenus(void);
 void add_item_to_menu(F_CMD_ARGS);
 void add_another_menu_item(char *action);

@@ -1,3 +1,16 @@
+1999-05-06  Dominik Vogt  <dominik_vogt@gmx.de>
+
+	* utils/BuildXLockMenu: applied documentation patch
+
+	* fvwm/windowlist.c (do_windowList):
+
+	* fvwm/menus.c (NewMenuRoot): use memset to initialise menu
+
+	* fvwm/add_window.c (GetWindowSizeHints): accept a min width/height
+	without complaining
+	(GetWindowSizeHints): some more information in case of illegal
+	aspect ratio
+
 1999-05-05  Dominik Vogt  <dominik_vogt@gmx.de>
 
 	* fvwm/events.c (HandleLeaveNotify):
@@ -51,7 +64,7 @@
 	* fvwm/events.c (HandleEnterNotify): improve the icon title
 	raising fix with a better understanding of what goes on:
 	We get an EnterNotify with mode == NotifyUnGrab when fvwm releases
-	the grab held during iconification. Now we only react to 
+	the grab held during iconification. Now we only react to
 	EnterNotify events with mode == NotifyNormal.
 
 	* fvwm/add_window.c (GetWindowSizeHints): issue a warning

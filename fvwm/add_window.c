@@ -971,15 +971,17 @@ void GetWindowSizeHints(FvwmWindow *tmp)
 
   if(tmp->hints.flags & PMinSize)
     {
-      if (tmp->hints.min_width <= 0)
+      if (tmp->hints.min_width < 0)
         {
           tmp->hints.min_width = 1;
-	  broken_hints = True;
+	  if (tmp->hints.min_width != 0)
+	    broken_hints = True;
         }
-      if (tmp->hints.min_height <= 0)
+      if (tmp->hints.min_height < 0)
         {
           tmp->hints.min_height = 1;
-	  broken_hints = True;
+	  if (tmp->hints.min_height != 0)
+	    broken_hints = True;
         }
     }
   else
@@ -1119,6 +1121,10 @@ void GetWindowSizeHints(FvwmWindow *tmp)
     {
       tmp->hints.flags &= ~PAspect;
       broken_hints = True;
+      fvwm_msg (WARN, "GetWindowSizeHints",
+               "%s window %#lx has broken aspect ratio: %d/%d - %d/%d\n",
+                tmp->name, tmp->w, minAspectX, minAspectY, maxAspectX,
+		maxAspectY);
     }
   }
 

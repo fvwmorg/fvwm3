@@ -85,7 +85,7 @@ static void PopDownMenu(MenuRoot *mr);
 static void PopDownAndRepaintParent(MenuRoot *mr, Bool *fSubmenuOverlaps);
 static int DoMenusOverlap(MenuRoot *mr, int x, int y, int width, int height,
 			  Bool fTolerant);
-static Bool FPopupMenu(MenuRoot *menu, MenuRoot *menuPrior, int x, int y,
+static Bool FPopupMenu(MenuRoot **pmenu, MenuRoot *menuPrior, int x, int y,
 		       Bool fWarpItem, MenuOptions *pops, Bool *ret_overlap);
 static void GetPreferredPopupPosition(MenuRoot *mr, int *x, int *y);
 static int PopupPositionOffset(MenuRoot *mr);
@@ -100,7 +100,7 @@ static Bool FMenuMapped(MenuRoot *menu);
 Bool menuFromFrameOrWindowOrTitlebar = FALSE;
 static Bool mouse_moved = FALSE;
 
-extern int Context,Button;
+extern int Context, Button;
 extern FvwmWindow *ButtonWindow, *Tmp_win;
 extern XEvent Event;
 extern XContext MenuContext;
@@ -225,9 +225,11 @@ MenuStatus do_menu(MenuRoot *menu, MenuRoot *menuPrior,
 
     /* FPopupMenu may move the x,y to make it fit on screen more nicely */
     /* it might also move menuPrior out of the way */
-    if (!FPopupMenu (menu, menuPrior, x, y, key_press /*warp*/, pops, NULL)) {
+    if (!FPopupMenu(&menu, menuPrior, x, y, key_press /*warp*/, pops, NULL)) {
       fFailedPopup = TRUE;
-      XBell (dpy, 0);
+      XBell(dpy, 0);
+      UngrabEm();
+      return MENU_ERROR;
     }
   }
   else {
@@ -915,8 +917,15 @@ MenuStatus MenuInteraction(MenuRoot *menu,MenuRoot *menuPrior,
 	      } else {
 		GetPreferredPopupPosition(menu,&x,&y);
 	      }
-	      FPopupMenu(mrPopup, menu, x, y, fPopupAndWarp, &mops,
+	      FPopupMenu(&mrPopup, menu, x, y, fPopupAndWarp, &mops,
 			 &fSubmenuOverlaps);
+	      if (mrPopup == NULL)
+	      {
+		/* the menu deleted itself when execution the dynamic popup
+		 * action */
+		retval = MENU_ERROR;
+		goto DO_RETURN;
+	      }
 	    }
 	    if (mrPopup->mrDynamicPrev == menu) {
 	      mi = FindEntry(NULL);
@@ -1159,12 +1168,13 @@ int DoMenusOverlap(MenuRoot *mr, int x, int y, int width, int height,
  *
  ***********************************************************************/
 static
-Bool FPopupMenu(MenuRoot *menu, MenuRoot *menuPrior, int x, int y,
+Bool FPopupMenu(MenuRoot **pmenu, MenuRoot *menuPrior, int x, int y,
 		Bool fWarpItem, MenuOptions *pops, Bool *ret_overlap)
 {
   Bool fWarpTitle = FALSE;
   int x_overlap, x_clipped_overlap;
   MenuItem *mi = NULL;
+  MenuRoot *menu = *pmenu;
 
   DBUG("FPopupMenu","called");
   if ((!menu)||(menu->w == None)||(menu->items == 0)||
@@ -1172,6 +1182,32 @@ Bool FPopupMenu(MenuRoot *menu, MenuRoot *menuPrior, int x, int y,
     fWarpPointerToTitle = FALSE;
     return False;
   }
+
+  /* First of all, execute the popup action (if defined). */
+  if (menu->dynamic.popup_action)
+  {
+    char *menu_name;
+    FvwmWindow *save_Tmp_win;
+
+    /* Save the current window in case the popup action modifies it */
+    save_Tmp_win = Tmp_win;
+    /* Save the menu name */
+    menu_name = strdup(menu->name);
+    /* Execute the action */
+    ExecuteFunction(menu->dynamic.popup_action, Tmp_win, &Event, Context, -1,
+		    DONT_EXPAND_COMMAND);
+    /* Now let's see if the menu still exists. It may have been destroyed and
+     * recreated, so we have to look for a menu with the saved name. */
+    *pmenu = FindPopup(menu_name);
+    menu = *pmenu;
+    free(menu_name);
+    if(menu == NULL)
+      /* Duh, the menu deleted itself. */
+      return False;
+    /* Restore the current window */
+    Tmp_win = save_Tmp_win;
+  }
+
   menu->mrDynamicPrev = menuPrior;
   menu->flags.f.painted = 0;
   menu->flags.f.is_left = 0;
@@ -1536,7 +1572,8 @@ void GetPopupOptions(MenuItem *mi, MenuOptions *pops)
  *	PopDownMenu - unhighlight the current menu selection and
  *                    take down the menus
  *
- *      mr     - menu to pop down
+ *      mr     - menu to pop down; this pointer is invalid after the function
+ *               returns. Don't use it anymore!
  *      parent - the menu that has spawned mr (may be NULL). this is
  *               used to see if mr was spawned by itself on some level.
  *               this is a hack to allow specifying 'Popup foo' within
@@ -1555,7 +1592,7 @@ void PopDownMenu(MenuRoot *mr)
 
   UninstallRootColormap();
   XFlush(dpy);
-  /* FIX: Context and menuFromFrameOrWindowOrTitlebar should really
+  /* FIXME: Context and menuFromFrameOrWindowOrTitlebar should really
      be passed around, and not global */
   if (Context & (C_WINDOW | C_FRAME | C_TITLE | C_SIDEBAR))
     menuFromFrameOrWindowOrTitlebar = TRUE;
@@ -1566,6 +1603,20 @@ void PopDownMenu(MenuRoot *mr)
   }
 
   /* DBUG("PopDownMenu","popped down %s",mr->name); */
+  /* Finally execute the popdown action (if defined). */
+  if (mr->dynamic.popdown_action)
+  {
+    FvwmWindow *save_Tmp_win;
+
+    /* Save the current window in case the popup action modifies it */
+    save_Tmp_win = Tmp_win;
+    /* Execute the action */
+    ExecuteFunction(mr->dynamic.popdown_action, Tmp_win, &Event, Context, -1,
+		    DONT_EXPAND_COMMAND);
+    /* Restore the current window */
+    Tmp_win = save_Tmp_win;
+  }
+
   return;
 }
 
@@ -2261,7 +2312,7 @@ void FreeMenuItem(MenuItem *mi)
 }
 
 
-void DestroyMenu(MenuRoot *mr)
+void DestroyMenu(MenuRoot *mr, Bool recreate)
 {
   MenuItem *mi,*tmp2;
   MenuRoot *tmp, *prev;
@@ -2290,35 +2341,55 @@ void DestroyMenu(MenuRoot *mr)
   else
     prev->next = mr->next;
 
-  free(mr->name);
-  XDestroyWindow(dpy,mr->w);
-  XDeleteContext(dpy, mr->w, MenuContext);
-
-  if (mr->sidePic)
-    DestroyPicture(dpy, mr->sidePic);
-
-#if 0
-  /* Hey, we can't just destroy the menu face here. Another menu may need it */
-  if (mr->ms != Scr.DefaultMenuStyle && mr->ms) /* I'm a bit paranoid about
-                                                  segfaults :) */
-  {
-    XFreeGC(dpy,mr->ms->look.MenuReliefGC);
-    XFreeGC(dpy,mr->ms->look.MenuShadowGC);
-    XFreeGC(dpy,mr->ms->look.MenuActiveGC);
-    XFreeGC(dpy,mr->ms->look.MenuGC);
-    free( mr->ms );
-  }
-#endif
-
   /* need to free the window list ? */
   mi = mr->first;
   while(mi != NULL)
-    {
-      tmp2 = mi->next;
-      FreeMenuItem(mi);
-      mi = tmp2;
-    }
-  free(mr);
+  {
+    tmp2 = mi->next;
+    FreeMenuItem(mi);
+    mi = tmp2;
+  }
+
+  if (recreate)
+  {
+    /* just dump the menu items but keep the menu itself */
+    mr->first = NULL;
+    mr->last = NULL;
+    mr->selected = NULL;
+    mr->continuation = NULL;
+    mr->mrDynamicPrev = NULL;
+    mr->items = 0;
+    if (mr->stored_item.stored)
+      XFreePixmap(dpy, mr->stored_item.stored);
+    memset(&(mr->stored_item), 0 , sizeof(mr->stored_item));
+    MakeMenu(mr);
+  }
+  else
+  {
+    free(mr->name);
+
+    XDestroyWindow(dpy,mr->w);
+    XDeleteContext(dpy, mr->w, MenuContext);
+
+    if (mr->sidePic)
+      DestroyPicture(dpy, mr->sidePic);
+
+#if 0
+    /* Hey, we can't just destroy the menu face here. Another menu may need it
+     */
+    if (mr->ms != Scr.DefaultMenuStyle && mr->ms) /* I'm a bit paranoid about
+						     segfaults :) */
+      {
+	FreeGC(dpy,mr->ms->look.MenuReliefGC);
+	XFreeGC(dpy,mr->ms->look.MenuShadowGC);
+	XFreeGC(dpy,mr->ms->look.MenuActiveGC);
+	XFreeGC(dpy,mr->ms->look.MenuGC);
+	free( mr->ms );
+      }
+#endif
+
+    free(mr);
+  }
 }
 
 /****************************************************************************
@@ -2374,7 +2445,7 @@ void MakeMenu(MenuRoot *mr)
       mr->continuation = cont->continuation;
       /* fake an empty menu so that DestroyMenu does not destroy the items. */
       cont->first = NULL;
-      DestroyMenu(cont);
+      DestroyMenu(cont, False);
     }
 
   mr->width = 0;
@@ -2786,10 +2857,30 @@ void AddToMenu(MenuRoot *menu, char *item, char *action, Bool fPixmapsOk,
    * separator */
   if (item == NULL)
     item = "";
+  if (StrEquals(item, "DynamicPopupAction"))
+  {
+    if (menu->dynamic.popup_action)
+      free(menu->dynamic.popup_action);
+    if (!action || *action == 0)
+      menu->dynamic.popup_action = NULL;
+    else
+      menu->dynamic.popup_action = stripcpy(action);
+    return;
+  }
+  else if (StrEquals(item, "DynamicPopdownAction"))
+  {
+    if (menu->dynamic.popdown_action)
+      free(menu->dynamic.popdown_action);
+    if (!action || *action == 0)
+      menu->dynamic.popdown_action = NULL;
+    else
+      menu->dynamic.popdown_action = stripcpy(action);
+    return;
+  }
+
   if (action == NULL || *action == 0)
     action = "Nop";
   GetNextToken(GetNextToken(action, &token), &option);
-
   tmp = (MenuItem *)safemalloc(sizeof(MenuItem));
   tmp->chHotkey = '\0';
   tmp->next = NULL;
@@ -2933,32 +3024,14 @@ MenuRoot *NewMenuRoot(char *name)
 
   tmp = (MenuRoot *) safemalloc(sizeof(MenuRoot));
 
-  tmp->flags.allflags = 0;
-  tmp->first = NULL;
-  tmp->last = NULL;
-  tmp->selected = NULL;
-#ifdef GRADIENT_BUTTONS
-  tmp->stored_item.width = 0;
-  tmp->stored_item.height = 0;
-  tmp->stored_item.y = 0;
-#endif
-  tmp->next  = Menus.all;
-  tmp->continuation = NULL;
-  tmp->mrDynamicPrev = NULL;
+  memset(tmp, 0, sizeof(MenuRoot));
+  tmp->next = Menus.all;
   tmp->name = stripcpy(name);
   tmp->w = None;
-  tmp->height = 0;
-  tmp->width = 0;
-  tmp->width2 = 0;
-  tmp->width0 = 0;
-  tmp->items = 0;
-  tmp->sidePic = NULL;
   scanForPixmap(tmp->name, &tmp->sidePic, '@');
   scanForColor(tmp->name, &tmp->sideColor, &flag,'^');
   tmp->flags.f.colorize = flag;
-  tmp->xoffset = 0;
   tmp->ms = Menus.DefaultStyle;
-  tmp->xanimation = 0;
 
   Menus.all = tmp;
   return (tmp);
@@ -4101,20 +4174,25 @@ void destroy_menu(F_CMD_ARGS)
 {
   MenuRoot *mr;
   MenuRoot *mrContinuation;
+  Bool recreate = False;
 
   char *token;
 
-  GetNextToken(action,&token);
+  token = PeekToken(action, &action);
   if (!token)
     return;
+  if (StrEquals(token, "recreate"))
+  {
+    recreate = True;
+    token = PeekToken(action, NULL);
+  }
   mr = FindPopup(token);
   if (Scr.last_added_item.type == ADDED_MENU)
     set_last_added_item(ADDED_NONE, NULL);
-  free(token);
   while (mr)
   {
     mrContinuation = mr->continuation; /* save continuation before destroy */
-    DestroyMenu(mr);
+    DestroyMenu(mr, recreate);
     mr = mrContinuation;
   }
   return;

@@ -1,51 +1,54 @@
 #!/usr/bin/perl
 
 # ---------------------------------------------------------------------------
-#
-# NAME
-#
-#   BuildXLockMenu -
-#     builds xlock menu definition for Fine Virtual Window Manager
-#
-# SYNOPSIS
-#
-#   BuildXLockMenu [ --menu-name name ] [ --menu-title title ]
-#                  [ --menu-icon icon ] [ xlock params ]
-#
-# DESCRIPTION
-#
-#   A simple perl script which parses xlock's output to build an fvwm 2.xx
-#   menu definition of all xlock's modes.
-#
-# Argument list
-#
-#   Arguments used by the script (must be first):
-#
-#   --menu-name, --menu-title, --menu-icon - define menu name, title
-#   and mini-icon acordingly given in the following argument. Default is name
-#   "XLockMenu", title "XLock Modes" and no mini-icon.
-#
-#   Additional arguments will be passed to xload.
-#
-# USAGE
-#
-# # add these lines to .fvwm2rc:
-# PipeRead 'BuildXLockMenu --menu-name Screensaver --menu-title \
-#   "Screensaver" --menu-icon mini-bball.xpm -nice 20 -nolock'
-# PipeRead 'BuildXLockMenu --menu-name Screenlock --menu-title \
-#   "Lock Screen" --menu-icon mini-rball.xpm -nice 20'
-# AddToMenu "Utilities" "Screensaver%mini-monitor.xpm%" Popup Screensaver
-# AddToMenu "Utilities" "Screenlock%mini-lock.xpm%"     Popup Screenlock
-#
-# AUTHORS
-#
-#   Charles K. Hines <chuck_hines@vnet.ibm.com>, initial version.
-#   Mikhael Goikhman <migo@homemail.com>, 24 Feb 1999.
-#
-# BUGS
-#
-#   Depends on the output of 'xlock -h'. Will produce an empty menu, if the
-#   structure of the output is changed.
+
+=head1 NAME
+
+BuildXLockMenu - builds xlock menu definition for Fine Virtual Window Manager
+
+=head1 SYNOPSIS
+
+B<BuildXLockMenu> [B<--menu-name> name] [B<--menu-title> title]
+[B<--menu-icon> icon] [xlock params]
+
+=head1 DESCRIPTION
+
+A simple perl script which parses xlock's output to build an fvwm 2.xx
+menu definition of all xlock's modes.
+
+=head2 Argument list
+
+Arguments used by the script (must be first):
+
+B<--menu-name>, B<--menu-title>, B<--menu-icon> - define menu name, title
+and mini-icon accordingly given in the following argument. Default is name
+"XLockMenu", title "XLock Modes" and no mini-icon.
+
+Additional arguments will be passed to xlock.
+
+=head1 USAGE
+
+ # add these lines to .fvwm2rc:
+ PipeRead 'BuildXLockMenu --menu-name Screensaver --menu-title \
+   "Screensaver" --menu-icon mini-bball.xpm -nice 19 -nolock'
+ PipeRead 'BuildXLockMenu --menu-name Screenlock --menu-title \
+   "Lock Screen" --menu-icon mini-rball.xpm -nice 19'
+ AddToMenu "Utilities" "Screensaver%mini-monitor.xpm%" Popup Screensaver
+ AddToMenu "Utilities" "Screenlock%mini-lock.xpm%"     Popup Screenlock
+
+=head1 AUTHORS
+
+ Charles K. Hines <chuck_hines@vnet.ibm.com>, initial version.
+ Mikhael Goikhman <migo@homemail.com>, 24 Feb 1999.
+
+=head1 BUGS
+
+Depends on the output of xlock. Will produce an empty menu if the structure
+of the output is changed.
+
+=cut
+
+# ===========================================================================
 
 $name  = "XLockMenu";
 $title = "XLock Modes";
