@@ -41,6 +41,7 @@
 #include "module_interface.h"
 #include "stack.h"
 #include "move_resize.h"
+#include "virtual.h"
 #include "defaults.h"
 
 static void ApplyIconFont(void);

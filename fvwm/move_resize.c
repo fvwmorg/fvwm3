@@ -41,6 +41,7 @@
 #include "screen.h"
 #include "module_interface.h"
 #include "move_resize.h"
+#include "virtual.h"
 
 /* ----- move globals ----- */
 extern XEvent Event;

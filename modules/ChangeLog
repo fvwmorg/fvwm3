@@ -1,3 +1,16 @@
+1999-06-25  Dominik Vogt  <dominik_vogt@gmx.de>
+
+	* FvwmIdent/FvwmIdent.c (list_end): fixed several bugs:
+	- can't call GetConfigLine because it waits forever if no line arrives
+	- don't free tline, it isn' malloced
+	- call XFlush to make sure the text is visible in an expose
+
+	* FvwmWinList/FvwmWinList.c (MakeMeWindow): don't set buggy resize
+	increment hints (0).
+
+	* FvwmPager/x_pager.c (IconMoveWindow): fixed printing at random
+	location
+
 1999-06-24  Hippo
 
 	* FvwmAnimate/FvwmAnimate.c: Removed the Gcontext sharing stuff

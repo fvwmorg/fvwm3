@@ -30,6 +30,7 @@
 #include <X11/Xatom.h>
 #include "screen.h"
 #include "misc.h"
+#include "virtual.h"
 
 extern int master_pid;
 
@@ -151,7 +152,7 @@ LoadGlobalState(char *filename)
 	      if (last_used_filename) free (last_used_filename);
 	      last_used_filename = strdup (s2);
 	    }
-	  else 
+	  else
 #endif /* SESSION */
 	    if (!strcmp(s1, "[DESKTOP]"))
 	      {
@@ -165,7 +166,7 @@ LoadGlobalState(char *filename)
 		Scr.VyMax = i4;
 		MoveViewport(i1, i2, True);
 	      }
-	    else if (!Restarting) 
+	    else if (!Restarting)
 	      {
 		/* We don't want to restore too much state if
 		   we are restarting, since that would make restarting

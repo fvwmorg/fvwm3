@@ -2110,7 +2110,7 @@ void IconMoveWindow(XEvent *Event,PagerWindow *t)
 
   if(KeepMoving)
     {
-      char *command;
+      char command[48];
 
       XQueryPointer(dpy, Scr.Root, &JunkRoot, &JunkChild,
 		    &x, &y, &JunkX, &JunkY, &JunkMask);

@@ -39,7 +39,7 @@
 #include "screen.h"
 #include "bindings.h"
 #include "stack.h"
-
+#include "virtual.h"
 
 static Bool lastFocusType;
 

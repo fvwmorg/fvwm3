@@ -1,3 +1,21 @@
+1999-06-25  Dominik Vogt  <dominik_vogt@gmx.de>
+
+	* libs/Module.c (InitGetConfigLine): allocate buffer instead of using
+	a fixed size.
+
+	* fvwm/misc.c (Destroy): don't try to free a NULL icon pixmap mask
+
+	* fvwm/stack.c:
+	* fvwm/session.c:
+	* fvwm/placement.c:
+	* fvwm/move_resize.c:
+	* fvwm/icons.c:
+	* fvwm/gnome.c:
+	* fvwm/fvwm.c:
+	* fvwm/focus.c:
+	* fvwm/events.c:
+	* fvwm/builtins.c: include virtual.h
+
 1999-06-24  Hippo
 
 	* fvwm/modconf.c, libs/ModGraph.c: removed Gcontext sharing stuff

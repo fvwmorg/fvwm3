@@ -182,7 +182,8 @@ void Destroy(FvwmWindow *Tmp_win)
   if ((Tmp_win->icon_w)&&(IS_PIXMAP_OURS(Tmp_win)))
     {
       XFreePixmap(dpy, Tmp_win->iconPixmap);
-      XFreePixmap(dpy, Tmp_win->icon_maskPixmap);
+      if (Tmp_win->icon_maskPixmap != None)
+	XFreePixmap(dpy, Tmp_win->icon_maskPixmap);
     }
 
 #ifdef MINI_ICON

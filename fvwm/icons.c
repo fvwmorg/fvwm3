@@ -49,6 +49,8 @@
 #include "Module.h"
 #include "focus.h"
 #include "stack.h"
+#include "virtual.h"
+
 
 #ifdef SHAPE
 #include <X11/extensions/shape.h>

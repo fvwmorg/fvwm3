@@ -80,6 +80,7 @@
 #include "focus.h"
 #include "stack.h"
 #include "move_resize.h"
+#include "virtual.h"
 #ifdef HAVE_STROKE
 #include <errno.h>
 #include "stroke.h"

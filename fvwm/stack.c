@@ -28,6 +28,7 @@
 #include "screen.h"
 #include "module_interface.h"
 #include "stack.h"
+#include "virtual.h"
 
 
 /*

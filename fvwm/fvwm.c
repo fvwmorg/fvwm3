@@ -49,6 +49,7 @@
 #include "Module.h"
 #include "read.h"
 #include "session.h"
+#include "virtual.h"
 
 
 #include <X11/Xproto.h>
@@ -423,9 +424,9 @@ int main(int argc, char **argv)
 
   {
     Cursor cursor = XCreateFontCursor(dpy, XC_watch);
-    XGrabPointer(dpy, Scr.Root, 0, 0, GrabModeSync, GrabModeSync, 
-               None, cursor, CurrentTime); 
-  } 
+    XGrabPointer(dpy, Scr.Root, 0, 0, GrabModeSync, GrabModeSync,
+               None, cursor, CurrentTime);
+  }
 
   /* create the Scr.bg structure (required for the following visual stuff) */
   Scr.bg = (Background *)safemalloc(sizeof(Background));
@@ -676,7 +677,7 @@ int main(int argc, char **argv)
 #ifdef GNOME
   GNOME_Init();
 #endif
-  
+
   DBUG("main","Entering HandleEvents loop...");
 
   HandleEvents();
@@ -1770,7 +1771,7 @@ void Done(int restart, char *command)
     if (!command)
       RestartInSession(restart_restore_filename); /* won't return under SM */
 
-    /* 
+    /*
       RBW - 06/08/1999 - without this, windows will wander to other pages on
       a Restart/Recapture because Restart gets the window position information
       out of sync. There may be a better way to do this (i.e., adjust the

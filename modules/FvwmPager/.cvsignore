@@ -2,3 +2,4 @@ Makefile
 Makefile.in
 FvwmPager
 .deps
+bb.out

@@ -858,9 +858,7 @@ void MakeMeWindow(void)
   hints.width=win_width;
   hints.height=win_height;
   hints.win_gravity=NorthWestGravity;
-  hints.flags=PSize|PWinGravity|PResizeInc;
-  hints.width_inc=0;
-  hints.height_inc=0;
+  hints.flags=PSize|PWinGravity;
 
   if (geometry!= NULL)
   {
@@ -894,7 +892,8 @@ void MakeMeWindow(void)
 
   if (Transient)
   {
-    XQueryPointer(dpy,Root,&dummyroot,&dummychild,&hints.x,&hints.y,&x,&y,&dummy1);
+    XQueryPointer(dpy,Root,&dummyroot,&dummychild,&hints.x,&hints.y,&x,&y,
+		  &dummy1);
     hints.win_gravity=NorthWestGravity;
     hints.flags |= USPosition;
   }
@@ -931,7 +930,8 @@ void MakeMeWindow(void)
       GrabModeAsync,None,None);
     XGrabButton(dpy,3,AnyModifier,win,True,GRAB_EVENTS,GrabModeAsync,
       GrabModeAsync,None,None);
-    SetMwmHints(MWM_DECOR_ALL|MWM_DECOR_RESIZEH|MWM_DECOR_MAXIMIZE|MWM_DECOR_MINIMIZE,
+    SetMwmHints(
+      MWM_DECOR_ALL|MWM_DECOR_RESIZEH|MWM_DECOR_MAXIMIZE|MWM_DECOR_MINIMIZE,
       MWM_FUNC_ALL|MWM_FUNC_RESIZE|MWM_FUNC_MAXIMIZE|MWM_FUNC_MINIMIZE,
       MWM_INPUT_MODELESS);
   }
@@ -1071,7 +1071,8 @@ PropMwmHints prop;
       prop.decorations= value;
       prop.functions = funcs;
       prop.inputMode = input;
-      prop.flags = MWM_HINTS_DECORATIONS| MWM_HINTS_FUNCTIONS | MWM_HINTS_INPUT_MODE;
+      prop.flags = MWM_HINTS_DECORATIONS | MWM_HINTS_FUNCTIONS |
+	MWM_HINTS_INPUT_MODE;
 
       /* HOP - LA! */
       XChangeProperty (dpy,win,

@@ -430,6 +430,8 @@ void list_end(void)
   /* Window is created. Display it until the user clicks or deletes it. */
   /* also grok any dynamic config changes */
   while(1) {
+    FvwmPacket* packet;
+    int body_count;
     int x_fd = XConnectionNumber(dpy);
     fd_set fdset;
 
@@ -444,6 +446,7 @@ void list_end(void)
         case Expose:
 	  if(Event.xexpose.count == 0)
 	    RedrawWindow();
+	  XFlush(dpy);
 	  break;
         case KeyRelease:
         case ButtonRelease:
@@ -463,20 +466,30 @@ void list_end(void)
     if (FD_ISSET(fd[1], &fdset)) {
       char *tline;
 
-      GetConfigLine(fd, &tline);
-      if (tline != NULL && (strlen(tline) > 1))
-	if(strncasecmp(tline, DEFGRAPHSTR, DEFGRAPHLEN)==0)
-	  ParseGraphics(dpy, tline, G);
-/* this is where dynamic colorset changing happens
-	    SetWindowBackground(dpy, main_win, mysizehints.width,
-				mysizehints.height, G->bg, G->depth, G->foreGC);
-*/
+      packet = ReadFvwmPacket( fd[1] );
+      if ( packet && packet->type == M_CONFIG_INFO ) {
+	tline = (char*)&(packet->body[3]);
 
-      /* free up line malloc'd by GetConfigLine */
-      if (tline) free(tline);
+	/* For whatever reason CONFIG_INFO packets start with three
+	   (unsigned long) zeros.  Skip the zeros and any whitespace that
+	   follows */
+	body_count = FvwmPacketBodySize(*packet) * sizeof(unsigned long);
+
+	while ( body_count > 0 && isspace(*tline) ) {
+	  tline++;
+	  --body_count;
+	}
+
+	if (tline != NULL && (strlen(tline) > 1))
+	  if(strncasecmp(tline, DEFGRAPHSTR, DEFGRAPHLEN)==0)
+	    ParseGraphics(dpy, tline, G);
+	/* this is where dynamic colorset changing happens
+	   SetWindowBackground(dpy, main_win, mysizehints.width,
+	   mysizehints.height, G->bg, G->depth, G->foreGC);
+	*/
+      }
     }
   }
-
 }
 
 

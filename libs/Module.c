@@ -42,10 +42,10 @@ inline static int positive_read( int fd, void* buf, int count )
 /**
  * Reads a single packet of info from FVWM.
  * The packet is stored in static memory that is reused during
- * the next call. 
+ * the next call.
  **/
 
-FvwmPacket* ReadFvwmPacket( int fd ) 
+FvwmPacket* ReadFvwmPacket( int fd )
 {
     static unsigned long buffer[FvwmPacketMaxSize];
     FvwmPacket* packet = (FvwmPacket*)buffer;
@@ -65,7 +65,7 @@ FvwmPacket* ReadFvwmPacket( int fd )
 	return NULL;
 
     /* Finally, read the body, and we're done */
-    if ( positive_read( fd, &buffer[4], 
+    if ( positive_read( fd, &buffer[4],
 			FvwmPacketBodySize(*packet)*sizeof(unsigned long)) < 0)
 	return NULL;
 
@@ -127,12 +127,12 @@ void SetMessageMask(int *fd, unsigned long mask)
  */
 static int first_pass = 1;
 
-void InitGetConfigLine(int *fd,char *match) 
+void InitGetConfigLine(int *fd,char *match)
 {
-    char buffer[200];
-    first_pass = 0;                       /* make sure get wont do this */
-    sprintf(buffer,"Send_ConfigInfo %s",match);
-    SendText(fd,buffer,0);
+  char *buffer = (char *)safemalloc(strlen(match) + 32);
+  first_pass = 0;                       /* make sure get wont do this */
+  sprintf(buffer,"Send_ConfigInfo %s",match);
+  SendText(fd,buffer,0);
 }
 
 
@@ -164,7 +164,7 @@ void GetConfigLine(int *fd, char **tline)
 	}
     } while ( packet->type != M_CONFIG_INFO );
 
-    /* For whatever reason CONFIG_INFO packets start with three 
+    /* For whatever reason CONFIG_INFO packets start with three
        (unsigned long) zeros.  Skip the zeros and any whitespace that
        follows */
     *tline = (char*)&(packet->body[3]);
@@ -177,7 +177,7 @@ void GetConfigLine(int *fd, char **tline)
 }
 
 
-ModuleArgs* ParseModuleArgs( int argc, char* argv[], int use_arg6_as_alias ) 
+ModuleArgs* ParseModuleArgs( int argc, char* argv[], int use_arg6_as_alias )
 {
     static ModuleArgs ma;
 
@@ -188,7 +188,7 @@ ModuleArgs* ParseModuleArgs( int argc, char* argv[], int use_arg6_as_alias )
        [3] pathname of last config file read (ignored -- use Send_ConfigInfo)
        [4] application window context
        [5] window decoration context
-       
+
        Optionally (left column used if use_arg6_as_alias is true):
        [6] alias       or  user argument 0
        [7] user arg 0  or  user arg 1

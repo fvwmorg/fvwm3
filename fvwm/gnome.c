@@ -29,6 +29,7 @@
 #include "screen.h"
 #include "misc.h"
 #include "stack.h"
+#include "virtual.h"
 
 
 
@@ -470,7 +471,7 @@ GNOME_GetHints(FvwmWindow *fwin)
 /* this duplicates most of the above... and it assumes
    that style is inizialized to zero.
  */
-void 
+void
 GNOME_GetStyle (FvwmWindow *fwin, window_style *style)
 {
   Atom atom_get;
@@ -489,7 +490,7 @@ GNOME_GetStyle (FvwmWindow *fwin, window_style *style)
     }
 
   /* Icons - not implemented */
-  
+
   /* Layer */
   atom_get = XInternAtom(dpy, XA_WIN_LAYER, False);
   retval = AtomGet(fwin->w, atom_get, XA_CARDINAL, &size);
@@ -504,12 +505,12 @@ GNOME_GetStyle (FvwmWindow *fwin, window_style *style)
   retval = AtomGet(fwin->w, atom_get, XA_CARDINAL, &size);
   if (retval)
     {
-      if (*(int*)retval & WIN_STATE_STICKY) 
+      if (*(int*)retval & WIN_STATE_STICKY)
 	{
           style->flags.common.is_sticky = 1;
           style->flag_mask.common.is_sticky = 1;
 	}
-      
+
       if (*(int*)retval & WIN_STATE_SHADED)
 	{
 	  /* unimplemented, since we don't have a
@@ -521,7 +522,7 @@ GNOME_GetStyle (FvwmWindow *fwin, window_style *style)
       if (*(int*)retval & WIN_STATE_FIXED_POSITION)
 	{
           style->flags.common.is_fixed = 1;
-          style->flag_mask.common.is_fixed = 1;	  
+          style->flag_mask.common.is_fixed = 1;
 	}
 
       free(retval);

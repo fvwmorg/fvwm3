@@ -36,6 +36,7 @@
 #include "parse.h"
 #include "screen.h"
 #include "move_resize.h"
+#include "virtual.h"
 
 #ifndef MIN
 #define MIN(A,B) ((A)<(B)? (A):(B))
