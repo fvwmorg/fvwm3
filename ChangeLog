@@ -1,5 +1,8 @@
 1999-10-07  Dominik Vogt  <dominik.vogt@gmx.de>
 
+	* fvwm/move_resize.c (moveLoop): fixed snapping widows when Move was
+	called but the window was not moved
+
 	* fvwm/icons.c (DeIconify): fixed deiconifying on wrong page
 
 	* fvwm/move_resize.c (move_window_doit): fixed reversed cursors for

@@ -378,6 +378,7 @@ void ProcessMessage(unsigned long type,unsigned long *body)
 
 #ifdef MINI_ICONS
   case M_MINI_ICON:
+fprintf(stderr,"*** got miniicon 0x%x\n", (int)body[6]);
     if ((i=FindItem(&windows,body[0]))==-1) break;
 
     if (UpdateButton(&buttons,i,NULL,-1)!=-1)
@@ -865,6 +866,9 @@ void AdjustWindow(Bool force)
 {
   int new_width=0,new_height=0,tw,i,total;
   char *temp;
+#ifdef MINI_ICONS
+  int base_miw = 0;
+#endif
 
   total = ItemCountD(&windows );
   if (!total)
@@ -876,6 +880,18 @@ void AdjustWindow(Bool force)
     }
     return;
   }
+
+#ifdef MINI_ICONS
+  for(i=0; i<total; i++)
+  {
+    if(ButtonPicture(&buttons,i)->picture != None)
+    {
+fprintf(stderr,"button %s has picture 0x%x\n", ButtonName(&buttons,i),(int)ButtonPicture(&buttons,i));
+	base_miw = 14; /* for title icon */ /* Magic Number */
+        break;
+    }
+  }
+#endif
   for(i=0;i<total;i++)
   {
     temp=ItemName(&windows,i);
@@ -883,11 +899,9 @@ void AdjustWindow(Bool force)
     {
 	tw=10+XTextWidth(ButtonFont,temp,strlen(temp));
 	tw+=XTextWidth(ButtonFont,"()",2);
-
 #ifdef MINI_ICONS
-	tw+=14; /* for title icon */ /* Magic Number ? */
+	tw+=base_miw;
 #endif
-
 	new_width=max(new_width,tw);
     }
   }

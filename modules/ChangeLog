@@ -1,5 +1,9 @@
 1999-10-07  Dominik Vogt  <dominik.vogt@gmx.de>
 
+	* FvwmWinList/ButtonArray.c (ButtonPicture):
+	* FvwmWinList/FvwmWinList.c (AdjustWindow):
+	Don't reserve space for windows if no window has a mini icon
+
 	* FvwmPager/FvwmPager.c (list_deiconify): fixed deiconifying on wrong
 	page
 

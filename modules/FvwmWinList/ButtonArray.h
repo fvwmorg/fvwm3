@@ -69,4 +69,8 @@ extern void DoButton(Button *ptr, int x, int y, int w, int h);
 extern void DrawButtonArray(ButtonArray *array, Bool all);
 extern void SwitchButton(ButtonArray *array,int butnum);
 extern int WhichButton(ButtonArray *array,int x, int y);
+extern char *ButtonName(ButtonArray *array, int butnum);
 extern void PrintButtons(ButtonArray *array);
+#ifdef MINI_ICONS
+extern Picture *ButtonPicture(ButtonArray *array, int butnum);
+#endif

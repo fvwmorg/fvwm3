@@ -774,6 +774,8 @@ void moveLoop(FvwmWindow *tmp_win, int XOffset, int YOffset, int Width,
   int count;
   int vx = Scr.Vx;
   int vy = Scr.Vy;
+  int xl_orig;
+  int yt_orig;
 
   /* make a copy of the tmp_win structure for sending to the pager */
   memcpy(&tmp_win_copy, tmp_win, sizeof(FvwmWindow));
@@ -785,6 +787,8 @@ void moveLoop(FvwmWindow *tmp_win, int XOffset, int YOffset, int Width,
   button_mask &= Button1Mask|Button2Mask|Button3Mask|Button4Mask|Button5Mask;
   xl += XOffset;
   yt += YOffset;
+  xl_orig = xl;
+  yt_orig = yt;
 
   if(((!do_move_opaque)&&(!Scr.gs.EmulateMWM))||(AddWindow))
     MoveOutline(xl, yt, Width - 1, Height - 1);
@@ -930,7 +934,11 @@ void moveLoop(FvwmWindow *tmp_win, int XOffset, int YOffset, int Width,
 	xl = xl2;
 	yt = yt2;
       }
-      DoSnapAttract(tmp_win, Width, Height, &xl, &yt);
+      if (xl != xl_orig || yt != yt_orig || vx != Scr.Vx || vy != Scr.Vy)
+      {
+          /* only snap if the window actually moved! */
+        DoSnapAttract(tmp_win, Width, Height, &xl, &yt);
+      }
 
       /* Resist moving windows over the edge of the screen! */
       if(((xl + Width) >= Scr.MyDisplayWidth)&&

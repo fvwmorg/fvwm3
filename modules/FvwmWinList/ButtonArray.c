@@ -96,13 +96,15 @@ Button *ButtonNew(char *title, Picture *p, int up)
   if (p != NULL)
   {
     new->p.picture = p->picture;
+fprintf(stderr,"new button has picture\n");
     new->p.mask = p->mask;
     new->p.width = p->width;
     new->p.height = p->height;
     new->p.depth = p->depth;
   } else {
-    new->p.picture = 0;
-    new->p.width = 0;
+fprintf(stderr,"new button has no picture\n");
+    new->p.picture = None;
+    new->p.width = None;
   }
 
   new->up = up;
@@ -590,6 +592,19 @@ void PrintButtons(ButtonArray *array)
   for(temp=array->head;temp!=NULL;temp=temp->next)
     ConsoleMessage("   %s is %s\n",temp->title,(temp->up) ? "Up":"Down");
 }
+
+#ifdef MINI_ICONS
+/******************************************************************************
+  ButtonPicture - Return the mini icon associated with the button
+******************************************************************************/
+Picture *ButtonPicture(ButtonArray *array, int butnum)
+{
+  Button *temp;
+
+  temp=find_n(array,butnum);
+  return &(temp->p);
+}
+#endif
 
 #if 0
 /******************************************************************************
