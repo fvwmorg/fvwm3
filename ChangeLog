@@ -1,5 +1,8 @@
 1999-11-08  Dominik Vogt  <dominik.vogt@gmx.de>
 
+	* fvwm/move_resize.c (resize_window):
+	don't allow shaded windows to be resized opaque
+
 	* fvwm/windowlist.c (do_windowList):
 	enhanced window list spacing
 

@@ -1506,7 +1506,7 @@ void resize_window(F_CMD_ARGS)
   if(IS_ICONIFIED(tmp_win))
     return;
 
-  do_resize_opaque = DO_RESIZE_OPAQUE(tmp_win);
+  do_resize_opaque = (IS_SHADED(tmp_win)) ? False : DO_RESIZE_OPAQUE(tmp_win);
   /* no suffix = % of screen, 'p' = pixels, 'c' = increment units */
   n = GetSuffixedIntegerArguments(action, NULL, values, 2, "pc", suffix);
   if(n == 2)
