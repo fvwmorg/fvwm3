@@ -1,3 +1,11 @@
+2001-03-23  olicha  <olivier.chapuis@free.fr>
+
+	* fvwm-menu-desktop.in:
+	* fvwm-menu-desktop.1:
+	New option --merge-user-menu for KDE version 2
+	New options --check-[mini-]icons to fix problems if no icons
+	are found for the styles
+
 2001-03-23  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* fvwm24_convert.in (line):

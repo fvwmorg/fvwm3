@@ -30,11 +30,13 @@ fvwm-menu-desktop
 [ \fB\-\-fvwmgtk\-alias\fR NAME\fR ]
 [ \fB\-\-title\fR \fINAME\fR ]
 [ \fB\-\-name\fR \fINAME\fR ]
+[ \fB\-\-merge-user-menu\fR ]
 [ \fB\-\-enable\-mini\-icons\fR ]
 [ \fB\-\-enable\-tran\-mini\-icons\fR ]
 [ \fB\-\-mini\-icons\-path\fR \fIDIR\fR ]
 [ \fB\-\-png\-icons\-path\fR \fIDIR\fR ]
 [ \fB\-\-tran\-mini\-icons\-path\fR \fIDIR\fR ]
+[ \fB\-\-check-mini\-icons\fR \fIPATH\fR ]
 [ \fB\-\-icon\-toptitle\fR
 \fImicon\fR:\fIlaw\fR:\fIplace\fR:\fIside_pic\fR:\fIcolor\fR ]
 [ \fB\-\-icon\-title\fR
@@ -47,6 +49,7 @@ fvwm-menu-desktop
 [ \fB\-\-icon-style\fR \fImicon\fR:\fIicon\fR:\fIlaw\fR ]
 [ \fB\-\-icons\-path\fR \fIDIR\fR ]
 [ \fB\-\-tran\-icons\-path\fR \fIDIR\fR ]
+[ \fB\-\-check-icons\fR \fIPATH\fR ]
 [ \fB\-\-submenu\-name\-prefix\fR \fIname\fR ]
 [ \fB\-\-dir\fR \fIDIR\fR ]
 [ \fB\-\-destroy\-type\fR \fIFLAG\fR ]
@@ -79,6 +82,7 @@ AddToMenu Utilities "KDE System Menu" Popup kde\-sys
 PipeRead 'fvwm-menu-desktop --desktop kde-sys'
 .EE
 For KDE2 you may have to add --utf8 or --uniconv "charset" (see below).
+Moreover, with KDE2 you can add --merge-user-menu.
 If you use KDE version 1 (see below for KDE2) and you want mini\-icons 
 in the menu and if the KDE mini\-icons are in "mini/"
 relative to your FVWM ImagePath add the option \-\-enable-mini\-icons.
@@ -218,6 +222,12 @@ default is given by KDE itself (or are similar to GNOME title).
 .IP "\fB\-\-name\fR \fINAME\fR"
 Define the menu name of the top menu. Default is the \-\-desktop
 name if you use one above.
+.IP "\fB\-\-merge-user-menu\fR" this option will try to merge the user menu
+with the system menu (gnome-sys or kde-sys is assumed as --desktop option)
+and will take in account the change to the system menu that it is now
+possible to do in the "user directory" (at least with KDE version 2
+menu editor).
+
 
 .IP "Icons Options"
 
@@ -251,7 +261,11 @@ option. Default is mini/. It is
 preferable to give the complete path so that fvwm-menu-desktop can check
 if the translated mini\-icons exists (and the "re" law will apply in
 a good way).
-
+.IP "\fB\-\-check-mini\-icons\fR \fIPATH\fR"
+Where PATH is a list of directories with ":" as separator. Then,
+fvwm-menu-desktop checks if the mini icons can be found in one of
+these directories (this does not apply to the translated mini icons).
+ 
 .IP Comments
 
 To control  mini\-icons in menus you can use the 4 following options
@@ -363,6 +377,11 @@ the path given by the \-\-mini\-icons\-path option. To set the path to ""
 you need to use "inpath".
 .IP "\fB\-\-tran\-icons\-path\fR \fIDIR\fR"
 Similar to the above option.
+.IP "\fB\-\-check-icons\fR \fIPATH\fR"
+Where PATH is a list of directories with ":" as separator. Then,
+fvwm-menu-desktop checks if the icons can be found in one of
+these directories (this does not apply to the translated icons, use a
+complete path in --tran-icons-path to do so).
 
 .IP "Other Options"
 
