@@ -11,11 +11,11 @@ mparams = CFLAGS="-O2"
 datum = `date "+%a, %d %b %Y %T %z"`
 fullname = FVWM Workers
 email = fvwm-workers@fvwm.org
-arch ?= $(shell dpkg-architecture -qDEB_BUILD_ARCH)
+arch = `dpkg-architecture -qDEB_BUILD_ARCH`
 distdir = $(PACKAGE)-$(version)
 tarball = $(distdir).tar.gz
 instdir = inst-$(version)
-fullinstdir ?= $(shell cd $(top_srcdir) && pwd)/$(instdir)
+fullinstdir = `cd $(top_srcdir) && pwd`/$(instdir)
 
 this:
 	@if [ ! -d debian ]; then echo "Wrong working dir `pwd`"; exit -1; fi
@@ -45,7 +45,7 @@ inplace:
 	echo "" >> debian/changelog
 	echo "  * new upstream release" >> debian/changelog
 	echo "" >> debian/changelog
-	(LANG=en_UK && LC_ALL=en_UK && echo " -- $(fullname) <$(email)>  $(datum)" >> debian/changelog)
+	LANG=en_UK LC_ALL=en_UK echo " -- $(fullname) <$(email)>  $(datum)" >> debian/changelog
 	./configure --prefix=/usr --mandir=/usr/share/man --libexecdir=/usr/lib --sysconfdir=/etc/X11/fvwm $(cparams)
 	fakeroot dh_testdir -P$(fullinstdir)
 	fakeroot dh_testroot -P$(fullinstdir)
