@@ -1,3 +1,13 @@
+2001-03-02  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* fvwm/events.c (HandleMapRequestKeepRaised):
+	icon position hint was sometimes used although it was not set
+	(fake_map_unmap_notify):
+	(HandleMapRequestKeepRaised):
+	simply fake a MapNotify if a MapRequest for an already mapped window
+	arrives
+	fake an UnmapNotify when a window starts iconic
+
 2001-03-01  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* fvwm/style.c (ProcessNewStyle):

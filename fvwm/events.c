@@ -931,6 +931,48 @@ void HandleDestroyNotify(void)
 /***********************************************************************
  *
  *  Procedure:
+ *	SendConfigureNotify - inform a client window of its geometry.
+ *
+ *  The input (frame) geometry will be translated to client geometry
+ *  before sending.
+ *
+ ************************************************************************/
+static void fake_map_unmap_notify(FvwmWindow *tmp_win, int event_type)
+{
+  XEvent client_event;
+  XWindowAttributes winattrs = {0};
+
+  if (!XGetWindowAttributes(dpy, tmp_win->w, &winattrs))
+  {
+    return;
+  }
+  XSelectInput(
+    dpy, tmp_win->w, winattrs.your_event_mask & ~StructureNotifyMask);
+  client_event.type = event_type;
+  client_event.xmap.display = dpy;
+  client_event.xmap.event = tmp_win->w;
+  client_event.xmap.window = tmp_win->w;
+  switch (event_type)
+  {
+    case MapNotify:
+      client_event.xmap.override_redirect = False;
+      break;
+    case UnmapNotify:
+      client_event.xunmap.from_configure = False;
+      break;
+    default:
+      /* not possible if called correctly */
+      break;
+  }
+  XSendEvent(dpy, tmp_win->w, False, StructureNotifyMask, &client_event);
+  XSelectInput(dpy, tmp_win->w, winattrs.your_event_mask);
+
+  return;
+}
+
+/***********************************************************************
+ *
+ *  Procedure:
  *	HandleMapRequest - MapRequest event handler
  *
  ************************************************************************/
@@ -952,7 +994,8 @@ void HandleMapRequestKeepRaised(Window KeepRaised, FvwmWindow *ReuseWin)
   extern long isIconicState;
   extern Bool isIconifiedByParent;
   extern Bool PPosOverride;
-  Bool OnThisPage = False;
+  Bool is_on_this_page = False;
+  Bool is_new_window = False;
   FvwmWindow *tmp;
 
   Event.xany.window = Event.xmaprequest.window;
@@ -970,30 +1013,42 @@ void HandleMapRequestKeepRaised(Window KeepRaised, FvwmWindow *ReuseWin)
     Tmp_win = ReuseWin;
   }
 
-  if(!PPosOverride)
+  if (!PPosOverride)
+  {
     XFlush(dpy);
+  }
 
   /* If the window has never been mapped before ... */
-  if(!Tmp_win || (Tmp_win && DO_REUSE_DESTROYED(Tmp_win)))
+  if (!Tmp_win || (Tmp_win && DO_REUSE_DESTROYED(Tmp_win)))
   {
     /* Add decorations. */
     Tmp_win = AddWindow(Event.xany.window, ReuseWin);
     if (Tmp_win == NULL)
       return;
+    is_new_window = True;
   }
   /*
    * Make sure at least part of window is on this page
    * before giving it focus...
    */
-  OnThisPage = IsRectangleOnThisPage(&(Tmp_win->frame_g), Tmp_win->Desk);
-
+  is_on_this_page = IsRectangleOnThisPage(&(Tmp_win->frame_g), Tmp_win->Desk);
   if(KeepRaised != None)
   {
     XRaiseWindow(dpy, KeepRaised);
   }
   /* If it's not merely iconified, and we have hints, use them. */
 
-  if (!IS_ICONIFIED(Tmp_win))
+  if (IS_ICONIFIED(Tmp_win))
+  {
+    /* If no hints, or currently an icon, just "deiconify" */
+    DeIconify(Tmp_win);
+  }
+  else if (IS_MAPPED(Tmp_win))
+  {
+    /* the window is already mapped - fake a MapNotify event */
+    fake_map_unmap_notify(Tmp_win, MapNotify);
+  }
+  else
   {
     int state;
 
@@ -1025,7 +1080,7 @@ void HandleMapRequestKeepRaised(Window KeepRaised, FvwmWindow *ReuseWin)
 	SetMapStateProp(Tmp_win, NormalState);
 	if (Scr.flags.is_map_desk_in_progress)
 	  do_grab_focus = False;
-	else if (!OnThisPage)
+	else if (!is_on_this_page)
 	  do_grab_focus = False;
 	else if (DO_GRAB_FOCUS(Tmp_win) &&
 		 (!IS_TRANSIENT(Tmp_win) || Tmp_win->transientfor == Scr.Root))
@@ -1089,7 +1144,8 @@ void HandleMapRequestKeepRaised(Window KeepRaised, FvwmWindow *ReuseWin)
 	isIconifiedByParent = False;
 	SET_ICONIFIED_BY_PARENT(Tmp_win, 1);
       }
-      if (USE_ICON_POSITION_HINT(Tmp_win) && Tmp_win->wmhints)
+      if (USE_ICON_POSITION_HINT(Tmp_win) && Tmp_win->wmhints &&
+	  (Tmp_win->wmhints->flags & IconPositionHint))
       {
 	Iconify(Tmp_win, Tmp_win->wmhints->icon_x,
 		Tmp_win->wmhints->icon_y);
@@ -1097,6 +1153,11 @@ void HandleMapRequestKeepRaised(Window KeepRaised, FvwmWindow *ReuseWin)
       else
       {
 	Iconify(Tmp_win, 0, 0);
+      }
+      if (is_new_window)
+      {
+	/* the window will not be mapped - fake an UnmapNotify event */
+	fake_map_unmap_notify(Tmp_win, UnmapNotify);
       }
       break;
     }
@@ -1106,11 +1167,6 @@ void HandleMapRequestKeepRaised(Window KeepRaised, FvwmWindow *ReuseWin)
       XSync(dpy,0);
 #endif
     MyXUngrabServer(dpy);
-  }
-  /* If no hints, or currently an icon, just "deiconify" */
-  else
-  {
-    DeIconify(Tmp_win);
   }
   if (IS_SHADED(Tmp_win))
   {
@@ -1159,7 +1215,7 @@ void HandleMapRequestKeepRaised(Window KeepRaised, FvwmWindow *ReuseWin)
  ***********************************************************************/
 void HandleMapNotify(void)
 {
-  Bool OnThisPage = False;
+  Bool is_on_this_page = False;
 
   DBUG("HandleMapNotify","Routine Entered");
 
@@ -1190,7 +1246,7 @@ void HandleMapNotify(void)
       Make sure at least part of window is on this page
       before giving it focus...
   */
-  OnThisPage = IsRectangleOnThisPage(&(Tmp_win->frame_g), Tmp_win->Desk);
+  is_on_this_page = IsRectangleOnThisPage(&(Tmp_win->frame_g), Tmp_win->Desk);
 
   /*
    * Need to do the grab to avoid race condition of having server send
@@ -1205,12 +1261,10 @@ void HandleMapNotify(void)
     XUnmapWindow(dpy, Tmp_win->icon_pixmap_w);
   XMapSubwindows(dpy, Tmp_win->frame);
   XMapSubwindows(dpy, Tmp_win->decor_w);
-
-  if(Tmp_win->Desk == Scr.CurrentDesk)
+  if (Tmp_win->Desk == Scr.CurrentDesk)
   {
     XMapWindow(dpy, Tmp_win->frame);
   }
-
   if(IS_ICONIFIED(Tmp_win))
     BroadcastPacket(M_DEICONIFY, 3,
                     Tmp_win->w, Tmp_win->frame, (unsigned long)Tmp_win);
@@ -1222,7 +1276,7 @@ void HandleMapNotify(void)
      (IS_TRANSIENT(Tmp_win) && DO_GRAB_FOCUS_TRANSIENT(Tmp_win) &&
       Scr.Focus && Scr.Focus->w == Tmp_win->transientfor))
   {
-    if (OnThisPage)
+    if (is_on_this_page)
     {
       SetFocusWindow(Tmp_win, 1);
     }
@@ -1295,18 +1349,15 @@ void HandleUnmapNotify(void)
 		     FvwmContext, (caddr_t *)&Tmp_win) == XCNOENT)
       Tmp_win = NULL;
   }
-
-  if(!Tmp_win)
+  if (!Tmp_win)
     return;
-
+fprintf(stderr,"UnmapNotify for 0x%08x (%s)\n", (int)Tmp_win->w, Tmp_win->name);
   if (Event.xunmap.window == Tmp_win->frame)
   {
     SET_DEICONIFY_PENDING(Tmp_win , 0);
   }
-
   if (must_return)
     return;
-
   if(weMustUnmap)
     XUnmapWindow(dpy, Event.xunmap.window);
   if(Tmp_win ==  Scr.Hilite)
@@ -1359,9 +1410,7 @@ void HandleUnmapNotify(void)
     XSelectInput (dpy, Event.xunmap.window, NoEventMask);
     MyXUngrabServer(dpy);
   }
-
   destroy_window(Tmp_win);		/* do not need to mash event before */
-
   if (focus_grabbed)
   {
     CoerceEnterNotifyOnCurrentWindow();
@@ -2308,36 +2357,36 @@ void SendConfigureNotify(
   FvwmWindow *tmp_win, int x, int y, unsigned int w, unsigned int h, int bw,
   Bool send_for_frame_too)
 {
+  XEvent client_event;
+
   if (!tmp_win || IS_SHADED(tmp_win))
     return;
+  client_event.type = ConfigureNotify;
+  client_event.xconfigure.display = dpy;
+  client_event.xconfigure.event = tmp_win->w;
+  client_event.xconfigure.window = tmp_win->w;
+  client_event.xconfigure.x = x + tmp_win->boundary_width;
+  client_event.xconfigure.y = y + tmp_win->boundary_width +
+    tmp_win->title_top_height;
+  client_event.xconfigure.width = w - 2 * tmp_win->boundary_width;
+  client_event.xconfigure.height = h -
+    2 * tmp_win->boundary_width - tmp_win->title_g.height;
+  client_event.xconfigure.border_width = bw;
+  client_event.xconfigure.above = tmp_win->frame;
+  client_event.xconfigure.override_redirect = False;
+  XSendEvent(dpy, tmp_win->w, False, StructureNotifyMask, &client_event);
+  if (send_for_frame_too)
   {
-    XEvent client_event;
-
-    client_event.type = ConfigureNotify;
-    client_event.xconfigure.display = dpy;
-    client_event.xconfigure.event = tmp_win->w;
-    client_event.xconfigure.window = tmp_win->w;
-    client_event.xconfigure.x = x + tmp_win->boundary_width;
-    client_event.xconfigure.y = y + tmp_win->boundary_width +
-      tmp_win->title_top_height;
-    client_event.xconfigure.width = w - 2 * tmp_win->boundary_width;
-    client_event.xconfigure.height = h -
-      2 * tmp_win->boundary_width - tmp_win->title_g.height;
-    client_event.xconfigure.border_width = bw;
-    client_event.xconfigure.above = tmp_win->frame;
-    client_event.xconfigure.override_redirect = False;
-    XSendEvent(dpy, tmp_win->w, False, StructureNotifyMask, &client_event);
-    if (send_for_frame_too)
-    {
-      /* This is for buggy tk, which waits for the real ConfigureNotify
-       * on frame instead of the synthetic one on w. The geometry data
-       * in the event will not be correct for the frame, but tk doesn't
-       * look at that data anyway. */
-      client_event.xconfigure.event = tmp_win->frame;
-      client_event.xconfigure.window = tmp_win->frame;
-      XSendEvent(dpy, tmp_win->frame, False,StructureNotifyMask,&client_event);
-    }
+    /* This is for buggy tk, which waits for the real ConfigureNotify
+     * on frame instead of the synthetic one on w. The geometry data
+     * in the event will not be correct for the frame, but tk doesn't
+     * look at that data anyway. */
+    client_event.xconfigure.event = tmp_win->frame;
+    client_event.xconfigure.window = tmp_win->frame;
+    XSendEvent(dpy, tmp_win->frame, False,StructureNotifyMask,&client_event);
   }
+
+  return;
 }
 
 /***********************************************************************
