@@ -361,8 +361,8 @@ char *envDupExpand(const char *s, int extra)
  */
 const char* getFirstEnv(const char *s, int *beg, int *end)
 {
-    char *var, save;
-    const char *env, *ret;
+    char *var;
+    const char *env;
     int len;
 
     *beg = *end = 0;

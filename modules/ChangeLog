@@ -1,3 +1,15 @@
+1999-06-23  Dominik Vogt  <dominik_vogt@gmx.de>
+
+	* FvwmTaskBar/ButtonArray.c (RemoveButton): Grr, why was this function
+	broken again?
+
+	* FvwmEvent/FvwmEvent.c (event_table): removed excess events from
+	list (I thought I'd put this in the 2.2 branch).
+
+	* FvwmCpp/FvwmCpp.c (main): added missing declaration for tline
+
+	* FvwmAnimate/FvwmAnimate.c: added missing include for time.h
+
 1999-06-23  Hippo
 
 	* Fvwm{M4,Cpp}/Fvwm{M4,Cpp}.{c,1}: added new variable FVWM_CLASS and

@@ -343,19 +343,22 @@ void RemoveButton(ButtonArray *array, int butnum)
 
   if (butnum == 0) {
     temp2 = array->head;
+    temp = NULL;
   } else {
     temp = find_n(array, butnum-1);
     if (temp == NULL) return;
     temp2 = temp->next;
   }
   if (temp2 == NULL) return;
-  temp->next = temp2->next;
+  if (temp)
+    temp->next = temp2->next;
 
-  if (array->tail == temp2) array->tail = temp;
+  if (array->tail == temp2)
+    array->tail = temp;
 
   ButtonDelete(temp2);
   array->count--;
-  if (temp != array->head)
+  if (temp && temp != array->head)
     temp = temp->next;
   for (; temp!=NULL; temp=temp->next)
     temp->needsupdate = 1;

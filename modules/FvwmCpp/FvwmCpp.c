@@ -71,6 +71,7 @@ int main(int argc, char **argv)
   char *display_name = NULL;
   char *filename = NULL;
   char *tmp_file, read_string[80],delete_string[80];
+  char *tline;
   int i,cpp_debug = 0;
 
   strcpy(cpp_options,"");

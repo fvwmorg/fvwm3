@@ -1742,7 +1742,6 @@ RETSIGTYPE SigDone(int sig)
 void Done(int restart, char *command)
 {
   FvwmFunction *func;
-  int i;
 
   if (!restart)
     {
@@ -2010,7 +2009,7 @@ int parseCommandArgs(const char *command, char **argv, int maxArgc, const char *
   char *aptr = argString;
   const char *cptr = command;
   #define theChar (*cptr)
-  #define advChar (*(cptr++))
+  #define advChar (cptr++)
   #define topChar (*cptr     == '\\'? *(cptr+1): *cptr)
   #define popChar (*(cptr++) == '\\'? *(cptr++): *(cptr-1))
   #define isSpace (theChar == ' ' || theChar == '\t' || theChar == '\n')
@@ -2046,7 +2045,7 @@ int parseCommandArgs(const char *command, char **argv, int maxArgc, const char *
       } else if (theChar == '$') {
         int beg, len;
         const char *str = getFirstEnv(cptr, &beg, &len);
-        if (!str || beg) { addArgChar(advChar); continue; }
+        if (!str || beg) { addArgChar(theChar); advChar; continue; }
         if (!canAddArgStr(str)) { break; }
         addArgStr(str);
         cptr += len;

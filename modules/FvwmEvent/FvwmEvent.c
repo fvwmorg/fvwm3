@@ -179,8 +179,6 @@ event_entry event_table[MAX_MESSAGES+MAX_BUILTIN] =
   { "restack", -1 },
   { "add_window", 0 },
   { "configure_window", 0 },
-  { "lockonsend", -1 },
-  { "sendconfig", -1 },
 #ifdef M_BELL
   { "beep", -1 },
 #endif

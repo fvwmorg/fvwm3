@@ -1,3 +1,8 @@
+11999-06-23  Dominik Vogt  <dominik_vogt@gmx.de>
+
+	* fvwm/fvwm.c (Done): fixed -Wall warnings
+	* libs/envvar.c (getFirstEnv): removed unused variables
+
 1999-06-23  Dominik Vogt  <dominik_vogt@gmx.de>
 
 	* fvwm/placement.c (PlaceWindow): added warning when Skipmapping,
