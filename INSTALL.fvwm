@@ -292,7 +292,7 @@ and more.  This turns this support off.  Note, you may turn it off
 dynamically for all or individual windows by: Style * GNOMEIgnoreHints
 Note that no additional libraries are needed for supporting GNOME hints.
 
-  --disable-ewmh         disable extended window manager hints
+  --disable-ewmh                disable extended window manager hints
   ~~~~~~~~~~~~~~
 
 By default, FVWM supports the extended window manager hints specification

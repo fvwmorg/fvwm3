@@ -585,7 +585,6 @@ Bool is_function_allowed(
                         function = F_RESIZE;
                         break;
                 case 2:
-fprintf(stderr,"resize\n");
                         function = F_RESIZE;
                         break;
                 case 3:
