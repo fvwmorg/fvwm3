@@ -2285,6 +2285,7 @@ void MakeMenu(MenuRoot *mr)
 	  menuContinuation->first = cur;
 	  menuContinuation->last = mr->last;
 	  menuContinuation->items = mr->items - cItems;
+	  cur->prev = NULL;
 
 	  /* cur_prev is now the last item in the current menu */
 	  mr->last = cur_prev;
@@ -2493,7 +2494,8 @@ void scanForPixmap(char *instring, Picture **p, char identifier)
 	  if (txt[1] == identifier)
 	    {
 	      char *tmp;		/* Copy the string down over it	*/
-	      for (tmp = txt; *tmp != '\0'; tmp++) tmp[0] = tmp[1];
+	      for (tmp = txt; *tmp != '\0'; tmp++)
+		tmp[0] = tmp[1];
 	      continue;		/* ...And skip to the key char		*/
 	    }
 	  /* It's a hot key marker - work out the offset value		*/
@@ -2515,12 +2517,14 @@ void scanForPixmap(char *instring, Picture **p, char identifier)
 #else
 	  pp=CachePicture(dpy,Scr.Root,IconPath,IconPath,name,Scr.ColorLimit);
 #endif
-	  if(*txt != '\0')txt++;
+	  if(*txt != '\0')
+	    txt++;
 	  while(*txt != '\0')
 	    {
 	      *tstart++ = *txt++;
 	    }
 	  *tstart = 0;
+if (pp && *p != NULL)fprintf(stderr,"********* overwriting picture!! ********\n");
 	  if (pp)
 	    *p = pp;
 	  else
@@ -2601,6 +2605,7 @@ void AddToMenu(MenuRoot *menu, char *item, char *action, Bool fPixmapsOk,
   if (menu->first == NULL)
     {
       menu->first = tmp;
+      menu->last = tmp;
       tmp->prev = NULL;
     }
   else if (StrEquals(token, "title") && option && StrEquals(option, "top"))
@@ -2621,18 +2626,20 @@ void AddToMenu(MenuRoot *menu, char *item, char *action, Bool fPixmapsOk,
       if (token2)
 	free(token2);
       tmp->prev = NULL;
+      if (menu->first == NULL)
+	menu->last = tmp;
       menu->first = tmp;
     }
   else
     {
       menu->last->next = tmp;
       tmp->prev = menu->last;
+      menu->last = tmp;
     }
   if (token)
     free(token);
   if (option)
     free(option);
-  menu->last = tmp;
   tmp->picture=NULL;
   tmp->lpicture=NULL;
 

@@ -1,3 +1,26 @@
+1998-12-30  Dominik Vogt  <dominik_vogt@hp.com>
+
+	* libs/Picture.c (GetPicture): fixed use of freed memory (path)
+
+	* fvwm/read.c (ReadSubFunc): fixed PipeRead memory leak
+
+	* fvwm/builtins.c (SetMenuStyle): removed unused code
+
+	* fvwm/menus.h: remove unused flag 'hasFont' from MenuLook
+
+	* fvwm/builtins.c (SetMenuStyle): fixed font memory leak
+
+	* fvwm/menus.c (MakeMenu): fixed bug in menu continuations:
+	menuContinuation->first->prev still pointed to last item of parent menu
+	(AddToMenu): fixed memory leak with "Title top"
+
+	* fvwm/add_window.c (AddWindow): fixed memory leak (tmp_win->name
+	assigned twice in the same function: duplicate code removed)
+
+	* FAQ: updated question 1. Miaow.
+
+	* fvwm/builtins.c (SetMenuStyle): fixed TrianglesRelief option
+
 1998-12-28  Dominik Vogt  <dominik_vogt@hp.com>
 
 	* fvwm/builtins.c (MatchesConditionMask): fixed name matching broken in

@@ -1609,7 +1609,6 @@ static void FreeMenuStyle(MenuStyle *ms)
       mr->ms = Scr.menus.DefaultStyle;
     mr = mr->next;
   }
-/* and what about freeing colours, the menuface etc. ?!!!*/
   if(ms->look.MenuGC)
     XFreeGC(dpy, ms->look.MenuGC);
   if(ms->look.MenuActiveGC)
@@ -1864,7 +1863,7 @@ void SetMenuStyle(XEvent *eventp,Window w,FvwmWindow *tmp_win,
   else
     {
       tmpms->name = name;
-      is_new_style = 1;
+      is_new_style = True;
     }
 
   /* Parse the options. */
@@ -1941,9 +1940,11 @@ void SetMenuStyle(XEvent *eventp,Window w,FvwmWindow *tmp_win,
 	tmpms->feel.f.Animated = 0;
 	FreeMenuFace(dpy, &tmpms->look.face);
 	tmpms->look.face.type = SimpleMenu;
-	if (tmpms->look.f.hasFont)
+	if (tmpms->look.pStdFont && tmpms->look.pStdFont != &Scr.StdFont)
+	{
 	  XFreeFont(dpy, tmpms->look.pStdFont->font);
-	tmpms->look.f.hasFont = 0;
+	  free(tmpms->look.pStdFont);
+	}
 	tmpms->look.pStdFont = &Scr.StdFont;
 	gc_changed = True;
 
@@ -2078,22 +2079,7 @@ void SetMenuStyle(XEvent *eventp,Window w,FvwmWindow *tmp_win,
       case 16: /* MenuFace */
 	while (args && *args != '\0' && isspace(*args))
 	  args++;
-#if 0
-	if (!args || *args == '\0')
-	{
-	  fvwm_msg(ERR,"SetMenuStyle", "MenuFace needs some arguments in '%s'",
-		   optstring);
-	  break;
-	}
-	len = strlen(args);
-	tmp = safemalloc(len + 1);
-	strncpy(tmp, args, len);
-	tmp[len] = 0;
-#endif
 	ReadMenuFace(args, &tmpms->look.face, True);
-#if 0
-	free(tmp);
-#endif
 	break;
 
       case 17: /* PopupDelay */
@@ -2117,7 +2103,6 @@ void SetMenuStyle(XEvent *eventp,Window w,FvwmWindow *tmp_win,
 	  }
 	else
 	  {
-	    /*... safety checks here? */
 	    tmpms->feel.PopupOffsetAdd = val[0];
 	    if (n == 2 && val[1] <= 100 && val[1] >= 0)
 	      tmpms->feel.PopupOffsetPercent = val[1];
@@ -2159,7 +2144,7 @@ void SetMenuStyle(XEvent *eventp,Window w,FvwmWindow *tmp_win,
 	break;
 
       case 27: /* TrianglesRelief */
-	tmpms->look.f.TriangleRelief = 0;
+	tmpms->look.f.TriangleRelief = 1;
 	break;
 
       case 28: /* PrepopMenus */
@@ -2218,7 +2203,7 @@ void SetMenuStyle(XEvent *eventp,Window w,FvwmWindow *tmp_win,
       Scr.menus.DefaultStyle = tmpms;
       tmpms->next = NULL;
     }
-  else if (ms)
+  else if (!is_new_style)
     {
       /* copy our new menu face over the old one */
       memcpy(ms, tmpms, sizeof(MenuStyle));
@@ -4428,12 +4413,7 @@ static void GetDirectionReference(FvwmWindow *w, int *x, int *y)
   else
   {
     *x = w->frame_x + w->frame_width / 2;
-/*!!!*/
-#if 0
-    *y = w->frame_y;
-#else
     *y = w->frame_y + w->frame_height / 2;
-#endif
   }
 }
 

@@ -133,7 +133,8 @@ Picture *GetPicture(Display *dpy,Window Root,char *IconPath,char *PixmapPath,
     if(!(path=findIconFile(name,IconPath,R_OK)))
       return NULL;
   p = LoadPicture(dpy,Root,path, color_limit);
-  free(path);
+  if (!p)
+    free(path);
   return p;
 }
 

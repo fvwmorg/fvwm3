@@ -56,16 +56,27 @@ static void ReadSubFunc(XEvent *eventp,Window junk,FvwmWindow *tmp_win,
   int thisfileno;
   extern XEvent Event;
   char missing_quiet;                   /* missing file msg control */
+  char *cmdname;
+
+  /* domivogt (30-Dec-1998: I tried using conditional evaluation instead
+   * of the cmdname variable ( piperead?"PipeRead":"Read" ), but gcc seems
+   * to treat this expression as a pointer to a character pointer, not just
+   * as a character pointer, but it doesn't complain either. Or perhaps
+   * insure++ gets this wrong? */
+  if (piperead)
+    cmdname = "PipeRead";
+  else
+    cmdname = "Read";
 
   thisfileno = numfilesread;
   numfilesread++;
 
-/*  fvwm_msg(INFO,piperead?"PipeRead":"Read","action == '%s'",action); */
+/*  fvwm_msg(INFO,cmdname,"action == '%s'",action); */
 
   rest = GetNextToken(action,&ofilename); /* read file name arg */
   if(ofilename == NULL)
   {
-    fvwm_msg(ERR,piperead?"PipeRead":"Read","missing parameter");
+    fvwm_msg(ERR, cmdname,"missing parameter");
     last_read_failed = 1;
     return;
   }
@@ -79,7 +90,7 @@ static void ReadSubFunc(XEvent *eventp,Window junk,FvwmWindow *tmp_win,
   } /* end there is a second arg */
 
   filename = ofilename;
-/*  fvwm_msg(INFO,piperead?"PipeRead":"Read","trying '%s'",filename); */
+/*  fvwm_msg(INFO, cmdname,"trying '%s'",filename); */
 
   if (piperead)
     fd = popen(filename,"r");
@@ -119,10 +130,11 @@ static void ReadSubFunc(XEvent *eventp,Window junk,FvwmWindow *tmp_win,
   if(fd == NULL)
   {
     if (missing_quiet == 'n') {         /* if quiet option not on */
-      fvwm_msg(ERR,
-               piperead ? "PipeRead" : "Read",
-               piperead ? "command '%s' not run" :
-	       "file '%s' not found in $HOME or "FVWM_CONFIGDIR, ofilename);
+      if (piperead)
+	fvwm_msg(ERR, cmdname, "command '%s' not run", ofilename);
+      else
+	fvwm_msg(ERR, cmdname,
+		 "file '%s' not found in $HOME or "FVWM_CONFIGDIR, ofilename);
     } /* end quiet option not on */
     if((ofilename != filename)&&(filename != NULL))
     {
@@ -143,6 +155,11 @@ static void ReadSubFunc(XEvent *eventp,Window junk,FvwmWindow *tmp_win,
     if(fvwm_file != NULL)
       free(fvwm_file);
     fvwm_file = filename;
+  }
+  else
+  {
+    if (filename)
+      free(filename);
   }
 
   tline = fgets(line,(sizeof line)-1,fd);

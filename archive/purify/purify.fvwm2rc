@@ -161,6 +161,10 @@ AddToMenu menu1 "t1"		title
 + "*test1.xpm*fo*test2.xpm*"
 + "^test1.xpm^f^test2.xpm^"
 + "@test1.xpm@oo@test2.xpm@"
++ "%test2.xpm%foo%test1.xpm%"
++ "*test2.xpm*fo*test1.xpm*"
++ "^test2.xpm^f^test1.xpm^"
++ "@test2.xpm@oo@test1.xpm@"
 + "xx" function xyz
 + "xx" function xyz
 + "xx" function xyz

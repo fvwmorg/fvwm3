@@ -111,7 +111,6 @@ typedef struct MenuLook {
       unsigned char hasActiveFore : 1;
       unsigned char hasActiveBack : 1;
       unsigned char hasStippleFore : 1;
-      unsigned char hasFont : 1;
       unsigned char LongSeparators : 1;
       unsigned char TriangleRelief : 1;
     } f;

@@ -657,10 +657,6 @@ FvwmWindow *AddWindow(Window w)
   attributes.do_not_propagate_mask = ButtonPressMask | ButtonReleaseMask;
 
   XChangeWindowAttributes (dpy, tmp_win->w, valuemask, &attributes);
-  if ( XGetWMName(dpy, tmp_win->w, &text_prop) != 0 )
-    tmp_win->name = (char *)text_prop.value;
-  else
-    tmp_win->name = NoName;
 
   XAddToSaveSet(dpy, tmp_win->w);
 
