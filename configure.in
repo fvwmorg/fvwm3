@@ -238,7 +238,7 @@ AC_SUBST(Xinerama_LIBS)
 AC_SUBST(Xinerama_CFLAGS)
 
 dnl ********* xinerama-emulation
-smr_SWITCH(xinerama-emulation, Xinerama emulation on one screen, off,
+smr_SWITCH(xinerama-emulation, Xinerama emulation on one screen (useful only for developers), off,
            USE_XINERAMA_EMULATION)
 if test "$enable_xinerama_emulation" = yes; then
   with_xinerama_emulation=yes
@@ -409,7 +409,7 @@ if test "$with_png" = "yes"; then
   png_LIBS="-lpng -lz"
   problem_png=""
 else
-  with_png=no  
+  with_png=no
 fi
 AC_SUBST(png_LIBS)
 AC_SUBST(png_CFLAGS)
