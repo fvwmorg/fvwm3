@@ -1,4 +1,4 @@
-/* This program is free software; you can redistribute it and/or modify
+#/* This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 2 of the License, or
  * (at your option) any later version.
@@ -486,6 +486,7 @@ typedef struct MenuRootDynamic
   MenuItem *selected_item;      /* the selected item in menu */
   MenuItem *to_be_selected_item;/* item that will be selected when the current
 				 * item's popup menu will be closed */
+  MenuItem *submenu_items;      /* item that has it's submenu mapped */
   int xanimation;               /* x distance window was moved by animation */
   /* dynamic temp flags */
   struct
@@ -517,6 +518,7 @@ typedef struct MenuRootDynamic
 #define MR_WINDOW(m)                ((m)->d->window)
 #define MR_SELECTED_ITEM(m)         ((m)->d->selected_item)
 #define MR_TO_BE_SELECTED_ITEM(m)   ((m)->d->to_be_selected_item)
+#define MR_SUBMENU_ITEM(m)          ((m)->d->submenu_item)
 #define MR_XANIMATION(m)            ((m)->d->xanimation)
 #define MR_STORED_ITEM(m)           ((m)->d->stored_item)
 /* flags */
@@ -620,6 +622,7 @@ typedef enum
   MENU_SELECTED,
   MENU_NEWITEM,
   MENU_POST,
+  MENU_UNPOST,
   MENU_TEAR_OFF,
   /* propagate the event to a different menu */
   MENU_PROPAGATE_EVENT

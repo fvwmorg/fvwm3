@@ -4,6 +4,7 @@
 	tried to fix core dump w/ windowlist
 	(MenuInteraction):
 	Fixed RemoveSubmenus menu style; affects keyboard navigation only
+	Clicking on a posted menu item unposts the menu
 
 2000-01-09  Mikhael Goikhman  <migo@homemail.com>
 

@@ -1411,6 +1411,7 @@ static void MenuInteraction(
     unsigned is_motion_first : 1;
     unsigned is_release_first : 1;
     unsigned is_submenu_mapped : 1;
+    unsigned was_item_unposted : 1;
   } flags;
   /* Can't make this a member of the flags as we have to take its address. */
   Bool does_submenu_overlap = False;
@@ -1573,9 +1574,15 @@ static void MenuInteraction(
 	continue;
 	/* break; */
       }
+      flags.was_item_unposted = 0;
       if (pmret->flags.is_menu_posted && mrMi != NULL)
       {
-	if (mrPopup && mrMi == mrPopup)
+	if (mi == MR_SELECTED_ITEM(pmp->menu))
+	{
+	  pmret->flags.is_menu_posted = 0;
+	  flags.was_item_unposted = 1;
+	}
+	else if (mrPopup && mrMi == mrPopup)
 	{
 	  flags.do_propagate_event_into_submenu = True;
 	  break;
@@ -1585,6 +1592,7 @@ static void MenuInteraction(
 	  if (pmret->menu != mrMi)
 	  {
 	    pmret->flags.is_menu_posted = 0;
+	    break;
 	  }
 	  if (pmp->menu != mrMi)
 	  {
@@ -1601,17 +1609,28 @@ static void MenuInteraction(
 	goto DO_RETURN;
       }
       pmret->rc = (mi) ? MENU_SELECTED : MENU_ABORTED;
-      if (pmret->rc == MENU_SELECTED && mi && MI_IS_POPUP(mi) &&
-	  !MST_DO_POPUP_AS_ROOT_MENU(pmp->menu))
+      if (pmret->rc == MENU_SELECTED && mi &&
+	  MI_IS_POPUP(mi) && !MST_DO_POPUP_AS_ROOT_MENU(pmp->menu))
       {
-	pmret->rc = MENU_POST;
-	pmret->flags.is_menu_posted = 1;
-	pmret->menu = NULL;
-	pmret->parent_menu = pmp->menu;
-	flags.do_popup_now = True;
-	if (mrPopup && mi != MR_SELECTED_ITEM(pmp->menu))
+	if (flags.was_item_unposted)
 	{
-	  flags.do_popdown_now = True;
+	  pmret->flags.is_menu_posted = 0;
+	  pmret->rc = MENU_UNPOST;
+	  pmret->menu = NULL;
+	  pmret->parent_menu = pmp->menu;
+	  flags.do_popup_now = False;
+	}
+	else
+	{
+	  pmret->flags.is_menu_posted = 1;
+	  pmret->rc = MENU_POST;
+	  pmret->menu = NULL;
+	  pmret->parent_menu = pmp->menu;
+	  flags.do_popup_now = True;
+	  if (mrPopup && mi != MR_SELECTED_ITEM(pmp->menu))
+	  {
+	    flags.do_popdown_now = True;
+	  }
 	}
 	break;
       }
