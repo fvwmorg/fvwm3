@@ -618,25 +618,36 @@ the
 file that is generated during compilation.
 
 .SH ICONS AND IMAGES
-.\"needs_lang_check
-Fvwm can load image from files in various format depending on compile-time
-options.
-Fvwm can always uses monochrome bitmap image file (aka xbm image file).
-The other formats that Fvwm can support are
+
+Fvwm can load
+.B .xbm,
+.B .xpm,
+and
+.B .png
+images.
+.B XBM
+images are monochrome.
+FVWM can always display
+.B XBM
+files.
 .B XPM
 and
 .B PNG
-which allow to use colored icons and images.
-In order to use these formats you need the corresponding package,
-as described in the
+formats are color images.
+Compile-time
+options determine whether FVWM can use
+.B XPM
+or
+.B PNG
+icons and images.
+See the
 .I INSTALL.fvwm
-file.
+file for more information.
 
-Moreover, if
+The related
 .BR SHAPE
-option is compiled in you get shaped color icons, which are very
-spiffy.
-.\"end
+compile-time option can make your colored icons shaped
+which is very spiffy.
 
 .SH MODULES
 
