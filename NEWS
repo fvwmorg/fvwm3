@@ -11,6 +11,9 @@ Changes in developement release 2.5.6 (not released yet)
 * Not documented in 2.5.5: ButtonStyle and TitleStyle new style
   type Colorset.
 
+* New conditionals for matchng windows
+  Closable, Iconifiable, Maximizable, FixedSize and HasHandles
+
 * Improvement in MultiPixmap.  In particular Colorset and Solid
   colour can be specified.
 
