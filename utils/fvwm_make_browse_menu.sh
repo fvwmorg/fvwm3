@@ -29,7 +29,7 @@
 DIRFILE="$HOME/.fvwm_browse_menu_cwd"
 
 # the name of our menu
-MENU="$1"
+MENU=`echo "$1" | $SED -e s:\"::g`
 
 # the command to execute on plain files
 ACTION=vi
@@ -58,23 +58,23 @@ if [ ! -d "$DIR" ] ; then
 fi
 
 # dump all menu items
-echo DestroyMenu recreate \"$MENU\"
+echo DestroyMenu recreate \""$MENU"\"
 
 # add a new title
-echo AddToMenu \"$MENU\" \"`cat "$DIRFILE"`\" Title
+echo AddToMenu \""$MENU"\" \"`cat "$DIRFILE"`\" Title
 
 # add '..' entry
 cd "$DIR"/..
-echo AddToMenu \"$MENU\" \"..\" PipeRead \'echo \""`/bin/pwd`"\" \> "$DIRFILE" ';' echo Menu \\\""$MENU"\\\" WarpTitle\'
+echo AddToMenu \""$MENU"\" \"..\" PipeRead \'echo \""`/bin/pwd`"\" \> "$DIRFILE" ';' echo Menu \\\""$MENU"\\\" WarpTitle\'
 
 # add separator
-echo AddToMenu \"$MENU\" \"\" Nop
+echo AddToMenu \""$MENU"\" \"\" Nop
 
 # add $HOME entry
-echo AddToMenu \"$MENU\" \"~\" PipeRead \'echo \""$HOME"\" \> "$DIRFILE" ';' echo Menu \\\""$MENU"\\\" WarpTitle\'
+echo AddToMenu \""$MENU"\" \"~\" PipeRead \'echo \""$HOME"\" \> "$DIRFILE" ';' echo Menu \\\""$MENU"\\\" WarpTitle\'
 
 # add separator
-echo AddToMenu \"$MENU\" \"\" Nop
+echo AddToMenu \""$MENU"\" \"\" Nop
 
 # add directory contents
 for i in `"$LS" "$DIR"` ; do
@@ -82,9 +82,9 @@ for i in `"$LS" "$DIR"` ; do
         # it's a directory
         cd "$DIR/$i"
         # put new path in $DIRFILE and invoke the menu again
-        echo AddToMenu \"$MENU\" \""$i/"\" PipeRead \'echo \"`echo $DIR/$i|$SED -e s://:/:g`\" \> "$DIRFILE" ';' echo Menu \\\""$MENU"\\\" WarpTitle\'
+        echo AddToMenu \""$MENU"\" \""$i/"\" PipeRead \'echo \"`echo $DIR/$i|$SED -e s://:/:g`\" \> "$DIRFILE" ';' echo Menu \\\""$MENU"\\\" WarpTitle\'
     else
         # something else, apply $ACTION to it
-        echo AddToMenu \"$MENU\" \""$i"\" Exec $TERMINAL $ACTION \""$DIR/$i"\"
+        echo AddToMenu \""$MENU"\" \""$i"\" Exec $TERMINAL $ACTION \""$DIR/$i"\"
     fi
 done

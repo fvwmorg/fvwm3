@@ -43,9 +43,7 @@ SED=sed
 
 # the name of our menu
 MENU=`echo $1 | $SED -e 's://*:/:g'`
-
-# the item title
-ITEM='basename $MENU'
+PMENU=`echo "$MENU" | $SED -e s:\"::g`
 
 # the command to execute on plain files
 ACTION=vi
@@ -59,30 +57,31 @@ TERMINALSHELL="xterm"
 #
 
 # dump all menu items
-echo DestroyMenu recreate \"$MENU\"
+echo DestroyMenu recreate \""$PMENU"\"
 
 # add a new title
-echo AddToMenu \"$MENU\" \"$MENU\" Exec "echo cd $MENU\; $TERMINALSHELL | $SHELL"
+echo AddToMenu \""$PMENU"\" \""$PMENU"\" Exec "echo cd $MENU\; $TERMINALSHELL | $SHELL"
 
 # add a separator
-echo AddToMenu \"$MENU\" \"\" nop
+echo AddToMenu \""$PMENU"\" \"\" nop
 
 # destroy the menu after it is popped down
 if [ "$OPTIMIZE_SPACE" = yes ] ; then
-  echo AddToMenu \"$MENU\" DynamicPopDownAction DestroyMenu \"$MENU\"
+  echo AddToMenu \""$PMENU"\" DynamicPopDownAction DestroyMenu \""$PMENU"\"
 fi
 
 # set the 'missing submenu function'
-echo AddToMenu \"$MENU\" MissingSubmenuFunction MakeMissingDirectoryMenu
+echo AddToMenu \""$PMENU"\" MissingSubmenuFunction MakeMissingDirectoryMenu
 
 # add directory contents
 $LS "$MENU" 2> /dev/null | $SED -n '
   /\/$/ bdirectory
   s:[=*@|]$::1
-  s:^\(.*\)$:AddToMenu "'$MENU'" "\1" Exec '"$TERMINAL $ACTION"' "'"$MENU"'/\1":1
+  s:"::g
+  s:^\(.*\)$:AddToMenu "'"$PMENU"'" "\1" Exec '"$TERMINAL $ACTION"' "'"$MENU"'/\1":1
   bnext
   :directory
-  s:^\(.*\)/$:AddToMenu "'$MENU'" "\1" Popup "'"$MENU"'/\1" item +100 c:1
+  s:^\(.*\)/$:AddToMenu "'"$PMENU"'" "\1" Popup "'"$PMENU"'/\1" item +100 c:1
   :next
   s://*:/:g
   p

@@ -12,6 +12,11 @@ Changes in alpha release 2.5.10 (not released yet)
 * Security patch in fvwm-bug.
   See http://securitytracker.com/alerts/2004/Jan/1008781.html
 
+* Security fixes in
+    fvwm-menu-directory (BugTraq id 9161)
+    fvwm_make_directory_menu.sh
+    fvwm_make_browse_menu.sh
+
 -------------------------------------------------------------------
 
 Changes in alpha release 2.5.9 (2-Mar-2004)
@@ -28,6 +33,9 @@ Changes in alpha release 2.5.9 (2-Mar-2004)
 * New binding context 'U' for unmanaged windows, similar to 'R'oot.
 
 * New option DisplayNewWindowNames to the BugOpts command.
+
+* Security fix for fvwm-menu-directory.
+  Se BugTraq id 9161.
 
 -------------------------------------------------------------------
 
