@@ -683,9 +683,6 @@ void raise_function(XEvent *eventp,Window w,FvwmWindow *tmp_win,
 		    unsigned long context, char *action, int *Module)
 {
   name_list styles;                     /* place for merged styles */
-  char *junk, *junkC;
-  unsigned long junkN;
-  int junkD, method, BoxJunk[4];
 
   if (DeferExecution(eventp,&w,&tmp_win,&context, SELECT,ButtonRelease))
     return;
@@ -3139,7 +3136,7 @@ FvwmWindow *Circulate(char *action, int Direction, char **restofline)
           (!needsNotName ||
            !(matchWildcards(name, fw->name) ||
              matchWildcards(name, fw->icon_name) ||
-             fw->class.res_class && matchWildcards(name, fw->class.res_class) ||
+             fw->class.res_class && matchWildcards(name, fw->class.res_class)||
              fw->class.res_name && matchWildcards(name, fw->class.res_name)
              )
             )

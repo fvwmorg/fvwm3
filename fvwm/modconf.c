@@ -71,7 +71,6 @@ void  ModuleConfig(XEvent *eventp,Window w,FvwmWindow *tmp_win,
                    unsigned long context,
                    char *action, int *Module) {
   int module;
-  static int count, mask_count = 0;                 /* debugging */
   AddToModList(action);                 /* save for config request */
   for (module=0;module<npipes;module++) {/* look at all possible pipes */
     if (PipeMask[module] & M_SENDCONFIG) { /* does module want config cmds */

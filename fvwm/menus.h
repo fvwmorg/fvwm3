@@ -98,10 +98,11 @@ typedef struct MenuRoot
     MenuItem *selected;	/* the selected item in menu */
 
     struct MenuRoot *next;	/* next in list of root menus */
-    struct MenuRoot *continuation; /* continuation of this menu (too tall for screen */
+    struct MenuRoot *continuation; /* continuation of this menu
+				    * (too tall for screen */
     /* can get the menu that this popped up through selected->mr when
        selected IS_POPUP_MENU_ITEM(selected) */
-    struct MenuRoot *mrDynamicPrev;   /* the menu that popped this up, if any */
+    struct MenuRoot *mrDynamicPrev; /* the menu that popped this up, if any */
 
     char *name;			/* name of root */
     Window w;			/* the window of the menu */
@@ -159,7 +160,8 @@ extern Bool fLastMenuPosHintsValid;
 
 
 /* Return values for UpdateMenu, do_menu, menuShortcuts */
-/* Just uses enum-s for their constant value, replaced a bunch of #define-s before */
+/* Just uses enum-s for their constant value, replaced a bunch of #define-s
+ * before */
 /* This is a lame hack, in that "_BUTTON" is added to mean a button-release
    caused the return-- the macros below help deal with the ugliness */
 typedef enum {
@@ -197,7 +199,8 @@ typedef enum {
 
 MenuRoot *FollowMenuContinuations(MenuRoot *mr,MenuRoot **pmrPrior);
 void AnimatedMoveOfWindow(Window w,int startX,int startY,int endX, int endY,
-			  Bool fWarpPointerToo, int cusDelay, float *ppctMovement );
+			  Bool fWarpPointerToo, int cusDelay,
+			  float *ppctMovement );
 
 #endif /* _MENUS_ */
  

@@ -546,7 +546,7 @@ char *GetMenuOptions(char *action, Window w, FvwmWindow *tmp_win,
   char *tok = NULL, *naction = action, *taction;
   int x, y, button, gflags;
   unsigned int width, height;
-  Window context_window;
+  Window context_window = 0;
   Bool fHasContext, fUseItemOffset;
   Bool fValidPosHints = fLastMenuPosHintsValid;
 

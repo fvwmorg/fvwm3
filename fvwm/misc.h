@@ -541,6 +541,8 @@ void AddModConfig(XEvent *eventp,Window junk,FvwmWindow *tmp_win,
 void SetEnv(XEvent *eventp,Window junk,FvwmWindow *tmp_win,
 	    unsigned long context, char *action,int* Module);
 
+void CoerceEnterNotifyOnCurrentWindow();
+
 /*
 ** message levels for fvwm_msg:
 */

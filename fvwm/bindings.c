@@ -71,7 +71,7 @@ void remove_binding(int contexts, int mods, int button, KeySym keysym,
                     int mouse_binding)
 {
   Binding *temp=Scr.AllBindings, *temp2, *prev=NULL;
-  KeyCode keycode;
+  KeyCode keycode = 0;
 
   if (!mouse_binding)
     keycode=XKeysymToKeycode(dpy,keysym);

@@ -95,9 +95,12 @@ static char g_bits[] = {0x02, 0x01};
 #define l_g_height 2
 static char l_g_bits[] = {0x08, 0x02};
 
+#if 0
+/* code unused */
 #define s_g_width 4
 #define s_g_height 4
 static char s_g_bits[] = {0x01, 0x02, 0x04, 0x08};
+#endif
 
 #ifdef SHAPE
 int ShapeEventBase, ShapeErrorBase;

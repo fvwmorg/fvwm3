@@ -138,7 +138,7 @@ MenuStatus do_menu(MenuRoot *menu, MenuRoot *menuPrior,
   Bool fWasAlreadyPopped = FALSE;
   Bool key_press;
   Bool fDoubleClick = FALSE;
-  Time t0;
+  Time t0 = lastTimestamp;
   extern Time lastTimestamp;
   static int cindirectDeep = 0;
 
@@ -185,7 +185,6 @@ MenuStatus do_menu(MenuRoot *menu, MenuRoot *menuPrior,
     } else {
       /* we're a top level menu */
       mouse_moved = FALSE;
-      t0 = lastTimestamp;
       if(!GrabEm(MENU)) { /* GrabEm specifies the cursor to use */
 	XBell(dpy,Scr.screen);
 	return MENU_ABORTED;
@@ -1040,8 +1039,6 @@ Bool FPopupMenu (MenuRoot *menu, MenuRoot *menuPrior, int x, int y,
 		 Bool fWarpItem, MenuOptions *pops)
 {
   Bool fWarpTitle = FALSE;
-  Bool fLeft = FALSE;
-  Bool fRight = (pops->flags & MENU_HAS_POSHINTS) ? TRUE : FALSE;
   int x_overlap, x_clipped_overlap;
   MenuItem *mi = NULL;
 
@@ -2181,8 +2178,6 @@ void AddToMenu(MenuRoot *menu, char *item, char *action, Bool fPixmapsOk)
   MenuItem *tmp;
   char *start,*end;
   char *taction = NULL, *taction2 = NULL;
-  Bool fEmptyItem = FALSE;
-  Bool fEmptyAction = FALSE;
 
   /* Just returning will probably cause a coredump somewhere else, so I think
      we should continue with a default! */

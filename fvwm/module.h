@@ -63,7 +63,7 @@ extern struct queue_buff_struct **pipeQueue;
  * creating and looping  over  large arrays.  The  impact seems  to be in
  * module.c, modconf.c and event.c.  dje 10/2/98
  */
-#define MAX_MASK             ((1<<MAX_MESSAGES)-1\
+#define MAX_MASK             (((1<<MAX_MESSAGES)-1)\
                               &~(M_LOCKONSEND + M_SENDCONFIG))
 
 /*
@@ -83,5 +83,11 @@ extern struct queue_buff_struct **pipeQueue;
 
 void KillModuleByName(char *name);
 void AddToModList(char *tline);
+void BroadcastMiniIcon(unsigned long event_type,
+		       unsigned long data1, unsigned long data2, 
+		       unsigned long data3, unsigned long data4,
+		       unsigned long data5, unsigned long data6,
+		       unsigned long data7, unsigned long data8,
+		       char *name);
 
 #endif /* MODULE_H */

@@ -17,6 +17,7 @@
 #include <stdio.h>
 #include <signal.h>
 #include <string.h>
+#include <unistd.h>
 #include <X11/keysym.h>
 #include "fvwm.h"
 #include "menus.h"
@@ -39,7 +40,8 @@ float rgpctMovementDefault[32] = {
 int cmsDelayDefault = 10; /* milliseconds */
 
 /* Perform the movement of the window. ppctMovement *must* have a 1.0 entry
-   somewhere in ins list of floats, and movement will stop when it hits a 1.0 entry */
+ * somewhere in ins list of floats, and movement will stop when it hits a 1.0
+ * entry */
 void AnimatedMoveOfWindow(Window w,int startX,int startY,int endX, int endY,
 			  Bool fWarpPointerToo, int cmsDelay, float *ppctMovement )
 {
