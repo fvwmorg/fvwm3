@@ -77,19 +77,6 @@ Display *PictureSaveDisplay;            /* Save area for display pointer */
 
 
 /* This routine called during fvwm and some modules initialization */
-void InitPictureCMap(Display *dpy,Window Root)
-{
-  XWindowAttributes root_attr;
-  PictureSaveDisplay = dpy;                       /* save for later */
-  XGetWindowAttributes(dpy,Root,&root_attr);
-  PictureVisual = root_attr.visual;
-  PictureCMap = root_attr.colormap;
-  PictureDepth = root_attr.depth;
-}
-
-
-/* This is an alternative used by modules that have got the information
- * from the Default_Graphics config line sent by fvwm */
 void SavePictureCMap(Display *dpy, Visual *viz, Colormap cmap, int depth)
 {
   PictureSaveDisplay = dpy;                       /* save for later */

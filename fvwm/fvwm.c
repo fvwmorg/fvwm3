@@ -496,8 +496,11 @@ int main(int argc, char **argv)
     Scr.usingDefaultVisual = True;
   }
 
+  /* make a copy for the XPM loading code */
+  SavePictureCMap(dpy, Scr.viz, Scr.cmap, Scr.depth);
+  
 #ifdef SHAPE
-  ShapesSupported=XShapeQueryExtension(dpy, &ShapeEventBase, &ShapeErrorBase);
+  ShapesSupported = XShapeQueryExtension(dpy, &ShapeEventBase, &ShapeErrorBase);
 #endif /* SHAPE */
 
   InternUsefulAtoms ();
@@ -1657,7 +1660,6 @@ static void InitVariables(void)
   Scr.gs.use_active_down_buttons = DEFAULT_USE_ACTIVE_DOWN_BUTTONS;
   Scr.gs.use_inactive_buttons = DEFAULT_USE_INACTIVE_BUTTONS;
   /* Not the right place for this, should only be called once somewhere .. */
-  InitPictureCMap(dpy,Scr.NoFocusWin);
 
   return;
 }

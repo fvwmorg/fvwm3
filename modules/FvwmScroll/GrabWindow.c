@@ -44,7 +44,6 @@
 
 #include "libs/Module.h"
 #include "libs/fvwmlib.h"
-#include "libs/Picture.h"
 
 #include "FvwmScroll.h"
 
@@ -117,7 +116,6 @@ void CreateWindow(int x,int y, int w, int h)
 			   CWColormap | CWBackPixel | CWBorderPixel,
 			   &attributes);
 
-  InitPictureCMap(dpy, main_win);
   hilite_pix = GetHilite(attributes.background_pixel);
   shadow_pix = GetShadow(attributes.background_pixel);
 

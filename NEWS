@@ -1,5 +1,7 @@
 Changes in beta release 2.3.5 (July 1999)
 
+* Fvwm and all modules except FvwmScroll now share the same visual and colormap
+ 
 * The behaviour of the Raised and Visible flags for Next, Circulate, ...
   commands has been changed. They now do what their names suggest, i.e.
   visible = partially visible and raised = fully visible.

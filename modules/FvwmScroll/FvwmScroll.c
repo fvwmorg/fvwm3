@@ -33,6 +33,7 @@
 
 #include "libs/Module.h"
 #include "libs/fvwmlib.h"
+#include "libs/Picture.h"
 #include "FvwmScroll.h"
 
 char *MyName;
@@ -117,6 +118,7 @@ int main(int argc, char **argv)
 
   SetMessageMask(fd, M_CONFIG_INFO | M_END_CONFIG_INFO | M_SENDCONFIG);
   G = CreateGraphics(dpy);
+  SavePictureCMap(dpy, G->viz, G->cmap, G->depth);
 
   /* scan config file for set-up parameters */
   /* Colors and fonts */
