@@ -629,6 +629,9 @@ scratch. When the menu has been destroyed (unless you used the
 "recreate" option when destroying the menu), do not forget to add the
 dynamic action again.
 
+Note: Do not trigger actions that require user interaction. They will
+probably fail and may screw up your menus. See \fISilent\fP command.
+
 Example (File browser):
 
 .EX

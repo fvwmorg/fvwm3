@@ -1421,7 +1421,6 @@ static MenuStatus MenuInteraction(
 	  /* restore the stuff we saved */
 	  lastTimestamp = t;
 	  *pdo_warp_to_title = f;
-	  /* grab the mouse again */
 	  if (!check_if_fvwm_window_exists(*(pmp->pTmp_win)))
 	  {
 	    *(pmp->pTmp_win) = NULL;
@@ -1809,8 +1808,6 @@ static Bool pop_menu_up(
     pos_hints = last_saved_pos_hints;
     f = *pdo_warp_to_title;
     t = lastTimestamp;
-    /* need to ungrab the mouse during function call */
-    UngrabEm();
     /* Execute the action */
     ExecuteFunctionSaveTmpWin(MR_POPUP_ACTION(mr), *pfw, &Event,
 			      *pcontext, -2, DONT_EXPAND_COMMAND);
@@ -1829,14 +1826,6 @@ static Bool pop_menu_up(
     *pmenu = FindPopup(menu_name);
     free(menu_name);
     mr = *pmenu;
-    /* grab the mouse again */
-    if(!GrabEm(MENU))
-    {
-      /* FIXME: If this happens in a submenu we're pissed. All kinds of
-       * unpleasant things might happen. */
-      free(menu_name);
-      return False;
-    }
     if (mr)
     {
       make_menu(mr);
@@ -2346,8 +2335,6 @@ static void pop_menu_down(MenuRoot **pmr, MenuParameters *pmp)
     /* save variables that we still need but that may be overwritten */
     pos_hints = last_saved_pos_hints;
     t = lastTimestamp;
-    /* need to ungrab the mouse during function call */
-    UngrabEm();
     /* Execute the action */
     ExecuteFunctionSaveTmpWin(MR_POPDOWN_ACTION(*pmr), (*pmp->pTmp_win),
 			      &Event, *(pmp->pcontext), -2,
@@ -2355,10 +2342,6 @@ static void pop_menu_down(MenuRoot **pmr, MenuParameters *pmp)
     /* restore the stuff we saved */
     last_saved_pos_hints = pos_hints;
     lastTimestamp = t;
-    /* grab the mouse again */
-    GrabEm(MENU);
-    /* FIXME: If the grab fails in a submenu we're pissed. All kinds of
-     * unpleasant things might happen. */
     if (!check_if_fvwm_window_exists(*(pmp->pTmp_win)))
     {
       *(pmp->pTmp_win) = NULL;

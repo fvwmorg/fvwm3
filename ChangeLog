@@ -1,3 +1,13 @@
+1999-06-14  Dominik Vogt  <domivotdomivogt@bvstp038.bbn.hp.com>
+
+	* fvwm/menus.c (pop_menu_up): 
+	(pop_menu_down): don't ungrab the pointer during dynamic actions
+
+1999-06-14  Dominik Vogt  <dominik_vogt@gmx.de>
+
+	* fvwm/misc.c (GetMoveArguments): handle MoveToPage without arguments
+	as described in the man page (patch by Chetan Patil)
+
 1999-06-12  Dominik Vogt  <dominik_vogt@gmx.de>
 
 	* fvwm/menus.c (paint_item):

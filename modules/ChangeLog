@@ -1,3 +1,17 @@
+1999-06-14  Dominik Vogt  <domivotdomivogt@bvstp038.bbn.hp.com>
+
+	* FvwmPager/x_pager.c (DispatchEvent): 
+	* FvwmPager/FvwmPager.c (main): Any keystroke exits a transient pager
+
+1999-11-09  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* FvwmPager/x_pager.c (Scroll): Center the desktop view around the
+	mouse instead of placing the pointer in the top left corner.
+
+	* FvwmPager/FvwmPager.c (main): 
+	* FvwmPager/x_pager.c (DispatchEvent): transient pager ignores first
+	button release for improved usability
+
 Sat May 29 13:53:05 1999  Steve Robbins  <steve@nyongwa.montreal.qc.ca>
 
 	* modules/FvwmEvent/FvwmEvent.c: replace packet size macros with

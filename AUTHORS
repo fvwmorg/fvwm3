@@ -39,6 +39,9 @@ MoveThreshold command.
 Jay Painter:
 Gnome support (thanks, Jay!).
 
+Chetan Patil:
+Patch fix MoveToPage command without arguments.
+
 Chris Rankin:
 Rework of signal handlers (fvwm, FvwmButtons, FvwmIconMan, FvwmPager and
 FvwmEvent).
@@ -72,7 +75,7 @@ syntax, Repeat command, menu code clean up, panel enhancements (FvwmButtons),
 transient FvwmPager, GSFR for the main module, dynamic menus, recursive menus,
 rewrite of menu drawing, speed up startup with lots of menus, new menu styles
 BorderWidth, ItemFormat, Hilight3DThickness and SubmenusLeft, major clean up
-of the menu code.
+of the menu code, improved transient FvwmPager.
 
 A.J. Weber:
 SnapAttraction patch.

@@ -19,6 +19,7 @@
 #include <X11/Xproto.h>
 #include <X11/Xatom.h>
 #include <X11/Intrinsic.h>
+#include <X11/keysym.h>
 #ifdef SHAPE
 #include <X11/extensions/shape.h>
 #endif
@@ -81,6 +82,7 @@ DeskInfo *Desks;
 int Wait = 0;
 XErrorHandler FvwmErrorHandler(Display *, XErrorEvent *);
 extern Bool is_transient;
+extern Bool do_ignore_next_button_release;
 
 
 /* assorted gray bitmaps for decorative borders */
@@ -349,6 +351,7 @@ void initialize_pager(void)
 	      True, ButtonPressMask | ButtonReleaseMask|ButtonMotionMask,
 	      GrabModeAsync, GrabModeAsync, None,
 	      None);
+
   if(!StartIconic)
     wmhints.initial_state = NormalState;
   else
@@ -403,7 +406,8 @@ void initialize_pager(void)
 				       valuemask,
 				       &attributes);
       attributes.event_mask = (ExposureMask | ButtonReleaseMask |
-			       ButtonPressMask |ButtonMotionMask);
+			       ButtonPressMask |ButtonMotionMask|
+			       KeyPressMask);
       desk_h = window_h - label_h;
 
       valuemask &= ~(CWBackPixel);
@@ -690,7 +694,21 @@ void DispatchEvent(XEvent *Event)
     case Expose:
       HandleExpose(Event);
       break;
+    case KeyPress:
+      if (is_transient)
+	{
+	  XUngrabPointer(dpy,CurrentTime);
+	  MyXUngrabServer(dpy);
+	  XSync(dpy,0);
+	  exit(0);
+	}
+      break;
     case ButtonRelease:
+      if (do_ignore_next_button_release)
+	{
+	  do_ignore_next_button_release = False;
+	  break;
+	}
       if (Event->xbutton.button == 3)
 	{
 	  for(i=0;i<ndesks;i++)
@@ -733,6 +751,7 @@ void DispatchEvent(XEvent *Event)
 	}
       break;
     case ButtonPress:
+      do_ignore_next_button_release = False;
       if ( ShowBalloons )
         UnmapBalloonWindow();
       if (((Event->xbutton.button == 2)||
@@ -768,6 +787,7 @@ void DispatchEvent(XEvent *Event)
 	}
       break;
     case MotionNotify:
+      do_ignore_next_button_release = False;
       while(XCheckMaskEvent(dpy, PointerMotionMask | ButtonMotionMask,Event))
 	;
 
@@ -1094,7 +1114,6 @@ void DrawGrid(int i, int erase)
 #ifdef SHAPE
   UpdateWindowShape ();
 #endif
-
 }
 
 
@@ -1518,6 +1537,10 @@ void Scroll(int window_w, int window_h, int x, int y, int Desk)
 	  return;
 	}
 
+      /* center around mouse */
+      x -= (desk_w / (1 + Scr.VxMax / Scr.MyDisplayWidth)) / 2;
+      y -= (desk_h / (1 + Scr.VyMax / Scr.MyDisplayHeight)) / 2;
+
       if(x < 0)
 	x = 0;
       if(y < 0)
@@ -1904,8 +1927,8 @@ void LabelIconWindow(PagerWindow *t)
   XClearWindow(dpy, t->IconView);
   XDrawString (dpy, t->IconView,StdGC,2,windowFont->ascent+2 ,
 	       t->window_label, strlen(t->window_label));
-
 }
+
 void PictureWindow (PagerWindow *t)
 {
   XGCValues Globalgcv;
@@ -1951,6 +1974,7 @@ void PictureWindow (PagerWindow *t)
 	}
     }
 }
+
 void PictureIconWindow (PagerWindow *t)
 {
   XGCValues Globalgcv;

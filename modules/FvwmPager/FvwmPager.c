@@ -32,6 +32,7 @@
 #include <X11/Xproto.h>
 #include <X11/Xatom.h>
 #include <X11/Intrinsic.h>
+#include <X11/keysym.h>
 
 #include "libs/Module.h"
 #include "libs/fvwmlib.h"
@@ -113,6 +114,7 @@ Pixel win_hi_fore_pix = -1;
 char fAlwaysCurrentDesk = 0;
 PagerStringList string_list = { NULL, 0, NULL, NULL, NULL };
 Bool is_transient = False;
+Bool do_ignore_next_button_release = False;
 Bool error_occured = False;
 
 static volatile sig_atomic_t isTerminated = False;
@@ -189,6 +191,7 @@ int main(int argc, char **argv)
     {
       opt_num++;
       is_transient = True;
+      do_ignore_next_button_release = True;
     }
 
   if (argc < opt_num + 1)
@@ -282,7 +285,6 @@ int main(int argc, char **argv)
       XQueryPointer(dpy, Scr.Root, &JunkRoot, &JunkChild,
 		    &window_x, &window_y, &JunkX, &JunkY, &JunkMask);
       usposition = 1;
-      usposition = 1;
       xneg = 0;
       yneg = 0;
     }
@@ -341,7 +343,7 @@ int main(int argc, char **argv)
 	     XGrabPointer(dpy, Scr.Root, True,
 			  ButtonPressMask|ButtonReleaseMask|ButtonMotionMask|
 			  PointerMotionMask|EnterWindowMask|LeaveWindowMask,
-			  GrabModeAsync, GrabModeAsync, Scr.Pager_w,
+			  GrabModeAsync, GrabModeAsync, None,
 			  None, CurrentTime) != GrabSuccess)
 	{
 	  i++;
@@ -349,13 +351,9 @@ int main(int argc, char **argv)
 	   * any grab that they have. */
 	  usleep(1000);
 	}
+      XGrabKeyboard(dpy, Scr.Root, True, GrabModeAsync, GrabModeAsync,
+		    CurrentTime);
       XSync(dpy,0);
-
-      Event.xany.type = ButtonPress;
-      Event.xbutton.state = 0;
-      Event.xbutton.button = 3;
-      Event.xany.window = Desks[0].w;
-      DispatchEvent(&Event);
     }
   Loop(fd);
   return 0;
