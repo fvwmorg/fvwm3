@@ -124,7 +124,7 @@ static void FShmSafeCreateImage(
 		{
 			Fshmdt(fim->shminfo->shmaddr);
 		}
-		if (fim->shminfo->shmid)
+		if (fim->shminfo->shmid > 0)
 		{
 			Fshmctl(fim->shminfo->shmid, IPC_RMID, 0);
 		}
