@@ -70,9 +70,11 @@ AM_CONFIG_HEADER(config.h)
 
 dnl override CFLAGS and CPPFLAGS as they may cause configure to exit or to
 dnl fail detecting some features
+__CFLAGS="$CFLAGS"
 CFLAGS=""
-CPPFLAGS=""
 export CFLAGS
+__CPPFLAGS="$CPPFLAGS"
+CPPFLAGS=""
 export CPPFLAGS
 
 dnl installation paths
@@ -950,6 +952,11 @@ AC_SUBST(with_xpm)
 LOCAL_BUGADDR=${FVWM_BUGADDR-${USER-${LOGNAME-`whoami`}}}
 AC_SUBST(LOCAL_BUGADDR)
 
+dnl enable the old CFLAGS and CPPFLAGS settings
+CFLAGS="$__CFLAGS"
+export CFLAGS
+CPPFLAGS="$__CPPFLAGS"
+export CPPFLAGS
 
 AC_OUTPUT(
 	Makefile
