@@ -321,9 +321,43 @@ FvwmButtons will make the indicator as big as it fits in the button.
 You will probably want to use the \fIPadding\fP option to leave a
 few pixels between the indicator and the frame of the button.
 
+The \fIposition\fP option allows to place the panel. The syntaxe is:
+.nf
+.sp
+position [\fIcontext-window\fP] [\fIpos\fP] [\fIx\fP \fIy\fP] [\fIborder-opts\fP]
+.sp
+.fi
+The \fIcontext-window\fP can be one of: Button, Module or Root.
+It defines the window from which the Panel will be placed. Button
+specify the panel's button, Module specify FvwmButtons itself, 
+and Root specify a virtual screen (on the left of the screen for a 'right'
+sliding, on the right of the screen for a 'left' sliding, above the screen
+for a 'down' sliding and below the screen for an 'up' sliding).
+The context-window together the sliding direction define a line segment
+which is one of the borders of the context-window: the top/bottom/left/right 
+border for an up/down/left/right sliding. Then, the Panel is placed so that
+its bottom/top/right/left border is contiguous to this line segment.
+The \fIpos\fP can be one of: center, left or right (for an up
+or a down slidings) or top or bottom (for a left or a right slidings).
+It defines the vertical (up and down sliding) or the horizontal (left and
+right sliding) position of the Panel on the line segment.
+The offset values \fIx\fP and \fIy\fP specify how far the panel is
+moved from it's default position. By default, the numeric value given
+is interpreted as a percentage of the context window's width (height).
+Furthermore a trailing "p" changes the interpretation to mean "pixels".
+The \fIborder-opts\fP are: mlr, mtb, noplr and noptb.
+They define which borders width are taken in account. By default,
+the borders of the FvwmButtons are not taken in account. mlr reverses
+this default for the left and the right border and mtb reverses this default 
+for the top and the bottom border. Conversely, by default the borders of
+the Panel is taken in account. noplr reverses this default for the left and 
+the right border and noptb reverses this default for the top and the bottom 
+border.
+
 The defaults are sliding up with a delay of five millisecond and
 twelve animation steps. To post the panel without any animation,
-set the number of steps to zero.
+set the number of steps to zero. Moreover, the position default
+is 'Button center'.
 
 Please refer to the \fICREATING PANELS\fP section for further
 information on panels.

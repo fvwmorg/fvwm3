@@ -303,7 +303,8 @@ static void ParseSwallow(char **ss,byte *flags,byte *mask)
 **/
 static void ParsePanel(char **ss, byte *flags, byte *mask, char *direction,
 		       int *steps, int *delay, panel_flags_type *panel_flags,
-		       int *indicator_size)
+		       int *indicator_size, int *rela_x, int *rela_y,
+		       char *position, char *context)
 {
   char *swallowopts[] =
   {
@@ -319,8 +320,16 @@ static void ParsePanel(char **ss, byte *flags, byte *mask, char *direction,
     "smooth",
     "noborder",
     "indicator",
+    "position",
     NULL
   };
+
+  char *positionopts[] =
+  {
+    "button", "module", "root", "center", "left", "top", "right", 
+    "bottom", "noplr", "noptb", "mlr", "mtb", NULL
+  };
+
   char *t,*s=*ss;
   int n;
 
@@ -403,7 +412,8 @@ static void ParsePanel(char **ss, byte *flags, byte *mask, char *direction,
       (*panel_flags).smooth = 1;
       break;
     case 19: /* noborder */
-      (*panel_flags).ignore_border = 1;
+      (*panel_flags).ignore_lrborder = 1;
+      (*panel_flags).ignore_tbborder = 1;
       break;
     case 20: /* indicator */
       n = 0;
@@ -415,6 +425,79 @@ static void ParsePanel(char **ss, byte *flags, byte *mask, char *direction,
 	*indicator_size = 0;
       }
       s += n;
+      break;
+    case 21: /* position */
+      n = 0;
+      *rela_x = *rela_y = 0;
+      while(*s != ',' && *s != ')' && *s)
+      {    
+	s = trimleft(s);
+	/* get x and y offset */
+	if((*s>='0' && *s<='9') || *s=='+' || *s=='-')
+	{
+	  sscanf(s, "%i%n", rela_x, &n);
+	  s += n;
+	  if (*s == 'p' || *s == 'P')
+	  {
+	    (*panel_flags).relative_x_pixel = 1;
+	    s++;
+	  }
+	  n = 0;
+	  s = trimleft(s);
+	  sscanf(s, "%i%n", rela_y, &n);
+	  s += n;
+	  if (*s == 'p' || *s == 'P')
+	  {
+	    (*panel_flags).relative_y_pixel = 1;
+	    s++;
+	  }
+	  s = trimleft(s);
+	}
+	switch(GetTokenIndex(s,positionopts,-1,&s))
+	{
+	case 0: /* panelbutton */
+	  *context = SLIDE_CONTEXT_PB;
+	  break;
+	case 1: /* module */
+	  *context = SLIDE_CONTEXT_MODULE;
+	  break;
+	case 2: /* root */
+	  *context = SLIDE_CONTEXT_ROOT;
+	  break;
+	case 3: /* center */
+	  *position = SLIDE_POSITION_CENTER;
+	  break;
+	case 4: /* left */
+	case 5: /* top  */
+	  *position = SLIDE_POSITION_LEFT_TOP;
+	  break;
+	case 6: /* right */
+	case 7: /* bottom */
+	  *position = SLIDE_POSITION_RIGHT_BOTTOM;
+	  break;
+	case 8: /*  nobplr */
+	  (*panel_flags).ignore_lrborder = 1;
+	  break;
+	case 9: /* nobptb */
+	  (*panel_flags).ignore_tbborder = 1;
+	  break;
+	case 10: /* mlr */
+	  (*panel_flags).buttons_lrborder = 1;
+	  break;
+	case 11: /* mtb */
+	  (*panel_flags).buttons_tbborder = 1;
+	  break;
+	default:
+	  t=seekright(&s);
+	  s--;
+	  if (t) 
+	  {
+	    fprintf(stderr,"%s: Illegal Panel position option \"%s\"\n",MyName,
+		    (t)?t:"");
+	    free(t);
+	  }
+	}
+      }
       break;
     default:
       t=seekright(&s);
@@ -853,6 +936,10 @@ static void ParseButton(button_info **uberb,char *s)
 	  b->swallow = b_Respawn;
 	  b->swallow_mask = b_Respawn;
 	  b->slide_direction = SLIDE_UP;
+	  b->slide_position = SLIDE_POSITION_CENTER;
+	  b->slide_context = SLIDE_CONTEXT_PB;
+	  b->relative_x = 0;
+	  b->relative_y = 0;
 	  b->slide_steps = 12;
 	  b->slide_delay_ms = 5;
 	}
@@ -863,7 +950,8 @@ static void ParseButton(button_info **uberb,char *s)
 	  else
 	    ParsePanel(&s, &b->swallow, &b->swallow_mask, &b->slide_direction,
 		       &b->slide_steps, &b->slide_delay_ms, &b->panel_flags,
-		       &b->indicator_size);
+		       &b->indicator_size, &b->relative_x, &b->relative_y,
+		       &b->slide_position, &b->slide_context);
 	}
 	t=seekright(&s);
 	o=seekright(&s);

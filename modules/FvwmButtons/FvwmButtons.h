@@ -139,7 +139,12 @@ struct container_info_struct
 typedef struct
 {
   unsigned smooth : 1;
-  unsigned ignore_border : 1;
+  unsigned ignore_lrborder : 1;
+  unsigned ignore_tbborder : 1;
+  unsigned buttons_lrborder : 1;
+  unsigned buttons_tbborder : 1;
+  unsigned relative_x_pixel : 1;
+  unsigned relative_y_pixel : 1;
   unsigned panel_indicator : 1; /* b_Panel */
 } panel_flags_type;
 
@@ -201,6 +206,16 @@ struct button_info_struct
 #define SLIDE_RIGHT 'r'
 #define SLIDE_GEOMETRY 'g'
   char slide_direction;        /* b_Panel */
+#define SLIDE_POSITION_CENTER 'c'
+#define SLIDE_POSITION_LEFT_TOP 'l'
+#define SLIDE_POSITION_RIGHT_BOTTOM 'r'
+  char  slide_position;        /* b_Panel */
+#define SLIDE_CONTEXT_PB 'b'
+#define SLIDE_CONTEXT_MODULE 'm'
+#define SLIDE_CONTEXT_ROOT 'r'
+  char  slide_context;         /* b_Panel */
+  int relative_x;              /* b_Panel */
+  int relative_y;              /* b_Panel */
   int slide_steps;             /* b_Panel */
   int slide_delay_ms;          /* b_Panel */
   int indicator_size;          /* b_Panel */

@@ -57,10 +57,12 @@
 #include <X11/extensions/shape.h>
 #endif
 
+#include "fvwm/fvwm.h"
 #include "libs/Module.h"
 #include "libs/fvwmlib.h"
 #include "libs/fvwmsignal.h"
 #include "libs/Colorset.h"
+#include "libs/vpacket.h"
 #include "FvwmButtons.h"
 #include "misc.h" /* ConstrainSize() */
 #include "parse.h" /* ParseConfiguration(), parse_window_geometry() */
@@ -159,6 +161,10 @@ static int xneg = 0;
 static int yneg = 0;
 int button_width = 0;
 int button_height = 0;
+int button_lborder = 0;
+int button_rborder = 0;
+int button_tborder = 0;
+int button_bborder = 0;
 Bool has_button_geometry = 0;
 Bool is_transient = 0;
 Bool is_transient_panel = 0;
@@ -831,7 +837,7 @@ int main(int argc, char **argv)
 
   SetMessageMask(fd, M_NEW_DESK | M_END_WINDOWLIST | M_MAP | M_WINDOW_NAME
 		 | M_RES_CLASS | M_CONFIG_INFO | M_END_CONFIG_INFO | M_RES_NAME
-		 | M_SENDCONFIG);
+		 | M_SENDCONFIG | M_ADD_WINDOW | M_CONFIGURE_WINDOW);
 
   /* request a window list, since this triggers a response which
    * will tell us the current desktop and paging status, needed to
@@ -1654,7 +1660,7 @@ static void HandlePanelPress(button_info *b)
   tb = 0;
   rb = 0;
   bb = 0;
-  if (!b->panel_flags.ignore_border)
+  if (!b->panel_flags.ignore_lrborder || !b->panel_flags.ignore_tbborder)
   {
     ancestor = GetTopAncestorWindow(Dpy, b->PanelWin);
     if (ancestor)
@@ -1666,10 +1672,16 @@ static void HandlePanelPress(button_info *b)
 	  Dpy, b->PanelWin, ancestor, 0, 0, &px, &py, &JunkW))
       {
 	/* calculate the 'border' width in all four directions */
-	lb = max(px, 0) + abw;
-	tb = max(py, 0) + abw;
-	rb = max((aw + abw) - (px + pw), 0) + abw;
-	bb = max((ah + abw) - (py + ph), 0) + abw;
+	if (!b->panel_flags.ignore_lrborder)
+	{
+	  lb = max(px, 0) + abw;
+	  rb = max((aw + abw) - (px + pw), 0) + abw;
+	}
+	if (!b->panel_flags.ignore_tbborder)
+	{
+	  tb = max(py, 0) + abw;
+	  bb = max((ah + abw) - (py + ph), 0) + abw;
+	}
       }
     }
   }
@@ -2015,7 +2027,9 @@ void DebugFvwmEvents(unsigned long type)
     "M_CONFIG_INFO",
     "M_END_CONFIG_INFO",
     "M_ICON_FILE",
-    "M_DEFAULTICON",NULL};
+    "M_DEFAULTICON",
+    "M_ADD_WINDOW",
+    "M_CONFIGURE_WINDOW",NULL};
   int i=0;
   while(events[i])
   {
@@ -2214,6 +2228,7 @@ static void handle_colorset_packet(unsigned long *body)
 **/
 void process_message(unsigned long type,unsigned long *body)
 {
+  struct ConfigWinPacket  *cfgpacket;
 #ifdef DEBUG_FVWM
   DebugFvwmEvents(type);
 #endif
@@ -2238,6 +2253,19 @@ void process_message(unsigned long type,unsigned long *body)
     break;
   case M_CONFIG_INFO:
     handle_colorset_packet((unsigned long*)body);
+    break;
+  case M_ADD_WINDOW:
+  case M_CONFIGURE_WINDOW:
+    cfgpacket = (void *) body;
+    if ( cfgpacket->w == MyWindow)
+    {
+      button_lborder = button_rborder = button_tborder = button_bborder 
+	= cfgpacket->border_width;
+      if (HAS_BOTTOM_TITLE(cfgpacket))
+	button_bborder += cfgpacket->title_height;
+      else
+	button_tborder += cfgpacket->title_height;
+    }
     break;
   default:
     break;
@@ -2339,32 +2367,122 @@ static void GetPanelGeometry(
   Bool get_big, button_info *b, int lb, int tb, int rb, int bb,
   int *x, int *y, int *w, int *h)
 {
-  Window JunkChild;
-  int bx = buttonXPos(b, b->n);
-  int by = buttonYPos(b, b->n);
-  int bw = buttonWidth(b);
-  int bh = buttonHeight(b);
+  int bx, by, bw, bh;
+  int  ftb = 0, fbb = 0, frb = 0, flb = 0; 
+  Window JunkWin;
 
-  XTranslateCoordinates(Dpy, MyWindow, Root, bx, by, &bx, &by, &JunkChild);
+  /* take in acount or not the FvwmButtons borders width */
+  if (b->panel_flags.buttons_tbborder)
+  {
+    ftb = button_tborder;
+    fbb = button_bborder;
+  }
+  if (b->panel_flags.buttons_lrborder)
+  {
+    frb = button_rborder;
+    flb = button_lborder;
+  }
+
+  switch (b->slide_context)
+  {
+  case SLIDE_CONTEXT_PB: /* slide relatively to the panel button */
+    bx = buttonXPos(b, b->n);
+    by = buttonYPos(b, b->n);
+    bw = buttonWidth(b);
+    bh = buttonHeight(b);
+    XTranslateCoordinates(Dpy, MyWindow, Root, bx, by, &bx, &by, &JunkWin);
+    break;
+  case SLIDE_CONTEXT_MODULE: /* slide relatively to FvwmButtons */
+    {
+      unsigned int dum, dum2;
+      
+      XGetGeometry(Dpy, MyWindow, &JunkWin, &bx, &by, &bw, &bh, &dum, &dum2);
+      XTranslateCoordinates(Dpy, MyWindow, Root, bx, by, &bx, &by, &JunkWin);
+    }
+    break;
+  case SLIDE_CONTEXT_ROOT: /* slide relatively to the root windows */
+    switch (b->slide_direction)
+    {  
+    case SLIDE_UP:
+      bx = 0;
+      by = dph;
+      break;
+    case SLIDE_DOWN:
+      bx = 0;
+      by = -dph;
+      break;
+    case SLIDE_RIGHT:
+      bx = -dpw;
+      by = 0;
+      break;
+    case SLIDE_LEFT:
+      bx = dpw;
+      by = 0;
+      break;
+    }
+    bw = dpw;
+    bh = dph;
+    break;
+  }
+
+  /* relative corrections in % or pixel */
+  *x = *y = 0;
+  if (b->relative_x != 0)
+  {
+    if (b->panel_flags.relative_x_pixel)
+      *x = b->relative_x;
+    else
+      *x = (int)(b->relative_x * bw) / 100;
+  }
+  if (b->relative_y != 0)
+  {
+    if (b->panel_flags.relative_y_pixel)
+      *y = b->relative_y;
+    else
+      *y = (int)(b->relative_y * bh) / 100;
+  }
+
   switch (b->slide_direction)
   {
   case SLIDE_UP:
-    *x = bx + (int)(bw - (b->w + (rb - lb))) / 2;
-    *w = b->w;
+    switch (b->slide_position)
+    {
+    case SLIDE_POSITION_CENTER:
+      *x += bx + (int)(bw - (b->w + (rb - lb)) + (frb - flb)) / 2;
+      break;
+    case SLIDE_POSITION_LEFT_TOP:
+      *x += bx + lb - flb;
+      break;
+    case SLIDE_POSITION_RIGHT_BOTTOM:
+      *x += bx + bw - b->w - rb + frb;
+      break;
+    }
+    *w = b->w ;
     if (get_big)
     {
-      *y = by - (int)b->h - bb;
+      *y += by - (int)b->h - bb - ftb;
       *h = b->h;
     }
     else
     {
-      *y = by - bb;
+      *y += by - bb - ftb;
       *h = 0;
     }
     break;
   case SLIDE_DOWN:
-    *x = bx + (int)(bw - (b->w + (rb - lb))) / 2;
-    *y = by + (int)bh + tb;
+   switch (b->slide_position)
+    {
+    case SLIDE_POSITION_CENTER:
+      *x += bx + (int)(bw - (b->w + (rb - lb)) + (frb - flb)) / 2;
+      break;
+    case SLIDE_POSITION_LEFT_TOP:
+      *x += bx + lb - flb;
+      break;
+    case SLIDE_POSITION_RIGHT_BOTTOM:
+      *x += bx + bw - b->w - rb + frb;
+      break;
+    }
+    *y += by + (int)bh + tb + fbb;
     *w = b->w;
     if (get_big)
     {
@@ -2376,22 +2494,44 @@ static void GetPanelGeometry(
     }
     break;
   case SLIDE_LEFT:
-    *y = by + (int)(bh - b->h + (tb - bb)) / 2;
+    switch (b->slide_position)
+    {
+    case SLIDE_POSITION_CENTER:
+      *y += by + (int)(bh - b->h + (tb - bb) + (fbb - ftb)) / 2;
+      break;
+    case SLIDE_POSITION_LEFT_TOP:
+      *y += by + tb - ftb;
+      break;
+    case SLIDE_POSITION_RIGHT_BOTTOM:
+      *y += by + bh - b->h - bb + fbb;
+      break;
+    }
     *h = b->h;
     if (get_big)
     {
-      *x = bx - (int)b->w - rb;
+      *x += bx - (int)b->w - rb - flb;
       *w = b->w;
     }
     else
     {
-      *x = bx - rb;
+      *x += bx - rb - flb;
       *w = 0;
     }
     break;
   case SLIDE_RIGHT:
-    *y = by + (int)(bh - b->h + (tb - bb)) / 2;
-    *x = bx + (int)bw + lb;
+    switch (b->slide_position)
+    {
+    case SLIDE_POSITION_CENTER:
+      *y += by + (int)(bh - b->h + (tb - bb) + (fbb - ftb)) / 2;
+      break;
+    case SLIDE_POSITION_LEFT_TOP:
+      *y += by + tb - ftb;
+      break;
+    case SLIDE_POSITION_RIGHT_BOTTOM:
+      *y += by + bh - b->h - bb + fbb;
+      break;
+    }
+    *x += bx + (int)bw + lb + frb;
     *h = b->h;
     if (get_big)
     {

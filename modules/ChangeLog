@@ -1,3 +1,15 @@
+1999-12-06  olicha   <olivier.chapuis@free.fr>
+
+	* FvwmButtons/FvwmButons.c (GetPanelGeometry):
+	(process_message):
+	(HandlePanelPress):
+	* FvwmButtons/FvwmButons.h (button_info_struct):
+	(panel_flags_type):
+	* FvwmButtons/FvwmButons.1:
+	* FvwmButtons/parse.c (ParsePanel):
+	(ParseButton):
+	Added a position option to Panel.
+	
 1999-12-05  Dan Espen  <dane@mk.telcordia.com>
 
 	* FvwmForm/FvwmForm.c (DoCommand): Fixed overprinting in output message area.
