@@ -50,12 +50,12 @@ sub type ($) {
 
 sub argNames ($) {
 	my $self = shift;
-	return eventArgNames($self->type);
+	return eventArgNames($self->type, $self->argValues);
 }
 
 sub argTypes ($) {
 	my $self = shift;
-	return eventArgTypes($self->type);
+	return eventArgTypes($self->type, $self->argValues);
 }
 
 sub argValues ($) {
@@ -76,20 +76,7 @@ sub isExtended ($) {
 
 sub name ($) {
 	my $self = shift;
-	my $type = $self->{'type'};
-	if (!defined $FVWM::Event::EVENT_TYPE_NAMES) {
-		$FVWM::Event::EVENT_TYPE_NAMES = {};
-		foreach (@FVWM::Constants::EXPORT) {
-			next unless /^M_/ || /^MX_/;
-			no strict 'refs';
-			next if /^MX_/ && !(&$_() & M_EXTENDED_MSG);
-			$FVWM::Event::EVENT_TYPE_NAMES->{&$_()} = $_;
-		}
-	}
-	my $name = $FVWM::Event::EVENT_TYPE_NAMES->{$type};
-	$name = "*unknown-event-" . sprintf("%b", $self->type) . "*"
-		unless defined $name;
-	return $name;
+	return eventName($self->type);
 }
 
 sub propagationAllowed ($;$) {

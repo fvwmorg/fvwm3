@@ -46,11 +46,11 @@ sub eventLoop ($) {
 	$self->disconnect;
 }
 
-sub openErrorDialog ($$) {
+sub openErrorDialog ($$;$) {
 	my $self = shift;
 	my $error = shift;
+	my $title = shift || ($self->name . " Error");
 
-	my $title = "FVWM Error";
 	my $dialog = new Gtk::Dialog;
 	$dialog->set_title($title);
 	$dialog->set_border_width(4);
@@ -74,12 +74,31 @@ sub openErrorDialog ($$) {
 	$dialog->show_all;
 }
 
+sub openMessageDialog ($$;$) {
+	my $self = shift;
+	my $message = shift;
+	my $title = shift || ($self->name . " Message");
+
+	my $dialog = new Gtk::Dialog;
+	$dialog->set_title($title);
+	$dialog->set_border_width(4);
+
+	my $label = new Gtk::Label $message;
+	$dialog->vbox->pack_start($label, 0, 1, 10);
+
+	my $button = new Gtk::Button "Close";
+	$dialog->action_area->pack_start($button, 1, 1, 0);
+	$button->signal_connect("clicked", sub { $dialog->destroy; });
+
+	$dialog->show_all;
+}
+
 sub addDefaultErrorHandler ($) {
 	my $self = shift;
 
 	$self->addHandler(M_ERROR, sub {
-		my ($self, $type, @args) = @_;
-		$self->openErrorDialog($args[3]);
+		my ($self, $event) = @_;
+		$self->openErrorDialog($event->_text, "FVWM Error");
 	});
 }
 
@@ -114,7 +133,8 @@ FVWM::Module::Gtk - FVWM::Module with the GTK+ widget library attached
 
 The B<FVWM::Module::Gtk> package is a sub-class of B<FVWM::Module> that
 overloads the methods B<eventLoop> and B<addDefaultErrorHandler> to manage
-GTK+ objects as well. It also adds a new method B<openErrorDialog>.
+GTK+ objects as well. It also adds new methods B<openErrorDialog> and
+B<openMessageDialog>.
 
 This manual page details only those differences. For details on the
 API itself, see L<FVWM::Module>.
@@ -126,13 +146,13 @@ are covered here:
 
 =over 8
 
-=item eventLoop
+=item B<eventLoop>
 
 From outward appearances, this methods operates just as the parent
 B<eventLoop> does. It is worth mentioning, however, that this version
 enters into the B<Gtk>->B<main> subroutine, ostensibly not to return.
 
-=item openErrorDialog
+=item B<openErrorDialog> I<error> [I<title>]
 
 This method creates a dialog box using the GTK+ widgets. The dialog has
 three buttons labeled "Close", "Close All Errors" and "Exit Module".
@@ -142,7 +162,11 @@ all error dialogs that may be open on the screen at that time.
 
 Good for debugging a GTK+ based module.
 
-=item addDefaultErrorHandler
+=item B<openMessageDialog> I<message> [I<title>]
+
+Creates a message window with one "Close" button.
+
+=item B<addDefaultErrorHandler>
 
 This methods adds a M_ERROR handler to automatically notify you that an error
 has been reported by FVWM. The M_ERROR handler then calls C<openErrorDialog()>

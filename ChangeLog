@@ -1,3 +1,8 @@
+2002-10-03  Mikhael Goikhman  <migo@homemail.com>
+
+	* configure.in:
+	generate FvwmNewDebug and FvwmGtkDebug
+
 2002-10-02  olicha  <olivier.chapuis@free.fr>
 
 	* libs/PictureUtils.c (USED_DIST):

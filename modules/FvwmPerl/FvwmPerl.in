@@ -47,10 +47,10 @@ my $ppArgs = {};
 my $ppFileCount = 0;
 
 my $preprocessOptions = {
-	"c|command"    => \$ppArgs->{command},
-	"q|quote=s"    => \$ppArgs->{quote},
-	"nosend"       => \$ppArgs->{nosend},
-	"noremove"     => \$ppArgs->{noremove},
+	"c|cmd|command" => \$ppArgs->{command},
+	"q|quote=s"     => \$ppArgs->{quote},
+	"nosend"        => \$ppArgs->{nosend},
+	"noremove"      => \$ppArgs->{noremove},
 };
 
 my $options = {
@@ -90,10 +90,12 @@ my ($a, $b, $c, $d, $e, $f, $g, $h, $i, $j, $k, $l, $m, $n, $o, $p)
 my (@a, @b, @c, @d, @e, @f, @g, @h, @i, @j, @k, @l, @m, @n, @o, @p);
 my (%a, %b, %c, %d, %e, %f, %g, %h, %i, %j, %k, %l, %m, %n, %o, %p);
 
-sub command ($) {
+sub cmd ($) {
 	my $command = shift;
 	$module->send($command);
 }
+
+*command = \*cmd; *command = \*command;  # alias
 
 sub stop () {
 	# send a signal to the event loop to terminate the module
@@ -312,7 +314,7 @@ sub PreprocessNamespace::include ($) {
 
 sub processMessage ($$$$$$) {
 	my $event = $_[1];
-	my $string = $event->_line;
+	my $string = $event->_text;
 
 	$string =~ s/^\s+//;
 	return if $string eq "";
@@ -386,7 +388,11 @@ FvwmPerl - the FVWM perl manipulator
 
 =head1 SYNOPSIS
 
-FvwmPerl is spawned by fvwm(1), so no command line invocation will work.
+FvwmPerl should be spawned by fvwm(1) for normal functionality.
+
+To run this module, place this command somewhere in the configuration:
+
+  Module FvwmPerl [params]
 
 =head1 DESCRIPTION
 
@@ -396,10 +402,9 @@ construct fvwm commands.
 
 =head1 INVOCATION
 
-FvwmPerl may be invoked from a fvwmrc file.  If you want to invoke
-the unique and persistent instanse of FvwmPerl, it is suggested to
-do this from the I<StartFunction>.  Calling it from the top is also
-possible, but has several issues not discussed here.
+If you want to invoke the unique and persistent instanse of FvwmPerl, it is
+suggested to do this from the I<StartFunction>.  Calling it from the top is
+also possible, but involves some issues not discussed here.
 
     AddToFunc StartFunction I Module FvwmPerl
 
@@ -408,7 +413,7 @@ There are several command line switches:
 B<FvwmPerl>
 [ B<--eval> line ]
 [ B<--load> file ]
-[ B<--preprocess> [ B<--quote> char ] [ B<--command> ]
+[ B<--preprocess> [ B<--quote> char ] [ B<--cmd> ]
 [ B<--nosend> ] [ B<--noremove> ] [ line | file ] ]
 [ B<--stay> ] [ --nolock ]
 [ alias ]
@@ -421,7 +426,7 @@ B<-l>|B<--load> file - evaluate perl code in the given file
 
 B<-p>|B<--preprocess> file - preprocess the given fvwmrc file
 
-B<-c>|B<--command> line - an FVWM command to be preprocessed instead of file
+B<-c>|B<--cmd> line - an FVWM command to be preprocessed instead of file
 
 B<-q>|B<--quote> char - changes the default '%' quote
 
@@ -454,7 +459,7 @@ There are several actions that FvwmPerl may perform:
 
 Evaluate a line of perl code.
 
-A special function B<command(>"command"B<)> may be used in perl code to send
+A special function B<cmd(>"command"B<)> may be used in perl code to send
 commands back to fvwm.
 
 If perl code contains an error, it is printed to the standard error stream
@@ -467,15 +472,15 @@ If the file is not fully qualified, it is searched in the user
 directory $FVWM_USERDIR (usually ~/.fvwm) and the system wide
 data directory $FVWM_DATADIR.
 
-A special function B<command(>"command"B<)> may be used in perl code to send
+A special function B<cmd(>"command"B<)> may be used in perl code to send
 commands back to fvwm.
 
 If perl code contains an error, it is printed to the standard error stream
 with the I<[FvwmPerl][load]:> header prepended.
 
-=item B<preprocess> [-q|--quote char] [-c|--command] [I<line> | I<file>]
+=item B<preprocess> [-q|--quote char] [-c|--cmd] [I<line> | I<file>]
 
-Preprocess fvwmrc I<file> or (if --command is given) I<line>.
+Preprocess fvwmrc I<file> or (if --cmd is given) I<line>.
 This file contains lines that are not touched (usually FVWM commands)
 and specially preformatted perl code that is processed and replaced.
 Text enclosed in B<%{> ... B<}%> delimiters, that may start anywhere
@@ -495,7 +500,7 @@ free to use any variable names without fear of conflicts. Just don't
 use uninitialized variables to mean undef or empty list (they may be in fact
 initialized by the previous preprocess action), and do a clean-up if needed.
 The variables and function in the I<main> package are still available,
-like ::command() or ::skip(), but it is just not a good idea to access them
+like ::cmd() or ::skip(), but it is just not a good idea to access them
 while preprocessing.
 
 There is a special function B<include>(I<file>) that loads a file,
@@ -582,7 +587,7 @@ There are several functions that perl code may call:
 
 =over 4
 
-=item B<command(>I<$fvwmCommand>B<)>
+=item B<cmd(>I<$fvwmCommand>B<)>
 
 In case of B<eval> or B<load> - send back to fvwm a string I<$fvwmCommand>.
 In case of B<preprocess> - append a string I<$fvwmCommand> to the output of
@@ -661,10 +666,10 @@ All these commands may be added to StartFunction.
     # build a menu of background pixmaps
     AddToMenu MyBackgrounds "My Backgrounds" Title
     SendToModule FvwmPerl eval foreach $b (@b) \
-      { command("AddToMenu MyBackgrounds '$b' Exec fvwm-root $a/$b") }
+      { cmd("AddToMenu MyBackgrounds '$b' Exec fvwm-root $a/$b") }
 
     # choose a random background to load on start-up
-    SendToModule FvwmPerl eval command("AddToFunc \
+    SendToModule FvwmPerl eval cmd("AddToFunc \
       InitFunction + I Exec exec fvwm-root $a/" . $b[int(random(@b))])
 
 =head1 ESCAPING
@@ -678,7 +683,7 @@ The following 2 lines in each pair are equivalent:
     -SendToModule FvwmPerl eval $d = "$ENV{DISPLAY}"
 
     SendToModule FvwmPerl eval \
-        command("Echo desk=$d, display=$$d")
+        cmd("Echo desk=$d, display=$$d")
     SendToModule FvwmPerl preprocess -c \
         Echo desk=%("$d")%, display=%{$$d}%
 

@@ -1000,6 +1000,8 @@ dnl
 	modules/FvwmConsole/FvwmConsoleC.pl
 	modules/FvwmCpp/Makefile
 	modules/FvwmDebug/Makefile
+	modules/FvwmDebug/FvwmNewDebug
+	modules/FvwmDebug/FvwmGtkDebug
 	modules/FvwmDragWell/Makefile
 	modules/FvwmEvent/Makefile
 	modules/FvwmForm/Makefile

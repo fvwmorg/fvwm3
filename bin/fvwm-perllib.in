@@ -212,6 +212,8 @@ $internalPods->{tutorial} = q{
 	Currently see I<ftp://ftp.fvwm.org/pub/fvwm/devel/sources/tests/perl/>
 	for examples.
 
+	Also see sources of B<FvwmPerl>, B<FvwmDebug>, B<FvwmGtkDebug> modules.
+
 	:head1 AUTHOR
 
 	Mikhael Goikhman <migo@homemail.com>.

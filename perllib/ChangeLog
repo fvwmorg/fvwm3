@@ -1,3 +1,17 @@
+2002-10-03  Mikhael Goikhman  <migo@homemail.com>
+
+	* FVWM/Event.pm:
+	* FVWM/EventNames.pm:
+	rework some API
+
+	* FVWM/Module.pm.in:
+	small changes in API;
+	it is now possible to run a module in the dummy command line mode
+
+	* FVWM/Module/Gtk.pm:
+	* FVWM/Module/Tk.pm:
+	new openMessageDialog method, docs, fixes
+
 2002-09-20  Mikhael Goikhman  <migo@homemail.com>
 
 	* FVWM/Event.pm:

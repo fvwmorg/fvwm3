@@ -3,6 +3,7 @@
 ## Notes: Imakefile also linked with -ldnet_stub, on AlphaArchitecture
 
 moduledir = @FVWM_MODULEDIR@
+module_SCRIPTS = FvwmNewDebug FvwmGtkDebug
 module_PROGRAMS = FvwmDebug
 FvwmDebug_SOURCES = FvwmDebug.c FvwmDebug.h
 FvwmDebug_DEPENDENCIES = $(top_builddir)/libs/libfvwm.a

@@ -1,0 +1,131 @@
+#!@PERL@ -w
+
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+
+# Filter this script to pod2man to get a man page:
+#   pod2man -c "FVWM Module" FvwmDebug | nroff -man | less -e
+
+require 5.003;
+use strict;
+
+BEGIN {
+	use vars qw($prefix $datadir);
+	$prefix = "@prefix@";
+	$datadir = "@datadir@";
+}
+
+use lib "@FVWM_PERLLIBDIR@";
+use FVWM::Module;
+
+my $dumpArgs = 1;
+my $mask = MAX_MSG_MASK;
+my $xmask = MAX_XMSG_MASK & ~(MX_ENTER_WINDOW | MX_LEAVE_WINDOW);
+
+my $options = {
+	'args!'     => \$dumpArgs,
+	'm|mask=i'  => \$mask,
+	'x|xmask=i' => \$xmask,
+};
+
+my $module = new FVWM::Module(
+	Name => "FvwmDebug",
+	EnableOptions => $options,
+#	Debug => 1,
+);
+$xmask |= M_EXTENDED_MSG;
+$module->mask($mask);
+$module->xmask($xmask);
+
+$module->addHandler($mask, \&dumpEvent);
+$module->addHandler($xmask, \&dumpEvent);
+
+$module->eventLoop;
+
+sub dumpEvent ($$) {
+	my ($module, $event) = @_;
+
+	my $argNames  = $event->argNames;
+	my $argTypes  = $event->argTypes;
+	my $argValues = $event->argValues;
+
+	print STDERR $event->name, "\n";
+	return unless $dumpArgs;
+
+	my $i;
+	for ($i = 0; $i < @$argNames; $i++) {
+		my $name  = $argNames->[$i];
+		my $type  = $argTypes->[$i];
+		my $value = $argValues->[$i];
+
+		my $text;
+		if ($type == FVWM::EventNames::number) {
+			$text = $value;
+		} elsif ($type == FVWM::EventNames::bool) {
+			$text = $value? "True": "False";
+		} elsif ($type == FVWM::EventNames::window) {
+			$text = sprintf("0x%07lx", $value);
+		} elsif ($type == FVWM::EventNames::pixel) {
+			$text = "rgb:" . join('/',
+				sprintf("%06lx", $value) =~ /(..)(..)(..)/);
+		} elsif ($type == FVWM::EventNames::string) {
+			$text = qq("$value");
+		} elsif ($type == FVWM::EventNames::wflags) {
+			$text = qq([window flags are not supported yet]);
+		} else {
+			$text = qq([unsupported arg type $type] "$value");
+		}
+
+		my $nameLen = 12;
+		$nameLen = int((length($name) + 5) / 6) * 6
+			if length($name) > $nameLen;
+		printf STDERR "\t%-${nameLen}s %s\n", $name, $text;
+	}
+}
+
+__END__
+
+# ----------------------------------------------------------------------------
+# man page
+
+=head1 NAME
+
+FvwmDebug - the FVWM module debugger
+
+=head1 SYNOPSIS
+
+FvwmDebug should be spawned by fvwm(1) for normal functionality.
+
+To run this module, place this command somewhere in the configuration:
+
+  Module FvwmDebug
+
+To stop this module, execute:
+
+  KillModule FvwmDebug
+
+=head1 DESCRIPTION
+
+This module dumps all fvwm event information into standard error stream for
+debugging purposes.
+
+=head1 SEE ALSO
+
+See L<FvwmGtkDebug>.
+
+=head1 AUTHOR
+
+Mikhael Goikhman <migo@homemail.com>.
+
+=cut

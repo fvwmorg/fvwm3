@@ -1,3 +1,11 @@
+2002-10-03  Mikhael Goikhman  <migo@homemail.com>
+
+	* FvwmNewDebug.in:
+	* FvwmNewDebug.1:
+	* FvwmGtkDebug.in:
+	* FvwmGtkDebug.1:
+	two new debugging modules (the old FvwmDebug replacements)
+
 2002-10-02  olicha  <olivier.chapuis@free.fr>
 
 	* FvwmButtons/FvwmButtons.c (LoadIconFile):

@@ -62,11 +62,11 @@ sub eventLoop ($) {
 	MainLoop;
 }
 
-sub openErrorDialog ($$) {
+sub openErrorDialog ($$;$) {
 	my $self = shift;
 	my $error = shift;
+	my $title = shift || ($self->name . " Error");
 
-	my $title = "FVWM Error";
 	my $top = $self->{topLevel};
 
 	my $dialog = $top->Dialog(
@@ -86,8 +86,8 @@ sub addDefaultErrorHandler ($) {
 	my $self = shift;
 
 	$self->addHandler(M_ERROR, sub {
-		my ($self, $type, @args) = @_;
-		$self->openErrorDialog($args[3]);
+		my ($self, $event) = @_;
+		$self->openErrorDialog($event->_text, "FVWM Error");
 	});
 }
 
@@ -138,7 +138,7 @@ are covered here:
 
 =over 8
 
-=item new
+=item B<new>
 
 $module = new FVWM::Module::Tk $top, %params
 
@@ -148,13 +148,13 @@ method, with the exception that a Tk top-level of some sort (MainWindow,
 TopLevel, Frame, etc.) must be passed before the hash of options. The options
 themselves are as specified in L<FVWM::Module>.
 
-=item eventLoop 
+=item B<eventLoop>
 
 From outward appearances, this methods operates just as the parent
 B<eventLoop> does. It is worth mentioning, however, that this version
 enters into the Tk B<MainLoop> subroutine, ostensibly not to return.
 
-=item openErrorDialog
+=item B<openErrorDialog> I<error> [I<title>]
 
 This method creates a dialog box using the Tk widgets. The dialog has
 three buttons labeled "Close", "Close All Errors" and "Exit Module".
@@ -164,17 +164,17 @@ all error dialogs that may be open on the screen at that time.
 
 Good for debugging a Tk based module.
 
-=item addDefaultErrorHandler
+=item B<addDefaultErrorHandler>
 
 This methods adds a M_ERROR handler to automatically notify you that an error
 has been reported by FVWM. The M_ERROR handler then calls C<openErrorDialog()>
 with the received error text as a parameter to show it in a window.
 
-=item topLevel
+=item B<topLevel>
 
 Returns the Tk toplevel that this object was created with.
 
-=item winId
+=item B<winId>
 
 A shortcut for $self->topLevel->id, exists for efficiency reasons.
 

@@ -1,0 +1,524 @@
+#!@PERL@ -w
+
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+
+# Filter this script to pod2man to get a man page:
+#   pod2man -c "FVWM Module" FvwmDebug | nroff -man | less -e
+
+require 5.003;
+use strict;
+
+BEGIN {
+	use vars qw($prefix $datadir);
+	$prefix = "@prefix@";
+	$datadir = "@datadir@";
+}
+
+use lib "@FVWM_PERLLIBDIR@";
+use FVWM::Module::Gtk;
+use FVWM::EventNames;
+use Gtk;
+init Gtk;
+
+my $defaultMask = MAX_MSG_MASK &
+	~(M_FOCUS_CHANGE | M_CONFIGURE_WINDOW | M_VISIBLE_NAME | M_ICON_NAME);
+my $defaultXMask = MAX_XMSG_MASK &
+	~(MX_ENTER_WINDOW | MX_LEAVE_WINDOW | MX_VISIBLE_ICON_NAME);
+$defaultXMask &= ~M_EXTENDED_MSG;
+
+my $mask = $defaultMask;
+my $xmask = $defaultXMask;
+my $newMask = $mask;
+my $newXMask = $xmask;
+
+my $options = {
+	'm|mask=i'  => \$mask,
+	'x|xmask=i' => \$xmask,
+};
+
+my $module = new FVWM::Module::Gtk(
+	Name => "FvwmGtkDebug",
+	EnableOptions => $options,
+#	Debug => 1,
+);
+
+# ----------------------------------------------------------------------------
+# functions
+
+my $monitoring = 0;
+my $storedEventDatas = [];
+my $currentEventNum = -1;
+my $eventListSizeChanged = 0;
+my $stickToLastEvent = 1;
+
+sub eventArgTypeToName ($) {
+	my $type = shift;
+	return
+		$type == FVWM::EventNames::number? "number":
+		$type == FVWM::EventNames::bool? "boolean":
+		$type == FVWM::EventNames::window? "window":
+		$type == FVWM::EventNames::pixel? "color":
+		$type == FVWM::EventNames::string? "string":
+		$type == FVWM::EventNames::wflags? "wflags":
+		"unknown";
+}
+
+sub storeEvent ($$) {
+	my ($module, $event) = @_;
+
+	my $argNames  = $event->argNames;
+	my $argTypes  = $event->argTypes;
+	my $argValues = $event->argValues;
+
+#	print STDERR $event->name, "\n";
+
+	my $eventData = {
+		type => $event->type,
+		name => $event->name,
+		args => [],
+	};
+	my $i;
+	for ($i = 0; $i < @$argNames; $i++) {
+		my $name  = $argNames->[$i];
+		my $type  = $argTypes->[$i];
+		my $value = $argValues->[$i];
+
+		my $text;
+		if ($type == FVWM::EventNames::number) {
+			$text = $value;
+		} elsif ($type == FVWM::EventNames::bool) {
+			$text = $value? "True": "False";
+		} elsif ($type == FVWM::EventNames::window) {
+			$text = sprintf("0x%07lx", $value);
+		} elsif ($type == FVWM::EventNames::pixel) {
+			$text = "rgb:" . join('/',
+				sprintf("%06lx", $value) =~ /(..)(..)(..)/);
+		} elsif ($type == FVWM::EventNames::string) {
+			$text = qq("$value");
+		} elsif ($type == FVWM::EventNames::wflags) {
+			$text = qq([window flags are not supported yet]);
+		} else {
+			$text = qq([unsupported arg type $type] "$value");
+		}
+
+		push @{$eventData->{args}}, {
+			name => $name,
+			type => $type,
+			text => $text,
+		};
+
+	}
+	push @$storedEventDatas, $eventData;
+	$eventListSizeChanged = 1;
+	&updateCurrentEventWidgets();
+}
+
+sub sendModuleEventMask () {
+	if ($monitoring) {
+		$module->mask($mask);
+		$module->xmask($xmask);
+	} else {
+		$module->mask(0);
+		$module->xmask(0);
+	}
+}
+
+my $updateEventMaskButton;
+my $revertEventMaskButton;
+
+sub updateEventMaskChangeButtons () {
+	my $isChanged = $mask != $newMask || $xmask != $newXMask;
+	$updateEventMaskButton->set_sensitive($isChanged);
+	$revertEventMaskButton->set_sensitive($isChanged);
+}
+
+# ----------------------------------------------------------------------------
+# creating gui
+
+my $tmp;  # there is a Gtk::Frame bug regarding border_width, so use tmp box
+
+my $window = new Gtk::Window;
+$window->set_title($module->name);
+$window->set_border_width(4);
+
+my $notebook = new Gtk::Notebook();
+$notebook->set_homogeneous_tabs(1);
+$window->add($notebook);
+
+# ---- setup page ----
+my $setupPage = new Gtk::VBox(0, 0);
+$notebook->append_page($setupPage, new Gtk::Label(" Setup "));
+
+my $eventMaskBox = new Gtk::HBox(0, 0);
+$setupPage->pack_start($eventMaskBox, 1, 1, 10);
+
+my $eventMaskScroll = new Gtk::ScrolledWindow("", "");
+$eventMaskScroll->set_policy("automatic", "always");
+
+my $eventMaskScrollFrame = new Gtk::Frame(" Event mask ");
+$tmp = new Gtk::VBox(0, 0); $tmp->add($eventMaskScroll); $tmp->border_width(5);
+$eventMaskScrollFrame->add($tmp);
+$eventMaskBox->pack_start($eventMaskScrollFrame, 1, 1, 10);
+
+my $eventTypeBox = new Gtk::VButtonBox();
+$eventTypeBox->set_spacing(0);
+my $eventTypeCheckButtons = {};
+my $type;
+foreach $type (@{allEventTypes()}) {
+	my $checkButton = new Gtk::CheckButton(eventName($type));
+	$checkButton->border_width(0);
+	$eventTypeBox->pack_start($checkButton, 0, 0, 0);
+	$eventTypeCheckButtons->{$type} = $checkButton;
+	$checkButton->signal_connect("clicked", sub {
+		($type & M_EXTENDED_MSG? $newXMask: $newMask) ^=
+			($type & ~M_EXTENDED_MSG);
+		updateEventMaskChangeButtons();
+	});
+}
+$eventMaskScroll->add_with_viewport($eventTypeBox);
+
+sub updateCheckButtonsFromNewMask () {
+	my $curMask = $newMask; my $curXMask = $newXMask;
+	my ($type, $checkButton);
+	while (($type, $checkButton) = each %$eventTypeCheckButtons) {
+		$checkButton->set_active(($type & M_EXTENDED_MSG?
+			$newXMask: $newMask) & $type & ~M_EXTENDED_MSG);
+	}
+	# unfortunately set_active triggers "clicked" signal, so correct this
+	$newMask = $curMask; $newXMask = $curXMask;
+	updateEventMaskChangeButtons();
+}
+
+my $eventMaskButtonBox = new Gtk::VButtonBox();
+$eventMaskButtonBox->set_spacing_default(10);
+$eventMaskButtonBox->set_child_size(190, 0);
+$eventMaskButtonBox->set_child_ipadding(0, 2);
+$eventMaskButtonBox->set_layout('start');
+$eventMaskBox->pack_start($eventMaskButtonBox, 0, 0, 10);
+
+my $selectAllEventsButton = new Gtk::Button(" Select all events ");
+$eventMaskButtonBox->pack_start($selectAllEventsButton, 1, 1, 6);
+$selectAllEventsButton->signal_connect("clicked", sub {
+	$newMask = MAX_MSG_MASK; $newXMask = MAX_XMSG_MASK;
+	updateCheckButtonsFromNewMask();
+});
+
+my $unselectAllEventsButton = new Gtk::Button(" Unselect all events ");
+$eventMaskButtonBox->pack_start($unselectAllEventsButton, 1, 1, 6);
+$unselectAllEventsButton->signal_connect("clicked", sub {
+	$newMask = 0; $newXMask = 0;
+	updateCheckButtonsFromNewMask();
+});
+
+my $setDefaultEventsButton = new Gtk::Button(" Select default events ");
+$eventMaskButtonBox->pack_start($setDefaultEventsButton, 1, 1, 6);
+$setDefaultEventsButton->signal_connect("clicked", sub {
+	$newMask = $defaultMask; $newXMask = $defaultXMask;
+	updateCheckButtonsFromNewMask();
+});
+
+$revertEventMaskButton = new Gtk::Button(" Restore current events ");
+$eventMaskButtonBox->pack_start($revertEventMaskButton, 1, 1, 6);
+$revertEventMaskButton->signal_connect("clicked", sub {
+	$newMask = $mask; $newXMask = $xmask;
+	updateCheckButtonsFromNewMask();
+});
+
+my $setupButtonBox = new Gtk::HButtonBox();
+$setupButtonBox->border_width(10);
+$setupButtonBox->set_child_size(190, 0);
+$setupButtonBox->set_child_ipadding(0, 2);
+$setupButtonBox->set_layout('edge');
+$setupPage->pack_end($setupButtonBox, 0, 0, 0);
+
+$updateEventMaskButton = new Gtk::Button(" Update event mask ");
+$setupButtonBox->pack_start($updateEventMaskButton, 1, 1, 40);
+$updateEventMaskButton->signal_connect("clicked", sub {
+	$mask = $newMask; $xmask = $newXMask;
+	sendModuleEventMask() if $monitoring;
+	updateEventMaskChangeButtons();
+});
+
+my $startMonitoringButton = new Gtk::Button(" Start watching events ");
+$setupButtonBox->pack_start($startMonitoringButton, 1, 1, 40);
+$startMonitoringButton->signal_connect("clicked", \&switchMonitoring);
+
+# ---- event page ----
+my $eventPage = new Gtk::VBox(0, 0);
+$eventPage->border_width(10);
+$notebook->append_page($eventPage, new Gtk::Label(" Stored Events "));
+
+my $eventNameLine = new Gtk::HBox(0, 0);
+$eventPage->pack_start($eventNameLine, 0, 0, 0);
+
+my $eventNumBox = new Gtk::HBox(0, 0);
+$eventNumBox->border_width(5);
+my $eventNumFrame = new Gtk::Frame(" Event num ");
+$eventNumFrame->add($eventNumBox);
+$eventNameLine->pack_start($eventNumFrame, 0, 0, 0);
+
+my $eventNumAdj = new Gtk::Adjustment(0, 0, 0, 0, 0, 0);
+my $eventNum = new Gtk::SpinButton($eventNumAdj, 0, 1);
+$eventNum->set_usize(57, 0);
+$eventNum->signal_connect("changed", \&updateCurrentEventNumber);
+$eventNumBox->pack_start($eventNum, 0, 0, 0);
+
+my $eventTotalNum = new Gtk::Entry();
+$eventTotalNum->set_editable(0);
+$eventTotalNum->set_usize(42, 0);
+$eventNumBox->pack_start($eventTotalNum, 0, 0, 0);
+
+my $eventName = new Gtk::Entry();
+$eventName->set_editable(0);
+$eventName->set_usize(164, 0);
+
+my $eventNameFrame = new Gtk::Frame(" Event type ");
+$tmp = new Gtk::VBox(0, 0); $tmp->add($eventName); $tmp->border_width(5);
+$eventNameFrame->add($tmp);
+$eventNameLine->pack_start($eventNameFrame, 0, 0, 10);
+
+my $activeCheckButton = new Gtk::CheckButton("Active");
+$activeCheckButton->signal_connect("clicked", \&switchMonitoring);
+$eventNameLine->pack_end($activeCheckButton, 0, 0, 0);
+
+my $stickCheckButton = new Gtk::CheckButton("Stick to last");
+$stickCheckButton->set_active($stickToLastEvent);
+$stickCheckButton->signal_connect("clicked", sub {
+	$stickToLastEvent ^= 1;
+	&updateCurrentEventWidgets()
+		if $stickToLastEvent && $currentEventNum != @$storedEventDatas;
+});
+$eventNameLine->pack_end($stickCheckButton, 0, 0, 0);
+
+# ---- next event page row ----
+my $eventArgsList = new_with_titles Gtk::CList("Name", "Value");
+$eventArgsList->column_titles_passive();
+$eventArgsList->set_shadow_type("none");
+$eventArgsList->set_selection_mode("extended");
+$eventArgsList->set_column_width(0, 140);
+my $lastRowSelected = -1;
+$eventArgsList->signal_connect("select_row", sub {
+	my ($widget, $row) = @_;
+	my $currRowSelected = $lastRowSelected;
+	$lastRowSelected = $row;
+	return unless $currRowSelected == $row;
+	my $data = $widget->get_row_data($row);
+	$stickCheckButton->set_active(0);
+	$module->openMessageDialog(
+		"$data->{name} (" . eventArgTypeToName($data->{type}) .
+		"): $data->{text}", $eventName->get_text() . " event argument"
+	);
+});
+$eventArgsList->signal_connect("unselect_row", sub { $lastRowSelected = -1; });
+
+my $eventArgsListScroll = new Gtk::ScrolledWindow("", "");
+$eventArgsListScroll->set_policy("automatic", "automatic");
+$eventArgsListScroll->add_with_viewport($eventArgsList);
+
+my $eventArgsListScrollFrame = new Gtk::Frame(" Event arguments ");
+$tmp = new Gtk::VBox(0, 0); $tmp->add($eventArgsListScroll); $tmp->border_width(5);
+$eventArgsListScrollFrame->add($tmp);
+$eventPage->pack_start($eventArgsListScrollFrame, 1, 1, 10);
+
+my $eventListButtonBox = new Gtk::HButtonBox();
+$eventListButtonBox->set_child_size(90, 0);
+$eventListButtonBox->set_child_ipadding(0, 2);
+$eventListButtonBox->set_layout('edge');
+$eventPage->pack_end($eventListButtonBox, 0, 0, 0);
+
+my $currentEventPossiblyDirty = 0;
+sub filterStoredEvents ($) {
+	my $func = shift;
+	my $initialNum = @$storedEventDatas;
+	my $count = 0;
+	my $index = 0;
+	for ($count = 1; $count <= $initialNum; $count++) {
+		if (&$func($count, $storedEventDatas->[$index]->{type})) {
+			$index++;
+		} else {
+			splice(@$storedEventDatas, $index, 1);
+		}
+	}
+	if ($initialNum != @$storedEventDatas) {
+		$eventListSizeChanged = 1;
+		$currentEventPossiblyDirty = 1;
+		updateCurrentEventWidgets();
+	}
+}
+
+my $clearThisOneButton = new Gtk::Button(" Clear one ");
+$eventListButtonBox->pack_start($clearThisOneButton, 1, 1, 6);
+$clearThisOneButton->signal_connect("clicked", sub {
+	filterStoredEvents(sub { $_[0] != $currentEventNum });
+});
+
+my $clearThisTypeButton = new Gtk::Button(" Clear type ");
+$eventListButtonBox->pack_start($clearThisTypeButton, 1, 1, 6);
+$clearThisTypeButton->signal_connect("clicked", sub {
+	my $currentType = $storedEventDatas->[$currentEventNum - 1]->{type};
+	filterStoredEvents(sub { $_[1] != $currentType });
+});
+
+my $clearAllButton = new Gtk::Button(" Clear all ");
+$eventListButtonBox->pack_start($clearAllButton, 1, 1, 6);
+$clearAllButton->signal_connect("clicked", sub {
+	filterStoredEvents(sub { 0 });
+});
+
+my $leaveThisTypeButton = new Gtk::Button(" Leave type ");
+$eventListButtonBox->pack_start($leaveThisTypeButton, 1, 1, 6);
+$leaveThisTypeButton->signal_connect("clicked", sub {
+	my $currentType = $storedEventDatas->[$currentEventNum - 1]->{type};
+	filterStoredEvents(sub { $_[1] == $currentType });
+});
+
+my $leaveThisOneButton = new Gtk::Button(" Leave one ");
+$eventListButtonBox->pack_start($leaveThisOneButton, 1, 1, 6);
+$leaveThisOneButton->signal_connect("clicked", sub {
+	filterStoredEvents(sub { $_[0] == $currentEventNum });
+});
+
+sub updateCurrentEventWidgets (;$) {
+	my $maxNum = @$storedEventDatas;
+	my $num = shift || ($stickToLastEvent? $maxNum: $currentEventNum);
+	$num = 1 if $num <= 0;
+	$num = $maxNum if $num > $maxNum;
+	my $currentEventNumChanged = $currentEventNum != $num;
+	$currentEventNum = $num;
+	my $eventNumAdj = new Gtk::Adjustment($num, 1, $maxNum, 1, 10, 0);
+	$eventNum->configure($eventNumAdj, 0.5, 0);
+	$eventTotalNum->set_text($maxNum);
+
+	return unless $currentEventNumChanged
+		|| $eventListSizeChanged || $currentEventPossiblyDirty;
+	$eventListSizeChanged = 0;
+	$lastRowSelected = -1;
+	$eventName->set_text($num? $storedEventDatas->[$num - 1]->{name}: "");
+
+	if ($currentEventNumChanged || $currentEventPossiblyDirty) {
+		$eventArgsList->freeze();
+		$eventArgsList->clear();
+		my $row = 0;
+		foreach ($num? @{$storedEventDatas->[$num - 1]->{args}}: ()) {
+			my $data = $_;
+			$eventArgsList->append($data->{name}, $data->{text});
+			$eventArgsList->set_row_data($row++, $data);
+		}
+		$eventArgsList->thaw();
+		$currentEventPossiblyDirty = 0;
+	}
+
+	my $currentType = $num? $storedEventDatas->[$num - 1]->{type}: 0;
+	my $hasOtherTypes = 0;
+	foreach ($num = 1; $num <= $maxNum; $num++) {
+		if ($currentType != $storedEventDatas->[$num - 1]->{type})
+			{ $hasOtherTypes = 1; last; }
+	}
+	$clearThisOneButton->set_sensitive($maxNum > 0);
+	$clearThisTypeButton->set_sensitive($maxNum > 0);
+	$clearAllButton->set_sensitive($maxNum > 0);
+	$leaveThisTypeButton->set_sensitive($hasOtherTypes);
+	$leaveThisOneButton->set_sensitive($maxNum > 1);
+}
+
+sub updateCurrentEventNumber () {
+	return if $eventNum->value == $currentEventNum;
+	updateCurrentEventWidgets($eventNum->value);
+}
+
+my $inSwitchMonitoring = 0;
+sub switchMonitoring () {
+	return if $inSwitchMonitoring;
+	$inSwitchMonitoring = 1;
+	$monitoring ^= 1;
+	sendModuleEventMask();
+	$startMonitoringButton->child->set($monitoring?
+		" Stop watching events ": " Start watching events ");
+	$activeCheckButton->set_active($monitoring);
+	$inSwitchMonitoring = 0;
+}
+
+updateCheckButtonsFromNewMask();
+updateCurrentEventWidgets();
+
+$window->signal_connect("destroy" => \&Gtk::main_quit);
+$window->signal_connect("delete_event" => \&Gtk::false);
+$window->set_usize(520, 600);
+$window->show_all;
+
+# ----------------------------------------------------------------------------
+# main
+
+sendModuleEventMask();
+
+$module->addHandler(MAX_MSG_MASK, \&storeEvent);
+$module->addHandler(MAX_XMSG_MASK | M_EXTENDED_MSG, \&storeEvent);
+
+sub emulateSomeEvents () {
+	$module->invokeHandler(new FVWM::Event(M_NEW_DESK, [ $currentEventNum ]));
+	$module->invokeHandler(new FVWM::Event(M_MAP, [ 0x123, 0x456, 789 ]));
+	$module->invokeHandler(new FVWM::Event(M_NEW_PAGE, [ 0, 0, 2, 800, 600 ]));
+}
+
+sub emulateSomeEventForever () {
+	emulateSomeEvents() if $monitoring;
+	alarm(20);
+}
+
+if ($module->isDummy) {
+	emulateSomeEvents();
+	emulateSomeEvents();
+	$SIG{ALRM} = \&emulateSomeEventForever;
+	alarm(20);
+}
+
+$module->eventLoop;
+
+__END__
+
+# ----------------------------------------------------------------------------
+# man page
+
+=head1 NAME
+
+FvwmGtkDebug - the graphical FVWM module debugger
+
+=head1 SYNOPSIS
+
+FvwmGtkDebug should be spawned by fvwm(1).
+
+To run this module, place this command somewhere in the configuration:
+
+  Module FvwmGtkDebug
+
+To stop this module, just exit the GUI window, the usual KillModule works too.
+
+You may also run this application in the dummy mode from the command line,
+but this only shows GUI without the actual functionality.
+
+=head1 DESCRIPTION
+
+This module monitors all fvwm event information and shows it nicely in the
+interactive gtk+ application. Good for debugging purposes.
+
+=head1 SEE ALSO
+
+See L<FvwmDebug>.
+
+=head1 AUTHOR
+
+Mikhael Goikhman <migo@homemail.com>.
+
+=cut

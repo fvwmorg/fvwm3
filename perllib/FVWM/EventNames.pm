@@ -211,7 +211,7 @@ $EVENTS_INFO = {
 			win_id       => window,
 			frame_id     => window,
 			ptr          => number,
-			line         => string,
+			text         => string,
 		],
 	},
 
@@ -247,7 +247,7 @@ $EVENTS_INFO = {
 			win_id       => window,
 			frame_id     => window,
 			ptr          => number,
-			line         => string,
+			text         => string,
 		],
 	},
 
@@ -299,17 +299,22 @@ $EVENTS_INFO = {
 #	},
 
 	&M_RESTACK              => {
-		format => "l*",
+		format => "l3",
 		fields => [
 			win_id       => window,
 			frame_id     => window,
 			ptr          => number,
-			name         => string,
+		],
+		format2 => "l3",
+		fields2 => [
+			win_id       => window,
+			frame_id     => window,
+			ptr          => number,
 		],
 	},
 
 	&M_ADD_WINDOW           => {
-		format => "L[9]S[2]L[16]a*",
+		format => "L9S2L16a*",
 		fields => [
 			win_id       => window,
 			frame_id     => window,
@@ -330,8 +335,8 @@ $EVENTS_INFO = {
 			minimum_height    => number,
 			maximum_width     => number,
 			maximum_height    => number,
-			icon_title_id     => number,
-			icon_image_id     => number,
+			icon_title_id     => window,
+			icon_image_id     => window,
 			gravity      => number,
 			fore_color   => pixel,
 			back_color   => pixel,
@@ -343,7 +348,7 @@ $EVENTS_INFO = {
 	},
 
 	&M_CONFIGURE_WINDOW     => {
-		format => "L[9]S[2]L[16]a*",
+		format => "L9S2L16a*",
 		fields => [
 			win_id       => window,
 			frame_id     => window,
@@ -364,8 +369,8 @@ $EVENTS_INFO = {
 			minimum_height    => number,
 			maximum_width     => number,
 			maximum_height    => number,
-			icon_title_id     => number,
-			icon_image_id     => number,
+			icon_title_id     => window,
+			icon_image_id     => window,
 			gravity      => number,
 			fore_color   => pixel,
 			back_color   => pixel,
@@ -413,7 +418,7 @@ $EVENTS_INFO = {
 			property     => number,
 			value        => number,
 			win_id       => window,
-			string       => string,
+			text         => string,
 		],
 	},
 
@@ -429,12 +434,48 @@ $EVENTS_INFO = {
 # ----------------------------------------------------------------------------
 
 use Exporter;
-use vars qw(@EXPORT @ISA);
+use vars qw(@EXPORT @ISA $EVENT_TYPES $EVENT_NAMES $EVENT_TYPE_NAMES);
 @EXPORT = (
 	@FVWM::Constants::EXPORT,
-	qw(eventArgNames eventArgTypes eventArgValues eventArgs dumpEventArg)
+	qw(eventName eventArgNames eventArgTypes eventArgValues eventArgs),
+	qw(allEventNames allEventTypes)
 );
 @ISA = qw(Exporter);
+
+sub allEventTypeNames () {
+	if (!defined $EVENT_TYPE_NAMES) {
+		$EVENT_TYPES = [];
+		$EVENT_NAMES = [];
+		$EVENT_TYPE_NAMES = {};
+		my ($type, $name);
+		foreach $name (@FVWM::Constants::EXPORT) {
+			next unless $name =~ /^MX?_/;
+			next if $name eq 'M_EXTENDED_MSG';
+			no strict 'refs';
+			$type = &$name();
+			next if $name =~ /^MX_/ && !($type & M_EXTENDED_MSG);
+			push @$EVENT_TYPES, $type;
+			push @$EVENT_NAMES, $name;
+			$EVENT_TYPE_NAMES->{$type} = $name;
+		}
+	}
+	return $EVENT_TYPE_NAMES;
+}
+
+sub allEventTypes () {
+	allEventTypeNames();
+	return $EVENT_TYPES;
+}
+
+sub allEventNames () {
+	allEventTypeNames();
+	return $EVENT_NAMES;
+}
+
+sub eventName ($) {
+	my $type = shift;
+	return allEventTypeNames()->{$type};
+}
 
 sub eventTypeToBinary ($) {
 	my $type = shift || "no-event-type";
@@ -467,8 +508,9 @@ sub calculateInternals ($) {
 	}
 }
 
-sub eventArgNames ($) {
+sub eventArgNames ($$) {
 	my $type = shift;
+	my $argValues = shift;
 
 	my $eventInfo = eventInfo($type);
 	my $argNames = $eventInfo->{names};
@@ -477,8 +519,9 @@ sub eventArgNames ($) {
 	return $eventInfo->{names};
 }
 
-sub eventArgTypes ($) {
+sub eventArgTypes ($$) {
 	my $type = shift;
+	my $argValues = shift;
 
 	my $eventInfo = eventInfo($type);
 	my $argTypes = $eventInfo->{types};
@@ -504,7 +547,7 @@ sub eventArgs ($$) {
 	my $type = shift;
 	my $argValues = shift;
 
-   my $argNames = eventArgNames($type);
+   my $argNames = eventArgNames($type, $argValues);
    my $i = 0;
    my $suffix = "";
    $suffix = "1" if @$argValues > @$argNames;
@@ -515,6 +558,8 @@ sub eventArgs ($$) {
 	return \%args;
 }
 
+# ----------------------------------------------------------------------------
+
 =head1 NAME
 
 FVWM::EventNames - names and types of all FVWM event arguments
@@ -523,23 +568,31 @@ FVWM::EventNames - names and types of all FVWM event arguments
 
   use FVWM::EventNames;
 
-  my $argNames  = eventArgNames (M_ICON_LOCATION);
-  my $argTypes  = eventArgTypes (M_ICON_LOCATION);
-  my $argValues = eventArgValues(M_ICON_LOCATION, $packedStr);
-  my $args      = eventArgs     (M_ICON_LOCATION, $argValues);
+  print "All event names: ", join(", ", @{allEventNames()}), "\n";
+  print "All event types: ", join(", ", @{allEventTypes()}), "\n";
 
-  print dumpEventArgs(M_ICON_LOCATION, $argValues);
+  my $name      = eventName     (M_ICON_LOCATION);
+  my $argValues = eventArgValues(M_ICON_LOCATION, $packedStr);
+  my $argNames  = eventArgNames (M_ICON_LOCATION, $argValues);
+  my $argTypes  = eventArgTypes (M_ICON_LOCATION, $argValues);
+  my $args      = eventArgs     (M_ICON_LOCATION, $argValues);
 
 =head1 DESCRIPTION
 
 Every event send by I<fvwm> consist of arguments. The argument names and
 types vary from one event type to another. For example, event of the
 type B<M_NEW_DESK> consists of only one argument I<desk> of type I<number>.
-B<M_NEW_PAGE> consists of 5 numeric arguments, 
+B<M_NEW_PAGE> consists of 5 numeric arguments, B<M_MINI_ICON> consists of 10
+arguments of different types.
 
-names and types
-This class provides information about names and types of all fvwm event
-arguments.
+This class provides information about all fvwm events. It provides such
+services as listing all supporting event types and their names,
+converting event type to event name, listing the event argument names/types,
+constructing event argument values from the plain packet data.
+arguments
+, like event name, event
+typenames and types of all fvwm event
+arguments and event names.
 
 Usually you do not need to work with this class directly, but, instead, with
 B<FVWM::Event> objects. Hovewer, you may need this class source as a
@@ -549,13 +602,10 @@ reference for the names of the event arguments and their types.
 
 =over 4
 
-=item B<eventArgNames> I<type>
+=item B<eventName> I<type>
 
-Returns array ref of argument names of the event type.
-
-=item B<eventArgTypes> I<type>
-
-Returns array ref of argument types of the event type.
+Returns the string representation of the numeric event I<type> constant,
+like I<M_RAISE_WINDOW> or I<MX_ENTER_WINDOW>.
 
 =item B<eventArgValues> I<type> I<packedStr>
 
@@ -566,10 +616,38 @@ If the last argument type of the event is string, for convenience,
 everything past the first null (or newline) is automatically stripped
 from the last argument value.
 
+=item B<eventArgNames> I<type> I<argValues>
+
+Returns array ref of argument names of the event type.
+
+I<argValues> is either the real array ref of values (as returned by
+B<eventArgValues>) or a number of actual values.
+The returned array has the same number of elements.
+
+=item B<eventArgTypes> I<type> I<argValues>
+
+Returns array ref of argument types of the event type.
+
+I<argValues> is either the real array ref of values (as returned by
+B<eventArgValues>) or a number of actual values.
+The returned array has the same number of elements.
+
 =item B<eventArgs> I<type> I<argValues>
 
 Constructs hash ref of the named arguments for the event I<type>
-from the I<argValues> array ref (as returned by B<eventArgValues>.
+from the I<argValues> array ref (as returned by B<eventArgValues>).
+
+=item B<allEventNames>
+
+Returns array ref of all known event names (strings).
+
+=item B<allEventTypes>
+
+Returns array ref of all known event types (numbers).
+
+=item B<allEventTypeNames>
+
+Returns hash ref of all known event names and types (type => name).
 
 =back
 
