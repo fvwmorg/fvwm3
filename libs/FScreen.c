@@ -219,11 +219,11 @@ void FScreenInit(Display *dpy)
     /* add delimiter */
     attributes.background_pixel = WhitePixel(disp, scr);
     attributes.override_redirect = True;
-    blank_w = XCreateWindow(disp, root, 0, 7 * h / 8, ws, 2, 0, CopyFromParent,
+    blank_w = XCreateWindow(disp, root, 0, 7 * h / 8 - 1, ws, 2, 0, CopyFromParent,
 			    CopyFromParent, CopyFromParent,
 			    CWBackPixel|CWOverrideRedirect,
 			    &attributes);
-    vert_w = XCreateWindow(disp, root, ws, 0, 2, h, 0, CopyFromParent,
+    vert_w = XCreateWindow(disp, root, ws - 1, 0, 2, h, 0, CopyFromParent,
 			   CopyFromParent, CopyFromParent,
 			   CWBackPixel|CWOverrideRedirect,
 			   &attributes);
