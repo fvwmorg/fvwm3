@@ -1,3 +1,43 @@
+1999-02-23  Hippo
+
+	* fvwm/builtins.c: Emulate command updates feedback window position.
+
+	* fvwm/virtual.c: EdgeThickness command can be used at any time to alter
+	the panframe windows. Panframe windows unmapped when paging to the end
+	page and wrapping is disabled.  Panframe windows go right into the corners.
+
+	* fvwm/windows.c: WindowList looks better when NoGeometry specified.
+
+	* fvwm/move.c: Opaque and Animated moves send events to client.
+	Transparent Eterm will stay transparent. #define NO_ETERM_SUPPORT if
+	you think this is horrible.
+
+	* fvwm/{module.{c,h},move.c} Opaque and Animated moves send module
+	messages.  FvwmPager follows the move.
+
+	* fvwm/{events,fvwm,modconf,module,read}.c: moved invocation of
+	StartupStuff() from ReadSubFunc to main event loop.  Initial capture
+	happens only after all command line args are finished and any modules
+	that the command line args invoke.  Any number of -cmd's can be specified
+	and the initial capture will happen when they have finished so that you
+	don't need a recapture after a restart to get the right decorations.
+	Added a timeout so that Fvwm will always do the initial capture.
+	FvwmCPP & FvwmM4 can now be rewritten to exec() the subprocess and
+	avoid using a Read of a temp file.
+
+	* fvwm/{events,focus,module}.c: FOCUS_CHANGE packet has the third
+	(previously useless) paramter set to denote FlipFocus/Focus.  Modules
+	can now accuraetly track the internal window list order.
+
+	* fvwm/borders.c: experimental rewrite of Sticky lines.  Use xmag to look
+	at the ends. If they don't line up I think you have an Xserver bug.
+
+	* fvwm/{{builtins,functions,fvwm}.c,fvwm2.1,misc.h}: XORPixmap.
+	Eat this Enlightenment 8-).  Actually it's meantt to improve the visibility
+	of rubberband lines in PsuedoColor displays (use Colorlimit first) but it
+	looks great on TrueColor.  It plays nicely with XORValue and I don't think
+	it leaks pixmaps.
+	
 1999-02-23  Dominik Vogt  <dominik_vogt@hp.com>
 
 	* AUTHORS: updated
