@@ -172,6 +172,8 @@ static void get_xy_from_position_hints(
 	Bool do_reverse_x, int *ret_x, int *ret_y);
 static void merge_continuation_menus(MenuRoot *mr);
 static MenuRoot *clone_menu(MenuRoot *mr);
+static void paint_menu_gradient_background(
+	MenuRoot *mr, XEvent *pevent);
 
 /* ---------------------------- local variables ----------------------------- */
 
@@ -3658,7 +3660,8 @@ static void get_menu_paint_item_parameters(
 	mpip->selected_item = MR_SELECTED_ITEM(mr);
 	mpip->dim = &MR_DIM(mr);
 	mpip->fw = fw;
-	mpip->mr = mr;
+	mpip->cb_mr = mr;
+	mpip->cb_reset_bg = paint_menu_gradient_background;
 	mpip->flags.is_first_item = (MR_FIRST_ITEM(mr) == mi);
 	mpip->flags.is_left_triangle = MR_IS_LEFT_TRIANGLE(mr);
 
@@ -3756,7 +3759,7 @@ static void paint_side_pic(MenuRoot *mr, XEvent *pevent)
 	return;
 }
 
-void paint_menu_gradient_background(
+static void paint_menu_gradient_background(
 	MenuRoot *mr, XEvent *pevent)
 {
 	MenuStyle *ms = MR_STYLE(mr);
@@ -3869,7 +3872,6 @@ void paint_menu_gradient_background(
 		}
 		if (pevent)
 		{
-
 			r.x = pevent->xexpose.x;
 			r.y = pevent->xexpose.y;
 			r.width = pevent->xexpose.width;
@@ -4421,9 +4423,8 @@ static void size_menu_horizontally(MenuSizingParameters *msp)
 					{
 						right_objects++;
 					}
-					icons_placed++;
 				}
-
+				icons_placed++;
 				break;
 			case '|':
 				if (!relief_begin_placed)

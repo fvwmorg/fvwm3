@@ -123,7 +123,8 @@ typedef struct
 	MenuItem *selected_item;
 	MenuDimensions *dim;
 	FvwmWindow *fw;
-	void *mr;
+	struct MenuRoot *cb_mr;
+	void (*cb_reset_bg)(struct MenuRoot *mr, XEvent *pevent);
 	struct
 	{
 		unsigned is_first_item : 1;
