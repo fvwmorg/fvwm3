@@ -2010,8 +2010,7 @@ crash fvwm.
 
 Example (File browser):
 .EX
-# You can find the shell script
-# fvwm_make_browse_menu.sh in the utils
+# You can find the shell script fvwm_make_browse_menu.sh in the bin
 # directory of the distribution.
 AddToMenu BrowseMenu
 + DynamicPopupAction Piperead \\
@@ -2047,10 +2046,9 @@ can be referred to with "$0".
 Example:
 .EX
 # There is another shell script
-# fvwm_make_directory_menu.sh in the utils
-# directory of the distribution. To use it,
-# define this function in your configuration
-# file:
+# fvwm_make_directory_menu.sh in the bin directory of the
+# distribution. To use it, define this function in your
+# configuration file:
 
 AddToFunc MakeMissingDirectoryMenu
 + I Exec fvwm_make_directory_menu.sh $0
