@@ -109,9 +109,8 @@
 	((m)->s->ms->feel.flags.do_popdown_immediately)
 #define ST_DO_WARP_TO_TITLE(s)        ((s)->feel.flags.do_warp_to_title)
 #define MST_DO_WARP_TO_TITLE(m)       ((m)->s->ms->feel.flags.do_warp_to_title)
-#define ST_DO_POPUP_AS_ROOT_MENU(s)   ((s)->feel.flags.do_popup_as_root_menu)
-#define MST_DO_POPUP_AS_ROOT_MENU(m) \
-	((m)->s->ms->feel.flags.do_popup_as_root_menu)
+#define ST_DO_POPUP_AS(s)             ((s)->feel.flags.do_popup_as)
+#define MST_DO_POPUP_AS(m)            ((m)->s->ms->feel.flags.do_popup_as)
 #define ST_DO_UNMAP_SUBMENU_ON_POPDOWN(s) \
 	((s)->feel.flags.do_unmap_submenu_on_popdown)
 #define MST_DO_UNMAP_SUBMENU_ON_POPDOWN(m) \
@@ -156,6 +155,14 @@ typedef enum
 	/* max button is 8 (0x8) */
 } MenuFaceType;
 
+typedef enum
+{
+	MDP_POST_MENU = 0,
+	MDP_ROOT_MENU = 1,
+	MDP_IGNORE = 2,
+	MDP_CLOSE = 3
+} ms_do_popup_as_t;
+
 typedef struct MenuFeel
 {
 	struct
@@ -163,8 +170,8 @@ typedef struct MenuFeel
 		unsigned is_animated : 1;
 		unsigned do_popdown_immediately : 1;
 		unsigned do_popup_immediately : 1;
+		unsigned do_popup_as : 2;
 		unsigned do_warp_to_title : 1;
-		unsigned do_popup_as_root_menu : 1;
 		unsigned do_unmap_submenu_on_popdown : 1;
 		unsigned use_left_submenus : 1;
 		unsigned use_automatic_hotkeys : 1;

@@ -347,6 +347,7 @@ static int menustyle_get_styleopt_index(char *option)
 		"PopdownImmediately", "PopdownDelayed",
 		"PopdownDelay",
 		"PopupActiveArea",
+		"PopupIgnore", "PopupClose",
 		NULL
 	};
 
@@ -693,7 +694,7 @@ MenuStyle *menustyle_parse_style(F_CMD_ARGS)
 			ST_FACE(tmpms).type = SimpleMenu;
 			ST_HAS_ACTIVE_FORE(tmpms) = 0;
 			ST_HAS_ACTIVE_BACK(tmpms) = 0;
-			ST_DO_POPUP_AS_ROOT_MENU(tmpms) = 0;
+			ST_DO_POPUP_AS(tmpms) = MDP_POST_MENU;
 			ST_DOUBLE_CLICK_TIME(tmpms) = DEFAULT_MENU_CLICKTIME;
 			ST_POPUP_DELAY(tmpms) = DEFAULT_POPUP_DELAY;
 			ST_POPDOWN_DELAY(tmpms) = DEFAULT_POPDOWN_DELAY;
@@ -1099,11 +1100,11 @@ MenuStyle *menustyle_parse_style(F_CMD_ARGS)
 			break;
 
 		case 33: /* PopupAsRootmenu */
-			ST_DO_POPUP_AS_ROOT_MENU(tmpms) = 1;
+			ST_DO_POPUP_AS(tmpms) = MDP_ROOT_MENU;
 			break;
 
 		case 34: /* PopupAsSubmenu */
-			ST_DO_POPUP_AS_ROOT_MENU(tmpms) = 0;
+			ST_DO_POPUP_AS(tmpms) = MDP_POST_MENU;
 			break;
 
 		case 35: /* RemoveSubmenus */
@@ -1276,6 +1277,14 @@ MenuStyle *menustyle_parse_style(F_CMD_ARGS)
 			{
 				ST_ACTIVE_AREA_PERCENT(tmpms) = *val;
 			}
+			break;
+
+		case 54: /* PopupIgnore */
+			ST_DO_POPUP_AS(tmpms) = MDP_IGNORE;
+			break;
+
+		case 55: /* PopupClose */
+			ST_DO_POPUP_AS(tmpms) = MDP_CLOSE;
 			break;
 
 #if 0
@@ -1489,7 +1498,7 @@ void menustyle_copy(MenuStyle *origms, MenuStyle *destms)
 	}
 
 	/* PopupAsRootmenu */
-	ST_DO_POPUP_AS_ROOT_MENU(destms) = ST_DO_POPUP_AS_ROOT_MENU(origms);
+	ST_DO_POPUP_AS(destms) = ST_DO_POPUP_AS(origms);
 	/* RemoveSubmenus */
 	ST_DO_UNMAP_SUBMENU_ON_POPDOWN(destms) =
 		ST_DO_UNMAP_SUBMENU_ON_POPDOWN(origms);

@@ -4560,7 +4560,7 @@ static mloop_ret_code_t __mloop_get_event(
 			fev_fake_event(&e);
 			med->mi = MR_SELECTED_ITEM(pmp->menu);
 		}
-	} /* in->mif.do_recycle_event */
+	}
 	else if (pmp->tear_off_root_menu_window != NULL &&
 		 FCheckTypedWindowEvent(
 			 dpy, FW_W_PARENT(pmp->tear_off_root_menu_window),
@@ -4615,7 +4615,7 @@ static mloop_ret_code_t __mloop_get_event(
 		{
 			in->mif.is_popped_up_by_timeout = False;
 		}
-	} /* !in->mif.do_recycle_event */
+	}
 
 	in->mif.is_pointer_in_active_item_area = False;
 	if (e.type == MotionNotify)
@@ -4625,8 +4625,7 @@ static mloop_ret_code_t __mloop_get_event(
 			       dpy, ButtonMotionMask | ButtonReleaseMask,
 			       &e) && (e.type != ButtonRelease))
 		{
-
-			/* nop */
+			/* nothing */
 		}
 	}
 
@@ -4658,8 +4657,8 @@ static mloop_ret_code_t __mloop_handle_event(
 		}
 		if (med->mi != NULL)
 		{
-			if ((*pmp->pexc)->x.elast->xbutton.button == menu_tear_button &&
-			    MI_IS_TITLE(med->mi))
+			if ((*pmp->pexc)->x.elast->xbutton.button ==
+			    menu_tear_button && MI_IS_TITLE(med->mi))
 			{
 				pmret->rc = MENU_TEAR_OFF;
 				return MENU_MLOOP_RET_END;
@@ -4721,29 +4720,42 @@ static mloop_ret_code_t __mloop_handle_event(
 		}
 		pmret->rc = (med->mi) ? MENU_SELECTED : MENU_ABORTED;
 		if (pmret->rc == MENU_SELECTED && med->mi &&
-		    MI_IS_POPUP(med->mi) &&
-		    !MST_DO_POPUP_AS_ROOT_MENU(pmp->menu))
+		    MI_IS_POPUP(med->mi))
 		{
-			if (in->mif.was_item_unposted)
+			switch (MST_DO_POPUP_AS(pmp->menu))
 			{
-				pmret->flags.is_menu_posted = 0;
-				pmret->rc = MENU_UNPOST;
-				pmret->target_menu = NULL;
-				in->mif.do_popup_now = False;
-			}
-			else
-			{
-				pmret->flags.is_menu_posted = 1;
-				pmret->rc = MENU_POST;
-				pmret->target_menu = NULL;
-				in->mif.do_popup_now = True;
-				if ((in->mrPopup || in->mrPopdown) &&
-				    med->mi != MR_SELECTED_ITEM(pmp->menu))
+			case MDP_POST_MENU:
+				if (in->mif.was_item_unposted)
 				{
-					in->mif.do_popdown_now = True;
+					pmret->flags.is_menu_posted = 0;
+					pmret->rc = MENU_UNPOST;
+					pmret->target_menu = NULL;
+					in->mif.do_popup_now = False;
 				}
+				else
+				{
+					pmret->flags.is_menu_posted = 1;
+					pmret->rc = MENU_POST;
+					pmret->target_menu = NULL;
+					in->mif.do_popup_now = True;
+					if ((in->mrPopup || in->mrPopdown) &&
+					    med->mi !=
+					    MR_SELECTED_ITEM(pmp->menu))
+					{
+						in->mif.do_popdown_now = True;
+					}
+				}
+				return MENU_MLOOP_RET_NORMAL;
+			case MDP_IGNORE:
+				pmret->rc = MENU_NOP;
+				return MENU_MLOOP_RET_NORMAL;
+			case MDP_CLOSE:
+				pmret->rc = MENU_ABORTED;
+				break;
+			case MDP_ROOT_MENU:
+			default:
+				break;
 			}
-			break;
 		}
 		pdkp->timestamp = 0;
 		return MENU_MLOOP_RET_END;
@@ -4813,10 +4825,24 @@ static mloop_ret_code_t __mloop_handle_event(
 		switch (pmret->rc)
 		{
 		case MENU_SELECTED:
-			if (med->mi && MI_IS_POPUP(med->mi) &&
-			    !MST_DO_POPUP_AS_ROOT_MENU(pmp->menu))
+			if (med->mi && MI_IS_POPUP(med->mi))
 			{
-				pmret->rc = MENU_POPUP;
+				switch (MST_DO_POPUP_AS(pmp->menu))
+				{
+				case MDP_POST_MENU:
+					pmret->rc = MENU_POPUP;
+					break;
+				case MDP_IGNORE:
+					/*!!!*/
+					pmret->rc = MENU_NOP;
+					return MENU_MLOOP_RET_NORMAL;
+				case MDP_CLOSE:
+					pmret->rc = MENU_ABORTED;
+					return MENU_MLOOP_RET_END;
+				case MDP_ROOT_MENU:
+				default:
+					return MENU_MLOOP_RET_END;
+				}
 				break;
 			}
 			return MENU_MLOOP_RET_END;
@@ -7215,14 +7241,13 @@ void UpdateMenuColorset(int cset)
 		}
 	}
 
-	
 	for (t = Scr.FvwmRoot.next; t != NULL; t = t->next)
 	{
 		MenuRoot *mr = NULL;
 		MenuStyle *ms = NULL;
 
 		if (IS_TEAR_OFF_MENU(t) &&
-		    XFindContext(dpy, FW_W(t), MenuContext, (caddr_t *)&mr) != 
+		    XFindContext(dpy, FW_W(t), MenuContext, (caddr_t *)&mr) !=
 		    XCNOENT &&
 		    (ms = MR_STYLE(mr)))
 		{
@@ -7808,6 +7833,49 @@ char *get_menu_options(
 
 	return action;
 }
+
+int menu_binding(int button, KeySym keysym, int modifier, char *action)
+{
+	if (keysym != 0)
+	{
+		/* fixme */
+		fvwm_msg(
+			ERR, "menu_binding",
+			"sorry, menu keybindings not allowed. yet.");
+		return 1;
+	}
+	if (modifier != 0)
+	{
+		/* fixme */
+		fvwm_msg(
+			ERR, "menu_binding",
+			"sorry, menu binding modifiers not allowed. yet.");
+		return 1;
+	}
+	if (strcmp(action,"-") == 0)
+	{
+		if (keysym == 0) /* must be button binding */
+		{
+			menu_tear_button=-1;
+		}
+	}
+	else if (strcasecmp(action,"tearoff") == 0)
+	{
+		if (keysym == 0) /* must be button binding */
+		{
+			menu_tear_button=button;
+		}
+	}
+	else
+	{
+		fvwm_msg(
+			ERR, "menu_binding",
+			"invalid action, only tearoff or - allowed");
+	}
+
+	return 0;
+}
+
 /* ---------------------------- new menu loop code -------------------------- */
 
 #if 0
@@ -7985,39 +8053,3 @@ void __menu_loop_new(
 	return;
 }
 #endif
-
-int menu_binding(int button,KeySym keysym,int modifier,char *action)
-{
-	if (keysym != 0)
-	{
-		/* fixme */
-		fvwm_msg(ERR, "menu_binding",
-			 "sorry, menu keybindings not allowed. yet.");
-		return 1;
-	}
-	if (modifier != 0)
-	{
-		/* fixme */
-		fvwm_msg(ERR, "menu_binding",
-			 "sorry, menu binding modifiers not allowed. yet.");
-		return 1;
-	}
-	if (strcmp(action,"-") == 0)
-	{
-		if (keysym == 0) /* must be button binding */
-		{
-			menu_tear_button=-1;
-		}
-	} else if (strcasecmp(action,"tearoff") == 0)
-	{
-		if (keysym == 0) /* must be button binding */
-		{
-			menu_tear_button=button;
-		}
-	} else {
-		fvwm_msg(ERR, "menu_binding",
-			 "invalid action, only tearoff or - allowed");
-	}
-	
-	return 0;
-}
