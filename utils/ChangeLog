@@ -1,3 +1,10 @@
+2002-04-12  Mikhael Goikhman  <migo@homemail.com>
+
+	* Makefile.am (EXTRA_DIST):
+	* fvwm_make_browse_menu.sh:
+	* fvwm_make_directory_menu.sh:
+	moved from bin to utils again, may be installed into docdir later
+
 2002-11-07  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* Makefile.am (EXTRA_DIST):

@@ -2008,10 +2008,18 @@ Warning: Do not issue
 commands as dynamic menu actions.  Chances are good that this will
 crash fvwm.
 
+There are several configurable scripts installed together with fvwm
+for automatical menu generation.  They have their own man pages.
+Some of them, specifically
+.BR fvwm-menu-directory " and " fvwm-menu-desktop ,
+may be used with
+.I DynamicPopupAction
+to create a directory listing or GNOME/KDE application listing.
+
 Example (File browser):
 .EX
-# You can find the shell script fvwm_make_browse_menu.sh in the bin
-# directory of the distribution.
+# You can find the shell script fvwm_make_browse_menu.sh
+# in the utils/ directory of the distribution.
 AddToMenu BrowseMenu
 + DynamicPopupAction Piperead \\
   'fvwm_make_browse_menu.sh BrowseMenu'
@@ -2043,12 +2051,17 @@ Function <function-name> <submenu-name>
 I.e. the name is passed to the function as its first argument and
 can be referred to with "$0".
 
+The
+.B fvwm-menu-directory
+script mentioned above may be used with
+.I MissingSubmenuFunction
+to create an up to date recursive directory listing.
+
 Example:
 .EX
-# There is another shell script
-# fvwm_make_directory_menu.sh in the bin directory of the
-# distribution. To use it, define this function in your
-# configuration file:
+# There is another shell script fvwm_make_directory_menu.sh
+# in the utils/ directory of the distribution. To use it,
+# define this function in your configuration file:
 
 AddToFunc MakeMissingDirectoryMenu
 + I Exec fvwm_make_directory_menu.sh $0

@@ -9,9 +9,7 @@ bin_SCRIPTS = \
 	fvwm-config fvwm-bug fvwm-perllib \
 	fvwm-convert-2.4 fvwm-convert-2.6 \
 	fvwm-menu-xlock fvwm-menu-directory \
-	fvwm-menu-desktop fvwm-menu-headlines \
-	fvwm_make_browse_menu.sh \
-	fvwm_make_directory_menu.sh
+	fvwm-menu-desktop fvwm-menu-headlines
 
 man_MANS = \
 	fvwm-root.1 fvwm-config.1 fvwm-bug.1 fvwm-perllib.1 \

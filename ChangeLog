@@ -3,6 +3,10 @@
 	* configure.in:
 	autogenerate FvwmWindowLister files
 
+	* fvwm/fvwm.1.in:
+	mention fvwm-menu-directory and fvwm-menu-desktop as examples
+	of MissingSubmenuFunction and DynamicPopupAction
+
 2002-11-08  olicha  <olivier.chapuis@free.fr>
 
 	* libs/PictureUtils.c (alloc_color_proportion):
