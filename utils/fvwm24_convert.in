@@ -34,6 +34,19 @@ $[ = 1;				# set array base to 1
 $, = ' ';			# set output field separator
 $\ = "\n";			# set output record separator
 
+# GlobalOpts that became Styles:
+%OPTS = ('SMARTPLACEMENTISREALLYSMART','CleverPlacement',
+	 'SMARTPLACEMENTISNORMAL','SmartPlacement',
+	 'CLICKTOFOCUSDOESNTPASSCLICK', 'ClickToFocusPassesClickOff',
+	 'CLICKTOFOCUSDOESNTRAISE', 'ClickToFocusRaisesOff',
+	 'MOUSEFOCUSCLICKDOESNTRAISE', 'MouseFocusClickRaisesOff',
+	 'NOSTIPLEDTITLES', 'StippledTitleOff',
+	 'STIPLEDTITLES', 'StippledTitle');
+
+# GlobalOpts that became BugOpts:
+%BUGOPTS= ('RAISEOVERNATIVEWINDOWS','RaiseOverNativeWindows on',
+	   'IGNORENATIVEWINDOWS','RaiseOverNativeWindows off');
+
 print '# This file changed by the .fvwm2rc to .fvwm/.fvwm2rc converter';
 # create assoc array by imagepath:
 $imagepath = 'FVWM_IMAGEPATH';
@@ -73,6 +86,26 @@ line: while ( <IN> ) {
     }
     else {
       print 'ImagePath ' . $newpath . ':+';
+    }
+    next line;
+  }
+  
+  # Change GlobOpts to "Style * xxx, ..." commands
+  if (/^[ \t]*globalopts/i) { # Fix up GlobalOpts:
+    $newopts = '';
+    @rest=@Fld;			# copy the whole line
+    shift @rest;		# remove first element
+    &add_to_opts(join($",@rest)); # pass rest of line
+    $line = $_;    # prime possible loop
+    while (substr($line, length($line), 1) eq "\\") { # backslashed lines
+      $line = &Getline1();
+      &add_to_opts($line);	# build up newopts
+    }
+    if ($newopts eq '') {
+      next line;		# GlobalOpts without argument, drop silently
+    }
+    else {
+      print 'Style "*"  ' . $newopts;	# print as style command
     }
     next line;
   }
@@ -129,9 +162,8 @@ sub add_to_path {
     if ($parray[$i] eq "\\") {
       next;
     }
-    
-    $skip . $any . $end . $of . $line . $backslash;
-    # This next line should probably only skip files starting with $
+
+    # Maybe this next line should only skip files starting with $,
     # that dont start with  $HOME.
     if (substr($parray[$i], 1, 1) eq "\$") {
       next;
@@ -144,6 +176,45 @@ sub add_to_path {
       $newpath = $newpath . ':' . $parray[$i];
     }
   }
+}
+
+# take one GlobalOpt and convert it to a style argument -or-
+# just print any bugOpts
+sub add_to_opts {
+  local($opts) = @_;
+  $psize = (@parray = split(/[ ,\t]/, $opts, 9999));
+  # split them up
+  for ($i = 1; $i <= $psize; ++$i) {
+    if ($parray[$i] eq "\\") {
+      next;
+    }
+    if ($parray[$i] eq "") {
+      next;
+    }
+
+    # Convert args:
+    # Some args are the same in a style command
+    # Some are changed a little,
+    # the native window stuff becomes a BugOpt
+
+    $work = $parray[$i];	# init w. unconverted arg
+    $uwork = uc $work;		# uppercase version for lookup
+    $newStyleArg = $OPTS{$uwork}; # do conversion using hash
+    if ($newStyleArg ne '') {	# if arg got converted
+      $work = $newStyleArg;	# save new arg
+    }
+
+    $bugArg = $BUGOPTS{$uwork};	# convert using hash
+    if ($bugArg ne '') {	# if converted
+      print 'BugOpts ' . $bugArg;
+    } else {			# if not bugOpt, accum
+      if ($newopts eq '') {	# first time, just arg
+	$newopts = $work;
+      } else {
+	$newopts = $newopts . ', ' . $work; # add comma and arg
+      }
+    }				# end bugArg vs. style
+  }				# end for
 }
 
 sub Getline1 {

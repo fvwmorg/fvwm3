@@ -1,26 +1,11 @@
-  ____ _  _ _    _              ___     _ _     ___
- (  __X \/ X \/\/ )\/\    ___  (__ \ . / U ) . (   \
-  ) _) \  / \    /    \  (___) / __/ _ \__ \ _ / O /
- (__) * \/ * \/\(_/\/\_)       \___)(_)  (_/(_)\___)
+  ___  __  __ __      __   _  _     ___       __ __       _
+ | __| ||  || ||      ||  /\\//\   // \\      || ||      | |
+ ||_   ||  || ||      || // \/ \\     //      ||_||      | |
+ | _|  ||  || ||      || ||    ||    //       \__ |      |_|
+ ||     \\//   \\ /\ //  ||    ||   //__   _     ||       _
+ ||      \/     \//\\/   ||    ||  /____| |_|    ||      |_|
 
-%% migo: just an alternative banner, can be removed. :)
-  ___  __  __ __      __   _  _     ___       __ __
- | __| ||  || ||      ||  /\\//\   // \\      || ||
- ||_   ||  || ||      || // \/ \\     //      ||_||
- | _|  ||  || ||      || ||    ||    //       \__ |
- ||     \\//   \\ /\ //  ||    ||   //__   _     ||
- ||      \/     \//\\/   ||    ||  /____| |_|    ||
-
-The FVWM-Workers list is pleased to announce FVWM version 2.4 "F2K"
-%% domivogt: Ha ha ha 8-). "F2K" reminds me a bit of "F**k"
-%% domivogt: how about "Fvwm 3000 - The window manager of the next millenium"
-%% domivogt: ;-)
-%% dan: No, how about F2K,  like thanks a lot for asking over and over whether
-        fvwm was complaint, and making sure I was at work on New Years Eve. :)
-%% dan: Well it might be 3000 before we do another non-beta. :) I agree F2K
-        is getting a little old already.
-%% migo: I thought only commercial firms search for 1000's in product names?
-
+The FVWM-Workers list is pleased to announce FVWM version 2.4
 Available at http://www.fvwm.org/ it includes the following
 
 Highlights:
@@ -78,6 +63,8 @@ Highlights:
  ** VMS port.
 %% domivogt: we should definitely try it out first!
 %% migo: especially FVWM_DATADIR/FVWM_USERDIR stuff, or it is hopeless?
+%% dane: its hopeless and not important, it was working on VMS, if we
+%% broke something, we'll fix it in 2.4.1. I'll remove this next time around.
 
  ** Animated window shading with the WindowShadeAnimate command.
 
@@ -135,6 +122,9 @@ The Colorlimit command can be removed.
 The FvwmGoodStuff module is obsoleted by FvwmButtons.
 If you are using FvwmGoodStuff, you need to recode this part
 of your configuration.
+
+The GlobalOpts command has   become   Style options and the    BugOpts
+command.
 
 Most of these configuration files changes can be done using the new
 fvwm24_convert command that comes with fvwm.
