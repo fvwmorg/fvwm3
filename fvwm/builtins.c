@@ -1831,10 +1831,8 @@ void SetDefaultIcon(F_CMD_ARGS)
 void SetDefaultBackground(F_CMD_ARGS)
 {
   char *type = NULL;
-  char *rest = NULL;
 
   action = GetNextToken(action, &type);
-  action = GetNextToken(action, &rest);
 
   /* no args mean restore what was set with DefaultColors */
   if (!type) {
@@ -1843,24 +1841,29 @@ void SetDefaultBackground(F_CMD_ARGS)
     Scr.bg->pixmap = (Pixmap)Scr.StdColors.back;
     Scr.bg->type.word = 0;
   } else {
-    if (!rest) {
-      fvwm_msg(WARN, "DefaultBackground", "not enough arguments");
-      free(type);
-      return;
-    }
 
     if (StrEquals(type, "TiledPixmap") || StrEquals(type, "Pixmap")) {
-      Picture *pic = CachePicture(dpy, Scr.NoFocusWin, NULL, rest, Scr.ColorLimit);
+      Picture *pic;
+      char *name;
+
+      action = GetNextToken(action, &name);
+      if (!name) {
+        fvwm_msg(ERR, "DefaultBackground", "%s: No pixmap specified", type);
+        free(type);
+        return;
+      }
+      
+      pic = CachePicture(dpy, Scr.NoFocusWin, NULL, name, Scr.ColorLimit);
 
       if (pic && pic->depth == Scr.depth) {
-	Pixmap newpixmap = XCreatePixmap(dpy, Scr.NoFocusWin, pic->width,
-					 pic->height, Scr.depth);
+	Pixmap pixmap = XCreatePixmap(dpy, Scr.NoFocusWin, pic->width,
+				      pic->height, Scr.depth);
 
-	XCopyArea(dpy, pic->picture, newpixmap, Scr.StdGC, 0, 0, pic->width,
+	XCopyArea(dpy, pic->picture, pixmap, Scr.StdGC, 0, 0, pic->width,
 		  pic->height, 0, 0);
 	if (Scr.bg->type.bits.is_pixmap)
 	  XFreePixmap(dpy, Scr.bg->pixmap);
-	Scr.bg->pixmap = newpixmap;
+	Scr.bg->pixmap = pixmap;
 	Scr.bg->type.bits.w = pic->width;
 	Scr.bg->type.bits.h = pic->height;
 	Scr.bg->type.bits.is_pixmap = True;
@@ -1869,12 +1872,40 @@ void SetDefaultBackground(F_CMD_ARGS)
 	else
 	  Scr.bg->type.bits.stretch_h = Scr.bg->type.bits.stretch_v = False;
       } else {
-        fvwm_msg(WARN, "DefaultBackground", "Couldn't load pixmap %s\n", rest);
+        fvwm_msg(ERR, "DefaultBackground", "Couldn't load pixmap %s\n", name);
       }
       if (pic) DestroyPicture(dpy, pic);
+
+#ifdef GRADIENT_BUTTONS
+    } else if (StrEquals(type + 1, "Gradient")) {
+      unsigned int width, height;
+      char vtype = type[0];
+      Pixmap pixmap = CreateGradientPixmap(dpy, Scr.NoFocusWin, Scr.depth,
+					   Scr.ScratchGC3, vtype, action,
+					   Scr.bestTileWidth,Scr.bestTileHeight,
+					   &width, &height);
+      if (pixmap) {
+	if (Scr.bg->type.bits.is_pixmap)
+	  XFreePixmap(dpy, Scr.bg->pixmap);
+	Scr.bg->pixmap = pixmap;
+	Scr.bg->type.bits.w = width;
+	Scr.bg->type.bits.h = height;
+	Scr.bg->type.bits.is_pixmap = True;
+	Scr.bg->type.bits.stretch_h = Scr.bg->type.bits.stretch_v = True;
+	if ((vtype == 'H') || (vtype == 'h'))
+	  Scr.bg->type.bits.stretch_v = False;
+	else if ((vtype == 'V') || (vtype == 'v'))
+	  Scr.bg->type.bits.stretch_h = False;
+      }
+
+
+#endif
+    } else {
+      fvwm_msg(ERR, "DefaultBackground", "unknown type %s %s", type,
+	       action ? action : "");
     }
+  
     free(type);
-    free(rest);
   }
 
   ApplyDefaultFontAndColors();

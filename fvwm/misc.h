@@ -236,6 +236,12 @@ void FreeColors(Pixel *pixels, int n);
 Pixel *AllocLinearGradient(char *s_from, char *s_to, int npixels);
 Pixel *AllocNonlinearGradient(char *s_colors[], int clen[],
 			      int nsegs, int npixels);
+Pixmap CreateGradientPixmap(Display *dpy, Drawable d, unsigned int depth, GC gc,
+			    char type, char *action, unsigned int width,
+			    unsigned int height, unsigned int *width_return,
+			    unsigned int *height_return);
+unsigned int ParseGradient(char *gradient, char ***colors_return,
+			   int **perc_return, int *nsegs_return);
 #endif
 void bad_binding(int num);
 void nocolor(char *note, char *name);

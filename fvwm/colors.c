@@ -212,7 +212,240 @@ Pixel *AllocLinearGradient(char *s_from, char *s_to, int npixels)
     }
     return pixels;
 }
+
+
+/* Create a pixmap from a gradient specifier, width and height are hints
+ * that are only used for gradients that can be tiled e.g. H or V types
+ * types are HVDBSCRY for Horizontal, Vertical, Diagonal, Back-diagonal, Square,
+ * Circular, Radar and Yin/Yang respectively (in order of bloatiness)
+ */
+#define SQRT2 1.4142135623731
+#define PI    3.1415926535898
+Pixmap CreateGradientPixmap(Display *dpy, Drawable d, unsigned int depth, GC gc,
+			    char type, char *action, unsigned int width,
+			    unsigned int height, unsigned int *width_return,
+			    unsigned int *height_return)
+{
+  static char *me = "CreateGradientPixmap";
+  Pixmap pixmap;
+  Pixel *pixels;
+  unsigned int ncolors = 0;
+  char **colors;
+  int *perc, nsegs, i;
+  XGCValues xgcv;
+
+  /* translate the gradient string into an array of colors etc */
+  if (0 == (ncolors = ParseGradient(action, &colors, &perc, &nsegs))) {
+    fvwm_msg(ERR, me, "Can't parse gradient: %s", action);
+    return None;
+  }
+
+  /* grab the colors */
+  pixels = AllocNonlinearGradient(colors, perc, nsegs, ncolors);
+  for (i = 0; i <= nsegs; i++)
+    if (colors[i])
+      free(colors[i]);
+  free(colors);
+  free(perc);
+
+  if (!pixels) {
+    fvwm_msg(ERR, me, "couldn't create gradient");
+    return None;
+  }
+ 
+  /* grok the size to create from the type */
+  type = toupper(type);
+  switch (type) {
+    case 'H':
+      width = ncolors;
+      break;
+    case 'V':
+      height = ncolors;
+      break;
+    case 'D':
+    case 'B':
+      /* diagonal gradients are square with an odd number of colors and
+       * one pixel taller than wide with even numbers */
+      width = ncolors / 2;
+      height = ncolors + 1 - width;
+      break;
+    case 'S':
+      /* square gradients have a single pixel in the middle */
+      width = height = 2 * ncolors - 1;
+      break;
+    case 'C':
+      /* circular gradients have the last color as a pixel in each corner */
+      width = height = ncolors * SQRT2;
+      break;
+    case 'R':
+    case 'Y':
+      /* swept types need each color to occupy at least one pixel at the edge */
+      width = height = ncolors * (1.0 / PI);
+      break;
+    default:
+      fvwm_msg(ERR, me, "%cGradient not supported", type);
+      return None;
+  }
+  pixmap = XCreatePixmap(dpy, d, width, height, depth);
+  if (pixmap == None)
+    return None;
+
+  /* set the gc style */
+  xgcv.function = GXcopy;
+  xgcv.plane_mask = AllPlanes;
+  xgcv.foreground = pixels[0];
+  xgcv.fill_style = FillSolid;
+  xgcv.clip_mask = None;
+  XChangeGC(dpy, gc, GCFunction | GCPlaneMask | GCForeground | GCFillStyle
+		     | GCClipMask, &xgcv);
+  
+  /* now do the fancy drawing */
+  /* draw one pixel further than expected in case line style is CapNotLast */
+  switch (type) {
+    case 'H':
+      for (i = 0; i < ncolors; i++) {
+        xgcv.foreground = pixels[i];
+        XChangeGC(dpy, gc, GCForeground, &xgcv);
+        XDrawLine(dpy, pixmap, gc, i, 0, i, height);
+      }
+      break;
+    case 'V':
+      for (i = 0; i < ncolors; i++) {
+        xgcv.foreground = pixels[i];
+        XChangeGC(dpy, gc, GCForeground, &xgcv);
+        XDrawLine(dpy, pixmap, gc, 0, i, width, i);
+      }
+      break;
+    case 'D':
+      /* split into two stages for top left corner then bottom right corner */
+      for (i = 0; i < ncolors / 2; i++) {
+        xgcv.foreground = pixels[i];
+        XChangeGC(dpy, gc, GCForeground, &xgcv);
+        XDrawLine(dpy, pixmap, gc, 0, i, i + 1, -1);
+      }
+      for (; i < ncolors; i++) {
+        xgcv.foreground = pixels[i];
+        XChangeGC(dpy, gc, GCForeground, &xgcv);
+        XDrawLine(dpy, pixmap, gc,  i - ncolors / 2, ncolors / 2,
+		  ncolors / 2 + 1, i - ncolors / 2 - 1);
+      }
+      break;
+    case 'B':
+      /* split into two stages for bottom left corner then top right corner */
+      for (i = 0; i < ncolors / 2; i++) {
+        xgcv.foreground = pixels[i];
+        XChangeGC(dpy, gc, GCForeground, &xgcv);
+        XDrawLine(dpy, pixmap, gc, 0, ncolors / 2 + 1 - i, i + 1, -1);
+      }
+/*      for (; i < ncolors; i++) {
+        xgcv.foreground = pixels[i];
+        XChangeGC(dpy, gc, GCForeground, &xgcv);
+        XDrawLine(dpy, pixmap, gc,  i - ncolors / 2, ncolors / 2,
+		  ncolors / 2 + 1, i - ncolors / 2 - 1);
+      }
+      break;
+*/    default:
+      /* placeholder function, just fills the pixmap */
+      XFillRectangle(dpy, pixmap, gc, 0, 0, width, height);
+      break;
+  }
+
+  /* pass back info */
+  *width_return = width;
+  *height_return = height;
+  return pixmap;
+}
+
+
+/* groks a gradient string and creates arrays of colors and percentages
+ * returns the number of colors asked for (No. allocated may be less due
+ * to the ColorLimit command).  A return of 0 indicates an error
+ */
+unsigned int ParseGradient(char *gradient, char ***colors_return,
+			   int **perc_return, int *nsegs_return)
+{
+  static char *me = "ParseGradient";
+  char *item;
+  unsigned int npixels;
+  char **s_colors;
+  int *perc;
+  int nsegs, i, sum;
+
+  /* get the number of colors specified */
+  if (!(gradient = GetNextToken(gradient, &item)) || (item == NULL)) {
+    fvwm_msg(ERR, me, "expected number of colors to allocate");
+    if (item)
+      free(item);
+    return 0;
+  }
+  npixels = atoi(item);
+  free(item);
+
+  /* get the starting color or number of segments */
+  if (!(gradient = GetNextToken(gradient, &item)) || (item == NULL)) {
+    fvwm_msg(ERR, me, "incomplete gradient style");
+    if (item)
+      free(item);
+    return 0;
+  }
+
+  if (!(isdigit(*item))) {
+    /* get the end color of a simple gradient */
+    s_colors = (char **)safemalloc(sizeof(char *) * 2);
+    perc = (int *)safemalloc(sizeof(int));
+    nsegs = 1;
+    s_colors[0] = item;
+    gradient = GetNextToken(gradient, &s_colors[1]);
+    perc[0] = 100;
+  } else {
+    /* get a list of colors and percentages */
+    nsegs = atoi(item);
+    free(item);
+    if (nsegs < 1) nsegs = 1;
+    if (nsegs > 128) nsegs = 128;
+    s_colors = (char **)safemalloc(sizeof(char *) * (nsegs + 1));
+    perc = (int *)safemalloc(sizeof(int) * nsegs);
+    for (i = 0; i <= nsegs; i++) {
+      gradient = GetNextToken(gradient, &s_colors[i]);
+      if (i < nsegs) {
+        gradient = GetNextToken(gradient, &item);
+	if (item) {
+	  perc[i] = atoi(item);
+	  free(item);
+	} else {
+	  perc[i] = 0;
+	}
+      }
+    }
+  }
+
+  /* sanity check */
+  for (i = 0, sum = 0; i < nsegs; ++i)
+    sum += perc[i];
+
+  if (sum != 100) {
+    fvwm_msg(ERR, me, "multi gradient lengths must sum to 100");
+    for (i = 0; i <= nsegs; ++i)
+    if (s_colors[i])
+      free(s_colors[i]);
+    free(s_colors);
+    free(perc);
+    return 0;
+  }
+
+  /* sensible limits */
+  if (npixels < 2) npixels = 2;
+  if (npixels > 128) npixels = 128;
+
+  /* send data back */
+  *colors_return = s_colors;
+  *perc_return = perc;
+  *nsegs_return = nsegs;
+  return npixels;
+}
+
 #endif /* GRADIENT_BUTTONS */
+
 
 void nocolor(char *note, char *name)
 {
