@@ -1,3 +1,10 @@
+2002-11-15  Mikhael Goikhman  <migo@homemail.com>
+
+	* FvwmWindowLister/FvwmWindowLister.in:
+	* FvwmWindowLister/FvwmWindowLister.1:
+	Improvements by Richard Lister with minor changes,
+	new options ItemFormat and Function, changed Show/DontShow
+
 2002-11-15  olicha  <olivier.chapuis@free.fr>
 
 	* FvwmForm/FvwmForm.c (ParseActiveMessage):

@@ -37,11 +37,11 @@ my $opt = {
 	onlyiconic   => 0,      # only list iconified windows
 	alldesks     => 0,      # list windows on all desks
 	allpages     => 0,      # list windows on all pages
-	drawminiicon => 1,      # 0=never, 1=always, 2=iconified windows only
-	drawposition => 1,      # draw window position
 	maxlen       => 32,     # max chars for window name in menu
 	menuname     => "MenuFvwmWindowLister",  # name of fvwm menu to create
 	menustyle    => undef,  # name of fvwm menu style to use
+	itemformat   => "%m%n%t%t(+%x+%y) - Desk %d",  # format of menu items
+	function     => "WindowListFunc",
 };
 
 # get size of your screen
@@ -75,6 +75,7 @@ my $module = new FVWM::Module(
 	Mask => M_WINDOW_NAME | M_STRING |
 		M_NEW_PAGE | M_NEW_DESK |
 		M_ADD_WINDOW | M_CONFIGURE_WINDOW |
+		M_RES_NAME | M_RES_CLASS | M_ICON_NAME |
 		M_DESTROY_WINDOW | M_END_WINDOWLIST |
 		M_ICONIFY | M_DEICONIFY | M_MINI_ICON |
 		M_CONFIG_INFO | M_SENDCONFIG,
@@ -92,22 +93,24 @@ $module->addHandler(M_CONFIG_INFO, sub {
 	$_ = $1;
 
 	# get show array
-	if ( /^show\s+(.*)$/i ) {
-		push(@show, $1);
+	if ( /^show\s+(\w+)\s*=\s*(.*)$/i ) {
+		(my $type = $1) =~ tr/A-Z/a-z/;
+		push(@show, { type => $type, pattern => $2 });
 	}
 
 	# get dontshow array
-	elsif ( /^dontshow\s+(.*)$/i ) {
-		push(@dontshow, $1);
+	elsif ( /^dontshow\s+(\w+)\s*=\s*(.*)$/i ) {
+		(my $type = $1) =~ tr/A-Z/a-z/;
+		push(@dontshow, { type => $type, pattern => $2 });
 	}
 
-	# get drawminiicon option
-	elsif ( /^drawminiicon\s*(.*)/i ) {
-		$opt->{drawminiicon} = 0 + !!$1;
+	## match format string in quotes
+	elsif ( /^itemformat\s+([\"\'])(.*)\1/i ) {
+		$opt->{itemformat} = $2;
 	}
 
 	# get all other options, arg of 'off' sets opt to 0
-	elsif ( $1 =~ /^(\w+)\s*(\w+)/i ) {
+	elsif (  /^(\w+)\s*(\w+)/i ) {
 		(my $arg1 = $1) =~ tr/A-Z/a-z/;
 		$opt->{$arg1} = ($2 =~ /^off$/i) ? 0 : $2;
 	}
@@ -175,6 +178,22 @@ $module->addHandler(M_WINDOW_NAME, sub {
 	$window{$event->_win_id}->{name} = $event->_name;
 });
 
+$module->addHandler(M_ICON_NAME, sub {
+	my ($module, $event) = @_;
+	$window{$event->_win_id}->{icon} = $event->_name;
+});
+
+$module->addHandler(M_RES_CLASS, sub {
+	my ($module, $event) = @_;
+	$window{$event->_win_id}->{class} = $event->_name;
+});
+
+$module->addHandler(M_RES_NAME, sub {
+	my ($module, $event) = @_;
+	$window{$event->_win_id}->{resource} = $event->_name;
+});
+
+
 
 $module->addHandler(M_ICONIFY, sub {
 	my ($module, $event) = @_;
@@ -209,7 +228,9 @@ sub PopupMenu {
 		# skip windows in the dontshow array
 		my $dont_show_me;
 		foreach ( @dontshow ) {
-			$dont_show_me = 1, last if $window{$id}->{name} =~ /$_/;
+			my $p = $_->{pattern};
+			$dont_show_me = 1, last
+				if $window{$id}->{$_->{type}} =~ /$p/;
 		}
 
 		$module->debug("\t\tin dontshow list"), next
@@ -234,7 +255,8 @@ sub PopupMenu {
 		# loop on sections and choose which one to file in
 		my $sectctr = 0;
 		foreach ( @show ) {
-			last if $window{$id}->{name} =~ /$_/ ;
+ 			my $p = $_->{pattern};
+ 			last if $window{$id}->{$_->{type}} =~ /$p/ ;
 			++$sectctr;
 		}
 
@@ -277,30 +299,49 @@ sub PopupMenu {
 sub AddToSection {
 	my ($s, $id) = @_;
 
-	# shorten menu entry
-	my $entry = substr($window{$id}->{name}, 0, $opt->{maxlen});
+	my $format = $opt->{itemformat};
 
-	# add ellipses if we shortened entry
-	$entry .= "..." if length($window{$id}->{name}) > $opt->{maxlen};
+	# hack: insert __%__ instead of % to avoid bogus substitution later
+	$format =~ s/%%/__%____%__/g;
 
-	# add window position
-	$entry .= "\t\t(+$window{$id}->{x}+$window{$id}->{y})"
-		if $opt->{drawposition};
+	## make format string substitutions
+	$format =~ s/%t/\t/g;
+	$format =~ s/%n/&Shorten($window{$id}->{name}, $opt->{maxlen})/ge;
+	$format =~ s/%i/&Shorten($window{$id}->{icon}, $opt->{maxlen})/ge;
+	$format =~ s/%c/&Shorten($window{$id}->{class}, $opt->{maxlen})/ge;
+	$format =~ s/%r/&Shorten($window{$id}->{resource}, $opt->{maxlen})/ge;
+	$format =~ s/%x/$window{$id}->{x}/g;
+	$format =~ s/%y/$window{$id}->{y}/g;
+	$format =~ s/%d/$window{$id}->{desk}/g;
 
-	# add desk number if we are in multi-desk mode
-	$entry .= "\t($window{$id}->{desk})"
-		if $opt->{alldesks};
+	$format =~ s/%m/__%__$window{$id}->{mini_icon}__%__/g;
 
-	# add mini_icon always (opt=1) or only to iconified windows (opt=2)
-	my $mi = "";
-	if ( $opt->{drawminiicon} == 1 ||
-		$opt->{drawminiicon} == 2 && $window{$id}->{iconic} )
-	{
-		$mi = "%" . $window{$id}->{mini_icon} . "%";
+	if ($window{$id}->{iconic}) {
+		$format =~ s/%M/__%__$window{$id}->{mini_icon}__%__/g;
 	}
+	else {
+		$format =~ s/%M//g;
+	}
+	
+	# now fix __%__ hack
+	$format =~ s/__%__/%/g;
+
+	# escape quotes
+	$format =~ s/"/\\"/g;
 
 	# add the entry to the section
-	$$s .= qq(+ "$entry$mi" WindowListFunc $id\n);
+	$$s .= qq(+ "$format" $opt->{function} $id\n);
+}
+
+
+## shorten a string to given length and append ellipses
+sub Shorten {
+	my($string, $length) = @_;
+
+	my $r = substr($string, 0, $length);
+	$r .= "..." if length($string) > $length;
+
+	return $r;
 }
 
 
@@ -322,32 +363,41 @@ and easy to customize. Unlike B<FvwmIconMan> or B<FvwmWinList> the
 module does not draw its own window, but instead creates an
 I<fvwm> menu and asks I<fvwm> to pop it up.
 
-By defining a set of regular expressions in @show, windows may
+By defining a set of regular expressions using Show, windows may
 be sorted into sections based on the regexp matching their
-title.
+name, icon name, class or resource.
 
-Similarly, matches in @dontshow will be excluded from the list.
+Similarly, matches in DontShow will be excluded from the list.
 
-Any windows not matching an element of @show or @dontshow will
+Any windows not matching an instance of Show or DontShow will
 be placed in the last section of the menu.
 
 =head1 USAGE
 
 Place this in e.g. your StartFunction in I<.fvwm2rc>:
-    
+
     Module FvwmWindowLister
 
 Invoke the menu from .fvwmrc like this, for example:
-    
+
     Key Menu A N SendToModule FvwmWindowLister Menu Root c c
 
 The arguments are any valid B<Menu> command arguments without a menu name.
 You may also send B<Popup> action.
 
-Set module options, e.g.:
+Set module options for windows to show or not show. The syntax is:
 
-    *FvwmWindowLister: Show ^Galeon|^Netscape
-    *FvwmWindowLister: Show ^emacs
+    *FvwmWindowLister: Show type = pattern
+    *FvwmWindowLister: DontShow type = pattern
+
+where type is one of I<name>, I<icon>, I<class> or I<resource>. Pattern is
+a perl regular expression that will be evaluated in m// context.
+See perlre(1).
+
+For example:
+
+    *FvwmWindowLister: Show resource = Galeon|Navigator|mozilla-bin
+    *FvwmWindowLister: Show name = ^emacs
 
 will define two sections containing respectively browsers, and emacs.
 Number of sections is unlimited. The strings are perl regular
@@ -355,11 +405,11 @@ expressions that will be evaluated in m// context. See perlre(1).
 
 Similarly:
 
-    *FvwmWindowLister: DontShow ^Fvwm
-    *FvwmWindowLister: DontShow ^gkrellm
+    *FvwmWindowLister: DontShow name = ^Fvwm
+    *FvwmWindowLister: DontShow class = Gkrellm
 
-will cause the menu to ignore windows with title beginning with Fvwm or
-gkrellm.
+will cause the menu to ignore windows with name beginning with Fvwm
+or class gkrellm.
 
 Other options:
 
@@ -377,29 +427,64 @@ show windows from all desks
 
 show windows from all pages
 
-=item *FvwmWindowLister: I<DrawMiniIcon> {0|1|2}
-
-draw mini icon: 0=never, 1=always, 2=iconified windows only
-
-=item *FvwmWindowLister: I<DrawPosition> {on|off}
-
-draw window position in parentheses
-
 =item *FvwmWindowLister: I<Maxlen> 32
 
 max length in chars of entry
 
-=item *FvwmWindowLister: I<MenuName> foobar
+=item *FvwmWindowLister: I<MenuName> MyMenu
 
 name of menu to popup
 
-=item *FvwmWindowLister: I<MenuStyle> foobarstyle
+=item *FvwmWindowLister: I<MenuStyle> MyMenuStyle
 
 name of MenuStyle to apply
 
 =item *FvwmWindowLister: I<Debug> {-1,0,1,...}
 
 level of debug info output, -1 means no debug
+
+=item *FvwmWindowLister: I<Function> MyWindowListFunc
+
+function to invoke on menu entries; defaults to WindowListFunc
+
+=item *FvwmWindowLister: I<ItemFormat> formatstring
+
+how to format menu entries; substitutions are made as follows:
+
+=over 4
+
+=item %n, %i, %c, %r
+
+the window name, icon name, class or resource
+
+=item %x, %y
+
+the window x or y coordinates on current page
+
+=item %d
+
+the window desk number
+
+=item %m
+
+the window's mini-icon
+
+=item %M
+
+the window's mini-icon only for iconified windows, otherwise empty
+
+=item %t
+
+a tab
+
+=item %%
+
+a literal %
+
+=back
+
+The format string must be quoted. The default string is
+"%m%n%t%t(+%x+%y) - Desk %d".
 
 =back
 
