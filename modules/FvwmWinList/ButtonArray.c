@@ -394,14 +394,16 @@ void DoButton(Button *button, int x, int y, int w, int h)
 
   if ((button->p.picture != 0)/* &&
       (w + button->p.width + w3p + 3 > MIN_BUTTON_SIZE)*/) {
-
+    /* clip pixmap to fit inside button */
+    int height = min(button->p.height, h);
+    int offset = (button->p.height > h) ? 0 : ((h - button->p.height) >> 1);
     gcm = GCClipMask|GCClipXOrigin|GCClipYOrigin;
     gcv.clip_mask = button->p.mask;
     gcv.clip_x_origin = x + 2 + button->reliefwidth;
-    gcv.clip_y_origin = y + ((h-button->p.height) >> 1);
+    gcv.clip_y_origin = y + offset;
     XChangeGC(dpy, hilite[set], gcm, &gcv);
     XCopyArea(dpy, button->p.picture, win, hilite[set], 0, 0,
-                   button->p.width, button->p.height,
+                   button->p.width, height,
                    gcv.clip_x_origin, gcv.clip_y_origin);
     gcm = GCClipMask;
     gcv.clip_mask = None;
