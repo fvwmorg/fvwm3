@@ -258,15 +258,21 @@ static void draw_frame_relief(
 {
   if (w_shout > 0)
   {
+    /* The lower/right outer shadow is actually not necessary since it is
+     * redrawn by w_hi anyway. Thus, simply draw it outside of the window to
+     * reduce drawing on the X server. */
     RelieveRectangle(
-      dpy, t->decor_w, 0, 0, t->frame_g.width - 1, t->frame_g.height - 1,
-      sgc, sgc, w_shout);
+      dpy, t->decor_w, 0, 0, t->frame_g.width - 1 + w_shout,
+      t->frame_g.height - 1 + w_shout, sgc, sgc, w_shout);
   }
   if (w_hi > 0)
   {
+    /* w_shout is subtracted with a factor or 1 here instead of 2 because
+     * otherwise the shadow on the bottom/right would be too wide otherwise! */
     RelieveRectangle(
-      dpy, t->decor_w, w_shout, w_shout, t->frame_g.width - 1 - 2 * w_shout,
-      t->frame_g.height - 1 - 2 * w_shout, rgc, sgc, w_hi);
+      dpy, t->decor_w, w_shout, w_shout,
+      t->frame_g.width - 1 - 1 * w_shout,
+      t->frame_g.height - 1 - 1 * w_shout, rgc, sgc, w_hi);
   }
   if (w_shin > 0)
   {

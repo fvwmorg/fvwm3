@@ -36,6 +36,7 @@
  *
  ***********************************************************************/
 #include "config.h"
+#include <stdio.h>
 
 #include "fvwm.h"
 #include "cursor.h"
@@ -329,7 +330,7 @@ static void merge_style_list(void)
   for (temp = all_styles; temp != NULL;
        prev = temp, temp = SGET_NEXT_STYLE(*temp))
   {
-    if (prev && StrEquals(SGET_NAME(*prev), SGET_NAME(*temp)))
+    if (prev && strcmp(SGET_NAME(*prev), SGET_NAME(*temp)) == 0)
     {
       /* merge style into previous style with same name */
       if (last_style_in_list == temp)
@@ -470,7 +471,6 @@ void lookup_style(FvwmWindow *tmp_win, window_style *styles)
     if (matchWildcards(SGET_NAME(*nptr),tmp_win->class.res_class) == TRUE)
     {
       merge_styles(styles, nptr, False);
-
     }
     else if (matchWildcards(SGET_NAME(*nptr),tmp_win->class.res_name) == TRUE)
     {

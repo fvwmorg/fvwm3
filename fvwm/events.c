@@ -1460,9 +1460,9 @@ void HandleButtonPress(void)
            (Event.xbutton.window == Tmp_win->Parent
 	    /* RBW - I don't think we need these!!! Dominik...if this sems
 	    to cause a problem, just uncomment them.
-	    || Event.xbutton.window == Tmp_win->w 
-	    || Event.xbutton.window == Tmp_win->frame  
-	    */ 
+	    || Event.xbutton.window == Tmp_win->w
+	    || Event.xbutton.window == Tmp_win->frame
+	    */
 	    ) &&
 	   Scr.go.MouseFocusClickRaises)
   {

@@ -1,3 +1,12 @@
+1999-12-15  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* fvwm/borders.c (draw_frame_relief):
+	fixed size of lower/right outer relief with FvwmBorder style
+
+	* fvwm/style.c (merge_style_list):
+	fixed bug that merged styles that had different upper/lower case
+	letters, i.e. 'ddd*' and 'DDD*' are not merged anymore
+
 1999-12-25  Hippo
 
 	* fvwm/screen.h,borders.c: New GlobalOpt BorderColorPriority
