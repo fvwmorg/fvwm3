@@ -69,8 +69,8 @@ void DumpButtons(button_info *b)
   if(b->flags&b_Container)
     {
       int i=0;
-      fprintf(stderr,"  Container(%ix%i=%i buttons (alloc %i), size %ix%i, pos %i,%i\n",
-	      b->c->num_columns,b->c->num_rows,b->c->num_buttons,
+      fprintf(stderr,"  Container(%ix%i=%i buttons 0x%04x (alloc %i), size %ix%i, pos %i,%i)\n{ ",
+	      b->c->num_columns,b->c->num_rows,b->c->num_buttons,b->c->flags,
 	      b->c->allocated_buttons,
 	      b->c->ButtonWidth,b->c->ButtonHeight,b->c->xpos,b->c->ypos);
 /*

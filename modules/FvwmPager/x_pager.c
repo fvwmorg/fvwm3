@@ -483,6 +483,9 @@ void initialize_pager(void)
     gcv.foreground = (BalloonFore == NULL) ? 0 : GetColor(BalloonFore);
 
     BalloonGC = XCreateGC(dpy, balloon.w, GCFont | GCForeground, &gcv);
+
+    /* Make sure we don't get balloons initially with the Icon option. */
+    ShowBalloons = ShowPagerBalloons;
   } /* ShowBalloons */
 }
 
@@ -1951,22 +1954,37 @@ void MapBalloonWindow (XEvent *event)
   XTranslateCoordinates(dpy, view, Scr.Root, x, y,
                         &window_changes.x, &window_changes.y, &dummy);
 
-  if ( window_changes.y + balloon.height >
-       Scr.MyDisplayHeight - (2 * balloon.border) - 2 )
-  {
-    y = -balloon.yoffset - balloon.height - (2 * balloon.border);
-    XTranslateCoordinates(dpy, view, Scr.Root, x, y,
-			  &window_changes.x, &window_changes.y, &dummy);
-  }
+
   /* make sure balloon doesn't go off screen
      (actually 2 pixels from edge rather than 0 just to be pretty :-) */
+
+  /* too close to left */
   if ( window_changes.x < 2 )
     window_changes.x = 2;
+
+  /* too close to right */
   else if ( window_changes.x + window_changes.width >
             Scr.MyDisplayWidth - (2 * balloon.border) - 2 )
     window_changes.x = Scr.MyDisplayWidth - window_changes.width -
       (2 * balloon.border) - 2;
 
+  /* too close to top ... make yoffset +ve */
+  if ( window_changes.y < 2 ) {
+    y = - balloon.yoffset + view_height;
+    XTranslateCoordinates(dpy, view, Scr.Root, x, y,
+			  &window_changes.x, &window_changes.y, &dummy);
+  }
+
+  /* too close to bottom ... make yoffset -ve */
+  else if ( window_changes.y + balloon.height >
+	    Scr.MyDisplayHeight - (2 * balloon.border) - 2 ) {
+    y = - balloon.yoffset - balloon.height - (2 * balloon.border);
+    XTranslateCoordinates(dpy, view, Scr.Root, x, y,
+			  &window_changes.x, &window_changes.y, &dummy);
+  }
+
+
+  /* make changes to window */
   XConfigureWindow(dpy, balloon.w, CWX | CWY | CWWidth, &window_changes);
 
   /* if background not set in config make it match pager window */

@@ -1,4 +1,20 @@
+1998-12-12  Dominik Vogt  <dominik_vogt@hp.com>
+
+	* FvwmPager/x_pager.c (initialize_pager): fixed bug: balloons were
+	shown on the pager with the 'Icon' option initially. After iconify-
+	deiconify this was right.
+
+	* FvwmPager/FvwmPager.c (ParseOptions): *FvwmPagerBalloons Icon/Pager
+	did not switch off the other type if both were used.
+
 1998-12-10  Dominik Vogt  <dominik_vogt@hp.com>
+
+	* FvwmButtons/parse.c:
+	* FvwmButtons/output.c:
+	* FvwmButtons/FvwmButtons.c: panel bugfixes by J Joshua Feng
+
+	* FvwmPager/x_pager.c:
+	* FvwmPager/FvwmPager.1: applied ballon window flip patch by Ric Lister
 
 	* FvwmPager/x_pager.c (MapBalloonWindow): fixed possible coredump (t
 	referenced but NULL)

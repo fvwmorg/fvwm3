@@ -1222,8 +1222,10 @@ void ParseOptions(void)
 
 	  if ( strncasecmp(BalloonTypeString, "Pager", 5) == 0 ) {
 	    ShowPagerBalloons = 1;
+	    ShowIconBalloons = 0;
 	  }
 	  else if ( strncasecmp(BalloonTypeString, "Icon", 4) == 0 ) {
+	    ShowPagerBalloons = 0;
 	    ShowIconBalloons = 1;
 	  }
 	  else {

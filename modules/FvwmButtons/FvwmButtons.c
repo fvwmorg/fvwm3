@@ -575,13 +575,16 @@ int main(int argc, char **argv)
   if(UberButton->c->flags&b_TransBack)
     SetTransparentBackground(UberButton,Width,Height);
 # endif
+  
+    i=-1;ub=UberButton;
+    while(NextButton(&ub,&b,&i,0))
+      MakeButton(b);
 
     CurrentPanel = CurrentPanel->next;
   }
   CurrentPanel = MainPanel;
   UberButton   = CurrentPanel->uber;
   MyWindow     = UberButton->IconWinParent;
-
 
 # ifdef DEBUG_INIT
   fprintf(stderr,"OK\n%s: Mapping windows...",MyName);
@@ -713,7 +716,7 @@ void Loop(void)
             PanelIndex = MainPanel;
             b = NULL;
             do
-              if (PanelIndex->uber->swallow)
+              if (PanelIndex->uber->swallow) /* is the panel shown? */
               {
                 UberButton = PanelIndex->uber;
                 MyWindow   = UberButton->IconWinParent;
@@ -749,15 +752,14 @@ void Loop(void)
 	  case ButtonRelease:
             PanelIndex = MainPanel;
             b = NULL;
-            while (PanelIndex && !b)
+            do
             { if (PanelIndex->uber->swallow)
               { UberButton = PanelIndex->uber;
                 MyWindow   = UberButton->IconWinParent;
                 if (Event.xany.window == MyWindow)
 		  b=select_button(UberButton,Event.xbutton.x,Event.xbutton.y);
               }
-              PanelIndex = PanelIndex->next;
-            }
+            } while (!b && (PanelIndex = PanelIndex->next));
 
 	    if(!(act=GetButtonAction(b,Event.xbutton.button)))
 	      act=GetButtonAction(b,0);
@@ -765,12 +767,8 @@ void Loop(void)
 	      {
 		if(strncasecmp(act,"Exec",4)==0)
 		  {
-                    /* close all subpanels */
-                    PanelIndex = MainPanel->next;
-                    while (PanelIndex)
-                    { if (PanelIndex->uber->swallow) Slide(PanelIndex, NULL);
-                      PanelIndex = PanelIndex->next;
-                    }
+		    /* close current subpanel */  
+		    if (PanelIndex != MainPanel) Slide(PanelIndex, NULL);
 
 		    /* Look for Exec "identifier", in which case the button
 		       stays down until window "identifier" materializes */
@@ -1519,6 +1517,12 @@ void process_message(unsigned long type,unsigned long *body)
 # ifdef DEBUG_FVWM
   DebugFvwmEvents(type);
 # endif
+  panel_info *PanelIndex = MainPanel;
+  do
+  {
+    UberButton = PanelIndex->uber;
+    MyWindow   = UberButton->IconWinParent;
+
   switch(type)
     {
     case M_NEW_DESK:
@@ -1540,6 +1544,8 @@ void process_message(unsigned long type,unsigned long *body)
     default:
       break;
     }
+
+  } while (PanelIndex = PanelIndex->next);
 }
 
 

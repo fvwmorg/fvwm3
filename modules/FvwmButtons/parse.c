@@ -886,7 +886,7 @@ void ParseConfigLine(button_info **ubb,char *s)
       UberButton->BHeight = 1;
       UberButton->swallow = 0; /* subpanel is hidden initially */
       MakeContainer(UberButton);
-      *ubb = UberButton;
+      ub = *ubb = UberButton;
       break;
     case 11: /* BoxSize */
       ParseBoxSize(&s, &ub->c->flags);

@@ -233,7 +233,8 @@ set as an offset. Negative offsets of \fI-n\fP are placed \fIn\fP
 pixels above the pager window, positive offsets of \fI+n\fP are placed
 \fIn\fP pixels below. Offsets of 0 are not permitted, as this would permit
 direct transit from pager window to balloon window, causing an event
-loop. Defaults to +2.
+loop. Defaults to +2. The offset will change sign automatically, as needed,
+to keep the balloon on the screen.
 
 
 .SH AUTHOR

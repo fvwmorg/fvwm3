@@ -1,3 +1,12 @@
+1998-12-12  Dominik Vogt  <dominik_vogt@hp.com>
+
+	* fvwm/fvwm2.1:
+	* BUGS: documented problem with keyboard shortcuts in Xnest
+
+1998-12-11  Dominik Vogt  <dominik_vogt@hp.com>
+
+	* fvwm/fvwm2.1: Documented menu hotkeys
+
 1998-12-11  Tim Phipps  <tim@quadrics.com>
 
 	* modules/FvwmWinList/*: Without mini-icons text is centred by default.

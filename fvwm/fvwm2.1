@@ -261,7 +261,10 @@ The FvwmButtons module is documented in its own man page.
 \fIFvwm\fP attempts to be ICCCM 1.1 compliant.  In addition, ICCCM
 states that it should be possible for applications to receive ANY
 keystroke, which is not consistent with the keyboard shortcut approach
-used in \fIfvwm\fP and most other window managers.
+used in \fIfvwm\fP and most other window managers. In particular you
+cannot have the same keyboard shortcuts working with your fvwm2 and
+another fvwm2 running within Xnest (a nested X server). The same problem
+exists with mouse bindings.
 
 The ICCCM states that windows possessing the property
 .EX
@@ -568,6 +571,10 @@ AddToMenu Utilities "Tools" Title top
 All text up to the first TAB in the menu label is aligned to the
 left side of the menu, all text right of the first TAB is aligned
 to the right side. All other TABs are replaced by spaces.
+
+If the menu-label contains an ampersand ('&'), the next character
+is taken as a hotkey for the menu item. Hotkeys are underlined in
+the label. To get a literal '&', insert '&&'.
 
 If the menu-label contains a sub-string which is set off by stars,
 then the text between the stars is expected to be the name of an
@@ -1949,14 +1956,14 @@ Icons snap to only other icons.  Windows do not snap.
 The default SnapAttraction setting for behavior is "All".
 
 .IP "SnapGrid \fIx-grid-size y-grid-size\fP"
-During an interactive move a window (or icon) will be positioned such that 
+During an interactive move a window (or icon) will be positioned such that
 its location (top left corner) will be coincindent with the nearest grid point.
-The default \fIx-grid-size\fP and \fIy-grid-size\fP setting are both 1, which 
+The default \fIx-grid-size\fP and \fIy-grid-size\fP setting are both 1, which
 is effectively no grid all.  An interactive move with both \fISnapGrid\fP
 and \fISnapAttraction\fP in effect will result in the window being moved to be
-adjacent to the nearest window border (if within snap proximity) or grid 
+adjacent to the nearest window border (if within snap proximity) or grid
 position.  In other words, the window will move the shortest distance possible
-to satisfy both \fISnapGrid\fP and \fISnapAttraction\fP.  Note that the X and 
+to satisfy both \fISnapGrid\fP and \fISnapAttraction\fP.  Note that the X and
 Y coordinates are not coupled.  For example, a window may snap to another window
 on the X axis while snapping to a grid point on the Y axis.
 
