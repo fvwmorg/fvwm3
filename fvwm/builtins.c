@@ -410,7 +410,7 @@ void Maximize(XEvent *eventp,Window w,FvwmWindow *tmp_win,
  *
  *  WindowShade -- shades or unshades a window (veliaa@rpi.edu)
  *
- *  Args: 1 -- force shade, 2 -- force unshade  No Arg: toggle
+ *  Args: 1 -- shade, 2 -- unshade  No Arg: toggle
  *
  ***********************************************************************
  *
@@ -435,7 +435,7 @@ void WindowShade(XEvent *eventp,Window w,FvwmWindow *tmp_win,
     if (tmp_win == NULL)
 	return;
 
-    if (!(tmp_win->flags & TITLE) || (tmp_win->flags & MAXIMIZED)) {
+    if (!(tmp_win->flags & TITLE)) {
       XBell(dpy, 0);
       return;
     }

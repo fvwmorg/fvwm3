@@ -1,3 +1,8 @@
+1999-03-05  Tomas Ogren  <stric@ing.umu.se>
+
+	* fvwm/builtins.c (WindowShade): Removed a little check for MAXIMIZED
+	windows which broke the shade/maximize "cooperation".
+
 1999-03-05  Matthias Clasen  <clasen@mathematik.uni-freiburg.de>
 
 	* fvwm/session.c (SaveGlobalState): 
