@@ -287,7 +287,6 @@ ones have mouse actions bound to them.  See the section on the
 .B Mouse
 command below.
 
-
 .SH THE VIRTUAL DESKTOP
 
 Fvwm provides multiple virtual desktops for users who wish to use
@@ -426,7 +425,6 @@ is strongly recommended for multi-screen displays.  You may need
 to quit on each screen to quit from the X session completely.
 This is not to be confused with Xinerama support.
 
-
 .SH XINERAMA SUPPORT
 
 Fvwm supports the Xinerama extension of newer X servers which
@@ -488,7 +486,6 @@ configuration if the total screen seen by fvwm is made up of
 equal sized monitors in a rectangular grid.  The commands
 .BR XineramaSls ", " XineramaSlsSize " and " XineramaSlsScreens
 are used to configure this feature.
-
 
 .SH INITIALIZATION
 
@@ -627,7 +624,6 @@ was included at compile time.  Optional features are described in
 the
 .I config.h
 file that is generated during compilation.
-
 
 .SH ICONS AND IMAGES
 
@@ -1261,7 +1257,6 @@ and
 .SM Ctrl-l
 ) can be used instead of the arrow keys.
 
-
 .SH SESSION MANAGEMENT
 
 Fvwm supports session management according to the X Session
@@ -1754,13 +1749,38 @@ Some examples can be found in the description of the
 .B AddToFunc
 command.
 
+.SH SCRIPTING AND COMPLEX FUNCTIONS
+
+To achieve the more complex effects, fvwm knows a number of built
+in commands to improve its scripting abilities.  Scripts can be
+read from a file with
+.BR Read ,
+from the output of a command with
+.B PipeRead
+or written as a complex function with the
+.B AddToFunc
+command.  For the curious, section 7 of the fvwm FAQ shows some
+real life applications of scripting.  Please refer to the sections
+.B COMMANDS FOR USER FUNCTIONS AND SHELL COMMANDS
+and
+.B CONDITIONAL COMMANDS
+for details.  A word of warning:  During execution of complex
+functions, fvwm needs to take all input from the mouse pointer
+(the pointer is "grabbed" in the slang of X).  No other programs
+can receive any input from the pointer while a function is run.
+This can confuse some programs.  For example, the xwd program
+refuses to make screen shots when run from a complex function.  To
+achieve the same functionality you can use the.
+.BR Read " or " PipeRead
+command instead.
+
 .SS THE LIST OF BUILTIN COMMANDS
 
 The commands descriptions below are grouped together in the
 following sections.  The sections are hopefully sorted in order of
 usefulness to the newcomer.
 .EX
-- Menu commands
+- Commands for menus
 - Miscellaneous commands
 - Commands affecting window movement and placement
 - Commands for focus and mouse movement
@@ -3975,7 +3995,7 @@ The
 option causes fvwm to not display the geometries as well as
 the separators which indicate the different desktops.
 .I NoGeometryWithInfo
-removes the geometries, but keep the desktops information
+removes the geometries, but keep the desktop information
 and indicates iconic windows.
 .I NoDeskNum
 causes fvwm to not display the desktop number in the geometry
@@ -8380,6 +8400,10 @@ to the
 .B COMMAND EXPANSION
 section for details.
 
+Warning:  Please read the comments on executing complex functions
+in the section
+.BR "SCRIPTING AND COMPLEX FUNCTIONS" .
+
 Examples:
 
 If you call
@@ -8513,6 +8537,10 @@ The keyword
 may be omitted if
 .I FunctionName
 does not coincide with a fvwm built-in function name
+
+Warning:  Please read the comments on executing complex functions
+in the section
+.BR "SCRIPTING AND COMPLEX FUNCTIONS" .
 
 .TP
 .BI "Nop"
