@@ -1,5 +1,8 @@
 Changes in alpha release 2.3.3 (May 1999)
 
+* New button states ToggledActiveUp, ToggledActiveDown, ToggledInactive
+  for customizing e.g. the "maximized" appearance of the maximize button.
+
 * New button style flag MWMDecorStick to support toggle buttons for the
   Stick function.
 

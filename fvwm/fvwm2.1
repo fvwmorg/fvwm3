@@ -436,11 +436,12 @@ Ops".
 .IP "AddButtonStyle \fIbutton\fP [ \fIstate\fP ] [ \fIstyle\fP ] [-- \fI[!]flag ...\fP]"
 Adds a button style to \fIbutton\fP.  \fIbutton\fP can be a button
 number, or one of "All," "Left," or "Right."  \fIstate\fP can be
-"ActiveUp," "ActiveDown" or "Inactive."  If \fIstate\fP is omitted,
-then the style is added to every state.  If the button style and flags
-are enclosed in parentheses, then multiple state definitions can be
-placed on a single line.  Flags for additional button styles cannot be
-changed after definition.
+"ActiveUp," "ActiveDown", "Inactive", 
+"ToggledActiveUp," "ToggledActiveDown" or "ToggledInactive." 
+If \fIstate\fP is omitted, then the style is added to every state.  If the
+button style and flags are enclosed in parentheses, then multiple state
+definitions can be placed on a single line.  Flags for additional button
+styles cannot be changed after definition.
 
 Buttons are drawn in the order of definition, beginning with the most
 recent ButtonStyle, followed by those added with AddButtonStyle.  To
@@ -468,7 +469,9 @@ states and a Vector button style is drawn on top of all state.
 
 .IP "AddTitleStyle [ \fIstate\fP ] [ \fIstyle\fP ] [ -- \fI[!]flag ...\fP ]"
 Adds a title style to the title bar.  \fIstate\fP should be one of
-"ActiveUp," "ActiveDown," or "Inactive."  If \fIstate\fP is omitted,
+"ActiveUp," "ActiveDown", "Inactive", 
+"ToggledActiveUp," "ToggledActiveDown" or "ToggledInactive." 
+If \fIstate\fP is omitted,
 then the style is added to every state.  If the style and flags are
 enclosed in parentheses, then multiple state definitions can be placed
 on a single line.  This command is quite similar to the AddButtonStyle
@@ -798,11 +801,22 @@ line.
 \fIstate\fP refers to which button state should be set.  Button states
 are defined as follows: "ActiveUp" and "ActiveDown" refer to the
 unpressed and pressed states for buttons on active windows; while the
-"Inactive" state denotes buttons on inactive windows.
-
-If \fIstate\fP is ActiveUp, ActiveDown, or Inactive, that particular
-button state is set.  If \fIstate\fP is omitted, every state is set.
-Specifying a style destroys the current style (use AddButtonStyle to
+"Inactive" state denotes buttons on inactive windows. The "ToggledActiveUp",
+"ToggledActiveDown" and "ToggledInactive" states are used instead for buttons
+which have one of the MWMDecorMaximize, MWMDecorShade or MWMDecorStick
+hints, if the window is maximized, shaded or sticky, respectively.
+.EX
+AddToDecor Default
+ + ButtonStyle 6 All               Vector 4 50x25@1 85x75@0 15x75@0 50x25@1 
+ + ButtonStyle 6 ToggledActiveUp   Vector 4 50x75@0 85x25@1 15x25@0 50x75@0 
+ + ButtonStyle 6 ToggledActiveDown Vector 4 50x75@0 85x25@1 15x25@0 50x75@0 
+ + ButtonStyle 6 ToggledInactive   Vector 4 50x75@0 85x25@1 15x25@0 50x75@0 
+ + ButtonStyle 6 - MWMDecorShade
+Mouse 0 6 N WindowShade
+.EE
+If \fIstate\fP is ActiveUp, ActiveDown, Inactive, or a toggled variant, 
+that particular button state is set.  If \fIstate\fP is omitted, every state
+is set. Specifying a style destroys the current style (use AddButtonStyle to
 avoid this).
 
 If \fIstyle\fP is omitted, then state-dependent flags can be set for
@@ -865,7 +879,7 @@ button is pressed, the relief is inverted.  Because of this, to obtain
 a sunken ActiveDown state you must specify the opposite of the desired
 relief (i.e. to obtain a pressed-in look which is raised, specify Sunk
 for ActiveDown).  This behavior is consistent, but may seem confusing
-at first.
+at first.  The same applies to the toggled states. 
 
 Button styles are classified as non-destructive, partially destructive,
 or fully destructive.  Non-destructive styles do not affect the image.

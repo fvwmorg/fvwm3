@@ -9,6 +9,15 @@ Sat May 22 17:40:57 1999  Steve Robbins  <steve@nyongwa.montreal.qc.ca>
 
 1999-05-22  Matthias Clasen  <clasen@mathematik.uni-freiburg.de>
 
+	* fvwm/screen.h (ButtonState): 
+	* fvwm/builtins.c (button_states): new button states ToggledActiveUp,
+	ToggledActiveDown, ToggledInactive.
+	* fvwm/borders.c (get_button_state): new argument Bool toggled.
+	(SetBorder): 
+	(SetTitleBar): calculate toggled and feed it to get_button_state.
+	* NEWS:
+	* fvwm/fvwm2.1: explain new toggled button states.
+	
 	* NEWS:
 	* fvwm/fvwm2.1: 
 	* fvwm/screen.h: 

@@ -58,6 +58,13 @@ static char  *button_states[MaxButtonState]={
 #ifdef INACTIVE_BTNS
     "Inactive",
 #endif
+    "ToggledActiveUp",
+#ifdef ACTIVEDOWN_BTNS
+    "ToggledActiveDown",
+#endif
+#ifdef INACTIVE_BTNS
+    "ToggledInactive",
+#endif
 };
 
 static int

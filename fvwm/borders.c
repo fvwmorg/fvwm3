@@ -76,20 +76,28 @@ static void change_window_color(Window w, unsigned long valuemask,
 }
 
 /* rules to get button state */
-static enum ButtonState get_button_state(Bool onoroff, Window w)
+static enum ButtonState get_button_state(Bool onoroff, Bool toggled, Window w)
 {
 #if defined(ACTIVEDOWN_BTNS) && defined(INACTIVE_BTNS)
   if (!onoroff)
-    return Inactive;
+    return toggled ? ToggledInactive : Inactive;
   else
-    return (PressedW == w) ? ActiveDown : ActiveUp;
+    return (PressedW == w) 
+      ? (toggled ? ToggledActiveDown : ActiveDown) 
+      : (toggled ? ToggledActiveUp : ActiveUp);
 #elif defined(ACTIVEDOWN_BTNS) && !defined(INACTIVE_BTNS)
-  return (PressedW == w) ? ActiveDown : ActiveUp;
+  return (PressedW == w) 
+      ? (toggled ? ToggledActiveDown : ActiveDown) 
+      : (toggled ? ToggledActiveUp : ActiveUp);
 #elif !defined(ACTIVEDOWN_BTNS) && defined(INACTIVE_BTNS)
-  return (onoroff) ? ActiveUp : Inactive;
+  return (onoroff) ? 
+      : (toggled ? ToggledActiveUp : ActiveUp);
+      ? (toggled ? ToggledInactive : Inactive) 
 #elif !defined(ACTIVEDOWN_BTNS) && !defined(INACTIVE_BTNS)
-  return ActiveUp;
+  return toggled ? ToggledActiveUp : ActiveUp;
 #endif
+  
+  
 }
 
 /****************************************************************************
@@ -248,8 +256,14 @@ void SetBorder (FvwmWindow *t, Bool onoroff,Bool force,Bool Mapped,
     {
 	if(t->left_w[i] != None)
 	{
-	    enum ButtonState bs = get_button_state(onoroff, t->left_w[i]);
-	    ButtonFace *bf = &GetDecor(t,left_buttons[i].state[bs]);
+	  int stateflags = GetDecor(t,left_buttons[i].flags);
+	  Bool toggled = 
+	    (HAS_MWM_BUTTONS(t) &&
+	     ((stateflags & MWMDecorMaximize && IS_MAXIMIZED(t)) ||
+	      (stateflags & MWMDecorShade && IS_SHADED(t)) ||
+	      (stateflags & MWMDecorStick && IS_STICKY(t))));
+	  enum ButtonState bs = get_button_state(onoroff, toggled, t->left_w[i]);
+	  ButtonFace *bf = &GetDecor(t,left_buttons[i].state[bs]);
 #if !(defined(PIXMAP_BUTTONS) && defined(BORDERSTYLE))
 	    if (NewColor)
 	      change_window_color(t->left_w[i], valuemask, &attributes);
@@ -317,7 +331,13 @@ void SetBorder (FvwmWindow *t, Bool onoroff,Bool force,Bool Mapped,
     {
 	if(t->right_w[i] != None)
 	{
-	    enum ButtonState bs = get_button_state(onoroff, t->right_w[i]);
+	  int stateflags = GetDecor(t,right_buttons[i].flags);
+	  Bool toggled = 
+	    (HAS_MWM_BUTTONS(t) &&
+	     ((stateflags & MWMDecorMaximize && IS_MAXIMIZED(t)) ||
+	      (stateflags & MWMDecorShade && IS_SHADED(t)) ||
+	      (stateflags & MWMDecorStick && IS_STICKY(t))));
+	    enum ButtonState bs = get_button_state(onoroff, toggled, t->right_w[i]);
 	    ButtonFace *bf = &GetDecor(t,right_buttons[i].state[bs]);
 #if !(defined(PIXMAP_BUTTONS) && defined(BORDERSTYLE))
 	    if (NewColor)
@@ -873,9 +893,16 @@ void SetTitleBar (FvwmWindow *t,Bool onoroff, Bool NewTitle)
   else
     w = 0;
 
-  title_state = get_button_state(onoroff, t->title_w);
-  tb_style = GetDecor(t,titlebar.state[title_state].style);
   tb_flags = GetDecor(t,titlebar.flags);
+  {
+    Bool toggled = 
+      (HAS_MWM_BUTTONS(t) &&
+       ((tb_flags & MWMDecorMaximize && IS_MAXIMIZED(t)) ||
+	(tb_flags & MWMDecorShade && IS_SHADED(t)) ||
+	(tb_flags & MWMDecorStick && IS_STICKY(t))));
+    title_state = get_button_state(onoroff, toggled, t->title_w);
+  }
+  tb_style = GetDecor(t,titlebar.state[title_state].style);
   if (tb_flags & HOffCenter) {
       if (tb_flags & HRight)
 	  hor_off = t->title_g.width - w - 10;
