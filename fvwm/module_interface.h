@@ -54,13 +54,13 @@ extern struct queue_buff_struct **pipeQueue;
 /* this is a bit long winded to allow MAX_MESSAGE to be 32 and not get an
  * integer overflow with (1 << MAX_MESSAGES) */
 #define MAX_MASK             ((((1<<(MAX_MESSAGES-1))-1)+(1<<(MAX_MESSAGES-1)))\
-                              &~(M_LOCKONSEND + M_SENDCONFIG))
+                              &~(M_NOTUSED + M_SENDCONFIG))
 
 
 /*
- * M_LOCKONSEND  when set causes fvwm to  wait for the  module to send an
- * .unlock  message back, needless  to say, we  wouldn't want  this on by
- * default
+ * M_NOTUSED is not used. It was M_LOCKONSEND which is not more needed: it
+ * has been replaced by a separated mask which defines on which messages 
+ * the fvwm-to-module communication need to be lock. olicha Nov 13 1999. 
  *
  * M_SENDCONFIG for   modules to tell  fvwm that  they  want to  see each
  * module configuration command as   it is entered.  Causes  modconf.c to

@@ -1,3 +1,11 @@
+1999-11-12 olicha <olivier.chapuis@free.fr>
+	
+	* fvwm/module_interface.c (PoistiveWrite):
+	* fvwm/module_interface.h (MAX_MASK):
+	* libs/Modules.h:
+	Remove the "lock on send code" based on M_LOCKONSEND. Replace
+	M_LOCKONSEND by M_NOTUSED. So, we have a free type.
+
 1999-11-12  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* fvwm/add_window.c (setup_title_window):

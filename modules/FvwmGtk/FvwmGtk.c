@@ -344,10 +344,10 @@ process_message (unsigned long type,
   window_list_options *opts;
   char name[128];
 
-  SendText (fvwm_fd, "UNLOCK", 0);
   switch (type)
     {
     case M_STRING:
+      SendText (fvwm_fd, "UNLOCK", 0);
       context = body[0]; /* this is tmp_win->w */
       sscanf ((char*) (&body[3]), "%128s %d", name, &button);
       widget = g_hash_table_lookup (widgets, name);
@@ -501,7 +501,6 @@ main (int argc, char **argv)
 
   SetMessageMask (fvwm_fd,
 		  M_STRING |
-		  M_LOCKONSEND |
 		  M_CONFIG_INFO |
 		  M_SENDCONFIG |
 		  M_ADD_WINDOW |
@@ -519,6 +518,9 @@ main (int argc, char **argv)
 
   /* tell fvwm we're running */
   SendFinishedStartupNotification(fvwm_fd);
+
+  /* tell fvwm we want to be lock on send for M_STRING Messages */
+  SetSyncMask(fvwm_fd, M_STRING);
 
   gtk_main ();
   return 0;

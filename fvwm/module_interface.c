@@ -1156,20 +1156,21 @@ int PositiveWrite(int module, unsigned long *ptr, int size)
     return -1;
 
   /* a dirty hack to prevent FvwmAnimate triggering during Recapture */
-  /* would be better to send RecaptureStart and RecaptureEnd messages */
-  /* if module uses lock on send or lock on send for iconify and its an 
+  /* would be better to send RecaptureStart and RecaptureEnd messages. */
+  /* If module is lock on send for iconify message and its an 
    * iconify event and server grabbed, then return */
-  if (((PipeMask[module] & M_LOCKONSEND) || (SyncMask[module] & M_ICONIFY))
-      && (ptr[1] & M_ICONIFY) && (myxgrabcount != 0)) {
+  if ((SyncMask[module] & M_ICONIFY & ptr[1]) && (myxgrabcount != 0)) {
     return -1;
   }
 
   AddToQueue(module,ptr,size,0);
 
-  /* dje, from afterstep, for FvwmAnimate, allows modules to sync with fvwm. */
-  /* this is disabled when the server is grabbed, otherwise deadlocks happen */
-  if (((PipeMask[module] & M_LOCKONSEND) || (SyncMask[module] & ptr[1]))
-      && !myxgrabcount) {
+  /* dje, from afterstep, for FvwmAnimate, allows modules to sync with fvwm.
+   * this is disabled when the server is grabbed, otherwise deadlocks happen. 
+   * M_LOCKONSEND has been replaced by a separated mask which defines on 
+   * which messages the fvwm-to-module communication need to be lock 
+   * on send. olicha Nov 13, 1999 */
+  if ((SyncMask[module] & ptr[1]) && !myxgrabcount) {
     Window targetWindow;
     int e;
 

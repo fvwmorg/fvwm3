@@ -1,5 +1,12 @@
 1999-11-12 olicha <olivier.chapuis@free.fr>
 
+	* FvwmGtk/FvwmGtk.c (main):
+	(ProcessMessage):
+	Use SetSyncMask in the place of M_LOCKONSEND. Lock on send
+	only for M_STRING
+	
+1999-11-12 olicha <olivier.chapuis@free.fr>
+
 	* FvwmAnimate/FvwmAnimate.c (main):
         (Loop):
 	* FvwmAuto/FvwmAuto.c (main):
@@ -10,8 +17,8 @@
 	* FvwmTaskBar/FvwmTaskBar.c (main):
         (ParseConfig):
         (ProcessMessage):
-        * FvwmTaskBar/FvwmTaskBar.1:
-        * FvwmTaskBar/ButtonArray.{c,h} (ButtonCoordinates):
+	* FvwmTaskBar/FvwmTaskBar.1:
+	* FvwmTaskBar/ButtonArray.{c,h} (ButtonCoordinates):
         New configuration option NoIconAction for animation
 	
 1999-11-12 olicha <olivier.chapuis@free.fr>
@@ -20,6 +27,7 @@
 	* FvwmIconMan/fvwm.c (ProcessMessage):
 	Use SetSyncMask in the place of M_LOCKONSEND for synchronize its 
 	processing with fvwm only for M_ICONIFY and M_DEICONIFY messages
+	
 1999-11-11 olicha <olivier.chapuis@free.fr>
 
 	* FvwmWinList/FvwmWinList.c (main):
