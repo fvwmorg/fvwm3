@@ -79,7 +79,20 @@ AC_ISC_POSIX
 AC_MINIX
 
 dnl Need to know where X is, for finding some libraries (e.g. xpm)
+no_x=""
 AC_PATH_XTRA
+if test "$no_x" = "yes"; then
+  echo
+  echo "X11 libraries or header files could not be found.  Please make"
+  echo "sure the X11 development package is installed on your system."
+  echo "If it is definitely installed, try setting the include and library"
+  echo "paths with the --x-include and --x-libraries options of configure."
+  echo "Fvwm can not be compiled without the X11 development environment"
+  echo
+  echo "Aborting."
+  echo
+  exit 1
+fi
 
 dnl 'unset' is not portable, but setting to null is not enough to avoid using
 dnl the cached value!  For ancient shells "rm config.cache" is a solution.
