@@ -4,14 +4,14 @@ AC_PREREQ(2.13)
 AC_INIT(fvwm/fvwm.c)
 
 dnl should be "yes" only within the released distribution
-ISRELEASED=no
+ISRELEASED=yes
 version=2.5.4
 VERSIONINFO=""
 
 dnl date of the released version (please zero pad the day in the last 2 dates)
-RELDATELONG="25 August 2002"
-RELDATESHORT="25-Aug-2002"
-RELDATENUM="2002-08-25"
+RELDATELONG="20 October 2002"
+RELDATESHORT="20-Oct-2002"
+RELDATENUM="2002-10-20"
 
 dnl constant variable settings
 FVWMNAMEUCASE="FVWM"
@@ -1012,7 +1012,6 @@ dnl
 	modules/FvwmPager/Makefile
 	modules/FvwmPerl/Makefile
 	modules/FvwmPerl/FvwmPerl
-	modules/FvwmProxy/Makefile
 	modules/FvwmRearrange/Makefile
 	modules/FvwmSave/Makefile
 	modules/FvwmSaveDesk/Makefile

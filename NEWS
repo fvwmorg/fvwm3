@@ -3,7 +3,7 @@ _+_A HREF="#2.4.12"_-_2.4.12_+_/A_-_.
 
 -------------------------------------------------------------------
 
-Changes in *experimental* release 2.5.4 (not released yet)
+Changes in alpha release 2.5.4 (20-Oct-2002)
 
 * FvwmTaskBar may now include mini launchbuttons using the Button
   command.  Also has new options for spacing the buttons:
@@ -81,8 +81,6 @@ Changes in *experimental* release 2.5.4 (not released yet)
   SortClassName option is renamed to SortByClass.
 
 * New command PrintInfo for debugging.
-
-* New experimental module FvwmProxy.
 
 -------------------------------------------------------------------
 
