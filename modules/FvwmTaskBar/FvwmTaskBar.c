@@ -602,7 +602,6 @@ void ProcessMessage(unsigned long type,unsigned long *body)
     /* fwvm will wait for an Unlock message before continuing
      * be careful when changing this construct, make sure unlock happens
      * if AnimCommand && AnimCommand[0] != 0 */
-    fprintf(stderr,"Iconfy msg\n");
     tb_flags = ItemFlags(&windows, body[0]);
     if (((i = FindItem(&windows, body[0])) == -1)
 	|| (type == M_DEICONIFY && !(tb_flags & F_ICONIFIED))
@@ -610,7 +609,6 @@ void ProcessMessage(unsigned long type,unsigned long *body)
     {
       if (AnimCommand && AnimCommand[0] != 0)
 	SendText(Fvwm_fd, "Unlock 1", 0);
-      fprintf(stderr,"No !\n");
       break;
     }
     tb_flags ^= F_ICONIFIED;

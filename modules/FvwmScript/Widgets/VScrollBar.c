@@ -107,7 +107,6 @@ void InitVScrollBar(struct XObj *xobj)
 		mask,&Attr);
  xobj->gc=XCreateGC(dpy,xobj->win,0,NULL);
  XSetForeground(dpy,xobj->gc,xobj->TabColor[fore]);
- XSetBackground(dpy,xobj->gc,xobj->TabColor[back]);
  if ((xobj->xfont=XLoadQueryFont(dpy,xobj->font))==NULL)
    fprintf(stderr,"Can't load font %s\n",xobj->font);
  else

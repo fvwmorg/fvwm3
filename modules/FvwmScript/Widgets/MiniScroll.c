@@ -55,7 +55,6 @@ void InitMiniScroll(struct XObj *xobj)
 		       &Colorset[xobj->colorset], Pdepth,
 		       xobj->gc, True);
  XSetForeground(dpy,xobj->gc,xobj->TabColor[fore]);
- XSetBackground(dpy,xobj->gc,xobj->TabColor[back]);
  XSetLineAttributes(dpy,xobj->gc,1,LineSolid,CapRound,JoinMiter);
  if (xobj->value2>xobj->value3)
  {

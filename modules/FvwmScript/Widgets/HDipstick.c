@@ -59,7 +59,6 @@ void InitHDipstick(struct XObj *xobj)
 		       xobj->gc, True);
  
  XSetForeground(dpy,xobj->gc,xobj->TabColor[fore]);
- XSetBackground(dpy,xobj->gc,x11base->TabColor[back]);
  XSetLineAttributes(dpy,xobj->gc,1,LineSolid,CapRound,JoinMiter);
 
  if (xobj->value2>xobj->value3)

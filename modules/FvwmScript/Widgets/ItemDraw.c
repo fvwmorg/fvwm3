@@ -40,17 +40,15 @@ void InitItemDraw(struct XObj *xobj)
   xobj->TabColor[shad] = GetColor(xobj->shadcolor);
  }
 
- mask=0;
  Attr.background_pixel=xobj->TabColor[back];
- mask|=CWBackPixel;
-
+ mask=CWBackPixel;
+ 
  xobj->win=XCreateWindow(dpy,*xobj->ParentWin,
 		xobj->x,xobj->y,xobj->width,xobj->height,0,
 		CopyFromParent,InputOutput,CopyFromParent,
 		mask,&Attr);
  xobj->gc=XCreateGC(dpy,xobj->win,0,NULL);
  XSetForeground(dpy,xobj->gc,xobj->TabColor[fore]);
- XSetBackground(dpy,xobj->gc,xobj->TabColor[back]);
  if ((xobj->xfont=XLoadQueryFont(dpy,xobj->font))==NULL)
    fprintf(stderr,"Can't load font %s\n",xobj->font);
  else
@@ -118,10 +116,10 @@ void DestroyItemDraw(struct XObj *xobj)
 }
 
 void DrawItemDraw(struct XObj *xobj)
-{
- /* Calcul de la position de la chaine de charactere */
- XClearArea(dpy,xobj->win,0,0,xobj->width,xobj->height,False);
- DrawIconStr(0,xobj,False);
+{ 
+  XClearArea(dpy,xobj->win,0,0,xobj->width,xobj->height,False);
+  XClearWindow(dpy,xobj->win);
+  DrawIconStr(0,xobj,False);
 }
 
 void EvtMouseItemDraw(struct XObj *xobj,XButtonEvent *EvtButton)

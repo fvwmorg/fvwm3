@@ -983,8 +983,12 @@ static void ChangeBackColor (int NbArg,long *TabArg)
  }
  tabxobj[IdItem]->colorset = -1;
 
- if (tabxobj[IdItem]->TypeWidget != SwallowExec)
+ if (tabxobj[IdItem]->TypeWidget != SwallowExec) {
+   XSetWindowBackground(dpy,
+			tabxobj[IdItem]->win,
+			tabxobj[IdItem]->TabColor[back]);
    XClearWindow(dpy, tabxobj[IdItem]->win);
+ }
  tabxobj[IdItem]->DrawObj(tabxobj[IdItem]);
 
  free(arg[0]);

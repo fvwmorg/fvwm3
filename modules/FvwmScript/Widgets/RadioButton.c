@@ -53,7 +53,6 @@ void InitRadioButton(struct XObj *xobj)
 
  xobj->gc=XCreateGC(dpy,xobj->win,0,NULL);
  XSetForeground(dpy,xobj->gc,xobj->TabColor[fore]);
- XSetBackground(dpy,xobj->gc,xobj->TabColor[back]);
 
  if ((xobj->xfont=XLoadQueryFont(dpy,xobj->font))==NULL)
   {

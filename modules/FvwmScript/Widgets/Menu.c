@@ -52,7 +52,6 @@ void InitMenu(struct XObj *xobj)
 		mask,&Attr);
  xobj->gc=XCreateGC(dpy,xobj->win,0,NULL);
  XSetForeground(dpy,xobj->gc,xobj->TabColor[fore]);
- XSetBackground(dpy,xobj->gc,xobj->TabColor[back]);
 
  XSetLineAttributes(dpy,xobj->gc,1,LineSolid,CapRound,JoinMiter);
  if ((xobj->xfont=XLoadQueryFont(dpy,xobj->font))==NULL)

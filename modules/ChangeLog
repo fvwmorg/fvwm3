@@ -1,6 +1,15 @@
 2000-02-06  olicha	<olivier.chapuis@free.fr>
 	
 	* FvwmTaskBar/FvwmTaskBar.c (ProcessMessage):
+	Removed debug code
+	* FvwmScript/Instruction.c (ChangeBackColor):
+	Fixed ChangeBackColor.
+	* FvwmScript/Widgets/*:
+	Removed unused XSetBackground.
+
+2000-02-06  olicha	<olivier.chapuis@free.fr>
+	
+	* FvwmTaskBar/FvwmTaskBar.c (ProcessMessage):
 	Fixed iconification of a sticky window after a desk switch
 	with FvwmTaskBarDeskOnly
 	
