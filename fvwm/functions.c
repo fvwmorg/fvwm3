@@ -1436,7 +1436,14 @@ static void execute_complex_function(F_CMD_ARGS, Bool *desperate,
     ev->type = ButtonRelease;
 
   fi = func->first_item;
+#if 0
+  /* domivogt (11-Apr-2000): The pointer ***must not*** be ungrabbed here.  If
+   * it is, any window that the mouse enters during the function will receive
+   * MotionNotify events with a button held down!  The results are
+   * unpredictable and likely unpredictable.  E.g. rxvt interprets the
+   * ButtonMotion as user input to select text. */
   UngrabEm(GRAB_NORMAL);
+#endif
   while(fi != NULL)
     {
       /* make lower case */
@@ -1456,6 +1463,8 @@ static void execute_complex_function(F_CMD_ARGS, Bool *desperate,
       fi = fi->next_item;
     }
   WaitForButtonsUp(False);
+  /* THis is the right place to ungrab the pointer (see comment above). */
+  UngrabEm(GRAB_NORMAL);
   for(i=0;i<10;i++)
     if(arguments[i] != NULL)
       free(arguments[i]);

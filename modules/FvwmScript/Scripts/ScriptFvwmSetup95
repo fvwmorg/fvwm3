@@ -1291,7 +1291,7 @@ Main
    If $KdeUserMenu == {1} Then
       Set $KdeMenu = {1}
 
-   Set $PERLCMD = {$U=0;$C=0;$P=0;$G=0;open(IN,"}$INPUT{");open(OUT,">}$OUTPUT{");while(<IN>)}$B{chomp;s/^\#// if $U;$_="\#$_" if $C;$U-- if $U;$C-- if $C;if(/^\#WIN/&&}$Fvwm{)}$B{split;$C=@_[1];}$E{if((/^\#FVWM/&&}$Fvwm{)||(/^\#K_M/&&}$KdeMenu{)||(/^\#K_SM/&&}$KdeSysMenu{)||(/^\#K_UM/&&}$KdeUserMenu{)||(/^\#KFM_ICONS/&&}$KfmIcons{)||(/^\#G_M_G/&&}$GnomeMenuGtk{)||(/^\#G_SM_G/&&}$GnomeSysMenuGtk{)||(/^\#G_UM_G/&&}$GnomeUserMenuGtk{)||(/^\#G_RHM_G/&&}$GnomeRHMenuGtk{)||(/^\#G_SM_F/&&}$GnomeSysMenuFvwm{)||(/^\#G_UM_F/&&}$GnomeUserMenuFvwm{)||(/^\#G_RHM_F/&&}$GnomeRHMenuFvwm{)||(/^\#G_SESSION/&&}$GnomeSession{)||(/^\#G_ST/&&}$GnomeY{)||(/^\#STROKE/&&}$Stroke{)||(/^\#LAPTOP/&&}$Laptop{)||(/^\#PANEL_PUT/&&}$PanelStaysPut{))}$B{split;$U=@_[1];}$E{if ($P)}$B{s# emacs# }$Editor{#;s#\*macs#}$Reditor{#;s#xfm#}$FileMgr{#;s#xterm#}$Term{#;}$E{$P-- if $P;if (/^\#PREF/)}$B{split;$P=@_[1];}$E{s#rplay#}$SoundPlayer{# if /Event/;s#/usr/share/sounds/#\}$SoundPath{# if /Event/;s#/usr#\}$GnomePath{# if($G);$G-- if $G;$G=1 if(/^\#G/);if(/pathtofvwm_icons/&&}$IP{)}$B{s/^\#//;s#pathtofvwm_icons#\}$ImagePath{#;}$E{print OUT "$_\n";}$E
+   Set $PERLCMD = {$S=1;$U=0;$C=0;$P=0;$G=0;open(IN,"}$INPUT{");open(OUT,">}$OUTPUT{");while(<IN>)}$B{if ($S)}$B{$_="";$S=0}$E{chomp;s/^\#// if $U;$_="\#$_" if $C;$U-- if $U;$C-- if $C;if(/^\#WIN/&&}$Fvwm{)}$B{split;$C=@_[1];}$E{if((/^\#FVWM/&&}$Fvwm{)||(/^\#K_M/&&}$KdeMenu{)||(/^\#K_SM/&&}$KdeSysMenu{)||(/^\#K_UM/&&}$KdeUserMenu{)||(/^\#KFM_ICONS/&&}$KfmIcons{)||(/^\#G_M_G/&&}$GnomeMenuGtk{)||(/^\#G_SM_G/&&}$GnomeSysMenuGtk{)||(/^\#G_UM_G/&&}$GnomeUserMenuGtk{)||(/^\#G_RHM_G/&&}$GnomeRHMenuGtk{)||(/^\#G_SM_F/&&}$GnomeSysMenuFvwm{)||(/^\#G_UM_F/&&}$GnomeUserMenuFvwm{)||(/^\#G_RHM_F/&&}$GnomeRHMenuFvwm{)||(/^\#G_SESSION/&&}$GnomeSession{)||(/^\#G_ST/&&}$GnomeY{)||(/^\#STROKE/&&}$Stroke{)||(/^\#LAPTOP/&&}$Laptop{)||(/^\#PANEL_PUT/&&}$PanelStaysPut{))}$B{split;$U=@_[1];}$E{if ($P)}$B{s# emacs# }$Editor{#;s#\*macs#}$Reditor{#;s#xfm#}$FileMgr{#;s#xterm#}$Term{#;}$E{$P-- if $P;if (/^\#PREF/)}$B{split;$P=@_[1];}$E{s#rplay#}$SoundPlayer{# if /Event/;s#/usr/share/sounds/#\}$SoundPath{# if /Event/;s#/usr#\}$GnomePath{# if($G);$G-- if $G;$G=1 if(/^\#G/);if(/pathtofvwm_icons/&&}$IP{)}$B{s/^\#//;s#pathtofvwm_icons#\}$ImagePath{#;}$E{print OUT "$_\n";}$E
 
 
   Do {Echo perl -e '} $PERLCMD {'}
@@ -1321,7 +1321,6 @@ Main
     Do {Exec [ -f } $FHOME {/.start-FvwmAuto ] || echo "# Do not start FvwmAuto">} $FHOME {/.start-FvwmAuto}
     Do {Exec [ -f } $FHOME {/.start-FvwmBanner ] || echo "# Do not start FvwmBanner">} $FHOME {/.start-FvwmBanner}
    Do {Exec [ -f } $FHOME {/.start-FvwmEvent ] || echo "# Do not start FvwmEvent">} $FHOME {/.start-FvwmEvent}
-   Do {Exec [ -f } $FHOME {/.fvwm-layers ] || echo "Style 'MiniButtons' StaysOnTop" >} $FHOME {/.fvwm-layers}
 
   # Try to wait perl finish its stuff
   Do {Piperead 'sleep 4'}
@@ -1411,7 +1410,6 @@ Main
     Do {Exec [ -f } $FHOME {/.start-FvwmAuto ] || echo "# Do not start FvwmAuto">} $FHOME {/.start-FvwmAuto}
     Do {Exec [ -f } $FHOME {/.start-FvwmBanner ] || echo "# Do not start FvwmBanner">} $FHOME {/.start-FvwmBanner}
    Do {Exec [ -f } $FHOME {/.start-FvwmEvent ] || echo "# Do not start FvwmEvent">} $FHOME {/.start-FvwmEvent}
-   Do {Exec [ -f } $FHOME {/.fvwm-layers ] || echo "Style 'MiniButtons' StaysOnTop" >} $FHOME {/.fvwm-layers}
 
   # Try to wait the above finish its stuff
   Do {Piperead 'sleep 4'}

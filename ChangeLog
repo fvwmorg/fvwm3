@@ -1,3 +1,8 @@
+2000-04-11  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* fvwm/functions.c (execute_complex_function):
+	finally fixed that annoying rxvt selection bug
+
 2000-04-11  olicha <olivier.chapuis@free.fr>
 
 	* sample.fvwmrc/system.fvwm2rc-sample-95:
@@ -14,12 +19,12 @@
 	Also added an entries for restarting fvwm.
 
 2000-04-11  olicha <olivier.chapuis@free.fr>
-	
+
 	* style.c (merge_styles, ProcessNewStyle, check_window_style_change
         update_style_colorset, update_window_color_style,
 	update_window_color_hi_style):
-	* style.h: 
-	* fvwm.h: 
+	* style.h:
+	* fvwm.h:
 	* border.c (get_common_decorations, DrawDecorations):
 	* fvwm2.1:
 	* NEWS:
