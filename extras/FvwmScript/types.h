@@ -1,15 +1,14 @@
 #include "config.h"
+
 #include "../../fvwm/module.h"
-#include "fvwmlib.h"  
+#include "fvwmlib.h"
 
 #include <stdio.h>
 #include <signal.h>
-#include <fcntl.h>
-#include <string.h>
-#include <unistd.h>
 #include <ctype.h>
-#include <stdlib.h>
-#include <malloc.h>
+
+#include <unistd.h>
+#include <fcntl.h>
 #include <sys/time.h>
 
 #define XK_MISCELLANY
@@ -168,7 +167,7 @@ typedef struct
  TypeName TabMsg[40];
 } TypeBuffSend ;
 
-struct XObj 
+struct XObj
 {
   int TypeWidget;
   Window win;		/* Fenetre contenant l'objet */

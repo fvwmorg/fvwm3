@@ -1,3 +1,16 @@
+1998-11-24  Paul D. Smith  <psmith@gnu.org>
+
+	* fvwm/functions.c (FindBuiltinFunction): Cast the return value
+	for systems where bsearch() isn't declared to return void*.
+
+	* acconfig.h: Include malloc.h if it's found, and we don't have
+	STDC_HEADERS (just in case).
+
+	* libs/ModParse.h (LFindToken):  Remove this macro.  It's not
+	used, and it uses a non-standard function lfind().  Best to not
+	use it at all.
+	(search.h): Removed #include.
+
 1998-11-24  Dan Espen  <dane@mk.bellcore.com>
 
 	*   fvwm/builtins.c  (SetColorLimit):  Check    return  code  from

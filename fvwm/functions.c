@@ -179,16 +179,19 @@ static int func_comp(const void *a, const void *b)
 static struct functions *FindBuiltinFunction(char *func)
 {
   static int func_config_size=0;
+
   if (!func_config_size)
   {
     /* remove finial NULL entry from size */
     func_config_size=((sizeof(func_config))/(sizeof(struct functions)))-1;
   }
+
   /* since a lot of lines in a typical rc are probably menu/func continues: */
   if (func[0]=='+')
     return &(func_config[0]);
-  return bsearch(func,func_config,func_config_size,sizeof(struct functions),
-                 func_comp);
+
+  return (struct functions *)bsearch(func, func_config, func_config_size,
+                                     sizeof(struct functions), func_comp);
 }
 
 

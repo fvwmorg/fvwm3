@@ -1,3 +1,10 @@
+1998-11-24  Paul D. Smith  <psmith@gnu.org>
+
+	* FvwmForm/FvwmForm.c: Clean up headers that are already included
+	(and better tested) in config.h.
+
+	* FvwmIconMan/FvwmIconMan.h: Ditto.
+
 1998-11-22  Dominik Vogt  <dominik_vogt@hp.com>
 
 	* FvwmButtons/FvwmButtons.1: Added BUGS section to point out frequent
@@ -5,10 +12,10 @@
 
 1998-11-19  Dominik Vogt  <dominik_vogt@hp.com>
 
-	* FvwmWinList/FvwmWinList.c (ProcessMessage): 
-	(AdjustWindow): 
-	(MakeMeWindow): 
-	* FvwmIdent/FvwmIdent.c (list_end): 
+	* FvwmWinList/FvwmWinList.c (ProcessMessage):
+	(AdjustWindow):
+	(MakeMeWindow):
+	* FvwmIdent/FvwmIdent.c (list_end):
 	* FvwmIconMan/x.c (X_init_manager):
 	(create_manager_window):
 	* FvwmIconBox/FvwmIconBox.c (CreateWindow):

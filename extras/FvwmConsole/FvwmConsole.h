@@ -1,5 +1,7 @@
 #include "config.h"
 
+#include <sys/types.h>
+
 #if HAVE_SYS_BSDTYPES_H
 #include <sys/bsdtypes.h>
 #endif
@@ -14,7 +16,6 @@
 #include <sys/stat.h>
 #include <fcntl.h>
 #include <sys/time.h>
-#include <sys/types.h>
 #include <sys/un.h>
 #include <sys/socket.h>
 #include <signal.h>
@@ -28,7 +29,7 @@
 /* Prompts for readline support */
 #define PS1     ""
 #define PS2     ">"
- 
+
 #define HISTSIZE 50    /* readline history file size */
 #define HISTFILE "/.FvConHist"
 

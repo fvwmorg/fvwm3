@@ -142,6 +142,9 @@
 #  ifdef HAVE_STDLIB_H
 #    include <stdlib.h>
 #  endif
+#  ifdef HAVE_MALLOC_H
+#    include <malloc.h>
+#  endif
 #  ifndef HAVE_STRCHR
 #    define strchr(_s,_c)   index((_s),(_c))
 #    define strrchr(_s,_c)  rindex((_s),(_c))

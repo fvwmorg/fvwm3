@@ -1,3 +1,11 @@
+1998-11-24  Paul D. Smith  <psmith@gnu.org>
+
+	* FvwmScript/types.h: Remove headers that are duplicated (and
+	better tested for by autoconf) in the config.h file.
+
+	* FvwmConsole/FvwmConsole.h: Move sys/types.h include nearer the
+	top, before sys/select.h.
+
 1998-11-20  Dominik Vogt  <dominik_vogt@hp.com>
 
 	* FvwmGoodStuff/FvwmGoodStuff.c (CreateWindow): border size bugfix

@@ -1,16 +1,12 @@
 #include "config.h"
 
-#include <stdio.h>
-#include <string.h>
 #include <assert.h>
+#include <stdio.h>
+
 #include <sys/time.h>
 
 #include <X11/Xlib.h>
 #include <X11/Intrinsic.h>
-
-#ifdef MALLOC_H
-#include <malloc.h>
-#endif
 
 #ifndef FVWM_VERSION
 #define FVWM_VERSION 2
@@ -80,7 +76,7 @@ typedef enum {
   SHOW_PAGE = 2
 } Resolution;
 
-typedef enum { 
+typedef enum {
   BUTTON_FLAT,
   BUTTON_UP,
   BUTTON_DOWN,
@@ -90,7 +86,7 @@ typedef enum {
 
 /* The clicks must be the first three elements in this type, X callbacks
 	depend on it! */
-typedef enum { 
+typedef enum {
   SELECT,
   MOUSE,
   KEYPRESS,
@@ -131,20 +127,20 @@ typedef struct {
   StringEl *list;
 } StringList;
 
-typedef enum { 
-  NoArg, 
+typedef enum {
+  NoArg,
   IntArg,
   StringArg,
-  ButtonArg, 
+  ButtonArg,
   WindowArg,
   ManagerArg,
   JmpArg
 } BuiltinArgType;
 
-typedef enum { 
-  NoButton, 
-  SelectButton, 
-  FocusButton, 
+typedef enum {
+  NoButton,
+  SelectButton,
+  FocusButton,
   AbsoluteButton,
   UpButton,
   DownButton,
@@ -181,10 +177,10 @@ typedef struct Binding
   char IsMouse;           /* Is it a mouse or key binding 1= mouse; */
   int Button_Key;         /* Mouse Button number of Keycode */
   char *key_name;         /* In case of keycode, give the key_name too */
-  int Modifier;           /* Modifiers for keyboard state */   
+  int Modifier;           /* Modifiers for keyboard state */
   char *Action;           /* What to do? */
   Function *Function;
-  struct Binding *NextBinding, *LastBinding; 
+  struct Binding *NextBinding, *LastBinding;
 } Binding;
 
 typedef struct win_data {
@@ -234,7 +230,7 @@ typedef struct button_array {
 } ButtonArray;
 
 typedef enum {
-  GROW_HORIZ = 1, 
+  GROW_HORIZ = 1,
   GROW_VERT  = 2,
   GROW_UP    = 4,
   GROW_DOWN  = 8,
@@ -243,7 +239,7 @@ typedef enum {
   GROW_FIXED = 64
 } GrowDirection;
 
-typedef struct { 
+typedef struct {
   /* Things which we can change go in here.
      This like border width go in WinManager */
   int x, y, width, height;
@@ -273,7 +269,7 @@ typedef struct win_manager {
   Resolution res;
   Pixel backcolor[NUM_CONTEXTS], forecolor[NUM_CONTEXTS];
   Pixel hicolor[NUM_CONTEXTS], shadowcolor[NUM_CONTEXTS];
-  GC hiContext[NUM_CONTEXTS], backContext[NUM_CONTEXTS], 
+  GC hiContext[NUM_CONTEXTS], backContext[NUM_CONTEXTS],
     reliefContext[NUM_CONTEXTS];
   GC shadowContext[NUM_CONTEXTS], flatContext[NUM_CONTEXTS];
   XFontStruct *ButtonFont;

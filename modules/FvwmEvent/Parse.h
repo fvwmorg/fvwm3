@@ -2,22 +2,6 @@
    File:		Parse.h
    Date:		Wed Jan 29 21:13:36 1997
    Author:		Albrecht Kadlec (albrecht)
-
-   Description:		
-
-   Modifications:	$Log$
-   Modifications:	Revision 1.3  1998/11/06 02:23:01  steve
-   Modifications:	Loads of code cleanup
-   Modifications:	
-   Modifications:	Revision 1.2  1998/10/30 21:19:44  domivogt
-   Modifications:	merging for 2.1_pre_beta
-   Modifications:	
-   Modifications:	Revision 1.1.1.1.6.2  1998/10/28 21:49:23  domivogt
-   Modifications:	merged animate_icons and menu_position
-   Modifications:	
-   Modifications:	Revision 1.1.1.1.4.1  1998/10/26 17:49:52  domivogt
-   Modifications:	changes for menu position
-   Modifications:	
 */
 
 #ifndef _Parse_h
@@ -27,8 +11,7 @@
 #include <assert.h>
 #include <stdio.h>
 #include <string.h>
-#include <search.h>
-/*#include "../../libs/fvwmlib.h"*/
+#include <stdlib.h>
 
 char *PeekArgument(const char *pstr);
 char *GetArgument(char **pstr);
@@ -38,14 +21,13 @@ int MatchArgument(const char *pstr,char *tok);
 
 
 /*
-   function:		FindToken, LFindToken
-   description:		find the entry of type 'struct_entry' 
+   function:		FindToken
+   description:		find the entry of type 'struct_entry'
                         holding 'key' in 'table'
    returns:		pointer to the matching entry
                         NULL if not found
 
-   table must be sorted in ascending order for FindToken,
-   this is not necessary for LFindToken (slower)
+   table must be sorted in ascending order for FindToken
 */
 
 #define FindToken(key,table,struct_entry)				\
@@ -55,31 +37,37 @@ int MatchArgument(const char *pstr,char *tok);
 				 sizeof(struct_entry),			\
 				 XCmpToken)
 
-#define LFindToken(key,table,struct_entry)				\
-        (struct_entry *) lfind(key,					\
+int XCmpToken();    /* (char *s, char **t); but avoid compiler warning */
+
+
+#if 0
+/* e.g: */
+
+  struct entry			/* these are stored in the table */
+  {    char *token;
+       /* ... */		/* any info */
+  };
+
+  struct entry table[] = { /* ... */ };	/* define entries here */
+
+  char *word = GetArgument( /* ... */);
+  entry_ptr = FindToken(word,table,struct entry);
+
+  (struct token *)bsearch("Style",
+                          (char *)table, sizeof (table)/sizeof (struct entry),
+                          sizeof(struct entry), CmpToken);
+#endif /* 0 */
+
+#if 0
+/* Note that lfind() is not part of the ANSI standard.  This is never used
+ * currently; I think we should just keep it that way...
+ */
+# define LFindToken(key,table,struct_entry)				\
+         (struct_entry *) lfind(key,					\
 				 (char *)(table), 			\
 				 sizeof(table) / sizeof(struct_entry),	\
 				 sizeof(struct_entry),			\
 				 XCmpToken)
-
-int XCmpToken();    /* (char *s, char **t); but avoid compiler warning */
-                                             /* needed by (L)FindToken */
-
-#if 0
-   e.g:
-        struct entry			/* these are stored in the table */
-        {    char *token;			
-             ...			/* any info */
-        };
-
-        struct entry table[]= { ... };	/* define entries here */
-
-        char *word=GetArgument(...);
-        entry_ptr = FindToken(word,table,struct entry);
-
-        (struct token *)bsearch("Style",
-                          (char *)table, sizeof (table)/sizeof (struct entry),
-                          sizeof(struct entry), CmpToken);
-#endif
+#endif /* 0 */
 
 #endif /* _Parse_h */
