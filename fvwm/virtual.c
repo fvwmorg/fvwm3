@@ -801,21 +801,16 @@ void MoveViewport(int newx, int newy, Bool grab)
   int txl, txr, tyt, tyb;
   FvwmWindow *sf = get_focus_window();
 
-  if(grab)
+  if (grab)
     MyXGrabServer(dpy);
-
-  prev_page_x = Scr.Vx;
-  prev_page_y = Scr.Vy;
-
-  if(newx > Scr.VxMax)
+  if (newx > Scr.VxMax)
     newx = Scr.VxMax;
-  if(newy > Scr.VyMax)
+  if (newy > Scr.VyMax)
     newy = Scr.VyMax;
-  if(newx <0)
+  if (newx <0)
     newx = 0;
-  if(newy <0)
+  if (newy <0)
     newy = 0;
-
   deltay = Scr.Vy - newy;
   deltax = Scr.Vx - newx;
   /*
@@ -826,13 +821,17 @@ void MoveViewport(int newx, int newy, Bool grab)
   PageRight     =  Scr.MyDisplayWidth  - deltax - 1;
   PageTop       =  0 - deltay;
   PageLeft      =  0 - deltax;
-
+  if (deltax || deltay)
+  {
+    prev_page_x = Scr.Vx;
+    prev_page_y = Scr.Vy;
+  }
   Scr.Vx = newx;
   Scr.Vy = newy;
-  BroadcastPacket(M_NEW_PAGE, 5,
-		  Scr.Vx, Scr.Vy, Scr.CurrentDesk, Scr.VxMax, Scr.VyMax);
+  BroadcastPacket(
+    M_NEW_PAGE, 5, Scr.Vx, Scr.Vy, Scr.CurrentDesk, Scr.VxMax, Scr.VyMax);
 
-  if((deltax!=0)||(deltay!=0))
+  if (deltax || deltay)
   {
 
     /*

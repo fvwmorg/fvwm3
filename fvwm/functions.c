@@ -1359,25 +1359,32 @@ void AddToFunction(FvwmFunction *func, char *action)
   char *token = NULL;
   char condition;
 
-  action = GetNextToken(action, &token);
+  token = PeekToken(action, &action);
   if (!token)
     return;
   condition = token[0];
   if (isupper(condition))
     condition = tolower(condition);
-
-  if (condition != CF_IMMEDIATE && condition != CF_MOTION &&
-      condition != CF_HOLD && condition != CF_CLICK &&
+  if (condition != CF_IMMEDIATE &&
+      condition != CF_MOTION &&
+      condition != CF_HOLD &&
+      condition != CF_CLICK &&
       condition != CF_DOUBLE_CLICK)
   {
     fvwm_msg(
       ERR, "AddToFunction",
       "Got '%s' instead of a valid function specifier", token);
-    free(token);
     return;
   }
-  free(token);
-
+  if (token[0] != 0 && token[1] != 0 &&
+      (FindBuiltinFunction(token) || FindFunction(token)))
+  {
+    fvwm_msg(
+      WARN, "AddToFunction",
+      "Got the command or function name '%s' instead of a function specifier. "
+      "This may indicate a syntax error in the configuration file. "
+      "Using %c as the specifier.", token, token[0]);
+  }
   if (!action)
     return;
   while (isspace(*action))
@@ -1547,19 +1554,16 @@ static void execute_complex_function(F_CMD_ARGS, Bool *desperate)
   static unsigned int depth = 0;
 
   /* FindFunction expects a token, not just a quoted string */
-  taction = GetNextToken(action,&func_name);
-  if (!action || !func_name)
+  func_name = PeekToken(action, &taction);
+  if (!func_name)
   {
-    if (func_name)
-      free(func_name);
     return;
   }
   func = FindFunction(func_name);
-  free(func_name);
-  if(func == NULL)
+  if (func == NULL)
   {
     if(*desperate == 0)
-      fvwm_msg(ERR,"ComplexFunction","No such function %s",action);
+      fvwm_msg(ERR, "ComplexFunction", "No such function %s",action);
     return;
   }
   if (!depth)

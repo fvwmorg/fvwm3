@@ -1,3 +1,9 @@
+2001-04-04  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* fvwm/virtual.c (MoveViewport):
+	do not overwrite 'previous' page when switching pages without actually
+	moving the viewport
+
 2001-04-05  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* fvwm/screen.h (ScreenInfo):
@@ -48,6 +54,11 @@
 	* fvwm/functions.c (AddToFunction):
 	allow "Click", "Hold", etc. in addition to single letter function
 	specifiers
+	(execute_complex_function):
+	a little clean up
+	(AddToFunction):
+	added a warning when a command or function name is used as the function
+	specifier
 
 2001-03-30  Dominik Vogt  <dominik.vogt@gmx.de>
 
