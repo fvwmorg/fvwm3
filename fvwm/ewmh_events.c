@@ -953,7 +953,7 @@ int ewmh_WMStrut(EWMH_CMD_ARGS)
 /* ************************************************************************* *
  *
  * ************************************************************************* */
-Bool EWMH_ProcessClientMessage(FvwmWindow *fwin, XEvent *ev)
+Bool EWMH_ProcessClientMessage(const FvwmWindow *fwin, const XEvent *ev)
 {
   ewmh_atom *ewmh_a = NULL;
 
@@ -985,7 +985,7 @@ Bool EWMH_ProcessClientMessage(FvwmWindow *fwin, XEvent *ev)
 /* ************************************************************************* *
  *
  * ************************************************************************* */
-void EWMH_ProcessPropertyNotify(FvwmWindow *fwin, XEvent *ev)
+void EWMH_ProcessPropertyNotify(const FvwmWindow *fwin, const XEvent *ev)
 {
   ewmh_atom *ewmh_a = NULL;
 

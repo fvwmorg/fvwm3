@@ -357,21 +357,27 @@ static char *ReadTitleButton(
 }
 
 /* Remove the given decor from all windows */
-static void __remove_window_decors(FvwmDecor *d)
+static void __remove_window_decors(F_CMD_ARGS, FvwmDecor *d)
 {
-	FvwmWindow *fw;
+	const exec_context_t *exc2;
+	exec_context_changes_t ecc;
+	FvwmWindow *t;
 
-	for (fw = Scr.FvwmRoot.next; fw; fw = fw->next)
+	for (t = Scr.FvwmRoot.next; t; t = t->next)
 	{
-		if (fw->decor == d)
+		if (t->decor == d)
 		{
 			/* remove the extra title height now because we delete
 			 * the current decor before calling ChangeDecor(). */
-			fw->frame_g.height -= fw->decor->title_height;
-			fw->decor = NULL;
-			old_execute_function(
-				NULL, "ChangeDecor Default", fw, eventp,
-				C_WINDOW, *Module, 0, NULL);
+			t->frame_g.height -= t->decor->title_height;
+			t->decor = NULL;
+			ecc.w.fw = t;
+			ecc.w.wcontext = C_WINDOW;
+			exc2 = exc_clone_context(
+				exc, &ecc, ECC_FW | ECC_WCONTEXT);
+			execute_function(
+				cond_rc, exc2, "ChangeDecor Default", 0);
+			exc_destroy_context(exc2);
 		}
 	}
 
@@ -1615,22 +1621,22 @@ Bool ReadDecorFace(char *s, DecorFace *df, int button, int verbose)
  * Diverts a style definition to an FvwmDecor structure (veliaa@rpi.edu)
  *
  ****************************************************************************/
-void AddToDecor(FvwmDecor *decor, char *s)
+void AddToDecor(F_CMD_ARGS, FvwmDecor *decor)
 {
-	if (!s)
+	if (!action)
 	{
 		return;
 	}
-	while (*s && isspace((unsigned char)*s))
+	while (*action && isspace((unsigned char)*action))
 	{
-		++s;
+		++action;
 	}
-	if (!*s)
+	if (!*action)
 	{
 		return;
 	}
 	Scr.cur_decor = decor;
-	old_execute_function(NULL, s, NULL, &Event, C_ROOT, -1, 0, NULL);
+	execute_function(cond_rc, exc, action, 0);
 	Scr.cur_decor = NULL;
 
 	return;
@@ -2010,9 +2016,8 @@ void CMD_Wait(F_CMD_ARGS)
 	Bool is_ungrabbed;
 	char *escape;
 	Window nonewin = None;
-	extern FvwmWindow *Fw;
 	char *wait_string, *rest;
-	FvwmWindow *s_Fw = Fw;
+	FvwmWindow *t;
 
 	/* try to get a single token */
 	rest = GetNextToken(action, &wait_string);
@@ -2051,48 +2056,55 @@ void CMD_Wait(F_CMD_ARGS)
 	is_ungrabbed = UngrabEm(GRAB_NORMAL);
 	while (!done && !isTerminated)
 	{
+		XEvent e;
 		if (BUSY_WAIT & Scr.BusyCursor)
 		{
 			XDefineCursor(dpy, Scr.Root, Scr.FvwmCursors[CRS_WAIT]);
 			redefine_cursor = True;
 		}
-		if (My_XNextEvent(dpy, &Event))
+		if (My_XNextEvent(dpy, &e))
 		{
-			dispatch_event(&Event, False);
-			if (Event.type == MapNotify)
+			dispatch_event(&e);
+			if (XFindContext(
+				    dpy, e.xmap.window, FvwmContext,
+				    (caddr_t *)&t) == XCNOENT)
+			{
+				t = NULL;
+			}
+
+			if (e.type == MapNotify)
 			{
 				if (!*wait_string)
 				{
 					done = True;
 				}
-				if (Fw &&
-				    matchWildcards(wait_string, Fw->name.name)
-				    == True)
+				if (t && matchWildcards(
+					    wait_string, t->name.name) == True)
 				{
 					done = True;
 				}
-				else if (Fw && Fw->class.res_class &&
+				else if (t && t->class.res_class &&
 					 matchWildcards(
 						 wait_string,
-						 Fw->class.res_class) == True)
+						 t->class.res_class) == True)
 				{
 					done = True;
 				}
-				else if (Fw && Fw->class.res_name &&
+				else if (t && t->class.res_name &&
 					 matchWildcards(
 						 wait_string,
-						 Fw->class.res_name) == True)
+						 t->class.res_name) == True)
 				{
 					done = True;
 				}
 			}
-			else if (Event.type == KeyPress)
+			else if (e.type == KeyPress)
 			{
 				escape = CheckBinding(
 					Scr.AllBindings, STROKE_ARG(0)
-					Event.xkey.keycode,
-					Event.xkey.state, GetUnusedModifiers(),
-					GetContext(Fw, &Event, &nonewin),
+					e.xkey.keycode, e.xkey.state,
+					GetUnusedModifiers(),
+					GetContext(&t, t, &e, &nonewin),
 					KEY_BINDING);
 				if (escape != NULL)
 				{
@@ -2112,7 +2124,6 @@ void CMD_Wait(F_CMD_ARGS)
 	{
 		GrabEm(CRS_NONE, GRAB_NORMAL);
 	}
-	Fw = (check_if_fvwm_window_exists(s_Fw)) ? s_Fw : NULL;
 	free(wait_string);
 
 	return;
@@ -2634,11 +2645,9 @@ void CMD_DestroyDecor(F_CMD_ARGS)
 
 	if (found && (found != &Scr.DefaultDecor || do_recreate))
 	{
-		FvwmWindow *fw2;
-
 		if (!do_recreate)
 		{
-			__remove_window_decors(found);
+			__remove_window_decors(F_PASS_ARGS, found);
 		}
 		DestroyFvwmDecor(found);
 		if (do_recreate)
@@ -2673,16 +2682,16 @@ void CMD_DestroyDecor(F_CMD_ARGS)
  ****************************************************************************/
 void CMD_AddToDecor(F_CMD_ARGS)
 {
-	FvwmDecor *decor, *found = NULL;
-	char *item = NULL, *s = action;
+	FvwmDecor *decor;
+	FvwmDecor *found = NULL;
+	char *item = NULL;
 
-	s = GetNextToken(s, &item);
-
+	action = GetNextToken(action, &item);
 	if (!item)
 	{
 		return;
 	}
-	if (!s)
+	if (!action)
 	{
 		free(item);
 		return;
@@ -2717,7 +2726,7 @@ void CMD_AddToDecor(F_CMD_ARGS)
 
 	if (found)
 	{
-		AddToDecor(found, s);
+		AddToDecor(F_PASS_ARGS, found);
 		/* Set + state to last decor */
 		set_last_added_item(ADDED_DECOR, found);
 	}
@@ -3394,8 +3403,8 @@ void CMD_StrokeFunc(F_CMD_ARGS)
 {
 	int finished = 0;
 	int abort = 0;
-	int modifiers = eventp->xbutton.state;
-	int start_event_type = eventp->type;
+	int modifiers = exc->x.etrigger->xbutton.state;
+	int start_event_type = exc->x.etrigger->type;
 	char sequence[STROKE_MAX_SEQUENCE + 1];
 	char *stroke_action;
 	char *opt = NULL;
@@ -3424,7 +3433,7 @@ void CMD_StrokeFunc(F_CMD_ARGS)
 	}
 	x = (int*)safemalloc(coords_size * sizeof(int));
 	y = (int*)safemalloc(coords_size * sizeof(int));
-	e = *eventp;
+	e = *exc->x.etrigger;
 	/* set the default option */
 	if (e.type == KeyPress || e.type == ButtonPress)
 	{
@@ -3563,47 +3572,24 @@ void CMD_StrokeFunc(F_CMD_ARGS)
 				tmpy = e.xmotion.y;
 			}
 			stroke_record(tmpx,tmpy);
-			if (draw_motion)
+			if (draw_motion && (x[i] != tmpx || y[i] != tmpy))
 			{
-				if ((x[i] != tmpx || y[i] != tmpy))
+				i++;
+				if (i >= coords_size)
 				{
-					i++;
-					if (i >= coords_size)
-					{
-						coords_size +=
-							STROKE_CHUNK_SIZE;
-						x = (int*)saferealloc(
-							(void *)x, coords_size *
-							sizeof(int));
-						y = (int*)saferealloc(
-							(void *)y, coords_size *
-							sizeof(int));
-						if (!x || !y)
-						{
-							/* unlikely */
-							fvwm_msg(WARN,
-								 "strokeFunc",
-								 "unable to"
-								 " allocate %d"
-								 " bytes ..."
-								 " aborted.",
-								 coords_size *
-								 sizeof(int));
-							abort = 1;
-							i = -1; /* no undrawing
-								 * possible
-								 * since
-								 * either x or
-								 * y == 0 */
-							break;
-						}
-					}
-					x[i] = tmpx;
-					y[i] = tmpy;
-					XDrawLine(
-						dpy, Scr.Root, Scr.XorGC,
-						x[i-1], y[i-1], x[i], y[i]);
+					coords_size += STROKE_CHUNK_SIZE;
+					x = (int*)saferealloc(
+						(void *)x, coords_size *
+						sizeof(int));
+					y = (int*)saferealloc(
+						(void *)y, coords_size *
+						sizeof(int));
 				}
+				x[i] = tmpx;
+				y[i] = tmpy;
+				XDrawLine(
+					dpy, Scr.Root, Scr.XorGC, x[i-1],
+					y[i-1], x[i], y[i]);
 			}
 			break;
 		case ButtonRelease:
@@ -3657,6 +3643,9 @@ void CMD_StrokeFunc(F_CMD_ARGS)
 		}
 		XSetLineAttributes(dpy,Scr.XorGC,0,LineSolid,CapButt,JoinMiter);
 		MyXUngrabServer(dpy);
+	}
+	if (x != NULL)
+	{
 		free(x);
 		free(y);
 	}
@@ -3677,7 +3666,7 @@ void CMD_StrokeFunc(F_CMD_ARGS)
 	{
 		char num_seq[STROKE_MAX_SEQUENCE + 1];
 
-		for (i=0;sequence[i] != '\0';i++)
+		for (i = 0; sequence[i] != '\0';i++)
 		{
 			/* Telephone to numeric pad */
 			if ('7' <= sequence[i] && sequence[i] <= '9')
@@ -3711,14 +3700,19 @@ void CMD_StrokeFunc(F_CMD_ARGS)
 	/* execute the action */
 	if (stroke_action != NULL)
 	{
+		const exec_context_t *exc2;
+		exec_context_changes_t ecc;
+
 		if (feed_back && atoi(sequence) != 0)
 		{
 			GrabEm(CRS_WAIT, GRAB_BUSY);
 			usleep(200000);
 			UngrabEm(GRAB_BUSY);
 		}
-		old_execute_function(
-			NULL, stroke_action, fw, &e, context, -1, 0, NULL);
+		ecc.x.etrigger = &e;
+		exc2 = exc_clone_context(exc, &ecc, ECC_ETRIGGER);
+		execute_function(cond_rc, exc2, stroke_action, 0);
+		exc_destroy_context(exc2);
 	}
 
 	return;

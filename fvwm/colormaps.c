@@ -34,6 +34,8 @@
 #include "fvwm.h"
 #include "externs.h"
 #include "cursor.h"
+#include "execcontext.h"
+#include "eventhandler.h"
 #include "functions.h"
 #include "bindings.h"
 #include "misc.h"
@@ -45,8 +47,6 @@
 /* ---------------------------- local macros -------------------------------- */
 
 /* ---------------------------- imports ------------------------------------- */
-
-extern FvwmWindow *Fw;
 
 /* ---------------------------- included code files ------------------------- */
 
@@ -61,7 +61,7 @@ static Colormap last_cmap = None;
 
 /* ---------------------------- exported variables (globals) ---------------- */
 
-FvwmWindow *colormap_win;
+const FvwmWindow *colormap_win;
 
 /* ---------------------------- local functions ----------------------------- */
 
@@ -80,24 +80,25 @@ void set_client_controls_colormaps(Bool flag)
  * a client explicitly installing its colormap itself (only the window
  * manager should do that, so we must set it correctly).
  */
-void colormap_handle_colormap_notify(const XEvent *e)
+void colormap_handle_colormap_notify(const evh_args_t *ea)
 {
 	XEvent evdummy;
-	XColormapEvent *cevent = (XColormapEvent *)e;
+	XColormapEvent *cevent = (XColormapEvent *)ea->exc->x.etrigger;
 	Bool ReInstall = False;
 	XWindowAttributes attr;
+	FvwmWindow *fw = ea->exc->w.fw;
 
-	if (!Fw)
+	if (!fw)
 	{
 		return;
 	}
 	if (cevent->new)
 	{
-		if (XGetWindowAttributes(dpy, FW_W(Fw), &attr) != 0)
+		if (XGetWindowAttributes(dpy, FW_W(fw), &attr) != 0)
 		{
-			Fw->attr_backup.colormap = attr.colormap;
-			if (Fw == colormap_win &&
-			    Fw->number_cmap_windows == 0)
+			fw->attr_backup.colormap = attr.colormap;
+			if (fw == colormap_win &&
+			    fw->number_cmap_windows == 0)
 			{
 				last_cmap = attr.colormap;
 			}
@@ -115,31 +116,31 @@ void colormap_handle_colormap_notify(const XEvent *e)
 	{
 		if (XFindContext(
 			    dpy, cevent->window, FvwmContext,
-			    (caddr_t *) &Fw) == XCNOENT)
+			    (caddr_t *) &fw) == XCNOENT)
 		{
-			Fw = NULL;
+			fw = NULL;
 		}
-		if ((Fw)&&(cevent->new))
+		if ((fw)&&(cevent->new))
 		{
-			if (XGetWindowAttributes(dpy, FW_W(Fw), &attr) != 0)
+			if (XGetWindowAttributes(dpy, FW_W(fw), &attr) != 0)
 			{
-				Fw->attr_backup.colormap = attr.colormap;
-				if (Fw == colormap_win &&
-				    Fw->number_cmap_windows == 0)
+				fw->attr_backup.colormap = attr.colormap;
+				if (fw == colormap_win &&
+				    fw->number_cmap_windows == 0)
 				{
 					last_cmap = attr.colormap;
 				}
 				ReInstall = True;
 			}
 		}
-		else if ((Fw)&&
+		else if ((fw)&&
 			(cevent->state == ColormapUninstalled)&&
 			(last_cmap == cevent->colormap))
 		{
 			/* Some window installed its colormap, change it back */
 			ReInstall = True;
 		}
-		else if ((Fw)&&
+		else if ((fw)&&
 			(cevent->state == ColormapInstalled)&&
 			(last_cmap == cevent->colormap))
 		{
@@ -177,7 +178,7 @@ void ReInstallActiveColormap(void)
  *      tmp     - for a subset of event types, the address of the
  *                window structure, whose colormaps are to be installed.
  */
-void InstallWindowColormaps(FvwmWindow *fw)
+void InstallWindowColormaps(const FvwmWindow *fw)
 {
 	int i;
 	XWindowAttributes attributes;

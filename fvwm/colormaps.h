@@ -46,7 +46,7 @@
  * This procedure handles both a client changing its own colormap, and
  * a client explicitly installing its colormap itself (only the window
  * manager should do that, so we must set it correctly). */
-void colormap_handle_colormap_notify(const XEvent *e);
+void colormap_handle_colormap_notify(const evh_args_t *ea);
 
 /* Re-Install the active colormap */
 void ReInstallActiveColormap(void);
@@ -57,7 +57,7 @@ void ReInstallActiveColormap(void);
  *      type    - type of event that caused the installation
  *      tmp     - for a subset of event types, the address of the
  *                window structure, whose colormaps are to be installed. */
-void InstallWindowColormaps (FvwmWindow *tmp);
+void InstallWindowColormaps(const FvwmWindow *tmp);
 
 /* <Uni/I>nstallRootColormap - Force (un)loads root colormap(s)
  *

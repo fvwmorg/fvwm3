@@ -1,5 +1,127 @@
+2002-09-10  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* fvwm/add_window.c (CaptureOneWindow):
+	(do_recapture):
+	(CaptureAllWindows):
+
+	* fvwm/fvwm.c (StartupStuff):
+	generate an execution context for startup
+
+	* fvwm/move_resize.c (DoResize):
+	(__resize_step):
+	(moveLoop):
+	(__move_loop):
+	renamed and used new function interface in args
+
+	* fvwm/geometry.c (constrain_size):
+	added XEvent *e argument to remove use of global "Event"; changed all
+	callers
+
 2002-09-09  Dominik Vogt  <dominik.vogt@gmx.de>
 
+	* fvwm/stack.c (get_next_window_in_stack_ring):
+	(get_prev_window_in_stack_ring):
+	(get_transientfor_fvwmwindow):
+	* fvwm/icons.c (SetMapStateProp):
+	* fvwm/events.c (fake_map_unmap_notify):
+	* fvwm/misc.c (IsRectangleOnThisPage):
+	* fvwm/menus.c (menu_enter_tear_off_menu):
+	(menu_close_tear_off_menu):
+	* fvwm/icons.c (DrawIconWindow):
+	* fvwm/focus.c:
+	* fvwm/colormaps.c (InstallWindowColormaps):
+	made FvwmWindow * arguments const in many functions
+
+	* fvwm/move_resize.c (AnimatedMoveAnyWindow):
+	(__move_window):
+	(__move_loop):
+	(__resize_step):
+	(__resize_window):
+	* fvwm/functions.c (DeferExecution):
+	(__execute_function):
+	* fvwm/windowlist.c (CMD_WindowList):
+	* fvwm/colormaps.c (colormap_handle_colormap_notify):
+	* fvwm/module_interface.c (CMD_ModuleSynchronous):
+	(ExecuteModuleCommand):
+	* fvwm/builtins.c (CMD_Wait):
+	* fvwm/events.c (WaitForButtonsUp):
+	(HandleShapeNotify):
+	(HandleVisibilityNotify):
+	(HandleUnmapNotify):
+	(HandleSelectionRequest):
+	(HandleReparentNotify):
+	(HandlePropertyNotify):
+	(HandleMotionNotify):
+	(HandleMapRequestKeepRaised):
+	(HandleMapRequest):
+	(HandleMappingNotify):
+	(HandleMapNotify):
+	(HandleLeaveNotify):
+	(HandleKeyPress):
+	(HandleFocusOut):
+	(HandleFocusIn):
+	(HandleExpose):
+	(HandleEnterNotify):
+	(HandleDestroyNotify):
+	(HandleColormapNotify):
+	(HandleClientMessage):
+	(HandleButtonRelease):
+	(HandleButtonPress):
+	(__handle_bpress_on_root):
+	(__handle_bpress_action):
+	(__handle_click_to_raise):
+	(__handle_click_to_focus):
+	(__is_bpress_window_handled):
+	(__handle_focus_raise_click):
+	don't use "Event", "Fw" and old_execute_function() anymore
+
+	* fvwm/events.c (dispatch_event):
+	removed preserve_tmpwin argument; changed all callers
+
+	* fvwm/events.c (CoerceEnterNotifyOnCurrentWindow):
+	fixed random focus member of faked event
+
+	* fvwm/gnome.c (GNOME_ProcessClientMessage):
+	* fvwm/ewmh_events.c (EWMH_ProcessClientMessage):
+	(EWMH_ProcessPropertyNotify):
+	* fvwm/move_resize.c (DisplaySize):
+	(DisplayPosition):
+	(position_geometry_window):
+	* fvwm/geometry.c (get_window_borders):
+	(get_window_borders_no_title):
+	made args const
+
+	* fvwm/events.c (dispatch_event):
+	create event execution context
+	(HandleClientMessage):
+	removed useless local "button"
+	(GetContext):
+	don't fiddle with global Fw anymore; added argument to return context
+	window; changed all callers
+
+	* fvwm/events.c (CoerceEnterNotifyOnCurrentWindow):
+	* fvwm/move_resize.c (__resize_window):
+	use new event handle interface
+
+	* fvwm/events.c:
+	* fvwm/eventhandler.h:
+	new event handler interface
+
+	* fvwm/functions.c (CMD_Plus):
+	* fvwm/builtins.c (AddToDecor):
+	(CMD_AddToDecor):
+	(CMD_DestroyDecor):
+	use F_CMD_ARGS in AddToDecor
+	(CMD_StrokeFunc):
+	removed useless check for realloc return value
+	use new function interface
+	fixed another memory leak
+
+	* fvwm/builtins.c (__remove_window_decors):
+	replace old_execute_function with execute_function
+
+	* fvwm/add_window.c (setup_window_placement):
+	* fvwm/placement.c (PlaceWindow):
 	* fvwm/schedule.c (execute_obj_func):
 	* fvwm/colorset.c (add_to_junk):
 	use new function call interface
@@ -144,11 +266,6 @@
 	(__try_program_focus):
 	* fvwm/icccm2.c (SetupICCCM2):
 	* fvwm/virtual.c (HandlePaging):
-	(HandlePaging):
-	(HandlePaging):
-	(HandlePaging):
-	(HandlePaging):
-	(HandlePaging):
 	* fvwm/module_interface.c (make_vpacket):
 	(make_new_vpacket):
 	* fvwm/schedule.c (squeue_get_next_ms):
@@ -231,32 +348,6 @@
 	* fvwm/menus.c (menu_tear_off):
 	* fvwm/move_resize.c (resize_window):
 	* fvwm/events.c:
-	(HandleExpose):
-	(HandleDestroyNotify):
-	(HandleMapRequest):
-	(HandleMapNotify):
-	(HandleUnmapNotify):
-	(HandleButtonPress):
-	(HandleEnterNotify):
-	(HandleLeaveNotify):
-	(HandleFocusIn):
-	(HandleFocusOut):
-	(HandleConfigureRequest):
-	(HandleClientMessage):
-	(HandlePropertyNotify):
-	(HandleKeyPress):
-	(HandleVisibilityNotify):
-	(HandleColormapNotify):
-	(HandleShapeNotify):
-	(HandleSelectionClear):
-	(HandleSelectionRequest):
-	(HandleReparentNotify):
-	(HandleMappingNotify):
-	(HandleButtonRelease):
-	(HandleMotionNotify):
-	(HandleSelectionRequest):
-	(HandleSelectionClear):
-	(HandleColormapNotify):
 	* fvwm/events.h:
 	new argument avh_args_t to the event handler functions; still unused
 	moved all event handlers to events.c
@@ -672,7 +763,6 @@ q2002-08-25  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* fvwm/Makefile.am:
 	don't include *.in in EXTRA_DIST, they are auto-included
-
 
 2002-08-17  Dominik Vogt  <dominik.vogt@gmx.de>
 

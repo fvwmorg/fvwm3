@@ -101,7 +101,7 @@ static Bool focus_get_fpol_context_flag(
 /********************************************************************
  * Helper functions for setting the focus
  ********************************************************************/
-static void __try_program_focus(Window w, FvwmWindow *fw)
+static void __try_program_focus(Window w, const FvwmWindow *fw)
 {
 	if (fw && WM_TAKES_FOCUS(fw) &&
 	    FP_DO_FOCUS_BY_PROGRAM(FW_FOCUS_POLICY(fw)))
@@ -112,7 +112,7 @@ static void __try_program_focus(Window w, FvwmWindow *fw)
 	return;
 }
 
-static Bool __try_forbid_user_focus(Window w, FvwmWindow *fw)
+static Bool __try_forbid_user_focus(Window w, const FvwmWindow *fw)
 {
 	if (fw == NULL ||
 	    fpol_query_allow_user_focus(&FW_FOCUS_POLICY(fw)) == True)
@@ -136,7 +136,7 @@ static Bool __try_forbid_user_focus(Window w, FvwmWindow *fw)
 }
 
 static Bool __check_allow_focus(
-	Window w, FvwmWindow *fw, fpol_set_focus_by_t set_by)
+	Window w, const FvwmWindow *fw, fpol_set_focus_by_t set_by)
 {
 	FvwmWindow *sf;
 
@@ -162,7 +162,7 @@ static Bool __check_allow_focus(
 }
 
 static void __update_windowlist(
-	FvwmWindow *fw, fpol_set_focus_by_t set_by,
+	const FvwmWindow *fw, fpol_set_focus_by_t set_by,
 	int is_focus_by_focus_cmd)
 {
 	lastFocusType = !is_focus_by_focus_cmd;
@@ -239,7 +239,7 @@ static void __update_windowlist(
 	return;
 }
 
-static Bool __try_other_screen_focus(FvwmWindow *fw)
+static Bool __try_other_screen_focus(const FvwmWindow *fw)
 {
 	if (fw == NULL && !Scr.flags.is_pointer_on_this_screen)
 	{
@@ -264,7 +264,7 @@ static Bool __try_other_screen_focus(FvwmWindow *fw)
  * Sets the input focus to the indicated window.
  ********************************************************************/
 static void __set_focus_to_fwin(
-	Window w, FvwmWindow *fw, sftfwin_args_t *args)
+	Window w, const FvwmWindow *fw, sftfwin_args_t *args)
 {
 	FvwmWindow *sf;
 
@@ -369,7 +369,7 @@ static void __set_focus_to_fwin(
 }
 
 static void set_focus_to_fwin(
-	Window w, FvwmWindow *fw, sftfwin_args_t *args)
+	Window w, const FvwmWindow *fw, sftfwin_args_t *args)
 {
 	FvwmWindow *sf;
 
@@ -524,7 +524,7 @@ static void warp_to_fvwm_window(
 	return;
 }
 
-static Bool focus_query_grab_buttons(FvwmWindow *fw, Bool client_entered)
+static Bool focus_query_grab_buttons(const FvwmWindow *fw, Bool client_entered)
 {
 	Bool flag;
 	Bool is_focused;
@@ -555,7 +555,7 @@ static Bool focus_query_grab_buttons(FvwmWindow *fw, Bool client_entered)
 }
 
 static FvwmWindow *__restore_focus_after_unmap(
-	FvwmWindow *fw, Bool do_skip_marked_transients)
+	const FvwmWindow *fw, Bool do_skip_marked_transients)
 {
 	FvwmWindow *t = NULL;
 	FvwmWindow *set_focus_to = NULL;
@@ -701,7 +701,7 @@ static void __activate_window_by_command(
 }
 
 static void __focus_grab_one_button(
-	FvwmWindow *fw, int button, int grab_buttons)
+	const FvwmWindow *fw, int button, int grab_buttons)
 {
 	register Bool do_grab;
 	register unsigned int mods;
@@ -758,19 +758,19 @@ static void __focus_grab_one_button(
 
 /* ---------------------------- interface functions ------------------------- */
 
-Bool focus_does_accept_input_focus(FvwmWindow *fw)
+Bool focus_does_accept_input_focus(const FvwmWindow *fw)
 {
 	return (!fw || !fw->wmhints ||
 		!(fw->wmhints->flags & InputHint) || fw->wmhints->input);
 }
 
-Bool focus_is_focused(FvwmWindow *fw)
+Bool focus_is_focused(const FvwmWindow *fw)
 {
 	return (fw && fw == ScreenFocus);
 }
 
 Bool focus_query_click_to_raise(
-	FvwmWindow *fw, Bool is_focused, int context)
+	const FvwmWindow *fw, Bool is_focused, int context)
 {
 	fpol_context_t *c;
 
@@ -787,7 +787,7 @@ Bool focus_query_click_to_raise(
 }
 
 Bool focus_query_click_to_focus(
-	FvwmWindow *fw, int context)
+	const FvwmWindow *fw, int context)
 {
 	fpol_context_t *c;
 
@@ -798,7 +798,7 @@ Bool focus_query_click_to_focus(
 
 /* Takes as input the window that wants the focus and the one that currently
  * has the focus and returns if the new window should get it. */
-Bool focus_query_open_grab_focus(FvwmWindow *fw, FvwmWindow *focus_win)
+Bool focus_query_open_grab_focus(const FvwmWindow *fw, FvwmWindow *focus_win)
 {
 	if (fw == NULL)
 	{
@@ -853,7 +853,7 @@ Bool focus_query_open_grab_focus(FvwmWindow *fw, FvwmWindow *focus_win)
 
 /* Returns true if the focus has to be restored to a different window after
  * unmapping. */
-Bool focus_query_close_release_focus(FvwmWindow *fw)
+Bool focus_query_close_release_focus(const FvwmWindow *fw)
 {
 	if (fw == NULL || fw != get_focus_window())
 	{
@@ -874,7 +874,7 @@ Bool focus_query_close_release_focus(FvwmWindow *fw)
 	return False;
 }
 
-void _focus_grab_buttons(FvwmWindow *fw, Bool client_entered)
+void _focus_grab_buttons(const FvwmWindow *fw, Bool client_entered)
 {
 	int i;
 	Bool do_grab_window = False;
@@ -903,12 +903,12 @@ void _focus_grab_buttons(FvwmWindow *fw, Bool client_entered)
 	return;
 }
 
-void focus_grab_buttons(FvwmWindow *fw)
+void focus_grab_buttons(const FvwmWindow *fw)
 {
         return _focus_grab_buttons(fw, False);
 }
 
-void focus_grab_buttons_client_entered(FvwmWindow *fw)
+void focus_grab_buttons_client_entered(const FvwmWindow *fw)
 {
         return _focus_grab_buttons(fw, True);
 }
@@ -942,7 +942,7 @@ void focus_grab_buttons_all(void)
 }
 
 void _SetFocusWindow(
-	FvwmWindow *fw, Bool do_allow_force_broadcast,
+	const FvwmWindow *fw, Bool do_allow_force_broadcast,
 	fpol_set_focus_by_t set_by, Bool client_entered)
 {
 	sftfwin_args_t sf_args;
@@ -965,7 +965,7 @@ void _SetFocusWindow(
 	return;
 }
 
-void _ReturnFocusWindow(FvwmWindow *fw)
+void _ReturnFocusWindow(const FvwmWindow *fw)
 {
 	sftfwin_args_t sf_args;
 
@@ -1013,7 +1013,7 @@ void _ForceDeleteFocus(void)
 /* When a window is unmapped (or destroyed) this function takes care of
  * adjusting the focus window appropriately. */
 void restore_focus_after_unmap(
-	FvwmWindow *fw, Bool do_skip_marked_transients)
+	const FvwmWindow *fw, Bool do_skip_marked_transients)
 {
 	extern FvwmWindow *colormap_win;
 	FvwmWindow *set_focus_to = NULL;
@@ -1071,7 +1071,7 @@ FvwmWindow *get_focus_window(void)
 	return ScreenFocus;
 }
 
-void set_focus_window(FvwmWindow *fw)
+void set_focus_window(const FvwmWindow *fw)
 {
 	ScreenFocus = fw;
 
@@ -1083,14 +1083,14 @@ FvwmWindow *get_last_screen_focus_window(void)
 	return LastScreenFocus;
 }
 
-void set_last_screen_focus_window(FvwmWindow *fw)
+void set_last_screen_focus_window(const FvwmWindow *fw)
 {
 	LastScreenFocus = fw;
 
 	return;
 }
 
-void update_last_screen_focus_window(FvwmWindow *fw)
+void update_last_screen_focus_window(const FvwmWindow *fw)
 {
 	if (fw == LastScreenFocus)
 	{
@@ -1100,7 +1100,7 @@ void update_last_screen_focus_window(FvwmWindow *fw)
 	return;
 }
 
-void set_focus_model(FvwmWindow *fw)
+void set_focus_model(const FvwmWindow *fw)
 {
 	if (!focus_does_accept_input_focus(fw))
 	{
@@ -1132,7 +1132,7 @@ void set_focus_model(FvwmWindow *fw)
  * applications that use the passive focus model but manage focus in their own
  * sub windows and should thus use the locally active focus model instead.
  * There are many examples like netscape or ddd. */
-void focus_force_refresh_focus(FvwmWindow *fw)
+void focus_force_refresh_focus(const FvwmWindow *fw)
 {
 	XWindowAttributes winattrs;
 
@@ -1150,7 +1150,7 @@ void focus_force_refresh_focus(FvwmWindow *fw)
 	return;
 }
 
-void refresh_focus(FvwmWindow *fw)
+void refresh_focus(const FvwmWindow *fw)
 {
 	Bool do_refresh = False;
 

@@ -31,8 +31,8 @@
 
 /* ---------------------------- interface functions ------------------------- */
 
-void dispatch_event(XEvent *e, Bool preserve_Fw);
-int GetContext(FvwmWindow *, const XEvent *, Window *dummy);
+void dispatch_event(XEvent *e);
+int GetContext(FvwmWindow **ret_fw, FvwmWindow *t, const XEvent *e, Window *w);
 int My_XNextEvent(Display *dpy, XEvent *event);
 int flush_expose(Window w);
 int flush_accumulate_expose(Window w, XEvent *e);

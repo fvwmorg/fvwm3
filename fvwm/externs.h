@@ -43,10 +43,9 @@
 /**    OR PERFORMANCE OF THIS SOFTWARE.                                     **/
 /*****************************************************************************/
 
-extern void Done(int, char *) __attribute__((__noreturn__));
-extern void setInitFunctionName(int n, const char *name);
-extern const char *getInitFunctionName(int n);
-extern void CaptureAllWindows(Bool is_recapture);
+void Done(int, char *) __attribute__((__noreturn__));
+void setInitFunctionName(int n, const char *name);
+const char *getInitFunctionName(int n);
 
 extern char NoName[];
 extern char NoClass[];

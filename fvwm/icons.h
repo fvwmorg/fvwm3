@@ -38,7 +38,7 @@ void SetIconPixmapSize(
 void CreateIconWindow(FvwmWindow *fw, int def_x, int def_y);
 void Iconify(FvwmWindow *fw, initial_window_options_type *win_opts);
 void DeIconify(FvwmWindow *);
-void SetMapStateProp(FvwmWindow *, int);
+void SetMapStateProp(const FvwmWindow *, int);
 
 
 #endif /* _ICONS_ */

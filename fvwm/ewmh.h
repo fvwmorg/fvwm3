@@ -68,8 +68,8 @@ void EWMH_ExitStuff(void);
 /* ewmh_conf.c */
 
 /* ewmh_events.c */
-Bool EWMH_ProcessClientMessage(FvwmWindow *fwin, XEvent *ev);
-void EWMH_ProcessPropertyNotify(FvwmWindow *fwin, XEvent *ev);
+Bool EWMH_ProcessClientMessage(const FvwmWindow *fwin, const XEvent *ev);
+void EWMH_ProcessPropertyNotify(const FvwmWindow *fwin, const XEvent *ev);
 
 /* ewmh_icon.c */
 void EWMH_DeleteWmIcon(FvwmWindow *fwin, Bool mini_icon, Bool icon);

@@ -310,8 +310,8 @@ typedef struct ScreenInfo
 				   colormap windows */
   int fvwm_pushes;              /* current push level to install fvwm
 				   colormap windows */
-  FvwmWindow *pushed_window;    /* saved window to install when pushes drops
-				   to zero */
+  const FvwmWindow *pushed_window; /* saved window to install when pushes drops
+				      to zero */
   Cursor *FvwmCursors;
   int BusyCursor;               /* context where we display the busy cursor */
   char *DefaultIcon;            /* Icon to use when no other icons are found */
@@ -476,7 +476,7 @@ void simplify_style_list(void);
 /*
  * Diverts a style definition to an FvwmDecor structure (veliaa@rpi.edu)
  */
-void AddToDecor(FvwmDecor *decor, char *s);
+void AddToDecor(F_CMD_ARGS, FvwmDecor *decor);
 
 extern ScreenInfo Scr;
 

@@ -41,6 +41,7 @@
 #include "fvwm.h"
 #include "externs.h"
 #include "cursor.h"
+#include "execcontext.h"
 #include "commands.h"
 #include "bindings.h"
 #include "events.h"
@@ -700,10 +701,12 @@ void DrawIconWindow(FvwmWindow *fw)
 					 * (off edge on right) */
 					if ((x_title_w + w_title_w) >sx + sw) {
 						/* off right */
-						/* position up against right edge */
+						/* position up against right
+						 * edge */
 						x_title_w = sx + sw - w_title_w;
 					}
-					/* end keep label on screen. dje 8/7/97 */
+					/* end keep label on screen. dje
+					 * 8/7/97 */
 				}
 			}
 		}
@@ -1957,7 +1960,7 @@ void Iconify(FvwmWindow *fw, initial_window_options_type *win_opts)
  * that go with them.
  *
  ****************************************************************************/
-void SetMapStateProp(FvwmWindow *fw, int state)
+void SetMapStateProp(const FvwmWindow *fw, int state)
 {
 	/* "suggested" by ICCCM version 1 */
 	unsigned long data[2];
@@ -1966,8 +1969,10 @@ void SetMapStateProp(FvwmWindow *fw, int state)
 	data[1] = (unsigned long) FW_W_ICON_TITLE(fw);
 	/*  data[2] = (unsigned long) FW_W_ICON_PIXMAP(fw);*/
 
-	XChangeProperty(dpy, FW_W(fw), _XA_WM_STATE, _XA_WM_STATE, 32,
-			PropModeReplace, (unsigned char *) data, 2);
+	XChangeProperty(
+		dpy, FW_W(fw), _XA_WM_STATE, _XA_WM_STATE, 32, PropModeReplace,
+		(unsigned char *) data, 2);
+
 	return;
 }
 

@@ -55,9 +55,9 @@ void get_shaded_client_window_pos(
 void get_client_geometry(
 	FvwmWindow *fw, rectangle *ret_g);
 void get_window_borders(
-	FvwmWindow *fw, size_borders *borders);
+	const FvwmWindow *fw, size_borders *borders);
 void get_window_borders_no_title(
-	FvwmWindow *fw, size_borders *borders);
+	const FvwmWindow *fw, size_borders *borders);
 void set_window_border_size(
 	FvwmWindow *fw, short used_width);
 Bool is_window_border_minimal(
@@ -66,8 +66,8 @@ void update_relative_geometry(FvwmWindow *fw);
 void update_absolute_geometry(FvwmWindow *fw);
 void maximize_adjust_offset(FvwmWindow *fw);
 void constrain_size(
-	FvwmWindow *fw, unsigned int *widthp, unsigned int *heightp,
-	int xmotion, int ymotion, int flags);
+	FvwmWindow *fw, const XEvent *e, unsigned int *widthp,
+	unsigned int *heightp, int xmotion, int ymotion, int flags);
 void gravity_constrain_size(
   int gravity, FvwmWindow *t, rectangle *rect, int flags);
 Bool get_visible_window_or_icon_geometry(

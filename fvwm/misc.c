@@ -497,7 +497,7 @@ int truncate_to_multiple (int x, int m)
 	return (x < 0) ? (m * (((x + 1) / m) - 1)) : (m * (x / m));
 }
 
-Bool IsRectangleOnThisPage(rectangle *rec, int desk)
+Bool IsRectangleOnThisPage(const rectangle *rec, int desk)
 {
 	return (desk == Scr.CurrentDesk &&
 		rec->x + rec->width > 0 &&

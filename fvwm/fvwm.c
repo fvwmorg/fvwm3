@@ -1376,8 +1376,10 @@ void StartupStuff(void)
 {
 #define startFuncName "StartFunction"
 	const char *initFuncName;
+	const exec_context_t *exc;
 
-	CaptureAllWindows(False);
+	exc = exc_create_null_context();
+	CaptureAllWindows(exc, False);
 	/* Turn off the SM stuff after the initial capture so that new windows
 	 * will not be matched by accident. */
 	if (Restarting)
@@ -1437,6 +1439,7 @@ void StartupStuff(void)
 	{
 		unlink(state_filename);
 	}
+	exc_destroy_context(exc);
 
 	return;
 }

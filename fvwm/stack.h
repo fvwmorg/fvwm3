@@ -23,9 +23,9 @@ void verify_stack_ring_consistency(void);
 #endif
 void remove_window_from_stack_ring(FvwmWindow *t);
 void add_window_to_stack_ring_after(FvwmWindow *t, FvwmWindow *add_after_win);
-FvwmWindow *get_next_window_in_stack_ring(FvwmWindow *t);
-FvwmWindow *get_prev_window_in_stack_ring(FvwmWindow *t);
-FvwmWindow *get_transientfor_fvwmwindow(FvwmWindow *t);
+FvwmWindow *get_next_window_in_stack_ring(const FvwmWindow *t);
+FvwmWindow *get_prev_window_in_stack_ring(const FvwmWindow *t);
+FvwmWindow *get_transientfor_fvwmwindow(const FvwmWindow *t);
 Bool position_new_window_in_stack_ring(FvwmWindow *t, Bool do_lower);
 void RaiseWindow(FvwmWindow *t);
 void LowerWindow(FvwmWindow *t);

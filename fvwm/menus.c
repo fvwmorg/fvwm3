@@ -4862,9 +4862,7 @@ static mloop_ret_code_t __mloop_handle_event(
 		menu_expose(in->e, (*pmp->pfw));
 		/* we want to dispatch this too so window decorations get
 		 * redrawn after being obscured by menus. */
-		/* We need to preserve the Fw here! Note that handling an Expose
-		 * event will never invalidate the Fw. */
-		dispatch_event(in->e, True);
+		dispatch_event(in->e);
 		return MENU_MLOOP_RET_LOOP;
 
 	case ClientMessage:
@@ -5198,7 +5196,6 @@ static mloop_ret_code_t __mloop_do_popup(
 		Bool is_busy_grabbed = False;
 		char *menu_name;
 		char *action;
-		extern XEvent Event;
 		char *missing_action = MR_MISSING_SUBMENU_FUNC(pmp->menu);
 
 		menu_name = PeekToken(
@@ -6023,7 +6020,7 @@ static void menu_tear_off(MenuRoot *mr_to_copy)
 	return;
 }
 
-void menu_enter_tear_off_menu(FvwmWindow *fw)
+void menu_enter_tear_off_menu(const FvwmWindow *fw)
 {
 	MenuRoot *mr;
 	FvwmWindow *fw2;
@@ -6060,7 +6057,7 @@ void menu_enter_tear_off_menu(FvwmWindow *fw)
 	return;
 }
 
-void menu_close_tear_off_menu(FvwmWindow *fw)
+void menu_close_tear_off_menu(const FvwmWindow *fw)
 {
 	MenuRoot *mr;
 	MenuParameters mp;
@@ -6100,8 +6097,6 @@ void menu_close_tear_off_menu(FvwmWindow *fw)
  ***************************************************************************/
 void do_menu(MenuParameters *pmp, MenuReturn *pmret)
 {
-	extern XEvent Event;
-
 	int x;
 	int y;
 	Bool fWasAlreadyPopped = False;

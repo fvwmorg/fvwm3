@@ -23,8 +23,9 @@ void AnimatedMoveOfWindow(
 void AnimatedMoveFvwmWindow(
 	FvwmWindow *fw, Window w, int startX, int startY, int endX, int endY,
 	Bool fWarpPointerToo, int cmsDelay, float *ppctMovement);
-Bool moveLoop(FvwmWindow *fw, int XOffset, int YOffset, int Width,
-	      int Height, int *FinalX, int *FinalY,Bool do_move_opaque);
+Bool __move_loop(
+	const exec_context_t *exc, int XOffset, int YOffset, int Width,
+	int Height, int *FinalX, int *FinalY,Bool do_move_opaque);
 void handle_stick(F_CMD_ARGS, int toggle);
 void resize_geometry_window(void);
 void __move_icon(

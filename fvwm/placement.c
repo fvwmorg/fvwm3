@@ -32,6 +32,7 @@
 #include "libs/FScreen.h"
 #include "fvwm.h"
 #include "externs.h"
+#include "execcontext.h"
 #include "cursor.h"
 #include "bindings.h"
 #include "misc.h"
@@ -535,7 +536,7 @@ static float test_fit(
  *
  **************************************************************************/
 Bool PlaceWindow(
-	FvwmWindow *fw, style_flags *sflags, rectangle *attr_g,
+	const exec_context_t *exc, style_flags *sflags, rectangle *attr_g,
 	int Desk, int PageX, int PageY, int XineramaScreen, int mode,
 	initial_window_options_type *win_opts)
 {
@@ -564,6 +565,7 @@ Bool PlaceWindow(
     unsigned do_not_use_wm_placement : 1;
   } flags;
   extern Bool Restarting;
+  FvwmWindow *fw = exc->w.fw;
 
   memset(&flags, 0, sizeof(flags));
 
@@ -901,8 +903,8 @@ Bool PlaceWindow(
 	  XMapRaised(dpy, Scr.SizeWindow);
 	}
 	FScreenGetScrRect(NULL, FSCREEN_GLOBAL, &mx, &my, NULL, NULL);
-	if (moveLoop(fw, mx, my, DragWidth, DragHeight,
-		     &xl, &yt, False))
+	if (__move_loop(
+		    exc, mx, my, DragWidth, DragHeight, &xl, &yt, False))
 	{
 	  /* resize too */
 	  rc = True;
@@ -1193,7 +1195,7 @@ void CMD_PlaceAgain(F_CMD_ARGS)
 		attr_g.width = attr.width;
 		attr_g.height = attr.height;
 		PlaceWindow(
-			fw, &style.flags, &attr_g, SGET_START_DESK(style),
+			exc, &style.flags, &attr_g, SGET_START_DESK(style),
 			SGET_START_PAGE_X(style), SGET_START_PAGE_Y(style),
 			SGET_START_SCREEN(style), PLACE_AGAIN, &win_opts);
 		AnimatedMoveFvwmWindow(

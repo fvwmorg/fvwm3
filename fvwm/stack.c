@@ -259,23 +259,25 @@ static void add_windowlist_to_stack_ring_after(
 	return;
 }
 
-FvwmWindow *get_next_window_in_stack_ring(FvwmWindow *t)
+FvwmWindow *get_next_window_in_stack_ring(const FvwmWindow *t)
 {
 	return t->stack_next;
 }
 
-FvwmWindow *get_prev_window_in_stack_ring(FvwmWindow *t)
+FvwmWindow *get_prev_window_in_stack_ring(const FvwmWindow *t)
 {
 	return t->stack_prev;
 }
 
-FvwmWindow *get_transientfor_fvwmwindow(FvwmWindow *t)
+FvwmWindow *get_transientfor_fvwmwindow(const FvwmWindow *t)
 {
 	FvwmWindow *s;
 
 	if (!t || !IS_TRANSIENT(t) || FW_W_TRANSIENTFOR(t) == Scr.Root ||
 	    FW_W_TRANSIENTFOR(t) == None)
+	{
 		return NULL;
+	}
 	for (s = Scr.FvwmRoot.next; s != NULL; s = s->next)
 	{
 		if (FW_W(s) == FW_W_TRANSIENTFOR(t))

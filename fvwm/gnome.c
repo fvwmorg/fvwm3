@@ -869,7 +869,7 @@ CMD_GnomeShowDesks(F_CMD_ARGS)
 
 /*** RECIVING MESSAGES ***/
 int
-GNOME_ProcessClientMessage(FvwmWindow *fwin, XEvent *ev)
+GNOME_ProcessClientMessage(const FvwmWindow *fwin, const XEvent *ev)
 {
   int x, y;
   Atom a;

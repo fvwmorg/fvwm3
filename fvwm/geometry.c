@@ -23,6 +23,7 @@
 #include "libs/fvwmlib.h"
 #include "fvwm.h"
 #include "externs.h"
+#include "execcontext.h"
 #include "misc.h"
 #include "screen.h"
 #include "geometry.h"
@@ -441,7 +442,7 @@ void get_shaded_client_window_pos(
 
 /* returns the dimensions of the borders */
 void get_window_borders(
-	FvwmWindow *fw, size_borders *borders)
+	const FvwmWindow *fw, size_borders *borders)
 {
 	borders->top_left.width = fw->boundary_width;
 	borders->bottom_right.width = fw->boundary_width;
@@ -472,7 +473,7 @@ void get_window_borders(
 
 /* returns the dimensions of the borders without the title */
 void get_window_borders_no_title(
-	FvwmWindow *fw, size_borders *borders)
+	const FvwmWindow *fw, size_borders *borders)
 {
 	borders->top_left.width = fw->boundary_width;
 	borders->bottom_right.width = fw->boundary_width;
@@ -647,8 +648,8 @@ void maximize_adjust_offset(FvwmWindow *fw)
 ***********************************************************************/
 #define MAKEMULT(a,b) ((b==1) ? (a) : (((int)((a)/(b))) * (b)) )
 void constrain_size(
-	FvwmWindow *fw, unsigned int *widthp, unsigned int *heightp,
-	int xmotion, int ymotion, int flags)
+	FvwmWindow *fw, const XEvent *e, unsigned int *widthp,
+	unsigned int *heightp, int xmotion, int ymotion, int flags)
 {
 	int minWidth, minHeight, maxWidth, maxHeight, xinc, yinc, delta;
 	int baseWidth, baseHeight;
@@ -740,23 +741,23 @@ void constrain_size(
 	 * Step 2a: check we didn't move the edge off screen in interactive
 	 * moves
 	 */
-	if ((flags & CS_ROUND_UP) && Event.type == MotionNotify)
+	if ((flags & CS_ROUND_UP) && e != NULL && e->type == MotionNotify)
 	{
-		if (xmotion > 0 && Event.xmotion.x_root < roundUpX)
+		if (xmotion > 0 && e->xmotion.x_root < roundUpX)
 		{
 			dwidth -= xinc;
 		}
 		else if (xmotion < 0 &&
-			 Event.xmotion.x_root >= Scr.MyDisplayWidth - roundUpX)
+			 e->xmotion.x_root >= Scr.MyDisplayWidth - roundUpX)
 		{
 			dwidth -= xinc;
 		}
-		if (ymotion > 0 && Event.xmotion.y_root < roundUpY)
+		if (ymotion > 0 && e->xmotion.y_root < roundUpY)
 		{
 			dheight -= yinc;
 		}
 		else if (ymotion < 0 &&
-			 Event.xmotion.y_root >= Scr.MyDisplayHeight - roundUpY)
+			 e->xmotion.y_root >= Scr.MyDisplayHeight - roundUpY)
 		{
 			dheight -= yinc;
 		}
@@ -931,8 +932,8 @@ void gravity_constrain_size(
 		new_height = rect->height;
 	}
 	constrain_size(
-		t, (unsigned int *)&new_width, (unsigned int *)&new_height, 0,
-		0, flags);
+		t, NULL, (unsigned int *)&new_width,
+		(unsigned int *)&new_height, 0, 0, flags);
 	if (rect->width != new_width || rect->height != new_height)
 	{
 		gravity_resize(

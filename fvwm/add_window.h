@@ -72,5 +72,6 @@ void destroy_window(
 void RestoreWithdrawnLocation(
 	FvwmWindow *tmp, Bool is_restart_or_recapture, Window parent);
 void Reborder(void);
+void CaptureAllWindows(const exec_context_t *exc, Bool is_recapture);
 
 #endif /* ADD_WINDOW_H */

@@ -33,8 +33,7 @@ enum
 	FUNC_ALLOW_UNMANAGED     = 0x10,
 	/* only to be passed to execute_function() */
 	FUNC_FLAG_IS_UNMANAGED   = 0x20,
-	FUNC_FLAG_SO_SAVE_FW     = 0x40,
-	FUNC_DONT_EXPAND_COMMAND = 0x80
+	FUNC_DONT_EXPAND_COMMAND = 0x40
 };
 
 /* ---------------------------- global macros ------------------------------- */

@@ -27,7 +27,7 @@
 
 typedef struct
 {
-	XEvent e;
+	const exec_context_t *exc;
 } evh_args_t;
 
 /* ---------------------------- forward declarations ------------------------ */
@@ -45,7 +45,7 @@ void HandleFocusOut(const evh_args_t *ea);
 void HandleDestroyNotify(const evh_args_t *ea);
 void HandleMapRequest(const evh_args_t *ea);
 void HandleMapRequestKeepRaised(
-	Window keepraised, FvwmWindow *ReuseWin,
+	const evh_args_t *ea, Window KeepRaised, FvwmWindow *ReuseWin,
 	initial_window_options_type *win_opts);
 void HandleMapNotify(const evh_args_t *ea);
 void HandleUnmapNotify(const evh_args_t *ea);

@@ -478,7 +478,6 @@ void CMD_ModuleSynchronous(F_CMD_ARGS)
 	Bool need_ungrab = False;
 	char *escape = NULL;
 	XEvent tmpevent;
-	extern FvwmWindow *Fw;
 
 	if (!action)
 	{
@@ -615,7 +614,9 @@ void CMD_ModuleSynchronous(F_CMD_ARGS)
 				Scr.AllBindings, STROKE_ARG(0)
 				tmpevent.xkey.keycode, tmpevent.xkey.state,
 				GetUnusedModifiers(),
-				GetContext(Fw, &tmpevent, &targetWindow),
+				GetContext(
+					NULL, exc->w.fw, &tmpevent,
+					&targetWindow),
 				KEY_BINDING);
 			if (escape != NULL)
 			{
@@ -764,7 +765,7 @@ void ExecuteModuleCommand(Window w, int module, char *text)
 	e.xbutton.x = 0;
 	e.xbutton.y = 0;
 	fev_fake_event(&e);
-	context = GetContext(fw, &e, &w);
+	context = GetContext(NULL, fw, &e, &w);
 	old_execute_function(NULL, text, fw, &e, context, module, 0, NULL);
 
 	return;

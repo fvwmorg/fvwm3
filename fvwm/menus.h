@@ -346,8 +346,8 @@ void menus_remove_style_from_menus(MenuStyle *ms);
 MenuRoot *FollowMenuContinuations(MenuRoot *mr,MenuRoot **pmrPrior);
 MenuRoot *NewMenuRoot(char *name);
 void AddToMenu(MenuRoot *, char *, char *, Bool, Bool, Bool);
-void menu_enter_tear_off_menu(FvwmWindow *fw);
-void menu_close_tear_off_menu(FvwmWindow *fw);
+void menu_enter_tear_off_menu(const FvwmWindow *fw);
+void menu_close_tear_off_menu(const FvwmWindow *fw);
 void do_menu(MenuParameters *pmp, MenuReturn *pret);
 char *get_menu_options(
 	char *action, Window w, FvwmWindow *fw, XEvent *e, MenuRoot *mr,

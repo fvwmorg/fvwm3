@@ -59,8 +59,6 @@
 
 /* ---------------------------- imports ------------------------------------- */
 
-extern FvwmWindow *Fw;
-
 /* ---------------------------- included code files ------------------------- */
 
 /* ---------------------------- local types --------------------------------- */
@@ -219,7 +217,7 @@ static Bool DeferExecution(
 		}
 		if (!done)
 		{
-			dispatch_event(&e, False);
+			dispatch_event(&e);
 		}
 	}
 	MyXUngrabKeyboard(dpy);
@@ -276,7 +274,7 @@ static Bool DeferExecution(
 		XBell(dpy, 0);
 		return True;
 	}
-	ecc.w.wcontext = GetContext(ecc.w.fw, &e, &dummy);
+	ecc.w.wcontext = GetContext(NULL, ecc.w.fw, &e, &dummy);
 	/* return new exec_context_t */
 	*ret_exc = exc_clone_context(exc, &ecc, mask);
 
@@ -355,7 +353,6 @@ static void __execute_function(
 	FUNC_FLAGS_TYPE exec_flags, char *args[])
 {
 	static unsigned int func_depth = 0;
-	FvwmWindow *s_Fw = Fw;
 	Window w;
 	int j;
 	char *function;
@@ -368,6 +365,7 @@ static void __execute_function(
 	Bool set_silent;
 	Bool must_free_string = False;
 	Bool must_free_function = False;
+	fvwm_cond_func_rc dummy_rc;
 
 	if (!action)
 	{
@@ -385,6 +383,11 @@ static void __execute_function(
 	{
 		/* a comment */
 		return;
+	}
+	if (cond_rc == NULL)
+	{
+		cond_rc = &dummy_rc;
+		memset(cond_rc, 0, sizeof(*cond_rc));
 	}
 
 	func_depth++;
@@ -626,17 +629,6 @@ static void __execute_function(
 	{
 		free(function);
 	}
-	if (exec_flags & FUNC_FLAG_SO_SAVE_FW)
-	{
-		if (check_if_fvwm_window_exists(s_Fw))
-		{
-			Fw = s_Fw;
-		}
-		else
-		{
-			Fw = NULL;
-		}
-	}
 	func_depth--;
 
 	return;
@@ -744,9 +736,7 @@ static cfunc_action_type CheckActionType(
 			case Expose:
 				/* must handle expose here so that raising a
 				 * window with "I" works */
-				/* note: handling Expose events never modifies
-				 * the global Fw */
-				dispatch_event(d, True);
+				dispatch_event(d);
 				break;
 			default:
 				/* can't happen */
@@ -1417,7 +1407,7 @@ void CMD_Plus(F_CMD_ARGS)
 		{
 			return;
 		}
-		AddToDecor(tmp, action);
+		AddToDecor(F_PASS_ARGS, tmp);
 	}
 #endif /* USEDECOR */
 

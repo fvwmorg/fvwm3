@@ -57,6 +57,7 @@
 #include "fvwm.h"
 #include "externs.h"
 #include "cursor.h"
+#include "execcontext.h"
 #include "commands.h"
 #include "bindings.h"
 #include "misc.h"
@@ -115,12 +116,15 @@ char NoResource[] = "NoResource"; /* Class if no res_name in class hints */
  ***********************************************************************/
 
 static void CaptureOneWindow(
-	FvwmWindow *fw, Window window, Window keep_on_top_win,
-	Window parent_win, Bool is_recapture)
+	const exec_context_t *exc, FvwmWindow *fw, Window window,
+	Window keep_on_top_win, Window parent_win, Bool is_recapture)
 {
 	Window w;
 	unsigned long data[1];
 	initial_window_options_type win_opts;
+	evh_args_t ea;
+	exec_context_changes_t ecc;
+	XEvent e;
 
 	if (fw == NULL)
 	{
@@ -130,8 +134,8 @@ static void CaptureOneWindow(
 	{
 		/* Fvwm might crash in complex functions if we really try to
 		 * the dying window here because AddWindow() may fail and leave
-		 * a destroyed window in Fw.  Any, by the way, it is
-		 * pretty useless to recapture a * window that will vanish in a
+		 * a destroyed window in some structures.  By the way, it is
+		 * pretty useless to recapture a window that will vanish in a
 		 * moment. */
 		return;
 	}
@@ -187,10 +191,17 @@ static void CaptureOneWindow(
 		RestoreWithdrawnLocation(fw, is_recapture, parent_win);
 		SET_DO_REUSE_DESTROYED(fw, 1); /* RBW - 1999/03/20 */
 		destroy_window(fw);
-		Event.xmaprequest.window = w;
 		win_opts.flags.is_menu =
 			(is_recapture && fw != NULL && IS_TEAR_OFF_MENU(fw));
-		HandleMapRequestKeepRaised(keep_on_top_win, fw, &win_opts);
+
+
+		fev_make_null_event(&e, dpy);
+		e.xmaprequest.window = w;
+		ecc.x.etrigger = &e;
+		ea.exc = exc_create_context(&ecc, ECC_ETRIGGER);
+		HandleMapRequestKeepRaised(&ea, keep_on_top_win, fw, &win_opts);
+		exc_destroy_context(exc);
+
 		/* HandleMapRequestKeepRaised may have destroyed the fw if the
 		 * window vanished while in AddWindow(), so don't access fw
 		 * anymore before checking if it is a valid window. */
@@ -349,11 +360,11 @@ static void do_recapture(F_CMD_ARGS, Bool fSingle)
 	if (fSingle)
 	{
 		CaptureOneWindow(
-			fw, FW_W(fw), None, None, True);
+			exc, fw, FW_W(fw), None, None, True);
 	}
 	else
 	{
-		CaptureAllWindows(True);
+		CaptureAllWindows(exc, True);
 	}
 	/* Throw away queued up events. We don't want user input during a
 	 * recapture.  The window the user clicks in might disapper at the very
@@ -1360,6 +1371,9 @@ static Bool setup_window_placement(
 		{"-xrn", NULL, XrmoptionResArg, (caddr_t) NULL},
 		{"-xrm", NULL, XrmoptionResArg, (caddr_t) NULL},
 	};
+	Bool rc;
+	const exec_context_t *exc;
+	exec_context_changes_t ecc;
 
 	/* Find out if the client requested a specific desk on the command
 	 * line. */
@@ -1439,10 +1453,15 @@ static Bool setup_window_placement(
 	{
 		win_opts->initial_state = IconicState;
 	}
-	return PlaceWindow(
-		fw, &pstyle->flags, attr_g, SGET_START_DESK(*pstyle),
+	ecc.w.fw = fw;
+	exc = exc_create_context(&ecc, ECC_FW);
+	rc = PlaceWindow(
+		exc, &pstyle->flags, attr_g, SGET_START_DESK(*pstyle),
 		SGET_START_PAGE_X(*pstyle), SGET_START_PAGE_Y(*pstyle),
 		SGET_START_SCREEN(*pstyle), PLACE_INITIAL, win_opts);
+	exc_destroy_context(exc);
+
+	return rc;
 }
 
 static void destroy_mini_icon(FvwmWindow *fw)
@@ -2113,7 +2132,7 @@ FvwmWindow *AddWindow(
 		/****** calculate frame size ******/
 		setup_frame_size_limits(fw, &style);
 		constrain_size(
-			fw, (unsigned int *)&fw->frame_g.width,
+			fw, NULL, (unsigned int *)&fw->frame_g.width,
 			(unsigned int *)&fw->frame_g.height, 0, 0, 0);
 
 		/****** maximize ******/
@@ -2121,7 +2140,7 @@ FvwmWindow *AddWindow(
 		{
 			SET_MAXIMIZED(fw, 1);
 			constrain_size(
-				fw, (unsigned int *)&fw->max_g.width,
+				fw, NULL, (unsigned int *)&fw->max_g.width,
 				(unsigned int *)&fw->max_g.height, 0, 0,
 				CS_UPDATE_MAX_DEFECT);
 			get_relative_geometry(&fw->frame_g, &fw->max_g);
@@ -3122,7 +3141,7 @@ void Reborder(void)
 	return;
 }
 
-void CaptureAllWindows(Bool is_recapture)
+void CaptureAllWindows(const exec_context_t *exc, Bool is_recapture)
 {
 	int i,j;
 	unsigned int nchildren;
@@ -3204,7 +3223,7 @@ void CaptureAllWindows(Bool is_recapture)
 				    (caddr_t *)&fw) != XCNOENT)
 			{
 				CaptureOneWindow(
-					fw, children[i], keep_on_top_win,
+					exc, fw, children[i], keep_on_top_win,
 					parent_win, is_recapture);
 			}
 		}
