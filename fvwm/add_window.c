@@ -85,14 +85,20 @@ static XrmOptionDescRec table [] = {
  ***********************************************************************/
 FvwmWindow *AddWindow(Window w, FvwmWindow *ReuseWin)
 {
-  FvwmWindow *tmp_win;		        /* new fvwm window structure */
-  unsigned long valuemask;		/* mask for create windows */
+  /* new fvwm window structure */
+  register FvwmWindow *tmp_win;
+  /* mask for create windows */
+  unsigned long valuemask;
 #if defined(PIXMAP_BUTTONS) && defined(BORDERSTYLE)
   Pixmap TexturePixmap = None, TexturePixmapSave = None;
 #endif
   unsigned long valuemask_save = 0;
-  XSetWindowAttributes attributes;	/* attributes for create windows */
-  window_style style;                     /* area for merged styles */
+  /* attributes for create windows */
+  XSetWindowAttributes attributes;
+  /* area for merged styles */
+  window_style style;
+  /* used for faster access */
+  style_flags *sflags;
   int i,width,height;
   int a,b;
 /*  RBW - 11/02/1998  */
@@ -137,10 +143,6 @@ FvwmWindow *AddWindow(Window w, FvwmWindow *ReuseWin)
     }
 
   memset(&(tmp_win->gsfr_flags), 0, sizeof(window_flags));
-  //  tmp_win->flags = 0;
-  //  tmp_win->tmpflags.ViewportMoved = 0;
-  //  tmp_win->tmpflags.IconifiedByParent = 0;
-  //  tmp_win->tmpflags.NameChanged = 0;
   tmp_win->w = w;
 
   tmp_win->cmap_windows = (Window *)NULL;
@@ -215,20 +217,23 @@ FvwmWindow *AddWindow(Window w, FvwmWindow *ReuseWin)
 
   /* get merged styles */
   lookup_style(tmp_win, &style);
+  sflags = SGET_FLAGS_POINTER(style);
 
-  tmp_win->IconBoxes = style.IconBoxes; /* copy iconboxes ptr (if any) */
-  tmp_win->buttons = style.on_buttons;  /* on and off buttons combined. */
+  /* copy iconboxes ptr (if any) */
+  tmp_win->IconBoxes = SGET_ICON_BOXES(style);
+  /* on and off buttons combined. */
+  tmp_win->buttons = SGET_BUTTONS(style);
   /* FIXME: shouldn't transients inherit the layer ? */
-  tmp_win->default_layer = style.layer;
-  tmp_win->layer = style.layer;
+  tmp_win->default_layer = SGET_LAYER(style);
+  tmp_win->layer = SGET_LAYER(style);
 
 #ifdef USEDECOR
   /* search for a UseDecor tag in the Style */
   tmp_win->fl = NULL;
-  if (style.decor_name != NULL) {
+  if (SGET_DECOR_NAME(style) != NULL) {
       FvwmDecor *fl = &Scr.DefaultDecor;
       for (; fl; fl = fl->next)
-	  if (strcasecmp(style.decor_name, fl->tag) == 0) {
+	  if (strcasecmp(SGET_DECOR_NAME(style), fl->tag) == 0) {
 	      tmp_win->fl = fl;
 	      break;
 	  }
@@ -242,7 +247,8 @@ FvwmWindow *AddWindow(Window w, FvwmWindow *ReuseWin)
   GetMwmHints(tmp_win);
   GetOlHints(tmp_win);
 
-  SelectDecor(tmp_win, &(style.flags), style.border_width, style.handle_width);
+  SelectDecor(tmp_win, sflags, SGET_BORDER_WIDTH(style),
+	      SGET_HANDLE_WIDTH(style));
 
 #ifdef GNOME
   /* set GNOME window hints & FVWM flags translated from those hints */
@@ -255,12 +261,12 @@ FvwmWindow *AddWindow(Window w, FvwmWindow *ReuseWin)
     tmp_win->boundary_width = 0;
 #endif /* SHAPE */
 
-  memcpy(&(tmp_win->gsfr_flags), &(style.flags), sizeof(common_flags_type));
+  memcpy(&(tmp_win->gsfr_flags), sflags, sizeof(common_flags_type));
   /* find a suitable icon pixmap */
-  if(style.flags.has_icon)
+  if(SHAS_ICON(sflags))
     {
       /* an icon was specified */
-      tmp_win->icon_bitmap_file = style.icon_name;
+      tmp_win->icon_bitmap_file = SGET_ICON_NAME(style);
     }
   else if((tmp_win->wmhints)
 	  &&(tmp_win->wmhints->flags & (IconWindowHint|IconPixmapHint)))
@@ -275,8 +281,8 @@ FvwmWindow *AddWindow(Window w, FvwmWindow *ReuseWin)
     }
 
 #ifdef MINI_ICONS
-  if (style.flags.has_mini_icon) {
-    tmp_win->mini_pixmap_file = style.mini_icon_name;
+  if (SHAS_MINI_ICON(sflags)) {
+    tmp_win->mini_pixmap_file = SGET_MINI_ICON_NAME(style);
   }
   else {
     tmp_win->mini_pixmap_file = NULL;
@@ -301,9 +307,9 @@ FvwmWindow *AddWindow(Window w, FvwmWindow *ReuseWin)
       status = XrmGetResource (db, "fvwm.desk", "Fvwm.Desk",
                                &str_type, &rm_value);
       if ((status == True) && (rm_value.size != 0)) {
-          style.start_desk = atoi(rm_value.addr);
+          SGET_START_DESK(style) = atoi(rm_value.addr);
           /*  RBW - 11/20/1998  */
-          if (style.start_desk > -1)
+          if (SGET_START_DESK(style) > -1)
             {
               style.start_desk++;
             }
@@ -353,8 +359,8 @@ FvwmWindow *AddWindow(Window w, FvwmWindow *ReuseWin)
   }
 
 /*  RBW - 11/02/1998  */
-  if(!PlaceWindow(tmp_win, &(style.flags), style.start_desk,
-		  style.start_page_x, style.start_page_y))
+  if(!PlaceWindow(tmp_win, sflags, SGET_START_DESK(style),
+		  SGET_START_PAGE_X(style), SGET_START_PAGE_Y(style)))
     return NULL;
 
   /*
@@ -389,19 +395,19 @@ FvwmWindow *AddWindow(Window w, FvwmWindow *ReuseWin)
   tmp_win->ShadowPixel = Scr.StdRelief.back;
   tmp_win->BackPixel = Scr.StdColors.back;
 
-  if(style.fore_color_name != NULL) {
+  if(SGET_FORE_COLOR_NAME(style) != NULL) {
     XColor color;
 
-    if((XParseColor (dpy, PictureCMap, style.fore_color_name, &color))
-       &&(XAllocColor (dpy, PictureCMap, &color)))
+    if(XParseColor(dpy, PictureCMap, SGET_FORE_COLOR_NAME(style), &color) &&
+       XAllocColor(dpy, PictureCMap, &color))
       {
         tmp_win->TextPixel = color.pixel;
       }
   }
-  if(style.back_color_name != NULL) {
+  if(SGET_BACK_COLOR_NAME(style) != NULL) {
     XColor color;
 
-    if((XParseColor (dpy, PictureCMap, style.back_color_name, &color))
+    if((XParseColor (dpy, PictureCMap, SGET_BACK_COLOR_NAME(style), &color))
        &&(XAllocColor (dpy, PictureCMap, &color)))
 
       {
@@ -491,10 +497,10 @@ FvwmWindow *AddWindow(Window w, FvwmWindow *ReuseWin)
 #endif
 
   /* create the frame window, child of root, grandparent of client */
-  tmp_win->frame = XCreateWindow (dpy, Scr.Root, tmp_win->frame_x,
-  				  tmp_win->frame_y, tmp_win->frame_width,
-  				  tmp_win->frame_height, 0, Scr.depth,
-  				  InputOutput, Scr.viz, valuemask, &attributes);
+  tmp_win->frame = XCreateWindow(dpy, Scr.Root, tmp_win->frame_x,
+				 tmp_win->frame_y, tmp_win->frame_width,
+				 tmp_win->frame_height, 0, Scr.depth,
+				 InputOutput, Scr.viz, valuemask, &attributes);
 
 #if defined(PIXMAP_BUTTONS) && defined(BORDERSTYLE)
   /* restore background */
@@ -545,10 +551,12 @@ FvwmWindow *AddWindow(Window w, FvwmWindow *ReuseWin)
 #if defined(PIXMAP_BUTTONS) && defined(BORDERSTYLE)
         if (TexturePixmap
 	    && GetDecor(tmp_win,right_buttons[i].flags) & UseBorderStyle) {
-	  valuemask = CWBackPixmap|CWCursor|CWColormap|CWBorderPixmap|CWEventMask;
+	  valuemask = CWBackPixmap|CWCursor|CWColormap|CWBorderPixmap|
+	    CWEventMask;
           attributes.background_pixmap = TexturePixmap;
         } else {
-	  valuemask=valuemask_save|CWCursor|CWColormap|CWBorderPixmap|CWEventMask;
+	  valuemask=valuemask_save|CWCursor|CWColormap|CWBorderPixmap|
+	    CWEventMask;
           attributes.background_pixmap = TexturePixmapSave;
         }
 #endif
@@ -705,7 +713,7 @@ FvwmWindow *AddWindow(Window w, FvwmWindow *ReuseWin)
     }
   if (tmp_win->stack_prev == &Scr.FvwmRoot) {
     /* RaiseWindow/LowerWindow will put the window in its layer */
-    if (style.flags.do_start_lowered)
+    if (SDO_START_LOWERED(sflags))
       {
 	LowerWindow(tmp_win);
       }

@@ -1,3 +1,32 @@
+1999-04-09  Dominik Vogt  <dominik_vogt@gmx.de>
+
+	* fvwm/gsfr.h (SET_ICON_OURS):
+	* fvwm/style.c (ProcessNewStyle):
+	fixed missing icons
+
+	* fvwm/decorations.c (SelectDecor): fixed MWM_FUNCCTIONS (maximize and
+	minimize)
+
+	* fvwm/fvwm.h (style_flags):
+	* fvwm/style.c (ProcessNewStyle):
+	(merge_styles):
+	* fvwm/style.h (SUSE_NO_PPOSITION): removed unused flags use_layer
+
+	* fvwm/add_window.c (AddWindow): use macros from style.h
+
+	* fvwm/style.c (ProcessNewStyle):
+	(merge_styles):
+	* fvwm/style.h:
+	* fvwm/fvwm.h (style_flags): removed unused flag
+	use_start_raised_lowered
+
+	* fvwm/placement.c (PlaceWindow):
+	* fvwm/fvwm.h:
+	* fvwm/gsfr.h (DO_NOT_SHOW_ON_MAP):
+	logic of show_on_map was reversed
+
+	* fvwm/style.c (ProcessNewStyle): removed duplicate code
+
 Thu Apr  8 23:45:05 1999  Steve Robbins  <steve@nyongwa.montreal.qc.ca>
 
 	* fvwm/Makefile.am (fvwm2_SOURCES): include gnome.c
@@ -14,6 +43,10 @@ Thu Apr  8 23:45:05 1999  Steve Robbins  <steve@nyongwa.montreal.qc.ca>
 	comparison in operand of &
 
 1999-04-08  Dominik Vogt  <dominik_vogt@gmx.de>
+
+	* libs/Bindings.c:
+	* fvwm/bindings.c (ParseBinding):
+	function moved back to fvwm directory
 
 	* fvwm/builtins.c (change_layer): modified the syntax of the 'Layer'
 	command. 'Layer 0 -1' should no longer be used. Use 'Layer default' or

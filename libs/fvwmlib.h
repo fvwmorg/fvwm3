@@ -157,18 +157,18 @@ char *safemalloc(int);
 
 /**
  * Set a colon-separated path, with environment variable expansions.
- * Expand '+' to be the value of the previous path.  
- * 
+ * Expand '+' to be the value of the previous path.
+ *
  * Parameters:
  * p_path          pointer to the path variable
  * newpath         new value for *p_path
  * free_old_path   set true if we should free the memory pointed to
  *                 by p_path on entry
  *
- * The value of newpath is copied into a newly-allocated place, to which 
+ * The value of newpath is copied into a newly-allocated place, to which
  * '*p_path' will point to upon return.  The memory region pointed to by
  * '*p_path' upon entry will be freed if 'free_old_path' is true.
- * 
+ *
  **/
 void setPath( char** p_path, const char* newpath, int free_old_path );
 
@@ -191,7 +191,7 @@ void setPath( char** p_path, const char* newpath, int free_old_path );
  * checking for the existence of the file.
  *
  **/
-char* searchPath( const char* path, const char* filename, 
+char* searchPath( const char* path, const char* filename,
 		  const char* suffix, int type );
 
 
@@ -295,9 +295,6 @@ Binding *AddBinding(Display *dpy, Binding **pblist, BindingType type,
 		    int contexts, void *action, void *action2);
 void RemoveBinding(Display *dpy, Binding **pblist, BindingType type,
 		   int button, KeySym keysym, int modifiers, int contexts);
-Binding *ParseBinding(Display *dpy, Binding ** pblist, char *tline,
-		      BindingType type, int *nr_left_buttons,
-		      int *nr_right_buttons, unsigned char *buttons_grabbed);
 void *CheckBinding(Binding *blist, int button_keycode, unsigned int modifier,
 		   unsigned int dead_modifiers, int Context, BindingType type);
 void GrabWindowKey(Display *dpy, Window w, Binding *binding,

@@ -20,49 +20,70 @@
 
 /* access to the common flags of a window */
 /* call these with a pointer to a style_flags struct */
-#define SDO_SKIP_CIRCULATE(s)        ((s)->common.do_circulate_skip)
-#define SDO_SKIP_CIRCULATE_ICON(s)   ((s)->common.circulate_skip_icon)
-#define SDO_SHOW_ON_MAP(s)           ((s)->common.do_show_on_map)
-#define SDO_SKIP_WINDOW_LIST(s)      ((s)->common.do_window_list_skip)
-#define SDO_START_ICONIC(s)          ((s)->common.do_start_iconic)
-#define SIS_ICON_STICKY(s)           ((s)->common.is_icon_sticky)
-#define SIS_ICON_SUPPRESSED(s)       ((s)->common.is_icon_suppressed)
-#define SIS_LENIENT(s)               ((s)->common.is_lenient)
-#define SIS_STICKY(s)                ((s)->common.is_sticky)
-#define SHAS_CLICK_FOCUS(s)          \
-          ((s)->common.focus_mode == FOCUS_CLICK)
-#define SHAS_MOUSE_FOCUS(s)          \
-          ((s)->common.focus_mode == FOCUS_MOUSE)
-#define SHAS_SLOPPY_FOCUS(s)         \
-          ((s)->common.focus_mode == FOCUS_SLOPPY)
-#define SHAS_NO_ICON_TITLE(s)        ((s)->common.has_no_icon_title)
-#define SHAS_MWM_BORDER(s)           ((s)->common.has_mwm_border)
-#define SHAS_MWM_BUTTONS(s)          ((s)->common.has_mwm_buttons)
-#define SHAS_MWM_OVERRIDE_HINTS(s)   ((s)->common.has_mwm_override)
+#define SDO_SKIP_CIRCULATE(sf)        ((sf)->common.do_circulate_skip)
+#define SDO_SKIP_CIRCULATE_ICON(sf)   ((sf)->common.circulate_skip_icon)
+#define SDO_NOT_SHOW_ON_MAP(sf)       ((sf)->common.do_not_show_on_map)
+#define SDO_SKIP_WINDOW_LIST(sf)      ((sf)->common.do_window_list_skip)
+#define SDO_START_ICONIC(sf)          ((sf)->common.do_start_iconic)
+#define SIS_ICON_STICKY(sf)           ((sf)->common.is_icon_sticky)
+#define SIS_ICON_SUPPRESSED(sf)       ((sf)->common.is_icon_suppressed)
+#define SIS_LENIENT(sf)               ((sf)->common.is_lenient)
+#define SIS_STICKY(sf)                ((sf)->common.is_sticky)
+#define SHAS_CLICK_FOCUS(sf)          \
+          ((sf)->common.focus_mode == FOCUS_CLICK)
+#define SHAS_MOUSE_FOCUS(sf)          \
+          ((sf)->common.focus_mode == FOCUS_MOUSE)
+#define SHAS_SLOPPY_FOCUS(sf)         \
+          ((sf)->common.focus_mode == FOCUS_SLOPPY)
+#define SHAS_NO_ICON_TITLE(sf)        ((sf)->common.has_no_icon_title)
+#define SHAS_MWM_BORDER(sf)           ((sf)->common.has_mwm_border)
+#define SHAS_MWM_BUTTONS(sf)          ((sf)->common.has_mwm_buttons)
+#define SHAS_MWM_OVERRIDE_HINTS(sf)   ((sf)->common.has_mwm_override)
 
 /* access to the special flags of a style */
 /* call these with a pointer to a style_flags struct */
-#define SDO_DECORATE_TRANSIENT(s)    ((s)->do_decorate_transient)
-#define SDO_PLACE_RANDOM(s)          ((s)->do_place_random)
-#define SDO_PLACE_SMART(s)           ((s)->do_place_smart)
-#define SDO_START_LOWERED(s)         ((s)->do_start_lowered)
-#define SHAS_BORDER_WIDTH(s)         ((s)->has_border_width)
-#define SHAS_COLOR_BACK(s)           ((s)->has_color_back)
-#define SHAS_COLOR_FORE(s)           ((s)->has_color_fore)
-#define SHAS_HANDLE_WIDTH(s)         ((s)->has_handle_width)
-#define SHAS_ICON(s)                 ((s)->has_icon)
+#define SDO_DECORATE_TRANSIENT(sf)    ((sf)->do_decorate_transient)
+#define SDO_PLACE_RANDOM(sf)          ((sf)->do_place_random)
+#define SDO_PLACE_SMART(sf)           ((sf)->do_place_smart)
+#define SDO_START_LOWERED(sf)         ((sf)->do_start_lowered)
+#define SHAS_BORDER_WIDTH(sf)         ((sf)->has_border_width)
+#define SHAS_COLOR_BACK(sf)           ((sf)->has_color_back)
+#define SHAS_COLOR_FORE(sf)           ((sf)->has_color_fore)
+#define SHAS_HANDLE_WIDTH(sf)         ((sf)->has_handle_width)
+#define SHAS_ICON(sf)                 ((sf)->has_icon)
 #ifdef MINI_ICONS
-#define SHAS_MINI_ICON(s)            ((s)->has_mini_icon)
+#define SHAS_MINI_ICON(sf)            ((sf)->has_mini_icon)
 #endif
-#define SHAS_MWM_DECOR(s)            ((s)->has_mwm_decor)
-#define SHAS_MWM_FUNCTIONS(s)        ((s)->has_mwm_functions)
-#define SHAS_NO_BORDER(s)            ((s)->has_no_border)
-#define SHAS_NO_TITLE(s)             ((s)->has_no_title)
-#define SHAS_OL_DECOR(s)             ((s)->has_ol_decor)
-#define SUSE_LAYER(s)                ((s)->use_layer)
-#define SUSE_NO_PPOSITION(s)         ((s)->use_no_pposition)
-#define SUSE_START_RAISED_LOWERED(s) ((s)->use_start_raised_lowered)
-#define SUSE_START_ON_DESK(s)        ((s)->use_start_on_desk)
+#define SHAS_MWM_DECOR(sf)            ((sf)->has_mwm_decor)
+#define SHAS_MWM_FUNCTIONS(sf)        ((sf)->has_mwm_functions)
+#define SHAS_NO_BORDER(sf)            ((sf)->has_no_border)
+#define SHAS_NO_TITLE(sf)             ((sf)->has_no_title)
+#define SHAS_OL_DECOR(sf)             ((sf)->has_ol_decor)
+#define SUSE_NO_PPOSITION(sf)         ((sf)->use_no_pposition)
+#define SUSE_START_ON_DESK(sf)        ((sf)->use_start_on_desk)
+
+/* access to other parts of a style (call with the style itself) */
+#define SGET_NEXT_STYLE(style)        ((style).next)
+#define SGET_NAME(style)              ((style).name)
+#define SGET_ICON_NAME(style)         ((style).icon_name)
+#ifdef MINI_ICONS
+#define SGET_MINI_ICON_NAME(style)    ((style).mini_icon_name)
+#endif
+#ifdef USEDECOR
+#define SGET_DECOR_NAME(style)        ((style).decor_name)
+#endif
+#define SGET_FORE_COLOR_NAME(style)   ((style).fore_color_name)
+#define SGET_BACK_COLOR_NAME(style)   ((style).back_color_name)
+#define SGET_FLAGS_POINTER(style)     (&((style).flags))
+#define SGET_BUTTONS(style)           ((style).on_buttons)
+#define SGET_BORDER_WIDTH(style)      ((style).border_width)
+#define SGET_HANDLE_WIDTH(style)      ((style).handle_width)
+#define SGET_LAYER(style)             ((style).layer)
+#define SGET_START_DESK(style)        ((style).start_desk)
+#define SGET_START_PAGE_X(style)      ((style).start_page_x)
+#define SGET_START_PAGE_Y(style)      ((style).start_page_y)
+#define SGET_ICON_BOXES(style)        ((style).IconBoxes)
+
 
 /* function prototypes */
 void ProcessNewStyle(F_CMD_ARGS);

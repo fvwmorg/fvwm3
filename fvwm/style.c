@@ -91,23 +91,31 @@ void ProcessNewStyle(XEvent *eventp, Window w, FvwmWindow *tmp_win,
   char *restofline;
   char *tmp;
   window_style *add_style;
-  int butt;                             /* work area for button number */
+  /* work area for button number */
+  int butt;
   int num,i;
   /*  RBW - 11/02/1998  */
   int tmpno1 = -1, tmpno2 = -1, tmpno3 = -1, spargs = 0;
   /**/
 
-  window_style tmpstyle;                      /* temp area to build name list */
+  /* temp area to build name list */
+  window_style tmpstyle;
   int len = 0;
-  icon_boxes *which = 0;                /* which current boxes to chain to */
-  int is_quoted;                        /* for parsing args with quotes */
+  /* which current boxes to chain to */
+  icon_boxes *which = 0;
+  /* for parsing args with quotes */
+  int is_quoted;
 
-  memset(&tmpstyle, 0, sizeof(window_style)); /* init temp window_style area */
+  /* init temp window_style area */
+  memset(&tmpstyle, 0, sizeof(window_style));
+  /* default uninitialised layer */
+  tmpstyle.layer = -9;
 
   restofline = GetNextToken(text, &tmpstyle.name); /* parse style name */
   /* in case there was no argument! */
-  if((tmpstyle.name == NULL)||(restofline == NULL))/* If no name, or blank cmd */
+  if((tmpstyle.name == NULL)||(restofline == NULL))
     {
+      /* If no name, or blank cmd */
       if (tmpstyle.name)
         free(tmpstyle.name);
       return;                             /* drop it. */
@@ -135,7 +143,6 @@ void ProcessNewStyle(XEvent *eventp, Window w, FvwmWindow *tmp_win,
           SKIP("ACTIVEPLACEMENT");
           tmpstyle.flags.do_place_random = 0;
           tmpstyle.flag_mask.do_place_random = 1;
-          //          tmpstyle.off_flags |= RANDOM_PLACE_FLAG;
         }
         break;
       case 'b':
@@ -146,14 +153,10 @@ void ProcessNewStyle(XEvent *eventp, Window w, FvwmWindow *tmp_win,
           if(len > 0)
           {
             tmpstyle.back_color_name = safemalloc(len+1);
-            //            tmpstyle.BackColor = safemalloc(len+1);
             strncpy(tmpstyle.back_color_name, restofline, len);
-            //            strncpy(tmpstyle.BackColor,restofline,len);
             tmpstyle.back_color_name[len] = 0;
-            //            tmpstyle.BackColor[len] = 0;
             tmpstyle.flags.has_color_back = 1;
             tmpstyle.flag_mask.has_color_back = 1;
-            //            tmpstyle.on_flags |= BACK_COLOR_FLAG;
           }
           restofline = tmp;
         }
@@ -174,9 +177,7 @@ void ProcessNewStyle(XEvent *eventp, Window w, FvwmWindow *tmp_win,
           SKIP("BorderWidth");
           tmpstyle.flags.has_border_width = 1;
           tmpstyle.flag_mask.has_border_width = 1;
-          //          tmpstyle.on_flags |= BW_FLAG;
           sscanf(restofline, "%d", &tmpstyle.border_width);
-          //          sscanf(restofline,"%d",&tmpstyle.border_width);
           GETWORD;
           restofline = tmp;
           SKIPSPACE;
@@ -202,10 +203,6 @@ void ProcessNewStyle(XEvent *eventp, Window w, FvwmWindow *tmp_win,
             tmpstyle.fore_color_name[len] = 0;
             tmpstyle.flags.has_color_fore = 1;
             tmpstyle.flag_mask.has_color_fore = 1;
-            //            tmpstyle.ForeColor = safemalloc(len+1);
-            //            strncpy(tmpstyle.ForeColor,restofline,len);
-            //            tmpstyle.ForeColor[len] = 0;
-            //            tmpstyle.on_flags |= FORE_COLOR_FLAG;
           }
 
           while(isspace(*tmp))
@@ -230,10 +227,6 @@ void ProcessNewStyle(XEvent *eventp, Window w, FvwmWindow *tmp_win,
               tmpstyle.back_color_name[len] = 0;
               tmpstyle.flags.has_color_back = 1;
               tmpstyle.flag_mask.has_color_back = 1;
-              //              tmpstyle.BackColor = safemalloc(len+1);
-              //              strncpy(tmpstyle.BackColor,restofline,len);
-              //              tmpstyle.BackColor[len] = 0;
-              //              tmpstyle.on_flags |= BACK_COLOR_FLAG;
             }
           }
           restofline = tmp;
@@ -243,14 +236,12 @@ void ProcessNewStyle(XEvent *eventp, Window w, FvwmWindow *tmp_win,
           SKIP("CirculateSkipIcon");
           tmpstyle.flags.common.do_circulate_skip_icon = 1;
           tmpstyle.flag_mask.common.do_circulate_skip_icon = 1;
-          //      tmpstyle.on_flags |= CIRCULATE_SKIP_ICON_FLAG;
         }
         else if(ITIS("CirculateHitIcon"))
         {
           SKIP("CirculateHitIcon");
           tmpstyle.flags.common.do_circulate_skip_icon = 0;
           tmpstyle.flag_mask.common.do_circulate_skip_icon = 1;
-          //          tmpstyle.off_flags |= CIRCULATE_SKIP_ICON_FLAG;
         }
         else if(ITIS("CLICKTOFOCUS"))
         {
@@ -259,23 +250,18 @@ void ProcessNewStyle(XEvent *eventp, Window w, FvwmWindow *tmp_win,
           tmpstyle.flag_mask.common.focus_mode = FOCUS_MASK;
           tmpstyle.flags.common.do_grab_focus_when_created = 1;
           tmpstyle.flag_mask.common.do_grab_focus_when_created = 1;
-          //          tmpstyle.on_flags |= CLICK_FOCUS_FLAG;
-          //          tmpstyle.off_flags |= SLOPPY_FOCUS_FLAG;
-          //          tmpstyle.on_flags |= GRAB_FOCUS;
         }
         else if(ITIS("CirculateSkip"))
         {
           SKIP("CirculateSkip");
           tmpstyle.flags.common.do_circulate_skip = 1;
           tmpstyle.flag_mask.common.do_circulate_skip = 1;
-          //          tmpstyle.on_flags |= CIRCULATESKIP_FLAG;
         }
         else if(ITIS("CirculateHit"))
         {
           SKIP("CirculateHit");
           tmpstyle.flags.common.do_circulate_skip = 0;
           tmpstyle.flag_mask.common.do_circulate_skip = 1;
-          //          tmpstyle.off_flags |= CIRCULATESKIP_FLAG;
         }
         break;
       case 'd':
@@ -284,14 +270,12 @@ void ProcessNewStyle(XEvent *eventp, Window w, FvwmWindow *tmp_win,
           SKIP("DecorateTransient");
           tmpstyle.flags.do_decorate_transient = 1;
           tmpstyle.flag_mask.do_decorate_transient = 1;
-          //          tmpstyle.on_flags |= DECORATE_TRANSIENT_FLAG;
         }
         else if(ITIS("DUMBPLACEMENT"))
         {
           SKIP("DUMBPLACEMENT");
           tmpstyle.flags.do_place_smart = 0;
           tmpstyle.flag_mask.do_place_smart = 1;
-          //          tmpstyle.off_flags |= SMART_PLACE_FLAG;
         }
         break;
       case 'e':
@@ -308,10 +292,6 @@ void ProcessNewStyle(XEvent *eventp, Window w, FvwmWindow *tmp_win,
             tmpstyle.fore_color_name[len] = 0;
             tmpstyle.flags.has_color_fore = 1;
             tmpstyle.flag_mask.has_color_fore = 1;
-            //            tmpstyle.ForeColor = safemalloc(len+1);
-            //            strncpy(tmpstyle.ForeColor,restofline,len);
-            //            tmpstyle.ForeColor[len] = 0;
-            //            tmpstyle.on_flags |= FORE_COLOR_FLAG;
           }
           restofline = tmp;
         }
@@ -320,14 +300,12 @@ void ProcessNewStyle(XEvent *eventp, Window w, FvwmWindow *tmp_win,
           SKIP("FVWMBUTTONS");
           tmpstyle.flags.common.has_mwm_buttons = 0;
           tmpstyle.flag_mask.common.has_mwm_buttons = 1;
-          //      tmpstyle.off_flags |= MWM_BUTTON_FLAG;
         }
         else if(ITIS("FVWMBORDER"))
         {
           SKIP("FVWMBORDER");
           tmpstyle.flags.common.has_mwm_border = 0;
           tmpstyle.flag_mask.common.has_mwm_border = 1;
-          //          tmpstyle.off_flags |= MWM_BORDER_FLAG;
         }
         else if(ITIS("FocusFollowsMouse"))
         {
@@ -336,8 +314,6 @@ void ProcessNewStyle(XEvent *eventp, Window w, FvwmWindow *tmp_win,
           tmpstyle.flag_mask.common.focus_mode = FOCUS_MASK;
           tmpstyle.flags.common.do_grab_focus_when_created = 0;
           tmpstyle.flag_mask.common.do_grab_focus_when_created = 1;
-          //          tmpstyle.off_flags |= CLICK_FOCUS_FLAG;
-          //          tmpstyle.off_flags |= SLOPPY_FOCUS_FLAG;
         }
         break;
       case 'g':
@@ -346,14 +322,12 @@ void ProcessNewStyle(XEvent *eventp, Window w, FvwmWindow *tmp_win,
           SKIP("GRABFOCUSOFF");
           tmpstyle.flags.common.do_grab_focus_when_created = 0;
           tmpstyle.flag_mask.common.do_grab_focus_when_created = 1;
-          //          tmpstyle.off_flags |= GRAB_FOCUS;
         }
         else if(ITIS("GrabFocus"))
         {
           SKIP("GRABFOCUS");
           tmpstyle.flags.common.do_grab_focus_when_created = 1;
           tmpstyle.flag_mask.common.do_grab_focus_when_created = 1;
-          //          tmpstyle.on_flags |= GRAB_FOCUS;
         }
         break;
       case 'h':
@@ -362,23 +336,19 @@ void ProcessNewStyle(XEvent *eventp, Window w, FvwmWindow *tmp_win,
           SKIP("HINTOVERRIDE");
           tmpstyle.flags.common.has_mwm_override = 1;
           tmpstyle.flag_mask.common.has_mwm_override = 1;
-          //          tmpstyle.on_flags |= MWM_OVERRIDE_FLAG;
         }
         else if(ITIS("HANDLES"))
         {
           SKIP("HANDLES");
           tmpstyle.flags.has_no_border = 0;
           tmpstyle.flag_mask.has_no_border = 1;
-          //          tmpstyle.off_flags |= NOBORDER_FLAG;
         }
         else if(ITIS("HandleWidth"))
         {
           SKIP("HandleWidth");
           tmpstyle.flags.has_handle_width = 1;
           tmpstyle.flag_mask.has_handle_width = 1;
-          //          tmpstyle.on_flags |= NOBW_FLAG;
           sscanf(restofline, "%d", &tmpstyle.handle_width);
-          //          sscanf(restofline,"%d",&tmpstyle.resize_width);
           GETWORD;
           restofline = tmp;
           SKIPSPACE;
@@ -390,7 +360,6 @@ void ProcessNewStyle(XEvent *eventp, Window w, FvwmWindow *tmp_win,
           SKIP("IconTitle");
           tmpstyle.flags.common.has_no_icon_title = 0;
           tmpstyle.flag_mask.common.has_no_icon_title = 1;
-          //          tmpstyle.off_flags |= NOICON_TITLE_FLAG;
         }
         else if(ITIS("IconBox"))
         {
@@ -421,13 +390,19 @@ void ProcessNewStyle(XEvent *eventp, Window w, FvwmWindow *tmp_win,
                 restofline++;
             }
             /* Note: here there is no test for valid co-ords, use geom */
-          } else {                   /* Not 4 numeric args dje */
-            char geom_string[25];    /* bigger than =32767x32767+32767+32767 */
+          } else {
+	    /* Not 4 numeric args dje */
+	    /* bigger than =32767x32767+32767+32767 */
+            char geom_string[25];
             int geom_flags;
-            GETWORD;                    /* read in 1 word w/o advancing */
-            if(len > 0 && len < 24) {   /* if word found, not too long */
-              strncpy(geom_string,restofline,len); /* copy and null term */
-              geom_string[len] = 0;     /* null terminate it */
+	    /* read in 1 word w/o advancing */
+            GETWORD;
+            if(len > 0 && len < 24) {
+	      /* if word found, not too long */
+	      /* copy and null term */
+              strncpy(geom_string,restofline,len);
+	      /* null terminate it */
+              geom_string[len] = 0;
               geom_flags=XParseGeometry(geom_string,
                                         &IconBoxes->IconBox[0],
                                         &IconBoxes->IconBox[1], /* x/y */
@@ -546,20 +521,9 @@ void ProcessNewStyle(XEvent *eventp, Window w, FvwmWindow *tmp_win,
             tmpstyle.icon_name[len] = 0;
             tmpstyle.flags.has_icon = 1;
             tmpstyle.flag_mask.has_icon = 1;
-            tmpstyle.flags.common.is_icon_suppressed = 0;
-            tmpstyle.flag_mask.common.is_icon_suppressed = 1;
-            //            tmpstyle.value = safemalloc(len+1);
-            //            strncpy(tmpstyle.value,restofline,len);
-            //            tmpstyle.value[len] = 0;
-            //            tmpstyle.on_flags |= ICON_FLAG;
-            //            tmpstyle.off_flags |= SUPPRESSICON_FLAG;
           }
-          else
-            {
-              tmpstyle.flags.common.is_icon_suppressed = 0;
-              tmpstyle.flag_mask.common.is_icon_suppressed = 1;
-              //              tmpstyle.off_flags |= SUPPRESSICON_FLAG;
-            }
+	  tmpstyle.flags.common.is_icon_suppressed = 0;
+	  tmpstyle.flag_mask.common.is_icon_suppressed = 1;
           restofline = tmp;
         }
         break;
@@ -573,7 +537,6 @@ void ProcessNewStyle(XEvent *eventp, Window w, FvwmWindow *tmp_win,
           SKIP("LENIENCE");
           tmpstyle.flags.common.is_lenient = 1;
           tmpstyle.flag_mask.common.is_lenient = 1;
-          //          tmpstyle.on_flags |= LENIENCE_FLAG;
         }
         else if (ITIS("LAYER"))
           {
@@ -583,12 +546,8 @@ void ProcessNewStyle(XEvent *eventp, Window w, FvwmWindow *tmp_win,
               {
                 fvwm_msg(ERR, "ProcessNewStyle",
                          "Layer must be non-negative." );
-                tmpstyle.flag_mask.use_layer = 0;
-              }
-            else
-              {
-                tmpstyle.flags.use_layer = 1;
-                tmpstyle.flag_mask.use_layer = 1;
+		/* mark layer unset */
+		tmpstyle.layer = -9;
               }
             GETWORD;
             restofline = tmp;
@@ -601,7 +560,6 @@ void ProcessNewStyle(XEvent *eventp, Window w, FvwmWindow *tmp_win,
           SKIP("MWMBUTTONS");
           tmpstyle.flags.common.has_mwm_buttons = 1;
           tmpstyle.flag_mask.common.has_mwm_buttons = 1;
-          //          tmpstyle.on_flags |= MWM_BUTTON_FLAG;
         }
 #ifdef MINI_ICONS
         else if (ITIS("MINIICON"))
@@ -615,10 +573,6 @@ void ProcessNewStyle(XEvent *eventp, Window w, FvwmWindow *tmp_win,
             tmpstyle.mini_icon_name[len] = 0;
             tmpstyle.flags.has_mini_icon = 1;
             tmpstyle.flag_mask.has_mini_icon = 1;
-            //            tmpstyle.mini_value = safemalloc(len+1);
-            //            strncpy(tmpstyle.mini_value,restofline,len);
-            //            tmpstyle.mini_value[len] = 0;
-            //            tmpstyle.on_flags |= MINIICON_FLAG;
           }
           restofline = tmp;
         }
@@ -628,21 +582,18 @@ void ProcessNewStyle(XEvent *eventp, Window w, FvwmWindow *tmp_win,
           SKIP("MWMBORDER");
           tmpstyle.flags.common.has_mwm_border = 1;
           tmpstyle.flag_mask.common.has_mwm_border = 1;
-          //          tmpstyle.on_flags |= MWM_BORDER_FLAG;
         }
         else if(ITIS("MWMDECOR"))
         {
           SKIP("MWMDECOR");
           tmpstyle.flags.has_mwm_decor = 1;
           tmpstyle.flag_mask.has_mwm_decor = 1;
-          //          tmpstyle.on_flags |= MWM_DECOR_FLAG;
         }
         else if(ITIS("MWMFUNCTIONS"))
         {
           SKIP("MWMFUNCTIONS");
           tmpstyle.flags.has_mwm_functions = 1;
           tmpstyle.flag_mask.has_mwm_functions = 1;
-          //          tmpstyle.on_flags |= MWM_FUNCTIONS_FLAG;
         }
         else if(ITIS("MOUSEFOCUS"))
         {
@@ -651,9 +602,6 @@ void ProcessNewStyle(XEvent *eventp, Window w, FvwmWindow *tmp_win,
           tmpstyle.flag_mask.common.focus_mode = FOCUS_MASK;
           tmpstyle.flags.common.do_grab_focus_when_created = 0;
           tmpstyle.flag_mask.common.do_grab_focus_when_created = 1;
-          //          tmpstyle.off_flags |= CLICK_FOCUS_FLAG;
-          //          tmpstyle.off_flags |= SLOPPY_FOCUS_FLAG;
-          //          tmpstyle.off_flags |= GRAB_FOCUS;
         }
         break;
       case 'n':
@@ -662,70 +610,60 @@ void ProcessNewStyle(XEvent *eventp, Window w, FvwmWindow *tmp_win,
           SKIP("NoIconTitle");
           tmpstyle.flags.common.has_no_icon_title = 1;
           tmpstyle.flag_mask.common.has_no_icon_title = 1;
-          //          tmpstyle.on_flags |= NOICON_TITLE_FLAG;
         }
         else if(ITIS("NOICON"))
         {
           SKIP("NOICON");
           tmpstyle.flags.common.is_icon_suppressed = 1;
           tmpstyle.flag_mask.common.is_icon_suppressed = 1;
-          //          tmpstyle.on_flags |= SUPPRESSICON_FLAG;
         }
         else if(ITIS("NOTITLE"))
         {
           SKIP("NOTITLE");
           tmpstyle.flags.has_no_title = 1;
           tmpstyle.flag_mask.has_no_title = 1;
-          //          tmpstyle.on_flags |= NOTITLE_FLAG;
         }
         else if(ITIS("NoPPosition"))
         {
           SKIP("NoPPosition");
           tmpstyle.flags.use_no_pposition = 1;
           tmpstyle.flag_mask.use_no_pposition = 1;
-          //          tmpstyle.on_flags |= NO_PPOSITION_FLAG;
         }
         else if(ITIS("NakedTransient"))
         {
           SKIP("NakedTransient");
           tmpstyle.flags.do_decorate_transient = 0;
           tmpstyle.flag_mask.do_decorate_transient = 1;
-          //          tmpstyle.off_flags |= DECORATE_TRANSIENT_FLAG;
         }
         else if(ITIS("NODECORHINT"))
         {
           SKIP("NODECORHINT");
           tmpstyle.flags.has_mwm_decor = 0;
           tmpstyle.flag_mask.has_mwm_decor = 1;
-          //          tmpstyle.off_flags |= MWM_DECOR_FLAG;
         }
         else if(ITIS("NOFUNCHINT"))
         {
           SKIP("NOFUNCHINT");
           tmpstyle.flags.has_mwm_functions = 0;
           tmpstyle.flag_mask.has_mwm_functions = 1;
-          //          tmpstyle.off_flags |= MWM_FUNCTIONS_FLAG;
         }
         else if(ITIS("NOOVERRIDE"))
         {
           SKIP("NOOVERRIDE");
           tmpstyle.flags.common.has_mwm_override = 0;
           tmpstyle.flag_mask.common.has_mwm_override = 1;
-          //          tmpstyle.off_flags |= MWM_OVERRIDE_FLAG;
         }
         else if(ITIS("NOHANDLES"))
         {
           SKIP("NOHANDLES");
           tmpstyle.flags.has_no_border = 1;
           tmpstyle.flag_mask.has_no_border = 1;
-          //          tmpstyle.on_flags |= NOBORDER_FLAG;
         }
         else if(ITIS("NOLENIENCE"))
         {
           SKIP("NOLENIENCE");
           tmpstyle.flags.common.is_lenient = 0;
           tmpstyle.flag_mask.common.is_lenient = 1;
-          //          tmpstyle.off_flags |= LENIENCE_FLAG;
         }
         else if (ITIS("NOBUTTON"))
         {
@@ -747,7 +685,6 @@ void ProcessNewStyle(XEvent *eventp, Window w, FvwmWindow *tmp_win,
           SKIP("NOOLDECOR");
           tmpstyle.flags.has_ol_decor = 0;
           tmpstyle.flag_mask.has_ol_decor = 1;
-          //          tmpstyle.off_flags |= OL_DECOR_FLAG;
         }
         break;
       case 'o':
@@ -756,7 +693,6 @@ void ProcessNewStyle(XEvent *eventp, Window w, FvwmWindow *tmp_win,
           SKIP("OLDECOR");
           tmpstyle.flags.has_ol_decor = 1;
           tmpstyle.flag_mask.has_ol_decor = 1;
-          //          tmpstyle.on_flags |= OL_DECOR_FLAG;
         }
         break;
       case 'p':
@@ -769,7 +705,6 @@ void ProcessNewStyle(XEvent *eventp, Window w, FvwmWindow *tmp_win,
           SKIP("RANDOMPLACEMENT");
           tmpstyle.flags.do_place_random = 1;
           tmpstyle.flag_mask.do_place_random = 1;
-          //          tmpstyle.on_flags |= RANDOM_PLACE_FLAG;
         }
         break;
       case 's':
@@ -778,35 +713,30 @@ void ProcessNewStyle(XEvent *eventp, Window w, FvwmWindow *tmp_win,
           SKIP("SMARTPLACEMENT");
           tmpstyle.flags.do_place_smart = 1;
           tmpstyle.flag_mask.do_place_smart = 1;
-          //          tmpstyle.on_flags |= SMART_PLACE_FLAG;
         }
         else if(ITIS("SkipMapping"))
         {
           SKIP("SkipMapping");
-          tmpstyle.flags.common.do_show_on_map = 0;
-          tmpstyle.flag_mask.common.do_show_on_map = 1;
-          //          tmpstyle.on_flags |= SHOW_MAPPING;
+          tmpstyle.flags.common.do_not_show_on_map = 1;
+          tmpstyle.flag_mask.common.do_not_show_on_map = 1;
         }
         else if(ITIS("ShowMapping"))
         {
           SKIP("ShowMapping");
-          tmpstyle.flags.common.do_show_on_map = 1;
-          tmpstyle.flag_mask.common.do_show_on_map = 1;
-          //          tmpstyle.off_flags |= SHOW_MAPPING;
+          tmpstyle.flags.common.do_not_show_on_map = 0;
+          tmpstyle.flag_mask.common.do_not_show_on_map = 1;
         }
         else if(ITIS("StickyIcon"))
         {
           SKIP("StickyIcon");
           tmpstyle.flags.common.is_icon_sticky = 1;
           tmpstyle.flag_mask.common.is_icon_sticky = 1;
-          //          tmpstyle.on_flags |= STICKY_ICON_FLAG;
         }
         else if(ITIS("SlipperyIcon"))
         {
           SKIP("SlipperyIcon");
           tmpstyle.flags.common.is_icon_sticky = 0;
           tmpstyle.flag_mask.common.is_icon_sticky = 1;
-          //          tmpstyle.off_flags |= STICKY_ICON_FLAG;
         }
         else if(ITIS("SLOPPYFOCUS"))
         {
@@ -815,36 +745,27 @@ void ProcessNewStyle(XEvent *eventp, Window w, FvwmWindow *tmp_win,
           tmpstyle.flag_mask.common.focus_mode = FOCUS_MASK;
           tmpstyle.flags.common.do_grab_focus_when_created = 0;
           tmpstyle.flag_mask.common.do_grab_focus_when_created = 1;
-          //          tmpstyle.off_flags |= CLICK_FOCUS_FLAG;
-          //          tmpstyle.on_flags |= SLOPPY_FOCUS_FLAG;
-          //          tmpstyle.off_flags |= GRAB_FOCUS;
         }
         else if(ITIS("StartIconic"))
         {
           SKIP("StartIconic");
           tmpstyle.flags.common.do_start_iconic = 1;
           tmpstyle.flag_mask.common.do_start_iconic = 1;
-          //          tmpstyle.on_flags |= START_ICONIC_FLAG;
         }
         else if(ITIS("StartNormal"))
         {
           SKIP("StartNormal");
           tmpstyle.flags.common.do_start_iconic = 0;
           tmpstyle.flag_mask.common.do_start_iconic = 1;
-          //          tmpstyle.off_flags |= START_ICONIC_FLAG;
         }
         else if(ITIS("StaysOnTop"))
         {
           SKIP("StaysOnTop");
-          tmpstyle.flags.use_layer = 1;
-          tmpstyle.flag_mask.use_layer = 1;
           tmpstyle.layer = Scr.OnTopLayer;
         }
         else if(ITIS("StaysPut"))
         {
           SKIP("StaysPut");
-          tmpstyle.flags.use_layer = 1;
-          tmpstyle.flag_mask.use_layer = 1;
           tmpstyle.layer = Scr.StaysPutLayer;
         }
         else if(ITIS("Sticky"))
@@ -852,19 +773,16 @@ void ProcessNewStyle(XEvent *eventp, Window w, FvwmWindow *tmp_win,
           SKIP("Sticky");
           tmpstyle.flags.common.is_sticky = 1;
           tmpstyle.flag_mask.common.is_sticky = 1;
-          //          tmpstyle.on_flags |= STICKY_FLAG;
         }
         else if(ITIS("Slippery"))
         {
           SKIP("Slippery");
           tmpstyle.flags.common.is_sticky = 0;
           tmpstyle.flag_mask.common.is_sticky = 1;
-          //          tmpstyle.off_flags |= STICKY_FLAG;
         }
         else if(ITIS("STARTSONDESK"))
         {
           SKIP("STARTSONDESK");
-          //          tmpstyle.on_flags |= STARTSONDESK_FLAG;
           /*  RBW - 11/02/1998  */
           spargs = sscanf(restofline, "%d", &tmpno1);
           if (spargs == 1)
@@ -876,7 +794,6 @@ void ProcessNewStyle(XEvent *eventp, Window w, FvwmWindow *tmp_win,
             }
           else
             {
-              //              tmpstyle.on_flags &= ~STARTSONDESK_FLAG;
               fvwm_msg(ERR,"ProcessNewStyle",
                        "bad StartsOnDesk arg: %s", restofline);
             }
@@ -891,14 +808,14 @@ void ProcessNewStyle(XEvent *eventp, Window w, FvwmWindow *tmp_win,
        else if(ITIS("STARTSONPAGE"))
          {
            SKIP("STARTSONPAGE");
-           //           tmpstyle.on_flags |= STARTSONDESK_FLAG;
            spargs = sscanf(restofline,"%d %d %d", &tmpno1, &tmpno2, &tmpno3);
 
           if (spargs == 1 || spargs == 3)
             {
-            /*  We have a desk no., with or without page.  */
-              /*  RBW - 11/20/1998 - allow for the special case of -1  */
-              tmpstyle.start_desk = (tmpno1 > -1) ? tmpno1 + 1 : tmpno1;  /*  Desk is now actual + 1  */
+	      /* We have a desk no., with or without page. */
+              /* RBW - 11/20/1998 - allow for the special case of -1 */
+	      /* Desk is now actual + 1 */
+              tmpstyle.start_desk = (tmpno1 > -1) ? tmpno1 + 1 : tmpno1;
               /*  Bump past desk no.    */
               GETWORD;
               restofline = tmp;
@@ -929,7 +846,6 @@ void ProcessNewStyle(XEvent *eventp, Window w, FvwmWindow *tmp_win,
             }
           if (spargs < 1 || spargs > 3)
             {
-              //              tmpstyle.on_flags &= ~STARTSONDESK_FLAG;
               fvwm_msg(ERR,"ProcessNewStyle",
                        "bad StartsOnPage args: %s", restofline);
             }
@@ -946,27 +862,18 @@ void ProcessNewStyle(XEvent *eventp, Window w, FvwmWindow *tmp_win,
           SKIP("STARTSANYWHERE");
           tmpstyle.flags.use_start_on_desk = 0;
           tmpstyle.flag_mask.use_start_on_desk = 1;
-          //          tmpstyle.off_flags |= STARTSONDESK_FLAG;
         }
         else if (ITIS("STARTSLOWERED"))
         {
           SKIP("STARTSLOWERED");
-          tmpstyle.flags.use_start_raised_lowered = 1;
-          tmpstyle.flag_mask.use_start_raised_lowered = 1;
           tmpstyle.flags.do_start_lowered = 1;
           tmpstyle.flag_mask.do_start_lowered = 1;
-          //      tmpstyle.tmpflags.has_starts_lowered = 1;
-          //      tmpstyle.tmpflags.starts_lowered = 1;
         }
         else if (ITIS("STARTSRAISED"))
         {
           SKIP("STARTSRAISED");
-          tmpstyle.flags.use_start_raised_lowered = 1;
-          tmpstyle.flag_mask.use_start_raised_lowered = 1;
           tmpstyle.flags.do_start_lowered = 0;
           tmpstyle.flag_mask.do_start_lowered = 1;
-          //      tmpstyle.tmpflags.has_starts_lowered = 1;
-          //      tmpstyle.tmpflags.starts_lowered = 0;
         }
         break;
       case 't':
@@ -975,7 +882,6 @@ void ProcessNewStyle(XEvent *eventp, Window w, FvwmWindow *tmp_win,
           SKIP("TITLE");
           tmpstyle.flags.has_no_title = 0;
           tmpstyle.flag_mask.has_no_title = 1;
-          //          tmpstyle.off_flags |= NOTITLE_FLAG;
         }
         break;
       case 'u':
@@ -984,7 +890,6 @@ void ProcessNewStyle(XEvent *eventp, Window w, FvwmWindow *tmp_win,
           SKIP("UsePPosition");
           tmpstyle.flags.use_no_pposition = 0;
           tmpstyle.flag_mask.use_no_pposition = 1;
-          //          tmpstyle.off_flags |= NO_PPOSITION_FLAG;
         }
 #ifdef USEDECOR
         if(ITIS("UseDecor"))
@@ -1007,17 +912,24 @@ void ProcessNewStyle(XEvent *eventp, Window w, FvwmWindow *tmp_win,
           if (len > 0) {
             int hit = 0;
             /* changed to accum multiple Style definitions (veliaa@rpi.edu) */
-            for ( add_style = all_styles; add_style;
-		  add_style = add_style->next ) {
-              if (!strncasecmp(restofline,add_style->name,len)) { /* match style */
+            for (add_style = all_styles; add_style;
+		 add_style = add_style->next ) {
+              if (!strncasecmp(restofline,add_style->name,len)) {
+		/* match style */
                 if (!hit)
-                {             /* first match */
+                {
+		  /* first match */
                   char *save_name;
                   save_name = tmpstyle.name;
-                  memcpy((void*)&tmpstyle, (const void*)add_style, sizeof(window_style)); /* copy everything */
-                  tmpstyle.next = NULL;      /* except the next pointer */
-                  tmpstyle.name = save_name; /* and the name */
-                  hit = 1;                   /* set not first match */
+		  /* copy everything */
+                  memcpy((void*)&tmpstyle, (const void*)add_style,
+			 sizeof(window_style));
+		  /* except the next pointer */
+                  tmpstyle.next = NULL;
+		  /* and the name */
+                  tmpstyle.name = save_name;
+		  /* set not first match */
+                  hit = 1;
                 }
                 else
                 {
@@ -1026,7 +938,8 @@ void ProcessNewStyle(XEvent *eventp, Window w, FvwmWindow *tmp_win,
               } /* end found matching style */
             } /* end looking at all styles */
 
-            restofline = tmp;           /* move forward one word */
+	    /* move forward one word */
+            restofline = tmp;
             if (!hit) {
               tmp=safemalloc(500);
               strcat(tmp,"UseStyle: ");
@@ -1047,14 +960,12 @@ void ProcessNewStyle(XEvent *eventp, Window w, FvwmWindow *tmp_win,
           SKIP("WindowListSkip");
 	  tmpstyle.flags.common.do_window_list_skip = 1;
 	  tmpstyle.flag_mask.common.do_window_list_skip = 1;
-	  //          tmpstyle.on_flags |= LISTSKIP_FLAG;
         }
         else if(ITIS("WindowListHit"))
         {
           SKIP("WindowListHit");
 	  tmpstyle.flags.common.do_window_list_skip = 0;
 	  tmpstyle.flag_mask.common.do_window_list_skip = 1;
-	  //          tmpstyle.off_flags |= LISTSKIP_FLAG;
         }
         break;
       case 'x':
@@ -1081,17 +992,16 @@ void ProcessNewStyle(XEvent *eventp, Window w, FvwmWindow *tmp_win,
   } /* end while still stuff on command */
 
   /* capture default icons */
-  if(strcmp(tmpstyle.name, "*") == 0)
+  if(StrEquals(tmpstyle.name, "*"))
   {
     if(tmpstyle.flags.has_icon == 1)
       Scr.DefaultIcon = tmpstyle.icon_name;
     tmpstyle.flags.has_icon = 0;
-    tmpstyle.flag_mask.has_icon = 1;
-    //    tmpstyle.on_flags &= ~ICON_FLAG;
+    tmpstyle.flag_mask.has_icon = 0;
     tmpstyle.icon_name = NULL;
-    //    tmpstyle.value = NULL;
   }
-  add_style_to_list(&all_styles, &tmpstyle);                /* add temp name list to list */
+  /* add temp name list to list */
+  add_style_to_list(&all_styles, &tmpstyle);
 }
 
 /* Check word after IconFill to see if its "Top,Bottom,Left,Right" */
@@ -1181,11 +1091,8 @@ void merge_styles(window_style *merged_style, window_style *add_style)
   if(add_style->IconBoxes != NULL) {         /* If style has iconboxes */
     merged_style->IconBoxes = add_style->IconBoxes; /* copy it */
   }
-  if (add_style->flags.use_layer) {
+  if (add_style->layer != -9) {
     merged_style->layer = add_style->layer;
-  }
-  if (add_style->flags.use_start_raised_lowered) {
-    merged_style->flags.do_start_lowered = add_style->flags.do_start_lowered;
   }
   return;                               /* return */
 }

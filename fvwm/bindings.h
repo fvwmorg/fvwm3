@@ -17,7 +17,11 @@
 #define _BINDINGS_
 
 #include "fvwm.h"
+#include "fvwmlib.h"
 
+Binding *ParseBinding(Display *dpy, Binding ** pblist, char *tline,
+		      BindingType type, int *nr_left_buttons,
+		      int *nr_right_buttons, unsigned char *buttons_grabbed);
 void key_binding(F_CMD_ARGS);
 void mouse_binding(F_CMD_ARGS);
 unsigned int MaskUsedModifiers(unsigned int in_modifiers);

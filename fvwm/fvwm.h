@@ -121,7 +121,7 @@ typedef struct
   unsigned do_circulate_skip : 1; /* was circulateskip */
   unsigned do_circulate_skip_icon : 1;
   unsigned do_grab_focus_when_created : 1; /* was grab_focus */
-  unsigned do_show_on_map : 1; /* was show_mapping */
+  unsigned do_not_show_on_map : 1; /* was show_mapping */
   unsigned do_start_iconic : 1;
   unsigned do_window_list_skip : 1; /* was listskip */
 #define FOCUS_MOUSE   0x0
@@ -191,8 +191,6 @@ typedef struct
   unsigned use_no_pposition : 1; /* NO_PPOSITION_FLAG */
   unsigned has_no_title : 1; /* NOTITLE_FLAG */
   unsigned has_ol_decor : 1; /* OL_DECOR_FLAG */
-  unsigned use_layer : 1; /* has_layer */ /* has layer been set explicitly ? */
-  unsigned use_start_raised_lowered : 1; /* has_starts_lowered */ /* has starts_lowered been set ? */
   unsigned use_start_on_desk : 1; /* STARTSONDESK_FLAG */
 } style_flags;
 

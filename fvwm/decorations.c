@@ -280,7 +280,7 @@ void SelectDecor(FvwmWindow *t, style_flags *sflags, int border_width,
       t->functions = (MWM_FUNC_RESIZE | MWM_FUNC_MOVE | MWM_FUNC_MINIMIZE |
 		   MWM_FUNC_MAXIMIZE | MWM_FUNC_CLOSE) & (~(t->functions));
     }
-  if(SHAS_MWM_FUNCTIONS(sflags) || IS_TRANSIENT(t))
+  if(SHAS_MWM_FUNCTIONS(sflags) && IS_TRANSIENT(t))
     {
       t->functions &= ~(MWM_FUNC_MAXIMIZE|MWM_FUNC_MINIMIZE);
     }

@@ -483,7 +483,7 @@ Bool PlaceWindow(FvwmWindow *tmp_win, style_flags *sflags, int Desk, int PageX,
       /*
           it's ActivePlacement and SkipMapping, and that's disallowed.
       */
-      if (!PPosOverride && (DO_SHOW_ON_MAP(tmp_win) &&
+      if (!PPosOverride && (DO_NOT_SHOW_ON_MAP(tmp_win) &&
 			    (!(SDO_PLACE_RANDOM(sflags))) &&
 			    !Scr.go.ActivePlacementHonorsStartsOnPage))
         {
@@ -542,7 +542,7 @@ Bool PlaceWindow(FvwmWindow *tmp_win, style_flags *sflags, int Desk, int PageX,
   }
   /* I think it would be good to switch to the selected desk
    * whenever a new window pops up, except during initialization */
-  if((!PPosOverride)&&(!DO_SHOW_ON_MAP(tmp_win)))
+  if((!PPosOverride)&&(!DO_NOT_SHOW_ON_MAP(tmp_win)))
 /*  RBW - 11/02/1998  --  I dont. */
     {
       changeDesks(tmp_win->Desk);
@@ -561,7 +561,7 @@ Bool PlaceWindow(FvwmWindow *tmp_win, style_flags *sflags, int Desk, int PageX,
           py  =  PageY -1 ;
           px  *= Scr.MyDisplayWidth;
           py  *= Scr.MyDisplayHeight;
-          if ( (!PPosOverride) && (!DO_SHOW_ON_MAP(tmp_win)))
+          if ( (!PPosOverride) && (!DO_NOT_SHOW_ON_MAP(tmp_win)))
             {
               MoveViewport(px,py,True);
             }
@@ -725,7 +725,7 @@ Bool PlaceWindow(FvwmWindow *tmp_win, style_flags *sflags, int Desk, int PageX,
     If SkipMapping, and other legalities are observed, adjust for StartsOnPage.
 */
 
-      if ( ( DO_SHOW_ON_MAP(tmp_win) && HonorStartsOnPage )  &&
+      if ( ( DO_NOT_SHOW_ON_MAP(tmp_win) && HonorStartsOnPage )  &&
 
            ( !(IS_TRANSIENT(tmp_win)) &&
 

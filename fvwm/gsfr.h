@@ -31,7 +31,8 @@
           (fw)->gsfr_flags.common.do_circulate_skip_icon = !!(x)
 #define SETM_DO_SKIP_ICON_CIRCULATE(fw,x) \
           (fw)->gsfr_flag_mask.common.do_circulate_skip_icon = !!(x)
-#define DO_SHOW_ON_MAP(fw)     ((fw)->gsfr_flags.common.do_show_on_map)
+#define DO_NOT_SHOW_ON_MAP(fw)  \
+          ((fw)->gsfr_flags.common.do_not_show_on_map)
 #define DO_SKIP_WINDOW_LIST(fw) \
           ((fw)->gsfr_flags.common.do_window_list_skip)
 #define SET_DO_SKIP_WINDOW_LIST(fw,x) \
@@ -105,7 +106,7 @@
 #define SETM_ICONIFIED_BY_PARENT(fw,x) \
           (fw)->gsfr_flag_mask.is_iconified_by_parent = !!(x)
 #define IS_ICON_OURS(fw)       ((fw)->gsfr_flags.is_icon_ours)
-#define SET_ICON_OURS(fw,x)
+#define SET_ICON_OURS(fw,x)    (fw)->gsfr_flags.is_icon_ours = !!(x)
 #define SETM_ICON_OURS(fw,x)   (fw)->gsfr_flag_mask.is_icon_ours = !!(x)
 #define IS_ICON_SHAPED(fw)     ((fw)->gsfr_flags.is_icon_shaped)
 #define SET_ICON_SHAPED(fw,x)  (fw)->gsfr_flags.is_icon_shaped = !!(x)
