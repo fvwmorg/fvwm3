@@ -39,7 +39,7 @@ typedef struct {
   /* fvwm/colorset.c use only */
   Pixmap mask;
   Pixmap alpha_pixmap;
-  unsigned int color_flags : 6;
+  unsigned int color_flags : 7;
   FvwmPicture *picture;
   Pixel *pixels;
   int nalloc_pixels;

@@ -308,6 +308,7 @@ void parse_colorset(int n, char *line)
 
 	/* make sure it exists and has sensible contents */
 	alloc_colorset(n);
+	cs = &Colorset[n];
 
 	/* ---------- Parse the options ---------- */
 	while (line && *line)

@@ -1,5 +1,9 @@
 2002-04-22  olicha  <olivier.chapuis@free.fr>
 
+	* fvwm/colorset.c (parse_colorset):
+	* libs/Colorset.h:
+	Fixed an enormous core dump which comes from a cvs merging problem
+
 	* fvwm/Makefile.am:
 	* acconfig.h:
 	* configure.in:
