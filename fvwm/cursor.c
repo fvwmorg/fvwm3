@@ -49,6 +49,7 @@ static const unsigned int default_cursors[CRS_MAX] =
   XC_bottom_side,          /* CRS_BOTTOM_EDGE */
   XC_left_side,            /* CRS_LEFT_EDGE */
   XC_left_ptr,             /* CRS_ROOT */
+  XC_plus                  /* CRS_STROKE */
 };
 
 /***********************************************************************

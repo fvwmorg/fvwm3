@@ -1,5 +1,7 @@
 Changes in beta release 2.3.10
 
+* New command StrokeFunc to handle mouse stroke.
+
 * The default root cursor, unless specified otherwise, is now left pointer.
 
 * New command BusyCursor to control a busy cursor during execution of

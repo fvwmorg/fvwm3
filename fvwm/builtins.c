@@ -50,7 +50,11 @@
 #include "colors.h"
 #include "decorations.h"
 #include "libs/Colorset.h"
+#ifdef HAVE_STROKE
+#include "stroke.h"
+#endif /* HAVE_STROKE */
 #include "add_window.h"
+
 
 static void ApplyIconFont(void);
 static void ApplyWindowFont(FvwmDecor *fl);
@@ -2926,3 +2930,141 @@ void setShadeAnim(F_CMD_ARGS)
 
   return;
 }
+
+
+/* A function to handle stroke (olicha Nov 11, 1999) */
+#ifdef HAVE_STROKE
+void strokeFunc(F_CMD_ARGS)
+{
+  int finished = 0;
+  int abort = 0;
+  int modifiers = eventp->xbutton.state;
+  int start_event_type = eventp->type;
+  char sequence[MAX_SEQUENCE+1];
+  int stroke;
+  Bool finish_on_release = True;
+  KeySym keysym;
+  Bool restor_repeat = False;
+  Bool echo_sequence = False;
+  char *opt = NULL;
+  char *stroke_action;
+
+  if(!GrabEm(CRS_STROKE, GRAB_NORMAL))
+  {
+    XBell(dpy, 0);
+    return;
+  }
+
+  /* set the default option */
+  if (eventp->type == KeyPress || eventp->type == ButtonPress)
+    finish_on_release = True;
+  else
+    finish_on_release = False;
+  
+  /* parse the option */
+  for (action = GetNextSimpleOption(action, &opt); opt;
+       action = GetNextSimpleOption(action, &opt))
+  {
+    if (StrEquals("NotStayPressed",opt))
+      finish_on_release = False;
+    else if (StrEquals("EchoSequence",opt))
+      echo_sequence = True;
+    else
+      fvwm_msg(WARN,"StrokeFunc","Unknown option %s", opt);
+    /* Programming is not Mathematics ... */
+    if (opt)
+      free(opt);
+  }
+  if (opt)
+    free(opt);
+
+  /* Force auto repeat off and grab the Keyboard to get proper 
+   * KeyRelease events if we need it.
+   * Some computers do not support keyRelease events, can we
+   * check this here ? No ? */
+  if (start_event_type == KeyPress && finish_on_release)
+  {
+    XKeyboardState kstate;
+
+    XGetKeyboardControl(dpy, &kstate);
+    if (kstate.global_auto_repeat == AutoRepeatModeOn)
+    {
+      XAutoRepeatOff(dpy);
+      restor_repeat = True;
+    }
+    XGrabKeyboard(dpy, Scr.Root, False, GrabModeAsync, GrabModeAsync, 
+		  CurrentTime);
+  }
+
+  /* be ready to get a stroke sequence */
+  stroke_init();
+  
+  while (!finished && !abort)
+  {
+    /* block until there is an event */
+    XMaskEvent(dpy,  ButtonPressMask | ButtonReleaseMask | KeyPressMask | 
+	       KeyReleaseMask | ButtonMotionMask | PointerMotionMask | 
+	       EnterWindowMask | LeaveWindowMask, eventp);
+    /* Records the time */
+    StashEventTime(eventp);
+    
+    switch (eventp->type)
+    {
+    case MotionNotify:
+      stroke_record(eventp->xmotion.x,eventp->xmotion.y);
+      break;
+    case ButtonRelease:
+      if (finish_on_release && start_event_type == ButtonPress)
+	finished = 1;
+      break;
+    case KeyRelease:
+      if (finish_on_release &&  start_event_type == KeyPress)
+	finished = 1;
+      break;
+    case KeyPress:
+      keysym = XLookupKeysym(&eventp->xkey,0);
+      /* abort if Escape or Delete is pressed (as in menus.c) */
+      if (keysym == XK_Escape || keysym == XK_Delete || 
+	  keysym == XK_KP_Separator)
+	abort = 1;
+      /* finish on enter or space (as in menus.c) */
+       if (keysym == XK_Return || keysym == XK_KP_Enter ||
+	   keysym ==  XK_space)
+	 finished = 1;
+       break;
+    case ButtonPress:
+     if (!finish_on_release)
+       finished = 1;
+     break;
+    default:
+      break;
+    }
+  }
+
+  if ( start_event_type == KeyPress && finish_on_release)
+    XUngrabKeyboard(dpy, CurrentTime);
+  UngrabEm(GRAB_NORMAL);
+     
+  if (restor_repeat)
+    XAutoRepeatOn(dpy);
+
+  /* get the stroke sequence */
+  stroke_trans(sequence);
+  stroke = atoi(sequence);
+
+  if (echo_sequence)
+    fvwm_msg(INFO, "StrokeFunc", "stroke sequence: %i", stroke);
+
+  if (abort) return;
+
+  /* check for a binding */
+  stroke_action = CheckBinding(Scr.AllBindings, stroke, 0, modifiers, 
+			       GetUnusedModifiers(), context, STROKE_BINDING);
+
+  /* execute the action */
+  if (stroke_action != NULL)
+    ExecuteFunction(stroke_action, tmp_win, eventp, context, -1, 
+		    EXPAND_COMMAND);
+
+}
+#endif /* HAVE_STROKE */

@@ -1896,6 +1896,11 @@ ROOT (left_ptr)
 .in +.3i
 used as the root cursor.
 .in -.3i
+
+STROKE (plus)
+.in +.3i
+used during a StrokeFunc command.
+.in -.3i
 .in -.5i
 
 And the \fInumber-or-name-or-xpm\fP is either the numeric value of the
@@ -2792,7 +2797,8 @@ or keyboard keys.
 Binds a mouse stroke sequence to a specified fvwm built-in function,
 or removes the binding if \fIFunction\fP is '-'.  Definition is the same
 as for a mouse binding except that \fIsequence\fP is inserted in front of
-the button number. The \fIContext\fP and \fIModifiers\fP fields are defined
+the button number and a value of 0 for \fIbutton\fP concerns the StrokeFunc
+command. The \fIContext\fP and \fIModifiers\fP fields are defined
 as in the mouse binding. At the present time it is preferable to use
 R as context and A as modifier.
 
@@ -2831,6 +2837,53 @@ support. LibStroke can be obtained via anonymous ftp at
 .EX
 http://www.etla.net/~willey/projects/libstroke/
 .EE
+
+.TP
+.B "StrokeFunc [\fIOptions\fP]"
+Causes fvwm to record a mouse stroke sequence and to execute
+the corresponding action as defined in a Stroke command. The cursor
+is modified to the STROKE context of the CursorStyle command during
+recording. When the stroke is "finished" StrokeFunc looks to a Stroke 
+binding of the form
+.EX
+Stroke sequence 0 Context Modifiers action
+.EE
+and execute the action accordingly (Note the 0). Normal use of this
+function is via a Mouse or Key command. Examples:
+.EX
+Mouse 3 A M StrokeFunc
+Key x R N StrokeFunc
+.EE
+If you press mouse button 3 and Alt anywhere (respectively, press the key
+x when the cursor is on the root window), then fvwm will record the
+mouse motions until the mouse button 3 (respectively, the x key) is 
+released and then check if the recorded \fIsequence\fP correspond
+to a Stroke binding of the form  "Stroke \fIsequence\fP 0 A M action"
+(respectively, "Stroke \fIsequence\fP 0 R N action"). Note that the 
+\fIContext\fP and \fIModifiers\fP are taken at the beginning of the 
+execution of the StrokeFunc command (so you can release the modifiers 
+before the end of the stroke recording in the case of a mouse binding 
+and if you used, say, a TitleBar context the mouse motion can go through an 
+application window). The keys Escape and Delete allow to abort the command.
+
+The StrokeFunc command has two options \fINotStayPressed\fP and 
+\fIEchoSequence\fP. These options are disabled by default. 
+\fIEchoSequence\fP causes fvwm to Echo the recorded stroke sequence.
+
+\fINotStayPressed\fP has effect only if StrokeFunc is used via a Mouse 
+or a Key command. This option causes that we do not need to have the 
+button or the key pressed during the stroke, but we have to do a 
+mouse click or press the Return or Space key to finish the mouse motion 
+recording (these keys also work without the \fINotStayPressed\fP option).
+
+You can use the StrokeFunc "alone". In this case it will work as above
+with the \fINotStayPressed\fP option enabled. However, \fIModifiers\fP 
+will, in general, does not work as expected (i.e., in this case use A or 
+N as \fIModifiers\fP in the Stroke bindings).
+
+Note that some computers do not support key release events. If it is the
+case the StrokeFunc used via a Key command will work as if the 
+\fINotStayPressed\fP option is enabled (I hope).
 
 
 .SS COMMANDS CONTROLLING WINDOW STYLES
@@ -4295,7 +4348,6 @@ xmh window appears control moves to desk 0.
 You can escape from a Wait pause by using Ctrl-Alt-Escape (where Alt is
 the first modifier). To redefine this key sequence see the \fIEscapeFunc\fP
 command.
-
 
 .TP
 .B "WindowId" "\fIid (\fIconditions\fP) func\fP"

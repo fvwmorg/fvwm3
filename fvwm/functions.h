@@ -177,6 +177,10 @@ enum
   F_SNAP_ATT,
   F_SNAP_GRID,
   F_STAYSUP,
+#ifdef HAVE_STROKE
+  F_STROKE,
+  F_STROKE_FUNC,
+#endif /* HAVE_STROKE */
   F_STYLE,
   F_TITLE,
   F_TITLESTYLE,
@@ -215,9 +219,6 @@ enum
   F_RESIZE,
   F_SEND_STRING,
   F_STICK,
-#ifdef HAVE_STROKE
-  F_STROKE,
-#endif /* HAVE_STROKE */
   F_UPDATE_DECOR,
   F_WARP,
   F_WINDOWID,

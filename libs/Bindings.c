@@ -304,7 +304,8 @@ void *CheckBinding(Binding *blist,
 	   ((type == MOUSE_BINDING || type == KEY_BINDING) &&
 	    b->Button_Key == button_keycode) ||
 #ifdef HAVE_STROKE
-	   (type == STROKE_BINDING && b->Stroke_Seq == stroke) ||
+	   (type == STROKE_BINDING && b->Stroke_Seq == stroke &&
+	    b->Button_Key == button_keycode) ||
 #endif /* HAVE_STROKE */
 	   (type == MOUSE_BINDING && b->Button_Key == 0))
 	  && (((b->Modifier & used_modifiers) == modifier) ||

@@ -235,6 +235,7 @@ static const struct functions func_config[] =
   {"stick",        stick_function,   F_STICK,               FUNC_NEEDS_WINDOW},
 #ifdef HAVE_STROKE
   {"stroke",       stroke_binding,   F_STROKE,              0},
+  {"strokefunc",   strokeFunc,       F_STROKE_FUNC,         0},
 #endif /* HAVE_STROKE */
   {"style",        ProcessNewStyle,  F_STYLE,               0},
   {"title",        Nop_func,         F_TITLE,               0},
