@@ -6170,6 +6170,7 @@ void do_menu(MenuParameters *pmp, MenuReturn *pmret)
 	Bool is_pointer_ungrabbed = False;
 	Bool do_menu_interaction;
 	Bool do_check_pop_down;
+	Bool do_warp;
 	Time t0 = fev_get_evtime();
 	XEvent tmpevent;
 	double_keypress dkp;
@@ -6228,6 +6229,14 @@ void do_menu(MenuParameters *pmp, MenuReturn *pmret)
 		pmp->screen_origin_x = pmp->pops->pos_hints.screen_origin_x;
 		pmp->screen_origin_y = pmp->pops->pos_hints.screen_origin_y;
 	}
+	if (pmp->pops->flags.do_not_warp)
+	{
+		do_warp = False;
+	}
+	else
+	{
+		do_warp = True;
+	}
 	/* Figure out where we should popup, if possible */
 	if (!pmp->flags.is_already_mapped)
 	{
@@ -6281,8 +6290,8 @@ void do_menu(MenuParameters *pmp, MenuReturn *pmret)
 		if (!pop_menu_up(
 			    &(pmp->menu), pmp, pmp->parent_menu, NULL,
 			    pmp->pfw, pmp->pcontext, x, y,
-			    prefer_left_submenus, key_press /*warp*/,
-			    pmp->pops, NULL, None))
+			    prefer_left_submenus, do_warp, pmp->pops, NULL,
+			    None))
 		{
 			XBell(dpy, 0);
 			UngrabEm(GRAB_MENU);

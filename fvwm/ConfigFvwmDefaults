@@ -35,8 +35,8 @@ AddToFunc UrgencyFunc
 AddToFunc UrgencyDoneFunc I Nop
 
 # Default styles
-Style * GrabFocusTransient, LowerTransient, RaiseTransient, StackTransientParent
-Style * TileCascadePlacement, Title, MouseFocus, GrabFocusOff
+Style * LowerTransient, RaiseTransient, StackTransientParent
+Style * TileCascadePlacement, Title, MouseFocus
 Style * UseIconPosition, RightTitleRotatedCW, UseTitleDecorRotation
 Style * EWMHPlacementUseDynamicWorkingArea, EWMHMaximizeUseDynamicWorkingArea
 # Default styles for tear off menus

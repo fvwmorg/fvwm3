@@ -1,11 +1,20 @@
+2003-04-25  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* fvwm/menus.c (do_menu):
+	the NoWarp position hint option works with root menus too
+
+	* fvwm/ConfigFvwmDefaults:
+	removed GrabFocusOff and GrabFocusTransient since they nullify the
+	default with the plain focus policies
+
 2003-04-24  olicha  <olivier.chapuis@free.fr>
 
 	* fvwm/ewmh_events.c (ewmh_WMStateStaysOnBottom):
 	Fixed a miss print in my previous commit
- 
+
 	* fvwm/ewmh_events.c (ewmh_WMStateStaysOnBottom):
 	(ewmh_MoveResize)
-	(ewmh_WMStateStaysOnBottom): 
+	(ewmh_WMStateStaysOnBottom):
 	* fvwm/ewmh.c (ewmh_AllowsMinimize):
 	* fvwm/ewmh_intern.h:
 	Added comment on the implementation at the top of ewmh.c.
@@ -43,7 +52,7 @@
 	(FiconvCharsetToUtf8):
 	Formating clean-up
 
-	* fvwm/ewmh_names.c (EWMH_SetVisibleName): 
+	* fvwm/ewmh_names.c (EWMH_SetVisibleName):
 	(EWMH_WMIconName):
 	(EWMH_WMName):
 	Fixed a core dump and safety check related to not loaded font
