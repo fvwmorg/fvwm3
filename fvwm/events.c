@@ -200,6 +200,7 @@ static Bool test_map_request(
 	Bool rc;
 
 	cie_args = (check_if_event_args *)arg;
+        cie_args->ret_does_match = False;
 	if (event->type == MapRequest &&
 	    event->xmaprequest.window == cie_args->w)
 	{
@@ -210,7 +211,6 @@ static Bool test_map_request(
 	else
 	{
 		cie_args->ret_type = 0;
-		cie_args->ret_does_match = False;
 		rc = False;
 	}
 
@@ -225,6 +225,7 @@ static Bool test_resizing_event(
 	Bool rc;
 
 	cie_args = (check_if_event_args *)arg;
+        cie_args->ret_does_match = False;
 	if (event->xany.window != cie_args->w)
 	{
 		return False;
@@ -249,7 +250,6 @@ static Bool test_resizing_event(
 			rc = cie_args->do_return_true;
 		}
 	default:
-		cie_args->ret_does_match = False;
 		break;
 	}
 
@@ -792,11 +792,11 @@ void HandleConfigureRequest(void)
 	}
 
 	/*
-	 * According to the July 27, 1988 ICCCM draft, we should ignore size and
-	 * position fields in the WM_NORMAL_HINTS property when we map a window.
-	 * Instead, we'll read the current geometry.  Therefore, we should
-	 * respond to configuration requests for windows which have never been
-	 * mapped.
+	 * According to the July 27, 1988 ICCCM draft, we should ignore size
+         * and position fields in the WM_NORMAL_HINTS property when we map a
+         * window. Instead, we'll read the current geometry.  Therefore, we
+         * should respond to configuration requests for windows which have
+         * never been mapped.
 	 */
 	if (!Fw || cre->window == FW_W_ICON_TITLE(Fw) ||
 	    cre->window == FW_W_ICON_PIXMAP(Fw))
@@ -1031,8 +1031,9 @@ void HandleConfigureRequest(void)
 			}
 			else if (args.ret_type == PropertyNotify)
 			{
-				/* Van't merge events with a PropertyNotify in
-				 * between.  The event is still on the queue. */
+				/* Can't merge events with a PropertyNotify in
+				 * between.  The event is still on the queue.
+                                 */
 				break;
 			}
 			else if (args.ret_type != ConfigureRequest)

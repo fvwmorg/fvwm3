@@ -1,3 +1,9 @@
+2002-04-02  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* fvwm/events.c (test_map_request):
+	(test_resizing_event):
+	fixed endless loop in HandleConfigureRequest
+
 2002-03-31  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* fvwm/add_window.c (setup_style_and_decor):
@@ -12,8 +18,8 @@
 	tried to improve ConfigureRequest handling
 
 	* fvwm/events.c (HandlePropertyNotify):
-	recalculate window size when the base_width or base_height hint changes;
-	fixes some problems with xemacs
+	recalculate window size when the base_width or base_height hint
+	changes; fixes some problems with xemacs
 
 	* fvwm/virtual.c (map_window):
 	redraw decorations
