@@ -985,7 +985,6 @@ void setup_icon(FvwmWindow *tmp_win, window_style *pstyle)
       tmp_win->icon_bitmap_file = SGET_ICON_NAME(*pstyle);
     else
       tmp_win->icon_bitmap_file = NULL;
-if (tmp_win->icon_bitmap_file) fprintf(stderr,"iwh: using style icon '%s'\n", tmp_win->icon_bitmap_file);
   }
   else if((tmp_win->wmhints) && (tmp_win->wmhints->flags & IconPixmapHint))
   {
@@ -994,19 +993,16 @@ if (tmp_win->icon_bitmap_file) fprintf(stderr,"iwh: using style icon '%s'\n", tm
       tmp_win->icon_bitmap_file = SGET_ICON_NAME(*pstyle);
     else
       tmp_win->icon_bitmap_file = NULL;
-if (tmp_win->icon_bitmap_file) fprintf(stderr,"iph: using style icon '%s'\n", tmp_win->icon_bitmap_file);
   }
   else if(SHAS_ICON(&pstyle->flags))
   {
     /* an icon was specified */
     tmp_win->icon_bitmap_file = SGET_ICON_NAME(*pstyle);
-if (tmp_win->icon_bitmap_file) fprintf(stderr,"hi: using style icon '%s'\n", tmp_win->icon_bitmap_file);
   }
   else
   {
     /* use default icon */
     tmp_win->icon_bitmap_file = Scr.DefaultIcon;
-if (tmp_win->icon_bitmap_file) fprintf(stderr,"using default icon '%s'\n", tmp_win->icon_bitmap_file);
   }
 
   /* icon name */

@@ -111,6 +111,7 @@ void CreateIconWindow(FvwmWindow *tmp_win, int def_x, int def_y)
     icon_order[2] = 2;
     icon_order[3] = 3;
   }
+#if 0
   else if (ICON_OVERRIDE_MODE(tmp_win) == NO_ACTIVE_ICON_OVERRIDE)
   {
     /* use application provided icon window first, then fvwm provided icons
@@ -120,6 +121,7 @@ void CreateIconWindow(FvwmWindow *tmp_win, int def_x, int def_y)
     icon_order[2] = 1;
     icon_order[3] = 3;
   }
+#endif
   else
   {
     /* use application provided icon rather than fvwm provided icon */
@@ -138,27 +140,23 @@ void CreateIconWindow(FvwmWindow *tmp_win, int def_x, int def_y)
       /* First, check for a monochrome bitmap */
       if (tmp_win->icon_bitmap_file)
 	GetBitmapFile(tmp_win);
-if (tmp_win->icon_p_height || tmp_win->icon_p_width) fprintf(stderr,"  now using bitmap icon\n");
       break;
     case 1:
 #ifdef XPM
       /* Next, check for a color pixmap */
       if (tmp_win->icon_bitmap_file)
 	GetXPMFile(tmp_win);
-if (tmp_win->icon_p_height || tmp_win->icon_p_width) fprintf(stderr,"  now using xpm icon\n");
 #endif /* XPM */
       break;
     case 2:
       /* Next, See if the app supplies its own icon window */
       if (tmp_win->wmhints && (tmp_win->wmhints->flags & IconWindowHint))
 	GetIconWindow(tmp_win);
-if (tmp_win->icon_p_height || tmp_win->icon_p_width) fprintf(stderr,"  now using icon window hint\n");
       break;
     case 3:
       /* Finally, try to get icon bitmap from the application */
       if (tmp_win->wmhints && (tmp_win->wmhints->flags & IconPixmapHint))
 	GetIconBitmap(tmp_win);
-if (tmp_win->icon_p_height || tmp_win->icon_p_width) fprintf(stderr,"  now using icon pixmap hint\n");
       break;
     default:
       /* can't happen */

@@ -1,3 +1,9 @@
+2001-01-09  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* fvwm/icons.c (CreateIconWindow):
+	* fvwm/events.c (HandlePropertyNotify):
+	different definition of active icons
+
 2001-01-08  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* tests/purify/purify.fvwm2rc:

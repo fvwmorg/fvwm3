@@ -530,38 +530,36 @@ void HandlePropertyNotify(void)
 	(old_wmhints_flags       & IconPixmapHint))
     {
       has_icon_pixmap_hint_changed = True;
-fprintf(stderr,"iph changed\n");
     }
     if ((Tmp_win->wmhints->flags & IconWindowHint) ||
 	(old_wmhints_flags       & IconWindowHint))
     {
       has_icon_window_hint_changed = True;
-fprintf(stderr,"iwh changed\n");
     }
     if (has_icon_window_hint_changed || has_icon_pixmap_hint_changed)
     {
       if (ICON_OVERRIDE_MODE(Tmp_win) == ICON_OVERRIDE)
       {
 	has_icon_changed = False;
-fprintf(stderr,"requested icon overridden, icon not changed\n");
       }
       else if (ICON_OVERRIDE_MODE(Tmp_win) == NO_ACTIVE_ICON_OVERRIDE)
       {
+#if 1
+	has_icon_changed = True;
+#else
 	if (has_icon_window_hint_changed)
 	{
 	  has_icon_changed = True;
-fprintf(stderr,"using new active icon\n");
 	}
 	else
 	{
 	  has_icon_changed = False;
-fprintf(stderr,"requested active icon overridden, icon not changed\n");
 	}
+#endif
       }
       else
       {
 	has_icon_changed = True;
-fprintf(stderr,"icon changed\n");
       }
       if (has_icon_changed)
       {
@@ -576,7 +574,6 @@ fprintf(stderr,"icon changed\n");
 	{
 	  Tmp_win->icon_bitmap_file =
 	    (Scr.DefaultIcon) ? Scr.DefaultIcon : NULL;
-fprintf(stderr,"using default icon\n");
 	}
 	Tmp_win->iconPixmap = (Window)NULL;
       }
