@@ -2050,7 +2050,7 @@ static void MenuInteraction(
       {
 	DBUG("MenuInteraction","Moving the menu back over");
 	/* we have to see if we need menu to be moved */
-	animated_move_back(mrPopup, True);
+	animated_move_back(pmp->menu, True);
       }
 
     } /* if (mi) */

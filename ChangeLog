@@ -1,5 +1,8 @@
 2000-10-10  Dominik Vogt  <dominik.vogt@gmx.de>
 
+	* fvwm/menus.c (MenuInteraction):
+	fixed menu animation core dump
+
 	* fvwm/move_resize.c (moveLoop):
 	fixed activeplacement
 
