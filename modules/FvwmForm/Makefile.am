@@ -52,5 +52,5 @@ INCLUDES = -I$(top_srcdir) $(X_CFLAGS) $(xpm_CFLAGS)
 
 FormFvwmSetup.: FormFvwmSetup.in
 	rm -f $@
-	sed -e 's,xFVWM_CONFIGDIRx,$(FVWM_CONFIGDIR),' FormFvwmSetup.in > $@-t
+	sed -e 's,xFVWM_CONFIGDIRx,$(FVWM_CONFIGDIR),' $(top_srcdir)/modules/FvwmForm/FormFvwmSetup.in > $@-t
 	mv $@-t $@

@@ -1,3 +1,8 @@
+1999-09-07  Dan Espen  <dane@mk.telcordia.com>
+
+	* FvwmForm/Makefile.am (FormFvwmSetup.): This time remove $< in such a way
+	that makes in a parallel directory still work.
+
 1999-09-06  Hippo
 
 	* FvwmWinList/FvwmWinList.c: new config option *FvwmWinListNoIconAction
