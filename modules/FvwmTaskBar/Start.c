@@ -97,7 +97,6 @@ Bool StartButtonParseConfig(char *tline)
       /* declarin caption twice, ignore */
       break;
     }
-    First_Start_Button->buttonCaption = safemalloc(strlen(rest) * sizeof(char));
     CopyString(&(First_Start_Button->buttonCaption), rest);    
     break;
   case 1: /* StartMenu */
@@ -121,7 +120,6 @@ Bool StartButtonParseConfig(char *tline)
       /* declaring command twice, ignore */
       break;
     }
-    First_Start_Button->buttonCommand = safemalloc(strlen(rest) * sizeof(char));
     CopyString(&(First_Start_Button->buttonCommand), rest);   
     break;
   case 2: /* StartIcon */
@@ -145,7 +143,6 @@ Bool StartButtonParseConfig(char *tline)
       /* declaring icon twice, ignore */
       break;
     }
-    First_Start_Button->buttonIconFileName = safemalloc(strlen(rest) * sizeof(char));
     CopyString(&(First_Start_Button->buttonIconFileName), rest);   
    break;
   case 3: /* StartCommand */
@@ -169,7 +166,6 @@ Bool StartButtonParseConfig(char *tline)
       /* declaring icon twice, ignore */
       break;
     }
-    First_Start_Button->buttonStartCommand = safemalloc(strlen(rest) * sizeof(char));
     CopyString(&(First_Start_Button->buttonStartCommand), rest);   
     break;
   case 4:
@@ -197,7 +193,6 @@ Bool StartButtonParseConfig(char *tline)
 	tokens[j+1] = tokens[k] + ((sizeof(char))*5);
 	while(*(tokens[j+1])==' ')
 	  tokens[j+1]+=sizeof(char);
-	Last_Start_Button->buttonCaption = (char *) safemalloc(sizeof(char) * (strlen(tokens[j+1])));
         CopyString(&(Last_Start_Button->buttonCaption), tokens[j+1]);
 	titleRecorded=1;
       }	
@@ -206,7 +201,6 @@ Bool StartButtonParseConfig(char *tline)
 	tokens[j+1] = tokens[k] + ((sizeof(char))*4);
 	while(*(tokens[j+1])==' ')
 	  tokens[j+1]+=sizeof(char);
-	Last_Start_Button->buttonIconFileName = (char *) safemalloc(sizeof(char) * (strlen(tokens[j+1])));
 	CopyString(&(Last_Start_Button->buttonIconFileName),tokens[j+1] );
 	iconRecorded = 1;
       }
@@ -215,7 +209,6 @@ Bool StartButtonParseConfig(char *tline)
 	tokens[j+1] = tokens[k] + ((sizeof(char))*6);
 	while(*(tokens[j+1])==' ')
 	  tokens[j+1]+=sizeof(char);
-	Last_Start_Button->buttonCommand = (char *) safemalloc(sizeof(char) * (strlen(tokens[j+1])));
 	CopyString(&(Last_Start_Button->buttonCommand), tokens[j+1]);
 	actionRecorded = 1;
       }
