@@ -51,7 +51,7 @@
 #include <signal.h>
 #include <ctype.h>
 
-#include <sys/time.h>
+#include "ftime.h"
 
 #include <X11/Xlib.h>
 #include <X11/Xutil.h>

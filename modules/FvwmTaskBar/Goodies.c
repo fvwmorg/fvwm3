@@ -21,8 +21,7 @@
 #include <string.h>
 #include <fcntl.h>
 #include <pwd.h>
-#include <time.h>
-#include <sys/time.h>
+#include "libs/ftime.h"
 #include <sys/stat.h>
 #include <sys/types.h>
 #include <X11/Xlib.h>

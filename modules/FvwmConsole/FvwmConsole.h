@@ -30,7 +30,7 @@
 #include <stdio.h>
 #include <sys/stat.h>
 #include <fcntl.h>
-#include <sys/time.h>
+#include "time.h"
 #include <sys/socket.h>
 #include <sys/un.h>
 #include <signal.h>

@@ -18,7 +18,7 @@
 #include <stdlib.h>
 
 #include <sys/types.h>
-#include <sys/time.h>
+#include "ftime.h"
 
 #ifdef HAVE_SYS_SELECT
 #include <sys/select.h>

@@ -28,7 +28,7 @@
 #include <stdlib.h>
 #include <ctype.h>
 #include <string.h>
-#include <sys/time.h>
+#include "libs/ftime.h"
 #include <sys/types.h>
 #include <unistd.h>
 #include <signal.h>

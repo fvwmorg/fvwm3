@@ -13,7 +13,7 @@
 #include <sys/stat.h>
 #include <sys/types.h>
 #include <sys/fcntl.h>
-#include <sys/time.h>
+#include "libs/ftime.h"
 #include <signal.h>
 #include <unistd.h>
 #define AUDIO_DEVICE            "/dev/audio"

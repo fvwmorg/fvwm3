@@ -51,7 +51,7 @@
 #include <fcntl.h>
 #include <string.h>
 #include <sys/wait.h>
-#include <sys/time.h>
+#include "libs/ftime.h"
 #include <sys/stat.h>
 #include <stdarg.h>
 #include <locale.h>

@@ -43,7 +43,7 @@
 #include <errno.h>
 #include <string.h>
 #include <sys/wait.h>
-#include <sys/time.h>
+#include "libs/ftime.h"
 
 #include <unistd.h>
 #include <ctype.h>

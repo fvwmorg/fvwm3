@@ -15,8 +15,7 @@
 
 #include "types.h"
 #include "libs/fvwmsignal.h"
-#include <time.h>
-#include <sys/time.h>
+#include "libs/ftime.h"
 #ifdef HAVE_GETPWUID
 #  include <pwd.h>
 #endif

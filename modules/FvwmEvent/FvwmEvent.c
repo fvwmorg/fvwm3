@@ -56,8 +56,7 @@
 #include <stdio.h>
 #include <signal.h>
 #include <sys/wait.h>
-#include <sys/time.h>
-#include <time.h>
+#include "libs/ftime.h"
 #include <ctype.h>
 
 /* ---------------------------- local definitions --------------------------- */

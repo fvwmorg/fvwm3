@@ -27,7 +27,7 @@
 #include <signal.h>
 #include <stdlib.h>                     /* for getenv */
 
-#include <sys/time.h>
+#include "libs/ftime.h"
 #include <fcntl.h>
 
 #include <X11/Xlib.h>

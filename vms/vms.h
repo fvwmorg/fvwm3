@@ -4,7 +4,7 @@
     Date   : 5-JAN-1999
     Action : specials functions and constants for running Fvwm with OpenVms.
 ----------------------------------------------------------------------------------------------------------------------------------*/
-#include <time.h>
+#include "ftime.h"
 
 #ifndef DBG
   #define DBG  -1

@@ -29,11 +29,10 @@
 
 #include <unistd.h>
 #include <fcntl.h>
-#include <sys/time.h>
+#include "libs/ftime.h"
 
 #define XK_MISCELLANY
 #include <sys/types.h>
-#include <sys/time.h>
 
 #if HAVE_SYS_BSDTYPES_H
 #include <sys/bsdtypes.h> /* Saul */

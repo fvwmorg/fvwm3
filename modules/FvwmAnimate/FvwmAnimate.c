@@ -51,9 +51,9 @@
 #include <string.h>
 #include <ctype.h>
 #include <fcntl.h>                      /* for O_WRONLY */
-#include <sys/times.h>                  /* For timing things time() */
-#include <time.h>                       /* For time() */
-#include <limits.h>                     /* For time() */
+#include <sys/times.h>
+#include "libs/ftime.h"
+#include <limits.h>
 #include "libs/fvwmsignal.h"
 #include "libs/Module.h"
 #include "libs/fvwmlib.h"

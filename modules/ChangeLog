@@ -1,5 +1,35 @@
 2002-08-05  Dominik Vogt  <dominik.vogt@gmx.de>
 
+	* FvwmWinList/FvwmWinList.c:
+	* FvwmWharf/FvwmWharf.c:
+	* FvwmWharf/ASSound/ASSound.c:
+	* FvwmTaskBar/Goodies.c:
+	* FvwmTaskBar/FvwmTaskBar.c:
+	* FvwmScroll/GrabWindow.c:
+	* FvwmScript/types.h:
+	* FvwmScript/Widgets/PopupMenu.c:
+	* FvwmScript/Instructions.c:
+	* FvwmSaveDesk/FvwmSaveDesk.c:
+	* FvwmSave/FvwmSave.c:
+	* FvwmRearrange/FvwmRearrange.c:
+	* FvwmPager/FvwmPager.c:
+	* FvwmM4/FvwmM4.c:
+	* FvwmIdent/FvwmIdent.c:
+	* FvwmIconMan/FvwmIconMan.h:
+	* FvwmIconBox/FvwmIconBox.c:
+	* FvwmForm/FvwmForm.c:
+	* FvwmEvent/FvwmEvent.c:
+	* FvwmDragWell/fvwmDragWell.c:
+	* FvwmDebug.c:
+	* FvwmCpp/FvwmCpp.c:
+	* FvwmConsole/FvwmConsole.h:
+	* FvwmCommand/FvwmCommand.h:
+	* FvwmButtons/FvwmButtons.c:
+	* FvwmBanner/FvwmBanner.c:
+	* FvwmAuto/FvwmAuto.c:
+	* FvwmAnimate/FvwmAnimate.c:
+	use ftime.h instead of time.h and sys/time.h
+
 	* FvwmDebug/FvwmDebug.c (list_configure):
 	* FvwmCommand/FvwmCommand.c (list_configure):
 	removed bsolete focus policy output

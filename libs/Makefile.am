@@ -16,7 +16,7 @@ libfvwm_a_SOURCES = ClientMsg.h Colorset.h Grab.h Module.h Parse.h Picture.h \
 	PictureImageLoader.c PictureGraphics.c PictureUtils.c FRender.c \
 	FRenderInit.c XError.c fvwmsignal.c Strings.c wild.c safemalloc.c \
 	Pointer.c debug.c Grab.c ClientMsg.c fvwmrect.c Cursor.c \
-	setpgrp.c setpgrp.h queue.c queue.h gravity.c gravity.h
+	setpgrp.c setpgrp.h queue.c queue.h gravity.c gravity.h ftime.h
 
 libfvwm_a_LIBADD = @LIBOBJS@ @ALLOCA@
 

@@ -31,7 +31,7 @@
 #include <stdio.h>
 #include <stdarg.h>
 #include <errno.h>
-#include <time.h>
+#include "libs/ftime.h"
 
 #ifdef HAVE_FCNTL_H
 #include <fcntl.h>

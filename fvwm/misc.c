@@ -28,12 +28,7 @@
 
 #include <stdio.h>
 #include <stdarg.h>
-#include <time.h>
-
-/* To add timing info to debug output, #define this: */
-#ifdef FVWM_DEBUG_TIME
-#include <sys/times.h>
-#endif
+#include "libs/ftime.h"
 
 #include "libs/fvwmlib.h"
 #include "fvwm.h"

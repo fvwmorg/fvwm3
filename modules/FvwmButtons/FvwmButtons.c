@@ -38,7 +38,7 @@
 #include <signal.h>
 #include <fcntl.h>
 #include <sys/wait.h>
-#include <sys/time.h>
+#include "libs/ftime.h"
 #include <sys/stat.h>
 
 #include <X11/keysym.h>

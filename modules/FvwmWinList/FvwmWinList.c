@@ -49,7 +49,7 @@
 #include <stdio.h>
 #include <signal.h>
 #include <fcntl.h>
-#include <sys/time.h>
+#include "libs/ftime.h"
 
 #ifdef HAVE_SYS_BSDTYPES_H
 #include <sys/bsdtypes.h> /* Saul */

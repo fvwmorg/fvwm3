@@ -28,7 +28,7 @@
 #include <signal.h>
 #include <fcntl.h>
 #include <sys/wait.h>
-#include <sys/time.h>
+#include "libs/ftime.h"
 #include <ctype.h>
 
 #ifdef HAVE_SYS_BSDTYPES_H

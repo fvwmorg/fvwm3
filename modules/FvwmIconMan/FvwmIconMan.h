@@ -18,7 +18,7 @@
 #include <assert.h>
 #include <stdio.h>
 
-#include <sys/time.h>
+#include "libs/ftime.h"
 
 #include <X11/Xlib.h>
 #include <X11/Intrinsic.h>

@@ -21,7 +21,7 @@
 #include <sys/stat.h>
 #include <fcntl.h>
 #include <sys/types.h>
-#include <sys/time.h>
+#include "libs/ftime.h"
 #include <sys/wait.h>
 
 #if HAVE_GETOPT_H

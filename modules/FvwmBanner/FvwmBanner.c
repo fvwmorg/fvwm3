@@ -30,7 +30,7 @@
 #include <signal.h>
 #include <fcntl.h>
 #include <sys/wait.h>
-#include <sys/time.h>
+#include "libs/ftime.h"
 
 #if HAVE_SYS_SELECT_H
 #include <sys/select.h>

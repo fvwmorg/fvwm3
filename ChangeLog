@@ -1,5 +1,17 @@
 2002-08-05  Dominik Vogt  <dominik.vogt@gmx.de>
 
+	* vms/vms.c:
+	* libs/fvwmsignal.h:
+	* libs/Picture.c:
+	* fvwm/ewmh_intern.h:
+	* fvwm/events.c:
+	* fvwm/module_interface.c:
+	* fvwm/misc.c:
+	use ftime.h
+
+	* libs/ftime.h:
+	new file to encapsulate time.h and sys/time.h inclusion
+
 	* fvwm/stack.c:
 	re-indented
 	(mark_transient_subtree):

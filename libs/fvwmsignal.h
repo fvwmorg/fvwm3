@@ -40,7 +40,7 @@
 #endif
 
 #include <signal.h>
-#include <sys/time.h>
+#include "ftime.h"
 #if HAVE_SYS_SELECT_H
 #  include <sys/select.h>
 #endif

@@ -16,9 +16,9 @@
 #include "config.h"
 
 #include <stdio.h>
-#include <sys/time.h>
 #include <signal.h>
 #include <stdarg.h>
+#include "ftime.h"
 
 #include "libs/fvwmlib.h"
 #include <libs/gravity.h>
