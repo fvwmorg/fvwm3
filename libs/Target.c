@@ -186,7 +186,7 @@ void fvwmlib_get_target_window(
     fprintf(stderr,"%s: Couldn't grab the cursor!\n",MyName);
     exit(1);
   }
-  XGrabKeyboard(dpy, Root, True, GrabModeAsync, GrabModeAsync, CurrentTime);
+  MyXGrabKeyboard(dpy);
 
   while (!finished && !canceled)
   {
@@ -224,7 +224,7 @@ void fvwmlib_get_target_window(
     }
   }
 
-  XUngrabKeyboard(dpy, CurrentTime);
+  MyXUngrabKeyboard(dpy);
   XUngrabPointer(dpy, CurrentTime);
   XSync(dpy,0);
   if (canceled)

@@ -1,3 +1,23 @@
+2001-04-20  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* libs/Target.c (fvwmlib_get_target_window):
+	* libs/Grab.c (MyXGrabKeyboard):
+	(MyXUngrabKeyboard):
+	* fvwm/placement.c (PlaceWindow):
+	(PlaceWindow):
+	* fvwm/move_resize.c (AnimatedMoveAnyWindow):
+	(InteractiveMove):
+	(CMD_Resize):
+	(InteractiveMove):
+	(AnimatedMoveAnyWindow):
+	(CMD_Resize):
+	* fvwm/functions.c (DeferExecution):
+	* fvwm/builtins.c (CMD_StrokeFunc):
+	* fvwm/menus.c (do_menu):
+	new functions MyXGrabKeyboard and MyXUngrabKeyboard to handle multiple
+	keyborad grabs
+	fixes focus lost during menu animation
+
 2001-04-19  Mikhael Goikhman  <migo@homemail.com>
 
 	* fvwm/fvwm2.1:

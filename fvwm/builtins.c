@@ -3135,8 +3135,7 @@ void CMD_StrokeFunc(F_CMD_ARGS)
       XAutoRepeatOff(dpy);
       restor_repeat = True;
     }
-    XGrabKeyboard(dpy, Scr.Root, False, GrabModeAsync, GrabModeAsync,
-		  CurrentTime);
+    MyXGrabKeyboard(dpy);
   }
 
   /* be ready to get a stroke sequence */
@@ -3239,7 +3238,7 @@ void CMD_StrokeFunc(F_CMD_ARGS)
     free(y);
   }
   if (start_event_type == KeyPress && finish_on_release)
-    XUngrabKeyboard(dpy, CurrentTime);
+    MyXUngrabKeyboard(dpy);
   UngrabEm(GRAB_NORMAL);
 
   if (restor_repeat)

@@ -21,6 +21,7 @@
 
 /* Made into global for module interface.  See module.c. */
 int myxgrabcount = 0;
+static unsigned int keyboard_grab_count = 0;
 
 void MyXGrabServer(Display *disp)
 {
@@ -46,3 +47,26 @@ void MyXUngrabServer(Display *disp)
   XSync(disp, 0);
 }
 
+void MyXGrabKeyboard(Display *dpy)
+{
+  keyboard_grab_count++;
+  XGrabKeyboard(
+    dpy, RootWindow(dpy, DefaultScreen(dpy)), False, GrabModeAsync,
+    GrabModeAsync, CurrentTime);
+
+  return;
+}
+
+void MyXUngrabKeyboard(Display *dpy)
+{
+  if (keyboard_grab_count > 0)
+  {
+    keyboard_grab_count--;
+  }
+  if (keyboard_grab_count == 0)
+  {
+    XUngrabKeyboard(dpy, CurrentTime);
+  }
+
+  return;
+}

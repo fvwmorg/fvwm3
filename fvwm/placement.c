@@ -749,8 +749,7 @@ Bool PlaceWindow(
 	  MyXUngrabServer(dpy);
 	  return False;
 	}
-	XGrabKeyboard(
-	  dpy, Scr.Root, False, GrabModeAsync, GrabModeAsync, CurrentTime);
+	MyXGrabKeyboard(dpy);
 	DragWidth = tmp_win->frame_g.width;
 	DragHeight = tmp_win->frame_g.height;
 
@@ -766,7 +765,7 @@ Bool PlaceWindow(
 	  rc = False;
 	}
 	XUnmapWindow(dpy, Scr.SizeWindow);
-	XUngrabKeyboard(dpy, CurrentTime);
+	MyXUngrabKeyboard(dpy);
 	MyXUngrabServer(dpy);
 	UngrabEm(GRAB_NORMAL);
       }

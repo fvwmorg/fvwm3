@@ -491,8 +491,7 @@ static void InteractiveMove(
     MyXUngrabServer(dpy);
     return;
   }
-  XGrabKeyboard(
-    dpy, Scr.Root, False, GrabModeAsync, GrabModeAsync, CurrentTime);
+  MyXGrabKeyboard(dpy);
   if (do_start_at_pointer)
   {
     origDragX = DragX;
@@ -545,7 +544,7 @@ static void InteractiveMove(
     Scr.flags.is_wire_frame_displayed = False;
     MyXUngrabServer(dpy);
   }
-  XUngrabKeyboard(dpy, CurrentTime);
+  MyXUngrabKeyboard(dpy);
 
   return;
 }
@@ -596,8 +595,7 @@ static void AnimatedMoveAnyWindow(
     return;
 
   /* Needed for aborting */
-  XGrabKeyboard(dpy, Scr.Root, False, GrabModeAsync, GrabModeAsync,
-		CurrentTime);
+  MyXGrabKeyboard(dpy);
   do
   {
     currentX = startX + deltaX * (*ppctMovement);
@@ -660,7 +658,7 @@ static void AnimatedMoveAnyWindow(
   }
   while
     (*ppctMovement != 1.0 && ppctMovement++);
-  XUngrabKeyboard(dpy, CurrentTime);
+  MyXUngrabKeyboard(dpy);
   XFlush(dpy);
   if (tmp_win)
     GNOME_SetWinArea(tmp_win);
@@ -1983,8 +1981,7 @@ void CMD_Resize(F_CMD_ARGS)
   {
     Scr.flags.is_wire_frame_displayed = True;
   }
-  XGrabKeyboard(
-    dpy, Scr.Root, False, GrabModeAsync, GrabModeAsync, CurrentTime);
+  MyXGrabKeyboard(dpy);
 
   *orig = *drag;
   start_g = *drag;
@@ -2358,7 +2355,7 @@ void CMD_Resize(F_CMD_ARGS)
     Scr.flags.is_wire_frame_displayed = False;
     MyXUngrabServer(dpy);
   }
-  XUngrabKeyboard(dpy, CurrentTime);
+  MyXUngrabKeyboard(dpy);
   xmotion = 0;
   ymotion = 0;
   WaitForButtonsUp(True);

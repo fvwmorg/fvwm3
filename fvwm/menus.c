@@ -768,8 +768,7 @@ void do_menu(MenuParameters *pmp, MenuReturn *pmret)
   if(!pmp->flags.is_submenu && indirect_depth == 0)
   {
     /* we need to grab the keyboard so we are sure no key presses are lost */
-    XGrabKeyboard(
-      dpy, Scr.Root, False, GrabModeAsync, GrabModeAsync, CurrentTime);
+    MyXGrabKeyboard(dpy);
   }
   if (!fFailedPopup)
   {
@@ -847,7 +846,7 @@ void do_menu(MenuParameters *pmp, MenuReturn *pmret)
   if(!pmp->flags.is_submenu && indirect_depth == 0)
   {
     /* release the keyboard when the last menu closes */
-    XUngrabKeyboard(dpy, CurrentTime);
+    MyXUngrabKeyboard(dpy);
   }
 
   return;
