@@ -1069,8 +1069,54 @@ void Loop(void)
 	    change_colorset(i);
 	  while(NextButton(&ub,&b,&button,0))
 	    MakeButton(b);
+	  XClearWindow(Dpy, MyWindow);
 	  RedrawWindow(NULL);
 	}
+	if (Event.xconfigure.window == MyWindow && Event.xconfigure.send_event &&
+	    (Event.xconfigure.x != UberButton->x ||
+	     Event.xconfigure.y != UberButton->y))
+	{
+	  UberButton->x = Event.xconfigure.x;
+	  UberButton->y = Event.xconfigure.y;
+	  if ((UberButton->c->flags & b_Colorset) &&
+	      Colorset[UberButton->c->colorset].pixmap == ParentRelative)
+	  {
+	    XClearWindow(Dpy, MyWindow);
+	    RedrawWindow(NULL);
+	    /* Handle the swallowed window */
+	    ub = UberButton;button=-1;
+	    while(NextButton(&ub,&b,&button,0))
+	    {
+	      if (buttonSwallowCount(b) == 3 && (b->flags & b_Swallow) &&
+		  ((b->flags & b_Colorset) || (b->flags & b_ColorsetParent)) &&
+		  Colorset[buttonColorset(b)].pixmap == ParentRelative) 
+	      {
+		int bx,by,bpx,bpy,bf;
+
+		/* should handle 2 cases: may cause problems with complex
+		 * functions, but this may be considered as a feature if
+		 * we document the rules used */
+		if (b->spawn != NULL &&
+		    (strncasecmp(b->spawn,"module",6) == 0 ||
+		     strncasecmp(b->spawn,"fvwm",4) == 0))
+		{
+		  /* it is a module (or a complex fct) */
+		  buttonInfo(b,&bx,&by,&bpx,&bpy,&bf);
+		  Event.xconfigure.x = UberButton->x + bx;
+		  Event.xconfigure.y = UberButton->y + by;
+		  Event.xconfigure.window = SwallowedWindow(b);  
+		  XSendEvent(
+		    Dpy, SwallowedWindow(b), False, NoEventMask, &Event);
+		}
+		else
+		{
+		  /* it is an application (or a complex fct) */
+		  change_swallowed_window_colorset(b, True);
+		}
+	      } /* swallowed */
+	    } /* while */
+	  } /* ParentRelative */
+	} /* moved */
       }
       break;
 

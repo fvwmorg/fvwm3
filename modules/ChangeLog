@@ -1,3 +1,28 @@
+2002-01-08  olicha  <olivier.chapuis@free.fr>
+
+	* FvwmDragWell/fvwmDragWell.c (veryLongLoop):
+	* FvwmDragWell/fvwmDragWell.h:
+	Fixed transparent redraw
+
+	* FvwmIconBox/FvwmIconBox.c (Loop):
+	(CreateWindow):
+	(change_colorset):
+	Implemented transparency
+
+	* FvwmForm/FvwmForm.h:
+	* FvwmForm/FvwmForm.c:
+	* FvwmForm/ReadXServer.c (ReadXServer):
+	* FvwmScript/FvwmScript.c (OpenWindow):
+	(ReadXServer):
+	Fixed redraw of transparent scripts and forms
+
+	* FvwmIconMan/x.c (xevent_loop):
+	Fixed redraw of a transparent swallowed IconMan
+
+	* FvwmButtons/FvwmButtons.c (Loop):
+	Fixed redraw of a transparent FvwmButtons. Take in acount swallowed
+	window and try to distinguish fvwm module and x applications
+
 2002-01-08  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* FvwmWharf/FvwmWharf.c (ParseOptions):

@@ -23,7 +23,7 @@
 #include <dirent.h>
 
 #define MW_EVENTS (ExposureMask | ButtonReleaseMask | ButtonPressMask | \
-		   ButtonMotionMask)
+		   ButtonMotionMask | StructureNotifyMask)
 
 
 #define MODULE_TO_FVWM       0   /*fd[] entries*/

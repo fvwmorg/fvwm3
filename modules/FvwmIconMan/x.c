@@ -207,6 +207,11 @@ void xevent_loop (void)
     }
 
     man = find_windows_manager (theEvent.xany.window);
+    if (!man && theEvent.type == ConfigureNotify)
+    {
+      /* swallowed icon man */
+      man = find_windows_manager (theEvent.xconfigure.window);
+    }
     if (!man) {
       ConsoleDebug (X11, "Event doesn't belong to a manager\n");
       continue;
@@ -309,7 +314,7 @@ void xevent_loop (void)
 	  moved = True;
       }
       theEvent = saveEvent;
-
+	      
       if (man->geometry.dir & GROW_FIXED)
       {
 	man->geometry.rows =
@@ -350,6 +355,8 @@ void xevent_loop (void)
       /* must refresh transparent windows when moved */
       if (moved && man->pixmap[DEFAULT] == ParentRelative)
       {
+	man->geometry.x = theEvent.xconfigure.x;
+	man->geometry.y = theEvent.xconfigure.y;
         XClearArea(theDisplay, man->theWindow, 0, 0, 0, 0, True);
       }
 

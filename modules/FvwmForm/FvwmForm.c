@@ -87,8 +87,8 @@ int Channel[2];
    . copied into items during parse
    . displayed in the customization dialog
    */
-static int colorset = -1;
-static int itemcolorset = 0;
+int colorset = -1;
+int itemcolorset = 0;
 
 /* prototypes */
 static void AssignDrawTable(Item *);

@@ -227,6 +227,8 @@ enum { f_text, f_input, f_button };
 extern char *font_names[3];
 extern char *screen_background_color;
 
+extern int colorset;
+extern int itemcolorset;
 
 /* From FvwmAnimate start */
 extern char *MyName;

@@ -275,6 +275,10 @@ void veryLongLoop()
 	case Expose:
 	  drawDragWellButton(&dragBut); /*draws the drag icon*/
 	  break;
+	case ConfigureNotify:
+	  if (xg.colorset >= 0 && Colorset[xg.colorset].pixmap == ParentRelative)
+	    XClearArea(xg.dpy, xg.win, 0,0,0,0, True);
+	  break;
 	}
     } else if (eventType==FOUND_FVWM_MESSAGE) { /*we have a fvwm2 message */
       /* two cases, one where item is a file, other where we have a subdir*/

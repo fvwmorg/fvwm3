@@ -410,7 +410,7 @@ void OpenWindow (void)
   /* Choix des evts recus par la fenetre */
   XSelectInput(dpy,x11base->win, KeyPressMask|ButtonPressMask|
 	       ExposureMask|ButtonReleaseMask|EnterWindowMask|LeaveWindowMask|
-	       ButtonMotionMask);
+	       ButtonMotionMask|StructureNotifyMask);
   XSelectInput(dpy, x11base->root, PropertyChangeMask);
 
   /* Specification des parametres utilises par le gestionnaire de fenetre */
@@ -773,6 +773,34 @@ void ReadXServer (void)
 	}
       }
       break;
+    case ConfigureNotify:
+    {
+      Bool moved = False;
+
+      moved = event.xconfigure.send_event;
+      while (XCheckTypedEvent(dpy, ConfigureNotify, &event))
+      {
+	/* check for movement */
+	if (event.xconfigure.send_event)
+	  moved = True;
+      }
+      if (moved && x11base->colorset > 0 &&
+	  Colorset[x11base->colorset].pixmap == ParentRelative)
+      {
+	XClearArea(dpy, x11base->win, 0, 0, 0, 0, True);
+	for (i=0; i<nbobj; i++)
+	{
+	  if (Rectangle != tabxobj[i]->TypeWidget &&
+	      SwallowExec != tabxobj[i]->TypeWidget && 
+	      tabxobj[i]->colorset > 0 &&
+	      Colorset[tabxobj[i]->colorset].pixmap == ParentRelative)
+	  {
+	    XClearArea(dpy, tabxobj[i]->win, 0, 0, 0, 0, True);
+	  }
+	}
+      }
+    }
+    break;
     case KeyPress:
       /* Touche presse dans un objet / Key press in an object */
       isTab = 0;

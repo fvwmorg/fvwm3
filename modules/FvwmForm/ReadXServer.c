@@ -41,6 +41,7 @@
 
 #include "config.h"
 #include "libs/fvwmlib.h"
+#include "libs/Colorset.h"
 
 #include <stdio.h>
 #include <ctype.h>
@@ -79,7 +80,26 @@ void ReadXServer ()
     if (event.xany.window == CF.frame) {
       switch (event.type) {
       case ConfigureNotify:             /* has window be reconfigured */
-        ResizeFrame();                  /* adjust yourself... */
+	if (colorset > -1 && Colorset[colorset].pixmap == ParentRelative && 
+	    event.xconfigure.send_event)
+	{
+	  /* window has moved redraw the background if it is transparent */
+	  XClearArea(dpy, CF.frame, 0,0,0,0, True);
+	  if (itemcolorset > -1 &&
+	      Colorset[itemcolorset].pixmap == ParentRelative)
+	  {
+	    for (item = root_item_ptr; item != 0; item = item->header.next)
+	    {
+	      if (item->header.win != None)
+		XClearArea(dpy, item->header.win, 0,0,0,0, True);
+	    }
+	  }
+	}
+	else
+	{
+	  /* adjust yourself... */
+	  ResizeFrame();
+	}
         break;
 #if 0
       case SelectionClear:

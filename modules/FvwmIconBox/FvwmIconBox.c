@@ -373,6 +373,13 @@ void Loop(void)
 	      break;
 
 	    case ConfigureNotify:
+	      if (Event.xconfigure.window == icon_win &&
+		  (colorset < 0 ||
+		   Colorset[colorset].pixmap != ParentRelative))
+	      {
+		/* needs this event only for transparency */
+		break;
+	      }
 	      if (!XGetGeometry(dpy,main_win,&root,&x,&y,
 				(unsigned int *)&tw,(unsigned int *)&th,
 				(unsigned int *)&border_width,
@@ -421,6 +428,14 @@ void Loop(void)
 		  XClearWindow(dpy,main_win);
 		  RedrawWindow();
 		}
+	      }
+	      else if (ready &&
+		       (Event.xconfigure.send_event ||
+			Event.xconfigure.window == icon_win) && colorset >= 0 &&
+		       Colorset[colorset].pixmap == ParentRelative)
+	      {
+		/* moved */
+		XClearArea(dpy, icon_win, 0,0,0,0, True);
 	      }
 	      break;
 	    case KeyPress:
@@ -1168,6 +1183,8 @@ void CreateWindow(void)
 				 icon_win_width,
 				 icon_win_height,
 				 0,fore_pix,back_pix);
+  /* needed for transparency */
+  XSelectInput(dpy,icon_win,StructureNotifyMask);
 
   gcm = GCForeground|GCBackground;
   gcv.foreground = hilite_pix;
@@ -1193,6 +1210,9 @@ void CreateWindow(void)
   /* icon_win's background */
   if (colorset >= 0) {
     SetWindowBackground(dpy, icon_win, icon_win_width, icon_win_height,
+                        &Colorset[(colorset)], Pdepth, NormalGC,
+			True);
+    SetWindowBackground(dpy, holder_win, mysizehints.width, mysizehints.height,
                         &Colorset[(colorset)], Pdepth, NormalGC,
 			True);
     SetWindowBackground(dpy, main_win, mysizehints.width, mysizehints.height,
@@ -1299,7 +1319,8 @@ static void change_colorset(int color)
     SetWindowBackground(
       dpy, icon_win, icon_win_width, icon_win_height, &Colorset[(colorset)],
       Pdepth, NormalGC, True);
-    XSetWindowBackground(dpy, holder_win, back_pix);
+    SetWindowBackground(dpy, holder_win, main_width - h_margin,
+      main_height - v_margin, &Colorset[(colorset)], Pdepth, NormalGC, True);
     XSetWindowBackground(dpy, h_scroll_bar, back_pix);
     XSetWindowBackground(dpy, v_scroll_bar, back_pix);
     XSetWindowBackground(dpy, l_button, back_pix);
