@@ -2814,7 +2814,7 @@ void CaptureAllWindows(Bool is_recapture)
 	;
       if (t)
       {
-	SetFocusWindow(t, 0);
+	SetFocusWindow(t, False, True);
       }
     }
   }

@@ -801,7 +801,7 @@ ICON_DBG((stderr,"hpn: icon changed '%s'\n", Tmp_win->name));
 	if (OnThisPage)
 	{
 	  set_focus_window(NULL);
-	  SetFocusWindow(Tmp_win, 0);
+	  SetFocusWindow(Tmp_win, False, True);
 	}
       }
     }
@@ -1146,7 +1146,7 @@ void HandleMapRequestKeepRaised(Window KeepRaised, FvwmWindow *ReuseWin)
 	  do_grab_focus = False;
 	if (do_grab_focus)
 	{
-	  SetFocusWindow(Tmp_win, 1);
+	  SetFocusWindow(Tmp_win, True, True);
 	}
 	else
 	{
@@ -1320,7 +1320,7 @@ void HandleMapNotify(void)
   {
     if (is_on_this_page)
     {
-      SetFocusWindow(Tmp_win, 1);
+      SetFocusWindow(Tmp_win, True, True);
     }
   }
   if((!(HAS_BORDER(Tmp_win)|HAS_TITLE(Tmp_win)))&&(Tmp_win->boundary_width <2))
@@ -1595,14 +1595,14 @@ void HandleButtonPress(void)
     /* It might seem odd to try to focus a window that never is given focus by
      * fvwm, but the window might want to take focus itself, and SetFocus will
      * tell it to do so in this case instead of giving it focus. */
-    SetFocusWindow(Tmp_win, 1);
+    SetFocusWindow(Tmp_win, True, True);
   }
   /* click to focus stuff goes here */
   if((Tmp_win)&&(HAS_CLICK_FOCUS(Tmp_win))&&(Tmp_win != Scr.Ungrabbed))
   {
     if (Tmp_win != get_focus_window())
     {
-      SetFocusWindow(Tmp_win, 1);
+      SetFocusWindow(Tmp_win, True, True);
     }
     /* RBW - 12/09/.1999- I'm not sure we need to check both cases, but
        I'll leave this as is for now.  */
@@ -2019,7 +2019,7 @@ void HandleEnterNotify(void)
       if (lf && lf != &Scr.FvwmRoot &&
 	  (HAS_SLOPPY_FOCUS(lf) || HAS_CLICK_FOCUS(lf)))
       {
-	SetFocusWindow(lf, 1);
+	SetFocusWindow(lf, True, True);
       }
       else if (lf != &Scr.FvwmRoot)
       {
@@ -2033,7 +2033,7 @@ void HandleEnterNotify(void)
     }
     else if (!(sf = get_focus_window()) || HAS_MOUSE_FOCUS(sf))
     {
-      DeleteFocus(1);
+      DeleteFocus(True, True);
     }
     if (Scr.ColormapFocus == COLORMAP_FOLLOWS_MOUSE)
     {
@@ -2074,11 +2074,11 @@ void HandleEnterNotify(void)
   sf = get_focus_window();
   if (sf && Tmp_win != sf && HAS_MOUSE_FOCUS(sf))
   {
-    DeleteFocus(1);
+    DeleteFocus(True, True);
   }
   if (HAS_MOUSE_FOCUS(Tmp_win) || HAS_SLOPPY_FOCUS(Tmp_win))
   {
-    SetFocusWindow(Tmp_win, 1);
+    SetFocusWindow(Tmp_win, True, True);
   }
   else if (HAS_NEVER_FOCUS(Tmp_win))
   {
@@ -2189,7 +2189,7 @@ void HandleLeaveNotify(void)
 	set_last_screen_focus_window(sf);
 	if (sf != NULL)
 	{
-	  DeleteFocus(1);
+	  DeleteFocus(True, True);
 	}
 	if (Scr.Hilite != NULL)
 	  DrawDecorations(Scr.Hilite, DRAW_ALL, False, True, None, CLEAR_ALL);

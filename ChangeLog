@@ -1,3 +1,29 @@
+2002-01-27  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* fvwm/update.c (flush_window_updates):
+	* fvwm/virtual.c (UnmapDesk):
+	(MapDesk):
+	(do_move_window_to_desk):
+	* fvwm/icons.c (DeIconify):
+	(DeIconify):
+	* fvwm/events.c (HandlePropertyNotify):
+	(HandleMapRequestKeepRaised):
+	(HandleMapNotify):
+	(HandleButtonPress):
+	(HandleEnterNotify):
+	(HandleLeaveNotify):
+	* fvwm/focus.c (DoSetFocus):
+	(MoveFocus):
+	(SetFocusWindow):
+	(ReturnFocusWindow):
+	(DeleteFocus):
+	(ForceDeleteFocus):
+	(FocusOn):
+	(restore_focus_after_unmap):
+	Fixed a race condition with M_FOCUS_CHANGE events and window updates by
+	suppressing the M_FOCUS_CHANGE message if the focus does not change in
+	the flush_window_updates() function.
+
 2002-01-24  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* fvwm/placement.c (PlaceWindow):

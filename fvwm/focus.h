@@ -25,9 +25,10 @@
  * Sets/deletes the input focus to the indicated window.
  *
  **********************************************************************/
-void SetFocusWindow(FvwmWindow *Fw, Bool FocusByMouse);
+void SetFocusWindow(
+  FvwmWindow *Fw, Bool FocusByMouse, Bool do_allow_force_broadcast);
 void ReturnFocusWindow(FvwmWindow *Fw, Bool FocusByMouse);
-void DeleteFocus(Bool FocusByMouse);
+void DeleteFocus(Bool FocusByMouse, Bool do_allow_force_broadcast);
 void ForceDeleteFocus(Bool FocusByMouse);
 void restore_focus_after_unmap(
   FvwmWindow *tmp_win, Bool do_skip_marked_transients);

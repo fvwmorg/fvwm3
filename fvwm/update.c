@@ -423,7 +423,7 @@ void flush_window_updates(void)
   /* This is necessary in case the focus policy changes. With ClickToFocus some
    * buttons have to be grabbed/ungrabbed. */
   focus_fw = get_focus_window();
-  DeleteFocus(1);
+  DeleteFocus(True, False);
 
   /* Apply the new default font and colours first */
   if (Scr.flags.has_default_color_changed || Scr.flags.has_default_font_changed)
@@ -471,14 +471,16 @@ void flush_window_updates(void)
    * window is now NeverFocus */
   if (focus_fw)
   {
-    SetFocusWindow(focus_fw, 1);
+    SetFocusWindow(focus_fw, True, False);
     if (Scr.flags.has_mouse_binding_changed)
     {
       focus_grab_buttons(focus_fw, True);
     }
   }
   else
-    DeleteFocus(1);
+  {
+    DeleteFocus(True, True);
+  }
 
   /* finally clean up the change flags */
   reset_style_changes();

@@ -1131,7 +1131,7 @@ static void UnmapDesk(int desk, Bool grab)
 	{
 	  t->flags.is_focused_on_other_desk = 1;
 	  t->FocusDesk = desk;
-	  DeleteFocus(1);
+	  DeleteFocus(True, True);
 	}
 	else
 	{
@@ -1231,7 +1231,7 @@ static void MapDesk(int desk, Bool grab)
     }
     else if (FocusWin && !HAS_NEVER_FOCUS(FocusWin))
     {
-      DeleteFocus(1);
+      DeleteFocus(True, True);
     }
   }
   Scr.flags.is_map_desk_in_progress = 0;
@@ -1390,7 +1390,7 @@ void do_move_window_to_desk(FvwmWindow *tmp_win, int desk)
       tmp_win->Desk = desk;
       if (tmp_win == get_focus_window())
       {
-	DeleteFocus(0);
+	DeleteFocus(False, True);
       }
       unmap_window(tmp_win);
     }

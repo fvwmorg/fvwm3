@@ -64,7 +64,9 @@ Bool do_accept_input_focus(FvwmWindow *tmp_win)
  * Sets the input focus to the indicated window.
  *
  **********************************************************************/
-static void DoSetFocus(Window w, FvwmWindow *Fw, Bool FocusByMouse, Bool NoWarp)
+static void DoSetFocus(
+  Window w, FvwmWindow *Fw, Bool FocusByMouse, Bool NoWarp,
+  Bool do_allow_force_broadcast)
 {
   extern Time lastTimestamp;
   FvwmWindow *sf;
@@ -214,7 +216,10 @@ static void DoSetFocus(Window w, FvwmWindow *Fw, Bool FocusByMouse, Bool NoWarp)
   {
     FOCUS_SET(w);
     set_focus_window(Fw);
-    SET_FOCUS_CHANGE_BROADCAST_PENDING(Fw, 1);
+    if (do_allow_force_broadcast)
+    {
+      SET_FOCUS_CHANGE_BROADCAST_PENDING(Fw, 1);
+    }
     Scr.UnknownWinFocused = None;
   }
   else if (!Fw || !(Fw->wmhints) || !(Fw->wmhints->flags & InputHint) ||
@@ -225,7 +230,10 @@ static void DoSetFocus(Window w, FvwmWindow *Fw, Bool FocusByMouse, Bool NoWarp)
     set_focus_window(Fw);
     if (Fw)
     {
-      SET_FOCUS_CHANGE_BROADCAST_PENDING(Fw, 1);
+      if (do_allow_force_broadcast)
+      {
+	SET_FOCUS_CHANGE_BROADCAST_PENDING(Fw, 1);
+      }
     }
     Scr.UnknownWinFocused = None;
   }
@@ -245,7 +253,8 @@ static void DoSetFocus(Window w, FvwmWindow *Fw, Bool FocusByMouse, Bool NoWarp)
 }
 
 static void MoveFocus(
-  Window w, FvwmWindow *Fw, Bool FocusByMouse, Bool NoWarp, Bool do_force)
+  Window w, FvwmWindow *Fw, Bool FocusByMouse, Bool NoWarp, Bool do_force,
+  Bool do_allow_force_broadcast)
 {
   FvwmWindow *ffw_old = get_focus_window();
   Bool accepts_input_focus = do_accept_input_focus(Fw);
@@ -273,7 +282,7 @@ static void MoveFocus(
     }
     return;
   }
-  DoSetFocus(w, Fw, FocusByMouse, NoWarp);
+  DoSetFocus(w, Fw, FocusByMouse, NoWarp, do_allow_force_broadcast);
   if (get_focus_window() != ffw_old)
   {
     if (accepts_input_focus)
@@ -297,24 +306,26 @@ static void MoveFocus(
   }
 }
 
-void SetFocusWindow(FvwmWindow *Fw, Bool FocusByMouse)
+void SetFocusWindow(
+  FvwmWindow *Fw, Bool FocusByMouse, Bool do_allow_force_broadcast)
 {
-  MoveFocus(Fw->w, Fw, FocusByMouse, False, False);
+  MoveFocus(Fw->w, Fw, FocusByMouse, False, False, do_allow_force_broadcast);
 }
 
 void ReturnFocusWindow(FvwmWindow *Fw, Bool FocusByMouse)
 {
-  MoveFocus(Fw->w, Fw, FocusByMouse, True, False);
+  MoveFocus(Fw->w, Fw, FocusByMouse, True, False, True);
 }
 
-void DeleteFocus(Bool FocusByMouse)
+void DeleteFocus(Bool FocusByMouse, Bool do_allow_force_broadcast)
 {
-  MoveFocus(Scr.NoFocusWin, NULL, FocusByMouse, False, False);
+  MoveFocus(
+    Scr.NoFocusWin, NULL, FocusByMouse, False, False, do_allow_force_broadcast);
 }
 
 void ForceDeleteFocus(Bool FocusByMouse)
 {
-  MoveFocus(Scr.NoFocusWin, NULL, FocusByMouse, False, True);
+  MoveFocus(Scr.NoFocusWin, NULL, FocusByMouse, False, True, True);
 }
 
 /* When a window is unmapped (or destroyed) this function takes care of
@@ -361,11 +372,11 @@ void restore_focus_after_unmap(
 	set_focus_to->Desk == tmp_win->Desk)
     {
       /* Don't transfer focus to windows on other desks */
-      SetFocusWindow(set_focus_to, 1);
+      SetFocusWindow(set_focus_to, True, True);
     }
     if (tmp_win == get_focus_window())
     {
-      DeleteFocus(1);
+      DeleteFocus(True, True);
     }
   }
   if (tmp_win == Scr.pushed_window)
@@ -412,7 +423,7 @@ void FocusOn(FvwmWindow *t, Bool FocusByMouse, char *action)
     if (t)
     {
       /* give the window a chance to take the focus itself */
-      MoveFocus(t->w, t, FocusByMouse, 1, 0);
+      MoveFocus(t->w, t, FocusByMouse, True, False, True);
     }
     return;
   }
@@ -462,7 +473,7 @@ void FocusOn(FvwmWindow *t, Bool FocusByMouse, char *action)
   UngrabEm(GRAB_NORMAL);
   if (t->Desk == Scr.CurrentDesk)
   {
-    MoveFocus(t->w, t, FocusByMouse, do_not_warp, 0);
+    MoveFocus(t->w, t, FocusByMouse, do_not_warp, False, True);
   }
 
   return;
