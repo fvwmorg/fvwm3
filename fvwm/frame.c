@@ -396,7 +396,7 @@ static void frame_get_title_bar_dimensions(
         *padd_coord += t_length;
         /* configure right buttons */
         *padd_coord -= br_sub;
-	for (i = 1; i < NUMBER_OF_BUTTONS; i += 2)
+	for (i = 1 + ((NUMBER_OF_BUTTONS - 1) / 2) * 2; i >= 0; i -= 2)
 	{
 		if (FW_W_BUTTON(fw, i) == None)
 		{
@@ -1036,7 +1036,7 @@ static void frame_move_resize_step(
 	XSetWindowAttributes xswa;
 	Bool dummy;
         Bool is_setup;
-        Bool do_resize_frame_first = False;
+        Bool do_force_static_gravity = False;
         int do_force;
 	int i;
 	int w;
@@ -1072,7 +1072,10 @@ static void frame_move_resize_step(
         if (is_setup && mra->dstep_g.x == 0 && mra->dstep_g.y == 0 &&
             mra->dstep_g.width == 0 && mra->dstep_g.height == 0)
         {
-                do_resize_frame_first = True;
+                /* The caller has already set the frame geometry.  Use
+                 * StaticGravity so the sub windows are not moved to funny
+                 * places later. */
+                do_force_static_gravity = True;
                 do_force = 1;
         }
 	/*
@@ -1098,14 +1101,16 @@ static void frame_move_resize_step(
 		XChangeWindowAttributes(
 			dpy, FW_W_PARENT(fw), CWWinGravity, &xswa);
 	}
-        if (do_resize_frame_first == True)
+        if (do_force_static_gravity == True)
         {
-                /* The caller has already set the frame geometry. Resize the
-                 * frame first so the sub windows are not moved to funny places
-                 * later. */
-                XMoveResizeWindow(
-                        dpy, FW_W_FRAME(fw), mra->next_g.x, mra->next_g.y,
-                        mra->next_g.width, mra->next_g.height);
+                frame_decor_gravities_type grav;
+                grav.decor_grav = StaticGravity;
+                grav.title_grav = StaticGravity;
+                grav.lbutton_grav = StaticGravity;
+                grav.rbutton_grav = StaticGravity;
+                grav.parent_grav = StaticGravity;
+                grav.client_grav = StaticGravity;
+                frame_set_decor_gravities(fw, &grav);
         }
 	/* setup the border */
 	draw_clipped_decorations_with_geom(
@@ -1157,11 +1162,13 @@ static void frame_move_resize_step(
                 break;
         }
 	/* setup the frame */
-        if (do_resize_frame_first == False)
+        XMoveResizeWindow(
+                dpy, FW_W_FRAME(fw), mra->next_g.x, mra->next_g.y,
+                mra->next_g.width, mra->next_g.height);
+        /* restore the old gravities */
+        if (do_force_static_gravity == True)
         {
-                XMoveResizeWindow(
-                        dpy, FW_W_FRAME(fw), mra->next_g.x, mra->next_g.y,
-                        mra->next_g.width, mra->next_g.height);
+                frame_set_decor_gravities(fw, &mra->grav);
         }
 	/*!!! remove when title/buttons are drawn in the window background */
 	draw_clipped_decorations_with_geom(
