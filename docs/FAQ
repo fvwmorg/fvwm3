@@ -2,7 +2,7 @@
                    FVWM Frequently Asked Questions
 ======================================================================
 
-Last updated March 18, 2001 for beta release 2.3.29 and official
+Last updated May 1, 2001 for beta release 2.3.31 and official
 release 2.2.5.
 
 Contents
@@ -601,6 +601,10 @@ A: The built in command WindowList provides a very close approximation
       Key Tab A M WindowList Root c c NoDeskSort
 
    Starting with release 2.3.2, the above key binding is built-in.
+
+   Starting with release 2.3.15 you can hold the alt key down and
+   keep hitting tab.  A single alt-tab selects the previous window.
+   The remainder of this FAQ entry describes releases prior to 2.3.2.
 
    Hitting Alt-Tab will pop up the WindowList menu.  Unlike another GUI
    you should not keep the Alt key held down, the menu will stay up
