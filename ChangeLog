@@ -1,5 +1,8 @@
 2002-08-05  Dominik Vogt  <dominik.vogt@gmx.de>
 
+	* configure.in:
+	enable error message when png or xpm test compilation fails
+
 	* fvwm/style.h:
 	* fvwm/window_flags.h:
 	* fvwm/ewmh.c (ewmh_HandleDesktop):

@@ -357,7 +357,6 @@ smr_CHECK_LIB(xpm, Xpm, for coloured or shaped icons,
 
 if test "$xpm_LIBS"; then
   dnl Check for proper version of Xpm -- from XEmacs 21.x configure.in
-  problem_xpm=""
   AC_MSG_CHECKING(for Xpm 3.4g or better)
   my_CPPFLAGS="$CPPFLAGS"
   my_LIBS="$LIBS"
@@ -409,7 +408,6 @@ smr_CHECK_LIB(png, png, for coloured or shaped icons,
 
 if test "$png_LIBS"; then
   dnl Check for proper version of Png
-  problem_png=""
   AC_MSG_CHECKING(for libpng 1.0.4a or better)
   my_CPPFLAGS="$CPPFLAGS"
   my_LIBS="$LIBS"
