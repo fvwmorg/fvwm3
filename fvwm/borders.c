@@ -1382,10 +1382,10 @@ static void RedrawTitle(
   switch (TB_JUSTIFICATION(GetDecor(t, titlebar)))
   {
   case JUST_LEFT:
-    hor_off = 10;
+    hor_off = WINDOW_TITLE_TEXT_OFFSET;
     break;
   case JUST_RIGHT:
-    hor_off = t->title_g.width - w - 10;
+    hor_off = t->title_g.width - w - WINDOW_TITLE_TEXT_OFFSET;
     break;
   case JUST_CENTER:
   default:
@@ -1531,20 +1531,39 @@ static void RedrawTitle(
 
   if (IS_STICKY(t) || HAS_STIPPLED_TITLE(t))
   {
-    /* an odd number of lines every 4 pixels */
-    int num = (int)(t->title_g.height / 8) * 2 - 1;
+    /* an odd number of lines every WINDOW_TITLE_STICK_VERT_DIST pixels */
+    int num =
+      (int)(t->title_g.height / WINDOW_TITLE_STICK_VERT_DIST / 2) * 2 - 1;
     int min = t->title_g.height / 2 - num * 2 + 1;
-    int max = t->title_g.height / 2 + num * 2 - 3;
-    int left_w = hor_off - WINDOW_TITLE_STICKY_GAP;
-    int right_w = t->title_g.width - hor_off - w - WINDOW_TITLE_STICKY_GAP;
+    int max =
+            t->title_g.height / 2 + num * 2 - WINDOW_TITLE_STICK_VERT_DIST + 1;
+    int left_x = WINDOW_TITLE_STICK_OFFSET;
+    int left_w = hor_off - left_x - WINDOW_TITLE_TO_STICK_GAP;
+    int right_x = hor_off + w + WINDOW_TITLE_TO_STICK_GAP - 1;
+    int right_w = t->title_g.width - right_x - WINDOW_TITLE_STICK_OFFSET;
 
-    for(i = min; i <= max; i += 4)
+    if (left_w < WINDOW_TITLE_STICK_MIN_WIDTH)
+    {
+      left_x = 0;
+      left_w = WINDOW_TITLE_STICK_MIN_WIDTH;
+    }
+    if (right_w < WINDOW_TITLE_STICK_MIN_WIDTH)
+    {
+      right_w = WINDOW_TITLE_STICK_MIN_WIDTH;
+      right_x = t->title_g.width - WINDOW_TITLE_STICK_MIN_WIDTH - 1;
+    }
+    for (i = min; i <= max; i += WINDOW_TITLE_STICK_VERT_DIST)
     {
       if (left_w > 0)
-	RelieveRectangle(dpy, t->title_w, 4, i, left_w, 1, sgc, rgc,1);
+      {
+	RelieveRectangle(
+          dpy, t->title_w, left_x, i, left_w, 1, sgc, rgc, 1);
+      }
       if (right_w > 0)
-	RelieveRectangle(dpy, t->title_w, hor_off + w + 6, i, right_w, 1,
-			 sgc, rgc, 1);
+      {
+	RelieveRectangle(
+          dpy, t->title_w, right_x, i, right_w, 1, sgc, rgc, 1);
+      }
     }
   }
 

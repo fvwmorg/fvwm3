@@ -135,8 +135,21 @@
 #define GEOMETRY_WINDOW_POS_STRING         " %+-4d %+-4d "
 #define GEOMETRY_WINDOW_SIZE_STRING        " %4d x %-4d "
 
-/* window title */
-#define WINDOW_TITLE_STICKY_GAP           10 /* pixels */
+/*
+ * window title layout
+ */
+/* height of stick lines */
+#define WINDOW_TITLE_STICK_HEIGHT     1 /* pixels */
+/* vertical distance between stick lines */
+#define WINDOW_TITLE_STICK_VERT_DIST  4 /* pixels */
+/* minimum width of stick lines */
+#define WINDOW_TITLE_STICK_MIN_WIDTH  1 /* pixels */
+/* gap between border of title window and stick lines */
+#define WINDOW_TITLE_STICK_OFFSET     4 /* pixels */
+/* gap between title and stick lines */
+#define WINDOW_TITLE_TO_STICK_GAP     4 /* pixels */
+/* gap between border of title window and text */
+#define WINDOW_TITLE_TEXT_OFFSET     10 /* pixels */
 
 /*** window placement (MinOverlap(Percent)Placement) ***/
 /** Now these values are configurable by using styles **/
