@@ -1351,11 +1351,24 @@ void HandleButtonPress(void)
   if((Tmp_win)&&(HAS_CLICK_FOCUS(Tmp_win))&&(Tmp_win != Scr.Ungrabbed))
   {
     SetFocus(Tmp_win->w,Tmp_win,1);
+    /*
+        RBW - 09/20/1999 - I'll remove the bogus if 0 stuff eventually,
+        if we don't see any problems arising from this change.
+        The attempt to raise if the window decorations are clicked mimicked
+        the way the old CLICKY_MODE hack worked. This seems counter to the
+        apparent sense of ClickToFocusDoesntRaise; and it causes double
+        raises when functions containing a raise command are bound to the
+        decorations, which is extremely common.
+    */
+#if 0
     if (Scr.go.ClickToFocusRaises ||
 	((Event.xany.window != Tmp_win->w)&&
 	 (Event.xbutton.subwindow != Tmp_win->w)&&
 	 (Event.xany.window != Tmp_win->Parent)&&
 	 (Event.xbutton.subwindow != Tmp_win->Parent)))
+#else
+    if (Scr.go.ClickToFocusRaises)
+#endif
     {
       RaiseWindow(Tmp_win);
     }

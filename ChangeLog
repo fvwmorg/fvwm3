@@ -1,3 +1,10 @@
+1999-09-20  Bob Woodside  <proteus@pcnet.com>
+
+	* fvwm/events.c (HandleButtonPress): Dropped the raise on window
+	decoration clicks for ClicToFocusDoesntRaise. This causes double
+	raises in a lot of configurations, and seems counter to the sense
+	of ClickToFocusDoesntRaise.
+
 1999-09-21  Dominik Vogt  <dominik_vogt@gmx.de>
 
 	* fvwm/move_resize.c (resize_window):
