@@ -1541,6 +1541,7 @@ Bool moveLoop(FvwmWindow *tmp_win, int XOffset, int YOffset, int Width,
   Window move_w = None;
   int orig_icon_x = 0;
   int orig_icon_y = 0;
+  Bool do_snap = True;
 
   if (!GrabEm(CRS_MOVE, GRAB_NORMAL))
   {
@@ -1630,7 +1631,10 @@ Bool moveLoop(FvwmWindow *tmp_win, int XOffset, int YOffset, int Width,
 	{
 	  yt += YOffset;
 	}
-	DoSnapAttract(tmp_win, Width, Height, &xl, &yt);
+	if (do_snap)
+	{
+	  DoSnapAttract(tmp_win, Width, Height, &xl, &yt);
+	}
 	Event.type = MotionNotify;
 	Event.xmotion.time = lastTimestamp;
 	Event.xmotion.x_root = xl - XOffset;
@@ -1676,6 +1680,8 @@ Bool moveLoop(FvwmWindow *tmp_win, int XOffset, int YOffset, int Width,
     switch(Event.type)
     {
     case KeyPress:
+      do_snap = Event.xkey.state & Mod1Mask ? False : True;
+
       /* simple code to bag out of move - CKH */
       if (XLookupKeysym(&(Event.xkey),0) == XK_Escape)
       {
@@ -1766,7 +1772,10 @@ Bool moveLoop(FvwmWindow *tmp_win, int XOffset, int YOffset, int Width,
       if (xl != xl_orig || yt != yt_orig || vx != Scr.Vx || vy != Scr.Vy)
       {
 	/* only snap if the window actually moved! */
-        DoSnapAttract(tmp_win, Width, Height, &xl, &yt);
+	if (do_snap)
+        {
+	  DoSnapAttract(tmp_win, Width, Height, &xl, &yt);
+        }
       }
 
       *FinalX = xl;
@@ -1776,6 +1785,8 @@ Bool moveLoop(FvwmWindow *tmp_win, int XOffset, int YOffset, int Width,
       break;
 
     case MotionNotify:
+      do_snap = Event.xkey.state & Mod1Mask ? False : True;
+
       xl = Event.xmotion.x_root;
       yt = Event.xmotion.y_root;
       if (xl > 0 && xl < Scr.MyDisplayWidth - 1)
@@ -1793,7 +1804,10 @@ Bool moveLoop(FvwmWindow *tmp_win, int XOffset, int YOffset, int Width,
       xl += XOffset + x_virtual_offset;
       yt += YOffset + y_virtual_offset;
 
-      DoSnapAttract(tmp_win, Width, Height, &xl, &yt);
+      if (do_snap)
+      {
+        DoSnapAttract(tmp_win, Width, Height, &xl, &yt);
+      }
 
       /* check Paging request once and only once after outline redrawn */
       /* redraw after paging if needed - mab */
@@ -1840,7 +1854,10 @@ Bool moveLoop(FvwmWindow *tmp_win, int XOffset, int YOffset, int Width,
 	  {
 	    yt += YOffset;
 	  }
-	  DoSnapAttract(tmp_win, Width, Height, &xl, &yt);
+	  if (do_snap)
+	  {
+	    DoSnapAttract(tmp_win, Width, Height, &xl, &yt);
+	  }
 	  if (!delta_x && !delta_y)
 	    /* break from while (paged <= 1) */
 	    break;

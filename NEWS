@@ -9,6 +9,9 @@ Changes in beta release 2.5.1 (not released yet)
 
 * New commands XSync and XSynchronize for debugging purposes.
 
+* In interactive move/placement when Alt/Meta modifier is pressed, snap
+  attraction (SnapAttraction, SnapGrid and EdgeResistance) is ignored.
+
 Changes in beta release 2.5.0 (27-Jan-2002)
 
 * New commands ResizeMaximize and ResizeMoveMaximize that modify
