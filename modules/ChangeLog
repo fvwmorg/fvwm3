@@ -1,3 +1,10 @@
+Wed May  5 23:51:00 1999  DanEspen  <dje@blue>
+
+	* FvwmForm/FormFvwmForm.: Put slash and dot back on output file.
+
+	* FvwmForm/FvwmForm.c: Correct line width calculation for forms
+	with a message area when using a proportional text font.
+
 1999-05-05  Dominik Vogt  <dominik_vogt@gmx.de>
 
 	* FvwmScript/FvwmScript.c: honour color limit and make it possible to

@@ -374,10 +374,10 @@ static void ct_Message(char *cp) {
   item->header.name = "FvwmMessage";    /* No purpose to this? dje */
   item->text.value = malloc(80);        /* point at last error recvd */
   item->text.n = 80;
-  memset(item->text.value,'M',80);      /* for font width calc */
-  item->header.size_x = XTextWidth(item->header.dt_ptr->dt_font_struct,
+  strcpy(item->text.value,"A mix of chars. MM20"); /* 20 mixed width chars */
+  item->header.size_x = (XTextWidth(item->header.dt_ptr->dt_font_struct,
                                    item->text.value,
-                                   item->text.n) + 2 * TEXT_SPC;
+                                   item->text.n/4) * 4) + 2 * TEXT_SPC;
   item->header.size_y = FontHeight(item->header.dt_ptr->dt_font_struct)
     + CF.padVText;
 
