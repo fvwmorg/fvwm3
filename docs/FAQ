@@ -79,8 +79,7 @@ Contents
     3.19  When my specific window (or all windows) is closed, I want to
           switch desks/wrap to my app X/popup a menu/start app X...  How?
     3.20  I have a multi head setup (multiple screens used under X).  How
-          can I tell fvwm to use different configuration files for the
-          screens?
+          can I tell fvwm to use different configurations for the screens?
 
 4. Modules
 
@@ -1196,21 +1195,38 @@ A: Please read the answer to the previous question to understand better.
 ----------------------------------------------------------------------
 
 3.20  I have a multi head setup (multiple screens used under X).  How
-      can I tell fvwm to use different configuration files for the
-      screens?
+      can I tell fvwm to use different configurations for the screens?
 
-A: Write your configuration file as you would if you had only one
+A: FVWM spawns itself into all found screens unless -s command line
+   parameter is specified, as explained in the man page.  All spawned
+   fvwm2 processes by default use the same configuration on each screen.
+   There are several ways to change the default behavior.
+
+   Write your configuration file as you would if you had only one
    screen.  Then move the screen specific lines into separate
    configuration files and call them for example .fvwm2rc.<screen>
    where <screen> is the screen number.  Usually this will be 0 for
    the main screen and 1 for the secondary screen.  Place the screen
    specific files in the $HOME/.fvwm directory or whatever you set
-   $FVWM_USERHOME to.  Now add this line to your .fvwm2rc:
+   $FVWM_USERDIR to.  Now add this line to your .fvwm2rc:
 
      Read .fvwm2rc.$[screen]
 
    The $[screen] will be replaced with the number of the screen each
    instance of fvwm is started on.
+
+
+   Another method, which should work for older fvwm versions as well,
+   is to specify a separate file for each screen explicitly. For this,
+   start a separate fvwm for each screen in your .xinitrc (or .Xclients):
+
+     fvwm2 -s -d :0.0 -f .fvwm2rc-0 &
+     fvwm2 -s -d :0.1 -f .fvwm2rc-1 &
+     fvwm2 -s -d :0.2 -f .fvwm2rc-2
+
+   Note that only the last command is without a trailing ampersand.
+   If you wish, .fvwm2rc-* files may all include line "Read .fvwm2rc-common".
+
 
 ======================================================================
                              4 - Modules

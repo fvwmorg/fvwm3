@@ -161,10 +161,10 @@
 
 2000-11-19  Mikhael Goikhman  <migo@homemail.com>
 
-	* modules/FvwmEvent/Makefile.am:
-	don't interupt 'make install' on 'ln -s' error
+	* FvwmEvent/Makefile.am:
+	don't interrupt 'make install' on 'ln -s' error
 
-	* modules/FvwmCommand/scripts/Makefile.am:
+	* FvwmCommand/scripts/Makefile.am:
 	added a comment about focus-link
 	* FvwmCommand/scripts/focus-link.1:
 	fixed a man page note about 'sleep in Exec'

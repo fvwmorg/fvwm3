@@ -3,18 +3,22 @@ which of these will not be done.
 
 Items with highest priority / most severe problems:
 
-  167!, 117, 134, 146
+  117, 134, 146
+
+Closed recently:
+
+  163, 167
 
 ---------- Summary: ----------------------------------------------
 
  1 to be verified
 11 to be discussed
  4 to do
- 3 distribution issues
+ 1 distribution issues
  9 testing
 ----------------------
-28  open items
-139 items closed
+26  open items
+141 items closed
 167 items in total
 
 ---------- To be verified: ---------------------------------------
@@ -37,6 +41,7 @@ Items with highest priority / most severe problems:
      [reported by Mikhael]
      -> [Dominik: I know the problem is there, but it is difficult to debug and
      perhaps not worth to delay the release]
+     -> [not critical; delayed until after 2.4]
 122) Investigate FvwmButtons panel problem.
      [reported by Robert H. Ford II <rhford2@lucent.com> on 18-Feb-2000]
      -> [no usable feedback]
@@ -52,12 +57,13 @@ Items with highest priority / most severe problems:
      [purify may bring it up when we run the test script again]
      -> [unreproducible]
 143) Bug #603 (TaskBar bugs): investigate and possibly fix.
+     -> [unreproducible, fixed a related AutoStick problem]
 156) xterm client window cursor corrupted.
      [reported by Nagi Aboulenein on 2-Nov-1999]
      -> [unreproducible]
-158) IS_NAME_CHANGED flag still broken?
-     [Mikhael]
-     -> ?
+158) Sometimes a state is not restored for windows with IS_NAME_CHANGED
+     flag set under SM - no match in matchWin().
+     [Mikhael: investigate/fix if there is a time]
 162) Fix core dump with icon boxes
      [reported on 25-may-2000 by kibble_98@yahoo.com]
      [fixed]
@@ -77,9 +83,6 @@ Items with highest priority / most severe problems:
 
  62) Write a new announcement.
      [in progress]
-163) Make bzip2 and rpm packages available from our downloads page.
-167) Add a screenshot of Mikhael's new kitten to the fvwm-cats page.
-     [obviously a show stopper] :)
 
 ---------- Testing: ----------------------------------------------
 
@@ -334,3 +337,6 @@ Items with highest priority / most severe problems:
 161) Rename MovedButton3 condition to PlacedByButton3.
 164) Update ANNOUNCE to identify GlobalOpts as a compatiblity issue
 165) Update fvwm24_convert.in to handle GlobalOpts
+163) Make bzip2 and rpm packages available from our downloads page.
+167) Add a screenshot of Mikhael's new kitten to the fvwm-cats page.
+     [obviously a show stopper] :)
