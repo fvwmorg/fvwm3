@@ -4367,20 +4367,29 @@ annoying multiple selections with complex functions.
 
 
 .TP
-.B "PipeRead" "\fIcmd option\fP"
-Causes fvwm to read commands output from the program named
-\fIcmd\fP.  Useful for building up dynamic menu entries based on a
-directories contents, for example.
+.B "PipeRead" "\fIcommand\fP [\fI quiet \fP]"
+Causes fvwm to read commands from the output of the \fIcommand\fP.
+This command is executed by /bin/sh as if you typed it on the command
+line.  If the command consists of more than one word it must be quoted.
+Useful for building up dynamic menu entries based on a
+directories contents, for example.  If the keyword "Quiet" follows the
+command no message is produced if the command is not found.
+
+Example:
+.EX
+AddToMenu HomeDirMenu
+PipeRead 'for i in $HOME;
+  do echo "+ $i Exec vi $i"; done'
+.EE
 
 
 .TP
-.B "Read" "\fIfilename\fP [\fIoption\fP]"
+.B "Read" "\fIfilename\fP [\fI quiet \fP]"
 Causes fvwm to read commands from the file named \fIfilename\fP.
-If the option following the filename is "Quiet", no message is
-produced if the file is not found.
-If the file name does not begin with a slash, fvwm looks
-in the users configuration directory, then the system configuration
-directory.
+If the keyword "Quiet" follows the command no message is produced
+if the file is not found.  If the file name does not begin with a
+slash, fvwm looks in the users configuration directory, then the
+system configuration directory.
 
 The users configuration directory is $HOME.  $HOME can be overridden
 by exporting FVWM_USERHOME set to a directory.

@@ -792,27 +792,6 @@ void ExecuteFunction(char *Action, FvwmWindow *tmp_win, XEvent *eventp,
     }
   skip = taction - Action;
 
-#if 0
-  if (expand_cmd == EXPAND_COMMAND)
-    expaction = expand(Action, arguments, tmp_win);
-  else
-    expaction = Action;
-  taction = expaction + skip;
-  j=0;
-
-  action = GetNextToken(taction,&function);
-  if (!function)
-    function = strdup("");
-  bif = FindBuiltinFunction(function);
-  if (expand_cmd == EXPAND_COMMAND && func_depth <= 1)
-  {
-    must_free_string = set_repeat_data(expaction, REPEAT_COMMAND, bif);
-  }
-  if (bif)
-  {
-    bif->action(eventp,w,tmp_win,context,action,&Module);
-  }
-#else
   GetNextToken(taction, &function);
   if (!function)
     function = strdup("");
@@ -824,7 +803,7 @@ void ExecuteFunction(char *Action, FvwmWindow *tmp_win, XEvent *eventp,
   else
     expaction = Action;
   taction = expaction + skip;
-  j=0;
+  j = 0;
   action = SkipNTokens(taction, 1);
   if (expand_cmd == EXPAND_COMMAND && func_depth <= 1)
   {
@@ -834,7 +813,6 @@ void ExecuteFunction(char *Action, FvwmWindow *tmp_win, XEvent *eventp,
   {
     bif->action(eventp,w,tmp_win,context,action,&Module);
   }
-#endif
   else
   {
     Bool desperate = 1;
@@ -846,8 +824,8 @@ void ExecuteFunction(char *Action, FvwmWindow *tmp_win, XEvent *eventp,
       if (executeModuleDesperate(
 	eventp,w,tmp_win,context,taction, &Module) == -1 && *function != 0)
       {
-	fvwm_msg(ERR, "ExecuteFunction",
-		 "No such command '%s'", function);
+	fvwm_msg(
+	  ERR, "ExecuteFunction", "No such command '%s'", function);
       }
     }
   }

@@ -553,12 +553,12 @@ overlap_box (FvwmWindow *r, int x, int y, int w, int h)
   if (IS_ICONIFIED(r))
   {
     return ((r->icon_pixmap_w) &&
-             intersect (x, y, w, h, r->icon_x_loc, r->icon_y_loc,
+             intersect (x, y, w, h, r->icon_g.x, r->icon_g.y,
 			r->icon_p_width, r->icon_p_height)) ||
            ((r->icon_w) &&
              intersect (x, y, w, h, r->icon_xl_loc,
-			r->icon_y_loc + r->icon_p_height,
-			r->icon_w_width, r->icon_w_height));
+			r->icon_g.y + r->icon_p_height,
+			r->icon_g.width, r->icon_g.height));
   }
   else
   {
@@ -578,11 +578,11 @@ overlap (FvwmWindow *r, FvwmWindow *s)
   if (IS_ICONIFIED(r))
   {
     return ((r->icon_pixmap_w) &&
-             overlap_box (s, r->icon_x_loc, r->icon_y_loc,
+             overlap_box (s, r->icon_g.x, r->icon_g.y,
                              r->icon_p_width, r->icon_p_height)) ||
            ((r->icon_w) &&
-             overlap_box (s, r->icon_xl_loc, r->icon_y_loc + r->icon_p_height,
-                             r->icon_w_width, r->icon_w_height));
+             overlap_box (s, r->icon_xl_loc, r->icon_g.y + r->icon_p_height,
+                             r->icon_g.width, r->icon_g.height));
   }
   else
   {

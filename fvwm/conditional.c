@@ -503,18 +503,12 @@ void AllFunc(F_CMD_ARGS)
   FreeConditionMask(&mask);
 }
 
-static void GetDirectionReference(FvwmWindow *w, int *x, int *y)
+static void GetDirectionReference(FvwmWindow *w, rectangle *r)
 {
   if (IS_ICONIFIED(w))
-  {
-    *x = w->icon_x_loc + w->icon_w_width / 2;
-    *y = w->icon_y_loc + w->icon_w_height / 2;
-  }
+    *r = w->icon_g;
   else
-  {
-    *x = w->frame_g.x + w->frame_g.width / 2;
-    *y = w->frame_g.y + w->frame_g.height / 2;
-  }
+    *r = w->frame_g;
 }
 
 /**********************************************************************
@@ -523,16 +517,30 @@ static void GetDirectionReference(FvwmWindow *w, int *x, int *y)
  **********************************************************************/
 void DirectionFunc(F_CMD_ARGS)
 {
-  char *directions[] = { "North", "East", "South", "West", "NorthEast",
-			 "SouthEast", "SouthWest", "NorthWest", NULL };
-  int my_x;
-  int my_y;
-  int his_x;
-  int his_y;
-  int score;
+  static char *directions[] =
+  {
+    "North",
+    "East",
+    "South",
+    "West",
+    "NorthEast",
+    "SouthEast",
+    "SouthWest",
+    "NorthWest",
+    NULL
+  };
+  /* The rectangles are inteded for a future enhancement and are not used yet.
+   */
+  rectangle my_g;
+  rectangle his_g;
+  int my_cx;
+  int my_cy;
+  int his_cx;
+  int his_cy;
   int offset = 0;
   int distance = 0;
-  int best_score;
+  double score;
+  double best_score;
   FvwmWindow *window;
   FvwmWindow *best_window;
   int dir;
@@ -546,7 +554,7 @@ void DirectionFunc(F_CMD_ARGS)
   dir = GetTokenIndex(tmp, directions, 0, NULL);
   if (dir == -1)
   {
-    fvwm_msg(ERR, "Direction","Invalid direction %s", (tmp)? tmp : "");
+    fvwm_msg(ERR, "Direction", "Invalid direction %s", (tmp)? tmp : "");
     if (tmp)
       free(tmp);
     return;
@@ -571,18 +579,27 @@ void DirectionFunc(F_CMD_ARGS)
    * Otherwise we use the pointer as a starting point. */
   if (tmp_win)
   {
-    GetDirectionReference(tmp_win, &my_x, &my_y);
+    GetDirectionReference(tmp_win, &my_g);
+    my_cx = my_g.x + my_g.width / 2;
+    my_cy = my_g.y + my_g.height / 2;
   }
   else
+  {
     XQueryPointer(dpy, Scr.Root, &JunkRoot, &JunkChild,
-		  &my_x, &my_y, &JunkX, &JunkY, &JunkMask);
+		  &my_g.x, &my_g.y, &JunkX, &JunkY, &JunkMask);
+    my_g.width = 1;
+    my_g.height = 1;
+    my_cx = my_g.x;
+    my_cy = my_g.y;
+  }
 
   /* Next we iterate through all windows and choose the closest one in
    * the wanted direction.
    */
   best_window = NULL;
   best_score = -1;
-  for (window = Scr.FvwmRoot.next; window; window = window->next) {
+  for (window = Scr.FvwmRoot.next; window; window = window->next)
+  {
     /* Skip every window that does not match conditionals.
      * Skip also currently focused window.  That would be too close. :)
      */
@@ -590,9 +607,11 @@ void DirectionFunc(F_CMD_ARGS)
       continue;
 
     /* Calculate relative location of the window. */
-    GetDirectionReference(window, &his_x, &his_y);
-    his_x -= my_x;
-    his_y -= my_y;
+    GetDirectionReference(window, &his_g);
+    his_g.x -= my_cx;
+    his_g.y -= my_cy;
+    his_cx = his_g.x + his_g.width / 2;
+    his_cy = his_g.y + his_g.height / 2;
 
     if (dir > 3)
     {
@@ -602,9 +621,9 @@ void DirectionFunc(F_CMD_ARGS)
        *                     \-h +h/
        * h = sqrt(0.5). We can set h := 1 since absolute distance doesn't
        * matter here. */
-      tx = his_x + his_y;
-      his_y = -his_x + his_y;
-      his_x = tx;
+      tx = his_cx + his_cy;
+      his_cy = -his_cx + his_cy;
+      his_cx = tx;
     }
     /* Arrange so that distance and offset are positive in desired direction.
      */
@@ -614,32 +633,36 @@ void DirectionFunc(F_CMD_ARGS)
     case 2: /* S */
     case 4: /* NE */
     case 6: /* SW */
-      offset = (his_x < 0) ? -his_x : his_x;
-      distance = (dir == 0 || dir == 4) ? -his_y : his_y;
+      offset = (his_cx < 0) ? -his_cx : his_cx;
+      distance = (dir == 0 || dir == 4) ? -his_cy : his_cy;
       break;
     case 1: /* E */
     case 3: /* W */
     case 5: /* SE */
     case 7: /* NW */
-      offset = (his_y < 0) ? -his_y : his_y;
-      distance = (dir == 3 || dir == 7) ? -his_x : his_x;
+      offset = (his_cy < 0) ? -his_cy : his_cy;
+      distance = (dir == 3 || dir == 7) ? -his_cx : his_cx;
       break;
     }
 
     /* Target must be in given direction. */
-    if (distance <= 0) continue;
+    if (distance <= 0)
+      continue;
 
     /* Calculate score for this window.  The smaller the better. */
-    score = 1024 * offset / distance + 2 * distance + 2 * offset;
-    if (best_score == -1 || score < best_score) {
+    score = 1024 * offset * distance + 2 * distance + 2 * offset;
+    if (best_score == -1 || score < best_score)
+    {
       best_window = window;
       best_score = score;
     }
   } /* for */
 
   if (best_window)
-    ExecuteFunction(restofline, best_window, eventp, C_WINDOW, *Module,
-		    EXPAND_COMMAND);
+  {
+    ExecuteFunction(
+      restofline, best_window, eventp, C_WINDOW, *Module, EXPAND_COMMAND);
+  }
 
   FreeConditionMask(&mask);
 }

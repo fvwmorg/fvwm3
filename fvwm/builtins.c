@@ -50,6 +50,7 @@
 #include "add_window.h"
 #include "update.h"
 #include "style.h"
+#include "focus.h"
 #ifdef HAVE_STROKE
 #include "stroke.h"
 #endif /* HAVE_STROKE */
@@ -341,6 +342,12 @@ void WindowShade(F_CMD_ARGS)
     XMoveWindow(dpy, tmp_win->decor_w, 0, 0);
     XRaiseWindow(dpy, tmp_win->decor_w);
     XMapWindow(dpy, tmp_win->Parent);
+    /* domivogt (28-Dec-1999): For some reason the XMoveResize() on the frame
+     * window removes the input focus from the client window.  I have no idea
+     * why, but if we explicitly restore the focus here everything works fine.
+     */
+    if (Scr.Focus == tmp_win)
+      FOCUS_SET(tmp_win->w);
     set_decor_gravity(
       tmp_win, NorthWestGravity, NorthWestGravity, NorthWestGravity);
     /* Finally let SetupFrame take care of the window */

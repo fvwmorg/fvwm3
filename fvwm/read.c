@@ -56,29 +56,30 @@ char *fvwm_file = NULL;
 void run_command_stream( FILE* f, XEvent *eventp, FvwmWindow *tmp_win,
 			 unsigned long context, int Module )
 {
-    char *tline,line[1024];
+  char *tline;
+  char line[1024];
 
-    /* Set close-on-exec flag */
-    fcntl(fileno(f), F_SETFD, 1);
+  /* Set close-on-exec flag */
+  fcntl(fileno(f), F_SETFD, 1);
 
-    tline = fgets(line,(sizeof line)-1,f);
-    while(tline)
+  tline = fgets(line, (sizeof line) - 1, f);
+  while(tline)
+  {
+    int l;
+    while(tline && (l = strlen(line)) < sizeof(line) && l >= 2 &&
+	  line[l-2]=='\\' && line[l-1]=='\n')
     {
-	int l;
-	while(tline && (l = strlen(line)) < sizeof(line) && l >= 2 &&
-	      line[l-2]=='\\' && line[l-1]=='\n')
-        {
-	    tline = fgets(line+l-2,sizeof(line)-l+1,f);
-	}
-	tline=line;
-	while(isspace((unsigned char)*tline))
-	    tline++;
-	if (debugging)
-	    fvwm_msg(DBG,"ReadSubFunc","about to exec: '%s'",tline);
-
-	ExecuteFunction(tline,tmp_win,eventp,context,Module,EXPAND_COMMAND);
-	tline = fgets(line,(sizeof line)-1,f);
+      tline = fgets(line+l-2,sizeof(line)-l+1,f);
     }
+    tline=line;
+    while(isspace((unsigned char)*tline))
+      tline++;
+    if (debugging)
+      fvwm_msg(DBG,"ReadSubFunc","about to exec: '%s'",tline);
+
+    ExecuteFunction(tline,tmp_win,eventp,context,Module,EXPAND_COMMAND);
+    tline = fgets(line,(sizeof line)-1,f);
+  }
 }
 
 
@@ -91,30 +92,32 @@ void run_command_stream( FILE* f, XEvent *eventp, FvwmWindow *tmp_win,
  * The filename and the presence of the quiet flag are returned
  * using the pointer arguments.
  **/
-static int parse_filename( char* cmdname, char* action,
-			   char** filename, int* quiet_flag )
+static int parse_filename(
+  char *cmdname, char *action, char **filename, int *quiet_flag)
 {
-    char* rest;
-    char* option;
+  char *rest;
+  char *option;
 
-    /*  fvwm_msg(INFO,cmdname,"action == '%s'",action); */
+  /*  fvwm_msg(INFO,cmdname,"action == '%s'",action); */
 
-    /* read file name arg */
-    rest = GetNextToken(action,filename);
-    if(*filename == NULL) {
-	fvwm_msg(ERR, cmdname, "missing filename parameter");
-	return 0;
-    }
+  /* read file name arg */
+  rest = GetNextToken(action,filename);
+  if (*filename == NULL)
+  {
+    fvwm_msg(ERR, cmdname, "missing filename parameter");
+    return 0;
+  }
 
-    /* optional "Quiet" argument -- flag defaults to `off' (noisy) */
-    *quiet_flag = 0;
-    rest = GetNextToken(rest,&option);
-    if ( option != NULL) {
-	*quiet_flag = strncasecmp(option,"Quiet",5) == 0;
-	free(option);
-    }
+  /* optional "Quiet" argument -- flag defaults to `off' (noisy) */
+  *quiet_flag = 0;
+  rest = GetNextToken(rest,&option);
+  if ( option != NULL)
+  {
+    *quiet_flag = strncasecmp(option, "Quiet", 5) == 0;
+    free(option);
+  }
 
-    return 1;
+  return 1;
 }
 
 
@@ -224,29 +227,30 @@ void PipeRead(F_CMD_ARGS)
 
     /* Save filename for passing as argument to modules */
     if (fvwm_file != NULL)
-	free(fvwm_file);
+      free(fvwm_file);
     fvwm_file = NULL;
 
     if (debugging)
-	fvwm_msg(DBG,"PipeRead","about to attempt '%s'",action);
+      fvwm_msg(DBG,"PipeRead","about to attempt '%s'", action);
 
-    if ( !parse_filename( "PipeRead", action, &command, &read_quietly ) )
-	return;
+    if (!parse_filename("PipeRead", action, &command, &read_quietly))
+      return;
 
     cursor_control(True);
 
-    f = popen( command, "r" );
+    f = popen(command, "r");
 
-    if (f == NULL) {
-	if ( !read_quietly )
-	    fvwm_msg( ERR, "PipeRead", "command '%s' not run", command );
-	free( command );
-	cursor_control(False);
-	return;
+    if (f == NULL)
+    {
+      if (!read_quietly)
+	fvwm_msg( ERR, "PipeRead", "command '%s' not run", command );
+      free(command);
+      cursor_control(False);
+      return;
     }
-    free( command );
+    free(command);
 
-    run_command_stream( f, eventp, tmp_win, context, *Module );
-    pclose( f );
+    run_command_stream(f, eventp, tmp_win, context, *Module);
+    pclose(f);
     cursor_control(False);
 }

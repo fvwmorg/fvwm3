@@ -758,12 +758,12 @@ void HandlePropertyNotify(void)
 	      SET_ICONIFIED(Tmp_win, 0);
 	      SET_ICON_UNMAPPED(Tmp_win, 0);
 	      CreateIconWindow(Tmp_win,
-			       Tmp_win->icon_x_loc,Tmp_win->icon_y_loc);
+			       Tmp_win->icon_g.x,Tmp_win->icon_g.y);
 	      BroadcastPacket(M_ICONIFY, 7,
 			      Tmp_win->w, Tmp_win->frame,
 			      (unsigned long)Tmp_win,
-			      Tmp_win->icon_x_loc, Tmp_win->icon_y_loc,
-			      Tmp_win->icon_w_width, Tmp_win->icon_w_height);
+			      Tmp_win->icon_g.x, Tmp_win->icon_g.y,
+			      Tmp_win->icon_g.width, Tmp_win->icon_g.height);
 	      /* domivogt (15-Sep-1999): BroadcastConfig informs modules of the
 	       * configuration change including the iconified flag. So this
 	       * flag must be set here. I'm not sure if the two calls of the
@@ -1850,16 +1850,16 @@ void HandleConfigureRequest(void)
     else if((Tmp_win)&&((Tmp_win->icon_w == cre->window)))
     {
       Tmp_win->icon_xl_loc = cre->x;
-      Tmp_win->icon_x_loc = cre->x +
-        (Tmp_win->icon_w_width - Tmp_win->icon_p_width)/2;
-      Tmp_win->icon_y_loc = cre->y - Tmp_win->icon_p_height;
+      Tmp_win->icon_g.x = cre->x +
+        (Tmp_win->icon_g.width - Tmp_win->icon_p_width)/2;
+      Tmp_win->icon_g.y = cre->y - Tmp_win->icon_p_height;
       if(!IS_ICON_UNMAPPED(Tmp_win))
         BroadcastPacket(M_ICON_LOCATION, 7,
                         Tmp_win->w, Tmp_win->frame,
                         (unsigned long)Tmp_win,
-                        Tmp_win->icon_x_loc, Tmp_win->icon_y_loc,
+                        Tmp_win->icon_g.x, Tmp_win->icon_g.y,
                         Tmp_win->icon_p_width,
-                        Tmp_win->icon_w_height + Tmp_win->icon_p_height);
+                        Tmp_win->icon_g.height + Tmp_win->icon_p_height);
     }
     xwc.width = cre->width;
     xwc.height = cre->height;
@@ -1872,15 +1872,15 @@ void HandleConfigureRequest(void)
       if (cre->window != Tmp_win->icon_pixmap_w &&
 	  Tmp_win->icon_pixmap_w != None)
       {
-	xwc.x = Tmp_win->icon_x_loc;
-	xwc.y = Tmp_win->icon_y_loc - Tmp_win->icon_p_height;
+	xwc.x = Tmp_win->icon_g.x;
+	xwc.y = Tmp_win->icon_g.y - Tmp_win->icon_p_height;
 	xwcm = cre->value_mask & (CWX | CWY);
 	XConfigureWindow(dpy, Tmp_win->icon_pixmap_w, xwcm, &xwc);
       }
       if(Tmp_win->icon_w != None)
       {
-	xwc.x = Tmp_win->icon_x_loc;
-	xwc.y = Tmp_win->icon_y_loc;
+	xwc.x = Tmp_win->icon_g.x;
+	xwc.y = Tmp_win->icon_g.y;
 	xwcm = cre->value_mask & (CWX | CWY);
         XConfigureWindow(dpy, Tmp_win->icon_w, xwcm, &xwc);
       }

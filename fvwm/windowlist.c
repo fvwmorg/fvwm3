@@ -85,19 +85,22 @@ void do_windowList(XEvent *eventp,Window w,FvwmWindow *tmp_win,
   int numWindows;
   int ii;
   char tname[80] = "";
-  char loc[40],*name=NULL;
-  int dwidth,dheight;
+  char loc[40];
+  char *name=NULL;
+  int dwidth;
+  int dheight;
   char tlabel[50]="";
   int last_desk_done = INT_MIN;
   int last_desk_displayed = INT_MIN;
   int next_desk = 0;
   char *t_hot=NULL;		/* Menu label with hotkey added */
   char scut = '0';		/* Current short cut key */
-  char *line=NULL,*tok=NULL;
+  char *opts=NULL;
+  char *tok=NULL;
   int desk = Scr.CurrentDesk;
   int flags = SHOW_EVERYTHING;
-  char *func=NULL;
-  char *tfunc=NULL;
+  char *func = NULL;
+  char *tfunc = NULL;
   char *default_action = NULL;
   MenuReturn mret;
   XEvent *teventp;
@@ -111,18 +114,14 @@ void do_windowList(XEvent *eventp,Window w,FvwmWindow *tmp_win,
   /* Condition vars. */
   Bool use_condition = False;
   WindowConditionMask mask;
-  char *cond_flags, *restofline;
+  char *cond_flags;
 
   memset(&(mops.flags), 0, sizeof(mops.flags));
   memset(&mret, 0, sizeof(MenuReturn));
   if (action && *action)
   {
-    /* parse postitioning args */
-    action = GetMenuOptions(action, w, tmp_win, NULL, NULL, &mops);
-    line = action;
-
     /* Look for condition - CreateFlagString returns NULL if no '(' or '[' */
-    cond_flags = CreateFlagString(action, &restofline);
+    cond_flags = CreateFlagString(action, &action);
     if (cond_flags)
     {
       /* Create window mask */
@@ -135,16 +134,18 @@ void do_windowList(XEvent *eventp,Window w,FvwmWindow *tmp_win,
 
       CreateConditionMask(cond_flags, &mask);
       free(cond_flags);
-
-      /* Relocate action */
-      action = restofline;
     }
 
+    if (action && *action)
+    {
+      /* parse postitioning args */
+      opts = GetMenuOptions(action, w, tmp_win, NULL, NULL, &mops);
+    }
 
     /* parse options */
-    while (line && *line)
+    while (opts && *opts)
     {
-      line = GetNextSimpleOption(line, &tok);
+      opts = GetNextSimpleOption(opts, &tok);
       if (!tok)
 	break;
 
@@ -154,12 +155,12 @@ void do_windowList(XEvent *eventp,Window w,FvwmWindow *tmp_win,
       }
       if (StrEquals(tok,"Function"))
       {
-        line = GetNextSimpleOption(line, &func);
+        opts = GetNextSimpleOption(opts, &func);
       }
       else if (StrEquals(tok,"Desk"))
       {
 	free(tok);
-        line = GetNextSimpleOption(line, &tok);
+        opts = GetNextSimpleOption(opts, &tok);
 	if (tok)
 	{
 	  desk = atoi(tok);
@@ -238,19 +239,19 @@ void do_windowList(XEvent *eventp,Window w,FvwmWindow *tmp_win,
       else if (StrEquals(tok, "Layers"))
       {
 	free(tok);
-        line = GetNextSimpleOption(line, &tok);
+        opts = GetNextSimpleOption(opts, &tok);
 	if (tok)
         {
           low_layer = high_layer = atoi(tok);
 	  free(tok);
-          line = GetNextSimpleOption(line, &tok);
+          opts = GetNextSimpleOption(opts, &tok);
 	  if (tok)
           {
             high_layer = atoi(tok);
           }
         }
       }
-      else if (!line || !*line)
+      else if (!opts || !*opts)
 	default_action = strdup(tok);
       else
       {
@@ -284,7 +285,8 @@ void do_windowList(XEvent *eventp,Window w,FvwmWindow *tmp_win,
     return;
   }
   /* get the windowlist starting from the current window (if any)*/
-  if ((t = Scr.Focus) == NULL) t = Scr.FvwmRoot.next;
+  if ((t = Scr.Focus) == NULL)
+    t = Scr.FvwmRoot.next;
   for (ii = 0; ii < numWindows; ii++)
   {
     windowList[ii] = t;
@@ -472,8 +474,10 @@ void do_windowList(XEvent *eventp,Window w,FvwmWindow *tmp_win,
   else
     teventp = eventp;
 
+#if 0
   /* Use the WindowList menu style is there is one */
   change_mr_menu_style(mr, "WindowList");
+#endif
 
   mp.menu = mr;
   mp.parent_menu = NULL;

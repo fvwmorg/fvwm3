@@ -148,9 +148,9 @@ test_y = PageTop;
           {
             tw=test_window->icon_p_width;
             th=test_window->icon_p_height+
-              test_window->icon_w_height;
-            tx = test_window->icon_x_loc - stickyx;
-            ty = test_window->icon_y_loc - stickyy;
+              test_window->icon_g.height;
+            tx = test_window->icon_g.x - stickyx;
+            ty = test_window->icon_g.y - stickyy;
 
             if((tx<(test_x+width))&&((tx + tw) > test_x)&&
                (ty<(test_y+height))&&((ty + th)>test_y))
@@ -277,14 +277,14 @@ static int get_next_x(FvwmWindow *t, int x, int y, int pdeltax, int pdeltay)
 
     if(IS_ICONIFIED(testw))
     {
-      if((y < (testw->icon_p_height+testw->icon_w_height+testw->icon_y_loc
+      if((y < (testw->icon_p_height+testw->icon_g.height+testw->icon_g.y
 	       - stickyy))&&
-         (testw->icon_y_loc - stickyy < (t->frame_g.height+y)))
+         (testw->icon_g.y - stickyy < (t->frame_g.height+y)))
       {
-        xtest = testw->icon_p_width+testw->icon_x_loc - stickyx;
+        xtest = testw->icon_p_width+testw->icon_g.x - stickyx;
         if(xtest > x)
           xnew = MIN(xnew, xtest);
-        xtest = testw->icon_x_loc - stickyx - t->frame_g.width;
+        xtest = testw->icon_g.x - stickyx - t->frame_g.width;
         if(xtest > x)
           xnew = MIN(xnew, xtest);
       }
@@ -336,11 +336,11 @@ static int get_next_y(FvwmWindow *t, int y, int pdeltay)
 
     if(IS_ICONIFIED(testw))
     {
-      ytest = testw->icon_p_height+testw->icon_w_height+testw->icon_y_loc
+      ytest = testw->icon_p_height+testw->icon_g.height+testw->icon_g.y
 	- stickyy;
       if(ytest > y)
         ynew = MIN(ynew, ytest);
-      ytest = testw->icon_y_loc - stickyy - t->frame_g.height;
+      ytest = testw->icon_g.y - stickyy - t->frame_g.height;
       if(ytest > y)
         ynew = MIN(ynew, ytest);
     }
@@ -400,10 +400,10 @@ static int test_fit(FvwmWindow *t, int x11, int y11, int aoimin, int pdeltax,
     {
        if(testw->icon_w == None || IS_ICON_UNMAPPED(testw))
 	  continue;
-       x21 = testw->icon_x_loc - stickyx;
-       y21 = testw->icon_y_loc - stickyy;
+       x21 = testw->icon_g.x - stickyx;
+       y21 = testw->icon_g.y - stickyy;
        x22 = x21 + testw->icon_p_width;
-       y22 = y21 + testw->icon_p_height + testw->icon_w_height;
+       y22 = y21 + testw->icon_p_height + testw->icon_g.height;
     }
     else
     {

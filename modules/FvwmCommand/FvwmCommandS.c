@@ -266,10 +266,10 @@ void close_pipes(void)
   /* prevent that this is executed twice */
   if (!is_closed)
   {
+    is_closed = 1;
     close (Fd[0]);
     close (Fd[1]);
     close_fifos();
-    is_closed = 1;
   }
 }
 

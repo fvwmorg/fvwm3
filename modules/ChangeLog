@@ -1,12 +1,17 @@
+1999-12-20  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* FvwmCommand/FvwmCommandS.c (close_pipes):
+	another try to fix the FvwmCommandS-on-exit core dump
+
 1999-12-28  olicha  <olivier.chapuis@free.fr>
 
 	* FvwmScript/FvwmScript.c (ParseOptions):
 	(main):
 	* FvwmScript/FvwmScript.1
 	New options FvwmScriptDefaultFont, FvwmScriptDefaultBack,
-	FvwmScriptDefaultFore, FvwmScriptDefaultHilight, 
+	FvwmScriptDefaultFore, FvwmScriptDefaultHilight,
 	FvwmScriptDefaultShadow, and FvwmScriptDefaultColorset
-	
+
 
 1999-12-27  Mikhael Goikhman  <migo@homemail.com>
 
@@ -20,7 +25,7 @@
 	* FvwmScript/Scripts/Find:
 	* FvwmScript/Scripts/Makefile.am:
 	New script, a front-end to find
-	
+
 1999-12-26  Dan Espen  <dane@mk.telcordia.com>
 
 	* FvwmForm/FvwmForm.c: Fix array bounds write when message exactly
@@ -55,7 +60,7 @@
 	(DoAlarmAction):
 	(LoopOnEvents):
 	Fixed Alarm stuff
-	
+
 1999-12-17  Dan Espen  <dane@mk.telcordia.com>
 
 	* FvwmIconMan/readconfig.c: Keep TRU64 compiler happy by changing

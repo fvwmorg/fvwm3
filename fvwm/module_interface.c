@@ -586,8 +586,8 @@ int HandleModuleInput(Window w, int channel, char *expect)
 	  }
 	  else
 	  {
-	    Event.xbutton.x_root = tmp_win->icon_x_loc;
-	    Event.xbutton.y_root = tmp_win->icon_y_loc;
+	    Event.xbutton.x_root = tmp_win->icon_g.x;
+	    Event.xbutton.y_root = tmp_win->icon_g.y;
 	  }
 	}
       else
@@ -1352,8 +1352,8 @@ void send_list_func(XEvent *eventp, Window w, FvwmWindow *tmp_win,
 	  if((IS_ICONIFIED(t))&&(!IS_ICON_UNMAPPED(t)))
 	    SendPacket(*Module, M_ICONIFY, 7, t->w, t->frame,
 		       (unsigned long)t,
-		       t->icon_x_loc, t->icon_y_loc,
-		       t->icon_w_width, t->icon_w_height+t->icon_p_height);
+		       t->icon_g.x, t->icon_g.y,
+		       t->icon_g.width, t->icon_g.height+t->icon_p_height);
 
 	  if((IS_ICONIFIED(t))&&(IS_ICON_UNMAPPED(t)))
 	    SendPacket(*Module, M_ICONIFY, 7, t->w, t->frame,

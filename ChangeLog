@@ -1,3 +1,57 @@
+1999-12-29  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* fvwm/functions.c (ExecuteFunction):
+	removed some '#if 0'ed code
+
+	* fvwm/conditional.c (DirectionFunc):
+	fixed score calcutaltions that preferred to switch to windows farther
+	away
+
+	* fvwm/placement.c (SmartPlacement):
+	(get_next_y):
+	(test_fit):
+	* fvwm/session.c (SaveWindowStates):
+	(MatchWinToSM):
+	* fvwm/virtual.c (MoveViewport):
+	* fvwm/module_interface.c:
+	* fvwm/icons.c (CreateIconWindow):
+	(AutoPlaceIcon):
+	(DeIconify):
+	(Iconify):
+	* fvwm/add_window.c (destroy_icon):
+	* fvwm/move_resize.c (move_window_doit):
+	(DoSnapAttract):
+	(moveLoop):
+	(MaximizeHeight):
+	(MaximizeWidth):
+	* fvwm/events.c (HandleConfigureRequest):
+	(HandlePropertyNotify):
+	* fvwm/fvwm.h (FvwmWindow):
+	replaced icon_x/y_loc and icon_w_... members with icon_g
+
+1999-12-28  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* fvwm/fvwm2.1 (PipeRead):
+	added a example and wrote a more detailed explanation
+
+	* fvwm/builtins.c (WindowShade):
+	fixed keyboard focus that got lost when a window was shaded
+
+	* fvwm/focus.h (FOCUS_RESET):
+	* fvwm/focus.c (DoSetFocus):
+	* fvwm/focus.h (FOCUS_SET):
+	new convenience macro so that only focus.c needs to call XSetInputFocus
+
+1999-12-27  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* fvwm/fvwm2.1 (PipeRead):
+	fixed PipeRead manpage
+
+1999-12-21  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* fvwm/windowlist.c (do_windowList):
+	fixed several parsing bugs
+
 1999-12-22  Mikhael Goikhman  <migo@homemail.com>
 
 	fvwm/menus.c (menuShortcuts): added XK_ISO_Left_Tab (like XK_Tab),

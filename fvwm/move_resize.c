@@ -489,16 +489,16 @@ fprintf(stderr,"move window '%s'\n", tmp_win->name);
   else /* icon window */
   {
     SET_ICON_MOVED(tmp_win, 1);
-    tmp_win->icon_x_loc = FinalX ;
+    tmp_win->icon_g.x = FinalX ;
     tmp_win->icon_xl_loc = FinalX -
-      (tmp_win->icon_w_width - tmp_win->icon_p_width)/2;
-    tmp_win->icon_y_loc = FinalY;
+      (tmp_win->icon_g.width - tmp_win->icon_p_width)/2;
+    tmp_win->icon_g.y = FinalY;
     BroadcastPacket(M_ICON_LOCATION, 7,
 		    tmp_win->w, tmp_win->frame,
 		    (unsigned long)tmp_win,
-		    tmp_win->icon_x_loc, tmp_win->icon_y_loc,
+		    tmp_win->icon_g.x, tmp_win->icon_g.y,
 		    tmp_win->icon_p_width,
-		    tmp_win->icon_w_height + tmp_win->icon_p_height);
+		    tmp_win->icon_g.height + tmp_win->icon_p_height);
     if (do_animate)
     {
       AnimatedMoveOfWindow(tmp_win->icon_w,-1,-1,tmp_win->icon_xl_loc,
@@ -517,11 +517,11 @@ fprintf(stderr,"move window '%s'\n", tmp_win->name);
       if (do_animate)
       {
 	AnimatedMoveOfWindow(tmp_win->icon_pixmap_w, -1,-1,
-			     tmp_win->icon_x_loc,FinalY,fWarp,-1,NULL);
+			     tmp_win->icon_g.x,FinalY,fWarp,-1,NULL);
       }
       else
       {
-	XMoveWindow(dpy, tmp_win->icon_pixmap_w, tmp_win->icon_x_loc, FinalY);
+	XMoveWindow(dpy, tmp_win->icon_pixmap_w, tmp_win->icon_g.x, FinalY);
 	if (fWarp)
 	  XWarpPointer(dpy, None, None, 0, 0, 0, 0, FinalX - x, FinalY - y);
       }
@@ -551,7 +551,6 @@ fprintf(stderr,"move window '%s'\n", tmp_win->name);
 void move_window(F_CMD_ARGS)
 {
   move_window_doit(eventp,w,tmp_win,context,action,Module,False,False);
-
 }
 
 void animated_move_window(F_CMD_ARGS)
@@ -627,11 +626,11 @@ static void DoSnapAttract(
 	}
 	else
 	{
-	  other.width = tmp->icon_w_width;
-	  other.height = tmp->icon_w_height;
+	  other.width = tmp->icon_g.width;
+	  other.height = tmp->icon_g.height;
 	}
-	other.x = tmp->icon_x_loc;
-	other.y = tmp->icon_y_loc;
+	other.x = tmp->icon_g.x;
+	other.y = tmp->icon_g.y;
       }
       else
       {
@@ -958,8 +957,8 @@ Bool moveLoop(FvwmWindow *tmp_win, int XOffset, int YOffset, int Width,
 	}
 	else
 	{
-	  *FinalX = tmp_win->icon_x_loc;
-	  *FinalY = tmp_win->icon_y_loc;
+	  *FinalX = tmp_win->icon_g.x;
+	  *FinalY = tmp_win->icon_g.y;
 	}
 	aborted = True;
 	finished = True;
@@ -1003,8 +1002,8 @@ Bool moveLoop(FvwmWindow *tmp_win, int XOffset, int YOffset, int Width,
 	  }
 	  else
 	  {
-	    *FinalX = tmp_win->icon_x_loc;
-	    *FinalY = tmp_win->icon_y_loc;
+	    *FinalX = tmp_win->icon_g.x;
+	    *FinalY = tmp_win->icon_g.y;
 	  }
 	  aborted = True;
 	  finished = True;
@@ -1081,12 +1080,12 @@ Bool moveLoop(FvwmWindow *tmp_win, int XOffset, int YOffset, int Width,
 	{
 	  if (IS_ICONIFIED(tmp_win))
 	  {
-	    tmp_win->icon_x_loc = xl ;
+	    tmp_win->icon_g.x = xl ;
 	    tmp_win->icon_xl_loc = xl -
-	      (tmp_win->icon_w_width - tmp_win->icon_p_width)/2;
-	    tmp_win->icon_y_loc = yt;
+	      (tmp_win->icon_g.width - tmp_win->icon_p_width)/2;
+	    tmp_win->icon_g.y = yt;
 	    if(tmp_win->icon_pixmap_w != None)
-	      XMoveWindow(dpy, tmp_win->icon_pixmap_w, tmp_win->icon_x_loc,yt);
+	      XMoveWindow(dpy, tmp_win->icon_pixmap_w, tmp_win->icon_g.x,yt);
 	    else if (tmp_win->icon_w != None)
 	      XMoveWindow(dpy, tmp_win->icon_w,tmp_win->icon_xl_loc,
 			  yt+tmp_win->icon_p_height);
@@ -2377,10 +2376,10 @@ static void MaximizeHeight(FvwmWindow *win, unsigned int win_width, int win_x,
     {
       if(cwin->icon_w == None || IS_ICON_UNMAPPED(cwin))
 	continue;
-      x21 = cwin->icon_x_loc;
-      y21 = cwin->icon_y_loc;
+      x21 = cwin->icon_g.x;
+      y21 = cwin->icon_g.y;
       x22 = x21 + cwin->icon_p_width;
-      y22 = y21 + cwin->icon_p_height + cwin->icon_w_height;
+      y22 = y21 + cwin->icon_p_height + cwin->icon_g.height;
     }
     else
     {
@@ -2440,10 +2439,10 @@ static void MaximizeWidth(FvwmWindow *win, unsigned int *win_width, int *win_x,
     {
       if(cwin->icon_w == None || IS_ICON_UNMAPPED(cwin))
 	continue;
-      x21 = cwin->icon_x_loc;
-      y21 = cwin->icon_y_loc;
+      x21 = cwin->icon_g.x;
+      y21 = cwin->icon_g.y;
       x22 = x21 + cwin->icon_p_width;
-      y22 = y21 + cwin->icon_p_height + cwin->icon_w_height;
+      y22 = y21 + cwin->icon_p_height + cwin->icon_g.height;
     }
     else
     {

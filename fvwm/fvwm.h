@@ -361,7 +361,7 @@ typedef struct FvwmWindow
   int corner_width;
 
   rectangle title_g;
-#if 0
+#if 1
   rectangle icon_g;
 #else
   int icon_x_loc;             /* icon window x coordinate */

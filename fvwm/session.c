@@ -385,8 +385,8 @@ SaveWindowStates(FILE *f)
       f, "  [GEOMETRY] %i %i %i %i %i %i %i %i %i %i %i %i %i\n",
       save_g.x, save_g.y, save_g.width, save_g.height,
       ewin->max_g.x, ewin->max_g.y, ewin->max_g.width, ewin->max_g.height,
-      ewin->icon_x_loc + ((!is_icon_sticky) ? Scr.Vx : 0),
-      ewin->icon_y_loc + ((!is_icon_sticky) ? Scr.Vy : 0),
+      ewin->icon_g.x + ((!is_icon_sticky) ? Scr.Vx : 0),
+      ewin->icon_g.y + ((!is_icon_sticky) ? Scr.Vy : 0),
       ewin->hints.win_gravity,
       ewin->max_offset.x, ewin->max_offset.y);
     fprintf(f, "  [DESK] %i\n", ewin->Desk);
@@ -707,13 +707,13 @@ MatchWinToSM(FvwmWindow *ewin, int *do_shade, int *do_max)
 
       /* this is not enough to fight fvwms attempts to
 	 put icons on the current page */
-      ewin->icon_x_loc = matches[i].icon_x;
-      ewin->icon_y_loc = matches[i].icon_y;
+      ewin->icon_g.x = matches[i].icon_x;
+      ewin->icon_g.y = matches[i].icon_y;
       if (!IS_STICKY(&(matches[i])) &&
 	  !(IS_ICONIFIED(&(matches[i])) && IS_ICON_STICKY(&(matches[i]))))
       {
-	ewin->icon_x_loc -= Scr.Vx;
-	ewin->icon_y_loc -= Scr.Vy;
+	ewin->icon_g.x -= Scr.Vx;
+	ewin->icon_g.y -= Scr.Vy;
       }
 
 #if 0

@@ -138,7 +138,7 @@ static void DoSetFocus(Window w, FvwmWindow *Fw, Bool FocusByMouse, Bool NoWarp)
 		  }
 	      Scr.Focus = NULL;
 	      Scr.Ungrabbed = NULL;
-	      XSetInputFocus(dpy, Scr.NoFocusWin,RevertToParent,lastTimestamp);
+	      FOCUS_SET(Scr.NoFocusWin);
 	    }
 	  return;
 	}
@@ -157,8 +157,9 @@ static void DoSetFocus(Window w, FvwmWindow *Fw, Bool FocusByMouse, Bool NoWarp)
       window here, or we'll never catch the raise click. For this special case,
       the newly-focused window is ungrabbed in events.c (HandleButtonPress).
   */
-  if((Scr.Ungrabbed != NULL)&&(HAS_CLICK_FOCUS(Scr.Ungrabbed) || Scr.go.MouseFocusClickRaises)
-     && (Scr.Ungrabbed != Fw))
+  if ((Scr.Ungrabbed != NULL)&&
+      (HAS_CLICK_FOCUS(Scr.Ungrabbed) || Scr.go.MouseFocusClickRaises) &&
+      (Scr.Ungrabbed != Fw))
     {
       /* need to grab all buttons for window that we are about to
        * unfocus */
@@ -201,7 +202,7 @@ static void DoSetFocus(Window w, FvwmWindow *Fw, Bool FocusByMouse, Bool NoWarp)
 
   if((Fw)&&(IS_LENIENT(Fw)))
     {
-      XSetInputFocus (dpy, w, RevertToParent, lastTimestamp);
+      FOCUS_SET(w);
       Scr.Focus = Fw;
       Scr.UnknownWinFocused = None;
     }
@@ -209,18 +210,18 @@ static void DoSetFocus(Window w, FvwmWindow *Fw, Bool FocusByMouse, Bool NoWarp)
 	    (Fw->wmhints->input == False)))
     {
       /* Window will accept input focus */
-      XSetInputFocus (dpy, w, RevertToParent, lastTimestamp);
+      FOCUS_SET(w);
       Scr.Focus = Fw;
       Scr.UnknownWinFocused = None;
     }
   else if ((Scr.Focus)&&(Scr.Focus->Desk == Scr.CurrentDesk))
     {
       /* Window doesn't want focus. Leave focus alone */
-      /* XSetInputFocus (dpy,Scr.Hilite->w , RevertToParent, lastTimestamp);*/
+      /* FOCUS_SET(Scr.Hilite->w);*/
     }
   else
     {
-      XSetInputFocus (dpy, Scr.NoFocusWin, RevertToParent, lastTimestamp);
+      FOCUS_SET(Scr.NoFocusWin);
       Scr.Focus = NULL;
     }
 
@@ -278,8 +279,8 @@ void FocusOn(FvwmWindow *t, Bool FocusByMouse, char *action)
 
     if(IS_ICONIFIED(t))
     {
-      cx = t->icon_xl_loc + t->icon_w_width/2;
-      cy = t->icon_y_loc + t->icon_p_height + ICON_HEIGHT/2;
+      cx = t->icon_xl_loc + t->icon_g.width/2;
+      cy = t->icon_g.y + t->icon_p_height + ICON_HEIGHT/2;
     }
     else
     {
@@ -331,8 +332,8 @@ static void WarpOn(XEvent *eventp, FvwmWindow *t, int warp_x, int x_unit,
 
   if(IS_ICONIFIED(t))
   {
-    cx = t->icon_xl_loc + t->icon_w_width/2;
-    cy = t->icon_y_loc + t->icon_p_height + ICON_HEIGHT/2;
+    cx = t->icon_xl_loc + t->icon_g.width/2;
+    cy = t->icon_g.y + t->icon_p_height + ICON_HEIGHT/2;
   }
   else
   {
@@ -347,8 +348,8 @@ static void WarpOn(XEvent *eventp, FvwmWindow *t, int warp_x, int x_unit,
 
   if(IS_ICONIFIED(t))
   {
-    x = t->icon_xl_loc + t->icon_w_width/2;
-    y = t->icon_y_loc + t->icon_p_height + ICON_HEIGHT/2;
+    x = t->icon_xl_loc + t->icon_g.width/2;
+    y = t->icon_g.y + t->icon_p_height + ICON_HEIGHT/2;
   }
   else
   {

@@ -1088,9 +1088,9 @@ static void menuShortcuts(MenuRoot *mr, MenuReturn *pmret, XEvent *event,
     /* fall through */
 
   case XK_Tab:
-  #ifdef XK_XKB_KEYS
+#ifdef XK_XKB_KEYS
   case XK_ISO_Left_Tab:
-  #endif
+#endif
     /* Tab added mostly for Winlist */
     if (items_to_move == 0)
     {
@@ -1127,7 +1127,6 @@ static void menuShortcuts(MenuRoot *mr, MenuReturn *pmret, XEvent *event,
 	break;
       }
     }
-    /* fall through */
 
     if (!miCurrent)
     {

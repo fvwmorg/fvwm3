@@ -16,6 +16,10 @@
 #ifndef _FOCUS_
 #define _FOCUS_
 
+#define FOCUS_SET(w) XSetInputFocus(dpy, w, RevertToParent, lastTimestamp);
+#define FOCUS_RESET() \
+  XSetInputFocus (dpy, PointerRoot, RevertToPointerRoot, CurrentTime);
+
 /********************************************************************
  *
  * Sets the input focus to the indicated window.

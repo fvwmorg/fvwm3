@@ -60,6 +60,7 @@
 #include "events.h"
 #include "read.h"
 #include "colors.h"
+#include "focus.h"
 
 #include <X11/Xproto.h>
 #include <X11/Xatom.h>
@@ -550,7 +551,7 @@ int main(int argc, char **argv)
   XMapWindow(dpy, Scr.NoFocusWin);
 
   SetMWM_INFO(Scr.NoFocusWin);
-  XSetInputFocus (dpy, Scr.NoFocusWin, RevertToParent, CurrentTime);
+  FOCUS_SET(Scr.NoFocusWin);
 
   XSync(dpy, 0);
   if(debugging)
@@ -1661,7 +1662,7 @@ static void Reborder(void)
   }
 
   MyXUngrabServer (dpy);
-  XSetInputFocus (dpy, PointerRoot, RevertToPointerRoot, CurrentTime);
+  FOCUS_RESET();
   XSync(dpy,0);
 }
 
