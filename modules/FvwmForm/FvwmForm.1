@@ -468,6 +468,10 @@ If the choice is not selected, the result is empty.
 .B $(\fIname\fP!\fIstring\fP)
 The same as the above, except that the converse conditions are taken.
 
+When using the "?" and "!" forms to pass a string, the string is delimited
+by a right parenthesis.  If you need to put a right parenthesis in a string,
+preceed the right parenthesis with a backslash.
+
 .TP 4
 .B *FvwmFormUseData \fIdatafile\fP \fIleading\fP
 Tells FvwmForm to read a data file and extract data from module

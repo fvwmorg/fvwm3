@@ -129,6 +129,10 @@ char * ParseCommand (int dn, char *sp, char end, int *dn1, char **sp1)
 	}
       }
       goto next_loop;
+    } /* end char is $, not followed by ( */
+    /* if char is \, followed by ), want to pass thru the paren literally */
+    if (c == '\\' && *sp == ')') {
+      c = *(sp++);                      /* skip to the paren */
     }
   normal_char:
     AddChar(c);

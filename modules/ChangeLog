@@ -1,3 +1,11 @@
+2000-01-04  Dan Espen  <dane@mk.telcordia.com>
+
+	* FvwmForm/FvwmForm.1: Document means of passing closing paren
+	thru in a command string.
+
+	* FvwmForm/ParseCommand.c (ParseCommand): Provide a means to pass
+	a closing paren thru in a command.
+
 2000-01-04  olicha <olivier.chapuis@free.fr>
 
 	* FvwmScript/Scripts/ScriptFvwmQuit
