@@ -1214,6 +1214,7 @@ static void execute_complex_function(F_CMD_ARGS, Bool *desperate,
   Bool HaveDoubleClick = False;
   Bool HaveHold = False;
   Bool NeedsTarget = False;
+  Bool ImmediateNeedsTarget = False;
   char *arguments[10], *taction;
   char* func_name;
   int x, y ,i;
@@ -1243,38 +1244,62 @@ static void execute_complex_function(F_CMD_ARGS, Bool *desperate,
   if(eventp->type == ButtonPress)
     eventp->type = ButtonRelease;
   func->use_depth++;
-  fi = func->first_item;
-  while(fi != NULL)
+
+  for (fi = func->first_item; fi != NULL; fi = fi->next_item)
+  {
+    if (fi->flags & FUNC_NEEDS_WINDOW)
     {
-      /* c is already lowercase here */
-      c = fi->condition;
-      if (fi->flags & FUNC_NEEDS_WINDOW)
-	NeedsTarget = True;
-      switch (c)
+      NeedsTarget = True;
+      if (fi->condition == CF_IMMEDIATE)
       {
-      case CF_IMMEDIATE:
-	if(tmp_win)
-	  w = tmp_win->frame;
-	else
-	  w = None;
-	taction = expand(fi->action,arguments,tmp_win,False);
-	ExecuteFunction(taction,tmp_win,eventp,context,-2,EXPAND_COMMAND);
-	free(taction);
-	break;
-      case CF_DOUBLE_CLICK:
-	HaveDoubleClick = True;
-	Persist = True;
-	break;
-      case CF_HOLD:
-	HaveHold = True;
-	Persist = True;
-	break;
-      default:
-	Persist = True;
-	break;
+        ImmediateNeedsTarget = True;
+        break;
       }
-      fi = fi->next_item;
     }
+  }
+
+  if(ImmediateNeedsTarget)
+  {
+    if (DeferExecution(eventp,&w,&tmp_win,&context, CRS_SELECT,ButtonPress))
+    {
+      func->use_depth--;
+      WaitForButtonsUp(False);
+      for(i=0;i<10;i++)
+        if(arguments[i] != NULL)
+          free(arguments[i]);
+      return;
+    }
+    NeedsTarget = False;
+  }
+
+  for (fi = func->first_item; fi != NULL; fi = fi->next_item)
+  {
+    /* c is already lowercase here */
+    c = fi->condition;
+    switch (c)
+    {
+    case CF_IMMEDIATE:
+      if (tmp_win)
+	w = tmp_win->frame;
+      else
+	w = None;
+      taction = expand(fi->action,arguments,tmp_win,False);
+      ExecuteFunction(taction,tmp_win,eventp,context,-2,EXPAND_COMMAND);
+      free(taction);
+      break;
+    case CF_DOUBLE_CLICK:
+      HaveDoubleClick = True;
+      Persist = True;
+      break;
+    case CF_HOLD:
+      HaveHold = True;
+      Persist = True;
+      break;
+    default:
+      Persist = True;
+      break;
+    }
+  }
 
   if(!Persist)
     {
