@@ -1,3 +1,7 @@
+2002-10-23  Dan Espen  <dane@mk.telcordia.com>
+
+	* fvwm/fvwm.1.in: Lang check done.
+
 2002-10-24  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* fvwm/menus.c:

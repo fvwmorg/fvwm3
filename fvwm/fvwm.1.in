@@ -3816,23 +3816,23 @@ This command is obsolete. Please use
 .B ImagePath
 instead.
 
-.\"needs_lang_check
 .TP
 .BI "PrintInfo " "subject [verbose]"
-Print information on a given
+Print information on
 .I subject
 on stderr.  An optional integer argument
 .I verbose
-define the level of information which is given.
+defines the level of information which is given.
 The current valid subject is:
 
 .IR Colors
-which print information on the colours used by fvwm. This useful
-with screen which can only display 256 (or less) colors at once.
+which prints information about the colors used by fvwm. This useful
+on screens which can only display 256 (or less) colors at once.
 If
 .I verbose
-is >= 1 the pallet used by fvwm is printed.
-.\"end
+is one or greater the pallet used by fvwm is printed.
+If you have a limited color palette, and you run out of colors,
+this command might be helpful.
 
 .TP
 .BI "Schedule " "delay_ms [command_id] command"
