@@ -1,3 +1,8 @@
+1999-03-02  Dan Espen  <dane@mk.bellcore.com>
+
+	* fvwm/fvwm2.1: Changed fvwm to fvwm2 everywhere I thought it should
+	be changed.
+
 1999-03-02  Matthias Clasen  <clasen@mathematik.uni-freiburg.de>
 
 	* fvwm/fvwm2.1: details about the geometry displayed
