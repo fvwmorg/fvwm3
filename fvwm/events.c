@@ -1432,9 +1432,11 @@ void HandleButtonPress(void)
       DrawDecorations(
         Tmp_win, DRAW_BUTTONS, (Scr.Hilite == Tmp_win), True, PressedW);
     else
+    {
       DrawDecorations(
         Tmp_win, DRAW_FRAME, (Scr.Hilite == Tmp_win),
         (HAS_DEPRESSABLE_BORDER(Tmp_win) && PressedW != None), PressedW);
+    }
   }
 
   ButtonWindow = Tmp_win;
@@ -1472,8 +1474,7 @@ void HandleButtonPress(void)
     else
       DrawDecorations(
         ButtonWindow, DRAW_FRAME, (Scr.Hilite == ButtonWindow),
-        (HAS_DEPRESSABLE_BORDER(ButtonWindow) && OldPressedW != None),
-        (HAS_DEPRESSABLE_BORDER(ButtonWindow) ? OldPressedW : None));
+        HAS_DEPRESSABLE_BORDER(ButtonWindow), None);
   }
   ButtonWindow = NULL;
 }

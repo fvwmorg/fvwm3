@@ -332,9 +332,6 @@ static void RedrawBorder(
     &GetDecor(t, BorderStyle.active.style) :
     &GetDecor(t, BorderStyle.inactive.style);
 
-#if 0
-  is_reversed = (HAS_DEPRESSABLE_BORDER(t) && PressedW == t->decor_w);
-#endif
   is_reversed ^= (borderstyle->flags.button_relief == DFS_BUTTON_IS_SUNK);
   if (is_reversed)
   {
@@ -347,12 +344,14 @@ static void RedrawBorder(
     sgc = cd->shadow_gc;
   }
 
+#if 0
   if (flush_expose(t->frame) + flush_expose(t->decor_w) == 0 &&
       expose_win && expose_win != t->frame && expose_win != t->decor_w)
   {
     /* nothing else to do */
     return;
   }
+#endif
 
 
   /*
