@@ -241,6 +241,12 @@ void FlocaleUnloadFont(Display *dpy, FlocaleFont *flf);
 void FlocaleDrawString(
 	Display *dpy, FlocaleFont *ff, FlocaleWinString *fstring,
 	unsigned long flags);
+
+/*
+ * Underline a character in a string (pete@tecc.co.uk) at coffest position
+ */
+void FlocaleDrawUnderline(
+	     Display *dpy, FlocaleFont *flf, FlocaleWinString *fws, int coffset);
 /*
  * Call XmbTextEscapement(ff->fontset, str, sl) if ff->fontset is not None.
  * Call XTextWith(ff->font, str, sl) if ff->font is not NULL.

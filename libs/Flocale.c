@@ -1040,6 +1040,34 @@ void FlocaleDrawString(
 	return;
 }
 
+void FlocaleDrawUnderline(
+	Display *dpy, FlocaleFont *flf, FlocaleWinString *fws, int coffset)
+{
+	int off1, off2, y, x_s, x_e, i;
+
+	off1 = FlocaleTextWidth(flf, fws->str, coffset) -
+		((coffset > 0)? flf->shadow_size:0);
+	off2 = FlocaleTextWidth(flf, fws->str + coffset, 1) -
+		flf->shadow_size - 1 + off1;
+	y = fws->y + 2;
+	x_s = fws->x + off1;
+	x_e = fws->x + off2;
+
+	if (flf->shadow_size > 0 && fws->flags.has_colorset)
+	{
+		for (i=1; i <= flf->shadow_size; i++)
+		{
+			XSetForeground(dpy, fws->gc, fws->colorset->fgsh);
+			XDrawLine(dpy, fws->win, fws->gc,
+				  x_s + i, y + i, x_e + i, y +i);
+			XSetForeground(dpy, fws->gc, fws->colorset->fg);
+		}
+		XDrawLine(dpy, fws->win, fws->gc, x_s, y, x_e, y);
+	}
+
+	return;
+}
+
 int FlocaleTextWidth(FlocaleFont *flf, char *str, int sl)
 {
 	int result = 0;

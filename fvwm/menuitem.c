@@ -55,27 +55,6 @@
 /* ---------------------------- local functions ----------------------------- */
 
 /****************************************************************************
- * Procedure:
- *	draw_underline() - Underline a character in a string (pete@tecc.co.uk)
- *
- * Calculate the pixel offsets to the start of the character position we
- * want to underline and to the next character in the string.  Shrink by
- * one pixel from each end and the draw a line that long two pixels below
- * the character...
- *
- ****************************************************************************/
-static void draw_underline(
-	FlocaleFont *font, Window w, GC gc, int x, int y, char *txt,
-	int coffset)
-{
-	int off1 = FlocaleTextWidth(font, txt, coffset);
-	int off2 = FlocaleTextWidth(font, txt + coffset, 1) - 1 + off1;
-	XDrawLine(dpy, w, gc, x + off1, y + 2, x + off2, y + 2);
-
-	return;
-}
-
-/****************************************************************************
  *
  *  Draws two horizontal lines to form a separator
  *
@@ -645,10 +624,8 @@ void menuitem_paint(
 		     ST_USE_AUTOMATIC_HOTKEYS(ms)) &&
 		    MI_HOTKEY_COLUMN(mi) == i)
 		{
-			draw_underline(
-				ST_PSTDFONT(ms), mpip->w, fws->gc,
-				MI_LABEL_OFFSET(mi)[i], text_y,
-				MI_LABEL(mi)[i], MI_HOTKEY_COFFSET(mi));
+			FlocaleDrawUnderline(
+				dpy, ST_PSTDFONT(ms),fws, MI_HOTKEY_COFFSET(mi));
 		}
 	}
 

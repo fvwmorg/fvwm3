@@ -1,5 +1,13 @@
 2002-05-17  olicha  <olivier.chapuis@free.fr>
 
+	* fvwm/menuitem.c (draw_underline):
+	* libs/Flocale.h:
+	* libs/Flocale.c (FlocaleDrawUnderline):
+	Move draw_underline into Flocale.c and fix underline position with
+	shadow rendering
+
+2002-05-17  olicha  <olivier.chapuis@free.fr>
+
 	* fvwm/style.c (update_window_color_style):
 	(update_window_color_hi_style):
 	* fvwm/move_resize.c (DisplayPosition):
