@@ -102,9 +102,10 @@ static int SmartPlacement(FvwmWindow *t,
 /**/
   int temp_h,temp_w;
   int test_x = 0,test_y = 0;
-  int loc_ok = False, tw,tx,ty,th;
+  int loc_ok = False, tw = 0, tx = 0, ty = 0, th = 0;
   FvwmWindow *test_window;
   int stickyx, stickyy;
+  Bool do_test;
 
   /*  RBW - 11/02/1998  */
   test_x = PageLeft;
@@ -115,7 +116,7 @@ static int SmartPlacement(FvwmWindow *t,
   temp_w = width;
 
   /*  RBW - 11/02/1998  */
-  while (test_y + temp_h < PageBottom && !loc_ok)
+  for ( ; test_y + temp_h < PageBottom && !loc_ok; )
   {
     test_x = PageLeft;
     while (test_x + temp_w < PageRight && !loc_ok)
@@ -139,42 +140,44 @@ static int SmartPlacement(FvwmWindow *t,
 	    stickyx = 0;
 	    stickyy = 0;
 	  }
+	  do_test = False;
 #ifndef NO_STUBBORN_PLACEMENT
           if((IS_ICONIFIED(test_window))&&!(IS_ICON_UNMAPPED(test_window))&&
-             (test_window->icon_w)&&(test_window != t))
+             (test_window->icon_w))
           {
             tw=test_window->icon_p_width;
             th=test_window->icon_p_height+
               test_window->icon_g.height;
             tx = test_window->icon_g.x - stickyx;
             ty = test_window->icon_g.y - stickyy;
-
-            if((tx<(test_x+width))&&((tx + tw) > test_x)&&
-               (ty<(test_y+height))&&((ty + th)>test_y))
-            {
-              loc_ok = False;
-              test_x = tx + tw;
-            }
+	    do_test = True;
           }
 #endif /* !NO_STUBBORN_PLACEMENT */
-          if(!(IS_ICONIFIED(test_window))&&(test_window != t))
+          else if(!IS_ICONIFIED(test_window))
           {
             tw = test_window->frame_g.width;
             th = test_window->frame_g.height;
             tx = test_window->frame_g.x - stickyx;
             ty = test_window->frame_g.y - stickyy;
-            if((tx <= (test_x+width))&&((tx + tw) >= test_x)&&
-               (ty <= (test_y+height))&&((ty + th)>= test_y))
-            {
-              loc_ok = False;
-              test_x = tx + tw;
-            }
+	    do_test = True;
           }
-        }
+	  if (do_test)
+	  {
+            if (tx < test_x + width  && test_x < tx + tw &&
+		ty < test_y + height && test_y < ty + th)
+            {
+	      /* window overlaps, look for a different place */
+              loc_ok = False;
+              test_x = tx + tw - 1;
+            }
+	  }
+        } /* if (test_window->Desk == t->Desk || IS_STICKY(test_window)) */
       } /* for */
-      test_x +=1;
+      if (!loc_ok)
+	test_x +=1;
     } /* while */
-    test_y +=1;
+    if (!loc_ok)
+      test_y +=1;
   } /* while */
   /*  RBW - 11/02/1998  */
   if(loc_ok == False)
