@@ -1,3 +1,8 @@
+2004-06-11  Scott Smedley  <scottie7@tpg.com.au>
+
+	* libs/Bindings.c:
+	bugfix: wrong stroke action being invoked.
+
 2004-06-10  Scott Smedley  <scottie7@tpg.com.au>
 
 	* fvwm/builtins.c:

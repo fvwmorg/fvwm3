@@ -423,8 +423,8 @@ Bool __compare_binding(
 	}
 #ifdef HAVE_STROKE
 	else if (BIND_IS_STROKE_BINDING(type) &&
-		(strcmp(b->Stroke_Seq, stroke) != 0) &&
-		 b->Button_Key != button_keycode)
+		((strcmp(b->Stroke_Seq, stroke) != 0) ||
+		 b->Button_Key != button_keycode))
 	{
 		return False;
 	}
