@@ -1,3 +1,7 @@
+1999-09-23  Hippo
+
+	* FvwmTheme/FvwmTheme.c: Fixed memory corruption.
+
 1999-09-23  Dominik Vogt  <dominik_vogt@gmx.de>
 
 	* FvwmButtons/FvwmButtons.c (HandlePanelPress): reduce flickering when
@@ -34,7 +38,7 @@
 
 1999-09-16  Hippo
 
-	* FvwmScroll/*: Fixed man page formatting, removed generated files
+	* FvwmScript/*: Fixed man page formatting, removed generated files
 	removed many copies of display and colormap, uses GetColor from fvwmlib,
 	uses same Visual as fvwm.
 

@@ -45,6 +45,7 @@ static Display *dpy;
 static Window win;			/* need a window to create pixmaps */
 static GC gc;				/* ditto */
 static char *name;
+static int namelen;
 static int color_limit = 0;
 static int fd[2];			/* communication pipes */
 static Bool privateCells = False;	/* set when read/write colors used */
@@ -67,6 +68,7 @@ int main(int argc, char **argv)
   XGCValues xgcv;
 
   name = GetFileNameFromPath(argv[0]);
+  namelen = strlen(name);
 
   set_signals();
 
@@ -95,7 +97,7 @@ int main(int argc, char **argv)
   XSetCloseDownMode(dpy, RetainTemporary);
 
   /* create a window to work in */
-  xswa.background_pixmap = CopyFromParent;
+  xswa.background_pixmap = None;
   xswa.border_pixel = 0;
   xswa.colormap = Pcmap;
   win = XCreateWindow(dpy, RootWindow(dpy, DefaultScreen(dpy)), -2, -2, 2, 2, 0,
@@ -235,13 +237,14 @@ static void parse_colorset(char *line)
 
   /* find out which colorset and make sure it exists */
   token = PeekToken(line, &line);
-  if (!token) {
+  if (!token)
     return;
-  }
-  ret = !sscanf(token, "%d", &n);
-  if (ret)
+
+  if (!sscanf(token, "%d", &n))
     return;
+
   cs = AllocColorset(n);
+
   /* grab cells */
   if (privateCells) {
     while (nSets <= n) {
@@ -294,9 +297,7 @@ static void parse_colorset(char *line)
       color.pixel = cs->shadow;
       XStoreColor(dpy, Pcmap, &color);
     } else {
-      XFreeColors(dpy, Pcmap, &cs->bg, 1, 0);
-      XFreeColors(dpy, Pcmap, &cs->hilite, 1, 0);
-      XFreeColors(dpy, Pcmap, &cs->shadow, 1, 0);
+      XFreeColors(dpy, Pcmap, &cs->bg, 3, 0);
       cs->bg = GetColor(bg);
       cs->hilite = GetHilite(cs->bg);
       cs->shadow = GetShadow(cs->bg);
@@ -305,20 +306,28 @@ static void parse_colorset(char *line)
   } /* bg */
 
   /* look for a pixmap specifier, if not "-" remove the existing one */
-  /* ret is guaranteed false at this point */
+  ret = False;
   token = PeekToken(line, &line);
   if (token) {
     ret = StrEquals(token, dash);
   }
   /* ret is only true if the rest of the line is "-" */
   if (!ret) {
-    XFreePixmap(dpy, cs->pixmap);
-    XFreePixmap(dpy, cs->mask);
-    XFreePixmap(dpy, cs->shape_mask);
-    cs->pixmap = None;
-    cs->mask = None;
-    cs->shape_mask = None;
-    update = True;
+    if (cs->pixmap) {
+      XFreePixmap(dpy, cs->pixmap);
+      cs->pixmap = None;
+      update = True;
+    }
+    if (cs->mask) {
+      XFreePixmap(dpy, cs->mask);
+      cs->mask = None;
+      update = True;
+    }
+    if (cs->shape_mask) {
+      XFreePixmap(dpy, cs->shape_mask);
+      cs->shape_mask = None;
+      update = True;
+    }
   }
 
   i = GetTokenIndex(token, shape_options, 0, NULL);
@@ -531,9 +540,7 @@ static void parse_colorset(char *line)
       color.pixel = cs->shadow;
       XStoreColor(dpy, Pcmap, &color);
     } else {
-      XFreeColors(dpy, Pcmap, &cs->bg, 1, 0);
-      XFreeColors(dpy, Pcmap, &cs->hilite, 1, 0);
-      XFreeColors(dpy, Pcmap, &cs->shadow, 1, 0);
+      XFreeColors(dpy, Pcmap, &cs->bg, 3, 0);
       XAllocColor(dpy, Pcmap, &color);
       cs->bg = color.pixel;
       cs->hilite = GetHilite(cs->bg);
@@ -588,13 +595,13 @@ static void parse_config(void) {
   char *line;
 
   /* prepare the tokenizer array, [0,1] are ImagePath and ColorLimit */
-  config_options[3] = safemalloc(strlen(name) + 10);
+  config_options[3] = safemalloc(namelen + 10);
   sprintf(config_options[3], "*%sColorset", name);
-  config_options[4] = safemalloc(strlen(name) + 17);
+  config_options[4] = safemalloc(namelen + 17);
   sprintf(config_options[4], "*%sReadWriteColors", name);
 
   /* set a filter on the config lines sent */
-  line = safemalloc(strlen(name + 2));
+  line = safemalloc(namelen + 2);
   sprintf(line, "*%s", name);
   InitGetConfigLine(fd, line);
   free(line);
