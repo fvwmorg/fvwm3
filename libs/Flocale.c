@@ -117,8 +117,8 @@ XChar2b *FlocaleUtf8ToUnicodeStr2b(unsigned char *str, int len, int *nl)
 }
 
 /* Note: this function is not expected to work perfectly; good mb rendering
- * should be (and is) done using Xmb functions and not XDrawString16. This function
- * is used when the locale does not correspond to the font */ 
+ * should be (and is) done using Xmb functions and not XDrawString16.
+ * This function is used when the locale does not correspond to the font */ 
 static
 XChar2b *FlocaleStringToString2b(unsigned char *str, int len, int *nl)
 {
@@ -134,7 +134,6 @@ XChar2b *FlocaleStringToString2b(unsigned char *str, int len, int *nl)
 			 * and ksc5601.1987-0, but for jisx0208.1983-0 this is
 			 * ok only for 0-9, a-z and A-Z, char as (, ! ...etc
 			 * are elsewhere  */
-			fprintf(stderr,"s: %c\n", str[i]);
 			str2b[j].byte1 = 0x23; /* magic number!! */
 			str2b[j].byte2 = str[i++];
 		}

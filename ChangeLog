@@ -1,4 +1,9 @@
 2002-04-29  olicha  <olivier.chapuis@free.fr>
+	
+	* libs/Flocale.c (FlocaleStringToString2b):
+	Removed some debug code
+
+2002-04-29  olicha  <olivier.chapuis@free.fr>
 
 	* libs/Fft.c (FftGetFontWidths):
 	(FftGetFontWidths):
