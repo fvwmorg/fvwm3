@@ -32,7 +32,8 @@ Changes in alpha release 2.5.11 (not released yet)
 * Fluxbox-like Alt-Button3 resizing with the new Resize options
   Direction, WarpToBorder and FixedDirection
 
-* Enhanced "Test (Version >= x.y.z)" option to allow version comparisons.
+* Enhanced "Test (Version >= x.y.z)" option to allow version
+  comparisons.
 
 * New FvwmButtons options: HoverColorset, HoverIcon & HoverTitle.
 
