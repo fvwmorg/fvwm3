@@ -26,7 +26,7 @@
 void EndLessLoop();
 void ReadFvwmPipe();
 void ProcessMessage(unsigned long type, unsigned long *body);
-void DeadPipe(int nonsense);
+RETSIGTYPE DeadPipe(int nonsense);
 void ParseConfig(void);
 int ParseConfigLine(char *line);
 void AddCommand(char *line);

@@ -378,6 +378,7 @@ TerminateHandler(int sig)
    * BEFORE we call it ...
    */
   fvwmSetTerminate(sig);
+  SIGNAL_RETURN;
 }
 
 

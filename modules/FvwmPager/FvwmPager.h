@@ -137,7 +137,7 @@ typedef struct pager_string_list
  */
 char *GetNextToken(char *indata,char **token);
 void Loop(int *fd);
-void DeadPipe(int nonsense) __attribute__((noreturn));
+RETSIGTYPE DeadPipe(int nonsense);
 void process_message(FvwmPacket*);
 void ParseOptions(void);
 

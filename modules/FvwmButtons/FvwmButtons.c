@@ -89,7 +89,7 @@ extern void SaveButtons(button_info*);
 
 /* ------------------------------ prototypes ------------------------------- */
 
-void DeadPipe(int nonsense) __attribute__((__noreturn__));
+RETSIGTYPE DeadPipe(int nonsense);
 static void DeadPipeCleanup(void);
 static RETSIGTYPE TerminateHandler(int sig);
 void SetButtonSize(button_info*,int,int);
@@ -218,9 +218,10 @@ int IsThereADestroyEvent(button_info *b)
 *** Externally callable function to quit! Note that DeadPipeCleanup
 *** is an exit-procedure and so will be called automatically
 **/
-void DeadPipe(int whatever)
+RETSIGTYPE DeadPipe(int whatever)
 {
   exit(0);
+  SIGNAL_RETURN;
 }
 
 /**
@@ -231,6 +232,7 @@ static RETSIGTYPE
 TerminateHandler(int sig)
 {
   fvwmSetTerminate(sig);
+  SIGNAL_RETURN;
 }
 
 /**

@@ -35,7 +35,7 @@ char Name[80]; /* name of this program in executable format */
 char *S_name;  /* socket name */
 
 void server( void );
-void DeadPipe( int );
+RETSIGTYPE DeadPipe( int );
 void CloseSocket();
 void ErrMsg( char *msg );
 void SigHandler( int );
@@ -141,16 +141,18 @@ int main(int argc, char *argv[])
 /*
  *      signal handler
  */
-void DeadPipe( int dummy )
+RETSIGTYPE DeadPipe( int dummy )
 {
   CloseSocket();
   exit(0);
+  SIGNAL_RETURN;
 }
 
-void SigHandler(int dummy)
+RETSIGTYPE SigHandler(int dummy)
 {
   CloseSocket();
   exit(1);
+  SIGNAL_RETURN;
 }
 
 /*

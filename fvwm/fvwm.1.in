@@ -4512,7 +4512,7 @@ Simple Examples:
 .EX
 # Interactive move
 Mouse 1 T A Move
-# Move window so top left is at (10%,10%)
+# Move window to top left is at (10%,10%)
 Mouse 2 T A Move 10 10
 # Move top left to (10pixels,10pixels)
 Mouse 3 T A Move 10p 10p
@@ -4524,6 +4524,10 @@ keystrokes, etc.; only the command is shown, though):
 # right of screen
 Move -0 -0
 
+# Move window so top left corner is 10 pixels
+# off the top left screen edge
+Move +-10 +-10
+
 # Move window 5% to the right, and to the
 # middle vertically
 Move w+5 50
@@ -4533,7 +4537,6 @@ Move w+5 50
 Move 40p w-10p
 
 # Move window to the mouse pointer location
-#
 Move m+0 m+0
 .EE
 See also the
@@ -5130,10 +5133,8 @@ screen (containing the mouse pointer), 'g' for the global screen
 or the screen number itself (counting from zero).  This option is
 only useful with multiple Xinerama screens.
 
-Here are some examples.
-The following
-adds a title-bar button to switch a window to the full vertical
-size of the screen:
+Here are some examples.  The following adds a title-bar button to
+switch a window to the full vertical size of the screen:
 .EX
 Mouse 0 4 A Maximize 0 100
 .EE

@@ -2509,6 +2509,7 @@ static RETSIGTYPE
 TerminateHandler(int sig)
 {
   fvwmSetTerminate(sig);
+  SIGNAL_RETURN;
 }
 
 /* signal-handler to make the timer work */
@@ -2564,6 +2565,8 @@ TimerHandler(int sig)
     RedrawTimeout(timer);
     alarm(1);
   }
+
+  SIGNAL_RETURN;
 }
 
 
@@ -2702,9 +2705,10 @@ int main (int argc, char **argv)
 }
 
 
-void DeadPipe(int nonsense)
+RETSIGTYPE DeadPipe(int nonsense)
 {
   exit(0);
+  SIGNAL_RETURN;
 }
 
 /*

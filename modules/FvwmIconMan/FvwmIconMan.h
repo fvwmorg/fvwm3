@@ -370,7 +370,7 @@ extern void ReadFvwmPipe(void);
 extern void *Malloc (size_t size);
 extern void Free (void *p);
 extern void ShutMeDown (int flag) __attribute__ ((__noreturn__));
-extern void DeadPipe (int nothing) __attribute__ ((__noreturn__));
+extern RETSIGTYPE DeadPipe (int nothing);
 extern char *copy_string (char **target, const char *src);
 
 extern void init_globals (void);

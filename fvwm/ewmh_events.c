@@ -22,6 +22,9 @@
 #include <X11/Xlib.h>
 #include <X11/Xmd.h>
 
+#include "libs/fvwmlib.h"
+#include "libs/fvwmrect.h"
+#include "libs/FScreen.h"
 #include "fvwm.h"
 #include "execcontext.h"
 #include "functions.h"
@@ -36,6 +39,7 @@
 #include "ewmh.h"
 #include "ewmh_intern.h"
 #include "decorations.h"
+#include "geometry.h"
 
 extern ewmh_atom ewmh_atom_wm_state[];
 
@@ -371,7 +375,6 @@ int ewmh_WMState(EWMH_CMD_ARGS)
 /* not yet implemented */
 int ewmh_WMStateFullScreen(EWMH_CMD_ARGS)
 {
-
 	if (ev == NULL && style == NULL)
 	{
 		return 0;
@@ -405,6 +408,50 @@ int ewmh_WMStateFullScreen(EWMH_CMD_ARGS)
 		}
 		SET_HAS_EWMH_INIT_FULLSCREEN_STATE(fwin, EWMH_STATE_HAS_HINT);
 		return 0;
+	}
+
+	if (ev != NULL)
+	{
+		/* client message */
+		char cmd[128];
+		int bool_arg = ev->xclient.data.l[0];
+
+		if ((bool_arg == NET_WM_STATE_TOGGLE && !IS_MAXIMIZED(fwin)) ||
+		    bool_arg == NET_WM_STATE_ADD)
+		{
+			fscreen_scr_arg fscr;
+			rectangle scr_g;
+			size_borders b;
+			int page_x;
+			int page_y;
+
+			/* maximize */
+			if (!is_function_allowed(
+				    F_MAXIMIZE, NULL, fwin, True, False))
+			{
+				return 0;
+			}
+			fscr.xypos.x =
+				fwin->frame_g.x + fwin->frame_g.width / 2;
+			fscr.xypos.y =
+				fwin->frame_g.y + fwin->frame_g.height / 2;
+			FScreenGetScrRect(
+				&fscr, FSCREEN_XYPOS, &scr_g.x, &scr_g.y,
+				&scr_g.width, &scr_g.height);
+			get_window_borders(fwin, &b);
+			get_page_offset_check_visible(&page_x, &page_y, fwin);
+			sprintf(
+				cmd, "ResizeMoveMaximize %dp %dp +%dp +%dp",
+				scr_g.width, scr_g.height,
+				scr_g.x - b.top_left.width + page_x,
+				scr_g.y - b.top_left.height + page_y);
+		}
+		else
+		{
+			/* unmaximize */
+			sprintf(cmd, "Maximize off");
+		}
+		execute_function_override_window(NULL, NULL, cmd, 0, fwin);
 	}
 
 	return 0;

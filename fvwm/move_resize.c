@@ -307,7 +307,7 @@ static int GetOnePositionArgument(
 	{
 		*pFinalX = max-w - (int)(val*factor);
 	}
-	else if (sscanf(s1,"%d",&val) == 1)
+	else if (sscanf(s1,"+%d",&val) == 1 || sscanf(s1,"%d",&val) == 1)
 	{
 		*pFinalX = (int)(val*factor);
 	}
@@ -368,17 +368,14 @@ static int GetMoveArguments(
 		free(s1);
 		return 0;
 	}
-	else
+	action = GetNextToken(action, &s2);
+	if (fWarp)
 	{
-		action = GetNextToken(action, &s2);
-		if (fWarp)
+		warp = PeekToken(action, &naction);
+		if (StrEquals(warp, "Warp"))
 		{
-			warp = PeekToken(action, &naction);
-			if (StrEquals(warp, "Warp"))
-			{
-				*fWarp = True;
-				action = naction;
-			}
+			*fWarp = True;
+			action = naction;
 		}
 	}
 
@@ -1338,13 +1335,10 @@ static void __move_window(F_CMD_ARGS, Bool do_animate, int mode)
 	{
 		return;
 	}
-
-
 	if (mode == MOVE_PAGE && IS_STICKY_ACROSS_PAGES(fw))
 	{
 		return;
 	}
-
 	if (mode == MOVE_PAGE)
 	{
 		rectangle r;
@@ -3811,26 +3805,7 @@ void CMD_Maximize(F_CMD_ARGS)
 	new_g.y = fw->frame_g.y;
 	new_g.width = fw->frame_g.width;
 	new_g.height = fw->frame_g.height;
-	if (IsRectangleOnThisPage(&fw->frame_g, fw->Desk))
-	{
-		/* maximize on visible page if any part of the window is
-		 * visible */
-		page_x = 0;
-		page_y = 0;
-	}
-	else
-	{
-		int xoff = Scr.Vx % Scr.MyDisplayWidth;
-		int yoff = Scr.Vy % Scr.MyDisplayHeight;
-
-		/* maximize on the page where the center of the window is */
-		page_x = truncate_to_multiple(
-			fw->frame_g.x + fw->frame_g.width / 2 + xoff,
-			Scr.MyDisplayWidth) - xoff;
-		page_y = truncate_to_multiple(
-			fw->frame_g.y + fw->frame_g.height / 2 + yoff,
-			Scr.MyDisplayHeight) - yoff;
-	}
+	get_page_offset_check_visible(&page_x, &page_y, fw);
 
 	/* Check if we should constrain rectangle to some Xinerama screen */
 	if (!is_screen_given)

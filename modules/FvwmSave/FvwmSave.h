@@ -29,7 +29,7 @@ struct list
 void Loop(int *fd);
 struct list *find_window(unsigned long id);
 void add_window(unsigned long new_win, unsigned long *body);
-void DeadPipe(int nonsense) __attribute__((noreturn));
+RETSIGTYPE DeadPipe(int nonsense);
 void process_message(unsigned long type,unsigned long *body);
 void do_save(void);
 void list_new_page(unsigned long *body);

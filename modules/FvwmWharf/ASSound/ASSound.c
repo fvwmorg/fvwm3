@@ -152,9 +152,10 @@ void PlaySound(int sid)
 #endif
 }
 
-void DoNothing(int foo)
+RETSIGTYPE DoNothing(int foo)
 {
-    signal(SIGUSR1, DoNothing);
+	signal(SIGUSR1, DoNothing);
+	SIGNAL_RETURN;
 }
 
 /*

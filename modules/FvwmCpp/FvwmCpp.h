@@ -7,7 +7,7 @@
  *
  */
 
-void DeadPipe(int nonsense);
+RETSIGTYPE DeadPipe(int nonsense);
 
 
 

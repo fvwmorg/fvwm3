@@ -28,6 +28,7 @@ char *getline();
 void sclose (int foo) {
   fclose(sp);
   exit(0);
+  SIGNAL_RETURN;
 }
 
 /*

@@ -1848,6 +1848,7 @@ TerminateHandler(int sig)
    * BEFORE we call it ...
    */
   fvwmSetTerminate(sig);
+  SIGNAL_RETURN;
 }
 
 
@@ -1861,6 +1862,7 @@ DeadPipe(int nonsense)
 {
   is_dead_pipe = True;
   exit(0);
+  SIGNAL_RETURN;
 }
 
 static void

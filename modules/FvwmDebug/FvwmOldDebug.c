@@ -343,11 +343,12 @@ void process_message(unsigned long type, const unsigned long *body)
  *      SIGPIPE handler - SIGPIPE means fvwm is dying
  *
  */
-void DeadPipe(int nonsense)
+RETSIGTYPE DeadPipe(int nonsense)
 {
   (void)nonsense;
   fprintf(stderr,"FvwmDebug: DeadPipe\n");
   exit(0);
+  SIGNAL_RETURN;
 }
 
 /*

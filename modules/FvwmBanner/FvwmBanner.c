@@ -435,7 +435,8 @@ void change_window_name(char *str)
  */
 
 /*ARGSUSED*/
-void DeadPipe (int nonsense)
+RETSIGTYPE DeadPipe (int nonsense)
 {
   exit (0);
+  SIGNAL_RETURN;
 }

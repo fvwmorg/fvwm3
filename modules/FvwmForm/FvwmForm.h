@@ -259,6 +259,6 @@ int FontWidth (XFontStruct *xfs);        /* FvwmForm.c */
 void RedrawFrame (XEvent *pev);          /* FvwmForm.c */
 char * ParseCommand (int, char *, char, int *, char **s); /* ParseCommand.c */
 
-void DeadPipe(int nonsense);            /* FvwmForm.c */
+RETSIGTYPE DeadPipe(int nonsense);            /* FvwmForm.c */
 
 #endif

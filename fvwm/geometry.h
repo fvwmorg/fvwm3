@@ -77,5 +77,7 @@ void modify_icon_position(FvwmWindow *fw, int dx, int dy);
 void set_icon_position(FvwmWindow *fw, int x, int y);
 void set_icon_picture_size(FvwmWindow *fw, int w, int h);
 void resize_icon_title_height(FvwmWindow *fw, int dh);
+void get_page_offset_check_visible(
+	int *ret_page_x, int *ret_page_y, FvwmWindow *fw);
 
 #endif /* PLACEMENT_H */

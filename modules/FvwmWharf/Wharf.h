@@ -22,7 +22,7 @@ extern void   ParseOptions(char *);
 extern char   *safemalloc(int length);
 extern void   change_window_name(char *str);
 extern int    My_XNextEvent(Display *dpy, XEvent *event);
-extern void   DeadPipe(int nonsense);
+extern RETSIGTYPE DeadPipe(int nonsense);
 extern Bool   LoadIconFile(int button,int ico);
 extern void   CreateIconWindow(int button, Window *win);
 extern void   ConfigureIconWindow(int button,int row, int column, int colorset);

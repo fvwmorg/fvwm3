@@ -10,7 +10,7 @@ extern int x_fd;
 extern int ScreenWidth, ScreenHeight;
 
 char *safemalloc(int length);
-void DeadPipe(int nonsense);
+RETSIGTYPE DeadPipe(int nonsense);
 void GetTargetWindow(Window *app_win);
 void get_graphics(char *line);
 

@@ -261,57 +261,7 @@ static Bool test_resizing_event(
 	return rc;
 }
 
-/*
- *
- *  Procedure:
- *      SendConfigureNotify - inform a client window of its geometry.
- *
- *  The input (frame) geometry will be translated to client geometry
- *  before sending.
- *
- */
-void SendConfigureNotify(
-	FvwmWindow *fw, int x, int y, unsigned int w, unsigned int h,
-	int bw, Bool send_for_frame_too)
-{
-	XEvent client_event;
-	size_borders b;
-
-	if (!fw || IS_SHADED(fw))
-	{
-		return;
-	}
-	client_event.type = ConfigureNotify;
-	client_event.xconfigure.display = dpy;
-	client_event.xconfigure.event = FW_W(fw);
-	client_event.xconfigure.window = FW_W(fw);
-	get_window_borders(fw, &b);
-	client_event.xconfigure.x = x + b.top_left.width;
-	client_event.xconfigure.y = y + b.top_left.height;
-	client_event.xconfigure.width = w - b.total_size.width;
-	client_event.xconfigure.height = h - b.total_size.height;
-	client_event.xconfigure.border_width = bw;
-	client_event.xconfigure.above = FW_W_FRAME(fw);
-	client_event.xconfigure.override_redirect = False;
-	FSendEvent(
-		dpy, FW_W(fw), False, StructureNotifyMask, &client_event);
-	if (send_for_frame_too)
-	{
-		/* This is for buggy tk, which waits for the real
-		 * ConfigureNotify on frame instead of the synthetic one on w.
-		 * The geometry data in the event will not be correct for the
-		 * frame, but tk doesn't look at that data anyway. */
-		client_event.xconfigure.event = FW_W_FRAME(fw);
-		client_event.xconfigure.window = FW_W_FRAME(fw);
-		FSendEvent(
-			dpy, FW_W_FRAME(fw), False, StructureNotifyMask,
-			&client_event);
-	}
-
-	return;
-}
-
-static void __handle_cr_on_unmanaged(XConfigureRequestEvent *cre)
+static inline void __handle_cr_on_unmanaged(XConfigureRequestEvent *cre)
 {
 	XWindowChanges xwc;
 	unsigned long xwcm;
@@ -327,7 +277,8 @@ static void __handle_cr_on_unmanaged(XConfigureRequestEvent *cre)
 	return;
 }
 
-static void __handle_cr_on_icon(XConfigureRequestEvent *cre, FvwmWindow *fw)
+static inline void __handle_cr_on_icon(
+	XConfigureRequestEvent *cre, FvwmWindow *fw)
 {
 	XWindowChanges xwc;
 	unsigned long xwcm;
@@ -387,7 +338,7 @@ static void __handle_cr_on_icon(XConfigureRequestEvent *cre, FvwmWindow *fw)
 	return;
 }
 
-static void __handle_cr_on_shaped(FvwmWindow *fw)
+static inline void __handle_cr_on_shaped(FvwmWindow *fw)
 {
 	/* suppress compiler warnings w/o shape extension */
 	int i = 0;
@@ -409,7 +360,7 @@ static void __handle_cr_on_shaped(FvwmWindow *fw)
 	return;
 }
 
-static void __handle_cr_restack(
+static inline void __handle_cr_restack(
 	int *ret_do_send_event, XConfigureRequestEvent *cre, FvwmWindow *fw)
 {
 	XWindowChanges xwc;
@@ -509,7 +460,7 @@ static void __handle_cr_restack(
 	return;
 }
 
-static void __cr_get_static_position(
+static inline void __cr_get_static_position(
 	rectangle *ret_g, FvwmWindow *fw, XConfigureRequestEvent *cre,
 	size_borders *b)
 {
@@ -533,7 +484,7 @@ static void __cr_get_static_position(
 	return;
 }
 
-static void __cr_get_grav_position(
+static inline void __cr_get_grav_position(
 	rectangle *ret_g, FvwmWindow *fw, XConfigureRequestEvent *cre,
 	size_borders *b)
 {
@@ -564,7 +515,7 @@ static void __cr_get_grav_position(
 #define CR_DETECT_MOTION_METHOD_DEBUG
 /* Try to detect whether the application uses the ICCCM way of moving its
  * window or the traditional way, always assuming StaticGravity. */
-static void __cr_detect_icccm_move(
+static inline void __cr_detect_icccm_move(
 	FvwmWindow *fw, XConfigureRequestEvent *cre, size_borders *b)
 {
 	rectangle grav_g;
@@ -621,7 +572,6 @@ fprintf(stderr,"_cdim: --- not moved\n");
 #endif
 		return;
 	}
-	/*!!!move down*/
 	dg_g.x = grav_g.x - fw->frame_g.x;
 	dg_g.y = grav_g.y - fw->frame_g.y;
 	ds_g.x = static_g.x - fw->frame_g.x;
@@ -751,7 +701,7 @@ fprintf(stderr,"--- not detected\n");
 /* dv (31 Mar 2002): The code now handles these situations, so enable it
  * again. */
 #ifdef EXPERIMENTAL_ANTI_RACE_CONDITION_CODE
-static int __merge_cr_moveresize(
+static inline int __merge_cr_moveresize(
 	const evh_args_t *ea, XConfigureRequestEvent *cre, FvwmWindow *fw,
 	size_borders *b)
 {
@@ -846,7 +796,7 @@ static int __merge_cr_moveresize(
 }
 #endif
 
-static int __handle_cr_on_client(
+static inline int __handle_cr_on_client(
 	int *ret_do_send_event, const evh_args_t *ea, FvwmWindow *fw)
 {
 	XConfigureRequestEvent cre = ea->exc->x.etrigger->xconfigurerequest;
@@ -3441,6 +3391,51 @@ void HandleVisibilityNotify(const evh_args_t *ea)
 }
 
 /* ---------------------------- interface functions ------------------------ */
+
+/* Inform a client window of its geometry.
+ *
+ *  The input (frame) geometry will be translated to client geometry
+ *  before sending. */
+void SendConfigureNotify(
+	FvwmWindow *fw, int x, int y, unsigned int w, unsigned int h,
+	int bw, Bool send_for_frame_too)
+{
+	XEvent client_event;
+	size_borders b;
+
+	if (!fw || IS_SHADED(fw))
+	{
+		return;
+	}
+	client_event.type = ConfigureNotify;
+	client_event.xconfigure.display = dpy;
+	client_event.xconfigure.event = FW_W(fw);
+	client_event.xconfigure.window = FW_W(fw);
+	get_window_borders(fw, &b);
+	client_event.xconfigure.x = x + b.top_left.width;
+	client_event.xconfigure.y = y + b.top_left.height;
+	client_event.xconfigure.width = w - b.total_size.width;
+	client_event.xconfigure.height = h - b.total_size.height;
+	client_event.xconfigure.border_width = bw;
+	client_event.xconfigure.above = FW_W_FRAME(fw);
+	client_event.xconfigure.override_redirect = False;
+	FSendEvent(
+		dpy, FW_W(fw), False, StructureNotifyMask, &client_event);
+	if (send_for_frame_too)
+	{
+		/* This is for buggy tk, which waits for the real
+		 * ConfigureNotify on frame instead of the synthetic one on w.
+		 * The geometry data in the event will not be correct for the
+		 * frame, but tk doesn't look at that data anyway. */
+		client_event.xconfigure.event = FW_W_FRAME(fw);
+		client_event.xconfigure.window = FW_W_FRAME(fw);
+		FSendEvent(
+			dpy, FW_W_FRAME(fw), False, StructureNotifyMask,
+			&client_event);
+	}
+
+	return;
+}
 
 /*
 ** Procedure:

@@ -22,7 +22,7 @@ extern void   Loop(void);
 extern void   ParseOptions(void);
 extern char   *safemalloc(int length);
 extern int    My_XNextEvent(Display *dpy, XEvent *event);
-extern void   DeadPipe(int nonsense);
+extern RETSIGTYPE DeadPipe(int nonsense);
 extern void   CreateIconWindow(struct icon_info *item);
 extern void   DrawIconWindow(struct icon_info *item);
 extern void   GetIconFromFile(struct icon_info *item);

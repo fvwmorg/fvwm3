@@ -8,7 +8,7 @@
  *
  */
 void Loop(const int *fd);
-void DeadPipe(int nonsense) __attribute__((noreturn));
+RETSIGTYPE DeadPipe(int nonsense) __attribute__((noreturn));
 void process_message(unsigned long type, const unsigned long *body);
 
 void list_old_configure(const unsigned long *body);

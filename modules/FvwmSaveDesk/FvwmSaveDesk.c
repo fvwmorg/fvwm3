@@ -264,9 +264,10 @@ void list_new_page(unsigned long *body)
  *      SIGPIPE handler - SIGPIPE means fvwm is dying
  *
  */
-void DeadPipe(int nonsense)
+RETSIGTYPE DeadPipe(int nonsense)
 {
   exit(0);
+  SIGNAL_RETURN;
 }
 
 

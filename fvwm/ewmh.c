@@ -134,12 +134,9 @@ ewmh_atom ewmh_atom_wm_state[] =
 	ENTRY(
 		"_NET_WM_STATE_BELOW",           XA_ATOM,
 		ewmh_WMStateStaysOnBottom),
-	/* not yet implemented */
-#if 0
 	ENTRY(
 		"_NET_WM_STATE_FULLSCREEN",      XA_ATOM,
 		ewmh_WMStateFullScreen),
-#endif
 	ENTRY("_NET_WM_STATE_HIDDEN",          XA_ATOM,   ewmh_WMStateHidden),
 	ENTRY(
 		"_NET_WM_STATE_MAXIMIZED_HORIZ", XA_ATOM,

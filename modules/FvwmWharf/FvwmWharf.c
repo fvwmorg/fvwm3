@@ -1531,7 +1531,7 @@ void CreateWindow(void)
  * Dead pipe handler
  *
  */
-void DeadPipe(int nonsense)
+RETSIGTYPE DeadPipe(int nonsense)
 {
   int i,j,button;
 
@@ -1557,6 +1557,8 @@ void DeadPipe(int nonsense)
     }
   XSync(dpy,0);
   exit(0);
+
+  SIGNAL_RETURN;
 }
 
 int TOTHEFOLDER = -1;

@@ -91,7 +91,7 @@ typedef enum
 void EndLessLoop(void);
 void ReadFvwmPipe(void);
 void ProcessMessage(unsigned long type,unsigned long *body);
-void DeadPipe(int nonsense)  __attribute__((noreturn));
+RETSIGTYPE DeadPipe(int nonsense);
 /*
 void Alarm(int nonsense);
 void SetAlarm(int event);

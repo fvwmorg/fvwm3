@@ -206,7 +206,7 @@ int main(int argc, char **argv)
  * Detected a broken pipe - time to exit
  *
  */
-void DeadPipe(int nonsense)
+RETSIGTYPE DeadPipe(int nonsense)
 {
   extern Atom wm_del_win;
 
@@ -214,6 +214,7 @@ void DeadPipe(int nonsense)
   send_clientmessage (dpy, app_win, wm_del_win, CurrentTime);
   XSync(dpy,0);
   exit(0);
+  SIGNAL_RETURN;
 }
 
 

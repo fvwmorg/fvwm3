@@ -85,7 +85,7 @@ typedef PropMotifWmHints        PropMwmHints;
 void MainEventLoop(void);
 void ReadFvwmPipe(void);
 void ProcessMessage(unsigned long type,unsigned long *body);
-void DeadPipe(int nonsense) __attribute__((noreturn));
+RETSIGTYPE DeadPipe(int nonsense) __attribute__((noreturn));
 void MakeMeWindow(void);
 void RedrawWindow(Bool force, Bool clear_bg, XEvent *evp);
 void StartMeUp_I(void);

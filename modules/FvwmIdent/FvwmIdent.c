@@ -389,6 +389,7 @@ static RETSIGTYPE
 TerminateHandler(int sig)
 {
 	fvwmSetTerminate(sig);
+	SIGNAL_RETURN;
 }
 
 /*

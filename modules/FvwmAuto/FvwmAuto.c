@@ -74,11 +74,12 @@ static RETSIGTYPE TerminateHandler(int signo);
  *  Termination procedure : *not* a signal handler
  *
  */
-void DeadPipe(int nonsense)
+RETSIGTYPE DeadPipe(int nonsense)
 {
 	(void)nonsense;
 	myfprintf((stderr,"Leaving via DeadPipe\n"));
 	exit(0);
+	SIGNAL_RETURN;
 }
 
 /*
@@ -91,6 +92,7 @@ static RETSIGTYPE
 TerminateHandler(int signo)
 {
 	fvwmSetTerminate(signo);
+	SIGNAL_RETURN;
 }
 
 /*

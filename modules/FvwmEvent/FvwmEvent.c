@@ -89,7 +89,7 @@ typedef struct
 
 void execute_event(short, unsigned long*);
 void config(void);
-void DeadPipe(int) __attribute__((__noreturn__));
+RETSIGTYPE DeadPipe(int);
 static RETSIGTYPE TerminateHandler(int);
 
 /* ---------------------------- local variables ----------------------------- */
@@ -782,7 +782,7 @@ TerminateHandler(int nonsense)
 {
 	isTerminated = True;
 
-	return;
+	SIGNAL_RETURN;
 }
 
 /*
@@ -791,8 +791,9 @@ TerminateHandler(int nonsense)
  *      Externally callable procedure to quit
  *
  */
-void DeadPipe(int flag)
+RETSIGTYPE DeadPipe(int flag)
 {
 	execute_event(BUILTIN_SHUTDOWN, NULL);
 	exit(flag);
+	SIGNAL_RETURN;
 }

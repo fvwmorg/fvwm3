@@ -1,3 +1,61 @@
+2003-07-06  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* FvwmConsole/FvwmConsoleC.c (sclose):
+	* FvwmIconMan/FvwmIconMan.c (TerminateHandler):
+	* FvwmWharf/ASSound/ASSound.c (DoNothing):
+	* FvwmButtons/FvwmButtons.c (DeadPipe):
+	* FvwmBacker/FvwmBacker.c (DeadPipe):
+	* FvwmBacker/FvwmBacker.h (ParseConfigLine):
+	* FvwmBanner/FvwmBanner.c (DeadPipe):
+	* FvwmConsole/FvwmConsole.c (DeadPipe):
+	* FvwmCpp/FvwmCpp.c (DeadPipe):
+	* FvwmCpp/FvwmCpp.h (DeadPipe):
+	* FvwmDebug/FvwmOldDebug.c (DeadPipe):
+	* FvwmDebug/FvwmOldDebug.h:
+	* FvwmEvent/FvwmEvent.c (DeadPipe):
+	* FvwmForm/FvwmForm.c (DeadPipe):
+	* FvwmForm/FvwmForm.h (DeadPipe):
+	* FvwmIconBox/FvwmIconBox.h:
+	* FvwmIconMan/FvwmIconMan.h:
+	* FvwmIdent/FvwmIdent.h:
+	* FvwmM4/FvwmM4.c (DeadPipe):
+	* FvwmM4/FvwmM4.h (DeadPipe):
+	* FvwmPager/FvwmPager.c (DeadPipe):
+	* FvwmPager/FvwmPager.h:
+	* FvwmRearrange/FvwmRearrange.c (DeadPipe):
+	* FvwmSave/FvwmSave.c (DeadPipe):
+	* FvwmSave/FvwmSave.h:
+	* FvwmSaveDesk/FvwmSaveDesk.c (DeadPipe):
+	* FvwmSaveDesk/FvwmSaveDesk.h:
+	* FvwmScript/FvwmScript.c (DeadPipe):
+	* FvwmScroll/FvwmScroll.c (DeadPipe):
+	* FvwmScroll/FvwmScroll.h:
+	* FvwmTaskBar/FvwmTaskBar.c (DeadPipe):
+	* FvwmTaskBar/FvwmTaskBar.h:
+	* FvwmWharf/Wharf.h:
+	* FvwmWinList/FvwmWinList.h:
+	* FvwmWharf/FvwmWharf.c (DeadPipe):
+	* FvwmAnimate/FvwmAnimate.c (HandleTerminate):
+	* FvwmAuto/FvwmAuto.c (TerminateHandler):
+	(DeadPipe):
+	* FvwmButtons/FvwmButtons.c (TerminateHandler):
+	* FvwmCommand/FvwmCommand.c (sig_ttin):
+	(sig_quit):
+	* FvwmCommand/FvwmCommandS.c (sig_handler):
+	* FvwmDragWell/fvwmDragWell.c (TerminateHandler):
+	* FvwmEvent/FvwmEvent.c (TerminateHandler):
+	* FvwmForm/FvwmForm.c (TimerHandler):
+	(TerminateHandler):
+	* FvwmIconBox/FvwmIconBox.c (TerminateHandler):
+	* FvwmIdent/FvwmIdent.c (TerminateHandler):
+	* FvwmPager/FvwmPager.c (TerminateHandler):
+	* FvwmScript/FvwmScript.c (TerminateHandler):
+	* FvwmTaskBar/FvwmTaskBar.c (Alarm):
+	(TerminateHandler):
+	* FvwmTheme/FvwmTheme.c (signal_handler):
+	* FvwmWinList/FvwmWinList.c (TerminateHandler):
+	use RETSIGTYPE and SIGNAL_RETURN for all signal handlers
+
 2003-07-05  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* FvwmScript/Instructions.c (Key):

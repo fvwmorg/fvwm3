@@ -116,6 +116,7 @@ static RETSIGTYPE
 TerminateHandler(int sig)
 {
 	fvwmSetTerminate(sig);
+	SIGNAL_RETURN;
 }
 
 
@@ -131,6 +132,7 @@ DeadPipe(int nothing)
 {
 	(void)nothing;
 	ShutMeDown(0);
+	SIGNAL_RETURN;
 }
 
 static void

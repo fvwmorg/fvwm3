@@ -423,6 +423,7 @@ sig_quit(int sig)
 {
   close_fifos();
   fvwmSetTerminate(sig);
+  SIGNAL_RETURN;
 }
 
 static RETSIGTYPE
@@ -432,6 +433,7 @@ sig_ttin(int dummy)
 
   Bg = 1;
   signal(SIGTTIN, SIG_IGN);
+  SIGNAL_RETURN;
 }
 
 /*

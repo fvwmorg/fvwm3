@@ -146,6 +146,7 @@ static RETSIGTYPE
 sig_handler(int signo)
 {
   fvwmSetTerminate(signo);
+  SIGNAL_RETURN;
 }
 
 /*

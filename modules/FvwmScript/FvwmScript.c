@@ -225,10 +225,11 @@ static void TryToFind(char *filename) {
 }
 
 /* Quitter par l'option Delete du bouton de la fenetre */
-void DeadPipe(int nonsense)
+RETSIGTYPE DeadPipe(int nonsense)
 {
   is_dead_pipe = True;
   Quit (0,NULL);
+  SIGNAL_RETURN;
 }
 
 /* Lecture du fichier system.fvwmrc ou .fvwmrc */
@@ -1241,6 +1242,7 @@ static RETSIGTYPE
 TerminateHandler(int sig)
 {
   fvwmSetTerminate(sig);
+  SIGNAL_RETURN;
 }
 
 

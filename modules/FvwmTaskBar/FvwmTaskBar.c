@@ -946,10 +946,11 @@ void redraw_buttons()
     Based on DeadPipe() from FvwmIdent:
       Copyright 1994, Robert Nation and Nobutaka Suzuki.
 */
-void DeadPipe(int nonsense)
+RETSIGTYPE DeadPipe(int nonsense)
 {
   is_dead_pipe = True;
   exit(1);
+  SIGNAL_RETURN;
 }
 
 /*
@@ -962,6 +963,7 @@ static RETSIGTYPE
 TerminateHandler(int sig)
 {
   fvwmSetTerminate(sig);
+  SIGNAL_RETURN;
 }
 
 #if 0
@@ -1267,6 +1269,7 @@ Alarm(int nonsense)
 #if !defined(HAVE_SIGACTION) && !defined(USE_BSD_SIGNALS)
   signal (SIGALRM, Alarm);
 #endif
+  SIGNAL_RETURN;
 }
 
 /*

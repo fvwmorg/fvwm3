@@ -737,12 +737,14 @@ void
 DeadPipe(int arg) {
   myfprintf((stderr,"Dead Pipe, arg %d\n",arg));
   exit(0);
+  SIGNAL_RETURN;
 }
 
 
 static RETSIGTYPE
 HandleTerminate(int sig) {
   fvwmSetTerminate(sig);
+  SIGNAL_RETURN;
 }
 
 

@@ -178,6 +178,7 @@ static RETSIGTYPE TerminateHandler(int sig)
    * BEFORE we call it ...
    */
   fvwmSetTerminate(sig);
+  SIGNAL_RETURN;
 }
 
 static void window_shade(unsigned long *body, int do_shade)

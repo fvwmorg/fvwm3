@@ -1,5 +1,19 @@
 2003-07-06  Dominik Vogt  <dominik.vogt@gmx.de>
 
+	* libs/PictureImageLoader.c (PImageLoadXpm):
+	use RETSIGTYPE and SIGNAL_RETURN for all signal handlers
+
+	* fvwm/ewmh_events.c (ewmh_WMStateFullScreen):
+	implemented _NET_WM_STATE_FULLSCREEN handling
+
+	* fvwm/move_resize.c (GetOnePositionArgument):
+	fixed parsing of "+-x +-y" Move arguments
+	(CMD_Maximize):
+	use get_page_offset_check_visible
+
+	* fvwm/geometry.c (get_page_offset_check_visible):
+	new convenience function
+
 	* fvwm/events.c (__handle_cr_on_client):
 	fixed handling of gravities other than NW or Static
 	(__cr_detect_icccm_move):
@@ -7,13 +21,18 @@
 
 2003-07-06  Marcus Lundblad  <ml@update.uu.se>
 
-
-	* libs/BidiJoin.[ch]:
-	* libs/CombineChars.[ch]:
+	* libs/BidiJoin.c:
+	* libs/BidiJoin.h:
+	* libs/BidiJoin.c:
+	* libs/BidiJoin.h:
+	* libs/CombineChars.c:
+	* libs/CombineChars.h:
 	* libs/Flocale.c (FlocaleEncodeString):
-	* libs/FBidi.[ch]:
+	* libs/FBidi.c:
+	* libs/FBidi.h:
 	* libs/Makefile.am:
-	Removed "F" prefix on FBidiJoin.[ch] and FCombineChars.[ch]
+	Removed "F" prefix on FBidiJoin.c, FBidiJoin.h, FCombineChars.c and
+	FCombineChars.h
 
 2003-07-06  olicha  <olivier.chapuis@free.fr>
 
@@ -652,7 +671,7 @@
 	(ewmh_HandleDock):
 	* fvwm/ewmh_events.c (ewmh_WMStateStaysOnTop):
 	(ewmh_WMStateStaysOnBottom):
-	Fixed Ewmh{Use,Ignore}StackingHints style update
+	Fixed EwmhUseStackingHints and EwmhIgnoreStackingHints style update
 
 2003-04-27  Dominik Vogt  <dominik.vogt@gmx.de>
 
@@ -1332,7 +1351,7 @@
 	(DrawIconPixmapWindow):
 	(setup_icon_title_size):
 	* fvwm/style.c (style_parse_one_style_option):
-	Fixed Icon{Title,Background}Relief arguments
+	Fixed IconTitleRelief and IconBackgroundRelief arguments
 
 	* fvwm/icons.c (GetIconPicture):
 	(SetIconPixmapSize):
@@ -1630,7 +1649,7 @@
 	MultiPixmap can use Colorset and Solid color. Various others minor
 	improvement in MultiPixmap. "Merge" the MultiPixmap code into the
 	"main" drawing code and remove the #ifdef.
-	New option to {Button,Title}Style  StretchedPixmap.
+	New option to ButtonStyle and TitleStyle: StretchedPixmap.
 	Use the new Scr.AlphaGC.
 
 2002-12-16  Dominik Vogt  <dominik.vogt@gmx.de>
@@ -1744,7 +1763,9 @@
 	(check_window_style_change):
 	* fvwm/style.h:
 	* fvwm/window_flags.h:
-	renamed Stick[y]{Desk,Page} to Stick[y]Across{Desks,Pages} everywhere
+	renamed StickDesk to StickAcrossDesks, StickyDesk to StickyAcrossDesks,
+	StickPage to StickAcrossPages and StickyPage to StickyAcrossPages
+	everywhere
 
 	* fvwm/focus.c (CMD_Focus):
 	(CMD_FlipFocus):
@@ -2304,7 +2325,7 @@
 	ignore packets that are too long
 
 	* fvwm/fvwm.1.in:
-	document Pop{up,down}Delay defaults
+	document PopupDelay and PopdownDelay defaults
 
 2002-11-06  olicha  <olivier.chapuis@free.fr>
 
@@ -5200,7 +5221,7 @@
 	* libs/PictureUtils.h:
 	* libs/Makefile.am:
 	Moved color limitation and some rgb to pixel functions from
-	PictureImageLoader to new files PictureUtils.{c,h}
+	PictureImageLoader to new files PictureUtils.c, PictureUtils.h
 
 	* fvwm/colorset.c (parse_colorset):
 	* libs/PictureGraphics.c (PCreateTintedPixmap):
@@ -5577,7 +5598,8 @@
 
 2002-06-10  Mikhael Goikhman  <migo@homemail.com>
 
-	* libs/Strings.[ch]:
+	* libs/Strings.c:
+	* libs/Strings.h:
 	added CopyStringWithQuotes, not perfect, but works for now
 
 2002-06-08  Dominik Vogt  <dominik.vogt@gmx.de>
@@ -6278,8 +6300,10 @@
 	* configure.in:
 	Added Xrender detection and link fvwm if needed
 
-	* libs/PictureGraphics.{c,h}:
-	* libs/FRender.{c,h}:
+	* libs/PictureGraphics.c:
+	* libs/PictureGraphics.h:
+	* libs/FRender.c:
+	* libs/FRender.h:
 	* libs/FRenderInterface.h:
 	* libs/PictureGrpahics.c (*):
 	* libs/PictureGrpahics.h:
@@ -6332,9 +6356,12 @@
 	SendFvwmPicture which send the alpha. Add a MiniIconPacket structure
 
 	* libs/Makefile.am:
-	* libs/PictureBase.{c,h} (*):
-	* libs/Picture.{c,h} (*):
-	* libs/PictureImageLoader.{c,h} (*):
+	* libs/PictureBase.c (*):
+	* libs/PictureBase.h:
+	* libs/Picture.c (*):
+	* libs/Picture.h:
+	* libs/PictureImageLoader.c (*):
+	* libs/PictureImageLoader.h:
 	* fvwm/*:
 	Rename some libs file InitPicture -> PictureBase, FImageLoader ->
 	PictureImageLoader.
@@ -6594,7 +6621,8 @@
 	Images are loaded in FImageLoader. PNG image can be loaded, the loader
 	come from Imlib2 and the argb loader from fvwm/ewmh_icons.c.
 	ColorLimit stuff is applied to PNG image.
-	Split Picture.{c,h} into InitPicture.{c,h} and Picture.{c,h}.
+	Split Picture.c, Picture.h into InitPicture.c, InitPicture.h,
+	Picture.c and Picture.h.
 	InitPicture contains the Picture structure, initialize the visual,
 	depth and color map and contains image path stuff as Picture contains
 	Picture manipulations.
@@ -7129,7 +7157,8 @@
 
 2002-03-22  Mikhael Goikhman  <migo@homemail.com>
 
-	* libs/FBidi.{c,h}:
+	* libs/FBidi.c:
+	* libs/FBidi.h:
 	new files
 
 2002-03-22  Dominik Vogt  <dominik.vogt@gmx.de>
@@ -7718,7 +7747,7 @@
 	renamed function
 
 	* libs/Parse.h:
-	direction code moved to gravity.[ch]
+	direction code moved to gravity.c and gravity.h
 
 	* fvwm/windowshade.c (CMD_WindowShade):
 	* fvwm/geometry.c (get_shaded_geometry):
@@ -8425,13 +8454,15 @@
 2002-02-09  olicha  <olivier.chapuis@free.fr>
 
 	* libs/fvwmlib.h:
-	* libs/Flocale.{c,h}:
+	* libs/Flocale.c:
+	* libs/Flocale.h:
 	* acconfig.h:
 	* configure.in:
 	Rename I18N_MB to MULTIBYTE
 	Added --disable-compound-text (COMPOUND_TEXT), so this is on by default
 
-	* libs/Flocale.{c,h} (*):
+	* libs/Flocale.c (*):
+	* libs/Flocale.h:
 	New Font and Text API. A cache is used for fonts information. Font
 	loading is more powerfull as both font or fontset can be loaded.
 	See Flocale.h for details, more comments will be added soon.
@@ -8649,11 +8680,11 @@
 	* libs/Flocale.h:
 	* libs/Makefile.am:
 	* fvwm/fvwm.c (main):
-	New libs files Flocale.{c,h} with a function to set the locale as
-	the Xlib prog man says to do it. Use it in fvwm.c. There is also a
-	function to get the charset (from ewmh_name.c) and which setlocale if
-	this has not been done with the above function. This function is also
-	call at fvwm2 init
+	New libs files Flocale.c and Flocale.h with a function to set the
+	locale as the Xlib prog man says to do it. Use it in fvwm.c. There is
+	also a function to get the charset (from ewmh_name.c) and which
+	setlocale if this has not been done with the above function. This
+	function is also call at fvwm2 init
 
 	* fvwm/ewmh_names.c (charset_to_utf8):
 	(utf8_to_charset):
@@ -9348,7 +9379,8 @@
 	EWMHIconicStateWorkaround for supporting current KDE versions
 
 	* fvwm/events.c (HandlePropertyNotify):
-	* fvwm/ewmh.{c,h} (ewmh_AllowsYes):
+	* fvwm/ewmh.c (ewmh_AllowsYes):
+	* fvwm/ewmh.h:
 	(ewmh_AllowsClose):
 	(ewmh_AllowsMaximize):
 	(ewmh_AllowsMove):
@@ -9356,7 +9388,8 @@
 	(EWMH_SetAllowedActions):
 	(EWMH_WindowInit):
 	* fvwm/style.c (check_window_style_change):
-	* fvwm/update.{c,h} (apply_window_updates):
+	* fvwm/update.c (apply_window_updates):
+	* fvwm/update.h:
 	Implemented _NET_WM_ALLOWED_ACTIONS from version 1.2 of the wm-spec
 
 2001-12-13  Dominik Vogt  <dominik.vogt@gmx.de>
@@ -9369,14 +9402,16 @@
 
 	* NEWS:
 	* fvwm/commands.h:
-	* fvwm/ewmh.{c,h} (ewmh_SetWorkArea):
+	* fvwm/ewmh.c (ewmh_SetWorkArea):
+	* fvwm/ewmh.h:
 	(ewmh_ComputeAndSetWorkArea):
 	(ewmh_HandleDynamicWorkArea):
 	(EWMH_GetWorkAreaIntersection):
 	(EWMH_GetStrutIntersection):
 	(get_intersection):
 	* fvwm/ewmh_name.c (EWMH_SetDeskNames):
-	* fvwm/function.{c,h}:
+	* fvwm/function.c:
+	* fvwm/function.h:
 	* fvwm/fvwm.c (InitVariables):
 	* fvwm/fvwm2.1:
 	* fvwm/modconf.c (send_desktop_names):
@@ -9384,21 +9419,22 @@
 	* fvwm/placement.c (get_next_x):
 	(get_next_y):
 	* fvwm/screen.h:
-	* fvwm/virtual.{c,h} (CMD_DesktopName):
+	* fvwm/virtual.c (CMD_DesktopName):
+	* fvwm/virtual.h:
 	(GetDesktopName):
 	New command "DesktopName desk name" to define desktops names for
 	the FvwmPager, the WindowList and ewmh compliant pagers.
-	Desktops information (desk, desk name, working areas) is stored in a new
-	list sub structure of Scr, DesktopsInfo. The head of the list contains
-	generic information for desks that are not in the list.
+	Desktops information (desk, desk name, working areas) is stored in a
+	new list sub structure of Scr, DesktopsInfo. The head of the list
+	contains generic information for desks that are not in the list.
 
 	* fvwm/windowlist.c (get_desk_title):
 	(CMD_WindowList):
 	* fvwm/fvwm2.1:
 	* NEWS:
-	New window list options NoDeskNum, NoCurrentDeskTitle, TitleForAllDesks,
-	NoNumInDeskTitle. Document these options and also the NoGeometry and
-	NoGeometryInfo options.
+	New window list options NoDeskNum, NoCurrentDeskTitle,
+	TitleForAllDesks, NoNumInDeskTitle. Document these options and also
+	the NoGeometry and NoGeometryInfo options.
 
 	* fvwm/ewmh.c:
 	* fvwm/ewmh_names.c:
@@ -9425,9 +9461,11 @@
 
 2001-12-08  olicha  <olivier.chapuis@free.fr>
 
-	* fvwm/style.{c,h}:
+	* fvwm/style.c:
+	* fvwm/style.h:
 	* fvwm/fvwm.h:
-	* fvwm/update.{c,h}:
+	* fvwm/update.c:
+	* fvwm/update.h:
 	* fvwm/window_flags.h:
 	* fvwm/fvwm2.1:
 	s/extended_window_name/indexed_window_name/i
@@ -9435,7 +9473,8 @@
 	s/do_update_window_name/do_update_visible_window_name/
 	s/do_update_icon_name/do_update_visible_icon_name/
 
-	* fvwm/style.{c,h} (CMD_Style):
+	* fvwm/style.c (CMD_Style):
+	* fvwm/style.h:
 	(parse_and_set_window_style):
 	Split CMD_Style into CMD_Style and parse_and_set_window_style
 
@@ -9450,7 +9489,8 @@
 	* fvwm/events.c (HandlePropertyNotify):
 	* fvwm/ewmh_names.c (EWMH_WMName):
 	(EWMH_WMIconName):
-	* fvwm/module_interface.{c,h} (BroadcastWindowIconNames):
+	* fvwm/module_interface.c (BroadcastWindowIconNames):
+	* fvwm/module_interface.h:
 	(CMD_Send_WindowList):
 	(CMD_set_mask):
 	(CMD_set_sync_mask):
@@ -9470,7 +9510,8 @@
 2001-12-05  olicha  <olivier.chapuis@free.fr>
 
 	* fvwm/add_window.c:
-	* fvwm/ewmh.{c,h} (*):
+	* fvwm/ewmh.c (*):
+	* fvwm/ewmh.h:
 	* fvwm/ewmh_conf.c (EWMH_CMD_Styles):
 	* fvwm/ewmh_events.c:
 	* fvwm/fvwm.h:
@@ -9479,9 +9520,11 @@
 	* fvwm/placement.c (test_fit):
 	(PlaceWindow):
 	* fvwm/session.c (SaveWindowStates):
-	* fvwm/style.{c,h} (merge_styles):
+	* fvwm/style.c (merge_styles):
+	* fvwm/style.h:
 	(check_window_style_change):
-	* fvwm/update.{c,h} (apply_window_updates):
+	* fvwm/update.c (apply_window_updates):
+	* fvwm/update.h:
 	* fvwm/window_flags.h:
 	New ewmh styles:
 	EWMHMaximizeIgnoreWorkingArea / EWMHMaximizeUseWorkingArea /
@@ -9493,26 +9536,32 @@
 	EWMHIgnoreStrutHints / EWMHUseStrutHints
 
 	* fvwm/ConfigFvwmDefaults:
-	Use EWMHPlacementUseDynamicWorkingArea, EWMHMaximizeUseDynamicWorkingArea
-	as default placement styles
+	Use EWMHPlacementUseDynamicWorkingArea,
+	EWMHMaximizeUseDynamicWorkingArea as default placement styles
 
 	* NEWS:
-	* fvwm/add_window.{c,h} (setup_placement_penalty):
+	* fvwm/add_window.c (setup_placement_penalty):
+	* fvwm/add_window.h:
 	(setup_placement_penalty):
 	(AddWindow):
 	* fvwm/fvwm.h:
-	* fvwm/placement.{c,h} (get_next_x):
+	* fvwm/placement.c (get_next_x):
+	* fvwm/placement.h:
 	(get_next_y):
 	(test_fit):
-	* fvwm/style.{c,h} (CMD_Style):
+	* fvwm/style.c (CMD_Style):
+	* fvwm/style.h:
 	(check_window_style_change):
-	* fvwm/update.{c,h} (apply_window_updates):
+	* fvwm/update.c (apply_window_updates):
+	* fvwm/update.h:
 	* fvwm/window_flags.h:
 	* libs/default.h:
-	New styles PlacementOverlapPenalties and PlacementOverlapPercentPenalties
+	New styles PlacementOverlapPenalties and
+	PlacementOverlapPercentPenalties
 
 	* NEWS:
-	* fvwm/add_window.{c,h} (setup_window_name_count):
+	* fvwm/add_window.c (setup_window_name_count):
+	* fvwm/add_window.h:
 	(setup_icon_name_count):
 	(setup_visible_name):
 	(setup_window_name):
@@ -9529,9 +9578,11 @@
 	(AutoPlaceIcon):
 	(Iconify):
 	* fvwm/session.c (MatchWinToSM):
-	* fvwm/style.{c,h} (CMD_Style):
+	* fvwm/style.c (CMD_Style):
+	* fvwm/style.h:
 	(check_window_style_change):
-	* fvwm/update.{c,h} (apply_window_updates):
+	* fvwm/update.c (apply_window_updates):
+	* fvwm/update.h:
 	* fvwm/window_flags.h:
 	New styles ExtendedWindowName / SimpleWindowName and
 	ExtendedIconName / SimpleIconName. TODO: the modules implementation
@@ -9619,9 +9670,11 @@
 	* fvwm/fvwm.h:
 	* fvwm/icons.c (GetIcon):
 	* fvwm/session.c (get_version_string):
-	* fvwm/style.{c,h} (CMD_Style):
+	* fvwm/style.c (CMD_Style):
+	* fvwm/style.h:
 	(check_window_style_change)
-	* fvwm/update.{c,h} (apply_window_updates):
+	* fvwm/update.c (apply_window_updates):
+	* fvwm/update.h:
 	* fvwm/window_flags.h:
 	New style EWMHMiniIconOverride / EWMHNoMiniIconOverride,
 	EWMHDonateMiniIcon / EWMHDontDonateMiniIcon,
@@ -9629,7 +9682,8 @@
 	Some ewmh icon code simplification.
 	Ewmh icons priority: just after icon window.
 
-	* fvwm/ewmh.{c,h} (EWMH_ExitStuff):
+	* fvwm/ewmh.c (EWMH_ExitStuff):
+	* fvwm/ewmh.h:
 	* fvwm/session.c (SaveWindowStates):
 	(LoadWindowStates):
 	(MatchWinToSM):
@@ -9658,8 +9712,10 @@
 	Fixed some styles update
 
 	* fvwm/ewmh_conf.c:
-	* fvwm/function.{c,h} (func_config):
-	* fvwm/ewmh.{c,h}:
+	* fvwm/function.c (func_config):
+	* fvwm/function.h:
+	* fvwm/ewmh.c:
+	* fvwm/ewmh.h:
 	* fvwm/ewmh_events.c:
 	* fvwm/ewmh_intern.h:
 	* fvwm/Makefile.am:
@@ -9678,10 +9734,12 @@
 	* fvwm/sceen.h:
 	* fvwm/session.c:
 	* fvwm/styles.c:
-	* fvwm/update.{c,h}:
+	* fvwm/update.c:
+	* fvwm/update.h:
 	* fvwm/window_flags.c:
 	* libs/Bindings.c:
-	* libs/Picture.{c,h}:
+	* libs/Picture.c:
+	* libs/Picture.h:
 	* libs/fvwmlib.h:
 	* configure.in:
 	* acconfig.h:
@@ -9701,7 +9759,8 @@
 
 2001-11-18  olicha  <olivier.chapuis@free.fr>
 
-	* fvwm/ewmh.{c,h} (add_kst_item):
+	* fvwm/ewmh.c (add_kst_item):
+	* fvwm/ewmh.h:
 	(ewmh_AddToKdeSysTray):
 	(EWMH_IsKdeSysTrayWindow):
 	(EWMH_ManageKdeSysTray):
@@ -9720,7 +9779,8 @@
 
 2001-11-15  olicha  <olivier.chapuis@free.fr>
 
-	* fvwm/ewmh.{c,h} (EWMH_DestroyWindow):
+	* fvwm/ewmh.c (EWMH_DestroyWindow):
+	* fvwm/ewmh.h:
 	(EWMH_WindowDestroyed):
 	* fvwm/events.c (HandleReparentNotify):
 	(HandleDestroyNotify):
@@ -9731,7 +9791,8 @@
 2001-11-15  olicha  <olivier.chapuis@free.fr>
 
 	* fvwm/Makefile.am:
-	* fvwm/ewmh.{c,h}:
+	* fvwm/ewmh.c:
+	* fvwm/ewmh.h:
 	* fvwm/ewmh_intern.h:
 	* fvwm/ewmh_events.c:
 	* fvwm/ewmh_icons.c:
@@ -9804,7 +9865,8 @@
 	icon state. EWMH_ProcessPropertyNotify, EWMH_ProcessClientMessage,
 	EWMH_SetClientList
 
-	* fvwm/icons.{c,h} (GetIcon):
+	* fvwm/icons.c (GetIcon):
+	* fvwm/icons.h:
 	(CreateIconWindow):
 	(ChangeIconPixmap):
 	* fvwm/events.c (HandlePropertyNotify):
@@ -9836,7 +9898,8 @@
 	EWMH_SetClientListStacking, EWMH_SetWMState
 
 	* fvwm/style.c (check_window_style_change):
-	* fvwm/update.{c,h} (apply_window_updates):
+	* fvwm/update.c (apply_window_updates):
+	* fvwm/update.h:
 	Added do_update_list_skip to the update_win flags for EWMH_SetWMState.
 	This code is ifdefed.
 
@@ -10505,7 +10568,8 @@
 
 2001-08-25  Mikhael Goikhman  <migo@homemail.com>
 
-	* libs/Strings.{c,h}:
+	* libs/Strings.c:
+	* libs/Strings.h:
 	new function QuoteString() to add and escape single quotes to strings
 
 	* fvwm/menus.c (MenuInteraction):
@@ -11075,8 +11139,9 @@
 2001-07-06  Mikhael Goikhman  <migo@homemail.com>
 
 	* acinclude.m4:
-	Replaced forgotten instances of IMLIB_{CFLAGS,LIBS} to GDK_IMLIB_*.
-	This fixes "make FvwmGtk" on systems with bogus imlib-config.
+	Replaced forgotten instances of IMLIB_CFLAGS and IMLIB_LIBS to
+	GDK_IMLIB_*.  This fixes "make FvwmGtk" on systems with bogus
+	imlib-config.
 
 2001-07-05  Mikhael Goikhman  <migo@homemail.com>
 

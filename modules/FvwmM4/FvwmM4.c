@@ -507,9 +507,10 @@ static char *m4_defs(
  *      SIGPIPE handler - SIGPIPE means fvwm is dying
  *
  */
-void DeadPipe(int nonsense)
+RETSIGTYPE DeadPipe(int nonsense)
 {
   exit(0);
+  SIGNAL_RETURN;
 }
 
 static char *MkDef(char *name, char *def)

@@ -34,7 +34,7 @@
 /* Globals */
 static char *name;
 static int namelen;
-static int fd[2];                       /* communication pipes */
+static int fd[2]; /* communication pipes */
 
 /* forward declarations */
 static RETSIGTYPE signal_handler(int signal);
@@ -47,71 +47,78 @@ static void parse_colorset(char *line);
 
 int main(int argc, char **argv)
 {
-  name = GetFileNameFromPath(argv[0]);
-  namelen = strlen(name);
+	name = GetFileNameFromPath(argv[0]);
+	namelen = strlen(name);
 
-  fprintf(stderr,
-	  "%s is obsolete, see the Colorset section of the fvwm(1) man page\n",
-	  name);
-  set_signals();
+	fprintf(
+		stderr,
+		"%s is obsolete, see the Colorset section of the fvwm(1) man"
+		" page\n", name);
+	set_signals();
 
-  /* try to make sure it is fvwm that spawned this module */
-  if (argc != 6) {
-    fprintf(stderr, "%s "VERSION" should only be executed by fvwm!\n", name);
-    exit(1);
-  }
+	/* try to make sure it is fvwm that spawned this module */
+	if (argc != 6)
+	{
+		fprintf(
+			stderr,
+			"%s "VERSION" should only be executed by fvwm!\n",
+			name);
+		exit(1);
+	}
 
-  /* note the communication pipes */
-  fd[0] = atoi(argv[1]);
-  fd[1] = atoi(argv[2]);
+	/* note the communication pipes */
+	fd[0] = atoi(argv[1]);
+	fd[1] = atoi(argv[2]);
 
-  /* get the initial configuration options */
-  parse_config();
+	/* get the initial configuration options */
+	parse_config();
 
-  /* tell fvwm we're running */
-  SendFinishedStartupNotification(fd);
+	/* tell fvwm we're running */
+	SendFinishedStartupNotification(fd);
 
-  /* sit around waiting for something to do */
-  main_loop();
+	/* sit around waiting for something to do */
+	main_loop();
 }
 
 static void main_loop(void)
 {
-  FvwmPacket *packet;
-  fd_set_size_t fd_width;
-  fd_set in_fdset;
+	FvwmPacket *packet;
+	fd_set_size_t fd_width;
+	fd_set in_fdset;
 
-  fd_width = fd[1] + 1;
-  FD_ZERO(&in_fdset);
+	fd_width = fd[1] + 1;
+	FD_ZERO(&in_fdset);
 
-  while (True) {
-    /* garbage collect */
-    alloca(0);
+	while (True)
+	{
+		/* garbage collect */
+		alloca(0);
 
-    FD_SET(fd[1], &in_fdset);
-    /* wait for an instruction from fvwm or a timeout */
-    if (fvwmSelect(fd_width, &in_fdset, NULL, NULL, NULL) < 0)
-    {
-      fprintf(stderr, "%s: select error!\n", name);
-      exit(-1);
-    }
+		FD_SET(fd[1], &in_fdset);
+		/* wait for an instruction from fvwm or a timeout */
+		if (fvwmSelect(fd_width, &in_fdset, NULL, NULL, NULL) < 0)
+		{
+			fprintf(stderr, "%s: select error!\n", name);
+			exit(-1);
+		}
 
-    packet = ReadFvwmPacket(fd[1]);
-    if (!packet)
-      exit(0);
+		packet = ReadFvwmPacket(fd[1]);
+		if (!packet)
+			exit(0);
 
-    /* handle dynamic config lines and text messages */
-    switch (packet->type) {
-    case M_CONFIG_INFO:
-      parse_config_line((char *)&packet->body[3]);
-      SendUnlockNotification(fd);
-      break;
-    case M_STRING:
-      parse_message_line((char *)&packet->body[3]);
-      SendUnlockNotification(fd);
-      break;
-    }
-  }
+		/* handle dynamic config lines and text messages */
+		switch (packet->type)
+		{
+		case M_CONFIG_INFO:
+			parse_config_line((char *)&packet->body[3]);
+			SendUnlockNotification(fd);
+			break;
+		case M_STRING:
+			parse_message_line((char *)&packet->body[3]);
+			SendUnlockNotification(fd);
+			break;
+		}
+	}
 }
 
 /* config options, the first NULL is replaced with *FvwmThemeColorset */
@@ -119,36 +126,36 @@ static void main_loop(void)
 /* FvwmTheme ignores any "colorset" lines since it causes them */
 static char *config_options[] =
 {
-  "ImagePath",
-  "ColorLimit",
-  NULL,
-  NULL,
-  NULL
+	"ImagePath",
+	"ColorLimit",
+	NULL,
+	NULL,
+	NULL
 };
 
 static void parse_config_line(char *line)
 {
-  char *rest;
+	char *rest;
 
-  switch(GetTokenIndex(line, config_options, -1, &rest))
-  {
-  case 0: /* ImagePath */
-    break;
-  case 1: /* ColorLimit */
-    break;
-  case 2: /* *FvwmThemColorset */
-    parse_colorset(rest);
-    break;
-  case 3: /* *FvwmThemeReadWriteColors */
-    SendText(fd, "ReadWriteColors", 0);
-    break;
-  }
+	switch(GetTokenIndex(line, config_options, -1, &rest))
+	{
+	case 0: /* ImagePath */
+		break;
+	case 1: /* ColorLimit */
+		break;
+	case 2: /* *FvwmThemColorset */
+		parse_colorset(rest);
+		break;
+	case 3: /* *FvwmThemeReadWriteColors */
+		SendText(fd, "ReadWriteColors", 0);
+		break;
+	}
 }
 
 /* translate a colorset spec into a colorset structure */
 static void parse_colorset(char *line)
 {
-  SendText(fd, CatString2("Colorset ", line), 0);
+	SendText(fd, CatString2("Colorset ", line), 0);
 }
 
 /* SendToModule options */
@@ -156,84 +163,87 @@ static char *message_options[] = {"Colorset", NULL};
 
 static void parse_message_line(char *line)
 {
-  char *rest;
+	char *rest;
 
-  switch(GetTokenIndex(line, message_options, -1, &rest)) {
-  case 0:
-    parse_colorset(rest);
-    break;
-  }
+	switch(GetTokenIndex(line, message_options, -1, &rest))
+	{
+	case 0:
+		parse_colorset(rest);
+		break;
+	}
 }
 
 static void parse_config(void)
 {
-  char *line;
+	char *line;
 
-  /* prepare the tokenizer array, [0,1] are ImagePath and ColorLimit */
-  config_options[2] = safemalloc(namelen + 10);
-  sprintf(config_options[2], "*%sColorset", name);
-  config_options[3] = safemalloc(namelen + 17);
-  sprintf(config_options[3], "*%sReadWriteColors", name);
+	/* prepare the tokenizer array, [0,1] are ImagePath and ColorLimit */
+	config_options[2] = safemalloc(namelen + 10);
+	sprintf(config_options[2], "*%sColorset", name);
+	config_options[3] = safemalloc(namelen + 17);
+	sprintf(config_options[3], "*%sReadWriteColors", name);
 
-  /* set a filter on the config lines sent */
-  line = safemalloc(namelen + 2);
-  sprintf(line, "*%s", name);
-  InitGetConfigLine(fd, line);
-  free(line);
+	/* set a filter on the config lines sent */
+	line = safemalloc(namelen + 2);
+	sprintf(line, "*%s", name);
+	InitGetConfigLine(fd, line);
+	free(line);
 
-  /* tell fvwm what we want to receive */
-  SetMessageMask(fd, M_CONFIG_INFO | M_END_CONFIG_INFO | M_SENDCONFIG
-		 | M_STRING);
+	/* tell fvwm what we want to receive */
+	SetMessageMask(fd, M_CONFIG_INFO | M_END_CONFIG_INFO | M_SENDCONFIG
+		       | M_STRING);
 
-  /* loop on config lines, a bit strange looking because GetConfigLine
-   * is a void(), have to test $line */
-  while (GetConfigLine(fd, &line), line)
-    parse_config_line(line);
+	/* loop on config lines, a bit strange looking because GetConfigLine
+	 * is a void(), have to test $line */
+	while (GetConfigLine(fd, &line), line)
+		parse_config_line(line);
 
-  SetSyncMask(fd, M_CONFIG_INFO | M_STRING);
+	SetSyncMask(fd, M_CONFIG_INFO | M_STRING);
 }
 
 static void set_signals(void) {
 #ifdef HAVE_SIGACTION
-  struct sigaction  sigact;
+	struct sigaction  sigact;
 
-  sigemptyset(&sigact.sa_mask);
-  sigaddset(&sigact.sa_mask, SIGPIPE);
-  sigaddset(&sigact.sa_mask, SIGINT);
-  sigaddset(&sigact.sa_mask, SIGHUP);
-  sigaddset(&sigact.sa_mask, SIGTERM);
+	sigemptyset(&sigact.sa_mask);
+	sigaddset(&sigact.sa_mask, SIGPIPE);
+	sigaddset(&sigact.sa_mask, SIGINT);
+	sigaddset(&sigact.sa_mask, SIGHUP);
+	sigaddset(&sigact.sa_mask, SIGTERM);
 # ifdef SA_INTERRUPT
-  sigact.sa_flags = SA_INTERRUPT;
+	sigact.sa_flags = SA_INTERRUPT;
 # else
-  sigact.sa_flags = 0;
+	sigact.sa_flags = 0;
 # endif
-  sigact.sa_handler = signal_handler;
-  sigaction(SIGPIPE, &sigact, NULL);
-  sigaction(SIGINT, &sigact, NULL);
-  sigaction(SIGHUP, &sigact, NULL);
-  sigaction(SIGTERM, &sigact, NULL);
+	sigact.sa_handler = signal_handler;
+	sigaction(SIGPIPE, &sigact, NULL);
+	sigaction(SIGINT, &sigact, NULL);
+	sigaction(SIGHUP, &sigact, NULL);
+	sigaction(SIGTERM, &sigact, NULL);
 #else
-  /* We don't have sigaction(), so fall back to less robust methods.  */
+	/* We don't have sigaction(), so fall back to less robust methods.  */
 #ifdef USE_BSD_SIGNALS
-  fvwmSetSignalMask(sigmask(SIGPIPE)
-		    | sigmask(SIGINT)
-		    | sigmask(SIGHUP)
-		    | sigmask(SIGTERM));
+	fvwmSetSignalMask(sigmask(SIGPIPE)
+			  | sigmask(SIGINT)
+			  | sigmask(SIGHUP)
+			  | sigmask(SIGTERM));
 #endif
-  signal(SIGPIPE, signal_handler);
-  signal(SIGINT, signal_handler);
-  signal(SIGHUP, signal_handler);
-  signal(SIGTERM, signal_handler);
+	signal(SIGPIPE, signal_handler);
+	signal(SIGINT, signal_handler);
+	signal(SIGHUP, signal_handler);
+	signal(SIGTERM, signal_handler);
 #ifdef HAVE_SIGINTERRUPT
-  siginterrupt(SIGPIPE, 1);
-  siginterrupt(SIGINT, 1);
-  siginterrupt(SIGHUP, 1);
-  siginterrupt(SIGTERM, 1);
+	siginterrupt(SIGPIPE, 1);
+	siginterrupt(SIGINT, 1);
+	siginterrupt(SIGHUP, 1);
+	siginterrupt(SIGTERM, 1);
 #endif
 #endif
 }
 
-static RETSIGTYPE signal_handler(int signal) {
-  fprintf(stderr, "%s quiting on signal %d\n", name, signal);
-  exit(signal);
+static RETSIGTYPE signal_handler(int signal)
+{
+	fprintf(stderr, "%s quiting on signal %d\n", name, signal);
+	exit(signal);
+	SIGNAL_RETURN;
 }
