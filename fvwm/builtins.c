@@ -1737,6 +1737,7 @@ void SetMenuStyle(XEvent *eventp,Window w,FvwmWindow *tmp_win,
     free(tmpmf);
     goto etiqueta_final;
   }
+  tmpmf->visual_style = tmpmf->style;
 
   if (action)
   {
@@ -2888,7 +2889,7 @@ char *ReadTitleButton(char *s, TitleButton *tb, Boolean append, int button)
 
 void FreeMenuFace(Display *dpy, MenuFace *mf)
 {
-    switch (mf->style)
+    switch (mf->visual_style)
     {
 #ifdef GRADIENT_BUTTONS
     case HGradMenu:
@@ -2916,6 +2917,7 @@ void FreeMenuFace(Display *dpy, MenuFace *mf)
         break;
     }
     mf->style = FVWMMenu;
+    mf->visual_style = FVWMMenu;
 }
 
 /*****************************************************************************
@@ -2944,7 +2946,7 @@ Boolean ReadMenuFace(char *s, MenuFace *mf, int verbose)
         {
             s = GetNextToken(s, &file);
             if (file && *file) {
-                mf->style = SolidMenu;
+                mf->visual_style = SolidMenu;
                 mf->u.back = GetColor(file);
             } else {
                 if(verbose)fvwm_msg(ERR,"ReadMenuFace",
@@ -2965,9 +2967,9 @@ Boolean ReadMenuFace(char *s, MenuFace *mf, int verbose)
             Pixel *pixels;
 
             if (!(s = GetNextToken(s, &item)) || (item == NULL)) {
-                if(verbose)
-                  fvwm_msg(ERR,"ReadMenuFace",
-                           "expected number of colors to allocate in gradient");
+	      if(verbose)
+		fvwm_msg(ERR,"ReadMenuFace",
+			 "expected number of colors to allocate in gradient");
                 return False;
             }
             npixels = atoi(item); free(item);
@@ -3034,13 +3036,13 @@ Boolean ReadMenuFace(char *s, MenuFace *mf, int verbose)
             mf->u.grad.npixels = npixels;
 
             if (strncasecmp(style,"H",1)==0)
-                mf->style = HGradMenu;
+                mf->visual_style = HGradMenu;
             else if (strncasecmp(style,"V",1)==0)
-                mf->style = VGradMenu;
+                mf->visual_style = VGradMenu;
             else if (strncasecmp(style,"D",1)==0)
-                mf->style = DGradMenu;
+                mf->visual_style = DGradMenu;
             else
-                mf->style = BGradMenu;
+                mf->visual_style = BGradMenu;
         }
 #endif /* GRADIENT_BUTTONS */
 #ifdef PIXMAP_BUTTONS
@@ -3067,9 +3069,9 @@ Boolean ReadMenuFace(char *s, MenuFace *mf, int verbose)
             free(file); file = NULL;
 
             if (strncasecmp(style,"Tiled",5)==0)
-                mf->style = TiledPixmapMenu;
+                mf->visual_style = TiledPixmapMenu;
             else
-                mf->style = PixmapMenu;
+                mf->visual_style = PixmapMenu;
         }
 #endif /* PIXMAP_BUTTONS */
         else {

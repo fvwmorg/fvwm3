@@ -71,7 +71,7 @@ static MenuStatus MenuInteraction(MenuRoot *menu,MenuRoot *menuPrior,
 				  Bool fSticks);
 static void WarpPointerToTitle(MenuRoot *menu);
 static MenuItem *MiWarpPointerToItem(MenuItem *mi, Bool fSkipTitle);
-static void PopDownMenu(MenuRoot *mr, MenuRoot *parent);
+static void PopDownMenu(MenuRoot *mr);
 static Bool FPopupMenu(MenuRoot *menu, MenuRoot *menuPrior, int x, int y,
 		       Bool fWarpItem, MenuOptions *pops);
 static void GetPreferredPopupPosition(MenuRoot *mr, int *x, int *y);
@@ -237,7 +237,7 @@ MenuStatus do_menu(MenuRoot *menu, MenuRoot *menuPrior,
   menu->in_use = FALSE;
 
   if (!fWasAlreadyPopped)
-    PopDownMenu(menu, NULL);
+    PopDownMenu(menu);
 
   /* FIX: this global is bad */
   menuFromFrameOrWindowOrTitlebar = FALSE;
@@ -327,16 +327,12 @@ MenuItem *FindEntry(int *px_offset /*NULL means don't return this value */)
 static
 int PopupPositionOffset(MenuRoot *mr)
 {
-  int x;
-  if(mr->mf->style == MWMMenu)
-    x = mr->width - 3;
-  else if (mr->mf->style == WINMenu)
-    x = mr->width - 5;
+  if (mr->mf->style == WINMenu)
+    return mr->width - 5;
   else if (mr->mf->style == FVWMMenu)
-    x = mr->width*2/3;
-  else /* next menus */
-    x = mr->width + 1;
-  return x;
+    return mr->width*2/3;
+  else /* if(mr->mf->style == MWMMenu) */
+    return mr->width - 3;
 }
 
 static
@@ -779,7 +775,7 @@ MenuStatus MenuInteraction(MenuRoot *menu,MenuRoot *menuPrior,
 	    /* something else was already selected on this menu */
 	    SetMenuItemSelected(menu->selected,FALSE);
 	    if (mrPopup) {
-	      PopDownMenu(mrPopup, mr);
+	      PopDownMenu(mrPopup);
 	      mrPopup = NULL;
 	    }
 	  } else {
@@ -827,7 +823,7 @@ MenuStatus MenuInteraction(MenuRoot *menu,MenuRoot *menuPrior,
 	  DBUG("MenuInteraction","Popping down");
 	  /* popdown previous popup */
 	  if (mrPopup) {
-	    PopDownMenu(mrPopup, mr);
+	    PopDownMenu(mrPopup);
 	  }
 	  mrPopup = NULL;
 	  fPopdown = FALSE;
@@ -855,10 +851,19 @@ MenuStatus MenuInteraction(MenuRoot *menu,MenuRoot *menuPrior,
 	      }
 	      FPopupMenu(mrPopup,menu,x,y,fPopupAndWarp,&mops);
 	    }
-	    mi = FindEntry(NULL);
-	    if (mi && mi->mr == mrPopup) {
-	      fDoMenu = TRUE;
-	      fPopdown = (mr->mf->style == FVWMMenu) ? TRUE : FALSE;
+	    if (mrPopup->mrDynamicPrev == mr) {
+	      mi = FindEntry(NULL);
+	      if (mi && mi->mr == mrPopup) {
+		fDoMenu = TRUE;
+		fPopdown = (mr->mf->style == FVWMMenu) ? TRUE : FALSE;
+	      }
+	    }
+	    else {
+	      /* This menu must be already mapped somewhere else, so ignore
+	       * it completely. */
+	      fDoMenu = FALSE;
+	      fPopdown = FALSE;
+	      mrPopup = NULL;
 	    }
 	  } /* if (!mrPopup) */
 	} /* if (fPopup) */
@@ -871,7 +876,7 @@ MenuStatus MenuInteraction(MenuRoot *menu,MenuRoot *menuPrior,
 	    goto DO_RETURN;
 	  }
 	  if (fPopdown ||  mr->mf->style == FVWMMenu) {
-	    PopDownMenu(mrPopup, mr);
+	    PopDownMenu(mrPopup);
 	    mrPopup = NULL;
 	  }
 	  if (retval == MENU_POPDOWN) {
@@ -884,8 +889,8 @@ MenuStatus MenuInteraction(MenuRoot *menu,MenuRoot *menuPrior,
 	   over to the right to unobscure the current menu;  this
 	   happens only when using animation */
 	tmi = FindEntry(NULL);
-	if (mrPopup && mrPopup->xanimation && mr->mf->style <= WINMenu &&
-	    tmi && (tmi == menu->selected || tmi->mr != menu)) {
+	if (mrPopup && mrPopup->xanimation && tmi &&
+	    (tmi == menu->selected || tmi->mr != menu)) {
 	  int x_popup, y_popup;
 	  DBUG("MenuInteraction","Moving the popup menu back over");
 	  XGetGeometry(dpy, mrPopup->w, &JunkRoot, &x_popup, &y_popup,
@@ -899,8 +904,8 @@ MenuStatus MenuInteraction(MenuRoot *menu,MenuRoot *menuPrior,
 	/* now check whether we should animate the current real menu
 	   over to the right to unobscure the prior menu; only a very
 	   limited case where this might be helpful and not too disruptive */
-	if (mrPopup == NULL && menuPrior != NULL && mr->mf->style <= WINMenu &&
-	    menu->xanimation != 0 && x_offset < menu->width/4) {
+	if (mrPopup == NULL && menuPrior != NULL && menu->xanimation != 0 &&
+	    x_offset < menu->width/4) {
 	  int x_menu, y_menu;
 	  DBUG("MenuInteraction","Moving the menu back over");
 	  /* we have to see if we need menu to be moved */
@@ -929,7 +934,7 @@ MenuStatus MenuInteraction(MenuRoot *menu,MenuRoot *menuPrior,
 		(!IS_RIGHT_MENU(mrPopup) && x > mx+mw) ||
 		(!IS_UP_MENU(mrPopup)    && y < my)    ||
 		(!IS_DOWN_MENU(mrPopup)  && y > my+mh)) {
-	      PopDownMenu(mrPopup, mr);
+	      PopDownMenu(mrPopup);
 	      mrPopup = NULL;
 	    } else {
 	      fOffMenuAllowed = TRUE;
@@ -942,7 +947,7 @@ MenuStatus MenuInteraction(MenuRoot *menu,MenuRoot *menuPrior,
 
   DO_RETURN:
   if (mrPopup) {
-    PopDownMenu(mrPopup, NULL);
+    PopDownMenu(mrPopup);
   }
   if (retval == MENU_POPDOWN) {
     if (menu->selected)
@@ -1179,7 +1184,7 @@ Bool FPopupMenu (MenuRoot *menu, MenuRoot *menuPrior, int x, int y,
 	AnimatedMoveOfWindow(menuPrior->w,prev_x,prev_y,end_x,prev_y,
 			     TRUE, -1, NULL);
       } /* if (USING_ANIMATED_MENUS) */
-      else if ( menu->mf->style != FVWMMenu &&
+      else if ((menu->mf->style == MWMMenu ||  menu->mf->style == WINMenu) &&
 	       !(pops->flags & MENU_FIXED)) {
 	Bool fLeftIsOK = FALSE;
 	Bool fRightIsOK = FALSE;
@@ -1306,16 +1311,10 @@ void GetPopupOptions(MenuItem *mi, MenuOptions *pops)
  *
  ***********************************************************************/
 static
-void PopDownMenu(MenuRoot *mr, MenuRoot *parent)
+void PopDownMenu(MenuRoot *mr)
 {
   MenuItem *mi;
   assert(mr);
-
-  for ( ; parent; parent =  parent->mrDynamicPrev)
-  {
-    if (parent == mr)
-      return;
-  }
 
   mr->flags = 0;
   XUnmapWindow(dpy, mr->w);
@@ -1401,7 +1400,7 @@ void PaintEntry(MenuItem *mi)
   else
       ReliefGC = mr->mf->MenuReliefGC;
 
-  if(mr->mf->style == MWMMenu) {
+  if(mr->mf->visual_style == MWMMenu) {
     if((!mi->prev)||(!mi->prev->state))
       XClearArea(dpy, mr->w,mr->xoffset,y_offset-1,mr->width,y_height+2,0);
     else
@@ -1426,7 +1425,7 @@ void PaintEntry(MenuItem *mi)
       }
     RelieveHalfRectangle(mr->w, 0, y_offset-1, mr->width,
 			 y_height+2, ReliefGC, ShadowGC);
-  } else if (mr->mf->style == WINMenu) {
+  } else if (mr->mf->visual_style == WINMenu) {
     if (mi->state && (!mi->fIsSeparator) &&
 	(((*mi->item)!=0) || mi->picture || mi->lpicture)) {
       XChangeGC(dpy, Scr.ScratchGC1, Globalgcm, &Globalgcv);
@@ -1438,7 +1437,7 @@ void PaintEntry(MenuItem *mi)
     }
     RelieveHalfRectangle(mr->w, 0, y_offset-1, mr->width,
 			 y_height+3, ReliefGC, ShadowGC);
-  } else if (mr->mf->style == FVWMMenu) {
+  } else if (mr->mf->visual_style == FVWMMenu) {
     XClearArea(dpy, mr->w, mr->xoffset,y_offset,mr->width,y_height,0);
     if ((mi->state)&&(!mi->fIsSeparator)&&
 	(((*mi->item)!=0)|| mi->picture || mi->lpicture ))
@@ -1478,7 +1477,8 @@ void PaintEntry(MenuItem *mi)
 	  XDrawLine(dpy, mr->w, ShadowGC, mr->xoffset+2, y_offset+y_height-4,
 		    mr->width-3, y_offset+y_height-4);
 	}
-      else if (mr->mf->style == FVWMMenu || mr->mf->style == WINMenu)
+      else if (mr->mf->style == FVWMMenu ||
+	       mr->mf->style == WINMenu)
 	{
 	  if(mi->next != NULL)
 	    {
@@ -1499,7 +1499,7 @@ void PaintEntry(MenuItem *mi)
   /* see if it's am actual separator (titles are also separators) */
   if(mi->fIsSeparator && !IS_TITLE_MENU_ITEM(mi) && !IS_LABEL_MENU_ITEM(mi))
     {
-      if(mr->mf->style == MWMMenu)
+      if(mr->mf->visual_style == MWMMenu)
 	DrawSeparator(mr->w,ShadowGC,ReliefGC,mr->xoffset+2,
 		      y_offset-1+HEIGHT_SEPARATOR/2,
 		      mr->width-3,y_offset-1+HEIGHT_SEPARATOR/2,0);
@@ -1525,7 +1525,8 @@ void PaintEntry(MenuItem *mi)
     /* should be a shaded out word, not just re-colored. */
     currentGC = mr->mf->MenuStippleGC;
 
-  if (mr->mf->style == WINMenu && mi->state && (mi->fIsSeparator == FALSE))
+  if (mr->mf->visual_style == WINMenu && mi->state &&
+      mi->fIsSeparator == FALSE)
     /* Use a lighter color for highlighted windows menu items for win mode */
     currentGC = ReliefGC;
 
@@ -1549,11 +1550,11 @@ void PaintEntry(MenuItem *mi)
     if(mi->state)
       DrawTrianglePattern(mr->w, ShadowGC, ReliefGC, ShadowGC, ReliefGC,
 			  mr->width-d-8, y_offset+d-1, mr->width-d-1,
-			  y_offset+d+7, mr->mf->style);
+			  y_offset+d+7, mr->mf->visual_style);
     else
       DrawTrianglePattern(mr->w, ReliefGC, ShadowGC, ReliefGC,  mr->mf->MenuGC,
 			  mr->width-d-8, y_offset+d-1, mr->width-d-1,
-			  y_offset+d+7, mr->mf->style);
+			  y_offset+d+7, mr->mf->visual_style);
 
   if(mi->picture)
     {
@@ -1744,184 +1745,201 @@ void PaintMenu(MenuRoot *mr, XEvent *e)
 
   if( mf )
     {
-     type = mf->style;
-     switch(type)
-     {
-     case SolidMenu:
-        XSetWindowBackground(dpy, mr->w, mr->mf->u.back);
-        flush_expose(mr->w);
-        XClearWindow(dpy,mr->w);
-        break;
+      type = mf->visual_style;
+      switch(type)
+      {
+      case SolidMenu:
+	XSetWindowBackground(dpy, mr->w, mr->mf->u.back);
+	flush_expose(mr->w);
+	XClearWindow(dpy,mr->w);
+	break;
 #ifdef GRADIENT_BUTTONS
-     case HGradMenu:
-     case VGradMenu:
-     case DGradMenu:
-     case BGradMenu:
+      case HGradMenu:
+      case VGradMenu:
+      case DGradMenu:
+      case BGradMenu:
         bounds.x = 2; bounds.y = 2;
         bounds.width = mr->width - 5;
         bounds.height = mr->height;
 
         if ( type == HGradMenu ) {
-            register int i = 0, dw = (float) bounds.width / mf->u.grad.npixels + 1;
-            while (i < mf->u.grad.npixels)
-            {
-                unsigned short x = i * bounds.width / mf->u.grad.npixels;
-                XSetForeground(dpy, Scr.TransMaskGC, mf->u.grad.pixels[i++ ]);
-                XFillRectangle(dpy, mr->w, Scr.TransMaskGC,
-                               bounds.x + x, bounds.y,
-                               dw, bounds.height);
-            }
+	  register int i = 0;
+	  register int dw;
+	  dw= (float) bounds.width / mf->u.grad.npixels + 1;
+	  while (i < mf->u.grad.npixels)
+          {
+	    unsigned short x = i * bounds.width / mf->u.grad.npixels;
+	    XSetForeground(dpy, Scr.TransMaskGC, mf->u.grad.pixels[i++ ]);
+	    XFillRectangle(dpy, mr->w, Scr.TransMaskGC,
+			   bounds.x + x, bounds.y,
+			   dw, bounds.height);
+	  }
         }
         else if ( type == VGradMenu )
         {
-            register int i = 0, dh = bounds.height / mf->u.grad.npixels + 1;
-            while (i < mf->u.grad.npixels)
-            {
-                unsigned short y = i * bounds.height / mf->u.grad.npixels;
-                XSetForeground(dpy, Scr.TransMaskGC, mf->u.grad.pixels[ i++ ]);
-                XFillRectangle(dpy, mr->w, Scr.TransMaskGC,
-                               bounds.x, bounds.y + y,
-                               bounds.width, dh);
-            }
+	  register int i = 0, dh = bounds.height / mf->u.grad.npixels + 1;
+	  while (i < mf->u.grad.npixels)
+          {
+	    unsigned short y = i * bounds.height / mf->u.grad.npixels;
+	    XSetForeground(dpy, Scr.TransMaskGC, mf->u.grad.pixels[ i++ ]);
+	    XFillRectangle(dpy, mr->w, Scr.TransMaskGC,
+			   bounds.x, bounds.y + y,
+			   bounds.width, dh);
+	  }
         }
         else if ( type == DGradMenu )
         {
-            register int i = 0, dc;
-            float ds;
-            int cindex = 0;
+	  register int i = 0, dc;
+	  float ds;
+	  int cindex = 0;
 
-            if( mr->width > mr->height )
-            {
-                ds = (float) mr->height / mr->width;
-                dc = mr->width * 2 / mf->u.grad.npixels + 1;
-                for(i = 0; i < mr->width; i++)
-                {
-                    if( i % dc == 0 )
-                        XSetForeground(dpy, Scr.TransMaskGC, mf->u.grad.pixels[cindex++]);
-                    XDrawLine(dpy, mr->w, Scr.TransMaskGC, 0, i*ds, i, 0);
-                }
-                for(i = 0; i < mr->width; i++)
-                {
-                    if( i % dc == 0 )
-                        XSetForeground(dpy, Scr.TransMaskGC, mf->u.grad.pixels[cindex++]);
-                    XDrawLine(dpy, mr->w, Scr.TransMaskGC, i, mr->height, mr->width, i*ds);
-                }
-            }
-            else
-            {
-                ds = (float) mr->width / mr->height;
-                dc = mr->height * 2 / mf->u.grad.npixels + 1;
-                for(i = 0; i < mr->height; i++)
-                {
-                    if( i % dc == 0 )
-                        XSetForeground(dpy, Scr.TransMaskGC, mf->u.grad.pixels[cindex++]);
-                    XDrawLine(dpy, mr->w, Scr.TransMaskGC, 0, i, i*ds, 0);
-                }
-                for(i = 0; i < mr->height; i++)
-                {
-                    if( i % dc == 0 )
-                        XSetForeground(dpy, Scr.TransMaskGC, mf->u.grad.pixels[cindex++]);
-                    XDrawLine(dpy, mr->w, Scr.TransMaskGC, i*ds, mr->height, mr->width, i);
-                }
-            }
+	  if( mr->width > mr->height )
+          {
+	    ds = (float) mr->height / mr->width;
+	    dc = mr->width * 2 / mf->u.grad.npixels + 1;
+	    for(i = 0; i < mr->width; i++)
+	    {
+	      if( i % dc == 0 )
+		XSetForeground(dpy, Scr.TransMaskGC,
+			       mf->u.grad.pixels[cindex++]);
+	      XDrawLine(dpy, mr->w, Scr.TransMaskGC, 0, i*ds, i, 0);
+	    }
+	    for(i = 0; i < mr->width; i++)
+	    {
+	      if( i % dc == 0 )
+		XSetForeground(dpy, Scr.TransMaskGC,
+			       mf->u.grad.pixels[cindex++]);
+	      XDrawLine(dpy, mr->w, Scr.TransMaskGC, i, mr->height, mr->width,
+			i*ds);
+	    }
+	  }
+	  else
+	  {
+	    ds = (float) mr->width / mr->height;
+	    dc = mr->height * 2 / mf->u.grad.npixels + 1;
+	    for(i = 0; i < mr->height; i++)
+	    {
+	      if( i % dc == 0 )
+		XSetForeground(dpy, Scr.TransMaskGC,
+			       mf->u.grad.pixels[cindex++]);
+	      XDrawLine(dpy, mr->w, Scr.TransMaskGC, 0, i, i*ds, 0);
+	    }
+	    for(i = 0; i < mr->height; i++)
+	    {
+	      if( i % dc == 0 )
+		XSetForeground(dpy, Scr.TransMaskGC,
+			       mf->u.grad.pixels[cindex++]);
+	      XDrawLine(dpy, mr->w, Scr.TransMaskGC, i*ds, mr->height,
+			mr->width, i);
+	    }
+	  }
         }
         else
         {
-            register int i = 0, dc;
-            float ds;
-            int cindex = 0;
+	  register int i = 0, dc;
+	  float ds;
+	  int cindex = 0;
 
-            if( mr->width > mr->height )
-            {
-                ds = (float) mr->height / mr->width;
-                dc = mr->width * 2 / mf->u.grad.npixels + 1;
-                for(i = 0; i < mr->width; i++)
-                {
-                    if( i % dc == 0 )
-                        XSetForeground(dpy, Scr.TransMaskGC, mf->u.grad.pixels[cindex++]);
-                    XDrawLine(dpy, mr->w, Scr.TransMaskGC, 0, mr->height - i*ds, i, mr->height);
-                }
-                for(i = 0; i < mr->width; i++)
-                {
-                    if( i % dc == 0 )
-                        XSetForeground(dpy, Scr.TransMaskGC, mf->u.grad.pixels[cindex++]);
-                    XDrawLine(dpy, mr->w, Scr.TransMaskGC, i, 0, mr->width, mr->height - i*ds);
-                }
-            }
-            else
-            {
-                ds = (float) mr->width / mr->height;
-                dc = mr->height * 2 / mf->u.grad.npixels + 1;
-                for(i = 0; i < mr->height; i++)
-                {
-                    if( i % dc == 0 )
-                        XSetForeground(dpy, Scr.TransMaskGC, mf->u.grad.pixels[cindex++]);
-                    XDrawLine(dpy, mr->w, Scr.TransMaskGC, 0, mr->height - i, i*ds , mr->height);
-                }
-                for(i = 0; i < mr->height; i++)
-                {
-                    if( i % dc == 0 )
-                        XSetForeground(dpy, Scr.TransMaskGC, mf->u.grad.pixels[cindex++]);
-                    XDrawLine(dpy, mr->w, Scr.TransMaskGC, i*ds, 0, mr->width, mr->height - i);
-                }
-            }
+	  if( mr->width > mr->height )
+          {
+	    ds = (float) mr->height / mr->width;
+	    dc = mr->width * 2 / mf->u.grad.npixels + 1;
+	    for(i = 0; i < mr->width; i++)
+	    {
+	      if( i % dc == 0 )
+		XSetForeground(dpy, Scr.TransMaskGC,
+			       mf->u.grad.pixels[cindex++]);
+	      XDrawLine(dpy, mr->w, Scr.TransMaskGC, 0, mr->height - i*ds, i,
+			mr->height);
+	    }
+	    for(i = 0; i < mr->width; i++)
+	    {
+	      if( i % dc == 0 )
+		XSetForeground(dpy, Scr.TransMaskGC,
+			       mf->u.grad.pixels[cindex++]);
+	      XDrawLine(dpy, mr->w, Scr.TransMaskGC, i, 0, mr->width,
+			mr->height - i*ds);
+	    }
+	  }
+	  else
+          {
+	    ds = (float) mr->width / mr->height;
+	    dc = mr->height * 2 / mf->u.grad.npixels + 1;
+	    for(i = 0; i < mr->height; i++)
+	    {
+	      if( i % dc == 0 )
+		XSetForeground(dpy, Scr.TransMaskGC,
+			       mf->u.grad.pixels[cindex++]);
+	      XDrawLine(dpy, mr->w, Scr.TransMaskGC, 0, mr->height - i, i*ds,
+			mr->height);
+	    }
+	    for(i = 0; i < mr->height; i++)
+	    {
+	      if( i % dc == 0 )
+		XSetForeground(dpy, Scr.TransMaskGC,
+			       mf->u.grad.pixels[cindex++]);
+	      XDrawLine(dpy, mr->w, Scr.TransMaskGC, i*ds, 0, mr->width,
+			mr->height - i);
+	    }
+	  }
         }
         break;
 #endif  /* GRADIENT_BUTTONS */
 #ifdef PIXMAP_BUTTONS
     case PixmapMenu:
-        p = mf->u.p;
+      p = mf->u.p;
 
-        border = 0;
-        width = mr->width - border * 2; height = mr->height - border * 2;
+      border = 0;
+      width = mr->width - border * 2; height = mr->height - border * 2;
 
-        x = border;
-        if (mf->style&HOffCenter) {
-            if (mf->style&HRight)
-                x += (int)(width - p->width);
-        } else
-            x += (int)(width - p->width) / 2;
+      x = border;
+      if (mf->visual_style & HOffCenter) {
+	if (mf->visual_style & HRight)
+	  x += (int)(width - p->width);
+      } else
+	x += (int)(width - p->width) / 2;
 
-        y = border;
-        if (mf->style&VOffCenter) {
-            if (mf->style&VBottom)
-                y += (int)(height - p->height);
-        } else
-            y += (int)(height - p->height) / 2;
+      y = border;
+      if (mf->visual_style & VOffCenter) {
+	if (mf->visual_style & VBottom)
+	  y += (int)(height - p->height);
+      } else
+	y += (int)(height - p->height) / 2;
 
-        if (x < border) x = border;
-        if (y < border) y = border;
-        if (width > p->width) width = p->width;
-        if (height > p->height) height = p->height;
-        if (width > mr->width - x - border) width = mr->width - x - border;
-        if (height > mr->height - y - border) height = mr->height - y - border;
+      if (x < border) x = border;
+      if (y < border) y = border;
+      if (width > p->width) width = p->width;
+      if (height > p->height) height = p->height;
+      if (width > mr->width - x - border) width = mr->width - x - border;
+      if (height > mr->height - y - border) height = mr->height - y - border;
 
-        XSetClipMask(dpy, Scr.TransMaskGC, p->mask);
-        XSetClipOrigin(dpy, Scr.TransMaskGC, x, y);
-        XCopyArea(dpy, p->picture, mr->w, Scr.TransMaskGC,
-                  0, 0, width, height, x, y);
-        break;
+      XSetClipMask(dpy, Scr.TransMaskGC, p->mask);
+      XSetClipOrigin(dpy, Scr.TransMaskGC, x, y);
+      XCopyArea(dpy, p->picture, mr->w, Scr.TransMaskGC,
+		0, 0, width, height, x, y);
+      break;
 
    case TiledPixmapMenu:
-        XSetWindowBackgroundPixmap(dpy, mr->w, mf->u.p->picture);
-        flush_expose(mr->w);
-        XClearWindow(dpy,mr->w);
-        break;
+     XSetWindowBackgroundPixmap(dpy, mr->w, mf->u.p->picture);
+     flush_expose(mr->w);
+     XClearWindow(dpy,mr->w);
+     break;
 #endif /* PIXMAP_BUTTONS */
     }
   }
 
   for (mi = mr->first; mi != NULL; mi = mi->next)
+  {
+    /* be smart about handling the expose, redraw only the entries
+     *        *        * that we need to
+     *               *               */
+    if( mr->mf->visual_style != SolidMenu ||
+	(e->xexpose.y < (mi->y_offset + mi->y_height) &&
+	 (e->xexpose.y + e->xexpose.height) > mi->y_offset))
     {
-      /* be smart about handling the expose, redraw only the entries
-       *        *        * that we need to
-       *               *               */
-      if( mr->mf->style != SolidMenu || (e->xexpose.y < (mi->y_offset + mi->y_height) &&
-          (e->xexpose.y + e->xexpose.height) > mi->y_offset))
-        {
-          PaintEntry(mi);
-        }
+      PaintEntry(mi);
     }
+  }
 
   PaintSidePic(mr);
   XSync(dpy, 0);

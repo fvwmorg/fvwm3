@@ -1,3 +1,19 @@
+1998-12-17  Dominik Vogt  <dominik_vogt@hp.com>
+
+	* fvwm/menus.c: backed out my prvious patch for 'recursive' menus and
+	did it another (much simpler) way. Now we ignore the popup completely
+	if it is already mapped but has a parent different from the current
+	menu.
+
+	* fvwm/fvwm2.1: documented syntax changes for SetMenuStyle,
+	sorted manpage
+
+	* fvwm/menus.c:
+	* fvwm/menus.h:
+	* fvwm/builtins.c (ReadMenuFace): implmented visual_style for menus
+	that should fix the 'menuface' bug. all traces of the former 'next'
+	menu style have been eliminated.
+
 1998-12-16  Paul D. Smith  <psmith@gnu.org>
 
 	* libs/fvwmlib.h: Added #defines to handle the __attribute__ GCC

@@ -1,6 +1,6 @@
 /****************************************************************************
- * This module is based on Twm, but has been siginificantly modified 
- * by Rob Nation 
+ * This module is based on Twm, but has been siginificantly modified
+ * by Rob Nation
  ****************************************************************************/
 /*****************************************************************************/
 /**       Copyright 1988 by Evans & Sutherland Computer Corporation,        **/
@@ -84,6 +84,7 @@ typedef struct MenuFace {
     char *name;
     struct MenuFace *next;
     MenuFaceStyle style;
+    MenuFaceStyle visual_style;
     union {
 #ifdef PIXMAP_BUTTONS
         Picture *p;
@@ -181,9 +182,9 @@ typedef struct Binding
   int Button_Key;         /* Mouse Button number of Keycode */
   char *key_name;         /* In case of keycode, give the key_name too */
   int Context;            /* Contex is Fvwm context, ie titlebar, frame, etc */
-  int Modifier;           /* Modifiers for keyboard state */   
+  int Modifier;           /* Modifiers for keyboard state */
   char *Action;           /* What to do? */
-  struct Binding *NextBinding; 
+  struct Binding *NextBinding;
 } Binding;
 
 typedef struct
@@ -219,9 +220,9 @@ extern Bool fLastMenuPosHintsValid;
 /* This is a lame hack, in that "_BUTTON" is added to mean a button-release
    caused the return-- the macros below help deal with the ugliness */
 typedef enum {
-    MENU_ERROR = -1, 
-    MENU_NOP = 0, 
-    MENU_DONE = 1, 
+    MENU_ERROR = -1,
+    MENU_NOP = 0,
+    MENU_DONE = 1,
     MENU_DONE_BUTTON = 2,  /* must be MENU_DONE + 1 */
     MENU_ABORTED = 3,
     MENU_ABORTED_BUTTON = 4, /* must be MENU_ABORTED + 1 */
@@ -241,7 +242,6 @@ typedef enum {
 #define USING_MWM_MENUS(menu)	((menu)->MenuFace->style == MWMMenu)
 #define USING_FVWM_MENUS(menu)	((menu)->MenuFace->style == FVWMMenu)
 #define USING_WIN_MENUS(menu)	((menu)->MenuFace->style == WINMenu)
-#define USING_NEXT_MENUS(menu)	((menu)->MenuFace->style >  WINMenu)
 
 /*
 #define USING_MWM_MENUS (Scr.menu_type == MWM)
@@ -264,4 +264,4 @@ void AnimatedMoveOfWindow(Window w,int startX,int startY,int endX, int endY,
 			  float *ppctMovement );
 
 #endif /* _MENUS_ */
- 
+
