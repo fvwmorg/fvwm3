@@ -4,17 +4,17 @@ typedef struct ScreenInfo
   int d_depth;	        /* copy of DefaultDepth(dpy, screen) */
   int MyDisplayWidth;	/* my copy of DisplayWidth(dpy, screen) */
   int MyDisplayHeight;  /* my copy of DisplayHeight(dpy, screen) */
-  
+
   char *FvwmRoot;	/* the head of the fvwm window list */
   Window Root;		/* the root window */
 
   Window Pager_w;
 
   Font PagerFont;        /* font struct for window labels in pager (optional)*/
-  
+
   GC NormalGC;		 /* normal GC for menus, pager, resize window */
 
-  char  *Hilite;	 /* the fvwm window that is highlighted 
+  char  *Hilite;	 /* the fvwm window that is highlighted
 			  * except for networking delays, this is the
 			  * window which REALLY has the focus */
   unsigned VScale;       /* Panner scale factor */
@@ -79,7 +79,7 @@ typedef struct balloon_window
 } BalloonWindow;
 
 
-typedef struct desk_info 
+typedef struct desk_info
 {
   Window w;
   Window title_w;
@@ -104,7 +104,7 @@ typedef struct pager_string_list
 /*************************************************************************
  *
  * Subroutine Prototypes
- * 
+ *
  *************************************************************************/
 char *GetNextToken(char *indata,char **token);
 void Loop(int *fd);
@@ -151,7 +151,7 @@ void MoveResizePagerView(PagerWindow *t);
 void ChangeDeskForWindow(PagerWindow *t,long newdesk);
 void MoveStickyWindow(void);
 void Hilight(PagerWindow *, int);
-void Scroll(int Desk, int x, int y);
+void Scroll(int window_w, int window_h, int x, int y, int Desk);
 void MoveWindow(XEvent *Event);
 void LabelWindow(PagerWindow *t);
 void LabelIconWindow(PagerWindow *t);
@@ -159,7 +159,6 @@ void PictureWindow(PagerWindow *t);
 void PictureIconWindow(PagerWindow *t);
 void ReConfigureIcons(void);
 void IconSwitchPage(XEvent *Event);
-void IconScroll(int x, int y);
 void IconMoveWindow(XEvent *Event,PagerWindow *t);
 void HandleExpose(XEvent *Event);
 void MoveStickyWindows(void);

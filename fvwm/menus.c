@@ -436,7 +436,9 @@ MenuStatus menuShortcuts(MenuRoot *menu,XEvent *Event,MenuItem **pmiCurrent)
   /* No, because the keypad numbers don't work. Use XlookupString */
   index = XLookupString(&(Event->xkey), &keychar, 1, &keysym, NULL);
   /* Try to match hot keys */
-  if (index == 1 && isgraph((int)keychar) && fControlKey == FALSE) {
+  /* Need isascii here - isgraph might coredump! */
+  if (index == 1 && isascii((int)keychar) && isgraph((int)keychar) &&
+      fControlKey == FALSE) {
     /* allow any printable character to be a keysym, but be sure control
        isn't pressed */
     MenuItem *mi;
@@ -490,7 +492,8 @@ MenuStatus menuShortcuts(MenuRoot *menu,XEvent *Event,MenuItem **pmiCurrent)
 	else
 	  return MENU_NOP;
       }
-      if (isgraph(keysym))
+      /* Need isascii here - isgraph might coredump! */
+      if (isascii(keysym) && isgraph(keysym))
 	fControlKey = FALSE; /* don't use control modifier
 				for k or p, since those might
 				be shortcuts too-- C-k, C-p will
@@ -522,7 +525,8 @@ MenuStatus menuShortcuts(MenuRoot *menu,XEvent *Event,MenuItem **pmiCurrent)
 	else
 	  return MENU_NOP;
       }
-      if (isgraph(keysym))
+      /* Need isascii here - isgraph might coredump! */
+      if (isascii(keysym) && isgraph(keysym))
 	fControlKey = FALSE; /* don't use control modifier
 				for j or n, since those might
 				be shortcuts too-- C-j, C-n will

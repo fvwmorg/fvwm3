@@ -1,3 +1,17 @@
+1998-12-09  Dominik Vogt  <dominik_vogt@hp.com>
+
+	* FvwmPager/x_pager.c (SwitchToDeskAndPage):
+	(DispatchEvent): patch to make desk changing via button 3 work.
+
+1998-12-08  Dominik Vogt  <dominik_vogt@hp.com>
+
+	* FvwmPager/x_pager.c (Scroll): fixed another mouse-button-3 bug. You
+	can now consistently reach the left/top border of page 0 0.
+	(IconScroll): merged with function Scroll
+	(DispatchEvent): changed Scroll signature
+	(Scroll): Changed signature and removed code limiting movement to 100%
+	of the desktop size. What was this good for?
+
 1998-12-04  Dominik Vogt  <dominik_vogt@hp.com>
 
 	* modules/FvwmButtons/parse.c (match_string): fixed 'up' panels as

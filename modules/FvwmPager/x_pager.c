@@ -571,14 +571,14 @@ void DispatchEvent(XEvent *Event)
 		{
 		  XQueryPointer(dpy, Desks[i].w, &JunkRoot, &JunkChild,
 				&JunkX, &JunkY,&x, &y, &JunkMask);
-		  Scroll(i,x,y);
+		  Scroll(desk_w, desk_h, x, y, i);
 		}
 	    }
 	  if(Event->xany.window == icon_win)
 	    {
 	      XQueryPointer(dpy, icon_win, &JunkRoot, &JunkChild,
 			    &JunkX, &JunkY,&x, &y, &JunkMask);
-	      IconScroll(x,y);
+	      Scroll(icon_w, icon_h, x, y, -1);
 	    }
 	}
       break;
@@ -601,10 +601,13 @@ void DispatchEvent(XEvent *Event)
 		  if (Scr.CurrentDesk != i + desk1)
 		    {
 		      SwitchToDeskAndPage(i,Event);
+		      Scr.CurrentDesk = i + desk1;
+		      Wait = 0;
 		    }
 		  XQueryPointer(dpy, Desks[i].w, &JunkRoot, &JunkChild,
 				&JunkX, &JunkY,&x, &y, &JunkMask);
-		  Scroll(i,x,y);
+fprintf(stderr,"6 x = %d, y = %d\n",x,y);
+		  Scroll(desk_w, desk_h, x, y, i);
 		  break;
 		}
 	    }
@@ -612,7 +615,7 @@ void DispatchEvent(XEvent *Event)
 	    {
 	      XQueryPointer(dpy, icon_win, &JunkRoot, &JunkChild,
 			    &JunkX, &JunkY,&x, &y, &JunkMask);
-	      IconScroll(x,y);
+	      Scroll(icon_w, icon_h, x, y, -1);
 	    }
 	}
       break;
@@ -627,14 +630,14 @@ void DispatchEvent(XEvent *Event)
 		{
 		  XQueryPointer(dpy, Desks[i].w, &JunkRoot, &JunkChild,
 				    &JunkX, &JunkY,&x, &y, &JunkMask);
-		  Scroll(i,x,y);
+		  Scroll(desk_w, desk_h, x, y, i);
 		}
 	    }
 	  if(Event->xany.window == icon_win)
 	    {
 	      XQueryPointer(dpy, icon_win, &JunkRoot, &JunkChild,
 			    &JunkX, &JunkY,&x, &y, &JunkMask);
-	      IconScroll(x,y);
+	      Scroll(icon_w, icon_h, x, y, -1);
 	    }
 
 	}
@@ -986,14 +989,17 @@ void SwitchToDeskAndPage(int Desk, XEvent *Event)
 
   if (Scr.CurrentDesk != (Desk+desk1))
     {
+      int vx, vy;
       SendInfo(fd,"Desk 0 10000\n",0);
-      sprintf(command,"GotoPage %d %d\n",
-	      Event->xbutton.x*(Scr.VxMax+Scr.MyDisplayWidth)/
-	      (desk_w*Scr.MyDisplayWidth),
-	      Event->xbutton.y*(Scr.VyMax+Scr.MyDisplayHeight)/
-	      (desk_h*Scr.MyDisplayHeight));
+      /* patch to let mouse button 3 change desks and do not cling to a page */
+      vx = Event->xbutton.x*(Scr.VxMax+Scr.MyDisplayWidth)/
+	(desk_w*Scr.MyDisplayWidth);
+      vy = Event->xbutton.y*(Scr.VyMax+Scr.MyDisplayHeight)/
+	(desk_h*Scr.MyDisplayHeight);
+      Scr.Vx = vx * Scr.MyDisplayWidth;
+      Scr.Vy = vy * Scr.MyDisplayHeight;
+      sprintf(command,"GotoPage %d %d\n", vx, vy);
       SendInfo(fd,command,0);
-
       sprintf(command,"Desk 0 %d\n",Desk+desk1);
       SendInfo(fd,command,0);
 
@@ -1302,14 +1308,17 @@ void Hilight(PagerWindow *t, int on)
   PictureIconWindow(t);
 }
 
-void Scroll(int Desk, int x, int y)
+/* Use Desk == -1 to scroll the icon window */
+void Scroll(int window_w, int window_h, int x, int y, int Desk)
 {
 #ifndef NON_VIRTUAL
   char command[256];
   int sx, sy;
+fprintf(stderr,"Wait=%d, Desk=%d, CD=%d\n",Wait,Desk,Scr.CurrentDesk);
   if(Wait == 0)
     {
-      if(Desk + desk1 != Scr.CurrentDesk)
+      /* Desk < 0 means we want to scroll an icon window */
+      if(Desk >= 0 && Desk + desk1 != Scr.CurrentDesk)
 	{
 	  return;
 	}
@@ -1319,19 +1328,20 @@ void Scroll(int Desk, int x, int y)
       if(y < 0)
 	y = 0;
 
-      if(x > desk_w)
-	x = desk_w;
-      if(y > desk_h)
-	y = desk_h;
+      if(x > window_w)
+	x = window_w;
+      if(y > window_h)
+	y = window_h;
 
-      sx = (100*(x*(Scr.VxMax+Scr.MyDisplayWidth)/desk_w- Scr.Vx)) /
+      sx = (100*(x*(Scr.VxMax+Scr.MyDisplayWidth)/window_w- Scr.Vx)) /
 	Scr.MyDisplayWidth;
-      sy = (100*(y*(Scr.VyMax+Scr.MyDisplayHeight)/
-		   desk_h - Scr.Vy))/Scr.MyDisplayHeight;
-      if(sx > 100)sx = 100;
-      if(sx < -100)sx = -100;
-      if(sy < -100)sy = -100;
-      if(sy > 100)sy = 100;
+      sy = (100*(y*(Scr.VyMax+Scr.MyDisplayHeight)/window_h - Scr.Vy)) /
+	Scr.MyDisplayHeight;
+      /* Make sure we don't get stuck a few pixels fromt the top/left border.
+       * Since sx/sy are ints, values between 0 and 1 are rounded down. */
+fprintf(stderr, "sx = %d, sy = %d\n",sx,sy);
+      if(sx == 0 && x == 0 && Scr.Vx != 0) sx = -1;
+      if(sy == 0 && y == 0 && Scr.Vy != 0) sy = -1;
 
       sprintf(command,"Scroll %d %d\n",sx,sy);
       SendInfo(fd,command,0);
@@ -1339,41 +1349,6 @@ void Scroll(int Desk, int x, int y)
     }
 #endif
 }
-
-
-void IconScroll(int x, int y)
-{
-#ifndef NON_VIRTUAL
-  char command[256];
-  int sx, sy;
-  if(Wait == 0)
-    {
-      if(x < 0)
-	x = 0;
-      if(y < 0)
-	y = 0;
-
-      if(x > icon_w)
-	x = icon_w;
-      if(y > icon_h)
-	y = icon_h;
-
-      sx = (100*(x*(Scr.VxMax+Scr.MyDisplayWidth)/icon_w- Scr.Vx)) /
-	Scr.MyDisplayWidth;
-      sy = (100*(y*(Scr.VyMax+Scr.MyDisplayHeight)/
-		   icon_h - Scr.Vy))/Scr.MyDisplayHeight;
-      if(sx > 100)sx = 100;
-      if(sx < -100)sx = -100;
-      if(sy < -100)sy = -100;
-      if(sy > 100)sy = 100;
-
-      sprintf(command,"Scroll %d %d\n",sx,sy);
-      SendInfo(fd,command,0);
-      Wait = 1;
-    }
-#endif
-}
-
 
 void MoveWindow(XEvent *Event)
 {
