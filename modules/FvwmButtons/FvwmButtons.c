@@ -1745,6 +1745,12 @@ static void HandlePanelPress(button_info *b)
   else
     is_mapped = False;
 
+  /* force StaticGravity on window */
+  mysizehints.flags = 0;
+  XGetWMNormalHints(Dpy, b->PanelWin, &mysizehints, &supplied);
+  mysizehints.flags |= PWinGravity;
+  mysizehints.win_gravity = StaticGravity;
+  XSetWMNormalHints(Dpy, b->PanelWin, &mysizehints);
   if (is_mapped &&
       XGetGeometry(Dpy, b->PanelWin, &JunkW, &b->x, &b->y, &b->w, &b->h,
 		   &b->bw, &d))
@@ -3085,7 +3091,7 @@ void exec_swallow(char *action, button_info *b)
 	static char *orig_sm_env = NULL;
 	static int len = 0;
 	static Bool sm_initialized = False;
-	static Bool session_manager = False; 
+	static Bool session_manager = False;
 	char *cmd;
 
 	if (!action)
@@ -3117,7 +3123,7 @@ void exec_swallow(char *action, button_info *b)
 		len = 45 + strlen(my_sm_env) + strlen(orig_sm_env);
 	}
 
-	cmd = safemalloc(len + strlen(action)); 
+	cmd = safemalloc(len + strlen(action));
 	sprintf(
 		cmd,
 		"FSMExecFuncWithSessionManagment \"%s\" \"%s\" \"%s\"",

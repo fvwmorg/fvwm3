@@ -112,7 +112,7 @@ void do_relieve_rectangle_with_rotation(
 		{
 			/* left */
 			seg[i].x1 = x+i; seg[i].y1 = y+i+a;
-			seg[i].x2 = x+i; seg[i].y2 = y+h-i+a+l;
+			seg[i].x2 = x+i; seg[i].y2 = y+h-i+a;
 		}
 		else /* ROTATION_90 */
 		{
@@ -148,7 +148,7 @@ void do_relieve_rectangle_with_rotation(
 		{
 			/* left */
 			seg[i2].x1 = x+i; seg[i2].y1 = y+i+a;
-			seg[i2].x2 = x+i; seg[i2].y2 = y+h-i+a+l;
+			seg[i2].x2 = x+i; seg[i2].y2 = y+h-i+a;
 		}
 	}
 	XDrawSegments(dpy, d, shadow_gc, seg, i2);
