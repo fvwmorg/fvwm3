@@ -278,7 +278,7 @@ void SetBorder (FvwmWindow *t, Bool onoroff,Bool force,Bool Mapped,
 		    for (; tsbf; tsbf = tsbf->next)
 #endif
 			DrawButton(t, t->left_w[i],
-				   t->title_height, t->title_height,
+				   t->title_g.height, t->title_g.height,
 				   tsbf, ReliefGC, ShadowGC,
 				   inverted,
 				   GetDecor(t,left_buttons[i].flags));
@@ -288,7 +288,7 @@ void SetBorder (FvwmWindow *t, Bool onoroff,Bool force,Bool Mapped,
 		for (; bf; bf = bf->next)
 #endif
 		    DrawButton(t, t->left_w[i],
-			       t->title_height, t->title_height,
+			       t->title_g.height, t->title_g.height,
 			       bf, ReliefGC, ShadowGC,
 			       inverted, GetDecor(t,left_buttons[i].flags));
 
@@ -297,15 +297,15 @@ void SetBorder (FvwmWindow *t, Bool onoroff,Bool force,Bool Mapped,
 		    if (GetDecor(t,left_buttons[i].state[bs].style) &
 			SunkButton)
 			RelieveRectangle(dpy,t->left_w[i],0,0,
-				         t->title_height - 1,
-					 t->title_height - 1,
+				         t->title_g.height - 1,
+					 t->title_g.height - 1,
 				         (inverted ? ReliefGC : ShadowGC),
 				         (inverted ? ShadowGC : ReliefGC),
 					 rwidth);
 		    else
 			RelieveRectangle(dpy,t->left_w[i],0,0,
-				         t->title_height - 1,
-					 t->title_height - 1,
+				         t->title_g.height - 1,
+					 t->title_g.height - 1,
 				         (inverted ? ShadowGC : ReliefGC),
 				         (inverted ? ReliefGC : ShadowGC),
 					 rwidth);
@@ -348,7 +348,7 @@ void SetBorder (FvwmWindow *t, Bool onoroff,Bool force,Bool Mapped,
 		    for (; tsbf; tsbf = tsbf->next)
 #endif
 			DrawButton(t, t->right_w[i],
-				   t->title_height, t->title_height,
+				   t->title_g.height, t->title_g.height,
 				   tsbf, ReliefGC, ShadowGC,
 				   inverted,
 				   GetDecor(t,right_buttons[i].flags));
@@ -358,7 +358,7 @@ void SetBorder (FvwmWindow *t, Bool onoroff,Bool force,Bool Mapped,
 		for (; bf; bf = bf->next)
 #endif
 		    DrawButton(t, t->right_w[i],
-			       t->title_height, t->title_height,
+			       t->title_g.height, t->title_g.height,
 			       bf, ReliefGC, ShadowGC,
 			       inverted, GetDecor(t,right_buttons[i].flags));
 
@@ -367,15 +367,15 @@ void SetBorder (FvwmWindow *t, Bool onoroff,Bool force,Bool Mapped,
 		    if (GetDecor(t,right_buttons[i].state[bs].style) &
 			SunkButton)
 			RelieveRectangle(dpy,t->right_w[i],0,0,
-				        t->title_height - 1,
-					 t->title_height - 1,
+				        t->title_g.height - 1,
+					 t->title_g.height - 1,
 				        (inverted ? ReliefGC : ShadowGC),
 				        (inverted ? ShadowGC : ReliefGC),
 					 rwidth);
 		    else
 			RelieveRectangle(dpy,t->right_w[i],0,0,
-                                         t->title_height - 1,
-					 t->title_height - 1,
+                                         t->title_g.height - 1,
+					 t->title_g.height - 1,
 				         (inverted ? ShadowGC : ReliefGC),
 				         (inverted ? ReliefGC : ShadowGC),
 					 rwidth);
@@ -440,21 +440,21 @@ void SetBorder (FvwmWindow *t, Bool onoroff,Bool force,Bool Mapped,
 #endif
            && t->boundary_width > 2)
         {
-          int height = t->frame_height - (t->boundary_width * 2 ) + 1;
+          int height = t->frame_g.height - (t->boundary_width * 2 ) + 1;
           /* Inset for shaded windows goes to the bottom */
           if (shaded) height += t->boundary_width;
           /* draw a single pixel band for MWMBorders and the top FvwmBorder
 	   * line */
           RelieveRectangle(dpy, t->frame,
                            t->boundary_width - 1, t->boundary_width - 1,
-                           t->frame_width - (t->boundary_width * 2 ) + 1,
+                           t->frame_g.width - (t->boundary_width * 2 ) + 1,
                            height,
                            sgc, HAS_MWM_BORDER(t) ? rgc : sgc, 1);
           /* draw the rest of FvwmBorder Inset */
           if (!HAS_MWM_BORDER(t))
             RelieveRectangle(dpy, t->frame,
                              t->boundary_width - 2, t->boundary_width - 2,
-                             t->frame_width - (t->boundary_width * 2) + 4,
+                             t->frame_g.width - (t->boundary_width * 2) + 4,
                              height + 3,
                              sgc, rgc, 2);
         }
@@ -462,15 +462,15 @@ void SetBorder (FvwmWindow *t, Bool onoroff,Bool force,Bool Mapped,
         /* draw the outside relief */
         if (HAS_MWM_BORDER(t))
           RelieveRectangle(dpy, t->frame,
-                           0, 0, t->frame_width - 1, t->frame_height - 1,
+                           0, 0, t->frame_g.width - 1, t->frame_g.height - 1,
                            rgc, sgc, 2);
         else {
 	  /* FVWMBorder style has an extra line of shadow on top and left */
           RelieveRectangle(dpy, t->frame,
-                           1, 1, t->frame_width - 2, t->frame_height - 2,
+                           1, 1, t->frame_g.width - 2, t->frame_g.height - 2,
                            rgc, sgc, 2);
           RelieveRectangle(dpy, t->frame,
-                           0, 0, t->frame_width - 1, t->frame_height - 1,
+                           0, 0, t->frame_g.width - 1, t->frame_g.height - 1,
                            sgc, sgc, 1);
         }
 
@@ -511,18 +511,18 @@ void SetBorder (FvwmWindow *t, Bool onoroff,Bool force,Bool Mapped,
             marks[i].y2 = (marks[i].y1 = 1 + j) + tlength;
             i++;
             /* top right */
-            marks[i].x2 = marks[i].x1 = t->frame_width - t->corner_width + j;
+            marks[i].x2 = marks[i].x1 = t->frame_g.width - t->corner_width + j;
             marks[i].y2 = (marks[i].y1 = 1 + j) + tlength;
             i++;
             if (!shaded)
             {
 	      /* bot left */
               marks[i].x2 = marks[i].x1 = t->corner_width + j;
-              marks[i].y2 = (marks[i].y1 = t->frame_height - badjust) -blength;
+              marks[i].y2 = (marks[i].y1 = t->frame_g.height-badjust)-blength;
               i++;
               /* bot right */
-              marks[i].x2 = marks[i].x1 = t->frame_width - t->corner_width + j;
-              marks[i].y2 = (marks[i].y1 = t->frame_height - badjust) -blength;
+              marks[i].x2 = marks[i].x1 = t->frame_g.width - t->corner_width+j;
+              marks[i].y2 = (marks[i].y1 = t->frame_g.height-badjust)-blength;
               i++;
               /* left top */
               marks[i].x2 = (marks[i].x1 = 1 + j) + tlength;
@@ -530,15 +530,15 @@ void SetBorder (FvwmWindow *t, Bool onoroff,Bool force,Bool Mapped,
               i++;
               /* left bot */
               marks[i].x2 = (marks[i].x1 = 1 + j) + tlength;
-              marks[i].y2 = marks[i].y1 = t->frame_height - t->corner_width +j;
+              marks[i].y2 = marks[i].y1 = t->frame_g.height-t->corner_width+j;
               i++;
               /* right top */
-              marks[i].x2 = (marks[i].x1 = t->frame_width - badjust) - blength;
+              marks[i].x2 = (marks[i].x1 = t->frame_g.width-badjust) - blength;
               marks[i].y2 = marks[i].y1 = t->corner_width + j;
               i++;
               /* right bot */
-              marks[i].x2 = (marks[i].x1 = t->frame_width - badjust) - blength;
-              marks[i].y2 = marks[i].y1 = t->frame_height - t->corner_width +j;
+              marks[i].x2 = (marks[i].x1 = t->frame_g.width-badjust) - blength;
+              marks[i].y2 = marks[i].y1 = t->frame_g.height-t->corner_width +j;
               i++;
             }
             XDrawSegments(dpy, t->frame, rgc, marks, i);
@@ -588,28 +588,28 @@ void SetBorder (FvwmWindow *t, Bool onoroff,Bool force,Bool Mapped,
           if (PressedW == t->sides[0]) { /* top */
             RelieveRectangle(dpy, t->frame,
                              t->corner_width, 1,
-                             t->frame_width - 2 * t->corner_width - 1,
+                             t->frame_g.width - 2 * t->corner_width - 1,
                              t->boundary_width - 2,
                              sgc, rgc, rwidth);
           } else if (PressedW == t->sides[1]) { /* right */
             RelieveRectangle(dpy, t->frame,
-                             t->frame_width - t->boundary_width + rwidth - 1,
+                             t->frame_g.width - t->boundary_width + rwidth - 1,
 			     t->corner_width,
                              t->boundary_width - 2,
-                             t->frame_height - 2 * t->corner_width - 1,
+                             t->frame_g.height - 2 * t->corner_width - 1,
                              sgc, rgc, rwidth);
           } else if (PressedW == t->sides[2]) { /* bottom */
             RelieveRectangle(dpy, t->frame,
                              t->corner_width,
-			     t->frame_height - t->boundary_width + rwidth - 1,
-                             t->frame_width - 2 * t->corner_width - 1,
+			     t->frame_g.height - t->boundary_width + rwidth - 1,
+                             t->frame_g.width - 2 * t->corner_width - 1,
                              t->boundary_width - 2,
                              sgc, rgc, rwidth);
           } else if (PressedW == t->sides[3]) { /* left */
             RelieveRectangle(dpy, t->frame,
                              1, t->corner_width,
                              t->boundary_width - 2,
-                             t->frame_height - 2 * t->corner_width - 1,
+                             t->frame_g.height - 2 * t->corner_width - 1,
                              sgc, rgc, rwidth);
           } else if (PressedW == t->corners[0]) { /* top left */
             /* drawn as two relieved rectangles, this will have to change if
@@ -626,36 +626,36 @@ void SetBorder (FvwmWindow *t, Bool onoroff,Bool force,Bool Mapped,
                              sgc, rgc, rwidth);
           } else if (PressedW == t->corners[1]) { /* top right */
             RelieveRectangle(dpy, t->frame,
-                             t->frame_width - t->corner_width + rwidth - 2,
+                             t->frame_g.width - t->corner_width + rwidth - 2,
 			     t->boundary_width - rwidth,
                              t->corner_width - t->boundary_width + rwidth,
                              t->corner_width - t->boundary_width + rwidth,
                              rgc, sgc, rwidth);
             RelieveRectangle(dpy, t->frame,
-                             t->frame_width - t->corner_width, 1,
+                             t->frame_g.width - t->corner_width, 1,
                              t->corner_width - 3 + rwidth, t->corner_width - 2,
                              sgc, rgc, rwidth);
           } else if (PressedW == t->corners[2]) { /* bottom left */
             RelieveRectangle(dpy, t->frame,
                              t->boundary_width - rwidth,
-			     t->frame_height - t->corner_width + rwidth -2,
+			     t->frame_g.height - t->corner_width + rwidth -2,
                              t->corner_width - t->boundary_width + rwidth,
                              t->corner_width - t->boundary_width + rwidth,
                              rgc, sgc, rwidth);
             RelieveRectangle(dpy, t->frame,
-                             1, t->frame_height - t->corner_width,
+                             1, t->frame_g.height - t->corner_width,
                              t->corner_width - 2, t->corner_width - 3 + rwidth,
                              sgc, rgc, rwidth);
           } else if (PressedW == t->corners[3]) { /* bottom right */
             RelieveRectangle(dpy, t->frame,
-                             t->frame_width - t->corner_width + rwidth - 2,
-			     t->frame_height - t->corner_width + rwidth - 2,
+                             t->frame_g.width - t->corner_width + rwidth - 2,
+			     t->frame_g.height - t->corner_width + rwidth - 2,
                              t->corner_width - t->boundary_width + rwidth,
                              t->corner_width - t->boundary_width + rwidth,
                              rgc, sgc, rwidth);
             RelieveRectangle(dpy, t->frame,
-                             t->frame_width - t->corner_width,
-			     t->frame_height - t->corner_width,
+                             t->frame_g.width - t->corner_width,
+			     t->frame_g.height - t->corner_width,
                              t->corner_width - 3 + rwidth,
 			     t->corner_width - 3 + rwidth,
                              sgc, rgc, rwidth);
@@ -868,8 +868,8 @@ void SetTitleBar (FvwmWindow *t,Bool onoroff, Bool NewTitle)
   if(t->name != (char *)NULL)
   {
     w=XTextWidth(GetDecor(t,WindowFont.font),t->name,strlen(t->name));
-    if(w > t->title_width-12)
-      w = t->title_width-4;
+    if(w > t->title_g.width-12)
+      w = t->title_g.width-4;
     if(w < 0)
       w = 0;
   }
@@ -881,11 +881,11 @@ void SetTitleBar (FvwmWindow *t,Bool onoroff, Bool NewTitle)
   tb_flags = GetDecor(t,titlebar.flags);
   if (tb_flags & HOffCenter) {
       if (tb_flags & HRight)
-	  hor_off = t->title_width - w - 10;
+	  hor_off = t->title_g.width - w - 10;
       else
 	  hor_off = 10;
   } else
-      hor_off = (t->title_width - w) / 2;
+      hor_off = (t->title_g.width - w) / 2;
 
   NewFontAndColor(GetDecor(t,WindowFont.font->fid),Forecolor, BackColor);
 
@@ -915,17 +915,17 @@ void SetTitleBar (FvwmWindow *t,Bool onoroff, Bool NewTitle)
    * title goes, so that its more legible. For color, no need */
   if(Scr.depth<2)
   {
-    RelieveRectangle(dpy,t->title_w,0,0,hor_off-3,t->title_height - 1,
+    RelieveRectangle(dpy,t->title_w,0,0,hor_off-3,t->title_g.height - 1,
                      ReliefGC, ShadowGC, rwidth);
     RelieveRectangle(dpy,t->title_w,hor_off+w+2,0,
-                     t->title_width - w - hor_off-3,t->title_height - 1,
+                     t->title_g.width - w - hor_off-3,t->title_g.height - 1,
                      ReliefGC, ShadowGC, rwidth);
     XFillRectangle(dpy,t->title_w,
                    (PressedW==t->title_w?ShadowGC:ReliefGC),
-                   hor_off - 2, 0, w+4,t->title_height);
+                   hor_off - 2, 0, w+4,t->title_g.height);
 
     XDrawLine(dpy,t->title_w,ShadowGC,hor_off+w+1,0,hor_off+w+1,
-              t->title_height);
+              t->title_g.height);
     if(t->name != (char *)NULL)
       XDrawString (dpy, t->title_w,Scr.ScratchGC3,hor_off,
                    GetDecor(t,WindowFont.y)+1,
@@ -940,13 +940,13 @@ void SetTitleBar (FvwmWindow *t,Bool onoroff, Bool NewTitle)
 #ifdef MULTISTYLE
 	  for (; bf; bf = bf->next)
 #endif
-	      DrawButton(t, t->title_w, t->title_width, t->title_height,
+	      DrawButton(t, t->title_w, t->title_g.width, t->title_g.height,
 			 bf, ShadowGC, ReliefGC, True, 0);
       } else {
 #ifdef MULTISTYLE
 	  for (; bf; bf = bf->next)
 #endif
-	      DrawButton(t, t->title_w, t->title_width, t->title_height,
+	      DrawButton(t, t->title_w, t->title_g.width, t->title_g.height,
 			 bf, ReliefGC, ShadowGC, False, 0);
       }
 #endif /* EXTENDED_TITLESTYLE */
@@ -954,11 +954,11 @@ void SetTitleBar (FvwmWindow *t,Bool onoroff, Bool NewTitle)
       if (!(tb_style & FlatButton)) {
 	  if (tb_style & SunkButton)
 	      RelieveRectangle(dpy,t->title_w,0,0,
-	                       t->title_width - 1,t->title_height - 1,
+	                       t->title_g.width - 1,t->title_g.height - 1,
 			       ShadowGC, ReliefGC, rwidth);
 	  else
 	      RelieveRectangle(dpy,t->title_w,0,0,
-	                       t->title_width - 1,t->title_height - 1,
+	                       t->title_g.width - 1,t->title_g.height - 1,
 	                       ReliefGC, ShadowGC, rwidth);
       }
 
@@ -971,16 +971,16 @@ void SetTitleBar (FvwmWindow *t,Bool onoroff, Bool NewTitle)
   if(IS_STICKY(t) || Scr.go.StipledTitles)
   {
     /* an odd number of lines every 4 pixels */
-    int num = (int)(t->title_height/8) * 2 - 1;
-    int min = t->title_height / 2 - num * 2 + 1;
-    int max = t->title_height / 2 + num * 2 - 3;
+    int num = (int)(t->title_g.height/8) * 2 - 1;
+    int min = t->title_g.height / 2 - num * 2 + 1;
+    int max = t->title_g.height / 2 + num * 2 - 3;
     for(i = min; i <= max; i += 4)
     {
       RelieveRectangle(dpy, t->title_w,
                        4, i, hor_off - 10, 1,
                        ShadowGC, ReliefGC, 1);
       RelieveRectangle(dpy, t->title_w,
-                       hor_off + w + 6, i, t->title_width - hor_off - w - 11,
+                       hor_off + w + 6, i, t->title_g.width - hor_off - w - 11,
 		       1, ShadowGC, ReliefGC, 1);
     }
   }
@@ -1060,16 +1060,16 @@ void SetupFrame(FvwmWindow *tmp_win,int x,int y,int w,int h,Bool sendEvent,
   if (!IS_MAXIMIZED(tmp_win))
   {
     /* store orig values in absolute coords */
-    tmp_win->orig_x = x + Scr.Vx;
-    tmp_win->orig_y = y + Scr.Vy;
-    tmp_win->orig_wd = w;
+    tmp_win->orig_g.x = x + Scr.Vx;
+    tmp_win->orig_g.y = y + Scr.Vy;
+    tmp_win->orig_g.width = w;
     if (!shaded)
-      tmp_win->orig_ht = h;
+      tmp_win->orig_g.height = h;
   }
 
-  if((w != tmp_win->frame_width) || (h != tmp_win->frame_height))
+  if((w != tmp_win->frame_g.width) || (h != tmp_win->frame_g.height))
     Resized = True;
-  if ((x != tmp_win->frame_x || y != tmp_win->frame_y))
+  if ((x != tmp_win->frame_g.x || y != tmp_win->frame_g.y))
     Moved = True;
 
   /*
@@ -1086,35 +1086,35 @@ void SetupFrame(FvwmWindow *tmp_win,int x,int y,int w,int h,Bool sendEvent,
     right = tmp_win->nr_right_buttons;
 
     if (HAS_TITLE(tmp_win))
-      tmp_win->title_height = GetDecor(tmp_win,TitleHeight);
+      tmp_win->title_g.height = GetDecor(tmp_win,TitleHeight);
 
-    tmp_win->title_width = w - (left + right) * tmp_win->title_height
+    tmp_win->title_g.width = w - (left + right) * tmp_win->title_g.height
                            - 2 * tmp_win->boundary_width;
 
 
-    if(tmp_win->title_width < 1)
-      tmp_win->title_width = 1;
+    if(tmp_win->title_g.width < 1)
+      tmp_win->title_g.width = 1;
 
     if (HAS_TITLE(tmp_win))
     {
       xwcm = CWWidth | CWX | CWY | CWHeight;
-      tmp_win->title_x = tmp_win->boundary_width+
-        (left)*tmp_win->title_height;
-      if(tmp_win->title_x >=  w - tmp_win->boundary_width)
-        tmp_win->title_x = -10;
-      tmp_win->title_y = tmp_win->boundary_width;
+      tmp_win->title_g.x = tmp_win->boundary_width+
+        (left)*tmp_win->title_g.height;
+      if(tmp_win->title_g.x >=  w - tmp_win->boundary_width)
+        tmp_win->title_g.x = -10;
+      tmp_win->title_g.y = tmp_win->boundary_width;
 
-      xwc.width = tmp_win->title_width;
+      xwc.width = tmp_win->title_g.width;
 
-      xwc.height = tmp_win->title_height;
-      xwc.x = tmp_win->title_x;
-      xwc.y = tmp_win->title_y;
+      xwc.height = tmp_win->title_g.height;
+      xwc.x = tmp_win->title_g.x;
+      xwc.y = tmp_win->title_g.y;
       XConfigureWindow(dpy, tmp_win->title_w, xwcm, &xwc);
 
 
       xwcm = CWX | CWY | CWHeight | CWWidth;
-      xwc.height = tmp_win->title_height;
-      xwc.width = tmp_win->title_height;
+      xwc.height = tmp_win->title_g.height;
+      xwc.width = tmp_win->title_g.height;
 
       xwc.y = tmp_win->boundary_width;
       xwc.x = tmp_win->boundary_width;
@@ -1122,14 +1122,14 @@ void SetupFrame(FvwmWindow *tmp_win,int x,int y,int w,int h,Bool sendEvent,
       {
         if(tmp_win->left_w[i] != None)
         {
-          if(xwc.x + tmp_win->title_height < w-tmp_win->boundary_width)
+          if(xwc.x + tmp_win->title_g.height < w-tmp_win->boundary_width)
             XConfigureWindow(dpy, tmp_win->left_w[i], xwcm, &xwc);
           else
           {
-            xwc.x = -tmp_win->title_height;
+            xwc.x = -tmp_win->title_g.height;
             XConfigureWindow(dpy, tmp_win->left_w[i], xwcm, &xwc);
           }
-          xwc.x += tmp_win->title_height;
+          xwc.x += tmp_win->title_g.height;
         }
       }
 
@@ -1138,12 +1138,12 @@ void SetupFrame(FvwmWindow *tmp_win,int x,int y,int w,int h,Bool sendEvent,
       {
         if(tmp_win->right_w[i] != None)
         {
-          xwc.x -=tmp_win->title_height;
+          xwc.x -=tmp_win->title_g.height;
           if(xwc.x > tmp_win->boundary_width)
             XConfigureWindow(dpy, tmp_win->right_w[i], xwcm, &xwc);
           else
           {
-            xwc.x = -tmp_win->title_height;
+            xwc.x = -tmp_win->title_g.height;
             XConfigureWindow(dpy, tmp_win->right_w[i], xwcm, &xwc);
           }
         }
@@ -1224,10 +1224,10 @@ void SetupFrame(FvwmWindow *tmp_win,int x,int y,int w,int h,Bool sendEvent,
     }
   }
   tmp_win->attr.width = w - 2*tmp_win->boundary_width;
-  tmp_win->attr.height = h - tmp_win->title_height
+  tmp_win->attr.height = h - tmp_win->title_g.height
     - 2*tmp_win->boundary_width;
   cx = tmp_win->boundary_width;
-  cy = tmp_win->title_height + tmp_win->boundary_width;
+  cy = tmp_win->title_g.height + tmp_win->boundary_width;
 
   if (!shaded) {
     XResizeWindow(dpy, tmp_win->w, tmp_win->attr.width, tmp_win->attr.height);
@@ -1239,10 +1239,10 @@ void SetupFrame(FvwmWindow *tmp_win,int x,int y,int w,int h,Bool sendEvent,
    * fix up frame and assign size/location values in tmp_win
    */
   if (!curr_shading) {
-      frame_wc.x = tmp_win->frame_x = x;
-      frame_wc.y = tmp_win->frame_y = y;
-      frame_wc.width = tmp_win->frame_width = w;
-      frame_wc.height = tmp_win->frame_height = h;
+      frame_wc.x = tmp_win->frame_g.x = x;
+      frame_wc.y = tmp_win->frame_g.y = y;
+      frame_wc.width = tmp_win->frame_g.width = w;
+      frame_wc.height = tmp_win->frame_g.height = h;
       frame_mask = (CWX | CWY | CWWidth | CWHeight);
       XConfigureWindow (dpy, tmp_win->frame, frame_mask, &frame_wc);
   }
@@ -1270,11 +1270,11 @@ void SetupFrame(FvwmWindow *tmp_win,int x,int y,int w,int h,Bool sendEvent,
     client_event.xconfigure.window = tmp_win->w;
 
     client_event.xconfigure.x = x + tmp_win->boundary_width;
-    client_event.xconfigure.y = y + tmp_win->title_height+
+    client_event.xconfigure.y = y + tmp_win->title_g.height+
       tmp_win->boundary_width;
     client_event.xconfigure.width = w-2*tmp_win->boundary_width;
     client_event.xconfigure.height =h-2*tmp_win->boundary_width -
-      tmp_win->title_height;
+      tmp_win->title_g.height;
 
     client_event.xconfigure.border_width = 0;
     /* Real ConfigureNotify events say we're above title window, so ... */
@@ -1307,16 +1307,16 @@ void SetShape(FvwmWindow *tmp_win, int w)
 
     XShapeCombineShape (dpy, tmp_win->frame, ShapeBounding,
                         tmp_win->boundary_width,
-                        tmp_win->title_height+tmp_win->boundary_width,
+                        tmp_win->title_g.height+tmp_win->boundary_width,
                         tmp_win->w,
                         ShapeBounding, ShapeSet);
     if (tmp_win->title_w)
     {
       /* windows w/ titles */
       rect.x = tmp_win->boundary_width;
-      rect.y = tmp_win->title_y;
+      rect.y = tmp_win->title_g.y;
       rect.width = w - 2*tmp_win->boundary_width;
-      rect.height = tmp_win->title_height;
+      rect.height = tmp_win->title_g.height;
 
 
       XShapeCombineRectangles(dpy,tmp_win->frame,ShapeBounding,

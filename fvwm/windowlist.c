@@ -310,8 +310,8 @@ void do_windowList(XEvent *eventp,Window w,FvwmWindow *tmp_win,
           sprintf(loc,"%d(%d):",t->Desk, t->layer);
           strcat(tname,loc);
 
-          dheight = t->frame_height - t->title_height - 2*t->boundary_width;
-          dwidth = t->frame_width - 2*t->boundary_width;
+          dheight = t->frame_g.height - t->title_g.height -2*t->boundary_width;
+          dwidth = t->frame_g.width - 2*t->boundary_width;
 
           dwidth -= t->hints.base_width;
           dheight -= t->hints.base_height;
@@ -323,15 +323,15 @@ void do_windowList(XEvent *eventp,Window w,FvwmWindow *tmp_win,
           strcat(tname, loc);
           sprintf(loc,"x%d",dheight);
           strcat(tname, loc);
-          if(t->frame_x >=0)
-            sprintf(loc,"+%d",t->frame_x);
+          if(t->frame_g.x >=0)
+            sprintf(loc,"+%d",t->frame_g.x);
           else
-            sprintf(loc,"%d",t->frame_x);
+            sprintf(loc,"%d",t->frame_g.x);
           strcat(tname, loc);
-          if(t->frame_y >=0)
-            sprintf(loc,"+%d",t->frame_y);
+          if(t->frame_g.y >=0)
+            sprintf(loc,"+%d",t->frame_g.y);
           else
-            sprintf(loc,"%d",t->frame_y);
+            sprintf(loc,"%d",t->frame_g.y);
           strcat(tname, loc);
 
           if (IS_STICKY(t))

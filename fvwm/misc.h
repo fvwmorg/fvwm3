@@ -350,7 +350,7 @@ typedef enum {
 
 void set_last_added_item(last_added_item_type type, void *item);
 void NewFontAndColor(Font newfont, Pixel color, Pixel backcolor);
-Bool IsWindowOnThisPage(FvwmWindow *fw);
+Bool IsRectangleOnThisPage(rectangle *rec, int desk);
 
 void Keyboard_shortcuts(XEvent *, FvwmWindow*, int);
 

@@ -42,14 +42,6 @@
 #include "module_interface.h"
 #include "move_resize.h"
 
-typedef struct geom
-{
-  int x;
-  int y;
-  int width;
-  int height;
-} geom;
-
 /* ----- move globals ----- */
 extern XEvent Event;
 extern int menuFromFrameOrWindowOrTitlebar;
@@ -76,7 +68,8 @@ extern int menuFromFrameOrWindowOrTitlebar;
 extern Window PressedW;
 
 static void DoResize(int x_root, int y_root, FvwmWindow *tmp_win,
-		     geom *drag, geom *orig, int *xmotionp, int *ymotionp);
+		     rectangle *drag, rectangle *orig, int *xmotionp,
+		     int *ymotionp);
 static void DisplaySize(FvwmWindow *, int, int, Bool, Bool);
 /* ----- end of resize globals ----- */
 
@@ -213,12 +206,12 @@ static void AnimatedMoveAnyWindow(FvwmWindow *tmp_win, Window w, int startX,
       client_event.xconfigure.event = tmp_win->w;
       client_event.xconfigure.window = tmp_win->w;
       client_event.xconfigure.x = currentX + tmp_win->boundary_width;
-      client_event.xconfigure.y = currentY + tmp_win->title_height +
+      client_event.xconfigure.y = currentY + tmp_win->title_g.height +
 	tmp_win->boundary_width;
-      client_event.xconfigure.width = tmp_win->frame_width -
+      client_event.xconfigure.width = tmp_win->frame_g.width -
 	2 * tmp_win->boundary_width;
-      client_event.xconfigure.height = tmp_win->frame_height -
-	2 * tmp_win->boundary_width - tmp_win->title_height;
+      client_event.xconfigure.height = tmp_win->frame_g.height -
+	2 * tmp_win->boundary_width - tmp_win->title_g.height;
       client_event.xconfigure.border_width = 0;
       /* Real ConfigureNotify events say we're above title window, so ... */
       /* what if we don't have a title ????? */
@@ -233,8 +226,8 @@ static void AnimatedMoveAnyWindow(FvwmWindow *tmp_win, Window w, int startX,
     }
     XFlush(dpy);
     if (tmp_win) {
-      tmp_win->frame_x = currentX;
-      tmp_win->frame_y = currentY;
+      tmp_win->frame_g.x = currentX;
+      tmp_win->frame_g.y = currentY;
       BroadcastConfig(M_CONFIGURE_WINDOW, tmp_win);
       FlushOutputQueues();
     }
@@ -346,7 +339,7 @@ void move_window_doit(F_CMD_ARGS, Bool fAnimated, Bool fMoveToPage)
       AnimatedMoveFvwmWindow(tmp_win,w,-1,-1,FinalX,FinalY,fWarp,-1,NULL);
     }
     SetupFrame (tmp_win, FinalX, FinalY,
-		tmp_win->frame_width, tmp_win->frame_height,FALSE,False);
+		tmp_win->frame_g.width, tmp_win->frame_g.height,FALSE,False);
     if (fWarp & !fAnimated)
       XWarpPointer(dpy, None, None, 0, 0, 0, 0, FinalX - x, FinalY - y);
   }
@@ -414,7 +407,7 @@ static void DoSnapAttract(FvwmWindow *tmp_win, int Width, int Height,
 			  int *px, int *py)
 {
   int nyt,nxl,dist,closestLeft,closestRight,closestBottom,closestTop;
-  geom self, other;
+  rectangle self, other;
   FvwmWindow *tmp;
 
   /* START OF SNAPATTRACTION BLOCK, mirrored in ButtonRelease */
@@ -487,10 +480,10 @@ static void DoSnapAttract(FvwmWindow *tmp_win, int Width, int Height,
 	    }
 	  else
 	    {
-	      other.width = tmp->frame_width;
-	      other.height = tmp->frame_height;
-	      other.x = tmp->frame_x;
-	      other.y = tmp->frame_y;
+	      other.width = tmp->frame_g.width;
+	      other.height = tmp->frame_g.height;
+	      other.x = tmp->frame_g.x;
+	      other.y = tmp->frame_g.y;
 	    }
 	  if(!((other.y + other.height) < (*py) ||
 	       (other.y) > (*py + self.height) ))
@@ -720,8 +713,8 @@ void moveLoop(FvwmWindow *tmp_win, int XOffset, int YOffset, int Width,
 	    {
 	      if(!opaque_move)
 		MoveOutline(Scr.Root, 0, 0, 0, 0);
-	      *FinalX = tmp_win->frame_x;
-	      *FinalY = tmp_win->frame_y;
+	      *FinalX = tmp_win->frame_g.x;
+	      *FinalY = tmp_win->frame_g.y;
 	      finished = TRUE;
 	    }
 	  done = TRUE;
@@ -756,8 +749,8 @@ void moveLoop(FvwmWindow *tmp_win, int XOffset, int YOffset, int Width,
 		{
 		  if(!opaque_move)
 		    MoveOutline(Scr.Root, 0, 0, 0, 0);
-		  *FinalX = tmp_win->frame_x;
-		  *FinalY = tmp_win->frame_y;
+		  *FinalX = tmp_win->frame_g.x;
+		  *FinalY = tmp_win->frame_g.y;
 		  finished = TRUE;
 		}
 	      done = TRUE;
@@ -889,11 +882,11 @@ void moveLoop(FvwmWindow *tmp_win, int XOffset, int YOffset, int Width,
           client_event.xconfigure.event = tmp_win->w;
           client_event.xconfigure.window = tmp_win->w;
           client_event.xconfigure.x = xl + tmp_win->boundary_width;
-          client_event.xconfigure.y = yt + tmp_win->title_height +
+          client_event.xconfigure.y = yt + tmp_win->title_g.height +
 	    tmp_win->boundary_width;
           client_event.xconfigure.width = Width - 2 * tmp_win->boundary_width;
           client_event.xconfigure.height = Height -
-	    2 * tmp_win->boundary_width - tmp_win->title_height;
+	    2 * tmp_win->boundary_width - tmp_win->title_g.height;
           client_event.xconfigure.border_width = 0;
           /* Real ConfigureNotify events say we're above title window, so... */
           /* what if we don't have a title ????? */
@@ -908,8 +901,8 @@ void moveLoop(FvwmWindow *tmp_win, int XOffset, int YOffset, int Width,
 #endif
 	}
       if(opaque_move) { /* no point in doing this if server grabbed */
-        tmp_win_copy.frame_x = xl;
-        tmp_win_copy.frame_y = yt;
+        tmp_win_copy.frame_g.x = xl;
+        tmp_win_copy.frame_g.y = yt;
         BroadcastConfig(M_CONFIGURE_WINDOW, &tmp_win_copy);
         FlushOutputQueues();
       }
@@ -986,10 +979,10 @@ void resize_window(F_CMD_ARGS)
   Bool fForceRedraw = False;
   int val1, val2, val1_unit,val2_unit,n;
   unsigned int button_mask = 0;
-  geom sdrag;
-  geom sorig;
-  geom *drag = &sdrag;
-  geom *orig = &sorig;
+  rectangle sdrag;
+  rectangle sorig;
+  rectangle *drag = &sdrag;
+  rectangle *orig = &sorig;
   int ymotion=0, xmotion = 0;
   int was_maximized;
   unsigned edge_wrap_x;
@@ -1027,20 +1020,20 @@ void resize_window(F_CMD_ARGS)
       drag->width = val1*val1_unit/100;
       drag->height = val2*val2_unit/100;
       drag->width += (2*tmp_win->boundary_width);
-      drag->height += (tmp_win->title_height + 2*tmp_win->boundary_width);
+      drag->height += (tmp_win->title_g.height + 2*tmp_win->boundary_width);
 
       /* size will be less or equal to requested */
       ConstrainSize (tmp_win, &drag->width, &drag->height, False, xmotion,
 		     ymotion);
       if (IS_SHADED(tmp_win))
 	{
-	  tmp_win->orig_wd = drag->width;
-	  tmp_win->orig_ht = drag->height;
- 	  SetupFrame (tmp_win, tmp_win->frame_x, tmp_win->frame_y,
-		      drag->width, tmp_win->frame_height,FALSE,False);
+	  tmp_win->orig_g.width = drag->width;
+	  tmp_win->orig_g.height = drag->height;
+ 	  SetupFrame (tmp_win, tmp_win->frame_g.x, tmp_win->frame_g.y,
+		      drag->width, tmp_win->frame_g.height,FALSE,False);
 	}
       else
-	SetupFrame (tmp_win, tmp_win->frame_x, tmp_win->frame_y, drag->width,
+	SetupFrame (tmp_win, tmp_win->frame_g.x, tmp_win->frame_g.y, drag->width,
 		    drag->height,FALSE,False);
       SetBorder(tmp_win,True,True,True,None);
 
@@ -1067,13 +1060,13 @@ void resize_window(F_CMD_ARGS)
 
   if (IS_SHADED(tmp_win))
     {
-      drag->x = tmp_win->frame_x;
-      drag->y = tmp_win->frame_y;
-      drag->width = tmp_win->frame_width;
+      drag->x = tmp_win->frame_g.x;
+      drag->y = tmp_win->frame_g.y;
+      drag->width = tmp_win->frame_g.width;
       if (was_maximized)
         drag->height = tmp_win->maximized_ht;
       else
-        drag->height = tmp_win->orig_ht;
+        drag->height = tmp_win->orig_g.height;
     }
   else
     XGetGeometry(dpy, (Drawable) ResizeWindow, &JunkRoot,
@@ -1226,7 +1219,8 @@ void resize_window(F_CMD_ARGS)
 
   /* draw the rubber-band window */
   MoveOutline(Scr.Root, drag->x, drag->y, drag->width - 1, drag->height - 1);
-  /* kick off resizing without requiring any motion if invoked with a key press */
+  /* kick off resizing without requiring any motion if invoked with a key
+   * press */
   if (eventp->type == KeyPress)
     {
       XQueryPointer(dpy, Scr.Root, &JunkRoot, &JunkChild,
@@ -1360,9 +1354,9 @@ void resize_window(F_CMD_ARGS)
 		     ymotion);
        if (IS_SHADED(tmp_win))
        {
-         SetupFrame (tmp_win, tmp_win->frame_x, tmp_win->frame_y,
-                     drag->width, tmp_win->frame_height, FALSE, False);
-         tmp_win->orig_ht = drag->height;
+         SetupFrame (tmp_win, tmp_win->frame_g.x, tmp_win->frame_g.y,
+                     drag->width, tmp_win->frame_g.height, FALSE, False);
+         tmp_win->orig_g.height = drag->height;
        }
       else
 	SetupFrame (tmp_win, drag->x, drag->y, drag->width, drag->height,
@@ -1400,7 +1394,8 @@ void resize_window(F_CMD_ARGS)
  *
  ************************************************************************/
 static void DoResize(int x_root, int y_root, FvwmWindow *tmp_win,
-		     geom *drag, geom *orig, int *xmotionp, int *ymotionp)
+		     rectangle *drag, rectangle *orig, int *xmotionp,
+		     int *ymotionp)
 {
   int action=0;
 
@@ -1487,7 +1482,7 @@ static void DisplaySize(FvwmWindow *tmp_win, int width, int height, Bool Init,
   last_width = width;
   last_height = height;
 
-  dheight = height - tmp_win->title_height - 2*tmp_win->boundary_width;
+  dheight = height - tmp_win->title_g.height - 2*tmp_win->boundary_width;
   dwidth = width - 2*tmp_win->boundary_width;
 
   dwidth -= tmp_win->hints.base_width;
@@ -1552,7 +1547,7 @@ void ConstrainSize(FvwmWindow *tmp_win, int *widthp, int *heightp,
 	constrainy = 0;
       }
     dwidth -= 2 *tmp_win->boundary_width;
-    dheight -= (tmp_win->title_height + 2*tmp_win->boundary_width);
+    dheight -= (tmp_win->title_g.height + 2*tmp_win->boundary_width);
 
     minWidth = tmp_win->hints.min_width;
     minHeight = tmp_win->hints.min_height;
@@ -1614,9 +1609,9 @@ void ConstrainSize(FvwmWindow *tmp_win, int *widthp, int *heightp,
 
 	if (tmp_win->hints.flags & PBaseSize)
 	  {
-	    /* ICCCM 2 demands that aspect ratio should apply 
+	    /* ICCCM 2 demands that aspect ratio should apply
 	       to width - base_width if base_width is explicitly
-	       given. This might give funny results if dwidth is 
+	       given. This might give funny results if dwidth is
 	       smaller than baseWidth. Maybe we should warn about
 	       slightly broken size hints if base is larger than
 	       min. */
@@ -1685,10 +1680,10 @@ void ConstrainSize(FvwmWindow *tmp_win, int *widthp, int *heightp,
      * Fourth, account for border width and title height
      */
     *widthp = dwidth + 2*tmp_win->boundary_width;
-    *heightp = dheight + tmp_win->title_height + 2*tmp_win->boundary_width;
+    *heightp = dheight + tmp_win->title_g.height + 2*tmp_win->boundary_width;
 #if 0
     if (is_SHADED(tmp_win))
-      *heightp = tmp_win->title_height + tmp_win->boundary_width;
+      *heightp = tmp_win->title_g.height + tmp_win->boundary_width;
 #endif
 
     return;

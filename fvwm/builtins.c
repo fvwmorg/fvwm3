@@ -46,10 +46,6 @@ static int shade_anim_steps=0;
 
 static void ApplyIconFont(void);
 static void ApplyWindowFont(FvwmDecor *fl);
-void MaximizeHeight(FvwmWindow *win, int height, int x, int *ret_height,
-		    int *ret_y);
-void MaximizeWidth(FvwmWindow *win, int *ret_width, int *ret_x, int height,
-		   int y);
 
 static char *exec_shell_name="/bin/sh";
 /* button state strings must match the enumerated states */
@@ -67,6 +63,100 @@ static int
 truncate_to_multiple (int x, int m)
 {
   return (x < 0) ? (m * (x / m - 1)) : (m * (x / m));
+}
+
+static void MaximizeHeight(FvwmWindow *win, int win_width, int win_x,
+			   int *win_height, int *win_y)
+{
+  FvwmWindow *cwin;
+  int x11, x12, x21, x22;
+  int y11, y12, y21, y22;
+  int new_y1, new_y2;
+
+  x11 = win_x;             /* Start x */
+  y11 = *win_y;            /* Start y */
+  x12 = x11 + win_width;   /* End x   */
+  y12 = y11 + *win_height; /* End y   */
+  new_y1 = 0;
+  new_y2 = Scr.MyDisplayHeight;
+
+  for (cwin = Scr.FvwmRoot.next; cwin; cwin = cwin->next) {
+    if ((cwin == win) ||
+	((cwin->Desk != win->Desk) && (!IS_STICKY(cwin)))) {
+      continue;
+    }
+    if (IS_ICONIFIED(cwin)) {
+      if(cwin->icon_w == None || IS_ICON_UNMAPPED(cwin))
+	continue;
+      x21 = cwin->icon_x_loc;
+      y21 = cwin->icon_y_loc;
+      x22 = x21 + cwin->icon_p_width;
+      y22 = y21 + cwin->icon_p_height + cwin->icon_w_height;
+    } else {
+      x21 = cwin->frame_g.x;
+      y21 = cwin->frame_g.y;
+      x22 = x21 + cwin->frame_g.width;
+      y22 = y21 + cwin->frame_g.height;
+    }
+
+    /* Are they in the same X space? */
+    if (!((x22 <= x11) || (x21 >= x12))) {
+      if ((y22 <= y11) && (y22 >= new_y1)) {
+	new_y1 = y22;
+      } else if ((y12 <= y21) && (new_y2 >= y21)) {
+	new_y2 = y21;
+      }
+    }
+  }
+  *win_height = new_y2 - new_y1;
+  *win_y = new_y1;
+}
+
+static void MaximizeWidth(FvwmWindow *win, int *win_width, int *win_x,
+			  int win_height, int win_y)
+{
+  FvwmWindow *cwin;
+  int x11, x12, x21, x22;
+  int y11, y12, y21, y22;
+  int new_x1, new_x2;
+
+  x11 = *win_x;            /* Start x */
+  y11 = win_y;             /* Start y */
+  x12 = x11 + *win_width;  /* End x   */
+  y12 = y11 + win_height;  /* End y   */
+  new_x1 = 0;
+  new_x2 = Scr.MyDisplayWidth;
+
+  for (cwin = Scr.FvwmRoot.next; cwin; cwin = cwin->next) {
+    if ((cwin == win) ||
+	((cwin->Desk != win->Desk) && (!IS_STICKY(cwin)))) {
+      continue;
+    }
+    if (IS_ICONIFIED(cwin)) {
+      if(cwin->icon_w == None || IS_ICON_UNMAPPED(cwin))
+	continue;
+      x21 = cwin->icon_x_loc;
+      y21 = cwin->icon_y_loc;
+      x22 = x21 + cwin->icon_p_width;
+      y22 = y21 + cwin->icon_p_height + cwin->icon_w_height;
+    } else {
+      x21 = cwin->frame_g.x;
+      y21 = cwin->frame_g.y;
+      x22 = x21 + cwin->frame_g.width;
+      y22 = y21 + cwin->frame_g.height;
+    }
+
+    /* Are they in the same Y space? */
+    if (!((y22 <= y11) || (y21 >= y12))) {
+      if ((x22 <= x11) && (x22 >= new_x1)) {
+	new_x1 = x22;
+      } else if ((x12 <= x21) && (new_x2 >= x21)) {
+	new_x2 = x21;
+      }
+    }
+  }
+  *win_width  = new_x2 - new_x1;
+  *win_x = new_x1;
 }
 
 /***********************************************************************
@@ -138,40 +228,62 @@ void Maximize(F_CMD_ARGS)
     /* Unmaximizing is slightly tricky since we want the window to
      * stay on the same page, even if we have moved to a different page
      * in the meantime. the orig values are absolute! */
-    if (/*tmp_win->flags & STICKY ||*/ IsWindowOnThisPage(tmp_win))
+    if (IsRectangleOnThisPage(&(tmp_win->frame_g), tmp_win->Desk))
       {
-	/* make sure we keep it on screen while unmaximizing */
-	new_x = tmp_win->orig_x -
-	  truncate_to_multiple(tmp_win->orig_x,Scr.MyDisplayWidth);
-	new_y = tmp_win->orig_y -
-	  truncate_to_multiple(tmp_win->orig_y,Scr.MyDisplayHeight);
+	if (IsRectangleOnThisPage(&(tmp_win->orig_g), tmp_win->Desk))
+	{
+	  new_x = tmp_win->frame_g.x;
+	  new_y = tmp_win->frame_g.y;
+	}
+	else
+	{
+	  /* make sure we keep it on screen while unmaximizing */
+	  new_x = tmp_win->orig_g.x -
+	    truncate_to_multiple(tmp_win->orig_g.x,Scr.MyDisplayWidth);
+	  new_y = tmp_win->orig_g.y -
+	    truncate_to_multiple(tmp_win->orig_g.y,Scr.MyDisplayHeight);
+	}
       }
     else
       {
-	new_x = tmp_win->orig_x - Scr.Vx;
-	new_y = tmp_win->orig_y - Scr.Vy;
+	new_x = tmp_win->orig_g.x - Scr.Vx;
+	new_y = tmp_win->orig_g.y - Scr.Vy;
       }
-    new_width = tmp_win->orig_wd;
+    new_width = tmp_win->orig_g.width;
     if (IS_SHADED(tmp_win))
-      new_height = tmp_win->title_height + tmp_win->boundary_width;
+      new_height = tmp_win->title_g.height + tmp_win->boundary_width;
     else
-      new_height = tmp_win->orig_ht;
+      new_height = tmp_win->orig_g.height;
     SetupFrame(tmp_win, new_x, new_y, new_width, new_height, TRUE, False);
     SetBorder(tmp_win, True, True, True, None);
   }
   else
   {
     if (IS_SHADED(tmp_win))
-      new_height = tmp_win->orig_ht;
+      new_height = tmp_win->orig_g.height;
     else
-      new_height = tmp_win->frame_height;
-    new_width = tmp_win->frame_width;
+      new_height = tmp_win->frame_g.height;
+    new_width = tmp_win->frame_g.width;
 
-    page_x = truncate_to_multiple (tmp_win->frame_x,Scr.MyDisplayWidth);
-    page_y = truncate_to_multiple (tmp_win->frame_y,Scr.MyDisplayHeight);
+    if (IsRectangleOnThisPage(&(tmp_win->frame_g), tmp_win->Desk))
+    {
+      /* maximize on visible page */
+      page_x = 0;
+      page_y = 0;
+    }
+    else
+    {
+      /* maximize on the page where the center of the window is */
+      page_x = truncate_to_multiple(
+	(tmp_win->frame_g.x + tmp_win->frame_g.width-1) / 2,
+	Scr.MyDisplayWidth);
+      page_y = truncate_to_multiple(
+	(tmp_win->frame_g.y + tmp_win->frame_g.height-1) / 2,
+	Scr.MyDisplayHeight);
+    }
 
-    new_x = tmp_win->frame_x;
-    new_y = tmp_win->frame_y;
+    new_x = tmp_win->frame_g.x;
+    new_y = tmp_win->frame_g.y;
 
     if (grow_y)
     {
@@ -202,104 +314,10 @@ void Maximize(F_CMD_ARGS)
     ConstrainSize (tmp_win, &new_width, &new_height, False, 0, 0);
     tmp_win->maximized_ht = new_height;
     if (IS_SHADED(tmp_win))
-      new_height = tmp_win->frame_height;
+      new_height = tmp_win->frame_g.height;
     SetupFrame(tmp_win,new_x,new_y,new_width,new_height,TRUE,False);
     /*   SetBorder(tmp_win,Scr.Hilite == tmp_win,True,True,None);*/
   }
-}
-
-void MaximizeHeight(FvwmWindow *win, int win_width, int win_x, int *win_height,
-		    int *win_y)
-{
-  FvwmWindow *cwin;
-  int x11, x12, x21, x22;
-  int y11, y12, y21, y22;
-  int new_y1, new_y2;
-
-  x11 = win_x;             /* Start x */
-  y11 = *win_y;            /* Start y */
-  x12 = x11 + win_width;   /* End x   */
-  y12 = y11 + *win_height; /* End y   */
-  new_y1 = 0;
-  new_y2 = Scr.MyDisplayHeight;
-
-  for (cwin = Scr.FvwmRoot.next; cwin; cwin = cwin->next) {
-    if ((cwin == win) ||
-	((cwin->Desk != win->Desk) && (!IS_STICKY(cwin)))) {
-      continue;
-    }
-    if (IS_ICONIFIED(cwin)) {
-      if(cwin->icon_w == None || IS_ICON_UNMAPPED(cwin))
-	continue;
-      x21 = cwin->icon_x_loc;
-      y21 = cwin->icon_y_loc;
-      x22 = x21 + cwin->icon_p_width;
-      y22 = y21 + cwin->icon_p_height + cwin->icon_w_height;
-    } else {
-      x21 = cwin->frame_x;
-      y21 = cwin->frame_y;
-      x22 = x21 + cwin->frame_width;
-      y22 = y21 + cwin->frame_height;
-    }
-
-    /* Are they in the same X space? */
-    if (!((x22 <= x11) || (x21 >= x12))) {
-      if ((y22 <= y11) && (y22 >= new_y1)) {
-	new_y1 = y22;
-      } else if ((y12 <= y21) && (new_y2 >= y21)) {
-	new_y2 = y21;
-      }
-    }
-  }
-  *win_height = new_y2 - new_y1;
-  *win_y = new_y1;
-}
-
-void MaximizeWidth(FvwmWindow *win, int *win_width, int *win_x, int win_height,
-		   int win_y)
-{
-  FvwmWindow *cwin;
-  int x11, x12, x21, x22;
-  int y11, y12, y21, y22;
-  int new_x1, new_x2;
-
-  x11 = *win_x;            /* Start x */
-  y11 = win_y;             /* Start y */
-  x12 = x11 + *win_width;  /* End x   */
-  y12 = y11 + win_height;  /* End y   */
-  new_x1 = 0;
-  new_x2 = Scr.MyDisplayWidth;
-
-  for (cwin = Scr.FvwmRoot.next; cwin; cwin = cwin->next) {
-    if ((cwin == win) ||
-	((cwin->Desk != win->Desk) && (!IS_STICKY(cwin)))) {
-      continue;
-    }
-    if (IS_ICONIFIED(cwin)) {
-      if(cwin->icon_w == None || IS_ICON_UNMAPPED(cwin))
-	continue;
-      x21 = cwin->icon_x_loc;
-      y21 = cwin->icon_y_loc;
-      x22 = x21 + cwin->icon_p_width;
-      y22 = y21 + cwin->icon_p_height + cwin->icon_w_height;
-    } else {
-      x21 = cwin->frame_x;
-      y21 = cwin->frame_y;
-      x22 = x21 + cwin->frame_width;
-      y22 = y21 + cwin->frame_height;
-    }
-
-    /* Are they in the same Y space? */
-    if (!((y22 <= y11) || (y21 >= y12))) {
-      if ((x22 <= x11) && (x22 >= new_x1)) {
-	new_x1 = x22;
-      } else if ((x12 <= x21) && (new_x2 >= x21)) {
-	new_x2 = x21;
-      }
-    }
-  }
-  *win_width  = new_x2 - new_x1;
-  *win_x = new_x1;
 }
 
 /***********************************************************************
@@ -353,7 +371,7 @@ void WindowShade(F_CMD_ARGS)
 
   /* calcuate the step size */
   if (shade_anim_steps > 0)
-    step = tmp_win->orig_ht/shade_anim_steps;
+    step = tmp_win->orig_g.height/shade_anim_steps;
   else if (shade_anim_steps < 0) /* if it's -ve it means pixels */
     step = -shade_anim_steps;
   if (step <= 0)  /* We don't want an endless loop, do we? */
@@ -363,32 +381,32 @@ void WindowShade(F_CMD_ARGS)
   {
     /* unshade window */
     SET_SHADED(tmp_win, 0);
-    new_x = tmp_win->frame_x;
-    new_y = tmp_win->frame_y;
+    new_x = tmp_win->frame_g.x;
+    new_y = tmp_win->frame_g.y;
     if (IS_MAXIMIZED(tmp_win))
       new_height = tmp_win->maximized_ht;
     else
-      new_height = tmp_win->orig_ht;
+      new_height = tmp_win->orig_g.height;
 
     /* this is necessary if the maximized state has changed while shaded */
-    SetupFrame(tmp_win, new_x, new_y, tmp_win->frame_width, new_height,
+    SetupFrame(tmp_win, new_x, new_y, tmp_win->frame_g.width, new_height,
                True, True);
 
     if (shade_anim_steps != 0) {
-      h = tmp_win->title_height+tmp_win->boundary_width;
+      h = tmp_win->title_g.height+tmp_win->boundary_width;
       if (Scr.go.WindowShadeScrolls)
         XMoveWindow(dpy, tmp_win->w, 0, - (new_height-h));
       y = h - new_height;
-      old_h = tmp_win->frame_height;
+      old_h = tmp_win->frame_g.height;
       while (h < new_height) {
-        XResizeWindow(dpy, tmp_win->frame, tmp_win->frame_width, h);
+        XResizeWindow(dpy, tmp_win->frame, tmp_win->frame_g.width, h);
         XResizeWindow(dpy, tmp_win->Parent,
-                      tmp_win->frame_width - 2 * tmp_win->boundary_width,
+                      tmp_win->frame_g.width - 2 * tmp_win->boundary_width,
                       max(h - 2 * tmp_win->boundary_width
-                          - tmp_win->title_height, 1));
+                          - tmp_win->title_g.height, 1));
         if (Scr.go.WindowShadeScrolls)
           XMoveWindow(dpy, tmp_win->w, 0, y);
-        tmp_win->frame_height = h;
+        tmp_win->frame_g.height = h;
         /* way too flickery
         SetBorder(tmp_win, tmp_win == Scr.Hilite, True, True, tmp_win->frame);
         */
@@ -398,10 +416,10 @@ void WindowShade(F_CMD_ARGS)
         h+=step;
         y+=step;
       }
-      tmp_win->frame_height = old_h;
+      tmp_win->frame_g.height = old_h;
       XMoveWindow(dpy, tmp_win->w, 0, 0);
     }
-    SetupFrame(tmp_win, new_x, new_y, tmp_win->frame_width, new_height,
+    SetupFrame(tmp_win, new_x, new_y, tmp_win->frame_g.width, new_height,
                True, False);
     BroadcastPacket(M_DEWINDOWSHADE, 3, tmp_win->w, tmp_win->frame,
                     (unsigned long)tmp_win);
@@ -413,18 +431,18 @@ void WindowShade(F_CMD_ARGS)
 
     if (shade_anim_steps != 0) {
       XLowerWindow(dpy, tmp_win->w);
-      h = tmp_win->frame_height;
+      h = tmp_win->frame_g.height;
       y = 0;
-      old_h = tmp_win->frame_height;
-      while (h > tmp_win->title_height+tmp_win->boundary_width) {
+      old_h = tmp_win->frame_g.height;
+      while (h > tmp_win->title_g.height+tmp_win->boundary_width) {
 	if (Scr.go.WindowShadeScrolls)
 	  XMoveWindow(dpy, tmp_win->w, 0, y);
-        XResizeWindow(dpy, tmp_win->frame, tmp_win->frame_width, h);
+        XResizeWindow(dpy, tmp_win->frame, tmp_win->frame_g.width, h);
         XResizeWindow(dpy, tmp_win->Parent,
-                      tmp_win->frame_width - 2 * tmp_win->boundary_width,
+                      tmp_win->frame_g.width - 2 * tmp_win->boundary_width,
                       max(h - 2 * tmp_win->boundary_width
-                          - tmp_win->title_height, 1));
-        tmp_win->frame_height = h;
+                          - tmp_win->title_g.height, 1));
+        tmp_win->frame_g.height = h;
         /* way too flickery
 	SetBorder(tmp_win, tmp_win == Scr.Hilite, True, True, tmp_win->frame);
         */
@@ -434,12 +452,12 @@ void WindowShade(F_CMD_ARGS)
         h-=step;
         y-=step;
       }
-      tmp_win->frame_height = old_h;
+      tmp_win->frame_g.height = old_h;
       if (Scr.go.WindowShadeScrolls)
         XMoveWindow(dpy, tmp_win->w, 0, 0);
     }
-    SetupFrame(tmp_win, tmp_win->frame_x, tmp_win->frame_y,
-               tmp_win->frame_width, tmp_win->title_height
+    SetupFrame(tmp_win, tmp_win->frame_g.x, tmp_win->frame_g.y,
+               tmp_win->frame_g.width, tmp_win->title_g.height
                + tmp_win->boundary_width, False, False);
     BroadcastPacket(M_WINDOWSHADE, 3, tmp_win->w, tmp_win->frame,
                     (unsigned long)tmp_win);
@@ -1679,14 +1697,14 @@ void SetTitleStyle(F_CMD_ARGS)
 		    tmp = tmp->next;
 		    continue;
 		}
-		x = tmp->frame_x;
-		y = tmp->frame_y;
-		w = tmp->frame_width;
-		h = tmp->frame_height-extra_height;
-		tmp->frame_x = 0;
-		tmp->frame_y = 0;
-		tmp->frame_height = 0;
-		tmp->frame_width = 0;
+		x = tmp->frame_g.x;
+		y = tmp->frame_g.y;
+		w = tmp->frame_g.width;
+		h = tmp->frame_g.height-extra_height;
+		tmp->frame_g.x = 0;
+		tmp->frame_g.y = 0;
+		tmp->frame_g.height = 0;
+		tmp->frame_g.width = 0;
 		SetupFrame(tmp,x,y,w,h,True,False);
 		SetTitleBar(tmp,True,True);
 		SetTitleBar(tmp,False,True);
@@ -1943,14 +1961,14 @@ static void ApplyWindowFont(FvwmDecor *fl)
       tmp = tmp->next;
       continue;
     }
-    x = tmp->frame_x;
-    y = tmp->frame_y;
-    w = tmp->frame_width;
-    h = tmp->frame_height-extra_height;
-    tmp->frame_x = 0;
-    tmp->frame_y = 0;
-    tmp->frame_height = 0;
-    tmp->frame_width = 0;
+    x = tmp->frame_g.x;
+    y = tmp->frame_g.y;
+    w = tmp->frame_g.width;
+    h = tmp->frame_g.height-extra_height;
+    tmp->frame_g.x = 0;
+    tmp->frame_g.y = 0;
+    tmp->frame_g.height = 0;
+    tmp->frame_g.width = 0;
     SetupFrame(tmp,x,y,w,h,True,False);
     SetTitleBar(tmp,True,True);
     SetTitleBar(tmp,False,True);
@@ -2580,14 +2598,14 @@ void ChangeDecor(F_CMD_ARGS)
     tmp_win->fl = found;
     extra_height = (HAS_TITLE(tmp_win)) ?
       (old_height - tmp_win->fl->TitleHeight) : 0;
-    x = tmp_win->frame_x;
-    y = tmp_win->frame_y;
-    width = tmp_win->frame_width;
-    height = tmp_win->frame_height - extra_height;
-    tmp_win->frame_x = 0;
-    tmp_win->frame_y = 0;
-    tmp_win->frame_height = 0;
-    tmp_win->frame_width = 0;
+    x = tmp_win->frame_g.x;
+    y = tmp_win->frame_g.y;
+    width = tmp_win->frame_g.width;
+    height = tmp_win->frame_g.height - extra_height;
+    tmp_win->frame_g.x = 0;
+    tmp_win->frame_g.y = 0;
+    tmp_win->frame_g.height = 0;
+    tmp_win->frame_g.width = 0;
     SetupFrame(tmp_win,x,y,width,height,True,False);
     SetBorder(tmp_win,Scr.Hilite == tmp_win,True,True,None);
 }
@@ -3260,10 +3278,10 @@ Bool MatchesConditionMask(FvwmWindow *fw, WindowConditionMask *mask)
     return 0;
 
   if (mask->my_flags.needs_current_page &&
-      !(fw->frame_x < Scr.MyDisplayWidth &&
-	fw->frame_y < Scr.MyDisplayHeight &&
-	fw->frame_x + fw->frame_width > 0 &&
-	fw->frame_y + fw->frame_height > 0))
+      !(fw->frame_g.x < Scr.MyDisplayWidth &&
+	fw->frame_g.y < Scr.MyDisplayHeight &&
+	fw->frame_g.x + fw->frame_g.width > 0 &&
+	fw->frame_g.y + fw->frame_g.height > 0))
     return 0;
 
   /* Yes, I know this could be shorter, but it's hard to understand then */
@@ -3473,8 +3491,8 @@ static void GetDirectionReference(FvwmWindow *w, int *x, int *y)
   }
   else
   {
-    *x = w->frame_x + w->frame_width / 2;
-    *y = w->frame_y + w->frame_height / 2;
+    *x = w->frame_g.x + w->frame_g.width / 2;
+    *y = w->frame_g.y + w->frame_g.height / 2;
   }
 }
 

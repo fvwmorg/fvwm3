@@ -118,7 +118,7 @@ extern int g_argc;
 SmcConn sm_conn = NULL;
 static char *last_used_filename = NULL;
 
-static void 
+static void
 set_sm_properties (SmcConn sm_conn, char *filename, char hint);
 
 static int
@@ -151,7 +151,7 @@ LoadGlobalState(char *filename)
 	      last_used_filename = strdup (s2);
 	    }
 	  else
-#endif /* SESSION */ 
+#endif /* SESSION */
 	  if (!strcmp(s1, "[DESKTOP]"))
 	    {
 	      sscanf(s, "%*s %i", &i1);
@@ -321,13 +321,13 @@ SaveWindowStates(FILE *f)
 	} /* !window_role */
 
       fprintf(f, "  [GEOMETRY] %i %i %i %i %i %i %i %i %i %i\n",
-	      ewin->orig_x,
-              ewin->orig_y,
-	      ewin->orig_wd - 2*ewin->boundary_width ,
-	      ewin->orig_ht - 2*ewin->boundary_width - ewin->title_height,
-	      ewin->frame_x + Scr.Vx,
-              ewin->frame_y + Scr.Vy,
-              ewin->frame_width,
+	      ewin->orig_g.x,
+              ewin->orig_g.y,
+	      ewin->orig_g.width - 2*ewin->boundary_width ,
+	      ewin->orig_g.height -2*ewin->boundary_width-ewin->title_g.height,
+	      ewin->frame_g.x + Scr.Vx,
+              ewin->frame_g.y + Scr.Vy,
+              ewin->frame_g.width,
               ewin->maximized_ht,
 	      ewin->icon_x_loc + Scr.Vx,
 	      ewin->icon_y_loc + Scr.Vy);
@@ -677,15 +677,15 @@ RestartInSession (char *filename)
 	  fprintf (f, "[SESSION_STATE] %s\n", last_used_filename);
 	}
       save_session_state (sm_conn, filename, f);
-      fclose (f);  
+      fclose (f);
       set_sm_properties (sm_conn, filename, SmRestartImmediately);
-      
+
       XSelectInput(dpy, Scr.Root, 0);
       XSync(dpy, 0);
       XCloseDisplay(dpy);
-      
+
       SmcCloseConnection(sm_conn, 0, NULL);
-      
+
       exit (0); /* let the SM restart us */
     }
 #endif
@@ -743,21 +743,21 @@ set_sm_properties (SmcConn sm_conn, char *filename, char hint)
   prop1.vals = &prop1val;
   prop1val.value = g_argv[0];
   prop1val.length = strlen (g_argv[0]);
-  
+
   prop2.name = SmUserID;
   prop2.type = SmARRAY8;
   prop2.num_vals = 1;
   prop2.vals = &prop2val;
   prop2val.value = (SmPointer) user_id;
   prop2val.length = strlen (user_id);
-  
+
   prop3.name = SmRestartStyleHint;
   prop3.type = SmCARD8;
   prop3.num_vals = 1;
   prop3.vals = &prop3val;
   prop3val.value = (SmPointer) &hint;
   prop3val.length = 1;
-  
+
   prop4.name = "_GSM_Priority";
   prop4.type = SmCARD8;
   prop4.num_vals = 1;
@@ -812,7 +812,7 @@ set_sm_properties (SmcConn sm_conn, char *filename, char hint)
 #ifdef XSM_BUGGY_DISCARD_COMMAND
   /* the protocol spec says that the discard command
      should be LISTofARRAY8 on posix systems, but xsm
-     demands that it be ARRAY8. 
+     demands that it be ARRAY8.
   */
   sprintf (discardCommand, "rm -f %s", filename);
   prop6.type = SmARRAY8;
@@ -838,7 +838,7 @@ set_sm_properties (SmcConn sm_conn, char *filename, char hint)
   props[3] = &prop4;
   props[4] = &prop5;
   props[5] = &prop6;
-  
+
   SmcSetProperties (sm_conn, 6, props);
 
   free ((char *) prop5.vals);

@@ -612,10 +612,10 @@ void MoveViewport(int newx, int newy, Bool grab)
 	    /*
 	        If the window is moving into the viewport...
 	    */
-            txl = t->frame_x;
-            tyt = t->frame_y;
-	    txr = t->frame_x + t->frame_width;
-	    tyb = t->frame_y + t->frame_height;
+            txl = t->frame_g.x;
+            tyt = t->frame_g.y;
+	    txr = t->frame_g.x + t->frame_g.width;
+	    tyb = t->frame_g.y + t->frame_g.height;
 	    if ((txr >= PageLeft && txl <= PageRight
 	        && tyb >= PageTop && tyt <= PageBottom)
 	        && !IS_VIEWPORT_MOVED(t)
@@ -648,8 +648,8 @@ void MoveViewport(int newx, int newy, Bool grab)
                                          t->icon_w_height+t->icon_p_height);
                         }
 		     }
-	           SetupFrame (t, t->frame_x+ deltax, t->frame_y + deltay,
-		          t->frame_width, t->frame_height,FALSE, False);
+	           SetupFrame (t, t->frame_g.x+ deltax, t->frame_g.y + deltay,
+		          t->frame_g.width, t->frame_g.height,FALSE, False);
 	         }
 	      }
             /*  Bump to next win...    */
@@ -660,10 +660,10 @@ void MoveViewport(int newx, int newy, Bool grab)
 	    /*
 	        If the window is not moving into the viewport...
 	    */
-            txl = t1->frame_x;
-            tyt = t1->frame_y;
-            txr = t1->frame_x + t1->frame_width;
-            tyb = t1->frame_y + t1->frame_height;
+            txl = t1->frame_g.x;
+            tyt = t1->frame_g.y;
+            txr = t1->frame_g.x + t1->frame_g.width;
+            tyb = t1->frame_g.y + t1->frame_g.height;
             if (! (txr >= PageLeft && txl <= PageRight
                 && tyb >= PageTop && tyt <= PageBottom)
                 && !IS_VIEWPORT_MOVED(t1)
@@ -698,9 +698,9 @@ void MoveViewport(int newx, int newy, Bool grab)
 					    t1->icon_p_height);
 			  }
 		      }
-		    SetupFrame (t1, t1->frame_x+ deltax,
-				t1->frame_y + deltay, t1->frame_width,
-				t1->frame_height,FALSE, False);
+		    SetupFrame (t1, t1->frame_g.x+ deltax,
+				t1->frame_g.y + deltay, t1->frame_g.width,
+				t1->frame_g.height,FALSE, False);
 		  }
 	      }
             /*  Bump to next win...    */

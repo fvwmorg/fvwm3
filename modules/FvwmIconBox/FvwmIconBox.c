@@ -161,7 +161,7 @@ int ready = 0;
 unsigned long local_flags = 0;
 int sortby = UNSORT;
 
-int save_color_limit;                   /* color limit from config */
+int save_color_limit = 0;                   /* color limit from config */
 
 /************************************************************************
   Main

@@ -478,7 +478,7 @@ void HandlePropertyNotify(void)
       Make sure at least part of window is on this page
       before giving it focus...
   */
-  OnThisPage = IsWindowOnThisPage(Tmp_win);
+  OnThisPage = IsRectangleOnThisPage(&(Tmp_win->frame_g), Tmp_win->Desk);
 
   switch (Event.xproperty.atom)
     {
@@ -646,12 +646,12 @@ void HandlePropertyNotify(void)
       */
       {
 	int new_width, new_height;
-	new_width = Tmp_win->frame_width;
-	new_height = Tmp_win->frame_height;
+	new_width = Tmp_win->frame_g.width;
+	new_height = Tmp_win->frame_g.height;
 	ConstrainSize(Tmp_win, &new_width, &new_height, False, 0, 0);
-	if((new_width != Tmp_win->frame_width)||
-	   (new_height != Tmp_win->frame_height))
-	  SetupFrame(Tmp_win,Tmp_win->frame_x, Tmp_win->frame_y,
+	if((new_width != Tmp_win->frame_g.width)||
+	   (new_height != Tmp_win->frame_g.height))
+	  SetupFrame(Tmp_win,Tmp_win->frame_g.x, Tmp_win->frame_g.y,
 		     new_width,new_height,False,False);
       }
 #endif /* 0 */
@@ -849,7 +849,7 @@ void HandleMapRequestKeepRaised(Window KeepRaised,  FvwmWindow  *ReuseWin)
       Make sure at least part of window is on this page
       before giving it focus...
   */
-  OnThisPage = IsWindowOnThisPage(Tmp_win);
+  OnThisPage = IsRectangleOnThisPage(&(Tmp_win->frame_g), Tmp_win->Desk);
 
   if(KeepRaised != None)
     XRaiseWindow(dpy,KeepRaised);
@@ -965,7 +965,7 @@ void HandleMapNotify(void)
       Make sure at least part of window is on this page
       before giving it focus...
   */
-  OnThisPage = IsWindowOnThisPage(Tmp_win);
+  OnThisPage = IsRectangleOnThisPage(&(Tmp_win->frame_g), Tmp_win->Desk);
 
   /*
    * Need to do the grab to avoid race condition of having server send
@@ -1355,9 +1355,7 @@ void HandleLeaveNotify(void)
   if (Tmp_win && IS_ICONIFIED(Tmp_win))
     {
       SET_ICON_ENTERED(Tmp_win,0);
-fprintf(stderr,"leaving icon 0x%x\n", Tmp_win);
       DrawIconWindow (Tmp_win);
-fprintf(stderr,"leaving icon done\n");
     }
 
   /* If we leave the root window, then we're really moving
@@ -1484,10 +1482,10 @@ void HandleConfigureRequest(void)
  if (cre->window == Tmp_win->w)
  {
   /* Don't modify frame_XXX fields before calling SetupWindow! */
-  x = Tmp_win->frame_x;
-  y = Tmp_win->frame_y;
-  width = Tmp_win->frame_width;
-  height = Tmp_win->frame_height;
+  x = Tmp_win->frame_g.x;
+  y = Tmp_win->frame_g.y;
+  width = Tmp_win->frame_g.width;
+  height = Tmp_win->frame_g.height;
 
   /* for restoring */
   if (cre->value_mask & CWBorderWidth)
@@ -1499,11 +1497,11 @@ void HandleConfigureRequest(void)
   if (cre->value_mask & CWX)
     x = cre->x - Tmp_win->boundary_width;
   if (cre->value_mask & CWY)
-    y = cre->y - Tmp_win->boundary_width - Tmp_win->title_height;
+    y = cre->y - Tmp_win->boundary_width - Tmp_win->title_g.height;
   if (cre->value_mask & CWWidth)
     width = cre->width + 2*Tmp_win->boundary_width;
   if (cre->value_mask & CWHeight)
-    height = cre->height+Tmp_win->title_height+2*Tmp_win->boundary_width;
+    height = cre->height+Tmp_win->title_g.height+2*Tmp_win->boundary_width;
 
   /*
    * SetupWindow (x,y) are the location of the upper-left outer corner and
@@ -1516,8 +1514,9 @@ void HandleConfigureRequest(void)
   if (IS_SHADED(Tmp_win))
     {
       /* for shaded windows, allow resizing, but keep it shaded */
-      SetupFrame (Tmp_win, x, y, width, Tmp_win->frame_height,sendEvent,False);
-      Tmp_win->orig_ht = height;
+      SetupFrame (Tmp_win, x, y, width, Tmp_win->frame_g.height,sendEvent,
+		  False);
+      Tmp_win->orig_g.height = height;
     }
   else if (!IS_MAXIMIZED(Tmp_win))
     {
@@ -1649,7 +1648,7 @@ void HandleShapeNotify (void)
     if (sev->kind != ShapeBounding)
       return;
     Tmp_win->wShaped = sev->shaped;
-    SetShape(Tmp_win,Tmp_win->frame_width);
+    SetShape(Tmp_win,Tmp_win->frame_g.width);
   }
 }
 #endif  /* SHAPE*/

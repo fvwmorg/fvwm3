@@ -153,10 +153,10 @@ test_y = PageTop;
 #endif /* !NO_STUBBORN_PLACEMENT */
           if(!(IS_ICONIFIED(test_window))&&(test_window != t))
           {
-            tw=test_window->frame_width;
-            th=test_window->frame_height;
-            tx = test_window->frame_x - stickyx;
-            ty = test_window->frame_y - stickyy;
+            tw=test_window->frame_g.width;
+            th=test_window->frame_g.height;
+            tx = test_window->frame_g.x - stickyx;
+            ty = test_window->frame_g.y - stickyy;
             if((tx <= (test_x+width))&&((tx + tw) >= test_x)&&
                (ty <= (test_y+height))&&((ty + th)>= test_y))
             {
@@ -244,7 +244,7 @@ int get_next_x(FvwmWindow *t, int x, int y, int pdeltax, int pdeltay)
   /* Test window at far right of screen */
 /*  RBW - 11/02/1998  */
   xnew = PageRight;
-  xtest = PageRight - t->frame_width;
+  xtest = PageRight - t->frame_g.width;
 /**/
   if(xtest > x)
     xnew = MIN(xnew, xtest);
@@ -269,23 +269,23 @@ int get_next_x(FvwmWindow *t, int x, int y, int pdeltax, int pdeltay)
     {
       if((y < (testw->icon_p_height+testw->icon_w_height+testw->icon_y_loc
 	       - stickyy))&&
-         (testw->icon_y_loc - stickyy < (t->frame_height+y)))
+         (testw->icon_y_loc - stickyy < (t->frame_g.height+y)))
       {
         xtest = testw->icon_p_width+testw->icon_x_loc - stickyx;
         if(xtest > x)
           xnew = MIN(xnew, xtest);
-        xtest = testw->icon_x_loc - stickyx - t->frame_width;
+        xtest = testw->icon_x_loc - stickyx - t->frame_g.width;
         if(xtest > x)
           xnew = MIN(xnew, xtest);
       }
     }
-    else if((y < (testw->frame_height+testw->frame_y - stickyy)) &&
-            (testw->frame_y - stickyy < (t->frame_height+y)))
+    else if((y < (testw->frame_g.height+testw->frame_g.y - stickyy)) &&
+            (testw->frame_g.y - stickyy < (t->frame_g.height+y)))
     {
-      xtest = testw->frame_width+testw->frame_x - stickyx;
+      xtest = testw->frame_g.width+testw->frame_g.x - stickyx;
       if(xtest > x)
         xnew = MIN(xnew, xtest);
-      xtest = testw->frame_x - stickyx - t->frame_width;
+      xtest = testw->frame_g.x - stickyx - t->frame_g.width;
       if(xtest > x)
         xnew = MIN(xnew, xtest);
     }
@@ -305,7 +305,7 @@ int get_next_y(FvwmWindow *t, int y, int pdeltay)
   /* Test window at far bottom of screen */
 /*  RBW - 11/02/1998  */
   ynew = PageBottom;
-  ytest = PageBottom - t->frame_height;
+  ytest = PageBottom - t->frame_g.height;
 /**/
   if(ytest > y)
     ynew = MIN(ynew, ytest);
@@ -330,16 +330,16 @@ int get_next_y(FvwmWindow *t, int y, int pdeltay)
 	- stickyy;
       if(ytest > y)
         ynew = MIN(ynew, ytest);
-      ytest = testw->icon_y_loc - stickyy - t->frame_height;
+      ytest = testw->icon_y_loc - stickyy - t->frame_g.height;
       if(ytest > y)
         ynew = MIN(ynew, ytest);
     }
     else
     {
-      ytest = testw->frame_height+testw->frame_y - stickyy;
+      ytest = testw->frame_g.height+testw->frame_g.y - stickyy;
       if(ytest > y)
         ynew = MIN(ynew, ytest);
-      ytest = testw->frame_y - stickyy - t->frame_height;
+      ytest = testw->frame_g.y - stickyy - t->frame_g.height;
       if(ytest > y)
         ynew = MIN(ynew, ytest);
     }
@@ -363,8 +363,8 @@ int test_fit(FvwmWindow *t, int x11, int y11, int aoimin, int pdeltax,
   int PageRight     =  Scr.MyDisplayWidth - pdeltax;
   int stickyx, stickyy;
 
-  x12 = x11 + t->frame_width;
-  y12 = y11 + t->frame_height;
+  x12 = x11 + t->frame_g.width;
+  y12 = y11 + t->frame_g.height;
 
   if (y12 > PageBottom) /* No room in y direction */
     return -1;
@@ -397,10 +397,10 @@ int test_fit(FvwmWindow *t, int x11, int y11, int aoimin, int pdeltax,
     }
     else
     {
-       x21 = testw->frame_x - stickyx;
-       y21 = testw->frame_y - stickyy;
-       x22 = x21 + testw->frame_width;
-       y22 = y21 + testw->frame_height;
+       x21 = testw->frame_g.x - stickyx;
+       y21 = testw->frame_g.y - stickyy;
+       x22 = x21 + testw->frame_g.width;
+       y22 = y21 + testw->frame_g.height;
     }
     if((x11 < x22) && (x12 > x21) &&
        (y11 < y22) && (y12 > y21))
@@ -625,8 +625,8 @@ Bool PlaceWindow(FvwmWindow *tmp_win, style_flags *sflags, int Desk, int PageX,
     if(SDO_PLACE_RANDOM(sflags))
     {
       if(SDO_PLACE_SMART(sflags))
-        smartlyplaced = SmartPlacement(tmp_win,tmp_win->frame_width,
-                                       tmp_win->frame_height,
+        smartlyplaced = SmartPlacement(tmp_win,tmp_win->frame_g.width,
+                                       tmp_win->frame_g.height,
                                        &xl,&yt, pdeltax, pdeltay);
       if(! smartlyplaced)
       {
@@ -647,21 +647,21 @@ Bool PlaceWindow(FvwmWindow *tmp_win, style_flags *sflags, int Desk, int PageX,
       }
       /* patches 11/93 to try to keep the window on the
        * screen */
-      tmp_win->frame_x = tmp_win->attr.x + tmp_win->old_bw;
-      tmp_win->frame_y = tmp_win->attr.y + tmp_win->old_bw;
+      tmp_win->frame_g.x = tmp_win->attr.x + tmp_win->old_bw;
+      tmp_win->frame_g.y = tmp_win->attr.y + tmp_win->old_bw;
 
-      if(tmp_win->frame_x + tmp_win->frame_width +
+      if(tmp_win->frame_g.x + tmp_win->frame_g.width +
          2*tmp_win->boundary_width> PageRight)
       {
         tmp_win->attr.x = PageRight -tmp_win->attr.width
           - tmp_win->old_bw - 2*tmp_win->boundary_width;
         Scr.randomx = 0;
       }
-      if(tmp_win->frame_y + 2*tmp_win->boundary_width+tmp_win->title_height
-         + tmp_win->frame_height > PageBottom)
+      if(tmp_win->frame_g.y + 2*tmp_win->boundary_width+tmp_win->title_g.height
+         + tmp_win->frame_g.height > PageBottom)
       {
         tmp_win->attr.y = PageBottom -tmp_win->attr.height
-          - tmp_win->old_bw - tmp_win->title_height -
+          - tmp_win->old_bw - tmp_win->title_g.height -
           2*tmp_win->boundary_width;
         Scr.randomy = 0;
       }
@@ -673,7 +673,7 @@ Bool PlaceWindow(FvwmWindow *tmp_win, style_flags *sflags, int Desk, int PageX,
       tmp_win->ydiff -= gravy*tmp_win->old_bw;
       tmp_win->xdiff -= gravx*tmp_win->old_bw;
       if(gravy > 0)
-        tmp_win->ydiff += 2*tmp_win->boundary_width + tmp_win->title_height;
+        tmp_win->ydiff += 2*tmp_win->boundary_width + tmp_win->title_g.height;
       if(gravx > 0)
         tmp_win->xdiff += 2*tmp_win->boundary_width;
     }
@@ -683,8 +683,8 @@ Bool PlaceWindow(FvwmWindow *tmp_win, style_flags *sflags, int Desk, int PageX,
       xl = -1;
       yt = -1;
       if (SDO_PLACE_SMART(sflags))
-        smartlyplaced = SmartPlacement(tmp_win,tmp_win->frame_width,
-                                       tmp_win->frame_height,
+        smartlyplaced = SmartPlacement(tmp_win,tmp_win->frame_g.width,
+                                       tmp_win->frame_g.height,
                                        &xl,&yt, pdeltax, pdeltay);
       if(! smartlyplaced)
       {
@@ -701,8 +701,8 @@ Bool PlaceWindow(FvwmWindow *tmp_win, style_flags *sflags, int Desk, int PageX,
             MyXUngrabServer(dpy);
             return False;
           }
-          DragWidth = tmp_win->frame_width;
-          DragHeight = tmp_win->frame_height;
+          DragWidth = tmp_win->frame_g.width;
+          DragHeight = tmp_win->frame_g.height;
 
           XMapRaised(dpy,Scr.SizeWindow);
           moveLoop(tmp_win,0,0,DragWidth,DragHeight,&xl,&yt,False,True);
@@ -803,7 +803,7 @@ Bool PlaceWindow(FvwmWindow *tmp_win, style_flags *sflags, int Desk, int PageX,
     tmp_win->attr.y += gravy*tmp_win->old_bw;
     tmp_win->attr.x += gravx*tmp_win->old_bw;
     if(gravy > 0)
-      tmp_win->attr.y -= 2*tmp_win->boundary_width + tmp_win->title_height;
+      tmp_win->attr.y -= 2*tmp_win->boundary_width + tmp_win->title_g.height;
     if(gravx > 0)
       tmp_win->attr.x -= 2*tmp_win->boundary_width;
   }
@@ -820,17 +820,17 @@ void PlaceAgain_func(F_CMD_ARGS)
     return;
 
   /* Find new position for window */
-  SmartPlacement(tmp_win,tmp_win->frame_width,tmp_win->frame_height, &x, &y,
+  SmartPlacement(tmp_win,tmp_win->frame_g.width,tmp_win->frame_g.height, &x, &y,
 		 0,0);
 
   /* Possibly animate the movement */
   token = PeekToken(action, NULL);
   if(token && StrEquals("ANIM", token))
-    AnimatedMoveFvwmWindow(tmp_win, tmp_win->frame, -1, -1, x, y, FALSE, -1,
+    AnimatedMoveFvwmWindow(tmp_win, tmp_win->frame, -1, -1, x, y, False, -1,
 			   NULL);
 
-  SetupFrame(tmp_win,x,y,tmp_win->frame_width, tmp_win->frame_height, FALSE,
-	     False);
+  SetupFrame(tmp_win,x,y,tmp_win->frame_g.width, tmp_win->frame_g.height,
+	     False, False);
 
   return;
 }

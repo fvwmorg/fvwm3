@@ -170,7 +170,8 @@ void CreateIconWindow(FvwmWindow *tmp_win, int def_x, int def_y)
 
   if((IS_ICON_OURS(tmp_win)) && (tmp_win->icon_p_width > 0)
      && (tmp_win->icon_p_height > 0)) {
-      /* fixme: if a client pixmap is supplied use it's depth, visual and colormap */
+      /* fixme: if a client pixmap is supplied use it's depth, visual and
+       * colormap */
       tmp_win->icon_pixmap_w = XCreateWindow(dpy, Scr.Root, final_x, final_y,
 					     tmp_win->icon_p_width,
 					     tmp_win->icon_p_height, 0,
@@ -230,7 +231,8 @@ void CreateIconWindow(FvwmWindow *tmp_win, int def_x, int def_y)
         XWindowChanges xwc;
         xwc.sibling = tmp_win->frame;
         xwc.stack_mode = Below;
-        XConfigureWindow(dpy, tmp_win->icon_pixmap_w, CWSibling|CWStackMode, &xwc);
+        XConfigureWindow(dpy, tmp_win->icon_pixmap_w, CWSibling|CWStackMode,
+			 &xwc);
       }
 #endif
   }
@@ -452,27 +454,28 @@ void AutoPlaceIcon(FvwmWindow *t)
   /* New! Put icon in same page as the center of the window */
   /* Not a good idea for StickyIcons. Neither for icons of windows that are
    * visible on the current page. */
-  if((IS_ICON_STICKY(t))||(IS_STICKY(t))||(IsWindowOnThisPage(t)))
+  if((IS_ICON_STICKY(t))||(IS_STICKY(t))||
+     (IsRectangleOnThisPage(&(t->frame_g), t->Desk)))
     {
       base_x = 0;
       base_y = 0;
       /*Also, if its a stickyWindow, put it on the current page! */
-      new_x = t->frame_x % Scr.MyDisplayWidth;
-      new_y = t->frame_y % Scr.MyDisplayHeight;
-      if(new_x + t->frame_width <= 0)
+      new_x = t->frame_g.x % Scr.MyDisplayWidth;
+      new_y = t->frame_g.y % Scr.MyDisplayHeight;
+      if(new_x + t->frame_g.width <= 0)
 	new_x += Scr.MyDisplayWidth;
-      if(new_y + t->frame_height <= 0)
+      if(new_y + t->frame_g.height <= 0)
 	new_y += Scr.MyDisplayHeight;
       SetupFrame(t,new_x,new_y,
-		 t->frame_width,t->frame_height,False,False);
+		 t->frame_g.width,t->frame_g.height,False,False);
       t->Desk = Scr.CurrentDesk;
     }
   else
     {
-      base_x=((t->frame_x+Scr.Vx+(t->frame_width>>1))/Scr.MyDisplayWidth)*
+      base_x=((t->frame_g.x+Scr.Vx+(t->frame_g.width>>1))/Scr.MyDisplayWidth)*
 	Scr.MyDisplayWidth - Scr.Vx;
-      base_y=((t->frame_y+Scr.Vy+(t->frame_height>>1))/Scr.MyDisplayHeight)*
-	Scr.MyDisplayHeight - Scr.Vy;
+      base_y=((t->frame_g.y+Scr.Vy+(t->frame_g.height>>1))/
+	      Scr.MyDisplayHeight)*Scr.MyDisplayHeight - Scr.Vy;
     }
   if(IS_ICON_MOVED(t))
     {
@@ -897,8 +900,8 @@ void DeIconify(FvwmWindow *tmp_win)
                             (unsigned long)t,
                             t->icon_x_loc, t->icon_y_loc,
                             t->icon_p_width, t->icon_p_height+t->icon_w_height,
-                            t->frame_x, t->frame_y,
-                            t->frame_width, t->frame_height);
+                            t->frame_g.x, t->frame_g.y,
+                            t->frame_g.width, t->frame_g.height);
           else
 	    BroadcastPacket(M_DEICONIFY, 7,
                             t->w, t->frame,
@@ -1028,10 +1031,10 @@ void Iconify(FvwmWindow *tmp_win, int def_x, int def_y)
                   tmp_win->icon_y_loc,
                   tmp_win->icon_w_width,
                   tmp_win->icon_w_height+tmp_win->icon_p_height,
-                  tmp_win->frame_x, /* next 4 added for Animate module */
-                  tmp_win->frame_y,
-                  tmp_win->frame_width,
-                  tmp_win->frame_height);
+                  tmp_win->frame_g.x, /* next 4 added for Animate module */
+                  tmp_win->frame_g.y,
+                  tmp_win->frame_g.width,
+                  tmp_win->frame_g.height);
   BroadcastConfig(M_CONFIGURE_WINDOW,tmp_win);
 
 #ifdef SESSION

@@ -91,11 +91,20 @@ unsigned long context,char *action, int *Module
 
 #define NULLSTR ((char *) NULL)
 
+typedef struct
+{
+  int x;
+  int y;
+  int width;
+  int height;
+} rectangle;
+
 /*
   For 1 style statement, there can be any number of IconBoxes.
   The name list points at the first one in the chain.
  */
-typedef struct icon_boxes_struct {
+typedef struct icon_boxes_struct
+{
   struct icon_boxes_struct *next;       /* next icon_boxes or zero */
   int IconBox[4];                       /* x/y x/y for iconbox */
   short IconGrid[2];                    /* x incr, y incr */
@@ -276,16 +285,28 @@ typedef struct FvwmWindow
 #ifdef SHAPE
     int wShaped;               /* is this a shaped window */
 #endif
+
+#if 1
+    rectangle frame_g;
+#else
     int frame_x;		/* x position of frame */
     int frame_y;		/* y position of frame */
     int frame_width;		/* width of frame */
     int frame_height;		/* height of frame */
+#endif
+
     int boundary_width;
     int corner_width;
+
+#if 1
+    rectangle title_g;
+#else
     int title_x;
     int title_y;
     int title_height;		/* height of the title bar */
     int title_width;		/* width of the title bar */
+#endif
+
     int icon_x_loc;		/* icon window x coordinate */
     int icon_xl_loc;		/* icon label window x coordinate */
     int icon_y_loc;		/* icon window y coordiante */
@@ -317,10 +338,14 @@ typedef struct FvwmWindow
 #endif
     char *icon_bitmap_file;
 
+#if 1
+    rectangle orig_g;
+#else
     int orig_x;                 /* unmaximized x coordinate */
     int orig_y;                 /* unmaximized y coordinate */
     int orig_wd;                /* unmaximized window width */
     int orig_ht;                /* unmaximized window height */
+#endif
 
     int maximized_ht;           /* maximized window height */
 

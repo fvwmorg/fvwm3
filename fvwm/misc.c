@@ -301,12 +301,12 @@ void RestoreWithdrawnLocation (FvwmWindow *tmp,Bool restart)
       if(!restart)
 	{
 	  /* Don't mess with it if its partially on the screen now */
-	  if((tmp->frame_x < 0)||(tmp->frame_y<0)||
-	     (tmp->frame_x >= Scr.MyDisplayWidth)||
-	     (tmp->frame_y >= Scr.MyDisplayHeight))
+	  if((tmp->frame_g.x < 0)||(tmp->frame_g.y<0)||
+	     (tmp->frame_g.x >= Scr.MyDisplayWidth)||
+	     (tmp->frame_g.y >= Scr.MyDisplayHeight))
 	    {
-	      w2 = (tmp->frame_width>>1);
-	      h2 = (tmp->frame_height>>1);
+	      w2 = (tmp->frame_g.width>>1);
+	      h2 = (tmp->frame_g.height>>1);
 	      if (( xwc.x < -w2) || (xwc.x > (Scr.MyDisplayWidth-w2 )))
 		{
 		  xwc.x = xwc.x % Scr.MyDisplayWidth;
@@ -772,13 +772,13 @@ void ReapChildren(void)
 #endif
 }
 
-Bool IsWindowOnThisPage(FvwmWindow *fw)
+Bool IsRectangleOnThisPage(rectangle *rec, int desk)
 {
-  return (fw->Desk == Scr.CurrentDesk &&
-	  fw->frame_x > -fw->frame_width &&
-	  fw->frame_x < Scr.MyDisplayWidth &&
-	  fw->frame_y > -fw->frame_height &&
-	  fw->frame_y < Scr.MyDisplayHeight) ?
+  return (desk == Scr.CurrentDesk &&
+	  rec->x > -rec->width &&
+	  rec->x < Scr.MyDisplayWidth &&
+	  rec->y > -rec->height &&
+	  rec->y < Scr.MyDisplayHeight) ?
     True : False;
 }
 

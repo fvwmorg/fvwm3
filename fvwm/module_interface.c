@@ -377,8 +377,8 @@ int HandleModuleInput(Window w, int channel)
 	}
       if(tmp_win)
 	{
-	  Event.xbutton.x_root = tmp_win->frame_x;
-	  Event.xbutton.y_root = tmp_win->frame_y;
+	  Event.xbutton.x_root = tmp_win->frame_g.x;
+	  Event.xbutton.y_root = tmp_win->frame_g.y;
 	}
       else
 	{
@@ -583,13 +583,13 @@ BroadcastNewPacket(unsigned long event_type, unsigned long num_datum, ...)
             (_t)->w,\
             (_t)->frame,\
             (unsigned long)(_t),\
-            (_t)->frame_x,\
-            (_t)->frame_y,\
-            (_t)->frame_width,\
-            (_t)->frame_height,\
+            (_t)->frame_g.x,\
+            (_t)->frame_g.y,\
+            (_t)->frame_g.width,\
+            (_t)->frame_g.height,\
             (_t)->Desk,\
             (_t)->flags,\
-            (_t)->title_height,\
+            (_t)->title_g.height,\
             (_t)->boundary_width,\
 	    (_t)->hints.base_width,\
 	    (_t)->hints.base_height,\
@@ -610,13 +610,13 @@ BroadcastNewPacket(unsigned long event_type, unsigned long num_datum, ...)
             (_t)->w,\
             (_t)->frame,\
             (unsigned long)(_t),\
-            (_t)->frame_x,\
-            (_t)->frame_y,\
-            (_t)->frame_width,\
-            (_t)->frame_height,\
+            (_t)->frame_g.x,\
+            (_t)->frame_g.y,\
+            (_t)->frame_g.width,\
+            (_t)->frame_g.height,\
             (_t)->Desk,\
             old_flags,\
-            (_t)->title_height,\
+            (_t)->title_g.height,\
             (_t)->boundary_width,\
 	    (_t)->hints.base_width,\
 	    (_t)->hints.base_height,\
@@ -688,13 +688,13 @@ BroadcastNewPacket(unsigned long event_type, unsigned long num_datum, ...)
 	    (unsigned long)(sizeof(unsigned long)),\
             &(_t),\
 	    (unsigned long)(sizeof(unsigned long)),\
-            &(*(_t))->frame_x,\
+            &(*(_t))->frame_g.x,\
 	    (unsigned long)(sizeof(unsigned long)),\
-            &(*(_t))->frame_y,\
+            &(*(_t))->frame_g.y,\
 	    (unsigned long)(sizeof(unsigned long)),\
-            &(*(_t))->frame_width,\
+            &(*(_t))->frame_g.width,\
 	    (unsigned long)(sizeof(unsigned long)),\
-            &(*(_t))->frame_height,\
+            &(*(_t))->frame_g.height,\
 	    (unsigned long)(sizeof(unsigned long)),\
             &(*(_t))->Desk,\
  \
@@ -703,7 +703,7 @@ BroadcastNewPacket(unsigned long event_type, unsigned long num_datum, ...)
             (void *) &junkzero,\
  \
 	    (unsigned long)(sizeof(unsigned long)),\
-            &(*(_t))->title_height,\
+            &(*(_t))->title_g.height,\
 	    (unsigned long)(sizeof(unsigned long)),\
             &(*(_t))->boundary_width,\
 	    (unsigned long)(sizeof(unsigned long)),\

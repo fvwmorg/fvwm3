@@ -95,7 +95,7 @@ void SavePictureCMap(Display *dpy, Visual *viz, Colormap cmap, int depth)
   PictureCMap = cmap;
   PictureDepth = depth;
 }
-  
+
 
 static char* imagePath = FVWM_IMAGEPATH;
 

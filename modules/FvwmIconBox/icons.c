@@ -68,22 +68,22 @@ void CreateIconWindow(struct icon_info *item)
 
   /* pixmap */
   if (max_icon_height != 0){
-  item->icon_pixmap_w = 
-    XCreateWindow(dpy, icon_win, 0, 0, 
+  item->icon_pixmap_w =
+    XCreateWindow(dpy, icon_win, 0, 0,
 		  max(max_icon_width,item->icon_w),
-		  max(max_icon_height,item->icon_h), 
+		  max(max_icon_height,item->icon_h),
 		  0,CopyFromParent,CopyFromParent,
-		  CopyFromParent,valuemask,&attributes);    
+		  CopyFromParent,valuemask,&attributes);
   XSelectInput(dpy, item->icon_pixmap_w, ICON_EVENTS);
   }
-  
+
   /* label */
   item->IconWin =
-    XCreateWindow(dpy, icon_win, 0, 0, 
+    XCreateWindow(dpy, icon_win, 0, 0,
 		  max_icon_width,
-		  max_icon_height + 10, 
+		  max_icon_height + 10,
 		  0,CopyFromParent,CopyFromParent,
-		  CopyFromParent,valuemask,&attributes);    
+		  CopyFromParent,valuemask,&attributes);
   XSelectInput(dpy, item->IconWin, ICON_EVENTS);
 }
 
@@ -105,10 +105,10 @@ void ConfigureIconWindow(struct icon_info *item)
 
   if (item->icon_file != NULL && (!(item->extra_flags & DEFAULTICON) || !(item->wmhints &&
 					      item->wmhints->flags &
-					      (IconPixmapHint|IconWindowHint)))){  
+					      (IconPixmapHint|IconWindowHint)))){
     /* monochrome bitmap */
     GetBitmapFile(item);
-  
+
     /* color pixmap */
     if((item->icon_w == 0)&&(item->icon_h == 0))
       GetXPMFile(item);
@@ -118,7 +118,7 @@ void ConfigureIconWindow(struct icon_info *item)
      for his patch to handle icon windows        */
   if((item->icon_h == 0)&&(item->icon_w == 0)&&
      (item->wmhints) && (item->wmhints->flags & IconWindowHint))
-    GetIconWindow(item); 
+    GetIconWindow(item);
 
   /* icon bitmap from the application */
   if((item->icon_h == 0)&&(item->icon_w == 0)&&
@@ -129,7 +129,7 @@ void ConfigureIconWindow(struct icon_info *item)
 #ifdef SHAPE
   if (item->icon_maskPixmap != None)
     {
-      XShapeCombineMask(dpy, item->icon_pixmap_w, ShapeBounding, 
+      XShapeCombineMask(dpy, item->icon_pixmap_w, ShapeBounding,
 			hr, hr, item->icon_maskPixmap, ShapeSet);
     }
 #endif
@@ -138,7 +138,7 @@ void ConfigureIconWindow(struct icon_info *item)
   if(item->icon_depth == -1)
     {
       temp = item->iconPixmap;
-      item->iconPixmap = 
+      item->iconPixmap =
 	XCreatePixmap(dpy, Root, item->icon_w,
 		      item->icon_h,d_depth);
       XCopyPlane(dpy,temp,item->iconPixmap,NormalGC,
@@ -149,11 +149,11 @@ void ConfigureIconWindow(struct icon_info *item)
 void AdjustIconWindow(struct icon_info *item, int n)
 {
   int x=0,y=0,w,h,h2,h3,w3;
-  
+
   w3 = w = max_icon_width + icon_relief;
   h3 = h2 = max_icon_height + icon_relief;
   h = h2 + 6 + font->ascent + font->descent;
-  
+
   switch (primary){
   case LEFT:
   case RIGHT:
@@ -182,7 +182,7 @@ void AdjustIconWindow(struct icon_info *item, int n)
   default:
     break;
   }
-  
+
   item->x = x;
   item->y = y;
 
@@ -209,10 +209,10 @@ void GetBitmapFile(struct icon_info *item)
   path = findImageFile(item->icon_file, imagePath,R_OK);
   if(path == NULL)return;
 
-  if(XReadBitmapFile (dpy, Root,path,(unsigned int *)&item->icon_w, 
+  if(XReadBitmapFile (dpy, Root,path,(unsigned int *)&item->icon_w,
 		      (unsigned int *)&item->icon_h,
 		      &item->iconPixmap,
-		      (int *)&HotX, 
+		      (int *)&HotX,
 		      (int *)&HotY) != BitmapSuccess)
     {
       item->icon_w = 0;
@@ -243,7 +243,7 @@ void GetXPMFile(struct icon_info *item)
   XpmImage	my_image;
 
   path = findImageFile(item->icon_file, imagePath,R_OK);
-  if(path == NULL)return;  
+  if(path == NULL)return;
 
   XGetWindowAttributes(dpy,Root,&root_attr);
   xpm_attributes.colormap = root_attr.colormap;
@@ -258,7 +258,7 @@ void GetXPMFile(struct icon_info *item)
   color_reduce_pixmap(&my_image,save_color_limit);
   rc = XpmCreatePixmapFromXpmImage(dpy,Root, &my_image,
                                     &item->iconPixmap,
-                                    &item->icon_maskPixmap, 
+                                    &item->icon_maskPixmap,
                                     &xpm_attributes);
   if (rc != XpmSuccess) {
     fprintf(stderr, "Problem creating pixmap from image, rc %d\n", rc);
@@ -285,9 +285,9 @@ void GetIconWindow(struct icon_info *item)
   unsigned int bw;
   Window Junkroot;
 
-  if(!XGetGeometry(dpy, item->wmhints->icon_window, &Junkroot, 
-                  &x, &y, (unsigned int *)&item->icon_w, 
-		   (unsigned int *)&item->icon_h, 
+  if(!XGetGeometry(dpy, item->wmhints->icon_window, &Junkroot,
+                  &x, &y, (unsigned int *)&item->icon_w,
+		   (unsigned int *)&item->icon_h,
 		   &bw, (unsigned int *)&item->icon_depth))
     return;
 
@@ -302,7 +302,7 @@ void GetIconWindow(struct icon_info *item)
     }
 #endif
 
-  item->icon_w = min(max_icon_width + icon_relief,  item->icon_w); 
+  item->icon_w = min(max_icon_width + icon_relief,  item->icon_w);
   item->icon_h = min(max_icon_height + icon_relief, item->icon_h);
 
   XReparentWindow(dpy, item->icon_pixmap_w, icon_win, 0, 0);
@@ -325,7 +325,7 @@ void GetIconBitmap(struct icon_info *item)
   GC gc;
 
   if (!XGetGeometry(dpy, item->wmhints->icon_pixmap, &Junkroot, &x, &y,
-               (unsigned int *)&item->icon_w, 
+               (unsigned int *)&item->icon_w,
                (unsigned int *)&item->icon_h, &bw, &depth))
     return;
 
@@ -344,7 +344,7 @@ void GetIconBitmap(struct icon_info *item)
   item->icon_h = min(max_icon_height, item->icon_h);
 
   item->iconPixmap = XCreatePixmap(dpy, Root, item->icon_w,
-                                   item->icon_h, depth); 
+                                   item->icon_h, depth);
   gc = XCreateGC(dpy, item->iconPixmap, 0, NULL);
   XCopyArea(dpy, item->wmhints->icon_pixmap, item->iconPixmap,
                gc, 0, 0, item->icon_w, item->icon_h, 0, 0);
@@ -373,16 +373,16 @@ Bool GetBackPixmap(void)
     else{
       IconwinPixmap = XCreatePixmap(dpy, Root, w, h, d_depth);
       XCopyPlane(dpy, tmp_bitmap, IconwinPixmap, NormalGC, 0, 0, w, h,
-		 0, 0, 1); 
+		 0, 0, 1);
       XFreePixmap(dpy, tmp_bitmap);
     }
     free(path);
   }
-  
+
 #ifdef XPM
   if ( w == 0 && h == 0 && (path = findImageFile(IconwinPixmapFile,
 						imagePath,R_OK)) != NULL)
-    { 
+    {
       XGetWindowAttributes(dpy,Root,&root_attr);
       xpm_attributes.colormap = root_attr.colormap;
       xpm_attributes.closeness = 40000;    /* same closeness used elsewhere */

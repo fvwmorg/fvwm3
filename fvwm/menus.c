@@ -1189,24 +1189,28 @@ Bool FPopupMenu(MenuRoot *menu, MenuRoot *menuPrior, int x, int y,
   if (!(pops->flags.f.has_poshints)) {
     if((Tmp_win)&&(menuPrior == NULL)&&(Context&C_LALL))
       {
-	y = Tmp_win->frame_y+Tmp_win->boundary_width+Tmp_win->title_height+1;
-	x = Tmp_win->frame_x + Tmp_win->boundary_width +
-	  ButtonPosition(Context,Tmp_win)*Tmp_win->title_height+1;
+	y = Tmp_win->frame_g.y + Tmp_win->boundary_width +
+	  Tmp_win->title_g.height + 1;
+	x = Tmp_win->frame_g.x + Tmp_win->boundary_width +
+	  ButtonPosition(Context,Tmp_win)*Tmp_win->title_g.height + 1;
       }
     if((Tmp_win)&&(menuPrior == NULL)&&(Context&C_RALL))
       {
-	y = Tmp_win->frame_y+Tmp_win->boundary_width+Tmp_win->title_height+1;
-	x = Tmp_win->frame_x +Tmp_win->frame_width - Tmp_win->boundary_width-
-	  ButtonPosition(Context,Tmp_win)*Tmp_win->title_height-menu->width+1;
+	y = Tmp_win->frame_g.y + Tmp_win->boundary_width +
+	  Tmp_win->title_g.height + 1;
+	x = Tmp_win->frame_g.x + Tmp_win->frame_g.width -
+	  Tmp_win->boundary_width - ButtonPosition(Context,Tmp_win) *
+	  Tmp_win->title_g.height-menu->width+1;
       }
     if((Tmp_win)&&(menuPrior == NULL)&&(Context&C_TITLE))
       {
-	y = Tmp_win->frame_y+Tmp_win->boundary_width+Tmp_win->title_height+1;
-	if(x < Tmp_win->frame_x + Tmp_win->title_x)
-	  x = Tmp_win->frame_x + Tmp_win->title_x;
+	y = Tmp_win->frame_g.y + Tmp_win->boundary_width
+	  + Tmp_win->title_g.height + 1;
+	if(x < Tmp_win->frame_g.x + Tmp_win->title_g.x)
+	  x = Tmp_win->frame_g.x + Tmp_win->title_g.x;
 	if((x + menu->width) >
-	   (Tmp_win->frame_x + Tmp_win->title_x +Tmp_win->title_width))
-	  x = Tmp_win->frame_x + Tmp_win->title_x +Tmp_win->title_width-
+	   (Tmp_win->frame_g.x + Tmp_win->title_g.x +Tmp_win->title_g.width))
+	  x = Tmp_win->frame_g.x + Tmp_win->title_g.x +Tmp_win->title_g.width-
 	    menu->width +1;
       }
   } /* if (pops->flags.f.has_poshints) */

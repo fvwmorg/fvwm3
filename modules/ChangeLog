@@ -1,3 +1,11 @@
+1999-05-05  Dominik Vogt  <dominik_vogt@gmx.de>
+
+	* FvwmScript/FvwmScript.c: honour color limit and make it possible to
+	compile without xpm
+
+	* FvwmIconBox/FvwmIconBox.c: use '0' color limit as default (instead of
+	a random value).
+
 1999-05-05  Dan Espen  <dane@mk.bellcore.com>
 
 	* FvwmForm/FvwmForm.1: Man page update to make it clear that you use

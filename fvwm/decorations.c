@@ -371,7 +371,7 @@ void SelectDecor(FvwmWindow *t, style_flags *sflags, int border_width,
 
   t->boundary_width = 0;
   t->corner_width = 0;
-  t->title_height = 0;
+  t->title_g.height = 0;
 
   if(decor & MWM_DECOR_BORDER)
     {
@@ -384,7 +384,7 @@ void SelectDecor(FvwmWindow *t, style_flags *sflags, int border_width,
       /*  A title barm with no buttons in it
        * window gets a 1 pixel wide black border. */
       SET_HAS_TITLE(t, 1);
-      t->title_height = GetDecor(t,TitleHeight);
+      t->title_g.height = GetDecor(t,TitleHeight);
     }
   if(decor & MWM_DECOR_RESIZEH)
     {

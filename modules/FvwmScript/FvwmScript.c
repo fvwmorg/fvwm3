@@ -55,6 +55,7 @@ char *Scrapt;
 Atom propriete,type;
 static Atom wm_del_win;
 char *imagePath = NULL;
+int save_color_limit = 0;                   /* color limit from config */
 
 extern void InitCom();
 
@@ -112,11 +113,16 @@ void ParseOptions(void)
       {
 	CopyString(&imagePath,&tline[9]);
       }
-
-      if((strlen(&tline[0])>1)&&(strncasecmp(tline,"*FvwmScriptPath",15)==0))
+      else if((strlen(&tline[0])>1)&&
+	      (strncasecmp(tline,"*FvwmScriptPath",15)==0))
       {
 	CopyString(&ScriptPath,&tline[15]);
       }
+      else if (strncasecmp(tline,"ColorLimit",10)==0)
+      {
+	save_color_limit = atoi(&tline[10]);
+      }
+
       GetConfigLine(fd,&tline);
     }
 }
@@ -174,35 +180,27 @@ void Xinit(int IsFather)
 /***********************/
 void LoadIcon(struct XObj *xobj)
 {
- char *path = NULL;
- XWindowAttributes root_attr;
- XpmAttributes xpm_attributes;
+  Picture *pic;
 
- if ((xobj->icon)!=NULL)
- {
-  path = (char*)findImageFile(xobj->icon, imagePath,4);
-  if(path == NULL)return;
-  XGetWindowAttributes(xobj->display,RootWindow(xobj->display,DefaultScreen(xobj->display)),&root_attr);
-  xpm_attributes.colormap = root_attr.colormap;
-  xpm_attributes.valuemask = XpmSize | XpmReturnPixels|XpmColormap;
-  if(XpmReadFileToPixmap(xobj->display, RootWindow(xobj->display,DefaultScreen(xobj->display)),
-  			 path,
-			 &xobj->iconPixmap,
-			 &xobj->icon_maskPixmap,
-			 &xpm_attributes) == XpmSuccess)
+  if ((xobj->icon)!=NULL)
+  {
+    pic = LoadPicture(xobj->display,
+		      RootWindow(xobj->display,DefaultScreen(xobj->display)),
+		      imagePath, save_color_limit);
+    if (!pic)
     {
-      xobj->icon_w = xpm_attributes.width;
-      xobj->icon_h = xpm_attributes.height;
+      fprintf(stderr,"Unable to load pixmap %s\n",xobj->icon);
+      xobj->iconPixmap=None;
+      xobj->icon_maskPixmap=None;
+      return;
     }
-    else
-    {
-     fprintf(stderr,"Enable to load pixmap %s\n",xobj->icon);
-     xobj->iconPixmap=None;
-     xobj->icon_maskPixmap=None;
-    }
-  free(path);
+    xobj->iconPixmap = pic->picture;
+    xobj->icon_maskPixmap = pic->mask;
+    xobj->icon_w = pic->width;
+    xobj->icon_h = pic->height;
  }
 }
+
 
 int MyAllocNamedColor(Display *display,Colormap colormap,char* colorname,XColor* color)
 {

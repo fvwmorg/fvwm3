@@ -259,7 +259,7 @@ FvwmWindow *AddWindow(Window w, FvwmWindow *ReuseWin)
       tmp_win->fl = &Scr.DefaultDecor;
 #endif
 
-  tmp_win->title_height = GetDecor(tmp_win,TitleHeight);
+  tmp_win->title_g.height = GetDecor(tmp_win,TitleHeight);
 
   GetMwmHints(tmp_win);
   GetOlHints(tmp_win);
@@ -310,12 +310,12 @@ FvwmWindow *AddWindow(Window w, FvwmWindow *ReuseWin)
   GetWindowSizeHints (tmp_win);
 
   /* Tentative size estimate */
-  tmp_win->frame_width = tmp_win->attr.width+2*tmp_win->boundary_width;
-  tmp_win->frame_height = tmp_win->attr.height + tmp_win->title_height+
+  tmp_win->frame_g.width = tmp_win->attr.width+2*tmp_win->boundary_width;
+  tmp_win->frame_g.height = tmp_win->attr.height + tmp_win->title_g.height+
     2*tmp_win->boundary_width;
 
-  ConstrainSize(tmp_win, &tmp_win->frame_width, &tmp_win->frame_height, False,
-		0, 0);
+  ConstrainSize(tmp_win, &tmp_win->frame_g.width, &tmp_win->frame_g.height,
+		False, 0, 0);
 
   /* Find out if the client requested a specific desk on the command line. */
   /*  RBW - 11/20/1998 - allow a desk of -1 to work.  */
@@ -450,8 +450,8 @@ FvwmWindow *AddWindow(Window w, FvwmWindow *ReuseWin)
     tmp_win->prev = tmp_win->next;
     tmp_win->next = tmp_win->next->next;
   }
-  /* tmp_win->prev points to the last window in the list, tmp_win->next is NULL.
-     Now fix the last window to point to tmp_win */
+  /* tmp_win->prev points to the last window in the list, tmp_win->next is
+   * NULL. Now fix the last window to point to tmp_win */
   tmp_win->prev->next = tmp_win;
   /*
       RBW - 11/13/1998 - add it into the stacking order chain also.
@@ -468,21 +468,22 @@ FvwmWindow *AddWindow(Window w, FvwmWindow *ReuseWin)
       Thus it is important have this call *after* PlaceWindow and the
       stacking order initialization.
   */
-  MatchWinToSM(tmp_win, &x_max, &y_max, &w_max, &h_max, &do_shade, &do_maximize);
+  MatchWinToSM(tmp_win, &x_max, &y_max, &w_max, &h_max, &do_shade,
+	       &do_maximize);
 
   /* set up geometry */
-  tmp_win->frame_x = tmp_win->attr.x + tmp_win->old_bw;
-  tmp_win->frame_y = tmp_win->attr.y + tmp_win->old_bw;
-  tmp_win->frame_width = tmp_win->attr.width+2*tmp_win->boundary_width;
-  tmp_win->frame_height = tmp_win->attr.height + tmp_win->title_height
+  tmp_win->frame_g.x = tmp_win->attr.x + tmp_win->old_bw;
+  tmp_win->frame_g.y = tmp_win->attr.y + tmp_win->old_bw;
+  tmp_win->frame_g.width = tmp_win->attr.width+2*tmp_win->boundary_width;
+  tmp_win->frame_g.height = tmp_win->attr.height + tmp_win->title_g.height
 			  + 2 * tmp_win->boundary_width;
-  ConstrainSize(tmp_win, &tmp_win->frame_width, &tmp_win->frame_height, False,
-		0, 0);
-  tmp_win->title_x = tmp_win->title_y = 0;
+  ConstrainSize(tmp_win, &tmp_win->frame_g.width, &tmp_win->frame_g.height,
+		False, 0, 0);
+  tmp_win->title_g.x = tmp_win->title_g.y = 0;
   tmp_win->title_w = 0;
-  tmp_win->title_width = tmp_win->frame_width - 2 * tmp_win->boundary_width;
-  if(tmp_win->title_width < 1)
-    tmp_win->title_width = 1;
+  tmp_win->title_g.width = tmp_win->frame_g.width - 2*tmp_win->boundary_width;
+  if(tmp_win->title_g.width < 1)
+    tmp_win->title_g.width = 1;
 
   /* create windows */
 
@@ -521,9 +522,9 @@ FvwmWindow *AddWindow(Window w, FvwmWindow *ReuseWin)
 #endif
 
   /* create the frame window, child of root, grandparent of client */
-  tmp_win->frame = XCreateWindow(dpy, Scr.Root, tmp_win->frame_x,
-				 tmp_win->frame_y, tmp_win->frame_width,
-				 tmp_win->frame_height, 0, Scr.depth,
+  tmp_win->frame = XCreateWindow(dpy, Scr.Root, tmp_win->frame_g.x,
+				 tmp_win->frame_g.y, tmp_win->frame_g.width,
+				 tmp_win->frame_g.height, 0, Scr.depth,
 				 InputOutput, Scr.viz, valuemask, &attributes);
 
 #if defined(PIXMAP_BUTTONS) && defined(BORDERSTYLE)
@@ -538,14 +539,17 @@ FvwmWindow *AddWindow(Window w, FvwmWindow *ReuseWin)
 			   | EnterWindowMask | LeaveWindowMask | ExposureMask);
 
   if (HAS_TITLE(tmp_win)) {
-    tmp_win->title_x = tmp_win->boundary_width + tmp_win->title_height + 1;
-    tmp_win->title_y = tmp_win->boundary_width;
+    tmp_win->title_g.x = tmp_win->boundary_width + tmp_win->title_g.height + 1;
+    tmp_win->title_g.y = tmp_win->boundary_width;
     attributes.cursor = Scr.FvwmCursors[TITLE_CURSOR];
-    tmp_win->title_w = XCreateWindow (dpy, tmp_win->frame, tmp_win->title_x,
-				      tmp_win->title_y, tmp_win->title_width,
-				      tmp_win->title_height, 0, CopyFromParent,
-				      InputOutput, CopyFromParent, valuemask,
-				      &attributes);
+    tmp_win->title_w = XCreateWindow(dpy, tmp_win->frame,
+					tmp_win->title_g.x,
+					tmp_win->title_g.y,
+					tmp_win->title_g.width,
+					tmp_win->title_g.height, 0,
+					CopyFromParent,
+					InputOutput, CopyFromParent, valuemask,
+					&attributes);
     attributes.cursor = Scr.FvwmCursors[SYS];
     for(i = 4; i >= 0; i--) {
       if((i < Scr.nr_left_buttons) && (tmp_win->left_w[i] > 0)) {
@@ -562,9 +566,9 @@ FvwmWindow *AddWindow(Window w, FvwmWindow *ReuseWin)
         }
 #endif
         tmp_win->left_w[i] = XCreateWindow (dpy, tmp_win->frame,
-					    tmp_win->title_height * i, 0,
-					    tmp_win->title_height,
-					    tmp_win->title_height, 0,
+					    tmp_win->title_g.height * i, 0,
+					    tmp_win->title_g.height,
+					    tmp_win->title_g.height, 0,
 					    CopyFromParent, InputOutput,
 					    CopyFromParent, valuemask,
 					    &attributes);
@@ -585,10 +589,10 @@ FvwmWindow *AddWindow(Window w, FvwmWindow *ReuseWin)
         }
 #endif
         tmp_win->right_w[i] = XCreateWindow (dpy, tmp_win->frame,
-					     tmp_win->title_width
-					     - tmp_win->title_height * (i + 1),
-					     0, tmp_win->title_height,
-					     tmp_win->title_height, 0,
+					     tmp_win->title_g.width
+					     - tmp_win->title_g.height * (i+1),
+					     0, tmp_win->title_g.height,
+					     tmp_win->title_g.height, 0,
 					     CopyFromParent, InputOutput,
 					     CopyFromParent, valuemask,
 					     &attributes);
@@ -635,14 +639,16 @@ FvwmWindow *AddWindow(Window w, FvwmWindow *ReuseWin)
   attributes.colormap = Scr.cmap;
   attributes.background_pixmap = None;
   attributes.event_mask = SubstructureRedirectMask;
-  tmp_win->Parent = XCreateWindow (dpy, tmp_win->frame, tmp_win->boundary_width,
+  tmp_win->Parent = XCreateWindow (dpy, tmp_win->frame,
+				   tmp_win->boundary_width,
 				   tmp_win->boundary_width
-				   + tmp_win->title_height,
-				   (tmp_win->frame_width
+				   + tmp_win->title_g.height,
+				   (tmp_win->frame_g.width
 				   - 2 * tmp_win->boundary_width),
-				   (tmp_win->frame_height
+				   (tmp_win->frame_g.height
 				   - 2 * tmp_win->boundary_width
-				   - tmp_win->title_height), 0, CopyFromParent,
+				   - tmp_win->title_g.height), 0,
+				   CopyFromParent,
 				   InputOutput, CopyFromParent, valuemask,
 				   &attributes);
 
@@ -650,7 +656,8 @@ FvwmWindow *AddWindow(Window w, FvwmWindow *ReuseWin)
 #ifdef MINI_ICONS
   if (tmp_win->mini_pixmap_file) {
     tmp_win->mini_icon = CachePicture (dpy, Scr.NoFocusWin, NULL,
-				       tmp_win->mini_pixmap_file, Scr.ColorLimit);
+				       tmp_win->mini_pixmap_file,
+				       Scr.ColorLimit);
   }
   else {
     tmp_win->mini_icon = NULL;
@@ -679,12 +686,12 @@ FvwmWindow *AddWindow(Window w, FvwmWindow *ReuseWin)
    * again in HandleMapNotify.
    */
   SET_MAPPED(tmp_win, 0);
-  width = tmp_win->frame_width;
-  tmp_win->frame_width = 0;
-  height = tmp_win->frame_height;
-  tmp_win->frame_height = 0;
+  width = tmp_win->frame_g.width;
+  tmp_win->frame_g.width = 0;
+  height = tmp_win->frame_g.height;
+  tmp_win->frame_g.height = 0;
 
-  SetupFrame(tmp_win, tmp_win->frame_x, tmp_win->frame_y,width,height,
+  SetupFrame(tmp_win, tmp_win->frame_g.x, tmp_win->frame_g.y,width,height,
 	     True, False);
 
   if (do_maximize) {
@@ -695,10 +702,10 @@ FvwmWindow *AddWindow(Window w, FvwmWindow *ReuseWin)
     SetupFrame(tmp_win, x_max, y_max, w_max, h_max, TRUE, False);
     SetBorder(tmp_win, Scr.Hilite == tmp_win, True, True, None);
     /* fix orig values to not change page on unmaximize  */
-    if (tmp_win->orig_x >= Scr.MyDisplayWidth)
-      tmp_win->orig_x = tmp_win->orig_x % Scr.MyDisplayWidth;
-    if (tmp_win->orig_y >= Scr.MyDisplayHeight)
-      tmp_win->orig_y = tmp_win->orig_y % Scr.MyDisplayHeight;
+    if (tmp_win->orig_g.x >= Scr.MyDisplayWidth)
+      tmp_win->orig_g.x = tmp_win->orig_g.x % Scr.MyDisplayWidth;
+    if (tmp_win->orig_g.y >= Scr.MyDisplayHeight)
+      tmp_win->orig_g.y = tmp_win->orig_g.y % Scr.MyDisplayHeight;
   }
 
   if (do_shade) {
@@ -818,14 +825,14 @@ FvwmWindow *AddWindow(Window w, FvwmWindow *ReuseWin)
     {
       XWarpPointer(dpy, Scr.Root, Scr.Root, 0, 0, Scr.MyDisplayWidth,
 		   Scr.MyDisplayHeight,
-		   tmp_win->frame_x + (tmp_win->frame_width>>1),
-		   tmp_win->frame_y + (tmp_win->frame_height>>1));
+		   tmp_win->frame_g.x + (tmp_win->frame_g.width>>1),
+		   tmp_win->frame_g.y + (tmp_win->frame_g.height>>1));
       Event.xany.type = ButtonPress;
       Event.xbutton.button = 1;
-      Event.xbutton.x_root = tmp_win->frame_x + (tmp_win->frame_width>>1);
-      Event.xbutton.y_root = tmp_win->frame_y + (tmp_win->frame_height>>1);
-      Event.xbutton.x = (tmp_win->frame_width>>1);
-      Event.xbutton.y = (tmp_win->frame_height>>1);
+      Event.xbutton.x_root = tmp_win->frame_g.x + (tmp_win->frame_g.width>>1);
+      Event.xbutton.y_root = tmp_win->frame_g.y + (tmp_win->frame_g.height>>1);
+      Event.xbutton.x = (tmp_win->frame_g.width>>1);
+      Event.xbutton.y = (tmp_win->frame_g.height>>1);
       Event.xbutton.subwindow = None;
       Event.xany.window = tmp_win->w;
       resize_window(&Event , tmp_win->w, tmp_win, C_WINDOW, "", 0);
@@ -945,12 +952,12 @@ void GetWindowSizeHints(FvwmWindow *tmp)
    * filled in! */
   if (tmp->hints.flags & PResizeInc)
     {
-      if (tmp->hints.width_inc <= 0) 
+      if (tmp->hints.width_inc <= 0)
         {
           tmp->hints.width_inc = 1;
 	  broken_hints = True;
         }
-      if (tmp->hints.height_inc <= 0) 
+      if (tmp->hints.height_inc <= 0)
         {
           tmp->hints.height_inc = 1;
 	  broken_hints = True;
@@ -964,14 +971,14 @@ void GetWindowSizeHints(FvwmWindow *tmp)
 
   if(tmp->hints.flags & PMinSize)
     {
-      if (tmp->hints.min_width <= 0) 
+      if (tmp->hints.min_width <= 0)
         {
           tmp->hints.min_width = 1;
 	  broken_hints = True;
         }
-      if (tmp->hints.min_height <= 0) 
+      if (tmp->hints.min_height <= 0)
         {
-          tmp->hints.min_height = 1;      
+          tmp->hints.min_height = 1;
 	  broken_hints = True;
         }
     }
@@ -982,7 +989,7 @@ void GetWindowSizeHints(FvwmWindow *tmp)
 	  tmp->hints.min_width = tmp->hints.base_width;
 	  tmp->hints.min_height = tmp->hints.base_height;
 	}
-      else 
+      else
 	{
 	  tmp->hints.min_width = 1;
 	  tmp->hints.min_height = 1;
@@ -1015,12 +1022,12 @@ void GetWindowSizeHints(FvwmWindow *tmp)
 
   if(tmp->hints.flags & PBaseSize)
     {
-      if (tmp->hints.base_width < 0) 
+      if (tmp->hints.base_width < 0)
         {
           tmp->hints.base_width = 0;
           broken_hints = True;
         }
-      if (tmp->hints.base_height < 0) 
+      if (tmp->hints.base_height < 0)
         {
           tmp->hints.base_height = 0;
           broken_hints = True;
@@ -1030,12 +1037,12 @@ void GetWindowSizeHints(FvwmWindow *tmp)
         {
           /* In this case, doing the aspect ratio calculation
 	     for window_size - base_size as prescribed by the
-             ICCCM is going to fail. 
+             ICCCM is going to fail.
              Resetting the flag disables
              the use of base_size in aspect ratio calculation
              while it is still used for grid sizing in the way
 	     most window manager do, allowing for window sizes
-	     below the base size. 
+	     below the base size.
            */
           tmp->hints.flags &= ~PBaseSize;
 #if 0
@@ -1092,7 +1099,7 @@ void GetWindowSizeHints(FvwmWindow *tmp)
     ** seems safest.
     **
     */
-     
+
     /* protect against silly things like MAXINT/MAXINT */
     g  = gcd(maxAspectX, maxAspectY);
     if (g != 0)
