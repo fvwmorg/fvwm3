@@ -110,6 +110,7 @@ int My_XNextEvent(Display *dpy, XEvent *event);
 void process_message(unsigned long type,unsigned long *body);
 extern void send_clientmessage (Display *disp, Window w, Atom a,
 				Time timestamp);
+void parse_message_line(char *line);
 void CheckForHangon(unsigned long*);
 static Window GetRealGeometry(
   Display*,Window,int*,int*,unsigned int*,unsigned int*, unsigned int*,
@@ -936,7 +937,7 @@ int main(int argc, char **argv)
 
   SetMessageMask(fd, M_NEW_DESK | M_END_WINDOWLIST | M_MAP | M_WINDOW_NAME
 		 | M_RES_CLASS | M_CONFIG_INFO | M_END_CONFIG_INFO | M_RES_NAME
-		 | M_SENDCONFIG | M_ADD_WINDOW | M_CONFIGURE_WINDOW);
+		 | M_SENDCONFIG | M_ADD_WINDOW | M_CONFIGURE_WINDOW | M_STRING);
   SetMessageMask(fd, MX_PROPERTY_CHANGE);
 
   /* request a window list, since this triggers a response which
@@ -2618,6 +2619,9 @@ void process_message(unsigned long type,unsigned long *body)
       swallowed = body[1];
     }
     break;
+  case M_STRING:
+    parse_message_line((char *)&body[3]);
+    break;
   default:
     break;
   }
@@ -3076,5 +3080,54 @@ void swallow(unsigned long *body)
       }
       break;
     }
+  }
+}
+
+/* SendToModule options */
+static void parse_title(char *line)
+{
+  int n, count, i;
+  button_info *b, *ub = UberButton;
+
+  /* find out which button */
+  if (GetIntegerArguments(line, &line, &n, 1) != 1)
+    return;
+  if (n < 0)
+  {
+    fprintf(stderr, "%s: button number must not be negative\n", MyName);
+    return;
+  }
+  i = count = -1;
+  /* find the button */
+  while (NextButton(&ub, &b, &i, 0)) {
+    if (++count == n)
+      break;
+  }
+  if (count != n) {
+    fprintf(stderr, "%s: button number %d not found\n", MyName, n);
+    return;
+  }
+  if (b) {
+    if (!b->flags & b_Title) {
+      fprintf(stderr, "%s: cannot create a title, only change one\n", MyName);
+      return;
+    }
+    free(b->title);
+    CopyString(&b->title, line);
+    RedrawButton(b, 2);
+  }
+  return;  
+}
+
+static char *message_options[] = {"Title", NULL};
+
+void parse_message_line(char *line)
+{
+  char *rest;
+
+  switch(GetTokenIndex(line, message_options, -1, &rest)) {
+  case 0:
+    parse_title(rest);
+    break;
   }
 }

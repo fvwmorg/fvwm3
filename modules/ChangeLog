@@ -1,13 +1,18 @@
+2002-02-02  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* FvwmButtons/FvwmButtons.c:
+	Applied dynamic button title patch by Hippo
+
 2002-02-01  Dan Espen  <dane@mk.telcordia.com>
 
-	* FvwmWinList/FvwmWinList.1: 
-	* FvwmScroll/FvwmScroll.1: 
-	* FvwmScript/FvwmScript.1: 
-	* FvwmSave/FvwmSave.1: 
-	* FvwmPager/FvwmPager.1: 
-	* FvwmM4/FvwmM4.1: 
-	* FvwmIconMan/FvwmIconMan.1: 
-	* FvwmDragWell/FvwmDragWell.1: 
+	* FvwmWinList/FvwmWinList.1:
+	* FvwmScroll/FvwmScroll.1:
+	* FvwmScript/FvwmScript.1:
+	* FvwmSave/FvwmSave.1:
+	* FvwmPager/FvwmPager.1:
+	* FvwmM4/FvwmM4.1:
+	* FvwmIconMan/FvwmIconMan.1:
+	* FvwmDragWell/FvwmDragWell.1:
 	* FvwmCpp/FvwmCpp.1: .fvwmrc -> .fvwm2rc
 
 	* FvwmButtons/FvwmButtons.1: Language fix.
@@ -34,7 +39,7 @@
 	* FvwmIconMan/FvwmIconMan.c (main):
 	* FvwmIconMan/FvwmIconMan.h:
 	* FvwmIconBox/FvwmIconBox.c (main):
-	* FvwmForm/FvwmForm.c (main): 
+	* FvwmForm/FvwmForm.c (main):
 	* FvwmButtons/FvwmButtons.c (main):
 	Use FInitLocale in the place of setlocale
 
@@ -47,10 +52,10 @@
 	* FvwmButtons/FvwmButtons.c (recursive_change_colorset):
 	(swallow):
 	(DeadPipeCleanup):
-	* FvwmButtons/parse.c (ParseSwallow): 
+	* FvwmButtons/parse.c (ParseSwallow):
 	(ParseButton):
 	(ParsePanel):
-	* FvwmButtons/FvwmButtons.h: 
+	* FvwmButtons/FvwmButtons.h:
 	Added a (no)FvwmModule flags to Swallow
 
 	* FvwmButtons/FvwmButtons.c (main):
@@ -66,8 +71,8 @@
 	* FvwmDragWell/fvwmDragWell.c (myXNextEvent):
 	* FvwmWinList/FvwmWinList.c (ProcessMessage):
 	(main):
-	* FvwmTaskBar/FvwmTaskBar.c (main): 
-	(ProcessMessage): 
+	* FvwmTaskBar/FvwmTaskBar.c (main):
+	(ProcessMessage):
 	* FvwmScript/FvwmScript.c (main):
 	(MainLoop):
 	FvwmScript/types.h:
@@ -76,21 +81,21 @@
 	(list_property_change):
 	FvwmIdent/FvwmIdent.h:
 	* FvwmIconMan/FvwmIconMan.h:
-	* FvwmIconMan/fvwm.c (property_change): 
-	(handle_config_info): 
+	* FvwmIconMan/fvwm.c (property_change):
+	(handle_config_info):
 	* FvwmPager/FvwmPager.c (list_property_change):
 	(process_message):
 	(main):
 	* FvwmPager/FvwmPager.h:
 	* FvwmIconBox/FvwmIconBox.c (process_message):
 	(Loop):
-	* FvwmForm/FvwmForm.c (main): 
+	* FvwmForm/FvwmForm.c (main):
 	(process_message):
 	(ParseActiveMessage):
 	FvwmButtons and fvwm2 can send a MX_PROPERTY_CHANGE message with
 	MX_PROPERTY_CHANGE_BACKGROUND and a window id as argument to modules.
 	Then, the modules update their background if needed.
-	FvwmButtons sends a MX_PROPERTY_CHANGE message with 
+	FvwmButtons sends a MX_PROPERTY_CHANGE message with
 	MX_PROPERTY_CHANGE_SWALLOW and the id the modules when it
 	swallow a fvwm module. Swallowable modules handle this message.
 	Removed the ROOT_BG_CHANGE_STRING stuff.

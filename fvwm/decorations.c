@@ -575,7 +575,7 @@ Bool is_function_allowed(
 
                 /* remap to regular actions */
 
-                i = GetTokenIndex(action_string, functionlist, 0, NULL);
+                i = GetTokenIndex(action_string, functionlist, -1, NULL);
                 switch (i)
                 {
                 case 0:
@@ -585,6 +585,7 @@ Bool is_function_allowed(
                         function = F_RESIZE;
                         break;
                 case 2:
+fprintf(stderr,"resize\n");
                         function = F_RESIZE;
                         break;
                 case 3:
