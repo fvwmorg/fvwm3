@@ -1,3 +1,13 @@
+2001-07-05  Mikhael Goikhman  <migo@homemail.com>
+
+	* configure.in:
+	changed version to 2.4.1
+
+	* acinclude.m4:
+	small fix that should solve the problem with running autoconf
+	(autoreconf is ok) from autoconf-2.50;
+	applied a patch that adds gtk include dirs to gnome include dirs
+
 2001-07-03  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* NEWS, configure.in:

@@ -262,7 +262,7 @@ ifelse($2, , smr_lib=[$1], smr_lib=[$2])
 ifelse($5, , , smr_header=[$5])
 smr_ARG_WITHLIB($1,$2,$3)
 if test "$with_$1" != no; then
-    AC_CHECK_LIB($smr_lib, $4,
+    AC_CHECK_LIB(${smr_lib}, $4,
         smr_havelib=yes,
         smr_havelib=no; problem_$1=": Can't find required lib$smr_lib",
         ifelse($6, , ${$1_LIBS}, [${$1_LIBS} $6]))
@@ -888,7 +888,7 @@ AC_DEFUN([GNOME_INIT_HOOK],[
 		AC_MSG_CHECKING(whether trivial gnome compilation passes)
 		my_CPPFLAGS="$CPPFLAGS"
 		my_LIBS="$LIBS"
-		CPPFLAGS="$CPPFLAGS $GNOME_INCLUDEDIR"
+		CPPFLAGS="$CPPFLAGS $GNOME_INCLUDEDIR $GTK_CFLAGS"
 		LIBS="$LIBS $GNOME_LIBDIR $GNOMEUI_LIBS"
 		AC_TRY_RUN([
 			#include <gnome.h>
