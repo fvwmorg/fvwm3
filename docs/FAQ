@@ -2594,7 +2594,7 @@ A: OK, 93 is a joke, we know you don't have 93 buttons, but we've
 7.16  Finding the mouse pointer.
 
     Sometimes its hard to see the mouse pointer.
-    Heres a way to find it:
+    Here is a way to find it:
 
     Key Super_L A A Exec xmessage -name "SmallBlob" -bg red \
       -fg white -nearmouse -timeout 1 'I am here!'
