@@ -3943,11 +3943,12 @@ See also the
 command above.
 
 .TP
-.BI "MoveToDesk " prev " | " arg1 " [" arg2 "] [" "min max" "]"
+.BI "MoveToDesk [" prev " | " arg1 " [" arg2 "] [" "min max" "]]"
 Moves the selected window to another desktop.  The arguments are
 the same as for the
 .B GotoDesk
-command.
+command.  Without any arguments, the window is moved to the
+current desk.
 .B MoveToDesk
 is a replacement for the old
 .B WindowsDesk
@@ -8195,20 +8196,20 @@ Conditions are the same as for
 .BR Next .
 
 .TP
-.BI "This [(" conditions ")] " command
-.B This
+.BI "ThisWindow [(" conditions ")] " command
+.B ThisWindow
 executes the specified
 .I command
 in the context of the current operand window.  If there is no
-operand window (i.e. it is invoked in the root window), the
-command is ignored.
-.B This
-is always silent, i.e. non-interactive.
-The command is executed only if the given
+operand window (it is invoked in the root window), the command is
+ignored.
+.B ThisWindow
+is always non-interactive.  The command is executed only if the
+given
 .I conditions
 are met.  The conditions are the same as for
 .BR Current .
-Returns -1 if used outside a window context.
+It returns -1 if used outside a window context.
 
 .IP "\fBWindowId [\fP \fIid\fP \
 \fB] [(\fP \fIconditions\fP \

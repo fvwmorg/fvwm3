@@ -27,7 +27,7 @@ Changes in beta release 2.5.1 (not released yet)
   to enable it). Recent versions of XFree and freetype2 are needed (see
   the FONT NAMES AND FONT LOADING section of the fvwm2 manual page).
 
-* New conditional command This.
+* New conditional command ThisWindow.
 
 * Conditional commands now have a return code (Match, NoMatch or
   Error).  This return code can be checked and tied to an action
@@ -50,6 +50,9 @@ Changes in beta release 2.5.1 (not released yet)
   pointer.wy, pointer.cx and pointer.cy.
 
 * Fixed an FvwmScript compile problem on dec-osf5.
+
+* The Circulate command does not select a random window when no
+  window has the focus.
 
 Changes in beta release 2.5.0 (27-Jan-2002)
 

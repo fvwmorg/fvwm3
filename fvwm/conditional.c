@@ -569,6 +569,10 @@ static FvwmWindow *Circulate(char *action, int Direction, char **restofline)
 	else
 	{
 		fw = NULL;
+		if (Direction == 0)
+		{
+			return NULL;
+		}
 	}
 
 	for (pass = 0; pass < 3 && !found; pass++)
@@ -722,7 +726,7 @@ void CMD_PointerWindow(F_CMD_ARGS)
 	return;
 }
 
-void CMD_This(F_CMD_ARGS)
+void CMD_ThisWindow(F_CMD_ARGS)
 {
 	select_cmd(F_PASS_ARGS);
 

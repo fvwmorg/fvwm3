@@ -258,7 +258,7 @@ static const func_type func_config[] =
 #endif /* HAVE_STROKE */
   CMD_ENTRY("style", CMD_Style, F_STYLE, 0),
   CMD_ENTRY("tearmenuoff", CMD_TearMenuOff, F_TEARMENUOFF, 0),
-  CMD_ENTRY("this", CMD_This, F_THIS, 0),
+  CMD_ENTRY("thiswindow", CMD_ThisWindow, F_THISWINDOW, 0),
   CMD_ENTRY("title", CMD_Title, F_TITLE, 0),
   CMD_ENTRY("titlestyle", CMD_TitleStyle, F_TITLESTYLE, FUNC_DECOR),
   CMD_ENTRY("unsetenv", CMD_UnsetEnv, F_SETENV, 0),

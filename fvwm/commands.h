@@ -167,7 +167,7 @@ void CMD_StrokeFunc(F_CMD_ARGS);
 #endif /* HAVE_STROKE */
 void CMD_Style(F_CMD_ARGS);
 void CMD_TearMenuOff(F_CMD_ARGS);
-void CMD_This(F_CMD_ARGS);
+void CMD_ThisWindow(F_CMD_ARGS);
 void CMD_Title(F_CMD_ARGS);
 void CMD_TitleStyle(F_CMD_ARGS);
 void CMD_UnsetEnv(F_CMD_ARGS);
