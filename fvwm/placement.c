@@ -430,8 +430,10 @@ static int test_fit(FvwmWindow *t, int x11, int y11, int aoimin, int pdeltax,
         avoidance_factor = AVOIDSTICKY;
       else
         avoidance_factor = 1;
+fprintf(stderr,"layers = %d %d\n", testw->layer, t->layer);
       anew *= avoidance_factor;
       aoi += anew;
+fprintf(stderr,"anew = %d, af = %d, aoi = %d\n", anew, avoidance_factor, aoi);
       if((aoi > aoimin)&&(aoimin != -1))
         return aoi;
     }

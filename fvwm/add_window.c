@@ -1348,6 +1348,9 @@ FvwmWindow *AddWindow(Window w, FvwmWindow *ReuseWin)
     /****** calculate frame size ******/
     setup_frame_size_limits(tmp_win, &style);
 
+    /****** layer ******/
+    setup_layer(tmp_win, &style);
+
     /****** window placement ******/
     do_resize_too = setup_window_placement(tmp_win, &style);
 
@@ -1361,9 +1364,6 @@ FvwmWindow *AddWindow(Window w, FvwmWindow *ReuseWin)
       tmp_win->hints.win_gravity, tmp_win, &tmp_win->frame_g);
 
     update_absolute_geometry(tmp_win);
-
-    /****** layer ******/
-    setup_layer(tmp_win, &style);
   }
 
   /****** auxiliary window setup ******/

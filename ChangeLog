@@ -1,5 +1,8 @@
 2000-01-31  Dominik Vogt  <dominik.vogt@gmx.de>
 
+	* fvwm/add_window.c (AddWindow):
+	fixed placement to honouring the layer
+
 	* fvwm/add_window.c (GetWindowSizeHints):
 	* fvwm/fvwm.h (struct):
 	* fvwm/events.c (HandlePropertyNotify):
