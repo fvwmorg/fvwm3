@@ -199,6 +199,8 @@ static ManGeometry *figure_geometry (WinManager *man)
   if (man->geometry.dir & GROW_FIXED) {
     ret.cols = num_visible_rows (n, g->rows);
     ret.boxwidth = ret.width / ret.cols;
+    if (ret.boxwidth < 1)
+      ret.boxwidth = 1;
   }
   else {
     if (man->geometry.dir & GROW_VERT) {
@@ -602,6 +604,8 @@ void set_manager_width (WinManager *man, int width)
 		  width / man->geometry.cols);
     man->geometry.width = width;
     man->geometry.boxwidth = width / man->geometry.cols;
+    if (man->geometry.boxwidth < 1)
+      man->geometry.boxwidth = 1;
     man->dirty_flags |= GEOMETRY_CHANGED;
   }
 }
