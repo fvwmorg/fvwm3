@@ -170,7 +170,9 @@ void HandleFocusIn(void)
   }
   /* dito */
   if (w == None)
+  {
     return;
+  }
   /**/
   if (XFindContext (dpy, w, FvwmContext, (caddr_t *) &Tmp_win) == XCNOENT)
   {
@@ -217,6 +219,21 @@ void HandleFocusIn(void)
     focus_fw = Tmp_win->frame;
     fc = Tmp_win->hicolors.fore;
     bc = Tmp_win->hicolors.back;
+    if (Scr.Focus != Tmp_win && Scr.Focus != NULL &&
+	(HAS_CLICK_FOCUS(Scr.Focus) || DO_RAISE_MOUSE_FOCUS_CLICK(Scr.Focus)))
+    {
+      int i;
+
+      /* need to grab all buttons for window that we are about to unfocus */
+      XSync(dpy,0);
+      for(i=0;i<3;i++)
+	if(Scr.buttons2grab & (1<<i))
+	  XGrabButton(dpy,(i+1),0,Scr.Focus->Parent,True,
+		      ButtonPressMask, GrabModeSync,GrabModeAsync,None,
+		      Scr.FvwmCursors[CRS_SYS]);
+      Scr.Focus = Tmp_win;
+      Scr.Ungrabbed = NULL;
+    }
     if (Scr.ColormapFocus == COLORMAP_FOLLOWS_FOCUS)
     {
       if((Scr.Hilite)&&(!IS_ICONIFIED(Scr.Hilite)))

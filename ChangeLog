@@ -2,6 +2,10 @@
 
 	* fvwm/stack.c (RaiseOrLowerWindow):
 	* fvwm/events.c (HandleButtonPress):
+	(HandleFocusIn):
+	Fixed at least one problem that caused focus loss of xview windows when
+	a normal ClickToFocus is entered.
+
 	* fvwm/window_flags.h (IS_SCHEDULED_FOR_RAISE):
 	(SET_SCHEDULED_FOR_RAISE):
 	* fvwm/fvwm.h (is_just_restacked):
