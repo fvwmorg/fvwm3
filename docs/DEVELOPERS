@@ -214,7 +214,7 @@ following:
       13. Upload the files fvwm-x.y.z.tar.gz and fvwm-x.y.z.tar.bz2 to
 	  ftp://ftp.fvwm.org/pub/incoming/fvwm
       14. Notify fvwm-owner@fvwm.org of the upload.
-      15. Update the release numbers in fvwm-wb/index.html and
+      15. Update the release numbers in fvwm-web/index.html and
           fvwm-web/download.html.
       16. Use fvwm-web generated/txt2html.sh to update the NEWS file
             cd fvwm-web/generated && ./txt2html.sh ../../fvwm/NEWS
