@@ -1050,13 +1050,9 @@ void moveLoop(FvwmWindow *tmp_win, int XOffset, int YOffset, int Width,
 	tmp_win_copy.frame_g.x = xl;
 	tmp_win_copy.frame_g.y = yt;
       }
-      /* no point in doing this if server grabbed */
-      /* domivogt (20-Aug-1999): Then don't do it. Slows things down quite a
-       * bit! */
-#if 0
+      /* only do this with opaque moves, (e.g. the server is not grabbed) */
       BroadcastConfig(M_CONFIGURE_WINDOW, &tmp_win_copy);
       FlushOutputQueues();
-#endif
     }
   } /* while (!finished) */
   if (!NeedToResizeToo)

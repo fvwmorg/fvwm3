@@ -2,6 +2,7 @@
 
 	* fvwm/move_resize.c (resize_window): disabled warping when resizing,
 	except when clicking on the border.
+	(moveLoop): fixed M_CONFIGURE_WINDOW packet during opaque moves
 
 	* fvwm/fvwm2.1:
 	* fvwm/conditional.h:
