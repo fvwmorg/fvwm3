@@ -106,6 +106,7 @@ void SetBorder (FvwmWindow *t, Bool onoroff,Bool force,Bool Mapped,
   Bool shaded;
 #endif
 
+fprintf(stderr,"border %d %d %d %d\n", t, onoroff, force, expose_win);
   if(!t)
     return;
 
