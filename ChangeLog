@@ -1,3 +1,9 @@
+2002-12-05  Marcus Lundblad <ml@update.uu.se>
+	* fvwm/conditional.c (CreateConditionMask):
+	Implemented conditional "FixedSize" and "HasHandles"
+	* fvwm/fvwm.1.in
+	Documented conditional options "FixedSize" and "HasHandles".
+	
 2002-12-08  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* fvwm/placement.c (PlaceWindow):

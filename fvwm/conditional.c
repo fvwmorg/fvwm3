@@ -43,6 +43,8 @@
 #include "focus.h"
 #include "geometry.h"
 #include "stack.h"
+#include "commands.h"
+#include "decorations.h"
 
 /* ---------------------------- local definitions --------------------------- */
 
@@ -435,6 +437,19 @@ void CreateConditionMask(char *flags, WindowConditionMask *mask)
 			SET_MAXIMIZED(mask, on);
 			SETM_MAXIMIZED(mask, 1);
 		}
+		else if (StrEquals(cond,"FixedSize"))
+		{
+		        /* don't set mask here, because we make the test here
+			   (and don't compare against window's mask)
+			   by checking allowed function */
+		        SET_SIZE_FIXED(mask, on);
+			SETM_SIZE_FIXED(mask, 1);
+		}		
+		else if (StrEquals(cond,"HasHandles"))
+		{
+		        SET_HAS_HANDLES(mask,on);
+			SETM_HAS_HANDLES(mask,1);
+		}
 		else if (StrEquals(cond,"Shaded"))
 		{
 			SET_SHADED(mask, on);
@@ -570,12 +585,30 @@ Bool MatchesConditionMask(FvwmWindow *fw, WindowConditionMask *mask)
 	Bool fMatchesResource;
 	Bool fMatches;
 	FvwmWindow *sf = get_focus_window();
-
+	
+	/* match FixedSize conditional */
+	/* special treatment for FixedSize, because more than just
+	   the is_size_fixed flag makes a window unresizable (width and height
+	   hints etc.) */
+	if(IS_SIZE_FIXED(mask) && 
+	   mask->flag_mask.common.s.is_size_fixed && 
+	   is_function_allowed(F_RESIZE,NULL,fw,True,False))
+	{
+	        return False;
+	}
+	if(!IS_SIZE_FIXED(mask) &&
+           mask->flag_mask.common.s.is_size_fixed &&
+	   !is_function_allowed(F_RESIZE,NULL,fw,True,False))
+	{
+	        return False;
+        }
+        SETM_SIZE_FIXED(mask, 0);
 	if (!blockcmpmask((char *)&(fw->flags), (char *)&(mask->flags),
 			  (char *)&(mask->flag_mask), sizeof(fw->flags)))
 	{
 		return False;
 	}
+	
 	if (!mask->my_flags.use_circulate_hit && DO_SKIP_CIRCULATE(fw))
 	{
 		return False;

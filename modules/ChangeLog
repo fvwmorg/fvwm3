@@ -32,6 +32,16 @@
 	(draw_empty_manager):
 	Fixed drawing icon background
 
+2002-12-01  Marcus Lundblad <ml@update.uu.se>
+	* FvwmIconBox/FvwmIconBox.c (RedrawIcon, CreateWindow, ParseOptions):
+	* FvwmIconBox/icons.c (AdjustIconWindow):
+	implemented options for turning off parenthesisation of iconified
+	window title and options for defining relief width and look for titles
+					    
+	* FvwmIconBox/FvwmIconBox.1:
+	documented options for turning off parenthesisation of iconified
+	window title and options for defining relief width and look for titles
+
 2002-12-01  olicha  <olivier.chapuis@free.fr>
 
 	* FvwmScript/Instructions.c (ChangeIcon):

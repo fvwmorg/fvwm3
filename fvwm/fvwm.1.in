@@ -9200,6 +9200,8 @@ commas or whitespace.  Conditions include
 "Layer [n]", "!Layer",
 "State n", "!State n",
 "Sticky", "!Sticky",
+"FixedSize", "!FixedSize",
+"HasHandles", "!HasHandles",
 "StickyAcrossPages", "!StickyAcrossPages",
 "StickyAcrossDesks", "!StickyAcrossDesks",
 "Maximized", "!Maximized",
@@ -9279,6 +9281,12 @@ The "State" (or "!State") conditions include only windows with the
 specified integer state set or (or unset).  See the
 .B State
 command.  The argument may range from 0 to 31.
+
+The condition "FixedSize" excludes all windows that don't have a fixed
+size, either set through WM hints or the style option "FixedSize".
+
+The condition "HasHandles" excludes all windoows that don't have
+resize handles.
 
 The "PlacedByButton3" condition is fulfilled if the last
 interactive motion of the window (with the
