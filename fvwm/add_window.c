@@ -1909,7 +1909,7 @@ void free_window_names(FvwmWindow *tmp, Bool nukename, Bool nukeicon)
   }
   if (nukeicon && tmp->icon_name)
   {
-    if (tmp->name != tmp->icon_name && tmp->icon_name != NoName)
+    if ((tmp->name != tmp->icon_name || nukename) && tmp->icon_name != NoName)
       FREE_TEXT_PROPERTY(&(tmp->icon_name), &(tmp->icon_name_list));
   }
 

@@ -1299,7 +1299,7 @@ Bool saveQuitSession(void)
 /* migo: xsm does not support RequestSaveYourself, but supports signals: */
 /*
   if (saveSession() == False) return False;
-  sleep(3);  // doesn't work anyway
+  sleep(3);  / * doesn't work anyway * /
   if (quitSession() == False) return False;
   return True;
 */

@@ -1,5 +1,22 @@
 2001-03-10  Dominik Vogt  <dominik.vogt@gmx.de>
 
+	* libs/envvar.c (getEnv):
+	initialise a temporary variable
+
+	* fvwm/builtins.c (add_to_env_list):
+	fixed SetEnv memory leak
+
+	* fvwm/session.c (saveQuitSession):
+	removed c++ comment
+
+	* libs/envvar.c (strIns):
+	commented debug code
+	(envDupExpand):
+	removed debug code
+
+	* fvwm/add_window.c (free_window_names):
+	fixed memory leak
+
 	* libs/Picture.c (LoadPicture):
 	fixed core dump with xmb files
 

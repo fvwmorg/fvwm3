@@ -111,13 +111,17 @@ static void strIns(char *s, const char *ins, int idx, int maxstrlen)
     int  l, li, move;
     char *p1, *p2;
 
+#if 0
 if (strlen(s) + 1 >maxstrlen)fprintf(stderr,"+++++++++++++++ si: old string longer than maxlen: %d > %d\n", strlen(s) + 1, maxstrlen);
 if (strlen(s) + strlen(ins) + 1 >maxstrlen)fprintf(stderr,"++++++++++++ si: new string longer than maxlen: %d > %d\n", strlen(s) + strlen(ins) + 1, maxstrlen);
+#endif
     if (idx > (l = strlen(s)))
-{
+    {
 	idx = l;
+#if 0
 fprintf(stderr,"++++++ si: index too big\n");
-}
+#endif
+    }
     li = strlen(ins);
     move = l - idx + 1; /* include '\0' in move */
     p1 = s + l;
@@ -126,7 +130,9 @@ fprintf(stderr,"++++++ si: index too big\n");
 	--p1;
 	--p2;
 	--move;
+#if 0
 fprintf(stderr,"++++++ si: combined string too long\n");
+#endif
     }
     while (move-- > 0)
 	*p2-- = *p1--;
@@ -134,11 +140,15 @@ fprintf(stderr,"++++++ si: combined string too long\n");
     if (idx + li >= maxstrlen)
     {
         li = maxstrlen - idx - 1;
+#if 0
 fprintf(stderr,"++++++ si: truncated insert string\n");
+#endif
     }
     while (li-- > 0)
 	*p1++ = *ins++;
+#if 0
 if (p1 > s + maxstrlen) fprintf(stderr,"++++++++++++ si: buffer overrun\n");
+#endif
     s[maxstrlen - 1] = '\0';
 }
 
@@ -218,7 +228,7 @@ static char *findEnvVar(const char *s, int *len)
 static const char *getEnv(const char *name, int len)
 {
     static char *empty = "";
-    char   *ret, *tmp, *p, *p2;
+    char   *ret = NULL, *tmp, *p, *p2;
 
     if ((tmp = safestrdup(name)) == NULL)
 	return empty;  /* better than no test at all. */
@@ -317,7 +327,6 @@ char *envDupExpand(const char *s, int extra)
     /*
      *  calculate length needed.
      */
-//fprintf(stderr,"ede: string = '%s' ", s);
     s2 = s;
     slen = strlen(s);
     bufflen = slen + 1 + extra;
@@ -333,14 +342,12 @@ char *envDupExpand(const char *s, int extra)
 	bufflen = slen + 1;
 
     ret = safemalloc(bufflen);
-//fprintf(stderr," bufflen = %d/%d ", bufflen, bufflen - extra);
 
     /*
      *  now do the real expansion.
      */
     strcpy(ret, s);
     envExpand(ret, bufflen - extra);
-//fprintf(stderr," final len = %d '%s' %s\n", strlen(ret) + 1, ret, (bufflen - extra < strlen(ret) + 1)? "********" : "");
 
     return ret;
 }

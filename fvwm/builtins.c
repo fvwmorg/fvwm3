@@ -2368,7 +2368,7 @@ typedef struct
 static void add_to_env_list(char *var, char *env)
 {
   static env_list_item *env_list = NULL;
-  unsigned int env_len = 0;
+  static unsigned int env_len = 0;
   unsigned int i;
 
   /* find string in list */
@@ -2427,7 +2427,6 @@ void SetEnv(F_CMD_ARGS)
   putenv(szPutenv);
   add_to_env_list(szVar, szPutenv);
   /* szVar is stored in the env list. do not free it */
-  /*free(szVar);*/
   free(szValue);
 }
 
