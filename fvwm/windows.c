@@ -313,7 +313,6 @@ void do_windowList(XEvent *eventp,Window w,FvwmWindow *tmp_win,
 	  func = NULL;
 	}
         AddToMenu(mr, t_hot, tfunc, FALSE, FALSE);
-fprintf(stderr,"item=%s, tfunc=%s\n",t_hot,tfunc);
         free(tfunc);
 #ifdef MINI_ICONS
         /* Add the title pixmap */

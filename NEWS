@@ -1,5 +1,7 @@
 Changes in beta release 2.1.8 (January 1999)
 
+* New options SidePic and SideColor to MenuStyle
+
 * Configure generates a summary at the end of processing.  In particular
   this is useful to see if any of XPM, Readline, or RPlay are missing.
 

@@ -1,6 +1,8 @@
 1999-01-12  Dominik Vogt  <dominik_vogt@hp.com>
 
 	* FvwmPager/x_pager.c (IconMoveWindow):
+	(MoveWindow): removed duplicate code
+
 	* FvwmPager/x_pager.c (MoveWindow): applied FvwmPager focus problem
 	patch by Matthias Clasen
 

@@ -1463,18 +1463,12 @@ void MoveWindow(XEvent *Event)
 	}
       XTranslateCoordinates(dpy, Scr.Pager_w, Scr.Root,
 			    x, y, &x1, &y1, &dumwin);
+      XUngrabPointer(dpy,CurrentTime);
+      XSync(dpy,0);
       if(t->flags & ICONIFIED)
-	{
-	  XUngrabPointer(dpy,CurrentTime);
-	  XSync(dpy,0);
-	  SendInfo(fd,"Move",t->icon_w);
-	}
+	SendInfo(fd,"Move",t->icon_w);
       else
-	{
-	  XUngrabPointer(dpy,CurrentTime);
-	  XSync(dpy,0);
-	  SendInfo(fd,"Move",t->w);
-	}
+	SendInfo(fd,"Move",t->w);
       return;
     }
   else
@@ -1838,18 +1832,12 @@ void IconMoveWindow(XEvent *Event,PagerWindow *t)
     {
       XTranslateCoordinates(dpy, t->IconView, Scr.Root,
 			    x, y, &x1, &y1, &dumwin);
+      XUngrabPointer(dpy,CurrentTime);
+      XSync(dpy,0);
       if(t->flags & ICONIFIED)
-	{
-	  XUngrabPointer(dpy,CurrentTime);
-	  XSync(dpy,0);
-	  SendInfo(fd,"Move",t->icon_w);
-	}
+	SendInfo(fd,"Move",t->icon_w);
       else
-	{
-	  XUngrabPointer(dpy,CurrentTime);
-	  XSync(dpy,0);
-	  SendInfo(fd,"Move",t->w);
-	}
+	SendInfo(fd,"Move",t->w);
     }
   else
     {
