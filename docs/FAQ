@@ -573,7 +573,11 @@ A: RedHat Linux installs the X server accompanied (by default) by a
      itself, not just the border?
 
 A: Any version later than 2.0.46 (i.e. 2.1.0 or later) has this
-   feature:
+   feature.  In the 2.2.x series, use:
+
+     GlobalOpts MouseFocusClickRaises
+
+With the latter 2.3.x betas and after use:
 
      Style * MouseFocusClickRaises
 
