@@ -1,5 +1,14 @@
 2000-02-09  Dominik Vogt  <dominik.vogt@gmx.de>
 
+	* fvwm/menus.c (NewMenuStyle):
+	(paint_item):
+	* fvwm/menus.h (MenuLook):
+	implemented reversed menu selection
+	fixed bug in item drawing introduced with ActiveColorset patch
+
+	* fvwm/menus.c (find_entry):
+	fixed function with thick reliefs
+
 	* fvwm/placement.c (PlaceWindow):
 	(PlaceAgain_func):
 	* fvwm/placement.h:

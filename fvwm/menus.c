@@ -402,10 +402,14 @@ static MenuItem *find_entry(
     int b ;
 
     a = (MI_PREV_ITEM(mi) && MI_IS_SELECTABLE(MI_PREV_ITEM(mi))) ? r : 0;
-    b = (MI_NEXT_ITEM(mi) && MI_IS_SELECTABLE(MI_NEXT_ITEM(mi))) ? r : 0;
+    if (!MI_IS_SELECTABLE(mi))
+      b = 0;
+    else if (MI_NEXT_ITEM(mi) && MI_IS_SELECTABLE(MI_NEXT_ITEM(mi)))
+      b = MST_RELIEF_THICKNESS(mr) + r;
+    else
+      b = 2 * MST_RELIEF_THICKNESS(mr);
     if (y >= MI_Y_OFFSET(mi) - a &&
-	y < MI_Y_OFFSET(mi) + MI_HEIGHT(mi) + b -
-	((MI_IS_SELECTABLE(mi)) ? MST_RELIEF_THICKNESS(mr) : 0))
+	y < MI_Y_OFFSET(mi) + MI_HEIGHT(mi) + b)
     {
       break;
     }
@@ -2971,20 +2975,29 @@ static void paint_item(MenuRoot *mr, MenuItem *mi, FvwmWindow *fw,
   /* Hilight 3D */
   if (is_item_selected && relief_thickness > 0)
   {
+    GC rgc = ReliefGC;
+    GC sgc = ShadowGC;
     if (MST_HAS_ACTIVE_CSET(mr))
     {
-      ReliefGC = MST_MENU_ACTIVE_RELIEF_GC(mr);
-      ShadowGC = MST_MENU_ACTIVE_SHADOW_GC(mr);
+      rgc = MST_MENU_ACTIVE_RELIEF_GC(mr);
+      sgc = MST_MENU_ACTIVE_SHADOW_GC(mr);
+    }
+    if (MST_IS_ITEM_RELIEF_REVERSED(mr))
+    {
+      GC tgc = rgc;
+
+      /* swap gcs for reversed relief */
+      rgc = sgc;
+      sgc = tgc;
     }
     if (MR_HILIGHT_WIDTH(mr) - 2 * relief_thickness > 0)
     {
       /* The relief reaches down into the next item, hence the value for the
        * second y coordinate: MI_HEIGHT(mi) + 1 */
-      RelieveRectangle(dpy, MR_WINDOW(mr),
-		       MR_HILIGHT_X_OFFSET(mr), y_offset,
-		       MR_HILIGHT_WIDTH(mr) - 1,
-		       MI_HEIGHT(mi) - 1 + relief_thickness,
-		       ReliefGC, ShadowGC, relief_thickness);
+      RelieveRectangle(
+        dpy, MR_WINDOW(mr),  MR_HILIGHT_X_OFFSET(mr), y_offset,
+        MR_HILIGHT_WIDTH(mr) - 1, MI_HEIGHT(mi) - 1 + relief_thickness,
+        rgc, sgc, relief_thickness);
     }
   }
 
@@ -5957,9 +5970,19 @@ static void NewMenuStyle(F_CMD_ARGS)
       break;
 
     case 40: /* Hilight3DThickness */
-      if (GetIntegerArguments(args, NULL, val, 1) > 0 &&
-	  *val >= 0 && *val <= MAX_ITEM_RELIEF_THICKNESS)
+      if (GetIntegerArguments(args, NULL, val, 1) > 0)
+      {
+        if (*val < 0)
+        {
+          *val = -*val;
+          ST_IS_ITEM_RELIEF_REVERSED(tmpms) = 1;
+        }
+        else
+        {
+          ST_IS_ITEM_RELIEF_REVERSED(tmpms) = 0;
+        }
 	ST_RELIEF_THICKNESS(tmpms) = *val;
+      }
       break;
 
     case 41: /* ItemFormat */

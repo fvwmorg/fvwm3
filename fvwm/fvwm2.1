@@ -1465,8 +1465,9 @@ menu style.  No other parts of the colorset are used.
 determine if the selected menu item is hilighted with a 3D relief.
 Thick reliefs are two pixels wide, thin reliefs are one pixel wide.
 .I Hilight3DThickness
-takes one numeric argument that may be between zero and 50 pixels.
-The above three commands are equivalent to a thickness of 2, 1 and 0.
+takes one numeric argument that may be between -50 and +50 pixels.
+With negative values the menu item gets a pressed in look.  The
+above three commands are equivalent to a thickness of 2, 1 and 0.
 
 .IR Animation " and " AnimationOff
 turn menu animation on or off.  When animation is on, sub-menus

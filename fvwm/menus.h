@@ -132,6 +132,7 @@ typedef struct MenuLook
     unsigned has_menu_cset : 1;
     unsigned has_active_cset : 1;
     unsigned has_greyed_cset : 1;
+    unsigned is_item_relief_reversed : 1;
   } flags;
   unsigned char ReliefThickness;
   unsigned char TitleUnderlines;
@@ -214,6 +215,9 @@ typedef struct MenuStyle
 #define MST_HAS_ACTIVE_CSET(m)        ((m)->s->ms->look.flags.has_active_cset)
 #define ST_HAS_GREYED_CSET(s)         ((s)->look.flags.has_greyed_cset)
 #define MST_HAS_GREYED_CSET(m)        ((m)->s->ms->look.flags.has_greyed_cset)
+#define ST_IS_ITEM_RELIEF_REVERSED(s) ((s)->look.flags.is_item_relief_reversed)
+#define MST_IS_ITEM_RELIEF_REVERSED(m) \
+        ((m)->s->ms->look.flags.is_item_relief_reversed)
 #define ST_RELIEF_THICKNESS(s)        ((s)->look.ReliefThickness)
 #define MST_RELIEF_THICKNESS(m)       ((m)->s->ms->look.ReliefThickness)
 #define ST_TITLE_UNDERLINES(s)        ((s)->look.TitleUnderlines)
