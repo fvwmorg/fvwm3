@@ -7,7 +7,7 @@
 DestroyFunc CreateFunc
 AddToFunc CreateFunc
  + I DestroyFunc $0
- + I AddToFunc $0 $1 $2 $3 $4 $5 $6 $7 $8 $9
+ + I AddToFunc $0
 
 # Log:
 CreateFunc Log
@@ -37,6 +37,7 @@ DestroyFunc TestFunc
 CreateFunc AddTest
  + I AddToMenu TestMenu "$0" function $1
  + I AddToFunc TestFunc I Function Log "$0"
+ + I DestroyFunc $1
  + I AddToFunc TestFunc I Function $1
 
 
@@ -44,7 +45,7 @@ CreateFunc AddTest
 
 # This one has to be first, other tests use it.
 AddTest "Test ImagePath" ImagePath-Func
-AddToFunc ImagePath
+AddToFunc ImagePath-Func
  + I ImagePath
  + I ImagePath
  + I ImagePath /usr/lib/X11/icons/pixmaps:+
@@ -292,6 +293,18 @@ AddToFunc IconFont-Func
 # Note, the ImagePath test is not in ManPage order, look elsewhere
 # Note, there is no test for PixmapPath, its obsolete
 # Note, there is no test for WindowFont, its obsolete
+
+AddTest "Test WindowList" WindowList-Func
+AddToFunc WindowList-Func
+ + I WindowList
+ + I WindowList
+# 2 windowlists, each using all the options, opposite options:
+ + I WindowList NoGeometry, Function nonexistent, Desk 0, NoIcons, NoNormal,   NoSticky,   NoOnTop, NoOnBottom, UseIconName, Alphabetic, NotAlphabetic, UseListSkip, NoDeskSort, NoHotKeys, SelectOnRelease
+ + I WindowList Geometry,   Function nonexistent, Desk 0, Icons, OnlyNormal, OnlySticky, OnlyOnTop, OnlyOnBottom, UseIconName, Alphabetic, NotAlphabetic, OnlyListSkip
+ + I WindowList Geometry,   Function nonexistent, Desk 0, OnlyIcons, Normal,     Sticky,     OnTop, OnBottom, UseIconName, Alphabetic, NotAlphabetic, NoGeometryWithInfo, CurrentDesk
+# This option is in the man page but gets "Unknown Option":
+# + I WindowList Layer 0
+ + I Refresh
 
 # Ending ManPage Order
 
@@ -1552,13 +1565,6 @@ AddToFunc WindowId-Func
  + I WindowID		0x00110011		nop
  + I Refresh
 
-AddTest "Test WindowList" WindowList-Func
-AddToFunc WindowList-Func
- + I WindowList
- + I WindowList
- + I WindowList NoGeometry,    Function		nonexistent,	Desk    0, CurrentDesk, NoIcons, Icons, OnlyIcons, NoNormal, Normal, OnlyNormal, NoSticky, Sticky, OnlySticky, NoOnTop, OnTop, OnlyOnTop, UseIconName, Alphabetic, NotAlphabetic Nop
- + I WindowList NoGeometry,    Function		nonexistent,	Desk    0, CurrentDesk, NoIcons, Icons, OnlyIcons, NoNormal, Normal, OnlyNormal, NoSticky, Sticky, OnlySticky, NoOnTop, OnTop, OnlyOnTop, UseIconName, Alphabetic, NotAlphabetic Nop
- + I Refresh
 
 AddTest "Test Close_Delete_Destroy" Close_Delete_Destroy-Func
 AddToFunc Close_Delete_Destroy-Func

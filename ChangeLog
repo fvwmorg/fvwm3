@@ -6,6 +6,8 @@
 2000-12-05  Dan Espen  <dane@mk.telcordia.com>
 
 	* tests/purify/purify.fvwm2rc: Fix step logging.
+	Upgrade WindowList test to match man page description.
+	Other fixes.
 
 2000-12-05  Dominik Vogt  <dominik.vogt@gmx.de>
 
