@@ -25,9 +25,6 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#define TRUE 1
-#define FALSE 0
-
 #define NONE 0
 #define VERTICAL 1
 #define HORIZONTAL 2
@@ -64,12 +61,6 @@
 #include <X11/extensions/shape.h>
 #endif /* SHAPE */
 
-/* just as same as wild.c */
-#ifndef TRUE
-#define TRUE    1
-#define FALSE   0
-#endif
-
 #include "fvwm/fvwm.h"
 #include "FvwmIconBox.h"
 
@@ -82,12 +73,12 @@ XFontSet fontset;
 #endif
 
 Display *dpy;			/* which display are we talking to */
+Graphics *G;
 int x_fd;
 fd_set_size_t fd_width;
 
 Window Root;
 int screen;
-int d_depth;
 
 char *Back = "#5f9ea0";
 char *Fore = "#82dfe3";
@@ -272,6 +263,8 @@ int main(int argc, char **argv)
 	      XDisplayName(display_name));
       exit (1);
     }
+  G = CreateGraphics(dpy);
+  SavePictureCMap(dpy, G->viz, G->cmap, G->depth);
   x_fd = XConnectionNumber(dpy);
 
   fd_width = GetFdWidth();
@@ -283,8 +276,6 @@ int main(int argc, char **argv)
       fprintf(stderr,"%s: Screen %d is not valid ", MyName, screen);
       exit(1);
     }
-  InitPictureCMap(dpy,Root); /* store the root cmap */
-  d_depth = DefaultDepth(dpy, screen);
 
   XSetErrorHandler(myErrorHandler);
 
@@ -695,15 +686,24 @@ void RedrawIcon(struct icon_info *item, int f)
   /* icon pixmap */
   if ((f & 1) && (IS_ICON_OURS(item))){
     if (item->iconPixmap != None && item->icon_pixmap_w != None){
-      if (item->icon_depth != d_depth)
+      if (item->icon_depth == 1) {
 	XCopyPlane(dpy, item->iconPixmap, item->icon_pixmap_w, NormalGC,
 		   0, 0, item->icon_w, item->icon_h,
 		   hr, hr, plane);
-      else
-	XCopyArea(dpy, item->iconPixmap, item->icon_pixmap_w, NormalGC,
-		  0, 0, item->icon_w, item->icon_h, hr, hr);
+      } else {
+        if (G->usingDefaultVisual || IS_PIXMAP_OURS(item)) {
+	  XCopyArea(dpy, item->iconPixmap, item->icon_pixmap_w, NormalGC,
+		    0, 0, item->icon_w, item->icon_h, hr, hr);
+        } else {
+	  XCopyArea(dpy, item->iconPixmap, item->icon_pixmap_w, DefaultGC(dpy, screen),
+		    0, 0, item->icon_w, item->icon_h, 0, 0);        
+	}
       }
-    if (!(IS_ICON_SHAPED(item))){
+    }
+      
+    if (!(IS_ICON_SHAPED(item)) && (G->usingDefaultVisual
+				    || (item->icon_depth == 1)
+				    || IS_PIXMAP_OURS(item))) {
       if (item->icon_w > 0 && item->icon_h > 0)
 	RelieveRectangle(dpy, item->icon_pixmap_w, 0, 0, item->icon_w
 		         +icon_relief - 1,
@@ -1020,7 +1020,7 @@ void CreateWindow(void)
 
   mysizehints.win_gravity = gravity;
 
-  if(d_depth < 2)
+  if(G->depth < 2)
     {
       back_pix = icon_back_pix = act_icon_fore_pix = GetColor("white");
       fore_pix = icon_fore_pix = act_icon_back_pix = GetColor("black");
@@ -1043,9 +1043,14 @@ void CreateWindow(void)
       shadow_pix = GetShadow(back_pix);
     }
 
-  main_win = XCreateSimpleWindow(dpy,Root,mysizehints.x,mysizehints.y,
-				 mysizehints.width,mysizehints.height,
-				 0,fore_pix,back_pix);
+  attributes.background_pixel = back_pix;
+  attributes.border_pixel = 0;
+  attributes.colormap = G->cmap;
+  main_win = XCreateWindow(dpy, Root, mysizehints.x, mysizehints.y,
+			   mysizehints.width, mysizehints.height, 0, G->depth,
+			   InputOutput, G->viz,
+			   CWBackPixel | CWBorderPixel | CWColormap,
+			   &attributes);
   XSetWMProtocols(dpy,main_win,&wm_del_win,1);
   XSelectInput(dpy,main_win,MW_EVENTS);
 
@@ -1079,28 +1084,22 @@ void CreateWindow(void)
   gcm = GCForeground|GCBackground;
   gcv.foreground = hilite_pix;
   gcv.background = back_pix;
-  ReliefGC = XCreateGC(dpy, Root, gcm, &gcv);
+  ReliefGC = XCreateGC(dpy, main_win, gcm, &gcv);
 
-  gcm = GCForeground|GCBackground;
   gcv.foreground = shadow_pix;
-  gcv.background = back_pix;
-  ShadowGC = XCreateGC(dpy, Root, gcm, &gcv);
+  ShadowGC = XCreateGC(dpy, main_win, gcm, &gcv);
 
-  gcm = GCForeground|GCBackground;
   gcv.foreground = icon_hilite_pix;
   gcv.background = icon_back_pix;
-  IconReliefGC = XCreateGC(dpy, Root, gcm, &gcv);
+  IconReliefGC = XCreateGC(dpy, main_win, gcm, &gcv);
 
-  gcm = GCForeground|GCBackground;
   gcv.foreground = icon_shadow_pix;
-  gcv.background = icon_back_pix;
-  IconShadowGC = XCreateGC(dpy, Root, gcm, &gcv);
+  IconShadowGC = XCreateGC(dpy, main_win, gcm, &gcv);
 
   gcm = GCForeground|GCBackground|GCFont;
-  gcv.foreground = fore_pix;
-  gcv.background = back_pix;
+  gcv.foreground = icon_fore_pix;
   gcv.font =  font->fid;
-  NormalGC = XCreateGC(dpy, Root, gcm, &gcv);
+  NormalGC = XCreateGC(dpy, main_win, gcm, &gcv);
 
 
   /* icon_win's background */
@@ -1111,15 +1110,12 @@ void CreateWindow(void)
     XFreePixmap(dpy, IconwinPixmap);
   }
 
-  XSetForeground(dpy, NormalGC, icon_fore_pix);
-  XSetBackground(dpy, NormalGC, icon_back_pix);
-
   /* scroll bars */
   mask = CWWinGravity | CWBackPixel;
   attributes.background_pixel = back_pix;
   if (!(local_flags & HIDE_H)){
     attributes.win_gravity = SouthWestGravity;
-    h_scroll_bar = XCreateWindow(dpy ,main_win, margin1 + 2 +
+    h_scroll_bar = XCreateWindow(dpy, main_win, margin1 + 2 +
 				 bar_width,
 				 margin1 + 6 + Height + margin2,
 				 Width - bar_width*2, bar_width,
@@ -1219,18 +1215,12 @@ void nocolor(char *a, char *b)
 Pixel GetColor(char *name)
 {
   XColor color;
-  XWindowAttributes attributes;
 
-  XGetWindowAttributes(dpy,Root,&attributes);
   color.pixel = 0;
-   if (!XParseColor (dpy, attributes.colormap, name, &color))
-     {
-       nocolor("parse",name);
-     }
-   else if(!XAllocColor (dpy, attributes.colormap, &color))
-     {
-       nocolor("alloc",name);
-     }
+  if (!XParseColor (dpy, G->cmap, name, &color))
+    nocolor("parse",name);
+  else if(!XAllocColor (dpy, G->cmap, &color))
+    nocolor("alloc",name);
   return color.pixel;
 }
 
@@ -1614,9 +1604,8 @@ void ParseOptions(void)
 	  CopyString(&imagePath,&tline[9]);
 	else if (strncasecmp(tline,"ClickTime",9)==0)
 	  ClickTime = atoi(&tline[9]);
-	else if (strncasecmp(tline,"ColorLimit",10)==0) {
+	else if (strncasecmp(tline,"ColorLimit",10)==0)
 	  save_color_limit = atoi(&tline[10]);
-        }
       }
       GetConfigLine(fd,&tline);
     }
@@ -2022,7 +2011,6 @@ void process_message(unsigned long type, unsigned long *body)
       if (sortby != UNSORT)
 	SortItem(tmp);
       CreateIconWindow(tmp);
-      ConfigureIconWindow(tmp);
       AdjustIconWindows();
       if (desk_cond(tmp)){
 	if (max_icon_height != 0)
@@ -2099,7 +2087,6 @@ void process_message(unsigned long type, unsigned long *body)
     tmp = Head;
     while(tmp != NULL){
       CreateIconWindow(tmp);
-      ConfigureIconWindow(tmp);
       tmp = tmp->next;
     }
     if (sortby != UNSORT)
@@ -2219,6 +2206,7 @@ Bool AddItem(ConfigWinPacket *cfgpacket)
   new->extra_flags = DEFAULTICON;
   memcpy(&(new->flags), &(cfgpacket->flags), sizeof(new->flags));
   SET_ICON_OURS(new, True);
+  SET_PIXMAP_OURS(new, True);
   new->wmhints = NULL;
 
 /* add new item to the head of the list
@@ -2664,19 +2652,19 @@ int LookInList(struct icon_info *item)
     if (nptr == DefaultIcon)
       isdefault = 1;
 
-    if (matchWildcards(nptr->name, item->res_class) == TRUE){
+    if (matchWildcards(nptr->name, item->res_class) == True){
       value = nptr->iconfile;
       if (nptr != DefaultIcon)
 	isdefault = 0;
     }
 
-    if (matchWildcards(nptr->name, item->res_name) == TRUE){
+    if (matchWildcards(nptr->name, item->res_name) == True){
       value = nptr->iconfile;
       if (nptr != DefaultIcon)
 	isdefault = 0;
     }
 
-    if (matchWildcards(nptr->name, item->window_name) == TRUE){
+    if (matchWildcards(nptr->name, item->window_name) == True){
       value = nptr->iconfile;
       if (nptr != DefaultIcon)
 	isdefault = 0;

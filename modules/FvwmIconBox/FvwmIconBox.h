@@ -37,7 +37,6 @@ extern int    My_XNextEvent(Display *dpy, XEvent *event);
 extern void   SendFvwmPipe(int *,char *text, unsigned long window);
 extern void   DeadPipe(int nonsense);
 extern void   CreateIconWindow(struct icon_info *item);
-extern void   ConfigureIconWindow(struct icon_info *item);
 extern void   DrawIconWindow(struct icon_info *item);
 extern void   GetBitmapFile(struct icon_info *item);
 extern void   GetXPMFile(struct icon_info *item);
@@ -87,12 +86,12 @@ extern int itemcmp(struct icon_info *item1, struct icon_info *item2);
 
 
 extern Display *dpy;			/* which display are we talking to */
+extern Graphics *G;
 extern Window Root;
 extern Window main_win;
 extern Window holder_win;
 extern Window icon_win;
 extern int screen;
-extern int d_depth;
 extern Pixel fore_pix, back_pix, icon_fore_pix, icon_back_pix;
 extern GC  NormalGC;
 extern GC  ReliefGC;

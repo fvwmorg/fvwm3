@@ -215,6 +215,7 @@
 	* FvwmBanner/FvwmBanner.c: FvwmBanner now shares fvwm's visual type
 	* FvwmForm/FvwmForm.c:		ditto
 	* FvwmIconMan/FvwmForm.c:	ditto
+	* FvwmIconBox/*			ditto
 
 1999-06-24  Dominik Vogt  <dominik_vogt@gmx.de>
 
