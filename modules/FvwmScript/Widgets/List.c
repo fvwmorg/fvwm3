@@ -155,13 +155,22 @@ void DrawCellule(struct XObj *xobj,int NbCell,int NbVisCell,int HeightCell,int a
 	{
 	    if (xobj->value==i)
 	    {
-		XSetForeground(dpy,xobj->gc,xobj->TabColor[shad]);
-		XFillRectangle(dpy,xobj->win,xobj->gc,r.x+2,
+		/* hili is better than shad.*/
+		XSetForeground(dpy,xobj->gc,xobj->TabColor[hili]);
+		XFillRectangle(dpy,xobj->win,xobj->gc,r.x+2, 
 			       r.y+(i-xobj->value2)*HeightCell+2,
 			       xobj->width-16-SbWidth-BdWidth,HeightCell-2);
 		DrawString(dpy,xobj,xobj->win,5+r.x,
 			   (i-xobj->value2)*HeightCell+asc+2+r.y,Title,
 			   strlen(Title),fore,back,shad,!xobj->flags[1]);
+		/* another solution is to invert bg and fg: */
+		/* XSetForeground(dpy,xobj->gc,xobj->TabColor[fore]); 
+		XFillRectangle(dpy,xobj->win,xobj->gc,r.x+2,
+			       r.y+(i-xobj->value2)*HeightCell+2,
+			       xobj->width-16-SbWidth-BdWidth,HeightCell-2);
+		DrawString(dpy,xobj,xobj->win,5+r.x,
+			   (i-xobj->value2)*HeightCell+asc+2+r.y,Title,
+			   strlen(Title),back,fore,hili,!xobj->flags[1]); */
 	    }
 	    else
 	    {
