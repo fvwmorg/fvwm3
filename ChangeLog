@@ -111,7 +111,6 @@
 	(UpdateMenuColorset):
 	implemented colour set support for menus
 
->>>>>>> 1.644
 1999-09-24  Paul D. Smith  <psmith@gnu.org>
 
 	* configure.in (perl): Make sure we have perl 5.002 or better for
