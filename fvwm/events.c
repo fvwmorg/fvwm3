@@ -533,14 +533,14 @@ static inline void __cr_detect_icccm_move(
 	if (CR_MOTION_METHOD(fw) != CR_MOTION_METHOD_AUTO)
 	{
 #ifdef CR_DETECT_MOTION_METHOD_DEBUG
-fprintf(stderr,"_cdim: --- already detected (pid %d)\n", HAS_EWMH_WM_PID(fw));
+fprintf(stderr,"_cdim: --- already detected (pid %d) 0x%08x '%s'\n", HAS_EWMH_WM_PID(fw), (int)fw, fw->visible_name);
 #endif
 		return;
 	}
 	if (fw->hints.win_gravity == StaticGravity)
 	{
 #ifdef CR_DETECT_MOTION_METHOD_DEBUG
-fprintf(stderr,"_cdim: --- using StaticGravity\n");
+fprintf(stderr,"_cdim: --- using StaticGravity 0x%08x '%s'\n", (int)fw, fw->visible_name);
 #endif
 		return;
 	}
@@ -549,7 +549,7 @@ fprintf(stderr,"_cdim: --- using StaticGravity\n");
 	if (!has_x && !has_y)
 	{
 #ifdef CR_DETECT_MOTION_METHOD_DEBUG
-fprintf(stderr,"_cdim: --- not moved\n");
+fprintf(stderr,"_cdim: --- not moved 0x%08x '%s'\n", (int)fw, fw->visible_name);
 #endif
 		return;
 	}
@@ -568,7 +568,7 @@ fprintf(stderr,"_cdim: --- not moved\n");
 	if (!has_x && !has_y)
 	{
 #ifdef CR_DETECT_MOTION_METHOD_DEBUG
-fprintf(stderr,"_cdim: --- not moved\n");
+fprintf(stderr,"_cdim: --- not moved 0x%08x '%s'\n", (int)fw, fw->visible_name);
 #endif
 		return;
 	}
@@ -592,7 +592,7 @@ fprintf(stderr,"s %3d/%3d %2d/%2d, g %3d/%3d %2d/%2d: ", static_g.x, static_g.y,
 			SET_CR_MOTION_METHOD(fw, CR_MOTION_METHOD_USE_GRAV);
 			SET_CR_MOTION_METHOD_DETECTED(fw, 1);
 #ifdef CR_DETECT_MOTION_METHOD_DEBUG
-fprintf(stderr,"+++ fullscreen icccm\n");
+fprintf(stderr,"+++ fullscreen icccm 0x%08x '%s'\n", (int)fw, fw->visible_name);
 #endif
 			return;
 		}
@@ -603,7 +603,7 @@ fprintf(stderr,"+++ fullscreen icccm\n");
 			SET_CR_MOTION_METHOD(fw, CR_MOTION_METHOD_STATIC_GRAV);
 			SET_CR_MOTION_METHOD_DETECTED(fw, 1);
 #ifdef CR_DETECT_MOTION_METHOD_DEBUG
-fprintf(stderr,"+++ fullscreen traditional\n");
+fprintf(stderr,"+++ fullscreen traditional 0x%08x '%s'\n", (int)fw, fw->visible_name);
 #endif
 			return;
 		}
@@ -617,7 +617,7 @@ fprintf(stderr,"+++ fullscreen traditional\n");
 		SET_CR_MOTION_METHOD(fw, CR_MOTION_METHOD_USE_GRAV);
 		SET_CR_MOTION_METHOD_DETECTED(fw, 1);
 #ifdef CR_DETECT_MOTION_METHOD_DEBUG
-fprintf(stderr,"+++ travelling icccm\n");
+fprintf(stderr,"+++ travelling icccm 0x%08x '%s'\n", (int)fw, fw->visible_name);
 #endif
 		return;
 	}
@@ -629,7 +629,7 @@ fprintf(stderr,"+++ travelling icccm\n");
 		SET_CR_MOTION_METHOD(fw, CR_MOTION_METHOD_STATIC_GRAV);
 		SET_CR_MOTION_METHOD_DETECTED(fw, 1);
 #ifdef CR_DETECT_MOTION_METHOD_DEBUG
-fprintf(stderr,"+++ travelling traditional\n");
+fprintf(stderr,"+++ travelling traditional 0x%08x '%s'\n", (int)fw, fw->visible_name);
 #endif
 		return;
 	}
@@ -679,13 +679,13 @@ fprintf(stderr,"+++ travelling traditional\n");
 			SET_CR_MOTION_METHOD(fw, m);
 			SET_CR_MOTION_METHOD_DETECTED(fw, 1);
 #ifdef CR_DETECT_MOTION_METHOD_DEBUG
-fprintf(stderr, "+++ near border %s\n", (m == CR_MOTION_METHOD_USE_GRAV) ? "icccm" : "traditional");
+fprintf(stderr, "+++ near border %s 0x%08x '%s'\n", (m == CR_MOTION_METHOD_USE_GRAV) ? "icccm" : "traditional", (int)fw, fw->visible_name);
 #endif
 			return;
 		}
 	}
 #ifdef CR_DETECT_MOTION_METHOD_DEBUG
-fprintf(stderr,"--- not detected\n");
+fprintf(stderr,"--- not detected 0x%08x '%s'\n", (int)fw, fw->visible_name);
 #endif
 
 	return;
