@@ -422,7 +422,7 @@ Mew module options and features:
 New utilities:
 --------------
 
- * New utility fvwm-config allows to query an existing instalation.
+ * New utility fvwm-config allows to query an existing installation.
  * New configurable script fvwm-menu-headlines to show headlines
    of some popular web sites in your fvwm menus.  Supported sites:
    FreshMeat, LinuxToday, Slashdot, Segfault, AppWatch and more.
