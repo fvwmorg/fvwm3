@@ -39,7 +39,7 @@
 
 /* --- Define to debug VMS_ExecL() routine --- */
 #define DEBUG_EXECL
-  
+
 /* --- Define to close or sync output file after each line in VMS_msg() --- */
 #undef DEBUG_CLOSE_OUTPUT
 #undef DEBUG_SYNC_OUTPUT
@@ -308,7 +308,7 @@ int VMS_select_pipes(int nbPipes, fd_set *readFds, fd_set *writeFds, fd_set *fil
       VMS_TestStatus(sysStat, "Can't cancel timer request (Error %d)", 0);
     }
   }
-    
+
   /* --- Checking other events --- */
   for (iFd = 0; iFd < nbPipes; iFd++) {
     if (DEV_UNUSED != infosPipes[iFd].devType) {
@@ -391,10 +391,12 @@ void VMS_msg(int type,char *id,char *msg,...) {
       break;
   }
 
-  va_start(args,msg);
-
   sprintf(buffer1,"[FVWM-%d/%d-%s-%s] ", time(NULL), clock(), typestr, id);
+
+  va_start(args,msg);
   vsprintf(buffer2, msg, args);
+  va_end(args);
+
   strcat(buffer1, buffer2);
 
   if (NULL == fabFD) {
@@ -416,7 +418,6 @@ void VMS_msg(int type,char *id,char *msg,...) {
     #endif
     }
   else fprintf(stderr, "FAB-ERROR : file %s not opened <%s>", FabName, strerror(errno));
-  va_end(args);
 }
 
 /*----------------------------------------------------------------------------------------------------------------------------------
@@ -528,6 +529,9 @@ int VMS_ExecL(
          be run by the shell. Well of course, it can be something very different. --- */
   cmdPtr = va_arg(vaCmd, char*);
   cmdPtr = va_arg(vaCmd, char*);
+
+  va_end(vaCmd);
+
   if (DBG_EXL) fvwm_msg(DBG,"VMS_ExecL","cmd <%s>", cmdPtr);
 
   /* --- Splits command in the argument array --- */
