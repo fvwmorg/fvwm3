@@ -13,5 +13,5 @@ EXTRA_DIST = $(man_MANS) README
 
 LDADD = -L$(top_builddir)/libs -lfvwm $(xpm_LIBS) \
 	$(X_LIBS) $(X_PRE_LIBS) -lXext -lX11 -lXmu $(X_EXTRA_LIBS) -lm
-INCLUDES = -I$(top_srcdir)/libs $(xpm_CFLAGS) $(X_CFLAGS)
+INCLUDES = -I$(top_srcdir) $(xpm_CFLAGS) $(X_CFLAGS)
 

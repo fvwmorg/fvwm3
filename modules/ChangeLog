@@ -1,3 +1,7 @@
+1999-10-31  Dan Espen  <dane@mk.telcordia.com>
+
+	* FvwmDragWell/Makefile.am (INCLUDES): Remove /libs from top_srcdir.
+
 1999/10/30  Bob Woodside  <proteus@pcnet.com>
 
 	* FvwmIdent/FvwmIdent.h:
