@@ -559,15 +559,14 @@ int main(int argc, char **argv)
   attributes.override_redirect = True;
   attributes.colormap = Scr.cmap;
   attributes.background_pixmap = None;
-  attributes.border_pixmap = None;
+  attributes.border_pixel = 0;
   Scr.NoFocusWin=XCreateWindow(dpy, Scr.Root, -10, -10, 10, 10, 0, Scr.depth,
                                InputOutput, Scr.viz,
                                CWEventMask | CWOverrideRedirect | CWColormap
-                               | CWBackPixmap | CWBorderPixmap, &attributes);
+                               | CWBackPixmap | CWBorderPixel, &attributes);
   XMapWindow(dpy, Scr.NoFocusWin);
 
   SetMWM_INFO(Scr.NoFocusWin);
-
   XSetInputFocus (dpy, Scr.NoFocusWin, RevertToParent, CurrentTime);
 
   XSync(dpy, 0);
@@ -575,7 +574,6 @@ int main(int argc, char **argv)
     XSynchronize(dpy,1);
 
   SetupICCCM2 (replace_wm);
-
   XSetErrorHandler(CatchRedirectError);
   XSetIOErrorHandler(CatchFatal);
   XSelectInput(dpy, Scr.Root,
@@ -658,9 +656,8 @@ int main(int argc, char **argv)
                                     " +8888 x +8888 ", 15);
   attributes.background_pixel = Scr.StdColors.back;
   attributes.colormap = Scr.cmap;
-  attributes.background_pixmap = None;
-  attributes.border_pixmap = None;
-  valuemask = CWBackPixel | CWColormap | CWBackPixmap | CWBorderPixmap;
+  attributes.border_pixel = 0;
+  valuemask = CWBackPixel | CWColormap | CWBorderPixel;
 
   if(!Scr.gs.EmulateMWM)
   {
@@ -680,7 +677,6 @@ int main(int argc, char **argv)
 				  (unsigned int) 0, Scr.depth,
 				  InputOutput, Scr.viz,
 				  valuemask, &attributes);
-
   initPanFrames();
 
   MyXGrabServer(dpy);

@@ -70,7 +70,9 @@ static double c400_distance(XColor *, XColor *);
 
 
 static Picture *PictureList=NULL;
+Visual *PictureVisual;
 Colormap PictureCMap;
+unsigned int PictureDepth;
 Display *PictureSaveDisplay;            /* Save area for display pointer */
 
 
@@ -80,7 +82,9 @@ void InitPictureCMap(Display *dpy,Window Root)
   XWindowAttributes root_attr;
   PictureSaveDisplay = dpy;                       /* save for later */
   XGetWindowAttributes(dpy,Root,&root_attr);
-  PictureCMap=root_attr.colormap;
+  PictureVisual = root_attr.visual;
+  PictureCMap = root_attr.colormap;
+  PictureDepth = root_attr.depth;
 }
 
 
@@ -129,29 +133,30 @@ Picture *LoadPicture(Display *dpy,Window Root,char *path, int color_limit)
   XpmImage	my_image = {0};
 #endif
 
-  p=(Picture*)safemalloc(sizeof(Picture));
-  p->count=1;
-  p->name=path;
-  p->next=NULL;
+  p = (Picture*)safemalloc(sizeof(Picture));
+  p->count = 1;
+  p->name = path;
+  p->next = NULL;
 
 #ifdef XPM
   /* Try to load it as an X Pixmap first */
-  xpm_attributes.colormap=PictureCMap;
+  xpm_attributes.visual = PictureVisual;
+  xpm_attributes.colormap = PictureCMap;
+  xpm_attributes.depth = PictureDepth;
   xpm_attributes.closeness=40000; /* Allow for "similar" colors */
-  xpm_attributes.valuemask=
-    XpmSize | XpmReturnPixels | XpmColormap | XpmCloseness;
+  xpm_attributes.valuemask = XpmSize | XpmReturnPixels | XpmCloseness
+			     | XpmVisual | XpmColormap | XpmDepth;
 
-  rc =XpmReadFileToXpmImage(path, &my_image, NULL);
+  rc = XpmReadFileToXpmImage(path, &my_image, NULL);
   if (rc == XpmSuccess) {
     color_reduce_pixmap(&my_image, color_limit);
-    rc = XpmCreatePixmapFromXpmImage(dpy, Root, &my_image,
-                                     &p->picture,&p->mask,
-                                     &xpm_attributes);
+    rc = XpmCreatePixmapFromXpmImage(dpy, Root, &my_image, &p->picture,
+				     &p->mask, &xpm_attributes);
     if (rc == XpmSuccess) {
       p->width = my_image.width;
       p->height = my_image.height;
+      p->depth = PictureDepth;
       XpmFreeXpmImage(&my_image);
-      p->depth = DefaultDepthOfScreen(DefaultScreenOfDisplay(dpy));
       return p;
     }
     XpmFreeXpmImage(&my_image);

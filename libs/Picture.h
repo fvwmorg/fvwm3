@@ -28,7 +28,9 @@ typedef struct PictureThing
     unsigned int count;
 } Picture;
 
+extern Visual *PictureVisual;
 extern Colormap PictureCMap;
+extern unsigned int PictureDepth;
 extern Display *PictureSaveDisplay;     /* Save area for display pointer */
 
 /* This routine called during fvwm and some modules initialization */

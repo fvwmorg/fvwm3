@@ -47,6 +47,7 @@
 #include "screen.h"
 #include "bindings.h"
 #include "module.h"
+#include "focus.h"
 
 #ifdef SHAPE
 #include <X11/extensions/shape.h>
@@ -148,31 +149,32 @@ void CreateIconWindow(FvwmWindow *tmp_win, int def_x, int def_y)
   tmp_win->icon_y_loc = final_y;
 
   /* clip to fit on screen */
-  valuemask = CWColormap | CWBackPixmap | CWBorderPixmap
+  valuemask = CWColormap | CWBorderPixel
               | CWBackPixel | CWCursor | CWEventMask;
   attributes.colormap = Scr.cmap;
   attributes.background_pixel = Scr.StdColors.back;
   attributes.cursor = Scr.FvwmCursors[DEFAULT];
-  attributes.background_pixmap = None;
-  attributes.border_pixmap = None;
-  attributes.event_mask = (ButtonPressMask | ButtonReleaseMask |
-			   VisibilityChangeMask |
-			   ExposureMask | KeyPressMask|
-			   EnterWindowMask | LeaveWindowMask |
-			   FocusChangeMask );
-  if (!(HAS_NO_ICON_TITLE(tmp_win))||(tmp_win->icon_p_height == 0))
-    tmp_win->icon_w =
-      XCreateWindow(dpy, Scr.Root, final_x, final_y+tmp_win->icon_p_height,
-                    tmp_win->icon_w_width, tmp_win->icon_w_height,0,Scr.depth,
-                    InputOutput,Scr.viz,valuemask,&attributes);
+  attributes.border_pixel = 0;
+  attributes.event_mask = (ButtonPressMask | ButtonReleaseMask
+			   | VisibilityChangeMask | ExposureMask | KeyPressMask
+			   | EnterWindowMask | LeaveWindowMask
+			   | FocusChangeMask );
+  if (!(HAS_NO_ICON_TITLE(tmp_win)) || (tmp_win->icon_p_height == 0))
+    tmp_win->icon_w = XCreateWindow(dpy, Scr.Root, final_x,
+				    final_y + tmp_win->icon_p_height,
+				    tmp_win->icon_w_width,
+				    tmp_win->icon_w_height, 0, Scr.depth,
+				    InputOutput, Scr.viz, valuemask,
+				    &attributes);
 
-  if((IS_ICON_OURS(tmp_win))&&(tmp_win->icon_p_width>0)&&
-     (tmp_win->icon_p_height>0))
-    {
-      tmp_win->icon_pixmap_w =
-	XCreateWindow(dpy, Scr.Root, final_x, final_y, tmp_win->icon_p_width,
-		      tmp_win->icon_p_height, 0, Scr.depth,
-		      InputOutput,Scr.viz,valuemask,&attributes);
+  if((IS_ICON_OURS(tmp_win)) && (tmp_win->icon_p_width > 0)
+     && (tmp_win->icon_p_height > 0)) {
+      /* fixme: if a client pixmap is supplied use it's depth, visual and colormap */
+      tmp_win->icon_pixmap_w = XCreateWindow(dpy, Scr.Root, final_x, final_y,
+					     tmp_win->icon_p_width,
+					     tmp_win->icon_p_height, 0,
+					     Scr.depth, InputOutput, Scr.viz,
+					     valuemask,&attributes);
     }
   else
     {
@@ -182,8 +184,8 @@ void CreateIconWindow(FvwmWindow *tmp_win, int def_x, int def_y)
 			       FocusChangeMask | LeaveWindowMask );
 
       valuemask = CWEventMask;
-      XChangeWindowAttributes(dpy,tmp_win->icon_pixmap_w,
-			      valuemask,&attributes);
+      XChangeWindowAttributes(dpy, tmp_win->icon_pixmap_w, valuemask,
+			      &attributes);
     }
 
 
@@ -361,6 +363,7 @@ void DrawIconWindow(FvwmWindow *Tmp_win)
 		    0,0,Tmp_win->icon_p_width-4, Tmp_win->icon_p_height-4,2,2);
 	}
       else /* fixme: this only copies one plane, should be min(scr,icon) */
+           /* even if fixed the result will probabaly be garbage */
 	XCopyPlane(dpy,Tmp_win->iconPixmap,Tmp_win->icon_pixmap_w,
 		   Scr.ScratchGC3,0,0,Tmp_win->icon_p_width-4,
 		   Tmp_win->icon_p_height-4,2,2,1);
@@ -749,11 +752,14 @@ static void GetXPMFile(FvwmWindow *tmp_win)
   path = findImageFile(tmp_win->icon_bitmap_file, NULL, R_OK);
   if(path == NULL)return;
 
+  xpm_attributes.visual = PictureVisual;
   xpm_attributes.colormap = PictureCMap;
+  xpm_attributes.depth = PictureDepth;
   xpm_attributes.closeness = 40000; /* Allow for "similar" colors */
-  xpm_attributes.valuemask = XpmSize|XpmReturnPixels|XpmColormap|XpmCloseness;
+  xpm_attributes.valuemask = XpmSize | XpmReturnPixels | XpmCloseness
+			     | XpmVisual | XpmColormap | XpmDepth;
 
-  rc =XpmReadFileToXpmImage(path, &my_image, NULL);
+  rc = XpmReadFileToXpmImage(path, &my_image, NULL);
   if (rc != XpmSuccess) {
     fvwm_msg(ERR,"GetXPMFile","XpmReadFileToXpmImage failed, pixmap %s, rc %d",
            path, rc);

@@ -1,3 +1,9 @@
+1999-04-21  Hippo
+
+	* libs/Picture.{c,h},fvwm/{add_window,fvwm,icons,menus}.c: Partly fixed
+	-visual Truecolor with different depths,  Client supplied icon pixmaps
+	look ugly and XorPixmap has no effect.
+
 1999-04-20  Bob Woodside  <proteus@pcnet.com>
 
 	* fvwm/AUTHORS: Who-to-blame entry for module GSFR.

@@ -495,10 +495,10 @@ FvwmWindow *AddWindow(Window w, FvwmWindow *ReuseWin)
     attributes.background_pixmap = None;
   }
 
-  valuemask = valuemask_save|CWCursor|CWColormap|CWBorderPixmap|CWEventMask;
+  valuemask = valuemask_save|CWCursor|CWColormap|CWBorderPixel|CWEventMask;
   attributes.cursor = Scr.FvwmCursors[DEFAULT];
   attributes.colormap = Scr.cmap;
-  attributes.border_pixmap = None;
+  attributes.border_pixel = 0;
   attributes.event_mask = (SubstructureRedirectMask | ButtonPressMask
 			   | ButtonReleaseMask | EnterWindowMask
 			   | LeaveWindowMask | ExposureMask
@@ -529,7 +529,7 @@ FvwmWindow *AddWindow(Window w, FvwmWindow *ReuseWin)
 
 
   /* restore valuemask to remember background */
-  valuemask = valuemask_save|CWCursor|CWColormap|CWBorderPixmap|CWEventMask;
+  valuemask = valuemask_save|CWCursor|CWColormap|CWBorderPixel|CWEventMask;
   attributes.event_mask = (ButtonPressMask | ButtonReleaseMask
 			   | EnterWindowMask | LeaveWindowMask | ExposureMask);
 
@@ -548,11 +548,11 @@ FvwmWindow *AddWindow(Window w, FvwmWindow *ReuseWin)
 #if defined(PIXMAP_BUTTONS) && defined(BORDERSTYLE)
         if (TexturePixmap
 	    && GetDecor(tmp_win,left_buttons[i].flags) & UseBorderStyle) {
-	  valuemask = CWBackPixmap|CWCursor|CWColormap|CWBorderPixmap|
+	  valuemask = CWBackPixmap|CWCursor|CWColormap|CWBorderPixel|
 	    CWEventMask;
 	  attributes.background_pixmap = TexturePixmap;
         } else {
-	  valuemask=valuemask_save|CWCursor|CWColormap|CWBorderPixmap|
+	  valuemask=valuemask_save|CWCursor|CWColormap|CWBorderPixel|
 	    CWEventMask;
           attributes.background_pixmap = TexturePixmapSave;
         }
@@ -571,11 +571,11 @@ FvwmWindow *AddWindow(Window w, FvwmWindow *ReuseWin)
 #if defined(PIXMAP_BUTTONS) && defined(BORDERSTYLE)
         if (TexturePixmap
 	    && GetDecor(tmp_win,right_buttons[i].flags) & UseBorderStyle) {
-	  valuemask = CWBackPixmap|CWCursor|CWColormap|CWBorderPixmap|
+	  valuemask = CWBackPixmap|CWCursor|CWColormap|CWBorderPixel|
 	    CWEventMask;
           attributes.background_pixmap = TexturePixmap;
         } else {
-	  valuemask=valuemask_save|CWCursor|CWColormap|CWBorderPixmap|
+	  valuemask=valuemask_save|CWCursor|CWColormap|CWBorderPixel|
 	    CWEventMask;
           attributes.background_pixmap = TexturePixmapSave;
         }
@@ -626,10 +626,10 @@ FvwmWindow *AddWindow(Window w, FvwmWindow *ReuseWin)
   /* make sure this does not have a BackPixel or BackPixmap so that
      that when the client dies there is no flash of BackPixel/BackPixmap */
   /* may look odd with shaped windows if fvwm has shapes disabled */
-  valuemask = CWCursor|CWColormap|CWBorderPixmap|CWBackPixmap|CWEventMask;
+  valuemask = CWCursor|CWColormap|CWBorderPixel|CWBackPixmap|CWEventMask;
   attributes.cursor = Scr.FvwmCursors[DEFAULT];
   attributes.colormap = Scr.cmap;
-  attributes.border_pixmap = attributes.background_pixmap = None;
+  attributes.background_pixmap = None;
   attributes.event_mask = SubstructureRedirectMask;
   tmp_win->Parent = XCreateWindow (dpy, tmp_win->frame, tmp_win->boundary_width,
 				   tmp_win->boundary_width

@@ -2527,10 +2527,9 @@ void MakeMenu(MenuRoot *mr)
   mr->xanimation = 0;
 
 
-  valuemask = CWBackPixel | CWEventMask | CWCursor | CWColormap |
-    CWBackPixmap | CWBorderPixmap | CWSaveUnder;
-  attributes.background_pixmap = None;
-  attributes.border_pixmap = None;
+  valuemask = CWBackPixel | CWEventMask | CWCursor | CWColormap
+             | CWBorderPixel | CWSaveUnder;
+  attributes.border_pixel = 0;
   attributes.colormap = Scr.cmap;
   attributes.background_pixel = mr->ms->look.MenuColors.back;
   attributes.event_mask = (ExposureMask | EnterWindowMask);
