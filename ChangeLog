@@ -1,3 +1,8 @@
+1998-11-27  Bob Woodside  <proteus@pcnet.com>
+
+	* fvwm/fvwm.c, fvwm/fvwm2.1: changed GlobalOpts default from
+	ActivePlacementIgnoresStartsOnPage to ActivePlacementHonorsStartsOnPage.
+
 1998-11-27  Dominik Vogt  <dominik_vogt@hp.com>
 
 	* fvwm/fvwm2.1: entry for 'Direction'

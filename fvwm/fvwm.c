@@ -1286,7 +1286,7 @@ void InitVariables(void)
   Scr.ModifyUSP                          =  True;
   Scr.CaptureHonorsStartsOnPage          =  True;
   Scr.RecaptureHonorsStartsOnPage        =  False;
-  Scr.ActivePlacementHonorsStartsOnPage  =  False;
+  Scr.ActivePlacementHonorsStartsOnPage  =  True;
 
   /* Not the right place for this, should only be called once somewhere .. */
   InitPictureCMap(dpy,Scr.Root);

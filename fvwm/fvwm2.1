@@ -1274,11 +1274,11 @@ ActivePlacementIgnoresStartsOnPage suppresses StartsOnPage or StartsOnDesk
 placement in the event that both ActivePlacement and SkipMapping are in
 effect when a window is created. This prevents you from interactively
 placing a window and then wondering where it disappeared to, because it got
-placed on a different desk or page. Specify ActivePlacementHonorsStartsOnPage
-to allow this to happen anyway, which was the old way that StartsOnDesk
-worked. This has no effect if SkipMapping is not in effect, because fvwm
-will switch to the proper desk/page to perform interactive placement. The
-default is ActivePlacementIgnoresStartsOnPage.
+placed on a different desk or page. ActivePlacementHonorsStartsOnPage
+allows this to happen anyway. The option has no effect if SkipMapping is
+not in effect, because fvwm will switch to the proper desk/page to perform
+interactive placement. The default is ActivePlacementHonorsStartsOnPage,
+which matches the way StartsOnDesk handled the situation.
 
 .IP "GotoPage x y"
 Moves the desktop viewport to page (x,y).  The upper left page is
