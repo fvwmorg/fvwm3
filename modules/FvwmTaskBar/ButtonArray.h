@@ -39,14 +39,16 @@
 
 /* Struct definitions */
 
-typedef struct button {
+typedef struct button
+{
   char   *title;
   int    state, needsupdate, truncate, count, iconified;
   struct button *next;
   Picture p;
 } Button;
 
-typedef struct {
+typedef struct
+{
   int count;
   Button *head, *tail;
   int x, y, w, h, tw;
@@ -54,14 +56,15 @@ typedef struct {
 
 /* Function Prototypes */
 
-void Draw3dRect(Window wn, int x, int y, int w, int h, int state);
+void Draw3dRect(Window wn, int x, int y, int w, int h, int state,
+		Bool iconified);
 Button *ButtonNew(const char *title, Picture *p, int state, int count);
 int ButtonUpdate(Button *button, const char *title, int state);
 char *ButtonName(Button *button);
 void InitArray(ButtonArray *array, int x, int y, int w, int h, int tw);
 void UpdateArray(ButtonArray *array, int x, int y, int w, int h, int tw);
 void AddButton(ButtonArray *array, const char *title, Picture *p, int state,
-               int count);
+               int count, int iconified);
 int UpdateButton(ButtonArray *array, int butnum, const char *title, int state);
 int UpdateButtonPicture(ButtonArray *array, int butnum, Picture *p);
 void RemoveButton(ButtonArray *array, int butnum);

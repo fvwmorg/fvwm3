@@ -41,14 +41,41 @@ char *StartName     = NULL,
      *StartIconName = NULL;
 
 
-void StartButtonParseConfig(const char *tline, char *Module)
+static char *startopts[] =
 {
-  if(strncasecmp(tline,CatString3(Module,"StartName",""), Clength+9)==0)
-    CopyString(&StartName,&tline[Clength+9]);
-  else if(strncasecmp(tline,CatString3(Module,"StartMenu",""), Clength+9)==0)
-    CopyString(&StartPopup,&tline[Clength+9]);
-  else if(strncasecmp(tline,CatString3(Module,"StartIcon",""), Clength+9)==0)
-    CopyString(&StartIconName,&tline[Clength+9]);
+  "StartName",
+  "StartMenu",
+  "StartIcon",
+  NULL
+};
+
+Bool StartButtonParseConfig(char *tline)
+{
+  char *rest;
+  char *option;
+  int i;
+
+  option = tline + Clength;
+  i = GetTokenIndex(option, startopts, -1, &rest);
+  while (*rest && *rest != '\n' && isspace(*rest))
+    rest++;
+  switch(i)
+  {
+  case 0: /* StartName */
+    CopyString(&StartName, rest);
+    break;
+  case 1: /* StartMenu */
+    CopyString(&StartPopup, rest);
+    break;
+  case 2: /* StartIcon */
+    CopyString(&StartIconName, rest);
+    break;
+  default:
+    /* unknown option */
+    return False;
+  } /* switch */
+
+  return True;
 }
 
 void StartButtonInit(int height)

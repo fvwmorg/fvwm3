@@ -34,6 +34,7 @@
 #include <X11/extensions/shape.h>
 
 #include "libs/fvwmlib.h"
+#include "libs/Colorset.h"
 #include "Goodies.h"
 #include "FvwmTaskBar.h"
 #include "Mallocs.h"
@@ -44,13 +45,16 @@
 
 extern Display *dpy;
 extern Window Root, win;
+extern int screen;
 extern int win_width, win_height, win_y, win_border,
        ScreenWidth, ScreenHeight, RowHeight;
 extern Pixel back, fore;
+extern int colorset;
 extern int Clength;
 extern GC blackgc, hilite, shadow, checkered;
 
-GC statusgc, dategc;
+GC statusgc = 0;
+GC tipsgc = 0;
 XFontStruct *StatusFont;
 #ifdef I18N_MB
 XFontSet StatusFontset;
@@ -66,11 +70,15 @@ int fontheight, clock_width;
 char *mailpath = NULL;
 char *clockfmt = NULL;
 int BellVolume = DEFAULT_BELL_VOLUME;
-Pixmap mailpix, wmailpix, pmask, pclip;
+Pixmap mailpix = None;
+Pixmap wmailpix = None;
+Pixmap pmask = None;
+Pixmap pclip = None;
 int Mailcheck = MAILCHECK_DEFAULT;
-char *DateFore = "black",
-     *DateBack = "LightYellow",
+char *TipsFore = "black",
+     *TipsBack = "LightYellow",
      *MailCmd  = "Exec xterm -e mail";
+int tipscolorset = -1;
 int IgnoreOldMail = False;
 int ShowTips = False;
 char *statusfont_string = "fixed";
@@ -86,59 +94,151 @@ extern unsigned char gray_bits[];
 TipStruct Tip = { 0, 0, 0, 0,  0, 0,   0,   0, NULL, None };
 
 
-/* Parse 'goodies' specific resources */
-void GoodiesParseConfig(const char *tline, char *Module)
+static void CreateOrUpdateGoodyGC(void)
 {
-  if(strncasecmp(tline,CatString3(Module, "BellVolume",""),
-				Clength+10)==0) {
-    BellVolume = atoi(&tline[Clength+11]);
-  } else if(strncasecmp(tline,CatString3(Module, "Mailbox",""),
-				Clength+7)==0) {
-    if (strncasecmp(&tline[Clength+11], "None", 4) == 0) {
+  XGCValues gcval;
+  unsigned long gcmask;
+  Pixel pfore;
+  Pixel pback;
+
+  if (colorset >= 0)
+  {
+    pfore = Colorset[colorset % nColorsets].fg;
+    pback = Colorset[colorset % nColorsets].bg;
+  }
+  else
+  {
+    pfore = fore;
+    pback = back;
+  }
+  gcmask = GCForeground | GCBackground | GCFont | GCGraphicsExposures;
+  gcval.foreground = pfore;
+  gcval.background = pback;
+  gcval.font = StatusFont->fid;
+  gcval.graphics_exposures = False;
+  if (statusgc)
+    XChangeGC(dpy, statusgc, gcmask, &gcval);
+  else
+    statusgc = XCreateGC(dpy, win, gcmask, &gcval);
+
+  if (Mailcheck > 0)
+  {
+    if (mailpix)
+      XFreePixmap(dpy, mailpix);
+    mailpix = XCreatePixmapFromBitmapData(
+      dpy, win, (char *)minimail_bits, minimail_width, minimail_height,
+      pfore, pback, Pdepth);
+    if (wmailpix)
+      XFreePixmap(dpy, wmailpix);
+    wmailpix = XCreatePixmapFromBitmapData(
+      dpy, win, (char *)minimail_bits, minimail_width, minimail_height,
+      pfore, WhitePixel(dpy, screen), Pdepth);
+    goodies_width += minimail_width + 7;
+  }
+}
+
+Bool change_goody_colorset(int cset)
+{
+  if (cset < 0 || (cset != tipscolorset && cset != nColorsets))
+    return False;
+  CreateOrUpdateGoodyGC();
+
+  return True;
+}
+
+static char *goodyopts[] =
+{
+  "BellVolume",
+  "Mailbox",
+  "Mailcheck",
+  "ClockFormat",
+  "StatusFont",
+  "TipsFore",
+  "TipsBack",
+  "TipsColorset",
+  "MailCommand",
+  "IgnoreOldMail",
+  "ShowTips",
+  NULL
+};
+
+/* Parse 'goodies' specific resources */
+Bool GoodiesParseConfig(char *tline)
+{
+  char *rest;
+  char *option;
+  int i;
+
+  option = tline + Clength;
+  i = GetTokenIndex(option, goodyopts, -1, &rest);
+  while (*rest && *rest != '\n' && isspace(*rest))
+    rest++;
+  switch(i)
+  {
+  case 0: /* BellVolume */
+    BellVolume = atoi(rest);
+    break;
+  case 1: /* Mailbox */
+    if (strcasecmp(rest, "None") == 0)
+    {
       Mailcheck = 0;
-    } else {
+    }
+    else
+    {
       int len;
-      UpdateString(&mailpath, &tline[Clength+8]);
+
+      UpdateString(&mailpath, rest);
       len = strlen(mailpath);
       if (len > 0 && mailpath[len-1] == '\n')
 	mailpath[len-1] = 0;
     }
-  } else if(strncasecmp(tline,CatString3(Module, "Mailcheck",""),
-			  Clength+9)==0) {
+    break;
+  case 2: /* Mailcheck */
     Mailcheck = MAILCHECK_DEFAULT;
-    sscanf(&tline[Clength+20], "%d", &Mailcheck);
+    sscanf(rest, "%d", &Mailcheck);
     if (Mailcheck < 0)
       Mailcheck = 0;
-  } else if(strncasecmp(tline,CatString3(Module, "ClockFormat",""),
-			  Clength+11)==0) {
-    UpdateString(&clockfmt, &tline[Clength+12]);
+    break;
+  case 3: /* ClockFormat */
+    UpdateString(&clockfmt, rest);
     clockfmt[strlen(clockfmt)-1] = 0;
-  } else if(strncasecmp(tline, CatString3(Module, "StatusFont",""),
-                          Clength+10)==0) {
-    CopyString(&statusfont_string,&tline[Clength+11]);
-  } else if(strncasecmp(tline,CatString3(Module, "TipsFore",""),
-                               Clength+8)==0) {
-    CopyString(&DateFore, &tline[Clength+9]);
-  } else if(strncasecmp(tline,CatString3(Module, "TipsBack",""),
-                               Clength+8)==0) {
-    CopyString(&DateBack, &tline[Clength+9]);
-  } else if(strncasecmp(tline,CatString3(Module, "MailCommand",""),
-                               Clength+11)==0) {
-    CopyString(&MailCmd, &tline[Clength+12]);
-  } else if(strncasecmp(tline,CatString3(Module, "IgnoreOldMail",""),
-                               Clength+13)==0) {
+    break;
+  case 4: /* StatusFont */
+    CopyString(&statusfont_string, rest);
+    break;
+  case 5: /* TipsFore */
+    CopyString(&TipsFore, rest);
+    tipscolorset = -1;
+    break;
+  case 6: /* TipsBack */
+    CopyString(&TipsBack, rest);
+    tipscolorset = -1;
+    break;
+  case 7: /* TipsColorset */
+    tipscolorset = -1;
+    tipscolorset = atoi(rest);
+    break;
+  case 8: /* MailCommand */
+    CopyString(&MailCmd, rest);
+    break;
+  case 9: /* IgnoreOldMail */
     IgnoreOldMail = True;
-  } else if(strncasecmp(tline,CatString3(Module, "ShowTips",""),
-                               Clength+8)==0) {
+    break;
+  case 10: /* ShowTips */
     ShowTips = True;
-  }
+    break;
+  default:
+    /* unknow option */
+    return False;
+  } /* switch */
+
+  return True;
 }
 
-void InitGoodies(void) {
+void InitGoodies(void)
+{
   struct passwd *pwent;
   char tmp[1024];
-  XGCValues gcval;
-  unsigned long gcmask;
 #ifdef I18N_MB
   char **ml;
   int mc;
@@ -176,25 +276,9 @@ void InitGoodies(void) {
 #endif
 
   fontheight = StatusFont->ascent + StatusFont->descent;
-
-  gcmask = GCForeground | GCBackground | GCFont | GCGraphicsExposures;
-  gcval.foreground = fore;
-  gcval.background = back;
-  gcval.font = StatusFont->fid;
-  gcval.graphics_exposures = False;
-  statusgc = XCreateGC(dpy, win, gcmask, &gcval);
-
-  if (Mailcheck > 0) {
-    mailpix = XCreatePixmapFromBitmapData(dpy, win, (char *)minimail_bits,
-					  minimail_width, minimail_height,
-					  fore,back, Pdepth);
-    wmailpix = XCreatePixmapFromBitmapData(dpy, win, (char *)minimail_bits,
-					   minimail_width, minimail_height,
-					   fore,GetColor("white"), Pdepth);
-
-    goodies_width += minimail_width + 7;
-  }
-  if (clockfmt) {
+  CreateOrUpdateGoodyGC();
+  if (clockfmt)
+  {
     struct tm *tms;
     static time_t timer;
     static char str[24];
@@ -203,7 +287,8 @@ void InitGoodies(void) {
     strftime(str, 24, clockfmt, tms);
     clock_width = XTextWidth(StatusFont, str, strlen(str)) + 4;
   }
-  else clock_width = XTextWidth(StatusFont, "XX:XX", 5) + 4;
+  else
+    clock_width = XTextWidth(StatusFont, "XX:XX", 5) + 4;
   goodies_width += clock_width;
   stwin_width = goodies_width;
 }
@@ -219,7 +304,8 @@ void Draw3dBox(Window wn, int x, int y, int w, int h)
   XDrawLine(dpy, win, hilite, x+w-1, y+h-1, x+w-1, y);
 }
 
-void DrawGoodies(void) {
+void DrawGoodies(void)
+{
   struct tm *tms;
   static char str[40];
   static time_t timer;
@@ -274,19 +360,22 @@ void DrawGoodies(void) {
 
 }
 
-int MouseInClock(int x, int y) {
+int MouseInClock(int x, int y)
+{
   int clockl = win_width - stwin_width;
   int clockr = win_width - stwin_width + clock_width;
   return (x>=clockl && x<clockr && y>1 && y<RowHeight-2);
 }
 
-int MouseInMail(int x, int y) {
+int MouseInMail(int x, int y)
+{
   int maill = win_width - stwin_width + clock_width;
   int mailr = win_width;
   return (x>=maill && x<mailr && y>1 && y<RowHeight-2);
 }
 
-void CreateDateWindow(void) {
+void CreateDateWindow(void)
+{
   struct tm *tms;
   static time_t timer;
   static char str[40];
@@ -299,7 +388,8 @@ void CreateDateWindow(void) {
   PopupTipWindow(win_width, 0, str);
 }
 
-void CreateMailTipWindow() {
+void CreateMailTipWindow()
+{
   char str[20];
 
   if (!anymail) return;
@@ -307,19 +397,21 @@ void CreateMailTipWindow() {
   PopupTipWindow(win_width, 0, str);
 }
 
-void RedrawTipWindow(void) {
+void RedrawTipWindow(void)
+{
   if (Tip.text) {
 #ifdef I18N_MB
-    XmbDrawString(dpy, Tip.win, StatusFontset, dategc, 3, Tip.th-4,
+    XmbDrawString(dpy, Tip.win, StatusFontset, tipsgc, 3, Tip.th-4,
 #else
-    XDrawString(dpy, Tip.win, dategc, 3, Tip.th-4,
+    XDrawString(dpy, Tip.win, tipsgc, 3, Tip.th-4,
 #endif
                      Tip.text, strlen(Tip.text));
     XRaiseWindow(dpy, Tip.win);  /*****************/
   }
 }
 
-void PopupTipWindow(int px, int py, const char *text) {
+void PopupTipWindow(int px, int py, const char *text)
+{
   int newx, newy;
   Window child;
 
@@ -347,90 +439,128 @@ void PopupTipWindow(int px, int py, const char *text) {
 
   if (Tip.open)
     XMapRaised(dpy, Tip.win);
-
 }
 
-void ShowTipWindow(int open) {
-  if (open) {
-    if (Tip.win != None) {
+void ShowTipWindow(int open)
+ {
+  if (open)
+  {
+    if (Tip.win != None)
+    {
       XMapRaised(dpy, Tip.win);
     }
-  } else {
+  }
+  else
+  {
     XUnmapWindow(dpy, Tip.win);
   }
   Tip.open = open;
 }
 
-void CreateTipWindow(int x, int y, int w, int h) {
+void CreateTipWindow(int x, int y, int w, int h)
+{
   unsigned long gcmask;
   unsigned long winattrmask = CWBackPixel | CWBorderPixel | CWEventMask |
                               CWColormap |CWSaveUnder | CWOverrideRedirect;
   XSetWindowAttributes winattr;
-  GC cgc, gc0, gc1;
+  GC cgc = None;
+  GC gc0 = None;
+  GC gc1 = None;
   XGCValues gcval;
-  Pixmap pchk;
-  winattr.background_pixel = GetColor(DateBack);
-  winattr.border_pixel = GetColor("black");
+  static Pixmap pchk = None;
+  Pixel tip_fore;
+  Pixel tip_back;
+  colorset_struct *cset = NULL;
+
+  if (tipscolorset >= 0)
+  {
+    cset = &Colorset[tipscolorset % nColorsets];
+    tip_fore = cset->fg;
+    tip_back = cset->bg;
+  }
+  else
+  {
+    tip_fore = GetColor(TipsFore);
+    tip_back = GetColor(TipsBack);
+  }
+
+  winattr.background_pixel = tip_back;
+  winattr.border_pixel = BlackPixel(dpy, screen);
   winattr.colormap = Pcmap;
   winattr.override_redirect = True;
-  winattr.save_under = True;
+ winattr.save_under = True;
   winattr.event_mask = ExposureMask;
-
   Tip.win = XCreateWindow(dpy, Root, x, y, w+4, h+4, 0, Pdepth, InputOutput,
 			  Pvisual, winattrmask, &winattr);
+
   gcmask = GCForeground | GCBackground | GCFont | GCGraphicsExposures;
   gcval.graphics_exposures = False;
-  gcval.foreground = GetColor(DateFore);
-  gcval.background = GetColor(DateBack);
+  gcval.foreground = tip_fore;
+  gcval.background = tip_back;
   gcval.font = StatusFont->fid;
-  dategc = XCreateGC(dpy, Tip.win, gcmask, &gcval);
+  if (tipsgc)
+    XChangeGC(dpy, tipsgc, gcmask, &gcval);
+  else
+    tipsgc = XCreateGC(dpy, Tip.win, gcmask, &gcval);
 
   pmask = XCreatePixmap(dpy, Tip.win, w+4, h+4, 1);
   pclip = XCreatePixmap(dpy, Tip.win, w+4, h+4, 1);
 
   gcmask = GCForeground | GCBackground | GCFillStyle | GCStipple |
            GCGraphicsExposures;
-  gcval.foreground = 1;
-  gcval.background = 0;
+  gcval.foreground = WhitePixel(dpy, screen);
+  gcval.background = BlackPixel(dpy, screen);
   gcval.fill_style = FillStippled;
-  pchk = XCreatePixmapFromBitmapData(dpy, Tip.win, (char *)gray_bits,
-                                     gray_width, gray_height, 1, 0, 1);
+  if (pchk == None)
+    pchk = XCreatePixmapFromBitmapData(dpy, Tip.win, (char *)gray_bits,
+				       gray_width, gray_height, 1, 0, 1);
   gcval.stipple = pchk;
-  cgc = XCreateGC(dpy, pmask, gcmask, &gcval);
+  if (cgc)
+    XChangeGC(dpy, cgc, gcmask, &gcval);
+  else
+    cgc = XCreateGC(dpy, pmask, gcmask, &gcval);
 
   gcmask = GCForeground | GCBackground | GCGraphicsExposures | GCFillStyle;
   gcval.graphics_exposures = False;
   gcval.fill_style = FillSolid;
-  gcval.foreground = 0;
-  gcval.background = 0;
-  gc0 = XCreateGC(dpy, pmask, gcmask, &gcval);
+  gcval.foreground = BlackPixel(dpy, screen);
+  gcval.background = BlackPixel(dpy, screen);
+  if (gc0)
+    XChangeGC(dpy, gc0, gcmask, &gcval);
+  else
+    gc0 = XCreateGC(dpy, pmask, gcmask, &gcval);
 
-  gcval.foreground = 1;
-  gcval.background = 1;
-  gc1 = XCreateGC(dpy, pmask, gcmask, &gcval);
+  gcval.foreground = WhitePixel(dpy, screen);
+  gcval.background = WhitePixel(dpy, screen);
+  if (gc1)
+    XChangeGC(dpy, gc1, gcmask, &gcval);
+  else
+    gc1 = XCreateGC(dpy, pmask, gcmask, &gcval);
 
   XFillRectangle(dpy, pmask, gc0, 0, 0, w+4, h+4);
   XFillRectangle(dpy, pmask, cgc, 3, 3, w+4, h+4);
   XFillRectangle(dpy, pmask, gc1, 0, 0, w+1, h+1);
-
   XFillRectangle(dpy, pclip, gc0, 0, 0, w+4, h+4);
   XFillRectangle(dpy, pclip, gc1, 1, 1, w-1, h-1);
-
   XShapeCombineMask(dpy, Tip.win, ShapeBounding, 0, 0, pmask, ShapeSet);
   XShapeCombineMask(dpy, Tip.win, ShapeClip,     0, 0, pclip, ShapeSet);
-
-  XFreeGC(dpy, gc0);
-  XFreeGC(dpy, gc1);
-  XFreeGC(dpy, cgc);
-  XFreePixmap(dpy, pchk);
+  if (tipscolorset >= 0 && (cset->pixmap || cset->shape_mask))
+  {
+     SetWindowBackground(
+       dpy, Tip.win, w + 4, h + 4, cset, Pdepth, tipsgc, False);
+  }
 }
 
-void DestroyTipWindow() {
-  XFreePixmap(dpy, pclip);
+void DestroyTipWindow()
+{
   XFreePixmap(dpy, pmask);
-  XFreeGC(dpy, dategc);
+  XFreePixmap(dpy, pclip);
   XDestroyWindow(dpy, Tip.win);
-  if (Tip.text) { free(Tip.text); Tip.text = NULL; }
+  if (Tip.text)
+  {
+    free(Tip.text);
+    Tip.text = NULL;
+  }
   Tip.win = None;
 }
 
@@ -483,9 +613,11 @@ void cool_get_inboxstatus()
 
 /*---------------------------------------------------------------------------*/
 
-void HandleMailClick(XEvent event) {
+void HandleMailClick(XEvent event)
+{
   static Time lastclick = 0;
-  if (event.xbutton.time - lastclick < 250) {
+  if (event.xbutton.time - lastclick < 250)
+  {
     SendFvwmPipe(MailCmd, 0);
   }
   lastclick = event.xbutton.time;

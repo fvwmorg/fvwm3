@@ -315,10 +315,11 @@ of the window when calculating positions for the animation.
 With the \fIindicator\fP option set, FvwmButtons will draw a small
 triangle in the button that will open a panel.  The triangle points
 in the direction where the panel will pop up.  The \fIindicator\fP
- keyword may be followed by a positive integer that specifies the
+keyword may be followed by a positive integer that specifies the
 maximum width and height of the indicator.  Without this size
-FvwmButtons will make the indicator as big as it fits in the button
-but leaving one pixel at each side.
+FvwmButtons will make the indicator as big as it fits in the button.
+You will probably want to use the \fIPadding\fP option to leave a
+few pixels between the indicator and the frame of the button.
 
 The defaults are sliding up with a delay of five millisecond and
 twelve animation steps. To post the panel without any animation,
@@ -583,12 +584,13 @@ Last but not least you can now put an icon, a title or a small
 arrow in the button so that you can see what it is good for.
 A title or icon can be specified as usual.  To activate the arrow,
 just add '(indicator)' after the 'Panel' keyword in the example
-above.  An optional direction in which the panel shall be opened
-can be given too:
+above and the \fIPadding\fP option to leave a few pixels between
+the arrow and the border of the button.  An optional direction
+in which the panel shall be opened can be given too:
 
 .nf
 .sp
-*FvwmButtons(Panel(down, indicator) my_first_panel \\
+*FvwmButtons(Padding 2, Panel(down, indicator) my_first_panel \\
   "Module FvwmButtons -g -30000-30000 -transientpanel my_first_panel")
 .sp
 .fi

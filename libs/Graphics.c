@@ -653,14 +653,14 @@ Drawable CreateGradientPixmap(Display *dpy, Drawable d, GC gc,
       {
         register int w = t_width - 1;
         register int h = t_height - 1;
-	register int t_scale = t_width * t_height;
+	register int t_scale = w * h;
 	register int myncolors = ncolors * 2;
         for (i = 0; i <= w; i++) {
           register int pi = min(i, w - i) * h;
           for (j = 0; j <= h; j++) {
             register int pj = min(j, h - j) * w;
             XPutPixel(image, i, j,
-		      pixels[min(pi, pj) * myncolors / t_scale]);
+		      pixels[(min(pi, pj) * myncolors - 1) / t_scale]);
           }
         }
       }
@@ -673,8 +673,8 @@ Drawable CreateGradientPixmap(Display *dpy, Drawable d, GC gc,
 
 	for (i = 0; i <= w; i++)
 	  for (j = 0; j <= h; j++) {
-            register double x = (i - w / 2) * h / 2;
-            register double y = (h / 2 - j) * w / 2;
+            register double x = (double)((2 * i - w) * h) / 4.0;
+            register double y = (double)((h - 2 * j) * w) / 4.0;
             register double rad = sqrt(x * x + y * y);
 	    XPutPixel(image, i, j, pixels[(int)(rad * ncolors / t_scale)]);
 	  }
@@ -684,13 +684,11 @@ Drawable CreateGradientPixmap(Display *dpy, Drawable d, GC gc,
       {
 	register int w = t_width - 1;
 	register int h = t_height - 1;
-        register int rx = w / 2;
-        register int ry = h / 2;
         /* g_width == g_height, both are odd, therefore x can be 0.0 */
         for (i = 0; i <= w; i++) {
           for (j = 0; j <= h; j++) {
-            register double x = (i - rx) * h / 2;
-	    register double y = (ry - j) * w / 2;
+            register double x = (double)((2 * i - w) * h) / 4.0;
+            register double y = (double)((h - 2 * j) * w) / 4.0;
             /* angle ranges from -pi/2 to +pi/2 */
             register double angle;
             if (x != 0.0) {
@@ -725,8 +723,8 @@ Drawable CreateGradientPixmap(Display *dpy, Drawable d, GC gc,
 
         for (i = 0; i <= w; i++) {
           for (j = 0; j <= h; j++) {
-            register double x = (i - w / 2) * h / 2;
-            register double y = (h / 2 - j) * w / 2;
+            register double x = (double)((2 * i - w) * h) / 4.0;
+            register double y = (double)((h - 2 * j) * w) / 4.0;
             register double rad = sqrt(x * x + y * y);
             /* angle ranges from -pi/2 to +pi/2 */
             register double angle;

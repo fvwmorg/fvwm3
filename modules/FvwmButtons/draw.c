@@ -216,6 +216,11 @@ void RedrawButton(button_info *b,int clean)
     /* Hanging swallow or held down by user or mapped panel */
     rev=1;
   }
+  if ((b->flags & b_Panel) && !(b->flags&b_Title))
+  {
+    clean = 1;
+    XClearArea(Dpy, MyWindow, ix, iy, iw, ih, False);
+  }
   if(b->flags&b_Action) /* If this is a Desk button that takes you to here.. */
   {
     int n=0;
@@ -323,10 +328,6 @@ void RedrawButton(button_info *b,int clean)
     XChangeGC(Dpy,ShadowGC,GCForeground,&gcv);
 
     GetInternalSize(b, &ix, &iy, &iw, &ih);
-    ix++;
-    iy++;
-    iw -= 2;
-    ih -= 2;
     if (is != 0)
     {
       /* limit to user specified size */
@@ -359,9 +360,29 @@ void RedrawButton(button_info *b,int clean)
     }
     else
     {
+      char dir = b->slide_direction;
+
+      if (rev)
+      {
+	switch (dir)
+	{
+	case SLIDE_UP:
+	  dir = SLIDE_DOWN;
+	  break;
+	case SLIDE_DOWN:
+	  dir = SLIDE_UP;
+	  break;
+	case SLIDE_LEFT:
+	  dir = SLIDE_RIGHT;
+	  break;
+	case SLIDE_RIGHT:
+	  dir = SLIDE_LEFT;
+	  break;
+	}
+      }
       DrawTrianglePattern(
-	Dpy, MyWindow, NormalGC, ShadowGC, None, ix, iy, iw, ih, 0,
-	b->slide_direction, 1, 0, 0);
+	Dpy, MyWindow, NormalGC, ShadowGC, None, ix, iy, iw, ih, 0, dir, 1, 0,
+	0);
     }
   } /* panel indicator */
 }

@@ -1,5 +1,9 @@
 1999-09-26  Dominik Vogt  <dominik_vogt@gmx.de>
 
+	* libs/Graphics.c (CreateGradientPixmap): fixed array bounds read in
+	C gradients. Similar but non-critical bug in R and Y gradients.
+	Fixed SGradient: several colours were potentially not used
+
 	* libs/WinMagic.c (GetEqualSizeChildren): new function
 
 	* fvwm/menus.c (paint_menu):

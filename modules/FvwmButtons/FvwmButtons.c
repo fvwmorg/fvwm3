@@ -2109,8 +2109,7 @@ void change_swallowed_window_colorset(button_info *b, Bool do_clear)
   int nchildren;
 
   nchildren = GetEqualSizeChildren(
-    Dpy, w, Pdepth, XVisualIDFromVisual(Pvisual),
-    XDefaultColormap(Dpy, screen), &children);
+    Dpy, w, Pdepth, XVisualIDFromVisual(Pvisual), Pcmap, &children);
   SetWindowBackground(
     Dpy, w, buttonWidth(b), buttonHeight(b),
     &Colorset[b->colorset % nColorsets], Pdepth, NormalGC, do_clear);

@@ -17,7 +17,7 @@ EXTRA_DIST = $(man_MANS) fvwm2.README minimail.xbm ConfigFvwmTaskBar
 config_DATA = \
   ConfigFvwmTaskBar
 
-LDADD = -L$(top_builddir)/libs $(X_LIBS) -lfvwm $(xpm_LIBS) \
+LDADD = -L$(top_builddir)/libs $(X_LIBS) -lfvwm -lm $(xpm_LIBS) \
 	$(X_PRE_LIBS) -lXext -lX11 $(X_EXTRA_LIBS)
 
 INCLUDES = -I$(top_srcdir) $(xpm_CFLAGS) $(X_CFLAGS)

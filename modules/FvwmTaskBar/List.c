@@ -51,7 +51,7 @@ void InitList(List *list)
 /******************************************************************************
   AddItem - Allocates spaces for and appends an item to the list
 ******************************************************************************/
-void AddItem(List *list,  long id, long flags, ConfigWinPacket *cfgpacket,
+void AddItem(List *list, long id, long flags, ConfigWinPacket *cfgpacket,
              long Desk, int count)
 {
   Item *new;
@@ -61,7 +61,7 @@ void AddItem(List *list,  long id, long flags, ConfigWinPacket *cfgpacket,
   new->tb_flags=flags;
 
   /* If this was M_ADD_WINDOW or M_CONFIGURE_WINDOW, we have real flags  */
-  if (cfgpacket != NULL)  {
+  if (cfgpacket != NULL) {
     memcpy(&new->flags, &cfgpacket->flags, sizeof(new->flags));
   }
 
@@ -80,7 +80,8 @@ void AddItem(List *list,  long id, long flags, ConfigWinPacket *cfgpacket,
 /******************************************************************************
   AddItemName - Allocates spaces for and appends an item to the list
 ******************************************************************************/
-void AddItemName(List *list, char *string, long flags) {
+void AddItemName(List *list, char *string, long flags)
+{
   Item *new;
 
   new = (Item *)safemalloc(sizeof(Item));
@@ -90,8 +91,10 @@ void AddItemName(List *list, char *string, long flags) {
   new->tb_flags = flags;
   new->next = NULL;
 
-  if (list->tail == NULL) list->head = list->tail = new;
-  else {
+  if (list->tail == NULL)
+    list->head = list->tail = new;
+  else
+  {
     list->tail->next = new;
     list->tail = new;
   }
@@ -104,9 +107,12 @@ void AddItemName(List *list, char *string, long flags) {
 ******************************************************************************/
 int FindItem(List *list, long id)
 {
-Item *temp;
-  for(temp=list->head;temp!=NULL && temp->id!=id;temp=temp->next);
-  if (temp==NULL) return -1;
+  Item *temp;
+
+  for(temp=list->head;temp!=NULL && temp->id!=id;temp=temp->next)
+    ;
+  if (temp==NULL)
+    return -1;
   return temp->count;
 }
 
@@ -129,7 +135,7 @@ int FindNameItem(List *list, char *string)
 ******************************************************************************/
 int UpdateItemName(List *list, long id, char *string)
 {
-Item *temp;
+  Item *temp;
   for(temp=list->head;temp!=NULL && id!=temp->id;temp=temp->next);
   if (temp==NULL) return -1;
   UpdateString(&temp->name,string);
@@ -138,7 +144,7 @@ Item *temp;
 
 int UpdateItemFlags(List *list, long id, long flags)
 {
-Item *temp;
+  Item *temp;
   for(temp=list->head;temp!=NULL && id!=temp->id;temp=temp->next);
   if (temp==NULL) return -1;
   if (flags!=-1) temp->tb_flags=flags;
@@ -216,8 +222,9 @@ int i;
 ******************************************************************************/
 void FreeList(List *list)
 {
-Item *temp,*temp2;
-  for(temp=list->head;temp!=NULL;) {
+  Item *temp,*temp2;
+  for(temp=list->head;temp!=NULL;)
+  {
     temp2=temp;
     temp=temp->next;
     FreeItem(temp2);
@@ -247,7 +254,7 @@ void PrintList(List *list)
 ******************************************************************************/
 char *ItemName(List *list, int n)
 {
-Item *temp;
+  Item *temp;
   for(temp=list->head;temp!=NULL && temp->count!=n;temp=temp->next);
   if (temp==NULL) return NULL;
   return temp->name;
@@ -258,7 +265,7 @@ Item *temp;
 ******************************************************************************/
 long ItemFlags(List *list, long id)
 {
-Item *temp;
+  Item *temp;
   for(temp=list->head;temp!=NULL && id!=temp->id;temp=temp->next);
   if (temp==NULL) return -1;
   else return temp->tb_flags;
@@ -269,7 +276,7 @@ Item *temp;
 ******************************************************************************/
 long ItemIndexFlags(List *list, int i)
 {
-Item *temp;
+  Item *temp;
   for(temp=list->head;temp!=NULL && temp->count!=i;temp=temp->next);
   if (temp==NULL) return -1;
   else return temp->tb_flags;
@@ -305,7 +312,7 @@ int ItemCount(List *list)
 ******************************************************************************/
 long ItemID(List *list, int n)
 {
-Item *temp;
+  Item *temp;
   for(temp=list->head;temp!=NULL && temp->count!=n;temp=temp->next);
   if (temp==NULL) return -1;
   return temp->id;
@@ -316,8 +323,8 @@ Item *temp;
 ******************************************************************************/
 void CopyItem(List *dest, List *source, int n)
 {
-Item *temp;
-ConfigWinPacket cfgpkt;
+  Item *temp;
+  ConfigWinPacket cfgpkt;
 
   for(temp=source->head;temp!=NULL && temp->count!=n;temp=temp->next);
   if (temp==NULL) return;

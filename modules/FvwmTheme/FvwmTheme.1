@@ -75,6 +75,10 @@ with only two colors, this bitmap is used as the mask. Note that the
 shape will create holes in the window it is applied to. The masked
 parts are not simply transparent.
 
+Warning: Due to the way X11 implements shapes and the implementation
+of the FvwmTheme module you cannot take back making windows shaped.
+You may have to restart fvwm or the shaped application.
+
 \fI?Gradient ...\fP will create a pixmap and stretch it to fit the window.
 \fI?Gradient\fP may be one of HGradient, VGradient, DGradient, BGradient,
 SGradient, CGradient, RGradient or YGradient.  The gradient types are as

@@ -1485,7 +1485,7 @@ void ParseConfiguration(button_info *ub)
   char *s;
   char *items[] =
   {
-    NULL,
+    NULL, /* filled out below */
     "imagepath",
     "colorlimit",
     "colorset",

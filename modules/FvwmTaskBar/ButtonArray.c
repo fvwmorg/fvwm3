@@ -36,6 +36,7 @@
 #include <X11/Xlib.h>
 
 #include "libs/fvwmlib.h"
+#include "libs/Colorset.h"
 #include "libs/safemalloc.h"
 
 #include "ButtonArray.h"
@@ -56,7 +57,9 @@ extern XFontSet ButtonFontset, SelButtonFontset;
 extern Display *dpy;
 extern Window win;
 extern GC shadow, hilite, graph, whitegc, blackgc, checkered, icongraph;
+extern GC iconbackgraph;
 extern int button_width;
+extern int iconcolorset;
 
 extern Button *StartButton;
 
@@ -73,31 +76,50 @@ extern int NRows, RowHeight;
  *************************************************************************/
 
 /* Draws a 3D rectangle */
-void Draw3dRect(Window wn, int x, int y, int w, int h, int state)
+void Draw3dRect(Window wn, int x, int y, int w, int h, int state,
+		Bool iconified)
 {
   XClearArea (dpy, wn, x, y, w, h, False);
+  if (iconified)
+  {
+    colorset_struct *cset;
 
-  switch (state) {
+    if (iconcolorset >= 0)
+      cset = &Colorset[iconcolorset % nColorsets];
+    if (iconcolorset >= 0 && (cset->pixmap || cset->shape_mask))
+    {
+      /* we have a colorset background */
+      SetRectangleBackground(dpy, win, x + 2, y + 2, w - 4, h - 4, cset,
+			     Pdepth, icongraph);
+    }
+    else
+    {
+      XFillRectangle (dpy, wn, iconbackgraph, x + 2, y + 2, w - 4, h - 4);
+    }
+  }
+
+  switch (state)
+  {
   case BUTTON_UP:
-    XDrawLine (dpy, win, hilite, x, y, x+w-2, y);
-    XDrawLine (dpy, win, hilite, x, y, x, y+h-2);
+    XDrawLine (dpy, wn, hilite, x, y, x+w-2, y);
+    XDrawLine (dpy, wn, hilite, x, y, x, y+h-2);
 
-    XDrawLine (dpy, win, shadow,  x+1, y+h-2, x+w-2, y+h-2);
-    XDrawLine (dpy, win, shadow,  x+w-2, y+h-2, x+w-2, y+1);
-    XDrawLine (dpy, win, blackgc, x, y+h-1, x+w-1, y+h-1);
-    XDrawLine (dpy, win, blackgc, x+w-1, y+h-1, x+w-1, y);
+    XDrawLine (dpy, wn, shadow,  x+1, y+h-2, x+w-2, y+h-2);
+    XDrawLine (dpy, wn, shadow,  x+w-2, y+h-2, x+w-2, y+1);
+    XDrawLine (dpy, wn, blackgc, x, y+h-1, x+w-1, y+h-1);
+    XDrawLine (dpy, wn, blackgc, x+w-1, y+h-1, x+w-1, y);
     break;
   case BUTTON_BRIGHT:
-    XFillRectangle (dpy, win, checkered, x+2, y+2, w-4, h-4);
-    XDrawLine (dpy, win, hilite, x+2, y+2, x+w-3, y+2);
+    XFillRectangle (dpy, wn, checkered, x+2, y+2, w-4, h-4);
+    XDrawLine (dpy, wn, hilite, x+2, y+2, x+w-3, y+2);
   case BUTTON_DOWN:
-    XDrawLine (dpy, win, blackgc, x, y, x+w-1, y);
-    XDrawLine (dpy, win, blackgc, x, y, x, y+h-1);
+    XDrawLine (dpy, wn, blackgc, x, y, x+w-1, y);
+    XDrawLine (dpy, wn, blackgc, x, y, x, y+h-1);
 
-    XDrawLine (dpy, win, shadow, x+1, y+1, x+w-3, y+1);
-    XDrawLine (dpy, win, shadow, x+1, y+1, x+1, y+h-3);
-    XDrawLine (dpy, win, hilite, x+1, y+h-1, x+w-1, y+h-1);
-    XDrawLine (dpy, win, hilite, x+w-1, y+h-1, x+w-1, y+1);
+    XDrawLine (dpy, wn, shadow, x+1, y+1, x+w-3, y+1);
+    XDrawLine (dpy, wn, shadow, x+1, y+1, x+1, y+h-3);
+    XDrawLine (dpy, wn, hilite, x+1, y+h-1, x+w-1, y+h-1);
+    XDrawLine (dpy, wn, hilite, x+w-1, y+h-1, x+w-1, y+1);
     break;
   }
 }
@@ -148,10 +170,11 @@ void ButtonDraw(Button *button, int x, int y, int w, int h)
   unsigned long gcm;
   GC *drawgc;
 
-  if (button == NULL) return;
+  if (button == NULL)
+    return;
   button->needsupdate = 0;
   state = button->state;
-  Draw3dRect(win, x, y, w, h, state);
+  Draw3dRect(win, x, y, w, h, state, !!(button->iconified));
   if (button->iconified)
     drawgc = &icongraph;
   else
@@ -204,7 +227,8 @@ void ButtonDraw(Button *button, int x, int y, int w, int h)
     newx += button->p.width+2;
   }
 
-  if (button->title == NULL) return;
+  if (button->title == NULL)
+    return;
 
   search_len = strlen(button->title);
 
@@ -329,7 +353,7 @@ void UpdateArray(ButtonArray *array,int x,int y,int w, int h, int tw)
    AddButton - Allocate space for and add the button to the list
    ------------------------------------------------------------------------- */
 void AddButton(ButtonArray *array, const char *title, Picture *p, int state,
-               int count)
+               int count, int iconified)
 {
   Button *new, *temp;
 
@@ -457,11 +481,12 @@ void RemoveButton(ButtonArray *array, int butnum)
 Button *find_n(ButtonArray *array, int n)
 {
   Button *temp;
-  int i;
 
   temp = array->head;
-  if (n < 0) return NULL;
-  for(i=0; i<n && temp!=NULL; i++,temp=temp->next);
+  if (n < 0)
+    return NULL;
+  for ( ; temp && n != temp->count; temp=temp->next)
+    ;
   return temp;
 }
 

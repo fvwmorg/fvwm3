@@ -39,7 +39,7 @@ typedef struct {
   Window win;
 } TipStruct;
 
-void GoodiesParseConfig(const char *tline, char *Module);
+Bool GoodiesParseConfig(char *tline);
 void InitGoodies(void);
 void DrawGoodies(void);
 int MouseInClock(int x, int y);
@@ -53,5 +53,6 @@ void DestroyTipWindow(void);
 void ShowTipWindow(int open);
 void HandleMouseClick(XEvent event);
 void HandleMailClick(XEvent event);
+Bool change_goody_colorset(int cset);
 
 #endif

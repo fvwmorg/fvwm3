@@ -20,7 +20,7 @@
  *
  *
  * The author makes not guarantees or warantees, either express or
- * implied.  Feel free to use any contained here for any purpose, as long
+ * implied.  Feel free to use any code contained here for any purpose, as long
  * and this and any other applicable copyrights are kept intact.
 
  * The functions in this source file that are based on part of the FvwmIdent
@@ -77,7 +77,7 @@
 #include "libs/fvwmlib.h"  /* for pixmaps routines */
 #include "libs/safemalloc.h"
 #include "libs/fvwmsignal.h"
-
+#include "libs/Colorset.h"
 
 #include "FvwmTaskBar.h"
 #include "ButtonArray.h"
@@ -99,7 +99,6 @@
 #define gray_height 8
 unsigned char gray_bits[] = { 0xaa, 0x55, 0xaa, 0x55,
                               0xaa, 0x55, 0xaa, 0x55 };
-GC checkered;
 
 /* File type information */
 FILE  *console;
@@ -110,8 +109,20 @@ int   x_fd;
 Display *dpy;
 Window  Root, win;
 int     screen;
-Pixel   back, fore, iconfore;
-GC      icongraph, graph, shadow, hilite, blackgc, whitegc;
+Pixel back;
+Pixel fore;
+static Pixel iconfore;
+static Pixel iconback;
+GC      icongraph = None;
+GC      iconbackgraph = None;
+GC      graph = None;
+GC      shadow = None;
+GC      hilite = None;
+GC      blackgc = None;
+GC      whitegc = None;
+GC      checkered = None;
+int     colorset = -1;
+int     iconcolorset = -1;
 XFontStruct *ButtonFont, *SelButtonFont;
 #ifdef I18N_MB
 XFontSet ButtonFontset, SelButtonFontset;
@@ -150,6 +161,7 @@ char *ClickAction[3] = { DEFAULT_CLICK1, DEFAULT_CLICK2, DEFAULT_CLICK3 },
      *EnterAction,
      *BackColor      = "white",
      *ForeColor      = "black",
+     *IconBackColor  = "white",
      *IconForeColor  = "black",
      *geometry       = NULL,
      *font_string    = "fixed",
@@ -192,6 +204,7 @@ static RETSIGTYPE Alarm(int sig);
 static void SetAlarm(int event);
 static void ClearAlarm(void);
 static int ErrorHandler(Display*, XErrorEvent*);
+static Bool change_colorset(int cset);
 
 /******************************************************************************
   Main - Setup the XConnection,request the window list and loop forever
@@ -277,7 +290,7 @@ int main(int argc, char **argv)
   SetMessageMask(Fvwm_fd,M_ADD_WINDOW | M_CONFIGURE_WINDOW | M_DESTROY_WINDOW |
 		 M_WINDOW_NAME | M_ICON_NAME | M_RES_NAME | M_DEICONIFY |
 		 M_ICONIFY | M_END_WINDOWLIST | M_FOCUS_CHANGE |
-		 M_CONFIG_INFO | M_END_CONFIG_INFO | M_NEW_DESK
+		 M_CONFIG_INFO | M_END_CONFIG_INFO | M_NEW_DESK | M_SENDCONFIG
 #ifdef MINI_ICONS
 		 | M_MINI_ICON
 #endif
@@ -307,7 +320,6 @@ int main(int argc, char **argv)
   /* tell fvwm we're running */
   SendFinishedStartupNotification(Fvwm_fd);
 
-XSynchronize(dpy,1);
   /* Receive all messages from Fvwm */
   EndLessLoop();
 #ifdef FVWM_DEBUG_MSGS
@@ -389,11 +401,15 @@ void ProcessMessage(unsigned long type,unsigned long *body)
 
 /*    memset(&p, 0, sizeof(Picture)); */
 
-  switch(type) {
+  switch(type)
+  {
   case M_FOCUS_CHANGE:
     i = FindItem(&windows, body[0]);
-    if (win != body[0]) { /* This case is handled in LoopOnEvents() */
-      if (ItemFlags(&windows, body[0]) & F_ICONIFIED) i = -1;
+    if (win != body[0])
+    {
+      /* This case is handled in LoopOnEvents() */
+      if (ItemFlags(&windows, body[0]) & F_ICONIFIED)
+	i = -1;
       RadioButton(&buttons, i, BUTTON_BRIGHT);
       ButPressed = i;
       ButReleased = -1;
@@ -410,8 +426,10 @@ void ProcessMessage(unsigned long type,unsigned long *body)
     cfgpacket = (ConfigWinPacket *) body;
     if (!ShowTransients && (IS_TRANSIENT(cfgpacket)))
       break;
-    if (cfgpacket->w == win) {
-      if (win_border != (int)cfgpacket->border_width) {
+    if (cfgpacket->w == win)
+    {
+      if (win_border != (int)cfgpacket->border_width)
+      {
 	win_x = win_border = (int)cfgpacket->border_width;
 
         if (win_y > Midline)
@@ -425,51 +443,58 @@ void ProcessMessage(unsigned long type,unsigned long *body)
       break;
     }
 
-    if ((i=FindItem(&windows, cfgpacket->w)) != -1) {
-      if (GetDeskNumber(&windows,i,&Desk) && DeskOnly) {
-        if (DeskNumber != Desk && DeskNumber == cfgpacket->desk) {
+    if ((i=FindItem(&windows, cfgpacket->w)) != -1)
+    {
+      if (GetDeskNumber(&windows,i,&Desk) && DeskOnly)
+      {
+        if (DeskNumber != Desk && DeskNumber == cfgpacket->desk)
+	{
           /* window moving to current desktop */
           AddButton(&buttons, ItemName(&windows,i),
-                    GetItemPicture(&windows,i), BUTTON_UP, i);
+                    GetItemPicture(&windows,i), BUTTON_UP, i,
+		    !!(ItemIndexFlags(&windows, i) & F_ICONIFIED));
           redraw = 1;
         }
-        if (DeskNumber != cfgpacket->desk && DeskNumber == Desk) {
+        if (DeskNumber != cfgpacket->desk && DeskNumber == Desk)
+	{
           /* window moving to another desktop */
           RemoveButton(&buttons, i);
           redraw = 1;
         }
+	/* NEED TO DETERMINE IF BODY[8] IS RIGHT HERE! */
+	tb_flags = ItemFlags(&windows, cfgpacket->w);
+	UpdateItemFlagsDesk(&windows, cfgpacket->w, tb_flags, cfgpacket->desk);
       }
-      /* NEED TO DETERMINE IF BODY[8] IS RIGHT HERE!!! */
-      tb_flags = ItemFlags(&windows, cfgpacket->w);
-      UpdateItemFlagsDesk(&windows, cfgpacket->w,
-                          tb_flags, cfgpacket->desk);
-      break;
     }
-
-    if (!(DO_SKIP_WINDOW_LIST(cfgpacket)) || !UseSkipList) {
-      AddItem(&windows,
-        cfgpacket->w,
-        IS_ICONIFIED(cfgpacket) ? F_ICONIFIED : 0,
-        cfgpacket, cfgpacket->desk, Count++);
-      if (Count > COUNT_LIMIT) Count = 0;
+    else if (!(DO_SKIP_WINDOW_LIST(cfgpacket)) || !UseSkipList)
+    {
+      AddItem(&windows, cfgpacket->w,
+	      IS_ICONIFIED(cfgpacket) ? F_ICONIFIED : 0,
+	      cfgpacket, cfgpacket->desk, Count++);
+      if (Count > COUNT_LIMIT)
+	Count = 0;
+      i = FindItem(&windows, cfgpacket->w);
+    }
+    if (i != -1)
+    {
+      Button *temp = find_n(&buttons, i);
+      if (temp && IS_ICONIFIED(cfgpacket))
+	temp->iconified = 1;
     }
     break;
 
   case M_DESTROY_WINDOW:
-/*      if ((i = DeleteItem(&windows, body[0])) == -1) */
+    /*      if ((i = DeleteItem(&windows, body[0])) == -1) */
     if ((i = FindItem(&windows, body[0])) == -1)
       break;
     if (FindItem(&swallowed, body[0]) != -1)
       break;
 
-    if (GetDeskNumber(&windows, i, &Desk)) {
+    if (GetDeskNumber(&windows, i, &Desk))
+    {
       DeleteItem(&windows, body[0]);
-      if (Desk == DeskNumber || !DeskOnly) {
-        RemoveButton(&buttons, i); /* what about sticky windows? */
-                                   /* problem when they are deleted */
-                                   /* from another desktop! */
-        redraw = 1;
-      }
+      RemoveButton(&buttons, i);
+      redraw = 1;
     }
     break;
 
@@ -502,37 +527,43 @@ void ProcessMessage(unsigned long type,unsigned long *body)
     if ((i = UpdateItemName(&windows, body[0], (char *)&body[3])) == -1)
       break;
     if (UpdateButton(&buttons, i, string, DONT_CARE) == -1)
+    {
+      if (GetDeskNumber(&windows, i, &Desk) == 0)
+	break;
+      if (!DeskOnly || Desk == DeskNumber)
       {
-      if (GetDeskNumber(&windows, i, &Desk) == 0) return; /* ?? */
-         if (!DeskOnly || Desk == DeskNumber)
-         {
-           AddButton(&buttons, string, NULL, BUTTON_UP, i);
-           redraw = 1;
-         }
+	AddButton(&buttons, string, NULL, BUTTON_UP, i,
+		  !!(ItemIndexFlags(&windows, i) & F_ICONIFIED));
+	redraw = 1;
       }
+    }
     else
       redraw = 0;
     break;
 
   case M_DEICONIFY:
   case M_ICONIFY:
-    if ((i = FindItem(&windows, body[0])) == -1) break;
+    if ((i = FindItem(&windows, body[0])) == -1)
+      break;
     tb_flags = ItemFlags(&windows, body[0]);
-    if (type == M_DEICONIFY && !(tb_flags & F_ICONIFIED)) break;
-    if (type == M_ICONIFY   &&   tb_flags & F_ICONIFIED) break;
+    if (type == M_DEICONIFY && !(tb_flags & F_ICONIFIED))
+      break;
+    if (type == M_ICONIFY   &&   tb_flags & F_ICONIFIED)
+      break;
     tb_flags ^= F_ICONIFIED;
-    if (type == M_ICONIFY && i == ButReleased) {
-      RadioButton(&buttons, -1, BUTTON_UP);
-      ButReleased = ButPressed = -1;
-      redraw = 0;
-    }
     UpdateItemFlags(&windows, body[0], tb_flags);
     {
       Button *temp = find_n(&buttons, i);
       if (temp) {
 	temp->needsupdate = 1;
 	temp->iconified = (tb_flags & F_ICONIFIED) ? 1 : 0;
+	DrawButtonArray(&buttons, 0);
       }
+    }
+    if (type == M_ICONIFY && i == ButReleased) {
+      RadioButton(&buttons, -1, BUTTON_UP);
+      ButReleased = ButPressed = -1;
+      redraw = 0;
     }
     break;
 
@@ -551,9 +582,26 @@ void ProcessMessage(unsigned long type,unsigned long *body)
   case M_NEW_PAGE:
     break;
 
-  }
+  case M_CONFIG_INFO:
+    {
+      char *tline;
+      int cset;
 
-  if (redraw >= 0) RedrawWindow(redraw);
+      tline = (char*)&(body[3]);
+      if (strncasecmp(tline, "Colorset", 8) == 0)
+      {
+	cset = LoadColorset(tline + 8);
+	if (change_colorset(cset))
+	{
+	  redraw = 1;
+	}
+      }
+    }
+    break;
+  } /* switch */
+
+  if (redraw >= 0)
+    RedrawWindow(redraw);
 }
 
 
@@ -580,15 +628,18 @@ void redraw_buttons()
   fprintf(stderr,"Starting to add new desk buttons...\n");
 #endif
 
-  for (item=windows.head; item; item=item->next) {
-      if (DeskNumber == item->Desk || (item->flags.common.is_sticky)) {
-          AddButton(&buttons, item->name, &(item->p), BUTTON_UP, item->count);
+  for (item=windows.head; item; item=item->next)
+  {
+    if (DeskNumber == item->Desk || IS_STICKY(item))
+    {
+      AddButton(&buttons, item->name, &(item->p), BUTTON_UP, item->count,
+		!!(item->tb_flags & F_ICONIFIED));
 #ifdef DEBUG_DESKONLY
-          /* print buttons.count, buttons.tw here */
-          fprintf(stderr,"buttons.count = %i \t ",buttons.count);
-          fprintf(stderr,"buttons.tw = %i\n",buttons.tw);
+      /* print buttons.count, buttons.tw here */
+      fprintf(stderr,"buttons.count = %i \t ",buttons.count);
+      fprintf(stderr,"buttons.tw = %i\n",buttons.tw);
 #endif
-      }
+    }
   }
 
 #ifdef DEBUG_DESKONLY
@@ -685,23 +736,27 @@ void WaitForExpose(void)
 ******************************************************************************/
 void RedrawWindow(int force)
 {
-    if (Tip.open){
-      RedrawTipWindow();
+  if (Tip.open)
+  {
+    RedrawTipWindow();
 
-      /* 98-11-21 13:45, Mohsin_Ahmed, mailto:mosh@sasi.com. */
-      if( Tip.type >= 0 && AutoFocus ){
-          SendFvwmPipe( "Iconify off, Raise, Focus",
-                        ItemID( &windows, Tip.type ) );
-      }
+    /* 98-11-21 13:45, Mohsin_Ahmed, mailto:mosh@sasi.com. */
+    if( Tip.type >= 0 && AutoFocus )
+    {
+      SendFvwmPipe( "Iconify off, Raise, Focus",
+		    ItemID( &windows, Tip.type ) );
     }
+  }
 
-  if (force) {
+  if (force)
+  {
     XClearArea (dpy, win, 0, 0, win_width, win_height, False);
     DrawGoodies();
   }
   DrawButtonArray(&buttons, force);
   StartButtonDraw(force);
-  if (XQLength(dpy) && !force) LoopOnEvents();
+  if (XQLength(dpy) && !force)
+    LoopOnEvents();
 }
 
 /******************************************************************************
@@ -730,7 +785,8 @@ void ConsoleMessage(char *fmt, ...)
 int OpenConsole(void)
 {
 #ifndef NO_CONSOLE
-  if ((console = fopen("/dev/console","w")) == NULL) {
+  if ((console = fopen("/dev/console","w")) == NULL)
+  {
     fprintf(stderr, "%s: cannot open console\n", Module);
     return 0;
   }
@@ -738,121 +794,224 @@ int OpenConsole(void)
   return 1;
 }
 
-void ParseConfig( void )
+static char *configopts[] =
 {
-    char* buf;
-    InitGetConfigLine(Fvwm_fd,Module);
-    while (GetConfigLine(Fvwm_fd,&buf), buf != NULL) {
-	ParseConfigLine(buf);
-    } /* end config lines */
+  "imagepath",
+  "colorset",
+  NULL
+};
+
+static char *moduleopts[] =
+{
+  "Font",
+  "SelFont",
+  "Geometry",
+  "Fore",
+  "Back",
+  "Colorset",
+  "IconFore",
+  "IconBack",
+  "IconColorset",
+  "Action",
+  "UseSkipList",
+  "AutoFocus",
+  "AutoStick",
+  "AutoHide",
+  "UseIconNames",
+  "ShowTransients",
+  "DeskOnly",
+  "UpdateInterval",
+  "HighlightFocus",
+  "SwallowModule",
+  "Swallow",
+  "ButtonWidth",
+  NULL
+};
+
+void ParseConfig(void)
+{
+  char *buf;
+
+  InitGetConfigLine(Fvwm_fd,Module);
+  while (GetConfigLine(Fvwm_fd,&buf), buf != NULL)
+  {
+    ParseConfigLine(buf);
+  } /* end config lines */
 } /* end function */
 
-static void ParseConfigLine(char *tline) {
+static void ParseConfigLine(char *tline)
+{
   char *str;
+  char *rest;
   int i, j;
+  int index;
 
-  while (isspace((unsigned char)*tline))tline++;
-  if(strncasecmp(tline, CatString3(Module, "Font",""),Clength+4)==0)
-    CopyString(&font_string,&tline[Clength+4]);
-  else if(strncasecmp(tline, CatString3(Module, "SelFont",""),Clength+7)==0)
-    CopyString(&selfont_string,&tline[Clength+7]);
-  else if(strncasecmp(tline,CatString3(Module,"Fore",""), Clength+4)==0)
-    CopyString(&ForeColor,&tline[Clength+4]);
-  else if(strncasecmp(tline,CatString3(Module,"IconFore",""), Clength+8)==0)
-    CopyString(&IconForeColor,&tline[Clength+8]);
-  else if(strncasecmp(tline,CatString3(Module, "Geometry",""), Clength+8)==0)
+  while (isspace((unsigned char)*tline))
+    tline++;
+
+  if (strncasecmp(tline, Module, Clength) != 0)
   {
-    str = &tline[Clength+9];
-    while(((isspace((unsigned char)*str))&&(*str != '\n'))&&(*str != 0))
-      str++;
-    str[strlen(str)-1] = 0;
-    UpdateString(&geometry,str);
-  }
-  else if(strncasecmp(tline,CatString3(Module, "Back",""), Clength+4)==0)
-    CopyString(&BackColor,&tline[Clength+4]);
-  else if(strncasecmp(tline,CatString3(Module, "Action",""), Clength+6)==0)
-    LinkAction(&tline[Clength+6]);
-  else if(strncasecmp(tline,CatString3(Module, "UseSkipList",""),
-                      Clength+11)==0) UseSkipList=True;
-  else if(strncasecmp(tline,CatString3(Module, "AutoFocus",""),
-			Clength+9)==0) AutoFocus=True;
-  else if(strncasecmp(tline,CatString3(Module, "AutoStick",""),
-                      Clength+9)==0) AutoStick=True;
-  else if(strncasecmp(tline,CatString3(Module, "AutoHide",""),
-                      Clength+4)==0) { AutoHide=True; AutoStick=True; }
-  else if(strncasecmp(tline,CatString3(Module, "UseIconNames",""),
-                      Clength+12)==0) UseIconNames=True;
-  else if(strncasecmp(tline,CatString3(Module, "ShowTransients",""),
-                      Clength+14)==0) ShowTransients=True;
-  else if(strncasecmp(tline,CatString3(Module, "DeskOnly",""),
-                      Clength+8)==0) DeskOnly=True;
-  else if(strncasecmp(tline,CatString3(Module, "UpdateInterval",""),
-                      Clength+14)==0)
-    UpdateInterval=atoi(&tline[Clength+14]);
-  else if(strncasecmp(tline,CatString3(Module, "HighlightFocus",""),
-                      Clength+14)==0) HighlightFocus=True;
-  else if(strncasecmp(tline,CatString3(Module, "SwallowModule",""),
-                      Clength+13)==0) {
-
-    /* tell fvwm to launch the module for us */
-    str = safemalloc(strlen(&tline[Clength+13]) + 6);
-    sprintf(str, "Module %s",&tline[Clength+13]);
-    ConsoleMessage("Trying to: %s", str);
-    SendFvwmPipe(str, 0);
+    /* Non module spcific option */
+    index = GetTokenIndex(tline, configopts, -1, &rest);
+    while (*rest && *rest != '\n' && isspace(*rest))
+      rest++;
+    switch(index)
+    {
+    case 0: /* imagepath */
+      CopyString(&ImagePath, rest);
+      break;
+    case 1: /* colorset */
+      LoadColorset(rest);
+      break;
+    default:
+      /* unknown option */
+      break;
+    }
+  } /* if options */
+  else
+  {
+    /* option beginning with '*ModuleName' */
+    rest = tline + Clength;
+    index = GetTokenIndex(rest, moduleopts, -1, &rest);
+    while (*rest && *rest != '\n' && isspace(*rest))
+      rest++;
+    switch(index)
+    {
+    case 0: /* Font */
+      CopyString(&font_string, rest);
+      break;
+    case 1: /* Selfont */
+      CopyString(&selfont_string, rest);
+      break;
+    case 2: /* Geometry */
+      while (isspace((unsigned char)*rest) && *rest != '\n' && *rest != 0)
+	rest++;
+      if (*rest != 0)
+	rest[strlen(rest) - 1] = 0;
+      UpdateString(&geometry, rest);
+      break;
+    case 3: /* Fore */
+      CopyString(&ForeColor, rest);
+      colorset = -1;
+      break;
+    case 4: /* Back */
+      CopyString(&BackColor, rest);
+      colorset = -1;
+      break;
+    case 5: /* Colorset */
+      colorset = -1;
+      colorset = atoi(rest);
+      break;
+    case 6: /* IconFore */
+      CopyString(&IconForeColor, rest);
+      iconcolorset = -1;
+      break;
+    case 7: /* IconBack */
+      CopyString(&IconBackColor, rest);
+      iconcolorset = -1;
+      break;
+    case 8: /* IconColorset */
+      iconcolorset = -1;
+      iconcolorset = atoi(rest);
+      break;
+    case 9: /* Action */
+      LinkAction(rest);
+      break;
+    case 10: /* UseSkipList */
+      UseSkipList=True;
+      break;
+    case 11: /* AutoFocus */
+      AutoFocus=True;
+      break;
+    case 12: /* AutoStick */
+      AutoStick=True;
+      break;
+    case 13: /* AutoHide */
+      AutoHide=True;
+      AutoStick=True;
+      break;
+    case 14: /* UseIconNames */
+      UseIconNames=True;
+      break;
+    case 15: /* ShowTransients */
+      ShowTransients=True;
+      break;
+    case 16: /* DeskOnly */
+      DeskOnly=True;
+      break;
+    case 17: /* UpdateInterval */
+      UpdateInterval = atoi(rest);
+      break;
+    case 18: /* HighlightFocus */
+      HighlightFocus=True;
+      break;
+    case 19: /* SwallowModule */
+      {
+	/* tell fvwm to launch the module for us */
+	str = safemalloc(strlen(rest) + 8);
+	sprintf(str, "Module %s", rest);
+	ConsoleMessage("Trying to: %s", str);
+	SendFvwmPipe(str, 0);
 
 	/* Remember the anticipated window's name for swallowing */
-    i = 4;
-    while((str[i] != 0)&&
-          (str[i] != '"'))
-      i++;
-    j = ++i;
-    while((str[i] != 0)&&
-          (str[i] != '"'))
-      i++;
-    if (i > j) {
-      str[i] = 0;
-      ConsoleMessage("Looking for window: [%s]\n", &str[j]);
-      AddItemName(&swallowed, &str[j], F_NOT_SWALLOWED);
-    }
-    free(str);
-  } else if(strncasecmp(tline,CatString3(Module, "Swallow",""),
-                        Clength+7)==0) {
-
-    /* tell fvwm to Exec the process for us */
-    str = safemalloc(strlen(&tline[Clength+7]) + 6);
-    sprintf(str, "Exec %s",&tline[Clength+7]);
-    ConsoleMessage("Trying to: %s", str);
-    SendFvwmPipe(str, 0);
+	i = 4;
+	while(str[i] != 0 && str[i] != '"')
+	i++;
+	j = ++i;
+	while(str[i] != 0 && str[i] != '"')
+	  i++;
+	if (i > j)
+	{
+	  str[i] = 0;
+	  ConsoleMessage("Looking for window: [%s]\n", &str[j]);
+	  AddItemName(&swallowed, &str[j], F_NOT_SWALLOWED);
+	}
+	free(str);
+      } /* swallowmodule */
+      break;
+    case 20: /* Swallow */
+      {
+	/* tell fvwm to Exec the process for us */
+	str = safemalloc(strlen(rest) + 6);
+	sprintf(str, "Exec %s", rest);
+	ConsoleMessage("Trying to: %s", str);
+	SendFvwmPipe(str, 0);
 
 	/* Remember the anticipated window's name for swallowing */
-    i = 4;
-    while((str[i] != 0)&&
-          (str[i] != '"'))
-      i++;
-    j = ++i;
-    while((str[i] != 0)&&
-          (str[i] != '"'))
-      i++;
-    if (i > j) {
-      str[i] = 0;
-      ConsoleMessage("Looking for window: [%s]\n", &str[j]);
-      AddItemName(&swallowed, &str[j], F_NOT_SWALLOWED);
-    }
-    free(str);
-  } else if(strncasecmp(tline,"ButtonWidth",11) == 0) {
-    button_width = atoi(&tline[11]);
-  } else if(strncasecmp(tline,"ImagePath",9) == 0) {
-    CopyString(&ImagePath, &tline[9]);
-  } else {
-    GoodiesParseConfig(tline, Module);
-    StartButtonParseConfig(tline, Module);
-  }
+	i = 4;
+	while(str[i] != 0 && str[i] != '"')
+	  i++;
+	j = ++i;
+	while( str[i] != 0 && str[i] != '"')
+	  i++;
+	if (i > j)
+	{
+	  str[i] = 0;
+	  ConsoleMessage("Looking for window: [%s]\n", &str[j]);
+	  AddItemName(&swallowed, &str[j], F_NOT_SWALLOWED);
+	}
+	free(str);
+      } /* swallow */
+      break;
+    case 21: /* ButtonWidth */
+      button_width = atoi(rest);
+      break;
+    default:
+      if (!GoodiesParseConfig(tline) &&
+	  !StartButtonParseConfig(tline))
+      {
+	fprintf(stderr,"%s: unknown configuration option %s", Module, tline);
+      }
+      break;
+    } /* switch */
+  } /* else options */
 }
 
 /******************************************************************************
   Swallow a process window
 ******************************************************************************/
-void Swallow(unsigned long *body) {
+void Swallow(unsigned long *body)
+{
   XSizeHints hints;
   long supplied;
   int h,w;
@@ -927,7 +1086,8 @@ Alarm(int nonsense)
 /******************************************************************************
   CheckForTip - determine when to popup the tip window
 ******************************************************************************/
-void CheckForTip(int x, int y) {
+void CheckForTip(int x, int y)
+{
   int  num, bx, by, trunc;
   char *name;
 
@@ -974,6 +1134,7 @@ void LoopOnEvents(void)
   int  num = 0;
   char tmp[100];
   XEvent Event;
+  XEvent Event2;
   int x, y, redraw;
   static unsigned long lasttime = 0L;
 
@@ -987,7 +1148,8 @@ void LoopOnEvents(void)
 	;
     }
 
-    switch(Event.type) {
+    switch(Event.type)
+    {
       case ButtonRelease:
         num = WhichButton(&buttons, Event.xbutton.x, Event.xbutton.y);
         if (num == -1) {
@@ -1007,8 +1169,10 @@ void LoopOnEvents(void)
         }
 
         if (HighlightFocus) {
-          if (num == ButPressed) RadioButton(&buttons, num, BUTTON_DOWN);
-          if (num != -1) SendFvwmPipe("Focus 0", ItemID(&windows, num));
+          if (num == ButPressed)
+	    RadioButton(&buttons, num, BUTTON_DOWN);
+          if (num != -1)
+	    SendFvwmPipe("Focus 0", ItemID(&windows, num));
         }
         ButPressed = -1;
 	redraw = 0;
@@ -1067,9 +1231,11 @@ void LoopOnEvents(void)
         break;
 
       case EnterNotify:
-        if (AutoHide) RevealTaskBar();
+        if (AutoHide)
+	  RevealTaskBar();
 
-        if (Event.xcrossing.mode != NotifyNormal) break;
+        if (Event.xcrossing.mode != NotifyNormal)
+	  break;
         num = WhichButton(&buttons, Event.xcrossing.x, Event.xcrossing.y);
         if (!HighlightFocus) {
           if (SomeButtonDown(Event.xcrossing.state)) {
@@ -1158,6 +1324,12 @@ void LoopOnEvents(void)
         break;
 
       case ConfigureNotify:
+	memcpy(&Event2, &Event, sizeof(Event));
+	/* eat up excess ConfigureNotify events. */
+	while (XCheckTypedWindowEvent(dpy, win, ConfigureNotify, &Event2))
+	{
+	  memcpy(&Event, &Event2, sizeof(Event));
+	}
         if ((Event.xconfigure.width != win_width ||
 	     Event.xconfigure.height != win_height)) {
 	  AdjustWindow(Event.xconfigure.width, Event.xconfigure.height);
@@ -1165,10 +1337,14 @@ void LoopOnEvents(void)
 	    WarpTaskBar(win_y);
 	  redraw = 1;
         }
-        else if (Event.xconfigure.x != win_x || Event.xconfigure.y != win_y) {
-          if (AutoStick) {
+        else if (Event.xconfigure.x != win_x || Event.xconfigure.y != win_y)
+	{
+          if (AutoStick)
+	  {
             WarpTaskBar(Event.xconfigure.y);
-          } else {
+          }
+	  else
+	  {
             win_x = Event.xconfigure.x;
             win_y = Event.xconfigure.y;
           }
@@ -1196,6 +1372,7 @@ void AdjustWindow(int width, int height)
   win_height = height;
   win_width = width;
   ArrangeButtonArray(&buttons);
+  change_colorset(nColorsets);
 }
 
 /******************************************************************************
@@ -1230,14 +1407,137 @@ void LinkAction(const char *string)
     CopyString(&EnterAction,&temp[5]);
 }
 
+static void CreateOrUpdateGCs(void)
+{
+   XGCValues gcval;
+   unsigned long gcmask;
+   Pixel pfore;
+   Pixel pback;
+   Pixel piconfore;
+   Pixel piconback;
+   Pixel philite;
+   Pixel pshadow;
+
+   if (colorset >= 0)
+   {
+     pfore = Colorset[colorset % nColorsets].fg;
+     pback = Colorset[colorset % nColorsets].bg;
+     philite = Colorset[colorset % nColorsets].hilite;
+     pshadow = Colorset[colorset % nColorsets].shadow;
+   }
+   else
+   {
+     pfore = fore;
+     pback = back;
+     philite = GetHilite(back);
+     if(Pdepth < 2)
+       pshadow = GetShadow(fore);
+     else
+       pshadow = GetShadow(back);
+   }
+   if (iconcolorset >= 0)
+   {
+     piconfore = Colorset[iconcolorset % nColorsets].fg;
+     piconback = Colorset[iconcolorset % nColorsets].bg;
+   }
+   else
+   {
+     piconfore = iconfore;
+     piconback = iconback;
+   }
+
+   /* only the foreground changes for all GCs */
+   gcval.background = pback;
+   gcval.font = SelButtonFont->fid;
+   gcval.graphics_exposures = False;
+
+   gcmask = GCForeground | GCBackground | GCFont | GCGraphicsExposures;
+   gcval.foreground = pfore;
+   if (graph)
+     XChangeGC(dpy,graph,gcmask,&gcval);
+   else
+     graph = XCreateGC(dpy,win,gcmask,&gcval);
+
+   gcval.foreground = piconfore;
+   if (iconbackgraph)
+     XChangeGC(dpy,icongraph,gcmask,&gcval);
+   else
+     icongraph = XCreateGC(dpy,Root,gcmask,&gcval);
+
+   gcval.foreground = piconback;
+   if (iconbackgraph)
+     XChangeGC(dpy,iconbackgraph,gcmask,&gcval);
+   else
+     iconbackgraph = XCreateGC(dpy,Root,gcmask,&gcval);
+
+   gcmask = GCForeground | GCBackground | GCGraphicsExposures;
+   gcval.foreground = pshadow;
+   if (shadow)
+     XChangeGC(dpy,shadow,gcmask,&gcval);
+   else
+     shadow = XCreateGC(dpy,win,gcmask,&gcval);
+
+   gcval.foreground = philite;
+   if (hilite)
+     XChangeGC(dpy,hilite,gcmask,&gcval);
+   else
+     hilite = XCreateGC(dpy,win,gcmask,&gcval);
+
+   gcval.foreground = WhitePixel(dpy, screen);;
+   if (whitegc)
+     XChangeGC(dpy,whitegc,gcmask,&gcval);
+   else
+     whitegc = XCreateGC(dpy,win,gcmask,&gcval);
+
+   gcval.foreground = BlackPixel(dpy, screen);
+   if (blackgc)
+     XChangeGC(dpy,blackgc,gcmask,&gcval);
+   else
+     blackgc = XCreateGC(dpy,win,gcmask,&gcval);
+
+   gcmask = GCForeground | GCBackground | GCTile |
+            GCFillStyle  | GCGraphicsExposures;
+   gcval.foreground = philite;
+   gcval.fill_style = FillTiled;
+   gcval.tile       = XCreatePixmapFromBitmapData(dpy, win, (char *)gray_bits,
+						  gray_width, gray_height,
+						  gcval.foreground,
+						  gcval.background,Pdepth);
+   if (checkered)
+     XChangeGC(dpy, checkered, gcmask, &gcval);
+   else
+     checkered = XCreateGC(dpy, win, gcmask, &gcval);
+}
+
+static Bool change_colorset(int cset)
+{
+  Bool do_redraw = False;
+
+  if (cset < 0)
+    return False;
+  if (cset == colorset || cset == iconcolorset || cset == nColorsets)
+  {
+    CreateOrUpdateGCs();
+    if (cset == colorset || cset == nColorsets)
+    {
+      SetWindowBackground(
+	dpy, win, win_width, win_height, &Colorset[colorset % nColorsets],
+	Pdepth,	graph, True);
+    }
+    do_redraw = True;
+  }
+  do_redraw |= change_goody_colorset(cset);
+
+  return do_redraw;
+}
+
+
 /******************************************************************************
   StartMeUp - Do X initialization things
 ******************************************************************************/
 void StartMeUp(void)
 {
    XSizeHints hints;
-   XGCValues gcval;
-   unsigned long gcmask;
    int ret;
    XSetWindowAttributes attr;
 #ifdef I18N_MB
@@ -1253,6 +1553,7 @@ void StartMeUp(void)
       exit (1);
    }
    InitPictureCMap(dpy);
+   AllocColorset(0);
    x_fd = XConnectionNumber(dpy);
    screen= DefaultScreen(dpy);
    Root = RootWindow(dpy, screen);
@@ -1340,16 +1641,19 @@ void StartMeUp(void)
    win_y = hints.y;
 
    if(Pdepth < 2) {
-     back = GetColor("white");
-     fore = GetColor("black");
-     iconfore = GetColor("black");
+     back = WhitePixel(dpy, screen);
+     fore = BlackPixel(dpy, screen);
+     iconback = WhitePixel(dpy, screen);
+     iconfore = BlackPixel(dpy, screen);
    } else {
      back = GetColor(BackColor);
      fore = GetColor(ForeColor);
+     iconback = GetColor(IconBackColor);
      iconfore = GetColor(IconForeColor);
    }
 
-   attr.background_pixel = back;
+   attr.background_pixel =
+     (colorset >= 0) ? Colorset[colorset % nColorsets].bg : back;
    attr.border_pixel = 0;
    attr.colormap = Pcmap;
    win=XCreateWindow(dpy,Root,hints.x,hints.y,hints.width,hints.height,0,Pdepth,
@@ -1372,45 +1676,14 @@ void StartMeUp(void)
 	       MWM_FUNC_ALL|MWM_FUNC_MAXIMIZE|MWM_FUNC_MINIMIZE,
 	       MWM_INPUT_MODELESS);
 	       */
-   gcmask = GCForeground | GCBackground | GCFont | GCGraphicsExposures;
-   gcval.foreground = fore;
-   gcval.background = back;
-   gcval.font = SelButtonFont->fid;
-   gcval.graphics_exposures = False;
-   graph = XCreateGC(dpy,win,gcmask,&gcval);
-   gcval.foreground = iconfore;
-   icongraph = XCreateGC(dpy,Root,gcmask,&gcval);
 
-   if(Pdepth < 2)
-     gcval.foreground = GetShadow(fore);
-   else
-     gcval.foreground = GetShadow(back);
-   gcval.background = back;
-   gcmask = GCForeground | GCBackground | GCGraphicsExposures;
-   shadow = XCreateGC(dpy,win,gcmask,&gcval);
-
-   gcval.foreground = GetHilite(back);
-   gcval.background = back;
-   hilite = XCreateGC(dpy,win,gcmask,&gcval);
-
-   gcval.foreground = GetColor("white");;
-   gcval.background = back;
-   whitegc = XCreateGC(dpy,win,gcmask,&gcval);
-
-   gcval.foreground = GetColor("black");
-   gcval.background = back;
-   blackgc = XCreateGC(dpy,win,gcmask,&gcval);
-
-   gcmask = GCForeground | GCBackground | GCTile |
-            GCFillStyle  | GCGraphicsExposures;
-   gcval.foreground = GetHilite(back);
-   gcval.background = back;
-   gcval.fill_style = FillTiled;
-   gcval.tile       = XCreatePixmapFromBitmapData(dpy, win, (char *)gray_bits,
-						  gray_width, gray_height,
-						  gcval.foreground,
-						  gcval.background,Pdepth);
-   checkered = XCreateGC(dpy, win, gcmask, &gcval);
+   CreateOrUpdateGCs();
+   if (colorset >= 0)
+   {
+     SetWindowBackground(
+       dpy, win, win_width, win_height, &Colorset[colorset % nColorsets],
+       Pdepth, graph, False);
+   }
 
    XSelectInput(dpy,win,(ExposureMask | KeyPressMask | PointerMotionMask |
                          EnterWindowMask | LeaveWindowMask |
@@ -1479,7 +1752,8 @@ PropMwmHints prop;
       prop.decorations= value;
       prop.functions = funcs;
       prop.inputMode = input;
-      prop.flags = MWM_HINTS_DECORATIONS| MWM_HINTS_FUNCTIONS | MWM_HINTS_INPUT_MODE;
+      prop.flags =
+	MWM_HINTS_DECORATIONS | MWM_HINTS_FUNCTIONS | MWM_HINTS_INPUT_MODE;
 
       /* HOP - LA! */
       XChangeProperty (dpy,win,
@@ -1639,7 +1913,8 @@ void ConstrainSize (XSizeHints *hints, int *widthp, int *heightp)
 /***********************************************************************
  WarpTaskBar -- Enforce AutoStick feature
  ***********************************************************************/
-void WarpTaskBar(int y) {
+void WarpTaskBar(int y)
+{
   win_x = win_border;
 
   if (!AutoHide) {
@@ -1648,7 +1923,9 @@ void WarpTaskBar(int y) {
      else
        win_y = (int)ScreenHeight - win_height - win_border;
 
+     XSync(dpy, 0);
      XMoveWindow(dpy, win, win_x, win_y);
+     XSync(dpy, 0);
   }
 
   if (AutoHide)
@@ -1664,7 +1941,8 @@ void WarpTaskBar(int y) {
 /***********************************************************************
  RevealTaskBar -- Make taskbar fully visible
  ***********************************************************************/
-void RevealTaskBar() {
+void RevealTaskBar()
+{
   int new_win_y;
 
   ClearAlarm();
@@ -1687,7 +1965,8 @@ void RevealTaskBar() {
 /***********************************************************************
  HideTaskbar -- Make taskbar partially visible
  ***********************************************************************/
-void HideTaskBar() {
+void HideTaskBar()
+{
   int new_win_y;
 
   ClearAlarm();
@@ -1711,7 +1990,8 @@ void HideTaskBar() {
  SetAlarm -- Schedule a timeout event
  ************************************************************************/
 static void
-SetAlarm(int event) {
+SetAlarm(int event)
+{
   alarm(0);  /* remove a race-condition */
   AlarmSet = event;
   alarm(1);
@@ -1721,7 +2001,8 @@ SetAlarm(int event) {
  ClearAlarm -- Disable timeout events
  ************************************************************************/
 static void
-ClearAlarm(void) {
+ClearAlarm(void)
+{
   AlarmSet = NOT_SET;
   alarm(0);
 }
@@ -1729,11 +2010,13 @@ ClearAlarm(void) {
 /***********************************************************************
  PurgeConfigEvents -- Wait for and purge ConfigureNotify events.
  ************************************************************************/
-void PurgeConfigEvents(void) {
+void PurgeConfigEvents(void)
+{
   XEvent Event;
 
   XPeekEvent(dpy, &Event);
-  while (XCheckTypedWindowEvent(dpy, win, ConfigureNotify, &Event));
+  while (XCheckTypedWindowEvent(dpy, win, ConfigureNotify, &Event))
+    ;
 }
 
 /************************************************************************

@@ -1,3 +1,36 @@
+1999-09-26  Dominik Vogt  <dominik_vogt@gmx.de>
+
+	* FvwmTaskBar/ButtonArray.c (find_n): fixed bug that totally screwed up
+	TaskBar after a recapture
+
+	* FvwmTaskBar/ButtonArray.c (AddButton):
+	* FvwmTaskBar/Start.c (StartButtonParseConfig):
+	* FvwmTaskBar/Goodies.c (GoodiesParseConfig):
+	(DestroyTipWindow):
+	(CreateTipWindow):
+	* FvwmTaskBar/FvwmTaskBar.c (main):
+	(StartMeUp):
+	(CreateOrUpdateGCs):
+	implemented colour set support in TaskBar
+	several bug fixes
+
+	* FvwmTaskBar/ButtonArray.c (Draw3dRect):
+	* FvwmTaskBar/FvwmTaskBar.c (ParseConfigLine):
+	(StartMeUp):
+	(ProcessMessage):
+	added IconBack option
+
+	* FvwmTaskBar/FvwmTaskBar.c (ParseConfigLine):
+	fixed an array bounds read problem in parsing
+	fixed an array bounds write problem in parsing
+
+	* FvwmTaskBar/Makefile.am (LDADD): added -lm
+
+	* FvwmTaskBar/FvwmTaskBar.c (main): removed forgotten XSynchronize call
+
+	* FvwmButtons/draw.c (RedrawButton):
+	reverse panel indicators when panel is active
+
 1999-09-26  Chris Rankin <rankinc@zipworld.com.au>
 
 	* FvwmAnimate/FvwmAnimate.c:
@@ -6,7 +39,6 @@
 1999-09-26  Dominik Vogt  <dominik_vogt@gmx.de>
 
 	* FvwmButtons/FvwmButtons.c (change_swallowed_window_colorset):
-	* FvwmButtons/draw.c (RedrawButton):
 	* FvwmButtons/FvwmButtons.c (swallow):
 	improved(?) setting backgrounds of swallowed applications
 

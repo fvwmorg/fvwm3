@@ -426,29 +426,29 @@ int GetSuffixedIntegerArguments(char *action, char **ret_action, int retvals[],
     if (sscanf(token, "%d", &(retvals[i])) != 1)
       break;
     if (suffixes != 0 && ret_suffixnum != NULL)
+    {
+      int len;
+      char c;
+
+      len = strlen(token) - 1;
+      c = token[len];
+      if (isupper(c))
+	c = tolower(c);
+      for (j = 0; j < suffixes; j++)
       {
-	int len;
-	char c;
+	char c2 = suffixlist[j];
 
-	len = strlen(token) - 1;
-	c = token[len];
-	if (isupper(c))
-	  c = tolower(c);
-	for (j = 0; j < suffixes; j++)
-	  {
-	    char c2 = suffixlist[j];
-
-	    if (isupper(c2))
-	      c2 = tolower(c2);
-	    if (c == c2)
-	      {
-		ret_suffixnum[i] = j+1;
-		break;
-	      }
-	  }
-	if (j == suffixes)
-	  ret_suffixnum[i] = 0;
+	if (isupper(c2))
+	  c2 = tolower(c2);
+	if (c == c2)
+	{
+	  ret_suffixnum[i] = j+1;
+	  break;
+	}
       }
+      if (j == suffixes)
+	ret_suffixnum[i] = 0;
+    }
   }
   if (ret_action != NULL)
     *ret_action = action;
@@ -508,26 +508,26 @@ int GetTokenIndex(char *token, char *list[], int len, char **next)
   int k;
 
   if (!token || !list)
-    {
-      if (next)
-	*next = NULL;
-      return -1;
-    }
+  {
+    if (next)
+      *next = NULL;
+    return -1;
+  }
   l = (len) ? len : strlen(token);
   for (i = 0; list[i] != NULL; i++)
-    {
-      k = strlen(list[i]);
-      if (len < 0)
-	l = k;
-      if (len == 0 && k != l)
-	continue;
-      if (!strncasecmp(token, list[i], l))
-	break;
-    }
+  {
+    k = strlen(list[i]);
+    if (len < 0)
+      l = k;
+    if (len == 0 && k != l)
+      continue;
+    if (!strncasecmp(token, list[i], l))
+      break;
+  }
   if (next)
-    {
-      *next = (list[i]) ? token + l : token;
-    }
+  {
+    *next = (list[i]) ? token + l : token;
+  }
 
   return (list[i]) ? i : -1;
 }
