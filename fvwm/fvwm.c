@@ -42,6 +42,7 @@
 #include "libs/FScreen.h"
 #include "libs/FShape.h"
 #include "libs/PictureBase.h"
+#include "libs/PictureUtils.h"
 #include "libs/Flocale.h"
 #include <libs/gravity.h>
 #include "libs/FRenderInit.h"
@@ -185,7 +186,7 @@ int main(int argc, char **argv)
   int i;
   extern int x_fd;
   int len;
-  char *display_string;
+  char *display_string, *envp;
   char message[255];
   Bool do_force_single_screen = False;
   Bool replace_wm = False;
@@ -534,6 +535,26 @@ int main(int argc, char **argv)
 
   /* make a copy of the visual stuff so that XorPixmap can swap with root */
   PictureSaveFvwmVisual();
+
+  Scr.ColorLimit = 0;
+  if (Pdepth <= 8 && (Pvisual->class & 1))
+  {
+	  /* limit the number of colors */
+	  Scr.ColorLimit = 256;
+  }
+  if (Pdepth <= 20 && (Pvisual->class & 1) &&
+      (envp = getenv("FVWM_COLORLIMIT")) != NULL)
+  {
+	  Scr.ColorLimit = atoi(envp);
+	  if (Scr.ColorLimit < 0)
+		  Scr.ColorLimit = 0;
+  }
+#ifndef USE_OLD_COLOR_LIMIT_METHODE
+  if (Scr.ColorLimit > 0)
+  {
+	  PictureAllocColorTable(Scr.ColorLimit, "FVWM");
+  }
+#endif
 
   FShapeInit(dpy);
   FRenderInit(dpy);
@@ -1377,158 +1398,163 @@ static void CreateGCs(void)
  ************************************************************************/
 static void InitVariables(void)
 {
-  FvwmContext = XUniqueContext();
-  MenuContext = XUniqueContext();
+	FvwmContext = XUniqueContext();
+	MenuContext = XUniqueContext();
 
-  /* initialize some lists */
-  Scr.AllBindings = NULL;
+	/* initialize some lists */
+	Scr.AllBindings = NULL;
 
-  Scr.functions = NULL;
+	Scr.functions = NULL;
 
-  menus_init();
+	menus_init();
 
-  Scr.last_added_item.type = ADDED_NONE;
+	Scr.last_added_item.type = ADDED_NONE;
 
-  Scr.DefaultIcon = NULL;
+	Scr.DefaultIcon = NULL;
 
-  Scr.DefaultColorset = -1;
+	Scr.DefaultColorset = -1;
 
-  Scr.StdGC = 0;
-  Scr.StdReliefGC = 0;
-  Scr.StdShadowGC = 0;
-  Scr.XorGC = 0;
+	Scr.StdGC = 0;
+	Scr.StdReliefGC = 0;
+	Scr.StdShadowGC = 0;
+	Scr.XorGC = 0;
 
-  /* zero all flags */
-  memset(&Scr.flags, 0, sizeof(Scr.flags));
+	/* zero all flags */
+	memset(&Scr.flags, 0, sizeof(Scr.flags));
 
-  /* create graphics contexts */
-  CreateGCs();
+	/* create graphics contexts */
+	CreateGCs();
 
-  if (Pdepth <= 8) {               /* if the color is limited */
-    /* a number > than the builtin table! */
-    Scr.ColorLimit = 255;
-  }
-  FW_W(&Scr.FvwmRoot) = Scr.Root;
-  Scr.FvwmRoot.next = 0;
+	
+	FW_W(&Scr.FvwmRoot) = Scr.Root;
+	Scr.FvwmRoot.next = 0;
 
-  init_stack_and_layers();
+	init_stack_and_layers();
 
-  Scr.root_pushes = 0;
-  Scr.fvwm_pushes = 0;
-  Scr.pushed_window = &Scr.FvwmRoot;
-  Scr.FvwmRoot.number_cmap_windows = 0;
-  Scr.FvwmRoot.attr_backup.colormap = Pcmap;
+	Scr.root_pushes = 0;
+	Scr.fvwm_pushes = 0;
+	Scr.pushed_window = &Scr.FvwmRoot;
+	Scr.FvwmRoot.number_cmap_windows = 0;
+	Scr.FvwmRoot.attr_backup.colormap = Pcmap;
 
-  Scr.MyDisplayWidth = DisplayWidth(dpy, Scr.screen);
-  Scr.MyDisplayHeight = DisplayHeight(dpy, Scr.screen);
-  Scr.BusyCursor = BUSY_NONE;
-  Scr.Hilite = NULL;
-  /* this indicates that the root window was never entered since the startup of
-   * fvwm. */
-  Scr.Ungrabbed = NULL;
+	Scr.MyDisplayWidth = DisplayWidth(dpy, Scr.screen);
+	Scr.MyDisplayHeight = DisplayHeight(dpy, Scr.screen);
+	Scr.BusyCursor = BUSY_NONE;
+	Scr.Hilite = NULL;
+	/* this indicates that the root window was never entered since the
+	 * startup of fvwm. */
+	Scr.Ungrabbed = NULL;
 
+	Scr.DefaultFont = NULL;
 
-  Scr.DefaultFont = NULL;
+	Scr.VxMax = 2*Scr.MyDisplayWidth;
+	Scr.VyMax = 2*Scr.MyDisplayHeight;
 
-  Scr.VxMax = 2*Scr.MyDisplayWidth;
-  Scr.VyMax = 2*Scr.MyDisplayHeight;
+	Scr.Vx = Scr.Vy = 0;
 
-  Scr.Vx = Scr.Vy = 0;
+	Scr.SizeWindow = None;
 
-  Scr.SizeWindow = None;
+	/* Sets the current desktop number to zero */
+	/* Multiple desks are available even in non-virtual
+	 * compilations */
+	Scr.CurrentDesk = 0;
 
-  /* Sets the current desktop number to zero */
-  /* Multiple desks are available even in non-virtual
-   * compilations */
-  Scr.CurrentDesk = 0;
+	Scr.EdgeScrollX = Scr.EdgeScrollY = DEFAULT_EDGE_SCROLL;
+	Scr.ScrollResistance = DEFAULT_SCROLL_RESISTANCE;
+	Scr.MoveResistance = DEFAULT_MOVE_RESISTANCE;
+	Scr.XiMoveResistance = DEFAULT_XIMOVE_RESISTANCE;
+	Scr.SnapAttraction = DEFAULT_SNAP_ATTRACTION;
+	Scr.SnapMode = DEFAULT_SNAP_ATTRACTION_MODE;
+	Scr.SnapGridX = DEFAULT_SNAP_GRID_X;
+	Scr.SnapGridY = DEFAULT_SNAP_GRID_Y;
+	Scr.OpaqueSize = DEFAULT_OPAQUE_MOVE_SIZE;
+	Scr.MoveThreshold = DEFAULT_MOVE_THRESHOLD;
+	/* ClickTime is set to the positive value upon entering the
+	 * event loop. */
+	Scr.ClickTime = -DEFAULT_CLICKTIME;
+	Scr.ColormapFocus = COLORMAP_FOLLOWS_MOUSE;
 
-  Scr.EdgeScrollX = Scr.EdgeScrollY = DEFAULT_EDGE_SCROLL;
-  Scr.ScrollResistance = DEFAULT_SCROLL_RESISTANCE;
-  Scr.MoveResistance = DEFAULT_MOVE_RESISTANCE;
-  Scr.XiMoveResistance = DEFAULT_XIMOVE_RESISTANCE;
-  Scr.SnapAttraction = DEFAULT_SNAP_ATTRACTION;
-  Scr.SnapMode = DEFAULT_SNAP_ATTRACTION_MODE;
-  Scr.SnapGridX = DEFAULT_SNAP_GRID_X;
-  Scr.SnapGridY = DEFAULT_SNAP_GRID_Y;
-  Scr.OpaqueSize = DEFAULT_OPAQUE_MOVE_SIZE;
-  Scr.MoveThreshold = DEFAULT_MOVE_THRESHOLD;
-  /* ClickTime is set to the positive value upon entering the event loop. */
-  Scr.ClickTime = -DEFAULT_CLICKTIME;
-  Scr.ColormapFocus = COLORMAP_FOLLOWS_MOUSE;
+	/* set major operating modes */
+	Scr.NumBoxes = 0;
 
-  /* set major operating modes */
-  Scr.NumBoxes = 0;
+	Scr.cascade_x = Scr.cascade_y = 0;
+	/* the last Cascade placed window or NULL, we don't want NULL 
+	 * initially */
+	Scr.cascade_window = &Scr.FvwmRoot;
 
-  Scr.cascade_x = Scr.cascade_y = 0;
-  /* the last Cascade placed window or NULL, we don't want NULL initially */
-  Scr.cascade_window = &Scr.FvwmRoot;
+	Scr.buttons2grab = 0;
 
-  Scr.buttons2grab = 0;
+	/* initialisation of the head of the desktops info */
+	Scr.Desktops = (DesktopsInfo *)safemalloc(sizeof(DesktopsInfo));
+	Scr.Desktops->name = NULL;
+	Scr.Desktops->desk = 0; /* not desk 0 */
+	Scr.Desktops->ewmh_dyn_working_area.x =
+		Scr.Desktops->ewmh_working_area.x = 0;
+	Scr.Desktops->ewmh_dyn_working_area.y =
+		Scr.Desktops->ewmh_working_area.y = 0;
+	Scr.Desktops->ewmh_dyn_working_area.width =
+		Scr.Desktops->ewmh_working_area.width = Scr.MyDisplayWidth;
+	Scr.Desktops->ewmh_dyn_working_area.height =
+		Scr.Desktops->ewmh_working_area.height = Scr.MyDisplayHeight;
+	Scr.Desktops->next = NULL;
 
-  /* initialisation of the head of the desktops info */
-  Scr.Desktops = (DesktopsInfo *)safemalloc(sizeof(DesktopsInfo));
-  Scr.Desktops->name = NULL;
-  Scr.Desktops->desk = 0; /* not desk 0 */
-  Scr.Desktops->ewmh_dyn_working_area.x = Scr.Desktops->ewmh_working_area.x = 0;
-  Scr.Desktops->ewmh_dyn_working_area.y = Scr.Desktops->ewmh_working_area.y = 0;
-  Scr.Desktops->ewmh_dyn_working_area.width =
-    Scr.Desktops->ewmh_working_area.width = Scr.MyDisplayWidth;
-  Scr.Desktops->ewmh_dyn_working_area.height =
-    Scr.Desktops->ewmh_working_area.height = Scr.MyDisplayHeight;
-  Scr.Desktops->next = NULL;
+	/* ewmh desktop */
+	Scr.EwmhDesktop = NULL;
 
-  /* ewmh desktop */
-  Scr.EwmhDesktop = NULL;
-
-  InitFvwmDecor(&Scr.DefaultDecor);
+	InitFvwmDecor(&Scr.DefaultDecor);
 #ifdef USEDECOR
-  Scr.DefaultDecor.tag = "Default";
+	Scr.DefaultDecor.tag = "Default";
 #endif
 
-  /* Initialize RaiseHackNeeded by identifying X servers
-     possibly running under NT. This is probably not an
-     ideal solution, since eg NCD also produces X servers
-     which do not run under NT.
+	/* Initialize RaiseHackNeeded by identifying X servers
+	   possibly running under NT. This is probably not an
+	   ideal solution, since eg NCD also produces X servers
+	   which do not run under NT.
 
-     "Hummingbird Communications Ltd."
-	is the ServerVendor string of the Exceed X server under NT,
+	   "Hummingbird Communications Ltd."
+	   is the ServerVendor string of the Exceed X server under NT,
 
-     "Network Computing Devices Inc."
-	is the ServerVendor string of the PCXware X server under Windows.
+	   "Network Computing Devices Inc."
+	   is the ServerVendor string of the PCXware X server under Windows.
 
-     "WRQ, Inc."
-	is the ServerVendor string of the Reflection X server under Windows.
-  */
-  Scr.bo.RaiseHackNeeded =
-    (strcmp (ServerVendor (dpy), "Hummingbird Communications Ltd.") == 0) ||
-    (strcmp (ServerVendor (dpy), "Network Computing Devices Inc.") == 0) ||
-    (strcmp (ServerVendor (dpy), "WRQ, Inc.") == 0);
+	   "WRQ, Inc."
+	   is the ServerVendor string of the Reflection X server under Windows.
+	*/
+	Scr.bo.RaiseHackNeeded =
+		(strcmp (
+			ServerVendor (dpy),
+			"Hummingbird Communications Ltd.") == 0) ||
+		(strcmp (
+			ServerVendor (dpy),
+			"Network Computing Devices Inc.") == 0) ||
+		(strcmp (ServerVendor (dpy), "WRQ, Inc.") == 0);
 
-  Scr.bo.ModalityIsEvil = 0;
-  Scr.bo.DisableConfigureNotify = 0;
-  Scr.bo.InstallRootCmap = 0;
-  Scr.bo.FlickeringQtDialogsWorkaround = 1;
-  Scr.bo.EWMHIconicStateWorkaround = 0;
+	Scr.bo.ModalityIsEvil = 0;
+	Scr.bo.DisableConfigureNotify = 0;
+	Scr.bo.InstallRootCmap = 0;
+	Scr.bo.FlickeringQtDialogsWorkaround = 1;
+	Scr.bo.EWMHIconicStateWorkaround = 0;
 
-  Scr.gs.EmulateMWM = DEFAULT_EMULATE_MWM;
-  Scr.gs.EmulateWIN = DEFAULT_EMULATE_WIN;
-  Scr.gs.use_active_down_buttons = DEFAULT_USE_ACTIVE_DOWN_BUTTONS;
-  Scr.gs.use_inactive_buttons = DEFAULT_USE_INACTIVE_BUTTONS;
-  /* Not the right place for this, should only be called once somewhere .. */
+	Scr.gs.EmulateMWM = DEFAULT_EMULATE_MWM;
+	Scr.gs.EmulateWIN = DEFAULT_EMULATE_WIN;
+	Scr.gs.use_active_down_buttons = DEFAULT_USE_ACTIVE_DOWN_BUTTONS;
+	Scr.gs.use_inactive_buttons = DEFAULT_USE_INACTIVE_BUTTONS;
+	/* Not the right place for this, should only be called once 
+	 * somewhere .. */
 
-  /* EdgeCommands - no edge commands by default */
-  Scr.PanFrameTop.command    = NULL;
-  Scr.PanFrameBottom.command = NULL;
-  Scr.PanFrameRight.command  = NULL;
-  Scr.PanFrameLeft.command   = NULL;
-  Scr.flags.is_pointer_on_this_screen = !!XQueryPointer(
-	  dpy, Scr.Root, &JunkRoot, &JunkChild, &JunkX, &JunkY, &JunkX, &JunkY,
-	  &JunkMask);
+	/* EdgeCommands - no edge commands by default */
+	Scr.PanFrameTop.command    = NULL;
+	Scr.PanFrameBottom.command = NULL;
+	Scr.PanFrameRight.command  = NULL;
+	Scr.PanFrameLeft.command   = NULL;
+	Scr.flags.is_pointer_on_this_screen = !!XQueryPointer(
+		dpy, Scr.Root, &JunkRoot, &JunkChild, &JunkX, &JunkY, &JunkX,
+		&JunkY, &JunkMask);
 
-  /* make sure colorset 0 exists */
-  alloc_colorset(0);
+	/* make sure colorset 0 exists */
+	alloc_colorset(0);
 
-  return;
+	return;
 }
 
 /***********************************************************************

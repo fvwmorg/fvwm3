@@ -23,6 +23,8 @@
 #include "defaults.h"
 #include "libs/fvwmlib.h"
 #include "libs/PictureBase.h"
+#include "libs/PictureUtils.h"
+#include "libs/PictureGraphics.h"
 
 #include <X11/Xlib.h>
 #include <stdio.h>
@@ -310,7 +312,7 @@ Pixel *AllocLinearGradient(
 			((int)(g + dg / (float)div * (float)i + 0.5));
 		c.blue  = (unsigned short)
 			((int)(b + db / (float)div * (float)i + 0.5));
-		if (!XAllocColor(Pdpy, Pcmap, &c))
+		if (!PictureAllocColor(Pdpy, Pcmap, &c, False))
 		{
 			got_all = 0;
 		}

@@ -1263,7 +1263,7 @@ static void ChangeForeColor (int NbArg,long *TabArg)
 
   /* Liberation de la couleur */
   if (tabxobj[IdItem]->colorset < 0)
-    XFreeColors(dpy,Pcmap,(void*)(&(tabxobj[IdItem])->TabColor[fore]),1,0);
+    PictureFreeColors(dpy,Pcmap,(void*)(&(tabxobj[IdItem])->TabColor[fore]),1,0);
 
   tabxobj[IdItem]->forecolor=(char*)safecalloc(100,sizeof(char));
   sprintf(tabxobj[IdItem]->forecolor,"%s",arg[1]);
@@ -1299,7 +1299,7 @@ static void ChangeBackColor (int NbArg,long *TabArg)
 
   /* Liberation de la couleur */
   if (tabxobj[IdItem]->colorset < 0)
-    XFreeColors(dpy,Pcmap,(void*)(&(tabxobj[IdItem])->TabColor[back]),1,0);
+    PictureFreeColors(dpy,Pcmap,(void*)(&(tabxobj[IdItem])->TabColor[back]),1,0);
 
   tabxobj[IdItem]->backcolor = (char*)safecalloc(100,sizeof(char));
   sprintf(tabxobj[IdItem]->backcolor,"%s",arg[1]);
@@ -1329,10 +1329,10 @@ static void ChangeMainColorset (int i)
 {
  /* Liberation de la couleur */
   if (x11base->colorset < 0) {
-    XFreeColors(dpy,Pcmap,&x11base->TabColor[fore],1,0);
-    XFreeColors(dpy,Pcmap,&x11base->TabColor[back],1,0);
-    XFreeColors(dpy,Pcmap,&x11base->TabColor[hili],1,0);
-    XFreeColors(dpy,Pcmap,&x11base->TabColor[shad],1,0);
+    PictureFreeColors(dpy,Pcmap,&x11base->TabColor[fore],1,0);
+    PictureFreeColors(dpy,Pcmap,&x11base->TabColor[back],1,0);
+    PictureFreeColors(dpy,Pcmap,&x11base->TabColor[hili],1,0);
+    PictureFreeColors(dpy,Pcmap,&x11base->TabColor[shad],1,0);
   }
   x11base->colorset = i;
   AllocColorset(i);
@@ -1364,10 +1364,10 @@ static void ChangeColorset (int NbArg,long *TabArg)
 
   /* Liberation de la couleur */
   if (tabxobj[IdItem]->colorset < 0) {
-    XFreeColors(dpy,Pcmap,&tabxobj[IdItem]->TabColor[fore],1,0);
-    XFreeColors(dpy,Pcmap,&tabxobj[IdItem]->TabColor[back],1,0);
-    XFreeColors(dpy,Pcmap,&tabxobj[IdItem]->TabColor[hili],1,0);
-    XFreeColors(dpy,Pcmap,&tabxobj[IdItem]->TabColor[shad],1,0);
+    PictureFreeColors(dpy,Pcmap,&tabxobj[IdItem]->TabColor[fore],1,0);
+    PictureFreeColors(dpy,Pcmap,&tabxobj[IdItem]->TabColor[back],1,0);
+    PictureFreeColors(dpy,Pcmap,&tabxobj[IdItem]->TabColor[hili],1,0);
+    PictureFreeColors(dpy,Pcmap,&tabxobj[IdItem]->TabColor[shad],1,0);
   }
   sscanf(arg[1], "%d", &i);
   tabxobj[IdItem]->colorset = i;

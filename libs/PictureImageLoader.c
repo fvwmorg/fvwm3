@@ -102,6 +102,7 @@ PImageLoader Loaders[] =
  *
  * ***************************************************************************/
 
+#ifdef USE_OLD_COLOR_LIMIT_METHODE
 /* given an xpm, change colors to colors close to the subset above. */
 static
 void color_reduce_xpm(FxpmImage *image,int color_limit)
@@ -136,6 +137,7 @@ void color_reduce_xpm(FxpmImage *image,int color_limit)
 
 	return;
 }
+#endif
 
 /* ***************************************************************************
  *
@@ -301,6 +303,31 @@ Bool PImageLoadPng(FIMAGE_CMD_ARGS)
  * xpm loader
  *
  * ***************************************************************************/
+int PImageXpmAllocColor(
+	Display *dpy, Colormap colormap, char *colorname, XColor *color,
+	void *closure);
+int PImageXpmFreeColor(
+	Display *dpy, Colormap colormap, Pixel *pixel, int n, void *closure);
+
+int PImageXpmAllocColor(
+	Display *dpy, Colormap colormap, char *colorname, XColor *xcolor,
+	void *closure)
+{
+	if (colorname)
+	{
+		if (!XParseColor(dpy, colormap, colorname, xcolor))
+			return -1;
+	}
+	return PictureAllocColor(dpy, colormap, xcolor, False);
+}
+
+int PImageXpmFreeColor(
+	Display *dpy, Colormap colormap, Pixel *pixel, int n, void *closure)
+{
+	PictureFreeColors(dpy, colormap, pixel, n, 0);
+	return 1;
+}
+
 static
 Bool PImageLoadXpm(FIMAGE_CMD_ARGS)
 {
@@ -323,10 +350,19 @@ Bool PImageLoadXpm(FIMAGE_CMD_ARGS)
 	xpm_attributes.closeness=40000; /* Allow for "similar" colors */
 	xpm_attributes.valuemask = FxpmSize | FxpmCloseness | FxpmVisual |
 		FxpmColormap | FxpmDepth;
+#ifndef USE_OLD_COLOR_LIMIT_METHODE
+	xpm_attributes.valuemask |= FxpmAllocColor | FxpmFreeColors |
+		FxpmColorClosure;
+	xpm_attributes.alloc_color = PImageXpmAllocColor;
+	xpm_attributes.free_colors = PImageXpmFreeColor;
+	xpm_attributes.color_closure = NULL;
+	xpm_attributes.closeness = 0;
+#else
 	if (fpf.alloc_pixels)
 	{
 		xpm_attributes.valuemask |= FxpmReturnAllocPixels;
 	}
+#endif
 #ifdef HAVE_SIGACTION
 	sigemptyset(&defaultHandler.sa_mask);
 	defaultHandler.sa_flags = 0;
@@ -346,7 +382,9 @@ Bool PImageLoadXpm(FIMAGE_CMD_ARGS)
 
 	if (rc == FxpmSuccess)
 	{
+#ifdef USE_OLD_COLOR_LIMIT_METHODE
 		color_reduce_xpm(&my_image, color_limit);
+#endif
 		rc = FxpmCreatePixmapFromXpmImage(
 			dpy, Root, &my_image, pixmap, mask,
 			&xpm_attributes);
@@ -356,7 +394,11 @@ Bool PImageLoadXpm(FIMAGE_CMD_ARGS)
 			*height = my_image.height;
 			*depth = Pdepth;
 			FxpmFreeXpmImage(&my_image);
-			if (fpf.alloc_pixels && nalloc_pixels != NULL)
+			if (fpf.alloc_pixels && nalloc_pixels != NULL
+#ifndef USE_OLD_COLOR_LIMIT_METHODE
+			    && 0 
+#endif
+			   )
 			{
 				*alloc_pixels = xpm_attributes.alloc_pixels;
 				*nalloc_pixels = xpm_attributes.nalloc_pixels;

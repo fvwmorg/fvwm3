@@ -17,6 +17,11 @@
 #ifndef Picture_Utils_H
 #define Picture_Utils_H
 
+int PictureAllocColor(Display *dpy, Colormap cmap, XColor *c, int no_limit);
+void PictureFreeColors(
+	Display *dpy, Colormap cmap, Pixel *pixels, int n, unsigned long planes);
+Pixel PictureGetNextColor(Pixel p, int n);
+void PictureAllocColorTable(int color_limit, char *module);
 void PictureReduceColor(char **my_color, int color_limit);
 void PictureReduceRGBColor(XColor *c, int color_limit);
 Pixel PictureRGBtoPixel(int r, int g, int b);

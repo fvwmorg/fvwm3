@@ -34,6 +34,7 @@
 #include "screen.h"
 #include "menustyle.h"
 #include "menuitem.h"
+#include "menus.h"
 #include "decorations.h"
 
 /* ---------------------------- local definitions --------------------------- */

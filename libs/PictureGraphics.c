@@ -457,10 +457,9 @@ PGraphicsTintRectangle(
 	Drawable d, Pixmap mask, int depth, GC gc, int color_limit,
 	int dest_x, int dest_y, int dest_w, int dest_h)
 {
-	if (!XRenderSupport || !FRenderGetExtensionSupported() ||
-	    color_limit > 0)
+	if (!XRenderSupport || !FRenderGetExtensionSupported())
 	{
-		/* FIXME: work only if d is pixmap */
+		/* FIXME: work only if d is a pixmap */
 		Pixmap tinted_pix;
 
 		tinted_pix = PCreateTintedPixmap(

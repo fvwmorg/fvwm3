@@ -36,6 +36,8 @@
 #include <X11/Xproto.h>                 /* for X functions in general */
 #include "fvwmlib.h"                    /* prototype GetShadow GetHilit */
 #include "Colorset.h"
+#include "PictureBase.h"
+#include "PictureUtils.h"
 
 #define PCT_BRIGHTNESS                  (6 * 0xffff / 100)
 
@@ -60,8 +62,6 @@
 /* From Xm.h on Solaris */
 #define XmDEFAULT_DARK_THRESHOLD        15
 #define XmDEFAULT_LIGHT_THRESHOLD       85
-extern Colormap Pcmap;
-extern Display *Pdpy;
 
 static XColor color;
 
@@ -266,11 +266,15 @@ XColor *GetShadowColor(Pixel background)
 
 Pixel GetShadow(Pixel background)
 {
-  XColor *colorp;
+	XColor *colorp;
 
-  colorp = GetShadowColor(background);
-  XAllocColor (Pdpy, Pcmap, colorp);
-  return colorp->pixel;
+	colorp = GetShadowColor(background);
+	PictureAllocColor(Pdpy, Pcmap, colorp, True);
+	if (colorp->pixel == background)
+	{
+		colorp->pixel = PictureGetNextColor(colorp->pixel, 1);
+	}
+	return colorp->pixel;
 }
 
 XColor *GetHiliteColor(Pixel background)
@@ -284,7 +288,11 @@ Pixel GetHilite(Pixel background)
   XColor *colorp;
 
   colorp = GetHiliteColor(background);
-  XAllocColor (Pdpy, Pcmap, colorp);
+  PictureAllocColor(Pdpy, Pcmap, colorp, True);
+  if (colorp->pixel == background)
+  {
+	  colorp->pixel = PictureGetNextColor(colorp->pixel, -1);
+  }
   return colorp->pixel;
 }
 
@@ -335,7 +343,11 @@ Pixel GetForeShadow(Pixel foreground, Pixel background)
   XColor *colorp;
 
   colorp = GetForeShadowColor(foreground, background);
-  XAllocColor (Pdpy, Pcmap, colorp);
+  PictureAllocColor(Pdpy, Pcmap, colorp, True);
+  if (colorp->pixel == background)
+  {
+	  colorp->pixel = PictureGetNextColor(colorp->pixel, 1);
+  }
   return colorp->pixel;
 }
 
@@ -364,7 +376,7 @@ Pixel GetTintedPixel(Pixel in, Pixel tint, int percent)
   XColor *colorp;
 
   colorp = GetTintedColor(in, tint, percent);
-  XAllocColor (Pdpy, Pcmap, colorp);
+  PictureAllocColor(Pdpy, Pcmap, colorp, True);
   return colorp->pixel;
 }
 
@@ -442,7 +454,7 @@ Pixel GetSimpleColor(char *name)
 		fprintf(stderr, "Cannot parse color \"%s\"\n",
 			name ? name : "<blank>");
 	}
-	else if (!XAllocColor (Pdpy, Pcmap, &color))
+	else if (!PictureAllocColor(Pdpy, Pcmap, &color, True))
 	{
 		fprintf(stderr, "Cannot allocate color \"%s\"\n", name);
 	}
@@ -501,7 +513,7 @@ Pixel GetColor(char *name)
 			color.pixel = Colorset[cs].shadow;
 			break;
 		}
-		if (!XAllocColor(Pdpy, Pcmap, &color))
+		if (!PictureAllocColor(Pdpy, Pcmap, &color, True))
 		{
 			fprintf(stderr, "Cannot allocate color %d from"
 				" colorset %d\n", i, cs);
@@ -523,7 +535,7 @@ Pixel fvwmlib_clone_color(Pixel p)
 
 	c.pixel = p;
 	XQueryColor(Pdpy, Pcmap, &c);
-	if (!XAllocColor(Pdpy, Pcmap, &c))
+	if (!PictureAllocColor(Pdpy, Pcmap, &c, True))
 	{
 		fprintf(stderr, "Cannot allocate clone Pixel %d\n", (int)p);
 		return 0;

@@ -39,6 +39,7 @@
 #include "commands.h"
 #include "libs/FShape.h"
 #include "libs/Picture.h"
+#include "libs/PictureUtils.h"
 #include "libs/PictureGraphics.h"
 #include "libs/FRenderInit.h"
 
@@ -880,8 +881,10 @@ void parse_colorset(int n, char *line)
 				{
 					Pixel old_bg = cs->bg;
 
-					XFreeColors(dpy, Pcmap, &cs->bg, 1, 0);
-					XAllocColor(dpy, Pcmap, &color);
+					PictureFreeColors(
+						dpy, Pcmap, &cs->bg, 1, 0);
+					PictureAllocColor(
+						dpy, Pcmap, &color, True);
 					cs->bg = color.pixel;
 					if (old_bg != cs->bg)
 					{
@@ -908,7 +911,7 @@ void parse_colorset(int n, char *line)
 			{
 				Pixel old_bg = cs->bg;
 
-				XFreeColors(dpy, Pcmap, &cs->bg, 1, 0);
+				PictureFreeColors(dpy, Pcmap, &cs->bg, 1, 0);
 				cs->bg = GetColor(bg);
 				if (old_bg != cs->bg)
 				{
@@ -936,7 +939,7 @@ void parse_colorset(int n, char *line)
 			{
 				Pixel old_bg = cs->bg;
 
-				XFreeColors(dpy, Pcmap, &cs->bg, 1, 0);
+				PictureFreeColors(dpy, Pcmap, &cs->bg, 1, 0);
 				cs->bg = GetColor(white);
 				if (old_bg != cs->bg)
 					have_pixels_changed = True;
@@ -958,7 +961,7 @@ void parse_colorset(int n, char *line)
 		}
 		else
 		{
-			XFreeColors(dpy, Pcmap, &cs->fg_tint, 1, 0);
+			PictureFreeColors(dpy, Pcmap, &cs->fg_tint, 1, 0);
 			cs->fg_tint = GetColor(fg_tint);
 		}
 	}
@@ -986,8 +989,8 @@ void parse_colorset(int n, char *line)
 			{
 				Pixel old_fg = cs->fg;
 
-				XFreeColors(dpy, Pcmap, &cs->fg, 1, 0);
-				XAllocColor(dpy, Pcmap, &color);
+				PictureFreeColors(dpy, Pcmap, &cs->fg, 1, 0);
+				PictureAllocColor(dpy, Pcmap, &color, True);
 				cs->fg = color.pixel;
 				if (old_fg != cs->fg)
 					have_pixels_changed = True;
@@ -1005,7 +1008,7 @@ void parse_colorset(int n, char *line)
 			{
 				Pixel old_fg = cs->fg;
 
-				XFreeColors(dpy, Pcmap, &cs->fg, 1, 0);
+				PictureFreeColors(dpy, Pcmap, &cs->fg, 1, 0);
 				cs->fg = GetColor(fg);
 				if (old_fg != cs->fg)
 					have_pixels_changed = True;
@@ -1025,7 +1028,7 @@ void parse_colorset(int n, char *line)
 			{
 				Pixel old_fg = cs->fg;
 
-				XFreeColors(dpy, Pcmap, &cs->fg, 1, 0);
+				PictureFreeColors(dpy, Pcmap, &cs->fg, 1, 0);
 				cs->fg = GetColor(black);
 				if (old_fg != cs->fg)
 					have_pixels_changed = True;
@@ -1055,7 +1058,7 @@ void parse_colorset(int n, char *line)
 			{
 				Pixel old_fg = cs->fg;
 
-				XFreeColors(dpy, Pcmap, &cs->fg, 1, 0);
+				PictureFreeColors(dpy, Pcmap, &cs->fg, 1, 0);
 				cs->fg = cs->fg_saved;
 				if (old_fg != cs->fg)
 					have_pixels_changed = True;
@@ -1076,7 +1079,7 @@ void parse_colorset(int n, char *line)
 			{
 				Pixel old_fg = cs->fg;
 
-				XFreeColors(dpy, Pcmap, &cs->fg, 1, 0);
+				PictureFreeColors(dpy, Pcmap, &cs->fg, 1, 0);
 				cs->fg = GetTintedPixel(
 					cs->fg_saved, cs->fg_tint,
 					cs->fg_tint_percent);
@@ -1105,7 +1108,7 @@ void parse_colorset(int n, char *line)
 			{
 				Pixel old_hilite = cs->hilite;
 
-				XFreeColors(dpy, Pcmap, &cs->hilite, 1, 0);
+				PictureFreeColors(dpy, Pcmap, &cs->hilite, 1, 0);
 				cs->hilite = GetColor(hi);
 				if (old_hilite != cs->hilite)
 					have_pixels_changed = True;
@@ -1125,7 +1128,7 @@ void parse_colorset(int n, char *line)
 			{
 				Pixel old_hilite = cs->hilite;
 
-				XFreeColors(dpy, Pcmap, &cs->hilite, 1, 0);
+				PictureFreeColors(dpy, Pcmap, &cs->hilite, 1, 0);
 				cs->hilite = GetHilite(cs->bg);
 				if (old_hilite != cs->hilite)
 					have_pixels_changed = True;
@@ -1152,7 +1155,7 @@ void parse_colorset(int n, char *line)
 			{
 				Pixel old_shadow = cs->shadow;
 
-				XFreeColors(dpy, Pcmap, &cs->shadow, 1, 0);
+				PictureFreeColors(dpy, Pcmap, &cs->shadow, 1, 0);
 				cs->shadow = GetColor(sh);
 				if (old_shadow != cs->shadow)
 					have_pixels_changed = True;
@@ -1172,7 +1175,7 @@ void parse_colorset(int n, char *line)
 			{
 				Pixel old_shadow = cs->shadow;
 
-				XFreeColors(dpy, Pcmap, &cs->shadow, 1, 0);
+				PictureFreeColors(dpy, Pcmap, &cs->shadow, 1, 0);
 				cs->shadow = GetShadow(cs->bg);
 				if (old_shadow != cs->shadow)
 					have_pixels_changed = True;
@@ -1199,7 +1202,7 @@ void parse_colorset(int n, char *line)
 			{
 				Pixel old_fgsh = cs->fgsh;
 
-				XFreeColors(dpy, Pcmap, &cs->fgsh, 1, 0);
+				PictureFreeColors(dpy, Pcmap, &cs->fgsh, 1, 0);
 				cs->fgsh = GetColor(fgsh);
 				if (old_fgsh != cs->fgsh)
 					have_pixels_changed = True;
@@ -1219,7 +1222,7 @@ void parse_colorset(int n, char *line)
 			{
 				Pixel old_fgsh = cs->fgsh;
 
-				XFreeColors(dpy, Pcmap, &cs->fgsh, 1, 0);
+				PictureFreeColors(dpy, Pcmap, &cs->fgsh, 1, 0);
 				cs->fgsh = GetForeShadow(cs->fg, cs->bg);
 				if (old_fgsh != cs->fgsh)
 					have_pixels_changed = True;
@@ -1294,7 +1297,7 @@ void parse_colorset(int n, char *line)
 			else
 			{
 				Pixel old_tint = cs->tint;
-				XFreeColors(dpy, Pcmap, &cs->tint, 1, 0);
+				PictureFreeColors(dpy, Pcmap, &cs->tint, 1, 0);
 				cs->tint = GetColor(tint);
 				if (old_tint != cs->tint)
 				{
@@ -1315,7 +1318,7 @@ void parse_colorset(int n, char *line)
 			else
 			{
 				Pixel old_tint = cs->tint;
-				XFreeColors(dpy, Pcmap, &cs->tint, 1, 0);
+				PictureFreeColors(dpy, Pcmap, &cs->tint, 1, 0);
 				cs->tint = GetColor(black);
 				if (old_tint != cs->tint)
 				{
@@ -1410,6 +1413,28 @@ void alloc_colorset(int n)
 		colorset_struct *ncs = &Colorset[nColorsets];
 
 		/* try to allocate private colormap entries if required */
+#ifndef USE_OLD_COLOR_LIMIT_METHODE
+		if (n == 0 && getenv("FVWM_READWRITE_COLORS") != NULL)
+		{
+			char *envp;
+			
+			envp = getenv("FVWM_READWRITE_COLORS");
+			if (*envp == '1')
+			{
+				if (Pvisual->class != PseudoColor)
+				{
+					fvwm_msg(
+						WARN, "ReadWriteColors",
+						"ReadWriteColors only works "
+						"with PseudoColor visuals");
+				}
+				else
+				{
+					privateCells = True;
+				}
+			}
+		}
+#endif
 		if (privateCells && XAllocColorCells(
 			/* grab 5 writeable cells */
 			dpy, Pcmap, False, NULL, 0, &(ncs->fg), 5)
@@ -1419,7 +1444,7 @@ void alloc_colorset(int n)
 		{
 			XColor color;
 			XColor *colorp;
-
+			
 			/* set the fg color */
 			MyXParseColor(black, &color);
 			color.pixel = ncs->fg;
@@ -1503,6 +1528,12 @@ void CMD_ReadWriteColors(F_CMD_ARGS)
 {
 	static char *name = "ReadWriteColors";
 
+#ifndef USE_OLD_COLOR_LIMIT_METHODE
+	fvwm_msg(
+		WARN, name,
+		"ReadWriteColors is obsolete,\n\tuse the "
+		"FVWM_READWRITE_COLORS environment variable");
+#else
 	if (sharedCells)
 	{
 		fvwm_msg(
@@ -1519,6 +1550,7 @@ void CMD_ReadWriteColors(F_CMD_ARGS)
 	{
 		privateCells = True;
 	}
+#endif
 
 	return;
 }

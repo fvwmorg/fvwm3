@@ -23,6 +23,7 @@
 extern Window main_win;
 #include "libs/fvwmlib.h"
 #include "libs/PictureBase.h"
+#include "libs/PictureUtils.h"
 
 /* Masks to apply to color components when allocating colors
  * you may want to set them to 0xffff if your display supports 16bpp+
@@ -74,8 +75,7 @@ int MakeColors(Display *dpy, Drawable d, int from[3], int to[3], int maxcols,
 	    color.red = red;
 	    color.green = green;
 	    color.blue = blue;
-	    if (XAllocColor(dpy, DefaultColormap(dpy, DefaultScreen(dpy)),
-			&color)==0) {
+	    if (PictureAllocColor(dpy, Pcmap, &color, True)==0) {
 		return 0;
 	    }
 	}
@@ -101,7 +101,7 @@ int MakeColors(Display *dpy, Drawable d, int from[3], int to[3], int maxcols,
 	color.red = (unsigned short)(rv<0?0:rv);
     color.green = (unsigned short)(gv<0?0:gv);
 	color.blue = (unsigned short)(bv<0?0:bv);
-	if (XAllocColor(dpy, DefaultColormap(dpy, DefaultScreen(dpy)),&color))
+	if (PictureAllocColor(dpy, Pcmap, &color, True))
 	  *dark = color.pixel;
 	else
 	  *dark = colors[incr ? 0 : maxcols-1];
@@ -122,8 +122,7 @@ int MakeColors(Display *dpy, Drawable d, int from[3], int to[3], int maxcols,
 	color.red = (unsigned short)(rv>65535.0 ? 65535.0:rv);
     color.green = (unsigned short)(gv>65535.0 ? 65535.0:gv);
 	color.blue = (unsigned short)(bv>65535.0 ? 65535.0:bv);
-	if (XAllocColor(dpy, DefaultColormap(dpy, DefaultScreen(dpy)),
-			&color))
+	if (PictureAllocColor(dpy, Pcmap, &color, True))
 	  *light = color.pixel;
 	else
 	  *light = colors[incr ? maxcols-1 : 0];
@@ -574,7 +573,7 @@ int MakeShadowColors(Display *dpy, int from[3], int to[3],
 	color.red = (short)(rv<0?0:rv);
 	color.green = (short)(gv<0?0:gv);
 	color.blue = (short)(bv<0?0:bv);
-	if (XAllocColor(dpy, Pcmap ,&color))
+	if (PictureAllocColor(dpy, Pcmap ,&color, True))
 	  *dark = color.pixel;
 	else
 	  return 0;
@@ -595,7 +594,7 @@ int MakeShadowColors(Display *dpy, int from[3], int to[3],
 	color.red = (unsigned short)(rv>65535.0 ? 65535.0:rv);
 	color.green = (unsigned short)(gv>65535.0 ? 65535.0:gv);
 	color.blue = (unsigned short)(bv>65535.0 ? 65535.0:bv);
-	if (XAllocColor(dpy, Pcmap, &color))
+	if (PictureAllocColor(dpy, Pcmap, &color, True))
 	  *light = color.pixel;
 	else
 	  return 0;

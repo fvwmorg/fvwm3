@@ -2987,6 +2987,11 @@ void CMD_Emulate(F_CMD_ARGS)
 /* It is also ignored if the colormap is static i.e you can't run out */
 void CMD_ColorLimit(F_CMD_ARGS)
 {
+#ifndef USE_OLD_COLOR_LIMIT_METHODE
+	fvwm_msg(
+		WARN, "ColorLimit", "ColorLimit is obsolete,\n\tuse the "
+		"FVWM_COLORLIMIT environment variable");
+#else
 	int val;
 
 	/* from X.h:
@@ -3005,7 +3010,7 @@ void CMD_ColorLimit(F_CMD_ARGS)
 	}
 
 	Scr.ColorLimit = (long)val;
-
+#endif
 	return;
 }
 

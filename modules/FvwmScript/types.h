@@ -18,6 +18,7 @@
 #include "libs/fvwmlib.h"
 #include "libs/Module.h"
 #include "libs/Picture.h"
+#include "libs/PictureUtils.h"
 #include "libs/PictureGraphics.h"
 #include "libs/Colorset.h"
 #include "libs/Flocale.h"

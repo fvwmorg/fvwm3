@@ -1,3 +1,41 @@
+2002-07-17  olicha  <olivier.chapuis@free.fr>
+
+	* fvwm/menuitem.c:
+	A -Wall fix
+
+	* fvwm/fvwm.c (InitVariables):
+	(main):
+	* fvwm/colorset.c (parse_colorset):
+	(alloc_colorset):
+	(CMD_ReadWriteColors):
+	* fvwm/builtins.c (CMD_ColorLimit):
+	* libs/PictureUtils.h:
+	* libs/PictureUtils.c (PictureReduceColor):
+	(PictureReduceRGBColor):
+	(PictureRGBtoPixel):
+	(PictureAllocColor):
+	(PictureFreeColors):
+	(PictureGetNextColor):
+	(colors_alloc_fail):
+	(my_alloc_color):
+	(AllocColors*):
+	(AllocColorTable):
+	(PictureAllocColorTable):
+	* libs/PictureImageLoader.c (PImageXpmAllocColor):
+	(PImageXpmFreeColor):
+	(PImageLoadXpm):
+	* libs/PictureBase.c (PictureInitCMap):
+	* libs/Graphics.c (AllocLinearGradient):
+	* libs/ColorUtils.c (GetShadow):
+	(GetHilite):
+	(GetForeShadow):
+	(GetTintedPixel):
+	(GetSimpleColor):
+	(GetColor):
+	(fvwmlib_clone_color):
+	* libs/PictureGraphics.c (PGraphicsTintRectangle): 
+	Implemented a new color limit method
+
 2002-07-17  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* fvwm/move_resize.c (moveLoop):

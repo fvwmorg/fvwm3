@@ -53,6 +53,7 @@
 
 #include <fvwmlib.h>
 #include "PictureBase.h"
+#include "PictureUtils.h"
 
 Bool Pdefault;
 Visual *Pvisual;
@@ -91,6 +92,29 @@ void PictureInitCMap(Display *dpy) {
 	FvwmVisual = Pvisual;
 	FvwmDepth = Pdepth;
 	FvwmCmap = Pcmap;
+
+	/* initialise color limit */
+#ifndef USE_OLD_COLOR_LIMIT_METHODE
+	{
+		int cl = 0;
+		
+		if (Pdepth <= 8 && (Pvisual->class & 1))
+		{
+			cl = 256;
+		}
+		if (Pdepth <= 20 && (Pvisual->class & 1) &&
+		    (envp = getenv("FVWM_COLORLIMIT")) != NULL)
+		{
+			cl = atoi(envp);
+			if (cl < 0)
+				cl = 0;
+		}
+		if (cl > 0)
+		{
+			PictureAllocColorTable(cl, NULL);
+		}
+	}
+#endif
 
 	return;
 }
