@@ -1,3 +1,8 @@
+1999-08-12  Hippo
+
+	* fvwm/menus.c: fixed shaped sidepics in menus when menu is shorter
+	than sidepic
+
 1999-08-12  Dominik Vogt  <domivogt@bvstp038.bbn.hp.com>
 
 	* fvwm/fvwm2.1 (Current): clarified condition mask (application name)

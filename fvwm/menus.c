@@ -2840,7 +2840,7 @@ static void paint_side_pic(MenuRoot *mr)
   {
     Globalgcv.clip_mask = sidePic->mask;
     Globalgcv.clip_x_origin = MR_SIDEPIC_X_OFFSET(mr);
-    Globalgcv.clip_y_origin = yt;
+    Globalgcv.clip_y_origin = yt - ys;
     XChangeGC(dpy, ReliefGC, GCClipMask | GCClipXOrigin | GCClipYOrigin,
 	      &Globalgcv);
     XCopyArea(dpy, sidePic->picture, MR_WINDOW(mr), ReliefGC,
