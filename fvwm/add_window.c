@@ -1034,9 +1034,12 @@ FvwmWindow *AddWindow(Window w, FvwmWindow *ReuseWin)
   Bool used_sm = False;
   Bool do_resize_too = False;
 
+  fvwm_msg(WARN,"AddWindow","Entering");
   /****** init window structure ******/
-  if (!setup_window_structure(&tmptmp_win, w, ReuseWin))
+  if (!setup_window_structure(&tmptmp_win, w, ReuseWin)) {
+    fvwm_msg(ERR,"AddWindow","Bad return code from setup_window_structure");
     return NULL;
+  }
   tmp_win = tmptmp_win;
 
   /****** safety check ******/
@@ -1045,11 +1048,13 @@ FvwmWindow *AddWindow(Window w, FvwmWindow *ReuseWin)
 		  &JunkWidth, &JunkHeight, &JunkBW, &JunkDepth) == 0)
   {
     free((char *)tmp_win);
+    fvwm_msg(ERR,"AddWindow","Can't get geometry");
     return NULL;
   }
 
   /****** window name ******/
   setup_window_name(tmp_win);
+  fvwm_msg(WARN,"AddWindow","Window name is %s",tmp_win->name);
   setup_class_and_resource(tmp_win);
   setup_wm_hints(tmp_win);
 
@@ -1077,6 +1082,7 @@ FvwmWindow *AddWindow(Window w, FvwmWindow *ReuseWin)
     free((char *)tmp_win);
     MyXUngrabServer(dpy);
 /*!!! this is a memory leak!!!*/
+    fvwm_msg(ERR,"AddWindow","Can't get geometry a second time");
     return NULL;
   }
 
@@ -1180,6 +1186,7 @@ FvwmWindow *AddWindow(Window w, FvwmWindow *ReuseWin)
     case 0:
       /* failed */
 /*!!! this is a memory leak!!!*/
+      fvwm_msg(ERR,"AddWindow","setup_window_placement failed");
       return NULL;
     case 1:
       /* ok */
@@ -1318,6 +1325,7 @@ FvwmWindow *AddWindow(Window w, FvwmWindow *ReuseWin)
       tmp_win->frame_g.width, tmp_win->frame_g.height, False);
     SET_SHADED(tmp_win ,1);
   }
+  fvwm_msg(WARN,"AddWindow","Window added");
 
   return tmp_win;
 }
