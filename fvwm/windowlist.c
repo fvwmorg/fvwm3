@@ -59,27 +59,14 @@ extern FvwmWindow *ButtonWindow;
 #define NO_DESK_SORT		(1<<6)
 #define SHOW_ICONNAME		(1<<7)
 #define SHOW_ALPHABETIC		(1<<8)
-#define SHOW_INFONOTGEO		(1<<9)
-#define NO_DESK_NUM		(1<<10)
-#define NO_CURRENT_DESK_TITLE	(1<<11)
-#define TITLE_FOR_ALL_DESKS	(1<<12)
-#define NO_NUM_IN_DESK_TITLE	(1<<13)
+#define SORT_CLASSNAME		(1<<9)
+#define SORT_REVERSE		(1<<10)
+#define SHOW_INFONOTGEO		(1<<11)
+#define NO_DESK_NUM		(1<<12)
+#define NO_CURRENT_DESK_TITLE	(1<<13)
+#define TITLE_FOR_ALL_DESKS	(1<<14)
+#define NO_NUM_IN_DESK_TITLE	(1<<15)
 #define SHOW_EVERYTHING (SHOW_GEOMETRY | SHOW_ALLDESKS | SHOW_NORMAL | SHOW_ICONIC | SHOW_STICKY)
-
-/* Function to compare window title names
- */
-static int globalFlags;
-static int winCompare(const  FvwmWindow **a, const  FvwmWindow **b)
-{
-  if(globalFlags & SHOW_ICONNAME)
-    return strcasecmp((*a)->visible_icon_name,(*b)->visible_icon_name);
-  else
-    return strcasecmp((*a)->visible_name,(*b)->visible_name);
-}
-static int winCompareReverse(const  FvwmWindow **a, const  FvwmWindow **b)
-{
-  return -winCompare(a, b);
-}
 
 static char *get_desk_title(int desk, unsigned long flags, Bool is_top_title)
 {
@@ -153,7 +140,6 @@ void CMD_WindowList(F_CMD_ARGS)
   char *sor_keyname = sor_default_keyname;
   /* Condition vars. */
   Bool use_condition = False;
-  Bool do_reverse_sort_order = False;
   Bool current_at_end = False;
   Bool iconified_at_end = False;
   int ic = 0;
@@ -222,8 +208,10 @@ void CMD_WindowList(F_CMD_ARGS)
 	flags &= ~SHOW_ALPHABETIC;
       else if (StrEquals(tok,"Alphabetic"))
 	flags |= SHOW_ALPHABETIC;
+      else if (StrEquals(tok,"SortClassName"))
+	flags |= SORT_CLASSNAME;
       else if (StrEquals(tok,"ReverseOrder"))
-	do_reverse_sort_order = True;
+	flags |= SORT_REVERSE;
       else if (StrEquals(tok,"CurrentAtEnd"))
 	current_at_end = True;
       else if (StrEquals(tok,"IconifiedAtEnd"))
@@ -346,8 +334,6 @@ void CMD_WindowList(F_CMD_ARGS)
   {
     opts = get_menu_options(action, w, fw, eventp, NULL, NULL, &mops);
   }
-  globalFlags = flags;
-
 
   tlabel = get_desk_title(desk, flags, True);
   mr = NewMenuRoot(tlabel);
@@ -388,7 +374,7 @@ void CMD_WindowList(F_CMD_ARGS)
   }
   for (ii = 0; ii < numWindows; ii++)
   {
-    if (do_reverse_sort_order)
+    if (flags & SORT_REVERSE)
       windowList[numWindows - ii - 1] = t;
     else if (iconified_at_end && IS_ICONIFIED(t))
       iconifiedList[ic++] = t;
@@ -410,18 +396,82 @@ void CMD_WindowList(F_CMD_ARGS)
   }
 
   /* Do alphabetic sort */
-  if (flags & SHOW_ALPHABETIC)
+  if (flags & (SHOW_ALPHABETIC | SORT_CLASSNAME))
   {
-    if (do_reverse_sort_order)
-    {
-      qsort(windowList,numWindows,sizeof(t),
-	    (int(*)(const void*,const void*))winCompareReverse);
-    }
-    else
-    {
-      qsort(windowList,numWindows,sizeof(t),
-	    (int(*)(const void*,const void*))winCompare);
-    }
+	/* Which of the compare functions to sort on. */
+  	int (*compare)( const FvwmWindow **a, const FvwmWindow **b);
+	/* This will be compare or compareReverse if a reverse order
+	 * is selected.
+	 */
+	int (*sort)(const FvwmWindow **a, const FvwmWindow **b);
+	/* Function to compare window title names
+	*/
+	static int visibleCompare(const  FvwmWindow **a, const  FvwmWindow **b)
+	{
+		return strcasecmp((*a)->visible_name,(*b)->visible_name);
+	}
+	static int iconCompare(const  FvwmWindow **a, const  FvwmWindow **b)
+	{
+		return strcasecmp((*a)->visible_icon_name,
+			(*b)->visible_icon_name);
+	}
+	static int classCompare(const  FvwmWindow **a, const  FvwmWindow **b)
+	{
+		int result = strcasecmp((*a)->class.res_class,
+			(*b)->class.res_class);
+		if(result)
+			return result;
+		return strcasecmp((*a)->visible_name,(*b)->visible_name);
+	}
+	static int classIconCompare(const  FvwmWindow **a,
+		const  FvwmWindow **b)
+	{
+		int result = strcasecmp((*a)->class.res_class,
+			(*b)->class.res_class);
+		if(result)
+			return result;
+		return strcasecmp((*a)->visible_icon_name,
+			(*b)->visible_icon_name);
+	}
+	switch( flags & (SHOW_ALPHABETIC|SHOW_ICONNAME|SORT_CLASSNAME))
+	{
+	case SHOW_ALPHABETIC:
+		compare=visibleCompare;
+		break;
+	case SHOW_ALPHABETIC|SHOW_ICONNAME:
+		compare=iconCompare;
+		break;
+	/* Sorting based on class name produces an alphabetic order so the
+	 * keyword alphabetic is redundant.
+	 */
+	case SORT_CLASSNAME:
+	case SORT_CLASSNAME|SHOW_ALPHABETIC:
+		compare=classCompare;
+		break;
+	case SORT_CLASSNAME|SHOW_ICONNAME:
+	case SORT_CLASSNAME|SHOW_ALPHABETIC|SHOW_ICONNAME:
+		compare=classIconCompare;
+		break;
+	/* All current cases are covered, but if something changes in the
+	 * future we leave compare valid even if it isn't what is expected.
+	 */
+	default:
+		compare=visibleCompare;
+	}
+
+	if( flags & SORT_REVERSE )
+	{
+		static int compareReverse(const  FvwmWindow **a,
+			const  FvwmWindow **b)
+		{
+			return -compare(a, b);
+		}
+		sort = compareReverse;
+	}
+	else
+		sort=compare;
+	qsort(windowList,numWindows,sizeof(t),
+		(int(*)(const void*,const void*))sort);
   }
 
   while(next_desk != INT_MAX)

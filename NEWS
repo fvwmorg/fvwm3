@@ -7,6 +7,8 @@ Changes in alpha release 2.5.3 (not released yet)
 
 * New Style option IconSize for restricting icon sizes.
 
+* New WindowList option SortClassName.
+
 -------------------------------------------------------------------
 
 Changes in alpha release 2.5.2 (24-Jun-2002)

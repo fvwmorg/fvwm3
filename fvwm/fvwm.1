@@ -3876,10 +3876,20 @@ passed to WindowList can be
 .IR IconifiedAtEnd ,
 .IR UseIconName ,
 .IR Alphabetic " / " NotAlphabetic ,
+.IR SortClassName ,
 .IR NoHotkeys ,
 .IR SelectOnRelease .
 
 (Note - normal means not iconic, sticky, or on top)
+
+With the
+.I SortClassName
+option windows are alphabetically sorted first by class (WM_CLASS)
+and then by window name or icon name if
+.I UseIconName
+is specified.
+.I ReverseOrder
+also works in the expected manner.
 
 The
 .I SelectOnRelease
