@@ -4531,6 +4531,9 @@ is a comma separated list containing one or more of the keywords
 .IR UseDecor ,
 .IR UseStyle ,
 .IR NoPPosition " / " UsePPosition ,
+.IR NoUSPosition " / " UseUSPosition ,
+.IR NoTransientPPosition " / " UseTransientPPosition ,
+.IR NoTransientUSPosition " / " UseTransientUSPosition ,
 .IR UseIconPosition " / " NoIconPosition ,
 .IR Lenience " / " NoLenience ,
 .IR ClickToFocus " / " SloppyFocus " /"
@@ -5153,6 +5156,20 @@ hint) when adding new windows.  Using PPosition is required for
 some applications, but if you don't have one of those its a real
 headache.  Many programs set PPosition to something obnoxious like
 0,0 (upper left corner).
+
+.I NoUSPosition
+works like
+.I NoPPosition
+but applies suppresses using the user specified position indicated
+by the program (USPosition hint).  It is generally a bad thing to
+override the user's choice, but some applications misuse the
+USPosition hint to force their windows to a certain spot on the
+screen without the user's consent.
+
+.IR NoTransientPPosition " and " UseTransientPPosition
+work like
+.IR NoPPosition " and " UsePPosition
+but apply only to transient windows.
 
 .I NoIconPosition
 instructs fvwm to ignore the program specified icon position

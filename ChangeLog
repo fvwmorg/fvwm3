@@ -1,3 +1,19 @@
+2001-08-31  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* fvwm/placement.c (PlaceWindow):
+	* fvwm/style.c (CMD_Style):
+	(check_window_style_change):
+	* fvwm/style.h (SUSE_NO_USPOSITION):
+	(SUSE_NO_TRANSIENT_PPOSITION):
+	(SUSE_NO_TRANSIENT_USPOSITION):
+	* fvwm/fvwm.h (struct):
+	implemented new styles NoUSPosition/UseUSPosition,
+	NoTransientPPosition/UseTransientPPosition,
+	NoTransientUSPosition/UseTransientUSPosition.
+	These work exactly like NoPPosition/UsePPosition.
+	Transient windows ignore the window position if neither the PPosition
+	nor the USPosition hint is set.
+
 2001-08-28  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* fvwm/focus.c (restore_focus_after_unmap):

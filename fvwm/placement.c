@@ -719,16 +719,32 @@ Bool PlaceWindow(
   {
     flags.do_not_use_wm_placement = False;
   }
-  else if (IS_TRANSIENT(tmp_win))
+  else if (IS_TRANSIENT(tmp_win) &&
+	   !((tmp_win->hints.flags & PPosition) &&
+	     SUSE_NO_TRANSIENT_PPOSITION(sflags)) &&
+	   !((tmp_win->hints.flags & USPosition) &&
+	     SUSE_NO_TRANSIENT_USPOSITION(sflags)))
   {
+    /* Transient windows use the position hint if these conditions are met:
+     *
+     *  The program specified a USPosition hint and it is not overridden with
+     *  the NoTransientUSPosition style.
+     *
+     * OR
+     *
+     *  The program specified a PPosition hint and it is not overridden with
+     *  the NoTransientPPosition style.
+     */
     flags.do_not_use_wm_placement = True;
   }
-  else if (tmp_win->hints.flags & USPosition)
+  else if (!IS_TRANSIENT(tmp_win) &&
+	   !((tmp_win->hints.flags & PPosition) &&
+	     SUSE_NO_PPOSITION(sflags)) &&
+	   !((tmp_win->hints.flags & USPosition) &&
+	     SUSE_NO_USPOSITION(sflags)) &&
+	   (tmp_win->hints.flags & (USPosition | PPosition)))
   {
-    flags.do_not_use_wm_placement = True;
-  }
-  else if (!SUSE_NO_PPOSITION(sflags) && (tmp_win->hints.flags & PPosition))
-  {
+    /* Same applies to non transient windows, but use different style flags. */
     flags.do_not_use_wm_placement = True;
   }
   else if (PPosOverride)

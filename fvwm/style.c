@@ -1986,6 +1986,27 @@ void CMD_Style(F_CMD_ARGS)
           ptmpstyle->flag_mask.use_no_pposition = 1;
           ptmpstyle->change_mask.use_no_pposition = 1;
         }
+        else if (StrEquals(token, "NoUSPosition"))
+        {
+	  found = True;
+          ptmpstyle->flags.use_no_usposition = 1;
+          ptmpstyle->flag_mask.use_no_usposition = 1;
+          ptmpstyle->change_mask.use_no_usposition = 1;
+        }
+        else if (StrEquals(token, "NoTransientPPosition"))
+        {
+	  found = True;
+          ptmpstyle->flags.use_no_transient_pposition = 1;
+          ptmpstyle->flag_mask.use_no_transient_pposition = 1;
+          ptmpstyle->change_mask.use_no_transient_pposition = 1;
+        }
+        else if (StrEquals(token, "NoTransientUSPosition"))
+        {
+	  found = True;
+          ptmpstyle->flags.use_no_transient_usposition = 1;
+          ptmpstyle->flag_mask.use_no_transient_usposition = 1;
+          ptmpstyle->change_mask.use_no_transient_usposition = 1;
+        }
         else if (StrEquals(token, "NoIconPosition"))
         {
 	  found = True;
@@ -2464,6 +2485,27 @@ void CMD_Style(F_CMD_ARGS)
           ptmpstyle->flag_mask.use_no_pposition = 1;
           ptmpstyle->change_mask.use_no_pposition = 1;
         }
+        else if (StrEquals(token, "UseUSPosition"))
+        {
+	  found = True;
+          ptmpstyle->flags.use_no_usposition = 0;
+          ptmpstyle->flag_mask.use_no_usposition = 1;
+          ptmpstyle->change_mask.use_no_usposition = 1;
+        }
+        else if (StrEquals(token, "UseTransientPPosition"))
+        {
+	  found = True;
+          ptmpstyle->flags.use_no_transient_pposition = 0;
+          ptmpstyle->flag_mask.use_no_transient_pposition = 1;
+          ptmpstyle->change_mask.use_no_transient_pposition = 1;
+        }
+        else if (StrEquals(token, "UseTransientUSPosition"))
+        {
+	  found = True;
+          ptmpstyle->flags.use_no_transient_usposition = 0;
+          ptmpstyle->flag_mask.use_no_transient_usposition = 1;
+          ptmpstyle->change_mask.use_no_transient_usposition = 1;
+        }
         else if (StrEquals(token, "UseIconPosition"))
         {
 	  found = True;
@@ -2751,6 +2793,9 @@ void check_window_style_change(
    *   do_place_smart
    *   do_start_lowered
    *   use_no_pposition
+   *   use_no_usposition
+   *   use_no_transient_pposition
+   *   use_no_transient_usposition
    *   use_start_on_desk
    *   use_start_on_page_for_transient
    *   use_start_on_screen

@@ -377,6 +377,9 @@ typedef struct
   unsigned use_border_colorset_hi : 1;
   unsigned use_layer : 1;
   unsigned use_no_pposition : 1;
+  unsigned use_no_usposition : 1;
+  unsigned use_no_transient_pposition : 1;
+  unsigned use_no_transient_usposition : 1;
   unsigned use_start_on_desk : 1;
   unsigned use_start_on_page_for_transient : 1;
   unsigned use_start_on_screen : 1;

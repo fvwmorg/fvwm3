@@ -47,6 +47,9 @@
 #define SUSE_BORDER_COLORSET_HI(sf)   ((sf)->use_border_colorset_hi)
 #define SUSE_LAYER(sf)                ((sf)->use_layer)
 #define SUSE_NO_PPOSITION(sf)         ((sf)->use_no_pposition)
+#define SUSE_NO_USPOSITION(sf)         ((sf)->use_no_usposition)
+#define SUSE_NO_TRANSIENT_PPOSITION(sf)  ((sf)->use_no_transient_pposition)
+#define SUSE_NO_TRANSIENT_USPOSITION(sf) ((sf)->use_no_transient_usposition)
 #define SUSE_START_ON_DESK(sf)        ((sf)->use_start_on_desk)
 #define SUSE_START_ON_PAGE_FOR_TRANSIENT(sf) \
   ((sf)->use_start_on_page_for_transient)
