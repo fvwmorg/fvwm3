@@ -1,5 +1,10 @@
 2001-05-04  Mikhael Goikhman  <migo@homemail.com>
 
+	* NEWS, configure.in:
+	changed version to 2.3.33
+
+2001-05-04  Mikhael Goikhman  <migo@homemail.com>
+
 	* configure.in:
 	report gdk-imlib support in FvwmGtk; don't report gnome-libs and
 	gdk-imlib support in FvwmGtk if FvwmGtk is not installed;
