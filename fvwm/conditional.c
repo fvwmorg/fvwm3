@@ -1625,11 +1625,11 @@ void CMD_On(F_CMD_ARGS)
 		{
 			match = !match;
 		}
+		free(condition);
 		if (error || !match)
 		{
 			break;
 		}
-		free(condition);
 		tmp = GetNextSimpleOption(tmp, &condition);
 	}
 	if (flags != NULL)

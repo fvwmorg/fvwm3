@@ -1,5 +1,8 @@
 2003-05-22  olicha  <olivier.chapuis@free.fr>
 
+	* fvwm/conditional.c (CMD_On):
+	Fixed memory leaks
+
 	* fvwm/conditional.c (CreateConditionMask):
 	Fixed memory leaks for layer and state
 

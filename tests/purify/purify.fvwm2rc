@@ -36,6 +36,9 @@ CreateFunc RootTail
 DestroyMenu TestMenu
 AddToMenu TestMenu "=== TestMenu ===" Title
 AddToMenu TestMenu "Run root tail" Function RootTail
+AddToMenu TestMenu "FvwmConsole" FvwmConsole
+AddToMenu TestMenu "Xterm" Exec xterm
++ "" Nop
 AddToMenu TestMenu "Run all tests" function TestFunc
 # Give the TestMenu a distinctive Style:
 MenuStyle TMS fvwm, background cornflowerblue, foreground white, Hilight3DThick
@@ -1021,14 +1024,15 @@ AddToFunc WarpToWindow-Func
 # This test destroys the test windows and then brings them back
 AddTest "Test Close_Delete_Destroy" Close_Delete_Destroy-Func
 AddToFunc Close_Delete_Destroy-Func
- + I Next (window1) Close
- + I Next (window2) Close #älök.,nm-öp93m-öki 0 <F3>üß8
- + I Next (window3) Delete
- + I Next (window4) Delete .mwq.-l km<F3>noi
- + I Next (window5) Destroy .mwq.-l km<F3>noiDestroy .mwq.-l km<F3>noi
- + I Next (window6) Destroy
- + I Next (window_iconic) Close
- + I Next (window_shaded) Close
+ + I All (window0) Close
+ + I All (window1) Close
+ + I All (window2) Close #älök.,nm-öp93m-öki 0 <F3>üß8
+ + I All (window3) Delete
+ + I All (window4) Delete .mwq.-l km<F3>noi
+ + I All (window5) Destroy .mwq.-l km<F3>noiDestroy .mwq.-l km<F3>noi
+ + I All (window6) Destroy
+ + I All (window_iconic) Close
+ + I All (window_shaded) Close
  + I CreateWindows-Func
  + I Refresh
 
@@ -1389,7 +1393,7 @@ AddToFunc Style-Func
  + I StyleAndUpdate "window*" !StickyAcrossDesks
  + I StyleAndUpdate "window*" StartIconic
  + I StyleAndUpdate "window*" StartIconic
- + I Exec xterm -T window7 -n window7 -e sleep 1000
+ + I Exec xterm -geometry 10x5 -T window7 -n window7 -e sleep 1000
  + I Wait window7
  + I All (window7) Close
  + I StyleAndUpdate "window*" StartNormal
@@ -1505,7 +1509,7 @@ AddToFunc Style2-Func
  + I StyleAndUpdate "window*" StartsOnDesk		0
  + I StyleAndUpdate "window*" StartsOnDesk 1
  + I StyleAndUpdate "window*" SkipMapping
- + I Exec xterm -T window7 -n window7 -e sleep 1000
+ + I Exec xterm -geometry 10x5 -T window7 -n window7 -e sleep 1000
  + I Wait window7
  + I All (window7) Close
  + I StyleAndUpdate "window*" StartsOnPage
@@ -1513,7 +1517,7 @@ AddToFunc Style2-Func
  + I StyleAndUpdate "window*" StartsOnPage  0   0
  + I StyleAndUpdate "window*" StartsOnPage	0	0
  + I StyleAndUpdate "window*" StartsOnPage	1
- + I Exec xterm -T window7 -n window7 -e sleep 1000
+ + I Exec xterm -geometry 10x5 -T window7 -n window7 -e sleep 1000
  + I Wait window7
  + I All (window7) Close
  + I StyleAndUpdate "window*" StartsAnyWhere
@@ -1584,7 +1588,7 @@ AddToFunc Style2-Func
 # old names for pacement
  + I StyleAndUpdate "window*" SmartPlacement
  + I StyleAndUpdate "window*" SmartPlacement
- + I Exec xterm -T window7 -n window7 -e sleep 1000
+ + I Exec xterm -geometry 10x5 -T window7 -n window7 -e sleep 1000
  + I Wait window7
  + I All (window7) Close
  + I StyleAndUpdate "window*" CleverPlacement
@@ -1597,44 +1601,44 @@ AddToFunc Style2-Func
 # new one's
  + I StyleAndUpdate "window*" CascadePlacement
  + I StyleAndUpdate "window*" CascadePlacement
- + I Exec xterm -T window7 -n window7 -e sleep 1000
+ + I Exec xterm -geometry 10x5 -T window7 -n window7 -e sleep 1000
  + I Wait window7
  + I All (window7) Close
  + I StyleAndUpdate "window*" ManualPlacement
  + I StyleAndUpdate "window*" ManualPlacement
- + I Exec xterm -T window7 -n window7 -e sleep 1000
- + I Wait window7
- + I All (window7) Close
+# + I Exec xterm -geometry 10x5 -T window7 -n window7 -e sleep 1000
+# + I Wait window7
+# + I All (window7) Close
  + I StyleAndUpdate "window*" TileCascadePlacement
  + I StyleAndUpdate "window*" TileCascadePlacement
- + I Exec xterm -T window7 -n window7 -e sleep 1000
+ + I Exec xterm -geometry 10x5 -T window7 -n window7 -e sleep 1000
  + I Wait window7
  + I All (window7) Close
  + I StyleAndUpdate "window*" TileManualPlacement
  + I StyleAndUpdate "window*" TileManualPlacement
- + I Exec xterm -T window7 -n window7 -e sleep 1000
- + I Wait window7
- + I All (window7) Close
+# + I Exec xterm -geometry 10x5 -T window7 -n window7 -e sleep 1000
+# + I Wait window7
+# + I All (window7) Close
  + I StyleAndUpdate "window*" MinOverlapPlacement
  + I StyleAndUpdate "window*" MinOverlapPlacement
- + I Exec xterm -T window7 -n window7 -e sleep 1000
+ + I Exec xterm -geometry 10x5 -T window7 -n window7 -e sleep 1000
  + I Wait window7
  + I All (window7) Close
  + I StyleAndUpdate "window*" MinOverlapPercentPlacement
  + I StyleAndUpdate "window*" MinOverlapPercentPlacement
- + I Exec xterm -T window7 -n window7 -e sleep 1000
+ + I Exec xterm -geometry 10x5 -T window7 -n window7 -e sleep 1000
  + I Wait window7
  + I All (window7) Close
  + I StyleAndUpdate "window*" MinOverlapPlacementPenalties 1 10 5 3 0.2 50000
  + I StyleAndUpdate "window*" MinOverlapPlacementPenalties -1 aa 0 16 kk
  + I StyleAndUpdate "window*" MinOverlapPlacementPenalties
- + I Exec xterm -T window7 -n window7 -e sleep 1000
+ + I Exec xterm -geometry 10x5 -T window7 -n window7 -e sleep 1000
  + I Wait window7
  + I All (window7) Close
  + I StyleAndUpdate "window*" MinOverlapPlacementPenalties
  + I StyleAndUpdate "window*" MinOverlapPercentPlacementPenalties 12 6 4 1
  + I StyleAndUpdate "window*" MinOverlapPercentPlacementPenalties -1 aa 0 16
- + I Exec xterm -T window7 -n window7 -e sleep 1000
+ + I Exec xterm -geometry 10x5 -T window7 -n window7 -e sleep 1000
  + I Wait window7
  + I All (window7) Close
  + I StyleAndUpdate "window*" MinOverlapPercentPlacementPenalties
@@ -1833,7 +1837,8 @@ AddToFunc Style2-Func
  + I StyleAndUpdate "window*" EWMHPlacementUseWorkingArea
  + I StyleAndUpdate "window*" EWMHPlacementUseDynamicWorkingArea
  + I PrintInfo style 36
-
+ + I All (window7) Close
+ 
 AddTest "Test DestroyStyle" DestroyStyle
 AddToFunc DestroyStyle-Func
  + I StyleAndUpdate "destroyme" IconBox 1 1 2 2, font 10x20, lenience
