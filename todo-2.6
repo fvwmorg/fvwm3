@@ -1,17 +1,17 @@
 ----- Summary ------------------------------------------------------------------
 
 Issues opened recently: 0
-Issues closed recently: 3 (C.18, C.24, E.10)
+Issues closed recently: 3 (C.18, C.24, D.1, E.10)
                              open / closed
 A. Release stopping bugs:       0 / 1
 B. Normal bugs:                 3 / 5
 C. To be verified:             12 / 14
-D. To be discussed:             1 / 0
+D. To be discussed:             1 / 1
 E. To do:                      10 / 7
 F. Distribution issues:         3 / 1
 G. Testing:                     5 / 0
 
-Total:                         37 / 25
+Total:                         37 / 26
 
 - When you add/close an item give dates
 
@@ -86,19 +86,6 @@ C. To be verified
 D. To be discussed
 ------------------
 
-  D.1 Make the distinction between FVWM (project) and fvwm (core executable)?
-      [dv: Against it.  I've never seen myself as being part of an 'FVWM
-      project'.  I think this will only confuse people.  For me, fvwm is simply
-      a name.]
-      [migo: Ok, so everyone does what he feels is good. For me it is confusing
-      to use the same word to mean different things. Say, I'm an FVWM developer
-      that means much more than a coder of the window manager executable fvwm,
-      it also includes working on modules, documentation, perllib, web site,
-      configs, rpms and much more that makes the whole thing - FVWM.]
-      [dv: I don't care if it's confusing for you or for me.  I care about the
-      users who will eventually bring their confusion to the mailing list and
-      thus complicate maintenance.]
-
   D.2 Leave or remove the current change to triggering bindings on button press
       or release?  Seems to irritate a lot of users, but fixes a root window
       binding bug.
@@ -133,7 +120,7 @@ E. To do
        [Mikhael]
 
   E.13 Rename ~/.fvwm/.fvwm2rc to ~/.fvwm/main or ~/.fvwm/config.
-       [Mikhael, after a notice and a possible discussion]
+       [Mikhael]
        [dv: why? it's only confusing]
        [migo: what is a non confusing name? The ~/.fvwm/.fvwm2rc is way too
         confusing for new/independent users, since it 1) is hidden (too bad),
@@ -153,7 +140,8 @@ E. To do
        [Mikhael (with help of Richard Lister?)]
 
   E.16 Rename all "Pixmap" in the syntax to "Image" while supporting both.
-       Probably rename MultiPixmap to Multi, since it accepts Solid + Colorset.
+       Rename MultiPixmap to MultiPart, since it also accepts Solid and
+       Colorset options, not just images for different titlebar parts.
        [Mikhael]
        [dv: I wouldn't do that anymore.  That syntax will be removed soon after
        the 2.6 release, so the clean up work is in vain.]
@@ -278,6 +266,9 @@ G. Testing
   C.26 ClickToFocus broken? [#993,2.5.5,2003-02-26].
        [dv: added on 02-Mar-2003; asked for a config file but go no reply]
        [no reply, probably FAQ 0.1]
+
+  D.1 Make the distinction between FVWM (project) and fvwm (core executable)?
+      [no consensus]
 
   E.1 Complete this document
 
