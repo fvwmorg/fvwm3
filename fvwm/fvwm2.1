@@ -2852,6 +2852,23 @@ AddToDecor FlatDecor
  + Style xterm UseStyle FlatStyle
 .EE
 
+Although this is not obvious, decors can partially be nested
+with the UseDecor style:
+
+.EX
+AddToDecor CommonDecor
+ + Style * Forecolor black, Backcolor darkseagreen
+
+AddToDecor FlatDecor
+ + Style * UseDecor CommonDecor
+...
+
+AddToDecor RaisedDecor
+ + Style * UseDecor CommonDecor
+...
+.EE
+
+This works only with the 'Style' command.
 
 .TP
 .B "BorderStyle" "[\fIstate\fP] [\fIstyle\fP] [-- \fI[!]flag ...\fP]"
