@@ -1,5 +1,8 @@
 2001-03-21  Dominik Vogt  <dominik.vogt@gmx.de>
 
+	* FvwmIdent/FvwmIdent.c (list_end):
+	Fixed crash when reselecting the FvwmIdent window (mouse button 2)
+
 	* FvwmButtons/draw.c (RedrawButton):
 	* FvwmButtons/FvwmButtons.c (HandlePanelPress):
 	(Loop):

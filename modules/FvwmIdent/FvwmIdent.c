@@ -587,7 +587,6 @@ void list_end(void)
 	    if (is_button_pressed == 2 && Event.xbutton.button == 2)
 	    {
 	      /* select a new window when button 2 is pressed */
-	      fvwmlib_get_target_window(dpy, screen, MyName, &app_win, True);
 	      SetMessageMask(
 		fd, M_CONFIGURE_WINDOW | M_WINDOW_NAME | M_ICON_NAME
 		| M_RES_CLASS | M_RES_NAME | M_END_WINDOWLIST | M_CONFIG_INFO
@@ -595,6 +594,7 @@ void list_end(void)
 	      SendInfo(fd,"Send_WindowList",0);
 	      XDestroyWindow(dpy, main_win);
 	      DestroyList();
+	      fvwmlib_get_target_window(dpy, screen, MyName, &app_win, True);
 	      found = 0;
 	      return;
 	    }
