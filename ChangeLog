@@ -1,5 +1,8 @@
 2002-05-26  Dominik Vogt  <dominik.vogt@gmx.de>
 
+	* libs/gravity.c (ParseDirectionArgument):
+	allow "t", "u", ... shortcuts as direction arguments
+
 	* fvwm/style.c (check_window_style_change):
 	(parse_and_set_window_style):
 	* fvwm/frame.c (frame_setup_border):
