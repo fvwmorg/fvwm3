@@ -168,7 +168,7 @@ will start an xterm on desk number 1;
 .EX
 xterm -xrm "*Page:3 2 1"
 .EE
-will start an xterm two pages to the right and one down from the upper 
+will start an xterm two pages to the right and one down from the upper
 left hand page of desk number 3. Not all applications understand the use
 of these options, however.
 
@@ -1657,7 +1657,7 @@ TitleWarp/TitleWarpOff,
 TitleUnderlines0/TitleUnderlines1/TitleUnderlines2,
 SeparatorsLong/SeparatorsShort,
 TrianglesSolid/TrianglesRelief,
-PrepopMenus/PrepopMenusOff,
+PopupImmediately/PopupDelayed,
 DoubleClickTime,
 SidePic,
 SideColor.
@@ -1681,17 +1681,17 @@ MWM and WIN style menus never overlap the parent menu.
 
 \fIFVWM\fP style is equivalent to HilightBackOff, Hilight3DThin,
 ActiveForeOff, AnimationOff, Font, MenuFace, PopupOffset 0 67, TitleWarp,
-TitleUnderlines1, SeparatorsShort, TriangleRelief, PrepopMenusOff.
+TitleUnderlines1, SeparatorsShort, TriangleRelief, PopupDelayed.
 
 \fIMWM\fP style is equivalent to HilightBackOff, Hilight3DThick,
 ActiveForeOff, AnimationOff, Font, MenuFace, PopupOffset -3 100,
 TitleWarpOff, TitleUnderlines2, SeparatorsLong, TriangleRelief,
-PrepopMenus.
+PopupImmediately.
 
 \fIWIN\fP style is equivalent to HilightBack, Hilight3DOff,
 ActiveForeOff, AnimationOff, Font, MenuFace, PopupOffset -5 100,
 TitleWarpOff, TitleUnderlines1, SeparatorsShort, TriangleSolid,
-PrepopMenus.
+PopupImmediately.
 
 \fIForeground\fP and \fIBackground\fP may have a color name as an
 argument. This color is used for menu text or the menu's background.
@@ -1775,11 +1775,15 @@ delay in milliseconds before a sub-menu is popped up when the
 pointer moves over a menu item that has a sub-menu. If the value
 is zero no automatical pop up is done. If the argument is omitted
 the built in default is used. Note that the popup delay has no
-effect if the \fIPrepopMenus\fP option is used since sub-menus pop
-up immediately then.
+effect if the \fIPopupImmediately\fP option is used since sub-menus pop
+up immediately then. The PopupDelay option should only be applied to the
+default style ('*') since it is a global setting and affects all
+menus.
 
-\fIPrepopMenus\fP and \fIPrepopMenusOff\fP turn prepop menus on and
-off (see PopupDelay)
+\fIPopupImmediately\fP makes menu items with sub menus pop up it up as
+soon as the pointer enters the item. The PopupDelay is ignored then.
+If \fIPopupDelayed\fP is used fvwm2 looks at the \fIPopupDelay\fP option
+if or when this automatic popup happens.
 
 \fIPopupOffset\fP requires two integer arguments. Both values affect
 where sub-menus are placed relative to the parent menu. If both
@@ -1810,7 +1814,9 @@ filled with a color while relief triangles are hollow.
 time in milliseconds between two mouse clicks in a menu to be
 considered as a double click. The default is 450 milliseconds.
 If the argument is omitted the doucle click time is reset to this
-default.
+default. The DoubleClickTime option should only be applied to the
+default style ('*') since it is a global setting and affects all
+menus.
 
 \fISidePic\fP takes the name of an xpm or bitmap file as an argument.
 The picture is drawn along the left side of the menu. The SidePic

@@ -76,7 +76,7 @@ typedef struct MenuFeel {
     struct
     {
       unsigned char Animated : 1;
-      unsigned char PrepopMenus : 1;
+      unsigned char PopupImmediately : 1;
       unsigned char TitleWarp : 1;
     } f;
     int PopupOffsetPercent;
@@ -216,7 +216,6 @@ typedef struct MenuRoot
       struct
       {
 	unsigned painted : 1;
-	unsigned redrawn : 1;
 	unsigned is_left : 1;   /* menu direction relative to parent menu */
 	unsigned is_right : 1;
 	unsigned is_up : 1;

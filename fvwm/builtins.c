@@ -1776,7 +1776,7 @@ static int GetMenuStyleIndex(char *option)
     "TitleUnderlines0", "TitleUnderlines1", "TitleUnderlines2",
     "SeparatorsLong", "SeparatorsShort",
     "TrianglesSolid", "TrianglesRelief",
-    "PrepopMenus", "PrepopMenusOff",
+    "PopupImmediately", "PopupDelayed",
     "DoubleClickTime",
     "SidePic", "SideColor",
     NULL
@@ -1867,7 +1867,7 @@ static void NewMenuStyle(XEvent *eventp,Window w,FvwmWindow *tmp_win,
 	if (i == 0) {
 	  tmpms->feel.PopupOffsetPercent = 67;
 	  tmpms->feel.PopupOffsetAdd = 0;
-	  tmpms->feel.f.PrepopMenus = 0;
+	  tmpms->feel.f.PopupImmediately = 0;
 	  tmpms->feel.f.TitleWarp = 1;
 	  tmpms->look.ReliefThickness = 1;
 	  tmpms->look.TitleUnderlines = 1;
@@ -1877,7 +1877,7 @@ static void NewMenuStyle(XEvent *eventp,Window w,FvwmWindow *tmp_win,
 	} else if (i == 1) {
 	  tmpms->feel.PopupOffsetPercent = 100;
 	  tmpms->feel.PopupOffsetAdd = -3;
-	  tmpms->feel.f.PrepopMenus = 1;
+	  tmpms->feel.f.PopupImmediately = 1;
 	  tmpms->feel.f.TitleWarp = 0;
 	  tmpms->look.ReliefThickness = 2;
 	  tmpms->look.TitleUnderlines = 2;
@@ -1887,7 +1887,7 @@ static void NewMenuStyle(XEvent *eventp,Window w,FvwmWindow *tmp_win,
 	} else /* i == 2 */ {
 	  tmpms->feel.PopupOffsetPercent = 100;
 	  tmpms->feel.PopupOffsetAdd = -5;
-	  tmpms->feel.f.PrepopMenus = 1;
+	  tmpms->feel.f.PopupImmediately = 1;
 	  tmpms->feel.f.TitleWarp = 0;
 	  tmpms->look.ReliefThickness = 0;
 	  tmpms->look.TitleUnderlines = 1;
@@ -2118,12 +2118,12 @@ static void NewMenuStyle(XEvent *eventp,Window w,FvwmWindow *tmp_win,
 	tmpms->look.f.TriangleRelief = 1;
 	break;
 
-      case 28: /* PrepopMenus */
-	tmpms->feel.f.PrepopMenus = 1;
+      case 28: /* PopupImmediately */
+	tmpms->feel.f.PopupImmediately = 1;
 	break;
 
-      case 29: /* PrepopMenusOff */
-	tmpms->feel.f.PrepopMenus = 0;
+      case 29: /* PopupDelayed */
+	tmpms->feel.f.PopupImmediately = 0;
 	break;
 
       case 30: /* DoubleClickTime */

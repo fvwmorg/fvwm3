@@ -1,3 +1,8 @@
+Changes in beta release 2.1.11 (January 1999)
+
+* Renamed MenuStyle options: PrepopMenus to PopupImmediately and
+  PrepopMenusOff to PopupDelayed.
+
 Changes in beta release 2.1.8 (January 1999)
 
 * New options SidePic and SideColor to MenuStyle

@@ -614,7 +614,7 @@ MenuStatus MenuInteraction(MenuRoot *menu,MenuRoot *menuPrior,
   Bool fSubmenuOverlaps = False;
 
   mops.flags.allflags = 0;
-  fPopupImmediately = (menu->ms->feel.f.PrepopMenus &&
+  fPopupImmediately = (menu->ms->feel.f.PopupImmediately &&
 		       (Scr.menus.PopupDelay10ms > 0));
 
   /* remember where the pointer was so we can tell if it has moved */
@@ -630,28 +630,31 @@ MenuStatus MenuInteraction(MenuRoot *menu,MenuRoot *menuPrior,
 	Event.xmotion.time = lastTimestamp;
 	fFakedMotion = TRUE;
 	fForceReposition = FALSE;
-      } else if (Scr.menus.PopupDelay10ms > 0) {
-        while (XCheckMaskEvent(dpy,
-                               ButtonPressMask|ButtonReleaseMask|
-                               ExposureMask|KeyPressMask|VisibilityChangeMask|
-                               ButtonMotionMask,
-                               &Event) == FALSE) {
-	  usleep(MICRO_S_FOR_10MS);
- 	  if (c10msDelays++ == Scr.menus.PopupDelay10ms) {
-	    DBUG("MenuInteraction","Faking motion");
-	    /* fake a motion event, and set fDoPopupNow */
-	    Event.type = MotionNotify;
-	    Event.xmotion.time = lastTimestamp;
-	    fFakedMotion = TRUE;
-	    fDoPopupNow = TRUE;
-	    break;
+      } else if (!XCheckMaskEvent(dpy,ExposureMask,&Event)) {
+	/* handle exposure events first */
+	if (Scr.menus.PopupDelay10ms > 0) {
+	  while (XCheckMaskEvent(dpy,
+				 ButtonPressMask|ButtonReleaseMask|
+				 ExposureMask|KeyPressMask|
+				 VisibilityChangeMask|ButtonMotionMask,
+				 &Event) == FALSE) {
+	    usleep(MICRO_S_FOR_10MS);
+	    if (c10msDelays++ == Scr.menus.PopupDelay10ms) {
+	      DBUG("MenuInteraction","Faking motion");
+	      /* fake a motion event, and set fDoPopupNow */
+	      Event.type = MotionNotify;
+	      Event.xmotion.time = lastTimestamp;
+	      fFakedMotion = TRUE;
+	      fDoPopupNow = TRUE;
+	      break;
+	    }
 	  }
+	} else {  /* block until there is an event */
+	  XMaskEvent(dpy,
+		     ButtonPressMask|ButtonReleaseMask|ExposureMask |
+		     KeyPressMask|VisibilityChangeMask|ButtonMotionMask,
+		     &Event);
 	}
-      } else {  /* block until there is an event */
-	XMaskEvent(dpy,
-		   ButtonPressMask|ButtonReleaseMask|ExposureMask |
-		   KeyPressMask|VisibilityChangeMask|ButtonMotionMask,
-		   &Event);
       }
       /*DBUG("MenuInteraction","mrPopup=%s",mrPopup?mrPopup->name:"(none)");*/
 
@@ -721,7 +724,7 @@ MenuStatus MenuInteraction(MenuRoot *menu,MenuRoot *menuPrior,
 	    }
 	  }
 	  mi = FindEntry(&x_offset);
-	  if (!fReleaseFirst && !fFakedMotion)
+	  if (!fReleaseFirst && !fFakedMotion && mouse_moved)
 	    fMotionFirst = TRUE;
 	  fFakedMotion = FALSE;
 	  break;
@@ -730,13 +733,7 @@ MenuStatus MenuInteraction(MenuRoot *menu,MenuRoot *menuPrior,
 	  /* grab our expose events, let the rest go through */
 	  if((XFindContext(dpy, Event.xany.window,MenuContext,
 			   (caddr_t *)&mrNeedsPainting)!=XCNOENT)) {
-	    /* don't redraw multiple times in a row */
-	    if (mrNeedsPainting == menu) {
-	      if (menu->flags.f.redrawn == 1)
-		continue;
-	      else
-		menu->flags.f.redrawn = 1;
-	    }
+	    flush_expose(Event.xany.window);
 	    PaintMenu(mrNeedsPainting,&Event);
 	  }
 	  /* continue; */ /* instead of continuing, we want to
@@ -864,13 +861,12 @@ MenuStatus MenuInteraction(MenuRoot *menu,MenuRoot *menuPrior,
 	      }
 	      FPopupMenu(mrPopup, menu, x, y, fPopupAndWarp, &mops,
 			 &fSubmenuOverlaps);
-	      menu->flags.f.redrawn = 0;
 	    }
 	    if (mrPopup->mrDynamicPrev == menu) {
 	      mi = FindEntry(NULL);
 	      if (mi && mi->mr == mrPopup) {
 		fDoMenu = TRUE;
-		fPopdown = !menu->ms->feel.f.PrepopMenus;
+		fPopdown = !menu->ms->feel.f.PopupImmediately;
 	      }
 	    }
 	    else {
@@ -890,7 +886,7 @@ MenuStatus MenuInteraction(MenuRoot *menu,MenuRoot *menuPrior,
 	    dkp_timestamp = 0;
 	    goto DO_RETURN;
 	  }
-	  if (fPopdown || !menu->ms->feel.f.PrepopMenus) {
+	  if (fPopdown || !menu->ms->feel.f.PopupImmediately) {
 	    PopDownAndRepaintParent(mrPopup, &fSubmenuOverlaps);
 	    mrPopup = NULL;
 	  }
@@ -1068,7 +1064,7 @@ int DoMenusOverlap(MenuRoot *mr, int x, int y, int width, int height,
       tolerance1 = 3;
       if (mr->ms->feel.PopupOffsetAdd < 0)
 	tolerance1 -= mr->ms->feel.PopupOffsetAdd;
-      tolerance2 = tolerance1 + 4;
+      tolerance2 = 4;
     }
   else
     {
@@ -1078,11 +1074,14 @@ int DoMenusOverlap(MenuRoot *mr, int x, int y, int width, int height,
   XGetGeometry(dpy,mr->w,&JunkRoot,&prior_x,&prior_y,
 	       &prior_width,&prior_height,&JunkBW,&JunkDepth);
   x_overlap = 0;
-  prior_width = prior_width * mr->ms->feel.PopupOffsetPercent / 100;
+  if (fTolerant) {
+    /* Don't use multiplier if doing an intolerant check */
+    prior_width *= mr->ms->feel.PopupOffsetPercent / 100;
+  }
   if (y <= prior_y + prior_height - tolerance2 &&
-      prior_y <= y + height - tolerance1 &&
-      x <= prior_x + prior_width - tolerance2 &&
-      prior_x <= x + width - tolerance1) {
+      prior_y <= y + height - tolerance2 &&
+      x <= prior_x + prior_width - tolerance1 &&
+      prior_x <= x + width - tolerance2) {
     x_overlap = x - prior_x;
     if (x <= prior_x) {
       x_overlap--;
@@ -1118,7 +1117,6 @@ Bool FPopupMenu (MenuRoot *menu, MenuRoot *menuPrior, int x, int y,
   }
   menu->mrDynamicPrev = menuPrior;
   menu->flags.f.painted = 0;
-  menu->flags.f.redrawn = 0;
   menu->flags.f.is_left = 0;
   menu->flags.f.is_right = 0;
   menu->flags.f.is_up = 0;
@@ -1155,26 +1153,29 @@ Bool FPopupMenu (MenuRoot *menu, MenuRoot *menuPrior, int x, int y,
 	    menu->width +1;
       }
   } /* if (pops->flags.f.has_poshints) */
-  x_overlap = DoMenusOverlap(menuPrior, x, y,menu->width,menu->height,True);
+  x_overlap = DoMenusOverlap(menuPrior, x, y, menu->width, menu->height, True);
   /* clip to screen */
   if (x + menu->width > Scr.MyDisplayWidth - 2)
     x = Scr.MyDisplayWidth - 2 - menu->width;
   if (y + menu->height > Scr.MyDisplayHeight)
     y = Scr.MyDisplayHeight - menu->height;
-  if (x < 0) x = 0;
-  if (y < 0) y = 0;
+  if (x < 0)
+    x = 0;
+  if (y < 0)
+    y = 0;
 
   if (menuPrior != NULL) {
     int prev_x, prev_y, left_x, right_x;
     unsigned int prev_width, prev_height;
+    int x_offset;
 
     /* try to find a better place */
     XGetGeometry(dpy,menuPrior->w,&JunkRoot,&prev_x,&prev_y,
 		 &prev_width,&prev_height,&JunkBW,&JunkDepth);
 
     /* check if menus overlap */
-    x_clipped_overlap = DoMenusOverlap(menuPrior, x, y,
-				       menu->width, menu->height, True);
+    x_clipped_overlap = DoMenusOverlap(menuPrior, x, y, menu->width,
+				       menu->height, True);
     if (x_clipped_overlap &&
 	(!(pops->flags.f.has_poshints) ||
 	 pops->pos_hints.fRelative == FALSE || x_overlap == 0)) {
@@ -1183,12 +1184,13 @@ Bool FPopupMenu (MenuRoot *menu, MenuRoot *menuPrior, int x, int y,
       Bool fDefaultLeft;
       Bool fEmergencyLeft;
 
+      x_offset = prev_width * menu->ms->feel.PopupOffsetPercent / 100 +
+	menu->ms->feel.PopupOffsetAdd;
       left_x = prev_x - menu->width + 2;
-      right_x = prev_x + prev_width * menu->ms->feel.PopupOffsetPercent / 100;
-      if (menu->ms->feel.PopupOffsetPercent >= 100)
+      right_x = prev_x + x_offset;
+      if (x_offset > prev_width - 2)
 	right_x = prev_x + prev_width - 2;
-      if (x+menu->width < (prev_x + right_x)/2 ||
-	  (x < (prev_x + right_x)/2 && -x > menu->width/2))
+      if (x + menu->width < prev_x + right_x)
 	fDefaultLeft = TRUE;
       else
 	fDefaultLeft = FALSE;
@@ -1197,9 +1199,10 @@ Bool FPopupMenu (MenuRoot *menu, MenuRoot *menuPrior, int x, int y,
       if (menu->ms->feel.f.Animated) {
 	/* animate previous out of the way */
 	int left_x, right_x, end_x;
-	left_x = x - prev_width * menu->ms->feel.PopupOffsetPercent / 100;
-	if (menu->ms->feel.PopupOffsetPercent >= 100)
-	  left_x = x - prev_width + 3;
+
+	left_x = x - x_offset;
+	if (x_offset >= prev_width)
+	  left_x = x - x_offset + 3;
 	right_x = x + menu->width;
 	if (fDefaultLeft) {
 	  /* popup menu is left of old menu, try to move prior menu right */
@@ -1222,7 +1225,7 @@ Bool FPopupMenu (MenuRoot *menu, MenuRoot *menuPrior, int x, int y,
 	AnimatedMoveOfWindow(menuPrior->w,prev_x,prev_y,end_x,prev_y,
 			     TRUE, -1, NULL);
       } /* if (menu->ms->feel.f.Animated) */
-      else if ((menu->ms->feel.PopupOffsetPercent >= 100) &&
+      else if (prev_x + x_offset > x + 3 && x_offset + 3 > -menu->width &&
 	       !(pops->flags.f.fixed)) {
 	Bool fLeftIsOK = FALSE;
 	Bool fRightIsOK = FALSE;
@@ -1290,10 +1293,11 @@ Bool FPopupMenu (MenuRoot *menu, MenuRoot *menuPrior, int x, int y,
   /* popup the menu */
   XMoveWindow(dpy, menu->w, x, y);
   XMapRaised(dpy, menu->w);
-  if (ret_overlap)
+  if (ret_overlap) {
     *ret_overlap =
       DoMenusOverlap(menuPrior, x, y, menu->width, menu->height, False) ?
       True : False;
+  }
 
   if (!fWarpItem) {
     mi = FindEntry(NULL);
@@ -1357,7 +1361,7 @@ void SetMenuItemSelected(MenuItem *mi, Bool f)
       if (!mi->mr->flags.f.painted)
       {
 	PaintMenu(mi->mr, NULL);
-	mi->mr->flags.f.redrawn = 1;
+	flush_expose(mi->mr->w);
       }
       iy = mi->y_offset - 2;
       ih = mi->y_height + 4;
@@ -1509,7 +1513,7 @@ static void PopDownAndRepaintParent(MenuRoot *mr, Bool *fSubmenuOverlaps)
     event.xexpose.y = mr_y - parent_y;
     event.xexpose.height = mr_height;
     PaintMenu(parent, &event);
-    parent->flags.f.redrawn = 1;
+    flush_expose(parent->w);
   }
   else
   {
@@ -1730,7 +1734,7 @@ void PaintEntry(MenuItem *mi)
 
   if(check_allowed_function(mi))
   {
-    if(mi->state)
+    if(mi->state && !IS_TITLE_MENU_ITEM(mi))
       currentGC = mr->ms->look.MenuActiveGC;
     else
       currentGC = mr->ms->look.MenuGC;

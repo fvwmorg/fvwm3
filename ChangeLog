@@ -1,3 +1,34 @@
+1999-01-28  Dominik Vogt  <dominik_vogt@hp.com>
+
+	* fvwm/menus.c (PaintEntry): Prevent menu titles from being hilighted
+	with ActiveFore
+	(MenuInteraction): fixed bug that caused menus ('Menu' command) being
+	popped down immediately if the pointer moved even a single pixel.
+
+	* fvwm/builtins.c (GetMenuStyleIndex):
+	(NewMenuStyle): Changed PrepopMenus -> PopupImmediately and
+	PrepopMenusOff -> PopupDelayed
+
+	* fvwm/menus.c (MenuInteraction):
+	* fvwm/menus.h: changed PrepopMenus -> PopupImmediately
+
+1999-01-27  Dominik Vogt  <dominik_vogt@hp.com>
+
+	* fvwm/menus.c (MenuInteraction): check for expose events first to
+	ensure the menu is drawn properly before navigating
+	(FPopupMenu): fixed *badly* broken code to avoid overlapping menus
+	(with and without animation).
+	(DoMenusOverlap): fixed broken overlapping algorithm
+
+	* fvwm/menus.h (MenuRoot): removed 'redrawn' flag
+
+	* fvwm/menus.c (DoMenusOverlap): fixed gradient menu drawing bug
+	(MenuInteraction):
+	(PopDownAndRepaintParent):
+	(PaintMenu):
+	(SetMenuItemSelected): removed 'redrawn' flag. Use flush_expose
+	instead: simpler and fixes a drawing bug
+
 1999-01-27  Bob Woodside  <proteus@pcnet.com>
 
 	* modules/FvwmPager/x_pager.c:  Backed out the change to prevent
@@ -11,7 +42,7 @@
 1999-01-26  Bob Woodside  <proteus@pcnet.com>
 
 	* fvwm/events.c:  Changed the stacking order chain rebuilder to seek
-	out the icon window's position in the stacking order, not the app 
+	out the icon window's position in the stacking order, not the app
 	window frame's position, if a window is iconic (and the icon is not
 	being suppressed).
 
@@ -49,6 +80,7 @@
 	* fvwm/fvwm2.1: Update the section that said there was no way to
 	map a window to someplace other than the current viewport.
 
+>>>>>>> 1.138
 1999-01-20  Paul D. Smith  <psmith@gnu.org>
 
 	* INSTALL.fvwm: Document new install-strip issue and workaround.
