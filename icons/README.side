@@ -1,0 +1,15 @@
+Side pixmaps are used to decorate the sides of popup menus.
+
+Then naming convention is "side.xxx.xpm".
+
+If the side pixmap is shorter than the menu height,
+the pixmap may be extended to reach the top of the menu.
+You may want to give the side pixmap a background color that
+matches the background of the side pixmap.
+
+The side pixmaps are:
+
+NAME               BACKGROUND   DESC
+====               ==========   ====
+side.fvwm2.xpm     black        A blue to black gradient with "fvwm" in white,
+                                a "2" in green.  Looks OK with colorlimiting.
