@@ -440,6 +440,8 @@ A: Some people find this annoying, but let me say that I did that for
           they are running.
 
    Note, starting from 2.5.1, the executable fvwm2 became fvwm again.
+   Also, starting from 2.5.11, the default config file is fvwm/config.
+   So, we completely returned to the "fvwm" name.
 
 ----------------------------------------------------------------------
 
@@ -564,11 +566,10 @@ A: FVWM uses the XPM (X PixMap) library to provide support for colored
 2.5  I'm a sysadmin, and if I wanted to force fvwm to read a system rc
      file and then the user's rc file, how would I do that?
 
-A: Well, you could probably do something like this:
-
-        - have the first line of everyone's .fvwm2rc be 'Read
-          global.fvwm2rc' and have global.fvwm2rc reside in your
-          defined "datadir"/fvwm (from the ./configure step).
+A: Well, you could probably do something like this.  Have the first
+   line of everyone's ~/.fvwm/config or ~/.fvwm/.fvwm2rc files be
+   'Read global.config' and have global.config reside in
+   "$datadir"/fvwm (the value of $datadir is set on ./configure step).
 
 ----------------------------------------------------------------------
 
@@ -579,8 +580,7 @@ A: Well, you could probably do something like this:
 A: FVWM now supports ~/.fvwm search directory by default.
 
    This could be probably done similarly to Q2.5 above.  The system rc
-   file "sysconfdir"/system.fvwm2rc (or "datadir"/fvwm/system.fvwm2rc)
-   could do something like:
+   "$datadir"/fvwm/config (or system.fvwm2rc) could do something like:
 
         Read Init      quiet
         Read Decors    quiet
@@ -591,7 +591,7 @@ A: FVWM now supports ~/.fvwm search directory by default.
         Read Modules   quiet
 
    or whatever breakdown you deemed appropriate, and you would have
-   default versions of these in {"datadir"}/fvwm/ that it could find
+   default versions of these in "$datadir"/fvwm/ that it could find
    in case the user was missing one of them and you wanted to supply
    defaults.
 
@@ -721,7 +721,7 @@ With the later 2.3.x betas and after use:
 
 A: The built in command WindowList provides a very close approximation
    to the Alt-Tab feature found in another GUI.  It doesn't look the
-   same but the following .fvwm2rc sample will provide a similar
+   same but the following fvwm/config sample will provide a similar
    interface:
 
       Key Tab A M WindowList Root c c NoDeskSort
@@ -925,11 +925,11 @@ A: Yes.  For release 2.3.14 and after, put the line
 
      Style * StippledTitle
 
-   in your .fvwm2rc.  For earlier releases use
+   in your fvwm/config (or .fvwm2rc).  For earlier releases use
 
      GlobalOpts StipledTitles
 
-   (Yes the spelling was inconsistent.)
+   (Yes, the spelling was inconsistent.)
 
 ----------------------------------------------------------------------
 
@@ -1405,13 +1405,13 @@ A: FVWM spawns itself into all found screens unless -s command line
 
    Write your configuration file as you would if you had only one
    screen.  Then move the screen specific lines into separate
-   configuration files and call them, for example, .fvwm2rc.<screen>
+   configuration files and call them, for example, config.<screen>
    where <screen> is the screen number.  Usually this will be 0 for
    the main screen and 1 for the secondary screen.  Place the screen
    specific files in the $HOME/.fvwm directory or whatever you set
-   $FVWM_USERDIR to.  Now add this line to your .fvwm2rc:
+   $FVWM_USERDIR to.  Now add this line to your config file:
 
-     Read .fvwm2rc.$[screen]
+     Read config.$[screen]
 
    The $[screen] will be replaced with the number of the screen each
    instance of fvwm is started on.
@@ -1422,13 +1422,12 @@ A: FVWM spawns itself into all found screens unless -s command line
    this, start a separate fvwm for each screen in your .xinitrc (or
    .Xclients):
 
-     fvwm -s -d :0.0 -f .fvwm2rc-0 &
-     fvwm -s -d :0.1 -f .fvwm2rc-1 &
-     fvwm -s -d :0.2 -f .fvwm2rc-2
+     fvwm -s -d :0.0 -f config-0 &
+     fvwm -s -d :0.1 -f config-1 &
+     fvwm -s -d :0.2 -f config-2
 
    Note that only the last command is without a trailing ampersand.
-   If you wish, .fvwm2rc-* files may all include line
-   "Read .fvwm2rc-common".
+   If you wish, config-* files may all include "Read config-common".
 
 ----------------------------------------------------------------------
 
@@ -1953,7 +1952,7 @@ A: Please do not report any 'bugs' related to XMMS in the fvwm bug
           server or a vendor specific server (e.g. the OpenWindow X
           server under SunOS)
         - How was FVWM compiled (compiler & version, options, etc)
-        - What settings do you have in your .fvwm2rc that may be
+        - What settings do you have in your config file that may be
           pertinent.
 
 ----------------------------------------------------------------------
@@ -2057,7 +2056,7 @@ A: The flickering is caused by fvwm constantly redrawing the menus
    For the speed problem both suggestions above might help too.
    Another thing to try is to turn hilighting of the active menu
    item other than by foreground color off.  Put these lines in your
-   .fvwm2rc after the menu styles have been defined:
+   fvwm/config after the menu styles have been defined:
 
      MenuStyle <stylename> Hilight3DOff, HilightBackOff
      MenuStyle <Stylename> ActiveFore <preferred color>
@@ -2101,13 +2100,13 @@ A: The error message usually looks something like this:
          Current serial number in output stream:  1596
 
    Well, this is telling you that there is a conflict in key/button
-   assignments.  In your .fvwm2rc you have bound some key/button that
+   assignments.  In your config you have bound some key/button that
    this program really wants to bind to an action, but it can't since
    FVWM has already done so (but you weren't doing it in the rc file
    for your previous window manager).  Figure out what the offending
-   key binding is and remove it from your .fvwm2rc, or temporarily via
-   "FvwmForm FvwmForm-Talk" by removing the FVWM binding (see the man
-   page for the Key & Mouse commands).
+   key binding is and remove it from your fvwm/config, or temporarily
+   via "FvwmForm FvwmForm-Talk" by removing the FVWM binding (see the
+   man page for the Key & Mouse commands).
 
 ----------------------------------------------------------------------
 
@@ -2144,7 +2143,7 @@ A: Some applications use so called 'override redirect' windows that
    since KFM is violating the conventions and the applications may
    violate them in different ways.
 
-   Now the command.  Put this anywhere in your .fvwm2rc file:
+   Now the command.  Put this anywhere in your config file:
 
      BugOpts RaiseOverUnmanaged on
 
@@ -2176,7 +2175,7 @@ A: You may see the following error message on the console:
 
      ModuleTimeout 10
 
-   to your .fvwm2rc file.  The units are in seconds and the default
+   to your config file.  The units are in seconds and the default
    value is 5.
 
    This problem will only occur on slow machines or high system load
@@ -2252,14 +2251,14 @@ A: This problem might occur on other applications besides the one
 
 ----------------------------------------------------------------------
 
-5.15  Although I use the WIndowListSkip style for my modules they
+5.15  Although I use the WindowListSkip style for my modules they
       still show up in FvwmIconMan, FvwmWinList etc.
 
 A: Make sure you have
 
-     *FvwmIconMan*UseWinList true
+     *FvwmIconMan: UseWinList true
 
-   in you .fvwm2rc file.  If that does not help, the modules you are
+   in your config file.  If that does not help, the modules you are
    using may not match the fvwm executable.  Recompile and reinstall
    everything and the problem should go away.
 
@@ -2301,7 +2300,7 @@ A: Our naming convention is sometimes a source of confusion, and when
    handled inside fvwm.  To display the different desktops, the user
    can configure key bindings that determine which desktop is
    displayed.  For example, to have the combinations Meta-1 to Meta-4
-   display desktop numbers 0 to 3, one would add this to .fvwm2rc:
+   display desktop numbers 0 to 3, one would add this to her config:
 
      Key 1 A M GotoDesk 0
      Key 2 A M GotoDesk 1
@@ -2398,7 +2397,7 @@ A: Setting the background image is not really part of the window
    If you just want a static image on your background, you might
    invoke one of these programs from your .xsession or .xinitrc file.
    You can also invoke one of these programs from the InitFunction in
-   your .fvwm2rc.
+   your config.
 
    The fvwm module FvwmBacker can be used to change the background
    depending on the desk you are currently on by calling an external
@@ -2503,7 +2502,7 @@ A: OK, 93 is a joke, we know you don't have 93 buttons, but we've
       + "FvwmConsole" Module FvwmConsole
 
    Using FvwmCommand is a bit more tricky.  To use it you need to
-   start a server in your .fvwm2rc by adding this line:
+   start a server in your config by adding this line:
 
      Module FvwmCommandS
 
@@ -2525,31 +2524,31 @@ A: OK, 93 is a joke, we know you don't have 93 buttons, but we've
 7.2  Using shell commands for configuration.
 
    Sometimes you might want to use the output of a shell command or
-   script in your .fvwm2rc.  For example you might need a menu that
+   script in your config.  For example you might need a menu that
    has all filenames in a certain directory as its entries.  You can
    use the PipeRead command and the FvwmCommand module.  I recommend
    using PipeRead since creating twenty menu items takes a
    considerable amount of time with FvwmCommand.
 
-   Example from my .fvwm2rc:
+   Example from my config:
 
      # make the background menu
      AddToFunc MakeBackgroundMenu
       + "I" DestroyMenu BackgroundMenu
       + "I" AddToMenu BackgroundMenu Backgrounds Title
-      + "I" PipeRead 'for i in `/bin/ls $HOME/.fvwm2/backgrounds/*.bg.*`; \
+      + "I" PipeRead 'for i in `/bin/ls $HOME/.fvwm/backgrounds/*.bg.*`; \
             do echo -e AddToMenu BackgroundMenu `basename $i | sed -e \
             "s/\.bg\..*$//"` Function SetDefaultBackground $i; done'
 
      # set the default background
      AddToFunc SetDefaultBackground
-      + "I" Exec echo -e $0 > $HOME/.fvwm2/background
+      + "I" Exec echo -e $0 > $HOME/.fvwm/background
       + "I" Function SetBackground
 
      # set a new background
      AddToFunc SetBackground
-      + "I" Exec test -r $HOME/.fvwm2/background && xv -root -quit -viewonly \
-            `cat $HOME/.fvwm2/background|tr -d "\n"`
+      + "I" Exec test -r $HOME/.fvwm/background && xv -root -quit -viewonly \
+            `cat $HOME/.fvwm/background|tr -d "\n"`
 
      # activate setting from last session and build the menu
      AddToFunc InitFunction
@@ -2559,10 +2558,10 @@ A: OK, 93 is a joke, we know you don't have 93 buttons, but we've
 
    The MakeBackgroundMenu function builds a menu that contains an item
    for every file that matches the pattern "*.bg.*" in the directory
-   $HOME/.fvwm2/backgrounds.  The suffix .bg.* is removed.  When I
+   $HOME/.fvwm/backgrounds.  The suffix .bg.* is removed.  When I
    select an item the file is displayed in the background using
    xv. Furthermore the path and filename are stored in
-   $HOME/.fvwm2/background.  When I start my next fvwm session the
+   $HOME/.fvwm/background.  When I start my next fvwm session the
    filename is fetched from there so I get the background from my last
    session.
 
@@ -2573,7 +2572,7 @@ A: OK, 93 is a joke, we know you don't have 93 buttons, but we've
 7.3  How to start applications on a page or desk other than the
      current.
 
-   Use the 'StartsOnDesk' or 'StartsOnPage' style in your .fvwm2rc:
+   Use the 'StartsOnDesk' or 'StartsOnPage' style in your config:
 
      Style Netscape* StartsOnPage 0 1
 
@@ -2633,9 +2632,9 @@ A: OK, 93 is a joke, we know you don't have 93 buttons, but we've
 
      Key  space A M   Menu root c c main_menu
 
-   in your .fvwm2rc gives you the menu 'main_menu' in the center of
-   the screen when you press Alt-space.  Or you might want a shortcut
-   to the window menu:
+   in your config gives you the menu 'main_menu' in the center of the
+   screen when you press Alt-space.  Or you might want a shortcut to
+   the window menu:
 
      Key  space A SM  Menu root c c WindowMenu
 
@@ -2652,7 +2651,7 @@ A: OK, 93 is a joke, we know you don't have 93 buttons, but we've
 
      EdgeScroll 0 0
 
-   in your .fvwm2rc turns it off.
+   in your config turns it off.
 
 ----------------------------------------------------------------------
 
@@ -2662,7 +2661,7 @@ A: OK, 93 is a joke, we know you don't have 93 buttons, but we've
    desktop tidy.  With SnapAttraction windows (or icons or both) are
    'attracted' to each other.  When you drag a window (icon) and it
    comes close to another window (icon) it clings to it without a gap
-   between the borders.  Put this command in your .fvwm2rc:
+   between the borders.  Put this command in your config:
 
      SnapAttraction 8 SameType
 
@@ -2685,7 +2684,7 @@ A: OK, 93 is a joke, we know you don't have 93 buttons, but we've
 
      SnapGrid 8
 
-   in your .fvwm2rc tells fvwm to use a grid of 8 pixels to place
+   in your config tells fvwm to use a grid of 8 pixels to place
    windows and icons.  Try it and see if you like it.
 
    Hint: It might be a good idea to use a divisor of your desktop
@@ -2776,7 +2775,7 @@ A: OK, 93 is a joke, we know you don't have 93 buttons, but we've
    the first time and closes it if used a second time.  Although it
    is not obvious how to do this, it is possible.  Let's assume you
    need a menu item that toggles an FvwmConsole window on and off.
-   Then put the following lines in your .fvwm2rc:
+   Then put the following lines in your config:
 
      AddToFunc ToggleFvwmConsole
      + I None (FvwmConsole, CirculateHit) Module FvwmConsole

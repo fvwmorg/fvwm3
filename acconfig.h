@@ -1,5 +1,8 @@
-/* Suffix for config filenames */
-#define FVWMRC ".fvwm2rc"
+/* Name of config filenames in FVWM_USERDIR and FVWM_DATADIR */
+#define FVWM_CONFIG "config"
+
+/* Suffix for old (to be deprecated) config filenames */
+#define FVWM2RC ".fvwm2rc"
 
 /* Additional version information, like date */
 #define VERSIONINFO ""

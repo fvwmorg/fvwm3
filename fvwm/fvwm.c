@@ -2454,7 +2454,7 @@ int main(int argc, char **argv)
 	if (num_config_commands > 0)
 	{
 		int i;
-		for (i=0;i<num_config_commands;i++)
+		for (i = 0; i < num_config_commands; i++)
 		{
 			DoingCommandLine = True;
 			execute_function(NULL, exc, config_commands[i], 0);
@@ -2464,26 +2464,44 @@ int main(int argc, char **argv)
 	}
 	else
 	{
-		/* Run startup command file in 5 places: FVWM_USERDIR,
-		 * FVWM_DATADIR, and for compatibility: ~/.fvwm2rc,
-		 * $sysconfdir/system.fvwm2rc */
-		if (!run_command_file(
-			    CatString3(fvwm_userdir, "/", FVWMRC), exc) &&
-		    !run_command_file(
-			    CatString3(home_dir, "/", FVWMRC), exc) &&
-		    !run_command_file(
-			    CatString3(FVWM_DATADIR, "/", FVWMRC), exc) &&
-		    !run_command_file(
-			    CatString3(FVWM_DATADIR, "/system", FVWMRC), exc) &&
-		    !run_command_file(
-			    CatString3(FVWM_CONFDIR, "/system", FVWMRC), exc))
+		/* Run startup command file in these places (default prefix):
+		 *   ~/.fvwm/config
+		 *   /usr/local/share/fvwm/config
+		 * and for compatibility:
+		 *   ~/.fvwm/.fvwm2rc
+		 *   /usr/local/share/fvwm/system.fvwm2rc
+		 * and for compatibility to be discontinued:
+		 *   ~/.fvwm2rc,
+		 *   /usr/local/share/fvwm/.fvwm2rc
+		 *   /usr/local/etc/system.fvwm2rc
+		 */
+		if (
+			!run_command_file(CatString3(
+				fvwm_userdir, "/", FVWM_CONFIG), exc) &&
+			!run_command_file(CatString3(
+				FVWM_DATADIR, "/", FVWM_CONFIG), exc) &&
+			!run_command_file(CatString3(
+				fvwm_userdir, "/", FVWM2RC), exc) &&
+			!run_command_file(CatString3(
+				home_dir, "/", FVWM2RC), exc) &&
+			!run_command_file(CatString3(
+				FVWM_DATADIR, "/", FVWM2RC), exc) &&
+			!run_command_file(CatString3(
+				FVWM_DATADIR, "/system", FVWM2RC), exc) &&
+			!run_command_file(CatString3(
+				FVWM_CONFDIR, "/system", FVWM2RC), exc))
 		{
 			fvwm_msg(
-				ERR, "main", "Cannot read startup file, tried:"
-				" \n\t%s/%s\n\t%s/%s\n\t%s/%s\n\t%s/system"
-				"%s\n\t%s/system%s", fvwm_userdir, FVWMRC,
-				home_dir, FVWMRC, FVWM_DATADIR, FVWMRC,
-				FVWM_DATADIR, FVWMRC, FVWM_CONFDIR, FVWMRC);
+				ERR, "main", "Cannot read startup config file,"
+				" tried: \n\t%s/%s\n\t%s/%s\n\t%s/%s\n\t"
+				"%s/%s\n\t%s/%s\n\t%s/system%s\n\t%s/system%s",
+				fvwm_userdir, FVWM_CONFIG,
+				FVWM_DATADIR, FVWM_CONFIG,
+				fvwm_userdir, FVWM2RC,
+				home_dir, FVWM2RC,
+				FVWM_DATADIR, FVWM2RC,
+				FVWM_DATADIR, FVWM2RC,
+				FVWM_CONFDIR, FVWM2RC);
 		}
 	}
 	exc_destroy_context(exc);

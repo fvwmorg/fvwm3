@@ -1140,8 +1140,7 @@ LoadGlobalState(char *filename)
 			MoveViewport(i1, i2, True);
 		}
 #if 0
-		/* migo (08-Dec-1999): we don't want to eliminate .fvwm2rc for
-		 * now */
+		/* migo (08-Dec-1999): we don't want to eliminate config yet */
 		else if (/*!Restarting*/ 0)
 		{
 			/* Matthias: We don't want to restore too much

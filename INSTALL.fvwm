@@ -44,8 +44,8 @@ What gets installed, and where
 * perl library is installed into ${datadir}/fvwm/perllib
 
 where VERSION is the version string of FVWM, typically something like
-"2.4.0".  No other files are installed.  There are sample system.fvwm2rc
-files which you may copy manually to ${sysconfdir}/fvwm, see below.
+"2.4.0".  No other files are installed.  There are sample fvwm/config
+files which you may copy manually to ${datadir}/fvwm, see below.
 
 Unless you used configure options,
 
@@ -62,8 +62,8 @@ executables, man pages, modules, and configuration files, respectively.
 
 Note that by default, none of the executables are stripped when they're
 installed.  If you'd like them to be, run `make install-strip' instead
-of `make install'.  Note that due to a bug in the current versions of
-autoconf/automake this will fail in some of the modules directories
+of `make install'.  Note that due to a bug in the older versions of
+autoconf/automake this may fail in some of the modules directories
 trying to strip shell scripts.  We recommend that you run `make -k
 install-strip', which will continue past the failures.
 
@@ -72,12 +72,11 @@ Configuration File
 ==================
 
 FVWM configures itself at runtime by reading one or more configuration
-files.  The default location for the system-wide configuration (named
-system.fvwm2rc) is /usr/local/etc/fvwm; this may be changed by changing the
-prefix or setting sysconfdir explicitly.  This system-wide file is
-read only if the user's ~/.fvwm2rc is not found.
+files.  The default locations of the config file are ~/.fvwm/config and
+/usr/local/share/fvwm/config (if the user's file is not found).  The
+.fvwm2rc file names used in the past are supported too.
 
-Sample configuration files may be found in the sample.fvwm2rc
+Sample configuration files may be found in the sample.fvwmrc
 directory.  To avoid clobbering the current configuration, no
 configuration file is installed by default.  You must copy it manually
 the first time FVWM is installed.  But this is fully optional, FVWM
@@ -88,10 +87,10 @@ Other system-wide configuration files are located in /usr/local/share/fvwm
 (also called FVWM_DATADIR) that can be used directly from the configuration
 directory.  See the FvwmForm man page for some examples.
 
-For users starting fvwm without a .fvwm2rc file, there are built-in
-dialogs that can copy files from the configuration directory into the
-users home directory to create the users starting .fvwm2rc.
-See the fvwm man page under "INITIALIZATION".
+For users starting fvwm without a fvwm/config or fvwm/.fvwm2rc file,
+there are built-in dialogs that can copy files from the configuration
+directory into the users home directory to create the users startup
+file.  See the fvwm man page under "INITIALIZATION".
 
 
 Bug Reports

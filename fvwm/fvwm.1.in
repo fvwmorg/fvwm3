@@ -19,7 +19,7 @@
 .\"
 .\"  context                            typeface        example
 .\"  ---------------------------------- --------------  -----------------
-.\"  filenames:                         italics (.I)    .I .fvwm2rc
+.\"  filenames:                         italics (.I)    .I .fvwm/config
 .\"  command line options of fvwm cmd:  bold (.B)       .B \-cmd
 .\"  arguments of command line options: italics (.I)    .BI "\-cmd " command
 .\"  fvwm commands:                     bold (.B)       .B Move
@@ -39,7 +39,9 @@
 .\"
 .\" The name fvwm is written in lower case throughout this man
 .\" page.  Fvwm is written without a version number, i.e. fvwm,
-.\" not fvwm2.  The latter is used only in the .fvwm2rc file name.
+.\" not fvwm2.  The latter is currently used only in the .fvwm2rc
+.\" file name; if there is a need to specify this old name, place
+.\" it as an accompaniment to the preferred ~/.fvwm/config name.
 .\"
 .\" Note that the word "will" is rarely correct in a man page or
 .\" any document. Describe what fvwm does, not what it will do,
@@ -187,23 +189,25 @@ Causes fvwm to use
 .I config-command
 instead of
 .RB "'" "Read"
-.IR ".fvwm2rc" "'"
+.IR "config" "'"
+.RB "(or '" "Read"
+.IR ".fvwm2rc" "')"
 as its initialization command.  (Note that up to 10
 .BR \-f " and " \-c
 parameters can be given, and they are executed in the order
 specified.)
 
 Any module started by command line arguments is assumed to be
-a module that sends back config commands.  All command line modules
-have to quit before fvwm proceeds on to the InitFunction and
-setting border decorations and styles.  There is a potential deadlock
-if you start a module other than FvwmCpp/FvwmM4/FvwmPerl but there is
-a timeout so fvwm will eventually get going.
+a module that sends back config commands.  All command line
+modules have to quit before fvwm proceeds on to the StartFunction
+and setting border decorations and styles.  There is a potential
+deadlock if you start a module other than FvwmCpp/FvwmM4/FvwmPerl
+but there is a timeout so fvwm will eventually get going.
 
-As an example,
-starting the pager this way hangs fvwm until the timeout, but this works:
+As an example, starting the pager this way hangs fvwm until
+the timeout, but the following should work well:
 .EX
-  fvwm -c "AddToFunc StartFunction I Module FvwmPager"
+fvwm -c "AddToFunc StartFunction I Module FvwmPager"
 .EE
 .TP
 .BR "-d" " | " "--display "
@@ -223,7 +227,7 @@ running.
 Causes fvwm to read
 .I config-file
 instead of
-.I .fvwm2rc
+.I ~/.fvwm/config
 as its initialization file.  This is equivalent to
 .RB "-c 'Read"
 .IR "config-file'."
@@ -539,10 +543,10 @@ from the currently mapped viewport is to use the
 .IR StartsOnPage " or " StartsOnScreen
 style specification (the successors to the older
 .I StartsOnDesk
-style) in the
-.I .fvwm2rc
-configuration file.  The placement is consistent: it does not
-depend on your current location on the virtual desktop.
+style) in your
+.I config
+file.  The placement is consistent: it does
+not depend on your current location on the virtual desktop.
 
 Some applications that understand standard Xt command line
 arguments and X resources, like xterm and xfontsel, allow the user
@@ -653,23 +657,34 @@ which describes key and button bindings, and many other
 things. The format of these files is described later.  Fvwm first
 searches for configuration files using the command
 .EX
-.BI "Read " .fvwm2rc
+.BI "Read " config
 .EE
-This looks for
-.IR .fvwm2rc " in "
-.IR "$HOME/.fvwm" " or " "$FVWM_USERDIR"
+This looks for file
+.IR config " in " "$FVWM_USERDIR" " and " "$FVWM_DATADIR"
 directories, as described in
 .B Read
-below.  If this fails, fvwm also searches for this file in the
-.I $HOME
-directory or for
-.I system.fvwm2rc
-file in the system place.  If a configuration file is not found,
-any mouse button or the
+below.  If this fails more files are queried for backward
+compatibility.  Here is the complete list of all file locations
+queried in the default installation (only the first found file
+is used):
+.EX
+$HOME/.fvwm/config
+/usr/local/share/fvwm/config
+
+$HOME/.fvwm/.fvwm2rc
+$HOME/.fvwm2rc
+/usr/local/share/fvwm/.fvwm2rc
+/usr/local/share/fvwm/system.fvwm2rc
+/etc/system.fvwm2rc
+.EE
+Please note, the last 5 locations are not guarranteed to be
+supported in the future.
+
+If a configuration file is not found, the left mouse button, or
 .SM Help
 or
 .SM F1
-keys on the root window brings up menus and forms that can create
+keys on the root window bring up menus and forms that can create
 a starting configuration file.
 
 Fvwm sets two environment variables which are inherited by its
@@ -702,29 +717,30 @@ or
 Module FvwmXxx
 .EE
 into your
-.IR .fvwm2rc ,
+.IR config ,
 but it is not recommended; do this only if you know what you are
 doing. It is usually critical to start applications or modules
-after
-.I .fvwm2rc
-is read, because it contains styles or module configurations which
-can affect window appearance and functionality.
+after the entire config is read, because it contains styles or
+module configurations which can affect window appearance and
+functionality.
 
 The standard way to start applications or modules on fvwm's start
 up is to add them to an initialization function (usually
 .BR StartFunction " or " InitFunction ).
-This way they are only started after fvwm reads the entire
-.IR .fvwm2rc .
+This way they are only started after fvwm finishes to read and
+execute
+.I config
+file.
 
 Fvwm has three special functions for initialization:
 .BR StartFunction ,
 which is executed on startups and restarts;
 .BR InitFunction " and " RestartFunction ,
 which are executed during initialization and restarts
-(respectively) just after StartFunction. These functions may be
+(respectively) just after StartFunction.  These functions may be
 customized in a user's
-.I .fvwm2rc
-file via the
+.I config
+file using the
 .B AddToFunc
 command (described later) to start up modules, xterms, or whatever
 you'd like to have started by fvwm.
@@ -738,13 +754,13 @@ If fvwm is run under a session manager, functions
 .BR SessionInitFunction " and " SessionRestartFunction
 are executed instead of InitFunction and RestartFunction.
 This helps to define the user's
-.I .fvwm2rc
+.I config
 file to be good for both running under a session manager and
 without it.  Generally it is a bad idea to start xterms or other
 applications in "Session*" functions.  Also someone can decide to
 start different modules while running under a session manager or
 not.  For the similar purposes
-. B SessionExitFunction
+.B SessionExitFunction
 is used instead of ExitFunction.
 .EX
 DestroyFunc StartFunction
@@ -773,6 +789,22 @@ AddToFunc SessionRestartFunction
  + I Nop
 .EE
 You don't need to define all special functions if some are empty.
+Also note, all these special functions may be emulated now using
+.B StartFunction " and " ExitFunction,
+like this:
+.EX
+DestroyFunc StartFunction
+AddToFunc StartFunction
++ I Test (Init) Module FvwmBanner
++ I Module FvwmPager * *
++ I Test (Restart) Beep
+
+DestroyFunc ExitFunction
+AddToFunc ExitFunction
++ I Test (Quit) Echo Bye-bye
++ I KillModule MyBuggyModule
++ I Test (ToRestart) Beep
+.EE
 
 .SH COMPILATION OPTIONS
 
@@ -843,7 +875,7 @@ between 60 and 256.
 Modules simply transmit commands to the fvwm command
 engine.  Commands are formatted just as in the case of a
 mouse binding in the
-.I .fvwm2rc
+.I config
 setup file.  Certain auxiliary information is also transmitted, as
 in the sample module
 .BR FvwmButtons .
@@ -893,7 +925,7 @@ The differences between
 .SM ICCCM
 2.0 compliant window manager; thus
 .EX
-fvwm; vi .fvwm2rc; fvwm -replace
+fvwm; vi ~/.fvwm/config; fvwm -replace
 .EE
 resembles the
 .B Restart
@@ -1003,7 +1035,7 @@ commands for details.
 .SH OPEN LOOK and XVIEW COMPATIBILITY
 Fvwm supports all the Open Look decoration hints (except
 pushpins).  Should you use any such application, please add the
-following line to your .fvwm2rc:
+following line to your config:
 .EX
 Style * OLDecor
 .EE
@@ -1037,10 +1069,10 @@ replace the command
 with
 .B FvwmM4
 in your
-.I .fvwm2rc
+.I ~/.fvwm/config
 file (if it appears at all), and start fvwm with the command
 .EX
-fvwm -cmd "FvwmM4 .fvwm2rc"
+fvwm -cmd "FvwmM4 config"
 .EE
 
 .SH CPP PREPROCESSING
@@ -1063,7 +1095,7 @@ auto-raise module,
 The configuration file is used to describe mouse and button
 bindings, colors, the virtual display size, and related items.
 The initialization configuration file is typically called
-.IR .fvwm2rc .
+.IR config " (or " .fvwm2rc ")."
 By using the
 .B Read
 command, it is easy to read in new configuration files as you go.
@@ -1088,9 +1120,18 @@ sense for run-time.
 .SH SUPPLIED CONFIGURATION
 
 A sample configuration file,
-.IR .fvwm2rc ,
+.IR system.fvwm2rc ,
 is supplied with the fvwm distribution.  It is well commented and
 can be used as a source of examples for fvwm configuration.
+It may be copied to /usr/local/share/fvwm/config file.
+
+Alternativelly, the built-in menu (accessible when no
+configuration file is found) has options to create an initial
+config file for the user.
+
+If you are new to
+.IR fvwm ", try " fvwm-themes
+package demonstrating the powerful fvwm functionality.
 .\"
 .\" .SH INTERNATIONALIZATION
 .\" Internationalized fvwm enables to display not only LATIN-1
@@ -1533,7 +1574,7 @@ This allows complex functions or modules to be invoked in a manner
 which is fairly transparent to the configuration file.
 
 Example: the
-.I .fvwm2rc
+.I config
 file contains the line
 .EX
 HelpMe
@@ -2289,7 +2330,7 @@ Mouse 1 R A Popup Utilities
 .EE
 There is no end-of-menu symbol.  Menus do not have to be defined
 in a contiguous region of the
-.I .fvwm2rc
+.I config
 file.  The quoted (or first word)
 portion in the above examples is the menu label,
 which appears in the menu when the user pops it up.  The remaining
@@ -3661,7 +3702,7 @@ option to fvwm.
 .\"would limit pixmaps to these 9 colors.
 .\"
 .\"It makes the most sense to put this command at the front of the
-.\".I .fvwm2rc
+.\".I config
 .\"file.  This command should occur before any menu definitions that
 .\"contain mini-icons.
 .\"
@@ -3678,7 +3719,7 @@ option to fvwm.
 .\"On 8 bit displays, the default color limit is set to the size of
 .\"the built-in table (about 60).  We recommend that you start with
 .\"the default value, and not include this command in your
-.\".IR .fvwm2rc .
+.\".IR config " file."
 
 .TP
 .BI "ColormapFocus " FollowsMouse | FollowsFocus
@@ -4254,7 +4295,7 @@ ImagePath $HOME/icons:+:/usr/include/X11/bitmaps
 Note: if the
 .B FvwmM4
 module is used to parse your
-.I .fvwm2rc
+.I config
 files, then m4 may want to mangle the word "include" which
 frequently shows up in the
 .B ImagePath
@@ -5626,11 +5667,11 @@ bindings.
 affects the
 .I ClickToFocus
 style too.  This command belongs into your
-.IR .fvwm2rc .
+.IR config .
 If you issue it when your fvwm session is already up and running
 the results are unpredictable.  The should appear before any
 applications or modules are started in your
-.I .fvwm2rc
+.I config
 file (e.g. with the
 .B Exec
 command).
@@ -9068,7 +9109,7 @@ paging or scrolling when you hit the edge of a page include
 EdgeScroll 0 0
 .EE
 in your
-.I .fvwm2rc
+.I config
 file, or possibly better, set the
 .B EdgeThickness
 to zero.  See the
@@ -9509,7 +9550,7 @@ Key F11 R A Function MailFunction \\
   zmail "-bg pink"
 .EE
 in the same
-.IR .fvwm2rc ,
+.IR config ,
 if you wanted.  An example of using "$[w.id]" is:
 .EX
 AddToFunc PrintFunction
@@ -9546,7 +9587,7 @@ DestroyFunc PrintFunction
 Prints a message to
 .IR stderr .
 Potentially useful for debugging things in your
-.IR .fvwm2rc .
+.IR config .
 .EX
 Echo Beginning style definitions...
 .EE
@@ -10591,7 +10632,7 @@ de-iconified),
 (to execute fvwm commands directly),
 .B FvwmCpp
 (to preprocess your
-.I .fvwm2rc
+.I config
 with cpp),
 .B FvwmDebug
 (to help debug fvwm),
@@ -10611,7 +10652,7 @@ with cpp),
 (to get window info),
 .B FvwmM4
 (to preprocess your
-.I .fvwm2rc
+.I config
 with m4),
 .B FvwmPager
 (a mini version of the desktop),

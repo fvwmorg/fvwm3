@@ -348,7 +348,7 @@ char *envDupExpand(const char *s, int extra)
  *                occurrences are skipped.
  *                If nothing is found returns NULL and sets beg and end to 0.
  *
- *  EXAMPLE       getFirstEnv("echo $HOME/.fvwm2rc", &beg, &end)
+ *  EXAMPLE       getFirstEnv("echo $HOME/.fvwm/config", &beg, &end)
  *                returns "/home/username" and beg=5, end=10.
  *
  */

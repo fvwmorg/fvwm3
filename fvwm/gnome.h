@@ -22,7 +22,7 @@ void GNOME_Init(void);
 /* client messages; setting hints on a window comes through this mechanism */
 int  GNOME_ProcessClientMessage(const exec_context_t *exc);
 
-/* hook into .fvwm2rc functions */
+/* hook into config functions */
 void GNOME_ButtonFunc(
 	XEvent *eventp, Window w, FvwmWindow *fwin, unsigned long context,
 	char *action, int *Module);

@@ -1,3 +1,10 @@
+2004-04-21  Mikhael Goikhman  <migo@homemail.com>
+
+	* docs/FAQ:
+	* docs/todo-2.6:
+	new default ~/.fvwm/config file is now recommended instead of
+	still supported ~/.fvwm/.fvwm2rc
+
 2004-04-21  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* FAQ:
