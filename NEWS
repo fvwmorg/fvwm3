@@ -6,7 +6,7 @@ _+_A HREF="#2.4.14"_-_2.4.14_+_/A_-_.
 Changes in development release 2.5.6 (not released yet)
 
 * Fix for gmplayer launched by fvwm.  Close stdin on Exec so the
-  exex'd process knows its not running interactively.
+  exec'd process knows its not running interactively.
 
 * Improvement in MultiPixmap.  In particular Colorset and Solid
   color can be specified.
