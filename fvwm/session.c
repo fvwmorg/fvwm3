@@ -283,6 +283,7 @@ GetWindowRole(Window window)
 
 void SetClientID(char *new_id)
 {
+;                                       /* put something in function */
 }
 
 static char *
@@ -1152,6 +1153,7 @@ ProcessICEMsgs(void)
       sm_fd = -1;
     }
 #endif
+;                                       /* put something in function */
 }
 
 
