@@ -45,7 +45,7 @@ typedef struct ScreenInfo
   Pixmap sticky_gray_pixmap;
   Pixmap light_gray_pixmap;
   Pixmap gray_pixmap;
-
+  Pixel black;
 } ScreenInfo;
 
 typedef struct pager_window

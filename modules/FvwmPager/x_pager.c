@@ -157,6 +157,7 @@ void initialize_viz_pager(void)
   }
   xgcv.plane_mask = AllPlanes;
   Scr.MiniIconGC = XCreateGC(dpy, Scr.Pager_w, GCPlaneMask, &xgcv);
+  Scr.black = GetColor("Black");
 }
 
 /***********************************************************************
@@ -2229,11 +2230,12 @@ XErrorHandler FvwmErrorHandler(Display *dpy, XErrorEvent *event)
 void BorderWindow(PagerWindow *t)
 {
   if (t->PagerView != None) {
-    if ((!WindowBorders3d) || (windowcolorset < 0) || (activecolorset < 0))
+    if ((!WindowBorders3d) || (windowcolorset < 0) || (activecolorset < 0)) {
+      XSetForeground(dpy, Scr.NormalGC, Scr.black);
       RelieveRectangle(dpy, t->PagerView, 0, 0, t->pager_view_width - 1,
         	       t->pager_view_height - 1, Scr.NormalGC, Scr.NormalGC,
         	       WindowBorderWidth);
-    else if (t == FocusWin)
+    } else if (t == FocusWin)
       RelieveRectangle(dpy, t->PagerView, 0, 0, t->pager_view_width - 1,
 		       t->pager_view_height - 1, Scr.ahGC, Scr.asGC,
 		       WindowBorderWidth);
@@ -2247,11 +2249,12 @@ void BorderWindow(PagerWindow *t)
 void BorderIconWindow(PagerWindow *t)
 {
   if (t->IconView != None) {
-    if ((!WindowBorders3d) || (windowcolorset < 0) || (activecolorset < 0))
+    if ((!WindowBorders3d) || (windowcolorset < 0) || (activecolorset < 0)) {
+      XSetForeground(dpy, Scr.NormalGC, Scr.black);
       RelieveRectangle(dpy, t->IconView, 0, 0, t->icon_view_width - 1,
         	       t->icon_view_height - 1, Scr.NormalGC, Scr.NormalGC,
         	       WindowBorderWidth);
-    else if (t == FocusWin)
+    } else if (t == FocusWin)
       RelieveRectangle(dpy, t->IconView, 0, 0, t->icon_view_width - 1,
 		       t->icon_view_height - 1, Scr.ahGC, Scr.asGC,
 		       WindowBorderWidth);
