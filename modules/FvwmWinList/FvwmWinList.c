@@ -1137,12 +1137,30 @@ void MakeMeWindow(void)
   {
     XQueryPointer(dpy,Root,&dummyroot,&dummychild,&hints.x,&hints.y,&x,&y,
 		  &dummy1);
-    hints.win_gravity=NorthWestGravity;
+    hints.x -= hints.width / 2;
+    hints.y -= buttonheight / 2;
+    if (hints.x + hints.width > ScreenWidth)
+    {
+      hints.x = ScreenWidth - hints.width;
+    }
+    if (hints.x < 0)
+    {
+      hints.x = 0;
+    }
+    if (hints.y + hints.height > ScreenHeight)
+    {
+      hints.y = ScreenHeight - hints.height;
+    }
+    if (hints.y < 0)
+    {
+      hints.y = 0;
+    }
+    hints.win_gravity = NorthWestGravity;
     hints.flags |= USPosition;
   }
-  win_grav=hints.win_gravity;
-  win_x=hints.x;
-  win_y=hints.y;
+  win_x = hints.x;
+  win_y = hints.y;
+  win_grav = hints.win_gravity;
 
 
   for (i = 0; i != MAX_COLOUR_SETS; i++)
