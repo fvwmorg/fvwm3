@@ -1,5 +1,7 @@
 1999-05-30  Dominik Vogt  <dominik_vogt@gmx.de>
 
+	* fvwm/fvwm.c (main): backed out restart patch
+
 	* fvwm/menus.c (SelectMenuItem): fixed another x error message
 
 	* fvwm/fvwm.c (main): applied restart patch by Mikhael Goikhman
