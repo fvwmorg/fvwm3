@@ -22,7 +22,7 @@
 .\"  style names and strings:           double quotes   "stylename", "x"
 .\"  single characters:                 single quotes   '@'
 .\"  module names:                      bold (.B)       .B FvwmPager
-.\"  links to web pages:                bold (.B)       .B http://fvwm.org
+.\"  links to web pages:                bold (.B)       .B http://@FVWMHOMEPAGE@
 .\"  acronyms:                          small (.SM)     .SM ICCCM
 .\"
 .\"
@@ -46,7 +46,7 @@
 .\" formatted with ".IP".
 .\"  dje 15/June/2001.
 .\"
-.\" @(#)fvwm-2.5.3 not released yet
+.\" @(#)@PACKAGE@-@VERSION@ @RELDATELONG@
 .de EX		\"Begin example
 .ne 5
 .if n .sp 1
@@ -61,11 +61,11 @@
 .if t .sp .5
 ..
 .ta .3i .6i .9i 1.2i 1.5i 1.8i
-.TH FVWM 1 "not released yet" FVWM "FVWM 2.5.3"
+.TH FVWM 1 "@RELDATELONG@" FVWM "FVWM @VERSION@"
 .UC
 .SH NAME
 
-fvwm \- F? Virtual Window Manager for X11
+fvwm \- @FVWMNAMELONG@ for X11
 .SH SYNOPSIS
 
 .B fvwm
@@ -4804,7 +4804,7 @@ Values larger than 100 can be used with caution.
 This command is obsolete and should not be used anymore.  Should
 you want to do something specific that you cannot do without it,
 please report this to the fvwm-workers mailing list
-(fvwm-workers@fvwm.org).  This command will be removed at some point
+(@FVWMWORKERSLIST@).  This command will be removed at some point
 in the future.  Please read the note at the end of the section
 .B "BUILT IN COMMANDS"
 to learn about how to avoid the
@@ -9421,12 +9421,12 @@ files in the distribution.  These files are no longer maintained
 and may be out of date.
 
 Bug reports can be sent to the fvwm-workers mailing list at
-fvwm-workers@fvwm.org (see the
+@FVWMWORKERSLIST@ (see the
 .IR FAQ )
 or reported through the bug tracking system.
 
 The official fvwm homepage is
-.BR http://fvwm.org .
+.BR http://@FVWMHOMEPAGE@ .
 
 \" LocalWords:  XTerm xterm rc fvwm Linux ICCCM CDE XView XINERAMA Xinerama
 \" LocalWords:  EdgeResistance fvwm's IconBox MoveToScreen FvwmConsole
