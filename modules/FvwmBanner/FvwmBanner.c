@@ -65,16 +65,15 @@ static int MyNameLen;
 int timeout = 3000000; /* default time of 3 seconds */
 
 Display *dpy;			/* which display are we talking to */
+Graphics *G;
 Window Root;
 int screen;
 int x_fd;
-int d_depth;
 int ScreenWidth, ScreenHeight;
 XSizeHints mysizehints;
 Pixel back_pix, fore_pix;
 GC NormalGC,FGC;
 static Atom wm_del_win;
-Colormap colormap;
 Bool no_wm = False;
 
 #define MW_EVENTS   (ExposureMask | ButtonReleaseMask)
@@ -132,27 +131,39 @@ int main(int argc, char **argv)
     }
   screen= DefaultScreen(dpy);
   Root = RootWindow(dpy, screen);
-  colormap = XDefaultColormap(dpy,screen);
-  d_depth = DefaultDepth(dpy, screen);
   x_fd = XConnectionNumber(dpy);
 
   ScreenHeight = DisplayHeight(dpy,screen);
   ScreenWidth = DisplayWidth(dpy,screen);
 
+  G = CreateGraphics(dpy);
   parseOptions(fd);
+
+  /* chick in the neck situation:
+   * can't load pixmaps into non-default visual without a window
+   * don't know what size the window should be until pixmap is loaded
+   */
+  attr.background_pixmap = None;
+  attr.border_pixel = 0;
+  attr.colormap = G->cmap;
+  attr.override_redirect = no_wm;
+  win = XCreateWindow(dpy, Root, -20, -20, 10, 10, 0, G->depth, InputOutput,
+		      G->viz,
+		      CWColormap|CWBackPixmap|CWBorderPixel|CWOverrideRedirect,
+		      &attr);
 
   /* Get the xpm banner */
   if (imageName)
     GetXPMFile(imageName,imagePath);
   else
     GetXPMData(fvwm2_big_xpm);
+  XSetWindowBackgroundPixmap(dpy, win, view.pixmap);
 
   /* Create a window to hold the banner */
-  mysizehints.flags=
-    USSize|USPosition|PWinGravity|PResizeInc|PBaseSize|PMinSize|PMaxSize;
-  /* subtract one for the right/bottom border */
+  mysizehints.flags = USSize | USPosition | PWinGravity | PResizeInc
+		     | PBaseSize | PMinSize | PMaxSize;
   mysizehints.width = view.attributes.width;
-  mysizehints.height=view.attributes.height;
+  mysizehints.height = view.attributes.height;
   mysizehints.width_inc = 1;
   mysizehints.height_inc = 1;
   mysizehints.base_height = mysizehints.height;
@@ -166,27 +177,20 @@ int main(int argc, char **argv)
   mysizehints.x = (ScreenWidth - view.attributes.width)/2;
   mysizehints.y = (ScreenHeight - view.attributes.height)/2;
 
-  win = XCreateSimpleWindow(dpy,Root,mysizehints.x,mysizehints.y,
-				 mysizehints.width,mysizehints.height,
-				 0,fore_pix ,None);
-
-
-  /* Set assorted info for the window */
-  if (no_wm) {
-    attr.override_redirect = True;
-    XChangeWindowAttributes(dpy, win, CWOverrideRedirect, &attr);
-  }
   wm_del_win = XInternAtom(dpy,"WM_DELETE_WINDOW",False);
   XSetWMProtocols(dpy,win,&wm_del_win,1);
 
   XSetWMNormalHints(dpy,win,&mysizehints);
   change_window_name("FvwmBanner");
 
-  XSetWindowBackgroundPixmap(dpy,win,view.pixmap);
+  XMoveResizeWindow(dpy, win, mysizehints.x, mysizehints.y, mysizehints.width,
+		    mysizehints.height);
+
 #ifdef SHAPE
   if(view.mask != None)
     XShapeCombineMask(dpy, win, ShapeBounding,0,0,view.mask, ShapeSet);
 #endif
+
   XMapWindow(dpy,win);
   XSync(dpy,0);
   XSelectInput(dpy,win,ButtonReleaseMask);
@@ -241,11 +245,14 @@ int main(int argc, char **argv)
  ****************************************************************************/
 void GetXPMData(char **data)
 {
-  view.attributes.valuemask = XpmReturnPixels| XpmCloseness | XpmExtensions;
+  view.attributes.valuemask = XpmReturnPixels | XpmCloseness | XpmExtensions
+			      | XpmVisual | XpmColormap | XpmDepth;
   view.attributes.closeness = 40000 /* Allow for "similar" colors */;
-  if(XpmCreatePixmapFromData(dpy, Root, data,
-                             &view.pixmap, &view.mask,
-                             &view.attributes)!=XpmSuccess)
+  view.attributes.visual = G->viz;
+  view.attributes.colormap = G->cmap;
+  view.attributes.depth = G->depth;
+  if(XpmCreatePixmapFromData(dpy, win, data, &view.pixmap, &view.mask,
+			     &view.attributes)!=XpmSuccess)
   {
     fprintf(stderr,"FvwmBanner: ERROR couldn't convert data to pixmap\n");
     exit(1);
@@ -255,23 +262,21 @@ void GetXPMFile(char *file, char *path)
 {
   char *full_file = NULL;
 
-  view.attributes.valuemask = XpmReturnPixels| XpmCloseness | XpmExtensions;
+  view.attributes.valuemask = XpmReturnPixels | XpmCloseness | XpmExtensions
+			      | XpmVisual | XpmColormap | XpmDepth;
   view.attributes.closeness = 40000 /* Allow for "similar" colors */;
+  view.attributes.visual = G->viz;
+  view.attributes.colormap = G->cmap;
+  view.attributes.depth = G->depth;
 
   if (file)
     full_file = findImageFile(file,path,R_OK);
 
   if (full_file)
   {
-    if(XpmReadFileToPixmap(dpy,
-                           Root,
-                           full_file,
-                           &view.pixmap,
-                           &view.mask,
-                           &view.attributes) == XpmSuccess)
-    {
+    if(XpmReadFileToPixmap(dpy, Root, full_file, &view.pixmap, &view.mask,
+			   &view.attributes) == XpmSuccess)
       return;
-    }
     fprintf(stderr,"FvwmBanner: ERROR reading pixmap file\n");
   }
   else
@@ -292,6 +297,11 @@ static void parseOptions (int fd[2])
   InitGetConfigLine(fd,MyName);
   while (GetConfigLine (fd, &tline),tline != NULL) {
     if (strlen (tline) > 1) {
+      if(strncasecmp(tline, DEFGRAPHSTR, DEFGRAPHLEN)==0)  {
+        ParseGraphics(dpy, tline, G);
+        SavePictureCMap(dpy, G->viz, G->cmap, G->depth);
+        continue;
+      }
       if (strncasecmp(tline, "ImagePath",9)==0) {
         CopyString (&imagePath, &tline[9]);
         if (imagePath[0] == 0) {
