@@ -105,6 +105,13 @@ static void activate_binding(Binding *binding, binding_t type, Bool do_grab)
 	{
 		return;
 	}
+	if (BIND_IS_KEY_RELEASE(type))
+	{
+		/* Release a passive grab on the key if any.  Actually this may
+		 * release the grab for the wrong key, but it will prevent the
+		 * keyboard from staying frozen forever. */
+		MyXUngrabKey(dpy);
+	}
 	if (BIND_IS_PKEY_BINDING(type) || binding->Context == C_ALL)
 	{
 		/* necessary for key bindings that work over unfocused windows
@@ -223,6 +230,12 @@ static int ParseBinding(
 	{
 		if (BIND_IS_KEY_BINDING(type))
 		{
+			if (token[0] == '-')
+			{
+				/* it's a key release binding */
+				type++;
+				token++;
+			}
 			/* see len of key_string above */
 			n1 = sscanf(token,"%200s", key_string);
 		}

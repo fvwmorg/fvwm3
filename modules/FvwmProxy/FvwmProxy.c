@@ -89,6 +89,7 @@ static int deskNumber=0;
 static int mousex,mousey;
 static ProxyWindow *firstWindow=NULL;
 static ProxyWindow *selectProxy=NULL;
+static ProxyWindow *enterProxy=NULL;
 static XGCValues xgcv;
 static int are_windows_shown = 0;
 static FlocaleWinString *FwinString;
@@ -736,6 +737,10 @@ static void DestroyWindow(Window w)
 	{
 		selectProxy = NULL;
 	}
+	if (enterProxy == proxy)
+	{
+		enterProxy = NULL;
+	}
 	CloseOneWindow(proxy);
 	delete_ProxyWindow(proxy);
 
@@ -778,6 +783,7 @@ static void StartProxies(void)
 		return;
 	}
 	selectProxy=NULL;
+	enterProxy=NULL;
 	send_command_to_fvwm(show_command, None);
 	are_windows_shown = 1;
 	CloseWindows();
@@ -832,6 +838,7 @@ static void SelectProxy(void)
 		send_command_to_fvwm(select_command, selectProxy->window);
 	}
 	send_command_to_fvwm(hide_command, None);
+	selectProxy = NULL;
 
 	return;
 }
@@ -840,6 +847,7 @@ static void AbortProxies(boid)
 {
 	HideProxies();
 	send_command_to_fvwm(abort_command, None);
+	selectProxy = NULL;
 
 	return;
 }
@@ -1102,11 +1110,14 @@ static void DispatchEvent(XEvent *pEvent)
 		if (pEvent->xcrossing.mode == NotifyNormal)
 		{
 			MarkProxy(proxy);
+			enterProxy = proxy;
 		}
 		else if (pEvent->xcrossing.mode == NotifyUngrab &&
-			 proxy != NULL && proxy != selectProxy)
+			 proxy != NULL && proxy != selectProxy &&
+			 proxy != enterProxy)
 		{
 			MarkProxy(proxy);
+			enterProxy = proxy;
 		}
 		break;
 	default:

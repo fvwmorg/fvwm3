@@ -1,3 +1,10 @@
+2002-11-14  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* FvwmProxy/FvwmProxy.c (DispatchEvent):
+	(DestroyWindow):
+	(StartProxies):
+	ignore EnterNotify events cause by keyboard grabs
+
 2002-11-13  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* FvwmScript/Instructions.c (Key):
@@ -5,6 +12,7 @@
 	* FvwmIconMan/readconfig.c (ParseKeyEntry):
 	(ParseMouseEntry):
 	(ParseSimpleEntry):
+	use new Bindings.h interface
 
 2002-11-13  olicha  <olivier.chapuis@free.fr>
 

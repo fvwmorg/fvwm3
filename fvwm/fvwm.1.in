@@ -5328,7 +5328,7 @@ Mouse 3 R A GnomeButton
 .EE
 
 .TP
-.BI "Key " "Keyname Context Modifiers Function"
+.BI "Key [" "-" "]" "Keyname Context Modifiers Function"
 Binds a keyboard key to a specified fvwm command, or
 removes the binding if
 .I Function
@@ -5336,6 +5336,14 @@ is '-'.  The syntax is the same as for a
 .B Mouse
 binding except that the mouse button number is replaced with a
 .IR Keyname .
+Normally, the key binding is activated when the key is pressed.
+The
+.I Keyname
+can be prefixed with a '-' to activate the binding when the
+corresponding key is released.  However, some X servers do not
+implement key release events.  Do not use this functionality on
+such an X server.  Also, some applications, for example xterm, do
+not take keyboard input while fvwm is waiting for the key release.
 The
 .I Keyname
 is one of the entries from the file
@@ -5430,7 +5438,7 @@ side buttons which are drawn.  Actions can be bound to either
 mouse buttons or keyboard keys.
 
 .TP
-.BI "PointerKey " "Keyname Context Modifiers Function"
+.BI "PointerKey [" "-" "]" "Keyname Context Modifiers Function"
 This command works exactly like the
 .B Key
 command.  The only difference is that the binding operates on the

@@ -12,10 +12,12 @@ AddToFunc FvwmProxyMarkFunc
 + I SetEnv FvwmProxy_S $w
 
 AddToFunc FvwmProxySelectFunc
++ I echo $w
 + I WindowId $w Iconify off
 + I WindowId $w FlipFocus
 + I WindowId $w Raise
 + I WindowId $w WarpToWindow 5p 5p
++ I UnsetEnv FvwmProxy_S
 
 AddToFunc FvwmProxy_Mark
 + I None WindowId $w

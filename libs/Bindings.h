@@ -78,13 +78,14 @@
 
 typedef enum
 {
+	/* press = even number, release = press + 1 */
 	BIND_BUTTONPRESS = 0,
-	BIND_BUTTONRELEASE,
-	BIND_KEYPRESS,
-	BIND_KEYRELEASE,
-	BIND_PKEYPRESS,
-	BIND_PKEYRELEASE,
-	BIND_STROKE
+	BIND_BUTTONRELEASE = 1,
+	BIND_KEYPRESS = 2,
+	BIND_KEYRELEASE = 3,
+	BIND_PKEYPRESS = 4,
+	BIND_PKEYRELEASE = 5,
+	BIND_STROKE = 6
 } binding_t;
 
 typedef struct Binding

@@ -32,6 +32,10 @@ Changes in developement release 2.5.5 (not released yet)
      StickyDesk, OnlyStickyPage, OnlyStickyDesk.
    - New FvwmRearrange options -sp and -sd.
 
+* Key bindings can operate on the release of a key too.  Prefix the
+  key name with a '-' in the Key command.  Please read about the
+  caveats in the man page.
+
 -------------------------------------------------------------------
 
 Changes in alpha release 2.5.4 (20-Oct-2002)

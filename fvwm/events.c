@@ -1931,17 +1931,17 @@ void HandleFocusOut(const evh_args_t *ea)
 	return;
 }
 
-void HandleKeyPress(const evh_args_t *ea)
+void __handle_key_event(const evh_args_t *ea, Bool is_release)
 {
 	char *action;
 	FvwmWindow *sf;
 	KeyCode kc;
 	int context2;
+	binding_t type1;
+	binding_t type2;
 	const XEvent *te = ea->exc->x.etrigger;
 	const FvwmWindow * const fw = ea->exc->w.fw;
 	Bool is_second_binding;
-
-	DBUG("HandleKeyPress","Routine Entered");
 
 	PressedW = None;
 
@@ -1955,10 +1955,28 @@ void HandleKeyPress(const evh_args_t *ea)
 	sf = get_focus_window();
 	context2 = (sf != NULL && sf != ea->exc->w.fw) ?
 		C_WINDOW : ea->exc->w.wcontext;
+	if (is_release == False)
+	{
+		if (CheckTwoBindings(
+			    &is_second_binding, Scr.AllBindings, STROKE_ARG(0)
+			    kc, te->xkey.state, GetUnusedModifiers(),
+			    ea->exc->w.wcontext, BIND_KEYRELEASE, context2,
+			    BIND_PKEYRELEASE) != NULL)
+		{
+			MyXGrabKey(dpy);
+		}
+		type1 = BIND_KEYPRESS;
+		type2 = BIND_PKEYPRESS;
+	}
+	else
+	{
+		type1 = BIND_KEYRELEASE;
+		type2 = BIND_PKEYRELEASE;
+	}
 	action = CheckTwoBindings(
 		&is_second_binding, Scr.AllBindings, STROKE_ARG(0) kc,
 		te->xkey.state, GetUnusedModifiers(), ea->exc->w.wcontext,
-		BIND_PKEYPRESS, context2, BIND_KEYPRESS);
+		type1, context2, type2);
 	if (action != NULL)
 	{
 		const exec_context_t *exc;
@@ -1977,6 +1995,11 @@ void HandleKeyPress(const evh_args_t *ea)
 		{
 			exc_destroy_context(exc);
 		}
+		if (is_release == True)
+		{
+			MyXUngrabKey(dpy);
+		}
+		XAllowEvents(dpy, AsyncKeyboard, CurrentTime);
 		return;
 	}
 
@@ -1989,7 +2012,10 @@ void HandleKeyPress(const evh_args_t *ea)
 
 		e = *te;
 		e.xkey.window = FW_W(sf);
-		FSendEvent(dpy, FW_W(sf), False, KeyPressMask, &e);
+		FSendEvent(
+			dpy, e.xkey.window, False,
+			(is_release == True) ? KeyReleaseMask : KeyPressMask,
+			&e);
 	}
 	else if (fw && te->xkey.window != FW_W(fw))
 	{
@@ -1997,8 +2023,26 @@ void HandleKeyPress(const evh_args_t *ea)
 
 		e = *te;
 		e.xkey.window = FW_W(fw);
-		FSendEvent(dpy, FW_W(fw), False, KeyPressMask, &e);
+		FSendEvent(
+			dpy, e.xkey.window, False,
+			(is_release == True) ? KeyReleaseMask : KeyPressMask,
+			&e);
 	}
+	XAllowEvents(dpy, AsyncKeyboard, CurrentTime);
+
+	return;
+}
+
+void HandleKeyPress(const evh_args_t *ea)
+{
+	__handle_key_event(ea, False);
+
+	return;
+}
+
+void HandleKeyRelease(const evh_args_t *ea)
+{
+	__handle_key_event(ea, True);
 
 	return;
 }
@@ -3080,6 +3124,7 @@ void InitEventHandlerJumpTable(void)
 	EventHandlerJumpTable[ClientMessage] =    HandleClientMessage;
 	EventHandlerJumpTable[PropertyNotify] =   HandlePropertyNotify;
 	EventHandlerJumpTable[KeyPress] =         HandleKeyPress;
+	EventHandlerJumpTable[KeyRelease] =       HandleKeyRelease;
 	EventHandlerJumpTable[VisibilityNotify] = HandleVisibilityNotify;
 	EventHandlerJumpTable[ColormapNotify] =   HandleColormapNotify;
 	if (FShapesSupported)

@@ -40,7 +40,7 @@
 	ColormapChangeMask | FocusChangeMask)
 #define XEVMASK_ICONW \
 	(ButtonPressMask | ButtonReleaseMask | \
-	VisibilityChangeMask | ExposureMask | KeyPressMask | \
+	VisibilityChangeMask | ExposureMask | KeyPressMask | KeyReleaseMask | \
 	EnterWindowMask | LeaveWindowMask | FocusChangeMask)
 #define XEVMASK_ICONPW \
 	XEVMASK_ICONW
@@ -61,14 +61,15 @@
 	(ButtonPressMask | ButtonReleaseMask | KeyReleaseMask | KeyPressMask | \
 	EnterWindowMask | LeaveWindowMask | VisibilityChangeMask)
 #define XEVMASK_NOFOCUSW \
-	(KeyPressMask|FocusChangeMask)
+	(KeyPressMask | KeyReleaseMask | FocusChangeMask)
 #define XEVMASK_MENUNFW \
-	(KeyPressMask|KeyReleaseMask|FocusChangeMask)
+	(KeyPressMask | KeyReleaseMask | FocusChangeMask)
 #define XEVMASK_ORW \
 	(FocusChangeMask)
 #define XEVMASK_ROOTW \
 	(LeaveWindowMask| EnterWindowMask | \
 	PropertyChangeMask | SubstructureRedirectMask | KeyPressMask | \
+	KeyReleaseMask | \
 	SubstructureNotifyMask | ColormapChangeMask | \
 	STROKE_CODE(ButtonMotionMask | DEFAULT_ALL_BUTTONS_MOTION_MASK |) \
 	ButtonPressMask | ButtonReleaseMask)
