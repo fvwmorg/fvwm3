@@ -1400,6 +1400,9 @@ void MovePage(Bool is_new_desk)
       {
 	XMoveWindow(dpy, Desks[i].CPagerWin, x,y);
 	XLowerWindow(dpy,Desks[i].CPagerWin);
+	if (Desks[i].highcolorset > -1 &&
+	    Colorset[Desks[i].highcolorset].pixmap == ParentRelative)
+	  XClearWindow(dpy, Desks[i].CPagerWin);
       }
       else
       {

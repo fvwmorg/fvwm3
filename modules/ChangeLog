@@ -1,3 +1,9 @@
+2002-01-05  olicha  <olivier.chapuis@free.fr>
+
+	* FvwmPager/x_pager.c (MovePage):
+	Fixed the active page colorset updating after a page change if the
+	colorset is transparent
+
 2002-01-04  olicha  <olivier.chapuis@free.fr>
 
 	* FvwmIconMan/xmanager.c (draw_manager):
