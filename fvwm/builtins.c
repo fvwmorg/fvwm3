@@ -1818,6 +1818,11 @@ void SetDefaultIcon(F_CMD_ARGS)
 }
 
 
+void SetDefaultBackground(F_CMD_ARGS)
+{
+}
+
+
 void SetDefaultColors(F_CMD_ARGS)
 {
   char *fore = NULL;
@@ -1844,6 +1849,8 @@ void SetDefaultColors(F_CMD_ARGS)
       Scr.StdColors.back = GetColor(back);
       Scr.StdRelief.fore = GetHilite(Scr.StdColors.back);
       Scr.StdRelief.back = GetShadow(Scr.StdColors.back);
+      Scr.bg.pixel = Scr.StdColors.back;
+      Scr.bgtype.word = 0;
     }
   free(fore);
   free(back);

@@ -52,6 +52,7 @@
 #include <X11/cursorfont.h>
 #include "functions.h"
 #include "misc.h"
+#include "libs/ModGraph.h"
 
 #define SIZE_HINDENT 5
 #define SIZE_VINDENT 3
@@ -287,6 +288,11 @@ typedef struct ScreenInfo
   Visual *viz;
   unsigned int depth;
   Colormap cmap;
+  /* these next two define the dewfault background, used by modules that have
+   * been converted to share fvwm's visuals. see libs/ModGraph.h */
+  BGtype bgtype;
+  BG bg;
+
   GC DrawGC;			/* GC to draw lines for move and resize */
   Picture *DrawPicture;
   GC ScratchGC1;
