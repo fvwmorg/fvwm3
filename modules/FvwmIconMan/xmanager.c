@@ -1321,6 +1321,8 @@ static void draw_button (WinManager *man, int button, int force)
 	ConsoleDebug (X11, "\tIcon changed\n");
 	b->drawn_state.iconified = win->iconified;
 	draw_icon = 1;
+	draw_background = 1;
+	draw_string = 1;
       }
       if (dirty & STRING_CHANGED) {
 	ConsoleDebug (X11, "\tString changed: %s\n", win->display_string);
