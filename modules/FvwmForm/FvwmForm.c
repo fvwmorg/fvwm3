@@ -931,7 +931,6 @@ static void PutDataInForm(char *cp)
         item->input.buf = var_len+1;
         item->input.value = safemalloc(item->input.buf);
         strcpy(item->input.value,cp);     /* new value in field */
-        /* New value, but don't change length */
         free(var_name);                 /* goto's have their uses */
         return;
       }

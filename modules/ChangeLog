@@ -2,7 +2,7 @@
 
 	* FvwmForm/ReadXServer.c: Some comments.
 	* FvwmForm/FvwmForm.c (PutDataInForm): Update buffer length when
-	input data read from form.  Fixes core.
+	input data read from form.  Fixes core.  Remove incorrect comment.
 
 2002-03-05  Dominik Vogt  <dominik.vogt@gmx.de>
 
