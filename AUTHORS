@@ -81,7 +81,7 @@ Mike Han:
 Multiple menu hotkeys. Automatic menu hotkeys. Reverse-resolution for
 FvwmIconMan. Multiple FvwmIconMan invocations. FvwmBacker per-page hacks
 (only usable after lots of fixes by others). Finally killed FvwmAudio.
-Finished off GSFR in modules. mkstemp() replacement function.
+Finished off GSFR in modules.
 
 Albrecht Kadlec:
 Code & manual cleanups, enhancements, Fixes and module-library which

@@ -117,10 +117,6 @@ char* strerror( int errNum );
 int usleep( unsigned long usec );
 #endif
 
-#ifndef HAVE_MKSTEMP
-int mkstemp( char* template );
-#endif
-
 
 #include "ClientMsg.h"
 #include "Grab.h"

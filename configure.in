@@ -406,7 +406,7 @@ if test $ac_cv_func_select != yes; then
 fi
 
 dnl Check for standard functions that we have replacements for.
-AC_REPLACE_FUNCS(gethostname strcasecmp strncasecmp strdup strerror usleep atexit mkstemp)
+AC_REPLACE_FUNCS(gethostname strcasecmp strncasecmp strdup strerror usleep atexit)
 AC_SUBST(LIBOBJS)
 
 dnl If we do not have atexit(), then check for on_exit()
