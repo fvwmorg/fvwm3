@@ -873,8 +873,8 @@ static Bool __place_get_wm_pos(
 	rc = False;
 	PageLeft   = screen_g.x - pdeltax;
 	PageTop    = screen_g.y - pdeltay;
-	PageRight  = PageLeft + screen_g.width - pdeltax;
-	PageBottom = PageTop + screen_g.height - pdeltay;
+	PageRight  = PageLeft + screen_g.width;
+	PageBottom = PageTop + screen_g.height;
 	xl = -1;
 	yt = PageTop;
 	/* override if Manual placement happen */
@@ -1028,8 +1028,8 @@ static Bool __place_get_wm_pos(
 		{
 			Scr.cascade_y = 2 * fw->title_thickness;
 		}
-		attr_g->x = Scr.cascade_x + PageLeft - pdeltax;
-		attr_g->y = Scr.cascade_y + PageTop - pdeltay;
+		attr_g->x = Scr.cascade_x + PageLeft;
+		attr_g->y = Scr.cascade_y + PageTop;
 		/* try to keep the window on the screen */
 		get_window_borders(fw, &b);
 		if (attr_g->x + fw->frame_g.width >= PageRight)
