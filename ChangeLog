@@ -1,5 +1,17 @@
 2001-03-02  Dominik Vogt  <dominik.vogt@gmx.de>
 
+	* fvwm/fvwm2.1:
+	* fvwm/builtins.c (do_recapture):
+	* fvwm/stack.h:
+	* fvwm/externs.h:
+	* fvwm/stack.c (verify_stack_ring_consistency):
+	(dump_stack_ring):
+	(verify_stack_ring_consistency):
+	* fvwm/fvwm.c (main):
+	disabled stack ring debugging by default
+	to enable use the -debug_stack_ring option
+	verify stack ring consistency after a recapture
+
 	* fvwm/borders.c (draw_clipped_decorations):
 	(get_common_decorations):
 	further performance enhancement

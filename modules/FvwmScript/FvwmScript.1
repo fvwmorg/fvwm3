@@ -51,28 +51,28 @@ The following commands can be placed in the .fvwm2rc file. They are used
 only if the corresponding script commands are not used in the script.
 
 .IP "*FvwmScriptDefaultFont \fIfont\fP"
-Specifies the default font to be used. If not specified with this command 
+Specifies the default font to be used. If not specified with this command
 or in the script with the Font command, fixed font is assumed.
 
 .IP "*FvwmScriptDefaultFore \fIcolor\fP"
-Specifies the default foreground color to be used. If not specified with 
+Specifies the default foreground color to be used. If not specified with
 this command or in the script with the ForeColor command, black is used.
 
 .IP  "*FvwmScriptDefaultBack \fIcolor\fP"
-Specifies the default background color to be used. If not specified with 
+Specifies the default background color to be used. If not specified with
 this command or in the script with the BackColor command, grey85 is used.
 
 .IP  "*FvwmScriptDefaultHilight \fIcolor\fP"
-Specifies the default hilight color to be used. If not specified with 
+Specifies the default hilight color to be used. If not specified with
 this command or in the script with the HilightColor command, grey100 is used.
 
 .IP  "*FvwmScriptDefaultShadow \fIcolor\fP"
-Specifies the default shadow color to be used. If not specified with this 
+Specifies the default shadow color to be used. If not specified with this
 command or in the script with the ShadowColor command, grey55 is used.
 
 .IP "*FvwmScriptDefaultColorset \fIcolorset\fP"
 Tells the module to use colorset \fIcolorset\fP as the default colorset.
-Refer to the FvwmTheme man page for details about 
+Refer to the FvwmTheme man page for details about
 colorsets.
 
 .SH ANATOMY OF A SCRIPT
@@ -539,18 +539,18 @@ You will find examples of scripts in the fvwm configuration directory.
 
 FvwmScript-BellSetup, FvwmScript-KeyboardSetup, FvwmScript-PointerSetup and
 FvwmScript-ScreenSetup are a set of scripts that modify X settings.
-These scripts save preferences into a file named ~/.xinit-fvwmrc (If you want 
-to use another file name, give it as the first argument of the script). 
-If you want to load these preferences at every startup, you have to include 
-the line  ".xinit-fvwmrc" in your .xinitrc (or .xsession) file before 
+These scripts save preferences into a file named ~/.xinit-fvwmrc (If you want
+to use another file name, give it as the first argument of the script).
+If you want to load these preferences at every startup, you have to include
+the line  ".xinit-fvwmrc" in your .xinitrc (or .xsession) file before
 starting fvwm.
 
 FvwmScript-BaseConfig modifies fvwm
 focus and paging mouse policy, window placement, opacity and
-other features of the move and resize commands, snap attraction and 
+other features of the move and resize commands, snap attraction and
 shading animation.
 This script saves preferences into a file named .FvwmBaseConfig in the
-user's data directory (i.e., $HOME/.fvwm or $FVWM_USERDIR if set). 
+user's data directory (i.e., $HOME/.fvwm or $FVWM_USERDIR if set).
 If you want to load these preferences at every startup you must add
 the line "Read .FvwmBaseConfig" in your fvwm configuration file.
 If you want to use another file name, give it as the first
@@ -561,13 +561,13 @@ This allows for reloading specific application styles
 that the script has destroyed
 (e.g., AddToFunc  BaseConfigOkFunc I Read MyAppStyle).
 
-FvwmScript-Buttons is a buttons panel which can replace FvwmButtons (this 
+FvwmScript-Buttons is a buttons panel which can replace FvwmButtons (this
 script supports popup menus and requires xload, xclock, FvwmPager, TkDesk).
 FvwmScript-Colorset allows you to edit your colorset (see FvwmTheme).
 FvwmScript-Date allows you to set date and time.
 FvwmScript-FileBrowser is a file browser used by the other scripts.
 FvwmScript-Find is an elementary front-end to find.
-FvwmScript-Quit allows to quit fvwm, restart fvwm or some other window 
+FvwmScript-Quit allows to quit fvwm, restart fvwm or some other window
 manager, or shut down and reboot the computer.
 FvwmScript-ScreenDump is a screen dumper. FvwmScript-WidgetDemo is a pure
 example script.

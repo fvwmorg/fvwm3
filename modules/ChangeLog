@@ -1,3 +1,8 @@
+2001-03-02  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* FvwmScript/FvwmScript.c (BuildGUI):
+	fixed core dump when WindowSize option was not used
+
 2001-02-28  Dan Espen  <dane@mk.telcordia.com>
 
 	* FvwmButtons/FvwmButtons.1: Another round of cleanups.

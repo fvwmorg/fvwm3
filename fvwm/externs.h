@@ -65,6 +65,7 @@ extern XContext FvwmContext;
 extern Bool fFvwmInStartup;
 extern Bool DoingCommandLine;
 extern Bool debugging;
+extern Bool debugging_stack_ring;
 extern int GrabPointerState;
 extern Boolean ShapesSupported;
 extern Window JunkRoot, JunkChild;

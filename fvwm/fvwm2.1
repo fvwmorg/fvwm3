@@ -47,7 +47,7 @@
 fvwm2 \- F(?) Virtual Window Manager (version 2) for X11
 .SH SYNOPSIS
 
-.BI "fvwm2 [\-blackout] [\-clientId " id "] [\-cmd " config_command "] [\-d " displayname "] [\-debug] [\-f " config_file "] [\-h] [\-replace] [\-restore " state_file "] [\-s] [\-version] [\-visual " "visual class" "] [\-visualId " id "]"
+.BI "fvwm2 [\-blackout] [\-clientId " id "] [\-cmd " config_command "] [\-d " displayname "] [\-debug] [\-debug_stack_ring] [\-f " config_file "] [\-h] [\-replace] [\-restore " state_file "] [\-s] [\-version] [\-visual " "visual class" "] [\-visualId " id "]"
 
 .SH DESCRIPTION
 
@@ -142,6 +142,10 @@ instead of the name obtained from the environment variable
 Puts X transactions in synchronous mode, which dramatically slows things
 down, but guarantees that fvwm's internal error messages are correct.
 Also causes fvwm to output debug messages while running.
+.TP
+.BI "-debug_stack_ring"
+Enables stack ring debugging.  This option is only intended for
+internal debugging and should only be used by developers.
 .TP
 .BI "-f " config_file
 Causes fvwm to read

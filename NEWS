@@ -3,6 +3,8 @@ _+_A HREF="#2.2.5"_-_2.2.5_+_/A_-_.
 
 Changes in beta release 2.3.29 (not released yet)
 
+* New temporary option -debug_stack_ring.
+
 * New styles IconifyWindowGroupsTogether  and IconifyWindowGroupsOff.
 
 * New styles KeepWindowGroupsOnDesk and ScatterWindowGroups to cope with

@@ -16,6 +16,10 @@
 #ifndef _STACK_H
 #define _STACK_H
 
+#define DEBUG_STACK_RING 1
+#ifdef DEBUG_STACK_RING
+void verify_stack_ring_consistency(void);
+#endif
 void remove_window_from_stack_ring(FvwmWindow *t);
 void add_window_to_stack_ring_after(FvwmWindow *t, FvwmWindow *add_after_win);
 FvwmWindow *get_next_window_in_stack_ring(FvwmWindow *t);

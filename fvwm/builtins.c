@@ -53,6 +53,7 @@
 #include "update.h"
 #include "style.h"
 #include "focus.h"
+#include "stack.h"
 #ifdef HAVE_STROKE
 #include "stroke.h"
 #endif /* HAVE_STROKE */
@@ -2466,6 +2467,9 @@ static void do_recapture(F_CMD_ARGS, Bool fSingle)
   discard_events(
     ButtonPressMask|ButtonReleaseMask|ButtonMotionMask|PointerMotionMask|
     EnterWindowMask|LeaveWindowMask|KeyPressMask|KeyReleaseMask);
+#ifdef DEBUG_STACK_RING
+  verify_stack_ring_consistency();
+#endif
   MyXUngrabServer(dpy);
 }
 

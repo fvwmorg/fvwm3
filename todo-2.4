@@ -1,25 +1,25 @@
 New items
 
-  173
+  none
 
 Items with highest priority / most severe problems:
 
-  92, 134, 172
+  92, 173
 
 Closed recently:
 
-  171
+  34, 134, 171, 172, 174
 
 ---------- Summary: ----------------------------------------------
 
  0 to be verified
  0 to be discussed
- 3 to do
- 2 distribution issues
- 2 testing
+ 1 to do
+ 1 distribution issues
+ 1 testing
 ----------------------
-  7 open items
-167 items closed/postponed
+  3 open items
+171 items closed/postponed
 174 items in total
 
 ---------- To be verified: ---------------------------------------
@@ -28,11 +28,6 @@ Closed recently:
 
 --------- To do: ------------------------------------------------
 
-134) Investigate DecWindows ConfigureRequest/Notify race condition.
-     [reported by Fabien Viallard on 19-Apr-2000]
-     [Anybody who has DecWindows and can look into this?]
-172) Investigate travelling rxvt-2.7.4
-     [reported by PDS]
 173) Reword panel description in FvwmButtons man page.
      [Dan]
 
@@ -40,18 +35,16 @@ Closed recently:
 
  62) Write a new announcement.
      [in progress]
-174) Disable stack ring debugging code for release (stack.c).
 
 ---------- Testing: ----------------------------------------------
 
- 34) Update and run the purify script again.
-     [in progress]
  92) Test session management restart code.
 
 ========== Closed recently: ======================================
 
  33) Test the GNOME patches.
      [skipped, patches are simple, fix problems when they show up]
+ 34) Update and run the purify script again.
  35) Test the strokes patch.
      [skipped, patches are simple, fix problems when they show up]
  36) Test the new menu styles (ItemFormat and menu layout)
@@ -69,6 +62,7 @@ Closed recently:
 171) With virtually any border config, when moving opaqually, the borders of
      all underlying windows flick a lot. There is no any flicking in 2.2.x.
      [reported by Mikhael]
+174) Disable stack ring debugging code for release (stack.c).
 
 ========== Postponed until after 2.4: ============================
 
@@ -108,6 +102,10 @@ Closed recently:
      [not reproduced yet]
      [purify may bring it up when we run the test script again]
      -> [unreproducible]
+134) Investigate DecWindows ConfigureRequest/Notify race condition.
+     [reported by Fabien Viallard on 19-Apr-2000]
+     [Anybody who has DecWindows and can look into this?]
+     [seems not]
 143) Bug #603 (TaskBar bugs): investigate and possibly fix.
      -> [unreproducible, fixed a related AutoStick problem]
 146) Bug #542 (Winch signals).
@@ -117,6 +115,9 @@ Closed recently:
 158) Sometimes a state is not restored for windows with IS_NAME_CHANGED
      flag set under SM - no match in matchWin().
      [Mikhael: investigate/fix if there is a time]
+172) Investigate travelling rxvt-2.7.4
+     [reported by PDS]
+     -> [unreproducible, not serious anyway]
 
 ========== Closed: ===============================================
 

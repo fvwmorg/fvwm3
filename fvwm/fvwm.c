@@ -135,6 +135,7 @@ Window JunkRoot, JunkChild;		/* junk window */
 unsigned int JunkWidth, JunkHeight, JunkBW, JunkDepth, JunkMask;
 
 Bool debugging = False;
+Bool debugging_stack_ring = False;
 Bool PPosOverride = False;
 
 Window bad_window = None;
@@ -251,22 +252,26 @@ int main(int argc, char **argv)
 
   for (i = 1; i < argc; i++)
   {
-    if (strncasecmp(argv[i],"-debug",6)==0)
+    if (strncasecmp(argv[i],"-debug_stack_ring", 17)==0)
+    {
+      debugging_stack_ring = True;
+    }
+    else if (strncasecmp(argv[i],"-debug",6)==0)
     {
       debugging = True;
     }
     else if (strncasecmp(argv[i], "-clientId", 9) == 0)
-      {
-	if (++i >= argc)
-	  usage();
-	SetClientID(argv[i]);
-      }
+    {
+      if (++i >= argc)
+	usage();
+      SetClientID(argv[i]);
+    }
     else if (strncasecmp(argv[i], "-restore", 8) == 0)
-      {
-	if (++i >= argc)
-	  usage();
-	state_filename = argv[i];
-      }
+    {
+      if (++i >= argc)
+	usage();
+      state_filename = argv[i];
+    }
     else if (strncasecmp(argv[i],"-s",2)==0)
     {
       do_force_single_screen = True;

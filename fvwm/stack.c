@@ -53,6 +53,8 @@ static void dump_stack_ring(void)
 {
   FvwmWindow *t1;
 
+  if (!debugging_stack_ring)
+    return;
   XBell(dpy, 0);
   fprintf(stderr,"dumping stack ring:\n");
   for (t1 = Scr.FvwmRoot.stack_next; t1 != &Scr.FvwmRoot; t1 = t1->stack_next)
@@ -65,7 +67,7 @@ static void dump_stack_ring(void)
 }
 
 /* debugging function */
-static void verify_stack_ring_consistency(void)
+void verify_stack_ring_consistency(void)
 {
   Window root, parent, *children;
   unsigned int nchildren, i;
@@ -73,6 +75,8 @@ static void verify_stack_ring_consistency(void)
   int last_layer;
   int last_index;
 
+  if (!debugging_stack_ring)
+    return;
   XSync(dpy, 0);
   t2 = Scr.FvwmRoot.stack_next;
   if (t2 == &Scr.FvwmRoot)
