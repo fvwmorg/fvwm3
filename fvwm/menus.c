@@ -823,6 +823,12 @@ void do_menu(MenuParameters *pmp, MenuReturn *pmret)
     }
     dkp.timestamp = (key_press && pmp->flags.has_default_action) ? t0 : 0;
   }
+  if(!pmp->flags.is_submenu && indirect_depth == 0)
+  {
+    /* we need to grab the keyboard so we are sure no key presses are lost */
+    XGrabKeyboard(
+      dpy, Scr.Root, False, GrabModeAsync, GrabModeAsync, CurrentTime);
+  }
   if (!fFailedPopup)
   {
     XSelectInput(dpy, Scr.NoFocusWin, NO_FOCUS_WIN_MENU_EVMASK);
@@ -878,6 +884,11 @@ void do_menu(MenuParameters *pmp, MenuReturn *pmret)
       last_saved_pos_hints.flags.do_ignore_pos_hints = False;
       last_saved_pos_hints.flags.is_last_menu_pos_hints_valid = False;
     }
+  }
+  if(!pmp->flags.is_submenu && indirect_depth == 0)
+  {
+    /* release the keyboard when the last menu closes */
+    XUngrabKeyboard(dpy, CurrentTime);
   }
 
   return;

@@ -1,5 +1,9 @@
 2000-11-19  Dominik Vogt  <dominik.vogt@gmx.de>
 
+	* fvwm/menus.c (do_menu):
+	fixed keyboard-events-missing in menus invoked from
+	no-input-hint windows when lenience is active
+
 	* libs/defaults.h:
 	* fvwm/placement.c (test_fit):
 	(CleverPlacement):
