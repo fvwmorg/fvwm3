@@ -77,6 +77,7 @@ typedef struct
 	{
 		unsigned do_force : 1;
 		unsigned do_not_configure_client : 1;
+		unsigned do_not_draw : 1;
 		unsigned do_restore_gravity : 1;
 		unsigned do_set_bit_gravity : 1;
 		unsigned do_update_shape : 1;
@@ -203,6 +204,8 @@ static void get_resize_decor_gravities_one_axis(
 	case FRAME_MR_SETUP:
 	case FRAME_MR_SETUP_BY_APP:
 		ret_grav->client_grav = neg_grav;
+	case FRAME_MR_DONT_DRAW:
+		/* can not happen, just a dummy to keep -Wall happy */
 		break;
 	}
 	ret_grav->parent_grav = ret_grav->client_grav;
@@ -876,7 +879,11 @@ static void frame_mrs_setup_draw_decorations(
 	frame_setup_titlebar(fw, &mra->next_g, setup_parts, &mra->dstep_g);
 	frame_setup_border(fw, &mra->next_g, PART_ALL, &mra->dstep_g);
 	/* draw the border and the titlebar */
-	if (!mra->flags.is_shading || !mra->flags.is_lazy_shading)
+	if (mra->flags.do_not_draw == 1)
+	{
+		/* nothing */
+	}
+	else if (!mra->flags.is_shading || !mra->flags.is_lazy_shading)
 	{
 		/* draw as usual */
 		border_draw_decorations(
@@ -1584,6 +1591,15 @@ frame_move_resize_args frame_create_move_resize_args(
 	/* set some variables */
 	mra = (mr_args_internal *)safecalloc(1, sizeof(mr_args_internal));
 	memset(mra, 0, sizeof(*mra));
+	if (mr_mode & FRAME_MR_DONT_DRAW)
+	{
+		mr_mode &= ~FRAME_MR_DONT_DRAW;
+		mra->flags.do_not_draw = 1;
+	}
+	else
+	{
+		mra->flags.do_not_draw = 0;
+	}
 	if (mr_mode == FRAME_MR_SETUP_BY_APP)
 	{
 		mr_mode = FRAME_MR_SETUP;
@@ -1744,7 +1760,7 @@ void frame_free_move_resize_args(
 			CLEAR_ALL, &mra->current_g, &mra->next_g);
 	}
 	update_absolute_geometry(fw);
-	frame_reparent_hide_windows(Scr.Root);
+	frame_reparent_hide_windows(Scr.NoFocusWin);
 	if (mra->w_with_focus != None)
 	{
 		/* domivogt (28-Dec-1999): For some reason the XMoveResize() on

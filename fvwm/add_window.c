@@ -1096,6 +1096,7 @@ static void get_default_window_attributes(
 	FvwmWindow *fw, unsigned long *pvaluemask,
 	XSetWindowAttributes *pattributes)
 {
+#if 0
 	if (Pdepth < 2)
 	{
 		*pvaluemask = CWBackPixmap;
@@ -1114,6 +1115,11 @@ static void get_default_window_attributes(
 		pattributes->background_pixel = fw->colors.back;
 		pattributes->background_pixmap = None;
 	}
+#else
+	*pvaluemask = CWBackPixmap;
+	pattributes->background_pixel = 0;
+	pattributes->background_pixmap = None;
+#endif
 
 	*pvaluemask |= CWBackingStore | CWCursor | CWSaveUnder | CWBorderPixel |
 		CWColormap;
@@ -2285,17 +2291,19 @@ FvwmWindow *AddWindow(
 		SET_FORCE_NEXT_CR(fw, 1);
 		SET_FORCE_NEXT_PN(fw, 1);
 		mr_args = frame_create_move_resize_args(
-			fw, FRAME_MR_FORCE_SETUP_NO_W, NULL, &fw->frame_g, 0,
-			DIR_NONE);
+			fw, FRAME_MR_FORCE_SETUP_NO_W | FRAME_MR_DONT_DRAW,
+			NULL, &fw->frame_g, 0, DIR_NONE);
 	}
 	else
 	{
 		mr_args = frame_create_move_resize_args(
-			fw, FRAME_MR_FORCE_SETUP, NULL, &fw->frame_g, 0,
-			DIR_NONE);
+			fw, FRAME_MR_FORCE_SETUP | FRAME_MR_DONT_DRAW, NULL,
+			&fw->frame_g, 0, DIR_NONE);
 	}
 	frame_move_resize(fw, mr_args);
 	frame_free_move_resize_args(fw, mr_args);
+	/* draw later */
+	SET_WAS_NEVER_DRAWN(fw, 1);
 
 	/****** grab keys and buttons ******/
 	setup_key_and_button_grabs(fw);
@@ -2408,8 +2416,8 @@ FvwmWindow *AddWindow(
 		get_shaded_geometry_with_dir(
 			fw, &new_g, &new_g, state_args.shade_dir);
 		mr_args = frame_create_move_resize_args(
-			fw, FRAME_MR_SHRINK, &big_g, &new_g, 0,
-			state_args.shade_dir);
+			fw, FRAME_MR_SHRINK | FRAME_MR_DONT_DRAW, &big_g,
+			&new_g, 0, state_args.shade_dir);
 		frame_move_resize(fw, mr_args);
 		SET_SHADED(fw, 1);
 		SET_SHADED_DIR(fw, state_args.shade_dir);

@@ -1773,6 +1773,11 @@ void HandleExpose(const evh_args_t *ea)
 		/* refresh the contents of the torn out menu */
 		menu_expose(&e, NULL);
 	}
+else if (WAS_NEVER_DRAWN(fw))
+{
+border_draw_decorations(
+	fw, PART_ALL, (Scr.Hilite == fw), True, CLEAR_ALL, NULL, NULL);
+}
 
 	return;
 }

@@ -386,6 +386,7 @@ typedef struct
 #define ICON_HINT_MULTIPLE 2
 	unsigned was_icon_hint_provided : 2;
 	unsigned was_icon_name_provided : 1;
+	unsigned was_never_drawn : 1;
 	unsigned has_ewmh_wm_name : 1;
 	unsigned has_ewmh_wm_icon_name : 1;
 #define EWMH_NO_ICON     0 /* the application does not provide an ewmh icon */

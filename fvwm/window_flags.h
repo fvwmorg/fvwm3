@@ -555,6 +555,12 @@
 	(fw)->flags.was_icon_name_provided = (x)
 #define SETM_WAS_ICON_NAME_PROVIDED(fw,x) \
 	(fw)->flag_mask.was_icon_name_provided = (x)
+#define WAS_NEVER_DRAWN(fw) \
+	((fw)->flags.was_never_drawn)
+#define SET_WAS_NEVER_DRAWN(fw,x) \
+	(fw)->flags.was_never_drawn = (x)
+#define SETM_WAS_NEVER_DRAWN(fw,x) \
+	(fw)->flag_mask.was_never_drawn = (x)
 #define HAS_EWMH_WM_NAME(fw) \
 	((fw)->flags.has_ewmh_wm_name)
 #define SET_HAS_EWMH_WM_NAME(fw,x) \

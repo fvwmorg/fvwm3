@@ -2606,6 +2606,13 @@ void border_draw_decorations(
 	{
 		return;
 	}
+	if (WAS_NEVER_DRAWN(fw))
+	{
+		/* force drawing everything */
+		do_force = True;
+		draw_parts = PART_ALL;
+		SET_WAS_NEVER_DRAWN(fw, 0);
+	}
 	memset(&cd, 0, sizeof(cd));
 	/* can't compare with True here, old code calls this with value "2" */
 	if (do_force != False)

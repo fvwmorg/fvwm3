@@ -34,7 +34,9 @@ typedef enum
 	FRAME_MR_SCROLL,
 	/* used internally only, do not set these in any calls */
 	FRAME_MR_FORCE_SETUP,
-	FRAME_MR_FORCE_SETUP_NO_W
+	FRAME_MR_FORCE_SETUP_NO_W,
+	/* used by AddWindow() to suppress drawing during window setup */
+	FRAME_MR_DONT_DRAW = 0x80
 } frame_move_resize_mode;
 
 typedef struct
