@@ -249,22 +249,14 @@ int main(int argc, char **argv)
   /* Request a list of all windows,
    * wait for ConfigureWindow packets */
 
+  SetMessageMask(Fvwm_fd,
 #ifdef MINI_ICONS
-#define MESSAGE_MASK M_CONFIGURE_WINDOW | M_RES_CLASS | M_RES_NAME \
-		     | M_ADD_WINDOW | M_DESTROY_WINDOW | M_ICON_NAME \
-		     | M_DEICONIFY | M_ICONIFY | M_END_WINDOWLIST \
-		     | M_NEW_DESK | M_NEW_PAGE | M_FOCUS_CHANGE | M_STRING \
-		     | M_WINDOW_NAME | M_CONFIG_INFO | M_SENDCONFIG
-#else
-#define MESSAGE_MASK M_CONFIGURE_WINDOW | M_RES_CLASS | M_RES_NAME \
-		     | M_ADD_WINDOW | M_DESTROY_WINDOW | M_ICON_NAME \
-		     | M_DEICONIFY | M_ICONIFY | M_END_WINDOWLIST \
-		     | M_NEW_DESK | M_NEW_PAGE | M_FOCUS_CHANGE | M_STRING \
-		     | M_WINDOW_NAME | M_CONFIG_INFO | M_SENDCONFIG \
-		     | M_MINI_ICON
+		 M_MINI_ICON |
 #endif
-
-  SetMessageMask(Fvwm_fd, MESSAGE_MASK);
+		 M_CONFIGURE_WINDOW | M_ADD_WINDOW | M_DESTROY_WINDOW |\
+		 M_WINDOW_NAME | M_ICON_NAME | M_DEICONIFY | M_ICONIFY |\
+		 M_END_WINDOWLIST | M_NEW_DESK | M_FOCUS_CHANGE |\
+		 M_CONFIG_INFO | M_SENDCONFIG | M_LOCKONSEND);
 
   SendFvwmPipe("Send_WindowList",0);
 
@@ -479,11 +471,8 @@ void ProcessMessage(unsigned long type,unsigned long *body)
         RadioButton(&buttons,-1);
       break;
     case M_END_WINDOWLIST:
-      if (!WindowIsUp) {
+      if (!WindowIsUp)
 	MakeMeWindow();
-	/* setting lock on send before the map causes a lock up */
-	SetMessageMask(Fvwm_fd, MESSAGE_MASK | M_LOCKONSEND);
-      }
       redraw = 1;
       break;
     case M_NEW_DESK:
@@ -493,8 +482,6 @@ void ProcessMessage(unsigned long type,unsigned long *body)
         AdjustWindow(False);
         RedrawWindow(True);
       }
-      break;
-    case M_NEW_PAGE:
       break;
     case M_CONFIG_INFO:
       ParseConfigLine((char *)&body[3]);
@@ -558,37 +545,6 @@ void DeadPipe(int nonsense)
    * NOTE: ShutMeDown will now be called automatically by exit().
    */
   exit(1);
-}
-
-/******************************************************************************
-  WaitForExpose - Used to wait for expose event so we don't draw too early
-******************************************************************************/
-void WaitForExpose(void)
-{
-  XEvent Event;
-
-  while(1)
-  {
-    /*
-     * Temporary solution to stop the process blocking
-     * in XNextEvent once we have been asked to quit.
-     * There is still a small race condition between
-     * checking the flag and calling the X-Server, but
-     * we can fix that ...
-     */
-    if (isTerminated)
-    {
-      /* Just exit - the installed exit-procedure will clean up */
-      exit(0);
-    }
-    /**/
-
-    XNextEvent(dpy,&Event);
-    if (Event.type==Expose)
-    {
-      if (Event.xexpose.count==0) break;
-    }
-  }
 }
 
 /******************************************************************************
@@ -951,7 +907,6 @@ void AdjustWindow(Bool force)
   {
     XMapWindow(dpy,win);
     WindowIsUp=1;
-    WaitForExpose();
   }
 }
 
@@ -1140,7 +1095,6 @@ void MakeMeWindow(void)
   if (ItemCountD(&windows) > 0)
   {
     XMapRaised(dpy,win);
-    WaitForExpose();
     WindowIsUp=1;
   } else WindowIsUp=2;
 

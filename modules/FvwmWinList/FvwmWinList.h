@@ -102,7 +102,6 @@ void ProcessMessage(unsigned long type,unsigned long *body);
 void SendFvwmPipe(char *message,unsigned long window);
 void DeadPipe(int nonsense) __attribute__((noreturn));
 void MakeMeWindow(void);
-void WaitForExpose(void);
 void RedrawWindow(Bool force);
 void StartMeUp(void);
 void ShutMeDown(void);
