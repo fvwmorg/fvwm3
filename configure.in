@@ -24,6 +24,7 @@ FVWMALTFTPDIR="/pub/Linux/X11/window-managers/"
 FVWMLIST="fvwm@fvwm.org"
 FVWMWORKERSLIST="fvwm-workers@fvwm.org"
 FVWMWORKERSLISTLONG="fvwm workers list <fvwm-workers@fvwm.org>"
+MANPAGE_PREAMBLE='.\" WARNING: This file was automatically generated.  Edit the .in file instead.'
 
 if test x"$ISRELEASED" != xyes; then
 	VERSIONINFO=" (from cvs)"
@@ -64,6 +65,7 @@ AC_SUBST(FVWMALTFTPDIR)
 AC_SUBST(FVWMLIST)
 AC_SUBST(FVWMWORKERSLIST)
 AC_SUBST(FVWMWORKERSLISTLONG)
+AC_SUBST(MANPAGE_PREAMBLE)
 
 AM_INIT_AUTOMAKE(fvwm, ${version})
 AM_CONFIG_HEADER(config.h)

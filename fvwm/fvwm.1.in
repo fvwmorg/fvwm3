@@ -1,4 +1,15 @@
-.\" Formatting instructions for the fvwm man page:                   -*-nroff-*-
+.\"                                                                  -*-nroff-*-
+.\"
+.\"
+.\"
+.\"
+@MANPAGE_PREAMBLE@
+.\"
+.\"
+.\"
+.\"
+.\"
+.\" Formatting instructions for the fvwm man page:
 .\"
 .\"  - Do not use \f... formatting instructions
 .\"    unless you have to, see below.
