@@ -90,7 +90,7 @@ static Window app_win;
 
 static EventMask mw_events =
   ExposureMask | ButtonPressMask | KeyPressMask |
-  ButtonReleaseMask | KeyReleaseMask;
+  ButtonReleaseMask | KeyReleaseMask | StructureNotifyMask;
 
 static Atom wm_del_win;
 
@@ -494,28 +494,31 @@ void list_end(void)
 		&x, &y, &JunkX, &JunkY, &JunkMask);
   mysizehints.win_gravity = NorthWestGravity;
 
-  if((y+height+100)>ScreenHeight)
-    {
-      y = ScreenHeight - height - 10;
-      mysizehints.win_gravity = SouthWestGravity;
-    }
+  if ((y+height+100)>ScreenHeight)
+  {
+    y = ScreenHeight - height - 10;
+    mysizehints.win_gravity = SouthWestGravity;
+  }
 
-  if((x+lmax+100)>ScreenWidth)
-    {
-      x = ScreenWidth - lmax - 10;
-      if((y+height+100)>ScreenHeight)
-	mysizehints.win_gravity = SouthEastGravity;
-      else
-	mysizehints.win_gravity = NorthEastGravity;
-    }
+  if ((x+lmax+100)>ScreenWidth)
+  {
+    x = ScreenWidth - lmax - 10;
+    if((y+height+100)>ScreenHeight)
+      mysizehints.win_gravity = SouthEastGravity;
+    else
+      mysizehints.win_gravity = NorthEastGravity;
+  }
   mysizehints.x = x;
   mysizehints.y = y;
 
 
-  if(Pdepth < 2) {
+  if (Pdepth < 2)
+  {
     attributes.background_pixel = GetColor("white");
     fore_pix = GetColor("black");
-  } else {
+  }
+  else
+  {
     attributes.background_pixel = (colorset < 0)
 				  ? GetColor(BackColor)
     				  : Colorset[colorset].bg;
@@ -553,10 +556,12 @@ void list_end(void)
 
   /* Window is created. Display it until the user clicks or deletes it. */
   /* also grok any dynamic config changes */
-  while(1) {
+  while(1)
+  {
     FvwmPacket* packet;
     int x_fd = XConnectionNumber(dpy);
     fd_set fdset;
+    char buf[32];
 
     FD_ZERO(&fdset);
     FD_SET(fd[1], &fdset);
@@ -607,6 +612,12 @@ void list_end(void)
         case ClientMessage:
 	  if (Event.xclient.format==32 && Event.xclient.data.l[0]==wm_del_win)
 	    exit(0);
+	  break;
+	case ReparentNotify:
+	  sprintf(buf, "Layer 0 %d", (int)target.layer);
+	  SendInfo(fd, buf, main_win);
+	  SendInfo(fd, "Raise", main_win);
+	  break;
 	case ConfigureNotify:
 	{
 	  /* this only happens with transparent windows, slurp up as many
