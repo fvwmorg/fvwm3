@@ -1,3 +1,13 @@
+1999-06-23  Dominik Vogt  <dominik_vogt@gmx.de>
+
+	* fvwm/placement.c (PlaceWindow): added warning when Skipmapping,
+	ActivePlacement and StartsOn... are used together
+
+	* fvwm/virtual.c (MoveViewport):
+	* fvwm/icons.c (AutoPlaceIcon):
+	* fvwm/events.c (HandleConfigureRequest): same modification for more
+	Broadcasts as in the previous patch by Matthias.
+
 1999-06-22  Matthias Clasen  <clasen@mathematik.uni-freiburg.de>
 
 	* fvwm/move_resize.c (move_window_doit): broadcast the
@@ -8,6 +18,8 @@
 
 	* fvwm/move_resize.c (moveLoop): fixed moving icons (didn't communicate
 	to modules correctly).
+	(moveLoop): fixed SnapGrid with FvwmPager
+	(moveLoop): fixed bug that caused windows to jump around
 
 	* fvwm/events.c (HandleConfigureRequest): fixed bug in ConfigureNotify
 	handler: modules couldn't reconfigure maximized windows

@@ -707,7 +707,7 @@ void AutoPlaceIcon(FvwmWindow *t)
                     t->w, t->frame,
                     (unsigned long)t,
                     t->icon_x_loc, t->icon_y_loc,
-                    t->icon_w_width, t->icon_w_height+t->icon_p_height);
+                    t->icon_p_width, t->icon_w_height+t->icon_p_height);
   }
 }
 

@@ -1533,7 +1533,7 @@ void HandleConfigureRequest(void)
                         Tmp_win->w, Tmp_win->frame,
                         (unsigned long)Tmp_win,
                         Tmp_win->icon_x_loc, Tmp_win->icon_y_loc,
-                        Tmp_win->icon_w_width,
+                        Tmp_win->icon_p_width,
                         Tmp_win->icon_w_height + Tmp_win->icon_p_height);
     }
     xwc.width = cre->width;

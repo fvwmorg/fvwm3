@@ -1,3 +1,8 @@
+1999-06-23  Dominik Vogt  <dominik_vogt@gmx.de>
+
+	* FvwmEvent/FvwmEvent.c (event_table): added missing events to table
+	(core dump)
+
 1999-06-22  Paul D. Smith  <psmith@gnu.org>
 
 	* FvwmEvent/Makefile.am (install-exec-local): Make sure the local

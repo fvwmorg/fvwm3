@@ -332,7 +332,6 @@ void move_window_doit(F_CMD_ARGS, Bool fAnimated, Bool fMoveToPage)
 
   if (w == tmp_win->frame)
   {
-fprintf(stderr,"moved frame\n");
     if (fAnimated) {
       AnimatedMoveFvwmWindow(tmp_win,w,-1,-1,FinalX,FinalY,fWarp,-1,NULL);
     }
@@ -343,7 +342,6 @@ fprintf(stderr,"moved frame\n");
   }
   else /* icon window */
     {
-fprintf(stderr,"moved icon\n");
       SET_ICON_MOVED(tmp_win, 1);
       tmp_win->icon_x_loc = FinalX ;
       tmp_win->icon_xl_loc = FinalX -
@@ -679,6 +677,7 @@ void moveLoop(FvwmWindow *tmp_win, int XOffset, int YOffset, int Width,
 	      /* Fake an event to force window reposition */
 	      xl += XOffset;
 	      yt += YOffset;
+	      DoSnapAttract(tmp_win, Width, Height, &xl, &yt);
 	      Event.type = MotionNotify;
 	      Event.xmotion.time = lastTimestamp;
 	      Event.xmotion.x_root = xl - XOffset;
@@ -785,11 +784,6 @@ void moveLoop(FvwmWindow *tmp_win, int XOffset, int YOffset, int Width,
 	    xl = xl2;
 	    yt = yt2;
 	  }
-	  else
-	  {
-	    xl += XOffset;
-	    yt += YOffset;
-	  }
 
 	  DoSnapAttract(tmp_win, Width, Height, &xl, &yt);
 
@@ -869,12 +863,13 @@ void moveLoop(FvwmWindow *tmp_win, int XOffset, int YOffset, int Width,
 			       False);
 		  xl += XOffset;
 		  yt += YOffset;
+		  DoSnapAttract(tmp_win, Width, Height, &xl, &yt);
 		  if ( (delta_x==0) && (delta_y==0))
-		    /* break from while paged */
+		    /* break from while (paged)*/
 		    break;
 		}
 	      paged++;
-	    }  /* end while paged */
+	    }  /* end while (paged) */
 
 	  done = TRUE;
 	  break;

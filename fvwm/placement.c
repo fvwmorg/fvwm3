@@ -500,10 +500,16 @@ Bool PlaceWindow(FvwmWindow *tmp_win, style_flags *sflags, int Desk, int PageX,
           it's ActivePlacement and SkipMapping, and that's disallowed.
       */
       if (!PPosOverride && (DO_NOT_SHOW_ON_MAP(tmp_win) &&
-			    (!(SDO_PLACE_RANDOM(sflags))) &&
+			    !SDO_PLACE_RANDOM(sflags) &&
 			    !Scr.go.ActivePlacementHonorsStartsOnPage))
         {
           HonorStartsOnPage  =  False;
+	  fvwm_msg(WARN, "PlaceWindow",
+		   "illegal style combination used: StartsOnPage/StartsOnDesk"
+		   " and SkipMapping don't work with ActivePlacement."
+		   " Putting window on current page,"
+		   " please use RandomPlacement or"
+		   " ActivePlacementHonorsStartsOnPage.");
         }
     }
 /**/

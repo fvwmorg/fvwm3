@@ -171,12 +171,6 @@ event_entry event_table[MAX_MESSAGES+MAX_BUILTIN] =
   { "icon_file", -1 },
   { "default_icon", -1 },
   { "string", -1 },
-#ifdef M_BELL
-  { "beep", -1 },
-#endif
-#ifdef M_TOGGLEPAGE
-  { "togglepage", -1 },
-#endif
   { "mini_icon", -1 },
   { "windowshade", -1 },
   { "dewindowshade", -1 },
@@ -185,6 +179,14 @@ event_entry event_table[MAX_MESSAGES+MAX_BUILTIN] =
   { "restack", -1 },
   { "add_window", 0 },
   { "configure_window", 0 },
+  { "lockonsend", -1 },
+  { "sendconfig", -1 },
+#ifdef M_BELL
+  { "beep", -1 },
+#endif
+#ifdef M_TOGGLEPAGE
+  { "toggle_paging", -1 },
+#endif
   /* add builtins here */
   { "startup", -1 },
   { "shutdown", -1 },

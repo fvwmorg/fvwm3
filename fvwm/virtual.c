@@ -645,7 +645,7 @@ void MoveViewport(int newx, int newy, Bool grab)
                                          t->w, t->frame,
                                          (unsigned long)t,
                                          t->icon_x_loc, t->icon_y_loc,
-                                         t->icon_w_width,
+                                         t->icon_p_width,
                                          t->icon_w_height+t->icon_p_height);
                         }
 		     }
@@ -694,7 +694,7 @@ void MoveViewport(int newx, int newy, Bool grab)
 					    t1->w, t1->frame,
 					    (unsigned long)t1,
 					    t1->icon_x_loc, t1->icon_y_loc,
-					    t1->icon_w_width,
+					    t1->icon_p_width,
 					    t1->icon_w_height +
 					    t1->icon_p_height);
 			  }
@@ -771,7 +771,7 @@ return;
 
 /*=========================================================================
  *
- * Unmap all windows on a desk - 
+ * Unmap all windows on a desk -
  *   - Part 1 of a desktop switch
  *   - must eventually be followed by a call to MapDesk
  *   - unmaps from the bottom of the stack up
@@ -824,7 +824,7 @@ return;
 
 /*========================================================================
  *
- * Map all windows on a desk - 
+ * Map all windows on a desk -
  *   - Part 2 of a desktop switch
  *   - only use if UnmapDesk has previously been called
  *   - maps from the top of the stack down
@@ -869,7 +869,7 @@ if (grab) {
 
 for (t = Scr.FvwmRoot.next; t != NULL; t = t->next)
   {
-    /* 
+    /*
        Autoplace any sticky icons, so that sticky icons from the old
        desk don't land on top of stationary ones on the new desk.
     */
