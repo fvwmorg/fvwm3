@@ -380,7 +380,8 @@ static void AnimatedMoveAnyWindow(FvwmWindow *tmp_win, Window w, int startX,
   XUngrabKeyboard(dpy, CurrentTime);
   XFlush(dpy);
 #ifdef GNOME
-  GNOME_SetWinArea(tmp_win);
+  if (tmp_win)
+    GNOME_SetWinArea(tmp_win);
 #endif
   return;
 }
