@@ -29,8 +29,9 @@ typedef struct ScreenInfo
 
   Font PagerFont;        /* font struct for window labels in pager (optional)*/
 
-  GC NormalGC;		 /* normal GC for menus, pager, resize window */
-  GC MiniIconGC;
+  GC NormalGC;		 /* used for window names and setting backgrounds */
+  GC MiniIconGC;	 /* used for clipping mini-icons */
+  GC whGC, wsGC, ahGC, asGC; /* used for 3d shadows on mini-windows */
 
   char  *Hilite;	 /* the fvwm window that is highlighted
 			  * except for networking delays, this is the
@@ -117,10 +118,10 @@ typedef struct desk_info
   int ballooncolorset;
   char *Dcolor;
   char *label;
-  GC NormalGC;
-  GC DashedGC;
-  GC HiliteGC;
-  GC rvGC;
+  GC NormalGC;			/* used for desk labels */
+  GC DashedGC;			/* used the the pages boundary lines */
+  GC HiliteGC;			/* used for hilighting the active desk */
+  GC rvGC;			/* used for drawing hilighted desk title */
   GC BalloonGC;
 } DeskInfo;
 

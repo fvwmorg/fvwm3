@@ -1,3 +1,7 @@
+1999-08-11  Hippo
+
+	* FvwmPager/* Mini-windows drawn in 3D if *FvwmPagerWindowColorsets used
+
 1999-08-11  Dan Espen  <dane@mk.telcordia.com>
 
 	* FvwmForm/FormFvwmSetup.in: Fix installed config file names.
