@@ -1359,8 +1359,14 @@ static void GetXPMFile(FvwmWindow *tmp_win)
   rc = XpmReadFileToXpmImage(path, &my_image, NULL);
   if (rc != XpmSuccess)
   {
-    fvwm_msg(ERR,"GetXPMFile","XpmReadFileToXpmImage failed, pixmap %s, rc %d",
-	     path, rc);
+    int len = strlen(path);
+
+    /* no message for files that don't have an 'xpm' suffix */
+    if (len >= 3 && StrEquals(path + len - 3, "xpm"))
+    {
+      fvwm_msg(ERR, "GetXPMFile",
+         "XpmReadFileToXpmImage failed, pixmap %s, rc %d", path, rc);
+    }
     free(path);
     return;
   }

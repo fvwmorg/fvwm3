@@ -66,6 +66,7 @@ typedef enum
   ECHO,
   INFO,
   WARN,
+  OLD,
   ERR
 } fvwm_msg_type;
 void fvwm_msg(fvwm_msg_type type, char *id, char *msg, ...);

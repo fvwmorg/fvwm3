@@ -269,11 +269,12 @@ print_grab_stats("-ungrab");
 /*
 ** fvwm_msg: used to send output from fvwm to files and or stderr/stdout
 **
-** type -> DBG == Debug, ERR == Error, INFO == Information, WARN == Warning
+** type -> DBG == Debug, ERR == Error, INFO == Information, WARN == Warning,
+** OLD == Command or option deprecated
 ** id -> name of function, or other identifier
 */
 static char *fvwm_msg_strings[] =
-{ "<<DEBUG>>", "", "", "<<WARNING>>", "<<ERROR>>" };
+{ "<<DEBUG>>", "", "", "<<WARNING>>", "<<DEPRECATED>>", "<<ERROR>>" };
 void fvwm_msg(fvwm_msg_type type, char *id, char *msg, ...)
 {
   va_list args;
