@@ -74,7 +74,7 @@ A: An example should be instructive.  The following is a complete (but
 
        print "---start of window list---\n";
        # Ask FVWM to send us its list of windows
-       &SendInfo(0, "SendWindowList");
+       &SendInfo(0, "Send_WindowList");
 
        # Enter the main loop
        &EventLoop;

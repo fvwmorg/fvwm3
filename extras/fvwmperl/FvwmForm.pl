@@ -232,6 +232,6 @@ sub parseline {
     return @v;
 }
 
-&SendInfo(0, "SendConfigInfo");
+&SendInfo(0, "Send_ConfigInfo");
 
 &EventLoop;

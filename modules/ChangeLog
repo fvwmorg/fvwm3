@@ -1,3 +1,23 @@
+1999-03-06  Dominik Vogt  <dominik_vogt@hp.com>
+
+	* FvwmForm/FvwmForm.c (ReadDefaults):
+	(ReadConfig):
+	* FvwmWinList/FvwmWinList.c (main):
+	* FvwmSave/FvwmSave.c (main):
+	* FvwmSaveDesk/FvwmSaveDesk.c (main):
+	* FvwmRearrange/FvwmRearrange.c (main):
+	* FvwmPager/FvwmPager.c (main):
+	* FvwmIdent/FvwmIdent.c (main):
+	* FvwmIconMan/FvwmIconMan.c (main):
+	* FvwmIconBox/FvwmIconBox.c (main):
+	* FvwmButtons/FvwmButtons.c (main):
+	(swallow):
+	* FvwmBacker/FvwmBacker.c (main):
+	Rerenamed builtin functions
+	  Send_ConfigInfo <- SendConfigInfo
+	  Send_WindowList <- SendWindowList
+	  set_mask        <- SetMask
+
 Sat Mar  6 10:55:06 1999  DanEspen  <dje@blue>
 
 	* FvwmForm/Makefile.am (config_DATA): added new forms.
@@ -17,15 +37,14 @@ Sat Mar  6 10:55:06 1999  DanEspen  <dje@blue>
 
 	* FvwmPager/FvwmPager.h (process_message): changed signature
 	to pass complete header.
-	* FvwmPager/FvwmPager.c (process_message): handle M_RESTACK 
+	* FvwmPager/FvwmPager.c (process_message): handle M_RESTACK
 	packets by calling list_restack.
-	(list_restack): new function.	
+	(list_restack): new function.
 
 1999-03-05  Dominik Vogt  <dominik_vogt@hp.com>
 
 	* FvwmForm/FvwmForm.c (ReadDefaults):
 	(ReadConfig):
-
 	* FvwmWinList/FvwmWinList.c (main):
 	* FvwmSave/FvwmSave.c (main):
 	* FvwmSaveDesk/FvwmSaveDesk.c (main):

@@ -236,7 +236,7 @@ int main(int argc, char **argv)
   /* request a window list, since this triggers a response which
    * will tell us the current desktop and paging status, needed to
    * indent buttons correctly */
-  SendText(fd,"SendWindowList",0);
+  SendText(fd,"Send_WindowList",0);
 
   Loop();
   return 0;

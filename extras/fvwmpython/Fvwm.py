@@ -501,7 +501,7 @@ class FvwmModule:
 		if hasattr(self, methodname) or \
 		   self.__dispatch.has_key(methodname):
 		    mask = mask | flag
-	self.send('SetMask ' + `mask`)
+	self.send('Set_Mask ' + `mask`)
 
     def unhandled_packet(self, pkt):
 	debug('Unhandled packet type: %s' % Types[pkt.msgtype])
@@ -537,7 +537,7 @@ class FvwmModule:
 		error('Unexpected packet type: %s' % pktname)
 
 	cache = self.__override(callback)
-	self.send('SendConfigInfo')
+	self.send('Send_ConfigInfo')
 	self.start()
 	self.__restore(cache)
 	return ConfigInfo(info)
@@ -553,7 +553,7 @@ class FvwmModule:
 		tracker.feed_pkt(pkt)
 
 	cache = self.__override(callback)
-	self.send('SendWindowList')
+	self.send('Send_WindowList')
 	self.start()
 	self.__restore(cache)
 	return t

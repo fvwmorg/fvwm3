@@ -20,6 +20,7 @@
 #include <string.h>
 #include <unistd.h>
 #include "fvwm.h"
+#include "functions.h"
 #include "menus.h"
 #include "misc.h"
 #include "screen.h"
@@ -426,19 +427,19 @@ int main(int argc, char **argv)
                LeaveWindowMask| EnterWindowMask | PropertyChangeMask |
                SubstructureRedirectMask | KeyPressMask |
                SubstructureNotifyMask|
-	       ColormapChangeMask| 
+	       ColormapChangeMask|
                ButtonPressMask | ButtonReleaseMask );
   XSync(dpy, 0);
 
   XSetErrorHandler(FvwmErrorHandler);
 
 #ifdef SESSION
-  /* 
+  /*
      This should be done early enough to have the window states loaded
-     before the first call to AddWindow.  
+     before the first call to AddWindow.
    */
   if (restore_filename)
-    LoadWindowStates(restore_filename); 
+    LoadWindowStates(restore_filename);
 #endif
 
   BlackoutScreen(); /* if they want to hide the capture/startup */
@@ -572,7 +573,7 @@ int main(int argc, char **argv)
 */
 void StartupStuff(void)
 {
-  MenuRoot *mr;
+  FvwmFunction *func;
 
   CaptureAllWindows();
   MakeMenus();
@@ -587,23 +588,23 @@ void StartupStuff(void)
   /* Make sure we have the correct click time now. */
   if (Scr.ClickTime < 0)
     Scr.ClickTime = -Scr.ClickTime;
-  
+
   if(Restarting)
   {
-    mr = FindPopup("RestartFunction");
-    if(mr != NULL)
+    func = FindFunction("RestartFunction");
+    if(func != NULL)
       ExecuteFunction("Function RestartFunction",NULL,&Event,C_ROOT,-1);
   }
   else
   {
-    mr = FindPopup("InitFunction");
-    if(mr != NULL)
+    func = FindFunction("InitFunction");
+    if(func != NULL)
       ExecuteFunction("Function InitFunction",NULL,&Event,C_ROOT,-1);
   }
 #ifdef SESSION
   /*
      This should be done after the initialization is finished, since
-     it directly changes the global state. 
+     it directly changes the global state.
    */
   if (restore_filename)
     LoadGlobalState(restore_filename);
@@ -1332,6 +1333,8 @@ void InitVariables(void)
   Scr.AllBindings = NULL;
   Scr.TheList = NULL;
 
+  Scr.functions = NULL;
+
   Scr.menus.all = NULL;
   Scr.menus.DefaultStyle = NULL;
   Scr.menus.LastStyle = NULL;
@@ -1352,7 +1355,7 @@ void InitVariables(void)
   Scr.hasIconFont = False;
   Scr.hasWindowFont = False;
 
-  Scr.OnTopLayer = 6;      
+  Scr.OnTopLayer = 6;
   Scr.StaysPutLayer = 4;
 
   /* create graphics contexts */
@@ -1365,7 +1368,7 @@ void InitVariables(void)
   /*  RBW - 11/13/1998 - 2 new fields to init - stacking order chain.  */
   Scr.FvwmRoot.stack_next  =  &Scr.FvwmRoot;
   Scr.FvwmRoot.stack_prev  =  &Scr.FvwmRoot;
-  Scr.FvwmRoot.layer = -1; 
+  Scr.FvwmRoot.layer = -1;
 
   XGetWindowAttributes(dpy,Scr.Root,&(Scr.FvwmRoot.attr));
   Scr.root_pushes = 0;
@@ -1508,14 +1511,14 @@ RETSIGTYPE SigDone(int nonsense)
 
 void Done(int restart, char *command)
 {
-  MenuRoot *mr;
+  FvwmFunction *func;
 
 #ifndef NON_VIRTUAL
   MoveViewport(0,0,False);
 #endif
 
-  mr = FindPopup("ExitFunction");
-  if(mr != NULL)
+  func = FindFunction("ExitFunction");
+  if(func != NULL)
     ExecuteFunction("Function ExitFunction",NULL,&Event,C_ROOT,-1);
 
   /* Close all my pipes */

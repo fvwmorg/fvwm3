@@ -1,3 +1,13 @@
+1999-03-06  Dominik Vogt  <dominik_vogt@hp.com>
+
+	* mod_initialization.html (descriptors):
+	* mod_m2f_communication.html:
+	* mod_f2m_communication.html:
+	Rerenamed builtin functions
+	  Send_ConfigInfo <- SendConfigInfo
+	  Send_WindowList <- SendWindowList
+	  set_mask        <- SetMask
+
 Sat Mar  6 11:43:27 1999  DanEspen  <dje@blue>
 
 	* links.html: Added link to Jay Kuri's copy of the Module Documentation

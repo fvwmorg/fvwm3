@@ -304,7 +304,7 @@ sub SetModOptions {
 sub GetConfigInfo {
     local($name, $value, @args);
 
-    &SendInfo(0, "SendConfigInfo");
+    &SendInfo(0, "Send_ConfigInfo");
 
     while (1) {
 	($len, $packet, $type) = &ReadPacket;

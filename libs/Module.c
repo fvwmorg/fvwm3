@@ -102,7 +102,7 @@ void SetMessageMask(int *fd, unsigned long mask)
 {
   char set_mask_mesg[50];
 
-  sprintf(set_mask_mesg,"SetMask %lu\n",mask);
+  sprintf(set_mask_mesg,"SET_MASK %lu\n",mask);
   SendText(fd,set_mask_mesg,0);
 }
 
@@ -129,7 +129,7 @@ void GetConfigLine(int *fd, char **tline)
 
   if(first_pass)
   {
-    SendInfo(fd,"SendConfigInfo",0);
+    SendInfo(fd,"Send_ConfigInfo",0);
     first_pass = 0;
   }
 

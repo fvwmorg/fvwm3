@@ -162,8 +162,9 @@ MenuStatus do_menu(MenuRoot *menu, MenuRoot *menuPrior,
 
   key_press = (eventp && (eventp == (XEvent *)1 || eventp->type == KeyPress));
   /* this condition could get ugly */
-  if(menu == NULL || menu->in_use) {
-    /* DBUG("do_menu","menu->in_use for %s -- returning",menu->name); */
+  if(menu == NULL || menu->flags.f.is_in_use) {
+    /* DBUG("do_menu","menu->flags.f.is_in_use for %s -- returning",
+	 menu->name); */
     return MENU_ERROR;
   }
 
@@ -228,7 +229,7 @@ MenuStatus do_menu(MenuRoot *menu, MenuRoot *menuPrior,
   }
   fWarpPointerToTitle = FALSE;
 
-  menu->in_use = TRUE;
+  menu->flags.f.is_in_use = TRUE;
   /* Remember the key that popped up the root menu. */
   if (!(cmenuDeep++)) {
     if (eventp && eventp != (XEvent *)1) {
@@ -243,7 +244,7 @@ MenuStatus do_menu(MenuRoot *menu, MenuRoot *menuPrior,
   else
     retval = MENU_ABORTED;
   cmenuDeep--;
-  menu->in_use = FALSE;
+  menu->flags.f.is_in_use = FALSE;
 
   if (!fWasAlreadyPopped)
     PopDownMenu(menu);
@@ -1111,7 +1112,8 @@ Bool FPopupMenu (MenuRoot *menu, MenuRoot *menuPrior, int x, int y,
   MenuItem *mi = NULL;
 
   DBUG("FPopupMenu","called");
-  if ((!menu)||(menu->w == None)||(menu->items == 0)||(menu->in_use)) {
+  if ((!menu)||(menu->w == None)||(menu->items == 0)||
+      (menu->flags.f.is_in_use)) {
     fWarpPointerToTitle = FALSE;
     return False;
   }
@@ -1413,6 +1415,32 @@ void SetMenuItemSelected(MenuItem *mi, Bool f)
   mi->state = f;
   mi->mr->selected = (f) ? mi : NULL;
   PaintEntry(mi);
+}
+
+MenuRoot *FindPopup(char *action)
+{
+  char *tmp;
+  MenuRoot *mr;
+
+  GetNextToken(action,&tmp);
+
+  if(tmp == NULL)
+    return NULL;
+
+  mr = Scr.menus.all;
+  while(mr != NULL)
+  {
+    if(mr->name != NULL)
+      if(strcasecmp(tmp,mr->name)== 0)
+      {
+        free(tmp);
+        return mr;
+      }
+    mr = mr->next;
+  }
+  free(tmp);
+  return NULL;
+
 }
 
 /* Returns a menu root that a given menu item pops up */
@@ -1860,11 +1888,11 @@ void PaintSidePic(MenuRoot *mr)
     ReliefGC = mr->ms->look.MenuReliefGC;
   TextGC = mr->ms->look.MenuGC;
 
-  if(mr->colorize)
+  if(mr->flags.f.colorize)
     Globalgcv.foreground = mr->sideColor;
   else if (mr->ms->look.f.hasSideColor)
     Globalgcv.foreground = mr->ms->look.sideColor;
-  if (mr->colorize || mr->ms->look.f.hasSideColor) {
+  if (mr->flags.f.colorize || mr->ms->look.f.hasSideColor) {
     Globalgcm = GCForeground;
     XChangeGC(dpy, Scr.ScratchGC1, Globalgcm, &Globalgcv);
     XFillRectangle(dpy, mr->w, Scr.ScratchGC1, 3, 3,
@@ -2003,7 +2031,7 @@ void PaintMenu(MenuRoot *mr, XEvent *pevent)
         bounds.height = mr->height;
 
         if (type == HGradMenu) {
-	  if (mr->backgroundset == False)
+	  if (mr->flags.f.is_backgroundset == False)
 	  {
 	  register int i = 0;
 	  register int dw;
@@ -2025,13 +2053,13 @@ void PaintMenu(MenuRoot *mr, XEvent *pevent)
 	     XSetWindowBackgroundPixmap(dpy, mr->w, pmap);
 	     XFreeGC(dpy,pmapgc);
 	     XFreePixmap(dpy,pmap);
-	     mr->backgroundset = True;
+	     mr->flags.f.is_backgroundset = True;
 	  }
 	  XClearWindow(dpy, mr->w);
         }
         else if (type == VGradMenu)
         {
-	  if (mr->backgroundset == False)
+	  if (mr->flags.f.is_backgroundset == False)
 	  {
 	  register int i = 0;
 	  register int dh = bounds.height / ms->look.face.u.grad.npixels + 1;
@@ -2051,7 +2079,7 @@ void PaintMenu(MenuRoot *mr, XEvent *pevent)
 	     XSetWindowBackgroundPixmap(dpy, mr->w, pmap);
 	     XFreeGC(dpy,pmapgc);
 	     XFreePixmap(dpy,pmap);
-	     mr->backgroundset = True;
+	     mr->flags.f.is_backgroundset = True;
 	  }
 	  XClearWindow(dpy, mr->w);
         }
@@ -2189,6 +2217,12 @@ void DestroyMenu(MenuRoot *mr)
   if(tmp != mr)
     return;
 
+  if (mr->flags.f.is_in_use)
+  {
+    fvwm_msg(ERR,"DestroyMenu", "Menu %s is in use", mr->name);
+    return;
+  }
+
   if(prev == NULL)
     Scr.menus.all = mr->next;
   else
@@ -2256,7 +2290,7 @@ void MakeMenu(MenuRoot *mr)
   int y,width;
   int cItems;
 
-  if((mr->func != F_POPUP)||(!(Scr.flags & WindowsCaptured)))
+  if(!(Scr.flags & WindowsCaptured))
     return;
 
   /* merge menu continuations into one menu again - needed when changing the
@@ -2267,7 +2301,7 @@ void MakeMenu(MenuRoot *mr)
 
       if (mr->first == mr->last)
 	{
-	  fvwm_msg(ERR, "MakeMenu", "BUG: Menu contains only contionuation");
+	  fvwm_msg(ERR, "MakeMenu", "BUG: Menu contains only continuation");
 	  break;
 	}
       /* link first item of continuation to item before 'more...' */
@@ -2402,8 +2436,7 @@ void MakeMenu(MenuRoot *mr)
 	     but, we need it at the end */
 	  /* (Give it just the name, which is 6 chars past the action
 	     since strlen("Popup ")==6 ) */
-	  menuContinuation = NewMenuRoot(szMenuContinuationActionAndName+6,
-					 False);
+	  menuContinuation = NewMenuRoot(szMenuContinuationActionAndName+6);
 	  mr->continuation = menuContinuation;
 
 	  /* Now move this item and the remaining items into the new menu */
@@ -2429,7 +2462,7 @@ void MakeMenu(MenuRoot *mr)
 	  free(szMenuContinuationActionAndName);
 	}
     } /* for */
-  mr->in_use = 0;
+  mr->flags.f.is_in_use = 0;
   /* allow two pixels for top border */
   mr->height = y + ((mr->ms->look.ReliefThickness == 1) ? 2 : 3);
   mr->flags.allflags = 0;
@@ -2458,7 +2491,7 @@ void MakeMenu(MenuRoot *mr)
   }
 
   mr->width = mr->width0 + mr->width + mr->width2 + mr->xoffset;
-  mr->backgroundset = False;
+  mr->flags.f.is_backgroundset = False;
 
   mr->w = XCreateWindow (dpy, Scr.Root, 0, 0, (unsigned int) (mr->width),
 			 (unsigned int) mr->height, (unsigned int) 0,
@@ -2692,7 +2725,6 @@ MenuRoot *FollowMenuContinuations(MenuRoot *mr, MenuRoot **pmrPrior )
  *	menu	- pointer to the root menu to add the item
  *	item	- the text to appear in the menu
  *	action	- the string to possibly execute
- *	func	- the numeric function
  *
  * ckh - need to add boolean to say whether or not to expand for pixmaps,
  *       so built in window list can handle windows w/ * and % in title.
@@ -2862,7 +2894,7 @@ void AddToMenu(MenuRoot *menu, char *item, char *action, Bool fPixmapsOk,
 
   tmp->action = stripcpy(action);
   tmp->state = 0;
-  find_func_type(tmp->action, &(tmp->func_type), &(tmp->func_needs_window));
+  find_func_type(tmp->action, &(tmp->func_type), NULL);
   tmp->item_num = menu->items++;
 }
 
@@ -2876,16 +2908,16 @@ void AddToMenu(MenuRoot *menu, char *item, char *action, Bool fPixmapsOk,
  *
  *  Inputs:
  *	name	- the name of the menu root
- *      fFunction - True if we should set func to F_FUNCTION,
- *                  F_POPUP otherwise
  *
  ***********************************************************************/
-MenuRoot *NewMenuRoot(char *name, Bool fFunction)
+MenuRoot *NewMenuRoot(char *name)
 {
   MenuRoot *tmp;
+  Bool flag;
 
   tmp = (MenuRoot *) safemalloc(sizeof(MenuRoot));
 
+  tmp->flags.allflags = 0;
   tmp->first = NULL;
   tmp->last = NULL;
   tmp->selected = NULL;
@@ -2904,14 +2936,12 @@ MenuRoot *NewMenuRoot(char *name, Bool fFunction)
   tmp->width2 = 0;
   tmp->width0 = 0;
   tmp->items = 0;
-  tmp->in_use = 0;
-  tmp->func = (fFunction) ? F_FUNCTION : F_POPUP;
   tmp->sidePic = NULL;
   scanForPixmap(tmp->name, &tmp->sidePic, '@');
-  scanForColor(tmp->name, &tmp->sideColor, &tmp->colorize,'^');
+  scanForColor(tmp->name, &tmp->sideColor, &flag,'^');
+  tmp->flags.f.colorize = flag;
   tmp->xoffset = 0;
   tmp->ms = Scr.menus.DefaultStyle;
-  tmp->flags.allflags = 0;
   tmp->xanimation = 0;
 
   Scr.menus.all = tmp;

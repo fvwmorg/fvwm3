@@ -741,7 +741,7 @@ static void ReadDefaults ()
   } /* end defaults read already */
   SendText(Channel,"read .FvwmForm Quiet",0); /* read default config */
   SendText(Channel,"*FvwmFormDefaultRead y",0); /* remember you read it */
-  SendInfo(Channel,"SendConfigInfo",0); /* trick it into another serving */
+  SendInfo(Channel,"Send_ConfigInfo",0); /* trick it into another serving */
 
   while (GetConfigLine(Channel,&line_buf),line_buf) { /* get config from fvwm */
     ParseDefaults(line_buf);             /* process default config lines 1st */
@@ -752,7 +752,7 @@ static void ReadConfig ()
 {
   char *line_buf;                       /* ptr to curr config line */
 
-  SendInfo(Channel,"SendConfigInfo",0); /* trick it into a second serving */
+  SendInfo(Channel,"Send_ConfigInfo",0); /* trick it into a second serving */
   while (GetConfigLine(Channel,&line_buf),line_buf) { /* get config from fvwm */
     ParseConfigLine(line_buf);          /* process config lines */
   }
@@ -1438,7 +1438,7 @@ int main (int argc, char **argv)
   ReadConfig();                         /* get config from fvwm */
 
   /* Now tell fvwm we want *Alias commands in real time */
-  sprintf(mask_mesg,"SETMASK %lu\n",(unsigned long)
+  sprintf(mask_mesg,"SET_MASK %lu\n",(unsigned long)
           (M_SENDCONFIG|M_CONFIG_INFO|M_ERROR|M_STRING));
   SendInfo(Channel, mask_mesg, 0);      /* tell fvwm about our mask */
 

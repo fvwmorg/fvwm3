@@ -1,3 +1,102 @@
+1999-03-07  Dominik Vogt  <dominik_vogt@gmx.de>
+
+	* fvwm/menus.c (MakeMenu): fixed typo
+
+	* ------ end of my changes to split functions and menus ------
+
+	* fvwm/builtins.c (add_item_to_menu):
+	* fvwm/misc.h:
+	* fvwm/windows.c (do_windowList):
+	* fvwm/menus.c (MakeMenu):
+ 	(NewMenuRoot): removed parameter to distinguish between menus and
+	functions (NewMenuRoot).
+
+	* fvwm/menus.c:
+	* fvwm/menus.h (MenuRoot): moved some flags into flags structure
+
+	* fvwm/menus.c (DestroyMenu): fixed coredump with menus destroying
+	themself
+
+	* fvwm/misc.h: added NewFvwmFunction
+
+	* fvwm/menus.h (MenuItem):
+	* fvwm/menus.c (AddToMenu): removed unused flag 'func_needs_window'
+
+	* fvwm/functions.c (find_func_type): return parameters optional
+
+	* fvwm/builtins.c (add_another_item): updated for AddToFunction
+
+	* fvwm/misc.h: added DestroyFunction
+
+	* fvwm/builtins.c (destroy_fvwmfunc): new function
+
+	* fvwm/parse.h: added F_DESTROY_FUNCTION
+
+	* fvwm/builtins.c (add_item_to_func): use AddToFunction now instead of
+	AddToMenu
+	(add_item_to_menu): added last_func static global (like last_menu)
+	(destroy_menu): fixed coredump:
+	  AddToMenu foo
+	   + "bar" Nop
+	  DestroyMenu foo
+	   + "foobar" Nop
+
+	* fvwm/Makefile.am: removed complex.c, added functions.h
+
+	* fvwm/functions.c (DestroyFunction): new function
+	(NewFvwmFunction): new function
+
+	* fvwm/misc.h: added FindFunction
+
+	* fvwm/fvwm.c (StartupStuff):
+	(Done): FindPopup -> FindFunction
+
+	* fvwm/functions.c (FindFunction): analogon to FindPopup
+
+	* fvwm/builtins.c (FindPopup): moved function to menus.c
+
+	* fvwm/functions.c (expand): now static
+
+	* fvwm/misc.h: removed function expand
+
+	* fvwm/functions.c (IsClick): now static
+
+	* fvwm/fvwm.c (InitVariables): initialise Scr.functions
+
+	* fvwm/screen.h (ScreenInfo): added member 'FvwmFunction *functions'
+
+	* fvwm/menus.h: moved function specific code into
+ 	functions.c/functios.h
+
+	* fvwm/functions.h: new file
+
+	* fvwm/complex.c: merged file with functions.c
+
+	* fvwm/functions.c (ExecuteFunction):
+	* fvwm/complex.c (ComplexFunction):
+	* fvwm/misc.h:
+	removed global variable 'desperate' by introducing a wrapper around
+	ComplexFunction that copes with an additional argument
+
+	* ------ beginning of my changes to split functions and menus ------
+
+1999-03-07  Dominik Vogt  <dominik_vogt@hp.com>
+
+	* fvwm/functions.c (func_config): changed function names to uppercase
+	(FindBuiltinFunction):
+	(func_comp): functions are converted to uppercase before comparing them
+	to the table entries
+
+1999-03-06  Dominik Vogt  <dominik_vogt@hp.com>
+
+	* libs/Module.c (GetConfigLine):
+	(SetMessageMask):
+	* fvwm/functions.c (func_config):
+	Rerenamed builtin functions
+	  Send_ConfigInfo <- SendConfigInfo
+	  Send_WindowList <- SendWindowList
+	  set_mask        <- SetMask
+
 1999-03-07  Matthias Clasen  <clasen@mathematik.uni-freiburg.de>
 
 	* fvwm/add_window.c (merge_styles): fix Layer option handling.
@@ -19,30 +118,30 @@
 	windows which broke the shade/maximize "cooperation".
 
 1999-03-05  Matthias Clasen  <clasen@mathematik.uni-freiburg.de>
-        
+
 	* utils/xselection.c: new utility for using the X Selection
-	as commands to fvwm. 
+	as commands to fvwm.
 	* utils/Makefile.am (bin_PROGRAMS): add xselection.
 
-	* fvwm/session.c (SaveGlobalState): 
-	(LoadGlobalState): 
-	(GetClientID): 
-	(SaveWindowStates): 
-	(matchWin): 
-	(SessionInit): 
+	* fvwm/session.c (SaveGlobalState):
+	(LoadGlobalState):
+	(GetClientID):
+	(SaveWindowStates):
+	(matchWin):
+	(SessionInit):
 	* fvwm/icccm2.c (SetupICCCM2): fix -Wall trivia. Change
         some fvwm_msg(DBG...) to DBUG(...)
 
 	* fvwm/events.c (XUrgencyHint): define it if it isn't already.
 
-	* configure.in: Add a check for SM. 
+	* configure.in: Add a check for SM.
 
 	* fvwm/misc.c (RaiseWindow): fix bugs with raising windows
 	with transients.
 
 	* fvwm/module.h (M_RESTACK): new packet type.
 	* fvwm/misc.c (BroadcastRestack): new function sending
-	information about stacking order changes. 
+	information about stacking order changes.
 	(RaiseWindow): use BroadcastRestack.
 	(LowerWindow): use BroadcastRestack.
 

@@ -604,7 +604,7 @@ int main(int argc, char *argv[])
       if (!maxy) maxy = dheight;
     }
 
-    SendInfo(fd,"SendWindowList",0);
+    SendInfo(fd,"Send_WindowList",0);
     while (get_window());
     if (wins_count)
     {

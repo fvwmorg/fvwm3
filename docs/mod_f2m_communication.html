@@ -12,9 +12,9 @@
 Fvwm
 can send messages to the modules in either a broadcast mode, or a
 module specific mode. Certain messages regarding important window or
-desktop manipulations are broadcast to all modules, whether they
+desktop manipulations are broadcast to all modules, whether they 
 want it or not. Modules are able to request information about current windows
-from fvwm, via the SendWindowList built-in. When invoked this way,
+from fvwm, via the Send_WindowList built-in. When invoked this way,
 only requesting module receives the data.
 <H2> <font color="turquoise">Communication packet format</font></h2>
 Packets from fvwm to modules conform to a standard format, so modules
@@ -280,13 +280,13 @@ unsigned long. The RES_CLASS and RES_NAME fields are fields in the
 XClass structure for the window. Icon and Window name packets will
 will be sent upon window creation or whenever the name is changed. The
 RES_CLASS and RES_NAME packets are sent on window creation. All
-packets are sent in response to a SendWindowList request from a module.
+packets are sent in response to a Send_WindowList request from a module.
 <P>
 <H2><A NAME="M_END_WINDOWLIST">M_END_WINDOWLIST</A></H2>
 <P>
 These packets contain no values. This packet is sent to mark the end
-of transmission in response to  a SendWindowList request. A module
-which request SendWindowList, and processes all packets received
+of transmission in response to  a Send_WindowList request. A module
+which request Send_WindowList, and processes all packets received
 between the request and the M_END_WINDOWLIST will have a snapshot of
 the status of the desktop.
 <P>
@@ -300,7 +300,7 @@ by a variable length string which contains the error message.
 <P>
 Fvwm records all configuration commands that it encounters which
 begins with the character ``*''. When the built-in command
-``SendConfigInfo'' is invoked by a module, this entire list is
+``Send_ConfigInfo'' is invoked by a module, this entire list is
 transmitted to the module in packets (one line per packet) of this
 type. The packet consists of three zeros, followed by a variable
 length character string. In addition, the ImagePath, and

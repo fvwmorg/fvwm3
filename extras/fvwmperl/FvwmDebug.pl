@@ -40,8 +40,8 @@ if (defined $opt_h) {
 -f <file>: Send output to <file> instead of FVWM's stdout
 -m <mask>: Show only packets with types in <mask>
 -M <mask>: Show only packets with types NOT in <mask>
--c:        Send an initial SendConfigInfo packet to FVWM
--w:        Send an initial SendWindowList packet to FVWM
+-c:        Send an initial Send_ConfigInfo packet to FVWM
+-w:        Send an initial Send_WindowList packet to FVWM
 END
     &EndModule;
     exit;
@@ -81,8 +81,8 @@ if (defined $opt_m || defined $opt_M) {
     &SendInfo(0, "Set_Mask $mask");
 }
 
-&SendInfo(0, "SendConfigInfo") if (defined $opt_c);
-&SendInfo(0, "SendWindowList") if (defined $opt_w);
+&SendInfo(0, "Send_ConfigInfo") if (defined $opt_c);
+&SendInfo(0, "Send_WindowList") if (defined $opt_w);
 
 &EventLoop;
 

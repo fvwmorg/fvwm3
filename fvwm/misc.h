@@ -3,6 +3,7 @@
 
 #include <ctype.h>
 #include "defaults.h"
+#include "functions.h"
 #include "menus.h"
 #include <libs/fvwmlib.h>
 
@@ -221,7 +222,8 @@ extern void       RaiseWindow(FvwmWindow *t);
 extern void       LowerWindow(FvwmWindow *t);
 extern Bool       GrabEm(int);
 extern void       UngrabEm(void);
-extern MenuRoot   *NewMenuRoot(char *name, Bool function_or_popup);
+extern FvwmFunction *NewFvwmFunction(char *name);
+extern MenuRoot   *NewMenuRoot(char *name);
 extern void       AddToMenu(MenuRoot *, char *, char *, Bool, Bool);
 extern void       MakeMenu(MenuRoot *);
 extern void       CaptureAllWindows(void);
@@ -270,6 +272,7 @@ void GetOlHints(FvwmWindow *t);
 void SelectDecor(FvwmWindow *, unsigned long, int,int);
 extern Bool PopUpMenu(MenuRoot *, int, int);
 void ComplexFunction(F_CMD_ARGS);
+void ComplexFunction2(F_CMD_ARGS, Bool *desperate);
 extern int DeferExecution(XEvent *, Window *,FvwmWindow **, unsigned long *, int, int);
 void SetBorder (FvwmWindow *, Bool,Bool,Bool, Window);
 void move_window(F_CMD_ARGS);
@@ -348,6 +351,7 @@ char *GetNextPtr(char *ptr);
 void InteractiveMove(Window *w, FvwmWindow *tmp_win, int *FinalX, int *FinalY,
 		     XEvent *eventp);
 
+FvwmFunction *FindFunction(char *action);
 MenuRoot *FindPopup(char *action);
 
 void Bell(F_CMD_ARGS);
@@ -398,6 +402,7 @@ void Nop_func(F_CMD_ARGS);
 void SetGlobalOptions(F_CMD_ARGS);
 void Emulate(F_CMD_ARGS);
 void set_mask_function(F_CMD_ARGS);
+void DestroyFunction(FvwmFunction *func);
 void DestroyMenu(MenuRoot *mr);
 Pixel GetColor(char *);
 void FreeColors(Pixel *pixels, int n);
@@ -413,6 +418,7 @@ void GetMenuXPMFile(char *name, MenuItem *it);
 void GetMenuBitmapFile(char *name, MenuItem *it);
 
 void add_item_to_menu(F_CMD_ARGS);
+void destroy_fvwmfunc(F_CMD_ARGS);
 void destroy_menu(F_CMD_ARGS);
 void ModuleConfig(F_CMD_ARGS);
 void add_another_item(F_CMD_ARGS);
@@ -457,7 +463,6 @@ void AllFunc(F_CMD_ARGS);
 void ReadFile(F_CMD_ARGS);
 void PipeRead(F_CMD_ARGS);
 void module_zapper(F_CMD_ARGS);
-char *expand(char *input, char *arguments[], FvwmWindow *tmp_win);
 void Recapture(F_CMD_ARGS);
 void HandleHardFocus(FvwmWindow *t);
 void DestroyModConfig(F_CMD_ARGS);

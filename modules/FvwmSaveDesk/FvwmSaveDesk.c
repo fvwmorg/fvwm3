@@ -105,7 +105,7 @@ int main(int argc, char **argv)
   /* Create a list of all windows */
   /* Request a list of all windows,
    * wait for ConfigureWindow packets */
-  SendInfo(fd,"SendWindowList",0);
+  SendInfo(fd,"Send_WindowList",0);
 
   Loop(fd);
   return 0;

@@ -1,3 +1,29 @@
+1999-03-06  Dominik Vogt  <dominik_vogt@hp.com>
+
+	* FvwmWharf/FvwmWharf.c (main):
+	* fvwmperl/fvwmmod.pl (GetConfigInfo):
+	* fvwmperl/FvwmForm.pl (parseline):
+	* fvwmpython/Manual/fvwm_man.html:
+	* fvwmpython/Fvwm.py (FvwmModule.callback):
+	(FvwmModule.callback):
+	(FvwmModule.set_mask):
+	* fvwmperl/MiniPerl.pl:
+	* fvwmperl/FvwmDebug.pl:
+	* FvwmDebug/FvwmDebug.1:
+	* FvwmConfig/FvwmConfig.C (main):
+	* FvwmCommand/scripts/focus-link.pl (init):
+	* FvwmWharf/FvwmWharf.c (main):
+	* FvwmTaskBar/FvwmTaskBar.c (main):
+	* FvwmScript/FvwmScript.c (main):
+	* fvwmperl/fvwmmod.doc:
+	* FvwmGoodStuff/FvwmGoodStuff.c (main):
+	* FvwmDebug/FvwmDebug.c (main):
+	(list_end):
+	Rerenamed builtin functions
+	  Send_ConfigInfo <- SendConfigInfo
+	  Send_WindowList <- SendWindowList
+	  set_mask        <- SetMask
+
 1999-03-05  Dominik Vogt  <dominik_vogt@hp.com>
 
 	* FvwmWharf/FvwmWharf.c (main):

@@ -71,6 +71,7 @@ enum {
     F_STAYSUP,
     F_RECAPTURE,
     F_CONFIG_LIST,
+    F_DESTROY_FUNCTION,
     F_DESTROY_MENU,
     F_ZAP,
     F_QUIT_SCREEN,

@@ -667,7 +667,7 @@ int main(int argc, char **argv)
   /* request a window list, since this triggers a response which
    * will tell us the current desktop and paging status, needed to
    * indent buttons correctly */
-  MySendText(fd,"SendWindowList",0);
+  MySendText(fd,"Send_WindowList",0);
 
 # ifdef DEBUG_INIT
   fprintf(stderr,"OK\n%s: Startup complete\n",MyName);
@@ -1768,7 +1768,7 @@ void swallow(unsigned long *body)
 
 	    /* Request a new windowlist, we might have ignored another
 	       matching window.. */
-	    SendText(fd,"SendWindowList",0);
+	    SendText(fd,"Send_WindowList",0);
 
 	    /* Back one square and lose one turn */
 	    b->swallow&=~b_Count;

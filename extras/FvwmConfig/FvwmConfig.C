@@ -471,7 +471,7 @@ int main(int argc, char **argv)
 
   WinInitialize(argv,argc);
   WinAddInput(fd[1],ReadPacket);
-  SendInfo(fd,"SendWindowList",0);
+  SendInfo(fd,"Send_WindowList",0);
   WinBase a(NULL,300,WINDOW_HEIGHT,0,0);
   pwin = a.win;
   base = &a;

@@ -43,11 +43,6 @@
 #ifndef _MENUS_
 #define _MENUS_
 
-/* Function types used for formatting menus */
-
-#define FUNC_NO_WINDOW False
-#define FUNC_NEEDS_WINDOW True
-
 #define MENU_IS_LEFT  0x01
 #define MENU_IS_RIGHT 0x02
 #define MENU_IS_UP    0x04
@@ -156,7 +151,6 @@ typedef struct MenuItem
     short y_offset;		/* y coordinate for item */
     short y_height;		/* y height for item */
     short func_type;		/* type of built in function */
-    Bool func_needs_window;
     short state;		/* video state, 0 = normal, 1 = reversed */
     short strlen;		/* strlen(item) */
     short strlen2;		/* strlen(item2) */
@@ -200,12 +194,8 @@ typedef struct MenuRoot
     short width2;		/* width of the menu for 2nd col */
     short width0;               /* width of the menu-left-picture col */
     short items;		/* number of items in the menu */
-    Bool backgroundset;         /* is win background set for this menu ?? */
-    Bool in_use;
-    int func;
     Picture *sidePic;
     Pixel sideColor;
-    Bool colorize;
     short xoffset;
     MenuStyle *ms;        /* Menu Face    */
     union                 /* internal flags, deleted when menu pops down! */
@@ -215,6 +205,9 @@ typedef struct MenuRoot
       unsigned char allflags;
       struct
       {
+	unsigned is_backgroundset : 1; /* is win background set? */
+	unsigned is_in_use : 1;
+	unsigned colorize : 1;
 	unsigned painted : 1;
 	unsigned is_left : 1;   /* menu direction relative to parent menu */
 	unsigned is_right : 1;
@@ -302,13 +295,6 @@ typedef enum {
 #define IS_MENU_BUTTON(x) ((x)==MENU_DONE_BUTTON || (x)==MENU_ABORTED_BUTTON)
 #define MENU_ADD_BUTTON(x) ((x)==MENU_DONE || (x)==MENU_ABORTED?(x)+1:(x))
 #define MENU_ADD_BUTTON_IF(y,x) (y?MENU_ADD_BUTTON((x)):(x))
-
-/* Types of events for the FUNCTION builtin */
-#define MOTION 'm'
-#define IMMEDIATE 'i'
-#define CLICK 'c'
-#define DOUBLE_CLICK 'd'
-#define ONE_AND_A_HALF_CLICKS 'o'
 
 MenuRoot *FollowMenuContinuations(MenuRoot *mr,MenuRoot **pmrPrior);
 void AnimatedMoveOfWindow(Window w,int startX,int startY,int endX, int endY,

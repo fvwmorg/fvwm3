@@ -80,7 +80,7 @@ void do_windowList(XEvent *eventp,Window w,FvwmWindow *tmp_win,
   MenuStatus menu_retval;
   XEvent *teventp;
   MenuOptions mops;
-  int low_layer = 0;  /* show all layers by default */ 
+  int low_layer = 0;  /* show all layers by default */
   int high_layer = INT_MAX;
 
   mops.flags.allflags = 0;
@@ -145,35 +145,35 @@ void do_windowList(XEvent *eventp,Window w,FvwmWindow *tmp_win,
         flags |= SHOW_STICKY;
       else if (StrEquals(tok,"OnlySticky"))
         flags = SHOW_STICKY;
-          /* 
+          /*
              these are a bit dubious, but we
-             should keep the OnTop options 
-             for compatibility 
+             should keep the OnTop options
+             for compatibility
            */
       else if (StrEquals(tok, "NoOnTop"))
 	{
 	  if (high_layer >= Scr.OnTopLayer)
             high_layer = Scr.OnTopLayer - 1;
-        }  
+        }
       else if (StrEquals(tok, "OnTop"))
         {
 	  if (high_layer < Scr.OnTopLayer)
             high_layer = Scr.OnTopLayer;
-	}  
+	}
       else if (StrEquals(tok, "OnlyOnTop"))
         {
 	  high_layer = low_layer = Scr.OnTopLayer;
         }
-      else if (StrEquals(tok, "Layers")) 
+      else if (StrEquals(tok, "Layers"))
       {
 	free(tok);
         line = GetNextOption(line, &tok);
-	if (tok) 
+	if (tok)
         {
           low_layer = high_layer = atoi(tok);
 	  free(tok);
           line = GetNextOption(line, &tok);
-	  if (tok) 
+	  if (tok)
           {
             high_layer = atoi(tok);
           }
@@ -199,7 +199,7 @@ void do_windowList(XEvent *eventp,Window w,FvwmWindow *tmp_win,
   {
     sprintf(tlabel,"Desk: %d",desk);
   }
-  mr=NewMenuRoot(tlabel, False);
+  mr=NewMenuRoot(tlabel);
   AddToMenu(mr, tlabel, "TITLE", FALSE, FALSE);
 
   numWindows = 0;
@@ -265,7 +265,7 @@ void do_windowList(XEvent *eventp,Window w,FvwmWindow *tmp_win,
         if (!(flags & SHOW_STICKY) && (t->flags & STICKY))
           continue; /* don't want sticky ones - skip */
         if (!(flags & SHOW_NORMAL) &&
-            !((t->flags & ICONIFIED) || (t->flags & STICKY))) 
+            !((t->flags & ICONIFIED) || (t->flags & STICKY)))
           continue; /* don't want "normal" ones - skip */
         if ((t->layer < low_layer) || (t->layer > high_layer))
           continue;  /* don't want this layer */

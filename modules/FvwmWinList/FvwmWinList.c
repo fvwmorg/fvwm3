@@ -221,7 +221,7 @@ int main(int argc, char **argv)
 #endif
                  M_STRING);
 
-  SendFvwmPipe("SendWindowList",0);
+  SendFvwmPipe("Send_WindowList",0);
 
   /* Recieve all messages from Fvwm */
   atexit(ShutMeDown);

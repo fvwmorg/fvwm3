@@ -37,6 +37,7 @@
 #include <X11/cursorfont.h>
 #include "misc.h"
 #include "menus.h"
+#include "functions.h"
 
 #define SIZE_HINDENT 5
 #define SIZE_VINDENT 3
@@ -255,6 +256,7 @@ typedef struct ScreenInfo
   int StaysPutLayer;
 
   MenuGlobals menus;
+  FvwmFunction *functions;
 
   MyFont StdFont;     	/* font structure */
   MyFont IconFont;      /* for icon labels */

@@ -723,21 +723,21 @@ sub init {
 
   # send command through the new fifo which is "$FIFO" + "C"
   open( FCC, ">${FIFO}C" ) || die "FCC $FIFO" ;
-
+   
   # appearantly, it has to be unbuffered
   select( FCC ); $| = 1;
   select( STDOUT ); $| = 1;
-
+  
   %Focus = (); # last focused windows for each class
   @Message = (); # message queue
 
-  %Window = ();
+  %Window = (); 
 
   #get current screen info
-  send_cmd("SendWindowList\n");
+  send_cmd("Send_WindowList\n");
 
 #  while(<FCM>) {
-#    last if /^end windowlist/;
+#    last if /^end windowlist/;   
 #
 #    # create window list
 #    if (/^($HEX) ($STATUS)\s*(.*)/) {

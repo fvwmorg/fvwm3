@@ -537,34 +537,6 @@ void WindowShade(XEvent *eventp,Window w,FvwmWindow *tmp_win,
 #endif /* WINDOWSHADE */
 
 
-MenuRoot *FindPopup(char *action)
-{
-  char *tmp;
-  MenuRoot *mr;
-
-  GetNextToken(action,&tmp);
-
-  if(tmp == NULL)
-    return NULL;
-
-  mr = Scr.menus.all;
-  while(mr != NULL)
-  {
-    if(mr->name != NULL)
-      if(strcasecmp(tmp,mr->name)== 0)
-      {
-        free(tmp);
-        return mr;
-      }
-    mr = mr->next;
-  }
-  free(tmp);
-  return NULL;
-
-}
-
-
-
 void Bell(XEvent *eventp,Window w,FvwmWindow *tmp_win,unsigned long context,
 	  char *action, int *Module)
 {
@@ -575,10 +547,10 @@ void Bell(XEvent *eventp,Window w,FvwmWindow *tmp_win,unsigned long context,
 #ifdef USEDECOR
 static FvwmDecor *last_decor = NULL, *cur_decor = NULL;
 #endif
-MenuRoot *last_menu=NULL;
+static MenuRoot *last_menu=NULL;
+static FvwmFunction *last_func=NULL;
 void add_item_to_menu(XEvent *eventp,Window w,FvwmWindow *tmp_win,
-		      unsigned long context,
-		      char *action, int *Module)
+		      unsigned long context, char *action, int *Module)
 {
   MenuRoot *mr;
   MenuRoot *mrPrior;
@@ -593,8 +565,9 @@ void add_item_to_menu(XEvent *eventp,Window w,FvwmWindow *tmp_win,
     return;
   mr = FollowMenuContinuations(FindPopup(token),&mrPrior);
   if(mr == NULL)
-    mr = NewMenuRoot(token, False);
+    mr = NewMenuRoot(token);
   last_menu = mr;
+  last_func = NULL;
 
   rest = GetNextToken(rest,&item);
   AddToMenu(mr, item,rest,TRUE /* pixmap scan */, TRUE);
@@ -632,6 +605,9 @@ void add_another_item(XEvent *eventp,Window w,FvwmWindow *tmp_win,
       free(item);
     MakeMenu(mr);
   }
+  else if (last_func != NULL) {
+    AddToFunction(last_func, action);
+  }
 #ifdef USEDECOR
   else if (last_decor != NULL) {
     FvwmDecor *tmp = &Scr.DefaultDecor;
@@ -658,6 +634,7 @@ void destroy_menu(XEvent *eventp,Window w,FvwmWindow *tmp_win,
   if (!token)
     return;
   mr = FindPopup(token);
+  last_menu = NULL;
   free(token);
   while (mr)
   {
@@ -668,27 +645,41 @@ void destroy_menu(XEvent *eventp,Window w,FvwmWindow *tmp_win,
   return;
 }
 
-void add_item_to_func(XEvent *eventp,Window w,FvwmWindow *tmp_win,
-		      unsigned long context,
-		      char *action, int *Module)
+void destroy_fvwmfunc(XEvent *eventp,Window w,FvwmWindow *tmp_win,
+		      unsigned long context, char *action, int *Module)
 {
-  MenuRoot *mr;
+  FvwmFunction *func;
+  char *token;
 
-  char *token, *rest,*item;
-
-  rest = GetNextToken(action,&token);
+  GetNextToken(action,&token);
   if (!token)
     return;
-  mr = FindPopup(token);
-  if(mr == NULL)
-    mr = NewMenuRoot(token, True);
-  last_menu = mr;
-  if (token)
-    free(token);
-  rest = GetNextToken(rest,&item);
-  AddToMenu(mr, item,rest,FALSE,FALSE);
-  if (item)
-    free(item);
+  func = FindFunction(token);
+  free(token);
+  if (!func)
+    return;
+  last_func = NULL;
+  DestroyFunction(func);
+
+  return;
+}
+
+void add_item_to_func(XEvent *eventp,Window w,FvwmWindow *tmp_win,
+		      unsigned long context, char *action, int *Module)
+{
+  FvwmFunction *func;
+  char *token;
+
+  action = GetNextToken(action,&token);
+  if (!token)
+    return;
+  func = FindFunction(token);
+  if(func == NULL)
+    func = NewFvwmFunction(token);
+  last_menu = NULL;
+  last_func = func;
+  free(token);
+  AddToFunction(func, action);
 
   return;
 }
