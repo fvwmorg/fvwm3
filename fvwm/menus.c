@@ -2754,7 +2754,7 @@ static void paint_item(MenuRoot *mr, MenuItem *mi, FvwmWindow *fw,
     x = menu_middle_x_offset(mr) - MI_PICTURE(mi)->width / 2;
     y = y_offset + ((MI_IS_SELECTABLE(mi)) ? relief_thickness : 0);
 
-    if(MI_PICTURE(mi)->depth > 0) /* pixmap? */
+    if(MI_PICTURE(mi)->depth == Scr.depth) /* pixmap */
     {
       Globalgcm = GCClipMask | GCClipXOrigin | GCClipYOrigin;
       Globalgcv.clip_mask = MI_PICTURE(mi)->mask;
@@ -2798,7 +2798,7 @@ static void paint_item(MenuRoot *mr, MenuItem *mi, FvwmWindow *fw,
 	  (MI_HEIGHT(mi) + ((MI_IS_SELECTABLE(mi)) ? relief_thickness : 0) -
 	   MI_MINI_ICON(mi)[i]->height) / 2;
       }
-      if(MI_MINI_ICON(mi)[i]->depth > 0) /* pixmap? */
+      if(MI_MINI_ICON(mi)[i]->depth == Scr.depth) /* pixmap */
       {
 	Globalgcm = GCClipMask | GCClipXOrigin | GCClipYOrigin;
 	Globalgcv.clip_mask = MI_MINI_ICON(mi)[i]->mask;
@@ -2887,15 +2887,17 @@ static void paint_side_pic(MenuRoot *mr)
     yt = MR_HEIGHT(mr) - bw - sidePic->height;
   }
 
-  if(sidePic->depth > 0) /* pixmap? */
+  if(sidePic->depth == Scr.depth) /* pixmap */
   {
-    Globalgcm = GCClipMask;
     Globalgcv.clip_mask = sidePic->mask;
-    XChangeGC(dpy, ReliefGC, Globalgcm, &Globalgcv);
+    Globalgcv.clip_x_origin = MR_SIDEPIC_X_OFFSET(mr);
+    Globalgcv.clip_y_origin = yt;
+    XChangeGC(dpy, ReliefGC, GCClipMask | GCClipXOrigin | GCClipYOrigin,
+	      &Globalgcv);
     XCopyArea(dpy, sidePic->picture, MR_WINDOW(mr), ReliefGC,
 	      0, ys, sidePic->width, h, MR_SIDEPIC_X_OFFSET(mr), yt);
     Globalgcv.clip_mask = None;
-    XChangeGC(dpy, ReliefGC, Globalgcm, &Globalgcv);
+    XChangeGC(dpy, ReliefGC, GCClipMask, &Globalgcv);
   }
   else
   {
