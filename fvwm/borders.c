@@ -834,16 +834,21 @@ static void RedrawBorder(
 
     if (is_pressed == True)
     {
+      Bool is_not_empty = True;
+
       if (rclip)
       {
-	merge_xrectangles(&r, rclip);
+	is_not_empty = intersect_xrectangles(&r, rclip);
       }
-      XSetClipRectangles(dpy, rgc, 0, 0, &r, 1, Unsorted);
-      XSetClipRectangles(dpy, sgc, 0, 0, &r, 1, Unsorted);
-      draw_frame_relief(
-	t, sgc, rgc, tgc, sgc,
-	w_dout, w_hiout, w_trout, w_c, w_trin, w_shin, w_din);
-      is_clipped = True;
+      if (is_not_empty)
+      {
+	XSetClipRectangles(dpy, rgc, 0, 0, &r, 1, Unsorted);
+	XSetClipRectangles(dpy, sgc, 0, 0, &r, 1, Unsorted);
+	draw_frame_relief(
+	  t, sgc, rgc, tgc, sgc,
+	  w_dout, w_hiout, w_trout, w_c, w_trin, w_shin, w_din);
+	is_clipped = True;
+      }
     }
   }
   if (is_clipped)
