@@ -1,5 +1,8 @@
 2002-04-05  olicha  <olivier.chapuis@free.fr>
 
+	* FvwmTaskBar/FvwmTaskBar.c (LoopOnEvents): 
+	Fixed a core dump
+
 	* FvwmScript/FvwmScript (LoadIcon):
 	* FvwmScript/Makefile.am:
 	Fixed icon loading. Added Bitmap support (no more core dump!).
