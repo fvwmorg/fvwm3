@@ -5,6 +5,6 @@ DestroyModuleConfig FvwmWinList: *
 *FvwmWinList: Font -adobe-helvetica-bold-r-*-*-10-*-*-*-*-*-*-*
 *FvwmWinList: Action Click1 Iconify -1,Focus
 *FvwmWinList: Action Click2 Iconify
-*FvwmWinList: Action Click3 Module "FvwmIdent" FvwmIdent
+*FvwmWinList: Action Click3 Module FvwmIdent
 *FvwmWinList: UseSkipList
 *FvwmWinList: Geometry +0-1

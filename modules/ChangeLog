@@ -12,6 +12,10 @@
 	fixed fvwm freeze - s/scanf/sscanf/,
 	fixed internal commands (Next, Left) by restoring [My]SendFvwmPipe()
 
+	* FvwmWinList/ConfigFvwmWinList:
+	* FvwmWinList/FvwmWinList.1:
+	fixed obsolete Module "match" syntax
+
 2000-11-08  Mikhael Goikhman  <migo@homemail.com>
 
 	* FvwmForm/FormFvwm-*:
