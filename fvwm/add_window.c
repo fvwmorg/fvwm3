@@ -57,6 +57,7 @@
 
 #include "libs/fvwmlib.h"
 #include "libs/FShape.h"
+#include "libs/FScreen.h"
 #include "fvwm.h"
 #include "externs.h"
 #include "cursor.h"
@@ -588,6 +589,12 @@ Bool setup_window_placement(FvwmWindow *tmp_win, window_style *pstyle)
 	SSET_START_DESK(*pstyle, SGET_START_DESK(*pstyle) + 1);
       }
       pstyle->flags.use_start_on_desk = 1;
+    }
+    if (GetResourceString(db, "fvwmscreen", client_argv[0], &rm_value) &&
+	rm_value.size != 0)
+    {
+      SSET_START_SCREEN(*pstyle, FScreenGetScreenArgument(rm_value.addr, 'c'));
+      pstyle->flags.use_start_on_screen = 1;
     }
     if (GetResourceString(db, "page", client_argv[0], &rm_value) &&
 	rm_value.size != 0)

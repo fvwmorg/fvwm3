@@ -619,6 +619,34 @@ Bool FScreenGetScrRect(
   return !(screen == 0 && num_screens > 1);
 }
 
+/* Translates the coodinates *x *y from the screen specified by arg_src and
+ * screen_src to coordinates on the screen specified by arg_dest and
+ * screen_dest. (see FScreenGetScrRect for more details). */
+void FScreenTranslateCoordinates(
+  fscreen_scr_arg *arg_src, int screen_src,
+  fscreen_scr_arg *arg_dest, int screen_dest,
+  int *x, int *y)
+{
+  int x_src;
+  int y_src;
+  int x_dest;
+  int y_dest;
+
+  FScreenGetScrRect(arg_src, screen_src, &x_src, &y_src, NULL, NULL);
+  FScreenGetScrRect(arg_dest, screen_dest, &x_dest, &y_dest, NULL, NULL);
+
+  if (x)
+  {
+    *x = *x + x_src - x_dest;
+  }
+  if (y)
+  {
+    *y = *y + y_src - y_dest;
+  }
+
+  return;
+}
+
 /* Arguments work exactly like for FScreenGetScrRect() */
 int FScreenClipToScreen(
   fscreen_scr_arg *arg, int screen, int *x, int *y, int w, int h)
@@ -748,6 +776,7 @@ Bool FScreenIsRectangleOnScreen(
   int sh;
 
   FScreenGetScrRect(arg, screen, &sx, &sy, &sw, &sh);
+
   return (rec->x + rec->width > sx && rec->x < sx + sw &&
 	  rec->y + rec->height > sy && rec->y < sy + sh) ? True : False;
 }
@@ -791,7 +820,6 @@ int FScreenGetScreenArgument(char *scr_spec, char default_screen)
   return FScreenParseScreenBit(scr_spec, default_screen);
 }
 
-#if 1
 /*
  * FScreenParseGeometry
  *     Does the same as XParseGeometry, but handles additional "@scr".
@@ -1099,7 +1127,6 @@ int FScreenGetGeometry(
 
   return ret;
 }
-#endif
 
 
 /* no rand_r for now */

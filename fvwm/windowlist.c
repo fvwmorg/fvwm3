@@ -144,11 +144,9 @@ void CMD_WindowList(F_CMD_ARGS)
       free(cond_flags);
     }
 
-    if (action && *action)
-    {
-      /* parse postitioning args */
-      opts = get_menu_options(action, w, tmp_win, eventp, NULL, NULL, &mops);
-    }
+    /* parse postitioning args - must call this even if no action is given
+     * because it sets the xinerama screen origin */
+    opts = get_menu_options(action, w, tmp_win, eventp, NULL, NULL, &mops);
 
     /* parse options */
     while (opts && *opts)

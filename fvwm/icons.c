@@ -604,6 +604,9 @@ void DrawIconWindow(FvwmWindow *tmp_win)
       XConfigureWindow(dpy, tmp_win->icon_pixmap_w, mask, &xwc);
     }
   }
+  /* wait for pending EnterNotify/LeaveNotify events to suppress race condition
+   * w/ expanding/collapsing icon titles */
+  XSync(dpy, 0);
 }
 
 
@@ -629,7 +632,9 @@ void RedoIconName(FvwmWindow *tmp_win)
                  strlen(tmp_win->icon_name));
   /* clear the icon window, and trigger a re-draw via an expose event */
   if (IS_ICONIFIED(tmp_win))
+  {
     DrawIconWindow(tmp_win);
+  }
   if (IS_ICONIFIED(tmp_win))
     XClearArea(dpy, tmp_win->icon_w, 0, 0, 0, 0, True);
   return;

@@ -10,6 +10,16 @@ Changes in beta 2.4.3 (not released yet)
 * Single letter key names are allowed in upper and lower case in
   key bindings as before 2.4.0.
 
+* Fixed WindowList placement with Xinerama.
+
+* Fixed flickering icon titles.
+
+* New X resource fvwmscreen to select the Xinerama screen on which to
+  place new windows.
+
+* Coordinates of a window during motion are show relative to the
+  Xinerama screen.
+
 Changes in stable 2.4.2 (16-Sep-2001)
 
 * Desk and page can be given as X resources in .Xdefaults, for example:

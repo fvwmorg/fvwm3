@@ -418,7 +418,7 @@ void resize_geometry_window(void)
 
   Scr.SizeStringWidth =
     XTextWidth(Scr.DefaultFont.font, GEOMETRY_WINDOW_STRING,
-	       strlen(GEOMETRY_WINDOW_STRING));
+	       sizeof(GEOMETRY_WINDOW_STRING));
   w = Scr.SizeStringWidth + 2 * GEOMETRY_WINDOW_BW;
   h = Scr.DefaultFont.height + 2 * GEOMETRY_WINDOW_BW;
   if (w != sizew_g.width || h != sizew_g.height)
@@ -455,13 +455,19 @@ void resize_geometry_window(void)
 static void DisplayPosition(
   FvwmWindow *tmp_win, XEvent *eventp, int x, int y,int Init)
 {
-  char str [100];
+  char str[100];
   int offset;
+  fscreen_scr_arg fscr;
 
   if (Scr.gs.do_hide_position_window)
     return;
   position_geometry_window(eventp);
-  (void) sprintf (str, GEOMETRY_WINDOW_POS_STRING, x, y);
+  /* Translate x,y into local screen coordinates, in case Xinerama is used. */
+  fscr.xypos.x = x;
+  fscr.xypos.y = y;
+  FScreenTranslateCoordinates(
+    NULL, FSCREEN_GLOBAL, &fscr, FSCREEN_XYPOS, &x, &y);
+  (void)sprintf(str, GEOMETRY_WINDOW_POS_STRING, x, y);
   if (Init)
   {
     XClearWindow(dpy, Scr.SizeWindow);

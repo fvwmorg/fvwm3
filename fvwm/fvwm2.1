@@ -5239,7 +5239,7 @@ functions exactly like
 .IR StartsOnDesk .
 For those standard Xt programs which understand this usage, the
 starting desk/page can also be specified via a resource (e.g.,
-"-xrm 'Fvwm.Page: 1 0 2'").
+"-xrm '*page: 1 0 2'").
 .I StartsOnPage
 in conjunction with
 .I SkipMapping
@@ -5254,19 +5254,23 @@ global screen or the screen number itself (counting from zero).
 A new window is placed on the specified Xinerama screen.  The
 default is to place windows on the screen that contains the mouse
 pointer at the time the window is created.
-
-.I StartsOnPage
-functions exactly like
-.IR StartsOnDesk .
+However, those windows which are not placed by FVWM (i.e., those with
+a USPosition hint from a user specified geometry) are normally placed
+in a position relative to the global screen.  The
+.I StartsOnScreen
+style is also useful to cause these windows to be placed relative
+to a specific Xinerama screen.  For example:
+.EX
+Style * StartsOnScreen c
+.EE
+Would cause all windows, including those with their own geometry
+to be placed relative to the current Xinerama screen rather than
+the global screen.
 For those standard Xt programs which understand this usage, the
 starting desk/page can also be specified via a resource (e.g.,
-"-xrm 'Fvwm.Page: 1 0 2'").
-.I StartsOnPage
-in conjunction with
-.I SkipMapping
-is a useful technique when you want to start an app on some other
-page and continue with what you were doing, rather than waiting
-for it to appear.
+"-xrm '*fvwmscreen: c'").  ('fvwmscreen' was chosen
+because some applications already use '.screen' for other
+purposes.)
 
 .I StartsOnPageIncludesTransients
 causes the
@@ -7199,7 +7203,7 @@ is either a real module name or an alias.
 This database is initially filled from config file (or from
 output of
 .B \-cmd
-config command), and can be later modified either by user (via 
+config command), and can be later modified either by user (via
 .BR FvwmCommand )
 or by modules.
 

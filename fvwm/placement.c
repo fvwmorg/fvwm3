@@ -922,6 +922,27 @@ Bool PlaceWindow(
     /* the USPosition was specified, or the window is a transient,
      * or it starts iconic so place it automatically */
 
+    if (SUSE_START_ON_SCREEN(sflags) && flags.do_honor_starts_on_screen)
+    {
+      /*
+       * If StartsOnScreen has been given for a window, translate its
+       * USPosition so that it is relative to that particular screen.
+       * If we don't do this, then a geometry would completely cancel
+       * the effect of the StartsOnScreen style.
+       *
+       * So there are two ways to get a window to pop up on a particular
+       * Xinerama screen.  1: The intuitive way giving a geometry hint
+       * relative to the desired screen's 0,0 along with the appropriate
+       * StartsOnScreen style (or *wmscreen resource), or 2: Do NOT
+       * specify a Xinerama screen (or specify it to be 'g') and give
+       * the geometry hint in terms of the global screen.
+       */
+
+      FScreenTranslateCoordinates(
+	NULL, XineramaScreen, NULL, FSCREEN_GLOBAL,
+	&tmp_win->attr.x, &tmp_win->attr.y);
+    }
+
     /*
      *  If SkipMapping, and other legalities are observed, adjust for
      * StartsOnPage.

@@ -2159,9 +2159,7 @@ static void DestroyFvwmDecor(FvwmDecor *decor)
   DestroyAllButtons(decor);
   for (i = 0; i < BS_MaxButtonState; ++i)
   {
-    int j = 0;
-    for (; j < BS_MaxButtonState; ++j)
-      FreeDecorFace(dpy, &TB_STATE(decor->titlebar)[i]);
+    FreeDecorFace(dpy, &TB_STATE(decor->titlebar)[i]);
   }
   FreeDecorFace(dpy, &decor->BorderStyle.active);
   FreeDecorFace(dpy, &decor->BorderStyle.inactive);

@@ -7479,6 +7479,12 @@ char *get_menu_options(
     else if (StrEquals(tok,"rectangle"))
     {
       int flags;
+      int screen;
+      int sx;
+      int sy;
+      int sw;
+      int sh;
+
       /* parse the rectangle */
       free(tok);
       naction = GetNextToken(naction, &tok);
@@ -7494,7 +7500,8 @@ char *get_menu_options(
 	}
 	return action;
       }
-      flags = FScreenParseGeometry(tok, &x, &y, &width, &height);
+      flags = FScreenParseGeometryWithScreen(
+	tok, &x, &y, &width, &height, &screen);
       if ((flags & (XValue | YValue)) != (XValue | YValue))
       {
 	free(tok);
@@ -7508,6 +7515,10 @@ char *get_menu_options(
 	}
 	return action;
       }
+      pops->pos_hints.has_screen_origin = 1;
+      FScreenGetScrRect(NULL, screen, &sx, &sy, &sw, &sh);
+      pops->pos_hints.screen_origin_x = sx;
+      pops->pos_hints.screen_origin_y = sy;
       if (!(flags & WidthValue))
       {
 	width = 1;
@@ -7516,12 +7527,12 @@ char *get_menu_options(
       {
 	height = 1;
       }
-      /* These calculations shouldn't be affected by Xinerama support logic
-       * since geometry specifications are for "global" screen */
+      x += sx;
+      y += sy;
       if (flags & XNegative)
-	x = Scr.MyDisplayWidth - x - width;
+	x = sx + sw - x - width;
       if (flags & YNegative)
-	y = Scr.MyDisplayHeight - y - height;
+	y = sy + sh - y - height;
       pops->pos_hints.is_relative = False;
       fRectangleContext = True;
     }

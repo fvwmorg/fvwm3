@@ -446,13 +446,15 @@ static void restack_windows(
 
   if (count <= 0)
   {
-    FvwmWindow *prev = NULL;
-    count = 0;
-    for (t = r; prev != s; prev = t, t = t->stack_next)
+    FvwmWindow *prev;
+
+    for (t = r, prev = NULL; prev != s; prev = t, t = t->stack_next)
     {
       count++;
       if (IS_ICONIFIED(t) && !IS_ICON_SUPPRESSED(t))
+      {
 	count += 2;
+      }
     }
   }
   /* restack the windows between r and s */
