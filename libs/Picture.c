@@ -576,7 +576,6 @@ Pixel GetColor(char *name)
   int cs;
   char *rest;
   XColor color;
-  color.pixel = 0;
 
   switch ((i = GetTokenIndex(name, colorset_names, -1, &rest)))
   {
@@ -605,14 +604,25 @@ Pixel GetColor(char *name)
     switch (i)
     {
     case 0:
-      return Colorset[cs].fg;
+      color.pixel = Colorset[cs].fg;
+      break;
     case 1:
-      return Colorset[cs].bg;
+      color.pixel = Colorset[cs].bg;
+      break;
     case 2:
-      return Colorset[cs].hilite;
+      color.pixel = Colorset[cs].hilite;
+      break;
     case 3:
-      return Colorset[cs].shadow;
+      color.pixel = Colorset[cs].shadow;
+      break;
     }
+    if (!XAllocColor(Pdpy, Pcmap, &color))
+    {
+      fprintf(stderr, "Cannot allocate color %d from colorset %d\n", i, cs);
+      return 0;
+    }
+    return color.pixel;
+
   default:
     break;
   }

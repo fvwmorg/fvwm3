@@ -1,5 +1,9 @@
 2001-03-12  Dominik Vogt  <dominik.vogt@gmx.de>
 
+	* libs/Picture.c (GetColor):
+	allocate colours from a colour set
+	removed unused variable
+
 	* fvwm/move_resize.c (moveLoop):
 	removed debug code
 	(MoveOutline):
