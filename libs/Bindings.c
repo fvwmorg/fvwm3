@@ -448,7 +448,6 @@ int AddBinding(
 #endif
 	bound_mask |= bind_mask;
 	count++;
-match=1;
       }
     }
   }
