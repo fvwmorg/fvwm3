@@ -165,7 +165,7 @@ void SendDataToModule(XEvent *eventp,Window w,FvwmWindow *tmp_win,
 
   if (ImagePath && strlen(ImagePath))
   {
-    message=safemalloc(strlen(ImagePath)+11);
+    message=safemalloc(strlen(ImagePath)+12);
     sprintf(message,"ImagePath %s\n",ImagePath);
     SendName(*Module,M_CONFIG_INFO,0,0,0,message);
     free(message);

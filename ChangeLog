@@ -1,3 +1,8 @@
+Wed Mar 17 00:09:32 1999  Steve Robbins  <steve@nyongwa.montreal.qc.ca>
+
+	* fvwm/modconf.c (SendDataToModule): fixed stupid off-by-one error
+	that caused a stack smash.
+
 1999-03-17  Matthias Clasen  <clasen@mathematik.uni-freiburg.de>
 
 	* fvwm/module.c (KillModule): remove spurious debug message.
@@ -21,14 +26,14 @@
 
 1999-03-16  Tomas Ogren  <stric@ing.umu.se>
 
-	* modules/FvwmGtk/Makefile.am: Added GTK_CFLAGS and friends, the values
-	we got from autoconf...
+	* modules/FvwmGtk/Makefile.am: Added GTK_CFLAGS and friends, the
+	values we got from autoconf...
 
 16th Mar 1999  Hippo
 
-	* fvwm/builtins.c,functions.c,misc.h,parse.h: applied Replace patch from
-	Trent Piepho <xyzzy@u.washington.edu> first posted in Nov 1996. Changed
-	the name to PlaceAgain to avoid confusion.
+	* fvwm/builtins.c,functions.c,misc.h,parse.h: applied Replace
+	patch from Trent Piepho <xyzzy@u.washington.edu> first posted in
+	Nov 1996. Changed the name to PlaceAgain to avoid confusion.
 
 Mon Mar 15 22:17:04 1999  Steve Robbins  <steve@nyongwa.montreal.qc.ca>
 
