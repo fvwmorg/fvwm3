@@ -941,6 +941,8 @@ static MenuStatus menuShortcuts(MenuRoot *mr, XEvent *event,
   case XK_KP_6:
     if (!MST_USE_LEFT_SUBMENUS(mr))
     {
+      if (miCurrent && MI_IS_POPUP(miCurrent))
+	return MENU_POPUP;
     }
     else
       return MENU_POPDOWN;
