@@ -1,11 +1,11 @@
-DestroyModuleConfig               FormFvwmQuitVerify*
-*FormFvwmQuitVerifyGrabServer
-*FormFvwmQuitVerifyWarpPointer
-*FormFvwmQuitVerifyCommand     Beep
-*FormFvwmQuitVerifyLine        center
-*FormFvwmQuitVerifyText        "Do you really want to logout?"
-*FormFvwmQuitVerifyLine        expand
-*FormFvwmQuitVerifyButton      quit "Logout" ^M
-*FormFvwmQuitVerifyCommand     Quit 
-*FormFvwmQuitVerifyButton      quit "Cancel" ^[
-*FormFvwmQuitVerifyCommand     Nop
+DestroyModuleConfig               FormFvwmQuitVerify.*
+*FormFvwmQuitVerify.GrabServer
+*FormFvwmQuitVerify.WarpPointer
+*FormFvwmQuitVerify.Command     Beep
+*FormFvwmQuitVerify.Line        center
+*FormFvwmQuitVerify.Text        "Do you really want to logout?"
+*FormFvwmQuitVerify.Line        expand
+*FormFvwmQuitVerify.Button      quit "Logout" ^M
+*FormFvwmQuitVerify.Command     Quit 
+*FormFvwmQuitVerify.Button      quit "Cancel" ^[
+*FormFvwmQuitVerify.Command     Nop
