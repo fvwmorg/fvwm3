@@ -1,3 +1,8 @@
+2002-03-29  olicha  <olivier.chapuis@free.fr>
+
+	* libs/FlocaleCharset.c (FlocaleCharsetSetFlocaleCharset):
+	Set the X locale charset on system without XOpenOM
+
 2002-03-27  Mikhael Goikhman  <migo@homemail.com>
 
 	* configure.in:
@@ -27,7 +32,7 @@
 
 	* libs/FlocaleCharset.c (FlocaleInit_X_Charset):
 	* libs/Ficonv.c (FiconvInit):
-	By more safe
+	Be more safe
 
 	* fvwm/fvwm.c:
 	include only libs/Flocale.h

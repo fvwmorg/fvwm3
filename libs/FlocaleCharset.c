@@ -498,8 +498,15 @@ void FlocaleCharsetSetFlocaleCharset(Display *dpy, FlocaleFont *flf)
 		}
 		else
 		{
-			/* FIXME */
-			flf->fc = &UnkownCharset;
+			/* basically we are here if !HAVE_XOUTPUT_METHOD */
+			XFontStruct **fs_list;
+			char **ml;
+
+			if (XFontsOfFontSet(flf->fontset, &fs_list, &ml) > 0)
+			{
+				flf->fc = FLCXOMCharset =
+				    FlocaleCharsetOfFontStruct(dpy, fs_list[0]);
+			}
 		}
 	}
 	else if (flf->font != NULL)
