@@ -31,15 +31,17 @@
 **  into a file.
 */
 void LoadGlobalState(char *filename);
-int SaveGlobalState(FILE *f);
-
 
 /*
 **  Load and save window states.
 */
-void LoadWindowStates(char *filename);
-int SaveWindowStates(FILE *f);
+void LoadWindowStates (char *filename);
 
+/*
+** Save state to the named file, and if running under SM,
+** make the SM properly restart fvwm. 
+*/
+void RestartInSession (char *filename);
 
 /*
 **  Fill in the FvwmWindow struct with information saved from

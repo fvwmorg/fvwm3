@@ -59,6 +59,8 @@ static int          num_match = 0;
 static Match        *matches = NULL;
 static Bool         sent_save_done = 0;
 
+extern Bool Restarting;
+
 static
 char *duplicate(char *s)
 {
@@ -107,11 +109,28 @@ SaveGlobalState(FILE *f)
   return 1;
 }
 
+#ifdef SESSION
+#include <X11/SM/SMlib.h>
+
+extern char **g_argv;
+extern int g_argc;
+
+SmcConn sm_conn = NULL;
+static char *last_used_filename = NULL;
+
+static void 
+set_sm_properties (SmcConn sm_conn, char *filename, char hint);
+
+static int
+save_session_state (SmcConn sm_conn, char *filename, FILE *f);
+
+#endif /* SESSION */
+
 void
 LoadGlobalState(char *filename)
 {
   FILE               *f;
-  char                s[4096], s1[4096];
+  char                s[4096], s1[4096], s2[256];
   int i1, i2, i3, i4, i5, i6, i7, i8, i9;
 
   if (filename && (f = fopen(filename, "r")))
@@ -121,6 +140,18 @@ LoadGlobalState(char *filename)
 	  i1 = 0; i2 = 0; i3 = 0; i4 = 0; i5 = 0; i6 = 0;
 	  i7 = 0; i8 = 0;
 	  sscanf(s, "%4000s", s1);
+#ifdef SESSION
+	  /* If we are restarting, [SESSION_STATE] points
+	     to the file containing the true session state. */
+	  if (!strcmp(s1, "[SESSION_STATE]"))
+	    {
+	      sscanf(s, "%*s %s", &s2);
+	      set_sm_properties (sm_conn, s2, SmRestartIfRunning);
+	      if (last_used_filename) free (last_used_filename);
+	      last_used_filename = strdup (s2);
+	    }
+	  else
+#endif /* SESSION */ 
 	  if (!strcmp(s1, "[DESKTOP]"))
 	    {
 	      sscanf(s, "%*s %i", &i1);
@@ -269,9 +300,9 @@ SaveWindowStates(FILE *f)
       else
 	{
 	  if (ewin->class.res_class)
-	    fprintf(f, "  [RES_NAME] %s\n", ewin->class.res_name);
+	    fprintf(f, "  [RES_NAME] %s\n", ewin->class.res_class);
 	  if (ewin->class.res_name)
-	    fprintf(f, "  [RES_CLASS] %s\n", ewin->class.res_class);
+	    fprintf(f, "  [RES_CLASS] %s\n", ewin->class.res_name);
 	  if (ewin->name)
 	    fprintf(f, "  [WM_NAME] %s\n", ewin->name);
 
@@ -439,8 +470,6 @@ LoadWindowStates(char *filename)
 }
 
 /* This complicated logic is from twm, where it is explained */
-
-extern Bool Restarting;
 
 #define xstreq(a,b) ((!a && !b) || (a && b && (strcmp(a,b)==0)))
 
@@ -635,97 +664,108 @@ MatchWinToSM(FvwmWindow *ewin,
     }
 }
 
+void
+RestartInSession (char *filename)
+{
+  FILE *f = fopen (filename, "w");
+
 #ifdef SESSION
-#include <X11/SM/SMlib.h>
+  if (sm_conn)
+    {
+      if (last_used_filename)
+	{
+	  fprintf (f, "[SESSION_STATE] %s\n", last_used_filename);
+	}
+      save_session_state (sm_conn, filename, f);
+      fclose (f);  
+      set_sm_properties (sm_conn, filename, SmRestartImmediately);
+      
+      XSelectInput(dpy, Scr.Root, 0);
+      XSync(dpy, 0);
+      XCloseDisplay(dpy);
+      
+      SmcCloseConnection(sm_conn, 0, NULL);
+      
+      exit (0); /* let the SM restart us */
+    }
+#endif
+  SaveWindowStates (f);
+  SaveGlobalState (f);
+  fclose (f); /* return and let Done restart us */
+}
 
-extern char **g_argv;
-extern int g_argc;
-
+#ifdef SESSION
 static void
 callback_save_yourself2(SmcConn sm_conn, SmPointer client_data)
 {
-  FILE *cfg_file = NULL;
   char *path = NULL;
   char *filename = NULL;
+  FILE *f = NULL;
   Bool success = 0;
-  SmProp prop1, prop2, prop3, prop4, *props[4];
-  SmPropValue prop1val, prop2val, prop3val, prop4val;
-  char discardCommand[80];
-  int numVals, i;
-  static int first_time = 1;
-  struct passwd       *pwd;
-  int priority = 30;
-
-  pwd = getpwuid(getuid());
-
-  if (first_time)
-    {
-      char hint = SmRestartIfRunning;
-      char *user_id = pwd->pw_name;
-
-      prop1.name = SmProgram;
-      prop1.type = SmARRAY8;
-      prop1.num_vals = 1;
-      prop1.vals = &prop1val;
-      prop1val.value = g_argv[0];
-      prop1val.length = strlen (g_argv[0]);
-
-      prop2.name = SmUserID;
-      prop2.type = SmARRAY8;
-      prop2.num_vals = 1;
-      prop2.vals = &prop2val;
-      prop2val.value = (SmPointer) user_id;
-      prop2val.length = strlen (user_id);
-
-      prop3.name = SmRestartStyleHint;
-      prop3.type = SmCARD8;
-      prop3.num_vals = 1;
-      prop3.vals = &prop3val;
-      prop3val.value = (SmPointer) &hint;
-      prop3val.length = 1;
-
-      prop4.name = "_GSM_Priority";
-      prop4.type = SmCARD8;
-      prop4.num_vals = 1;
-      prop4.vals = &prop4val;
-      prop4val.value = (SmPointer) &priority;
-      prop4val.length = 1;
-
-      props[0] = &prop1;
-      props[1] = &prop2;
-      props[2] = &prop3;
-      props[3] = &prop4;
-
-      SmcSetProperties (sm_conn, 4, props);
-
-      first_time = 0;
-    }
 
   path = getenv ("SM_SAVE_DIR");
   if (!path)
     {
+      pwd = getpwuid (getuid ());
       path = pwd->pw_dir;
     }
 
-  if ((filename = tempnam (path, ".fvwm")) == NULL)
-    goto bad;
+  filename = tempnam (path, ".fvwm");
+  f = fopen (filename, "w");
+  success = save_session_state (sm_conn, filename, f);
+  fclose (f);
 
-  if (!(cfg_file = fopen (filename, "w")))
-    goto bad;
+  SmcSaveYourselfDone (sm_conn, success);
+  sent_save_done = 1;
+}
 
-  success = SaveWindowStates(cfg_file);
-  success = SaveGlobalState(cfg_file);
+static void
+set_sm_properties (SmcConn sm_conn, char *filename, char hint)
+{
+  SmProp prop1, prop2, prop3, prop4, prop5, prop6, *props[6];
+  SmPropValue prop1val, prop2val, prop3val, prop4val, prop5val, prop6val;
+  char discardCommand[80];
+  struct passwd *pwd;
+  char *user_id;
+  int numVals, i, priority = 30;
 
-  prop1.name = SmRestartCommand;
-  prop1.type = SmLISTofARRAY8;
+  if (!sm_conn) return;
 
-  prop1.vals = (SmPropValue *) malloc ((g_argc + 7) * sizeof (SmPropValue));
+  pwd = getpwuid (getuid());
+  user_id = pwd->pw_name;
 
-  if (!prop1.vals)
-    {
-      success = False;
-      goto bad;
-    }
+  prop1.name = SmProgram;
+  prop1.type = SmARRAY8;
+  prop1.num_vals = 1;
+  prop1.vals = &prop1val;
+  prop1val.value = g_argv[0];
+  prop1val.length = strlen (g_argv[0]);
+  
+  prop2.name = SmUserID;
+  prop2.type = SmARRAY8;
+  prop2.num_vals = 1;
+  prop2.vals = &prop2val;
+  prop2val.value = (SmPointer) user_id;
+  prop2val.length = strlen (user_id);
+  
+  prop3.name = SmRestartStyleHint;
+  prop3.type = SmCARD8;
+  prop3.num_vals = 1;
+  prop3.vals = &prop3val;
+  prop3val.value = (SmPointer) &hint;
+  prop3val.length = 1;
+  
+  prop4.name = "_GSM_Priority";
+  prop4.type = SmCARD8;
+  prop4.num_vals = 1;
+  prop4.vals = &prop4val;
+  prop4val.value = (SmPointer) &priority;
+  prop4val.length = 1;
+
+  prop5.name = SmRestartCommand;
+  prop5.type = SmLISTofARRAY8;
+
+  prop5.vals = (SmPropValue *) malloc ((g_argc + 7) * sizeof (SmPropValue));
 
   numVals = 0;
 
@@ -737,74 +777,87 @@ callback_save_yourself2(SmcConn sm_conn, SmPointer client_data)
 	{
 	  i++;
 	} else if (strcmp (g_argv[i], "-s") != 0) {
-	  prop1.vals[numVals].value = (SmPointer) g_argv[i];
-	  prop1.vals[numVals++].length = strlen (g_argv[i]);
+	  prop5.vals[numVals].value = (SmPointer) g_argv[i];
+	  prop5.vals[numVals++].length = strlen (g_argv[i]);
 	}
     }
 
-  prop1.vals[numVals].value = (SmPointer) "-d";
-  prop1.vals[numVals++].length = 2;
+  prop5.vals[numVals].value = (SmPointer) "-d";
+  prop5.vals[numVals++].length = 2;
 
-  prop1.vals[numVals].value = (SmPointer) XDisplayString (dpy);
-  prop1.vals[numVals++].length = strlen (XDisplayString (dpy));
+  prop5.vals[numVals].value = (SmPointer) XDisplayString (dpy);
+  prop5.vals[numVals++].length = strlen (XDisplayString (dpy));
 
-  prop1.vals[numVals].value = (SmPointer) "-s";
-  prop1.vals[numVals++].length = 2;
+  prop5.vals[numVals].value = (SmPointer) "-s";
+  prop5.vals[numVals++].length = 2;
 
-  prop1.vals[numVals].value = (SmPointer) "-clientId";
-  prop1.vals[numVals++].length = 9;
+  prop5.vals[numVals].value = (SmPointer) "-clientId";
+  prop5.vals[numVals++].length = 9;
 
-  prop1.vals[numVals].value = (SmPointer) sm_client_id;
-  prop1.vals[numVals++].length = strlen (sm_client_id);
+  prop5.vals[numVals].value = (SmPointer) sm_client_id;
+  prop5.vals[numVals++].length = strlen (sm_client_id);
 
-  prop1.vals[numVals].value = (SmPointer) "-restore";
-  prop1.vals[numVals++].length = 8;
+  prop5.vals[numVals].value = (SmPointer) "-restore";
+  prop5.vals[numVals++].length = 8;
 
-  prop1.vals[numVals].value = (SmPointer) filename;
-  prop1.vals[numVals++].length = strlen (filename);
+  prop5.vals[numVals].value = (SmPointer) filename;
+  prop5.vals[numVals++].length = strlen (filename);
 
-  prop1.num_vals = numVals;
+  prop5.num_vals = numVals;
 
-  prop2.name = SmDiscardCommand;
+  prop6.name = SmDiscardCommand;
 #ifdef XSM_BUGGY_DISCARD_COMMAND
   /* the protocol spec says that the discard command
      should be LISTofARRAY8 on posix systems, but xsm
      demands that it be ARRAY8. 
   */
   sprintf (discardCommand, "rm -f %s", filename);
-  prop2.type = SmARRAY8;
-  prop2.num_vals = 1;
-  prop2.vals = &prop2val;
-  prop2val.value = (SmPointer) discardCommand;
-  prop2val.length = strlen (discardCommand);
+  prop6.type = SmARRAY8;
+  prop6.num_vals = 1;
+  prop6.vals = &prop6val;
+  prop6val.value = (SmPointer) discardCommand;
+  prop6val.length = strlen (discardCommand);
 #else
-  prop2.type = SmLISTofARRAY8;
-  prop2.num_vals = 3;
-  prop2.vals = (SmPropValue *) malloc (3 * sizeof (SmPropValue));
-  prop2.vals[0].value = "rm";
-  prop2.vals[0].length = 2;
-  prop2.vals[1].value = "-f";
-  prop2.vals[1].length = 2;
-  prop2.vals[2].value = filename;
-  prop2.vals[2].length = strlen (filename);
+  prop6.type = SmLISTofARRAY8;
+  prop6.num_vals = 3;
+  prop6.vals = (SmPropValue *) malloc (3 * sizeof (SmPropValue));
+  prop6.vals[0].value = "rm";
+  prop6.vals[0].length = 2;
+  prop6.vals[1].value = "-f";
+  prop6.vals[1].length = 2;
+  prop6.vals[2].value = filename;
+  prop6.vals[2].length = strlen (filename);
 #endif
 
   props[0] = &prop1;
   props[1] = &prop2;
+  props[2] = &prop3;
+  props[3] = &prop4;
+  props[4] = &prop5;
+  props[5] = &prop6;
+  
+  SmcSetProperties (sm_conn, 6, props);
 
-  SmcSetProperties (sm_conn, 2, props);
-  free ((char *) prop1.vals);
+  free ((char *) prop5.vals);
 #ifndef XSM_BUGGY_DISCARD_COMMAND
-  free ((char *) prop2.vals);
+  free ((char *) prop6.vals);
 #endif
+}
 
- bad:
-  SmcSaveYourselfDone (sm_conn, success);
-  sent_save_done = 1;
+static int
+save_session_state (SmcConn sm_conn, char *filename, FILE *cfg_file)
+{
+  Bool success = 0;
 
-  if (cfg_file) fclose (cfg_file);
+  if (!filename || !cfg_file) return 0;
 
-  if (filename) free (filename);
+  success = (SaveWindowStates (cfg_file) && SaveGlobalState (cfg_file));
+
+  set_sm_properties (sm_conn, filename, SmRestartIfRunning);
+  if (last_used_filename) free (last_used_filename);
+  last_used_filename = filename;
+
+  return success;
 }
 
 static void
@@ -842,7 +895,6 @@ callback_shutdown_cancelled(SmcConn sm_conn, SmPointer client_data)
 {
   if (!sent_save_done)
     {
-
       SmcSaveYourselfDone(sm_conn, False);
       sent_save_done = 1;
     }
@@ -852,7 +904,7 @@ callback_shutdown_cancelled(SmcConn sm_conn, SmPointer client_data)
 
 static IceIOErrorHandler prev_handler;
 
-void
+static void
 MyIoErrorHandler (ice_conn)
 
   IceConn ice_conn;
@@ -874,7 +926,6 @@ InstallIOErrorHandler (void)
     prev_handler = NULL;
 }
 
-SmcConn sm_conn = NULL;
 #endif /* SESSION */
 
 void

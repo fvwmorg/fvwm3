@@ -1685,7 +1685,6 @@ void Done(int restart, char *command)
   if(restart)
   {
      char* filename = strdup( CatString2(user_home_dir, "/.fvwm_restart") );
-     FILE *cfg_file;
 
      /* We currently still need this, since InitVariables
         sets the Restarting flag based on the presence of
@@ -1695,10 +1694,10 @@ void Done(int restart, char *command)
         deals with WM_DESKTOP could be eliminated. */
      SaveDesktopState();		/* I wonder why ... */
 
-     cfg_file = fopen( filename, "w");
-     SaveWindowStates (cfg_file);
-     SaveGlobalState (cfg_file);
-     fclose (cfg_file);
+     if (!command || strstr (command, "fvwm"))
+       {
+	 RestartInSession (filename); /* won't return under SM */
+       }
 
     /* Really make sure that the connection is closed and cleared! */
     XSelectInput(dpy, Scr.Root, 0 );

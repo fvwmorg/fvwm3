@@ -1,3 +1,27 @@
+1999-04-29  Matthias Clasen  <clasen@mathematik.uni-freiburg.de>
+
+	* fvwm/session.h: 
+	* fvwm/session.c (set_sm_properties): 
+	(save_session_state): new functions split off from save_yourself2.
+	(RestartInSession): new function used to restart fvwm under SM.
+
+	* fvwm/fvwm.c (Done): rework how restarting is done under SM. The
+	new scheme should not leak files and should not introduce
+	unwanted checkpoints. 
+
+	We do the following now:
+ 
+	1) Change the current state in .fvwm_restart
+           and add a pointer to the previous session save file
+	   to .fvwm_restart.
+	2) Change the SmRestartCommand and SmDiscardCommand
+	   to refer to .fvwm_restart and change the SmRestartStyleHint
+           to Immediately.
+        3) Exit, the SM starts us again, restoring the current state
+           from .fvwm_restart
+        4) The new fvwm finds the pointer to the session save file
+	   and changes the SM properties back to their previous values.
+
 1999-04-29  Hippo
 
 	* libs/ModGraph.{h,c}: new function (Graphics *)CreateGraphics(void);
