@@ -2006,7 +2006,7 @@ MouseFocusClickDoesntRaise / MouseFocusClickRaises,
 CaptureHonorsStartsOnPage / CaptureIgnoresStartsOnPage,
 RecaptureHonorsStartsOnPage / RecaptureIgnoresStartsOnPage,
 ActivePlacementHonorsStartsOnPage / ActivePlacementIgnoresStartsOnPage,
-NoStipledTitles / StipledTitles,
+NoStipledTitles / StipledTitles, BorderColorPriority / BorderReliefPriority,
 WindowShadeScrolls / WindowShadeShrinks,
 RaiseOverNativeWindows / IgnoreNativeWindows.
 
@@ -2050,6 +2050,10 @@ over native windows of the X servers host system. This is needed for
 some (all ?) X servers running under Windows NT. Fvwm tries to detect
 if it is running under such an X server and initializes the flag
 accordingly.
+
+BorderColorPriority makes fvwm reduce the width of the relief on window borders
+so that at least one pixel of the border color/pixmap is visible. The default
+is BorderReliefPriority which allows the border color/pixmap to be invisible.
 
 .TP
 .B "HilightColor" "\fItextcolor backgroundcolor\fP"

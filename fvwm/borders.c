@@ -299,16 +299,16 @@ static void RedrawBorder(
 
   /*
    * draw the border; resize handles are InputOnly so draw in the decor_w and
-   * it will show through
+   * it will show through. The entire border is redrawn so flush all exposes
+   * up to this point.
    */
+  flush_expose(t->decor_w);
 
   if (t->boundary_width < 2)
   {
     /*
      * for mono - put a black border on
      */
-    flush_expose(t->frame);
-    flush_expose(t->decor_w);
     if (Pdepth <2)
     {
       XSetWindowBackgroundPixmap(dpy, t->decor_w, cd->back_pixmap);
@@ -343,16 +343,6 @@ static void RedrawBorder(
     rgc = cd->relief_gc;
     sgc = cd->shadow_gc;
   }
-
-#if 0
-  if (flush_expose(t->frame) + flush_expose(t->decor_w) == 0 &&
-      expose_win && expose_win != t->frame && expose_win != t->decor_w)
-  {
-    /* nothing else to do */
-    return;
-  }
-#endif
-
 
   /*
    * remove any lines drawn in the border if hidden handles or noinset and if
@@ -393,7 +383,8 @@ static void RedrawBorder(
   }
   /* reduce size of relief until at leas one pixel of the original colour is
    * visible. */
-  while (w_shout + w_hi + w_shin >= t->boundary_width)
+  while (w_shout + w_hi + w_shin + (Scr.go.BorderColorPriority ? 1 : 0)
+	 > t->boundary_width)
   {
     if (w_shin > 1)
     {
@@ -422,7 +413,7 @@ static void RedrawBorder(
    * draw the handle marks
    */
 
-  /* draw the handles as eight marks rectangles around the border */
+  /* draw the handles as eight marks around the border */
   if (HAS_BORDER(t) && (t->boundary_width > 1) &&
       !DFS_HAS_HIDDEN_HANDLES(*borderstyle))
   {
@@ -534,7 +525,7 @@ static void RedrawBorder(
    * now draw the pressed in part on top if we have depressable borders
    */
 
-  /* a bit hacky to draw twice but you should see the code it replaces never
+  /* a bit hacky to draw twice but you should see the code it replaces, never
    * mind the esoterics, feel the thin-ness */
   if ((HAS_BORDER(t) || PressedW == t->decor_w || PressedW == t->decor_w) &&
       HAS_DEPRESSABLE_BORDER(t))

@@ -2664,114 +2664,79 @@ void SetGlobalOptions(F_CMD_ARGS)
     {
       Scr.go.StipledTitles = True;
     }
-         /*  RBW - 11/14/1998 - I'll eventually remove these. */
-/*
-    else if (StrEquals(opt,"STARTSONPAGEMODIFIESUSPOSITION"))
+    else if (StrEquals(opt,"BORDERCOLORPRIORITY"))
     {
-      Scr.go.ModifyUSP = True;
+      Scr.go.BorderColorPriority = True;
     }
-    else if (StrEquals(opt,"STARTSONPAGEHONORSUSPOSITION"))
+    else if (StrEquals(opt,"BORDERRELIEFPRIORITY"))
     {
-      Scr.go.ModifyUSP = False;
+      Scr.go.BorderColorPriority = False;
     }
-*/
     else if (StrEquals(opt,"CAPTUREHONORSSTARTSONPAGE"))
     {
-#if 0
-      Scr.go.CaptureHonorsStartsOnPage = True;
-#else
       ProcessNewStyle(eventp, w, tmp_win, context,
 		      "* CaptureHonorsStartsOnPage", Module);
-#endif
       fvwm_msg(ERR,"SetGlobalOptions",
 	       "Global Option '%s' is obsolete -\n"
 	       "     use the style option instead.",opt);
     }
     else if (StrEquals(opt,"CAPTUREIGNORESSTARTSONPAGE"))
     {
-#if 0
-      Scr.go.CaptureHonorsStartsOnPage = False;
-#else
       ProcessNewStyle(eventp, w, tmp_win, context,
 		      "* CAPTUREIGNORESSTARTSONPAGE", Module);
-#endif
       fvwm_msg(ERR,"SetGlobalOptions",
 	       "Global Option '%s' is obsolete -\n"
 	       "     use the style option instead.",opt);
     }
     else if (StrEquals(opt,"RECAPTUREHONORSSTARTSONPAGE"))
     {
-#if 0
-      Scr.go.RecaptureHonorsStartsOnPage = True;
-#else
       ProcessNewStyle(eventp, w, tmp_win, context,
 		      "* RECAPTUREHONORSSTARTSONPAGE", Module);
-#endif
       fvwm_msg(ERR,"SetGlobalOptions",
 	       "Global Option '%s' is obsolete -\n"
 	       "     use the style option instead.",opt);
     }
     else if (StrEquals(opt,"RECAPTUREIGNORESSTARTSONPAGE"))
     {
-#if 0
-      Scr.go.RecaptureHonorsStartsOnPage = False;
-#else
       ProcessNewStyle(eventp, w, tmp_win, context,
 		      "* RECAPTUREIGNORESSTARTSONPAGE", Module);
-#endif
       fvwm_msg(ERR,"SetGlobalOptions",
 	       "Global Option '%s' is obsolete -\n"
 	       "     use the style option instead.",opt);
     }
     else if (StrEquals(opt,"ACTIVEPLACEMENTHONORSSTARTSONPAGE"))
     {
-#if 0
-      Scr.go.ActivePlacementHonorsStartsOnPage = True;
-#else
       ProcessNewStyle(eventp, w, tmp_win, context,
 		      "* ACTIVEPLACEMENTHONORSSTARTSONPAGE", Module);
-#endif
       fvwm_msg(ERR,"SetGlobalOptions",
 	       "Global Option '%s' is obsolete -\n"
 	       "     use the style option instead.",opt);
     }
     else if (StrEquals(opt,"ACTIVEPLACEMENTIGNORESSTARTSONPAGE"))
     {
-#if 0
-      Scr.go.ActivePlacementHonorsStartsOnPage = False;
-#else
       ProcessNewStyle(eventp, w, tmp_win, context,
 		      "* ACTIVEPLACEMENTIGNORESSTARTSONPAGE", Module);
-#endif
       fvwm_msg(ERR,"SetGlobalOptions",
 	       "Global Option '%s' is obsolete -\n"
 	       "     use the style option instead.",opt);
     }
     else if (StrEquals(opt,"RAISEOVERNATIVEWINDOWS"))
     {
-#if 0
-      Scr.bo.RaiseHackNeeded = True;
-#else
       SetBugOptions(eventp, w, tmp_win, context,
 		    "RaiseOverNativeWindows on", Module);
       fvwm_msg(ERR, "SetGlobalOptions",
 	       "Global Option '%s' is obsolete -\n"
 	       "     use the \"BugOpts RaiseOverNativeWindows on\" instead.",
 	       opt);
-#endif
     }
     else if (StrEquals(opt,"IGNORENATIVEWINDOWS"))
     {
-#if 0
-      Scr.bo.RaiseHackNeeded = False;
-#else
       SetBugOptions(eventp, w, tmp_win, context,
 		    "RaiseOverNativeWindows off", Module);
       fvwm_msg(ERR, "SetGlobalOptions",
 	       "Global Option '%s' is obsolete -\n"
 	       "     use the \"BugOpts RaiseOverNativeWindows off\" instead.",
 	       opt);
-#endif
     }
     else
       fvwm_msg(ERR,"SetGlobalOptions","Unknown Global Option '%s'",opt);

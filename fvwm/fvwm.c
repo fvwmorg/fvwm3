@@ -1670,6 +1670,7 @@ static void InitVariables(void)
   Scr.go.ClickToFocusRaises = True;
   Scr.go.MouseFocusClickRaises = False;
   Scr.go.StipledTitles = False;
+  Scr.go.BorderColorPriority = False;
 
   /*  RBW - 11/02/1998    */
   Scr.go.ModifyUSP                          =  True;
