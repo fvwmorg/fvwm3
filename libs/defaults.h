@@ -135,6 +135,9 @@
 #define GEOMETRY_WINDOW_POS_STRING         " %+-4d %+-4d "
 #define GEOMETRY_WINDOW_SIZE_STRING        " %4d x %-4d "
 
+/* window title */
+#define WINDOW_TITLE_STICKY_GAP           10 /* pixels */
+
 /*** window placement (MinOverlap(Percent)Placement) ***/
 
 /* The following factors represent the amount of area that these types of

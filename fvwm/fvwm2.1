@@ -4883,6 +4883,11 @@ A Style command with the IconBox option replaces any icon box
 previously defined for the same style.  Thats why the backslash in
 the previous example is required.
 
+Note: The geometry for the icon box command takes the additional
+screen specifier "@w" in case a Xinerama setup is used.  This
+designates the screen where the window center is located.  The
+addininal screen specifier is not allowed anywhere else.
+
 If you never define an icon box, or you fill all the icon boxes,
 fvwm has a default icon box that covers the screen, it fills top
 to bottom, then left to right, and has an 80x80 pixel grid.  To

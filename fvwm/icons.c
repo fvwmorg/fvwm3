@@ -657,6 +657,7 @@ void AutoPlaceIcon(FvwmWindow *t)
   FvwmWindow *test_window;
   Bool loc_ok;
   Bool loc_ok_wrong_screen;
+  Bool loc_ok_wrong_screen2;
   int real_x=10, real_y=10;
   int new_x, new_y;
   Bool do_move_pixmap = False;
@@ -810,7 +811,7 @@ void AutoPlaceIcon(FvwmWindow *t)
       }
       /* get the screen dimensions for the icon box */
       FScreenGetScrRect(
-	NULL, icon_boxes_ptr->IconScreen,
+	&fscr, icon_boxes_ptr->IconScreen,
 	&ref.x, &ref.y, &ref.width, &ref.height);
       dim[1].screen_offset = ref.y;
       dim[1].screen_dimension = ref.height;
@@ -899,12 +900,14 @@ void AutoPlaceIcon(FvwmWindow *t)
       } /* end horizontal dimension first */
       /* save for reseting inner loop */
       dim[0].start_at = dim[2].start_at;
+      loc_ok_wrong_screen2 = False;
       while((dim[1].step < 0            /* filling reversed */
              ? (dim[1].start_at + dim[1].icon_dimension - dim[1].nom_dimension
                 > dim[1].end_at)        /* check back edge */
              : (dim[1].start_at + dim[1].nom_dimension
                 < dim[1].end_at))       /* check front edge */
-            && (!loc_ok)) {             /* nothing found yet */
+            && (!loc_ok)
+	    && (!loc_ok_wrong_screen2)) {  /* nothing found yet */
         dim[1].real_start = dim[1].start_at; /* init */
         if (dim[1].start_at + dim[1].icon_dimension >
 	    dim[1].screen_offset + dim[1].screen_dimension - 2 + dim[1].base)
@@ -925,7 +928,8 @@ void AutoPlaceIcon(FvwmWindow *t)
                   > dim[2].end_at)        /* check back edge */
                : (dim[2].start_at + dim[2].nom_dimension
                   < dim[2].end_at))       /* check front edge */
-              && (!loc_ok)) {             /* nothing found yet */
+	      && (!loc_ok)
+	      && (!loc_ok_wrong_screen2)) { /* nothing found yet */
           dim[2].real_start = dim[2].start_at; /* init */
           if (dim[2].start_at + dim[2].icon_dimension >
               dim[2].screen_offset + dim[2].screen_dimension - 2 + dim[2].base)
@@ -956,12 +960,16 @@ void AutoPlaceIcon(FvwmWindow *t)
 
 	  /* this may be a good location */
 	  if (FScreenIsRectangleOnScreen(&fscr, FSCREEN_XYPOS, &ref))
+	  {
 	    loc_ok = True;
+	  }
 	  else
-	    loc_ok_wrong_screen = True;
+	  {
+	    loc_ok_wrong_screen2 = True;
+	  }
           test_window = Scr.FvwmRoot.next;
           while((test_window != (FvwmWindow *)0)
-                &&(loc_ok == True || loc_ok_wrong_screen))
+                &&(loc_ok == True || loc_ok_wrong_screen2))
 	  {
 	    /* test overlap */
             if(test_window->Desk == t->Desk)
@@ -982,12 +990,16 @@ void AutoPlaceIcon(FvwmWindow *t)
 		{
 		  /* don't accept this location */
                   loc_ok = False;
-                  loc_ok_wrong_screen = False;
+                  loc_ok_wrong_screen2 = False;
                 } /* end if icons overlap */
               } /* end if its an icon */
             } /* end if same desk */
             test_window = test_window->next;
           } /* end while icons that may overlap */
+	  if (loc_ok_wrong_screen2)
+	  {
+	    loc_ok_wrong_screen = True;
+	  }
 	  /* Grid inner value & direction */
           dim[2].start_at += dim[2].step;
         } /* end while room inner dimension */

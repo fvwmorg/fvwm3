@@ -7343,6 +7343,8 @@ char *get_menu_options(
   Bool fHasContext, fUseItemOffset, fRectangleContext, fXineramaRoot;
   Bool fValidPosHints =
     last_saved_pos_hints.flags.is_last_menu_pos_hints_valid;
+  Bool is_action_empty = False;
+
   /* If this is set we may want to reverse the position hints, so don't sum up
    * the totals right now. This is useful for the SubmenusLeft style. */
 
@@ -7359,17 +7361,7 @@ char *get_menu_options(
   pops->flags.has_poshints = 0;
   if (!action || *action == 0)
   {
-    if (!pops->pos_hints.has_screen_origin)
-    {
-      pops->pos_hints.has_screen_origin = 1;
-      if (!GetLocationFromEventOrQuery(
-	    dpy, None, e, &pops->pos_hints.screen_origin_x,
-	    &pops->pos_hints.screen_origin_y))
-      {
-	pops->pos_hints.screen_origin_x = 0;
-	pops->pos_hints.screen_origin_y = 0;
-      }
-    }
+    is_action_empty = True;
   }
   while (action != NULL && *action != 0)
   {
@@ -7382,18 +7374,9 @@ char *get_menu_options(
     naction = GetNextToken(taction, &tok);
     if (!tok)
     {
-      /* no context string */ 
+      /* no context string */
       fHasContext = False;
-      if (!pops->pos_hints.has_screen_origin)
-      {
-	if (!GetLocationFromEventOrQuery(
-	    dpy, None, e, &pops->pos_hints.screen_origin_x,
-	    &pops->pos_hints.screen_origin_y))
-	{
-	  pops->pos_hints.screen_origin_x = 0;
-	  pops->pos_hints.screen_origin_y = 0;
-	}
-      }
+      is_action_empty = True;
       break;
     }
     pops->pos_hints.is_relative = True; /* set to False for absolute hints! */
@@ -7683,6 +7666,20 @@ char *get_menu_options(
     /* we want to do this only once */
     break;
   } /* while */
+  if (is_action_empty)
+  {
+    if (!pops->pos_hints.has_screen_origin)
+    {
+      pops->pos_hints.has_screen_origin = 1;
+      if (!GetLocationFromEventOrQuery(
+	    dpy, None, e, &pops->pos_hints.screen_origin_x,
+	    &pops->pos_hints.screen_origin_y))
+      {
+	pops->pos_hints.screen_origin_x = 0;
+	pops->pos_hints.screen_origin_y = 0;
+      }
+    }
+  }
 
   if (!pops->flags.has_poshints && fValidPosHints)
   {

@@ -20,6 +20,8 @@ Changes in beta 2.4.3 (not released yet)
 * Coordinates of a window during motion are show relative to the
   Xinerama screen.
 
+* Some icon placement improvements with Xinerama.
+
 Changes in stable 2.4.2 (16-Sep-2001)
 
 * Desk and page can be given as X resources in .Xdefaults, for example:

@@ -1335,7 +1335,8 @@ static void RedrawTitle(
    * draw the 'sticky' lines
    */
 
-  if (IS_STICKY(t) || HAS_STIPPLED_TITLE(t))
+  if ((IS_STICKY(t) || HAS_STIPPLED_TITLE(t)) &&
+      hor_off > WINDOW_TITLE_STICKY_GAP)
   {
     /* an odd number of lines every 4 pixels */
     int num = (int)(t->title_g.height / 8) * 2 - 1;
@@ -1344,10 +1345,13 @@ static void RedrawTitle(
 
     for(i = min; i <= max; i += 4)
     {
-      RelieveRectangle(dpy, t->title_w, 4, i, hor_off - 10, 1, sgc, rgc, 1);
+      RelieveRectangle(
+	dpy, t->title_w, 4, i, hor_off - WINDOW_TITLE_STICKY_GAP, 1, sgc, rgc,
+	1);
       RelieveRectangle(
 	dpy, t->title_w, hor_off + w + 6, i,
-	t->title_g.width - hor_off - w - 11, 1, sgc, rgc, 1);
+	t->title_g.width - hor_off - w - WINDOW_TITLE_STICKY_GAP - 1, 1, sgc,
+	rgc, 1);
     }
   }
 

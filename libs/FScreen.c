@@ -794,6 +794,8 @@ static int FScreenParseScreenBit(char *scr_spec, char default_screen)
     scr = FSCREEN_CURRENT;
   else if (c == FSCREEN_SPEC_PRIMARY)
     scr = FSCREEN_PRIMARY;
+  else if (c == FSCREEN_SPEC_WINDOW)
+    scr = FSCREEN_XYPOS;
   else if (isdigit(c))
     scr = atoi(scr_spec);
   else
@@ -805,6 +807,8 @@ static int FScreenParseScreenBit(char *scr_spec, char default_screen)
       scr = FSCREEN_CURRENT;
     else if (c == FSCREEN_SPEC_PRIMARY)
       scr = FSCREEN_PRIMARY;
+    else if (c == FSCREEN_SPEC_WINDOW)
+      scr = FSCREEN_XYPOS;
     else if (isdigit(c))
       scr = atoi(scr_spec);
   }

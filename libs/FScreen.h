@@ -15,7 +15,8 @@ enum
 {
   FSCREEN_SPEC_GLOBAL = 'g',
   FSCREEN_SPEC_CURRENT = 'c',
-  FSCREEN_SPEC_PRIMARY = 'p'
+  FSCREEN_SPEC_PRIMARY = 'p',
+  FSCREEN_SPEC_WINDOW = 'w'
 };
 
 typedef union
