@@ -115,7 +115,6 @@ char *makename(const char *string, Bool iconified);
 void ChangeWindowName(char *str);
 void LinkAction(char *string);
 void AddToSkipList(char *string);
-int InSkipList(char *string);
 void PrintSkipList(void);
 void FvwmNameMessage(long *body);
 void SetMwmHints(unsigned int value,unsigned int funcs,unsigned int input);

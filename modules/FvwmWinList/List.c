@@ -37,6 +37,9 @@
 #include "libs/Module.h"
 #include "fvwm/fvwm.h"
 
+extern long CurrentDesk;
+extern int ShowCurrentDesk;
+extern int UseSkipList;
 
 /******************************************************************************
   InitList - Initialize the list
@@ -127,15 +130,18 @@ int FindItem(List *list, long id)
 }
 
 /******************************************************************************
-  FindItemDesk - Find the item in the list matching the id, and desk id
+  FindItemVisible - Find the item which should be in winlist in the list 
+  matching the id
 ******************************************************************************/
-int FindItemDesk(List *list, long id, long desk)
+int FindItemVisible(List *list, long id)
 {
   Item *temp;
-  int i;
+  int i=0;
 
-  for(i=0,temp=list->head;temp!=NULL && temp->id!=id;temp=temp->next) 
-    if (temp->desk == desk) i++;
+  for(temp=list->head;temp!=NULL && temp->id!=id;temp=temp->next) 
+  { 
+    if (IsItemVisible(temp)) i++;
+  }
   if (temp==NULL) return -1;
   return i;
 }
@@ -299,38 +305,6 @@ Item *ItemFlags(List *list, long id)
   return temp;
 }
 
-/******************************************************************************
-  IsItemSticky - Say if an item is sticky
-******************************************************************************/
-int IsItemSticky(List *list, long id)
-{
-  Item *temp;
-  for(temp=list->head;temp!=NULL && id!=temp->id;temp=temp->next);
-  if (temp==NULL) return -1;
-  return IS_STICKY(temp);
-}
-
-/******************************************************************************
-  IsItemIndexIconSuppressed - Say if an item has a no icon style
-******************************************************************************/
-int IsItemIconSuppressed(List *list, long id)
-{
-  Item *temp;
-  for(temp=list->head;temp!=NULL && id!=temp->id;temp=temp->next);
-  if (temp==NULL) return -1;
-  return IS_ICON_SUPPRESSED(temp);
-}
-
-/******************************************************************************
-  IsItemIndexSkipWindowList - Say if an item is in the skip list
-******************************************************************************/
-int IsItemSkipWindowList(List *list, long id)
-{
-  Item *temp;
-  for(temp=list->head;temp!=NULL && id!=temp->id;temp=temp->next);
-  if (temp==NULL) return -1;
-  return DO_SKIP_WINDOW_LIST(temp);
-}
 
 /******************************************************************************
   ItemDesk - Return the desk for an item
@@ -348,7 +322,7 @@ long ItemDesk(List *list, long id)
 
 
 /******************************************************************************
-  ItemCount - Return the number of items inthe list
+  ItemCount - Return the number of items in the list
 ******************************************************************************/
 int ItemCount(List *list)
 {
@@ -356,22 +330,18 @@ int ItemCount(List *list)
 }
 
 /******************************************************************************
-  ItemCountDesk - Return the number of items inthe list, with desk desk
+  ItemCountDesk - Return the number of items in the list which should be in
+  in winlist
 ******************************************************************************/
 
-int ItemCountDesk(List *list, long desk)
+int ItemCountVisible(List *list)
 {
   Item *temp;
   int count=0;
 
-/*return list->count;*/
-
-  for(temp=list->head;
-	temp != NULL;
-	temp = temp->next
-  )
+  for(temp=list->head;temp != NULL;temp = temp->next)
   {
-    if(temp->desk == desk)
+     if (IsItemVisible(temp))
       count++;
   }
 
@@ -408,3 +378,31 @@ void CopyItem(List *dest, List *source, int n)
   DeleteItem(source,temp->id);
 }
 
+/******************************************************************************
+  IsItemVisible - Says if the item should be in winlist
+******************************************************************************/
+int IsItemVisible(Item *temp)
+{
+  if ((!ShowCurrentDesk || temp->desk == CurrentDesk || IS_STICKY(temp)) && 
+      (!DO_SKIP_WINDOW_LIST(temp) || !UseSkipList))
+    return 1;
+  else
+    return 0;
+}
+
+/******************************************************************************
+  IsItemIndexVisible - Says if the item of index i in the list should be in 
+  winlist
+******************************************************************************/
+int IsItemIndexVisible(List *list,int n)
+{
+  Item *temp;
+  int i;
+
+  for(i=0,temp=list->head;temp!=NULL && i<n;i++,temp=temp->next);
+  if (temp == NULL) return 0;
+  if (IsItemVisible(temp))
+    return 1;
+  else
+    return 0;
+}

@@ -77,7 +77,7 @@ extern int LeftJustify, TruncateLeft, ShowFocus;
 
 extern long CurrentDesk;
 extern int ShowCurrentDesk;
-
+extern int UseSkipList;
 
 /*************************************************************************
  *                                                                       *
@@ -294,9 +294,10 @@ int UpdateButtonSet(ButtonArray *array, int butnum, int set)
 }
 
 /******************************************************************************
-  UpdateButtonDesk - Change desk of a button
+  UpdateButtonDeskFlags - Change desk and flags of a button
 ******************************************************************************/
-int UpdateButtonDesk(ButtonArray *array, int butnum, long desk )
+int UpdateButtonDeskFlags(ButtonArray *array, int butnum, long desk, 
+			  int is_sticky, int skip)
 {
   Button *btn;
 
@@ -304,6 +305,8 @@ int UpdateButtonDesk(ButtonArray *array, int butnum, long desk )
   if (btn != NULL)
   {
     btn->desk = desk;
+    btn->is_sticky = is_sticky;
+    btn->skip = skip;
   } else return -1;
   return 1;
 }
@@ -503,7 +506,7 @@ void DrawButtonArray(ButtonArray *barray, Bool all, Bool clear_bg)
   int i = 0;		/* buttons displayed */
 
   for(btn = barray->head; btn != NULL; btn = btn->next)
-    if (!ShowCurrentDesk || (btn->desk == CurrentDesk))
+    if (IsButtonVisible(btn))
     {
       if (all || btn->needsupdate)
         DoButton(btn, barray->x, barray->y + (i * (barray->h + 1)),
@@ -532,7 +535,7 @@ void ExposeAllButtons(ButtonArray *barray, XEvent *eventp)
 
   i = 0;
   for (btn = barray->head; btn != NULL; btn = btn->next)
-    if (!ShowCurrentDesk || (btn->desk == CurrentDesk))
+    if (IsButtonVisible(btn))
     {
       set = btn->set;
       if (colorset[set] < 0 || Colorset[colorset[set]].pixmap != ParentRelative)
@@ -604,25 +607,20 @@ void RadioButton(ButtonArray *array, int butnum)
 int WhichButton(ButtonArray *array,int x, int y)
 {
   int num;
+  Button *temp;
+  int i, n;
 
   num=y/(array->h+1);
   if (x<array->x || x>array->x+array->w || num<0 || num>array->count-1) num=-1;
 
-  /* Current Desk Hack */
-
-  if(ShowCurrentDesk)
+  temp=array->head;
+  for(i=0, n = 0;n < (num + 1) && temp != NULL;temp=temp->next, i++)
   {
-    Button *temp;
-    int i, n;
-
-    temp=array->head;
-    for(i=0, n = 0;n < (num + 1) && temp != NULL;temp=temp->next, i++)
-    {
-       if(temp->desk == CurrentDesk)
-         n++;
-    }
-    num = i-1;
+    if (IsButtonVisible(temp))
+      n++;
   }
+  num = i-1;
+
   return(num);
 }
 
@@ -662,6 +660,35 @@ Picture *ButtonPicture(ButtonArray *array, int butnum)
 }
 #endif
 
+/******************************************************************************
+  IsButtonVisible - Says if the button should be in winlist
+******************************************************************************/
+int IsButtonVisible(Button *btn)
+{
+
+  if ((!ShowCurrentDesk || btn->desk == CurrentDesk || btn->is_sticky) &&
+      (!btn->skip || !UseSkipList))
+    return 1;
+  else
+    return 0;
+}
+
+/******************************************************************************
+  IsButtonIndexVisible - Says if the button of index butnum should be 
+  in winlist
+******************************************************************************/
+int IsButtonIndexVisible(ButtonArray *array, int butnum)
+{
+  Button *temp;
+
+  temp=find_n(array,butnum);
+  if (temp == NULL) return 0;
+  if (IsButtonVisible(temp))
+    return 1;
+  else
+    return 0;
+}
+
 #if 0
 /******************************************************************************
   ButtonArrayMaxWidth - Calculate the width needed for the widest title
@@ -675,3 +702,4 @@ int x=0;
   return x;
 }
 #endif
+

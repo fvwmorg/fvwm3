@@ -41,6 +41,8 @@ typedef struct button
   Picture p;
   int reliefwidth;
   long desk;
+  Bool is_sticky;
+  Bool skip;
   Bool is_iconified;
 } Button;
 
@@ -61,7 +63,8 @@ extern void UpdateButtonIconified(
     ButtonArray *array, int butnum, int iconified);
 extern void RadioButton(ButtonArray *array, int butnum);
 extern void ReorderButtons(ButtonArray *array, int butnum, int FlipFocus);
-extern int UpdateButtonDesk(ButtonArray *array, int butnum, long desk );
+extern int UpdateButtonDeskFlags(ButtonArray *array, int butnum, long desk, 
+				 int is_sticky, int skip);
 extern int UpdateButtonPicture(ButtonArray *array, int butnum, Picture *p);
 extern int UpdateButtonSet(ButtonArray *array, int butnum, int set);
 extern void RemoveButton(ButtonArray *array, int butnum);
@@ -78,3 +81,5 @@ extern void PrintButtons(ButtonArray *array);
 #ifdef MINI_ICONS
 extern Picture *ButtonPicture(ButtonArray *array, int butnum);
 #endif
+extern int IsButtonVisible(Button *btn);
+extern int IsButtonIndexVisible(ButtonArray *array, int butnum);

@@ -170,15 +170,6 @@ static RETSIGTYPE TerminateHandler(int sig)
   fvwmSetTerminate(sig);
 }
 
-int ItemCountD(List *list )
-{
-	if(!ShowCurrentDesk)
-		return ItemCount(list);
-	/* else */
-	return ItemCountDesk(list, CurrentDesk);
-
-}
-
 /******************************************************************************
   Main - Setup the XConnection,request the window list and loop forever
     Based on main() from FvwmIdent:
@@ -381,17 +372,23 @@ void ProcessMessage(unsigned long type,unsigned long *body)
 #endif
       if ((i = FindItem(&windows,cfgpacket->w))!=-1)
       {
-	if(UpdateItemDesk(&windows, cfgpacket) > 0)
-        {	  
-          UpdateButtonDesk(&buttons, i, cfgpacket->desk);
+	flagitem=ItemFlags(&windows,cfgpacket->w);
+	if(UpdateItemDesk(&windows, cfgpacket) > 0 || 
+	   IS_STICKY(cfgpacket) != IS_STICKY(flagitem) ||
+	   DO_SKIP_WINDOW_LIST(cfgpacket) != DO_SKIP_WINDOW_LIST(flagitem))
+        {
+	  UpdateItemGSFRFlags(&windows, cfgpacket);
+          UpdateButtonDeskFlags(&buttons, i, cfgpacket->desk, 
+				IS_STICKY(cfgpacket),
+				DO_SKIP_WINDOW_LIST(cfgpacket));
           AdjustWindow(False);
           RedrawWindow(True, True);
         }
-	UpdateItemGSFRFlags(&windows, cfgpacket);
+	else
+	  UpdateItemGSFRFlags(&windows, cfgpacket);
 	break;
-	
       }
-      if (!(DO_SKIP_WINDOW_LIST(cfgpacket)) || !UseSkipList)
+      else
         AddItem(&windows, cfgpacket);
       break;
     case M_DESTROY_WINDOW:
@@ -431,15 +428,14 @@ void ProcessMessage(unsigned long type,unsigned long *body)
       if ((i=UpdateItemName(&windows,body[0],string))==-1) break;
       flagitem = ItemFlags(&windows,body[0]);
       name=makename(string, (IS_ICONIFIED(flagitem)?True:False));
-/* surely this is uneccesary
-      UpdateButtonIconified(&buttons, i, IS_ICONIFIED(flagitem));
-*/
+
       if (UpdateButton(&buttons,i,name,-1)==-1)
       {
 	AddButton(&buttons, name, NULL, 1);
-        flagitem = ItemFlags(&windows,body[0]);
 	UpdateButtonSet(&buttons, i, (IS_ICONIFIED(flagitem)?1:0));
-        UpdateButtonDesk(&buttons,i,ItemDesk(&windows, body[0]));
+        UpdateButtonDeskFlags(&buttons,i,ItemDesk(&windows, body[0]),
+			      IS_STICKY(flagitem),
+			      DO_SKIP_WINDOW_LIST(flagitem));
       }
       free(name);
       if (WindowState) AdjustWindow(False);
@@ -453,17 +449,14 @@ void ProcessMessage(unsigned long type,unsigned long *body)
 	flagitem = ItemFlags(&windows, body[0]);
 	if ((type == M_DEICONIFY && IS_ICONIFIED(flagitem))
 	    || (type == M_ICONIFY && !IS_ICONIFIED(flagitem))) {
-	  if (IsItemIconSuppressed(&windows, body[0]) && 
-	      AnimCommand && WindowState && (AnimCommand[0] != 0)) {
+	  if (IS_ICON_SUPPRESSED(flagitem) && 
+	      AnimCommand && WindowState && AnimCommand[0] != 0) {
 	    char buff[MAX_MODULE_INPUT_TEXT_LEN];
 	    Window child;
 	    int x, y;
 
 	    /* find out where our button is */
-	    if (ShowCurrentDesk)
-	      j = FindItemDesk(&windows, body[0],CurrentDesk);
-	    else
-	      j = i;
+	    j = FindItemVisible(&windows, body[0]);
 	    XTranslateCoordinates(dpy, win, Root, 0, j * buttonheight,
 				  &x, &y, &child);
 	    /* tell FvwmAnimate to animate to our button */
@@ -883,13 +876,14 @@ void LoopOnEvents(void)
 ******************************************************************************/
 void AdjustWindow(Bool force)
 {
-  int new_width=0,new_height=0,tw,i,total;
+  int new_width=0,new_height=0,tw,i,total,all;
   char *temp;
 #ifdef MINI_ICONS
   int base_miw = 0;
 #endif
 
-  total = ItemCountD(&windows );
+  total = ItemCountVisible(&windows);
+  all = ItemCount(&windows);
   if (!total)
   {
     if (WindowState==1)
@@ -901,9 +895,10 @@ void AdjustWindow(Bool force)
   }
 
 #ifdef MINI_ICONS
-  for(i=0; i<total; i++)
+  for(i=0; i<all; i++)
   {
-    if(ButtonPicture(&buttons,i)->picture != None)
+    if(IsButtonIndexVisible(&buttons,i) &&
+       ButtonPicture(&buttons,i)->picture != None)
     {
       if (ButtonPicture(&buttons,i)->width > base_miw)
 	base_miw = ButtonPicture(&buttons,i)->width;
@@ -912,10 +907,10 @@ void AdjustWindow(Bool force)
   }
   base_miw += 2;
 #endif
-  for(i=0;i<total;i++)
+  for(i=0;i<all;i++)
   {
     temp=ItemName(&windows,i);
-    if(temp != NULL)
+    if(temp != NULL && IsItemIndexVisible(&windows,i))
     {
 	tw = 8 + XTextWidth(ButtonFont,temp,strlen(temp));
 	tw += XTextWidth(ButtonFont,"()",2);
@@ -1062,7 +1057,7 @@ void MakeMeWindow(void)
   int i;
   XSetWindowAttributes attr;
 
-  if ((count = ItemCountD(&windows))==0 && Transient) exit(0);
+  if ((count = ItemCountVisible(&windows))==0 && Transient) exit(0);
   AdjustWindow(False);
 
   hints.width=win_width;
@@ -1225,7 +1220,7 @@ void MakeMeWindow(void)
 
   ChangeWindowName(&Module[1]);
 
-  if (ItemCountD(&windows) > 0)
+  if (ItemCountVisible(&windows) > 0)
   {
     XMapRaised(dpy,win);
     WindowState=1;

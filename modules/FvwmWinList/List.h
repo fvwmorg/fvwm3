@@ -49,7 +49,7 @@ extern void ReorderList(List *list, long id, long FlipFocus);
 
 extern void AddItem(List *list, ConfigWinPacket *cfgpacket);
 extern int FindItem(List *list, long id);
-extern int FindItemDesk(List *list, long id, long desk);
+extern int FindItemVisible(List *list, long id);
 extern long ItemDesk(List *list, long id);
 extern int UpdateItemName(List *list, long id, char *string);
 extern int UpdateItemDesk(List *list, ConfigWinPacket *cfgpacket);
@@ -61,11 +61,10 @@ extern void PrintList(List *list);
 extern char *ItemName(List *list, int n);
 
 extern Item *ItemFlags(List *list, long id );
-extern int IsItemSticky(List *list, long id);
-extern int IsItemIconSuppressed(List *list, long id);
-extern int IsItemSkipWindowList(List *list, long id);
 
 extern int ItemCount(List *list);
-extern int ItemCountDesk(List *list, long desk);
+extern int ItemCountVisible(List *list);
 extern long ItemID(List *list, int n);
 extern void CopyItem(List *dest,List *source,int n);
+extern int IsItemVisible(Item *temp);
+extern int IsItemIndexVisible(List *list,int n);
