@@ -225,6 +225,22 @@ Binding *AddBinding(Display *dpy, Binding **pblist, BindingType type,
       if (type == MOUSE_BINDING ||
 	  (tkeysym = XKeycodeToKeysym(dpy, i, m)) == keysym)
       {
+        /* If the modifier (m) doesn't change the keys value,
+           (for example, num-lock on a letter),
+           don't add the key twice, check against the one just added...
+        */
+        if (*pblist != 0 &&
+            (*pblist)->Button_Key == i &&
+            (*pblist)->type == type &&
+            (*pblist)->Context == contexts &&
+            (*pblist)->Modifier == modifiers &&
+            ((type == KEY_BINDING && strcmp((*pblist)->key_name,key_name) == 0)
+             ||
+             (type == MOUSE_BINDING && (*pblist)->key_name == NULL)) &&
+            (*pblist)->Action == action &&
+            (*pblist)->Action2 == action2) {
+          continue;
+        }
 	temp = *pblist;
 	(*pblist) = (Binding *)safemalloc(sizeof(Binding));
 	(*pblist)->type = type;
