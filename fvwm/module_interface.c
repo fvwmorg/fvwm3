@@ -354,7 +354,9 @@ void executeModuleSync(F_CMD_ARGS)
   extern fd_set_size_t fd_width;
   time_t start_time;
   Bool done = False;
+#ifdef BUSYCURSOR
   Bool need_ungrab = False;
+#endif
   char *escape = NULL;
   XEvent tmpevent;
   extern FvwmWindow *Tmp_win;
@@ -1175,13 +1177,16 @@ extern int myxgrabcount;                /* defined in libs/Grab.c */
 int PositiveWrite(int module, unsigned long *ptr, int size)
 {
   if((pipeOn[module]<0)||(!((PipeMask[module]) & ptr[1])))
+  {
     return -1;
+  }
 
   /* a dirty hack to prevent FvwmAnimate triggering during Recapture */
   /* would be better to send RecaptureStart and RecaptureEnd messages. */
   /* If module is lock on send for iconify message and its an
    * iconify event and server grabbed, then return */
-  if ((SyncMask[module] & M_ICONIFY & ptr[1]) && (myxgrabcount != 0)) {
+  if ((SyncMask[module] & M_ICONIFY & ptr[1]) && (myxgrabcount != 0))
+  {
     return -1;
   }
 
@@ -1192,18 +1197,40 @@ int PositiveWrite(int module, unsigned long *ptr, int size)
    * M_LOCKONSEND has been replaced by a separated mask which defines on
    * which messages the fvwm-to-module communication need to be lock
    * on send. olicha Nov 13, 1999 */
-  if ((SyncMask[module] & ptr[1]) && !myxgrabcount) {
+  if ((SyncMask[module] & ptr[1]) && !myxgrabcount)
+  {
     Window targetWindow;
-    int e;
+    int e = 0;
+    int count = 0;
+    int delay = 1;
+    int finished = 0;
 
     FlushQueue(module);
     fcntl(readPipes[module],F_SETFL,0);
-    while ((e = read(readPipes[module],&targetWindow, sizeof(Window))) > 0) {
-      if (HandleModuleInput(targetWindow, module, NULL) == 66) {
-        break;
+    while(!finished)
+    {
+      while ((e = read(readPipes[module],&targetWindow, sizeof(Window))) > 0)
+      {
+        if (HandleModuleInput(targetWindow, module, NULL) == 66)
+        {
+          finished = 1;
+          break;
+        }
       }
+      if (errno == EAGAIN && !finished && count++ < 7)
+      {
+        /* Give the module another chance to reply.  This is necessary with
+         * fast module input. Otherwise the module might be killed
+         * unnecessarily (i.e. because it had no chance to reply).  Experiments
+         * indicate that a delay of 1 microsecond is usually enough. */
+        usleep(delay);
+        delay *= 10;
+        continue;
+      }
+      finished = 1;
     }
-    if (e <= 0) {
+    if (e <= 0)
+    {
       KillModule(module);
     }
     fcntl(readPipes[module],F_SETFL,O_NDELAY);

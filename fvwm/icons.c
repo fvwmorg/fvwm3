@@ -1095,6 +1095,7 @@ void DeIconify(FvwmWindow *tmp_win)
 	}
       }
       if (t == tmp_win)
+      {
 	BroadcastPacket(M_DEICONIFY, 11,
 			t->w, t->frame,
 			(unsigned long)t,
@@ -1102,13 +1103,16 @@ void DeIconify(FvwmWindow *tmp_win)
 			t->icon_p_width, t->icon_p_height+t->icon_g.height,
 			t->frame_g.x, t->frame_g.y,
 			t->frame_g.width, t->frame_g.height);
+      }
       else
+      {
 	BroadcastPacket(M_DEICONIFY, 7,
 			t->w, t->frame,
 			(unsigned long)t,
 			t->icon_g.x, t->icon_g.y,
 			t->icon_p_width,
 			t->icon_p_height+t->icon_g.height);
+      }
       if(t->Desk == Scr.CurrentDesk)
       {
 	XMapWindow(dpy, t->frame);

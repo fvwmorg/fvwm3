@@ -1,6 +1,8 @@
 2000-01-27  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* FvwmCommand/FvwmCommand.c:
+	-Wall fix
+
 	* FvwmCommand/FvwmCommand.h:
 	* FvwmCommand/FvwmCommandS.c:
 	fixed communication problem between server and client

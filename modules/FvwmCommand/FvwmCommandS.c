@@ -238,6 +238,9 @@ void server ( char *name )
           err_quit("reading fifo");
         }
       }
+buf[len]=0;
+fprintf(stderr,"fcs: read '%s'\n", buf);
+if (buf[0]=='o')fprintf(stderr,"*******************\n");
 
       /* in case of multiple long lines */
       for (ix=0; ix<len; ix++)

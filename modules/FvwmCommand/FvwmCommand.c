@@ -26,8 +26,8 @@
  */
 
 #include "FvwmCommand.h"
-#include "../../libs/fvwmsignal.h"
-#include "../../libs/fvwmlib.h"
+#include "libs/fvwmsignal.h"
+#include "libs/fvwmlib.h"
 
 #define MYNAME "FvwmCommand"
 #define MAXHOSTNAME 255
@@ -82,7 +82,8 @@ void spawn_child( void );
  * send command to and receive message from the server
  *
  *******************************************************/
-int main ( int argc, char *argv[]) {
+int main ( int argc, char *argv[])
+{
   char cmd[MAX_MODULE_INPUT_TEXT_LEN + 1];
   char *home;
   char *f_stem, *fc_name, *fm_name;
@@ -160,8 +161,10 @@ int main ( int argc, char *argv[]) {
   Bg = 0;
 
 
-  while( (opt = getopt( argc, argv, "S:hvF:f:w:i:rm" )) != EOF ) {
-    switch(opt) {
+  while( (opt = getopt( argc, argv, "S:hvF:f:w:i:rm" )) != EOF )
+  {
+    switch(opt)
+    {
     case 'h':
       usage();
       exit(0);
@@ -198,7 +201,8 @@ int main ( int argc, char *argv[]) {
   }
 
 
-  if( f_stem == NULL ) {
+  if( f_stem == NULL )
+  {
     char *dpy_name;
 
     /* default name */
@@ -206,7 +210,8 @@ int main ( int argc, char *argv[]) {
     if (!home)  home = "";
     f_stem = safemalloc( strlen(home) + strlen(F_NAME) + MAXHOSTNAME + 4);
     strcpy (f_stem, home);
-    if (f_stem[strlen(f_stem)-1] != '/') {
+    if (f_stem[strlen(f_stem)-1] != '/')
+    {
       strcat (f_stem, "/");
     }
     strcat (f_stem, F_NAME);
@@ -235,8 +240,10 @@ int main ( int argc, char *argv[]) {
   strcpy(Fr_name,f_stem);
   strcat(Fr_name, "R");
 
-  if ((Frun = fopen (Fr_name,"r" )) !=NULL) {
-    if (fgets (cmd, 20, Frun) != NULL) {
+  if ((Frun = fopen (Fr_name,"r" )) !=NULL)
+  {
+    if (fgets (cmd, 20, Frun) != NULL)
+    {
       fprintf (stderr, "\nFvwmCommand lock file %sR is detected. "
 	       "This may indicate another FvwmCommand is running. "
 	       "It appears to be running under process ID:\n%s\n",
@@ -251,36 +258,45 @@ int main ( int argc, char *argv[]) {
     unlink (Fr_name);
   }
 
-  if( Opt_Serv ) {
+  if( Opt_Serv )
+  {
     sprintf (cmd,"%s '%sS %s'", argv[0], MYNAME, sf_stem);
     system (cmd);
   }
 
-  if ((Frun = fopen (Fr_name,"w" )) != NULL) {
+  if ((Frun = fopen (Fr_name,"w" )) != NULL)
+  {
     fprintf (Frun, "%d\n", (int) getpid());
     fclose (Frun);
-  }else {
+  }
+  else
+  {
       err_quit ("writing lock file");
   }
 
   Fdr = Fdw = -1;
   count = 0;
-  while ((Fdr=open (fm_name, O_RDONLY)) < 0) {
-    if (count++>5) {
+  while ((Fdr=open (fm_name, O_RDONLY)) < 0)
+  {
+    if (count++>5)
+    {
       err_quit ("opening message fifo");
     }
     sleep(1);
   }
   count = 0;
-  while ((Fdw=open (fc_name, O_WRONLY)) < 0) {
-    if (count++>2) {
+  while ((Fdw=open (fc_name, O_WRONLY)) < 0)
+  {
+    if (count++>2)
+    {
       err_quit ("opening command fifo");
     }
     sleep(1);
   }
 
   i = optind;
-  if( Opt_monitor ) {
+  if( Opt_monitor )
+  {
 
     /* test if its stdin is closed for coprocess */
     tv2.tv_sec = 0;
@@ -288,7 +304,8 @@ int main ( int argc, char *argv[]) {
     FD_ZERO(&fdset);
     FD_SET(STDIN_FILENO, &fdset);
     ncnt = fvwmSelect(FD_SETSIZE, &fdset, 0, 0, &tv2);
-    if( ncnt && (fgets( cmd, 1, stdin )==0 || cmd[0] == 0)) {
+    if( ncnt && (fgets( cmd, 1, stdin )==0 || cmd[0] == 0))
+    {
       Bg = 1;
     }
 
@@ -296,30 +313,38 @@ int main ( int argc, char *argv[]) {
     setvbuf( stdout, NULL, _IOLBF, 0);
 
     /* send arguments first */
-    for( ;i < argc; i++ ) {
+    for( ;i < argc; i++ )
+    {
       strncpy( cmd, argv[i], MAX_MODULE_INPUT_TEXT_LEN - 1 );
       sendit( cmd );
     }
 
 
-    while( !isTerminated ) {
+    while( !isTerminated )
+    {
       FD_ZERO(&fdset);
       FD_SET(Fdr, &fdset);
-      if( Bg == 0 ) {
+      if( Bg == 0 )
+      {
         FD_SET(STDIN_FILENO, &fdset);
       }
       ncnt = fvwmSelect(FD_SETSIZE, &fdset, 0, 0, NULL);
 
       /* message from fvwm */
-      if (FD_ISSET(Fdr, &fdset)){
+      if (FD_ISSET(Fdr, &fdset))
+      {
         process_message();
       }
 
-      if( Bg == 0 ) {
+      if( Bg == 0 )
+      {
         /* command input */
-        if( FD_ISSET(STDIN_FILENO, &fdset) ) {
-          if( fgets( cmd, MAX_MODULE_INPUT_TEXT_LEN - 1, stdin ) == 0 ) {
-            if( Bg == 0 ) {
+        if( FD_ISSET(STDIN_FILENO, &fdset) )
+        {
+          if( fgets( cmd, MAX_MODULE_INPUT_TEXT_LEN - 1, stdin ) == 0 )
+          {
+            if( Bg == 0 )
+            {
               /* other than SIGTTIN */
               break;
             }
@@ -329,8 +354,11 @@ int main ( int argc, char *argv[]) {
         }
       }
     }
-  }else {
-    for( ;i < argc; i++ ) {
+  }
+  else
+  {
+    for( ;i < argc; i++ )
+    {
       strncpy( cmd, argv[i], MAX_MODULE_INPUT_TEXT_LEN - 1 );
       sendit( cmd );
       if (Opt_info >= 0)
@@ -344,9 +372,8 @@ int main ( int argc, char *argv[]) {
 /*
  * send exit notice and close fifos
  */
-void close_fifos (void) {
-  char cmd[10];
-
+void close_fifos (void)
+{
   close(Fdr);
   close(Fdw);
   unlink (Fr_name);
@@ -374,50 +401,58 @@ sig_ttin(int dummy)
 /************************************/
 /* print error message on stderr */
 /************************************/
-void err_quit( const char *msg ) {
+void err_quit( const char *msg )
+{
   fprintf (stderr, "%s ", strerror(errno));
   err_msg(msg);
   close_fifos();
   exit(1);
 }
 
-void err_msg( const char *msg ) {
+void err_msg( const char *msg )
+{
   fprintf( stderr, "%s error in %s\n", MYNAME , msg );
 }
 
 /*************************************/
 /* add cr to the command and send it */
 /*************************************/
-void sendit( char *cmd ) {
+void sendit( char *cmd )
+{
   int clen;
 
-  if( cmd[0] != '\0'  ) {
+  if( cmd[0] != '\0'  )
+  {
     clen = strlen(cmd);
 
     /* add cr */
-    if( cmd[clen-1] != '\n' ) {
+    if( cmd[clen-1] != '\n' )
+    {
       strcat(cmd, "\n");
       clen++;
     }
-    if( clen != 1 ) {
+    if( clen != 1 )
+    {
       write( Fdw, cmd, clen );
     }
   }
 }
 
-void receive(void) {
+void receive(void)
+{
   int  ncnt;
   struct timeval tv;
 
-  if( Opt_reply ) {
+  if( Opt_reply )
+  {
     /* wait indefinitely */
     FD_ZERO(&fdset);
     FD_SET( Fdr, &fdset);
     ncnt = select(FD_SETSIZE, SELECT_FD_SET_CAST &fdset, 0, 0, NULL);
   }
 
-
-  while (1){
+  while (1)
+  {
     tv.tv_sec = Tv.tv_sec;
     tv.tv_usec = Tv.tv_usec;
     FD_ZERO(&fdset);
@@ -425,15 +460,18 @@ void receive(void) {
 
     ncnt = select(FD_SETSIZE, SELECT_FD_SET_CAST &fdset, 0, 0, &tv);
 
-    if( ncnt < 0 ) {
+    if( ncnt < 0 )
+    {
       err_quit("receive");
       break;
     }
-    if( ncnt == 0 ) {
+    if( ncnt == 0 )
+    {
       /* timeout */
       break;
     }
-    if (FD_ISSET(Fdr, &fdset)) {
+    if (FD_ISSET(Fdr, &fdset))
+    {
       process_message();
     }
   }
@@ -443,7 +481,8 @@ void receive(void) {
 /*******************************
  * print usage
  *******************************/
-void usage(void) {
+void usage(void)
+{
   fprintf (stderr, "Usage: %s [OPTION] [COMMAND]...\n", MYNAME);
   fprintf (stderr, "Send commands to fvwm via %sS\n\n", MYNAME);
   fprintf (stderr,
@@ -484,14 +523,18 @@ void usage(void) {
 /*
  * read fifo
  */
-int read_f(int fd, char *p, int len) {
+int read_f(int fd, char *p, int len)
+{
   int i, n;
-  for (i=0; i<len; )  {
+  for (i=0; i<len; )
+  {
     n = read(fd, &p[i], len-i);
-    if (n<0 && errno!=EAGAIN) {
+    if (n<0 && errno!=EAGAIN)
+    {
       err_quit("reading message");
     }
-    if (n==0) {
+    if (n==0)
+    {
       /* eof */
       close_fifos();
       exit(0);
@@ -504,18 +547,22 @@ int read_f(int fd, char *p, int len) {
 /*
  * process message
  */
-void process_message( void ) {
+void process_message( void )
+{
   unsigned long type, length, body[24*SOL];
 
   read_f( Fdr, (char*)&type, SOL);
   read_f( Fdr, (char*)&length, SOL);
   read_f( Fdr, (char*)body, length );
 
-  if( type==M_ERROR ) {
+  if( type==M_ERROR )
+  {
     fprintf( stderr,"%s", (char *)&body[3] );
-  }else if( Opt_info >= 1 ) {
-
-    switch( type ) {
+  }
+  else if( Opt_info >= 1 )
+  {
+    switch( type )
+    {
 
     case M_WINDOW_NAME:
       list( body, "window");
@@ -558,9 +605,10 @@ void process_message( void ) {
       break;
 
     default:
-      if( Opt_info >=2 ) {
-
-	switch(type) {
+      if( Opt_info >=2 )
+      {
+	switch(type)
+        {
 
 	case M_CONFIGURE_WINDOW:
 	  list_configure( body);
@@ -570,8 +618,10 @@ void process_message( void ) {
 	  break;
 
 	default:
-	  if( Opt_info >= 3 ) {
-	    switch( type ) {
+	  if( Opt_info >= 3 )
+          {
+	    switch( type )
+            {
 	    case M_NEW_PAGE:
 	      list_new_page(body);
 	      break;
@@ -626,11 +676,13 @@ void process_message( void ) {
  *
  **********************************/
 
-void list_configure(unsigned long *body) {
+void list_configure(unsigned long *body)
+{
   unsigned long i;
   char *flag;
   char *grav;
-  char *flagstr[32] = {
+  char *flagstr[32] =
+  {
     "StartIconic",
     "OnTop",
     "Sticky",
@@ -665,16 +717,20 @@ void list_configure(unsigned long *body) {
     "MWMBorders"
   };
 
-
   printf( "0x%08lx %-20s x %ld, y %ld, width %ld, height %ld\n",
 	  body[0], "frame", body[3], body[4], body[5], body[6] );
   printf( "0x%08lx %-20s %ld\n" ,body[0], "desktop", body[7]);
 
-  if (Opt_flags == 2) {
-    for( i=0; i<=31; i++ ) {
-      if( body[8] & (1<<i) ) {
+  if (Opt_flags == 2)
+  {
+    for( i=0; i<=31; i++ )
+    {
+      if( body[8] & (1<<i) )
+      {
 	flag = "yes";
-      }else{
+      }
+      else
+      {
 	flag = "no";
       }
       printf( "0x%08lx %-20s %s\n", body[0], flagstr[i], flag );
@@ -694,8 +750,8 @@ void list_configure(unsigned long *body) {
   printf( "0x%08lx %-20s width %ld, height %ld\n",
 	  body[0], "max size", body[17], body[18]);
 
-
-  switch(body[21]) {
+  switch(body[21])
+  {
   case ForgetGravity:
     grav = "Forget";
     break;
@@ -734,7 +790,6 @@ void list_configure(unsigned long *body) {
     break;
   }
   printf( "0x%08lx %-20s %s\n", body[0], "gravity", grav);
-
   printf( "0x%08lx %-20s text 0x%lx, back 0x%lx\n",
 	  body[0], "pixel", body[22], body[23]);
 }
@@ -744,8 +799,8 @@ void list_configure(unsigned long *body) {
  * print info  icon location
  *
  ************************************************************************/
-void list_icon_loc(unsigned long *body) {
-
+void list_icon_loc(unsigned long *body)
+{
   printf( "0x%08lx %-20s x %ld, y %ld, width %ld, height%ld\n",
 	  body[0], "icon location", body[3], body[4], body[5], body[6] );
 }
@@ -755,8 +810,8 @@ void list_icon_loc(unsigned long *body) {
  * print info mini icon
  *
  ************************************************************************/
-void list_mini_icon(unsigned long *body) {
-
+void list_mini_icon(unsigned long *body)
+{
   printf( "0x%08lx %-20s width %ld, height %ld, depth %ld\n",
 	  body[0], "mini icon",body[5], body[6], body[7] );
 }
@@ -766,8 +821,8 @@ void list_mini_icon(unsigned long *body) {
  * print info  message body[3]
  *
  ************************************************************************/
-void list( unsigned long *body, char *text ) {
-
+void list( unsigned long *body, char *text )
+{
   printf( "0x%08lx %-20s %s\n", body[0], text, (char *)&body[3] );
 }
 
@@ -777,8 +832,8 @@ void list( unsigned long *body, char *text ) {
  * print info  new page
  *
  ************************************************************************/
-void list_new_page(unsigned long *body) {
-
+void list_new_page(unsigned long *body)
+{
   printf( "           %-20s x %ld, y %ld, desk %ld, max x %ld, max y %ld\n",
 	  "new page",
 	  body[0], body[0], body[2], body[3], body[4]);
@@ -789,8 +844,8 @@ void list_new_page(unsigned long *body) {
  * print info  new desk
  *
  ************************************************************************/
-void list_new_desk(unsigned long *body) {
-
+void list_new_desk(unsigned long *body)
+{
   printf( "           %-20s %ld\n",  "new desk", body[0] );
 }
 
@@ -799,7 +854,8 @@ void list_new_desk(unsigned long *body) {
  * print string
  *
  ************************************************************************/
-void list_string (char *str) {
+void list_string (char *str)
+{
     printf( "%-20s\n", str );
 }
 
@@ -808,10 +864,9 @@ void list_string (char *str) {
  * print info header
  *
  ************************************************************************/
-void list_header(unsigned long *body, char *text) {
-
+void list_header(unsigned long *body, char *text)
+{
   printf("0x%08lx %s\n", body[0], text);
-
 }
 
 /*************************************************************************
@@ -819,8 +874,8 @@ void list_header(unsigned long *body, char *text) {
  * print info focus change
  *
  ************************************************************************/
-void list_focus_change(unsigned long *body) {
-
+void list_focus_change(unsigned long *body)
+{
   printf( "0x%08lx %-20s highlight 0x%lx, foreground 0x%lx, background 0x%lx\n",
 	  body[0], "focus change", body[3], body[4], body[5] );
 }
@@ -830,8 +885,8 @@ void list_focus_change(unsigned long *body) {
  * print info iconify
  *
  ************************************************************************/
-void list_iconify(unsigned long *body) {
-
+void list_iconify(unsigned long *body)
+{
   printf( "0x%08lx %-20s x %ld, y %ld, width %ld, hight %ld\n",
 	  body[0], "iconify", body[3], body[4], body[5], body[6] );
 }
