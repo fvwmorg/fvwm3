@@ -444,7 +444,7 @@ void CreateConditionMask(char *flags, WindowConditionMask *mask)
 			   by checking allowed function */
 		        SET_SIZE_FIXED(mask, on);
 			SETM_SIZE_FIXED(mask, 1);
-		}		
+		}
 		else if (StrEquals(cond,"HasHandles"))
 		{
 		        SET_HAS_HANDLES(mask,on);
@@ -600,32 +600,32 @@ Bool MatchesConditionMask(FvwmWindow *fw, WindowConditionMask *mask)
 	Bool fMatchesResource;
 	Bool fMatches;
 	FvwmWindow *sf = get_focus_window();
-	
+
 	/* match FixedSize conditional */
 	/* special treatment for FixedSize, because more than just
 	   the is_size_fixed flag makes a window unresizable (width and height
 	   hints etc.) */
-	if(IS_SIZE_FIXED(mask) && 
-	   mask->flag_mask.common.s.is_size_fixed && 
+	if (IS_SIZE_FIXED(mask) &&
+	   mask->flag_mask.common.s.is_size_fixed &&
 	   is_function_allowed(F_RESIZE,NULL,fw,True,False))
 	{
 	        return False;
 	}
-	if(!IS_SIZE_FIXED(mask) &&
+	if (!IS_SIZE_FIXED(mask) &&
            mask->flag_mask.common.s.is_size_fixed &&
 	   !is_function_allowed(F_RESIZE,NULL,fw,True,False))
 	{
 	        return False;
         }
         SETM_SIZE_FIXED(mask, 0);
-	
-	if(IS_UNICONIFIABLE(mask) &&
+
+	if (IS_UNICONIFIABLE(mask) &&
 	   mask->flag_mask.common.s.is_uniconifiable &&
 	   is_function_allowed(F_ICONIFY,NULL,fw,True,False))
 	{
 	        return False;
 	}
-	if(!IS_UNICONIFIABLE(mask) &&
+	if (!IS_UNICONIFIABLE(mask) &&
 	   mask->flag_mask.common.s.is_uniconifiable &&
 	   !is_function_allowed(F_ICONIFY,NULL,fw,True,False))
 	{
@@ -633,13 +633,13 @@ Bool MatchesConditionMask(FvwmWindow *fw, WindowConditionMask *mask)
 	}
 	SETM_IS_UNICONIFIABLE(mask, 0);
 
-	if(IS_UNMAXIMIZABLE(mask) &&
+	if (IS_UNMAXIMIZABLE(mask) &&
 	   mask->flag_mask.common.s.is_unmaximizable &&
 	   is_function_allowed(F_MAXIMIZE,NULL,fw,True,False))
 	{
 	        return False;
 	}
-	if(!IS_UNMAXIMIZABLE(mask) &&
+	if (!IS_UNMAXIMIZABLE(mask) &&
 	   mask->flag_mask.common.s.is_unmaximizable &&
 	   !is_function_allowed(F_MAXIMIZE,NULL,fw,True,False))
 	{
@@ -647,7 +647,7 @@ Bool MatchesConditionMask(FvwmWindow *fw, WindowConditionMask *mask)
 	}
 	SETM_IS_UNMAXIMIZABLE(mask, 0);
 
-	if(IS_UNCLOSABLE(mask) &&
+	if (IS_UNCLOSABLE(mask) &&
 	   mask->flag_mask.common.s.is_unclosable &&
 	   (is_function_allowed(F_CLOSE,NULL,fw,True,False) ||
 	    is_function_allowed(F_DELETE,NULL,fw,True,False) ||
@@ -655,7 +655,7 @@ Bool MatchesConditionMask(FvwmWindow *fw, WindowConditionMask *mask)
 	{
 	        return False;
 	}
-	if(!IS_UNCLOSABLE(mask) &&
+	if (!IS_UNCLOSABLE(mask) &&
 	   mask->flag_mask.common.s.is_unclosable &&
 	   (!is_function_allowed(F_CLOSE,NULL,fw,True,False) &&
 	    !is_function_allowed(F_DELETE,NULL,fw,True,False) &&
@@ -670,7 +670,7 @@ Bool MatchesConditionMask(FvwmWindow *fw, WindowConditionMask *mask)
 	{
 		return False;
 	}
-	
+
 	if (!mask->my_flags.use_circulate_hit && DO_SKIP_CIRCULATE(fw))
 	{
 		return False;
@@ -937,17 +937,17 @@ static void direction_cmd(F_CMD_ARGS,Bool is_scan)
 	int my_cy;
 	int his_cx;
 	int his_cy;
-	int cross=0;
+	int cross = 0;
 	int offset = 0;
 	int distance = 0;
-	int cycle=False;
-	int forward=False;
+	int cycle = False;
+	int forward = False;
 	int score;
-	int best_cross=0;
+	int best_cross = 0;
 	int best_score;
-	int worst_score= -1;
-	FvwmWindow *window;
-	FvwmWindow *best_window;
+	int worst_score = -1;
+	FvwmWindow *tfw;
+	FvwmWindow *fw_best;
 	int dir;
 	int dir2;
 	Bool right_handed=False;
@@ -982,9 +982,9 @@ static void direction_cmd(F_CMD_ARGS,Bool is_scan)
 		}
 		return;
 	}
-	if(is_scan)
+	if (is_scan)
 	{
-		cycle=True;
+		cycle = True;
 		tmp = PeekToken(action, &action);
 		dir2 = gravity_parse_dir_argument(tmp, NULL, -1);
 		/* if enum direction_type changes, this is trashed. */
@@ -999,7 +999,7 @@ static void direction_cmd(F_CMD_ARGS,Bool is_scan)
 			}
 			return;
 		}
-		else if(dir2-dir==1 || dir2-dir== -3)
+		else if (dir2-dir==1 || dir2-dir== -3)
 		{
 			right_handed=True;
 		}
@@ -1052,20 +1052,20 @@ static void direction_cmd(F_CMD_ARGS,Bool is_scan)
 
 	/* Next we iterate through all windows and choose the closest one in
 	 * the wanted direction. */
-	best_window = NULL;
+	fw_best = NULL;
 	best_score = -1;
-	for (window = Scr.FvwmRoot.next; window; window = window->next)
+	for (tfw = Scr.FvwmRoot.next; tfw != NULL; tfw = tfw->next)
 	{
 		/* Skip every window that does not match conditionals.  Also
 		 * skip the currently focused window.  That would be too
 		 * close. :) */
-		if (window == fw || !MatchesConditionMask(window, &mask))
+		if (tfw == fw || !MatchesConditionMask(tfw, &mask))
 		{
 			continue;
 		}
 
 		/* Calculate relative location of the window. */
-		get_visible_window_or_icon_geometry(window, &his_g);
+		get_visible_window_or_icon_geometry(tfw, &his_g);
 		his_g.x -= my_cx;
 		his_g.y -= my_cy;
 		his_cx = his_g.x + his_g.width / 2;
@@ -1089,21 +1089,23 @@ static void direction_cmd(F_CMD_ARGS,Bool is_scan)
 		{
 		case DIR_S:
 		case DIR_SW:
-			forward=True;
+			forward = True;
 		case DIR_N:
 		case DIR_NE:
 			cross = -his_cx;
 			offset = (his_cx < 0) ? -his_cx : his_cx;
-			distance = (dir == DIR_N || dir == DIR_NE) ? -his_cy : his_cy;
+			distance = (dir == DIR_N || dir == DIR_NE) ?
+				-his_cy : his_cy;
 			break;
 		case DIR_E: /* E */
 		case DIR_SE: /* SE */
-			forward=True;
+			forward = True;
 		case DIR_W: /* W */
 		case DIR_NW: /* NW */
 			cross = his_cy;
 			offset = (his_cy < 0) ? -his_cy : his_cy;
-			distance = (dir == DIR_W || dir == DIR_NW) ? -his_cx : his_cx;
+			distance = (dir == DIR_W || dir == DIR_NW) ?
+				-his_cx : his_cx;
 			break;
 		case DIR_C:
 			offset = 0;
@@ -1113,67 +1115,77 @@ static void direction_cmd(F_CMD_ARGS,Bool is_scan)
 			break;
 		}
 
-		if(cycle)
+		if (cycle)
+		{
 			offset=0;
-		else if (distance <= 0)	/* Target must be in given direction. */
+		}
+		else if (distance < 0)	/* Target must be in given direction. */
+		{
 			continue;
+		}
+		else if (distance == 0 && dir != DIR_C)
+		{
+			continue;
+		}
 
 		/* Calculate score for this window.  The smaller the better. */
 		score = distance + offset;
-
-		if(!right_handed)
-			cross= -cross;
-
-		if(cycle)
+		if (!right_handed)
 		{
-			int ordered=(forward == (cross<best_cross));
+			cross= -cross;
+		}
+		if (cycle)
+		{
+			int ordered = (forward == (cross < best_cross));
 
-			if (distance<0 && best_score == -1 &&
+			if (distance < 0 && best_score == -1 &&
 				(score < worst_score ||
-				(score==worst_score && ordered)))
+				(score == worst_score && ordered)))
 			{
-				best_window = window;
+				fw_best = tfw;
 				worst_score = score;
 				best_cross = cross;
 			}
-
-			if(score==0 && forward==(cross<0))
-				continue;
-
-			if (distance>=0 &&
-				(best_score == -1 || score < best_score ||
-				(score==best_score && ordered)))
+			if (score == 0 && forward == (cross < 0) &&
+			    dir != DIR_C)
 			{
-				best_window = window;
+				continue;
+			}
+			if (distance >= 0 &&
+				(best_score == -1 || score < best_score ||
+				 (score == best_score && ordered)))
+			{
+				fw_best = tfw;
 				best_score = score;
 				best_cross = cross;
 			}
 		}
 		else
 		{
-			/* windows more than 45 degrees off the direction are heavily
-			 * penalized and will only be chosen if nothing else within a
-			 * million pixels */
+			/* windows more than 45 degrees off the direction are
+			 * heavily penalized and will only be chosen if nothing
+			 * else within a million pixels */
 			if (offset > distance)
 			{
 				score += 1000000;
 			}
-			if (best_score == -1 || score < best_score)
+			if (best_score == -1 || score < best_score ||
+			    (score == best_score && dir == DIR_C))
 			{
-				best_window = window;
+				fw_best = tfw;
 				best_score = score;
 			}
 		}
 	} /* for */
 
-	if (best_window)
+	if (fw_best)
 	{
 		if (cond_rc != NULL)
 		{
 			*cond_rc = COND_RC_OK;
 		}
 		execute_function_override_window(
-			NULL, exc, restofline, 0, best_window);
+			NULL, exc, restofline, 0, fw_best);
 	}
 	else if (cond_rc != NULL)
 	{
