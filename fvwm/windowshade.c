@@ -190,23 +190,13 @@ fprintf(stderr, "toggle %d (%s) state %d (%s) title dir %s\n", toggle, get_dir_s
 		SET_SHADED_DIR(fw, shade_dir);
 		get_shaded_geometry(fw, &end_g, &end_g);
 	}
-print_g("end1 ", &end_g);
+print_g("end", &end_g);
 	resize_mode = (DO_SHRINK_WINDOWSHADE(fw)) ?
 		FRAME_MR_SHRINK : FRAME_MR_SCROLL;
 	mr_args = frame_create_move_resize_args(
 		fw, resize_mode, &start_g, &end_g, fw->shade_anim_steps);
 	frame_move_resize(fw, mr_args);
 	frame_free_move_resize_args(mr_args);
-
-	/* Update the window state after the animation.  The animation code
-	 * needs to know the old window state to work properly. */
-	SET_SHADED(fw, toggle);
-	if (toggle == 1)
-	{
-		SET_SHADED_DIR(fw, shade_dir);
-		get_shaded_geometry(fw, &end_g, &end_g);
-	}
-
 	/* update hints and inform modules */
 	BroadcastConfig(M_CONFIGURE_WINDOW, fw);
 	BroadcastPacket(

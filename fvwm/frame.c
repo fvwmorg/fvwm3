@@ -1204,8 +1204,10 @@ void frame_move_resize(
 		frame_move_resize_step(fw, mra);
 	}
 	/* clean up */
+	print_g("normal1", &fw->normal_g);
 	fw->frame_g = mra->end_g;
 	update_absolute_geometry(fw);
+	print_g("normal2", &fw->normal_g);
 
 #if 1
 	/*!!! necessary? */
