@@ -1,3 +1,15 @@
+1999-11-27  olicha   <olivier.chapuis@free.fr>
+	
+	* FvwmTaskBar/FvwmTaskBar.c (ProssesMessage): 
+	(LoopOnEvent):
+	(HideTaskBar):
+	(RevealTaskBar):
+	* FvwmTaskBar/FvwmTaskBar.1
+	FvwmTaskBarAutoHide ameliorations and bug fix: now the TaskBar does't
+	hide if the pointer is on the border; fix a problem with the first 
+	tip.
+	Fixed the StartMenu tip
+
 1999-11-27  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* FvwmBacker/FvwmBacker.c (ExecuteMatchingCommands):

@@ -154,7 +154,9 @@ int  win_width    = 5,
      ButPressed   = -1,
      ButReleased  = -1,
      Checked      = 0,
-     BelayHide    = False;
+     WindowState  = -2, /* -2 unmaped, 1 not hidden, -1 hidden, 
+			 *  0 hidden -> not hidden (for the events loop) */
+     FocusInWin = 0;    /* 1 if the Taskbar has the focus */
 
 static volatile sig_atomic_t AlarmSet = NOT_SET;
 static volatile sig_atomic_t tip_window_alarm = False;
@@ -435,7 +437,9 @@ void ProcessMessage(unsigned long type,unsigned long *body)
       ButPressed = i;
       ButReleased = -1;
       redraw = 0;
-    }
+      FocusInWin = 0;
+    } else 
+      FocusInWin = 1;
     break;
 
   case M_ADD_WINDOW:
@@ -644,6 +648,10 @@ void ProcessMessage(unsigned long type,unsigned long *body)
   case M_END_WINDOWLIST:
     AdjustWindow(win_width, win_height);
     XMapRaised(dpy, win);
+    if (AutoHide)
+      WindowState = -1;
+    else 
+      WindowState = 1;
     break;
 
   case M_NEW_DESK:
@@ -1234,7 +1242,6 @@ void LoopOnEvents(void)
 	    StartButtonUpdate(NULL, BUTTON_UP);
 	} else {
           ButReleased = ButPressed; /* Avoid race fvwm pipe */
-          BelayHide = True; /* Don't AutoHide when function ends */
           SendFvwmPipe(Fvwm_fd, ClickAction[Event.xbutton.button-1],
                        ItemID(&windows, num));
         }
@@ -1327,8 +1334,8 @@ void LoopOnEvents(void)
           if (num != -1 && num != ButPressed)
             SendFvwmPipe(Fvwm_fd, "Focus 0", ItemID(&windows, num));
         }
-
-        CheckForTip(Event.xmotion.x, Event.xmotion.y);
+	
+	CheckForTip(Event.xmotion.x, Event.xmotion.y);
         break;
 
       case LeaveNotify:
@@ -1336,7 +1343,7 @@ void LoopOnEvents(void)
         if (Tip.open)
 	  ShowTipWindow(0);
 
-        if (AutoHide)
+        if (AutoHide) 
 	  SetAlarm(HIDE_TASK_BAR);
 
         if (Event.xcrossing.mode != NotifyNormal)
@@ -1371,13 +1378,33 @@ void LoopOnEvents(void)
 	  else if (tip_window_alarm)
 	  {
 	    tip_window_alarm = False;
-	    ShowTipWindow(1);
+	    if (AutoHide && WindowState == 0)
+	    {
+	      Window dummy_rt, dummy_c;
+	      int abs_x, abs_y, pos_x, pos_y;
+	      unsigned int dummy;
+	      XEvent sevent;
+
+	      /* We are now "sure" that the TaskBar is not hidden for the
+		 Event loop. We send a motion notify for activating tips */
+	      WindowState = 1;
+	      XQueryPointer(dpy, win, &dummy_rt,&dummy_c, &abs_x, &abs_y,
+			    &pos_x, &pos_y, &dummy);
+	      sevent.xmotion.x = pos_x;
+	      sevent.xmotion.y = pos_y;
+	      sevent.xany.type = MotionNotify;
+	      XSendEvent(dpy, win, False, EnterWindowMask, &sevent);
+	      Tip.type = NO_TIP;
+	    }
+	    else
+	      ShowTipWindow(1);
 	  }
 	  break;
 	}
 	if (MouseInStartButton(Event.xmotion.x, Event.xbutton.y)) {
 	  if (SomeButtonDown(Event.xmotion.state))
 	    redraw = StartButtonUpdate(NULL, BUTTON_DOWN) ? 0 : -1;
+	  CheckForTip(Event.xmotion.x, Event.xmotion.y);
 	  break;
 	}
 	redraw = StartButtonUpdate(NULL, BUTTON_UP) ? 0 : -1;
@@ -1395,8 +1422,8 @@ void LoopOnEvents(void)
           }
         } else if (num != -1 && num != ButPressed)
 	  SendFvwmPipe(Fvwm_fd, "Focus 0", ItemID(&windows, num));
-
-        CheckForTip(Event.xmotion.x, Event.xmotion.y);
+	
+	CheckForTip(Event.xmotion.x, Event.xmotion.y);
         break;
 
       case ConfigureNotify:
@@ -2167,7 +2194,7 @@ void RevealTaskBar()
 
   win_y = new_win_y;
   XMoveWindow(dpy, win, win_x, win_y);
-  BelayHide = False;
+  WindowState = (WindowState <= 0) ? 0 : 1;
 }
 
 /***********************************************************************
@@ -2176,8 +2203,23 @@ void RevealTaskBar()
 void HideTaskBar()
 {
   int new_win_y;
+  Window d_rt, d_ch;
+  int d_x, d_y, wx, wy;
+  unsigned int mask;
 
   ClearAlarm();
+
+  if (FocusInWin)
+  {
+    XQueryPointer(dpy, win, &d_rt,&d_ch, &d_x, &d_y,
+		  &wx, &wy, &mask);
+    if (wy >= -win_border && wy < win_height + win_border) 
+    {
+      if (wy < 0 || wy >= win_height || wx < 0 || wx >= win_width)
+	SetAlarm(HIDE_TASK_BAR);
+      return;
+    }
+  }
 
   if (win_y < Midline) {
     new_win_y = 1 - win_height;
@@ -2188,10 +2230,8 @@ void HideTaskBar()
     for (; win_y<=new_win_y; ++win_y)
       XMoveWindow(dpy, win, win_x, win_y);
   }
-
   win_y = new_win_y;
-
-/*    XMoveWindow(dpy, win, win_x, win_y); */
+  WindowState = -1;
 }
 
 /***********************************************************************
