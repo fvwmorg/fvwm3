@@ -19,7 +19,7 @@
  * as long as the copyright is kept intact. */
 
 /* Modified to directly manipulate the X server if a solid color
- * background is requested. To use this, usr "-solid <color_name>"
+ * background is requested. To use this, use "-solid <color_name>"
  * as the command to be executed.
  *
  * A. Davison
@@ -93,10 +93,10 @@ typedef struct
 
 CommandChain *commands;
 
-/* int DeskCount=0; */
 int current_desk = 0;
 int current_x = 0;
 int current_y = 0;
+int current_colorset = -1;  /* the last matched command colorset or -1 */
 
 int Fvwm_fd[2];
 int fd_width;
@@ -113,13 +113,6 @@ int			screen;
 int MyDisplayHeight;
 int MyDisplayWidth;
 
-FILE*	logFile;
-
-/* Comment this out if you don't want a logfile. */
-
-/* #define LOGFILE "/tmp/FvwmBacker.log" */
-/* #define FVWM_DEBUG_MSGS 1 */
-
 
 int main(int argc, char **argv)
 {
@@ -131,14 +124,14 @@ int main(int argc, char **argv)
 
   /* Save the program name for error messages and config parsing */
   temp = argv[0];
-  s=strrchr(argv[0], '/');
+  s = strrchr(argv[0], '/');
   if (s != NULL)
     temp = s + 1;
 
-  Module=temp;
+  Module = temp;
   configPrefix = CatString2("*", Module);
 
-  if((argc != 6)&&(argc != 7))
+  if ((argc != 6) && (argc != 7))
   {
     fprintf(stderr, "%s Version %s should only be executed by fvwm!\n", Module,
 	    VERSION);
@@ -165,12 +158,6 @@ int main(int argc, char **argv)
   /* allocate default colorset */
   AllocColorset(0);
 
-  /* Open a log file if necessary */
-#ifdef LOGFILE
-  logFile = fopen(LOGFILE,"a");
-  fprintf(logFile,"Initialising FvwmBacker\n");
-#endif
-
   signal (SIGPIPE, DeadPipe);
 
   /* Parse the config file */
@@ -178,13 +165,13 @@ int main(int argc, char **argv)
 
   fd_width = GetFdWidth();
 
-  SetMessageMask(Fvwm_fd, M_NEW_DESK|M_NEW_PAGE|
-                 M_CONFIG_INFO|M_END_CONFIG_INFO|M_SENDCONFIG);
+  SetMessageMask(Fvwm_fd,
+    M_NEW_PAGE | M_CONFIG_INFO | M_END_CONFIG_INFO | M_SENDCONFIG);
 
   /*
-  ** we really only want the current desk, and window list sends it
+  ** we really only want the current desk/page, and window list sends it
   */
-  SendInfo(Fvwm_fd,"Send_WindowList",0);
+  SendInfo(Fvwm_fd, "Send_WindowList", 0);
 
   /* tell fvwm we're running */
   SendFinishedStartupNotification(Fvwm_fd);
@@ -197,14 +184,12 @@ int main(int argc, char **argv)
 }
 
 /******************************************************************************
-  EndLessLoop -  Read until we get killed, blocking when can't read
-    Originally Loop() from FvwmIdent:
-      Copyright 1994, Robert Nation and Nobutaka Suzuki.
+  EndLessLoop - Read until we get killed, blocking when can't read
 ******************************************************************************/
 void EndLessLoop()
 {
   while(1)
- {
+  {
     ReadFvwmPipe();
   }
 }
@@ -224,6 +209,7 @@ void ReadFvwmPipe()
 
 void SetDeskPageBackground(const Command *c)
 {
+  current_colorset = -1;
   switch (c->type)
   {
   case 1:
@@ -231,17 +217,16 @@ void SetDeskPageBackground(const Command *c)
     XSetWindowBackground(dpy, root, c->solidColor);
     XClearWindow(dpy, root);
     XFlush(dpy);
-#ifdef LOGFILE
-    fprintf(logFile,"Color set.\n");
-    fflush(logFile);
-#endif
     break;
+
   case 2:
+    current_colorset = c->colorset;
     SetWindowBackground(
       dpy, root, MyDisplayWidth, MyDisplayHeight, &Colorset[c->colorset],
       DefaultDepth(dpy, screen), DefaultGC(dpy, screen), True);
     XFlush(dpy);
     break;
+
   case 0:
   case -1:
   default:
@@ -250,11 +235,11 @@ void SetDeskPageBackground(const Command *c)
       SendFvwmPipe(Fvwm_fd, c->cmdStr, (unsigned long)0);
     }
     break;
-  } /* switch */
+  }
 }
 
 /*
- * migo (23-11-1999): Maybe execute only first (or last?) matching command?
+ * migo (23-Nov-1999): Maybe execute only first (or last?) matching command?
  */
 void ExecuteMatchingCommands(int colorset)
 {
@@ -262,10 +247,10 @@ void ExecuteMatchingCommands(int colorset)
   for (command = commands->first; command; command = command->next)
   {
     if (
-      (command->deskglob || command->desk     == current_desk) &&
-      (command->x < 0    || command->x        == current_x)    &&
-      (command->y < 0    || command->y        == current_y)    &&
-      (colorset   < 0    || command->colorset == colorset)
+      (command->deskglob || command->desk == current_desk) &&
+      (command->x < 0    || command->x    == current_x)    &&
+      (command->y < 0    || command->y    == current_y)    &&
+      (colorset   < 0    || colorset      == current_colorset && colorset == command->colorset)
     )
       SetDeskPageBackground(command);
   }
@@ -274,7 +259,7 @@ void ExecuteMatchingCommands(int colorset)
 /******************************************************************************
   ProcessMessage - Process the message coming from Fvwm
 ******************************************************************************/
-void ProcessMessage(unsigned long type,unsigned long *body)
+void ProcessMessage(unsigned long type, unsigned long *body)
 {
   char *tline;
   int colorset = -1;
@@ -283,44 +268,17 @@ void ProcessMessage(unsigned long type,unsigned long *body)
   {
   case M_CONFIG_INFO:
     tline = (char*)&(body[3]);
-#ifdef FVWM_DEBUG_MSGS
-    fprintf(stderr, "\t[FvwmBacker] M_CONFIG_INFO: %s\n", tline);
-#endif
-    if (strncasecmp(tline, "colorset", 8) == 0)
-    {
-      colorset = LoadColorset(tline + 8);
-      ExecuteMatchingCommands(colorset);
-    }
-    else
-    {
-      ParseConfigLine(tline);
-      ExecuteMatchingCommands(-1);
-    }
-    break;
-
-  case M_NEW_DESK:
-    current_desk = body[0];
-#ifdef FVWM_DEBUG_MSGS
-    fprintf(stderr, "\t[FvwmBacker] M_NEW_DESK: d=%d p=[%d, %d]\n", current_desk, current_x, current_y);
-#endif
-/*
-    ExecuteMatchingCommands(-1);
-*/
+    ExecuteMatchingCommands(ParseConfigLine(tline));
     break;
 
   case M_NEW_PAGE:
     current_desk = body[2];
     current_x = body[0]/MyDisplayWidth;
     current_y = body[1]/MyDisplayHeight;
-#ifdef FVWM_DEBUG_MSGS
-    fprintf(stderr, "\t[FvwmBacker] M_NEW_PAGE: d=%d p=(%d, %d)\n", current_desk, current_x, current_y);
-#endif
     ExecuteMatchingCommands(-1);
     break;
 
-  default:
-    break;
-  } /* switch */
+  }
 }
 
 /******************************************************************************
@@ -334,15 +292,16 @@ void DeadPipe(int nonsense)
 /******************************************************************************
   ParseConfigLine - Parse the configuration line fvwm to us to use
 ******************************************************************************/
-void ParseConfigLine(char *line)
+int ParseConfigLine(char *line)
 {
   if (strlen(line) > 1)
   {
     if (strncasecmp(line, configPrefix, strlen(configPrefix)) == 0)
       AddCommand(line + strlen(configPrefix));
     else if (strncasecmp(line, "colorset", 8) == 0)
-      LoadColorset(line + 8);
+      return LoadColorset(line + 8);
   }
+  return -1;
 }
 
 /******************************************************************************
@@ -353,17 +312,17 @@ void ParseConfig()
   char *line_start;
   char *tline;
 
-  line_start=safemalloc(strlen(Module)+1);
-  strcpy(line_start,"*");
+  line_start = safemalloc(strlen(Module) + 1);
+  strcpy(line_start, "*");
   strcat(line_start, Module);
 
-  InitGetConfigLine(Fvwm_fd,line_start);
-  GetConfigLine(Fvwm_fd,&tline);
+  InitGetConfigLine(Fvwm_fd, line_start);
+  GetConfigLine(Fvwm_fd, &tline);
 
   while(tline != (char *)0)
   {
     ParseConfigLine(tline);
-    GetConfigLine(Fvwm_fd,&tline);
+    GetConfigLine(Fvwm_fd, &tline);
   }
   free(line_start);
 }
@@ -385,7 +344,7 @@ void AddCommand(char *line)
   this->cmdStr = NULL;
   this->next = NULL;
 
-  if (strncasecmp(line,"Desk",4)==0)
+  if (strncasecmp(line, "Desk", 4) == 0)
   {
     /* Old command style */
 
@@ -398,7 +357,7 @@ void AddCommand(char *line)
     }
     free(token);
   }
-  else if (strncasecmp(line,"Command",7)==0)
+  else if (strncasecmp(line, "Command", 7) == 0)
   {
     /* New command style */
 
@@ -484,7 +443,7 @@ void AddCommand(char *line)
   while (*line && isspace(*line)) line++;
   if (strncasecmp(line, "-solid", 6) == 0)
   {
-    /* Process a solid color request */
+    /* Solid color command */
 
     line += 6;
     line = GetNextToken(line, &token);
@@ -492,15 +451,12 @@ void AddCommand(char *line)
     this->solidColor = (!token || !*token) ?
       BlackPixel(dpy, screen) :
       BackerGetColor(token);
-#ifdef LOGFILE
-    fprintf(logFile,"Adding color: %s as number %d\n",
-	    token,this->solidColor);
-    fflush(logFile);
-#endif
     free(token);
   }
   else if (strncasecmp(line, "colorset", 8) == 0)
   {
+    /* Colorset command */
+
     if (sscanf(line + 8, "%d", &this->colorset) < 1)
     {
       this->colorset = 0;
@@ -510,19 +466,12 @@ void AddCommand(char *line)
   }
   else
   {
-#ifdef LOGFILE
-    fprintf(logFile,"Adding command: %s\n",line);
-    fflush(logFile);
-#endif
-    this->type = 0;
-    this->cmdStr = (char *)safemalloc(strlen(line)+1);
-    strcpy(this->cmdStr,line);
-  }
+    /* Plain fvwm command */
 
-#ifdef FVWM_DEBUG_MSGS
-  fprintf(stderr, "[FvwmBacker] d=%d, dg=%d, x=%d, y=%d, type=%d, cmd=%s\n",
-    this->desk, this->deskglob, this->x, this->y, this->type, this->cmdStr);
-#endif
+    this->type = 0;
+    this->cmdStr = (char *)safemalloc(strlen(line) + 1);
+    strcpy(this->cmdStr, line);
+  }
 
   if (commands->first == NULL)
     commands->first = this;

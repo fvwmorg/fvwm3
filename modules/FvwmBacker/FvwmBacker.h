@@ -43,5 +43,5 @@ void ReadFvwmPipe();
 void ProcessMessage(unsigned long type, unsigned long *body);
 void DeadPipe(int nonsense);
 void ParseConfig(void);
-void ParseConfigLine(char *line);
+int ParseConfigLine(char *line);
 void AddCommand(char *line);
