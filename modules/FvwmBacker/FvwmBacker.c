@@ -29,23 +29,11 @@
 
 #include <stdio.h>
 #include <signal.h>
-#include <fcntl.h>
 #include <string.h>
-#include <sys/wait.h>
-#include <sys/time.h>
-
-#if HAVE_SYS_SELECT_H
-#include <sys/select.h>
-#endif
-
-#include <unistd.h>
-#include <ctype.h>
 
 #if HAVE_SYS_BSDTYPES_H
 #include <sys/bsdtypes.h> /* Saul */
 #endif /* Saul */
-
-#include <stdlib.h>
 
 #include "fvwm/module.h"
 #include "FvwmBacker.h"
@@ -155,22 +143,7 @@ char *temp, *s;
 ******************************************************************************/
 void EndLessLoop()
 {
-fd_set readset;
-struct timeval tv;
-
   while(1) {
-    FD_ZERO(&readset);
-    FD_SET(Fvwm_fd[1],&readset);
-    tv.tv_sec=0;
-    tv.tv_usec=0;
-
-    if (!select(fd_width,SELECT_TYPE_ARG234 &readset,NULL,NULL,&tv)) {
-      FD_ZERO(&readset);
-      FD_SET(Fvwm_fd[1],&readset);
-      select(fd_width,SELECT_TYPE_ARG234 &readset,NULL,NULL,NULL);
-    }
-
-    if (!FD_ISSET(Fvwm_fd[1],&readset)) continue;
     ReadFvwmPipe();
   }
 }
@@ -232,8 +205,6 @@ void ProcessMessage(unsigned long type,unsigned long *body)
 	  XSetWindowBackground(dpy, root, commands[body[0]].solidColor);
 	  XClearWindow(dpy, root);
 	  XFlush(dpy);
-	  /*	XSetWindowBackground(dpy, root, commands[body[0]].solidColor);
-	   */
 
 #		ifdef LOGFILE
 	  fprintf(logFile,"Color set.\n");

@@ -1,3 +1,7 @@
+1999-04-29  Hippo
+
+	* FvwmBacker/*: Removed select() calls and unused #include's
+
 Wed Apr 28 20:45:51 1999  Steve Robbins  <steve@nyongwa.montreal.qc.ca>
 
 	* FvwmRearrange/Makefile.am (FvwmCascade): 

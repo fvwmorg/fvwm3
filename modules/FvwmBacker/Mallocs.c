@@ -20,10 +20,6 @@
 
 #include "config.h"
 #include <stdio.h>
-#include <stdlib.h>
-#include <ctype.h>
-#include <string.h>
-#include <sys/time.h>
 #include "libs/fvwmlib.h"
 
 extern char *Module;
