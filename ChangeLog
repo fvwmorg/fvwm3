@@ -1,6 +1,8 @@
 2001-06-28  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* configure.in:
+	changed version to 2.4.0-pre2
+
 	* NEWS:
 	* fvwm/fvwm2.1:
 	* modules/**/*.1:
