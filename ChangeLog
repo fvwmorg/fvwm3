@@ -1,3 +1,8 @@
+2002-02-05  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* fvwm/menus.c (do_menu):
+	fixed leaving tear off menus when something is selected with the mouse
+
 2002-02-03  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* fvwm/events.c (HandleEnterNotify):
