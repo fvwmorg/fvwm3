@@ -358,6 +358,8 @@ void AddButton(ButtonArray *array, const char *title, Picture *p, int state,
   Button *new, *temp;
 
   new = ButtonNew(title, p, state, count);
+  if (iconified)
+    new->iconified = 1;
   if (array->head == NULL)
     array->head = new;
   else

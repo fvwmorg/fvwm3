@@ -501,12 +501,13 @@ void ProcessMessage(unsigned long type,unsigned long *body)
 #ifdef MINI_ICONS
   case M_MINI_ICON:
     if ((i = FindItem(&windows, body[0])) == -1) break;
+    p.picture = body[6];
+    p.mask    = body[7];
+    p.width   = body[3];
+    p.height  = body[4];
+    p.depth   = body[5];
+    UpdateItemPicture(&windows, i, &p);
     if (UpdateButton(&buttons, i, NULL, DONT_CARE) != -1) {
-      p.picture = body[6];
-      p.mask    = body[7];
-      p.width   = body[3];
-      p.height  = body[4];
-      p.depth   = body[5];
       UpdateButtonPicture(&buttons, i, &p);
       redraw = 0;
     }
@@ -633,7 +634,7 @@ void redraw_buttons()
     if (DeskNumber == item->Desk || IS_STICKY(item))
     {
       AddButton(&buttons, item->name, &(item->p), BUTTON_UP, item->count,
-		!!(item->tb_flags & F_ICONIFIED));
+		(item->tb_flags & F_ICONIFIED) ? 1 : 0);
 #ifdef DEBUG_DESKONLY
       /* print buttons.count, buttons.tw here */
       fprintf(stderr,"buttons.count = %i \t ",buttons.count);
