@@ -78,6 +78,12 @@ GSFR for the modules.
 Tomas Ogren:
 Animated windowshading, "adaptive maximize", various bugfixes.
 
+Albrecht Kadlec:
+Code & manual cleanups, enhancements, Fixes and module-library which
+partially made it into fvwm2.0.42-47d.
+Rewrite & cleanup of FvwmAuto & FvwmAudio.
+Created FvwmEvent to supersede FvwmAudio (& FvwmAuto).
+
 
 Along with a cast of thousands (well, dozens) mentioned in old
 ChangeLog entries.  If you find your name below, please send an entry
@@ -120,7 +126,6 @@ Sverre H. Huseby
 Toshi Isogai
 Jesper James
 Thimo Jansen
-Albrecht Kadlec
 Michael A. Kazda
 Jonathan Kelley
 Andreas Klemm
