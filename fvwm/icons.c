@@ -187,7 +187,7 @@ void CreateIconWindow(FvwmWindow *tmp_win, int def_x, int def_y)
       {
         XWindowChanges xwc;
         xwc.sibling = tmp_win->frame;
-        xwc.stack_mode = Above;   
+        xwc.stack_mode = Above;
         XConfigureWindow(dpy, tmp_win->icon_w, CWSibling|CWStackMode, &xwc);
       }
 #endif
@@ -203,7 +203,7 @@ void CreateIconWindow(FvwmWindow *tmp_win, int def_x, int def_y)
       {
         XWindowChanges xwc;
         xwc.sibling = tmp_win->frame;
-        xwc.stack_mode = Above;   
+        xwc.stack_mode = Above;
         XConfigureWindow(dpy, tmp_win->icon_pixmap_w, CWSibling|CWStackMode, &xwc);
       }
 #endif
@@ -619,7 +619,7 @@ static void GrabIconButtons(FvwmWindow *tmp_win, Window w)
   while(MouseEntry != (Binding *)0)
     {
       if((MouseEntry->Action != NULL)&&(MouseEntry->Context & C_ICON)&&
-	 (MouseEntry->IsMouse == 1))
+	 (MouseEntry->type == MOUSE_BINDING))
 	{
 	  if(MouseEntry->Button_Key >0)
 	    XGrabButton(dpy, MouseEntry->Button_Key, MouseEntry->Modifier, w,
@@ -664,7 +664,7 @@ static void GrabIconKeys(FvwmWindow *tmp_win,Window w)
   Binding *tmp;
   for (tmp = Scr.AllBindings; tmp != NULL; tmp = tmp->NextBinding)
     {
-      if ((tmp->Context & C_ICON)&&(tmp->IsMouse == 0))
+      if ((tmp->Context & C_ICON)&&(tmp->type == KEY_BINDING))
 	XGrabKey(dpy, tmp->Button_Key, tmp->Modifier, w, True,
 		 GrabModeAsync, GrabModeAsync);
     }

@@ -228,17 +228,6 @@ typedef struct MenuGlobals {
     int DoubleClickTime;
 } MenuGlobals;
 
-typedef struct Binding
-{
-  char IsMouse;           /* Is it a mouse or key binding 1= mouse; */
-  int Button_Key;         /* Mouse Button number of Keycode */
-  char *key_name;         /* In case of keycode, give the key_name too */
-  int Context;            /* Contex is Fvwm context, ie titlebar, frame, etc */
-  int Modifier;           /* Modifiers for keyboard state */
-  char *Action;           /* What to do? */
-  struct Binding *NextBinding;
-} Binding;
-
 typedef struct
 {
   int x;                  /* suggested x position */

@@ -1,3 +1,31 @@
+1999-03-27  Dominik Vogt  <dominik_vogt@gmx.de>
+
+	* fvwm/events.c (HandleButtonPress): fixed bug in title button drawing
+
+	* --- end of changes to move binding code into fvwmlib ---
+
+	* fvwm/functions.c (func_config): use key_func/mouse_func instead of
+	Parse...Entry
+
+	* fvwm/icons.c (GrabIconButtons):
+	(GrabIconKeys):
+	* fvwm/events.c (HandleButtonPress):
+	(HandleKeyPress):
+	* fvwm/add_window.c (GrabKeys):
+	(GrabButtons): use new Bindings module in fvwmlib
+
+	* libs/fvwmlib.h:
+	* fvwm/menus.h (Binding): moved typedef to fvwmlib.h
+
+	* libs/fvwmlib.h:
+	* fvwm/fvwm.h: move context macros into fvwmlib
+
+	* libs/Makefile.am: added Bindings.c
+
+	* libs/Bindings.c: new file
+
+	* --- begin of changes to move binding code into fvwmlib ---
+
 1999-03-27  Matthias Clasen  <clasen@mathematik.uni-freiburg.de>
 
 	* fvwm/move.c (moveLoop): don't send synthetic 
@@ -32,15 +60,15 @@
 
 1999-03-24  Matthias Clasen  <clasen@mathematik.uni-freiburg.de>
 
-	* fvwm/resize.c (resize_window): 
-	* fvwm/builtins.c (Maximize): 
-	* fvwm/add_window.c (AddWindow): 
-	* fvwm/session.c (SaveWindowStates): 
-	* fvwm/events.c (HandleConfigureRequest): 
+	* fvwm/resize.c (resize_window):
+	* fvwm/builtins.c (Maximize):
+	* fvwm/add_window.c (AddWindow):
+	* fvwm/session.c (SaveWindowStates):
+	* fvwm/events.c (HandleConfigureRequest):
 	* fvwm/borders.c (SetBorder): Change orig_x/orig_y to absolute coords.
-	
+
 	* fvwm/builtins.c (Maximize): Unmaximize to the same
-	absolute position as before (unless we're sticky). 
+	absolute position as before (unless we're sticky).
 
 	* fvwm/events.c (HandleMapRequest): While in startup,
 	handle map request by just mapping the window, decorations

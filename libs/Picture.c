@@ -341,7 +341,7 @@ static Color_Info base_array[] = {
 
 /* given an xpm, change colors to colors close to the
    subset above. */
-void color_reduce_pixmap(XpmImage *image,int color_limit) 
+void color_reduce_pixmap(XpmImage *image,int color_limit)
 {
   int i;
   XpmColor *color_table_ptr;
@@ -362,7 +362,7 @@ void color_reduce_pixmap(XpmImage *image,int color_limit)
 }
 
 /* from the color names in the base table, calc rgbs */
-static void c100_init_base_table () 
+static void c100_init_base_table ()
 {
   int i;
   for (i=0; i<NColors; i++) {           /* change all base colors to numbers */
@@ -373,7 +373,7 @@ static void c100_init_base_table ()
 
 /* Replace the color in my_color by the closest matching color
    from base_table */
-static void c200_substitute_color(char **my_color, int color_limit) 
+static void c200_substitute_color(char **my_color, int color_limit)
 {
   int i, limit, minind;
   double mindst=1e20;
@@ -409,7 +409,7 @@ static void c200_substitute_color(char **my_color, int color_limit)
   return;                             /* all done */
  }
 
-static void c300_color_to_rgb(char *c_color, XColor *rgb_space) 
+static void c300_color_to_rgb(char *c_color, XColor *rgb_space)
 {
   int rc;
   rc=XParseColor(PictureSaveDisplay, PictureCMap, c_color, rgb_space);
@@ -422,7 +422,7 @@ static void c300_color_to_rgb(char *c_color, XColor *rgb_space)
 /* A macro for squaring things */
 #define SQUARE(X) ((X)*(X))
 /* RGB Color distance sum of square of differences */
-static double c400_distance(XColor *target_ptr, XColor *base_ptr) 
+static double c400_distance(XColor *target_ptr, XColor *base_ptr)
 {
   register double dst;
   dst = SQUARE((double)(base_ptr->red   - target_ptr->red  )/655.35)

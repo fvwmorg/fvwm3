@@ -73,29 +73,6 @@
 
 #define NULLSTR ((char *) NULL)
 
-/* contexts for button presses */
-#define C_NO_CONTEXT	0x00
-#define C_WINDOW	0x01
-#define C_TITLE		0x02
-#define C_ICON		0x04
-#define C_ROOT		0x08
-#define C_FRAME		0x10
-#define C_SIDEBAR       0x20
-#define C_L1            0x40
-#define C_L2            0x80
-#define C_L3           0x100
-#define C_L4           0x200
-#define C_L5           0x400
-#define C_R1           0x800
-#define C_R2          0x1000
-#define C_R3          0x2000
-#define C_R4          0x4000
-#define C_R5          0x8000
-#define C_RALL       (C_R1|C_R2|C_R3|C_R4|C_R5)
-#define C_LALL       (C_L1|C_L2|C_L3|C_L4|C_L5)
-#define C_ALL   (C_WINDOW|C_TITLE|C_ICON|C_ROOT|C_FRAME|C_SIDEBAR|\
-                 C_L1|C_L2|C_L3|C_L4|C_L5|C_R1|C_R2|C_R3|C_R4|C_R5)
-
 typedef struct MyFont
 {
   XFontStruct *font;		/* font structure */

@@ -293,14 +293,17 @@ MenuStatus do_menu (MenuRoot *menu,MenuRoot *menuPrior,
 int check_allowed_function(MenuItem *mi);
 int check_allowed_function2(int function, FvwmWindow *t);
 void ReInstallActiveColormap(void);
+
 void ParsePopupEntry(char *,FILE *, char **, int *);
-void ParseMouseEntry(F_CMD_ARGS);
-void ParseKeyEntry(F_CMD_ARGS);
-Bool CheckBinding(int keycode, unsigned int modifier, FvwmWindow *Tmp_win,
-		  int Context, int IsMouse);
+
+/* --- bindings.c --- */
+void key_binding(F_CMD_ARGS);
+void mouse_binding(F_CMD_ARGS);
 unsigned int MaskUsedModifiers(unsigned int in_modifiers);
 unsigned int GetUnusedModifiers(void);
 void ignore_modifiers(F_CMD_ARGS);
+/* --- end of bindings.c --- */
+
 void SetOneStyle(char *text,FILE *,char **,int *);
 void ParseStyle(char *text,FILE *,char **,int *);
 void assign_string(char *text, FILE *fd, char **arg,int *);

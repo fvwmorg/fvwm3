@@ -1,3 +1,11 @@
+1999-03-27  Dominik Vogt  <dominik_vogt@gmx.de>
+
+	* FvwmIconMan/x.c:
+	* FvwmIconMan/readconfig.c:
+	* FvwmIconMan/readconfig.h:
+	* FvwmIconMan/FvwmIconMan.h: use Binding structure from fvwmlib instead
+	of private reimplementation
+
 Mon Mar 22 19:01:38 1999  DanEspen  <dje@blue>
 
 	* FvwmForm/Makefile.am (FvwmTalk): Fix loop in FvwmTalk.

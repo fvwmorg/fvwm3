@@ -391,6 +391,8 @@ void HandleFocusIn()
  ************************************************************************/
 void HandleKeyPress()
 {
+  char *action;
+
   ButtonWindow = Tmp_win;
 
   DBUG("HandleKeyPress","Routine Entered");
@@ -405,8 +407,14 @@ void HandleKeyPress()
     XKeysymToKeycode(dpy,XKeycodeToKeysym(dpy,Event.xkey.keycode,0));
 
   /* Check if there is something bound to the key */
-  if (CheckBinding(Event.xkey.keycode, Event.xkey.state, Tmp_win, Context, 0))
-    return;
+  action = CheckBinding(Scr.AllBindings, Event.xkey.keycode,
+			MaskUsedModifiers(Event.xkey.state), Context,
+			KEY_BINDING);
+  if (action != NULL)
+    {
+      ExecuteFunction(action,Tmp_win, &Event, Context, -1);
+      return;
+    }
 
   /* if we get here, no function key was bound to the key.  Send it
    * to the client if it was in a window we know about.
@@ -1148,6 +1156,7 @@ void HandleUnmapNotify()
 void HandleButtonPress()
 {
   int LocalContext;
+  char *action;
   Window OldPressedW;
 
   DBUG("HandleButtonPress","Routine Entered");
@@ -1213,8 +1222,13 @@ void HandleButtonPress()
 
   /* we have to execute a function or pop up a menu */
   /* need to search for an appropriate mouse binding */
-  CheckBinding(Event.xbutton.button, Event.xkey.state, Tmp_win, Context,1);
+  action = CheckBinding(Scr.AllBindings, Event.xbutton.button,
+			MaskUsedModifiers(Event.xbutton.state), Context,
+			MOUSE_BINDING);
+  if (action != NULL)
+    ExecuteFunction(action,Tmp_win, &Event, Context, -1);
 
+  OldPressedW = PressedW;
   PressedW = None;
   if(LocalContext == C_TITLE)
     SetTitleBar(ButtonWindow,(Scr.Hilite==ButtonWindow),False);

@@ -846,7 +846,7 @@ void GrabButtons(FvwmWindow *tmp_win)
   while(MouseEntry != (Binding *)0)
     {
       if((MouseEntry->Action != NULL)&&(MouseEntry->Context & C_WINDOW)
-	 &&(MouseEntry->IsMouse == 1))
+	 &&(MouseEntry->type == MOUSE_BINDING))
 	{
 	  if(MouseEntry->Button_Key >0)
 	    {
@@ -925,7 +925,7 @@ void GrabKeys(FvwmWindow *tmp_win)
   for (tmp = Scr.AllBindings; tmp != NULL; tmp = tmp->NextBinding)
     {
       if((tmp->Context & (C_WINDOW|C_TITLE|C_RALL|C_LALL|C_SIDEBAR))&&
-	 (tmp->IsMouse == 0))
+	 (tmp->type == KEY_BINDING))
 	{
 	  XGrabKey(dpy, tmp->Button_Key, tmp->Modifier, tmp_win->frame, True,
 		   GrabModeAsync, GrabModeAsync);
@@ -1128,7 +1128,7 @@ void LookInList(  FvwmWindow *tmp_win, name_list *styles)
   name_list *nptr;
 
   memset(styles, 0, sizeof(name_list)); /* clear callers return area */
-  styles->layer = Scr.StaysPutLayer; /* initialize to default layer */ 
+  styles->layer = Scr.StaysPutLayer; /* initialize to default layer */
   /* look thru all styles in order defined. */
   for (nptr = Scr.TheList; nptr != NULL; nptr = nptr->next) {
     /* If name/res_class/res_name match, merge */

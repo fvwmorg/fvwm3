@@ -163,17 +163,6 @@ typedef struct Function {
   struct Function *prev;
 } Function;
 
-typedef struct Binding
-{
-  char IsMouse;           /* Is it a mouse or key binding 1= mouse; */
-  int Button_Key;         /* Mouse Button number of Keycode */
-  char *key_name;         /* In case of keycode, give the key_name too */
-  int Modifier;           /* Modifiers for keyboard state */
-  char *Action;           /* What to do? */
-  Function *Function;
-  struct Binding *NextBinding, *LastBinding;
-} Binding;
-
 typedef struct win_data {
   struct button *button;
   /* stuff shadowed in the Button structure */
