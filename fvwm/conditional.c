@@ -166,7 +166,8 @@ static FvwmWindow *Circulate(char *action, int Direction, char **restofline)
 }
 
 static void circulate_cmd(
-	F_CMD_ARGS, int new_context, int circ_dir, Bool do_use_found)
+	F_CMD_ARGS, int new_context, int circ_dir, Bool do_use_found,
+	Bool do_exec_on_match)
 {
 	FvwmWindow *found;
 	char *restofline;
@@ -176,12 +177,12 @@ static void circulate_cmd(
 	{
 		*cond_rc = (found == NULL) ? COND_RC_NO_MATCH : COND_RC_OK;
 	}
-	if ((!found == !do_use_found) && restofline)
+	if ((!found == !do_exec_on_match) && restofline)
 	{
 		const exec_context_t *exc2;
 		exec_context_changes_t ecc;
 
-		ecc.w.fw = found;
+		ecc.w.fw = (do_use_found == True) ? found : NULL;
 		ecc.w.w = (found != NULL) ? FW_W(found) : None;
 		ecc.w.wcontext = new_context;
 		exc2 = exc_clone_context(
@@ -705,35 +706,35 @@ Bool MatchesConditionMask(FvwmWindow *fw, WindowConditionMask *mask)
 
 void CMD_Prev(F_CMD_ARGS)
 {
-	circulate_cmd(F_PASS_ARGS, C_WINDOW, -1, True);
+	circulate_cmd(F_PASS_ARGS, C_WINDOW, -1, True, True);
 
 	return;
 }
 
 void CMD_Next(F_CMD_ARGS)
 {
-	circulate_cmd(F_PASS_ARGS, C_WINDOW, 1, True);
+	circulate_cmd(F_PASS_ARGS, C_WINDOW, 1, True, True);
 
 	return;
 }
 
 void CMD_None(F_CMD_ARGS)
 {
-	circulate_cmd(F_PASS_ARGS, C_ROOT, 1, False);
+	circulate_cmd(F_PASS_ARGS, C_ROOT, 1, False, False);
 
 	return;
 }
 
 void CMD_Any(F_CMD_ARGS)
 {
-	circulate_cmd(F_PASS_ARGS, exc->w.wcontext, 1, False);
+	circulate_cmd(F_PASS_ARGS, exc->w.wcontext, 1, False, True);
 
 	return;
 }
 
 void CMD_Current(F_CMD_ARGS)
 {
-	circulate_cmd(F_PASS_ARGS, C_WINDOW, 0, True);
+	circulate_cmd(F_PASS_ARGS, C_WINDOW, 0, True, True);
 
 	return;
 }

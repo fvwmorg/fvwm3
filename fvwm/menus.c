@@ -4538,7 +4538,7 @@ static mloop_ret_code_t __mloop_get_event(
 	{
 		in->mif.is_popped_up_by_timeout = False;
 		in->mif.do_recycle_event = 0;
-		if (pmp->menu != pmret->menu)
+		if (pmp->menu != pmret->target_menu)
 		{
 			/* the event is for a previous menu, just close this
 			 * one */
@@ -4688,7 +4688,7 @@ static mloop_ret_code_t __mloop_handle_event(
 				 * current menu */
 				pmret->flags.do_unpost_submenu = 1;
 				pmret->rc = MENU_PROPAGATE_EVENT;
-				pmret->menu = med->mrMi;
+				pmret->target_menu = med->mrMi;
 				return MENU_MLOOP_RET_END;
 			}
 			else if (med->mrMi != pmp->menu &&
@@ -4697,7 +4697,7 @@ static mloop_ret_code_t __mloop_handle_event(
 				/* unpost and propagate back to ancestor */
 				pmret->flags.is_menu_posted = 0;
 				pmret->rc = MENU_PROPAGATE_EVENT;
-				pmret->menu = med->mrMi;
+				pmret->target_menu = med->mrMi;
 				return MENU_MLOOP_RET_END;
 			}
 			else if (in->mrPopup && med->mrMi == in->mrPopup)
@@ -4729,16 +4729,14 @@ static mloop_ret_code_t __mloop_handle_event(
 			{
 				pmret->flags.is_menu_posted = 0;
 				pmret->rc = MENU_UNPOST;
-				pmret->menu = NULL;
-				pmret->parent_menu = pmp->menu;
+				pmret->target_menu = NULL;
 				in->mif.do_popup_now = False;
 			}
 			else
 			{
 				pmret->flags.is_menu_posted = 1;
 				pmret->rc = MENU_POST;
-				pmret->menu = NULL;
-				pmret->parent_menu = pmp->menu;
+				pmret->target_menu = NULL;
 				in->mif.do_popup_now = True;
 				if ((in->mrPopup || in->mrPopdown) &&
 				    med->mi != MR_SELECTED_ITEM(pmp->menu))
@@ -4792,7 +4790,7 @@ static mloop_ret_code_t __mloop_handle_event(
 					/* unpost the menu and propagate the
 					 * event to the correct menu */
 					pmret->rc = MENU_PROPAGATE_EVENT;
-					pmret->menu = l_mrMi;
+					pmret->target_menu = l_mrMi;
 					return MENU_MLOOP_RET_END;
 				}
 			}
@@ -4883,7 +4881,7 @@ static mloop_ret_code_t __mloop_handle_event(
 		}
 		med->mi = find_entry(
 			pmp, &med->x_offset, &med->mrMi, p_child, p_rx, p_ry);
-		if (pmret->flags.is_menu_posted && med->mrMi != pmret->menu)
+		if (pmret->flags.is_menu_posted && med->mrMi != pmret->target_menu)
 		{
 			/* ignore mouse movement outside a posted menu */
 			med->mrMi = NULL;
@@ -5461,7 +5459,7 @@ static mloop_ret_code_t __mloop_handle_action_with_mi(
 			/* the event is for a previous menu, just close
 			 * this one */
 			pmret->rc = MENU_PROPAGATE_EVENT;
-			pmret->menu = med->mrMi;
+			pmret->target_menu = med->mrMi;
 		}
 		else
 		{
@@ -5516,9 +5514,9 @@ static mloop_ret_code_t __mloop_handle_action_with_mi(
 	}
 	/* remember the 'posted' menu */
 	if (pmret->flags.is_menu_posted && in->mrPopup != NULL &&
-	    pmret->menu == NULL)
+	    pmret->target_menu == NULL)
 	{
-		pmret->menu = in->mrPopup;
+		pmret->target_menu = in->mrPopup;
 	}
 	if (in->mif.do_menu)
 	{
@@ -7725,26 +7723,61 @@ char *get_menu_options(
 }
 /* ---------------------------- new menu loop code -------------------------- */
 
+#if 0
 /*!!!*/
 typedef enum
 {
-	MEV_XEVENT = 0x1,
-	MEV_PROPAGATE_XEVENT = 0x2,
-	MEV_POPUP = 0x4,
-	MEV_POPDOWN = 0x8
-} mloop_event_t;
+	MTR_XEVENT = 0x1,
+	MTR_FAKE_ENTER_ITEM = 0x2,
+	MTR_PROPAGATE_XEVENT_UP = 0x4,
+	MTR_PROPAGATE_XEVENT_DOWN = 0x8,
+	MTR_POPUP_TIMEOUT = 0x10,
+	MTR_POPDOWN_TIMEOUT = 0x20
+} mloop_trigger_type_t;
+
+typedef_struct
+{
+	mloop_trigger_type_t type;
+	XEvent trigger_ev;
+	int ticks_passed;
+} mloop_trigger_t;
+
+typedef_struct
+{
+	int popup_10ms;
+	int popdown_10ms;
+} mloop_timeouts_t;
+
+typedef struct
+{
+	MenuRoot *current_menu;
+	XEvent *in_ev;
+	struct
+	{
+		unsigned do_fake_enter_item : 1;
+		unsigned do_propagete_event_up : 1;
+		unsigned do_propagete_event_down : 1;
+	} flags;
+} mloop_get_trigger_input_t;
 
 /*!!!static*/
-mloop_event_t __mloop_get_event_new(
-	MenuParameters *pmp, MenuReturn *pmret,
-	mloop_evh_input_t *in, mloop_evh_data_t *med, mloop_static_info_t *msi)
+mloop_trigger_type_t __mloop_get_trigger(
+	mloop_trigger_t *ret_trigger, mloop_timeouts_t *io_timeouts,
+	const mloop_get_trigger_input_t * const in,
 {
-	if (0/*!!!do_propagate_event_to_submenu*/)
+	if (in_out->in_flags->do_propagate_event_down)
 	{
-		/*!!!return propagate down*/
+		return MTR_PROPAGATE_XEVENT_DOWN;
 	}
-	else if (0/*!!!do_propagate_event_to_parent menu*/)
+	else if (in_out->in_flags->do_propagate_event_up)
 	{
+		if (a != b)
+		{
+			return MTR_PROPAGATE_XEVENT_UP;
+		}
+		else
+		{
+		}
 		/*!!!return propagate up*/
 		/*!!!*/
 	}
@@ -7762,19 +7795,19 @@ mloop_event_t __mloop_get_event_new(
 		}
 		if (0/*got event*/)
 		{
-			/*!!!rc = MEV_XEVENT*/
+			/*!!!rc = MTR_XEVENT*/
 		}
 		if (0/*!!!popup timed out;break*/)
 		{
-			/*!!!rc = MEV_POPUP;break*/
+			/*!!!rc = MTR_POPUP;break*/
 		}
 		if (0/*!!!popdown timed out;break*/)
 		{
-			/*!!!rc = MEV_POPDOWN;break*/
+			/*!!!rc = MTR_POPDOWN;break*/
 		}
 		/*!!!sleep*/
 	}
-	if (0/*!!!rc == MEV_XEVENT && evtype == MotionNotify*/)
+	if (0/*!!!rc == MTR_XEVENT && evtype == MotionNotify*/)
 	{
 		/*!!!eat up further MotionNotify events*/
 	}
@@ -7799,21 +7832,27 @@ void __menu_loop_new(
 	__mloop_init(pmp, pmret, &mei, &med, &msi, &mops);
 	for (is_finished = False; !is_finished; )
 	{
-		mloop_event_t mev;
+		mloop_trigger_type_t mtr;
 
-		mev = __mloop_get_event_new(pmp, pmret, &mei, &med, &msi);
-		switch (mev)
+		mtr = __mloop_get_trigger(pmp, pmret, &mei, &med, &msi);
+		switch (mtr)
 		{
-		case MEV_XEVENT:
+		case MTR_XEVENT:
 			/*!!!handle event*/
 			break;
-		case MEV_PROPAGATE_XEVENT:
+		case MTR_FAKE_ENTER_ITEM:
+			/*!!!fake enter item*/
+			break;
+		case MTR_PROPAGATE_XEVENT_UP:
 			/*!!!handle propagation*/
 			break;
-		case MEV_POPUP:
+		case MTR_PROPAGATE_XEVENT_DOWN:
+			/*!!!handle propagation*/
+			break;
+		case MTR_POPUP_TIMEOUT:
 			/*!!!handle popup*/
 			break;
-		case MEV_POPDOWN:
+		case MTR_POPDOWN_TIMEOUT:
 			/*!!!handle popdown*/
 			break;
 		}
@@ -7858,3 +7897,4 @@ void __menu_loop_new(
 
 	return;
 }
+#endif

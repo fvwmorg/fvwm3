@@ -324,8 +324,7 @@ typedef enum
 typedef struct
 {
 	MenuRC rc;
-	MenuRoot *menu;
-	MenuRoot *parent_menu;
+	MenuRoot *target_menu;
 	struct
 	{
 		unsigned do_unpost_submenu : 1;
