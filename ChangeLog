@@ -6,6 +6,8 @@
 	(draw_clipped_decorations):
 	vastly improved speed of window motion with pixmap backgrounds in
 	titles and buttons
+	(get_button_state):
+	removed debug statement
 
 	* fvwm/builtins.c (ReadTitleButton):
 	* fvwm/fvwm.c (DestroyAllButtons):

@@ -446,7 +446,6 @@ static enum ButtonState get_button_state(
     {
       if (PressedW == w)
       {
-fprintf(stderr,"/// active down usedpw = 0x%08x, w = 0x%08x, has_focus = %d, toggled = %d\n", (int)PressedW, (int)w, has_focus, toggled);
 	return (toggled) ? BS_ToggledActiveDown : BS_ActiveDown;
       }
       else
