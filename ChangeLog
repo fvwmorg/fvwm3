@@ -1,5 +1,8 @@
 2002-09-14  olicha  <olivier.chapuis@free.fr>
 
+	* libs/Fft.c (FftDrawString):
+	Fixed clip region with shadow font
+	
 	* libs/PictureGraphics.c (PGraphicsCreateTranslucent):
 	Added a function to create translucent pixmaps
 	* libs/Colorset.c (CreateBackgroundPixmap):
