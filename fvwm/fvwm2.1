@@ -6960,10 +6960,10 @@ this functionality.  Use Unix signals to manage xsm remotely.
 
 .TP
 .BI "Restart [" window_manager " [" params "]]"
-Causes FVWM to restart itself if
+Causes fvwm to restart itself if
 .I window_manager
 is left blank, or to switch to an alternate window manager
-(or other FVWM version) if
+(or other fvwm version) if
 .I window_manager
 is specified.  If the window manager is not in your default search
 path, then you should use the full path name for
@@ -6990,8 +6990,8 @@ If you use 'Restart fvwm2', all current command line arguments are lost,
 while on Restart without parameters or with --pass-args, they are preserved.
 Here are some cases when 'Restart fvwm2' causes troubles:
 .EX
-* running FVWM under a session manager
-* running FVWM with multi headed displays
+* running fvwm under a session manager
+* running fvwm with multi headed displays
 * having command line arguments, like -f themes-rc or -cmd
 * if the first fvwm2 in the $PATH is a different one
 .EE
@@ -7015,7 +7015,7 @@ This command is useful if you use initial arguments like
 .EX
 -cmd FvwmCpp
 .EE
-and want to switch to another FVWM version without losing the
+and want to switch to another fvwm version without losing the
 initial arguments.
 
 .TP
@@ -7140,7 +7140,7 @@ Fvwm tries to contact this session manager.
 .I SESSION_MANAGER_NAME
 This is used mainly to determine xsm running to work around its bug.
 If this variable is set to "xsm", DiscardCommand is set as xsm expects it
-and not as XSMP requires.  If you run FVWM under xsm, you should set this
+and not as XSMP requires.  If you run fvwm under xsm, you should set this
 variable to "xsm", otherwise old state files are not removed.
 .TP
 .I SM_SAVE_DIR
@@ -7190,7 +7190,7 @@ Bug reports can be sent to the fvwm-workers mailing list (see the
 .IR FAQ )
 or reported through the bug tracking system.
 
-The official FVWM homepage is
+The official fvwm homepage is
 .BR http://www.fvwm.org/ .
 
 \" LocalWords:  XTerm xterm rc fvwm Linux ICCCM CDE XView

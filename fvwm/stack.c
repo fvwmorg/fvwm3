@@ -682,7 +682,7 @@ static void RaiseOrLowerWindow(
   {
     /* This hack raises the target and all higher FVWM windows over any style
      * grabfocusoff override_redirect windows that may be above it. This is
-     * used to cope with ill-bahaved applications that insist on using
+     * used to cope with ill-behaved applications that insist on using
      * long-lived override_redirects. */
     if (Scr.bo.RaiseOverUnmanaged)
     {
