@@ -37,7 +37,7 @@ void XineramaSupportGetCurrentScrRect(XEvent *eventp,
 void XineramaSupportGetPrimaryScrRect(int *x, int *y, int *w, int *h);
 void XineramaSupportGetGlobalScrRect(int *x, int *y, int *w, int *h);
 
-void XineramaSupportGetNumberedScreenRect(
+void XineramaSupportGetNumberedScrRect(
   int screen, int *x, int *y, int *w, int *h);
 void XineramaSupportGetResistanceRect(
   int wx, int wy, int ww, int wh, int *x0, int *y0, int *x1, int *y1);

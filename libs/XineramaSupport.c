@@ -553,7 +553,7 @@ void XineramaSupportGetGlobalScrRect(int *x, int *y, int *w, int *h)
   *h = screens[0].height;
 }
 
-void XineramaSupportGetNumberedScreenRect(
+void XineramaSupportGetNumberedScrRect(
   int screen, int *x, int *y, int *w, int *h)
 {
   switch (screen)

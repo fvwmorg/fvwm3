@@ -651,7 +651,7 @@ void X_init_manager (int man_id)
     geometry_mask = XineramaSupportParseGeometryWithScreen(
       man->geometry_str, &man->geometry.x, &man->geometry.y,
       &man->geometry.cols, &man->geometry.rows, &scr);
-    XineramaSupportGetNumberedScreenRect(
+    XineramaSupportGetNumberedScrRect(
       scr, &man->managed_g.x, &man->managed_g.y,
       &man->managed_g.width, &man->managed_g.height);
 

@@ -361,6 +361,8 @@ void flush_window_updates(void)
   for (t = Scr.FvwmRoot.next; t != NULL; t = t->next)
   {
     check_window_style_change(t, &flags, &style);
+    if (Scr.flags.has_xinerama_state_changed)
+      flags.do_update_icon_boxes = True;
     if (Scr.flags.has_nr_buttons_changed)
       flags.do_redecorate = True;
     /* TODO: this is not optimised for minimal redrawing yet*/
@@ -410,6 +412,7 @@ void flush_window_updates(void)
   Scr.flags.has_default_color_changed = 0;
   Scr.flags.has_mouse_binding_changed = 0;
   Scr.flags.has_nr_buttons_changed = 0;
+  Scr.flags.has_xinerama_state_changed = 0;
 
   MyXUngrabServer(dpy);
   if (do_need_ungrab)

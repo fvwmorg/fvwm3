@@ -3922,8 +3922,9 @@ positive number instead of "True", or a negative number instead of
 "False".  Note that this syntax is obsolete, and will be removed
 in the future.
 
-.IP "\fBMaximize[\fP \fIbool\fP \
+.IP "\fBMaximize [\fP \fIscreen screen-spec\fP \
 \fB] [\fP \fIhorizontal\fP \
+\fB] [\fP \fIbool\fP \
 \fB[\fP \fIp\fP \
 \fB]\fP \fIvertical\fP \
 \fB[\fP \fIp\fP \
@@ -3980,6 +3981,16 @@ unoccupied
 Mouse 0 4 A Maximize 100 -60p
 .EE
 Values larger than 100 can be used with caution.
+
+If the first argument is the word
+.IR screen ,
+the
+.I screen-spec
+argument specifies the Xinerama screen on which to operate.
+It can be 'p' for the primary screen, 'c' for the current
+screen (containing the mouse pointer), 'g' for the global screen
+or the screen number itself (counting from zero).  This option is
+only useful with multiple Xinerama screens.
 
 .TP
 .BI "Recapture"

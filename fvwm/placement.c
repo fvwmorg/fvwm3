@@ -574,7 +574,7 @@ Bool PlaceWindow(
     if (flags.do_honor_starts_on_screen)
     {
       /* use screen from style */
-      XineramaSupportGetNumberedScreenRect(
+      XineramaSupportGetNumberedScrRect(
 	XineramaScreen,
 	&screen_g.x, &screen_g.y, &screen_g.width, &screen_g.height);
     }

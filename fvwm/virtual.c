@@ -340,6 +340,8 @@ void CMD_Xinerama(F_CMD_ARGS)
   int val;
   int toggle;
 
+  Scr.flags.do_need_window_update = True;
+  Scr.flags.has_xinerama_state_changed = True;
   if (GetIntegerArguments(action, NULL, &val, 1) == 1)
   {
     XineramaSupportEnable();
@@ -361,6 +363,8 @@ void CMD_Xinerama(F_CMD_ARGS)
     broadcast_xinerama_state();
   }
   broadcast_xinerama_state();
+
+  return;
 }
 
 

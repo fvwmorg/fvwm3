@@ -1,3 +1,23 @@
+2001-08-19  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* fvwm/update.c (flush_window_updates):
+	* fvwm/screen.h (ScreenInfo):
+	* fvwm/virtual.c (CMD_Xinerama):
+
+	* fvwm/move_resize.c (CMD_Maximize):
+	* fvwm/placement.c (PlaceWindow):
+	* libs/XineramaSupport.c (XineramaSupportGetNumberedScrRect):
+	renamed function
+
+	* fvwm/fvwm2.1:
+	describe new maximize options
+
+	* fvwm/move_resize.c (MaximizeWidth):
+	(MaximizeHeight):
+	(CMD_Maximize):
+	applied Dmitry's Xinerama patch for Maximize command
+	replaced "global" and "absolute" with "screen" which is more flexible
+
 2001-08-16  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* libs/Parse.c (SkipQuote):

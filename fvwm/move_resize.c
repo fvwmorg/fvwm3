@@ -986,7 +986,7 @@ static void move_window_doit(F_CMD_ARGS, Bool do_animate, int mode)
     SET_STICKY(tmp_win, 0);
 
     xi_screen = XineramaSupportGetScreenArgument(action, 'c');
-    XineramaSupportGetNumberedScreenRect(
+    XineramaSupportGetNumberedScrRect(
       xi_screen, &s.x, &s.y, &s.width, &s.height);
     page_x = Scr.Vx;
     page_y = Scr.Vy;
@@ -2922,7 +2922,8 @@ static void move_sticky_window_to_same_page(
 }
 static void MaximizeHeight(
   FvwmWindow *win, unsigned int win_width, int win_x, unsigned int *win_height,
-  int *win_y, Bool grow_up, Bool grow_down)
+  int *win_y, Bool grow_up, Bool grow_down,
+  int top_border, int bottom_border)
 {
   FvwmWindow *cwin;
   int x11, x12, x21, x22;
@@ -2934,8 +2935,8 @@ static void MaximizeHeight(
   y11 = *win_y;            /* Start y */
   x12 = x11 + win_width;   /* End x   */
   y12 = y11 + *win_height; /* End y   */
-  new_y1 = truncate_to_multiple(y11, Scr.MyDisplayHeight);
-  new_y2 = new_y1 + Scr.MyDisplayHeight;
+  new_y1 = top_border;
+  new_y2 = bottom_border;
 
   for (cwin = Scr.FvwmRoot.next; cwin; cwin = cwin->next)
   {
@@ -2990,7 +2991,8 @@ static void MaximizeHeight(
 
 static void MaximizeWidth(
   FvwmWindow *win, unsigned int *win_width, int *win_x, unsigned int win_height,
-  int win_y, Bool grow_left, Bool grow_right)
+  int win_y, Bool grow_left, Bool grow_right,
+  int left_border, int right_border)
 {
   FvwmWindow *cwin;
   int x11, x12, x21, x22;
@@ -3002,8 +3004,8 @@ static void MaximizeWidth(
   y11 = win_y;             /* Start y */
   x12 = x11 + *win_width;  /* End x   */
   y12 = y11 + win_height;  /* End y   */
-  new_x1 = truncate_to_multiple(x11, Scr.MyDisplayWidth);
-  new_x2 = new_x1 + Scr.MyDisplayWidth;
+  new_x1 = left_border;
+  new_x2 = right_border;
 
   for (cwin = Scr.FvwmRoot.next; cwin; cwin = cwin->next)
   {
@@ -3074,6 +3076,8 @@ void CMD_Maximize(F_CMD_ARGS)
   Bool grow_left = False;
   Bool grow_right = False;
   Bool do_force_maximize = False;
+  Bool is_screen_given = False;
+  int  scr_x, scr_y, scr_w, scr_h;
   rectangle new_g;
   FvwmWindow *sf;
 
@@ -3087,6 +3091,20 @@ void CMD_Maximize(F_CMD_ARGS)
     XBell(dpy, 0);
     return;
   }
+  /* Check for "global" flag ("absolute" is for compatibility with E) */
+  token = PeekToken(action, &taction);
+  if (token)
+  {
+    if (StrEquals(token, "screen"))
+    {
+      int scr;
+
+      is_screen_given = True;
+      token = PeekToken(taction, &action);
+      scr = XineramaSupportGetScreenArgument(token, 'p');
+      XineramaSupportGetNumberedScrRect(scr, &scr_x, &scr_y, &scr_w, &scr_h);
+    }
+  }
   toggle = ParseToggleArgument(action, &action, -1, 0);
   if (toggle == 0 && !IS_MAXIMIZED(tmp_win))
     return;
@@ -3097,88 +3115,127 @@ void CMD_Maximize(F_CMD_ARGS)
     do_force_maximize = True;
   }
 
+  /* find the new page and geometry */
+  new_g.x = tmp_win->frame_g.x;
+  new_g.y = tmp_win->frame_g.y;
+  new_g.width = tmp_win->frame_g.width;
+  new_g.height = tmp_win->frame_g.height;
+  if (IsRectangleOnThisPage(&tmp_win->frame_g, tmp_win->Desk))
+  {
+    /* maximize on visible page if any part of the window is visible */
+    page_x = 0;
+    page_y = 0;
+  }
+  else
+  {
+    int xoff = Scr.Vx % Scr.MyDisplayWidth;
+    int yoff = Scr.Vy % Scr.MyDisplayHeight;
+
+    /* maximize on the page where the center of the window is */
+    page_x = truncate_to_multiple(
+      tmp_win->frame_g.x + tmp_win->frame_g.width / 2 + xoff,
+      Scr.MyDisplayWidth) - xoff;
+    page_y = truncate_to_multiple(
+      tmp_win->frame_g.y + tmp_win->frame_g.height / 2 + yoff,
+      Scr.MyDisplayHeight) - yoff;
+  }
+
+  /* Check if we should constrain rectangle to some Xinerama screen */
+  if (!is_screen_given)
+  {
+    XineramaSupportGetScrRect(
+      tmp_win->frame_g.x + tmp_win->frame_g.width  / 2 - page_x,
+      tmp_win->frame_g.y + tmp_win->frame_g.height / 2 - page_y,
+      &scr_x, &scr_y, &scr_w, &scr_h);
+  }
+
+#if 0
+  fprintf(stderr, "%s: page=(%d,%d), scr=(%d,%d, %dx%d)\n", __FUNCTION__,
+          page_x, page_y, scr_x, scr_y, scr_w, scr_h);
+#endif
+
   /* parse first parameter */
-  val1_unit = Scr.MyDisplayWidth;
+  val1_unit = scr_w;
   token = PeekToken(action, &taction);
   if (token && StrEquals(token, "grow"))
   {
     grow_left = True;
     grow_right = True;
     val1 = 100;
-    val1_unit = Scr.MyDisplayWidth;
+    val1_unit = scr_w;
   }
   else if (token && StrEquals(token, "growleft"))
   {
     grow_left = True;
     val1 = 100;
-    val1_unit = Scr.MyDisplayWidth;
+    val1_unit = scr_w;
   }
   else if (token && StrEquals(token, "growright"))
   {
     grow_right = True;
     val1 = 100;
-    val1_unit = Scr.MyDisplayWidth;
+    val1_unit = scr_w;
   }
   else
   {
     if (GetOnePercentArgument(token, &val1, &val1_unit) == 0)
     {
       val1 = 100;
-      val1_unit = Scr.MyDisplayWidth;
+      val1_unit = scr_w;
     }
     else if (val1 < 0)
     {
       /* handle negative offsets */
-      if (val1_unit == Scr.MyDisplayWidth)
+      if (val1_unit == scr_w)
       {
 	val1 = 100 + val1;
       }
       else
       {
-	val1 = Scr.MyDisplayWidth + val1;
+	val1 = scr_w + val1;
       }
     }
   }
 
   /* parse second parameter */
-  val2_unit = Scr.MyDisplayHeight;
+  val2_unit = scr_h;
   token = PeekToken(taction, NULL);
   if (token && StrEquals(token, "grow"))
   {
     grow_up = True;
     grow_down = True;
     val2 = 100;
-    val2_unit = Scr.MyDisplayHeight;
+    val2_unit = scr_h;
   }
   else if (token && StrEquals(token, "growup"))
   {
     grow_up = True;
     val2 = 100;
-    val2_unit = Scr.MyDisplayHeight;
+    val2_unit = scr_h;
   }
   else if (token && StrEquals(token, "growdown"))
   {
     grow_down = True;
     val2 = 100;
-    val2_unit = Scr.MyDisplayHeight;
+    val2_unit = scr_h;
   }
   else
   {
     if (GetOnePercentArgument(token, &val2, &val2_unit) == 0)
     {
       val2 = 100;
-      val2_unit = Scr.MyDisplayHeight;
+      val2_unit = scr_h;
     }
     else if (val2 < 0)
     {
       /* handle negative offsets */
-      if (val2_unit == Scr.MyDisplayHeight)
+      if (val2_unit == scr_h)
       {
 	val2 = 100 + val2;
       }
       else
       {
-	val2 = Scr.MyDisplayHeight + val2;
+	val2 = scr_h + val2;
       }
     }
   }
@@ -3196,60 +3253,37 @@ void CMD_Maximize(F_CMD_ARGS)
   }
   else /* maximize */
   {
-    /* find the new page and geometry */
-    new_g.x = tmp_win->frame_g.x;
-    new_g.y = tmp_win->frame_g.y;
-    new_g.width = tmp_win->frame_g.width;
-    new_g.height = tmp_win->frame_g.height;
-    if (IsRectangleOnThisPage(&tmp_win->frame_g, tmp_win->Desk))
-    {
-      /* maximize on visible page if any part of the window is visible */
-      page_x = 0;
-      page_y = 0;
-    }
-    else
-    {
-      int xoff = Scr.Vx % Scr.MyDisplayWidth;
-      int yoff = Scr.Vy % Scr.MyDisplayHeight;
-
-      /* maximize on the page where the center of the window is */
-      page_x = truncate_to_multiple(
-	tmp_win->frame_g.x + tmp_win->frame_g.width / 2 + xoff,
-	Scr.MyDisplayWidth) - xoff;
-      page_y = truncate_to_multiple(
-	tmp_win->frame_g.y + tmp_win->frame_g.height / 2 + yoff,
-	Scr.MyDisplayHeight) - yoff;
-    }
-
     /* handle command line arguments */
     if (grow_up || grow_down)
     {
       MaximizeHeight(
-	  tmp_win, new_g.width, new_g.x, (unsigned int *)&new_g.height,
-	  &new_g.y, grow_up, grow_down);
+	tmp_win, new_g.width, new_g.x, (unsigned int *)&new_g.height,
+	&new_g.y, grow_up, grow_down,
+	page_y + scr_y, page_y + scr_y + scr_h);
     }
     else if(val2 > 0)
     {
       new_g.height = val2 * val2_unit / 100;
-      new_g.y = page_y;
+      new_g.y = page_y + scr_y;
     }
     if (grow_left || grow_right)
     {
       MaximizeWidth(
-	  tmp_win, (unsigned int *)&new_g.width, &new_g.x, new_g.height,
-	  new_g.y, grow_left, grow_right);
+	tmp_win, (unsigned int *)&new_g.width, &new_g.x, new_g.height,
+	new_g.y, grow_left, grow_right,
+	page_x + scr_x, page_x + scr_x + scr_w);
     }
     else if(val1 >0)
     {
       new_g.width = val1 * val1_unit / 100;
-      new_g.x = page_x;
+      new_g.x = page_x + scr_x;
     }
     if(val1 == 0 && val2 == 0)
     {
-      new_g.x = page_x;
-      new_g.y = page_y;
-      new_g.height = Scr.MyDisplayHeight;
-      new_g.width = Scr.MyDisplayWidth;
+      new_g.x = page_x + scr_x;
+      new_g.y = page_y + scr_y;
+      new_g.height = scr_h;
+      new_g.width = scr_w;
     }
     /* now maximize it */
     SET_MAXIMIZED(tmp_win, 1);

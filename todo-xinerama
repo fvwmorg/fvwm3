@@ -38,10 +38,10 @@ Minimal set of Xinerama features:
 
 1b, 2b, 3 a b c, 4a, 5 a e (placement only), 6d, 7a, 8b
 
+[done]
+
 Still to do:
 ------------
-
-6 d
 
 Optional to do:
 ---------------
@@ -75,7 +75,7 @@ Already done:
     k) FvwmIconBox
     l) FvwmScript
     m) FvwmIdent
-6 a c g i j k
+6 a c d g i j k
  7) Control:
     a) Enable and Disable Xinerama on the fly (including modules)
 8 b d

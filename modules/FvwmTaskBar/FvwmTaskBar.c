@@ -1822,7 +1822,7 @@ void StartMeUp(void)
    ret = XineramaSupportParseGeometryWithScreen(
      geometry, &hints.x, &hints.y, (unsigned int *)&hints.width,
      (unsigned int *)&hints.height, &xi_screen);
-   XineramaSupportGetNumberedScreenRect(
+   XineramaSupportGetNumberedScrRect(
      xi_screen, &screen_g.x, &screen_g.y, &screen_g.width, &screen_g.height);
    XineramaSupportGetGlobalScrRect(
      &global_scr_g.x, &global_scr_g.y, &global_scr_g.width,

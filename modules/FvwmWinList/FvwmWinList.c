@@ -1379,7 +1379,7 @@ void StartMeUp_II(void)
   g_hints_rc = XineramaSupportParseGeometryWithScreen(
     geometry, &g_hints.x, &g_hints.y, (unsigned int *)&g_hints.width,
     (unsigned int *)&g_hints.height, &xi_screen);
-  XineramaSupportGetNumberedScreenRect(
+  XineramaSupportGetNumberedScrRect(
     xi_screen, &screen_g.x, &screen_g.y, &screen_g.width, &screen_g.height);
 
 #ifdef I18N_MB
