@@ -1663,7 +1663,7 @@ void DrawGrid(int desk, int erase, Window ew, XRectangle *r)
 	}
 	if(((Scr.CurrentDesk - desk1) == desk) && !ShapeLabels)
 	{
-		if (uselabel && erase)
+		if (uselabel)
 		{
 			XFillRectangle(
 				dpy,Desks[desk].title_w,Desks[desk].HiliteGC,
@@ -1717,6 +1717,7 @@ void DrawGrid(int desk, int erase, Window ew, XRectangle *r)
 		{
 			FwinString->flags.has_clip_region = True;
 			FwinString->clip_region = region;
+			XSetRegion(dpy, FwinString->gc, region);
 		}
 		else
 		{
@@ -1729,6 +1730,7 @@ void DrawGrid(int desk, int erase, Window ew, XRectangle *r)
 		XDestroyRegion(region);
 		FwinString->flags.has_clip_region = False;
 		FwinString->clip_region = None;
+		XSetClipMask(dpy, FwinString->gc, None);
 	}
 	
 	if (FShapesSupported)
