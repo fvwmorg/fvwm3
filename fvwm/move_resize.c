@@ -710,7 +710,7 @@ void CMD_ResizeMove(F_CMD_ARGS)
      * depressed. */
     SET_MAXIMIZED(tmp_win, 0);
     DrawDecorations(
-      tmp_win, DRAW_BUTTONS, (tmp_win == Scr.Hilite), True, None);
+      tmp_win, DRAW_BUTTONS, (tmp_win == Scr.Hilite), True, None, CLEAR_ALL);
   }
   dx = FinalX - tmp_win->frame_g.x;
   dy = FinalY - tmp_win->frame_g.y;
@@ -737,7 +737,7 @@ void CMD_ResizeMove(F_CMD_ARGS)
     tmp_win->normal_g.x += dx;
     tmp_win->normal_g.y += dy;
   }
-  DrawDecorations(tmp_win, DRAW_ALL, True, True, None);
+  DrawDecorations(tmp_win, DRAW_ALL, True, True, None, CLEAR_ALL);
   update_absolute_geometry(tmp_win);
   maximize_adjust_offset(tmp_win);
   XSync(dpy, 0);
@@ -2324,7 +2324,7 @@ void CMD_Resize(F_CMD_ARGS)
     /* must redraw the buttons now so that the 'maximize' button does not stay
      * depressed. */
     DrawDecorations(
-      tmp_win, DRAW_BUTTONS, (tmp_win == Scr.Hilite), True, None);
+      tmp_win, DRAW_BUTTONS, (tmp_win == Scr.Hilite), True, None, CLEAR_ALL);
   }
 
   if (IS_SHADED(tmp_win) || !IS_MAPPED(tmp_win))
@@ -2365,7 +2365,7 @@ void CMD_Resize(F_CMD_ARGS)
       ForceSetupFrame(tmp_win, tmp_win->frame_g.x, tmp_win->frame_g.y,
 		      drag->width, drag->height, False);
     }
-    DrawDecorations(tmp_win, DRAW_ALL, True, True, None);
+    DrawDecorations(tmp_win, DRAW_ALL, True, True, None, CLEAR_ALL);
     update_absolute_geometry(tmp_win);
     maximize_adjust_offset(tmp_win);
     GNOME_SetWinArea(tmp_win);
@@ -2677,7 +2677,7 @@ void CMD_Resize(F_CMD_ARGS)
 	  DoResize(
 	    start_g.x, start_g.y, tmp_win, &start_g, orig, &xmotion, &ymotion,
 	    do_resize_opaque);
-	  DrawDecorations(tmp_win, DRAW_ALL, True, True, None);
+	  DrawDecorations(tmp_win, DRAW_ALL, True, True, None, CLEAR_ALL);
 	}
       }
       done = True;
@@ -2779,7 +2779,7 @@ void CMD_Resize(F_CMD_ARGS)
     SET_MAXIMIZED(tmp_win, 1);
     /* force redraw */
     DrawDecorations(
-      tmp_win, DRAW_BUTTONS, (tmp_win == Scr.Hilite), True, None);
+      tmp_win, DRAW_BUTTONS, (tmp_win == Scr.Hilite), True, None, CLEAR_ALL);
   }
 
   if (bad_window == tmp_win->w)
@@ -3482,7 +3482,7 @@ void CMD_Maximize(F_CMD_ARGS)
     ForceSetupFrame(
       tmp_win, tmp_win->frame_g.x, tmp_win->frame_g.y, tmp_win->frame_g.width,
       tmp_win->frame_g.height, True);
-    DrawDecorations(tmp_win, DRAW_ALL, True, True, None);
+    DrawDecorations(tmp_win, DRAW_ALL, True, True, None, CLEAR_ALL);
   }
   else /* maximize */
   {
@@ -3529,7 +3529,8 @@ void CMD_Maximize(F_CMD_ARGS)
       get_shaded_geometry(tmp_win, &new_g, &tmp_win->max_g);
     SetupFrame(
       tmp_win, new_g.x, new_g.y, new_g.width, new_g.height, True);
-    DrawDecorations(tmp_win, DRAW_ALL, (Scr.Hilite == tmp_win), True, None);
+    DrawDecorations(
+      tmp_win, DRAW_ALL, (Scr.Hilite == tmp_win), True, None, CLEAR_ALL);
     update_absolute_geometry(tmp_win);
     /* remember the offset between old and new position in case the maximized
      * window is moved more than the screen width/height. */
@@ -3580,7 +3581,8 @@ void handle_stick(F_CMD_ARGS, int toggle)
   }
   BroadcastConfig(M_CONFIGURE_WINDOW,tmp_win);
   DrawDecorations(
-    tmp_win, DRAW_TITLE | DRAW_BUTTONS, (Scr.Hilite==tmp_win), True, None);
+    tmp_win, DRAW_TITLE | DRAW_BUTTONS, (Scr.Hilite==tmp_win),
+    True, None, CLEAR_ALL);
   if ((sf = get_focus_window()))
   {
     focus_grab_buttons(sf, True);

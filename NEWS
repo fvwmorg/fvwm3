@@ -27,12 +27,22 @@ Changes in beta release 2.5.0 (not released yet)
   ExactIconName.
 
 * New command "DesktopName desk name" to define the name of a desktop for
-  the FvwmPager, the WindowList and ewmh compliant pagers
+  the FvwmPager, the WindowList and ewmh compliant pagers. New expanding
+  variables $[desk.name<n>] for the desktop names.
 
 * New window list options NoDeskNum, NoCurrentDeskTitle, TitleForAllDesks,
   NoNumInDeskTitle
 
 * New emacs style bindings in menus.
+
+* New Maximize global flags "layer" which caues the various grow methods
+  to ignore the windows with a layer less than or equal to the layer on
+  the window which is maximized.
+
+* Better support of the Transparent colorset in the modules and in
+  animated menus.
+
+* Amelioration of the WindowShade animation
 
 _+_A NAME="2.4.4"_-_
 Changes in stable release 2.4.4 (16-Dec-2001)

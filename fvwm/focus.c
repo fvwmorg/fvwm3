@@ -82,7 +82,7 @@ static void DoSetFocus(Window w, FvwmWindow *Fw, Bool FocusByMouse, Bool NoWarp)
     else
     {
       /* make sure the window is not hilighted */
-      DrawDecorations(Fw, DRAW_ALL, False, False, None);
+      DrawDecorations(Fw, DRAW_ALL, False, False, None, CLEAR_ALL);
     }
     return;
   }

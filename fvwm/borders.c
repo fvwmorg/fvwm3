@@ -1775,7 +1775,7 @@ static void get_common_decorations(
 
 void draw_clipped_decorations(
   FvwmWindow *t, draw_window_parts draw_parts, Bool has_focus, int force,
-  Window expose_win, XRectangle *rclip)
+  Window expose_win, XRectangle *rclip, clear_window_parts clear_parts)
 {
   common_decorations_type cd;
   Bool is_frame_redraw_allowed = False;
@@ -1822,7 +1822,7 @@ void draw_clipped_decorations(
       {
 	/* make sure that the previously highlighted window got
 	 * unhighlighted */
-	DrawDecorations(Scr.Hilite, DRAW_ALL, False, True, None);
+	DrawDecorations(Scr.Hilite, DRAW_ALL, False, True, None, CLEAR_ALL);
       }
       Scr.Hilite = t;
     }
@@ -1888,7 +1888,7 @@ void draw_clipped_decorations(
   {
     get_common_decorations(
       &cd, t, draw_parts, has_focus, force, expose_win, True, True);
-    if (!rclip || !IS_WINDOW_BORDER_DRAWN(t))
+    if ((clear_parts & CLEAR_FRAME) && (!rclip || !IS_WINDOW_BORDER_DRAWN(t)))
     {
       change_window_background(t->decor_w, cd.valuemask, &cd.attributes);
       SET_WINDOW_BORDER_DRAWN(t, 1);
@@ -1903,9 +1903,10 @@ void draw_clipped_decorations(
 
 void DrawDecorations(
   FvwmWindow *t, draw_window_parts draw_parts, Bool has_focus, int force,
-  Window expose_win)
+  Window expose_win, clear_window_parts clear_parts)
 {
-  draw_clipped_decorations(t, draw_parts, has_focus, force, expose_win, NULL);
+  draw_clipped_decorations(
+    t, draw_parts, has_focus, force, expose_win, NULL, clear_parts);
 
   return;
 }
@@ -2510,6 +2511,7 @@ void RedrawDecorations(FvwmWindow *tmp_win)
   /* domivogt (6-Jun-2000): Don't check if the window is visible here.  If we
    * do, some updates are not applied and when the window becomes visible
    * again, the X Server may not redraw the window. */
-  DrawDecorations(tmp_win, DRAW_ALL, (Scr.Hilite == tmp_win), 2, None);
+  DrawDecorations(
+    tmp_win, DRAW_ALL, (Scr.Hilite == tmp_win), 2, None, CLEAR_ALL);
   Scr.Hilite = u;
 }

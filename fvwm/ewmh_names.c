@@ -363,7 +363,8 @@ int EWMH_WMName(EWMH_CMD_ARGS)
 
   /* fix the name in the title bar */
   if(!IS_ICONIFIED(fwin))
-    DrawDecorations(fwin, DRAW_TITLE, (Scr.Hilite == fwin), True, None);
+    DrawDecorations(fwin, DRAW_TITLE, (Scr.Hilite == fwin),
+		    True, None, CLEAR_ALL);
 
   if (!WAS_ICON_NAME_PROVIDED(fwin))
   {

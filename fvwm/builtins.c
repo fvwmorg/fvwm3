@@ -245,18 +245,18 @@ void CMD_WindowShade(F_CMD_ARGS)
       /* make the decor window the full sze before the animation unveils it */
       XMoveResizeWindow(dpy, tmp_win->decor_w, 0, HAS_BOTTOM_TITLE(tmp_win)
         ? frame_g.height - big_g.height : 0, big_g.width, big_g.height);
+      tmp_win->frame_g.width = big_g.width;
+      tmp_win->frame_g.height = big_g.height;
       /* draw the border decoration iff backing store is on */
       if (Scr.use_backing_store != NotUseful)
       { /* eek! fvwm doesn't know the backing_store setting for windows */
         XWindowAttributes xwa;
 
         if (XGetWindowAttributes(dpy, tmp_win->decor_w, &xwa)
-            && xwa.backing_store != NotUseful)
+	    && xwa.backing_store != NotUseful)
         {
-          tmp_win->frame_g.width = big_g.width;
-          tmp_win->frame_g.height = big_g.height;
           DrawDecorations(
-	    tmp_win, DRAW_FRAME, sf == tmp_win, True, None);
+	    tmp_win, DRAW_FRAME, sf == tmp_win, True, None, CLEAR_ALL);
         }
       }
       while (frame_g.height + diff.height < big_g.height)
@@ -315,6 +315,8 @@ void CMD_WindowShade(F_CMD_ARGS)
 	    dpy, tmp_win->frame, FShapeBounding, 0, 0, shape_w, FShapeBounding,
 	    FShapeSet);
 	}
+	DrawDecorations(
+	  tmp_win, DRAW_FRAME, sf == tmp_win, True, None, CLEAR_NONE);
         FlushAllMessageQueues();
         XSync(dpy, 0);
       }
@@ -498,7 +500,8 @@ void CMD_WindowShade(F_CMD_ARGS)
       M_WINDOWSHADE, 3, tmp_win->w, tmp_win->frame, (unsigned long)tmp_win);
   }
   DrawDecorations(
-    tmp_win, DRAW_FRAME | DRAW_BUTTONS, (Scr.Hilite == tmp_win), True, None);
+    tmp_win, DRAW_FRAME | DRAW_BUTTONS, (Scr.Hilite == tmp_win),
+    True, None, CLEAR_NONE);
   FlushAllMessageQueues();
   XSync(dpy, 0);
 
@@ -2124,7 +2127,8 @@ void CMD_ChangeDecor(F_CMD_ARGS)
   ForceSetupFrame(
     tmp_win, tmp_win->frame_g.x, tmp_win->frame_g.y, tmp_win->frame_g.width,
     tmp_win->frame_g.height - extra_height, True);
-  DrawDecorations(tmp_win, DRAW_ALL, (Scr.Hilite == tmp_win), 2, None);
+  DrawDecorations(
+    tmp_win, DRAW_ALL, (Scr.Hilite == tmp_win), 2, None, CLEAR_ALL);
 }
 
 /*****************************************************************************
@@ -2373,18 +2377,18 @@ void CMD_UpdateDecor(F_CMD_ARGS)
     {
       if (fw->decor == found)
       {
-	DrawDecorations(fw, DRAW_ALL, True, True, None);
-	DrawDecorations(fw, DRAW_ALL, False, True, None);
+	DrawDecorations(fw, DRAW_ALL, True, True, None, CLEAR_ALL);
+	DrawDecorations(fw, DRAW_ALL, False, True, None, CLEAR_ALL);
       }
     }
     else
 #endif
     {
-      DrawDecorations(fw, DRAW_ALL, True, True, None);
-      DrawDecorations(fw, DRAW_ALL, False, True, None);
+      DrawDecorations(fw, DRAW_ALL, True, True, None, CLEAR_ALL);
+      DrawDecorations(fw, DRAW_ALL, False, True, None, CLEAR_ALL);
     }
   }
-  DrawDecorations(hilight, DRAW_ALL, True, True, None);
+  DrawDecorations(hilight, DRAW_ALL, True, True, None, CLEAR_ALL);
 }
 
 void reset_decor_changes(void)

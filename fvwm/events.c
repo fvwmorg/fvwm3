@@ -189,7 +189,7 @@ void HandleFocusIn(void)
     }
     else
     {
-      DrawDecorations(Scr.Hilite, DRAW_ALL, False, True, None);
+      DrawDecorations(Scr.Hilite, DRAW_ALL, False, True, None, CLEAR_ALL);
       if (Scr.ColormapFocus == COLORMAP_FOLLOWS_FOCUS)
       {
 	if((Scr.Hilite)&&(!IS_ICONIFIED(Scr.Hilite)))
@@ -219,7 +219,7 @@ void HandleFocusIn(void)
     SET_FOCUS_CHANGE_BROADCAST_PENDING(Tmp_win, 0);
     if (Tmp_win != Scr.Hilite)
     {
-      DrawDecorations(Tmp_win, DRAW_ALL, True, True, None);
+      DrawDecorations(Tmp_win, DRAW_ALL, True, True, None, CLEAR_ALL);
     }
     focus_w = Tmp_win->w;
     focus_fw = Tmp_win->frame;
@@ -452,7 +452,7 @@ fprintf(stderr, " '%s'\n", Tmp_win->name);
     /* fix the name in the title bar */
     if(!IS_ICONIFIED(Tmp_win))
       DrawDecorations(
-	Tmp_win, DRAW_TITLE, (Scr.Hilite == Tmp_win), True, None);
+	Tmp_win, DRAW_TITLE, (Scr.Hilite == Tmp_win), True, None, CLEAR_ALL);
 
     EWMH_SetVisibleName(Tmp_win, False);
     /*
@@ -903,7 +903,7 @@ void HandleExpose(void)
     }
     draw_clipped_decorations(
       Tmp_win, draw_parts, (Scr.Hilite == Tmp_win), True, Event.xany.window,
-      &r);
+      &r, CLEAR_ALL);
   }
 
   return;
@@ -1303,13 +1303,13 @@ void HandleMapNotify(void)
   if((!(HAS_BORDER(Tmp_win)|HAS_TITLE(Tmp_win)))&&(Tmp_win->boundary_width <2))
   {
     DrawDecorations(
-      Tmp_win, DRAW_ALL, False, True, Tmp_win->decor_w);
+      Tmp_win, DRAW_ALL, False, True, Tmp_win->decor_w, CLEAR_ALL);
   }
   else if (Tmp_win == get_focus_window() && Tmp_win != Scr.Hilite)
   {
     /* BUG 679: must redraw decorations here to make sure the window is properly
      * hilighted after being de-iconified by a key press. */
-    DrawDecorations(Tmp_win, DRAW_ALL, True, True, None);
+    DrawDecorations(Tmp_win, DRAW_ALL, True, True, None, CLEAR_ALL);
   }
   MyXUngrabServer (dpy);
   SET_MAPPED(Tmp_win, 1);
@@ -1631,7 +1631,7 @@ void HandleButtonPress(void)
     }
     if (!IS_ICONIFIED(Tmp_win))
     {
-      DrawDecorations(Tmp_win, DRAW_ALL, True, True, PressedW);
+      DrawDecorations(Tmp_win, DRAW_ALL, True, True, PressedW, CLEAR_ALL);
     }
   }
   else if (Tmp_win && Event.xbutton.window == Tmp_win->Parent &&
@@ -1682,18 +1682,20 @@ void HandleButtonPress(void)
     if (Context == C_TITLE)
     {
       DrawDecorations(
-        Tmp_win, DRAW_TITLE, (Scr.Hilite == Tmp_win), True, PressedW);
+        Tmp_win, DRAW_TITLE, (Scr.Hilite == Tmp_win), True, PressedW, CLEAR_ALL);
     }
     else if (Context & (C_LALL | C_RALL))
     {
       DrawDecorations(
-        Tmp_win, DRAW_BUTTONS, (Scr.Hilite == Tmp_win), True, PressedW);
+        Tmp_win, DRAW_BUTTONS, (Scr.Hilite == Tmp_win),
+	True, PressedW, CLEAR_ALL);
     }
     else
     {
       DrawDecorations(
         Tmp_win, DRAW_FRAME, (Scr.Hilite == Tmp_win),
-        (HAS_DEPRESSABLE_BORDER(Tmp_win) && PressedW != None), PressedW);
+        (HAS_DEPRESSABLE_BORDER(Tmp_win) && PressedW != None),
+	PressedW, CLEAR_ALL);
     }
   }
 
@@ -1748,15 +1750,16 @@ void HandleButtonPress(void)
   {
     if (LocalContext == C_TITLE)
       DrawDecorations(
-        ButtonWindow, DRAW_TITLE, (Scr.Hilite == ButtonWindow), True, None);
+        ButtonWindow, DRAW_TITLE, (Scr.Hilite == ButtonWindow),
+	True, None, CLEAR_ALL);
     else if (LocalContext & (C_LALL | C_RALL))
       DrawDecorations(
         ButtonWindow, DRAW_BUTTONS, (Scr.Hilite == ButtonWindow), True,
-        OldPressedW);
+        OldPressedW, CLEAR_ALL);
     else
       DrawDecorations(
         ButtonWindow, DRAW_FRAME, (Scr.Hilite == ButtonWindow),
-        HAS_DEPRESSABLE_BORDER(ButtonWindow), None);
+        HAS_DEPRESSABLE_BORDER(ButtonWindow), None, CLEAR_ALL);
   }
   ButtonWindow = NULL;
   UngrabEm(GRAB_PASSIVE);
@@ -2093,7 +2096,7 @@ void HandleLeaveNotify(void)
 	  DeleteFocus(1);
 	}
 	if (Scr.Hilite != NULL)
-	  DrawDecorations(Scr.Hilite, DRAW_ALL, False, True, None);
+	  DrawDecorations(Scr.Hilite, DRAW_ALL, False, True, None, CLEAR_ALL);
       }
     }
   }

@@ -24,6 +24,15 @@ typedef enum
   DRAW_ALL      = 0x7
 } draw_window_parts;
 
+typedef enum
+{
+  CLEAR_NONE     = 0x0,
+  CLEAR_FRAME    = 0x1,
+  CLEAR_TITLE    = 0x2,
+  CLEAR_BUTTONS  = 0x4,
+  CLEAR_ALL      = 0x7
+} clear_window_parts;
+
 int ButtonPosition(int context, FvwmWindow * t);
 void SetupTitleBar(FvwmWindow *tmp_win, int w, int h);
 void SetupFrame(
@@ -35,9 +44,9 @@ void set_decor_gravity(
 void SetShape(FvwmWindow *, int);
 void draw_clipped_decorations(
   FvwmWindow *t, draw_window_parts draw_parts, Bool has_focus, int force,
-  Window expose_win, XRectangle *rclip);
+  Window expose_win, XRectangle *rclip, clear_window_parts clear_parts);
 void DrawDecorations(
   FvwmWindow *t, draw_window_parts draw_parts, Bool has_focus, int force,
-  Window expose_win);
+  Window expose_win, clear_window_parts clear_parts);
 void RedrawDecorations(FvwmWindow *tmp_win);
 #endif /* _BORDERS_H */
