@@ -110,6 +110,7 @@ void CMD_Move(F_CMD_ARGS);
 void CMD_MoveThreshold(F_CMD_ARGS);
 void CMD_MoveToDesk(F_CMD_ARGS);
 void CMD_MoveToPage(F_CMD_ARGS);
+void CMD_MoveToScreen(F_CMD_ARGS);
 void CMD_Next(F_CMD_ARGS);
 void CMD_None(F_CMD_ARGS);
 void CMD_Nop(F_CMD_ARGS);
@@ -167,6 +168,7 @@ void CMD_WindowId(F_CMD_ARGS);
 void CMD_WindowList(F_CMD_ARGS);
 void CMD_WindowShade(F_CMD_ARGS);
 void CMD_WindowShadeAnimate(F_CMD_ARGS);
+void CMD_Xinerama(F_CMD_ARGS);
 void CMD_XorPixmap(F_CMD_ARGS);
 void CMD_XorValue(F_CMD_ARGS);
 

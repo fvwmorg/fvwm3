@@ -1,4 +1,50 @@
-2001-08-05  Dominik Vogt  <dominik.vogt@gmx.de>
+2001-08-06  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* FvwmTaskBar/FvwmTaskBar.c:
+	fixed mouse button grabbing
+
+	* FvwmTaskBar/List.c (UpdateItemIndexGeometry):
+	(GetItemGeometry):
+	* FvwmTaskBar/Goodies.c (PopupTipWindow):
+	* FvwmTaskBar/FvwmTaskBar.c (StartMeUp):
+	(ProcessMessage):
+	(WarpTaskBar):
+	(RevealTaskBar):
+	(HideTaskBar):
+	(ParseConfigLine):
+	xineramified TaskBar
+	new options PageOnly and ScreenOnly
+
+	* FvwmTaskBar/FvwmTaskBar.c (ParseConfigLine):
+	fixed memory leak
+
+	* FvwmWharf/FvwmWharf.c (CreateWindow):
+	fixed handling of negative geometries
+
+	* FvwmIconMan/readconfig.c (GetConfigLineWrapper):
+	* FvwmIconMan/fvwm.c (handle_config_info):
+	* FvwmPager/FvwmPager.c (list_config_info):
+	(ParseOptions):
+	* FvwmTaskBar/FvwmTaskBar.c (ProcessMessage):
+	(configopts):
+	(ParseConfigLine):
+	(StartMeUp):
+	* FvwmWharf/FvwmWharf.c (handle_config_info_packet):
+	(ParseOptions):
+	honour Xinerama settings from the start
+
+	* FvwmForm/FvwmForm.c (OpenWindows):
+	* FvwmDragWell/fvwmDragWell.c (createWindow):
+	* FvwmButtons/FvwmButtons.c (CreateUberButtonWindow):
+	removed the "fix" for negative geometries and fixed it in
+	XineramaSupport.c instead ;-)
+
+	* FvwmIconBox/FvwmIconBox.c (process_message):
+	(ParseOptions):
+	reindented
+	honour Xinerama settings from the start
+	(CreateWindow):
+	reindented
 
 	* FvwmPager/FvwmPager.c (ParseOptions):
 	fixed parsing of SmallFont with double quotes;
@@ -615,8 +661,8 @@
 	* FvwmPager/FvwmPager.c (ParseOptions):
 	* FvwmPager/x_pager.c (initialize_pager):
 	* FvwmPager/FvwmPager.c (ParseOptions):
-	fix for multiple FvwmPageGeometry settings
-	fixed negative FvwmPageIconGeometry strings
+	fix for multiple FvwmPagerGeometry settings
+	fixed negative FvwmPagerIconGeometry strings
 
 2001-01-14  olicha  <olivier.chapuis@free.fr>
 

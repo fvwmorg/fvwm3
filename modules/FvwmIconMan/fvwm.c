@@ -19,6 +19,8 @@
 #include "x.h"
 #include "xmanager.h"
 
+#include <libs/fvwmlib.h>
+#include <libs/XineramaSupport.h>
 #include <libs/Module.h>
 
 static char const rcsid[] =
@@ -211,16 +213,21 @@ static void set_win_configuration (WinData *win, FvwmPacketBody *body)
   memcpy(&(win->flags), &(body->add_config_data.flags), sizeof(win->flags));
 }
 
-static void configure_colorsets (unsigned long *body)
+static void handle_config_info (unsigned long *body)
 {
   char *tline, *token;
   int color;
 
   tline = (char*)&(body[3]);
   token = PeekToken(tline, &tline);
-  if (StrEquals(token, "Colorset")) {
+  if (StrEquals(token, "Colorset"))
+  {
     color = LoadColorset(tline);
     change_colorset(color);
+  }
+  else if (StrEquals(token, XINERAMA_CONFIG_STRING))
+  {
+    XineramaSupportConfigureModule(tline);
   }
 }
 
@@ -470,7 +477,7 @@ static void ProcessMessage (Ulong type, FvwmPacketBody *body)
   {
   case M_CONFIG_INFO:
     ConsoleDebug (FVWM, "DEBUG::M_CONFIG_INFO\n");
-    configure_colorsets ((unsigned long*)body);
+    handle_config_info ((unsigned long*)body);
     break;
 
   case M_CONFIGURE_WINDOW:
@@ -597,17 +604,19 @@ static void ProcessMessage (Ulong type, FvwmPacketBody *body)
 
 void ReadFvwmPipe (void)
 {
-    FvwmPacket* packet;
+  FvwmPacket* packet;
 
-    PrintMemuse();
-    ConsoleDebug(FVWM, "DEBUG: entering ReadFvwmPipe\n");
+  PrintMemuse();
+  ConsoleDebug(FVWM, "DEBUG: entering ReadFvwmPipe\n");
 
-    if ( (packet = ReadFvwmPacket(Fvwm_fd[1])) == NULL )
-    {
-	exit(0);
-    }
-    else
-	ProcessMessage( packet->type, (FvwmPacketBody*) packet->body );
+  if ( (packet = ReadFvwmPacket(Fvwm_fd[1])) == NULL )
+  {
+    exit(0);
+  }
+  else
+  {
+    ProcessMessage( packet->type, (FvwmPacketBody*) packet->body );
+  }
 
-    ConsoleDebug(FVWM, "DEBUG: leaving ReadFvwmPipe\n");
+  ConsoleDebug(FVWM, "DEBUG: leaving ReadFvwmPipe\n");
 }

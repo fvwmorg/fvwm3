@@ -856,11 +856,11 @@ void createWindow()
   if (xg.xneg)
   {
     xg.sizehints.win_gravity = NorthEastGravity;
-    xg.x = xg.dpyWidth - xg.x - xg.w;
+    xg.x = xg.dpyWidth + xg.x - xg.w;
   }
   if (xg.yneg)
   {
-    xg.y = xg.dpyHeight - xg.y - xg.h;
+    xg.y = xg.dpyHeight + xg.y - xg.h;
     if(xg.sizehints.win_gravity == NorthEastGravity)
       xg.sizehints.win_gravity = SouthEastGravity;
     else

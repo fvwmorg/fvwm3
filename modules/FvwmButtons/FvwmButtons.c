@@ -1978,14 +1978,14 @@ void CreateUberButtonWindow(button_info *ub,int maxx,int maxy)
   {
     if (xneg)
     {
-      mysizehints.x = DisplayWidth(Dpy,screen) - x - mysizehints.width;
+      mysizehints.x = DisplayWidth(Dpy,screen) + x - mysizehints.width;
       gravity = NorthEastGravity;
     }
     else
       mysizehints.x = x;
     if (yneg)
     {
-      mysizehints.y = DisplayHeight(Dpy,screen) - y - mysizehints.height;
+      mysizehints.y = DisplayHeight(Dpy,screen) + y - mysizehints.height;
       gravity = SouthWestGravity;
     }
     else

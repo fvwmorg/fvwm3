@@ -1433,27 +1433,31 @@ void CreateWindow(void)
   mysizehints.height_inc = BUTTONHEIGHT;
   mysizehints.base_height = 0;
   mysizehints.base_width = 0;
-  if(x > -100000)
+  if (x > -100000)
   {
-    if (x <= -1)
+    if (flags & XNegative)
     {
-      mysizehints.x = DisplayWidth(dpy,screen) + x - mysizehints.width-1;
+      mysizehints.x = DisplayWidth(dpy,screen) + x - mysizehints.width;
       gravity = NorthEastGravity;
     }
-    else if ((x == 0) && (flags & 16))
-      mysizehints.x = DisplayWidth(dpy,screen) - mysizehints.width-2;
     else
-      mysizehints.x = x;
-    if ( y<0)
     {
-      mysizehints.y = DisplayHeight(dpy,screen) + y - mysizehints.height-2;
+      mysizehints.x = x;
+    }
+    if (flags & YNegative)
+    {
+      mysizehints.y = DisplayHeight(dpy,screen) + y - mysizehints.height;
       gravity = SouthWestGravity;
     }
     else
+    {
       mysizehints.y = y;
+    }
 
-    if((x < 0) && (y < 0))
+    if ((flags & XNegative) && (flags & YNegative))
+    {
       gravity = SouthEastGravity;
+    }
     mysizehints.flags |= USPosition;
   }
 
@@ -1764,6 +1768,11 @@ void ParseOptions(char *filename)
     {
       /* store colorset sent by fvwm */
       LoadColorset(&(tline[8]));
+    }
+    else if((strncasecmp(tline, XINERAMA_CONFIG_STRING,
+			 strlen(XINERAMA_CONFIG_STRING))==0))
+    {
+      XineramaSupportConfigureModule(tline + strlen(XINERAMA_CONFIG_STRING));
     }
     GetConfigLine(fd, &tline);
     orig_tline = tline;
@@ -2239,7 +2248,7 @@ static void change_colorset(int colorset)
   return;
 }
 
-static void handle_colorset_packet(unsigned long *body)
+static void handle_config_info_packet(unsigned long *body)
 {
   char *tline, *token;
   int colorset;
@@ -2250,6 +2259,10 @@ static void handle_colorset_packet(unsigned long *body)
   {
     colorset = LoadColorset(tline);
     change_colorset(colorset);
+  }
+  else if (StrEquals(token, XINERAMA_CONFIG_STRING))
+  {
+    XineramaSupportConfigureModule(tline);
   }
 
   return;
@@ -2284,7 +2297,7 @@ void process_message(unsigned long type,unsigned long *body)
     CheckForHangon(body);
     break;
   case M_CONFIG_INFO:
-    handle_colorset_packet((unsigned long*)body);
+    handle_config_info_packet((unsigned long*)body);
     break;
   default:
     break;

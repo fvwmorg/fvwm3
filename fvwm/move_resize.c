@@ -63,6 +63,10 @@ extern XEvent Event;
 #define SNAP_SAME    0x04
 #define SNAP_SCREEN  0x08
 
+#define MOVE_NORMAL  0x00
+#define MOVE_PAGE    0x01
+#define MOVE_SCREEN  0x02
+
 /* Animated move stuff added by Greg J. Badros, gjb@cs.washington.edu */
 
 float rgpctMovementDefault[32] =
@@ -900,7 +904,7 @@ void AnimatedMoveFvwmWindow(FvwmWindow *tmp_win, Window w, int startX,
  * Start a window move operation
  *
  ****************************************************************************/
-void move_window_doit(F_CMD_ARGS, Bool do_animate, Bool do_move_to_page)
+static void move_window_doit(F_CMD_ARGS, Bool do_animate, int mode)
 {
   int FinalX = 0;
   int FinalY = 0;
@@ -913,9 +917,12 @@ void move_window_doit(F_CMD_ARGS, Bool do_animate, Bool do_move_to_page)
   int dx;
   int dy;
 
-  if (DeferExecution(eventp,&w,&tmp_win,&context,
-		     (do_move_to_page) ? CRS_SELECT : CRS_MOVE, ButtonPress))
+  if (DeferExecution(
+	eventp,&w,&tmp_win,&context,
+	(mode == MOVE_NORMAL) ? CRS_MOVE : CRS_SELECT, ButtonPress))
+  {
     return;
+  }
 
   if (tmp_win == NULL)
     return;
@@ -943,7 +950,7 @@ void move_window_doit(F_CMD_ARGS, Bool do_animate, Bool do_move_to_page)
     return;
   }
 
-  if (do_move_to_page)
+  if (mode == MOVE_PAGE)
   {
     rectangle r;
     rectangle s;
@@ -964,6 +971,36 @@ void move_window_doit(F_CMD_ARGS, Bool do_animate, Bool do_move_to_page)
     s.y = page_y - Scr.Vy;
     s.width = Scr.MyDisplayWidth;
     s.height = Scr.MyDisplayHeight;
+    move_into_rectangle(&r, &s);
+    FinalX = r.x;
+    FinalY = r.y;
+  }
+  else if (mode == MOVE_SCREEN)
+  {
+    rectangle r;
+    rectangle s;
+    rectangle p;
+    int xi_screen;
+
+    do_animate = False;
+    SET_STICKY(tmp_win, 0);
+
+    xi_screen = XineramaSupportGetScreenArgument(action, 'c');
+    XineramaSupportGetNumberedScreenRect(
+      xi_screen, &s.x, &s.y, &s.width, &s.height);
+    page_x = Scr.Vx;
+    page_y = Scr.Vy;
+    r.x = x;
+    r.y = y;
+    r.width = width;
+    r.height = height;
+    p.x = page_x - Scr.Vx;
+    p.y = page_y - Scr.Vy;
+    p.width = Scr.MyDisplayWidth;
+    p.height = Scr.MyDisplayHeight;
+    /* move to page first */
+    move_into_rectangle(&r, &p);
+    /* then move to screen */
     move_into_rectangle(&r, &s);
     FinalX = r.x;
     FinalY = r.y;
@@ -1053,17 +1090,22 @@ void move_window_doit(F_CMD_ARGS, Bool do_animate, Bool do_move_to_page)
 
 void CMD_Move(F_CMD_ARGS)
 {
-  move_window_doit(F_PASS_ARGS, False, False);
+  move_window_doit(F_PASS_ARGS, False, MOVE_NORMAL);
 }
 
 void CMD_AnimatedMove(F_CMD_ARGS)
 {
-  move_window_doit(F_PASS_ARGS, True, False);
+  move_window_doit(F_PASS_ARGS, True, MOVE_NORMAL);
 }
 
 void CMD_MoveToPage(F_CMD_ARGS)
 {
-  move_window_doit(F_PASS_ARGS, False, True);
+  move_window_doit(F_PASS_ARGS, False, MOVE_PAGE);
+}
+
+void CMD_MoveToScreen(F_CMD_ARGS)
+{
+  move_window_doit(F_PASS_ARGS, False, MOVE_SCREEN);
 }
 
 /* This function does the SnapAttraction stuff. If takes x and y coordinates
@@ -3249,7 +3291,7 @@ void handle_stick(F_CMD_ARGS, int toggle)
     if (!IsRectangleOnThisPage(&tmp_win->frame_g, Scr.CurrentDesk))
     {
       action = "";
-      move_window_doit(F_PASS_ARGS, FALSE, TRUE);
+      move_window_doit(F_PASS_ARGS, FALSE, MOVE_PAGE);
       /* move_window_doit resets the STICKY flag, so we must set it after the
        * call! */
       SET_STICKY(tmp_win, 1);

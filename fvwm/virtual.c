@@ -335,21 +335,31 @@ void CMD_EdgeResistance(F_CMD_ARGS)
   Scr.XiMoveResistance = (n < 3) ? val[1] : val[2];
 }
 
-void CMD_XineramaDisable(F_CMD_ARGS)
-{
-  XineramaSupportDisable();
-  broadcast_xinerama_state();
-}
-
-void CMD_XineramaEnable(F_CMD_ARGS)
+void CMD_Xinerama(F_CMD_ARGS)
 {
   int val;
+  int toggle;
 
   if (GetIntegerArguments(action, NULL, &val, 1) == 1)
   {
+    XineramaSupportEnable();
     XineramaSupportSetPrimaryScreen(val);
+    return;
   }
-  XineramaSupportEnable();
+  toggle = ParseToggleArgument(action, NULL, -1, 0);
+  if (toggle == -1)
+  {
+    toggle = !XineramaSupportIsEnabled();
+  }
+  if (toggle)
+  {
+    XineramaSupportEnable();
+  }
+  else
+  {
+    XineramaSupportDisable();
+    broadcast_xinerama_state();
+  }
   broadcast_xinerama_state();
 }
 

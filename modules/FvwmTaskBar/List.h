@@ -33,6 +33,7 @@ typedef struct item {
   /* The new, post-gsfr flags - now the "only" flag  */
   window_flags flags;
   long Desk;
+  rectangle win_g;
   int  count;
   Picture p;
   struct item *next;
@@ -55,6 +56,7 @@ int UpdateItemIconifiedFlag(List *list, long id, int iconified);
 int UpdateItemGSFRFlags(List *list, ConfigWinPacket *cfgpacket);
 int UpdateItemIndexDesk(List *list, int i, long desk);
 int UpdateNameItem(List *list, char *string, long id, int iconified);
+int UpdateItemIndexGeometry(List *list, int i, rectangle *new_g);
 void FreeItem(Item *ptr);
 int DeleteItem(List *list,long id);
 void FreeList(List *list);
@@ -71,3 +73,4 @@ void CopyItem(List *dest,List *source,int n);
 void UpdateItemPicture(List *list, int n, Picture *p);
 int GetDeskNumber(List *list, int n, long *Desk);
 Picture *GetItemPicture(List *list, int n);
+int GetItemGeometry(List *list, int n, rectangle **r);

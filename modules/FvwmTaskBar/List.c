@@ -150,7 +150,7 @@ int UpdateItemGSFRFlags(List *list, ConfigWinPacket *cfgpacket)
   Item *temp;
   for(temp=list->head;temp!=NULL && cfgpacket->w!=temp->id;temp=temp->next);
   if (temp==NULL) return -1;
-  temp->flags = cfgpacket->flags; 
+  temp->flags = cfgpacket->flags;
   return temp->count;
 }
 
@@ -163,7 +163,8 @@ int UpdateItemIndexDesk(List *list, int i, long desk)
   return temp->count;
 }
 
-int UpdateNameItem(List *list, char *string, long id, int iconified) {
+int UpdateNameItem(List *list, char *string, long id, int iconified)
+{
   Item *temp;
 
   for(temp=list->head;
@@ -175,6 +176,15 @@ int UpdateNameItem(List *list, char *string, long id, int iconified) {
     if (iconified != -1) SET_ICONIFIED(temp,iconified);
     return temp->count;
   }
+}
+
+int UpdateItemIndexGeometry(List *list, int i, rectangle *new_g)
+{
+  Item *temp;
+  for(temp=list->head;temp!=NULL && temp->count!=i;temp=temp->next);
+  if (temp==NULL) return -1;
+  temp->win_g = *new_g;
+  return temp->count;
 }
 
 /******************************************************************************
@@ -394,3 +404,17 @@ Picture *GetItemPicture(List *list, int n)
   if (temp==NULL) return 0;
   return &(temp->p);
 }
+
+/******************************************************************************
+  GetItemGeometry - returns a pointer to the internal geometry rectangle
+******************************************************************************/
+int GetItemGeometry(List *list, int n, rectangle **r)
+{
+  Item *temp;
+
+  for (temp=list->head;temp && temp->count!=n;temp=temp->next);
+  if (temp==NULL) return 0;
+  *r=&temp->win_g;
+  return 1;
+}
+

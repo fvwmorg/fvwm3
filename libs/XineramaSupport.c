@@ -541,6 +541,37 @@ void XineramaSupportGetGlobalScrRect(int *x, int *y, int *w, int *h)
   *h = screens[0].height;
 }
 
+void XineramaSupportGetNumberedScreenRect(
+  int screen, int *x, int *y, int *w, int *h)
+{
+  switch (screen)
+  {
+  case GEOMETRY_SCREEN_GLOBAL:
+    screen = 0;
+    break;
+  case GEOMETRY_SCREEN_CURRENT:
+    XineramaSupportGetCurrentScrRect(NULL, x, y, w, h);
+    return;
+  case GEOMETRY_SCREEN_PRIMARY:
+    screen = primary_scr;
+    break;
+  default:
+    /* screen is given counting from 0; translate to counting from 1 */
+    screen++;
+    break;
+  }
+  if (screen < first_to_check || screen > last_to_check)
+  {
+    screen = 0;
+  }
+  *x = screens[screen].x_org;
+  *y = screens[screen].y_org;
+  *w = screens[screen].width;
+  *h = screens[screen].height;
+
+  return;
+}
+
 void XineramaSupportGetResistanceRect(int wx, int wy, int ww, int wh,
                                       int *x0, int *y0, int *x1, int *y1)
 {
@@ -606,6 +637,32 @@ Bool XineramaSupportIsRectangleOnThisScreen(
 }
 
 
+static int XineramaSupportParseScreenBit(char *arg, char default_screen)
+{
+  int scr = DEFAULT_GEOMETRY_SCREEN;
+  char c;
+
+  c = (arg) ? tolower(*arg) : tolower(default_screen);
+  if (c == 'g')
+    scr = GEOMETRY_SCREEN_GLOBAL;
+  else if (c == 'c')
+    scr = GEOMETRY_SCREEN_CURRENT;
+  else if (c == 'p')
+    scr = GEOMETRY_SCREEN_PRIMARY;
+  else if (isdigit(c))
+    scr = atoi(arg);
+
+  return scr;
+}
+
+int XineramaSupportGetScreenArgument(char *arg, char default_screen)
+{
+  while (arg && isspace(*arg))
+    arg++;
+
+  return XineramaSupportParseScreenBit(arg, default_screen);
+}
+
 #if 1
 /*
  * XineramaSupportParseGeometry
@@ -616,15 +673,14 @@ Bool XineramaSupportIsRectangleOnThisScreen(
  *     present in `parse_string' (set to default in that case).
  *
  */
-
-static int XineramaSupportParseGeometryWithScreen(
+int XineramaSupportParseGeometryWithScreen(
   char *parsestring, int *x_return, int *y_return, unsigned int *width_return,
   unsigned int *height_return, int *screen_return)
 {
   int   ret;
   char *copy, *scr_p;
   int   s_size;
-  int   scr = DEFAULT_GEOMETRY_SCREEN;
+  int   scr;
 
   /* Safety net */
   if (parsestring == NULL  ||  *parsestring == '\0')
@@ -654,17 +710,7 @@ static int XineramaSupportParseGeometryWithScreen(
 #endif
 
   /* Parse the "@scr", if any */
-  if (scr_p != NULL)
-  {
-    if      (tolower(*scr_p) == 'g')
-      scr = GEOMETRY_SCREEN_GLOBAL;
-    else if (tolower(*scr_p) == 'c')
-      scr = GEOMETRY_SCREEN_CURRENT;
-    else if (tolower(*scr_p) == 'p')
-      scr = GEOMETRY_SCREEN_PRIMARY;
-    else if (*scr_p >= '0' && *scr_p <= '9')
-      scr = atoi(scr_p);
-  }
+  scr = XineramaSupportParseScreenBit(scr_p, 'p');
   *screen_return = scr;
 
   /* We don't need the string any more */
@@ -713,7 +759,7 @@ int XineramaSupportParseGeometry(
     {
       if (rc & XNegative)
       {
-	*x_return +=
+	*x_return -=
 	  (screens[0].width - screens[scr].width - screens[scr].x_org);
       }
       else
@@ -725,7 +771,7 @@ int XineramaSupportParseGeometry(
     {
       if (rc & YNegative)
       {
-	*y_return +=
+	*y_return -=
 	  (screens[0].height - screens[scr].height - screens[scr].y_org);
       }
       else

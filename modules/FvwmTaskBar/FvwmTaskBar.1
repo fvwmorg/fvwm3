@@ -162,8 +162,19 @@ Tells FvwmTaskBar to not show the windows that are listed on a WindowListSkip
 line in the configuration file.
 
 .IP "*FvwmTaskBar: DeskOnly"
-Tells FvwmTaskBar to show the windows that are only on the current desktop.
+Tells FvwmTaskBar to show only windows that are on the current desktop.
 When desktops are switched, the list of windows changes accordingly.
+
+.IP "*FvwmTaskBar: PageOnly"
+Tells FvwmTaskBar to show only windows that are on the same page
+as the task bar.
+When a window enters or leaves the page, the list of windows changes
+accordingly.
+
+.IP "*FvwmTaskBar: ScreenOnly"
+Tells FvwmTaskBar to show only windows that are only on the same
+Xinerama screen as the task bar.  When a window enters or leaves the
+screen, the list of windows changes accordingly.
 
 .IP "*FvwmTaskBar: UseIconNames"
 Tells FvwmTaskBar to use the icon name of the window instead of the full

@@ -37,12 +37,18 @@ void XineramaSupportGetCurrentScrRect(XEvent *eventp,
 void XineramaSupportGetPrimaryScrRect(int *x, int *y, int *w, int *h);
 void XineramaSupportGetGlobalScrRect(int *x, int *y, int *w, int *h);
 
+void XineramaSupportGetNumberedScreenRect(
+  int screen, int *x, int *y, int *w, int *h);
 void XineramaSupportGetResistanceRect(
   int wx, int wy, int ww, int wh, int *x0, int *y0, int *x1, int *y1);
 Bool XineramaSupportIsRectangleOnThisScreen(
   XEvent *eventp, rectangle *rec, int screen);
 
 /* Geometry management */
+int XineramaSupportGetScreenArgument(char *arg, char default_screen);
+int XineramaSupportParseGeometryWithScreen(
+  char *parsestring, int *x_return, int *y_return, unsigned int *width_return,
+  unsigned int *height_return, int *screen_return);
 int XineramaSupportParseGeometry(
   char *parsestring, int *x_return, int *y_return, unsigned int *width_return,
   unsigned int *height_return);

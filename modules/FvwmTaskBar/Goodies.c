@@ -51,8 +51,8 @@ extern Window Root, win;
 extern int Fvwm_fd[2];
 extern int screen;
 extern char *Module;
-extern int win_width, win_height, win_y, win_border,
-       ScreenWidth, ScreenHeight, RowHeight, Midline;
+extern int win_width, win_height, win_y, win_border, RowHeight, Midline;
+extern rectangle screen_g;
 extern Pixel back, fore;
 extern int colorset;
 extern int Clength;
@@ -427,8 +427,10 @@ void PopupTipWindow(int px, int py, const char *text)
   int newx, newy;
   Window child;
 
-  if (!ShowTips) return;
-  if (Tip.win != None) DestroyTipWindow();
+  if (!ShowTips)
+    return;
+  if (Tip.win != None)
+    DestroyTipWindow();
 
   Tip.tw = XTextWidth(StatusFont, text, strlen(text)) + 6;
   Tip.th = StatusFont->ascent + StatusFont->descent + 4;
@@ -444,8 +446,10 @@ void PopupTipWindow(int px, int py, const char *text)
   Tip.w = Tip.tw;
   Tip.h = Tip.th;
 
-  if (Tip.x+Tip.tw+4 > ScreenWidth-5) Tip.x = ScreenWidth-Tip.tw-9;
-  if (Tip.x < 5) Tip.x = 5;
+  if (Tip.x + Tip.tw + 4 > screen_g.x + screen_g.width - 5)
+    Tip.x = screen_g.x + screen_g.width - Tip.tw - 9;
+  if (Tip.x < screen_g.x + 5)
+    Tip.x = screen_g.x + 5;
 
   UpdateString(&Tip.text, text);
   CreateTipWindow(Tip.x, Tip.y, Tip.w, Tip.h);

@@ -25,9 +25,6 @@ void AnimatedMoveFvwmWindow(
   Bool fWarpPointerToo, int cmsDelay, float *ppctMovement);
 Bool moveLoop(FvwmWindow *tmp_win, int XOffset, int YOffset, int Width,
 	      int Height, int *FinalX, int *FinalY,Bool do_move_opaque);
-void move_window_doit(
-  XEvent *eventp,Window w,FvwmWindow *tmp_win, unsigned long context,
-  char *action,int* Module, Bool do_animate, Bool do_move_to_page);
 void handle_stick(F_CMD_ARGS, int toggle);
 void resize_geometry_window(void);
 

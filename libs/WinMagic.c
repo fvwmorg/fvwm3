@@ -17,7 +17,7 @@
 
 /*
 ** WinMagic.c:
-** This file supplied routines for moving and resizing windows in an animated
+** This file supplies routines for moving and resizing windows in an animated
 ** fashion.
 */
 

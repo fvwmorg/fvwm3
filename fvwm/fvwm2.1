@@ -411,8 +411,9 @@ example, menus might pop up right between two screens.  The
 command allows to specify an explicit resistance value for moving
 windows over the screen edge between two Xinerama screens.
 Xinerama support can be enabled or disabled on the fly or from the
-configuration file with
-.BI XineramaDisable " or " XineramaEnable .
+configuration file with the
+.B Xinerama
+command.
 Xinerama support does not work too well if the involved screens
 use different resolutions.  In this situation, windows may get
 stuck in the portion of the whole desktop that belongs to neither
@@ -3515,6 +3516,14 @@ MoveToPage +2p -1p
 .EE
 
 .TP
+.BI "MoveToScreen [ " screen " ]"
+Moves the selected window to another Xinerama screen.  The
+.I screen
+argument can be 'p' for the primary screen, 'c' for the current
+screen (containing the mouse pointer), 'g' for the global screen
+or the screen number itself (counting from zero).
+
+.TP
 .BI "OpaqueMoveSize [" percentage "]"
 Tells fvwm the maximum size window with which opaque window
 movement should be used.  The percentage is percent of the total
@@ -6478,19 +6487,17 @@ is appended to each coordinate
 then the scroll amount is measured in pixels.
 
 .TP
-.BI XineramaDisable
-Diables Xinerama support.
-
-.TP
-.BI "XineramaEnable [ " primary-screen " ]"
-Enables Xinerama support.  The
-.I primary-screen
-argument is an integer that indicates the number of the Xinerama
-screen that is to be used as the primary screen.  The primary
-screen is the preferred screen to place windows.  Any number that
-is zero or more is taken as the primary screen's number.  Any
-negative value disables the primary screen feature.
-
+.BI "Xinerama [ " bool " | " primary-screen " ]"
+Enables Xinerama support if the boolean argument is true and
+disables it if the argument is false.  If instead an integer
+argument is given as
+.IR primary-screen ,
+this is taken as the number of the Xinerama screen that is to be
+used as the primary screen.  The primary screen is the preferred
+screen to place windows.  Any number that is zero or more is taken
+as the primary screen's number.  Any negative value disables the
+primary screen feature.  Calling this command without arguments
+turns on Xinerama support with the primary screen 0 if it was disabled before and turns it off if it was enabled.
 
 .SS COMMANDS FOR USER FUNCTIONS AND SHELL COMMANDS
 

@@ -542,7 +542,7 @@ void process_message( FvwmPacket* packet )
       list_restack(body,length);
       break;
     case M_CONFIG_INFO:
-      list_colorset(body);
+      list_config_info(body);
       break;
     default:
       /* ignore unknown packet */
@@ -1309,16 +1309,21 @@ void list_end(void)
 }
 
 
-void list_colorset(unsigned long *body)
+void list_config_info(unsigned long *body)
 {
   char *tline, *token;
   int color;
 
   tline = (char*)&(body[3]);
   token = PeekToken(tline, &tline);
-  if (StrEquals(token, "Colorset")) {
+  if (StrEquals(token, "Colorset"))
+  {
     color = LoadColorset(tline);
     change_colorset(color);
+  }
+  else if (StrEquals(token, XINERAMA_CONFIG_STRING))
+  {
+    XineramaSupportConfigureModule(tline);
   }
 }
 
@@ -1334,10 +1339,10 @@ int My_XNextEvent(Display *dpy, XEvent *event)
   static int miss_counter = 0;
 
   if(XPending(dpy))
-    {
-      XNextEvent(dpy,event);
-      return 1;
-    }
+  {
+    XNextEvent(dpy,event);
+    return 1;
+  }
 
   FD_ZERO(&in_fdset);
   FD_SET(x_fd,&in_fdset);
@@ -1476,10 +1481,14 @@ void ParseOptions(void)
     resource_string = arg1 = arg2 = NULL;
 
     token = PeekToken(tline, &next);
-    if(StrEquals(token, "Colorset"))
+    if (StrEquals(token, "Colorset"))
     {
       LoadColorset(next);
       continue;
+    }
+    else if (StrEquals(token, XINERAMA_CONFIG_STRING))
+    {
+      XineramaSupportConfigureModule(next);
     }
     else if (StrEquals(token, "DesktopSize"))
     {

@@ -185,8 +185,7 @@ enum
   F_WAIT,
   F_WINDOWFONT,
   F_WINDOWLIST,
-  F_XINERAMA_DISABLE,
-  F_XINERAMA_ENABLE,
+  F_XINERAMA,
   F_XOR,
 
   /* functions that need a window to operate on */
@@ -210,6 +209,7 @@ enum
   F_MOVE,
   F_MOVE_THRESHOLD,
   F_MOVE_TO_PAGE,
+  F_MOVE_TO_SCREEN,
   F_PLACEAGAIN,
   F_RAISE,
   F_RAISELOWER,

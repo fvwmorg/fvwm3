@@ -24,6 +24,8 @@
 #include <X11/Intrinsic.h>              /* needed for xpm.h and Pixel defn */
 #include <ctype.h>
 
+#include "fvwmrect.h"
+
 /* Allow GCC extensions to work, if you have GCC */
 
 #ifndef __attribute__
@@ -95,20 +97,6 @@ extern void f_db_print(const char *fmt, ...)
 /***********************************************************************
  * typedefs
  ***********************************************************************/
-typedef struct
-{
-  int x;
-  int y;
-  int width;
-  int height;
-} rectangle;
-
-typedef struct
-{
-  int x;
-  int y;
-} position;
-
 
 
 /***********************************************************************

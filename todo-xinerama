@@ -17,6 +17,8 @@ Possible things to do for perfect(?) Xinerama support:
     g) FvwmBanner
     h) FvwmButtons
     i) FvwmDragWell
+    j) FvwmWharf
+    k) FvwmIconBox
  6) Commands and styles:
     a) EdgeResistance
     b) Move/Resize/Resizemove
@@ -60,12 +62,9 @@ Optional to do:
 1a
 2a
 5b
-5c
 5d
 5e
-5f
 6b
-6c
 6f
 6h
 6i
@@ -83,10 +82,15 @@ Already done:
  4) Geometry window:
     a) Place on proper Xinerama screen
 5a
+5c
+5f
 5g
 5h
 5i
+5j
+5k
 6a
+6c
 6g
 6j
  7) Control:

@@ -1511,7 +1511,7 @@ static void OpenWindows ()
   {
     if (CF.xneg)
     {
-      x = DisplayWidth(dpy, screen) - CF.max_width - CF.gx;
+      x = DisplayWidth(dpy, screen) - CF.max_width + CF.gx;
       gravity = NorthEastGravity;
     }
     else
@@ -1520,7 +1520,7 @@ static void OpenWindows ()
     }
     if (CF.yneg)
     {
-      y = DisplayHeight(dpy, screen) - CF.total_height - CF.gy;
+      y = DisplayHeight(dpy, screen) - CF.total_height + CF.gy;
       gravity = SouthWestGravity;
     }
     else

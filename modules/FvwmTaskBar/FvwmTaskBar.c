@@ -199,6 +199,8 @@ int UseSkipList    = False,
     AutoFocus      = False,
     HighlightFocus = False,
     DeskOnly       = False,
+    PageOnly       = False,
+    ScreenOnly     = False,
     NoBrightFocus  = False,
     ThreeDfvwm     = False,
     RowsNumber     = 1;
@@ -207,7 +209,8 @@ int VisiblePixels  = DEFAULT_VISIBLE_PIXELS;
 /* This macro should be used when calculating geometry */
 #define VISIBLE_PIXELS() (VisiblePixels < win_height? VisiblePixels:win_height)
 
-unsigned int ScreenWidth, ScreenHeight;
+rectangle screen_g;
+rectangle global_scr_g;
 
 int NRows, RowHeight, Midline;
 
@@ -224,7 +227,9 @@ extern TipStruct Tip;
 extern int StartButtonWidth, StartButtonHeight;
 extern char *StartPopup;
 
-char *ImagePath   = NULL;
+char *ImagePath = NULL;
+char *XineramaConfig = NULL;
+static int xi_screen = 0;
 
 static void ParseConfig( void );
 static void ParseConfigLine(char *tline);
@@ -438,6 +443,7 @@ void ProcessMessage(unsigned long type,unsigned long *body)
   Picture p;
   struct ConfigWinPacket  *cfgpacket;
   int iconified;
+  rectangle new_g;
 
 /*    memset(&p, 0, sizeof(Picture)); */
 
@@ -462,10 +468,14 @@ void ProcessMessage(unsigned long type,unsigned long *body)
   case M_ADD_WINDOW:
   case M_CONFIGURE_WINDOW:
     cfgpacket = (ConfigWinPacket *) body;
+    new_g.x = cfgpacket->frame_x;
+    new_g.y = cfgpacket->frame_y;
+    new_g.width = cfgpacket->frame_width;
+    new_g.height = cfgpacket->frame_height;
     if (!ShowTransients && (IS_TRANSIENT(cfgpacket)))
       break;
     /* Notes: users cannot modify the win_width of the taskbar (see
-       the hints in StartMeup; it is a good idea). So "we have to" modify
+       the hints in StartMeUp; it is a good idea). So "we have to" modify
        the win_width here by modifying the WMNormalHints. Moreover, 1. we want
        that the TaskBar width with its border is execately the screen width
        2. be carful with dynamic style change */
@@ -480,32 +490,44 @@ void ProcessMessage(unsigned long type,unsigned long *body)
 	long dumy;
 
 	win_border = (short)cfgpacket->border_width;
-	win_width = ScreenWidth-(win_border<<1);
+	win_width = screen_g.width-(win_border<<1);
 	win_title_height = (int)cfgpacket->title_height;
 	win_has_title = HAS_TITLE(cfgpacket);
 	win_has_bottom_title = HAS_BOTTOM_TITLE(cfgpacket);
 
 	if (AutoStick)
 	{
-	  win_x = win_border;
-	  if (!win_is_shaded) {
+	  win_x = screen_g.x + win_border;
+	  if (!win_is_shaded)
+	  {
 	    if (win_y > Midline)
-	      win_y = ScreenHeight -
-		(AutoHide ? VISIBLE_PIXELS() - win_title_height*win_has_bottom_title :
+	    {
+	      win_y = screen_g.height -
+		(AutoHide ?
+		 VISIBLE_PIXELS() - win_title_height*win_has_bottom_title :
 		 win_height + win_border);
+	    }
 	    else
-	      win_y = AutoHide ? VISIBLE_PIXELS() + win_title_height*win_has_bottom_title
+	    {
+	      win_y = AutoHide ?
+		VISIBLE_PIXELS() + win_title_height*win_has_bottom_title
 		- win_height : win_border + win_title_height;
+	    }
 	  }
 	  else
 	  {
-	   if (win_y > Midline)
-	    win_y = ScreenHeight - win_border -
-	      (win_has_bottom_title)*win_height;
-	  else
-	     win_y = win_title_height + win_border -
-	       (win_has_bottom_title)*win_height;
+	    if (win_y > Midline)
+	    {
+	      win_y = screen_g.height - win_border -
+		(win_has_bottom_title)*win_height;
+	    }
+	    else
+	    {
+	      win_y = win_title_height + win_border -
+		(win_has_bottom_title)*win_height;
+	    }
 	  }
+	  win_y += screen_g.y;
 	}
 
 	XGetWMNormalHints(dpy,win,&hints,&dumy);
@@ -529,25 +551,34 @@ void ProcessMessage(unsigned long type,unsigned long *body)
 	win_is_shaded = IS_SHADED(cfgpacket);
 	if (win_is_shaded)
 	{
-	   if (win_y > Midline)
-	    win_y = ScreenHeight - win_border -
+	  if (win_y > Midline)
+	  {
+	    win_y = screen_g.height - win_border -
 	      (win_has_bottom_title)*win_height;
+	  }
 	  else
-	     win_y = win_title_height + win_border -
-	       (win_has_bottom_title)*win_height;
+	  {
+	    win_y = win_title_height + win_border -
+	      (win_has_bottom_title)*win_height;
+	  }
 	}
 	else
 	{
 	  if (win_y > Midline)
-	    win_y = ScreenHeight - win_border - win_height;
+	  {
+	    win_y = screen_g.height - win_border - win_height;
+	  }
 	  else
+	  {
 	    win_y = win_title_height + win_border;
+	  }
 	  if (AutoHide)
 	  {
 	    WindowState = 1;
 	    SetAlarm(HIDE_TASK_BAR);
 	  }
 	}
+	win_y += screen_g.y;
 	XMoveWindow(dpy, win, win_x, win_y);
       }
       break;
@@ -558,44 +589,92 @@ void ProcessMessage(unsigned long type,unsigned long *body)
       int remove=0;
       int add = 0;
       int skiplist = 0;
+      rectangle *pold_g;
+      Bool is_on_desk = True;
+      Bool is_changing_desk = False;
+      Bool is_on_page = True;
+      Bool is_changing_page = False;
+      Bool is_on_screen = True;
+      Bool is_changing_screen = False;
+      Bool is_managed;
 
-      if (GetDeskNumber(&windows,i,&Desk) && DeskOnly)
+      if (!GetItemGeometry(&windows, i, &pold_g))
       {
-        if (DeskNumber != Desk && DeskNumber == cfgpacket->desk
-	    && !IsItemIndexSticky(&windows,i))
+	pold_g = &new_g;
+      }
+
+      if (DeskOnly && GetDeskNumber(&windows,i,&Desk))
+      {
+	if (IsItemIndexSticky(&windows,i))
 	{
-          /* window moving to current desktop */
-          add = 1;
-        }
-        if (DeskNumber != cfgpacket->desk && DeskNumber == Desk)
+	  is_on_desk = True;
+	  is_changing_desk = False;
+	}
+	else if (!IsItemIndexSticky(&windows,i))
 	{
-          /* window moving to another desktop */
-          remove = 1;
-        }
+	  is_on_desk = (DeskNumber != cfgpacket->desk);
+	  is_changing_desk = (Desk != cfgpacket->desk);
+	}
 	UpdateItemIndexDesk(&windows, i, cfgpacket->desk);
       }
-      if (UseSkipList && (!DeskOnly || DeskNumber == cfgpacket->desk)) {
+      if (PageOnly)
+      {
+	is_on_page = fvwmrect_do_rectangles_intersect(&new_g, &global_scr_g);
+	is_changing_page =
+	  (fvwmrect_do_rectangles_intersect(pold_g, &global_scr_g) !=
+	   is_on_page);
+      }
+      if (ScreenOnly)
+      {
+	is_on_screen = fvwmrect_do_rectangles_intersect(&new_g, &screen_g);
+	is_changing_screen =
+	  (fvwmrect_do_rectangles_intersect(pold_g, &screen_g) !=
+	   is_on_screen);
+      }
+      UpdateItemIndexGeometry(&windows, i, &new_g);
+
+      is_managed = (is_on_desk && is_on_page && is_on_screen);
+      if (is_changing_desk || is_changing_page || is_changing_screen)
+      {
+	if (is_managed)
+	{
+	  /* window entering managed area of the virtual desktop */
+	  add = 1;
+	}
+	else
+	{
+	  /* window leaving managed area of the virtual desktop */
+	  remove = 1;
+	}
+      }
+
+      if (UseSkipList && is_managed)
+      {
 	skiplist = IsItemIndexSkipWindowList(&windows,i);
-	if (DO_SKIP_WINDOW_LIST(cfgpacket) && !skiplist) {
+	if (DO_SKIP_WINDOW_LIST(cfgpacket) && !skiplist)
+	{
+	  add = 0;
 	  remove = 1;
 	}
 	if (!DO_SKIP_WINDOW_LIST(cfgpacket) && skiplist) {
 	  add = 1;
+	  remove = 0;
 	}
       }
 
       UpdateItemGSFRFlags(&windows, cfgpacket);
-      if (remove) {
+      if (remove)
+      {
 	RemoveButton(&buttons, i);
 	redraw = 1;
       }
-      else if (add) {
-	 AddButton(&buttons, ItemName(&windows,i),
-		   GetItemPicture(&windows,i), BUTTON_UP, i,
-		   IsItemIndexIconified(&windows, i));
-          redraw = 1;
+      else if (add)
+      {
+	AddButton(&buttons, ItemName(&windows,i),
+		  GetItemPicture(&windows,i), BUTTON_UP, i,
+		  IsItemIndexIconified(&windows, i));
+	redraw = 1;
       }
-
     }
     else
     {
@@ -604,6 +683,7 @@ void ProcessMessage(unsigned long type,unsigned long *body)
       if (Count > COUNT_LIMIT)
 	Count = 0;
       i = FindItem(&windows, cfgpacket->w);
+      UpdateItemIndexGeometry(&windows, i, &new_g);
     }
     if (i != -1)
     {
@@ -646,15 +726,23 @@ void ProcessMessage(unsigned long type,unsigned long *body)
       break;
     if (UpdateButton(&buttons, i, string, DONT_CARE) == -1)
     {
+      rectangle *pold_g;
+
       if (GetDeskNumber(&windows, i, &Desk) == 0)
 	break;
-      if ((!DeskOnly || Desk == DeskNumber) &&
-	  (!UseSkipList || !IsItemIndexSkipWindowList(&windows, i)))
-      {
-	AddButton(&buttons, string, NULL, BUTTON_UP, i,
-		  IsItemIndexIconified(&windows, i));
-	redraw = 1;
-      }
+      if (DeskOnly && Desk != DeskNumber)
+	break;
+      if (!GetItemGeometry(&windows, i, &pold_g))
+	break;
+      if (PageOnly && !fvwmrect_do_rectangles_intersect(pold_g, &global_scr_g))
+	break;
+      if (ScreenOnly && !fvwmrect_do_rectangles_intersect(pold_g, &screen_g))
+	break;
+      if (UseSkipList && IsItemIndexSkipWindowList(&windows, i))
+	break;
+      AddButton(&buttons, string, NULL, BUTTON_UP, i,
+		IsItemIndexIconified(&windows, i));
+      redraw = 1;
     }
     else
       redraw = 0;
@@ -751,6 +839,11 @@ void ProcessMessage(unsigned long type,unsigned long *body)
 	{
 	  redraw = 1;
 	}
+      }
+      else if (strncasecmp(tline, XINERAMA_CONFIG_STRING,
+			   strlen(XINERAMA_CONFIG_STRING)) == 0)
+      {
+	XineramaSupportConfigureModule(tline + strlen(XINERAMA_CONFIG_STRING));
       }
     }
     break;
@@ -850,6 +943,7 @@ static char *configopts[] =
 {
   "imagepath",
   "colorset",
+  XINERAMA_CONFIG_STRING,
   NULL
 };
 
@@ -882,6 +976,8 @@ static char *moduleopts[] =
   "FocusColorset",
   "3DFvwm",
   "Rows",
+  "PageOnly",
+  "ScreenOnly",
   NULL
 };
 
@@ -913,10 +1009,21 @@ static void ParseConfigLine(char *tline)
     switch(index)
     {
     case 0: /* imagepath */
+      if (ImagePath)
+      {
+	free(ImagePath);
+      }
       CopyString(&ImagePath, rest);
       break;
     case 1: /* colorset */
       LoadColorset(rest);
+      break;
+    case 2: /* XINERAMA_CONFIG_STRING */
+      if (XineramaConfig)
+      {
+	free(XineramaConfig);
+      }
+      CopyString(&XineramaConfig, rest);
       break;
     default:
       /* unknown option */
@@ -1034,6 +1141,14 @@ static void ParseConfigLine(char *tline)
       if (!(1 <= RowsNumber && RowsNumber <= 8)) {
 	RowsNumber = 1;
       }
+      break;
+    case 27: /* PageOnly */
+fprintf(stderr,"page only\n");
+      PageOnly=True;
+      break;
+    case 28: /* ScreenOnly */
+fprintf(stderr,"screen only\n");
+      ScreenOnly=True;
       break;
     default:
       if (!GoodiesParseConfig(tline) &&
@@ -1221,7 +1336,7 @@ void LoopOnEvents(void)
 	  y = win_y + RowHeight;
 	} else {
 	  /* bar in bottom of the screen */
-	  y = win_y - ScreenHeight;
+	  y = win_y - screen_g.height;
 	}
 	sprintf(tmp,"Popup %s %d %d", StartPopup, x, y);
 	SendFvwmPipe(Fvwm_fd, tmp, 0);
@@ -1349,11 +1464,16 @@ void LoopOnEvents(void)
 	if (AutoHide && !win_is_shaded)
 	{
 	  if (win_y > Midline)
-	    win_y = ScreenHeight - VISIBLE_PIXELS() +
+	  {
+	    win_y = screen_g.height - VISIBLE_PIXELS() +
 	      win_title_height*win_has_bottom_title;
+	  }
 	  else
+	  {
 	    win_y = VISIBLE_PIXELS() + win_title_height*win_has_bottom_title
 	      - win_height;
+	  }
+	  win_y += screen_g.y;
 	  XSync(dpy,0);
 	  XMoveWindow(dpy, win, win_x, win_y);
 	  XSync(dpy,0);
@@ -1659,6 +1779,7 @@ void StartMeUp(void)
 {
    XSizeHints hints;
    int ret;
+   int i;
    XSetWindowAttributes attr;
 #ifdef I18N_MB
   char **ml;
@@ -1668,23 +1789,37 @@ void StartMeUp(void)
 #endif
 
    if (!(dpy = XOpenDisplay(""))) {
-      fprintf(stderr,"%s: can't open display %s", Module,
-	      XDisplayName(""));
-      exit (1);
+     fprintf(stderr,"%s: can't open display %s", Module,
+	     XDisplayName(""));
+     exit (1);
    }
    InitPictureCMap(dpy);
    XineramaSupportInit(dpy);
+   if (XineramaConfig)
+   {
+     XineramaSupportConfigureModule(XineramaConfig);
+     free(XineramaConfig);
+   }
    AllocColorset(0);
    x_fd = XConnectionNumber(dpy);
    screen= DefaultScreen(dpy);
    Root = RootWindow(dpy, screen);
 
-   ScreenWidth  = XDisplayWidth(dpy, screen);
-   ScreenHeight = XDisplayHeight(dpy, screen);
+   if (geometry == NULL)
+     UpdateString(&geometry, "+0-0");
+   /* evaluate further down */
+   ret = XineramaSupportParseGeometryWithScreen(
+     geometry, &hints.x, &hints.y, (unsigned int *)&hints.width,
+     (unsigned int *)&hints.height, &xi_screen);
+   XineramaSupportGetNumberedScreenRect(
+     xi_screen, &screen_g.x, &screen_g.y, &screen_g.width, &screen_g.height);
+   XineramaSupportGetGlobalScrRect(
+     &global_scr_g.x, &global_scr_g.y, &global_scr_g.width,
+     &global_scr_g.height);
+   Midline = (screen_g.height >> 1) + screen_g.y;
 
-   Midline = (int) (ScreenHeight >> 1);
-
-   if (selfont_string == NULL) selfont_string = font_string;
+   if (selfont_string == NULL)
+     selfont_string = font_string;
 
 #ifdef I18N_MB
    if ((ButtonFontset=XCreateFontSet(dpy,font_string,&ml,&mc,&ds)) == NULL) {
@@ -1699,7 +1834,8 @@ void StartMeUp(void)
    }
    XFontsOfFontSet(ButtonFontset,&fs_list,&ml);
    ButtonFont = fs_list[0];
-   if ((SelButtonFontset=XCreateFontSet(dpy,selfont_string,&ml,&mc,&ds)) == NULL) {
+   if ((SelButtonFontset = XCreateFontSet(dpy,selfont_string,&ml,&mc,&ds))
+       == NULL) {
 #ifdef STRICTLY_FIXED
      if ((SelButtonFontset=XCreateFontSet(dpy,"fixed",&ml,&mc,&ds)) == NULL)
 #else
@@ -1732,48 +1868,51 @@ void StartMeUp(void)
 
    win_border = 4; /* default border width */
    win_height = RowHeight+(RowsNumber-1)*(RowHeight+2);
-   win_width = ScreenWidth - (win_border * 2);
+   win_width = screen_g.width - (win_border * 2);
 
-   if (geometry == NULL)
-     UpdateString(&geometry, "+0-0");
-   ret = XineramaSupportParseGeometry(geometry, &hints.x, &hints.y,
-				      (unsigned int *)&hints.width,
-				      (unsigned int *)&hints.height);
-
+   /* now evaluate the geometry parsed above */
    if (ret & YNegative)
    {
      if (AutoStick)
      {
        if (-hints.y < Midline)
-	 hints.y = ScreenHeight - (AutoHide ? VISIBLE_PIXELS() : win_height);
+	 hints.y = screen_g.height - (AutoHide ? VISIBLE_PIXELS() : win_height);
        else
 	 hints.y = AutoHide ? VISIBLE_PIXELS() - win_height : 0;
+       hints.y += screen_g.y;
      }
      else
-       hints.y += ScreenHeight - win_height;
+     {
+       hints.y += screen_g.height - win_height;
+     }
    }
    else if (AutoStick)
    {
      if (hints.y < Midline)
        hints.y = AutoHide ? VISIBLE_PIXELS() - win_height : 0;
      else
-       hints.y = ScreenHeight - (AutoHide ? VISIBLE_PIXELS() : win_height);
+       hints.y = screen_g.height - (AutoHide ? VISIBLE_PIXELS() : win_height);
+     hints.y += screen_g.y;
    }
 
-    if (ret & XNegative)
-    {
-      if (ret & YNegative) hints.win_gravity=SouthEastGravity;
-      else hints.win_gravity=NorthEastGravity;
-    }
-    else
-    {
-      if (ret & YNegative) hints.win_gravity=SouthWestGravity;
-      else hints.win_gravity=NorthWestGravity;
-    }
+   if (ret & XNegative)
+   {
+     if (ret & YNegative)
+       hints.win_gravity=SouthEastGravity;
+     else
+       hints.win_gravity=NorthEastGravity;
+   }
+   else
+   {
+     if (ret & YNegative)
+       hints.win_gravity=SouthWestGravity;
+     else
+       hints.win_gravity=NorthWestGravity;
+   }
 
    hints.flags=USPosition|PPosition|USSize|PSize|PResizeInc|
      PWinGravity|PMinSize|PMaxSize|PBaseSize;
-   hints.x           = 0;
+   hints.x           = screen_g.x;
    hints.width       = win_width;
    hints.height      = win_height;
    hints.width_inc   = 1;
@@ -1823,12 +1962,11 @@ void StartMeUp(void)
 
    XSetWMNormalHints(dpy,win,&hints);
 
-   XGrabButton(dpy,1,AnyModifier,win,True,GRAB_EVENTS,GrabModeAsync,
-	       GrabModeAsync,None,None);
-   XGrabButton(dpy,2,AnyModifier,win,True,GRAB_EVENTS,GrabModeAsync,
-	       GrabModeAsync,None,None);
-   XGrabButton(dpy,3,AnyModifier,win,True,GRAB_EVENTS,GrabModeAsync,
-	       GrabModeAsync,None,None);
+   for (i = 1; i <= NUMBER_OF_MOUSE_BUTTONS; i++)
+   {
+     XGrabButton(dpy,i,AnyModifier,win,True,GRAB_EVENTS,GrabModeAsync,
+		 GrabModeAsync,None,None);
+   }
 
    /*   SetMwmHints(MWM_DECOR_ALL|MWM_DECOR_MAXIMIZE|MWM_DECOR_MINIMIZE,
 	       MWM_FUNC_ALL|MWM_FUNC_MAXIMIZE|MWM_FUNC_MINIMIZE,
@@ -1932,12 +2070,18 @@ PropMwmHints prop;
 void WarpTaskBar(int y, Bool force)
 {
   /* The tests on y are really useful ! */
-  if (!AutoHide && ((y != (int)ScreenHeight - win_height - win_border &&
-      y !=  win_border) || force)) {
+  if (!AutoHide &&
+      ((y != screen_g.y + screen_g.height - win_height - win_border &&
+	y !=  screen_g.y + win_border) || force)) {
     if (y > Midline)
-      win_y = (int)ScreenHeight - win_height - win_border;
+    {
+      win_y = screen_g.height - win_height - win_border;
+    }
     else
+    {
       win_y = win_border + win_title_height;
+    }
+    win_y += screen_g.y;
     XSync(dpy, 0);
     XMoveWindow(dpy, win, win_x, win_y);
     XSync(dpy, 0);
@@ -1986,15 +2130,18 @@ void RevealTaskBar()
   /* Go faster with the number of rows */
   inc_y += (NRows >= 3 ? 3 : 0) + (NRows >= 5 ? 3 : 0);
 
-  if (win_y < Midline) {
-    new_win_y = win_border + win_title_height;
+  if (win_y < Midline)
+  {
+    new_win_y = screen_g.y + win_border + win_title_height;
     for (; win_y<=new_win_y; win_y +=inc_y)
     {
       XMoveWindow(dpy, win, win_x, win_y);
       SleepALittle();
     }
-  } else {
-    new_win_y = (int)ScreenHeight - win_height - win_border;
+  }
+  else
+  {
+    new_win_y = screen_g.y + screen_g.height - win_height - win_border;
     for (; win_y>=new_win_y; win_y -=inc_y)
     {
       XMoveWindow(dpy, win, win_x, win_y);
@@ -2040,16 +2187,19 @@ void HideTaskBar()
   /* Go faster with the number of rows */
   inc_y += (NRows >= 3 ? 2 : 0) + (NRows >= 5 ? 2 : 0);
 
-  if (win_y < Midline) {
-    new_win_y = VISIBLE_PIXELS() + win_title_height*win_has_bottom_title -
-      win_height;
+  if (win_y < Midline)
+  {
+    new_win_y = screen_g.y + VISIBLE_PIXELS() +
+      win_title_height*win_has_bottom_title - win_height;
     for (; win_y>=new_win_y; win_y -=inc_y)
     {
       XMoveWindow(dpy, win, win_x, win_y);
       SleepALittle();
     }
-  } else {
-    new_win_y = (int)ScreenHeight - VISIBLE_PIXELS() +
+  }
+  else
+  {
+    new_win_y = screen_g.y + screen_g.height - VISIBLE_PIXELS() +
       win_title_height*win_has_bottom_title;
     for (; win_y<=new_win_y; win_y +=inc_y)
     {

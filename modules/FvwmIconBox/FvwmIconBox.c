@@ -101,7 +101,8 @@ char NoResource[] = "NoResource";
 
 Pixel fore_pix, hilite_pix, back_pix, shadow_pix;
 Pixel icon_fore_pix, icon_back_pix, icon_hilite_pix, icon_shadow_pix;
-Pixel act_icon_fore_pix, act_icon_back_pix, act_icon_hilite_pix, act_icon_shadow_pix;
+Pixel act_icon_fore_pix, act_icon_back_pix,
+  act_icon_hilite_pix, act_icon_shadow_pix;
 
 GC  NormalGC,ShadowGC,ReliefGC,IconShadowGC,IconReliefGC;
 Window main_win;
@@ -138,7 +139,8 @@ int num_columns = 6;
 int Lines = 6;
 int max_icon_width = 48,max_icon_height = 48;
 int ButtonWidth,ButtonHeight;
-int x= -100000,y= -100000,w= -1,h= -1,gravity = NorthWestGravity;
+int geom_x = -100000, geom_y = -100000;
+int gravity = NorthWestGravity;
 int icon_win_x = 0, icon_win_y = 0, icon_win_width = 100,
 icon_win_height = 100;
 int interval = 8;
@@ -1013,28 +1015,28 @@ void CreateWindow(void)
   /* load the font */
 #ifdef I18N_MB
   if ((fontset = XCreateFontSet(dpy, font_string, &ml, &mc, &ds)) == NULL)
-    {
+  {
 #ifdef STRICTLY_FIXED
-      if ((fontset = XCreateFontSet(dpy, "fixed", &ml, &mc, &ds)) == NULL)
+    if ((fontset = XCreateFontSet(dpy, "fixed", &ml, &mc, &ds)) == NULL)
 #else
-      if ((fontset = XCreateFontSet(dpy, "-*-fixed-medium-r-normal-*-14-*-*-*-*-*-*-*", &ml, &mc, &ds)) == NULL)
+    if ((fontset = XCreateFontSet(dpy, "-*-fixed-medium-r-normal-*-14-*-*-*-*-*-*-*", &ml, &mc, &ds)) == NULL)
 #endif
-      {
-	fprintf(stderr,"%s: No fonts available\n",MyName);
-	exit(1);
-      }
+    {
+      fprintf(stderr,"%s: No fonts available\n",MyName);
+      exit(1);
     }
+  }
   XFontsOfFontSet(fontset, &fs_list, &ml);
   font = fs_list[0];
 #else
   if ((font = XLoadQueryFont(dpy, font_string)) == NULL)
+  {
+    if ((font = XLoadQueryFont(dpy, "fixed")) == NULL)
     {
-      if ((font = XLoadQueryFont(dpy, "fixed")) == NULL)
-	{
-	  fprintf(stderr,"%s: No fonts available\n",MyName);
-	  exit(1);
-	}
-    };
+      fprintf(stderr,"%s: No fonts available\n",MyName);
+      exit(1);
+    }
+  }
 #endif
 
   if ((local_flags & HIDE_H))
@@ -1058,63 +1060,69 @@ void CreateWindow(void)
   mysizehints.width_inc = UWidth;
   mysizehints.height_inc = UHeight;
 
-  if(x > -100000)
+  if (geom_x > -100000)
+  {
+    if (xneg)
     {
-      if (xneg)
-	{
-	  mysizehints.x = DisplayWidth(dpy,screen) + x - mysizehints.width;
-	  gravity = NorthEastGravity;
-	}
-      else
-	mysizehints.x = x;
-      if (yneg)
-	{
-	  mysizehints.y = DisplayHeight(dpy,screen) + y - mysizehints.height;
-	  gravity = SouthWestGravity;
-	}
-      else
-	mysizehints.y = y;
-
-      if((xneg) && (yneg))
-	gravity = SouthEastGravity;
-
-      mysizehints.flags |= USPosition;
+      mysizehints.x = DisplayWidth(dpy,screen) + geom_x - mysizehints.width;
+      gravity = NorthEastGravity;
     }
+    else
+    {
+      mysizehints.x = geom_x;
+    }
+    if (yneg)
+    {
+      mysizehints.y = DisplayHeight(dpy,screen) + geom_y - mysizehints.height;
+      gravity = SouthWestGravity;
+    }
+    else
+    {
+      mysizehints.y = geom_y;
+    }
+
+    if (xneg && yneg)
+    {
+      gravity = SouthEastGravity;
+    }
+
+    mysizehints.flags |= USPosition;
+  }
 
   mysizehints.win_gravity = gravity;
 
   if(Pdepth < 2)
-    {
-      back_pix = icon_back_pix = act_icon_fore_pix = GetColor("white");
-      fore_pix = icon_fore_pix = act_icon_back_pix = GetColor("black");
-      hilite_pix = icon_hilite_pix = act_icon_shadow_pix = icon_back_pix;
-      shadow_pix = icon_shadow_pix = act_icon_hilite_pix = icon_fore_pix;
-    }
+  {
+    back_pix = icon_back_pix = act_icon_fore_pix = GetColor("white");
+    fore_pix = icon_fore_pix = act_icon_back_pix = GetColor("black");
+    hilite_pix = icon_hilite_pix = act_icon_shadow_pix = icon_back_pix;
+    shadow_pix = icon_shadow_pix = act_icon_hilite_pix = icon_fore_pix;
+  }
   else
-    {
-      fore_pix = (colorset < 0) ? GetColor(Fore) : Colorset[colorset].fg;
-      back_pix = (colorset < 0) ? GetColor(Back) : Colorset[colorset].bg;
-      icon_back_pix = (Iconcolorset < 0) ? GetColor(IconBack)
-			      : Colorset[Iconcolorset].bg;
-      icon_fore_pix = (Iconcolorset < 0) ? GetColor(IconFore)
-			      : Colorset[Iconcolorset].fg;
-      icon_hilite_pix = (Iconcolorset < 0) ? GetHilite(icon_back_pix)
-			      : Colorset[Iconcolorset].hilite;
-      icon_shadow_pix = (Iconcolorset < 0) ? GetShadow(icon_back_pix)
-			      : Colorset[Iconcolorset].shadow;
-      act_icon_back_pix = (IconHicolorset < 0) ? GetColor(ActIconBack)
-			      : Colorset[IconHicolorset].bg;
-      act_icon_fore_pix = (IconHicolorset < 0) ? GetColor(ActIconFore)
-			      : Colorset[IconHicolorset].fg;
-      act_icon_hilite_pix = (IconHicolorset < 0) ? GetHilite(act_icon_back_pix)
-			      : Colorset[IconHicolorset].hilite;
-      act_icon_shadow_pix = (IconHicolorset < 0) ? GetShadow(act_icon_back_pix)
-			      : Colorset[IconHicolorset].shadow;
-      hilite_pix = (colorset < 0) ? GetHilite(back_pix)
-			      : Colorset[colorset].hilite;
-      shadow_pix = (colorset < 0) ? GetShadow(back_pix)
-			      : Colorset[colorset].shadow;
-    }
+  {
+    fore_pix = (colorset < 0) ? GetColor(Fore) : Colorset[colorset].fg;
+    back_pix = (colorset < 0) ? GetColor(Back) : Colorset[colorset].bg;
+    icon_back_pix = (Iconcolorset < 0) ? GetColor(IconBack)
+      : Colorset[Iconcolorset].bg;
+    icon_fore_pix = (Iconcolorset < 0) ? GetColor(IconFore)
+      : Colorset[Iconcolorset].fg;
+    icon_hilite_pix = (Iconcolorset < 0) ? GetHilite(icon_back_pix)
+      : Colorset[Iconcolorset].hilite;
+    icon_shadow_pix = (Iconcolorset < 0) ? GetShadow(icon_back_pix)
+      : Colorset[Iconcolorset].shadow;
+    act_icon_back_pix = (IconHicolorset < 0) ? GetColor(ActIconBack)
+      : Colorset[IconHicolorset].bg;
+    act_icon_fore_pix = (IconHicolorset < 0) ? GetColor(ActIconFore)
+      : Colorset[IconHicolorset].fg;
+    act_icon_hilite_pix = (IconHicolorset < 0) ? GetHilite(act_icon_back_pix)
+      : Colorset[IconHicolorset].hilite;
+    act_icon_shadow_pix = (IconHicolorset < 0) ? GetShadow(act_icon_back_pix)
+      : Colorset[IconHicolorset].shadow;
+    hilite_pix = (colorset < 0) ? GetHilite(back_pix)
+      : Colorset[colorset].hilite;
+    shadow_pix = (colorset < 0) ? GetShadow(back_pix)
+      : Colorset[colorset].shadow;
+  }
 
   attributes.background_pixel = back_pix;
   attributes.border_pixel = 0;
@@ -1131,10 +1139,10 @@ void CreateWindow(void)
   list[0]=MyName;
   list[1]=NULL;
   if (XStringListToTextProperty(list,1,&name) == 0)
-    {
-      fprintf(stderr,"%s: cannot allocate window name",MyName);
-      return;
-    }
+  {
+    fprintf(stderr,"%s: cannot allocate window name",MyName);
+    return;
+  }
   class_hints.res_name = MyName;
   class_hints.res_class = "FvwmIconBox";
   XSetWMProperties(dpy,main_win,&name,&name,
@@ -1150,9 +1158,9 @@ void CreateWindow(void)
                                    0,fore_pix,back_pix);
 
   icon_win = XCreateSimpleWindow(dpy,holder_win,-icon_win_x,-icon_win_y,
-                                   icon_win_width,
-                                   icon_win_height,
-                                   0,fore_pix,back_pix);
+				 icon_win_width,
+				 icon_win_height,
+				 0,fore_pix,back_pix);
 
   gcm = GCForeground|GCBackground;
   gcv.foreground = hilite_pix;
@@ -1202,9 +1210,10 @@ void CreateWindow(void)
 				 0, CopyFromParent,
 				 InputOutput, CopyFromParent,
 				 mask, &attributes);
-  XSelectInput(dpy,h_scroll_bar,SCROLL_EVENTS);
+    XSelectInput(dpy,h_scroll_bar,SCROLL_EVENTS);
   }
-  if (!(local_flags & HIDE_V)){
+  if (!(local_flags & HIDE_V))
+  {
     attributes.win_gravity = NorthEastGravity;
     v_scroll_bar = XCreateWindow(dpy ,main_win, margin1 + 6 +
 				 Width + margin2,
@@ -1213,11 +1222,12 @@ void CreateWindow(void)
 				 0, CopyFromParent,
 				 InputOutput, CopyFromParent,
 				 mask, &attributes);
-  XSelectInput(dpy,v_scroll_bar,SCROLL_EVENTS);
+    XSelectInput(dpy,v_scroll_bar,SCROLL_EVENTS);
   }
 
   /* buttons */
-  if (!(local_flags & HIDE_H)){
+  if (!(local_flags & HIDE_H))
+  {
     attributes.win_gravity = SouthWestGravity;
     l_button = XCreateWindow(dpy, main_win, margin1 + 2,
 			     margin1 + 6 + Height + margin2,
@@ -1233,8 +1243,8 @@ void CreateWindow(void)
 			     0, CopyFromParent,
 			     InputOutput, CopyFromParent,
 			     mask, &attributes);
-  XSelectInput(dpy,l_button,BUTTON_EVENTS);
-  XSelectInput(dpy,r_button,BUTTON_EVENTS);
+    XSelectInput(dpy,l_button,BUTTON_EVENTS);
+    XSelectInput(dpy,r_button,BUTTON_EVENTS);
   }
   if (!(local_flags & HIDE_V)){
     attributes.win_gravity = NorthEastGravity;
@@ -1253,8 +1263,8 @@ void CreateWindow(void)
 
 			     InputOutput, CopyFromParent,
 			     mask, &attributes);
-  XSelectInput(dpy,t_button,BUTTON_EVENTS);
-  XSelectInput(dpy,b_button,BUTTON_EVENTS);
+    XSelectInput(dpy,t_button,BUTTON_EVENTS);
+    XSelectInput(dpy,b_button,BUTTON_EVENTS);
   }
 }
 
@@ -1626,173 +1636,243 @@ void ParseOptions(void)
   GetConfigLine(fd,&tline);
 
   while(tline != NULL)
+  {
+    int g_x, g_y, flags;
+    unsigned width,height;
+
+    if(strlen(&tline[0])>1)
     {
-      int g_x, g_y, flags;
-      unsigned width,height;
-
-      if(strlen(&tline[0])>1){
-	if (strncasecmp(tline,CatString3("*", MyName,
-					  "Geometry"),Clength+9)==0){
-	  tmp = &tline[Clength+9];
-	  while(((isspace((unsigned char)*tmp))&&(*tmp != '\n'))&&(*tmp != 0))
-	    tmp++;
-	  tmp[strlen(tmp)] = 0;
-	  flags = XineramaSupportParseGeometry(tmp,&g_x,&g_y,&width,&height);
-	  if (flags & WidthValue)
-	    num_columns = width;
-	  if (flags & HeightValue)
-	    num_rows = height;
-	  if (flags & XValue)
-	    x = g_x;
-	  if (flags & YValue)
-	    y = g_y;
-	  if (flags & XNegative)
-	    xneg = 1;
-	  if (flags & YNegative)
-	    yneg = 1;
-	} else if (strncasecmp(tline,CatString3("*", MyName,
-						"MaxIconSize"),Clength+12)==0){
-	  tmp = &tline[Clength+12];
-	  while(((isspace((unsigned char)*tmp))&&(*tmp != '\n'))&&(*tmp != 0))
-	    tmp++;
-	  tmp[strlen(tmp)] = 0;
-
-	  flags = XineramaSupportParseGeometry(tmp,&g_x,&g_y,&width,&height);
-	  if (flags & WidthValue)
-	    max_icon_width = width;
-	  if (flags & HeightValue)
-	    max_icon_height = height;
-	  if (height == 0){
-	    icon_relief = 0;
-	    redraw_flag = 2;
-	    max_icon_width += 4;
-	  }
-	}else if
-    (strncasecmp(tline, "Colorset", 8) == 0)
-    LoadColorset(&tline[8]);
-  else if
-	  (strncasecmp(tline,CatString3("*",MyName,"Colorset"),Clength+9)==0)
-	  AllocColorset(colorset = atoi(&tline[Clength+9]));
-  else if
-	  (strncasecmp(tline,CatString3("*",MyName,"IconColorset"),Clength+13)==0)
-	  AllocColorset(Iconcolorset = atoi(&tline[Clength+13]));
-  else if
-	  (strncasecmp(tline,CatString3("*",MyName,"IconHiColorset"),Clength+15)==0)
-	  AllocColorset(IconHicolorset = atoi(&tline[Clength+15]));
-	else if
-	  (strncasecmp(tline,CatString3("*",MyName,"Font"),Clength+5)==0)
-	  CopyString(&font_string,&tline[Clength+5]);
-	else if
-	  (strncasecmp(tline,CatString3("*",MyName,"IconFore"),Clength+9)==0)
-	  CopyString(&IconFore,&tline[Clength+9]);
-	else if
-	  (strncasecmp(tline,CatString3("*",MyName,"IconBack"),Clength+9)==0)
-	    CopyString(&IconBack,&tline[Clength+9]);
-	else if
-	  (strncasecmp(tline,CatString3("*",MyName,"IconHiFore"),Clength+11)==0)
-	  CopyString(&ActIconFore,&tline[Clength+11]);
-	else if
-	  (strncasecmp(tline,CatString3("*",MyName,"IconHiBack"),Clength+11)==0)
-	  CopyString(&ActIconBack,&tline[Clength+11]);
-	else if (strncasecmp(tline,CatString3("*",MyName,
-					      "Fore"),Clength+5)==0)
-	  CopyString(&Fore,&tline[Clength+5]);
-	else if (strncasecmp(tline,CatString3("*",MyName,
-					      "Back"),Clength+5)==0)
-	  CopyString(&Back,&tline[Clength+5]);
-	else if (strncasecmp(tline,CatString3("*",MyName,
-					      "Pixmap"),Clength+7)==0)
-	  CopyString(&IconwinPixmapFile,&tline[Clength+7]);
-	else if (strncasecmp(tline,CatString3("*",MyName,
-					      "Padding"),Clength+8)==0)
-	  interval = max(0,atoi(&tline[Clength+8]));
-	else if (strncasecmp(tline,CatString3("*",MyName,
-					      "FrameWidth"),Clength+11)==0){
-	  sscanf(&tline[Clength+11], "%d %d", &margin1, &margin2);
-	  margin1 = max(0, margin1);
-	  margin2 = max(0, margin2);
-	}else if (strncasecmp(tline,CatString3("*",MyName,
-					      "Lines"),Clength+6)==0)
-	  Lines = max(1,atoi(&tline[Clength+6]));
-	else if (strncasecmp(tline,CatString3("*", MyName,
-           "NoIconAction"),Clength+13) == 0) {
-	  tmp = &tline[Clength+14];
-	  while(((isspace((unsigned char)*tmp))&&(*tmp != '\n'))&&(*tmp != 0))
-	    tmp++;
-	  if (tmp[strlen(tmp)-1] == '\n') tmp[strlen(tmp) -1] = '\0';
-	  if (AnimCommand) free(AnimCommand);
-	  AnimCommand = (char *)safemalloc((strlen(tmp) + 1) * sizeof(char));
-	  strcpy(AnimCommand, tmp);
-	} else if (strncasecmp(tline,CatString3("*",MyName,
-					      "SBWidth"),Clength+8)==0)
-	  bar_width = max(5,atoi(&tline[Clength+8]));
-	else if (strncasecmp(tline,CatString3("*",MyName,
-						"Placement"),Clength+10)==0)
-	  parseplacement(&tline[Clength+10]);
-	else if (strncasecmp(tline,CatString3("*",MyName,
-					      "SetWMIconSize"),Clength+14)==0)
-	  local_flags |= SETWMICONSIZE;
-	else if (strncasecmp(tline,CatString3("*",MyName,
-					      "HilightFocusWin"),Clength+16)==0)
-	  m_mask |= M_FOCUS_CHANGE;
-	else if (strncasecmp(tline,CatString3("*",MyName,
-					      "UseSkipList"),Clength+10)==0)
-	  UseSkipList = True;
-	else if (strncasecmp(tline,CatString3("*",MyName,
-					      "Resolution"),Clength+11)==0)
-	{
-	  tmp = &tline[Clength+11];
-	  while(((isspace((unsigned char)*tmp))&&(*tmp != '\n'))&&(*tmp != 0))
-	    tmp++;
-	  if (strncasecmp(tmp, "Desk", 4) == 0){
-	    m_mask |= M_NEW_DESK;
-	    local_flags |= CURRENT_ONLY;
-	  }
-	}
-	else if (strncasecmp(tline,CatString3("*",MyName,
-					      "Mouse"),Clength+6)==0)
-	  parsemouse(&tline[Clength + 6]);
-	else if (strncasecmp(tline,CatString3("*",MyName,
-					      "Key"),Clength+4)==0)
-	  parsekey(&tline[Clength + 4]);
-	else if (strncasecmp(tline,CatString3("*",MyName,
-					      "SortIcons"),Clength+10)==0){
-	  tmp = &tline[Clength+10];
-	  while(((isspace((unsigned char)*tmp))&&(*tmp != '\n'))&&(*tmp != 0))
-	    tmp++;
-	  if (strlen(tmp) == 0){ /* the case where no argument is given */
-	    sortby = ICONNAME;
-	    return;
-	  }
-	  if (strncasecmp(tmp, "WindowName", 10) == 0)
-	    sortby = WINDOWNAME;
-	  else if (strncasecmp(tmp, "IconName", 8) == 0)
-	    sortby = ICONNAME;
-	  else if (strncasecmp(tmp, "ResClass", 8) == 0)
-	    sortby = RESCLASS;
-	  else if (strncasecmp(tmp, "ResName", 7) == 0)
-	    sortby = RESNAME;
-	}else if (strncasecmp(tline,CatString3("*",MyName,
-					      "HideSC"),Clength+7)==0){
-	  tmp = &tline[Clength+7];
-	  while(((isspace((unsigned char)*tmp))&&(*tmp != '\n'))&&(*tmp != 0))
-	    tmp++;
-	  if (strncasecmp(tmp, "Horizontal", 10) == 0)
-	    local_flags |= HIDE_H;
-	  else if (strncasecmp(tmp, "Vertical", 8) == 0)
-	    local_flags |= HIDE_V;
-	}else if (strncasecmp(tline,CatString3("*",MyName,
-					      ""),Clength+1)==0)
-	  parseicon(&tline[Clength + 1]);
-	else if (strncasecmp(tline,"ImagePath",9)==0)
-	  CopyString(&imagePath,&tline[9]);
-	else if (strncasecmp(tline,"ClickTime",9)==0)
-	  ClickTime = atoi(&tline[9]);
-	else if (strncasecmp(tline,"ColorLimit",10)==0)
-	  save_color_limit = atoi(&tline[10]);
+      if (strncasecmp(tline,CatString3("*", MyName, "Geometry"),Clength+9)==0)
+      {
+	tmp = &tline[Clength+9];
+	while(((isspace((unsigned char)*tmp))&&(*tmp != '\n'))&&(*tmp != 0))
+	  tmp++;
+	tmp[strlen(tmp)] = 0;
+	flags = XineramaSupportParseGeometry(tmp,&g_x,&g_y,&width,&height);
+	if (flags & WidthValue)
+	  num_columns = width;
+	if (flags & HeightValue)
+	  num_rows = height;
+	if (flags & XValue)
+	  geom_x = g_x;
+	if (flags & YValue)
+	  geom_y = g_y;
+	if (flags & XNegative)
+	  xneg = 1;
+	if (flags & YNegative)
+	  yneg = 1;
       }
-      GetConfigLine(fd,&tline);
+      else if (strncasecmp(tline,CatString3(
+			     "*", MyName, "MaxIconSize"),Clength+12)==0)
+      {
+	tmp = &tline[Clength+12];
+	while(((isspace((unsigned char)*tmp))&&(*tmp != '\n'))&&(*tmp != 0))
+	  tmp++;
+	tmp[strlen(tmp)] = 0;
+
+	flags = XParseGeometry(tmp,&g_x,&g_y,&width,&height);
+	if (flags & WidthValue)
+	  max_icon_width = width;
+	if (flags & HeightValue)
+	  max_icon_height = height;
+	if (height == 0){
+	  icon_relief = 0;
+	  redraw_flag = 2;
+	  max_icon_width += 4;
+	}
+      }
+      else if (strncasecmp(tline, "Colorset", 8) == 0)
+      {
+	LoadColorset(&tline[8]);
+      }
+      else if (strncasecmp(tline, XINERAMA_CONFIG_STRING,
+			   strlen(XINERAMA_CONFIG_STRING)) == 0)
+      {
+	XineramaSupportConfigureModule(tline + strlen(XINERAMA_CONFIG_STRING));
+      }
+      else if (strncasecmp(
+		 tline,CatString3("*",MyName,"Colorset"),Clength+9)==0)
+      {
+	AllocColorset(colorset = atoi(&tline[Clength+9]));
+      }
+      else if (strncasecmp(
+		 tline,CatString3("*",MyName,"IconColorset"),Clength+13)==0)
+      {
+	AllocColorset(Iconcolorset = atoi(&tline[Clength+13]));
+      }
+      else if (strncasecmp(
+		 tline,CatString3("*",MyName,"IconHiColorset"),Clength+15)==0)
+      {
+	AllocColorset(IconHicolorset = atoi(&tline[Clength+15]));
+      }
+      else if (strncasecmp(tline,CatString3("*",MyName,"Font"),Clength+5)==0)
+      {
+	CopyString(&font_string,&tline[Clength+5]);
+      }
+      else if (strncasecmp(
+		 tline,CatString3("*",MyName,"IconFore"),Clength+9)==0)
+      {
+	CopyString(&IconFore,&tline[Clength+9]);
+      }
+      else if (strncasecmp(
+		 tline,CatString3("*",MyName,"IconBack"),Clength+9)==0)
+      {
+	CopyString(&IconBack,&tline[Clength+9]);
+      }
+      else if (strncasecmp(
+		 tline,CatString3("*",MyName,"IconHiFore"),Clength+11)==0)
+      {
+	CopyString(&ActIconFore,&tline[Clength+11]);
+      }
+      else if (strncasecmp(
+		 tline,CatString3("*",MyName,"IconHiBack"),Clength+11)==0)
+      {
+	CopyString(&ActIconBack,&tline[Clength+11]);
+      }
+      else if (strncasecmp(tline,CatString3("*",MyName,
+					    "Fore"),Clength+5)==0)
+      {
+	CopyString(&Fore,&tline[Clength+5]);
+      }
+      else if (strncasecmp(tline,CatString3("*",MyName,
+					    "Back"),Clength+5)==0)
+      {
+	CopyString(&Back,&tline[Clength+5]);
+      }
+      else if (strncasecmp(tline,CatString3("*",MyName,
+					    "Pixmap"),Clength+7)==0)
+      {
+	CopyString(&IconwinPixmapFile,&tline[Clength+7]);
+      }
+      else if (strncasecmp(tline,CatString3("*",MyName,
+					    "Padding"),Clength+8)==0)
+      {
+	interval = max(0,atoi(&tline[Clength+8]));
+      }
+      else if (strncasecmp(tline,CatString3("*",MyName,
+					    "FrameWidth"),Clength+11)==0)
+      {
+	sscanf(&tline[Clength+11], "%d %d", &margin1, &margin2);
+	margin1 = max(0, margin1);
+	margin2 = max(0, margin2);
+      }
+      else if (strncasecmp(tline,CatString3("*",MyName,
+					    "Lines"),Clength+6)==0)
+      {
+	Lines = max(1,atoi(&tline[Clength+6]));
+      }
+      else if (strncasecmp(tline,CatString3("*", MyName,
+					    "NoIconAction"),Clength+13) == 0)
+      {
+	tmp = &tline[Clength+14];
+	while(((isspace((unsigned char)*tmp))&&(*tmp != '\n'))&&(*tmp != 0))
+	  tmp++;
+	if (tmp[strlen(tmp)-1] == '\n')
+	  tmp[strlen(tmp) -1] = '\0';
+	if (AnimCommand)
+	  free(AnimCommand);
+	AnimCommand = (char *)safemalloc((strlen(tmp) + 1) * sizeof(char));
+	strcpy(AnimCommand, tmp);
+      }
+      else if (strncasecmp(tline,CatString3("*",MyName,
+					    "SBWidth"),Clength+8)==0)
+      {
+	bar_width = max(5,atoi(&tline[Clength+8]));
+      }
+      else if (strncasecmp(tline,CatString3("*",MyName,
+					    "Placement"),Clength+10)==0)
+      {
+	parseplacement(&tline[Clength+10]);
+      }
+      else if (strncasecmp(tline,CatString3("*",MyName,
+					    "SetWMIconSize"),Clength+14)==0)
+      {
+	local_flags |= SETWMICONSIZE;
+      }
+      else if (strncasecmp(tline,CatString3("*",MyName,
+					    "HilightFocusWin"),Clength+16)==0)
+      {
+	m_mask |= M_FOCUS_CHANGE;
+      }
+      else if (strncasecmp(tline,CatString3("*",MyName,
+					    "UseSkipList"),Clength+10)==0)
+      {
+	UseSkipList = True;
+      }
+      else if (strncasecmp(tline,CatString3("*",MyName,
+					    "Resolution"),Clength+11)==0)
+      {
+	tmp = &tline[Clength+11];
+	while(((isspace((unsigned char)*tmp))&&(*tmp != '\n'))&&(*tmp != 0))
+	  tmp++;
+	if (strncasecmp(tmp, "Desk", 4) == 0)
+	{
+	  m_mask |= M_NEW_DESK;
+	  local_flags |= CURRENT_ONLY;
+	}
+      }
+      else if (strncasecmp(tline,CatString3("*",MyName,
+					    "Mouse"),Clength+6)==0)
+      {
+	parsemouse(&tline[Clength + 6]);
+      }
+      else if (strncasecmp(tline,CatString3("*",MyName,
+					    "Key"),Clength+4)==0)
+      {
+	parsekey(&tline[Clength + 4]);
+      }
+      else if (strncasecmp(tline,CatString3("*",MyName,
+					    "SortIcons"),Clength+10)==0)
+      {
+	tmp = &tline[Clength+10];
+	while(((isspace((unsigned char)*tmp))&&(*tmp != '\n'))&&(*tmp != 0))
+	  tmp++;
+	if (strlen(tmp) == 0)
+	{
+	  /* the case where no argument is given */
+	  sortby = ICONNAME;
+	  return;
+	}
+	if (strncasecmp(tmp, "WindowName", 10) == 0)
+	  sortby = WINDOWNAME;
+	else if (strncasecmp(tmp, "IconName", 8) == 0)
+	  sortby = ICONNAME;
+	else if (strncasecmp(tmp, "ResClass", 8) == 0)
+	  sortby = RESCLASS;
+	else if (strncasecmp(tmp, "ResName", 7) == 0)
+	  sortby = RESNAME;
+      }
+      else if (strncasecmp(tline,CatString3("*",MyName,
+					    "HideSC"),Clength+7)==0)
+      {
+	tmp = &tline[Clength+7];
+	while(((isspace((unsigned char)*tmp))&&(*tmp != '\n'))&&(*tmp != 0))
+	  tmp++;
+	if (strncasecmp(tmp, "Horizontal", 10) == 0)
+	  local_flags |= HIDE_H;
+	else if (strncasecmp(tmp, "Vertical", 8) == 0)
+	  local_flags |= HIDE_V;
+      }
+      else if (strncasecmp(tline,CatString3("*",MyName,
+					    ""),Clength+1)==0)
+      {
+	parseicon(&tline[Clength + 1]);
+      }
+      else if (strncasecmp(tline,"ImagePath",9)==0)
+      {
+	CopyString(&imagePath,&tline[9]);
+      }
+      else if (strncasecmp(tline,"ClickTime",9)==0)
+      {
+	ClickTime = atoi(&tline[9]);
+      }
+      else if (strncasecmp(tline,"ColorLimit",10)==0)
+      {
+	save_color_limit = atoi(&tline[10]);
+      }
     }
+    GetConfigLine(fd,&tline);
+  }
 
   return;
 }
@@ -2355,6 +2435,10 @@ void process_message(unsigned long type, unsigned long *body)
     if (StrEquals(token, "Colorset")) {
       color = LoadColorset(tline);
       change_colorset(color);
+    }
+    else if (StrEquals(token, XINERAMA_CONFIG_STRING))
+    {
+      XineramaSupportConfigureModule(tline);
     }
   }
     break;

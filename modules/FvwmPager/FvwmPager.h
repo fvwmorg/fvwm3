@@ -156,7 +156,7 @@ void ParseOptions(void);
 
 void list_add(unsigned long *body);
 void list_configure(unsigned long *body);
-void list_colorset(unsigned long *body);
+void list_config_info(unsigned long *body);
 void list_destroy(unsigned long *body);
 void list_focus(unsigned long *body);
 void list_toggle(unsigned long *body);
