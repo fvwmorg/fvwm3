@@ -1,3 +1,14 @@
+2001-07-15  Mikhael Goikhman  <migo@homemail.com>
+
+	* bindings.c:
+	use libstroke-0.5 constant names while still supporting 0.3/0.4
+
+	* menus.c:
+	compiling fix for old AIX, which does not define XK_Page_Up/Down
+
+	* module_interface.c:
+	minor compiling fix for some proprietary preprocessors
+
 2001-07-10  Mikhael Goikhman  <migo@homemail.com>
 
 	* fvwm/fvwm2.1:

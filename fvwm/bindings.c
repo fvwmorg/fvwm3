@@ -29,6 +29,10 @@
 #include "focus.h"
 #ifdef HAVE_STROKE
 #include "stroke.h"
+/* migo (15-Jul-2001): libstroke <= 0.4 does not use STROKE_ prefix */
+#ifndef STROKE_MAX_SEQUENCE
+#  define STROKE_MAX_SEQUENCE MAX_SEQUENCE
+#endif
 #endif /* HAVE_STROKE */
 
 static void activate_binding(
@@ -92,7 +96,7 @@ int ParseBinding(
   char *action, context[20], modifiers[20], *ptr, *token;
   char key[20] = "";
   int button = 0;
-  STROKE_CODE(char stroke[MAX_SEQUENCE+1] = "";)
+  STROKE_CODE(char stroke[STROKE_MAX_SEQUENCE + 1] = "";)
   int n1=0,n2=0,n3=0;
   STROKE_CODE(int n4=0;)
   STROKE_CODE(int i;)
@@ -118,7 +122,7 @@ int ParseBinding(
       if (token[0] == 'N' && token[1] != '\0')
         num = 1;
       j=i+num;
-      while(n1 && token[j] != '\0' && i < MAX_SEQUENCE)
+      while(n1 && token[j] != '\0' && i < STROKE_MAX_SEQUENCE)
       {
         if (!isdigit(token[j]))
           n1 = 0;
@@ -135,11 +139,11 @@ int ParseBinding(
         j=i+num;
       }
       stroke[i] = '\0';
-      if (strlen(token) > MAX_SEQUENCE+num)
+      if (strlen(token) > STROKE_MAX_SEQUENCE + num)
       {
         fvwm_msg(WARN,"ParseBinding","To long stroke sequence in line %s"
                       "Only %i elements will be taken in account",
-                       tline, MAX_SEQUENCE);
+                       tline, STROKE_MAX_SEQUENCE);
       }
     }
 #endif /* HAVE_STROKE */

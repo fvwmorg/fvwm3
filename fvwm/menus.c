@@ -1063,13 +1063,18 @@ static void menuShortcuts(
     saction = SA_ENTER;
     break;
 
+  /* migo (15-Jun-2001): not defined in AIX 3.2.5 */
+#ifdef XK_Page_Up
   case XK_Page_Up:
+#endif
   case XK_KP_9:
     items_to_move = -5;
     saction = SA_MOVE_ITEMS;
     break;
 
+#ifdef XK_Page_Down
   case XK_Page_Down:
+#endif
   case XK_KP_3:
     items_to_move = 5;
     saction = SA_MOVE_ITEMS;
