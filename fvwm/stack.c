@@ -278,6 +278,10 @@ static void RaiseOrLowerWindow(
   Bool no_movement;
   int test_layer;
 
+  /* Do not raise this window after command execution (see HandleButtonPress()).
+   */
+  SET_SCHEDULED_FOR_RAISE(t, 0);
+
   /* New windows are simply raised/lowered without touching the transientfor
    * at first.  Then, further down in the code, RaiseOrLowerWindow() is called
    * again to raise/lower the transientfor if necessary.  We can not do the

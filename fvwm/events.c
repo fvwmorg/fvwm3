@@ -1290,12 +1290,21 @@ void HandleButtonPress(void)
 	 (Event.xany.window != Tmp_win->Parent)&&
 	 (Event.xbutton.subwindow != Tmp_win->Parent)))
     {
-      RaiseWindow(Tmp_win);
+      /* We can't raise the window immediately because the action bound to the
+       * click might be "Lower" or "RaiseLower". So mark the window as scheduled
+       * to be raised after the binding is executed. Functions that modify the
+       * stacking order will reset this flag. */
+      SET_SCHEDULED_FOR_RAISE(Tmp_win, 1);
     }
 
     Context = GetContext(Tmp_win,&Event, &PressedW);
     if (!IS_ICONIFIED(Tmp_win) && Context == C_WINDOW)
     {
+      if (Tmp_win && IS_SCHEDULED_FOR_RAISE(Tmp_win))
+      {
+	RaiseWindow(Tmp_win);
+	SET_SCHEDULED_FOR_RAISE(Tmp_win, 0);
+      }
       XSync(dpy,0);
       /* pass click event to just clicked to focus window? Do not swallow the
        * click if the window didn't accept the focus */
@@ -1325,7 +1334,8 @@ void HandleButtonPress(void)
   else if ((Tmp_win) && !(HAS_CLICK_FOCUS(Tmp_win)) &&
            (Event.xbutton.window == Tmp_win->Parent
 	    /* RBW - I don't think we need these!!! Dominik...if this sems
-	    to cause a problem, just uncomment them.
+	     * to cause a problem, just uncomment them.
+	     * DV - No, I think you are right.
 	    || Event.xbutton.window == Tmp_win->w
 	    || Event.xbutton.window == Tmp_win->frame
 	    */
@@ -1367,7 +1377,7 @@ void HandleButtonPress(void)
   XAllowEvents(dpy,ReplayPointer,CurrentTime);
   XSync(dpy,0);
 
-  Context = GetContext(Tmp_win,&Event, &PressedW);
+  Context = GetContext(Tmp_win, &Event, &PressedW);
   LocalContext = Context;
   if (Tmp_win)
   {
@@ -1408,6 +1418,14 @@ void HandleButtonPress(void)
     {
       GNOME_ProxyButtonEvent(&Event);
     }
+  }
+
+  if (ButtonWindow && IS_SCHEDULED_FOR_RAISE(ButtonWindow))
+  {
+    /* now that we know the action did not restack the window we can raise it.
+     */
+    RaiseWindow(ButtonWindow);
+    SET_SCHEDULED_FOR_RAISE(ButtonWindow, 0);
   }
 
   OldPressedW = PressedW;

@@ -1,3 +1,13 @@
+2000-09-06  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* fvwm/stack.c (RaiseOrLowerWindow):
+	* fvwm/events.c (HandleButtonPress):
+	* fvwm/window_flags.h (IS_SCHEDULED_FOR_RAISE):
+	(SET_SCHEDULED_FOR_RAISE):
+	* fvwm/fvwm.h (is_just_restacked):
+	Fixed Lower/RaiseLower problems in conjunction with ClickToFocus plus
+	ClickToFocusRaises.
+
 2000-09-05  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* fvwm/fvwm2.1 (Example):
