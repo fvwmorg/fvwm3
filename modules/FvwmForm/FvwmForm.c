@@ -2079,15 +2079,6 @@ int main (int argc, char **argv)
   *MyName='*';
   strcpy(MyName+1, s);		/* append name */
 
-  /* convert aliases FormFvwmMyFlavor. used in 2.3 to FvwmForm-MyFlavor */
-  if (matchWildcards("FormFvwm*.", s))
-  {
-    strcpy(MyName + 1, "FvwmForm-");
-    strncpy(MyName + 10, s + 8, MyNameLen - 10);
-    fprintf(stderr, "FvwmForm: Please use alias name %s instead of %s\n",
-      MyName + 1, s);
-  }
-
   myfprintf((stderr,"%s: Starting, argv[0] is %s, len %d\n",MyName+1,
              argv[0],MyNameLen));
 

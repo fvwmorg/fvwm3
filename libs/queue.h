@@ -68,4 +68,4 @@ void fqueue_remove_or_operate_all(
 	fqueue *fq, operate_fqueue_object_type operate_func,
 	void *operate_args);
 
-#endif QUEUE_H
+#endif /* QUEUE_H */

@@ -1,5 +1,0 @@
-#!/bin/sh
-
-echo "BuildXLockMenu is obsolete, please use fvwm-menu-xlock(1) instead" 1>&2
-# Ignoring any script arguments, because 2.2 version didn't have arguments.
-exec fvwm-menu-xlock

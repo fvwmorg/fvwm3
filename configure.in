@@ -41,11 +41,6 @@ smr_SWITCH(multibyte, multibyte character support (experimental), off, I18N_MB)
 smr_SWITCH(multipixmap-titles, fancy pixmap titlebars, on, FANCY_TITLEBARS)
 dnl dummy: smr_SWITCH(sm, dummy for test script, on, SESSION)
 
-AC_ARG_ENABLE(kanji,
-  [  --enable-kanji          obsolete, please use --enable-multibyte instead],
-  [AC_MSG_ERROR(--enable-kanji is obsolete; use --enable-multibyte instead.)],
-  [])
-
 dnl FIXME: default value should be derived from computed path to X
 dnl includes.  Actually, this should probably not appear in configure
 dnl at all: it is settable at runtime, and only confuses the issue to
