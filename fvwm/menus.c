@@ -1615,14 +1615,12 @@ static void MenuInteraction(
 	/* handle exposure events first */
 	if (flags.do_force_popup || flags.is_pointer_in_active_item_area ||
 	    MST_POPDOWN_DELAY(pmp->menu) > 0 ||
-	    (MST_POPUP_DELAY(pmp->menu) > 0 &&
-             flags.is_popped_up_by_timeout))
+	    (MST_POPUP_DELAY(pmp->menu) > 0 && !flags.is_popped_up_by_timeout))
 	{
 	  while (!XPending(dpy) || !XCheckMaskEvent(dpy, XEVMASK_MENU, &Event))
 	  {
 	    Bool is_popup_timed_out =
-	      (!MST_DO_POPUP_IMMEDIATELY(pmp->menu) &&
-               MST_POPUP_DELAY(pmp->menu) > 0 &&
+	      (MST_POPUP_DELAY(pmp->menu) > 0 &&
 	       popup_delay_10ms++ >= MST_POPUP_DELAY(pmp->menu) + 1);
 	    Bool is_popdown_timed_out =
 	      (MST_POPDOWN_DELAY(pmp->menu) > 0 && mrPopdown &&
