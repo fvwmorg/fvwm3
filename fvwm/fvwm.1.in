@@ -1740,12 +1740,18 @@ the command.
 .in +.5i
 $[w.name]
 $[w.iconname]
+$[w.iconfile]
+$[w.miniiconfile]
 $[w.class]
 $[w.resource]
 .in +.3i
-The window's name or icon name or resource class or resource name
-respectivelly, or unexpended "$[w.<attribute>]" string if no window
-is associated with the command.
+The window's name, icon name, file name of its icon or mini icon
+defined with the
+.IR Icon " or " MiniIcon
+style, resource class or resource name respectivelly, or
+unexpended "$[w.<attribute>]" string if no window is associated
+with the command.
+
 .in -.3i
 .in -.5i
 

@@ -1,5 +1,8 @@
 2004-02-16  Dominik Vogt  <dominik.vogt@gmx.de>
 
+	* fvwm/expand.c (expand_vars_extended):
+	new variables $[w.iconfile] and $[w.miniiconfile]
+
 	* libs/Graphics.c (do_relieve_rectangle_with_rotation):
 	made left side of a relief one pixel longer at the bottom
 

@@ -9,6 +9,8 @@ Changes in development release 2.5.9 (not released yet)
 
 * New configure option --disable-iconv to disable iconv support.
 
+* New extended variables $[w.iconfile] and $[w.miniiconfile].
+
 -------------------------------------------------------------------
 
 Changes in development release 2.5.8 (31-Oct-2003)

@@ -108,6 +108,8 @@ static char *function_vars[] =
 	"w.class",
 	"w.height",
 	"w.iconname",
+	"w.iconfile",
+	"w.miniiconfile",
 	"w.id",
 	"w.name",
 	"w.resource",
@@ -174,6 +176,8 @@ enum
 	VAR_W_CLASS,
 	VAR_W_HEIGHT,
 	VAR_W_ICONNAME,
+	VAR_W_ICONFILE,
+	VAR_W_MINIICONFILE,
 	VAR_W_ID,
 	VAR_W_NAME,
 	VAR_W_RESOURCE,
@@ -369,6 +373,18 @@ static signed int expand_vars_extended(
 		if (fw && !IS_EWMH_DESKTOP(FW_W(fw)))
 		{
 			string = fw->icon_name.name;
+		}
+		break;
+	case VAR_W_ICONFILE:
+		if (fw && !IS_EWMH_DESKTOP(FW_W(fw)))
+		{
+			string = fw->icon_bitmap_file;
+		}
+		break;
+	case VAR_W_MINIICONFILE:
+		if (fw && !IS_EWMH_DESKTOP(FW_W(fw)))
+		{
+			string = fw->mini_pixmap_file;
 		}
 		break;
 	case VAR_W_CLASS:
