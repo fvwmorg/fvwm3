@@ -963,7 +963,7 @@ void PGraphicsRenderPixmaps(
 			t_fra.added_alpha_percent =
 				fra->colorset->icon_alpha_percent;
 			t_fra.tint_percent = fra->colorset->icon_tint_percent;
-			t_fra.tint = fra->colorset->icon_tint_percent;
+			t_fra.tint = fra->colorset->icon_tint;
 		}
 		if (fra->mask & FRAM_HAVE_ADDED_ALPHA)
 		{
