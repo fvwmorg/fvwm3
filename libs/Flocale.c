@@ -528,7 +528,7 @@ char *FlocaleEncodeString(
 			}
 		}
 	}
-	
+
 	*nl = len1;
 	return str1;
 }
@@ -538,6 +538,7 @@ void FlocaleEncodeWinString(
 	Display *dpy, FlocaleFont *flf, FlocaleWinString *fws, int *do_free,
 	int *len, superimpose_char_t **comb_chars, int **l_to_v)
 {
+	int len2b;
 	fws->e_str = FlocaleEncodeString(
 		dpy, flf, fws->str, do_free, *len, len, NULL, comb_chars,
 		l_to_v);
@@ -548,21 +549,12 @@ void FlocaleEncodeWinString(
 		if (FLC_ENCODING_TYPE_IS_UTF_8(flf->fc))
 		{
 			fws->str2b = FlocaleUtf8ToUnicodeStr2b(
-				fws->e_str, *len, len);
+				fws->e_str, *len, &len2b);
 		}
 		else if (flf->flags.is_mb)
 		{
 			fws->str2b = FlocaleStringToString2b(
-				dpy, flf, fws->e_str, *len, len);
-		}
-		if (FLC_ENCODING_TYPE_IS_UTF_8(flf->fc) || flf->flags.is_mb)
-		{
-			if (*do_free)
-			{
-				free(fws->e_str);
-			}
-			fws->e_str = NULL;
-			*do_free = True;
+				dpy, flf, fws->e_str, *len, &len2b);
 		}
 	}
 }
@@ -728,10 +720,12 @@ void FlocaleRotateDrawString(
 				tmp_fws.str2b = NULL;
 				if (FLC_ENCODING_TYPE_IS_UTF_8(flf->fc))
 				{
-					tmp_fws.str2b = 
-					  FlocaleUtf8ToUnicodeStr2b(
-						     tmp_fws.e_str,curr_len, 
-						     &out_len);
+					tmp_fws.str2b = (XChar2b *)
+					       safemalloc(2 * sizeof(XChar2b));
+					tmp_fws.str2b[0] = comb_chars[i].c;
+					tmp_fws.str2b[1].byte1 = 0;
+					tmp_fws.str2b[1].byte2 = 0;
+					out_len = 1;
 				}
 				else if (flf->flags.is_mb)
 				{
@@ -1810,26 +1804,26 @@ void FlocaleDrawString(
 	/* encode the string */
 	FlocaleEncodeWinString(dpy, flf, fws, &do_free, &len, &comb_chars,
 			       NULL);
+	curr_str = fws->e_str;
+	for(char_len = 0, i = 0 ;
+	    i < len && curr_str[i] != 0 ;
+	    char_len++, i += curr_len)
+	{
+		curr_len = FlocaleStringNumberOfBytes(flf, curr_str + i);
+	}
 
 	/* for superimposition calculate the character positions in pixels */
 	if(comb_chars != NULL)
 	{
-		char_len = 0;
-		i = 0;
-		/* the second condition is actually redundant, but there
-		   for clarity, ending at 0 is what's expected in a correct
+		/* the second condition is actually redundant, 
+		   but there for clarity, 
+		   ending at 0 is what's expected in a correct
 		   string */
-		for(char_len = 0, i = 0 ;
-		    i < len && fws->e_str[i] != 0 ;
-		    char_len++, i += curr_len)
-		{
-		        curr_len = FlocaleStringNumberOfBytes(
-						flf, fws->str + i);
-		}
 		pixel_pos = (int *)safemalloc(char_len * sizeof(int));
-		curr_str = fws->e_str;
-		curr_pixel_pos = 0;
-		for(i = 0 ; i < char_len ; i++)
+		
+		for(i = 0, curr_pixel_pos = 0 ; 
+		    i < char_len ; 
+		    i++, curr_str += curr_len)
 		{
 		        curr_len = FlocaleStringNumberOfBytes(flf, curr_str);
 			for(j = 0 ; j < curr_len ; j++)
@@ -1839,7 +1833,6 @@ void FlocaleDrawString(
 			buf[j] = 0;
 			pixel_pos[i] = curr_pixel_pos;
 			curr_pixel_pos += FlocaleTextWidth(flf, buf, curr_len);
-			curr_str += curr_len;
 		}
 	}
 
@@ -1864,6 +1857,13 @@ void FlocaleDrawString(
 		}
 		fgsh = GetShadow(fg);
 		has_fg_pixels = True;
+	}
+
+	if(flf->font != None && 
+	   (FLC_ENCODING_TYPE_IS_UTF_8(flf->fc) || flf->flags.is_mb))
+	{
+		/* in this case, length is number of 2-byte chars */
+		len = char_len;
 	}
 
 	if (fws->flags.text_rotation != ROTATION_0 &&
@@ -1923,7 +1923,7 @@ void FlocaleDrawString(
 			char *buf2;
 			int out_len;
 		        curr_len = FlocaleChar2bOneCharToUtf8(comb_chars[i].c, 
-								  buf);
+							      buf);
 			buf2 = FiconvUtf8ToCharset(
 				dpy, flf->str_fc, (const char *)buf, curr_len);
 			if(FftSupport && flf->fftf.fftfont != NULL)
@@ -1949,24 +1949,29 @@ void FlocaleDrawString(
 				tmp_fws.str2b = NULL;
 				if (FLC_ENCODING_TYPE_IS_UTF_8(flf->fc))
 				{
-				        tmp_fws.str2b =
+					tmp_fws.str2b = (XChar2b *)
+					       safemalloc(2 * sizeof(XChar2b));
+					tmp_fws.str2b[0] = comb_chars[i].c;
+					tmp_fws.str2b[1].byte1 = 0;
+					tmp_fws.str2b[1].byte2 = 0;
+					out_len = 1;
+				        /*tmp_fws.str2b =
 						FlocaleUtf8ToUnicodeStr2b(
 							tmp_fws.e_str,
-							curr_len, &out_len);
+							curr_len, &out_len);*/
 				}
 				else if (flf->flags.is_mb)
 				{
-				        tmp_fws.str2b =
-						FlocaleStringToString2b(
-							dpy, flf,
-							tmp_fws.e_str,
-							curr_len, &out_len);
+					tmp_fws.str2b =
+					  FlocaleStringToString2b(
+					  dpy, flf,
+					  tmp_fws.e_str,
+					  curr_len, &out_len);
 				}
 				else
 				{
 				        out_len = strlen(buf2);
 				}
-
 			        FlocaleFontStructDrawString(
 					dpy, flf, fws->win, fws->gc,
 					fws->x + offset, fws->y, fg, fgsh,
@@ -2051,6 +2056,12 @@ void FlocaleDrawUnderline(
 	XDrawLine(dpy, fws->win, fws->gc, x_s, y, x_e, y);
 
 	free(fws->e_str);
+	fws->e_str = NULL;
+	if(fws->str2b != NULL)
+	{
+		free(fws->str2b);
+		fws->str2b = NULL;
+	}
 	free(l_to_v);
 
 	return;
