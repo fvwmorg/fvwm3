@@ -74,6 +74,12 @@ static void apply_window_updates(
   short buttons;
   Bool is_style_initialised = False;
 
+  if (IS_TRANSIENT(t) && flags->do_redecorate_transient)
+  {
+    flags->do_redecorate = True;
+    flags->do_update_window_font = True;
+  }
+
   /*
    * is_sticky
    * is_icon_sticky
@@ -108,7 +114,8 @@ static void apply_window_updates(
       t, pstyle, (flags->do_update_window_font && HAS_WINDOW_FONT(t)));
     flags->do_redecorate = True;
   }
-  if (flags->do_redecorate)
+  if (flags->do_redecorate ||
+      (IS_TRANSIENT(t) && flags->do_redecorate_transient))
   {
     rectangle naked_g;
     rectangle *new_g;

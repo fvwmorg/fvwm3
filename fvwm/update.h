@@ -19,6 +19,7 @@
 typedef struct
 {
   unsigned do_redecorate : 1;
+  unsigned do_redecorate_transient : 1;
   unsigned do_redraw_decoration : 1;
   unsigned do_resize_window : 1;
   unsigned do_setup_focus_policy : 1;

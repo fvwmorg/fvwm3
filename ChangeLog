@@ -1,7 +1,16 @@
+2000-01-21  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* fvwm/add_window.c (setup_style_and_decor):
+	* fvwm/update.c (apply_window_updates):
+	* fvwm/update.h (struct):
+	* fvwm/style.c (check_window_style_change):
+	fixed DecorateTransient/NakedTransient styles; also make them take
+	effect without a recapture
+
 2000-01-21  Chris Rankin  <rankinc@zipworld.com.au>
 
-	* fvwm/fvwm.c
-    Changed SA_INTERRUPT to SA_RESTART
+	* fvwm/fvwm.c:
+	Changed SA_INTERRUPT to SA_RESTART
 
 2000-01-21  Dominik Vogt  <dominik.vogt@gmx.de>
 

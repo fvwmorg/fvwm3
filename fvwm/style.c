@@ -2260,6 +2260,13 @@ void check_window_style_change(
 
   /*
    * do_decorate_transient
+   */
+  if (ret_style->change_mask.do_decorate_transient)
+  {
+    flags->do_redecorate_transient = True;
+  }
+
+  /*
    * has_border_width
    * has_handle_width
    * has_mwm_decor
@@ -2268,8 +2275,7 @@ void check_window_style_change(
    * has_ol_decor
    * is_button_disabled
    */
-  if (ret_style->change_mask.do_decorate_transient ||
-      ret_style->change_mask.has_border_width ||
+  if (ret_style->change_mask.has_border_width ||
       ret_style->change_mask.has_handle_width ||
       ret_style->change_mask.has_mwm_decor ||
       ret_style->change_mask.has_mwm_functions ||

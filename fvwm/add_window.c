@@ -420,6 +420,11 @@ void setup_style_and_decor(
   SelectDecor(tmp_win, &pstyle->flags, SGET_BORDER_WIDTH(*pstyle),
 	      SGET_HANDLE_WIDTH(*pstyle), buttons);
 
+  if (IS_TRANSIENT(tmp_win) && !pstyle->flags.do_decorate_transient)
+  {
+      SET_HAS_BORDER(tmp_win, 0);
+      SET_HAS_TITLE(tmp_win, 0);
+  }
 #ifdef SHAPE
   /* set boundary width to zero for shaped windows */
   if (tmp_win->wShaped)
@@ -1239,6 +1244,8 @@ FvwmWindow *AddWindow(Window w, FvwmWindow *ReuseWin)
   /* get merged styles */
   lookup_style(tmp_win, &style);
   sflags = SGET_FLAGS_POINTER(style);
+  SET_TRANSIENT(
+    tmp_win, !!XGetTransientForHint(dpy, tmp_win->w, &tmp_win->transientfor));
   setup_style_and_decor(tmp_win, &style, &buttons);
   memcpy(&(FW_COMMON_FLAGS(tmp_win)), &(sflags->common),
          sizeof(common_flags_type));
@@ -1248,8 +1255,6 @@ FvwmWindow *AddWindow(Window w, FvwmWindow *ReuseWin)
   setup_icon_font(tmp_win, &style, False);
 
   /****** state setup ******/
-  SET_TRANSIENT(
-    tmp_win, !!XGetTransientForHint(dpy, tmp_win->w, &tmp_win->transientfor));
   setup_icon_boxes(tmp_win, &style);
   SET_ICONIFIED(tmp_win, 0);
   SET_ICON_UNMAPPED(tmp_win, 0);
