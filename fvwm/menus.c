@@ -6441,9 +6441,8 @@ void do_menu(MenuParameters *pmp, MenuReturn *pmret)
 		 * are lost */
 		MyXGrabKeyboard(dpy);
 	}
-	do_menu_interaction = True;
 	/* This may loop for tear off menus */
-	while (do_menu_interaction)
+	for (do_menu_interaction = True; do_menu_interaction == True; )
 	{
 		if (is_pointer_ungrabbed && !GrabEm(CRS_MENU, GRAB_MENU))
 		{
@@ -6453,14 +6452,23 @@ void do_menu(MenuParameters *pmp, MenuReturn *pmret)
 			break;
 		}
 		do_menu_interaction = False;
-		if (!pmp->flags.is_submenu)
+		if (pmp->pops->flags.do_tear_off_immediately == 1)
 		{
-			XSelectInput(dpy, Scr.NoFocusWin, XEVMASK_MENUNFW);
+			pmret->rc = MENU_TEAR_OFF;
 		}
-		__menu_loop(pmp, pmret, &dkp);
-		if (!pmp->flags.is_submenu)
+		else
 		{
-			XSelectInput(dpy, Scr.NoFocusWin, XEVMASK_NOFOCUSW);
+			if (!pmp->flags.is_submenu)
+			{
+				XSelectInput(
+					dpy, Scr.NoFocusWin, XEVMASK_MENUNFW);
+			}
+			__menu_loop(pmp, pmret, &dkp);
+			if (!pmp->flags.is_submenu)
+			{
+				XSelectInput(
+					dpy, Scr.NoFocusWin, XEVMASK_NOFOCUSW);
+			}
 		}
 		do_check_pop_down = False;
 		switch (pmret->rc)
@@ -7804,7 +7812,9 @@ char *get_menu_options(
 	{
 		naction = GetNextToken(action, &tok);
 		if (!tok)
+		{
 			break;
+		}
 		if (StrEquals(tok, "WarpTitle"))
 		{
 			pops->flags.do_warp_title = 1;
@@ -7826,6 +7836,10 @@ char *get_menu_options(
 		else if (StrEquals(tok, "SelectWarp"))
 		{
 			pops->flags.do_warp_on_select = 1;
+		}
+		else if (StrEquals(tok, "TearOffImmediately"))
+		{
+			pops->flags.do_tear_off_immediately = 1;
 		}
 		else
 		{

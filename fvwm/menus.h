@@ -243,6 +243,7 @@ typedef struct
 		unsigned do_warp_on_select : 1;
 		unsigned do_warp_title : 1;
 		unsigned do_select_in_place : 1;
+		unsigned do_tear_off_immediately : 1;
 		unsigned has_poshints : 1;
 		unsigned is_fixed : 1;
 	} flags;

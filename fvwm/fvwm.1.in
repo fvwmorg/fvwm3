@@ -2298,6 +2298,13 @@ A tear off menu is an independent copy of the menu it originated
 from.  As such, it is not affected by adding items to that menu or
 changing its menu style.
 
+To create a tear off menu without opening the normal menu first,
+the option
+.I TearOffImmediately
+can be added to the
+.BR Menu " or " Popup
+command.
+
 .TP
 .BI "AddToMenu " menu-name " [" menu-label " " action "]"
 
@@ -2734,6 +2741,19 @@ The
 .IR special-options :
 
 .in +.5i
+To create a tear off menu without opening the normal menu, add the
+option
+.IR TearOffImmediately .
+Normally the menu opens in normal state for a split second before
+being torn off.  As tearing off places the menu like any other
+window, a position should be specified explicitly:
+.EX
+# Forbid fvwm to place the menu window
+Style <name of menu> UsePPosition
+# Menu at top left corner of screen
+Menu Root 0p 0p TearOffImmediately
+.EE
+
 The
 .IR animated " and " Mwm " or " Win
 menu styles may move a menu somewhere else on the screen.  If you
