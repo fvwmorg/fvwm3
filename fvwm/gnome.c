@@ -498,7 +498,7 @@ GNOME_SetHints(FvwmWindow *fwin)
 	atom_set = XInternAtom(dpy, XA_WIN_STATE, False);
 	val = 0;
 
-	if (IS_STICKY(fwin))
+	if (IS_STICKY_ON_PAGE(fwin) && IS_STICKY_ON_DESK(fwin))
 	{
 		val |= WIN_STATE_STICKY;
 	}
@@ -567,9 +567,12 @@ GNOME_GetStyle (FvwmWindow *fwin, window_style *style)
 	{
 		if (*(int*)retval & WIN_STATE_STICKY)
 		{
-			S_SET_IS_STICKY(SCF(*style), 1);
-			S_SET_IS_STICKY(SCM(*style), 1);
-			S_SET_IS_STICKY(SCC(*style), 1);
+			S_SET_IS_STICKY_ON_PAGE(SCF(*style), 1);
+			S_SET_IS_STICKY_ON_PAGE(SCM(*style), 1);
+			S_SET_IS_STICKY_ON_PAGE(SCC(*style), 1);
+			S_SET_IS_STICKY_ON_DESK(SCF(*style), 1);
+			S_SET_IS_STICKY_ON_DESK(SCM(*style), 1);
+			S_SET_IS_STICKY_ON_DESK(SCC(*style), 1);
 		}
 
 		if (*(int*)retval & WIN_STATE_SHADED)
@@ -1045,11 +1048,13 @@ void GNOME_HandlePropRequest(
 	{
 		if (prop & WIN_STATE_STICKY)
 		{
-			SET_STICKY(fwin, 1);
+			SET_STICKY_ON_PAGE(fwin, 1);
+			SET_STICKY_ON_DESK(fwin, 1);
 		}
 		else
 		{
-			SET_STICKY(fwin, 0);
+			SET_STICKY_ON_PAGE(fwin, 0);
+			SET_STICKY_ON_DESK(fwin, 0);
 		}
 		border_draw_decorations(
 			fwin, PART_TITLE, (Scr.Hilite==fwin), True, CLEAR_ALL,

@@ -126,10 +126,14 @@
 	((c).title_dir)
 #define S_SET_TITLE_DIR(c,x) \
 	((c).title_dir = x)
-#define S_IS_STICKY(c) \
-	((c).is_sticky)
-#define S_SET_IS_STICKY(c,x) \
-	((c).is_sticky = !!(x))
+#define S_IS_STICKY_ON_PAGE(c) \
+	((c).is_sticky_on_page)
+#define S_SET_IS_STICKY_ON_PAGE(c,x) \
+	((c).is_sticky_on_page = !!(x))
+#define S_IS_STICKY_ON_DESK(c) \
+	((c).is_sticky_on_desk)
+#define S_SET_IS_STICKY_ON_DESK(c,x) \
+	((c).is_sticky_on_desk = !!(x))
 #define S_DO_CIRCULATE_SKIP(c) \
 	((c).s.do_circulate_skip)
 #define S_SET_DO_CIRCULATE_SKIP(c,x) \
@@ -246,10 +250,14 @@
 	((c).s.is_fixed_ppos)
 #define S_SET_IS_FIXED_PPOS(c,x) \
 	((c).s.is_fixed_ppos = !!(x))
-#define S_IS_ICON_STICKY(c) \
-	((c).s.is_icon_sticky)
-#define S_SET_IS_ICON_STICKY(c,x) \
-	((c).s.is_icon_sticky = !!(x))
+#define S_IS_ICON_STICKY_ON_PAGE(c) \
+	((c).s.is_icon_sticky_on_page)
+#define S_SET_IS_ICON_STICKY_ON_PAGE(c,x) \
+	((c).s.is_icon_sticky_on_page = !!(x))
+#define S_IS_ICON_STICKY_ON_DESK(c) \
+	((c).s.is_icon_sticky_on_desk)
+#define S_SET_IS_ICON_STICKY_ON_DESK(c,x) \
+	((c).s.is_icon_sticky_on_desk = !!(x))
 #define S_IS_ICON_SUPPRESSED(c) \
 	((c).s.is_icon_suppressed)
 #define S_SET_IS_ICON_SUPPRESSED(c,x) \

@@ -468,7 +468,8 @@ static Bool is_button_toggled(
 	{
 		return True;
 	}
-	if ((mf & MWM_DECOR_STICK) && IS_STICKY(fw))
+	if ((mf & MWM_DECOR_STICK) &&
+	    (IS_STICKY_ON_PAGE(fw) || IS_STICKY_ON_DESK(fw)))
 	{
 		return True;
 	}
@@ -553,7 +554,7 @@ static void get_common_decorations(
 			cd->texture_pixmap = GetDecor(
 				t, BorderStyle.inactive.u.p->picture);
 		}
-		if (IS_STICKY(t))
+		if (IS_STICKY_ON_PAGE(t) || IS_STICKY_ON_DESK(t))
 		{
 			cd->back_pixmap = Scr.sticky_gray_pixmap;
 		}
@@ -1865,7 +1866,8 @@ static void border_draw_title_stick_lines(
 	int right_x;
 	int right_w;
 
-	if (!IS_STICKY(fw) && !HAS_STIPPLED_TITLE(fw))
+	if (!IS_STICKY_ON_PAGE(fw) && !IS_STICKY_ON_DESK(fw) &&
+	    !HAS_STIPPLED_TITLE(fw))
 	{
 		return;
 	}

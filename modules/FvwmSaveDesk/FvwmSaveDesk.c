@@ -335,7 +335,7 @@ void do_save_command(FILE *out, struct list *t, int *curdesk,
   dwidth /= t->width_inc;
   dheight /= t->height_inc;
 
-  if (IS_STICKY(t))
+  if (IS_STICKY_ON_PAGE(t))
   {
     tVx = 0;
     tVy = 0;

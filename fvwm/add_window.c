@@ -2333,23 +2333,32 @@ FvwmWindow *AddWindow(
 		      (unsigned long)fw,fw->class.res_name);
 
 	/****** stick window ******/
-	if (IS_STICKY(fw) && (!(fw->hints.flags & USPosition) || used_sm))
+	if (!(fw->hints.flags & USPosition) || used_sm)
 	{
-		/* If it's sticky and the user didn't ask for an explicit
-		 * position, force it on screen now.  Don't do that with
-		 * USPosition because we have to assume the user knows what
-		 * (s)he is doing.  This is necessary e.g. if we want a sticky
-		 * 'panel' in FvwmButtons but don't want to see when it's
-		 * mapped in the void. */
-		if (!IsRectangleOnThisPage(&fw->frame_g, Scr.CurrentDesk))
+		int stick_page;
+		int stick_desk;
+
+		stick_page = is_window_sticky_on_page(fw);
+		stick_desk = is_window_sticky_on_page(fw);
+		if ((stick_page &&
+		     !IsRectangleOnThisPage(&fw->frame_g, Scr.CurrentDesk)) ||
+		    (stick_desk && fw->Desk != Scr.CurrentDesk))
 		{
+			/* If it's sticky and the user didn't ask for an
+			 * explicit position, force it on screen now.  Don't do
+			 * that with USPosition because we have to assume the
+			 * user knows what (s)he is doing.  This is necessary
+			 * e.g. if we want a sticky 'panel' in FvwmButtons but
+			 * don't want to see when it's mapped in the void. */
 			ecc.w.fw = fw;
 			ecc.w.w = FW_W_FRAME(fw);
 			ecc.w.wcontext = C_FRAME;
 			exc2 = exc_clone_context(
 				exc, &ecc, ECC_FW | ECC_W | ECC_WCONTEXT);
-			SET_STICKY(fw, 0);
-			handle_stick(NULL, exc2, "", 1, 1, 0);
+			SET_STICKY_ON_PAGE(fw, 0);
+			SET_STICKY_ON_DESK(fw, 0);
+			handle_stick(
+				NULL, exc2, "", stick_page, stick_desk, 1, 0);
 			exc_destroy_context(exc2);
 		}
 	}

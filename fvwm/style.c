@@ -3137,15 +3137,33 @@ static Bool style_parse_one_style_option(
 		}
 		else if (StrEquals(token, "StickyIcon"))
 		{
-			S_SET_IS_ICON_STICKY(SCF(*ps), on);
-			S_SET_IS_ICON_STICKY(SCM(*ps), 1);
-			S_SET_IS_ICON_STICKY(SCC(*ps), 1);
+			S_SET_IS_ICON_STICKY_ON_PAGE(SCF(*ps), on);
+			S_SET_IS_ICON_STICKY_ON_PAGE(SCM(*ps), 1);
+			S_SET_IS_ICON_STICKY_ON_PAGE(SCC(*ps), 1);
+			S_SET_IS_ICON_STICKY_ON_DESK(SCF(*ps), on);
+			S_SET_IS_ICON_STICKY_ON_DESK(SCM(*ps), 1);
+			S_SET_IS_ICON_STICKY_ON_DESK(SCC(*ps), 1);
+		}
+		else if (StrEquals(token, "StickyPageIcon"))
+		{
+			S_SET_IS_ICON_STICKY_ON_PAGE(SCF(*ps), on);
+			S_SET_IS_ICON_STICKY_ON_PAGE(SCM(*ps), 1);
+			S_SET_IS_ICON_STICKY_ON_PAGE(SCC(*ps), 1);
+		}
+		else if (StrEquals(token, "StickyDeskIcon"))
+		{
+			S_SET_IS_ICON_STICKY_ON_DESK(SCF(*ps), on);
+			S_SET_IS_ICON_STICKY_ON_DESK(SCM(*ps), 1);
+			S_SET_IS_ICON_STICKY_ON_DESK(SCC(*ps), 1);
 		}
 		else if (StrEquals(token, "SlipperyIcon"))
 		{
-			S_SET_IS_ICON_STICKY(SCF(*ps), !on);
-			S_SET_IS_ICON_STICKY(SCM(*ps), 1);
-			S_SET_IS_ICON_STICKY(SCC(*ps), 1);
+			S_SET_IS_ICON_STICKY_ON_PAGE(SCF(*ps), !on);
+			S_SET_IS_ICON_STICKY_ON_PAGE(SCM(*ps), 1);
+			S_SET_IS_ICON_STICKY_ON_PAGE(SCC(*ps), 1);
+			S_SET_IS_ICON_STICKY_ON_DESK(SCF(*ps), !on);
+			S_SET_IS_ICON_STICKY_ON_DESK(SCM(*ps), 1);
+			S_SET_IS_ICON_STICKY_ON_DESK(SCC(*ps), 1);
 		}
 		else if (StrEquals(token, "SloppyFocus"))
 		{
@@ -3189,15 +3207,33 @@ static Bool style_parse_one_style_option(
 		}
 		else if (StrEquals(token, "Sticky"))
 		{
-			S_SET_IS_STICKY(SCF(*ps), on);
-			S_SET_IS_STICKY(SCM(*ps), 1);
-			S_SET_IS_STICKY(SCC(*ps), 1);
+			S_SET_IS_STICKY_ON_PAGE(SCF(*ps), on);
+			S_SET_IS_STICKY_ON_PAGE(SCM(*ps), 1);
+			S_SET_IS_STICKY_ON_PAGE(SCC(*ps), 1);
+			S_SET_IS_STICKY_ON_DESK(SCF(*ps), on);
+			S_SET_IS_STICKY_ON_DESK(SCM(*ps), 1);
+			S_SET_IS_STICKY_ON_DESK(SCC(*ps), 1);
+		}
+		else if (StrEquals(token, "StickyPage"))
+		{
+			S_SET_IS_STICKY_ON_PAGE(SCF(*ps), on);
+			S_SET_IS_STICKY_ON_PAGE(SCM(*ps), 1);
+			S_SET_IS_STICKY_ON_PAGE(SCC(*ps), 1);
+		}
+		else if (StrEquals(token, "StickyDesk"))
+		{
+			S_SET_IS_STICKY_ON_DESK(SCF(*ps), on);
+			S_SET_IS_STICKY_ON_DESK(SCM(*ps), 1);
+			S_SET_IS_STICKY_ON_DESK(SCC(*ps), 1);
 		}
 		else if (StrEquals(token, "Slippery"))
 		{
-			S_SET_IS_STICKY(SCF(*ps), !on);
-			S_SET_IS_STICKY(SCM(*ps), 1);
-			S_SET_IS_STICKY(SCC(*ps), 1);
+			S_SET_IS_STICKY_ON_PAGE(SCF(*ps), !on);
+			S_SET_IS_STICKY_ON_PAGE(SCM(*ps), 1);
+			S_SET_IS_STICKY_ON_PAGE(SCC(*ps), 1);
+			S_SET_IS_STICKY_ON_DESK(SCF(*ps), !on);
+			S_SET_IS_STICKY_ON_DESK(SCM(*ps), 1);
+			S_SET_IS_STICKY_ON_DESK(SCC(*ps), 1);
 		}
 		else if (StrEquals(token, "STARTSONDESK"))
 		{
@@ -3929,12 +3965,18 @@ void check_window_style_change(
 	 * is_sticky
 	 * is_icon_sticky
 	 */
-	if (S_IS_STICKY(SCC(*ret_style)))
+	if (S_IS_STICKY_ON_PAGE(SCC(*ret_style)) ||
+	    S_IS_STICKY_ON_DESK(SCC(*ret_style)))
 	{
 		flags->do_update_stick = True;
 	}
-	if (S_IS_ICON_STICKY(SCC(*ret_style)) && IS_ICONIFIED(t) &&
-	    !IS_STICKY(t))
+	else if (S_IS_ICON_STICKY_ON_PAGE(SCC(*ret_style)) && IS_ICONIFIED(t) &&
+	    !IS_STICKY_ON_PAGE(t))
+	{
+		flags->do_update_stick_icon = True;
+	}
+	else if (S_IS_ICON_STICKY_ON_DESK(SCC(*ret_style)) && IS_ICONIFIED(t) &&
+	    !IS_STICKY_ON_DESK(t))
 	{
 		flags->do_update_stick_icon = True;
 	}

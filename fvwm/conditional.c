@@ -415,8 +415,20 @@ void CreateConditionMask(char *flags, WindowConditionMask *mask)
 		}
 		else if (StrEquals(cond,"Sticky"))
 		{
-			SET_STICKY(mask, on);
-			SETM_STICKY(mask, 1);
+			SET_STICKY_ON_PAGE(mask, on);
+			SET_STICKY_ON_DESK(mask, on);
+			SETM_STICKY_ON_PAGE(mask, 1);
+			SETM_STICKY_ON_DESK(mask, 1);
+		}
+		else if (StrEquals(cond,"StickyPage"))
+		{
+			SET_STICKY_ON_PAGE(mask, on);
+			SETM_STICKY_ON_PAGE(mask, 1);
+		}
+		else if (StrEquals(cond,"StickyDesk"))
+		{
+			SET_STICKY_ON_DESK(mask, on);
+			SETM_STICKY_ON_DESK(mask, 1);
 		}
 		else if (StrEquals(cond,"Maximized"))
 		{

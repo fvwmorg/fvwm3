@@ -2311,7 +2311,7 @@ void process_message(unsigned long type, unsigned long *body)
 	    SET_DO_SKIP_WINDOW_LIST(tmp,DO_SKIP_WINDOW_LIST(cfgpacket));
 	  }
 	  if ((local_flags & CURRENT_ONLY) &&
-	      tmp->desk != cfgpacket->desk && !IS_STICKY(tmp))
+	      tmp->desk != cfgpacket->desk && !IS_STICKY_ON_DESK(tmp))
 	  {
 	    olddesk = tmp->desk;
 	    tmp->desk = cfgpacket->desk;
@@ -2324,10 +2324,12 @@ void process_message(unsigned long type, unsigned long *body)
 	      else
 		remove = 1;
 	    }
-	  }else if ((IS_STICKY(cfgpacket)) && !(IS_STICKY(tmp))) /* stick */
-	    SET_STICKY(tmp, True);
-	  else if (!(IS_STICKY(cfgpacket)) && (IS_STICKY(tmp))){ /* unstick */
-	    SET_STICKY(tmp, False);
+	  }else if ((IS_STICKY_ON_DESK(cfgpacket)) &&
+		    !(IS_STICKY_ON_DESK(tmp))) /* stick */
+	    SET_STICKY_ON_DESK(tmp, True);
+	  else if (!(IS_STICKY_ON_DESK(cfgpacket)) &&
+		   (IS_STICKY_ON_DESK(tmp))){ /* unstick */
+	    SET_STICKY_ON_DESK(tmp, False);
 	    tmp->desk = cfgpacket->desk;
 	  }
 	  if ((add && window_cond(tmp)) || remove) {
@@ -2624,7 +2626,7 @@ int AdjustIconWindows(void)
 int window_cond(struct icon_info *item)
 {
   if ((!(local_flags & CURRENT_ONLY) ||
-      (IS_STICKY(item)) || (item->desk == CurrentDesk)) &&
+      (IS_STICKY_ON_DESK(item)) || (item->desk == CurrentDesk)) &&
       IS_ICON_SUPPRESSED(item) &&
       (!DO_SKIP_WINDOW_LIST(item) || !UseSkipList))
     return 1;

@@ -363,7 +363,7 @@ int check_desk(void)
 
   for (t = Scr.FvwmRoot.next; t != NULL; t = t->next)
   {
-    if (!IS_STICKY(t))
+    if (!IS_STICKY_ON_DESK(t))
       d = max(d,t->Desk);
   }
   return d;
@@ -430,7 +430,7 @@ void EWMH_SetWMDesktop(FvwmWindow *fwin)
 {
   CARD32 desk = fwin->Desk;
 
-  if (IS_STICKY(fwin))
+  if (IS_STICKY_ON_DESK(fwin))
   {
     desk = 0xFFFFFFFE;
   }
@@ -729,7 +729,7 @@ void ewmh_ComputeAndSetWorkArea(void)
 
   for (t = Scr.FvwmRoot.next; t != NULL; t = t->next)
   {
-    if (DO_EWMH_IGNORE_STRUT_HINTS(t) || !IS_STICKY(t))
+    if (DO_EWMH_IGNORE_STRUT_HINTS(t) || !IS_STICKY_ON_PAGE(t))
       continue;
     left = max(left, t->strut.left);
     right = max(right, t->strut.right);
@@ -767,7 +767,7 @@ void ewmh_HandleDynamicWorkArea(void)
 
   for (t = Scr.FvwmRoot.next; t != NULL; t = t->next)
   {
-    if (DO_EWMH_IGNORE_STRUT_HINTS(t) || !IS_STICKY(t))
+    if (DO_EWMH_IGNORE_STRUT_HINTS(t) || !IS_STICKY_ON_PAGE(t))
       continue;
     dyn_left = max(dyn_left, t->dyn_strut.left);
     dyn_right = max(dyn_right, t->dyn_strut.right);
@@ -997,9 +997,12 @@ int ewmh_HandleDesktop(EWMH_CMD_ARGS)
   style->flags.use_layer = 1;
   style->flag_mask.use_layer = 1;
 
-  S_SET_IS_STICKY(SCF(*style), 1);
-  S_SET_IS_STICKY(SCM(*style), 1);
-  S_SET_IS_STICKY(SCC(*style), 1);
+  S_SET_IS_STICKY_ON_PAGE(SCF(*style), 1);
+  S_SET_IS_STICKY_ON_PAGE(SCM(*style), 1);
+  S_SET_IS_STICKY_ON_PAGE(SCC(*style), 1);
+  S_SET_IS_STICKY_ON_DESK(SCF(*style), 1);
+  S_SET_IS_STICKY_ON_DESK(SCM(*style), 1);
+  S_SET_IS_STICKY_ON_DESK(SCC(*style), 1);
 
   S_SET_IS_FIXED(SCF(*style), 1);
   S_SET_IS_FIXED(SCM(*style), 1);
@@ -1072,9 +1075,12 @@ int ewmh_HandleDock(EWMH_CMD_ARGS)
 {
   fwin->ewmh_window_type = EWMH_WINDOW_TYPE_DOCK_ID;
 
-  S_SET_IS_STICKY(SCF(*style), 1);
-  S_SET_IS_STICKY(SCM(*style), 1);
-  S_SET_IS_STICKY(SCC(*style), 1);
+  S_SET_IS_STICKY_ON_PAGE(SCF(*style), 1);
+  S_SET_IS_STICKY_ON_PAGE(SCM(*style), 1);
+  S_SET_IS_STICKY_ON_PAGE(SCC(*style), 1);
+  S_SET_IS_STICKY_ON_DESK(SCF(*style), 1);
+  S_SET_IS_STICKY_ON_DESK(SCM(*style), 1);
+  S_SET_IS_STICKY_ON_DESK(SCC(*style), 1);
 
   S_SET_DO_WINDOW_LIST_SKIP(SCF(*style), 1);
   S_SET_DO_WINDOW_LIST_SKIP(SCM(*style), 1);
@@ -1093,9 +1099,12 @@ int ewmh_HandleMenu(EWMH_CMD_ARGS)
 {
   fwin->ewmh_window_type = EWMH_WINDOW_TYPE_MENU_ID;
 
-  S_SET_IS_STICKY(SCF(*style), 1);
-  S_SET_IS_STICKY(SCM(*style), 1);
-  S_SET_IS_STICKY(SCC(*style), 1);
+  S_SET_IS_STICKY_ON_PAGE(SCF(*style), 1);
+  S_SET_IS_STICKY_ON_PAGE(SCM(*style), 1);
+  S_SET_IS_STICKY_ON_PAGE(SCC(*style), 1);
+  S_SET_IS_STICKY_ON_DESK(SCF(*style), 1);
+  S_SET_IS_STICKY_ON_DESK(SCM(*style), 1);
+  S_SET_IS_STICKY_ON_DESK(SCC(*style), 1);
 
   S_SET_DO_WINDOW_LIST_SKIP(SCF(*style), 1);
   S_SET_DO_WINDOW_LIST_SKIP(SCM(*style), 1);
@@ -1133,9 +1142,12 @@ int ewmh_HandleToolBar(EWMH_CMD_ARGS)
 {
   fwin->ewmh_window_type = EWMH_WINDOW_TYPE_TOOLBAR_ID;
 
-  S_SET_IS_STICKY(SCF(*style), 1);
-  S_SET_IS_STICKY(SCM(*style), 1);
-  S_SET_IS_STICKY(SCC(*style), 1);
+  S_SET_IS_STICKY_ON_PAGE(SCF(*style), 1);
+  S_SET_IS_STICKY_ON_PAGE(SCM(*style), 1);
+  S_SET_IS_STICKY_ON_PAGE(SCC(*style), 1);
+  S_SET_IS_STICKY_ON_DESK(SCF(*style), 1);
+  S_SET_IS_STICKY_ON_DESK(SCM(*style), 1);
+  S_SET_IS_STICKY_ON_DESK(SCC(*style), 1);
 
   S_SET_DO_WINDOW_LIST_SKIP(SCF(*style), 1);
   S_SET_DO_WINDOW_LIST_SKIP(SCM(*style), 1);

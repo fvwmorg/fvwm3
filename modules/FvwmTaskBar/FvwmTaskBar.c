@@ -170,7 +170,7 @@ static volatile sig_atomic_t stick_taskbar_alarm = False;
 
 int UpdateInterval = 30;
 
-int whichButton = -1; 
+int whichButton = -1;
 Bool startButtonPressed = FALSE;
 
 ButtonArray buttons;
@@ -896,8 +896,8 @@ void redraw_buttons()
 
   for (item=windows.head; item; item=item->next)
   {
-    if ((DeskNumber == item->Desk || IS_STICKY(item) ||
-	 (IS_ICONIFIED(item) && IS_ICON_STICKY(item))) &&
+    if ((DeskNumber == item->Desk || IS_STICKY_ON_DESK(item) ||
+	 (IS_ICONIFIED(item) && IS_ICON_STICKY_ON_DESK(item))) &&
 	(!DO_SKIP_WINDOW_LIST(item) || !UseSkipList))
     {
       AddButton(&buttons, item->name, &(item->p), BUTTON_UP, item->count,
@@ -1351,7 +1351,7 @@ void LoopOnEvents(void)
       NewTimestamp = Event.xbutton.time;
       num = WhichButton(&buttons, Event.xbutton.x, Event.xbutton.y);
       StartButtonUpdate(NULL, -1, BUTTON_UP);
-      if (num == -1) 
+      if (num == -1)
       {
 	if (MouseInStartButton(Event.xbutton.x, Event.xbutton.y, &whichButton, &startButtonPressed))
 	{
@@ -1366,7 +1366,7 @@ void LoopOnEvents(void)
 	      r.width = StartAndLaunchButtonsWidth;
 	      r.height = StartAndLaunchButtonsHeight;
 	      XTranslateCoordinates(dpy, win, Root, r.x, r.y, &r.x, &r.y, &tmpw);
-	      tmp = module_expand_action(dpy, screen, First_Start_Button->buttonStartCommand, &r, NULL, NULL);  
+	      tmp = module_expand_action(dpy, screen, First_Start_Button->buttonStartCommand, &r, NULL, NULL);
 	      if (tmp)
 	      {
 		SendText(Fvwm_fd, tmp, 0);
@@ -1386,8 +1386,8 @@ void LoopOnEvents(void)
 	    }
 	  }
 	}
-      } 
-      else 
+      }
+      else
       {
 	ButReleased = ButPressed; /* Avoid race fvwm pipe */
 	if (Event.xbutton.button >= 1 &&

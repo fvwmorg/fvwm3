@@ -35,6 +35,7 @@
 #include "icons.h"
 #include "ewmh.h"
 #include "ewmh_intern.h"
+#include "move_resize.h"
 
 #ifdef HAVE_EWMH
 /* ************************************************************************* *
@@ -49,8 +50,7 @@ void set_state_workaround(void)
 	for (t = Scr.FvwmRoot.next; t != NULL; t = t->next)
 	{
 		if ((t->Desk != Scr.CurrentDesk) &&
-		    (!(IS_ICONIFIED(t) && IS_ICON_STICKY(t)) &&
-		     !(IS_STICKY(t)) && !IS_ICON_UNMAPPED(t)))
+		    (!is_window_sticky_on_desk(t) && !IS_ICON_UNMAPPED(t)))
 		{
 			if (Scr.bo.EWMHIconicStateWorkaround)
 			{

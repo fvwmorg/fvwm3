@@ -77,7 +77,8 @@ int desk = 0;
 int reversed = 0, raise_window = 1;
 int resize = 0;
 int nostretch = 0;
-int sticky = 0;
+int sticky_page = 0;
+int sticky_desk = 0;
 int flatx = 0, flaty = 0;
 int incx = 0, incy = 0;
 int horizontal = 0;
@@ -130,7 +131,10 @@ int is_suitable_window(unsigned long *body)
   if ((IS_MAXIMIZED(cfgpacket)) && !maximized)
     return 0;
 
-  if ((IS_STICKY(cfgpacket)) && !sticky)
+  if ((IS_STICKY_ON_PAGE(cfgpacket)) && !sticky_page)
+    return 0;
+
+  if ((IS_STICKY_ON_DESK(cfgpacket)) && !sticky_desk)
     return 0;
 
   if (!XGetWindowAttributes(dpy, cfgpacket->w, &xwa))
@@ -404,7 +408,8 @@ void parse_args(char *s, int argc, char *argv[], int argi)
     else if (!strcmp(argv[argi], "-a")) {
       all = untitled = transients = maximized = 1;
       if (FvwmCascade)
-	sticky = 1;
+	sticky_page = 1;
+	sticky_desk = 1;
     }
     else if (!strcmp(argv[argi], "-r")) {
       reversed = 1;
@@ -437,7 +442,14 @@ void parse_args(char *s, int argc, char *argv[], int argi)
       maximized = 1;
     }
     else if (!strcmp(argv[argi], "-s")) {
-      sticky = 1;
+      sticky_page = 1;
+      sticky_desk = 1;
+    }
+    else if (!strcmp(argv[argi], "-sp")) {
+      sticky_page = 1;
+    }
+    else if (!strcmp(argv[argi], "-sd")) {
+      sticky_desk = 1;
     }
     else if (!strcmp(argv[argi], "-mn") && ((argi + 1) < argc)) {
       maxnum = atoi(argv[++argi]);

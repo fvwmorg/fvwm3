@@ -130,14 +130,19 @@ static void apply_window_updates(
 	ecc.w.wcontext = C_FRAME;
 	exc = exc_create_context(
 		&ecc, ECC_TYPE | ECC_FW | ECC_W | ECC_WCONTEXT);
-	if (flags->do_update_stick_icon && IS_ICONIFIED(t) && !IS_STICKY(t))
+	if (flags->do_update_stick_icon && IS_ICONIFIED(t) &&
+	    !(IS_STICKY_ON_PAGE(t) || IS_STICKY_ON_DESK(t)))
 	{
-		if (IS_ICON_STICKY(pstyle))
+		if (IS_ICON_STICKY_ON_PAGE(pstyle) ||
+		    IS_ICON_STICKY_ON_DESK(pstyle))
 		{
 			/* stick and unstick the window to force the icon on
 			 * the current page */
-			handle_stick(NULL, exc, "", 1, 1, 1);
-			handle_stick(NULL, exc, "", 0, 1, 0);
+			handle_stick(
+				NULL, exc, "",
+				S_IS_STICKY_ON_PAGE(SCF(*pstyle)),
+				S_IS_STICKY_ON_DESK(SCF(*pstyle)), 1, 1);
+			handle_stick(NULL, exc, "", 0, 0, 1, 0);
 		}
 		else
 		{
@@ -146,7 +151,9 @@ static void apply_window_updates(
 	}
 	else if (flags->do_update_stick)
 	{
-		handle_stick(NULL, exc, "", S_IS_STICKY(SCF(*pstyle)), 0, 0);
+		handle_stick(
+			NULL, exc, "", S_IS_STICKY_ON_PAGE(SCF(*pstyle)),
+			S_IS_STICKY_ON_DESK(SCF(*pstyle)), 0, 0);
 	}
 	exc_destroy_context(exc);
 	if (FMiniIconsSupported && flags->do_update_mini_icon)

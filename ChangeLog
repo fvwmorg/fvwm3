@@ -1,5 +1,70 @@
 2002-11-09  Dominik Vogt  <dominik.vogt@gmx.de>
 
+	* fvwm/ewmh_conf.c (set_state_workaround):
+	* fvwm/functable.c (func_table):
+	* fvwm/update.c (apply_window_updates):
+	* fvwm/windowlist.c (CMD_WindowList):
+	* fvwm/ewmh_events.c (ewmh_WMDesktop):
+	(ewmh_WMStateSticky):
+	* fvwm/conditional.c (CreateConditionMask):
+	(CreateConditionMask):
+	* fvwm/gnome.c (GNOME_SetHints):
+	(GNOME_GetStyle):
+	(GNOME_HandlePropRequest):
+	* fvwm/placement.c (SmartPlacement):
+	(get_next_x):
+	(test_fit):
+	(get_next_y):
+	(PlaceWindow):
+	* fvwm/session.c (SaveWindowStates):
+	(MatchWinToSM):
+	* fvwm/ewmh.c (check_desk):
+	(EWMH_SetWMDesktop):
+	(ewmh_ComputeAndSetWorkArea):
+	(ewmh_HandleDynamicWorkArea):
+	(ewmh_HandleDesktop):
+	(ewmh_HandleDock):
+	(ewmh_HandleMenu):
+	(ewmh_HandleToolBar):
+	* fvwm/virtual.c (UnmapDesk):
+	(MapDesk):
+	(MoveViewport):
+	(MoveViewport):
+	(do_move_window_to_desk):
+	* fvwm/icons.c (setup_icon_title_size):
+	(DrawIconTitleWindow):
+	(AutoPlaceIcon):
+	(Iconify):
+	* fvwm/borders.c (is_button_toggled):
+	(get_common_decorations):
+	(border_draw_title_stick_lines):
+	* fvwm/add_window.c (AddWindow):
+	* fvwm/move_resize.c (__move_window):
+	(is_window_sticky_on_page):
+	(is_window_sticky_on_desk):
+	(MaximizeWidth):
+	(MaximizeHeight):
+	(stick_page):
+	(stick_desk):
+	(handle_stick):
+	(handle_stick_page):
+	(handle_stick_desk):
+	(__handle_stick_exit):
+	(CMD_StickDesk):
+	(CMD_StickPage):
+	* fvwm/style.c (style_parse_one_style_option):
+	(check_window_style_change):
+	* fvwm/style.h:
+	* fvwm/fvwm.h:
+	New Style options stickypage and stickydesk
+	New WindowList options NoStickyPage, NoStickyDesk, StickyPage,
+	StickyDesk, OnlyStickyPage, OnlyStickyDesk
+	New conditions StickyPage and StickyDesk
+	New commands StickPage and StickDesk
+
+	* fvwm/move_resize.c (__move_window):
+	do not unstick a window when using MoveToScreen
+
 	* fvwm/ewmh_conf.c:
 	reindented
 

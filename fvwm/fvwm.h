@@ -229,7 +229,8 @@ typedef struct
 typedef struct
 {
 	/* common flags (former flags in bits 0-12) */
-	unsigned is_sticky : 1;
+	unsigned is_sticky_on_page : 1;
+	unsigned is_sticky_on_desk : 1;
 	unsigned has_icon_font : 1;
 	unsigned has_no_border : 1;
 	unsigned has_window_font : 1;
@@ -275,7 +276,8 @@ typedef struct
 		unsigned is_bottom_title_rotated : 1;
 		unsigned is_fixed : 1;
 		unsigned is_fixed_ppos : 1;
-		unsigned is_icon_sticky : 1;
+		unsigned is_icon_sticky_on_page : 1;
+		unsigned is_icon_sticky_on_desk : 1;
 		unsigned is_icon_suppressed : 1;
 		unsigned is_left_title_rotated_cw : 1; /* cw = clock wise */
 		unsigned is_lenient : 1;

@@ -1328,12 +1328,11 @@ static void __move_window(F_CMD_ARGS, Bool do_animate, int mode)
 		rectangle r;
 		rectangle s;
 
-		if (IS_STICKY(fw))
+		if (IS_STICKY_ON_PAGE(fw))
 		{
 			return;
 		}
 		do_animate = False;
-
 		if (!get_page_arguments(action, &page_x, &page_y))
 		{
 			page_x = Scr.Vx;
@@ -1359,8 +1358,6 @@ static void __move_window(F_CMD_ARGS, Bool do_animate, int mode)
 		int fscreen;
 
 		do_animate = False;
-		SET_STICKY(fw, 0);
-
 		fscreen = FScreenGetScreenArgument(
 			action, FSCREEN_SPEC_CURRENT);
 		FScreenGetScrRect(
@@ -3414,6 +3411,32 @@ void CMD_Resize(F_CMD_ARGS)
 
 /* ----------------------------- maximizing code --------------------------- */
 
+Bool is_window_sticky_on_page(FvwmWindow *fw)
+{
+	if (IS_STICKY_ON_PAGE(fw) ||
+	    (IS_ICONIFIED(fw) && IS_ICON_STICKY_ON_PAGE(fw)))
+	{
+		return True;
+	}
+	else
+	{
+		return False;
+	}
+}
+
+Bool is_window_sticky_on_desk(FvwmWindow *fw)
+{
+	if (IS_STICKY_ON_DESK(fw) ||
+	    (IS_ICONIFIED(fw) && IS_ICON_STICKY_ON_DESK(fw)))
+	{
+		return True;
+	}
+	else
+	{
+		return False;
+	}
+}
+
 static void move_sticky_window_to_same_page(
 	int *x11, int *x12, int *y11, int *y12,
 	int x21, int x22, int y21, int y22)
@@ -3467,7 +3490,6 @@ static void MaximizeHeight(
 	int x11, x12, x21, x22;
 	int y11, y12, y21, y22;
 	int new_y1, new_y2;
-	Bool is_sticky;
 	rectangle g;
 	Bool rc;
 
@@ -3480,16 +3502,9 @@ static void MaximizeHeight(
 
 	for (cwin = Scr.FvwmRoot.next; cwin; cwin = cwin->next)
 	{
-		if (IS_STICKY(cwin) ||
-		    (IS_ICONIFIED(cwin) && IS_ICON_STICKY(cwin)))
-		{
-			is_sticky = True;
-		}
-		else
-		{
-			is_sticky = False;
-		}
-		if (cwin == win || (cwin->Desk != win->Desk && !is_sticky) ||
+		if (cwin == win ||
+		    (cwin->Desk != win->Desk &&
+		     !is_window_sticky_on_desk(cwin)) ||
 		    (layer_grow && cwin->layer <= win->layer))
 		{
 			continue;
@@ -3503,7 +3518,7 @@ static void MaximizeHeight(
 		y21 = g.y;
 		x22 = x21 + g.width;
 		y22 = y21 + g.height;
-		if (is_sticky)
+		if (is_window_sticky_on_page(cwin))
 		{
 			move_sticky_window_to_same_page(
 				&x21, &x22, &new_y1, &new_y2, x11, x12, y11,
@@ -3546,7 +3561,6 @@ static void MaximizeWidth(
 	int x11, x12, x21, x22;
 	int y11, y12, y21, y22;
 	int new_x1, new_x2;
-	Bool is_sticky;
 	rectangle g;
 	Bool rc;
 
@@ -3559,16 +3573,9 @@ static void MaximizeWidth(
 
 	for (cwin = Scr.FvwmRoot.next; cwin; cwin = cwin->next)
 	{
-		if (IS_STICKY(cwin) ||
-		    (IS_ICONIFIED(cwin) && IS_ICON_STICKY(cwin)))
-		{
-			is_sticky = True;
-		}
-		else
-		{
-			is_sticky = False;
-		}
-		if (cwin == win || (cwin->Desk != win->Desk && !is_sticky) ||
+		if (cwin == win ||
+		    (cwin->Desk != win->Desk &&
+		     !is_window_sticky_on_desk(cwin)) ||
 		    (layer_grow && cwin->layer <= win->layer))
 		{
 			continue;
@@ -3582,7 +3589,7 @@ static void MaximizeWidth(
 		y21 = g.y;
 		x22 = x21 + g.width;
 		y22 = y21 + g.height;
-		if (is_sticky)
+		if (is_window_sticky_on_page(cwin))
 		{
 			move_sticky_window_to_same_page(
 				&new_x1, &new_x2, &y21, &y22, x11, x12, y11,
@@ -4009,18 +4016,45 @@ void CMD_ResizeMoveMaximize(F_CMD_ARGS)
 
 /* ----------------------------- stick code -------------------------------- */
 
-void handle_stick(F_CMD_ARGS, int toggle, int do_not_draw, int do_silently)
+int stick_page(F_CMD_ARGS, int toggle)
 {
 	FvwmWindow *fw = exc->w.fw;
 
-	if ((toggle == 1 && IS_STICKY(fw)) || (toggle == 0 && !IS_STICKY(fw)))
+	if ((toggle == 1 && IS_STICKY_ON_PAGE(fw)) ||
+	    (toggle == 0 && !IS_STICKY_ON_PAGE(fw)))
 	{
-		return;
+		return 0;
+	}
+	if (IS_STICKY_ON_PAGE(fw))
+	{
+		SET_STICKY_ON_PAGE(fw, 0);
+	}
+	else
+	{
+		if (!IsRectangleOnThisPage(&fw->frame_g, Scr.CurrentDesk))
+		{
+			action = "";
+			__move_window(F_PASS_ARGS, FALSE, MOVE_PAGE);
+		}
+		SET_STICKY_ON_PAGE(fw, 1);
 	}
 
-	if (IS_STICKY(fw))
+	return 1;
+}
+
+int stick_desk(F_CMD_ARGS, int toggle)
+{
+	FvwmWindow *fw = exc->w.fw;
+
+	if ((toggle == 1 && IS_STICKY_ON_DESK(fw)) ||
+	    (toggle == 0 && !IS_STICKY_ON_DESK(fw)))
 	{
-		SET_STICKY(fw, 0);
+		return 0;
+	}
+
+	if (IS_STICKY_ON_DESK(fw))
+	{
+		SET_STICKY_ON_DESK(fw, 0);
 		fw->Desk = Scr.CurrentDesk;
 		GNOME_SetDeskCount();
 		GNOME_SetDesk(fw);
@@ -4031,16 +4065,15 @@ void handle_stick(F_CMD_ARGS, int toggle, int do_not_draw, int do_silently)
 		{
 			do_move_window_to_desk(fw, Scr.CurrentDesk);
 		}
-		SET_STICKY(fw, 1);
-		if (!IsRectangleOnThisPage(&fw->frame_g, Scr.CurrentDesk))
-		{
-			action = "";
-			__move_window(F_PASS_ARGS, FALSE, MOVE_PAGE);
-			/* __move_window resets the STICKY flag, so we must
-			 * set it after the call! */
-			SET_STICKY(fw, 1);
-		}
+		SET_STICKY_ON_DESK(fw, 1);
 	}
+
+	return 1;
+}
+
+static void __handle_stick_exit(
+	FvwmWindow *fw, int do_not_draw, int do_silently)
+{
 	if (do_not_draw == 0)
 	{
 		border_draw_decorations(
@@ -4058,12 +4091,87 @@ void handle_stick(F_CMD_ARGS, int toggle, int do_not_draw, int do_silently)
 	return;
 }
 
+void handle_stick_page(
+	F_CMD_ARGS, int toggle, int do_not_draw, int do_silently)
+{
+	FvwmWindow *fw = exc->w.fw;
+	int did_change;
+
+	did_change = stick_page(F_PASS_ARGS, toggle);
+	if (did_change)
+	{
+		__handle_stick_exit(fw, do_not_draw, do_silently);
+	}
+
+	return;
+}
+
+void handle_stick_desk(
+	F_CMD_ARGS, int toggle, int do_not_draw, int do_silently)
+{
+	FvwmWindow *fw = exc->w.fw;
+	int did_change;
+
+	did_change = stick_desk(F_PASS_ARGS, toggle);
+	if (did_change)
+	{
+		__handle_stick_exit(fw, do_not_draw, do_silently);
+	}
+
+	return;
+}
+
+void handle_stick(
+	F_CMD_ARGS, int toggle_page, int toggle_desk, int do_not_draw,
+	int do_silently)
+{
+	FvwmWindow *fw = exc->w.fw;
+	int did_change;
+
+	did_change = 0;
+	did_change |= stick_desk(F_PASS_ARGS, toggle_desk);
+	did_change |= stick_page(F_PASS_ARGS, toggle_page);
+	if (did_change)
+	{
+		__handle_stick_exit(fw, do_not_draw, do_silently);
+	}
+
+	return;
+}
+
 void CMD_Stick(F_CMD_ARGS)
 {
 	int toggle;
 
 	toggle = ParseToggleArgument(action, &action, -1, 0);
-	handle_stick(F_PASS_ARGS, toggle, 0, 0);
+	if (toggle == -1 &&
+	    IS_STICKY_ON_DESK(exc->w.fw) != IS_STICKY_ON_PAGE(exc->w.fw))
+	{
+		/* don't switch between only stickypage and only stickydesk.
+		 * rather switch it off completely */
+		toggle = 0;
+	}
+	handle_stick(F_PASS_ARGS, toggle, toggle, 0, 0);
+
+	return;
+}
+
+void CMD_StickPage(F_CMD_ARGS)
+{
+	int toggle;
+
+	toggle = ParseToggleArgument(action, &action, -1, 0);
+	handle_stick_page(F_PASS_ARGS, toggle, 0, 0);
+
+	return;
+}
+
+void CMD_StickDesk(F_CMD_ARGS)
+{
+	int toggle;
+
+	toggle = ParseToggleArgument(action, &action, -1, 0);
+	handle_stick_desk(F_PASS_ARGS, toggle, 0, 0);
 
 	return;
 }

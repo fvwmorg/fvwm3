@@ -4130,6 +4130,8 @@ passed to WindowList can be
 .IR NoIcons " / " Icons " / " OnlyIcons ,
 .IR NoNormal " / " Normal " / " OnlyNormal ,
 .IR NoSticky " / " Sticky " / " OnlySticky ,
+.IR NoStickyPage " / " StickyPage " / " OnlyStickyPage ,
+.IR NoStickyDesk " / " StickyDesk " / " OnlyStickyDesk ,
 .IR NoOnTop " / " OnTop " / " OnlyOnTop ,
 .IR NoOnBottom " / " OnBottom " / " OnlyOnBottom ,
 .IR "Layer m [n]" ,
@@ -5115,6 +5117,18 @@ regardless of its current state the
 argument must be "True".  To make it non-sticky use "False".
 
 .TP
+.BI "StickPage [" bool "]"
+Works like
+.B Stick
+but only sticks a window across pages, not across desks.
+
+.TP
+.BI "StickDesk [" bool "]"
+Works like
+.B Stick
+but only sticks a window across desks, not across pages.
+
+.TP
 .BI "WindowShade [" bool "] | [[" ShadeAgain "] " direction "]"
 Toggles the window shade feature for titled windows.  Windows in
 the shaded state only display a title-bar.  If
@@ -5728,6 +5742,8 @@ slashes ('/').  The last style in these groups is the default.
 .IR Layer ,
 .IR StaysOnTop " / " StaysOnBottom " / " StaysPut ,
 .IR Sticky " / " Slippery ,
+.IR StickyPage " / " !StickyPage ,
+.IR StickyDesk " / " !StickyDesk ,
 .IR StartIconic " / " StartNormal ,
 .IR Color ", " ForeColor ", " BackColor ", " Colorset ,
 .IR HilightFore ", " HilightBack ", " HilightColorset ,
@@ -5751,6 +5767,8 @@ slashes ('/').  The last style in these groups is the default.
 .IR OLDecor " / " NoOLDecor ,
 .IR GNOMEUseHints " / " GNOMEIgnoreHints ,
 .IR StickyIcon " / " SlipperyIcon ,
+.IR StickyPageIcon " / " !StickyPageIcon ,
+.IR StickyDeskIcon " / " !StickyDeskIcon ,
 .IR ManualPlacement " / " CascadePlacement " / " MinOverlapPlacement " / "
 .IR MinOverlapPercentPlacement " / " TileManualPlacement " / "
 .IR TileCascadePlacement ,
@@ -6116,7 +6134,7 @@ With the
 .I StippledTitle
 style, titles are drawn with the same effect that is usually reserved for
 windows with the
-.I Sticky
+.IR Sticky ", " StickyPage " or " StickyDesk
 style.
 .I StippledTitleOff
 reverts back to normal titles.
@@ -6567,11 +6585,25 @@ and each desk.  The opposite style,
 .I Slippery
 reverts back to the default.
 
+.I StickyPage
+works like
+.IR Sticky ,
+but sticks the window only across pages, not desks while
+.I StickyDesk
+works the other way round.
+
 .I StickyIcon
 makes the window sticky when its iconified.  It de-iconifies on
 top the active desktop.
 .I SlipperIcon
 reverts back to the default.
+
+.I StickyIconPage
+works like
+.IR StickyIcon ,
+but sticks the icon only across pages, not desks while
+.I StickyIconDesk
+works the other way round.
 
 .I IgnoreRestack
 makes fvwm ignore attempts of clients to raise or lower their own
@@ -9137,6 +9169,8 @@ commas or whitespace.  Conditions include
 "Layer [n]", "!Layer",
 "State n", "!State n",
 "Sticky", "!Sticky",
+"StickyPage", "!StickyPage",
+"StickyDesk", "!StickyDesk",
 "Maximized", "!Maximized",
 "Shaded", "!Shaded",
 "Transient", "!Transient",

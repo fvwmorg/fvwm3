@@ -126,7 +126,10 @@ static void setup_icon_title_size(FvwmWindow *fw)
 				fw->icon_g.title_text_width +
 				2 * (ICON_TITLE_TEXT_GAP_COLLAPSED +
 				     ICON_RELIEF_WIDTH);
-			if (IS_STICKY(fw) || IS_ICON_STICKY(fw))
+			if (IS_STICKY_ON_PAGE(fw) ||
+			    IS_ICON_STICKY_ON_PAGE(fw) ||
+			    IS_STICKY_ON_DESK(fw) ||
+			    IS_ICON_STICKY_ON_DESK(fw))
 			{
 				fw->icon_g.title_w_g.width +=
 					2 * (ICON_TITLE_TO_STICK_EXTRA_GAP +
@@ -673,10 +676,12 @@ void DrawIconTitleWindow(
 	int x_stipple = ICON_RELIEF_WIDTH;
 	int w_title_text_gap = 0;
 	int w_stipple = 0;
-	int is_sticky = (IS_STICKY(fw) || IS_ICON_STICKY(fw));
+	int is_sticky;
 	int use_unexpanded_size = 1;
 	Bool draw_string = True;
 
+	is_sticky = (IS_STICKY_ON_PAGE(fw) || IS_ICON_STICKY_ON_PAGE(fw));
+	is_sticky |= (IS_STICKY_ON_DESK(fw) || IS_ICON_STICKY_ON_DESK(fw));
 	if (is_expanded && FW_W_ICON_PIXMAP(fw) != None)
 	{
 		int sx;
@@ -690,7 +695,8 @@ void DrawIconTitleWindow(
 		if (is_sticky)
 		{
 			w_stipple = ICON_TITLE_STICK_MIN_WIDTH;
-			x_title_min += w_stipple + ICON_TITLE_TO_STICK_EXTRA_GAP;
+			x_title_min +=
+				w_stipple + ICON_TITLE_TO_STICK_EXTRA_GAP;
 		}
 		/* resize the icon name window */
 		w_title_w = w_title + 2 * x_title_min;
@@ -1358,7 +1364,11 @@ void AutoPlaceIcon(
   /* New! Put icon in same page as the center of the window */
   /* Not a good idea for StickyIcons. Neither for icons of windows that are
    * visible on the current page. */
-  if (IS_ICON_STICKY(t) || IS_STICKY(t))
+  if (IS_ICON_STICKY_ON_DESK(t) || IS_STICKY_ON_DESK(t))
+  {
+    t->Desk = Scr.CurrentDesk;
+  }
+  if (IS_ICON_STICKY_ON_PAGE(t) || IS_STICKY_ON_PAGE(t))
   {
     base_x = 0;
     base_y = 0;
@@ -1371,7 +1381,6 @@ void AutoPlaceIcon(
       new_y += Scr.MyDisplayHeight;
     frame_setup_window(
 	    t, new_x, new_y, t->frame_g.width, t->frame_g.height, False);
-    t->Desk = Scr.CurrentDesk;
   }
   else if (IsRectangleOnThisPage(&(t->frame_g), t->Desk))
   {
@@ -2302,7 +2311,7 @@ void Iconify(FvwmWindow *fw, initial_window_options_type *win_opts)
 	{
 		LowerWindow(fw);
 	}
-	if (IS_ICON_STICKY(fw) || IS_STICKY(fw))
+	if (IS_ICON_STICKY_ON_DESK(fw) || IS_STICKY_ON_DESK(fw))
 	{
 		fw->Desk = Scr.CurrentDesk;
 	}

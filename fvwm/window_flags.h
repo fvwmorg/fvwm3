@@ -88,12 +88,18 @@
 	(fw)->flags.common.s.icon_override = ((x) & ICON_OVERRIDE_MASK)
 #define SETM_ICON_OVERRIDE_MODE(fw,x) \
 	(fw)->flag_mask.common.s.icon_override = ((x) ? ICON_OVERRIDE_MASK : 0)
-#define IS_ICON_STICKY(fw) \
-	((fw)->flags.common.s.is_icon_sticky)
-#define SET_ICON_STICKY(fw,x) \
-	(fw)->flags.common.s.is_icon_sticky = !!(x)
-#define SETM_ICON_STICKY(fw,x) \
-	(fw)->flag_mask.common.s.is_icon_sticky = !!(x)
+#define IS_ICON_STICKY_ON_PAGE(fw) \
+	((fw)->flags.common.s.is_icon_sticky_on_page)
+#define SET_ICON_STICKY_ON_PAGE(fw,x) \
+	(fw)->flags.common.s.is_icon_sticky_on_page = !!(x)
+#define SETM_ICON_STICKY_ON_PAGE(fw,x) \
+	(fw)->flag_mask.common.s.is_icon_sticky_on_page = !!(x)
+#define IS_ICON_STICKY_ON_DESK(fw) \
+	((fw)->flags.common.s.is_icon_sticky_on_desk)
+#define SET_ICON_STICKY_ON_DESK(fw,x) \
+	(fw)->flags.common.s.is_icon_sticky_on_desk = !!(x)
+#define SETM_ICON_STICKY_ON_DESK(fw,x) \
+	(fw)->flag_mask.common.s.is_icon_sticky_on_desk = !!(x)
 #define USE_ICON_POSITION_HINT(fw) \
 	((fw)->flags.common.s.use_icon_position_hint)
 #define SET_USE_ICON_POSITION_HINT(fw,x) \
@@ -168,12 +174,18 @@
 	(fw)->flags.common.s.is_icon_suppressed = !!(x)
 #define SETM_ICON_SUPPRESSED(fw,x) \
 	(fw)->flag_mask.common.s.is_icon_suppressed = !!(x)
-#define IS_STICKY(fw) \
-	((fw)->flags.common.is_sticky)
-#define SET_STICKY(fw,x) \
-	(fw)->flags.common.is_sticky = !!(x)
-#define SETM_STICKY(fw,x) \
-	(fw)->flag_mask.common.is_sticky = !!(x)
+#define IS_STICKY_ON_PAGE(fw) \
+	((fw)->flags.common.is_sticky_on_page)
+#define SET_STICKY_ON_PAGE(fw,x) \
+	(fw)->flags.common.is_sticky_on_page = !!(x)
+#define SETM_STICKY_ON_PAGE(fw,x) \
+	(fw)->flag_mask.common.is_sticky_on_page = !!(x)
+#define IS_STICKY_ON_DESK(fw) \
+	((fw)->flags.common.is_sticky_on_desk)
+#define SET_STICKY_ON_DESK(fw,x) \
+	(fw)->flags.common.is_sticky_on_desk = !!(x)
+#define SETM_STICKY_ON_DESK(fw,x) \
+	(fw)->flag_mask.common.is_sticky_on_desk = !!(x)
 #define HAS_ICON_FONT(fw) \
 	((fw)->flags.common.has_icon_font)
 #define SET_HAS_ICON_FONT(fw,x) \
