@@ -662,7 +662,7 @@ int myErrorHandler(Display *dpy, XErrorEvent *event)
   }
   if((event->error_code == BadWindow) || (event->error_code == BadDrawable)
      || (event->error_code == BadMatch) || (event->request_code==X_GrabButton)
-     || (event->request_code == X_GetGeometry) 
+     || (event->request_code == X_GetGeometry)
      || (event->error_code == BadPixmap))
     return 0;
 
@@ -965,6 +965,8 @@ void Loop(void)
   KeySym keysym;
   char buffer[10],*tmp,*act;
   int i,i2,button;
+  int x;
+  int y;
   button_info *ub,*b;
 #ifndef OLD_EXPOSE
   int ex=10000,ey=10000,ex2=0,ey2=0;
@@ -1103,8 +1105,21 @@ void Loop(void)
 	{
 	  break;
 	}
+        if (Event.xbutton.window == MyWindow)
+        {
+          x = Event.xbutton.x;
+          y = Event.xbutton.y;
+        }
+        else
+        {
+          Window dummy;
+
+          XTranslateCoordinates(
+            Dpy, Event.xbutton.window, MyWindow, Event.xbutton.x,
+            Event.xbutton.y, &x, &y, &dummy);
+        }
 	CurrentButton = b =
-	  select_button(UberButton,Event.xbutton.x,Event.xbutton.y);
+	  select_button(UberButton, x, y);
 	is_pointer_in_current_button = True;
 
 	act = NULL;
@@ -1145,7 +1160,20 @@ void Loop(void)
 	  CurrentButton = NULL;
 	  break;
 	}
-	b = select_button(UberButton,Event.xbutton.x,Event.xbutton.y);
+        if (Event.xbutton.window == MyWindow)
+        {
+          x = Event.xbutton.x;
+          y = Event.xbutton.y;
+        }
+        else
+        {
+          Window dummy;
+
+          XTranslateCoordinates(
+            Dpy, Event.xbutton.window, MyWindow, Event.xbutton.x,
+            Event.xbutton.y, &x, &y, &dummy);
+        }
+	b = select_button(UberButton, x, y);
 	act = GetButtonAction(b,Event.xbutton.button);
 	if (b && !act && (b->flags & b_Panel))
 	{
@@ -2754,6 +2782,7 @@ void swallow(unsigned long *body)
   char *temp;
   button_info *ub=UberButton,*b;
   int button=-1;
+  int i;
   unsigned int d;
   Window p;
 
@@ -2823,6 +2852,20 @@ void swallow(unsigned long *body)
 	  return;
 	}
 	/*error checking*/
+        for (i = 0; i <= NUMBER_OF_MOUSE_BUTTONS; i++)
+        {
+          if (b->action != NULL && b->action[i] != NULL)
+          {
+            XGrabButton(
+              Dpy, i, 0, b->IconWin, False,
+              ButtonPressMask | ButtonReleaseMask, GrabModeAsync,
+              GrabModeAsync, None, None);
+            if (i == 0)
+            {
+              break;
+            }
+          }
+        }
 	XReparentWindow(Dpy,swin,MyWindow,-32768,-32768);
 	XSync(Dpy, 0);
 	MyXUngrabServer(Dpy);

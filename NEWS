@@ -3,6 +3,8 @@ _+_A HREF="#2.4.4"_-_2.4.4_+_/A_-_.
 
 Changes in beta release 2.5.0 (not released yet)
 
+* Actions can be bound to windows swallowed in FvwmButtons.
+
 * Fvwm respect the extended window manager hints specification.
   This allows fvwm to work with KDE version >= 2 and GNOME version 2.
   This support is configurable with some new styles and new commands.

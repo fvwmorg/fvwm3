@@ -1,3 +1,9 @@
+2001-12-13  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* FvwmButtons/FvwmButtons.c (swallow):
+	(Loop):
+	Mouse actions can be bound to swallowed windows
+
 2001-12-11  olicha  <olivier.chapuis@free.fr>
 
 	* FvwmPager/FvwmPager.c (list_config_info):
@@ -6,10 +12,10 @@
 	Respect the DesktopName fvwm2 command
 
 2001-12-06  olicha  <olivier.chapuis@free.fr>
-	
+
 	* FvwmDebug/FvwmDebug.c:
 	Added M_VISIBLE_NAME, M_VISIBLE_ICON_NAME and M_ICON_FILE
-	
+
 	* FvwmGtk/FvwmGtk.c:
 	* FvwmIconBox/FvwmIconBox.c:
 	* FvwmPager/FvwmPager.c:
@@ -19,7 +25,7 @@
 	M_VISIBLE_ICON_NAME
 
 	* FvwmIconMan/FvwmIconMan.{c,h} (main):
-	* FvwmIconMan/fvwm.c (ProcessMessage): 
+	* FvwmIconMan/fvwm.c (ProcessMessage):
 	(visible_name):
 	(visible_icon_name):
 	(icon_name):
