@@ -47,7 +47,6 @@
 #include <fvwm/fvwm.h>
 #include <libs/vpacket.h>
 
-#undef MINI_ICONS
 /* Motif  window hints */
 typedef struct
 {
