@@ -312,30 +312,40 @@ char *FlocaleEncodeString(
 	str1 = str;
 	if (FiconvSupport)
 	{
+		char *tmp_str;
+
 	        /* first process combining characters */
-	        str1 = FiconvCharsetToUtf8(
+	        tmp_str = FiconvCharsetToUtf8(
 			dpy,
 			flf->str_fc,
 			(const char *)str,len);
 		/* if conversion to UTF-8 failed str1 will be NULL */
-		if(str1 != NULL)
+		if(tmp_str != NULL)
 		{
 		        /* do combining */
-			len = FCombineChars(str1,strlen(str1));
+			len = FCombineChars(tmp_str,strlen(tmp_str));
 			/* returns the length of the resulting UTF-8 string */
 			/* convert back to current charset */
 			str1 = FiconvUtf8ToCharset(
 						   dpy,
 						   flf->str_fc,
-						   (const char *)str1,len);
-			len = strlen(str1);
+						   (const char *)tmp_str,len);
+			if (tmp_str != str1)
+			{ 
+				free(tmp_str);
+			}
+			if (str1)
+			{
+				*nl = len = strlen(str1);
+				*do_free = True;
+			}
+			else
+			{
+				/* convert back to current charset fail */
+				len = strlen(str);
+				str1 = str;
+			}
 		}
-		else
-		{
-		        /* in case conversion to UTF-8 failed above, 
-			   use original string as is */
-		        str1 = str;
-		}	  
 	}
 
 	if (FiconvSupport && do_iconv)
@@ -346,11 +356,15 @@ char *FlocaleEncodeString(
 		if (str2 == NULL)
 		{
 			/* fail to convert */
-			*do_free = False;
 			return str1;
 		}
 		if (str2 != str1)
 		{
+			if (*do_free && str1)
+			{
+				free(str1);
+				str1 = str2;
+			}
 			*do_free = True;
 			len1 = strlen(str2);
 		}
@@ -369,7 +383,6 @@ char *FlocaleEncodeString(
 		{
 			if (*do_free)
 			{
-				free(str1);
 				free(str2);
 			}
 			*do_free = True;
@@ -382,11 +395,6 @@ char *FlocaleEncodeString(
 		{
 		        str1 = str2;
 		}
-	}
-	/* if non-bidi charset */
-	else
-	{
-	        str1 = str2;
 	}
 
 	*nl = len1;

@@ -1,3 +1,8 @@
+2003-06-04  olicha  <olivier.chapuis@free.fr>
+
+	* libs/Flocale.c (FlocaleEncodeString): 
+	Fixed memroy leaks
+
 2003-06-03  Mikhael Goikhman  <migo@homemail.com>
 
 	* libs/Makefile.am:
