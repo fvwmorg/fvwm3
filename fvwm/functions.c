@@ -132,9 +132,7 @@ static struct functions func_config[] =
   {"Nop",          Nop_func,         F_NOP,                 FUNC_NOP},
   {"OpaqueMoveSize", SetOpaque,      F_OPAQUE,              FUNC_NO_WINDOW},
   {"PipeRead",     PipeRead,         F_READ,                FUNC_NO_WINDOW},
-#ifdef XPM
   {"PixmapPath",   setPixmapPath,    F_PIXMAP_PATH,         FUNC_NO_WINDOW},
-#endif /* XPM */
   {"PopUp",        popup_func,       F_POPUP,               FUNC_POPUP},
   {"Prev",         PrevFunc,         F_PREV,                FUNC_NO_WINDOW},
   {"Quit",         quit_func,        F_QUIT,                FUNC_NO_WINDOW},

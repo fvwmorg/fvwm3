@@ -1378,9 +1378,11 @@ void SetDeskSize(XEvent *eventp,Window w,FvwmWindow *tmp_win,
 
 #ifdef XPM
 char *PixmapPath = FVWM_ICONDIR;
+#endif
 void setPixmapPath(XEvent *eventp,Window w,FvwmWindow *tmp_win,
                    unsigned long context, char *action,int* Module)
 {
+#ifdef XPM
   static char *ptemp = NULL;
   char *tmp;
 
@@ -1392,8 +1394,11 @@ void setPixmapPath(XEvent *eventp,Window w,FvwmWindow *tmp_win,
   tmp = stripcpy(action);
   PixmapPath = envDupExpand(tmp, 0);
   free(tmp);
-}
+#else
+  fvwm_msg(ERR, "setPixmapPath",
+           "XPM support has not been included in this version of Fvwm2.");
 #endif
+}
 
 char *IconPath = FVWM_ICONDIR;
 void setIconPath(XEvent *eventp,Window w,FvwmWindow *tmp_win,
