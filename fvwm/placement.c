@@ -449,7 +449,8 @@ static int test_fit(FvwmWindow *t, int x11, int y11, int aoimin, int pdeltax,
  **************************************************************************/
 /*  RBW - 11/02/1998  */
 Bool PlaceWindow(
-  FvwmWindow *tmp_win, style_flags *sflags, int Desk, int PageX, int PageY)
+  FvwmWindow *tmp_win, style_flags *sflags, int Desk, int PageX, int PageY,
+  int mode)
 {
 /**/
   FvwmWindow *t;
@@ -460,6 +461,7 @@ Bool PlaceWindow(
   int is_smartly_placed       =  False;
   Bool rc = False;
   Bool HonorStartsOnPage  =  False;
+  Bool use_wm_placement = True;
   extern Bool Restarting;
 /**/
   extern Boolean PPosOverride;
@@ -633,16 +635,23 @@ Bool PlaceWindow(
    *   If RandomPlacement was specified,
    *       then place the window in a psuedo-random location
    */
-  if (!(IS_TRANSIENT(tmp_win)) &&
-      !(tmp_win->hints.flags & USPosition) &&
-      (SUSE_NO_PPOSITION(sflags)||
-       !(tmp_win->hints.flags & PPosition)) &&
-      !(PPosOverride) &&
-      /*  RBW - allow StartsOnPage to go through, even if iconic.  */
-      ( ((!((tmp_win->wmhints)&&
-	    (tmp_win->wmhints->flags & StateHint)&&
-	    (tmp_win->wmhints->initial_state == IconicState)))
-	 || (HonorStartsOnPage)) ) )
+  if (mode == PLACE_AGAIN)
+    use_wm_placement = True;
+  else if (IS_TRANSIENT(tmp_win))
+    use_wm_placement = False;
+  else if (tmp_win->hints.flags & USPosition)
+    use_wm_placement = False;
+  else if (!SUSE_NO_PPOSITION(sflags) && (tmp_win->hints.flags & PPosition))
+    use_wm_placement = False;
+  else if (PPosOverride)
+    use_wm_placement = False;
+  else if (!((!(tmp_win->wmhints && (tmp_win->wmhints->flags & StateHint) &&
+                tmp_win->wmhints->initial_state == IconicState))
+             || HonorStartsOnPage))
+  {
+    use_wm_placement = False;
+  }
+  if (use_wm_placement)
   {
     /* Get user's window placement, unless RandomPlacement is specified */
     if (SPLACEMENT_MODE(sflags) & PLACE_RANDOM)
@@ -862,10 +871,13 @@ Bool PlaceWindow(
       final_g.y += tmp_win->old_bw;
       final_g.width = 0;
       final_g.height = 0;
-      gravity_resize(
-	tmp_win->hints.win_gravity, &final_g,
-	2 * tmp_win->boundary_width,
-	2 * tmp_win->boundary_width + tmp_win->title_g.height);
+      if (mode == PLACE_INITIAL)
+      {
+        gravity_resize(
+          tmp_win->hints.win_gravity, &final_g,
+          2 * tmp_win->boundary_width,
+          2 * tmp_win->boundary_width + tmp_win->title_g.height);
+      }
       tmp_win->attr.x = final_g.x;
       tmp_win->attr.y = final_g.y;
     }
@@ -880,29 +892,17 @@ void PlaceAgain_func(F_CMD_ARGS)
   int x;
   int y;
   char *token;
-#if 0
   window_style style;
-#endif
 
   if (DeferExecution(eventp, &w, &tmp_win, &context, CRS_SELECT,
 		     ButtonRelease))
     return;
 
-#if 0
   lookup_style(tmp_win, &style);
   PlaceWindow(tmp_win, &style.flags, SGET_START_DESK(style),
-	      SGET_START_PAGE_X(style), SGET_START_PAGE_Y(style));
+	      SGET_START_PAGE_X(style), SGET_START_PAGE_Y(style), PLACE_AGAIN);
   x = tmp_win->attr.x;
   y = tmp_win->attr.y;
-
-  return PlaceWindow(tmp_win, &pstyle->flags, SGET_START_DESK(*pstyle),
-		     SGET_START_PAGE_X(*pstyle), SGET_START_PAGE_Y(*pstyle));
-  PlaceWindow(tmp_win, style_flags *sflags, int Desk, int PageX, int PageY)
-#endif
-
-  /* Find new position for window */
-  SmartPlacement(
-    tmp_win, tmp_win->frame_g.width, tmp_win->frame_g.height, &x, &y, 0, 0);
 
   /* Possibly animate the movement */
   token = PeekToken(action, NULL);

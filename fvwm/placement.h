@@ -16,9 +16,13 @@
 #ifndef PLACEMENT_H
 #define PLACEMENT_H
 
+#define PLACE_INITIAL 0x0
+#define PLACE_AGAIN   0x1
+
 /*  RBW - 11/02/1998  */
 int PlaceWindow(
-  FvwmWindow *tmp_win, style_flags *sflag, int Desk, int PageX,	int PageY);
+  FvwmWindow *tmp_win, style_flags *sflag, int Desk, int PageX,	int PageY,
+  int mode);
 void PlaceAgain_func(F_CMD_ARGS);
 
 #endif /* PLACEMENT_H */
