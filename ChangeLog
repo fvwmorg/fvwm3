@@ -1,3 +1,8 @@
+1998-11-24  Dan Espen  <dane@mk.bellcore.com>
+
+	*   fvwm/builtins.c  (SetColorLimit):  Check    return  code  from
+ 	GetIntegerArguments not equal 1 for arg parse failure test.
+
 1998-11-24  Dominik Vogt  <dominik_vogt@hp.com>
 
 	* fvwm/virtual.c (checkPanFrames): made sure appropriate pan frames

@@ -4133,7 +4133,7 @@ void SetColorLimit(XEvent *eventp,Window w,FvwmWindow *tmp_win,
 {
   int val;
 
-  if (GetIntegerArguments(action, NULL, &val, 1))
+  if (GetIntegerArguments(action, NULL, &val, 1) != 1)
   {
     fvwm_msg(ERR,"SetColorLimit","ColorLimit requires one argument");
     return;
