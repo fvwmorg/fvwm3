@@ -261,6 +261,10 @@ static cfunc_action_type CheckActionType(
 			case ButtonRelease:
 				return CF_CLICK;
 			case MotionNotify:
+				if (d->xmotion.same_screen == False)
+				{
+					break;
+				}
 				if ((d->xmotion.state &
 				     DEFAULT_ALL_BUTTONS_MASK) ||
 				    !is_button_pressed)

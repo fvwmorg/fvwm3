@@ -1861,6 +1861,7 @@ Bool moveLoop(
 				Event.xmotion.time = lastTimestamp;
 				Event.xmotion.x_root = xl - XOffset;
 				Event.xmotion.y_root = yt - YOffset;
+				Event.xmotion.same_screen = True;
 				break;
 			}
 		}
@@ -2033,6 +2034,10 @@ Bool moveLoop(
 			break;
 
 		case MotionNotify:
+			if (Event.xmotion.same_screen == False)
+			{
+				continue;
+			}
 			if (!(Event.xkey.state & Mod1Mask))
 				nosnap_enabled = True;
 			do_snap = nosnap_enabled &&
@@ -2999,6 +3004,10 @@ static Bool resize_window(F_CMD_ARGS)
 			break;
 
 		case MotionNotify:
+			if (Event.xmotion.same_screen == False)
+			{
+				continue;
+			}
 			if (!fForceRedraw)
 			{
 				x = Event.xmotion.x_root;

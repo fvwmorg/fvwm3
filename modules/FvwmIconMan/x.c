@@ -58,13 +58,9 @@ static void grab_pointer (WinManager *man)
 
 static int lookup_color (char *name, Pixel *ans)
 {
+#if 0
   XColor color;
 
-  /* use the lib */
-  *ans = GetSimpleColor(name);
-  return 1;
-  
-#if 0
   color.pixel = 0;
   if (!XParseColor (theDisplay, Pcmap, name, &color)) {
     ConsoleDebug(X11, "Could not parse color '%s'\n", name);
@@ -75,6 +71,10 @@ static int lookup_color (char *name, Pixel *ans)
     return 0;
   }
   *ans = color.pixel;
+  return 1;
+#else
+  /* use the lib */
+  *ans = GetSimpleColor(name);
   return 1;
 #endif
 }

@@ -3371,6 +3371,10 @@ void CMD_StrokeFunc(F_CMD_ARGS)
 		switch (eventp->type)
 		{
 		case MotionNotify:
+			if (eventp->xmotion.same_screen == False)
+			{
+				continue;
+			}
 			if (eventp->xany.window != Scr.Root)
 			{
 				if (XQueryPointer(

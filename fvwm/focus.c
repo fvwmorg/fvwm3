@@ -436,6 +436,7 @@ void SetPointerEventPosition(XEvent *eventp, int x, int y)
 	case MotionNotify:
 		eventp->xbutton.x_root = x;
 		eventp->xbutton.y_root = y;
+		eventp->xmotion.same_screen = True;
 		break;
 	default:
 		break;

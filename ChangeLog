@@ -1,4 +1,17 @@
+2002-07-18  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* libs/Pointer.c (GetLocationFromEventOrQuery):
+	* fvwm/focus.c (SetPointerEventPosition):
+	* fvwm/functions.c (CheckActionType):
+	* fvwm/builtins.c (CMD_StrokeFunc):
+	* fvwm/move_resize.c (moveLoop):
+	(resize_window):
+	fixed some bugs w/ pointer on wrong screen
+
 2002-07-17  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* fvwm/events.c (HandleLeaveNotify):
+	fixed problem w/ click+drag and mousey focus
 
 	* fvwm/menus.c (size_menu_horizontally):
 	fixed menu style SubmenusLeft w/ icons in menu items

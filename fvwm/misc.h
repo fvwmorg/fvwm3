@@ -21,17 +21,20 @@
 
 /* ---------------------------- global definitions -------------------------- */
 
-#define GRAB_ALL      0       /* sum of all grabs */
-#define GRAB_STARTUP  1       /* Startup busy cursor */
-#define GRAB_NORMAL   2       /* DeferExecution, Move, Resize, ... */
-#define GRAB_MENU     3       /* a menus.c grabing */
-#define GRAB_BUSY     4       /* BusyCursor stuff */
-#define GRAB_BUSYMENU 5       /* Allows menus.c to regrab the cursor */
-#define GRAB_PASSIVE  6       /* Override of passive grab, only prevents grab
-			       * to be released too early */
-#define GRAB_FREEZE_CURSOR 7  /* Freeze the cursor shape if a window is
+enum
+{
+	GRAB_ALL      = 0,       /* sum of all grabs */
+	GRAB_STARTUP  = 1,       /* Startup busy cursor */
+	GRAB_NORMAL   = 2,       /* DeferExecution, Move, Resize, ... */
+	GRAB_MENU     = 3,       /* a menus.c grabing */
+	GRAB_BUSY     = 4,       /* BusyCursor stuff */
+	GRAB_BUSYMENU = 5,       /* Allows menus.c to regrab the cursor */
+	GRAB_PASSIVE  = 6,       /* Override of passive grab, only prevents grab
+			          * to be released too early */
+	GRAB_FREEZE_CURSOR = 7,  /* Freeze the cursor shape if a window is
 			       * pressed. */
-#define GRAB_MAXVAL   8       /* last GRAB macro + 1 */
+	GRAB_MAXVAL              /* last GRAB macro + 1 */
+};
 
 /* ---------------------------- global macros ------------------------------- */
 

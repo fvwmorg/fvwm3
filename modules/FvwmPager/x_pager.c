@@ -308,7 +308,7 @@ void draw_desk_background(int i, int page_w, int page_h)
 			Colorset[Desks[i].highcolorset].bg);
 		XSetForeground(
 			dpy, Desks[i].rvGC, Colorset[Desks[i].highcolorset].fg);
-		if (HilightDesks && Scr.CurrentDesk - desk1 == i)
+		if (HilightDesks)
 		{
 			SetWindowBackground(
 				dpy, Desks[i].CPagerWin, page_w, page_h,
