@@ -1220,6 +1220,7 @@ void MainLoop (void)
 				  SendText(fd,cmd,0);
 			  }
 		  }
+		  UpdateRootTransparency(False);
 	  }
 	}
 	else if (packet->type == M_STRING) {

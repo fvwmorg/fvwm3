@@ -1,3 +1,8 @@
+2004-01-04  Olivier Chapuis  <olivier.chapuis@free.fr>
+
+	* FvwmScript/FvwmScript.c (MainLoop):
+	Updated root transparent bg when we are (un)swallowed
+
 2003-12-08  Mikhael Goikhman  <migo@homemail.com>
 
 	* FvwmTheme/FvwmTheme.1:
