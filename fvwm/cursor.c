@@ -366,6 +366,7 @@ void CursorStyle(F_CMD_ARGS)
   else if (StrEquals("TOP_EDGE",cname)) index = CRS_TOP_EDGE;
   else if (StrEquals("BOTTOM_EDGE",cname)) index = CRS_BOTTOM_EDGE;
   else if (StrEquals("ROOT",cname)) index = CRS_ROOT;
+  else if (StrEquals("STROKE",cname)) index = CRS_STROKE;
   else
   {
     fvwm_msg(ERR,"CursorStyle","Unknown cursor name %s",cname);
