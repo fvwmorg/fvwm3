@@ -1,3 +1,10 @@
+2000-12-07  Dan Espen  <dane@mk.telcordia.com>
+
+	* tests/purify/purify.fvwm2rc: Move CreateWindows before WindowList so
+	WindowList can use the windows.  Add Layer/Condition/Placement
+ 	tests to WindowList.
+	Upgrade AnimatedMove and Lower tests.
+
 2000-12-06  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* fvwm/ConfigFvwmDefaults:

@@ -1,8 +1,6 @@
 # All tests are defined as functions, added to a menu and added to
 # the function that can run all tests.
 
-
-
 # Destroy/AddTo in 1 line:
 DestroyFunc CreateFunc
 AddToFunc CreateFunc
@@ -289,6 +287,34 @@ AddToFunc IconFont-Func
  + I IconFont -adobe-helvetica-bold-r-*-*-*-140-*-*-*-*-*-*
  + I IconFont
 
+# This test tests "Exec" and "Wait" but also creates some windows
+# used in tests afterward.
+# The windows are named so the tests can access them
+AddTest "Test CreateWindows" CreateWindows-Func
+AddToFunc CreateWindows-Func
+ + I Style "*" SmartPlacement
+ + I Style "*" RandomPlacement
+ + I Style "*" MouseFocus
+ + I DestroyFunc makewindows
+ + I AddToFunc makewindows
+ + I AddToFunc makewindows I Exec xterm -geometry 10x5+0+0 -T window1 -n window1 -e sleep 1000
+ + I AddToFunc makewindows I Wait window1
+ + I AddToFunc makewindows I Exec xterm -geometry 10x5+25+25 -T window2 -n window2 -e sleep 1000
+ + I AddToFunc makewindows I Wait window2
+ + I AddToFunc makewindows I Exec xterm -geometry 10x5+50+50 -T window3 -n window3 -e sleep 1000
+ + I AddToFunc makewindows I Wait window3
+ + I AddToFunc makewindows I Exec xterm -geometry 10x5+75+75 -T window4 -n window4 -e sleep 1000
+ + I AddToFunc makewindows I Wait window4
+ + I AddToFunc makewindows I Exec xterm -geometry 10x5+100+100 -T window5 -n window5 -e sleep 1000
+ + I AddToFunc makewindows I Wait window5
+ + I AddToFunc makewindows I Exec xterm -geometry 10x5-0-0 -T window6 -n window6 -e sleep 1000
+ + I AddToFunc makewindows I Wait window6
+ + I function makewindows
+# Move to main page, move the pointer to the lower right corner near window6
+ + I GotoPage 0 0
+ + I CursorMove -1000 -1000
+ + I CursorMove 95 95
+
 # Note, there is no test for IconPath, its obsolete
 # Note, the ImagePath test is not in ManPage order, look elsewhere
 # Note, there is no test for PixmapPath, its obsolete
@@ -299,12 +325,51 @@ AddToFunc WindowList-Func
  + I WindowList
  + I WindowList
 # 2 windowlists, each using all the options, opposite options:
- + I WindowList NoGeometry, Function nonexistent, Desk 0, NoIcons, NoNormal,   NoSticky,   NoOnTop, NoOnBottom, UseIconName, Alphabetic, NotAlphabetic, UseListSkip, NoDeskSort, NoHotKeys, SelectOnRelease
- + I WindowList Geometry,   Function nonexistent, Desk 0, Icons, OnlyNormal, OnlySticky, OnlyOnTop, OnlyOnBottom, UseIconName, Alphabetic, NotAlphabetic, OnlyListSkip
+ + I WindowList NoGeometry, Function nonexistent, Desk 0, NoIcons, NoNormal,   NoSticky,   NoOnTop, NoOnBottom, UseIconName, Alphabetic, NotAlphabetic, UseListSkip, NoDeskSort, NoHotKeys, SelectOnRelease, Layer 0
+ + I WindowList Geometry,   Function nonexistent, Desk 0, Icons, OnlyNormal, OnlySticky, OnlyOnTop, OnlyOnBottom, UseIconName, Alphabetic, NotAlphabetic, OnlyListSkip, Layer 9
  + I WindowList Geometry,   Function nonexistent, Desk 0, OnlyIcons, Normal,     Sticky,     OnTop, OnBottom, UseIconName, Alphabetic, NotAlphabetic, NoGeometryWithInfo, CurrentDesk
-# This option is in the man page but gets "Unknown Option":
-# + I WindowList Layer 0
+# Condition and placement test
+ + I WindowList (win*) Root 12p 12p CurrentDesk
+# Could use a test where the "WindowList MenuStyle" is redone.
  + I Refresh
+
+AddTest "Test Moves" Moves-Func
+AddToFunc Moves-Func
+ + I Next [window2] WarpToWindow 50 50
+ + I Next [window2] AnimatedMove 50 50 warp
+ + I Next [window2] AnimatedMove 100 100 warp
+ + I Next [window2] AnimatedMove 100 0 warp
+ + I Next [window2] AnimatedMove 0 100 warp
+ + I Next [window2] AnimatedMove -50 -50 warp
+ + I Next [window2] AnimatedMove 25p 25p warp
+# Need some HideGeometryWindow tests.
+# Need some Layer tests.
+ + I Next [window5] Lower
+ + I Next [window4] Lower
+ + I Next [window3] Lower
+ + I Next [window2] Lower
+ + I Next [window1] Lower
+ + I Move   10    10
+ + I Move		-10		-10
+ + I MoveToPage
+ + I MoveToPage
+ + I MoveToPage 1 1
+ + I MoveToPage 10000 -12312
+ + I MoveToPage 0 0
+ + I MoveToDesk
+ + I MoveToDesk    2
+ + I MoveToDesk		+3
+ + I MoveToDesk -2
+ + I MoveToDesk 0 1
+ + I MoveToDesk   0    3
+ + I MoveToDesk		0		1923874
+ + I MoveToDesk +1 0 10
+ + I MoveToDesk -1 0 10
+ + I MoveToDesk 0 0 5 7
+ + I MoveToDesk 0 -11111 5 7
+ + I MoveToDesk 0 0
+ + I Refresh
+
 
 # Ending ManPage Order
 
@@ -721,32 +786,6 @@ AddToFunc XorValue-Func
  + I XORValue 255
  + I XORValue 128
  + I XORValue 0
-
-# Tests that require a window
-
-AddTest "Test CreateWindows" CreateWindows-Func
-AddToFunc CreateWindows-Func
- + I Style "*" SmartPlacement
- + I Style "*" RandomPlacement
- + I Style "*" MouseFocus
- + I DestroyFunc makewindows
- + I AddToFunc makewindows
- + I AddToFunc makewindows I Exec xterm -geometry 10x5+0+0 -T window1 -n window1 -e sleep 1000
- + I AddToFunc makewindows I Wait window1
- + I AddToFunc makewindows I Exec xterm -geometry 10x5+25+25 -T window2 -n window2 -e sleep 1000
- + I AddToFunc makewindows I Wait window2
- + I AddToFunc makewindows I Exec xterm -geometry 10x5+50+50 -T window3 -n window3 -e sleep 1000
- + I AddToFunc makewindows I Wait window3
- + I AddToFunc makewindows I Exec xterm -geometry 10x5+75+75 -T window4 -n window4 -e sleep 1000
- + I AddToFunc makewindows I Wait window4
- + I AddToFunc makewindows I Exec xterm -geometry 10x5+100+100 -T window5 -n window5 -e sleep 1000
- + I AddToFunc makewindows I Wait window5
- + I AddToFunc makewindows I Exec xterm -geometry 10x5-0-0 -T window6 -n window6 -e sleep 1000
- + I AddToFunc makewindows I Wait window6
- + I function makewindows
- + I GotoPage 0 0
- + I CursorMove -1000 -1000
- + I CursorMove 95 95
 
 AddTest "Test ColormapFocus" ColormapFocus-Func
 AddToFunc ColormapFocus-Func
@@ -1418,31 +1457,6 @@ AddToFunc Raise_RaiseLower_Lower-Func
  + I RaiseLower asöpoi
  + I RaiseLower asöpoi
  + I Raise
- + I Refresh
-
-AddTest "Test Moves" Moves-Func
-AddToFunc Moves-Func
- + I AnimatedMove 50 50 warp
- + I AnimatedMove -50 -50 warp
- + I Move   10    10
- + I Move		-10		-10
- + I MoveToPage
- + I MoveToPage
- + I MoveToPage 1 1
- + I MoveToPage 10000 -12312
- + I MoveToPage 0 0
- + I MoveToDesk
- + I MoveToDesk    2
- + I MoveToDesk		+3
- + I MoveToDesk -2
- + I MoveToDesk 0 1
- + I MoveToDesk   0    3
- + I MoveToDesk		0		1923874
- + I MoveToDesk +1 0 10
- + I MoveToDesk -1 0 10
- + I MoveToDesk 0 0 5 7
- + I MoveToDesk 0 -11111 5 7
- + I MoveToDesk 0 0
  + I Refresh
 
 AddTest "Test Resize_Maximize" Resize_Maximize-Func
