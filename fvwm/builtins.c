@@ -3112,7 +3112,7 @@ FvwmWindow *Circulate(char *action, int Direction, char **restofline)
     while((fw != NULL)&&(found==NULL)&&(fw != &Scr.FvwmRoot))
     {
 #ifdef FVWM_DEBUG_MSGS
-      fvwm_msg(DBG,"Circulate","Trying %s",fw->name)
+	fvwm_msg(DBG,"Circulate","Trying %s",fw->name);
 #endif /* FVWM_DEBUG_MSGS */
       /* Make CirculateUp and CirculateDown take args. by Y.NOMURA */
       if ((onFlags & fw->flags) == onFlags &&
