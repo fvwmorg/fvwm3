@@ -1,5 +1,10 @@
 2003-01-20  Dominik Vogt  <dominik.vogt@gmx.de>
 
+	* fvwm/stack.c (new_layer):
+	(collect_transients_recursive):
+	(__restack_window):
+	fixed Layer command
+
 	* fvwm/events.c (HandleConfigureRequest):
 	fixed placement of icons
 	fixed size calculations of icons

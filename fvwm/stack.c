@@ -85,7 +85,8 @@ static void ResyncXStackingOrder(void);
 static void BroadcastRestack(FvwmWindow *s1, FvwmWindow *s2);
 static Bool is_above_unmanaged(FvwmWindow *fw, Window *umtop);
 static int collect_transients_recursive(
-	FvwmWindow *t, FvwmWindow *list_head, int layer, stack_mode_t mode);
+	FvwmWindow *t, FvwmWindow *list_head, int layer, stack_mode_t mode,
+	Bool do_include_target_window);
 
 /* ---------------------------- local variables ----------------------------- */
 
@@ -623,7 +624,8 @@ static Bool __restack_window(
 		/* collect the transients in a temp list */
 		tmp_r.stack_prev = &tmp_r;
 		tmp_r.stack_next = &tmp_r;
-		count = collect_transients_recursive(t, &tmp_r, t->layer, mode);
+		count = collect_transients_recursive(
+			t, &tmp_r, t->layer, mode, False);
 		if (count == 0)
 		{
 			do_restack_transients = False;
@@ -1096,7 +1098,8 @@ static void __mark_group_member(
 }
 
 static int collect_transients_recursive(
-	FvwmWindow *t, FvwmWindow *list_head, int layer, stack_mode_t mode)
+	FvwmWindow *t, FvwmWindow *list_head, int layer, stack_mode_t mode,
+	Bool do_include_target_window)
 {
 	FvwmWindow *s;
 	int count = 0;
@@ -1124,7 +1127,7 @@ static int collect_transients_recursive(
 	{
 		FvwmWindow *tmp;
 
-		if (s == t)
+		if (s == t && do_include_target_window == False)
 		{
 			/* ignore the target window */
 			s = s->stack_next;
@@ -1686,7 +1689,8 @@ void new_layer(FvwmWindow *fw, int layer)
 	list_head.stack_next = &list_head;
 	list_head.stack_prev = &list_head;
 	count = collect_transients_recursive(
-		fw, &list_head, fw->layer, (layer < fw->layer));
+		fw, &list_head, fw->layer,
+		(layer < fw->layer) ? SM_LOWER : SM_RAISE, True);
 	if (count == 0)
 	{
 		/* no windows to move */
