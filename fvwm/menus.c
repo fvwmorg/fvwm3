@@ -272,6 +272,7 @@ MenuStatus do_menu(MenuRoot *menu, MenuRoot *menuPrior, char **ret_paction,
 			EXPAND_COMMAND);
 	cindirectDeep--;
 	free(*ret_paction);
+        *ret_paction = NULL;
       }
       fIgnorePosHints = FALSE;
       fLastMenuPosHintsValid = FALSE;

@@ -1,3 +1,9 @@
+1999-05-12  Matthias Clasen  <clasen@mathematik.uni-freiburg.de>
+
+	* fvwm/menus.c (do_menu): set *ret_paction to NULL after 
+	freeing it. This fixes coredumps from do_windowList (bugs 
+	#332 and #339).
+	
 1999-05-12  Dan Espen  <dane@mk.bellcore.com>
 
 	* INSTALL.fvwm (Configuration File): Some clarification on config files
@@ -26,7 +32,7 @@
 
 	* NEWS:
 	* fvwm/fvwm2.1: document IconOverride/NoIconOverride/
-	NoActiveIconOverride.
+	NoActiveIconOverride. This fixes bug #333.
 
 1999-05-10  Dominik Vogt  <dominik_vogt@gmx.de>
 
@@ -41,6 +47,7 @@
 
 	* fvwm/session.c (SaveWindowStates): save orig_g.[xy] - old_bw
 	instead of orig_g.[xy] - the old_bw is added again in AddWindow.
+	This fixes bug #334.
 
 Sun May  9 02:43:02 1999  Steve Robbins  <steve@nyongwa.montreal.qc.ca>
 
