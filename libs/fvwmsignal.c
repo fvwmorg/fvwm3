@@ -63,7 +63,7 @@ fvwmGetSignalMask(void)
  * This function should ONLY be called at the end of a
  * signal handler. It is an integral part of the mechanism
  * to stop system calls from blocking once the process is
- * finished. 
+ * finished.
  *
  * NOTE: This is NOT a signal handler function in its own right!
  */
@@ -108,7 +108,7 @@ fvwmSelect(fd_set_size_t nfds,
            fd_set *readfds, fd_set *writefds, fd_set *exceptfds,
            struct timeval *timeout)
 {
-  volatile int iRet = -1;  /* This variable MUST NOT be in a register */
+  volatile int iRet = 0;  /* This variable MUST NOT be in a register */
 
   /*
    * Now initialise the non-local jump. Between here and the end of

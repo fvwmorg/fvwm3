@@ -281,6 +281,40 @@ static void apply_window_updates(
   return;
 }
 
+/* similar, but takes only care of destroying windows that have to go away. */
+void destroy_scheduled_windows(void)
+{
+  FvwmWindow *t;
+  FvwmWindow *next;
+  Bool do_need_ungrab = False;
+
+  if (Scr.flags.is_executing_complex_function != 0 ||
+      Scr.flags.is_window_scheduled_for_destroy == 0)
+    return;
+  /* Grab the server during the style update! */
+  if (GrabEm(CRS_WAIT, GRAB_BUSY))
+    do_need_ungrab = True;
+  MyXGrabServer(dpy);
+  XSync(dpy,0);
+  Scr.flags.is_window_scheduled_for_destroy = 0;
+  /* need to destroy one or more windows before looking at the window list */
+  for (t = Scr.FvwmRoot.next, next = NULL; t != NULL; t = next)
+  {
+    next = t->next;
+    if (IS_SCHEDULED_FOR_DESTROY(t))
+    {
+      SET_SCHEDULED_FOR_DESTROY(t, 0);
+      destroy_window(t);
+    }
+  }
+  MyXUngrabServer(dpy);
+  if (do_need_ungrab)
+    UngrabEm(GRAB_BUSY);
+  XSync(dpy, 0);
+
+  return;
+}
+
 /* similar to the flush_window_updates() function, but does only the updates
  * for a single window whose decor has been changed. */
 void apply_decor_change(FvwmWindow *tmp_win)
@@ -299,7 +333,6 @@ void apply_decor_change(FvwmWindow *tmp_win)
 void flush_window_updates(void)
 {
   FvwmWindow *t;
-  FvwmWindow *next;
   window_style style;
   FvwmWindow *focus_fw;
   Bool do_need_ungrab = False;
@@ -311,23 +344,6 @@ void flush_window_updates(void)
     do_need_ungrab = True;
   MyXGrabServer(dpy);
   XSync(dpy,0);
-
-  if (Scr.flags.is_window_scheduled_for_destroy &&
-      !Scr.flags.is_executing_complex_function)
-  {
-    Scr.flags.is_window_scheduled_for_destroy = 0;
-
-    /* need to destroy one or more windows before looking at the window list */
-    for (t = Scr.FvwmRoot.next, next = NULL; t != NULL; t = next)
-    {
-      next = t->next;
-      if (IS_SCHEDULED_FOR_DESTROY(t))
-      {
-	SET_SCHEDULED_FOR_DESTROY(t, 0);
-	destroy_window(t);
-      }
-    }
-  }
 
   /* This is necessary in case the focus policy changes. With ClickToFocus some
    * buttons have to be grabbed/ungrabbed. */

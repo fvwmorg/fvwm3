@@ -40,6 +40,7 @@ typedef struct
   unsigned do_update_modules_flags : 1;
 } update_win;
 
+void destroy_scheduled_windows(void);
 void apply_decor_change(FvwmWindow *tmp_win);
 void flush_window_updates(void);
 void update_styles_func(F_CMD_ARGS);

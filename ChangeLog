@@ -1,4 +1,21 @@
+2000-12-23  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* fvwm/module_interface.c (PositiveWrite):
+	retry select() if it failed with EINTR
+
+	* libs/fvwmsignal.c (fvwmSelect):
+	Return 0 instead of -1 if select() was not really executed. Otherwise
+	the caller might evaluate an invalid "errno".
+
 2000-12-22  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* fvwm/events.c (HandleEvents):
+	* fvwm/add_window.c (destroy_window):
+	* fvwm/update.c (destroy_sceduled_windows):
+	(flush_window_updates):
+	fixed new window destruction logic; forgot to actually destroy the
+	frames of windows that were destroyed in a complex function under some
+	circumstances
 
 	* fvwm/icons.c (CreateIconWindow):
 	remove the shape from an icon window if necessary

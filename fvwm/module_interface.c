@@ -1286,9 +1286,9 @@ void PositiveWrite(int module, unsigned long *ptr, int size)
 
     FlushMessageQueue(module);
 
-    FD_ZERO(&readSet);
     do
     {
+      int rc = 0;
       /*
        * We give the read a long timeout; if the module fails to
        * respond within this time then it deserves to be KILLED!
@@ -1296,15 +1296,21 @@ void PositiveWrite(int module, unsigned long *ptr, int size)
        * NOTE: rather than impose an arbitrary timeout on the user,
        *       we will make this a configuration parameter.
        */
-      timeout.tv_sec = moduleTimeout;
-      timeout.tv_usec = 0;
-      FD_SET(channel, &readSet);
 
-      /* Wait for input to arrive on just one descriptor, with a timeout */
-      /* (fvwmSelect <= 0) or read() returning wrong size is bad news */
-      if ((fvwmSelect(channel + 1, &readSet, NULL, NULL, &timeout) <= 0)
-          || (read(channel, &targetWindow, sizeof(targetWindow))
-              != sizeof(targetWindow)))
+      do
+      {
+	timeout.tv_sec = moduleTimeout;
+	timeout.tv_usec = 0;
+	FD_ZERO(&readSet);
+	FD_SET(channel, &readSet);
+
+	/* Wait for input to arrive on just one descriptor, with a timeout */
+	/* (fvwmSelect <= 0) or read() returning wrong size is bad news */
+	rc = fvwmSelect(channel + 1, &readSet, NULL, NULL, &timeout);
+	/* retry if select() failed with EINTR */
+      } while (rc < 0 && errno == EINTR);
+      if (rc <= 0 || read(channel, &targetWindow, sizeof(targetWindow))
+	  != sizeof(targetWindow))
       {
         /* Doh! Something has gone wrong - get rid of the offender!! */
         fvwm_msg(ERR, "PositiveWrite",

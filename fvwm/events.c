@@ -2569,6 +2569,10 @@ void HandleEvents(void)
   while ( !isTerminated )
   {
     last_event_type = 0;
+    if (Scr.flags.is_window_scheduled_for_destroy)
+    {
+      destroy_scheduled_windows();
+    }
     if (Scr.flags.do_need_window_update)
     {
       flush_window_updates();

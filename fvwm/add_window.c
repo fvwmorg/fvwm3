@@ -1867,7 +1867,6 @@ void destroy_window(FvwmWindow *tmp_win)
   {
     /* mark window for destruction */
     SET_SCHEDULED_FOR_DESTROY(tmp_win, 1);
-    Scr.flags.do_need_window_update = 1;
     Scr.flags.is_window_scheduled_for_destroy = 1;
     /* this is necessary in case the application destroys the client window and
      * a new window is created with the saem window id */
