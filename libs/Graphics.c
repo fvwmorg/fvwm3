@@ -676,7 +676,8 @@ Drawable CreateGradientPixmap(Display *dpy, Drawable d, GC gc,
             register double x = (double)((2 * i - w) * h) / 4.0;
             register double y = (double)((h - 2 * j) * w) / 4.0;
             register double rad = sqrt(x * x + y * y);
-	    XPutPixel(image, i, j, pixels[(int)(rad * ncolors / t_scale)]);
+	    XPutPixel(image, i, j,
+		      pixels[(int)((rad * ncolors - 0.5) / t_scale)]);
 	  }
 	break;
       }
