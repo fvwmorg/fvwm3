@@ -339,6 +339,35 @@ Pixel GetForeShadow(Pixel foreground, Pixel background)
   return colorp->pixel;
 }
 
+XColor *GetTintedColor(Pixel in, Pixel tint, int percent)
+{
+	XColor tint_color;
+
+	memset(&color, 0, sizeof(color));
+	memset(&tint_color, 0, sizeof(tint_color));
+	color.pixel = in;
+	XQueryColor(Pdpy, Pcmap, &color);
+	tint_color.pixel = tint;
+	XQueryColor(Pdpy, Pcmap, &tint_color);
+
+	color.red = (unsigned short)
+		(((100-percent)*color.red + tint_color.red * percent) / 100);
+	color.green = (unsigned short)
+		(((100-percent)*color.green + tint_color.green * percent) / 100);
+	color.blue = (unsigned short)
+		(((100-percent)*color.blue + tint_color.blue * percent) / 100);
+	return &color;
+}
+
+Pixel GetTintedPixel(Pixel in, Pixel tint, int percent)
+{
+  XColor *colorp;
+
+  colorp = GetTintedColor(in, tint, percent);
+  XAllocColor (Pdpy, Pcmap, colorp);
+  return colorp->pixel;
+}
+
 /* This function converts the colour stored in a colorcell (pixel) into the
  * string representation of a colour.  The output is printed at the
  * address 'output'.  It is either in rgb format ("rgb:rrrr/gggg/bbbb") if

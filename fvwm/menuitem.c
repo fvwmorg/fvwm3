@@ -401,10 +401,27 @@ void menuitem_paint(
 			d = relief_thickness;
 		}
 		/* Undo the hilighting. */
-		XClearArea(
-			dpy, mpip->w, MDIM_ITEM_X_OFFSET(*dim), y_offset + d,
-			MDIM_ITEM_WIDTH(*dim), y_height + relief_thickness - d,
-			0);
+		if (xft_redraw && !ST_HAS_MENU_CSET(ms) && 
+		    ST_FACE(ms).type == GradientMenu &&
+		    (ST_FACE(ms).gradient_type == D_GRADIENT ||
+		     ST_FACE(ms).gradient_type == B_GRADIENT))
+		{
+			XEvent e;
+
+			e.xexpose.x = MDIM_ITEM_X_OFFSET(*dim);
+			e.xexpose.y = y_offset + d;
+			e.xexpose.width = MDIM_ITEM_WIDTH(*dim);
+			e.xexpose.height = y_height + relief_thickness - d;
+			paint_menu_gradient_background(mpip->mr,&e);
+		}
+		else
+		{
+			XClearArea(
+				dpy, mpip->w, MDIM_ITEM_X_OFFSET(*dim),
+				y_offset + d, MDIM_ITEM_WIDTH(*dim),
+				y_height + relief_thickness - d,
+				0);
+		}
 	}
 	else
 	{

@@ -3658,6 +3658,7 @@ static void get_menu_paint_item_parameters(
 	mpip->selected_item = MR_SELECTED_ITEM(mr);
 	mpip->dim = &MR_DIM(mr);
 	mpip->fw = fw;
+	mpip->mr = mr;
 	mpip->flags.is_first_item = (MR_FIRST_ITEM(mr) == mi);
 	mpip->flags.is_left_triangle = MR_IS_LEFT_TRIANGLE(mr);
 
@@ -3755,7 +3756,7 @@ static void paint_side_pic(MenuRoot *mr, XEvent *pevent)
 	return;
 }
 
-static void paint_menu_gradient_background(
+void paint_menu_gradient_background(
 	MenuRoot *mr, XEvent *pevent)
 {
 	MenuStyle *ms = MR_STYLE(mr);

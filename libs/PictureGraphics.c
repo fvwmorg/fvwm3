@@ -26,9 +26,11 @@
 
 #include <fvwmlib.h>
 #include "PictureBase.h"
+#include "PictureImageLoader.h"
 #include "FRenderInit.h"
 #include "FRenderInterface.h"
 #include "PictureGraphics.h"
+#include "PictureUtils.h"
 
 /* ---------------------------- local definitions --------------------------- */
 
@@ -234,6 +236,154 @@ void PTileRectangle(Display *dpy, Window win, Pixmap pixmap, Pixmap mask,
 	}
 }
 
+static
+Pixmap PCreateTintedPixmap(
+	Display *dpy, Window win, int percent, Pixel tint,
+	Drawable src, Pixmap mask, int depth, GC gc, int color_limit,
+	int x, int y, int width, int height)
+{
+	XImage *src_im;
+	XImage *mask_im = NULL;
+	XImage *out_im;
+	GC my_gc;
+	Pixmap out_pix = None;
+	unsigned char *cm;
+	XColor *colors;
+	XColor tint_color, c;
+	int j, i, m = 0, k = 0;
+
+	if (depth < 2 || depth != Pdepth)
+		return None;
+
+	if (!(src_im =
+	      XGetImage(dpy, src, x, y, width, height, AllPlanes, ZPixmap)))
+	{
+		return None;
+	}
+	if (mask != None)
+	{
+		mask_im = XGetImage(
+			dpy, mask, 0, 0, width, height, AllPlanes, ZPixmap);
+	}
+	out_pix = XCreatePixmap(dpy, win, width, height, Pdepth);
+	out_im = XCreateImage(
+		dpy, Pvisual, Pdepth, ZPixmap, 0, 0, width, height,
+		Pdepth > 16 ? 32 : (Pdepth > 8 ? 16 : 8), 0);
+	if (gc == None)
+	{
+		my_gc = fvwmlib_XCreateGC(dpy, win, 0, NULL);
+	}
+	else
+	{
+		my_gc = gc;
+	}
+
+	if (!out_pix || !out_im || !my_gc)
+	{
+		XDestroyImage(src_im);
+		if (mask_im)
+		{
+			XDestroyImage(mask_im);
+		}
+		if (out_pix)
+		{
+			XFreePixmap(dpy, out_pix);
+		}
+		if (out_im)
+		{
+			XDestroyImage(out_im);
+		}
+		if (gc == None && my_gc)
+		{
+			XFreeGC(dpy, my_gc);
+		}
+		return None;
+	}
+
+	colors = (XColor *)safemalloc(width * height * sizeof(XColor));
+	cm = (unsigned char *)safemalloc(width * height * sizeof(char));
+	out_im->data = safemalloc(out_im->bytes_per_line * height);
+
+	tint_color.pixel = tint;
+	XQueryColor(dpy, Pcmap, &tint_color);
+
+	for (j = 0; j < height; j++)
+	{
+		for (i = 0; i < width; i++)
+		{
+			if (mask_im != NULL &&
+			    (XGetPixel(mask_im, i, j) == 0))
+			{
+				cm[m++] = 0;
+			}
+			else
+			{
+				cm[m++] = 255;
+				colors[k++].pixel = XGetPixel(src_im, i, j);
+			}
+		}
+	}
+
+	for (i = 0; i < k; i += 256)
+		XQueryColors(dpy, Pcmap, &colors[i], min(k - i, 256));
+
+	k = 0;m = 0;
+	c.flags = DoRed | DoGreen | DoBlue;
+	for (j = 0; j < height; j++)
+	{
+		for (i = 0; i < width; i++)
+		{
+			if (cm[m] > 0)
+			{
+				c.blue = (unsigned short)
+					(((100-percent)*colors[k].blue +
+					  tint_color.blue * percent) / 100);
+				c.green = (unsigned short)
+					(((100-percent)*colors[k].green +
+					  tint_color.green * percent) / 100);
+				c.red = (unsigned short)
+					(((100-percent)*colors[k].red +
+					  tint_color.red * percent) / 100);
+				k++;
+				if (Pvisual->class == DirectColor ||
+				    Pvisual->class == TrueColor)
+				{
+					c.pixel = PictureRGBtoPixel(
+						c.red/257,
+						c.green/257,
+						c.blue/257);
+				}
+				else
+				{
+
+					PictureReduceRGBColor(&c,color_limit);
+				}
+			}
+			else
+			{
+				c.pixel = XGetPixel(src_im, i, j);
+			}
+			XPutPixel(out_im, i, j, c.pixel);
+			m++;
+		}
+	}
+	free(colors);
+	free(cm);
+	XDestroyImage(src_im);
+	if (mask_im)
+	{
+		XDestroyImage(mask_im);
+	}
+	XPutImage(dpy, out_pix, my_gc, out_im, 0, 0, 0, 0, width, height);
+	if (gc == None)
+	{
+		XFreeGC(dpy, my_gc);
+	}
+	XDestroyImage(out_im);
+
+	return out_pix;
+}
+
 /* ---------------------------- interface functions ------------------------- */
 
 void PGraphicsCopyPixmaps(Display *dpy,
@@ -302,13 +452,33 @@ void PGraphicsTileRectangle(Display *dpy, Window win,
 }
 
 void
-PGraphicsTintRectangle(Display *dpy, Window win, int tint_percent, Pixel tint,
-		       Pixmap mask, Drawable d,
-		       int dest_x, int dest_y, int dest_w, int dest_h)
+PGraphicsTintRectangle(
+	Display *dpy, Window win, int tint_percent, Pixel tint,
+	Drawable d, Pixmap mask, int depth, GC gc, int color_limit,
+	int dest_x, int dest_y, int dest_w, int dest_h)
 {
-	if (!XRenderSupport || !FRenderGetExtensionSupported())
-		return;
+	if (!XRenderSupport || !FRenderGetExtensionSupported() ||
+	    color_limit > 0)
+	{
+		/* FIXME: work only if d is pixmap */
+		Pixmap tinted_pix;
 
-	FRenderTintRectangle(dpy, win, tint_percent, tint, mask, d,
-			     dest_x, dest_y, dest_w, dest_h);
+		tinted_pix = PCreateTintedPixmap(
+			dpy, win, tint_percent, tint, (Pixmap)d, mask,
+			depth, gc, color_limit, dest_x, dest_y, dest_w, dest_h);
+		if (tinted_pix == None)
+		{
+			return;
+		}
+		PCopyArea(
+			dpy, tinted_pix, None, depth, d, None,
+			0, 0, dest_w, dest_h, dest_x, dest_y);
+		XFreePixmap(dpy, tinted_pix);
+			
+	}
+	else
+	{
+		FRenderTintRectangle(dpy, win, tint_percent, tint, mask, d,
+				     dest_x, dest_y, dest_w, dest_h);
+	}
 }

@@ -123,6 +123,7 @@ typedef struct
 	MenuItem *selected_item;
 	MenuDimensions *dim;
 	FvwmWindow *fw;
+	void *mr;
 	struct
 	{
 		unsigned is_first_item : 1;

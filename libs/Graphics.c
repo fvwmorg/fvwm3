@@ -222,8 +222,6 @@ Pixmap CreateTiledPixmap(
 	return pixmap;
 }
 
-
-
 /****************************************************************************
  *
  * Returns True if the given type of gradient is supported.

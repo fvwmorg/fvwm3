@@ -22,32 +22,36 @@
 #define LIBS_COLORSETS_H
 
 typedef struct {
-  /* AllocColorset copies the first four pixels from colorset 0, don't move */
-  Pixel fg;
-  Pixel bg;
-  Pixel hilite;
-  Pixel shadow;
-  Pixel fgsh;
-  Pixmap pixmap;
-  Pixmap shape_mask;
-  unsigned int fg_alpha : 7;
-  unsigned int width : 12;
-  unsigned int height : 12;
-  unsigned int pixmap_type: 3;
-  unsigned int shape_width : 12;
-  unsigned int shape_height : 12;
-  unsigned int shape_type : 2;
+	/* AllocColorset copies the first four pixels from colorset 0, 
+	 * don't move */
+	Pixel fg;
+	Pixel bg;
+	Pixel hilite;
+	Pixel shadow;
+	Pixel fgsh;
+	Pixmap pixmap;
+	Pixmap shape_mask;
+	unsigned int fg_alpha : 7;
+	unsigned int width : 12;
+	unsigned int height : 12;
+	unsigned int pixmap_type: 3;
+	unsigned int shape_width : 12;
+	unsigned int shape_height : 12;
+	unsigned int shape_type : 2;
 #ifdef FVWM_COLORSET_PRIVATE
-  /* fvwm/colorset.c use only */
-  Pixel tint;
-  Pixmap mask;
-  Pixmap alpha_pixmap;
-  unsigned int color_flags : 7;
-  FvwmPicture *picture;
-  Pixel *pixels;
-  int nalloc_pixels;
-  int tint_percent;
-  Bool do_tint_use_mask;
+	/* fvwm/colorset.c use only */
+	Pixel tint;
+	Pixel fg_tint;
+	Pixel fg_saved;
+	Pixmap mask;
+	Pixmap alpha_pixmap;
+	unsigned int color_flags;
+	FvwmPicture *picture;
+	Pixel *pixels;
+	int nalloc_pixels;
+	int tint_percent;
+	int fg_tint_percent;
+	Bool do_tint_use_mask;
 #endif
 } colorset_struct;
 
@@ -70,6 +74,7 @@ typedef struct {
 #define FG_CONTRAST 0x20
 #define BG_AVERAGE  0x40
 #define TINT_SUPPLIED  0x80
+#define FG_TINT_SUPPLIED  0x100
 #endif
 
 /* colorsets are stored as an array of structs to permit fast dereferencing */

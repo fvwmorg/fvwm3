@@ -1,3 +1,34 @@
+2002-07-12  olicha  <olivier.chapuis@free.fr>
+
+	* fvwm/menus.c (get_menu_paint_item_parameters):
+	(paint_menu_gradient_background):
+	* fvwm/menuitem.c (menuitem_paint):
+	* fvwm/menuitem.h:
+	* fvwm/menus.h:
+	Fixed B/DGradient with Xft fonts
+
+	* libs/Colorset.h:
+	* libs/ColorUtils.c (GetTintedColor):
+	(GetTintedPixel):
+	* fvwm/colorset.c (parse_simple_tint):
+	(parse_colorset):
+	(alloc_colorset):
+	Implemented fgTint colorset option
+
+	* libs/PictureImageLoader.c:
+	* libs/PictureUtils.c:
+	* libs/PictureUtils.h:
+	* libs/Makefile.am:
+	Moved color limitation and some rgb to pixel functions from
+	PictureImageLoader to new files PictureUtils.{c,h}
+
+	* fvwm/colorset.c (parse_colorset):
+	* libs/PictureGraphics.c (PCreateTintedPixmap):
+	(PGraphicsTintRectangle):
+	Implemented tinting for X server without Xrender support and
+	did color limitation when tinting
+
+	
 2002-07-10  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* fvwm/events.c (WaitForButtonsUp):

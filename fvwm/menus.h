@@ -354,5 +354,6 @@ void UpdateMenuColorset(int cset);
 void SetMenuCursor(Cursor cursor);
 void ParentalMenuRePaint(MenuRoot *mr);
 void menu_expose(XEvent *event, FvwmWindow *fw);
+void paint_menu_gradient_background(MenuRoot *mr, XEvent *pevent);
 
 #endif /* _MENUS_ */

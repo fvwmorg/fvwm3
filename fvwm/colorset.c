@@ -123,6 +123,7 @@ static char *csetopts[] =
 	"TintMask",
 	"NoTint",
 
+	"fgTint",
 	NULL
 };
 
@@ -488,6 +489,39 @@ static void parse_tint(Window win, GC gc, colorset_struct *cs, int i, char *args
 	}
 }
 
+static void parse_simple_tint(
+	colorset_struct *cs, char *args, char **tint, int supplied_color,
+	int *has_tint_changed, int *percent)
+{
+	char *rest;
+	static char *name = "parse_colorset (tint)";
+
+	rest = get_simple_color(args, tint, cs, supplied_color, 0, NULL);
+	if (!(cs->color_flags & supplied_color))
+	{
+		/* restore to default */
+		*percent = 0;
+		*has_tint_changed = True;
+		cs->color_flags &= ~(supplied_color);
+		return;
+	}
+	if (!GetIntegerArguments(rest, NULL, percent, 1))
+	{
+		fvwm_msg(WARN, name,
+			 "Tint must have two arguments a color and an integer");
+		return;
+	}
+	*has_tint_changed = True;
+	if (*percent > 100)
+	{
+		*percent = 100;
+	}
+	else if (*percent < 0)
+	{
+		*percent = 0;
+	}
+}
+
 /* ---------------------------- interface functions ------------------------- */
 
 void cleanup_colorsets()
@@ -511,6 +545,7 @@ void parse_colorset(int n, char *line)
 	int w;
 	int h;
 	int tmp;
+	int percent;
 	colorset_struct *cs;
 	char *optstring;
 	char *args;
@@ -522,6 +557,7 @@ void parse_colorset(int n, char *line)
 	char *sh = NULL;
 	char *fgsh = NULL;
 	char *tint = NULL;
+	char *fg_tint = NULL;
 	Bool have_pixels_changed = False;
 	Bool has_fg_changed = False;
 	Bool has_bg_changed = False;
@@ -530,6 +566,7 @@ void parse_colorset(int n, char *line)
 	Bool has_fgsh_changed = False;
 	Bool has_fg_alpha_changed = False;
 	Bool has_tint_changed = False;
+	Bool has_fg_tint_changed = False;
 	Bool has_pixmap_changed = False;
 	Bool has_shape_changed = False;
 	Bool pixmap_is_a_bitmap = False;
@@ -675,6 +712,12 @@ void parse_colorset(int n, char *line)
 			cs->tint_percent = -1;
 			cs->color_flags &= ~TINT_SUPPLIED;
 			break;
+		case 26: /* fgTint */
+			parse_simple_tint(
+				cs, args, &fg_tint, FG_TINT_SUPPLIED,
+				&has_fg_tint_changed, &percent);
+			cs->fg_tint_percent = percent;
+			break;
 		default:
 			/* test for ?Gradient */
 			if (option[0] && StrEquals(&option[1], "Gradient"))
@@ -719,6 +762,7 @@ void parse_colorset(int n, char *line)
 	{
 		pixmap_is_a_bitmap = True;
 	}
+
 	/*
 	 * ---------- change the background colour ----------
 	 */
@@ -901,6 +945,24 @@ void parse_colorset(int n, char *line)
 		has_bg_changed = True;
 	} /* has_bg_changed */
 
+
+	/*
+	 * ---------- setup the fg tint colour ----------
+	 */
+	if (has_fg_tint_changed && cs->fg_tint_percent > 0 && fg_tint != NULL)
+	{
+		if (privateCells) {
+			MyXParseColor(fg_tint, &color);
+			color.pixel = cs->fg_tint;
+			XStoreColor(dpy, Pcmap, &color);
+		}
+		else
+		{
+			XFreeColors(dpy, Pcmap, &cs->fg_tint, 1, 0);
+			cs->fg_tint = GetColor(fg_tint);
+		}
+	}
+
 	/*
 	 * ---------- change the foreground colour ----------
 	 */
@@ -969,8 +1031,62 @@ void parse_colorset(int n, char *line)
 					have_pixels_changed = True;
 			}
 		}
+
+		/* save the fg color for tinting */
+		cs->fg_saved = cs->fg;
+
 	} /* has_fg_changed */
 
+	/*
+	 * ---------- tint the foreground colour ----------
+	 */
+	if (has_fg_tint_changed || (has_fg_changed && cs->fg_tint_percent > 0))
+	{
+		if (cs->fg_tint_percent == 0)
+		{
+			
+			if (privateCells) {
+				color.pixel = cs->fg_saved;
+				XQueryColor(Pdpy, Pcmap, &color);
+				color.pixel = cs->fg;
+				XStoreColor(dpy, Pcmap, &color);
+			}
+			else
+			{
+				Pixel old_fg = cs->fg;
+
+				XFreeColors(dpy, Pcmap, &cs->fg, 1, 0);
+				cs->fg = cs->fg_saved;
+				if (old_fg != cs->fg)
+					have_pixels_changed = True;
+			}
+		}
+		else
+		{
+			if (privateCells) {
+				XColor *colorp;
+
+				colorp = GetTintedColor(
+					cs->fg_saved, cs->fg_tint,
+					cs->fg_tint_percent);
+				colorp->pixel = cs->fg;
+				XStoreColor(dpy, Pcmap, colorp);
+			}
+			else
+			{
+				Pixel old_fg = cs->fg;
+
+				XFreeColors(dpy, Pcmap, &cs->fg, 1, 0);
+				cs->fg = GetTintedPixel(
+					cs->fg_saved, cs->fg_tint,
+					cs->fg_tint_percent);
+				if (old_fg != cs->fg)
+					have_pixels_changed = True;
+			}
+		}
+	}
+	
+	
 	/*
 	 * ---------- change the hilight colour ----------
 	 */
@@ -1213,14 +1329,13 @@ void parse_colorset(int n, char *line)
 	 * ---------- tint the pixmap ----------
 	 */
 	/* FIXME: recompute the bg/fg if BG_AVERAGE/FG_CONTRASTE ? */
-	if (XRenderSupport && cs->picture != NULL && cs->tint_percent > 0 &&
-	    (has_pixmap_changed || has_bg_changed || has_tint_changed) &&
-	    FRenderGetExtensionSupported())
+	if (cs->picture != NULL && cs->tint_percent > 0 &&
+	    (has_pixmap_changed || has_bg_changed || has_tint_changed))
 	{
 		PGraphicsTintRectangle(
-			dpy, win, cs->tint_percent, cs->tint,
+			dpy, win, cs->tint_percent, cs->tint, cs->pixmap,
 			(cs->do_tint_use_mask)? cs->picture->mask: None,
-			cs->pixmap, 0, 0, cs->width, cs->height);
+			Pdepth, gc, Scr.ColorLimit, 0, 0, cs->width, cs->height);
 		has_pixmap_changed = True;
 	}
 
@@ -1261,7 +1376,10 @@ void parse_colorset(int n, char *line)
 	{
 		free(tint);
 	}
-
+	if (fg_tint)
+	{
+		free(fg_tint);
+	}
 	return;
 }
 
@@ -1294,7 +1412,10 @@ void alloc_colorset(int n)
 		/* try to allocate private colormap entries if required */
 		if (privateCells && XAllocColorCells(
 			/* grab 5 writeable cells */
-			dpy, Pcmap, False, NULL, 0, &(ncs->fg), 5))
+			dpy, Pcmap, False, NULL, 0, &(ncs->fg), 5)
+			&& XAllocColorCells(
+			/* plus 2 writeable cells (fvwm private) */
+			dpy, Pcmap, False, NULL, 0, &(ncs->tint), 2))
 		{
 			XColor color;
 			XColor *colorp;
@@ -1323,6 +1444,10 @@ void alloc_colorset(int n)
 			MyXParseColor(black, &color);
 			color.pixel = ncs->tint;
 			XStoreColor(dpy, Pcmap, &color);
+			/* set the fg tint color */
+			MyXParseColor(black, &color);
+			color.pixel = ncs->fg_tint;
+			XStoreColor(dpy, Pcmap, &color);
 		}
 		/* otherwise allocate shared ones and turn off private flag */
 		else
@@ -1342,6 +1467,7 @@ void alloc_colorset(int n)
 				ncs->shadow = GetColor(black);
 				ncs->fgsh = GetColor(white);
 				ncs->tint = GetColor(black);
+				ncs->fg_tint = GetColor(black);
 				ncs->pixmap = XCreatePixmapFromBitmapData(
 					dpy, Scr.NoFocusWin,
 					&g_bits[4 * (nColorsets % 3)], 4, 4,
@@ -1358,12 +1484,15 @@ void alloc_colorset(int n)
 				ncs->shadow = GetShadow(ncs->bg);
 				ncs->fgsh = GetForeShadow(ncs->fg, ncs->bg);
 				ncs->tint = GetColor(black);
+				ncs->fg_tint = GetColor(black);
 			}
 			/* set flags for fg contrast, bg average */
 			/* in case just a pixmap is given */
 			ncs->color_flags = FG_CONTRAST | BG_AVERAGE;
 		}
+		ncs->fg_saved = ncs->fg;
 		ncs->fg_alpha = 100;
+		ncs->fg_tint_percent = -1;
 		nColorsets++;
 	}
 }

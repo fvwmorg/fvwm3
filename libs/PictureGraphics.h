@@ -87,8 +87,7 @@ void PGraphicsTileRectangle(Display *dpy, Window win,
 /*
  * <pubfunc>PGraphicsTintDrawable
  * <description>
- * PGraphicsTintDrawable tint a rectangle of a dawable. It needs the
- * Xrender extension.
+ * PGraphicsTintDrawable tint a rectangle of a dawable.
  * </description>
  * <arg>
  * dpy:            Specifies the connection to the X server.
@@ -103,8 +102,8 @@ void PGraphicsTileRectangle(Display *dpy, Window win,
  * dest_w, dest_h: Specify the height and the width of the destination rectangle.
  * </arg>
  */
-void PGraphicsTintRectangle(Display *dpy, Window win, int tint_percent,
-			    Pixel tint, Pixmap mask, Drawable d,
-			    int dest_x, int dest_y, int dest_w, int dest_h);
-
+void PGraphicsTintRectangle(
+	Display *dpy, Window win, int tint_percent, Pixel tint,
+	Drawable d, Pixmap mask, int depth, GC gc, int color_limit,
+	int dest_x, int dest_y, int dest_w, int dest_h);
 #endif
