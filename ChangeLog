@@ -1,3 +1,6 @@
+1999-04-24  Bob Woodside  <proteus@pcnet.com>
+	* fvwm/Makefile.am: added stack.c & stack.h.
+
 1999-04-24  Matthias Clasen  <clasen@mathematik.uni-freiburg.de>
 
 	* fvwm/virtual.c (changeDesks): update number of workspaces,
