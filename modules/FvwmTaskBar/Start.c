@@ -27,7 +27,7 @@
 
 extern Display *dpy;
 extern Window Root, win;
-extern FlocaleFont *FButtonFont;
+extern FlocaleFont *FButtonFont, *FSelButtonFont;
 extern char *Module;
 extern int Clength;
 extern char *ImagePath;
@@ -108,7 +108,7 @@ Bool StartButtonParseConfig(char *tline)
 			/* declarin caption twice, ignore */
 			break;
 		}
-		CopyString(&(First_Start_Button->buttonCaption), rest);    
+		CopyString(&(First_Start_Button->buttonCaption), rest);
 		break;
 	case 1: /* StartMenu */
 		rest = ParseButtonOptions(rest, &mouseButton);
@@ -122,7 +122,7 @@ Bool StartButtonParseConfig(char *tline)
 		}
 		else if (First_Start_Button->isStartButton == FALSE)
 		{
-			/* shortcut button has been declared before start 
+			/* shortcut button has been declared before start
 			 * button */
 			tempPtr = (StartAndLaunchButtonItem*) safemalloc(
 				sizeof(StartAndLaunchButtonItem));
@@ -160,14 +160,14 @@ Bool StartButtonParseConfig(char *tline)
 			StartAndLaunchButtonItemInit(tempPtr);
 			tempPtr->tail = First_Start_Button;
 			First_Start_Button = tempPtr;
-			First_Start_Button->isStartButton = TRUE;      
+			First_Start_Button->isStartButton = TRUE;
 		}
 		else if (First_Start_Button->buttonIconFileName != NULL)
 		{
 			/* declaring icon twice, ignore */
 			break;
 		}
-		CopyString(&(First_Start_Button->buttonIconFileName), rest);   
+		CopyString(&(First_Start_Button->buttonIconFileName), rest);
 		break;
 	case 3: /* StartCommand */
 		rest = ParseButtonOptions(rest, &mouseButton);
@@ -181,14 +181,14 @@ Bool StartButtonParseConfig(char *tline)
 		}
 		else if (First_Start_Button->isStartButton == FALSE)
 		{
-			/* shortcut button has been declared before start 
+			/* shortcut button has been declared before start
 			 * button */
 			tempPtr = (StartAndLaunchButtonItem*)safemalloc(
 				sizeof(StartAndLaunchButtonItem));
 			StartAndLaunchButtonItemInit(tempPtr);
 			tempPtr->tail = First_Start_Button;
 			First_Start_Button = tempPtr;
-			First_Start_Button->isStartButton = TRUE;      
+			First_Start_Button->isStartButton = TRUE;
 		}
 		tmpStrPtr =
 			(mouseButton ?
@@ -239,7 +239,7 @@ Bool StartButtonParseConfig(char *tline)
 					&(Last_Start_Button->buttonCaption),
 					tokens[j+1]);
 				titleRecorded=1;
-			}	
+			}
 			else if (strncmp(tokens[k], "Icon", 4)==0)
 			{
 				tokens[j+1] = tokens[k] + ((sizeof(char))*4);
@@ -260,7 +260,7 @@ Bool StartButtonParseConfig(char *tline)
 					tmpStrPtr =
 						&(Last_Start_Button->
 						  buttonStartCommands
-						  [mouseButton-1]);	
+						  [mouseButton-1]);
 				}
 				else
 				{
@@ -417,7 +417,7 @@ void StartButtonInit(int height)
 	  else if (p != NULL)
 	  {
 		  /* just icon */
-		  pw = p->width + 8; 
+		  pw = p->width + 8;
 	  }
 	  else
 	  {
@@ -425,8 +425,21 @@ void StartButtonInit(int height)
 		  pw = 10;
 	  }
 
-    tempPtr->buttonItem = (Button *)ButtonNew(tempPtr->buttonCaption, p, BUTTON_UP,0);
-    tempPtr->width = FlocaleTextWidth(FButtonFont, tempPtr->buttonCaption, strlen(tempPtr->buttonCaption)) + pw; 
+    tempPtr->buttonItem = (Button *)ButtonNew(
+	    tempPtr->buttonCaption, p, BUTTON_UP,0);
+    if (tempPtr->isStartButton)
+    {
+	    StartButton = tempPtr->buttonItem;
+	    tempPtr->width = FlocaleTextWidth(
+		    FSelButtonFont, tempPtr->buttonCaption,
+		    strlen(tempPtr->buttonCaption)) + pw;
+    }
+    else
+    {
+	    tempPtr->width = FlocaleTextWidth(
+		    FButtonFont, tempPtr->buttonCaption,
+		    strlen(tempPtr->buttonCaption)) + pw;
+    }
     tempPtr->height = height;
     StartAndLaunchButtonsWidth += tempPtr->width;
     tempPtr=tempPtr->tail;
@@ -457,7 +470,7 @@ int StartButtonUpdate(const char *title, int index, int state)
   if(index != -1)
   {
     for(i=0; i<index; i++)
-      tempPtr = tempPtr->tail;      
+      tempPtr = tempPtr->tail;
     ButtonUpdate(tempPtr->buttonItem, title, state);
   }
   else
@@ -477,7 +490,7 @@ int StartButtonUpdate(const char *title, int index, int state)
   if(index != -1)
   {
     for(i=0; i<index; i++)
-      tempPtr = tempPtr->tail;      
+      tempPtr = tempPtr->tail;
     ButtonUpdate(tempPtr->buttonItem, title, state);
   }
   else
@@ -493,7 +506,7 @@ int StartButtonUpdate(const char *title, int index, int state)
   {
     if (tempPtr->buttonItem->needsupdate)
       return 1;
-    tempPtr = tempPtr->tail;    
+    tempPtr = tempPtr->tail;
   }
   return 0;
 }
@@ -520,7 +533,7 @@ void StartButtonDraw(int force, XEvent *evp)
 			while((tempPtr2 != NULL) && (j<i))
 			{
 				tempsum+=tempPtr2->width;
-				tempPtr2 = tempPtr2->tail;	
+				tempPtr2 = tempPtr2->tail;
 				j++;
 			}
 			if (!(tempPtr->isStartButton))
@@ -559,14 +572,14 @@ int MouseInStartButton(int x, int y, int *whichButton, Bool *startButtonPressed)
       while((tempPtr2 != NULL) && (j<i))
       {
 	tempsum+=tempPtr2->width;
-	tempPtr2 = tempPtr2->tail;	
+	tempPtr2 = tempPtr2->tail;
 	j++;
-      }     
+      }
       if (x >= tempsum && x < tempsum+tempPtr->width && y > 0 && y < First_Start_Button->height)
       {
 	*whichButton = i;
 	if(tempPtr->isStartButton)
-	  *startButtonPressed = TRUE;	  
+	  *startButtonPressed = TRUE;
 	return 1;
       }
       tempPtr = tempPtr->tail;
@@ -621,7 +634,7 @@ void StartAndLaunchButtonItemInit(StartAndLaunchButtonItem *item)
   item->buttonCommand = NULL;
   item->buttonStartCommand = NULL;
   item->buttonCaption = NULL;
-  item->buttonIconFileName = NULL;  
+  item->buttonIconFileName = NULL;
   item->buttonToolTip = NULL;
   for (i=0; i < NUMBER_OF_MOUSE_BUTTONS; i++)
   {

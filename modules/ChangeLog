@@ -1,3 +1,9 @@
+2003-06-24  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* FvwmTaskBar/Start.c (StartButtonInit):
+	use font for selected buttons in Start button; modified patch by David
+	Lazar
+
 2003-06-19  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* FvwmDebug/Makefile.am:

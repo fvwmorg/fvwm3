@@ -2,6 +2,9 @@ To find out what should go in this file, see "Information For
 Maintainers of GNU Software" (maintain.texi), the section called
 "Recording Changes".
 
+David Lazar:
+Use font for selected buttons in Start button.
+
 Scott Smedley:
 Some Perl/Tk programming.
 
