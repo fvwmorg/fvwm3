@@ -3129,7 +3129,7 @@ static void MaximizeHeight(
     }
     x21 = g.x;
     y21 = g.y;
-    x22 = y21 + g.width;
+    x22 = x21 + g.width;
     y22 = y21 + g.height;
     if (is_sticky)
     {
@@ -3194,7 +3194,7 @@ static void MaximizeWidth(
     }
     x21 = g.x;
     y21 = g.y;
-    x22 = y21 + g.width;
+    x22 = x21 + g.width;
     y22 = y21 + g.height;
     if (is_sticky)
     {

@@ -1,5 +1,8 @@
 2002-03-18  Dominik Vogt  <dominik.vogt@gmx.de>
 
+	* fvwm/move_resize.c (MaximizeHeight):
+	fixed bug in "grow" option of the Maximize command
+
 	* fvwm/geometry.h:
 	fixed broken prototype for get_title_font_size_and_offset
 
