@@ -1,7 +1,8 @@
 2003-05-22  olicha  <olivier.chapuis@free.fr>
 
 	* purify/purify.fvwm2rc:
-	A few adjustement
+	A few adjustments. Added png and xbm images in decor tests
+	
 
 2003-04-22  Mikhael Goikhman  <migo@homemail.com>
 

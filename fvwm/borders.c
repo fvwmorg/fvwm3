@@ -1300,7 +1300,8 @@ static void border_fill_pixmap_background(
 				bg->pixmap.g.width, bg->pixmap.g.height,
 				bg->pixmap.depth,
 				bg->pixmap.stretch_w, bg->pixmap.stretch_h,
-				Scr.BordersGC);
+				(bg->pixmap.depth == 1)?
+				Scr.MonoGC:Scr.BordersGC);
 		}
 		if (bg->pixmap.shape)
 		{

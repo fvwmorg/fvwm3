@@ -416,7 +416,7 @@ AddToFunc BugOpts-Func
  + I BugOpts RaiseOverUnmanaged False
  + I BugOpts RaiseOverUnmanaged toggle
  + I BugOpts RaiseOverUnmanaged what ever
- + I BugOpts RaiseOverUnmanaged
+ + I BugOpts RaiseOverUnmanaged False
  + I BugOpts FlickeringQtDialogsWorkaround True
  + I BugOpts FlickeringQtDialogsWorkaround False
  + I BugOpts FlickeringQtDialogsWorkaround toggle
@@ -1308,8 +1308,8 @@ AddToFunc Style-Func
  + I StyleAndUpdate "window*" Icon test1.xpm
  + I StyleAndUpdate "window1" Icon test.png
  + I StyleAndUpdate "window1" Icon test.png
-# + I StyleAndUpdate "window2" Icon xtrek_fed_e.xbm
-# + I StyleAndUpdate "window2" Icon xtrek_fed_e.xbm
+ + I StyleAndUpdate "window2" Icon xtrek_fed_e.xbm
+ + I StyleAndUpdate "window2" Icon xtrek_fed_e.xbm
  + I StyleAndUpdate IconSize 56 56
  + I StyleAndUpdate IconSize 10 10 120 120
  + I StyleAndUpdate IconSize 10 10
@@ -1327,8 +1327,8 @@ AddToFunc Style-Func
  + I StyleAndUpdate "window*" MiniIcon test1.xpm
  + I StyleAndUpdate "window1" MiniIcon test.png
  + I StyleAndUpdate "window1" MiniIcon test.png
-# + I StyleAndUpdate "window2" MiniIcon xtrek_fed_e.xbm
-# + I StyleAndUpdate "window2" MiniIcon xtrek_fed_e.xbm
+ + I StyleAndUpdate "window2" MiniIcon xtrek_fed_e.xbm
+ + I StyleAndUpdate "window2" MiniIcon xtrek_fed_e.xbm
  + I StyleAndUpdate "window*" IconBox 1 5 100 500, IconGrid -10 10, IconFill
  + I StyleAndUpdate "window*" IconBox 1 5 100 500, IconGrid -0 10
  + I StyleAndUpdate "window*" IconBox 400 300 100 500, IconGrid -0 10
@@ -1943,9 +1943,13 @@ AddTest "Test AddButtonStylePixmaps" AddButtonStylePixmaps-Func
 AddToFunc AddButtonStylePixmaps-Func
  + I AddButtonStyleAndUpdate 1 Pixmap test1.xpm
  + I AddButtonStyleAndUpdate 1 Pixmap test2.xpm
+ + I AddButtonStyleAndUpdate 1 Pixmap test.png
+ + I AddButtonStyleAndUpdate 1 Pixmap xtrek_fed_e.xbm
  + I AddButtonStyleAndUpdate 1 TiledPixmap test2.xpm
  + I AddButtonStyleAndUpdate 1 TiledPixmap test2.xpm
  + I AddButtonStyleAndUpdate 1 TiledPixmap test1.xpm
+ + I AddButtonStyleAndUpdate 1 TiledPixmap test.png
+ + I AddButtonStyleAndUpdate 1 TiledPixmap xtrek_fed_e.xbm
  + I AddButtonStyleAndUpdate 1 ActiveUp (Pixmap test3.xpm) ActiveDown (Pixmap test2.xpm)
  + I AddButtonStyleAndUpdate 1 Inactive Pixmap nonexistent.xpm
  + I AddButtonStyleAndUpdate 1 Inactive Pixmap test3.xpm
@@ -2018,8 +2022,12 @@ AddTest "Test AddTitleStylePixmaps" AddTitleStylePixmaps-Func
 AddToFunc AddTitleStylePixmaps-Func
  + I AddTitleStyleAndUpdate Pixmap test1.xpm
  + I AddTitleStyleAndUpdate Pixmap test2.xpm
+ + I AddTitleStyleAndUpdate Pixmap test.png
+ + I AddTitleStyleAndUpdate Pixmap xtrek_fed_e.xbm
  + I AddTitleStyleAndUpdate TiledPixmap test2.xpm
  + I AddTitleStyleAndUpdate TiledPixmap test2.xpm
+ + I AddTitleStyleAndUpdate TiledPixmap test.png
+ + I AddTitleStyleAndUpdate TiledPixmap xtrek_fed_e.xbm
  + I AddTitleStyleAndUpdate TiledPixmap test1.xpm
  + I AddTitleStyleAndUpdate ActiveUp (Pixmap test3.xpm) ActiveDown (Pixmap test2.xpm)
  + I AddTitleStyleAndUpdate Inactive Pixmap nonexistent.xpm
@@ -2087,6 +2095,10 @@ AddToFunc BorderStyle-Func
  + I BorderStyleAndUpdate Inactive -- HiddenHandles NoInset
 # Clear NoInset flag
  + I BorderStyleAndUpdate Inactive -- !NoInset
+ + I BorderStyleAndUpdate Active TiledPixmap test.png
+ + I BorderStyleAndUpdate Inactive TiledPixmap xtrek_fed_e.xbm
+ + I BorderStyleAndUpdate Active TiledPixmap test.png
+ + I BorderStyleAndUpdate Inactive TiledPixmap xtrek_fed_e.xbm
  + I BorderStyleAndUpdate Active TiledPixmap test1.xpm
  + I BorderStyleAndUpdate Inactive TiledPixmap test2.xpm
  + I BorderStyleAndUpdate Active -- HiddenHandles NoInset
@@ -2167,8 +2179,12 @@ AddTest "Test ButtonStylePixmaps" ButtonStylePixmaps-Func
 AddToFunc ButtonStylePixmaps-Func
  + I ButtonStyleAndUpdate 1 Pixmap test1.xpm
  + I ButtonStyleAndUpdate 1 Pixmap test2.xpm
+ + I ButtonStyleAndUpdate 1 Pixmap test.png
+ + I ButtonStyleAndUpdate 1 Pixmap xtrek_fed_e.xbm
  + I ButtonStyleAndUpdate 1 TiledPixmap test2.xpm
  + I ButtonStyleAndUpdate 1 TiledPixmap test2.xpm
+ + I ButtonStyleAndUpdate 1 TiledPixmap test.png
+ + I ButtonStyleAndUpdate 1 TiledPixmap xtrek_fed_e.xbm
  + I ButtonStyleAndUpdate 1 TiledPixmap test1.xpm
  + I ButtonStyleAndUpdate 1 ActiveUp (Pixmap test3.xpm) ActiveDown (Pixmap test2.xpm)
  + I ButtonStyleAndUpdate 1 Inactive Pixmap nonexistent.xpm
@@ -2290,8 +2306,12 @@ AddTest "Test pixmaps" pixmaps-Func
 AddToFunc pixmaps-Func
  + I TitleStyleAndUpdate Pixmap test1.xpm
  + I TitleStyleAndUpdate Pixmap test2.xpm
+ + I TitleStyleAndUpdate Pixmap test.png
+ + I TitleStyleAndUpdate Pixmap xtrek_fed_e.xbm
  + I TitleStyleAndUpdate TiledPixmap test2.xpm
  + I TitleStyleAndUpdate TiledPixmap test2.xpm
+ + I TitleStyleAndUpdate TiledPixmap test.png
+ + I TitleStyleAndUpdate TiledPixmap xtrek_fed_e.xbm
  + I TitleStyleAndUpdate TiledPixmap test1.xpm
  + I TitleStyleAndUpdate ActiveUp (Pixmap test3.xpm) ActiveDown (Pixmap test2.xpm)
  + I TitleStyleAndUpdate Inactive Pixmap nonexistent.xpm
@@ -3432,7 +3452,7 @@ AddToFunc Cleanup-Func
  + I All (window_shaded) destroy
  + I beep
  + I Echo ------------ ok ------------
- + I quit poesfj apäuofw ük-lnlöiooüp. ..a,sjdms.,x-,
+# + I quit poesfj apäuofw ük-lnlöiooüp. ..a,sjdms.,x-,
 
 DestroyFunc PurifyInit
 AddToFunc   PurifyInit
