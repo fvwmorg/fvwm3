@@ -499,11 +499,11 @@ and MailFunction is
 AddToFunc MailFunction
  + "I" Next [$0] Iconify -1
  + "I" Next [$0] focus
- + "I" None [$0] Exec $0 $1
+ + "I" None [$0] Exec exec $0 $1
 .EE
 Then the last line of the function becomes
 .EX
- + "I" None [xmh] Exec xmh -font fixed
+ + "I" None [xmh] Exec exec xmh -font fixed
 .EE
 The expansion is performed as the function is executed, so you can use the
 same function with all sorts of different arguments.  I could use
@@ -525,15 +525,15 @@ Begins or adds to a menu definition.  Typically a menu definition looks
 like this:
 .EX
 AddToMenu Utilities "Utilities" Title
- + "Xterm"         Exec  xterm -e tcsh
- + "Rxvt"          Exec  rxvt
+ + "Xterm"         Exec  exec xterm -e tcsh
+ + "Rxvt"          Exec  exec rxvt
  + "Remote Logins" Popup Remote-Logins
- + "Top"           Exec  rxvt -T Top -n \\
+ + "Top"           Exec  exec rxvt -T Top -n \\
                    Top -e top
- + "Calculator"    Exec  xcalc
- + "Xman"          Exec  xman
- + "Xmag"          Exec  xmag
- + "emacs"         Exec  xemacs
+ + "Calculator"    Exec  exec xcalc
+ + "Xman"          Exec  exec xman
+ + "Xmag"          Exec  exec xmag
+ + "emacs"         Exec  exec xemacs
  + "Mail"          MailFunction \\
                    xmh "-font fixed"
  + ""              Nop
@@ -573,12 +573,12 @@ If the menu-label contains a sub-string which is set off by stars,
 then the text between the stars is expected to be the name of an
 xpm-icon or bitmap-file to insert in the menu.  For example
 .EX
- + "Calculator*xcalc.xpm*" Exec xcalc
+ + "Calculator*xcalc.xpm*" Exec exec xcalc
 .EE
 inserts a menu item labeled "calculator" with a picture of a
 calculator above it.  The following:
 .EX
- + "*xcalc.xpm*"           Exec xcalc
+ + "*xcalc.xpm*"           Exec exec xcalc
 .EE
 Omits the "Calculator" label, but leaves the picture.
 
@@ -586,12 +586,12 @@ If the menu-label contains a sub-string which is set off by percent signs,
 then the text between the percent signs is expected to be the name of an
 xpm-icon or bitmap-file to insert to the left of the menu label.  For example
 .EX
- + "Calculator%xcalc.xpm%" Exec xcalc
+ + "Calculator%xcalc.xpm%" Exec exec xcalc
 .EE
 inserts a menu item labeled "calculator" with a picture of a
 calculator to the left.  The following:
 .EX
- + "%xcalc.xpm%"           Exec xcalc
+ + "%xcalc.xpm%"           Exec exec xcalc
 .EE
 Omits the "Calculator" label, but leaves the picture.  The pictures
 used with this feature should be small (perhaps 16x16).
@@ -1204,17 +1204,29 @@ around at the edge of the desktop.
 
 
 .IP "Exec \fIcommand\fP"
-Executes \fIcommand\fP.  Exec does not require an additional 'exec' at
-the beginning or '&' at the end of the command.
+Executes \fIcommand\fP.  You should not use an ampersand ``&'' at the
+end of the command.  You probably want to use an additional ``exec'' at
+the beginning of \fIcommand\fP.  Without that, the shell that fvwm
+invokes to run your command will stay until the command exits.  In
+effect, you'll have twice as many processes running as you need.
+Note that some shells are smart enough to avoid this, but it never hurts
+to include the ``exec'' anyway.
 
 The following example binds function key F1 in the root window, with
 no modifiers, to the exec function.  The program rxvt will be started
 with an assortment of options.
 .EX
-Key F1 R N Exec rxvt -fg yellow -bg blue \\
+Key F1 R N Exec exec rxvt -fg yellow -bg blue \\
   -e /bin/tcsh
 .EE
 
+Note that this function doesn't wait for \fIcommand\fP to complete, so
+things like:
+.EX
+Exec "echo AddToMenu ... > /tmp/file"
+Read /tmp/file
+.EE
+won't work reliably.
 
 .IP "ExecUseShell [ \fIshell\fP ]"
 Makes the Exec command use the specified shell, or the value of the
@@ -1227,11 +1239,12 @@ ExecUseShell /usr/local/bin/tcsh
 
 
 .IP "FlipFocus"
-Executes a \fIFocus\fP command as if the user had used the pointer to select
-the window.  This command alters the order of the windowlist in the same way
-as clicking in a window to focus, i.e. the target window is removed from the
-windowlist and placed at the start. This command is recommended for use with the
-\fIDirection\fP command and in the function invoked from \fIWindowList\fP.
+Executes a \fIFocus\fP command as if the user had used the pointer to
+select the window.  This command alters the order of the windowlist in
+the same way as clicking in a window to focus, i.e. the target window is
+removed from the windowlist and placed at the start. This command is
+recommended for use with the \fIDirection\fP command and in the function
+invoked from \fIWindowList\fP.
 
 
 .IP "Focus"
@@ -1784,9 +1797,9 @@ AddToMenu Quit-Verify
 
 AddToMenu RootMenu "Root Menu" Title
  + "Open XTerm Window" Popup NewWindowMenu
- + "Login as Root"     Exec xterm        \\
-                       -fg green -T Root \\
-                       -n Root -e su -
+ + "Login as Root"     Exec exec xterm \\
+                                 -fg green -T Root \\
+                                 -n Root -e su -
  + "Login as Anyone"   Popup AnyoneMenu
  + "Remote Hosts"      Popup HostMenu
  + ""                  Nop
@@ -2348,7 +2361,7 @@ AddToFunc InitFunction
  + "I" exec xterm -geometry 80x64+0+0
  + "I" Wait xterm
  + "I" Desk 0 2
- + "I" Exec xmh -font fixed -geometry \\
+ + "I" Exec exec xmh -font fixed -geometry \\
        507x750+0+0
  + "I" Wait xmh
  + "I" Desk 0 0
