@@ -119,7 +119,7 @@ void CreateIconWindow(FvwmWindow *tmp_win, int def_x, int def_y)
     GetIconBitmap(tmp_win);
 
   /* figure out the icon window size */
-  if (!HAS_NO_ICON_TITLE(tmp_win))
+  if ((!HAS_NO_ICON_TITLE(tmp_win)) && (tmp_win->icon_font.font != 0))
   {
     tmp_win->icon_t_width =
       XTextWidth(tmp_win->icon_font.font, tmp_win->icon_name,

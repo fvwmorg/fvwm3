@@ -1,184 +1,219 @@
+# All tests are defined as functions, added to a menu and added to
+# the function that can run all tests.
+
+# Destroy/AddTo in 1 line:
+DestroyFunc CreateFunc
+AddToFunc CreateFunc
++ I DestroyFunc $0
++ I AddToFunc $0
+
+# Log:
 DestroyFunc Log
 AddToFunc Log I Exec echo "### `date`: $0 ###"
 
-########### PATH section -- must be first #############
+# Init TestMenu and all tests function TestFunc:
+DestroyMenu TestMenu
+AddToMenu TestMenu "=== TestMenu ===" Title
+AddToMenu TestMenu "Run all tests" function TestFunc
+# Give the TestMenu a distinctive Style:
+DestroyMenuStyle TMS
+MenuStyle TMS fvwm, background cornflowerblue, foreground white, Hilight3DThick
+MenuStyle TMS AutomaticHotkeys, BorderWidth 5, Font 9x15bold
+ChangeMenuStyle TMS TestMenu
+DestroyFunc TestFunc
+
+# Function to define a test:
+# Arg 0 Menu Entry/Logged test name
+# Arg 1 Function that runs the test
+# Note: In normal use, After AddTest, theres another
+# "AddToFunc" even though this
+# function could supply it.  (I think.)
+CreateFunc AddTest
++ I AddToMenu TestMenu "$0" function $1
++ I AddToFunc TestFunc I Function Log $0
++ I AddToFunc TestFunc I Function $1
 
 
-Log "Test ImagePath"
+# Now start defining test functions:
 
-ImagePath
-ImagePath
-ImagePath /usr/lib/X11/icons/pixmaps:+
-ImagePath		/usr/lib/X11/icons/pixmaps:+
-ImagePath /home/tim/pics/xpm/16:/home/tim/pics/xbm/16:/home/tim/pics/xpm/21:/home/tim/pics/xpm/32:/home/tim/pics/xpm/46:/home/tim/pics/xpm/48:/home/tim/pics/xpm:/home/tim/pics/tiles:+
-ImagePath /root/icons:/usr/X11R6/include/X11/pixmaps:/usr/X11R6/include/X11/bitmaps:/root/pixmaps:/root/gifs:/opt/kde/share/icons:+
-ImagePath /home/tim/pics/xpm/16:/home/tim/pics/xbm/16:/home/tim/pics/xpm/21:/home/tim/pics/xpm/32:/home/tim/pics/xpm/46:/home/tim/pics/xpm/48:/home/tim/pics/xpm:/home/tim/pics/tiles:+
-ImagePath /usr/X11R6/include/X11/3dpixmaps/small:/usr/X11R6/include/X11/susexpm/small:/usr/X11R6/include/X11/susexpm/normal:/usr/X11R6/include/X11/susexpm/mini:/usr/X11R6/include/X11/3dpixmaps/normal:/usr/X11R6/include/X11/pixmaps:/etc/dtpixmaps:+
-ImagePath /tmp:/usr/X11R6/include/X11/3dpixmaps/small:/usr/X11R6/include/X11/susexpm/small:/usr/X11R6/include/X11/susexpm/normal:/usr/X11R6/include/X11/susexpm/mini:/usr/X11R6/include/X11/3dpixmaps/normal:/usr/X11R6/include/X11/pixmaps:/etc/dtpixmaps:+
+# This one has to be first, other tests use it.
+AddTest "Test ImagePath" ImagePath-Func
+AddToFunc ImagePath
++ I ImagePath
++ I ImagePath
++ I ImagePath /usr/lib/X11/icons/pixmaps:+
++ I ImagePath		/usr/lib/X11/icons/pixmaps:+
++ I ImagePath /home/tim/pics/xpm/16:/home/tim/pics/xbm/16:/home/tim/pics/xpm/21:/home/tim/pics/xpm/32:/home/tim/pics/xpm/46:/home/tim/pics/xpm/48:/home/tim/pics/xpm:/home/tim/pics/tiles:+
++ I ImagePath /root/icons:/usr/X11R6/include/X11/pixmaps:/usr/X11R6/include/X11/bitmaps:/root/pixmaps:/root/gifs:/opt/kde/share/icons:+
++ I ImagePath /home/tim/pics/xpm/16:/home/tim/pics/xbm/16:/home/tim/pics/xpm/21:/home/tim/pics/xpm/32:/home/tim/pics/xpm/46:/home/tim/pics/xpm/48:/home/tim/pics/xpm:/home/tim/pics/tiles:+
++ I ImagePath /usr/X11R6/include/X11/3dpixmaps/small:/usr/X11R6/include/X11/susexpm/small:/usr/X11R6/include/X11/susexpm/normal:/usr/X11R6/include/X11/susexpm/mini:/usr/X11R6/include/X11/3dpixmaps/normal:/usr/X11R6/include/X11/pixmaps:/etc/dtpixmaps:+
++ I ImagePath /tmp:/usr/X11R6/include/X11/3dpixmaps/small:/usr/X11R6/include/X11/susexpm/small:/usr/X11R6/include/X11/susexpm/normal:/usr/X11R6/include/X11/susexpm/mini:/usr/X11R6/include/X11/3dpixmaps/normal:/usr/X11R6/include/X11/pixmaps:/etc/dtpixmaps:+
 
-ImagePath +
-ImagePath /usr/local/share/icons/wm-icons:/usr/share/icons/wm-icons:+:/usr/include/X11/bitmaps:/usr/include/X11/pixmaps
-ImagePath $HOME/.wm-icons:+
-ImagePath +:/usr/share/icons/mini
-ImagePath +::::/opt/kde/share/icons:/opt/kde/share/apps/kappfinder/pics:
++ I ImagePath +
++ I ImagePath /usr/local/share/icons/wm-icons:/usr/share/icons/wm-icons:+:/usr/include/X11/bitmaps:/usr/include/X11/pixmaps
++ I ImagePath $HOME/.wm-icons:+
++ I ImagePath +:/usr/share/icons/mini
++ I ImagePath +::::/opt/kde/share/icons:/opt/kde/share/apps/kappfinder/pics:
 
 # Starting ManPage Order
-Log "Test ChangeMenuStyle"
-
+AddTest "Test ChangeMenuStyle" ChangeMenuStyle-Func
+AddToFunc ChangeMenuStyle-Func
 # Create new menu using the default style and show it.
 # Add Line to menu and pop it up.
-DestroyMenu Menu-ChangeMenuStyle
-MenuStyle * Background lightblue, Foreground black, ActiveFore Maroon, 
-MenuStyle * Fvwm, Font 6x13bold
-AddToMenu Menu-ChangeMenuStyle "ChangeMenuStyle test menu, using default style"
-+ "Press Escape to continue" Echo "Tester selected item on menu to proceed"
-Popup Menu-ChangeMenuStyle
++ I DestroyMenu Menu-ChangeMenuStyle
++ I MenuStyle * Background lightblue, Foreground black, ActiveFore Maroon, 
++ I MenuStyle * Fvwm, Font 6x13bold
++ I AddToMenu Menu-ChangeMenuStyle "ChangeMenuStyle test menu, using default style"
++ I AddToMenu Menu-ChangeMenuStyle "Press Escape to continue" Echo "Tester selected item on menu to proceed"
++ I Popup Menu-ChangeMenuStyle
 # Create a new MenuStyle, do ChangeMenuStyle to the new menu and show it
-MenuStyle NewStyle Background white, Foreground black, ActiveFore cyan
-MenuStyle NewStyle Win, Font 9x15bold
-ChangeMenuStyle NewStyle Menu-ChangeMenuStyle
-AddToMenu Menu-ChangeMenuStyle "ChangeMenuStyle: Menu now white/black/cyan, 9x15bold"
-+ "Press Escape to continue" Echo "Tester selected item on menu to proceed"
-Popup Menu-ChangeMenuStyle
++ I MenuStyle NewStyle Background white, Foreground black, ActiveFore cyan
++ I MenuStyle NewStyle Win, Font 9x15bold
++ I ChangeMenuStyle NewStyle Menu-ChangeMenuStyle
++ I AddToMenu Menu-ChangeMenuStyle "ChangeMenuStyle: Menu now white/black/cyan, 9x15bold"
++ I AddToMenu Menu-ChangeMenuStyle "Press Escape to continue" Echo "Tester selected item on menu to proceed"
++ I Popup Menu-ChangeMenuStyle
 # Syntax tests:
-Echo Start intentional errors
-ChangeMenuStyle
-ChangeMenuStyle none_such
-ChangeMenuStyle not_at_all same_here
-ChangeMenuStyle same_here same_here
-ChangeMenuStyle NewStyle
-ChangeMenuStyle NewStyle no_such_style
-ChangeMenuStyle NewStyle NewStyle
-ChangeMenuStyle " a large quoted arg with spaces at the front, middle, end"
-Echo End intentional errors
++ I Echo Start intentional errors
++ I ChangeMenuStyle
++ I ChangeMenuStyle none_such
++ I ChangeMenuStyle not_at_all same_here
++ I ChangeMenuStyle same_here same_here
++ I ChangeMenuStyle NewStyle
++ I ChangeMenuStyle NewStyle no_such_style
++ I ChangeMenuStyle NewStyle NewStyle
++ I ChangeMenuStyle " a large quoted arg with spaces at the front, middle, end"
++ I Echo End intentional errors
 
-Log "Test DestroyMenu"
+# Now Display the tests:
+Menu TestMenu
 
-Echo "The next test attempts to popup a menu thats been destroyed w. recreate"
-AddToMenu Menu-ChangeMenuStyle "ChangeMenuStyle: Attempt to pop destroyed menu"
-+ "Press Escape to continue" Echo "Tester selected item on menu to proceed"
-DestroyMenu recreate Menu-ChangeMenuStyle
-Popup Menu-ChangeMenuStyle
-AddToMenu Menu-ChangeMenuStyle "ChangeMenuStyle: Same Menu recreated" Title
-+ "Press Escape to continue" Echo "Tester selected item on menu to proceed"
+AddTest "Test DestroyMenu - needs ChangeMenuStyle" DestroyMenuStyle-Func
+AddToFunc DestroyMenuStyle-Func
++ I Echo "The next test attempts to popup a menu thats been destroyed w. recreate"
++ I AddToMenu Menu-ChangeMenuStyle "ChangeMenuStyle: Attempt to pop destroyed menu"
+I I AddToMenu Menu-ChangeMenuStyle "Press Escape to continue" Echo "Tester selected item on menu to proceed"
++ I DestroyMenu recreate Menu-ChangeMenuStyle
++ I Popup Menu-ChangeMenuStyle
++ I AddToMenu Menu-ChangeMenuStyle "ChangeMenuStyle: Same Menu recreated" Title
+I I AddToMenu Menu-ChangeMenuStyle "Press Escape to continue" Echo "Tester selected item on menu to proceed"
++ I Echo "The next test attempts to popup a menu thats been destroyed w/o recreate"
++ I AddToMenu Menu-ChangeMenuStyle "ChangeMenuStyle: Second Attempt to pop destroyed menu"
++ I AddToMenu Menu-ChangeMenuStyle "Press Escape to continue" Echo "Tester selected item on menu to proceed"
++ I DestroyMenu Menu-ChangeMenuStyle
++ I Popup Menu-ChangeMenuStyle
++ I # Syntax tests (note, doesn't produce errors):
++ I Echo Start intentional errors (note, doesn't produce message)
++ I DestroyMenu
++ I DestroyMenu MenuDoesntExist
++ I DestroyMenu MenuDoesntExist MenuDoesntExist
++ I DestroyMenu MenuDoesntExist MenuDoesntExistEither
++ I Echo End intentional errors (note, doesn't produce message)
 
-Echo "The next test attempts to popup a menu thats been destroyed w/o recreate"
-AddToMenu Menu-ChangeMenuStyle "ChangeMenuStyle: Second Attempt to pop destroyed menu"
-+ "Press Escape to continue" Echo "Tester selected item on menu to proceed"
-DestroyMenu Menu-ChangeMenuStyle
-Popup Menu-ChangeMenuStyle
+AddTest "Test DestroyMenuStyle" AddMenuStyle-Func
+AddToFunc AddMenuStyle-Func
++ I DestroyMenu Menu-DestroyMenuStyle
++ I AddToMenu Menu-DestroyMenuStyle "Menu for testing DestroyMenuStyle" Title
++ I AddToMenu Menu-DestroyMenuStyle "First shown using non-default style" Echo "Tester selected item on menu to proceed"
++ I AddToMenu Menu-DestroyMenuStyle "Press Escape to see it in default style" Echo "Tester selected item on menu to proceed"
++ I MenuStyle Menu_DestroyMenuStyle Foreground Black, BackGround CornFlowerBlue
++ I MenuStyle Menu_DestroyMenuStyle Font 9x15bold
++ I ChangeMenuStyle Menu_DestroyMenuStyle Menu-DestroyMenuStyle
++ I Popup Menu-DestroyMenuStyle
++ I AddToMenu Menu-DestroyMenuStyle "Now shown in the current default style" Echo "Tester selected item on menu to proceed"
++ I AddToMenu Menu-DestroyMenuStyle "Press Escape to continue" Echo "Tester selected item on menu to proceed"
++ I DestroyMenuStyle Menu_DestroyMenuStyle
++ I PopUp Menu-DestroyMenuStyle
++ I Echo Start intentional errors
++ I DestroyMenuStyle
++ I DestroyMenuStyle MenuStyleDoesntExist
++ I DestroyMenuStyle MenuStyleDoesntExist MenuStyleDoesntExist
++ I DestroyMenuStyle MenuStyleDoesntExist MenuStyleDoesntExistEither
++ I Echo "Attempt to destroy the same menu style twice"
++ I DestroyMenuStyle Menu_DestroyMenuStyle
++ I Echo "Attempt to destroy the default menu style"
++ I DestroyMenuStyle *
++ I Echo End intentional errors
 
-# Syntax tests (note, doesn't produce errors):
-Echo Start intentional errors (note, doesn't produce message)
-DestroyMenu
-DestroyMenu MenuDoesntExist
-DestroyMenu MenuDoesntExist MenuDoesntExist
-DestroyMenu MenuDoesntExist MenuDoesntExistEither
-Echo End intentional errors (note, doesn't produce message)
-
-Log "Test DestroyMenuStyle"
-
-DestroyMenu Menu-DestroyMenuStyle
-AddToMenu Menu-DestroyMenuStyle "Menu for testing DestroyMenuStyle" Title
-+ "First shown using non-default style" Echo "Tester selected item on menu to proceed"
-+ "Press Escape to see it in default style" Echo "Tester selected item on menu to proceed"
-MenuStyle Menu_DestroyMenuStyle Foreground Black, BackGround CornFlowerBlue
-MenuStyle Menu_DestroyMenuStyle Font 9x15bold
-ChangeMenuStyle Menu_DestroyMenuStyle Menu-DestroyMenuStyle
-Popup Menu-DestroyMenuStyle
-+ "Now shown in the current default style" Echo "Tester selected item on menu to proceed"
-+ "Press Escape to continue" Echo "Tester selected item on menu to proceed"
-DestroyMenuStyle Menu_DestroyMenuStyle
-PopUp Menu-DestroyMenuStyle
-Echo Start intentional errors
-DestroyMenuStyle
-DestroyMenuStyle MenuStyleDoesntExist
-DestroyMenuStyle MenuStyleDoesntExist MenuStyleDoesntExist
-DestroyMenuStyle MenuStyleDoesntExist MenuStyleDoesntExistEither
-Echo "Attempt to destroy the same menu style twice"
-DestroyMenuStyle Menu_DestroyMenuStyle
-Echo "Attempt to destroy the default menu style"
-DestroyMenuStyle *
-Echo End intentional errors
-
-Log "Test Menu Positioning"
-
-DestroyMenu Menu-Position
-AddToMenu Menu-Position "Menu Position tests" Title
-+ "Position Root 0p 0p"
-Menu Menu-Position Root 0p 0p
-+ "Position Root 100p 100p"
-Menu Menu-Position Root 100p 100p
-+ "Position Root 100 100"
-Menu Menu-Position Root 100 100
-+ "Position Root 50 100"
-Menu Menu-Position Root 50 100
+AddTest "Test Menu Positioning" MenuPositioning-Func
+AddToFunc MenuPositioning-Func
++ I DestroyMenu Menu-Position
++ I AddToMenu Menu-Position "Menu Position tests" Title
++ I AddToMenu Menu-Position "Position Root 0p 0p"
++ I Menu Menu-Position Root 0p 0p
++ I AddToMenu Menu-Position "Position Root 100p 100p"
++ I Menu Menu-Position Root 100p 100p
++ I AddToMenu Menu-Position "Position Root 100 100"
++ I Menu Menu-Position Root 100 100
++ I AddToMenu Menu-Position "Position Root 50 100"
++ I Menu Menu-Position Root 50 100
 #   Purposely more than 100%:
-+ "Position Root 150 10"
-Menu Menu-Position Root 150 10
-+ "Position Mouse -150p -50p"
-Menu Menu-Position Mouse -150p -50p
++ I AddToMenu Menu-Position "Position Root 150 10"
++ I Menu Menu-Position Root 150 10
++ I AddToMenu Menu-Position "Position Mouse -150p -50p"
++ I Menu Menu-Position Mouse -150p -50p
 # There are lots more of these...and lots more options for the menu command.
 # Need to add "menu command syntax errors...
 
-Log "Test MenuStyle"
-
+AddTest "Test MenuStyle" MenuStyle-Func
+AddToFunc MenuStyle-Func
 # Attempt to use every option:
-MenuStyle FvwmStyle Fvwm, BorderWidth 10, Foreground black, Background Gray
-MenuStyle FvwmStyle Greyed blue,  HilightBack, ActiveFore, Hilight3DThick
-MenuStyle FvwmStyle Animation, Font 9x15bold, PopupOffset 2 2, TitleWarp
-MenuStyle FvwmStyle TitleUnderlines0, SeparatorsLong, TrianglesSolid
-MenuStyle FvwmStyle AutomaticHotkeys, PopupAsRootMenu, RemoveSubmenus
-MenuStyle FvwmStyle SubmenusRight, SelectOnRelease Alt, VerticalItemSpacing -2
++ I MenuStyle FvwmStyle Fvwm, BorderWidth 10, Foreground black, Background Gray
++ I MenuStyle FvwmStyle Greyed blue,  HilightBack, ActiveFore, Hilight3DThick
++ I MenuStyle FvwmStyle Animation, Font 9x15bold, PopupOffset 2 2, TitleWarp
++ I MenuStyle FvwmStyle TitleUnderlines0, SeparatorsLong, TrianglesSolid
++ I MenuStyle FvwmStyle AutomaticHotkeys, PopupAsRootMenu, RemoveSubmenus
++ I MenuStyle FvwmStyle SubmenusRight, SelectOnRelease Alt, VerticalItemSpacing -2
 
-MenuStyle MwmStyle Mwm, HilightBackOff, ActiveForeOff, Hilight3DThin
-MenuStyle MwmStyle AnimationOff, PopupDelayed, TitleWarpOff
-MenuStyle MwmStyle Font -*-*-*-*-normal--*-160-75-75-m-50-iso8859-*
-MenuStyle MwmStyle TitleUnderlines1, SeparatorsShort, TrianglesRelief
-MenuStyle MwmStyle AutomaticHotkeysOff, PopupAsSubmenu, HoldSubmenus
-MenuStyle MwmStyle SubmenusLeft, VerticalTitleSpacing 5
++ I MenuStyle MwmStyle Mwm, HilightBackOff, ActiveForeOff, Hilight3DThin
++ I MenuStyle MwmStyle AnimationOff, PopupDelayed, TitleWarpOff
++ I MenuStyle MwmStyle Font -*-*-*-*-normal--*-160-75-75-m-50-iso8859-*
++ I MenuStyle MwmStyle TitleUnderlines1, SeparatorsShort, TrianglesRelief
++ I MenuStyle MwmStyle AutomaticHotkeysOff, PopupAsSubmenu, HoldSubmenus
++ I MenuStyle MwmStyle SubmenusLeft, VerticalTitleSpacing 5
 
 # Since the Theme module may not be running this Style may not display well:
-MenuStyle WinStyle MenuColorset 0, ActiveColorset 0, GreyedColorset 0
-MenuStyle WinStyle Hilight3DOff, PopupImmediately
++ I MenuStyle WinStyle MenuColorset 0, ActiveColorset 0, GreyedColorset 0
++ I MenuStyle WinStyle Hilight3DOff, PopupImmediately
 
-MenuStyle XStyle Hilight3DThickness -3, MenuFace Solid Maroon
-MenuStyle XStyle TitleUnderlines2, SidePic test1.xpm, SideColor cyan
++ I MenuStyle XStyle Hilight3DThickness -3, MenuFace Solid Maroon
++ I MenuStyle XStyle TitleUnderlines2, SidePic test1.xpm, SideColor cyan
 # I have no idea what this will do but its in the man page:
-MenuStyle XStyle ItemFormat "%.1|%3.2<%5i%5l%5l%5r%5i%1|%4s"
++ I MenuStyle XStyle ItemFormat "%.1|%3.2<%5i%5l%5l%5r%5i%1|%4s"
 
 # This only works for the default menuStyle:
-MenuStyle * PopupDelay 12, DoubleClickTime 2
-MenuStyle * PopupDelay 0
-DestroyMenu Main
-AddToMenu Main "Main menu - Test MenuStyles"
-+ "Popup FvwmStyle" Popup FvwmStyle
-+ "Popup MwmStyle" Popup MwmStyle
-+ "Popup WinStyle" Popup WinStyle
-+ "Popup XStyle" Popup XStyle item +0 -100m
-+ "To complete this test, Popup all the sub-menus"
-DestroyMenu FvwmStyle
-AddToMenu FvwmStyle "FvwmStyle Menu" Title
-+ "An item in the menu"
-ChangeMenuStyle FvwmStyle FvwmStyle
-DestroyMenu MwmStyle
-AddToMenu MwmStyle "MwmStyle Menu" Title
-+ "An item in the menu"
-ChangeMenuStyle MwmStyle MwmStyle
-DestroyMenu WinStyle
-AddToMenu WinStyle "WinStyle Menu" Title
-+ "An item in the menu"
-ChangeMenuStyle WinStyle WinStyle
-DestroyMenu XStyle
-AddToMenu XStyle "XStyle Menu" Title
-+ "An item in the menu"
-ChangeMenuStyle XStyle XStyle
-Menu Main
++ I MenuStyle * PopupDelay 12, DoubleClickTime 2
++ I MenuStyle * PopupDelay 0
++ I DestroyMenu Main
++ I AddToMenu Main "Main menu - Test MenuStyles"
++ I AddToMenu Main "Popup FvwmStyle" Popup FvwmStyle
++ I AddToMenu Main "Popup MwmStyle" Popup MwmStyle
++ I AddToMenu Main "Popup WinStyle" Popup WinStyle
++ I AddToMenu Main "Popup XStyle" Popup XStyle item +0 -100m
++ I AddToMenu Main "To complete this test, Popup all the sub-menus"
++ I DestroyMenu FvwmStyle
++ I AddToMenu FvwmStyle "FvwmStyle Menu" Title
++ I AddToMenu FvwmStyle "An item in the menu"
++ I ChangeMenuStyle FvwmStyle FvwmStyle
++ I DestroyMenu MwmStyle
++ I AddToMenu MwmStyle "MwmStyle Menu" Title
++ I AddToMenu MwmStyle "An item in the menu"
++ I ChangeMenuStyle MwmStyle MwmStyle
++ I DestroyMenu WinStyle
++ I AddToMenu WinStyle "WinStyle Menu" Title
++ I AddToMenu WinStyle "An item in the menu"
++ I ChangeMenuStyle WinStyle WinStyle
++ I DestroyMenu XStyle
++ I AddToMenu XStyle "XStyle Menu" Title
++ I AddToMenu XStyle "An item in the menu"
++ I ChangeMenuStyle XStyle XStyle
++ I Menu Main
 # Need to add a bunch of MenuStyle syntax errors.
 
-Log "Test Popup"
-Popup Main
-Popup I don't know
+AddTest "Test Popup" Popup-Func
+AddToFunc Popup-Func
++ I Popup Main
++ I Popup I don't know
 
 # End of "Menu oriented commands. The "title" menu command is already
 # tested.
@@ -186,221 +221,226 @@ Popup I don't know
 # For now, skip testing of the BugOpts command.
 # Log "Test BugOpts"
 
-Log "Test BusyCursor"
+AddTest "Test BusyCursor" BusyCursor-Func
+AddToFunc BusyCursor-Func
 # These are the defaults:
-BusyCursor DynamicMenu False, ModuleSynchronous False, Read False
-BusyCursor Recapture True, Wait False
++ I BusyCursor DynamicMenu False, ModuleSynchronous False, Read False
++ I BusyCursor Recapture True, Wait False
 # Turn all on:
-BusyCursor * True
++ I BusyCursor * True
 # Turn all off:
-BusyCursor * False
++ I BusyCursor * False
 # Set the opposite of the defaults:
-BusyCursor DynamicMenu True, ModuleSynchronous True, Read True
-BusyCursor Recapture False, Wait True
++ I BusyCursor DynamicMenu True, ModuleSynchronous True, Read True
++ I BusyCursor Recapture False, Wait True
 # Back to the defaults:
-BusyCursor DynamicMenu False, ModuleSynchronous False, Read False
-BusyCursor Recapture True, Wait False
++ I BusyCursor DynamicMenu False, ModuleSynchronous False, Read False
++ I BusyCursor Recapture True, Wait False
 
-Log "Test ClickTime"
-
-ClickTime
-ClickTime 0
-ClickTime    0 # blah
-ClickTime 	 	0
-ClickTime -1
-ClickTime 150
-ClickTime 150
-ClickTime 200
+AddTest "Test ClickTime" ClickTime-Func
+AddToFunc ClickTime-Func
++ I ClickTime
++ I ClickTime 0
++ I ClickTime    0 # blah
++ I ClickTime 	 	0
++ I ClickTime -1
++ I ClickTime 150
++ I ClickTime 150
++ I ClickTime 200
 # This resets the default:
-ClickTime
++ I ClickTime
 
-Log "Test COLOR LIMIT"
+AddTest "Test ColorLimit" ColorLimit-Func
+AddToFunc ColorLimit-Func
++ I Colorlimit
++ I ColorLimit 0
++ I ColorLimit   77
++ I ColorLimit		77
++ I ColorLimit 50
++ I ColorLimit 50
++ I ColorLimit 40
++ I ColorLimit -23
++ I ColorLimit 0
 
-ColorLimit
-ColorLimit 0
-ColorLimit   77
-ColorLimit		77
-ColorLimit 50
-ColorLimit 50
-ColorLimit 40
-ColorLimit -23
-ColorLimit 0
+AddTest "Test ColormapFocus" ColormapFocus-Func
+AddToFunc ColormapFocus-Func
++ I ColormapFocus
++ I ColormapFocus    FollowsFocus
++ I ColormapFocus 		FollowsFocus
++ I ColormapFocus FollowsMouse
++ I ColormapFocus FollowsFocus
++ I ColormapFocus FollowsFocus
++ I ColormapFocus FollowsMouse
 
-Log "Test COLORMAP FOCUS"
-
-ColormapFocus
-ColormapFocus    FollowsFocus
-ColormapFocus 		FollowsFocus
-ColormapFocus FollowsMouse
-ColormapFocus FollowsFocus
-ColormapFocus FollowsFocus
-ColormapFocus FollowsMouse
-
-Log "Test CURSOR STYLE"
-
-CursorStyle
-CursorStyle liewud
-CursorStyle BOTTOM 132
-CursorStyle BOTTOM_LEFT 133
-CursorStyle BOTTOM_RIGHT 134
-CursorStyle DEFAULT 64
-CursorStyle DEFAULT 68
-CursorStyle DEFAULT 68
-CursorStyle DESTROY 88
-CursorStyle DESTROY 88
-CursorStyle DESTROY 99
-CursorStyle DESTROY
-CursorStyle DEFAULT
+AddTest "Test CursorStyle" CursorStyle-Func
+AddToFunc CursorStyle-Func
++ I CursorStyle
++ I CursorStyle liewud
++ I CursorStyle BOTTOM 132
++ I CursorStyle BOTTOM_LEFT 133
++ I CursorStyle BOTTOM_RIGHT 134
++ I CursorStyle DEFAULT 64
++ I CursorStyle DEFAULT 68
++ I CursorStyle DEFAULT 68
++ I CursorStyle DESTROY 88
++ I CursorStyle DESTROY 88
++ I CursorStyle DESTROY 99
++ I CursorStyle DESTROY
++ I CursorStyle DEFAULT
 # These are the defaults from the man page:
-CursorStyle POSITION top_left_corner
-CursorStyle TITLE top_left_arrow
-CursorStyle SYS hand2
-CursorStyle MOVE fleur
-CursorStyle RESIZE sizing
-CursorStyle WAIT watch
-CursorStyle MENU top_left_arrow
-CursorStyle SELECT crosshair
-CursorStyle DESTROY pirate
-CursorStyle TOP top_side
-CursorStyle RIGHT right_side
-CursorStyle BOTTOM bottom_side
-CursorStyle LEFT left_side
-CursorStyle TOP_LEFT top_left_corner
-CursorStyle TOP_RIGHT top_right_corner
-CursorStyle BOTTOM_LEFT bottom_left_corner
-CursorStyle BOTTOM_RIGHT bottom_right_corner
-CursorStyle TOP_EDGE top_side
-CursorStyle RIGHT_EDGE right_side
-CursorStyle BOTTOM_EDGE bottom_side
-CursorStyle LEFT_EDGE left_side
-CursorStyle ROOT left_ptr
-CursorStyle STROKE plus
-CursorStyle MENU fleur yellow blue
-CursorStyle MENU fleur invalid_color_name another_invalid_name
++ I CursorStyle POSITION top_left_corner
++ I CursorStyle TITLE top_left_arrow
++ I CursorStyle SYS hand2
++ I CursorStyle MOVE fleur
++ I CursorStyle RESIZE sizing
++ I CursorStyle WAIT watch
++ I CursorStyle MENU top_left_arrow
++ I CursorStyle SELECT crosshair
++ I CursorStyle DESTROY pirate
++ I CursorStyle TOP top_side
++ I CursorStyle RIGHT right_side
++ I CursorStyle BOTTOM bottom_side
++ I CursorStyle LEFT left_side
++ I CursorStyle TOP_LEFT top_left_corner
++ I CursorStyle TOP_RIGHT top_right_corner
++ I CursorStyle BOTTOM_LEFT bottom_left_corner
++ I CursorStyle BOTTOM_RIGHT bottom_right_corner
++ I CursorStyle TOP_EDGE top_side
++ I CursorStyle RIGHT_EDGE right_side
++ I CursorStyle BOTTOM_EDGE bottom_side
++ I CursorStyle LEFT_EDGE left_side
++ I CursorStyle ROOT left_ptr
++ I CursorStyle STROKE plus
++ I CursorStyle MENU fleur yellow blue
++ I CursorStyle MENU fleur invalid_color_name another_invalid_name
 
-Log "Test DefaultColors"
-DefaultColors Pink Blue
-DefaultColors NotValid "On purpose"
-DefaultColors Pink "Also on purpose (second arg)"
-DefaultColors *
-DefaultColors
+AddTest "Test DefaultColors" DefaultColors-Func
+AddToFunc DefaultColors-Func
++ I DefaultColors Pink Blue
++ I DefaultColors NotValid "On purpose"
++ I DefaultColors Pink "Also on purpose (second arg)"
++ I DefaultColors *
++ I DefaultColors
 
-Log "Test DefaultColorset"
-DefaultColorset
-DefaultColorset junk
-DefaultColorset 0
-#DefaultColorset 1236789
-DefaultColorset -1
+AddTest "Test DefaultColorset" DefaultColorset-Func
+AddToFunc DefaultColorset-Func
++ I DefaultColorset
++ I DefaultColorset junk
++ I DefaultColorset 0
++ I DefaultColorset 1236789
++ I DefaultColorset -1
 
-Log "Test DefaultFont"
-DefaultFont
-DefaultFont 9x15bold
-DefaultFont badnameforafont
-DefaultFont "another bad name"
-DefaultFont two args
-DefaultFont
+AddTest "Test DefaultFont" DefaultFont-Func
+AddToFunc DefaultFont-Func
++ I DefaultFont
++ I DefaultFont 9x15bold
++ I DefaultFont badnameforafont
++ I DefaultFont "another bad name"
++ I DefaultFont two args
++ I DefaultFont
 
-Log "Test DefaultIcon"
-DefaultIcon
-DefaultIcon test1.xpm
-DefaultIcon
+AddTest "Test DefaultIcon" DefaultIcon-Func
+AddToFunc DefaultIcon-Func
++ I DefaultIcon
++ I DefaultIcon test1.xpm
++ I DefaultIcon
 
-Log "Test DefaultLayers"
-DefaultLayers
-DefaultLayers junk three times
-DefaultLayers 2 4 6
+AddTest "Test DefaultLayers" DefaultLayers-Func
+AddToFunc DefaultLayers-Func
++ I DefaultLayers
++ I DefaultLayers junk three times
++ I DefaultLayers 2 4 6
 
-Log "Test Emulate"
-Emulate Fvwm
-Emulate Mwm
-Emulate Win
-Emulate badname
+AddTest "Test Emulate" Emulate-Func
+AddToFunc Emulate-Func
++ I Emulate Fvwm
++ I Emulate Mwm
++ I Emulate Win
++ I Emulate badname
 
 # Note, there is no test for EscapeFunc
 # Note, there is no test for HilightColor, its obsolete
 # Note, there is no test for HilightColorset, its obsolete
 
-Log "Test ICON FONT"
-
-IconFont
-IconFont     9x15
-IconFont		9x15
-IconFont /nonexistent/foo/bar
-IconFont -adobe-helvetica-bold-r-*-*-*-140-*-*-*-*-*-*
-IconFont -adobe-helvetica-bold-r-*-*-*-140-*-*-*-*-*-*
-IconFont
+AddTest "Test IconFont" IconFont-Func
+AddToFunc IconFont-Func
++ I IconFont
++ I IconFont     9x15
++ I IconFont		9x15
++ I IconFont /nonexistent/foo/bar
++ I IconFont -adobe-helvetica-bold-r-*-*-*-140-*-*-*-*-*-*
++ I IconFont -adobe-helvetica-bold-r-*-*-*-140-*-*-*-*-*-*
++ I IconFont
 
 # Note, there is no test for IconPath, its obsolete
 # Note, the ImagePath test is not in ManPage order, look elsewhere
 # Note, there is no test for PixmapPath, its obsolete
+# Note, there is no test for WindowFont, its obsolete
 
 # Ending ManPage Order
 
 
-Log "Test CONFIG, DESTROY MODULE CONFIG"
+AddTest "Test ConfigDestroyModuleConfig" ConfigDestroyModuleConfig-Func
+AddToFunc ConfigDestroyModuleConfig-Func
++ I *dummymodule
++ I *dummymodule
++ I *dummymodule ÖLq- ö.qljüpßi+123
++ I *dummymodule1fooqmnld Ä"§k
++ I *dummymodule1p	o q#köpiü
++ I *dummymodule1wqwq  lkjöö 13
++ I *dummymodule1r 13r  g3w
++ I *dummymodule2r 13r  g3w
++ I *dummymodule2r 13r  g3w
++ I *dummymodule2 121 32
++ I *dummymodule2 qw 124
++ I DestroyModuleConfig
++ I DestroyModuleConfig
++ I DestroyModuleConfig  dummymodule1
++ I DestroyModuleConfig		dummymodule1
++ I DestroyModuleConfig dummymod*
++ I DestroyModuleConfig dummymod*
 
-*dummymodule
-*dummymodule
-*dummymodule ÖLq- ö.qljüpßi+123
-*dummymodule1fooqmnld Ä"§k
-*dummymodule1p	o q#köpiü
-*dummymodule1wqwq  lkjöö 13
-*dummymodule1r 13r  g3w
-*dummymodule2r 13r  g3w
-*dummymodule2r 13r  g3w
-*dummymodule2 121 32
-*dummymodule2 qw 124
++ I *dummymodule
++ I *dummymodule
++ I *dummymodule ÖLq- ö.qljüpßi+123
++ I *dummymodule1fooqmnld Ä"§k
++ I *dummymodule1p	o q#köpiü
++ I *dummymodule1wqwq  lkjöö 13
++ I *dummymodule1r 13r  g3w
++ I *dummymodule2r 13r  g3w
++ I *dummymodule2r 13r  g3w
++ I *dummymodule2 121 32
++ I *dummymodule2 qw 124
++ I DestroyModuleConfig *
 
-DestroyModuleConfig
-DestroyModuleConfig
-DestroyModuleConfig  dummymodule1
-DestroyModuleConfig		dummymodule1
-DestroyModuleConfig dummymod*
-DestroyModuleConfig dummymod*
-
-*dummymodule
-*dummymodule
-*dummymodule ÖLq- ö.qljüpßi+123
-*dummymodule1fooqmnld Ä"§k
-*dummymodule1p	o q#köpiü
-*dummymodule1wqwq  lkjöö 13
-*dummymodule1r 13r  g3w
-*dummymodule2r 13r  g3w
-*dummymodule2r 13r  g3w
-*dummymodule2 121 32
-*dummymodule2 qw 124
-
-DestroyModuleConfig *
-
-Log "Test FvwmBanner"
-
-*FvwmBannerTimeout 9182743120348908713204
-*FvwmBannerTimeout 1000
-*FvwmBannerTimeout 10
-
-Module
-Module
-Module FvwmBanner
-Module    FvwmBanner
-Module		FvwmBanner
+AddTest "Test FvwmBanner" FvwmBanner-Func
+AddToFunc FvwmBanner-Func
++ I *FvwmBannerTimeout 9182743120348908713204
++ I *FvwmBannerTimeout 1000
++ I *FvwmBannerTimeout 10
++ I Module
++ I Module
++ I Module FvwmBanner
++ I Module    FvwmBanner
++ I Module		FvwmBanner
 
 ################# GLOBAL COMMANDS ###################
 
-Log "Test AddToFunc, DestroyFunc, Function"
+AddTest "Test AddToFunc_DestroyFunc" AddToFunc_DestroyFunc-Func
+AddToFunc AddToFunc_DestroyFunc-Func
++ I AddToFunc
++ I AddToFunc   foo
++ I AddToFunc		bar
 
-AddToFunc
-AddToFunc   foo
-AddToFunc		bar
-
-AddToFunc   suicide
-AddToFunc		suicide
-AddToFunc suicide
- + "I" DestroyFunc suicide
- + "I" DestroyFunc suicide
- + "I" DestroyFunc suicide
-AddToFunc suicide
- + "I" DestroyFunc suicide
-function suicide
++ I AddToFunc   suicide
++ I AddToFunc		suicide
++ I AddToFunc suicide
++ I AddToFunc suicide "I" DestroyFunc suicide
++ I AddToFunc suicide "I" DestroyFunc suicide
++ I AddToFunc suicide "I" DestroyFunc suicide
++ I AddToFunc suicide
++ I AddToFunc suicide "I" DestroyFunc suicide
++ I function suicide
 
 ### coredump!!
 
@@ -420,951 +460,939 @@ function suicide
 # + "I" function grow1
 #function grow1
 
-addtofunc foo
- + "I" nop $w $d $1 $10298097
-function
-function   foo
-function		foo
-function nonexist
-
-DestroyFunc
-DestroyFunc    grow2
-DestroyFunc		grow1
-DestroyFunc loop1
-DestroyFunc loop2
-
-Log "Test TO MENU, DESTROY MENU, MENU, POPUP"
-
-AddToMenu menu1 "tt1" title top
-AddToMenu menu1 "t1" title
-AddToMenu menu1 "tt1"   title   top
-AddToMenu menu1 "t1"   title
-AddToMenu menu1 "tt1"		title		top
-AddToMenu menu1 "t1"		title
-+ "" ""
-+ "" nop
-+ "" nop
-+ "%test1.xpm%foo%test2.xpm%"
-+ "*test1.xpm*fo*test2.xpm*"
-+ "^test1.xpm^f^test2.xpm^"
-+ "@test1.xpm@oo@test2.xpm@"
-+ "%test1.xpm%foo%test2.xpm%"
-+ "*test1.xpm*fo*test2.xpm*"
-+ "^test1.xpm^f^test2.xpm^"
-+ "@test1.xpm@oo@test2.xpm@"
-+ "%test2.xpm%foo%test1.xpm%"
-+ "*test2.xpm*fo*test1.xpm*"
-+ "^test2.xpm^f^test1.xpm^"
-+ "@test2.xpm@oo@test1.xpm@"
-+ "xx" function xyz
-+ "xx" function xyz
-+ "xx" function xyz
-
-Menu menu1 root c+0 c+0 beep
-Menu menu1 root c+0 c+0 beep
-popup menu1 root c+0 c+0 beep
-popup menu1 root c+0 c+0 beep
-
-DestroyMenu
-DestroyMenu
-DestroyMenu		 menu1
-
-addtofunc makelongmenu
-+ "I" AddToMenu longmenu popup "short menu"
-+ "I" AddToMenu longmenu popup "recursive menu"
-+ "I" AddToMenu longmenu popup "short menu"
-+ "I" AddToMenu longmenu popup "recursive menu"
-+ "I" AddToMenu longmenu popup "short menu"
-+ "I" AddToMenu longmenu popup "recursive menu"
-+ "I" AddToMenu longmenu popup "short menu"
-+ "I" AddToMenu longmenu popup "recursive menu"
-+ "I" AddToMenu longmenu popup "short menu"
-+ "I" AddToMenu longmenu popup "recursive menu"
-+ "I" AddToMenu longmenu popup "short menu"
-+ "I" AddToMenu longmenu popup "recursive menu"
-+ "I" AddToMenu longmenu popup "short menu"
-+ "I" AddToMenu longmenu popup "recursive menu"
-+ "I" AddToMenu longmenu popup "short menu"
-+ "I" AddToMenu longmenu popup "recursive menu"
-+ "I" AddToMenu longmenu popup "short menu"
-+ "I" AddToMenu longmenu popup "recursive menu"
-+ "I" AddToMenu longmenu popup "short menu"
-+ "I" AddToMenu longmenu popup "recursive menu"
-
-AddToMenu longmenu "a very long menu" title
-Addtomenu "short menu" "a very short menu" title top
-+ "single item" nop
-Addtomenu "recursive menu" "recursion" title top
-+ "recurse" popup "recursive menu"
-
-makelongmenu
-makelongmenu
-makelongmenu
-makelongmenu
-makelongmenu
-makelongmenu
-makelongmenu
-makelongmenu
-makelongmenu
-makelongmenu
-
-Menu longmenu
-Popup longmenu
-DestroyMenu longmenu
-
-Log "Test BEEP"
-
-Beep
-Beep
-Beep ü30 23äö ü9823r ,l.öapü39
-
-Log "Test BorderStyle"
-
-BorderStyle
-BorderStyle -- HiddenHandles
-BorderStyle Active -- !HiddenHandles
-BorderStyle Active -- !HiddenHandles
-BorderStyle Simple
-BorderStyle Simple
-BorderStyle Inactive -- HiddenHandles NoInset
-BorderStyle Active TiledPixmap test1.xpm
-BorderStyle Inactive TiledPixmap test2.xpm
-BorderStyle Active -- HiddenHandles NoInset
-
-Log "Test TITLE STYLE"
-
-Log "Test TitleStyle justification and height"
-
-TitleStyle
-TitleStyle LEFtJusTiFied
-TitleStyle LEFtJusTiFied
-TitleStyle   centered
-TitleStyle		rightjustified
-TitleStyle heIGht 20
-TitleStyle heIGht 20
-TitleStyle leftjustified height 37
-TitleStyle leftjustified height 24
-
-Log "Test TitleStyles"
-
-TitleStyle -- raisED
-TitleStyle -- SUNk
-TitleStyle -- flat
-TitleStyle -- flat
-TitleStyle -- !flat
-TitleStyle Activeup -- raised
-TitleStyle Activeup -- raised
-TitleStyle activeDOWN -- sunk
-TitleStyle inactive -- flat
-TitleStyle inactive -- flat
-TitleStyle Activeup -- sunk
-TitleStyle simple
-TitleStyle simple
-TitleStyle default 3
-TitleStyle default 3
-TitleStyle solid blaCK
-TitleStyle solid blaCK
-TitleStyle simple
-
-Log "Test gradients"
-
-TitleStyle hgradient 16 green red
-TitleStyle hgradient 16 green red
-TitleStyle hgradient 16 red blue
-TitleStyle hgradient 32 red blue
-TitleStyle hgradient 128 red blue
-TitleStyle hgradient 2 red blue
-TitleStyle vgradient 16 green red
-TitleStyle vgradient 16 green red
-TitleStyle vgradient 16 red blue
-TitleStyle vgradient 32 red blue
-TitleStyle vgradient 128 red blue
-TitleStyle vgradient 2 red blue
-TitleStyle VGradient 16 3 Red 20 Blue 30 Black 50 Grey
-TitleStyle VGradient 16 3 Red 20 Blue 30 Black 50 Grey
-TitleStyle VGradient 16 4 Red 20 Blue 30 Black 20 Grey 30 yellow
-TitleStyle VGradient 16 2 Red 20 Blue 80
-TitleStyle VGradient 128 2 Red 20 Blue 80
-TitleStyle VGradient 2 2 Red 20 Blue 80
-TitleStyle hGradient 16 3 Red 20 Blue 30 Black 50 Grey
-TitleStyle hGradient 16 3 Red 20 Blue 30 Black 50 Grey
-TitleStyle hGradient 16 4 Red 20 Blue 30 Black 20 Grey 30 yellow
-TitleStyle hGradient 16 2 Red 20 Blue 80
-TitleStyle hGradient 128 2 Red 20 Blue 80
-TitleStyle hGradient 2 2 Red 20 Blue 80
-
-Log "Test vector buttons"
-
-TitleStyle Vector 5 45x60@0 80x60@0 80x80@1 45x80@1 45x60@0
-TitleStyle Vector 5 45x60@0 80x60@0 80x80@1 45x80@1 45x60@0
-TitleStyle 4 50x35@1 65x65@0 35x65@0 50x35@1
-TitleStyle 4 50x65@1 35x35@1 65x35@1 50x65@0
-TitleStyle 5 40x40@1 60x40@1 60x60@0 40x60@0 40x40@1
-TitleStyle 5 40x40@1 60x40@1 60x60@0 40x60@0 40x40@1
-
-Log "Test pixmaps"
-
-TitleStyle Pixmap test1.xpm
-TitleStyle Pixmap test2.xpm
-TitleStyle TiledPixmap test2.xpm
-TitleStyle TiledPixmap test2.xpm
-TitleStyle TiledPixmap test1.xpm
-TitleStyle ActiveUp (Pixmap test3.xpm) ActiveDown (Pixmap test2.xpm)
-TitleStyle Inactive Pixmap nonexistent.xpm
-TitleStyle Inactive Pixmap test3.xpm
-TitleStyle Inactive Pixmap test3.xpm
-TitleStyle Inactive Pixmap
-TitleStyle MiniIcons
-TitleStyle miniicons
-
-Log "Test ADD TITLE STYLE"
-
-AddTitleStyle
-AddTitleStyle -- raisED
-AddTitleStyle -- SUNk
-AddTitleStyle -- flat
-AddTitleStyle -- flat
-AddTitleStyle -- !flat
-AddTitleStyle Activeup -- raised
-AddTitleStyle Activeup -- raised
-AddTitleStyle activeDOWN -- sunk
-AddTitleStyle inactive -- flat
-AddTitleStyle inactive -- flat
-AddTitleStyle Activeup -- sunk
-AddTitleStyle simple
-AddTitleStyle simple
-AddTitleStyle default 3
-AddTitleStyle default 3
-AddTitleStyle solid blaCK
-AddTitleStyle solid blaCK
-AddTitleStyle simple
-
-Log "Test gradients"
-
-AddTitleStyle hgradient 16 green red
-AddTitleStyle hgradient 16 green red
-AddTitleStyle hgradient 16 red blue
-AddTitleStyle hgradient 32 red blue
-AddTitleStyle hgradient 128 red blue
-AddTitleStyle hgradient 2 red blue
-AddTitleStyle vgradient 16 green red
-AddTitleStyle vgradient 16 green red
-AddTitleStyle vgradient 16 red blue
-AddTitleStyle vgradient 32 red blue
-AddTitleStyle vgradient 128 red blue
-AddTitleStyle vgradient 2 red blue
-AddTitleStyle VGradient 16 3 Red 20 Blue 30 Black 50 Grey
-AddTitleStyle VGradient 16 3 Red 20 Blue 30 Black 50 Grey
-AddTitleStyle VGradient 16 4 Red 20 Blue 30 Black 20 Grey 30 yellow
-AddTitleStyle VGradient 16 2 Red 20 Blue 80
-AddTitleStyle VGradient 128 2 Red 20 Blue 80
-AddTitleStyle VGradient 2 2 Red 20 Blue 80
-AddTitleStyle hGradient 16 3 Red 20 Blue 30 Black 50 Grey
-AddTitleStyle hGradient 16 3 Red 20 Blue 30 Black 50 Grey
-AddTitleStyle hGradient 16 4 Red 20 Blue 30 Black 20 Grey 30 yellow
-AddTitleStyle hGradient 16 2 Red 20 Blue 80
-AddTitleStyle hGradient 128 2 Red 20 Blue 80
-AddTitleStyle hGradient 2 2 Red 20 Blue 80
-
-Log "Test vector buttons"
-
-AddTitleStyle Vector 5 45x60@0 80x60@0 80x80@1 45x80@1 45x60@0
-AddTitleStyle Vector 5 45x60@0 80x60@0 80x80@1 45x80@1 45x60@0
-AddTitleStyle 4 50x35@1 65x65@0 35x65@0 50x35@1
-AddTitleStyle 4 50x65@1 35x35@1 65x35@1 50x65@0
-AddTitleStyle 5 40x40@1 60x40@1 60x60@0 40x60@0 40x40@1
-AddTitleStyle 5 40x40@1 60x40@1 60x60@0 40x60@0 40x40@1
-
-Log "Test pixmaps"
-
-AddTitleStyle Pixmap test1.xpm
-AddTitleStyle Pixmap test2.xpm
-AddTitleStyle TiledPixmap test2.xpm
-AddTitleStyle TiledPixmap test2.xpm
-AddTitleStyle TiledPixmap test1.xpm
-AddTitleStyle ActiveUp (Pixmap test3.xpm) ActiveDown (Pixmap test2.xpm)
-AddTitleStyle Inactive Pixmap nonexistent.xpm
-AddTitleStyle Inactive Pixmap test3.xpm
-AddTitleStyle Inactive Pixmap test3.xpm
-AddTitleStyle Inactive Pixmap
-AddTitleStyle MiniIcons
-AddTitleStyle miniicons
-
-Log "Test BUTTON STYLE"
-
-Log "Test various states and styles"
-
-ButtonStyle
-ButtonStyle All -- UseBorderStyle
-ButtonStyle All -- UseTitleStyle
-ButtonStyle Reset
-ButtonStyle All -- raisED
-ButtonStyle All -- SUNk
-ButtonStyle Left -- flat
-ButtonStyle Left -- flat
-ButtonStyle Right -- !flat
-ButtonStyle Left Activeup -- raised
-ButtonStyle Left Activeup -- raised
-ButtonStyle Left activeDOWN -- sunk
-ButtonStyle Left inactive -- flat
-ButtonStyle Left inactive -- flat
-ButtonStyle Left Activeup -- sunk
-ButtonStyle 1 simple
-ButtonStyle 1 simple
-ButtonStyle 1 default 3
-ButtonStyle 1 default 3
-ButtonStyle 1 solid blaCK
-ButtonStyle 1 solid blaCK
-ButtonStyle 1 simple
-
-Log "Test gradients"
-
-ButtonStyle 2 hgradient 16 green red
-ButtonStyle 2 hgradient 16 green red
-ButtonStyle 2 hgradient 16 red blue
-ButtonStyle 2 hgradient 32 red blue
-ButtonStyle 2 hgradient 128 red blue
-ButtonStyle 2 hgradient 2 red blue
-ButtonStyle 2 vgradient 16 green red
-ButtonStyle 2 vgradient 16 green red
-ButtonStyle 2 vgradient 16 red blue
-ButtonStyle 2 vgradient 32 red blue
-ButtonStyle 2 vgradient 128 red blue
-ButtonStyle 2 vgradient 2 red blue
-ButtonStyle 3 VGradient 16 3 Red 20 Blue 30 Black 50 Grey
-ButtonStyle 3 VGradient 16 3 Red 20 Blue 30 Black 50 Grey
-ButtonStyle 3 VGradient 16 4 Red 20 Blue 30 Black 20 Grey 30 yellow
-ButtonStyle 3 VGradient 16 2 Red 20 Blue 80
-ButtonStyle 3 VGradient 128 2 Red 20 Blue 80
-ButtonStyle 3 VGradient 2 2 Red 20 Blue 80
-ButtonStyle 3 hGradient 16 3 Red 20 Blue 30 Black 50 Grey
-ButtonStyle 3 hGradient 16 3 Red 20 Blue 30 Black 50 Grey
-ButtonStyle 3 hGradient 16 4 Red 20 Blue 30 Black 20 Grey 30 yellow
-ButtonStyle 3 hGradient 16 2 Red 20 Blue 80
-ButtonStyle 3 hGradient 128 2 Red 20 Blue 80
-ButtonStyle 3 hGradient 2 2 Red 20 Blue 80
-
-Log "Test vector buttons"
-
-ButtonStyle Reset
-ButtonStyle 1 Vector 5 45x60@0 80x60@0 80x80@1 45x80@1 45x60@0
-ButtonStyle 1 Vector 5 45x60@0 80x60@0 80x80@1 45x80@1 45x60@0
-ButtonStyle 1 4 50x35@1 65x65@0 35x65@0 50x35@1
-ButtonStyle 1 4 50x65@1 35x35@1 65x35@1 50x65@0
-ButtonStyle 1 5 40x40@1 60x40@1 60x60@0 40x60@0 40x40@1
-ButtonStyle 1 5
-ButtonStyle 1 5 40x40@1 60x40@1 60x60@0 40x60@0 40x40@1
-ButtonStyle Reset
-
-Log "Test pixmaps"
-
-ButtonStyle 1 Pixmap test1.xpm
-ButtonStyle 1 Pixmap test2.xpm
-ButtonStyle 1 TiledPixmap test2.xpm
-ButtonStyle 1 TiledPixmap test2.xpm
-ButtonStyle 1 TiledPixmap test1.xpm
-ButtonStyle 1 ActiveUp (Pixmap test3.xpm) ActiveDown (Pixmap test2.xpm)
-ButtonStyle 1 Inactive Pixmap nonexistent.xpm
-ButtonStyle 1 Inactive Pixmap test3.xpm
-ButtonStyle 1 Inactive Pixmap test3.xpm
-ButtonStyle 1 Inactive Pixmap
-ButtonStyle 1 MiniIcons
-ButtonStyle 1 miniicons
-
-Log "Test state-independent flags"
-
-ButtonStyle 1 - MWMDecorMenu MWMDecorMin MWMDecorMax MWMDecorMenu
-ButtonStyle 1 - MWMDecorMenu MWMDecorMin MWMDecorMax MWMDecorMenu
-ButtonStyle 1 - MWMDecorMax
-ButtonStyle 1 - MWMDecorMin
-ButtonStyle 1 -
-
-Log "Test ADD BUTTON STYLE"
-
-Log "Test various states and styles"
-
-AddButtonStyle
-AddButtonStyle Reset
-AddButtonStyle All -- raisED
-AddButtonStyle All -- SUNk
-AddButtonStyle Left -- flat
-AddButtonStyle Left -- flat
-AddButtonStyle Right -- !flat
-AddButtonStyle Left Activeup -- raised
-AddButtonStyle Left Activeup -- raised
-AddButtonStyle Left activeDOWN -- sunk
-AddButtonStyle Left inactive -- flat
-AddButtonStyle Left inactive -- flat
-AddButtonStyle Left Activeup -- sunk
-AddButtonStyle 1 simple
-AddButtonStyle 1 simple
-AddButtonStyle 1 default 3
-AddButtonStyle 1 default 3
-AddButtonStyle 1 solid blaCK
-AddButtonStyle 1 solid blaCK
-AddButtonStyle 1 simple
-
-Log "Test gradients"
-
-AddButtonStyle 2 hgradient 16 green red
-AddButtonStyle 2 hgradient 16 green red
-AddButtonStyle 2 hgradient 16 red blue
-AddButtonStyle 2 hgradient 32 red blue
-AddButtonStyle 2 hgradient 128 red blue
-AddButtonStyle 2 hgradient 2 red blue
-AddButtonStyle 2 vgradient 16 green red
-AddButtonStyle 2 vgradient 16 green red
-AddButtonStyle 2 vgradient 16 red blue
-AddButtonStyle 2 vgradient 32 red blue
-AddButtonStyle 2 vgradient 128 red blue
-AddButtonStyle 2 vgradient 2 red blue
-AddButtonStyle 3 VGradient 16 3 Red 20 Blue 30 Black 50 Grey
-AddButtonStyle 3 VGradient 16 3 Red 20 Blue 30 Black 50 Grey
-AddButtonStyle 3 VGradient 16 4 Red 20 Blue 30 Black 20 Grey 30 yellow
-AddButtonStyle 3 VGradient 16 2 Red 20 Blue 80
-AddButtonStyle 3 VGradient 128 2 Red 20 Blue 80
-AddButtonStyle 3 VGradient 2 2 Red 20 Blue 80
-AddButtonStyle 3 hGradient 16 3 Red 20 Blue 30 Black 50 Grey
-AddButtonStyle 3 hGradient 16 3 Red 20 Blue 30 Black 50 Grey
-AddButtonStyle 3 hGradient 16 4 Red 20 Blue 30 Black 20 Grey 30 yellow
-AddButtonStyle 3 hGradient 16 2 Red 20 Blue 80
-AddButtonStyle 3 hGradient 128 2 Red 20 Blue 80
-AddButtonStyle 3 hGradient 2 2 Red 20 Blue 80
-
-Log "Test vector buttons"
-
-AddButtonStyle Reset
-AddButtonStyle 1 Vector 5 45x60@0 80x60@0 80x80@1 45x80@1 45x60@0
-AddButtonStyle 1 Vector 5 45x60@0 80x60@0 80x80@1 45x80@1 45x60@0
-AddButtonStyle 1 4 50x35@1 65x65@0 35x65@0 50x35@1
-AddButtonStyle 1 4 50x65@1 35x35@1 65x35@1 50x65@0
-AddButtonStyle 1 5 40x40@1 60x40@1 60x60@0 40x60@0 40x40@1
-AddButtonStyle 1 5
-AddButtonStyle 1 5 40x40@1 60x40@1 60x60@0 40x60@0 40x40@1
-AddButtonStyle Reset
-
-Log "Test pixmaps"
-
-AddButtonStyle 1 Pixmap test1.xpm
-AddButtonStyle 1 Pixmap test2.xpm
-AddButtonStyle 1 TiledPixmap test2.xpm
-AddButtonStyle 1 TiledPixmap test2.xpm
-AddButtonStyle 1 TiledPixmap test1.xpm
-AddButtonStyle 1 ActiveUp (Pixmap test3.xpm) ActiveDown (Pixmap test2.xpm)
-AddButtonStyle 1 Inactive Pixmap nonexistent.xpm
-AddButtonStyle 1 Inactive Pixmap test3.xpm
-AddButtonStyle 1 Inactive Pixmap test3.xpm
-AddButtonStyle 1 Inactive Pixmap
-AddButtonStyle 1 MiniIcons
-AddButtonStyle 1 miniicons
-
-
-Log "Test CURSOR MOVE"
-
-CursorMove
-CursorMove 50p
-CursorMove   10p   -10p
-CursorMove 		-50		+50
-CursorMove -0 +0
-CursorMove -50p -50p
-CursorMove -1000 -1000
-
-Log "Test DESK"
-
-Desk
-Desk    2
-Desk		+3
-Desk -2
-Desk 0 1
-Desk   0    3
-Desk		0		1923874
-Desk +1 0 10
-Desk -1 0 10
-Desk 0 0 5 7
-Desk 0 -11111 5 7
-Desk 0 0
-
-Log "Test DESK TOP SIZE"
-
-DeskTopSize
-DeskTopSize ödslajf
-DeskTopSize   2x2
-DeskTopSize		 2x2
-DeskTopSize 2x3
-DeskTopSize 2x3
-DeskTopSize 3x3
-DeskTopSize 3x1
-DeskTopSize 1x1
-DeskTopSize 0x2
-DeskTopSize 2x0
-DeskTopSize 0x0
-DeskTopSize 1000x1000
-DeskTopSize 2x2
-
-Log "Test ECHO"
-
-Echo
-Echo
-Echo ädsa		 iopq9 $SHELL "'lksaä"
-
-Log "Test EDGE RESISTANCE"
-
-EdgeResistance
-EdgeResistance     300   10
-EdgeResistance		300		10
-EdgeResistance 400 400
-EdgeResistance 400 400
-EdgeResistance 300 10
-EdgeResistance 0 20
-EdgeResistance -1 20
-EdgeResistance 20 0
-EdgeResistance 20 -1
-
-Log "Test EDGE SCROLL"
-
-EdgeScroll
-EdgeScroll    50    50
-EdgeScroll		50		50
-EdgeScroll 100 100
-EdgeScroll -125 111
-EdgeScroll 100000 100000
-EdgeScroll 0 0
-EdgeScroll 75 75
-
-Log "Test EXEC, EXEC USE SHELL"
-
-Log "Test ExecUseShell"
-
-ExecUseShell
-ExecUseShell
-ExecUseShell     /bin/bash
-ExecUseShell		/bin/bash
-ExecUseShell /bin/bash
-ExecUseShell /nonexistent/foo/bar
-ExecUseShell
-
-Log "Test Exec"
-
-Exec
-Exec  	 	 	""
-Exec echo "Test of exec using echo"
-Exec echo "Exec test, value of \$$d $d, \$$v $v, \$$[screen] $[screen]"
-
-
-Log "Test Old GLOBAL OPTIONS, now styles"
-
-Style "*"  CleverPlacement, SmartPlacement
-Style "*"  ClickToFocusPassesClickOff, CLICKTOFOCUSPASSESCLICK
-Style "*"  ClickToFocusRaisesOff, CLICKTOFOCUSRAISES, MouseFocusClickRaisesOff, MOUSEFOCUSCLICKRAISES, StippledTitleOff, StippledTitle, STARTSONPAGEMODIFIESUSPOSITION, STARTSONPAGEHONORSUSPOSITION, CAPTUREHONORSSTARTSONPAGE, CAPTUREIGNORESSTARTSONPAGE, RECAPTUREHONORSSTARTSONPAGE, RECAPTUREIGNORESSTARTSONPAGE, ACTIVEPLACEMENTHONORSSTARTSONPAGE, ACTIVEPLACEMENTIGNORESSTARTSONPAGE
-Style "*"  äöwwwkjfd, 2wäeöqdpefoeqopweäöööööööööcöäowäjafewjäoäajopfdewjpoafdsjpoafsdäjopfdsjopfdasäjopdfsäjopfdsajpoafds, jäwpouef, päu3pä9, upä43owu, päfoopu, 43päuo, 4w3fuop, af, 4wawä4opufwuä4f, 4wp, apwöejaeäwfpöojwoäpfoejäwpajoeäjopfwejp\aawehoiöoaihöwhawepjpewfpjewfajopäefwjopewfjopajeopfwajopefwajpoewfajpoewfajpoaefwjopaewfjpoeafwjopaefwjopaewfjopafewjopfewajpoafewjfaewihoöwhöfohzfw4öof4whoiaf4ihoaf4ihofa, apwöejaeäwfpöojwoäpfoejäwpajoeäjopfwejp\aawehoiöoaihöwhawepjpewfpjewfajopäefwjopewfjopajeopfwajopefwajpoewfajpoewfajpoaefwjopaewfjpoeafwjopaefwjopaewfjopafewjopfewajpoafewjfaewihoöwhöfohzfw4öof4whoiaf4ihoaf4ihofa
-Log "Test GOTO PAGE"
-
-GotoPage
-GotoPage  2  2
-GotoPage		1		1
-GotoPage -1 -100
-GotoPage 10000 1000000
-GotoPage 2 1
-GotoPage 2 1
-GotoPage 1 1
-
-Log "Test old HilightColor commands, the conversion utility changed them."
-
-Style "*" HilightFore , HilightBack 
-Style "*" HilightFore blue, HilightBack 
-Style "*" HilightFore green, HilightBack 
-Style "*" HilightFore black, HilightBack yellow
-Style "*" HilightFore black, HilightBack yellow
-Style "*" HilightFore gold2, HilightBack SteelBlue
-Style "*" HilightFore gold2, HilightBack SteelBlue
-Style "*" HilightFore , HilightBack 
-Style "*" HilightFore gold2, HilightBack SteelBlue
-
-Log "Test KEY"
-
-Key
-Key f12
-Key f12 t
-key f12 t cs
-key		f12		t		cs
-Key		f12		a		a		Nop
-Key  f12     a  a     function nonexistent
-Key f12 a a function nonexistent
-Key f12 t a function nonexistent
-Key f12 t a -
-Key f12 t a -
-
-Log "Test MENU STYLE"
-
-MenuStyle
-MenuStyle  red  yellow  green  9x15  mwm  anim
-MenuStyle 	red	 yellow	 green 	9x15	 mwm 	anim
-MenuStyle red yellow green 9x15 mwm anim
-MenuStyle red yellow green 9x15 mwm anim
-MenuStyle red yellow green 6x10 mwm anim
-MenuStyle red yellow green 6x10 mwm
-MenuStyle red yellow green 6x10 fvwm
-MenuStyle red yellow green 6x10 fvwm anim
-MenuStyle yellow black pink 8x13bold fvwm anim
-
-Log "Test MOUSE"
-
-Mouse
-Mouse 2
-Mouse 2 t
-Mouse 2 t cs
-Mouse		2		t		cs
-Mouse		2		a		a		Nop
-Mouse  2     a  a     function nonexistent
-Mouse 2 a a function nonexistent
-Mouse 2 t a function nonexistent
-Mouse 2 t a -
-Mouse 2 t a -
-
-Log "Test NOP"
-
-Nop
-NOP
-nOp allöoawqj _Ö:K_ÖL ökq
-
-Log "Test OPAQUE MOVE SIZE"
-
-OpaqueMoveSize
-OpaqueMoveSize    50
-OpaqueMoveSize		50
-OpaqueMoveSize 0
-OpaqueMoveSize 0
-OpaqueMoveSize -1
-OpaqueMoveSize 100
-OpaqueMoveSize 200
-OpaqueMoveSize 75
-OpaqueMoveSize 75
-OpaqueMoveSize 0
-
-Log "Test SCROLL"
-
-Scroll
-Scroll 50p
-Scroll   10p   -10p
-Scroll 		-50		+50
-Scroll -0 +0
-Scroll -50p -50p
-Scroll -1000 -1000
-
-Log "Test SET ANIMATION"
-
-SetAnimation
-SetAnimation  10  -.01 0 .01 .03 .08 .18 .3 .45 .6 .75 .85 .90 .94 .97 .99 1.0
-SetAnimation 10	 -.01 0	 .01 .03 .08 .18 .3 .45 .6 .75 .85 .90 .94 .97 .99 1.0
-SetAnimation 0 -.01 0 .01 .03 .08 .18 .3 .45 .6 .75 .85 .90 .94 .97 .99 1.0
-SetAnimation 20 -.01 0 .01 .03 .08
-SetAnimation 1000 -.01 0 .01 .03 .08
-SetAnimation 10 -.01 0 .01 .03 .08 .18 .3 .45 .6 .75 .85 .90 .94 .97 .99 1.0
-
-Log "Test SET ENV"
-
-SetEnv
-SetEnv FOO
-SetEnv   BAR bar
-SetEnv		FOOBAR		barfoo
-SetEnv "	FOO	" x
-SetEnv FOO "   ""ölwäökkü"''
-SetEnv FOO "   ""ölwäökkü"''
-
-Log "Test UNSET ENV"
-
-UnsetEnv FOO         BAR
-UnsetEnv       FOO
-UnSetEnv "   ""ölwäökkü"''
-
-Log "Test TITLE"
-
-Title
-Title "lökjads
-Title "lökjads
-Title -A -köq
-
-Log "Test old WINDOWFONT commands, the conversion utility changed them"
-
-Style "*" Font 
-Style "*" Font 9x15
-Style "*" Font 9x15
-Style "*" Font /nonexistent/foo/bar
-Style "*" Font -adobe-helvetica-bold-r-*-*-*-140-*-*-*-*-*-*
-Style "*" Font -adobe-helvetica-bold-r-*-*-*-140-*-*-*-*-*-*
-Style "*" Font 
-
-Log "Test XOR VALUE"
-
-XORValue
-XORValue     1
-XORValue		1
-XORValue 0
-XORValue 0
-XORValue 255
-XORValue 255
-XORValue 128
-XORValue 0
-
-
-Log "Test settings that require a window"
-
-Log "Test CREATE WINDOWS"
-
-Style "*" SmartPlacement
-Style "*" RandomPlacement
-Style "*" MouseFocus
-AddToFunc makewindows
- + "I" Exec xterm -geometry +0+0 -T window1 -n window1 -e sleep 1000
- + "I" Wait window1
- + "I" Exec xterm -geometry +50+50 -T window2 -n window2 -e sleep 1000
- + "I" Wait window2
- + "I" Exec xterm -geometry +100+100 -T window3 -n window3 -e sleep 1000
- + "I" Wait window3
- + "I" Exec xterm -geometry +150+150 -T window4 -n window4 -e sleep 1000
- + "I" Wait window4
- + "I" Exec xterm -geometry +200+200 -T window5 -n window5 -e sleep 1000
- + "I" Wait window5
- + "I" Exec xterm -geometry -0-0 -T window6 -n window6 -e sleep 1000
- + "I" Wait window6
-function makewindows
-CursorMove 90 90
-
-Log "Test STYLE"
-
-Style "foo*" BorderWidth
-Style "foo*" BorderWidth  3
-Style "foo*" BorderWidth	5
-Style "foo*" BorderWidth	5
-Style "foo*" HandleWidth
-Style "foo*" HandleWidth  3
-Style "foo*" HandleWidth		7
-Style "foo*" HandleWidth		7
-Style "foo*" NoIcon
-Style "foo*" NoIcon
-Style "foo*" Icon
-Style "foo*" Icon
-Style "foo*" MiniIcon
-Style "foo*" MiniIcon
-Style "foo*" IconBox 1 5 100 500, IconGrid -10 10, IconFill
-Style "foo*" IconBox 1 5 100 500, IconGrid -0 10
-Style "foo*" NoTitle
-Style "foo*" NoTitle
-Style "foo*" Title
-Style "foo*" Title
-Style "foo*" NoHandles
-Style "foo*" NoHandles
-Style "foo*" Handles
-Style "foo*" Handles
-Style "foo*" WindowListSkip
-Style "foo*" WindowListSkip
-Style "foo*" WindowListHit
-Style "foo*" WindowListHit
-Style "foo*" CirculateSkip
-Style "foo*" CirculateSkip
-Style "foo*" CirculateHit
-Style "foo*" CirculateHit
-Style "foo*" StaysOnTop
-Style "foo*" StaysOnTop
-Style "foo*" StaysPut
-Style "foo*" StaysPut
-Style "foo*" Sticky
-Style "foo*" Sticky
-Style "foo*" Slippery
-Style "foo*" Slippery
-Style "foo*" StartIconic
-Style "foo*" StartIconic
-style "foo*" StartNormal
-style "foo*" StartNormal
-Style "foo*" Color
-Style "foo*" Color
-Style "foo*" ForeColor
-Style "foo*" ForeColor
-Style "foo*" BackColor
-Style "foo*" BackColor
-Style "foo*" StartsOnDesk
-Style "foo*" StartsOnDesk   0
-Style "foo*" StartsOnDesk		0
-Style "foo*" StartsOnDesk		0
-Style "foo*" StartsOnPage
-Style "foo*" StartsOnPage  0
-Style "foo*" StartsOnPage  0   0
-Style "foo*" StartsOnPage	0	0
-Style "foo*" StartsAnyWhere
-Style "foo*" StartsAnyWhere
-Style "foo*" IconTitle
-Style "foo*" IconTitle
-Style "foo*" NoIconTitle
-Style "foo*" NoIconTitle
-Style "foo*" MWMButtons
-Style "foo*" MWMButtons
-Style "foo*" FvwmButtons
-Style "foo*" FvwmButtons
-Style "foo*" MWMBorder
-Style "foo*" MWMBorder
-Style "foo*" FvwmBorder
-Style "foo*" FvwmBorder
-Style "foo*" MWMDecor
-Style "foo*" MWMDecor
-Style "foo*" NoDecorHint
-Style "foo*" NoDecorHint
-Style "foo*" MWMFunctions
-Style "foo*" MWMFunctions
-Style "foo*" NoFuncHint
-Style "foo*" NoFuncHint
-Style "foo*" HintOverride
-Style "foo*" HintOverride
-Style "foo*" NoOverride
-Style "foo*" NoOverride
-Style "foo*" NoButton
-Style "foo*" NoButton  1
-Style "foo*" NoButton		2
-Style "foo*" Button
-Style "foo*" Button  3
-Style "foo*" Button		0
-Style "foo*" OLDecor
-Style "foo*" OLDecor
-Style "foo*" NoOLDecor
-Style "foo*" NoOLDecor
-Style "foo*" StickyIcon
-Style "foo*" StickyIcon
-Style "foo*" SlipperyIcon
-Style "foo*" SlipperyIcon
-Style "foo*" SmartPlacement
-Style "foo*" SmartPlacement
-Style "foo*" DumbPlacement
-Style "foo*" DumbPlacement
-Style "foo*" RandomPlacement
-Style "foo*" RandomPlacement
-Style "foo*" ActivePlacement
-Style "foo*" ActivePlacement
-Style "foo*" DecorateTransient
-Style "foo*" DecorateTransient
-Style "foo*" NakedTransient
-Style "foo*" NakedTransient
-Style "foo*" SkipMapping
-Style "foo*" SkipMapping
-Style "foo*" ShowMapping
-Style "foo*" ShowMapping
-Style "foo*" UseDecor
-Style "foo*" UseDecor
-style "*f*" UseStyle
-style "*f*" UseStyle
-style "*f*" NoPPosition
-style "*f*" NoPPosition
-style "*f*" UsePPosition
-style "*f*" UsePPosition
-style "*f*" Lenience
-style "*f*" Lenience
-style "*f*" NoLenience
-style "*f*" NoLenience
-style "*f*" ClickToFocus
-style "*f*" ClickToFocus
-style "*f*" SloppyFocus
-style "*f*" SloppyFocus
-style "*f*" MouseFocus
-style "*f*" MouseFocus
-style "*f*" FocusFollowsMouse
-style "*f*" FocusFollowsMouse
-
-Log "Test READ, PIPE READ"
-
-read
-read
-read /nonexistent/foo/bar
-read 	  /tmp/purify.read
-
-piperead
-piperead `sleep 2`
++ I addtofunc foo
++ I addtofunc foo "I" nop $w $d $1 $10298097
++ I function
++ I function   foo
++ I function		foo
++ I function nonexist
+
++ I DestroyFunc
++ I DestroyFunc    grow2
++ I DestroyFunc		grow1
++ I DestroyFunc loop1
++ I DestroyFunc loop2
+
+AddTest "Test Menu_Destroy_Menu_Menu_Popup" Menu_Destroy_Menu_Menu_Popup-Func
+AddToFunc Menu_Destroy_Menu_Menu_Popup-Func
++ I AddToMenu menu1 "tt1" title top
++ I AddToMenu menu1 "t1" title
++ I AddToMenu menu1 "tt1"   title   top
++ I AddToMenu menu1 "t1"   title
++ I AddToMenu menu1 "tt1"		title		top
++ I AddToMenu menu1 "t1"		title
++ I AddToMenu menu1 "" ""
++ I AddToMenu menu1 "" nop
++ I AddToMenu menu1 "" nop
++ I AddToMenu menu1 "%test1.xpm%foo%test2.xpm%"
++ I AddToMenu menu1 "*test1.xpm*fo*test2.xpm*"
++ I AddToMenu menu1 "^test1.xpm^f^test2.xpm^"
++ I AddToMenu menu1 "@test1.xpm@oo@test2.xpm@"
++ I AddToMenu menu1 "%test1.xpm%foo%test2.xpm%"
++ I AddToMenu menu1 "*test1.xpm*fo*test2.xpm*"
++ I AddToMenu menu1 "^test1.xpm^f^test2.xpm^"
++ I AddToMenu menu1 "@test1.xpm@oo@test2.xpm@"
++ I AddToMenu menu1 "%test2.xpm%foo%test1.xpm%"
++ I AddToMenu menu1 "*test2.xpm*fo*test1.xpm*"
++ I AddToMenu menu1 "^test2.xpm^f^test1.xpm^"
++ I AddToMenu menu1 "@test2.xpm@oo@test1.xpm@"
++ I AddToMenu menu1 "xx" function xyz
++ I AddToMenu menu1 "xx" function xyz
++ I AddToMenu menu1 "xx" function xyz
+
++ I Menu menu1 root c+0 c+0 beep
++ I Menu menu1 root c+0 c+0 beep
++ I popup menu1 root c+0 c+0 beep
++ I popup menu1 root c+0 c+0 beep
+
++ I DestroyMenu
++ I DestroyMenu
++ I DestroyMenu		 menu1
+
++ I addtofunc makelongmenu
++ I addtofunc makelongmenu "I" AddToMenu longmenu popup "short menu"
++ I addtofunc makelongmenu "I" AddToMenu longmenu popup "recursive menu"
++ I addtofunc makelongmenu "I" AddToMenu longmenu popup "short menu"
++ I addtofunc makelongmenu "I" AddToMenu longmenu popup "recursive menu"
++ I addtofunc makelongmenu "I" AddToMenu longmenu popup "short menu"
++ I addtofunc makelongmenu "I" AddToMenu longmenu popup "recursive menu"
++ I addtofunc makelongmenu "I" AddToMenu longmenu popup "short menu"
++ I addtofunc makelongmenu "I" AddToMenu longmenu popup "recursive menu"
++ I addtofunc makelongmenu "I" AddToMenu longmenu popup "short menu"
++ I addtofunc makelongmenu "I" AddToMenu longmenu popup "recursive menu"
++ I addtofunc makelongmenu "I" AddToMenu longmenu popup "short menu"
++ I addtofunc makelongmenu "I" AddToMenu longmenu popup "recursive menu"
++ I addtofunc makelongmenu "I" AddToMenu longmenu popup "short menu"
++ I addtofunc makelongmenu "I" AddToMenu longmenu popup "recursive menu"
++ I addtofunc makelongmenu "I" AddToMenu longmenu popup "short menu"
++ I addtofunc makelongmenu "I" AddToMenu longmenu popup "recursive menu"
++ I addtofunc makelongmenu "I" AddToMenu longmenu popup "short menu"
++ I addtofunc makelongmenu "I" AddToMenu longmenu popup "recursive menu"
++ I addtofunc makelongmenu "I" AddToMenu longmenu popup "short menu"
++ I addtofunc makelongmenu "I" AddToMenu longmenu popup "recursive menu"
+
++ I AddToMenu longmenu "a very long menu" title
++ I Addtomenu "short menu" "a very short menu" title top
++ I Addtomenu "short menu" "single item" nop
++ I Addtomenu "recursive menu" "recursion" title top
++ I Addtomenu "recursive menu" "recurse" popup "recursive menu"
+
++ I makelongmenu
++ I makelongmenu
++ I makelongmenu
++ I makelongmenu
++ I makelongmenu
++ I makelongmenu
++ I makelongmenu
++ I makelongmenu
++ I makelongmenu
++ I makelongmenu
+
++ I Menu longmenu
++ I Popup longmenu
++ I DestroyMenu longmenu
+
+AddTest "Test Beep" Beep-Func
+AddToFunc Beep-Func
++ I Beep
++ I Beep
++ I Beep ü30 23äö ü9823r ,l.öapü39
+
+AddTest "Test BorderStyle" BorderStyle-Func
+AddToFunc BorderStyle-Func
++ I BorderStyle
++ I BorderStyle -- HiddenHandles
++ I BorderStyle Active -- !HiddenHandles
++ I BorderStyle Active -- !HiddenHandles
++ I BorderStyle Simple
++ I BorderStyle Simple
++ I BorderStyle Inactive -- HiddenHandles NoInset
++ I BorderStyle Active TiledPixmap test1.xpm
++ I BorderStyle Inactive TiledPixmap test2.xpm
++ I BorderStyle Active -- HiddenHandles NoInset
+
+AddTest "Test TitleStyle_justify" TitleStyle_justify-Func
+AddToFunc TitleStyle_justify-Func
++ I TitleStyle
++ I TitleStyle LEFtJusTiFied
++ I TitleStyle LEFtJusTiFied
++ I TitleStyle   centered
++ I TitleStyle		rightjustified
++ I TitleStyle heIGht 20
++ I TitleStyle heIGht 20
++ I TitleStyle leftjustified height 37
++ I TitleStyle leftjustified height 24
+
+AddTest "Test TitleStyles" TitleStyles-Func
+AddToFunc TitleStyles-Func
++ I TitleStyle -- raisED
++ I TitleStyle -- SUNk
++ I TitleStyle -- flat
++ I TitleStyle -- flat
++ I TitleStyle -- !flat
++ I TitleStyle Activeup -- raised
++ I TitleStyle Activeup -- raised
++ I TitleStyle activeDOWN -- sunk
++ I TitleStyle inactive -- flat
++ I TitleStyle inactive -- flat
++ I TitleStyle Activeup -- sunk
++ I TitleStyle simple
++ I TitleStyle simple
++ I TitleStyle default 3
++ I TitleStyle default 3
++ I TitleStyle solid blaCK
++ I TitleStyle solid blaCK
++ I TitleStyle simple
+
+AddTest "Test gradients" gradients-Func
+AddToFunc gradients-Func
++ I TitleStyle hgradient 16 green red
++ I TitleStyle hgradient 16 green red
++ I TitleStyle hgradient 16 red blue
++ I TitleStyle hgradient 32 red blue
++ I TitleStyle hgradient 128 red blue
++ I TitleStyle hgradient 2 red blue
++ I TitleStyle vgradient 16 green red
++ I TitleStyle vgradient 16 green red
++ I TitleStyle vgradient 16 red blue
++ I TitleStyle vgradient 32 red blue
++ I TitleStyle vgradient 128 red blue
++ I TitleStyle vgradient 2 red blue
++ I TitleStyle VGradient 16 3 Red 20 Blue 30 Black 50 Grey
++ I TitleStyle VGradient 16 3 Red 20 Blue 30 Black 50 Grey
++ I TitleStyle VGradient 16 4 Red 20 Blue 30 Black 20 Grey 30 yellow
++ I TitleStyle VGradient 16 2 Red 20 Blue 80
++ I TitleStyle VGradient 128 2 Red 20 Blue 80
++ I TitleStyle VGradient 2 2 Red 20 Blue 80
++ I TitleStyle hGradient 16 3 Red 20 Blue 30 Black 50 Grey
++ I TitleStyle hGradient 16 3 Red 20 Blue 30 Black 50 Grey
++ I TitleStyle hGradient 16 4 Red 20 Blue 30 Black 20 Grey 30 yellow
++ I TitleStyle hGradient 16 2 Red 20 Blue 80
++ I TitleStyle hGradient 128 2 Red 20 Blue 80
++ I TitleStyle hGradient 2 2 Red 20 Blue 80
+
+AddTest "Test vector_buttons" vector_buttons-Func
+AddToFunc vector_buttons-Func
++ I TitleStyle Vector 5 45x60@0 80x60@0 80x80@1 45x80@1 45x60@0
++ I TitleStyle Vector 5 45x60@0 80x60@0 80x80@1 45x80@1 45x60@0
++ I TitleStyle 4 50x35@1 65x65@0 35x65@0 50x35@1
++ I TitleStyle 4 50x65@1 35x35@1 65x35@1 50x65@0
++ I TitleStyle 5 40x40@1 60x40@1 60x60@0 40x60@0 40x40@1
++ I TitleStyle 5 40x40@1 60x40@1 60x60@0 40x60@0 40x40@1
+
+AddTest "Test pixmaps" pixmaps-Func
+AddToFunc pixmaps-Func
++ I TitleStyle Pixmap test1.xpm
++ I TitleStyle Pixmap test2.xpm
++ I TitleStyle TiledPixmap test2.xpm
++ I TitleStyle TiledPixmap test2.xpm
++ I TitleStyle TiledPixmap test1.xpm
++ I TitleStyle ActiveUp (Pixmap test3.xpm) ActiveDown (Pixmap test2.xpm)
++ I TitleStyle Inactive Pixmap nonexistent.xpm
++ I TitleStyle Inactive Pixmap test3.xpm
++ I TitleStyle Inactive Pixmap test3.xpm
++ I TitleStyle Inactive Pixmap
++ I TitleStyle MiniIcons
++ I TitleStyle miniicons
+
+AddTest "Test AddTitleStyle" AddTitleStyle-Func
+AddToFunc AddTitleStyle-Func
++ I AddTitleStyle
++ I AddTitleStyle -- raisED
++ I AddTitleStyle -- SUNk
++ I AddTitleStyle -- flat
++ I AddTitleStyle -- flat
++ I AddTitleStyle -- !flat
++ I AddTitleStyle Activeup -- raised
++ I AddTitleStyle Activeup -- raised
++ I AddTitleStyle activeDOWN -- sunk
++ I AddTitleStyle inactive -- flat
++ I AddTitleStyle inactive -- flat
++ I AddTitleStyle Activeup -- sunk
++ I AddTitleStyle simple
++ I AddTitleStyle simple
++ I AddTitleStyle default 3
++ I AddTitleStyle default 3
++ I AddTitleStyle solid blaCK
++ I AddTitleStyle solid blaCK
++ I AddTitleStyle simple
+
+AddTest "Test AddTitleStyleGradients" AddTitleStyleGradients-Func
+AddToFunc AddTitleStyleGradients-Func
++ I AddTitleStyle hgradient 16 green red
++ I AddTitleStyle hgradient 16 green red
++ I AddTitleStyle hgradient 16 red blue
++ I AddTitleStyle hgradient 32 red blue
++ I AddTitleStyle hgradient 128 red blue
++ I AddTitleStyle hgradient 2 red blue
++ I AddTitleStyle vgradient 16 green red
++ I AddTitleStyle vgradient 16 green red
++ I AddTitleStyle vgradient 16 red blue
++ I AddTitleStyle vgradient 32 red blue
++ I AddTitleStyle vgradient 128 red blue
++ I AddTitleStyle vgradient 2 red blue
++ I AddTitleStyle VGradient 16 3 Red 20 Blue 30 Black 50 Grey
++ I AddTitleStyle VGradient 16 3 Red 20 Blue 30 Black 50 Grey
++ I AddTitleStyle VGradient 16 4 Red 20 Blue 30 Black 20 Grey 30 yellow
++ I AddTitleStyle VGradient 16 2 Red 20 Blue 80
++ I AddTitleStyle VGradient 128 2 Red 20 Blue 80
++ I AddTitleStyle VGradient 2 2 Red 20 Blue 80
++ I AddTitleStyle hGradient 16 3 Red 20 Blue 30 Black 50 Grey
++ I AddTitleStyle hGradient 16 3 Red 20 Blue 30 Black 50 Grey
++ I AddTitleStyle hGradient 16 4 Red 20 Blue 30 Black 20 Grey 30 yellow
++ I AddTitleStyle hGradient 16 2 Red 20 Blue 80
++ I AddTitleStyle hGradient 128 2 Red 20 Blue 80
++ I AddTitleStyle hGradient 2 2 Red 20 Blue 80
+
+AddTest "Test AddTitleStyleVectorButtons" AddTitleStyleVectorButtons-Func
+AddToFunc AddTitleStyleVectorButtons-Func
++ I AddTitleStyle Vector 5 45x60@0 80x60@0 80x80@1 45x80@1 45x60@0
++ I AddTitleStyle Vector 5 45x60@0 80x60@0 80x80@1 45x80@1 45x60@0
++ I AddTitleStyle 4 50x35@1 65x65@0 35x65@0 50x35@1
++ I AddTitleStyle 4 50x65@1 35x35@1 65x35@1 50x65@0
++ I AddTitleStyle 5 40x40@1 60x40@1 60x60@0 40x60@0 40x40@1
++ I AddTitleStyle 5 40x40@1 60x40@1 60x60@0 40x60@0 40x40@1
+
+AddTest "Test AddTitleStylePixmaps" AddTitleStylePixmaps-Func
+AddToFunc AddTitleStylePixmaps-Func
++ I AddTitleStyle Pixmap test1.xpm
++ I AddTitleStyle Pixmap test2.xpm
++ I AddTitleStyle TiledPixmap test2.xpm
++ I AddTitleStyle TiledPixmap test2.xpm
++ I AddTitleStyle TiledPixmap test1.xpm
++ I AddTitleStyle ActiveUp (Pixmap test3.xpm) ActiveDown (Pixmap test2.xpm)
++ I AddTitleStyle Inactive Pixmap nonexistent.xpm
++ I AddTitleStyle Inactive Pixmap test3.xpm
++ I AddTitleStyle Inactive Pixmap test3.xpm
++ I AddTitleStyle Inactive Pixmap
++ I AddTitleStyle MiniIcons
++ I AddTitleStyle miniicons
+
+AddTest "Test ButtonStyle" ButtonStyle-Func
+AddToFunc ButtonStyle-Func
++ I ButtonStyle
++ I ButtonStyle All -- UseBorderStyle
++ I ButtonStyle All -- UseTitleStyle
++ I ButtonStyle Reset
++ I ButtonStyle All -- raisED
++ I ButtonStyle All -- SUNk
++ I ButtonStyle Left -- flat
++ I ButtonStyle Left -- flat
++ I ButtonStyle Right -- !flat
++ I ButtonStyle Left Activeup -- raised
++ I ButtonStyle Left Activeup -- raised
++ I ButtonStyle Left activeDOWN -- sunk
++ I ButtonStyle Left inactive -- flat
++ I ButtonStyle Left inactive -- flat
++ I ButtonStyle Left Activeup -- sunk
++ I ButtonStyle 1 simple
++ I ButtonStyle 1 simple
++ I ButtonStyle 1 default 3
++ I ButtonStyle 1 default 3
++ I ButtonStyle 1 solid blaCK
++ I ButtonStyle 1 solid blaCK
++ I ButtonStyle 1 simple
+
+AddTest "Test ButtonStyleGradients" ButtonStyleGradients-Func
+AddToFunc ButtonStyleGradients-Func
++ I ButtonStyle 2 hgradient 16 green red
++ I ButtonStyle 2 hgradient 16 green red
++ I ButtonStyle 2 hgradient 16 red blue
++ I ButtonStyle 2 hgradient 32 red blue
++ I ButtonStyle 2 hgradient 128 red blue
++ I ButtonStyle 2 hgradient 2 red blue
++ I ButtonStyle 2 vgradient 16 green red
++ I ButtonStyle 2 vgradient 16 green red
++ I ButtonStyle 2 vgradient 16 red blue
++ I ButtonStyle 2 vgradient 32 red blue
++ I ButtonStyle 2 vgradient 128 red blue
++ I ButtonStyle 2 vgradient 2 red blue
++ I ButtonStyle 3 VGradient 16 3 Red 20 Blue 30 Black 50 Grey
++ I ButtonStyle 3 VGradient 16 3 Red 20 Blue 30 Black 50 Grey
++ I ButtonStyle 3 VGradient 16 4 Red 20 Blue 30 Black 20 Grey 30 yellow
++ I ButtonStyle 3 VGradient 16 2 Red 20 Blue 80
++ I ButtonStyle 3 VGradient 128 2 Red 20 Blue 80
++ I ButtonStyle 3 VGradient 2 2 Red 20 Blue 80
++ I ButtonStyle 3 hGradient 16 3 Red 20 Blue 30 Black 50 Grey
++ I ButtonStyle 3 hGradient 16 3 Red 20 Blue 30 Black 50 Grey
++ I ButtonStyle 3 hGradient 16 4 Red 20 Blue 30 Black 20 Grey 30 yellow
++ I ButtonStyle 3 hGradient 16 2 Red 20 Blue 80
++ I ButtonStyle 3 hGradient 128 2 Red 20 Blue 80
++ I ButtonStyle 3 hGradient 2 2 Red 20 Blue 80
+
+AddTest "Test ButtonStyleVectors" ButtonStyleVectors-Func
+AddToFunc ButtonStyleVectors-Func
++ I ButtonStyle Reset
++ I ButtonStyle 1 Vector 5 45x60@0 80x60@0 80x80@1 45x80@1 45x60@0
++ I ButtonStyle 1 Vector 5 45x60@0 80x60@0 80x80@1 45x80@1 45x60@0
++ I ButtonStyle 1 4 50x35@1 65x65@0 35x65@0 50x35@1
++ I ButtonStyle 1 4 50x65@1 35x35@1 65x35@1 50x65@0
++ I ButtonStyle 1 5 40x40@1 60x40@1 60x60@0 40x60@0 40x40@1
++ I ButtonStyle 1 5
++ I ButtonStyle 1 5 40x40@1 60x40@1 60x60@0 40x60@0 40x40@1
++ I ButtonStyle Reset
+
+AddTest "Test ButtonStylePixmaps" ButtonStylePixmaps-Func
+AddToFunc ButtonStylePixmaps-Func
++ I ButtonStyle 1 Pixmap test1.xpm
++ I ButtonStyle 1 Pixmap test2.xpm
++ I ButtonStyle 1 TiledPixmap test2.xpm
++ I ButtonStyle 1 TiledPixmap test2.xpm
++ I ButtonStyle 1 TiledPixmap test1.xpm
++ I ButtonStyle 1 ActiveUp (Pixmap test3.xpm) ActiveDown (Pixmap test2.xpm)
++ I ButtonStyle 1 Inactive Pixmap nonexistent.xpm
++ I ButtonStyle 1 Inactive Pixmap test3.xpm
++ I ButtonStyle 1 Inactive Pixmap test3.xpm
++ I ButtonStyle 1 Inactive Pixmap
++ I ButtonStyle 1 MiniIcons
++ I ButtonStyle 1 miniicons
+
+AddTest "Test ButtonStyleDash" ButtonStyleDash-Func
+AddToFunc ButtonStyleDash-Func
++ I ButtonStyle 1 - MWMDecorMenu MWMDecorMin MWMDecorMax MWMDecorMenu
++ I ButtonStyle 1 - MWMDecorMenu MWMDecorMin MWMDecorMax MWMDecorMenu
++ I ButtonStyle 1 - MWMDecorMax
++ I ButtonStyle 1 - MWMDecorMin
++ I ButtonStyle 1 -
+
+AddTest "Test AddButtonStyleMisc" AddButtonStyleMisc-Func
+AddToFunc AddButtonStyleMisc-Func
++ I AddButtonStyle
++ I AddButtonStyle Reset
++ I AddButtonStyle All -- raisED
++ I AddButtonStyle All -- SUNk
++ I AddButtonStyle Left -- flat
++ I AddButtonStyle Left -- flat
++ I AddButtonStyle Right -- !flat
++ I AddButtonStyle Left Activeup -- raised
++ I AddButtonStyle Left Activeup -- raised
++ I AddButtonStyle Left activeDOWN -- sunk
++ I AddButtonStyle Left inactive -- flat
++ I AddButtonStyle Left inactive -- flat
++ I AddButtonStyle Left Activeup -- sunk
++ I AddButtonStyle 1 simple
++ I AddButtonStyle 1 simple
++ I AddButtonStyle 1 default 3
++ I AddButtonStyle 1 default 3
++ I AddButtonStyle 1 solid blaCK
++ I AddButtonStyle 1 solid blaCK
++ I AddButtonStyle 1 simple
+
+AddTest "Test AddButtonStyleGradients" AddButtonStyleGradients-Func
+AddToFunc AddButtonStyleGradients-Func
++ I AddButtonStyle 2 hgradient 16 green red
++ I AddButtonStyle 2 hgradient 16 green red
++ I AddButtonStyle 2 hgradient 16 red blue
++ I AddButtonStyle 2 hgradient 32 red blue
++ I AddButtonStyle 2 hgradient 128 red blue
++ I AddButtonStyle 2 hgradient 2 red blue
++ I AddButtonStyle 2 vgradient 16 green red
++ I AddButtonStyle 2 vgradient 16 green red
++ I AddButtonStyle 2 vgradient 16 red blue
++ I AddButtonStyle 2 vgradient 32 red blue
++ I AddButtonStyle 2 vgradient 128 red blue
++ I AddButtonStyle 2 vgradient 2 red blue
++ I AddButtonStyle 3 VGradient 16 3 Red 20 Blue 30 Black 50 Grey
++ I AddButtonStyle 3 VGradient 16 3 Red 20 Blue 30 Black 50 Grey
++ I AddButtonStyle 3 VGradient 16 4 Red 20 Blue 30 Black 20 Grey 30 yellow
++ I AddButtonStyle 3 VGradient 16 2 Red 20 Blue 80
++ I AddButtonStyle 3 VGradient 128 2 Red 20 Blue 80
++ I AddButtonStyle 3 VGradient 2 2 Red 20 Blue 80
++ I AddButtonStyle 3 hGradient 16 3 Red 20 Blue 30 Black 50 Grey
++ I AddButtonStyle 3 hGradient 16 3 Red 20 Blue 30 Black 50 Grey
++ I AddButtonStyle 3 hGradient 16 4 Red 20 Blue 30 Black 20 Grey 30 yellow
++ I AddButtonStyle 3 hGradient 16 2 Red 20 Blue 80
++ I AddButtonStyle 3 hGradient 128 2 Red 20 Blue 80
++ I AddButtonStyle 3 hGradient 2 2 Red 20 Blue 80
+
+AddTest "Test AddButtonStyleVectors" AddButtonStyleVectors-Func
+AddToFunc AddButtonStyleVectors-Func
++ I AddButtonStyle Reset
++ I AddButtonStyle 1 Vector 5 45x60@0 80x60@0 80x80@1 45x80@1 45x60@0
++ I AddButtonStyle 1 Vector 5 45x60@0 80x60@0 80x80@1 45x80@1 45x60@0
++ I AddButtonStyle 1 4 50x35@1 65x65@0 35x65@0 50x35@1
++ I AddButtonStyle 1 4 50x65@1 35x35@1 65x35@1 50x65@0
++ I AddButtonStyle 1 5 40x40@1 60x40@1 60x60@0 40x60@0 40x40@1
++ I AddButtonStyle 1 5
++ I AddButtonStyle 1 5 40x40@1 60x40@1 60x60@0 40x60@0 40x40@1
++ I AddButtonStyle Reset
+
+AddTest "Test AddButtonStylePixmaps" AddButtonStylePixmaps-Func
+AddToFunc AddButtonStylePixmaps-Func
++ I AddButtonStyle 1 Pixmap test1.xpm
++ I AddButtonStyle 1 Pixmap test2.xpm
++ I AddButtonStyle 1 TiledPixmap test2.xpm
++ I AddButtonStyle 1 TiledPixmap test2.xpm
++ I AddButtonStyle 1 TiledPixmap test1.xpm
++ I AddButtonStyle 1 ActiveUp (Pixmap test3.xpm) ActiveDown (Pixmap test2.xpm)
++ I AddButtonStyle 1 Inactive Pixmap nonexistent.xpm
++ I AddButtonStyle 1 Inactive Pixmap test3.xpm
++ I AddButtonStyle 1 Inactive Pixmap test3.xpm
++ I AddButtonStyle 1 Inactive Pixmap
++ I AddButtonStyle 1 MiniIcons
++ I AddButtonStyle 1 miniicons
+
+
+AddTest "Test CursorMove" CursorMove-Func
+AddToFunc CursorMove-Func
++ I CursorMove
++ I CursorMove 50p
++ I CursorMove   10p   -10p
++ I CursorMove 		-50		+50
++ I CursorMove -0 +0
++ I CursorMove -50p -50p
++ I CursorMove -1000 -1000
+
+AddTest "Test Desk" Desk-Func
+AddToFunc Desk-Func
++ I Desk
++ I Desk    2
++ I Desk		+3
++ I Desk -2
++ I Desk 0 1
++ I Desk   0    3
++ I Desk		0		1923874
++ I Desk +1 0 10
++ I Desk -1 0 10
++ I Desk 0 0 5 7
++ I Desk 0 -11111 5 7
++ I Desk 0 0
+
+AddTest "Test DeskTopSize" DeskTopSize-Func
+AddToFunc DeskTopSize-Func
++ I DeskTopSize
++ I DeskTopSize ödslajf
++ I DeskTopSize   2x2
++ I DeskTopSize		 2x2
++ I DeskTopSize 2x3
++ I DeskTopSize 2x3
++ I DeskTopSize 3x3
++ I DeskTopSize 3x1
++ I DeskTopSize 1x1
++ I DeskTopSize 0x2
++ I DeskTopSize 2x0
++ I DeskTopSize 0x0
++ I DeskTopSize 1000x1000
++ I DeskTopSize 2x2
+
+AddTest "Test Echo" Echo-Func
+AddToFunc Echo-Func
++ I Echo
++ I Echo
++ I Echo ädsa		 iopq9 $SHELL "'lksaä"
+
+AddTest "Test EdgeResistance" EdgeResistance-Func
+AddToFunc EdgeResistance-Func
++ I EdgeResistance
++ I EdgeResistance     300   10
++ I EdgeResistance		300		10
++ I EdgeResistance 400 400
++ I EdgeResistance 400 400
++ I EdgeResistance 300 10
++ I EdgeResistance 0 20
++ I EdgeResistance -1 20
++ I EdgeResistance 20 0
++ I EdgeResistance 20 -1
+
+AddTest "Test EdgeScroll" EdgeScroll-Func
+AddToFunc EdgeScroll-Func
++ I EdgeScroll
++ I EdgeScroll    50    50
++ I EdgeScroll		50		50
++ I EdgeScroll 100 100
++ I EdgeScroll -125 111
++ I EdgeScroll 100000 100000
++ I EdgeScroll 0 0
++ I EdgeScroll 75 75
+
+AddTest "Test ExecUseShell" ExecUseShell-Func
+AddToFunc ExecUseShell-Func
++ I ExecUseShell
++ I ExecUseShell
++ I ExecUseShell     /bin/bash
++ I ExecUseShell		/bin/bash
++ I ExecUseShell /bin/bash
++ I ExecUseShell /nonexistent/foo/bar
++ I ExecUseShell
+
+AddTest "Test Exec" Exec-Func
+AddToFunc Exec-Func
++ I Exec
++ I Exec  	 	 	""
++ I Exec echo "Test of exec using echo"
++ I Exec echo "Exec test, value of \$$d $d, \$$v $v, \$$[screen] $[screen]"
+
+AddTest "Test OldGlobalOptions" OldGlobalOptions-Func
+AddToFunc OldGlobalOptions-Func
++ I Style "*"  CleverPlacement, SmartPlacement
++ I Style "*"  ClickToFocusPassesClickOff, CLICKTOFOCUSPASSESCLICK
++ I Style "*"  ClickToFocusRaisesOff, CLICKTOFOCUSRAISES, MouseFocusClickRaisesOff, MOUSEFOCUSCLICKRAISES, StippledTitleOff, StippledTitle, STARTSONPAGEMODIFIESUSPOSITION, STARTSONPAGEHONORSUSPOSITION, CAPTUREHONORSSTARTSONPAGE, CAPTUREIGNORESSTARTSONPAGE, RECAPTUREHONORSSTARTSONPAGE, RECAPTUREIGNORESSTARTSONPAGE, ACTIVEPLACEMENTHONORSSTARTSONPAGE, ACTIVEPLACEMENTIGNORESSTARTSONPAGE
++ I Style "*"  äöwwwkjfd, 2wäeöqdpefoeqopweäöööööööööcöäowäjafewjäoäajopfdewjpoafdsjpoafsdäjopfdsjopfdasäjopdfsäjopfdsajpoafds, jäwpouef, päu3pä9, upä43owu, päfoopu, 43päuo, 4w3fuop, af, 4wawä4opufwuä4f, 4wp, apwöejaeäwfpöojwoäpfoejäwpajoeäjopfwejp\aawehoiöoaihöwhawepjpewfpjewfajopäefwjopewfjopajeopfwajopefwajpoewfajpoewfajpoaefwjopaewfjpoeafwjopaefwjopaewfjopafewjopfewajpoafewjfaewihoöwhöfohzfw4öof4whoiaf4ihoaf4ihofa, apwöejaeäwfpöojwoäpfoejäwpajoeäjopfwejp\aawehoiöoaihöwhawepjpewfpjewfajopäefwjopewfjopajeopfwajopefwajpoewfajpoewfajpoaefwjopaewfjpoeafwjopaefwjopaewfjopafewjopfewajpoafewjfaewihoöwhöfohzfw4öof4whoiaf4ihoaf4ihofa
+
+AddTest "Test GotoPage" GotoPage-Func
+AddToFunc GotoPage-Func
++ I GotoPage
++ I GotoPage  2  2
++ I GotoPage		1		1
++ I GotoPage -1 -100
++ I GotoPage 10000 1000000
++ I GotoPage 2 1
++ I GotoPage 2 1
++ I GotoPage 1 1
+
+AddTest "Test StyleHilightForeBack" StyleHilightForeBack-Func
+AddToFunc StyleHilightForeBack-Func
++ I Style "*" HilightFore , HilightBack 
++ I Style "*" HilightFore blue, HilightBack 
++ I Style "*" HilightFore green, HilightBack 
++ I Style "*" HilightFore black, HilightBack yellow
++ I Style "*" HilightFore black, HilightBack yellow
++ I Style "*" HilightFore gold2, HilightBack SteelBlue
++ I Style "*" HilightFore gold2, HilightBack SteelBlue
++ I Style "*" HilightFore , HilightBack 
++ I Style "*" HilightFore gold2, HilightBack SteelBlue
+
+AddTest "Test Key" Key-Func
+AddToFunc Key-Func
++ I Key
++ I Key f12
++ I Key f12 t
++ I key f12 t cs
++ I key		f12		t		cs
++ I Key		f12		a		a		Nop
++ I Key  f12     a  a     function nonexistent
++ I Key f12 a a function nonexistent
++ I Key f12 t a function nonexistent
++ I Key f12 t a -
++ I Key f12 t a -
+
+AddTest "Test MenuStyle" MenuStyle-Func
+AddToFunc MenuStyle-Func
++ I MenuStyle
++ I MenuStyle  red  yellow  green  9x15  mwm  anim
++ I MenuStyle 	red	 yellow	 green 	9x15	 mwm 	anim
++ I MenuStyle red yellow green 9x15 mwm anim
++ I MenuStyle red yellow green 9x15 mwm anim
++ I MenuStyle red yellow green 6x10 mwm anim
++ I MenuStyle red yellow green 6x10 mwm
++ I MenuStyle red yellow green 6x10 fvwm
++ I MenuStyle red yellow green 6x10 fvwm anim
++ I MenuStyle yellow black pink 8x13bold fvwm anim
+
+AddTest "Test Mouse" Mouse-Func
+AddToFunc Mouse-Func
++ I Mouse
++ I Mouse 2
++ I Mouse 2 t
++ I Mouse 2 t cs
++ I Mouse		2		t		cs
++ I Mouse		2		a		a		Nop
++ I Mouse  2     a  a     function nonexistent
++ I Mouse 2 a a function nonexistent
++ I Mouse 2 t a function nonexistent
++ I Mouse 2 t a -
++ I Mouse 2 t a -
+
+AddTest "Test Nop" Nop-Func
+AddToFunc Nop-Func
++ I Nop
++ I NOP
++ I nOp allöoawqj _Ö:K_ÖL ökq
+
+AddTest "Test OpaqueMoveSize" OpaqueMoveSize-Func
+AddToFunc OpaqueMoveSize-Func
++ I OpaqueMoveSize
++ I OpaqueMoveSize    50
++ I OpaqueMoveSize		50
++ I OpaqueMoveSize 0
++ I OpaqueMoveSize 0
++ I OpaqueMoveSize -1
++ I OpaqueMoveSize 100
++ I OpaqueMoveSize 200
++ I OpaqueMoveSize 75
++ I OpaqueMoveSize 75
++ I OpaqueMoveSize 0
+
+AddTest "Test Scroll" Scroll-Func
+AddToFunc Scroll-Func
++ I Scroll
++ I Scroll 50p
++ I Scroll   10p   -10p
++ I Scroll 		-50		+50
++ I Scroll -0 +0
++ I Scroll -50p -50p
++ I Scroll -1000 -1000
+
+AddTest "Test SetAnimation" SetAnimation-Func
+AddToFunc SetAnimation-Func
++ I SetAnimation
++ I SetAnimation  10  -.01 0 .01 .03 .08 .18 .3 .45 .6 .75 .85 .90 .94 .97 .99 1.0
++ I SetAnimation 10	 -.01 0	 .01 .03 .08 .18 .3 .45 .6 .75 .85 .90 .94 .97 .99 1.0
++ I SetAnimation 0 -.01 0 .01 .03 .08 .18 .3 .45 .6 .75 .85 .90 .94 .97 .99 1.0
++ I SetAnimation 20 -.01 0 .01 .03 .08
++ I SetAnimation 1000 -.01 0 .01 .03 .08
++ I SetAnimation 10 -.01 0 .01 .03 .08 .18 .3 .45 .6 .75 .85 .90 .94 .97 .99 1.0
+
+AddTest "Test SetEnv" SetEnv-Func
+AddToFunc SetEnv-Func
++ I SetEnv
++ I SetEnv FOO
++ I SetEnv   BAR bar
++ I SetEnv		FOOBAR		barfoo
++ I SetEnv "	FOO	" x
++ I SetEnv FOO "   ""ölwäökkü"''
++ I SetEnv FOO "   ""ölwäökkü"''
+
+AddTest "Test UnsetEnv" UnsetEnv-Func
+AddToFunc UnsetEnv-Func
++ I UnsetEnv FOO         BAR
++ I UnsetEnv       FOO
++ I UnSetEnv "   ""ölwäökkü"''
+
+AddTest "Test Title" Title-Func
+AddToFunc Title-Func
++ I Title
++ I Title "lökjads
++ I Title "lökjads
++ I Title -A -köq
+
+AddTest "Test StyleFont" StyleFont-Func
+AddToFunc StyleFont-Func
++ I Style "*" Font 
++ I Style "*" Font 9x15
++ I Style "*" Font 9x15
++ I Style "*" Font /nonexistent/foo/bar
++ I Style "*" Font -adobe-helvetica-bold-r-*-*-*-140-*-*-*-*-*-*
++ I Style "*" Font -adobe-helvetica-bold-r-*-*-*-140-*-*-*-*-*-*
++ I Style "*" Font 
+
+AddTest "Test XorValue" XorValue-Func
+AddToFunc XorValue-Func
++ I XORValue
++ I XORValue     1
++ I XORValue		1
++ I XORValue 0
++ I XORValue 0
++ I XORValue 255
++ I XORValue 255
++ I XORValue 128
++ I XORValue 0
+
+# Tests that require a window
+
+AddTest "Test CreateWindows" CreateWindows-Func
+AddToFunc CreateWindows-Func
++ I Style "*" SmartPlacement
++ I Style "*" RandomPlacement
++ I Style "*" MouseFocus
++ I AddToFunc makewindows
++ I AddToFunc makewindows "I" Exec xterm -geometry +0+0 -T window1 -n window1 -e sleep 1000
++ I AddToFunc makewindows "I" Wait window1
++ I AddToFunc makewindows "I" Exec xterm -geometry +50+50 -T window2 -n window2 -e sleep 1000
++ I AddToFunc makewindows "I" Wait window2
++ I AddToFunc makewindows "I" Exec xterm -geometry +100+100 -T window3 -n window3 -e sleep 1000
++ I AddToFunc makewindows "I" Wait window3
++ I AddToFunc makewindows "I" Exec xterm -geometry +150+150 -T window4 -n window4 -e sleep 1000
++ I AddToFunc makewindows "I" Wait window4
++ I AddToFunc makewindows "I" Exec xterm -geometry +200+200 -T window5 -n window5 -e sleep 1000
++ I AddToFunc makewindows "I" Wait window5
++ I AddToFunc makewindows "I" Exec xterm -geometry -0-0 -T window6 -n window6 -e sleep 1000
++ I AddToFunc makewindows "I" Wait window6
++ I function makewindows
++ I CursorMove 90 90
+
+AddTest "Test Style" Style-Func
+AddToFunc Style-Func
++ I Style "foo*" BorderWidth
++ I Style "foo*" BorderWidth  3
++ I Style "foo*" BorderWidth	5
++ I Style "foo*" BorderWidth	5
++ I Style "foo*" HandleWidth
++ I Style "foo*" HandleWidth  3
++ I Style "foo*" HandleWidth		7
++ I Style "foo*" HandleWidth		7
++ I Style "foo*" NoIcon
++ I Style "foo*" NoIcon
++ I Style "foo*" Icon
++ I Style "foo*" Icon
++ I Style "foo*" MiniIcon
++ I Style "foo*" MiniIcon
++ I Style "foo*" IconBox 1 5 100 500, IconGrid -10 10, IconFill
++ I Style "foo*" IconBox 1 5 100 500, IconGrid -0 10
++ I Style "foo*" NoTitle
++ I Style "foo*" NoTitle
++ I Style "foo*" Title
++ I Style "foo*" Title
++ I Style "foo*" NoHandles
++ I Style "foo*" NoHandles
++ I Style "foo*" Handles
++ I Style "foo*" Handles
++ I Style "foo*" WindowListSkip
++ I Style "foo*" WindowListSkip
++ I Style "foo*" WindowListHit
++ I Style "foo*" WindowListHit
++ I Style "foo*" CirculateSkip
++ I Style "foo*" CirculateSkip
++ I Style "foo*" CirculateHit
++ I Style "foo*" CirculateHit
++ I Style "foo*" StaysOnTop
++ I Style "foo*" StaysOnTop
++ I Style "foo*" StaysPut
++ I Style "foo*" StaysPut
++ I Style "foo*" Sticky
++ I Style "foo*" Sticky
++ I Style "foo*" Slippery
++ I Style "foo*" Slippery
++ I Style "foo*" StartIconic
++ I Style "foo*" StartIconic
++ I style "foo*" StartNormal
++ I style "foo*" StartNormal
++ I Style "foo*" Color
++ I Style "foo*" Color
++ I Style "foo*" ForeColor
++ I Style "foo*" ForeColor
++ I Style "foo*" BackColor
++ I Style "foo*" BackColor
++ I Style "foo*" StartsOnDesk
++ I Style "foo*" StartsOnDesk   0
++ I Style "foo*" StartsOnDesk		0
++ I Style "foo*" StartsOnDesk		0
++ I Style "foo*" StartsOnPage
++ I Style "foo*" StartsOnPage  0
++ I Style "foo*" StartsOnPage  0   0
++ I Style "foo*" StartsOnPage	0	0
++ I Style "foo*" StartsAnyWhere
++ I Style "foo*" StartsAnyWhere
++ I Style "foo*" IconTitle
++ I Style "foo*" IconTitle
++ I Style "foo*" NoIconTitle
++ I Style "foo*" NoIconTitle
++ I Style "foo*" MWMButtons
++ I Style "foo*" MWMButtons
++ I Style "foo*" FvwmButtons
++ I Style "foo*" FvwmButtons
++ I Style "foo*" MWMBorder
++ I Style "foo*" MWMBorder
++ I Style "foo*" FvwmBorder
++ I Style "foo*" FvwmBorder
++ I Style "foo*" MWMDecor
++ I Style "foo*" MWMDecor
++ I Style "foo*" NoDecorHint
++ I Style "foo*" NoDecorHint
++ I Style "foo*" MWMFunctions
++ I Style "foo*" MWMFunctions
++ I Style "foo*" NoFuncHint
++ I Style "foo*" NoFuncHint
++ I Style "foo*" HintOverride
++ I Style "foo*" HintOverride
++ I Style "foo*" NoOverride
++ I Style "foo*" NoOverride
++ I Style "foo*" NoButton
++ I Style "foo*" NoButton  1
++ I Style "foo*" NoButton		2
++ I Style "foo*" Button
++ I Style "foo*" Button  3
++ I Style "foo*" Button		0
++ I Style "foo*" OLDecor
++ I Style "foo*" OLDecor
++ I Style "foo*" NoOLDecor
++ I Style "foo*" NoOLDecor
++ I Style "foo*" StickyIcon
++ I Style "foo*" StickyIcon
++ I Style "foo*" SlipperyIcon
++ I Style "foo*" SlipperyIcon
++ I Style "foo*" SmartPlacement
++ I Style "foo*" SmartPlacement
++ I Style "foo*" DumbPlacement
++ I Style "foo*" DumbPlacement
++ I Style "foo*" RandomPlacement
++ I Style "foo*" RandomPlacement
++ I Style "foo*" ActivePlacement
++ I Style "foo*" ActivePlacement
++ I Style "foo*" DecorateTransient
++ I Style "foo*" DecorateTransient
++ I Style "foo*" NakedTransient
++ I Style "foo*" NakedTransient
++ I Style "foo*" SkipMapping
++ I Style "foo*" SkipMapping
++ I Style "foo*" ShowMapping
++ I Style "foo*" ShowMapping
++ I Style "foo*" UseDecor
++ I Style "foo*" UseDecor
++ I style "*f*" UseStyle
++ I style "*f*" UseStyle
++ I style "*f*" NoPPosition
++ I style "*f*" NoPPosition
++ I style "*f*" UsePPosition
++ I style "*f*" UsePPosition
++ I style "*f*" Lenience
++ I style "*f*" Lenience
++ I style "*f*" NoLenience
++ I style "*f*" NoLenience
++ I style "*f*" ClickToFocus
++ I style "*f*" ClickToFocus
++ I style "*f*" SloppyFocus
++ I style "*f*" SloppyFocus
++ I style "*f*" MouseFocus
++ I style "*f*" MouseFocus
++ I style "*f*" FocusFollowsMouse
++ I style "*f*" FocusFollowsMouse
+
+AddTest "Test Read_PipeRead" Read_PipeRead-Func
+AddToFunc Read_PipeRead-Func
++ I read
++ I read
++ I read /nonexistent/foo/bar
++ I read 	  /tmp/purify.read
+
++ I piperead
++ I piperead `sleep 2`
 ## hangs !!
 #piperead cat
-piperead "cat /nonexistent/foo/bar"
-piperead " 	cat	  /tmp/purify.read"
++ I piperead "cat /nonexistent/foo/bar"
++ I piperead " 	cat	  /tmp/purify.read"
 
-Log "Test DECORS"
+AddTest "Test AddToDecor" AddToDecor-Func
+AddToFunc AddToDecor-Func
++ I AddToDecor
++ I AddToDecor bar
++ I AddToDecor bar AddButtonStyle All ActiveUp (-- flat) Inactive (-- flat)
++ I AddToDecor bar ButtonStyle All ActiveUp (-- flat) Inactive (-- flat)
++ I AddToDecor bar AddTitleStyle -- flat
++ I AddToDecor bar TitleStyle -- flat
++ I AddToDecor bar BorderStyle -- HiddenHandles NoInset
++ I AddToDecor bar HilightColor white navy
++ I AddToDecor foo
++ I AddToDecor foo AddButtonStyle All ActiveUp (-- flat) Inactive (-- flat)
++ I AddToDecor foo ButtonStyle All ActiveUp (-- flat) Inactive (-- flat)
++ I AddToDecor foo AddTitleStyle -- flat
++ I AddToDecor foo TitleStyle -- flat
++ I AddToDecor foo BorderStyle -- HiddenHandles NoInset
++ I AddToDecor foo HilightColor white navy
++ I AddToDecor foo
++ I AddToDecor foo AddButtonStyle All ActiveUp (-- flat) Inactive (-- flat)
++ I AddToDecor foo ButtonStyle All ActiveUp (-- flat) Inactive (-- flat)
++ I AddToDecor foo AddTitleStyle -- flat
++ I AddToDecor foo TitleStyle -- flat
++ I AddToDecor foo BorderStyle -- HiddenHandles NoInset
++ I AddToDecor foo HilightColor white navy
 
-AddToDecor
-AddToDecor bar
- + AddButtonStyle All ActiveUp (-- flat) Inactive (-- flat)
- + ButtonStyle All ActiveUp (-- flat) Inactive (-- flat)
- + AddTitleStyle -- flat
- + TitleStyle -- flat
- + BorderStyle -- HiddenHandles NoInset
- + HilightColor white navy
-AddToDecor foo
- + AddButtonStyle All ActiveUp (-- flat) Inactive (-- flat)
- + ButtonStyle All ActiveUp (-- flat) Inactive (-- flat)
- + AddTitleStyle -- flat
- + TitleStyle -- flat
- + BorderStyle -- HiddenHandles NoInset
- + HilightColor white navy
-AddToDecor foo
- + AddButtonStyle All ActiveUp (-- flat) Inactive (-- flat)
- + ButtonStyle All ActiveUp (-- flat) Inactive (-- flat)
- + AddTitleStyle -- flat
- + TitleStyle -- flat
- + BorderStyle -- HiddenHandles NoInset
- + HilightColor white navy
+AddTest "Test SendToModule_KillModule" SendToModule_KillModule-Func
+AddToFunc SendToModule_KillModule-Func
++ "I" SendToModule
++ "I" SendToModule
++ "I" SendToModule	FvwmBanner	.-, q-l  ,j
++ "I" SendToModule		FvwmBanner		.-, q-l  ,j
++ "I" KillModule
++ "I" KillModule
++ "I" KillModule  	FvwmBanner
++ "I" KillModule FvwmBanner
++ "I" KillModule FvwmBanner
++ "I" KillModule FvwmBanner
++ "I" KillModule FvwmBanner
 
-Log "Test CREATE TEST FUNC"
+AddTest "Test Raise_RaiseLower_Lower" Raise_RaiseLower_Lower-Func
+AddToFunc Raise_RaiseLower_Lower-Func
++ "I" Raise
++ "I" Lower
++ "I" RaiseLower
++ "I" RaiseLower
++ "I" Raise
++ "I" Lower
++ "I" RaiseLower
++ "I" RaiseLower
++ "I" Raise asöpoi
++ "I" Lower asöpoi
++ "I" RaiseLower asöpoi
++ "I" RaiseLower asöpoi
++ "I" Raise
 
-Log "Test SEND TO MODULE, KILL MODULE"
+AddTest "Test Moves" Moves-Func
+AddToFunc Moves-Func
++ "I" AnimatedMove 50 50 warp
++ "I" AnimatedMove -50 -50 warp
++ "I" Move   10    10
++ "I" Move		-10		-10
++ "I" MoveToPage
++ "I" MoveToPage
++ "I" MoveToPage 1 1
++ "I" MoveToPage 10000 -12312
++ "I" MoveToPage 0 0
++ "I" MoveToDesk
++ "I" MoveToDesk    2
++ "I" MoveToDesk		+3
++ "I" MoveToDesk -2
++ "I" MoveToDesk 0 1
++ "I" MoveToDesk   0    3
++ "I" MoveToDesk		0		1923874
++ "I" MoveToDesk +1 0 10
++ "I" MoveToDesk -1 0 10
++ "I" MoveToDesk 0 0 5 7
++ "I" MoveToDesk 0 -11111 5 7
++ "I" MoveToDesk 0 0
 
-AddToFunc test_func
- + "I" SendToModule
- + "I" SendToModule
- + "I" SendToModule		FvwmBanner		.-, q-l  ,j
- + "I" SendToModule		FvwmBanner		.-, q-l  ,j
- + "I" KillModule
- + "I" KillModule
- + "I" KillModule  	FvwmBanner
- + "I" KillModule FvwmBanner
- + "I" KillModule FvwmBanner
- + "I" KillModule FvwmBanner
- + "I" KillModule FvwmBanner
-
-Log "Test RAISE, RAISE LOWER, LOWER"
-
- + "I" Raise
- + "I" Lower
- + "I" RaiseLower
- + "I" RaiseLower
- + "I" Raise
- + "I" Lower
- + "I" RaiseLower
- + "I" RaiseLower
- + "I" Raise asöpoi
- + "I" Lower asöpoi
- + "I" RaiseLower asöpoi
- + "I" RaiseLower asöpoi
- + "I" Raise
-
-Log "Test MOVE, ANIMATED MOVE, MOVE TO PAGE, MOVE TO DESK"
-
- + "I" AnimatedMove 50 50 warp
- + "I" AnimatedMove -50 -50 warp
- + "I" Move   10    10
- + "I" Move		-10		-10
- + "I" MoveToPage
- + "I" MoveToPage
- + "I" MoveToPage 1 1
- + "I" MoveToPage 10000 -12312
- + "I" MoveToPage 0 0
- + "I" MoveToDesk
- + "I" MoveToDesk    2
- + "I" MoveToDesk		+3
- + "I" MoveToDesk -2
- + "I" MoveToDesk 0 1
- + "I" MoveToDesk   0    3
- + "I" MoveToDesk		0		1923874
- + "I" MoveToDesk +1 0 10
- + "I" MoveToDesk -1 0 10
- + "I" MoveToDesk 0 0 5 7
- + "I" MoveToDesk 0 -11111 5 7
- + "I" MoveToDesk 0 0
-
-Log "Test RESIZE, MAXIMIZE, ICONIFY"
-
+AddTest "Test Resize_Maximize" Resize_Maximize-Func
+AddToFunc Resize_Maximize-Func
  + "I" Resize 50 50
  + "I" Resize   45    45
  + "I" Resize		40		60
@@ -1374,6 +1402,9 @@ Log "Test RESIZE, MAXIMIZE, ICONIFY"
  + "I" Maximize		0	100
  + "I" Maximize 50 50
  + "I" Maximize
+
+AddTest "Test Iconify" Iconify-Func
+AddToFunc Iconify-Func
  + "I" Iconify
  + "I" Iconify   0 üpikü
  + "I" Iconify		0
@@ -1382,14 +1413,14 @@ Log "Test RESIZE, MAXIMIZE, ICONIFY"
  + "I" Iconify 1
  + "I" Iconify -102973
 
-Log "Test STICK"
-
+AddTest "Test Stick" Stick-Func
+AddToFunc Stick-Func
  + "I" Stick
  + "I" Stick
  + "I" Stick öäpqewikrpü8.,.-kl-.294
 
-Log "Test WARP TO WINDOW"
-
+AddTest "Test WarpToWindow" WarpToWindow-Func
+AddToFunc WarpToWindow-Func
  + "I" CursorMove -100 -100
  + "I" CursorMove 0 100
  + "I" WarpToWindow
@@ -1403,9 +1434,8 @@ Log "Test WARP TO WINDOW"
  + "I" CursorMove 0 100
  + "I" WarpToWindow 50 50
 
-Log "Test DECOR COMMANDS"
-
-AddToFunc test_func
+AddTest "Test DecorCommands" DecorCommands-Func
+AddToFunc DecorCommands-Func
  + "I" DestroyDecor
  + "I" DestroyDecor bar
  + "I" DestroyDecor bar
@@ -1416,9 +1446,8 @@ AddToFunc test_func
  + "I" ChangeDecor
  + "I" ChangeDecor foo
 
-Log "Test WINDOW SHADE"
-
-AddToFunc test_func
+AddTest "Test WindowShade" WindowShade-Func
+AddToFunc WindowShade-Func
  + "I" WindowShade
  + "I" WindowShade 1
  + "I" WindowShade 1
@@ -1428,8 +1457,8 @@ AddToFunc test_func
  + "I" WindowShade
  + "I" WindowShade 1
 
-Log "Test REFRESH WINDOW, REFRESH, RECAPTURE"
-
+AddTest "Test Refresh_Recapture" Refresh_Recapture-Func
+AddToFunc Refresh_Recapture-Func
  + "I" RefreshWindow
  + "I" RefreshWindow
  + "I" RefreshWindow wäepik-ö .-,poci32
@@ -1437,12 +1466,12 @@ Log "Test REFRESH WINDOW, REFRESH, RECAPTURE"
  + "I" Refresh
  + "I" Refresh .-3mölp 9 n a.d.ök3qj0
 # These can cause heap corruption (see bug #42)
-# + "I" Recapture
-# + "I" Recapture
-# + "I" Recapture .-QW,ÖKcäük,.-qköcli qopiuw
+ + "I" Recapture
+ + "I" Recapture
+ + "I" Recapture .-QW,ÖKcäük,.-qköcli qopiuw
 
-Log "Test FOCUS, FLIP FOCUS, NEXT, PREV, CURRENT, NONE"
-
+AddTest "Test Next_Prev_Current_None" Next_Prev_Current_None-Func
+AddToFunc Next_Prev_Current_None-Func
  + "I" prev
  + "I" prev
  + "I" prev  ()
@@ -1464,8 +1493,8 @@ Log "Test FOCUS, FLIP FOCUS, NEXT, PREV, CURRENT, NONE"
  + "I" none   (*)   focus
  + "I" none		(*)		flipfocus olöiqwehj
 
-Log "Test WINDOW ID"
-
+AddTest "Test WindowId" WindowId-Func
+AddToFunc WindowId-Func
  + "I" WindowID
  + "I" WindowID
  + "I" WindowID 0x7491
@@ -1474,15 +1503,15 @@ Log "Test WINDOW ID"
  + "I" WindowID   0x00110011   nop
  + "I" WindowID		0x00110011		nop
 
-Log "Test WINDOW LIST"
-
+AddTest "Test WindowList" WindowList-Func
+AddToFunc WindowList-Func
  + "I" WindowList
  + "I" WindowList
  + "I" WindowList NoGeometry,    Function		nonexistent,	Desk    0, CurrentDesk, NoIcons, Icons, OnlyIcons, NoNormal, Normal, OnlyNormal, NoSticky, Sticky, OnlySticky, NoOnTop, OnTop, OnlyOnTop, UseIconName, Alphabetic, NotAlphabetic Nop
  + "I" WindowList NoGeometry,    Function		nonexistent,	Desk    0, CurrentDesk, NoIcons, Icons, OnlyIcons, NoNormal, Normal, OnlyNormal, NoSticky, Sticky, OnlySticky, NoOnTop, OnTop, OnlyOnTop, UseIconName, Alphabetic, NotAlphabetic Nop
 
-Log "Test CLOSE, DELETE, DESTROY"
-
+AddTest "Test Close_Delete_Destroy" Close_Delete_Destroy-Func
+AddToFunc Close_Delete_Destroy-Func
  + "I" Close
  + "I" Close
  + "I" Close #älök.,nm-öp93m-öki 0 <F3>üß8
@@ -1494,206 +1523,124 @@ Log "Test CLOSE, DELETE, DESTROY"
 # + "I" Destroy
 # + "I" Destroy
 
-Log "Test all functions without parameters"
 
-AddToFunc test_func
- + "I" echo AddButtonStyle
- + "I" AddButtonStyle
- + "I" echo AddTitleStyle
- + "I" AddTitleStyle
- + "I" echo AddToDecor
- + "I" AddToDecor
- + "I" echo AddToFunc
- + "I" AddToFunc
- + "I" echo AddToMenu
- + "I" AddToMenu
- + "I" echo AnimatedMove
- + "I" AnimatedMove
- + "I" echo Beep
- + "I" Beep
- + "I" echo BorderStyle
- + "I" BorderStyle
- + "I" echo ButtonStyle
- + "I" ButtonStyle
- + "I" echo ChangeDecor
- + "I" ChangeDecor
- + "I" echo ClickTime
- + "I" ClickTime
- + "I" echo Close
- + "I" Close
- + "I" echo ColorLimit
- + "I" ColorLimit
- + "I" echo ColormapFocus
- + "I" ColormapFocus
- + "I" echo Current
- + "I" Current
- + "I" echo CursorMove
- + "I" CursorMove
- + "I" echo CursorStyle
- + "I" CursorStyle
- + "I" echo Delete
- + "I" Delete
- + "I" echo Desk
- + "I" Desk
- + "I" echo DeskTopSize
- + "I" DeskTopSize
-# This can cause heap corruption (see bug #42)
-# + "I" echo Destroy
-# + "I" Destroy
- + "I" echo DestroyDecor
- + "I" DestroyDecor
- + "I" echo DestroyFunc
- + "I" DestroyFunc
- + "I" echo DestroyMenu
- + "I" DestroyMenu
- + "I" echo DestroyModuleConfig
- + "I" DestroyModuleConfig
- + "I" echo Echo
- + "I" Echo
- + "I" echo EdgeResistance
- + "I" EdgeResistance
- + "I" echo EdgeScroll
- + "I" EdgeScroll
- + "I" echo Exec
- + "I" Exec
- + "I" echo ExecUseShell
- + "I" ExecUseShell
- + "I" echo FlipFocus
- + "I" FlipFocus
- + "I" echo Focus
- + "I" Focus
- + "I" echo Function
- + "I" Function
- + "I" echo GlobalOpts
- + "I" GlobalOpts
- + "I" echo GotoPage
- + "I" GotoPage
- + "I" echo HilightColor
- + "I" HilightColor
- + "I" echo IconFont
- + "I" IconFont
- + "I" echo Iconify
- + "I" Iconify
- + "I" echo IconPath
- + "I" IconPath
- + "I" echo Key
- + "I" Key
- + "I" echo KillModule
- + "I" KillModule
- + "I" echo Lower
- + "I" Lower
- + "I" echo Maximize
- + "I" Maximize
- + "I" echo Menu
- + "I" Menu
- + "I" echo MenuStyle
- + "I" MenuStyle
- + "I" echo Module
- + "I" Module
- + "I" echo ModulePath
- + "I" ModulePath
- + "I" echo Move
- + "I" Move
- + "I" echo MoveToPage
- + "I" MoveToPage
- + "I" echo Nop
- + "I" Nop
- + "I" echo Next
- + "I" Next
- + "I" echo None
- + "I" None
- + "I" echo OpaqueMoveSize
- + "I" OpaqueMoveSize
- + "I" echo PipeRead
- + "I" PipeRead
- + "I" echo PixmapPath
- + "I" PixmapPath
- + "I" echo Popup
- + "I" Popup
- + "I" echo Prev
- + "I" Prev
- + "I" echo Raise
- + "I" Raise
- + "I" echo RaiseLower
- + "I" RaiseLower
- + "I" echo Read
- + "I" Read
-# This can cause heap corruption (see bug #42)
-# + "I" echo Recapture
-# + "I" Recapture
- + "I" echo Refresh
- + "I" Refresh
- + "I" echo RefreshWindow
- + "I" RefreshWindow
- + "I" echo Resize
- + "I" Resize
- + "I" echo SendToModule
- + "I" SendToModule
- + "I" echo SetAnimation
- + "I" SetAnimation
- + "I" echo SetMenuDelay
- + "I" SetMenuDelay
- + "I" echo SetEnv
- + "I" SetEnv
- + "I" echo Scroll
- + "I" Scroll
- + "I" echo Stick
- + "I" Stick
- + "I" echo Style
- + "I" Style
- + "I" echo Title
- + "I" Title
- + "I" echo TitleStyle
- + "I" TitleStyle
- + "I" echo TitleStyle
- + "I" TitleStyle
- + "I" echo UpdateDecor
- + "I" UpdateDecor
- + "I" echo WarpToWindow
- + "I" WarpToWindow
+# ShortHand Function for next test:
+DestroyFunc EchoDo
+AddToFunc EchoDo
++ I AddToFunc AllFunctionsNoParams-Func I Echo Doing $0
++ I AddToFunc AllFunctionsNoParams-Func I $0
 
+
+AddTest "Test AllFunctionsNoParams" AllFunctionsNoParams-Func
+AddToFunc AllFunctionsNoParams-Func 
+EchoDo AddButtonStyle
+EchoDo AddTitleStyle
+EchoDo AddToDecor
+EchoDo AddToFunc
+EchoDo AddToMenu
+EchoDo AnimatedMove
+EchoDo Beep
+EchoDo BorderStyle
+EchoDo ButtonStyle
+EchoDo ChangeDecor
+EchoDo ClickTime
+EchoDo Close
+EchoDo ColorLimit
+EchoDo ColormapFocus
+EchoDo Current
+EchoDo CursorMove
+EchoDo CursorStyle
+EchoDo Delete
+EchoDo Desk
+EchoDo DeskTopSize
+# This can cause heap corruption (see bug #42)
+#EchoDo Destroy
+EchoDo DestroyDecor
+EchoDo DestroyFunc
+EchoDo DestroyMenu
+EchoDo DestroyModuleConfig
+EchoDo Echo
+EchoDo EdgeResistance
+EchoDo EdgeScroll
+EchoDo Exec
+EchoDo ExecUseShell
+EchoDo FlipFocus
+EchoDo Focus
+EchoDo Function
+EchoDo GlobalOpts
+EchoDo GotoPage
+EchoDo HilightColor
+EchoDo IconFont
+EchoDo Iconify
+EchoDo IconPath
+EchoDo Key
+EchoDo KillModule
+EchoDo Lower
+EchoDo Maximize
+EchoDo Menu
+EchoDo MenuStyle
+EchoDo Module
+EchoDo ModulePath
+EchoDo Move
+EchoDo MoveToPage
+EchoDo Nop
+EchoDo Next
+EchoDo None
+EchoDo OpaqueMoveSize
+EchoDo PipeRead
+EchoDo PixmapPath
+EchoDo Popup
+EchoDo Prev
+EchoDo Raise
+EchoDo RaiseLower
+EchoDo Read
+# This can cause heap corruption (see bug #42)
+#EchoDo Recapture
+EchoDo Refresh
+EchoDo RefreshWindow
+EchoDo Resize
+EchoDo SendToModule
+EchoDo SetAnimation
+EchoDo SetMenuDelay
+EchoDo SetEnv
+EchoDo Scroll
+EchoDo Stick
+EchoDo Style
+EchoDo Title
+EchoDo TitleStyle
+EchoDo TitleStyle
+EchoDo UpdateDecor
+EchoDo WarpToWindow
 #Log "Test hang"
-#echo Wait
 #Wait
+EchoDo MoveToDesk
+EchoDo WindowFont
+EchoDo WindowId
+EchoDo WindowList
+EchoDo WindowShade
+EchoDo XORvalue
 
-AddToFunc test_func
- + "I" echo MoveToDesk
- + "I" MoveToDesk
- + "I" echo WindowFont
- + "I" WindowFont
- + "I" echo WindowId
- + "I" WindowId
- + "I" echo WindowList
- + "I" WindowList
- + "I" echo WindowShade
- + "I" WindowShade
- + "I" echo XORvalue
- + "I" XORvalue
-
-Log "Test ModulePath"
+AddTest "Test ModulePath" ModulePath-Func
+AddToFunc ModulePath-Func
 # the proper config does not have ModulePath, this overwrites a good default
 # This is near the end because it kills module execution.
++ I ModulePath
++ I ModulePath
++ I ModulePath $HOME/bin/fvwm2:/usr/local/libexec/fvwm/2.1.2
++ I ModulePath /usr/local/libexec/fvwm/2.1.2:/nonexisT/FOO/bar:$HOME/bin/fvwm2
++ I ModulePath /usr/local/libexec/fvwm/2.1.2:/nonexisT/FOO/bar:$HOME/bin/fvwm2
++ I ModulePath $HOME/bin/fvwm2
++ I ModulePath   $HOME/bin/fvwm2:/usr/local/libexec/fvwm/2.1.2:/nonexist/foo/bar
++ I ModulePath 		$HOME/bin/fvwm2:/usr/local/libexec/fvwm/2.1.2:/nonexist/foo/bar
++ I ModulePath
++ I ModulePath $HOME/bin/fvwm2:/usr/local/libexec/fvwm/2.3.22:/opt/public/src/fvwm/2.3.22
 
-ModulePath
-ModulePath
-ModulePath $HOME/bin/fvwm2:/usr/local/libexec/fvwm/2.1.2
-ModulePath /usr/local/libexec/fvwm/2.1.2:/nonexisT/FOO/bar:$HOME/bin/fvwm2
-ModulePath /usr/local/libexec/fvwm/2.1.2:/nonexisT/FOO/bar:$HOME/bin/fvwm2
-ModulePath $HOME/bin/fvwm2
-ModulePath   $HOME/bin/fvwm2:/usr/local/libexec/fvwm/2.1.2:/nonexist/foo/bar
-ModulePath 		$HOME/bin/fvwm2:/usr/local/libexec/fvwm/2.1.2:/nonexist/foo/bar
-ModulePath
-ModulePath $HOME/bin/fvwm2:/usr/local/libexec/fvwm/2.3.22:/opt/public/src/fvwm/2.3.22
-
-Log "Test cleanup"
-AddToFunc test_func
+AddTest "Test Cleanup" Cleanup-Func
+AddToFunc Cleanup-Func
  + "I" beep
  + "I" Echo ------------ ok ------------
  + "I" quit poesfj apäuofw ük-lnlöiooüp. ..a,sjdms.,x-,
 
-Mouse 1 a a function test_func
-Mouse 2 a a function test_func
-Mouse 3 a a function test_func
-Key F12 a a function test_func
+Menu TestMenu
 
-Log "Tests done, F12 or any mouse button will make fvwm quit"
+Log "After Menu-Prompt, Done."
