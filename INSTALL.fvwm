@@ -1,5 +1,5 @@
 VMS users: ignore this file, and follow the instructions in vms/README
-instead. 
+instead.
 
 This file details only configuration options peculiar to FVWM.  Please
 read the generic instructions in INSTALL first.
@@ -180,10 +180,73 @@ the version of the switch that you are likely to use is the one
 listed.
 
 
+  --disable-activedown-button	disable ActiveDown button state
+
+Disables the ActiveDown button state.  This state allows different
+button styles for pressed down buttons on active windows, and also for
+the title-bar if extended-titlestyle is enabled (see below).  The man
+page refers to this button state as "ActiveDown."  If not defined, the
+"ActiveUp" state is used instead.  Disabling this reduces memory
+usage.
+
+  --disable-borderstyle		disable BorderStyle command
+
+Disables the BorderStyle command.  Not all button styles are
+available.  See the man page entry for BorderStyle for usage
+information.  If you are also using pixmap-buttons, you can also
+texture your borders with tiled pixmaps.  The BorderStyle command has
+Active and Inactive states, regardless of the activedown-button and
+inactive-button flags.
+
+  --enable-debug-msgs		enable debugging messages
+
+If you would like to see lots of debug messages from FVWM, for
+debugging purposes, enable this option.
+
+  --disable-extended-titlestyle	 disable styled title-bars
+
+Disables styled title-bars.  These are specified with the TitleStyle
+command in a similar fashion to the ButtonStyle command.  This flag
+this also controls whether support to change the title-bar height is
+compiled in.
+
+  --disable-gradient-buttons    disable gradient button style
+
+Disables the gradient button style.  See the man page button style
+entries for "HGradient" and "VGradient" for usage information.
+
+  --disable-inactive-button	disable Inactive button state
+
+Disables the Inactive button state.  This state allows different
+button styles for inactive windows, and also for the title-bar if
+extended-titlestyle is enabled (see below).  The man page refers to
+this button state as "Inactive."  If not defined, the "ActiveUp" state
+is used instead.  Disabling this reduces memory usage.
+
+  --disable-mini-icons		disable MiniIcon style option
+
+Disables the "MiniIcon" Style option to specify a small pixmap which
+can be used as one of the title-bar buttons, shown in window list,
+utilized by modules, etc.  Requires pixmap-buttons to be defined (see
+below).
+
   --disable-modality		disable modal dialogs for applications
 
 Totally disables motif applications ability to have modal dialogs.
 Use with care.
+
+  --disable-multistyle		disable stacked button styles
+
+Disables stacked button styles (also for the title-bar if
+extended-titlestyle is enabled).  There is a slight memory penalty for
+each additional style. See the man page entries for AddButtonStyle and
+AddTitleStyle for usage information.
+
+  --disable-pixmap-buttons	disable pixmap button style
+
+Disables the pixmap button style.  You must have Xpm support to use
+color pixmaps.  See the man page button style entries for "Pixmap" and
+"TiledPixmap" for usage information.
 
   --disable-saveunder		disable saveunders for pop-up menus
 
@@ -212,69 +275,6 @@ yourself.
 Note: if it is compiled in, run time detection is used to make sure
 that the currently running X server supports it.
 
-  --disable-activedown-button	disable ActiveDown button state
-
-Disables the ActiveDown button state.  This state allows different
-button styles for pressed down buttons on active windows, and also for
-the title-bar if extended-titlestyle is enabled (see below).  The man
-page refers to this button state as "ActiveDown."  If not defined, the
-"ActiveUp" state is used instead.  Disabling this reduces memory
-usage.
-
-  --disable-inactive-button	disable Inactive button state
-
-Disables the Inactive button state.  This state allows different
-button styles for inactive windows, and also for the title-bar if
-extended-titlestyle is enabled (see below).  The man page refers to
-this button state as "Inactive."  If not defined, the "ActiveUp" state
-is used instead.  Disabling this reduces memory usage.
-
-  --disable-mini-icons		disable MiniIcon style option
-
-Disables the "MiniIcon" Style option to specify a small pixmap which
-can be used as one of the title-bar buttons, shown in window list,
-utilized by modules, etc.  Requires pixmap-buttons to be defined (see
-below).
-
-  --disable-vector-buttons	disable vector button style
-
-Disables the vector button style.  This button type is considered
-"standard," so it is recommended that you leave it in.
-
-  --disable-pixmap-buttons	disable pixmap button style
-
-Disables the pixmap button style.  You must have Xpm support to use
-color pixmaps.  See the man page button style entries for "Pixmap" and
-"TiledPixmap" for usage information.
-
-  --disable-gradient-buttons    disable gradient button style
-
-Disables the gradient button style.  See the man page button style
-entries for "HGradient" and "VGradient" for usage information.
-
-  --disable-multistyle		disable stacked button styles
-
-Disables stacked button styles (also for the title-bar if
-extended-titlestyle is enabled).  There is a slight memory penalty for
-each additional style. See the man page entries for AddButtonStyle and
-AddTitleStyle for usage information.
-
-  --disable-extended-titlestyle	 disable styled title-bars
-
-Disables styled title-bars.  These are specified with the TitleStyle
-command in a similar fashion to the ButtonStyle command.  This flag
-this also controls whether support to change the title-bar height is
-compiled in.
-
-  --disable-borderstyle		disable BorderStyle command
-
-Disables the BorderStyle command.  Not all button styles are
-available.  See the man page entry for BorderStyle for usage
-information.  If you are also using pixmap-buttons, you can also
-texture your borders with tiled pixmaps.  The BorderStyle command has
-Active and Inactive states, regardless of the activedown-button and
-inactive-button flags.
-
   --disable-usedecor		disable UseDecor style option
 
 Disables tagged general decoration styles which can be assigned to
@@ -283,15 +283,13 @@ ChangeDecor.  To create and destroy "decor" definitions, see the man
 page entries for AddToDecor and DestroyDecor.  There is a slight
 memory penalty for each additionally defined decor.
 
+  --disable-vector-buttons	disable vector button style
+
+Disables the vector button style.  This button type is considered
+"standard," so it is recommended that you leave it in.
+
   --disable-windowshade		disable WindowShade function
 
 Disables the WindowShade function.  This function "rolls" the window
 up so only the title-bar remains.  See the man page entry for
 "WindowShade" for more information.
-
-  --enable-debug-msgs		enable debugging messages
-
-If you would like to see lots of debug messages from FVWM, for
-debugging purposes, enable this option.
-
-

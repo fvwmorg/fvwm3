@@ -508,7 +508,7 @@ FvwmWindow *AddWindow(Window w)
     tmp_win->title_width = 1;
   if(tmp_win->flags & BORDER)
     {
-      /* Just dump the windows any old place and left SetupFrame take
+      /* Just dump the windows any old place and let SetupFrame take
        * care of the mess */
       for(i=0;i<4;i++)
 	{

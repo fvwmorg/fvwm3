@@ -14,21 +14,21 @@ AC_SUBST(FVWM_CONFIGDIR)
 
 dnl Various configure-time options
 dnl
-smr_SWITCH(modality, modal dialogs for applications, on, , MODALITY_IS_EVIL)
-smr_SWITCH(saveunder, saveunders for pop-up menus, on, , NO_SAVEUNDERS)
-smr_SWITCH(shape, shape extensions, on, SHAPE)
 smr_SWITCH(activedown-button, ActiveDown button state, on, ACTIVEDOWN_BTNS)
+smr_SWITCH(borderstyle, BorderStyle command, on, BORDERSTYLE)
+smr_SWITCH(debug-msgs, debugging messages, off, FVWM_DEBUG_MSGS)
+smr_SWITCH(extended-titlestyle, styled title-bars, on, EXTENDED_TITLESTYLE)
+smr_SWITCH(gradient-buttons, gradient button style, on, GRADIENT_BUTTONS)
 smr_SWITCH(inactive-button, Inactive button state, on, INACTIVE_BTNS)
 smr_SWITCH(mini-icons, MiniIcon style option, on, MINI_ICONS)
-smr_SWITCH(vector-buttons, vector button style, on, VECTOR_BUTTONS)
-smr_SWITCH(pixmap-buttons, pixmap button style, on, PIXMAP_BUTTONS)
-smr_SWITCH(gradient-buttons, gradient button style, on, GRADIENT_BUTTONS)
+smr_SWITCH(modality, modal dialogs for applications, on, , MODALITY_IS_EVIL)
 smr_SWITCH(multistyle, stacked button styles, on, MULTISTYLE)
-smr_SWITCH(extended-titlestyle, styled title-bars, on, EXTENDED_TITLESTYLE)
-smr_SWITCH(borderstyle, BorderStyle command, on, BORDERSTYLE)
+smr_SWITCH(pixmap-buttons, pixmap button style, on, PIXMAP_BUTTONS)
+smr_SWITCH(saveunder, saveunders for pop-up menus, on, , NO_SAVEUNDERS)
+smr_SWITCH(shape, shape extensions, on, SHAPE)
 smr_SWITCH(usedecor, UseDecor style option, on, USEDECOR)
+smr_SWITCH(vector-buttons, vector button style, on, VECTOR_BUTTONS)
 smr_SWITCH(windowshade, WindowShade function, on, WINDOWSHADE)
-smr_SWITCH(debug-msgs, debugging messages, off, FVWM_DEBUG_MSGS)
 
 dnl FIXME: default value should be derived from computed path to X
 dnl includes.  Actually, this should probably not appear in configure

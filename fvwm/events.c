@@ -1166,18 +1166,18 @@ void HandleButtonPress()
   }
   else if ((Tmp_win) && !(Tmp_win->flags & ClickToFocus) &&
            (Event.xbutton.window == Tmp_win->frame) &&
-          Scr.MouseFocusClickRaises)
+	   Scr.MouseFocusClickRaises)
   {
     if (Tmp_win != Scr.LastWindowRaised &&
         (Event.xbutton.state & mods_used) == 0 &&
         GetContext(Tmp_win,&Event, &PressedW) == C_WINDOW)
     {
       RaiseWindow(Tmp_win);
+      XSync(dpy,0);
+      XAllowEvents(dpy,ReplayPointer,CurrentTime);
+      XSync(dpy,0);
+      return;
     }
-    XSync(dpy,0);
-    XAllowEvents(dpy,ReplayPointer,CurrentTime);
-    XSync(dpy,0);
-    return;
   }
 
   XSync(dpy,0);
@@ -1189,7 +1189,8 @@ void HandleButtonPress()
   if(Context == C_TITLE)
     SetTitleBar(Tmp_win,(Scr.Hilite == Tmp_win),False);
   else
-    SetBorder(Tmp_win,(Scr.Hilite == Tmp_win),True,True,Tmp_win ? Tmp_win->frame : 0);
+    SetBorder(Tmp_win,(Scr.Hilite == Tmp_win),True,True,
+	      Tmp_win ? Tmp_win->frame : 0);
 
   ButtonWindow = Tmp_win;
 
@@ -1199,7 +1200,7 @@ void HandleButtonPress()
   modifier = (Event.xbutton.state & mods_used);
   /* need to search for an appropriate mouse binding */
   for (MouseEntry = Scr.AllBindings; MouseEntry != NULL;
-       MouseEntry= MouseEntry->NextBinding)
+       MouseEntry = MouseEntry->NextBinding)
   {
     if(((MouseEntry->Button_Key == Event.xbutton.button)||
         (MouseEntry->Button_Key == 0))&&
@@ -1250,8 +1251,8 @@ void HandleEnterNotify()
         }
     }
 
-/* an EnterEvent in one of the PanFrameWindows activates the Paging */
 #ifndef NON_VIRTUAL
+  /* an EnterEvent in one of the PanFrameWindows activates the Paging */
   if (ewp->window==Scr.PanFrameTop.win
       || ewp->window==Scr.PanFrameLeft.win
       || ewp->window==Scr.PanFrameRight.win
@@ -1261,7 +1262,7 @@ void HandleEnterNotify()
     /* this was in the HandleMotionNotify before, HEDU */
     HandlePaging(Scr.EdgeScrollX,Scr.EdgeScrollY,
                  &Event.xcrossing.x_root,&Event.xcrossing.y_root,
-                 &delta_x,&delta_y,True);
+                 &delta_x,&delta_y,True,True);
     return;
   }
 #endif /* NON_VIRTUAL */

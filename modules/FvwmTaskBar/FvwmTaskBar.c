@@ -806,12 +806,14 @@ void LoopOnEvents()
     switch(Event.type) {
       case ButtonRelease:
         num = WhichButton(&buttons, Event.xbutton.x, Event.xbutton.y);
-        if (num != -1) {
+        if (num == -1) {
+	  if (MouseInStartButton(Event.xbutton.x, Event.xbutton.y))
+	    StartButtonUpdate(NULL, BUTTON_UP);
+	} else {
           ButReleased = ButPressed; /* Avoid race fvwm pipe */
           BelayHide = True; /* Don't AutoHide when function ends */
           SendFvwmPipe(ClickAction[Event.xbutton.button-1],
                        ItemID(&windows, num));
-          redraw = 0;
         }
 
         if (HighlightFocus) {
@@ -819,6 +821,7 @@ void LoopOnEvents()
           if (num != -1) SendFvwmPipe("Focus 0", ItemID(&windows, num));
         }
         ButPressed = -1;
+	redraw = 0;
         break;
 
       case ButtonPress:
@@ -835,15 +838,17 @@ void LoopOnEvents()
           }
           sprintf(tmp,"Popup %s %d %d", StartPopup, x, y);
           SendFvwmPipe(tmp, ItemID(&windows, num));
-        } else if (MouseInMail(Event.xbutton.x, Event.xbutton.y)) {
-           HandleMailClick(Event);
-	} else {
-          num = WhichButton(&buttons, Event.xbutton.x, Event.xbutton.y);
-          UpdateButton(&buttons, num, NULL, (ButPressed == num) ?
-                                              BUTTON_BRIGHT : BUTTON_DOWN);
+        } else {
+	  StartButtonUpdate(NULL, BUTTON_UP);
+	  if (MouseInMail(Event.xbutton.x, Event.xbutton.y)) {
+	    HandleMailClick(Event);
+	  } else {
+	    num = WhichButton(&buttons, Event.xbutton.x, Event.xbutton.y);
+	    UpdateButton(&buttons, num, NULL, (ButPressed == num) ?
+			 BUTTON_BRIGHT : BUTTON_DOWN);
 
-/*	  UpdateButton(&buttons, num, NULL, BUTTON_DOWN);*/
-          ButPressed = num;
+    /*	    UpdateButton(&buttons, num, NULL, BUTTON_DOWN);*/
+	    ButPressed = num;
 	}
 /*      else { / * Move taskbar * /
 
@@ -852,6 +857,7 @@ void LoopOnEvents()
 
         }
 */
+	}
         redraw = 0;
         break;
 
@@ -893,11 +899,14 @@ void LoopOnEvents()
 
       case LeaveNotify:
         ClearAlarm();
-        if (Tip.open) ShowTipWindow(0);
+        if (Tip.open)
+	  ShowTipWindow(0);
 
-        if (Event.xcrossing.mode != NotifyNormal) break;
+        if (Event.xcrossing.mode != NotifyNormal)
+	  break;
 
-        if (AutoHide) SetAlarm(HIDE_TASK_BAR);
+        if (AutoHide)
+	  SetAlarm(HIDE_TASK_BAR);
 
         if (!HighlightFocus) {
           if (SomeButtonDown(Event.xcrossing.state)) {
@@ -917,6 +926,12 @@ void LoopOnEvents()
         break;
 
       case MotionNotify:
+	if (MouseInStartButton(Event.xmotion.x, Event.xbutton.y)) {
+	  if (SomeButtonDown(Event.xmotion.state))
+	    redraw = StartButtonUpdate(NULL, BUTTON_DOWN) ? 0 : -1;
+	  break;
+	}
+	redraw = StartButtonUpdate(NULL, BUTTON_UP) ? 0 : -1;
         num = WhichButton(&buttons, Event.xmotion.x, Event.xmotion.y);
         if (!HighlightFocus) {
           if (SomeButtonDown(Event.xmotion.state) && num != ButPressed) {
@@ -929,10 +944,8 @@ void LoopOnEvents()
             }
             redraw = 0;
           }
-        } else {
-          if (num != -1 && num != ButPressed)
-            SendFvwmPipe("Focus 0", ItemID(&windows, num));
-        }
+        } else if (num != -1 && num != ButPressed)
+	  SendFvwmPipe("Focus 0", ItemID(&windows, num));
 
         CheckForTip(Event.xmotion.x, Event.xmotion.y);
         break;
@@ -955,7 +968,8 @@ void LoopOnEvents()
         break;
     }
 
-    if (redraw >= 0) RedrawWindow(redraw);
+    if (redraw >= 0)
+      RedrawWindow(redraw);
 
     if (Event.xkey.time - lasttime > UpdateInterval*1000L) {
       DrawGoodies();

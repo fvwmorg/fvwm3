@@ -59,86 +59,83 @@ void setEdgeThickness(F_CMD_ARGS)
  * Check to see if the pointer is on the edge of the screen, and scroll/page
  * if needed
  ***************************************************************************/
-void HandlePaging(int HorWarpSize, int VertWarpSize, int *xl, int *yt,
-		  int *delta_x, int *delta_y,Bool Grab)
+Bool HandlePaging(int HorWarpSize, int VertWarpSize, int *xl, int *yt,
+		  int *delta_x, int *delta_y,Bool Grab, Bool fLoop)
 {
-  int x,y,total;
+  static unsigned int add_time = 0;
+  int x,y;
+  static Time my_timestamp = 0;
 
   *delta_x = 0;
   *delta_y = 0;
 
   if((Scr.ScrollResistance >= 10000)||
      ((HorWarpSize ==0)&&(VertWarpSize==0)))
-    return;
-
-  /* need to move the viewport */
-  if(( Scr.VxMax == 0 ||
-       (*xl >= edge_thickness &&
-        *xl < Scr.MyDisplayWidth  - edge_thickness)) &&
-     ( Scr.VyMax == 0 ||
-       (*yt >= edge_thickness &&
-        *yt < Scr.MyDisplayHeight - edge_thickness)))
-    return;
-
-  total = 0;
-  while(total < Scr.ScrollResistance)
     {
-      usleep(10000);
-      total+=10;
-
-  XQueryPointer(dpy, Scr.Root, &JunkRoot, &JunkChild,
-		&x, &y, &JunkX, &JunkY, &JunkMask);
-
-      if(XCheckWindowEvent(dpy,Scr.PanFrameTop.win,
-			   LeaveWindowMask,&Event))
-	{
-	  StashEventTime(&Event);
-	  return;
-	}
-      if(XCheckWindowEvent(dpy,Scr.PanFrameBottom.win,
-			   LeaveWindowMask,&Event))
-	{
-	  StashEventTime(&Event);
-	  return;
-	}
-      if(XCheckWindowEvent(dpy,Scr.PanFrameLeft.win,
-			   LeaveWindowMask,&Event))
-	{
-	  StashEventTime(&Event);
-	  return;
-	}
-      if(XCheckWindowEvent(dpy,Scr.PanFrameRight.win,
-			   LeaveWindowMask,&Event))
-	{
-	  StashEventTime(&Event);
-	  return;
-	}
-      /* check actual pointer location since PanFrames can get buried under
-         a window being moved or resized - mab */
-      if(( x >= edge_thickness )&&
-         ( x < Scr.MyDisplayWidth-edge_thickness )&&
-         ( y >= edge_thickness )&&
-         ( y < Scr.MyDisplayHeight-edge_thickness ))
-           return ;
+      my_timestamp = 0;
+      add_time = 0;
+      return False;
     }
 
-  XQueryPointer(dpy, Scr.Root, &JunkRoot, &JunkChild,
-		&x, &y, &JunkX, &JunkY, &JunkMask);
+  /* need to move the viewport */
+  if(Scr.VxMax == 0 && Scr.VyMax == 0)
+    {
+      my_timestamp = 0;
+      add_time = 0;
+      return False;
+    }
+
+  if (my_timestamp == 0)
+    {
+      my_timestamp = lastTimestamp;
+      add_time = 0;
+    }
+
+  do
+    {
+      if(XCheckWindowEvent(dpy,Scr.PanFrameTop.win, LeaveWindowMask,&Event)  ||
+	 XCheckWindowEvent(dpy,Scr.PanFrameBottom.win,LeaveWindowMask,&Event)||
+	 XCheckWindowEvent(dpy,Scr.PanFrameLeft.win, LeaveWindowMask,&Event) ||
+	 XCheckWindowEvent(dpy,Scr.PanFrameRight.win, LeaveWindowMask,&Event))
+	{
+	  StashEventTime(&Event);
+	  my_timestamp = 0;
+	  add_time = 0;
+	  return False;
+	}
+      XQueryPointer(dpy, Scr.Root, &JunkRoot, &JunkChild,
+		    &x, &y, &JunkX, &JunkY, &JunkMask);
+      /* check actual pointer location since PanFrames can get buried under
+	 a window being moved or resized - mab */
+      if(( x >= edge_thickness )&&( x < Scr.MyDisplayWidth-edge_thickness )&&
+	 ( y >= edge_thickness )&&( y < Scr.MyDisplayHeight-edge_thickness ))
+	{
+	  my_timestamp = 0;
+	  add_time = 0;
+	  return False;
+	}
+      usleep(10000);
+      add_time += 10;
+    } while (fLoop &&
+	     lastTimestamp - my_timestamp + add_time < Scr.ScrollResistance);
+
+  if (lastTimestamp - my_timestamp + add_time < Scr.ScrollResistance)
+    return False;
 
   /* Move the viewport */
   /* and/or move the cursor back to the approximate correct location */
   /* that is, the same place on the virtual desktop that it */
   /* started at */
-  if( x<edge_thickness)
+  if(x < edge_thickness)
     *delta_x = -HorWarpSize;
-  else if ( x >= Scr.MyDisplayWidth-edge_thickness)
+  else if (x >= Scr.MyDisplayWidth-edge_thickness)
     *delta_x = HorWarpSize;
   else
     *delta_x = 0;
   if (Scr.VxMax == 0) *delta_x = 0;
-  if( y<edge_thickness)
+  if(y < edge_thickness)
     *delta_y = -VertWarpSize;
-  else if ( y >= Scr.MyDisplayHeight-edge_thickness)
+  else if (y >= Scr.MyDisplayHeight-edge_thickness)
     *delta_y = VertWarpSize;
   else
     *delta_y = 0;
@@ -224,8 +221,10 @@ void HandlePaging(int HorWarpSize, int VertWarpSize, int *xl, int *yt,
       if(Grab)
 	MyXUngrabServer(dpy);
     }
+  my_timestamp = 0;
+  add_time = 0;
+  return True;
 }
-
 
 
 /* the root window is surrounded by four window slices, which are InputOnly.
@@ -500,7 +499,8 @@ void MoveViewport(int newx, int newy, Bool grab)
 	    tyb = t->frame_y + t->frame_height;
 	    if ((txr >= PageLeft && txl <= PageRight
 	        && tyb >= PageTop && tyt <= PageBottom)
-	        && ! t->tmpflags.ViewportMoved)
+	        && ! t->tmpflags.ViewportMoved
+		&& t->tmpflags.window_being_moved == 0)
 	      {
                 t->tmpflags.ViewportMoved = True;    /*  Block double move.  */
 	        /* If the window is iconified, and sticky Icons is set,
@@ -547,42 +547,43 @@ void MoveViewport(int newx, int newy, Bool grab)
             tyb = t1->frame_y + t1->frame_height;
             if (! (txr >= PageLeft && txl <= PageRight
                 && tyb >= PageTop && tyt <= PageBottom)
-                && ! t1->tmpflags.ViewportMoved)
-                  {
-                    t1->tmpflags.ViewportMoved = True; /* Block double move.*/
-                    /* If the window is iconified, and sticky Icons is set,
-                    * then the window should essentially be sticky */
-                     if(!((t1->flags & ICONIFIED)&&(t1->flags & StickyIcon)) &&
-                        (!(t1->flags & STICKY)))
-                        {
-                          if(!(t1->flags & StickyIcon))
-                            {
-		              t1->icon_x_loc += deltax;
-		              t1->icon_xl_loc += deltax;
-		              t1->icon_y_loc += deltay;
-		              if(t1->icon_pixmap_w != None)
-		                XMoveWindow(dpy,t1->icon_pixmap_w,
-					    t1->icon_x_loc,
-		                  t1->icon_y_loc);
-                              if(t1->icon_w != None)
-                                XMoveWindow(dpy,t1->icon_w,t1->icon_x_loc,
-                                  t1->icon_y_loc+t1->icon_p_height);
-		              if(!(t1->flags &ICON_UNMAPPED))
-                               {
-			        BroadcastPacket(M_ICON_LOCATION, 7,
-                                                t1->w, t1->frame,
-                                                (unsigned long)t1,
-                                                t1->icon_x_loc, t1->icon_y_loc,
-                                                t1->icon_w_width,
-                                                t1->icon_w_height +
-						t1->icon_p_height);
-                               }
-		            }
-	                  SetupFrame (t1, t1->frame_x+ deltax,
-				      t1->frame_y + deltay,
-		               t1->frame_width, t1->frame_height,FALSE, False);
-	                }
-	            }
+                && ! t1->tmpflags.ViewportMoved
+		&& t->tmpflags.window_being_moved == 0)
+	      {
+		t1->tmpflags.ViewportMoved = True; /* Block double move.*/
+		/* If the window is iconified, and sticky Icons is set,
+		 * then the window should essentially be sticky */
+		if(!((t1->flags & ICONIFIED)&&(t1->flags & StickyIcon)) &&
+		   (!(t1->flags & STICKY)))
+		  {
+		    if(!(t1->flags & StickyIcon))
+		      {
+			t1->icon_x_loc += deltax;
+			t1->icon_xl_loc += deltax;
+			t1->icon_y_loc += deltay;
+			if(t1->icon_pixmap_w != None)
+			  XMoveWindow(dpy,t1->icon_pixmap_w,
+				      t1->icon_x_loc,
+				      t1->icon_y_loc);
+			if(t1->icon_w != None)
+			  XMoveWindow(dpy,t1->icon_w,t1->icon_x_loc,
+				      t1->icon_y_loc+t1->icon_p_height);
+			if(!(t1->flags &ICON_UNMAPPED))
+			  {
+			    BroadcastPacket(M_ICON_LOCATION, 7,
+					    t1->w, t1->frame,
+					    (unsigned long)t1,
+					    t1->icon_x_loc, t1->icon_y_loc,
+					    t1->icon_w_width,
+					    t1->icon_w_height +
+					    t1->icon_p_height);
+			  }
+		      }
+		    SetupFrame (t1, t1->frame_x+ deltax,
+				t1->frame_y + deltay, t1->frame_width,
+				t1->frame_height,FALSE, False);
+		  }
+	      }
             /*  Bump to next win...    */
             t1 = t1->stack_prev;
           }

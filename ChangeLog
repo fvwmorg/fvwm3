@@ -1,3 +1,29 @@
+1999-03-20  Dominik Vogt  <dominik_vogt@gmx.de>
+
+	* fvwm/move.c (moveLoop):
+	* fvwm/virtual.c (MoveViewport): fixed a bug that caused a window
+	that was being moved to flicker back to its original position when it
+	was moved over the screen edge e.g. with EdgeScroll 10 10
+
+	* fvwm/events.c (HandleEnterNotify):
+	* fvwm/resize.c (resize_window):
+	* fvwm/move.c (moveLoop): changes for new version of HandlePaging
+
+	* fvwm/virtual.c (HandlePaging): rewrote HandlePaging to return
+	immediately so resize or move can continue when the pointer is on the
+	border
+
+1999-03-16  Dominik Vogt  <dominik_vogt@gmx.de>
+
+	* fvwm/fvwm2.1: documented inability to bind something to the corners
+	of a naked transient
+
+	* fvwm/events.c (HandleButtonPress): fixed bug: naked transients can't
+	have functions bound to the frame with MouseFocusClickRaises.
+
+	* INSTALL.fvwm:
+	* configure.in: sorted options
+
 1999-03-19  Andrew T. Veliath  <andrewtv@usa.net>
 
 	* fvwm/builtins.c

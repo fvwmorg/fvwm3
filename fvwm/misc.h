@@ -223,7 +223,7 @@ extern void       RaiseThisWindow(int);
 extern int        GetContext(FvwmWindow *, XEvent *, Window *dummy);
 extern void       ConstrainSize (FvwmWindow *, int *, int *, Bool roundUp,
 				 int xmotion, int ymotion);
-extern void       HandlePaging(int, int, int *, int *, int *, int *,Bool);
+extern Bool       HandlePaging(int, int, int *, int *, int *, int *,Bool,Bool);
 extern void       SetShape(FvwmWindow *, int);
 extern void       AutoPlace(FvwmWindow *);
 void executeModule(F_CMD_ARGS);

@@ -538,9 +538,13 @@ void moveLoop(FvwmWindow *tmp_win, int XOffset, int YOffset, int Width,
   int xl,yt,delta_x,delta_y,paged;
   unsigned int button_mask = 0;
   FvwmWindow tmp_win_copy;
+  int dx = Scr.EdgeScrollX ? Scr.EdgeScrollX : Scr.MyDisplayWidth;
+  int dy = Scr.EdgeScrollY ? Scr.EdgeScrollY : Scr.MyDisplayHeight;
 
   /* make a copy of the tmp_win structure for sending to the pager */
   memcpy(&tmp_win_copy, tmp_win, sizeof(FvwmWindow));
+  /* prevent flicker when paging */
+  tmp_win->tmpflags.window_being_moved = 1;
 
   XQueryPointer(dpy, Scr.Root, &JunkRoot, &JunkChild,&xl, &yt,
 		&JunkX, &JunkY, &button_mask);
@@ -556,8 +560,22 @@ void moveLoop(FvwmWindow *tmp_win, int XOffset, int YOffset, int Width,
   while (!finished)
     {
       /* block until there is an interesting event */
-      XMaskEvent(dpy, ButtonPressMask | ButtonReleaseMask | KeyPressMask |
-		 PointerMotionMask | ButtonMotionMask | ExposureMask, &Event);
+      while (!XCheckMaskEvent(dpy, ButtonPressMask | ButtonReleaseMask |
+			      KeyPressMask | PointerMotionMask |
+			      ButtonMotionMask | ExposureMask, &Event))
+	{
+	  if (HandlePaging(dx, dy, &xl,&yt, &delta_x,&delta_y,False,False))
+	    {
+	      /* Fake an event to force window reposition */
+	      xl += XOffset;
+	      yt += YOffset;
+	      Event.type = MotionNotify;
+	      Event.xmotion.time = lastTimestamp;
+	      Event.xmotion.x_root = xl - XOffset;
+	      Event.xmotion.y_root = yt - YOffset;
+	      break;
+	    }
+	}
       StashEventTime(&Event);
 
       /* discard any extra motion events before a logical release */
@@ -567,7 +585,8 @@ void moveLoop(FvwmWindow *tmp_win, int XOffset, int YOffset, int Width,
 				ButtonPressMask |ButtonRelease, &Event))
 	    {
 	      StashEventTime(&Event);
-	      if(Event.type == ButtonRelease) break;
+	      if(Event.type == ButtonRelease || Event.type == ButtonPress)
+		break;
 	    }
 	}
 
@@ -655,13 +674,8 @@ void moveLoop(FvwmWindow *tmp_win, int XOffset, int YOffset, int Width,
 	  break;
 
 	case MotionNotify:
-	  xl = Event.xmotion.x_root;
-	  yt = Event.xmotion.y_root;
-/*	  HandlePaging(Scr.MyDisplayWidth,Scr.MyDisplayHeight,&xl,&yt,
-		       &delta_x,&delta_y,False);  mab */
-	  /* redraw the rubberband */
-	  xl += XOffset;
-	  yt += YOffset;
+	  xl = Event.xmotion.x_root + XOffset;
+	  yt = Event.xmotion.y_root + YOffset;
 
 	  DoSnapAttract(tmp_win, Width, Height, &xl, &yt);
 
@@ -708,14 +722,10 @@ void moveLoop(FvwmWindow *tmp_win, int XOffset, int YOffset, int Width,
 	      /* prevent window from lagging behind mouse when paging - mab */
 	      if(paged==0)
 		{
-		  int dx;
-		  int dy;
-
 		  xl = Event.xmotion.x_root;
 		  yt = Event.xmotion.y_root;
-		  dx = Scr.EdgeScrollX ? Scr.EdgeScrollX : Scr.MyDisplayWidth;
-		  dy = Scr.EdgeScrollY ? Scr.EdgeScrollY : Scr.MyDisplayHeight;
-		  HandlePaging(dx, dy, &xl,&yt, &delta_x,&delta_y,False);
+  		  HandlePaging(dx, dy, &xl, &yt, &delta_x, &delta_y, False,
+			       False);
 		  xl += XOffset;
 		  yt += YOffset;
 		  if ( (delta_x==0) && (delta_y==0))
@@ -781,6 +791,7 @@ void moveLoop(FvwmWindow *tmp_win, int XOffset, int YOffset, int Width,
     /* Don't wait for buttons to come up when user is placing a new window
      * and wants to resize it. */
     WaitForButtonsUp();
+  tmp_win->tmpflags.window_being_moved = 0;
 }
 
 /***********************************************************************

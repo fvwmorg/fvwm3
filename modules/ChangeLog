@@ -1,3 +1,17 @@
+1999-03-16  Dominik Vogt  <dominik_vogt@gmx.de>
+
+	* FvwmTaskBar/Start.c:
+	(StartButtonUpdate): new return value (needsupdate)
+	* FvwmTaskBar/FvwmTaskBar.c (LoopOnEvents): fixed bug: start button
+	staying depressed
+
+	* FvwmTaskBar/Goodies.c (GoodiesParseConfig): fixed some parsing bugs
+
+	* FvwmTaskBar/FvwmTaskBar.1: describe Mailcheck option
+
+	* FvwmTaskBar/Goodies.c (DrawGoodies):
+	(GoodiesParseConfig): implemented 'Mailcheck' option
+
 Fri Mar 19 19:50:08 1999  Steve ROBBINS  
 
 	* FvwmEvent/Makefile.am
@@ -8,8 +22,9 @@ Fri Mar 19 19:50:08 1999  Steve ROBBINS
 1999-03-19  Hippo
 
 	* FvwmWinList/*: new option FollowWindowList: shows the windows in the
-	order that Next/Prev will search (apart from WindowListSkip/CirculateSkip
-	differences). Documented ShowCurrrentDesk option.
+	order that Next/Prev will search (apart from
+	WindowListSkip/CirculateSkip differences). Documented ShowCurrrentDesk
+	option.
 
 1999-03-18  Paul D. Smith  <psmith@gnu.org>
 

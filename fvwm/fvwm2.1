@@ -2037,7 +2037,7 @@ frame (the corners), I for an Icon window, or 0 through 9 for
 title-bar buttons, or any combination of these letters.  A is for any
 context except for title-bar buttons.  For instance, a context of FST
 will apply when the mouse is anywhere in a window's border except the
-title-bar buttons.
+title-bar buttons.  Only S and W are valid for an undecorated window.
 
 \fIModifiers\fP is any combination of N for no modifiers, C for
 control, S for shift, M for Meta, or A for any modifier.  For example,
@@ -2504,7 +2504,9 @@ left undecorated, to be given the usual \fIfvwm2\fP decorations (title
 bar, buttons, etc.). Note that some pop-up windows, such as the xterm
 menus, are not managed by the window manager and still do not receive
 decorations. \fINakedTransient\fP (the default) causes transient windows
-not to be given the standard decorations.
+not to be given the standard decorations. You can only bind keys or mouse
+buttons to the sides and the client window of an undecorated window
+('S' and 'W' contexts in bindings, see \fIMouse\fP and \fIKey\fP commands).
 
 \fIIcon\fP takes an (optional) unquoted string argument which is the icon
 bitmap or pixmap to use.

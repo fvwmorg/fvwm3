@@ -51,6 +51,7 @@ void resize_window(F_CMD_ARGS)
   int x,y,delta_x,delta_y,stashed_x,stashed_y;
   Window ResizeWindow;
   Bool fButtonAbort = False;
+  Bool fForceRedraw = False;
   int val1, val2, val1_unit,val2_unit,n;
   unsigned int button_mask = 0;
   geom sdrag;
@@ -209,8 +210,21 @@ void resize_window(F_CMD_ARGS)
   /* loop to resize */
   while(!finished)
     {
-      XMaskEvent(dpy, ButtonPressMask | ButtonReleaseMask | KeyPressMask |
-		 ButtonMotionMask | PointerMotionMask | ExposureMask,  &Event);
+      /* block until there is an interesting event */
+      while (!XCheckMaskEvent(dpy, ButtonPressMask | ButtonReleaseMask |
+			      KeyPressMask | PointerMotionMask |
+			      ButtonMotionMask | ExposureMask, &Event))
+	{
+	  if (HandlePaging(Scr.EdgeScrollX,Scr.EdgeScrollY,&x,&y,
+			   &delta_x,&delta_y,False,False))
+	    {
+	      /* Fake an event to force window reposition */
+	      Event.type = MotionNotify;
+	      Event.xmotion.time = lastTimestamp;
+	      fForceRedraw = True;
+	      break;
+	    }
+	}
       StashEventTime(&Event);
 
       if (Event.type == MotionNotify)
@@ -268,16 +282,19 @@ void resize_window(F_CMD_ARGS)
 	  break;
 
 	case MotionNotify:
-	  x = Event.xmotion.x_root;
-	  y = Event.xmotion.y_root;
-	  /* resize before paging request to prevent resize from lagging
-	   * mouse - mab */
-	  DoResize(x, y, tmp_win, drag, orig, &xmotion, &ymotion);
-	  /* need to move the viewport */
-	  HandlePaging(Scr.EdgeScrollX,Scr.EdgeScrollY,&x,&y,
-		       &delta_x,&delta_y,False);
-	/* redraw outline if we paged - mab */
-	if ( (delta_x != 0) || (delta_y != 0) )
+	  if (!fForceRedraw)
+	    {
+	      x = Event.xmotion.x_root;
+	      y = Event.xmotion.y_root;
+	      /* resize before paging request to prevent resize from lagging
+	       * mouse - mab */
+	      DoResize(x, y, tmp_win, drag, orig, &xmotion, &ymotion);
+	      /* need to move the viewport */
+	      HandlePaging(Scr.EdgeScrollX,Scr.EdgeScrollY,&x,&y,
+			   &delta_x,&delta_y,False,False);
+	    }
+	  /* redraw outline if we paged - mab */
+	  if ( (delta_x != 0) || (delta_y != 0) )
 	  {
 	    orig->x -= delta_x;
 	    orig->y -= delta_y;
@@ -285,6 +302,7 @@ void resize_window(F_CMD_ARGS)
 	    drag->y -= delta_y;
 
 	    DoResize(x, y, tmp_win, drag, orig, &xmotion, &ymotion);
+	    fForceRedraw = False;
 	  }
 	  done = TRUE;
 	default:

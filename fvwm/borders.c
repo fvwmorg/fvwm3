@@ -104,7 +104,7 @@ void SetBorder (FvwmWindow *t, Bool onoroff,Bool force,Bool Mapped,
   int rwidth; /* relief width */
 #ifdef WINDOWSHADE
   Bool shaded;
-#endif        
+#endif
 
   if(!t)
     return;
@@ -185,10 +185,10 @@ void SetBorder (FvwmWindow *t, Bool onoroff,Bool force,Bool Mapped,
 
   /* MWMBorder style means thin 3d effects */
   rwidth = ((t->flags & MWMBorders) ? 1 : 2);
-  
+
 #ifdef WINDOWSHADE
   shaded =  t->buttons & WSHADE;
-#endif        
+#endif
 
   if(t->flags & ICONIFIED)
   {
@@ -414,7 +414,7 @@ void SetBorder (FvwmWindow *t, Bool onoroff,Bool force,Bool Mapped,
 #ifdef WINDOWSHADE
           /* Inset for shaded windows goes to the bottom */
           if (shaded) height += t->boundary_width;
-#endif        
+#endif
           /* draw a single pixel band for MWMBorders and the top FvwmBorder line */
           RelieveRectangle(dpy, t->frame,
                            t->boundary_width - 1, t->boundary_width - 1,
@@ -429,7 +429,7 @@ void SetBorder (FvwmWindow *t, Bool onoroff,Bool force,Bool Mapped,
                              height + 3,
                              sgc, rgc, 2);
         }
-      
+
         /* draw the outside relief */
         if (t->flags & MWMBorders)
           RelieveRectangle(dpy, t->frame,
@@ -443,14 +443,14 @@ void SetBorder (FvwmWindow *t, Bool onoroff,Bool force,Bool Mapped,
                            0, 0, t->frame_width - 1, t->frame_height - 1,
                            sgc, sgc, 1);
         }
-        
+
         /* draw the handles as eight marks rectangles around the border */
         if ((t->flags & BORDER) && (t->boundary_width > 2))
 #ifdef BORDERSTYLE
         if (!(borderflags & HiddenHandles))
-#endif 
+#endif
         {
-          /* MWM border windows have thin 3d effects 
+          /* MWM border windows have thin 3d effects
            * FvwmBorders have 3 pixels top/left, 2 bot/right so this makes
            * calculating the length of the marks difficult, top and bottom
            * marks for FvwmBorders are different if NoInset is specified */
@@ -549,7 +549,7 @@ void SetBorder (FvwmWindow *t, Bool onoroff,Bool force,Bool Mapped,
           }
         }
 
-      
+
         /* now draw the pressed in part on top */
         /* a bit hacky to draw twice but you should see the code it replaces
            never mind the esoterics, feel the thin-ness */
@@ -624,11 +624,11 @@ void SetBorder (FvwmWindow *t, Bool onoroff,Bool force,Bool Mapped,
                              t->corner_width - 3 + rwidth, t->corner_width - 3 + rwidth,
                              sgc, rgc, rwidth);
           }
-        }    
+        }
       }
     }
   }
-  
+
   /* Sync to make the border-color change look fast! */
   XSync(dpy,0);
 
@@ -798,7 +798,7 @@ void SetTitleBar (FvwmWindow *t,Bool onoroff, Bool NewTitle)
     return;
   if(!(t->flags & TITLE))
     return;
-  
+
   rwidth = (t->flags & MWMBorders) ? 1 : 2;
 
   if (onoroff)

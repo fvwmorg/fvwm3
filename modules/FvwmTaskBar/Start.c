@@ -52,11 +52,16 @@ void StartButtonInit(int height)
   StartButtonHeight = height;
 }
 
-void StartButtonUpdate(char *title, int state)
+int StartButtonUpdate(char *title, int state)
 {
+#if 0
   if (title != NULL)
     ConsoleMessage("Updating StartTitle not supported yet...\n");
   ButtonUpdate(StartButton, title, state);
+#else
+  ButtonUpdate(StartButton, NULL, state);
+#endif
+  return StartButton->needsupdate;
 }
 
 void StartButtonDraw(int force)

@@ -17,6 +17,8 @@
 #include "Goodies.h"
 #include "minimail.xbm"
 
+#define MAILCHECK_DEFAULT 10
+
 extern Display *dpy;
 extern Window Root, win;
 extern int win_width, win_height, win_y, win_border, d_depth,
@@ -34,7 +36,7 @@ char *mailpath = NULL;
 char *clockfmt = NULL;
 int BellVolume = DEFAULT_BELL_VOLUME;
 Pixmap mailpix, wmailpix, pmask, pclip;
-int NoMailCheck = False;
+int Mailcheck = MAILCHECK_DEFAULT;
 char *DateFore = "black",
      *DateBack = "LightYellow",
      *MailCmd  = "Exec xterm -e mail";
@@ -60,12 +62,22 @@ void GoodiesParseConfig(char *tline, char *Module)
 				Clength+10)==0) {
     BellVolume = atoi(&tline[Clength+11]);
   } else if(strncasecmp(tline,CatString3(Module, "Mailbox",""),
-				Clength+11)==0) {
+				Clength+7)==0) {
     if (strncasecmp(&tline[Clength+11], "None", 4) == 0) {
-      NoMailCheck = True;
+      Mailcheck = 0;
     } else {
+      int len;
       UpdateString(&mailpath, &tline[Clength+8]);
+      len = strlen(mailpath);
+      if (len > 0 && mailpath[len-1] == '\n')
+	mailpath[len-1] = 0;
     }
+  } else if(strncasecmp(tline,CatString3(Module, "Mailcheck",""),
+			  Clength+9)==0) {
+    Mailcheck = MAILCHECK_DEFAULT;
+    sscanf(&tline[Clength+20], "%d", &Mailcheck);
+    if (Mailcheck < 0)
+      Mailcheck = 0;
   } else if(strncasecmp(tline,CatString3(Module, "ClockFormat",""),
 			  Clength+11)==0) {
     UpdateString(&clockfmt, &tline[Clength+12]);
@@ -120,7 +132,7 @@ void InitGoodies() {
   gcval.graphics_exposures = False;
   statusgc = XCreateGC(dpy, Root, gcmask, &gcval);
 
-  if (!NoMailCheck) {
+  if (Mailcheck > 0) {
     mailpix = XCreatePixmapFromBitmapData(dpy, win, (char *)minimail_bits,
 					  minimail_width, minimail_height,
 					  fore,back, d_depth);
@@ -176,7 +188,8 @@ void DrawGoodies() {
 	      ((RowHeight - fontheight) >> 1) +StatusFont->ascent,
 	      str, strlen(str));
 
-  if (NoMailCheck) return;
+  if (Mailcheck == 0)
+    return;
   if (timer - last_mail_check >= 10) {
     cool_get_inboxstatus();
     last_mail_check = timer;
