@@ -139,7 +139,6 @@ FlocaleFont *get_FlocaleFontSet(Display *dpy, char *fontname, char *module)
   int mc,i;
   char *ds;
   XFontSetExtents *fset_extents;
-  XFontStruct **fs_list;
 
   if (!(fontset = XCreateFontSet(dpy, fontname, &ml, &mc, &ds)))
     return NULL;
@@ -170,10 +169,10 @@ FlocaleFont *get_FlocaleFontSet(Display *dpy, char *fontname, char *module)
   flf->font = NULL;
   fset_extents = XExtentsOfFontSet(fontset);
   flf->height = fset_extents->max_logical_extent.height;
-  /* FIXME MULTIBYTE: how to get the ascent directly (from fset_extents) ? */
-  XFontsOfFontSet(fontset, &fs_list, &ml);
-  flf->ascent = fs_list[0]->ascent;
-  flf->descent = fs_list[0]->descent;
+  flf->ascent = - fset_extents->max_logical_extent.y;
+  flf->descent = fset_extents->max_logical_extent.height +
+    fset_extents->max_logical_extent.y;
+  flf->max_char_width = fset_extents->max_logical_extent.width;
   return flf;
 }
 #endif
@@ -209,6 +208,7 @@ FlocaleFont *get_FlocaleFont(Display *dpy, char *fontname)
   flf->height = flf->font->ascent + flf->font->descent;
   flf->ascent = flf->font->ascent;
   flf->descent = flf->font->descent;
+  flf->max_char_width = flf->font->max_bounds.width;
   return flf;
 }
 

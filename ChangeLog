@@ -1,5 +1,12 @@
 2002-02-12  olicha  <olivier.chapuis@free.fr>
 
+	* libs/Flocale.h (FlocaleFont):
+	* libs/Flocale.c (get_FlocaleFont):
+	(get_FlocaleFontSet):
+	Compute the ascent and descent of the FlocaleFont structure directly
+	from the XFontSetExtents data in the case of a fontset
+	Added max_char_width to the FlocaleFont structure
+
 	* libs/Makefile.am (libfvwm_a_SOURCES):
 	* libs/GetFont.c:
 	Removed libs/GetFont.c

@@ -87,6 +87,7 @@ typedef struct flocalefont
   int height;			/* height of the font: ascent + descent */
   int ascent;
   int descent;
+  int max_char_width;
 } FlocaleFont;
 
 

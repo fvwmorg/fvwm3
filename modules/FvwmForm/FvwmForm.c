@@ -825,7 +825,7 @@ static void ct_Input(char *cp)
   item->input.value = (char *)safemalloc(item->input.buf);
   item->input.value[0] = 0;             /* avoid reading unitialized data */
 
-  item->header.size_x = FlocaleTextWidth(item->header.dt_ptr->dt_Ffont,"W",1)
+  item->header.size_x = item->header.dt_ptr->dt_Ffont->max_char_width
     * item->input.size + 2 * TEXT_SPC + 2 * BOX_SPC;
   item->header.size_y = item->header.dt_ptr->dt_Ffont->height
     + 3 * TEXT_SPC + 2 * BOX_SPC;
@@ -1436,7 +1436,7 @@ void RedrawItem (Item *item, int click)
 
     if (click) {
       x = BOX_SPC + TEXT_SPC +
-        FlocaleTextWidth(item->header.dt_ptr->dt_Ffont,"W",1)
+        item->header.dt_ptr->dt_Ffont->max_char_width
         * CF.abs_cursor - 1;
       XSetForeground(dpy, item->header.dt_ptr->dt_item_GC,
                      item->header.dt_ptr->dt_colors[c_item_bg]);
@@ -1455,7 +1455,7 @@ void RedrawItem (Item *item, int click)
       item->header.dt_ptr->dt_Fstr->gc  = item->header.dt_ptr->dt_item_GC;
       item->header.dt_ptr->dt_Fstr->str = item->input.blanks;
       item->header.dt_ptr->dt_Fstr->x   = BOX_SPC + TEXT_SPC
-                  + FlocaleTextWidth(item->header.dt_ptr->dt_Ffont,"W",1)
+                  + item->header.dt_ptr->dt_Ffont->max_char_width
                   * len;
       item->header.dt_ptr->dt_Fstr->y   = BOX_SPC + TEXT_SPC
                   + item->header.dt_ptr->dt_Ffont->ascent;
@@ -1475,7 +1475,7 @@ void RedrawItem (Item *item, int click)
                       item->header.dt_ptr->dt_Fstr, FWS_HAVE_LENGTH);
     if (item == CF.cur_input && !click) {
       x = BOX_SPC + TEXT_SPC +
-        FlocaleTextWidth(item->header.dt_ptr->dt_Ffont,"W",1)
+        item->header.dt_ptr->dt_Ffont->max_char_width
         * CF.abs_cursor - 1;
       XDrawLine(dpy, item->header.win, item->header.dt_ptr->dt_item_GC,
 		x, BOX_SPC, x, dy - BOX_SPC);
