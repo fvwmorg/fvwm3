@@ -270,37 +270,19 @@ static void frame_setup_title_bar(
 		switch (GET_TITLE_DIR(fw))
 		{
 		case DIR_S:
-                        if (diff_g->width < 0)
-                        {
-                                dxbr = diff_g->width;
-                        }
-			if (diff_g->height < 0)
-                        {
-                                dy = diff_g->height;
-                        }
+                        dxbr = diff_g->width;
+                        dy = diff_g->height;
 			break;
 		case DIR_E:
-			if (diff_g->width < 0)
-                        {
-                                dx = diff_g->width;
-                        }
-			if (diff_g->height < 0)
-                        {
-                                dybr = diff_g->height;
-                        }
+                        dx = diff_g->width;
+                        dybr = diff_g->height;
 			break;
 		case DIR_W:
-			if (diff_g->height < 0)
-                        {
-                                dybr = diff_g->height;
-                        }
+                        dybr = diff_g->height;
 			break;
 		case DIR_N:
 		default:
-			if (diff_g->width < 0)
-                        {
-                                dxbr = diff_g->width;
-                        }
+                        dxbr = diff_g->width;
 			break;
 		}
 	}
