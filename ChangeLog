@@ -1,3 +1,14 @@
+2000-05-13  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* fvwm/add_window.c (destroy_icon_font):
+	(destroy_window_font):
+	does not destroy the default font anymore
+	destroy old font even if no new font was specified
+	core dump fixes
+
+	* fvwm/style.c (ProcessNewStyle):
+	minor bugfix
+
 2000-05-12  Hippo
 
 	* fvwm/builtins.c

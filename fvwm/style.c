@@ -1406,7 +1406,7 @@ void ProcessNewStyle(F_CMD_ARGS)
 	  SCSET_HAS_ICON_FONT(*ptmpstyle, 1);
 
 	}
-	if(StrEquals(token, "IconOverride"))
+	else if(StrEquals(token, "IconOverride"))
 	{
 	  found = True;
 	  ptmpstyle->flags.icon_override = ICON_OVERRIDE;
