@@ -1,3 +1,8 @@
+2000-06-15  Mikhael Goikhman  <migo@homemail.com>
+
+	* Temporary disabled locking FvwmTheme config and messages.
+	This hanged fvwm.
+
 2000-06-14  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* FvwmConsole/FvwmConsoleC.c:
@@ -51,7 +56,6 @@
 	* FvwmWinList/FvwmWinList.c:
 	fixed typo in #include directive
 
->>>>>>> 1.553
 2000-06-06  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* FvwmButtons/draw.c (RedrawButton):

@@ -187,11 +187,11 @@ static void main_loop(void)
     switch (packet->type) {
     case M_CONFIG_INFO:
       parse_config_line((char *)&packet->body[3]);
-      SendUnlockNotification(fd);
+/*      SendUnlockNotification(fd);*/
       break;
     case M_STRING:
       parse_message_line((char *)&packet->body[3]);
-      SendUnlockNotification(fd);
+/*      SendUnlockNotification(fd);*/
       break;
     }
   }
@@ -1022,7 +1022,7 @@ static void parse_config(void)
   /* tell fvwm what we want to receive */
   SetMessageMask(fd, M_CONFIG_INFO | M_END_CONFIG_INFO | M_SENDCONFIG
 		 | M_STRING);
-  SetSyncMask(fd, M_CONFIG_INFO | M_STRING);
+/*  SetSyncMask(fd, M_CONFIG_INFO | M_STRING);*/
 
   /* loop on config lines, a bit strange looking because GetConfigLine
    * is a void(), have to test $line */
