@@ -1114,7 +1114,7 @@ void CreateCursors(void)
   Scr.FvwmCursors[SYS] = XCreateFontCursor(dpy, XC_hand2);
   Scr.FvwmCursors[TITLE_CURSOR] = XCreateFontCursor(dpy, XC_top_left_arrow);
   Scr.FvwmCursors[MOVE] = XCreateFontCursor(dpy, XC_fleur);
-  Scr.FvwmCursors[MENU] = XCreateFontCursor(dpy, XC_sb_left_arrow);
+  Scr.FvwmCursors[MENU] = XCreateFontCursor(dpy, XC_top_left_arrow);
   Scr.FvwmCursors[WAIT] = XCreateFontCursor(dpy, XC_watch);
   Scr.FvwmCursors[SELECT] = XCreateFontCursor(dpy, XC_dot);
   Scr.FvwmCursors[DESTROY] = XCreateFontCursor(dpy, XC_pirate);

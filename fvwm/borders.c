@@ -82,22 +82,22 @@ static enum ButtonState get_button_state(Bool onoroff, Bool toggled, Window w)
   if (!onoroff)
     return toggled ? ToggledInactive : Inactive;
   else
-    return (PressedW == w) 
-      ? (toggled ? ToggledActiveDown : ActiveDown) 
+    return (PressedW == w)
+      ? (toggled ? ToggledActiveDown : ActiveDown)
       : (toggled ? ToggledActiveUp : ActiveUp);
 #elif defined(ACTIVEDOWN_BTNS) && !defined(INACTIVE_BTNS)
-  return (PressedW == w) 
-      ? (toggled ? ToggledActiveDown : ActiveDown) 
+  return (PressedW == w)
+      ? (toggled ? ToggledActiveDown : ActiveDown)
       : (toggled ? ToggledActiveUp : ActiveUp);
 #elif !defined(ACTIVEDOWN_BTNS) && defined(INACTIVE_BTNS)
-  return (onoroff) ? 
+  return (onoroff) ?
       : (toggled ? ToggledActiveUp : ActiveUp);
-      ? (toggled ? ToggledInactive : Inactive) 
+      ? (toggled ? ToggledInactive : Inactive)
 #elif !defined(ACTIVEDOWN_BTNS) && !defined(INACTIVE_BTNS)
   return toggled ? ToggledActiveUp : ActiveUp;
 #endif
-  
-  
+
+
 }
 
 /****************************************************************************
@@ -264,7 +264,7 @@ void RedrawBorder (FvwmWindow *t, Bool onoroff,Bool force,Bool Mapped,
 	if(t->left_w[i] != None)
 	{
 	  int stateflags = GetDecor(t,left_buttons[i].flags);
-	  Bool toggled = 
+	  Bool toggled =
 	    (HAS_MWM_BUTTONS(t) &&
 	     ((stateflags & MWMDecorMaximize && IS_MAXIMIZED(t)) ||
 	      (stateflags & MWMDecorShade && IS_SHADED(t)) ||
@@ -339,7 +339,7 @@ void RedrawBorder (FvwmWindow *t, Bool onoroff,Bool force,Bool Mapped,
 	if(t->right_w[i] != None)
 	{
 	  int stateflags = GetDecor(t,right_buttons[i].flags);
-	  Bool toggled = 
+	  Bool toggled =
 	    (HAS_MWM_BUTTONS(t) &&
 	     ((stateflags & MWMDecorMaximize && IS_MAXIMIZED(t)) ||
 	      (stateflags & MWMDecorShade && IS_SHADED(t)) ||
@@ -900,7 +900,7 @@ void SetTitleBar (FvwmWindow *t,Bool onoroff, Bool NewTitle)
 
   tb_flags = GetDecor(t,titlebar.flags);
   {
-    Bool toggled = 
+    Bool toggled =
       (HAS_MWM_BUTTONS(t) &&
        ((tb_flags & MWMDecorMaximize && IS_MAXIMIZED(t)) ||
 	(tb_flags & MWMDecorShade && IS_SHADED(t)) ||
@@ -1071,7 +1071,9 @@ void DrawLinePattern(Window win,
 void SetupFrame(FvwmWindow *tmp_win,int x,int y,int w,int h,Bool sendEvent,
 		Bool curr_shading)
 {
+#ifdef FVWM_DEBUG_MSGS
   XEvent client_event;
+#endif
   XWindowChanges frame_wc, xwc;
   unsigned long frame_mask, xwcm;
   int cx,cy,i;
@@ -1317,7 +1319,7 @@ void SetupFrame(FvwmWindow *tmp_win,int x,int y,int w,int h,Bool sendEvent,
              client_event.xconfigure.width,client_event.xconfigure.height);
 #endif
   }
-#endif 
+#endif
   XSync(dpy,0);
 
   BroadcastConfig(M_CONFIGURE_WINDOW,tmp_win);

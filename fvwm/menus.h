@@ -214,9 +214,12 @@ typedef struct MenuItem
       unsigned has_text : 1;
       unsigned has_picture : 1;
       unsigned is_selectable : 1;
+      /* temporary flags */
+      unsigned was_deselected : 1;
     } flags;
 } MenuItem;
 
+/* flags */
 #define MI_IS_SEPARATOR(i)      ((i)->flags.is_separator)
 #define MI_IS_TITLE(i)          ((i)->flags.is_title)
 #define MI_IS_TITLE_CENTERED(i) ((i)->flags.is_title_centered)
@@ -225,6 +228,8 @@ typedef struct MenuItem
 #define MI_HAS_TEXT(i)          ((i)->flags.has_text)
 #define MI_HAS_PICTURE(i)       ((i)->flags.has_picture)
 #define MI_IS_SELECTABLE(i)     ((i)->flags.is_selectable)
+/* temporary flags */
+#define MI_WAS_DESELECTED(i)    ((i)->flags.was_deselected)
 
 
 
@@ -323,6 +328,8 @@ typedef struct MenuRootDynamic
     unsigned is_right : 1;
     unsigned is_up : 1;
     unsigned is_down : 1;
+    unsigned has_popped_up_left : 1;
+    unsigned has_popped_up_right : 1;
   } dflags;
 #ifdef GRADIENT_BUTTONS
   struct
@@ -355,6 +362,8 @@ typedef struct MenuRootDynamic
 #define MR_IS_RIGHT(m)              ((m)->d->dflags.is_right)
 #define MR_IS_UP(m)                 ((m)->d->dflags.is_up)
 #define MR_IS_DOWN(m)               ((m)->d->dflags.is_down)
+#define MR_HAS_POPPED_UP_LEFT(m)    ((m)->d->dflags.has_popped_up_left)
+#define MR_HAS_POPPED_UP_RIGHT(m)   ((m)->d->dflags.has_popped_up_right)
 
 typedef struct MenuRoot
 {
@@ -376,7 +385,7 @@ typedef struct
   int y;                  /* suggested y position */
   float x_factor;         /* to take menu width into account (0, -1 or -0.5) */
   float y_factor;         /* same with height */
-  Bool fRelative;         /* FALSE if referring to absolute screen position */
+  Bool is_relative;       /* FALSE if referring to absolute screen position */
 } MenuPosHints;
 
 typedef struct

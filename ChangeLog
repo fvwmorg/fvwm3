@@ -1,6 +1,43 @@
+1999-06-05  Dominik Vogt  <dominik_vogt@gmx.de>
+
+	* fvwm/menus.c (pop_menu_up et al.): the side on which sub menus pop up
+	reverses once one menu hit the left or right border
+	(MenuInteraction): fixed key press warping: don't warp if the key press
+	has no meaning (broken in earlier patches=.
+
+	* fvwm/borders.c (SetupFrame): -Wall fix
+
 1999-06-04  Dominik Vogt  <dominik_vogt@gmx.de>
 
-	* fvwm/menus.c (paint_menu): for drawing the selected item.
+	* fvwm/menus.c (do_menu):
+	(get_prefered_popup_position):
+	(MenuInteraction):
+
+	* fvwm/menus.c (GetOneMenuPositionArgument): fixed off-by-one bug in
+	position hint calculations.
+	(MenuInteraction): fixed coredump when up/down is pressed when the
+	pointer is not on a menu
+	(menuShortcuts): made up/down key press handling more intuitive when
+	not on a menu (hopefully)
+	(do_menus_overlap): fixed calculations with negative value of
+	PopupOffsetAdd.
+	(size_menu_horizontally): use '%|' instead of '%[' and '%]' in the
+	item format string
+
+	* fvwm/fvwm.c (CreateCursors): changed default menu cursor to
+	XC_top_left_arrow.
+
+	* fvwm/menus.c (paint_menu): removed fix for drawing the selected item.
+	(paint_item): suppress border redrawing when this was already done by
+	paint_menu()
+	(paint_menu): centralised drawing or menu border; speeds expose events
+	when only the border was obscured.
+	(item_middle_y_offset): fixed bug: offset didn't take the relief
+	thickness into account
+
+	* fvwm/menus.c: made menu items two pixels shorter
+
+	* fvwm/menus.c (paint_menu): fix for drawing the selected item.
 
 	* fvwm/menus.c: major rewrite to allow a lot more freedom in menu
 	layouts. See documentation of MenuStyle options BorderWidth,
