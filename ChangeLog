@@ -1,5 +1,8 @@
 1999-08-06  Dominik Vogt  <domivogt@bvstp038.bbn.hp.com>
 
+	* fvwm/fvwm2.1 (IgnoreModifiers): make it clear that the command
+	should appear before any bindings are made.
+
 	* libs/Bindings.c (GrabWindowButton): 
 	(GrabWindowKey): fixed bindings with 'N'o modifiers and the
 	IgnoreModifiers command
