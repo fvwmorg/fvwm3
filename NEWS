@@ -15,6 +15,9 @@ Changes in alpha release 2.5.2 (not released yet)
 * Allow to bind a function to the focus click and pass it to the
   application at the same time.
 
+* New styles NoBorder and Border to enable or disable window
+  borders.
+
 -------------------------------------------------------------------
 
 Changes in alpha release 2.5.1 (26-Apr-2002)

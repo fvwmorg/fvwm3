@@ -1,14 +1,34 @@
+2002-05-26  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* fvwm/style.c (check_window_style_change):
+	(parse_and_set_window_style):
+	* fvwm/frame.c (frame_setup_border):
+	(frame_get_shading_laziness):
+	(frame_get_sidebar_geometry):
+	* fvwm/decorations.c (SelectDecor):
+	* fvwm/add_window.c (setup_style_and_decor):
+	(setup_resize_handle_cursors):
+	(setup_resize_handle_windows):
+	(change_resize_handle_windows):
+	(destroy_auxiliary_windows):
+	* fvwm/borders.c (border_get_border_gcs):
+	(border_draw_border_parts):
+	* fvwm/style.h (SCSET_HAS_BORDER):
+	* fvwm/fvwm.h (FvwmWindow):
+	* fvwm/window_flags.h (SET_HAS_BORDER):
+	new styles NoBorder/Border
+
 2002-05-26  olicha  <olivier.chapuis@free.fr>
 
 	* libs/Flocale.h:
-	* libs/Flocale.c (FlocaleParseShadow): 
+	* libs/Flocale.c (FlocaleParseShadow):
 	(FlocaleGetNextShadowDirection):
 	(FlocaleGetShadowTextPosition):
 	(FlocaleLoadFont):
 	Implemented multidirectional shadow text rendering
 
 	* libs/Flocale.h:
-	* libs/Flocale.c 
+	* libs/Flocale.c
 	(FlocaleFontStructDrawString):
 	(FlocaleRotateDrawString):
 	(FlocaleLoadFont):
@@ -17,7 +37,7 @@
 	* libs/FlocaleCharset.c (FlocaleCharsetSetFlocaleCharset):
 	* libs/Fft.c (FftDrawString):
 	Cleanup the FlocaleFont structure by addings some flags
-	
+
 2002-05-26  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* fvwm/events.c (HandleFocusIn):

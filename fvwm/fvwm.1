@@ -4788,40 +4788,40 @@ you can find a better solution of this problem.
 
 .TP
 .BI "EdgeCommand " "[direction [Function]]"
-Binds a specified fvwm built-in function 
-.I Function 
-to an edge of the screen. Direction may be one of 
+Binds a specified fvwm built-in function
+.I Function
+to an edge of the screen. Direction may be one of
 "North", "Top", "West", "Left", "South", "Bottom", "Right"
-and "East". If 
-.I Function 
+and "East". If
+.I Function
 is omitted the binding for this edge is removed. If EdgeCommand is
-called without any arguments all edge bindings are removed. 
+called without any arguments all edge bindings are removed.
 
-.I Function 
+.I Function
 is executed when the mouse pointer
 enters the invisible pan frames that surround the visible screen.
 The binding works only if
-.I EdgeThickness 
+.I EdgeThickness
 is set to a value greater than 0.
-If a function is bound to an edge, scrolling specified by 
-.I EdgeScroll 
+If a function is bound to an edge, scrolling specified by
+.I EdgeScroll
 is disabled for this edge.
 It is possible to bind a function only to some edges
 and use the other edges for scrolling.
 This command is intended to raise or lower certain windows
 when the mouse pointer enters an edge.
-.I FvwmAuto 
+.I FvwmAuto
 can be used get a delay when raising or lowering windows.
 The following example raises
-.I FvwmButtons 
+.I FvwmButtons
 if the mouse pointer enters the top edge of the screen.
 .EX
-## Disable EdgeScrolling but make it possible to move 
+## Disable EdgeScrolling but make it possible to move
 ## windows over the screen edge
 EdgeResistance 10000 20
 
 ## Set thickness of the edge of the screen to 1
-EdgeThickness 1 
+EdgeThickness 1
 
 ## Give focus to FvwmButtons if the mouse hits top edge
 EdgeCommand Top Next (FvwmButtons) Focus
@@ -4829,8 +4829,8 @@ EdgeCommand Top Next (FvwmButtons) Focus
 Module FvwmButtons
 Module FvwmAuto 100 "Silent AutoRaiseFunction" "Silent AutoLowerFunction"
 
-## If any window except FvwmButtons has focus when calling 
-## this function FvwmButtons are lowered 
+## If any window except FvwmButtons has focus when calling
+## this function FvwmButtons are lowered
 DestroyFunc AutoLowerFunction
 AddToFunc AutoLowerFunction
 + I Current (!FvwmButtons) All (FvwmButtons) Lower
@@ -5225,6 +5225,7 @@ slashes ('/').  The last style in these groups is the default.
 .IR StippledTitle " / " StippledTitleOff ,
 .IR IndexedWindowName " / " ExactWindowName ,
 .IR IndexedIconName " / " ExactIconName ,
+.IR NoBorder " / " Border ,
 .IR NoHandles " / " Handles ,
 .IR WindowListSkip " / " WindowListHit ,
 .IR CirculateSkip " / " CirculateHit ,
@@ -5546,10 +5547,30 @@ style.
 .\" +++++++++++++++ styles affecting borders
 .TP
 .B Borders
+
+.I NoBorder
+suppresses the window border (but not the title) completely.  The
+.I Border
+style enables them again.  Without borders, all other styles
+affecting window borders are meaningless.
+
 .I MwmBorder
 makes the 3-D bevel more closely match Mwm's.
 .I FvwmBorder
 turns off the previous option.
+
+With the
+.I NoHandles
+style, the window does not get the handles in the window corners
+that are commonly used to resize it.  With
+.IR NoHandles ,
+the width from the
+.I BorderWidth
+style is used.  By default, or if
+.I Handles
+is is specified, the width from the
+.I HandleWidth
+style is used.
 
 .I HandleWidth
 takes a numeric argument which is the width of the border to place
@@ -5557,7 +5578,10 @@ the window if it does have resize-handles.
 
 .I BorderWidth
 takes a numeric argument which is the width of the border to place
-the window if it does not have resize-handles.
+the window if it does not have resize-handles.  It is used only if
+the
+.I NoHandles
+style is specified too.
 
 .I DepressableBorder
 makes the border parts of the window decoration look sunken in

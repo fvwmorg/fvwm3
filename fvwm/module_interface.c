@@ -5,12 +5,12 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307	 USA
  */
 
 /****************************************************************************
@@ -88,7 +88,7 @@ static void DeleteMessageQueueBuff(int module);
 static void AddToCommandQueue(Window w, int module, char * command);
 
 /*
- * Sets the mask to the specific value.  If M_EXTENDED_MSG is set in mask, the
+ * Sets the mask to the specific value.	 If M_EXTENDED_MSG is set in mask, the
  * function operates only on the extended messages, otherwise it operates only
  * on normal messages.
  */
@@ -148,22 +148,22 @@ void ClosePipes(void)
     {
       if(writePipes[i] > 0)
       {
-        close(writePipes[i]);
-        close(readPipes[i]);
+	close(writePipes[i]);
+	close(readPipes[i]);
       }
       if(pipeName[i] != NULL)
       {
-        free(pipeName[i]);
-        pipeName[i] = 0;
+	free(pipeName[i]);
+	pipeName[i] = 0;
       }
       if(pipeAlias[i] != NULL)
       {
-        free(pipeAlias[i]);
-        pipeAlias[i] = NULL;
+	free(pipeAlias[i]);
+	pipeAlias[i] = NULL;
       }
       while (!FQUEUE_IS_EMPTY(&pipeQueue[i]))
       {
-        DeleteMessageQueueBuff(i);
+	DeleteMessageQueueBuff(i);
       }
     }
 }
@@ -188,7 +188,7 @@ static int do_execute_module(F_CMD_ARGS, Bool desperate)
 
   /* Olivier: Why ? */
   /*   if(eventp->type != KeyPress) */
-  /*     UngrabEm(); */
+  /*	 UngrabEm(); */
 
   if(action == NULL)
   {
@@ -223,7 +223,7 @@ static int do_execute_module(F_CMD_ARGS, Bool desperate)
     if (!desperate)
     {
       fvwm_msg(ERR,"executeModule",
-                   "No such module '%s' in ModulePath '%s'",cptr,ModulePath);
+		   "No such module '%s' in ModulePath '%s'",cptr,ModulePath);
     }
     free(args);
     free(cptr);
@@ -233,8 +233,8 @@ static int do_execute_module(F_CMD_ARGS, Bool desperate)
 #ifdef REMOVE_EXECUTABLE_EXTENSION
   {
       char* p = arg1 + strlen( arg1 ) - strlen( EXECUTABLE_EXTENSION );
-      if ( strcmp( p, EXECUTABLE_EXTENSION ) ==  0 )
-        *p = 0;
+      if ( strcmp( p, EXECUTABLE_EXTENSION ) ==	 0 )
+	*p = 0;
   }
 #endif
 
@@ -296,7 +296,7 @@ static int do_execute_module(F_CMD_ARGS, Bool desperate)
     {
       const char *ptr = skipModuleAliasToken(args[nargs]);
       if (ptr && *ptr == '\0')
-        pipeAlias[i] = stripcpy(args[nargs]);
+	pipeAlias[i] = stripcpy(args[nargs]);
     }
   }
   args[nargs] = NULL;
@@ -343,12 +343,12 @@ static int do_execute_module(F_CMD_ARGS, Bool desperate)
     for(i=6;i<nargs;i++)
     {
       if(args[i] != 0)
-        free(args[i]);
+	free(args[i]);
     }
   }
   else if (val ==0)
   {
-    /* this is  the child */
+    /* this is	the child */
     /* this fork execs the module */
 #ifdef FORK_CREATES_CHILD
     close(fvwm_to_app[1]);
@@ -382,7 +382,7 @@ static int do_execute_module(F_CMD_ARGS, Bool desperate)
     for(i=6;i<nargs;i++)
     {
       if(args[i] != 0)
-        free(args[i]);
+	free(args[i]);
     }
     free(args);
     return -1;
@@ -487,9 +487,9 @@ void CMD_ModuleSynchronous(F_CMD_ARGS)
       FD_ZERO(&in_fdset);
       FD_ZERO(&out_fdset);
       if (readPipes[pipe_slot] >= 0)
-        FD_SET(readPipes[pipe_slot], &in_fdset);
+	FD_SET(readPipes[pipe_slot], &in_fdset);
       if (!FQUEUE_IS_EMPTY(&pipeQueue[pipe_slot]))
-        FD_SET(writePipes[pipe_slot], &out_fdset);
+	FD_SET(writePipes[pipe_slot], &out_fdset);
 
       timeout.tv_sec = 0;
       timeout.tv_usec = 1;  /* use 1 usec timeout in select */
@@ -503,28 +503,28 @@ void CMD_ModuleSynchronous(F_CMD_ARGS)
     if (num_fd > 0)
     {
       if ((readPipes[pipe_slot] >= 0) &&
-           FD_ISSET(readPipes[pipe_slot], &in_fdset))
+	   FD_ISSET(readPipes[pipe_slot], &in_fdset))
       {
-        /* Check for module input. */
-        if (read(readPipes[pipe_slot], &targetWindow, sizeof(Window)) > 0)
-        {
-          if (HandleModuleInput(targetWindow, pipe_slot, expect, False))
-          {
-            /* we got the message we were waiting for */
-            done = True;
-          }
-        }
-        else
-        {
-          KillModule(pipe_slot);
-          done = True;
-        }
+	/* Check for module input. */
+	if (read(readPipes[pipe_slot], &targetWindow, sizeof(Window)) > 0)
+	{
+	  if (HandleModuleInput(targetWindow, pipe_slot, expect, False))
+	  {
+	    /* we got the message we were waiting for */
+	    done = True;
+	  }
+	}
+	else
+	{
+	  KillModule(pipe_slot);
+	  done = True;
+	}
       }
 
       if ((writePipes[pipe_slot] >= 0) &&
-           FD_ISSET(writePipes[pipe_slot], &out_fdset))
+	   FD_ISSET(writePipes[pipe_slot], &out_fdset))
       {
-        FlushMessageQueue(pipe_slot);
+	FlushMessageQueue(pipe_slot);
       }
     }
 
@@ -539,15 +539,15 @@ void CMD_ModuleSynchronous(F_CMD_ARGS)
     if (XPending(dpy) && XCheckMaskEvent(dpy, KeyPressMask, &tmpevent))
     {
       escape = CheckBinding(Scr.AllBindings,
-                            STROKE_ARG(0)
-                            tmpevent.xkey.keycode,
-                            tmpevent.xkey.state, GetUnusedModifiers(),
-                            GetContext(Fw, &tmpevent, &targetWindow),
-                            KEY_BINDING);
+			    STROKE_ARG(0)
+			    tmpevent.xkey.keycode,
+			    tmpevent.xkey.state, GetUnusedModifiers(),
+			    GetContext(Fw, &tmpevent, &targetWindow),
+			    KEY_BINDING);
       if (escape != NULL)
       {
-        if (!strcasecmp(escape,"escapefunc"))
-          done = True;
+	if (!strcasecmp(escape,"escapefunc"))
+	  done = True;
       }
     }
   } /* while */
@@ -572,8 +572,8 @@ Bool HandleModuleInput(Window w, int module, char *expect, Bool queue)
   if (n < sizeof(size))
     {
       fvwm_msg(ERR, "HandleModuleInput",
-               "Fail to read (Module: %i, read: %i, size: %i)",
-               module, n, sizeof(size));
+	       "Fail to read (Module: %i, read: %i, size: %i)",
+	       module, n, sizeof(size));
       KillModule(module);
       return False;
     }
@@ -581,8 +581,8 @@ Bool HandleModuleInput(Window w, int module, char *expect, Bool queue)
   if (size > sizeof(text))
     {
       fvwm_msg(ERR, "HandleModuleInput",
-               "Module(%i) command is too big (%ld), limit is %d",
-               module, size, sizeof(text));
+	       "Module(%i) command is too big (%ld), limit is %d",
+	       module, size, sizeof(text));
       /* The rest of the output from this module is going to be scrambled
        * so let's kill it rather than risk interpreting garbage */
       KillModule(module);
@@ -595,8 +595,8 @@ Bool HandleModuleInput(Window w, int module, char *expect, Bool queue)
   if (n < size)
     {
       fvwm_msg(ERR, "HandleModuleInput",
-               "Fail to read command (Module: %i, read: %i, size: %ld)",
-               module, n, size);
+	       "Fail to read command (Module: %i, read: %i, size: %ld)",
+	       module, n, size);
       KillModule(module);
       return False;
     }
@@ -605,8 +605,8 @@ Bool HandleModuleInput(Window w, int module, char *expect, Bool queue)
   if (n < sizeof(cont))
     {
       fvwm_msg(ERR, "HandleModuleInput",
-                    "Module %i, Size Problems (read: %d, size: %d)",
-                    module, n, sizeof(cont));
+		    "Module %i, Size Problems (read: %d, size: %d)",
+		    module, n, sizeof(cont));
       KillModule(module);
       return False;
     }
@@ -615,20 +615,20 @@ Bool HandleModuleInput(Window w, int module, char *expect, Bool queue)
       /* this is documented as a valid way for a module to quit
        * so let's not complain
       fvwm_msg(ERR, "HandleModuleInput",
-               "Module %i, Size Problem: cont is zero", module);
+	       "Module %i, Size Problem: cont is zero", module);
        */
       KillModule(module);
     }
   if (strlen(text)>0)
     {
       if (expect && (strncasecmp(text, expect, strlen(expect)) == 0))
-        /* the module sent the expected string */
-        return True;
+	/* the module sent the expected string */
+	return True;
 
       if (queue)
-        AddToCommandQueue(w, module, text);
+	AddToCommandQueue(w, module, text);
       else
-        ExecuteModuleCommand(w, module, text);
+	ExecuteModuleCommand(w, module, text);
     }
   return False;
 }
@@ -727,8 +727,8 @@ static void KillModuleByName(char *name, char *alias)
   while(i<npipes)
     {
       if((pipeName[i] != NULL)&&(matchWildcards(name,pipeName[i]))
-          && (!alias || (pipeAlias[i] && matchWildcards(alias, pipeAlias[i])))
-        )
+	  && (!alias || (pipeAlias[i] && matchWildcards(alias, pipeAlias[i])))
+	)
 	{
 	  KillModule(i);
 	}
@@ -753,7 +753,7 @@ void CMD_KillModule(F_CMD_ARGS)
 
 static unsigned long *
 make_vpacket(unsigned long *body, unsigned long event_type,
-             unsigned long num, va_list ap)
+	     unsigned long num, va_list ap)
 {
   extern Time lastTimestamp;
   unsigned long *bp = body;
@@ -805,24 +805,24 @@ make_new_vpacket(unsigned char *body, unsigned long event_type,
 
   for (; num > 0; --num)  {
       arglen = va_arg(ap, unsigned long);
-      if (arglen != 0)  {
-        expandint = False;
-        }  else  {
-        expandint = True;
+      if (arglen != 0)	{
+	expandint = False;
+	}  else	 {
+	expandint = True;
 	arglen = sizeof(unsigned long);
-        }
+	}
       bodylen += arglen;
       if (bodylen < FvwmPacketMaxSize_byte) {
-        if (! expandint)  {
+	if (! expandint)  {
 	  register char *tmp = (char *)bp;
-          memcpy(tmp, va_arg(ap, char *), arglen);
-          tmp += arglen;
+	  memcpy(tmp, va_arg(ap, char *), arglen);
+	  tmp += arglen;
 	  bp = (unsigned long *)tmp;
-          }  else  {
-          tmpint = va_arg(ap, int *);
-          *bp = (unsigned long) *tmpint;
-          bp++;
-          }
+	  }  else  {
+	  tmpint = va_arg(ap, int *);
+	  *bp = (unsigned long) *tmpint;
+	  bp++;
+	  }
       }
     }
 
@@ -905,63 +905,63 @@ static void BroadcastNewPacket(unsigned long event_type,
 
 /* this is broken, the flags may not fit in a word */
 #define CONFIGARGS(_t) 27,\
-            FW_W(_t),\
-            FW_W_FRAME(_t),\
-            (unsigned long)(_t),\
-            (_t)->frame_g.x,\
-            (_t)->frame_g.y,\
-            (_t)->frame_g.width,\
-            (_t)->frame_g.height,\
-            (_t)->Desk,\
-            (_t)->flags,\
-            (_t)->title_thickness,\
-            (_t)->boundary_width,\
+	    FW_W(_t),\
+	    FW_W_FRAME(_t),\
+	    (unsigned long)(_t),\
+	    (_t)->frame_g.x,\
+	    (_t)->frame_g.y,\
+	    (_t)->frame_g.width,\
+	    (_t)->frame_g.height,\
+	    (_t)->Desk,\
+	    (_t)->flags,\
+	    (_t)->title_thickness,\
+	    (_t)->boundary_width,\
 	    (_t)->hints.base_width,\
 	    (_t)->hints.base_height,\
 	    (_t)->hints.width_inc,\
 	    (_t)->hints.height_inc,\
-            (_t)->hints.min_width,\
-            (_t)->hints.min_height,\
-            (_t)->hints.max_width,\
-            (_t)->hints.max_height,\
-            FW_W_ICON_TITLE(_t),\
-            FW_W_ICON_PIXMAP(_t),\
-            (_t)->hints.win_gravity,\
-            (_t)->colors.fore,\
-            (_t)->colors.back,\
-            (_t)->ewmh_hint_layer,\
-            (_t)->ewmh_hint_desktop,\
-            (_t)->ewmh_window_type
+	    (_t)->hints.min_width,\
+	    (_t)->hints.min_height,\
+	    (_t)->hints.max_width,\
+	    (_t)->hints.max_height,\
+	    FW_W_ICON_TITLE(_t),\
+	    FW_W_ICON_PIXMAP(_t),\
+	    (_t)->hints.win_gravity,\
+	    (_t)->colors.fore,\
+	    (_t)->colors.back,\
+	    (_t)->ewmh_hint_layer,\
+	    (_t)->ewmh_hint_desktop,\
+	    (_t)->ewmh_window_type
 
 #ifndef DISABLE_MBC
 #define OLDCONFIGARGS(_t) 27,\
-            FW_W(_t),\
-            FW_W_FRAME(_t),\
-            (unsigned long)(_t),\
-            (_t)->frame_g.x,\
-            (_t)->frame_g.y,\
-            (_t)->frame_g.width,\
-            (_t)->frame_g.height,\
-            (_t)->Desk,\
-            old_flags,\
-            (_t)->title_thickness,\
-            (_t)->boundary_width,\
+	    FW_W(_t),\
+	    FW_W_FRAME(_t),\
+	    (unsigned long)(_t),\
+	    (_t)->frame_g.x,\
+	    (_t)->frame_g.y,\
+	    (_t)->frame_g.width,\
+	    (_t)->frame_g.height,\
+	    (_t)->Desk,\
+	    old_flags,\
+	    (_t)->title_thickness,\
+	    (_t)->boundary_width,\
 	    (_t)->hints.base_width,\
 	    (_t)->hints.base_height,\
 	    (_t)->hints.width_inc,\
 	    (_t)->hints.height_inc,\
-            (_t)->hints.min_width,\
-            (_t)->hints.min_height,\
-            (_t)->hints.max_width,\
-            (_t)->hints.max_height,\
-            FW_W_ICON_TITLE(_t),\
-            FW_W_ICON_PIXMAP(_t),\
-            (_t)->hints.win_gravity,\
-            (_t)->colors.fore,\
-            (_t)->colors.back,\
-            (_t)->ewmh_hint_layer,\
-            (_t)->ewmh_hint_desktop,\
-            (_t)->ewmh_window_type
+	    (_t)->hints.min_width,\
+	    (_t)->hints.min_height,\
+	    (_t)->hints.max_width,\
+	    (_t)->hints.max_height,\
+	    FW_W_ICON_TITLE(_t),\
+	    FW_W_ICON_PIXMAP(_t),\
+	    (_t)->hints.win_gravity,\
+	    (_t)->colors.fore,\
+	    (_t)->colors.back,\
+	    (_t)->ewmh_hint_layer,\
+	    (_t)->ewmh_hint_desktop,\
+	    (_t)->ewmh_window_type
 
 #define SETOLDFLAGS \
 { int i = 1; \
@@ -978,7 +978,7 @@ static void BroadcastNewPacket(unsigned long event_type,
   old_flags |= HAS_CLICK_FOCUS(t)		? i : 0; i<<=1; \
   old_flags |= HAS_SLOPPY_FOCUS(t)		? i : 0; i<<=1; \
   old_flags |= !DO_NOT_SHOW_ON_MAP(t)		? i : 0; i<<=1; \
-  old_flags |= HAS_BORDER(t)			? i : 0; i<<=1; \
+  old_flags |= !HAS_NO_BORDER(t)		? i : 0; i<<=1; \
   old_flags |= HAS_TITLE(t)			? i : 0; i<<=1; \
   old_flags |= IS_MAPPED(t)			? i : 0; i<<=1; \
   old_flags |= IS_ICONIFIED(t)			? i : 0; i<<=1; \
@@ -1003,37 +1003,37 @@ static void BroadcastNewPacket(unsigned long event_type,
 
 /****************************************************************
     RBW - 04/16/1999 - new version for GSFR --
-        - args are now pairs:
-          - length of arg data
-          - pointer to arg data
-        - number of arguments is the number of length/pointer pairs.
-        - the 9th field, where flags used to be, is temporarily left
-        as a dummy to preserve alignment of the other fields in the
-        old packet: we should drop this before the next release.
+	- args are now pairs:
+	  - length of arg data
+	  - pointer to arg data
+	- number of arguments is the number of length/pointer pairs.
+	- the 9th field, where flags used to be, is temporarily left
+	as a dummy to preserve alignment of the other fields in the
+	old packet: we should drop this before the next release.
 *****************************************************************/
 #define CONFIGARGSNEW(_t) 28,\
 	    (unsigned long)(sizeof(unsigned long)),\
-            &FW_W(*(_t)),\
+	    &FW_W(*(_t)),\
 	    (unsigned long)(sizeof(unsigned long)),\
-            &FW_W_FRAME(*(_t)),\
+	    &FW_W_FRAME(*(_t)),\
 	    (unsigned long)(sizeof(unsigned long)),\
-            &(_t),\
+	    &(_t),\
 	    (unsigned long)(0),\
-            &(*(_t))->frame_g.x,\
+	    &(*(_t))->frame_g.x,\
 	    (unsigned long)(0),\
-            &(*(_t))->frame_g.y,\
+	    &(*(_t))->frame_g.y,\
 	    (unsigned long)(0),\
-            &(*(_t))->frame_g.width,\
+	    &(*(_t))->frame_g.width,\
 	    (unsigned long)(0),\
-            &(*(_t))->frame_g.height,\
+	    &(*(_t))->frame_g.height,\
 	    (unsigned long)(0),\
-            &(*(_t))->Desk,\
+	    &(*(_t))->Desk,\
 	    (unsigned long)(0),\
-            &(*(_t))->layer,\
+	    &(*(_t))->layer,\
 	    (unsigned long)(0),\
-            &(*(_t))->title_thickness,\
+	    &(*(_t))->title_thickness,\
 	    (unsigned long)(0),\
-            &(*(_t))->boundary_width,\
+	    &(*(_t))->boundary_width,\
 	    (unsigned long)(0),\
 	    &(*(_t))->hints.base_width,\
 	    (unsigned long)(0),\
@@ -1043,31 +1043,31 @@ static void BroadcastNewPacket(unsigned long event_type,
 	    (unsigned long)(0),\
 	    &(*(_t))->hints.height_inc,\
 	    (unsigned long)(0),\
-            &(*(_t))->hints.min_width,\
+	    &(*(_t))->hints.min_width,\
 	    (unsigned long)(0),\
-            &(*(_t))->hints.min_height,\
+	    &(*(_t))->hints.min_height,\
 	    (unsigned long)(0),\
-            &(*(_t))->hints.max_width,\
+	    &(*(_t))->hints.max_width,\
 	    (unsigned long)(0),\
-            &(*(_t))->hints.max_height,\
+	    &(*(_t))->hints.max_height,\
 	    (unsigned long)(0),\
-            &FW_W_ICON_TITLE(*(_t)),\
+	    &FW_W_ICON_TITLE(*(_t)),\
 	    (unsigned long)(sizeof(unsigned long)),\
-            &FW_W_ICON_PIXMAP(*(_t)),\
+	    &FW_W_ICON_PIXMAP(*(_t)),\
 	    (unsigned long)(0),\
-            &(*(_t))->hints.win_gravity,\
+	    &(*(_t))->hints.win_gravity,\
 	    (unsigned long)(sizeof(unsigned long)),\
-            &(*(_t))->colors.fore,\
+	    &(*(_t))->colors.fore,\
 	    (unsigned long)(sizeof(unsigned long)),\
-            &(*(_t))->colors.back,\
-            (unsigned long)(0),\
-            &(*(_t))->ewmh_hint_layer,\
-	    (unsigned long)(sizeof(unsigned long)),\
-            &(*(_t))->ewmh_hint_desktop,\
+	    &(*(_t))->colors.back,\
 	    (unsigned long)(0),\
-            &(*(_t))->ewmh_window_type,\
+	    &(*(_t))->ewmh_hint_layer,\
+	    (unsigned long)(sizeof(unsigned long)),\
+	    &(*(_t))->ewmh_hint_desktop,\
+	    (unsigned long)(0),\
+	    &(*(_t))->ewmh_window_type,\
 	    (unsigned long)(sizeof((*(_t))->flags)),\
-            &(*(_t))->flags
+	    &(*(_t))->flags
 
 
 
@@ -1084,8 +1084,8 @@ const FvwmWindow **t1 = &t;
     long old_flags = 0;
     SETOLDFLAGS
     SendPacket(module, event_type == M_ADD_WINDOW ?
-                       M_OLD_ADD_WINDOW : M_OLD_CONFIGURE_WINDOW,
-               OLDCONFIGARGS(t));
+		       M_OLD_ADD_WINDOW : M_OLD_CONFIGURE_WINDOW,
+	       OLDCONFIGARGS(t));
   }
 #endif /* DISABLE_MBC */
 }
@@ -1103,8 +1103,8 @@ const FvwmWindow **t1 = &t;
     long old_flags = 0;
     SETOLDFLAGS
     BroadcastPacket(event_type == M_ADD_WINDOW ?
-                    M_OLD_ADD_WINDOW : M_OLD_CONFIGURE_WINDOW,
-                    OLDCONFIGARGS(t));
+		    M_OLD_ADD_WINDOW : M_OLD_CONFIGURE_WINDOW,
+		    OLDCONFIGARGS(t));
   }
 #endif /* DISABLE_MBC */
 }
@@ -1146,8 +1146,8 @@ make_named_packet(int *len, unsigned long event_type, const char *name,
 
 void
 SendName(int module, unsigned long event_type,
-         unsigned long data1,unsigned long data2, unsigned long data3,
-         const char *name)
+	 unsigned long data1,unsigned long data2, unsigned long data3,
+	 const char *name)
 {
   unsigned long *body;
   int l;
@@ -1162,8 +1162,8 @@ SendName(int module, unsigned long event_type,
 
 void
 BroadcastName(unsigned long event_type,
-              unsigned long data1, unsigned long data2, unsigned long data3,
-              const char *name)
+	      unsigned long data1, unsigned long data2, unsigned long data3,
+	      const char *name)
 {
   unsigned long *body;
   int i, l;
@@ -1209,17 +1209,17 @@ SendFvwmPicture(int module, unsigned long event_type,
 		unsigned long data1, unsigned long data2,
 		unsigned long data3, FvwmPicture *picture, char *name)
 {
-        unsigned long *body;
+	unsigned long *body;
 	unsigned int data4 = 0, data5 = 0, data6 = 0,
 		data7 = 0, data8 = 0, data9 = 0;
-        int l;
+	int l;
 
-        if (!FMiniIconsSupported)
-        {
-                return;
-        }
+	if (!FMiniIconsSupported)
+	{
+		return;
+	}
 	if ((name == NULL) || (event_type != M_MINI_ICON))
-                return;
+		return;
 
 	if (picture != NULL)
 	{
@@ -1230,11 +1230,11 @@ SendFvwmPicture(int module, unsigned long event_type,
 		data8 = picture->mask;
 		data9 = picture->alpha;
 	}
-        body = make_named_packet(&l, event_type, name, 9, data1, data2, data3,
+	body = make_named_packet(&l, event_type, name, 9, data1, data2, data3,
 				 data4, data5, data6, data7, data8, data9);
 
 	PositiveWrite(module, body, l*sizeof(unsigned long));
-        free(body);
+	free(body);
 
 	return;
 }
@@ -1244,15 +1244,15 @@ BroadcastFvwmPicture(unsigned long event_type,
 		     unsigned long data1, unsigned long data2,
 		     unsigned long data3, FvwmPicture *picture, char *name)
 {
-        unsigned long *body;
+	unsigned long *body;
 	unsigned int data4 = 0, data5 = 0, data6 = 0,
 		data7 = 0, data8 = 0, data9 = 0;
-        int i, l;
+	int i, l;
 
-        if (!FMiniIconsSupported)
-        {
-                return;
-        }
+	if (!FMiniIconsSupported)
+	{
+		return;
+	}
 	if (picture != NULL)
 	{
 		data4 = picture->width;
@@ -1262,13 +1262,13 @@ BroadcastFvwmPicture(unsigned long event_type,
 		data8 = picture->mask;
 		data9 = picture->alpha;
 	}
-        body = make_named_packet(&l, event_type, name, 9, data1, data2, data3,
+	body = make_named_packet(&l, event_type, name, 9, data1, data2, data3,
 				 data4, data5, data6, data7, data8, data9);
 
-        for (i=0; i < npipes; i++)
-                PositiveWrite(i, body, l*sizeof(unsigned long));
+	for (i=0; i < npipes; i++)
+		PositiveWrite(i, body, l*sizeof(unsigned long));
 
-        free(body);
+	free(body);
 }
 
 /**********************************************************************
@@ -1354,7 +1354,7 @@ void CMD_SendToModule(F_CMD_ARGS)
   int i;
 
   /* FIXME: Without this, popup menus can't be implemented properly in
-   *  modules.  Olivier: Why ? */
+   *  modules.	Olivier: Why ? */
   /* UngrabEm(); */
   if (!action)
     return;
@@ -1390,7 +1390,7 @@ void CMD_SendToModule(F_CMD_ARGS)
 /* This used to be marked "fvwm_inline".  I removed this
    when I added the lockonsend logic.  The routine seems too big to
    want to inline.  dje 9/4/98 */
-extern int myxgrabcount;                /* defined in libs/Grab.c */
+extern int myxgrabcount;		/* defined in libs/Grab.c */
 extern char *ModuleUnlock;		/* defined in libs/Module.c */
 void PositiveWrite(int module, unsigned long *ptr, int size)
 {
@@ -1534,7 +1534,7 @@ void PositiveWrite(int module, unsigned long *ptr, int size)
 			 * will be read and then on returning up the third
 			 * level UNLOCK will be read at the first level. This
 			 * could be difficult to fix without turning queueing
-			 * on.  Turning queueing on may be bad because it can
+			 * on.	Turning queueing on may be bad because it can
 			 * be useful for modules to be able to inject commands
 			 * from modules in a synchronous manner. e.g.
 			 * FvwmIconMan can tell FvwmAnimate to do an animation
@@ -1693,13 +1693,13 @@ void CMD_Send_WindowList(F_CMD_ARGS)
     {
       SendPacket(*Module, M_NEW_DESK, 1, Scr.CurrentDesk);
       SendPacket(*Module, M_NEW_PAGE, 5,
-                 Scr.Vx, Scr.Vy, Scr.CurrentDesk, Scr.VxMax, Scr.VyMax);
+		 Scr.Vx, Scr.Vy, Scr.CurrentDesk, Scr.VxMax, Scr.VyMax);
 
       if(Scr.Hilite != NULL)
       {
 	SendPacket(*Module, M_FOCUS_CHANGE, 5,
-                   FW_W(Scr.Hilite),
-                   FW_W_FRAME(Scr.Hilite),
+		   FW_W(Scr.Hilite),
+		   FW_W_FRAME(Scr.Hilite),
 		   (unsigned long)True,
 		   Scr.Hilite->hicolors.fore,
 		   Scr.Hilite->hicolors.back);
@@ -1707,9 +1707,9 @@ void CMD_Send_WindowList(F_CMD_ARGS)
       else
       {
 	SendPacket(*Module, M_FOCUS_CHANGE, 5,
-                   0, 0, (unsigned long)True,
-                   GetColor(DEFAULT_FORE_COLOR),
-                   GetColor(DEFAULT_BACK_COLOR));
+		   0, 0, (unsigned long)True,
+		   GetColor(DEFAULT_FORE_COLOR),
+		   GetColor(DEFAULT_BACK_COLOR));
       }
       if (Scr.DefaultIcon != NULL)
 	SendName(*Module, M_DEFAULTICON, 0, 0, 0, Scr.DefaultIcon);
@@ -1725,10 +1725,10 @@ void CMD_Send_WindowList(F_CMD_ARGS)
 		   (unsigned long)t,t->visible_name);
 	  SendName(*Module,MX_VISIBLE_ICON_NAME,FW_W(t),FW_W_FRAME(t),
 		   (unsigned long)t,t->visible_icon_name);
-          if (t->icon_bitmap_file != NULL
-              && t->icon_bitmap_file != Scr.DefaultIcon)
-            SendName(*Module,M_ICON_FILE,FW_W(t),FW_W_FRAME(t),
-                     (unsigned long)t,t->icon_bitmap_file);
+	  if (t->icon_bitmap_file != NULL
+	      && t->icon_bitmap_file != Scr.DefaultIcon)
+	    SendName(*Module,M_ICON_FILE,FW_W(t),FW_W_FRAME(t),
+		     (unsigned long)t,t->icon_bitmap_file);
 
 	  SendName(*Module,M_RES_CLASS,FW_W(t),FW_W_FRAME(t),
 		   (unsigned long)t,t->class.res_class);
@@ -1751,9 +1751,9 @@ void CMD_Send_WindowList(F_CMD_ARGS)
 	  if((IS_ICONIFIED(t))&&(IS_ICON_UNMAPPED(t)))
 	    SendPacket(*Module, M_ICONIFY, 7, FW_W(t), FW_W_FRAME(t),
 		       (unsigned long)t,
-                       0, 0, 0, 0);
+		       0, 0, 0, 0);
 	  if (FMiniIconsSupported && t->mini_icon != NULL)
-            SendFvwmPicture(*Module, M_MINI_ICON,
+	    SendFvwmPicture(*Module, M_MINI_ICON,
 			    FW_W(t), FW_W_FRAME(t), (unsigned long)t,
 			    t->mini_icon, t->mini_pixmap_file);
 	}
@@ -1761,18 +1761,18 @@ void CMD_Send_WindowList(F_CMD_ARGS)
       if(Scr.Hilite == NULL)
       {
 	  BroadcastPacket(M_FOCUS_CHANGE, 5,
-                          0, 0, (unsigned long)True,
+			  0, 0, (unsigned long)True,
 			  GetColor(DEFAULT_FORE_COLOR),
 			  GetColor(DEFAULT_BACK_COLOR));
       }
       else
       {
 	  BroadcastPacket(M_FOCUS_CHANGE, 5,
-                          FW_W(Scr.Hilite),
-                          FW_W(Scr.Hilite),
-                          (unsigned long)True,
-                          Scr.Hilite->hicolors.fore,
-                          Scr.Hilite->hicolors.back);
+			  FW_W(Scr.Hilite),
+			  FW_W(Scr.Hilite),
+			  (unsigned long)True,
+			  Scr.Hilite->hicolors.fore,
+			  Scr.Hilite->hicolors.back);
       }
 
       SendPacket(*Module, M_END_WINDOWLIST, 0);

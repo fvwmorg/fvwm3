@@ -267,7 +267,7 @@ static void frame_setup_border(
 	rectangle part_g;
 	Bool dummy;
 
-	if (!HAS_BORDER(fw))
+	if (HAS_NO_BORDER(fw))
 	{
 		return;
 	}
@@ -1109,7 +1109,7 @@ static int frame_get_shading_laziness(
 		/* fall through */
 	case WINDOWSHADE_LAZY:
 	default:
-		if (has_tiled_pixmap_border && HAS_BORDER(fw))
+		if (has_tiled_pixmap_border && !HAS_NO_BORDER(fw))
 		{
 			return 0;
 		}
@@ -1404,7 +1404,7 @@ void frame_get_sidebar_geometry(
 	ret_g->height = 0;
 	*ret_has_x_marks = False;
 	*ret_has_y_marks = False;
-	if (!HAS_BORDER(fw))
+	if (HAS_NO_BORDER(fw))
 	{
 		return;
 	}

@@ -770,7 +770,7 @@ void list_configure(unsigned long *body)
     printf( "do_reuse_destroyed: %d\n",
 	    DO_REUSE_DESTROYED( cfgpacket ) );
     printf( "has_border: %d\n",
-	    HAS_BORDER( cfgpacket ) );
+	    !HAS_NO_BORDER( cfgpacket ) );
     printf( "has_title: %d\n",
 	    HAS_TITLE( cfgpacket ) );
     printf( "is_deiconify_pending: %d\n",

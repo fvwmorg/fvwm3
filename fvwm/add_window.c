@@ -6,42 +6,42 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307	 USA
  */
 /****************************************************************************
  * This module is based on Twm, but has been siginificantly modified
  * by Rob Nation
  ****************************************************************************/
 /*****************************************************************************/
-/**       Copyright 1988 by Evans & Sutherland Computer Corporation,        **/
-/**                          Salt Lake City, Utah                           **/
+/**	  Copyright 1988 by Evans & Sutherland Computer Corporation,	    **/
+/**			     Salt Lake City, Utah			    **/
 /**  Portions Copyright 1989 by the Massachusetts Institute of Technology   **/
-/**                        Cambridge, Massachusetts                         **/
-/**                                                                         **/
-/**                           All Rights Reserved                           **/
-/**                                                                         **/
+/**			   Cambridge, Massachusetts			    **/
+/**									    **/
+/**			      All Rights Reserved			    **/
+/**									    **/
 /**    Permission to use, copy, modify, and distribute this software and    **/
 /**    its documentation  for  any  purpose  and  without  fee is hereby    **/
-/**    granted, provided that the above copyright notice appear  in  all    **/
-/**    copies and that both  that  copyright  notice  and  this  permis-    **/
+/**    granted, provided that the above copyright notice appear	 in  all    **/
+/**    copies and that both  that  copyright  notice  and  this	 permis-    **/
 /**    sion  notice appear in supporting  documentation,  and  that  the    **/
 /**    names of Evans & Sutherland and M.I.T. not be used in advertising    **/
-/**    in publicity pertaining to distribution of the  software  without    **/
-/**    specific, written prior permission.                                  **/
-/**                                                                         **/
+/**    in publicity pertaining to distribution of the  software	 without    **/
+/**    specific, written prior permission.				    **/
+/**									    **/
 /**    EVANS & SUTHERLAND AND M.I.T. DISCLAIM ALL WARRANTIES WITH REGARD    **/
 /**    TO THIS SOFTWARE, INCLUDING ALL IMPLIED WARRANTIES  OF  MERCHANT-    **/
-/**    ABILITY  AND  FITNESS,  IN  NO  EVENT SHALL EVANS & SUTHERLAND OR    **/
+/**    ABILITY	AND  FITNESS,  IN  NO  EVENT SHALL EVANS & SUTHERLAND OR    **/
 /**    M.I.T. BE LIABLE FOR ANY SPECIAL, INDIRECT OR CONSEQUENTIAL  DAM-    **/
-/**    AGES OR  ANY DAMAGES WHATSOEVER  RESULTING FROM LOSS OF USE, DATA    **/
+/**    AGES OR	ANY DAMAGES WHATSOEVER	RESULTING FROM LOSS OF USE, DATA    **/
 /**    OR PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR OTHER    **/
-/**    TORTIOUS ACTION, ARISING OUT OF OR IN  CONNECTION  WITH  THE  USE    **/
-/**    OR PERFORMANCE OF THIS SOFTWARE.                                     **/
+/**    TORTIOUS ACTION, ARISING OUT OF OR IN  CONNECTION  WITH	THE  USE    **/
+/**    OR PERFORMANCE OF THIS SOFTWARE.					    **/
 /*****************************************************************************/
 
 /* ---------------------------- included header files ----------------------- */
@@ -108,8 +108,8 @@ char NoResource[] = "NoResource"; /* Class if no res_name in class hints */
 /***********************************************************************
  *
  *  Procedure:
- *      CaptureOneWindow
- *      CaptureAllWindows
+ *	CaptureOneWindow
+ *	CaptureAllWindows
  *
  *   Decorates windows at start-up and during recaptures
  *
@@ -140,7 +140,7 @@ static void CaptureOneWindow(
 	 * recapture. */
 	MyXGrabServer(dpy);
 	if (!XGetGeometry(dpy, FW_W(fw), &JunkRoot, &JunkX, &JunkY, &JunkWidth,
-			  &JunkHeight, &JunkBW,  &JunkDepth))
+			  &JunkHeight, &JunkBW,	 &JunkDepth))
 	{
 		/* The window has already died, do not recapture it! */
 		MyXUngrabServer(dpy);
@@ -240,7 +240,7 @@ static void hide_screen(
 		hide_win = XCreateWindow(
 			dpy, Scr.Root, 0, 0, Scr.MyDisplayWidth,
 			Scr.MyDisplayHeight, 0, Pdepth, InputOutput,
-		        Pvisual, valuemask, &xswa);
+			Pvisual, valuemask, &xswa);
 		if (hide_win)
 		{
 			/* When recapturing, all windows are reparented to this
@@ -309,7 +309,7 @@ static int MappedNotOverride(
 	Window w, initial_window_options_type *win_opts)
 {
 	XWindowAttributes wa;
-        Atom atype;
+	Atom atype;
 	int aformat;
 	unsigned long nitems, bytes_remain;
 	unsigned char *prop;
@@ -430,16 +430,16 @@ static Bool setup_window_structure(
 			*pfw, HAS_EWMH_INIT_SHADED_STATE(savewin));
 		SET_HAS_EWMH_INIT_STICKY_STATE(
 			*pfw, HAS_EWMH_INIT_STICKY_STATE(savewin));
-                CLEAR_USER_STATES(*pfw, ~0);
-                SET_USER_STATES(*pfw, GET_USER_STATES(savewin));
+		CLEAR_USER_STATES(*pfw, ~0);
+		SET_USER_STATES(*pfw, GET_USER_STATES(savewin));
 	}
 
 	(*pfw)->cmap_windows = (Window *)NULL;
-        if (FMiniIconsSupported)
-        {
-        	(*pfw)->mini_pixmap_file = NULL;
-                (*pfw)->mini_icon = NULL;
-        }
+	if (FMiniIconsSupported)
+	{
+		(*pfw)->mini_pixmap_file = NULL;
+		(*pfw)->mini_icon = NULL;
+	}
 
 	return True;
 }
@@ -625,10 +625,10 @@ static void adjust_fvwm_internal_windows(FvwmWindow *fw)
 
 static void broadcast_mini_icon(FvwmWindow *fw)
 {
-        if (!FMiniIconsSupported)
-        {
-                return;
-        }
+	if (!FMiniIconsSupported)
+	{
+		return;
+	}
 	if (fw->mini_pixmap_file && fw->mini_icon)
 	{
 		BroadcastFvwmPicture(
@@ -642,10 +642,10 @@ static void broadcast_mini_icon(FvwmWindow *fw)
 
 static void setup_mini_icon(FvwmWindow *fw, window_style *pstyle)
 {
-        if (!FMiniIconsSupported)
-        {
-                return;
-        }
+	if (!FMiniIconsSupported)
+	{
+		return;
+	}
 	if (SHAS_MINI_ICON(&pstyle->flags))
 	{
 		fw->mini_pixmap_file = SGET_MINI_ICON_NAME(*pstyle);
@@ -905,11 +905,6 @@ void setup_style_and_decor(
 		}
 	}
 
-	/*  Assume that we'll decorate */
-	SET_HAS_BORDER(fw, 1);
-	SET_HAS_HANDLES(fw, 1);
-	SET_HAS_TITLE(fw, 1);
-
 #ifdef USEDECOR
 	/* search for a UseDecor tag in the style */
 	if (!IS_DECOR_CHANGED(fw))
@@ -948,7 +943,7 @@ void setup_style_and_decor(
 		if (fw->wShaped)
 		{
 			set_window_border_size(fw, 0);
-			SET_HAS_BORDER(fw, 0);
+			SET_HAS_NO_BORDER(fw, 1);
 			SET_HAS_HANDLES(fw, 0);
 		}
 	}
@@ -1266,7 +1261,7 @@ void setup_title_window(
 
 	FW_W_TITLE(fw) = XCreateWindow(
 		dpy, FW_W_FRAME(fw), 0, 0, 1, 1, 0, Pdepth, InputOutput,
-                Pvisual, valuemask, pattributes);
+		Pvisual, valuemask, pattributes);
 	XSaveContext(dpy, FW_W_TITLE(fw), FvwmContext, (caddr_t) fw);
 
 	return;
@@ -1413,7 +1408,7 @@ void setup_resize_handle_cursors(FvwmWindow *fw)
 	XSetWindowAttributes attributes;
 	int i;
 
-	if (!HAS_BORDER(fw))
+	if (HAS_NO_BORDER(fw))
 	{
 		return;
 	}
@@ -1457,7 +1452,7 @@ void setup_resize_handle_windows(FvwmWindow *fw)
 		NorthWestGravity
 	};
 
-	if (!HAS_BORDER(fw))
+	if (HAS_NO_BORDER(fw))
 	{
 		return;
 	}
@@ -1475,13 +1470,13 @@ void setup_resize_handle_windows(FvwmWindow *fw)
 		attributes.win_gravity = c_grav[i];
 		FW_W_CORNER(fw, i) = XCreateWindow(
 			dpy, FW_W_FRAME(fw), -1, -1, 1, 1, 0, Pdepth,
-                        InputOutput, Pvisual, valuemask, &attributes);
+			InputOutput, Pvisual, valuemask, &attributes);
 		XSaveContext(
 			dpy, FW_W_CORNER(fw, i), FvwmContext, (caddr_t)fw);
 		attributes.win_gravity = s_grav[i];
 		FW_W_SIDE(fw, i) = XCreateWindow(
 			dpy, FW_W_FRAME(fw), -1, -1, 1, 1, 0, Pdepth,
-                        InputOutput, Pvisual, valuemask, &attributes);
+			InputOutput, Pvisual, valuemask, &attributes);
 		XSaveContext(dpy, FW_W_SIDE(fw, i), FvwmContext, (caddr_t)fw);
 	}
 	setup_resize_handle_cursors(fw);
@@ -1512,11 +1507,11 @@ void destroy_resize_handle_windows(
 
 void change_resize_handle_windows(FvwmWindow *fw)
 {
-	if (HAS_BORDER(fw) && FW_W_SIDE(fw, 0) == None)
+	if (!HAS_NO_BORDER(fw) && FW_W_SIDE(fw, 0) == None)
 	{
 		setup_resize_handle_windows(fw);
 	}
-	else if (!HAS_BORDER(fw) && FW_W_SIDE(fw, 0) != None)
+	else if (HAS_NO_BORDER(fw) && FW_W_SIDE(fw, 0) != None)
 	{
 		destroy_resize_handle_windows(fw, False);
 	}
@@ -1701,7 +1696,7 @@ void destroy_auxiliary_windows(
 	{
 		destroy_button_windows(fw, True);
 	}
-	if (HAS_BORDER(fw))
+	if (!HAS_NO_BORDER(fw))
 	{
 		destroy_resize_handle_windows(fw, True);
 	}
@@ -1758,13 +1753,13 @@ static void setup_icon(FvwmWindow *fw, window_style *pstyle)
 		    SICON_OVERRIDE(pstyle->flags) == ICON_OVERRIDE)
 		{
 			ICON_DBG((stderr,"si: iwh ignored '%s'\n",
-                                  fw->name.name));
+				  fw->name.name));
 			fw->icon_bitmap_file = SGET_ICON_NAME(*pstyle);
 		}
 		else
 		{
 			ICON_DBG((stderr,"si: using iwh '%s'\n",
-                                  fw->name.name));
+				  fw->name.name));
 			fw->icon_bitmap_file = NULL;
 		}
 	}
@@ -1774,13 +1769,13 @@ static void setup_icon(FvwmWindow *fw, window_style *pstyle)
 		    SICON_OVERRIDE(pstyle->flags) != NO_ICON_OVERRIDE)
 		{
 			ICON_DBG((stderr,"si: iph ignored '%s'\n",
-                                  fw->name.name));
+				  fw->name.name));
 			fw->icon_bitmap_file = SGET_ICON_NAME(*pstyle);
 		}
 		else
 		{
 			ICON_DBG((stderr,"si: using iph '%s'\n",
-                                  fw->name.name));
+				  fw->name.name));
 			fw->icon_bitmap_file = NULL;
 		}
 	}
@@ -1993,7 +1988,7 @@ FvwmWindow *AddWindow(
 	}
 
 	/****** Make sure the client window still exists.  We don't want to
-	 * leave an orphan frame window if it doesn't.  Since we now have the
+	 * leave an orphan frame window if it doesn't.	Since we now have the
 	 * server grabbed, the window can't disappear later without having been
 	 * reparented, so we'll get a DestroyNotify for it.  We won't have
 	 * gotten one for anything up to here, however. ******/
@@ -2015,7 +2010,7 @@ FvwmWindow *AddWindow(
 
 	/****** basic style and decor ******/
 	/* If the window is in the NoTitle list, or is a transient, dont
-	 * decorate it.  If its a transient, and DecorateTransients was
+	 * decorate it.	 If its a transient, and DecorateTransients was
 	 * specified, decorate anyway. */
 	/* get merged styles */
 	lookup_style(fw, &style);
@@ -2046,7 +2041,7 @@ FvwmWindow *AddWindow(
 	/*
 	 * Reparenting generates an UnmapNotify event, followed by a MapNotify.
 	 * Set the map state to FALSE to prevent a transition back to
-	 * WithdrawnState in HandleUnmapNotify.  Map state gets set corrected
+	 * WithdrawnState in HandleUnmapNotify.	 Map state gets set corrected
 	 * again in HandleMapNotify.
 	 */
 	SET_MAPPED(fw, 0);
@@ -2195,10 +2190,10 @@ FvwmWindow *AddWindow(
 	MyXUngrabServer(dpy);
 
 	/* need to set up the mini icon before drawing */
-        if (FMiniIconsSupported)
-        {
-                setup_mini_icon(fw, &style);
-        }
+	if (FMiniIconsSupported)
+	{
+		setup_mini_icon(fw, &style);
+	}
 
 	/****** arrange the frame ******/
 
@@ -2244,10 +2239,10 @@ FvwmWindow *AddWindow(
 	/* migo (20-Jan-2000): the logic is to unset this flag on NULL values */
 	SET_WAS_ICON_NAME_PROVIDED(fw, 1);
 	setup_icon(fw, &style);
-        if (FMiniIconsSupported)
-        {
-                broadcast_mini_icon(fw);
-        }
+	if (FMiniIconsSupported)
+	{
+		broadcast_mini_icon(fw);
+	}
 	BroadcastName(M_RES_CLASS,FW_W(fw),FW_W_FRAME(fw),
 		      (unsigned long)fw,fw->class.res_class);
 	BroadcastName(M_RES_NAME,FW_W(fw),FW_W_FRAME(fw),
@@ -2267,7 +2262,7 @@ FvwmWindow *AddWindow(
 			SET_STICKY(fw, 0);
 			handle_stick(
 				NULL, &Event, FW_W_FRAME(fw), fw, C_FRAME, "",
-			        0, 1);
+				0, 1);
 		}
 	}
 
@@ -2320,9 +2315,9 @@ FvwmWindow *AddWindow(
 		frame_free_move_resize_args(fw, mr_args);
 	}
 	if (!XGetGeometry(dpy, FW_W(fw), &JunkRoot, &JunkX, &JunkY, &JunkWidth,
-			  &JunkHeight, &JunkBW,  &JunkDepth))
+			  &JunkHeight, &JunkBW,	 &JunkDepth))
 	{
-		/* The window has disappeared somehow.  For some reason we do
+		/* The window has disappeared somehow.	For some reason we do
 		 * not always get a DestroyNotify on the window, so make sure
 		 * it is destroyed. */
 		destroy_window(fw);
@@ -2610,13 +2605,13 @@ void GetWindowSizeHints(FvwmWindow *tmp)
 		/*
 		** The math looks like this:
 		**
-		**   minAspectX    maxAspectX
+		**   minAspectX	   maxAspectX
 		**   ---------- <= ----------
-		**   minAspectY    maxAspectY
+		**   minAspectY	   maxAspectY
 		**
 		** If that is multiplied out, this must be satisfied:
 		**
-		**   minAspectX * maxAspectY <=  maxAspectX * minAspectY
+		**   minAspectX * maxAspectY <=	 maxAspectX * minAspectY
 		**
 		** So, what to do if this isn't met?  Ignoring it entirely
 		** seems safest.
@@ -2642,7 +2637,7 @@ void GetWindowSizeHints(FvwmWindow *tmp)
 				WARN, "GetWindowSizeHints", "%s window %#lx"
 				" has broken aspect ratio: %d/%d - %d/%d\n",
 				tmp->name.name, FW_W(tmp), minAspectX,
-                                minAspectY, maxAspectX, maxAspectY);
+				minAspectY, maxAspectX, maxAspectY);
 		}
 		else
 		{

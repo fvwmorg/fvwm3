@@ -6,12 +6,12 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307	 USA
  */
 
 /****************************************************************************
@@ -873,7 +873,7 @@ static void border_get_border_gcs(
 	DecorFaceStyle *borderstyle;
 	Bool is_reversed = False;
 
-	if (transparent_gc == None && HAS_BORDER(fw) && !HAS_MWM_BORDER(fw))
+	if (transparent_gc == None && !HAS_NO_BORDER(fw) && !HAS_MWM_BORDER(fw))
 	{
 		XGCValues xgcv;
 
@@ -981,13 +981,13 @@ static void border_fetch_mwm_layout(
 	 * HHCCCCS  from outside to inside on the left and top border
 	 * SSCCCCH  from outside to inside on the bottom and right border
 	 * |||||||
-	 * |||||||__ w_shin       (inner shadow area)
-	 * ||||||___ w_c          (transparent area)
-	 * |||||____ w_c          (transparent area)
-	 * ||||_____ w_c          (transparent area)
-	 * |||______ w_c          (transparent area)
-	 * ||_______ w_hiout      (outer hilight area)
-	 * |________ w_hiout      (outer hilight area)
+	 * |||||||__ w_shin	  (inner shadow area)
+	 * ||||||___ w_c	  (transparent area)
+	 * |||||____ w_c	  (transparent area)
+	 * ||||_____ w_c	  (transparent area)
+	 * |||______ w_c	  (transparent area)
+	 * ||_______ w_hiout	  (outer hilight area)
+	 * |________ w_hiout	  (outer hilight area)
 	 *
 	 *
 	 * C = original colour
@@ -1017,13 +1017,13 @@ static void border_fetch_fvwm_layout(
 	 * SHHCCSS  from outside to inside on the left and top border
 	 * SSCCHHS  from outside to inside on the bottom and right border
 	 * |||||||
-	 * |||||||__ w_din        (inner dark area)
-	 * ||||||___ w_shin       (inner shadow area)
-	 * |||||____ w_trin       (inner transparent/shadow area)
-	 * ||||_____ w_c          (transparent area)
-	 * |||______ w_trout      (outer transparent/hilight area)
-	 * ||_______ w_hiout      (outer hilight area)
-	 * |________ w_dout       (outer dark area)
+	 * |||||||__ w_din	  (inner dark area)
+	 * ||||||___ w_shin	  (inner shadow area)
+	 * |||||____ w_trin	  (inner transparent/shadow area)
+	 * ||||_____ w_c	  (transparent area)
+	 * |||______ w_trout	  (outer transparent/hilight area)
+	 * ||_______ w_hiout	  (outer hilight area)
+	 * |________ w_dout	  (outer dark area)
 	 *
 	 * C = original colour
 	 * H = hilight
@@ -1034,11 +1034,11 @@ static void border_fetch_fvwm_layout(
 	 * SHHCS
 	 * SSCHS
 	 * |||||
-	 * |||||__ w_din        (inner dark area)
-	 * ||||___ w_trin       (inner transparent/shadow area)
-	 * |||____ w_trout      (outer transparent/hilight area)
-	 * ||_____ w_hiout      (outer hilight area)
-	 * |______ w_dout       (outer dark area)
+	 * |||||__ w_din	(inner dark area)
+	 * ||||___ w_trin	(inner transparent/shadow area)
+	 * |||____ w_trout	(outer transparent/hilight area)
+	 * ||_____ w_hiout	(outer hilight area)
+	 * |______ w_dout	(outer dark area)
 	 */
 	ret_size_descr->w_dout = 1;
 	ret_size_descr->w_hiout = 1;
@@ -1466,7 +1466,7 @@ static void border_draw_one_border_part(
 }
 
 static void border_draw_all_border_parts(
-        common_decorations_type *cd, FvwmWindow *fw, border_relief_descr *br,
+	common_decorations_type *cd, FvwmWindow *fw, border_relief_descr *br,
 	rectangle *frame_g, window_parts draw_parts,
 	window_parts pressed_parts, Bool do_hilight, Bool do_clear)
 {
@@ -1777,7 +1777,7 @@ static void border_set_button_pixmap(
 		for (tsdf = &TB_STATE(GetDecor(fw, titlebar))[bs];
 		     tsdf != NULL; tsdf = tsdf->next)
 		{
-                        bg.pixel = tsdf->u.back;
+			bg.pixel = tsdf->u.back;
 			border_draw_decor_to_pixmap(
 				fw, dest_pix, &bg, button_g, tsdf, td->cd,
 				(td->tbstate.toggled_bmask & mask),
@@ -1788,7 +1788,7 @@ static void border_set_button_pixmap(
 	for ( ; df; df = df->next)
 	{
 		/* draw background from button style */
-                bg.pixel = df->u.back;
+		bg.pixel = df->u.back;
 		border_draw_decor_to_pixmap(
 			fw, dest_pix, &bg, button_g, df, td->cd,
 			(td->tbstate.toggled_bmask & mask), is_left_button);
@@ -1958,7 +1958,7 @@ static void border_draw_title_relief(
 				fw->title_thickness - 1),
 			(reverse) ? tdd->sgc : tdd->rgc,
 			(reverse) ? tdd->rgc : tdd->sgc, td->cd->relief_width,
-                        True);
+			True);
 		break;
 	default:
 		/* flat */
@@ -1973,12 +1973,12 @@ static void border_draw_title_deep(
 	title_draw_descr *tdd, FlocaleWinString *fstr, Pixmap dest_pix)
 {
 	DecorFace *df;
-        pixmap_background_type bg;
+	pixmap_background_type bg;
 
-        bg.flags.use_pixmap = 0;
+	bg.flags.use_pixmap = 0;
 	for (df = tdd->df; df != NULL; df = df->next)
 	{
-                bg.pixel = df->u.back;
+		bg.pixel = df->u.back;
 		border_draw_decor_to_pixmap(
 			fw, dest_pix, &bg, &td->layout.title_g, df, td->cd,
 			tdd->is_toggled, 1);
@@ -2338,7 +2338,7 @@ static void border_draw_border_parts(
 	window_parts draw_parts;
 	Bool do_clear;
 
-	if (!HAS_BORDER(fw))
+	if (HAS_NO_BORDER(fw))
 	{
 		/* just reset border states */
 		fw->decor_state.parts_drawn &= ~(PART_FRAME | PART_HANDLES);
@@ -2785,10 +2785,10 @@ void CMD_BorderStyle(F_CMD_ARGS)
 			memset(&tmpdf.style, 0, sizeof(tmpdf.style));
 			DFS_FACE_TYPE(tmpdf.style) = SimpleButton;
 			tmpdf.next = NULL;
-                        if (FMiniIconsSupported)
-                        {
-                                tmpdf.u.p = NULL;
-                        }
+			if (FMiniIconsSupported)
+			{
+				tmpdf.u.p = NULL;
+			}
 			if (StrEquals(parm,"active"))
 			{
 				df = &decor->BorderStyle.active;
@@ -2859,10 +2859,10 @@ void CMD_BorderStyle(F_CMD_ARGS)
 			memset(&tmpdf.style, 0, sizeof(tmpdf.style));
 			DFS_FACE_TYPE(tmpdf.style) = SimpleButton;
 			tmpdf.next = NULL;
-                        if (FMiniIconsSupported)
-                        {
-                                tmpdf.u.p = NULL;
-                        }
+			if (FMiniIconsSupported)
+			{
+				tmpdf.u.p = NULL;
+			}
 			if (ReadDecorFace(prev, &tmpdf,-1,True))
 			{
 				FreeDecorFace(dpy,&decor->BorderStyle.active);

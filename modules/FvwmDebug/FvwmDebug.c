@@ -606,7 +606,7 @@ void list_configure(const unsigned long *body)
     fprintf(output,"\t\tdoes_wm_take_focus: %d\n", WM_TAKES_FOCUS(p));
     fprintf(output,"\t\tdo_iconify_after_map: %d\n", DO_ICONIFY_AFTER_MAP(p));
     fprintf(output,"\t\tdo_reuse_destroyed: %d\n", DO_REUSE_DESTROYED(p));
-    fprintf(output,"\t\thas_border: %d\n", HAS_BORDER(p));
+    fprintf(output,"\t\thas_border: %d\n", !HAS_NO_BORDER(p));
     fprintf(output,"\t\thas_title: %d\n", HAS_TITLE(p));
     fprintf(output,"\t\tis_deiconify_pending: %d\n", IS_DEICONIFY_PENDING(p));
     fprintf(output,"\t\tis_fully_visible: %d\n", IS_FULLY_VISIBLE(p));
