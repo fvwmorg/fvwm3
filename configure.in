@@ -375,7 +375,7 @@ cat >config.status-t <<EOF
 UNIQUE_POSTFIX=\$\$
 
 EOF
-sed 's/conftest/conftest\$UNIQUE_POSTFIX/g' <config.status >>config.status-t && \
+sed 's/conftest/conftest\${UNIQUE_POSTFIX}/g' <config.status >>config.status-t && \
 mv config.status-t config.status
 # ---------------------------------------------------------------------------
 

@@ -45,7 +45,7 @@ below.
 
 .SH INVOCATION
 FvwmButtons can be invoked by inserting the line 'Module FvwmButtons' in
-the .fvwmrc file. This should be placed in the InitFunction if FvwmButtons
+the .fvwmrc file. This should be placed in the StartFunction if FvwmButtons
 is to be spawned during fvwm's initialization, or can be bound to a
 menu or mouse button or keystroke to invoke it later. Fvwm will search
 directory specified in the ModulePath configuration option to attempt
@@ -673,8 +673,7 @@ initialization commands:
 ModulePath /usr/lib/X11/fvwm:/usr/bin/X11
 
 # Make sure FvwmButtons is always there.
-AddToFunc InitFunction     "I" Module FvwmButtons
-AddToFunc RestartFunction  "I" Module FvwmButtons
+AddToFunc StartFunction  "I" Module FvwmButtons
 
 # Make it titlebar-less, sticky, and give it an icon
 Style "FvwmButtons"	Icon toolbox.xpm, NoTitle, Sticky

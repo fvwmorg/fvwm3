@@ -1,3 +1,10 @@
+Changes in beta release 2.3.8 (September? 1999)
+
+* A new special fvwm function StartFunction is introduced. It is supposed to
+  be used to start modules and for other start commands. This function is
+  executed before InitFunction and RestartFunction and anyone can take out
+  a common part for both of these functions in favor of StartFunction.
+
 Changes in beta release 2.3.7 (August 1999)
 
 * FvwmButtons and FvwmIconBox support colorsets.

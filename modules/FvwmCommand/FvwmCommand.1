@@ -44,12 +44,7 @@ Module FvwmCommandS
 
     or
 
-AddToFunc "InitFunction" "I" Module FvwmBanner
-+   "I" Module	FvwmPager 0 8
-+   "I" Module  FvwmCommandS
-
-AddToFunc "RestartFunction" "I" Module  FvwmCommandS
-+	"I" Module	FvwmPager 0 8
+AddToFunc StartFunction "I" Module FvwmCommandS
 .EE
 
 Then, in script file or from shell:

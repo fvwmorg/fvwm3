@@ -136,14 +136,11 @@ Mouse 3	TSIF	A	RaiseLower
 
 
 ########################Initialization Functions ############################
-AddToFunc InitFunction	  "I" Module FvwmScript Buttons
+AddToFunc StartFunction	  "I" Module FvwmScript Buttons
 #+			  "I" Module FvwmButtons 
 #+			  "I" Module FvwmBacker
 #+			  "I" Module FvwmAudio
 
-AddToFunc RestartFunction "I" Module FvwmScript Buttons
-#+			  "I" Module FvwmBacker
-#+			  "I" Module FvwmAudio
 ########################Menus ########################################
 
 # The following menus form the bulk of the menu system I have hanging

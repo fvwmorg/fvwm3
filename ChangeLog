@@ -1,3 +1,21 @@
+1999-09-05  Mikhael Goikhman  <migo@homemail.com>
+
+	* fvwm/fvwm.c (StartupStuff):
+	* fvwm/fvwm2.1:
+	* NEWS:
+	Implemented a new special fvwm function StartFunction.
+
+	* fvwm/ConfigFvwmSetup:
+	* sample.fvwmrc/new-features:
+	* sample.fvwmrc/system.fvwm2rc:
+	* sample.fvwmrc/system.fvwm2rc-sample-1:
+	* sample.fvwmrc/system.fvwm2rc-sample-2:
+	* sample.fvwmrc/system.fvwm2rc-sample-95:
+	Replaced several occurrences of InitFunction and/or RestartFunction
+	with StartFunction.
+
+	* configure.in: add braces to ${UNIQUE_POSTFIX}
+
 1999-09-04  Mikhael Goikhman  <migo@homemail.com>
 
 	* configure.in: a weird trail of some unsuccessful try fixed

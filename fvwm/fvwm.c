@@ -731,6 +731,7 @@ int main(int argc, char **argv)
 */
 void StartupStuff(void)
 {
+  #define startFuncName "StartFunction"
   const char *initFuncName;
 
   CaptureAllWindows();
@@ -743,6 +744,12 @@ void StartupStuff(void)
   /* Make sure we have the correct click time now. */
   if (Scr.ClickTime < 0)
     Scr.ClickTime = -Scr.ClickTime;
+
+  /* migo (04-Sep-1999): execute StartFunction */
+  if (FindFunction(startFuncName)) {
+    char *action = "Function " startFuncName;
+    ExecuteFunction(action, NULL, &Event, C_ROOT, -1, EXPAND_COMMAND);
+  }
 
   /* migo (03-Jul-1999): execute [Session]{Init|Restart}Function */
   initFuncName = getInitFunctionName(Restarting == True);

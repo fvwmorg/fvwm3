@@ -270,40 +270,35 @@ protocol (even for a local connection) so $DISPLAY should be used for
 local connections, as it may use Unix-domain sockets, which are
 faster.
 
-Fvwm has a two special functions for initialization:
-InitFunction and RestartFunction, which are executed during
-Initialization and Restarts (respectively).  These may be customized
-in the user's rc file via the AddToFunc facility (described later) to
-start up modules, xterms, or whatever you'd like have started by
-fvwm.
+Fvwm has three special functions for initialization:
+StartFunction, which is executed on startups and restarts; InitFunction
+and RestartFunction, which are executed during Initialization and Restarts
+(respectively) just after StartFunction.  These may be customized
+in a user's rc file via the AddToFunc facility (described later) to start up
+modules, xterms, or whatever you'd like to have started by fvwm.
 
-Fvwm also has a special exit function: ExitFunction, executed
-when exiting or restarting before actually quitting or anything else.
+Fvwm has also a special exit function: ExitFunction, executed
+when exiting or restarting before actually quitting.
 It could be used to explicitly kill modules, etc.
 
 If fvwm is run under a session manager, functions SessionInitFunction
 and SessionRestartFunction are executed instead of InitFunction and
-RestartFunction. This helps to define the user's rc file to be good for both
+RestartFunction. This helps to define a user's rc file to be good for both
 running under a session manager and without it. Generally it is a bad idea to
 start xterms or other applications in Session* functions. Also someone can
-decide to start different modules when running under a session manager or not.
+decide to start different modules while running under a session manager or not.
 For the similar purposes SessionExitFunction is used instead of ExitFunction.
 
 .EX
-DestroyFunc SessionInitFunction
-AddToFunc SessionInitFunction
- + I Module FvwmBanner
+DestroyFunc StartFunction
+AddToFunc StartFunction
+ + I ModuleSynchronous FvwmTheme
  + I Module FvwmPager * *
- + I xsetroot -cursor_name left_ptr -fg red -bg white
-
-DestroyFunc SessionRestartFunction
-AddToFunc SessionRestartFunction
- + I Module FvwmPager * *
+ + I Module FvwmButtons
 
 DestroyFunc InitFunction
 AddToFunc InitFunction
  + I Module FvwmBanner
- + I Module FvwmPager * *
  + I Module FvwmTaskBar
  + I xsetroot -cursor_name left_ptr -fg red \\
      -bg white -solid cyan
@@ -312,12 +307,19 @@ AddToFunc InitFunction
 
 DestroyFunc RestartFunction
 AddToFunc RestartFunction
- + I Module FvwmPager * *
  + I Module FvwmTaskBar
+
+DestroyFunc SessionInitFunction
+AddToFunc SessionInitFunction
+ + I Module FvwmBanner
+ + I xsetroot -cursor_name left_ptr -fg red -bg white
+
+DestroyFunc SessionRestartFunction
+AddToFunc SessionRestartFunction
+ + I Nop
 .EE
 
-It is possible to include one function into another not to duplicate things,
-but sometimes it is just easier and more readable just to duplicate things.
+You don't need to define all special functions if some are empty.
 
 .SH COMPILATION OPTIONS
 Fvwm has a number of compile-time options to reduce memory usage

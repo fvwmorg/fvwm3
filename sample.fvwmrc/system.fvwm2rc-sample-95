@@ -258,21 +258,18 @@ Style *console*  	MiniIcon mini-display.xpm
 #=============================================================================#
 
 
+DestroyFunc StartFunction
+AddToFunc StartFunction I Module FvwmButtons
++                       I Module FvwmTaskBar
++		        I Read .fvwm2rc-settings
+
+
 DestroyFunc InitFunction
-AddToFunc InitFunction      I Exec xsetroot -solid Cyan4 \
-                                 -cursor_name top_left_arrow
-+                           I Module FvwmButtons
-+                           I Module FvwmTaskBar
-+                           I Module FvwmPager
-#+			    I Module FvwmBanner
-#+			    I Module FvwmAudio
-+			    I Read .fvwm2rc-settings
-
-
-DestroyFunc RestartFunction
-AddToFunc RestartFunction   I Module FvwmButtons
-+                           I Module FvwmTaskBar
-+			    I Read .fvwm2rc-settings
+AddToFunc InitFunction  I Exec xsetroot -solid Cyan4 \
+                             -cursor_name top_left_arrow
++                       I Module FvwmPager
+#+                      I Module FvwmBanner
+#+                      I Module FvwmAudio
 
 
 #============================================================================#

@@ -129,12 +129,8 @@ Mouse 2	FST	A	Menu Window-Ops2 Nop
 Mouse 3	TSIF	A	RaiseLower
 
 ########################Initialization Functions ############################
-AddToFunc InitFunction 	  "I" Module FvwmButtons
+AddToFunc StartFunction   "I" Module FvwmButtons
 +			  "I" exec xsetroot -mod 2 2 -fg \#554055 -bg \#705070
-
-AddToFunc RestartFunction "I" Module FvwmButtons
-+			  "I" exec xsetroot -mod 2 2 -fg \#554055 -bg \#705070
-
 
 ########################Menus ########################################
 AddToMenu Utilities	"Utilities"	Title

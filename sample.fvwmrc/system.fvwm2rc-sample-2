@@ -132,20 +132,14 @@ Style "xmh"		Icon mail2.xpm StartsOnDesk 2
 #############################################################################
 # START-UP Functions
 #
-AddToFunc "InitFunction" "I" Module FvwmButtons
-+		"I" Module FvwmPager 0 0
-+		"I" Module FvwmAudio
-+		"I" Next [!iconic CurrentScreen xterm] Focus
-+		"I" CursorMove 30 40
-
-AddToFunc "RestartFunction" "I" Module FvwmButtons
+AddToFunc "StartFunction" "I" Module FvwmButtons
 +		"I" Module FvwmPager 0 0
 +		"I" Module FvwmAudio
 +		"I" Next [!iconic CurrentScreen xterm] Focus
 +		"I" CursorMove 30 40
 
 # Uncomment this to make windows auto-raise after [x] milliseconds
-# AddToFunc "InitFunction" "I" Module FvwmAuto 0
+# AddToFunc "StartFunction" "I" Module FvwmAuto 0
 
 ############################################################################
 # BUTTON Setup

@@ -1,3 +1,17 @@
+1999-09-05  Mikhael Goikhman  <migo@homemail.com>
+
+	* modules/FvwmAnimate/FvwmAnimate.1:
+	* modules/FvwmBanner/FvwmBanner.1:
+	* modules/FvwmButtons/FvwmButtons.1:
+	* modules/FvwmCommand/FvwmCommand.1:
+	* modules/FvwmCommand/README:
+	* modules/FvwmIconMan/FvwmIconMan.1:
+	* modules/FvwmScript/Scripts/system.fvwmrc:
+	* modules/FvwmTaskBar/FvwmTaskBar.1:
+	* modules/FvwmTheme/FvwmTheme.1:
+	Replaced several occurrences of InitFunction and/or RestartFunction
+	with StartFunction.
+
 1999-09-04  Mikhael Goikhman  <migo@homemail.com>
 
 	* FvwmConsole/Makefile.am: removed use of $< on explicit rule,

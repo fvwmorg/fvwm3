@@ -245,10 +245,9 @@ BEGIN   {
 /^[ \t]*ClickToFocus[ \t]*/	{ print "Style \"*\" " $0; next; }
 /^[ \t]*SloppyFocus[ \t]*/	{ print "Style \"*\" " $0; next; }
 /^[ \t]*StaysOnTop[ \t]*/	{ printf "Style \"%s\" StaysOnTop\n", $2; next; }
-/^[ \t]*AutoRaise[ \t]*/		{
+/^[ \t]*AutoRaise[ \t]*/	{
         print "#! " $0 " (use Module FvwmAuto)";
-	print "AddToFunc \"InitFunction\" \"I\" Module FvwmAuto " $2;
-	print "AddToFunc \"RestartFunction\" \"I\" Module FvwmAuto " $2;
+	print "AddToFunc \"StartFunction\" \"I\" Module FvwmAuto " $2;
 	next;
 }
 
@@ -357,8 +356,8 @@ BEGIN   {
 }
 
 # hack: Modules spawned outside of a function, menu, or popup cannot have leading whitespace.
-# add these to the initfunction
-/^Module[ \t]*/                 { printf "AddToFunc \"InitFunction\" \"I\" %s \n", $0; next; }
+# add these to the startfunction
+/^Module[ \t]*/                 { printf "AddToFunc \"StartFunction\" \"I\" %s \n", $0; next; }
 
 # hack: function declarations cannot have leading whitespace
 /^Function[ \t]*/		{

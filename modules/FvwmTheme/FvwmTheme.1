@@ -30,9 +30,9 @@ to be invoked with the 'ModuleSynchronous' command by inserting the
 line 'ModuleSynchronous Timeout 10 FvwmTheme' in the .fvwm2rc file.
 This can be placed on a line by itself, if FvwmTheme is to be
 spawned during fvwm's initialization.  It can be started from fvwm's
-InitFunction or RestartFunction too and should then be the first
-command executed.  Invoking FvwmTheme later may not work properly
-and casn cause excessive redrawind of already running modules.
+StartFunction too and should then be the first command executed.
+Invoking FvwmTheme later may not work properly
+and can cause excessive redrawind of already running modules.
 Fvwm will search the directory specified in the ModulePath
 configuration option to attempt to locate FvwmTheme. It is pointless
 to run more than one FvwmTheme so there is no provision for using an

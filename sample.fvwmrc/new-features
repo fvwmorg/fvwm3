@@ -277,19 +277,19 @@ AddToFunc "Resize-or-Raise" "M" Resize
 +              "C" Raise
 +              "D" RaiseLower
 
-AddToFunc "InitFunction" "Immediate" Module FvwmPager 0 3
-+		"Immediate" Module FvwmAuto 750
+AddToFunc "StartFunction"
++	       "Immediate" Module FvwmPager 0 3
 +	       "Immediate" Module FvwmAudio
++	       "Immediate" Module FvwmAuto 750
++              "Immediate" Module FvwmAnimate
+
+AddToFunc "InitFunction"
 +              "Immediate" Exec xsetroot -solid \#050530
 +              "Immediate" Desk 0 2
 +              "Immediate" Desk 0 0
-+              "Immediate" Module FvwmAnimate
 
-AddToFunc "RestartFunction" "Immediate" Module FvwmPager 0 3
-+	       "Immediate" Module FvwmAudio
-+              "Immediate" Exec xsetroot -solid \#004020
-+	       "Immediate" Module FvwmAuto 750
-+              "Immediate" Module FvwmAnimate
+AddToFunc "RestartFunction"
++	       "Immediate" Exec xsetroot -solid \#004020
 
 AddToFunc "Maximize_func" "M" Maximize 0 100
 +              "C" Maximize 0 80

@@ -75,20 +75,15 @@ Mouse 2 FST     A       Menu MenuFvwmWindowOps2 Nop
 Mouse 3 TSIF    A       RaiseLower
 
 ######################## Initialization Functions ############################
-AddToFunc InitFunction
+AddToFunc StartFunction
  + I Module FvwmButtons
- + I exec xsetroot -mod 2 2 -fg \#554055 -bg \#705070 -cursor_name left_ptr
 
-AddToFunc RestartFunction
- + I Module FvwmButtons
+AddToFunc InitFunction
+ + I exec xsetroot -mod 2 2 -fg \#554055 -bg \#705070 -cursor_name left_ptr
 
 # For some SM-s (like gnome-session) there is an internal background setter.
 AddToFunc SessionInitFunction
- + I Module FvwmButtons
  + I exec xsetroot -cursor_name left_ptr
-
-AddToFunc SessionRestartFunction
- + I Module FvwmButtons
 
 ######################## Menus ###################
 DestroyMenu MenuFvwmRoot
@@ -304,7 +299,4 @@ read ConfigFvwmPager
 read ConfigFvwmScroll
 read ConfigFvwmTaskBar
 read ConfigFvwmWinList
-AddToFunc "InitFunction" I Module FvwmAnimate
-AddToFunc "RestartFunction" I Module FvwmAnimate
-AddToFunc "SessionInitFunction" I Module FvwmAnimate
-AddToFunc "SessionRestartFunction" I Module FvwmAnimate
+AddToFunc "StartFunction" I Module FvwmAnimate

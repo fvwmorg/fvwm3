@@ -45,7 +45,7 @@ Examples
       right edge to keep it visible. If this is invoked from 
       .fvwm2rc, use as:
 
-          AddToFunc "InitFunction" "I" Module  FvwmCommandS
+          AddToFunc "StartFunction" "I" Module  FvwmCommandS
           + "I" Exec $HOME/scripts/focus-Netscape.pl
 
   push-away.pl <direction> <window name>

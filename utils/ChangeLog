@@ -1,3 +1,9 @@
+1999-09-05  Mikhael Goikhman  <migo@homemail.com>
+
+	* utils/fvwmrc_convert:
+	Replaced several occurrences of InitFunction and/or RestartFunction
+	with StartFunction.
+
 1999-09-04  Mikhael Goikhman  <migo@homemail.com>
 
 	* Makefile.am: removed use of $< on explicit rule;
