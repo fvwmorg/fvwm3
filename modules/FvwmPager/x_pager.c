@@ -1726,7 +1726,8 @@ void MoveWindow(XEvent *Event)
 	SendInfo(fd,"Silent Move",t->icon_w);
       else
 #endif
-	SendInfo(fd,"Silent Move",t->w);
+      SendInfo(fd,"Silent Raise",t->w);
+      SendInfo(fd,"Silent Move",t->w);
       return;
     }
   else

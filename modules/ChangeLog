@@ -1,7 +1,9 @@
 1999-06-23  Dominik Vogt  <dominik_vogt@gmx.de>
 
-	* FvwmEvent/FvwmEvent.c (event_table): added missing events to table
-	(core dump)
+	* FvwmScript/script.c: increased number of allowed variables to 512
+
+	* FvwmPager/x_pager.c (MoveWindow): raise windows when moving them out
+	of the pager
 
 1999-06-22  Paul D. Smith  <psmith@gnu.org>
 

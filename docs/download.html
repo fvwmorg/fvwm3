@@ -1,65 +1,96 @@
+<!doctype html public "-//w3c//dtd html 4.0 transitional//en">
 <html>
 <head>
-<title>The Official FVWM Homepage - Downloads</title>
+   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+   <meta name="GENERATOR" content="Mozilla/4.51 [en] (X11; I; Linux 2.2.5 i686) [Netscape]">
+   <title>The Official FVWM Homepage - Downloads</title>
 </head>
-  <body BACKGROUND="black-stone1.jpg"
-    bgcolor="#000000" text="#ffffff"
-    link="#FFFF88" vlink="#EEDDDD" alink="#ff0000">
+<body text="#FFFFFF" bgcolor="#000000" link="#FFFF88" vlink="#EEDDDD" alink="#FF0000" background="black-stone1.jpg">
+
 <center>
-<h1><font color="pink">The Official FVWM Homepage - Downloads</font></h1>
-</center>
+<h1>
+<font color="#FFC0CB">The Official FVWM Homepage - Downloads</font></h1></center>
+Current packages:
 <ul>
-  <li>Latest Release: <a href="ftp://ftp.fvwm.org/pub/fvwm/version-2/fvwm-2.2.tar.gz">2.2</a>
-<p>
-  <li>Latest Beta Version: N/A
-<p>
-  <li>Last 1.xx Version: <a
-  href="ftp://ftp.fvwm.org/pub/fvwm/version-1/fvwm-1.24r.tar.gz">1.24r</a>
-  (<strong>Note!</strong> This version is no longer supported.)
+<li>
+Latest stable Release: <a href="ftp://ftp.fvwm.org/pub/fvwm/version-2/fvwm-2.2.tar.gz">2.2</a></li>
+
+<li>
+Latest Beta Version: N/A</li>
+
+<li>
+Latest Alpha Versions: <a href="ftp://ftp.fvwm.org/pub/fvwm/version-2/testing/">here</a></li>
+
+<li>
+Latest snapshot: <a href="ftp://ftp.fvwm.org/pub/fvwm/devel/snapshots/">here</a></li>
+
+<li>
+Latest CVS sources via ftp: <a href="ftp://ftp.fvwm.org/pub/fvwm/devel/sources/">here</a></li>
+
+<li>
+Direct CVS access: see below</li>
 </ul>
+Obsolete packages:
+<ul>
+<li>
+Older 2.x versions: <a href="ftp://ftp.fvwm.org/pub/fvwm/version-2/">here</a></li>
 
-Just click on the version numbers above to download them.
+<li>
+Last 1.xx Version: <a href="ftp://ftp.fvwm.org/pub/fvwm/version-1/fvwm-1.24r.tar.gz">1.24r</a>
+(<b>Note!</b> This version is no longer supported.)</li>
 
+<li>
+Very old 1.x releases: <a href="ftp://ftp.fvwm.org/pub/fvwm/version-1/">here</a></li>
+</ul>
+Just click on the links above to download them.
+<p>If you find any bugs, you can enter them into the
+<a href="http://www.fvwm.org/cgi-bin/fvwm-bug">FVWM
+Bug Tracking System</a>. If possible, please try searching to see if someone
+else has already reported this bug. If you have more or better information,
+feel free to add a note!
+<p>If you just have a question, be sure to read our
+<a href="docs.html">Documentation</a>
+first, then you might want to try our <a href="mailinglist.html">Mailing
+List</a>.
+<p>When asking for help, of course always remember to provide the release
+number of fvwm, your operating system, and any other information you think
+might be pertinent.
 <p>
-Older versions of FVWM2 can be found <a
-href="ftp://ftp.fvwm.org/pub/fvwm/version-2/">here</a>.
-
-<p>
-Daily snapshots are available <a
-href="ftp://ftp.fvwm.org/pub/fvwm/devel/snapshots/">here</a>.  Note that
-these may not work; they might not even build.  Use them at your own risk.
-
-<p>
-A complete copy of the current CVS sources are <a
-href="ftp://ftp.fvwm.org/pub/fvwm/devel/sources/">here</a>.  This directory
-is updated every three hours.  It is simpler to use CVS than to fetch these
-files, but if you are behind a restrictive firewall or don't need CVS
-features like easy patch generation or commits then you can use an FTP
-mirroring tool to grab this directory.  Since this is an exact copy of what
-you'd get if you did a CVS checkout, you should read up on <a
-href="cvs.html">CVS</a>.
-
-<p>
-Very old releases of FVWM version 1 can be found <a
-href="ftp://ftp.fvwm.org/pub/fvwm/version-1/">here</a>.
-
-<p>
-If you find any bugs, you can enter them into the
-<a href="http://www.fvwm.org/cgi-bin/fvwm-bug">FVWM Bug Tracking System</a>.
-If possible, please try searching to see if someone else has already
-reported this bug.  If you have more or better information, feel
-free to add a note!
-
-<p>
-If you just have a question, be sure to read our
-<a href="docs.html">Documentation</a> first, then you might want to
-try our <a href="mailinglist.html">Mailing List</a>.
-
-<p>
-When asking for help, of course always remember to provide the release
-number of fvwm, your operating system, and any other information you
-think might be pertinent.
-
+<hr>
+<h2>
+What package should you use?</h2>
+Note that since the days of 2.1.x the second digit of the version number
+marks a release as a stable release (even number like 2.2.x) or as a development
+(i.e. alpha or beta) release (odd number like 2.3.4).
+<p><i>Stable release:</i>
+<p>Use it if you have no specific reason to use one of the other packages.
+Questions about the stable releases should be asked on our <a href="mailinglist.html">Mailing
+List</a>.
+<p>*** If you use anything else but the latest stable release we will make
+no promises that anything works. ***
+<p><i>Older 2.x and 1.x versions:</i>
+<p>Don't use them. If you encounter we will most likely ask you to upgrade.
+There is a constant stream of bug fixes and we cannot spend our time fixing
+the same bugs again and again.
+<p>*** Problems in one of the below packages should be discussed on the
+fvwm-workers <a href="mailinglist.html">Mailing List</a>. ***
+<p><i>Latest Alpha and Beta versions:</i>
+<p>Use them if you can tolerate some bugs and really need one of the new
+features.
+<p><i>Daily snapshots:</i>
+<p>If you want the development stuff but don't want to set up the build
+environment. Note that the snapshots may not even compile. Use them at
+your own risk.
+<p><i>CVS access:</i>
+<p>When you must have the latest stuff, up to the minute, or want to contribute
+heavily. Please read the <a href="cvs.html">CVS</a><i>&nbsp;</i> instructions.
+<p><i>FTP source tree:</i>
+<p>If you want to use CVS but can't. This directory is updated every three
+hours. It is simpler to use CVS than to fetch these files, but if you are
+behind a restrictive firewall or don't need CVS features like easy patch
+generation or commits then you can use an FTP mirroring tool to grab this
+directory. Since this is an exact copy of what you'd get if you did a CVS
+checkout, you should read up on <a href="cvs.html">CVS</a>.
 <p>
 <hr>
 </body>

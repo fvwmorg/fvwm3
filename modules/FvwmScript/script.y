@@ -1,6 +1,7 @@
 %{
 #include "types.h"
 
+#define MAX_VARS 512
 extern int numligne;
 ScriptProp *scriptprop;
 int nbobj=-1;			/* Nombre d'objets */
@@ -185,9 +186,9 @@ void AddVar(char *Name)		/* ajout de variable a la fin de la derniere commande p
    return ;
   }
 
- if (NbVar>58) 	
+ if (NbVar>MAX_VARS-2) 	
  {
-  fprintf(stderr,"Line %d: too many variables (>60)\n",numligne);
+  fprintf(stderr,"Line %d: too many variables (>512)\n",numligne);
   exit(1);
  }
 
