@@ -55,8 +55,7 @@ static struct
 static struct
 {
   char *command;
-  char *prev_command;
-} last = { NULL, NULL };
+} last = { NULL };
 
 /*
 char *repeat_last_function = NULL;
@@ -85,7 +84,8 @@ FvwmWindow *repeat_last_fvwm_window = NULL;
  *
  *
  */
-Bool set_repeat_data(void *data, repeat_type type)
+Bool set_repeat_data(void *data, repeat_type type,
+		     const struct functions *builtin)
 {
   char **pdest;
   char *trash = NULL;
@@ -103,12 +103,12 @@ Bool set_repeat_data(void *data, repeat_type type)
     if (data == NULL || repeat_depth != 0)
       /* Ignoring the data, must free it outside of this call. */
       return True;
-    if (last.prev_command)
-    {
-      free(last.prev_command);
-    }
+    if (builtin && (builtin->flags & FUNC_DONT_REPEAT))
+      /* Dont' record functions that have the FUNC_DONT_REPEAT flag set. */
+      return True;
+    if (last.command)
+      free(last.command);
     /* Store a backup. */
-    last.prev_command = last.command;
     last.command = (char *)data;
     /* Since we stored the pointer the caller must not free it. */
     return False;
@@ -134,8 +134,6 @@ void repeat_function(F_CMD_ARGS)
 
   repeat_depth++;
   /* Replay the backup, we don't want the repeat command recorded. */
-  last.command = last.prev_command;
-  last.prev_command = NULL;
   GetNextTokenIndex(action, optlist, 0, &index);
   switch (index)
   {

@@ -1,3 +1,16 @@
+1999-04-17  Dominik Vogt  <dominik_vogt@gmx.de>
+
+	* fvwm/resize.c (resize_window): fixed resize-loosing-grip bug
+
+	* fvwm/functions.c (func_config):
+	* fvwm/functions.h (FunctionItem):
+	(struct functions):
+ 	added FUNC_DONT_REPEAT flag to functions structure, changed Bool
+	f_needs_window/func_needs_window to unsigned char flags
+
+	* fvwm/parse.h (enum): added F_UNDEFINED define needed by repeat
+	function
+
 1999-04-17  Matthias Clasen  <clasen@mathematik.uni-freiburg.de>
 
 	* fvwm/screen.h (TOP_EDGE): 
@@ -35,6 +48,12 @@
 	StaysOnBottom.
 
 1999-04-16  Dominik Vogt  <dominik_vogt@gmx.de>
+
+	* fvwm/menus.c (menuShortcuts): Page up and page down work like
+	shift-up and shift-down in menus, i.e. they jump to the start or end of
+	the menu
+	(menuShortcuts): fixed up/down when pressed with the pointer outside
+	the menu
 
 	* fvwm/repeat.c (set_repeat_data): removed fprintfs
 

@@ -951,9 +951,6 @@ void GetWindowSizeHints(FvwmWindow *tmp)
     }
   if (tmp->hints.flags & PBaseSize)
     {
-      /* CHECK: code originally "a && b || c" which is "(a && b) || c" since 
-	 logical AND has higher precedence than logical OR.  But this doesn't 
-	 look right, so I (SMR) made it "a && (b || c)". */
       if (((tmp->hints.flags & PMinSize) &&
 	   (tmp->hints.base_width < tmp->hints.min_width ||
 	    tmp->hints.base_height < tmp->hints.min_height)) ||

@@ -19,6 +19,7 @@
 #define _REPEAT_
 
 #include "fvwm.h"
+#include "functions.h"
 
 typedef enum
 {
@@ -49,6 +50,7 @@ extern FvwmWindow *repeat_last_fvwm_window;
 */
 
 void repeat_function(F_CMD_ARGS);
-Bool set_repeat_data(void *data, repeat_type type);
+Bool set_repeat_data(void *data, repeat_type type,
+		     const struct functions *builtin);
 
 #endif /* _REPEAT_ */

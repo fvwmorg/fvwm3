@@ -337,11 +337,12 @@ void resize_window(F_CMD_ARGS)
 
       if (Event.type == MotionNotify)
 	/* discard any extra motion events before a release */
-	while(XCheckMaskEvent(dpy, ButtonMotionMask |	ButtonReleaseMask |
-			      PointerMotionMask,&Event))
+	while(XCheckMaskEvent(dpy, ButtonMotionMask | ButtonReleaseMask |
+			      PointerMotionMask, &Event))
 	  {
 	    StashEventTime(&Event);
-	    if (Event.type == ButtonRelease) break;
+	    if (Event.type == ButtonRelease)
+	      break;
 	  }
 
       done = FALSE;
@@ -410,8 +411,8 @@ void resize_window(F_CMD_ARGS)
 	    drag->y -= delta_y;
 
 	    DoResize(x, y, tmp_win, drag, orig, &xmotion, &ymotion);
-	    fForceRedraw = False;
 	  }
+	  fForceRedraw = False;
 	  done = TRUE;
 	default:
 	  break;
@@ -422,7 +423,6 @@ void resize_window(F_CMD_ARGS)
 	  MoveOutline(Scr.Root, drag->x, drag->y,
 		      drag->width - 1,
 		      drag->height - 1);
-
 	}
     }
 

@@ -527,7 +527,7 @@ MenuStatus menuShortcuts(MenuRoot *menu,XEvent *Event,MenuItem **pmiCurrent)
     case XK_k: /* vi up */
     case XK_p: /* prior */
       if (!miCurrent) {
-        if ((*pmiCurrent = menu->last) != NULL)
+        if ((*pmiCurrent = MiFromMenuIndex(menu,0)) != NULL)
 	  return MENU_NEWITEM;
 	else
 	  return MENU_NOP;
@@ -560,7 +560,7 @@ MenuStatus menuShortcuts(MenuRoot *menu,XEvent *Event,MenuItem **pmiCurrent)
     case XK_j: /* vi down */
     case XK_n: /* next */
       if (!miCurrent) {
-        if ((*pmiCurrent = MiFromMenuIndex(menu,0)) != NULL)
+        if ((*pmiCurrent = menu->last) != NULL)
 	  return MENU_NEWITEM;
 	else
 	  return MENU_NOP;
@@ -587,6 +587,20 @@ MenuStatus menuShortcuts(MenuRoot *menu,XEvent *Event,MenuItem **pmiCurrent)
 	*pmiCurrent = newItem;
 	return MENU_NEWITEM;
       } else
+	return MENU_NOP;
+      break;
+
+    case XK_Page_Up:
+      if ((*pmiCurrent = MiFromMenuIndex(menu,0)) != NULL)
+	return MENU_NEWITEM;
+      else
+	return MENU_NOP;
+      break;
+
+    case XK_Page_Down:
+      if ((*pmiCurrent = menu->last) != NULL)
+	return MENU_NEWITEM;
+      else
 	return MENU_NOP;
       break;
 

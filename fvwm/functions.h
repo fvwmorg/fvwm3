@@ -20,12 +20,12 @@ struct FvwmFunction;               /* forward declaration */
 
 typedef struct FunctionItem
 {
-  struct FvwmFunction *func;       /* the menu this item is in */
+  struct FvwmFunction *func;       /* the function this item is in */
   struct FunctionItem *next_item;  /* next function item */
   char condition;                  /* the character string displayed on left*/
   char *action;                    /* action to be performed */
   short type;                      /* type of built in function */
-  Bool f_needs_window;
+  unsigned char flags;
 } FunctionItem;
 
 typedef struct FvwmFunction
@@ -47,11 +47,12 @@ struct functions
   void (*action)();
 #endif
   short func_type;
-  Bool func_needs_window;
+  unsigned char flags;
 };
 
-#define FUNC_NO_WINDOW False
-#define FUNC_NEEDS_WINDOW True
+/* Bits for the function flag byte. */
+#define FUNC_NEEDS_WINDOW 0x01
+#define FUNC_DONT_REPEAT  0x02
 
 /* Types of events for the FUNCTION builtin */
 #define MOTION                'm'
@@ -66,7 +67,7 @@ typedef enum
   EXPAND_COMMAND
 } expand_command_type;
 
-void find_func_type(char *action, short *func_type, Bool *func_needs_window);
+void find_func_type(char *action, short *func_type, unsigned char *flags);
 FvwmFunction *FindFunction(char *function_name);
 extern FvwmFunction *NewFvwmFunction(char *name);
 void DestroyFunction(FvwmFunction *func);
