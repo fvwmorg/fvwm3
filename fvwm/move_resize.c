@@ -250,7 +250,8 @@ void switch_move_resize_grid(Bool state)
 	}
 	else if (!move_resize_grid.flags.is_enabled)
 	{
-		if (move_resize_grid.geom.width && move_resize_grid.geom.height)
+		if (move_resize_grid.geom.width &&
+		    move_resize_grid.geom.height)
 		{
 			draw_move_resize_grid(
 				move_resize_grid.geom.x,

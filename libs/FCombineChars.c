@@ -343,7 +343,7 @@ static const char_combclass_t combclass_table[] =
 	{ 0xFE22, 230},
 	{ 0xFE23, 230},
 	/* out of range */
-	/*
+#if 0
 	{ 0x1D165, 216},
 	{ 0x1D166, 216},
 	{ 0x1D167, 1},
@@ -373,7 +373,8 @@ static const char_combclass_t combclass_table[] =
 	{ 0x1D1AA, 230},
 	{ 0x1D1AB, 230},
 	{ 0x1D1AC, 230},
-	{ 0x1D1AD, 230},*/
+	{ 0x1D1AD, 230},
+#endif
 };
 
 /* maps characters to decompositions */
@@ -1370,7 +1371,8 @@ static const char_comb_t comb_table[] =
 	{ 0xFB4D, 0x05DB, 0x05BF },
 	{ 0xFB4E, 0x05E4, 0x05BF },
 	/* out of range of unsigned short int... */
-	/*	{ 0x1D15E, 0x1D157, 0x1D165 },
+#if 0
+	{ 0x1D15E, 0x1D157, 0x1D165 },
 	{ 0x1D15F, 0x1D158, 0x1D165 },
 	{ 0x1D160, 0x1D15F, 0x1D16E },
 	{ 0x1D161, 0x1D15F, 0x1D16F },
@@ -1382,14 +1384,15 @@ static const char_comb_t comb_table[] =
 	{ 0x1D1BD, 0x1D1BB, 0x1D16E },
 	{ 0x1D1BE, 0x1D1BC, 0x1D16E },
 	{ 0x1D1BF, 0x1D1BB, 0x1D16F },
-	{ 0x1D1C0, 0x1D1BC, 0x1D16F }, */
+	{ 0x1D1C0, 0x1D1BC, 0x1D16F },
+#endif
 	/* special hack, treat Arabic ligatures as combining characters */
 	/* combine them to the isolated presentation form, then let
-	   the shaping and joining take care of it */
+	 * the shaping and joining take care of it */
 	{ 0xFEF5, 0x0644, 0x0622 }, /* LAM_ALEF_MADDA */
-	{ 0xFEF7, 0x0644, 0x0623 },          /* LAM_ALEF_HAMZA_ABOVE */
-	{ 0xFEF9, 0x0644, 0x0625 },          /* LAM_ALEF_HAMZA_BELOW */
-	{ 0xFEFB, 0x0644, 0x0627 }           /* LAM_ALEF */
+	{ 0xFEF7, 0x0644, 0x0623 }, /* LAM_ALEF_HAMZA_ABOVE */
+	{ 0xFEF9, 0x0644, 0x0625 }, /* LAM_ALEF_HAMZA_BELOW */
+	{ 0xFEFB, 0x0644, 0x0627 } /* LAM_ALEF */
 };
 
 /* -------------------------- local functions ------------------------------ */
@@ -1422,10 +1425,10 @@ get_comb_entry_decomposed(unsigned short int ch)
 
 	for(count = 0; count < table_size; count++)
 	{
-	       if(comb_table[count].key == ch)
-	       {
-		       return &comb_table[count];
-	       }
+		if(comb_table[count].key == ch)
+		{
+			return &comb_table[count];
+		}
 	}
 
 	return NULL;
@@ -1439,11 +1442,11 @@ get_comb_entry_composed(unsigned short int first, unsigned short int second)
 
 	for(count = 0; count < table_size; count++)
 	{
-	       if(comb_table[count].first == first &&
-		  comb_table[count].second == second)
-	       {
-		       return comb_table[count].key;
-	       }
+		if(comb_table[count].first == first &&
+		   comb_table[count].second == second)
+		{
+			return comb_table[count].key;
+		}
 	}
 
 	return (unsigned short int) 0;
@@ -1456,34 +1459,34 @@ convert_to_ucs2(const unsigned char *str_utf8, unsigned short int *str_ucs2, int
 	int out_pos = 0;
 	while(in_pos < len)
 	{
-	       if(str_utf8[in_pos] <= 0x7f)
-	       {
-		       str_ucs2[out_pos] =
-			 (unsigned short int)str_utf8[in_pos];
-		       in_pos++;
-	       }
-	       else if(in_pos < len-1 &&
-		       str_utf8[in_pos] <= 0xdf)
-	       {
-		       str_ucs2[out_pos] =
-			 ((str_utf8[in_pos] & 0x1f) << 6) +
-			 (str_utf8[in_pos+1] & 0x3f);
-		       in_pos += 2;
-	       }
-	       else if(in_pos < len-2)
-	       {
-		       str_ucs2[out_pos] =
-			 ((str_utf8[in_pos] & 0x0f) << 12) +
-			 ((str_utf8[in_pos+1] & 0x3f) << 6) +
-			 (str_utf8[in_pos+2] & 0x3f);
-		       in_pos += 3;
-	       }
-	       else
-	       {
-		       /* skip illegal sequence */
-		       in_pos++;
-	       }
-	       out_pos++;
+		if(str_utf8[in_pos] <= 0x7f)
+		{
+			str_ucs2[out_pos] =
+				(unsigned short int)str_utf8[in_pos];
+			in_pos++;
+		}
+		else if(in_pos < len-1 &&
+			str_utf8[in_pos] <= 0xdf)
+		{
+			str_ucs2[out_pos] =
+				((str_utf8[in_pos] & 0x1f) << 6) +
+				(str_utf8[in_pos+1] & 0x3f);
+			in_pos += 2;
+		}
+		else if(in_pos < len-2)
+		{
+			str_ucs2[out_pos] =
+				((str_utf8[in_pos] & 0x0f) << 12) +
+				((str_utf8[in_pos+1] & 0x3f) << 6) +
+				(str_utf8[in_pos+2] & 0x3f);
+			in_pos += 3;
+		}
+		else
+		{
+			/* skip illegal sequence */
+			in_pos++;
+		}
+		out_pos++;
 	}
 	return out_pos;
 }
@@ -1497,30 +1500,30 @@ convert_to_utf8(const unsigned short int *str_ucs2, unsigned char *str_utf8,
 
 	for(in_pos = 0 ; in_pos < len ; in_pos++)
 	{
-	       if(str_ucs2[in_pos] <= 0x7f)
-	       {
-		      str_utf8[out_pos] = str_ucs2[in_pos];
-		      out_pos++;
-	       }
-	       else if(str_ucs2[in_pos] <= 0x7ff)
-	       {
-		      str_utf8[out_pos] =
-			(str_ucs2[in_pos] >> 6) | 0xc0;
-		      str_utf8[out_pos+1] =
-			(str_ucs2[in_pos] & 0x3f) | 0x80;
-		      out_pos += 2;
-	       }
-	       else
-	       {
-		      str_utf8[out_pos] =
-			(str_ucs2[in_pos] >> 12) | 0xe0;
-		      str_utf8[out_pos+1] =
-			((str_ucs2[in_pos] & 0xfff) >> 6) | 0x80;
-		      str_utf8[out_pos+2] =
-			(str_ucs2[in_pos] & 0x3f) | 0x80;
-		      out_pos += 3;
-	       }
-	       /* this doesn't handle values outside UCS2 (16-bit) */
+		if(str_ucs2[in_pos] <= 0x7f)
+		{
+			str_utf8[out_pos] = str_ucs2[in_pos];
+			out_pos++;
+		}
+		else if(str_ucs2[in_pos] <= 0x7ff)
+		{
+			str_utf8[out_pos] =
+				(str_ucs2[in_pos] >> 6) | 0xc0;
+			str_utf8[out_pos+1] =
+				(str_ucs2[in_pos] & 0x3f) | 0x80;
+			out_pos += 2;
+		}
+		else
+		{
+			str_utf8[out_pos] =
+				(str_ucs2[in_pos] >> 12) | 0xe0;
+			str_utf8[out_pos+1] =
+				((str_ucs2[in_pos] & 0xfff) >> 6) | 0x80;
+			str_utf8[out_pos+2] =
+				(str_ucs2[in_pos] & 0x3f) | 0x80;
+			out_pos += 3;
+		}
+		/* this doesn't handle values outside UCS2 (16-bit) */
 	}
 	return out_pos;
 }
@@ -1536,7 +1539,7 @@ convert_to_utf8(const unsigned short int *str_ucs2, unsigned char *str_utf8,
 
 
 int
-FCombineChars(unsigned char *str_visual, int len, 
+FCombineChars(unsigned char *str_visual, int len,
 	      superimpose_char_t **comb_chars)
 {
         int i,j,k;  /* counters */
@@ -1553,42 +1556,42 @@ FCombineChars(unsigned char *str_visual, int len,
 	}
 
 	/* decompose composed characters */
-	source = (unsigned short int *)safemalloc( (len + 1) *
-					     sizeof(unsigned short int));
+	source = (unsigned short int *)safemalloc(
+		(len + 1) * sizeof(unsigned short int));
 	/* convert from UTF-8-encoded text to internal 16-bit encoding */
 	str_len = convert_to_ucs2(str_visual,source,len);
 	/* we don't really need to NULL-terminate source, since we
 	   have string length */
 	/* be pessimistic, assume all characters are decomposed */
-	dest = (unsigned short int *)safemalloc( (str_len + 1) * 2 *
-					   sizeof(unsigned short int));
+	dest = (unsigned short int *)safemalloc(
+		(str_len + 1) * 2 * sizeof(unsigned short int));
 	do
 	{
 	        has_changed = False;
 	        for(i = 0, j = 0; i < str_len; i++)
 		{
 		        const char_comb_t *decomp =
-			  get_comb_entry_decomposed(source[i]);
+				get_comb_entry_decomposed(source[i]);
 			/* current character is decomposable */
 			if(decomp)
 			{
-			       dest[j] = decomp->first;
-			       dest[j+1] = decomp->second;
-			       j += 2;
-			       has_changed = True;
+				dest[j] = decomp->first;
+				dest[j+1] = decomp->second;
+				j += 2;
+				has_changed = True;
 			}
 			else /* leave it as is */
 			{
-			       dest[j] = source[i];
-			       j++;
+				dest[j] = source[i];
+				j++;
 			}
 		}
 		/* now swap */
 		free(source);
 		source = dest;
 		str_len = j;
-		dest = (unsigned short int *)safemalloc( (str_len + 1) * 2 *
-						   sizeof(unsigned short int));
+		dest = (unsigned short int *)safemalloc(
+			(str_len + 1) * 2 * sizeof(unsigned short int));
 	} while(has_changed);
 	/* source now holds decomposed string (got swapped before exiting
 	   loop, str_len holds string length */
@@ -1607,10 +1610,10 @@ FCombineChars(unsigned char *str_visual, int len,
 			int c2 = get_combining_class(source[i+1]);
 			if(c1 > c2 && c2 != 0)
 			{
-			       unsigned short int temp = source[i];
-			       source[i] = source[i+1];
-			       source[i+1] = temp;
-			       has_changed = True;
+				unsigned short int temp = source[i];
+				source[i] = source[i+1];
+				source[i+1] = temp;
+				has_changed = True;
 			}
 		}
 	} while(has_changed);
@@ -1625,22 +1628,22 @@ FCombineChars(unsigned char *str_visual, int len,
 		for(i = 0, j = 0; i < str_len - 1; j++)
 		{
 		        unsigned short int composed =
-			  get_comb_entry_composed(source[i],source[i+1]);
+				get_comb_entry_composed(source[i],source[i+1]);
 			if(composed != 0)
 			{
-			       dest[j] = composed;
-			       /* if the last character was "absorbed" */
-			       if(i == str_len - 2)
-			       {
-				       last_changed = True;
-			       }
-			       i += 2;
-			       has_changed = True;
+				dest[j] = composed;
+				/* if the last character was "absorbed" */
+				if(i == str_len - 2)
+				{
+					last_changed = True;
+				}
+				i += 2;
+				has_changed = True;
 			}
 			else
 			{
-			       dest[j] = source[i];
-			       i++;
+				dest[j] = source[i];
+				i++;
 			}
 		}
 		temp = dest;
@@ -1653,17 +1656,17 @@ FCombineChars(unsigned char *str_visual, int len,
 		   otherwise this would introduce crap here */
 		if(!last_changed)
 		{
-		       source[j] = dest[i];
-		       str_len = j+1;
+			source[j] = dest[i];
+			str_len = j+1;
 		}
 		else
 		{
-		       str_len = j;
+			str_len = j;
 		}
 	} while(has_changed);
 
 	/* source contains composed string */
-	
+
 	/* gather "uncomposed" combining characters here for rendering
 	  over normal characters later */
 
@@ -1680,12 +1683,12 @@ FCombineChars(unsigned char *str_visual, int len,
 		}
 		/* allocate storage for combining characters */
 		*comb_chars = (superimpose_char_t *)
-		           safemalloc((comp_str_len + 1) *
-				      sizeof(superimpose_char_t));
+			safemalloc((comp_str_len + 1) *
+				   sizeof(superimpose_char_t));
 	}
 	for(i = 0,j = 0,k = 0 ; i < str_len ; i++)
 	{
-	        /* if character is non-combining, 
+	        /* if character is non-combining,
 		   just copy it over to output */
 	        /* if first character is a combing character, just output
 		   it as if it where a base character */
@@ -1698,7 +1701,7 @@ FCombineChars(unsigned char *str_visual, int len,
 		{
 		        if(comb_chars != NULL)
 			{
-			        /* store composing character as associated 
+			        /* store composing character as associated
 				   with last base charcter */
 			        (*comb_chars)[k].position = j == 0 ? 0 : j-1;
 				(*comb_chars)[k].c.byte1 = source[i] >> 8;

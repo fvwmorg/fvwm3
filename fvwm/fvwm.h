@@ -378,6 +378,7 @@ typedef struct
 	/* says if the app have an ewmh icon of acceptable size for a mini
 	 * icon in its list of icons */
 	unsigned has_ewmh_mini_icon : 1;
+	unsigned has_ewmh_wm_pid : 1;
 	/* the ewmh icon is used as icon pixmap */
 	unsigned use_ewmh_icon : 1;
 	unsigned is_ewmh_modal : 1;

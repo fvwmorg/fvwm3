@@ -147,10 +147,10 @@ static const char_shaped_t shaped_table[] =
 
 static const char_shaped_comb_t shaped_comb_table[] =
 {
-	{ 0x0644, 0x0622, 0xFEF5, 0xFEF6, },          /* LAM_ALEF_MADDA */
-	{ 0x0644, 0x0623, 0xFEF7, 0xFEF8, },          /* LAM_ALEF_HAMZA_ABOVE */
-	{ 0x0644, 0x0625, 0xFEF9, 0xFEFA, },          /* LAM_ALEF_HAMZA_BELOW */
-	{ 0x0644, 0x0627, 0xFEFB, 0xFEFC, },          /* LAM_ALEF */
+	{ 0x0644, 0x0622, 0xFEF5, 0xFEF6, }, /* LAM_ALEF_MADDA */
+	{ 0x0644, 0x0623, 0xFEF7, 0xFEF8, }, /* LAM_ALEF_HAMZA_ABOVE */
+	{ 0x0644, 0x0625, 0xFEF9, 0xFEFA, }, /* LAM_ALEF_HAMZA_BELOW */
+	{ 0x0644, 0x0627, 0xFEFB, 0xFEFC, }, /* LAM_ALEF */
 };
 
 /* -------------------------- local functions ------------------------------ */
@@ -224,7 +224,7 @@ shape_n_join(
 		{
 			if (next)
 			{
-			       if (prev)
+				if (prev)
 				{
 					if (!prev->initial || !prev->medial)
 					{

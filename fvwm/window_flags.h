@@ -632,6 +632,12 @@
 	(fw)->flags.has_ewmh_mini_icon = !!(x)
 #define SETM_HAS_EWMH_MINI_ICON(fw,x) \
 	(fw)->flag_mask.has_ewmh_mini_icon = !!(x)
+#define HAS_EWMH_WM_PID(fw) \
+	((fw)->flags.has_ewmh_wm_pid)
+#define SET_HAS_EWMH_WM_PID(fw,x) \
+	(fw)->flags.has_ewmh_wm_pid = !!(x)
+#define SETM_HAS_EWMH_WM_PID(fw,x) \
+	(fw)->flag_mask.has_ewmh_wm_pid = !!(x)
 #define IS_EWMH_MODAL(fw) \
 	((fw)->flags.is_ewmh_modal)
 #define SET_EWMH_MODAL(fw,x) \

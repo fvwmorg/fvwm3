@@ -696,7 +696,8 @@ void parse_colorset(int n, char *line)
 			has_sh_changed = True;
 			break;
 		case 12: /* fgsh */
-			get_simple_color(args, &fgsh, cs, FGSH_SUPPLIED, 0,NULL);
+			get_simple_color(
+				args, &fgsh, cs, FGSH_SUPPLIED, 0,NULL);
 			has_fgsh_changed = True;
 			break;
 		case 13: /* fg_alpha */
@@ -1209,7 +1210,8 @@ void parse_colorset(int n, char *line)
 					Pixel old_bg = cs->bg;
 
 					PictureFreeColors(
-						dpy, Pcmap, &cs->bg, 1, 0, True);
+						dpy, Pcmap, &cs->bg, 1, 0,
+						True);
 					PictureAllocColor(
 						dpy, Pcmap, &color, True);
 					cs->bg = color.pixel;
@@ -1511,7 +1513,8 @@ void parse_colorset(int n, char *line)
 	 * ------- change the masked out parts of the background pixmap -------
 	 */
 	if (cs->pixmap != None && cs->pixmap != ParentRelative &&
-	    (!CSETS_IS_TRANSPARENT_ROOT(cs)||cs->allows_buffered_transparency) &&
+	    (!CSETS_IS_TRANSPARENT_ROOT(cs)||
+	     cs->allows_buffered_transparency) &&
 	    (cs->mask != None || cs->alpha_pixmap != None ||
 	     cs->image_alpha_percent < 100 || cs->tint_percent > 0) &&
 	    (has_pixmap_changed || has_bg_changed || has_image_alpha_changed

@@ -1382,7 +1382,8 @@ Bool get_page_arguments(char *action, int *page_x, int *page_y)
 		free(token);
 	}
 
-	if (GetSuffixedIntegerArguments(action, NULL, val, 2, "p", suffix) != 2)
+	if (GetSuffixedIntegerArguments(action, NULL, val, 2, "p", suffix) !=
+	    2)
 	{
 		return 0;
 	}

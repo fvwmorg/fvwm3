@@ -32,30 +32,30 @@
  * command again. */
 static unsigned int repeat_depth = 0;
 
-/*
-  typedef struct
-  {
-  char *start;
-  char *end;
-  } double_ended_string;
+#if 0
+typedef struct
+{
+	char *start;
+	char *end;
+} double_ended_string;
 
-  static struct
-  {
-  double_ended_string string;
-  double_ended_string old;
-  double_ended_string builtin;
-  double_ended_string function;
-  double_ended_string top_function;
-  double_ended_string module;
-  double_ended_string menu;
-  double_ended_string popup;
-  double_ended_string menu_or_popup;
-  int page_x;
-  int page_y;
-  int desk;
-  FvwmWindow *fvwm_window;
-  } last;
-*/
+static struct
+{
+	double_ended_string string;
+	double_ended_string old;
+	double_ended_string builtin;
+	double_ended_string function;
+	double_ended_string top_function;
+	double_ended_string module;
+	double_ended_string menu;
+	double_ended_string popup;
+	double_ended_string menu_or_popup;
+	int page_x;
+	int page_y;
+	int desk;
+	FvwmWindow *fvwm_window;
+} last;
+#endif
 
 static struct
 {

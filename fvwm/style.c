@@ -336,12 +336,15 @@ static void merge_styles(
 	if (add_style->flags.use_start_on_desk)
 	{
 		SSET_START_DESK(*merged_style, SGET_START_DESK(*add_style));
-		SSET_START_PAGE_X(*merged_style, SGET_START_PAGE_X(*add_style));
-		SSET_START_PAGE_Y(*merged_style, SGET_START_PAGE_Y(*add_style));
+		SSET_START_PAGE_X(
+			*merged_style, SGET_START_PAGE_X(*add_style));
+		SSET_START_PAGE_Y(
+			*merged_style, SGET_START_PAGE_Y(*add_style));
 	}
 	if (add_style->flags.use_start_on_screen)
 	{
-		SSET_START_SCREEN(*merged_style, SGET_START_SCREEN(*add_style));
+		SSET_START_SCREEN
+			(*merged_style, SGET_START_SCREEN(*add_style));
 	}
 	if (add_style->flag_mask.has_color_fore)
 	{

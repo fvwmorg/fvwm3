@@ -50,7 +50,9 @@ void EWMH_SetVisibleName(FvwmWindow *fwin, Bool is_icon_name)
 	FlocaleCharset *fc = NULL;
 
 	if (!FiconvSupport)
+	{
 		return;
+	}
 
 	/* set the ewmh visible name only if it is != wm name */
 	if (is_icon_name)
@@ -60,9 +62,9 @@ void EWMH_SetVisibleName(FvwmWindow *fwin, Bool is_icon_name)
 		    !HAS_EWMH_WM_ICON_NAME(fwin) &&
 		    !HAS_EWMH_WM_NAME(fwin))
 		{
-			ewmh_DeleteProperty(FW_W(fwin),
-					    "_NET_WM_ICON_VISIBLE_NAME",
-					    EWMH_ATOM_LIST_FVWM_WIN);
+			ewmh_DeleteProperty(
+				FW_W(fwin), "_NET_WM_ICON_VISIBLE_NAME",
+				EWMH_ATOM_LIST_FVWM_WIN);
 			return;
 		}
 		if (IS_ICON_FONT_LOADED(fwin) && fwin->icon_font != NULL)
@@ -73,12 +75,13 @@ void EWMH_SetVisibleName(FvwmWindow *fwin, Bool is_icon_name)
 	}
 	else
 	{
-		if ((fwin->name_count == 0 || !USE_INDEXED_WINDOW_NAME(fwin)) &&
+		if ((fwin->name_count == 0 ||
+		     !USE_INDEXED_WINDOW_NAME(fwin)) &&
 		    !HAS_EWMH_WM_NAME(fwin) && !HAS_EWMH_WM_ICON_NAME(fwin))
 		{
-			ewmh_DeleteProperty(FW_W(fwin),
-					    "_NET_WM_VISIBLE_NAME",
-					    EWMH_ATOM_LIST_FVWM_WIN);
+			ewmh_DeleteProperty(
+				FW_W(fwin), "_NET_WM_VISIBLE_NAME",
+				EWMH_ATOM_LIST_FVWM_WIN);
 			return;
 		}
 		if (IS_WINDOW_FONT_LOADED(fwin) && fwin->title_font != NULL)
@@ -89,25 +92,31 @@ void EWMH_SetVisibleName(FvwmWindow *fwin, Bool is_icon_name)
 	}
 
 	if (tmp_str == NULL)
+	{
 		return; /* should never happen */
+	}
 
 	val = (unsigned char *)FiconvCharsetToUtf8(
-					dpy, fc, tmp_str, strlen(tmp_str));
+		dpy, fc, tmp_str, strlen(tmp_str));
 
 	if (val == NULL)
+	{
 		return;
+	}
 
 	if (is_icon_name)
 	{
-		ewmh_ChangeProperty(FW_W(fwin), "_NET_WM_ICON_VISIBLE_NAME",
-				    EWMH_ATOM_LIST_FVWM_WIN,
-				    (unsigned char *)val, strlen(val));
+		ewmh_ChangeProperty(
+			FW_W(fwin), "_NET_WM_ICON_VISIBLE_NAME",
+			EWMH_ATOM_LIST_FVWM_WIN, (unsigned char *)val,
+			strlen(val));
 	}
 	else
 	{
-		ewmh_ChangeProperty(FW_W(fwin), "_NET_WM_VISIBLE_NAME",
-				    EWMH_ATOM_LIST_FVWM_WIN,
-				    (unsigned char *)val, strlen(val));
+		ewmh_ChangeProperty(
+			FW_W(fwin), "_NET_WM_VISIBLE_NAME",
+			EWMH_ATOM_LIST_FVWM_WIN, (unsigned char *)val,
+			strlen(val));
 	}
 	free(val);
 }
@@ -123,7 +132,9 @@ int EWMH_WMIconName(EWMH_CMD_ARGS)
 	FlocaleCharset *fc = NULL;
 
 	if (!FiconvSupport)
+	{
 		return 0;
+	}
 
 	val = ewmh_AtomGetByName(
 		FW_W(fwin), "_NET_WM_ICON_NAME",

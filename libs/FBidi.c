@@ -43,7 +43,7 @@ Bool FBidiIsApplicable(const char *charset)
 }
 
 char *FBidiConvert(
-	const char *logical_str, const char *charset, int str_len, 
+	const char *logical_str, const char *charset, int str_len,
 	Bool *is_rtl, int *out_len, superimpose_char_t *comb_chars)
 {
 	char *visual_str;
@@ -88,9 +88,9 @@ char *FBidiConvert(
 	/* apply bidi algorithm, convert logical string to visual string */
 	/* also keep track of how characters are reordered here, to reorder
 	   combing characters accordingly */
-	pos_l_to_v = 
-	  (FriBidiStrIndex *)safemalloc((str_len + 1) * 
-					   sizeof(FriBidiStrIndex));
+	pos_l_to_v =
+		(FriBidiStrIndex *)safemalloc((str_len + 1) *
+					      sizeof(FriBidiStrIndex));
 	fribidi_log2vis(
 		logical_unicode_str, str_len, &pbase_dir,
 		visual_unicode_str, pos_l_to_v, NULL, NULL);
@@ -98,11 +98,11 @@ char *FBidiConvert(
 	if(comb_chars != NULL)
 	{
 	        i = 0;
-		while(comb_chars[i].c.byte1 != 0 || 
+		while(comb_chars[i].c.byte1 != 0 ||
 		      comb_chars[i].c.byte2 != 0)
 		{
-		        comb_chars[i].position = 
-			  pos_l_to_v[comb_chars[i].position];
+		        comb_chars[i].position =
+				pos_l_to_v[comb_chars[i].position];
 			i++;
 		}
 	}

@@ -87,16 +87,14 @@ extern ewmhInfo ewmhc;
 
 
 ewmh_atom *ewmh_GetEwmhAtomByAtom(Atom atom, ewmh_atom_list_name list_name);
-void ewmh_ChangeProperty(Window w,
-			 const char *atom_name,
-			 ewmh_atom_list_name list,
-			 unsigned char *data,
-			 unsigned int length);
-void ewmh_DeleteProperty(Window w,
-			 const char *atom_name,
-			 ewmh_atom_list_name list);
-void *ewmh_AtomGetByName(Window win, const char *atom_name,
-			 ewmh_atom_list_name list, unsigned int *size);
+void ewmh_ChangeProperty(
+	Window w, const char *atom_name, ewmh_atom_list_name list,
+	unsigned char *data, unsigned int length);
+void ewmh_DeleteProperty(
+	Window w, const char *atom_name, ewmh_atom_list_name list);
+void *ewmh_AtomGetByName(
+	Window win, const char *atom_name, ewmh_atom_list_name list,
+	unsigned int *size);
 
 int ewmh_HandleDesktop(EWMH_CMD_ARGS);
 int ewmh_HandleDialog(EWMH_CMD_ARGS);

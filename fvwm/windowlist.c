@@ -731,302 +731,295 @@ void CMD_WindowList(F_CMD_ARGS)
 		for (ii = 0; ii < numWindows; ii++)
 		{
 			t = windowList[ii];
-			if (((t->Desk == next_desk) || (flags & NO_DESK_SORT)))
+			if (t->Desk != next_desk && !(flags & NO_DESK_SORT))
 			{
-				if (!show_listskip && DO_SKIP_WINDOW_LIST(t))
-				{
-					/* don't want listskip windows - skip */
-					continue;
-				}
-				if (show_listskip == 2 &&
-				    !DO_SKIP_WINDOW_LIST(t))
-				{
-					/* don't want no listskip one - skip */
-					continue;
-				}
-				if (use_condition &&
-				    !MatchesConditionMask(t, &mask))
-				{
-					/* doesn't match specified condition */
-					continue;
-				}
-				if (!(flags & SHOW_ICONIC) && (IS_ICONIFIED(t)))
-				{
-					/* don't want icons - skip */
-					continue;
-				}
-				if (!(flags & SHOW_STICKY_ACROSS_PAGES) &&
-				    (IS_STICKY_ACROSS_PAGES(t)))
-				{
-					/* don't want sticky ones - skip */
-					continue;
-				}
-				if (!(flags & SHOW_STICKY_ACROSS_DESKS) &&
-				    (IS_STICKY_ACROSS_DESKS(t)))
-				{
-					/* don't want sticky ones - skip */
-					continue;
-				}
-				if (!(flags & SHOW_NORMAL) &&
-				    !(IS_ICONIFIED(t) ||
-				      IS_STICKY_ACROSS_PAGES(t) ||
-				      IS_STICKY_ACROSS_DESKS(t)))
-				{
-					/* don't want "normal" ones - skip */
-					continue;
-				}
-				if (get_layer(t) < low_layer ||
-				    get_layer(t) > high_layer)
-				{
-					/* don't want this layer */
-					continue;
-				}
+				continue;
+			}
+			if (!show_listskip && DO_SKIP_WINDOW_LIST(t))
+			{
+				/* don't want listskip windows - skip */
+				continue;
+			}
+			if (show_listskip == 2 &&
+			    !DO_SKIP_WINDOW_LIST(t))
+			{
+				/* don't want no listskip one - skip */
+				continue;
+			}
+			if (use_condition && !MatchesConditionMask(t, &mask))
+			{
+				/* doesn't match specified condition */
+				continue;
+			}
+			if (!(flags & SHOW_ICONIC) && (IS_ICONIFIED(t)))
+			{
+				/* don't want icons - skip */
+				continue;
+			}
+			if (!(flags & SHOW_STICKY_ACROSS_PAGES) &&
+			    (IS_STICKY_ACROSS_PAGES(t)))
+			{
+				/* don't want sticky ones - skip */
+				continue;
+			}
+			if (!(flags & SHOW_STICKY_ACROSS_DESKS) &&
+			    (IS_STICKY_ACROSS_DESKS(t)))
+			{
+				/* don't want sticky ones - skip */
+				continue;
+			}
+			if (!(flags & SHOW_NORMAL) &&
+			    !(IS_ICONIFIED(t) ||
+			      IS_STICKY_ACROSS_PAGES(t) ||
+			      IS_STICKY_ACROSS_DESKS(t)))
+			{
+				/* don't want "normal" ones - skip */
+				continue;
+			}
+			if (get_layer(t) < low_layer ||
+			    get_layer(t) > high_layer)
+			{
+				/* don't want this layer */
+				continue;
+			}
 
-				empty_menu = False;
-				/* add separator between desks when geometry
-				 * shown but not at the top*/
-				if (t->Desk != last_desk_displayed)
+			empty_menu = False;
+			/* add separator between desks when geometry
+			 * shown but not at the top*/
+			if (t->Desk != last_desk_displayed)
+			{
+				if (last_desk_displayed != INT_MIN)
 				{
-					if (last_desk_displayed != INT_MIN)
+					if (((flags & SHOW_GEOMETRY) ||
+					     (flags & SHOW_INFONOTGEO)) &&
+					    !(flags & TITLE_FOR_ALL_DESKS))
 					{
-						if (((flags & SHOW_GEOMETRY) ||
-						     (flags &
-						      SHOW_INFONOTGEO)) &&
-						    !(flags &
-						      TITLE_FOR_ALL_DESKS))
-						{
-							AddToMenu(
-								mr, NULL, NULL,
-								False, False,
-								False);
-						}
-						if (flags & TITLE_FOR_ALL_DESKS)
-						{
-							tlabel = get_desk_title(
-								t->Desk, flags,
-								False);
-							AddToMenu(
-								mr, tlabel,
-								"TITLE", False,
-								False, False);
-							free(tlabel);
-						}
+						AddToMenu(
+							mr, NULL, NULL, False,
+							False, False);
 					}
-					last_desk_displayed = t->Desk;
-				}
-				if (first_desk && flags & TITLE_FOR_ALL_DESKS)
-				{
-					tlabel = get_desk_title(
-						t->Desk, flags, False);
-					AddToMenu(
-						mr, tlabel, "TITLE", False,
-						False, False);
-					free(tlabel);
-				}
-				first_desk = False;
-
-				if (flags & SHOW_ICONNAME)
-				{
-					name = t->visible_icon_name;
-				}
-				else
-				{
-					name = t->visible_name;
-				}
-
-				free_name = False;
-				if (!name)
-				{
-					name = "NULL_NAME";
-				}
-				else if (max_label_width > 0 &&
-					 strlen(name) > max_label_width)
-				{
-					name = strdup(name);
-					name[max_label_width] = '\0';
-					free_name = True;
-				}
-
-				t_hot = safemalloc(strlen(name) + 80);
-				if (use_hotkey)
-				{
-					/* Generate label */
-					sprintf(t_hot, "&%c. ", scut);
-				}
-				else
-				{
-					*t_hot = 0;
-				}
-				if (!(flags & SHOW_INFONOTGEO))
-				{
-					strcat(t_hot, name);
-				}
-				if (*t_hot == 0)
-				{
-					strcpy(t_hot, " ");
-				}
-
-				/* Next shortcut key */
-				if (scut == '9')
-				{
-					scut = 'A';
-				}
-				else if (scut == 'Z')
-				{
-					scut = '0';
-				}
-				else
-				{
-					scut++;
-				}
-
-				if (flags & SHOW_INFONOTGEO)
-				{
-					tname[0]=0;
-					if (!IS_ICONIFIED(t) &&
-					    !(flags & NO_DESK_NUM))
+					if (flags & TITLE_FOR_ALL_DESKS)
 					{
-						sprintf(loc,"%d:", t->Desk);
-						strcat(tname,loc);
-					}
-					if (IS_ICONIFIED(t))
-					{
-						strcat(tname, "(");
-					}
-					strcat(t_hot,"\t");
-					strcat(t_hot,tname);
-					strcat(t_hot, name);
-					if (IS_ICONIFIED(t))
-					{
-						strcat(t_hot, ")");
+						tlabel = get_desk_title(
+							t->Desk, flags, False);
+						AddToMenu(
+							mr, tlabel, "TITLE",
+							False, False, False);
+						free(tlabel);
 					}
 				}
-				else if (flags & SHOW_GEOMETRY)
-				{
-					size_borders b;
-
-					tname[0]=0;
-					if (IS_ICONIFIED(t))
-					{
-						strcpy(tname, "(");
-					}
-					if (!(flags & NO_DESK_NUM))
-					{
-						sprintf(loc, "%d", t->Desk);
-						strcat(tname, loc);
-					}
-					if (flags & SHOW_SCREEN)
-					{
-						fscreen_scr_arg fscr;
-						int scr;
-
-						fscr.xypos.x =
-							Scr.Vx + t->frame_g.x +
-							t->frame_g.width / 2;
-						fscr.xypos.y =
-							Scr.Vy + t->frame_g.y +
-							t->frame_g.height / 2;
-						scr = FScreenGetScrId(
-							&fscr, FSCREEN_XYPOS);
-						sprintf(loc, "@%d", scr);
-						strcat(tname, loc);
-					}
-					if (flags & SHOW_PAGE_X)
-					{
-						sprintf(loc, "+%d",
-							(Scr.Vx + t->frame_g.x +
-							 t->frame_g.width / 2) /
-							Scr.MyDisplayWidth);
-						strcat(tname, loc);
-					}
-					if (flags & SHOW_PAGE_Y)
-					{
-						sprintf(loc, "+%d",
-							(Scr.Vy + t->frame_g.y +
-							 t->frame_g.height/2) /
-							Scr.MyDisplayHeight);
-						strcat(tname, loc);
-					}
-					if (!(flags & NO_LAYER))
-					{
-						sprintf(loc, "(%d)",
-							(get_layer(t)));
-						strcat(tname, loc);
-					}
-					strcat(tname, ":");
-					get_window_borders(t, &b);
-					dheight = t->frame_g.height -
-						b.total_size.height;
-					dwidth = t->frame_g.width -
-						b.total_size.width;
-					dwidth -= t->hints.base_width;
-					dheight -= t->hints.base_height;
-					dwidth /= t->hints.width_inc;
-					dheight /= t->hints.height_inc;
-
-					sprintf(loc,"%d",dwidth);
-					strcat(tname, loc);
-					sprintf(loc,"x%d",dheight);
-					strcat(tname, loc);
-					if (t->frame_g.x >=0)
-					{
-						sprintf(loc,"+%d",t->frame_g.x);
-					}
-					else
-					{
-						sprintf(loc,"%d",t->frame_g.x);
-					}
-					strcat(tname, loc);
-					if (t->frame_g.y >=0)
-					{
-						sprintf(loc,"+%d",t->frame_g.y);
-					}
-					else
-					{
-						sprintf(loc,"%d",t->frame_g.y);
-					}
-					strcat(tname, loc);
-
-					if (IS_STICKY_ACROSS_PAGES(t) ||
-					    IS_STICKY_ACROSS_DESKS(t))
-					{
-						strcat(tname, " S");
-					}
-					if (IS_ICONIFIED(t))
-					{
-						strcat(tname, ")");
-					}
-					strcat(t_hot,"\t");
-					strcat(t_hot,tname);
-				}
-				ffunc = func ? func : "WindowListFunc";
-				tfunc = safemalloc(strlen(ffunc) + 36);
-				/* support two ways for now: window context
-				 * (new) and window id param (old) */
-				sprintf(tfunc, "WindowId %lu %s %lu",
-					FW_W(t), ffunc, FW_W(t));
+				last_desk_displayed = t->Desk;
+			}
+			if (first_desk && flags & TITLE_FOR_ALL_DESKS)
+			{
+				tlabel = get_desk_title(t->Desk, flags, False);
 				AddToMenu(
-					mr, t_hot, tfunc, False, False, False);
-				free(tfunc);
-				/* Add the title pixmap */
-				if (FMiniIconsSupported && t->mini_icon)
+					mr, tlabel, "TITLE", False, False,
+					False);
+				free(tlabel);
+			}
+			first_desk = False;
+
+			if (flags & SHOW_ICONNAME)
+			{
+				name = t->visible_icon_name;
+			}
+			else
+			{
+				name = t->visible_name;
+			}
+
+			free_name = False;
+			if (!name)
+			{
+				name = "NULL_NAME";
+			}
+			else if (max_label_width > 0 &&
+				 strlen(name) > max_label_width)
+			{
+				name = strdup(name);
+				name[max_label_width] = '\0';
+				free_name = True;
+			}
+
+			t_hot = safemalloc(strlen(name) + 80);
+			if (use_hotkey)
+			{
+				/* Generate label */
+				sprintf(t_hot, "&%c. ", scut);
+			}
+			else
+			{
+				*t_hot = 0;
+			}
+			if (!(flags & SHOW_INFONOTGEO))
+			{
+				strcat(t_hot, name);
+			}
+			if (*t_hot == 0)
+			{
+				strcpy(t_hot, " ");
+			}
+
+			/* Next shortcut key */
+			if (scut == '9')
+			{
+				scut = 'A';
+			}
+			else if (scut == 'Z')
+			{
+				scut = '0';
+			}
+			else
+			{
+				scut++;
+			}
+
+			if (flags & SHOW_INFONOTGEO)
+			{
+				tname[0]=0;
+				if (!IS_ICONIFIED(t) &&
+				    !(flags & NO_DESK_NUM))
 				{
-					MI_MINI_ICON(MR_LAST_ITEM(mr))[0] =
-						t->mini_icon;
-					/* increase the cache count. Otherwise
-					 * the pixmap will be eventually
-					 * removed from the cache by
-					 * DestroyMenu */
-					t->mini_icon->count++;
+					sprintf(loc,"%d:", t->Desk);
+					strcat(tname,loc);
 				}
-				if (t_hot)
+				if (IS_ICONIFIED(t))
 				{
-					free(t_hot);
+					strcat(tname, "(");
 				}
-				if (free_name)
+				strcat(t_hot,"\t");
+				strcat(t_hot,tname);
+				strcat(t_hot, name);
+				if (IS_ICONIFIED(t))
 				{
-					free(name);
+					strcat(t_hot, ")");
 				}
+			}
+			else if (flags & SHOW_GEOMETRY)
+			{
+				size_borders b;
+
+				tname[0]=0;
+				if (IS_ICONIFIED(t))
+				{
+					strcpy(tname, "(");
+				}
+				if (!(flags & NO_DESK_NUM))
+				{
+					sprintf(loc, "%d", t->Desk);
+					strcat(tname, loc);
+				}
+				if (flags & SHOW_SCREEN)
+				{
+					fscreen_scr_arg fscr;
+					int scr;
+
+					fscr.xypos.x =
+						Scr.Vx + t->frame_g.x +
+						t->frame_g.width / 2;
+					fscr.xypos.y =
+						Scr.Vy + t->frame_g.y +
+						t->frame_g.height / 2;
+					scr = FScreenGetScrId(
+						&fscr, FSCREEN_XYPOS);
+					sprintf(loc, "@%d", scr);
+					strcat(tname, loc);
+				}
+				if (flags & SHOW_PAGE_X)
+				{
+					sprintf(loc, "+%d",
+						(Scr.Vx + t->frame_g.x +
+						 t->frame_g.width / 2) /
+						Scr.MyDisplayWidth);
+					strcat(tname, loc);
+				}
+				if (flags & SHOW_PAGE_Y)
+				{
+					sprintf(loc, "+%d",
+						(Scr.Vy + t->frame_g.y +
+						 t->frame_g.height/2) /
+						Scr.MyDisplayHeight);
+					strcat(tname, loc);
+				}
+				if (!(flags & NO_LAYER))
+				{
+					sprintf(loc, "(%d)",
+						(get_layer(t)));
+					strcat(tname, loc);
+				}
+				strcat(tname, ":");
+				get_window_borders(t, &b);
+				dheight = t->frame_g.height -
+					b.total_size.height;
+				dwidth = t->frame_g.width -
+					b.total_size.width;
+				dwidth -= t->hints.base_width;
+				dheight -= t->hints.base_height;
+				dwidth /= t->hints.width_inc;
+				dheight /= t->hints.height_inc;
+
+				sprintf(loc,"%d",dwidth);
+				strcat(tname, loc);
+				sprintf(loc,"x%d",dheight);
+				strcat(tname, loc);
+				if (t->frame_g.x >=0)
+				{
+					sprintf(loc,"+%d",t->frame_g.x);
+				}
+				else
+				{
+					sprintf(loc,"%d",t->frame_g.x);
+				}
+				strcat(tname, loc);
+				if (t->frame_g.y >=0)
+				{
+					sprintf(loc,"+%d",t->frame_g.y);
+				}
+				else
+				{
+					sprintf(loc,"%d",t->frame_g.y);
+				}
+				strcat(tname, loc);
+
+				if (IS_STICKY_ACROSS_PAGES(t) ||
+				    IS_STICKY_ACROSS_DESKS(t))
+				{
+					strcat(tname, " S");
+				}
+				if (IS_ICONIFIED(t))
+				{
+					strcat(tname, ")");
+				}
+				strcat(t_hot,"\t");
+				strcat(t_hot,tname);
+			}
+			ffunc = func ? func : "WindowListFunc";
+			tfunc = safemalloc(strlen(ffunc) + 36);
+			/* support two ways for now: window context
+			 * (new) and window id param (old) */
+			sprintf(tfunc, "WindowId %lu %s %lu",
+				FW_W(t), ffunc, FW_W(t));
+			AddToMenu(
+				mr, t_hot, tfunc, False, False, False);
+			free(tfunc);
+			/* Add the title pixmap */
+			if (FMiniIconsSupported && t->mini_icon)
+			{
+				MI_MINI_ICON(MR_LAST_ITEM(mr))[0] =
+					t->mini_icon;
+				/* increase the cache count. Otherwise the
+				 * pixmap will be eventually removed from the
+				 * cache by DestroyMenu */
+				t->mini_icon->count++;
+			}
+			if (t_hot)
+			{
+				free(t_hot);
+			}
+			if (free_name)
+			{
+				free(name);
 			}
 		}
 	}

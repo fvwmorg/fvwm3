@@ -49,7 +49,8 @@ void set_state_workaround(void)
 	for (t = Scr.FvwmRoot.next; t != NULL; t = t->next)
 	{
 		if ((t->Desk != Scr.CurrentDesk) &&
-		    (!is_window_sticky_across_desks(t) && !IS_ICON_UNMAPPED(t)))
+		    (!is_window_sticky_across_desks(t) &&
+		     !IS_ICON_UNMAPPED(t)))
 		{
 			if (Scr.bo.EWMHIconicStateWorkaround)
 			{
@@ -238,7 +239,8 @@ Bool EWMH_CMD_Style(char *token, window_style *ptmpstyle)
 	else if (StrEquals(token, "EWMHPlacementIgnoreWorkingArea"))
 	{
 		found = True;
-		ptmpstyle->flags.ewmh_placement_mode = EWMH_IGNORE_WORKING_AREA;
+		ptmpstyle->flags.ewmh_placement_mode =
+			EWMH_IGNORE_WORKING_AREA;
 		ptmpstyle->flag_mask.ewmh_placement_mode =
 			EWMH_WORKING_AREA_MASK;
 		ptmpstyle->change_mask.ewmh_placement_mode =

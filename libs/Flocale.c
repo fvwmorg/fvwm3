@@ -186,7 +186,7 @@ int FlocaleChar2bOneCharToUtf8(XChar2b c, char *buf)
 	return len;
 }
 
-/* return number of bytes of character at current position 
+/* return number of bytes of character at current position
    (pointed to by str) */
 int FlocaleStringNumberOfBytes(FlocaleFont *flf, const unsigned char *str)
 {
@@ -201,7 +201,7 @@ int FlocaleStringNumberOfBytes(FlocaleFont *flf, const unsigned char *str)
 		else if(str[0] <= 0xdf)
 		{
 		        bytes = 2;
-		} 
+		}
 		else
 		{
 		        /* this handles only 16-bit Unicode */
@@ -213,11 +213,11 @@ int FlocaleStringNumberOfBytes(FlocaleFont *flf, const unsigned char *str)
 	        /* non-UTF-8 multibyte encoding */
 	        if(str[0] <= 0x7f)
 		{
-		       bytes = 1;
+			bytes = 1;
 		}
 		else
 		{
-		       bytes = 2;
+			bytes = 2;
 		}
 	}
 	else
@@ -244,10 +244,10 @@ XChar2b *FlocaleUtf8ToUnicodeStr2b(unsigned char *str, int len, int *nl)
 		}
 		else if (str[i] <= 0xdf && i+1 < len)
 		{
-		    t = ((str[i] & 0x1f) << 6) + (str[i+1] & 0x3f);
-		    str2b[j].byte2 = (unsigned char)(t & 0xff);
-		    str2b[j].byte1 = (unsigned char)(t >> 8);
-		    i++;
+			t = ((str[i] & 0x1f) << 6) + (str[i+1] & 0x3f);
+			str2b[j].byte2 = (unsigned char)(t & 0xff);
+			str2b[j].byte1 = (unsigned char)(t >> 8);
+			i++;
 		}
 		else if (i+2 <len)
 		{
@@ -267,9 +267,9 @@ XChar2b *FlocaleUtf8ToUnicodeStr2b(unsigned char *str, int len, int *nl)
  * should be (and is) done using Xmb functions and not XDrawString16
  * (or with iso10646-1 fonts and setting the encoding).
  * This function is used when the locale does not correspond to the font.
- * It works with  "EUC fonts": ksc5601.1987-0, gb2312 and maybe also cns11643-*.
- * It works patially with jisx* and big5-0. Should try gbk-0, big5hkscs-0,
- * and cns-11643- */
+ * It works with  "EUC fonts": ksc5601.1987-0, gb2312 and maybe also
+ * cns11643-*.  It works patially with jisx* and big5-0. Should try gbk-0,
+ * big5hkscs-0, and cns-11643- */
 static
 XChar2b *FlocaleStringToString2b(
 	Display *dpy, FlocaleFont *flf, unsigned char *str, int len, int *nl)
@@ -284,7 +284,8 @@ XChar2b *FlocaleStringToString2b(
 	if (flf->fc && StrEquals(flf->fc->x,"jisx0208.1983-0"))
 	{
 		tmp = FiconvCharsetToCharset(
-			dpy, flf->fc, FlocaleCharsetGetEUCJPCharset(), str, len);
+			dpy, flf->fc, FlocaleCharsetGetEUCJPCharset(), str,
+			len);
 		if (tmp != NULL)
 		{
 			free_str = True;
@@ -304,14 +305,16 @@ XChar2b *FlocaleStringToString2b(
 			if (str[i] <= 0x7f)
 			{
 				/* seems ok with KSC5601 and GB2312 as we get
-				 * almost the ascii. I do no try CNS11643-1986-1.
-				 * Should convert to ascii with jisx */
+				 * almost the ascii. I do no try
+				 * CNS11643-1986-1.  Should convert to ascii
+				 * with jisx */
 				str2b[j].byte1 = 0x23; /* magic number! */
 				str2b[j].byte2 = str[i++];
 			}
 			else if (i+1 < len)
 			{
-				/* mb gl (for gr replace & 0x7f by | 0x80 ...)*/
+				/* mb gl (for gr replace & 0x7f by | 0x80 ...)
+				 */
 				str2b[j].byte1 = str[i++] & 0x7f;
 				str2b[j].byte2 = str[i++] & 0x7f;
 			}
@@ -399,9 +402,7 @@ char *FlocaleEncodeString(
 			/* returns the length of the resulting UTF-8 string */
 			/* convert back to current charset */
 			str1 = FiconvUtf8ToCharset(
-						   dpy,
-						   flf->str_fc,
-						   (const char *)tmp_str,len);
+				dpy, flf->str_fc, (const char *)tmp_str,len);
 			if (tmp_str != str1)
 			{
 				free(tmp_str);
@@ -452,12 +453,12 @@ char *FlocaleEncodeString(
 	{
 	        if(comb_chars != NULL)
 		{
-		        str3 = FBidiConvert(str2, bidi_charset, len1, is_rtl, 
+		        str3 = FBidiConvert(str2, bidi_charset, len1, is_rtl,
 					    &len2, *comb_chars);
 		}
 		else
 		{
-		        str3 = FBidiConvert(str2, bidi_charset, len1, is_rtl, 
+		        str3 = FBidiConvert(str2, bidi_charset, len1, is_rtl,
 					    &len2, NULL);
 	        }
 		if (str3 != NULL && str3  != str2)
@@ -496,12 +497,12 @@ void FlocaleEncodeWinString(
 		if (FLC_ENCODING_TYPE_IS_UTF_8(flf->fc))
 		{
 			fws->str2b = FlocaleUtf8ToUnicodeStr2b(
-							fws->e_str, *len, len);
+				fws->e_str, *len, len);
 		}
 		else if (flf->flags.is_mb)
 		{
 			fws->str2b = FlocaleStringToString2b(
-					dpy, flf, fws->e_str, *len, len);
+				dpy, flf, fws->e_str, *len, len);
 		}
 		if (FLC_ENCODING_TYPE_IS_UTF_8(flf->fc) || flf->flags.is_mb)
 		{
@@ -574,7 +575,7 @@ void FlocaleFontStructDrawString(
 static
 void FlocaleRotateDrawString(
 	Display *dpy, FlocaleFont *flf, FlocaleWinString *fws, Pixel fg,
-	Pixel fgsh, Bool has_fg_pixels, int len, 
+	Pixel fgsh, Bool has_fg_pixels, int len,
 	superimpose_char_t *comb_chars, int *pixel_pos)
 {
 	static GC my_gc = None;
@@ -651,24 +652,23 @@ void FlocaleRotateDrawString(
 	{
 		while(comb_chars[i].c.byte1 != 0 && comb_chars[i].c.byte2 != 0)
 		{
-		        /* draw composing character on top of corresponding 
+		        /* draw composing character on top of corresponding
 			   "real" character */
 		        FlocaleWinString tmp_fws = *fws;
 			int offset = pixel_pos[comb_chars[i].position];
 		        int curr_len = FlocaleChar2bOneCharToUtf8(
-							    comb_chars[i].c, 
-							    buf);
+				comb_chars[i].c, buf);
 			int out_len;
 			char *buf2 = FiconvUtf8ToCharset(
-						   dpy,
-						   flf->str_fc,
-						   (const char *)buf,curr_len);
+				dpy,
+				flf->str_fc,
+				(const char *)buf,curr_len);
 			if(flf->fontset != None)
 			{
-			        XmbDrawString(dpy, canvas_pix, flf->fontset, 
-					      fws->gc, offset,
-					      height - descent, buf2, 
-					      strlen(buf2));
+			        XmbDrawString(
+					dpy, canvas_pix, flf->fontset,
+					fws->gc, offset, height - descent,
+					buf2, strlen(buf2));
 			}
 			else if(flf->font != None)
 			{
@@ -676,17 +676,18 @@ void FlocaleRotateDrawString(
 				tmp_fws.str2b = NULL;
 				if (FLC_ENCODING_TYPE_IS_UTF_8(flf->fc))
 				{
-				        tmp_fws.str2b = 
-					  FlocaleUtf8ToUnicodeStr2b(
-						     tmp_fws.e_str,curr_len, 
-						     &out_len);
+				        tmp_fws.str2b =
+						FlocaleUtf8ToUnicodeStr2b(
+							tmp_fws.e_str,curr_len,
+							&out_len);
 				}
 				else if (flf->flags.is_mb)
 				{
-				        tmp_fws.str2b = 
-					  FlocaleStringToString2b(
-						    dpy, flf, tmp_fws.e_str,
-						    curr_len, &out_len);
+				        tmp_fws.str2b =
+						FlocaleStringToString2b(
+							dpy, flf,
+							tmp_fws.e_str,
+							curr_len, &out_len);
 				}
 				else
 				{
@@ -694,12 +695,12 @@ void FlocaleRotateDrawString(
 				}
 				XSetFont(dpy, font_gc, flf->font->fid);
 			        FlocaleFontStructDrawString(
-					    dpy, flf, canvas_pix, font_gc,
-					    offset, height - descent, 
-					    fg, fgsh, has_fg_pixels, &tmp_fws,
-					    out_len, True);
+					dpy, flf, canvas_pix, font_gc,
+					offset, height - descent,
+					fg, fgsh, has_fg_pixels, &tmp_fws,
+					out_len, True);
 			}
-							       
+
 			free(buf2);
 			if(tmp_fws.str2b != NULL)
 			{
@@ -713,8 +714,9 @@ void FlocaleRotateDrawString(
 	normal_data = (unsigned char *)safemalloc(normal_len * normal_h);
 
 	/* create depth 1 XImage */
-	if ((image = XCreateImage(dpy, Pvisual, 1, XYBitmap,
-		0, (char *)normal_data, normal_w, normal_h, 8, 0)) == NULL)
+	if ((image = XCreateImage(
+		     dpy, Pvisual, 1, XYBitmap, 0, (char *)normal_data,
+		     normal_w, normal_h, 8, 0)) == NULL)
 	{
 		return;
 	}
@@ -746,8 +748,8 @@ void FlocaleRotateDrawString(
 
 	/* create the rotated X image */
 	if ((rotated_image = XCreateImage(
-		dpy, Pvisual, 1, XYBitmap, 0, (char *)rotated_data,
-		rotated_w, rotated_h, 8, 0)) == NULL)
+		     dpy, Pvisual, 1, XYBitmap, 0, (char *)rotated_data,
+		     rotated_w, rotated_h, 8, 0)) == NULL)
 	{
 		return;
 	}
@@ -764,19 +766,18 @@ void FlocaleRotateDrawString(
 				val = normal_data[
 					i * normal_len +
 					(normal_w - j - 1) / 8
-				] & (128 >> ((normal_w - j - 1) % 8));
+					] & (128 >> ((normal_w - j - 1) % 8));
 
 			else if (fws->flags.text_rotation == ROTATION_180)
 				val = normal_data[
 					(normal_h - j - 1) * normal_len +
 					(normal_w - i - 1) / 8
-				] & (128 >> ((normal_w - i - 1) % 8));
+					] & (128 >> ((normal_w - i - 1) % 8));
 
 			else /* ROTATION_90 */
 				val = normal_data[
 					(normal_h - i - 1) * normal_len +
-					j / 8
-				] & (128 >> (j % 8));
+					j / 8] & (128 >> (j % 8));
 
 			if (val)
 				rotated_data[j * rotated_len + i / 8] |=
@@ -1011,7 +1012,8 @@ FlocaleFont *FlocaleGetFftFont(
 	flf->count = 1;
 	flf->fftf = *fftf;
 	FlocaleCharsetSetFlocaleCharset(dpy, flf, hints, encoding, module);
-	FftGetFontHeights(&flf->fftf, &flf->height, &flf->ascent, &flf->descent);
+	FftGetFontHeights(
+		&flf->fftf, &flf->height, &flf->ascent, &flf->descent);
 	FftGetFontWidths(flf, &flf->max_char_width);
 	free(fftf);
 	if (fn != NULL && fn != FLOCALE_FFT_FALLBACK_FONT)
@@ -1081,8 +1083,8 @@ FlocaleFont *FlocaleGetFontSet(
 			if (mc_errors == FLOCALE_NUMBER_MISS_CSET_ERR_MSG)
 			{
 				fprintf(stderr,
-					"[%s][FlocaleGetFontSet]:"
-					" No more missing charset reportings\n",
+					"[%s][FlocaleGetFontSet]: No more"
+					" missing charset reportings\n",
 					(module)? module: "FVWMlibs");
 			}
 		}
@@ -1418,8 +1420,8 @@ FlocaleFont *FlocaleLoadFont(Display *dpy, char *fontname, char *module)
 					FLOCALE_MB_FALLBACK_FONT);
 			}
 			if ((flf = FlocaleGetFontSet(
-				dpy, FLOCALE_MB_FALLBACK_FONT, NULL,
-				module)) != NULL)
+				     dpy, FLOCALE_MB_FALLBACK_FONT, NULL,
+				     module)) != NULL)
 			{
 				flf->name = FLOCALE_MB_FALLBACK_FONT;
 			}
@@ -1433,8 +1435,8 @@ FlocaleFont *FlocaleLoadFont(Display *dpy, char *fontname, char *module)
 			}
 			if ((flf =
 			     FlocaleGetFont(
-			       dpy, FLOCALE_FALLBACK_FONT, NULL, module)) !=
-			    NULL)
+				     dpy, FLOCALE_FALLBACK_FONT, NULL,
+				     module)) != NULL)
 			{
 				flf->name = FLOCALE_FALLBACK_FONT;
 			}
@@ -1520,8 +1522,8 @@ void FlocaleUnloadFont(Display *dpy, FlocaleFont *flf)
 	}
 
 	if (flf->name != NULL &&
-		!StrEquals(flf->name, FLOCALE_MB_FALLBACK_FONT) &&
-		!StrEquals(flf->name, FLOCALE_FALLBACK_FONT))
+	    !StrEquals(flf->name, FLOCALE_MB_FALLBACK_FONT) &&
+	    !StrEquals(flf->name, FLOCALE_FALLBACK_FONT))
 	{
 		free(flf->name);
 	}
@@ -1669,7 +1671,8 @@ Bool FlocaleGetShadowTextPosition(
 		{
 			for (; tx <= args->outer_offset; tx++)
 			{
-				if (tx <= -args->offset || tx >= args->offset ||
+				if (tx <= -args->offset ||
+				    tx >= args->offset ||
 				    ty <= -args->offset || ty >= args->offset)
 				{
 					is_finished = 1;
@@ -1764,7 +1767,8 @@ void FlocaleDrawString(
 		i = 0;
 		while(fws->e_str[i] != 0 && i < len)
 		{
-		        curr_len = FlocaleStringNumberOfBytes(flf, fws->str + i);
+		        curr_len = FlocaleStringNumberOfBytes(
+				flf, fws->str + i);
 			char_len++;
 			i += curr_len;
 		}
@@ -1811,7 +1815,7 @@ void FlocaleDrawString(
 	if (fws->flags.text_rotation != ROTATION_0 &&
 	    flf->fftf.fftfont == NULL)
 	{
-	        /* pass in information to perform superimposition */ 
+	        /* pass in information to perform superimposition */
 		FlocaleRotateDrawString(
 			dpy, flf, fws, fg, fgsh, has_fg_pixels, len,
 			comb_chars, pixel_pos);
@@ -1858,34 +1862,32 @@ void FlocaleDrawString(
 	{
 		while(comb_chars[i].c.byte1 != 0 && comb_chars[i].c.byte2 != 0)
 		{
-		        /* draw composing character on top of corresponding 
+		        /* draw composing character on top of corresponding
 			   "real" character */
 		        FlocaleWinString tmp_fws = *fws;
 			int offset = pixel_pos[comb_chars[i].position];
 			char *buf2;
-		        curr_len = FlocaleChar2bOneCharToUtf8(comb_chars[i].c, 
-								  buf);
+		        int curr_len = FlocaleChar2bOneCharToUtf8(
+				comb_chars[i].c, buf);
 			int out_len;
 			buf2 = FiconvUtf8ToCharset(
-						   dpy,
-						   flf->str_fc,
-						   (const char *)buf,curr_len);
+				dpy, flf->str_fc, (const char *)buf, curr_len);
 			if(FftSupport && flf->fftf.fftfont != NULL)
 			{
 			        tmp_fws.x = fws->x + offset;
 				tmp_fws.e_str = buf2;
 				FftDrawString(
-					      dpy, flf, &tmp_fws, fg, fgsh, 
-					      has_fg_pixels, strlen(buf2),
-					      flags);
+					dpy, flf, &tmp_fws, fg, fgsh,
+					has_fg_pixels, strlen(buf2),
+					flags);
 			}
 			else if(flf->fontset != None)
 			{
 			        int xt = fws->x;
 				int yt = fws->y;
-			        XmbDrawString(dpy, fws->win, flf->fontset, 
-					      fws->gc, xt + offset,
-					      yt, buf2, strlen(buf2));
+			        XmbDrawString(
+					dpy, fws->win, flf->fontset, fws->gc,
+					xt + offset, yt, buf2, strlen(buf2));
 			}
 			else if(flf->font != None)
 			{
@@ -1893,17 +1895,18 @@ void FlocaleDrawString(
 				tmp_fws.str2b = NULL;
 				if (FLC_ENCODING_TYPE_IS_UTF_8(flf->fc))
 				{
-				        tmp_fws.str2b = 
-					  FlocaleUtf8ToUnicodeStr2b(
-						     tmp_fws.e_str, curr_len, 
-						     &out_len);
+				        tmp_fws.str2b =
+						FlocaleUtf8ToUnicodeStr2b(
+							tmp_fws.e_str,
+							curr_len, &out_len);
 				}
 				else if (flf->flags.is_mb)
 				{
-				        tmp_fws.str2b = 
-					  FlocaleStringToString2b(
-						    dpy, flf, tmp_fws.e_str,
-						    curr_len, &out_len);
+				        tmp_fws.str2b =
+						FlocaleStringToString2b(
+							dpy, flf,
+							tmp_fws.e_str,
+							curr_len, &out_len);
 				}
 				else
 				{
@@ -1911,12 +1914,12 @@ void FlocaleDrawString(
 				}
 
 			        FlocaleFontStructDrawString(
-					    dpy, flf, fws->win, fws->gc,
-					    fws->x + offset,
-					    fws->y, fg, fgsh, has_fg_pixels, 
-					    &tmp_fws, out_len, False);
+					dpy, flf, fws->win, fws->gc,
+					fws->x + offset, fws->y, fg, fgsh,
+					has_fg_pixels, &tmp_fws, out_len,
+					False);
 			}
-							       
+
 			free(buf2);
 			if(tmp_fws.str2b != NULL)
 			{
@@ -1939,7 +1942,7 @@ void FlocaleDrawString(
 			fws->str2b = NULL;
 		}
 	}
-	
+
 	if(comb_chars != NULL)
 	{
 	        free(comb_chars);
@@ -1952,7 +1955,6 @@ void FlocaleDrawUnderline(
 	Display *dpy, FlocaleFont *flf, FlocaleWinString *fws, int coffset)
 {
 	int off1, off2, y, x_s, x_e;
-	superimpose_char_t *comb_chars = NULL;
 
 	/* need to encode the string first to get BIDI and combining chars */
 	/*FlocaleEncodeWinString(dpy, flf, fws, &do_free, &len, &comb_chars);
@@ -1984,7 +1986,7 @@ int FlocaleTextWidth(FlocaleFont *flf, char *str, int sl)
 
 	if (!str || sl == 0)
 		return 0;
-	
+
 	if (sl < 0)
 	{
 		/* a vertical string: nothing to do! */
@@ -1992,7 +1994,7 @@ int FlocaleTextWidth(FlocaleFont *flf, char *str, int sl)
 	}
 	/* FIXME */
 	tmp_str = FlocaleEncodeString(
-	  Pdpy, flf, str, &do_free, sl, &new_l, NULL, NULL);
+		Pdpy, flf, str, &do_free, sl, &new_l, NULL, NULL);
 	if (FftSupport && flf->fftf.fftfont != NULL)
 	{
 		result = FftTextWidth(flf, tmp_str, new_l);
@@ -2010,10 +2012,10 @@ int FlocaleTextWidth(FlocaleFont *flf, char *str, int sl)
 
 			if (FLC_ENCODING_TYPE_IS_UTF_8(flf->fc))
 				str2b = FlocaleUtf8ToUnicodeStr2b(
-							tmp_str, new_l, &nl);
+					tmp_str, new_l, &nl);
 			else
 				str2b = FlocaleStringToString2b(
-						Pdpy, flf, tmp_str, new_l, &nl);
+					Pdpy, flf, tmp_str, new_l, &nl);
 			if (str2b != NULL)
 			{
 				result = XTextWidth16(flf->font, str2b, nl);
@@ -2027,7 +2029,7 @@ int FlocaleTextWidth(FlocaleFont *flf, char *str, int sl)
 	}
 	if (do_free)
 	{
-	  free(tmp_str);
+		free(tmp_str);
 	}
 
 	return result + ((result != 0)? FLF_SHADOW_WIDTH(flf):0);
