@@ -31,10 +31,10 @@ If the user wants his entire .fvwm2rc file pre-processed with FvwmM4,
 then fvwm should be invoked as:
 
 .EX
-fvwm2 -cmd "FvwmM4 .fvwm2rc" 
+fvwm2 -cmd "FvwmM4 .fvwm2rc"
 .EE
 
-Note that the argument to the option "-cmd" should be enclosed 
+Note that the argument to the option "-cmd" should be enclosed
 in quotes, and no other quoting should be used. For example, a
 typical invocation might be:
 
@@ -46,20 +46,25 @@ Some options can be specified on the command line:
 .IP -m4-prefix
 I think this makes all the m4 directives require the prefix "m4_".
 
-.IP -m4opt \fIoption\fP
+.TP
+-m4opt \fIoption\fP
 Lets you pass an option to the m4 program.  Not really needed as any
 unknown options will be passed on automatically.
 
-.IP -m4-squote \fIcharacter\fP
+.TP
+-m4-squote \fIcharacter\fP
 Lets you change the m4 start-of-quote character to \fIcharacter\fP.
 
-.IP -m4-equote \fIcharacter\fP
+.TP
+-m4-equote \fIcharacter\fP
 Lets you change the m4 end-of-quote character to \fIcharacter\fP.
 
-.IP -m4prog \fIname\fP
+.TP
+-m4prog \fIname\fP
 Instead of invoking "m4", fvwm will invoke \fIname\fP.
 
-.IP -outfile \fIfilename\fP
+.TP
+-outfile \fIfilename\fP
 Instead of creating a random unique name for the temporary file for
 the preprocessed rc file, this option will let you specify the name of
 the temporary file it will create.

@@ -36,14 +36,17 @@ fvwm2 -cmd "FvwmCpp .fvwm2rc"
 .EE
 
 Some options can be specified on the command line:
-.IP -Cppopt \fIoption\fP
+.TP
+-Cppopt \fIoption\fP
 Lets you pass an option to the cpp program.  Not really needed as any unknown
 options will be passed on automatically.
 
-.IP -Cppprog \fIname\fP
+.TP
+-Cppprog \fIname\fP
 Instead of invoking "/usr/lib/cpp", fvwm will invoke \fIname\fP.
 
-.IP -outfile \fIfilename\fP
+.TP
+-outfile \fIfilename\fP
 Instead of creating a random unique name for the temporary file for
 the preprocessed rc file, this option will let you specify the name of
 the temporary file it will create.
@@ -124,7 +127,7 @@ determined at compile time.
 #define CLASS PseudoColor
 #define COLOR Yes
 #define FVWM_VERSION 2.0 pl 1
-#define OPTIONS SHAPE XPM Cpp 
+#define OPTIONS SHAPE XPM Cpp
 #define FVWM_MODULEDIR /local/homes/dsp/nation/modules
 
 .EE

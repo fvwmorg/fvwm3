@@ -1,3 +1,8 @@
+1998-11-25  Paul D. Smith  <psmith@gnu.org>
+
+	* FvwmCpp/FvwmCpp.1: Don't use multi-word values with .IP.  Use .TP.
+	* FvwmM4/FvwmM4.1: Ditto.
+
 1998-11-24  Paul D. Smith  <psmith@gnu.org>
 
 	* FvwmForm/FvwmForm.c: Clean up headers that are already included
