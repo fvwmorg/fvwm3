@@ -1943,7 +1943,7 @@ static void handle_window_style_change(FvwmWindow *t)
   /*
    * focus
    */
-  if (SCSET_FOCUS_MODE(style, FOCUS_MASK))
+  if (SCFOCUS_MODE(style))
   {
     setup_focus_policy(t);
   }

@@ -1,3 +1,8 @@
+1999-10-19  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* fvwm/style.h (SMSET_FOCUS_MODE):
+	fixed focus policy
+
 1999-10-18  Hippo
 
 	* libs/Colorset: changed signature of AllocColorset
