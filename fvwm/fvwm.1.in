@@ -925,12 +925,9 @@ AddToFunc UrgencyDoneFunc
 
 Fvwm attempts to be
 .SM GNOME
-compliant.  Check
+(version 1) compliant.  Check
 .B http://www.gnome.org
-for what that may mean.
-.SM GNOME
-support is a compile time option which is on by default.  To
-disable GNOME hints for some or all windows, the
+for what that may mean. To disable GNOME hints for some or all windows, the
 .I GNOMEIgnoreHints
 style can be used.
 
@@ -950,9 +947,7 @@ version 2 and other applications which respect this specification
 version 2). Applications which respect this specification are
 called ewmh compliant applications.
 
-This support is a compile time option.  If selected at compile
-time, this support is configurable with styles and commands.
-
+This support is configurable with styles and commands.
 These styles and commands have
 .SM EWMH
 as the prefix (so you can find them easily in this man page).

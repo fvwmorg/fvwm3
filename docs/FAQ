@@ -43,7 +43,9 @@ Contents
      2.6  I'm a sysadmin, and if I wanted fvwm to look for all of
           its rc files in a hidden directory, say ~/.fvwm, much
           like CDE does, how could I do that?
-     2.7  How can I use FVWM with GNOME?
+     2.7  How can I use FVWM with GNOME version <= 1?
+     2.8  How can I use FVWM with GNOME version >= 2 or KDE
+          version >= 2?
 
 3. Features, Configuration, Functions & Commands
 
@@ -569,7 +571,7 @@ A: FVWM now supports ~/.fvwm search directory by default.
 
 ----------------------------------------------------------------------
 
-2.7  How can I use FVWM with GNOME?
+2.7  How can I use FVWM with GNOME (version <= 1)?
 
 A: Since the latest fvwm versions are mostly GNOME compliant, you may
    simply run GNOME applications, like panel, gmc, gnome-terminal and
@@ -607,6 +609,47 @@ A: Since the latest fvwm versions are mostly GNOME compliant, you may
    o If you run gmc and bind GnomeButton (see the man page), you can pass
      root clicks to a gnome application (i.e. to gmc in this case).
 
+----------------------------------------------------------------------
+
+2.8 How can I use FVWM with GNOME version >= 2 or KDE version >= 2?
+
+A: Most standard applications work as any other application on the top
+   of FVWM. However, some features and special applications as panels,
+   pagers, taskbars and desktops need a special support. Interaction
+   between the window manager, the desktop environment and applications
+   has been standardized in the Extended Window Manager Hints
+   specification. FVWM supports this specification since the 2.5.x
+   series (GNOME, GTK, KDE and QT since their version 2). See the
+   "Extended Window Manager Hints" section of the fvwm manual page and
+   the commands and styles which start with "EWMH" for more details.
+
+   You can use fvwm as the GNOME window manager. For this start GNOME
+   (gnome-session). The game is to replace the running window manager
+   (sawfish or metacity by default) by fvwm. You may try to type
+   "fvwm --replace&" in a terminal. If this does not work kill fvwm and
+   open the session properties dialog (run "gnome-session-properties&"
+   in a terminal) and change, in the second tab, the metacity (or
+   sawfish) Style value from "Restart" to "Normal" (do not forget to
+   "Apply" this change), so that gnome-session wouldn't restart it when
+   you kill it. Then, run "killall metacity; sleep 1; fvwm &" in a
+   terminal. After you have succeed to start fvwm you just have to save
+   your session (say via GNOME session logout). The next time you start
+   gnome-session, fvwm will be used (and you do not need to save the
+   session again at logout). Note that if you use gnome-smproxy, and run
+   a FvwmButtons which swallows some applications which use the old
+   session protocol these applications are restarted by gnome-session
+   and FvwmButtons at session restart which can cause trouble.
+
+   You can also use fvwm as the KDE window manager.  KDE is started by a
+   shell script called "startkde". This script start ksmserver which
+   start the window manager (kwin by default). To start fvwm you should
+   add the option "-w fvwm" to the ksmserver command line (close to the
+   end of the script). You may copy startkde to startkde_fvwm somewhere
+   in your path, edit startkde_fvwm and finally replace startkde by
+   startkde_fvwm in your X startup script (e.g., ~/.xinitrc, ~/.Xclients
+   or ~/.xsession). Note that ksmserver does not support the fvwm Restart
+   command. You should use "Restart fvwm" for restarting fvwm. But if you
+   do that it is a bad idea to save the session later. 
 
 ======================================================================
           3 - Features, Configuration, Functions & Commands
@@ -2513,7 +2556,8 @@ A: OK, 93 is a joke, we know you don't have 93 buttons, but we've
 
    Also, GNOME and KDE have desktop icon applications gmc and kfm,
    which enable this functionality.  These applications may be run
-   under FVWM.
+   under FVWM. Nautilus (version >= 2) and kdesktop may be run under
+   FVWM version 2.5.1 or better.
 
 ----------------------------------------------------------------------
 

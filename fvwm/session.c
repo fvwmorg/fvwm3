@@ -28,10 +28,8 @@
 #endif
 #include <signal.h>
 #include <fcntl.h>
-#ifdef SESSION
-#include <X11/SM/SMlib.h>
-#endif
 
+#include "libs/FSMlib.h"
 #include "libs/fvwmlib.h"
 #include "fvwm.h"
 #include "externs.h"
@@ -60,11 +58,9 @@
 /* ---------------------------- imports ------------------------------------ */
 
 extern Bool Restarting;
-#ifdef SESSION
 extern int master_pid;
 extern char **g_argv;
 extern int g_argc;
-#endif
 
 /* ---------------------------- included code files ------------------------ */
 
@@ -96,15 +92,14 @@ typedef struct _match
 
 /* ---------------------------- local variables ---------------------------- */
 
-#ifdef SESSION
 static char *previous_sm_client_id = NULL;
 static char *sm_client_id = NULL;
 static Bool sent_save_done = 0;
 static char *realStateFilename = NULL;
 static Bool goingToRestart = False;
-static IceIOErrorHandler prev_handler;
-static SmcConn sm_conn = NULL;
-#endif
+static FIceIOErrorHandler prev_handler;
+static FSmcConn sm_conn = NULL;
+
 static int num_match = 0;
 static Match *matches = NULL;
 static Bool does_file_version_match = False;
@@ -112,9 +107,7 @@ static Bool doPreserveState = True;
 
 /* ---------------------------- exported variables (globals) --------------- */
 
-#ifdef SESSION
 int sm_fd = -1;
-#endif
 
 /* ---------------------------- local functions ---------------------------- */
 
@@ -190,9 +183,12 @@ SaveGlobalState(FILE *f)
 	return 1;
 }
 
-#ifdef SESSION
 static void setRealStateFilename(char *filename)
 {
+	if (!SessionSupport)
+	{
+		return;
+	}
 	if (realStateFilename)
 	{
 		free(realStateFilename);
@@ -207,6 +203,11 @@ static char *getUniqueStateFilename(void)
 	const char *path = getenv("SM_SAVE_DIR");
 	char *filename;
 	int fd;
+
+	if (!SessionSupport)
+	{
+		return NULL;
+	}
 
 	if (!path)
 	{
@@ -243,9 +244,6 @@ static char *getUniqueStateFilename(void)
 
 	return filename;
 }
-#else
-#define setRealStateFilename(filename)
-#endif /* SESSION */
 
 static char *
 GetWindowRole(Window window)
@@ -429,12 +427,15 @@ SaveWindowStates(FILE *f)
 				/* No client id and no WM_COMMAND, the client
 				 * cannot be managed by the sessiom manager
 				 * skip it! */
-				if (wm_command)
+				if (!Restarting)
 				{
-					XFreeStringList(wm_command);
-					wm_command = NULL;
+					if (wm_command)
+					{
+						XFreeStringList(wm_command);
+						wm_command = NULL;
+					}
+					continue;
 				}
-				continue;
 			}
 		}
 
@@ -548,10 +549,9 @@ static Bool matchWin(FvwmWindow *w, Match *m)
 
 		window_role = GetWindowRole(FW_W(w));
 
-		if (window_role || m->window_role)
+		if (client_id && (window_role || m->window_role))
 		{
 			/* We have or had a window role, base decision on it */
-
 			found = xstreq(window_role, m->window_role);
 		}
 		else if (xstreq(w->class.res_name, m->res_name) &&
@@ -681,13 +681,11 @@ static int saveStateFile(char *filename)
 	fprintf(f, "# Normally, you must never delete this file,"
 		" it will be auto-deleted.\n\n");
 
-#ifdef SESSION
-	if (goingToRestart)
+	if (SessionSupport && goingToRestart)
 	{
 		fprintf(f, "[REAL_STATE_FILENAME] %s\n", realStateFilename);
 		goingToRestart = False;  /* not needed */
 	}
-#endif
 
 	success = doPreserveState?
 		SaveVersionInfo(f) && SaveWindowStates(f) && SaveGlobalState(f):
@@ -708,19 +706,21 @@ static int saveStateFile(char *filename)
 	return success;
 }
 
-#ifndef SESSION
-#define setSmProperties(a, b, c)
-#else
 static void
-setSmProperties(SmcConn sm_conn, char *filename, char hint)
+setSmProperties(FSmcConn sm_conn, char *filename, char hint)
 {
-	SmProp prop1, prop2, prop3, prop4, prop5, prop6, prop7, *props[7];
-	SmPropValue prop1val, prop2val, prop3val, prop4val, prop7val;
+	FSmProp prop1, prop2, prop3, prop4, prop5, prop6, prop7, *props[7];
+	FSmPropValue prop1val, prop2val, prop3val, prop4val, prop7val;
 	struct passwd *pwd;
 	char *user_id;
 	char screen_num[32];
 	int numVals, i, priority = 30;
 	Bool xsmDetected = False;
+
+	if (!SessionSupport)
+	{
+		return;
+	}
 
 #ifdef FVWM_SM_DEBUG_PROTO
 	fprintf(stderr, "[FVWM_SMDEBUG][setSmProperties] state filename: %s%s\n",
@@ -735,39 +735,39 @@ setSmProperties(SmcConn sm_conn, char *filename, char hint)
 	pwd = getpwuid (getuid());
 	user_id = pwd->pw_name;
 
-	prop1.name = SmProgram;
-	prop1.type = SmARRAY8;
+	prop1.name = FSmProgram;
+	prop1.type = FSmARRAY8;
 	prop1.num_vals = 1;
 	prop1.vals = &prop1val;
 	prop1val.value = g_argv[0];
 	prop1val.length = strlen (g_argv[0]);
 
-	prop2.name = SmUserID;
-	prop2.type = SmARRAY8;
+	prop2.name = FSmUserID;
+	prop2.type = FSmARRAY8;
 	prop2.num_vals = 1;
 	prop2.vals = &prop2val;
-	prop2val.value = (SmPointer) user_id;
+	prop2val.value = (FSmPointer) user_id;
 	prop2val.length = strlen (user_id);
 
-	prop3.name = SmRestartStyleHint;
-	prop3.type = SmCARD8;
+	prop3.name = FSmRestartStyleHint;
+	prop3.type = FSmCARD8;
 	prop3.num_vals = 1;
 	prop3.vals = &prop3val;
-	prop3val.value = (SmPointer) &hint;
+	prop3val.value = (FSmPointer) &hint;
 	prop3val.length = 1;
 
 	prop4.name = "_GSM_Priority";
-	prop4.type = SmCARD8;
+	prop4.type = FSmCARD8;
 	prop4.num_vals = 1;
 	prop4.vals = &prop4val;
-	prop4val.value = (SmPointer) &priority;
+	prop4val.value = (FSmPointer) &priority;
 	prop4val.length = 1;
 
 	sprintf(screen_num, "%d", (int)Scr.screen);
 
-	prop5.name = SmCloneCommand;
-	prop5.type = SmLISTofARRAY8;
-	prop5.vals = (SmPropValue *)malloc((g_argc + 2) * sizeof (SmPropValue));
+	prop5.name = FSmCloneCommand;
+	prop5.type = FSmLISTofARRAY8;
+	prop5.vals = (FSmPropValue *)malloc((g_argc + 2) * sizeof (FSmPropValue));
 	numVals = 0;
 	for (i = 0; i < g_argc; i++)
 	{
@@ -781,15 +781,15 @@ setSmProperties(SmcConn sm_conn, char *filename, char hint)
 		}
 		else if (strcmp (g_argv[i], "-s") != 0)
 		{
-			prop5.vals[numVals].value = (SmPointer) g_argv[i];
+			prop5.vals[numVals].value = (FSmPointer) g_argv[i];
 			prop5.vals[numVals++].length = strlen (g_argv[i]);
 		}
 	}
 
-	prop5.vals[numVals].value = (SmPointer) "-s";
+	prop5.vals[numVals].value = (FSmPointer) "-s";
 	prop5.vals[numVals++].length = 2;
 
-	prop5.vals[numVals].value = (SmPointer) screen_num;
+	prop5.vals[numVals].value = (FSmPointer) screen_num;
 	prop5.vals[numVals++].length = strlen (screen_num);
 
 
@@ -797,11 +797,11 @@ setSmProperties(SmcConn sm_conn, char *filename, char hint)
 
 	if (filename)
 	{
-		prop6.name = SmRestartCommand;
-		prop6.type = SmLISTofARRAY8;
+		prop6.name = FSmRestartCommand;
+		prop6.type = FSmLISTofARRAY8;
 
-		prop6.vals = (SmPropValue *)malloc(
-			(g_argc + 6) * sizeof (SmPropValue));
+		prop6.vals = (FSmPropValue *)malloc(
+			(g_argc + 6) * sizeof (FSmPropValue));
 
 		numVals = 0;
 
@@ -818,33 +818,33 @@ setSmProperties(SmcConn sm_conn, char *filename, char hint)
 			else if (strcmp (g_argv[i], "-s") != 0)
 			{
 				prop6.vals[numVals].value =
-					(SmPointer) g_argv[i];
+					(FSmPointer) g_argv[i];
 				prop6.vals[numVals++].length =
 					strlen (g_argv[i]);
 			}
 		}
 
-		prop6.vals[numVals].value = (SmPointer) "-s";
+		prop6.vals[numVals].value = (FSmPointer) "-s";
 		prop6.vals[numVals++].length = 2;
 
-		prop6.vals[numVals].value = (SmPointer) screen_num;
+		prop6.vals[numVals].value = (FSmPointer) screen_num;
 		prop6.vals[numVals++].length = strlen (screen_num);
 
-		prop6.vals[numVals].value = (SmPointer) "-clientId";
+		prop6.vals[numVals].value = (FSmPointer) "-clientId";
 		prop6.vals[numVals++].length = 9;
 
-		prop6.vals[numVals].value = (SmPointer) sm_client_id;
+		prop6.vals[numVals].value = (FSmPointer) sm_client_id;
 		prop6.vals[numVals++].length = strlen (sm_client_id);
 
-		prop6.vals[numVals].value = (SmPointer) "-restore";
+		prop6.vals[numVals].value = (FSmPointer) "-restore";
 		prop6.vals[numVals++].length = 8;
 
-		prop6.vals[numVals].value = (SmPointer) filename;
+		prop6.vals[numVals].value = (FSmPointer) filename;
 		prop6.vals[numVals++].length = strlen (filename);
 
 		prop6.num_vals = numVals;
 
-		prop7.name = SmDiscardCommand;
+		prop7.name = FSmDiscardCommand;
 
 		xsmDetected = StrEquals(getenv("SESSION_MANAGER_NAME"), "xsm");
 
@@ -857,19 +857,19 @@ setSmProperties(SmcConn sm_conn, char *filename, char hint)
 			char *discardCommand = alloca(
 				(10 + strlen(filename)) * sizeof(char));
 			sprintf (discardCommand, "rm -f '%s'", filename);
-			prop7.type = SmARRAY8;
+			prop7.type = FSmARRAY8;
 			prop7.num_vals = 1;
 			prop7.vals = &prop7val;
-			prop7val.value = (SmPointer) discardCommand;
+			prop7val.value = (FSmPointer) discardCommand;
 			prop7val.length = strlen (discardCommand);
 		}
 		else
 		{
-			prop7.type = SmLISTofARRAY8;
+			prop7.type = FSmLISTofARRAY8;
 			prop7.num_vals = 3;
 			prop7.vals =
-				(SmPropValue *) malloc (
-					3 * sizeof (SmPropValue));
+				(FSmPropValue *) malloc (
+					3 * sizeof (FSmPropValue));
 			prop7.vals[0].value = "rm";
 			prop7.vals[0].length = 2;
 			prop7.vals[1].value = "-f";
@@ -889,7 +889,7 @@ setSmProperties(SmcConn sm_conn, char *filename, char hint)
 	{
 		props[5] = &prop6;
 		props[6] = &prop7;
-		SmcSetProperties (sm_conn, 7, props);
+		FSmcSetProperties (sm_conn, 7, props);
 
 		free ((char *) prop6.vals);
 		if (!xsmDetected)
@@ -899,19 +899,24 @@ setSmProperties(SmcConn sm_conn, char *filename, char hint)
 	}
 	else
 	{
-		SmcSetProperties (sm_conn, 5, props);
+		FSmcSetProperties (sm_conn, 5, props);
 	}
 	free ((char *) prop5.vals);
 }
-#endif
 
-#ifdef SESSION
 static void
-callback_save_yourself2(SmcConn sm_conn, SmPointer client_data)
+callback_save_yourself2(FSmcConn sm_conn, FSmPointer client_data)
 {
 	Bool success = 0;
-	char *filename = getUniqueStateFilename();
+	char *filename;
 
+
+	if (!SessionSupport)
+	{
+		return;
+	}
+
+	filename = getUniqueStateFilename();
 #ifdef FVWM_SM_DEBUG_PROTO
 	fprintf(stderr, "[FVWM_SMDEBUG][callback_save_yourself2]\n");
 #endif
@@ -919,34 +924,40 @@ callback_save_yourself2(SmcConn sm_conn, SmPointer client_data)
 	success = saveStateFile(filename);
 	if (success)
 	{
-		setSmProperties(sm_conn, filename, SmRestartIfRunning);
+		setSmProperties(sm_conn, filename, FSmRestartIfRunning);
 		setRealStateFilename(filename);
 	}
 	free(filename);
 
-	SmcSaveYourselfDone (sm_conn, success);
+	FSmcSaveYourselfDone (sm_conn, success);
 	sent_save_done = 1;
 }
 
 static void
-callback_save_yourself(SmcConn sm_conn, SmPointer client_data,
+callback_save_yourself(FSmcConn sm_conn, FSmPointer client_data,
 		       int save_style, Bool shutdown, int interact_style,
 		       Bool fast)
 {
+
+	if (!SessionSupport)
+	{
+		return;
+	}
+
 #ifdef FVWM_SM_DEBUG_PROTO
 	fprintf(stderr, "[FVWM_SMDEBUG][callback_save_yourself] "
 		"(save=%d, shut=%d, intr=%d, fast=%d)\n",
 		save_style, shutdown, interact_style, fast);
 #endif
 
-	if (save_style == SmSaveGlobal)
+	if (save_style == FSmSaveGlobal)
 	{
 		/* nothing to do */
 #ifdef FVWM_SM_DEBUG_PROTO
 		fprintf(stderr, "[FVWM_SMDEBUG][callback_save_yourself] "
 		"Global Save type ... do nothing\n");
 #endif
-		SmcSaveYourselfDone (sm_conn, True);
+		FSmcSaveYourselfDone (sm_conn, True);
 		sent_save_done = 1;
 		return;
 		
@@ -955,10 +966,10 @@ callback_save_yourself(SmcConn sm_conn, SmPointer client_data,
 	fprintf(stderr, "[FVWM_SMDEBUG][callback_save_yourself] "
 		"Both or Local save type, going to phase 2 ...");
 #endif
-	if (!SmcRequestSaveYourselfPhase2(
+	if (!FSmcRequestSaveYourselfPhase2(
 		    sm_conn, callback_save_yourself2, NULL))
 	{
-		SmcSaveYourselfDone (sm_conn, False);
+		FSmcSaveYourselfDone (sm_conn, False);
 		sent_save_done = 1;
 #ifdef FVWM_SM_DEBUG_PROTO
 		fprintf(stderr, " failed!\n");
@@ -976,13 +987,22 @@ callback_save_yourself(SmcConn sm_conn, SmPointer client_data,
 }
 
 static void
-callback_die(SmcConn sm_conn, SmPointer client_data)
+callback_die(FSmcConn sm_conn, FSmPointer client_data)
 {
+
+	if (!SessionSupport)
+	{
+		return;
+	}
+
 #ifdef FVWM_SM_DEBUG_PROTO
 	fprintf(stderr, "[FVWM_SMDEBUG][callback_die]\n");
 #endif
 
-	SmcCloseConnection(sm_conn, 0, NULL);
+	if (FSmcCloseConnection(sm_conn, 0, NULL) != FSmcClosedNow)
+	{
+		/* go a head any way ? */
+	}
 	sm_fd = -1;
 
 	if (master_pid != getpid())
@@ -993,8 +1013,12 @@ callback_die(SmcConn sm_conn, SmPointer client_data)
 }
 
 static void
-callback_save_complete(SmcConn sm_conn, SmPointer client_data)
+callback_save_complete(FSmcConn sm_conn, FSmPointer client_data)
 {
+	if (!SessionSupport)
+	{
+		return;
+	}
 #ifdef FVWM_SM_DEBUG_PROTO
 	fprintf(stderr, "[FVWM_SMDEBUG][callback_save_complete]\n");
 #endif
@@ -1003,15 +1027,20 @@ callback_save_complete(SmcConn sm_conn, SmPointer client_data)
 }
 
 static void
-callback_shutdown_cancelled(SmcConn sm_conn, SmPointer client_data)
+callback_shutdown_cancelled(FSmcConn sm_conn, FSmPointer client_data)
 {
+	if (!SessionSupport)
+	{
+		return;
+	}
+
 #ifdef FVWM_SM_DEBUG_PROTO
 	fprintf(stderr, "[FVWM_SMDEBUG][callback_shutdown_cancelled]\n");
 #endif
 
 	if (!sent_save_done)
 	{
-		SmcSaveYourselfDone(sm_conn, False);
+		FSmcSaveYourselfDone(sm_conn, False);
 		sent_save_done = 1;
 	}
 
@@ -1020,8 +1049,13 @@ callback_shutdown_cancelled(SmcConn sm_conn, SmPointer client_data)
 
 /* the following is taken from xsm */
 static void
-MyIoErrorHandler(IceConn ice_conn)
+MyIoErrorHandler(FIceConn ice_conn)
 {
+	if (!SessionSupport)
+	{
+		return;
+	}
+
 	if (prev_handler)
 	{
 		(*prev_handler) (ice_conn);
@@ -1033,10 +1067,15 @@ MyIoErrorHandler(IceConn ice_conn)
 static void
 InstallIOErrorHandler(void)
 {
-	IceIOErrorHandler default_handler;
+	FIceIOErrorHandler default_handler;
 
-	prev_handler = IceSetIOErrorHandler (NULL);
-	default_handler = IceSetIOErrorHandler (MyIoErrorHandler);
+	if (!SessionSupport)
+	{
+		return;
+	}
+
+	prev_handler = FIceSetIOErrorHandler (NULL);
+	default_handler = FIceSetIOErrorHandler (MyIoErrorHandler);
 	if (prev_handler == default_handler)
 	{
 		prev_handler = NULL;
@@ -1044,7 +1083,6 @@ InstallIOErrorHandler(void)
 
 	return;
 }
-#endif
 
 /* ---------------------------- interface functions ------------------------ */
 
@@ -1073,99 +1111,96 @@ LoadGlobalState(char *filename)
 	{
 		i1 = 0; i2 = 0; i3 = 0; i4 = 0; i5 = 0; i6 = 0;
 		sscanf(s, "%4000s", s1);
-#ifdef SESSION
 		/* If we are restarting, [REAL_STATE_FILENAME] points
 		 * to the file containing the true session state. */
-		if (!strcmp(s1, "[REAL_STATE_FILENAME]"))
+		if (SessionSupport && !strcmp(s1, "[REAL_STATE_FILENAME]"))
 		{
-			/* migo: temporarily (?) moved to LoadWindowStates
-			 * (trick for gnome-session)
-			 sscanf(s, "%*s %s", s2);
-			 setSmProperties (sm_conn, s2, SmRestartIfRunning);
-			 setRealStateFilename(s2);
+			/* migo: temporarily (?) moved to
+			   LoadWindowStates (trick for gnome-session)
+			   sscanf(s, "%*s %s", s2);
+			   setFSmProperties (sm_conn, s2, FSmRestartIfRunning);
+			   setRealStateFilename(s2);
 			*/
 		}
-		else
-#endif /* SESSION */
-			if (!strcmp(s1, "[DESKTOP]"))
-			{
-				sscanf(s, "%*s %i", &i1);
-				goto_desk(i1);
-			}
-			else if (!strcmp(s1, "[VIEWPORT]"))
-			{
-				sscanf(s, "%*s %i %i %i %i", &i1, &i2, &i3,
-				       &i4);
-				/* migo: we don't want to lose DeskTopSize in
-				 * configurations, and it does not work well
-				 * anyways - Gnome is not updated
-				 Scr.VxMax = i3;
-				 Scr.VyMax = i4;
-				*/
-				MoveViewport(i1, i2, True);
-			}
+		else if (!strcmp(s1, "[DESKTOP]"))
+		{
+			sscanf(s, "%*s %i", &i1);
+			goto_desk(i1);
+		}
+		else if (!strcmp(s1, "[VIEWPORT]"))
+		{
+			sscanf(s, "%*s %i %i %i %i", &i1, &i2, &i3,
+			       &i4);
+			/* migo: we don't want to lose DeskTopSize in
+			 * configurations, and it does not work well
+			 * anyways - Gnome is not updated
+			 Scr.VxMax = i3;
+			 Scr.VyMax = i4;
+			*/
+			MoveViewport(i1, i2, True);
+		}
 #if 0
 		/* migo (08-Dec-1999): we don't want to eliminate .fvwm2rc for
 		 * now */
-			else if (/*!Restarting*/ 0)
+		else if (/*!Restarting*/ 0)
+		{
+			/* Matthias: We don't want to restore too much
+			 * state if we are restarting, since that
+			 * would make restarting useless for rereading
+			 * changed rc files. */
+			if (!strcmp(s1, "[SCROLL]"))
 			{
-				/* Matthias: We don't want to restore too much
-				 * state if we are restarting, since that
-				 * would make restarting useless for rereading
-				 * changed rc files. */
-				if (!strcmp(s1, "[SCROLL]"))
+				sscanf(s, "%*s %i %i %i %i %i %i", &i1,
+				       &i2, &i3, &i4, &i5, &i6);
+				Scr.EdgeScrollX = i1;
+				Scr.EdgeScrollY = i2;
+				Scr.ScrollResistance = i3;
+				Scr.MoveResistance = i4;
+				if (i5)
 				{
-					sscanf(s, "%*s %i %i %i %i %i %i", &i1,
-					       &i2, &i3, &i4, &i5, &i6);
-					Scr.EdgeScrollX = i1;
-					Scr.EdgeScrollY = i2;
-					Scr.ScrollResistance = i3;
-					Scr.MoveResistance = i4;
-					if (i5)
-					{
-						Scr.flags.edge_wrap_x = 1;
-					}
-					else
-					{
-						Scr.flags.edge_wrap_x = 0;
-					}
-					if (i6)
-					{
-						Scr.flags.edge_wrap_y = 1;
-					}
-					else
-					{
-						Scr.flags.edge_wrap_y = 0;
-					}
+					Scr.flags.edge_wrap_x = 1;
 				}
-				else if (!strcmp(s1, "[SNAP]"))
+				else
 				{
-					sscanf(s, "%*s %i %i %i %i", &i1, &i2,
-					       &i3, &i4);
-					Scr.SnapAttraction = i1;
-					Scr.SnapMode = i2;
-					Scr.SnapGridX = i3;
-					Scr.SnapGridY = i4;
+					Scr.flags.edge_wrap_x = 0;
 				}
-				else if (!strcmp(s1, "[MISC]"))
+				if (i6)
 				{
-					sscanf(s, "%*s %i %i %i", &i1, &i2,
-					       &i3);
-					Scr.ClickTime = i1;
-					Scr.ColormapFocus = i2;
-					Scr.ColorLimit = i3;
+					Scr.flags.edge_wrap_y = 1;
 				}
-				else if (!strcmp(s1, "[STYLE]"))
+				else
 				{
-					sscanf(s, "%*s %i %i", &i1, &i2);
-					Scr.gs.EmulateMWM = i1;
-					Scr.gs.EmulateWIN = i2;
+					Scr.flags.edge_wrap_y = 0;
 				}
 			}
+			else if (!strcmp(s1, "[SNAP]"))
+			{
+				sscanf(s, "%*s %i %i %i %i", &i1, &i2,
+				       &i3, &i4);
+				Scr.SnapAttraction = i1;
+				Scr.SnapMode = i2;
+				Scr.SnapGridX = i3;
+				Scr.SnapGridY = i4;
+			}
+			else if (!strcmp(s1, "[MISC]"))
+			{
+				sscanf(s, "%*s %i %i %i", &i1, &i2,
+				       &i3);
+				Scr.ClickTime = i1;
+				Scr.ColormapFocus = i2;
+				Scr.ColorLimit = i3;
+			}
+			else if (!strcmp(s1, "[STYLE]"))
+			{
+				sscanf(s, "%*s %i %i", &i1, &i2);
+				Scr.gs.EmulateMWM = i1;
+				Scr.gs.EmulateWIN = i2;
+			}
+		}
 #endif
 	}
 	fclose(f);
-
+	
 	return;
 }
 
@@ -1214,15 +1249,11 @@ LoadWindowStates(char *filename)
 	{
 		n = 0;
 		sscanf(s, "%4000s%n", s1, &n);
-		/* migo: temporarily */
-		if (
-#ifndef SESSION
-			0 &&
-#endif /* SESSION */
-			!strcmp(s1, "[REAL_STATE_FILENAME]"))
+		if (!SessionSupport /* migo: temporarily */ &&
+		    !strcmp(s1, "[REAL_STATE_FILENAME]"))
 		{
 			sscanf(s, "%*s %s", s1);
-			setSmProperties (sm_conn, s1, SmRestartIfRunning);
+			setSmProperties (sm_conn, s1, FSmRestartIfRunning);
 			setRealStateFilename(s1);
 		}
 		else if (!strcmp(s1, "[CLIENT]"))
@@ -1538,13 +1569,13 @@ void
 RestartInSession (char *filename, Bool isNative, Bool _doPreserveState)
 {
 	doPreserveState = _doPreserveState;
-#ifdef SESSION
-	if (sm_conn && isNative)
+
+	if (SessionSupport && sm_conn && isNative)
 	{
 		goingToRestart = True;
 
 		saveStateFile(filename);
-		setSmProperties(sm_conn, filename, SmRestartImmediately);
+		setSmProperties(sm_conn, filename, FSmRestartImmediately);
 
 		MoveViewport(0, 0, False);
 		Reborder();
@@ -1552,7 +1583,10 @@ RestartInSession (char *filename, Bool isNative, Bool _doPreserveState)
 		CloseICCCM2();
 		XCloseDisplay(dpy);
 
-		SmcCloseConnection(sm_conn, 0, NULL);
+		if (!FSmcCloseConnection(sm_conn, 0, NULL) != FSmcClosedNow)
+		{
+			/* go a head any way ? */
+		}
 
 #ifdef  FVWM_SM_DEBUG_PROTO
 		fprintf(stderr, "[FVWM_SMDEBUG]: Exiting, now SM must "
@@ -1563,16 +1597,19 @@ RestartInSession (char *filename, Bool isNative, Bool _doPreserveState)
 
 		exit(0); /* let the SM restart us */
 	}
-#endif
+
 	saveStateFile(filename);
 	/* return and let Done restart us */
 
 	return;
 }
 
-#ifdef SESSION
 void SetClientID(char *client_id)
 {
+	if (!SessionSupport)
+	{
+		return;
+	}
 	previous_sm_client_id = client_id;
 
 	return;
@@ -1582,9 +1619,18 @@ void
 SessionInit(void)
 {
 	char error_string_ret[4096] = "";
-	static SmPointer context;
-	SmcCallbacks callbacks;
+	FSmPointer context;
+	FSmcCallbacks callbacks;
 
+	if (!SessionSupport)
+	{
+		/* -Wall fixes */
+		MyIoErrorHandler(NULL);
+		callback_save_yourself2(NULL, NULL);
+		return;
+	}
+
+	context = NULL;
 	InstallIOErrorHandler();
 
 	callbacks.save_yourself.callback = callback_save_yourself;
@@ -1594,11 +1640,11 @@ SessionInit(void)
 	callbacks.save_yourself.client_data =
 		callbacks.die.client_data =
 		callbacks.save_complete.client_data =
-		callbacks.shutdown_cancelled.client_data = (SmPointer) NULL;
-	sm_conn = SmcOpenConnection(
-		NULL, &context, SmProtoMajor, SmProtoMinor,
-		SmcSaveYourselfProcMask | SmcDieProcMask |
-		SmcSaveCompleteProcMask | SmcShutdownCancelledProcMask,
+		callbacks.shutdown_cancelled.client_data = (FSmPointer) NULL;
+	sm_conn = FSmcOpenConnection(
+		NULL, &context, FSmProtoMajor, FSmProtoMinor,
+		FSmcSaveYourselfProcMask | FSmcDieProcMask |
+		FSmcSaveCompleteProcMask | FSmcShutdownCancelledProcMask,
 		&callbacks, previous_sm_client_id, &sm_client_id, 4096,
 		error_string_ret);
 	if (!sm_conn)
@@ -1620,7 +1666,7 @@ SessionInit(void)
 	}
 	else
 	{
-		sm_fd = IceConnectionNumber(SmcGetIceConnection(sm_conn));
+		sm_fd = FIceConnectionNumber(FSmcGetIceConnection(sm_conn));
 #ifdef FVWM_SM_DEBUG_PROTO
 		fprintf(stderr,"[FVWM_SMDEBUG] Connectecd to a SM\n");
 #endif
@@ -1629,7 +1675,7 @@ SessionInit(void)
 		setInitFunctionName(2, "SessionExitFunction");
 		/* basically to restet our restart style hint after a
 		 * restart */ 
-		setSmProperties(sm_conn, NULL, SmRestartIfRunning);
+		setSmProperties(sm_conn, NULL, FSmRestartIfRunning);
 	}
 
 	return;
@@ -1638,7 +1684,12 @@ SessionInit(void)
 void
 ProcessICEMsgs(void)
 {
-	IceProcessMessagesStatus status;
+	FIceProcessMessagesStatus status;
+
+	if (!SessionSupport)
+	{
+		return;
+	}
 
 #ifdef FVWM_SM_DEBUG_PROTO
 	fprintf(stderr,"[FVWM_SMDEBUG][ProcessICEMsgs] %i\n", (int)sm_fd);
@@ -1647,8 +1698,8 @@ ProcessICEMsgs(void)
 	{
 		return;
 	}
-	status = IceProcessMessages(SmcGetIceConnection(sm_conn), NULL, NULL);
-	if (status == IceProcessMessagesIOError)
+	status = FIceProcessMessages(FSmcGetIceConnection(sm_conn), NULL, NULL);
+	if (status == FIceProcessMessagesIOError)
 	{
 		fvwm_msg(ERR, "ProcessICEMSGS",
 			 "Connection to session manager lost\n");
@@ -1672,6 +1723,11 @@ int getSmPid(void)
 	const char *smPidStrPtr;
 	int smPid = 0;
 
+	if (!SessionSupport)
+	{
+		return 0;
+	}
+
 	if (!sessionManagerVar)
 	{
 		return 0;
@@ -1692,21 +1748,23 @@ int getSmPid(void)
 
 	return smPid;
 }
-#endif
 
 /*
  * quitSession - hopefully shutdowns the session
  */
 Bool quitSession(void)
 {
-#ifdef SESSION
+	if (!SessionSupport)
+	{
+		return False;
+	}
 	if (!sm_conn)
 	{
 		return False;
 	}
 
-	SmcRequestSaveYourself(
-		sm_conn, SmSaveLocal, True /* shutdown */, SmInteractStyleAny,
+	FSmcRequestSaveYourself(
+		sm_conn, FSmSaveLocal, True /* shutdown */, FSmInteractStyleAny,
 		False /* fast */, True /* global */);
 	return True;
 
@@ -1717,9 +1775,6 @@ Bool quitSession(void)
 	  if (!smPid) return False;
 	  return kill(smPid, SIGTERM) == 0? True: False;
 	*/
-#else
-	return False;
-#endif
 }
 
 /*
@@ -1727,14 +1782,17 @@ Bool quitSession(void)
  */
 Bool saveSession(void)
 {
-#ifdef SESSION
+	if (!SessionSupport)
+	{
+		return False;
+	}
 	if (!sm_conn)
 	{
 		return False;
 	}
 
-	SmcRequestSaveYourself(
-		sm_conn, SmSaveBoth, False /* shutdown */, SmInteractStyleAny,
+	FSmcRequestSaveYourself(
+		sm_conn, FSmSaveBoth, False /* shutdown */, FSmInteractStyleAny,
 		False /* fast */, True /* global */);
 	return True;
 
@@ -1745,9 +1803,6 @@ Bool saveSession(void)
 	  if (!smPid) return False;
 	  return kill(smPid, SIGUSR1) == 0? True: False;
 	*/
-#else
-	return False;
-#endif
 }
 
 /*
@@ -1755,14 +1810,18 @@ Bool saveSession(void)
  */
 Bool saveQuitSession(void)
 {
-#ifdef SESSION
+	if (!SessionSupport)
+	{
+		return False;
+	}
+
 	if (!sm_conn)
 	{
 		return False;
 	}
 
-	SmcRequestSaveYourself(
-		sm_conn, SmSaveBoth, True /* shutdown */, SmInteractStyleAny,
+	FSmcRequestSaveYourself(
+		sm_conn, FSmSaveBoth, True /* shutdown */, FSmInteractStyleAny,
 		False /* fast */, True /* global */);
 	return True;
 
@@ -1774,9 +1833,6 @@ Bool saveQuitSession(void)
 	  if (quitSession() == False) return False;
 	  return True;
 	*/
-#else
-	return False;
-#endif
 }
 
 /* ---------------------------- builtin commands --------------------------- */

@@ -57,7 +57,6 @@ Bool MatchWinToSM(
 	FvwmWindow *ewin, mwtsm_state_args *ret_state_args,
 	initial_window_options_t *win_opts);
 
-#ifdef SESSION
 void SetClientID(char *client_id);
 
 /*
@@ -77,15 +76,6 @@ extern int sm_fd;
 **  from the main event loop when there is input waiting sm_fd.
 */
 void ProcessICEMsgs(void);
-
-#else
-
-#define sm_fd -1
-#define ProcessICEMsgs()
-#define SessionInit()
-#define SetClientID(client_id)
-
-#endif
 
 /*
  * Fvwm Function implementation

@@ -1055,7 +1055,7 @@ static void ParseButton(button_info **uberb,char *s)
 	    if (p)
 	    {
 	      if(!(buttonSwallow(b)&b_UseOld))
-		SendText(fd,p,0);
+		exec_swallow(p,b);
 	      if (b->spawn)
 		free(b->spawn);
 	      b->spawn=o;  /* Might be needed if respawning sometime */

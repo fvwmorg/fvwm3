@@ -34,6 +34,13 @@ AddToFunc UrgencyFunc
 + I WarpToWindow 5p 5p
 AddToFunc UrgencyDoneFunc I Nop
 
+# Needed by modules which use session management
+# FSMExecFuncWithSessionManagment "module_sm_env" "action" "orig_sm_env"
+AddToFunc FSMExecFuncWithSessionManagment
++ I Setenv SESSION_MANAGER $0
++ I $1
++ I Setenv SESSION_MANAGER $2
+
 # Default styles
 Style * LowerTransient, RaiseTransient, StackTransientParent
 Style * TileCascadePlacement, Title, MouseFocus

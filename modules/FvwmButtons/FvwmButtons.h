@@ -225,6 +225,7 @@ char *mymalloc(int);
 void handle_xinerama_string(char *args);
 int LoadIconFile(const char *s, FvwmPicture **p, int cset);
 void SetTransparentBackground(button_info *ub,int w,int h);
+void exec_swallow(char *action, button_info *b);
 
 /* ----------------------------- global variables -------------------------- */
 

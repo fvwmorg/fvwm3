@@ -1,3 +1,18 @@
+2003-08-07  olicha  <olivier.chapuis@free.fr>
+
+	* FvwmButtons/FvwmButtons.h:
+	* FvwmButtons/parse.c (ParseButton):
+	* FvwmButtons/FvwmButtons.c (DeadPipeCleanup):
+	(My_FNextEvent):
+	(swallow):
+	(exec_swallow):
+	(Loop):
+	(SpawnSome):
+	Used the new fsm lib to make FvwmButtons as a session manager for
+	its swallowed apps when fvwm is runned under a session manager and
+	FvwmButtons swallow some applications. This fixes swallowed apps
+	multiplication after every save session/session restart.
+	
 2003-07-06  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* FvwmConsole/FvwmConsoleC.c (sclose):

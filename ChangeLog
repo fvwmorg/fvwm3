@@ -1,3 +1,24 @@
+2003-08-07  olicha  <olivier.chapuis@free.fr>
+
+	* libs/Makefile.am:
+	* libs/FSMlib.h (new file):
+	* fvwm/session.c (*):
+	* fvwm/session.h:
+	fvwmize SMlib and ICElib
+
+	* fvwm/session.c (matchWin): 
+	Fixed window matching for windows with no SM_CLIENT_ID and a
+	window_role
+
+	* libs/fsm.c (new file):
+	* libs/fsm.h (new file):
+	* fvwm/ConfigFvwmDefaults
+	A set of functions for implementing a dummy session manager
+
+	* fvwm/fvwm.1.in:
+	GNOME 1 hints and EWHM support is not a configure time option
+	(anymore).
+
 2003-08-06  Robert Wittek  <r.wittek@gmx.net>
 
 	* fvwm/add_window.c (AddWindow):

@@ -62,6 +62,7 @@
 #include "libs/Colorset.h"
 #include "libs/vpacket.h"
 #include "libs/FRender.h"
+#include "libs/fsm.h"
 
 #include "FvwmButtons.h"
 #include "misc.h" /* ConstrainSize() */
@@ -290,6 +291,7 @@ static void DeadPipeCleanup(void)
 		    MX_PROPERTY_CHANGE_SWALLOW, 0, swin);
 	    SendText(fd,cmd,0);
 	  }
+	  fsm_proxy(Dpy,swin,NULL);
 	  XReparentWindow(Dpy,swin,Root,b->x,b->y);
 	  XMoveWindow(Dpy,swin,b->x,b->y);
 	  XResizeWindow(Dpy,swin,b->w,b->h);
@@ -309,6 +311,7 @@ static void DeadPipeCleanup(void)
   XSync(Dpy, 0);
   MyXUngrabServer(Dpy); /* We're through */
 
+  fsm_close();
   /* Hey, we have to free the pictures too! */
   button=-1;
   ub=UberButton;
@@ -1399,7 +1402,7 @@ void Loop(void)
 		      UberButton->c->back);
 	      if (p)
 	      {
-		SendText(fd, p, 0);
+		exec_swallow(p, b);
 		free(p);
 	      }
 	      RedrawButton(b, DRAW_CLEAN, NULL); /* ? */
@@ -2121,53 +2124,80 @@ void DebugEvents(XEvent *event)
 **/
 int My_FNextEvent(Display *Dpy, XEvent *event)
 {
-  fd_set in_fdset;
-  static int miss_counter = 0;
+	fd_set in_fdset;
+	static int miss_counter = 0;
+	static Bool fsm_pending = False;
+	struct timeval tv;
 
-  if(FPending(Dpy))
-  {
-    FNextEvent(Dpy,event);
+	if(FPending(Dpy))
+	{
+		FNextEvent(Dpy,event);
 #ifdef DEBUG_EVENTS
-    DebugEvents(event);
+		DebugEvents(event);
 #endif
-    return 1;
-  }
+		return 1;
+	}
 
-  FD_ZERO(&in_fdset);
-  FD_SET(x_fd,&in_fdset);
-  FD_SET(fd[1],&in_fdset);
+	FD_ZERO(&in_fdset);
+	FD_SET(x_fd,&in_fdset);
+	FD_SET(fd[1],&in_fdset);
+	fsm_fdset(&in_fdset);
 
-  if (fvwmSelect(fd_width,SELECT_FD_SET_CAST &in_fdset, 0, 0, NULL) > 0)
-  {
+	if (fsm_pending)
+	{
+		tv.tv_sec  = 0;
+		tv.tv_usec = 10000; /* 10 ms */
+	}
 
-    if(FD_ISSET(x_fd, &in_fdset))
-    {
-      if(FPending(Dpy))
-      {
-	FNextEvent(Dpy,event);
-	miss_counter = 0;
+	if (fvwmSelect(
+		    fd_width, SELECT_FD_SET_CAST &in_fdset, 0, 0,
+		    (fsm_pending)? &tv:NULL) > 0)
+	{
+		if(FD_ISSET(x_fd, &in_fdset))
+		{
+			if(FPending(Dpy))
+			{
+				FNextEvent(Dpy,event);
+				miss_counter = 0;
 #ifdef DEBUG_EVENTS
-	DebugEvents(event);
+				DebugEvents(event);
 #endif
-	return 1;
-      }
-      else
-	miss_counter++;
-      if(miss_counter > 100)
-	DeadPipe(0);
-    }
+				return 1;
+			}
+			else
+			{
+				miss_counter++;
+			}
+			if(miss_counter > 100)
+			{
+				DeadPipe(0);
+			}
+		}
 
-    if(FD_ISSET(fd[1], &in_fdset))
-    {
-      FvwmPacket* packet = ReadFvwmPacket(fd[1]);
-      if ( packet == NULL )
-	DeadPipe(0);
-      else
-	process_message( packet->type, packet->body );
-    }
+		if(FD_ISSET(fd[1], &in_fdset))
+		{
+			FvwmPacket* packet = ReadFvwmPacket(fd[1]);
+			if ( packet == NULL )
+			{
+				DeadPipe(0);
+			}
+			else
+			{
+				process_message( packet->type, packet->body );
+			}
+		}
 
-  }
-  return 0;
+		fsm_pending = fsm_process(&in_fdset);
+
+	}
+	else
+	{
+		if (fsm_pending)
+		{
+			fsm_pending = fsm_process(&in_fdset);
+		}
+	}
+	return 0;
 }
 
 /**
@@ -2199,7 +2229,7 @@ void SpawnSome(void)
 		UberButton->c->back);
 	if (p)
 	{
-	  SendText(fd, p, 0);
+	  exec_swallow(p, b);
 	  free(p);
 	}
       }
@@ -2943,7 +2973,9 @@ void swallow(unsigned long *body)
 	    }
 	  }
 	}
+	XUnmapWindow(Dpy,swin);
 	XReparentWindow(Dpy,swin,MyWindow,-32768,-32768);
+	fsm_proxy(Dpy, swin, getenv("SESSION_MANAGER"));
 	XSync(Dpy, 0);
 	MyXUngrabServer(Dpy);
 	XSync(Dpy, 0);
@@ -3016,4 +3048,56 @@ void swallow(unsigned long *body)
       break;
     }
   }
+}
+
+
+void exec_swallow(char *action, button_info *b)
+{
+	static char *my_sm_env = NULL;
+	static char *orig_sm_env = NULL;
+	static int len = 0;
+	static Bool sm_initialized = False;
+	static Bool session_manager = False; 
+	char *cmd;
+
+	if (!action)
+	{
+		return;
+	}
+
+	if (!sm_initialized)
+	{
+		/* use sm only when needed */
+		sm_initialized = True;
+		orig_sm_env = getenv("SESSION_MANAGER");
+		if (orig_sm_env && !StrEquals("", orig_sm_env))
+		{
+			/* this set the new SESSION_MANAGER env */
+			session_manager = fsm_init(MyName);
+		}
+		else
+		{
+			fprintf(stderr, "No Session Manager");
+		}
+	}
+
+	if (!session_manager /*|| (buttonSwallow(b)&b_NoClose)*/)
+	{
+		SendText(fd, action, 0);
+		return;
+	}
+
+	if (my_sm_env == NULL)
+	{
+		my_sm_env = getenv("SESSION_MANAGER");
+		len = 45 + strlen(my_sm_env) + strlen(orig_sm_env);
+	}
+
+	cmd = safemalloc(len + strlen(action)); 
+	sprintf(
+		cmd,
+		"FSMExecFuncWithSessionManagment \"%s\" \"%s\" \"%s\"",
+		my_sm_env, action, orig_sm_env);
+	SendText(fd, cmd, 0);
+	free (cmd);
 }

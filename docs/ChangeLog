@@ -1,3 +1,13 @@
+2003-08-07  olicha  <olivier.chapuis@free.fr>
+
+	* FAQ (Q 2.8):
+	New Q/A  "How can I use FVWM with GNOME version >= 2 or KDE 
+	version >= 2?"
+	(Q 2.7):
+	GNOME --> GNOME (version <= 1).
+	(Q 7.13):
+	Mention also nautilus and kdesktop
+
 2003-07-07  Mikhael Goikhman  <migo@homemail.com>
 
 	* COMMANDS:
