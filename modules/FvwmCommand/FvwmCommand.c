@@ -39,6 +39,7 @@ static fd_set fdset;
 static struct timeval Tv;
 static int  Opt_reply; /* wait for replay */
 static int  Opt_monitor;
+static int  Opt_stdin;
 static int  Opt_info;
 static int  Opt_Serv;
 static int  Opt_flags;
@@ -147,6 +148,7 @@ int main ( int argc, char *argv[])
   f_stem = NULL;
   sf_stem = NULL;
   Opt_monitor = 0;
+  Opt_stdin = 0;
   Opt_Serv = 0;
   Opt_flags = 2;
   Tv.tv_sec = 0;
@@ -155,7 +157,7 @@ int main ( int argc, char *argv[])
   Bg = 0;
 
 
-  while( (opt = getopt( argc, argv, "S:hvF:f:w:i:rm" )) != EOF )
+  while( (opt = getopt( argc, argv, "S:hvF:f:w:i:rmc" )) != EOF )
   {
     switch(opt)
     {
@@ -188,6 +190,9 @@ int main ( int argc, char *argv[])
       break;
     case 'r':
       Opt_reply = 1;
+      break;
+    case 'c':
+      Opt_stdin = 1;
       break;
     case '?':
       exit(3);
@@ -287,7 +292,16 @@ int main ( int argc, char *argv[])
   }
 
   i = optind;
-  if( Opt_monitor )
+
+  if (Opt_stdin)
+  {
+    while (fgets(cmd, MAX_MODULE_INPUT_TEXT_LEN - 1, stdin))
+    {
+      sendit(cmd);
+    }
+  }
+
+  else if( Opt_monitor )
   {
 
     /* test if its stdin is closed for coprocess */
@@ -478,9 +492,8 @@ void usage(void)
   fprintf (stderr, "Usage: %s [OPTION] [COMMAND]...\n", MYNAME);
   fprintf (stderr, "Send commands to fvwm via %sS\n\n", MYNAME);
   fprintf (stderr,
-	   "  -F <flag info>      0 - no flag info\n");
-  fprintf (stderr,
-	   "                      2 - full flag info (default)\n");
+	   "  -c                  read and send commands from stdin\n"
+	   "                      The COMMAND if any is ignored.\n");
   fprintf (stderr,
 	   "  -S <file name>      "
 	   "invoke another %s server with fifo <file name>\n",
@@ -498,6 +511,10 @@ void usage(void)
 	   "                      3 - above and dynamic info\n" );
   fprintf (stderr,
 	   "                     -1 - none (default, much faster)\n" );
+  fprintf (stderr,
+	   "  -F <flag info>      0 - no flag info\n");
+  fprintf (stderr,
+	   "                      2 - full flag info (default)\n");
   fprintf (stderr,
 	   "  -m                  monitor fvwm message transaction\n");
   fprintf (stderr,

@@ -20,7 +20,7 @@
 FvwmCommand \- FVWM command external interface
 
 .SH SYNOPSIS
-FvwmCommand [-mrvw] [-S name] [-i level] [-f name] [-F level] [command...]
+FvwmCommand [-cmrvw] [-S name] [-i level] [-f name] [-F level] [command...]
 
 .SH DESCRIPTION
 
@@ -54,6 +54,15 @@ FvwmCommand  'popup Utilities'
 .EE
 
 .SH OPTIONS
+.IP "\fI-c\fR" 0.4i
+Informs FvwmCommand to read multiple commands from the standard input
+instead of the one command specified in the command line arguments.
+This disables \fI-m\fR or \fI-i\fR.
+.sp
+.EX
+(echo "Exec xload"; echo "Beep") | FvwmCommand -c
+.EE
+
 .IP "\fI-F <level>\fR" 0.4i
 Specifies the level of fvwm window flags FvwmCommand outputs.
 .sp
