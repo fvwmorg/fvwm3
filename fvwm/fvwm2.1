@@ -1085,11 +1085,11 @@ AddToFunc MakeJpgMenu
   do echo AddToMenu JpgMenu "`basename $i`" Exec xv $i; done'
 .EE
 The keyword
-.I MissingSubmenuFunc
+.I MissingSubmenuFunction
 has a similar meaning.  It is executed whenever you try to pop up a
 sub-menu that does not exist.  With this function you can define and
-destroy menus on the fly.  You can use any command after the key
-word, but the name of a function defined with
+destroy menus on the fly.  You can use any command after the keyword,
+but the name of a function defined with
 .B AddToFunc
 follows it, fvwm executes this command:
 .EX
@@ -1110,7 +1110,7 @@ AddToFunc MakeMissingDirectoryMenu
 + I Exec fvwm_make_directory_menu.sh $0
 
 AddToMenu SomeMenu
-+ MissingSumbenuFunc MakeMissing DirectoryMenu
++ MissingSubmenuFunction MakeMissingDirectoryMenu
 + "Root directory" Popup /
 .EE
 This is another implementation of the file browser that uses sub-menus
@@ -2237,7 +2237,7 @@ The
 option affects the
 .I DynamicPopupAction
 and
-.I MissingSubmenuFunc
+.I MissingSubmenuFunction
 options of the
 .B AddToMenu
 command.  If this option is set to "False", then the busy cursor is
