@@ -1,5 +1,9 @@
 2002-02-11  olicha  <olivier.chapuis@free.fr>
 
+	* INSTALL.fvwm: 
+	* NEWS:
+	Multibyte news. Document --disable-compound-text and --disable-ewmh.
+
 	* libs/Flocale.h:
 	Added more documentation and change the MB_FALLBACK_FONT to
 	"-*-fixed-medium-r-semicondensed-*-13-*,-*-fixed-medium-r-normal-*-14-*,

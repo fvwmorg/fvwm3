@@ -14,6 +14,15 @@ Changes in beta release 2.5.1 (not released yet)
 
 * New flags (No)FvwmModule to FvwmButtons Swallow option
 
+* The I18N_MB patch (--enable-multibyte) has been rewritten. MULTIBYTE
+is used in the place of I18N_MB. A set of locale functions (locale
+initialization, font loading, text drawing, ...etc.) can be found in
+libs/Flocale.{c,h} and is used in all the fvwm code (but the FvwmWharf).
+Font loading and memory management has been improved in the multibyte case.
+
+* Better support of non ISO-8859-1 window and icon titles. See the
+--disable-compound-text option in INSTALL.fvwm for more details.
+
 Changes in beta release 2.5.0 (27-Jan-2002)
 
 * New commands ResizeMaximize and ResizeMoveMaximize that modify
