@@ -36,7 +36,7 @@
 
 /* ---------------------------- local definitions and macro ------------------ */
 
-#define PICTURE_DEBUG_COLORS_ALLOC_FAILURE 1
+#define PICTURE_DEBUG_COLORS_ALLOC_FAILURE 0
 #define PICTURE_DEBUG_COLORS_PRINT_CMAP    0
 #define PICTURE_DEBUG_COLORS_INFO          1
 

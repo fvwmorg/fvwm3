@@ -1215,6 +1215,7 @@ static void usage(void)
 		" [-restore file]"
 		" [-visualId id]"
 		" [-visual class]"
+		" [-color-limit]"
 		"\n\n",g_argv[0]);
 	exit(1);
 }
@@ -1805,6 +1806,15 @@ int main(int argc, char **argv)
 			{
 				usage();
 			}
+		}
+		else if (StrEquals(argv[i], "-color-limit") ||
+			 StrEquals(argv[i], "--color-limit"))
+		{
+			if (++i >= argc)
+			{
+				usage();
+			}
+			CopyString(&opt_color_limit,argv[i]); 
 		}
 		else if (StrEquals(argv[i], "-version") ||
 			 StrEquals(argv[i], "--version"))
