@@ -300,10 +300,10 @@ static int ParseOneResizeArgument(
       {
 	if (suffix == 2)
 	{
-	  /* account for base width */
+	  /* account for base width and border size */
 	  *ret_size += base_size;
+	  *ret_size += add_size;
 	}
-	*ret_size += add_size;
       }
     }
   }
