@@ -5135,7 +5135,8 @@ static mloop_ret_code_t __mloop_get_mi_actions(
 	}
 	else if (med->mi && MI_IS_POPUP(med->mi))
 	{
-		if ((*pmp->pexc)->x.elast->type == ButtonPress && is_double_click(
+		if ((*pmp->pexc)->x.elast->type == ButtonPress &&
+		    is_double_click(
 			    msi->t0, med->mi, pmp, pmret, pdkp,
 			    in->mif.has_mouse_moved))
 		{
@@ -6003,11 +6004,11 @@ static void menu_tear_off(MenuRoot *mr_to_copy)
 	menuclasshints.res_class = safestrdup("fvwm_menu");
 	for (t = menuclasshints.res_name; t != NULL && *t != 0; t++)
 	{
-	  /* replace tabs in the title with spaces */
-	  if (*t == '\t')
-	  {
-	    *t = ' ';
-	  }
+		/* replace tabs in the title with spaces */
+		if (*t == '\t')
+		{
+			*t = ' ';
+		}
 	}
 	list[0] = menuclasshints.res_name;
 	menunametext.value = NULL;
@@ -6176,7 +6177,7 @@ void do_menu(MenuParameters *pmp, MenuReturn *pmret)
 		x = 0;
 		y = 0;
 	}
-	/* Save these-- we want to warp back here if this is a top level
+	/* Save these - we want to warp back here if this is a top level
 	 * menu brought up by a keystroke */
 	if (!pmp->flags.is_submenu)
 	{
@@ -6625,7 +6626,7 @@ Bool DestroyMenu(MenuRoot *mr, Bool do_recreate, Bool is_command_request)
 	    (is_command_request || MR_COPIES(mr) == 1))
 	{
 		/* can't destroy a menu while in use */
-		fvwm_msg(ERR,"DestroyMenu", "Menu %s is in use", MR_NAME(mr));
+		fvwm_msg(ERR, "DestroyMenu", "Menu %s is in use", MR_NAME(mr));
 		return False;
 	}
 
