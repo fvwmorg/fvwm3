@@ -14,7 +14,7 @@ fvwm2_SOURCES = add_window.c bindings.h bindings.c borders.c builtins.c	     \
 	gnome.c gsfr.h icccm2.c icons.c icons.h menus.c menus.h misc.c	     \
 	misc.h modconf.c module.c module.h move.c parse.h placement.c read.c \
 	repeat.h repeat.c resize.c screen.h session.c session.h style.c	     \
-	style.h virtual.c windowlist.c
+	style.h virtual.c vpacket.h windowlist.c
 
 fvwm2_DEPENDENCIES = $(top_builddir)/libs/libfvwm.a
 

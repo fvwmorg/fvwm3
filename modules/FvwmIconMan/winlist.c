@@ -188,7 +188,7 @@ WinData *new_windata (void)
   new->button = NULL;
   new->state = 0;
   new->complete = 0;
-  new->fvwm_flags = 0;
+  memset(&(new->flags), '\0', sizeof(new->flags));
 #ifdef MINI_ICONS
   new->pic.picture = 0;
 #endif

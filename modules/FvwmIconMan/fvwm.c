@@ -4,7 +4,6 @@
 #include "x.h"
 #include "xmanager.h"
 
-#include <fvwm/fvwm.h>
 #include <fvwm/module.h>
 
 static char const rcsid[] =
@@ -27,7 +26,7 @@ typedef struct {
   Ulong width;
   Ulong height;
   Ulong desknum;
-  Ulong windows_flags;
+  window_flags flags;
   Ulong window_title_height;
   Ulong window_border_width;
   Ulong window_base_width;
@@ -102,7 +101,7 @@ static int count_nonsticky_in_hashtab (void *arg)
   WinData *win = (WinData *)arg;
   WinManager *man = the_manager;
 
-  if (!(win->fvwm_flags & STICKY) && win->complete && win->manager == man)
+  if (!(IS_STICKY(win)) && win->complete && win->manager == man)
     return 1;
   return 0;
 }
@@ -162,12 +161,12 @@ int win_in_viewport (WinData *win)
     break;
 
   case SHOW_DESKTOP:
-    if ((win->fvwm_flags & STICKY) || win->desknum == globals.desknum)
+    if ((IS_STICKY(win)) || win->desknum == globals.desknum)
       flag = 1;
     break;
 
   case SHOW_PAGE:
-    if (win->fvwm_flags & STICKY) {
+    if (IS_STICKY(win)) {
       flag = 1;
     } else if (win->desknum == globals.desknum) {
       /* win and screen intersect if they are not disjoint in x and y */
@@ -201,7 +200,7 @@ static void set_win_configuration (WinData *win, FvwmPacketBody *body)
   win->width = body->add_config_data.width;
   win->height = body->add_config_data.height;
   win->geometry_set = 1;
-  win->fvwm_flags = body->add_config_data.windows_flags;
+  memcpy(&(win->flags), &(body->add_config_data.flags), sizeof(win->flags));
 }
 
 static void configure_window (FvwmPacketBody *body)
@@ -343,7 +342,8 @@ static void new_window (FvwmPacketBody *body)
   WinData *win;
 
   win = new_windata();
-  if (!(body->add_config_data.windows_flags & TRANSIENT)) {
+  memcpy(&(win->flags), &(body->add_config_data.flags), sizeof(win->flags));
+  if (!(IS_TRANSIENT(win))) {
     win->app_id = body->add_config_data.app_id;
     win->app_id_set = 1;
     set_win_configuration (win, body);
@@ -351,7 +351,10 @@ static void new_window (FvwmPacketBody *body)
     insert_win_hashtab (win);
     check_win_complete (win);
     check_in_window (win);
-  }
+    }  else  {
+    free(win);
+    }
+
 }
 
 static void destroy_window (FvwmPacketBody *body)

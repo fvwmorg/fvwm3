@@ -1,3 +1,12 @@
+1999-04-19  Bob Woodside  <proteus@pcnet.com>
+
+	* modules/FvwmIconMan/FvwmIconMan.h: GSFR.
+	* modules/FvwmIconMan/fvwm.c: Ibid.
+	* modules/FvwmIconMan/winlist.c: Ibid.
+	* modules/FvwmIconMan/xmanager.c: Ibid.
+
+	* fvwm/Makefile.am: Added vpacket.h.
+
 1999-04-19  Hippo
 
 	* fvwm/module.c,modconf.c Replaced M_NEW_LOOK packet with config line:

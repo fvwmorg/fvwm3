@@ -21,6 +21,8 @@
 #endif
 
 #include "debug.h"
+#include "fvwm/fvwm.h"
+#include "fvwm/vpacket.h"
 
 #ifndef DEFAULT_ACTION
 #define DEFAULT_ACTION "Iconify"
@@ -175,7 +177,8 @@ typedef struct win_data {
   Ulong desknum;
   long x, y, width, height;
   Ulong app_id;
-  Ulong fvwm_flags;
+/*  Ulong fvwm_flags; */
+  window_flags flags;
   char *resname;
   char *classname;
   char *titlename;
