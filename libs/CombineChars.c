@@ -41,6 +41,11 @@ typedef struct char_comb
 
 /* ---------------------------- static variables --------------------------- */
 
+/* would like to use the Unicode replacement character here, but that would
+   result in expanding incoming UTF-8 strings when garbage characters occurs */
+/* so for the time being use '?' */
+static unsigned short int REPLACEMENT_CHARACTER = 0x3f;
+
 /* maps characters to combination classes (not in list => 0) */
 /* parsed from UnicodeData-3.2.0.txt */
 static const char_combclass_t combclass_table[] =
@@ -1789,25 +1794,49 @@ convert_to_ucs2(
 				(unsigned short int)str_utf8[in_pos];
 			in_pos++;
 		}
-		else if (in_pos < len-1 && str_utf8[in_pos] <= 0xdf)
-		{
-			str_ucs2[out_pos] =
-				((str_utf8[in_pos] & 0x1f) << 6) +
-				(str_utf8[in_pos+1] & 0x3f);
-			in_pos += 2;
-		}
-		else if (in_pos < len-2)
-		{
-			str_ucs2[out_pos] =
-				((str_utf8[in_pos] & 0x0f) << 12) +
-				((str_utf8[in_pos+1] & 0x3f) << 6) +
-				(str_utf8[in_pos+2] & 0x3f);
-			in_pos += 3;
-		}
 		else
 		{
-			/* skip illegal sequence */
-			in_pos++;
+			if ((str_utf8[in_pos] & 0300) != 0300)
+			{
+				/* out of sync */
+				str_ucs2[out_pos] = REPLACEMENT_CHARACTER;
+				in_pos++;
+			}
+			else if (in_pos < len-1 && str_utf8[in_pos] <= 0xdf &&
+				 str_utf8[in_pos + 1] <= 0xbf &&
+				 str_utf8[in_pos + 1] >= 0x80)
+			{
+				str_ucs2[out_pos] =
+					((str_utf8[in_pos] & 0x1f) << 6) +
+					(str_utf8[in_pos+1] & 0x3f);
+				/* check for overlong sequence */
+				if(str_ucs2[out_pos] < 0x80)
+					str_ucs2[out_pos] = 
+						REPLACEMENT_CHARACTER;
+				in_pos += 2;
+			}
+			else if (in_pos < len-2 && str_utf8[in_pos] <= 0xef &&
+				 str_utf8[in_pos + 1] <= 0xbf &&
+				 str_utf8[in_pos + 1] >= 0x80 &&
+				 str_utf8[in_pos + 2] <= 0xbf &&
+				 str_utf8[in_pos + 2] >= 0x80)
+			{
+				str_ucs2[out_pos] =
+					((str_utf8[in_pos] & 0x0f) << 12) +
+					((str_utf8[in_pos+1] & 0x3f) << 6) +
+					(str_utf8[in_pos+2] & 0x3f);
+				/* check for overlong sequence */
+				if(str_ucs2[out_pos] < 0x800)
+					str_ucs2[out_pos] = 
+						REPLACEMENT_CHARACTER;
+				in_pos += 3;
+			}
+			else
+			{
+				/* incomplete sequence */
+				str_ucs2[out_pos] = REPLACEMENT_CHARACTER;
+				in_pos++;
+			}
 		}
 		out_pos++;
 	}
