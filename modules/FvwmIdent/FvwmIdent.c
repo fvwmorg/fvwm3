@@ -700,14 +700,18 @@ int ProcessXEvent(int x, int y)
 						main_width, main_height);
 					do_eat_expose = True;
 				}
-				else if (UpdateBackgroundTransparency(
+                                else if (colorset == -1)
+                                     {
+                                        do_eat_expose = True;
+                                     }
+				     else if (UpdateBackgroundTransparency(
 						 dpy, main_win, main_width,
 						 main_height,
 						 &Colorset[(colorset)], Pdepth,
 						 gc, True) == True)
-				{
-					do_eat_expose = True;
-				}
+			                {
+					        do_eat_expose = True;
+			                }
 				if (do_eat_expose == True)
 				{
 					while (FCheckTypedEvent(

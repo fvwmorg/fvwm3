@@ -1,3 +1,10 @@
+2003-04-30  Bob Woodside  <dumbledore@woodsway.com>
+
+	* FvwmIdent/FvwmIdent.c (ProcessXEvent):
+	Prevent call to UpdateBackgroundTransparency with a colorset
+        of -1 when Fore/Back are specified (caused BadDrawable X
+        error).
+
 2003-04-29  olicha  <olivier.chapuis@free.fr>
 
 	* FvwmIdent/FvwmIdent.h:
