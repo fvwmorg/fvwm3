@@ -87,7 +87,7 @@ End
 Widget 4
 Property
  Position 15 2
- Flags NoReliefString
+ Flags NoReliefString NoFocus
  Type ItemDraw
  Title {Time}
 Main
@@ -127,7 +127,7 @@ End
 Widget 7
 Property
  Position 35 40
- Flags NoReliefString
+ Flags NoReliefString NoFocus
  Type ItemDraw
  Title {Hours:}
 Main
@@ -140,7 +140,7 @@ End
 Widget 8
 Property
  Position 100 40
- Flags NoReliefString
+ Flags NoReliefString NoFocus
  Type ItemDraw
  Title {00}
 Main
@@ -184,7 +184,7 @@ End
 Widget 11
 Property
  Position 35 90
- Flags NoReliefString
+ Flags NoReliefString NoFocus
  Type ItemDraw
  Title {Minutes:}
 Main
@@ -197,7 +197,7 @@ End
 Widget 12
 Property
  Position 100 90
- Flags NoReliefString
+ Flags NoReliefString NoFocus
  Type ItemDraw
  Title {00}
 Main
@@ -254,7 +254,7 @@ End
 Widget 16
 Property
  Position 15 147
- Flags NoReliefString
+ Flags NoReliefString NoFocus
  Type ItemDraw
  Title {Date}
 Main

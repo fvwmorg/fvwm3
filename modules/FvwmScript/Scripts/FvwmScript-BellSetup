@@ -128,7 +128,7 @@ End
 Widget 5
 Property
  Position 20 53
- Flags NoReliefString
+ Flags NoReliefString NoFocus
  Type ItemDraw
  Title {Volume:}
 Main
@@ -154,7 +154,7 @@ End
 Widget 7
 Property
  Position 20 95
- Flags NoReliefString
+ Flags NoReliefString NoFocus
  Type ItemDraw
  Title {Pitch(Hz):}
 Main
@@ -180,7 +180,7 @@ End
 Widget 9
 Property
  Position 190 95
- Flags NoReliefString
+ Flags NoReliefString NoFocus
  Type ItemDraw
  Title {Duration(ms):}
 Main
@@ -205,7 +205,7 @@ End
 Widget 11
 Property
  Position 15 3
- Flags NoReliefString
+ Flags NoReliefString NoFocus
  Type ItemDraw
  Title {Bell}
 Main

@@ -5,6 +5,9 @@ Changes in beta 2.5.0 (not released yet)
 
 * New OpaqueMoveSize argument "unlimited".
 
+* FvwmScript: new keyboard bindings. New flags NoFocus. Amelioration of the
+  Menu and PopupMenu Widgets.
+
 Changes in stable 2.4.3 (8-Oct-2001)
 
 * Fixed activation of shape extension.

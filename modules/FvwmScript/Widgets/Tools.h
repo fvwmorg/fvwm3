@@ -20,6 +20,7 @@
 
 extern Display *dpy;
 extern int screen;
+extern Window Root;
 extern char *Scrapt;
 extern Atom propriete;
 extern Atom type;
@@ -35,6 +36,11 @@ extern int x_fd;
 #define SingleClic -1
 #define DoubleClic -2
 
+/* if the time in X ms between a Button Press and ButtonRelease is < to *
+ * MENU_DRAG_TIME, then we consider the mouse click as simple click and
+ * not "menu drag" (use in Menu.c and PopupMenu.c */
+#define MENU_DRAG_TIME 300
+#define GRAB_EVMASK (ButtonPressMask | ButtonReleaseMask | ButtonMotionMask | PointerMotionMask | EnterWindowMask | LeaveWindowMask)
 #ifdef I18N_MB
 void FakeDrawString(XFontSet FONTSET,Display *dpy,struct XObj *xobj,Window win,
 		    int x,int y,char *str,int strl,unsigned long ForeC,

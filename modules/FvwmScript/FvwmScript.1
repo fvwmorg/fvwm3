@@ -16,17 +16,25 @@
 .ta .3i .6i .9i 1.2i 1.5i 1.8i
 .TH FvwmScript 1 "3 July 2001"
 .UC
+
 .SH NAME
 FvwmScript - module to build graphic user interface
+
 .SH SYNOPSIS
 FvwmScript must be spawned by Fvwm.
 It will not work from the command line.
+
 .SH DESCRIPTION
 FvwmScript is a module which allows to build many graphical
 applications such as desktop accessories, button panel with pop up
 menu, modal dialog... At the startup, FvwmScript reads
 the file which is specified in the command line. This file contains the script.
 This script is not included in the configuration file of Fvwm.
+
+A FvwmScript script is fully controllable by using the keyboard.
+(Shift)-Tab circulates around the widgets, Return simulate a mouse
+click, the arrows either move the cursor or change the values of the
+widget and Escape "cancels" for Menu and PopupMenu.
 
 .SH INVOCATION
 FvwmScript can be invoked by inserting the line `Module
@@ -169,11 +177,16 @@ Property
  HilightColor	{ color }
  ShadowColor	{ color }
  Colorset	int
- Flags		Hidden and/or NoReliefString
+ Flags		Hidden and/or NoReliefString and/or NoFocus
 .EE
-The option 'Flags` is used to specify if the widget is hidden or not and
-if strings are drawn with relief or not. The position of every widget must be
-specified.
+The option 'Flags` Hidden is used to specify if the widget is hidden.
+NoReliefString specifies if strings are drawn with relief or not.
+NoFocus specifies if the widget can get the keyboard focus or not.
+By default all widget take the focus, but Rectangle, HDipstick and VDipstick
+which cannot at all. Moreover, the NoFocus widgets are skipped when you 
+circulate around the widgets with the (Shift-)Tab short cut.
+
+The position of every widget must be specified.
 
 .EX
 Main
@@ -234,6 +247,10 @@ minimum width of 48.
 \fBTitle\fP: string to display.
 
 \fBIcon\fP: icon to display.
+
+\fBMaxValue\fP: x coordinate of the cursor.
+
+\fBMinValue\fP: y coordinate of the cursor.
 
 The size is made large enough to contain the title and/or the icon.
 

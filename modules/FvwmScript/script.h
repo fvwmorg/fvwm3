@@ -33,7 +33,7 @@ typedef union {  char *str;
 #define	WARP	286
 #define	WRITETOFILE	287
 #define	HIDDEN	288
-#define	CANBESELECTED	289
+#define	NOFOCUS	289
 #define	NORELIEFSTRING	290
 #define	CASE	291
 #define	SINGLECLIC	292

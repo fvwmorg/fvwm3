@@ -48,6 +48,11 @@
 #define DrawString(a,b,c,d,e,f,g,h,i,j,k) FakeDrawString(xobj->xfontset,a,b,c,d,e,f,g,h,i,j,k)
 #endif /* I18N_MB */
 
+/* flags */
+#define IS_HIDDEN(x) (x->flags[0])
+#define HAS_NO_RELIEF_STRING(x) (x->flags[1])
+#define HAS_NO_FOCUS(x) (x->flags[2])
+
 #include <X11/keysymdef.h>
 #include <X11/keysym.h>
 #include <X11/Xlib.h>

@@ -650,7 +650,7 @@ Widget 10
 Property
  Position 20 30
  Type ItemDraw
- Flags NoReliefString
+ Flags NoReliefString NoFocus
  Title {Focus:}
 Main
  Case message of
@@ -732,7 +732,7 @@ End
 Widget 15
 Property
  Position 20 135
- Flags NoReliefString
+ Flags NoReliefString NoFocus
  Type ItemDraw
  Title {Horizontal Paging:}
 Main
@@ -784,7 +784,7 @@ End
 Widget 19
 Property
  Position 20 170
- Flags NoReliefString
+ Flags NoReliefString NoFocus
  Type ItemDraw
  Title {Vertical Paging:}
 Main
@@ -836,7 +836,7 @@ End
 Widget 21
 Property
  Position 20 205
- Flags NoReliefString
+ Flags NoReliefString NoFocus
  Type ItemDraw
  Title {Paging Delay (ms):}
 Main
@@ -864,7 +864,7 @@ End
 Widget 23
 Property
  Position 190 205
- Flags NoReliefString
+ Flags NoReliefString NoFocus
  Type ItemDraw
  Title {Thickness:}
 Main
@@ -902,7 +902,7 @@ End
 Widget 25
 Property
  Position 20 235
- Flags NoReliefString
+ Flags NoReliefString NoFocus
  Type ItemDraw
  Title {Window Placement:}
 Main
@@ -942,7 +942,7 @@ End
 Widget 27
 Property
  Position 340 323
- Flags NoReliefString
+ Flags NoReliefString NoFocus
  Type ItemDraw
  Title {Window shade animation steps:}
 Main
@@ -970,7 +970,7 @@ End
 Widget 29
 Property
  Position 30 310
- Flags NoReliefString
+ Flags NoReliefString NoFocus
  Type ItemDraw
  Title {New windows grab the focus:}
 Main
@@ -1017,7 +1017,7 @@ End
 Widget 32
 Property
  Position 30 330
- Flags NoReliefString
+ Flags NoReliefString NoFocus
  Type ItemDraw
  Title {Use Applications position hints:}
 Main
@@ -1098,7 +1098,7 @@ Widget 42
 Property
  Size 25 25
  Position 340 25
- Flags NoReliefString
+ Flags NoReliefString NoFocus
  Type ItemDraw
  Title {Opaque move size (%):}
 Main
@@ -1111,7 +1111,7 @@ End
 Widget 43
 Property
  Position 528 28
- Flags NoReliefString
+ Flags NoReliefString NoFocus
  Size 20 20
  Font fixed
  Type ItemDraw
@@ -1126,7 +1126,7 @@ End
 Widget 44
 Property
  Position 340 70
- Flags NoReliefString
+ Flags NoReliefString NoFocus
  Type ItemDraw
  Title {Moving Edge Resistance (pixels):}
 Main
@@ -1155,7 +1155,7 @@ End
 Widget 46
 Property
  Position 340 103
- Flags NoReliefString
+ Flags NoReliefString NoFocus
  Type ItemDraw
  Title {Move Threshold:}
 Main
@@ -1182,7 +1182,7 @@ End
 Widget 48
 Property
  Position 340 135
- Flags NoReliefString
+ Flags NoReliefString NoFocus
  Type ItemDraw
  Title {Resize:}
 Main
@@ -1229,7 +1229,7 @@ End
 Widget 51
 Property
  Position 340 165
- Flags NoReliefString
+ Flags NoReliefString NoFocus
  Type ItemDraw
  Title {Hide Geometry:}
 Main
@@ -1306,7 +1306,7 @@ End
 Widget 54
 Property
  Position 340 195
- Flags NoReliefString
+ Flags NoReliefString NoFocus
  Type ItemDraw
  Title {Snap Attraction:}
 Main
@@ -1319,7 +1319,7 @@ End
 Widget 55
 Property
  Position 350 220
- Flags NoReliefString
+ Flags NoReliefString NoFocus
  Type ItemDraw
  Title {distance (pixels):}
 Main
@@ -1347,7 +1347,7 @@ End
 Widget 57
 Property
  Position 350 255
- Flags NoReliefString
+ Flags NoReliefString NoFocus
  Type ItemDraw
  Title {behavior:}
 Main
@@ -1389,7 +1389,7 @@ End
 Widget 59
 Property
  Position 340 290
- Flags NoReliefString
+ Flags NoReliefString NoFocus
  Type ItemDraw
  Title {Emulate:}
 Main

@@ -84,7 +84,7 @@ End
 Widget 4
 Property
  Position 20 42
- Flags NoReliefString
+ Flags NoReliefString NoFocus
  Type ItemDraw
  Title {Path:}
 Main
@@ -97,7 +97,7 @@ End
 Widget 5
 Property
  Position 65 42
- Flags NoReliefString
+ Flags NoReliefString NoFocus
  Size 270 0
  Type ItemDraw
  Title {*}
@@ -244,7 +244,7 @@ End
 Widget 8
 Property
  Position 20 220
- Flags NoReliefString
+ Flags NoReliefString NoFocus
  Type ItemDraw
  Title {Selected file:}
 Main

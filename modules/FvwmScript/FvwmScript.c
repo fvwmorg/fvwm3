@@ -65,6 +65,7 @@ extern void (*TabCom[25]) (int NbArg,long *TabArg);
 
 Display *dpy;
 int screen;
+Window  Root;
 X11base *x11base;		/* Pour le serveur X */
 TypeBuffSend BuffSend;		/* Pour les communication entre script */
 int grab_server = 0;
@@ -75,6 +76,7 @@ static Atom wm_del_win;
 char *imagePath = NULL;
 int save_color_limit = 0;                   /* color limit from config */
 static Bool is_dead_pipe = False;
+KeySym shift_tab_ks;  /* shift-Tab keysym */
 
 extern void InitCom(void);
 static void TryToFind(char *filename);
@@ -104,11 +106,11 @@ ShutdownX(void)
   XFlush(dpy);
 
   /* Le script ne possede plus la propriete */
-  MyAtom=XInternAtom(dpy,x11base->TabScriptId[1],False);
-  XSetSelectionOwner(dpy,MyAtom,x11base->root,CurrentTime);
+  MyAtom = XInternAtom(dpy, x11base->TabScriptId[1], False);
+  XSetSelectionOwner(dpy, MyAtom, x11base->root, CurrentTime);
 
   /* On verifie si tous les messages ont ete envoyes */
-  while( !isTerminated && (BuffSend.NbMsg>0) && (NbEssai<10000) )
+  while( !isTerminated && (BuffSend.NbMsg > 0) && (NbEssai < 10000) )
   {
     tv.tv_sec = 1;
     tv.tv_usec = 0;
@@ -118,7 +120,7 @@ ShutdownX(void)
     {
       if (FD_ISSET(x_fd, &in_fdset))
       {
-	if (XCheckTypedEvent(dpy,SelectionRequest,&event))
+	if (XCheckTypedEvent(dpy, SelectionRequest, &event))
 	  SendMsgToScript(event);
 	else
 	  NbEssai++;
@@ -130,7 +132,7 @@ ShutdownX(void)
   /* Attente de deux secondes afin d'etre sur que tous */
   /* les messages soient arrives a destination         */
   /* On quitte proprement le serveur X */
-  for (i=0;i<nbobj;i++)
+  for (i=0; i<nbobj; i++)
     tabxobj[i]->DestroyObj(tabxobj[i]);
   XFlush(dpy);
   sleep(2);
@@ -143,7 +145,7 @@ void Debug(void)
   int i,j;
 
   for (j=1;j<=nbobj;j++)
-    for (i=0;i<=TabCObj[TabIdObj[j]].NbCase;i++)
+    for (i=0; i<=TabCObj[TabIdObj[j]].NbCase; i++)
     {
       /* Execution du bloc d'instruction */
       fprintf(stderr,"Id de l'objet %d\n",TabIdObj[j]);
@@ -164,7 +166,7 @@ void ReadConfig (char *ScriptName)
      could be a full path, or it could be relative to the current directory.
      Not very pretty, dje 12/26/99 */
   sprintf(s,"%s%s%s",ScriptPath,(!*ScriptPath ? "" : "/"),ScriptName);
-  yyin=fopen(s,"r");
+  yyin = fopen(s,"r");
   if (yyin == NULL) {                   /* file not found yet, */
     TryToFind(ScriptName);                   /* look in some other places */
   }
@@ -285,7 +287,7 @@ void Xinit(int IsFather)
 {
   char *name;
   Atom myatom;
-  int i=16;
+  int i = 16;
 
   /* Connextion au serveur X */
 #ifdef MEMDEBUG
@@ -293,12 +295,13 @@ void Xinit(int IsFather)
 #endif
 
   dpy=XOpenDisplay(NULL);
-  if (dpy==NULL)
+  if (dpy == NULL)
   {
     fprintf(stderr,"%s: Can't open display %s", ModuleName, XDisplayName(NULL));
     exit(1);
   }
-  screen=DefaultScreen(dpy);
+  screen = DefaultScreen(dpy);
+  Root = RootWindow(dpy,screen);
   InitPictureCMap(dpy);
   FScreenInit(dpy);
   AllocColorset(0);
@@ -311,19 +314,19 @@ void Xinit(int IsFather)
 
   if (IsFather)
   {
-    name=(char*)safecalloc(sizeof(char),strlen("FvwmScript")+5);
+    name = (char*)safecalloc(sizeof(char),strlen("FvwmScript")+5);
     do
     {
       sprintf(name,"%c%xFvwmScript",161,i);
       i++;
-      myatom=XInternAtom(dpy,name,False);
+      myatom = XInternAtom(dpy, name, False);
     }
-    while (XGetSelectionOwner(dpy,myatom)!=None)
+    while (XGetSelectionOwner(dpy,myatom) != None)
       ;
-    x11base->TabScriptId[1]=name;
-    x11base->TabScriptId[0]=NULL;
+    x11base->TabScriptId[1] = name;
+    x11base->TabScriptId[0] = NULL;
   }
-  x11base->NbChild=0;
+  x11base->NbChild = 0;
   x11base->root = RootWindow(dpy,screen);
   x_fd = XConnectionNumber(dpy);
 
@@ -338,14 +341,14 @@ void LoadIcon(struct XObj *xobj)
 {
   Picture *pic;
 
-  if ((xobj->icon)!=NULL)
+  if ((xobj->icon) != NULL)
   {
     pic = CachePicture(dpy,x11base->win,imagePath,xobj->icon,save_color_limit);
     if (!pic)
     {
       fprintf(stderr,"Unable to load pixmap %s\n",xobj->icon);
-      xobj->iconPixmap=None;
-      xobj->icon_maskPixmap=None;
+      xobj->iconPixmap = None;
+      xobj->icon_maskPixmap = None;
       return;
     }
     xobj->iconPixmap = pic->picture;
@@ -395,43 +398,43 @@ void OpenWindow (void)
       &Colorset[x11base->colorset], Pdepth, x11base->gc, True);
 
   /* Choix des evts recus par la fenetre */
-  XSelectInput(dpy,x11base->win,KeyPressMask|ButtonPressMask|
+  XSelectInput(dpy,x11base->win, KeyPressMask|ButtonPressMask|
 	       ExposureMask|ButtonReleaseMask|EnterWindowMask|LeaveWindowMask|
 	       ButtonMotionMask);
-  XSelectInput(dpy,x11base->root,PropertyChangeMask);
+  XSelectInput(dpy, x11base->root, PropertyChangeMask);
 
   /* Specification des parametres utilises par le gestionnaire de fenetre */
-  if (XStringListToTextProperty(&x11base->title,1,&Name)==0)
+  if (XStringListToTextProperty(&x11base->title,1,&Name) == 0)
     fprintf(stderr,"Can't use icon name\n");
-  IndicNorm=XAllocSizeHints();
+  IndicNorm = XAllocSizeHints();
   if (x11base->size.x!=-1)
   {
-    IndicNorm->x=x11base->size.x;
-    IndicNorm->y=x11base->size.y;
-    IndicNorm->flags=PSize|PMinSize|PMaxSize|PBaseSize|PPosition;
+    IndicNorm->x = x11base->size.x;
+    IndicNorm->y = x11base->size.y;
+    IndicNorm->flags = PSize|PMinSize|PMaxSize|PBaseSize|PPosition;
   }
   else
-    IndicNorm->flags=PSize|PMinSize|PMaxSize|PBaseSize;
-  IndicNorm->width=x11base->size.width;
-  IndicNorm->height=x11base->size.height;
-  IndicNorm->min_width=x11base->size.width;
-  IndicNorm->min_height=x11base->size.height;
-  IndicNorm->max_width=x11base->size.width;
-  IndicNorm->max_height=x11base->size.height;
-  IndicWM=XAllocWMHints();
-  IndicWM->input=True;
-  IndicWM->initial_state=NormalState;
-  IndicWM->flags=InputHint|StateHint;
+    IndicNorm->flags = PSize|PMinSize|PMaxSize|PBaseSize;
+  IndicNorm->width = x11base->size.width;
+  IndicNorm->height = x11base->size.height;
+  IndicNorm->min_width = x11base->size.width;
+  IndicNorm->min_height = x11base->size.height;
+  IndicNorm->max_width = x11base->size.width;
+  IndicNorm->max_height = x11base->size.height;
+  IndicWM = XAllocWMHints();
+  IndicWM->input = True;
+  IndicWM->initial_state = NormalState;
+  IndicWM->flags = InputHint|StateHint;
 
   classHints.res_name = safestrdup(ScriptBaseName);
   classHints.res_class = safestrdup(ModuleName);
 
-  XSetWMProperties(dpy,x11base->win,&Name,
-		   &Name,NULL,0,IndicNorm,IndicWM,&classHints);
-  Scrapt=(char*)safecalloc(sizeof(char),1);
+  XSetWMProperties(dpy, x11base->win, &Name,
+		   &Name, NULL, 0, IndicNorm, IndicWM, &classHints);
+  Scrapt = (char*)safecalloc(sizeof(char),1);
 
   /* Construction des atomes pour la communication inter-application */
-  propriete=XInternAtom(dpy,"Prop_selection",False);
+  propriete = XInternAtom(dpy,"Prop_selection",False);
   wm_del_win = XInternAtom(dpy,"WM_DELETE_WINDOW",False);
   XSetWMProtocols(dpy,x11base->win,&wm_del_win,1);
 
@@ -446,7 +449,7 @@ void ExecBloc(Bloc *bloc)
 {
   int i;
 
-  for (i=0;i<=bloc->NbInstr;i++)
+  for (i = 0; i <= bloc->NbInstr; i++)
   {
     TabCom[bloc->TabInstr[i].Type](bloc->TabInstr[i].NbArg,
 				   bloc->TabInstr[i].TabArg);
@@ -459,41 +462,40 @@ void BuildGUI(int IsFather)
 {
   int i;
 
-
   if (scriptprop->font != NULL)
   {
     /* leak! */
-    x11base->font=scriptprop->font;
+    x11base->font = scriptprop->font;
   }
 
   if (scriptprop->forecolor != NULL)
   {
-    x11base->colorset=-1;
+    x11base->colorset = -1;
     /* leak! */
-    x11base->forecolor=scriptprop->forecolor;
+    x11base->forecolor = scriptprop->forecolor;
   }
   if (scriptprop->backcolor != NULL)
   {
-    x11base->colorset=-1;
+    x11base->colorset = -1;
     /* leak! */
-    x11base->backcolor=scriptprop->backcolor;
+    x11base->backcolor = scriptprop->backcolor;
   }
   if (scriptprop->shadcolor != NULL)
   {
     x11base->colorset=-1;
     /* leak! */
-    x11base->shadcolor=scriptprop->shadcolor;
+    x11base->shadcolor = scriptprop->shadcolor;
   }
   if (scriptprop->hilicolor != NULL)
   {
     x11base->colorset=-1;
     /* leak! */
-    x11base->hilicolor=scriptprop->hilicolor;
+    x11base->hilicolor = scriptprop->hilicolor;
   }
   if (scriptprop->colorset != -1)
     x11base->colorset = scriptprop->colorset;
 
-  x11base->icon=scriptprop->icon;
+  x11base->icon = scriptprop->icon;
 
   {
     int sx;
@@ -503,77 +505,79 @@ void BuildGUI(int IsFather)
     x11base->size.x = scriptprop->x + sx;
     x11base->size.y = scriptprop->y + sy;
   }
-  x11base->size.width=scriptprop->width;
-  x11base->size.height=scriptprop->height;
-  x11base->title=scriptprop->titlewin;
+  x11base->size.width = scriptprop->width;
+  x11base->size.height = scriptprop->height;
+  x11base->title = scriptprop->titlewin;
 
   /* Initialisation de la fenetre */
   OpenWindow();
 
   /* Parcour de tous les objets graphiques */
   nbobj++;
-  for (i=0;i<nbobj;i++)
+  for (i=0; i<nbobj; i++)
   {
-    tabxobj[i]=(struct XObj*)safecalloc(1,sizeof(struct XObj));
-    tabxobj[i]->id=(*tabobj)[i].id;
-    tabxobj[i]->x=(*tabobj)[i].x;
-    tabxobj[i]->y=(*tabobj)[i].y;
-    tabxobj[i]->width=(*tabobj)[i].width;
-    tabxobj[i]->height=(*tabobj)[i].height;
-    if (tabxobj[i]->width==0) tabxobj[i]->width=1;
-    if (tabxobj[i]->height==0) tabxobj[i]->height=1;
-    tabxobj[i]->value=(*tabobj)[i].value;
-    tabxobj[i]->value2=(*tabobj)[i].value2;
-    tabxobj[i]->value3=(*tabobj)[i].value3;
-    tabxobj[i]->flags[0]=(*tabobj)[i].flags[0];
-    tabxobj[i]->flags[1]=(*tabobj)[i].flags[1];
-    tabxobj[i]->flags[2]=(*tabobj)[i].flags[2];
-    tabxobj[i]->icon=(*tabobj)[i].icon;
-    tabxobj[i]->swallow=(*tabobj)[i].swallow;
+    tabxobj[i] = (struct XObj*)safecalloc(1,sizeof(struct XObj));
+    tabxobj[i]->id = (*tabobj)[i].id;
+    tabxobj[i]->x = (*tabobj)[i].x;
+    tabxobj[i]->y = (*tabobj)[i].y;
+    tabxobj[i]->width = (*tabobj)[i].width;
+    tabxobj[i]->height = (*tabobj)[i].height;
+    if (tabxobj[i]->width == 0)
+      tabxobj[i]->width = 1;
+    if (tabxobj[i]->height == 0)
+      tabxobj[i]->height = 1;
+    tabxobj[i]->value = (*tabobj)[i].value;
+    tabxobj[i]->value2 = (*tabobj)[i].value2;
+    tabxobj[i]->value3 = (*tabobj)[i].value3;
+    tabxobj[i]->flags[0] = (*tabobj)[i].flags[0];
+    tabxobj[i]->flags[1] = (*tabobj)[i].flags[1];
+    tabxobj[i]->flags[2] = (*tabobj)[i].flags[2];
+    tabxobj[i]->icon = (*tabobj)[i].icon;
+    tabxobj[i]->swallow = (*tabobj)[i].swallow;
 
-    if ((*tabobj)[i].title==NULL)
-      tabxobj[i]->title=(char*)safecalloc(1,200);
+    if ((*tabobj)[i].title == NULL)
+      tabxobj[i]->title = (char*)safecalloc(1,200);
     else
-      tabxobj[i]->title=(*tabobj)[i].title;
+      tabxobj[i]->title = (*tabobj)[i].title;
 
-    if ((*tabobj)[i].font==NULL)
-      tabxobj[i]->font=(char*)safestrdup(x11base->font);
+    if ((*tabobj)[i].font == NULL)
+      tabxobj[i]->font = (char*)safestrdup(x11base->font);
     else
-      tabxobj[i]->font=(*tabobj)[i].font;
+      tabxobj[i]->font = (*tabobj)[i].font;
 
-    if ((*tabobj)[i].forecolor==NULL)
-      tabxobj[i]->forecolor=(char*)safestrdup(x11base->forecolor);
+    if ((*tabobj)[i].forecolor == NULL)
+      tabxobj[i]->forecolor = (char*)safestrdup(x11base->forecolor);
     else
-      tabxobj[i]->forecolor=(*tabobj)[i].forecolor;
+      tabxobj[i]->forecolor = (*tabobj)[i].forecolor;
 
-    if ((*tabobj)[i].backcolor==NULL)
-      tabxobj[i]->backcolor=(char*)safestrdup(x11base->backcolor);
+    if ((*tabobj)[i].backcolor == NULL)
+      tabxobj[i]->backcolor = (char*)safestrdup(x11base->backcolor);
     else
-      tabxobj[i]->backcolor=(*tabobj)[i].backcolor;
+      tabxobj[i]->backcolor = (*tabobj)[i].backcolor;
 
-    if ((*tabobj)[i].shadcolor==NULL)
-      tabxobj[i]->shadcolor=(char*)safestrdup(x11base->shadcolor);
+    if ((*tabobj)[i].shadcolor == NULL)
+      tabxobj[i]->shadcolor = (char*)safestrdup(x11base->shadcolor);
     else
-      tabxobj[i]->shadcolor=(*tabobj)[i].shadcolor;
+      tabxobj[i]->shadcolor = (*tabobj)[i].shadcolor;
 
-    if ((*tabobj)[i].hilicolor==NULL)
-      tabxobj[i]->hilicolor=safestrdup(x11base->hilicolor);
+    if ((*tabobj)[i].hilicolor == NULL)
+      tabxobj[i]->hilicolor = safestrdup(x11base->hilicolor);
     else
-      tabxobj[i]->hilicolor=(*tabobj)[i].hilicolor;
+      tabxobj[i]->hilicolor = (*tabobj)[i].hilicolor;
 
     if ((*tabobj)[i].colorset >= 0)
       tabxobj[i]->colorset=(*tabobj)[i].colorset;
-    else if ((*tabobj)[i].backcolor==NULL && (*tabobj)[i].forecolor==NULL &&
-	     (*tabobj)[i].shadcolor==NULL && (*tabobj)[i].hilicolor==NULL)
-      tabxobj[i]->colorset=x11base->colorset;
-    else tabxobj[i]->colorset=-1;
+    else if ((*tabobj)[i].backcolor == NULL && (*tabobj)[i].forecolor == NULL &&
+	     (*tabobj)[i].shadcolor == NULL && (*tabobj)[i].hilicolor == NULL)
+      tabxobj[i]->colorset = x11base->colorset;
+    else tabxobj[i]->colorset = -1;
 
 
     ChooseFunction(tabxobj[i],(*tabobj)[i].type);
-    tabxobj[i]->gc=x11base->gc;
-    tabxobj[i]->ParentWin=&(x11base->win);
-    tabxobj[i]->iconPixmap=None;
-    tabxobj[i]->icon_maskPixmap=None;
+    tabxobj[i]->gc = x11base->gc;
+    tabxobj[i]->ParentWin = &(x11base->win);
+    tabxobj[i]->iconPixmap = None;
+    tabxobj[i]->icon_maskPixmap = None;
 
     LoadIcon(tabxobj[i]);	           /* Chargement de l'icone du widget */
 
@@ -581,10 +585,10 @@ void BuildGUI(int IsFather)
   }
 
   /* Enregistrement du bloc de taches periodic */
-  x11base->periodictasks=scriptprop->periodictasks;
+  x11base->periodictasks = scriptprop->periodictasks;
 
   /*Si un bloc d'initialisation du script existe, on l'execute ici */
-  if (scriptprop->initbloc!=NULL)
+  if (scriptprop->initbloc != NULL)
   {
     ExecBloc(scriptprop->initbloc);
     free(scriptprop->initbloc->TabInstr);
@@ -594,8 +598,8 @@ void BuildGUI(int IsFather)
   free(tabobj);
   free(scriptprop);
   XMapRaised(dpy,x11base->win);
-  for (i=0;i<nbobj;i++)
-    if (tabxobj[i]->flags[0]!=True)
+  for (i=0; i<nbobj; i++)
+    if (tabxobj[i]->flags[0] != True)
       XMapWindow(dpy,tabxobj[i]->win);
 }
 
@@ -607,8 +611,8 @@ void SendMsg(struct XObj *xobj,int TypeMsg)
 {
   int i;
 
-  for (i=0;i<=TabCObj[TabIdObj[xobj->id]].NbCase;i++)
-    if (TabCObj[TabIdObj[xobj->id]].LstCase[i]==TypeMsg)
+  for (i=0; i <= TabCObj[TabIdObj[xobj->id]].NbCase; i++)
+    if (TabCObj[TabIdObj[xobj->id]].LstCase[i] == TypeMsg)
     {
       /* Execution du bloc d'instruction */
       ExecBloc(&TabIObj[TabIdObj[xobj->id]][i]);
@@ -624,27 +628,27 @@ void SendMsgToScript(XEvent event)
   static XEvent evnt_sel;
   int i;
 
-  Sender=XInternAtom(dpy,x11base->TabScriptId[1],True);
+  Sender = XInternAtom(dpy,x11base->TabScriptId[1],True);
 
-  if (event.xselectionrequest.selection==Sender)
+  if (event.xselectionrequest.selection == Sender)
   {
     i=0;
-    while ((i<BuffSend.NbMsg)&&(event.xselectionrequest.target!=Receiver))
+    while ((i < BuffSend.NbMsg) && (event.xselectionrequest.target != Receiver))
     {
-      Receiver=XInternAtom(dpy,BuffSend.TabMsg[i].R,True);
+      Receiver = XInternAtom(dpy,BuffSend.TabMsg[i].R,True);
       i++;
     }
     i--;
 
-    evnt_sel.type=SelectionNotify;
-    evnt_sel.xselection.requestor=event.xselectionrequest.requestor;
-    evnt_sel.xselection.selection=event.xselectionrequest.selection;
-    evnt_sel.xselection.target=Receiver;
-    evnt_sel.xselection.time=event.xselectionrequest.time;
-
-    if (event.xselectionrequest.target==Receiver) /* On a trouve le recepteur */
+    evnt_sel.type = SelectionNotify;
+    evnt_sel.xselection.requestor = event.xselectionrequest.requestor;
+    evnt_sel.xselection.selection = event.xselectionrequest.selection;
+    evnt_sel.xselection.target = Receiver;
+    evnt_sel.xselection.time = event.xselectionrequest.time;
+    /* On a trouve le recepteur */
+    if (event.xselectionrequest.target == Receiver)
     {
-      evnt_sel.xselection.property=event.xselectionrequest.property;
+      evnt_sel.xselection.property = event.xselectionrequest.property;
       XChangeProperty(dpy,
 		      evnt_sel.xselection.requestor,
 		      evnt_sel.xselection.property,
@@ -655,7 +659,7 @@ void SendMsgToScript(XEvent event)
 		      strlen(BuffSend.TabMsg[i].Msg)+1);
       BuffSend.NbMsg--;
       free(BuffSend.TabMsg[i].Msg);
-      if (BuffSend.NbMsg>0)
+      if (BuffSend.NbMsg > 0)
       {
 	memmove(&BuffSend.TabMsg[i],
 		&BuffSend.TabMsg[i+1],(BuffSend.NbMsg-i)*sizeof(TypeName));
@@ -664,9 +668,9 @@ void SendMsgToScript(XEvent event)
     else
     {
       /* Cas ou le recepteur demande un message et qu'il n'y en a pas */
-      evnt_sel.xselection.property=None;
+      evnt_sel.xselection.property = None;
     }
-    XSendEvent(dpy,evnt_sel.xselection.requestor,False,0,&evnt_sel);
+    XSendEvent(dpy,evnt_sel.xselection.requestor, False, 0, &evnt_sel);
   }
 }
 
@@ -675,16 +679,21 @@ void ReadXServer (void)
 {
   static XEvent event,evnt_sel;
   int i;
+  int isTab = 0;
   char *octet;
-
+  KeySym ks;
+  static unsigned char buf[10];         /* unsigned for international */
+  static int n;
+  Bool find = False;
+  
   while (XEventsQueued(dpy, QueuedAfterReading))
   {
     XNextEvent(dpy, &event);
     switch (event.type)
     {
     case Expose:
-      if (event.xexpose.count==0) {
-	for (i=0;i<nbobj;i++)
+      if (event.xexpose.count == 0) {
+	for (i=0; i<nbobj; i++)
 	  if (event.xexpose.window == tabxobj[i]->win) {
 	    tabxobj[i]->DrawObj(tabxobj[i]);
 	    break;
@@ -692,13 +701,13 @@ void ReadXServer (void)
 	/* handle exposes on x11base that need an object to render */
 	if (event.xexpose.window == x11base->win) {
 	  /* redraw first menu item to get the 3d menubar */
-	  for (i=0;i<nbobj;i++)
+	  for (i=0; i<nbobj; i++)
 	    if (Menu == tabxobj[i]->TypeWidget) {
 	      tabxobj[i]->DrawObj(tabxobj[i]);
 	      break;
 	    }
 	  /* redraw all Rectangles and SwallowExec's */
-	  for (i=0;i<nbobj;i++)
+	  for (i=0; i<nbobj; i++)
 	    if ((Rectangle == tabxobj[i]->TypeWidget)
 		||(SwallowExec == tabxobj[i]->TypeWidget))
 	      tabxobj[i]->DrawObj(tabxobj[i]);
@@ -706,20 +715,65 @@ void ReadXServer (void)
       }
       break;
     case KeyPress:
-      /* Touche presse dans un objet */
+      /* Touche presse dans un objet / Key press in an object */
+      isTab = 0;
+      find = False;
+      XLookupString(&event.xkey, (char *)buf, sizeof(buf), &ks, NULL);
+      if (ks == XK_Tab) {
+	isTab = 1;
+	if (event.xkey.state & ShiftMask) {
+	  /* does not work in general see AddBinding */
+	  isTab = 2;
+	}
+      }
+      else if (ks == shift_tab_ks)
+	isTab = 2;
       if (event.xkey.subwindow!=0)
+      {
 	/* Envoi de l'evt à l'objet */
-	for (i=0;i<nbobj;i++)
-	  if (tabxobj[i]->win==event.xkey.subwindow) {
-	    tabxobj[i]->EvtKey(tabxobj[i],&event.xkey);
+	for (i=0; i<nbobj; i++)
+	{
+	  if (tabxobj[i]->win == event.xkey.subwindow)
+	  {
+	    find = True;
+	    if (isTab == 0 && !HAS_NO_FOCUS(tabxobj[i])) {
+	      tabxobj[i]->EvtKey(tabxobj[i],&event.xkey);
+	    }
 	    break;
 	  }
+	}
+      }
+      if (isTab > 0) { 
+	Bool loop = False;
+	if (!find)
+	  i = (isTab == 1)? -1:nbobj;
+	find = False;
+	while(!find) {
+	  i = (isTab == 1)? i+1 : i-1;
+	  if (i == nbobj || i == -1) {
+	    i = (isTab == 1)? 0 : nbobj-1;
+	    if (loop) {
+	      i = -1;
+	      break;
+	    }
+	    loop = True;
+	  }
+	  if (!IS_HIDDEN(tabxobj[i]) && !HAS_NO_FOCUS(tabxobj[i]) &&
+	      tabxobj[i]->TypeWidget != Rectangle &&
+	      tabxobj[i]->TypeWidget != HDipstick &&
+	      tabxobj[i]->TypeWidget != VDipstick)
+	    find = True;
+	}
+	if (find)
+	  XWarpPointer(dpy, x11base->win, tabxobj[i]->win, 0, 0, 0, 0,
+		       tabxobj[i]->width/2, 10);
+      }
       break;
     case ButtonPress:
       /* Clique dans quel fenetre? */
-      if (event.xbutton.subwindow!=0)
-	for (i=0;i<nbobj;i++)
-	  if (tabxobj[i]->win==event.xbutton.subwindow) {
+      if (event.xbutton.subwindow != 0)
+	for (i=0; i<nbobj; i++)
+	  if (tabxobj[i]->win == event.xbutton.subwindow) {
 	    tabxobj[i]->EvtMouse(tabxobj[i],&event.xbutton);
 	    break;
 	  }
@@ -736,14 +790,14 @@ void ReadXServer (void)
       XRefreshKeyboardMapping((XMappingEvent*)&event);
       break;
     case SelectionRequest:
-      if (event.xselectionrequest.selection==XA_PRIMARY)
+      if (event.xselectionrequest.selection == XA_PRIMARY)
       {
-	evnt_sel.type=SelectionNotify;
-	evnt_sel.xselection.requestor=event.xselectionrequest.requestor;
-	evnt_sel.xselection.selection=event.xselectionrequest.selection;
-	evnt_sel.xselection.target=event.xselectionrequest.target;
-	evnt_sel.xselection.time=event.xselectionrequest.time;
-	evnt_sel.xselection.property=event.xselectionrequest.property;
+	evnt_sel.type = SelectionNotify;
+	evnt_sel.xselection.requestor = event.xselectionrequest.requestor;
+	evnt_sel.xselection.selection = event.xselectionrequest.selection;
+	evnt_sel.xselection.target = event.xselectionrequest.target;
+	evnt_sel.xselection.time = event.xselectionrequest.time;
+	evnt_sel.xselection.property = event.xselectionrequest.property;
 	switch (event.xselectionrequest.target)
 	{
 	case XA_STRING:
@@ -756,7 +810,7 @@ void ReadXServer (void)
 			  (unsigned char *)(Scrapt),
 			  strlen(Scrapt)+1);
 	  break;
-	default:evnt_sel.xselection.property=None;
+	default:evnt_sel.xselection.property = None;
 	}
 	XSendEvent(dpy,evnt_sel.xselection.requestor,
 		   False,0,&evnt_sel);
@@ -765,36 +819,36 @@ void ReadXServer (void)
 	SendMsgToScript(event);
       break;
     case SelectionClear:
-      if (event.xselectionclear.selection==XA_PRIMARY)
+      if (event.xselectionclear.selection == XA_PRIMARY)
 	UnselectAllTextField(tabxobj);
       break;
     case ClientMessage:
-      if ((event.xclient.format==32) &&
-	  (event.xclient.data.l[0]==wm_del_win))
+      if ((event.xclient.format == 32) &&
+	  (event.xclient.data.l[0] == wm_del_win))
 	DeadPipe(1);
       break;
     case PropertyNotify:
-      if (event.xproperty.atom==XA_CUT_BUFFER0)
-	octet=XFetchBuffer(dpy,&i,0);
-      else if (event.xproperty.atom==XA_CUT_BUFFER1)
-	octet=XFetchBuffer(dpy,&i,1);
-      else if (event.xproperty.atom==XA_CUT_BUFFER2)
-	octet=XFetchBuffer(dpy,&i,2);
-      else if (event.xproperty.atom==XA_CUT_BUFFER3)
-	octet=XFetchBuffer(dpy,&i,3);
-      else if (event.xproperty.atom==XA_CUT_BUFFER4)
-	octet=XFetchBuffer(dpy,&i,4);
-      else if (event.xproperty.atom==XA_CUT_BUFFER5)
-	octet=XFetchBuffer(dpy,&i,5);
-      else if (event.xproperty.atom==XA_CUT_BUFFER6)
-	octet=XFetchBuffer(dpy,&i,6);
-      else if (event.xproperty.atom==XA_CUT_BUFFER7)
-	octet=XFetchBuffer(dpy,&i,7);
+      if (event.xproperty.atom == XA_CUT_BUFFER0)
+	octet = XFetchBuffer(dpy,&i,0);
+      else if (event.xproperty.atom == XA_CUT_BUFFER1)
+	octet = XFetchBuffer(dpy,&i,1);
+      else if (event.xproperty.atom == XA_CUT_BUFFER2)
+	octet = XFetchBuffer(dpy,&i,2);
+      else if (event.xproperty.atom == XA_CUT_BUFFER3)
+	octet = XFetchBuffer(dpy,&i,3);
+      else if (event.xproperty.atom == XA_CUT_BUFFER4)
+	octet = XFetchBuffer(dpy,&i,4);
+      else if (event.xproperty.atom == XA_CUT_BUFFER5)
+	octet = XFetchBuffer(dpy,&i,5);
+      else if (event.xproperty.atom == XA_CUT_BUFFER6)
+	octet = XFetchBuffer(dpy,&i,6);
+      else if (event.xproperty.atom == XA_CUT_BUFFER7)
+	octet = XFetchBuffer(dpy,&i,7);
       else break;
-      if (i>0)
+      if (i > 0)
       {
-	Scrapt=(char*)saferealloc((void*)Scrapt,sizeof(char)*(i+1));
-	Scrapt=strcpy(Scrapt,octet);
+	Scrapt = (char*)saferealloc((void*)Scrapt,sizeof(char)*(i+1));
+	Scrapt = strcpy(Scrapt,octet);
       }
       break;
     }
@@ -901,24 +955,24 @@ void ReadFvwmScriptArg(int argc, char **argv,int IsFather)
 
   BuffSend.NbMsg=0;			/* Aucun message dans le buffer */
 
-  for (i=2;i<98;i++)
+  for (i=2; i<98; i++)
     x11base->TabScriptId[i]=NULL;
 
   if (IsFather)			/* Cas du pere */
   {
-    myatom=XInternAtom(dpy,x11base->TabScriptId[1],True);
-    XSetSelectionOwner(dpy,myatom,x11base->win,CurrentTime);
-    FisrtArg=9;
+    myatom = XInternAtom(dpy,x11base->TabScriptId[1],True);
+    XSetSelectionOwner(dpy, myatom, x11base->win, CurrentTime);
+    FisrtArg = 9;
   }
   else
   {				/* Cas du fils */
-    x11base->TabScriptId[0]=(char*)safecalloc(sizeof(char),strlen(argv[7]));
-    x11base->TabScriptId[0]=strncpy(x11base->TabScriptId[0],argv[7],
+    x11base->TabScriptId[0] = (char*)safecalloc(sizeof(char),strlen(argv[7]));
+    x11base->TabScriptId[0] = strncpy(x11base->TabScriptId[0],argv[7],
 				    strlen(argv[7])-2);
-    x11base->TabScriptId[1]=argv[7];
-    myatom=XInternAtom(dpy,x11base->TabScriptId[1],True);
-    XSetSelectionOwner(dpy,myatom,x11base->win,CurrentTime);
-    FisrtArg=8;
+    x11base->TabScriptId[1] = argv[7];
+    myatom=XInternAtom(dpy, x11base->TabScriptId[1], True);
+    XSetSelectionOwner(dpy, myatom, x11base->win, CurrentTime);
+    FisrtArg = 8;
   }
 }
 
@@ -956,10 +1010,10 @@ int main (int argc, char **argv)
   }
 
   /* On determine si le script a un pere */
-  if (argc>=8)
-    IsFather=(argv[7][0] != (char)161);
+  if (argc >= 8)
+    IsFather = (argv[7][0] != (char)161);
   else
-    IsFather=1;
+    IsFather = 1;
 
   ScriptName = argv[6];
   ScriptBaseName = GetFileNameFromPath(ScriptName);
@@ -972,16 +1026,16 @@ int main (int argc, char **argv)
 		 M_END_CONFIG_INFO| M_WINDOW_NAME | M_SENDCONFIG);
 
   /* Enregistrement des arguments du script */
-  x11base=(X11base*) safecalloc(1,sizeof(X11base));
-  x11base->TabArg[0]=ModuleName;
-  for (i=8-IsFather;i<argc;i++)
-    x11base->TabArg[i-7+IsFather]=argv[i];
+  x11base = (X11base*) safecalloc(1,sizeof(X11base));
+  x11base->TabArg[0] = ModuleName;
+  for (i=8-IsFather; i<argc; i++)
+    x11base->TabArg[i-7+IsFather] = argv[i];
   /* Couleurs et fontes par defaut */
-  x11base->font=safestrdup("fixed");
-  x11base->forecolor=safestrdup("black");
-  x11base->backcolor=safestrdup("grey85");
-  x11base->shadcolor=safestrdup("grey55");
-  x11base->hilicolor=safestrdup("grey100");
+  x11base->font = safestrdup("fixed");
+  x11base->forecolor = safestrdup("black");
+  x11base->backcolor = safestrdup("grey85");
+  x11base->shadcolor = safestrdup("grey55");
+  x11base->hilicolor = safestrdup("grey100");
   x11base->colorset = -1;
 
   /* Initialisation du serveur X et de la fenetre */
@@ -1039,6 +1093,12 @@ int main (int argc, char **argv)
   siginterrupt(SIGTERM, 1);
 #endif
 #endif
+
+  /* Compute the Shift-Tab keysym */
+  {
+    KeyCode tab = XKeysymToKeycode(dpy, XK_Tab);
+    shift_tab_ks = XKeycodeToKeysym(dpy, tab, ShiftMask);
+  }
 
   /* Construction des boutons et de la fenetre */
   BuildGUI(IsFather);

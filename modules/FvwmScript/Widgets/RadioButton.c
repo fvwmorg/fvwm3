@@ -17,9 +17,9 @@
 
 
 
-/***********************************************/
-/* Fonction pour RadioButton                    */
-/***********************************************/
+/*********************************************************/
+/* Fonction pour RadioButton / Function for RadioButton  */
+/*********************************************************/
 void InitRadioButton(struct XObj *xobj)
 {
  unsigned long mask;
@@ -210,6 +210,17 @@ void EvtMouseRadioButton(struct XObj *xobj,XButtonEvent *EvtButton)
 
 void EvtKeyRadioButton(struct XObj *xobj,XKeyEvent *EvtKey)
 {
+  KeySym ks;
+  unsigned char buf[10];
+  int j=xobj->height/2+3;
+
+  XLookupString(EvtKey, (char *)buf, sizeof(buf), &ks, NULL);
+  if (ks == XK_Return) {
+    xobj->value=1;
+    XSetForeground(dpy,xobj->gc,xobj->TabColor[fore]);
+    XFillArc(dpy, xobj->win, xobj->gc, 2, j-10, 8, 8, 0*64, 360*64);
+    SendMsg(xobj,SingleClic);
+  }
 }
 
 void ProcessMsgRadioButton(struct XObj *xobj,unsigned long type,unsigned long *body)

@@ -660,7 +660,7 @@ static char *ReceivFromScript (int *NbArg,long *TabArg)
  while ((!XCheckTypedEvent(dpy,SelectionNotify,&event))&&(NbEssai<10))
  {
    usleep(1);
-  NbEssai++;
+   NbEssai++;
  }
  if (event.xselection.property!=None)
   if (event.xselection.selection==ASend)

@@ -263,7 +263,7 @@ Widget 18
 Property
  Position 15 10
  Type ItemDraw
- Flags NoReliefString	
+ Flags NoReliefString NoFocus	
  Title {Background}
 Main
  Case message of
@@ -294,6 +294,7 @@ Widget 6
 Property
  Size 50 50
  Position 60 80
+ Flags NoFocus
  Type ItemDraw
  BackColor {#0EC4B8}
 Main
@@ -320,7 +321,7 @@ Property
  Size 50 50
  Position 58 140
  Type ItemDraw
- Flags NoReliefString
+ Flags NoReliefString NoFocus
  Title {#0EC4B8}
 Main
  Case message of
@@ -438,6 +439,7 @@ Widget 8
 Property
  Size 175 75
  Position 120 195
+ Flags NoReliefString NoFocus
  Type ItemDraw
  Icon /usr/X11/include/X11/pixmaps/fvwm2.xpm
 Main
@@ -497,7 +499,7 @@ Widget 19
 Property
  Position 430 10
  Type ItemDraw
- Flags NoReliefString
+ Flags NoReliefString NoFocus
  Title {Screen-saver}
 Main
  Case message of
@@ -525,7 +527,7 @@ Widget 12
 Property
  Position 505 40
  Type ItemDraw
- Flags NoReliefString
+ Flags NoReliefString NoFocus
  Title {Timeout(s):}
 Main
  Case message of
@@ -566,7 +568,7 @@ Widget 13
 Property
  Position 525 85
  Type ItemDraw
- Flags NoReliefString
+ Flags NoReliefString NoFocus
  Title {Cycle(s):}
 Main
  Case message of
@@ -611,7 +613,7 @@ Widget 59
 Property
  Position 430 120
  Type ItemDraw
- Flags NoReliefString
+ Flags NoReliefString NoFocus
  Title {DPMS}
 Main
  Case message of
@@ -654,7 +656,7 @@ Widget 62
 Property
  Position 440 180
  Type ItemDraw
- Flags NoReliefString
+ Flags NoReliefString NoFocus
  Title {Standby(s):}
 Main
  Case message of
@@ -681,7 +683,7 @@ Widget 64
 Property
  Position 440 205
  Type ItemDraw
- Flags NoReliefString
+ Flags NoReliefString NoFocus
  Title {Suspend(s):}
 Main
  Case message of
@@ -708,7 +710,7 @@ Widget 66
 Property
  Position 440 230
  Type ItemDraw
- Flags NoReliefString
+ Flags NoReliefString NoFocus
  Title {Off(s):}
 Main
  Case message of
@@ -751,7 +753,7 @@ Widget 71
 Property
  Position 430 270
  Type ItemDraw
- Flags NoReliefString
+ Flags NoReliefString NoFocus
  Title {xscreensaver}
 Main
  Case message of

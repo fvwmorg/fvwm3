@@ -52,7 +52,7 @@ get		=
 ^{bl}+Icon		{ return ICON; }
 ^{bl}+Flags		{ return FLAGS; }
 Hidden			{ return HIDDEN; }
-CanBeSelected		{ return CANBESELECTED; }
+NoFocus			{ return NOFOCUS; }
 NoReliefString		{ return NORELIEFSTRING; }
 
 ^{bl}+Do		{ return EXEC; }

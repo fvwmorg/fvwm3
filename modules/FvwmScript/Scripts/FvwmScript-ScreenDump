@@ -64,7 +64,7 @@ End
 Widget 4
 Property
  Position 15 2
- Flags NoReliefString
+ Flags NoReliefString NoFocus
  Type ItemDraw
  Title {Dump to:}
 Main
@@ -124,7 +124,7 @@ End
 Widget 8
 Property
  Position 74 65
- Flags NoReliefString
+ Flags NoReliefString NoFocus
  Type ItemDraw
  Title {Format}
  Value 1
@@ -202,7 +202,7 @@ End
 Widget 10
 Property
  Position 74 138
- Flags NoReliefString
+ Flags NoReliefString NoFocus
  Type ItemDraw
  Title {Command line}
  Value 1
@@ -245,7 +245,7 @@ End
 Widget 13
 Property
  Position 15 192
- Flags NoReliefString
+ Flags NoReliefString NoFocus
  Type ItemDraw
  Title {Options:}
 Main

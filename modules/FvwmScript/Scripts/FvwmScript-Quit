@@ -21,6 +21,7 @@ Init
 Widget 1
 Property
  Position 40 40
+ Flags NoReliefString NoFocus
  Type ItemDraw
  Icon shutdown.xpm
 Main
@@ -46,7 +47,7 @@ Widget 3
 Property
  Title { What do you want to do? }
  Position 100  8
- Flags NoReliefString
+ Flags NoReliefString NoFocus
  Type ItemDraw
  Value 0
  Font -adobe-helvetica-bold-r-*-*-12-*

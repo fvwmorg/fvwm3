@@ -102,7 +102,7 @@ End
 Widget 4
 Property
  Position 20 42
- Flags NoReliefString
+ Flags NoReliefString NoFocus
  Type ItemDraw
  Title {Path:}
 Main
@@ -130,7 +130,7 @@ End
 Widget 6
 Property
  Position 20 67
- Flags NoReliefString
+ Flags NoReliefString NoFocus
  Type ItemDraw
  Title {Name:}
 Main
@@ -157,7 +157,7 @@ End
 Widget 8
 Property
  Position 20 92
- Flags NoReliefString
+ Flags NoReliefString NoFocus
  Type ItemDraw
  Title {Body:}
 Main

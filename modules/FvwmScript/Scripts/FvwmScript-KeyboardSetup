@@ -117,7 +117,7 @@ End
 Widget 5
 Property
  Position 130 100
- Flags NoReliefString
+ Flags NoReliefString NoFocus
  Type ItemDraw
  Title {Click Volume (%)}
 Main
@@ -156,7 +156,7 @@ End
 Widget 8
 Property
  Position 170 40
- Flags NoReliefString
+ Flags NoReliefString NoFocus
  Type ItemDraw
  Title {Start Delay:  }
 Main
@@ -182,7 +182,7 @@ End
 Widget 10
 Property
  Position 170 65
- Flags NoReliefString
+ Flags NoReliefString NoFocus
  Type ItemDraw
  Title {Repeat Delay:}
 Main
@@ -207,7 +207,7 @@ End
 Widget 12
 Property
  Position 15 3
- Flags NoReliefString
+ Flags NoReliefString NoFocus
  Type ItemDraw
  Title {Keyboard}
 Main

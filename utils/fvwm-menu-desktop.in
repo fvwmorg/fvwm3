@@ -491,8 +491,14 @@ while( $Rec_Dir_List[0] ne '+') {
 		@Main_List=();	# will contain the list of the file and dir
 		#               # of $dir (in good order)
 		my $hidden = 0;
-		my @newList = ();
+		my @orderedList = ();
 		my @newDirList = ();
+
+		my @sList = ();
+		my @uList = ();
+		my @sDir = ();
+		my @uDir = ();
+		my @list = ();
 
 		if ($mergeUserMenu) {
 			$mergeDir = $dir;
@@ -518,7 +524,7 @@ while( $Rec_Dir_List[0] ne '+') {
 			"fvwm-menu-desktop: Can't open $dir/.order: $!\n";
 			while( defined ($name = <ORDER>)) {
 				chomp($name);
-				push(@newList, "$dir/$name");
+				push(@orderedList, "$dir/$name");
 			}
 			close(ORDER);
 		}
@@ -531,12 +537,12 @@ while( $Rec_Dir_List[0] ne '+') {
 			while(<ORDER>) {
 				$hidden = 1 if /^hidden=true/i;
 				if ( /^SortOrder=(.*)$/ ) {
-					@newList = ();
+					@orderedList = ();
 					$order = "$1";
 					@list = split(/\s*,\s*/, "$order");
 					foreach $name (@list) {
 						next if -f "$mergeDir/$name" && isHidden("$mergeDir/$name");
-						push(@newList, "$dir/$name"); 
+						push(@orderedList, "$dir/$name"); 
 					}
 				}
 			}
@@ -547,44 +553,42 @@ while( $Rec_Dir_List[0] ne '+') {
 			while(<ORDER>) {
 				$hidden = 1 if /^hidden=true/i;
 				if ( /^SortOrder=(.*)$/ ) {
-					@newList = ();
+					@orderedList = ();
 					$order = "$1";
 					@list = split(/\s*[,;]\s*/, "$order");
 					foreach $name (@list) {
 						next if $mergeUserMenu && -f "$mergeDir/$name" && 
 						  isHidden("$mergeDir/$name");
-						push(@newList, "$dir/$name"); 
+						push(@orderedList, "$dir/$name"); 
 					}
 				}
 			}
 			close(ORDER);
 		}
-		@newList = () if $hidden;
+		@orderedList = () if $hidden;
 
 		# 2. Add to @Main_List the items not in the order.
 		# AND WE UPDATE @Rec_Dir_List HERE
-		@list = @newList;
+
 		# a system submenu has a submenu in the user menu:
 		if ($mergeDirType eq "s" && ! -d $dir && -d $mergeDir) {
-			opendir(DIR,"$mergeDir");
-			foreach $name (readdir(DIR)) {
+			foreach $name (orderReadDir("$mergeDir")) {
 				next if $name =~ /^\./;
+				$add = (-f "$dir/$name") || isDirNonEmpty("$dir/$name");
 				if (-d "$mergeDir/$name") {
 					next if -f "$mergeDir/$name/.directory" && 
 					  isHidden("$mergeDir/$name/.directory");
-					push(@newDirList, "$dir/$name");
+					push(@uDir, "$dir/$name") if $add;
 				}
-				$add = 1;
-				foreach $j (@list) { $add=0 if "$dir/$name" eq "$j"; }
-				push(@newList, "$dir/$name") if $add ;
+				foreach $j (@orderedList) { $add=0 if "$dir/$name" eq "$j"; }
+				push(@uList, "$dir/$name") if $add ;
 			}
-			close(DIR);
 		}
 
 		if (-d $dir) {
-			opendir(DIR,"$dir");
-			foreach $name (readdir(DIR)) {
+			foreach $name (orderReadDir("$dir")) {
 				next if $name =~ /^\./;
+				$add = (-f "$dir/$name") || isDirNonEmpty("$dir/$name");
 				if ( -d "$dir/$name" ) {
 					if ($mergeDirType eq "s" && -f "$mergeDir/$name/.directory") {
 						next if isHidden("$mergeDir/$name/.directory");
@@ -595,45 +599,41 @@ while( $Rec_Dir_List[0] ne '+') {
 					elsif ( -f "$dir/$name/.directory") {
 						next if isHidden("$dir/$name/.directory");
 					}
-					push(@newDirList, "$dir/$name");
+					push(@sDir, "$dir/$name") if $add;
 				} elsif ($mergeDirType eq "s" && -f "$mergeDir/$name") {
 					next if isHidden("$mergeDir/$name");
 				}
-				$add = 1;
-				foreach $j  (@list) {
+				foreach $j  (@orderedList) {
 					$add=0 if ("$dir/$name" eq "$j");
 				}
-				push(@newList, "$dir/$name") if $add;
+				push(@sList, "$dir/$name") if $add;
 			}
 			close(DIR);
 		}
 		# added user entries in a "system" submenu
 		if ($mergeDirType eq "s" && -d "$mergeDir") {
-			@list = @newList;
-			opendir(DIR,"$mergeDir");
-			foreach $name (readdir(DIR)) {
+			foreach $name (orderReadDir("$mergeDir")) {
 				next if $name =~ /^\./;
 				next if -d "$dir/$name" || -f "$dir/$name";
 				next if "$dir" eq "$APPS_DIR";
 				if (-d "$mergeDir/$name") {
-					push(@newDirList, "$dir/$name") if -d "$mergeDir/$name";
+					push(@uDir, "$dir/$name") if -d "$mergeDir/$name";
 				} elsif (-f "$mergeDir/$name") {
 					next if isHidden("$mergeDir/$name");
 				}
 				$add = 1;
-				foreach $j (@list) {
+				foreach $j (@orderedList) {
 					$add=0 if ("$dir/$name" eq "$j");
 				}
-				push(@newList, "$dir/$name") if $add;
+				push(@uList, "$dir/$name") if $add;
 			}
-			close(DIR);
 		}
  
 		# ---------
 		# Build the menu of $dir
 		if (!$hidden) {
-			push @Rec_Dir_List, @newDirList;
-			push @Main_List, @newList;
+			push @Rec_Dir_List, @uDir, @sDir;
+			push @Main_List, @orderedList, @uList, @sList;
 			build_a_level();
 		}
 
@@ -668,6 +668,7 @@ if ($MENU_STYLE ne "") {
 #----------------------------------------------------------------------------
 #----------------------------------------------------------------------------
 # Subroutines:
+#     orderReadDir
 #     isHidden
 #     up_directory
 #     build_a_level (build a (sub)Menu)
@@ -678,6 +679,40 @@ if ($MENU_STYLE ne "") {
 #----------------------------------------------------------------------------
 #----------------------------------------------------------------------------
 # 
+sub orderReadDir {
+	my $dir = shift;
+			
+	opendir(DIR,"$dir") || return ();
+	# put the dirs first ...
+	my @f = ();
+	my @d = ();
+	my @l = ();
+	foreach $name (readdir(DIR)) {
+		next if  $name =~ /^\./;
+		if (-d "$dir/$name") {
+			push (@d, "$name");
+		}
+		elsif (-f "$dir/$name") {
+			push (@f, "$name");
+		}
+	}
+	close(DIR);
+	return (@d, @f);
+}
+
+sub isDirNonEmpty {
+	my $dir = shift;
+
+	return 0 if (! -d $dir);
+	opendir(DIR,"$dir") || return 0;
+	foreach $name (readdir(DIR)) {
+		next if  $name =~ /^\./;
+		close(DIR);
+		return 1;
+	}
+	return 0;
+}
+
 sub isHidden {
 	my $file = shift;
 	my $return = 0;
