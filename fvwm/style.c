@@ -2236,12 +2236,6 @@ static Bool style_parse_one_style_option(
 			ps->flag_mask.do_decorate_transient = 1;
 			ps->change_mask.do_decorate_transient = 1;
 		}
-		else if (StrEquals(token, "DisallowMaximizeFixedSize"))
-		{
-		        S_SET_MAXIMIZE_FIXED_SIZE_DISALLOWED(SCF(*ps), on);
-			S_SET_MAXIMIZE_FIXED_SIZE_DISALLOWED(SCM(*ps), 1);
-			S_SET_MAXIMIZE_FIXED_SIZE_DISALLOWED(SCC(*ps), 1);
-		}
 		else if (StrEquals(token, "DumbPlacement"))
 		{
 			ps->flags.placement_mode &= (~PLACE_SMART);
@@ -3607,25 +3601,7 @@ static Bool style_parse_one_style_option(
 		break;
 
 	case 'u':
-	        if (StrEquals(token, "Uniconifiable"))
-		{
-		        S_SET_IS_UNICONIFIABLE(SCF(*ps), on);
-			S_SET_IS_UNICONIFIABLE(SCM(*ps), 1);
-			S_SET_IS_UNICONIFIABLE(SCC(*ps), 1);
-		}
-		else if (StrEquals(token, "Unmaximizable"))
-		{
-		        S_SET_IS_UNMAXIMIZABLE(SCF(*ps), on);
-			S_SET_IS_UNMAXIMIZABLE(SCM(*ps), 1);
-			S_SET_IS_UNMAXIMIZABLE(SCC(*ps), 1);
-		}
-		else if (StrEquals(token, "Unclosable"))
-		{
-		        S_SET_IS_UNCLOSABLE(SCF(*ps), on);
-			S_SET_IS_UNCLOSABLE(SCM(*ps), 1);
-			S_SET_IS_UNCLOSABLE(SCC(*ps), 1);
-		}
-		else if (StrEquals(token, "UsePPosition"))
+		if (StrEquals(token, "UsePPosition"))
 		{
 			ps->flags.use_no_pposition = !on;
 			ps->flag_mask.use_no_pposition = 1;

@@ -5864,10 +5864,10 @@ slashes ('/').  The last style in these groups is the default.
 .IR FixedSize " / " VariableSize ,
 .IR FixedUSSize " / " VariableUSSize ,
 .IR FixedPSize " / " VariablePSize ,
-.IR Closable " / " Unclosable ,
-.IR Iconifiable " / " Uniconifiable ,
-.IR Maximizable " / " Unmaximizable ,
-.IR AllowMaximizeFixedSize " / " DisallowMaximizeFixedSize ,
+.IR !Closable " / " Closable ,
+.IR !Iconifiable " / " Iconifiable ,
+.IR !Maximizable " / " Maximizable ,
+.IR !AllowMaximizeFixedSize " / " AllowMaximizeFixedSize ,
 .IR IconOverride " / " NoIconOverride " / " NoActiveIconOverride ,
 .IR DepressableBorder " / " FirmBorder ,
 .IR MaxWindowSize ,
@@ -6724,34 +6724,27 @@ enables the functions
 and 
 .I Destroy 
 to be performed on the windows. This is on by default.
-.IR Unclosable
-disables the functions 
-.I Close,
-.I Delete 
-and 
-.I Destroy 
-to be performed on the windows.
+The opposite, 
+.IR !Closable
+,inhibits the window to be closed.
 
 .IR Iconifiable
 enables the function 
 .I Iconify 
 to be performed on the windows.
 This is on by default.
-.IR Uniconifiable
-disables the function 
-.I Iconify 
-to be performed on the windows.
-This can be useful for example on the FvwmIconBox.
+The opposite, 
+.IR !Iconifiable
+,inhibits the window from being iconified. 
 
 .IR Maximizable
 enables the function 
 .I Maximize 
 to be performed on the windows.
 This is on by default.
-.IR Unmaximizable
-disables the function 
-.I Maximize 
-to be performed on the windows.
+The opposite, 
+.IR !Maximizable
+,inhibits the window from being maximized.
 
 .IR AllowMaximizeFixedSize
 enables the function 
@@ -6761,13 +6754,9 @@ has been disabled either using the style
 .I Unmaximizable
 or throuth WM hints,
 This on by default.
-.IR DisallowMaximizeFixedSize
-disables the function 
-.I Maximize
-for all windows that are not resizable.
-Note that some applications set the window's minumum and maximum size
-the same and and expect this to mean that the size is fixed.
-This style forbids maximisation of such windows.
+The opposite,
+.IR !AllowMaximizeFixedSize
+,inibits all widows that are not resizable from being maximized.
 
 .I ResizeHintOverride
 instructs fvwm to ignore the program supplied minimum and maximum
