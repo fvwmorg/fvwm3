@@ -1,3 +1,39 @@
+1999-12-29  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* fvwm/events.c (HandleEvents):
+	* fvwm/update.c (flush_window_updates):
+	renamed function
+
+	* fvwm/bindings.c (ParseBinding):
+	* fvwm/add_window.c (setup_button_windows):
+	destroying bindings properly updates title buttons
+
+	* fvwm/bindings.c (ParseBinding):
+	core dump fixed
+
+	* fvwm/fvwm.c (InitVariables):
+	some new default macros
+
+	* fvwm/update.c (update_windows):
+	* fvwm/bindings.c (ParseBinding):
+	adding/removing bindings may affect decorations
+
+	* fvwm/functions.c (DeferExecution):
+	fixed button bindings over client window
+
+	* fvwm/windowlist.c (do_windowList):
+	implemented windowlist options NoOnBottom, OnBottom and OnlyOnBottom.
+
+	* fvwm/fvwm.c (InitVariables):
+	* fvwm/screen.h (ScreenInfo):
+	* fvwm/borders.c (RedrawBorder):
+	* fvwm/builtins.c (SetGlobalOptions):
+	removed border...priority globalopts
+	handle 2 pixel wide borders differently
+
+	* fvwm/add_window.c (setup_style_and_decor):
+	fixed butto/nobutton style
+
 1999-12-29  Chris Rankin  <rankinc@zipworld.com.au>
 
 	* fvwm/bindings.c:

@@ -992,11 +992,10 @@ int DeferExecution(XEvent *eventp, Window *w,FvwmWindow **tmp_win,
 
   /* this ugly mess attempts to ensure that the release and press
    * are in the same window. */
-  if((*w != original_w)&&(original_w != Scr.Root)&&
-     (original_w != None)&&(original_w != Scr.NoFocusWin))
+  if(*w != original_w && original_w != Scr.Root &&
+     original_w != None && original_w != Scr.NoFocusWin)
   {
-    if(!((*w == (*tmp_win)->decor_w)&&
-         (original_w == (*tmp_win)->w)))
+    if (*w != (*tmp_win)->frame || original_w != (*tmp_win)->w)
     {
       *context = C_ROOT;
       XBell(dpy, 0);

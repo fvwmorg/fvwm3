@@ -26,19 +26,37 @@
 #ifndef _DEFAULTS_
 #define _DEFAULTS_
 
+/* bindings */
+#define DEFAULT_BUTTONS_TO_GRAB         0x7
+
+/* menus */
 #define DEFAULT_CLICKTIME               150           /* ms */
 #define DEFAULT_POPUP_DELAY              15           /* ms*10 */
 #define DEFAULT_MENU_CLICKTIME           (3*DEFAULT_CLICKTIME)
 #define DEFAULT_MOVE_THRESHOLD            3
 
+/* window geometry */
 #define DEFAULT_MIN_MAX_WINDOW_WIDTH    100
 #define DEFAULT_MIN_MAX_WINDOW_HEIGHT   100
 #define DEFAULT_MAX_MAX_WINDOW_WIDTH  32767
 #define DEFAULT_MAX_MAX_WINDOW_HEIGHT 32767
 #define WINDOW_FREAKED_OUT_HEIGHT     65500
 
+/* movement */
 #define DEFAULT_OPAQUE_MOVE_SIZE          5
+#define DEFAULT_SNAP_ATTRACTION           -1
+#define DEFAULT_SNAP_ATTRACTION_MODE      0
+#define DEFAULT_SNAP_GRID_X               1
+#define DEFAULT_SNAP_GRID_Y               1
+#define DEFAULT_MOVE_SMOOTHNESS           30
 
+/* paging */
+#define DEFAULT_EDGE_SCROLL             100
+/* Don't page if the pointer has moved for more than this many pixels between
+ * two samples */
+#define MAX_PAGING_MOVE_DISTANCE          5
+
+/* layers */
 #define DEFAULT_BOTTOM_LAYER              2
 #define DEFAULT_DEFAULT_LAYER             4
 #define DEFAULT_TOP_LAYER                 6
@@ -50,19 +68,9 @@
 #define DEFAULT_USE_ACTIVE_DOWN_BUTTONS   True
 #define DEFAULT_USE_INACTIVE_BUTTONS      True
 
-#define DEFAULT_SNAP_ATTRACTION           -1
-#define DEFAULT_SNAP_ATTRACTION_MODE      0
-#define DEFAULT_SNAP_GRID_X               1
-#define DEFAULT_SNAP_GRID_Y               1
-
-#define DEFAULT_MOVE_SMOOTHNESS           30
-
 /* Tunable parameters. */
 #define MAX_GRADIENT_SEGMENTS          1000
 #define MAX_GRADIENT_COLORS            10000
-/* Don't page if the pointer has moved for more than this many pixels between
- * two samples */
-#define MAX_PAGING_MOVE_DISTANCE          5
 
 /* Very long window names (600000 characters or more) seem to hang the X
  * server. */

@@ -368,7 +368,6 @@ typedef struct ScreenInfo
     unsigned MouseFocusClickRaises : 1;
     unsigned StipledTitles : 1;
     unsigned WindowShadeScrolls : 1;
-    unsigned BorderColorPriority : 1;
   } go; /* global options */
   struct
   {
@@ -396,6 +395,7 @@ typedef struct ScreenInfo
     unsigned has_default_color_changed : 1;
     unsigned has_icon_font : 1;
     unsigned has_window_font : 1;
+    unsigned has_nr_buttons_changed : 1;
     unsigned silent_functions : 1;
     unsigned windows_captured : 1;
     unsigned edge_wrap_x : 1;

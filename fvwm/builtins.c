@@ -2782,14 +2782,6 @@ void SetGlobalOptions(F_CMD_ARGS)
     {
       Scr.go.StipledTitles = True;
     }
-    else if (StrEquals(opt,"BORDERCOLORPRIORITY"))
-    {
-      Scr.go.BorderColorPriority = True;
-    }
-    else if (StrEquals(opt,"BORDERRELIEFPRIORITY"))
-    {
-      Scr.go.BorderColorPriority = False;
-    }
     else if (StrEquals(opt,"CAPTUREHONORSSTARTSONPAGE"))
     {
       ProcessNewStyle(eventp, w, tmp_win, context,

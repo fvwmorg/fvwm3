@@ -238,7 +238,7 @@ void HandleEvents(void)
     last_event_type = 0;
     if (Scr.flags.do_need_window_update)
     {
-      update_windows();
+      flush_window_updates();
     }
     if(My_XNextEvent(dpy, &Event))
     {

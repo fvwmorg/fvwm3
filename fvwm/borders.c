@@ -316,6 +316,7 @@ static void RedrawBorder(
   int w_shin;
   int w_din;
   int sum;
+  int min;
 
   if (tgc == None && !HAS_MWM_BORDER(t))
   {
@@ -420,9 +421,9 @@ static void RedrawBorder(
     w_shin = 0;
     sum--;
   }
-  /* reduce size of relief until at leas one pixel of the original colour is
-   * visible. */
-  while (sum + (Scr.go.BorderColorPriority ? 1 : 0) > t->boundary_width)
+  /* reduce size of relief visible. */
+  min = ((!IS_SHADED(t) || HAS_TITLE(t)) && t->boundary_width == 2) ? 0 : 1;
+  while (sum + min > t->boundary_width)
   {
     if (w_hi > 1)
       w_hi--;

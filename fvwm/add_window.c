@@ -273,6 +273,7 @@ void setup_style_and_decor(
   GetMwmHints(tmp_win);
   GetOlHints(tmp_win);
 
+  tmp_win->buttons = SIS_BUTTON_DISABLED(&pstyle->flags);
   SelectDecor(tmp_win, &pstyle->flags, SGET_BORDER_WIDTH(*pstyle),
 	      SGET_HANDLE_WIDTH(*pstyle), left_buttons, right_buttons);
 
@@ -569,7 +570,8 @@ void setup_button_windows(
 					  pattributes);
       XSaveContext(dpy, tmp_win->right_w[i], FvwmContext, (caddr_t) tmp_win);
     }
-    else if (tmp_win->right_w[i] != None && !(right_buttons & (1 << i)))
+    else if (tmp_win->right_w[i] != None && (!(right_buttons & (1 << i)) ||
+					     i >= Scr.nr_right_buttons))
     {
       /* destroy the current button window */
       XDestroyWindow(dpy, tmp_win->right_w[i]);
@@ -591,7 +593,8 @@ void setup_button_windows(
 					 pattributes);
       XSaveContext(dpy, tmp_win->left_w[i], FvwmContext, (caddr_t) tmp_win);
     }
-    else if (tmp_win->left_w[i] != None && !(left_buttons & (1 << i)))
+    else if (tmp_win->left_w[i] != None && (!(left_buttons & (1 << i)) ||
+					    i >= Scr.nr_left_buttons))
     {
       /* destroy the current button window */
       XDestroyWindow(dpy, tmp_win->left_w[i]);
@@ -605,9 +608,6 @@ void destroy_button_windows(FvwmWindow *tmp_win, Bool do_only_delete_context)
 {
   int i;
 
-#if 0
-fprintf(stderr,"%s\n", tmp_win->name);
-#endif
   for(i = Scr.nr_left_buttons - 1; i >= 0; i--)
   {
     if(tmp_win->left_w[i] != None)
@@ -1144,7 +1144,6 @@ FvwmWindow *AddWindow(Window w, FvwmWindow *ReuseWin)
   SET_TRANSIENT(
     tmp_win, !!XGetTransientForHint(dpy, tmp_win->w, &tmp_win->transientfor));
   setup_icon_boxes(tmp_win, &style);
-  tmp_win->buttons = SIS_BUTTON_DISABLED(sflags);
   SET_ICONIFIED(tmp_win, 0);
   SET_ICON_UNMAPPED(tmp_win, 0);
   SET_MAXIMIZED(tmp_win, 0);

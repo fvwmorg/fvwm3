@@ -3,6 +3,10 @@ _+_A HREF="#2.2.4"_-_2.2.4_+_/A_-_.
 
 Changes in beta release 2.3.12 (not released yet)
 
+* New WindowList options NoOnBottom, OnBottom and OnlyOnBottom.
+
+* New FvwmTheme colorset options 'Plain' and 'NoShape'.
+
 * New window styles HilightFore, HilightBack and HilightColorset replace
   the old commands HilightColor and HilightColorset.
 

@@ -35,6 +35,6 @@ typedef struct
   unsigned do_update_window_font : 1;
 } update_win;
 
-void update_windows(void);
+void flush_window_updates(void);
 
 #endif /* _UPDATE_ */

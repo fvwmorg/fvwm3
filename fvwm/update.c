@@ -189,7 +189,7 @@ static void apply_window_updates(
 }
 
 /* Check and apply new style to each window if the style has changed. */
-void update_windows(void)
+void flush_window_updates(void)
 {
   FvwmWindow *t;
   window_style style;
@@ -222,6 +222,8 @@ void update_windows(void)
   for (t = Scr.FvwmRoot.next; t != NULL; t = t->next)
   {
     check_window_style_change(t, &flags, &style);
+    if (Scr.flags.has_nr_buttons_changed)
+      flags.do_redecorate = True;
     flags.do_update_window_font =
       (Scr.flags.has_window_font) ?
       t->decor->flags.has_font_changed : Scr.flags.has_default_font_changed;
@@ -252,6 +254,7 @@ void update_windows(void)
   Scr.flags.do_need_window_update = 0;
   Scr.flags.has_default_font_changed = 0;
   Scr.flags.has_default_color_changed = 0;
+  Scr.flags.has_nr_buttons_changed = 0;
 
 #if 0
   if (do_need_ungrab)

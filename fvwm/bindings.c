@@ -22,6 +22,7 @@
 #include "functions.h"
 #include "libs/fvwmlib.h"
 #include "bindings.h"
+#include "defaults.h"
 #include "misc.h"
 #include "screen.h"
 #ifdef HAVE_STROKE
@@ -33,6 +34,54 @@ static void activate_binding(Binding *binding, BindingType type, Bool do_grab);
 #define MODS_UNUSED_DEFAULT LockMask
 static int mods_unused = MODS_UNUSED_DEFAULT;
 
+
+static void update_nr_buttons(
+  int contexts, int *nr_left_buttons, int *nr_right_buttons)
+{
+  int i;
+  int j;
+  int l = (nr_left_buttons) ? *nr_left_buttons : 0;
+  int r = (nr_right_buttons) ? *nr_right_buttons : 0;
+
+  if (contexts != C_ALL && (contexts & C_LALL) && nr_left_buttons != NULL)
+  {
+    /* check for nr_left_buttons */
+    i = 0;
+    j = (contexts &C_LALL) / C_L1;
+    while (j > 0)
+    {
+      i++;
+      j = j >> 1;
+    }
+    if (*nr_left_buttons < i)
+    {
+      *nr_left_buttons = i;
+    }
+  }
+  if(contexts != C_ALL && (contexts & C_RALL) && nr_right_buttons != NULL)
+  {
+    /* check for nr_right_buttons */
+    i = 0;
+    j = (contexts&C_RALL) / C_R1;
+    while (j > 0)
+    {
+      i++;
+      j = j >> 1;
+    }
+    if(*nr_right_buttons < i)
+    {
+      Scr.flags.do_need_window_update = 1;
+      Scr.flags.has_nr_buttons_changed = 1;
+      *nr_right_buttons = i;
+    }
+  }
+  if ((nr_left_buttons && *nr_left_buttons != l) ||
+      (nr_right_buttons && *nr_right_buttons != r))
+  {
+    Scr.flags.do_need_window_update = 1;
+    Scr.flags.has_nr_buttons_changed = 1;
+  }
+}
 
 /****************************************************************************
  *
@@ -176,64 +225,67 @@ int ParseBinding(Display *dpy, Binding **pblist, char *tline,
   */
   if (!action || action[0] == '-')
   {
+    Bool is_binding_removed = False;
     Binding *b;
-    for (b = *pblist; b != NULL; b = b->NextBinding)
+    Binding *tmp;
+
+    for (b = *pblist; b != NULL; b = tmp)
     {
-      if (MatchBinding(dpy, b,
-		       STROKE_ARG(stroke)
+      tmp = b->NextBinding;
+      if (MatchBinding(dpy, b, STROKE_ARG(stroke)
 		       button, keysym, mods, GetUnusedModifiers(), contexts,
 		       type))
       {
         /* we found it, unbind it */
-          activate_binding(b, type, False);
-          RemoveBinding(dpy, pblist, type,
-                        STROKE_ARG(stroke)
-                        button, keysym, mods, contexts);
+	activate_binding(b, type, False);
+	RemoveBinding(dpy, pblist, type, STROKE_ARG(stroke)
+		      button, keysym, mods, contexts);
+	is_binding_removed = True;
       }
     }
 
+    if (is_binding_removed)
+    {
+      int bcontexts = 0;
+
+      if (buttons_grabbed)
+	*buttons_grabbed = DEFAULT_BUTTONS_TO_GRAB;
+      for (b = *pblist; b != NULL; b = b->NextBinding)
+      {
+	if(b->type == MOUSE_BINDING && (b->Context & C_WINDOW) &&
+	   (b->Modifier == 0 || b->Modifier == AnyModifier) &&
+	   buttons_grabbed != NULL)
+	{
+	  *buttons_grabbed &= ~(1<<(button-1));
+	}
+	if (nr_left_buttons != NULL || nr_right_buttons != NULL)
+	{
+	  if (b->Context != C_ALL && (b->Context & (C_LALL | C_RALL)) &&
+	      b->type == MOUSE_BINDING)
+	  {
+	    bcontexts |= b->Context;
+	  }
+	}
+      }
+      if (nr_left_buttons)
+	*nr_left_buttons = 0;
+      if (nr_right_buttons)
+	*nr_right_buttons = 0;
+      update_nr_buttons(bcontexts, nr_left_buttons, nr_right_buttons);
+    }
     return 0;
   }
 
   if (type == MOUSE_BINDING)
   {
-    int j;
-
-    if((contexts != C_ALL) && (contexts & C_LALL) &&
-       (nr_left_buttons != NULL))
-    {
-      /* check for nr_left_buttons */
-      i=0;
-      j=(contexts &C_LALL)/C_L1;
-      while(j>0)
-      {
-        i++;
-        j=j>>1;
-      }
-      if(*nr_left_buttons < i)
-        *nr_left_buttons = i;
-    }
-    if((contexts != C_ALL) && (contexts & C_RALL) &&
-       (nr_right_buttons != NULL))
-    {
-      /* check for nr_right_buttons */
-      i=0;
-      j=(contexts&C_RALL)/C_R1;
-      while(j>0)
-      {
-        i++;
-        j=j>>1;
-      }
-      if(*nr_right_buttons < i)
-        *nr_right_buttons = i;
-    }
+    update_nr_buttons(contexts, nr_left_buttons, nr_right_buttons);
   }
 
   if((mods & AnyModifier)&&(mods&(~AnyModifier)))
   {
     fvwm_msg(WARN,"ParseBinding","Binding specified AnyModifier and other "
 	     "modifers too. Excess modifiers will be ignored.");
-    mods &= AnyModifier;
+    mods = AnyModifier;
   }
 
   if((type == MOUSE_BINDING)&&(contexts & C_WINDOW)&&

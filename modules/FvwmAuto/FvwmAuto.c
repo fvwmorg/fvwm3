@@ -143,18 +143,41 @@ int main(int argc, char **argv)
 
   if (argv[7])			/* if specified */
   {
+    char *token;
+
     if (*argv[7] && !StrEquals(argv[7],"NOP")) /* not empty */
       enter_fn=argv[7];		/* override default */
     else
       enter_fn=NULL;		/* nop */
 
+    /* This is a hack to prevent user interaction with old configs. */
+    if (enter_fn)
+    {
+      token = PeekToken(enter_fn, NULL);
+      if (!StrEquals(token, "Silent"))
+      {
+	token = enter_fn;
+	enter_fn = safemalloc(strlen(token + 8));
+	sprintf(enter_fn,"Silent %s\n", token);
+      }
+    }
     if (argv[8] && *argv[8] && !StrEquals(argv[8],"NOP"))
       /* leave function specified */
       leave_fn=argv[8];
+    if (leave_fn)
+    {
+      token = PeekToken(leave_fn, NULL);
+      if (!StrEquals(token, "Silent"))
+      {
+	token = leave_fn;
+	leave_fn = safemalloc(strlen(token + 8));
+	sprintf(leave_fn,"Silent %s\n", token);
+      }
+    }
   }
 
   fd_width = GetFdWidth();
-  
+
   SetMessageMask(fd,M_FOCUS_CHANGE|M_RAISE_WINDOW);
   /* tell fvwm we're running */
   SendFinishedStartupNotification(fd);

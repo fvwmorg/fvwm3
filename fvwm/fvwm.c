@@ -1546,7 +1546,7 @@ static void InitVariables(void)
    * compilations */
   Scr.CurrentDesk = 0;
 
-  Scr.EdgeScrollX = Scr.EdgeScrollY = 100;
+  Scr.EdgeScrollX = Scr.EdgeScrollY = DEFAULT_EDGE_SCROLL;
   Scr.ScrollResistance = Scr.MoveResistance = 0;
   Scr.SnapAttraction = DEFAULT_SNAP_ATTRACTION;
   Scr.SnapMode = DEFAULT_SNAP_ATTRACTION_MODE;
@@ -1563,7 +1563,7 @@ static void InitVariables(void)
   Scr.NumBoxes = 0;
 
   Scr.randomx = Scr.randomy = 0;
-  Scr.buttons2grab = 7;
+  Scr.buttons2grab = DEFAULT_BUTTONS_TO_GRAB;
 
   InitFvwmDecor(&Scr.DefaultDecor);
 #ifdef USEDECOR
@@ -1576,7 +1576,6 @@ static void InitVariables(void)
   Scr.go.ClickToFocusRaises = True;
   Scr.go.MouseFocusClickRaises = False;
   Scr.go.StipledTitles = False;
-  Scr.go.BorderColorPriority = False;
 
   /*  RBW - 11/02/1998    */
   Scr.go.ModifyUSP                          =  True;
