@@ -1,5 +1,5 @@
 Note, the changes for the last STABLE release start with release
-_+_A HREF="#2.4.6"_-_2.4.6_+_/A_-_.
+_+_A HREF="#2.4.7"_-_2.4.7_+_/A_-_.
 
 ---------------------------------------------------------------------
 
@@ -169,9 +169,31 @@ Changes in alpha release 2.5.0 (27-Jan-2002)
 
 ---------------------------------------------------------------------
 
-_+_A NAME="2.4.6"_-_
-Changes in stable release 2.4.6 (10-Mar-2002)
+_+_A NAME="2.4.7"_-_
+Changes in stable release 2.4.7 (11-Apr-2002)
 _+_/A_-_
+
+* Fixed parsing of WindowList with conditions and a position at
+  the same time that was broken in 2.4.6.
+
+* Fixed some problems with the DeskOnly option of FvwmTaskBar
+  (windows were duplicated when moving to a different Desk; the
+  StickyIcon style was ignored).
+
+* Fixed config.h warnings with some compilers introduced in 2.4.6.
+
+* Fixed icon titles being raised when they should not be.
+
+* Fixed initial drawing of the internals of the FvwmPager window.
+
+* Fixed the FvwmAudio compatible mode in FvwmEvent when external
+  audio player is used.
+
+* Fixed execution on QNX.
+
+---------------------------------------------------------------------
+
+Changes in stable release 2.4.6 (10-Mar-2002)
 
 * Better support of non ISO-8859-1 window and icon titles. See the
   --disable-compound-text option in INSTALL.fvwm for more details.

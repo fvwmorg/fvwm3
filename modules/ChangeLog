@@ -1,3 +1,8 @@
+2002-04-11  Mikhael Goikhman  <migo@homemail.com>
+
+	* FvwmIconMan/xmanager.c:
+	removed ## from preprocessor's line win->##field to make gcc happy
+
 2002-04-06  Uwe Pross  <uwe.pross@gmx.net>
 
 	* FvwmAuto/FvwmAuto.1: 
