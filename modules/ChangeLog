@@ -1,3 +1,11 @@
+1999-11-30  olicha   <olivier.chapuis@free.fr>
+
+	* FvwmTaskBar/FvwmTaskBar.c (AdjustWindow):
+	Fixed a core dump if FvwmTaskBarColorset is not used
+
+	* FvwmTaskBar/FvwmTaskBar.c (ProsseMessage):
+	Fixed a dynamic style problem
+
 1999-11-30  Brad Giaccio  <bgiaccio@psrw.com>
 
 	* FvwmIconMan/ConfigFvwmIconMan:

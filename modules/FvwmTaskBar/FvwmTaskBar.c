@@ -481,13 +481,15 @@ void ProcessMessage(unsigned long type,unsigned long *body)
 	hints.max_width   = win_width;
 	XSetWMNormalHints(dpy,win,&hints);
 
- 	if (AutoStick && !AutoHide)
-	  WarpTaskBar(win_y);
-	else if (!AutoHide)
+	
+ 	if (!AutoHide)
+	{
 	  XResizeWindow(dpy, win, win_width, win_height);
-	else /* AutoHide */
+	  if (AutoStick) WarpTaskBar(win_y);
+	}
+	else
 	  XMoveResizeWindow(dpy, win, win_x, win_y, win_width, win_height);
-      } 
+      }
       break;
     }
 
@@ -1481,7 +1483,7 @@ void AdjustWindow(int width, int height)
   win_height = height;
   win_width = width;
   ArrangeButtonArray(&buttons);
-  change_colorset(0, True);
+  change_colorset(0, False);
 }
 
 /******************************************************************************
