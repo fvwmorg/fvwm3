@@ -318,11 +318,6 @@ static void parse_colorset(char *line)
       cs->pixmap = None;
       update = True;
     }
-    if (cs->mask) {
-      XFreePixmap(dpy, cs->mask);
-      cs->mask = None;
-      update = True;
-    }
     if (cs->shape_mask) {
       XFreePixmap(dpy, cs->shape_mask);
       cs->shape_mask = None;
@@ -447,24 +442,6 @@ static void parse_colorset(char *line)
       }
       XCopyArea(dpy, picture->picture, cs->pixmap, gc, 0, 0, cs->width,
 		cs->height, 0, 0);
-      if (picture->mask != None)
-      {
-	XGCValues xgcv;
-	static GC mask_gc = None;
-
-	/* first restore the gc we modified earlier */
-	XSetClipMask(dpy, gc, None);
-	/* make sure we have a gc */
-	if (mask_gc == None)
-	{
-	  /* create a gc for 1 bit depth */
-	  mask_gc = XCreateGC(dpy, picture->mask, 0, &xgcv);
-	}
-	cs->mask = XCreatePixmap(
-	  dpy, picture->mask, cs->width, cs->height, 1);
-	XCopyArea(dpy, picture->mask, cs->mask, mask_gc, 0, 0, cs->width,
-		  cs->height, 0, 0);
-      }
       DestroyPicture(dpy, picture);
       if (type == 2)
         cs->pixmap_type = PIXMAP_STRETCH_ASPECT;

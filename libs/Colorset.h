@@ -28,19 +28,11 @@ typedef struct {
   Pixel hilite;
   Pixel shadow;
   Pixmap pixmap;
-  Pixmap mask;
   Pixmap shape_mask;
   unsigned int width : 12;
   unsigned int height : 12;
   unsigned int pixmap_type: 3;
   unsigned int shape_type : 2;
-/*
-  unsigned int stretch_x : 1;
-  unsigned int stretch_y : 1;
-  unsigned int keep_aspect : 1;
-  unsigned int shape_tile : 1;
-  unsigned int shape_keep_aspect : 1;
-*/
 } colorset_struct;
 
 #define PIXMAP_TILED 0
