@@ -63,6 +63,13 @@ static void DoSetFocus(Window w, FvwmWindow *Fw, Bool FocusByMouse, Bool NoWarp)
     DrawDecorations(Fw, DRAW_ALL, False, False, None);
     return;
   }
+  if (Fw && !IS_LENIENT(Fw) &&
+      Fw->wmhints && (Fw->wmhints->flags & InputHint) && !Fw->wmhints->input &&
+      Scr.Focus && Scr.Focus->Desk == Scr.CurrentDesk)
+  {
+    /* window doesn't want focus */
+    return;
+  }
 
   /* ClickToFocus focus queue manipulation - only performed for
    * Focus-by-mouse type focus events */

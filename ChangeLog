@@ -1,5 +1,9 @@
 2000-02-04  Dominik Vogt  <dominik.vogt@gmx.de>
 
+	* fvwm/focus.c (DoSetFocus):
+	windows that have the InputFocus hint set to false are not hilighted
+	against their will if 'Lenience' isn't used
+
 	* fvwm/screen.h (struct):
 	use 'unsigned : 3' instead of 'DecorFaceType : 3'
 	use 'unsigned : 2' instead of 'JustificationType : 2'
