@@ -345,7 +345,7 @@ typedef struct Binding
 {
   BindingType type;       /* Is it a mouse, key, or stroke binding */
 #ifdef HAVE_STROKE
-  int Stroke_Seq;         /* stroke sequence */
+  void *Stroke_Seq;         /* stroke sequence */
 #endif /* HAVE_STROKE */
   int Button_Key;         /* Mouse Button number of Keycode */
   char *key_name;         /* In case of keycode, give the key_name too */
@@ -360,18 +360,18 @@ Bool ParseContext(char *in_context, int *out_context_mask);
 Bool ParseModifiers(char *in_modifiers, int *out_modifier_mask);
 Binding *AddBinding(Display *dpy, Binding **pblist, BindingType type,
 #ifdef HAVE_STROKE
-		    int stroke,
+		    void *stroke,
 #endif /* HAVE_STROKE */
 		    int button, KeySym keysym, char *key_name,
 		    int modifiers, int contexts, void *action, void *action2);
 void RemoveBinding(Display *dpy, Binding **pblist, BindingType type,
 #ifdef HAVE_STROKE
-		   int stroke,
+		   char *stroke,
 #endif /* HAVE_STROKE */
 		   int button, KeySym keysym, int modifiers, int contexts);
 void *CheckBinding(Binding *blist,
 #ifdef HAVE_STROKE
-		   int stroke,
+		   char *stroke,
 #endif /* HAVE_STROKE */
 		   int button_keycode,
 		   unsigned int modifier, unsigned int dead_modifiers,

@@ -3040,7 +3040,6 @@ void strokeFunc(F_CMD_ARGS)
   int start_event_type = eventp->type;
   char sequence[MAX_SEQUENCE+1];
   char *stroke_action;
-  int stroke;
   char *opt = NULL;
   Bool finish_on_release = True;
   KeySym keysym;
@@ -3187,21 +3186,36 @@ void strokeFunc(F_CMD_ARGS)
 
   /* get the stroke sequence */
   stroke_trans(sequence);
-  stroke = atoi(sequence);
 
   if (echo_sequence)
-    fvwm_msg(INFO, "StrokeFunc", "stroke sequence: %i", stroke);
+  {
+    char num_seq[MAX_SEQUENCE+1];
+
+    for(i=0;sequence[i] != '\0';i++)
+    {
+      /* Telephone to numeric pad */
+      if ('7' <= sequence[i] && sequence[i] <= '9')
+	num_seq[i] = sequence[i]-6;
+      else if ('1' <= sequence[i] && sequence[i] <= '3')
+	num_seq[i] = sequence[i]+6;
+      else 
+	num_seq[i] = sequence[i];
+    }
+    num_seq[i++] = '\0'; 
+    fvwm_msg(INFO, "StrokeFunc", "stroke sequence: %s (N%s)", 
+	     sequence, num_seq);
+  }
 
   if (abort) return;
 
   /* check for a binding */
-  stroke_action = CheckBinding(Scr.AllBindings, stroke, 0, modifiers,
+  stroke_action = CheckBinding(Scr.AllBindings, sequence, 0, modifiers,
 			       GetUnusedModifiers(), context, STROKE_BINDING);
 
   /* execute the action */
   if (stroke_action != NULL)
   {
-    if (feed_back && stroke != 0)
+    if (feed_back && atoi(sequence) != 0)
     {
       GrabEm(CRS_WAIT, GRAB_BUSY);
       usleep(200000);

@@ -140,7 +140,7 @@ Bool ParseModifiers(char *in_modifiers, int *out_modifier_mask)
 */
 void RemoveBinding(Display *dpy, Binding **pblist, BindingType type,
 #ifdef HAVE_STROKE
-		   int stroke,
+		   char *stroke,
 #endif /* HAVE_STROKE */
 		   int button, KeySym keysym, int modifiers, int contexts)
 {
@@ -160,7 +160,7 @@ void RemoveBinding(Display *dpy, Binding **pblist, BindingType type,
 #ifdef HAVE_STROKE
 	   (type == STROKE_BINDING &&
 	    temp->Button_Key == button &&
-	    temp->Stroke_Seq == stroke) ||
+	    (strcmp(temp->Stroke_Seq,stroke) == 0)) ||
 #endif /* HAVE_STROKE */
 	   (type == MOUSE_BINDING &&
 	    temp->Button_Key == button)) &&
@@ -178,6 +178,10 @@ void RemoveBinding(Display *dpy, Binding **pblist, BindingType type,
         }
 	if (temp->key_name)
 	  free(temp->key_name);
+#ifdef HAVE_STROKE
+	if (temp->Stroke_Seq)
+	  free(temp->Stroke_Seq);
+#endif /* HAVE_STROKE */
 	if (temp->Action)
 	  free(temp->Action);
 	if (temp->Action2)
@@ -204,7 +208,7 @@ void RemoveBinding(Display *dpy, Binding **pblist, BindingType type,
  ****************************************************************************/
 Binding *AddBinding(Display *dpy, Binding **pblist, BindingType type,
 #ifdef HAVE_STROKE
-		    int stroke,
+		    void *stroke,
 #endif /* HAVE_STROKE */
 		    int button, KeySym keysym, char *key_name,
 		    int modifiers, int contexts, void *action, void *action2)
@@ -258,9 +262,12 @@ Binding *AddBinding(Display *dpy, Binding **pblist, BindingType type,
              ||
              ((type == MOUSE_BINDING
 #ifdef HAVE_STROKE
-	       || type == STROKE_BINDING
+	       || (type == STROKE_BINDING)
 #endif
 	       ) &&(*pblist)->key_name == NULL)) &&
+#ifdef HAVE_STROKE
+	       (*pblist)->Stroke_Seq == stroke &&
+#endif
             (*pblist)->Action == action &&
             (*pblist)->Action2 == action2) {
           continue;
@@ -291,7 +298,7 @@ Binding *AddBinding(Display *dpy, Binding **pblist, BindingType type,
  * to be executed or NULL if not. */
 void *CheckBinding(Binding *blist,
 #ifdef HAVE_STROKE
-		   int stroke,
+		   char *stroke,
 #endif /* HAVE_STROKE */
 		   int button_keycode,
 		   unsigned int modifier,unsigned int dead_modifiers,
@@ -308,7 +315,7 @@ void *CheckBinding(Binding *blist,
 	   ((type == MOUSE_BINDING || type == KEY_BINDING) &&
 	    b->Button_Key == button_keycode) ||
 #ifdef HAVE_STROKE
-	   (type == STROKE_BINDING && b->Stroke_Seq == stroke &&
+	   (type == STROKE_BINDING && (strcmp(b->Stroke_Seq,stroke) == 0) &&
 	    b->Button_Key == button_keycode) ||
 #endif /* HAVE_STROKE */
 	   (type == MOUSE_BINDING && b->Button_Key == 0))

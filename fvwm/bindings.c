@@ -24,7 +24,9 @@
 #include "bindings.h"
 #include "misc.h"
 #include "screen.h"
-
+#ifdef HAVE_STROKE
+#include "stroke.h"
+#endif /* HAVE_STROKE */
 
 #define MODS_UNUSED_DEFAULT LockMask
 static int mods_unused = MODS_UNUSED_DEFAULT;
@@ -43,7 +45,7 @@ Binding *ParseBinding(Display *dpy, Binding **pblist, char *tline,
   char key[20] = { '\0' };
   int button = 0;
 #ifdef HAVE_STROKE
-  int stroke = 0;
+  char stroke[MAX_SEQUENCE+1] = {'\0'};
 #endif /* HAVE_STROKE */
   int n1=0,n2=0,n3=0;
 #ifdef HAVE_STROKE
@@ -62,7 +64,39 @@ Binding *ParseBinding(Display *dpy, Binding **pblist, char *tline,
       n1 = sscanf(token,"%19s",key);
 #ifdef HAVE_STROKE
     else if (type == STROKE_BINDING)
-      n1 = sscanf(token,"%d",&stroke);
+    {
+      int num = 0;
+      int j;
+
+      n1 = 1;
+      i = 0;
+      if (token[0] == 'N' && token[1] != '\0')
+	num = 1;
+      j=i+num;
+      while(n1 && token[j] != '\0' && i < MAX_SEQUENCE)
+      {
+	if (!isdigit(token[j]))
+	    n1 = 0;
+	if (num)
+	{
+	  /* Numeric pad to Telephone  */
+	  if ('7' <= token[j] && token[j] <= '9')
+	    token[j] -= 6;
+	  else if ('1' <= token[j] && token[j] <= '3')
+	    token[j] += 6;
+	}
+	stroke[i] = token[j];
+	i++;
+	j=i+num;
+      }
+      stroke[i] = '\0';
+      if (strlen(token) > MAX_SEQUENCE+num)
+      {
+	fvwm_msg(WARN,"ParseBinding","To long stroke sequence in line %s"
+		 "Only %i elements will be taken in account", 
+		 tline, MAX_SEQUENCE);
+      }
+    }
 #endif /* HAVE_STROKE */
     else
       n1 = sscanf(token,"%d",&button);
@@ -101,14 +135,14 @@ Binding *ParseBinding(Display *dpy, Binding **pblist, char *tline,
 #endif /* HAVE_STROKE */
     )
   {
-    fprintf(stderr,"ParseBinding: Syntax error in line %s\n", tline);
+    fvwm_msg(ERR,"ParseBinding","Syntax error in line %s", tline);
     return NULL;
   }
 
   if (ParseContext(context, &contexts))
-    fprintf(stderr,"ParseBinding: Illegal context in line %s\n", tline);
+    fvwm_msg(WARN,"ParseBinding","Illegal context in line %s", tline);
   if (ParseModifiers(modifiers, &mods))
-    fprintf(stderr,"ParseBinding: Illegal modifier in line %s\n", tline);
+    fvwm_msg(WARN,"ParseBinding","Illegal modifier in line %s", tline);
 
   if (type == KEY_BINDING)
     {
@@ -200,8 +234,8 @@ Binding *ParseBinding(Display *dpy, Binding **pblist, char *tline,
 
   if((mods & AnyModifier)&&(mods&(~AnyModifier)))
   {
-    fprintf(stderr,"ParseBinding: Binding specified AnyModifier and other modifers too.\n");
-    fprintf(stderr,"Excess modifiers will be ignored.\n");
+    fvwm_msg(WARN,"ParseBinding","Binding specified AnyModifier and other "
+	     "modifers too. Excess modifiers will be ignored.");
     mods &= AnyModifier;
   }
 
@@ -212,8 +246,9 @@ Binding *ParseBinding(Display *dpy, Binding **pblist, char *tline,
   }
 
 #ifdef HAVE_STROKE
-  return AddBinding(dpy, pblist, type, stroke, button, keysym, key,
-		    mods, contexts, (void *)(stripcpy(action)), NULL);
+  return AddBinding(dpy, pblist, type, (void *)(stripcpy(stroke)), button, 
+		    keysym, key, mods, contexts, (void *)(stripcpy(action)), 
+		    NULL);
 #else
   return AddBinding(dpy, pblist, type, button, keysym, key, mods, contexts,
 		    (void *)(stripcpy(action)), NULL);

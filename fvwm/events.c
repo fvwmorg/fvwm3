@@ -1488,7 +1488,6 @@ void HandleButtonPress(void)
 void HandleButtonRelease()
 {
    /* unsigned int modifier; */
-   int stroke;
    char *action;
    int real_modifier;
 
@@ -1496,7 +1495,6 @@ void HandleButtonRelease()
 
    send_motion = FALSE;
    stroke_trans (sequence);
-   stroke=atoi(sequence);
 /* DEBUG printfs
        if (stroke_trans (sequence) == TRUE)
          printf ("Translation succeeded: ");
@@ -1515,7 +1513,7 @@ void HandleButtonRelease()
 
    /* need to search for an appropriate stroke binding */
    action = CheckBinding(
-     Scr.AllBindings, stroke, Event.xbutton.button, real_modifier,
+     Scr.AllBindings, sequence, Event.xbutton.button, real_modifier,
      GetUnusedModifiers(), Context, STROKE_BINDING);
    /* got a match, now process it */
 /* DEBUG printfs

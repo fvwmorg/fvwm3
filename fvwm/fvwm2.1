@@ -2830,7 +2830,7 @@ command. The \fIContext\fP and \fIModifiers\fP fields are defined
 as in the mouse binding. However, only the R Context really works
 (if you want to use other contexts you need to use the StrokeFunc below).
 
-Strokes are defined in a grid like this:
+Strokes sequences are defined in a telephone grid like this:
 .EX
  1  2  3
 
@@ -2838,6 +2838,22 @@ Strokes are defined in a grid like this:
 
  7  8  9
 .EE
+or in a numeric pad grid like this:
+.EX
+ 7  8  9
+ 
+ 4  5  6
+ 
+ 1  2  3
+.EE
+The telephone grid is used by default, to use the numeric pad grid
+you should begin the sequence with a N. Note that a complex motion
+may gives several different sequences (see the "netscape" example
+below to handle such motion). Moreover, sequence are limited to
+20 elements (with the present version of libstroke), however,
+in practice it is preferable to use sequence with less than 12
+elements.
+
 Because of the default button menu in fvwm, you may need to remove
 a mouse button binding (using an empty action) before using the stroke
 .EX
@@ -2860,6 +2876,15 @@ Stroke 74158963   3  R  N  Exec exec netscape
 Stroke 7418963    3  R  N  Exec exec netscape
 Stroke 415963     3  R  N  Exec exec netscape
 .EE
+You may prefer to use the numeric pad grid since you have such
+a grid on your machine. Here an example:
+.EX
+Stroke N78963314   3  R  N  FvwmForm FormFvwmQuitVerify.
+Stroke N789633147  3  R  N  FvwmForm FormFvwmQuitVerify.
+.EE
+This example will start the QuitVerify form if you draw a box
+that begin in its top left corner.
+
 Note: You need LibStroke installed and fvwm compiled with stroke
 support. LibStroke can be obtained via anonymous ftp at
 .EX
