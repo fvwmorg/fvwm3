@@ -151,6 +151,37 @@ static void DrawLinePattern(
   }
 }
 
+/* used by DrawButton() */
+static void clip_button_pixmap(
+  int *ox, int *oy, int *cw, int *ch, int*cx, int *cy, XRectangle *rclip)
+{
+  if (rclip)
+  {
+    if (rclip->x > *cx)
+    {
+      *ox = (rclip->x - *cx);
+      *cx += *ox;
+      *cw -= *ox;
+    }
+    if (*cx + *cw > rclip->x + rclip->width)
+    {
+      *cw = rclip->x - *cx + rclip->width;
+    }
+    if (rclip->y > *cy)
+    {
+      *oy = (rclip->y - *cy);
+      *cy += *oy;
+      *ch -= *oy;
+    }
+    if (*cy + *ch > rclip->y + rclip->height)
+    {
+      *ch = rclip->y - *cy + rclip->height;
+    }
+  }
+
+  return;
+}
+
 /****************************************************************************
  *
  *  Redraws buttons (veliaa@rpi.edu)
@@ -165,6 +196,9 @@ static void DrawButton(FvwmWindow *t, Window win, int w, int h,
   Picture *p;
   int border = 0;
   int width, height, x, y;
+
+  /* Note: it is assumed that ReliefGC and ShadowGC are already clipped with
+   * the rclip rectangle when this function is called. */
 
   switch (type)
   {
@@ -192,9 +226,13 @@ static void DrawButton(FvwmWindow *t, Window win, int w, int h,
        ((stateflags & MWM_DECOR_MAXIMIZE && IS_MAXIMIZED(t)) ||
 	(stateflags & MWM_DECOR_SHADE && IS_SHADED(t)) ||
 	(stateflags & MWM_DECOR_STICK && IS_STICKY(t))))
+    {
       DrawLinePattern(win, ShadowGC, ReliefGC, &df->u.vector, w, h);
+    }
     else
+    {
       DrawLinePattern(win, ReliefGC, ShadowGC, &df->u.vector, w, h);
+    }
     break;
 
 #ifdef MINI_ICONS
@@ -250,11 +288,22 @@ static void DrawButton(FvwmWindow *t, Window win, int w, int h,
     }
 
     XSetClipMask(dpy, Scr.TransMaskGC, p->mask);
+    XSetClipOrigin(dpy, Scr.TransMaskGC, x, y);
     if (type != TiledPixmapButton)
     {
-      XSetClipOrigin(dpy, Scr.TransMaskGC, x, y);
-      XCopyArea(dpy, p->picture, win, Scr.TransMaskGC,
-		0, 0, width, height, x, y);
+      int cx = x;
+      int cy = y;
+      int cw = width;
+      int ch = height;
+      int ox = 0;
+      int oy = 0;
+
+      clip_button_pixmap(&ox, &oy, &cw, &ch, &cx, &cy, rclip);
+      if (cw > 0 && ch > 0)
+      {
+	XCopyArea(
+	  dpy, p->picture, win, Scr.TransMaskGC, ox, oy, cw, ch, cx, cy);
+      }
     }
     else
     {
@@ -265,8 +314,14 @@ static void DrawButton(FvwmWindow *t, Window win, int w, int h,
       {
 	for (xi = border; xi < width; xi += p->width)
 	{
-	  int lw = width - xi - 0*p->width;
-	  int lh = height - yi - 0*p->height;
+	  int lw = width - xi;
+	  int lh = height - yi;
+	  int cx;
+	  int cy;
+	  int cw;
+	  int ch;
+	  int ox;
+	  int oy;
 
 	  if (lw > p->width)
 	    lw = p->width;
@@ -280,12 +335,23 @@ static void DrawButton(FvwmWindow *t, Window win, int w, int h,
 	      continue;
 	    }
 	  }
-	  XSetClipOrigin(dpy, Scr.TransMaskGC, xi, yi);
-	  XCopyArea(dpy, p->picture, win, Scr.TransMaskGC,
-		    0, 0, lw, lh, xi, yi);
+	  cx = xi;
+	  cy = yi;
+	  cw = lw;
+	  ch = lh;
+	  ox = 0;
+	  oy = 0;
+	  clip_button_pixmap(&ox, &oy, &cw, &ch, &cx, &cy, rclip);
+	  if (cw > 0 && ch > 0)
+	  {
+	    XSetClipOrigin(dpy, Scr.TransMaskGC, xi, yi);
+	    XCopyArea(dpy, p->picture, win, Scr.TransMaskGC,
+		      ox, oy, cw, ch, cx, cy);
+	  }
 	}
       }
     }
+    XSetClipMask(dpy, Scr.TransMaskGC, None);
     break;
 
   case GradientButton:
@@ -1045,6 +1111,7 @@ static void RedrawTitle(
       False);
     XSetClipRectangles(dpy, rgc, 0, 0, rclip, 1, Unsorted);
     XSetClipRectangles(dpy, sgc, 0, 0, rclip, 1, Unsorted);
+    XSetClipRectangles(dpy, Scr.TitleGC, 0, 0, rclip, 1, Unsorted);
     is_clipped = True;
   }
   else
@@ -1108,11 +1175,9 @@ static void RedrawTitle(
 	  sgc, False, 0, 1, rclip);
       }
     }
-
     /*
      * draw title relief
      */
-
     switch (DFS_BUTTON_RELIEF(*tb_style))
     {
     case DFS_BUTTON_IS_SUNK:
@@ -1163,6 +1228,7 @@ static void RedrawTitle(
   {
     XSetClipMask(dpy, rgc, None);
     XSetClipMask(dpy, sgc, None);
+    XSetClipMask(dpy, Scr.TitleGC, None);
   }
 
   return;
