@@ -1,3 +1,8 @@
+2000-06-27  olicha  <olivier.chapuis@free.fr>
+
+	* fvwm/placement.c (NEW_CLEVERPLACEMENT_CODE):
+	Clever Placement try to be more clever
+
 2000-06-23  Mikhael Goikhman  <migo@homemail.com>
 
 	* fvwm/functions.c: patch by Christophe Martin - fixed $$ and $y

@@ -84,6 +84,7 @@ static void CleverPlacement(
 #else
 #define AVOIDICON 10    /*  Try hard no to place windows over icons */
 #endif
+#define NEW_CLEVERPLACEMENT_CODE 1
 
 /*  RBW - 11/02/1998  */
 static int SmartPlacement(FvwmWindow *t,
@@ -248,6 +249,9 @@ static int get_next_x(FvwmWindow *t, int x, int y, int pdeltax, int pdeltay)
   int xtest;
   FvwmWindow *testw;
   int PageRight     =  Scr.MyDisplayWidth - pdeltax;
+#ifdef NEW_CLEVERPLACEMENT_CODE
+  int minx_inc = Scr.MyDisplayWidth/20;
+#endif
   int stickyx, stickyy;
 
   /* Test window at far right of screen */
@@ -299,6 +303,9 @@ static int get_next_x(FvwmWindow *t, int x, int y, int pdeltax, int pdeltay)
         xnew = MIN(xnew, xtest);
     }
   }
+#ifdef NEW_CLEVERPLACEMENT_CODE
+  xnew = MIN(xnew,x+minx_inc);
+#endif
   return xnew;
 }
 /*  RBW - 11/02/1998  */
@@ -309,6 +316,9 @@ static int get_next_y(FvwmWindow *t, int y, int pdeltay)
   int ytest;
   FvwmWindow *testw;
   int PageBottom    =  Scr.MyDisplayHeight - pdeltay;
+#ifdef NEW_CLEVERPLACEMENT_CODE
+  int miny_inc = Scr.MyDisplayHeight/20;
+#endif
   int stickyy;
 
   /* Test window at far bottom of screen */
@@ -353,6 +363,9 @@ static int get_next_y(FvwmWindow *t, int y, int pdeltay)
         ynew = MIN(ynew, ytest);
     }
   }
+#ifdef NEW_CLEVERPLACEMENT_CODE
+  ynew = MIN(ynew,y+miny_inc);
+#endif
   return ynew;
 }
 
@@ -366,7 +379,12 @@ static int test_fit(FvwmWindow *t, int x11, int y11, int aoimin, int pdeltax,
   int y12, y21, y22;
   int xl, xr, yt, yb; /* xleft, xright, ytop, ybottom */
   int aoi = 0;	    /* area of interference */
+#ifdef NEW_CLEVERPLACEMENT_CODE
+  float anew;
+  int norm_factor = 1;
+#else
   int anew;
+#endif
   int avoidance_factor;
   int PageBottom    =  Scr.MyDisplayHeight - pdeltay;
   int PageRight     =  Scr.MyDisplayWidth - pdeltax;
@@ -428,6 +446,21 @@ static int test_fit(FvwmWindow *t, int x11, int y11, int aoimin, int pdeltax,
         avoidance_factor = AVOIDSTICKY;
       else
         avoidance_factor = 1;
+#ifdef NEW_CLEVERPLACEMENT_CODE
+      /* normalisation */
+      if ((x22-x21)*(y22-y21) != 0 && (x12-x11)*(y12-y11) != 0) {
+	anew = MAX(anew/((x22-x21)*(y22-y21)),anew/((x12-x11)*(y12-y11)))*100;
+	if (anew >= 99)
+	  norm_factor = 12;
+	else if (anew >= 95)
+	  norm_factor = 6;
+	else if (anew >= 85)
+	  norm_factor = 4;
+      }
+      anew *= norm_factor;
+      if (avoidance_factor>1)
+	avoidance_factor = avoidance_factor*6;
+#endif
       anew *= avoidance_factor;
       aoi += anew;
       if((aoi > aoimin)&&(aoimin != -1))
