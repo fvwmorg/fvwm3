@@ -30,6 +30,7 @@
 
 #include "libs/fvwmlib.h"
 #include "libs/fvwmsignal.h"
+#include "libs/setpgrp.h"
 #include "libs/FShape.h"
 #include "fvwm.h"
 #include "externs.h"
@@ -792,8 +793,16 @@ void CMD_Exec(F_CMD_ARGS)
   /* Thought I'd try vfork and _exit() instead of regular fork().
    * The man page says that its better. */
   /* Not everyone has vfork! */
+  /* According to the man page, vfork should never be used at all.
+   */
+
   if (!(fork())) /* child process */
   {
+    if (fvwm_setpgrp() == -1)
+    {
+      fvwm_msg(ERR,"exec_function","setpgrp failed (%s)",strerror(errno));
+      exit(100);
+    }
     if (execl(exec_shell_name, exec_shell_name, "-c", cmd, NULL)==-1)
     {
       fvwm_msg(ERR,"exec_function","execl failed (%s)",strerror(errno));
@@ -801,6 +810,7 @@ void CMD_Exec(F_CMD_ARGS)
     }
   }
   free(cmd);
+
   return;
 }
 

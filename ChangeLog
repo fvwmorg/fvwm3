@@ -1,8 +1,20 @@
+2002-01-29  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* fvwm/builtins.c (CMD_Exec):
+	applied job control patch by Alexander Kotelnikov using the portable
+	version of setpgrp()
+
+	* libs/setpgrp.c (fvwm_setpgrp):
+	* libs/setpgrp.h (fvwm_setpgrp):
+	* libs/Makefile.am:
+	* configure.in:
+	added checks for setpgrp and setpgid
+
 2002-01-29  olicha  <olivier.chapuis@free.fr>
 
-	* acinclude.m4: 
+	* acinclude.m4:
 	Better test for iconv second argumeny
-	
+
 	* configure.in:
 	Use gnu libiconv in priority against the system iconv
 

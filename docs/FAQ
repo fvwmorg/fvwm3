@@ -71,7 +71,7 @@ Contents
           Why?
     3.15  I don't like the gaps in my icon box when I de-iconify an
           application.  Is there some kind of auto arrange function?
-    3.16  How do I set up a fvwm menu item that shuts down my Linux machine?
+    3.16  How do I set up an fvwm menu item that shuts down my Linux machine?
     3.17  Although the Recapture command is obsolete, do I still need it to
           apply certain style changes?
     3.18  When my specific window (or all windows) pops up, I want it to
@@ -141,7 +141,7 @@ Contents
           happened to to rxvt and rclock which Rob Nation used to
           support?  Where can I find them now?
      6.6  How do I set the background with fvwm?
-     6.7  When I use Fvwm --- isn't the right color.  Whats wrong?
+     6.7  When I use Fvwm ... isn't the right color.  Whats wrong?
      6.8  I just got a mouse with 57 buttons.  How do I make Fvwm
           use them?
 
@@ -177,8 +177,8 @@ A: Probably your NumLock, CapsLock or ScrollLock key is pressed.  See
 
 Trivia: In all my years as an fvwm developer this has been by far the
    most frequently asked question.  Whoever can solve this problem so
-   that this question is never asked will me mentioned in big letters
-   on the fvwm home page :-)
+   that this question is never asked again will be mentioned in big
+   letters on the fvwm home page :-)
 
 ======================================================================
                             1 - About Fvwm
@@ -194,7 +194,9 @@ A: "Fill_in_the_blank_with_whatever_f_word_you_like_at_the_time
      Feeble, Fabulous, Famous, Fast, Foobar, Fantastic, Flexible,
      F!@#$%, Flashy, FVWM (the GNU recursive approach), Free, Final,
      Funky, Fred's (who the heck is Fred?), Freakin', Flawed,
-     Father-of-all, Feivel (the mouse from "An American Tail"), etc.
+     Father-of-all, Feivel (the mouse from "An American Tail"),
+     Frungy (hey, where does that come from?), Floppy, Foxy,
+     Frenzied, Funny, Fumbling etc.
 
    Just pick your Favorite (hey, there's another one!), which will of
    course change depending on your mood and whether or not you've run
@@ -205,7 +207,7 @@ A: "Fill_in_the_blank_with_whatever_f_word_you_like_at_the_time
    to do with the discovery that four of the six core developers have
    cats (averaging 1.17 cats)?  Miaow.
 
-   Know what? I found another one while stroking my cats: FOOD :-)
+   Know what? I found another one while stroking my cats: FEEDING :-)
 
    Check this link:
    _+_A HREF="http://fvwm.org/fvwm-cats/"_-_fvwm-cats_+_/A_-_
@@ -279,8 +281,8 @@ A: If your local FVWM maintainer can't help you, then the newsgroup
    This list is for discussion relating to the FVWM window manager,
    which is intended to have a small memory footprint and a rich
    feature set, be extremely customizable and extendable and have a
-   high degree of Motif MWM compatibility.  All relevant discussion is
-   encouraged.  Posting of binaries or irrelevant discussion is
+   high degree of Motif MWM compatibility.  All relevant discussion
+   is encouraged.  Posting of binaries or irrelevant discussion is
    strongly frowned upon.  Posting of short patches (less than 200
    lines) is acceptable, but all patches should also be sent to the
    fvwm-workers list (see Q5.2, below) for inspection and possible
@@ -351,6 +353,8 @@ A: Here's a little table comparing some of them.  It was done on an
      1004K 1156K mwm   (mwm 1.2)
       543K  632K twm   (???)
       263K  328K aixwm (a simple ugly window manager included w/ aix)
+
+   Note: This information is terribly outdated.
 
 ----------------------------------------------------------------------
 
@@ -586,7 +590,7 @@ A: Any version later than 2.0.46 (i.e. 2.1.0 or later) has this
 
      GlobalOpts MouseFocusClickRaises
 
-With the latter 2.3.x betas and after use:
+With the later 2.3.x betas and after use:
 
      Style * MouseFocusClickRaises
 
@@ -1088,7 +1092,7 @@ A: Assuming you are using the IconBox option of the Style command this
 
 ----------------------------------------------------------------------
 
-3.16  How do I set up a fvwm menu item that shuts down my Linux machine?
+3.16  How do I set up an fvwm menu item that shuts down my Linux machine?
 
 A: Write a little shell script to run the shutdown command.
 
@@ -1234,7 +1238,7 @@ A: FVWM spawns itself into all found screens unless -s command line
 
    Write your configuration file as you would if you had only one
    screen.  Then move the screen specific lines into separate
-   configuration files and call them for example .fvwm2rc.<screen>
+   configuration files and call them, for example, .fvwm2rc.<screen>
    where <screen> is the screen number.  Usually this will be 0 for
    the main screen and 1 for the secondary screen.  Place the screen
    specific files in the $HOME/.fvwm directory or whatever you set
@@ -1255,7 +1259,8 @@ A: FVWM spawns itself into all found screens unless -s command line
      fvwm2 -s -d :0.2 -f .fvwm2rc-2
 
    Note that only the last command is without a trailing ampersand.
-   If you wish, .fvwm2rc-* files may all include line "Read .fvwm2rc-common".
+   If you wish, .fvwm2rc-* files may all include line
+   "Read .fvwm2rc-common".
 
 
 ======================================================================
@@ -1286,10 +1291,13 @@ A: From the FvwmButtons man page:
      swallow xbiff and have a button press bring up the list of
      messages.
 
-A: You can do this, but it's not obvious how.  The button presses
-   normally get passed through to the swallowed application, but if
-   you put a title on the button, you can assign actions to that.
-   Here's an example that someone sent to the mailing list once:
+A: Yes, with the alpha release 2.5.0 or any later release.  For older
+   releases, read on.
+
+   The button presses normally get passed through to the swallowed
+   application, but if you put a title on the button, you can
+   assign actions to that. Here's an example that someone sent to
+   the mailing list once:
 
    *FvwmButtons(1x4,       \
      Title           'System Info', \
@@ -1945,7 +1953,7 @@ A: Setting the background image is not really part of the window
 
 ----------------------------------------------------------------------
 
-6.7  When I use Fvwm --- isn't the right color.  Whats wrong?
+6.7  When I use Fvwm ... isn't the right color.  Whats wrong?
 
 A: Under this heading we've had questions about FvwmForm being all
    white, icons not displaying and messages about being unable to
@@ -1988,7 +1996,7 @@ A: Under this heading we've had questions about FvwmForm being all
 
 6.8  I just got a mouse with 57 buttons.  How do I make Fvwm use them?
 
-A: OK, 57 is a joke, we know you don't have 57 buttons, but we've
+A: OK, 93 is a joke, we know you don't have 93 buttons, but we've
    seen reports of up to 7 so far.  Starting with Fvwm 2.4.0
    Fvwm supports all five mouse buttons that X officially
    supports.  To increase the number of buttons that Fvwm can handle,
@@ -2302,7 +2310,7 @@ A: OK, 57 is a joke, we know you don't have 57 buttons, but we've
    FvwmButtons or FvwmWharf that launches an application when used
    the first time and closes it if used a second time.  Although it
    is not obvious how to do this, it is possible.  Let's assume you
-   need a menu item that toggles a FvwmConsole window on and off.
+   need a menu item that toggles an FvwmConsole window on and off.
    Then put the following lines in your .fvwm2rc:
 
      AddToFunc ToggleFvwmConsole
