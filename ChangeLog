@@ -2,9 +2,12 @@
 
 	* configure.in:
 	* acinclude.m4:
-	* INSTALL INSTALL.fvwm:
+	* INSTALL:
+	* INSTALL.fvwm:
 	renamed --disable-gnome to --disable-gnome-hints;
-	documented configure options --with-gnome*
+	documented configure options --with-gnome*;
+	small improvements in documentation;
+	use underscore in version instead of dash that causes rpm problems
 
 2001-08-14  Mikhael Goikhman  <migo@homemail.com>
 

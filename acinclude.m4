@@ -128,8 +128,8 @@ AC_DEFUN(smr_SWITCH, [
     AC_ARG_ENABLE(
         $1,
         ifelse($3, on,
-            [  --disable-[$1]         disable [$2]],
-            [  --enable-[$1]          enable [$2]]),
+            [  --disable-[$1]substr([             ], len([$1])) disable [$2]],
+            [  --enable-[$1] substr([             ], len([$1])) enable [$2]]),
         [ if test "$enableval" = yes; then
             AC_MSG_RESULT(yes)
             ifelse($4, , , AC_DEFINE($4))
@@ -530,7 +530,7 @@ AC_ARG_WITH(imlib-prefix,[  --with-imlib-prefix=PFX prefix for IMLIB files (opti
             imlib_prefix="$withval", imlib_prefix="")
 AC_ARG_WITH(imlib-exec-prefix,[  --with-imlib-exec-prefix=PFX  exec prefix for IMLIB files (optional)],
             imlib_exec_prefix="$withval", imlib_exec_prefix="")
-AC_ARG_ENABLE(imlibtest, [  --disable-imlibtest       do not try to compile and run a test IMLIB program],
+AC_ARG_ENABLE(imlibtest, [  --disable-imlibtest     do not try to compile and run a test IMLIB program],
             , enable_imlibtest=yes)
 
   if test x$imlib_exec_prefix != x ; then
@@ -669,7 +669,7 @@ AC_ARG_WITH(imlib-prefix,[  --with-imlib-prefix=PFX prefix for IMLIB files (opti
             imlib_prefix="$withval", imlib_prefix="")
 AC_ARG_WITH(imlib-exec-prefix,[  --with-imlib-exec-prefix=PFX  exec prefix for IMLIB files (optional)],
             imlib_exec_prefix="$withval", imlib_exec_prefix="")
-AC_ARG_ENABLE(imlibtest, [  --disable-imlibtest       do not try to compile and run a test IMLIB program],
+AC_ARG_ENABLE(imlibtest, [  --disable-imlibtest     do not try to compile and run a test IMLIB program],
             , enable_imlibtest=yes)
 
   if test x$imlib_exec_prefix != x ; then
@@ -921,7 +921,7 @@ AC_DEFUN([GNOME_INIT_HOOK],[
 	if test "x$with_gnomelibs" = xyes; then
 		problem_gnomelibs=": Can't compile trivial gnome app"
 
-		AC_MSG_CHECKING(whether trivial gnome compilation passes)
+		AC_MSG_CHECKING(whether trivial gnome compilation works)
 		my_CPPFLAGS="$CPPFLAGS"
 		my_LIBS="$LIBS"
 		CPPFLAGS="$CPPFLAGS $GNOME_INCLUDEDIR $GTK_CFLAGS"

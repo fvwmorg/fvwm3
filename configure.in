@@ -2,7 +2,7 @@ dnl Process this file with autoconf to produce a configure script.
 dnl
 AC_PREREQ(2.13)
 AC_INIT(fvwm/fvwm.c)
-AM_INIT_AUTOMAKE(fvwm, 2.4.1-beta1)
+AM_INIT_AUTOMAKE(fvwm, 2.4.1_beta1)
 AM_CONFIG_HEADER(config.h)
 
 FVWM_MODULESUBDIR=/${PACKAGE}/${VERSION}
@@ -591,6 +591,7 @@ cat >config.status-t <<EOF
 #! /bin/sh
 
 # Original config.status is patched to satisfy processing *.in with 'make -j'.
+# This bug seems to be fixed in autoconf-2.50.
 UNIQUE_POSTFIX=\$\$
 
 EOF

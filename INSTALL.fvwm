@@ -101,8 +101,8 @@ written in C++, so configure probes for a C++ compiler by default, and
 will build these modules only if a C++ compiler exists.  If configure
 doesn't do the right thing, specify one or the other of these flags:
 
-    --with-cxx=foo  to use "foo" for compiling C++ programs
-    --without-cxx   to disable probing for a C++ compiler altogether
+  --with-cxx=foo  to use "foo" for compiling C++ programs
+  --without-cxx   to disable probing for a C++ compiler altogether
 
 
 CPP
@@ -135,17 +135,17 @@ links to source code.  You can also get the source code from
 ftp://ftp.x.org/contrib/libraries/.  If you're having trouble building
 with XPM even after reading this, try Question 2.4 in the FVWM FAQ.
 
-Rplay is used in a few modules (FvwmEvent, for one) for playing sounds
-without invoking an external program.  This library appears to have
-been orphaned in November, 1996.  The latest version is available at
+Rplay is used in one module (FvwmEvent) to play sounds without invoking
+an external program.  This library appears to have been orphaned
+in November, 1996.  The latest version is available at
 http://rplay.doit.org/dist/.
 
 Readline is used in one module (FvwmConsole) to allow fancy
 command-line editing, a history buffer, etc.  It is GNU software, and
 should be found on any GNU site, such as ftp://ftp.gnu.org/gnu/readline/.
 
-To have readline support, one of termcap or ncurses libraries should be
-found.  Use --with-termcap-library or --with-ncurses-library to specify
+To build with readline support, either termcap or ncurses library should
+be found.  Use --with-termcap-library or --with-ncurses-library to specify
 the path (directory or library file) to termcap or ncurses.  The first
 valid library found is used.  It is possible to disable termcap or ncurses
 autoprobing using --without-termcap-library or --without-ncurses-library.
@@ -158,19 +158,18 @@ http://www.etla.net/~willey/projects/libstroke/ and the fvwm2 man page.
 If configure doesn't do the right thing, try one or more of the
 following flags (examples assume library is named "foo"):
 
-    --without-foo-library    to disable probing for libfoo
-    --with-foo-library=FILE  to specify the library filename
-    --with-foo-library=DIR   to specify directory containing libfoo
-    --with-foo-includes=DIR  to specify include directory for libfoo's
-			     headers
+  --without-foo-library    to disable probing for libfoo
+  --with-foo-library=FILE  to specify the library filename
+  --with-foo-library=DIR   to specify directory containing libfoo
+  --with-foo-includes=DIR  to specify include directory for libfoo's headers
 
 The desired include directory is the one in which the following header
 may be found:
 
-    xpm		X11/xpm.h
-    readline	readline/readline.h
-    rplay	rplay.h
-    libstroke   stroke.h
+  xpm         X11/xpm.h
+  readline    readline/readline.h
+  rplay       rplay.h
+  stroke      stroke.h
 
 Only one version of the --with-foo-library flag may be specified.
 
@@ -212,6 +211,7 @@ runs to contain the -R option.  For example:
       --with-xpm-includes=/opt/xpm/include
 
 In the future, FVWM's configuration may perform this step automatically.
+
 
 Compile-time Options
 ====================
@@ -313,8 +313,7 @@ live with a border and backdrop around all your shaped windows
 If you normally use a shaped window (xeyes or oclock), you might as
 well compile this extension in, since the memory cost is minimal in
 this case (the shaped window shared libs will be loaded anyway).  If
-you don't normally use a shaped window, you have to decide for
-yourself.
+you don't normally use shaped windows, you have to decide for yourself.
 
 Note: if it is compiled in, run time detection is used to make sure
 that the currently running X server supports it.
@@ -329,5 +328,5 @@ You may also specify the location of GNOME headers and libs using
 --with-gnome-includes and --with-gnome-libs, but this is usually never
 needed, since all required info should be returned by gnome-config
 if GNOME is properly installed.  In case the GNOME installation works
-and you don't want to be dependant on GNOME, use --without-gnome.
+and you don't want to be dependant on GNOME, specify --without-gnome.
 
