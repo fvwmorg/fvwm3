@@ -1,5 +1,12 @@
 1999-11-21  olicha   <olivier.chapuis@free.fr>
 
+	* FvwmWinList/FvwmWinList.c (AdjustWindow):
+	Fixed a core dump. I hope I have not completely reverted the last
+ 	WinList commit.
+
+	
+1999-11-21  olicha   <olivier.chapuis@free.fr>
+
 	* FvwmTaskBar/FvwmTaskBar.c (ProcessMessage):
 	(ParseConfigLine):
 	(LoopOnEvents):

@@ -879,8 +879,8 @@ void AdjustWindow(Bool force)
   new_width=max(new_width, MinWidth);
   new_width=min(new_width, MaxWidth);
   new_height=(total * buttonheight);
-  if (force || (WindowState && (new_height != win_height
-			       || new_width != win_width))) {
+  if (WindowState && (force || new_height != win_height || 
+		      new_width != win_width)) {
     for (i = 0; i != MAX_COLOUR_SETS; i++) {
       int cset = colorset[i];
 
@@ -906,7 +906,7 @@ void AdjustWindow(Bool force)
       }
     }
   }
-  if (WindowState && (new_height!=win_height  || new_width!=win_width))
+  if (WindowState && (new_height!=win_height || new_width!=win_width))
   {
     if (Anchor)
     {
