@@ -1,3 +1,9 @@
+1999-04-18  Mikhael Goikhman  <migo@homemail.com>
+
+	* FvwmM4/FvwmM4.c (main):
+	* FvwmCpp/FvwmCpp.c (main):
+	add "-I FVWM_CONFIGDIR" to preprocessors
+
 2000-04-18  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* FvwmAuto/FvwmAuto.c (main):
