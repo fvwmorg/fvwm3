@@ -195,7 +195,7 @@ void ReadFile(F_CMD_ARGS)
     DoingCommandLine = False;
 
     if (debugging)
-	fvwm_msg(DBG,"ReadFile","Module flag %d, about to attempt '%s'",
+	fvwm_msg(DBG,"ReadFile","Module flag %d, about to attempt %s",
                  *Module,action);
 
     if ( !parse_filename( "Read", action, &filename, &read_quietly ) )

@@ -1319,6 +1319,7 @@ A: Because they are treated as modifiers. You can use the
      xmodmap -e "add Mod2 = Num_Lock"
      xmodmap -e "add Mod5 = Scroll_Lock"
 
+   Fvwm has to be restarted to use the changes made by xmodmap.
    Please refer to the man page of the xmodmap command for further
    details.
 
