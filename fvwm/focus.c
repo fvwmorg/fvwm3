@@ -713,12 +713,10 @@ static void __focus_grab_one_button(
 	do_grab = (grab_buttons & (1 << button));
 	if ((do_grab & (1 << button)) == (fw->grabbed_buttons & (1 << button)))
 	{
-fprintf(stderr,"nothing do_grab: %d, gb: %d'\n", do_grab, (fw->grabbed_buttons & (1 << button)));
 		return;
 	}
 	if (do_grab)
 	{
-fprintf(stderr,"grabbing %d on '%s'\n", button+1, fw->visible_name);
 		XGrabButton(
 			dpy, button + 1, AnyModifier, FW_W_PARENT(fw), True,
 			ButtonPressMask, GrabModeSync, GrabModeAsync, None,
@@ -728,7 +726,6 @@ fprintf(stderr,"grabbing %d on '%s'\n", button+1, fw->visible_name);
 	}
 	else
 	{
-fprintf(stderr,"ungrabbing %d on '%s'\n", button+1, fw->visible_name);
 		XUngrabButton(dpy, button + 1, AnyModifier, FW_W_PARENT(fw));
 		fw->grabbed_buttons &= ~(1 << button);
 	}

@@ -9256,7 +9256,9 @@ Performs
 .BR Focus )
 on the next window which satisfies all
 .IR conditions .
-Conditions are the same as for
+If the command is running in a window context, it starts looking
+for a matching window from there.  Otherwise it starts at the
+focused window.  Conditions are the same as for
 .B Current
 with the addition of "CirculateHit" which overrides the
 .IB "CirculateSkip " Style
@@ -9329,10 +9331,18 @@ Performs
 .I command
 (typically
 .BR Focus )
-on the previous window which satisfies all
+on the next window which satisfies all
 .IR conditions .
-Conditions are the same as for
-.BR Next .
+If the command is running in a window context, it starts looking
+for a matching window from there.  Otherwise it starts at the
+focused window.  Conditions are the same as for
+.B Current
+with the addition of "CirculateHit" which overrides the
+.IB "CirculateSkip " Style
+attribute, "CirculateHitIcon" which overrides the
+.IB "CirculateSkipIcon " Style
+attribute for iconified windows and "CirculateHitShaded" which
+does the same for shaded windows.
 
 .TP
 .BI "ThisWindow [(" conditions ")] " command

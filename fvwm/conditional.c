@@ -69,11 +69,11 @@
  * Direction = 0 ==> operation on current window (returns pass or fail)
  *
  **************************************************************************/
-static FvwmWindow *Circulate(char *action, int Direction, char **restofline)
+static FvwmWindow *Circulate(
+	FvwmWindow *sf, char *action, int Direction, char **restofline)
 {
 	int pass = 0;
 	FvwmWindow *fw, *found = NULL;
-	FvwmWindow *sf;
 	WindowConditionMask mask;
 	char *flags;
 
@@ -91,8 +91,11 @@ static FvwmWindow *Circulate(char *action, int Direction, char **restofline)
 	{
 		free(flags);
 	}
-	sf = get_focus_window();
-	if (sf)
+	if (sf == NULL || Direction == 0)
+	{
+		sf = get_focus_window();
+	}
+	if (sf != NULL)
 	{
 		if (Direction > 0)
 		{
@@ -173,7 +176,7 @@ static void circulate_cmd(
 	FvwmWindow *found;
 	char *restofline;
 
-	found = Circulate(action, circ_dir, &restofline);
+	found = Circulate(exc->w.fw, action, circ_dir, &restofline);
 	if (cond_rc != NULL)
 	{
 		*cond_rc = (found == NULL) ? COND_RC_NO_MATCH : COND_RC_OK;

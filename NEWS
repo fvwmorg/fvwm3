@@ -16,6 +16,9 @@ Changes in developement release 2.5.5 (not released yet)
 
 * New option Locale to PrintInfo command.
 
+* The Next and Prev commands start looking for a matching window at
+  the context window if there is any.
+
 -------------------------------------------------------------------
 
 Changes in alpha release 2.5.4 (20-Oct-2002)
