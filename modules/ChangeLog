@@ -1,3 +1,8 @@
+1999-01-04  Dan Espen  <dane@mk.bellcore.com>
+
+	* FvwmForm/FvwmForm.c (GetColors): Fix hilight/shadow allocation
+	on non-PsuedoColor visuals.
+
 Sun Jan  3 14:07:43 1999  Steve Robbins  <steve@nyongwa.montreal.qc.ca>
 
 	* FvwmCpp/FvwmCpp.c: Removed #ifdef defaulting FVWM_CPP to

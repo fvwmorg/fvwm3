@@ -637,8 +637,8 @@ void GetColors ()
          colors[c_itemback] = WhitePixel(dpy, screen);
 
     InitPictureCMap(dpy,root);          /* for shadow routines */
-    GetShadow(colors[c_itemlo]);        /* alloc shadow */
-    GetHilite(colors[c_itemhi]);        /* alloc shadow */
+    colors[c_itemlo] = GetShadow(colors[c_itemback]); /* alloc shadow */
+    colors[c_itemhi] = GetHilite(colors[c_itemback]); /* alloc shadow */
   } else if (!XAllocColorCells(dpy, d_cmap, 0, NULL, 0, colors, 6)) {
     colors[c_back] = colors[c_itemback] = WhitePixel(dpy, screen);
     colors[c_fore] = colors[c_itemfore] = colors[c_itemlo] = colors[c_itemhi]
