@@ -120,6 +120,9 @@
 /* Enables to use setlocale() provided by X */
 #undef X_LOCALE
 
+/* Enable X output method */
+#undef HAVE_XOUTPUT_METHOD
+
 /* Specify a type for sig_atomic_t if it's not available.  */
 #undef sig_atomic_t
 

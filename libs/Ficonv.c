@@ -343,7 +343,7 @@ void FiconvInit(Display *dpy, const char *module)
 	FLCUtf8Charset = FlocaleCharsetOfXCharset(FLOCALE_UTF8_XCHARSET);
 
 	suc = set_default_iconv_charsets(FLCDefaultIconvCharset);
-	if (!suc && FLCDefaultIconvCharset != xom_charset)
+	if (!suc && FLCDefaultIconvCharset != xom_charset && xom_charset != NULL)
 	{
 		FLCDefaultIconvCharset = xom_charset;
 		suc = set_default_iconv_charsets(FLCDefaultIconvCharset);

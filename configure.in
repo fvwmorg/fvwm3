@@ -414,6 +414,8 @@ fi
 dnl Check if Xsetlocale() is available or not.
 AC_CHECK_LIB(X11, _Xsetlocale, AC_DEFINE(X_LOCALE),, $X_LIBS -lX11)
 
+dnl Check if Xsetlocale() is available or not.
+AC_CHECK_LIB(X11, XOpenOM, AC_DEFINE(HAVE_XOUTPUT_METHOD),, $X_LIBS -lX11)
 
 dnl ******** iconv
 found_iconv=no

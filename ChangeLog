@@ -1,3 +1,18 @@
+2002-03-27  olicha  <olivier.chapuis@free.fr>
+
+	* libs/FlocaleCharset.c (FlocaleInit_X_Charset):
+	(FlocaleCharsetSetFlocaleCharset):
+	* acconfig.h:
+	* configure.in (problem_multibyte):
+	Fixed compilation for system without XOpenOM in Xlib.h
+
+	* libs/FlocaleCharset.c (FlocaleInit_X_Charset):
+	* libs/Ficonv.c (FiconvInit):
+	By more safe
+
+	* fvwm/fvwm.c:
+	include only libs/Flocale.h
+
 2002-03-26  Mikhael Goikhman  <migo@homemail.com>
 
 	* configure.in:

@@ -258,7 +258,7 @@ char *viscii1_1_1[]       = {"VISCII", NULL};
 
 #else /* !FlocaleIconvSupport */
 
-#if HAVE_BIDI
+#ifdef HAVE_BIDI
 #define  CT_ENTRY(x,y,z) {x, nullsl, FLC_INDEX_ICONV_CHARSET_NOT_FOUND, z}
 #else
 #define  CT_ENTRY(x,y,z) {x, nullsl, FLC_INDEX_ICONV_CHARSET_NOT_FOUND, NULL}
@@ -385,6 +385,7 @@ FlocaleCharset *FlocaleCharsetOfFontStruct(Display *dpy, XFontStruct *fs)
 static
 void FlocaleInit_X_Charset(Display *dpy, const char *module)
 {
+#ifdef HAVE_XOUTPUT_METHOD
 	XOM om;
 	XOMCharSetList cs;
 	int i;
@@ -418,10 +419,14 @@ void FlocaleInit_X_Charset(Display *dpy, const char *module)
 			}
 		}
 	}
-	XCloseOM(om);
+	if (om)
+	{
+		XCloseOM(om);
+	}
 
 	if (FLCXOMCharsetList_num > 0 && FLCXOMCharsetList[0])
 		FLCXOMCharset = FLCXOMCharsetList[0];
+#endif
 }
 
 /* ---------------------------- interface functions ------------------------- */
@@ -487,13 +492,21 @@ void FlocaleCharsetSetFlocaleCharset(Display *dpy, FlocaleFont *flf)
 	}
 	else if (FlocaleMultibyteSupport && flf->fontset != None)
 	{
-		flf->fc = FLCXOMCharset;
+		if (FLCXOMCharset != NULL)
+		{
+			flf->fc = FLCXOMCharset;
+		}
+		else
+		{
+			/* FIXME */
+			flf->fc = &UnkownCharset;
+		}
 	}
 	else if (flf->font != NULL)
 	{
 		flf->fc = FlocaleCharsetOfFontStruct(dpy, flf->font);
 	}
-	if (flf->fc == NULL)
+	if (flf->fc == NULL || flf->fc = FlocaleGetUnsetCharset())
 	{
 		flf->fc = &UnkownCharset;
 	}

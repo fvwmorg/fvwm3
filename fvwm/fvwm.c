@@ -41,7 +41,7 @@
 #include "libs/fvwmlib.h"
 #include "libs/FScreen.h"
 #include "libs/FShape.h"
-#include "libs/FlocaleCharset.h"
+#include "libs/Flocale.h"
 #include <libs/gravity.h>
 #include "fvwm.h"
 #include "externs.h"
