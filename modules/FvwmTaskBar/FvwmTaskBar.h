@@ -134,7 +134,7 @@ extern void SetMwmHints(unsigned int value,
 extern void ConstrainSize (XSizeHints *hints, int *widthp, int *heightp);
 extern void RevealTaskBar(void);
 extern void HideTaskBar(void);
-extern void WarpTaskBar(int x);
+extern void WarpTaskBar(int x, Bool force);
 extern void PurgeConfigEvents(void);
 extern void redraw_buttons(void);
 

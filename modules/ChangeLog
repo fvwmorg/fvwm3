@@ -1,3 +1,13 @@
+1999-12-13  olicha   <olivier.chapuis@free.fr>
+
+	* FvwmTaskBar/FvwmTaskBar.{c,h} (WarpTaskBar):
+	(LoopOnEvents):
+	Fixed AutoStick
+
+	* FvwmTaskBar/FvwmTaskBar.c (ProcessMessage):
+	(StartMeUp):
+	Some hints clean up
+
 1999-12-12  olicha   <olivier.chapuis@free.fr>
 
 	* FvwmTaskBar/FvwmTaskBar.c (ProcessMessage):

@@ -478,6 +478,7 @@ void ProcessMessage(unsigned long type,unsigned long *body)
 	/* allows to resize */
 	XGetWMNormalHints(dpy,win,&hints,&dumy);
 	hints.min_width   = win_width;
+	hints.base_width  = win_width;
 	hints.max_width   = win_width;
 	XSetWMNormalHints(dpy,win,&hints);
 
@@ -1401,11 +1402,10 @@ void LoopOnEvents(void)
 	{
 	  memcpy(&Event, &Event2, sizeof(Event));
 	}
-        if ((Event.xconfigure.width != win_width ||
-	     Event.xconfigure.height != win_height)) {
+        if (Event.xconfigure.height != win_height) {
 	  AdjustWindow(Event.xconfigure.width, Event.xconfigure.height);
           if (AutoStick && !AutoHide)
-	    WarpTaskBar(win_y);
+	    WarpTaskBar(win_y, 1);
 	  redraw = 1;
         }
 	/* useful because of dynamic style change */
@@ -1414,11 +1414,11 @@ void LoopOnEvents(void)
 	  PurgeConfigEvents();
 	  break;
 	}
-        else if ((Event.xconfigure.x != win_x || Event.xconfigure.y != win_y))
+        else if (Event.xconfigure.x != win_x || Event.xconfigure.y != win_y)
 	{
           if (AutoStick && !AutoHide)
 	  {
-            WarpTaskBar(Event.xconfigure.y);
+            WarpTaskBar(Event.xconfigure.y, 0);
           }
 	  else if (!AutoHide)
 	  {
@@ -1823,9 +1823,9 @@ void StartMeUp(void)
    hints.width_inc   = 1;
    hints.height_inc  = RowHeight+2;
    hints.min_width   = win_width;
-   hints.min_height  = RowHeight-1;
+   hints.min_height  = RowHeight;
    hints.max_width   = win_width;
-   hints.max_height  = RowHeight+7*(RowHeight+2) + 1;
+   hints.max_height  = RowHeight+7*(RowHeight+2);
    hints.base_width  = win_width;
    hints.base_height = RowHeight;
 
@@ -2116,19 +2116,18 @@ void ConstrainSize (XSizeHints *hints, int *widthp, int *heightp)
 /***********************************************************************
  WarpTaskBar -- Enforce AutoStick feature
  ***********************************************************************/
-void WarpTaskBar(int y)
+void WarpTaskBar(int y, Bool force)
 {
-  win_x = win_border;
-
-  if (!AutoHide) {
-     if (y < Midline)
-       win_y = win_border;
-     else
-       win_y = (int)ScreenHeight - win_height - win_border;
-
-     XSync(dpy, 0);
-     XMoveWindow(dpy, win, win_x, win_y);
-     XSync(dpy, 0);
+  /* The tests on y are really useful ! */ 
+  if (!AutoHide && ((y != (int)ScreenHeight - win_height - win_border &&
+      y !=  win_border) || force)) {
+    if (y > Midline)
+      win_y = (int)ScreenHeight - win_height - win_border;
+    else
+      win_y = win_border;
+    XSync(dpy, 0);
+    XMoveWindow(dpy, win, win_x, win_y);
+    XSync(dpy, 0);
   }
 
   if (AutoHide)
