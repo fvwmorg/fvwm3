@@ -69,10 +69,10 @@ void init_fft(Display *dpy)
 static
 Bool is_utf8_encoding(FftFont *f)
 {
-	int i;
+	int i = 0;
 	FftPatternElt *e;
 
-	if (FftUtf8Support)
+	if (!FftUtf8Support)
 	{
 		return False;
 	}
