@@ -2793,6 +2793,14 @@ forced to the non-shaded state.  Maximized windows and windows without
 titles cannot be shaded.
 
 
+.IP "XORpixmap \fIpixmap\fP"
+Selects the pixmap with which bits are XOR'ed when doing rubber-band
+window moving or resizing.  This will use up colormap entries (see
+\fIColorLimit\fP), but has a better chance of making the rubber-band
+visible if \fIXORvalue\fP does not give good results.  An example pixmap
+\fIresize.rainbow.xpm\fP is provided with the source distribution.
+
+
 .IP "XORvalue \fInumber\fP"
 Changes the value with which bits are XOR'ed when doing rubber-band
 window moving or resizing.  Setting this value is a trial-and-error

@@ -1321,6 +1321,54 @@ void SetXOR(XEvent *eventp,Window w,FvwmWindow *tmp_win,
   if (Scr.DrawGC)
     XFreeGC(dpy, Scr.DrawGC);
   Scr.DrawGC = XCreateGC(dpy, Scr.Root, gcm, &gcv);
+  /* free up XORPixmap if possible */
+  if (Scr.DrawPicture) {
+    DestroyPicture(dpy, Scr.DrawPicture);
+    Scr.DrawPicture = NULL;
+  }
+}
+
+extern char *IconPath;
+extern char *PixmapPath;
+
+void SetXORPixmap(XEvent *eventp,Window w,FvwmWindow *tmp_win,
+            unsigned long context, char *action,int* Module)
+{
+  char *PixmapName;
+  Picture *GCPicture;
+  XGCValues gcv;
+  unsigned long gcm;
+
+  action = GetNextToken(action, &PixmapName);
+  if(PixmapName == NULL)
+  {
+    fvwm_msg(ERR,"SetXORPixmap","XORPixmap requires 1 argument");
+    return;
+  }
+  
+  /* search for pixmap */
+  GCPicture = CachePicture(dpy, Scr.Root, IconPath, PixmapPath, PixmapName, Scr.ColorLimit);
+  free(PixmapName);
+  if (GCPicture == NULL) {
+    fvwm_msg(ERR,"SetXORPixmap","Can't find pixmap %s", PixmapName);
+    return;
+  }
+  
+  /* free up old one */
+  if (Scr.DrawPicture)
+    DestroyPicture(dpy, Scr.DrawPicture);
+  Scr.DrawPicture = GCPicture;
+  
+  /* create Graphics context */
+  gcm = GCFunction|GCLineWidth|GCTile|GCFillStyle|GCSubwindowMode;
+  gcv.function = GXxor;
+  gcv.line_width = 0;
+  gcv.tile = GCPicture->picture;
+  gcv.fill_style = FillTiled;
+  gcv.subwindow_mode = IncludeInferiors;
+  if (Scr.DrawGC)
+    XFreeGC(dpy, Scr.DrawGC);
+  Scr.DrawGC = XCreateGC(dpy, Scr.Root, gcm, &gcv);
 }
 
 void SetOpaque(XEvent *eventp,Window w,FvwmWindow *tmp_win,

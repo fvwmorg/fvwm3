@@ -454,6 +454,7 @@ void AddTitleStyle(F_CMD_ARGS);
 void SetDeskSize(F_CMD_ARGS);
 void SetOpaque(F_CMD_ARGS);
 void SetXOR(F_CMD_ARGS);
+void SetXORPixmap(F_CMD_ARGS);
 void SetClick(F_CMD_ARGS);
 void SetSnapAttraction(F_CMD_ARGS);
 void SetSnapGrid(F_CMD_ARGS);

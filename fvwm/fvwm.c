@@ -1290,6 +1290,7 @@ void InitVariables(void)
   Scr.StdReliefGC = 0;
   Scr.StdShadowGC = 0;
   Scr.DrawGC = 0;
+  Scr.DrawPicture = NULL;
   Scr.hasIconFont = False;
   Scr.hasWindowFont = False;
 

@@ -277,7 +277,6 @@ void resize_window(XEvent *eventp,Window w,FvwmWindow *tmp_win,
 	}
       if(!done)
 	{
-	  MoveOutline(Scr.Root,0,0,0,0);
 	  DispatchEvent();
 	  MoveOutline(Scr.Root, drag->x - tmp_win->bw, drag->y - tmp_win->bw,
 		      drag->width - 1 + 2 * tmp_win->bw,
@@ -619,46 +618,65 @@ void MoveOutline(Window root, int x, int  y, int  width, int height)
   static int lasty = 0;
   static int lastWidth = 0;
   static int lastHeight = 0;
-  char draw;
-  XRectangle rects[5];
+  int interleave = 0;
+  int offset;
+  XRectangle rects[10];
 
   if (x == lastx && y == lasty && width == lastWidth && height == lastHeight)
     return;
 
-  /* undraw the old one, if any */
+  /* figure out the ordering */
+  if (width || height)
+    interleave += 1;
+  if (lastWidth || lastHeight)
+    interleave += 1;
+  offset = interleave >> 1;
+    
+  /* place the resize rectangle into the array of rectangles */
+  /* interleave them for best visual look */
+  
   /* draw the new one, if any */
-  draw = 0;
-  while (1)
+  if (width || height)
   {
+    int i;
+     for (i=0; i < 4; i++)
+    {
+      rects[i * interleave].x = x + i;
+      rects[i * interleave].y = y + i;
+      rects[i * interleave].width = width - (i << 1);
+      rects[i * interleave].height = height - (i << 1);
+    }
+    rects[3 * interleave].y = y+3 + (height-6)/3;
+    rects[3 * interleave].height = (height-6)/3;
+    rects[4 * interleave].x = x+3 + (width-6)/3;
+    rects[4 * interleave].y = y+3;
+    rects[4 * interleave].width = (width-6)/3;
+    rects[4 * interleave].height = (height-6);
+  }
+  
+  /* undraw the old one, if any */
     if (lastWidth || lastHeight)
     {
       int i;
-
       for (i=0; i < 4; i++)
       {
-	rects[i].x = lastx + i;
-	rects[i].y = lasty + i;
-	rects[i].width = lastWidth - (i << 1);
-	rects[i].height = lastHeight - (i << 1);
-      }
-      rects[3].y = lasty+3 + (lastHeight-6)/3;
-      rects[3].height = (lastHeight-6)/3;
-      rects[4].x = lastx+3 + (lastWidth-6)/3;
-      rects[4].y = lasty+3;
-      rects[4].width = (lastWidth-6)/3;
-      rects[4].height = (lastHeight-6);
-      XDrawRectangles(dpy,Scr.Root,Scr.DrawGC,rects,5);
+      rects[i * interleave + offset].x = lastx + i;
+      rects[i * interleave + offset].y = lasty + i;
+      rects[i * interleave + offset].width = lastWidth - (i << 1);
+      rects[i * interleave + offset].height = lastHeight - (i << 1);
     }
-    draw++;
+    rects[3 * interleave + offset].y = lasty+3 + (lastHeight-6)/3;
+    rects[3 * interleave + offset].height = (lastHeight-6)/3;
+    rects[4 * interleave + offset].x = lastx+3 + (lastWidth-6)/3;
+    rects[4 * interleave + offset].y = lasty+3;
+    rects[4 * interleave + offset].width = (lastWidth-6)/3;
+    rects[4 * interleave + offset].height = (lastHeight-6);
+    }
 
-    if (draw < 2)
-    {
+  XDrawRectangles(dpy,Scr.Root,Scr.DrawGC,rects,interleave * 5);
+  
       lastx = x;
       lasty = y;
       lastWidth = width;
       lastHeight = height;
-    }
-    else
-      break;
-  }
 }

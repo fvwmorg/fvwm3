@@ -263,6 +263,7 @@ typedef struct ScreenInfo
   GC StdReliefGC;
   GC StdShadowGC;
   GC DrawGC;			/* GC to draw lines for move and resize */
+  Picture *DrawPicture;
   GC ScratchGC1;
   GC ScratchGC2;
   GC ScratchGC3;

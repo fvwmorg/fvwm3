@@ -170,6 +170,7 @@ static struct functions func_config[] =
 #ifdef WINDOWSHADE
   {"WindowShade",  WindowShade,      F_WINDOW_SHADE,        FUNC_NEEDS_WINDOW},
 #endif /* WINDOWSHADE */
+  {"XORPixmap",    SetXORPixmap,     F_XOR,                 FUNC_NO_WINDOW},
   {"XORValue",     SetXOR,           F_XOR,                 FUNC_NO_WINDOW},
   {"",0,0,0}
 };
