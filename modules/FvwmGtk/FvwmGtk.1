@@ -91,6 +91,10 @@ doesn't exist yet, it will be created. If the optional argument is given,
 it should be the name of an xpm file in the ImagePath. The icon will 
 appear to the left of the text.
 
+.IP "*FvwmGtkTearoff"
+Appends a special tear-off item. Activating it turns the menu into 
+a permanent window; activating it once more makes the menu disappear again. 
+
 .SH WINDOW-LISTS
 
 Window-lists are special dynamically created menus. They offer a list of 
@@ -208,6 +212,11 @@ color specifications are always of the form "rgb:rrrr/gggg/bbbb".
 .IP "*FvwmGtkScale \fBname\fP [ \fBvertical\fP ] \fBvalue\fP \fBlower\fP
 \fBupper\fP \fBinc\fP \fBpage-inc\fP \fBpage-size\fP [ \fBdigits\fP ]"
 Adds a scale. 
+
+.IP "FvwmGtkSpinButton \fBname\fP \fBvalue\fP \fBlower\fP
+\fBupper\fP \fBinc\fP \fBpage-inc\fP \fBpage-size\fP \fBclimb-rate\fP [
+\fBdigits\fP ]"
+Adds a spin button.
 
 .SH COMMON CONFIGURATION
 The following commands can be used for menus and dialogs.

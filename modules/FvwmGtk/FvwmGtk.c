@@ -45,9 +45,9 @@
 #include "libs/ModParse.h"
 #include "libs/Picture.h"
 
-int Fvwm_fd[2];
-char *MyName;
-int MyNameLen;
+int fvwm_fd[2];
+char *my_name;
+int my_name_len;
 char *image_path;
 GSList *radio_group;
 char *radio_name;
@@ -113,17 +113,17 @@ open_dialog (int argc, char **argv)
       item = gtk_window_new (GTK_WINDOW_DIALOG);
       gtk_widget_set_name (item, argv[0]);
       name = gtk_widget_get_name (item);
-      gtk_widget_ref (item);
       g_hash_table_insert (widgets, name, item);
+      gtk_object_ref (GTK_OBJECT (item));
      
       gtk_window_set_title (GTK_WINDOW (item), argv[1]);
       gtk_window_set_wmclass (GTK_WINDOW (item), argv[1], "FvwmGtk");
       gtk_object_set_data 
 	(GTK_OBJECT (item), "values", 
-	 (gpointer) g_hash_table_new (g_str_hash, g_str_equal)); 
+	 g_hash_table_new (g_str_hash, g_str_equal)); 
       gtk_signal_connect 
 	(GTK_OBJECT (item), "delete_event",
-	 GTK_SIGNAL_FUNC (gtk_widget_hide), (gpointer) current);
+	 GTK_SIGNAL_FUNC (gtk_widget_hide), current);
       if (argc >= 3 && strcasecmp ("center", argv[2]) == 0) 
         {
           gtk_window_position (GTK_WINDOW (item), GTK_WIN_POS_CENTER);
@@ -262,6 +262,7 @@ dialog_notebook (int argc, char **argv)
   if (notebook_label)
     {
       free (notebook_label);
+      notebook_label = NULL;
     }
   notebook_label = strdup (argv[0]);
 }
@@ -274,6 +275,7 @@ dialog_end_notebook (int argc, char **argv)
   if (notebook_label)
     {
       free (notebook_label);
+      notebook_label = NULL;
     }
   current = GTK_WIDGET (current)->parent;
 }
@@ -369,7 +371,7 @@ combine_string (str *p)
   int l;
   char *res;
   
-  for (l = 0, r = p; r != NULL; r = r->next)
+  for (l = 1, r = p; r != NULL; r = r->next)
     {
       l += strlen (r->s);
     }
@@ -384,24 +386,6 @@ combine_string (str *p)
   return res;
 }
 
-void
-debug_list (char *t, str *p)
-{
-  str *r;
-
-  for (r = p; r != NULL; r = r->next)
-    {
-      if (r->is_var)
-	{
-	  fprintf (stderr, "\t$(%s)\n", r->s);
-	}
-      else
-	{
-	  fprintf (stderr, "\t\"%s\"\n", r->s);
-	}
-    }
-  fprintf(stderr, "----\n");
-}
 
 char *
 recursive_replace (GtkWidget *d, char *val)
@@ -415,8 +399,6 @@ recursive_replace (GtkWidget *d, char *val)
   head->next = NULL;
 
   split_string (val, head);
-  
-  debug_list ("main list", head);
   for (r = head; r->next != NULL; r = r->next)
     {
       next = r->next;
@@ -425,10 +407,10 @@ recursive_replace (GtkWidget *d, char *val)
 	  nval = (char *) gtk_object_get_data (GTK_OBJECT (d), next->s);
 	  if (nval)
 	    {
+              /* this changes r->next, thus freeing next is safe */
 	      tail = split_string (nval, r);
 	      tail->next = next->next;
-	      free (next);
-	      debug_list ("main list", head);
+              free (next);
 	    }
 	  else 
 	    {
@@ -448,7 +430,7 @@ send_values (GtkWidget *w)
   int i;
 
   dialog = gtk_widget_get_toplevel (w);
-  for (vals = (char **) gtk_object_get_data (GTK_OBJECT(w), "return_values");
+  for (vals = (char **) gtk_object_get_data (GTK_OBJECT (w), "return_values");
        *vals; vals++)
     {
       char *val = recursive_replace (dialog, *vals);
@@ -464,7 +446,7 @@ send_values (GtkWidget *w)
 	    } 
 	  else
 	    {
-	      SendText (Fvwm_fd, val, context);
+	      SendText (fvwm_fd, val, context);
 	    }
 	}
       free (val);
@@ -478,9 +460,9 @@ widget_get_value (GtkWidget *w)
 
   if (GTK_IS_SCALE (w))
     {
-      snprintf (buf, sizeof (buf), "%.*f", 
-		GTK_RANGE (w)->digits,
-		gtk_range_get_adjustment (GTK_RANGE (w))->value);
+      g_snprintf (buf, sizeof (buf), "%.*f", 
+	  	  GTK_RANGE (w)->digits,
+		  gtk_range_get_adjustment (GTK_RANGE (w))->value);
       return buf;
     }
   else if (GTK_IS_COLOR_SELECTION (w))
@@ -504,12 +486,13 @@ widget_get_value (GtkWidget *w)
 	{
 	  blue = 65535;
 	}
-      snprintf (buf, sizeof (buf), "rgb:%0.4lx/%0.4lx/%0.4lx", 
+      g_snprintf (buf, sizeof (buf), "rgb:%0.4lx/%0.4lx/%0.4lx", 
 		red, green, blue);
       return buf;
     }
   else if (GTK_IS_ENTRY (w))
     {
+      /* this also catches spin buttons */
       return gtk_entry_get_text (GTK_ENTRY (w));
     } 
   else if (GTK_IS_TOGGLE_BUTTON (w))
@@ -563,11 +546,10 @@ dialog_button (int argc, char **argv)
       vals[i] = strdup(argv[i + 1]);
     }
   vals[i] = NULL;
-  gtk_object_set_data (GTK_OBJECT(item), "return_values", 
-		       (gpointer) vals); 
+  gtk_object_set_data (GTK_OBJECT (item), "return_values", vals); 
   gtk_signal_connect 
-    (GTK_OBJECT(item), "clicked",
-     GTK_SIGNAL_FUNC(send_values), (gpointer) item);
+    (GTK_OBJECT (item), "clicked",
+     GTK_SIGNAL_FUNC (send_values), item);
   gtk_widget_show (item);
   add_to_dialog (item, argc, argv);
 }
@@ -592,8 +574,8 @@ dialog_checkbutton (int argc, char **argv)
       gtk_toggle_button_set_state (GTK_TOGGLE_BUTTON (item), FALSE);
     }
   gtk_signal_connect 
-    (GTK_OBJECT(item), "toggled",
-     GTK_SIGNAL_FUNC(update_value), (gpointer) item);
+    (GTK_OBJECT (item), "toggled",
+     GTK_SIGNAL_FUNC (update_value), item);
 
   gtk_widget_show (item);
   add_to_dialog (item, argc, argv);
@@ -612,8 +594,8 @@ dialog_entry (int argc, char **argv)
       gtk_entry_set_text (GTK_ENTRY (item), argv[1]);
     }
   gtk_signal_connect 
-    (GTK_OBJECT(item), "changed",
-     GTK_SIGNAL_FUNC(update_value), (gpointer) item);
+    (GTK_OBJECT (item), "changed",
+     GTK_SIGNAL_FUNC (update_value), item);
   gtk_widget_show (item);
   add_to_dialog (item, argc, argv);
 }
@@ -638,8 +620,8 @@ dialog_radiobutton (int argc, char **argv)
       gtk_toggle_button_set_state (GTK_TOGGLE_BUTTON (item), FALSE);
     }
   gtk_signal_connect 
-    (GTK_OBJECT(item), "toggled",
-     GTK_SIGNAL_FUNC(update_value), (gpointer) item);
+    (GTK_OBJECT (item), "toggled",
+     GTK_SIGNAL_FUNC (update_value), item);
 
   gtk_widget_show (item);
   add_to_dialog (item, argc, argv);  
@@ -664,6 +646,7 @@ dialog_end_radiogroup (int argc, char **argv)
   if (radio_name)
     {
       free (radio_name);
+      radio_name = NULL;
     }
   radio_group = NULL;
 }
@@ -696,7 +679,7 @@ dialog_color (int argc, char **argv)
     }
   gtk_signal_connect 
     (GTK_OBJECT (item), "color_changed",
-     GTK_SIGNAL_FUNC (update_value), (gpointer) item);  
+     GTK_SIGNAL_FUNC (update_value), item);  
   gtk_widget_show (item);
   add_to_dialog (item, argc, argv);
 }
@@ -772,7 +755,8 @@ dialog_separator (int argc, char **argv)
 void
 dialog_scale (int argc, char **argv)
 {
-  int vertical = 0;
+  unsigned int vertical = 0;
+  unsigned int digits = 0;
   GtkWidget *item;
   GtkObject *adj;
   int i;
@@ -794,6 +778,11 @@ dialog_scale (int argc, char **argv)
 	}
     }
 
+  if (argc >= 8 + i) 
+    {
+      digits = atoi (argv[i + 7]);
+    }
+
   adj = gtk_adjustment_new (atof (argv[i + 1]), atof (argv[i + 2]), 
 			    atof (argv[i + 3]), atof (argv[i + 4]), 
 			    atof (argv[i + 5]), atof (argv[i + 6]));
@@ -807,14 +796,38 @@ dialog_scale (int argc, char **argv)
     }
   gtk_signal_connect_object
     (GTK_OBJECT (adj), "value_changed",
-     GTK_SIGNAL_FUNC (update_value), (gpointer) item);
+     GTK_SIGNAL_FUNC (update_value), GTK_OBJECT (item));
   gtk_widget_set_name (item, argv[0]);
-  if (argc >= 8 + i) 
-    {
-      gtk_scale_set_digits (GTK_SCALE (item), atoi (argv[i + 7]));
-    }
+  gtk_scale_set_digits (GTK_SCALE (item), digits);
   gtk_widget_show (item);
   add_to_dialog (item, argc, argv);  
+}
+
+void
+dialog_spinbutton (int argc, char **argv)
+{
+  GtkWidget *item;
+  GtkObject *adj;
+  unsigned int digits = 0;
+
+  g_return_if_fail (argc >= 8);
+
+  if (argc >= 9)
+    {
+      digits = atoi (argv[8]);
+    }
+
+  adj = gtk_adjustment_new (atof (argv[1]), atof (argv[2]), 
+			    atof (argv[3]), atof (argv[4]), 
+			    atof (argv[5]), atof (argv[6]));
+
+  item = gtk_spin_button_new (GTK_ADJUSTMENT (adj), atof (argv[7]), digits);
+  gtk_signal_connect_object
+    (GTK_OBJECT (adj), "value_changed",
+     GTK_SIGNAL_FUNC (update_value), GTK_OBJECT (item));
+  gtk_widget_set_name (item, argv[0]);
+  gtk_widget_show (item);
+  add_to_dialog (item, argc, argv);   
 }
 
 /*********************************
@@ -824,12 +837,12 @@ dialog_scale (int argc, char **argv)
  *********************************/
 
 void 
-send_item (char *s)
+send_item (GtkWidget *item, char *s)
 {
-  SendText (Fvwm_fd, s, context);
+  SendText (fvwm_fd, s, context);
 }
 
-GtkWidget *
+GtkWidget*
 find_or_create_menu (char *name)
 {
   GtkWidget *menu;
@@ -842,8 +855,14 @@ find_or_create_menu (char *name)
       menu = gtk_menu_new ();
       gtk_widget_set_name (menu, name);
       name_copy = gtk_widget_get_name (menu);
-      gtk_widget_ref (menu);
+      gtk_object_ref (GTK_OBJECT (menu));
+      gtk_object_sink (GTK_OBJECT (menu));
+      fprintf (stderr, "new menu after sinking ref_count == %d\n", 
+	       GTK_OBJECT (menu)->ref_count);
       g_hash_table_insert (widgets, name_copy, menu);
+      gtk_object_ref (GTK_OBJECT (menu));
+      fprintf (stderr, "after inserting ref_count == %d\n", 
+	       GTK_OBJECT (menu)->ref_count);
     } 
   if (GTK_IS_MENU (menu))
     {
@@ -928,8 +947,8 @@ menu_title (int argc, char **argv)
      to be a better way.
   */
   gtk_signal_connect 
-    (GTK_OBJECT(item), "select",
-     GTK_SIGNAL_FUNC(gtk_menu_item_deselect), NULL);
+    (GTK_OBJECT (item), "select",
+     GTK_SIGNAL_FUNC (gtk_menu_item_deselect), NULL);
 }
 
 /*
@@ -966,9 +985,20 @@ menu_item (int argc, char **argv)
     }
   gtk_menu_append (GTK_MENU (current), item);
   gtk_widget_show (item);
-  gtk_signal_connect_object 
+  gtk_signal_connect 
     (GTK_OBJECT (item), "activate",
-     GTK_SIGNAL_FUNC (send_item), (gpointer) strdup (argv[1])); 
+     GTK_SIGNAL_FUNC (send_item), strdup (argv[1])); 
+}
+
+void
+menu_tearoff_item (int argc, char **argv)
+{
+  GtkWidget *item;
+  
+  item = gtk_tearoff_menu_item_new ();
+
+  gtk_menu_append (GTK_MENU (current), item);
+  gtk_widget_show (item);
 }
 
 /*
@@ -1006,28 +1036,27 @@ destroy (int argc, char **argv)
     { 
       if (GTK_IS_MENU (w))
         {
-	  fprintf(stderr, "destroying menu %s\n", argv[0]);
+	  fprintf(stderr, "destroying menu %s ref_count == %d\n", 
+		  argv[0], GTK_OBJECT (w)->ref_count);
 	}
       else if (GTK_IS_WINDOW (w))
 	{
-	  fprintf(stderr, "destroying dialog %s\n", argv[0]);
+	  fprintf(stderr, "destroying dialog %s ref_count == %d\n", 
+		  argv[0], GTK_OBJECT (w)->ref_count);
 	}
       else 
 	{
 	  fprintf(stderr, "destroying unknown %s\n", argv[0]);
 	}
-      fprintf(stderr, "1\n");
-      g_hash_table_remove (widgets, argv[0]);
-      fprintf(stderr, "2\n");
-      gtk_widget_unref (w);
-      fprintf(stderr, "3\n");
-      if (current == w) 
+
+      if (gtk_widget_get_toplevel (current) == w) 
         {
           current = NULL;
         }
-      fprintf(stderr, "4\n");
+
+      g_hash_table_remove (widgets, argv[0]);
+      gtk_object_unref (GTK_OBJECT (w));
       gtk_widget_destroy (w);
-      fprintf(stderr, "5\n");
     }
 }
 
@@ -1062,7 +1091,7 @@ window_list (int argc, char **argv)
       opts[i] = strdup (argv[i + 1]);
     }
   opts[i] = NULL;
-  gtk_object_set_data (GTK_OBJECT (item), "window_list", (gpointer) opts);
+  gtk_object_set_data (GTK_OBJECT (item), "window_list", opts);
 }
 
 void
@@ -1070,10 +1099,10 @@ start_window_list (char *name, int button, char **opts)
 {
   destroy (1, &name);
   open_menu (1, &name);
-  gtk_object_set_data (GTK_OBJECT (current), "window_list", (gpointer) opts);
+  gtk_object_set_data (GTK_OBJECT (current), "window_list", opts);
   collecting_window_list = TRUE;
   window_list_button = button;
-  SendText (Fvwm_fd, "Send_WindowList", 0);
+  SendText (fvwm_fd, "Send_WindowList", 0);
 }
 
 char *table[] = {
@@ -1097,7 +1126,9 @@ char *table[] = {
   "RadioGroup",
   "Scale",
   "Separator",
+  "SpinButton",
   "Submenu",
+  "Tearoff",
   "Title",
   "WindowList"
 };
@@ -1123,7 +1154,9 @@ void (*handler[])(int, char**) = {
   dialog_start_radiogroup,
   dialog_scale,
   separator,
+  dialog_spinbutton,
   menu_submenu,
+  menu_tearoff_item,
   menu_title,
   window_list
 };
@@ -1141,7 +1174,7 @@ parse_arguments (char **line, int *argc, char ***argv)
     }
   *argc = i;
   
-  *argv = (char**) safemalloc (i * sizeof (char *));
+  *argv = (char **) safemalloc (i * sizeof (char *));
   for (i = 0; i < *argc; i++)
     {
       (*argv)[i] = tmp[i]; 
@@ -1154,7 +1187,7 @@ widget_not_found (char *name)
   GtkWidget *dialog, *box, *item;
   char buf[200];	
 
-  SendText (Fvwm_fd, "Beep", 0);
+  SendText (fvwm_fd, "Beep", 0);
   dialog = gtk_window_new (GTK_WINDOW_DIALOG);
   gtk_window_set_title (GTK_WINDOW (dialog), "Error");
   gtk_window_set_wmclass (GTK_WINDOW (dialog), "Error", "FvwmGtk");
@@ -1162,20 +1195,20 @@ widget_not_found (char *name)
   box = gtk_vbox_new (FALSE, 10);
   gtk_container_add (GTK_CONTAINER (dialog), box);
   gtk_container_border_width (GTK_CONTAINER (dialog), 30);
-  snprintf (buf, sizeof (buf), "No such menu or dialog: %s", name); 
+  g_snprintf (buf, sizeof (buf), "No such menu or dialog: %s", name); 
   item = gtk_label_new (buf);
   gtk_box_pack_start (GTK_BOX (box), item, FALSE, FALSE, 5);
   item = gtk_button_new_with_label ("OK");
   gtk_box_pack_start (GTK_BOX (box), item, FALSE, FALSE, 5);
   gtk_signal_connect_object 
     (GTK_OBJECT (item), "clicked",
-     GTK_SIGNAL_FUNC (gtk_widget_destroy), (gpointer) dialog); 
+     GTK_SIGNAL_FUNC (gtk_widget_destroy), GTK_OBJECT (dialog)); 
   gtk_widget_show_all (box);
   gtk_widget_show (dialog);
 }
 
 void 
-ParseConfigLine (char *buf) 
+parse_config_line (char *buf) 
 {
   int argc;
   char **argv;
@@ -1186,10 +1219,10 @@ ParseConfigLine (char *buf)
     {
       buf[strlen(buf)-1] = '\0';	
     }
-  if (strncasecmp (buf, MyName, MyNameLen) == 0) 
+  if (strncasecmp (buf, my_name, my_name_len) == 0) 
     {
       fprintf (stderr, "Found line for me: %s\n", buf);
-      p = buf + MyNameLen;
+      p = buf + my_name_len;
       if (e = FindToken (p, table, char*)) 
 	{ 
 	  p += strlen (*e);	
@@ -1198,35 +1231,40 @@ ParseConfigLine (char *buf)
 	} 
       else 
 	{
-	  fprintf (stderr, "%s: unknown command: %s\n", MyName + 1, buf);
+	  fprintf (stderr, "%s: unknown command: %s\n", my_name + 1, buf);
 	}
     }
   else if (strncasecmp (buf, "ImagePath", 9) == 0) 
     {
       fprintf (stderr, "Found ImagePath: %s\n", buf);
-      if (image_path != NULL) 
+      if (image_path) 
 	{
 	  free (image_path);
 	}
-      image_path = strdup (buf+9);
+      image_path = strdup (buf + 9);
     }
 }
 
 void 
-ParseOptions (void) 
+parse_options (void) 
 {
   char *buf;
   
-  while (GetConfigLine (Fvwm_fd, &buf), buf != NULL) 
+  while (GetConfigLine (fvwm_fd, &buf), buf != NULL) 
     {
-      ParseConfigLine(buf);
+      parse_config_line (buf);
     } 
 } 
 
+void
+detacher (GtkWidget *attach, GtkMenu *menu)
+{
+}
+
 void 
-ProcessMessage (unsigned long type, 
-	        unsigned long timestamp, 
-		unsigned long *body)
+process_message (unsigned long type, 
+		 unsigned long timestamp, 
+		 unsigned long *body)
 {
   int button = 0;
   char name[128];
@@ -1235,7 +1273,7 @@ ProcessMessage (unsigned long type,
   char buf[200];
   char **opts;
 
-  SendText (Fvwm_fd, "UNLOCK", 0);
+  SendText (fvwm_fd, "UNLOCK", 0);
   switch (type) 
     {
     case M_STRING:
@@ -1256,6 +1294,15 @@ ProcessMessage (unsigned long type,
             }
           else
             {
+	      /* FIXME: This is a hack: we must have menus attached
+		 to some widget or gtk_menu_set_tearoff_state complains.
+		 Unattached menus are attached to themself here!
+		 Submenus are attached already to their item. */
+	      if (!gtk_menu_get_attach_widget (GTK_MENU (widget)))
+		{
+		  gtk_menu_attach_to_widget (GTK_MENU (widget), 
+					     widget, detacher);
+		}
 	      gtk_menu_popup (GTK_MENU (widget), NULL, NULL, NULL, NULL, 
 			      button, timestamp);
 	    }    
@@ -1266,12 +1313,12 @@ ProcessMessage (unsigned long type,
 	}
       break;
     case M_CONFIG_INFO:
-      ParseConfigLine ((char*) (&body[3]));
+      parse_config_line ((char*) (&body[3]));
       break;
     case M_WINDOW_NAME:
       if (collecting_window_list)
 	{
-	  snprintf (buf, sizeof(buf), "WindowListFunc %#lx", body[0]);
+	  g_snprintf (buf, sizeof (buf), "WindowListFunc %#lx", body[0]);
 	  wl_args[0] = (char*) (&body[3]);
 	  wl_args[1] = buf;
 	  menu_item (2, wl_args);
@@ -1289,14 +1336,14 @@ ProcessMessage (unsigned long type,
 }
 
 void 
-ReadFvwmPipe (gpointer data, int source, GdkInputCondition cond)
+read_fvwm_pipe (gpointer data, int source, GdkInputCondition cond)
 {
-  unsigned long header[HEADER_SIZE],*body;
+  unsigned long header[HEADER_SIZE], *body;
 
   if (ReadFvwmPacket (source, header, &body) > 0)
     {
-      ProcessMessage (header[1], header[3], body);
-      /*      free (body); */
+      process_message (header[1], header[3], body);
+      free (body);
     }
 }
 
@@ -1323,18 +1370,18 @@ main (int argc, char **argv)
     {
       s = argv[6];
     }
-  MyNameLen = strlen(s) + 1;
-  MyName = safemalloc (MyNameLen + 1);
-  *MyName = '*';
-  strcpy (MyName + 1, s);
+  my_name_len = strlen (s) + 1;
+  my_name = safemalloc (my_name_len + 1);
+  *my_name = '*';
+  strcpy (my_name + 1, s);
 
   image_path = NULL;
 
-  Fvwm_fd[0] = atoi (argv[1]);
-  Fvwm_fd[1] = atoi (argv[2]);
+  fvwm_fd[0] = atoi (argv[1]);
+  fvwm_fd[1] = atoi (argv[2]);
 
   gtk_init (&argc, &argv);
-  snprintf (rcfile, 200, "%s/.%src", getenv ("HOME"), MyName + 1);
+  g_snprintf (rcfile, 200, "%s/.%src", getenv ("HOME"), my_name + 1);
   gtk_rc_parse (rcfile);
 
   widgets = g_hash_table_new (g_str_hash, g_str_equal);
@@ -1344,9 +1391,9 @@ main (int argc, char **argv)
   radio_name = NULL;
   collecting_window_list = 0;
 
-  ParseOptions ();
+  parse_options ();
   
-  SetMessageMask (Fvwm_fd, 
+  SetMessageMask (fvwm_fd, 
 		  M_STRING |
 		  M_LOCKONSEND |
 		  M_CONFIG_INFO |
@@ -1354,10 +1401,9 @@ main (int argc, char **argv)
 		  M_WINDOW_NAME |
 		  M_END_WINDOWLIST);
 
-  gtk_input_add_full (Fvwm_fd[1], GDK_INPUT_READ, ReadFvwmPipe, 
+  gtk_input_add_full (fvwm_fd[1], GDK_INPUT_READ, read_fvwm_pipe, 
                       NULL, NULL, NULL);
   gtk_main ();
   return 0;
 }
-
 

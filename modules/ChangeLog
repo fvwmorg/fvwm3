@@ -1,3 +1,12 @@
+1999-03-16  Matthias Clasen  <clasen@mathematik.uni-freiburg.de>
+
+	* FvwmGtk/FvwmGtk.c : Replace sprintf with g_sprintf 
+	to avoid problems on Solaris.
+	Fix segfaults when redefining dialogs.
+	Various cleanups.
+	Implement tear-off menus.
+	Implement spin buttons.
+	
 Mar 16 1999 Hippo
 
 	* FvwmEvent/FvwmEvent.c: new config option *fvwmEventPassID makes
