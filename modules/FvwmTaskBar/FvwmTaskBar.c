@@ -501,12 +501,13 @@ void ProcessMessage(unsigned long type,unsigned long *body)
     {
       if (GetDeskNumber(&windows,i,&Desk) && DeskOnly)
       {
-        if (DeskNumber != Desk && DeskNumber == cfgpacket->desk)
+        if (DeskNumber != Desk && DeskNumber == cfgpacket->desk
+	    && !IS_STICKY(cfgpacket))
 	{
           /* window moving to current desktop */
           AddButton(&buttons, ItemName(&windows,i),
                     GetItemPicture(&windows,i), BUTTON_UP, i,
-		    !!(ItemIndexFlags(&windows, i) & F_ICONIFIED));
+		    ItemIndexFlags(&windows, i) & F_ICONIFIED ? 1 : 0);
           redraw = 1;
         }
         if (DeskNumber != cfgpacket->desk && DeskNumber == Desk)
@@ -601,13 +602,15 @@ void ProcessMessage(unsigned long type,unsigned long *body)
     /* fwvm will wait for an Unlock message before continuing
      * be careful when changing this construct, make sure unlock happens
      * if AnimCommand && AnimCommand[0] != 0 */
-   tb_flags = ItemFlags(&windows, body[0]);
+    fprintf(stderr,"Iconfy msg\n");
+    tb_flags = ItemFlags(&windows, body[0]);
     if (((i = FindItem(&windows, body[0])) == -1)
 	|| (type == M_DEICONIFY && !(tb_flags & F_ICONIFIED))
 	|| (type == M_ICONIFY   &&   tb_flags & F_ICONIFIED))
     {
       if (AnimCommand && AnimCommand[0] != 0)
 	SendText(Fvwm_fd, "Unlock 1", 0);
+      fprintf(stderr,"No !\n");
       break;
     }
     tb_flags ^= F_ICONIFIED;
