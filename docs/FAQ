@@ -163,6 +163,7 @@ Contents
     7.11  Lowering and moving windows.
     7.12  Toggling windows on and off.
     7.13  How do I start applications by clicking on an icon.
+    7.14  How do I define the hot-spot in an XPM cursor.
 
 
 ======================================================================
@@ -2397,3 +2398,35 @@ A: OK, 93 is a joke, we know you don't have 93 buttons, but we've
 
    Also, GNOME and KDE have desktop icon applications gmc and kfm, which
    enable this functionality.  These applications may be run under FVWM.
+
+----------------------------------------------------------------------
+
+    7.14  How do I define the hot-spot in an XPM cursor.
+
+   Fvwm allows you to use a pixmap as a mouse cursor.  For example,
+   the command:
+
+     CursorStyle ROOT xterm.xpm
+
+   Sets the root mouse cursor to the image of a terminal.
+   Normally the actual pixel the mouse cursor points to is the center
+   of the pixmap.  This pixel in the mouse cursor is called the
+   hot-spot.  If you want the hot-spot to be somewhere other than
+   the center of the image, you can use a GUI that supports setting
+   the hot-spot, or you can edit the XPM file with an editor.
+
+   If the XPM image is in version 3 format, there's a line that contains
+   the width, height, number of colors and the characters per color
+   in the image:
+
+     static char * image_name [] = {
+     "64 38 8 1",
+
+   To put the hot-spot in the upper left, change this to:
+
+     static char * image_name [] = {
+     "64 38 8 1 0 0 XPMEXT",
+
+   Notice that the hot-spot is an offset, relative to zero.
+
+
