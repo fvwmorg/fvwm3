@@ -1666,7 +1666,7 @@ void SetupFrame(
     SendConfigureNotify(tmp_win, x, y, w, h, 0, True);
 #ifdef FVWM_DEBUG_MSGS
     fvwm_msg(DBG,"SetupFrame","Sent ConfigureNotify (w == %d, h == %d)",
-             client_event.xconfigure.width,client_event.xconfigure.height);
+             w,h);
 #endif
   }
 

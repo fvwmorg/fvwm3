@@ -1169,6 +1169,10 @@ void PositiveWrite(int module, unsigned long *ptr, int size)
 {
   extern int moduleTimeout;
 
+  if(ptr == NULL)
+  {
+   return;
+  }
   if((pipeOn[module]<0)||(!((PipeMask[module]) & ptr[1])))
   {
     return;

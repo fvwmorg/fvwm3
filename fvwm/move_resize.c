@@ -602,7 +602,7 @@ static void AnimatedMoveAnyWindow(FvwmWindow *tmp_win, Window w, int startX,
 #ifdef FVWM_DEBUG_MSGS
       fvwm_msg(DBG,"AnimatedMoveAnyWindow",
 	       "Sent ConfigureNotify (w == %d, h == %d)",
-               client_event.xconfigure.width,client_event.xconfigure.height);
+               tmp_win->frame_g.width, tmp_win->frame_g.height);
 #endif
     }
     XFlush(dpy);
@@ -1444,8 +1444,8 @@ Bool moveLoop(FvwmWindow *tmp_win, int XOffset, int YOffset, int Width,
 	SendConfigureNotify(tmp_win, xl, yt, Width, Height, 0, False);
 #ifdef FVWM_DEBUG_MSGS
         fvwm_msg(DBG,"SetupFrame","Sent ConfigureNotify (w == %d, h == %d)",
-                 client_event.xconfigure.width,
-                 client_event.xconfigure.height);
+                 Width,
+                 Height);
 #endif
       }
     }

@@ -731,12 +731,7 @@ int main(int argc, char **argv)
   DBUG("main","Entering HandleEvents loop...");
 
   HandleEvents();
-#ifdef FVWM_DEBUG_MSGS
-  if ( debug_term_signal )
-  {
-    fvwm_msg(DBG, "main", "Terminated by signal %d", debug_term_signal);
-  }
-#endif
+
   switch( fvwmRunState )
   {
   case FVWM_DONE:

@@ -1,3 +1,11 @@
+2000-06-12  Brad Giaccio  <bgiaccio@psrw.com>
+
+	* fvwm/fvwm.c: fvwm/borders.c:
+	* fvwm/module_interface.c: fvwm/move_resize.c:
+	* modules/FvwmIconBox/FvwmIconBox.c: modules/FvwmIconMan/FvwmIconMan.c:
+	* modules/FvwmWinList/FvwmWinList.c:
+	now builds with FVWM_DEBUG_MSGS defined
+
 2000-06-10  olicha  <olivier.chapuis@free.fr>
 
 	* sample/system.fvwm2rc-sample-95:

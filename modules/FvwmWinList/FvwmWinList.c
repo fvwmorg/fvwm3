@@ -284,12 +284,6 @@ int main(int argc, char **argv)
   SetSyncMask(Fvwm_fd, M_DEICONIFY | M_ICONIFY);
 
   MainEventLoop();
-#ifdef FVWM_DEBUG_MSGS
-  if ( debug_term_signal )
-  {
-    fvwm_msg(DBG, "main", "Terminated by signal %d", debug_term_signal);
-  }
-#endif
   return 0;
 }
 

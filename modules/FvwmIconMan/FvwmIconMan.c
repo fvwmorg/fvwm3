@@ -303,13 +303,6 @@ main(int argc, char **argv)
 
   main_loop();
 
-#ifdef FVWM_DEBUG_MSGS
-  if ( debug_term_signal )
-  {
-    fvwm_msg(DBG, "main", "Terminated by signal %d", debug_term_signal);
-  }
-#endif
-
   return 0;
 }
 
