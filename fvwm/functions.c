@@ -242,6 +242,7 @@ static const func_type func_config[] =
   {"style",        ProcessNewStyle,  F_STYLE,                0},
   {"title",        Nop_func,         F_TITLE,                0},
   {"titlestyle",   SetTitleStyle,    F_TITLESTYLE,           FUNC_DECOR},
+  {"unsetenv",     UnsetEnv,         F_SETENV,               0},
   {"updatedecor",  UpdateDecor,      F_UPDATE_DECOR,         0},
   {"updatestyles", update_styles_func,F_UPDATE_STYLES,       0},
   {"wait",         wait_func,        F_WAIT,                 0},

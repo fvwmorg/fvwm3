@@ -6175,7 +6175,7 @@ will make the FvwmM4-set variable
 .I HEIGHT
 usable by processes started by fvwm as the environment
 variable
-.IR $HEIGHT .
+.IR $height .
 If
 .I value
 includes whitespace, you should enclose it in quotes.
@@ -6204,6 +6204,14 @@ Examples:
 Silent Move 0 0
 Silent User_defined_function
 .EE
+
+.TP
+.BI "UnsetEnv " "variable"
+Unset an environment variable, similar to shell's export or unsetenv command.
+The
+.I variable
+then is removed from the environment array inherited by processes started
+directly by fvwm.
 
 .TP
 .BI "Wait " windowname

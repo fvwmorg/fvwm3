@@ -31,7 +31,7 @@
 
 Time managing_since;
 
-Atom _XA_WIN_SX;
+Atom _XA_WM_SX;
 Atom _XA_MANAGER;
 Atom _XA_ATOM_PAIR;
 Atom _XA_WM_COLORMAP_NOTIFY;
@@ -52,10 +52,10 @@ SetupICCCM2 (Bool replace_wm)
   XSetWindowAttributes attr;
   XEvent xev;
   XClientMessageEvent ev;
-  char win_sx[20];
+  char wm_sx[20];
 
-  sprintf (win_sx, "WIN_S%lu", Scr.screen);
-  _XA_WIN_SX =    XInternAtom (dpy, win_sx, False);
+  sprintf (wm_sx, "WM_S%lu", Scr.screen);
+  _XA_WM_SX =     XInternAtom (dpy, wm_sx, False);
   _XA_MANAGER =   XInternAtom (dpy, "MANAGER", False);
   _XA_ATOM_PAIR = XInternAtom (dpy, "ATOM_PAIR", False);
   _XA_TARGETS =   XInternAtom (dpy, "TARGETS", False);
@@ -65,13 +65,13 @@ SetupICCCM2 (Bool replace_wm)
   _XA_WM_COLORMAP_NOTIFY = XInternAtom (dpy, "WM_COLORMAP_NOTIFY", False);
 
   /* Check for a running ICCCM 2.0 compliant WM */
-  running_wm_win = XGetSelectionOwner (dpy, _XA_WIN_SX);
+  running_wm_win = XGetSelectionOwner (dpy, _XA_WM_SX);
   if (running_wm_win != None) {
     DBUG("SetupICCCM2", "another ICCCM 2.0 compliant WM is running");
     if (!replace_wm)
       {
 	fvwm_msg(ERR, "SetupICCCM2",
-		 "another ICCCM 2.0 compliant WM is running");
+	  "another ICCCM 2.0 compliant WM is running, try -replace");
 	exit (1);
       }
     /* We need to know when the old manager is gone.
@@ -95,8 +95,8 @@ SetupICCCM2 (Bool replace_wm)
 
   managing_since = xev.xproperty.time;
 
-  XSetSelectionOwner (dpy, _XA_WIN_SX, Scr.NoFocusWin, managing_since);
-  if (XGetSelectionOwner (dpy, _XA_WIN_SX) != Scr.NoFocusWin) {
+  XSetSelectionOwner (dpy, _XA_WM_SX, Scr.NoFocusWin, managing_since);
+  if (XGetSelectionOwner (dpy, _XA_WM_SX) != Scr.NoFocusWin) {
     fvwm_msg (ERR, "SetupICCCM2", "failed to acquire selection ownership");
     exit (1);
   }
@@ -107,7 +107,7 @@ SetupICCCM2 (Bool replace_wm)
   ev.message_type = _XA_MANAGER;
   ev.format = 32;
   ev.data.l[0] = managing_since;
-  ev.data.l[1] = _XA_WIN_SX;
+  ev.data.l[1] = _XA_WM_SX;
   XSendEvent (dpy, Scr.Root, False, StructureNotifyMask, (XEvent*)&ev);
 
   if (running_wm_win != None) {

@@ -2328,6 +2328,20 @@ void SetEnv(F_CMD_ARGS)
   free(szValue);
 }
 
+void UnsetEnv(F_CMD_ARGS)
+{
+  char *szVar = NULL;
+  char *szPutenv = NULL;
+
+  action = GetNextToken(action,&szVar);
+  if (!szVar)
+    return;
+
+  szPutenv = stripcpy(szVar);
+  putenv(szPutenv);
+  free(szVar);
+}
+
 static void do_recapture(F_CMD_ARGS, Bool fSingle)
 {
   XEvent event;
