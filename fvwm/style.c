@@ -1593,16 +1593,18 @@ void CMD_Style(F_CMD_ARGS)
                 if (geom_flags & XNegative) {
                   IconBoxes->IconBox[0] =
 		    /* neg x coord */
-                    + IconBoxes->IconBox[0]
+                    IconBoxes->IconBox[0]
                     - width -2;
                   IconBoxes->IconSign[0]='-'; /* save for later */
+                  IconBoxes->IconSign[2]='-'; /* save for later */
                 }
                 if (geom_flags & YNegative) {
                   IconBoxes->IconBox[1] =
 		    /* neg y coord */
-                    + IconBoxes->IconBox[1]
+                    IconBoxes->IconBox[1]
                     - height -2;
                   IconBoxes->IconSign[1]='-'; /* save for later */
+                  IconBoxes->IconSign[3]='-'; /* save for later */
                 }
 		/* x + wid = right x */
                 IconBoxes->IconBox[2] = width + IconBoxes->IconBox[0];
