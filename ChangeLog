@@ -1,3 +1,8 @@
+2004-06-01  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* fvwm/ewmh.c (EWMH_SetWMDesktop):
+	use 0xFFFFFFFF instead of 0xFFFFFFFE for "sticky across all desks"
+
 2004-05-31  Dan Espen  <dane@mk.telcordia.com>
 
 	* fvwm/fvwm.1.in (COLORSETS): Moved FvwmTheme description of colorsets
@@ -15,7 +20,7 @@
 	* fvwm/placement.c (__place_get_wm_pos)
 	* fvwm/style.c (style_parse_one_style_option)
 	Added support for new CenterPlacement style (cf. macro PLACE_CENTER).
-	
+
 2004-05-29  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* fvwm/events.c (HandleEnterNotify):

@@ -25,7 +25,7 @@
  * _NET_VIRTUAL_ROOTS         (not useful at all for us)
  * _NET_SHOWING_DESKTOP       should be implemented
  * _NET_REQUEST_FRAME_EXTENTS may be implemented
- * 
+ *
  * Some _NET_WINDOW_TYPE are simply ignored:
  *         _NET_WM_WINDOW_TYPE_SPLASH
  *         _NET_WM_WINDOW_TYPE_UTILITIES
@@ -528,7 +528,7 @@ void EWMH_SetWMDesktop(FvwmWindow *fwin)
 
 	if (IS_STICKY_ACROSS_DESKS(fwin))
 	{
-		desk = 0xFFFFFFFE;
+		desk = 0xFFFFFFFF;
 	}
 	else if (desk >= ewmhc.CurrentNumberOfDesktops)
 	{
@@ -1481,7 +1481,7 @@ void EWMH_GetStyle(FvwmWindow *fwin, window_style *style)
 {
 	if (style->change_mask.use_layer)
 	{
-		fwin->ewmh_normal_layer = SGET_LAYER(*style);	
+		fwin->ewmh_normal_layer = SGET_LAYER(*style);
 	}
 	else if (fwin->ewmh_normal_layer == 0)
 	{

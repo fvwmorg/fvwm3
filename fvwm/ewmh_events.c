@@ -128,7 +128,7 @@ int ewmh_CloseWindow(EWMH_CMD_ARGS)
 int ewmh_MoveResizeWindow(EWMH_CMD_ARGS)
 {
 	XConfigureRequestEvent cre;
-	
+
 	if (ev == NULL)
 	{
 		return 0;
@@ -142,14 +142,14 @@ int ewmh_MoveResizeWindow(EWMH_CMD_ARGS)
 	cre.window = ev->xclient.window;
 
 	events_handle_configure_request(cre, fwin, True);
-	
+
 	return 0;
 }
 
 int ewmh_RestackWindow(EWMH_CMD_ARGS)
 {
 	XConfigureRequestEvent cre;
-	
+
 	if (ev == NULL)
 	{
 		return 0;
@@ -161,7 +161,7 @@ int ewmh_RestackWindow(EWMH_CMD_ARGS)
 	cre.window = ev->xclient.window;
 
 	events_handle_configure_request(cre, fwin, True);
-	
+
 	return 0;
 }
 
@@ -173,7 +173,7 @@ int ewmh_WMDesktop(EWMH_CMD_ARGS)
 		unsigned long d = (unsigned long)ev->xclient.data.l[0];
 
 		/* the spec says that if d = 0xFFFFFFFF then we have to Stick
-		 * the window  however KDE use 0xFFFFFFFE :o) */
+		 * the window however KDE use 0xFFFFFFFE :o) */
 		if (d == 0xFFFFFFFE || d == 0xFFFFFFFF)
 		{
 			execute_function_override_window(
@@ -572,10 +572,10 @@ int ewmh_WMStateFullScreen(EWMH_CMD_ARGS)
 		    (!IS_EWMH_FULLSCREEN(fwin) &&
 		     DO_EWMH_USE_STACKING_HINTS(fwin)))
 		{
-			/* On: if not raised by a layer cmd raise 
+			/* On: if not raised by a layer cmd raise
 			 * Off: if lowered by a layer cmd raise */
 			execute_function_override_window(
-				NULL, NULL, "Raise", 0, fwin);	
+				NULL, NULL, "Raise", 0, fwin);
 		}
 	}
 
@@ -1429,7 +1429,7 @@ Bool EWMH_ProcessClientMessage(const exec_context_t *exc)
 		ewmh_a->action(fwin, ev, NULL, 0);
 		return True;
 	}
-	
+
 	if (fwin == NULL)
 	{
 		return False;
