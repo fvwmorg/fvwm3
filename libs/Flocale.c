@@ -712,8 +712,10 @@ void FlocaleDrawString(
 	unsigned long flags)
 {
 	int len;
-	char *str1 = NULL, *str2;
+	char *str1 = NULL;  /* if Bidi used: original string */
+	char *str2 = NULL;  /* if Bidi used: converted string */
 	Bool is_rtl;
+	const char *bidi_charset;
 
 	is_rtl = False;
 	if (!fstring || !fstring->str)
@@ -730,7 +732,12 @@ void FlocaleDrawString(
 		len = strlen(fstring->str);
 	}
 
-	str2 = FBidiConvert(dpy, fstring->str, flf, &is_rtl);
+	/* check whether we should apply Bidi filter to text */
+	bidi_charset = FlocaleGetBidiCharset(dpy, flf);
+	if (bidi_charset)
+	{
+		str2 = FBidiConvert(fstring->str, bidi_charset, &is_rtl);
+	}
 	if (str2)
 	{
 		str1 = fstring->str;
@@ -968,3 +975,4 @@ FlocaleCharset *FlocaleGetUnsetCharset(void)
 {
 	return &UnsetCharset;
 }
+

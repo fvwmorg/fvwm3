@@ -37,38 +37,27 @@ Bool FBidiIsApplicable(const char *charset)
 	return True;
 }
 
-char *FBidiConvert(
-	Display *dpy, const char *logical_str, FlocaleFont *flf, Bool *is_rtl)
+char *FBidiConvert(const char *logical_str, const char *charset, Bool *is_rtl)
 {
+
 	int str_len = strlen(logical_str);
 	char *visual_str;
-	FlocaleCharset *fc;
 
 	FriBidiCharSet fribidi_charset;
 	FriBidiChar *logical_unicode_str;
 	FriBidiChar *visual_unicode_str;
 	FriBidiCharType pbase_dir = FRIBIDI_TYPE_ON;
 
+	if (charset == NULL)
+	{
+		return NULL;
+	}
 	if (is_rtl != NULL)
 	{
 		*is_rtl = False;
 	}
 
-	if (flf == NULL)
-	{
-		return NULL;
-	}
-	else if (flf->fc == FlocaleGetUnsetCharset())
-	{
-		FlocaleCharsetSetFlocaleCharset(dpy, flf);
-	}
-	fc = flf->fc;
-	if (fc == FlocaleCharsetGetUnknownCharset() || fc->bidi == NULL)
-	{
-		return NULL;
-	}
-
-	fribidi_charset = fribidi_parse_charset(fc->bidi);
+	fribidi_charset = fribidi_parse_charset((char *)charset);
 	if (fribidi_charset == FRIBIDI_CHARSET_NOT_FOUND)
 	{
 		return NULL;

@@ -1,3 +1,13 @@
+2002-04-24  Mikhael Goikhman  <migo@homemail.com>
+
+	* libs/FBidi.c:
+	* libs/FBidi.h:
+	* libs/Flocale.c:
+	* libs/Flocale.h:
+	* libs/FlocaleCharset.c:
+	FBidi is now independent from Flocale* again;
+	iso8859-6.8x fonts recognized now as bidi-enabled
+
 2002-04-23  Mikhael Goikhman  <migo@homemail.com>
 
 	* libs/Flocale.c:

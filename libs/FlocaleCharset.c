@@ -299,6 +299,7 @@ FlocaleCharset FlocaleCharsetTable[] =
 	CT_ENTRY("ISO8859-4",           iso8859_4,           NULL),
 	CT_ENTRY("ISO8859-5",           iso8859_5,           NULL),
 	CT_ENTRY("ISO8859-6",           iso8859_6,           "ISO8859-6"),
+	CT_ENTRY("ISO8859-6.8X",        iso8859_6,           "ISO8859-6"),
 	CT_ENTRY("ISO8859-7",           iso8859_7,           NULL),
 	CT_ENTRY("ISO8859-8",           iso8859_8,           "ISO8859-8"),
 	CT_ENTRY("ISO8859-9",           iso8859_9,           NULL),

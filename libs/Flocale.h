@@ -274,6 +274,7 @@ Bool FlocaleTextListToTextProperty(
  * Misc
  * ***************************************************************************/
 FlocaleCharset *FlocaleGetUnsetCharset(void);
+const char *FlocaleGetBidiCharset(Display *dpy, FlocaleFont *flf);
 
 #endif /* FLOCALE_H */
 
