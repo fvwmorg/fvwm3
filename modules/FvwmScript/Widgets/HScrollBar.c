@@ -162,7 +162,7 @@ void DrawHScrollBar(struct XObj *xobj)
 	    !xobj->flags[1]);
  sprintf(str,"%d",xobj->value3);
  x=w-XTextWidth(xobj->xfont,str,strlen(str))-4;
- DrawString(dpy,xobj,xobj->win,x,y,str,strlen(str),fore,hili,back,!
+ DrawString(dpy,xobj,xobj->win,x,y,str,strlen(str),fore,hili,back,
 	    !xobj->flags[1]);
 }
 

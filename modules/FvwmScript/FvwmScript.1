@@ -108,13 +108,13 @@ This example shows how to launch xcalc every 10 seconds.
 .SH MAIN OF A SCRIPT
 The second part of the script contains the description for every widget
 which will be used in the program.  A description of widget is composed of
-two parts. Fisrt part describes initial properties and second part contains
+two parts. The first part describes initial properties and the second part contains
 instructions which will be executed when the widget receives  messages.
 All widgets can send and receive messages. All message are identify by
 a number. The message "UserAction" is sent to a widget when user has
 altered this one. The syntax is as following:
 .EX
-Widget		id	# Set the id widget
+Widget		id	# A number between 1 and 99 inclusive
 Property
  Type		string
  Size width	height
@@ -336,8 +336,9 @@ Set the foreground color of the widget numbered \fIid1\fP to {\fIcolor\fP}.
 .IP "ChangeBackColor \fIid1\fP {\fIcolor\fP}"
 Set the background color of the widget numbered \fIid1\fP to {\fIcolor\fP}.
 
-.IP "ChangeColorSet \fIid1\fP {\fIcolor\fP}"
-Set the colorset of the widget numbered \fIid1\fP to {\fIcolor\fP}.
+.IP "ChangeColorSet \fIid1\fP \fIid2\fP"
+Set the colorset of the widget numbered \fIid1\fP to \fIid2\fP. Specifying
+widget 0 sets the main window colorset.
 
 .IP "ChangePosition \fIid1 x y\fP"
 Move the widget numbered \fIid1\fP to position (\fIx\fP,\fIy\fP).
@@ -392,6 +393,22 @@ Return the title of the widget numbered \fIid\fP.
 
 .IP "(GetValue \fIid\fP)"
 Return the current value of the widget numbered \fIid\fP.
+
+.IP "(GetFore \fIid\fP)"
+Return the current RGB foreground value of the widget numbered \fIid\fP in the
+hex format RRGGBB.
+
+.IP "(GetBack \fIid\fP)"
+Return the current RGB background value of the widget numbered \fIid\fP in the
+hex format RRGGBB.
+
+.IP "(GetHilight \fIid\fP)"
+Return the current RGB hilight value of the widget numbered \fIid\fP in the
+hex format RRGGBB.
+
+.IP "(GetShadow \fIid\fP)"
+Return the current RGB shadow value of the widget numbered \fIid\fP in the
+hex format RRGGBB.
 
 .IP "(GetOutput {\fIstr\fP} \fIint1 int2\fP)"
 Executes the command \fIstr\fP, gets the standard output and returns the word

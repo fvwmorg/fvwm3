@@ -63,6 +63,10 @@ NoReliefString		{ return NORELIEFSTRING; }
 ^{bl}+ChangeMinValue	{ return CHVALUEMIN; }
 GetTitle		{ return GETTITLE; }
 GetValue		{ return GETVALUE; }
+GetFore			{ return GETFORE; }
+GetBack			{ return GETBACK; }
+GetHilight		{ return GETHILIGHT; }
+GetShadow		{ return GETSHADOW; }
 GetOutput		{ return GETOUTPUT; }
 NumToHex		{ return NUMTOHEX; }
 HexToNum		{ return HEXTONUM; }

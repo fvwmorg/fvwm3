@@ -196,6 +196,18 @@ void ParseOptions(void)
   }
 }
 
+static int myErrorHandler(Display *dpy, XErrorEvent *event)
+{
+  /* some errors are acceptable, mostly they're caused by
+   * trying to use a deleted pixmap */
+  if((event->error_code == BadDrawable) || (event->error_code == BadPixmap))
+    return 0;
+
+  PrintXErrorAndCoredump(dpy, event, x11base->title);
+
+  /* return (*oldErrorHandler)(dpy,event); */
+  return 0;
+}
 
 /* Procedure d'initialisation du serveur X et des variables globales*/
 void Xinit(int IsFather)
@@ -218,6 +230,7 @@ void Xinit(int IsFather)
  screen=DefaultScreen(dpy);
  InitPictureCMap(dpy);
  AllocColorset(0);
+ XSetErrorHandler(myErrorHandler);
 
 #ifdef MEMDEBUG
  __bounds_debug_no_checking=False;
@@ -460,6 +473,8 @@ void BuildGUI(int IsFather)
 
   if ((*tabobj)[i].colorset >= 0)
     tabxobj[i]->colorset=(*tabobj)[i].colorset;
+  else
+    tabxobj[i]->colorset=x11base->colorset;
 
   ChooseFunction(tabxobj[i],(*tabobj)[i].type);
   tabxobj[i]->gc=x11base->gc;

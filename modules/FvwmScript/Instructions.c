@@ -19,9 +19,9 @@
 extern int fd[2];
 extern Window ref;
 
-void (*TabCom[30]) (int NbArg,long *TabArg);
+void (*TabCom[25]) (int NbArg,long *TabArg);
 char *(*TabFunc[20]) (int *NbArg, long *TabArg);
-int (*TabComp[15]) (char *arg1,char *arg2);
+int (*TabComp[7]) (char *arg1,char *arg2);
 
 extern Display *dpy;
 extern int screen;
@@ -45,7 +45,7 @@ time_t TimeCom=0;
 /*************************************************************/
 /* Ensemble de fonction de comparaison de deux entiers       */
 /*************************************************************/
-int Inf(char *arg1,char *arg2)
+static int Inf(char *arg1,char *arg2)
 {
  int an1,an2;
  an1=atoi(arg1);
@@ -53,7 +53,7 @@ int Inf(char *arg1,char *arg2)
  return (an1<an2);
 }
 
-int InfEq(char *arg1,char *arg2)
+static int InfEq(char *arg1,char *arg2)
 {
  int an1,an2;
  an1=atoi(arg1);
@@ -61,7 +61,7 @@ int InfEq(char *arg1,char *arg2)
  return (an1<=an2);
 }
 
-int Equal(char *arg1,char *arg2)
+static int Equal(char *arg1,char *arg2)
 {
  int an1,an2;
  an1=atoi(arg1);
@@ -69,7 +69,7 @@ int Equal(char *arg1,char *arg2)
  return (strcmp(arg1,arg2)==0);
 }
 
-int SupEq(char *arg1,char *arg2)
+static int SupEq(char *arg1,char *arg2)
 {
  int an1,an2;
  an1=atoi(arg1);
@@ -77,7 +77,7 @@ int SupEq(char *arg1,char *arg2)
  return (an1>=an2);
 }
 
-int Sup(char *arg1,char *arg2)
+static int Sup(char *arg1,char *arg2)
 {
  int an1,an2;
  an1=atoi(arg1);
@@ -85,7 +85,7 @@ int Sup(char *arg1,char *arg2)
  return (an1>an2);
 }
 
-int Diff(char *arg1,char *arg2)
+static int Diff(char *arg1,char *arg2)
 {
  int an1,an2;
  an1=atoi(arg1);
@@ -96,7 +96,7 @@ int Diff(char *arg1,char *arg2)
 /*****************************************************/
 /* Fonction qui retourne la valeur d'un argument     */
 /*****************************************************/
-char *CalcArg (long *TabArg,int *Ix)
+static char *CalcArg (long *TabArg,int *Ix)
 {
  char *TmpStr;
  int i;
@@ -127,7 +127,7 @@ char *CalcArg (long *TabArg,int *Ix)
 /*************************************************************/
 /* Ensemble des fonctions pour recuperer les prop d'un objet */
 /*************************************************************/
-char *FuncGetValue(int *NbArg, long *TabArg)
+static char *FuncGetValue(int *NbArg, long *TabArg)
 {
  char *tmp;
  long Id;
@@ -141,8 +141,76 @@ char *FuncGetValue(int *NbArg, long *TabArg)
  return tmp;
 }
 
+static char *FuncGetFore(int *NbArg, long *TabArg)
+{
+ char *tmp;
+ long Id;
+ XColor color;
+
+ (*NbArg)++;			/* La fonction GetValue n'a qu'un seul argument */
+ tmp=CalcArg(TabArg,NbArg);
+ Id=atoi(tmp);
+ free(tmp);
+ tmp=(char*)calloc(1,sizeof(char)*7);
+ color.pixel = tabxobj[TabIdObj[Id]]->TabColor[fore];
+ XQueryColor(dpy, Pcmap, &color);
+ sprintf(tmp, "%02x%02x%02x", color.red >> 8, color.green >> 8, color.blue >> 8);
+ return tmp;
+}
+
+static char *FuncGetBack(int *NbArg, long *TabArg)
+{
+ char *tmp;
+ long Id;
+ XColor color;
+
+ (*NbArg)++;			/* La fonction GetValue n'a qu'un seul argument */
+ tmp=CalcArg(TabArg,NbArg);
+ Id=atoi(tmp);
+ free(tmp);
+ tmp=(char*)calloc(1,sizeof(char)*7);
+ color.pixel = tabxobj[TabIdObj[Id]]->TabColor[back];
+ XQueryColor(dpy, Pcmap, &color);
+ sprintf(tmp, "%02x%02x%02x", color.red >> 8, color.green >> 8, color.blue >> 8);
+ return tmp;
+}
+
+static char *FuncGetHili(int *NbArg, long *TabArg)
+{
+ char *tmp;
+ long Id;
+ XColor color;
+
+ (*NbArg)++;			/* La fonction GetValue n'a qu'un seul argument */
+ tmp=CalcArg(TabArg,NbArg);
+ Id=atoi(tmp);
+ free(tmp);
+ tmp=(char*)calloc(1,sizeof(char)*7);
+ color.pixel = tabxobj[TabIdObj[Id]]->TabColor[hili];
+ XQueryColor(dpy, Pcmap, &color);
+ sprintf(tmp, "%02x%02x%02x", color.red >> 8, color.green >> 8, color.blue >> 8);
+ return tmp;
+}
+
+static char *FuncGetShad(int *NbArg, long *TabArg)
+{
+ char *tmp;
+ long Id;
+ XColor color;
+
+ (*NbArg)++;			/* La fonction GetValue n'a qu'un seul argument */
+ tmp=CalcArg(TabArg,NbArg);
+ Id=atoi(tmp);
+ free(tmp);
+ tmp=(char*)calloc(1,sizeof(char)*7);
+ color.pixel = tabxobj[TabIdObj[Id]]->TabColor[shad];
+ XQueryColor(dpy, Pcmap, &color);
+ sprintf(tmp, "%02x%02x%02x", color.red >> 8, color.green >> 8, color.blue >> 8);
+ return tmp;
+}
+
 /* Fonction qui retourne le titre d'un objet */
-char *FuncGetTitle(int *NbArg, long *TabArg)
+static char *FuncGetTitle(int *NbArg, long *TabArg)
 {
  char *tmp;
  long Id;
@@ -163,7 +231,7 @@ char *FuncGetTitle(int *NbArg, long *TabArg)
 }
 
 /* Fonction qui retourne la sortie d'une commande */
-char *FuncGetOutput(int *NbArg, long *TabArg)
+static char *FuncGetOutput(int *NbArg, long *TabArg)
 {
  char *cmndbuf;
  char *str;
@@ -250,7 +318,7 @@ char *FuncGetOutput(int *NbArg, long *TabArg)
 }
 
 /* Convertion decimal vers hexadecimal */
-char *FuncNumToHex(int *NbArg, long *TabArg)
+static char *FuncNumToHex(int *NbArg, long *TabArg)
 {
  char *str;
  int value,nbchar;
@@ -279,7 +347,7 @@ char *FuncNumToHex(int *NbArg, long *TabArg)
 }
 
 /* Convertion hexadecimal vers decimal */
-char *FuncHexToNum(int *NbArg, long *TabArg)
+static char *FuncHexToNum(int *NbArg, long *TabArg)
 {
  char *str,*str2;
  int k;
@@ -296,7 +364,7 @@ char *FuncHexToNum(int *NbArg, long *TabArg)
  return str2;
 }
 
-char *FuncAdd(int *NbArg, long *TabArg)
+static char *FuncAdd(int *NbArg, long *TabArg)
 {
  char *str;
  int val1,val2;
@@ -314,7 +382,7 @@ char *FuncAdd(int *NbArg, long *TabArg)
  return str;
 }
 
-char *FuncMult(int *NbArg, long *TabArg)
+static char *FuncMult(int *NbArg, long *TabArg)
 {
  char *str;
  int val1,val2;
@@ -332,7 +400,7 @@ char *FuncMult(int *NbArg, long *TabArg)
  return str;
 }
 
-char *FuncDiv(int *NbArg, long *TabArg)
+static char *FuncDiv(int *NbArg, long *TabArg)
 {
  char *str;
  int val1,val2;
@@ -350,7 +418,7 @@ char *FuncDiv(int *NbArg, long *TabArg)
  return str;
 }
 
-char *RemainderOfDiv(int *NbArg, long *TabArg)
+static char *RemainderOfDiv(int *NbArg, long *TabArg)
 {
 #ifndef HAVE_DIV
  return strdup("Unsupported function: div");
@@ -375,7 +443,7 @@ char *RemainderOfDiv(int *NbArg, long *TabArg)
 }
 
 
-char *FuncStrCopy(int *NbArg, long *TabArg)
+static char *FuncStrCopy(int *NbArg, long *TabArg)
 {
  char *str,*strsrc;
  int i1,i2;
@@ -409,7 +477,7 @@ char *FuncStrCopy(int *NbArg, long *TabArg)
 }
 
 /* Lancement d'un script avec pipe */
-char *LaunchScript (int *NbArg,long *TabArg)
+static char *LaunchScript (int *NbArg,long *TabArg)
 {
  char *arg,*execstr,*str,*scriptarg,*scriptname;
  int leng,i;
@@ -470,7 +538,7 @@ char *LaunchScript (int *NbArg,long *TabArg)
  return str;
 }
 
-char *GetScriptFather (int *NbArg,long *TabArg)
+static char *GetScriptFather (int *NbArg,long *TabArg)
 {
  char *str;
 
@@ -479,7 +547,7 @@ char *GetScriptFather (int *NbArg,long *TabArg)
  return str;
 }
 
-char *GetTime (int *NbArg,long *TabArg)
+static char *GetTime (int *NbArg,long *TabArg)
 {
  char *str;
  time_t t;
@@ -490,7 +558,7 @@ char *GetTime (int *NbArg,long *TabArg)
  return str;
 }
 
-char *GetScriptArg (int *NbArg,long *TabArg)
+static char *GetScriptArg (int *NbArg,long *TabArg)
 {
  char *str;
  int val1;
@@ -506,7 +574,7 @@ char *GetScriptArg (int *NbArg,long *TabArg)
  return str;
 }
 
-char *ReceivFromScript (int *NbArg,long *TabArg)
+static char *ReceivFromScript (int *NbArg,long *TabArg)
 {
  char *arg,*msg;
  int send;
@@ -574,7 +642,7 @@ char *ReceivFromScript (int *NbArg,long *TabArg)
 /* Ensemble des commandes possible pour un obj */
 /***********************************************/
 
-void Exec (int NbArg,long *TabArg)
+static void Exec (int NbArg,long *TabArg)
 {
  int leng;
  char *execstr;
@@ -600,7 +668,7 @@ void Exec (int NbArg,long *TabArg)
  free(execstr);
 }
 
-void HideObj (int NbArg,long *TabArg)
+static void HideObj (int NbArg,long *TabArg)
 {
  char *arg[1];
  int IdItem;
@@ -615,7 +683,7 @@ void HideObj (int NbArg,long *TabArg)
  free(arg[0]);
 }
 
-void ShowObj (int NbArg,long *TabArg)
+static void ShowObj (int NbArg,long *TabArg)
 {
  char *arg[1];
  int IdItem;
@@ -630,7 +698,7 @@ void ShowObj (int NbArg,long *TabArg)
  free(arg[0]);
 }
 
-void ChangeValue (int NbArg,long *TabArg)
+static void ChangeValue (int NbArg,long *TabArg)
 {
  int i=0;
  char *arg[2];
@@ -648,7 +716,7 @@ void ChangeValue (int NbArg,long *TabArg)
  free(arg[1]);
 }
 
-void ChangeValueMax (int NbArg,long *TabArg)
+static void ChangeValueMax (int NbArg,long *TabArg)
 {
  int i=0;
  char *arg[2];
@@ -672,7 +740,7 @@ void ChangeValueMax (int NbArg,long *TabArg)
  free(arg[1]);
 }
 
-void ChangeValueMin (int NbArg,long *TabArg)
+static void ChangeValueMin (int NbArg,long *TabArg)
 {
  int i=0;
  char *arg[2];
@@ -696,7 +764,7 @@ void ChangeValueMin (int NbArg,long *TabArg)
  free(arg[1]);
 }
 
-void ChangePos (int NbArg,long *TabArg)
+static void ChangePos (int NbArg,long *TabArg)
 {
  int i=0;
  char *arg[3];
@@ -722,7 +790,7 @@ void ChangePos (int NbArg,long *TabArg)
 
 }
 
-void ChangeFont (int NbArg,long *TabArg)
+static void ChangeFont (int NbArg,long *TabArg)
 {
  int i=0;
  char *arg[2];
@@ -775,7 +843,7 @@ void ChangeFont (int NbArg,long *TabArg)
  free(arg[1]);
 }
 
-void ChangeSize (int NbArg,long *TabArg)
+static void ChangeSize (int NbArg,long *TabArg)
 {
  int i=0;
  char *arg[3];
@@ -800,7 +868,7 @@ void ChangeSize (int NbArg,long *TabArg)
  free(arg[2]);
 }
 
-void ChangeTitle (int NbArg,long *TabArg)
+static void ChangeTitle (int NbArg,long *TabArg)
 {
  int i=0;
  char *arg[2];
@@ -819,7 +887,7 @@ void ChangeTitle (int NbArg,long *TabArg)
  free(arg[1]);
 }
 
-void ChangeIcon (int NbArg,long *TabArg)
+static void ChangeIcon (int NbArg,long *TabArg)
 {
  int i=0;
  char *arg[2];
@@ -846,7 +914,7 @@ void ChangeIcon (int NbArg,long *TabArg)
  free(arg[1]);
 }
 
-void ChangeForeColor (int NbArg,long *TabArg)
+static void ChangeForeColor (int NbArg,long *TabArg)
 {
  int i=0;
  char *arg[2];
@@ -881,7 +949,7 @@ void ChangeForeColor (int NbArg,long *TabArg)
 
 }
 
-void ChangeBackColor (int NbArg,long *TabArg)
+static void ChangeBackColor (int NbArg,long *TabArg)
 {
  int i=0;
  char *arg[2];
@@ -915,7 +983,26 @@ void ChangeBackColor (int NbArg,long *TabArg)
  free(arg[1]);
 }
 
-void ChangeColorset (int NbArg,long *TabArg)
+static void ChangeMainColorset (int i)
+{
+ /* Liberation de la couleur */
+ if (x11base->colorset < 0) {
+   XFreeColors(dpy,Pcmap,&x11base->TabColor[fore],1,0);
+   XFreeColors(dpy,Pcmap,&x11base->TabColor[back],1,0);
+   XFreeColors(dpy,Pcmap,&x11base->TabColor[hili],1,0);
+   XFreeColors(dpy,Pcmap,&x11base->TabColor[shad],1,0);
+ }
+ x11base->colorset = i;
+ i = i % nColorsets;
+ x11base->TabColor[fore] = Colorset[i].fg;
+ x11base->TabColor[back] = Colorset[i].bg;
+ x11base->TabColor[hili] = Colorset[i].hilite;
+ x11base->TabColor[shad] = Colorset[i].shadow;
+ SetWindowBackground(dpy, x11base->win,x11base->size.width,x11base->size.height,
+		     &Colorset[i], Pdepth, x11base->gc, True);
+}
+
+static void ChangeColorset (int NbArg,long *TabArg)
 {
  int i=0;
  char *arg[2];
@@ -924,32 +1011,40 @@ void ChangeColorset (int NbArg,long *TabArg)
  arg[0]=CalcArg(TabArg,&i);
  i++;
  arg[1]=CalcArg(TabArg,&i);
+ if (atoi(arg[0]) == 0) {
+   ChangeMainColorset(atoi(arg[1]));
+   return;
+ }
  IdItem= TabIdObj[atoi(arg[0])];
 
  /* Liberation de la couleur */
  if (tabxobj[IdItem]->colorset < 0) {
-   XFreeColors(dpy,Pcmap,(void*)(&(tabxobj[IdItem])->TabColor[fore]),1,0);
-   XFreeColors(dpy,Pcmap,(void*)(&(tabxobj[IdItem])->TabColor[back]),1,0);
-   XFreeColors(dpy,Pcmap,(void*)(&(tabxobj[IdItem])->TabColor[hili]),1,0);
-   XFreeColors(dpy,Pcmap,(void*)(&(tabxobj[IdItem])->TabColor[shad]),1,0);
+   XFreeColors(dpy,Pcmap,&tabxobj[IdItem]->TabColor[fore],1,0);
+   XFreeColors(dpy,Pcmap,&tabxobj[IdItem]->TabColor[back],1,0);
+   XFreeColors(dpy,Pcmap,&tabxobj[IdItem]->TabColor[hili],1,0);
+   XFreeColors(dpy,Pcmap,&tabxobj[IdItem]->TabColor[shad],1,0);
  }
  sscanf(arg[1], "%d", &i);
- i = i %nColorsets;
  tabxobj[IdItem]->colorset = i;
+ i = i % nColorsets;
  tabxobj[IdItem]->TabColor[fore] = Colorset[i].fg;
  tabxobj[IdItem]->TabColor[back] = Colorset[i].bg;
  tabxobj[IdItem]->TabColor[hili] = Colorset[i].hilite;
  tabxobj[IdItem]->TabColor[shad] = Colorset[i].shadow;
 
- if (tabxobj[IdItem]->TypeWidget != SwallowExec)
+ if (tabxobj[IdItem]->TypeWidget != SwallowExec) {
+   SetWindowBackground(dpy, tabxobj[IdItem]->win, tabxobj[IdItem]->width,
+		       tabxobj[IdItem]->height, &Colorset[i], Pdepth,
+		       tabxobj[IdItem]->gc, False);
    XClearWindow(dpy, tabxobj[IdItem]->win);
+ }
  tabxobj[IdItem]->DrawObj(tabxobj[IdItem]);
 
  free(arg[0]);
  free(arg[1]);
 }
 
-void SetVar (int NbArg,long *TabArg)
+static void SetVar (int NbArg,long *TabArg)
 {
  int i;
  char *str,*tempstr;
@@ -967,7 +1062,7 @@ void SetVar (int NbArg,long *TabArg)
  TabVVar[TabArg[0]]=str;
 }
 
-void SendSign (int NbArg,long *TabArg)
+static void SendSign (int NbArg,long *TabArg)
 {
  int i=0;
  char *arg[2];
@@ -984,7 +1079,7 @@ void SendSign (int NbArg,long *TabArg)
  free(arg[1]);
 }
 
-void WarpPointer(int NbArg,long *TabArg)
+static void WarpPointer(int NbArg,long *TabArg)
 {
  int i=0;
  char *arg;
@@ -1003,7 +1098,7 @@ void Quit (int NbArg,long *TabArg)
  exit(0);
 }
 
-void IfThen (int NbArg,long *TabArg)
+static void IfThen (int NbArg,long *TabArg)
 {
  char *arg[10];
  int i,j;
@@ -1047,7 +1142,7 @@ void IfThen (int NbArg,long *TabArg)
 }
 
 /* Instruction boucle */
-void Loop (int NbArg,long *TabArg)
+static void Loop (int NbArg,long *TabArg)
 {
  int IdVar;
  char *arg[2];
@@ -1097,7 +1192,7 @@ void Loop (int NbArg,long *TabArg)
 }
 
 /* Instruction While */
-void While (int NbArg,long *TabArg)
+static void While (int NbArg,long *TabArg)
 {
  char *arg[3],*str;
  int i;
@@ -1123,7 +1218,7 @@ void While (int NbArg,long *TabArg)
 }
 
 
-void WriteToFile (int NbArg,long *TabArg)
+static void WriteToFile (int NbArg,long *TabArg)
 {
  int i=0;
  char *arg[2],str[50],*tempstr,*home,*file;
@@ -1215,7 +1310,7 @@ void WriteToFile (int NbArg,long *TabArg)
  free(arg[1]);
 }
 
-void SendToScript (int NbArg,long *TabArg)
+static void SendToScript (int NbArg,long *TabArg)
 {
  char *tempstr,*Msg,*R;
  int dest;
@@ -1308,6 +1403,10 @@ void InitCom()
  TabFunc[13]=RemainderOfDiv;
  TabFunc[14]=GetTime;
  TabFunc[15]=GetScriptArg;
+ TabFunc[16]=FuncGetFore;
+ TabFunc[17]=FuncGetBack;
+ TabFunc[18]=FuncGetHili;
+ TabFunc[19]=FuncGetShad;
 
  /* Fonction de comparaison */
  TabComp[1]=Inf;

@@ -360,7 +360,7 @@ int yyerror(char *errmsg)
 %token HIDDEN CANBESELECTED NORELIEFSTRING
 %token CASE SINGLECLIC DOUBLECLIC BEG POINT
 %token EXEC HIDE SHOW FONT CHFORECOLOR CHBACKCOLOR CHCOLORSET
-%token GETVALUE CHVALUE CHVALUEMAX CHVALUEMIN
+%token GETVALUE GETFORE GETBACK GETHILIGHT GETSHADOW CHVALUE CHVALUEMAX CHVALUEMIN
 %token ADD DIV MULT GETTITLE GETOUTPUT STRCOPY NUMTOHEX HEXTONUM QUIT
 %token LAUNCHSCRIPT GETSCRIPTFATHER SENDTOSCRIPT RECEIVFROMSCRIPT
 %token GET SET SENDSIGN REMAINDEROFDIV GETTIME GETSCRIPTARG
@@ -450,6 +450,7 @@ id: NUMBER			{ nbobj++;
 				    exit(1);}
 			          TabIdObj[$1]=nbobj;
 				  (*tabobj)[nbobj].id=$1;
+				  (*tabobj)[nbobj].colorset = -1;
 				}
   ;
 
@@ -709,6 +710,10 @@ function: GETVALUE numarg	{ AddFunct(1,1); }
 	| REMAINDEROFDIV numarg numarg { AddFunct(13,1); }
 	| GETTIME { AddFunct(14,1); }
 	| GETSCRIPTARG numarg { AddFunct(15,1); }
+	| GETFORE numarg { AddFunct(16,1); }
+	| GETBACK numarg { AddFunct(17,1); }
+	| GETHILIGHT numarg { AddFunct(18,1); }
+	| GETSHADOW numarg { AddFunct(19,1); }
 	;
 
 
