@@ -7080,7 +7080,7 @@ are the percentage of the total screen area.  If the letter
 is appended to either of the values, the numbers are interpreted
 as pixels. This command is useful to force large application
 windows to be fully visible.  Neither
-.IR height " or " width
+.IR height " nor " width
 may be less than 100 pixels.  If you omit the parameters or their
 values are invalid, both limits are set to 32767 pixels (which is
 the default).
@@ -7804,7 +7804,7 @@ Style FvwmPager Icon
 .TP
 .BI "WindowStyle " "options"
 sets attributes (styles) on the selected window. The
-.I options  
+.I options
 are exactly the same as for the
 .B Style
 command.
