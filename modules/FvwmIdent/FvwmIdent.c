@@ -85,7 +85,7 @@ static Pixel fore_pix;
 static Window main_win;
 static Window app_win;
 
-#define MW_EVENTS   (ExposureMask | ButtonReleaseMask | KeyReleaseMask)
+static EventMask mw_events = ExposureMask | ButtonReleaseMask | KeyReleaseMask;
 
 static Atom wm_del_win;
 
@@ -424,13 +424,12 @@ void list_end(void)
   /* size and create the window */
   lmax = max_col1 + max_col2 + 15;
 
-  height = ListSize*(font->ascent + font->descent);
+  height = ListSize * (font->ascent + font->descent);
 
   mysizehints.flags=
     USSize|USPosition|PWinGravity|PResizeInc|PBaseSize|PMinSize|PMaxSize;
-  /* subtract one for the right/bottom border */
-  mysizehints.width = lmax+10;
-  mysizehints.height=height+10;
+  mysizehints.width = lmax + 10;
+  mysizehints.height= height + 10;
   mysizehints.width_inc = 1;
   mysizehints.height_inc = 1;
   mysizehints.base_height = mysizehints.height;
@@ -474,7 +473,7 @@ void list_end(void)
 
   attributes.colormap = Pcmap;
   attributes.border_pixel = 0;
-  main_win = XCreateWindow(dpy, Root, mysizehints.x, mysizehints.y,
+  main_win = XCreateWindow(dpy, Root, x, y,
 			   mysizehints.width, mysizehints.height, 0, Pdepth,
 			   InputOutput, Pvisual,
 			   CWColormap | CWBackPixel | CWBorderPixel,
@@ -483,7 +482,10 @@ void list_end(void)
   XSetWMProtocols(dpy,main_win,&wm_del_win,1);
 
   XSetWMNormalHints(dpy,main_win,&mysizehints);
-  XSelectInput(dpy,main_win,MW_EVENTS);
+  /* have to ask for configure events when transparent */
+  if (colorset >= 0 && Colorset[colorset].pixmap == ParentRelative)
+    mw_events |= StructureNotifyMask;
+  XSelectInput(dpy, main_win, mw_events);
   change_window_name(&MyName[1]);
 
   gcm = GCForeground|GCFont;
@@ -513,9 +515,8 @@ void list_end(void)
       XNextEvent(dpy,&Event);
       switch(Event.type) {
         case Expose:
-	  if(Event.xexpose.count == 0)
-	    RedrawWindow();
-	  XFlush(dpy);
+          while (XCheckTypedEvent(dpy, Expose, &Event)) ;
+	  RedrawWindow();
 	  break;
         case KeyRelease:
         case ButtonRelease:
@@ -523,8 +524,31 @@ void list_end(void)
         case ClientMessage:
 	  if (Event.xclient.format==32 && Event.xclient.data.l[0]==wm_del_win)
 	    exit(0);
-        default:
+	case ConfigureNotify:
+	{
+	  /* this only happens with transparent windows, slurp up as many
+	   * events as possible before redrawing to reduce flickering */
+	  XEvent event;
+	  while (XCheckTypedEvent(dpy, ConfigureNotify, &event))
+	  {
+	    if (!event.xconfigure.send_event)
+	      continue;
+            Event.xconfigure.x = event.xconfigure.x;
+            Event.xconfigure.y = event.xconfigure.y;
+            Event.xconfigure.send_event = True;
+	  }
+	  /* only refresh if moved */
+	  if (x != Event.xconfigure.x || y != Event.xconfigure.y)
+	  {
+	    x = Event.xconfigure.x;
+	    y = Event.xconfigure.y;
+	    /* flush any expose events */
+	    while (XCheckTypedEvent(dpy, Expose, &Event)) ;
+	    XClearWindow(dpy, main_win);
+	    RedrawWindow();
+	  }
 	  break;
+	}
       }
     }
 
@@ -547,6 +571,12 @@ void list_end(void)
 				mysizehints.height,
 				&Colorset[colorset], Pdepth, gc,
 				True);
+	    /* ask for movement events iff transparent */
+	    if (Colorset[colorset].pixmap == ParentRelative)
+	      mw_events |= StructureNotifyMask;
+	    else
+	      mw_events &= ~StructureNotifyMask;
+	    XSelectInput(dpy, main_win, mw_events);
 	  }
 	}
 	free(token);
