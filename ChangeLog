@@ -1,3 +1,8 @@
+2003-07-05  Marcus Lundblad  <ml@update.uu.se>
+
+	* libs/Flocale.c (FlocaleDrawString):
+	fixed drawing superimposed characters with a fontset
+	
 2003-07-05  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* fvwm/events.c (__handle_cr_on_unmanaged):

@@ -658,6 +658,7 @@ void FlocaleRotateDrawString(
 		        int curr_len = FlocaleChar2bOneCharToUtf8(
 							    comb_chars[i].c, 
 							    buf);
+			int out_len;
 			char *buf2 = FiconvUtf8ToCharset(
 						   dpy,
 						   flf->str_fc,
@@ -672,15 +673,38 @@ void FlocaleRotateDrawString(
 			else if(flf->font != None)
 			{
 			        tmp_fws.e_str = buf2;
+				tmp_fws.str2b = NULL;
+				if (FLC_ENCODING_TYPE_IS_UTF_8(flf->fc))
+				{
+				        tmp_fws.str2b = 
+					  FlocaleUtf8ToUnicodeStr2b(
+						     tmp_fws.e_str,curr_len, 
+						     &out_len);
+				}
+				else if (flf->flags.is_mb)
+				{
+				        tmp_fws.str2b = 
+					  FlocaleStringToString2b(
+						    dpy, flf, tmp_fws.e_str,
+						    curr_len, &out_len);
+				}
+				else
+				{
+				        out_len = strlen(buf2);
+				}
 				XSetFont(dpy, font_gc, flf->font->fid);
 			        FlocaleFontStructDrawString(
 					    dpy, flf, canvas_pix, font_gc,
 					    offset, height - descent, 
 					    fg, fgsh, has_fg_pixels, &tmp_fws,
-					    strlen(buf2), True);
+					    out_len, True);
 			}
 							       
 			free(buf2);
+			if(tmp_fws.str2b != NULL)
+			{
+			        free(tmp_fws.str2b);
+			}
 			i++;
 		}
 	}
@@ -1841,6 +1865,7 @@ void FlocaleDrawString(
 			char *buf2;
 		        curr_len = FlocaleChar2bOneCharToUtf8(comb_chars[i].c, 
 								  buf);
+			int out_len;
 			buf2 = FiconvUtf8ToCharset(
 						   dpy,
 						   flf->str_fc,
@@ -1865,14 +1890,38 @@ void FlocaleDrawString(
 			else if(flf->font != None)
 			{
 			        tmp_fws.e_str = buf2;
+				tmp_fws.str2b = NULL;
+				if (FLC_ENCODING_TYPE_IS_UTF_8(flf->fc))
+				{
+				        tmp_fws.str2b = 
+					  FlocaleUtf8ToUnicodeStr2b(
+						     tmp_fws.e_str, curr_len, 
+						     &out_len);
+				}
+				else if (flf->flags.is_mb)
+				{
+				        tmp_fws.str2b = 
+					  FlocaleStringToString2b(
+						    dpy, flf, tmp_fws.e_str,
+						    curr_len, &out_len);
+				}
+				else
+				{
+				        out_len = strlen(buf2);
+				}
+
 			        FlocaleFontStructDrawString(
 					    dpy, flf, fws->win, fws->gc,
 					    fws->x + offset,
 					    fws->y, fg, fgsh, has_fg_pixels, 
-					    &tmp_fws, strlen(buf2), False);
+					    &tmp_fws, out_len, False);
 			}
 							       
 			free(buf2);
+			if(tmp_fws.str2b != NULL)
+			{
+			        free(tmp_fws.str2b);
+			}
 			i++;
 		}
 	}
@@ -1903,6 +1952,14 @@ void FlocaleDrawUnderline(
 	Display *dpy, FlocaleFont *flf, FlocaleWinString *fws, int coffset)
 {
 	int off1, off2, y, x_s, x_e;
+	superimpose_char_t *comb_chars = NULL;
+
+	/* need to encode the string first to get BIDI and combining chars */
+	/*FlocaleEncodeWinString(dpy, flf, fws, &do_free, &len, &comb_chars);
+	 */
+
+	/* we don't need this, only interested in char mapping */
+	free(comb_chars);
 
 	off1 = FlocaleTextWidth(flf, fws->str, coffset) +
 		((coffset == 0)?
