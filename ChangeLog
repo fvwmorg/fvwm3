@@ -1,3 +1,8 @@
+1999-03-10 Hippo
+
+	* fvwm/events.c (DispatchEvent) clears the rubber band outline
+	before processing the event.
+
 Tue Mar  9 22:14:25 1999  Steve ROBBINS  <stever@osric.bic.mni.mcgill.ca>
 
 	* extras: removed.  Copied former 'extra' modules FvwmCommand,

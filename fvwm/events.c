@@ -162,8 +162,11 @@ void DispatchEvent()
   last_event_type = Event.type;
   last_event_window = w;
 
-  if (EventHandlerJumpTable[Event.type])
+  if (EventHandlerJumpTable[Event.type]) {
+    /* clear the rubber band outline, this is NOP if it doesn't exist */
+    MoveOutline(Scr.Root, 0, 0, 0, 0);
     (*EventHandlerJumpTable[Event.type])();
+  }
 
   DBUG("DispatchEvent","Leaving Routine");
   return;
