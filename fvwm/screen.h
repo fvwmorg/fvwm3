@@ -71,17 +71,17 @@ typedef struct
 typedef enum
 {
     /* button types */
-    DefaultVectorButton         ,
-    VectorButton                ,
-    SimpleButton                ,
-    GradientButton              ,
-    PixmapButton                ,
-    TiledPixmapButton           ,
+    DefaultVectorButton       ,
+    VectorButton              ,
+    SimpleButton              ,
+    GradientButton            ,
+    PixmapButton              ,
+    TiledPixmapButton         ,
 #ifdef FANCY_TITLEBARS
-    MultiPixmap                 ,
+    MultiPixmap               ,
 #endif
 #ifdef MINI_ICONS
-    MiniIconButton              ,
+    MiniIconButton            ,
 #endif
     SolidButton
 } DecorFaceType;
@@ -98,7 +98,11 @@ typedef enum
 
 typedef struct
 {
+#ifdef FANCY_TITLEBARS
+  unsigned face_type : 4;
+#else
   unsigned face_type : 3; /* was DecorFaceType : 3 */
+#endif
   struct
   {
     unsigned h_justification : 2; /* was JustificationType : 2 */
