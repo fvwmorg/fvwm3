@@ -1,3 +1,14 @@
+2002-02-12  Mikhael Goikhman  <migo@homemail.com>
+
+	* hints/README:
+	* hints/Makefile:
+	some improvements
+
+2002-02-11  Mikhael Goikhman  <migo@homemail.com>
+
+	* perl/*:
+	added 2 test modules written in perl
+
 2002-01-17  olicha  <olivier.chapuis@free.fr>
 
 	* hints/hints_test.c (main): fixed a miss print

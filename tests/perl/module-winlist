@@ -5,12 +5,15 @@ use lib `fvwm-config --fvwm-perllibdir | tr -d '\n'`;
 use FVWM::Module;
 use IO::File;
 
+my $runXmessage = 0;
 my $module = new FVWM::Module(
 	Name => "FvwmPerlBasedWinList",
 	Mask => M_WINDOW_NAME | M_END_WINDOWLIST,
+	EnableOptions => { "x" => \$runXmessage },
 );
-my $fh = new IO::File "| xmessage -geometry 240x300 -title 'Window List' -file -";
-#my $fh = \*STDERR;
+my $fh = $runXmessage?
+	new IO::File "| xmessage -geometry 240x300 -title 'Window List' -file -":
+	\*STDERR;
 
 # Register the event handlers
 $module->addHandler(M_WINDOW_NAME, sub {

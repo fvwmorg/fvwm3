@@ -1,15 +1,14 @@
 This directory contains only the hints_test.c program. To compile it
-something like
+either try "make" or something like
 
-gcc -g -O2 -Wall -I/usr/X11R6/include -L/usr/X11R6/lib -c hints_test.c
-
-gcc -g -O2 -Wall -o hints_test hints_test.o -I/usr/X11R6/include -L/usr/X11R6/lib-lX11
+  % gcc -g -O2 -Wall -I/usr/X11R6/include -L/usr/X11R6/lib -c hints_test.c
+  % gcc -g -O2 -Wall -o hints_test hints_test.o -I/usr/X11R6/include -L/usr/X11R6/lib -lX11
 
 should work.
 
-The program do nothing: it is just a 170x100 black window. However,
+The program does nothing: it is just a 170x100 black window. However,
 using options you can set various hints (XSizeHints, XWMHints, MWM hints,
-EWMH hints) on the window. Here the options:
+EWMH hints) on the window. Here are the options:
 
 -min-size w h
 	Set the min_width and min_height XSizeHints to w and h
@@ -49,7 +48,7 @@ EWMH hints) on the window. Here the options:
 	Set the window group leader to win where win can be root,
 	window or the id of an window.
 
--transient
+-transient win
 	Set the WM_TRANSIENT_FOR window to win where win can be root
 	or the id of an window.
 

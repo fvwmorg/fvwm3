@@ -120,7 +120,7 @@ sub new ($@) {
 	if (@ARGV && ref($params{'EnableOptions'}) eq 'HASH') {
 		# save time by lazy loading Getopt::Long only if needed
 		eval "use Getopt::Long;"; die $@ if $@;
-		GetOptions($params{'EnableOptions'})
+		GetOptions(%{$params{'EnableOptions'}})
 			or die "$name: Incorrect options given.\n";
 	}
 	if (@ARGV && $params{'EnableAlias'} && $ARGV[0] =~ /^\w[\w\d\.\/-]*/) {

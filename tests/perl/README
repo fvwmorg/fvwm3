@@ -1,0 +1,11 @@
+These are 2 small FVWM modules written in perl:
+
+* module-example:
+	Beeps, auto-raises and sends a command to terminate itself in
+	one minute.
+	
+* module-winlist:
+	Prints window names and ids to stderr and exits.
+	If -x flag is given, do this in xmessage instead of stderr.
+
+You may just run these modules in FvwmConsole using their full path.
