@@ -1,3 +1,9 @@
+2002-08-12  Bob Woodside  <dumbledore@woodsway.com>
+
+	* fvwm/style.c (style_parse_one_style_option):
+	Fixed a typo so that ClickToFocusRaisesOff actually turns
+	the option off instead of on.
+
 2002-08-12  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* fvwm/focus.c (focus_grab_buttons):
