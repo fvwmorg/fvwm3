@@ -1,3 +1,14 @@
+2004-08-07  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* fvwm/geometry.c (constrain_size):
+	* fvwm/ewmh.c (EWMH_fullscreen):
+	* fvwm/window_flags.h (DO_DISABLE_CONSTRAIN_SIZE_FULLSCREEN):
+	(SET_DISABLE_CONSTRAIN_SIZE_FULLSCREEN):
+	(SETM_DISABLE_CONSTRAIN_SIZE_FULLSCREEN):
+	* fvwm/fvwm.h (window_flags_t):
+	allow windows to override their size hints when going fullscreen:
+	minimum and maximum size, size inc, aspect ratio, etc.
+
 2004-08-06  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* fvwm/decorations.c (struct):

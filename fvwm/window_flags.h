@@ -484,6 +484,12 @@
 	(fw)->flags.do_iconify_after_map = !!(x)
 #define SETM_ICONIFY_AFTER_MAP(fw,x) \
 	(fw)->flag_mask.do_iconify_after_map = !!(x)
+#define DO_DISABLE_CONSTRAIN_SIZE_FULLSCREEN(fw) \
+	((fw)->flags.do_disable_constrain_size_fullscreen)
+#define SET_DISABLE_CONSTRAIN_SIZE_FULLSCREEN(fw,x) \
+	(fw)->flags.do_disable_constrain_size_fullscreen = !!(x)
+#define SETM_DISABLE_CONSTRAIN_SIZE_FULLSCREEN(fw,x) \
+	(fw)->flag_mask.do_disable_constrain_size_fullscreen = !!(x)
 #define IS_SIZE_INC_SET(fw) \
 	((fw)->flags.is_size_inc_set)
 #define SET_SIZE_INC_SET(fw,x) \

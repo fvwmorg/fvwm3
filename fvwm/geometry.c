@@ -676,6 +676,10 @@ void constrain_size(
 	int old_h = 0;
 	size_borders b;
 
+	if (DO_DISABLE_CONSTRAIN_SIZE_FULLSCREEN(fw) == 1)
+	{
+		return;
+	}
 	if (IS_MAXIMIZED(fw) && (flags & CS_UPDATE_MAX_DEFECT))
 	{
 		*widthp += fw->max_g_defect.width;

@@ -286,6 +286,7 @@ typedef struct
 	unsigned do_force_next_cr : 1;
 	unsigned do_force_next_pn : 1;
 	unsigned do_iconify_after_map : 1;
+	unsigned do_disable_constrain_size_fullscreen : 1;
 	/* Reuse this struct, don't free it, when destroying/recapturing
 	 * window. */
 	unsigned do_reuse_destroyed : 1;

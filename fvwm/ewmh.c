@@ -1817,7 +1817,9 @@ void EWMH_fullscreen(FvwmWindow *fwin)
 	}
 	if (cmd[0] != 0)
 	{
+		SET_DISABLE_CONSTRAIN_SIZE_FULLSCREEN(fwin, 1);
 		execute_function_override_window(NULL, NULL, cmd, 0, fwin);
+		SET_DISABLE_CONSTRAIN_SIZE_FULLSCREEN(fwin, 0);
 	}
 
 	return;
