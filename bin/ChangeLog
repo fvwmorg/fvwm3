@@ -1,3 +1,12 @@
+2002-06-17  Mikhael Goikhman  <migo@homemail.com>
+
+	* fvwm-menu-desktop.1:
+	some improvements
+
+	* fvwm-perllib.1:
+	* fvwm-perllib.in:
+	improved documentation and code
+
 2002-06-15  Mikhael Goikhman  <migo@homemail.com>
 
 	* fvwm-menu-headlines.1:

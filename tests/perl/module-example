@@ -5,7 +5,7 @@
 # Either place this module in FVWM_MODULEDIR or run it using the full path.
 
 use strict;
-use lib `fvwm-config -p | tr -d '\n'`;
+use lib `fvwm-perllib dir`;
 use FVWM::Module;
 
 my $newWindowHandler = sub {

@@ -5,7 +5,7 @@ use strict;
 use Gtk;
 init Gtk;
 
-use lib `fvwm-config -p | tr -d '\n'`;
+use lib `fvwm-perllib dir`;
 use FVWM::Module::Gtk;
 
 my $module = new FVWM::Module::Gtk(

@@ -3,16 +3,15 @@
 # Filter this script to pod2man to get a man page:
 #   pod2man -c "FVWM Utilities" fvwm-perllib | nroff -man | less -e
 
-require 5.003;
-use strict;
+#use strict;  # comment to make it faster
 
 BEGIN {
-        use vars qw($prefix $datadir $perllibdir);
-        $prefix = "@prefix@";
-        $datadir = "@datadir@";
+#	use vars qw($prefix $datadir $perllibdir);
+	$prefix = "@prefix@";
+	$datadir = "@datadir@";
 	$perllibdir = "@FVWM_PERLLIBDIR@";
 
-	# try to do it fast
+	# try to do it as fast as possible
 	if ($ARGV[0] eq 'dir') {
 		print $perllibdir;
 		exit(0);
@@ -25,6 +24,7 @@ use General::FileSystem '-die';
 
 my $version = "@VERSION@";
 
+my $pager = $ENV{PAGER} || "less -e";
 my $doMan = 0;
 my $doCat = 0;
 
@@ -33,6 +33,7 @@ GetOptions(
 	"version"  => \&showVersion,
 	"man"      => \$doMan,
 	"cat"      => \$doCat,
+	"dir"      => sub { print $perllibdir; exit(0); },
 ) || wrongUsage();
 
 if ($ARGV[0] eq 'man') {
@@ -48,28 +49,28 @@ wrongUsage() if !$doMan && !$doCat || @ARGV > 1;
 my $manOrCatStr = $doMan? "man": "cat";
 my $internalPods = {};
 
-$internalPods->{contents} = qq{
+$internalPods->{index} = qq{
 	:head1 NAME
 
-	contents - lists all available help topics
+	index - lists all available help topics
 
 	:head1 DESCRIPTION
 
 	You may run this script as:
 
-	  % fvwm-perllib $manOrCatStr <topic>
+	    % fvwm-perllib $manOrCatStr <topic>
 
 	Available topics:
 
-	  contents
-	  examples
-	  {{CLASS_NAMES}}
+	    index
+	    examples
+	    {{CLASS_NAMES}}
 
 	For example:
 
-	  % fvwm-perllib $manOrCatStr FVWM::Module
+	    % fvwm-perllib $manOrCatStr FVWM::Module
 
-	:head1 AUTHORS
+	:head1 AUTHOR
 
 	Mikhael Goikhman <migo\@homemail.com>.
 };
@@ -81,15 +82,15 @@ $internalPods->{examples} = qq{
 
 	:head1 DESCRIPTION
 
-	Currently see C<ftp://ftp.fvwm.org/pub/fvwm/devel/sources/tests/perl/>
+	Currently see I<ftp://ftp.fvwm.org/pub/fvwm/devel/sources/tests/perl/>
 	for examples.
 
-	:head1 AUTHORS
+	:head1 AUTHOR
 
 	Mikhael Goikhman <migo\@homemail.com>.
 };
 
-my $topic = $ARGV[0] || "contents";
+my $topic = $ARGV[0] || "index";
 my $file = "-";
 my $text = "";
 if (exists $internalPods->{$topic}) {
@@ -98,17 +99,17 @@ if (exists $internalPods->{$topic}) {
 	$text =~ s/^:/=/mg;
 	my @classNames = sort @{listFileNames($perllibdir, 1)};
 	@classNames = map { s!\.pm$!!; s!/!::!g; $_ } @classNames;
-	$text =~ s/{{CLASS_NAMES}}/join("\n  ", @classNames)/seg;
+	$text =~ s/{{CLASS_NAMES}}/join("\n    ", @classNames)/seg;
 } else {
 	$file = "$perllibdir/$topic.pm";
 	$file =~ s!::!/!g;
 	die "No $file found.\n" unless -f $file;
 }
 
-open(MANPIPE, $doCat? "| pod2text '$file'":
+open(MANPIPE, $doCat? "| pod2text '$file' | $pager":
 	"| pod2man --section 3 --release 'FVWM $version'" .
 		" --center 'FVWM Perl library' '$file'" .
-		" | sed 's/<STANDARD INPUT>/perllib/ig' | nroff -man | less -e")
+		" | sed 's/<STANDARD INPUT>/perllib/ig' | nroff -man | $pager")
 	or die "Can't open pipe to pod/man viewer\n";
 print MANPIPE $text
 	or die "Can't write to pod/man viewer\n";
@@ -118,12 +119,13 @@ close MANPIPE;
 
 sub showHelp {
 	print "Shows documentation of the supplied FVWM Perl library.\n\n";
-	print "Usage: fvwm-perllib dir\n";
-	print "\tFor use in FVWM modules written in Perl\n\n";
 	print "Usage: fvwm-perllib man|cat\n";
 	print "\tAn introduction to the FVWM Perl library\n\n";
 	print "Usage: fvwm-perllib man|cat <Perl::Class>\n";
-	print "\tManual page for <Perl::Class>, try: man FVWM::Module\n\n";
+	print "\tManual page for <Perl::Class>, try: man FVWM::Module\n";
+	print "\t\$PAGER is used for a pager, the default is '$pager'\n\n";
+	print "Usage: fvwm-perllib dir\n";
+	print "\tFor use in FVWM modules written in Perl\n\n";
 	print "Usage: fvwm-perllib [OPTIONS]\n";
 	print "Options:\n";
 	print "\t--help           show this help and exit\n";
@@ -160,33 +162,45 @@ B<fvwm-perllib>
 
 =head1 DESCRIPTION
 
-With fvwm-2.5.x versions it is possible to create FVWM modules in Perl.
-This B<fvwm-perllib> utility provides help topics for the FVWM Perl library.
+Starting from fvwm-2.5.x versions there is a built-in support for creating
+FVWM modules in Perl. This B<fvwm-perllib> utility provides help services
+for the FVWM Perl library.
 
 =head1 OPTIONS
 
-B<--help>    - show the help and exit
+B<--help>
+    show the help and exit
 
-B<--version> - show the version and exit
+B<--version>
+    show the version and exit
+
+B<--man> or B<man> [ I<Perl::Class> ]
+    show manual page just like man(1)
+
+B<--cat> or B<cat> [ I<Perl::Class> ]
+    show manual page in plain text
+
+B<--dir> or B<dir>
+    print perllib directory without a trailing end of line
 
 =head1 USAGE
 
 Use this in the FVWM modules written in Perl:
 
-  use lib `fvwm-perllib dir`;
+    use lib `fvwm-perllib dir`;
 
 Introduction to the FVWM Perl library:
 
-  % fvwm-perllib man
+    % fvwm-perllib man
 
 Manual page for the C<FVWM::Module> class:
 
-  % fvwm-perllib man FVWM::Module
+    % fvwm-perllib man FVWM::Module
 
 Standard options:
 
-  % fvwm-perllib --help
-  % fvwm-perllib --version
+    % fvwm-perllib --help
+    % fvwm-perllib --version
 
 =head1 AUTHORS
 

@@ -1,7 +1,7 @@
 #!/usr/bin/perl -w
 
 use strict;
-use lib `fvwm-config --fvwm-perllibdir | tr -d '\n'`;
+use lib `fvwm-perllib dir`;
 use FVWM::Module;
 use IO::File;
 

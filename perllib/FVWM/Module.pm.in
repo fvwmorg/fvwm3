@@ -88,12 +88,6 @@ my $TEXTBASED_PACKET_XMASK = (
 $General::FileSystem::SAVE_FILE_DIR = __PACKAGE__->userDataDir();
 $General::FileSystem::LOAD_FILE_DIRS = [ __PACKAGE__->searchDirs() ];
 
-sub isExtended ($$) {
-	my $self = shift;
-	my $type = shift;
-	return $type & M_EXTENDED_MSG? 1: 0;
-}
-
 sub internalDie ($$) {
 	my $self = shift;
 	my $msg = shift;
@@ -108,6 +102,20 @@ sub debug ($$;$) {
 	return if $self->{debug} < $level;
 	$msg =~ s/\n$//s;
 	print STDERR $self->name . ": $msg\n";
+}
+
+sub isPacketExtended ($$) {
+	my $self = shift;
+	my $type = shift;
+	return $type & M_EXTENDED_MSG? 1: 0;
+}
+
+sub isPacketTextBased ($$) {
+	my $self = shift;
+	my $type = shift;
+	return $self->isPacketExtended($type)?
+		$type & $TEXTBASED_PACKET_XMASK? 1: 0:
+		$type & $TEXTBASED_PACKET_MASK? 1: 0;
 }
 
 sub getPacketArgs ($$) {
@@ -131,14 +139,6 @@ sub getPacketName ($$) {
 	}
 	my $name = $PACKET_TYPE_NAMES->{$type};
 	return defined $name? $name: "*unknown-packet-$type*";
-}
-
-sub isPacketTextBased ($$) {
-	my $self = shift;
-	my $type = shift;
-	return $self->isExtended($type)?
-		$type & $TEXTBASED_PACKET_XMASK? 1: 0:
-		$type & $TEXTBASED_PACKET_MASK? 1: 0;
 }
 
 sub new ($@) {
@@ -184,6 +184,7 @@ sub new ($@) {
 	$self->{ostream}->autoflush(1);
 	$self->{istream}->autoflush(1);
 
+	$self->{disconnected} = 0;
 	$self->{debug} = $params{'Debug'} || 0;
 	$self->{lastPacket} = [];
 	$self->{handlers} = {};
@@ -204,6 +205,13 @@ sub new ($@) {
 
 sub disconnect ($) {
 	my $self = shift;
+
+	# do nonrecoverable things, but do them only once
+	return if $self->{disconnected};
+
+	$self->{disconnected} = 1;
+	$self->invokeHandler(ON_EXIT);
+
 	if (defined $self->{ostream} && $self->{ostream}->opened) {
 		$self->send("Nop", 0, 0);
 		close $self->{ostream};
@@ -229,7 +237,7 @@ sub mask ($;$) {
 	my $self = shift;
 	my $mask = shift;
 	if (defined $mask) {
-		my $maskId = $self->isExtended($mask)? "xmask": "mask";
+		my $maskId = $self->isPacketExtended($mask)? "xmask": "mask";
 		my $oldMask = $self->{$maskId};
 		return $oldMask
 			if $mask == M_EXTENDED_MSG;
@@ -245,7 +253,7 @@ sub syncMask ($;$) {
 	my $self = shift;
 	my $mask = shift;
 	if (defined $mask) {
-		my $maskId = $self->isExtended($mask)? "sync_xmask": "sync_mask";
+		my $maskId = $self->isPacketExtended($mask)? "sync_xmask": "sync_mask";
 		my $oldMask = $self->{$maskId};
 		return $oldMask
 			if $mask == M_EXTENDED_MSG;
@@ -280,7 +288,7 @@ sub getHandlerCategory ($$) {
 	my $self = shift;
 	my $type = shift;
 	return "special" if $type =~ /e/i;
-	return "extended" if $self->isExtended($type);
+	return "extended" if $self->isPacketExtended($type);
 	return "regular";
 }
 
@@ -343,6 +351,8 @@ sub terminate ($;$) {
 sub readPacket ($) {
 	my $self = shift;
 
+	$self->{lastPacket} = [];
+
 	my $header = "";
 	my $packet = "";
 
@@ -351,7 +361,6 @@ sub readPacket ($) {
 
 	unless (defined $got and $got == (INTSIZE * HEADER_SIZE)) {
 		# module killed or other read error
-		$self->{lastPacket} = [];
 		return undef;
 	}
 
@@ -415,7 +424,7 @@ sub processPacket ($;$$) {
 	($packet, $type) = @{$self->{lastPacket}} unless defined $packet;
 	return undef unless defined $packet;
 
-	$type &= $self->isExtended($type)?
+	$type &= $self->isPacketExtended($type)?
 		(MAX_XMSG_MASK | M_EXTENDED_MSG): MAX_MSG_MASK;
 	my @args = unpack($self->getPacketArgs($type), $packet);
 	# strip everything past the first null (or newline) if needed
@@ -428,7 +437,7 @@ sub processPacket ($;$$) {
 	}
 
 	$self->{shouldSendUnlock} = 1 if $type &
-		($self->isExtended($type)? $self->{sync_xmask}: $self->{sync_mask});
+		($self->isPacketExtended($type)? $self->{sync_xmask}: $self->{sync_mask});
 
 	my $continue = $self->invokeHandler($type, @args);
 
@@ -443,10 +452,10 @@ sub eventLoop ($) {
 	$self->sendReady;
 
 	while (1) {
-		# catch all possible exceptions, for example from alarm() handler
-		eval { $self->processPacket($self->readPacket) } || last;
+		# catch exceptions during read, for example from alarm() handler,
+		# but don't catch errors (or die) in event handlers
+		$self->processPacket(eval { $self->readPacket }) || last;
 	}
-	$self->invokeHandler(ON_EXIT);
 	$self->disconnect;
 }
 
@@ -463,14 +472,15 @@ sub addHandler ($$$) {
 		unless exists $self->{handlers}->{$category}->{$type};
 	push @{$self->{handlers}->{$category}->{$type}}, $handler;
 	my $index = @{$self->{handlers}->{$category}->{$type}} - 1;
-	return "$type $index";
+	return [$type, $index];
 }
 
 sub deleteHandler ($$) {
 	my $self = shift;
 	my $id = shift;
 
-	my ($type, $index) = split(/ /, $id);
+	return 0 unless ref($id) eq 'ARRAY' && @$id == 2;
+	my ($type, $index) = @$id;
 	my $category = $self->getHandlerCategory($type);
 	return 0 unless defined $self->{handlers}->{$category}->{$type}->[$index];
 
@@ -518,6 +528,7 @@ FVWM::Module - the base class representing FVWM module
 
 =head1 SYNOPSIS
 
+  use lib `fvwm-perllib dir`;
   use FVWM::Module;
 
   my $module = new FVWM::Module;
@@ -532,11 +543,322 @@ FVWM::Module - the base class representing FVWM module
 
 =head1 DESCRIPTION
 
-The documentation will be completed for fvwm-2.5.2.
+An FVWM module is a separate program that communicates with the main I<fvwm>
+process, receives a module configuration and events and sends commands back.
+This class B<FVWM::Module> makes it easy to create FVWM modules in Perl.
+
+If you are interested in all module protocol details that this class tries
+to make invisible, visit the web page I<http://fvwm.org/modules.html>.
+You will need an information about packet arguments anyway to be able to
+write complex modules. This is however not obligatory for simple modules
+that only send commands back when something happens.
+
+A tipical FVWM module has an initialization part including setting event
+handlers using B<addHandler> methods and entering an event loop using
+B<eventLoop> method. Most of the work is done in the event handlers although
+a module may define other execution ways, for example using C<$SIG{ALRM}>.
+
+The following methods are available:
+
+B<new>,
+B<version>,
+B<argv>,
+B<send>,
+B<sendReady>,
+B<sendUnlock>,
+B<terminate>,
+B<eventLoop>,
+B<resetHandlers>,
+B<addHandler>,
+B<deleteHandler>,
+B<addDefaultErrorHandler>,
+B<debug>
+
+The following methods are a bit less useful, since they are called from
+other methods above:
+
+B<internalDie>,
+B<name>,
+B<mask>,
+B<syncMask>,
+B<disconnect>,
+B<getHandlerCategory>,
+B<readPacket>,
+B<invokeHandler>,
+B<processPacket>,
+B<readConfigInfo>
+
+These methods deal with a received packet (event):
+
+B<isPacketExtended>,
+B<isPacketTextBased>,
+B<getPacketArgs>,
+B<getPacketName>
+
+These methods deal with configuration directories:
+
+B<userDataDir>,
+B<siteDataDir>,
+B<searchDirs>
 
 =head1 METHODS
 
-To be written.
+=over 4
+
+=item B<new> %params
+
+Creates a module object. Only one module instance may be created in the
+program, since this object gets exclusive rights on communication with I<fvwm>.
+
+The following parameters may be given in the constractor:
+
+    Name          - used in module configuration and debugging
+    Mask          - events a module is interested to receive
+    XMask         - the same for extended events
+    SyncMask      - events to lock on
+    SyncXMask     - the same for extended events
+    EnableAlias   - a module accepts an alias in command line
+    EnableOptions - a module accepts options in command line
+    Debug         - if set to 1, print sent and received data
+    NoConfigInfo  - don't read module configuration on startup
+
+Example:
+
+    my $module = new FVWM::Module(
+        Name => "FvwmPerlBasedWindowRearranger",
+        Mask => M_CONFIGURE_WINDOW | M_END_WINDOWLIST,
+        EnableOptions => { "animate" => \$a, "cascade" => \$c },
+        Debug => 1,
+    );
+
+=item B<version>
+
+Returns FVWM version string I<x.y.z>.
+
+=item B<argv>
+
+Returns remaining module arguments (array ref) passed in the command line.
+Arguments that are used for I<fvwm>-to-module communication are not included.
+Arguments that are automatically parsed using I<EnableAlias> and/or
+I<EnableOptions> specified in the constructor are not included.
+
+=item B<send> command [window-id]
+
+Sends I<command> back for execution. If the I<window-id> is specified this
+command will be executed in this window context.
+
+=item B<eventLoop>
+
+The main event loop. A module should define some event handlers using
+B<addHandler> before entering the event loop. When the event happens all
+event handlers registered on this event are called, then a module returns
+to the event loop awaiting for new events forever.
+
+This method may be finished when one of the following happens. 1) Explicit
+B<terminate> is called in one of the event handlers. 2) Signal handler
+(system signals are independent from this event loop) decides to I<die>.
+This is usually catched and a proper shutdown is done. 3) An event handler
+I<die>d, in this case the module aborts, this is done on purpose to
+encourage programmers to fix bugs. 4) Communication with I<fvwm> closed, for
+example B<KillModule> called or the main I<fvwm> process exited.
+
+In all these cases (except for the third one) I<ON_EXIT> event handlers are
+called if defined and then B<disconnect> is called. So no communication is
+available after this method is finished. If you need a communication before
+the module exits, define an I<ON_EXIT> event handler.
+
+=item B<sendReady>
+
+This is automatically called (if needed) when a module enters B<eventLoop>,
+but sometimes you may want to tell I<fvwm> that the module is fully ready
+earlier. This only makes sence if the module was run using
+B<ModuleSynchronous> command, in this case I<fvwm> gets locked until the module
+sends the "ready" notification.
+
+=item B<sendUnlock>
+
+When an event was configured to be sent to a module synchronously using
+I<SyncMask> and I<SyncXMask>, I<fvwm> gets locked until the module sends
+the "unlock" notification. This is automatically sent (if needed) when a
+handler is finished, but sometimes a handler should release I<fvwm> earlier.
+
+=item B<terminate> [continue]
+
+This method is used for 2 purposed, usually in event handlers. To terminate
+the entire event loop and to terminate only an execution of the current
+handler if I<continue> is set.
+
+=item B<resetHandlers>
+
+This deletes all event handlers without exception.
+
+=item B<addHandler> mask code
+
+Defines a handler (that is a I<code> subroutine) for the given I<mask> event
+(or several events). Usually the event type is one of the FVWM I<M_*> or
+I<MX_*> constants, but it may also be M<ON_EXIT>, this special event is
+called just before the event loop is terminated.
+
+The I<mask> may include several events in the same category (the event types
+are or-ed). In this case the handler will be called for every matching event.
+Currently there are 3 categories: regular events (M_*), extended events (MX_*)
+and special events (ON_EXIT). These 3 categories of events can't be mixed,
+primary because of technical reasons.
+
+The handler subroutine is called with these parameters:
+
+    ($self, $type, @args)
+
+where C<$self> is a module object, C<$type> is a single event type that is
+useful when the same event handler serves several events.
+
+The handler may call C<$self-E<gt>terminate> to terminate the event loop
+completely or C<$self-E<gt>terminate("continue")> to terminate the current
+event handler only. The second form is useful when the handler subroutine
+calls other subroutines that need to terminate the primary one.
+
+The return value from B<addHandler> is an identifier the only purpose of
+which is to be passed to B<deleteHandler> in case the newly defined handler
+should be deleted at some point.
+
+=item B<deleteHandler> id
+
+Removes the handler specified by I<id>. The return value is 1 if the handler
+is found and deleted, 0 otherwise.
+
+=item B<addDefaultErrorHandler>
+
+This adds the default handler for I<M_ERROR> event. This class simply prints
+an error message to the standard error stream, but subclasses may define
+another default handler by overwriting this method.
+
+=item B<debug> msg [level]
+
+Prints I<msg> to the standard error stream if I<level> is greater or equal to
+the module debug level defined using I<Debug> in the constructor. The default
+I<level> for this method is 0, the default module level is 0 as well, so
+just calling this method with only one parameter normally results in printing
+the message. Subclasses may overwrite this method and, for example, show
+all debugging messages in a separate window.
+
+This method is automatically called (with I<level> 1) to dump all incoming
+and outgoing communication data in B<send> and B<processPacket>. Apparently
+this data is only seen if I<Debug> is set to something positive.
+
+=item B<internalDie> msg
+
+This may be used to end the module with the corresponding I<msg>.
+For a clean module exit use B<debug> and B<terminate> instead.
+
+=item B<name> [name]
+
+Sets or returns the module name. Called automatically from the constructor.
+
+=item B<mask> [mask]
+
+Sets or returns the module mask. Called automatically from the constructor.
+This method should be called twice for regular and extended packet types.
+If I<M_EXTENDED_MSG> is given as a parameter the method returns extended
+mask, all other mask parameters results in setting the mask.
+
+The module only receives the packets matching these 2 module masks (regular
+and extended).
+
+=item B<syncMask> [mask]
+
+The same as B<mask>, but sets/returns the synchronization mask of the
+module.
+
+The module is synchronized with I<fvwm> on all packets matching these 2
+module synchronization masks (regular and extended).
+
+=item B<disconnect>
+
+This method invokes I<ON_EXIT> handlers if any and closes communication.
+It is called automatically from B<eventLoop> before finishing.
+It is safe to call this method more than once.
+
+This method may be called from signal handlers before I<exit>ing for the
+proper shutdown.
+
+=item B<getHandlerCategory> type
+
+Returns one of 3 string ids depending on the event handler I<type> that has
+the same meaning as the corresponding packet type ("regular" or "extended")
+with an addition of "special" category for I<ON_EXIT> handlers.
+
+=item B<readPacket>
+
+This is a blocking method that waits until there is a packet on the
+communication end from I<fvwm>. Then it returns a list of 2 values,
+packet type and packet data (packed).
+
+=item B<invokeHandler> type args...
+
+Dispatches the apropos event handlers with the packet data.
+This method is called automatically, so you usually should not worry about it.
+
+=item B<processPacket> [data type]
+
+This method does several things. Unpacks packet data to the normal perl list
+of arguments. Normalizes the string if the packet is text based. Prints debug
+info if requested. Calls B<invokeHandler> with the correct parameters.
+Finally calls B<sendUnlock> if needed.
+
+You should not really worry about this method, it is called automatically
+from the event loop.
+
+=item B<readConfigInfo>
+
+Not implemented yet.
+
+=item B<isPacketExtended> type
+
+For technical reasons there are 2 categories of packets, regular and
+extended. This is done to enable more than 32 packets. With introdution of
+extended packets (the packets with the highest bit set) it is now possible
+to have 31+31=62 packets rather than 32. This is a good point, the bad point
+is that only packets of the same category may be masked (or-ed) together.
+This method returns 1 or 0 depending on whether the packet I<type> is
+extended or not.
+
+=item B<isPacketTextBased> type
+
+This method is called automatically when the packet is processed using
+B<processPacket>. The last argument of the text based packets is a text.
+For convenience, everything past the first null (or newline) is stripped
+from the text based packets, so the event handlers should not do this every
+time.
+
+=item B<getPacketArgs> type
+
+Returns a format string corresponding the given packet type that may be
+passed to C<unpack> (see `perldoc -f unpack`) to unpack the packet arguments.
+This method is called automatically, so you should not really worry about it,
+you get already unpacked arguments in the event handlers.
+
+=item B<getPacketName> type
+
+Returns a string representing a packet name (like "M_ADD_WINDOW") of the
+given packet type constant (like I<M_ADD_WINDOW>). May be (and in fact is)
+used for debugging.
+
+=item B<userDataDir>
+
+Returns the user data directory, usually ~/.fvwm or set by $FVWM_USERDIR.
+
+=item B<siteDataDir>
+
+Returns the system-wide data directory, the one configured when FVWM is
+installed. It is also returned by `fvwm-config --fvwm-datadir`.
+
+=item B<searchDirs>
+
+It is a good practice for a module to search for the given configuration
+in one of 2 data directories, the user one and the system-wide. This method
+returns a list of both directories in that order.
+
+=back
 
 =head1 BUGS
 

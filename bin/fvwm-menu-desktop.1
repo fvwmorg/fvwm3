@@ -17,7 +17,7 @@
 .TH fvwm-menu-desktop 1 "25 April 2002" FVWM "FVWM Utilities"
 .UC
 .SH NAME
-fvwm-menu-desktop \- builds Gnome and KDE menus and style commands for FVWM
+fvwm-menu-desktop \- builds GNOME and KDE menus and style commands for FVWM
 
 .SH SYNOPSIS
 
@@ -68,9 +68,6 @@ corresponding FVWM or FvwmGtk menus. The script can also
 build icon and mini\-icon style commands for the applications.
 
 .SH USAGE
-If the script is not installed in your path you will find it in the
-utils directory of the fvwm distribution.
-
 There are a lot of options. However the defaults are, I hope, good
 enough.
 If you want the KDE system menu in the menu "Utilities" add the
@@ -111,16 +108,16 @@ the \-\-mini\-icons\-path option, respectively).
 
 .EX
 Module FvwmGtk
-*FvwmGtkDestroy gnome-all
-*FvwmGtkMenu gnome-all
-*FvwmGtkTitle "Gnome Menus"
-*FvwmGtkSeparator
-*FvwmGtkDestroy gnome-sys
-*FvwmGtkSubmenu "System" gnome-sys
-*FvwmGtkDestroy gnome-user
-*FvwmGtkSubmenu "User" gnome-user
-*FvwmGtkDestroy gnome-redhat
-*FvwmGtkSubmenu "RedHat" gnome-redhat
+*FvwmGtk: Destroy gnome-all
+*FvwmGtk: Menu gnome-all
+*FvwmGtk: Title "Gnome Menus"
+*FvwmGtk: Separator
+*FvwmGtk: Destroy gnome-sys
+*FvwmGtk: Submenu "System" gnome-sys
+*FvwmGtk: Destroy gnome-user
+*FvwmGtk: Submenu "User" gnome-user
+*FvwmGtk: Destroy gnome-redhat
+*FvwmGtk: Submenu "RedHat" gnome-redhat
 
 PipeRead 'fvwm-menu-desktop --type gtk --enable-mini-icons --icon-folder :re --icon-app :re --icon-title :re --icon-toptitle :re'
 

@@ -43,8 +43,7 @@ sub eventLoop ($) {
 		}
 	);
 	Gtk->main;
-	$self->invokeHandler(ON_EXIT);
-	$self->destroy;
+	$self->disconnect;
 }
 
 sub openErrorDialog ($$) {
@@ -95,6 +94,7 @@ FVWM::Module::Gtk - FVWM::Module with the GTK+ widget library attached
 =head1 SYNOPSIS
 
   use Gtk;
+  use lib `fvwm-perllib dir`;
   use FVWM::Module::Gtk;
 
   my $module = new FVWM::Module::Gtk;
@@ -114,7 +114,7 @@ FVWM::Module::Gtk - FVWM::Module with the GTK+ widget library attached
 
 The B<FVWM::Module::Gtk> package is a sub-class of B<FVWM::Module> that
 overloads the methods B<eventLoop> and B<addDefaultErrorHandler> to manage
-GTK+ objects as well.
+GTK+ objects as well. It also adds a new method B<openErrorDialog>.
 
 This manual page details only those differences. For details on the
 API itself, see L<FVWM::Module>.
@@ -145,8 +145,8 @@ Good for debugging a GTK+ based module.
 =item addDefaultErrorHandler
 
 This methods adds a M_ERROR handler to automatically notify you that an error
-has been reported by FVWM. The M_ERROR handler then calls C<openErrorDialog>()
-with the  received error text as parameter to show it in a window.
+has been reported by FVWM. The M_ERROR handler then calls C<openErrorDialog()>
+with the received error text as a parameter to show it in a window.
 
 =head1 BUGS
 

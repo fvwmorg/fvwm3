@@ -22,6 +22,7 @@ use Exporter;
 
 use FVWM::Module;
 use Tk;
+use Tk::Dialog;
 
 @ISA = qw(FVWM::Module Exporter);
 @EXPORT = @FVWM::Module::EXPORT;
@@ -53,8 +54,7 @@ sub eventLoop ($) {
 	$top->fileevent($self->{istream},
 		readable => sub {
 			unless ($self->processPacket($self->readPacket)) {
-				$self->invokeHandler(ON_EXIT);
-				$self->destroy;
+				$self->disconnect;
 				$top->destroy;
 			}
 		}
@@ -62,24 +62,32 @@ sub eventLoop ($) {
 	MainLoop;
 }
 
+sub openErrorDialog ($$) {
+	my $self = shift;
+	my $error = shift;
+
+	my $title = "FVWM Error";
+	my $top = $self->{topLevel};
+
+	my $dialog = $top->Dialog(
+		-title => $title,
+		-bitmap => 'error',
+		-default_button => 'Close',
+		-text => $error,
+		-buttons => ['Close', 'Close All Errors', 'Exit Module']
+	);
+	my $btn = $dialog->Show;
+
+	$self->terminate if $btn eq 'Exit Module';
+	$self->send("All ('$title') Close") if $btn eq 'Close All Errors';
+}
+
 sub addDefaultErrorHandler ($) {
 	my $self = shift;
 
 	$self->addHandler(M_ERROR, sub {
 		my ($self, $type, @args) = @_;
-
-		my $top = $self->{topLevel};
-
-		my $err = $top->Dialog(
-			-title => 'FVWM Error',
-			-bitmap => 'error',
-			-default_button => 'Dismiss',
-			-text => $args[3],
-			-buttons => ['Dismiss', 'Exit']
-		);
-		my $btn = $err->Show(-global);
-
-		die "quit" if $btn eq 'Exit';
+		$self->openErrorDialog($args[3]);
 	});
 }
 
@@ -102,6 +110,7 @@ FVWM::Module::Tk - FVWM::Module with the Tk widget library attached
 =head1 SYNOPSIS
 
   use Tk;
+  use lib `fvwm-perllib dir`;
   use FVWM::Module::Tk;
 
   my $top = new MainWindow;
@@ -116,7 +125,8 @@ FVWM::Module::Tk - FVWM::Module with the Tk widget library attached
 
 The B<FVWM::Module::Tk> package is a sub-class of B<FVWM::Module> that
 overloads the methods B<new>, B<eventLoop> and B<addDefaultErrorHandler>
-to manage Tk objects as well.
+to manage Tk objects as well. It also adds new methods B<openErrorDialog>,
+B<topLevel> and B<winId>.
 
 This manual page details only those differences. For details on the
 API itself, see L<FVWM::Module>.
@@ -130,7 +140,7 @@ are covered here:
 
 =item new
 
-$self = new FVWM::Module::Tk $top, %params
+$module = new FVWM::Module::Tk $top, %params
 
 Create and return an object of the B<FVWM::Module::Tk> class. The return value is
 the blessed reference. This B<new> method is identical to the parent class
@@ -144,16 +154,21 @@ From outward appearances, this methods operates just as the parent
 B<eventLoop> does. It is worth mentioning, however, that this version
 enters into the Tk B<MainLoop> subroutine, ostensibly not to return.
 
+=item openErrorDialog
+
+This method creates a dialog box using the Tk widgets. The dialog has
+three buttons labeled "Close", "Close All Errors" and "Exit Module".
+Selecting the "Close" button closes the dialog. "Close All Errors" closes
+all error dialogs that may be open on the screen at that time.
+"Exit Module" terminates your entire module.
+
+Good for debugging a Tk based module.
+
 =item addDefaultErrorHandler
 
-This methods adds a M_ERROR handler that creates a dialog box using the Tk
-widgets to notify you that an error has been reported by FVWM. The dialog
-has two buttons, labelled "Exit" and "Dismiss". Selecting the "Dismiss"
-button closes the dialog, and allows your application to continue (the
-handler grabs the pointer until the dialog is closed). Choosing the "Exit"
-button causes the termination of the running module. After exiting that
-window, the application will continue as if the "Dismiss" button had been
-pressed.
+This methods adds a M_ERROR handler to automatically notify you that an error
+has been reported by FVWM. The M_ERROR handler then calls C<openErrorDialog()>
+with the received error text as a parameter to show it in a window.
 
 =item topLevel
 
@@ -161,7 +176,7 @@ Returns the Tk toplevel that this object was created with.
 
 =item winId
 
-A shortcut for C<$self->topLevel->id>, exists for efficiency reasons.
+A shortcut for $self->topLevel->id, exists for efficiency reasons.
 
 =back
 
@@ -181,7 +196,8 @@ flexibility, not bugs.
 
 Mikhael Goikhman <migo@homemail.com>.
 
-Randy J. Ray <randy@byz.org>, original B<X11::Fvwm> and B<X11::Fvwm::Tk>.
+Randy J. Ray <randy@byz.org>, author of the old classes
+B<X11::Fvwm> and B<X11::Fvwm::Tk>.
 
 =head1 THANKS TO
 

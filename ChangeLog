@@ -1,3 +1,11 @@
+2002-06-17  Mikhael Goikhman  <migo@homemail.com>
+
+	* INSTALL.fvwm:
+	small improvements
+
+	* configure.in:
+	reworded some names of supported features
+
 2002-06-17  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* fvwm/update.c (apply_window_updates):

@@ -22,7 +22,7 @@ use strict;
 use vars qw($TOP $desker %opts $current_desk $frame @buttons @desk_focus);
 use Tk;
 
-use lib `fvwm-config -p | tr -d '\n'`;
+use lib `fvwm-perllib dir`;
 use FVWM::Module::Tk;
 
 my $TOP = new MainWindow;

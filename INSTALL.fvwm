@@ -1,4 +1,7 @@
                                                                 -*- text -*-
+If you only need an information about all supported features skip to the
+"Optional libraries used by FVWM" and "Compile-time Options" sections.
+
 VMS users: ignore this file, and follow the instructions in vms/README
 instead.
 
@@ -197,6 +200,7 @@ Optional libraries used by FvwmGtk
 ==================================
 
 FvwmGtk module requires GTK and optionally GDK-Imlib and GNOME libraries.
+GDK-Imlib library that is a part of Imlib version 1 is used to have images.
 
 Note, FVWM itself has an ability to support GNOME Window Manager hints
 (which is enabled by default), this has nothing to do with GNOME library

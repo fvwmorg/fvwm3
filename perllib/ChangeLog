@@ -1,3 +1,14 @@
+2002-06-17  Mikhael Goikhman  <migo@homemail.com>
+
+	* FVWM/Module.pm.in:
+	* FVWM/Constants.pm:
+	* FVWM/create-constants:
+	added almost complete documentation
+
+	* FVWM/Module/Gtk.pm:
+	* FVWM/Module/Tk.pm:
+	updated documentation
+
 2002-06-15  Mikhael Goikhman  <migo@homemail.com>
 
 	* FVWM/Module.pm.in:
