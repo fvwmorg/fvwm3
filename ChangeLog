@@ -1,3 +1,8 @@
+1999-10-21  Dan Espen  <dane@mk.telcordia.com>
+
+	* fvwm/ConfigFvwmDefaults, fvwm/fvwm2.1:  The  ability  to raise,
+ 	lower, resize, and move windows is built-in.
+
 1999-10-21  Mikhael Goikhman  <migo@homemail.com>
 
 	* fvwm/session.c (matchWin): reimplemented disabled code, so it

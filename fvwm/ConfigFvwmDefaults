@@ -30,3 +30,10 @@ Style * GrabFocusTransient
 Style * LowerTransient, RaiseTransient, StackTransientParent
 Style * RandomPlacement, SmartPlacement
 Style * Title, MouseFocus, GrabFocusOff
+# Basic Mouse controls:
+Mouse 1 TS A FuncFvwmRaiseLowerX Move
+Mouse 1 F  A FuncFvwmRaiseLowerX Resize
+AddToFunc FuncFvwmRaiseLowerX I Raise
++ M $0
++ D Lower
+

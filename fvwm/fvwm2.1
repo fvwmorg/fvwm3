@@ -498,6 +498,11 @@ The following commands are built-in to fvwm:
 Key Help R A Popup MenuFvwmRoot
 Key F1 R A Popup MenuFvwmRoot
 Key Tab A M WindowList Root c c NoDeskSort
+Mouse 1 TS A FuncFvwmRaiseLowerX Move
+Mouse 1 F  A FuncFvwmRaiseLowerX Resize
+AddToFunc FuncFvwmRaiseLowerX I Raise
++ M $0
++ D Lower
 .EE
 
 The "Help" and "F1" keys invoke a built-in menu that fvwm creates.
@@ -508,7 +513,12 @@ which should help you get started.
 The tab key pressed anywhere with the "meta" key held down will pop-up
 a window list.
 
-There is no reason why you can't override or remove these bindings.
+Mouse button 1 on the title bar or side frame can move, raise or lower
+a window.
+
+Mouse button 1 on the window corners can resize, raise or lower a window.
+
+You can override or remove these bindings.
 To remove the window list binding, use this:
 .EX
 Key Tab A M -
