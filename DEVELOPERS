@@ -1,4 +1,4 @@
-			Living with CVS and Autoconf
+			Living with CVS and Autoconf                 -*-text-*-
 			----------------------------
 
 These notes are intended for code developers.
@@ -23,13 +23,29 @@ Changing a Makefile
 
 First of all, NEVER edit anything named Makefile, or Makefile.in.  These
 are both derived from the corresponding Makefile.am.  The most common
-reason for editing is to change the list of sources. 
+reason for editing is to change the list of sources.
 
 Steps: 1. edit foo/blah/Makefile.am
        2. re-run "make" from the top of the build directory
 
 Step 2 will take care of rebuilding the Makefile.in and Makefile from your
 changed Makefile.am.
+
+As above, you must have automake installed in order to modify makefiles.
+PLEASE NOTE!  Automake will squirrel away some values in the automake
+script itself when it is configured.  These values then find their way
+into the Makefile.in files that automake generates.  Since we check in
+these files, it's imperative that everyone running automake use the
+_same_ values for these variables, or we'll be flip-flopping the
+Makefile.in files back and forth in CVS.
+
+In particular, after installing automake please edit the automake script
+itself and look for this line:
+
+  $TAR = "tar";
+
+If the value of the $TAR variable is _anything_ other than "tar" (e.g.,
+"gtar", "gnutar", etc.) please change it to plain "tar" immediately.
 
 Makefile.am has a simple format, basically:
 
@@ -71,7 +87,7 @@ Steps: 1. make sure you have XPM and a C++ compiler
        4. configure with the flag --enable-extras
        5. make
        6. make distcheck
-       7. ensure that you see the message 
+       7. ensure that you see the message
           "fvwm-x.y.z.tar.gz ready for distribution"
           before uploading the tar file somewhere
        8. Increase the version number in configure.in (see above)
@@ -79,7 +95,7 @@ Steps: 1. make sure you have XPM and a C++ compiler
 Steps 2, 3 and 8 are not required if you are builing a distribution
 just for fun.
 
-One thing I've learned the hard way: 
+One thing I've learned the hard way:
 
         You have to configure with ALL THE OPTIONAL SUBDIRECTORIES
         in order to build a distribution!
@@ -90,11 +106,11 @@ couple of subdirectories are only built when using Xpm (xpmroot, for
 example) or C++ (extras/FvwmConfig).  It is fine for end users to not
 build these.  However, the distribution-maker has to have all the
 directories enabled, else the files don't make it into the distribution
-tar file. 
+tar file.
 
 Similarly, you need to have actually built everything before packing the
 distribution, hence step #3.  Among other things, this puts into the
-Makefile.in's the proper dependency information. 
+Makefile.in's the proper dependency information.
 
 Step 4 will create the tar file, then unpack it and attempt a build &
 install (to a scratch directory, not /usr/local).  This makes sure
@@ -120,12 +136,12 @@ want to build one or two extra modules, you can do:
 On the other hand, if you want to build & install everything, you can
 arrange to treat the "extra" modules on the same footing as the
 regular modules.  The configure flag "enable-extras" turns on this
-behaviour.  If you do: 
+behaviour.  If you do:
 
     ./configure --enable-extras make; make install
 
 then all the "extra" modules are built and installed alongside the regular
-ones.  
+ones.
 
 There are short notes at the top of all the extras/*/Makefile.am files
 about what may have differed vis-a-vis the old Imakefiles.  Some of

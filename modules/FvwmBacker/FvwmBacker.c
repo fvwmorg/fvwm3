@@ -1,4 +1,4 @@
-/* FvwmBacker Module for Fvwm. 
+/* FvwmBacker Module for Fvwm.
  *
  *  Copyright 1994,  Mike Finger (mfinger@mermaid.micro.umn.edu or
  *                               Mike_Finger@atk.com)
@@ -55,7 +55,7 @@
 
 unsigned long GetColor(char *color);
 
-typedef struct 
+typedef struct
 {
   int type; /* The command type.
 	     * -1 = no command.
@@ -100,7 +100,7 @@ char *temp, *s;
     temp = s + 1;
 
   Module=temp;
-  
+
   if((argc != 6)&&(argc != 7)) {
     fprintf(stderr,"%s Version %s should only be executed by fvwm!\n",Module,
       VERSION);
@@ -113,7 +113,7 @@ char *temp, *s;
   /* Grab the X display information now. */
 
 	dpy = XOpenDisplay(displayName);
-	if (!dpy) 
+	if (!dpy)
 	{
 		fprintf(stderr, "%s:  unable to open display '%s'\n",
 			Module, XDisplayName (displayName));
@@ -128,7 +128,7 @@ char *temp, *s;
 		fprintf(logFile,"Initialising FvwmBacker\n");
 #	endif
 
-  signal (SIGPIPE, DeadPipe);  
+  signal (SIGPIPE, DeadPipe);
 
   /* Parse the config file */
   ParseConfig();
@@ -145,6 +145,9 @@ char *temp, *s;
 
   /* Recieve all messages from Fvwm */
   EndLessLoop();
+
+  /* Should never get here! */
+  return 1;
 }
 
 /******************************************************************************
@@ -205,9 +208,9 @@ void ReadFvwmPipe()
 ******************************************************************************/
 void ProcessMessage(unsigned long type,unsigned long *body)
 {
-  if (type==M_NEW_DESK) 
+  if (type==M_NEW_DESK)
     {
-      if (body[0]>DeskCount || commands[body[0]].type == -1) 
+      if (body[0]>DeskCount || commands[body[0]].type == -1)
 	{
 	  return;
 	}
@@ -228,17 +231,17 @@ void ProcessMessage(unsigned long type,unsigned long *body)
       fflush(logFile);
 #	endif
 
-      
+
       if (commands[body[0]].type == 1)
 	{
 	  /* Process a solid color request */
-	  
+
 	  XSetWindowBackground(dpy, root, commands[body[0]].solidColor);
 	  XClearWindow(dpy, root);
 	  XFlush(dpy);
 	  /*	XSetWindowBackground(dpy, root, commands[body[0]].solidColor);
 	   */
-	  
+
 #		ifdef LOGFILE
 	  fprintf(logFile,"Color set.\n");
 	  fflush(logFile);
@@ -256,7 +259,7 @@ void ProcessMessage(unsigned long type,unsigned long *body)
 }
 
 /******************************************************************************
-  SendFvwmPipe - Send a message back to fvwm 
+  SendFvwmPipe - Send a message back to fvwm
     Based on SendInfo() from FvwmIdent:
       Copyright 1994, Robert Nation and Nobutaka Suzuki.
 ******************************************************************************/
@@ -291,7 +294,7 @@ char *hold,*temp,*temp_msg;
 }
 
 /***********************************************************************
-  Detected a broken pipe - time to exit 
+  Detected a broken pipe - time to exit
     Based on DeadPipe() from FvwmIdent:
       Copyright 1994, Robert Nation and Nobutaka Suzuki.
  **********************************************************************/
@@ -309,14 +312,14 @@ void ParseConfig()
 {
   char line2[40];
   char *tline;
-  
+
   sprintf(line2,"*%sDesk",Module);
-  
+
   GetConfigLine(Fvwm_fd,&tline);
 
-    while(tline != (char *)0) 
+    while(tline != (char *)0)
       {
-	if(strlen(tline)>1) 
+	if(strlen(tline)>1)
 	  {
 	    if(strncasecmp(tline,line2,strlen(line2))==0)
 	      AddCommand(&tline[strlen(line2)]);

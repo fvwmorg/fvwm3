@@ -1,3 +1,23 @@
+1998-12-16  Paul D. Smith  <psmith@gnu.org>
+
+	* FvwmIconMan/functions.c (builtin_refresh): Return a valid value.
+
+	* FvwmButtons/FvwmButtons.c (RecursiveLoadData): Cast fprintf arg.
+
+	* FvwmBacker/FvwmBacker.c (main): Add return to silence warning.
+
+	* FvwmIconMan/FvwmIconMan.h: Remove ConsoleMessage() prototype (in
+	debug.h now).
+
+	* FvwmIconMan/FvwmIconMan.c (main): Pass filename to OpenConsole().
+
+	* FvwmIconMan/debug.c: Rewrite.  New signatures for all
+	functions.
+
+	* FvwmIconMan/debug.h: Disable debugging by default.  Print all
+	messages to stderr by default, rather than /dev/console.  Use the
+	GCC __attribute__ feature for more error checking.
+
 1998-12-15  Dominik Vogt  <dominik_vogt@hp.com>
 
 	* FvwmWinList/ButtonArray.c (ButtonArrayMaxWidth): function not used

@@ -26,11 +26,11 @@ static char const rcsid[] =
 char *copy_string (char **target, char *src)
 {
   int len = strlen (src);
-  ConsoleDebug (CORE, "copy_string: 1: 0x%x\n", *target);
+  ConsoleDebug (CORE, "copy_string: 1: 0x%x\n", (unsigned)*target);
 
   if (*target)
     Free (*target);
-  
+
   ConsoleDebug (CORE, "copy_string: 2\n");
   *target = (char *)safemalloc ((len + 1) * sizeof (char));
   strcpy (*target, src);
@@ -138,7 +138,7 @@ static int main_loop (void)
       readset = saveset;
       n = select(fd_width,&readset,NULL,NULL,NULL);
     }
-    
+
     if (n < 0) {
       ConsoleMessage ("Internal error with select\n");
     }
@@ -169,7 +169,7 @@ int main (int argc, char **argv)
     sprintf (buf, "%d", getpid());
     if (fork() == 0) {
       chdir ("/home/bradym/src/FvwmIconMan");
-      execl ("/usr/local/bin/ddd", "/usr/local/bin/ddd", "FvwmIconMan", 
+      execl ("/usr/local/bin/ddd", "/usr/local/bin/ddd", "FvwmIconMan",
 	     buf, NULL);
     }
     else {
@@ -179,7 +179,7 @@ int main (int argc, char **argv)
   }
 #endif
 
-  OpenConsole();
+  OpenConsole(OUTPUT_FILE);
 
 #if 0
   ConsoleMessage ("PID = %d\n", getpid());
@@ -189,7 +189,7 @@ int main (int argc, char **argv)
 
   init_globals();
   init_winlists();
-  
+
   temp = argv[0];
   s = strrchr (argv[0], '/');
   if (s != NULL)
@@ -207,15 +207,15 @@ int main (int argc, char **argv)
   Fvwm_fd[1] = atoi(argv[2]);
   init_display();
   init_boxes();
-  
-  signal (SIGPIPE, DeadPipe);  
+
+  signal (SIGPIPE, DeadPipe);
 
   read_in_resources (argv[3]);
-  
+
   for (i = 0; i < globals.num_managers; i++) {
     X_init_manager (i);
   }
-  
+
   assert (globals.managers);
   fd_width = GetFdWidth();
 
@@ -233,6 +233,6 @@ int main (int argc, char **argv)
   main_loop();
 
   ConsoleMessage ("Shouldn't be here\n");
-  
+
   return 0;
 }

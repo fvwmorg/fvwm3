@@ -1,24 +1,22 @@
 #ifndef IN_DEBUG_H
 #define IN_DEBUG_H
 
-#if 1
-#define PRINT_DEBUG      
+#if 0
+# define PRINT_DEBUG
 #endif
 
-#if 1
-#define OUTPUT_FILE "/dev/console"
-#endif
-
-
-#if !defined (PRINT_DEBUG) && defined (__GNUC__)
-#define ConsoleDebug(flag, fmt, args...)
+#if 0
+# define OUTPUT_FILE "/dev/console"
 #else
-extern void ConsoleDebug(int flag, char *fmt, ...);
+# define OUTPUT_FILE NULL
 #endif
 
-extern int OpenConsole (void);
 
-#define DEBUG_ALWAYS 1
+extern int OpenConsole(const char *filenm);
+extern void ConsoleMessage(const char *fmt, ...)
+                           __attribute__ ((__format__ (__printf__, 1, 2)));
+extern void ConsoleDebug(int flag, const char *fmt, ...)
+                         __attribute__ ((__format__ (__printf__, 2, 3)));
 
 extern int CORE, FUNCTIONS, X11, FVWM, CONFIG, WINLIST, MEM;
 

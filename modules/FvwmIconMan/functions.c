@@ -23,7 +23,7 @@ void run_function_list (Function *func)
   init_function_context (func);
 
   while (function_context.fp) {
-    function_context.fp->func (function_context.fp->numargs, 
+    function_context.fp->func (function_context.fp->numargs,
 			       function_context.fp->args);
     if (function_context.fp)
       function_context.fp = function_context.fp->next;
@@ -68,7 +68,7 @@ static Button *get_current_button (void)
 {
   return function_context.current_button;
 }
-  
+
 static Button *button_move (ButtonValue *bv)
 {
   Button *b = NULL, *cur;
@@ -99,7 +99,7 @@ static Button *button_move (ButtonValue *bv)
       b = man->buttons.buttons[i];
     }
     break;
-   
+
   default:
     man = get_current_man();
     if (!cur) {
@@ -123,7 +123,7 @@ static Button *button_move (ButtonValue *bv)
     case RightButton:
       b = button_right (man, cur);
       break;
-      
+
     case NextButton:
       b = button_next (man, cur);
       break;
@@ -148,7 +148,7 @@ int builtin_gotobutton (int numargs, BuiltinArg *args)
 
   ConsoleDebug (FUNCTIONS, "gotobutton: ");
   print_args (numargs, args);
-  
+
   bv = &args[0].value.button_value;
 
   b = button_move (bv);
@@ -158,7 +158,7 @@ int builtin_gotobutton (int numargs, BuiltinArg *args)
 
   return 0;
 }
-    
+
 int builtin_gotomanager (int numargs, BuiltinArg *args)
 {
   ButtonValue *bv;
@@ -188,7 +188,7 @@ int builtin_gotomanager (int numargs, BuiltinArg *args)
     /* Now we find the manager modulo the VISIBLE managers */
     static WinManager **wa = NULL;
     int i, num_mapped, n;
-    
+
     n = globals.num_managers;
     if (n) {
       if (wa == NULL) {
@@ -212,11 +212,11 @@ int builtin_gotomanager (int numargs, BuiltinArg *args)
     }
   }
   break;
-  
+
   case NextButton:
     if (man) {
-      for (i = man->index + 1, new = man + 1; 
-	   i < globals.num_managers && new->buttons.num_windows == 0; 
+      for (i = man->index + 1, new = man + 1;
+	   i < globals.num_managers && new->buttons.num_windows == 0;
 	   i++, new++)
 	;
       if (i == globals.num_managers)
@@ -277,7 +277,7 @@ int builtin_printdebug (int numargs, BuiltinArg *args)
   int i;
 
   for (i = 0; i < globals.num_managers; i++) {
-    ConsoleDebug (FUNCTIONS, "Manager %d\n---------\n");
+    ConsoleDebug (FUNCTIONS, "Manager %d\n---------\n", i);
     ConsoleDebug (FUNCTIONS, "Keys:\n");
     print_bindings (globals.managers[i].bindings[KEYPRESS]);
     ConsoleDebug (FUNCTIONS, "Mice:\n");
@@ -302,7 +302,7 @@ static void do_jmp (int off)
 {
   int i;
   ConsoleDebug (FUNCTIONS, "jmp: %d\n", off);
-  
+
   if (off < 0) {
     ConsoleMessage ("Can't have a negative relative jump offset\n");
     return;
@@ -344,32 +344,32 @@ static int eval_if (ButtonValue *bv)
     if (!cur || !man) {
       return 0;
     }
-    
+
     switch (bv->base) {
     case UpButton:
       return (button_above (man, cur) != cur);
 
     case DownButton:
       return (button_below (man, cur) != cur);
-      
+
     case LeftButton:
       return (button_left (man, cur) != cur);
-      
+
     case RightButton:
       return (button_right (man, cur) != cur);
-      
+
     case NextButton:
       return (button_next (man, cur) != cur);
 
     case PrevButton:
       return (button_prev (man, cur) != cur);
-      
+
     default:
       ConsoleMessage ("Internal error in eval_if: 2\n");
       break;
     }
   }
-    
+
   return 0;
 }
 
@@ -381,7 +381,7 @@ int builtin_bif (int numargs, BuiltinArg *args)
   if (eval_if (&args[0].value.button_value)) {
     do_jmp (off);
   }
-  
+
   return 0;
 }
 
@@ -393,7 +393,7 @@ int builtin_bifn (int numargs, BuiltinArg *args)
   if (eval_if (&args[0].value.button_value) == 0) {
     do_jmp (off);
   }
-  
+
   return 0;
 }
 
@@ -415,9 +415,9 @@ int builtin_ret (int numargs, BuiltinArg *args)
 int builtin_print (int numargs, BuiltinArg *args)
 {
   char *s, buf[256];
-  
+
   ConsoleDebug (FUNCTIONS, "print: %s\n", args[0].value.string_value);
-  
+
   s = args[0].value.string_value;
   if (strlen (s) > 250) {
     ConsoleMessage ("String too long\n");
@@ -426,7 +426,7 @@ int builtin_print (int numargs, BuiltinArg *args)
     sprintf (buf, "%s\n", s);
     ConsoleMessage (buf);
   }
-  
+
   return 0;
 }
 
@@ -439,7 +439,7 @@ int builtin_searchforward (int numargs, BuiltinArg *args)
   s = args[0].value.string_value;
 
   ConsoleDebug (FUNCTIONS, "searchforward: %s\n", s);
-  
+
   cur = get_current_button();
   man = get_current_man();
   b = cur;
@@ -458,7 +458,7 @@ int builtin_searchforward (int numargs, BuiltinArg *args)
   }
   if (cur)
     function_context.current_button = cur;
-  
+
   return 0;
 }
 
@@ -471,7 +471,7 @@ int builtin_searchback (int numargs, BuiltinArg *args)
   s = args[0].value.string_value;
 
   ConsoleDebug (FUNCTIONS, "searchback: %s\n", s);
-  
+
   cur = get_current_button();
   man = get_current_man();
   b = cur;
@@ -490,7 +490,7 @@ int builtin_searchback (int numargs, BuiltinArg *args)
   }
   if (cur)
     function_context.current_button = cur;
-  
+
   return 0;
 }
 
@@ -509,11 +509,12 @@ int builtin_warp (int numargs, BuiltinArg *args)
     y = cur->y + cur->h / 2;
     XWarpPointer (theDisplay, None, man->theWindow, 0, 0, 0, 0, x, y);
   }
-  
+
   return 0;
 }
 
 int builtin_refresh (int numargs, BuiltinArg *args)
 {
   draw_managers();
+  return 0;
 }
