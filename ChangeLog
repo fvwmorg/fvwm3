@@ -1,3 +1,7 @@
+1999-03-02  Dan Espen  <dane@mk.bellcore.com>
+
+	* NEWS: Updated news on FvwmAnimate fonts and colors defaults.
+
 1999-03-01  Matthias Clasen  <clasen@mathematik.uni-freiburg.de>
 
 	* fvwm/fvwm.c (InitVariables): Change the default layers
