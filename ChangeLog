@@ -1,3 +1,7 @@
+2002-03-07  Dan Espen  <dane@mk.telcordia.com>
+
+	* fvwm/bindings.c (ParseBinding): Handle key_string lengths up to 30.
+
 2002-03-07  olicha  <olivier.chapuis@free.fr>
 
 	* libs/Flocale.c (FInitLocale):

@@ -90,7 +90,7 @@ int ParseBinding(
   Bool do_ungrab_root, Bool is_silent)
 {
   char *action, context_string[20], modifier_string[20], *ptr, *token;
-  char key_string[20] = "";
+  char key_string[31] = "";
   int button = 0;
   STROKE_CODE(char stroke[STROKE_MAX_SEQUENCE + 1] = "";)
   int n1=0,n2=0,n3=0;
@@ -107,7 +107,7 @@ int ParseBinding(
   if (token != NULL)
   {
     if (type == KEY_BINDING)
-      n1 = sscanf(token,"%19s", key_string);
+      n1 = sscanf(token,"%30s", key_string); /* see len of key_string above */
 #ifdef HAVE_STROKE
     else if (type == STROKE_BINDING)
     {
