@@ -1734,7 +1734,7 @@ static void border_setup_bar_pixmaps(
 	i = 0;
 	for (tsdf = df; tsdf != NULL; tsdf = tsdf->next)
 	{
-		if (DFS_FACE_TYPE(df->style) == ColorsetButton)
+		if (DFS_FACE_TYPE(tsdf->style) == ColorsetButton)
 		{
 			dcd->bar_pixmaps[bs].bps[i].p = None;
 			dcd->bar_pixmaps[bs].bps[i].mp_created_pic = NULL;
@@ -4650,6 +4650,7 @@ void border_draw_decorations(
 		SET_WAS_NEVER_DRAWN(fw, 0);
 	}
 	memset(&cd, 0, sizeof(cd));
+
 	/* can't compare with True here, old code calls this with value "2" */
 	if (do_force != False)
 	{

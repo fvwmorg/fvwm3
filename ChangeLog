@@ -1,5 +1,8 @@
 2003-02-26  olicha  <olivier.chapuis@free.fr>
 
+	* fvwm/borders.c (border_setup_bar_pixmaps):
+	Fixed a miss-print which can cause a core dump
+
 	* todo-2.6: 
 	Added a 2.6 TODO file
 
