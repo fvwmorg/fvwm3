@@ -1,3 +1,8 @@
+2003-08-09  olicha  <olivier.chapuis@free.fr>
+
+	* todo-2.6: 
+	Updated
+
 2003-08-08  olicha  <olivier.chapuis@free.fr>
 
 	* fvwm/borders.c (border_draw_vector_to_pixmap):
