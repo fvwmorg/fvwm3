@@ -110,7 +110,6 @@ void CreateIconWindow(FvwmWindow *tmp_win, int def_x, int def_y)
     icon_order[3] = 3;
 ICON_DBG((stderr,"ciw: hint order: xpm bmp iwh iph '%s'\n", tmp_win->name));
   }
-#if 1
   else if (ICON_OVERRIDE_MODE(tmp_win) == NO_ACTIVE_ICON_OVERRIDE)
   {
     if (tmp_win->wmhints && (tmp_win->wmhints->flags & IconPixmapHint) &&
@@ -145,7 +144,6 @@ ICON_DBG((stderr,"ciw: hint order: iwh iph xpm bmp '%s'\n", tmp_win->name));
 ICON_DBG((stderr,"ciw: hint order: iwh xpm bmp iph '%s'\n", tmp_win->name));
     }
   }
-#endif
   else
   {
     /* use application provided icon rather than fvwm provided icon */

@@ -1,5 +1,12 @@
 2001-01-18  Dominik Vogt  <dominik.vogt@gmx.de>
 
+	* fvwm/fvwm.c (CaptureAllWindows):
+	explicitly store focused window over a recapture
+
+	* fvwm/icons.c (CreateIconWindow):
+	* fvwm/events.c (HandlePropertyNotify):
+	cleaned up icon override code
+
 	* fvwm/events.c (HandlePropertyNotify):
 	active icon patch
 

@@ -1053,7 +1053,10 @@ void CaptureAllWindows(void)
   {
     Window keep_on_top_win;
     Window parent_win;
+    Window focus_w;
+    FvwmWindow *t;
 
+    focus_w = (Scr.Focus) ? Scr.Focus->w : None;
     hide_screen(True, &keep_on_top_win, &parent_win);
     /* reborder all windows */
     for (i=0;i<nchildren;i++)
@@ -1064,6 +1067,16 @@ void CaptureAllWindows(void)
       }
     }
     hide_screen(False, NULL, NULL);
+    /* find the window that had the focus and focus it again */
+    if (focus_w)
+    {
+      for (t = Scr.FvwmRoot.next; t && t->w != focus_w; t = t->next)
+	;
+      if (t)
+      {
+	SetFocusWindow(t, 0);
+      }
+    }
   }
 
   isIconicState = DontCareState;

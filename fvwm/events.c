@@ -553,9 +553,6 @@ ICON_DBG((stderr,"hpn: icon override '%s'\n", Tmp_win->name));
       }
       else if (ICON_OVERRIDE_MODE(Tmp_win) == NO_ACTIVE_ICON_OVERRIDE)
       {
-#if 0
-	has_icon_changed = True;
-#else
 	if (has_icon_pixmap_hint_changed)
 	{
 	  if (WAS_ICON_HINT_PROVIDED(Tmp_win) == ICON_HINT_MULTIPLE)
@@ -587,7 +584,6 @@ ICON_DBG((stderr,"hpn: using iwh '%s'\n", Tmp_win->name));
 ICON_DBG((stderr,"hpn: iwh not changed, hint ignored '%s'\n", Tmp_win->name));
 	  has_icon_changed = False;
 	}
-#endif
       }
       else
       {
