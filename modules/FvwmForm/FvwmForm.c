@@ -1571,6 +1571,28 @@ void RedrawItem (Item *item, int click)
   XFlush(dpy);
 }
 
+/* update transparency if backgroude colorset is transparent */
+
+void UpdateRootTransapency(void)
+{
+  Item *item;
+
+  if (colorset > -1 && Colorset[colorset].pixmap == ParentRelative)
+  {
+    /* window has moved redraw the background if it is transparent */
+    XClearArea(dpy, CF.frame, 0,0,0,0, True);
+    if (itemcolorset > -1 &&
+	Colorset[itemcolorset].pixmap == ParentRelative)
+    {
+      for (item = root_item_ptr; item != 0; item = item->header.next)
+      {
+	if (item->header.win != None)
+	  XClearArea(dpy, item->header.win, 0,0,0,0, True);
+      }
+    }
+  }
+}
+
 /* execute a command */
 void DoCommand (Item *cmd)
 {
@@ -1947,6 +1969,11 @@ static void ParseActiveMessage(char *buf)
   if (strncasecmp(buf, XINERAMA_CONFIG_STRING, sizeof(XINERAMA_CONFIG_STRING)-1)
       == 0) {
     FScreenConfigureModule(buf + sizeof(XINERAMA_CONFIG_STRING)-1);
+    return;
+  }
+  if (strncasecmp(buf, ROOT_BG_CHANGE_STRING, sizeof(ROOT_BG_CHANGE_STRING)) == 0)
+  {
+    UpdateRootTransapency();
     return;
   }
   if (strncasecmp(buf, MyName, MyNameLen) != 0) {/* If its not for me */

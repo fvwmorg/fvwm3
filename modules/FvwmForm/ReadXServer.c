@@ -83,17 +83,7 @@ void ReadXServer ()
 	if (colorset > -1 && Colorset[colorset].pixmap == ParentRelative && 
 	    event.xconfigure.send_event)
 	{
-	  /* window has moved redraw the background if it is transparent */
-	  XClearArea(dpy, CF.frame, 0,0,0,0, True);
-	  if (itemcolorset > -1 &&
-	      Colorset[itemcolorset].pixmap == ParentRelative)
-	  {
-	    for (item = root_item_ptr; item != 0; item = item->header.next)
-	    {
-	      if (item->header.win != None)
-		XClearArea(dpy, item->header.win, 0,0,0,0, True);
-	    }
-	  }
+	  UpdateRootTransapency();
 	}
 	else
 	{

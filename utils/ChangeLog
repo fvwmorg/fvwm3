@@ -1,3 +1,11 @@
+2002-01-16  olicha  <olivier.chapuis@free.fr>
+
+	* xpmroot.c (main): 
+	New option -np which causes to set _XSETROOT_ID to None and to do not
+	keep the pixmap in memory. New option -d which free the _XSETROOT_ID
+	pixmap and set it to None and which forces xpmroot to do not set the
+	background. New options -fe for freeing the ESETROOT_PMAP_ID pixmap.
+
 2001-11-26  Mikhael Goikhman  <migo@homemail.com>
 
 	* fvwm-config.in:

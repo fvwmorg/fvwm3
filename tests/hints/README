@@ -74,6 +74,9 @@ EWMH hints) on the window. Here the options:
 	sticky, skippager, skiptaskbar, maxhoriz, maxvert, modal, staysontop,
 	fullscreen
 
+-ewmh-desktop int
+	Set desktop initial state
+
 This is just a test program there are no checking when the options
 are parsed. Do not forget to use xprop and xwininfo.
 

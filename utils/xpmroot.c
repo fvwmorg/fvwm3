@@ -25,15 +25,19 @@ Pixmap rootXpm;
 
 int main(int argc, char **argv)
 {
-  Atom prop, type;
+  Atom prop, type, e_prop;
   int format;
   unsigned long length, after;
   unsigned char *data;
+  int i = 1;
+  Bool FreeEsetroot = False;
+  Bool NotPermanent = False;
+  Bool Dummy = False;
 
-  if(argc != 2)
+  if(argc < 2)
     {
       fprintf(stderr,"Xpmroot Version %s\n",VERSION);
-      fprintf(stderr,"Usage: xpmroot xpmfile\n");
+      fprintf(stderr,"Usage: xpmroot [-fe -np -d] xpmfile\n");
       fprintf(stderr,"Try Again\n");
       exit(1);
     }
@@ -46,19 +50,73 @@ int main(int argc, char **argv)
     }
   screen = DefaultScreen(dpy);
   root = RootWindow(dpy, screen);
+  
+  for(i=1;i<argc-1;i++)
+    {
+      if (strcasecmp(argv[i],"-fe") == 0)
+      {
+	FreeEsetroot = True;
+      }
+      else if (strcasecmp(argv[i],"-np") == 0)
+      {
+	NotPermanent = True;
+      }
+      else if (strcasecmp(argv[argc-1],"-d") == 0)
+      {
+	Dummy = True;
+	NotPermanent = True;
+      }
+      else
+      {
+	fprintf(stderr, "Xpmroot:  unknow option '%s'\n", argv[i]);
+      }
+    }
 
-  SetRootWindow(argv[1]);
+  if (Dummy || strcasecmp(argv[argc-1],"-d") == 0)
+  {
+    Dummy = True;
+    NotPermanent = True;
+  }
+  else
+  {
+    SetRootWindow(argv[argc-1]);
+  }
 
   prop = XInternAtom(dpy, "_XSETROOT_ID", False);
-
   (void)XGetWindowProperty(dpy, root, prop, 0L, 1L, True, AnyPropertyType,
 			   &type, &format, &length, &after, &data);
-  if ((type == XA_PIXMAP) && (format == 32) && (length == 1) && (after == 0))
+  if ((type == XA_PIXMAP) && (format == 32) && (length == 1) && (after == 0)
+      && *((Pixmap *)data) != None)
+  {
     XKillClient(dpy, *((Pixmap *)data));
+  }
 
+  if (FreeEsetroot)
+    {
+      if (data != NULL)
+	XFree(data);
+      e_prop = XInternAtom(dpy, "ESETROOT_PMAP_ID", False);
+      (void)XGetWindowProperty(dpy, root, e_prop, 0L, 1L, True, AnyPropertyType,
+			       &type, &format, &length, &after, &data);
+      if ((type == XA_PIXMAP) && (format == 32) && (length == 1) && (after == 0)
+	  && *((Pixmap *)data) != None)
+      {
+	XKillClient(dpy, *((Pixmap *)data));
+      }
+      XDeleteProperty(dpy, root, e_prop);
+    }
+  if (NotPermanent)
+    {
+      if (rootXpm != None)
+	XFreePixmap(dpy, rootXpm);
+      rootXpm = None;
+    }
+  else
+    {
+      XSetCloseDownMode(dpy, RetainPermanent);
+    }
   XChangeProperty(dpy, root, prop, XA_PIXMAP, 32, PropModeReplace,
 		  (unsigned char *) &rootXpm, 1);
-  XSetCloseDownMode(dpy, RetainPermanent);
   XCloseDisplay(dpy);
   return 0;
 }

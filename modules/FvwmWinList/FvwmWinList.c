@@ -761,6 +761,12 @@ ParseConfigLine(char *tline)
       FScreenConfigureModule(
 	tline + sizeof(XINERAMA_CONFIG_STRING) - 1);
     }
+    else if (strncasecmp(tline, ROOT_BG_CHANGE_STRING,
+			 sizeof(ROOT_BG_CHANGE_STRING) - 1) == 0)
+    {
+      if (WindowState && win_bg == ParentRelative)
+	RedrawWindow(True, True);
+    }
   }
 }
 
@@ -869,7 +875,7 @@ void LoopOnEvents(void)
 	  }
 	}
         if (Event.xconfigure.send_event && (win_x != Event.xconfigure.x
-            || win_y != Event.xconfigure.y)) {
+            || win_y != Event.xconfigure.y || win_bg == ParentRelative)) {
 	  win_x = Event.xconfigure.x;
 	  win_y = Event.xconfigure.y;
 	  if (win_bg == ParentRelative)

@@ -217,7 +217,31 @@ void ReadFvwmPipe()
     ProcessMessage( packet->type, packet->body );
 }
 
+/* from xpmroot. free the memory associated to the XSETROOT_ID property
+ * and set this property to None to indicate a background change */
+void SetXsetRoot(Pixmap RootPix)
+{
+  static Atom prop = None;
+  Atom type;
+  int format;
+  unsigned long length, after;
+  unsigned char *data;
 
+  if (prop == None)
+  {
+    prop = XInternAtom(dpy, "_XSETROOT_ID", False);
+  }
+  (void)XGetWindowProperty(dpy, root, prop, 0L, 1L, True, AnyPropertyType,
+			   &type, &format, &length, &after, &data);
+  if ((type == XA_PIXMAP) && (format == 32) && (length == 1) && (after == 0)
+      && *((Pixmap *)data) != None)
+  {
+    XKillClient(dpy, *((Pixmap *)data));
+  }
+  XChangeProperty(dpy, root, prop, XA_PIXMAP, 32, PropModeReplace,
+		  (unsigned char *) &RootPix, 1);
+}
+  
 void SetDeskPageBackground(const Command *c)
 {
   current_colorset = -1;
@@ -227,6 +251,7 @@ void SetDeskPageBackground(const Command *c)
     /* Process a solid color request */
     XSetWindowBackground(dpy, root, c->solidColor);
     XClearWindow(dpy, root);
+    SetXsetRoot(None);
     XFlush(dpy);
     break;
 
@@ -235,6 +260,7 @@ void SetDeskPageBackground(const Command *c)
     SetWindowBackground(
       dpy, root, MyDisplayWidth, MyDisplayHeight, &Colorset[c->colorset],
       DefaultDepth(dpy, screen), DefaultGC(dpy, screen), True);
+    SetXsetRoot(None);
     XFlush(dpy);
     break;
 
@@ -294,6 +320,9 @@ void ProcessMessage(unsigned long type, unsigned long *body)
   {
   case M_CONFIG_INFO:
     tline = (char*)&(body[3]);
+    if (strncasecmp(tline, ROOT_BG_CHANGE_STRING,
+		    sizeof(ROOT_BG_CHANGE_STRING) - 1) == 0)
+      break;
     ExecuteMatchingCommands(ParseConfigLine(tline), EXEC_ALWAYS);
     break;
 

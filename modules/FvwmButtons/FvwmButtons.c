@@ -122,6 +122,7 @@ static void GetPanelGeometry(
 void swallow(unsigned long*);
 void AddButtonAction(button_info*,int,char*);
 char *GetButtonAction(button_info*,int);
+static void update_root_transparency(XEvent *Event);
 static void change_colorset(int colorset);
 
 void DebugEvents(XEvent*);
@@ -1048,7 +1049,7 @@ void Loop(void)
       {
 	unsigned int depth,tw,th,border_width;
 	Window root;
-
+ 
 	if (!XGetGeometry(Dpy, MyWindow, &root, &x, &y, &tw, &th, &border_width,
 			  &depth))
 	{
@@ -1073,51 +1074,13 @@ void Loop(void)
 	  RedrawWindow(NULL);
 	}
 	if (Event.xconfigure.window == MyWindow &&
-	    Event.xconfigure.send_event &&
-	    (Event.xconfigure.x != UberButton->x ||
-	     Event.xconfigure.y != UberButton->y))
+	    Event.xconfigure.send_event && (UberButton->c->flags & b_Colorset) &&
+	      Colorset[UberButton->c->colorset].pixmap == ParentRelative)
 	{
 	  UberButton->x = Event.xconfigure.x;
 	  UberButton->y = Event.xconfigure.y;
-	  if ((UberButton->c->flags & b_Colorset) &&
-	      Colorset[UberButton->c->colorset].pixmap == ParentRelative)
-	  {
-	    XClearWindow(Dpy, MyWindow);
-	    RedrawWindow(NULL);
-	    /* Handle the swallowed window */
-	    ub = UberButton;button=-1;
-	    while(NextButton(&ub,&b,&button,0))
-	    {
-	      if (buttonSwallowCount(b) == 3 && (b->flags & b_Swallow) &&
-		  ((b->flags & b_Colorset) || (b->flags & b_ColorsetParent)) &&
-		  Colorset[buttonColorset(b)].pixmap == ParentRelative)
-	      {
-		int bx,by,bpx,bpy,bf;
-
-		/* should handle 2 cases: may cause problems with complex
-		 * functions, but this may be considered as a feature if
-		 * we document the rules used */
-		if (b->spawn != NULL &&
-		    (strncasecmp(b->spawn,"module",6) == 0 ||
-		     strncasecmp(b->spawn,"fvwm",4) == 0))
-		{
-		  /* it is a module (or a complex fct) */
-		  buttonInfo(b,&bx,&by,&bpx,&bpy,&bf);
-		  Event.xconfigure.x = UberButton->x + bx;
-		  Event.xconfigure.y = UberButton->y + by;
-		  Event.xconfigure.window = SwallowedWindow(b);
-		  XSendEvent(
-		    Dpy, SwallowedWindow(b), False, NoEventMask, &Event);
-		}
-		else
-		{
-		  /* it is an application (or a complex fct) */
-		  change_swallowed_window_colorset(b, True);
-		}
-	      } /* swallowed */
-	    } /* while */
-	  } /* ParentRelative */
-	} /* moved */
+	  update_root_transparency(&Event);
+	} /* moved && ParentRelative */
       }
       break;
 
@@ -2448,6 +2411,54 @@ static void recursive_change_colorset(container_info *c, int colorset)
   return;
 }
 
+static void update_root_transparency(XEvent *Event)
+{
+  button_info *ub,*b;
+  int button,bx,by,bpx,bpy,bf;
+
+  if (!(UberButton->c->flags & b_Colorset) ||
+      Colorset[UberButton->c->colorset].pixmap != ParentRelative)
+  {
+    return;
+  }
+
+  XClearWindow(Dpy, MyWindow);
+  RedrawWindow(NULL);
+  /* Handle the swallowed window */
+  ub = UberButton;
+  button=-1;
+  while(NextButton(&ub,&b,&button,0))
+  {
+    if (buttonSwallowCount(b) == 3 && (b->flags & b_Swallow) &&
+	((b->flags & b_Colorset) || (b->flags & b_ColorsetParent)) &&
+	Colorset[buttonColorset(b)].pixmap == ParentRelative) 
+    {
+      /* should handle 2 cases: may cause problems with complex
+       * functions, but this may be considered as a feature if
+       * we document the rules used */
+      if (b->spawn != NULL &&
+	  (strncasecmp(b->spawn,"module",6) == 0 ||
+	   strncasecmp(b->spawn,"fvwm",4) == 0))
+      {
+	/* it is a module (or a complex fct) */
+	if (Event != NULL)
+	{
+	  buttonInfo(b,&bx,&by,&bpx,&bpy,&bf);
+	  Event->xconfigure.x = UberButton->x + bx;
+	  Event->xconfigure.y = UberButton->y + by;
+	  Event->xconfigure.window = SwallowedWindow(b);  
+	  XSendEvent(Dpy, SwallowedWindow(b), False, NoEventMask, Event);
+	}
+      }
+      else
+      {
+	/* it is an application (or a complex fct) */
+	change_swallowed_window_colorset(b, True);
+      }
+    }
+  }
+}
+
 static void change_colorset(int colorset)
 {
   if (UberButton->c->flags & b_Colorset && colorset == UberButton->c->colorset)
@@ -2477,6 +2488,10 @@ static void handle_config_info_packet(unsigned long *body)
   else if (StrEquals(token, XINERAMA_CONFIG_STRING))
   {
     FScreenConfigureModule(tline);
+  }
+  else if (StrEquals(token, ROOT_BG_CHANGE_STRING))
+  {
+    update_root_transparency(NULL);
   }
 
   return;

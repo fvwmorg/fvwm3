@@ -255,6 +255,7 @@ extern int Channel[2];
 void ReadXServer();                     /* ReadXServer.c */
 void RedrawText(Item *item);            /* FvwmForm.c */
 void RedrawItem (Item *item, int click); /* FvwmForm.c */
+void UpdateRootTransapency(void);        /* FvwmForm.c */
 void DoCommand (Item *cmd);             /* FvwmForm.c */
 int FontWidth (XFontStruct *xfs);       /* FvwmForm.c */
 void RedrawFrame ();                    /* FvwmForm.c */

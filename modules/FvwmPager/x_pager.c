@@ -130,7 +130,7 @@ Window icon_win;               /* icon window */
 static char *GetBalloonLabel(const PagerWindow *pw,const char *fmt);
 extern void ExitPager(void);
 
-static Pixmap default_pixmap = None;
+Pixmap default_pixmap = None;
 
 /* discard certain events on a window */
 static void discard_events(long event_type, Window w, XEvent *last_ev)

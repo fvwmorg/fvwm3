@@ -1,3 +1,16 @@
+2002-01-17  olicha  <olivier.chapuis@free.fr>
+	
+	* libs/defaults.h (ROOT_BG_CHANGE_STRING):
+	* fvwm/events.c (HandlePropertyNotify):
+	* fvwm/fvwm.c (InternUsefulAtoms):
+	* fvwm/extern.h:
+	Send the ROOT_BG_CHANGE_STRING to modules when fvwm2 detects
+	that the root background has changed. This uses the _XSETROOT_ID
+	and XROOTPMAP_ID properties
+
+	* fvwm/ewmh.c (atom_get):
+	Be paranoid
+
 2002-01-17  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* fvwm/update.c (flush_window_updates):

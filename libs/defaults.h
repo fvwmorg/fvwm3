@@ -268,6 +268,9 @@
 /* Replace with -1 to switch off "primary screen" concept by default */
 #define DEFAULT_PRIMARY_SCREEN             0
 
+/*** string sent to modules when fvwm2 detect that the root background change ***/
+#define ROOT_BG_CHANGE_STRING       "RootBgChange"
+
 /*** Very long window names (600000 characters or more) seem to hang the X
  *** server. ***/
 #define MAX_WINDOW_NAME_LEN		 200 /* characters */

@@ -65,6 +65,7 @@ int fd[2];
 PagerStringList *FindDeskStrings(int desk);
 PagerStringList *NewPagerStringItem(PagerStringList *last, int desk);
 extern XFontStruct *windowFont;
+extern Pixmap default_pixmap;
 
 /*************************************************************************
  *
@@ -1346,6 +1347,11 @@ void list_config_info(unsigned long *body)
   else if (StrEquals(token, XINERAMA_CONFIG_STRING))
   {
     FScreenConfigureModule(tline);
+  }
+  else if (StrEquals(token, ROOT_BG_CHANGE_STRING))
+  {
+    if (default_pixmap == ParentRelative)
+      ReConfigure();
   }
   else if (StrEquals(token, "DesktopName"))
   {

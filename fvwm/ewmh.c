@@ -314,19 +314,20 @@ void *atom_get(Window win, Atom to_get, Atom type, unsigned int *size)
   long length;
   int  format_ret;
   void *data;
+  int ok;
 
   retval = NULL;
   length = 0x7fffffff;
-  XGetWindowProperty(dpy, win, to_get, 0,
-		     length,
-		     False, type,
-		     &type_ret,
-		     &format_ret,
-		     &num_ret,
-		     &bytes_after,
-		     &retval);
+  ok = XGetWindowProperty(dpy, win, to_get, 0,
+			  length,
+			  False, type,
+			  &type_ret,
+			  &format_ret,
+			  &num_ret,
+			  &bytes_after,
+			  &retval);
 
-  if ((retval) && (num_ret > 0) && (format_ret > 0))
+  if ((ok == Success) && (retval) && (num_ret > 0) && (format_ret > 0))
   {
     data = safemalloc(num_ret * (format_ret >> 3));
     if (data)
@@ -335,6 +336,8 @@ void *atom_get(Window win, Atom to_get, Atom type, unsigned int *size)
     *size = num_ret * (format_ret >> 3);
     return data;
   }
+  if (retval)
+    XFree(retval);
   return NULL;
 }
 

@@ -99,5 +99,6 @@ extern Atom _XA_WIN_SX;
 extern Atom _XA_MANAGER;
 extern Atom _XA_ATOM_PAIR;
 extern Atom _XA_WM_COLORMAP_NOTIFY;
-
+extern Atom _XA_XROOTPMAP_ID;
+extern Atom _XA_XSETROOT_ID;
 #endif /* _EXTERNS_ */

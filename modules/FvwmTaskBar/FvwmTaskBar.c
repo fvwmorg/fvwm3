@@ -860,6 +860,12 @@ void ProcessMessage(unsigned long type,unsigned long *body)
 	FScreenConfigureModule(
 	  tline + sizeof(XINERAMA_CONFIG_STRING) - 1);
       }
+      else if (strncasecmp(tline, ROOT_BG_CHANGE_STRING,
+			   sizeof(ROOT_BG_CHANGE_STRING) - 1) == 0)
+      {
+	if (colorset > -1 && Colorset[colorset].pixmap == ParentRelative)
+	  redraw = 1;
+      }
     }
     break;
   } /* switch */

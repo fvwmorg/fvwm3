@@ -733,6 +733,28 @@ void SendMsgToScript(XEvent event)
   }
 }
 
+static
+void UpdateRootTransparency(void)
+{
+  int i;
+
+  if (x11base->colorset > 0 &&
+      Colorset[x11base->colorset].pixmap == ParentRelative)
+  {
+    XClearArea(dpy, x11base->win, 0, 0, 0, 0, True);
+    for (i=0; i<nbobj; i++)
+    {
+      if (Rectangle != tabxobj[i]->TypeWidget &&
+	  SwallowExec != tabxobj[i]->TypeWidget && 
+	  tabxobj[i]->colorset > 0 &&
+	  Colorset[tabxobj[i]->colorset].pixmap == ParentRelative)
+      {
+	XClearArea(dpy, tabxobj[i]->win, 0, 0, 0, 0, True);
+      }
+    }
+  }
+}
+
 /* read an X event */
 void ReadXServer (void)
 {
@@ -784,20 +806,9 @@ void ReadXServer (void)
 	if (event.xconfigure.send_event)
 	  moved = True;
       }
-      if (moved && x11base->colorset > 0 &&
-	  Colorset[x11base->colorset].pixmap == ParentRelative)
+      if (moved)
       {
-	XClearArea(dpy, x11base->win, 0, 0, 0, 0, True);
-	for (i=0; i<nbobj; i++)
-	{
-	  if (Rectangle != tabxobj[i]->TypeWidget &&
-	      SwallowExec != tabxobj[i]->TypeWidget && 
-	      tabxobj[i]->colorset > 0 &&
-	      Colorset[tabxobj[i]->colorset].pixmap == ParentRelative)
-	  {
-	    XClearArea(dpy, tabxobj[i]->win, 0, 0, 0, 0, True);
-	  }
-	}
+	UpdateRootTransparency();
       }
     }
     break;
@@ -1028,6 +1039,10 @@ void MainLoop (void)
 	  }
 	  else if (StrEquals(token, XINERAMA_CONFIG_STRING)) {
 	    FScreenConfigureModule(line);
+	  }
+	  else if (StrEquals(token, ROOT_BG_CHANGE_STRING))
+	  {
+	    UpdateRootTransparency();
 	  }
 	  if (token)
 	    free(token);

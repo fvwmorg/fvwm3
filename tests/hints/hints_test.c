@@ -255,7 +255,7 @@ main(int argc, char **argv)
       hints.min_height = atoi(argv[i]);
       hints.flags |= PMinSize;
     }
-    else if (strcasecmp(argv[i],"-max-sizes") == 0)
+    else if (strcasecmp(argv[i],"-max-size") == 0)
     {
       i++;
       hints.max_width = atoi(argv[i]);

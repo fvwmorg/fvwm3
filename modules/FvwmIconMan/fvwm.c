@@ -243,6 +243,18 @@ static void handle_config_info (unsigned long *body)
   {
     sscanf(tline, "%d", &mods_unused);
   }
+  else if (StrEquals(token, ROOT_BG_CHANGE_STRING))
+  {
+    int j;
+    WinManager *man;
+
+    for (j = 0; j < globals.num_managers; j++)
+    {
+      man = &globals.managers[j];
+      if (man->pixmap[DEFAULT] == ParentRelative)
+	XClearArea(theDisplay, man->theWindow, 0, 0, 0, 0, True);
+    }
+  }
 }
 
 static void configure_window (FvwmPacketBody *body)

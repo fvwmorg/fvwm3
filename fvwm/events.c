@@ -346,6 +346,21 @@ void HandlePropertyNotify(void)
 
   DBUG("HandlePropertyNotify","Routine Entered");
 
+  if (Event.xproperty.window == Scr.Root &&
+      Event.xproperty.state == PropertyNewValue &&
+      (Event.xproperty.atom == _XA_XSETROOT_ID ||
+       Event.xproperty.atom == _XA_XROOTPMAP_ID))
+  {
+    /* background change */
+    /* _XA_XSETROOT_ID is used by xpmroot, xli and others (xv send no property
+     *  notify?).  _XA_XROOTPMAP_ID is used by Esetroot compatible program:
+     * the problem here is that with some Esetroot compatible program we get
+     * the message _before_ the background change.
+     * This is fixed with Esetroot 9.2 (not yet released, 2002-01-14) */
+    BroadcastConfigInfoString(ROOT_BG_CHANGE_STRING);
+    return;
+  }
+
   if (!Tmp_win)
   {
     return;

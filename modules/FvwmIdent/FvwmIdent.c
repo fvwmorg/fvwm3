@@ -679,10 +679,10 @@ void list_end(void)
       packet = ReadFvwmPacket(fd[1]);
       if (packet == NULL)
 	exit(0);
-      if (colorset >= 0 && packet && packet->type == M_CONFIG_INFO) {
+      if (packet && packet->type == M_CONFIG_INFO) {
 	tline = (char*)&(packet->body[3]);
 	tline = GetNextToken(tline, &token);
-	if (StrEquals(token, "Colorset")) {
+	if (StrEquals(token, "Colorset") && colorset >= 0) {
 	  /* track all colorset changes and update display if necessary */
 	  if (LoadColorset(tline) == colorset) {
 	    XSetForeground(dpy, gc, Colorset[colorset].fg);
@@ -701,7 +701,13 @@ void list_end(void)
 	else if (StrEquals(token, XINERAMA_CONFIG_STRING)) {
 	  FScreenConfigureModule(tline);
 	}
-	free(token);
+	else if (StrEquals(token, ROOT_BG_CHANGE_STRING))
+	{
+	  if (colorset >= 0 && Colorset[colorset].pixmap == ParentRelative)
+	    XClearArea(dpy, main_win, 0,0,0,0, True);
+	}
+	if (token)
+	  free(token);
       }
     }
   }
