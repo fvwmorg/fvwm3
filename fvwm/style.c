@@ -1445,9 +1445,9 @@ void ProcessNewStyle(F_CMD_ARGS)
 	else if (StrEquals(token, "IconOverride"))
 	{
 	  found = True;
-	  ptmpstyle->flags.icon_override = ICON_OVERRIDE;
-	  ptmpstyle->flag_mask.icon_override = ICON_OVERRIDE_MASK;
-	  ptmpstyle->change_mask.icon_override = ICON_OVERRIDE_MASK;
+	  SFSET_ICON_OVERRIDE(*ptmpstyle, ICON_OVERRIDE);
+	  SMSET_ICON_OVERRIDE(*ptmpstyle, ICON_OVERRIDE_MASK);
+	  SCSET_ICON_OVERRIDE(*ptmpstyle, ICON_OVERRIDE_MASK);
 	}
         else if (StrEquals(token, "IgnoreRestack"))
         {
@@ -1812,16 +1812,16 @@ void ProcessNewStyle(F_CMD_ARGS)
 	if (StrEquals(token, "NoActiveIconOverride"))
 	{
 	  found = True;
-	  ptmpstyle->flags.icon_override = NO_ACTIVE_ICON_OVERRIDE;
-	  ptmpstyle->flag_mask.icon_override = ICON_OVERRIDE_MASK;
-	  ptmpstyle->change_mask.icon_override = ICON_OVERRIDE_MASK;
+	  SFSET_ICON_OVERRIDE(*ptmpstyle, NO_ACTIVE_ICON_OVERRIDE);
+	  SMSET_ICON_OVERRIDE(*ptmpstyle, ICON_OVERRIDE_MASK);
+	  SCSET_ICON_OVERRIDE(*ptmpstyle, ICON_OVERRIDE_MASK);
 	}
 	else if (StrEquals(token, "NoIconOverride"))
 	{
 	  found = True;
-	  ptmpstyle->flags.icon_override = NO_ICON_OVERRIDE;
-	  ptmpstyle->flag_mask.icon_override = ICON_OVERRIDE_MASK;
-	  ptmpstyle->change_mask.icon_override = ICON_OVERRIDE_MASK;
+	  SFSET_ICON_OVERRIDE(*ptmpstyle, NO_ICON_OVERRIDE);
+	  SMSET_ICON_OVERRIDE(*ptmpstyle, ICON_OVERRIDE_MASK);
+	  SCSET_ICON_OVERRIDE(*ptmpstyle, ICON_OVERRIDE_MASK);
 	}
         else if (StrEquals(token, "NoIconTitle"))
         {
@@ -2597,7 +2597,7 @@ void check_window_style_change(
    * icon_override
    */
   if (ret_style->change_mask.has_icon ||
-      ret_style->change_mask.icon_override)
+      SCICON_OVERRIDE(*ret_style))
   {
     flags->do_update_icon_font = True;
     flags->do_update_icon = True;

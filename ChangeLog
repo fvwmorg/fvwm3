@@ -1,3 +1,28 @@
+2001-01-03  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* fvwm/events.c (HandlePropertyNotify):
+	icon override logic applies for existing windows when the icon hint
+	changes
+	(HandlePropertyNotify):
+	fixed memory leak
+
+	* fvwm/style.c (ProcessNewStyle):
+	(check_window_style_change):
+	* fvwm/fvwm.h:
+	icon_override member is now part of the common flags; was a style member
+	before.
+
+	* fvwm/virtual.c (HandlePaging):
+	fixed a problem that sometimes prevented a window from being moved over
+	the edge of the screen by paging; possibly fixes that old "nescape-
+	won't-go-over-the-screen-edge" problem.
+
+	* fvwm/events.c (discard_window_events):
+	new function
+
+	* libs/Target.c (fvwmlib_keyboard_shortcuts):
+	suppress superfluous events when pointer did not move
+
 2001-01-02  Dan Espen  <dane@mk.telcordia.com>
 
 	* tests/purify/purify.fvwm2rc: More tests.

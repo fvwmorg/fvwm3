@@ -56,7 +56,6 @@
   ((sf)->capture_honors_starts_on_page)
 #define SRECAPTURE_HONORS_STARTS_ON_PAGE(sf) \
   ((sf)->recapture_honors_starts_on_page)
-#define SICON_OVERRIDE(sf)            ((sf)->icon_override)
 
 
 
@@ -284,6 +283,13 @@
 #define SFSET_HAS_WINDOW_FONT(st,x) ((st).flags.common.has_window_font = !!(x))
 #define SMSET_HAS_WINDOW_FONT(st,x) ((st).flag_mask.common.has_window_font = !!(x))
 #define SCSET_HAS_WINDOW_FONT(st,x) ((st).change_mask.common.has_window_font = !!(x))
+#define SICON_OVERRIDE(sf) ((sf).common.s.icon_override)
+#define SFICON_OVERRIDE(st) ((st).flags.common.s.icon_override)
+#define SMICON_OVERRIDE(st) ((st).flag_mask.common.s.icon_override)
+#define SCICON_OVERRIDE(st) ((st).change_mask.common.s.icon_override)
+#define SFSET_ICON_OVERRIDE(st,x) ((st).flags.common.s.icon_override = (x))
+#define SMSET_ICON_OVERRIDE(st,x) ((st).flag_mask.common.s.icon_override = (x))
+#define SCSET_ICON_OVERRIDE(st,x) ((st).change_mask.common.s.icon_override = (x))
 #define SIS_FIXED(sf) ((sf).common.s.is_fixed)
 #define SFIS_FIXED(st) ((st).flags.common.s.is_fixed)
 #define SMIS_FIXED(st) ((st).flag_mask.common.s.is_fixed)

@@ -981,7 +981,7 @@ void setup_icon(FvwmWindow *tmp_win, window_style *pstyle)
   if((tmp_win->wmhints) && (tmp_win->wmhints->flags & IconWindowHint))
   {
     if (SHAS_ICON(&pstyle->flags) &&
-	SICON_OVERRIDE(&pstyle->flags) == ICON_OVERRIDE)
+	SICON_OVERRIDE(pstyle->flags) == ICON_OVERRIDE)
       tmp_win->icon_bitmap_file = SGET_ICON_NAME(*pstyle);
     else
       tmp_win->icon_bitmap_file = NULL;
@@ -989,7 +989,7 @@ void setup_icon(FvwmWindow *tmp_win, window_style *pstyle)
   else if((tmp_win->wmhints) && (tmp_win->wmhints->flags & IconPixmapHint))
   {
     if (SHAS_ICON(&pstyle->flags) &&
-	SICON_OVERRIDE(&pstyle->flags) != NO_ICON_OVERRIDE)
+	SICON_OVERRIDE(pstyle->flags) != NO_ICON_OVERRIDE)
       tmp_win->icon_bitmap_file = SGET_ICON_NAME(*pstyle);
     else
       tmp_win->icon_bitmap_file = NULL;

@@ -433,6 +433,10 @@ Bool HandlePaging(int HorWarpSize, int VertWarpSize, int *xl, int *yt,
     {
       is_timestamp_valid = False;
       add_time = 0;
+      discard_window_events(Scr.PanFrameTop.win, LeaveWindowMask);
+      discard_window_events(Scr.PanFrameBottom.win, LeaveWindowMask);
+      discard_window_events(Scr.PanFrameLeft.win, LeaveWindowMask);
+      discard_window_events(Scr.PanFrameRight.win, LeaveWindowMask);
       return False;
     }
     if (!fLoop && is_last_position_valid &&
@@ -460,7 +464,9 @@ Bool HandlePaging(int HorWarpSize, int VertWarpSize, int *xl, int *yt,
 	   lastTimestamp - my_timestamp + add_time < Scr.ScrollResistance);
 
   if (lastTimestamp - my_timestamp + add_time < Scr.ScrollResistance)
+  {
     return False;
+  }
 
   /* Move the viewport */
   /* and/or move the cursor back to the approximate correct location */

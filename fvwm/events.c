@@ -315,6 +315,9 @@ void HandlePropertyNotify(void)
   XTextProperty text_prop;
   Bool OnThisPage = False;
   Bool was_size_inc_set;
+  Bool has_icon_changed = False;
+  Bool has_icon_pixmap_hint_changed = False;
+  Bool has_icon_window_hint_changed = False;
   int old_wmhints_flags;
   int old_width_inc;
   int old_height_inc;
@@ -523,19 +526,51 @@ void HandlePropertyNotify(void)
      * rebuild icon if the client either provides an icon
      * pixmap or window or has reset the hints to `no icon'.
      */
-    if ((Tmp_win->wmhints->flags & (IconPixmapHint|IconWindowHint)) ||
-	(old_wmhints_flags       & (IconPixmapHint|IconWindowHint)))
+    if ((Tmp_win->wmhints->flags & IconPixmapHint) ||
+	(old_wmhints_flags       & IconPixmapHint))
     {
-      if(Tmp_win->icon_bitmap_file == Scr.DefaultIcon)
-	Tmp_win->icon_bitmap_file = NULL;
-      if(!Tmp_win->icon_bitmap_file &&
-	 !(Tmp_win->wmhints->flags&(IconPixmapHint|IconWindowHint)))
+      has_icon_pixmap_hint_changed = True;
+    }
+    if ((Tmp_win->wmhints->flags & IconWindowHint) ||
+	(old_wmhints_flags       & IconWindowHint))
+    {
+      has_icon_window_hint_changed = True;
+    }
+    if (has_icon_window_hint_changed || has_icon_pixmap_hint_changed)
+    {
+      if (ICON_OVERRIDE_MODE(Tmp_win) == ICON_OVERRIDE)
       {
-	Tmp_win->icon_bitmap_file =
-	  (Scr.DefaultIcon) ? strdup(Scr.DefaultIcon) : NULL;
+	has_icon_changed = False;
       }
-      Tmp_win->iconPixmap = (Window)NULL;
-      if(IS_ICONIFIED(Tmp_win))
+      else if (ICON_OVERRIDE_MODE(Tmp_win) == NO_ACTIVE_ICON_OVERRIDE)
+      {
+	if (has_icon_window_hint_changed)
+	  has_icon_changed = True;
+	else
+	has_icon_changed = False;
+      }
+      else
+      {
+	has_icon_changed = True;
+      }
+      if (has_icon_changed)
+      {
+	/* Okay, the icon hint has changed and style options tell us to honour
+	 * this change.  Now let's see if we have to use the application
+	 * provided pixmap or window (if any), the icon file provided by the
+	 * window's style or the default style's icon. */
+	if (Tmp_win->icon_bitmap_file == Scr.DefaultIcon)
+	  Tmp_win->icon_bitmap_file = NULL;
+	if (!Tmp_win->icon_bitmap_file &&
+	    !(Tmp_win->wmhints->flags&(IconPixmapHint|IconWindowHint)))
+	{
+	  Tmp_win->icon_bitmap_file =
+	    (Scr.DefaultIcon) ? Scr.DefaultIcon : NULL;
+	}
+	Tmp_win->iconPixmap = (Window)NULL;
+      }
+
+      if (IS_ICONIFIED(Tmp_win) && has_icon_changed)
       {
 	SET_ICONIFIED(Tmp_win, 0);
 	SET_ICON_UNMAPPED(Tmp_win, 0);
@@ -2856,6 +2891,22 @@ int discard_events(long event_mask)
 
   XSync(dpy, 0);
   for (count = 0; XCheckMaskEvent(dpy, event_mask, &e); count++)
+  {
+    StashEventTime(&e);
+  }
+
+  return count;
+}
+
+/* This function discards all queued up ButtonPress, ButtonRelease and
+ * ButtonMotion events. */
+int discard_window_events(Window w, long event_mask)
+{
+  XEvent e;
+  int count;
+
+  XSync(dpy, 0);
+  for (count = 0; XCheckWindowEvent(dpy, w, event_mask, &e); count++)
   {
     StashEventTime(&e);
   }

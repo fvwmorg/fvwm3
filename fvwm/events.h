@@ -53,5 +53,6 @@ STROKE_CODE(void HandleButtonRelease(void);)
 STROKE_CODE(void HandleMotionNotify(void);)
 void WaitForButtonsUp(Bool do_handle_expose);
 int discard_events(long event_mask);
+int discard_window_events(Window w, long event_mask);
 
 #endif /* _EVENTS_ */

@@ -61,78 +61,86 @@ void fvwmlib_keyboard_shortcuts(
   x_move = 0;
   y_move = 0;
   switch(keysym)
-    {
-    case XK_Up:
-    case XK_KP_8:
-    case XK_k:
-    case XK_p:
-      y_move = -y_move_size;
-      break;
-    case XK_Down:
-    case XK_KP_2:
-    case XK_n:
-    case XK_j:
-      y_move = y_move_size;
-      break;
-    case XK_Left:
-    case XK_KP_4:
-    case XK_b:
-    case XK_h:
-      x_move = -x_move_size;
-      break;
-    case XK_Right:
-    case XK_KP_6:
-    case XK_f:
-    case XK_l:
-      x_move = x_move_size;
-      break;
-    case XK_KP_1:
-      x_move = -x_move_size;
-      y_move = y_move_size;
-      break;
-    case XK_KP_3:
-      x_move = x_move_size;
-      y_move = y_move_size;
-      break;
-    case XK_KP_7:
-      x_move = -x_move_size;
-      y_move = -y_move_size;
-      break;
-    case XK_KP_9:
-      x_move = x_move_size;
-      y_move = -y_move_size;
-      break;
-    case XK_Return:
-    case XK_KP_Enter:
-    case XK_space:
-      /* beat up the event */
-      Event->type = ReturnEvent;
-      break;
-    case XK_Escape:
-      /* simple code to bag out of move - CKH */
-      /* return keypress event instead */
-      Event->type = KeyPress;
-      Event->xkey.keycode = XKeysymToKeycode(Event->xkey.display,keysym);
-      break;
-    default:
-      break;
-    }
+  {
+  case XK_Up:
+  case XK_KP_8:
+  case XK_k:
+  case XK_p:
+    y_move = -y_move_size;
+    break;
+  case XK_Down:
+  case XK_KP_2:
+  case XK_n:
+  case XK_j:
+    y_move = y_move_size;
+    break;
+  case XK_Left:
+  case XK_KP_4:
+  case XK_b:
+  case XK_h:
+    x_move = -x_move_size;
+    break;
+  case XK_Right:
+  case XK_KP_6:
+  case XK_f:
+  case XK_l:
+    x_move = x_move_size;
+    break;
+  case XK_KP_1:
+    x_move = -x_move_size;
+    y_move = y_move_size;
+    break;
+  case XK_KP_3:
+    x_move = x_move_size;
+    y_move = y_move_size;
+    break;
+  case XK_KP_7:
+    x_move = -x_move_size;
+    y_move = -y_move_size;
+    break;
+  case XK_KP_9:
+    x_move = x_move_size;
+    y_move = -y_move_size;
+    break;
+  case XK_Return:
+  case XK_KP_Enter:
+  case XK_space:
+    /* beat up the event */
+    Event->type = ReturnEvent;
+    break;
+  case XK_Escape:
+    /* simple code to bag out of move - CKH */
+    /* return keypress event instead */
+    Event->type = KeyPress;
+    Event->xkey.keycode = XKeysymToKeycode(Event->xkey.display,keysym);
+    break;
+  default:
+    break;
+  }
   XQueryPointer(dpy, RootWindow(dpy, screen), &JunkRoot, &Event->xany.window,
 		&x_root, &y_root, &x, &y, &JunkMask);
 
-  if((x_move != 0)||(y_move != 0))
-    {
-      /* beat up the event */
-      XWarpPointer(dpy, None, RootWindow(dpy, screen), 0, 0, 0, 0,
-                   x_root+x_move, y_root+y_move);
+  if (x + x_move < 0)
+    x_move = -x;
+  else if (x + x_move >= DisplayWidth(dpy, DefaultScreen(dpy)))
+    x_move = DisplayWidth(dpy, DefaultScreen(dpy)) - x - 1;
+  if (y + y_move < 0)
+    y_move = -y;
+  else if (y + y_move >= DisplayHeight(dpy, DefaultScreen(dpy)))
+    y_move = DisplayHeight(dpy, DefaultScreen(dpy)) - y - 1;
+  if (x_move || y_move)
+  {
+    /* beat up the event */
+    XWarpPointer(dpy, None, RootWindow(dpy, screen), 0, 0, 0, 0,
+		 x_root+x_move, y_root+y_move);
 
-      /* beat up the event */
-      Event->type = MotionNotify;
-      Event->xkey.x += x_move;
-      Event->xkey.y += y_move;
-      Event->xkey.x_root += x_move;
-      Event->xkey.y_root += y_move;
-    }
+    /* beat up the event */
+    Event->type = MotionNotify;
+    Event->xkey.x += x_move;
+    Event->xkey.y += y_move;
+    Event->xkey.x_root += x_move;
+    Event->xkey.y_root += y_move;
+  }
 }
 
 void fvwmlib_get_target_window(

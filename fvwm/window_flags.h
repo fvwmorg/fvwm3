@@ -97,6 +97,12 @@
           (fw)->flags.common.s.has_stippled_title = !!(x)
 #define SETM_HAS_STIPPLED_TITLE(fw,x) \
           (fw)->flag_mask.common.s.has_stippled_title = !!(x)
+#define ICON_OVERRIDE_MODE(fw)  \
+          ((fw)->flags.common.s.icon_override)
+#define SET_ICON_OVERRIDE_MODE(fw,x)  \
+          (fw)->flags.common.s.icon_override = !!(x)
+#define SETM_ICON_OVERRIDE_MODE(fw,x) \
+          (fw)->flag_mask.common.s.icon_override = !!(x)
 #define IS_ICON_STICKY(fw)     ((fw)->flags.common.s.is_icon_sticky)
 #define SET_ICON_STICKY(fw,x)  (fw)->flags.common.s.is_icon_sticky = !!(x)
 #define SETM_ICON_STICKY(fw,x) \

@@ -226,6 +226,11 @@ typedef struct
     unsigned has_no_icon_title : 1;
     unsigned has_override_size : 1;
     unsigned has_stippled_title : 1;
+    unsigned icon_override : 2;
+#define NO_ACTIVE_ICON_OVERRIDE 0
+#define ICON_OVERRIDE           1
+#define NO_ICON_OVERRIDE        2
+#define ICON_OVERRIDE_MASK      3
     unsigned is_fixed : 1;
     unsigned is_icon_sticky : 1;
     unsigned is_icon_suppressed : 1;
@@ -357,11 +362,6 @@ typedef struct
   unsigned active_placement_honors_starts_on_page : 1;
   unsigned capture_honors_starts_on_page : 1;
   unsigned recapture_honors_starts_on_page : 1;
-  unsigned icon_override : 2;
-#define NO_ACTIVE_ICON_OVERRIDE 0
-#define ICON_OVERRIDE           1
-#define NO_ICON_OVERRIDE        2
-#define ICON_OVERRIDE_MASK      3
 } style_flags;
 
 /* only style.c and add_window.c are allowed to access this struct!! */
