@@ -437,7 +437,7 @@ void FlocaleRotateDrawString(
 	Display *dpy, FlocaleFont *flf, FlocaleWinString *fws, Pixel fg,
 	Pixel fgsh, Bool has_fg_pixels, int len)
 {
-	static GC my_gc, font_gc;
+	GC my_gc, font_gc;
 	int j, i, xpfg, ypfg, xpsh, ypsh;
 	int step = 0;
 	unsigned char *normal_data, *rotated_data;
