@@ -1,3 +1,16 @@
+2001-04-15  olicha  <olivier.chapuis@free.fr>
+
+	* FvwmWinList/FvwmWinList.c (main)
+	* FvwmTaskBar/ FvwmTaskBar.c (main)
+	* FvwmIconMan/ FvwmIconMan.c (main)
+	* FvwmIconBox/ FvwmIconBox.c (main)
+	Fixed an animation dead lock by adding M_(DE)ICONIFY to the NoGrabMask
+	mask
+
+	* FvwmTaskBar/ FvwmTaskBar.c (LoopOnEvents):
+	Send a NULL window in the case of a click on the start button
+	(this undo a recent stupid commit I do)
+
 2001-04-04  Dan Espen  <dane@mk.telcordia.com>
 
 	* FvwmCpp/FvwmCpp.c (main): No space allowed after -I on Solaris.

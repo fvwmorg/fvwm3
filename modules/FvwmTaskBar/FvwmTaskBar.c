@@ -342,9 +342,10 @@ int main(int argc, char **argv)
   SendFinishedStartupNotification(Fvwm_fd);
 
   /* Lock on send only for iconify and deiconify (for NoIconAction) */
-  if (AnimCommand && (AnimCommand[0] != 0))
+  if (AnimCommand && (AnimCommand[0] != 0)) {
     SetSyncMask(Fvwm_fd, M_DEICONIFY | M_ICONIFY);
-
+    SetNoGrabMask(Fvwm_fd, M_DEICONIFY | M_ICONIFY);
+  }
   /* Receive all messages from Fvwm */
   EndLessLoop();
 #ifdef FVWM_DEBUG_MSGS
@@ -1210,7 +1211,7 @@ void LoopOnEvents(void)
 	  y = win_y - ScreenHeight;
 	}
 	sprintf(tmp,"Popup %s %d %d", StartPopup, x, y);
-	SendFvwmPipe(Fvwm_fd, tmp, win);
+	SendFvwmPipe(Fvwm_fd, tmp, 0);
       } else {
 	StartButtonUpdate(NULL, BUTTON_UP);
 	if (MouseInMail(Event.xbutton.x, Event.xbutton.y)) {

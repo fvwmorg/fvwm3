@@ -295,9 +295,6 @@ int main(int argc, char **argv)
 
   SetMessageMask(fd, m_mask); /* it may have changed */
 
-  /* Lock on send only for iconify and deiconify (for NoIconAction) */
-  SetSyncMask(fd, M_DEICONIFY | M_ICONIFY);
-
   if ((local_flags & SETWMICONSIZE) && (size = XAllocIconSize()) != NULL){
     size->max_width  = size->min_width  = max_icon_width + icon_relief;
     /* max_height should be >0 */
@@ -314,6 +311,10 @@ int main(int argc, char **argv)
 
   /* tell fvwm we're running */
   SendFinishedStartupNotification(fd);
+
+  /* Lock on send only for iconify and deiconify (for NoIconAction) */
+  SetSyncMask(fd, M_DEICONIFY | M_ICONIFY);
+  SetNoGrabMask(fd, M_DEICONIFY | M_ICONIFY);
 
   Loop();
  return 0;

@@ -300,6 +300,7 @@ main(int argc, char **argv)
 
   /* Lock on send only for iconify and deiconify (for NoIconAction) */
   SetSyncMask(Fvwm_fd, M_DEICONIFY | M_ICONIFY);
+  SetNoGrabMask(Fvwm_fd, M_DEICONIFY | M_ICONIFY);
 
   main_loop();
 
