@@ -2377,7 +2377,7 @@ prevent menus being redrawn every time a sub-menu pops up or down.
 .EX
 MenuStyle <style> PopupOffset 1 100
 .EE
-Run you X server with backing storage.  If your X Server is
+Run your X server with backing storage.  If your X Server is
 started with the -bs option, turn it off.  If not try the -wm
 and +bs options:
 .EX
@@ -7954,11 +7954,11 @@ does not coincide with a fvwm built-in function name
 Does nothing.  This is used to insert a blank line or separator in
 a menu.  If the menu item specification is
 .EX
-Nop " "
+AddToMenu MyMenu " " Nop
 .EE
 then a blank line is inserted.  If it looks like
 .EX
-Nop ""
++ "" Nop
 .EE
 then a separator line is inserted.  Can also be used as the
 double-click action for
