@@ -1,5 +1,16 @@
 2002-06-30  Dominik Vogt  <dominik.vogt@gmx.de>
 
+	* fvwm/events.c (HandleButtonPress):
+	(HandleKeyPress):
+	* fvwm/menus.c (MenuInteraction):
+	(do_menu):
+	* fvwm/windowlist.c (CMD_WindowList):
+	* fvwm/menucmd.c (menu_func):
+	* fvwm/module_interface.c (ExecuteModuleCommand):
+	* fvwm/add_window.c (adjust_fvwm_internal_windows):
+	go away, evil globals! [removed the useless global variable
+	"ButtonWindow"]
+
 	* fvwm/events.c (HandleUnmapNotify):
 	(HandleMapNotify):
 	* fvwm/icons.c (Iconify):

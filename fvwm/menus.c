@@ -2288,7 +2288,6 @@ static void MenuInteraction(
 	  mp.parent_menu = pmp->menu;
 	  mp.parent_item = mi;
 	  mp.pfw = pmp->pfw;
-	  mp.button_window = pmp->button_window;
 	  mp.tear_off_root_menu_window = pmp->tear_off_root_menu_window;
 	  MR_IS_TEAR_OFF_MENU(mrPopup) = 0;
 	  mp.pcontext = pmp->pcontext;
@@ -6137,7 +6136,7 @@ void do_menu(MenuParameters *pmp, MenuReturn *pmret)
 					memset(&efa, 0, sizeof(efa));
 					efa.cond_rc = NULL;
 					efa.eventp = &Event;
-					efa.fw = pmp->button_window;
+					efa.fw = *(pmp->pfw);
 					efa.action = *(pmp->ret_paction);
 					efa.context = *(pmp->pcontext);
 					efa.module = -1;

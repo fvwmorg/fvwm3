@@ -149,7 +149,6 @@ static PFEH EventHandlerJumpTable[LASTEvent];
 
 /* ---------------------------- exported variables (globals) ---------------- */
 
-FvwmWindow *ButtonWindow = NULL;        /* button press window structure */
 XEvent Event;                           /* the current event */
 FvwmWindow *Fw = NULL;                  /* the current fvwm window */
 int last_event_type = 0;
@@ -321,6 +320,7 @@ void HandleButtonPress(void)
 	int context;
 	int local_context;
 	char *action;
+	FvwmWindow *button_window;
 	Window OldPressedW;
 	Window eventw;
 	Bool do_regrab_buttons = False;
@@ -569,7 +569,7 @@ void HandleButtonPress(void)
 	}
 
 	/* we have to execute a function or pop up a menu */
-	ButtonWindow = Fw;
+	button_window = Fw;
 	do_pass_click = True;
 	if (action && *action)
 	{
@@ -602,12 +602,13 @@ void HandleButtonPress(void)
 		XFlush(dpy);
 	}
 
-	if (ButtonWindow && IS_SCHEDULED_FOR_RAISE(ButtonWindow) && has_binding)
+	if (button_window && IS_SCHEDULED_FOR_RAISE(button_window) &&
+	    has_binding)
 	{
 		/* now that we know the action did not restack the window we
 		 * can raise it. */
-		RaiseWindow(ButtonWindow);
-		SET_SCHEDULED_FOR_RAISE(ButtonWindow, 0);
+		RaiseWindow(button_window);
+		SET_SCHEDULED_FOR_RAISE(button_window, 0);
 	}
 	if (do_regrab_buttons)
 	{
@@ -616,7 +617,7 @@ void HandleButtonPress(void)
 
 	OldPressedW = PressedW;
 	PressedW = None;
-	if (ButtonWindow && check_if_fvwm_window_exists(ButtonWindow) &&
+	if (button_window && check_if_fvwm_window_exists(button_window) &&
 	    has_binding)
 	{
 		window_parts part;
@@ -625,10 +626,10 @@ void HandleButtonPress(void)
 		part = border_context_to_parts(local_context);
 		do_force = (part & PART_TITLEBAR) ? True : False;
 		border_draw_decorations(
-			ButtonWindow, part, (Scr.Hilite == ButtonWindow),
+			button_window, part, (Scr.Hilite == button_window),
 			do_force, CLEAR_ALL, NULL, NULL);
 	}
-	ButtonWindow = NULL;
+	button_window = NULL;
 	UngrabEm(GRAB_PASSIVE);
 
 	return;
@@ -1785,6 +1786,7 @@ void HandleKeyPress(void)
 	char *action;
 	int context;
 	FvwmWindow *sf;
+	FvwmWindow *button_window;
 
 	DBUG("HandleKeyPress","Routine Entered");
 
@@ -1804,10 +1806,10 @@ void HandleKeyPress(void)
 		Event.xkey.state, GetUnusedModifiers(), context, KEY_BINDING);
 	if (action != NULL)
 	{
-		ButtonWindow = Fw;
+		button_window = Fw;
 		old_execute_function(
 			NULL, action, Fw, &Event, context, -1, 0, NULL);
-		ButtonWindow = NULL;
+		button_window = NULL;
 		return;
 	}
 

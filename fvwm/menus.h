@@ -267,7 +267,6 @@ typedef struct
 	MenuRoot *parent_menu;
 	MenuItem *parent_item;
 	FvwmWindow **pfw;
-	FvwmWindow *button_window;
 	FvwmWindow *tear_off_root_menu_window;
 	int *pcontext;
 	XEvent *eventp;

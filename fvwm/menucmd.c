@@ -85,7 +85,6 @@ static void menu_func(F_CMD_ARGS, Bool fStaysUp)
 	FvwmWindow *fw2;
 	int tc;
 	extern FvwmWindow *Fw;
-	extern FvwmWindow *ButtonWindow;
 
 	memset(&mops, 0, sizeof(mops));
 	memset(&mret, 0, sizeof(MenuReturn));
@@ -130,7 +129,6 @@ static void menu_func(F_CMD_ARGS, Bool fStaysUp)
 	mp.menu = menu;
 	fw2 = (fw != None) ? fw : Fw;
 	mp.pfw = &fw2;
-	mp.button_window = ButtonWindow;
 	MR_IS_TEAR_OFF_MENU(menu) = 0;
 	tc = context;
 	mp.pcontext = &tc;

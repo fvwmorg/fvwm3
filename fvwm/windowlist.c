@@ -49,7 +49,6 @@
 #include "geometry.h"
 
 extern FvwmWindow *Fw;
-extern FvwmWindow *ButtonWindow;
 
 #define SHOW_GEOMETRY           (1<<0)
 #define SHOW_ALLDESKS           (1<<1)
@@ -914,7 +913,6 @@ void CMD_WindowList(F_CMD_ARGS)
 	mp.menu = mr;
 	t = Fw;
 	mp.pfw = &t;
-	mp.button_window = ButtonWindow;
 	tc = context;
 	mp.pcontext = &tc;
 	mp.flags.has_default_action = (default_action && *default_action != 0);

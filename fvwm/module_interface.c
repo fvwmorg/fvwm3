@@ -702,7 +702,6 @@ Bool HandleModuleInput(Window w, int module, char *expect, Bool queue)
 /* run the command as if it cames from a button press or release */
 void ExecuteModuleCommand(Window w, int module, char *text)
 {
-	extern FvwmWindow *ButtonWindow;
 	int context;
 	FvwmWindow *fw;
 
@@ -728,7 +727,6 @@ void ExecuteModuleCommand(Window w, int module, char *text)
 		Event.xbutton.button = 1;
 		Event.xbutton.subwindow = None;
 		fw = NULL;
-		ButtonWindow = NULL;
 	}
 	else
 	{
@@ -736,7 +734,6 @@ void ExecuteModuleCommand(Window w, int module, char *text)
 		Event.xbutton.button = 1;
 		Event.xbutton.subwindow = None;
 		context = GetContext(fw,&Event,&w);
-		ButtonWindow = fw;
 	}
 	/* If a module does XUngrabPointer(), it can now get proper Popups */
 	if (StrEquals(text, "popup"))
@@ -751,7 +748,6 @@ void ExecuteModuleCommand(Window w, int module, char *text)
 	Event.xbutton.y = 0;
 	context = GetContext(fw,&Event,&w);
 	old_execute_function(NULL, text, fw, &Event, context, module, 0, NULL);
-	ButtonWindow = NULL;
 
 	return;
 }

@@ -600,17 +600,11 @@ static void destroy_icon_font(FvwmWindow *fw)
 
 static void adjust_fvwm_internal_windows(FvwmWindow *fw)
 {
-	extern FvwmWindow *ButtonWindow;
-
 	if (fw == Scr.Hilite)
 	{
 		Scr.Hilite = NULL;
 	}
 	update_last_screen_focus_window(fw);
-	if (ButtonWindow == fw)
-	{
-		ButtonWindow = NULL;
-	}
 	restore_focus_after_unmap(fw, False);
 	frame_destroyed_frame(FW_W(fw));
 	if (FW_W(fw) == Scr.StolenFocusWin)
