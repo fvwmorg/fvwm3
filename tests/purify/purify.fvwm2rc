@@ -2695,14 +2695,14 @@ AddToFunc UnsetEnv-Func
 
 # FIXME: Break
 
-# TestRc KeepRc tested with the conditional cmds
+# KeepRc TestRc tested with the conditional cmds
 
 DestroyFunc CurrentEchoFunc
 AddToFunc CurrentEchoFunc
 + I Current ($*) Nop
-+ I TestRc KeepRc (Match) Echo Current ($*) Match
-+ I TestRc KeepRc (NoMatch) Echo Current ($*) NoMatch
-+ I TestRc KeepRc (Error) Echo Current ($*) Error
++ I KeepRc TestRc (Match) Echo Current ($*) Match
++ I KeepRc TestRc (NoMatch) Echo Current ($*) NoMatch
++ I KeepRc TestRc (Error) Echo Current ($*) Error
 
 # Need lots more conditions, (visible/iconic, etc.)
 AddTest "Test Current" Current-Func
@@ -2864,8 +2864,8 @@ AddToFunc Current-Func
 DestroyFunc DirectionEchoFunc
 AddToFunc DirectionEchoFunc
 + I Direction $* Nop
-+ I TestRc KeepRc (Match) Echo Direction ($*) Match
-+ I TestRc KeepRc (NoMatch) Echo Direction ($*) NoMatch
++ I KeepRc TestRc (Match) Echo Direction ($*) Match
++ I KeepRc TestRc (NoMatch) Echo Direction ($*) NoMatch
 + I TestRc (Error) Echo Direction ($*) Error
 
 AddTest "Test Direction" Direction-Func
@@ -2909,9 +2909,9 @@ AddToFunc Direction-Func
 DestroyFunc NextEchoFunc
 AddToFunc NextEchoFunc
 + I Next ($*) Nop
-+ I TestRc KeepRc (Match) Echo Next ($*) Match: $[w.name]
-+ I TestRc KeepRc (NoMatch) Echo Next ($*) NoMatch
-+ I TestRc KeepRc (Error) Echo Next ($*) Error
++ I KeepRc TestRc (Match) Echo Next ($*) Match: $[w.name]
++ I KeepRc TestRc (NoMatch) Echo Next ($*) NoMatch
++ I KeepRc TestRc (Error) Echo Next ($*) Error
 
 # Need more conditions like Current, with exceptions, see man page.
 AddTest "Test Next" Next-Func
@@ -2938,9 +2938,9 @@ AddToFunc Next-Func
 DestroyFunc NoneEchoFunc
 AddToFunc NoneEchoFunc
 + I None ($*) Nop
-+ I TestRc KeepRc (Match) Echo None ($*) Match
-+ I TestRc KeepRc (NoMatch) Echo None ($*) NoMatch
-+ I TestRc KeepRc (Error) Echo None ($*) NoMatch
++ I KeepRc TestRc (Match) Echo None ($*) Match
++ I KeepRc TestRc (NoMatch) Echo None ($*) NoMatch
++ I KeepRc TestRc (Error) Echo None ($*) Error
 
 # Needs more conditions like Current
 AddTest "Test None" None-Func
