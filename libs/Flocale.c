@@ -54,6 +54,7 @@
 #include "Parse.h"
 #include "PictureBase.h"
 #include "Flocale.h"
+#include "FlocaleCharset.h"
 #include "FBidi.h"
 
 /* ---------------------------- local definitions --------------------------- */
@@ -80,6 +81,106 @@ static FlocaleCharset UnsetCharset = {"Unset", NULL, -2, NULL};
 
 /* ---------------------------- local functions ----------------------------- */
 
+static
+XChar2b *FlocaleUtf8ToUnicodeStr2b(unsigned char *str, int len, int *nl)
+{
+	XChar2b *str2b = NULL;
+	int i = 0, j = 0, t;
+
+	str2b = (XChar2b *)safemalloc((len+1)*sizeof(XChar2b));
+	while(i < len && str[i] != 0)
+	{
+		if (str[i] <= 0x7f)
+		{
+			str2b[j].byte2 = str[i];
+			str2b[j].byte1 = 0;	
+		}
+		else if (str[i] <= 0xdf && i+1 < len)
+		{
+		    t = ((str[i] & 0x1f) << 6) + (str[i+1] & 0x3f);
+		    str2b[j].byte2 = (unsigned char)(t & 0xff);
+		    str2b[j].byte1 = (unsigned char)(t >> 8);
+		    i++;
+		}
+		else if (i+2 <len)
+		{
+			t = ((str[i] & 0x0f) << 12) + ((str[i+1] & 0x3f) << 6)+
+				(str[i+2] & 0x3f);
+			str2b[j].byte2 = (unsigned char)(t & 0xff);
+			str2b[j].byte1 = (unsigned char)(t >> 8);
+			i += 2;
+		}
+		i++; j++;
+	}
+	*nl = j;
+	return str2b;
+}
+
+/* Note: this function is not expected to work perfectly; good mb rendering
+ * should be (and is) done using Xmb functions and not XDrawString16. This function
+ * is used when the locale does not correspond to the font */ 
+static
+XChar2b *FlocaleStringToString2b(unsigned char *str, int len, int *nl)
+{
+	XChar2b *str2b = NULL;
+	int i = 0, j = 0;
+
+	str2b = (XChar2b *)safemalloc((len+1)*sizeof(XChar2b));
+	while(i < len && str[i] != 0)
+	{
+		if (str[i] <= 0x7f)
+		{
+			/* ascii: this is not perfect but ok for gb2312.1980-0,
+			 * and ksc5601.1987-0, but for jisx0208.1983-0 this is
+			 * ok only for 0-9, a-z and A-Z, char as (, ! ...etc
+			 * are elsewhere  */
+			fprintf(stderr,"s: %c\n", str[i]);
+			str2b[j].byte1 = 0x23; /* magic number!! */
+			str2b[j].byte2 = str[i++];
+		}
+		else
+		{
+			/* mb gl (for gr replace & 0x7f by | 0x80 ...)*/
+			str2b[j].byte1 = str[i++] & 0x7f;
+			str2b[j].byte2 = str[i++] & 0x7f;
+		}
+		j++;
+	}
+	*nl = j;
+	return str2b;
+}
+
+static
+void FlocaleFontStructDrawString(Display *dpy, FlocaleFont *flf, Drawable d,
+				 GC gc, int x, int y, char *str, int len,
+				 Bool image)
+{
+	if (flf->utf8 || flf->mb)
+	{
+		XChar2b *str2b;
+		int nl;
+
+		if (flf->utf8)
+			str2b = FlocaleUtf8ToUnicodeStr2b(str, len, &nl);
+		else
+			str2b = FlocaleStringToString2b(str, len, &nl);
+		if (str2b != NULL)
+		{
+			if (image)
+				XDrawImageString16(dpy, d, gc, x, y, str2b, nl);
+			else
+				XDrawString16(dpy, d, gc, x, y, str2b, nl);
+			free(str2b);
+		}
+	}
+	else
+	{
+		if (image)
+			XDrawImageString(dpy, d, gc, x, y, str, len);
+		else
+			XDrawString(dpy, d, gc, x, y, str, len);
+	}
+}
 
 static
 FlocaleFont *FlocaleGetFftFont(Display *dpy, char *fontname)
@@ -101,7 +202,7 @@ FlocaleFont *FlocaleGetFftFont(Display *dpy, char *fontname)
 	FftGetFontHeights(
 		&flf->fftf, &flf->height, &flf->ascent, &flf->descent);
 	FftGetFontWidths(
-		&flf->fftf, &flf->max_char_width, &flf->min_char_offset);
+		&flf->fftf, &flf->max_char_width);
 	free(fftf);
 
 	return flf;
@@ -166,7 +267,6 @@ FlocaleFont *FlocaleGetFontSet(Display *dpy, char *fontname, char *module)
 	flf->descent = fset_extents->max_logical_extent.height +
 		fset_extents->max_logical_extent.y;
 	flf->max_char_width = fset_extents->max_logical_extent.width;
-	flf->min_char_offset = fset_extents->max_ink_extent.x;
 
 	return flf;
 }
@@ -217,8 +317,10 @@ FlocaleFont *FlocaleGetFont(Display *dpy, char *fontname)
 	flf->ascent = flf->font->ascent;
 	flf->descent = flf->font->descent;
 	flf->max_char_width = flf->font->max_bounds.width;
-	flf->min_char_offset = flf->font->min_bounds.lbearing;
-
+	if (flf->font->max_byte1 > 0)
+		flf->mb = True;
+	else
+		flf->mb = False;
 	return flf;
 }
 
@@ -317,9 +419,9 @@ void FlocaleRotateDrawString(
 	if (flf->font != NULL)
 	{
 		XSetFont(dpy, font_gc, flf->font->fid);
-		XDrawImageString(
-			dpy, canvas_pix, font_gc, 0,
-			flf->height - flf->descent, fws->str, len);
+		FlocaleFontStructDrawString(dpy, flf, canvas_pix, font_gc, 0,
+					    flf->height - flf->descent,
+					    fws->str, len, True);
 	}
 	else if (FlocaleMultibyteSupport && flf->fontset != None)
 	{
@@ -635,8 +737,10 @@ FlocaleFont *FlocaleLoadFont(Display *dpy, char *fontname, char *module)
 			}
 		}
 	}
+	
 	if (flf != NULL)
 	{
+		FlocaleCharsetSetFlocaleCharset(dpy, flf);
 		flf->next = FlocaleFontList;
 		FlocaleFontList = flf;
 	}
@@ -783,9 +887,9 @@ void FlocaleDrawString(
 	}
 	else if (flf->font != None)
 	{
-		XDrawString(
-			dpy, fstring->win, fstring->gc,
-			fstring->x, fstring->y, fstring->str, len);
+		FlocaleFontStructDrawString(dpy, flf, fstring->win, fstring->gc,
+					    fstring->x, fstring->y,
+					    fstring->str, len, False);
 	}
 
 	if (str2)
@@ -817,7 +921,26 @@ int FlocaleTextWidth(FlocaleFont *flf, char *str, int sl)
 	}
 	if (flf->font != None)
 	{
-		return XTextWidth(flf->font, str, sl);
+		if (flf->utf8 || flf->mb)
+		{
+			XChar2b *str2b;
+			int nl, l = 0;
+
+			if (flf->utf8)
+				str2b = FlocaleUtf8ToUnicodeStr2b(str, sl, &nl);
+			else
+				str2b = FlocaleStringToString2b(str, sl, &nl);
+			if (str2b != NULL)
+			{
+				l = XTextWidth16(flf->font, str2b, nl);
+				free(str2b);
+			}
+			return l;
+		}
+		else
+		{
+			return XTextWidth(flf->font, str, sl);
+		}
 	}
 
 	return 0;

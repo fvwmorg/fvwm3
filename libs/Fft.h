@@ -165,6 +165,7 @@ typedef struct
 	FftFont *fftfont_rotated_270;
 	char *encoding;
 	Bool utf8;
+	Bool mb;
 } FftFontType;
 
 /* ---------------------------- exported variables (globals) ---------------- */
@@ -174,7 +175,7 @@ typedef struct
 void FftGetFontHeights(
 	FftFontType *fftf, int *height, int *ascent, int *descent);
 void FftGetFontWidths(
-	FftFontType *fftf, int *max_char_width, int *min_char_offset);
+	FftFontType *fftf, int *max_char_width);
 FftFontType *FftGetFont(Display *dpy, char *fontname);
 void FftDrawString(
 	Display *dpy, Window win, FftFontType *fftf, GC gc, int x,

@@ -397,11 +397,7 @@ FlocaleCharset *FiconvSetupConversion(Display *dpy, FlocaleFont *flf)
 	{
 		fc = flf->fc;
 	}
-	if (fc == FlocaleGetUnsetCharset())
-	{
-		FlocaleCharsetSetFlocaleCharset(dpy, flf);
-		fc = flf->fc;
-	}
+
 	if (fc == FlocaleCharsetGetUnknownCharset())
 		return NULL;
 

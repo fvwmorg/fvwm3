@@ -1,3 +1,43 @@
+2002-04-29  olicha  <olivier.chapuis@free.fr>
+
+	* libs/Fft.c (FftGetFontWidths):
+	(FftGetFontWidths):
+	* libs/Fft.h
+	* libs/Flocale.h:
+	* libs/Flocale.c (FlocaleGetFont):
+	(FlocaleGetFontSet):
+	(FlocaleGetFftFont):
+	Removed min_char_offset member of the FlocaleFont as it is not use
+	since we rotate string for side title
+
+	* libs/Ficonv.c (FiconvSetupConversion):
+	* libs/FlocaleCharset.c (FlocaleGetBidiCharset):
+	(FlocaleCharsetSetFlocaleCharset):
+	* libs/Flocale.h:
+	* libs/Flocale.c (FlocaleTextWidth): 
+	(FlocaleDrawString): 
+	(FlocaleUtf8ToUnicodeStr2b):
+	(FlocaleLoadFont): 
+	(FlocaleStringToString2b):
+	(FlocaleRotateDrawString):
+	(FlocaleFontStructDrawString):
+	Added support for drawing string with 10646-1 fonts without an utf8
+	locale. Also, drawing strings with a multibyte font now work not so
+	bad even if the locale have nothing to do with the font.
+
+	* libs/Fft.c (FftUtf8ToFftString16):
+	(FftDrawString):
+	(FftTextWidth):
+	Added utf8 rendering with iso10646-1 fonts on system without
+	Xft Utf8 functions
+
+	* fvwm/colorset.c (reset_cs_pixmap):
+	(parse_pixmap):
+	(parse_shape):
+	(parse_tint):
+	(parse_colorset):
+	Colorset now accept bitmaps. Split a bit parse_colorset for readability
+
 2002-04-28  Mikhael Goikhman  <migo@homemail.com>
 
 	* fvwm/menus.c:

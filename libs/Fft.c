@@ -69,6 +69,37 @@ void init_fft(Display *dpy)
 }
 
 static
+FftChar16 *FftUtf8ToFftString16(unsigned char *str, int len, int *nl)
+{
+	FftChar16 *new;
+	int i = 0, j= 0;
+
+	new = (FftChar16 *)safemalloc((len+1)*sizeof(FftChar16));
+	while(i < len && str[i] != 0)
+	{
+		if (str[i] <= 0x7f)
+		{
+			new[j] = str[i];
+		}
+		else if (str[i] <= 0xdf && i+1 < len)
+		{
+		    new[j] = ((str[i] & 0x1f) << 6) + (str[i+1] & 0x3f);
+		    i++;
+		}
+		else if (i+2 < len)
+		{
+			new[j] = ((str[i] & 0x0f) << 12) +
+				((str[i+1] & 0x3f) << 6) +
+				(str[i+2] & 0x3f);
+			i += 2;
+		}
+		i++; j++;
+	}
+	*nl = j;
+	return new;
+}
+
+static
 void FftSetupEncoding(FftFontType *fftf)
 {
 	int i = 0;
@@ -89,14 +120,9 @@ void FftSetupEncoding(FftFontType *fftf)
 		    e->values->value.u.s != NULL)
 		{
 			fftf->encoding = e->values->value.u.s;
-			if (FftUtf8Support &&
-			    StrEquals(fftf->encoding, "iso10646-1"))
+			if (StrEquals(fftf->encoding, "ISO10646-1"))
 			{
 				fftf->utf8 = True;
-			}
-			else
-			{
-				fftf->utf8 = False;
 			}
 			return;
 		}
@@ -158,7 +184,7 @@ void FftGetFontHeights(
 }
 
 void FftGetFontWidths(
-	FftFontType *fftf, int *max_char_width, int *min_char_offset)
+	FftFontType *fftf, int *max_char_width)
 {
 	FGlyphInfo extents;
 
@@ -172,8 +198,6 @@ void FftGetFontWidths(
 		FftTextExtents8(fftdpy, fftf->fftfont, "W", 1, &extents);
 	}
 	*max_char_width = extents.xOff;
-	/* FIXME: how do you calculate this? */
-	*min_char_offset = 0;
 
 	return;
 }
@@ -281,7 +305,19 @@ void FftDrawString(
 	if (FftUtf8Support && fftf->utf8)
 	{
 		FftDrawStringUtf8(
-			fftdraw, &fft_fg, uf, x, y, (unsigned char *) str, len);
+			fftdraw, &fft_fg, uf, x, y, (FftChar8 *) str, len);
+	}
+	else if (fftf->utf8)
+	{
+		FftChar16 *new;
+		int nl;
+
+		new = FftUtf8ToFftString16((unsigned char *)str, len, &nl);
+		if (new != NULL)
+		{
+			FftDrawString16(fftdraw, &fft_fg, uf, x, y, new, nl);
+			free(new);
+		}
 	}
 	else
 	{
@@ -302,6 +338,19 @@ int FftTextWidth(FftFontType *fftf, char *str, int len)
 	if (FftUtf8Support && fftf->utf8)
 	{
 		FftTextExtentsUtf8(fftdpy, fftf->fftfont, str, len, &extents);
+	}
+	else if (fftf->utf8)
+	{
+		FftChar16 *new;
+		int nl;
+
+		new = FftUtf8ToFftString16((unsigned char *)str, len, &nl);
+		if (new != NULL)
+		{
+			FftTextExtents16(
+				fftdpy, fftf->fftfont, new, nl, &extents);
+			free(new);
+		}
 	}
 	else
 	{

@@ -513,6 +513,14 @@ void FlocaleCharsetSetFlocaleCharset(Display *dpy, FlocaleFont *flf)
 	else if (flf->font != NULL)
 	{
 		flf->fc = FlocaleCharsetOfFontStruct(dpy, flf->font);
+		if (StrEquals(flf->fc->x, "ISO10646-1"))
+		{
+			flf->utf8 = True;
+		}
+		else
+		{
+			flf->utf8 = False;
+		}
 	}
 	if (flf->fc == NULL || flf->fc == FlocaleGetUnsetCharset())
 	{
@@ -536,10 +544,6 @@ const char *FlocaleGetBidiCharset(Display *dpy, FlocaleFont *flf)
 	if (flf == NULL)
 	{
 		return NULL;
-	}
-	else if (flf->fc == FlocaleGetUnsetCharset())
-	{
-		FlocaleCharsetSetFlocaleCharset(dpy, flf);
 	}
 	fc = flf->fc;
 	if (fc == FlocaleCharsetGetUnknownCharset() || fc->bidi == NULL)

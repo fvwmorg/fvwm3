@@ -1,3 +1,8 @@
+2002-04-29  olicha  <olivier.chapuis@free.fr>
+
+	* FvwmTaskBar/ButtonArray.c (ButtonDraw):
+	A picture fix
+
 2002-04-28  Mikhael Goikhman  <migo@homemail.com>
 
 	* FvwmPager/x_pager.c:

@@ -259,11 +259,13 @@ void ButtonDraw(Button *button, int x, int y, int w, int h)
     int pheight = min(button->p.height, h-2);
     int offset = (button->p.height > h) ? 0 : ((h - button->p.height) >> 1);
     int pwidth = min(button->p.width, w-5);
- 
+
+#if 0 /* not needed and buggy but I saw some problems ... */ 
     if (button->p.alpha != None)
     {
       XClearArea(dpy, win, x+3, y+offset, pwidth, pheight, False);
     }
+#endif
     PGraphicsCopyFvwmPicture(dpy, &(button->p), win, hilite,
 			     0, 0, pwidth, pheight,
 			     x+3, y+offset);

@@ -109,11 +109,16 @@ typedef struct _FlocaleFont
 	XFontSet fontset;	/* font set */
 	FftFontType fftf;
 	FlocaleCharset *fc;
+	/* utf8 and mb are used only with a XFontStruct font, fftf as is own
+	 * value in the FftFontType and for XFontSet evrything is done in the
+	 * good way automatically and these parameters are not needed */
+	Bool utf8;              /* if true the font is an iso10646-1 and utf8
+				 * encoding is assumed */
+	Bool mb;                /* if true the font is a 2 bytes font */
 	int height;		/* height of the font: ascent + descent */
 	int ascent;
 	int descent;
 	int max_char_width;
-	int min_char_offset;
 } FlocaleFont;
 
 typedef struct

@@ -250,6 +250,210 @@ static void free_colorset_background(colorset_struct *cs)
 	}
 }
 
+static void reset_cs_pixmap(colorset_struct *cs, GC gc)
+{
+	if (Pdepth == cs->picture->depth)
+	{
+		XCopyArea(dpy, cs->picture->picture, cs->pixmap, gc,
+			  0, 0, cs->width, cs->height, 0, 0);
+	}
+	else
+	{
+		XCopyPlane(dpy, cs->picture->picture, cs->pixmap, gc,
+			   0, 0, cs->width, cs->height, 0, 0, 1);
+	}
+}
+
+static void parse_pixmap(Window win, GC gc, colorset_struct *cs, int i,
+			 char *args, Bool *pixmap_is_a_bitmap)
+{
+	char *token;
+	static char *name = "parse_colorset(pixmap)";
+
+	/* set the flags */
+	if (csetopts[i][0] == 'T')
+		cs->pixmap_type = PIXMAP_TILED;
+	else if (csetopts[i][0] == 'A')
+		cs->pixmap_type = PIXMAP_STRETCH_ASPECT;
+	else
+		cs->pixmap_type = PIXMAP_STRETCH;
+
+	/* read filename */
+	token = PeekToken(args, &args);
+	if (!token)
+		return;
+	/* load the file using the color reduction routines */
+	/* in Picture.c */
+	cs->picture = PCacheFvwmPicture(dpy, win, NULL, token, Scr.ColorLimit);
+	if (!cs->picture)
+	{
+		fvwm_msg(ERR, name, "can't load picture %s", token);
+		return;
+	}
+	/* don't try to be smart with bitmaps */
+	if (cs->picture->depth != Pdepth)
+	{
+		*pixmap_is_a_bitmap = True;
+		cs->pixmap = None; /* build cs->pixmap later */
+	}
+	/* copy the picture pixmap into the public structure */
+	cs->width = cs->picture->width;
+	cs->height = cs->picture->height;
+	cs->alpha_pixmap = cs->picture->alpha;
+
+	if (cs->picture->picture && !*pixmap_is_a_bitmap)
+	{
+		cs->pixmap = XCreatePixmap(dpy, win,
+					   cs->width, cs->height,
+					   Pdepth);
+		XSetClipMask(dpy, gc, cs->picture->mask);
+		XCopyArea(dpy, cs->picture->picture, cs->pixmap, gc,
+			  0, 0, cs->width, cs->height, 0, 0);
+		XSetClipMask(dpy, gc, None);
+	}
+	if (cs->pixmap)
+	{
+		if (cs->picture->mask != None)
+		{
+			/* make an inverted copy of the mask */
+			cs->mask = XCreatePixmap(dpy, win,
+						 cs->width, cs->height,
+						 1);
+			if (cs->mask)
+			{
+				XCopyArea(dpy, cs->picture->mask, cs->mask,
+					  Scr.MonoGC,
+					  0, 0, cs->width, cs->height, 0, 0);
+				/* Invert the mask. We use it to draw the 
+				 * background. */
+				XSetFunction(dpy, Scr.MonoGC, GXinvert);
+				XFillRectangle(dpy, cs->mask, Scr.MonoGC,
+					       0, 0, cs->width, cs->height);
+				XSetFunction(dpy, Scr.MonoGC, GXcopy);
+			}
+		}
+	}
+}
+
+static void parse_shape(Window win, colorset_struct *cs, int i, char *args,
+			int *has_shape_changed)
+{
+	char *token;
+	static char *name = "parse_colorset(shape)";
+	FvwmPicture *picture;
+
+	if (!FHaveShapeExtension)
+	{
+		cs->shape_mask = None;
+		return;
+	}
+
+	/* read filename */
+	token = PeekToken(args, &args);
+	*has_shape_changed = True;
+	if (cs->shape_mask)
+	{
+		add_to_junk(cs->shape_mask);
+		cs->shape_mask = None;
+	}
+
+	/* set the flags */
+	if (csetopts[i][0] == 'T')
+		cs->shape_type = SHAPE_TILED;
+	else if (csetopts[i][0] == 'A')
+		cs->shape_type = SHAPE_STRETCH_ASPECT;
+	else
+		cs->shape_type = SHAPE_STRETCH;
+
+	/* try to load the shape mask */
+	if (!token)
+	{
+		return;
+	}
+	
+	/* load the shape mask */
+	picture = PCacheFvwmPicture(dpy, win, NULL, token, Scr.ColorLimit);
+	if (!picture)
+		fvwm_msg(ERR, name, "can't load picture %s", token);
+	else if (picture->depth != 1 && picture->mask == None)
+	{
+		fvwm_msg(ERR, name, "shape pixmap must be of depth 1");
+		SafeDestroyPicture(dpy, picture);
+	}
+	else
+	{
+		Pixmap mask;
+
+		/* okay, we have what we want */
+		if (picture->mask != None)
+			mask = picture->mask;
+		else
+			mask = picture->picture;
+		cs->shape_width = picture->width;
+		cs->shape_height = picture->height;
+
+		if (mask != None)
+		{
+			cs->shape_mask = XCreatePixmap(dpy, mask,
+						       picture->width,
+						       picture->height,
+						       1);
+			if (cs->shape_mask != None)
+			{
+				XCopyPlane(dpy, mask, cs->shape_mask,
+					   Scr.MonoGC,
+					   0, 0, picture->width, picture->height,
+					   0, 0, 1);
+			}
+		}
+	}
+	if (picture)
+	{
+		SafeDestroyPicture(dpy, picture);
+		picture = None;
+	}
+	return;
+}
+
+static void parse_tint(Window win, GC gc, colorset_struct *cs, int i, char *args,
+		       char *tint, int *has_tint_changed,
+		       int *has_pixmap_changed)
+{
+	char *rest;
+	static char *name = "parse_colorset(tint)";
+	int tint_percent;
+
+	if (!XRenderSupport)
+		return;
+
+	rest = get_simple_color(args, &tint, cs, TINT_SUPPLIED, 0, NULL);
+	if (!GetIntegerArguments(rest, NULL, &tint_percent, 1))
+	{
+		fvwm_msg(WARN, name,
+			 "Tint must have two arguments a color and an integer");
+		tint_percent = -1;
+		return;
+	}
+	*has_tint_changed = True;
+	if (!*has_pixmap_changed && cs->picture && cs->picture->picture)
+	{
+		XSetClipMask(dpy, gc, cs->picture->mask);
+		XCopyArea(dpy, cs->picture->picture, cs->pixmap, gc,
+			  0, 0, cs->width, cs->height, 0, 0);
+		XSetClipMask(dpy, gc, None);
+		*has_pixmap_changed = True;
+	}
+	cs->tint_percent = (tint_percent > 100)? 100:tint_percent;
+	if (i == 22)
+	{
+		cs->do_tint_use_mask = True;
+	}
+	else
+	{
+		cs->do_tint_use_mask = False;
+	}
+}
+
 /* ---------------------------- interface functions ------------------------- */
 
 void cleanup_colorsets()
@@ -272,9 +476,7 @@ void parse_colorset(int n, char *line)
 	int i;
 	int w;
 	int h;
-	int tint_percent;
 	colorset_struct *cs;
-	char *token;
 	char *optstring;
 	char *args;
 	char *option;
@@ -284,7 +486,6 @@ void parse_colorset(int n, char *line)
 	char *hi = NULL;
 	char *sh = NULL;
 	char *tint = NULL;
-	Bool do_remove_shape;
 	Bool have_pixels_changed = False;
 	Bool has_fg_changed = False;
 	Bool has_bg_changed = False;
@@ -293,17 +494,17 @@ void parse_colorset(int n, char *line)
 	Bool has_tint_changed = False;
 	Bool has_pixmap_changed = False;
 	Bool has_shape_changed = False;
+	Bool pixmap_is_a_bitmap = False;
 	XColor color;
 	XGCValues xgcv;
 	static char *name = "parse_colorset";
 	Window win = Scr.NoFocusWin;
-	static GC gc = None, monoGC = None;
+	static GC gc = None;
 
 	/* initialize statics */
 	if (gc == None)
 	{
 		gc = fvwmlib_XCreateGC(dpy, win, 0, &xgcv);
-		monoGC = fvwmlib_XCreateGC(dpy, Scr.ScratchMonoPixmap,0, &xgcv);
 	}
 
 	/* make sure it exists and has sensible contents */
@@ -324,7 +525,6 @@ void parse_colorset(int n, char *line)
 			break;
 		}
 
-		do_remove_shape = False;
 		switch((i = GetTokenIndex(option, csetopts, 0, NULL)))
 		{
 		case 0: /* Foreground */
@@ -360,173 +560,12 @@ void parse_colorset(int n, char *line)
 		case 14: /* AspectPixmap */
 			has_pixmap_changed = True;
 			free_colorset_background(cs);
-			/* set the flags */
-			if (csetopts[i][0] == 'T')
-				cs->pixmap_type = PIXMAP_TILED;
-			else if (csetopts[i][0] == 'A')
-				cs->pixmap_type = PIXMAP_STRETCH_ASPECT;
-			else
-				cs->pixmap_type = PIXMAP_STRETCH;
-
-			/* read filename */
-			token = PeekToken(args, &args);
-			if (!token)
-				break;
-			/* load the file using the color reduction routines */
-			/* in Picture.c */
-			cs->picture = PCacheFvwmPicture(
-				dpy, win, NULL, token, Scr.ColorLimit);
-			if (!cs->picture)
-			{
-				fvwm_msg(
-					ERR, name, "can't load picture %s",
-					token);
-				break;
-			}
-			/* don't try to be smart with bitmaps */
-			if (cs->picture->depth != Pdepth)
-			{
-				fvwm_msg(ERR, name, "bitmaps not supported");
-				SafeDestroyPicture(dpy, cs->picture);
-				cs->picture = None;
-				break;
-			}
-			/* copy the picture pixmap into the public structure */
-			cs->width = cs->picture->width;
-			cs->height = cs->picture->height;
-			cs->alpha_pixmap = cs->picture->alpha;
-
-			if (cs->picture->picture)
-			{
-				cs->pixmap = XCreatePixmap(
-					dpy, win, cs->width,
-					cs->height, Pdepth);
-				XSetClipMask(dpy, gc, cs->picture->mask);
-				XCopyArea(
-					dpy, cs->picture->picture, cs->pixmap,
-					gc, 0, 0, cs->width, cs->height, 0, 0);
-				XSetClipMask(dpy, gc, None);
-			}
-			if (cs->pixmap)
-			{
-				if (cs->picture->mask != None)
-				{
-					/* make an inverted copy of the mask */
-					cs->mask = XCreatePixmap(
-						dpy, win, cs->width,
-						cs->height, 1);
-					if (cs->mask)
-					{
-						XCopyArea(
-							dpy, cs->picture->mask,
-							cs->mask, monoGC,
-							0, 0,
-							cs->width, cs->height,
-							0, 0);
-						/* Invert the mask. We use it
-						 * to draw the background. */
-						XSetFunction(
-							dpy, monoGC, GXinvert);
-						XFillRectangle(
-							dpy, cs->mask,
-							monoGC, 0, 0,
-							cs->width, cs->height);
-						XSetFunction(
-							dpy, monoGC, GXcopy);
-					}
-				}
-			}
+			parse_pixmap(win, gc, cs, i, args, &pixmap_is_a_bitmap);
 			break;
 		case 15: /* Shape */
 		case 16: /* TiledShape */
 		case 17: /* AspectShape */
-			if (FHaveShapeExtension)
-			{
-				/* read filename */
-				token = PeekToken(args, &args);
-				has_shape_changed = True;
-				if (cs->shape_mask)
-				{
-					add_to_junk(cs->shape_mask);
-					cs->shape_mask = None;
-				}
-				if (do_remove_shape == True)
-					break;
-				/* set the flags */
-				if (csetopts[i][0] == 'T')
-					cs->shape_type = SHAPE_TILED;
-				else if (csetopts[i][0] == 'A')
-					cs->shape_type = SHAPE_STRETCH_ASPECT;
-				else
-					cs->shape_type = SHAPE_STRETCH;
-
-				/* try to load the shape mask */
-				if (token)
-				{
-					FvwmPicture *picture;
-
-					/* load the shape mask */
-					picture = PCacheFvwmPicture(
-						dpy, win, NULL, token,
-						Scr.ColorLimit);
-					if (!picture)
-						fvwm_msg(
-							ERR, name, "can't load "
-							"picture %s", token);
-					else if (picture->depth != 1 &&
-						 picture->mask == None)
-					{
-						fvwm_msg(
-							ERR, name,
-							"shape pixmap must be "
-							"of depth 1");
-						SafeDestroyPicture(dpy, picture);
-					}
-					else
-					{
-						Pixmap mask;
-
-						/* okay, we have what we want */
-						if (picture->mask != None)
-							mask = picture->mask;
-						else
-							mask = picture->picture;
-						cs->shape_width = picture->width;
-						cs->shape_height =
-							picture->height;
-
-						if (mask != None)
-						{
-							cs->shape_mask =
-								XCreatePixmap(
-								dpy, mask,
-								picture->width,
-								picture->height,
-								1);
-							if (cs->shape_mask !=
-							    None)
-							{
-								XCopyPlane(
-								dpy, mask,
-								cs->shape_mask,
-								monoGC, 0, 0,
-								picture->width,
-								picture->height,
-								0, 0, 1);
-							}
-						}
-					}
-					if (picture)
-					{
-						SafeDestroyPicture(dpy, picture);
-						picture = None;
-					}
-				}
-			}
-			else
-			{
-				cs->shape_mask = None;
-			}
+			parse_shape(win, cs, i, args, &has_shape_changed);
 			break;
 		case 18: /* Plain */
 			has_pixmap_changed = True;
@@ -561,54 +600,15 @@ void parse_colorset(int n, char *line)
 			break;
 		case 21: /* Tint */
 		case 22: /* TintMask */
-			if (XRenderSupport)
-			{
-				char *rest;
-
-				rest = get_simple_color(args, &tint, cs,
-							TINT_SUPPLIED, 0, NULL);
-				if (!GetIntegerArguments(rest, NULL,
-							 &tint_percent, 1))
-				{
-					fvwm_msg(WARN, name,
-						 "Tint must have two arguments "
-						 "a color and an integer");
-					tint_percent = -1;
-					break;
-				}
-				has_tint_changed = True;
-				if (!has_pixmap_changed && cs->picture &&
-				    cs->picture->picture)
-				{
-					XSetClipMask(dpy, gc, cs->picture->mask);
-					XCopyArea(dpy, cs->picture->picture,
-						  cs->pixmap, gc, 0, 0,
-						  cs->width, cs->height, 0, 0);
-					XSetClipMask(dpy, gc, None);
-					has_pixmap_changed = True;
-				}
-				cs->tint_percent = (tint_percent > 100)?
-					100:tint_percent;
-				if (i == 22)
-				{
-					cs->do_tint_use_mask = True;
-				}
-				else
-				{
-					cs->do_tint_use_mask = False;
-				}
-			}
+			parse_tint(win, gc, cs, i, args, tint, &has_tint_changed,
+				   &has_pixmap_changed);
 			break;
 		case 23: /* NoTint */
 			has_pixmap_changed = True;
 			/* restore the pixmap */
 			if (cs->picture != None && cs->pixmap)
 			{
-				XSetClipMask(dpy, gc, cs->picture->mask);
-				XCopyArea(dpy, cs->picture->picture, cs->pixmap,
-					  gc, 0, 0,
-					  cs->width, cs->height, 0, 0);
-				XSetClipMask(dpy, gc, None);
+				reset_cs_pixmap(cs, gc);
 			}
 			cs->tint_percent = -1;
 			cs->color_flags &= ~TINT_SUPPLIED;
@@ -661,7 +661,7 @@ void parse_colorset(int n, char *line)
 		Bool do_set_default_background = False;
 
 		if ((cs->color_flags & BG_AVERAGE) && cs->pixmap != None &&
-			cs->pixmap != ParentRelative)
+			cs->pixmap != ParentRelative && !pixmap_is_a_bitmap)
 		{
 			/* calculate average background color */
 			XColor *colors;
@@ -759,8 +759,9 @@ void parse_colorset(int n, char *line)
 					have_pixels_changed = True;
 			}
 		} /* user specified */
-		else if ((bg == NULL && has_bg_changed) || ((cs->color_flags &
-			BG_AVERAGE) && cs->pixmap == ParentRelative))
+		else if ((bg == NULL && has_bg_changed) ||
+			 ((cs->color_flags & BG_AVERAGE) &&
+			  (cs->pixmap == ParentRelative || pixmap_is_a_bitmap)))
 		{
 			/* default */
 			do_set_default_background = True;
@@ -951,7 +952,7 @@ void parse_colorset(int n, char *line)
 	/*
 	 * ------- change the masked out parts of the background pixmap -------
 	 */
-	if (cs->picture != None &&
+	if ((cs->picture != None) &&
 	    (cs->mask != None || cs->alpha_pixmap != None) &&
 	    (has_pixmap_changed || has_bg_changed))
 	{
@@ -973,14 +974,26 @@ void parse_colorset(int n, char *line)
 		}
 		else
 		{
-			XSetClipMask(dpy, gc, cs->mask);
-			XFillRectangle(
-				dpy, cs->pixmap, gc, 0, 0, cs->width,
-				cs->height);
+			XSetClipMask(dpy, gc, cs->picture->mask);
+			reset_cs_pixmap(cs, gc);	
 		}
 		XSetClipMask(dpy, gc, None);
 		has_pixmap_changed = True;
 	} /* has_pixmap_changed */
+
+	/*
+	 * ------- the pixmap is a bitmap: create here cs->pixmap -------
+	 */
+	if (pixmap_is_a_bitmap && cs->picture->picture != None &&
+	    (has_pixmap_changed || has_bg_changed))
+	{
+		cs->pixmap = XCreatePixmap(dpy, win,
+					   cs->width, cs->height,
+					   Pdepth);
+		XSetBackground(dpy, gc, cs->bg);
+		XSetForeground(dpy, gc, cs->fg);
+		reset_cs_pixmap(cs, gc);
+	}
 
 	/*
 	 * ---------- change the tint colour ----------
