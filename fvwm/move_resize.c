@@ -1115,7 +1115,8 @@ void resize_window(F_CMD_ARGS)
       drag->height += (tmp_win->title_g.height + 2*tmp_win->boundary_width);
 
       /* size will be less or equal to requested */
-      ConstrainSize(tmp_win, &drag->width, &drag->height, xmotion, ymotion);
+      ConstrainSize(tmp_win, &drag->width, &drag->height, xmotion, ymotion,
+		    False);
       if (IS_SHADED(tmp_win))
 	{
 	  tmp_win->orig_g.width = drag->width;
@@ -1457,7 +1458,8 @@ void resize_window(F_CMD_ARGS)
   if(!abort)
     {
       /* size will be >= to requested */
-      ConstrainSize(tmp_win, &drag->width, &drag->height, xmotion, ymotion);
+      ConstrainSize(tmp_win, &drag->width, &drag->height, xmotion, ymotion,
+		    True);
        if (IS_SHADED(tmp_win))
        {
          SetupFrame(tmp_win, drag->x, drag->y,
@@ -1542,8 +1544,8 @@ static void DoResize(int x_root, int y_root, FvwmWindow *tmp_win,
   if (action)
     {
       /* round up to nearest OK size to keep pointer inside rubberband */
-      ConstrainSize(tmp_win, &drag->width, &drag->height, *xmotionp,
-		    *ymotionp);
+      ConstrainSize(tmp_win, &drag->width, &drag->height, *xmotionp, *ymotionp,
+		    True);
       if (*xmotionp == 1)
 	drag->x = orig->x + orig->width - drag->width;
       if (*ymotionp == 1)
@@ -1638,12 +1640,13 @@ static void DisplaySize(FvwmWindow *tmp_win, int width, int height, Bool Init,
 
 void ConstrainSize(
   FvwmWindow *tmp_win, unsigned int *widthp, unsigned int *heightp,
-  int xmotion, int ymotion)
+  int xmotion, int ymotion, Bool roundUp)
 {
 #define MAKEMULT(a,b) ((b==1) ? (a) : (((int)((a)/(b))) * (b)) )
     int minWidth, minHeight, maxWidth, maxHeight, xinc, yinc, delta;
     int baseWidth, baseHeight;
     int dwidth = *widthp, dheight = *heightp;
+    int roundUpX, roundUpY;
 
     dwidth -= 2 *tmp_win->boundary_width;
     dheight -= (tmp_win->title_g.height + 2 * tmp_win->boundary_width);
@@ -1688,12 +1691,36 @@ void ConstrainSize(
 
     /*
      * Second, round to base + N * inc (up or down depending on resize type)
+     * if rounding up store amount
      */
-    dwidth = ((dwidth - baseWidth) / xinc * xinc) + baseWidth;
-    dheight = ((dheight - baseHeight) / yinc * yinc) + baseHeight;
+    if (!roundUp) {
+      dwidth = (((dwidth - baseWidth) / xinc) * xinc) + baseWidth;
+      dheight = (((dheight - baseHeight) / yinc) * yinc) + baseHeight;
+    } else {
+      roundUpX = dwidth;
+      roundUpY = dheight;
+      dwidth = (((dwidth - baseWidth + xinc - 1) / xinc) * xinc) + baseWidth;
+      dheight = (((dheight - baseHeight + yinc - 1) / yinc) * yinc) + baseHeight;
+      roundUpX = dwidth - roundUpX;
+      roundUpY = dheight - roundUpY;
+    }
+
+    /* 
+     * Step 2a: check we didn't move the edge off screen in interactive moves
+     */
+    if (roundUp && Event.type == MotionNotify) {
+      if (xmotion > 0 && Event.xmotion.x_root < roundUpX)
+	dwidth -= xinc;
+      else if (xmotion < 0 && Event.xmotion.x_root >= Scr.MyDisplayWidth - roundUpX)
+	dwidth -= xinc;
+      if (ymotion > 0 && Event.xmotion.y_root < roundUpY)
+	dheight -= yinc;
+      else if (ymotion < 0 && Event.xmotion.y_root >= Scr.MyDisplayHeight - roundUpY)
+	dheight -= yinc;
+    }
 
     /*
-     * Step 2a: Check that we didn't violate min and max.
+     * Step 2b: Check that we didn't violate min and max.
      */
     if (dwidth < minWidth)
       dwidth += xinc;
@@ -2197,7 +2224,7 @@ void Maximize(F_CMD_ARGS)
       new_width = Scr.MyDisplayWidth - 1;
     }
     SET_MAXIMIZED(tmp_win, 1);
-    ConstrainSize(tmp_win, &new_width, &new_height, 0, 0);
+    ConstrainSize(tmp_win, &new_width, &new_height, 0, 0, False);
     tmp_win->maximized_ht = new_height;
     if (IS_SHADED(tmp_win))
       new_height = tmp_win->frame_g.height;

@@ -384,7 +384,7 @@ FvwmWindow *AddWindow(Window w, FvwmWindow *ReuseWin)
     tmp_win->max_window_height = DEFAULT_MAX_MAX_WINDOW_HEIGHT;
   }
   ConstrainSize(tmp_win, &tmp_win->frame_g.width, &tmp_win->frame_g.height,
-		0, 0);
+		0, 0, False);
 
   /* Find out if the client requested a specific desk on the command line. */
   /*  RBW - 11/20/1998 - allow a desk of -1 to work.  */
@@ -531,7 +531,7 @@ FvwmWindow *AddWindow(Window w, FvwmWindow *ReuseWin)
   tmp_win->frame_g.height = tmp_win->attr.height + tmp_win->title_g.height
 			  + 2 * tmp_win->boundary_width;
   ConstrainSize(tmp_win, &tmp_win->frame_g.width, &tmp_win->frame_g.height,
-		0, 0);
+		0, 0, False);
   tmp_win->title_g.x = tmp_win->title_g.y = 0;
   tmp_win->title_w = 0;
   tmp_win->title_g.width = tmp_win->frame_g.width - 2*tmp_win->boundary_width;
@@ -752,7 +752,7 @@ FvwmWindow *AddWindow(Window w, FvwmWindow *ReuseWin)
   if (do_maximize) {
     /* This is essentially Maximize, only we want the given dimensions */
     SET_MAXIMIZED(tmp_win, 1);
-    ConstrainSize(tmp_win, &w_max, &h_max, 0, 0);
+    ConstrainSize(tmp_win, &w_max, &h_max, 0, 0, False);
     tmp_win->maximized_ht = h_max;
     SetupFrame(tmp_win, x_max, y_max, w_max, h_max, TRUE, False);
     SetBorder(tmp_win, Scr.Hilite == tmp_win, True, True, None);

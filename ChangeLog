@@ -1,3 +1,8 @@
+1999-08-06  Hippo
+
+	* fvwm/move_resize.c: Fixed interactive resize to not allow borders
+	to be resized off screen if client has resize increments > 1.
+
 1999-08-06  Dominik Vogt  <domivogt@bvstp038.bbn.hp.com>
 
 	* fvwm/fvwm2.1 (IgnoreModifiers): make it clear that the command

@@ -784,7 +784,7 @@ void HandlePropertyNotify(void)
 	int new_width, new_height;
 	new_width = Tmp_win->frame_g.width;
 	new_height = Tmp_win->frame_g.height;
-	ConstrainSize(Tmp_win, &new_width, &new_height, 0, 0);
+	ConstrainSize(Tmp_win, &new_width, &new_height, 0, 0, False);
 	if((new_width != Tmp_win->frame_g.width)||
 	   (new_height != Tmp_win->frame_g.height))
 	  SetupFrame(Tmp_win,Tmp_win->frame_g.x, Tmp_win->frame_g.y,
@@ -1731,7 +1731,7 @@ void HandleConfigureRequest(void)
      * requested client window width; the inner height is the same as the
      * requested client window height plus any title bar slop.
      */
-    ConstrainSize(Tmp_win, &width, &height, 0, 0);
+    ConstrainSize(Tmp_win, &width, &height, 0, 0, False);
     h = (IS_SHADED(Tmp_win)) ? Tmp_win->frame_g.height : height;
     /* dont allow clients to resize maximized windows */
     if (!IS_MAXIMIZED(Tmp_win) || (width == Tmp_win->frame_g.width &&
