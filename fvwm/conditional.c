@@ -257,8 +257,11 @@ char *CreateFlagString(char *string, char **restptr)
 		c++;
 	}
 
+
 	if (*c == '[' || *c == '(')
 	{
+		char *d;
+
 		/* Get the text between [ ] or ( ) */
 		if (*c == '[')
 		{
@@ -281,8 +284,11 @@ char *CreateFlagString(char *string, char **restptr)
 				*restptr = NULL;
 				return NULL;
 			}
-			c++;
-			length++;
+
+			/* skip quoted string */
+			d = SkipQuote(c, NULL, NULL, NULL);
+			length += d - c;
+			c = d;
 		}
 
 		/* We must allocate a new string because we null terminate the
