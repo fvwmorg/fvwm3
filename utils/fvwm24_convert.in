@@ -35,9 +35,8 @@ $, = ' ';			# set output field separator
 $\ = "\n";			# set output record separator
 
 # GlobalOpts that became Styles:
-%OPTS = ('SMARTPLACEMENTISREALLYSMART','MinOverlapPlacement',
-	 'SMARTPLACEMENTISNORMAL','TileCascadePlacement',
- 'ACTIVEPLACEMENTHONORSSTARTSONPAGE','ManualPlacementHonorsStartsOnPage',
+%OPTS = (
+'ACTIVEPLACEMENTHONORSSTARTSONPAGE','ManualPlacementHonorsStartsOnPage',
 'ACTIVEPLACEMENTIGNORESSTARTSONPAGE', 'ManualPlacementIgnoresStartsOnPage',
 	 'CLICKTOFOCUSDOESNTPASSCLICK', 'ClickToFocusPassesClickOff',
 	 'CLICKTOFOCUSDOESNTRAISE', 'ClickToFocusRaisesOff',
@@ -66,13 +65,13 @@ line: while ( <IN> ) {
     next line;
   }
 
-  if (/^[ \t]*$/) {		# Empty line, pass it thru
+  if (/^\s*$/) {		# Empty line, pass it thru
     print $_;
     next line;
   }
 
   # Adds "path" to "newpath":
-  if (/^[ \t]*ICONPATH|^[ \t]*PIXMAPPATH/i) { # Fix up IconPath/PixmapPath:
+  if (/^\s*ICONPATH|^\s*PIXMAPPATH/i) { # Fix up IconPath/PixmapPath:
     $newpath = '';
     &add_to_path($Fld[2]);
     $line = $_;
@@ -93,7 +92,7 @@ line: while ( <IN> ) {
   }
 
   # Change GlobOpts to "Style * xxx, ..." commands
-  if (/^[ \t]*globalopts/i) { # Fix up GlobalOpts:
+  if (/^\s*globalopts/i) { # Fix up GlobalOpts:
     $newopts = '';
     @rest=@Fld;			# copy the whole line
     shift @rest;		# remove first element
@@ -112,7 +111,7 @@ line: while ( <IN> ) {
     next line;
   }
 
-  if (/^[ \t]*HILIGHTCOLOR\s/i) {
+  if (/^\s*HILIGHTCOLOR\s/i) {
     @colors = split("/", $Fld[2], 9999);
     if ($colors[2] eq '') {
       $colors[1] = $Fld[2];
@@ -123,32 +122,32 @@ line: while ( <IN> ) {
     next line;
   }
 
-  if (/^[ \t]*HILIGHTCOLORSET/i) {
+  if (/^\s*HILIGHTCOLORSET/i) {
     print "Style \"*\" HilightColorset " . $Fld[2];
     next line;
   }
 
-  if (/^[ \t]*WINDOWSHADEANIMATE/i) {
+  if (/^\s*WINDOWSHADEANIMATE/i) {
     print "Style \"*\" WindowShadeSteps " . $Fld[2];
     next line;
   }
 
-  if (/^[ \t]*WINDOWFONT/i) {
+  if (/^\s*WINDOWFONT/i) {
     print "Style \"*\" Font " . $Fld[2];
     next line;
   }
 
-  if (/^[ \t]*ICONFONT/i) {
+  if (/^\s*ICONFONT/i) {
     print "Style \"*\" IconFont " . $Fld[2];
     next line;
   }
 
-  if (/^[ \t]*COLORLIMIT/i) {
+  if (/^\s*COLORLIMIT/i) {
     print '# Removed by fvwm24_convert: ' . $_;
     next line;
   }
 
-  if (/^[ \t]*MODULEPATH/i) {
+  if (/^\s*MODULEPATH/i) {
     # Deletes continuation lines too, although if there are
     # continuation lines, there might be some part of the path we want to
     # Delete them anyway.
@@ -159,15 +158,22 @@ line: while ( <IN> ) {
     }
     next line;
   }
-  if (/^\s*[*]\S+PANEL[ \t"']/i) {
+  if (/^\s*[*]\S+PANEL/i) {
     print STDERR "Possible old style FvwmButtons Panel definition found";
     print STDERR "  $_";
     print STDERR "  See FvwmButtons(1), \"CONVERTING OLD PANEL CONFIGURATIONS\"";
   }
-  if (/^[ \t]*READ/i) {
+  if (/^\s*READ/i) {
     print STDERR "Read command found, check file for conversion issues:";
     print STDERR "  $_";
   }
+
+  if (/RANDOMPLACEMENT|ACTIVEPLACEMENT|SMARTPLACEMENT|DUMBPLACEMENT|CLEVERPLACEMENT/i) {
+    print STDERR "Placement style names can not be converted automatically:";
+    print STDERR "  $_";
+    print STDERR "  See fvwm2(1), \"Window manager placement\" for instructions.";
+  }
+
   print $_;			# pass everything else thru
 }
 exit 0;
