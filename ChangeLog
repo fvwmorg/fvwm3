@@ -1,3 +1,12 @@
+1999-01-09  Bob Woodside  <proteus@pcnet.com>
+
+	* fvwm/events.c (HandleConfigureRequest): added resynchronization of
+	* the stacking order ring when an app requests a change in its window's
+	* place in the Great Chain of Being.
+	* fvwm/misc.c (RaiseWindow): re-enabled Matthias Clasen's fix to keep
+	* FVWM-managed windows from being raised above override_redirect
+	* windows.
+
 1999-01-07  Dominik Vogt  <dominik_vogt@hp.com>
 
 	* **/*: Applied tons of cosmetic fixes from the Red Hat patches

@@ -57,8 +57,6 @@ Bugfixes:
         MotionThreshold not exceeded & ClickTime not exceeded -> DoubleClick
   - Make transient FvwmWinList reposition itself & pointer if popped up
     off the screen (like built in menus)
-  - If programs raise their own windows (XEmacs 'other-frame', for example)
-    new stacking order isn't communicated to fvwm
   - Maximize XTerm, change font, UnMaximize, XTerm goes to wrong window size
     (still unfixed on 28-Nov-1998)
   - Colormaps and xlock -install -mode blank (& swirl) interaction still
