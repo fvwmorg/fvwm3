@@ -53,7 +53,7 @@ Style "xmh"	    TileCascadePlacement, StartsOnDesk 2, NoButton 2
 Style "xman"	    Icon xman.xpm,TileCascadePlacement,ClickToFocus
 Style "xvgr"	    Icon graphs.xpm,TileCascadePlacement,ClickToFocus
 Style "matlab"	    Icon math4.xpm,ClickToFocus
-Style "xmag"	    Icon mag_glass.xpm,TileCascadePlacement, ClickToFocus
+Style "xmag"	    Icon mag_glass.xpm,CenterPlacement, ClickToFocus
 Style "xgraph"      Icon graphs.xpm,TileCascadePlacement,ClickToFocus
 Style "sppeed6"     Icon math3.xpm,NoTitle,ClickToFocus
 Style "sppeed6_user" Icon math4.xpm,NoTitle

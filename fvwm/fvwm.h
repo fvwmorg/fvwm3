@@ -467,8 +467,9 @@ typedef struct
 #define PLACE_TILECASCADE       0x5
 #define PLACE_CASCADE_B         0x6
 #define PLACE_MINOVERLAP        0x7
-#define PLACE_MASK              0x7
-	unsigned placement_mode : 3;
+#define PLACE_CENTER		0x8
+#define PLACE_MASK              0xF
+	unsigned placement_mode : 4;
 	unsigned ewmh_placement_mode : 2; /* see ewmh.h */
 #define WS_CR_MOTION_METHOD_AUTO CR_MOTION_METHOD_AUTO
 #define WS_CR_MOTION_METHOD_USE_GRAV CR_MOTION_METHOD_USE_GRAV

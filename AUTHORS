@@ -25,7 +25,7 @@ Wrote FvwmTabs and improved Perl/Tk module support. FakeKeyPress
 command.
 
 Francis Litterio:
-Fixed building FvwmScript under cygwin.
+Fixed building FvwmScript under cygwin.  Added CenterPlacement style.
 
 David Fries:
 Fixed the GNOME1 patch. WindowList class name sorting.

@@ -2096,7 +2096,13 @@ static Bool style_parse_one_style_option(
 		break;
 
 	case 'c':
-		if (StrEquals(token, "CascadePlacement"))
+		if (StrEquals(token, "CenterPlacement"))
+		{
+			ps->flags.placement_mode = PLACE_CENTER;
+			ps->flag_mask.placement_mode = PLACE_MASK;
+			ps->change_mask.placement_mode = PLACE_MASK;
+		}
+		else if (StrEquals(token, "CascadePlacement"))
 		{
 			ps->flags.placement_mode = PLACE_CASCADE;
 			ps->flag_mask.placement_mode = PLACE_MASK;

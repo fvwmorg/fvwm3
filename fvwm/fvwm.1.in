@@ -6256,7 +6256,7 @@ slashes ('/').  The last style in these groups is the default.
 .IR StickyAcrossDesksIcon " / " !StickyAcrossDesksIcon ,
 .IR ManualPlacement " / " CascadePlacement " / " MinOverlapPlacement " / "
 .IR MinOverlapPercentPlacement " / " TileManualPlacement " / "
-.IR TileCascadePlacement ,
+.IR TileCascadePlacement , " / " CenterPlacement ,
 .IR MinOverlapPlacementPenalties ,
 .IR MinOverlapPercentPlacementPenalties ,
 .IR DecorateTransient " / " NakedTransient ,
@@ -7294,6 +7294,9 @@ they do neither, then the window manager steps in to find a place
 for the window.  Fvwm knows six ways to deal with this
 situation. The default is
 .IR TileCascadePlacement .
+
+.I CenterPlacement
+automatically places new windows in the center of the display.
 
 .I CascadePlacement
 automatically place new windows in a cascading fashion.

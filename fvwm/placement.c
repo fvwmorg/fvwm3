@@ -898,6 +898,19 @@ static Bool __place_get_wm_pos(
 	reason->pos.algo = placement_mode;
 	switch (placement_mode)
 	{
+	case PLACE_CENTER:
+		attr_g->x = (screen_g.width - fw->frame_g.width) / 2;
+		attr_g->y = ((screen_g.height - fw->frame_g.height) / 2);
+		/* Don't let the upper left corner be offscreen. */
+		if (attr_g->x < PageLeft)
+		{
+			attr_g->x = PageLeft;
+		}
+		if (attr_g->y < PageTop)
+		{
+			attr_g->y = PageTop;
+		}
+		break;
 	case PLACE_TILEMANUAL:
 		flags.is_smartly_placed = SmartPlacement(
 			fw, &screen_g, fw->frame_g.width, fw->frame_g.height,
@@ -1784,6 +1797,9 @@ static void __explain_placement(FvwmWindow *fw, placement_reason_t *reason)
 
 		switch (reason->pos.algo)
 		{
+		case PLACE_CENTER:
+			a = "Center";
+			break;
 		case PLACE_TILEMANUAL:
 			a = "TileManual";
 			break;

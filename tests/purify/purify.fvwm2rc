@@ -459,6 +459,8 @@ AddToFunc BugOpts-Func
  + I BugOpts
  + I BugOpts FooBugs True
  + I BugOpts EWMHIconicStateWorkaround, FooBugs
+ + I BugOpts ExplainWindowPlacement on
+ + I BugOpts ExplainWindowPlacement off
 
 AddTest "Test BusyCursor" BusyCursor-Func
 AddToFunc BusyCursor-Func
@@ -1618,7 +1620,7 @@ AddToFunc Style2-Func
  + I StyleAndUpdate "window*" StickyAcrossDesksIcon
  + I StyleAndUpdate "window*" !StickyAcrossDesksIcon
  + I StyleAndUpdate "window*" !StickyAcrossDesksIcon
-# old names for pacement
+# old names for placement
  + I StyleAndUpdate "window*" SmartPlacement
  + I StyleAndUpdate "window*" SmartPlacement
  + I Exec xterm -geometry 10x5 -T window7 -n window7 -e sleep 1000
@@ -1657,8 +1659,14 @@ AddToFunc Style2-Func
  + I Exec xterm -geometry 10x5 -T window7 -n window7 -e sleep 1000
  + I Wait window7
  + I All (window7) Close
+
  + I StyleAndUpdate "window*" MinOverlapPercentPlacement
  + I StyleAndUpdate "window*" MinOverlapPercentPlacement
+ + I Exec xterm -geometry 10x5 -T window7 -n window7 -e sleep 1000
+ + I Wait window7
+ + I All (window7) Close
+ + I StyleAndUpdate "window*" CenterPlacement
+ + I StyleAndUpdate "window*" centerplacement
  + I Exec xterm -geometry 10x5 -T window7 -n window7 -e sleep 1000
  + I Wait window7
  + I All (window7) Close
