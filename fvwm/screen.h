@@ -169,11 +169,18 @@ typedef enum
 	BS_All = -1,
 	BS_ActiveUp,
 	BS_ActiveDown,
-	BS_Inactive,
+	BS_InactiveUp,
+	BS_InactiveDown,
 	BS_ToggledActiveUp,
 	BS_ToggledActiveDown,
+	BS_ToggledInactiveUp,
+	BS_ToggledInactiveDown,
+	BS_MaxButtonState,
+	BS_Active = BS_MaxButtonState,
+	BS_Inactive,
+	BS_ToggledActive,
 	BS_ToggledInactive,
-	BS_MaxButtonState
+	BS_MaxButtonStateName,
 } ButtonState;
 
 typedef enum
@@ -407,6 +414,7 @@ typedef struct ScreenInfo
     unsigned EmulateWIN : 1;
     unsigned use_active_down_buttons : 1;
     unsigned use_inactive_buttons : 1;
+    unsigned use_inactive_down_buttons : 1;
     unsigned do_hide_position_window : 1;
     unsigned do_hide_resize_window : 1;
   } gs; /* global style structure */

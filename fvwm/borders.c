@@ -490,35 +490,31 @@ static Bool is_button_toggled(
 static ButtonState border_flags_to_button_state(
 	int is_pressed, int is_lit, int is_toggled)
 {
-	if (Scr.gs.use_active_down_buttons)
+	if (!is_lit && Scr.gs.use_inactive_buttons)
 	{
-		if (Scr.gs.use_inactive_buttons && !is_lit)
+		if (is_pressed && Scr.gs.use_inactive_down_buttons)
 		{
-			return (is_toggled) ? BS_ToggledInactive : BS_Inactive;
+fprintf(stderr, "\tYahoo!\n");
+			return (is_toggled) ?
+				BS_ToggledInactiveDown : BS_InactiveDown;
 		}
 		else
 		{
-			if (is_pressed)
-			{
-				return (is_toggled) ?
-					BS_ToggledActiveDown : BS_ActiveDown;
-			}
-			else
-			{
-				return (is_toggled) ?
-					BS_ToggledActiveUp : BS_ActiveUp;
-			}
+			return (is_toggled) ?
+				BS_ToggledInactiveUp : BS_InactiveUp;
 		}
 	}
 	else
 	{
-		if (Scr.gs.use_inactive_buttons && !is_lit)
+		if (is_pressed && Scr.gs.use_active_down_buttons)
 		{
-			return (is_toggled) ? BS_ToggledInactive : BS_Inactive;
+			return (is_toggled) ?
+				BS_ToggledActiveDown : BS_ActiveDown;
 		}
 		else
 		{
-			return (is_toggled) ? BS_ToggledActiveUp : BS_ActiveUp;
+			return (is_toggled) ?
+				BS_ToggledActiveUp : BS_ActiveUp;
 		}
 	}
 }
@@ -2742,6 +2738,8 @@ void CMD_ButtonState(F_CMD_ARGS)
 				DEFAULT_USE_ACTIVE_DOWN_BUTTONS;
 			Scr.gs.use_inactive_buttons =
 				DEFAULT_USE_INACTIVE_BUTTONS;
+			Scr.gs.use_inactive_down_buttons =
+				DEFAULT_USE_INACTIVE_DOWN_BUTTONS;
 			return;
 		}
 		first = False;
@@ -2755,7 +2753,13 @@ void CMD_ButtonState(F_CMD_ARGS)
 		{
 			Scr.gs.use_inactive_buttons = ParseToggleArgument(
 				action, &action,
-				DEFAULT_USE_ACTIVE_DOWN_BUTTONS, True);
+				DEFAULT_USE_INACTIVE_BUTTONS, True);
+		}
+		else if (StrEquals("inactivedown", token))
+		{
+			Scr.gs.use_inactive_down_buttons = ParseToggleArgument(
+				action, &action,
+				DEFAULT_USE_INACTIVE_DOWN_BUTTONS, True);
 		}
 		else
 		{
@@ -2763,8 +2767,10 @@ void CMD_ButtonState(F_CMD_ARGS)
 				DEFAULT_USE_ACTIVE_DOWN_BUTTONS;
 			Scr.gs.use_inactive_buttons =
 				DEFAULT_USE_INACTIVE_BUTTONS;
+			Scr.gs.use_inactive_down_buttons =
+				DEFAULT_USE_INACTIVE_DOWN_BUTTONS;
 			fvwm_msg(ERR, "cmd_button_state",
-				 "unknown button state %s\n", token);
+				 "Unknown button state %s", token);
 			return;
 		}
 	}

@@ -100,13 +100,19 @@ typedef struct
 static char *exec_shell_name="/bin/sh";
 
 /* button state strings must match the enumerated states */
-static char *button_states[BS_MaxButtonState + 1] =
+static char *button_states[BS_MaxButtonStateName + 1] =
 {
 	"ActiveUp",
 	"ActiveDown",
-	"Inactive",
+	"InactiveUp",
+	"InactiveDown",
 	"ToggledActiveUp",
 	"ToggledActiveDown",
+	"ToggledInactiveUp",
+	"ToggledInactiveDown",
+	"Active",
+	"Inactive",
+	"ToggledActive",
 	"ToggledInactive",
 	NULL
 };
@@ -196,9 +202,9 @@ static char *ReadTitleButton(
 	char *t;
 	int i;
 	int bs;
+	int bs_start, bs_end;
 	int pstyle = 0;
 	DecorFace tmpdf;
-	Bool do_set_all = False;
 
 	s = SkipSpaces(s, NULL, 0);
 	t = GetNextTokenIndex(s, button_states, 0, &bs);
@@ -206,9 +212,32 @@ static char *ReadTitleButton(
 	{
 		s = SkipSpaces(t, NULL, 0);
 	}
-	else
+
+	bs_start = bs_end = bs;
+	if (bs == BS_All)
 	{
-		do_set_all = True;
+		bs_start = 0;
+		bs_end = BS_MaxButtonState - 1;
+	}
+	else if (bs == BS_Active)
+	{
+		bs_start = BS_ActiveUp;
+		bs_end = BS_ActiveDown;
+	}
+	else if (bs == BS_Inactive)
+	{
+		bs_start = BS_InactiveUp;
+		bs_end = BS_InactiveDown;
+	}
+	else if (bs == BS_ToggledActive)
+	{
+		bs_start = BS_ToggledActiveUp;
+		bs_end = BS_ToggledActiveDown;
+	}
+	else if (bs == BS_ToggledInactive)
+	{
+		bs_start = BS_ToggledInactiveUp;
+		bs_end = BS_ToggledInactiveDown;
 	}
 
 	if (*s == '(')
@@ -217,8 +246,9 @@ static char *ReadTitleButton(
 		pstyle = 1;
 		if (!(end = strchr(++s, ')')))
 		{
-			fvwm_msg(ERR, "ReadTitleButton",
-				 "missing parenthesis: %s", s);
+			fvwm_msg(
+				ERR, "ReadTitleButton",
+				"missing parenthesis: %s", s);
 			return NULL;
 		}
 		s = SkipSpaces(s, NULL, 0);
@@ -237,28 +267,21 @@ static char *ReadTitleButton(
 	memset(&tmpdf, 0, sizeof(DecorFace));
 	DFS_FACE_TYPE(tmpdf.style) = SimpleButton;
 
-	if (strncmp(spec, "--",2)==0)
+	if (strncmp(spec, "--", 2) == 0)
 	{
 		/* only change flags */
-		if (do_set_all)
+		Bool verbose = True;
+		for (i = bs_start; i <= bs_end; ++i)
 		{
-			for (i = 0; i < BS_MaxButtonState; ++i)
-			{
-				ReadDecorFace(
-					spec, &TB_STATE(*tb)[i], BS_All, !i);
-			}
-		}
-		else
-		{
-			ReadDecorFace(spec, &TB_STATE(*tb)[bs], button, True);
+			ReadDecorFace(spec, &TB_STATE(*tb)[i], button, verbose);
+			verbose = False;
 		}
 	}
 	else if (ReadDecorFace(spec, &tmpdf, button, True))
 	{
-		int b = (do_set_all) ? 0 : bs;
 		if (append)
 		{
-			DecorFace *head = &TB_STATE(*tb)[b];
+			DecorFace *head = &TB_STATE(*tb)[bs_start];
 			DecorFace *tail = head;
 			DecorFace *next;
 
@@ -269,12 +292,13 @@ static char *ReadTitleButton(
 			tail->next = (DecorFace *)safemalloc(sizeof(DecorFace));
 			memcpy(tail->next, &tmpdf, sizeof(DecorFace));
 			if (DFS_FACE_TYPE(tail->next->style) == VectorButton &&
-			    DFS_FACE_TYPE((&TB_STATE(*tb)[b])->style) ==
+			    DFS_FACE_TYPE((&TB_STATE(*tb)[bs_start])->style) ==
 			    DefaultVectorButton)
 			{
 				/* override the default vector style */
-				memcpy(&tail->next->style, &head->style,
-				       sizeof(DecorFaceStyle));
+				memcpy(
+					&tail->next->style, &head->style,
+					sizeof(DecorFaceStyle));
 				DFS_FACE_TYPE(tail->next->style) = VectorButton;
 				next = head->next;
 				head->next = NULL;
@@ -282,68 +306,53 @@ static char *ReadTitleButton(
 				memcpy(head, next, sizeof(DecorFace));
 				free(next);
 			}
-			if (do_set_all)
+			for (i = bs_start + 1; i <= bs_end; ++i)
 			{
-				for (i = 1; i < BS_MaxButtonState; ++i)
+				head = &TB_STATE(*tb)[i];
+				tail = head;
+				while (tail->next)
 				{
-					if (i == b)
-					{
-						/* already done above */
-						continue;
-					}
-					head = &TB_STATE(*tb)[i];
-					tail = head;
-					while (tail->next)
-					{
-						tail = tail->next;
-					}
-					tail->next = (DecorFace *)safemalloc(
-						sizeof(DecorFace));
-					memset(&DFS_FLAGS(tail->next->style), 0,
-					       sizeof(DFS_FLAGS(tail->next->
-								style)));
+					tail = tail->next;
+				}
+				tail->next = (DecorFace *)safemalloc(
+					sizeof(DecorFace));
+				memset(
+					&DFS_FLAGS(tail->next->style), 0,
+					sizeof(DFS_FLAGS(tail->next->style)));
+				DFS_FACE_TYPE(tail->next->style) =
+					SimpleButton;
+				tail->next->next = NULL;
+				ReadDecorFace(spec, tail->next, button, False);
+				if (DFS_FACE_TYPE(tail->next->style) ==
+				    VectorButton &&
+				    DFS_FACE_TYPE((&TB_STATE(*tb)[i])->style) ==
+				    DefaultVectorButton)
+				{
+					/* override the default vector style */
+					memcpy(
+						&tail->next->style,
+						&head->style,
+						sizeof(DecorFaceStyle));
 					DFS_FACE_TYPE(tail->next->style) =
-						SimpleButton;
-					tail->next->next = NULL;
-					ReadDecorFace(
-						spec, tail->next, button,
-						False);
-					if (DFS_FACE_TYPE(tail->next->style) ==
-					    VectorButton &&
-					    DFS_FACE_TYPE(
-						    (&TB_STATE(*tb)[i])->style)
-					    == DefaultVectorButton)
-					{
-						/* override the default vector
-						 * style */
-						memcpy(&tail->next->style,
-						       &head->style,
-						       sizeof(DecorFaceStyle));
-						DFS_FACE_TYPE(
-							tail->next->style) =
-							VectorButton;
-						next = head->next;
-						head->next = NULL;
-						FreeDecorFace(dpy, head);
-						memcpy(head, next,
-						       sizeof(DecorFace));
-						free(next);
-					}
+						VectorButton;
+					next = head->next;
+					head->next = NULL;
+					FreeDecorFace(dpy, head);
+					memcpy(head, next, sizeof(DecorFace));
+					free(next);
 				}
 			}
 		}
 		else
 		{
-			FreeDecorFace(dpy, &TB_STATE(*tb)[b]);
-			memcpy(&(TB_STATE(*tb)[b]), &tmpdf, sizeof(DecorFace));
-			if (do_set_all)
+			FreeDecorFace(dpy, &TB_STATE(*tb)[bs_start]);
+			memcpy(
+				&(TB_STATE(*tb)[bs_start]), &tmpdf,
+				sizeof(DecorFace));
+			for (i = bs_start + 1; i <= bs_end; ++i)
 			{
-				for (i = 1; i < BS_MaxButtonState; ++i)
-				{
-					ReadDecorFace(
-						spec, &TB_STATE(*tb)[i],
-						button, False);
-				}
+				ReadDecorFace(
+					spec, &TB_STATE(*tb)[i], button, False);
 			}
 		}
 	}

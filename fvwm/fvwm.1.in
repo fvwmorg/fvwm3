@@ -7101,13 +7101,15 @@ Adds a button style to
 .I button
 can be a button number, or one of "All", "Left" or "Right".
 .I state
-can be "ActiveUp," "ActiveDown" or "Inactive" or any of these
-three with "Toggled" prepended.  "ActiveUp" selects the style of
-the button when the window has the focus and the button is not
-pressed. "ActiveDown" is similar but applies when the button is
-pressed while the "Inactive" style is used for windows without the
-focus.  The "Toggled" prefix refers to maximized, shaded or sticky
-windows that have the corresponding
+can be "ActiveUp", "ActiveDown", "InactiveUp" or "InactiveDown",
+or "Active" (the same as both "ActiveUp" and "ActiveDown")
+or "Inactive" (the same as both "InactiveUp" and "InactiveDown")
+or any of these 6 with "Toggled" prepended.
+The "Active" states apply to the focussed window, the "Inactive"
+ones apply to all other windows. The "Up" states apply to the
+non pressed buttons, the "Down" ones apply to pressed buttons.
+The "Toggled" prefix refers to maximized, shaded or sticky windows
+that have the corresponding
 .I MwmDecor...
 button style set.  If
 .I state
@@ -7156,8 +7158,10 @@ all state.
 \fB...]\fP"
 Adds a title style to the title-bar.
 .I state
-can be one of "ActiveUp," "ActiveDown" or "Inactive" or any of
-these with "Toggled" prepended.  If
+can be "ActiveUp", "ActiveDown", "InactiveUp" or "InactiveDown",   
+or "Active" (the same as both "ActiveUp" and "ActiveDown") 
+or "Inactive" (the same as both "InactiveUp" and "InactiveDown")
+or any of these 6 with "Toggled" prepended.  If
 .I state
 is omitted, then the style is added to every state.  If the
 .IR style " and " flags
@@ -7225,13 +7229,16 @@ The following example creates a decor "FlatDecor" and style
 "FlatStyle".  They are distinct entities:
 .EX
 AddToDecor FlatDecor
- + ButtonStyle All ActiveUp (-- flat) \\
-   Inactive (-- flat)
- + TitleStyle -- flat
- + BorderStyle -- HiddenHandles NoInset
++ ButtonStyle All \\
+    Active   (-- flat) \\
+    Inactive (-- flat)
++ TitleStyle  -- flat
++ BorderStyle -- HiddenHandles NoInset
 
-Style FlatStyle UseDecor FlatDecor, \\
-     Color white/grey40,HandleWidth 4
+Style FlatStyle \\
+    UseDecor FlatDecor, HandleWidth 4, \\
+    ForeColor   white, BackColor   grey40, \\
+    HilightFore black, HilightBack grey70
 
 Style xterm UseStyle FlatStyle
 .EE
@@ -7243,8 +7250,7 @@ A decor can be destroyed with
 DestroyDecor FlatDecor
 AddToDecor FlatDecor ...
 
-Style FlatStyle UseDecor FlatDecor, \\
-     Color white/grey40,HandleWidth 4
+Style FlatStyle UseDecor FlatDecor
 .EE
 and now apply the style again:
 .EX
@@ -7329,13 +7335,14 @@ title-bar buttons can inherit the border style with the
 flag (see
 .BR ButtonStyle ).
 
-.TP
-.BI "ButtonState [" "ActiveDown bool" "] [" "inactive bool" "]"
+.IP "\fBButtonState [\fP\fIActiveDown\fP bool\fB]\
+ [\fP\fIInactive\fP bool\fB]\
+ [\fP\fIInactiveDown\fP bool\fB]\fP
 The
 .B ButtonState
 command controls which states of the window titles and title
-buttons are used.  The default is to use all three states:
-"ActiveUp", "ActiveDown" and "Inactive" (see
+buttons are used.  The default is to use all four states:
+"ActiveUp", "ActiveDown", "InactiveUp" and "InactiveDown" (see
 .BR ButtonStyle " and " TitleStyle
 commands).  The
 .I bool
@@ -7344,11 +7351,24 @@ used ("True") or not ("False").  The "ActiveUp" state cannot be
 deactivated. If no arguments are provided or the given arguments
 are illegal, the default is restored.
 
-The "ActiveDown" state allows different button styles for pressed
-down buttons and titles on active windows.  Otherwise the
-"ActiveUp" state is used instead.  The "Inactive" state allows
-different button and title styles for inactive windows.  Otherwise
-the "ActiveUp" state is used instead.
+If
+.I ActiveDown
+argument is "False", no different button style
+for the pressed down buttons used, instead "ActiveUp" state is
+used even when button is pressed.
+
+If
+.I Inactive
+argument is "False", focused and unfocused windows
+look similarly, the corresponding "Active" states are always used.
+
+If
+.I InactiveDown
+argument is "False" (only applied when
+.I Inactive
+is "True"), the pressed titles and title buttons in non-focussed
+windows are drawn using "InactiveUp" or "ActiveUp" states
+depending on the values of the other key words.
 
 .IP "\fBButtonStyle\fP \fIbutton\fP \
 \fB[\fP\fIstate\fP\
@@ -7373,9 +7393,12 @@ definitions can be specified per line.
 refers to which button state should be set.  Button states are
 defined as follows: "ActiveUp" and "ActiveDown" refer to the
 un-pressed and pressed states for buttons on active windows; while
-the "Inactive" state denotes buttons on inactive windows.  The
-"ToggledActiveUp", "ToggledActiveDown" and "ToggledInactive"
-states are used instead for buttons which have one of the
+the "InactiveUp" and "InactiveDown" states denote buttons on
+inactive windows.  Shortcut "Active" denotes both "ActiveUp" and
+"ActiveDown" states.  Shortcut "Inactive" denotes both "InactiveUp"
+and "InactiveDown" states.
+The similar state names like just described, but with the "Toggled"
+prefix are used instead for title buttons which have one of the
 .IR MwmDecorMax ", " MwmDecorShade ", " MwmDecorStick " or " MwmDecorLayer
 hints, if the window is maximized, shaded or sticky, respectively.
 .EX
@@ -7393,7 +7416,7 @@ Mouse 0 6 N WindowShade
 .EE
 If
 .I state
-is "ActiveUp", "ActiveDown", "Inactive", or a "Toggled" variant,
+is specified,
 that particular button state is set.  If
 .I state
 is omitted, every state is set.  Specifying a style destroys the
@@ -7482,13 +7505,14 @@ with both
 left unset.
 
 .I Important note
-for the "ActiveDown" state:  When a button is pressed, the relief
-is inverted.  Because of this, to obtain a sunken "ActiveDown"
-state you must specify the opposite of the desired relief (i.e. to
-obtain a pressed-in look which is raised, specify
+for the "ActiveDown" and "InactiveDown" states:  When a button is
+pressed, the relief is inverted.  Because of this, to obtain the
+raised look in "ActiveDown" or "InactiveDown" states you must
+specify the opposite of the desired relief (i.e.
 .I Sunk
-for "ActiveDown").  This behavior is consistent, but may seem
-confusing at first.  The same applies to the "Toggled" state.
+for "ActiveDown" or "InactiveDown").  This behavior is consistent,
+but may seem confusing at first.  The same applies to the
+"Toggled" states.
 
 Button styles are classified as non-destructive, partially
 destructive, or fully destructive.  Non-destructive styles do not
@@ -7576,14 +7600,16 @@ styles are fully destructive.
 The
 .I Pixmap
 style displays a pixmap.  A pixmap should be specified as an
-argument.  For example, the following would give button 2 the same
-pixmap for both states, and button 4 different pixmaps for the up,
-down and inactive states.
+argument.  For example, the following would give button number 2
+the same pixmap for all 4 states (2 active and 2 inactive), and
+button number 4 all different pixmaps.
 .EX
 ButtonStyle 2 Pixmap my_pixmap.xpm
-ButtonStyle 4 ActiveUp (Pixmap up.xpm) \\
-  ActiveDown (Pixmap down.xpm)
-ButtonStyle 4 Inactive Pixmap inactive.xpm
+ButtonStyle 4 \\
+    ActiveUp   (Pixmap activeup.xpm) \\
+    ActiveDown (Pixmap activedown.xpm) \\
+    Inactive   (Pixmap inactiveup.xpm)
+ButtonStyle 4 InactiveDown Pixmap inactivedown.xpm
 .EE
 The pixmap specification can be given as an absolute or relative
 pathname (see
@@ -7766,7 +7792,14 @@ are plans to replace it with a more flexible solution in fvwm-3.0.
 
 Sets the style for the title-bar.
 .I state
-can be one of  "ActiveUp", "ActiveDown", or "Inactive".  If
+can be one of "ActiveUp", "ActiveDown", "InactiveUp",
+or "InactiveDown". Shortcuts "Active" and "Inactive" are allowed.
+The states with the "Toggled" prefix are allowed too, the title
+itself does not use "Toggled" states, but these states are used
+for the buttons with
+.B ButtonStyle
+.IR UseTitleStyle .
+If
 .I state
 is omitted, then the
 .I style
@@ -7791,17 +7824,18 @@ regarding the "ActiveDown" state.  Examples:
 .EX
 TitleStyle ActiveUp HGradient 16 navy black
 TitleStyle ActiveDown (Solid red -- flat) \\
-  Inactive (TiledPixmap wood.xpm)
+    Inactive (TiledPixmap wood.xpm)
 TitleStyle ActiveUp (-- Flat) ActiveDown  \\
-  (-- Raised) Inactive (-- Flat)
+    (-- Raised) InactiveUp (-- Flat) \\
+    InactiveDown (-- Sunk)
 .EE
 This sets the "ActiveUp" state to a horizontal gradient, the
-"ActiveDown" state to solid red, and the "Inactive" state to a
-tiled wood pixmap. Finally, "ActiveUp" is set to look flat, while
-"ActiveDown" set to be sunk (the
+"ActiveDown" state to solid red, and the "Inactive" states to a
+tiled wood pixmap. Finally, "ActiveUp" and "InactiveUp" are set
+to look flat, while "ActiveDown" set to be sunk (the
 .I Raised
 flag for the "ActiveDown" state causes it to appear sunk due to
-relief inversion), and "Inactive" is set to flat as well. An
+relief inversion), and "InactiveDown" is set to look raised. An
 example which sets flags for all states:
 .EX
 TitleStyle -- flat
@@ -7809,8 +7843,7 @@ TitleStyle -- flat
 For a flattened look:
 .EX
 TitleStyle -- flat
-ButtonStyle All ActiveUp (-- flat) Inactive \\
-  (-- flat)
+ButtonStyle All Active (-- flat) Inactive (-- flat)
 .EE
 .B TitleStyle
 in addition to a simple

@@ -21,6 +21,13 @@ Changes in alpha release 2.5.4 (not released yet)
 
 * Alpha blending rendering is supported even without XRender support
 
+* Enhanced commands [Add]ButtonStyle, [Add]TitleStyle. ButtonState.
+  Titles and buttons now have 4 main states instead of 3: ActiveUp,
+  ActiveDown, InactiveUp and InactiveDown, plus 4 Toggled variants.
+  Several shortcuts added: Active means ActiveUp + ActiveDown,
+  Inactive means InactiveUp + InactiveDown, similarly for shortcuts
+  ToggledActive and ToggledInactive.
+
 -------------------------------------------------------------------
 
 Changes in alpha release 2.5.3 (25-Aug-2002)

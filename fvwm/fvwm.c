@@ -1181,6 +1181,7 @@ static void InitVariables(void)
 	Scr.gs.EmulateWIN = DEFAULT_EMULATE_WIN;
 	Scr.gs.use_active_down_buttons = DEFAULT_USE_ACTIVE_DOWN_BUTTONS;
 	Scr.gs.use_inactive_buttons = DEFAULT_USE_INACTIVE_BUTTONS;
+	Scr.gs.use_inactive_down_buttons = DEFAULT_USE_INACTIVE_DOWN_BUTTONS;
 	/* Not the right place for this, should only be called once
 	 * somewhere .. */
 
@@ -1233,11 +1234,11 @@ static void setVersionInfo(void)
 	Fvwm_VersionInfo = safestrdup(version_str);
 
 	sprintf(license_str,
-		"fvwm comes with NO WARRANTY, to the extent permitted\n"
-		"by law.  You may redistribute copies of fvwm under\n"
-		"the terms of the GNU General Public License.  For\n"
-		"more information about these matters, see the file\n"
-		"named COPYING.");
+		"fvwm comes with NO WARRANTY, to the extent permitted by law. "
+		"You may\nredistribute copies of fvwm under "
+		"the terms of the GNU General Public License.\n"
+		"For more information about these matters, see the file "
+		"named COPYING.\n");
 	Fvwm_LicenseInfo = safestrdup(license_str);
 
 #ifdef HAVE_READLINE
@@ -1267,7 +1268,7 @@ static void setVersionInfo(void)
 	strcat(support_str, " SM,");
 #endif
 #ifdef HAVE_BIDI
-	strcat(support_str, " bidi text,");
+	strcat(support_str, " Bidi text,");
 #endif
 #ifdef HAVE_XINERAMA
 	strcat(support_str, " Xinerama,");
