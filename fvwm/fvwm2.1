@@ -3974,8 +3974,8 @@ allow you to abort the command.
 
 The
 .B StrokeFunc
-command has four options:
-.IR NotStayPressed ", " EchoSequence ", " DrawMotion " and " FeedBack .
+command has five options:
+.IR NotStayPressed ", " EchoSequence ", " DrawMotion ", " FeedBack " and " StrokeWidth.
 These options are disabled by default.
 .I EchoSequence
 causes fvwm to Echo the recorded stroke sequence.
@@ -3987,6 +3987,10 @@ causes fvwm to display during a fraction of second the cursor of the
 context of the
 .B CursorStyle
 command if the recorded stroke sequence corresponds to a stroke binding.
+.I StrokeWidth
+takes an integer argument, which must be  >= 0 and <= 100 and which defines
+the width of the line for the 
+.I DrawMotion option.
 
 .I NotStayPressed
 works only if

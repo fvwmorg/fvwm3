@@ -2756,7 +2756,6 @@ void setShadeAnim(F_CMD_ARGS)
 
 /* A function to handle stroke (olicha Nov 11, 1999) */
 #ifdef HAVE_STROKE
-#define MAX_DRAWING_LINES 120
 void strokeFunc(F_CMD_ARGS)
 {
   int finished = 0;
@@ -2772,11 +2771,20 @@ void strokeFunc(F_CMD_ARGS)
   Bool echo_sequence = False;
   Bool draw_motion = False;
   int i = 0;
-  int x[MAX_DRAWING_LINES+1], y[MAX_DRAWING_LINES+1];
+
+  int* x = (int*)0;
+  int* y = (int*)0;
+  const int STROKE_CHUNK_SIZE = 0xff;
+  int coords_size = STROKE_CHUNK_SIZE;
+
   Window JunkRoot, JunkChild;
   int JunkX, JunkY;
   unsigned int JunkMask;
   Bool feed_back = False;
+  int stroke_width = 1;
+
+  x = (int*)safemalloc(coords_size * sizeof(int));
+  y = (int*)safemalloc(coords_size * sizeof(int));
 
   if(!GrabEm(CRS_STROKE, GRAB_NORMAL))
   {
@@ -2802,9 +2810,23 @@ void strokeFunc(F_CMD_ARGS)
       draw_motion = True;
     else if (StrEquals("FeedBack",opt))
       feed_back = True;
+    else if (StrEquals("StrokeWidth",opt))
+    {
+      /* stroke width takes a positive integer argument */
+      if (opt)
+        free(opt);
+      action = GetNextToken(action, &opt);
+      if (!opt)
+	fvwm_msg(WARN,"StrokeWidth","needs an integer argument");
+      /* we allow stroke_width == 0 which means drawing a `fast' line
+       * of width 1; the upper level of 100 is arbitrary */
+      else if (!sscanf(opt, "%d", &stroke_width) || stroke_width < 0 || stroke_width > 100) {
+	fvwm_msg(WARN,"StrokeWidth","Bad integer argument %d", stroke_width);
+	stroke_width = 1;
+      }
+    }
     else
       fvwm_msg(WARN,"StrokeFunc","Unknown option %s", opt);
-    /* Programming is not Mathematics ... */
     if (opt)
       free(opt);
   }
@@ -2837,7 +2859,7 @@ void strokeFunc(F_CMD_ARGS)
     MyXGrabServer(dpy);
     XQueryPointer(dpy, Scr.Root, &JunkRoot, &JunkChild, &x[0], &y[0],
 		&JunkX, &JunkY, &JunkMask);
-    XSetLineAttributes(dpy,Scr.XorGC,1,LineSolid,CapButt,JoinMiter);
+    XSetLineAttributes(dpy,Scr.XorGC,stroke_width,LineSolid,CapButt,JoinMiter);
   }
 
   while (!finished && !abort)
@@ -2854,10 +2876,24 @@ void strokeFunc(F_CMD_ARGS)
       stroke_record(eventp->xmotion.x,eventp->xmotion.y);
       if (draw_motion)
       {
-	if ((x[i] != eventp->xmotion.x || y[i] != eventp->xmotion.y) &&
-	    i < MAX_DRAWING_LINES)
+	if ((x[i] != eventp->xmotion.x || y[i] != eventp->xmotion.y))
 	{
 	  i++;
+	  if (i >= coords_size) {
+	    coords_size += STROKE_CHUNK_SIZE;
+	    x = (int*)realloc(x, coords_size * sizeof(int));
+	    y = (int*)realloc(y, coords_size * sizeof(int));
+	    if (!x || !y)
+	    {
+	      /* unlikely */
+	      fvwm_msg(WARN, 
+		       "strokeFunc","unable to allocate %d bytes ... aborted.",
+		       coords_size * sizeof(int));
+	      abort = 1;
+	      i = -1; /* no undrawing possible since either x or y == 0 */
+	      break;
+	    }
+	  }
 	  x[i] = eventp->xmotion.x;
 	  y[i] = eventp->xmotion.y;
 	  XDrawLine(dpy, Scr.Root, Scr.XorGC, x[i-1], y[i-1], x[i], y[i]);
@@ -2901,6 +2937,8 @@ void strokeFunc(F_CMD_ARGS)
     }
     XSetLineAttributes(dpy,Scr.XorGC,0,LineSolid,CapButt,JoinMiter);
     MyXUngrabServer(dpy);
+    free(x);
+    free(y);
   }
   if (start_event_type == KeyPress && finish_on_release)
     XUngrabKeyboard(dpy, CurrentTime);
