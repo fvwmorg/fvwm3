@@ -745,8 +745,8 @@ GNOME_SetWinArea(FvwmWindow *w)
   {
     if (IsRectangleOnThisPage(&(w->frame_g), w->Desk))
     {
-      val[0] = Scr.Vx;
-      val[1] = Scr.Vy;
+      val[0] = Scr.Vx / Scr.MyDisplayWidth;
+      val[1] = Scr.Vy / Scr.MyDisplayHeight;
     }
     else
     {
