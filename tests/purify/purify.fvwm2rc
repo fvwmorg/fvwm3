@@ -1270,6 +1270,18 @@ AddToFunc AddButtonStyleGradients-Func
  + I AddButtonStyle 3 hGradient 16 2 Red 20 Blue 80
  + I AddButtonStyle 3 hGradient 128 2 Red 20 Blue 80
  + I AddButtonStyle 3 hGradient 2 2 Red 20 Blue 80
+ + I AddButtonStyle ToggledActiveDown VGradient 55
+ + I AddButtonStyle ToggledActiveUp VGradient 55 b
+ + I AddButtonStyle ToggledInactive VGradient 55 blue
+ + I AddButtonStyle ActiveDown VGradient 55 blue
+ + I AddButtonStyle ActiveUp VGradient 55 blue r
+ + I AddButtonStyle Inactive VGradient 55 blue red
+ + I AddButtonStyle ActiveDown VGradient 20 3 blue 45 green
+ + I AddButtonStyle ActiveDown VGradient 20 3 blue 45 green 55 red
+ + I AddButtonStyle ActiveDown VGradient 20 3 blue 45 green 55 red 21
+ + I AddButtonStyle ActiveDown VGradient 20 3 blue 45 green 55 red 21 yellow
+ + I AddButtonStyle ActiveDown VGradient 20 3 blue 45 green 55 red 21 yellow 25
+ + I AddButtonStyle ActiveDown VGradient 20 2 blue 45 green -10 red
 
 AddTest "Test AddButtonStyleVectors" AddButtonStyleVectors-Func
 AddToFunc AddButtonStyleVectors-Func

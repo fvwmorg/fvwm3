@@ -397,27 +397,36 @@ unsigned int ParseGradient(char *gradient, char **rest, char ***colors_return,
 			   int **perc_return, int *nsegs_return)
 {
   char *item;
+  char *orig;
   unsigned int npixels;
   char **s_colors;
   int *perc;
   int nsegs, i, sum;
+  Bool is_syntax_error = False;
 
   /* get the number of colors specified */
   if (rest)
     *rest = gradient;
+  orig = gradient;
 
   if (GetIntegerArguments(gradient, &gradient, (int *)&npixels, 1) != 1 ||
       npixels < 2)
   {
-    fprintf(stderr, "ParseGradient: illegal number of colors in gradient\n");
+    fprintf(
+      stderr, "ParseGradient: illegal number of colors in gradient: '%s'\n",
+      orig);
     return 0;
   }
 
   /* get the starting color or number of segments */
   gradient = GetNextToken(gradient, &item);
-  if (!gradient || !item)
+  if (gradient)
   {
-    fprintf(stderr, "Incomplete gradient style\n");
+    gradient = SkipSpaces(gradient, NULL, 0);
+  }
+  if (!gradient || !*gradient || !item)
+  {
+    fprintf(stderr, "Incomplete gradient style: '%s'\n", orig);
     if (item)
       free(item);
     if (rest)
@@ -446,7 +455,7 @@ unsigned int ParseGradient(char *gradient, char **rest, char ***colors_return,
       nsegs = MAX_GRADIENT_SEGMENTS;
     s_colors = (char **)safemalloc(sizeof(char *) * (nsegs + 1));
     perc = (int *)safemalloc(sizeof(int) * nsegs);
-    for (i = 0; i <= nsegs; i++)
+    for (i = 0; !is_syntax_error && i <= nsegs; i++)
     {
       s_colors[i] = 0;
       gradient = GetNextToken(gradient, &s_colors[i]);
@@ -460,45 +469,47 @@ unsigned int ParseGradient(char *gradient, char **rest, char ***colors_return,
 	}
       }
     }
+    if (s_colors[nsegs] == NULL)
+    {
+      fprintf(
+	stderr, "ParseGradient: too few gradient segments: '%s'\n", orig);
+      is_syntax_error = True;
+    }
   }
 
   /* sanity check */
-  for (i = 0, sum = 0; i < nsegs; ++i)
+  for (i = 0, sum = 0; !is_syntax_error && i < nsegs; ++i)
   {
     int old_sum = sum;
+
     sum += perc[i];
     if (sum < old_sum)
     {
       /* integer overflow */
-      fprintf(stderr, "ParseGradient: multi gradient overflow");
-      for (i = 0; i <= nsegs; ++i)
-	if (s_colors[i])
-	  free(s_colors[i]);
-      free(s_colors);
-      free(perc);
-      if (rest)
-	*rest = gradient;
-      return 0;
+      fprintf(
+	stderr, "ParseGradient: multi gradient overflow: '%s'", orig);
+      is_syntax_error = 1;
+      break;
     }
   }
-  for (i = 0; i <= nsegs; i++)
+  if (is_syntax_error)
   {
-    if (s_colors[i] == 0)
+    for (i = 0; i <= nsegs; ++i)
     {
-      int j;
-
-      for (j = 0; j <= nsegs; j++)
+      if (s_colors[i])
       {
-	if (s_colors[j])
-	  free(s_colors[j]);
+	free(s_colors[i]);
       }
-      free(s_colors);
-      free(perc);
-      if (rest)
-	*rest = gradient;
-      return 0;
     }
+    free(s_colors);
+    free(perc);
+    if (rest)
+    {
+      *rest = gradient;
+    }
+    return 0;
   }
+
 
   /* sensible limits */
   if (npixels < 2)
@@ -833,7 +844,7 @@ Pixmap CreateGradientPixmapFromString(Display *dpy, Drawable d, GC gc,
 
   /* translate the gradient string into an array of colors etc */
   if (!(ncolors = ParseGradient(action, NULL, &colors, &perc, &nsegs))) {
-    fprintf(stderr, "Can't parse gradient: %s\n", action);
+    fprintf(stderr, "Can't parse gradient: '%s'\n", action);
     return None;
   }
   /* grab the colors */
@@ -844,19 +855,25 @@ Pixmap CreateGradientPixmapFromString(Display *dpy, Drawable d, GC gc,
   /* grok the size to create from the type */
   type = toupper(type);
 
-  if (CalculateGradientDimensions(dpy, d, ncolors, type, width_return,
-				  height_return))
-    pixmap = CreateGradientPixmap(dpy, d, gc, type, *width_return,
-				  *height_return, ncolors, pixels, None, 0, 0,
-				  0, 0, NULL);
+  if (CalculateGradientDimensions(
+	dpy, d, ncolors, type, width_return, height_return))
+  {
+    pixmap = CreateGradientPixmap(
+      dpy, d, gc, type, *width_return, *height_return, ncolors, pixels, None,
+      0, 0, 0, 0, NULL);
+  }
 
   /* if the caller has not asked for the pixels there is probably a leak */
-  if (!pixels_return) {
+  if (!pixels_return)
+  {
     fprintf(stderr,
 	    "CreateGradient: potential color leak, losing track of pixels\n");
     free(pixels);
-  } else
+  }
+  else
+  {
     *pixels_return = pixels;
+  }
 
   if (nalloc_pixels)
     *nalloc_pixels = ncolors;
