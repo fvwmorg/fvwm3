@@ -101,12 +101,10 @@ void ConstrainSize (XSizeHints *hints, int *widthp, int *heightp)
    */
   if (dwidth < minWidth)
   {
-fprintf(stderr, "+++ button width %d, but min width %d\n", dwidth, minWidth);
     dwidth = minWidth;
   }
   if (dheight < minHeight)
   {
-fprintf(stderr, "+++ button height %d, but min height %d\n", dheight, minHeight);
     dheight = minHeight;
   }
 
