@@ -82,7 +82,7 @@ rm -rf $RPM_BUILD_ROOT
 %files
 %defattr(-, root, root)
 
-%doc AUTHORS COPYING INSTALL INSTALL.fvwm NEWS README todo-2.4 todo-3.0
+%doc AUTHORS COPYING INSTALL INSTALL.fvwm NEWS README
 %doc docs/ANNOUNCE docs/BUGS docs/DEVELOPERS docs/FAQ docs/TODO
 %doc docs/color_combos docs/error_codes docs/fvwm.lsm docs/m4_hacks
 %{prefix}/bin/*
