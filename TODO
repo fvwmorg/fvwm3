@@ -164,11 +164,6 @@ New stuff:
   - More control over icon appearance (non 3D, fg/bg colors, constant
     size, gradients, etc)?
 
-  - Add StartsOnPage x y or something similiar to compliment
-    StartsOnDesk (and add X resource FvwmPage which will be analogous
-    to the Desk X resource, which I think should be renamed to
-    FvwmDesk)
-
   - Implement (or at least investigate) dynamic loading of functions
     on systems that support it?  
         AIX - load
@@ -300,13 +295,6 @@ typedef struct FvwmWindow
 ----------------------
 Bob Woodside's To-Do's
 ----------------------
-
-  - merge in the 2.0.46 StackingOrder patch
-      - corrects the "sort of" inverted stacking order on Restart bug
-      - speeds up Restart (ymmv)
-      - speeds up page/desk switching (again, ymmv)
-      - adds infrastructure for possible future enhancements, like
-        "raise/lower this window n positions in the stacking order"
   
   - investigate re-implementing the 2.0.46 Animated Windowshade patch
     using the module interface, like FvwmAnimate does for iconification
