@@ -1,55 +1,34 @@
 /*
- * The following GPL code from scwm  implements a good, fast 3D-shadowing
- * algorithm. It   converts  the color  from  RGB   to  HLS  space,  then
- * multiplies both the  luminosity   and the saturation by  a   specified
- * factor (clipping at the  extremes). Then it  converts back to  RGB and
- * creates a color. The guts of it, i.e.  the `color_mult' routine, looks
- * a bit longish, but this  is only because  there are 6-way conditionals
- * at the begining and end; it actually runs quite fast. The algorithm is
- * the same  as Gtk's,  but  the  implemenation  is independent and  more
- * streamlined.
- *
- * Calling `adjust_pixel_brightness' with  a `factor' of 1.3 for hilights
- * and 0.7 for  shadows exactly emulates  Gtk's shadowing, which is,  IMO
- * the most visually pleasing shadowing of any widget  set; using 1.2 and
- * 0.5  respectively gives something closer to  the "classic" fvwm effect
- * with deeper shadows and more subtle hilights, but still (IMO) smoother
- * and more attractive than fvwm.
- *
- * The only color these  routines do not  usefully handle is black; black
- * will be returned even  for a factor  greater than 1.0, when  optimally
- * one  would like  to  see a  very dark  gray.  This could   possibly be
- * addressed by  adding   a  small   additive factor  when    brightening
- * colors. If anyone adds that feature, please feed it upstream to me.
- *
- * Feel free to use this code in fvwm, of course.
- *
- * - Maciej Stachowiak
- *
- * And, of course, history shows, we took him up on the offer.
- * Integrated into fvwm by Dan Espen, 11/13/98.
- */
+  Around 12/20/99 we did the 3rd rewrite of the shadow/hilite stuff.
+  (That I know about (dje).
+  The first stuff I saw just applied a percentage.
+  Then we got some code from SCWM.
+  This stuff comes from "Visual.c" which is part of Lesstif.
+  Here's their copyright:
 
-
-/*
- * Copyright (C) 1997, 1998, Maciej Stachowiak and Greg J. Badros
+ * Copyright (C) 1995 Free Software Foundation, Inc.
  *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2, or (at your option)
- * any later version.
+ * This file is part of the GNU LessTif Library.
  *
- * This program is distributed in the hope that it will be useful,
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Library General Public
+ * License as published by the Free Software Foundation; either
+ * version 2 of the License, or (at your option) any later version.
+ *
+ * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Library General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
- * along with this software; see the file COPYING.GPL.  If not, write to
- * the Free Software Foundation, Inc., 59 Temple Place, Suite 330,
- * Boston, MA 02111-1307 USA
+ * You should have received a copy of the GNU Library General Public
+ * License along with this library; if not, write to the Free
+ * Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
- */
+
+ The routine at the bottom "pixel_to_color_string" was not from Lesstif.
+
+ Port by Dan Espen, no additional copyright
+*/
 
 #include "config.h"                     /* must be first */
 
@@ -57,16 +36,167 @@
 #include <X11/Xproto.h>                 /* for X functions in general */
 #include "fvwmlib.h"                    /* prototype GetShadow GetHilit */
 
+#define	PCT_BRIGHTNESS			(6 * 0xffff / 100)
+
+/* How much lighter/darker to make things in default routine */
+
+#define	PCT_DARK_BOTTOM		70	/* lighter (less dark, actually) */
+#define	PCT_DARK_TOP		50	/* lighter */
+#define	PCT_LIGHT_BOTTOM	55	/* darker */
+#define	PCT_LIGHT_TOP		80	/* darker */
+#define	PCT_MEDIUM_BOTTOM_BASE	40	/* darker */
+#define	PCT_MEDIUM_BOTTOM_RANGE	25
+#define	PCT_MEDIUM_TOP_BASE	60	/* lighter */
+#define	PCT_MEDIUM_TOP_RANGE	-30
+
+/* The "brightness" of an RGB color.  The "right" way seems to use
+ * empirical values like the default thresholds below, but it boils down
+ * to red is twice as bright as blue and green is thrice blue.
+ */
+
+#define	BRIGHTNESS(xc)		((xc).red + (xc).red + (xc).green + \
+				 (xc).green + (xc).green + (xc).blue)
+
+/* From Xm.h on Solaris */
+#define XmDEFAULT_DARK_THRESHOLD        15
+#define XmDEFAULT_LIGHT_THRESHOLD       77
+extern Colormap Pcmap;
+extern Display *Pdpy;
+
+Pixel GetShadow(Pixel background) {
+  long brightness, brightadj;
+  XColor bs_color;
+  XColor _widgetBackground;
+
+  _widgetBackground.pixel = background;
+  XQueryColor (Pdpy, Pcmap, &_widgetBackground);
+  brightness = BRIGHTNESS(_widgetBackground);
+  /* For "dark" backgrounds, make everything a fixed %age lighter */
+  if (brightness < XmDEFAULT_DARK_THRESHOLD * PCT_BRIGHTNESS)
+    {
+      bs_color.red = 0xffff -
+        ((0xffff - _widgetBackground.red) * PCT_DARK_BOTTOM) / 100;
+      bs_color.green = 0xffff - ((0xffff - _widgetBackground.green) *
+                                 PCT_DARK_BOTTOM + 50) / 100;
+      bs_color.blue = 0xffff - ((0xffff - _widgetBackground.blue) *
+                                PCT_DARK_BOTTOM + 50) / 100;
+    }
+  /* For "light" background, make everything a fixed %age darker */
+  else if (brightness > XmDEFAULT_LIGHT_THRESHOLD * PCT_BRIGHTNESS)
+    {
+      bs_color.red =
+        (_widgetBackground.red * PCT_LIGHT_BOTTOM + 50) / 100;
+      bs_color.green =
+        (_widgetBackground.green * PCT_LIGHT_BOTTOM + 50) / 100;
+      bs_color.blue =
+        (_widgetBackground.blue * PCT_LIGHT_BOTTOM + 50) / 100;
+    }
+  /* For "medium" background, select is a fixed %age darker;
+   * top (lighter) and bottom (darker) are a variable %age
+   * based on the background's brightness
+   */
+  else
+    {
+      brightness = (brightness + (PCT_BRIGHTNESS >> 1)) / PCT_BRIGHTNESS;
+      brightadj = PCT_MEDIUM_BOTTOM_BASE +
+        (brightness * PCT_MEDIUM_BOTTOM_RANGE + 50) / 100;
+      bs_color.red = (_widgetBackground.red * brightadj + 50) / 100;
+      bs_color.green = (_widgetBackground.green * brightadj + 50) / 100;
+      bs_color.blue = (_widgetBackground.blue * brightadj + 50) / 100;
+    }
+  XAllocColor (Pdpy, Pcmap, &bs_color);
+  return bs_color.pixel;
+}
+/* the default color calculation */
+Pixel GetHilite(Pixel background) {
+  long brightness, brightadj;
+  XColor ts_color;
+  XColor _widgetBackground;
+
+  _widgetBackground.pixel = background;
+  XQueryColor (Pdpy, Pcmap, &_widgetBackground);
+  brightness = BRIGHTNESS(_widgetBackground);
+  /* For "dark" backgrounds, make everything a fixed %age lighter */
+  if (brightness < XmDEFAULT_DARK_THRESHOLD * PCT_BRIGHTNESS)
+    {
+      ts_color.red = 0xffff -
+        ((0xffff - _widgetBackground.red) * PCT_DARK_TOP + 50) / 100;
+      ts_color.green = 0xffff -
+        ((0xffff - _widgetBackground.green) * PCT_DARK_TOP + 50) / 100;
+      ts_color.blue = 0xffff -
+        ((0xffff - _widgetBackground.blue) * PCT_DARK_TOP + 50) / 100;
+    }
+  /* For "light" background, make everything a fixed %age darker */
+  else if (brightness > XmDEFAULT_LIGHT_THRESHOLD * PCT_BRIGHTNESS)
+    {
+      ts_color.red = (_widgetBackground.red * PCT_LIGHT_TOP + 50) / 100;
+      ts_color.green =
+        (_widgetBackground.green * PCT_LIGHT_TOP + 50) / 100;
+      ts_color.blue =
+        (_widgetBackground.blue * PCT_LIGHT_TOP + 50) / 100;
+    }
+  /* For "medium" background, select is a fixed %age darker;
+   * top (lighter) and bottom (darker) are a variable %age
+   * based on the background's brightness
+   */
+  else
+    {
+      brightness = (brightness + (PCT_BRIGHTNESS >> 1)) / PCT_BRIGHTNESS;
+      brightadj = PCT_MEDIUM_TOP_BASE +
+        (brightness * PCT_MEDIUM_TOP_RANGE + 50) / 100;
+      ts_color.red = 0xffff -
+        ((0xffff - _widgetBackground.red) * brightadj + 50) / 100;
+      ts_color.green = 0xffff -
+        ((0xffff - _widgetBackground.green) * brightadj + 50) / 100;
+      ts_color.blue = 0xffff -
+        ((0xffff - _widgetBackground.blue) * brightadj + 50) / 100;
+    }
+  XAllocColor (Pdpy, Pcmap, &ts_color);
+  return ts_color.pixel;
+}
+
+/* This function converts the colour stored in a colorcell (pixel) into the
+ * string representation of a colour.  The output is printed at the
+ * address 'output'.  It is either in rgb format ("rgb:rrrr/gggg/bbbb") if
+ * use_hash is False or in hash notation ("#rrrrggggbbbb") if use_hash is true.
+ * The return value is the number of characters used by the string.  The
+ * rgb values of the output are undefined if the colorcell is invalid.  The
+ * memory area pointed at by 'output' must be at least 64 bytes (in case of
+ * future extensions and multibyte characters).*/
+int pixel_to_color_string(
+  Display *dpy, Colormap cmap, Pixel pixel, char *output, Bool use_hash)
+{
+  XColor color;
+  int n;
+
+  color.pixel = pixel;
+  color.red = 0;
+  color.green = 0;
+  color.blue = 0;
+
+  XQueryColor(dpy, cmap, &color);
+  if (!use_hash)
+  {
+    sprintf(output, "rgb:%04x/%04x/%04x%n", (int)color.red, (int)color.green,
+	    (int)color.blue, &n);
+  }
+  else
+  {
+    sprintf(output, "#%04x%04x%04x%n", (int)color.red, (int)color.green,
+	    (int)color.blue, &n);
+  }
+
+  return n;
+}
+
+/* color_mult being used by FvwmTheme. Fix this */
+
 #define SCALE 65535.0
 #define HALF_SCALE (SCALE / 2)
-typedef enum
-{
-  R_MAX_G_MIN,
-  R_MAX_B_MIN,
-  G_MAX_B_MIN,
-  G_MAX_R_MIN,
-  B_MAX_R_MIN,
-  B_MAX_G_MIN
+typedef enum {
+  R_MAX_G_MIN, R_MAX_B_MIN,
+  G_MAX_B_MIN, G_MAX_R_MIN,
+  B_MAX_R_MIN, B_MAX_G_MIN
 } MinMaxState;
 
 
@@ -75,17 +205,12 @@ typedef enum
    coded. Should give better relief colors for many cases than the old
    fvwm algorithm. */
 
-/* FIXME: This can probably be optimized more, examine later. */
+/* FIXMS: This can probably be optimized more, examine later. */
 void
 color_mult (unsigned short *red,
 	    unsigned short *green,
 	    unsigned short *blue, double k)
 {
-  unsigned short ored = *red;
-  unsigned short ogreen = *green;
-  unsigned short oblue = *blue;
-  unsigned short diff = 0;
-
   if (*red == *green && *red == *blue) {
     double temp;
     /* A shade of gray */
@@ -214,122 +339,5 @@ color_mult (unsigned short *red,
     *green = (unsigned short) g;
     *blue = (unsigned short) b;
   }
-  /* make sure we have a minimum contrast */
-  if (k > 1)
-  {
-    unsigned short cmax;
-
-    cmax = max(max(ored, ogreen), oblue);
-    if (cmax < HALF_SCALE)
-    {
-      diff = max(max(*red - ored, *green - ogreen), *blue - oblue);
-      if (diff < CONTRAST_MIN)
-      {
-	*red += CONTRAST_MIN - diff;
-	*green += CONTRAST_MIN - diff;
-	*blue += CONTRAST_MIN - diff;
-      }
-    }
-  }
-  else
-  {
-    unsigned short cmin;
-
-    cmin = min(min(ored, ogreen), oblue);
-    if (cmin > HALF_SCALE)
-    {
-      diff = max(max(ored - *red, ogreen - *green), oblue - *blue);
-      if (diff < CONTRAST_MIN)
-      {
-	*red -= CONTRAST_MIN - diff;
-	*green -= CONTRAST_MIN - diff;
-	*blue -= CONTRAST_MIN - diff;
-      }
-    }
-  }
 }
 
-/*
- * This  routine  uses PictureSaveDisplay  and PictureCMap  which must be
- * created by InitPictureCMAP in Picture.c.
- *
- * If you  attempt to use GetShadow and GetHilite, make  sure your module
- * calls InitPictureCMAP first.
- */
-static Pixel
-adjust_pixel_brightness(Pixel pixel, double factor)
-{
-  extern Colormap Pcmap;
-  extern Display *Pdpy;
-  XColor c;
-  c.pixel = pixel;
-  XQueryColor (Pdpy, Pcmap, &c);
-  color_mult(&c.red, &c.green, &c.blue, factor);
-  XAllocColor (Pdpy, Pcmap, &c);
-
-  return c.pixel;
-}
-
-/*
- * These  are  the original fvwm  APIs, one  for highlights  and one for
- * shadows.   Together, if  used  in a frame    around a rectangle,  they
- * produce a 3d appearance.
- *
- * The  input  pixel,   is normally  the  background   color used in  the
- * rectangle.  One would  hope, when the  user selects to color something
- * with a multi-color pixmap, they will have the insight to also assign a
- * background color to the pixmaped  area  that approximates the  average
- * color of the pixmap.
- *
- * Currently callers handle monochrome before calling  this routine.  The
- * next logical enhancement is for that logic to be moved here.  Probably
- * a  new   API   that  deals   with  foreground/background/hilite/shadow
- * allocation all in 1 call is the next logical extenstion.
- *
- * Color  allocation  is also a  good   candidate for becoming  a library
- * routine.  The color   allocation  logic in FvwmButtons using   the XPM
- * library closeness stuff may be the ideal model.
- * (dje 11/15/98)
- */
-Pixel GetShadow(Pixel background)
-{
-  return adjust_pixel_brightness(background, DARKNESS_FACTOR);
-}
-Pixel GetHilite(Pixel background)
-{
-  return adjust_pixel_brightness(background, BRIGHTNESS_FACTOR);
-}
-
-/* This function converts the colour stored in a colorcell (pixel) into the
- * string representation of a colour.  The output is printed at the
- * address 'output'.  It is either in rgb format ("rgb:rrrr/gggg/bbbb") if
- * use_hash is False or in hash notation ("#rrrrggggbbbb") if use_hash is true.
- * The return value is the number of characters used by the string.  The
- * rgb values of the output are undefined if the colorcell is invalid.  The
- * memory area pointed at by 'output' must be at least 64 bytes (in case of
- * future extensions and multibyte characters).*/
-int pixel_to_color_string(
-  Display *dpy, Colormap cmap, Pixel pixel, char *output, Bool use_hash)
-{
-  XColor color;
-  int n;
-
-  color.pixel = pixel;
-  color.red = 0;
-  color.green = 0;
-  color.blue = 0;
-
-  XQueryColor(dpy, cmap, &color);
-  if (!use_hash)
-  {
-    sprintf(output, "rgb:%04x/%04x/%04x%n", (int)color.red, (int)color.green,
-	    (int)color.blue, &n);
-  }
-  else
-  {
-    sprintf(output, "#%04x%04x%04x%n", (int)color.red, (int)color.green,
-	    (int)color.blue, &n);
-  }
-
-  return n;
-}
