@@ -1,10 +1,19 @@
 ## Process this file with automake to create Makefile.in
 
+PERL = @PERL@
+
 bin_PROGRAMS = @XPMROOT@ xselection
+bin_SCRIPTS = BuildXLockMenu
+
+BuildXLockMenu: BuildXLockMenu.in
+	@rm -f $@
+	sed -e 's,xPERLx,$(PERL),' $< > $@-t
+	mv $@-t $@
+
 EXTRA_PROGRAMS = xpmroot 
 
 man_MANS = xpmroot.1
-EXTRA_DIST = BuildXLockMenu fvwmrc_convert quantize_pixmaps $(man_MANS)
+EXTRA_DIST = BuildXLockMenu.in fvwmrc_convert quantize_pixmaps $(man_MANS)
 
 LDADD = -L$(top_builddir)/libs -lfvwm $(xpm_LIBS) \
 	$(X_LIBS) $(X_PRE_LIBS) -lXext -lX11 $(X_EXTRA_LIBS)
