@@ -1298,12 +1298,13 @@ void SetXORPixmap(F_CMD_ARGS)
   if (pixmap)
     XFreePixmap(dpy, pixmap);
   pixmap = None;
-  
+
   /* test for a pixmap id */
   if (sscanf(PixmapName, "%ld", &xorpixmap) == 1) {
     XGetGeometry(dpy, xorpixmap, &root_ret, (int *)&junk, (int *)&junk,
 		 &width, &height, &junk, &depth);
-    if ((width > 0) && (height > 0) && (depth = DefaultDepth(dpy,Scr.screen))) {
+    if ((width > 0) && (height > 0) && (depth = DefaultDepth(dpy,Scr.screen)))
+    {
       free(PixmapName);
       pixmap = XCreatePixmap(dpy, Scr.Root, width, height, depth);
       XCopyArea(dpy, xorpixmap, pixmap, DefaultGC(dpy, Scr.screen), 0, 0,
@@ -1311,7 +1312,9 @@ void SetXORPixmap(F_CMD_ARGS)
       XSync(dpy, False);
       gcv.tile = pixmap;
     }
-  } else {
+  }
+  else
+  {
     /* search for pixmap */
     GCPicture = CachePicture(dpy, Scr.NoFocusWin, NULL, PixmapName,
 			     Scr.ColorLimit);

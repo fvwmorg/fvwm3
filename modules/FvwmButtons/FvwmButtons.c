@@ -111,6 +111,7 @@ static Window GetRealGeometry(
 void swallow(unsigned long*);
 void AddButtonAction(button_info*,int,char*);
 char *GetButtonAction(button_info*,int);
+static void change_colorset(int colorset);
 
 void DebugEvents(XEvent*);
 
@@ -956,6 +957,8 @@ void Loop(void)
 	  SetButtonSize(UberButton,Width,Height);
 	  button=-1;
 	  ub=UberButton;
+	  for (i = 0; i < nColorsets; i++)
+	    change_colorset(i);
 	  while(NextButton(&ub,&b,&button,0))
 	    MakeButton(b);
 	  RedrawWindow(NULL);

@@ -1,3 +1,7 @@
+1999-08-30  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* FvwmButtons/FvwmButtons.c (Loop): resizing updates colour sets
+
 1999-08-30  Dominik Vogt  <dominik_vogt@gmx.de>
 
 	* FvwmAuto/FvwmAuto.c (main): another fix for FvwmAuto; it's probably
