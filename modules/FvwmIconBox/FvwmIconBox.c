@@ -222,7 +222,8 @@ int main(int argc, char **argv)
 
   if ((local_flags & SETWMICONSIZE) && (size = XAllocIconSize()) != NULL){
     size->max_width  = size->min_width  = max_icon_width + icon_relief;
-    size->max_height = size->min_height = max_icon_height + icon_relief;
+    /* max_height should be >0 */
+    size->max_height = size->min_height = max(1, max_icon_height) + icon_relief;
     size->width_inc  = size->height_inc = 0;
     XSetIconSizes(dpy, Root, size, 1);
     XFree(size);

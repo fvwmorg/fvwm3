@@ -1,3 +1,8 @@
+1999-04-01  Andi Karrer <karrer@iis.ee.ethz.ch>
+
+	* FvwmIconBox/FvwmIconBox.c (main):
+	XSetIconSizes() should not be called with a height of 0.
+
 1999-03-31  Dan Espen  <dane@mk.bellcore.com>
 
 	* FvwmForm/ReadXServer.c (ReadXServer): Fix bug. Function keys wouldn't
@@ -14,13 +19,13 @@
 
 Sun Mar 28 18:26:11 1999  Steve Robbins  <steve@nyongwa.montreal.qc.ca>
 
-	* FvwmScript/FvwmScript.c: 
+	* FvwmScript/FvwmScript.c:
 	* FvwmWharf/icons.c: include libs/Picture.h to get prototype of
 	findImageFile.
 
 Sun Mar 28 11:57:25 1999  Steve Robbins  <steve@nyongwa.montreal.qc.ca>
 
-	* FvwmForm/Makefile.am (FvwmTalk): 
+	* FvwmForm/Makefile.am (FvwmTalk):
 	* FvwmCommand/scripts/Makefile.am (.pl):
 	* FvwmConsole/Makefile.am: removed unnecesary chmod +x commands;
 	anything listed in a _SCRIPTS primary is correctly installed with
