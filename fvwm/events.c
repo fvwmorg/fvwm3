@@ -1098,7 +1098,9 @@ void HandleMapRequestKeepRaised(Window KeepRaised, FvwmWindow *ReuseWin)
 	      XMapWindow(dpy, Tmp_win->frame);
 	      SET_MAP_PENDING(Tmp_win, 1);
 	      SetMapStateProp(Tmp_win, NormalState);
-	      if((!IS_TRANSIENT(Tmp_win) && DO_GRAB_FOCUS(Tmp_win)) ||
+	      if(((!IS_TRANSIENT(Tmp_win) ||
+                   Tmp_win->transientfor == Scr.Root) &&
+                  DO_GRAB_FOCUS(Tmp_win)) ||
 		 (IS_TRANSIENT(Tmp_win) && DO_GRAB_FOCUS_TRANSIENT(Tmp_win) &&
 		  Scr.Focus && Scr.Focus->w == Tmp_win->transientfor))
 		{

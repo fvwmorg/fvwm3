@@ -1,5 +1,8 @@
 2000-01-31  Dominik Vogt  <dominik.vogt@gmx.de>
 
+	* fvwm/events.c (HandleMapRequestKeepRaised):
+	fixed 'GrabFocus' style for transients of the root window
+
 	* fvwm/icons.c (Iconify):
 	set is_icon_entered flag to false when a window is iconified to make
 	sure the flag is ok
