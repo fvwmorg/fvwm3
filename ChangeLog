@@ -1,3 +1,18 @@
+2002-12-30  Mikhael Goikhman  <migo@homemail.com>
+
+	* configure.in:
+	FvwmWindowMenu renaming; compact long diagnostics into half of line
+
+	* NEWS:
+	documeted and corrected new features
+
+	* fvwm/fvwm.1.in:
+	removed a "deprecated" tag from TitleStyle/ButtonStyle/BorderStyle
+	since these are the only way currently to create themes
+
+	* fvwm/fvwm.c:
+	small reformatting
+
 2002-12-30  olicha  <olivier.chapuis@free.fr>
 
 	* NEWS: 

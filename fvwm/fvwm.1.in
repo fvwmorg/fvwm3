@@ -420,19 +420,19 @@ there are up to 10 title-bar buttons.  The top, side, and bottom
 bars are collectively known as the side-bars.  The corner pieces
 are called the frame.
 
-Unless the standard defaults files are modified, pressing mouse
-button 1 in the title or side-bars begins a move operation on the
-window.  Pressing button 1 in the corner frame pieces begins a
-resize operation.  Pressing button 2 anywhere in the border brings
-up an extensive list of window operations.
+With the built-in minimal configuration, dragging mouse button 1
+in the frame or side-bars begins a resize operation on the window.
+Dragging mouse button 2 in the frame or side-bars begins a move
+operation.  There are raise/lower operations bound to a single
+clicking on borders.  Similarly for the window title.
 
 Up to ten title-bar buttons may exist.  Their use is completely
-user definable.  The default configuration has a title-bar button
-on each side of the title-bar.  The one on the left is used to
-bring up a list of window options, regardless of which mouse
-button is used.  The one on the right is used to iconify the
-window.  The number of title-bar buttons used depends on which
-ones have mouse actions bound to them.  See the section on the
+user definable.  One popular configuration uses one button on the
+left that is used to bring up a list of window options and two
+buttons on the right used to iconify and maximize the window.
+Another popular configuration adds a close button to the right.
+The number of title-bar buttons used depends on which ones have
+mouse actions bound to them.  See the section on the
 .B Mouse
 command below.
 
@@ -7625,9 +7625,6 @@ Style xterm UseStyle FlatStyle
 \fB] [\fP\fIstyle\fP\
 \fB] [-- [!]\fP \fIflag\fP \
 \fB...]\fP"
-This command is deprecated and will be removed in the future.  There
-are plans to replace it with a more flexible solution in fvwm-3.0.
-
 Defines a border style for windows.
 .I state
 can be either "Active" or "Inactive".  If
@@ -7739,9 +7736,6 @@ depending on the values of the other key words.
 \fB] [\fP\fIstyle\fP\
 \fB] [-- [!]\fP \fIflag\fP \
 \fB...]\fP"
-This command is deprecated and will be removed in the future.  There
-are plans to replace it with a more flexible solution in fvwm-3.0.
-
 Sets the button style for a title-bar button.
 .I button
 is the title-bar button number between 0 and 9, or one of "All",
@@ -8020,9 +8014,6 @@ used.  This style is fully destructive.
 
 .TP
 .BI "ButtonStyle " button " - [!]" flag " ..."
-This command is deprecated and will be removed in the future.  There
-are plans to replace it with a more flexible solution in fvwm-3.0.
-
 Sets state-independent flags for the specified
 .IR button .
 State-independent flags affect button behavior.  Each
@@ -8137,9 +8128,6 @@ DestroyDecor CustomDecor1
 
 .TP
 .BI "TitleStyle [" justification "] [" Height " [" num "]] [" MinHeight " [" num "]]"
-This command is deprecated and will be removed in the future.  There
-are plans to replace it with a more flexible solution in fvwm-3.0.
-
 Sets attributes for the title-bar.  Justifications can be
 .IR Centered ", " RightJustified " or " LeftJustified .
 .I Height
@@ -8168,9 +8156,6 @@ TitleStyle LeftJustified Height 24
 \fB] [\fP\fIstyle\fP\
 \fB] [-- [!]\fP \fIflag\fP \
 \fB...]\fP"
-This command is deprecated and will be removed in the future.  There
-are plans to replace it with a more flexible solution in fvwm-3.0.
-
 Sets the style for the title-bar.
 See also
 .BR AddTitleStyle " and " ButtonStyle .

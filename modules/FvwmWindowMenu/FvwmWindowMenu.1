@@ -128,8 +128,8 @@
 .rm #[ #] #H #V #F C
 .\" ========================================================================
 .\"
-.IX Title "FVWMWINDOWLISTER 1"
-.TH FVWMWINDOWLISTER 1 "2002-11-15" "perl v5.8.0" "FVWM Modules"
+.IX Title "FVWMWINDOWMENU 1"
+.TH FVWMWINDOWMENU 1 "2002-12-30" "perl v5.8.0" "FVWM Modules"
 .SH "DESCRIPTION"
 .IX Header "DESCRIPTION"
 A substitute for \fIfvwm\fR builtin \fBWindowList\fR, but written in Perl
@@ -147,26 +147,38 @@ Any windows not matching an instance of Show or DontShow will
 be placed in the last section of the menu.
 .SH "USAGE"
 .IX Header "USAGE"
-Place this in e.g. your StartFunction in \fI.fvwm2rc\fR:
+Place this line in e.g. your StartFunction in \fI.fvwm2rc\fR:
 .PP
 .Vb 1
-\&    Module FvwmWindowLister
+\&    Module FvwmWindowMenu
 .Ve
 .PP
-Invoke the menu from .fvwmrc like this, for example:
+To actually invoke the menu add something like:
+.PP
+.Vb 2
+\&    Key Menu A N SendToModule FvwmWindowMenu \e
+\&        Post Root c c SelectOnRelease Menu
+.Ve
+.PP
+or:
 .PP
 .Vb 1
-\&    Key Menu A N SendToModule FvwmWindowLister Menu Root c c
+\&    Mouse 2 A N SendToModule FvwmWindowMenu Popup
 .Ve
 .PP
-The arguments are any valid \fBMenu\fR command arguments without a menu name.
-You may also send \fBPopup\fR action.
+The additional parameters are any valid \fBMenu\fR command parameters without a
+menu name, see fvwm.
+.PP
+Recognized actions are \fBPost\fR (or its alias \fBMenu\fR) and \fBPopup\fR, they
+create \fIfvwm\fR menus and invoke them using the corresponding commands
+\&\fBMenu\fR and \fBPopup\fR. If the module was started with \*(L"\-g\*(R" switch, it
+additionally supports \fBPostBar\fR.
 .PP
 Set module options for windows to show or not show. The syntax is:
 .PP
 .Vb 2
-\&    *FvwmWindowLister: Show type = pattern
-\&    *FvwmWindowLister: DontShow type = pattern
+\&    *FvwmWindowMenu: Show type = pattern
+\&    *FvwmWindowMenu: DontShow type = pattern
 .Ve
 .PP
 where type is one of \fIname\fR, \fIicon\fR, \fIclass\fR or \fIresource\fR. Pattern is
@@ -176,8 +188,8 @@ See \fIperlre\fR\|(1).
 For example:
 .PP
 .Vb 2
-\&    *FvwmWindowLister: Show resource = Galeon|Navigator|mozilla-bin
-\&    *FvwmWindowLister: Show name = ^emacs
+\&    *FvwmWindowMenu: Show resource = Galeon|Navigator|mozilla-bin
+\&    *FvwmWindowMenu: Show name = ^emacs
 .Ve
 .PP
 will define two sections containing respectively browsers, and emacs.
@@ -187,40 +199,40 @@ expressions that will be evaluated in m// context. See \fIperlre\fR\|(1).
 Similarly:
 .PP
 .Vb 2
-\&    *FvwmWindowLister: DontShow name = ^Fvwm
-\&    *FvwmWindowLister: DontShow class = Gkrellm
+\&    *FvwmWindowMenu: DontShow name = ^Fvwm
+\&    *FvwmWindowMenu: DontShow class = Gkrellm
 .Ve
 .PP
 will cause the menu to ignore windows with name beginning with Fvwm
 or class gkrellm.
 .PP
 Other options:
-.IP "*FvwmWindowLister: \fIOnlyIconic\fR {on|off}" 4
-.IX Item "*FvwmWindowLister: OnlyIconic {on|off}"
+.IP "*FvwmWindowMenu: \fIOnlyIconic\fR {on|off}" 4
+.IX Item "*FvwmWindowMenu: OnlyIconic {on|off}"
 show only iconified windows
-.IP "*FvwmWindowLister: \fIAllDesks\fR {on|off}" 4
-.IX Item "*FvwmWindowLister: AllDesks {on|off}"
+.IP "*FvwmWindowMenu: \fIAllDesks\fR {on|off}" 4
+.IX Item "*FvwmWindowMenu: AllDesks {on|off}"
 show windows from all desks
-.IP "*FvwmWindowLister: \fIAllPages\fR {on|off}" 4
-.IX Item "*FvwmWindowLister: AllPages {on|off}"
+.IP "*FvwmWindowMenu: \fIAllPages\fR {on|off}" 4
+.IX Item "*FvwmWindowMenu: AllPages {on|off}"
 show windows from all pages
-.IP "*FvwmWindowLister: \fIMaxlen\fR 32" 4
-.IX Item "*FvwmWindowLister: Maxlen 32"
+.IP "*FvwmWindowMenu: \fIMaxlen\fR 32" 4
+.IX Item "*FvwmWindowMenu: Maxlen 32"
 max length in chars of entry
-.IP "*FvwmWindowLister: \fIMenuName\fR MyMenu" 4
-.IX Item "*FvwmWindowLister: MenuName MyMenu"
+.IP "*FvwmWindowMenu: \fIMenuName\fR MyMenu" 4
+.IX Item "*FvwmWindowMenu: MenuName MyMenu"
 name of menu to popup
-.IP "*FvwmWindowLister: \fIMenuStyle\fR MyMenuStyle" 4
-.IX Item "*FvwmWindowLister: MenuStyle MyMenuStyle"
+.IP "*FvwmWindowMenu: \fIMenuStyle\fR MyMenuStyle" 4
+.IX Item "*FvwmWindowMenu: MenuStyle MyMenuStyle"
 name of MenuStyle to apply
-.IP "*FvwmWindowLister: \fIDebug\fR {\-1,0,1,...}" 4
-.IX Item "*FvwmWindowLister: Debug {-1,0,1,...}"
-level of debug info output, \-1 means no debug
-.IP "*FvwmWindowLister: \fIFunction\fR MyWindowListFunc" 4
-.IX Item "*FvwmWindowLister: Function MyWindowListFunc"
+.IP "*FvwmWindowMenu: \fIDebug\fR {0,1,2,3}" 4
+.IX Item "*FvwmWindowMenu: Debug {0,1,2,3}"
+level of debug info output, 0 means no debug
+.IP "*FvwmWindowMenu: \fIFunction\fR MyWindowListFunc" 4
+.IX Item "*FvwmWindowMenu: Function MyWindowListFunc"
 function to invoke on menu entries; defaults to WindowListFunc
-.IP "*FvwmWindowLister: \fIItemFormat\fR formatstring" 4
-.IX Item "*FvwmWindowLister: ItemFormat formatstring"
+.IP "*FvwmWindowMenu: \fIItemFormat\fR formatstring" 4
+.IX Item "*FvwmWindowMenu: ItemFormat formatstring"
 how to format menu entries; substitutions are made as follows:
 .RS 4
 .ie n .IP "%n, %i\fR, \f(CW%c\fR, \f(CW%r" 4
@@ -251,6 +263,24 @@ a literal %
 The format string must be quoted. The default string is
 \&\*(L"%m%n%t%t(+%x+%y) \- Desk \f(CW%d\fR\*(R".
 .RE
+.SH "MORE EXAMPLES"
+.IX Header "MORE EXAMPLES"
+Fancy binding of the window menu to the right windows key on some keyboards.
+Hold this button while navigating using cursor keys, then release it.
+.PP
+.Vb 3
+\&    CopyMenuStyle * WindowMenu
+\&    MenuStyle WindowMenu SelectOnRelease Super_R
+\&    *FvwmWindowMenu: MenuStyle WindowMenu
+.Ve
+.PP
+.Vb 1
+\&    AddToFunc StartFunction I Module FvwmWindowMenu
+.Ve
+.PP
+.Vb 1
+\&    Key Super_R A A SendToModule FvwmWindowMenu Post Root c c WarpTitle
+.Ve
 .SH "AUTHOR"
 .IX Header "AUTHOR"
 Ric Lister <http://cns.georgetown.edu/~ric/>

@@ -289,7 +289,7 @@ if test x"$with_shm" != xno; then
   AC_CHECK_LIB(Xext, XShmQueryExtension,
                with_shm=yes; AC_DEFINE(HAVE_XSHM),
                with_shm=no;
-               problem_shm=": Failed to detect  MIT Shared Memory extension",
+               problem_shm=": Can't detect MIT Shared Memory ext.",
                [$X_LIBS $X_PRE_LIBS -lX11 $X_EXTRA_LIBS])
 fi
 
@@ -376,7 +376,7 @@ if test x"$with_xft" != xno; then
     have_freetype=yes
   else
     have_freetype=no
-    problem_xft=": Failed to detect freetype2 (version >= 6.1.0 aka 2.0.6)"
+    problem_xft=": Can't detect freetype2 >= 6.1.0/2.0.6"
   fi
 
   dnl check for fontconfig for Xft 2
@@ -387,7 +387,7 @@ if test x"$with_xft" != xno; then
       have_fontconfig=yes
     else
       have_fontconfig=no
-      problem_xft=": Failed to detect fontconfig (version >= 1.0.1)"
+      problem_xft=": Can't detect fontconfig >= 1.0.1"
     fi
   fi
 
@@ -405,7 +405,7 @@ if test x"$with_xft" != xno; then
       Xft_LIBS=$XFT_LIBS
       Xft_CFLAGS=$XFT_CFLAGS
     else
-      problem_xft=": Failed to detect Xft 2, but fontconfig detected"
+      problem_xft=": Can't detect Xft2, detected fontconfig"
     fi
   fi
 
@@ -428,10 +428,10 @@ if test x"$with_xft" != xno; then
         AC_DEFINE(HAVE_XFT)
       else
         with_xft=no
-        problem_xft=": Failed to detect Xft 1 or fontconfig"
+        problem_xft=": Can't detect Xft 1 or fontconfig"
       fi
     else
-      problem_xft=": Failed to detect Xft 1 or Xft 2 and fontconfig"
+      problem_xft=": Can't detect Xft 1 or 2 and fontconfig"
     fi
     if test x"$with_xft" = xyes; then
       AC_CHECK_LIB(Xft, XftDrawStringUtf8, AC_DEFINE(HAVE_XFT_UTF8),,
@@ -786,7 +786,7 @@ if test x"$with_gettext" != xno; then
     AC_DEFINE(HAVE_NLS, 1)
   else
     with_gettext="no"
-    problem_gettext=": failed to detected gnu gettext"
+    problem_gettext=": Failed to detected GNU gettext"
   fi
 else
   USE_NLS=no
@@ -1103,8 +1103,8 @@ dnl
 	modules/FvwmTheme/Makefile
 	modules/FvwmWharf/Makefile
 	modules/FvwmWinList/Makefile
-	modules/FvwmWindowLister/Makefile
-	modules/FvwmWindowLister/FvwmWindowLister
+	modules/FvwmWindowMenu/Makefile
+	modules/FvwmWindowMenu/FvwmWindowMenu
 	modules/FvwmGtk/Makefile
 )
 

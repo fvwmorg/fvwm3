@@ -1,3 +1,9 @@
+2002-12-30  Mikhael Goikhman  <migo@homemail.com>
+
+	* FvwmWindowMenu/*:
+	renamed from FvwmWindowLister;
+	make Popup actually work, not just Menu (Post)
+
 2002-12-20  olicha  <olivier.chapuis@free.fr>
 
 	* FvwmTaskBar/FvwmTaskBar.c (CreateOrUpdateGCs):

@@ -15,7 +15,7 @@
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 # Filter this script to pod2man to get a man page:
-#   pod2man -c "FVWM Module" FvwmWindowLister | nroff -man | less -e
+#   pod2man -c "FVWM Module" FvwmWindowMenu | nroff -man | less -e
 
 use 5.004;
 use strict;
@@ -32,13 +32,28 @@ use General::FileSystem "-quiet";
 use General::Parse;
 use Getopt::Long;
 
+my $moduleType = "";
+my $moduleClass = "FVWM::Module";
+if ($ARGV[5] && $ARGV[5] eq "-g") {
+	splice(@ARGV, 5, 1);
+	eval "use FVWM::Module::Gtk;";
+	if ($@) {
+		print STDERR $@;
+		print STDERR "FvwmWindowMenu: Ignoring the -g switch\n";
+	} else {
+		Gtk->init;
+		$moduleType = "gtk";
+		$moduleClass = "FVWM::Module::Gtk";
+	}
+}
+
 # default user options
 my $opt = {
 	onlyiconic   => 0,      # only list iconified windows
 	alldesks     => 0,      # list windows on all desks
 	allpages     => 0,      # list windows on all pages
 	maxlen       => 32,     # max chars for window name in menu
-	menuname     => "MenuFvwmWindowLister",  # name of fvwm menu to create
+	menuname     => "MenuFvwmWindowMenu",  # name of fvwm menu to create
 	menustyle    => undef,  # name of fvwm menu style to use
 	itemformat   => "%m%n%t%t(+%x+%y) - Desk %d",  # format of menu items
 	function     => "WindowListFunc",
@@ -67,11 +82,11 @@ my $page_ny = 0;
 my (@show, @dontshow);
 
 # init the module
-# set Debug = -1 for no messages at all
-# set Debug = 0 to see my messages about window decisions
-# set Debug = 1 to see also perllib messages about communication
-my $module = new FVWM::Module(
-	Name => "FvwmWindowLister",
+# set Debug = 0 for no messages at all
+# set Debug = 1 to see my messages about window decisions
+# set Debug = 2 to see also perllib messages about communication
+my $module = new $moduleClass(
+	Name => "FvwmWindowMenu",
 	Mask => M_WINDOW_NAME | M_STRING |
 		M_NEW_PAGE | M_NEW_DESK |
 		M_ADD_WINDOW | M_CONFIGURE_WINDOW |
@@ -79,12 +94,12 @@ my $module = new FVWM::Module(
 		M_DESTROY_WINDOW | M_END_WINDOWLIST |
 		M_ICONIFY | M_DEICONIFY | M_MINI_ICON |
 		M_CONFIG_INFO | M_SENDCONFIG,
-	Debug => -1,
+	Debug => 0,
 );
 
 $module->debug("starting " . $module->name);
 
-## process module options
+# process module options
 $module->addHandler(M_CONFIG_INFO, sub {
 	my ($module, $event) = @_;
 
@@ -104,7 +119,7 @@ $module->addHandler(M_CONFIG_INFO, sub {
 		push(@dontshow, { type => $type, pattern => $2 });
 	}
 
-	## match format string in quotes
+	# match format string in quotes
 	elsif ( /^itemformat\s+([\"\'])(.*)\1/i ) {
 		$opt->{itemformat} = $2;
 	}
@@ -125,15 +140,8 @@ $module->addHandler(M_NEW_PAGE, sub {
 
 	$desk = $event->_desk;
 
-	my $width  = $event->_vp_width;
-	my $height = $event->_vp_height;
-
-	if (!$width || !$height) {
-		# this may happen when doing DeskTopSize 1x1 on page 2 2;
-		# at least avoid division by zero
-		$width = 1;
-		$height = 1;
-	}
+	my $width  = $event->_vp_width || 1;
+	my $height = $event->_vp_height || 1;
 
 	$page_nx = int($event->_vp_x / $width);
 	$page_ny = int($event->_vp_y / $height);
@@ -150,10 +158,16 @@ $module->addHandler(M_STRING, sub{
 	my ($module, $event) = @_;
 	my ($action, $args) = getToken($event->_text);
 	return unless $action;
-	if ($action =~ /^Menu|Popup$/i) {
+	if ($action =~ /^Post|Menu|Popup$/i) {
 		&PopupMenu($action, $args);
+	} elsif ($action =~ /^ShowBar$/i) {
+		if ($moduleType ne "gtk") {
+			$module->debug("Not started with Gtk support", 0);
+			return;
+		}
+		&PopupTaskBar();
 	} else {
-		$module->debug("Unknown action $action", -1);
+		$module->debug("Unknown action $action", 0);
 	}
 });
 
@@ -213,10 +227,10 @@ $module->addHandler(M_MINI_ICON, sub {
 });
 
 
-
-## does all the work and pops up the menu
+# does all the work and pops up the menu
 sub PopupMenu {
-	my ($command, $args) = @_;
+	my ($action, $args) = @_;
+	my $command = $action =~ /^Popup$/i? "Popup": "Menu";
 
 	my @section;
 
@@ -304,7 +318,7 @@ sub AddToSection {
 	# hack: insert __%__ instead of % to avoid bogus substitution later
 	$format =~ s/%%/__%____%__/g;
 
-	## make format string substitutions
+	# make format string substitutions
 	$format =~ s/%t/\t/g;
 	$format =~ s/%n/&Shorten($window{$id}->{name}, $opt->{maxlen})/ge;
 	$format =~ s/%i/&Shorten($window{$id}->{icon}, $opt->{maxlen})/ge;
@@ -334,7 +348,7 @@ sub AddToSection {
 }
 
 
-## shorten a string to given length and append ellipses
+# shorten a string to given length and append ellipses
 sub Shorten {
 	my($string, $length) = @_;
 
@@ -345,9 +359,43 @@ sub Shorten {
 }
 
 
+sub PopupTaskBar () {
+	my ($w, $h) = (180, 60);
+
+	my $window = new Gtk::Window('toplevel');
+	$window->set_title("FvwmWindowMenuBar");
+	$window->set_border_width(5);
+	$window->set_usize($w, $h);
+	$window->set_uposition(($screen->{w} - $w) / 2, ($screen->{h} - $h) / 2);
+
+	my $frame = new Gtk::Frame();
+	$window->add($frame);
+	$frame->set_shadow_type('etched_out');
+
+	my $vbox = new Gtk::VBox();
+	$frame->add($vbox);
+
+	my $label = new Gtk::Label("Nothing interesting yet");
+	$vbox->add($label);
+
+	my $button = new Gtk::Button("Close");
+	$vbox->add($button);
+	$button->signal_connect("clicked", sub { $window->destroy; });
+
+	$window->show_all;
+
+#	my $winId = $window->window->XWINDOW();
+#	$module->send("Schedule 2000 WindowId $winId Close");
+}
+
+
 # main loop
 $module->send("Send_ConfigInfo");
 $module->send("Send_WindowList");
+$module->send(
+	"Style FvwmWindowMenuBar UsePPosition, !Title, !Borders, " .
+	"StaysOnTop, WindowListSkip, CascadePlacement, SloppyFocus"
+) if $moduleType eq "gtk";
 $module->eventLoop;
 
 1;
@@ -374,21 +422,31 @@ be placed in the last section of the menu.
 
 =head1 USAGE
 
-Place this in e.g. your StartFunction in I<.fvwm2rc>:
+Place this line in e.g. your StartFunction in I<.fvwm2rc>:
 
-    Module FvwmWindowLister
+    Module FvwmWindowMenu
 
-Invoke the menu from .fvwmrc like this, for example:
+To actually invoke the menu add something like:
 
-    Key Menu A N SendToModule FvwmWindowLister Menu Root c c
+    Key Menu A N SendToModule FvwmWindowMenu \
+        Post Root c c SelectOnRelease Menu
 
-The arguments are any valid B<Menu> command arguments without a menu name.
-You may also send B<Popup> action.
+or:
+
+    Mouse 2 A N SendToModule FvwmWindowMenu Popup
+
+The additional parameters are any valid B<Menu> command parameters without a
+menu name, see L<fvwm>.
+
+Recognized actions are B<Post> (or its alias B<Menu>) and B<Popup>, they
+create I<fvwm> menus and invoke them using the corresponding commands
+B<Menu> and B<Popup>. If the module was started with "-g" switch, it
+additionally supports B<PostBar> (not implemented yet).
 
 Set module options for windows to show or not show. The syntax is:
 
-    *FvwmWindowLister: Show type = pattern
-    *FvwmWindowLister: DontShow type = pattern
+    *FvwmWindowMenu: Show type = pattern
+    *FvwmWindowMenu: DontShow type = pattern
 
 where type is one of I<name>, I<icon>, I<class> or I<resource>. Pattern is
 a perl regular expression that will be evaluated in m// context.
@@ -396,8 +454,8 @@ See perlre(1).
 
 For example:
 
-    *FvwmWindowLister: Show resource = Galeon|Navigator|mozilla-bin
-    *FvwmWindowLister: Show name = ^emacs
+    *FvwmWindowMenu: Show resource = Galeon|Navigator|mozilla-bin
+    *FvwmWindowMenu: Show name = ^emacs
 
 will define two sections containing respectively browsers, and emacs.
 Number of sections is unlimited. The strings are perl regular
@@ -405,8 +463,8 @@ expressions that will be evaluated in m// context. See perlre(1).
 
 Similarly:
 
-    *FvwmWindowLister: DontShow name = ^Fvwm
-    *FvwmWindowLister: DontShow class = Gkrellm
+    *FvwmWindowMenu: DontShow name = ^Fvwm
+    *FvwmWindowMenu: DontShow class = Gkrellm
 
 will cause the menu to ignore windows with name beginning with Fvwm
 or class gkrellm.
@@ -415,39 +473,39 @@ Other options:
 
 =over 4
 
-=item *FvwmWindowLister: I<OnlyIconic> {on|off}
+=item *FvwmWindowMenu: I<OnlyIconic> {on|off}
 
 show only iconified windows
 
-=item *FvwmWindowLister: I<AllDesks> {on|off}
+=item *FvwmWindowMenu: I<AllDesks> {on|off}
 
 show windows from all desks
 
-=item *FvwmWindowLister: I<AllPages> {on|off}
+=item *FvwmWindowMenu: I<AllPages> {on|off}
 
 show windows from all pages
 
-=item *FvwmWindowLister: I<Maxlen> 32
+=item *FvwmWindowMenu: I<Maxlen> 32
 
 max length in chars of entry
 
-=item *FvwmWindowLister: I<MenuName> MyMenu
+=item *FvwmWindowMenu: I<MenuName> MyMenu
 
 name of menu to popup
 
-=item *FvwmWindowLister: I<MenuStyle> MyMenuStyle
+=item *FvwmWindowMenu: I<MenuStyle> MyMenuStyle
 
 name of MenuStyle to apply
 
-=item *FvwmWindowLister: I<Debug> {-1,0,1,...}
+=item *FvwmWindowMenu: I<Debug> {0,1,2,3}
 
-level of debug info output, -1 means no debug
+level of debug info output, 0 means no debug
 
-=item *FvwmWindowLister: I<Function> MyWindowListFunc
+=item *FvwmWindowMenu: I<Function> MyWindowListFunc
 
 function to invoke on menu entries; defaults to WindowListFunc
 
-=item *FvwmWindowLister: I<ItemFormat> formatstring
+=item *FvwmWindowMenu: I<ItemFormat> formatstring
 
 how to format menu entries; substitutions are made as follows:
 
@@ -487,6 +545,19 @@ The format string must be quoted. The default string is
 "%m%n%t%t(+%x+%y) - Desk %d".
 
 =back
+
+=head1 MORE EXAMPLES
+
+Fancy binding of the window menu to the right windows key on some keyboards.
+Hold this button while navigating using cursor keys, then release it.
+
+    CopyMenuStyle * WindowMenu
+    MenuStyle WindowMenu SelectOnRelease Super_R
+    *FvwmWindowMenu: MenuStyle WindowMenu
+
+    AddToFunc StartFunction I Module FvwmWindowMenu
+
+    Key Super_R A A SendToModule FvwmWindowMenu Post Root c c WarpTitle
 
 =head1 AUTHOR
 

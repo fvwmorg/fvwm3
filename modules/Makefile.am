@@ -6,4 +6,4 @@ SUBDIRS = \
 	FvwmGtk FvwmIconBox FvwmIconMan FvwmIdent FvwmM4 FvwmPager \
 	FvwmPerl FvwmProxy FvwmRearrange FvwmSave FvwmSaveDesk FvwmScript \
 	FvwmScroll FvwmTaskBar FvwmTheme FvwmWharf FvwmWinList \
-	FvwmWindowLister
+	FvwmWindowMenu

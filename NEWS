@@ -8,24 +8,29 @@ Changes in developement release 2.5.6 (not released yet)
 * Not documented in 2.5.5: added support for joining and shaping in
   bi-directional languages that need this.
 
-* Not documented in 2.5.5: ButtonStyle and TitleStyle new style type
-  Colorset
+* Not documented in 2.5.5: ButtonStyle and TitleStyle new style
+  type Colorset.
 
-* Improvement in MultiPixmap. In particular Colorset and Solid colour
-  can be specified.
+* Improvement in MultiPixmap.  In particular Colorset and Solid
+  colour can be specified.
 
-* New ButtonStyle and TitleStyle style type AdjustedPixmap, StretchedPixmap
-  and ShrunkPixmap.
+* New ButtonStyle and TitleStyle style options AdjustedPixmap,
+  StretchedPixmap and ShrunkPixmap.
 
-* Use the MIT Shared Memory Extension for XImage 
+* Use the MIT Shared Memory Extension for XImage.
 
-* The TitleStyle decor of a vertical window Title is rotated. This is
-  controlable with the new style option:
-         !UseTitleDecorRotation / UseTitleDecorRotation
+* The TitleStyle decor of a vertical window Title is rotated.
+  This is controlable using a new style option:
+
+    !UseTitleDecorRotation / UseTitleDecorRotation
 
 * New style options IconBackgroundColorset, IconTitleColorset,
   HilightIconTitleColorset, IconTitleRelief, IconBackgroundRelief
-  and IconBackgroundPadding
+  and IconBackgroundPadding,
+
+* Minor incompatible improvements to the Perl library API.
+
+* Renamed FvwmWindowLister to FvwmWindowMenu.
 
 -------------------------------------------------------------------
 

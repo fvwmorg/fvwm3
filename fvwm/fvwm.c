@@ -1362,31 +1362,47 @@ static void SetRCDefaults(void)
 	int i;
 	/* set up default colors, fonts, etc */
 	const char *defaults[][3] = {
-		{"XORValue 0","",""},
-		{"DefaultFont","",""},
-		{"DefaultColors black grey","",""},
-		{DEFAULT_MENU_STYLE,"",""},
-		{"TitleStyle Centered -- Raised"},
-		{"Style * Color lightgrey/dimgrey","",""},
-		{"Style * HilightFore black, HilightBack grey","",""},
-		{"AddToMenu MenuFvwmRoot \"",
-		 _("Builtin Menu"), "\" Title"},
-		{"+ \"&1. XTerm\" Exec xterm","",""},
-		{"+ \"&2. ",
-		_("Setup Form"),
-		"\" Module FvwmForm FvwmForm-Setup"},
-		{"+ \"&3. ",
-		 _("Setup 95 Script"), 
-		 "\" Module FvwmScript FvwmScript-Setup95"},
-		{"+ \"&4. ",
-		 _("Issue FVWM commands"),
-		"\" Module FvwmConsole"},
-		{"+ \"&R. ",
-		 _("Restart FVWM"), "\" Restart"},
-		{"+ \"&X. ", gettext("Exit FVWM"), "\" Quit"},
-		{"Mouse 0 R N Menu MenuFvwmRoot","",""},
-		{"Read "FVWM_DATADIR"/ConfigFvwmDefaults","",""},
-		{NULL,NULL,NULL}
+		{ "XORValue 0", "", "" },
+		{ "DefaultFont", "", "" },
+		{ "DefaultColors black grey", "", "" },
+		{ DEFAULT_MENU_STYLE, "", "" },
+		{ "TitleStyle Centered -- Raised", "", "" },
+		{ "Style * Color lightgrey/dimgrey", "", "" },
+		{ "Style * HilightFore black, HilightBack grey", "", "" },
+		{
+			"AddToMenu MenuFvwmRoot \"",
+			_("Builtin Menu"),
+			"\" Title"
+		},
+		{ "+ \"&1. XTerm\" Exec xterm", "", ""},
+		{
+			"+ \"&2. ",
+			_("Setup Form"),
+			"\" Module FvwmForm FvwmForm-Setup"
+		},
+		{
+			"+ \"&3. ",
+			_("Setup 95 Script"), 
+			"\" Module FvwmScript FvwmScript-Setup95"
+		},
+		{
+			"+ \"&4. ",
+			_("Issue FVWM commands"),
+			"\" Module FvwmConsole"
+		},
+		{
+			"+ \"&R. ",
+			_("Restart FVWM"),
+			"\" Restart"
+		},
+		{
+			"+ \"&X. ",
+			_("Exit FVWM"),
+			"\" Quit"
+		},
+		{ "Mouse 0 R N Menu MenuFvwmRoot", "", "" },
+		{ "Read "FVWM_DATADIR"/ConfigFvwmDefaults", "", "" },
+		{ NULL, NULL, NULL }
 	};
 
 	for (i = 0; defaults[i][0]; i++)
