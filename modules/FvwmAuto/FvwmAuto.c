@@ -213,7 +213,7 @@ int main(int argc, char **argv)
 	  raise_window_now = raise_immediately;
 	}
 #ifdef DEBUG
-        else myfprintf((stderr,"no new window\n"));
+        else fprintf(stderr,"no new window\n");
 #endif
 	break;
       case M_RAISE_WINDOW:

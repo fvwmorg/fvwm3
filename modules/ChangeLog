@@ -1,6 +1,7 @@
 1999-12-08  Dan Espen  <dane@mk.telcordia.com>
 
 	* FvwmAuto/FvwmAuto.c: Added DEBUGTOFILE capability.
+	Remove the #define inside the else.
 
 	* FvwmButtons/FvwmButtons.1 Grammar.
 
