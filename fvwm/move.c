@@ -536,7 +536,7 @@ void moveLoop(FvwmWindow *tmp_win, int XOffset, int YOffset, int Width,
   /* make a copy of the tmp_win structure for sending to the pager */
   memcpy(&tmp_win_copy, tmp_win, sizeof(FvwmWindow));
   /* prevent flicker when paging */
-  tmp_win->tmpflags.window_being_moved = 1;
+  tmp_win->tmpflags.window_being_moved = opaque_move;
 
   XQueryPointer(dpy, Scr.Root, &JunkRoot, &JunkChild,&xl, &yt,
 		&JunkX, &JunkY, &button_mask);
