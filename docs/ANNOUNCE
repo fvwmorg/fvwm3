@@ -12,14 +12,17 @@ to those affected:
   André Bonhôte
   Ben Hollingsworth
   Bo Jensen
+  Charles K. Hines
   Constanze Sinner
   Dan Espen
+  David Huff
   David Koo
   David Weinehall
   Denis Perelyubskiy
   Dominik Vogt
   Fabien Villard
   Jacek Kopecky
+  Jan Theofel
   Juha Takkinen
   Kendrick Vargas
   Larry Gensch
@@ -28,6 +31,8 @@ to those affected:
   Pavel Riha
   Peter Bak Nielsen
   Rudolf Otto Blättner
+  Stefan Henz
+  Sten Michael Drescher
   Tomas Ögren
   Yvonne Ott
 
@@ -134,7 +139,7 @@ Bug fixes:
 ** Fixed a formatting problem of the man page on AIX, Solaris, and
    some other UNIX variants.
 
-** Fixed a problems with FvwmIconBox exiting on 64 bit platforms.
+** Fixed a problem with FvwmIconBox exiting on 64 bit platforms.
 
 ** Fixed parameters of fvwm24_convert.
 
