@@ -823,7 +823,7 @@ void LoopOnEvents(void)
 	      Event.xbutton.button <= NUMBER_OF_MOUSE_BUTTONS)
 	  {
 	    SendFvwmPipe(Fvwm_fd,
-			 ClickAction[(Transient) ? 0:Event.xbutton.button-1],
+			 ClickAction[Event.xbutton.button-1],
 			 ItemID(&windows,num));
 	    SwitchButton(&buttons,num);
 	  }
