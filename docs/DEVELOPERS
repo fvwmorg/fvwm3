@@ -163,10 +163,10 @@ Preparations:
     stable release it is best to throw away the whole source tree
     and check it out from scratch to ensure all source files have
     been added to CVS.
-  - For a stable release, change the date in configure.in and fill
-    in the release date in NEWS.  Commit these changes.
-    Note:  For releases prior to 2.5.3, the date has to be updated
-    in docs/fvwm.lsm.in and fvwm/fvwm.1 instead of configure.in.
+  - Change the date in configure.in and fill in the release date
+    in NEWS.  Commit these changes.  Note: For releases prior to
+    2.5.3, the date has to be updated in docs/fvwm.lsm.in and
+    fvwm/fvwm.1 instead of configure.in.
   - For a stable release, update docs/ANNOUNCE file.  For the
     first version of a major release (e.g. 2.6.0) all user visible
     changes have to be mentioned.  For the following maintenance
