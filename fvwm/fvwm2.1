@@ -2796,7 +2796,7 @@ used outside the
 command does nothing.
 
 .TP
-.BI "FakeClick [" command value "] ..."
+.BI "FakeClick [" "command value" "] ..."
 This command is mainly intended for debugging fvwm and no guarantees
 are made that it works for you.
 .B FakeClick
@@ -2807,7 +2807,7 @@ which consist of pairs of
 tokens and integer
 .I values,
 The
-.IR press and release
+.IR press " and " release
 commands are followed by the appropriate mouse button number and generate
 a button press or release event on the window below the pointer.  The
 .I wait
@@ -2822,7 +2822,7 @@ while 6, 7 and 8 are mapped to
 .SM Shift,
 .SM Lock
 and
-.SM Control
+.SM Control.
 The modifier is set for any further button events.  To release a
 modifier key, use the corresponding negative number.  The
 .I depth
@@ -2839,8 +2839,7 @@ Note that events propagate upward.
 .EE
 This simulates a click with button 1 in the parent window
 (depth 2) with a delay of 250 milliseconds between the press and
-the release.  To generate clicks on the root window use depth 0,
-for the frame depth 1 and for the client window only depth 3.
+the release.
 
 .TP
 .BI "GlobalOpts [" options "]"

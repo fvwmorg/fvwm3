@@ -1,3 +1,9 @@
+2001-04-19  Mikhael Goikhman  <migo@homemail.com>
+
+	* fvwm/fvwm2.1:
+	corrected a spacing and contradicting info in FakeClick entry
+	(it once suggested to use depth 1 and once depth 0 for the root)
+
 2001-04-15  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* fvwm/menus.c (get_one_menu_position_argument):
