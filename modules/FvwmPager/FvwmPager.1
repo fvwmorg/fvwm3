@@ -30,19 +30,20 @@ Module FvwmPager *
 or from within an fvwm pop-up menu:
 .nf
 .sp
-AddToMenu Module-Popup Modules      Title
-+                      Audio        Module FvwmAudio
-+                      Auto         Module FvwmAuto 200
-+                      Buttons      Module FvwmButtons
-+                      Ident        Module FvwmIdent
-+                      Banner       Module FvwmBanner
-+                      Pager        Module FvwmPager 0 3
+AddToMenu Module-Popup Modules Title
++ Audio        Module FvwmAudio
++ Auto         Module FvwmAuto 200
++ Buttons      Module FvwmButtons
++ Console      Module FvwmConsole
++ Ident        Module FvwmIdent
++ Banner       Module FvwmBanner
++ Pager        Module FvwmPager 0 3
 .sp
 .fi
 or
 .nf
 .sp
-+                      Pager        Module FvwmPager *
++ Pager        Module FvwmPager *
 .sp
 .fi
 
@@ -56,8 +57,8 @@ Example:
 .nf
 .sp
 Style FvwmPager Sticky, StaysOnTop
-*FvwmPagerRows       1
-*FvwmPagerColumns    1
+*FvwmPager: Rows       1
+*FvwmPager: Columns    1
 Mouse 3 R C Module FvwmPager -transient
 .sp
 .fi
@@ -97,7 +98,7 @@ align the viewport to a page boundary. Dragging button 3 will
 cause the viewport to move as you drag but not switch desktops, even
 if the pointer moves to another desktop.
 
-With the \fI*FvwmPagerSloppyFocus\fP option the focus is transfered
+With the \fI*FvwmPager: SloppyFocus\fP option the focus is transfered
 to the window pointed at with the mouse when the pointer is inside
 the pager.
 
@@ -133,7 +134,7 @@ invoke FvwmPager with an optional parameter, which it will use
 as its \fIname\fP instead (e.g "Module FvwmPager OtherPager").
 OtherPager will then read only the lines in the configuration file
 starting with "*OtherPager", and not the lines belonging to FvwmPager.
-This way multiple pager programs can be used.
+This way multiple pager instances may be used.
 
 Note: the old way to use the FvwmPager with several different configurations
 is to link the executable to another name, i.e.
@@ -156,136 +157,136 @@ The invocation method was shown in the synopsis section
 FvwmPager reads the same .fvwmrc file as fvwm reads when it starts up,
 and looks for certain configuration options:
 
-.IP "*FvwmPagerGeometry \fIgeometry\fP"
+.IP "*FvwmPager: Geometry \fIgeometry\fP"
 Completely or partially specifies the pager windows location and
 geometry, in standard X11 notation.
 In order to maintain an undistorted aspect ratio, you might
 want to leave out either the width or height dimension of the
 geometry specification
 
-.IP "*FvwmPagerRows \fIrows\fP"
+.IP "*FvwmPager: Rows \fIrows\fP"
 Tells fvwm how many rows of desks to use when laying out the pager
 window.
 
-.IP "*FvwmPagerColumns \fIcolumns\fP"
+.IP "*FvwmPager: Columns \fIcolumns\fP"
 Tells fvwm how many columns of desks to use when laying out the pager
 window.
 
-.IP "*FvwmPagerIconGeometry \fIgeometry\fP"
+.IP "*FvwmPager: IconGeometry \fIgeometry\fP"
 Specifies a size (optional) and location (optional) for the pager's icon
 window. Since there is no easy way for FvwmPager to determine the height of the
 icon's label, you will have to make an allowance for the icon  label height
 when using negative y-coordinates in the icon location specification (used to
 specify a location relative to the bottom instead of the top of the screen).
 
-.IP "*FvwmPagerStartIconic"
+.IP "*FvwmPager: StartIconic"
 Causes the pager to start iconified.
 
-.IP "*FvwmPagerNoStartIconic"
+.IP "*FvwmPager: NoStartIconic"
 Causes the pager to start normally.  Useful for canceling the effect
 of the \fIStartIconic\fP option.
 
-.IP "*FvwmPagerLabelsBelow"
+.IP "*FvwmPager: LabelsBelow"
 Causes the pager to draw desk labels below the corresponding desk.
 
-.IP "*FvwmPagerLabelsAbove"
+.IP "*FvwmPager: LabelsAbove"
 Causes the pager to draw desk labels above the corresponding desk.
 Useful for canceling the effect of the \fILabelsBelow\fP option.
 
-.IP "*FvwmPagerShapeLabels"
+.IP "*FvwmPager: ShapeLabels"
 Causes the pager to hide the labels of all but the current desk. This
 turns off label hilighting.
 
-.IP "*FvwmPagerNoShapeLabels"
+.IP "*FvwmPager: NoShapeLabels"
 Causes the pager to show the labels of all visible desks.
 Useful for canceling the effect of the \fIShapeLabels\fP option.
 
-.IP "*FvwmPagerFont \fIfont-name\fP"
+.IP "*FvwmPager: Font \fIfont-name\fP"
 Specified a font to use to label the desktops.  If \fIfont_name\fP is
 "none" then no desktop labels will be displayed.
 
-.IP "*FvwmPagerSmallFont \fIfont-name\fP"
+.IP "*FvwmPager: SmallFont \fIfont-name\fP"
 Specified a font to use to label the window names in the pager. If not
 specified, the window labels will be omitted. Window labels seem to
 be fairly useless for desktop scales of 32 or greater.  If \fIfont_name\fP
 is "none" then no window names will be displayed.
 
-.IP "*FvwmPagerFore \fIcolor\fP"
+.IP "*FvwmPager: Fore \fIcolor\fP"
 Specifies the color to use to write the desktop labels, and
 to draw the page-grid lines.
 
-.IP "*FvwmPagerBack \fIcolor\fP"
+.IP "*FvwmPager: Back \fIcolor\fP"
 Specifies the background color for the window.
 
-.IP "*FvwmPagerHilight \fIcolor\fP"
+.IP "*FvwmPager: Hilight \fIcolor\fP"
 The active page and desk label will be highlighted by using this
 background pattern instead of the normal background.
 
-.IP "*FvwmPagerHilightPixmap \fIpixmap\fP"
+.IP "*FvwmPager: HilightPixmap \fIpixmap\fP"
 The active page will be highlighted by using this background pattern
 instead of the normal background.
 
-.IP "*FvwmPagerDeskHilight"
+.IP "*FvwmPager: DeskHilight"
 Hilight the active page with the current hilight color/pixmap. Useful
 for canceling the effect of the \fINoDeskHilight\fP option.
 
-.IP "*FvwmPagerNoDeskHilight"
+.IP "*FvwmPager: NoDeskHilight"
 Don't hilight the active page.
 
-.IP "*FvwmPagerWindowColors \fIfore back hiFore hiBack\fP"
+.IP "*FvwmPager: WindowColors \fIfore back hiFore hiBack\fP"
 Change the normal/highlight colors of the windows. \fIfore\fP and
 \fIhiFore\fP specify the colors as used for the font inside the windows.
 \fIback\fP and \fIhiBack\fP are used to fill the windows with.
 
-.IP "*FvwmPagerWindowLabelFormat \fIformat\fP"
+.IP "*FvwmPager: WindowLabelFormat \fIformat\fP"
 This specifies a printf() like format for the labels in the mini window.
 Possible flags are: %t, %i, %c, and %r for the window's title, icon, class,
 or resource name, respectively.  The default is "%i".
 
-.IP "*FvwmPagerLabel \fIdesk label\fP"
+.IP "*FvwmPager: Label \fIdesk label\fP"
 Assigns the text \fIlabel\fP to desk \fIdesk\fP (or the current desk
 if desk is "*") in the pager window. Useful for assigning symbolic names
 to desktops, i.e.
 .nf
 .sp
-*FvwmPagerLabel 1 Mail
-*FvwmPagerLabel 2 Maker
-*FvwmPagerLabel * Matlab
+*FvwmPager: Label 1 Mail
+*FvwmPager: Label 2 Maker
+*FvwmPager: Label * Matlab
 .sp
 .fi
 
-.IP "*FvwmPagerDeskColor \fIdesk color\fP"
+.IP "*FvwmPager: DeskColor \fIdesk color\fP"
 Assigns the color \fIcolor\fP to desk \fIdesk\fP (or the current desk if
 desk is "*") in the pager window. This replaces the background color for
 the particular \fIdesk\fP.  This only works when the pager is full sized.
-When Iconified, the pager uses the color specified by *FvwmPagerBack.
+When Iconified, the pager uses the color specified by *FvwmPager: Back.
 .sp
-\fBTIP:\fP	Try using *FvwmPagerDeskColor in conjunction with
+\fBTIP:\fP	Try using *FvwmPager: DeskColor in conjunction with
 FvwmCpp (or FvwmM4) and FvwmBacker to assign identical
 colors to your various desktops and the pager representations.
 
-.IP "*FvwmPagerPixmap \fIpixmap\fP"
+.IP "*FvwmPager: Pixmap \fIpixmap\fP"
 Use \fIpixmap\fP as background for the pager.
 
-.IP "*FvwmPagerDeskPixmap \fIdesk pixmap\fP"
+.IP "*FvwmPager: DeskPixmap \fIdesk pixmap\fP"
 Assigns the pixmap \fIcolor\fP to desk \fIdesk\fP (or the current desk if
 desk is "*") in the pager window. This replaces the background pixmap for
 the particular \fIdesk\fP.
 .sp
-\fBTIP:\fP Try using *FvwmPagerDeskPixmap in conjunction with FvwmCpp
+\fBTIP:\fP Try using *FvwmPager: DeskPixmap in conjunction with FvwmCpp
 (or FvwmM4) and FvwmBacker to assign identical pixmaps to your various
 desktops and the pager representations.
 
-.IP "*FvwmPagerDeskTopScale \fInumber\fP"
+.IP "*FvwmPager: DeskTopScale \fInumber\fP"
 If the geometry is not specified, then a desktop reduction factor is
 used to calculate the pager's size. Things in the pager window
 are shown at 1/\fInumber\fP of the actual size.
 
-.IP "*FvwmPagerMiniIcons"
+.IP "*FvwmPager: MiniIcons"
 Allow the pager to display a window's mini icon in the pager, if it has
 one, instead of showing the window's name.
 
-.IP "*FvwmPagerMoveThreshold \fIpixels\fP"
+.IP "*FvwmPager: MoveThreshold \fIpixels\fP"
 Defines the distance the pointer has to be moved before a window being
 dragged with button 2 is actually moved. The default value is three
 pixels. If the pointer moved less that this amount the window snaps back
@@ -294,21 +295,21 @@ less than zero the default value is used. The value set with the
 \fIMoveThreshold\fP command in fvwm is inherited by FvwmPager but can
 be overridden with this option.
 
-.IP "*FvwmPagerSloppyFocus"
+.IP "*FvwmPager: SloppyFocus"
 If the SloppyFocus option is used, you do not need to click into
 the mini window in the pager to give the real window the focus.
 Simply putting the pointer over the window inside the pager is
 enough.
 
-.IP "*FvwmPagerSolidSeparators"
+.IP "*FvwmPager: SolidSeparators"
 By default the pages of the virtual desktop are separated by
 dashed lines in the pager window.  This option causes FvwmPager to
 use solid lines instead.
 
-.IP "*FvwmPagerNoSeparators"
+.IP "*FvwmPager: NoSeparators"
 Turns off the lines separating the pages of the virtual desktop.
 
-.IP "*FvwmPagerBalloons [\fItype\fP]"
+.IP "*FvwmPager: Balloons [\fItype\fP]"
 Show a balloon describing the window when the pointer is moved into
 a window in the pager. The default format (the window's icon name) can be
 changed using BalloonStringFormat.
@@ -317,24 +318,24 @@ pager; if \fItype\fP is \fIIcon\fP balloons are just shown for an
 iconified pager. If \fItype\fP is anything else (or null) balloons are
 always shown.
 
-.IP "*FvwmPagerBalloonFore \fIcolor\fP"
+.IP "*FvwmPager: BalloonFore \fIcolor\fP"
 Specifies the color for text in the balloon window. If omitted it
 defaults to the foreground color for the window being described.
 
-.IP "*FvwmPagerBalloonBack \fIcolor\fP"
+.IP "*FvwmPager: BalloonBack \fIcolor\fP"
 Specifies the background color for the balloon window. If omitted it
 defaults to the background color for the window being described.
 
-.IP "*FvwmPagerBalloonFont \fIfont-name\fP"
+.IP "*FvwmPager: BalloonFont \fIfont-name\fP"
 Specifies a font to use for the balloon text. Defaults to \fIfixed\fP.
 
-.IP "*FvwmPagerBalloonBorderWidth \fInumber\fP"
+.IP "*FvwmPager: BalloonBorderWidth \fInumber\fP"
 Sets the width of the balloon window's border. Defaults to 1.
 
-.IP "*FvwmPagerBalloonBorderColor \fIcolor\fP"
+.IP "*FvwmPager: BalloonBorderColor \fIcolor\fP"
 Sets the color of the balloon window's border. Defaults to black.
 
-.IP "*FvwmPagerBalloonYOffset \fInumber\fP"
+.IP "*FvwmPager: BalloonYOffset \fInumber\fP"
 The balloon window is positioned to be horizontally centered against
 the pager window it is describing. The vertical position may be
 set as an offset. Negative offsets of \fI-n\fP are placed \fIn\fP
@@ -345,38 +346,38 @@ as this would permit direct transit from pager window to balloon window,
 causing an event loop. Defaults to +3. The offset will change sign
 automatically, as needed, to keep the balloon on the screen.
 
-.IP "*FvwmPagerBalloonStringFormat \fTformat\fP"
-The same as \fI*FvwmPagerWindowLabelFormat\fP, it just specifies the string to
+.IP "*FvwmPager: BalloonStringFormat \fTformat\fP"
+The same as \fI*FvwmPager: WindowLabelFormat\fP, it just specifies the string to
 display in the balloons. The default is "%i".
 
-.IP "*FvwmPagerColorset \fIdesk colorset\fP"
+.IP "*FvwmPager: Colorset \fIdesk colorset\fP"
 Tells the module to use colorset \fIcolorset\fP for \fIdesk\fP.
 If you use an asterisk '*' in place of \fIdesk\fP, the colorset is
 used on all desks. Please refer to the man page of the FvwmTheme
 module for details about colorsets.
-.IP "*FvwmPagerBalloonColorset \fIdesk colorset\fP"
+.IP "*FvwmPager: BalloonColorset \fIdesk colorset\fP"
 Tells the module to use colorset \fIcolorset\fP for balloons on \fIdesk\fP.
 If you use an asterisk '*' in place of \fIdesk\fP, the colorset is
 used on all desks. Please refer to the man page of the FvwmTheme
 module for details about colorsets.
-.IP "*FvwmPagerHilightColorset \fIdesk colorset\fP"
+.IP "*FvwmPager: HilightColorset \fIdesk colorset\fP"
 Tells the module to use colorset \fIcolorset\fP for hilighting on \fIdesk\fP.
 If you use an asterisk '*' in place of \fIdesk\fP, the colorset is
 used on all desks. Please refer to the man page of the FvwmTheme
 module for details about colorsets.
-.IP "*FvwmPagerWindowColorsets \fIcolorset activecolorset\fP"
-Uses colorsets in the same way as *FvwmPagerWindowColors.
+.IP "*FvwmPager: WindowColorsets \fIcolorset activecolorset\fP"
+Uses colorsets in the same way as *FvwmPager: WindowColors.
 Please refer to the man page of the FvwmTheme module for details
 about colorsets.  The shadow and hilight colors of the colorset are
-only used for the window borders if the *FvwmPagerWindow3DBorders
+only used for the window borders if the *FvwmPager: Window3DBorders
 is specified too.
-.IP "*FvwmPagerWindowBorderWidth \fIn\fP"
+.IP "*FvwmPager: WindowBorderWidth \fIn\fP"
 Specifies the width of the border drawn around the mini windows. This also sets
 the minimum size of the mini windows to (2 * \fIn\fP + 1).
 The default is 1.
-.IP "*FvwmPagerWindow3DBorders"
+.IP "*FvwmPager: Window3DBorders"
 Specifies that the mini windows should have a 3d borders based on the
-mini window background. This option only works if *FvwmPagerWindowColorsets
+mini window background. This option only works if *FvwmPager: WindowColorsets
 is specified.
 
 .SH AUTHOR
@@ -384,6 +385,8 @@ Robert Nation
 .br
 DeskColor patch contributed by Alan Wild
 .br
-MiniIcons and WindowColors patch contributed by Rob Whapham
+MiniIcons & WindowColors patch contributed by Rob Whapham
 .br
-Balloons patch by Ric Lister <ric@giccs.georgetown.edu>.
+Balloons patch by Ric Lister <ric@giccs.georgetown.edu>
+.br
+fvwm-workers: Dominik, Olivier, Hippo and others.

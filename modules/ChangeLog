@@ -1,3 +1,13 @@
+2001-05-16  Mikhael Goikhman  <migo@homemail.com>
+
+	* modules/FvwmButtons/FvwmButtons.1:
+	* modules/FvwmEvent/FvwmEvent.1:
+	* modules/FvwmGtk/FvwmGtk.1:
+	* modules/FvwmPager/FvwmPager.1:
+	* modules/FvwmTheme/FvwmTheme.1:
+	use a new non-conflicting module syntax;
+	more corrections and updates
+
 2001-05-14  olicha  <olivier.chapuis@free.fr>
 
 	* FvwmTaskBar/FvwmTaskBar.c (ErrorHandler):

@@ -31,7 +31,11 @@
 .\" Describe what fvwm does, not what it will do, even if you haven't
 .\" written the feature yet. dje 2/3/01.
 .\"
-.\" @(#)fvwm2.3 24 March 2001
+.\" A note to everyone who needs to write dates.  Don't use 2/3/01 notation,
+.\" a non-american person simply can't parse such sequence of digits.
+.\" Please use 3-Feb-2001 or 2001-02-03 forms.  migo 16/May/2001.
+.\"
+.\" @(#)fvwm-2.3 24 March 2001
 .de EX		\"Begin example
 .ne 5
 .if n .sp 1
@@ -540,6 +544,10 @@ as in the sample module
 The
 .B FvwmButtons
 module is documented in its own man page.
+
+Please refer to the
+.B "MODULE COMMANDS"
+section for details.
 
 .SH ICCCM COMPLIANCE
 
@@ -6743,6 +6751,8 @@ module name and the rest of the line, this is recommended to avoid conflicts.
 .EX
 *FvwmIconBox: MaxIconSize 48x48
 *FvwmPager: WindowBorderWidth 1
+*FvwmButtons-TopRight: Geometry 100x100-0+0
+*FvwmButtons-Bottom: Geometry +0-0
 .EE
 
 .TP
@@ -6753,7 +6763,7 @@ some module settings, previously defined.  This changes the the way a
 module runs during a fvwm session without restarting.  Wildcards can
 be used for portions of the name as well.
 
-A new non-conflicting syntax allows a delimiter, a colon and optional spaces,
+The new non-conflicting syntax allows a delimiter, a colon and optional spaces,
 between the module name and the rest of the line, in this case a module name
 (or alias) can't have wildcards.
 .EX
@@ -6777,11 +6787,26 @@ KillModule FvwmEvent SoundEvent
 .EE
 
 .TP
-.BI "Module " modulename
+.BI "Module " modulename " [" moduleparams ]
 Specifies a module with its optional parameters which should be spawned.
+Currently several modules, including
+.BR FvwmButtons ", " FvwmEvent ", " FvwmForm ", " FvwmGtk ", "
+.BR FvwmPager ", " FvwmScript
+support aliases.  Aliases are useful if more than one instance of the module
+should be spawned.  Aliases may be configured separately using
+.B *
+syntax described above.  To start a module
+.B FvwmForm
+using an alias
+.IR MyForm ,
+the following syntax may be used:
+.EX
+Module FvwmForm MyForm
+.EE
+
 At the current time the available modules (included with fvwm) are
 .B FvwmAnimate
-(produces animation effects when a window is iconified or de-iconifed).
+(produces animation effects when a window is iconified or de-iconifed),
 .B FvwmAudio
 (makes sounds to go with window manager actions),
 .B FvwmAuto
@@ -6793,17 +6818,17 @@ At the current time the available modules (included with fvwm) are
 .B FvwmButtons
 (brings up a customizable tool bar),
 .B FvwmCommandS
-(a command server to use with shell's FvwmCommand client)
+(a command server to use with shell's FvwmCommand client),
 .B FvwmConsole
-(to execute fvwm commands directly)
+(to execute fvwm commands directly),
 .B FvwmCpp
 (to preprocess your
 .I .fvwm2rc
 with cpp),
 .B FvwmDebug
-(to help debug fvwm)
+(to help debug fvwm),
 .B FvwmDragWell
-(the place to drag&drop to)
+(the place to drag&drop to),
 .B FvwmEvent
 (trigger various actions by events),
 .B FvwmForm

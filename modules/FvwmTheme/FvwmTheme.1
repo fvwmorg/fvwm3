@@ -42,7 +42,7 @@ so there is no provision for using an alias name.
 .SH CONFIGURATION OPTIONS
 FvwmTheme supports some configuration options.
 
-.IP "*FvwmThemeColorset \fIn\fP \fIoptions\fP "
+.IP "*FvwmTheme: Colorset \fIn\fP \fIoptions\fP "
 Will create or modify colorset \fIn\fP. Each colorset has four colors, an
 optional pixmap and an optional shape mask.  The four colors are used by
 modules as the foreground, background, highlight and shadow colors.  When
@@ -126,7 +126,7 @@ for the syntax of gradients.
 \fINoShape\fP removes tha shape mask from the colorset while \fIPlain\fP
 removes the background pixmap or gradient.
 
-.IP "*FvwmThemeReadWriteColors"
+.IP "*FvwmTheme: ReadWriteColors"
 Tells FvwmTheme to use read/write color cells for the foreground and background
 pixels.  This can make changing colorsets much faster but can only be used with
 PseudoColor displays.  This option must be specified first and it cannot be
@@ -143,28 +143,28 @@ The syntax is the same as the configuration option.
 .SH EXAMPLES
 
 .in +.3i
-*FvwmThemeColorset 3 fg wheat, bg navy
+*FvwmTheme: Colorset 3 fg wheat, bg navy
 .in -.3i
 
 If necessary this will create colorsets 0, 1, 2 and 3 and then change colorset
 3 to have a foreground of wheat, a background of navy.
 
 .in +.3i
-*FvwmThemeColorset 3 bg "navy blue"
+*FvwmTheme: Colorset 3 bg "navy blue"
 .in -.3i
 
 will change the background color of colorset 3 to navy blue. The foreground and
 pixmap will be unchanged.
 
 .in +.3i
-*FvwmThemeColorset 3 AspectPixmap \\
+*FvwmTheme: Colorset 3 AspectPixmap \\
   large_murky_dungeon.xpm
 .in -.3i
 
 will cause depression
 
 .in +.3i
-*FvwmThemeColorset 3 bg Average
+*FvwmTheme: Colorset 3 bg Average
 .in -.3i
 
 will set the background color and the relief colors to match the background
@@ -172,7 +172,7 @@ pixmap. This is the default setting but it must be used if a background color
 was specified and is now not required.
 
 .in +.3i
-*FvwmThemeColorset 3 YGradient 200 3 \\
+*FvwmTheme: Colorset 3 YGradient 200 3 \\
   blue 1000 navy 1 blue 1000 navy
 .in -.3i
 
@@ -195,10 +195,10 @@ if that is set to contrast.
  done
 .EE
 
-will make colorset 7 blink if used with the *FvwmThemeReadWriteColors option.
+will make colorset 7 blink if used with the *FvwmTheme: ReadWriteColors option.
 
 The color names used in color sets can be substituted in any fvwm
-command.  Please refer to the \fICOMMAND LINE PARAMETER EXPANSION\fP
+command.  Please refer to the \fICOMMAND EXPANSION\fP
 section in the fvwm2 man page and the example below for a description.
 
 .SH SAMPLE FVWM CONFIGURATION
@@ -208,8 +208,7 @@ use of the FvwmTheme module.  The order in which FvwmTheme and the
 other modules are configured and started is important.
 
 .EX
- # fvwm paths
- ModulePath <put your module path here>
+ # where your images are
  ImagePath <put your image path here>
 
  #
@@ -218,7 +217,7 @@ other modules are configured and started is important.
  # The FvwmTheme setup must be first in the config file,
  # right after the paths are set.
  #
- # Instead of the *FvwmThemeColorset... lines below you
+ # Instead of the *FvwmTheme: Colorset... lines below you
  # could read in a file with these commands.  So to change
  # your color scheme you can simply copy a different file
  # over your palette file and restart fvwm:
@@ -234,17 +233,17 @@ other modules are configured and started is important.
  # 5 = greyed out menu entry (only bg used)
  # 6 = module foreground and background
  # 7 = hilight colours
- *FvwmThemeColorset 0 fg black, bg rgb:b4/aa/94
- *FvwmThemeColorset 1 fg black, bg rgb:a1/b2/c8
- *FvwmThemeColorset 2 fg black, bg rgb:da/9a/68
- *FvwmThemeColorset 3 fg black, bg rgb:b4/aa/94, \\
+ *FvwmTheme: Colorset 0 fg black, bg rgb:b4/aa/94
+ *FvwmTheme: Colorset 1 fg black, bg rgb:a1/b2/c8
+ *FvwmTheme: Colorset 2 fg black, bg rgb:da/9a/68
+ *FvwmTheme: Colorset 3 fg black, bg rgb:b4/aa/94, \\
    VGradient 100 dtcolour5 rgb:b4/aa/94
- *FvwmThemeColorset 4 fg black, bg rgb:b4/aa/94
- *FvwmThemeColorset 5 fg rgb:d2/bf/a8, \\
+ *FvwmTheme: Colorset 4 fg black, bg rgb:b4/aa/94
+ *FvwmTheme: Colorset 5 fg rgb:d2/bf/a8, \\
    bg rgb:b4/aa/94
- *FvwmThemeColorset 6 fg black, bg rgb:b4/aa/94, \\
+ *FvwmTheme: Colorset 6 fg black, bg rgb:b4/aa/94, \\
    VGradient 100 dtcolour5 rgb:b4/aa/94
- *FvwmThemeColorset 7 fg black, bg rgb:94/ab/bf
+ *FvwmTheme: Colorset 7 fg black, bg rgb:94/ab/bf
 
  # run FvwmTheme before anything else is done
  ModuleSynchronous Timeout 5 FvwmTheme
@@ -252,10 +251,8 @@ other modules are configured and started is important.
  #
  # general setup
  #
- Style * ForeColor $[fg.cs1]
- Style * BackColor $[bg.cs1]
- Style * HilightFore $[fg.cs2]
- Style * HilightBack $[bg.cs2]
+ Style * Colorset 1
+ Style * HighlightColorset 2
  MenuStyle * MenuColorset 3
  MenuStyle * ActiveColorset 4
  MenuStyle * GreyedColorset 5
@@ -271,43 +268,47 @@ other modules are configured and started is important.
  #
 
  # ... more FvwmPager config lines ...
- *FvwmPagerColorset * 6
- *FvwmPagerBalloonColorset * 6
- *FvwmPagerHilightColorset * 7
- *FvwmPagerWindowColorsets 1 2
+ *FvwmPager: Colorset * 6
+ *FvwmPager: BalloonColorset * 6
+ *FvwmPager: HilightColorset * 7
+ *FvwmPager: WindowColorsets 1 2
 
  # ... more FvwmIconMan config lines ...
- *FvwmIconMan*Colorset 6
- *FvwmIconMan*FocusColorset 2
- *FvwmIconMan*FocusAndSelectColorset 2
- *FvwmIconMan*PlainColorset 6
- *FvwmIconMan*SelectColorset 6
- *FvwmIconMan*TitleColorset 6
+ *FvwmIconMan: *Colorset 6
+ *FvwmIconMan: *FocusColorset 2
+ *FvwmIconMan: *FocusAndSelectColorset 2
+ *FvwmIconMan: *PlainColorset 6
+ *FvwmIconMan: *SelectColorset 6
+ *FvwmIconMan: *TitleColorset 6
 
  # ... more FvwmButtons config lines ...
- *FvwmButtonsFore     $[fg.cs6]
- *FvwmButtonsBack     $[bg.cs6]
- *FvwmButtonsColorset 6
+ *FvwmButtons: Colorset 6
  # sample button passing color to xterm
- *FvwmButtons(Title xterm, \\
-   Action "Exec exec xterm -fg $[fg.cs6] -bg[bg.cs6")
+ *FvwmButtons: (Title xterm, \\
+   Action "Exec exec xterm -fg $[fg.cs6] -bg[bg.cs6]")
 
  # ... more FvwmWharf config lines ...
- *FvwmWharfColorset 6
+ *FvwmWharf: Colorset 6
 
  # ... more FvwmIdent config lines ...
- *FvwmIdentColorset 6
+ *FvwmIdent: Colorset 6
 
  # ... more FvwmWinList config lines ...
- *FvwmWinListColorset      1
- *FvwmWinListFocusColorset 2
- *FvwmWinListIconColorset  1
+ *FvwmWinList: Colorset      1
+ *FvwmWinList: FocusColorset 2
+ *FvwmWinList: IconColorset  1
 
  # ... more FvwmTaskBar config lines ...
- *FvwmTaskBarColorset     6
- *FvwmTaskBarIconColorset 6
- *FvwmTaskBarTipsColorset 0
+ *FvwmTaskBar: Colorset     6
+ *FvwmTaskBar: IconColorset 6
+ *FvwmTaskBar: TipsColorset 0
 .EE
+
+If you need to have more colors and don't want to reinvent the wheel,
+you may use the convention used in fvwm-themes, it defines the meaning
+of the first 40 colorsets for nearly all purposes:
+
+ \fBhttp://fvwm-themes.sourceforge.net/doc/colorsets\fP
 
 .SH BUGS
 

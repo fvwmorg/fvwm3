@@ -593,7 +593,7 @@ commands, like this:
 .nf
 .sp
   #define BG gray60
-  *FvwmButtons(Swallow "xload" `Exec xload -bg BG &`)
+  *FvwmButtons: (Swallow "xload" `Exec xload -bg BG &`)
 .sp
 .fi
 Any single character can be quoted with a preceding
@@ -903,11 +903,11 @@ DestroyModuleConfig FvwmButtons: *
 *FvwmButtons: (Title Tools, Panel Tools   \\
   "Module FvwmButtons -transientpanel Tools")
 
-*FvwmButtons: (Title Resize,Icon resize.xpm ,Action Resize)
-*FvwmButtons: (Title Move  ,Icon arrows2.xpm,Action Move  )
-*FvwmButtons: (Title Lower ,Icon Down       ,Action Lower )
-*FvwmButtons: (Title Raise ,Icon Up         ,Action Raise )
-*FvwmButtons: (Title Kill  ,Icon bomb.xpm   ,Action Destroy)
+*FvwmButtons: (Title Resize, Icon resize.xpm,  Action Resize)
+*FvwmButtons: (Title Move,   Icon arrows2.xpm, Action Move  )
+*FvwmButtons: (Title Lower,  Icon Down,        Action Lower )
+*FvwmButtons: (Title Raise,  Icon Up,          Action Raise )
+*FvwmButtons: (Title Kill,   Icon bomb.xpm,    Action Destroy)
 
 *FvwmButtons: (1x1,Container(Rows 3,Frame 1))
 *FvwmButtons: (Title Dopey ,Action                          \\
@@ -948,21 +948,21 @@ The other panels are specified after the root panel:
 .nf
 .sp
 ########## PANEL WinOps
-*WinOpsBack bisque2
-*WinOpsGeometry -3-3
-*WinOpsColumns 1
+*WinOps: Back bisque2
+*WinOps: Geometry -3-3
+*WinOps: Columns 1
 
-*WinOps(Title Resize,Icon resize.xpm ,Action Resize)
-*WinOps(Title Move  ,Icon arrows2.xpm,Action Move  )
-*WinOps(Title Lower ,Icon Down       ,Action Lower )
-*WinOps(Title Raise ,Icon Up         ,Action Raise )
+*WinOps: (Title Resize, Icon resize.xpm,  Action Resize)
+*WinOps: (Title Move,   Icon arrows2.xpm, Action Move  )
+*WinOps: (Title Lower,  Icon Down,        Action Lower )
+*WinOps: (Title Raise,  Icon Up,          Action Raise )
 
 ########## PANEL Tools
-*ToolsBack bisque2
-*ToolsGeometry -1-1
-*ToolsColumns 1
+*Tools: Back bisque2
+*Tools: Geometry -1-1
+*Tools: Columns 1
 
-*Tools(Title Kill  ,Icon bomb.xpm   ,Action Destroy)
+*Tools: (Title Kill,    Icon bomb.xpm,    Action Destroy)
 .sp
 .fi
 
@@ -995,7 +995,7 @@ Style "FvwmButtons"	Icon toolbox.xpm, NoTitle, Sticky
 *FvwmButtons: Padding     1 1
 
 # Pop up a module menu directly above the button.
-*FvwmButtons: (9x1+3+0, Padding 0, Title "Modules",     \\
+*FvwmButtons: (9x1+3+0, Padding 0, Title "Modules",   \\
   Action `Menu Modulepopup rectangle $wx$h+$l+$t o+50 -100m`)
 
 # first row of buttons from left to right:
@@ -1003,7 +1003,7 @@ Style "FvwmButtons"	Icon toolbox.xpm, NoTitle, Sticky
 *FvwmButtons: (3x2+3+1, Icon my_recapture.xpm, Action Recapture)
 *FvwmButtons: (3x2+6+1, Icon my_resize.xpm, Action Resize)
 *FvwmButtons: (3x2+9+1, Icon my_move.xpm, Action Move)
-*FvwmButtons: (3x2+12+1, Icon my_fvwmconsole.xpm,       \\
+*FvwmButtons: (3x2+12+1, Icon my_fvwmconsole.xpm,     \\
   Action 'Module FvwmConsole')
 
 # second row of buttons from left to right:
@@ -1013,14 +1013,14 @@ Style "FvwmButtons"	Icon toolbox.xpm, NoTitle, Sticky
 *FvwmButtons: (3x2+9+3, Icon my_shell.xpm, Action 'Exec rxvt')
 
 # big items
-*FvwmButtons: (10x5, Swallow (NoKill, NoCLose)          \\
+*FvwmButtons: (10x5, Swallow (NoKill, NoCLose)        \\
   "FvwmPager" 'FvwmPager * * -geometry 40x40-1024-1024')
-*FvwmButtons: (6x5, Swallow "FvwmXclock" `Exec xclock   \\
+*FvwmButtons: (6x5, Swallow "FvwmXclock" `Exec xclock \\
   -name FvwmXclock -geometry 40x40+0-3000 -padding 1  \\
   -analog -chime -bg rgb:90/80/90`)
-*FvwmButtons: (13x5, Swallow (NoClose)                  \\
+*FvwmButtons: (13x5, Swallow (NoClose)                \\
 "FvwmIconMan" 'Module FvwmIconMan')
-*FvwmButtons: (20x5, Padding 0, Swallow "xosview"       \\
+*FvwmButtons: (20x5, Padding 0, Swallow "xosview"     \\
   `Exec /usr/X11R6/bin/xosview -cpu -int -page -net   \\
   -geometry 100x50+0-3000 -font 5x7`)
 .sp

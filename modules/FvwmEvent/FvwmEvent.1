@@ -23,13 +23,14 @@ or from within an \fIfvwm\fP pop-up menu:
 .nf
 .sp
 DestroyMenu Module-Popup
-AddToMenu Module-Popup "Modules"      Title
-+                      "Event"        Module FvwmEvent
-+                      "Auto"         Module FvwmAuto 200
-+                      "Buttons"      Module FvwmButtons
-+                      "Ident"        Module FvwmIdent
-+                      "Banner"       Module FvwmBanner
-+                      "Pager"        Module FvwmPager 0 3
+AddToMenu Module-Popup "Modules" Title
++ "Event"        Module FvwmEvent
++ "Auto"         Module FvwmAuto 200
++ "Buttons"      Module FvwmButtons
++ "Console"      Module FvwmConsole
++ "Ident"        Module FvwmIdent
++ "Banner"       Module FvwmBanner
++ "Pager"        Module FvwmPager 0 3
 .sp
 .fi
 .SH DESCRIPTION
@@ -66,32 +67,32 @@ creating a symlink) enables FvwmAudio compatibility mode.
 \fIFvwmEvent\fP reads the same \fI.fvwm2rc\fP file as \fIfvwm\fP
 reads when it starts up, and looks for certain configuration options:
 
-.IP "*FvwmEventCmd \fIcommand\fP"
+.IP "*FvwmEvent: Cmd \fIcommand\fP"
 This determines the \fIfvwm\fP function that is to be called with the
 event parameters. You might want to do one of the following (details below):
 .nf
 .sp
-	#play sounds
-	*FvwmEventCmd \fIbuiltin-rplay\fP
+	# play sounds
+	*FvwmEvent: Cmd \fIbuiltin-rplay\fP
 
-	#execute distinct fvwm functions
-	*FvwmEventCmd
+	# execute distinct fvwm functions
+	*FvwmEvent: Cmd
 
-	#execute distinct external programs
-	*FvwmEventCmd exec
+	# execute distinct external programs
+	*FvwmEvent: Cmd exec
 .sp
 .fi
 This version of \fIFvwmEvent\fP has builtin \fIrplay\fP support which does not
 need to invoke an external audio player to play sounds.  The rplay
 support is enabled when \fIFvwmEvent\fP is compiled with \fIHAVE_RPLAY\fP
-defined and when \fIFvwmEventCmd\fP is set to \fIbuiltin-rplay\fP. See
+defined and when \fIFvwmEvent: Cmd\fP is set to \fIbuiltin-rplay\fP. See
 remarks below if \fIFvwmEvent\fP is invoked in FvwmAudio compatibility mode.
 
 For example:
 .nf
 .sp
-	*FvwmEventCmd \fIbuiltin-rplay\fP
-	*FvwmEvent add_window drip.au
+	*FvwmEvent: Cmd \fIbuiltin-rplay\fP
+	*FvwmEvent: add_window drip.au
 .sp
 .fi
 rplay can be obtained via anonymous ftp at
@@ -105,95 +106,95 @@ rplay can be obtained via anonymous ftp at
 e.g: the rsynth 'say' command:
 .nf
 .sp
-	*FvwmEventCmd Exec /rsynth/say
-	*FvwmEvent destroy_window "window closed"
+	*FvwmEvent: Cmd Exec /rsynth/say
+	*FvwmEvent: destroy_window "window closed"
 .sp
 .fi
 You can also use \fIfvwm\fP's builtin \fIEcho\fP command as
-\fIFvwmEventCmd\fP to obtain debug output for \fIfvwm\fP events quietly.
+\fIFvwmEvent: Cmd\fP to obtain debug output for \fIfvwm\fP events quietly.
 I used this setup to debug FvwmAuto:
 .nf
 .sp
-	*FvwmEventCmd \fIEcho\fP
-	*FvwmEvent focus_change "focus change"
-	*FvwmEvent raise_window "raise window"
+	*FvwmEvent: Cmd \fIEcho\fP
+	*FvwmEvent: focus_change "focus change"
+	*FvwmEvent: raise_window "raise window"
 .sp
 .fi
 You can even call different shell commands for each event just by setting
 .nf
 .sp
-	*FvwmEventCmd exec
-	*FvwmEvent add_window killname "APPL ERROR"
+	*FvwmEvent: Cmd exec
+	*FvwmEvent: add_window killname "APPL ERROR"
 .sp
 .fi
-.IP "*FvwmEventPassID"
+.IP "*FvwmEvent: PassID"
 Specifies that the event action will have an ID parameter added to the end
 of the command line. Most events will have the windowID of the window that the
 event refers to, new_desk will have the new desk number. The windowID is a
 hexadecimal string preceded by 0x, desk numbers are decimal.
 
-.IP "*FvwmEvent \fIwindow-manager-event action-or-filename\fP"
+.IP "*FvwmEvent: \fIwindow-manager-event action-or-filename\fP"
 Binds particular actions to window manager events.
 
 e.g. for audio-events:
 .nf
 .sp
-	*FvwmEvent startup TaDa.au
-	*FvwmEvent shutdown Elvis_Left.au
-	*FvwmEvent unknown doh.au
+	*FvwmEvent: startup TaDa.au
+	*FvwmEvent: shutdown Elvis_Left.au
+	*FvwmEvent: unknown doh.au
 
-	*FvwmEvent new_page beam_trek.au
-	*FvwmEvent new_desk beam_trek.au
-	*FvwmEvent add_window drip.au
-	*FvwmEvent raise_window swoosh.au
-	*FvwmEvent lower_window swoosh.au
-	*FvwmEvent configure_window hammer.au
-	*FvwmEvent focus_change boing.au
-	*FvwmEvent destroy_window explosion.au
-	*FvwmEvent iconify ploop.au
-	*FvwmEvent deiconify ploop.au
-	*FvwmEvent window_name huh.au
-	*FvwmEvent icon_name beep.au
-	*FvwmEvent res_class beep.au
-	*FvwmEvent res_name beep.au
-	*FvwmEvent end_windowlist twang.au
+	*FvwmEvent: new_page beam_trek.au
+	*FvwmEvent: new_desk beam_trek.au
+	*FvwmEvent: add_window drip.au
+	*FvwmEvent: raise_window swoosh.au
+	*FvwmEvent: lower_window swoosh.au
+	*FvwmEvent: configure_window hammer.au
+	*FvwmEvent: focus_change boing.au
+	*FvwmEvent: destroy_window explosion.au
+	*FvwmEvent: iconify ploop.au
+	*FvwmEvent: deiconify ploop.au
+	*FvwmEvent: window_name huh.au
+	*FvwmEvent: icon_name beep.au
+	*FvwmEvent: res_class beep.au
+	*FvwmEvent: res_name beep.au
+	*FvwmEvent: end_windowlist twang.au
 
-	*FvwmEvent icon_location beep.au
-	*FvwmEvent map beep.au
-	*FvwmEvent error beep.au
-	*FvwmEvent config_info beep.au
-	*FvwmEvent end_config_info beep.au
-	*FvwmEvent icon_file beep.au
-	*FvwmEvent default_icon beep.au
-	*FvwmEvent string plapper.au
+	*FvwmEvent: icon_location beep.au
+	*FvwmEvent: map beep.au
+	*FvwmEvent: error beep.au
+	*FvwmEvent: config_info beep.au
+	*FvwmEvent: end_config_info beep.au
+	*FvwmEvent: icon_file beep.au
+	*FvwmEvent: default_icon beep.au
+	*FvwmEvent: string plapper.au
 
-	*FvwmEvent mini_icon beep.au
-	*FvwmEvent windowshade beep.au
-	*FvwmEvent dewindowshade beep.au
+	*FvwmEvent: mini_icon beep.au
+	*FvwmEvent: windowshade beep.au
+	*FvwmEvent: dewindowshade beep.au
 .sp
 .fi
 Provided \fIfvwm\fP supports it (not yet), there's an additional event to
 replace all \fIfvwm\fP beeps with a sound:
 .nf
 .sp
-	*FvwmEvent beep beep.au
+	*FvwmEvent: beep beep.au
 .sp
 .fi
 The toggle_paging event will be supported, as soon, as it's
 resurrected by \fIfvwm\fP:
 .nf
 .sp
-	*FvwmEvent toggle_paging fwop.au
+	*FvwmEvent: toggle_paging fwop.au
 .sp
 .fi
-.IP "*FvwmEventDelay \fI5\fP"
+.IP "*FvwmEvent: Delay \fI5\fP"
 Specifies that an event-action will only be executed if it occurs at
 least 5 seconds after the previous event.  Events that occur during
 the delay period are ignored.  This option is useful if you don't want
 several sounds playing at the same time.  The default delay is 0 which
 disables the Event delay.
 
-.IP "*FvwmEventStartDelay \fIdelay\fP"
+.IP "*FvwmEvent: StartDelay \fIdelay\fP"
 Specifies that an event-action will only be executed if it occurs at
 least \fIdelay\fP seconds after the startup event. Events that occur during
 the delay period are ignored.  This option is useful when \fIfvwm\fP 
@@ -202,19 +203,19 @@ starts and restarts using an audio player.  The default delay is 0.
 .SH RPLAY OPTIONS
 The following options are only valid with builtin rplay support.
 i.e: when \fIFvwmEvent\fP was compiled with \fIHAVE_RPLAY\fP defined.
-They are used only if \fIFvwmEventCmd\fP is set
+They are used only if \fIFvwmEvent: Cmd\fP is set
 to \fIbuiltin-rplay\fP.
 
 
-.IP "*FvwmEventRplayHost \fIhostname\fP"
+.IP "*FvwmEvent: RplayHost \fIhostname\fP"
 Specifies what host the rplay sounds will play on.  The \fIhostname\fP
 can also be an environment variable such as $HOSTDISPLAY.
 
-.IP "*FvwmEventRplayPriority \fI0\fP"
+.IP "*FvwmEvent: RplayPriority \fI0\fP"
 Specifies what priority will be assigned to the rplay sounds when they
 are played.
 
-.IP "*FvwmEventRplayVolume \fI127\fP"
+.IP "*FvwmEvent: RplayVolume \fI127\fP"
 Specifies what volume will be assigned to the sounds when they are
 played.
 
@@ -224,19 +225,19 @@ When invoked in FvwmAudio compatibility mode (see above), FvwmEvent
 accepts the following options to provide backwards compatibility
 for FvwmAudio:
 
-.IP "*FvwmEventPlayCmd \fIcommand\fP"
-This is equivalent to using *FvwmEventCmd to Exec commands. This
+.IP "*FvwmEvent: PlayCmd \fIcommand\fP"
+This is equivalent to using *FvwmEvent: Cmd to Exec commands. This
 determines the independent audio player program that will actually
 play the sounds. If the play command is set to \fIbuiltin-rplay\fP
 then the builtin rplay support will be used.
 
-.IP "*FvwmAudioDir \fIdirectory\fP"
+.IP "*FvwmAudio: Dir \fIdirectory\fP"
 Specifies the directory to look for the audio files.  This option is
 ignored when rplay is used.
 
 .SH BUGS
 It's REALLY noisy when \fIfvwm\fP starts and restarts using an audio player.
-You can use FvwmEventStartDelay to fix this bug.
+You can use FvwmEvent: StartDelay to fix this problem.
 
 .SH COPYRIGHTS
 This module has evolved of \fIFvwmAudio\fP, which in term is heavily based
