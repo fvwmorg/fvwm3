@@ -322,6 +322,7 @@ typedef struct ScreenInfo
   ** some additional global options which will probably become window
   ** specific options later on:
   */
+  int WindowShadeScrolls;
   int SmartPlacementIsClever;
   int ClickToFocusPassesClick;
   int ClickToFocusRaises;

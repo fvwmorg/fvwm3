@@ -332,10 +332,13 @@ void WindowShade(F_CMD_ARGS)
     if (toggle == -1)
       toggle = (tmp_win->buttons & WSHADE) ? 0 : 1;
 
-    if (shade_anim_steps)
-	step = tmp_win->orig_ht/shade_anim_steps;
+    /* calcuate the step size */
+    if (shade_anim_steps > 0)
+      step = tmp_win->orig_ht/shade_anim_steps;
+    else if (shade_anim_steps < 0) /* if it's -ve it means pixels */
+      step = -shade_anim_steps;
     if (step <= 0)  /* We don't want an endless loop, do we? */
-	step = 1;
+      step = 1;
 
     if ((tmp_win->buttons & WSHADE) && toggle == 0)
     {
@@ -356,14 +359,16 @@ void WindowShade(F_CMD_ARGS)
 		True,
 		True);
 
-	if (shade_anim_steps > 0) {
+	if (shade_anim_steps != 0) {
 	    h = tmp_win->title_height+tmp_win->boundary_width;
-	    XMoveWindow(dpy, tmp_win->w, 0, - (new_height-h));
+	    if (Scr.WindowShadeScrolls)
+	      XMoveWindow(dpy, tmp_win->w, 0, - (new_height-h));
 	    y = h - new_height;
 	    old_h = tmp_win->frame_height;
 	    while (h < new_height) {
 		XResizeWindow(dpy, tmp_win->frame, new_width, h);
-		XMoveWindow(dpy, tmp_win->w, 0, y);
+		if (Scr.WindowShadeScrolls)
+		  XMoveWindow(dpy, tmp_win->w, 0, y);
 		tmp_win->frame_height = h;
 		BroadcastConfig(M_CONFIGURE_WINDOW, tmp_win);
 		FlushOutputQueues();
@@ -372,7 +377,7 @@ void WindowShade(F_CMD_ARGS)
 		y+=step;
 	    }
 	    tmp_win->frame_height = old_h;
-	    XMoveWindow(dpy, tmp_win->w, 0, 0);
+            XMoveWindow(dpy, tmp_win->w, 0, 0);
 	}
 	SetupFrame(tmp_win,
 		   new_x,
@@ -388,13 +393,14 @@ void WindowShade(F_CMD_ARGS)
     {
 	tmp_win->buttons |= WSHADE;
 
-	if (shade_anim_steps > 0) {
+	if (shade_anim_steps != 0) {
 	    XLowerWindow(dpy, tmp_win->w);
 	    h = tmp_win->frame_height;
 	    y = 0;
 	    old_h = tmp_win->frame_height;
 	    while (h > tmp_win->title_height+tmp_win->boundary_width) {
-		XMoveWindow(dpy, tmp_win->w, 0, y);
+		if (Scr.WindowShadeScrolls)
+                  XMoveWindow(dpy, tmp_win->w, 0, y);
 		XResizeWindow(dpy, tmp_win->frame, tmp_win->frame_width, h);
 		tmp_win->frame_height = h;
 		BroadcastConfig(M_CONFIGURE_WINDOW, tmp_win);
@@ -404,7 +410,8 @@ void WindowShade(F_CMD_ARGS)
 		y-=step;
 	    }
 	    tmp_win->frame_height = old_h;
-	    XMoveWindow(dpy, tmp_win->w, 0, 0);
+	    if (Scr.WindowShadeScrolls)
+              XMoveWindow(dpy, tmp_win->w, 0, 0);
 	}
 	SetupFrame(tmp_win,
 		   tmp_win->frame_x,
@@ -4844,7 +4851,15 @@ void SetGlobalOptions(F_CMD_ARGS)
     /* fvwm_msg(DBG,"SetGlobalOptions"," opt == '%s'\n",opt); */
     /* fvwm_msg(DBG,"SetGlobalOptions"," remaining == '%s'\n",
        action?action:"(NULL)"); */
-    if (StrEquals(opt,"SMARTPLACEMENTISREALLYSMART"))
+    if (StrEquals(opt,"WINDOWSHADESHRINKS"))
+    {
+      Scr.WindowShadeScrolls = False;
+    }
+    else if (StrEquals(opt,"WINDOWSHADESCROLLS"))
+    {
+      Scr.WindowShadeScrolls = True;
+    }
+    else if (StrEquals(opt,"SMARTPLACEMENTISREALLYSMART"))
     {
       Scr.SmartPlacementIsClever = True;
     }
@@ -5017,21 +5032,33 @@ void set_animation(F_CMD_ARGS)
 }
 
 #ifdef WINDOWSHADE
+/* set the number or size of shade animation steps, N => steps, Np => pixels */
 void setShadeAnim(F_CMD_ARGS)
 {
-    int val_unit,n = 0;
-    int val;
-    char *opt;
+  int val_unit,n = 0;
+  int val;
+  char *opt;
 
-    action = GetNextToken(action, &opt);
-    if (opt)
-	n = sscanf(opt, "%d", &val);
-    if (n != 1) {
-	fvwm_msg(ERR,"setShadeAnim","WindowShadeAnimate requires 1 argument");
-	return;
+  action = GetNextToken(action, &opt);
+  if (opt) {
+    if (val = strlen(opt)) {
+      if (opt[val - 1] == 'p') {
+        opt[val - 1] = '\0';
+        n = sscanf(opt, "%d", &val);
+        val = -val; /* negative values mean pixels */
+      } else {
+        n = sscanf(opt, "%d", &val);
+      }
+      if (n == 1) {
+        shade_anim_steps = val;
+        return;
+      }
     }
-
-    shade_anim_steps = val;
+  }
+      
+  /* doh! something is wrong */
+  fvwm_msg(ERR,"setShadeAnim","WindowShadeAnimate requires 1 argument");
+  return;
 }
 #endif /* WINDOWSHADE */
 

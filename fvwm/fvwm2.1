@@ -1400,7 +1400,8 @@ MouseFocusClickDoesntRaise/MouseFocusClickRaises,
 CaptureHonorsStartsOnPage/CaptureIgnoresStartsOnPage,
 RecaptureHonorsStartsOnPage/RecaptureIgnoresStartsOnPage,
 ActivePlacementHonorsStartsOnPage/ActivePlacementIgnoresStartsOnPage,
-NoStipledTitles/StipledTitles
+NoStipledTitles/StipledTitles,
+WindowShadeScrolls/WindowShadeShrinks
 
 Example:
 .EX
@@ -2946,7 +2947,9 @@ or 't' instead of 1 and 'n', 'no', 'off', 'false' or 'f' instead
 
 .IP "WindowShadeAnimate \fIsteps\fP"
 Selects the number of steps for animation when shading a window with
-\fIWindowShade\fP. 0 disables the animation.
+\fIWindowShade\fP. If the number has a trailing "p" it sets the number of
+pixels to use as the step size instead of a fixed number of steps.
+0 disables the animation.
 
 
 .IP "XORpixmap \fIpixmap\fP"

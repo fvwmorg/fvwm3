@@ -1449,6 +1449,7 @@ void InitVariables(void)
   Scr.DefaultDecor.tag = "Default";
 #endif
 
+  Scr.WindowShadeScrolls = True;
   Scr.SmartPlacementIsClever = False;
   Scr.ClickToFocusPassesClick = True;
   Scr.ClickToFocusRaises = True;

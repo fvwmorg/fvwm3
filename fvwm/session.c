@@ -81,11 +81,11 @@ SaveGlobalState(FILE *f)
 	  !!(Scr.flags.edge_wrap_x), !!(Scr.flags.edge_wrap_y));
   fprintf(f, "  [SNAP] %i %i %i %i\n",
 	  Scr.SnapAttraction, Scr.SnapMode, Scr.SnapGridX, Scr.SnapGridY);
-  fprintf(f, "  [MISC] %i %i %i %i %i %i %i %i\n",
+  fprintf(f, "  [MISC] %i %i %i %i %i %i %i %i %i\n",
 	  Scr.ClickTime, Scr.ColormapFocus,
 	  Scr.ColorLimit, Scr.SmartPlacementIsClever,
 	  Scr.ClickToFocusPassesClick, Scr.ClickToFocusRaises,
-	  Scr.MouseFocusClickRaises, Scr.StipledTitles);
+	  Scr.MouseFocusClickRaises, Scr.StipledTitles, Scr.WindowShadeScrolls);
   fprintf(f, "  [STYLE] %i %i %i %i %i %i\n",
 	  Scr.go.ModifyUSP, Scr.go.CaptureHonorsStartsOnPage,
 	  Scr.go.RecaptureHonorsStartsOnPage,
@@ -99,7 +99,7 @@ LoadGlobalState(char *filename)
 {
    FILE               *f;
    char                s[4096], s1[4096];
-   int i1, i2, i3, i4, i5, i6, i7, i8;
+   int i1, i2, i3, i4, i5, i6, i7, i8, i9;
 
    f = fopen(filename, "r");
    if (f)
@@ -144,8 +144,8 @@ LoadGlobalState(char *filename)
              }
            else if (!strcmp(s1, "[MISC]"))
              {
-               sscanf(s, "%*s %i %i %i %i %i %i %i %i", &i1, &i2, &i3, &i4,
-                      &i5, &i6, &i7, &i8);
+               sscanf(s, "%*s %i %i %i %i %i %i %i %i %i", &i1, &i2, &i3, &i4,
+                      &i5, &i6, &i7, &i8, &i9);
                Scr.ClickTime = i1;
                Scr.ColormapFocus = i2;
                Scr.ColorLimit = i3;
@@ -154,6 +154,7 @@ LoadGlobalState(char *filename)
                Scr.ClickToFocusRaises = i6;
                Scr.MouseFocusClickRaises = i7;
                Scr.StipledTitles = i8;
+               Scr.WindowShadeScrolls = i9;
              }
            else if (!strcmp(s1, "[STYLE]"))
              {
