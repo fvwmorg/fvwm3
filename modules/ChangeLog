@@ -1,5 +1,9 @@
 2001-03-22  Dominik Vogt  <dominik.vogt@gmx.de>
 
+	* FvwmConsole/FvwmConsoleC.c (main):
+	add a usleep to reduce likelihood of race condition between client and
+	server
+
 	* FvwmButtons/draw.c (RedrawButton):
 	* FvwmButtons/FvwmButtons.c:
 	(Loop):

@@ -100,6 +100,7 @@ int main ( int argc, char *argv[]) {
 	  }
 
 	  /* send the command including null to the server */
+	  usleep(1);
 	  send( s, cmd, strlen(cmd)+1, 0 );
 
 	}
