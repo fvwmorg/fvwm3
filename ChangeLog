@@ -1,3 +1,25 @@
+1999-04-04  Matthias Clasen  <clasen@mathematik.uni-freiburg.de>
+
+	* fvwm/fvwm.c (Done): use the session management functions
+	to save state to $HOME/.fvwm_restart and add 
+	"-restore $HOME/.fvwm_restart" to the command exec'd for
+	'Restart fvwm2'.
+
+	* fvwm/session.c: reorganized a bit to put only the functions
+	in #ifdef SESSION ... #endif which actually depend on SMlib.h.
+	(SaveWindowStates): Save window id.
+	(LoadWindowStates): Store saved window id in Match struct.
+	(matchWin): If Restarting is true, match by window id.
+
+	* fvwm/fvwm.c:
+	* fvwm/fvwm.h:
+	* fvwm/add_window.c:
+	* fvwm/misc.h: Remove #ifdef SESSION ... #endif protection
+	around calls to functions which are now compiled unconditionally.
+
+	* NEWS:
+	* fvwm/fvwm2.1: document the new Restart functionality.
+	
 Sat Apr  3 14:12:26 1999  Steve Robbins  <steve@nyongwa.montreal.qc.ca>
 
 	* libs/Parse.c (SkipNTokens): removed unused variable.

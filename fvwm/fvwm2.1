@@ -369,7 +369,8 @@ Try to take over from a previously running wm. This will not work
 unless the other wm is ICCCM 2.0 compliant.
 .IP "\fB-clientId\fP"
 .IP "\fB-restore\fP"
-These options are used by the session manager when restarting fvwm2.
+These options are used when fvwm2 is restarted by means of the 'Restart'
+command or by the session manager.
 
 .SH CONFIGURATION FILES
 The configuration file is used to describe mouse and button bindings,
@@ -2454,6 +2455,9 @@ Key F1 R N Restart fvwm2 &
 Key F1 R N Restart $(HOME)/bin/fvwm2
 Key F1 R N Restart /home/nation/bin/fvwm2
 .EE
+
+The command 'Restart fvwm2' preserves most per-window state by writing
+it to a file named .fvwm_restart in the user's home directory.
 
 .IP "Scroll \fIhorizonal vertical\fP"
 Scrolls the virtual desktop's viewport by \fIhorizontal\fP pages in

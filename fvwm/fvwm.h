@@ -211,11 +211,9 @@ typedef struct FvwmWindow
       unsigned reuse_destroyed : 1;     /* Reuse this struct, don't free it,
 					 * when destroying/recapturing window.
 					 */
-#ifdef SESSION
       unsigned name_changed : 1; /* Set if the client changes its WM_NAME.
 				  * The source of twm contains an explanation
 				  * why we need this information. */
-#endif
 
       /* flags where I'm not sure if they are state or style flags */
       bw : 1;            /* what are these for ??? */
@@ -246,11 +244,9 @@ typedef struct FvwmWindow
       unsigned ReuseDestroyed : 1;    /* Reuse this struct, don't free it, when
                                            destroying/recapturing window. */
       unsigned window_being_moved_opaque : 1;
-#ifdef SESSION
       unsigned NameChanged : 1; /* Set if the client changes its WM_NAME.
 				   The source of twm contains an explanation
 				   why we need this information. */
-#endif
     } tmpflags;
 #endif /* GSFR */
 
@@ -417,11 +413,11 @@ extern Atom _XA_OL_DECOR_CLOSE;
 extern Atom _XA_OL_DECOR_RESIZE;
 extern Atom _XA_OL_DECOR_HEADER;
 extern Atom _XA_OL_DECOR_ICON_NAME;
-#ifdef SESSION
+
 extern Atom _XA_WM_WINDOW_ROLE;
 extern Atom _XA_WM_CLIENT_LEADER;
 extern Atom _XA_SM_CLIENT_ID;
-#endif
+
 extern Atom _XA_WIN_SX;
 extern Atom _XA_MANAGER;
 extern Atom _XA_ATOM_PAIR;

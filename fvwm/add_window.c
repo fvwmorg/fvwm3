@@ -105,10 +105,9 @@ FvwmWindow *AddWindow(Window w, FvwmWindow *ReuseWin)
   XrmValue rm_value;
   XTextProperty text_prop;
   extern Boolean PPosOverride;
-#ifdef SESSION
+
   int do_shade, do_maximize;
   int x_max, y_max, w_max, h_max;
-#endif
 
   NeedToResizeToo = False;
 
@@ -139,9 +138,7 @@ FvwmWindow *AddWindow(Window w, FvwmWindow *ReuseWin)
   tmp_win->flags = 0;
   tmp_win->tmpflags.ViewportMoved = 0;
   tmp_win->tmpflags.IconifiedByParent = 0;
-#ifdef SESSION
   tmp_win->tmpflags.NameChanged = 0;
-#endif
   tmp_win->w = w;
 
   tmp_win->cmap_windows = (Window *)NULL;
@@ -434,14 +431,12 @@ FvwmWindow *AddWindow(Window w, FvwmWindow *ReuseWin)
   tmp_win->stack_prev = &Scr.FvwmRoot;
   Scr.FvwmRoot.stack_next = tmp_win;
 
-#ifdef SESSION
   /*
       MatchWinToSM changes tmp_win->attr and tmp_win->stack_{prev,next}.
       Thus it is important have this call *after* PlaceWindow and the
       stacking order initialization.
   */
   MatchWinToSM(tmp_win, &x_max, &y_max, &w_max, &h_max, &do_shade, &do_maximize);
-#endif
 
   /* create windows */
   tmp_win->frame_x = tmp_win->attr.x + tmp_win->old_bw;
@@ -688,7 +683,6 @@ valuemask = tvaluemask;
   SetupFrame(tmp_win, tmp_win->frame_x, tmp_win->frame_y,width,height,
 	     True, False);
 
-#ifdef SESSION
   if (do_maximize) {
     /* This is essentially Maximize, only we want the given dimensions */
     tmp_win->flags |= MAXIMIZED;
@@ -708,7 +702,6 @@ valuemask = tvaluemask;
     WindowShade(&Event, tmp_win->w, tmp_win, C_WINDOW, "", 0);
   }
 #endif /* WINDOWSHADE */
-#endif /* SESSION */
   /* wait until the window is iconified and the icon window is mapped
    * before creating the icon window
    */
@@ -740,16 +733,6 @@ valuemask = tvaluemask;
 	  XSaveContext(dpy,tmp_win->corners[i],FvwmContext, (caddr_t) tmp_win);
 	}
     }
-#ifndef SESSION
-  if (styles.tmpflags.starts_lowered)
-    {
-      LowerWindow (tmp_win);
-    }
-  else
-    {
-      RaiseWindow (tmp_win);
-    }
-#else
   if (tmp_win->stack_prev == &Scr.FvwmRoot) {
     /* RaiseWindow/LowerWindow will put the window in its layer */
     if (styles.tmpflags.starts_lowered)
@@ -766,7 +749,6 @@ valuemask = tvaluemask;
     xwc.stack_mode = Above;
     XConfigureWindow(dpy, tmp_win->frame, CWSibling|CWStackMode, &xwc);
   }
-#endif
   MyXUngrabServer(dpy);
 
   XGetGeometry(dpy, tmp_win->w, &JunkRoot, &JunkX, &JunkY,

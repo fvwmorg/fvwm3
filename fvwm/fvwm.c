@@ -19,6 +19,7 @@
 #include <fcntl.h>
 #include <string.h>
 #include <unistd.h>
+#include <pwd.h>
 #include "fvwm.h"
 #include "functions.h"
 #include "menus.h"
@@ -91,9 +92,9 @@ char **g_argv;
 int g_argc;
 
 #ifdef SESSION
-  char *client_id = NULL;
-  char *restore_filename = NULL;
+char *client_id = NULL;
 #endif
+char *restore_filename = NULL;
 
 /* assorted gray bitmaps for decorative borders */
 #define g_width 2
@@ -179,13 +180,13 @@ int main(int argc, char **argv)
 	  usage();
 	client_id = argv[i];
       }
+#endif
     else if (strncasecmp(argv[i], "-restore", 8) == 0)
       {
 	if (++i >= argc)
 	  usage();
 	restore_filename = argv[i];
       }
-#endif
     else if (strncasecmp(argv[i],"-s",2)==0)
     {
       single = True;
@@ -496,14 +497,12 @@ int main(int argc, char **argv)
 
   XSetErrorHandler(FvwmErrorHandler);
 
-#ifdef SESSION
   /*
      This should be done early enough to have the window states loaded
      before the first call to AddWindow.
    */
   if (restore_filename)
     LoadWindowStates(restore_filename);
-#endif
 
   BlackoutScreen(); /* if they want to hide the capture/startup */
 
@@ -659,14 +658,14 @@ void StartupStuff(void)
     if(func != NULL)
       ExecuteFunction("Function InitFunction",NULL,&Event,C_ROOT,-1);
   }
-#ifdef SESSION
+
   /*
      This should be done after the initialization is finished, since
      it directly changes the global state.
    */
   if (restore_filename)
     LoadGlobalState(restore_filename);
-#endif
+
 } /* StartupStuff */
 
 
@@ -914,11 +913,9 @@ Atom _XA_OL_DECOR_RESIZE;
 Atom _XA_OL_DECOR_HEADER;
 Atom _XA_OL_DECOR_ICON_NAME;
 
-#ifdef SESSION
 Atom _XA_WM_WINDOW_ROLE;
 Atom _XA_WM_CLIENT_LEADER;
 Atom _XA_SM_CLIENT_ID;
-#endif
 
 void InternUsefulAtoms (void)
 {
@@ -949,11 +946,9 @@ void InternUsefulAtoms (void)
   _XA_OL_DECOR_HEADER=XInternAtom(dpy,"_OL_DECOR_HEADER",False);
   _XA_OL_DECOR_ICON_NAME=XInternAtom(dpy,"_OL_DECOR_ICON_NAME",False);
 
-#ifdef SESSION
   _XA_WM_WINDOW_ROLE=XInternAtom(dpy, "WM_WINDOW_ROLE",False);
   _XA_WM_CLIENT_LEADER=XInternAtom(dpy, "WM_CLIENT_LEADER",False);
   _XA_SM_CLIENT_ID=XInternAtom(dpy, "SM_CLIENT_ID",False);
-#endif
   return;
 }
 
@@ -1594,7 +1589,27 @@ void Done(int restart, char *command)
 
   if(restart)
   {
-    SaveDesktopState();		/* I wonder why ... */
+     struct passwd   *pwd;
+     char filename[1024];
+     FILE *cfg_file;
+
+     pwd = getpwuid (getuid());
+
+     strncpy (filename, pwd->pw_dir, 1024);
+     strncat (filename, "/.fvwm_restart", 1024);
+
+     /* We currently still need this, since InitVariables
+        sets the Restarting flag based on the presence of
+        WM_DESKTOP on root. This could be changed to eg
+        match restore_filename against ".fvwm_restart". 
+        Then SaveDesktopState and all places where fvwm
+        deals with WM_DESKTOP could be eliminated. */
+     SaveDesktopState();		/* I wonder why ... */
+
+     cfg_file = fopen (filename, "w");
+     SaveWindowStates (cfg_file);
+     SaveGlobalState (cfg_file);
+     fclose (cfg_file);
 
     /* Really make sure that the connection is closed and cleared! */
     XSelectInput(dpy, Scr.Root, 0 );
@@ -1621,6 +1636,10 @@ void Done(int restart, char *command)
       }
       if(strstr(command,"fvwm")!= NULL)
         my_argv[i++] = "-s";
+      
+      my_argv[i++] = "-restore";
+      my_argv[i++] = filename;
+
       while(i<10)
         my_argv[i++] = NULL;
 

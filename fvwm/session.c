@@ -4,7 +4,6 @@
  */
 #include "config.h"
 
-#ifdef SESSION
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
@@ -16,13 +15,12 @@
 #include "screen.h"
 #include "misc.h"
 
-#include <X11/SM/SMlib.h>
-
 extern int master_pid;
 
 
 typedef struct _match
   {
+    unsigned long      win;
     char               *client_id;
     char               *res_name;
     char               *res_class;
@@ -41,7 +39,6 @@ typedef struct _match
 Match;
 
 static char        *sm_client_id = NULL;
-SmcConn             sm_conn = NULL;
 int                 sm_fd = -1;
 static int          num_match = 0;
 Match              *matches = NULL;
@@ -68,7 +65,7 @@ char *duplicate(char *s)
    to save here. Then the option "-restore xyz" could
    be replaced by "-f xyz".
  */
-static int
+int
 SaveGlobalState(FILE *f)
 {
   fprintf(f, "[GLOBAL]\n");
@@ -228,7 +225,7 @@ GetClientID (window)
     return client_id;
 }
 
-static int
+int
 SaveWindowStates(FILE *f)
 {
   char *client_id;
@@ -240,7 +237,7 @@ SaveWindowStates(FILE *f)
 
   for (ewin=Scr.FvwmRoot.stack_next; ewin!=&Scr.FvwmRoot; ewin=ewin->stack_next)
     {
-      fprintf(f, "[CLIENT]\n");
+      fprintf(f, "[CLIENT] %lx\n", ewin->w);
 
       client_id = GetClientID(ewin->w);
       if (client_id)
@@ -308,6 +305,7 @@ LoadWindowStates(char *filename)
   FILE               *f;
   char                s[4096], s1[4096];
   int i, pos;
+  unsigned long w;
 
    f = fopen(filename, "r");
    if (f)
@@ -317,8 +315,10 @@ LoadWindowStates(char *filename)
 	   sscanf(s, "%4000s", s1);
 	   if (!strcmp(s1, "[CLIENT]"))
 	     {
+	       sscanf(s, "%*s %lx", &w);
 	       num_match++;
 	       matches = realloc(matches, sizeof(Match) * num_match);
+               matches[num_match - 1].win = w;
 	       matches[num_match - 1].client_id = NULL;
 	       matches[num_match - 1].res_name = NULL;
 	       matches[num_match - 1].res_class = NULL;
@@ -421,6 +421,8 @@ LoadWindowStates(char *filename)
 
 /* This complicated logic is from twm, where it is explained */
 
+extern Bool Restarting;
+
 #define xstreq(a,b) ((!a && !b) || (a && b && (strcmp(a,b)==0)))
 
 Bool matchWin(FvwmWindow *w, Match *m)
@@ -430,6 +432,13 @@ Bool matchWin(FvwmWindow *w, Match *m)
   char **wm_command = NULL;
   int wm_command_count = 0, i;
   int found;
+
+
+  if (Restarting)
+    {
+       /* simply match by window id */
+       return (w->w == m->win);
+    }
 
   found = 0;
   client_id = GetClientID(w->w);
@@ -612,11 +621,14 @@ MatchWinToSM(FvwmWindow *ewin,
 	 }
 }
 
+#ifdef SESSION
+#include <X11/SM/SMlib.h>
+
 extern char **g_argv;
 extern int g_argc;
 
 static void
-callback_save_yourself2(SmcConn smc_conn, SmPointer client_data)
+callback_save_yourself2(SmcConn sm_conn, SmPointer client_data)
 {
   FILE *cfg_file = NULL;
   char *path = NULL;
@@ -661,7 +673,7 @@ callback_save_yourself2(SmcConn smc_conn, SmPointer client_data)
       props[1] = &prop2;
       props[2] = &prop3;
 
-      SmcSetProperties (smc_conn, 3, props);
+      SmcSetProperties (sm_conn, 3, props);
 
       first_time = 0;
   }
@@ -741,11 +753,11 @@ callback_save_yourself2(SmcConn smc_conn, SmPointer client_data)
   props[0] = &prop1;
   props[1] = &prop2;
 
-  SmcSetProperties (smc_conn, 2, props);
+  SmcSetProperties (sm_conn, 2, props);
   free ((char *) prop1.vals);
 
  bad:
-  SmcSaveYourselfDone (smc_conn, success);
+  SmcSaveYourselfDone (sm_conn, success);
   sent_save_done = 1;
 
   if (cfg_file) fclose (cfg_file);
@@ -754,13 +766,13 @@ callback_save_yourself2(SmcConn smc_conn, SmPointer client_data)
 }
 
 static void
-callback_save_yourself(SmcConn smc_conn, SmPointer client_data,
+callback_save_yourself(SmcConn sm_conn, SmPointer client_data,
 		       int save_style, Bool shutdown, int interact_style,
 		       Bool fast)
 {
-  if (!SmcRequestSaveYourselfPhase2(smc_conn, callback_save_yourself2, NULL))
+  if (!SmcRequestSaveYourselfPhase2(sm_conn, callback_save_yourself2, NULL))
     {
-      SmcSaveYourselfDone (smc_conn, False);
+      SmcSaveYourselfDone (sm_conn, False);
       sent_save_done = 1;
     }
   else
@@ -768,9 +780,9 @@ callback_save_yourself(SmcConn smc_conn, SmPointer client_data,
 }
 
 static void
-callback_die(SmcConn smc_conn, SmPointer client_data)
+callback_die(SmcConn sm_conn, SmPointer client_data)
 {
-   SmcCloseConnection(smc_conn, 0, NULL);
+   SmcCloseConnection(sm_conn, 0, NULL);
    sm_fd = -1;
 
    if (master_pid != getpid())
@@ -779,22 +791,24 @@ callback_die(SmcConn smc_conn, SmPointer client_data)
 }
 
 static void
-callback_save_complete(SmcConn smc_conn, SmPointer client_data)
+callback_save_complete(SmcConn sm_conn, SmPointer client_data)
 {
 }
 
 static void
-callback_shutdown_cancelled(SmcConn smc_conn, SmPointer client_data)
+callback_shutdown_cancelled(SmcConn sm_conn, SmPointer client_data)
 {
   if (!sent_save_done)
     {
 
-      SmcSaveYourselfDone(smc_conn, False);
+      SmcSaveYourselfDone(sm_conn, False);
       sent_save_done = 1;
     }
 }
 
 static void InstallIOErrorHandler();
+
+SmcConn sm_conn = NULL;
 
 void
 SessionInit(char *previous_client_id)
