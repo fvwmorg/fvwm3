@@ -1,3 +1,8 @@
+1999-05-23  Dominik Vogt  <dominik_vogt@gmx.de>
+
+	* fvwm/module_interface.c (DeadPipe): backed out DeadPipe signal
+	handler
+
 Sat May 22 17:40:57 1999  Steve Robbins  <steve@nyongwa.montreal.qc.ca>
 
 	* fvwm/menus.c (PopDownMenu): removed unused variable `f'.
@@ -9,28 +14,28 @@ Sat May 22 17:40:57 1999  Steve Robbins  <steve@nyongwa.montreal.qc.ca>
 
 1999-05-22  Matthias Clasen  <clasen@mathematik.uni-freiburg.de>
 
-	* fvwm/screen.h (ButtonState): 
+	* fvwm/screen.h (ButtonState):
 	* fvwm/builtins.c (button_states): new button states ToggledActiveUp,
 	ToggledActiveDown, ToggledInactive.
 	* fvwm/borders.c (get_button_state): new argument Bool toggled.
-	(SetBorder): 
+	(SetBorder):
 	(SetTitleBar): calculate toggled and feed it to get_button_state.
 	* NEWS:
 	* fvwm/fvwm2.1: explain new toggled button states.
-	
+
 	* NEWS:
-	* fvwm/fvwm2.1: 
-	* fvwm/screen.h: 
-	* fvwm/borders.c (DrawButton): 
+	* fvwm/fvwm2.1:
+	* fvwm/screen.h:
+	* fvwm/borders.c (DrawButton):
 	* fvwm/builtins.c (ButtonStyle): add MWMDecorStick as a button
 	style flag to support toggle buttons for the Stick function.
-	
-	* fvwm/borders.c (SetBorder): 
+
+	* fvwm/borders.c (SetBorder):
 	* fvwm/builtins.c (ChangeDecor): Make SetBorder with force > 1
-	mean: do a *full* redraw, including backgrounds. Use this to 
+	mean: do a *full* redraw, including backgrounds. Use this to
 	fix ChangeDecor.
 
-	* fvwm/builtins.c (CreateConditionMask): 
+	* fvwm/builtins.c (CreateConditionMask):
 	* NEWS:
 	* fvwm/fvwm2.1: Add [!]Shaded to the supported conditions.
 

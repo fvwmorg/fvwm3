@@ -404,7 +404,9 @@ RETSIGTYPE DeadPipe(int sig)
    * right out, so we need to do everything we need to do
    * BEFORE we call it ...
    */
+#if 0
   fvwmSetTerminate(sig);
+#endif
 }
 
 
