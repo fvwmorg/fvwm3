@@ -1,5 +1,12 @@
 2004-09-06  Dominik Vogt  <dominik.vogt@gmx.de>
 
+	* fvwm/conditional.c (select_cmd):
+	(direction_cmd):
+	(CMD_NoWindow):
+	(CMD_All):
+	fixed conditional return code in Pick, PointerWindow, ThisWindow, All,
+	WindowId and Direction commands; fixes break from these commands
+
 	* fvwm/geometry.c (get_shaded_geometry):
 	shading geometry fix for windows without decoration
 

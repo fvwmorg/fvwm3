@@ -245,7 +245,7 @@ static void select_cmd(F_CMD_ARGS)
 			cond_rc->rc = COND_RC_OK;
 		}
 		execute_function_override_wcontext(
-			NULL, exc, restofline, 0, C_WINDOW);
+			cond_rc, exc, restofline, 0, C_WINDOW);
 	}
 	else if (cond_rc != NULL)
 	{
@@ -1235,7 +1235,7 @@ static void direction_cmd(F_CMD_ARGS, Bool is_scan)
 			cond_rc->rc = COND_RC_OK;
 		}
 		execute_function_override_window(
-			NULL, exc, restofline, 0, fw_best);
+			cond_rc, exc, restofline, 0, fw_best);
 	}
 	else if (cond_rc != NULL)
 	{
@@ -1412,9 +1412,9 @@ void CMD_All(F_CMD_ARGS)
 	for (i = 0; i < num; i++)
 	{
 		execute_function_override_window(
-			NULL, exc, restofline, 0, g[i]);
+			cond_rc, exc, restofline, 0, g[i]);
 	}
-	if (cond_rc != NULL)
+	if (cond_rc != NULL && cond_rc->rc != COND_RC_BREAK)
 	{
 		cond_rc->rc = (does_any_window_match == False) ?
 			COND_RC_NO_MATCH : COND_RC_OK;
@@ -1531,7 +1531,7 @@ void CMD_WindowId(F_CMD_ARGS)
 					cond_rc->rc = COND_RC_OK;
 				}
 				execute_function_override_window(
-					NULL, exc, action, 0, t);
+					cond_rc, exc, action, 0, t);
 			}
 			else if (cond_rc != NULL)
 			{
@@ -1572,7 +1572,8 @@ void CMD_WindowId(F_CMD_ARGS)
 					exc, &ecc,
 					ECC_FW | ECC_W | ECC_WCONTEXT);
 				execute_function(
-					NULL, exc2, action, FUNC_IS_UNMANAGED);
+					cond_rc, exc2, action,
+					FUNC_IS_UNMANAGED);
 				exc_destroy_context(exc2);
 			}
 		}
@@ -1635,7 +1636,7 @@ void CMD_Break(F_CMD_ARGS)
 
 void CMD_NoWindow(F_CMD_ARGS)
 {
-	execute_function_override_window(NULL, exc, action, 0, NULL);
+	execute_function_override_window(cond_rc, exc, action, 0, NULL);
 
 	return;
 }
