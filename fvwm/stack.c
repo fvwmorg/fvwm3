@@ -31,8 +31,6 @@ void RaiseWindow(FvwmWindow *t)
   XWindowChanges changes;
   Window *wins;
 
-  Scr.LastWindowRaised = t;
-
   /* detach t early, so it doesn't make trouble in the loops */
   t->stack_prev->stack_next = t->stack_next;
   t->stack_next->stack_prev = t->stack_prev;
@@ -168,8 +166,6 @@ void LowerWindow(FvwmWindow *t)
   FvwmWindow *s;
   XWindowChanges changes;
   unsigned int flags;
-
-  Scr.LastWindowRaised = NULL;
 
   for (s = Scr.FvwmRoot.stack_next; s != &Scr.FvwmRoot; s = s->stack_next)
     {
@@ -482,4 +478,20 @@ void BroadcastRestack (FvwmWindow *s1, FvwmWindow *s2)
      PositiveWrite(i, body, length*sizeof(unsigned long));
 
    free (body);
+}
+
+/* return false if the only windows above tmp_win in the same
+   layer are its own transients 
+*/
+Bool
+CanBeRaised (FvwmWindow *tmp_win)
+{
+  FvwmWindow *t;
+
+  for (t = tmp_win->stack_prev; t != &Scr.FvwmRoot; t = t->stack_prev)
+    {
+      if (t->layer > tmp_win->layer) return False;
+      if (!IS_TRANSIENT(t) || (t->transientfor != tmp_win->w)) return True;
+    }
+  return False;
 }

@@ -648,12 +648,13 @@ callback_save_yourself2(SmcConn sm_conn, SmPointer client_data)
   char *path = NULL;
   char *filename = NULL;
   Bool success = 0;
-  SmProp prop1, prop2, prop3, *props[3];
-  SmPropValue prop1val, prop2val, prop3val;
+  SmProp prop1, prop2, prop3, prop4, *props[4];
+  SmPropValue prop1val, prop2val, prop3val, prop4val;
   char discardCommand[80];
   int numVals, i;
   static int first_time = 1;
   struct passwd       *pwd;
+  int priority = 30;
 
   pwd = getpwuid(getuid());
 
@@ -683,11 +684,19 @@ callback_save_yourself2(SmcConn sm_conn, SmPointer client_data)
       prop3val.value = (SmPointer) &hint;
       prop3val.length = 1;
 
+      prop4.name = "_GSM_Priority";
+      prop4.type = SmCARD8;
+      prop4.num_vals = 1;
+      prop4.vals = &prop4val;
+      prop4val.value = (SmPointer) &priority;
+      prop4val.length = 1;
+
       props[0] = &prop1;
       props[1] = &prop2;
       props[2] = &prop3;
+      props[3] = &prop4;
 
-      SmcSetProperties (sm_conn, 3, props);
+      SmcSetProperties (sm_conn, 4, props);
 
       first_time = 0;
     }
@@ -756,19 +765,38 @@ callback_save_yourself2(SmcConn sm_conn, SmPointer client_data)
 
   prop1.num_vals = numVals;
 
-  sprintf (discardCommand, "rm %s", filename);
   prop2.name = SmDiscardCommand;
+#ifdef XSM_BUGGY_DISCARD_COMMAND
+  /* the protocol spec says that the discard command
+     should be LISTofARRAY8 on posix systems, but xsm
+     demands that it be ARRAY8. 
+  */
+  sprintf (discardCommand, "rm -f %s", filename);
   prop2.type = SmARRAY8;
   prop2.num_vals = 1;
   prop2.vals = &prop2val;
   prop2val.value = (SmPointer) discardCommand;
   prop2val.length = strlen (discardCommand);
+#else
+  prop2.type = SmLISTofARRAY8;
+  prop2.num_vals = 3;
+  prop2.vals = (SmPropValue *) malloc (3 * sizeof (SmPropValue));
+  prop2.vals[0].value = "rm";
+  prop2.vals[0].length = 2;
+  prop2.vals[1].value = "-f";
+  prop2.vals[1].length = 2;
+  prop2.vals[2].value = filename;
+  prop2.vals[2].length = strlen (filename);
+#endif
 
   props[0] = &prop1;
   props[1] = &prop2;
 
   SmcSetProperties (sm_conn, 2, props);
   free ((char *) prop1.vals);
+#ifndef XSM_BUGGY_DISCARD_COMMAND
+  free ((char *) prop2.vals);
+#endif
 
  bad:
   SmcSaveYourselfDone (sm_conn, success);

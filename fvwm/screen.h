@@ -317,8 +317,6 @@ typedef struct ScreenInfo
   int NumBoxes;
   int randomx;                  /* values used for randomPlacement */
   int randomy;
-  FvwmWindow *LastWindowRaised; /* Last window which was raised. Used for raise
-				 * lower func. */
   int VxMax;                    /* Max location for top left of virt desk*/
   int VyMax;
   int Vx;                       /* Current loc for top left of virt desk */

@@ -22,8 +22,9 @@ void new_layer(FvwmWindow *t, int layer);
 Bool HandleUnusualStackmodes(unsigned int stack_mode, 
 			     FvwmWindow *r, Window rw,
 			     FvwmWindow *sib, Window sibw);
-void  ResyncFvwmStackRing(void);
+void ResyncFvwmStackRing(void);
 void BroadcastRestack (FvwmWindow *s1, FvwmWindow *s2);
+Bool CanBeRaised (FvwmWindow *t);
 
 #endif /* STACK_H */
 

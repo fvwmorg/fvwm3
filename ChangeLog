@@ -1,3 +1,24 @@
+1999-04-28  Matthias Clasen  <clasen@mathematik.uni-freiburg.de>
+
+	* fvwm/session.c (callback_save_yourself2): set the
+	_GSM_Priority property used by the Gnome session manager.
+	Use SmLISTofARRAY8 for SmDiscardCommand as the protocol demands 
+	on POSIX systems, but leave the old code using SmARRAY8 in as a 
+	hack for buggy xsm. Define XSM_BUGGY_DISCARD_COMMAND to use it.
+	(SaveWindowStates): save res_name under [RES_NAME], not res_class.
+
+	* fvwm/stack.c (LowerWindow): 
+	(RaiseWindow): 
+	* fvwm/screen.h (ScreenInfo): remove LastWindowRaised.
+
+	* fvwm/stack.h: 
+	* fvwm/stack.c (CanBeRaised): new function to determine if
+	a window can be raised any further.
+
+	* fvwm/events.c (HandleButtonPress): 
+	* fvwm/builtins.c (raiselower_func): use CanBeRaised instead
+	of LastWindowRaised to determine if a window should be raised.
+
 1999-04-28  Hippo
 
 	* libs/ModGraph.{h,c}: SetWindowBackground takes width/height of window

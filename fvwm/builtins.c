@@ -911,7 +911,7 @@ void raiselower_func(F_CMD_ARGS)
   if (DeferExecution(eventp,&w,&tmp_win,&context, SELECT,ButtonRelease))
     return;
 
-  if(tmp_win == Scr.LastWindowRaised || IS_VISIBLE(tmp_win))
+  if(!CanBeRaised (tmp_win) || IS_VISIBLE(tmp_win))
   {
     LowerWindow(tmp_win);
   }

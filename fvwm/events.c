@@ -1235,7 +1235,7 @@ void HandleButtonPress(void)
            (Event.xbutton.window == Tmp_win->frame) &&
 	   Scr.go.MouseFocusClickRaises)
   {
-    if (Tmp_win != Scr.LastWindowRaised &&
+    if (CanBeRaised(Tmp_win) &&
         MaskUsedModifiers(Event.xbutton.state) == 0 &&
         GetContext(Tmp_win,&Event, &PressedW) == C_WINDOW)
     {
