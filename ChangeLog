@@ -1,3 +1,19 @@
+1999-04-05  Dominik Vogt  <dominik_vogt@gmx.de>
+
+	* fvwm/misc.h: moved prototype of set_last_added_item out of GNOME
+	define
+
+	* fvwm/builtins.c (destroy_fvwmfunc): fixed bug: '=' -> '=='
+
+	* fvwm/menus.h: added prototypes for add_another_menu_item and
+	SetMenuCursor
+
+	* fvwm/fvwm.c (CaptureAllWindows): removed unused variable
+
+1999-04-04  Dominik Vogt  <dominik_vogt@gmx.de>
+
+	* fvwm/builtins.c (stick_function): fixed 'Stick'
+
 1999-04-05  Tomas Ogren  <stric@ing.umu.se>
 
 	* libs/fvwmlib.h: Be gone evil // comments in c-code
@@ -6,10 +22,12 @@ Sun Apr  4 10:53:17 1999  DanEspen  <dje@blue>
 
 	* fvwm/FormFvwmHelp.in: New form, creates users starting configuration.
 
-	* fvwm/fvwm2.1 (read): Explain new read logic, and config file creation.
+	* fvwm/fvwm2.1 (read): Explain new read logic, and config file
+	creation.
 
 	* fvwm/module.c (executeModule): Export FVWM_USERHOME to modules.
 
+  Window w;
 	* fvwm/read.c (ReadSubFunc): New logic to read either from $HOME, using
 	a leading dot, or the users config dir without the dot, or the config
 	dir without the dot.
@@ -20,7 +38,7 @@ Sun Apr  4 10:53:17 1999  DanEspen  <dje@blue>
 	to builtin command table.  If "FVWM_USERHOME" not already exported,
 	FVWM_USERHOME is ".fvwm/" or "." depending on existence.
 	Export environment variable "FVWM_USERHOME" to modules only.
-	
+
 	* fvwm/ConfigFvwmDefaults: Fvwm2 builtins in addition to the table
 	built in to fvwm.c.
 

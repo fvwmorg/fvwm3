@@ -30,6 +30,9 @@ Fixes in the fvwmrc_convert script.
 German Gomez Garcia:
 Named MenuStyles.
 
+Mike Han:
+Multiple menu hotkeys.
+
 Jay Painter:
 Gnome support (thanks, Jay!).
 
@@ -62,7 +65,8 @@ Silent command, GSFR preparations, various enhancements and bugfixes for
 FvwmButtons, FvwmPager and FvwmTaskBar, split function and menu code, FAQ
 rewrite, rewrite of toggling function syntax (with hints from Matthias
 Claasen), IgnoreModifiers command, enhancements of GotoPage and MoveToPage
-syntax.
+syntax, Repeat command, menu code clean up, panel enhancements (FvwmButtons),
+transient FvwmPager.
 
 A.J. Weber:
 SnapAttraction patch.

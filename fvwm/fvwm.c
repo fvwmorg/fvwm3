@@ -741,7 +741,6 @@ void CaptureAllWindows(void)
   unsigned int nchildren;
   Window root, parent, *children;
   FvwmWindow *tmp,*next;		/* temp fvwm window structure */
-  Window w;
 
   MyXGrabServer(dpy);
 

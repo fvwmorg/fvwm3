@@ -617,7 +617,7 @@ void destroy_fvwmfunc(F_CMD_ARGS)
   free(token);
   if (!func)
     return;
-  if (Scr.last_added_item.type = ADDED_FUNCTION)
+  if (Scr.last_added_item.type == ADDED_FUNCTION)
     set_last_added_item(ADDED_NONE, NULL);
   DestroyFunction(func);
 
@@ -1020,7 +1020,8 @@ void stick_function(F_CMD_ARGS)
   }
   else
   {
-    do_move_window_to_desk(tmp_win, Scr.CurrentDesk);
+    if (tmp_win->Desk != Scr.CurrentDesk)
+      do_move_window_to_desk(tmp_win, Scr.CurrentDesk);
     tmp_win->flags |= STICKY;
     move_window_doit(eventp, w, tmp_win, context, "", Module, FALSE, TRUE);
     /* move_window_doit resets the STICKY flag, so we must set it after the

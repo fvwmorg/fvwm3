@@ -312,11 +312,13 @@ char *GetMenuOptions(char *action, Window w, FvwmWindow *tmp_win,
 void DestroyMenu(MenuRoot *mr);
 void MakeMenus(void);
 void add_item_to_menu(F_CMD_ARGS);
+void add_another_menu_item(char *action);
 void destroy_menu(F_CMD_ARGS);
 void ChangeMenuStyle(F_CMD_ARGS);
 void DestroyMenuStyle(F_CMD_ARGS);
 void SetMenuStyle(F_CMD_ARGS);
 void UpdateAllMenuStyles(void);
+void SetMenuCursor(Cursor cursor);
 
 
 #endif /* _MENUS_ */

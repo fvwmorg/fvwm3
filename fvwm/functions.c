@@ -29,6 +29,8 @@
 #include "module.h"
 
 
+/* please ignore unused variables beginning with 'repeat_' for now. Thanks,
+ * Dominik */
 static char *repeat_last_function = NULL;
 static char *repeat_last_complex_function = NULL;
 static char *repeat_last_builtin_function = NULL;

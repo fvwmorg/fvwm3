@@ -503,9 +503,10 @@ void GNOME_SetCurrentArea();
 void GNOME_SetCurrentDesk();
 void GNOME_SetClientList();
 
+#endif /* GNOME */
+
 void set_last_added_item(last_added_item_type type, void *item);
 
-#endif /* GNOME */
 
 
 #endif /* MISC_H */
