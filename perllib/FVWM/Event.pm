@@ -116,6 +116,7 @@ sub dump ($) {
 		my $text;
 		if ($type == FVWM::EventNames::number) {
 			$text = $value;
+			$text = "*undefined*" unless defined $value;
 		} elsif ($type == FVWM::EventNames::bool) {
 			$text = $value? "True": "False";
 		} elsif ($type == FVWM::EventNames::window) {

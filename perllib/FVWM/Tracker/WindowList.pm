@@ -286,11 +286,12 @@ sub match ($$) {
 }
 
 sub dump ($) {
-	my $string = "Window $_\n";
-	my $window = $data->{$_};
-	foreach my $prop (sort keys %$window) {
+	my $self = shift;
+	my $id = $self->{win_id};
+	my $string = "Window $id\n";
+	foreach my $prop (sort keys %$self) {
 		next if $prop =~ /^_/;
-		$string .= "\t$prop:\t[$window->{$prop}]\n";
+		$string .= "\t$prop:\t[$self->{$prop}]\n";
 	}
 	return $string;
 }

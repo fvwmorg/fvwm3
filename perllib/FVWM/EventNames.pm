@@ -569,6 +569,7 @@ sub eventArgValues ($$) {
 	my $eventInfo = eventInfo($type);
 	my @argValues = unpack($eventInfo->{format}, $packedStr);
 	my $argFields = $eventInfo->{fields};
+	push @argValues, (undef) x ((@$argFields / 2) - @argValues);
 
 	# process looped args
 	if (@$argFields && $argFields->[@$argFields - 1] == looped) {
