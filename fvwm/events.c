@@ -1372,7 +1372,7 @@ void HandleUnmapNotify(void)
   focus_grabbed = (Tmp_win == get_focus_window()) &&
     ((!IS_TRANSIENT(Tmp_win) && DO_GRAB_FOCUS(Tmp_win)) ||
      (IS_TRANSIENT(Tmp_win) && DO_GRAB_FOCUS_TRANSIENT(Tmp_win)));
-  restore_focus_after_unmap(Tmp_win);
+  restore_focus_after_unmap(Tmp_win, False);
   if (!IS_MAPPED(Tmp_win) && !IS_ICONIFIED(Tmp_win))
   {
     return;

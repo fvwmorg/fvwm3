@@ -181,11 +181,11 @@ static void unmap_window(FvwmWindow *t)
     /* suppress UnmapRequest event */
     XSelectInput(dpy, t->w, eventMask & ~StructureNotifyMask);
   }
-  if(IS_ICONIFIED(t))
+  if (IS_ICONIFIED(t))
   {
-    if(t->icon_pixmap_w != None)
+    if (t->icon_pixmap_w != None)
       XUnmapWindow(dpy,t->icon_pixmap_w);
-    if(t->icon_w != None)
+    if (t->icon_w != None)
       XUnmapWindow(dpy,t->icon_w);
   }
   else
@@ -1248,31 +1248,37 @@ void CMD_GotoPage(F_CMD_ARGS)
  *************************************************************************/
 void do_move_window_to_desk(FvwmWindow *tmp_win, int desk)
 {
-  if(tmp_win == NULL)
+  if (tmp_win == NULL)
     return;
 
   /*
    * Set the window's desktop, and map or unmap it as needed.
    */
   /* Only change mapping for non-sticky windows */
-  if(!(IS_ICONIFIED(tmp_win) && IS_ICON_STICKY(tmp_win)) &&
-     !IS_STICKY(tmp_win) /*&& !IS_ICON_UNMAPPED(tmp_win)*/)
+  if (!(IS_ICONIFIED(tmp_win) && IS_ICON_STICKY(tmp_win)) &&
+      !IS_STICKY(tmp_win) /*&& !IS_ICON_UNMAPPED(tmp_win)*/)
   {
-    if(tmp_win->Desk == Scr.CurrentDesk)
+    if (tmp_win->Desk == Scr.CurrentDesk)
     {
       tmp_win->Desk = desk;
+      if (tmp_win == get_focus_window())
+      {
+	DeleteFocus(0);
+      }
       unmap_window(tmp_win);
     }
     else if(desk == Scr.CurrentDesk)
     {
       tmp_win->Desk = desk;
       /* If its an icon, auto-place it */
-      if(IS_ICONIFIED(tmp_win))
+      if (IS_ICONIFIED(tmp_win))
 	AutoPlaceIcon(tmp_win);
       map_window(tmp_win);
     }
     else
+    {
       tmp_win->Desk = desk;
+    }
     BroadcastConfig(M_CONFIGURE_WINDOW,tmp_win);
   }
   GNOME_SetDeskCount();
@@ -1288,7 +1294,7 @@ void CMD_MoveToDesk(F_CMD_ARGS)
   if (DeferExecution(eventp,&w,&tmp_win,&context,CRS_SELECT,ButtonRelease))
     return;
   desk = GetDeskNumber(action);
-  if(desk == tmp_win->Desk)
+  if (desk == tmp_win->Desk)
     return;
   do_move_window_to_desk(tmp_win, desk);
 }

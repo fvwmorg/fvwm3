@@ -1206,18 +1206,16 @@ void GetIconBitmap(FvwmWindow *tmp_win)
 void DeIconify(FvwmWindow *tmp_win)
 {
   FvwmWindow *t,*tmp;
-  FvwmWindow *sf;
+  FvwmWindow *sf = get_focus_window();
 
-  if(!tmp_win)
+  if (!tmp_win)
     return;
-
   if (IS_MAP_PENDING(tmp_win))
   {
     /* final state: de-iconified */
     SET_ICONIFY_AFTER_MAP(tmp_win, 0);
     return;
   }
-
   while (IS_ICONIFIED_BY_PARENT(tmp_win))
   {
     for (t = Scr.FvwmRoot.next; t != NULL; t = t->next)
@@ -1230,6 +1228,11 @@ void DeIconify(FvwmWindow *tmp_win)
   /* AS dje  RaiseWindow(tmp_win); */
 
   mark_transient_subtree(tmp_win, MARK_ALL_LAYERS, MARK_ALL, False, True);
+  if (tmp_win == sf)
+  {
+    /* take away the focus before mapping */
+    DeleteFocus(0);
+  }
   /* now de-iconify transients */
   for (t = Scr.FvwmRoot.next; t != NULL; t = t->next)
   {
@@ -1249,7 +1252,7 @@ void DeIconify(FvwmWindow *tmp_win)
       XFlush(dpy);
       /* End AS */
       XMapWindow(dpy, t->w);
-      if(t->Desk == Scr.CurrentDesk)
+      if (t->Desk == Scr.CurrentDesk)
       {
 	rectangle r;
 
@@ -1257,9 +1260,10 @@ void DeIconify(FvwmWindow *tmp_win)
 	r.y = t->icon_g.y;
 	r.width = t->icon_g.width;
 	r.height = t->icon_p_height+t->icon_g.height;
-	/* update frame geometry in case the icon was moved over a page
-	 * boundary*/
-	update_relative_geometry(t);
+	/* update absoluthe geometry in case the icon was moved over a page
+	 * boundary; the move code already takes care of keeping the frame
+	 * geometry up to date */
+	update_absolute_geometry(t);
 	if (IsRectangleOnThisPage(&r, t->Desk) &&
 	    !IsRectangleOnThisPage(&(t->frame_g), t->Desk))
 	{
@@ -1323,12 +1327,26 @@ void DeIconify(FvwmWindow *tmp_win)
 #if 1
   RaiseWindow(tmp_win); /* moved dje */
 #endif
-  if ((sf = get_focus_window()))
+  if (sf)
   {
     focus_grab_buttons(sf, True);
   }
-  if(HAS_CLICK_FOCUS(tmp_win))
+  if (sf == tmp_win)
+  {
+    /* update the focus to make sure the application knows its state */
+    if (HAS_CLICK_FOCUS(tmp_win) || HAS_SLOPPY_FOCUS(tmp_win))
+    {
+      SetFocusWindow(tmp_win, 0);
+    }
+  }
+  else if (HAS_CLICK_FOCUS(tmp_win))
+  {
+#if 0
     FocusOn(tmp_win, TRUE, "");
+#else
+    SetFocusWindow(tmp_win, 1);
+#endif
+  }
   GNOME_SetWinArea(tmp_win);
 
   return;
@@ -1349,26 +1367,30 @@ void Iconify(FvwmWindow *tmp_win, int def_x, int def_y)
 
   if(!tmp_win)
     return;
-
   if (IS_MAP_PENDING(tmp_win))
   {
     /* final state: iconified */
     SET_ICONIFY_AFTER_MAP(tmp_win, 1);
     return;
   }
-
   if (!XGetWindowAttributes(dpy, tmp_win->w, &winattrs))
   {
     return;
   }
   eventMask = winattrs.your_event_mask;
-
-  if((tmp_win == Scr.Hilite)&&(HAS_CLICK_FOCUS(tmp_win))&&(tmp_win->next))
+#if 0
+  if (tmp_win == Scr.Hilite && HAS_CLICK_FOCUS(tmp_win) && tmp_win->next)
   {
     SetFocusWindow(tmp_win->next, 1);
   }
+#endif
 
   mark_transient_subtree(tmp_win, MARK_ALL_LAYERS, MARK_ALL, False, True);
+  sf = get_focus_window();
+  if (sf && IS_IN_TRANSIENT_SUBTREE(sf))
+  {
+    restore_focus_after_unmap(sf, True);
+  }
   /* iconify transients first */
   for (t = Scr.FvwmRoot.next; t != NULL; t = t->next)
   {
@@ -1427,7 +1449,7 @@ void Iconify(FvwmWindow *tmp_win, int def_x, int def_y)
   }
 
   /* if no pixmap we want icon width to change to text width every iconify */
-  if( (tmp_win->icon_w != None) && (tmp_win->icon_pixmap_w == None) )
+  if (tmp_win->icon_w && !tmp_win->icon_pixmap_w)
   {
     if (HAS_NO_ICON_TITLE(tmp_win))
     {
@@ -1479,7 +1501,6 @@ void Iconify(FvwmWindow *tmp_win, int def_x, int def_y)
   {
     LowerWindow(tmp_win);
   }
-
   if (tmp_win->Desk == Scr.CurrentDesk)
   {
     if (tmp_win->icon_w != None)
@@ -1488,6 +1509,7 @@ void Iconify(FvwmWindow *tmp_win, int def_x, int def_y)
     if(tmp_win->icon_pixmap_w != None)
       XMapWindow(dpy, tmp_win->icon_pixmap_w);
   }
+#if 0
   if (HAS_CLICK_FOCUS(tmp_win) || HAS_SLOPPY_FOCUS(tmp_win))
   {
     if (tmp_win == get_focus_window())
@@ -1502,6 +1524,7 @@ void Iconify(FvwmWindow *tmp_win, int def_x, int def_y)
       }
     }
   }
+#endif
   if ((sf = get_focus_window()))
   {
     focus_grab_buttons(sf, True);

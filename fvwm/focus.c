@@ -292,46 +292,52 @@ void ForceDeleteFocus(Bool FocusByMouse)
 
 /* When a window is unmapped (or destroyed) this function takes care of
  * adjusting the focus window appropriately. */
-void restore_focus_after_unmap(FvwmWindow *tmp_win)
+void restore_focus_after_unmap(
+  FvwmWindow *tmp_win, Bool do_skip_marked_transients)
 {
   extern FvwmWindow *colormap_win;
   FvwmWindow *t = NULL;
   FvwmWindow *set_focus_to = NULL;
 
-  if (tmp_win != get_focus_window())
-    set_focus_to = tmp_win;
-  if (!set_focus_to &&
-      tmp_win->transientfor != None && tmp_win->transientfor != Scr.Root)
+  if (tmp_win == get_focus_window())
   {
-    for (t = Scr.FvwmRoot.next; t != NULL; t = t->next)
+    if (tmp_win->transientfor != None && tmp_win->transientfor != Scr.Root)
     {
-      if (t->w == tmp_win->transientfor)
+      for (t = Scr.FvwmRoot.next; t != NULL; t = t->next)
       {
-	set_focus_to = t;
-	break;
+	if (t->w == tmp_win->transientfor &&
+	    (!do_skip_marked_transients || !IS_IN_TRANSIENT_SUBTREE(tmp_win)))
+	{
+	  set_focus_to = t;
+	  break;
+	}
       }
     }
-  }
-  if (!set_focus_to && (HAS_CLICK_FOCUS(tmp_win) || HAS_SLOPPY_FOCUS(tmp_win)))
-  {
-    for (t = tmp_win->next; t != NULL; t = t->next)
+    if (!set_focus_to &&
+	(HAS_CLICK_FOCUS(tmp_win) || HAS_SLOPPY_FOCUS(tmp_win)))
     {
-      if (t->Desk == tmp_win->Desk)
+      for (t = tmp_win->next; t != NULL; t = t->next)
       {
-	/* If it is on a different desk we have to look for another window */
-	set_focus_to = t;
-	break;
+	if (t->Desk == tmp_win->Desk &&
+	    (!do_skip_marked_transients || !IS_IN_TRANSIENT_SUBTREE(tmp_win)))
+	{
+	  /* If it is on a different desk we have to look for another window */
+	  set_focus_to = t;
+	  break;
+	}
       }
     }
+    if (set_focus_to && set_focus_to != tmp_win &&
+	set_focus_to->Desk == tmp_win->Desk)
+    {
+      /* Don't transfer focus to windows on other desks */
+      SetFocusWindow(set_focus_to, 1);
+    }
+    if (tmp_win == get_focus_window())
+    {
+      DeleteFocus(1);
+    }
   }
-  if (set_focus_to && set_focus_to != tmp_win &&
-      set_focus_to->Desk == tmp_win->Desk)
-  {
-    /* Don't transfer focus to windows on other desks */
-    SetFocusWindow(set_focus_to, 1);
-  }
-  if (get_focus_window() == tmp_win)
-    DeleteFocus(1);
   if (tmp_win == Scr.pushed_window)
     Scr.pushed_window = NULL;
   if (tmp_win == colormap_win)

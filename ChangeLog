@@ -1,3 +1,20 @@
+2001-04-09  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* fvwm/icons.c (DeIconify):
+	(Iconify):
+	set focus to the correct window when iconifying transient window trees
+	fix deiconifying windows on other pages
+
+	* fvwm/icons.c (DeIconify):
+	* fvwm/events.c (HandleUnmapNotify):
+	* fvwm/add_window.c (destroy_window):
+	* fvwm/focus.c (restore_focus_after_unmap):
+	Delete and set focus when a window is moved to a desk or iconified or
+	deiconified
+
+	* fvwm/virtual.c (do_move_window_to_desk):
+	delete focus when moving focused window to another desk
+
 2001-04-08  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* fvwm/borders.c (draw_clipped_decorations):

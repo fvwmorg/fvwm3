@@ -1963,21 +1963,21 @@ void destroy_window(FvwmWindow *tmp_win)
 
   /****** adjust fvwm internal windows ******/
 
-  if(tmp_win == Scr.Hilite)
+  if (tmp_win == Scr.Hilite)
     Scr.Hilite = NULL;
   update_last_screen_focus_window(tmp_win);
-  if(ButtonWindow == tmp_win)
+  if (ButtonWindow == tmp_win)
     ButtonWindow = NULL;
 
   /****** adjust focus ******/
 
-  restore_focus_after_unmap(tmp_win);
+  restore_focus_after_unmap(tmp_win, False);
 
   /****** adjust fvwm internal windows II ******/
 
   /* restore_focus_after_unmap takes care of Scr.pushed_window and colormap_win
    */
-  if(tmp_win == Scr.Ungrabbed)
+  if (tmp_win == Scr.Ungrabbed)
     Scr.Ungrabbed = NULL;
 
   /****** destroy auxiliary windows ******/
