@@ -24,6 +24,7 @@ EXTRA_DIST = $(man_MANS) Changes \
  FormFvwmCapture.    \
  FormFvwmQuitVerify. \
  FormFvwmRlogin.     \
+ FormFvwmRootCursor. \
  FormFvwmTalk.       \
  FormFvwmTalkHelp.
 
@@ -37,6 +38,7 @@ config_DATA =        \
  FormFvwmCapture.    \
  FormFvwmQuitVerify. \
  FormFvwmRlogin.     \
+ FormFvwmRootCursor. \
  FormFvwmTalk.       \
  FormFvwmTalkHelp.
 

@@ -1,3 +1,9 @@
+1999-06-26  Mikhael Goikhman  <migo@homemail.com>
+
+	* FvwmForm/Makefile.am:
+	* FvwmForm/FormFvwmRootCursor.pl: produces FormFvwmRootCursor.
+	* FvwmForm/FormFvwmRootCursor.: new form
+
 1999-06-26  Dominik Vogt  <dominik_vogt@gmx.de>
 
 	* FvwmCommand/FvwmCommandS.c:

@@ -1,0 +1,151 @@
+# Front end to xsetroot, sets root cursor font and color.
+
+DestroyModuleConfig FormFvwmRootCursor.*
+*FormFvwmRootCursor.WarpPointer
+#*FormFvwmRootCursor.Font	fixed
+*FormFvwmRootCursor.ButtonFont	6x13
+#*FormFvwmRootCursor.Fore	yellow
+#*FormFvwmRootCursor.Back	navy
+#*FormFvwmRootCursor.ItemFore	black
+#*FormFvwmRootCursor.ItemBack	#20D020
+
+*FormFvwmRootCursor.Text   "Cursor font"
+*FormFvwmRootCursor.Selection	cursor_font single
+
+*FormFvwmRootCursor.Line   expand
+*FormFvwmRootCursor.Choice cursor_font X_cursor            off "X_cursor           "
+*FormFvwmRootCursor.Choice cursor_font arrow               off "arrow              "
+*FormFvwmRootCursor.Choice cursor_font based_arrow_down    off "based_arrow_down   "
+*FormFvwmRootCursor.Choice cursor_font based_arrow_up      off "based_arrow_up     "
+*FormFvwmRootCursor.Line   expand
+*FormFvwmRootCursor.Choice cursor_font boat                off "boat               "
+*FormFvwmRootCursor.Choice cursor_font bogosity            off "bogosity           "
+*FormFvwmRootCursor.Choice cursor_font bottom_left_corner  off "bottom_left_corner "
+*FormFvwmRootCursor.Choice cursor_font bottom_right_corner off "bottom_right_corner"
+*FormFvwmRootCursor.Line   expand
+*FormFvwmRootCursor.Choice cursor_font bottom_side         off "bottom_side        "
+*FormFvwmRootCursor.Choice cursor_font bottom_tee          off "bottom_tee         "
+*FormFvwmRootCursor.Choice cursor_font box_spiral          off "box_spiral         "
+*FormFvwmRootCursor.Choice cursor_font center_ptr          off "center_ptr         "
+*FormFvwmRootCursor.Line   expand
+*FormFvwmRootCursor.Choice cursor_font circle              off "circle             "
+*FormFvwmRootCursor.Choice cursor_font clock               off "clock              "
+*FormFvwmRootCursor.Choice cursor_font coffee_mug          off "coffee_mug         "
+*FormFvwmRootCursor.Choice cursor_font cross               off "cross              "
+*FormFvwmRootCursor.Line   expand
+*FormFvwmRootCursor.Choice cursor_font cross_reverse       off "cross_reverse      "
+*FormFvwmRootCursor.Choice cursor_font crosshair           off "crosshair          "
+*FormFvwmRootCursor.Choice cursor_font diamond_cross       off "diamond_cross      "
+*FormFvwmRootCursor.Choice cursor_font dot                 off "dot                "
+*FormFvwmRootCursor.Line   expand
+*FormFvwmRootCursor.Choice cursor_font dotbox              off "dotbox             "
+*FormFvwmRootCursor.Choice cursor_font double_arrow        off "double_arrow       "
+*FormFvwmRootCursor.Choice cursor_font draft_large         off "draft_large        "
+*FormFvwmRootCursor.Choice cursor_font draft_small         off "draft_small        "
+*FormFvwmRootCursor.Line   expand
+*FormFvwmRootCursor.Choice cursor_font draped_box          off "draped_box         "
+*FormFvwmRootCursor.Choice cursor_font exchange            off "exchange           "
+*FormFvwmRootCursor.Choice cursor_font fleur               off "fleur              "
+*FormFvwmRootCursor.Choice cursor_font gobbler             off "gobbler            "
+*FormFvwmRootCursor.Line   expand
+*FormFvwmRootCursor.Choice cursor_font gumby               off "gumby              "
+*FormFvwmRootCursor.Choice cursor_font hand1               off "hand1              "
+*FormFvwmRootCursor.Choice cursor_font hand2               off "hand2              "
+*FormFvwmRootCursor.Choice cursor_font heart               off "heart              "
+*FormFvwmRootCursor.Line   expand
+*FormFvwmRootCursor.Choice cursor_font icon                off "icon               "
+*FormFvwmRootCursor.Choice cursor_font iron_cross          off "iron_cross         "
+*FormFvwmRootCursor.Choice cursor_font left_ptr            off "left_ptr           "
+*FormFvwmRootCursor.Choice cursor_font left_side           off "left_side          "
+*FormFvwmRootCursor.Line   expand
+*FormFvwmRootCursor.Choice cursor_font left_tee            off "left_tee           "
+*FormFvwmRootCursor.Choice cursor_font leftbutton          off "leftbutton         "
+*FormFvwmRootCursor.Choice cursor_font ll_angle            off "ll_angle           "
+*FormFvwmRootCursor.Choice cursor_font lr_angle            off "lr_angle           "
+*FormFvwmRootCursor.Line   expand
+*FormFvwmRootCursor.Choice cursor_font man                 off "man                "
+*FormFvwmRootCursor.Choice cursor_font middlebutton        off "middlebutton       "
+*FormFvwmRootCursor.Choice cursor_font mouse               off "mouse              "
+*FormFvwmRootCursor.Choice cursor_font pencil              off "pencil             "
+*FormFvwmRootCursor.Line   expand
+*FormFvwmRootCursor.Choice cursor_font pirate              off "pirate             "
+*FormFvwmRootCursor.Choice cursor_font plus                off "plus               "
+*FormFvwmRootCursor.Choice cursor_font question_arrow      off "question_arrow     "
+*FormFvwmRootCursor.Choice cursor_font right_ptr           off "right_ptr          "
+*FormFvwmRootCursor.Line   expand
+*FormFvwmRootCursor.Choice cursor_font right_side          off "right_side         "
+*FormFvwmRootCursor.Choice cursor_font right_tee           off "right_tee          "
+*FormFvwmRootCursor.Choice cursor_font rightbutton         off "rightbutton        "
+*FormFvwmRootCursor.Choice cursor_font rtl_logo            off "rtl_logo           "
+*FormFvwmRootCursor.Line   expand
+*FormFvwmRootCursor.Choice cursor_font sailboat            off "sailboat           "
+*FormFvwmRootCursor.Choice cursor_font sb_down_arrow       off "sb_down_arrow      "
+*FormFvwmRootCursor.Choice cursor_font sb_h_double_arrow   off "sb_h_double_arrow  "
+*FormFvwmRootCursor.Choice cursor_font sb_left_arrow       off "sb_left_arrow      "
+*FormFvwmRootCursor.Line   expand
+*FormFvwmRootCursor.Choice cursor_font sb_right_arrow      off "sb_right_arrow     "
+*FormFvwmRootCursor.Choice cursor_font sb_up_arrow         off "sb_up_arrow        "
+*FormFvwmRootCursor.Choice cursor_font sb_v_double_arrow   off "sb_v_double_arrow  "
+*FormFvwmRootCursor.Choice cursor_font shuttle             off "shuttle            "
+*FormFvwmRootCursor.Line   expand
+*FormFvwmRootCursor.Choice cursor_font sizing              off "sizing             "
+*FormFvwmRootCursor.Choice cursor_font spider              off "spider             "
+*FormFvwmRootCursor.Choice cursor_font spraycan            off "spraycan           "
+*FormFvwmRootCursor.Choice cursor_font star                off "star               "
+*FormFvwmRootCursor.Line   expand
+*FormFvwmRootCursor.Choice cursor_font target              off "target             "
+*FormFvwmRootCursor.Choice cursor_font tcross              off "tcross             "
+*FormFvwmRootCursor.Choice cursor_font top_left_arrow      off "top_left_arrow     "
+*FormFvwmRootCursor.Choice cursor_font top_left_corner     off "top_left_corner    "
+*FormFvwmRootCursor.Line   expand
+*FormFvwmRootCursor.Choice cursor_font top_right_corner    off "top_right_corner   "
+*FormFvwmRootCursor.Choice cursor_font top_side            off "top_side           "
+*FormFvwmRootCursor.Choice cursor_font top_tee             off "top_tee            "
+*FormFvwmRootCursor.Choice cursor_font trek                off "trek               "
+*FormFvwmRootCursor.Line   expand
+*FormFvwmRootCursor.Choice cursor_font ul_angle            off "ul_angle           "
+*FormFvwmRootCursor.Choice cursor_font umbrella            off "umbrella           "
+*FormFvwmRootCursor.Choice cursor_font ur_angle            off "ur_angle           "
+*FormFvwmRootCursor.Choice cursor_font watch               off "watch              "
+*FormFvwmRootCursor.Line   expand
+*FormFvwmRootCursor.Choice cursor_font xterm               off "xterm              "
+
+*FormFvwmRootCursor.Line	expand
+*FormFvwmRootCursor.Text   "Cursor inner color"
+*FormFvwmRootCursor.Line	expand
+
+*FormFvwmRootCursor.Selection      cursor_fg single
+*FormFvwmRootCursor.Line   center
+*FormFvwmRootCursor.Choice cursor_fg black   on  "  black   "
+*FormFvwmRootCursor.Choice cursor_fg red     off "  red     "
+*FormFvwmRootCursor.Choice cursor_fg green   off "  green   "
+*FormFvwmRootCursor.Choice cursor_fg blue    off "  blue    "
+*FormFvwmRootCursor.Line   center
+*FormFvwmRootCursor.Choice cursor_fg navy    off "  navy    "
+*FormFvwmRootCursor.Choice cursor_fg cyan    off "  cyan    "
+*FormFvwmRootCursor.Choice cursor_fg yellow  off "  yellow  "
+*FormFvwmRootCursor.Choice cursor_fg white   off "  white   "
+
+*FormFvwmRootCursor.Line	expand
+*FormFvwmRootCursor.Text   "Cursor outer color"
+*FormFvwmRootCursor.Line	expand
+
+*FormFvwmRootCursor.Selection      cursor_bg single
+*FormFvwmRootCursor.Line   center
+*FormFvwmRootCursor.Choice cursor_bg black   off "  black   "
+*FormFvwmRootCursor.Choice cursor_bg red     off "  red     "
+*FormFvwmRootCursor.Choice cursor_bg green   off "  green   "
+*FormFvwmRootCursor.Choice cursor_bg blue    off "  blue    "
+*FormFvwmRootCursor.Line   center
+*FormFvwmRootCursor.Choice cursor_bg navy    off "  navy    "
+*FormFvwmRootCursor.Choice cursor_bg cyan    off "  cyan    "
+*FormFvwmRootCursor.Choice cursor_bg yellow  off "  yellow  "
+*FormFvwmRootCursor.Choice cursor_bg white   on  "  white   "
+
+*FormFvwmRootCursor.Line	expand
+*FormFvwmRootCursor.Line	expand
+
+*FormFvwmRootCursor.Button	continue "Set Root Cursor"
+*FormFvwmRootCursor.Command	Exec exec xsetroot -cursor_name $(cursor_font!none) -fg $(cursor_fg) -bg $(cursor_bg)
+*FormFvwmRootCursor.Button	quit "Finish" ^[
+*FormFvwmRootCursor.Command	Nop
