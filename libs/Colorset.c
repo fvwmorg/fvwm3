@@ -381,18 +381,17 @@ Pixmap CreateBackgroundPixmap(Display *dpy, Window win, int width, int height,
 		{
 			/* check if it is still here */
 			XID dummy;
-
+			
+			XGrabServer(dpy);
 			if (!XGetGeometry(
 				    dpy, colorset->pixmap, &dummy,
 				    (int *)&dummy, (int *)&dummy,
 				    (unsigned int *)&w, (unsigned int *)&h,
 				    (unsigned int *)&dummy,
-				    (unsigned int *)&dummy))
+				    (unsigned int *)&dummy) ||
+			    w != cs_width || h != cs_height)
 			{
-				return None;
-			}
-			if (w != cs_width || h != cs_height)
-			{
+				XUngrabServer(dpy);
 				return None;
 			}
 		}
@@ -402,6 +401,10 @@ Pixmap CreateBackgroundPixmap(Display *dpy, Window win, int width, int height,
 		pixmap = XCreatePixmap(dpy, win, width, height, Pdepth);
 		if (!pixmap)
 		{
+			if (CSETS_IS_TRANSPARENT_ROOT_PURE(colorset))
+			{
+				XUngrabServer(dpy);
+			}
 			return None;
 		}
 		/* make sx and sy positif */
@@ -430,6 +433,10 @@ Pixmap CreateBackgroundPixmap(Display *dpy, Window win, int width, int height,
 			dpy, win, GCTile | GCTileStipXOrigin | GCTileStipYOrigin
 			| GCFillStyle, &xgcv);
 		XFillRectangle(dpy, pixmap, fill_gc, 0, 0, width, height);
+		if (CSETS_IS_TRANSPARENT_ROOT_PURE(colorset))
+		{
+			XUngrabServer(dpy);
+		}
 		if (CSETS_IS_TRANSPARENT_ROOT_PURE(colorset) &&
 		    colorset->tint_percent > 0)
 		{

@@ -90,7 +90,7 @@ static char *gray = "gray";
 
 static struct junklist *junk = NULL;
 static Bool cleanup_scheduled = False;
-static struct root_pic root_pic = {None, 0, 0};
+static struct root_pic root_pic = {None, None, 0, 0};
 
 static char *csetopts[] =
 {
@@ -1063,9 +1063,42 @@ void parse_colorset(int n, char *line)
 	     !pixmap_is_a_bitmap))
 	{
 		Bool do_set_default_background = False;
+		Pixmap average_pix = None;
+
+		if (cs->color_flags & BG_AVERAGE)
+		{
+			average_pix =
+			   (cs->picture != NULL &&
+			    cs->picture->picture != None) ?
+				cs->picture->picture : cs->pixmap;
+			if (average_pix == root_pic.pixmap)
+			{
+				int w,h;
+				XID dummy;
+
+				XGrabServer(dpy);
+				if (!XGetGeometry(
+				    dpy, average_pix, &dummy,
+				    (int *)&dummy, (int *)&dummy,
+				    (unsigned int *)&w, (unsigned int *)&h,
+				    (unsigned int *)&dummy,
+				    (unsigned int *)&dummy))
+				{
+					average_pix = None;
+				}
+				if (w != cs->width || h != cs->height)
+				{
+					average_pix = None;
+				}
+				if (average_pix == None)
+				{
+					XUngrabServer(dpy);
+				}
+			}
+		}
 
 		/* note: no average for bitmap */
-		if (cs->color_flags & BG_AVERAGE)
+		if ((cs->color_flags & BG_AVERAGE) && average_pix)
 		{
 			/* calculate average background color */
 			XColor *colors;
@@ -1075,26 +1108,24 @@ void parse_colorset(int n, char *line)
 			unsigned long red = 0, blue = 0, green = 0;
 			unsigned long tred, tblue, tgreen;
 			double dred = 0.0, dblue = 0.0, dgreen = 0.0;
-			Pixmap pix;
 
 			has_bg_changed = True;
-			/* chose the good pixmap */
-			pix =
-			   (cs->picture != NULL &&
-			    cs->picture->picture != None) ?
-				cs->picture->picture : cs->pixmap;
 			/* create an array to store all the pixmap colors in */
 			colors = (XColor *)safemalloc(
 				cs->width * cs->height * sizeof(XColor));
 			/* get the pixmap and mask into an image */
 			image = XGetImage(
-				dpy, pix, 0, 0, cs->width, cs->height,
+				dpy, average_pix, 0, 0, cs->width, cs->height,
 				AllPlanes, ZPixmap);
 			if (cs->mask != None)
 			{
 				mask_image = XGetImage(
 					dpy, cs->mask, 0, 0, cs->width,
 					cs->height, AllPlanes, ZPixmap);
+			}
+			if (average_pix == root_pic.pixmap)
+			{
+				XUngrabServer(dpy);
 			}
 			/* only fetch the pixels that are not masked out */
 			for (i = 0; i < cs->width; i++)
@@ -1205,6 +1236,7 @@ void parse_colorset(int n, char *line)
 			{
 				have_pixels_changed = True;
 			}
+			has_bg_changed = True;
 		}
 
 		if (has_bg_changed)

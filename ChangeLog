@@ -1,3 +1,9 @@
+2002-11-26  olicha  <olivier.chapuis@free.fr>
+
+	* libs/Colorset.c (CreateBackgroundPixmap):
+	* fvwm/colorset.c (parse_colorset):
+	Be more safe with the E root pixmap
+
 2002-11-25  olicha  <olivier.chapuis@free.fr>
 
 	* fvwm/move_resize.c (__move_loop):
