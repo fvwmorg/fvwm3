@@ -1,5 +1,5 @@
-/*#define DEBUG
- *
+#define DEBUG
+/*
  * Copyright (C) 1994 Mark Boyns (boyns@sdsu.edu) and
  *                    Mark Scott (mscott@mcd.mot.com)
  *		 1996-1998 Albrecht Kadlec (albrecht@auto.tuwien.ac.at)
@@ -117,111 +117,74 @@
 #define BUILTIN_UNKNOWN		MAX_MESSAGES+2
 #define MAX_BUILTIN		3
 
-#define BUFSIZE			512
-
 /* globals */
-char	*MyName;
+char   *MyName;
 int	MyNameLen;
 int	fd[2];
-char	cmd_line[BUFSIZE]="";
+char   *cmd_line = NULL;
 time_t	audio_delay = 0,		/* seconds */
         last_time = 0,
         now;
 Bool	PassID = False;	/* don't tag on the windowID by default */
+Bool	audio_compat = False;
+char   *audio_play_dir = NULL;
 
 #ifdef HAVE_RPLAY
 int	rplay_fd = -1;
 #endif
 
 /* prototypes */
-int     execute_event(short, unsigned long*);
+void    execute_event(short, unsigned long*);
 void	config(void);
 void	DeadPipe(int) __attribute__((__noreturn__));
 
 static RETSIGTYPE TerminateHandler(int);
 
-/* define the event table */
-char	*events[MAX_MESSAGES+MAX_BUILTIN] =
+typedef struct
 {
-	"new_page",
-	"new_desk",
-	"add_window",
-	"raise_window",
-	"lower_window",
-	"configure_window",
-	"focus_change",
-	"destroy_window",
-	"iconify",
-	"deiconify",
-	"window_name",
-	"icon_name",
-	"res_class",
-	"res_name",
-	"end_windowlist",
-	"icon_location",
-	"map",
-	"error",
-	"config_info",
-	"end_config_info",
-	"icon_file",
-	"default_icon",
-	"string",
+  char *name;
+  int action_arg;
+} event_entry;
+
+event_entry event_table[MAX_MESSAGES+MAX_BUILTIN] =
+{
+  { "new_page",	-1 },
+  { "new_desk", 0 },
+  { "add_window", 0 },
+  { "raise_window", 0 },
+  { "lower_window", 0 },
+  { "configure_window", 0 },
+  { "focus_change", 0 },
+  { "destroy_window", 0 },
+  { "iconify", 0 },
+  { "deiconify", 0 },
+  { "window_name", 0 },
+  { "icon_name", 0 },
+  { "res_class", 0 },
+  { "res_name", 0 },
+  { "end_windowlist", -1 },
+  { "icon_location", 0 },
+  { "map", 0 },
+  { "error", -1 },
+  { "config_info", -1 },
+  { "end_config_info", -1 },
+  { "icon_file", -1 },
+  { "default_icon", -1 },
+  { "string", -1 },
 #ifdef M_BELL
-	"beep",
+  { "beep", -1 },
 #endif
 #ifdef M_TOGGLEPAGE
-	"togglepage",
+  { "togglepage", -1 },
 #endif
-	"mini_icon",
-	"windowshade",
-	"dewindowshade",
-/* add builtins here */
-	"startup",
-	"shutdown",
-	"unknown"
+  { "mini_icon", -1 },
+  { "windowshade", -1 },
+  { "dewindowshade", -1 },
+  /* add builtins here */
+  { "startup", -1 },
+  { "shutdown", -1 },
+  { "unknown", -1}
 };
-
-/* pointers to function args */
-int action_arg[MAX_MESSAGES+MAX_BUILTIN] =
-{
-	-1,
-	0,
-	0,
-	0,
-	0,
-	0,
-	0,
-	0,
-	0,
-	0,
-	0,
-	0,
-	0,
-	0,
-	-1,
-	0,
-	0,
-	-1,
-	-1,
-	-1,
-	-1,
-	-1,
-	-1,
-#ifdef M_BELL
-	-1,
-#endif
-#ifdef M_TOGGLEPAGE
-	-1,
-#endif
-	-1,
-	-1,
-	-1,
-/* add builtins here */
-	-1,
-	-1,
-	-1
-};
-
 
 /* define the action table  */
 char	*action_table[MAX_MESSAGES+MAX_BUILTIN];
@@ -235,30 +198,41 @@ static volatile sig_atomic_t isTerminated = False;
 
 int main(int argc, char **argv)
 {
-    char *s;
-    unsigned long	header[HEADER_SIZE], body[MAX_BODY_SIZE];
-    int			total, remaining, count, event;
+  char *s;
+  unsigned long	header[HEADER_SIZE], body[MAX_BODY_SIZE];
+  int			total, remaining, count, event;
 
-INFO("--- started ----\n");
+  INFO("--- started ----\n");
 
-    /* Save our program  name - for error events */
+  cmd_line = (char *)safemalloc(1);
+  *cmd_line = 0;
+  /* Save our program  name - for error events */
 
-    if ((s=strrchr(argv[0], '/')))	/* strip path */
-	s++;
-    else				/* no slash */
-	s = argv[0];
-
-    MyNameLen=strlen(s)+1;		/* account for '*' */
-    MyName = safemalloc(MyNameLen+1);	/* account for \0 */
-    *MyName='*';
-    strcpy(MyName+1, s);		/* append name */
-
-    if ((argc != 6)&&(argc != 7))	/* Now MyName is defined */
+  if ((s=strrchr(argv[0], '/')))	/* strip path */
+    s++;
+  else				/* no slash */
+    s = argv[0];
+  if ( argc==7 )
     {
-	fprintf(stderr,"%s Version "VERSION" should only be executed by fvwm!\n",
-		MyName+1);
-	exit(1);
+      if (strcmp(argv[6], "-audio") == 0)
+	audio_compat = True;
+      else
+	s = argv[6];			/* use an alias */
     }
+
+  MyNameLen=strlen(s)+1;		/* account for '*' */
+  MyName = safemalloc(MyNameLen+1);	/* account for \0 */
+  *MyName='*';
+  strcpy(MyName+1, s);		/* append name */
+  if (StrEquals("FvwmAudio", s))
+    audio_compat = True;		/* catch the FvwmAudio alias */
+
+  if ((argc != 6)&&(argc != 7))	/* Now MyName is defined */
+  {
+    fprintf(stderr,"%s Version "VERSION" should only be executed by fvwm!\n",
+	    MyName+1);
+    exit(1);
+  }
 
   INFO("--- installing signal server\n");
 
@@ -286,7 +260,7 @@ INFO("--- started ----\n");
     fd[0] = atoi(argv[1]);
     fd[1] = atoi(argv[2]);
 
-INFO("--- configuring\n");
+    INFO("--- configuring\n");
 
     config();				/* configure events */
     execute_event(BUILTIN_STARTUP, NULL);	/* Startup event */
@@ -296,49 +270,49 @@ INFO("--- configuring\n");
 
     /* main loop */
 
-INFO("--- waiting\n");
+    INFO("--- waiting\n");
     while ( !isTerminated )
     {
-	if ((count = read(fd[1],header,
-			  HEADER_SIZE*sizeof(unsigned long))) <= 0)
-	    exit(0);
-/* if this read is interrrupted  EINTR, the wrong event is triggered !!! */
+      if ((count = read(fd[1],header,
+			HEADER_SIZE*sizeof(unsigned long))) <= 0)
+	exit(0);
+      /* if this read is interrrupted  EINTR, the wrong event is triggered !!! */
 
-	if( header[0] != START_FLAG )
-	    continue;	/* should find something better for resyncing */
+      if( header[0] != START_FLAG )
+	continue;	/* should find something better for resyncing */
 
-	/* Ignore events that occur during the delay period. */
-	now = time(0);
+      /* Ignore events that occur during the delay period. */
+      now = time(0);
 
-	/* junk the event body */
-	total=0;
-	remaining = (header[2] - HEADER_SIZE) * sizeof(unsigned long);
-	while (remaining)
-	{
-	    if((count=read(fd[1],&body[total],remaining)) < 0)
-		exit(0);
-	    remaining -= count;
-	    total +=count;
-	}
+      /* junk the event body */
+      total=0;
+      remaining = (header[2] - HEADER_SIZE) * sizeof(unsigned long);
+      while (remaining)
+      {
+	if((count=read(fd[1],&body[total],remaining)) < 0)
+	  exit(0);
+	remaining -= count;
+	total +=count;
+      }
 
-	if (now < last_time + audio_delay)
-	    continue;			/* quash event */
+      if (now < last_time + audio_delay)
+	continue;			/* quash event */
 
-	/*
-	 * event will equal the number of shifts in the
-	 * base-2 header[1] number.  Could use log here
-	 * but this should be fast enough.
-	 */
-	event = -1;
-	while (header[1])
-	{
-	    event++;
-	    header[1] >>= 1;
-	}
-	if (event < 0 || event >= MAX_MESSAGES)
-	    event=BUILTIN_UNKNOWN;
+      /*
+       * event will equal the number of shifts in the
+       * base-2 header[1] number.  Could use log here
+       * but this should be fast enough.
+       */
+      event = -1;
+      while (header[1])
+      {
+	event++;
+	header[1] >>= 1;
+      }
+      if (event < 0 || event >= MAX_MESSAGES)
+	event=BUILTIN_UNKNOWN;
 
-	execute_event(event, body);		/* execute action */
+      execute_event(event, body);		/* execute action */
     } /* while */
 
     execute_event(BUILTIN_SHUTDOWN, NULL);
@@ -353,33 +327,60 @@ INFO("--- waiting\n");
  *    execute_event - actually executes the actions from lookup table
  *
  **********************************************************************/
-int execute_event(short event, unsigned long *body)
+void execute_event(short event, unsigned long *body)
 {
-    static char buf[BUFSIZE];
-
 #ifdef HAVE_RPLAY
-    if (rplay_fd != -1)		/* this is the sign that rplay is used */
+
+  if (rplay_fd != -1)		/* this is the sign that rplay is used */
+  {
+    if (rplay_table[event])
     {
-	if (rplay_table[event])
-	    if (rplay(rplay_fd, rplay_table[event]) >= 0)
-		last_time = now;
-	    else
-		rplay_perror("rplay");
-	return 0;
-    } else	/* avoid invalid second execute */
-#endif
-    if (action_table[event])
-    {
-        if(PassID && (action_arg[event] != -1))
-          sprintf(buf,"%s %s %ld", cmd_line, action_table[event], body[action_arg[event]]);
-        else
-          sprintf(buf,"%s %s", cmd_line, action_table[event]);
-INFO(buf);
-INFO("\n");
-	SendText(fd,buf,0);		/* let fvwm2 execute the function */
-        last_time = now;
+      if (rplay(rplay_fd, rplay_table[event]) >= 0)
+	last_time = now;
+      else
+	rplay_perror("rplay");
     }
-    return 1;
+  }
+  else	/* avoid invalid second execute */
+#endif
+  if (action_table[event])
+  {
+    char *buf;
+    int len = 0;
+
+    len = strlen(cmd_line) + strlen(action_table[event]) + 32;
+    if (audio_play_dir)
+      len += strlen(audio_play_dir);
+    buf = (char *)safemalloc(len);
+    if (audio_compat)
+    {
+      /*
+       * Don't use audio_play_dir if it's NULL or if the sound file
+       * is an absolute pathname.
+       */
+      if (!audio_play_dir || audio_play_dir[0] == '\0' ||
+	  action_table[event][0] == '/')
+	sprintf(buf,"%s %s", cmd_line, action_table[event]);
+      else
+	sprintf(buf,"%s %s/%s &", cmd_line, audio_play_dir,
+		action_table[event]);
+      if(!system(buf))
+	last_time = now;
+    }
+    else
+    {
+      if(PassID && (event_table[event].action_arg != -1))
+	sprintf(buf,"%s %s %ld", cmd_line, action_table[event],
+		body[event_table[event].action_arg]);
+      else
+	sprintf(buf,"%s %s", cmd_line, action_table[event]);
+      INFO(buf);
+      INFO("\n");
+      SendText(fd,buf,0);		/* let fvwm2 execute the function */
+      last_time = now;
+    }
+    free(buf);
+  }
 }
 
 
@@ -392,133 +393,207 @@ INFO("\n");
 
 char *table[]=
 {
-    "Cmd",
-    "Delay",
-    "PassID",
-    "RplayHost",
-    "RplayPriority",
-    "RplayVolume"
-};	/* define entries here, if this list becomes unsorted, use LFindToken */
+  "Cmd",
+  "Delay",
+  "Dir",
+  "PassID",
+  "PlayCmd",
+  "RplayHost",
+  "RplayPriority",
+  "RplayVolume"
+}; /* define entries here, if this list becomes unsorted, use FindToken */
 
 
-void	config(void)
+void config(void)
 {
-    char *buf, *event, *action, *p, *q, **e;
-    int  i, found;
+  char *buf, *event, *action, *p, *token, **e;
+  int i;
+  int found;
 #ifdef HAVE_RPLAY
-    int	 volume   = RPLAY_DEFAULT_VOLUME,
-	 priority = RPLAY_DEFAULT_PRIORITY;
-    char host[128];
+  int volume   = RPLAY_DEFAULT_VOLUME;
+  int priority = RPLAY_DEFAULT_PRIORITY;
+  char host[128];
 
-    strcpy(host, rplay_default_host());
+  strcpy(host, rplay_default_host());
 #endif
 
-    /* Intialize all the actions */
+  /* Intialize all the actions */
 
-    for (i = 0; i < MAX_MESSAGES+MAX_BUILTIN; i++)
+  for (i = 0; i < MAX_MESSAGES+MAX_BUILTIN; i++)
+  {
+    action_table[i] = NULL;
+#ifdef HAVE_RPLAY
+    rplay_table[i] = NULL;
+#endif
+  }
+
+  while (GetConfigLine(fd,&buf), buf != NULL)
+  {
+    if (buf[strlen(buf)-1] == '\n')
     {
-	action_table[i] = NULL;
-#ifdef HAVE_RPLAY
-	rplay_table[i] = NULL;
-#endif
+      /* if line ends with newline, strip it off */
+      buf[strlen(buf)-1] = '\0';
     }
 
-    while (GetConfigLine(fd,&buf), buf != NULL)
+    /* Search for MyName (normally *FvwmEvent) */
+    if (strncasecmp(buf, MyName, MyNameLen) == 0)
     {
-        if (buf[strlen(buf)-1] == '\n') {     /* if line ends with newline */
-	  buf[strlen(buf)-1] = '\0';	/* strip off \n */
-        }
+      p = buf+MyNameLen;
+      INFO(buf);
+      INFO("\n");
+      if ((e = FindToken(p,table,char *))) /* config option ? */
+      {
+	p += strlen(*e);		/* skip matched token */
+	p = GetNextToken(p, &token);
 
-	/* Search for MyName (normally *FvwmAudio) */
-	if (strncasecmp(buf, MyName, MyNameLen) == 0)
+	switch (e - (char**)table)
 	{
-	    p = buf+MyNameLen;
-INFO(buf);
-INFO("\n");
-	    if ((e= FindToken(p,table,char *))) /* config option ? */
+	case 0:	       /* Cmd */
+	case 4:
+	  if (! audio_compat && e - (char**)table == 4) /* PlayCmd */
+	  {
+	    fprintf(stderr,
+		    "%s: PlayCmd supported only when invoked as FvwmAudio\n",
+		    MyName+1,MyName+1);
+	    break;
+	  }
+	  if (cmd_line)
+	    free(cmd_line);
+	  if (token)
+	  {
+	    cmd_line = (char *)safemalloc(strlen(token)+1);
+	    strcpy(cmd_line, token);
+	  }
+	  else
+	  {
+	    cmd_line = (char *)safemalloc(1);
+	    *cmd_line = 0;
+	  }
+	  INFO("cmd_line = ->");
+	  INFO(cmd_line);
+	  INFO("<-\n");
+	  break;
+
+	case 1:
+	  if (token)
+	    audio_delay = atoi(token);
+	  break; /* Delay */
+
+	case 2:
+	  if (! audio_compat)		       /* Dir */
+	    fprintf(stderr,
+		    "%s: Dir supported only when invoked as FvwmAudio\n",
+		    MyName+1,MyName+1);
+	  else
+	    if (token)
 	    {
-                p+=strlen(*e);		/* skip matched token */
-		p = GetNextSimpleOption( p, &q );
-
-		switch (e - (char**)table)
-		{
-		case 0: if (q) strcpy(cmd_line, q);	       /* Cmd */
-		        else *cmd_line='\0';
-INFO("cmd_line = ->");
-INFO(cmd_line);
-INFO("<-\n");
-                                                        break;
-		case 1: if (q) audio_delay = atoi(q);	break; /* Delay */
-		case 2: PassID = True;			break;
-#ifdef HAVE_RPLAY
-		case 3: if (q && (*q == '$'))		       /* RPlayHost */
-			{			 /* Check for $HOSTDISPLAY */
-			  char *c1= (char *)getenv(q+1), *c2= host;
-			  while (c1 && *c1 != ':')
-			    *c2++ = *c1++;
-			  *c2 = '\0';
-			}
-			else
-			  strcpy(host, q);
-		                                        break;
-		case 4: if (q) priority = atoi(q);	break; /* RplayPriority */
-		case 5: if (q) volume = atoi(q);	break; /* RplayVolume */
-#endif
-		}
+	      if (audio_play_dir)
+		free(audio_play_dir);
+	      if (token)
+	      {
+		audio_play_dir = (char *)safemalloc(strlen(token)+1);
+		strcpy(audio_play_dir, token);
+	      }
 	    }
-	    else  /* test for isspace(*p) ??? */
-	    {
-		p = GetNextSimpleOption( p, &event );
-		p = GetNextSimpleOption( p, &action );
 
-INFO(event);
-INFO("  ");
-INFO(action);
-INFO("\n");
-		if (!event || !*event || !action || !*action)
-		{
-		    fprintf(stderr,"%s: incomplete event definition %s\n",
-			    MyName+1, buf);
-		    continue;
-		}
-		for (found = 0,i = 0; !found && i < MAX_MESSAGES+MAX_BUILTIN;
-		     i++)
-	       {
-INFO(events[i]);
-INFO("\n");
+	  break;
 
-		    if (MatchToken(event, events[i]))
-		    {
+	case 3:
+	  PassID = True;
+	  break; /* PassID */
+
 #ifdef HAVE_RPLAY
-			rplay_table[i] = rplay_create(RPLAY_PLAY);
-			rplay_set(rplay_table[i], RPLAY_APPEND,
-				  RPLAY_SOUND,		action,
-				  RPLAY_PRIORITY,	priority,
-				  RPLAY_VOLUME,		volume,
-				  NULL);
+	case 5:
+	  if (token && (*token == '$'))		       /* RPlayHost */
+	  {			 /* Check for $HOSTDISPLAY */
+	    char *c1= (char *)getenv(token+1), *c2= host;
+	    while (c1 && *c1 != ':')
+	      *c2++ = *c1++;
+	    *c2 = '\0';
+	  }
+	  else
+	    strcpy(host, token);
+	  break;
+
+	case 6:
+	  if (token)
+	    priority = atoi(token);
+	  break; /* RplayPriority */
+
+	case 7:
+	  if (token)
+	    volume = atoi(token);
+	  break; /* RplayVolume */
 #endif
-			action_table[i]=action;
-			found=1;
-INFO("found\n");
-		    }
-	        }
-		if (!found) fprintf(stderr,"%s: unknown event type: %s\n",
-				    MyName+1, event);
-	    }
 	}
-/*else INFO("NO CONFIG\n");*/
+	if (token)
+	  free(token);
+      }
+      else  /* test for isspace(*p) ??? */
+      {
+	p = GetNextSimpleOption( p, &event );
+	p = GetNextSimpleOption( p, &action );
+
+	INFO(event);
+	INFO("  ");
+	INFO(action);
+	INFO("\n");
+	if (!event || !*event || !action || !*action)
+	{
+	  if (event)
+	    free(event);
+	  if (action)
+	    free(action);
+	  fprintf(stderr,"%s: incomplete event definition %s\n",
+		  MyName+1, buf);
+	  continue;
+	}
+	for (found = 0,i = 0; !found && i < MAX_MESSAGES+MAX_BUILTIN;
+	     i++)
+	{
+	  INFO(event_table[i].name);
+	  INFO("\n");
+
+	  if (MatchToken(event, event_table[i].name))
+	  {
+#ifdef HAVE_RPLAY
+	    rplay_table[i] = rplay_create(RPLAY_PLAY);
+	    rplay_set(rplay_table[i], RPLAY_APPEND,
+		      RPLAY_SOUND, action,
+		      RPLAY_PRIORITY, priority,
+		      RPLAY_VOLUME, volume,
+		      NULL);
+#endif
+	    if (action_table[i])
+	      free(action_table[i]);
+	    action_table[i]=action;
+	    found=1;
+	    INFO("found\n");
+	  }
+	}
+	if (!found)
+	{
+	  fprintf(stderr,"%s: unknown event type: %s\n", MyName+1, event);
+	  if (action)
+	    free(action);
+	}
+	if (event)
+	  free(event);
+      }
     }
+    /*else INFO("NO CONFIG\n");*/
+  }
 
 #ifdef HAVE_RPLAY
-    /*
-     * Builtin rplay support is enabled when FvwmAudioPlayCmd == builtin-rplay.
-     */
-    if (strcasecmp(cmd_line, "builtin-rplay") == 0)
-	if ((rplay_fd = rplay_open(host)) < 0)
-	{
-	    rplay_perror("rplay_open");
-	    exit(1);
-	}
+  /*
+   * Builtin rplay support is enabled when FvwmAudioPlayCmd == builtin-rplay.
+   */
+  if (StrEquals(cmd_line, "builtin-rplay"))
+    if ((rplay_fd = rplay_open(host)) < 0)
+    {
+      rplay_perror("rplay_open");
+      exit(1);
+    }
 #endif
 }
 

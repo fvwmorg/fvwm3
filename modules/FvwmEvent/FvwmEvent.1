@@ -3,23 +3,23 @@
 .TH FvwmEvent 1.0 "Apr 22 1998"
 .UC
 .SH NAME
-\fBFvwmEvent\fP \- the FVWM Event module
+\fIFvwmEvent\fP \- the FVWM Event module
 .SH SYNOPSIS
-\fBFvwmEvent\fP is a more versatile replacement for \fBFvwmAudio\fP.
-It can in general be used to hook any \fBfvwm2\fP function or program to any
+\fIFvwmEvent\fP is a more versatile replacement for \fIFvwmAudio\fP.
+It can in general be used to hook any \fIfvwm2\fP function or program to any
 window manager event. e.g: Delete unwanted netscape-popups or
 application error popups as they appear, play sounds, log events to a
 file and the like. Be creative, You'll find a use for it.
 
-\fBFvwmEvent\fP is spawned by \fBfvwm2(1)\fP, so no command line invocation will 
-work.  From within the \fI.fvwm2rc\fP file, \fBFvwmEvent\fP is spawned as 
+\fIFvwmEvent\fP is spawned by \fIfvwm2(1)\fP, so no command line invocation will
+work.  From within the \fI.fvwm2rc\fP file, \fIFvwmEvent\fP is spawned as
 follows:
 .nf
 .sp
-Module FvwmEvent 
+Module FvwmEvent
 .sp
 .fi
-or from within an \fBfvwm2\fP pop-up menu:
+or from within an \fIfvwm2\fP pop-up menu:
 .nf
 .sp
 DestroyMenu Module-Popup
@@ -33,39 +33,39 @@ AddToMenu Module-Popup "Modules"      Title
 .sp
 .fi
 .SH DESCRIPTION
-The \fBFvwmEvent\fP module communicates with the \fBfvwm2\fP window manager
+The \fIFvwmEvent\fP module communicates with the \fIfvwm2\fP window manager
 to bind \fIactions\fP to window manager \fIevents\fP.  Different actions
 may be assigned to distinct window manager events.
 
-\fBFvwmEvent\fP can be used to bind sound files to events like
-\fBFvwmAudio\fP (RiP) did. It can be used for logging event traces to
-a log file, while debugging \fBfvwm2\fP.
+\fIFvwmEvent\fP can be used to bind sound files to events like
+\fIFvwmAudio\fP (RiP) did. It can be used for logging event traces to
+a log file, while debugging \fIfvwm2\fP.
 
-\fBFvwmEvent\fP can also have builtin support for the rplay library.
+\fIFvwmEvent\fP can also have builtin support for the rplay library.
 (heritage of FvwmAudio)
 
 .SH CONFIGURATION OPTIONS
-\fBFvwmEvent\fP reads the same \fI.fvwm2rc\fP file as \fBfvwm2\fP
+\fIFvwmEvent\fP reads the same \fI.fvwm2rc\fP file as \fIfvwm2\fP
 reads when it starts up, and looks for certain configuration options:
 
 .IP "*FvwmEventCmd \fIcommand\fP"
-This determines the \fBfvwm2\fP function that is to be called with the
-event parameters.
-You might want to do one of the following (details below):
+This determines the \fIfvwm2\fP function that is to be called with the
+event parameters. You might want to do one of the following (details below):
 .nf
 .sp
-	*FvwmEventCmd \fIbuiltin-rplay\fP	
+	*FvwmEventCmd \fIbuiltin-rplay\fP
 				play sounds
 	*FvwmEventCmd
 				execute distinct fvwm2 functions
-	*FvwmEventCmd exec		
+	*FvwmEventCmd exec
 				execute distinct external programs
 .sp
 .fi
-This version of \fBFvwmEvent\fP has builtin \fBrplay\fP support which does not
+This version of \fIFvwmEvent\fP has builtin \fIrplay\fP support which does not
 need to invoke an external audio player to play sounds.  The rplay
-support is enabled when \fBFvwmEvent\fP is compiled with \fIHAVE_RPLAY\fP defined
-(see the Imakefile) and when \fBFvwmEventCmd\fP is set to \fIbuiltin-rplay\fP.
+support is enabled when \fIFvwmEvent\fP is compiled with \fIHAVE_RPLAY\fP
+defined and when \fIFvwmEventCmd\fP is set to \fIbuiltin-rplay\fP. See
+remarks below if \fIFvwmEvent\fP is invoked in FvwmAudio compatibility mode.
 
 For example:
 .nf
@@ -73,21 +73,21 @@ For example:
 	*FvwmEventCmd \fIbuiltin-rplay\fP
 	*FvwmEvent add_window drip.au
 
-rplay can be obtained via anonymous ftp at 
+rplay can be obtained via anonymous ftp at
 	<URL:ftp://ftp.sdsu.edu/pub/rplay>
 or	<URL:ftp://ftp.x.org/contrib/Event/rplay>
 .sp
 .fi
-\fBFvwmEvent\fP also has support for any other external program.
-e.g: the rsynth 'say' command: 
+\fIFvwmEvent\fP also has support for any other external program.
+e.g: the rsynth 'say' command:
 .nf
 .sp
-	*FvwmEventCmd /rsynth/say
+	*FvwmEventCmd Exec /rsynth/say
 	*FvwmEvent destroy_window "window closed"
 .sp
 .fi
-You can also use \fBfvwm2\fP's builtin \fIEcho\fP command as
-\fIFvwmEventCmd\fP to obtain debug output for \fBfvwm2\fP events quietly.
+You can also use \fIfvwm2\fP's builtin \fIEcho\fP command as
+\fIFvwmEventCmd\fP to obtain debug output for \fIfvwm2\fP events quietly.
 I used this setup to debug FvwmAuto:
 .nf
 .sp
@@ -96,7 +96,7 @@ I used this setup to debug FvwmAuto:
 	*FvwmEvent raise_window "raise window"
 .sp
 .fi
-You can even call different shell commands for each event just by setting 
+You can even call different shell commands for each event just by setting
 .nf
 .sp
 	*FvwmEventCmd exec
@@ -110,7 +110,7 @@ event refers to, new_desk will have the new desk number.
 
 
 .IP "*FvwmEvent \fIwindow-manager-event action-or-filename\fP"
-Binds particular actions to window manager events. 
+Binds particular actions to window manager events.
 .nf
 .sp
 e.g. for audio-events:
@@ -149,15 +149,15 @@ e.g. for audio-events:
 	*FvwmEvent dewindowshade beep.au
 .sp
 .fi
-Provided \fBfvwm2\fP supports it (not yet), there's an additional event to
-replace all \fBfvwm2\fP beeps with a sound:
+Provided \fIfvwm2\fP supports it (not yet), there's an additional event to
+replace all \fIfvwm2\fP beeps with a sound:
 .nf
 .sp
 	*FvwmEvent beep beep.au
 .sp
 .fi
 The toggle_paging event will be supported, as soon, as it's
-resurrected by \fBfvwm2\fP:
+resurrected by \fIfvwm2\fP:
 .nf
 .sp
 	*FvwmEvent toggle_paging fwop.au
@@ -173,8 +173,8 @@ disables the Event delay.
 
 .SH RPLAY OPTIONS
 The following options are only valid with builtin rplay support.
-i.e: when \fBFvwmEvent\fP was compiled with \fIHAVE_RPLAY\fP defined
-(see the Imakefile). They are used only if \fBFvwmEventCmd\fP is set
+i.e: when \fIFvwmEvent\fP was compiled with \fIHAVE_RPLAY\fP defined
+(see the Imakefile). They are used only if \fIFvwmEventCmd\fP is set
 to \fIbuiltin-rplay\fP.
 
 
@@ -192,15 +192,27 @@ played.
 
 .SH INVOCATION
 The invocation method was shown in the synopsis section. No command
-line invocation is possible. \fBFvwmEvent\fP must be invoked by the
-\fBfvwm2\fP window manager.
+line invocation is possible. \fIFvwmEvent\fP must be invoked by the
+\fIfvwm2\fP window manager. \fIFvwmEvents\fP accepts a single
+argument:
+
+.IP \-audio
+Enables FvwmAudio compatibility mode.
+
+.IP alias
+Makes FvwmEvent use \fIalias\fP as its name. This affects which lines
+from the user's configuration file are used.
+
+Invoking FvwmEvent as \fIFvwmAudio\fP (either by using an alias or
+creating a symlink) enables FvwmAudio compatibility mode.
+
 .sp
 
 .SH FvwmAudio Compatibility
 
 FvwmAudioPlayCmd used to call an external program.
-FvwmEventCmd calls an \fBfvwm2\fP function. External programs can be called
-using the \fBfvwm2\fP exec function "exec program".
+FvwmEventCmd calls an \fIfvwm2\fP function. External programs can be called
+using the \fIfvwm2\fP exec function "exec program".
 
 FvwmAudioDir has been removed due to the fact that the parameters
 don't have to be files any more.
@@ -214,7 +226,7 @@ use:
 .sp
 .fi
 .SH BUGS
-It's REALLY noisy when \fBfvwm2\fP starts and restarts using an audio player.
+It's REALLY noisy when \fIfvwm2\fP starts and restarts using an audio player.
 FvwmEventDelay helps a little bit.
 
 The parameters inherent to several events are not accessible. This
@@ -222,26 +234,42 @@ might be implemented in the future so that the command executed by
 fvwm2 looks like FvwmEventCmd FvwmEvent-parameters
 event-specific-parameters.
 
-Simple \fBFvwmAuto\fP could then be emulated by:
+Simple \fIFvwmAuto\fP could then be emulated by:
 .nf
 	*FvwmEventCmd
 	*FvwmEvent raise-window Raise
 .sp
 .fi
+.SH FvwmAudio Compatibility Mode
+
+When invoked in FvwmAudio compatibility mode (see above), FvwmEvent
+accepts the following options to provide backwards compatibility
+for FvwmAudio:
+
+.IP "*FvwmEventPlayCmd \fIcommand\fP"
+This is equivalent to using *FvwmEventCmd. This determines the
+independent audio player program that will actually play the sounds.
+If the play command is set to \fIbuiltin-rplay\fP then the builtin
+rplay support will be used.
+
+.IP "*FvwmAudioDir \fIdirectory\fP"
+Specifies the directory to look for the audio files.  This option is
+ignored when rplay is used.
+
 .SH COPYRIGHTS
-This module has evolved of \fBFvwmAudio\fP, which in term is heavily based
-on a similar Fvwm module called \fBFvwmSound\fP by Mark
-Boyns. \fBFvwmAudio\fP simply took Mark's original program and
+This module has evolved of \fIFvwmAudio\fP, which in term is heavily based
+on a similar Fvwm module called \fIFvwmSound\fP by Mark
+Boyns. \fIFvwmAudio\fP simply took Mark's original program and
 extended it to make it generic enough to work with any Audio
 player. Due to different requests to do specific things on specific events,
-\fBFvwmEvent\fP took this one step further and now calls any
-\fBfvwm2\fP function, or builtin-rplay. If \fBfvwm2\fP's Exec function
+\fIFvwmEvent\fP took this one step further and now calls any
+\fIfvwm2\fP function, or builtin-rplay. If \fIfvwm2\fP's Exec function
 is used, any external program can be called with any parameter.
 
 The concept for interfacing this module to the Window Manager, is
-original work by Robert Nation. 
+original work by Robert Nation.
 
-Copyright 1998 Albrecht Kadlec. 
+Copyright 1998 Albrecht Kadlec.
 Copyright 1994, Mark Boyns and Mark Scott.  No guarantees or
 warranties or anything are provided or implied in any way whatsoever.
 Use this program at your own risk.  Permission to use and modify this
@@ -253,5 +281,5 @@ program for any purpose is given, as long as the copyright is kept intact.
 .nf
 1994  FvwmSound  Mark Boyns       (\fIboyns@sdsu.edu\fP)
 1994  FvwmAudio  Mark Scott       (\fImscott@mcd.mot.com\fP)
-1996  FvwmAudio  Albrecht Kadlec  
+1996  FvwmAudio  Albrecht Kadlec
 1998  FvwmEvent  Albrecht Kadlec  (\fIalbrecht@auto.tuwien.ac.at\fP)

@@ -109,6 +109,7 @@ Pixel win_hi_fore_pix = -1;
 char fAlwaysCurrentDesk = 0;
 PagerStringList string_list = { NULL, 0, NULL, NULL, NULL };
 Bool is_transient = False;
+Bool error_occured = False;
 
 static volatile sig_atomic_t isTerminated = False;
 
@@ -370,6 +371,26 @@ void Loop(int *fd)
     {
       if(My_XNextEvent(dpy,&Event))
 	DispatchEvent(&Event);
+      if (error_occured)
+      {
+	Window root;
+	unsigned border_width, depth;
+	int x,y;
+
+	if(XGetGeometry(dpy,Scr.Pager_w,&root,&x,&y,
+			(unsigned *)&window_w,(unsigned *)&window_h,
+			&border_width,&depth)==0)
+	  {
+	    if (is_transient)
+	      {
+		XUngrabPointer(dpy,CurrentTime);
+		MyXUngrabServer(dpy);
+		XSync(dpy,0);
+	      }
+	    exit(0);
+	  }
+	error_occured = False;
+      }
     }
 }
 
@@ -498,7 +519,7 @@ void list_add(unsigned long *body)
   (*prev)->width = cfgpacket->frame_width;
   (*prev)->height = cfgpacket->frame_height;
   (*prev)->desk = cfgpacket->desk;
-  memcpy(&((*prev)->flags), &(cfgpacket->flags), sizeof(cfgpacket->flags)); 
+  memcpy(&((*prev)->flags), &(cfgpacket->flags), sizeof(cfgpacket->flags));
   (*prev)->title_height = cfgpacket->title_height;
   (*prev)->border_width = cfgpacket->border_width;
   (*prev)->icon_w = cfgpacket->icon_w;
@@ -549,7 +570,7 @@ void list_configure(unsigned long *body)
       t->frame_height = cfgpacket->frame_height;
       t->title_height = cfgpacket->title_height;
       t->border_width = cfgpacket->border_width;
-      memcpy(&(t->flags), &(cfgpacket->flags), sizeof(cfgpacket->flags)); 
+      memcpy(&(t->flags), &(cfgpacket->flags), sizeof(cfgpacket->flags));
       t->icon_w = cfgpacket->icon_w;
       t->icon_pixmap_w = cfgpacket->icon_pixmap_w;
 

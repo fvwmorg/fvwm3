@@ -1791,23 +1791,9 @@ void MoveWindow(XEvent *Event)
 XErrorHandler FvwmErrorHandler(Display *dpy, XErrorEvent *event)
 {
 #if 1
-  Window root;
-  unsigned border_width, depth;
-  int x,y;
+  extern Bool error_occured;
 
-  if(XGetGeometry(dpy,Scr.Pager_w,&root,&x,&y,
-		  (unsigned *)&window_w,(unsigned *)&window_h,
-		  &border_width,&depth)==0)
-    {
-      if (is_transient)
-	{
-	  XUngrabPointer(dpy,CurrentTime);
-	  MyXUngrabServer(dpy);
-	  XSync(dpy,0);
-	}
-      exit(0);
-    }
-
+  error_occured = True;
   return 0;
 #else
   /* really should just exit here... */

@@ -1,10 +1,33 @@
+1999-05-03  Dominik Vogt  <dominik_vogt@gmx.de>
+
+	* FvwmAudio/FvwmAudio.c (config): fixed coredump
+
+	* FvwmPager/x_pager.c (FvwmErrorHandler):
+	* FvwmPager/FvwmPager.c (Loop):
+	fix for lost xlib sequence
+
+	* FvwmEvent/FvwmEvent.1: updates for FvwmAudio compatibility
+
+	* FvwmEvent/FvwmEvent.c:
+	reindented code
+	some general clean up
+	various memory leak and coredump fixes
+
+	* FvwmEvent/FvwmEvent.c (execute_event):
+	cleaned up and fixed FvwmAudio compatbility fix
+
+1999-05-02  Michael Han  <mikehan@best.com>
+	* FvwmEvent/FvwmEvent.c: changes to main(), config(), and
+	execute_event() for FvwmAudio compatability, namely the
+	PlayCmd and Dir commands.
+
 Sat May  1 11:46:24 1999  Steve Robbins  <steve@nyongwa.montreal.qc.ca>
 
 	* */*: include libs/Module.h rather than fvwm/module.h.
 
 Sat May  1 02:35:19 1999  Steve Robbins  <steve@nyongwa.montreal.qc.ca>
 
-	* FvwmWinList/ButtonArray.c (INNER_MARGIN): 
+	* FvwmWinList/ButtonArray.c (INNER_MARGIN):
 	* FvwmScript/Widgets/TextField.c (dec): move #define to column 1.
 
 Sat May  1 01:52:25 1999  Steve Robbins  <steve@nyongwa.montreal.qc.ca>
@@ -20,8 +43,8 @@ Sat May  1 01:52:25 1999  Steve Robbins  <steve@nyongwa.montreal.qc.ca>
 
 Wed Apr 28 20:45:51 1999  Steve Robbins  <steve@nyongwa.montreal.qc.ca>
 
-	* FvwmRearrange/Makefile.am (FvwmCascade): 
-	* FvwmRearrange/Makefile.am (FvwmTile): 
+	* FvwmRearrange/Makefile.am (FvwmCascade):
+	* FvwmRearrange/Makefile.am (FvwmTile):
 	* FvwmForm/Makefile.am (FvwmTalk): force generation each time.
 
 1999-04-28  Hippo
@@ -31,8 +54,8 @@ Wed Apr 28 20:45:51 1999  Steve Robbins  <steve@nyongwa.montreal.qc.ca>
 
 1999-04-27  Steven Michael ROBBINS  <stever@jeff.cs.mcgill.ca>
 
-	* FvwmWharf/FvwmWharf.c (ParseOptions): 
-	* FvwmTaskBar/FvwmTaskBar.c (ParseConfigLine): 
+	* FvwmWharf/FvwmWharf.c (ParseOptions):
+	* FvwmTaskBar/FvwmTaskBar.c (ParseConfigLine):
 	* FvwmIconBox/FvwmIconBox.c (ParseOptions): fix off-by-one error
 	in copying the ImagePath config option.
 
@@ -46,22 +69,22 @@ Wed Apr 28 20:45:51 1999  Steve Robbins  <steve@nyongwa.montreal.qc.ca>
 
 	* FvwmGtk/FvwmGtk.1: document *FvwmGtkIconSize.
 
-	* FvwmGtk/FvwmGtk.c (menu_item_new_with_pixmap_and_label): 
+	* FvwmGtk/FvwmGtk.c (menu_item_new_with_pixmap_and_label):
 	optionally use imlib to load and scale images.
-	(icon_size): new function to implement the config command 
+	(icon_size): new function to implement the config command
 	*FvwmGtkIconSize.
 
-	* FvwmGtk/Makefile.am (GDK_IMLIB_CFLAGS): 
+	* FvwmGtk/Makefile.am (GDK_IMLIB_CFLAGS):
 	(GDK_IMLIB_LIBS): New variables for imlib support.
 
 1999-04-27  Matthias Clasen  <clasen@mathematik.uni-freiburg.de>
 
 	* FvwmGtk/FvwmGtk.c (parse_rc_file): new function to implement
-	the config command *FvwmGtkRCFile. 
+	the config command *FvwmGtkRCFile.
 
 	* FvwmGtk/FvwmGtk.1: document *FvwmGtkRCFile. Add a hint for
 	how to make FvwmGtk use GNOME themes.
-	
+
 1999-04-27  Bob Woodside <proteus@pcnet.com>
 
 	* FvwmWharf/FvwmWharf.c: Fixed off-by-two error in copying the
@@ -86,13 +109,13 @@ Mon Apr 26 12:20:54 1999  Steve Robbins  <steve@nyongwa.montreal.qc.ca>
 
 1999-04-26  Matthias Clasen  <clasen@pong.mathematik.uni-freiburg.de>
 
-	* FvwmGtk/FvwmGtk.c (menu_item_new_with_pixmap_and_label): 
+	* FvwmGtk/FvwmGtk.c (menu_item_new_with_pixmap_and_label):
 	dont use accel labels, since accelerators won't work anyway.
-	(convert_label_with_ampersand): 
+	(convert_label_with_ampersand):
 	(create_label_pattern): functions from gtkcauldron.c in the
 	gnome-libs package for dealing with underlined accelerators.
 	(get_menu_accel_group): function from gnome-app-helper.c in
-	the gnome-libs package.  
+	the gnome-libs package.
 	(menu_item_new_with_pixmap_and_label): use the "stolen" functions
 	above to implement keyboard navigation like in fvwms native menus.
 
@@ -101,9 +124,9 @@ Mon Apr 26 12:20:54 1999  Steve Robbins  <steve@nyongwa.montreal.qc.ca>
 Mon Apr 26 01:33:51 1999  Steve Robbins  <steve@nyongwa.montreal.qc.ca>
 
 	* FvwmTaskBar/Mallocs.h:
-	* FvwmScroll/FvwmScroll.h: 
-	* FvwmScroll/FvwmScroll.h: 
-	* FvwmIdent/FvwmIdent.h: 
+	* FvwmScroll/FvwmScroll.h:
+	* FvwmScroll/FvwmScroll.h:
+	* FvwmIdent/FvwmIdent.h:
 	* FvwmIconBox/FvwmIconBox.h: remove prototypes for CatString2 and
 	CopyString.  Both are now in libs.
 

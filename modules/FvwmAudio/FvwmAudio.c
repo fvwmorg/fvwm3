@@ -337,7 +337,7 @@ void	config(void)
 	      else  {
 		message = p;
 		p=strtok(NULL, "");	/* get rest of line */
-		sound = GetNextToken(p, &sound); /* extract next parameter */
+		GetNextToken(p, &sound); /* extract next parameter */
 
 		if (!message || !*message || !sound || !*sound)
 		  {
