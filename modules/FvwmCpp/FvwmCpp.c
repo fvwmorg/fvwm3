@@ -83,11 +83,21 @@ int main(int argc, char **argv)
   char *temp, *s;
   char *display_name = NULL;
   char *filename = NULL;
-  char *tmp_file, read_string[80],delete_string[80];
+  char *tmp_file;
   int i;
-  int cpp_debug = 0;
+  int debug = 0;
   int lock = 0;
   int noread = 0;
+  char *user_dir;
+
+  /* Figure out the working directory and go to it */
+  user_dir = getenv("FVWM_USERDIR");
+  if (user_dir != NULL)
+  {
+    if (chdir(user_dir) < 0)
+      fprintf(stderr, "%s: <<Warning>> chdir to %s failed in cpp_defs",
+	      MyName, user_dir);
+  }
 
   sprintf(cpp_options, "-I '%s' ", FVWM_DATADIR);
 
@@ -134,7 +144,7 @@ int main(int argc, char **argv)
       }
       else if(strcasecmp(argv[i], "-debug") == 0)
 	{
-	  cpp_debug = 1;
+	  debug = 1;
 	}
       else if(strcasecmp(argv[i], "-lock") == 0)
 	{
@@ -183,15 +193,15 @@ int main(int argc, char **argv)
 
   /* tell fvwm we're running if -lock is not used */
   if (!lock)
-  SendFinishedStartupNotification(fd);
+    SendFinishedStartupNotification(fd);
 
   tmp_file = cpp_defs(dpy, display_name,cpp_options, filename);
 
   if (!noread)
-    {
-  sprintf(read_string,"read %s\n",tmp_file);
-  SendInfo(fd,read_string,0);
-    }
+  {
+    char *read_string = CatString3("Read '", tmp_file, "'\n");
+    SendText(fd, read_string, 0);
+  }
 
   /* tell fvwm to continue if -lock is used */
   if (lock)
@@ -199,11 +209,18 @@ int main(int argc, char **argv)
 
   /* For a debugging version, we may wish to omit this part. */
   /* I'll let some cpp advocates clean this up */
-  if(!cpp_debug)
+  if (!debug)
+  {
+    char *delete_string;
+    char *delete_file = tmp_file;
+    if (tmp_file[0] != '/' && user_dir != NULL) 
     {
-      sprintf(delete_string,"exec rm %s\n",tmp_file);
-      SendInfo(fd,delete_string,0);
+      delete_file = strdup(CatString3(user_dir, "/", tmp_file));
     }
+    delete_string = CatString3("Exec exec /bin/rm '", delete_file, "'\n");
+    SendText(fd, delete_string, 0);
+  }
+
   return 0;
 }
 
@@ -224,15 +241,6 @@ static char *cpp_defs(Display *display, const char *host, char *cpp_options, cha
   int fd;
   int ScreenWidth, ScreenHeight;
   int Mscreen;
-  char *user_dir;
-
-  /* Figure out the wroking directory and go to it */
-  user_dir = getenv("FVWM_USERDIR");
-  if ( user_dir != NULL ) {
-    if ( chdir(user_dir) < 0 )
-      fprintf(stderr, "%s: <<Warning>> chdir to %s failed in m4_defs",
-	      MyName, user_dir);
-  }
 
   /* Generate a temporary filename.  Honor the TMPDIR environment variable,
      if set. Hope nobody deletes this file! */

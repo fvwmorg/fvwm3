@@ -87,12 +87,21 @@ int main(int argc, char **argv)
   char *temp, *s;
   char *display_name = NULL;
   char *filename = NULL;
-  char *tmp_file, read_string[80],delete_string[80];
+  char *tmp_file;
   int i;
-  int m4_debug = 0;
+  int debug = 0;
   int lock = 0;
   int noread = 0;
   char *user_dir;
+
+  /* Figure out the working directory and go to it */
+  user_dir = getenv("FVWM_USERDIR");
+  if (user_dir != NULL)
+  {
+    if (chdir(user_dir) < 0)
+      fprintf(stderr, "%s: <<Warning>> chdir to %s failed in m4_defs",
+	      MyName, user_dir);
+  }
 
   m4_enable = True;
   m4_prefix = False;
@@ -156,7 +165,7 @@ int main(int argc, char **argv)
 	}
       else if(strcasecmp(argv[i], "-debug") == 0)
 	{
-	  m4_debug = 1;
+	  debug = 1;
 	}
       else if(strcasecmp(argv[i], "-lock") == 0)
 	{
@@ -201,38 +210,31 @@ int main(int argc, char **argv)
   if (!lock)
     SendFinishedStartupNotification(fd);
 
-  /* Figure out the working directory and go to it */
-  user_dir = getenv("FVWM_USERDIR");
-  if ( user_dir != NULL ) {
-    if ( chdir(user_dir) < 0 )
-      fprintf(stderr, "%s: <<Warning>> chdir to %s failed in m4_defs",
-	      MyName, user_dir);
+  tmp_file = m4_defs(dpy, display_name,m4_options, filename);
+
+  if (!noread)
+  {
+    char *read_string = CatString3("Read '", tmp_file, "'\n");
+    SendText(fd, read_string, 0);
   }
 
-  tmp_file = m4_defs(dpy, display_name,m4_options, filename);
-  if (!noread)
-    {
-      sprintf(read_string,"read %s\n",tmp_file);
-      SendText(fd,read_string,0);
-    }
   /* tell fvwm to continue if -lock is used */
   if (lock)
     SendFinishedStartupNotification(fd);
 
   /* For a debugging version, we may wish to omit this part. */
   /* I'll let some m4 advocates clean this up */
-  if(!m4_debug)
+  if (!debug)
+  {
+    char *delete_string;
+    char *delete_file = tmp_file;
+    if (tmp_file[0] != '/' && user_dir != NULL) 
     {
-      if (tmp_file[0] != '/' && user_dir != NULL) 
-      {
-	sprintf(delete_string,"Exec /bin/rm %s/%s\n",user_dir,tmp_file);
-      }
-      else
-      {
-	sprintf(delete_string,"Exec /bin/rm %s\n",tmp_file);
-      }
-      SendText(fd,delete_string,0);
+      delete_file = strdup(CatString3(user_dir, "/", tmp_file));
     }
+    delete_string = CatString3("Exec exec /bin/rm '", delete_file, "'\n");
+    SendText(fd, delete_string, 0);
+  }
 
   return 0;
 }
