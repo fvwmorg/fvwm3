@@ -1,3 +1,8 @@
+2000-11-13  Mikhael Goikhman  <migo@homemail.com>
+
+	* Makefile.am:
+	replaced unportable $<
+
 2000-11-10  Mikhael Goikhman  <migo@homemail.com>
 
 	* make_fvwmdist.sh:
