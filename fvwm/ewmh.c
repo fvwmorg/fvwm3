@@ -16,22 +16,35 @@
  */
 
 /*
- * An partial implementation of the Extended Window Manager Hints specification
- * http://www.freedesktop.org/standards/wm-spec.html
+ * An implementation of the Extended Window Manager Hints specification
+ * http://freedesktop.org/Standards/wm-spec/
  *
- * Not Implemented (draft 1.3 - 2003-01-03):
+ * Not Implemented (draft 1.3 - 2004-05-01):
  *
- * _NET_DESKTOP_LAYOUT
- * _NET_SHOWING_DESKTOP
- *
- * Some _NET_WINDOW_TYPE:
+ * _NET_DESKTOP_LAYOUT        (not useful for us)
+ * _NET_VIRTUAL_ROOTS         (not useful at all for us)
+ * _NET_SHOWING_DESKTOP       should be implemented
+ * _NET_REQUEST_FRAME_EXTENTS may be implemented
+ * 
+ * Some _NET_WINDOW_TYPE are simply ignored:
  *         _NET_WM_WINDOW_TYPE_SPLASH
  *         _NET_WM_WINDOW_TYPE_UTILITIES
- *         _KDE_NET_WM_WINDOW_TYPE_OVERRIDE
+ *         _KDE_NET_WM_WINDOW_TYPE_OVERRIDE (deprecated)
+ *
+ * _NET_WM_STATE_DEMANDS_ATTENTION state
+ *
+ * _NET_WM_STRUT_PARTIAL      should be implemented
+ *
+ * _NET_WM_USER_TIME  can be used to decide if we give the focus to a newly
+ *                    mapped window
+ *                    
  *
  * The kill huge process protocol: _NET_WM_PID and _NET_WM_PING
  *
  * _NET_WM_HANDLED_ICONS (what to do? Nothing?)
+ *
+ * "Source indication in requests" is not used but can be useful with some
+ * "ignore styles"
  *
  * Problems:
  * - _NET_WM_WINDOW_TYPE_TOOLBAR is interpreted in a different way
@@ -109,6 +122,7 @@ ewmh_atom ewmh_atom_client_win[] =
 	ENTRY("_NET_ACTIVE_WINDOW",     XA_WINDOW,   ewmh_ActiveWindow),
 	ENTRY("_NET_CLOSE_WINDOW",      XA_WINDOW,   ewmh_CloseWindow),
 	ENTRY("_NET_MOVERESIZE_WINDOW", XA_WINDOW,   ewmh_MoveResizeWindow),
+	ENTRY("_NET_RESTACK_WINDOW",    XA_WINDOW,   ewmh_RestackWindow),
 	ENTRY("_NET_WM_DESKTOP",        XA_CARDINAL, ewmh_WMDesktop),
 	ENTRY("_NET_WM_MOVERESIZE",     XA_WINDOW,   ewmh_MoveResize),
 	ENTRY("_NET_WM_STATE",          XA_ATOM,     ewmh_WMState),
@@ -227,6 +241,7 @@ ewmh_atom ewmh_atom_fvwm_root[] =
 ewmh_atom ewmh_atom_fvwm_win[] =
 {
 	ENTRY("_KDE_NET_WM_FRAME_STRUT",    XA_CARDINAL, None),
+	ENTRY("_NET_FRAME_EXTENTS",         XA_CARDINAL, None),
 	ENTRY("_NET_WM_ALLOWED_ACTIONS",    XA_ATOM,     None),
 	ENTRY("_NET_WM_ICON_VISIBLE_NAME",  None,        None),
 	ENTRY("_NET_WM_VISIBLE_NAME",       None,        None),
@@ -1086,6 +1101,9 @@ void EWMH_SetFrameStrut(FvwmWindow *fwin)
 
 	ewmh_ChangeProperty(
 		FW_W(fwin), "_KDE_NET_WM_FRAME_STRUT", EWMH_ATOM_LIST_FVWM_WIN,
+		(unsigned char *)&val, 4);
+	ewmh_ChangeProperty(
+		FW_W(fwin), "_NET_FRAME_EXTENTS", EWMH_ATOM_LIST_FVWM_WIN,
 		(unsigned char *)&val, 4);
 }
 

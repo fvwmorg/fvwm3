@@ -1,5 +1,29 @@
 2004-05-01  Olivier Chapuis  <olivier.chapuis@free.fr>
 
+	* fvwm/ewmh.c (ewmh_atom_client_win): 
+	* fvwm/ewmh_intern.h:
+	* fvwm/ewmh_events.c (EWMH_ProcessClientMessage):
+	(ewmh_MoveResizeWindow):
+	Added _NET_RESTACK_WINDOW as it is similar than _NET_MOVERESIZE_WINDOW
+
+	* fvwm/events.c (__handle_cr_on_client):
+	(__handle_configure_request):
+	(events_handle_configure_request):
+	Some renaming for consistency, force restacking if the event come from
+	an ewmh restack
+
+	* fvwm/ewmh_events.c (ewmh_MoveResize):
+	Fixed _NET_WM_MOVERESIZE
+
+	* fvwm/ewmh_events.c (ewmh_MoveResizeWindow):
+	Removed debug code
+
+	* fvwm/ewmh.c (ewmh_atom_fvwm_win):
+	(EWMH_SetFrameStrut):
+	Added _NET_FRAME_EXTENTS as it is just _KDE_NET_WM_FRAME_STRUT
+
+2004-04-29  Olivier Chapuis  <olivier.chapuis@free.fr>
+
 	* libs/FImage.c (FShmSafeCreateImage):
 	Finished to fix SHM remote client problem
 

@@ -813,7 +813,7 @@ static inline int __merge_cr_moveresize(
 
 static inline int __handle_cr_on_client(
 	int *ret_do_send_event, XConfigureRequestEvent cre, const evh_args_t *ea,
-	FvwmWindow *fw, Bool force_use_grav)
+	FvwmWindow *fw, Bool force)
 {
 	rectangle new_g;
 	rectangle d_g;
@@ -918,7 +918,7 @@ static inline int __handle_cr_on_client(
 		/* for restoring */
 		fw->attr_backup.border_width = cre.border_width;
 	}
-	if (!force_use_grav && CR_MOTION_METHOD(fw) == CR_MOTION_METHOD_AUTO)
+	if (!force && CR_MOTION_METHOD(fw) == CR_MOTION_METHOD_AUTO)
 	{
 		__cr_detect_icccm_move(fw, &cre, &b);
 	}
@@ -926,7 +926,7 @@ static inline int __handle_cr_on_client(
 	{
 		/* nothing */
 	}
-	else if ((force_use_grav ||
+	else if ((force ||
 		  CR_MOTION_METHOD(fw) == CR_MOTION_METHOD_USE_GRAV) &&
 		 fw->hints.win_gravity != StaticGravity)
 	{
@@ -1079,7 +1079,7 @@ static inline int __handle_cr_on_client(
 
 void __handle_configure_request(
 	XConfigureRequestEvent cre, const evh_args_t *ea, FvwmWindow *fw,
-	Bool force_use_grav)
+	Bool force)
 {
 	int do_send_event = 0;
 	int cn_count = 0;
@@ -1106,11 +1106,11 @@ void __handle_configure_request(
 	if (fw != NULL && cre.window == FW_W(fw))
 	{
 		cn_count = __handle_cr_on_client(
-			&do_send_event, cre, ea, fw, force_use_grav);
+			&do_send_event, cre, ea, fw, force);
 	}
 	/* Stacking order change requested.  Handle this *after* geometry
 	 * changes, since we need the new geometry in occlusion calculations */
-	if ((cre.value_mask & CWStackMode) && !DO_IGNORE_RESTACK(fw))
+	if ((cre.value_mask & CWStackMode) && (!DO_IGNORE_RESTACK(fw) || force))
 	{
 		__handle_cr_restack(&do_send_event, &cre, fw);
 	}
@@ -3631,9 +3631,9 @@ void dispatch_event(XEvent *e)
 
 /* ewmh configure request */
 void events_handle_configure_request(
-	XConfigureRequestEvent cre, FvwmWindow *fw, Bool force_use_grav)
+	XConfigureRequestEvent cre, FvwmWindow *fw, Bool force)
 {
-	__handle_configure_request(cre, NULL, fw, force_use_grav);
+	__handle_configure_request(cre, NULL, fw, force);
 }
 
 void HandleEvents(void)

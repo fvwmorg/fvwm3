@@ -140,11 +140,26 @@ int ewmh_MoveResizeWindow(EWMH_CMD_ARGS)
 	cre.width = ev->xclient.data.l[3];
 	cre.height = ev->xclient.data.l[4];
 	cre.window = ev->xclient.window;
-#if 1
-	fprintf(stderr, "_NET_MOVERESIZE_WINDOW: %i,%i,%i,%i,%i (%s)\n",
-		cre.x, cre.y, cre.width, cre.height, (int)cre.value_mask,
-		(fwin)? fwin->name.name:"unmanaged");
-#endif
+
+	events_handle_configure_request(cre, fwin, True);
+	
+	return 0;
+}
+
+int ewmh_RestackWindow(EWMH_CMD_ARGS)
+{
+	XConfigureRequestEvent cre;
+	
+	if (ev == NULL)
+	{
+		return 0;
+	}
+
+	cre.value_mask = CWSibling | CWStackMode;
+	cre.above = ev->xclient.data.l[1];
+	cre.detail = ev->xclient.data.l[2];
+	cre.window = ev->xclient.window;
+
 	events_handle_configure_request(cre, fwin, True);
 	
 	return 0;
@@ -277,7 +292,6 @@ int ewmh_MoveResize(EWMH_CMD_ARGS)
 		break;
 	case _NET_WM_MOVERESIZE_MOVE_KEYBOARD:
 	case _NET_WM_MOVERESIZE_MOVE:
-		x_warp = 50; y_warp = 50; /* why not */
 		move = True;
 		break;
 	default:
@@ -299,8 +313,12 @@ int ewmh_MoveResize(EWMH_CMD_ARGS)
 		}
 	}
 
-	sprintf(cmd, "WarpToWindow %i %i",x_warp,y_warp);
-	execute_function_override_window(NULL, NULL, cmd, 0, fwin);
+	if (!move)
+	{
+		sprintf(cmd, "WarpToWindow %i %i",x_warp,y_warp);
+		execute_function_override_window(NULL, NULL, cmd, 0, fwin);
+	}
+
 	if (move)
 	{
 		execute_function_override_window(
@@ -1404,8 +1422,9 @@ Bool EWMH_ProcessClientMessage(const exec_context_t *exc)
 		return False;
 	}
 
-	/* this one is special: we can get it on an unamaged window */
-	if (StrEquals(ewmh_a->name, "_NET_MOVERESIZE_WINDOW"))
+	/* these one are special: we can get it on an unamaged window */
+	if (StrEquals(ewmh_a->name, "_NET_MOVERESIZE_WINDOW") ||
+	    StrEquals(ewmh_a->name, "_NET_RESTACK_WINDOW"))
 	{
 		ewmh_a->action(fwin, ev, NULL, 0);
 		return True;

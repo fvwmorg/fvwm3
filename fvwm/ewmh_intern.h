@@ -117,6 +117,7 @@ int ewmh_NumberOfDesktops(EWMH_CMD_ARGS);
 int ewmh_ActiveWindow(EWMH_CMD_ARGS);
 int ewmh_CloseWindow(EWMH_CMD_ARGS);
 int ewmh_MoveResizeWindow(EWMH_CMD_ARGS);
+int ewmh_RestackWindow(EWMH_CMD_ARGS);
 int ewmh_WMDesktop(EWMH_CMD_ARGS);
 int ewmh_MoveResize(EWMH_CMD_ARGS);
 
