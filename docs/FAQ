@@ -1775,6 +1775,13 @@ A: This problem might occur on other applications besides the one
      looks like with dtwm, but I suspect it's quite close to
      all MWWM=MWM.
 
+   Next we had Klaus Zeitler report that the Rational Rose official
+   startup script is explictly setting ALLWM to nothing.  This makes
+   it more difficult for an individual user to set this variable.
+   If you can, you can just modify the script, otherwise, your other
+   alternative is to copy the script somewhere where you can modify it
+   and run it from there.
+
 ----------------------------------------------------------------------
 
 5.15  Although I use the WIndowListSkip style for my modules they
