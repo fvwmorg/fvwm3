@@ -1,3 +1,8 @@
+2002-05-05  olicha  <olivier.chapuis@free.fr>
+
+	* FvwmIdent/FvwmIdent.c (MakeList):
+	Fixed ewmh init state
+
 2002-05-02  olicha  <olivier.chapuis@free.fr>
 
 	* FvwmTaskBar/ButtonArray.c (ButtonDraw):

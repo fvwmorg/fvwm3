@@ -1,3 +1,4 @@
+
 /* This module, and the entire NoClutter program, and the concept for
  * interfacing this module to the Window Manager, are all original work
  * by Robert Nation and Nobutaka Suzuki <nobuta-s@is.aist-nara.ac.jp>
@@ -107,6 +108,7 @@ static struct Item* itemlistRoot = NULL;
 static int max_col1, max_col2;
 static char id[15], desktop[10], swidth[10], sheight[10], borderw[10];
 static char geometry[30], mymin_aspect[11], max_aspect[11], layer[10];
+static char ewmh_init_state[512];
 
 /* FIXME: default layer should be received from fvwm */
 #define default_layer 4
@@ -1118,46 +1120,35 @@ void MakeList(void)
     AddToList("EWMH Window Type:","ToolBar");
 
   /* EWMH wm state */
-  {
-    char ewmh_init_state[512] = "";
-    Bool add_to_list = False;
-
-
+    ewmh_init_state[0] = '\0';
     if (HAS_EWMH_INIT_FULLSCREEN_STATE(targ) == EWMH_STATE_HAS_HINT)
     {
       strcat(ewmh_init_state, "FullScreen ");
-      add_to_list = True;
     }
     if (HAS_EWMH_INIT_HIDDEN_STATE(targ) == EWMH_STATE_HAS_HINT)
     {
       strcat(ewmh_init_state, "Iconic ");
-      add_to_list = True;
     }
     if (HAS_EWMH_INIT_MAXHORIZ_STATE(targ) == EWMH_STATE_HAS_HINT)
     {
       strcat(ewmh_init_state, "MaxHoriz ");
-      add_to_list = True;
     }
     if (HAS_EWMH_INIT_MAXVERT_STATE(targ) == EWMH_STATE_HAS_HINT)
     {
       strcat(ewmh_init_state, "MaxVert ");
-      add_to_list = True;
     }
     if (HAS_EWMH_INIT_MODAL_STATE(targ) == EWMH_STATE_HAS_HINT)
     {
       strcat(ewmh_init_state, "Modal ");
-      add_to_list = True;
     }
     if (HAS_EWMH_INIT_SHADED_STATE(targ)== EWMH_STATE_HAS_HINT)
     {
       strcat(ewmh_init_state, "Shaded ");
-      add_to_list = True;
     }
     if (HAS_EWMH_INIT_SKIP_PAGER_STATE(targ) == EWMH_STATE_HAS_HINT ||
 	HAS_EWMH_INIT_SKIP_TASKBAR_STATE(targ) == EWMH_STATE_HAS_HINT )
     {
       strcat(ewmh_init_state, "SkipList ");
-      add_to_list = True;
     }
     if (HAS_EWMH_INIT_STICKY_STATE(targ) == EWMH_STATE_HAS_HINT ||
 	(HAS_EWMH_INIT_WM_DESKTOP(targ) ==  EWMH_STATE_HAS_HINT &&
@@ -1165,26 +1156,23 @@ void MakeList(void)
 	 target.ewmh_hint_desktop == 0xFFFFFFFF)))
     {
       strcat(ewmh_init_state, "Sticky ");
-      add_to_list = True;
     }
     if (target.ewmh_hint_layer > 0)
     {
       strcat(ewmh_init_state, "StaysOnTop ");
-      add_to_list = True;
     }
     if (HAS_EWMH_INIT_WM_DESKTOP(targ) == EWMH_STATE_HAS_HINT &&
 	target.ewmh_hint_desktop < 256)
     {
       strcat(ewmh_init_state, "StartOnDesk");
-      sprintf(ewmh_init_state, "%s %lu",
+      sprintf(ewmh_init_state, "%s %lu ",
 	      ewmh_init_state, target.ewmh_hint_desktop);
-      add_to_list = True;
     }
-    if (add_to_list)
+    if (ewmh_init_state[0] != '\0')
     {
-      /* should remove ending space */
+      /* remove ending space */
+      ewmh_init_state[strlen(ewmh_init_state)-1] = '\0';
       AddToList("EWMH Init State:",ewmh_init_state);
     }
-  }
 
 }

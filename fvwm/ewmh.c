@@ -1257,6 +1257,7 @@ void EWMH_DestroyWindow(FvwmWindow *fwin)
 void EWMH_WindowDestroyed(void)
 {
   EWMH_SetClientList();
+  EWMH_SetClientListStacking();
   if (ewmhc.NeedsToCheckDesk)
     EWMH_SetNumberOfDesktops();
   ewmh_ComputeAndSetWorkArea();
