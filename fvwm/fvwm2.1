@@ -45,7 +45,7 @@
 fvwm2 \- F(?) Virtual Window Manager (version 2) for X11
 .SH SYNOPSIS
 
-.BI "fvwm2 [\-blackout] [\-clientId " id "] [\-cmd " config_command "] [\-d " displayname "] [\-debug] [\-f " config_file "] [\-h] [\-replace] [\-restore] [\-s] [\-version] [\-visual " "visual class" "] [\-visualId " id "]"
+.BI "fvwm2 [\-blackout] [\-clientId " id "] [\-cmd " config_command "] [\-d " displayname "] [\-debug] [\-f " config_file "] [\-h] [\-replace] [\-restore " state_file "] [\-s] [\-version] [\-visual " "visual class" "] [\-visualId " id "]"
 
 .SH DESCRIPTION
 
@@ -117,10 +117,7 @@ This option is provided for backward compatibility only.  Blacking out
 the screen during startup is not necessary anymore.
 .TP
 .BI "-clientId " id
-This options is used when fvwm is restarted by means of the
-.B Restart
-command or by the session manager.  This option is ignored if fvwm
-was compiled without session management.
+This option is used when fvwm is restarted by the session manager.
 .TP
 .BI "-cmd " config_command
 Causes fvwm to use
@@ -162,10 +159,8 @@ unless the other wm is
 .SM ICCCM
 2.0 compliant.
 .TP
-.BI "-restore"
-This option is used when fvwm is restarted by means of the
-.B Restart
-command or by the session manager.
+.BI "-restore " state_file
+This option is used when fvwm is restarted by the session manager.
 .TP
 .BI "-s"
 On a multi-screen display, run fvwm only on the screen named in the
@@ -6364,7 +6359,7 @@ but it does not save any window states over the restart.
 
 Without this option,
 .B Restart preserves most per-window state by writing it to a file named
-.I .fs-restart
+.I .fs-restart-$HOSTDISPLAY
 in the user's home directory.
 
 .TP

@@ -590,7 +590,7 @@ int main(int argc, char **argv)
   }
 
   restart_state_filename =
-    strdup(CatString2(user_home_dir, "/.fs-restart"));
+    strdup(CatString3(user_home_dir, "/.fs-restart-", getenv("HOSTDISPLAY")));
   if (!state_filename && Restarting)
     state_filename = restart_state_filename;
 
