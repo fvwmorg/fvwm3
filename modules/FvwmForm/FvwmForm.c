@@ -84,6 +84,7 @@
 
 #include "libs/Module.h"                /* for headersize, etc. */
 #include "libs/fvwmlib.h"
+#include "libs/fvwmsignal.h"
 
 #include <libs/Picture.h>               /* for InitPictureCMap */
 
@@ -103,7 +104,7 @@ static void ReadFormData();
 static char *CopyQuotedString (char *cp)
 {
   char *dp, *bp, c;
-  bp = dp = (char *)malloc(strlen(cp) + 1);
+  bp = dp = (char *)safemalloc(strlen(cp) + 1);
   while (1) {
     switch (c = *(cp++)) {
     case '\\':
@@ -126,7 +127,7 @@ static char *CopyQuotedString (char *cp)
 static char *CopySolidString (char *cp)
 {
   char *dp, *bp, c;
-  bp = dp = (char *)malloc(strlen(cp) + 1);
+  bp = dp = (char *)safemalloc(strlen(cp) + 1);
   while (1) {
     c = *(cp++);
     if (c == '\\') {
@@ -374,7 +375,7 @@ static void ct_Message(char *cp) {
      to the correct DrawTable. */
   AssignDrawTable(item);
   item->header.name = "FvwmMessage";    /* No purpose to this? dje */
-  item->text.value = malloc(80);        /* point at last error recvd */
+  item->text.value = safemalloc(80);    /* point at last error recvd */
   item->text.n = 80;
   strcpy(item->text.value,"A mix of chars. MM20"); /* 20 mixed width chars */
   item->header.size_x = (XTextWidth(item->header.dt_ptr->dt_font_struct,
@@ -569,11 +570,11 @@ static void ct_Input(char *cp) {
     } /* end var not set */
 #endif
   } /* end env var */
-  item->input.blanks = (char *)malloc(item->input.size);
+  item->input.blanks = (char *)safemalloc(item->input.size);
   for (j = 0; j < item->input.size; j++)
     item->input.blanks[j] = ' ';
   item->input.buf = strlen(item->input.init_value) + 1;
-  item->input.value = (char *)malloc(item->input.buf);
+  item->input.value = (char *)safemalloc(item->input.buf);
 
   item->header.size_x = FontWidth(item->header.dt_ptr->dt_font_struct)
     * item->input.size + 2 * TEXT_SPC + 2 * BOX_SPC;
@@ -664,9 +665,9 @@ static void PutDataInForm(char *cp) {
   do {
     if (strcasecmp(var_name,item->header.name) == 0) {
       var_len = strlen(cp);
-      item->input.init_value = malloc(var_len+1); /* leak! */
+      item->input.init_value = safemalloc(var_len+1); /* leak! */
       strcpy(item->input.init_value,cp); /* new initial value in field */
-      item->input.value = malloc(var_len+1); /* leak! */
+      item->input.value = safemalloc(var_len+1); /* leak! */
       strcpy(item->input.value,cp);     /* new value in field */
       /* New value, but don't change length */
     }
@@ -1443,23 +1444,31 @@ static void am_Stop(char *cp) {
 }
 
 /* main event loop */
-static void MainLoop ()
+static void MainLoop (void)
 {
   fd_set fds;
 
-  while (1) {
+  while ( !isTerminated ) {
     FD_ZERO(&fds);
     FD_SET(Channel[1], &fds);
     FD_SET(fd_x, &fds);
 
     XFlush(dpy);
-    if (select(32, SELECT_FD_SET_CAST &fds, NULL, NULL, NULL) > 0) {
+    if (fvwmSelect(32, &fds, NULL, NULL, NULL) > 0) {
       if (FD_ISSET(Channel[1], &fds))
 	ReadFvwm();
       if (FD_ISSET(fd_x, &fds))
 	ReadXServer();
     }
   }
+}
+
+
+/* signal-handler to make the application quit */
+static RETSIGTYPE
+TerminateHandler(int sig)
+{
+  fvwmSetTerminate(sig);
 }
 
 
@@ -1496,7 +1505,39 @@ int main (int argc, char **argv)
             MyName+1);
     exit(1);
   }
-  signal (SIGPIPE, DeadPipe);		/* Dead pipe == Fvwm died */
+
+#ifdef HAVE_SIGACTION
+  {
+    struct sigaction  sigact;
+
+#ifdef SA_INTERRUPT
+    sigact.sa_flags = SA_INTERRUPT;
+#else
+    sigact.sa_flags = 0;
+#endif
+    sigemptyset(&sigact.sa_mask);
+    sigaddset(&sigact.sa_mask, SIGTERM);
+    sigaddset(&sigact.sa_mask, SIGPIPE);
+    sigaddset(&sigact.sa_mask, SIGINT);
+    sigact.sa_handler = TerminateHandler;
+
+    sigaction(SIGPIPE, &sigact, NULL);
+    sigaction(SIGTERM, &sigact, NULL);
+    sigaction(SIGINT, &sigact, NULL);
+  }
+#else
+#ifdef USE_BSD_SIGNALS
+  fvwmSetSignalMask( sigmask(SIGPIPE) | sigmask(SIGTERM) | sigmask(SIGINT) );
+#endif
+  signal(SIGPIPE, TerminateHandler);  /* Dead pipe == Fvwm died */
+  signal(SIGTERM, TerminateHandler);
+  signal(SIGINT, TerminateHandler);
+#ifdef HAVE_SIGINTERRUPT
+  siginterrupt(SIGPIPE, 1);
+  siginterrupt(SIGTERM, 1);
+  siginterrupt(SIGINT, 1);
+#endif
+#endif
 
   Channel[0] = atoi(argv[1]);
   Channel[1] = atoi(argv[2]);
@@ -1544,8 +1585,9 @@ int main (int argc, char **argv)
   OpenWindows();                        /* create initial window */
   MainLoop();                           /* start */
 
-  exit (0);                             /* Never going to get here ! */
+  return 0;                             /* */
 }
+
 
 void DeadPipe(int nonsense) {
   exit(0);

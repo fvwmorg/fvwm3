@@ -23,10 +23,6 @@
 
 #include <stdio.h>
 #include <unistd.h>
-#include <signal.h>
-#if HAVE_SYS_SELECT_H
-#include <sys/select.h>
-#endif
 
 #include <X11/Xlib.h>
 
