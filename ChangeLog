@@ -1,3 +1,7 @@
+1999-04-08  Hippo
+
+	* fvwm/fvwm.c: sticky_grey_pixmap initialised for mono screens
+
 1999-04-07  Dominik Vogt  <dominik_vogt@gmx.de>
 
 	* fvwm/functions.c:

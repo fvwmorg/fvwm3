@@ -110,12 +110,9 @@ static char g_bits[] = {0x02, 0x01};
 #define l_g_height 2
 static char l_g_bits[] = {0x08, 0x02};
 
-#if 0
-/* code unused */
 #define s_g_width 4
 #define s_g_height 4
 static char s_g_bits[] = {0x01, 0x02, 0x04, 0x08};
-#endif
 
 #ifdef SHAPE
 int ShapeEventBase, ShapeErrorBase;
@@ -570,6 +567,11 @@ int main(int argc, char **argv)
     Scr.light_gray_pixmap =
       XCreatePixmapFromBitmapData(dpy,Scr.NoFocusWin,l_g_bits,l_g_width,
                                   l_g_height,Scr.StdColors.fore,
+				  Scr.StdColors.back,
+                                  Scr.depth);
+    Scr.sticky_gray_pixmap =
+      XCreatePixmapFromBitmapData(dpy,Scr.NoFocusWin,s_g_bits,s_g_width,
+                                  s_g_height,Scr.StdColors.fore,
 				  Scr.StdColors.back,
                                   Scr.depth);
   }
