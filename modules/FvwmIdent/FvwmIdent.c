@@ -23,9 +23,6 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#define YES "Yes"
-#define NO  "No"
-
 #include "config.h"
 
 #include <stdio.h>
@@ -54,47 +51,52 @@
 
 #include "libs/Module.h"
 #include "libs/Picture.h"
+#include "libs/Colorset.h"
 #include "FvwmIdent.h"
 
-char *MyName;
-fd_set_size_t fd_width;
-int fd[2];
+static char *MyName;
+static fd_set_size_t fd_width;
+static int fd[2];
 
-Display *dpy;			/* which display are we talking to */
-Window Root;
-GC gc;
-XFontStruct *font;
+static Display *dpy;			/* which display are we talking to */
+static Window Root;
+static GC gc;
+static XFontStruct *font;
 #ifdef I18N_MB
-XFontSet fontset;
+static XFontSet fontset;
 #endif
 
-int screen;
-int x_fd;
-int ScreenWidth, ScreenHeight;
+static int screen;
+static int x_fd;
+static int ScreenWidth, ScreenHeight;
 
-char *BackColor = "white";
-char *ForeColor = "black";
-char *font_string = "fixed";
+static char *yes = "Yes";
+static char *no = "No";
 
-Pixel fore_pix;
-Window main_win;
-Window app_win;
+/* default colorset to use, set to -1 when explicitly setting colors */
+static int colorset = 0;
 
-int Width, Height,win_x,win_y;
+static char *BackColor = "white";
+static char *ForeColor = "black";
+static char *font_string = "fixed";
+
+static Pixel fore_pix;
+static Window main_win;
+static Window app_win;
 
 #define MW_EVENTS   (ExposureMask | ButtonReleaseMask | KeyReleaseMask)
 
 static Atom wm_del_win;
 
-struct target_struct target;
-int found=0;
+static struct target_struct target;
+static int found=0;
 
 static int ListSize=0;
 
-struct Item* itemlistRoot = NULL;
-int max_col1, max_col2;
-char id[15], desktop[10], swidth[10], sheight[10], borderw[10], geometry[30];
-char mymin_aspect[11], max_aspect[11];
+static struct Item* itemlistRoot = NULL;
+static int max_col1, max_col2;
+static char id[15], desktop[10], swidth[10], sheight[10], borderw[10];
+static char geometry[30], mymin_aspect[11], max_aspect[11];
 
 /***********************************************************************
  *
@@ -152,6 +154,8 @@ int main(int argc, char **argv)
   Root = RootWindow(dpy, screen);
 
   InitPictureCMap(dpy);
+  /* prevent core dumps if fvwm doesn't provide any colorsets */
+  AllocColorset(0);
 
   ScreenHeight = DisplayHeight(dpy,screen);
   ScreenWidth = DisplayWidth(dpy,screen);
@@ -172,9 +176,17 @@ int main(int argc, char **argv)
       }
       else if(strncasecmp(tline,CatString3(MyName,"Fore",""), Clength+4)==0) {
         CopyString(&ForeColor,&tline[Clength+4]);
+        colorset = -1;
       }
       else if(strncasecmp(tline,CatString3(MyName, "Back",""), Clength+4)==0) {
         CopyString(&BackColor,&tline[Clength+4]);
+        colorset = -1;
+      }
+      else if(strncasecmp(tline,CatString3(MyName,"Colorset",""),Clength+8)==0){
+        sscanf(&tline[Clength+8], "%d", &colorset);
+      }
+      else if(strncasecmp(tline, "Colorset", 8) == 0){
+        LoadColorset(&tline[8]);
       }
     }
     GetConfigLine(fd,&tline);
@@ -462,9 +474,14 @@ void list_end(void)
   change_window_name(&MyName[1]);
 
   gcm = GCForeground|GCFont;
-  gcv.foreground = fore_pix;
+  gcv.foreground = (colorset < 0) ? fore_pix
+				  : Colorset[colorset % nColorsets].fg;
   gcv.font = font->fid;
   gc = XCreateGC(dpy, main_win, gcm, &gcv);
+
+  if (colorset >= 0)
+    SetWindowBackground(dpy, main_win, mysizehints.width, mysizehints.height,
+			&Colorset[(colorset % nColorsets)], Pdepth, gc);
 
   XMapWindow(dpy,main_win);
 
@@ -472,7 +489,6 @@ void list_end(void)
   /* also grok any dynamic config changes */
   while(1) {
     FvwmPacket* packet;
-    int body_count;
     int x_fd = XConnectionNumber(dpy);
     fd_set fdset;
 
@@ -503,28 +519,24 @@ void list_end(void)
     /* wait for X-event or config line */
     select( fd_width, SELECT_FD_SET_CAST &fdset, NULL, NULL, NULL );
 
-    /* parse any config lines */
+    /* parse any dynamic config lines */
     if (FD_ISSET(fd[1], &fdset)) {
-      char *tline;
+      char *tline, *token;
 
-      packet = ReadFvwmPacket( fd[1] );
-      if ( packet && packet->type == M_CONFIG_INFO ) {
+      packet = ReadFvwmPacket(fd[1]);
+      if (packet && packet->type == M_CONFIG_INFO ) {
 	tline = (char*)&(packet->body[3]);
-
-	/* For whatever reason CONFIG_INFO packets start with three
-	   (unsigned long) zeros.  Skip the zeros and any whitespace that
-	   follows */
-	body_count = FvwmPacketBodySize(*packet) * sizeof(unsigned long);
-
-	while ( body_count > 0 && isspace(*tline) ) {
-	  tline++;
-	  --body_count;
+	tline = GetNextToken(tline, &token);
+	if (StrEquals(token, "Colorset")) {
+	  /* track all colorset changes and update display if necessary */
+	  if (LoadColorset(tline) == colorset) {
+	    XSetForeground(dpy, gc, Colorset[colorset % nColorsets].fg);
+	    SetWindowBackground(dpy, main_win, mysizehints.width,
+				mysizehints.height,
+				&Colorset[colorset % nColorsets], Pdepth, gc);
+	  }
 	}
-
-	/* this is where dynamic colorset changing happens
-	   SetWindowBackground(dpy, main_win, mysizehints.width,
-	   mysizehints.height, G->bg, G->depth, G->foreGC);
-	*/
+	free(token);
       }
     }
   }
@@ -689,11 +701,11 @@ void MakeList(void)
   AddToList("X (current page):",   xstr);
   AddToList("Y (current page):",   ystr);
   AddToList("Boundary Width:", borderw);
-  AddToList("Sticky:",        (target.flags & STICKY 	? YES : NO));
-  AddToList("Ontop:",         (target.flags & ONTOP  	? YES : NO));
-  AddToList("NoTitle:",       (target.flags & TITLE  	? NO : YES));
-  AddToList("Iconified:",     (target.flags & ICONIFIED ? YES : NO));
-  AddToList("Transient:",     (target.flags & TRANSIENT ? YES : NO));
+  AddToList("Sticky:",        (target.flags & STICKY 	? yes : no));
+  AddToList("Ontop:",         (target.flags & ONTOP  	? yes : no));
+  AddToList("NoTitle:",       (target.flags & TITLE  	? no : yes));
+  AddToList("Iconified:",     (target.flags & ICONIFIED ? yes : no));
+  AddToList("Transient:",     (target.flags & TRANSIENT ? yes : no));
 
   switch(target.gravity)
     {

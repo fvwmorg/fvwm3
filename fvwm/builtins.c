@@ -1612,15 +1612,24 @@ static void ApplyDefaultFontAndColors(void)
 
 void HandleColorset(F_CMD_ARGS)
 {
-  int n = LoadColorset(action);
+  int n = -1, ret;
+  char *token;
 
-  if (-1 == n)
+  GetNextToken(action, &token);
+  ret = sscanf(token, "%d", &n);
+  free(token);
+  
+  if ((ret == 0) || (n < 0))
     return;
-  if (0 != n) {
+
+  if (n) {
+    LoadColorset(action);
     BroadcastColorset(n);
-  } else
+  } else {
+    LoadColorsetAndFree(action);
     /* This broadcasts Colorset 0 */
     ApplyDefaultFontAndColors();
+  }
 }
 
 

@@ -28,6 +28,7 @@
 
 #include "libs/fvwmlib.h"
 #include "libs/Colorset.h"
+#include "libs/Picture.h"
 
 /* globals */
 colorset_struct *Colorset = NULL;
@@ -80,7 +81,7 @@ char *DumpColorset(unsigned int n) {
 /*****************************************************************************
  * LoadColorset() takes a strings and stuffs it into the array
  *****************************************************************************/
-int LoadColorset(char *line) {
+static int LoadColorsetConditional(char *line, Bool free) {
   colorset_struct *cs;
   unsigned int n, chars;
   Pixel fg, bg, hilite, shadow;
@@ -96,6 +97,19 @@ int LoadColorset(char *line) {
     return -1;
   AllocColorset(n);
   cs = &Colorset[n];
+  if (free) {
+    if (cs->fg != fg) {
+      XFreeColors(Pdpy, Pcmap, &cs->fg, 1, 0);
+    }
+    if (cs->bg != bg) {
+      XFreeColors(Pdpy, Pcmap, &cs->bg, 1, 0);
+      XFreeColors(Pdpy, Pcmap, &cs->hilite, 1, 0);
+      XFreeColors(Pdpy, Pcmap, &cs->shadow, 1, 0);
+    }
+    if (cs->pixmap && (cs->pixmap != pixmap)) {
+      XFreePixmap(Pdpy, cs->pixmap);
+    }
+  }
   cs->fg = fg;
   cs->bg = bg;
   cs->hilite = hilite;
@@ -107,6 +121,12 @@ int LoadColorset(char *line) {
   cs->stretch_y = stretch_y;
   cs->keep_aspect = keep_aspect;
   return n;
+}
+inline int LoadColorset(char *line) {
+  return LoadColorsetConditional(line, False);
+}
+inline int LoadColorsetAndFree(char *line) {
+  return LoadColorsetConditional(line, True);
 }
 
 /* sets a window background from a colorset

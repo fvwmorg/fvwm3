@@ -45,7 +45,8 @@ colorset_struct *AllocColorset(unsigned int n);
 /* dump one */
 char *DumpColorset(unsigned int n);
 /* load one */
-int LoadColorset(char *line);
+inline int LoadColorset(char *line);
+inline int LoadColorsetAndFree(char *line);
 
 void SetWindowBackground(Display *dpy, Window win, int width, int height,
 			 colorset_struct *colorset, unsigned int depth, GC gc);

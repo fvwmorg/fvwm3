@@ -1840,12 +1840,14 @@ int FvwmErrorHandler(Display *dpy, XErrorEvent *event)
   extern int last_event_type;
 
   /* some errors are acceptable, mostly they're caused by
-   * trying to update a lost  window */
+   * trying to update a lost  window or free'ing another modules colors */
   if((event->error_code == BadWindow)||(event->request_code == X_GetGeometry)||
      (event->error_code==BadDrawable)||(event->request_code==X_SetInputFocus)||
      (event->request_code==X_GrabButton)||
      (event->request_code==X_ChangeWindowAttributes)||
-     (event->request_code == X_InstallColormap))
+     (event->request_code == X_InstallColormap) ||
+     (event->request_code == X_FreePixmap) ||
+     (event->request_code == X_FreeColors))
     return 0;
 
   fvwm_msg(ERR,"FvwmErrorHandler","*** internal error ***");

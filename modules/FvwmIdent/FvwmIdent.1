@@ -51,12 +51,16 @@ FvwmIdent at start-up time, you probably don't want to.
 FvwmIdent reads the same .fvwmrc file as fvwm reads when it starts up,
 and looks for lines as listed below:
 
+.IP "*FvwmIdentColorset \fIn\fP"
+Tells the module to use colorset \fIn\fP. See FvwmTheme.
+
 .IP "*FvwmIdentFore \fIcolor\fP"
-Tells the module to use \fIcolor\fP instead of black for text.
+Tells the module to use \fIcolor\fP instead of black for text. Switches off the
+Colorset option.
 
 .IP "*FvwmIdentBack \fIcolor\fP"
 Tells the module to use \fIcolor\fP instead of white for the window
-background.
+background. Switches off the Colorset option.
 
 .IP "*FvwmIdentFont \fIfontname\fP"
 Tells the module to use \fIfontname\fP instead of fixed for text.

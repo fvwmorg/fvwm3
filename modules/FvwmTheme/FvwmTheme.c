@@ -146,7 +146,7 @@ static void parse_config_line(char *line) {
     break;
   case 2:
     /* got a colorset config line from fvwm, maybe Defaultcolors: load it */
-    LoadColorset(rest);
+    LoadColorsetAndFree(rest);
     break;
   case 3:
     parse_colorset(rest);

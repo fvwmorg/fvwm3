@@ -51,6 +51,7 @@
 #include "screen.h"
 #include "module_interface.h"
 #include "libs/Picture.h"
+#include "libs/Colorset.h"
 
 extern unsigned long *PipeMask;                /* in module.c */
 
@@ -176,6 +177,7 @@ void SendDataToModule(XEvent *eventp,Window w,FvwmWindow *tmp_win,
   char *message, msg2[32];
   char *match;                          /* matching criteria for module cmds */
   int match_len = 0;                    /* get length once for efficiency */
+  int n = nColorsets;
   char *ImagePath = GetImagePath();
 
   GetNextToken(action, &match);
@@ -183,6 +185,7 @@ void SendDataToModule(XEvent *eventp,Window w,FvwmWindow *tmp_win,
     match_len = strlen(match);
   }
 
+  /* send ImagePath and ColorLimit first */
   if (ImagePath && strlen(ImagePath))
   {
     message=safemalloc(strlen(ImagePath)+12);
@@ -196,6 +199,10 @@ void SendDataToModule(XEvent *eventp,Window w,FvwmWindow *tmp_win,
     SendName(*Module,M_CONFIG_INFO,0,0,0,msg2);
   }
 #endif
+  /* now dump the colorsets (in reverse order to minimize mallocing lots */
+  while (n--)
+    SendName(*Module, M_CONFIG_INFO, 0, 0, 0, DumpColorset(n));
+
   /* Dominik Vogt (8-Nov-1998): Scr.ClickTime patch to set ClickTime to
    * 'not at all' during InitFunction and RestartFunction. */
   sprintf(msg2,"ClickTime %d\n", (Scr.ClickTime < 0) ?

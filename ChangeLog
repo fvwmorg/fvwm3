@@ -1,3 +1,11 @@
+1999-07-20  Hippo
+
+	* fvwm/builtins.c: Fixed color leak with FvwmTheme.
+	* fvwm/fvwm.c: ignore errors with XFreeColors.
+	* fvwm/modconf.c: Colorsets sent out with module config.
+	* libs/Colorset.c: Fixed color leaks.
+	* modules/FvwmIdent/*: New config option *FvwmIdentColorset
+
 1999-07-16  Hippo
 
 	* configure.in: New module FvwmTheme.
