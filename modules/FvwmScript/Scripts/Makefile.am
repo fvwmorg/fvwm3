@@ -17,3 +17,5 @@ FvwmScript-Setup95: FvwmScript-Setup95.in
 	rm -f $@
 	sed -e 's,xFVWM_DATADIRx,$(FVWM_DATADIR),' -e 's,xPERLx,$(PERL),' -e 's,xFVWM_IMAGEPATHx,$(FVWM_IMAGEPATH),' $(top_srcdir)/modules/FvwmScript/Scripts/FvwmScript-Setup95.in > $@-t
 	mv $@-t $@
+
+CLEANFILES = FvwmScript-Setup95
