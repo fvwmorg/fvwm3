@@ -19,6 +19,7 @@
 void SetBorder (FvwmWindow *, Bool,int,Bool, Window);
 void RedrawBorder (FvwmWindow *, Bool,int,Bool, Window);
 void SetTitleBar(FvwmWindow *, Bool,Bool);
+void SetupTitleBar(FvwmWindow *tmp_win, int w, int h);
 void SetupFrame(FvwmWindow *,int,int,int,int,Bool,Bool);
 void ForceSetupFrame(FvwmWindow *,int,int,int,int,Bool,Bool);
 void SetShape(FvwmWindow *, int);

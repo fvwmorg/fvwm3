@@ -78,6 +78,7 @@ static char  *button_states[MaxButtonState]={
 #endif
 };
 
+
 /***********************************************************************
  *
  *  WindowShade -- shades or unshades a window (veliaa@rpi.edu)
@@ -98,8 +99,10 @@ static char  *button_states[MaxButtonState]={
 void WindowShade(F_CMD_ARGS)
 {
   int h;
+  int ph;
   int y;
   int fy;
+  int dy = 0;
   int step = 1;
   int old_h;
   int new_y;
@@ -141,9 +144,9 @@ void WindowShade(F_CMD_ARGS)
 
   if ((IS_SHADED(tmp_win)) && toggle == 0)
   {
+    XLowerWindow(dpy, tmp_win->decor_w);
     /* unshade window */
     SET_SHADED(tmp_win, 0);
-    XRaiseWindow(dpy, tmp_win->Parent);
     if (IS_MAXIMIZED(tmp_win))
       new_height = tmp_win->maximized_g.height;
     else
@@ -158,7 +161,18 @@ void WindowShade(F_CMD_ARGS)
 
     if (Scr.shade_anim_steps != 0)
     {
+      if (HAS_BOTTOM_TITLE(tmp_win))
+      {
+	dy = tmp_win->frame_g.height - new_height;
+	XResizeWindow(dpy, tmp_win->Parent,
+		      tmp_win->frame_g.width - 2 * tmp_win->boundary_width, 1);
+	XMoveResizeWindow(
+	  dpy, tmp_win->decor_w, 0, dy, tmp_win->frame_g.width, new_height);
+	SetupTitleBar(tmp_win, tmp_win->frame_g.width, new_height);
+        SetBorder(tmp_win, tmp_win->frame_g.width, True, True, None);
+      }
       h = tmp_win->title_g.height+tmp_win->boundary_width;
+      ph = 0;
       if (do_scroll)
         XMoveWindow(dpy, tmp_win->w, 0, - (new_height-h));
       y = h - new_height;
@@ -168,31 +182,36 @@ void WindowShade(F_CMD_ARGS)
       {
         XMoveResizeWindow(
 	  dpy, tmp_win->frame, tmp_win->frame_g.x, fy, tmp_win->frame_g.width,
-	  h);
-        XResizeWindow(dpy, tmp_win->decor_w, tmp_win->frame_g.width, h);
+	  h + ((HAS_BOTTOM_TITLE(tmp_win)) ? tmp_win->boundary_width : 0));
+	if (HAS_BOTTOM_TITLE(tmp_win))
+	  XMoveWindow(dpy, tmp_win->decor_w, 0, dy);
+	else
+	  XResizeWindow(dpy, tmp_win->decor_w, tmp_win->frame_g.width, h);
         XResizeWindow(dpy, tmp_win->Parent,
-                      tmp_win->frame_g.width - 2 * tmp_win->boundary_width,
-                      max(h - 2 * tmp_win->boundary_width
-                          - tmp_win->title_g.height, 1));
+		      tmp_win->frame_g.width - 2 * tmp_win->boundary_width,
+                      max(ph, 1));
         if (do_scroll)
           XMoveWindow(dpy, tmp_win->w, 0, y);
         tmp_win->frame_g.height = h;
-        /* way too flickery
-        SetBorder(tmp_win, tmp_win == Scr.Hilite, True, True, tmp_win->decor_w);
-        */
-        BroadcastConfig(M_CONFIGURE_WINDOW, tmp_win);
         FlushOutputQueues();
         XSync(dpy, 0);
         h += step;
+	ph += step;
         y += step;
+	dy += step;
 	if (HAS_BOTTOM_TITLE(tmp_win))
 	  fy -= step;
       }
       tmp_win->frame_g.height = old_h;
       XMoveWindow(dpy, tmp_win->w, 0, 0);
+      if (HAS_BOTTOM_TITLE(tmp_win))
+	XMoveWindow(dpy, tmp_win->decor_w, 0, 0);
     }
     SetupFrame(tmp_win, tmp_win->frame_g.x, new_y, tmp_win->frame_g.width,
 	       new_height, True, False);
+    tmp_win->frame_g.y = new_y;
+    tmp_win->frame_g.height = new_height;
+    BroadcastConfig(M_CONFIGURE_WINDOW, tmp_win);
     BroadcastPacket(M_DEWINDOWSHADE, 3, tmp_win->w, tmp_win->frame,
                     (unsigned long)tmp_win);
   }
@@ -211,39 +230,44 @@ void WindowShade(F_CMD_ARGS)
     if (Scr.shade_anim_steps != 0)
     {
       h = tmp_win->frame_g.height;
+      ph = h - new_height;
       y = 0;
       old_h = tmp_win->frame_g.height;
       while (h > tmp_win->title_g.height + 2 * tmp_win->boundary_width)
       {
 	if (do_scroll)
 	  XMoveWindow(dpy, tmp_win->w, 0, y);
+        XResizeWindow(dpy, tmp_win->Parent,
+                      tmp_win->frame_g.width - 2 * tmp_win->boundary_width,
+                      max(ph, 1));
+	if (HAS_BOTTOM_TITLE(tmp_win))
+	  XMoveWindow(dpy, tmp_win->decor_w, 0, y);
         XMoveResizeWindow(
 	  dpy, tmp_win->frame, tmp_win->frame_g.x,
 	  tmp_win->frame_g.y - ((HAS_BOTTOM_TITLE(tmp_win)) ? y : 0),
 	  tmp_win->frame_g.width, h);
-        XResizeWindow(dpy, tmp_win->frame, tmp_win->frame_g.width, h);
-        XResizeWindow(dpy, tmp_win->decor_w, tmp_win->frame_g.width, h);
-        XResizeWindow(dpy, tmp_win->Parent,
-                      tmp_win->frame_g.width - 2 * tmp_win->boundary_width,
-                      max(h - 2 * tmp_win->boundary_width
-                          - tmp_win->title_g.height, 1));
         tmp_win->frame_g.height = h;
-        /* way too flickery
-	SetBorder(tmp_win, tmp_win == Scr.Hilite, True, True, tmp_win->decor_w);
-        */
-        BroadcastConfig(M_CONFIGURE_WINDOW, tmp_win);
         FlushOutputQueues();
         XSync(dpy, 0);
+	ph -= step;
         h -= step;
         y -= step;
       }
       tmp_win->frame_g.height = old_h;
       if (do_scroll)
         XMoveWindow(dpy, tmp_win->w, 0, 0);
+      if (HAS_BOTTOM_TITLE(tmp_win))
+	XMoveWindow(dpy, tmp_win->decor_w, 0, 0);
     }
-    XRaiseWindow(dpy, tmp_win->decor_w);
     SetupFrame(tmp_win, tmp_win->frame_g.x, new_y, tmp_win->frame_g.width,
 	       new_height, False, False);
+    XResizeWindow(dpy, tmp_win->Parent,
+		  tmp_win->frame_g.width - 2 * tmp_win->boundary_width,
+		  1);
+    XRaiseWindow(dpy, tmp_win->decor_w);
+    tmp_win->frame_g.y = new_y;
+    tmp_win->frame_g.height = new_height;
+    BroadcastConfig(M_CONFIGURE_WINDOW, tmp_win);
     BroadcastPacket(M_WINDOWSHADE, 3, tmp_win->w, tmp_win->frame,
                     (unsigned long)tmp_win);
   }

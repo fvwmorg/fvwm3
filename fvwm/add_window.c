@@ -485,7 +485,9 @@ void setup_frame_window(
     valuemask = (valuemask & ~CWBackPixel) | CWBackPixmap;
   }
 #endif
-  pattributes->event_mask = (ExposureMask | VisibilityChangeMask);
+  pattributes->event_mask =
+    (ExposureMask | VisibilityChangeMask | ButtonPressMask |
+     ButtonReleaseMask);
   /* decor window, parent of all decorative subwindows */
   tmp_win->decor_w = XCreateWindow(dpy, tmp_win->frame, 0, 0,
 				   tmp_win->frame_g.width,

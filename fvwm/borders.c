@@ -41,6 +41,7 @@
 #include "Module.h"
 #include "borders.h"
 #include "module_interface.h"
+#include "window_flags.h"
 
 #ifdef SHAPE
 #include <X11/extensions/shape.h>
@@ -1091,6 +1092,69 @@ void SetTitleBar (FvwmWindow *t,Bool onoroff, Bool NewTitle)
 }
 
 
+void SetupTitleBar(FvwmWindow *tmp_win, int w, int h)
+{
+  XWindowChanges xwc;
+  unsigned long xwcm;
+  int i;
+
+  xwcm = CWWidth | CWX | CWY | CWHeight;
+  tmp_win->title_g.x = tmp_win->boundary_width+
+    (Scr.nr_left_buttons)*tmp_win->title_g.height;
+  if(tmp_win->title_g.x >=  w - tmp_win->boundary_width)
+    tmp_win->title_g.x = -10;
+  if (HAS_BOTTOM_TITLE(tmp_win))
+  {
+    tmp_win->title_g.y =
+      h - tmp_win->boundary_width - tmp_win->title_g.height;
+  }
+  else
+  {
+    tmp_win->title_g.y = tmp_win->boundary_width;
+  }
+
+  xwc.width = tmp_win->title_g.width;
+  xwc.height = tmp_win->title_g.height;
+  xwc.x = tmp_win->title_g.x;
+  xwc.y = tmp_win->title_g.y;
+  XConfigureWindow(dpy, tmp_win->title_w, xwcm, &xwc);
+
+  xwcm = CWX | CWY | CWHeight | CWWidth;
+  xwc.height = tmp_win->title_g.height;
+  xwc.width = tmp_win->title_g.height;
+  xwc.y = tmp_win->title_g.y;
+  xwc.x = tmp_win->boundary_width;
+  for(i=0;i<Scr.nr_left_buttons;i++)
+  {
+    if(tmp_win->left_w[i] != None)
+    {
+      if(xwc.x + tmp_win->title_g.height < w-tmp_win->boundary_width)
+	XConfigureWindow(dpy, tmp_win->left_w[i], xwcm, &xwc);
+      else
+      {
+	xwc.x = -tmp_win->title_g.height;
+	XConfigureWindow(dpy, tmp_win->left_w[i], xwcm, &xwc);
+      }
+      xwc.x += tmp_win->title_g.height;
+    }
+  }
+
+  xwc.x=w-tmp_win->boundary_width;
+  for(i=0;i<Scr.nr_right_buttons;i++)
+  {
+    if(tmp_win->right_w[i] != None)
+    {
+      xwc.x -= tmp_win->title_g.height;
+      if(xwc.x > tmp_win->boundary_width)
+	XConfigureWindow(dpy, tmp_win->right_w[i], xwcm, &xwc);
+      else
+      {
+	xwc.x = -tmp_win->title_g.height;
+	XConfigureWindow(dpy, tmp_win->right_w[i], xwcm, &xwc);
+      }
+    }
+  }
+}
 
 /***********************************************************************
  *
@@ -1174,62 +1238,7 @@ void SetupFrame(FvwmWindow *tmp_win,int x,int y,int w,int h,Bool sendEvent,
 
     if (HAS_TITLE(tmp_win))
     {
-      xwcm = CWWidth | CWX | CWY | CWHeight;
-      tmp_win->title_g.x = tmp_win->boundary_width+
-        (left)*tmp_win->title_g.height;
-      if(tmp_win->title_g.x >=  w - tmp_win->boundary_width)
-        tmp_win->title_g.x = -10;
-      if (HAS_BOTTOM_TITLE(tmp_win))
-      {
-	tmp_win->title_g.y =
-	  h - tmp_win->boundary_width - tmp_win->title_g.height;
-      }
-      else
-      {
-	tmp_win->title_g.y = tmp_win->boundary_width;
-      }
-
-      xwc.width = tmp_win->title_g.width;
-      xwc.height = tmp_win->title_g.height;
-      xwc.x = tmp_win->title_g.x;
-      xwc.y = tmp_win->title_g.y;
-      XConfigureWindow(dpy, tmp_win->title_w, xwcm, &xwc);
-
-      xwcm = CWX | CWY | CWHeight | CWWidth;
-      xwc.height = tmp_win->title_g.height;
-      xwc.width = tmp_win->title_g.height;
-      xwc.y = tmp_win->title_g.y;
-      xwc.x = tmp_win->boundary_width;
-      for(i=0;i<Scr.nr_left_buttons;i++)
-      {
-        if(tmp_win->left_w[i] != None)
-        {
-          if(xwc.x + tmp_win->title_g.height < w-tmp_win->boundary_width)
-            XConfigureWindow(dpy, tmp_win->left_w[i], xwcm, &xwc);
-          else
-          {
-            xwc.x = -tmp_win->title_g.height;
-            XConfigureWindow(dpy, tmp_win->left_w[i], xwcm, &xwc);
-          }
-          xwc.x += tmp_win->title_g.height;
-        }
-      }
-
-      xwc.x=w-tmp_win->boundary_width;
-      for(i=0;i<Scr.nr_right_buttons;i++)
-      {
-        if(tmp_win->right_w[i] != None)
-        {
-          xwc.x -=tmp_win->title_g.height;
-          if(xwc.x > tmp_win->boundary_width)
-            XConfigureWindow(dpy, tmp_win->right_w[i], xwcm, &xwc);
-          else
-          {
-            xwc.x = -tmp_win->title_g.height;
-            XConfigureWindow(dpy, tmp_win->right_w[i], xwcm, &xwc);
-          }
-        }
-      }
+      SetupTitleBar(tmp_win, w, h);
     }
 
     if(HAS_BORDER(tmp_win))
@@ -1361,7 +1370,8 @@ void SetupFrame(FvwmWindow *tmp_win,int x,int y,int w,int h,Bool sendEvent,
     client_event.xconfigure.window = tmp_win->w;
 
     client_event.xconfigure.x = x + tmp_win->boundary_width;
-    client_event.xconfigure.y = y + tmp_win->title_g.height+
+    client_event.xconfigure.y =
+      y + ((HAS_BOTTOM_TITLE(tmp_win)) ? 0 : tmp_win->title_g.height) +
       tmp_win->boundary_width;
     client_event.xconfigure.width = w-2*tmp_win->boundary_width;
     client_event.xconfigure.height =h-2*tmp_win->boundary_width -
@@ -1420,11 +1430,10 @@ void SetShape(FvwmWindow *tmp_win, int w)
     {
       XRectangle rect;
 
-      XShapeCombineShape (dpy, tmp_win->frame, ShapeBounding,
-			  tmp_win->boundary_width,
-			  tmp_win->title_g.height+tmp_win->boundary_width,
-			  tmp_win->w,
-			  ShapeBounding, ShapeSet);
+      XShapeCombineShape(
+	dpy, tmp_win->frame, ShapeBounding, tmp_win->boundary_width,
+	((HAS_BOTTOM_TITLE(tmp_win)) ? 0 : tmp_win->title_g.height) +
+	tmp_win->boundary_width, tmp_win->w, ShapeBounding, ShapeSet);
       if (tmp_win->title_w)
 	{
 	  /* windows w/ titles */

@@ -1754,7 +1754,8 @@ void HandleConfigureRequest(void)
     if (cre->value_mask & CWX)
       x = cre->x - Tmp_win->boundary_width;
     if (cre->value_mask & CWY)
-      y = cre->y - Tmp_win->boundary_width - Tmp_win->title_g.height;
+      y = cre->y - Tmp_win->boundary_width -
+	((HAS_BOTTOM_TITLE(Tmp_win)) ? 0 : Tmp_win->title_g.height);
     if (cre->value_mask & CWWidth)
       width = cre->width + 2*Tmp_win->boundary_width;
 
@@ -1902,8 +1903,9 @@ void HandleConfigureRequest(void)
       client_event.xconfigure.window = Tmp_win->w;
 
       client_event.xconfigure.x = Tmp_win->frame_g.x + Tmp_win->boundary_width;
-      client_event.xconfigure.y = Tmp_win->frame_g.y + Tmp_win->title_g.height+
-	Tmp_win->boundary_width;
+      client_event.xconfigure.y =
+	Tmp_win->frame_g.y + Tmp_win->boundary_width +
+	((HAS_BOTTOM_TITLE(Tmp_win)) ? 0 : Tmp_win->title_g.height);
       client_event.xconfigure.width = width-2*Tmp_win->boundary_width;
       client_event.xconfigure.height = height-2*Tmp_win->boundary_width -
 	Tmp_win->title_g.height;

@@ -684,8 +684,8 @@ int PlaceWindow(FvwmWindow *tmp_win, style_flags *sflags, int Desk, int PageX,
           - tmp_win->old_bw - 2*tmp_win->boundary_width;
         Scr.randomx = 0;
       }
-      if(tmp_win->frame_g.y + 2*tmp_win->boundary_width+tmp_win->title_g.height
-         + tmp_win->frame_g.height > PageBottom)
+      if(tmp_win->frame_g.y + 2*tmp_win->boundary_width +
+	 tmp_win->title_g.height + tmp_win->frame_g.height > PageBottom)
       {
         tmp_win->attr.y = PageBottom -tmp_win->attr.height
           - tmp_win->old_bw - tmp_win->title_g.height -

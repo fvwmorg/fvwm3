@@ -1,5 +1,29 @@
 1999-11-15  Dominik Vogt  <dominik.vogt@gmx.de>
 
+	* fvwm/move_resize.c (AnimatedMoveAnyWindow):
+	(moveLoop):
+	(Maximize):
+	* fvwm/borders.c (SetupFrame):
+	(SetShape):
+	* fvwm/events.c (HandleConfigureRequest):
+	fixed bottom title bugs
+
+	* fvwm/builtins.c (WindowShade):
+	Worked *very* hard to reduce flickering with animated shading bottom
+	titles. It can't be completely suppressed without tremendous efforts.
+
+	* fvwm/borders.c (SetupTitleBar):
+	code to place buttons and title bar moved to a separate function.
+
+	* fvwm/builtins.c (WindowShade):
+	fixed screwed animation of windowshading in pager by disabling it.
+
+	* fvwm/add_window.c (setup_frame_window):
+	fixed accessing the border of windows without handles.
+
+	* fvwm/menus.c (menuShortcuts):
+	fixed xhift-meta-tab, shift-tab bindings
+
 	* fvwm/fvwm2.1:
 	ispell session
 

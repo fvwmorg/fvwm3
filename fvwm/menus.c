@@ -1071,8 +1071,8 @@ static void menuShortcuts(MenuRoot *mr, MenuReturn *pmret, XEvent *event,
       {
       case 1:
       case 3:
-	/* meta-tab, shift-tab */
-	items_to_move = 1;
+	/* shift-meta-tab, shift-tab */
+	items_to_move = -1;
 	break;
       case 4:
 	/* ctrl-tab */

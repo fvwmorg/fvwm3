@@ -287,8 +287,8 @@ static void AnimatedMoveAnyWindow(FvwmWindow *tmp_win, Window w, int startX,
       client_event.xconfigure.event = tmp_win->w;
       client_event.xconfigure.window = tmp_win->w;
       client_event.xconfigure.x = currentX + tmp_win->boundary_width;
-      client_event.xconfigure.y = currentY + tmp_win->title_g.height +
-	tmp_win->boundary_width;
+      client_event.xconfigure.y = currentY + tmp_win->boundary_width +
+	((HAS_BOTTOM_TITLE(tmp_win)) ? 0 : tmp_win->title_g.height);
       client_event.xconfigure.width = tmp_win->frame_g.width -
 	2 * tmp_win->boundary_width;
       client_event.xconfigure.height = tmp_win->frame_g.height -
@@ -1066,7 +1066,9 @@ Bool moveLoop(FvwmWindow *tmp_win, int XOffset, int YOffset, int Width,
        * location */
       XEvent client_event;
       int nx = xl + tmp_win->boundary_width;
-      int ny = yt + tmp_win->title_g.height + tmp_win->boundary_width;
+      int ny = yt + tmp_win->boundary_width +
+	((HAS_BOTTOM_TITLE(tmp_win)) ? 0 : tmp_win->title_g.height);
+
 
       /* Don't send anything if position didn't change */
       if (!sent_cn || cnx != nx || cny != ny)
@@ -1078,9 +1080,8 @@ Bool moveLoop(FvwmWindow *tmp_win, int XOffset, int YOffset, int Width,
         client_event.xconfigure.display = dpy;
         client_event.xconfigure.event = tmp_win->w;
         client_event.xconfigure.window = tmp_win->w;
-        client_event.xconfigure.x = xl + tmp_win->boundary_width;
-        client_event.xconfigure.y = yt + tmp_win->title_g.height +
-            tmp_win->boundary_width;
+        client_event.xconfigure.x = nx;
+	client_event.xconfigure.y = ny;
         client_event.xconfigure.width = Width - 2 * tmp_win->boundary_width;
         client_event.xconfigure.height = Height -
             2 * tmp_win->boundary_width - tmp_win->title_g.height;
@@ -2714,7 +2715,7 @@ void Maximize(F_CMD_ARGS)
     }
     new_width = tmp_win->orig_g.width;
     if (IS_SHADED(tmp_win))
-      new_height = tmp_win->title_g.height + tmp_win->boundary_width;
+      new_height = tmp_win->title_g.height + 2 * tmp_win->boundary_width;
     else
       new_height = tmp_win->orig_g.height;
     SetupFrame(tmp_win, new_x, new_y, new_width, new_height, True, False);

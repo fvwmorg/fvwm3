@@ -2350,6 +2350,7 @@ static void GetPanelGeometry(
     {
       *y = by - (int)b->h - bb;
       *h = b->h;
+fprintf(stderr,"panel height = %d\n", b->h);
     }
     else
     {
