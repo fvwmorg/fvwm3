@@ -1,5 +1,8 @@
 2002-08-30  olicha  <olivier.chapuis@free.fr>
 
+	* libs/PictureGraphics.c (PGraphicsCreateStretchPicture):
+	Fixed compilation of certain modules
+
 	* fvwm/borders.c (border_render_into_pixmap):
 	* libs/PictureGraphics.c (PGraphicsCreateStretchPicture):
 	* libs/PictureGraphics.h:
