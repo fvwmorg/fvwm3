@@ -1,3 +1,11 @@
+2001-06-28  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* configure.in:
+	* NEWS:
+	* fvwm/fvwm2.1:
+	* modules/**/*.1:
+	updated for pre release 2.4.0-pre1
+
 2001-06-27  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* libs/Graphics.c (CreateGradientPixmap):

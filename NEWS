@@ -1,15 +1,17 @@
 Note, the changes for the last STABLE release start with release
-_+_A HREF="#2.2.5"_-_2.2.5_+_/A_-_.
+_+_A HREF="#2.4.0"_-_2.4.0_+_/A_-_.
 
-Changes in beta release 2.3.34 (not released yet)
+_+_A NAME="2.4.0"_-_
+Changes in stable release 2.4.0 (1-Jul-2001)
+_+_/A_-_
 
-Changes in beta release 2.3.33 (2001-06-22)
+Changes in beta release 2.3.33 (22-Jun-2001)
 
 * Module configuration commands are now partially expanded similarly to
   any other commands, except that single alphabetic-letter parameters are
   not expanded for backward compatibility.
 
-Changes in beta release 2.3.32 (2001-05-04)
+Changes in beta release 2.3.32 (4-May-2001)
 
 * Fixed several focus problems and several core dumps.
 
@@ -20,17 +22,17 @@ Changes in beta release 2.3.32 (2001-05-04)
 
 * Fixed gdk-imlib configure detection for FvwmGtk.
 
-Changes in beta release 2.3.31 (2001-04-07)
+Changes in beta release 2.3.31 (7-Apr-2001)
 
 * New option "recreate" to DestroyDecor command.
 
-Changes in beta release 2.3.30 (2001-03-29)
+Changes in beta release 2.3.30 (29-Mar-2001)
 
 * The configure option --disable-modality was removed.
 
 * New FvwmCommand -c option to read multiple commands from standard input.
 
-Changes in beta release 2.3.29 (2001-03-02)
+Changes in beta release 2.3.29 (2-Mar-2001)
 
 * New temporary option -debug_stack_ring.
 
@@ -45,7 +47,7 @@ Changes in beta release 2.3.29 (2001-03-02)
 
 * New option "None" to the IconBox style.
 
-Changes in beta release 2.3.28 (2001-01-25)
+Changes in beta release 2.3.28 (25-Jan-2001)
 
 * Renamed configure option --enable-kanji to --enable-multibyte.
 
@@ -69,28 +71,28 @@ Changes in beta release 2.3.28 (2001-01-25)
 * We have two "clever" placement algorithms: MinOverlapPlacement (the old one)
   and MinOverlapPercentPlacement.
 
-Changes in beta release 2.3.27 (2001-01-03)
+Changes in beta release 2.3.27 (3-Jan-2001)
 
-Changes in beta release 2.3.26 (2000-12-26)
+Changes in beta release 2.3.26 (26-Dec-2000)
 
-Changes in beta release 2.3.25 (2000-12-05)
+Changes in beta release 2.3.25 (5-Dec-2000)
 
 * Removed the now obsolete 'Recapture' option of the BusyCursor command.
 
-Changes in beta release 2.3.24 (2000-11-28)
+Changes in beta release 2.3.24 (28-Nov-2000)
 
 * WindowId and WarpToFunction have been enhanced to handle windows on
   different screens and unmanaged windows.
 
 * New command FakeClick.
 
-Changes in beta release 2.3.23 (2000-11-25)
+Changes in beta release 2.3.23 (25-Nov-2000)
 
 * New styles UseIconPosition (default) and NoIconPosition.
 
 * Better focus handling on multi head displays.
 
-Changes in beta release 2.3.22 (2000-11-10)
+Changes in beta release 2.3.22 (10-Nov-2000)
 
 * Configuration samples of FvwmForm and FvwmScript installed with fvwm are
   converted to the scheme: "FvwmForm-RootCursor", "FvwmScript-FileBrowser".
