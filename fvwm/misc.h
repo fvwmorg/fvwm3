@@ -32,11 +32,6 @@
 #endif
 #endif
 
-extern XGCValues Globalgcv;
-extern unsigned long Globalgcm;
-extern Time lastTimestamp;
-extern XEvent Event;
-
 /* Start of function prototype area.
    I wonder if there is any sequence to this stuff.
 
@@ -62,17 +57,13 @@ void ReapChildren(void);
 Bool GrabEm(int cursor, int grab_context);
 void UngrabEm(int ungrab_context);
 
-int flush_expose(Window w);
 void WaitForButtonsUp(Bool do_handle_expose);
-Bool StashEventTime (XEvent *ev);
 int GetTwoArguments(char *action, int *val1, int *val2, int *val1_unit,
 		    int *val2_unit);
-void CoerceEnterNotifyOnCurrentWindow(void);
 void NewFontAndColor(Font newfont, Pixel color, Pixel backcolor);
 Bool IsRectangleOnThisPage(rectangle *rec, int desk);
 void Keyboard_shortcuts(XEvent *, FvwmWindow*, int);
 Bool check_if_fvwm_window_exists(FvwmWindow *fw);
-int ButtonPosition(int context, FvwmWindow * t);
 int truncate_to_multiple (int x, int m);
 
 /*

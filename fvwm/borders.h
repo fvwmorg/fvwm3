@@ -24,6 +24,7 @@ typedef enum
   DRAW_ALL      = 0x7
 } draw_window_parts;
 
+int ButtonPosition(int context, FvwmWindow * t);
 void SetupTitleBar(FvwmWindow *tmp_win, int w, int h);
 void SetupFrame(
   FvwmWindow *tmp_win, int x, int y, int w, int h, Bool sendEvent);

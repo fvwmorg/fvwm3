@@ -26,6 +26,9 @@
 #ifndef _DEFAULTS_
 #define _DEFAULTS_
 
+/* event handling */
+#define CLOCK_SKEW_MS                 30000
+
 /* bindings */
 #define DEFAULT_BUTTONS_TO_GRAB         0x7
 

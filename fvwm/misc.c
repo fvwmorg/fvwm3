@@ -45,74 +45,6 @@
 #include "events.h"
 #include "focus.h"
 
-/**************************************************************************
- *
- * Removes expose events for a specific window from the queue
- *
- *************************************************************************/
-int flush_expose (Window w)
-{
-  XEvent dummy;
-  int i=0;
-
-  while (XCheckTypedWindowEvent (dpy, w, Expose, &dummy))
-    i++;
-  return i;
-}
-
-
-
-/****************************************************************************
- *
- * Records the time of the last processed event. Used in XSetInputFocus
- *
- ****************************************************************************/
-Time lastTimestamp = CurrentTime;	/* until Xlib does this for us */
-
-Bool StashEventTime (XEvent *ev)
-{
-  Time NewTimestamp = CurrentTime;
-
-  switch (ev->type)
-    {
-    case KeyPress:
-    case KeyRelease:
-      NewTimestamp = ev->xkey.time;
-      break;
-    case ButtonPress:
-    case ButtonRelease:
-      NewTimestamp = ev->xbutton.time;
-      break;
-    case MotionNotify:
-      NewTimestamp = ev->xmotion.time;
-      break;
-    case EnterNotify:
-    case LeaveNotify:
-      NewTimestamp = ev->xcrossing.time;
-      break;
-    case PropertyNotify:
-      NewTimestamp = ev->xproperty.time;
-      break;
-    case SelectionClear:
-      NewTimestamp = ev->xselectionclear.time;
-      break;
-    case SelectionRequest:
-      NewTimestamp = ev->xselectionrequest.time;
-      break;
-    case SelectionNotify:
-      NewTimestamp = ev->xselection.time;
-      break;
-    default:
-      return False;
-    }
-  /* Only update if the new timestamp is later than the old one, or
-   * if the new one is from a time at least 30 seconds earlier than the
-   * old one (in which case the system clock may have changed) */
-  if((NewTimestamp > lastTimestamp)||((lastTimestamp - NewTimestamp) > 30000))
-    lastTimestamp = NewTimestamp;
-  return True;
-}
-
 int GetTwoArguments(char *action, int *val1, int *val2, int *val1_unit,
 		    int *val2_unit)
 {
@@ -342,31 +274,6 @@ void fvwm_msg(int type,char *id,char *msg,...)
 #endif
 
 
-/* CoerceEnterNotifyOnCurrentWindow()
- * Pretends to get a HandleEnterNotify on the
- * window that the pointer currently is in so that
- * the focus gets set correctly from the beginning
- * Note that this presently only works if the current
- * window is not click_to_focus;  I think that
- * that behaviour is correct and desirable. --11/08/97 gjb */
-void
-CoerceEnterNotifyOnCurrentWindow(void)
-{
-  extern FvwmWindow *Tmp_win; /* from events.c */
-  Window child, root;
-  int root_x, root_y;
-  int win_x, win_y;
-  Bool f = XQueryPointer(dpy, Scr.Root, &root,
-                         &child, &root_x, &root_y, &win_x, &win_y, &JunkMask);
-  if (f && child != None) {
-    Event.xany.window = child;
-    if (XFindContext(dpy, child, FvwmContext, (caddr_t *) &Tmp_win) == XCNOENT)
-      Tmp_win = NULL;
-    HandleEnterNotify();
-    Tmp_win = None;
-  }
-}
-
 /* Store the last item that was added with '+' */
 void set_last_added_item(last_added_item_type type, void *item)
 {
@@ -422,8 +329,8 @@ void Keyboard_shortcuts(XEvent *Event, FvwmWindow *fw, int ReturnEvent)
     x_move_size = fw->hints.width_inc;
     y_move_size = fw->hints.height_inc;
   }
-  fvwmlib_keyboard_shortcuts(dpy, Scr.screen, Event, x_move_size, y_move_size,
-                             ReturnEvent);
+  fvwmlib_keyboard_shortcuts(
+    dpy, Scr.screen, Event, x_move_size, y_move_size, ReturnEvent);
 
   return;
 }
@@ -445,49 +352,6 @@ Bool check_if_fvwm_window_exists(FvwmWindow *fw)
       return True;
   }
   return False;
-}
-
-/***********************************************************************
- * change by KitS@bartley.demon.co.uk to correct popups off title buttons
- *
- *  Procedure:
- *ButtonPosition - find the actual position of the button
- *                 since some buttons may be disabled
- *
- *  Returned Value:
- *The button count from left or right taking in to account
- *that some buttons may not be enabled for this window
- *
- *  Inputs:
- *      context - context as per the global Context
- *      t       - the window (FvwmWindow) to test against
- *
- ***********************************************************************/
-int ButtonPosition(int context, FvwmWindow *t)
-{
-  int i = 0;
-  int buttons = -1;
-  int end = Scr.nr_left_buttons;
-
-  if (context & C_RALL)
-  {
-    i  = 1;
-    end = Scr.nr_right_buttons;
-  }
-  {
-    for (; i / 2 < end; i += 2)
-    {
-      if (t->button_w[i])
-      {
-	buttons++;
-      }
-      /* is this the button ? */
-      if (((1 << i) * C_L1) & context)
-	return buttons;
-    }
-  }
-  /* you never know... */
-  return 0;
 }
 
 /* rounds x down to the next multiple of m */

@@ -79,6 +79,49 @@ unsigned long Globalgcm;
 
 extern Window PressedW;
 
+/***********************************************************************
+ * change by KitS@bartley.demon.co.uk to correct popups off title buttons
+ *
+ *  Procedure:
+ *ButtonPosition - find the actual position of the button
+ *                 since some buttons may be disabled
+ *
+ *  Returned Value:
+ *The button count from left or right taking in to account
+ *that some buttons may not be enabled for this window
+ *
+ *  Inputs:
+ *      context - context as per the global Context
+ *      t       - the window (FvwmWindow) to test against
+ *
+ ***********************************************************************/
+int ButtonPosition(int context, FvwmWindow *t)
+{
+  int i = 0;
+  int buttons = -1;
+  int end = Scr.nr_left_buttons;
+
+  if (context & C_RALL)
+  {
+    i  = 1;
+    end = Scr.nr_right_buttons;
+  }
+  {
+    for (; i / 2 < end; i += 2)
+    {
+      if (t->button_w[i])
+      {
+	buttons++;
+      }
+      /* is this the button ? */
+      if (((1 << i) * C_L1) & context)
+	return buttons;
+    }
+  }
+  /* you never know... */
+  return 0;
+}
+
 static void change_window_background(
   Window w, unsigned long valuemask, XSetWindowAttributes *attributes)
 {

@@ -16,9 +16,9 @@
 #ifndef _FOCUS_
 #define _FOCUS_
 
-#define FOCUS_SET(w) XSetInputFocus(dpy, w, RevertToParent, lastTimestamp);
+#define FOCUS_SET(w) XSetInputFocus(dpy, w, RevertToParent, CurrentTime);
 #define FOCUS_RESET() \
-  XSetInputFocus (dpy, PointerRoot, RevertToPointerRoot, CurrentTime);
+  XSetInputFocus(dpy, PointerRoot, RevertToPointerRoot, CurrentTime);
 
 /********************************************************************
  *

@@ -55,11 +55,16 @@ extern const char *getInitFunctionName(int n);
 extern void CaptureOneWindow(FvwmWindow *fw, Window window);
 extern void CaptureAllWindows(void);
 
+extern XGCValues Globalgcv;
+extern unsigned long Globalgcm;
+extern Time lastTimestamp;
+extern XEvent Event;
 extern int master_pid;
 extern Display *dpy;
 extern XContext FvwmContext;
 extern Bool fFvwmInStartup;
 extern Bool DoingCommandLine;
+extern Bool debugging;
 #ifdef BUSYCURSOR
 extern int GrabPointerState;
 #endif

@@ -101,9 +101,6 @@
 #define XUrgencyHint            (1L << 8)
 #endif
 
-extern Boolean debugging;
-extern Bool fFvwmInStartup;
-
 extern void StartupStuff(void);
 
 int Context = C_NO_CONTEXT;	/* current button press context */
@@ -114,6 +111,8 @@ FvwmWindow *Tmp_win;		/* the current fvwm window */
 
 int last_event_type=0;
 Window last_event_window=0;
+Time lastTimestamp = CurrentTime;	/* until Xlib does this for us */
+
 
 STROKE_CODE(static int send_motion;)
 STROKE_CODE(static char sequence[MAX_SEQUENCE+1];)
@@ -137,244 +136,6 @@ Window PressedW;
 #endif /* !LASTEvent */
 typedef void (*PFEH)(void);
 PFEH EventHandlerJumpTable[LASTEvent];
-
-/*
-** Procedure:
-**   InitEventHandlerJumpTable
-*/
-void InitEventHandlerJumpTable(void)
-{
-  int i;
-
-  for (i=0; i<LASTEvent; i++)
-  {
-    EventHandlerJumpTable[i] = NULL;
-  }
-  EventHandlerJumpTable[Expose] =           HandleExpose;
-  EventHandlerJumpTable[DestroyNotify] =    HandleDestroyNotify;
-  EventHandlerJumpTable[MapRequest] =       HandleMapRequest;
-  EventHandlerJumpTable[MapNotify] =        HandleMapNotify;
-  EventHandlerJumpTable[UnmapNotify] =      HandleUnmapNotify;
-  EventHandlerJumpTable[ButtonPress] =      HandleButtonPress;
-  EventHandlerJumpTable[EnterNotify] =      HandleEnterNotify;
-  EventHandlerJumpTable[LeaveNotify] =      HandleLeaveNotify;
-  EventHandlerJumpTable[FocusIn] =          HandleFocusIn;
-  EventHandlerJumpTable[ConfigureRequest] = HandleConfigureRequest;
-  EventHandlerJumpTable[ClientMessage] =    HandleClientMessage;
-  EventHandlerJumpTable[PropertyNotify] =   HandlePropertyNotify;
-  EventHandlerJumpTable[KeyPress] =         HandleKeyPress;
-  EventHandlerJumpTable[VisibilityNotify] = HandleVisibilityNotify;
-  EventHandlerJumpTable[ColormapNotify] =   HandleColormapNotify;
-#ifdef SHAPE
-  if (ShapesSupported)
-    EventHandlerJumpTable[ShapeEventBase+ShapeNotify] = HandleShapeNotify;
-#endif /* SHAPE */
-  EventHandlerJumpTable[SelectionClear]   = HandleSelectionClear;
-  EventHandlerJumpTable[SelectionRequest] = HandleSelectionRequest;
-  STROKE_CODE(EventHandlerJumpTable[ButtonRelease] =    HandleButtonRelease);
-  STROKE_CODE(EventHandlerJumpTable[MotionNotify] =     HandleMotionNotify);
-#ifdef MOUSE_DROPPINGS
-  STROKE_CODE(stroke_init(dpy,DefaultRootWindow(dpy)));
-#else /* no MOUSE_DROPPINGS */
-  STROKE_CODE(stroke_init());
-#endif /* MOUSE_DROPPINGS */
-}
-
-/***********************************************************************
- *
- *  Procedure:
- *	DispatchEvent - handle a single X event stored in global var Event
- *
- ************************************************************************/
-void DispatchEvent(Bool preserve_Tmp_win)
-{
-  Window w = Event.xany.window;
-  FvwmWindow *s_Tmp_win = NULL;
-
-  DBUG("DispatchEvent","Routine Entered");
-
-  if (preserve_Tmp_win)
-    s_Tmp_win = Tmp_win;
-  StashEventTime(&Event);
-
-  XFlush(dpy);
-  if (XFindContext (dpy, w, FvwmContext, (caddr_t *) &Tmp_win) == XCNOENT)
-  {
-    Tmp_win = NULL;
-  }
-  last_event_type = Event.type;
-  last_event_window = w;
-
-  if (EventHandlerJumpTable[Event.type])
-  {
-    (*EventHandlerJumpTable[Event.type])();
-  }
-
-#ifdef C_ALLOCA
-  /* If we're using the C version of alloca, see if anything needs to be
-   * freed up.
-   */
-  alloca(0);
-#endif
-
-  if (preserve_Tmp_win)
-    Tmp_win = s_Tmp_win;
-  DBUG("DispatchEvent","Leaving Routine");
-  return;
-}
-
-
-/***********************************************************************
- *
- *  Procedure:
- *	HandleEvents - handle X events
- *
- ************************************************************************/
-void HandleEvents(void)
-{
-  DBUG("HandleEvents","Routine Entered");
-  STROKE_CODE(send_motion = FALSE);
-  while ( !isTerminated )
-  {
-    last_event_type = 0;
-    if (Scr.flags.do_need_window_update)
-    {
-      flush_window_updates();
-    }
-    if (Scr.flags.do_need_style_list_update)
-    {
-      simplify_style_list();
-    }
-    if(My_XNextEvent(dpy, &Event))
-    {
-      DispatchEvent(False);
-    }
-  }
-}
-
-/***********************************************************************
- *
- *  Procedure:
- *	Find the Fvwm context for the Event.
- *
- ************************************************************************/
-int GetContext(FvwmWindow *t, XEvent *e, Window *w)
-{
-  int Context,i;
-
-  Context = C_NO_CONTEXT;
-  if (e->type == KeyPress && e->xkey.window == Scr.Root &&
-      e->xkey.subwindow != None)
-  {
-    /* Translate root coordinates into subwindow coordinates.  Necessary for
-     * key bindings that work over unfocused windows. */
-    e->xkey.window = e->xkey.subwindow;
-    XTranslateCoordinates(
-      dpy, Scr.Root, e->xkey.subwindow, e->xkey.x, e->xkey.y, &(e->xkey.x),
-      &(e->xkey.y), &(e->xkey.subwindow));
-    XFindContext(dpy, e->xkey.window, FvwmContext, (caddr_t *) &t);
-    Tmp_win = t;
-  }
-if (e->type == ButtonPress && t && e->xkey.window == t->frame &&
-    e->xkey.subwindow != None)
-{
- /* Translate frame coordinates into subwindow coordinates. */
- e->xkey.window = e->xkey.subwindow;
- XTranslateCoordinates(
-  dpy, t->frame, e->xkey.subwindow, e->xkey.x, e->xkey.y, &(e->xkey.x),
-   &(e->xkey.y), &(e->xkey.subwindow));
- if (e->xkey.window == t->Parent)
- {
-  e->xkey.window = e->xkey.subwindow;
-  XTranslateCoordinates(
-   dpy, t->Parent, e->xkey.subwindow, e->xkey.x, e->xkey.y, &(e->xkey.x),
-   &(e->xkey.y), &(e->xkey.subwindow));
- }
-}
-  if(!t)
-    return C_ROOT;
-
-  if (e->type == KeyPress && e->xkey.window == t->frame &&
-      e->xkey.subwindow == t->decor_w)
-  {
-    /* We can't get keyboard events on the decor_w directly beacause it is a
-     * sibling of the parent window which gets all keyboard input. So we have to
-     * grab keys on the frame and then translate the coordinates to find out in
-     * which subwindow of the decor_w the event occured. */
-    e->xkey.window = e->xkey.subwindow;
-    XTranslateCoordinates(dpy, t->frame, t->decor_w, e->xkey.x, e->xkey.y,
-			  &JunkX, &JunkY, &(e->xkey.subwindow));
-  }
-  *w= e->xany.window;
-
-  if (*w == Scr.NoFocusWin)
-    return C_ROOT;
-  if (e->type == KeyPress && e->xkey.window == t->frame &&
-      e->xkey.subwindow == t->decor_w)
-  {
-    /* We can't get keyboard events on the decor_w directly beacause it is a
-     * sibling of the parent window which gets all keyboard input. So we have to
-     * grab keys on the frame and then translate the coordinates to find out in
-     * which subwindow of the decor_w the event occured. */
-    e->xkey.window = e->xkey.subwindow;
-    XTranslateCoordinates(dpy, t->frame, t->decor_w, e->xkey.x, e->xkey.y,
-			  &JunkX, &JunkY, &(e->xkey.subwindow));
-  }
-  *w= e->xany.window;
-
-  if (*w == Scr.NoFocusWin)
-    return C_ROOT;
-  if (e->xkey.subwindow != None && e->xany.window != t->w)
-    *w = e->xkey.subwindow;
-  if (*w == Scr.Root)
-    return C_ROOT;
-  if (t)
-    {
-      if (*w == t->title_w)
-	Context = C_TITLE;
-      else if (*w == t->w || *w == t->Parent || *w == t->frame)
-	Context = C_WINDOW;
-      else if (*w == t->icon_w || *w == t->icon_pixmap_w)
-	Context = C_ICON;
-      else if (*w == t->decor_w)
-	Context = C_SIDEBAR;
-      else
-      {
-	for(i=0;i<4;i++)
-	  {
-	    if(*w == t->corners[i])
-	      {
-		Context = C_FRAME;
-		break;
-	      }
-	    if(*w == t->sides[i])
-	      {
-		Context = C_SIDEBAR;
-		break;
-	      }
-	  }
-	if (i < 4)
-	  Button = i;
-	else
-	  {
-	    for (i = 0; i < NUMBER_OF_BUTTONS; i++)
-	    {
-	      if (*w == t->button_w[i])
-	      {
-		if ((!(i & 1) && i / 2 < Scr.nr_left_buttons) ||
-		    ( (i & 1) && i / 2 < Scr.nr_right_buttons))
-		{
-		  Context = (1 << i) * C_L1;
-		  Button = i;
-		  break;
-		}
-	      }
-	    }
-	  }
-      } /* else */
-    } /* if (t) */
-  return Context;
-}
 
 /***********************************************************************
  *
@@ -1779,11 +1540,10 @@ void HandleEnterNotify(void)
   }
 
   /* make sure its for one of our windows */
-  if (!Tmp_win) {
-  /* SUBWINDOW COLORMAP PATCH BY RANDY FRANK, RSI INC., BOULDER, COLORADO, USA */
-/* handle a subwindow cmap */
+  if (!Tmp_win)
+  {
+    /* handle a subwindow cmap */
     EnterSubWindowColormap(Event.xany.window);
-  /* END PATCH */
     return;
   }
 
@@ -1846,23 +1606,23 @@ void HandleLeaveNotify(void)
    * need to de-focus and unhighlight to make sure that we
    * don't end up with more than one highlighted window at a time */
   if(Event.xcrossing.window == Scr.Root)
+  {
+    if(Event.xcrossing.mode == NotifyNormal)
     {
-      if(Event.xcrossing.mode == NotifyNormal)
-	{
-	  if (Event.xcrossing.detail != NotifyInferior)
-	    {
-	      if(Scr.Focus != NULL)
-		SetFocus(Scr.NoFocusWin, NULL, 1);
-	      if(Scr.Hilite != NULL)
-		DrawDecorations(Scr.Hilite, DRAW_ALL, False, True, None);
-	    }
-	}
-  /* SUBWINDOW COLORMAP PATCH BY RANDY FRANK, RSI INC., BOULDER, COLORADO, USA */
-    } else {
-      /* handle a subwindow cmap */
-        LeaveSubWindowColormap(Event.xany.window);
-   }
-  /* END PATCH */
+      if (Event.xcrossing.detail != NotifyInferior)
+      {
+	if(Scr.Focus != NULL)
+	  SetFocus(Scr.NoFocusWin, NULL, 1);
+	if(Scr.Hilite != NULL)
+	  DrawDecorations(Scr.Hilite, DRAW_ALL, False, True, None);
+      }
+    }
+  }
+  else
+  {
+    /* handle a subwindow cmap */
+    LeaveSubWindowColormap(Event.xany.window);
+  }
 }
 
 
@@ -2454,4 +2214,338 @@ int My_XNextEvent(Display *dpy, XEvent *event)
 
   DBUG("My_XNextEvent","leaving My_XNextEvent");
   return 0;
+}
+
+
+
+
+
+
+/*
+** Procedure:
+**   InitEventHandlerJumpTable
+*/
+void InitEventHandlerJumpTable(void)
+{
+  int i;
+
+  for (i=0; i<LASTEvent; i++)
+  {
+    EventHandlerJumpTable[i] = NULL;
+  }
+  EventHandlerJumpTable[Expose] =           HandleExpose;
+  EventHandlerJumpTable[DestroyNotify] =    HandleDestroyNotify;
+  EventHandlerJumpTable[MapRequest] =       HandleMapRequest;
+  EventHandlerJumpTable[MapNotify] =        HandleMapNotify;
+  EventHandlerJumpTable[UnmapNotify] =      HandleUnmapNotify;
+  EventHandlerJumpTable[ButtonPress] =      HandleButtonPress;
+  EventHandlerJumpTable[EnterNotify] =      HandleEnterNotify;
+  EventHandlerJumpTable[LeaveNotify] =      HandleLeaveNotify;
+  EventHandlerJumpTable[FocusIn] =          HandleFocusIn;
+  EventHandlerJumpTable[ConfigureRequest] = HandleConfigureRequest;
+  EventHandlerJumpTable[ClientMessage] =    HandleClientMessage;
+  EventHandlerJumpTable[PropertyNotify] =   HandlePropertyNotify;
+  EventHandlerJumpTable[KeyPress] =         HandleKeyPress;
+  EventHandlerJumpTable[VisibilityNotify] = HandleVisibilityNotify;
+  EventHandlerJumpTable[ColormapNotify] =   HandleColormapNotify;
+#ifdef SHAPE
+  if (ShapesSupported)
+    EventHandlerJumpTable[ShapeEventBase+ShapeNotify] = HandleShapeNotify;
+#endif /* SHAPE */
+  EventHandlerJumpTable[SelectionClear]   = HandleSelectionClear;
+  EventHandlerJumpTable[SelectionRequest] = HandleSelectionRequest;
+  STROKE_CODE(EventHandlerJumpTable[ButtonRelease] =    HandleButtonRelease);
+  STROKE_CODE(EventHandlerJumpTable[MotionNotify] =     HandleMotionNotify);
+#ifdef MOUSE_DROPPINGS
+  STROKE_CODE(stroke_init(dpy,DefaultRootWindow(dpy)));
+#else /* no MOUSE_DROPPINGS */
+  STROKE_CODE(stroke_init());
+#endif /* MOUSE_DROPPINGS */
+}
+
+/***********************************************************************
+ *
+ *  Procedure:
+ *	DispatchEvent - handle a single X event stored in global var Event
+ *
+ ************************************************************************/
+void DispatchEvent(Bool preserve_Tmp_win)
+{
+  Window w = Event.xany.window;
+  FvwmWindow *s_Tmp_win = NULL;
+
+  DBUG("DispatchEvent","Routine Entered");
+
+  if (preserve_Tmp_win)
+    s_Tmp_win = Tmp_win;
+  StashEventTime(&Event);
+
+  XFlush(dpy);
+  if (XFindContext (dpy, w, FvwmContext, (caddr_t *) &Tmp_win) == XCNOENT)
+  {
+    Tmp_win = NULL;
+  }
+  last_event_type = Event.type;
+  last_event_window = w;
+
+  if (EventHandlerJumpTable[Event.type])
+  {
+    (*EventHandlerJumpTable[Event.type])();
+  }
+
+#ifdef C_ALLOCA
+  /* If we're using the C version of alloca, see if anything needs to be
+   * freed up.
+   */
+  alloca(0);
+#endif
+
+  if (preserve_Tmp_win)
+    Tmp_win = s_Tmp_win;
+  DBUG("DispatchEvent","Leaving Routine");
+  return;
+}
+
+
+/***********************************************************************
+ *
+ *  Procedure:
+ *	HandleEvents - handle X events
+ *
+ ************************************************************************/
+void HandleEvents(void)
+{
+  DBUG("HandleEvents","Routine Entered");
+  STROKE_CODE(send_motion = FALSE);
+  while ( !isTerminated )
+  {
+    last_event_type = 0;
+    if (Scr.flags.do_need_window_update)
+    {
+      flush_window_updates();
+    }
+    if (Scr.flags.do_need_style_list_update)
+    {
+      simplify_style_list();
+    }
+    if(My_XNextEvent(dpy, &Event))
+    {
+      DispatchEvent(False);
+    }
+  }
+}
+
+/***********************************************************************
+ *
+ *  Procedure:
+ *	Find the Fvwm context for the Event.
+ *
+ ************************************************************************/
+int GetContext(FvwmWindow *t, XEvent *e, Window *w)
+{
+  int Context,i;
+
+  Context = C_NO_CONTEXT;
+  if (e->type == KeyPress && e->xkey.window == Scr.Root &&
+      e->xkey.subwindow != None)
+  {
+    /* Translate root coordinates into subwindow coordinates.  Necessary for
+     * key bindings that work over unfocused windows. */
+    e->xkey.window = e->xkey.subwindow;
+    XTranslateCoordinates(
+      dpy, Scr.Root, e->xkey.subwindow, e->xkey.x, e->xkey.y, &(e->xkey.x),
+      &(e->xkey.y), &(e->xkey.subwindow));
+    XFindContext(dpy, e->xkey.window, FvwmContext, (caddr_t *) &t);
+    Tmp_win = t;
+  }
+if (e->type == ButtonPress && t && e->xkey.window == t->frame &&
+    e->xkey.subwindow != None)
+{
+ /* Translate frame coordinates into subwindow coordinates. */
+ e->xkey.window = e->xkey.subwindow;
+ XTranslateCoordinates(
+  dpy, t->frame, e->xkey.subwindow, e->xkey.x, e->xkey.y, &(e->xkey.x),
+   &(e->xkey.y), &(e->xkey.subwindow));
+ if (e->xkey.window == t->Parent)
+ {
+  e->xkey.window = e->xkey.subwindow;
+  XTranslateCoordinates(
+   dpy, t->Parent, e->xkey.subwindow, e->xkey.x, e->xkey.y, &(e->xkey.x),
+   &(e->xkey.y), &(e->xkey.subwindow));
+ }
+}
+  if(!t)
+    return C_ROOT;
+
+  if (e->type == KeyPress && e->xkey.window == t->frame &&
+      e->xkey.subwindow == t->decor_w)
+  {
+    /* We can't get keyboard events on the decor_w directly beacause it is a
+     * sibling of the parent window which gets all keyboard input. So we have to
+     * grab keys on the frame and then translate the coordinates to find out in
+     * which subwindow of the decor_w the event occured. */
+    e->xkey.window = e->xkey.subwindow;
+    XTranslateCoordinates(dpy, t->frame, t->decor_w, e->xkey.x, e->xkey.y,
+			  &JunkX, &JunkY, &(e->xkey.subwindow));
+  }
+  *w= e->xany.window;
+
+  if (*w == Scr.NoFocusWin)
+    return C_ROOT;
+  if (e->type == KeyPress && e->xkey.window == t->frame &&
+      e->xkey.subwindow == t->decor_w)
+  {
+    /* We can't get keyboard events on the decor_w directly beacause it is a
+     * sibling of the parent window which gets all keyboard input. So we have to
+     * grab keys on the frame and then translate the coordinates to find out in
+     * which subwindow of the decor_w the event occured. */
+    e->xkey.window = e->xkey.subwindow;
+    XTranslateCoordinates(dpy, t->frame, t->decor_w, e->xkey.x, e->xkey.y,
+			  &JunkX, &JunkY, &(e->xkey.subwindow));
+  }
+  *w= e->xany.window;
+
+  if (*w == Scr.NoFocusWin)
+    return C_ROOT;
+  if (e->xkey.subwindow != None && e->xany.window != t->w)
+    *w = e->xkey.subwindow;
+  if (*w == Scr.Root)
+    return C_ROOT;
+  if (t)
+    {
+      if (*w == t->title_w)
+	Context = C_TITLE;
+      else if (*w == t->w || *w == t->Parent || *w == t->frame)
+	Context = C_WINDOW;
+      else if (*w == t->icon_w || *w == t->icon_pixmap_w)
+	Context = C_ICON;
+      else if (*w == t->decor_w)
+	Context = C_SIDEBAR;
+      else
+      {
+	for(i=0;i<4;i++)
+	  {
+	    if(*w == t->corners[i])
+	      {
+		Context = C_FRAME;
+		break;
+	      }
+	    if(*w == t->sides[i])
+	      {
+		Context = C_SIDEBAR;
+		break;
+	      }
+	  }
+	if (i < 4)
+	  Button = i;
+	else
+	  {
+	    for (i = 0; i < NUMBER_OF_BUTTONS; i++)
+	    {
+	      if (*w == t->button_w[i])
+	      {
+		if ((!(i & 1) && i / 2 < Scr.nr_left_buttons) ||
+		    ( (i & 1) && i / 2 < Scr.nr_right_buttons))
+		{
+		  Context = (1 << i) * C_L1;
+		  Button = i;
+		  break;
+		}
+	      }
+	    }
+	  }
+      } /* else */
+    } /* if (t) */
+  return Context;
+}
+
+
+/**************************************************************************
+ *
+ * Removes expose events for a specific window from the queue
+ *
+ *************************************************************************/
+int flush_expose (Window w)
+{
+  XEvent dummy;
+  int i=0;
+
+  while (XCheckTypedWindowEvent (dpy, w, Expose, &dummy))
+    i++;
+  return i;
+}
+
+
+/****************************************************************************
+ *
+ * Records the time of the last processed event. Used in XSetInputFocus
+ *
+ ****************************************************************************/
+Bool StashEventTime (XEvent *ev)
+{
+  Time NewTimestamp = CurrentTime;
+
+  switch (ev->type)
+  {
+  case KeyPress:
+  case KeyRelease:
+    NewTimestamp = ev->xkey.time;
+    break;
+  case ButtonPress:
+  case ButtonRelease:
+    NewTimestamp = ev->xbutton.time;
+    break;
+  case MotionNotify:
+    NewTimestamp = ev->xmotion.time;
+    break;
+  case EnterNotify:
+  case LeaveNotify:
+    NewTimestamp = ev->xcrossing.time;
+    break;
+  case PropertyNotify:
+    NewTimestamp = ev->xproperty.time;
+    break;
+  case SelectionClear:
+    NewTimestamp = ev->xselectionclear.time;
+    break;
+  case SelectionRequest:
+    NewTimestamp = ev->xselectionrequest.time;
+    break;
+  case SelectionNotify:
+    NewTimestamp = ev->xselection.time;
+    break;
+  default:
+    return False;
+  }
+  /* Only update if the new timestamp is later than the old one, or
+   * if the new one is from a time at least 30 seconds earlier than the
+   * old one (in which case the system clock may have changed) */
+  if (NewTimestamp > lastTimestamp ||
+      lastTimestamp - NewTimestamp > CLOCK_SKEW_MS)
+    lastTimestamp = NewTimestamp;
+  return True;
+}
+
+/* CoerceEnterNotifyOnCurrentWindow()
+ * Pretends to get a HandleEnterNotify on the
+ * window that the pointer currently is in so that
+ * the focus gets set correctly from the beginning
+ * Note that this presently only works if the current
+ * window is not click_to_focus;  I think that
+ * that behaviour is correct and desirable. --11/08/97 gjb */
+void CoerceEnterNotifyOnCurrentWindow(void)
+{
+  extern FvwmWindow *Tmp_win; /* from events.c */
+  Window child, root;
+  int root_x, root_y;
+  int win_x, win_y;
+  Bool f = XQueryPointer(dpy, Scr.Root, &root,
+                         &child, &root_x, &root_y, &win_x, &win_y, &JunkMask);
+  if (f && child != None) {
+    Event.xany.window = child;
+    if (XFindContext(dpy, child, FvwmContext, (caddr_t *) &Tmp_win) == XCNOENT)
+      Tmp_win = NULL;
+    HandleEnterNotify();
+    Tmp_win = None;
+  }
 }

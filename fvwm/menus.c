@@ -65,6 +65,7 @@
 #include "cursor.h"
 #include "functions.h"
 #include "repeat.h"
+#include "borders.h"
 #include "misc.h"
 #include "screen.h"
 #include "colors.h"

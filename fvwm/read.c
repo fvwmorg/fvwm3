@@ -46,8 +46,6 @@
 #include "screen.h"
 #include "read.h"
 
-extern Boolean debugging;
-
 char *fvwm_file = NULL;
 
 

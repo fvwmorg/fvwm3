@@ -23,6 +23,7 @@
 #include "cursor.h"
 #include "functions.h"
 #include "bindings.h"
+#include "events.h"
 #include "misc.h"
 #include "screen.h"
 #include "defaults.h"
