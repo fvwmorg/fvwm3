@@ -1903,6 +1903,7 @@ Bool __move_loop(
 	Bool nosnap_enabled = False;
 	FvwmWindow *fw = exc->w.fw;
 	unsigned int draw_parts = PART_NONE;
+	XEvent e;
 
 	if (!GrabEm(CRS_MOVE, GRAB_NORMAL))
 	{
@@ -1980,14 +1981,13 @@ Bool __move_loop(
 	}
 	DisplayPosition(fw, exc->x.elast, xl, yt, True);
 
+	memset(&e, 0, sizeof(e));
 	while (!finished && bad_window != FW_W(fw))
 	{
 		int rc = 0;
-		XEvent e;
 		int old_xl;
 		int old_yt;
 
-		e.type = 0;
 		old_xl = xl;
 		old_yt = yt;
 		/* wait until there is an interesting event */
@@ -1999,8 +1999,8 @@ Bool __move_loop(
 				ButtonMotionMask | ExposureMask, &e)))
 		{
 			rc = HandlePaging(
-				(e.type != 0) ? &e : NULL, dx, dy, &xl, &yt,
-				&delta_x, &delta_y, False, False, True);
+				&e, dx, dy, &xl, &yt, &delta_x, &delta_y,
+				False, False, True);
 			if (rc == 1)
 			{
 				/* Fake an event to force window reposition */
@@ -2829,6 +2829,7 @@ static Bool __resize_window(F_CMD_ARGS)
 	frame_move_resize_args mr_args = NULL;
 	long evmask;
 	FvwmWindow *fw = exc->w.fw;
+	XEvent ev;
 
 	bad_window = False;
 	ResizeWindow = FW_W_FRAME(fw);
@@ -3170,19 +3171,18 @@ static Bool __resize_window(F_CMD_ARGS)
 	}
 
 	/* loop to resize */
+	memset(&ev, 0, sizeof(ev));
 	while (!finished && bad_window != FW_W(fw))
 	{
 		int rc = 0;
-		XEvent ev;
 
-		ev.type = 0;
 		/* block until there is an interesting event */
-		while (rc != -1 && !FCheckMaskEvent(dpy, evmask, &ev))
+		while (rc != -1 &&
+		       (!FPending(dpy) || !FCheckMaskEvent(dpy, evmask, &ev)))
 		{
 			rc = HandlePaging(
-				(ev.type != 0) ? &ev : NULL, Scr.EdgeScrollX,
-				Scr.EdgeScrollY, &x, &y, &delta_x, &delta_y,
-				False, False, True);
+				&ev, Scr.EdgeScrollX, Scr.EdgeScrollY, &x, &y,
+				&delta_x, &delta_y, False, False, True);
 			if (rc == 1)
 			{
 				/* Fake an event to force window reposition */
