@@ -156,6 +156,7 @@ enum
 	F_DESTROY,
 	F_DESTROY_DECOR,
 	F_DESTROY_MOD,
+	F_DESTROY_WINDOW_STYLE,
 	F_ECHO,
 	F_FLIP_FOCUS,
 	F_FOCUS,
@@ -183,6 +184,7 @@ enum
 	F_WARP,
 	F_WINDOWID,
 	F_WINDOW_SHADE,
+	F_WINDOW_STYLE,
 
 	F_END_OF_LIST = 999,
 
@@ -251,6 +253,7 @@ P(DestroyMenu);
 P(DestroyMenuStyle);
 P(DestroyModuleConfig);
 P(DestroyStyle);
+P(DestroyWindowStyle);
 P(Direction);
 P(Dummy);
 P(Echo);
@@ -372,6 +375,7 @@ P(WindowId);
 P(WindowList);
 P(WindowShade);
 P(WindowShadeAnimate);
+P(WindowStyle);
 P(Xinerama);
 P(XineramaPrimaryScreen);
 P(XineramaSls);

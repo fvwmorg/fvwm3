@@ -33,6 +33,9 @@ Changes in development release 2.5.8 (not released yet)
 * Fvwm now handles what Unicode calls "combining characters" (ie. marks
   drawn on top of other characters)
 
+* New commands WindowStyle and DestroyWindowStyle for per window
+  styles
+
 -------------------------------------------------------------------
 
 Changes in development release 2.5.7 (30-May-2003)

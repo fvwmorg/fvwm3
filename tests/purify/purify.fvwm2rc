@@ -1878,6 +1878,29 @@ AddToFunc DestroyStyle-Func
 # The man page says not to do this, to-do-2.4 #130
  + I DestroyStyle *
 
+DestroyFunc WindowStyleAndUpdate
+AddToFunc CommandAndUpdate I Echo $*
++ I $*
++ I UpdateStyles
+
+AddTest "Test WindowStyle" WindowStyle-Func
+AddToFunc WindowStyle-Func
++ I CommandAndUpdate Next (window*) WindowStyle BorderWidth 5, HandleWidth 5
++ I CommandAndUpdate Next (window*) WindowStyle NoTitle
++ I CommandAndUpdate Next (window*) WindowStyle NoTitle
++ I CommandAndUpdate Next (window*) WindowStyle NoTitle, gffgghf
++ I CommandAndUpdate All (window*)  WindowStyle Sticky
++ I CommandAndUpdate All (window*)  WindowStyle Sticky
++ I CommandAndUpdate All (window*)  WindowStyle Slippery
++ I CommandAndUpdate All (window*)  WindowStyle Slippery
++ I CommandAndUpdate Next (window*) WindowStyle
++ I CommandAndUpdate Next (window*) WindowStyle
++ I CommandAndUpdate Next (window*) WindowStyle nvhjvhjvhvhv jbjhbjkbjb
++ I CommandAndUpdate Next (window*) DestroyWindowStyle
++ I CommandAndUpdate Next (window*) DestroyWindowStyle pouf
++ I CommandAndUpdate All (window*) DestroyWindowStyle
++ I CommandAndUpdate All (window*) DestroyWindowStyle
+
 DestroyFunc AddButtonStyleAndUpdate
 AddToFunc AddButtonStyleAndUpdate I Echo AddButtonStyle $*
 + I AddButtonStyle $*

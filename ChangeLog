@@ -1,3 +1,46 @@
+2003-07-16  olicha  <olivier.chapuis@free.fr>
+
+	* NEWS:
+	* fvwm/style.h (SID_GET_NAME):
+	(SID_SET_NAME):
+	(SID_GET_WINDOW_ID):
+	(SID_SET_WINDOW_ID):
+	(SID_SET_HAS_NAME):
+	(SID_GET_HAS_NAME):
+	(SID_SET_HAS_WINDOW_ID):
+	(SID_GET_HAS_WINDOW_ID):
+	(SGET_ID):
+	(SGET_WINDOW_ID):
+	(SSET_WINDOW_ID):
+	(SSET_ID_HAS_NAME):
+	(SGET_ID_HAS_NAME):
+	(SSET_ID_HAS_WINDOW_ID):
+	(SGET_ID_HAS_WINDOW_ID):
+	* fvwm/style.c (style_ids_are_equals):
+	(style_id_equals_id):
+	(styles_have_same_id):
+	(fw_match_style_id):
+	(one_fw_can_match_both_ids):
+	(remove_all_of_style_from_list):
+	(__simplify_style_list):
+	(style_parse_one_style_option):
+	(__style_command):
+	(style_destroy_style):
+	(print_styles):
+	(CMD_Style):
+	(CMD_WindowStyle):
+	(CMD_FocusStyle):
+	(CMD_DestroyStyle):
+	(CMD_DestroyWindowStyle):
+	* fvwm/fvwm.h (style_id_t):
+	(window_style):
+	* fvwm/functable.c (func_table):
+	* fvwm/add_window.c (destroy_window):
+	* fvwm/commands.h:
+	* fvwm/fvwm.1:
+	New WindowStyle and DestroyWindowStyle command for setting styles
+	per window
+
 2003-07-14  Marcus Lundblad  <ml@update.uu.se>
 
 	* libs/Flocale.c (FlocaleDrawString):

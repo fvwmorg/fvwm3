@@ -215,6 +215,10 @@ const func_t func_table[] =
 	CMD_ENT("destroystyle", CMD_DestroyStyle, F_DESTROY_STYLE, 0, 0),
 	/* - Delete style defined using Style */
 
+	CMD_ENT("destroywindowstyle", CMD_DestroyWindowStyle,
+		F_DESTROY_WINDOW_STYLE, FUNC_NEEDS_WINDOW, CRS_SELECT),
+	/* - Delete style defined using WindowStyle */
+
 	CMD_ENT("direction", CMD_Direction, F_DIRECTION, 0, 0),
 	/* - Operate on the next window in the specified direction */
 
@@ -620,6 +624,10 @@ const func_t func_table[] =
 	CMD_ENT("windowshadeanimate", CMD_WindowShadeAnimate, F_SHADE_ANIMATE,
 		0, 0),
 	/* - (obsolete, use Style * WindowShadeSteps) */
+
+	CMD_ENT("windowstyle", CMD_WindowStyle, F_WINDOW_STYLE,
+		FUNC_NEEDS_WINDOW, CRS_SELECT),
+	/* - Set styles on the selected window */
 
 	CMD_ENT("xinerama", CMD_Xinerama, F_XINERAMA, 0, 0),
 	/* - Control Xinerama support */

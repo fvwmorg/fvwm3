@@ -522,12 +522,24 @@ typedef struct
 	unsigned has_placement_percentage_penalty : 1;
 } style_flags;
 
+typedef struct
+{
+	char *name;
+	XID window_id;
+	struct
+	{
+		unsigned has_name:1;
+		unsigned has_window_id:1;
+	} flags;
+} style_id_t;
+
+
 /* only style.c and add_window.c are allowed to access this struct! */
 typedef struct window_style
 {
 	struct window_style *next;
 	struct window_style *prev;
-	char *name;
+	style_id_t id;
 #if 0
 	WindowConditionMask *condition_mask;
 #endif

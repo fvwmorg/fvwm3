@@ -340,6 +340,24 @@
 #define S_SET_EWMH_MAXIMIZE_MODE(c,x) \
 	((c).s.ewmh_maximize_mode = (x))
 
+/* access to style_id */
+#define SID_GET_NAME(id) \
+	((id).name)
+#define SID_SET_NAME(id,x) \
+	((id).name = (x))
+#define SID_GET_WINDOW_ID(id) \
+	((id).window_id)
+#define SID_SET_WINDOW_ID(id,x) \
+	((id).window_id = (x))
+#define SID_SET_HAS_NAME(id,x) \
+        ((id).flags.has_name = !!(x))
+#define SID_GET_HAS_NAME(id) \
+        ((id).flags.has_name)
+#define SID_SET_HAS_WINDOW_ID(id,x) \
+        ((id).flags.has_window_id = !!(x))
+#define SID_GET_HAS_WINDOW_ID(id) \
+        ((id).flags.has_window_id)
+
 /* access to other parts of a style (call with the style itself) */
 #define SGET_NEXT_STYLE(s) \
 	((s).next)
@@ -349,10 +367,24 @@
 	((s).prev)
 #define SSET_PREV_STYLE(s,x) \
 	((s).prev = (x))
+#define SGET_ID(s) \
+        ((s).id)
 #define SGET_NAME(s) \
-	((s).name)
+	SID_GET_NAME(SGET_ID(s))
 #define SSET_NAME(s,x) \
-	((s).name = (x))
+	SID_SET_NAME(SGET_ID(s),x)
+#define SGET_WINDOW_ID(s) \
+	SID_GET_WINDOW_ID(SGET_ID(s))
+#define SSET_WINDOW_ID(s,x) \
+	SID_SET_WINDOW_ID(SGET_ID(s),x)
+#define SSET_ID_HAS_NAME(s,x) \
+        SID_SET_HAS_NAME(SGET_ID(s), x)
+#define SGET_ID_HAS_NAME(s) \
+        SID_GET_HAS_NAME(SGET_ID(s))
+#define SSET_ID_HAS_WINDOW_ID(s,x) \
+        SID_SET_HAS_WINDOW_ID(SGET_ID(s),x)
+#define SGET_ID_HAS_WINDOW_ID(s) \
+        SID_GET_HAS_WINDOW_ID(SGET_ID(s))
 #define SGET_ICON_NAME(s) \
 	((s).icon_name)
 #define SSET_ICON_NAME(s,x) \
@@ -551,6 +583,7 @@ void update_icon_title_cs_style(FvwmWindow *fw, window_style *pstyle);
 void update_icon_title_cs_hi_style(FvwmWindow *fw, window_style *pstyle);
 void update_icon_background_cs_style(FvwmWindow *fw, window_style *pstyle);
 void free_icon_boxes(icon_boxes *ib);
+void style_destroy_style(style_id_t s_id);
 void print_styles(int verbose);
 
 #endif /* _STYLE_ */

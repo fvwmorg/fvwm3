@@ -1,3 +1,8 @@
+2003-07-16  olicha  <olivier.chapuis@free.fr>
+
+	* purify/purify.fvwm2rc:
+	Added WindowStyle and DestroyWindowStyle tests
+
 2003-05-26  olicha  <olivier.chapuis@free.fr>
 
 	* purify/purify.fvwm2rc:

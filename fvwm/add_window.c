@@ -3020,6 +3020,18 @@ void destroy_window(FvwmWindow *fw)
 		return;
 	}
 
+	/* remove window style */
+	if (!IS_SCHEDULED_FOR_DESTROY(fw) && !DO_REUSE_DESTROYED(fw))
+	{
+		style_id_t s_id;
+
+		memset(&s_id, 0, sizeof(style_id_t));
+		SID_SET_WINDOW_ID(s_id, (XID)FW_W(fw));
+		SID_SET_HAS_WINDOW_ID(s_id, True);
+
+		style_destroy_style(s_id);
+	}
+
 	/****** remove from window list ******/
 	/* if the window is sheduled fro destroy the window has been already
 	 * removed from list */

@@ -135,6 +135,59 @@ static Bool blocksintersect(char *blk1, char *blk2, int length)
 	return False;
 }
 
+Bool style_ids_are_equals(style_id_t a, style_id_t b)
+{
+	if (SID_GET_HAS_NAME(a) && SID_GET_HAS_NAME(b) &&
+	    !strcmp(SID_GET_NAME(a), SID_GET_NAME(b)))
+	{
+		return True;
+	}
+	if (SID_GET_HAS_WINDOW_ID(a) && SID_GET_HAS_WINDOW_ID(b) &&
+	    SID_GET_WINDOW_ID(a) == SID_GET_WINDOW_ID(b))
+	{
+		return True;
+	}
+	return False;
+}
+
+Bool style_id_equals_id(window_style s, style_id_t id)
+{
+	return style_ids_are_equals(SGET_ID(s), id);
+}
+
+Bool styles_have_same_id(window_style s, window_style t)
+{
+	return style_ids_are_equals(SGET_ID(s), SGET_ID(t));
+}
+
+Bool fw_match_style_id(FvwmWindow *fw, style_id_t s_id)
+{
+	if (SID_GET_HAS_NAME(s_id) &&
+	    (matchWildcards(SID_GET_NAME(s_id), fw->class.res_class) == TRUE ||
+	     matchWildcards(SID_GET_NAME(s_id), fw->class.res_name) == TRUE ||
+	     matchWildcards(SID_GET_NAME(s_id), fw->name.name) == TRUE))
+	{
+		return True;
+	}
+	if (SID_GET_HAS_WINDOW_ID(s_id) &&
+	    SID_GET_WINDOW_ID(s_id) == (XID)FW_W(fw))
+	{
+		return True;
+	}
+
+	return False;
+}
+
+Bool one_fw_can_match_both_ids(window_style s, window_style t)
+{
+	if (SGET_ID_HAS_WINDOW_ID(s) && SGET_ID_HAS_WINDOW_ID(t) &&
+	    SGET_WINDOW_ID(s) != SGET_WINDOW_ID(t))
+	{
+		return False;
+	}
+	return True;
+}
+
 static void remove_icon_boxes_from_style(window_style *pstyle)
 {
 	if (SHAS_ICON_BOXES(&pstyle->flags))
@@ -742,7 +795,7 @@ static void remove_style_from_list(window_style *style, Bool do_free_style)
 	}
 }
 
-static Bool remove_all_of_style_from_list(char *style_ref)
+static Bool remove_all_of_style_from_list(style_id_t style_id)
 {
 	window_style *nptr = all_styles;
 	window_style *next;
@@ -753,7 +806,7 @@ static Bool remove_all_of_style_from_list(char *style_ref)
 	{
 		next = SGET_NEXT_STYLE(*nptr);
 		/* Check if it's to be wiped */
-		if (!strcmp(SGET_NAME(*nptr), style_ref))
+		if (style_id_equals_id(*nptr, style_id))
 		{
 			remove_style_from_list(nptr, True);
 			is_changed = True;
@@ -794,16 +847,19 @@ static Bool __simplify_style_list(void)
 		cmp = SGET_PREV_STYLE(*cur);
 		while (cmp)
 		{
-			if (strcmp(SGET_NAME(*cur), SGET_NAME(*cmp)) != 0)
+			if (!styles_have_same_id(*cur, *cmp))
 			{
-				blockor((char *)&interflags,
-					(char *)&interflags,
-					(char *)&cmp->flag_mask,
-					sizeof(style_flags));
-				blockor((char *)&interflags,
-					(char *)&interflags,
-					(char *)&cmp->flag_default,
-					sizeof(style_flags));
+				if (one_fw_can_match_both_ids(*cur,*cmp))
+				{
+					blockor((char *)&interflags,
+						(char *)&interflags,
+						(char *)&cmp->flag_mask,
+						sizeof(style_flags));
+					blockor((char *)&interflags,
+						(char *)&interflags,
+						(char *)&cmp->flag_default,
+						sizeof(style_flags));
+				}
 				cmp = SGET_PREV_STYLE(*cmp);
 				continue;
 			}
@@ -3747,7 +3803,8 @@ static Bool style_parse_one_style_option(
 			for (add_style = all_styles; add_style;
 			     add_style = SGET_NEXT_STYLE(*add_style))
 			{
-				if (StrEquals(token, SGET_NAME(*add_style)))
+				if (SGET_ID_HAS_NAME(*add_style) &&
+				    StrEquals(token, SGET_NAME(*add_style)))
 				{
 					/* match style */
 					hit = 1;
@@ -3969,7 +4026,7 @@ void parse_and_set_window_style(char *action, char *prefix, window_style *ps)
  * must be freed in ProcessDestroyStyle().
  */
 
-static void __style_command(F_CMD_ARGS, char *prefix)
+static void __style_command(F_CMD_ARGS, char *prefix, Bool is_window_style)
 {
 	/* temp area to build name list */
 	window_style *ps;
@@ -3986,14 +4043,25 @@ static void __style_command(F_CMD_ARGS, char *prefix)
 	/* default StartsOnPage behavior for initial capture */
 	ps->flags.capture_honors_starts_on_page = 1;
 
-	/* parse style name */
-	action = GetNextToken(action, &SGET_NAME(*ps));
-	/* in case there was no argument! */
-	if (SGET_NAME(*ps) == NULL)
+	if (!is_window_style)
 	{
-		free(ps);
-		return;
+		/* parse style name */
+		action = GetNextToken(action, &SGET_NAME(*ps));
+		/* in case there was no argument! */
+		if (SGET_NAME(*ps) == NULL)
+		{
+			free(ps);
+			return;
+		}
+		SSET_ID_HAS_NAME(*ps, True);
 	}
+	else
+	{
+		SSET_WINDOW_ID(*ps, (XID)FW_W(exc->w.fw));
+		SSET_ID_HAS_WINDOW_ID(*ps, True);
+		CopyString(&SGET_NAME(*ps), ""); /* safe */
+	}
+
 	if (action == NULL)
 	{
 		free(SGET_NAME(*ps));
@@ -4004,7 +4072,7 @@ static void __style_command(F_CMD_ARGS, char *prefix)
 	parse_and_set_window_style(action, prefix, ps);
 
 	/* capture default icons */
-	if (StrEquals(SGET_NAME(*ps), "*"))
+	if (SGET_ID_HAS_NAME(*ps) && StrEquals(SGET_NAME(*ps), "*"))
 	{
 		if (ps->flags.has_icon == 1)
 		{
@@ -4020,7 +4088,7 @@ static void __style_command(F_CMD_ARGS, char *prefix)
 		}
 	}
 	if (last_style_in_list &&
-	    strcmp(SGET_NAME(*ps), SGET_NAME(*last_style_in_list)) == 0)
+	    styles_have_same_id(*ps, *last_style_in_list))
 	{
 		/* merge with previous style */
 		merge_styles(last_style_in_list, ps, True);
@@ -4118,19 +4186,7 @@ void lookup_style(FvwmWindow *fw, window_style *styles)
 	/* look thru all styles in order defined. */
 	for (nptr = all_styles; nptr != NULL; nptr = SGET_NEXT_STYLE(*nptr))
 	{
-		/* If name/res_class/res_name match, merge */
-		if (matchWildcards(SGET_NAME(*nptr),fw->class.res_class) ==
-		    TRUE)
-		{
-			merge_styles(styles, nptr, False);
-		}
-		else if (matchWildcards(SGET_NAME(*nptr),fw->class.res_name) ==
-			 TRUE)
-		{
-			merge_styles(styles, nptr, False);
-		}
-		else if (matchWildcards(
-				 SGET_NAME(*nptr), fw->name.name) == TRUE)
+		if (fw_match_style_id(fw, SGET_ID(*nptr)))
 		{
 			merge_styles(styles, nptr, False);
 		}
@@ -4777,6 +4833,33 @@ void update_icon_background_cs_style(FvwmWindow *fw, window_style *pstyle)
 	}
 }
 
+void style_destroy_style(style_id_t s_id)
+{
+	FvwmWindow *t;
+
+	if (remove_all_of_style_from_list(s_id))
+	{
+		/* compact the current list of styles */
+		Scr.flags.do_need_style_list_update = 1;
+	}
+	else
+	{
+		return;
+	}
+	/* mark windows for update */
+	for (t = Scr.FvwmRoot.next; t != NULL && t != &Scr.FvwmRoot;
+	     t = t->next)
+	{
+		if (fw_match_style_id(t, s_id))
+		{
+			SET_STYLE_DELETED(t, 1);
+			Scr.flags.do_need_window_update = 1;
+		}
+	}
+
+	return;
+}
+
 void print_styles(int verbose)
 {
 	window_style *nptr;
@@ -4792,7 +4875,15 @@ void print_styles(int verbose)
 		count++;
 		if (verbose)
 		{
-			fprintf(stderr,"    * %s\n", SGET_NAME(*nptr));
+			if (SGET_ID_HAS_NAME(*nptr))
+			{
+				fprintf(stderr,"    * %s\n", SGET_NAME(*nptr));
+			}
+			else
+			{
+				fprintf(stderr,"    * 0x%lx\n",
+					(unsigned long)SGET_WINDOW_ID(*nptr));
+			}
 		}
 	}
 	fprintf(stderr,"  Number of styles: %i\n", count);
@@ -4802,14 +4893,21 @@ void print_styles(int verbose)
 
 void CMD_Style(F_CMD_ARGS)
 {
-	__style_command(F_PASS_ARGS, NULL);
+	__style_command(F_PASS_ARGS, NULL, False);
+
+	return;
+}
+
+void CMD_WindowStyle(F_CMD_ARGS)
+{
+	__style_command(F_PASS_ARGS, NULL, True);
 
 	return;
 }
 
 void CMD_FocusStyle(F_CMD_ARGS)
 {
-	__style_command(F_PASS_ARGS, "FP");
+	__style_command(F_PASS_ARGS, "FP", False);
 
 	return;
 }
@@ -4817,7 +4915,7 @@ void CMD_FocusStyle(F_CMD_ARGS)
 void CMD_DestroyStyle(F_CMD_ARGS)
 {
 	char *name;
-	FvwmWindow *t;
+	style_id_t s_id;
 
 	/* parse style name */
 	name = PeekToken(action, &action);
@@ -4826,28 +4924,24 @@ void CMD_DestroyStyle(F_CMD_ARGS)
 	if (name == NULL)
 		return;
 
-	/* Do it */
-	if (remove_all_of_style_from_list(name))
-	{
-		/* compact the current list of styles */
-		Scr.flags.do_need_style_list_update = 1;
-	}
-	else
-	{
-		return;
-	}
-	/* mark windows for update */
-	for (t = Scr.FvwmRoot.next; t != NULL && t != &Scr.FvwmRoot;
-	     t = t->next)
-	{
-		if (matchWildcards(name, t->class.res_class) == TRUE ||
-		    matchWildcards(name, t->class.res_name) == TRUE ||
-		    matchWildcards(name, t->name.name) == TRUE)
-		{
-			SET_STYLE_DELETED(t, 1);
-			Scr.flags.do_need_window_update = 1;
-		}
-	}
+	memset(&s_id, 0, sizeof(style_id_t));
+	SID_SET_NAME(s_id, name);
+	SID_SET_HAS_NAME(s_id, True);
 
+	/* Do it */
+	style_destroy_style(s_id);
+	return;
+}
+
+void CMD_DestroyWindowStyle(F_CMD_ARGS)
+{
+	style_id_t s_id;
+
+	memset(&s_id, 0, sizeof(style_id_t));
+	SID_SET_WINDOW_ID(s_id, (XID)FW_W(exc->w.fw));
+	SID_SET_HAS_WINDOW_ID(s_id, True);
+
+	/* Do it */
+	style_destroy_style(s_id);
 	return;
 }

@@ -5997,10 +5997,16 @@ This removes all settings for the style named "Application*", NOT
 all styles starting with "Application".
 
 .TP
+.B "DestroyWindowStyle"
+deletes the styles set by the
+.B WindowStyle
+command on the selected window. The changes take effect immediately.
+
+.TP
 .BI "UpdateStyles"
 All pending updates of all windows' styles and looks are applied
 immediately.  E.g. if
-.BR Style " or " TitleStyle
+.BR Style ", " WindowStyle " or " TitleStyle
 commands were issued inside a fvwm function.
 
 .TP
@@ -7799,6 +7805,14 @@ allows only the FvwmPager module icon to exist:
 Style * NoIcon
 Style FvwmPager Icon
 .EE
+
+.TP
+.BI "WindowStyle " "options"
+sets attributes (styles) on the selected window. The
+.I options  
+are exactly the same as for the
+.B Style
+command.
 
 .SS OTHER COMMANDS CONTROLLING WINDOW STYLES
 
