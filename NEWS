@@ -1,5 +1,5 @@
 Note, the changes for the last STABLE release start with release
-_+_A HREF="#2.4.4"_-_2.4.4_+_/A_-_.
+_+_A HREF="#2.4.5"_-_2.4.5_+_/A_-_.
 
 Changes in beta release 2.5.0 (not released yet)
 
@@ -77,9 +77,56 @@ Changes in beta release 2.5.0 (not released yet)
 
 * New conditions Focused, !Focused, HasPointer and !HasPointer.
 
-_+_A NAME="2.4.4"_-_
-Changes in stable release 2.4.4 (16-Dec-2001)
+_+_A NAME="2.4.5"_-_
+Changes in stable release 2.4.5 (27-Jan-2002)
 _+_/A_-_
+
+* Fixed minor problems in popping sub menus up and down.
+
+* Fixed moving windows between pages with the keyboard.
+
+* Fixed the size of the geometry window that was broken sometimes.
+
+* Fixed problem with pointer warping to another screen on a dual
+  head setup.
+
+* Fixed a problem with the focus in internal Ddd and Netscape
+  windows.
+
+* Reduced the time in which fvwm attempts to grab the pointer.
+
+* Fixed unmanaged window when window was mapped/unmapped/mapped too
+  fast.
+
+* Fixed MiniScroll's auto repeating in FvwmScript.
+
+* Fixed a crash with the UseStyle style in combination with
+  HilightBack.
+
+* Fixed excessive redraws of the windows under a window being shaded.
+
+* Fixed a minor memory leak in the Style command.
+
+* Fixed pixmap background of FvwmButtons behind buttons with only
+  text.
+
+* Fixed a crash in FvwmIconBox when the application provided an
+  illegal icon.
+
+* Fixed a configure problem with libstroke-0.5.1.
+
+* New style BackingStoreWindowDefault which is the default
+  now. Fvwm no longer disables backing store on windows by
+  default.
+
+* Fixed bug that sometimes caused unnecessary redraws when a style
+  was changed.
+
+* Fixed crash when something like "$[$v]" appeared in a command.
+
+* Fixed parsing of conditions with more than one comma.
+
+Changes in stable release 2.4.4 (16-Dec-2001)
 
 * Minor title drawing fixes.
 
