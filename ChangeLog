@@ -1,5 +1,7 @@
 1999-04-07  Dominik Vogt  <dominik_vogt@gmx.de>
 
+	* configure.in: changed version to 2.3.1
+
 	* fvwm/repeat.h:
 	* fvwm/repeat.c:
 	* fvwm/functions.c:
