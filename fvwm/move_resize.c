@@ -2514,68 +2514,88 @@ static void DisplaySize(FvwmWindow *tmp_win, int width, int height, Bool Init,
  *	height	    - the height of the rectangle
  *
  ***********************************************************************/
+int get_outline_rects(XRectangle *rects, int x, int y, int width, int height)
+{
+  int i;
+  int n;
+  int m;
+
+  n = 3;
+  m = (width - 5) / 2;
+  if (m < n)
+  {
+    n = m;
+  }
+  m = (height - 5) / 2;
+  if (m < n)
+  {
+    n = m;
+  }
+  if (n < 1)
+  {
+    n = 1;
+  }
+
+  for (i = 0; i < n; i++)
+  {
+    rects[i].x = x + i;
+    rects[i].y = y + i;
+    rects[i].width = width - (i << 1);
+    rects[i].height = height - (i << 1);
+  }
+  if (width - (n << 1) >= 5 && height - (n << 1) >= 5)
+  {
+    if (width - (n << 1) >= 10)
+    {
+      int off = (width - (n << 1)) / 3 + n;
+      rects[i].x = x + off;
+      rects[i].y = y + n;
+      rects[i].width = width - (off << 1);
+      rects[i].height = height - (n << 1);
+      i++;
+    }
+    if (height - (n << 1) >= 10)
+    {
+      int off = (height - (n << 1)) / 3 + n;
+      rects[i].x = x + n;
+      rects[i].y = y + off;
+      rects[i].width = width - (n << 1);
+      rects[i].height = height - (off << 1);
+      i++;
+    }
+  }
+
+  return i;
+}
+
 void MoveOutline(int x, int  y, int  width, int height)
 {
   static int lastx = 0;
   static int lasty = 0;
   static int lastWidth = 0;
   static int lastHeight = 0;
-  int interleave = 0;
-  int offset;
+  int nrects = 0;
   XRectangle rects[10];
 
   if (x == lastx && y == lasty && width == lastWidth && height == lastHeight)
     return;
-
-  /* figure out the ordering */
-  if (width || height)
-    interleave += 1;
-  if (lastWidth || lastHeight)
-    interleave += 1;
-  offset = interleave >> 1;
 
   /* place the resize rectangle into the array of rectangles */
   /* interleave them for best visual look */
   /* draw the new one, if any */
   if (width || height)
   {
-    int i;
-    for (i=0; i < 4; i++)
-    {
-      rects[i * interleave].x = x + i;
-      rects[i * interleave].y = y + i;
-      rects[i * interleave].width = width - (i << 1);
-      rects[i * interleave].height = height - (i << 1);
-    }
-    rects[3 * interleave].y = y+3 + (height-6)/3;
-    rects[3 * interleave].height = (height-6)/3;
-    rects[4 * interleave].x = x+3 + (width-6)/3;
-    rects[4 * interleave].y = y+3;
-    rects[4 * interleave].width = (width-6)/3;
-    rects[4 * interleave].height = (height-6);
+    nrects += get_outline_rects(&(rects[nrects]), x, y, width, height);
   }
-
-  /* undraw the old one, if any */
   if (lastWidth || lastHeight)
   {
-    int i;
-    for (i=0; i < 4; i++)
-    {
-      rects[i * interleave + offset].x = lastx + i;
-      rects[i * interleave + offset].y = lasty + i;
-      rects[i * interleave + offset].width = lastWidth - (i << 1);
-      rects[i * interleave + offset].height = lastHeight - (i << 1);
-    }
-    rects[3 * interleave + offset].y = lasty+3 + (lastHeight-6)/3;
-    rects[3 * interleave + offset].height = (lastHeight-6)/3;
-    rects[4 * interleave + offset].x = lastx+3 + (lastWidth-6)/3;
-    rects[4 * interleave + offset].y = lasty+3;
-    rects[4 * interleave + offset].width = (lastWidth-6)/3;
-    rects[4 * interleave + offset].height = (lastHeight-6);
+    nrects +=
+      get_outline_rects(&(rects[nrects]), lastx, lasty, lastWidth, lastHeight);
   }
-
-  XDrawRectangles(dpy, Scr.Root, Scr.XorGC, rects, interleave * 5);
-
+  if (nrects > 0)
+  {
+    XDrawRectangles(dpy, Scr.Root, Scr.XorGC, rects, nrects);
+  }
   lastx = x;
   lasty = y;
   lastWidth = width;
@@ -2583,7 +2603,6 @@ void MoveOutline(int x, int  y, int  width, int height)
 
   return;
 }
-
 
 /* ----------------------------- maximizing code --------------------------- */
 

@@ -1,3 +1,11 @@
+2001-03-10  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* tests/purify/purify.fvwm2rc:
+	merged ImagePath and SetEnv tests and enhanced SetEnv tests
+
+	* fvwm/move_resize.c (MoveOutline):
+	revised outline drawing code for small windows and simplified code
+
 2001-03-10  Dan Espen  <dane@mk.telcordia.com>
 
 	* tests/FvwmButtons/FvwmButtons.sh: More tests.

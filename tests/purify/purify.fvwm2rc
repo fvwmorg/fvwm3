@@ -59,12 +59,33 @@ CreateFunc AddTest
 # Now start defining test functions:
 
 # This one has to be first, other tests use it.
-AddTest "Test ImagePath" ImagePath-Func
+AddTest "Test ImagePath and SetEnv" ImagePath-Func
 AddToFunc ImagePath-Func
  + I ImagePath
  + I ImagePath
  + I ImagePath /usr/lib/X11/icons/pixmaps:+
+ + I SetEnv ImagePath foo:bar
+ + I SetEnv
+ + I SetEnv FOO
+ + I SetEnv   BAR bar
+ + I SetEnv		FOOBAR		barfoo
+ + I SetEnv "	FOO	" x
+ + I SetEnv FOO "   ""ölwäökkü"''
+ + I SetEnv FOO "   ""ölwäökkasdfsdü"''
+ + I SetEnv a1 1
+ + I SetEnv a2 2
+ + I SetEnv a3 3
+ + I SetEnv a4 4
+ + I SetEnv a5 5
+ + I SetEnv a6 6
+ + I SetEnv a7 7
+ + I SetEnv a8 8
+ + I SetEnv a9 9
+ + I SetEnv a10 10
+ + I SetEnv a11 11
+ + I SetEnv a12 12
  + I ImagePath		/usr/lib/X11/icons/pixmaps:+
+ + I SetEnv ImagePath foo:bar:baz
  + I ImagePath /home/tim/pics/xpm/16:/home/tim/pics/xbm/16:/home/tim/pics/xpm/21:/home/tim/pics/xpm/32:/home/tim/pics/xpm/46:/home/tim/pics/xpm/48:/home/tim/pics/xpm:/home/tim/pics/tiles:+
  + I ImagePath /root/icons:/usr/X11R6/include/X11/pixmaps:/usr/X11R6/include/X11/bitmaps:/root/pixmaps:/root/gifs:/opt/kde/share/icons:+
  + I ImagePath /home/tim/pics/xpm/16:/home/tim/pics/xbm/16:/home/tim/pics/xpm/21:/home/tim/pics/xpm/32:/home/tim/pics/xpm/46:/home/tim/pics/xpm/48:/home/tim/pics/xpm:/home/tim/pics/tiles:+
@@ -121,7 +142,7 @@ AddToFunc CopyMenuStyle-Func
  + I AddToMenu Menu-CopyMenuStyle "First we use TMS style"
  + I ChangeMenuStyle SecondMenuStyle Menu-CopyMenuStyle
  + I Popup Menu-CopyMenuStyle
- + I MenuStyle SecondMenuStyle mwm, Background red, Foreground blue 
+ + I MenuStyle SecondMenuStyle mwm, Background red, Foreground blue
  + I MenuStyle SecondMenuStyle ActiveFore yellow, Font fixed
  + I MenuStyle SecondMenuStyle ItemFormat "%.2|%4.3<%6i%6l%6l%6r%6i%2|%5s"
  + I MenuStyle SecondMenuStyle SidePic /tmp/test1.xpm, SideColor green
@@ -1792,16 +1813,6 @@ AddToFunc Read-Func
  + I Echo "Next test reads a non-existing file quietly, there should not be any message"
  + I Read "There is no file with this name!" quiet
 
-AddTest "Test SetEnv" SetEnv-Func
-AddToFunc SetEnv-Func
- + I SetEnv
- + I SetEnv FOO
- + I SetEnv   BAR bar
- + I SetEnv		FOOBAR		barfoo
- + I SetEnv "	FOO	" x
- + I SetEnv FOO "   ""ölwäökkü"''
- + I SetEnv FOO "   ""ölwäökkü"''
-
 # Silent test:
 AddTest "Test Silent" Silent-Func
 AddToFunc Silent-Func
@@ -1946,7 +1957,7 @@ AddToFunc ModuleSynchronous-Func
 AddTest "Test ModuleTimeout" ModuleTimeout-Func
 AddToFunc ModuleTimeout-Func
  + I ModuleTimeout 0
- + I ModuleTimeout 
+ + I ModuleTimeout
  + I ModuleTimeout Junk
  + I ModuleTimeout 01111111111111111
  + I ModuleTimeout 2e222
