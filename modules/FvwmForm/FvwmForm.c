@@ -1660,6 +1660,12 @@ void RedrawItem (Item *item, int click, XEvent *pev)
   Bool text_inter = True;
   DrawTable *dt_ptr = item->header.dt_ptr;
 
+  /* Init intersection to size of the item. */
+  inter.x = BOX_SPC + TEXT_SPC - 1;
+  inter.y = BOX_SPC;
+  inter.width = item->header.size_x - (2 * BOX_SPC) - 2 - TEXT_SPC;
+  inter.height = (item->header.size_y - 1) - 2 * BOX_SPC + 1;
+  /* This is a slightly altered expose event from ReadXServer. */
   if (pev)
   {
 	  r.x = pev->xexpose.x;
@@ -1668,19 +1674,18 @@ void RedrawItem (Item *item, int click, XEvent *pev)
 	  r.height = pev->xexpose.height;
 	  text_inter = frect_get_intersection(
 		  r.x, r.y, r.width, r.height,
-		  BOX_SPC + TEXT_SPC - 1, BOX_SPC,
-		  item->header.size_x - (2 * BOX_SPC) - 2 - TEXT_SPC,
-		  (item->header.size_y - 1) - 2 * BOX_SPC + 1,
+		  inter.x,inter.y,inter.width,inter.height,
 		  &inter);
   }
   else
   {
-	  inter.x = BOX_SPC + TEXT_SPC - 1;
-	  inter.y = BOX_SPC;
-	  inter.width = item->header.size_x - (2 * BOX_SPC) - 2 - TEXT_SPC;
-	  inter.height = (item->header.size_y - 1) - 2 * BOX_SPC + 1;
+	  /* If its not an expose event, the area assume the
+	     whole item is intersected. */
+	  r.x = inter.x;
+	  r.y = inter.y;
+	  r.width = inter.width;
+	  r.height = inter.height;
   }
-
   if (pev && text_inter && dt_ptr && dt_ptr->dt_Fstr)
   {
 	  region = XCreateRegion();
@@ -1714,14 +1719,12 @@ void RedrawItem (Item *item, int click, XEvent *pev)
        multifield paste.  dje */
     if (frect_get_intersection(
 	    r.x, r.y, r.width, r.height,
-	    BOX_SPC + TEXT_SPC - 1, BOX_SPC,
-	    item->header.size_x - (2 * BOX_SPC) - 2 - TEXT_SPC,
-	    (item->header.size_y - 1) - 2 * BOX_SPC + 1,
+	    inter.x, inter.y, inter.width, inter.height,
 	    &inter))
     {
 	    XClearArea(
-		    dpy, item->header.win,
-		    inter.x, inter.y, inter.width, inter.height, False);
+		       dpy, item->header.win,
+		       inter.x, inter.y, inter.width, inter.height, False);
     }
 
     xsegs[0].x1 = 0, xsegs[0].y1 = 0;
