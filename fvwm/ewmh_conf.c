@@ -32,6 +32,7 @@
 #include "stack.h"
 #include "style.h"
 #include "externs.h"
+#include "icons.h"
 #include "ewmh.h"
 #include "ewmh_intern.h"
 
@@ -39,6 +40,58 @@
 /* ************************************************************************* *
  * CMDS
  * ************************************************************************* */
+
+static
+void set_state_workaround(void)
+{
+  FvwmWindow *t;
+
+  for (t = Scr.FvwmRoot.next; t != NULL; t = t->next)
+  {
+    if ((t->Desk != Scr.CurrentDesk) &&
+	(!(IS_ICONIFIED(t) && IS_ICON_STICKY(t)) &&
+	 !(IS_STICKY(t)) && !IS_ICON_UNMAPPED(t)))
+    {
+      if (Scr.bo.EWMHIconicStateWorkaround)
+      {
+	SetMapStateProp(t, NormalState);
+      }
+      else
+      {
+	SetMapStateProp(t, IconicState);
+      }
+    }
+  }
+}
+
+Bool EWMH_BugOpts(char *opt, Bool toggle)
+{
+  Bool save_isw = Scr.bo.EWMHIconicStateWorkaround;
+
+  if (StrEquals(opt,"EWMHIconicStateWorkaround"))
+  {
+    switch (toggle)
+    {
+    case -1:
+      Scr.bo.EWMHIconicStateWorkaround ^= 1;
+      break;
+    case 0:
+    case 1:
+      Scr.bo.EWMHIconicStateWorkaround = toggle;
+      break;
+    default:
+      Scr.bo.EWMHIconicStateWorkaround = 0;
+      break;
+    }
+    if (save_isw != Scr.bo.EWMHIconicStateWorkaround)
+    {
+      set_state_workaround();
+    }
+    return True;
+  }
+  
+  return False;
+}
 
 void CMD_EwmhNumberOfDesktops(F_CMD_ARGS)
 {
@@ -239,6 +292,15 @@ Bool EWMH_CMD_Style(char *token, window_style *ptmpstyle)
 }
 
 #else /* HAVE_EWMH */
+
+Bool EWMH_BugOpts(char *opt, Bool toggle)
+{
+  if (StrEqual(opt,"EWMHIconicStateWorkaround"))
+  {
+    return True;
+  }
+  return False;
+}
 
 void CMD_EwmhNumberOfDesktops(F_CMD_ARGS)
 {

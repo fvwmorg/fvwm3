@@ -18,6 +18,8 @@
 #ifndef _EWMH_
 #define _EWMH_
 
+/* ewmh_conf.c */
+Bool EWMH_BugOpts(char *opt, Bool toggle);
 void CMD_EwmhNumberOfDesktops(F_CMD_ARGS);
 void CMD_EwmhBaseStrut(F_CMD_ARGS);
 Bool EWMH_CMD_Style(char *token, window_style *ptmpstyle);
@@ -50,6 +52,7 @@ void EWMH_GetWorkAreaIntersection(FvwmWindow *fwin,
 float EWMH_GetStrutIntersection(int x11, int y11, int x12, int y12,
 				Bool use_percent);
 void EWMH_SetFrameStrut(FvwmWindow *fwin);
+void EWMH_SetAllowedActions(FvwmWindow *fwin);
 
 int EWMH_GetIconGeometry(FvwmWindow *fwin, rectangle *icon_rect);
 
@@ -108,6 +111,7 @@ void EWMH_SetDesktopNames(void);
 #define EWMH_GetWorkAreaIntersection(x,y,z,t,u,v)
 #define EWMH_GetStrutIntersection(x,y,z,t,u) 0
 #define EWMH_SetFrameStrut(x)
+#define EWMH_SetAllowedActions(x)
 #define EWMH_GetIconGeometry(x,y) 0
 
 #define EWMH_GetStyle(x,y)

@@ -200,12 +200,8 @@ static void unmap_window(FvwmWindow *t)
     /* this is required by the ICCCM2 */
     XUnmapWindow(dpy, t->w);
 #endif
-    /* oc: We cannot do that if we want to be EWMH compliant: the only way a
-     * "taskbar" can know if a window is iconified is to look at the WM_STATE.
-     * Moreover, I am not sure than this is a good idea at all. */
-#ifndef HAVE_EWMH
-    SetMapStateProp(t, IconicState);
-#endif
+    if (!Scr.bo.EWMHIconicStateWorkaround)
+      SetMapStateProp(t, IconicState);
   }
   if (ret)
   {
@@ -257,10 +253,8 @@ static void map_window(FvwmWindow *t)
     /* this is required by the ICCCM2 */
     XMapWindow(dpy, t->w);
 #endif
-    /* see the comment in unmap_window */
-#ifndef HAVE_EWMH
-    SetMapStateProp(t, NormalState);
-#endif
+    if (!Scr.bo.EWMHIconicStateWorkaround)
+      SetMapStateProp(t, NormalState);
   }
   if (ret)
   {

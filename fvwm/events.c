@@ -765,6 +765,7 @@ ICON_DBG((stderr,"hpn: icon changed '%s'\n", Tmp_win->name));
       }
       GNOME_SetWinArea(Tmp_win);
     }
+    EWMH_SetAllowedActions(Tmp_win);
     BroadcastConfig(M_CONFIGURE_WINDOW,Tmp_win);
     break;
 

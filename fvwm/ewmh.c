@@ -16,11 +16,11 @@
  */
 
 /* ************************************************************************
- * An implementation of the Extended Window Manager Hints version 1.0 and 1.1
+ * An implementation of the Extended Window Manager Hints specification
+ * version 1.0, 1.1 and 1.2
  *
  * http://www.freedesktop.org/standards/wm-spec.html
  *
- * version 1.2 is on the road, but I wait it become official
  * ************************************************************************/
 
 #include "config.h"
@@ -42,6 +42,7 @@
 #include "stack.h"
 #include "style.h"
 #include "externs.h"
+#include "decorations.h"
 #include "ewmh.h"
 #include "ewmh_intern.h"
 
@@ -72,10 +73,6 @@ ewmhInfo ewmhc =
  * ************************************************************************* */
 #define ENTRY(name, type, func) \
  {name, None, type, func}
-
-#define NET_SUPPORTED 1
-#define NET_NOT_SUPPORTED 0
-#define IS_NET_ATOM_SUPPORTED(x) !!(x->flags)
 
 /* EWMH_ATOM_LIST_CLIENT_ROOT
  * net atoms that can be send (Client Message) by a client and do not
@@ -109,6 +106,7 @@ ewmh_atom ewmh_atom_client_win[] =
  * too */
 ewmh_atom ewmh_atom_wm_state[] =
 {
+  ENTRY("_NET_WM_STATE_HIDDEN",          XA_ATOM,   ewmh_WMStateHidden),
   ENTRY("_NET_WM_STATE_MAXIMIZED_HORIZ", XA_ATOM,   ewmh_WMStateMaxHoriz),
   ENTRY("_NET_WM_STATE_MAXIMIZED_HORZ",  XA_ATOM,   ewmh_WMStateMaxHoriz),
   ENTRY("_NET_WM_STATE_MAXIMIZED_VERT",  XA_ATOM,   ewmh_WMStateMaxVert),
@@ -121,6 +119,22 @@ ewmh_atom ewmh_atom_wm_state[] =
   {NULL,0,0,0}
 };
 #define EWMH_NUMBER_OF_STATE sizeof(ewmh_atom_wm_state)/sizeof(ewmh_atom) - 1
+
+/* EWMH ATOM_LIST_ALLOWED_ACTIONS: atom for _NET_WM_ALLOWED_ACTIONS */
+ewmh_atom ewmh_atom_allowed_actions[] =
+{
+  ENTRY("_NET_WM_ACTION_CHANGE_DESKTOP", XA_ATOM, ewmh_AllowsYes),
+  ENTRY("_NET_WM_ACTION_CLOSE",          XA_ATOM, ewmh_AllowsClose),
+  ENTRY("_NET_WM_ACTION_MAXIMIZE_HORZ",  XA_ATOM, ewmh_AllowsMaximize),
+  ENTRY("_NET_WM_ACTION_MAXIMIZE_VERT",  XA_ATOM, ewmh_AllowsMaximize),
+  ENTRY("_NET_WM_ACTION_MOVE",           XA_ATOM, ewmh_AllowsMove),
+  ENTRY("_NET_WM_ACTION_RESIZE",         XA_ATOM, ewmh_AllowsResize),
+  ENTRY("_NET_WM_ACTION_SHADE",          XA_ATOM, ewmh_AllowsYes),
+  ENTRY("_NET_WM_ACTION_STICK",          XA_ATOM, ewmh_AllowsYes),
+  {NULL,0,0,0}
+};
+#define EWMH_NUMBER_OF_ALLOWED_ACTIONS \
+  sizeof(ewmh_atom_allowed_actions)/sizeof(ewmh_atom) - 1
 
 /* EWMH ATOM_LIST_WINDOW_TYPE: the various window type */
 ewmh_atom ewmh_atom_window_type[] =
@@ -176,19 +190,21 @@ ewmh_atom ewmh_atom_fvwm_root[] =
 ewmh_atom ewmh_atom_fvwm_win[] =
 {
   ENTRY("_KDE_NET_WM_FRAME_STRUT",    XA_CARDINAL, None),
+  ENTRY("_NET_WM_ALLOWED_ACTIONS",    XA_ATOM,     None),
   ENTRY("_NET_WM_ICON_VISIBLE_NAME",  None,        None),
   ENTRY("_NET_WM_VISIBLE_NAME",       None,        None),
   {NULL,0,0,0}
 };
 
 
-#define NUMBER_OF_ATOM_LISTS 8
+#define NUMBER_OF_ATOM_LISTS 9
 #define L_ENTRY(x,y) {x,y,sizeof(y)/sizeof(ewmh_atom)}
 ewmh_atom_list atom_list[] =
 {
   L_ENTRY(EWMH_ATOM_LIST_CLIENT_ROOT,       ewmh_atom_client_root),
   L_ENTRY(EWMH_ATOM_LIST_CLIENT_WIN,        ewmh_atom_client_win),
   L_ENTRY(EWMH_ATOM_LIST_WM_STATE,          ewmh_atom_wm_state),
+  L_ENTRY(EWMH_ATOM_LIST_ALLOWED_ACTIONS,   ewmh_atom_allowed_actions),
   L_ENTRY(EWMH_ATOM_LIST_WINDOW_TYPE,       ewmh_atom_window_type),
   L_ENTRY(EWMH_ATOM_LIST_FIXED_PROPERTY,    ewmh_atom_fixed_property),
   L_ENTRY(EWMH_ATOM_LIST_PROPERTY_NOTIFY,   ewmh_atom_property_notify),
@@ -874,6 +890,78 @@ void EWMH_SetFrameStrut(FvwmWindow *fwin)
 		      EWMH_ATOM_LIST_FVWM_WIN, (unsigned char *)&val, 4);
 }
 
+/* **T*********************************************************************** *
+ * allowed actions
+ * ************************************************************************* */
+static
+Bool is_win_resizable(FvwmWindow *fwin)
+{
+  return (HAS_OVERRIDE_SIZE_HINTS(fwin) ||
+	  fwin->hints.min_width != fwin->hints.min_width ||
+	  fwin->hints.min_height != fwin->hints.max_height);
+}
+
+Bool ewmh_AllowsYes(EWMH_CMD_ARGS)
+{
+  return True; 
+}
+
+Bool ewmh_AllowsClose(EWMH_CMD_ARGS)
+{
+  return check_if_function_allowed(F_CLOSE, fwin, False, NULL);
+}
+
+Bool ewmh_AllowsMaximize(EWMH_CMD_ARGS)
+{
+  Bool r = check_if_function_allowed(F_MAXIMIZE, fwin, False, NULL);
+
+  /* should we do that ?? */
+#if 0
+  if (!is_win_resizable(fwin) && IS_FIXED(fwin))
+    r = False;
+#endif
+  return r;
+}
+
+Bool ewmh_AllowsMove(EWMH_CMD_ARGS)
+{
+  Bool r = check_if_function_allowed(F_MOVE, fwin, False, NULL);
+
+  if (IS_FIXED(fwin))
+    r = False;
+  return r;
+}
+
+Bool ewmh_AllowsResize(EWMH_CMD_ARGS)
+{
+  Bool r = check_if_function_allowed(F_RESIZE, fwin, False, NULL); 
+
+  if (!is_win_resizable(fwin))
+    r = False;
+  return r;
+}
+
+void EWMH_SetAllowedActions(FvwmWindow *fwin)
+{
+  Atom wm_actions[EWMH_NUMBER_OF_ALLOWED_ACTIONS];
+  int i = 0;
+  ewmh_atom *list = ewmh_atom_allowed_actions;
+
+  while(list->name != NULL)
+  {
+    if (list->action(fwin, NULL, NULL))
+      wm_actions[i++] = list->atom;
+    list++;
+  }
+
+  if (i > 0)
+    ewmh_ChangeProperty(fwin->w, "_NET_WM_ALLOWED_ACTIONS",
+		 EWMH_ATOM_LIST_FVWM_WIN, (unsigned char *)wm_actions, i);
+  else
+    ewmh_DeleteProperty(fwin->w, "_NET_WM_ALLOWED_ACTIONS",
+		 EWMH_ATOM_LIST_FVWM_WIN);
+}
+
 /* ************************************************************************* *
  * Window types
  * ************************************************************************* */
@@ -1041,6 +1129,7 @@ void ewmh_HandleWindowType(FvwmWindow *fwin, window_style *style)
     return;
 
   /* we support only one window type: the first one */
+  /* FIXME: in fact we should take the first that we support */
   while(list->name != NULL)
   {
     if (list->atom == val[0])
@@ -1097,6 +1186,7 @@ void EWMH_WindowInit(FvwmWindow *fwin)
   EWMH_SetWMState(fwin);
   EWMH_SetWMDesktop(fwin);
   EWMH_SetFrameStrut(fwin);
+  EWMH_SetAllowedActions(fwin);
   ewmh_WMStrut(fwin, NULL, NULL);
   ewmh_WMIconGeometry(fwin, NULL, NULL);
   ewmh_AddToKdeSysTray(fwin);
@@ -1181,7 +1271,7 @@ void EWMH_Init(void)
   int supported_count = 0;
   CARD32 val;
   XTextProperty text;
-  CARD32 utf_name[5];
+  CARD32 utf_name[4];
   char *names[1];
 
   /* initialisation of all the atoms */
@@ -1213,7 +1303,6 @@ void EWMH_Init(void)
   utf_name[1] = 0x56;
   utf_name[2] = 0x57;
   utf_name[3] = 0x4D;
-  utf_name[4] = 0x0;
 
   ewmh_ChangeProperty(Scr.NoFocusWin, "_NET_WM_NAME",
 		      EWMH_ATOM_LIST_PROPERTY_NOTIFY,

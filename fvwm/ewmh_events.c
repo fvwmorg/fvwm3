@@ -247,6 +247,41 @@ int ewmh_WMState(EWMH_CMD_ARGS)
   return 0;
 }
 
+int ewmh_WMStateHidden(EWMH_CMD_ARGS)
+{
+  if (ev == NULL && style == NULL)
+    return IS_ICONIFIED(fwin);
+
+  if (ev == NULL && style != NULL)
+  {
+    SFSET_DO_START_ICONIC(*style, 1);
+    SMSET_DO_START_ICONIC(*style, 1);
+    SCSET_DO_START_ICONIC(*style, 1);
+    return 0;
+  }
+
+  if (ev != NULL)
+  {
+    /* client message */
+    char cmd[8];
+    int bool_arg = ev->xclient.data.l[0];
+
+    if ((bool_arg == NET_WM_STATE_TOGGLE && !IS_ICONIFIED(fwin)) ||
+	bool_arg == NET_WM_STATE_ADD)
+    {
+      /* iconify */
+      sprintf(cmd,"%s", "On");
+    }
+    else
+    {
+      /* deiconify */
+      sprintf(cmd,"%s", "Off");
+    }
+    CMD_Iconify(ev, fwin->w, fwin, C_WINDOW, cmd, NULL);
+  }
+  return 0;
+}
+
 int ewmh_WMStateMaxHoriz(EWMH_CMD_ARGS)
 {
 
@@ -296,7 +331,7 @@ int ewmh_WMStateMaxVert(EWMH_CMD_ARGS)
 /* not yet implemented */
 int ewmh_WMStateModal(EWMH_CMD_ARGS)
 {
-  if (ev == NULL && style != NULL)
+  if (ev == NULL && style == NULL)
     return 0;
 
   if (ev == NULL && style != NULL)

@@ -2945,6 +2945,10 @@ void CMD_BugOpts(F_CMD_ARGS)
 	break;
       }
     }
+    else if (EWMH_BugOpts(opt, toggle))
+    {
+      /* work is done in EWMH_BugOpts */
+    }
     else
     {
       fvwm_msg(ERR, "SetBugOptions", "Unknown Bug Option '%s'", opt);

@@ -1,3 +1,31 @@
+2001-12-15  olicha  <olivier.chapuis@free.fr>
+
+	* fvwm/builtins (CMD_BugOpts):
+	* fvwm/ewmh.c:
+	* fvwm/ewmh_conf.c (EWMH_BugOpts):
+	* fvwm/ewmh_events.c (ewmh_StateHidden):
+	* fvwm/fvwm.c (InitVariables):
+	* fvwm/fvwm2.1:
+	* fvwm/icons.c (CMD_Iconify):
+	* fvwm/screen.h:
+	* fvwm/virtual.c (unmap_window):
+	(map_window):
+	Implemented the new _NET_WM_STATE_HIDDEN ewmh state that allows
+	to fix the IconicState problems in vitrual.c. New BugOpts
+	EWMHIconicStateWorkaround for supporting current KDE versions
+
+	* fvwm/events.c (HandlePropertyNotify):
+	* fvwm/ewmh.{c,h} (ewmh_AllowsYes):
+	(ewmh_AllowsClose):
+	(ewmh_AllowsMaximize):
+	(ewmh_AllowsMove):
+	(ewmh_AllowsResize):
+	(EWMH_SetAllowedActions):
+	(EWMH_WindowInit):
+	* fvwm/style.c (check_window_style_change):
+	* fvwm/update.{c,h} (apply_window_updates):
+	Implemented _NET_WM_ALLOWED_ACTIONS from version 1.2 of the wm-spec
+
 2001-12-13  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* fvwm/borders.c (RedrawTitle):

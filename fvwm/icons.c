@@ -1750,7 +1750,10 @@ void CMD_Iconify(F_CMD_ARGS)
   if (IS_ICONIFIED(tmp_win))
   {
     if (toggle == 0)
+    {
       DeIconify(tmp_win);
+      EWMH_SetWMState(tmp_win);
+    }
   }
   else
   {
@@ -1765,6 +1768,7 @@ void CMD_Iconify(F_CMD_ARGS)
       y = 0;
       GetLocationFromEventOrQuery(dpy, Scr.Root, eventp, &x, &y);
       Iconify(tmp_win, x, y);
+      EWMH_SetWMState(tmp_win);
     }
   }
 }

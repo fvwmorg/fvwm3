@@ -2652,6 +2652,12 @@ visually disturbing for other applications using windows not
 managed by fvwm.  Since these applications are rare it is most
 likely safe to leave this option at its default.
 
+.I EWMHIconicStateWorkaround
+is needed by EWMH compliant pagers or taskbars which use the Iconic
+WM_STATE to determine if an application is iconified in the place of the
+corresponding EWMH state. This option is needed by the current KDE2
+versions. By default this option is off.
+
 .TP
 .BI "BusyCursor [" "Option bool" "], " ...
 This command controls the cursor during the execution of certain

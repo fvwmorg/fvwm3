@@ -48,6 +48,7 @@ typedef enum
   EWMH_ATOM_LIST_CLIENT_ROOT,
   EWMH_ATOM_LIST_CLIENT_WIN,
   EWMH_ATOM_LIST_WM_STATE,
+  EWMH_ATOM_LIST_ALLOWED_ACTIONS,
   EWMH_ATOM_LIST_WINDOW_TYPE,
   EWMH_ATOM_LIST_FIXED_PROPERTY,
   EWMH_ATOM_LIST_PROPERTY_NOTIFY,
@@ -134,6 +135,7 @@ int ewmh_WMDesktop(EWMH_CMD_ARGS);
 int ewmh_MoveResize(EWMH_CMD_ARGS);
 
 int ewmh_WMState(EWMH_CMD_ARGS);
+int ewmh_WMStateHidden(EWMH_CMD_ARGS);
 int ewmh_WMStateMaxHoriz(EWMH_CMD_ARGS);
 int ewmh_WMStateMaxVert(EWMH_CMD_ARGS);
 int ewmh_WMStateModal(EWMH_CMD_ARGS);
@@ -144,6 +146,12 @@ int ewmh_WMStateSticky(EWMH_CMD_ARGS);
 
 int ewmh_WMIconGeometry(EWMH_CMD_ARGS);
 int ewmh_WMStrut(EWMH_CMD_ARGS);
+
+Bool ewmh_AllowsYes(EWMH_CMD_ARGS);
+Bool ewmh_AllowsClose(EWMH_CMD_ARGS);
+Bool ewmh_AllowsMaximize(EWMH_CMD_ARGS);
+Bool ewmh_AllowsMove(EWMH_CMD_ARGS);
+Bool ewmh_AllowsResize(EWMH_CMD_ARGS);
 
 /* ewmh_icon */
 int ewmh_WMIcon(EWMH_CMD_ARGS);

@@ -48,6 +48,7 @@ typedef struct
   unsigned do_update_placement_penalty : 1;
   unsigned do_update_working_area : 1;
   unsigned do_update_ewmh_stacking_hints : 1;
+  unsigned do_update_ewmh_allowed_actions : 1;
 } update_win;
 
 void destroy_scheduled_windows(void);

@@ -1509,6 +1509,7 @@ static void InitVariables(void)
   Scr.bo.DisableConfigureNotify = 0;
   Scr.bo.InstallRootCmap = 0;
   Scr.bo.FlickeringQtDialogsWorkaround = 1;
+  Scr.bo.EWMHIconicStateWorkaround = 0;
 
   Scr.gs.EmulateMWM = DEFAULT_EMULATE_MWM;
   Scr.gs.EmulateWIN = DEFAULT_EMULATE_WIN;

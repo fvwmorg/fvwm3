@@ -350,6 +350,10 @@ static void apply_window_updates(
 	new_layer(t, Scr.DefaultLayer);
     }
   }
+  if (flags->do_update_ewmh_allowed_actions)
+  {
+    EWMH_SetAllowedActions(t);
+  }
   t->shade_anim_steps = pstyle->shade_anim_steps;
 
   return;

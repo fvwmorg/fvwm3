@@ -3081,6 +3081,7 @@ void check_window_style_change(
   if (ret_style->change_mask.has_max_window_size)
   {
     flags->do_resize_window = True;
+    flags->do_update_ewmh_allowed_actions = True;
   }
 
   /*
@@ -3164,6 +3165,7 @@ void check_window_style_change(
       ret_style->change_mask.is_button_disabled)
   {
     flags->do_redecorate = True;
+    flags->do_update_ewmh_allowed_actions = True;
   }
 
   if (ret_style->change_mask.do_save_under ||
@@ -3215,6 +3217,14 @@ void check_window_style_change(
   {
     flags->do_update_visible_icon_name = True;
     flags->do_update_icon_title = True;
+  }
+
+  /*
+   *  is_fixed
+   */
+  if (SCIS_FIXED(*ret_style) || SCHAS_OVERRIDE_SIZE(*ret_style))
+  {
+    flags->do_update_ewmh_allowed_actions = True;
   }
 
   return;
