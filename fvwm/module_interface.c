@@ -1779,10 +1779,6 @@ void FlushMessageQueue(int module)
 			{
 				obj->done += a;
 			}
-			else if (errno == EINTR)
-			{
-				continue;
-			}
 			/* the write returns EWOULDBLOCK or EAGAIN if the pipe
 			 * is full. (This is non-blocking I/O). SunOS returns
 			 * EWOULDBLOCK, OSF/1 returns EAGAIN under these
@@ -1838,7 +1834,7 @@ void FlushMessageQueue(int module)
 				/* pipe accepts further input; continue */
 				continue;
 			}
-			else
+			else if (errno != EINTR)
 			{
 				KillModule(module);
 				return;
