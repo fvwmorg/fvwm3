@@ -68,6 +68,7 @@ void do_windowList(XEvent *eventp,Window w,FvwmWindow *tmp_win,
   int dwidth,dheight;
   char tlabel[50]="";
   int last_desk_done = INT_MIN;
+  int last_desk_displayed = INT_MIN;
   int next_desk = 0;
   char *t_hot=NULL;		/* Menu label with hotkey added */
   char scut = '0';		/* Current short cut key */
@@ -242,6 +243,14 @@ void do_windowList(XEvent *eventp,Window w,FvwmWindow *tmp_win,
               (t->flags & ONTOP)))
           continue; /* don't want "normal" ones - skip */
 
+        /* put a seperator between desks, but not at the top */
+        if (t->Desk != last_desk_displayed)
+        {
+          if (last_desk_displayed != INT_MIN)
+            AddToMenu(mr, NULL, NULL, FALSE, FALSE);
+          last_desk_displayed = t->Desk;
+        }
+        
         if(flags & SHOW_ICONNAME)
           name = t->icon_name;
         else
