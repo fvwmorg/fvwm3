@@ -15,27 +15,26 @@ Changes in beta release 2.5.1 (not released yet)
 * New flags (No)FvwmModule to FvwmButtons Swallow option
 
 * The I18N_MB patch (--enable-multibyte) has been rewritten. MULTIBYTE
-is used in the place of I18N_MB. A set of locale functions (locale
-initialization, font loading, text drawing, ...etc.) can be found in
-libs/Flocale.{c,h} and is used in all the fvwm code (but the FvwmWharf).
-Font loading and memory management has been improved in the multibyte case.
+  is used to identify what is was I18N_MB. A set of locale functions
+  (locale initialization, font loading, text drawing, ...etc.) is created
+  in libs/Flocale.{c,h} and used in the entire fvwm code (but FvwmWharf).
+  Font loading and memory management is improved in the multibyte case.
 
 * Better support of non ISO-8859-1 window and icon titles. See the
---disable-compound-text option in INSTALL.fvwm for more details.
+  --disable-compound-text option in INSTALL.fvwm for more details.
 
-* Added anti-aliased text rendering support using Xft (this is off by
-default, use --enable-xft). Recent version of XFree and freetype2 is
-needed (see the FONT NAMES AND FONT LOADING section of the fvwm2 manual
-page).
+* Added anti-aliased text rendering support using Xft (use --enable-xft
+  to enable it). Recent versions of XFree and freetype2 are needed (see
+  the FONT NAMES AND FONT LOADING section of the fvwm2 manual page).
 
 * New conditional command This.
 
-* Conditional commands now have a return code (True, False or
+* Conditional commands now have a return code (Match, NoMatch or
   Error).  This return code can be checked and tied to an action
   with the new commands Cond and CondCase.
 
 * Bindings can be made to the separate parts of the window border
-  with the new contexts '[', ']', '-', '_', '<', '^', '>' and '_'.
+  with the new contexts '[', ']', '-', '_', '<', '^', '>' and 'v'.
 
 * New options for FvwmRearange: -maximize and -animate.
 

@@ -292,12 +292,14 @@ and more.  This turns this support off.  Note, you may turn it off
 dynamically for all or individual windows by: Style * GNOMEIgnoreHints
 Note that no additional libraries are needed for supporting GNOME hints.
 
+
   --disable-ewmh                disable extended window manager hints
   ~~~~~~~~~~~~~~
 
 By default, FVWM supports the extended window manager hints specification
 (used by GNOME 2 and KDE version 2 or 3). This turns this support off.
 See the fvwm2 manual page for more details on this support.
+
 
   --disable-sm                  disable session management support
   ~~~~~~~~~~~~
@@ -316,6 +318,7 @@ FVWM has limited support for multibyte charsets.  It is fully experimental
 and does not work in all places.  If you have access to a multibyte system
 and want to extend this support, contact the fvwm-workers@fvwm.org list.
 
+
   --disable-compound-text       disable compound text conversion
   ~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -323,24 +326,26 @@ International application may encode its window and icon name using a
 special encoding (COMPOUND_TEXT) even with a non multibyte charset.
 Basically, this happen if the window title contains non ASCII characters
 (or only non ISO-8859-1 characters, this depends on the locale). By default,
-FVWM converts these names into STRING encoded in the current locale. In a
-pure ISO-8859-1 environment such conversion is rarely needed. To be ready
-to do the conversion some shared libraries are loaded at FVWM startup.
+FVWM converts these names into STRING encoded in the current locale. In the
+pure ISO-8859-1 environment such conversion is rarely needed. Some shared
+libraries are loaded at the FVWM startup when compound text is enabled.
 This option disable this conversion. Note that --enable-multibyte causes to
 ignore this option and you should try to use --enable-multibyte if you have
 problems with the window titles.
 
+
   --enable-xft                  enable anti-aliased text rendering
   ~~~~~~~~~~~~
 
-Enable the possibility to use Xft anti-aliased text rendering in all
-text drawn by fvwm2 and its modules. This support is totally experimental
-and if anti-aliased rendering is in used fvwm proceeds more redrawing which
-can cause text flickering. Moreover, this option add a not negligible amount
-of shared memory to all fvwm process. You need XFree version >= 4.1 and
-freetype2 version >= 6.1.0 (aka version 2.0.6), but more recent versions are
-better. The FONT NAMES AND FONT LOADING section of the fvwm2 manual page
-explain how to enable anti-aliased rendering.
+Allow using Xft anti-aliased text rendering in any text drawn by fvwm
+and modules. This support is totally experimental and if anti-aliased
+rendering is enabled fvwm performs more redrawing that may cause text
+flickering. Moreover, this option adds a not negligible amount of shared
+memory to all fvwm processes. You need XFree version >= 4.1 and freetype2
+version >= 6.1.0 (aka version 2.0.6), but more recent versions are better.
+The FONT NAMES AND FONT LOADING section of the fvwm2 manual page explains
+how to enable anti-aliased rendering.
+
 
   --disable-shape               disable shape extensions
   ~~~~~~~~~~~~~~~
