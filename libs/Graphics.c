@@ -60,12 +60,15 @@
  * Top and bottom lines come out full length, the sides come out 1 pixel less
  * This is so FvwmBorder windows have a correct bottom edge and the sticky lines
  * look like just lines
+ * rotation rotate the relief and shadow part 
  */
-void do_relieve_rectangle(
+void do_relieve_rectangle_with_rotation(
 	Display *dpy, Drawable d, int x, int y, int w, int h,
-	GC ReliefGC, GC ShadowGC, int line_width, Bool use_alternate_shading)
+	GC ReliefGC, GC ShadowGC, int line_width, Bool use_alternate_shading,
+	int rotation)
 {
 	XSegment* seg;
+	GC shadow_gc, relief_gc;
 	int i,i2;
 	int a = (use_alternate_shading) ? 1 : 0;
 
@@ -73,32 +76,84 @@ void do_relieve_rectangle(
 	{
 		return;
 	}
+
+	if (rotation == ROTATION_270)
+	{
+		rotation = ROTATION_90;
+		shadow_gc = ReliefGC;
+		relief_gc = ShadowGC;
+	}
+	else if (rotation == ROTATION_180)
+	{
+		rotation = ROTATION_0;
+		shadow_gc = ReliefGC;
+		relief_gc = ShadowGC;
+	}
+	else
+	{
+		shadow_gc = ShadowGC;
+		relief_gc = ReliefGC;
+	}
+
 	seg = (XSegment*)alloca((sizeof(XSegment) * line_width) * 2);
-	/* left side, from 0 to the lesser of line_width & just over half w */
-	for (i = 0; (i < line_width) && (i <= w / 2); i++) {
-		seg[i].x1 = x+i; seg[i].y1 = y+i+a;
-		seg[i].x2 = x+i; seg[i].y2 = y+h-i-1+a;
+	/* from 0 to the lesser of line_width & just over half w */
+	for (i = 0; (i < line_width) && (i <= w / 2); i++)
+	{
+		if (rotation == ROTATION_0)
+		{
+			/* left */
+			seg[i].x1 = x+i; seg[i].y1 = y+i+a;
+			seg[i].x2 = x+i; seg[i].y2 = y+h-i-1+a;
+		}
+		else /* ROTATION_90 */
+		{
+			/* right */
+			seg[i].x1 = x+w-i; seg[i].y1 = y+h-i-a;
+			seg[i].x2 = x+w-i; seg[i].y2 = y+i+1-a;
+		}
 	}
 	i2 = i;
 	/* draw top segments */
-	for (i = 0; (i < line_width) && (i <= h / 2); i++,i2++) {
+	for (i = 0; (i < line_width) && (i <= h / 2); i++,i2++)
+	{
 		seg[i2].x1 = x+w-i-a; seg[i2].y1 = y+i;
 		seg[i2].x2 = x+i+1-a; seg[i2].y2 = y+i;
 	}
-	XDrawSegments(dpy, d, ReliefGC, seg, i2);
+	XDrawSegments(dpy, d, relief_gc, seg, i2);
 	/* bottom */
-	for (i = 0; (i < line_width) && (i <= h / 2); i++) {
+	for (i = 0; (i < line_width) && (i <= h / 2); i++)
+	{
 		seg[i].x1 = x+i+a;     seg[i].y1 = y+h-i;
 		seg[i].x2 = x+w-i-1+a; seg[i].y2 = y+h-i;
 	}
-	/* right */
 	i2 = i;
-	for (i = 0; (i < line_width) && (i <= w / 2); i++,i2++) {
-		seg[i2].x1 = x+w-i; seg[i2].y1 = y+h-i-a;
-		seg[i2].x2 = x+w-i; seg[i2].y2 = y+i+1-a;
+	for (i = 0; (i < line_width) && (i <= w / 2); i++,i2++)
+	{
+		if (rotation == ROTATION_0)
+		{
+			/* right */
+			seg[i2].x1 = x+w-i; seg[i2].y1 = y+h-i-a;
+			seg[i2].x2 = x+w-i; seg[i2].y2 = y+i+1-a;
+		}
+		else
+		{
+			/* left */
+			seg[i2].x1 = x+i; seg[i2].y1 = y+i+a;
+			seg[i2].x2 = x+i; seg[i2].y2 = y+h-i-1+a;
+		}
 	}
-	XDrawSegments(dpy, d, ShadowGC, seg, i2);
+	XDrawSegments(dpy, d, shadow_gc, seg, i2);
 
+	return;
+}
+
+void do_relieve_rectangle(
+	Display *dpy, Drawable d, int x, int y, int w, int h,
+	GC ReliefGC, GC ShadowGC, int line_width, Bool use_alternate_shading)
+{
+	do_relieve_rectangle_with_rotation(
+		dpy, d, x, y, w, h, ReliefGC, ShadowGC, line_width,
+		use_alternate_shading, ROTATION_0);
 	return;
 }
 

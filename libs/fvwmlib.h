@@ -264,6 +264,10 @@ Bool GetResourceString(
 void do_relieve_rectangle(
 	Display *dpy, Drawable d, int x, int y, int w, int h,
 	GC ReliefGC, GC ShadowGC, int line_width, Bool use_alternate_shading);
+void do_relieve_rectangle_with_rotation(
+	Display *dpy, Drawable d, int x, int y, int w, int h,
+	GC ReliefGC, GC ShadowGC, int line_width, Bool use_alternate_shading,
+	int rotation);
 
 #define RelieveRectangle(dpy, d, x, y, w, h, ReliefGC, ShadowGC, line_width) \
 	do_relieve_rectangle( \

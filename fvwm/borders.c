@@ -221,15 +221,24 @@ typedef struct
 	int right_end_length;
 	int right_of_text_length;
 	rotation_type draw_rotation;
-	unsigned is_rotated : 1;
+	rotation_type restore_rotation;
+	unsigned td_is_rotated : 1;
 	unsigned has_been_saved : 1;
-	unsigned has_vt : 1;          /* vertical title ? */
-	unsigned buttons_reverted : 1;
+	unsigned has_vt : 1;             /* vertical title ? */
+	unsigned has_an_upsidedown_rotation : 1;  /* 270 || 180 */
 } titlebar_descr;
 
 /* ---------------------------- forward declarations ------------------------ */
-static void border_rotate_titlebar_descr(
-	FvwmWindow *fw, titlebar_descr *td);
+/*  forward declarations are not so good */
+
+/* for grouping titlebar_descr computation */
+static void border_rotate_titlebar_descr(FvwmWindow *fw, titlebar_descr *td);
+
+/* for grouping the MultiPixmap stuff */
+static Bool border_mp_get_use_title_style_parts_and_geometry(
+	titlebar_descr *td, FvwmPicture **pm, FvwmAcs *acs,
+	unsigned short sf, int is_left, rectangle *g, int *part);
+
 /* ---------------------------- local variables ----------------------------- */
 
 static const char ulgc[] = { 1, 0, 0, 0x7f, 2, 1, 1 };
@@ -1360,6 +1369,45 @@ static void border_fill_pixmap_background(
 	return;
 }
 
+/* create a root transparent colorset bg, we take in account a possible
+ * drawing rotation */
+static Pixmap border_create_root_transparent_pixmap(
+	titlebar_descr *td, Window w, int width, int height, int cs)
+{
+	int my_w, my_h;
+	Pixmap p;
+
+	if (!CSET_IS_TRANSPARENT_ROOT(cs))
+	{
+		return None;
+	}
+	if (td->td_is_rotated &&
+	    (td->draw_rotation == ROTATION_90 ||
+	     td->draw_rotation == ROTATION_270))
+	{
+		my_h = width;
+		my_w = height;
+	}
+	else
+	{
+		my_w = width;
+		my_h = height;
+	}
+	p = CreateBackgroundPixmap(
+		dpy, w, my_w, my_h, &Colorset[cs],
+		Pdepth, Scr.BordersGC, False);
+	if (td->td_is_rotated)
+	{
+		Pixmap tmp;
+		tmp = CreateRotatedPixmap(
+			dpy, p, my_w, my_h, Pdepth, Scr.BordersGC,
+			td->restore_rotation);
+		XFreePixmap(dpy, p);
+		p = tmp;
+	}
+	return p;
+}
+
 static void border_get_frame_pixmap(
 	common_decorations_type *cd, rectangle *frame_g)
 {
@@ -1614,10 +1662,6 @@ static void border_draw_vector_to_pixmap(
  *  Handle Title pixmaps used for UseTitleStyle
  *
  ****************************************************************************/
-static Bool border_mp_get_use_title_style_parts_and_geometry(
-	titlebar_descr *td, FvwmPicture **pm, FvwmAcs *acs,
-	unsigned short sf, int is_left, rectangle *g, int *part);
-
 static void border_setup_bar_pixmaps(
 	titlebar_descr *td, dynamic_common_decorations *dcd, DecorFace *df,
 	ButtonState bs)
@@ -1872,14 +1916,13 @@ static void border_free_bar_pixmaps(
  *  continuing for the given width and height. This is a utility function used
  *  by border_mp_draw_mp_titlebar. (tril@igs.net) */
 static void border_mp_render_into_pixmap(
-	common_decorations_type *cd, FvwmPicture **src, FvwmAcs *acs,
-	Pixel *pixels, unsigned short solid_flags, unsigned short stretch_flags,
-	int part, Pixmap dest, Window w, rectangle *full_g, rectangle *title_g,
-	ButtonState bs, rectangle *g)
+	titlebar_descr *td, common_decorations_type *cd, FvwmPicture **src,
+	FvwmAcs *acs, Pixel *pixels, unsigned short solid_flags,
+	unsigned short stretch_flags, int part, Pixmap dest, Window w,
+	rectangle *full_g, rectangle *title_g, ButtonState bs, rectangle *g)
 {
 	int x = 0;
 	int y = 0;
-	Pixmap bp = None;
 	pixmap_background_type bg;
 	rectangle dest_g;
 	dynamic_common_decorations *dcd;
@@ -1917,10 +1960,9 @@ static void border_mp_render_into_pixmap(
 		}
 		if (CSET_IS_TRANSPARENT_ROOT(acs[part].cs))
 		{
-			p = CreateBackgroundPixmap(
-				dpy, w, g->width + g->x, g->height + g->y,
-				&Colorset[acs[part].cs], Pdepth, Scr.BordersGC,
-				False);
+			p = border_create_root_transparent_pixmap(
+				td, w, g->width + g->x, g->height + g->y,
+				acs[part].cs);
 			bg.pixmap.p = p;
 			bg.pixmap.depth = Pdepth;
 			bg.pixmap.g.width = g->width;
@@ -1948,7 +1990,6 @@ static void border_mp_render_into_pixmap(
 				bg.pixmap.g.y = y;
 				bg.pixmap.depth = Pdepth;
 			}
-			
 		}
 		if (!bg.pixmap.p)
 		{
@@ -1971,7 +2012,7 @@ static void border_mp_render_into_pixmap(
 		{
 			border_fill_pixmap_background(dest, &dest_g, &bg, cd);	
 		}
-		if (p != bp)
+		if (p)
 		{
 			XFreePixmap(dpy, p);
 		}
@@ -2070,7 +2111,7 @@ static void border_mp_get_titlebar_descr(
 	DecorFace *tsdf;
 	FvwmPicture **pm;
 	FvwmAcs *acs;
-	int add;
+	int add,tmpi;
 	int left_of_text = 0;
 	int right_of_text = 0;
 	int left_end = 0;
@@ -2152,35 +2193,51 @@ static void border_mp_get_titlebar_descr(
 		is_start = 1;
 		/* fall through */
 	case JUST_RIGHT:
-		if (td->has_vt &&
-		    fw->title_text_rotation == ROTATION_270)
+		if (td->has_an_upsidedown_rotation)
 		{
 			is_start = !is_start;
 		}
 		if (is_start)
 		{
-			td->offset = max(
-				td->offset, left_of_text + left_end +
-				TBMP_MIN_RL_TITLE_LENGTH + TBMP_TITLE_PADDING);
+			if (td->has_an_upsidedown_rotation)
+			{
+				td->offset = max(
+					td->offset, right_of_text + right_end +
+					TBMP_MIN_RL_TITLE_LENGTH +
+					TBMP_TITLE_PADDING);
+			}
+			else
+			{
+				td->offset = max(
+					td->offset, left_of_text + left_end +
+					TBMP_MIN_RL_TITLE_LENGTH +
+					TBMP_TITLE_PADDING);
+			}
 		}
 		else
 		{
-			td->offset = min(
-				td->offset, fw->title_length - (td->length +
-				right_of_text +
-				right_end + TBMP_MIN_RL_TITLE_LENGTH +
-				TBMP_TITLE_PADDING));
+			if (td->has_an_upsidedown_rotation)
+			{
+				td->offset = min(
+					td->offset, fw->title_length -
+					(td->length + left_of_text +
+					 left_end + TBMP_MIN_RL_TITLE_LENGTH +
+					 TBMP_TITLE_PADDING));
+			}
+			else
+			{
+				td->offset = min(
+					td->offset, fw->title_length -
+					(td->length + right_of_text +
+					 right_end + TBMP_MIN_RL_TITLE_LENGTH +
+					 TBMP_TITLE_PADDING));
+			}
 		}
 		break;
 	case JUST_CENTER:
 	default:
 		break;
 	}
-
-	td->left_end_length = left_end;
-	td->left_of_text_length = left_of_text;
-	td->right_of_text_length = right_of_text;
-	td->right_end_length = right_end;
 
 	under_offset = td->offset - (under_width - td->length)/2;
 	before_space = under_offset;
@@ -2193,6 +2250,23 @@ static void border_mp_get_titlebar_descr(
 	{
 		after_space =
 			td->layout.title_g.width - before_space - under_width;
+	}
+	if (td->has_an_upsidedown_rotation)
+	{
+		td->left_end_length = right_end;
+		td->left_of_text_length = right_of_text;
+		td->right_of_text_length = left_of_text;
+		td->right_end_length = left_end;
+		tmpi = before_space;
+		before_space = after_space;
+		after_space = tmpi;
+	}
+	else
+	{
+		td->left_end_length = left_end;
+		td->left_of_text_length = left_of_text;
+		td->right_of_text_length = right_of_text;
+		td->right_end_length = right_end;
 	}
 
 	if (td->has_vt)
@@ -2210,57 +2284,99 @@ static void border_mp_get_titlebar_descr(
 		td->under_text_g.y = 0;
 	}
 
-	td->full_left_main_g.x = td->bar_g.x;
-	td->full_left_main_g.y = td->bar_g.y;
-	td->left_main_g.x = 0;
-	td->left_main_g.y = 0;
+	/* width & height */
 	if (td->has_vt)
 	{
+		/* left */
 		td->full_left_main_g.width = td->bar_g.width;
 		td->full_left_main_g.height =
 			before_space + td->left_buttons_g.height;
 		td->left_main_g.width = td->bar_g.width;
 		td->left_main_g.height = before_space;
-	}
-	else
-	{
-		td->full_left_main_g.height = td->bar_g.height;
-		td->full_left_main_g.width =
-			before_space + td->left_buttons_g.width;
-		td->left_main_g.height = td->bar_g.height;
-		td->left_main_g.width = before_space;
-	}
-
-	if (td->has_vt)
-	{
-		td->full_right_main_g.x = td->bar_g.x;
-		td->full_right_main_g.y =
-			td->full_left_main_g.height + td->bar_g.y +
-			td->under_text_g.height;
+		/* right */
 		td->full_right_main_g.width = td->bar_g.width;
 		td->full_right_main_g.height = after_space +
 			td->right_buttons_g.height;
 		td->right_main_g.width = td->bar_g.width;
 		td->right_main_g.height = after_space;
-		td->right_main_g.y =
-			td->under_text_g.y + td->under_text_g.height;
-		td->right_main_g.x = 0;
 	}
 	else
 	{
-		td->full_right_main_g.x =
-			td->full_left_main_g.width + td->bar_g.x +
-			td->under_text_g.width;
-		td->full_right_main_g.y = td->bar_g.y;
+		/* left */
+		td->full_left_main_g.height = td->bar_g.height;
+		td->full_left_main_g.width =
+			before_space + td->left_buttons_g.width;
+		td->left_main_g.height = td->bar_g.height;
+		td->left_main_g.width = before_space;
+		/* right */
 		td->full_right_main_g.height = td->bar_g.height;
 		td->full_right_main_g.width = after_space +
 			td->right_buttons_g.width;
 		td->right_main_g.height = td->bar_g.height;
 		td->right_main_g.width = after_space;
-		td->right_main_g.x =
-			td->under_text_g.x + td->under_text_g.width;
+	}
+
+	/* position */
+	if (td->has_an_upsidedown_rotation)
+	{
+		td->full_right_main_g.x = td->bar_g.x;
+		td->full_right_main_g.y = td->bar_g.y;
+		td->right_main_g.x = 0;
 		td->right_main_g.y = 0;
-		
+	}
+	else
+	{
+		td->full_left_main_g.x = td->bar_g.x;
+		td->full_left_main_g.y = td->bar_g.y;
+		td->left_main_g.x = 0;
+		td->left_main_g.y = 0;
+	}
+
+	if (td->has_vt)
+	{
+		if (td->has_an_upsidedown_rotation)
+		{
+			td->full_left_main_g.x = td->bar_g.x;
+			td->full_left_main_g.y =
+				td->full_right_main_g.height + td->bar_g.y +
+				td->under_text_g.height;
+			td->left_main_g.y =
+				td->under_text_g.y + td->under_text_g.height;
+			td->left_main_g.x = 0;
+		}
+		else
+		{
+			td->full_right_main_g.x = td->bar_g.x;
+			td->full_right_main_g.y =
+				td->full_left_main_g.height + td->bar_g.y +
+				td->under_text_g.height;
+			td->right_main_g.y =
+				td->under_text_g.y + td->under_text_g.height;
+			td->right_main_g.x = 0;
+		}
+	}
+	else
+	{
+		if (td->has_an_upsidedown_rotation)
+		{
+			td->full_left_main_g.x =
+				td->full_right_main_g.width + td->bar_g.x +
+				td->under_text_g.width;
+			td->full_left_main_g.y = td->bar_g.y;
+			td->left_main_g.x =
+				td->under_text_g.x + td->under_text_g.width;
+			td->left_main_g.y = 0;
+		}
+		else
+		{
+			td->full_right_main_g.x =
+				td->full_left_main_g.width + td->bar_g.x +
+				td->under_text_g.width;
+			td->full_right_main_g.y = td->bar_g.y;
+			td->right_main_g.x =
+				td->under_text_g.x + td->under_text_g.width;
+			td->right_main_g.y = 0;
+		}
 	}
 }
 
@@ -2282,7 +2398,7 @@ static void border_mp_get_extreme_geometry(
 	right_of_text = border_mp_get_length(
 		td, pm, acs, sf, TBMP_RIGHT_OF_TEXT);
 	right_end = border_mp_get_length(
-		td, pm, acs, sf, TBMP_RIGHT_END);
+			td, pm, acs, sf, TBMP_RIGHT_END);
 
 	if (left_of_text > 0 && left_of_text <= td->left_of_text_length)
 	{
@@ -2468,14 +2584,14 @@ static void border_mp_draw_mp_titlebar(
 	if (TBMP_HAS_PART(TBMP_MAIN, pm, acs, solid_flags))
 	{
 		border_mp_render_into_pixmap(
-			td->cd, pm, acs, pixels, solid_flags, stretch_flags,
+			td, td->cd, pm, acs, pixels, solid_flags, stretch_flags,
 			TBMP_MAIN, dest_pix, w, &td->bar_g, &td->layout.title_g,
 			bs, &tmp_g);
 	}
 	else if (td->length <= 0)
 	{
 		border_mp_render_into_pixmap(
-			td->cd, pm, acs, pixels, solid_flags, stretch_flags,
+			td, td->cd, pm, acs, pixels, solid_flags, stretch_flags,
 			TBMP_LEFT_MAIN, dest_pix, w, NULL, &td->layout.title_g,
 			bs, &tmp_g);
 	}
@@ -2490,7 +2606,7 @@ static void border_mp_draw_mp_titlebar(
 		    td->left_main_g.width > 0 && td->left_main_g.height > 0)
 		{
 			border_mp_render_into_pixmap(
-				td->cd, pm, acs, pixels, solid_flags,
+				td, td->cd, pm, acs, pixels, solid_flags,
 				stretch_flags, TBMP_LEFT_MAIN, dest_pix, w,
 				&td->full_left_main_g, &td->layout.title_g, bs,
 				&td->left_main_g);
@@ -2499,7 +2615,7 @@ static void border_mp_draw_mp_titlebar(
 		    td->right_main_g.width > 0 && td->right_main_g.height > 0)
 		{
 			border_mp_render_into_pixmap(
-				td->cd, pm, acs, pixels, solid_flags,
+				td, td->cd, pm, acs, pixels, solid_flags,
 				stretch_flags, TBMP_RIGHT_MAIN, dest_pix, w,
 				&td->full_right_main_g, &td->layout.title_g, bs,
 				&td->right_main_g);
@@ -2508,7 +2624,7 @@ static void border_mp_draw_mp_titlebar(
 		    td->under_text_g.width > 0 && td->under_text_g.height > 0)
 		{
 			border_mp_render_into_pixmap(
-				td->cd, pm, acs, pixels, solid_flags,
+				td, td->cd, pm, acs, pixels, solid_flags,
 				stretch_flags, TBMP_UNDER_TEXT, dest_pix, w,
 				NULL, &td->layout.title_g, bs,
 				&td->under_text_g);
@@ -2516,14 +2632,14 @@ static void border_mp_draw_mp_titlebar(
 		if (left_of_text_g.width > 0 && left_of_text_g.height > 0)
 		{
 			border_mp_render_into_pixmap(
-				td->cd, pm, acs, pixels, solid_flags,
+				td, td->cd, pm, acs, pixels, solid_flags,
 				stretch_flags, TBMP_LEFT_OF_TEXT, dest_pix, w,
-				NULL, &td->layout.title_g, bs,&left_of_text_g);
+				NULL, &td->layout.title_g, bs, &left_of_text_g);
 		}
 		if (right_of_text_g.width > 0 && right_of_text_g.height > 0)
 		{
 			border_mp_render_into_pixmap(
-				td->cd, pm, acs, pixels, solid_flags,
+				td, td->cd, pm, acs, pixels, solid_flags,
 				stretch_flags, TBMP_RIGHT_OF_TEXT, dest_pix, w,
 				NULL, &td->layout.title_g, bs, &right_of_text_g);
 		}
@@ -2531,14 +2647,14 @@ static void border_mp_draw_mp_titlebar(
 	if (left_end_g.width > 0 && left_end_g.height > 0)
 	{
 		border_mp_render_into_pixmap(
-			td->cd, pm, acs, pixels, solid_flags, stretch_flags,
+			td, td->cd, pm, acs, pixels, solid_flags, stretch_flags,
 			TBMP_LEFT_END, dest_pix, w, NULL, &td->layout.title_g,
 			bs, &left_end_g);
 	}
 	if (right_end_g.width > 0 && right_end_g.height > 0)
 	{
 		border_mp_render_into_pixmap(
-			td->cd, pm, acs, pixels, solid_flags, stretch_flags,
+			td, td->cd, pm, acs, pixels, solid_flags, stretch_flags,
 			TBMP_RIGHT_END, dest_pix, w, NULL, &td->layout.title_g,
 			bs, &right_end_g);
 	}
@@ -2563,6 +2679,7 @@ static void border_draw_decor_to_pixmap(
 	FvwmPicture *p;
 	int width,height;
 	int border;
+	int lr_just, tb_just;
 	common_decorations_type *cd;
 
 	cd = td->cd;
@@ -2652,7 +2769,97 @@ static void border_draw_decor_to_pixmap(
 				max(w_g->height - 2*border, p->height);
 			bg.pixmap.flags.is_stretched = 1;
 		}
-		switch (DFS_H_JUSTIFICATION(df->style))
+		lr_just = DFS_H_JUSTIFICATION(df->style);
+		tb_just = DFS_V_JUSTIFICATION(df->style);
+		if (!td->td_is_rotated && fw->title_text_rotation != ROTATION_0)
+		{
+			if (fw->title_text_rotation == ROTATION_180)
+			{
+				switch (lr_just)
+				{
+				case JUST_LEFT:
+					lr_just = JUST_RIGHT;
+					break;
+				case JUST_RIGHT:
+					lr_just = JUST_LEFT;
+					break;
+				case JUST_CENTER:
+				default:
+					break;
+				}
+				switch (tb_just)
+				{
+				case JUST_TOP:
+					tb_just = JUST_BOTTOM;
+					break;
+				case JUST_BOTTOM:
+					tb_just = JUST_TOP;
+					break;
+				case JUST_CENTER:
+				default:
+					break;
+				}
+			}
+			else if (fw->title_text_rotation == ROTATION_90)
+			{
+				switch (lr_just)
+				{
+				case JUST_LEFT:
+					tb_just = JUST_TOP;
+					break;
+				case JUST_RIGHT:
+					tb_just = JUST_BOTTOM;
+					break;
+				case JUST_CENTER:
+				default:
+					tb_just = JUST_CENTER;
+					break;
+				}
+				switch (DFS_V_JUSTIFICATION(df->style))
+				{
+				case JUST_TOP:
+					lr_just = JUST_RIGHT;
+					break;
+				case JUST_BOTTOM:
+					lr_just = JUST_LEFT;
+					break;
+				case JUST_CENTER:
+				default:
+					lr_just = JUST_CENTER;
+					break;
+				}
+			}
+			else if (fw->title_text_rotation == ROTATION_270)
+			{
+				switch (lr_just)
+				{
+				case JUST_LEFT:
+					tb_just = JUST_BOTTOM;
+					break;
+				case JUST_RIGHT:
+					tb_just = JUST_TOP;
+					break;
+				case JUST_CENTER:
+				default:
+					tb_just = JUST_CENTER;
+					break;
+				}
+				switch (DFS_V_JUSTIFICATION(df->style))
+				{
+				case JUST_TOP:
+					lr_just = JUST_LEFT;
+					break;
+				case JUST_BOTTOM:
+					lr_just = JUST_RIGHT;
+					break;
+				case JUST_CENTER:
+				default:
+					lr_just = JUST_CENTER;
+					break;
+				}
+			}
+		}
+		switch (lr_just)
 		{
 		case JUST_LEFT:
 			dest_g.x = border;
@@ -2666,7 +2873,7 @@ static void border_draw_decor_to_pixmap(
 			dest_g.x = (int)(w_g->width - width) / 2;
 			break;
 		}
-		switch (DFS_V_JUSTIFICATION(df->style))
+		switch (tb_just)
 		{
 		case JUST_TOP:
 			dest_g.y = border;
@@ -2795,6 +3002,17 @@ static void border_draw_decor_to_pixmap(
 			bg.pixmap.alpha = None;
 			bg.pixmap.depth = Pdepth;
 		}
+		else if (CSET_IS_TRANSPARENT_ROOT(cs))
+		{
+			tmp = border_create_root_transparent_pixmap(
+				td, w, w_g->width, w_g->height, cs);
+			bg.pixmap.p = tmp;
+			bg.pixmap.g.width = w_g->width;
+			bg.pixmap.g.height = w_g->height;
+			bg.pixmap.shape = None;
+			bg.pixmap.alpha = None;
+			bg.pixmap.depth = Pdepth;
+		}
 		else if (cs >= 0)
 		{
 			int bg_w, bg_h;
@@ -2889,6 +3107,17 @@ static void border_draw_decor_to_pixmap(
 			bg.pixmap.g.x = w_g->x - td->bar_g.x;
 			bg.pixmap.g.y = w_g->y - td->bar_g.y;
 		}
+		else if (CSET_IS_TRANSPARENT_ROOT(cs))
+		{
+			tmp = border_create_root_transparent_pixmap(
+				td, w, w_g->width, w_g->height, cs);
+			bg.pixmap.p = tmp;
+			bg.pixmap.g.width = w_g->width;
+			bg.pixmap.g.height = w_g->height;
+			bg.pixmap.shape = None;
+			bg.pixmap.alpha = None;
+			bg.pixmap.depth = Pdepth;
+		}
 		else
 		{
 			tmp = CreateBackgroundPixmap(
@@ -2954,7 +3183,7 @@ static void border_set_button_pixmap(
 
 	/* prepare variables */
 	mask = (1 << button);
-	if (td->buttons_reverted)
+	if (td->has_an_upsidedown_rotation)
 	{
 		is_left_button = (button & 1);
 	}
@@ -3015,29 +3244,16 @@ static void border_set_button_pixmap(
 
 		if (td->draw_rotation != ROTATION_0)
 		{
-			rotation_type rotation;
-			
-			if (td->draw_rotation == ROTATION_270)
-			{
-				rotation = ROTATION_90;
-			}
-			else if (td->draw_rotation == ROTATION_90)
-			{
-				rotation = ROTATION_270;
-			}
-			else
-			{
-				rotation = ROTATION_180;
-			}
 			tmp = CreateRotatedPixmap(
 				dpy, *dest_pix,
 				td->layout.button_g[button].width,
 				td->layout.button_g[button].height,
-				Pdepth, Scr.BordersGC, rotation);
+				Pdepth, Scr.BordersGC, td->restore_rotation);
 			XFreePixmap(dpy, *dest_pix);
 			*dest_pix = tmp;
 			border_rotate_titlebar_descr(fw, td);
 			button_g = &td->layout.button_g[button];
+			is_left_button = !(button & 1);
 		}
 		for (tsdf = &TB_STATE(GetDecor(fw, titlebar))[bs]; tsdf != NULL;
 		     tsdf = tsdf->next)
@@ -3059,6 +3275,14 @@ static void border_set_button_pixmap(
 			*dest_pix = tmp;
 			border_rotate_titlebar_descr(fw, td);
 			button_g = &td->layout.button_g[button];
+			if (td->has_an_upsidedown_rotation)
+			{
+				is_left_button = (button & 1);
+			}
+			else
+			{
+				is_left_button = !(button & 1);
+			}
 		}
 	}
 	/* handle button style */
@@ -3136,11 +3360,20 @@ static void border_draw_title_stick_lines(
 	int under_text_offset = 0;
 	int right_length = 0;
 	int left_length = 0;
+	rotation_type rotation;
 
 	if (!IS_STICKY_ACROSS_PAGES(fw) && !IS_STICKY_ACROSS_DESKS(fw) &&
 	    !HAS_STIPPLED_TITLE(fw))
 	{
 		return;
+	}
+	if (td->td_is_rotated)
+	{
+		rotation = td->restore_rotation;
+	}
+	else
+	{
+		rotation = ROTATION_0;
 	}
 	if (td->has_vt && td->under_text_g.height > 0)
 	{
@@ -3196,19 +3429,19 @@ static void border_draw_title_stick_lines(
 	{
 		if (left_w > 0)
 		{
-			do_relieve_rectangle(
+			do_relieve_rectangle_with_rotation(
 				dpy, dest_pix,
 				SWAP_ARGS(td->has_vt, left_x, i),
 				SWAP_ARGS(td->has_vt, left_w, 1),
-				tdd->sgc, tdd->rgc, 1, False);
+				tdd->sgc, tdd->rgc, 1, False, rotation);
 		}
 		if (right_w > 0)
 		{
-			do_relieve_rectangle(
+			do_relieve_rectangle_with_rotation(
 				dpy, dest_pix,
 				SWAP_ARGS(td->has_vt, right_x, i),
 				SWAP_ARGS(td->has_vt, right_w, 1),
-				tdd->sgc, tdd->rgc, 1, False);
+				tdd->sgc, tdd->rgc, 1, False, rotation);
 		}
 	}
 
@@ -3256,21 +3489,30 @@ static void border_draw_title_relief(
 	Pixmap dest_pix)
 {
 	int reverse = 0;
+	rotation_type rotation;
 
+	if (td->td_is_rotated)
+	{
+		rotation = td->restore_rotation;
+	}
+	else
+	{
+		rotation = ROTATION_0;
+	}
 	/* draw title relief */
 	switch (DFS_BUTTON_RELIEF(*tdd->tstyle))
 	{
 	case DFS_BUTTON_IS_SUNK:
 		reverse = 1;
 	case DFS_BUTTON_IS_UP:
-		do_relieve_rectangle(
+		do_relieve_rectangle_with_rotation(
 			dpy, dest_pix, 0, 0,
 			SWAP_ARGS(
 				td->has_vt, fw->title_length - 1,
 				fw->title_thickness - 1),
 			(reverse) ? tdd->sgc : tdd->rgc,
 			(reverse) ? tdd->rgc : tdd->sgc, td->cd->relief_width,
-			True);
+			True, rotation);
 		break;
 	default:
 		/* flat */
@@ -3336,7 +3578,7 @@ static void border_get_titlebar_draw_descr(
 	/* fetch the title string */
 	tdd->fstr.str = fw->visible_name;
 	tdd->fstr.win = dest_pix;
-	if (td->is_rotated)
+	if (td->td_is_rotated)
 	{
 		tdd->fstr.flags.text_rotation = ROTATION_0;
 	}
@@ -3365,7 +3607,7 @@ static void border_get_titlebar_draw_descr(
 }
 
 static void border_set_title_pixmap(
-	FvwmWindow *fw, titlebar_descr *td, Pixmap dest_pix, Window w)
+	FvwmWindow *fw, titlebar_descr *td, Pixmap *dest_pix, Window w)
 {
 	pixmap_background_type bg;
 	title_draw_descr tdd;
@@ -3373,7 +3615,7 @@ static void border_set_title_pixmap(
 	Bool free_bg_pixmap = False;
 	rectangle pix_g;
 
-	border_get_titlebar_draw_descr(fw, td, &tdd, dest_pix);
+	border_get_titlebar_draw_descr(fw, td, &tdd, *dest_pix);
 	/* prepare background, either from the window colour or from the
 	 * border style */
 	if (!DFS_USE_BORDER_STYLE(*tdd.tstyle))
@@ -3386,13 +3628,25 @@ static void border_set_title_pixmap(
 		pix_g.width = td->layout.title_g.width;
 		pix_g.height = td->layout.title_g.height;
 		border_fill_pixmap_background(
-			dest_pix, &pix_g, &bg, td->cd);
+			*dest_pix, &pix_g, &bg, td->cd);
 	}
 	else
 	{
 		/* draw pixmap background inherited from border style */
 		rectangle relative_g;
+		Pixmap tmp;
 
+		if (td->draw_rotation != ROTATION_0)
+		{
+			tmp = CreateRotatedPixmap(
+				dpy, *dest_pix,
+				td->layout.title_g.width,
+				td->layout.title_g.height,
+				Pdepth, Scr.BordersGC, td->restore_rotation);
+			XFreePixmap(dpy, *dest_pix);
+			*dest_pix = tmp;
+			border_rotate_titlebar_descr(fw, td);
+		}
 		relative_g.width = td->frame_g.width;
 		relative_g.height = td->frame_g.height;
 		relative_g.x = td->layout.title_g.x;
@@ -3409,23 +3663,34 @@ static void border_set_title_pixmap(
 		pix_g.width = td->layout.title_g.width;
 		pix_g.height = td->layout.title_g.height;
 		border_fill_pixmap_background(
-			dest_pix, &pix_g, &bg, td->cd);
+			*dest_pix, &pix_g, &bg, td->cd);
 		if (free_bg_pixmap && bg.pixmap.p)
 		{
 			XFreePixmap(dpy, bg.pixmap.p);
+		}
+		if (td->draw_rotation != ROTATION_0)
+		{
+			tmp = CreateRotatedPixmap(
+				dpy, *dest_pix,
+				td->layout.title_g.width,
+				td->layout.title_g.height,
+				Pdepth, Scr.BordersGC, td->draw_rotation);
+			XFreePixmap(dpy, *dest_pix);
+			*dest_pix = tmp;
+			border_rotate_titlebar_descr(fw, td);
 		}
 	}
 
 	if (Pdepth < 2)
 	{
-		border_draw_title_mono(fw, td, &tdd, &fstr, dest_pix);
+		border_draw_title_mono(fw, td, &tdd, &fstr, *dest_pix);
 	}
 	else
 	{
-		border_draw_title_deep(fw, td, &tdd, &fstr, dest_pix, w);
+		border_draw_title_deep(fw, td, &tdd, &fstr, *dest_pix, w);
 	}
-	border_draw_title_relief(fw, td, &tdd, dest_pix);
-	border_draw_title_stick_lines(fw, td, &tdd, dest_pix);
+	border_draw_title_relief(fw, td, &tdd, *dest_pix);
+	border_draw_title_stick_lines(fw, td, &tdd, *dest_pix);
 
 	return;
 }
@@ -3449,7 +3714,7 @@ static void border_draw_title(
 #if 0
 	fprintf(stderr,"drawing title\n");
 #endif
-	border_set_title_pixmap(fw, td, p, FW_W_TITLE(fw));
+	border_set_title_pixmap(fw, td, &p, FW_W_TITLE(fw));
 	if (td->draw_rotation != ROTATION_0)
 	{
 		Pixmap tmp;
@@ -3543,7 +3808,7 @@ static void border_rotate_titlebar_descr(
 	FvwmWindow *fw, titlebar_descr *td)
 {
 	rotation_type rotation;
-	int i, tmp_i;
+	int i, tmpi;
 	static titlebar_descr saved_td;
 
 	if (td->draw_rotation == ROTATION_0)
@@ -3555,7 +3820,7 @@ static void border_rotate_titlebar_descr(
 		td->has_been_saved = True;
 		memcpy(&saved_td, td, sizeof(titlebar_descr)); 
 	}
-	if (!td->is_rotated)
+	if (!td->td_is_rotated)
 	{
 		/* make the bar horizontal */
 		switch(td->draw_rotation)
@@ -3573,17 +3838,18 @@ static void border_rotate_titlebar_descr(
 			return;
 		}
 		td->has_vt = 0;
-		td->is_rotated = 1;
+		td->has_an_upsidedown_rotation = 0;
+		td->td_is_rotated = 1;
 	}
 	else
 	{
 		/* restore */
 		memcpy(td, &saved_td, sizeof(titlebar_descr)); 
-		td->is_rotated = 0;
+		td->td_is_rotated = 0;
 		return;
 	}
 
-#define ROTATE_RECTANGLE(rot, r, vs_frame, vs_titlebar) \
+#define ROTATE_RECTANGLE(rot, r, vs_frame, vs_titlebar, vs_title) \
 	{ \
 		rectangle tr; \
 		switch(rot) \
@@ -3594,9 +3860,14 @@ static void border_rotate_titlebar_descr(
 			{ \
 				tr.y = td->frame_g.width - (r->x+r->width); \
 			} \
-			if (vs_titlebar) \
+			else if (vs_titlebar) \
 			{ \
 				tr.y = td->bar_g.width - \
+					(r->x+r->width); \
+			} \
+			else if (vs_title) \
+			{ \
+				tr.y = td->layout.title_g.width - \
 					(r->x+r->width); \
 			} \
 			else \
@@ -3616,6 +3887,11 @@ static void border_rotate_titlebar_descr(
 				tr.x = td->bar_g.height - \
 					(r->y+r->height); \
 			} \
+			else if (vs_title) \
+			{ \
+				tr.x = td->layout.title_g.height - \
+					(r->y+r->height); \
+			} \
 			else \
 			{ \
 				tr.x = r->y; \
@@ -3625,10 +3901,27 @@ static void border_rotate_titlebar_descr(
 			tr.height = r->width; \
 			break; \
 		case ROTATION_180: \
-			tr.x = r->y; \
-			tr.y = r->x; \
-			tr.width = r->height; \
-			tr.height = r->width; \
+			if (vs_frame) \
+			{ \
+				tr.x = td->frame_g.width - (r->x+r->width); \
+			} \
+			else if (vs_titlebar) \
+			{ \
+				tr.x = td->bar_g.width - \
+					(r->x + r->width); \
+			} \
+			else if (vs_title) \
+			{ \
+				tr.x = td->layout.title_g.width - \
+					(r->x + r->width); \
+			} \
+			else \
+			{ \
+				tr.x = r->x; \
+			} \
+			tr.y = r->y; \
+			tr.width = r->width; \
+			tr.height = r->height; \
 			break; \
 		default: \
 		} \
@@ -3642,40 +3935,43 @@ static void border_rotate_titlebar_descr(
 	{
 	case ROTATION_90:
 		td->offset = td->layout.title_g.height - td->offset - td->length;
+		tmpi = td->left_end_length;
+		td->left_end_length = td->right_end_length;
+		td->right_end_length = tmpi;
+		tmpi = td->left_of_text_length;
+		td->left_of_text_length = td->right_of_text_length;
+		td->right_of_text_length = tmpi;
 		break;
 	case ROTATION_270:
 		break;
 	case ROTATION_180:
+		td->offset = td->layout.title_g.width - td->offset - td->length;
+		tmpi = td->left_end_length;
+		td->left_end_length = td->right_end_length;
+		td->right_end_length = tmpi;
+		tmpi = td->left_of_text_length;
+		td->left_of_text_length = td->right_of_text_length;
+		td->right_of_text_length = tmpi;
 		break;
 	default:
 	}
 
-	ROTATE_RECTANGLE(rotation, (&td->left_buttons_g), True, False)
-	ROTATE_RECTANGLE(rotation, (&td->right_buttons_g), True, False)
-	ROTATE_RECTANGLE(rotation, (&td->layout.title_g), True, False)
+	ROTATE_RECTANGLE(rotation, (&td->left_buttons_g), True, False, False)
+	ROTATE_RECTANGLE(rotation, (&td->right_buttons_g), True, False, False)
 	for (i=0; i < NUMBER_OF_BUTTONS; i++)
 	{
 		ROTATE_RECTANGLE(
-			rotation, (&td->layout.button_g[i]), True, False)
+			rotation, (&td->layout.button_g[i]), True, False, False)
 	}
-	ROTATE_RECTANGLE(rotation, (&td->under_text_g), False, True)
-	ROTATE_RECTANGLE(rotation, (&td->left_main_g), False, True)
-	ROTATE_RECTANGLE(rotation, (&td->right_main_g), False, True)
-	ROTATE_RECTANGLE(rotation, (&td->full_left_main_g), True, False)
-	ROTATE_RECTANGLE(rotation, (&td->full_right_main_g), True, False)
-	ROTATE_RECTANGLE(rotation, (&td->bar_g), True, False)
-	ROTATE_RECTANGLE(rotation, (&td->frame_g), False, False);
+	ROTATE_RECTANGLE(rotation, (&td->under_text_g), False, False, True)
+	ROTATE_RECTANGLE(rotation, (&td->left_main_g), False, False, True)
+	ROTATE_RECTANGLE(rotation, (&td->right_main_g), False, False, True)
+	ROTATE_RECTANGLE(rotation, (&td->full_left_main_g), True, False, False)
+	ROTATE_RECTANGLE(rotation, (&td->full_right_main_g), True, False, False)
+	ROTATE_RECTANGLE(rotation, (&td->layout.title_g), True, False, False)
+	ROTATE_RECTANGLE(rotation, (&td->bar_g), True, False, False)
+	ROTATE_RECTANGLE(rotation, (&td->frame_g), False, False, False);
 
-	switch(rotation)
-	{
-	case ROTATION_90:
-		break;
-	case ROTATION_270:
-		break;
-	case ROTATION_180:
-		break;
-	default:
-	}
 #undef ROTATE_RECTANGLE
 }
 
@@ -3766,11 +4062,25 @@ static window_parts border_get_titlebar_descr(
 	if (USE_TITLE_DECOR_ROTATION(fw))
 	{
 		ret_td->draw_rotation = fw->title_text_rotation;
+		switch(ret_td->draw_rotation)
+		{
+		case ROTATION_90:
+			ret_td->restore_rotation = ROTATION_270;
+			break;
+		case ROTATION_270: /* ccw */
+			ret_td->restore_rotation = ROTATION_90;
+			break;
+		case ROTATION_180:
+			ret_td->restore_rotation = ROTATION_180;
+			break;
+		default:
+			break;
+		}
 	}
 	if (fw->title_text_rotation == ROTATION_270 ||
 	    fw->title_text_rotation == ROTATION_180)
 	{
-		ret_td->buttons_reverted = True;
+		ret_td->has_an_upsidedown_rotation = True;
 	}
 	/* geometry of the title bar title + buttons */
 	if (!ret_td->has_vt)
@@ -3830,7 +4140,7 @@ static window_parts border_get_titlebar_descr(
 		}
 	}
 
-	if (ret_td->buttons_reverted)
+	if (ret_td->has_an_upsidedown_rotation)
 	{
 		if (ret_td->has_vt)
 		{
@@ -3919,7 +4229,7 @@ static window_parts border_get_titlebar_descr(
 		is_start = 1;
 		/* fall through */
 	case JUST_RIGHT:
-		if (ret_td->has_vt && fw->title_text_rotation == ROTATION_270)
+		if (ret_td->has_an_upsidedown_rotation)
 		{
 			is_start = !is_start;
 		}

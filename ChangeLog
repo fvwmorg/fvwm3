@@ -1,3 +1,26 @@
+2002-12-27  olicha  <olivier.chapuis@free.fr>
+
+	* fvwm/ConfigFvwmDefaults:
+	UseTitleDecorRotation is a default
+
+	* libs/Graphics.c (do_relieve_rectangle_with_rotation):
+	(do_relieve_rectangle):
+	* libs/fvwmlib.h:
+	* fvwm/borders.c (border_draw_title_stick_lines):
+	(border_create_root_transparent_pixmap):
+	(border_mp_render_into_pixmap):
+	(border_draw_decor_to_pixmap):
+	(border_mp_render_into_pixmap):
+	(border_mp_get_titlebar_descr):
+	(border_mp_draw_mp_titlebar):
+	(border_draw_decor_to_pixmap):
+	(border_set_button_pixmap):
+	(border_get_titlebar_draw_descr):
+	(border_set_title_pixmap):
+	(border_rotate_titlebar_descr):
+	(border_get_titlebar_descr):
+	Completed UseTitleDecorRotation
+
 2002-12-26  olicha  <olivier.chapuis@free.fr>
 
 	* fvwm/update.c (apply_window_updates):
