@@ -1,5 +1,8 @@
 2002-12-22  Dan Espen  <dane@mk.telcordia.com>
 
+	* fvwm/add_window.c (GetWindowSizeHints): Change hint warning message
+	so we won't get so many application bugs report to fvwm-workers.
+
 	* fvwm/fvwm.1.in: Grammar: allows to -> allows for.
 
 2002-12-21  Marcus Lundblad <ml@update.uu.se>
