@@ -876,10 +876,17 @@ void HandleExpose(void)
 {
   XRectangle r;
 
-  if (Event.xexpose.count != 0)
+#if 0
+  /* This doesn't work well. Sometimes, the expose count is zero although
+   * dozens of expose events are pending.  This happens all the time during
+   * a shading animation.  SImply flush expose events unconditionally. */
+  if (Event.xexpose.count != 0||1)
   {
     flush_accumulate_expose(Event.xexpose.window, &Event);
   }
+#else
+  flush_accumulate_expose(Event.xexpose.window, &Event);
+#endif
   r.x = Event.xexpose.x;
   r.y = Event.xexpose.y;
   r.width = Event.xexpose.width;
@@ -2145,7 +2152,7 @@ void HandleConfigureRequest(void)
 #define NO_EXPERIMENTAL_ANTI_RACE_CONDITION_CODE
   /* This is not a good idea because this interferes with changes in the size
    * hints of the window.  However, it is impossible to be completely safe here.
-   * For example, is the client changes the size inc, then resizes its of window
+   * For example, if the client changes the size inc, then resizes its of window
    * and then changes the size inc again - all in one batch - then the WM will
    * read the *second* size inc upon the *first* event and use the wrong one in
    * the ConfigureRequest calculations. */

@@ -1,11 +1,18 @@
+2002-01-10  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* fvwm/events.c (HandleExpose):
+	eat up expose events even if the server claims that the expose count is
+	zero; fixes a problem with many redraws of windows that are uncovered
+	by shading a window above them
+
 2002-01-10  olicha  <olivier.chapuis@free.fr>
 
 	* fvwm/focus.c (DoSetFocus):
 	* fvwm/move_resize.c (CMD_Maximize):
-	(CMD_Maximize): 
+	(CMD_Maximize):
 	(handle_stick):
-	(CMD_ResizeMove): 
-	(CMD_Resize): 
+	(CMD_ResizeMove):
+	(CMD_Resize):
 	* fvwm/icons.c (DeIconify):
 	(DeIconify):
 	(Iconify):
@@ -15,7 +22,7 @@
 	(HandlePropertyNotify):
 	(HandleMapNotify):
 	(HandleButtonPress):
-	(HandleLeaveNotify): 
+	(HandleLeaveNotify):
 	(HandleExpose):
 	* fvwm/builtins.c (CMD_UpdateDecor):
 	(CMD_WindowShade):
@@ -25,9 +32,9 @@
 	* fvwm/borders.h:
 	Added a new argument to DrawDecoration similar to draw_window_parts,
 	which indicate which part of the decor should be cleared. At present
-	time only CLEAR_FRAME is taken in account and this is used in ShadeWindow
-	to draw the decoration without flickering. This argument may be used in
-	the future to reduce opaque resizing flickering
+	time only CLEAR_FRAME is taken in account and this is used in
+	ShadeWindow to draw the decoration without flickering. This argument
+	may be used in the future to reduce opaque resizing flickering
 
 	* fvwm/builtins.c (CMD_WindowShade):
 	Draw the decoration during unshading a window
