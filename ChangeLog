@@ -1,5 +1,12 @@
 1999-01-14  Dominik Vogt  <dominik_vogt@hp.com>
 
+	* fvwm/resize.c (ConstrainSize): fixed bug: moving a shaded window in
+	FvwmPager screwed up the window's height
+
+	* fvwm/fvwmdebug.c (DB_WI_ALL): fixed coredump
+
+	* fvwm/menus.c (SetMenuItemSelected): removed malformed DBUG calls
+
 	* fvwm/builtins.c (ButtonStyle): fixed parsing bug causing a hang
 
 	* fvwm/module.c (HandleModuleInput): fixed parsing with popup

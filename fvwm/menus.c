@@ -1375,8 +1375,6 @@ void SetMenuItemSelected(MenuItem *mi, Bool f)
 						 Scr.d_depth);
       XCopyArea(dpy, mi->mr->w, mi->mr->stored_item.stored,
 		mi->mr->ms->look.MenuGC, 0, iy, mw, ih, 0, 0);
-      DBUG("SetMenuItemSelected", itoa(mw));
-      DBUG("SetMenuItemSelected", itoa(ih));
       mi->mr->stored_item.y = iy;
       mi->mr->stored_item.width = mw;
       mi->mr->stored_item.height = ih;

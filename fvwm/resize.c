@@ -602,6 +602,11 @@ DB(("ConstrainSize: after reaspect: dwidth=%d, dheight=%d",dwidth,dheight));
      */
     *widthp = dwidth + 2*tmp_win->boundary_width;
     *heightp = dheight + tmp_win->title_height + 2*tmp_win->boundary_width;
+#ifdef WINDOWSHADE
+    if (tmp_win->buttons & WSHADE)
+      *heightp = tmp_win->title_height + tmp_win->boundary_width;
+#endif
+
 DB(("ConstrainSize: final width=%d, final height=%d",*widthp,*heightp));
     return;
 }

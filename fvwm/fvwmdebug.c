@@ -96,7 +96,7 @@ void DB_WI_ALL(char *label, FvwmWindow *fw)
   DB_WI_TITLE("",fw);
   DB_WI_BORDER("",fw);
   DB_WI_XWINATTR("",fw);
-  fprintf(stderr,"%s: ---------- end ----------\n");
+  fprintf(stderr,"%s: ---------- end ----------\n",label);
   return;
 }
 
