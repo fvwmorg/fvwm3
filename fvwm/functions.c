@@ -487,6 +487,10 @@ static char *expand(
     {
       switch (input[i+1])
       {
+      case '$':
+	/* skip the second $, it is not a part of variable */
+	i++;
+	break;
       case '[':
 	/* extended variables */
 	var = &input[i+2];
@@ -673,6 +677,7 @@ static char *expand(
 	break;
       case 'y':
 	sprintf(&out[j], "%d", Scr.Vy);
+	j += strlen(&out[j]);
 	i++;
 	break;
 

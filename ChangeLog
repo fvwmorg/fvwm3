@@ -1,3 +1,7 @@
+2000-06-23  Mikhael Goikhman  <migo@homemail.com>
+
+	* fvwm/functions.c: patch by Christophe Martin - fixed $$ and $y
+
 2000-06-19  Hippo
 
 	* fvwm/module_interface.c: ExecuteCommandQueue is now reentrant and
@@ -214,12 +218,12 @@
 	* fvwm/conditional.c (CreateConditionMask):
 	conditions can be separated by commas
 
-2000-05-20  olicha <olivier.chapuis@free.fr>
+2000-05-20  olicha  <olivier.chapuis@free.fr>
 
 	* sample/system.fvwm2rc-sample-95
 	Corrected some miss prints (thanks to sa)
 
-2000-05-20  olicha <olivier.chapuis@free.fr>
+2000-05-20  olicha  <olivier.chapuis@free.fr>
 
 	* fvwm/update{c,h} (apply_window_updates):
 	* fvwm/styles.c (check_window_style_change):
