@@ -771,6 +771,15 @@ void LoopOnEvents(void)
         if (Event.xexpose.count==0)
           RedrawWindow(True);
         break;
+      case ConfigureNotify:
+        /* if send_event is true it means the user has moved the window
+         * take note of the new position. If it is false it comes from the
+         * Xserver and the coordinates are always (0,0) - ignore it */
+        if (Event.xconfigure.send_event) {
+          win_x = Event.xconfigure.x;
+          win_y = Event.xconfigure.y;
+        }
+        break;
       case KeyPress:
         num=XLookupString(&Event.xkey,buffer,10,NULL,0);
         if (num==1)
@@ -884,17 +893,11 @@ void AdjustWindow(Bool force)
   {
     if (Anchor)
     {
-      Window child;
-
-      MyXGrabServer(dpy);
-      XTranslateCoordinates(dpy, win, Root, 0, 0, &win_x, &win_y, &child);
       if (win_grav == SouthEastGravity || win_grav == NorthEastGravity)
         win_x += win_width - new_width;
       if (win_grav == SouthEastGravity || win_grav == SouthWestGravity)
         win_y += win_height - new_height;
-
       XMoveResizeWindow(dpy, win, win_x, win_y, new_width, new_height);
-      MyXUngrabServer(dpy);
     }
     else
       XResizeWindow(dpy, win, new_width, new_height);
@@ -1088,7 +1091,7 @@ void MakeMeWindow(void)
     background[i]=XCreateGC(dpy,win,gcmask,&gcval);
   }
   AdjustWindow(True);
-  XSelectInput(dpy,win,(ExposureMask | KeyPressMask));
+  XSelectInput(dpy,win,(StructureNotifyMask | ExposureMask | KeyPressMask));
 
   ChangeWindowName(&Module[1]);
 
