@@ -4,6 +4,10 @@
  *  Copyright 1994,  Mike Finger (mfinger@mermaid.micro.umn.edu or
  *                               Mike_Finger@atk.com)
  *
+ * Two little hacks by DYB: 1) make size of a strip in hidden state tunable
+ * (with *FvwmTaskBar: AutoHide <pixels>); 2) make process of TaskBar
+ * hiding/unhiding more smooth.
+ *
  * Minor hack by TKP to enable autohide to work with pages (leaves 2 pixels
  * visible so that the 1 pixel panframes don't get in the way)
  *
@@ -92,6 +96,8 @@
 #define gray_height 8
 unsigned char gray_bits[] = { 0xaa, 0x55, 0xaa, 0x55,
                               0xaa, 0x55, 0xaa, 0x55 };
+
+#define DEFAULT_VISIBLE_PIXELS 3
 
 /* File type information */
 int   Fvwm_fd[2];
@@ -195,6 +201,10 @@ int UseSkipList    = False,
     NoBrightFocus  = False,
     ThreeDfvwm     = False,
     RowsNumber     = 1;
+
+int VisiblePixels  = DEFAULT_VISIBLE_PIXELS;
+/* This macro should be used when calculating geometry */
+#define VISIBLE_PIXELS() (VisiblePixels < win_height? VisiblePixels:win_height)
 
 unsigned int ScreenWidth, ScreenHeight;
 
@@ -480,10 +490,10 @@ void ProcessMessage(unsigned long type,unsigned long *body)
 	  if (!win_is_shaded) {
 	    if (win_y > Midline)
 	      win_y = ScreenHeight -
-		(AutoHide ? 2 - win_title_height*win_has_bottom_title :
+		(AutoHide ? VISIBLE_PIXELS() - win_title_height*win_has_bottom_title :
 		 win_height + win_border);
 	    else
-	      win_y = AutoHide ? 2 + win_title_height*win_has_bottom_title
+	      win_y = AutoHide ? VISIBLE_PIXELS() + win_title_height*win_has_bottom_title
 		- win_height : win_border + win_title_height;
 	  }
 	  else
@@ -973,6 +983,8 @@ static void ParseConfigLine(char *tline)
     case 13: /* AutoHide */
       AutoHide=True;
       AutoStick=True;
+      VisiblePixels=atoi(rest);
+      if (VisiblePixels < 1) VisiblePixels = DEFAULT_VISIBLE_PIXELS;
       break;
     case 14: /* UseIconNames */
       UseIconNames=True;
@@ -1336,10 +1348,10 @@ void LoopOnEvents(void)
 	if (AutoHide && !win_is_shaded)
 	{
 	  if (win_y > Midline)
-	    win_y = ScreenHeight - 2 +
+	    win_y = ScreenHeight - VISIBLE_PIXELS() +
 	      win_title_height*win_has_bottom_title;
 	  else
-	    win_y = 2 + win_title_height*win_has_bottom_title
+	    win_y = VISIBLE_PIXELS() + win_title_height*win_has_bottom_title
 	      - win_height;
 	  XSync(dpy,0);
 	  XMoveWindow(dpy, win, win_x, win_y);
@@ -1731,9 +1743,9 @@ void StartMeUp(void)
      if (AutoStick)
      {
        if (-hints.y < Midline)
-	 hints.y = ScreenHeight - (AutoHide ? 2 : win_height);
+	 hints.y = ScreenHeight - (AutoHide ? VISIBLE_PIXELS() : win_height);
        else
-	 hints.y = AutoHide ? 2 - win_height : 0;
+	 hints.y = AutoHide ? VISIBLE_PIXELS() - win_height : 0;
      }
      else
        hints.y += ScreenHeight - win_height;
@@ -1741,9 +1753,9 @@ void StartMeUp(void)
    else if (AutoStick)
    {
      if (hints.y < Midline)
-       hints.y = AutoHide ? 2 - win_height : 0;
+       hints.y = AutoHide ? VISIBLE_PIXELS() - win_height : 0;
      else
-       hints.y = ScreenHeight - (AutoHide ? 2 : win_height);
+       hints.y = ScreenHeight - (AutoHide ? VISIBLE_PIXELS() : win_height);
    }
 
     if (ret & XNegative)
@@ -1940,6 +1952,23 @@ void WarpTaskBar(int y, Bool force)
 }
 
 /***********************************************************************
+ SleepALittle -- do a small delay in a fairly portable way
+ Replace "#if 1" with "#if 0" to turn delay off
+ ***********************************************************************/
+static void SleepALittle(void)
+{
+  struct timeval tv;
+
+    tv.tv_sec  = 0;
+    tv.tv_usec = 10000;
+#if 1
+    XSync(dpy, 0);
+    select(0, NULL, NULL, NULL, &tv);
+    XSync(dpy, 0);
+#endif
+}
+
+/***********************************************************************
  RevealTaskBar -- Make taskbar fully visible
  ***********************************************************************/
 void RevealTaskBar()
@@ -1958,11 +1987,17 @@ void RevealTaskBar()
   if (win_y < Midline) {
     new_win_y = win_border + win_title_height;
     for (; win_y<=new_win_y; win_y +=inc_y)
+    {
       XMoveWindow(dpy, win, win_x, win_y);
+      SleepALittle();
+    }
   } else {
     new_win_y = (int)ScreenHeight - win_height - win_border;
     for (; win_y>=new_win_y; win_y -=inc_y)
+    {
       XMoveWindow(dpy, win, win_x, win_y);
+      SleepALittle();
+    }
   }
 
   win_y = new_win_y;
@@ -2004,15 +2039,21 @@ void HideTaskBar()
   inc_y += (NRows >= 3 ? 2 : 0) + (NRows >= 5 ? 2 : 0);
 
   if (win_y < Midline) {
-    new_win_y = 2 + win_title_height*win_has_bottom_title -
+    new_win_y = VISIBLE_PIXELS() + win_title_height*win_has_bottom_title -
       win_height;
     for (; win_y>=new_win_y; win_y -=inc_y)
+    {
       XMoveWindow(dpy, win, win_x, win_y);
+      SleepALittle();
+    }
   } else {
-    new_win_y = (int)ScreenHeight - 2 +
+    new_win_y = (int)ScreenHeight - VISIBLE_PIXELS() +
       win_title_height*win_has_bottom_title;
     for (; win_y<=new_win_y; win_y +=inc_y)
+    {
       XMoveWindow(dpy, win, win_x, win_y);
+      SleepALittle();
+    }
   }
   win_y = new_win_y;
   XMoveWindow(dpy, win, win_x, win_y);

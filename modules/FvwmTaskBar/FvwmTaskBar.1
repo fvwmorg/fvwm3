@@ -105,7 +105,7 @@ windows.
 .IP "*FvwmTaskBar: IconBack \fIcolor\fP"
 Specifies the color to use for the buttons which represent iconified windows.
 
-.IP "*FvwmTaskBar: Colorset \fIcolorset\fP"
+.IP "*FvwmTaskBar: IconColorset \fIcolorset\fP"
 Tells the module to use colorset \fIcolorset\fP for the
 buttons of iconified windows.  Please refer to the man page of
 the FvwmTheme module for details about colorsets.
@@ -151,10 +151,11 @@ further move operation is also subject to that behavior.
 This option causes the taskbar to raise a window if the cursor stays on a
 button in taskbar and its tip is open.
 
-.IP "*FvwmTaskBar: AutoHide"
+.IP "*FvwmTaskBar: AutoHide [\fIpixels\fP]"
 This option causes the taskbar to disappear leaving a narrow strip at the
 bottom of the screen, and reappear only when the mouse is moved to that
-strip.  This option automatically enables AutoStick.
+strip.  This option automatically enables AutoStick.  The optional
+\fIpixels\fP parameter specifies thickness of a strip (3 pixels by default).
 
 .IP "*FvwmTaskBar: UseSkipList"
 Tells FvwmTaskBar to not show the windows that are listed on a WindowListSkip
