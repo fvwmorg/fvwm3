@@ -1,7 +1,9 @@
 Note, the changes for the last OFFICIAL release start with release
 _+_A HREF="#2.2.4"_-_2.2.4_+_/A_-_.
 
-Changes in beta release 2.3.12 (not released yet)
+Changes in beta release 2.3.13 (not released yet)
+
+Changes in beta release 2.3.12 (December 1999)
 
 * New command PointerKey.  Similar to 'Key' command but binds keystrokes
   to the window under the pointer instead of the window that has
