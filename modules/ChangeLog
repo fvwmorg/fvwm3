@@ -1,3 +1,8 @@
+1999-11_16  olicha  <olivier.chapuis@free.fr>
+
+	* FvwmTaskBar/ButtonArray.c (DoButton):
+	Fixed drawing out of a button
+	
 1999-11-15  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* FvwmButtons/FvwmButtons.c (GetPanelGeometry):

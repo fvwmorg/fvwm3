@@ -159,7 +159,7 @@ Button *ButtonNew(const char *title, Picture *p, int state, int count)
    ------------------------------------------------------------------------- */
 void ButtonDraw(Button *button, int x, int y, int w, int h)
 {
-  static char *t3p = "...";
+  char *t3p = "...";
   int state, x3p, newx;
   int search_len;
   XFontStruct *font;
@@ -209,26 +209,44 @@ void ButtonDraw(Button *button, int x, int y, int w, int h)
 
   w3p = XTextWidth(font, t3p, 3);
 
-  if ((button->p.picture != 0) &&
-      (w + button->p.width + w3p + 3 > MIN_BUTTON_SIZE))
+  if (button->p.picture != 0)
   {
+    /* clip pixmap to fit inside button */
+    int pheight = min(button->p.height, h-2);
+    int offset = (button->p.height > h) ? 0 : ((h - button->p.height) >> 1);
+    int pwidth = min(button->p.width, w-5);
     gcm = GCClipMask | GCClipXOrigin | GCClipYOrigin;
     gcv.clip_mask = button->p.mask;
     gcv.clip_x_origin = x + 3;
-    gcv.clip_y_origin = y + ((h-button->p.height) >> 1);
+    gcv.clip_y_origin = y + offset;
     XChangeGC(dpy, hilite, gcm, &gcv);
     XCopyArea(dpy, button->p.picture, win, hilite, 0, 0,
-                   button->p.width, button->p.height,
+                   pwidth, pheight,
                    gcv.clip_x_origin, gcv.clip_y_origin);
     gcm = GCClipMask;
     gcv.clip_mask = None;
     XChangeGC(dpy, hilite, gcm, &gcv);
 
-    newx += button->p.width+2;
+    newx += pwidth+2;
   }
 
   if (button->title == NULL)
     return;
+
+  /* see if we have the place for "...", if not for "..", if not for "."
+   * if not return */
+  if ((newx + w3p + 2) >= w)
+  {
+    t3p = "..\0";
+    w3p = XTextWidth(font, t3p, 2);
+    if ((newx + w3p + 2) >= w)
+    {
+      t3p = ".\0";
+      w3p = XTextWidth(font, t3p, 1);
+      if ((newx + w3p + 2) >= w)
+	return;
+    }
+  }
 
   search_len = strlen(button->title);
 
@@ -236,7 +254,7 @@ void ButtonDraw(Button *button, int x, int y, int w, int h)
   if (XTextWidth(font, button->title, search_len) > w-newx-3) {
 
     x3p = 0;
-    while (search_len > 0
+    while (search_len >= 0
 	   && ((x3p = newx + XTextWidth(font, button->title, search_len))
 	       > w-w3p-3))
       search_len--;
@@ -592,8 +610,10 @@ int LocateButton(ButtonArray *array, int xp,  int yp, int *xb, int *yb,
   return (num == -1) ? num : temp->count;
 }
 
+/* -------------------------------------------------------------------------
+    ButtonCoordinates - Compute the coordinates of a button (animation)
+   ------------------------------------------------------------------------- */
 extern int StartButtonWidth;
-
 void ButtonCoordinates(ButtonArray *array, int numbut, int *xc, int *yc)
 {
   Button *temp;
