@@ -41,7 +41,7 @@
 #include "defaults.h"
 #include "update.h"
 #include "style.h"
-#include "libs/Colorset.h"
+#include "colorset.h"
 #include "ewmh.h"
 #include "gnome.h"
 #include "icons.h"
@@ -991,7 +991,7 @@ void parse_and_set_window_style(char *action, window_style *ptmpstyle)
           *val = -1;
 	  GetIntegerArguments(rest, NULL, val, 1);
 	  SSET_BORDER_COLORSET(*ptmpstyle, *val);
-	  AllocColorset(*val);
+	  alloc_colorset(*val);
 	  ptmpstyle->flags.use_border_colorset = (*val >= 0);
 	  ptmpstyle->flag_mask.use_border_colorset = 1;
 	  ptmpstyle->change_mask.use_border_colorset = 1;
@@ -1056,7 +1056,7 @@ void parse_and_set_window_style(char *action, window_style *ptmpstyle)
 	  if (*val < 0)
 	    *val = -1;
 	  SSET_COLORSET(*ptmpstyle, *val);
-	  AllocColorset(*val);
+	  alloc_colorset(*val);
 	  ptmpstyle->flags.use_colorset = (*val >= 0);
 	  ptmpstyle->flag_mask.use_colorset = 1;
 	  ptmpstyle->change_mask.use_colorset = 1;
@@ -1505,7 +1505,7 @@ void parse_and_set_window_style(char *action, window_style *ptmpstyle)
           *val = -1;
 	  GetIntegerArguments(rest, NULL, val, 1);
 	  SSET_COLORSET_HI(*ptmpstyle, *val);
-	  AllocColorset(*val);
+	  alloc_colorset(*val);
 	  ptmpstyle->flags.use_colorset_hi = (*val >= 0);
 	  ptmpstyle->flag_mask.use_colorset_hi = 1;
 	  ptmpstyle->change_mask.use_colorset_hi = 1;
@@ -1516,7 +1516,7 @@ void parse_and_set_window_style(char *action, window_style *ptmpstyle)
           *val = -1;
 	  GetIntegerArguments(rest, NULL, val, 1);
 	  SSET_BORDER_COLORSET_HI(*ptmpstyle, *val);
-	  AllocColorset(*val);
+	  alloc_colorset(*val);
 	  ptmpstyle->flags.use_border_colorset_hi = (*val >= 0);
 	  ptmpstyle->flag_mask.use_border_colorset_hi = 1;
 	  ptmpstyle->change_mask.use_border_colorset_hi = 1;

@@ -5,16 +5,14 @@ _+_A HREF="#2.4.7"_-_2.4.7_+_/A_-_.
 
 Changes in alpha release 2.5.1 (not released yet)
 
-* Fvwm commands can be invoked when the edge of the screen is hit
-  with the mouse.
+* Changed the executable and the man page names from fvwm2 to fvwm.
+  The old names are still supported by symlinking.
 
 * Added a full support for the side window titles. New Style options
   TitleAtLeft and TitleAtRight added to TitleAtTop and TitleAtBottom.
 
 * A title text may now be optionally rotated for both vertical and
   horizontal title directions, search for "Rotated" in the man page.
-
-* FvwmForm can automatically run commands after a timeout interval.
 
 * New commands Schedule and Deschedule.
 
@@ -88,6 +86,16 @@ Changes in alpha release 2.5.1 (not released yet)
 
 * New FvwmIconMan configuration syntax now conforms to the syntax of
   other modules, see the man page.
+
+* FvwmForm can automatically run commands after a timeout interval.
+
+* Fvwm commands can be invoked when the edge of the screen is hit
+  with the mouse.
+
+* New commands Colorset, ReadWriteColors and CleanupColorsets allow
+  the colorset functionality previously available using FvwmTheme.
+
+* FvwmTheme is obsolete now, but still supported for some time.
 
 ---------------------------------------------------------------------
 

@@ -21,7 +21,7 @@
 #include "libs/queue.h"
 #include "fvwm.h"
 #include "externs.h"
-#include "libs/Colorset.h"
+#include "colorset.h"
 #include "bindings.h"
 #include "misc.h"
 #include "cursor.h"

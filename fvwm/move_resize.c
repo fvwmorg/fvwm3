@@ -32,7 +32,6 @@
 #include <stdio.h>
 
 #include "libs/fvwmlib.h"
-#include "libs/Colorset.h"
 #include "libs/FScreen.h"
 #include "libs/Flocale.h"
 #include <libs/gravity.h>
@@ -44,6 +43,7 @@
 #include "bindings.h"
 #include "misc.h"
 #include "screen.h"
+#include "colorset.h"
 #include "defaults.h"
 #include "move_resize.h"
 #include "module_interface.h"

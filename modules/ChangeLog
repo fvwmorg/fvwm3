@@ -1,3 +1,9 @@
+2002-04-16  Hippo
+
+	* FvwmTheme/FvwmTheme.c:
+	FvwmTheme printf a warning and sends the command back to fvwm.
+	This module is obsoleted now.
+
 2002-04-17  Mikhael Goikhman  <migo@homemail.com>
 
 	* FvwmEvent/FvwmEvent.c (execute_event):

@@ -38,7 +38,6 @@
 #endif
 
 #include "libs/fvwmlib.h"
-#include "libs/Colorset.h"
 #include "libs/FScreen.h"
 #include "libs/Module.h"
 #include "libs/queue.h"
@@ -50,6 +49,7 @@
 #include "bindings.h"
 #include "misc.h"
 #include "screen.h"
+#include "colorset.h"
 #include "module_interface.h"
 #include "read.h"
 #include "events.h"

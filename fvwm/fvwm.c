@@ -54,7 +54,7 @@
 #include "builtins.h"
 #include "menus.h"
 #include "module_interface.h"
-#include "libs/Colorset.h"
+#include "colorset.h"
 #include "icccm2.h"
 #include "gnome.h"
 #include "ewmh.h"
@@ -1390,7 +1390,7 @@ static void InitVariables(void)
   Scr.DefaultIcon = NULL;
 
   Scr.DefaultColorset = -1;
-  AllocColorset(0);
+  alloc_colorset(0);
   /* set up colorset 0 so that if FvwmTheme fails to start any modules
    * using colorsets don't appear black on black */
   Colorset[0].fg = Scr.StdFore = GetColor(DEFAULT_FORE_COLOR);

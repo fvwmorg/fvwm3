@@ -48,7 +48,7 @@
 #include "builtins.h"
 #include "icons.h"
 #include "module_interface.h"
-#include "libs/Colorset.h"
+#include "colorset.h"
 #include "add_window.h"
 #include "frame.h"
 

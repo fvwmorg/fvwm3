@@ -39,6 +39,7 @@ void CMD_ButtonStyle(F_CMD_ARGS);
 void CMD_ChangeDecor(F_CMD_ARGS);
 #endif /* USEDECOR */
 void CMD_ChangeMenuStyle(F_CMD_ARGS);
+void CMD_CleanupColorsets(F_CMD_ARGS);
 void CMD_ClickTime(F_CMD_ARGS);
 void CMD_Close(F_CMD_ARGS);
 void CMD_ColorLimit(F_CMD_ARGS);
@@ -135,6 +136,7 @@ void CMD_QuitSession(F_CMD_ARGS);
 void CMD_Raise(F_CMD_ARGS);
 void CMD_RaiseLower(F_CMD_ARGS);
 void CMD_Read(F_CMD_ARGS);
+void CMD_ReadWriteColors(F_CMD_ARGS);
 void CMD_Recapture(F_CMD_ARGS);
 void CMD_RecaptureWindow(F_CMD_ARGS);
 void CMD_Refresh(F_CMD_ARGS);

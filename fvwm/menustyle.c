@@ -42,7 +42,7 @@
 #include "colors.h"
 #include "colormaps.h"
 #include "decorations.h"
-#include "libs/Colorset.h"
+#include "colorset.h"
 #include "defaults.h"
 #include "libs/FScreen.h"
 #include "libs/Flocale.h"
@@ -1229,7 +1229,7 @@ void menustyle_parse_style(F_CMD_ARGS)
 			{
 				ST_HAS_MENU_CSET(tmpms) = 1;
 				ST_CSET_MENU(tmpms) = *val;
-				AllocColorset(*val);
+				alloc_colorset(*val);
 			}
 			has_gc_changed = True;
 			break;
@@ -1243,7 +1243,7 @@ void menustyle_parse_style(F_CMD_ARGS)
 			{
 				ST_HAS_ACTIVE_CSET(tmpms) = 1;
 				ST_CSET_ACTIVE(tmpms) = *val;
-				AllocColorset(*val);
+				alloc_colorset(*val);
 			}
 			has_gc_changed = True;
 			break;
@@ -1258,7 +1258,7 @@ void menustyle_parse_style(F_CMD_ARGS)
 			{
 				ST_HAS_GREYED_CSET(tmpms) = 1;
 				ST_CSET_GREYED(tmpms) = *val;
-				AllocColorset(*val);
+				alloc_colorset(*val);
 			}
 			has_gc_changed = True;
 			break;

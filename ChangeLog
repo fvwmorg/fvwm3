@@ -1,3 +1,10 @@
+2002-04-16  Hippo
+
+	* fvwm/*.[ch]:
+	* NEWS:
+	Moved FvwmTheme functionality into fvwm.
+	Added new commands Colorset, ReadWriteColors, CleanupColorsets.
+
 2002-04-17  Mikhael Goikhman  <migo@homemail.com>
 
 	* configure.in:

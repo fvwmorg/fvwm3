@@ -35,8 +35,8 @@ typedef struct {
   unsigned int shape_width : 12;
   unsigned int shape_height : 12;
   unsigned int shape_type : 2;
-#ifdef FVWMTHEME_PRIVATE
-  /* FvwmTheme use only. */
+#ifdef FVWM_COLORSET_PRIVATE
+  /* fvwm/colorset.c use only */
   Pixmap mask;
   unsigned int color_flags : 6;
   Picture *picture;
@@ -55,7 +55,7 @@ typedef struct {
 #define SHAPE_STRETCH 1
 #define SHAPE_STRETCH_ASPECT 2
 
-#ifdef FVWMTHEME_PRIVATE
+#ifdef FVWM_COLORSET_PRIVATE
 #define FG_SUPPLIED 0x1
 #define BG_SUPPLIED 0x2
 #define HI_SUPPLIED 0x4
@@ -67,8 +67,9 @@ typedef struct {
 /* colorsets are stored as an array of structs to permit fast dereferencing */
 extern colorset_struct *Colorset;
 
-#ifndef FVWMTHEME_PRIVATE
-/* Create n new colorsets, FvwmTheme does it's own thing (different size) */
+#ifndef FVWM_COLORSET_PRIVATE
+/* Create n new colorsets, fvwm/colorset.c does its own thing (different size)
+ */
 void AllocColorset(int n);
 #endif
 

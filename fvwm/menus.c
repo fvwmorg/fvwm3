@@ -49,7 +49,7 @@
 #include "colors.h"
 #include "colormaps.h"
 #include "decorations.h"
-#include "libs/Colorset.h"
+#include "colorset.h"
 #include "defaults.h"
 #include "libs/FScreen.h"
 #include "libs/Flocale.h"

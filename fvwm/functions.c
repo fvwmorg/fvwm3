@@ -51,7 +51,7 @@
 #include "repeat.h"
 #include "read.h"
 #include "virtual.h"
-#include "libs/Colorset.h"
+#include "colorset.h"
 #include "ewmh.h"
 #include "schedule.h"
 
@@ -121,6 +121,7 @@ static const func_type func_config[] =
   CMD_ENTRY("changedecor", CMD_ChangeDecor, F_CHANGE_DECOR, FUNC_NEEDS_WINDOW),
 #endif /* USEDECOR */
   CMD_ENTRY("changemenustyle", CMD_ChangeMenuStyle, F_CHANGE_MENUSTYLE, 0),
+  CMD_ENTRY("cleanupcolorsets", CMD_CleanupColorsets, F_NOP, 0),
   CMD_ENTRY("clicktime", CMD_ClickTime, F_CLICK, 0),
   CMD_ENTRY("close", CMD_Close, F_CLOSE, FUNC_NEEDS_WINDOW),
   CMD_ENTRY("colorlimit", CMD_ColorLimit, F_COLOR_LIMIT, 0),
@@ -221,6 +222,7 @@ static const func_type func_config[] =
   CMD_ENTRY("raise", CMD_Raise, F_RAISE, FUNC_NEEDS_WINDOW),
   CMD_ENTRY("raiselower", CMD_RaiseLower, F_RAISELOWER, FUNC_NEEDS_WINDOW),
   CMD_ENTRY("read", CMD_Read, F_READ, 0),
+  CMD_ENTRY("readwritecolors", CMD_ReadWriteColors, F_NOP, 0),
   CMD_ENTRY("recapture", CMD_Recapture, F_RECAPTURE, 0),
   CMD_ENTRY("recapturewindow", CMD_RecaptureWindow, F_RECAPTURE_WINDOW, 0),
   CMD_ENTRY("refresh", CMD_Refresh, F_REFRESH, 0),
@@ -406,7 +408,7 @@ static int expand_extended_var(
       return 0;
     if (cs < 0)
       return 0;
-    AllocColorset(cs);
+    alloc_colorset(cs);
     switch (i)
     {
     case 0:

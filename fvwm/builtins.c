@@ -40,7 +40,7 @@
 #include "libs/Picture.h"
 #include "fvwm.h"
 #include "externs.h"
-#include "libs/Colorset.h"
+#include "colorset.h"
 #include "bindings.h"
 #include "misc.h"
 #include "cursor.h"
@@ -2226,18 +2226,17 @@ void CMD_AddTitleStyle(F_CMD_ARGS)
 
 void CMD_Colorset(F_CMD_ARGS)
 {
-	int n = -1, ret;
+	int n;
 	char *token;
 
-	token = PeekToken(action, NULL);
+	if (GetIntegerArguments(action, &token, &n, 1) != 1)
+		return;
+	if (n < 0)
+		return;
 	if (token == NULL)
 		return;
-	ret = sscanf(token, "%x", &n);
 
-	if ((ret == 0) || (n < 0))
-		return;
-
-	LoadColorset(action);
+	parse_colorset(n, token);
 	BroadcastColorset(n);
 
 	if (n == Scr.DefaultColorset)
@@ -2250,6 +2249,11 @@ void CMD_Colorset(F_CMD_ARGS)
 	update_style_colorset(n);
 
 	return;
+}
+
+void CMD_CleanupColorsets(F_CMD_ARGS)
+{
+	cleanup_colorsets();
 }
 
 void CMD_PropertyChange(F_CMD_ARGS)
@@ -2290,7 +2294,7 @@ void CMD_DefaultColorset(F_CMD_ARGS)
 	Scr.DefaultColorset = cset;
 	if (Scr.DefaultColorset < 0)
 		Scr.DefaultColorset = -1;
-	AllocColorset(Scr.DefaultColorset);
+	alloc_colorset(Scr.DefaultColorset);
 	Scr.flags.do_need_window_update = 1;
 	Scr.flags.has_default_color_changed = 1;
 

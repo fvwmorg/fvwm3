@@ -71,7 +71,7 @@
 #include "screen.h"
 #include "defaults.h"
 #include "events.h"
-#include "libs/Colorset.h"
+#include "colorset.h"
 #include "fvwmsignal.h"
 #include "module_interface.h"
 #include "session.h"

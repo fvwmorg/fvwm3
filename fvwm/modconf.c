@@ -52,7 +52,7 @@
 #include "misc.h"
 #include "screen.h"
 #include "module_interface.h"
-#include "libs/Colorset.h"
+#include "colorset.h"
 #include "libs/FScreen.h"
 
 extern int nColorsets;	/* in libs/Colorset.c */

@@ -32,7 +32,7 @@
 #include "update.h"
 #include "style.h"
 #include "builtins.h"
-#include "libs/Colorset.h"
+#include "colorset.h"
 #include "borders.h"
 #include "frame.h"
 #include "gnome.h"
@@ -459,8 +459,6 @@ static void apply_window_updates(
 	{
 		if (Scr.Hilite != NULL && t == Scr.Hilite)
 		{
-			fprintf(stderr, "fc broadcast 0x%08x '%s'\n",
-				(int)Scr.Hilite, Scr.Hilite->name.name);
 			BroadcastPacket(
 				M_FOCUS_CHANGE, 5, FW_W(Scr.Hilite),
 				FW_W_FRAME(Scr.Hilite), 0,
