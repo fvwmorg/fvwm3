@@ -486,6 +486,9 @@ FvwmWindow *AddWindow(Window w, FvwmWindow *ReuseWin)
   }
 #endif
 
+  attributes.colormap = Scr.cmap;
+  valuemask |= CWColormap;
+  
   /* What the heck, we'll always reparent everything from now on! */
   tmp_win->frame =
     XCreateWindow (dpy, Scr.Root, tmp_win->frame_x,tmp_win->frame_y,

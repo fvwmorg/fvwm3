@@ -1,3 +1,8 @@
+1999-04-01  Hippo
+
+	* fvwm/*: #define PICK_TRUECOLOR and fvwm will use a truecolor visual
+	rather than the default.
+
 Wed Mar 31 20:32:27 1999  Steve ROBBINS  <stever@bottom.bic.mni.mcgill.ca (Steve ROBBINS)>
 
 	* fvwm/menus.c (menuShortcuts): removed C++-style comment.

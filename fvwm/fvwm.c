@@ -157,10 +157,6 @@ int main(int argc, char **argv)
   Bool option_error = FALSE;
   int x, y;
 
-#ifdef PICK_TRUECOLOR
-  XVisualInfo vizinfo;
-#endif
-
   g_argv = argv;
   g_argc = argc;
 
@@ -419,18 +415,38 @@ int main(int argc, char **argv)
     exit(1);
   }
 
-#ifdef PICK_TRUECOLOR
-  /* grab a TrueColor visual */
-  if (XMatchVisualInfo(dpy, Scr.screen, DefaultDepth(dpy, Scr.screen),
-                       TrueColor, &vizinfo)) {
-    Scr.viz = vizinfo.visual;
-    Scr.depth = vizinfo.depth;
-  }
-  else
-#endif
   {
-    Scr.viz = DefaultVisual(dpy, Scr.screen);
-    Scr.depth = DefaultDepth(dpy, Scr.screen);
+#ifdef PICK_TRUECOLOR
+    /* grab the best TrueColor visual */
+    /* this should be extended to allow a -visual option that takes a string
+     * or visualId but I think the only people who want it want this */
+    XVisualInfo template, *vizinfo;
+    int total, i;
+    
+    /* grab a TrueColor visual */
+    Scr.depth = 0;
+    template.screen = Scr.screen;
+    template.class = TrueColor;
+    vizinfo = XGetVisualInfo(dpy, VisualScreenMask | VisualClassMask, &template,
+                             &total);
+    if (total) { /* get the deepest visual that matched */
+      for (i = 0; i < total; i++) {
+        if (vizinfo[i].depth > Scr.depth) {
+          Scr.viz = vizinfo[i].visual;
+          Scr.depth = vizinfo[i].depth;
+        }
+      }
+      XFree(vizinfo);
+      /* have to have a colormap for non-default visual windows */
+      Scr.cmap = XCreateColormap(dpy, Scr.Root, Scr.viz, AllocNone);
+    }
+    else
+#endif /* PICK_TRUECOLOR */
+    {
+      Scr.viz = DefaultVisual(dpy, Scr.screen);
+      Scr.depth = DefaultDepth(dpy, Scr.screen);
+      Scr.cmap = DefaultColormap(dpy, Scr.screen);
+    }
   }
 
 #ifdef SHAPE
@@ -449,9 +465,11 @@ int main(int argc, char **argv)
    * rather than the root window */
   attributes.event_mask = KeyPressMask|FocusChangeMask;
   attributes.override_redirect = True;
+  attributes.colormap = Scr.cmap;
   Scr.NoFocusWin=XCreateWindow(dpy, Scr.Root, -10, -10, 10, 10, 0, Scr.depth,
                                InputOutput, Scr.viz,
-                               CWEventMask | CWOverrideRedirect, &attributes);
+                               CWEventMask | CWOverrideRedirect | CWColormap,
+                               &attributes);
   XMapWindow(dpy, Scr.NoFocusWin);
 
   SetMWM_INFO(Scr.NoFocusWin);
@@ -489,6 +507,12 @@ int main(int argc, char **argv)
 
   CreateCursors();
   InitVariables();
+#ifdef PICK_TRUECOLOR
+  /* this is so that menus use a colormap */
+  Scr.FvwmRoot.w = Scr.NoFocusWin;
+  Scr.FvwmRoot.number_cmap_windows = 1;
+  Scr.FvwmRoot.cmap_windows = &Scr.NoFocusWin;
+#endif
   InitEventHandlerJumpTable();
   initModules();
 
@@ -534,7 +558,8 @@ int main(int argc, char **argv)
   Scr.SizeStringWidth = XTextWidth (Scr.StdFont.font,
                                     " +8888 x +8888 ", 15);
   attributes.background_pixel = Scr.StdColors.back;
-  valuemask = CWBackPixel;
+  attributes.colormap = Scr.cmap;
+  valuemask = CWBackPixel | CWColormap;
 
   if(!Scr.gs.EmulateMWM)
   {

@@ -1,5 +1,10 @@
 Changes in alpha release 2.3.0 (February 1999)
 
+* #define PICK_TRUECOLOR will make fvwm use the best TrueColor Visual.  This is
+  for those poor unfortunates with legacy apps that crash if the default visual
+  is not an 8 bit PseudoColor (but fortunate enough to have a 24 bit server
+  that supports both 8 bit and 24 bit TrueColor)
+
 * New command line argument -replace. fvwm will try to "take over"
   from a running wm only if it is given. 
 

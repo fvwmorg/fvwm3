@@ -2497,10 +2497,11 @@ void MakeMenu(MenuRoot *mr)
   mr->xanimation = 0;
 
 #ifndef NO_SAVEUNDERS
-  valuemask = (CWBackPixel | CWEventMask | CWCursor | CWSaveUnder);
+  valuemask = (CWColormap | CWBackPixel | CWEventMask | CWCursor | CWSaveUnder);
 #else
-  valuemask = (CWBackPixel | CWEventMask | CWCursor);
+  valuemask = (CWColormap | CWBackPixel | CWEventMask | CWCursor);
 #endif
+  attributes.colormap = Scr.cmap;
   attributes.background_pixel = mr->ms->look.MenuColors.back;
   attributes.event_mask = (ExposureMask | EnterWindowMask);
   attributes.cursor = Scr.FvwmCursors[MENU];
