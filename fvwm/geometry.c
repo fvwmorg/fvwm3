@@ -224,7 +224,8 @@ Bool get_title_button_geometry(
 
 void get_title_font_size_and_offset(
 	FvwmWindow *fw, direction_type title_dir,
-	text_direction_type text_dir, int *size, int *offset)
+	Bool is_left_title_rotated_cw, Bool is_right_title_rotated_cw,
+	int *size, int *offset)
 {
 	int decor_size;
 	int extra_size;
@@ -237,35 +238,29 @@ void get_title_font_size_and_offset(
 	switch (title_dir)
 	{
 	case DIR_W:
-		switch(text_dir)
+		if (is_left_title_rotated_cw)
 		{
-		case TEXT_DIR_TOP_TO_BOTTOM:
 			fw->title_text_dir = TEXT_DIR_TOP_TO_BOTTOM;
 			min_offset = fw->title_font->height -
 				fw->title_font->ascent;
-			break;
-		case TEXT_DIR_LEFT_TO_RIGHT:
-		case TEXT_DIR_BOTTOM_TO_TOP:
-		default:
+		}
+		else
+		{
 			fw->title_text_dir = TEXT_DIR_BOTTOM_TO_TOP;
 			min_offset = fw->title_font->ascent;
-			break;
 		}
 		break;
 	case DIR_E:
-		switch(text_dir)
+		if (!is_right_title_rotated_cw)
 		{
-		case TEXT_DIR_BOTTOM_TO_TOP:
 			fw->title_text_dir = TEXT_DIR_BOTTOM_TO_TOP;
 			min_offset = fw->title_font->ascent;
-			break;
-		case TEXT_DIR_LEFT_TO_RIGHT:
-		case TEXT_DIR_TOP_TO_BOTTOM:
-		default:
+		}
+		else
+		{
 			fw->title_text_dir =  TEXT_DIR_TOP_TO_BOTTOM;
 			min_offset = fw->title_font->height -
 				fw->title_font->ascent;
-			break;
 		}
 		break;
 	case DIR_N:

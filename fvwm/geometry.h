@@ -37,11 +37,13 @@ void get_title_gravity_factors(
 Bool get_title_button_geometry(
 	FvwmWindow *fw, rectangle *ret_g, int context);
 void get_title_font_size_and_offset(
-	FvwmWindow *fw, direction_type title_dir,
-	text_direction_type text_dir, int *size, int *offset);
+
 void get_icon_corner(
 	FvwmWindow *fw, rectangle *ret_g);
 void get_shaded_geometry(
+	FvwmWindow *fw, direction_type title_dir,
+	Bool is_left_title_rotated_cw, Bool is_right_title_rotated_cw,
+	int *size, int *offset);
 	FvwmWindow *fw, rectangle *small_g, rectangle *big_g);
 void get_unshaded_geometry(
 	FvwmWindow *fw, rectangle *ret_g);

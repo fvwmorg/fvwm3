@@ -98,12 +98,6 @@
 	  (fw)->flag_mask.common.title_dir = DIR_MAJOR_MASK * !!(x)
 #define HAS_VERTICAL_TITLE(fw) \
           (HAS_TITLE_DIR(fw,DIR_W) || HAS_TITLE_DIR(fw,DIR_E))
-#define GET_TITLE_TEXT_DIR_MODE(fw) \
-                    ((fw)->flags.common.title_text_dir_mode)
-#define SET_TITLE_TEXT_DIR_MODE(fw,x) \
-                    (fw)->flags.common.title_text_dir_mode = (x)
-#define SETM_TITLE_TEXT_DIR_MODE(fw,x) \
-                    (fw)->flag_mask.common.title_text_dir_mode =(x)
 #define HAS_STIPPLED_TITLE(fw)  \
           ((fw)->flags.common.s.has_stippled_title)
 #define SET_HAS_STIPPLED_TITLE(fw,x) \
@@ -186,6 +180,12 @@
           (fw)->flags.common.s.is_icon_suppressed = !!(x)
 #define SETM_ICON_SUPPRESSED(fw,x) \
           (fw)->flag_mask.common.s.is_icon_suppressed = !!(x)
+#define IS_LEFT_TITLE_ROTATED_CW(fw)  \
+          ((fw)->flags.common.s.is_left_title_rotated_cw)
+#define SET_IS_LEFT_TITLE_ROTATED_CW(fw,x) \
+          (fw)->flags.common.s.is_left_title_rotated_cw = !!(x)
+#define SETM_IS_LEFT_TITLE_ROTATED_CW(fw,x) \
+          (fw)->flag_mask.common.s.is_left_title_rotated_cw = !!(x)
 #define IS_LENIENT(fw)         ((fw)->flags.common.s.is_lenient)
 #define SET_LENIENT(fw,x)      (fw)->flags.common.s.is_lenient = !!(x)
 #define SETM_LENIENT(fw,x)     (fw)->flag_mask.common.s.is_lenient = !!(x)
@@ -251,8 +251,13 @@
                                (fw)->flags.common.s.is_psize_fixed = !!(x)
 #define SETM_PSIZE_FIXED(fw,x) \
                             (fw)->flag_mask.common.s.is_psize_fixed = !!(x)
+#define IS_RIGHT_TITLE_ROTATED_CW(fw)  \
+          ((fw)->flags.common.s.is_right_title_rotated_cw)
+#define SET_IS_RIGHT_TITLE_ROTATED_CW(fw,x) \
+          (fw)->flags.common.s.is_right_title_rotated_cw = !!(x)
+#define SETM_IS_RIGHT_TITLE_ROTATED_CW(fw,x) \
+          (fw)->flag_mask.common.s.is_right_title_rotated_cw = !!(x)
 #define HAS_DEPRESSABLE_BORDER(fw) ((fw)->flags.common.s.has_depressable_border)
-
 
 /* access to the special flags of a window */
 #define DO_DELETE_ICON_MOVED(fw) \
@@ -534,4 +539,5 @@
           (fw)->flag_mask.user_states |= (mask)
 #define GET_USER_STATES(fw) \
           ((fw)->flags.user_states)
+
 #endif /* _WINDOW_FLAGS_ */

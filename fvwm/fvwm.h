@@ -214,7 +214,6 @@ typedef struct
 	unsigned has_icon_font : 1;
 	unsigned has_window_font : 1;
 	unsigned title_dir : 2;
-	unsigned title_text_dir_mode : 2;
 	/* static flags that do not change dynamically after the window has been
 	 * created */
 	struct
@@ -271,9 +270,11 @@ typedef struct
 		unsigned is_fixed_ppos : 1;
 		unsigned is_icon_sticky : 1;
 		unsigned is_icon_suppressed : 1;
+		unsigned is_left_title_rotated_cw : 1; /* cw = clock wise */
 		unsigned is_lenient : 1;
 		unsigned is_size_fixed : 1;
 		unsigned is_psize_fixed : 1;
+		unsigned is_right_title_rotated_cw : 1;
 		unsigned use_icon_position_hint : 1;
 		unsigned use_indexed_window_name : 1;
 		unsigned use_indexed_icon_name : 1;
@@ -627,7 +628,7 @@ typedef struct FvwmWindow
 	short title_text_offset;
 	short title_length;
 	short title_thickness;
-	short title_text_dir;
+	text_direction_type title_text_dir;
 	struct
 	{
 		/* geometry of the icon picture window */

@@ -1839,7 +1839,19 @@ void parse_and_set_window_style(char *action, window_style *ptmpstyle)
         break;
 
       case 'l':
-        if (StrEquals(token, "Lenience"))
+	if (StrEquals(token, "LeftTitleRotatedClockWise"))
+	{
+	  SFSET_IS_LEFT_TITLE_ROTATED_CW(*ptmpstyle, 1);
+	  SMSET_IS_LEFT_TITLE_ROTATED_CW(*ptmpstyle, 1);
+	  SCSET_IS_LEFT_TITLE_ROTATED_CW(*ptmpstyle, 1);
+	}
+	else if (StrEquals(token, "LeftTitleRotatedCounterClockWise"))
+	{
+	  SFSET_IS_LEFT_TITLE_ROTATED_CW(*ptmpstyle, 0);
+	  SMSET_IS_LEFT_TITLE_ROTATED_CW(*ptmpstyle, 1);
+	  SCSET_IS_LEFT_TITLE_ROTATED_CW(*ptmpstyle, 1);
+	}
+        else if (StrEquals(token, "Lenience"))
         {
 	  found = True;
 	  SFSET_IS_LENIENT(*ptmpstyle, 1);
@@ -2355,30 +2367,21 @@ void parse_and_set_window_style(char *action, window_style *ptmpstyle)
 	  SMSET_DO_RESIZE_OPAQUE(*ptmpstyle, 1);
 	  SCSET_DO_RESIZE_OPAQUE(*ptmpstyle, 1);
         }
+	else if (StrEquals(token, "RightTitleRotatedClockWise"))
+	{
+	  SFSET_IS_RIGHT_TITLE_ROTATED_CW(*ptmpstyle, 1);
+	  SMSET_IS_RIGHT_TITLE_ROTATED_CW(*ptmpstyle, 1);
+	  SCSET_IS_RIGHT_TITLE_ROTATED_CW(*ptmpstyle, 1);
+	}
+	else if (StrEquals(token, "RightTitleRotatedCounterClockWise"))
+	{
+	  SFSET_IS_RIGHT_TITLE_ROTATED_CW(*ptmpstyle, 0);
+	  SMSET_IS_RIGHT_TITLE_ROTATED_CW(*ptmpstyle, 1);
+	  SCSET_IS_RIGHT_TITLE_ROTATED_CW(*ptmpstyle, 1);
+	}
         break;
 
       case 's':
-	if (StrEquals(token, "SideTitleTextTopToBottom"))
-        {
-	  found = True;
-	  SFSET_TITLE_TEXT_DIR_MODE(*ptmpstyle, TEXT_DIR_TOP_TO_BOTTOM);
-	  SMSET_TITLE_TEXT_DIR_MODE(*ptmpstyle, TEXT_DIR_MASK);
-	  SCSET_TITLE_TEXT_DIR_MODE(*ptmpstyle, TEXT_DIR_MASK);
-        }
-        else if (StrEquals(token, "SideTitleTextBottomToTop"))
-        {
-	  found = True;
-	  SFSET_TITLE_TEXT_DIR_MODE(*ptmpstyle, TEXT_DIR_BOTTOM_TO_TOP);
-	  SMSET_TITLE_TEXT_DIR_MODE(*ptmpstyle, TEXT_DIR_MASK);
-	  SCSET_TITLE_TEXT_DIR_MODE(*ptmpstyle, TEXT_DIR_MASK);
-        }
-	else if (StrEquals(token, "SideTitleTextDefault"))
-        {
-	  found = True;
-	  SFSET_TITLE_TEXT_DIR_MODE(*ptmpstyle, TEXT_DIR_LEFT_TO_RIGHT);
-	  SMSET_TITLE_TEXT_DIR_MODE(*ptmpstyle, TEXT_DIR_MASK);
-	  SCSET_TITLE_TEXT_DIR_MODE(*ptmpstyle, TEXT_DIR_MASK);
-        }
         if (StrEquals(token, "SMARTPLACEMENT"))
         {
 	  found = True;
@@ -3042,9 +3045,11 @@ void check_window_style_change(
   }
 
   /*
-   * title_text_dir_mode
+   * is_left_title_rotated_cw
+   * is_right_title_rotated_cw
    */
-  if (SCTITLE_TEXT_DIR_MODE(*ret_style))
+  if (SCIS_LEFT_TITLE_ROTATED_CW(*ret_style) ||
+      SCIS_RIGHT_TITLE_ROTATED_CW(*ret_style))
   {
     flags->do_update_title_text_dir = True;
   }

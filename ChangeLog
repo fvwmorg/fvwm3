@@ -1,3 +1,18 @@
+2002-03-18  olicha  <olivier.chapuis@free.fr>
+
+	* fvwm/geometry.h:
+	* fvwm/geometry.c (get_title_font_size_and_offset):
+	* fvwm/add_window.c (setup_title_geometry):
+	* fvwm/style.h:
+	* fvwm/style.c (parse_and_set_window_style):
+	(check_window_style_change):
+	* fvwm/update.c (apply_window_updates):
+	* fvwm/window_flags.h:
+	* fvwm/fvwm.h:
+	Reworte side title direction styles and use LeftTitleRotatedClockWise /
+	LeftTitleRotatedCounterClockWise, RightTitleRotatedClockWise /
+	RightTitleRotatedCounterClockWise
+
 2002-03-18  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* acconfig.h:

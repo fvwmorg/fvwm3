@@ -700,10 +700,8 @@ static void DrawMultiPixmapTitlebar(FvwmWindow *fw, DecorFace *df)
 					  0));
 			after_space -= size;
 		}
-
-		get_title_font_size_and_offset(
-			fw, GET_TITLE_DIR(fw),
-			GET_TITLE_TEXT_DIR_MODE(fw), &size, &text_offset);
+		size = fw->title_thickness;
+		text_offset = fw->title_text_offset;
 		memset(&fstr, 0, sizeof(fstr));
 		fstr.str = fw->visible_name;
 		fstr.win = title_win;
