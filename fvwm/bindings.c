@@ -248,12 +248,12 @@ static int ParseBinding(
 	int modifier;
 	Bool is_unbind_request = False;
 	int rc;
-	STROKE_CODE(char stroke[STROKE_MAX_SEQUENCE + 1] = "");
-	STROKE_CODE(int n4=0);
-	STROKE_CODE(int i);
 	Bool is_binding_removed = False;
 	Binding *b;
 	Binding *rmlist = NULL;
+	STROKE_CODE(char stroke[STROKE_MAX_SEQUENCE + 1] = "");
+	STROKE_CODE(int n4=0);
+	STROKE_CODE(int i);
 
 	/* tline points after the key word "Mouse" or "Key" */
 	token = PeekToken(tline, &ptr);
