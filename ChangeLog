@@ -1,3 +1,9 @@
+2002-09-18  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* configure.in:
+	added a program that tests for -Werror option and similar; bug out of
+	configure if the test program doesn't compile
+
 2002-09-17  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* fvwm/fvwm.1.in:
