@@ -44,6 +44,16 @@ void raise_function(F_CMD_ARGS);
 void lower_function(F_CMD_ARGS);
 void change_layer(F_CMD_ARGS);
 void SetDefaultLayers(F_CMD_ARGS);
+/* This function recursively finds the transients of the window t and sets their
+ * is_in_transient_subtree flag.  If a layer is given, only windows in this
+ * layer are checked.  If the layer is < 0, all windows are considered.
+ */
+#define MARK_RAISE 0
+#define MARK_LOWER 1
+#define MARK_ALL   2
+#define MARK_ALL_LAYERS -1
+void mark_transient_subtree(
+  FvwmWindow *t, int layer, int mark_mode, Bool do_ignore_icons);
 
 
 #endif /* _STACK_H */

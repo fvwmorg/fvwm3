@@ -953,6 +953,7 @@ void HandleMapRequestKeepRaised(Window KeepRaised, FvwmWindow *ReuseWin)
   extern Bool isIconifiedByParent;
   extern Bool PPosOverride;
   Bool OnThisPage = False;
+  FvwmWindow *tmp;
 
   Event.xany.window = Event.xmaprequest.window;
 
@@ -1082,7 +1083,8 @@ void HandleMapRequestKeepRaised(Window KeepRaised, FvwmWindow *ReuseWin)
       break;
 
     case IconicState:
-      if (isIconifiedByParent)
+      if (isIconifiedByParent ||
+	  ((tmp = get_transientfor_fvwmwindow(Tmp_win)) && IS_ICONIFIED(tmp)))
       {
 	isIconifiedByParent = False;
 	SET_ICONIFIED_BY_PARENT(Tmp_win, 1);

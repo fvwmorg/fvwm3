@@ -1,3 +1,26 @@
+2001-02-24  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* fvwm/events.c (HandleMapRequestKeepRaised):
+	hide icons swallowed by parent icon on restart
+
+	* fvwm/icons.c (Iconify):
+	fixed iconic state in modules when an icon that was swallowed by a
+	parent icon was recaptured
+
+	* fvwm/icons.c (Iconify):
+	(DeIconify):
+	* fvwm/stack.c (mark_transient_subtree):
+	(collect_transients_recursive):
+	iconify/deiconify transients recursively
+
+	* fvwm/stack.c (mark_transient_subtree):
+	fixed logic
+
+	* fvwm/stack.c (must_move_transients):
+	(RaiseOrLowerWindow):
+	(mark_transient_subtree):
+	ignore icons when restacking transients
+
 2001-02-21  Mikhael Goikhman  <migo@homemail.com>
 
 	* fvwm/fvwm2.1:

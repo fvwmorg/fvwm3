@@ -1044,7 +1044,7 @@ void CaptureAllWindows(Bool is_recapture)
       {
         XUnmapWindow(dpy, children[i]);
         Event.xmaprequest.window = children[i];
-        HandleMapRequestKeepRaised (None, NULL);
+        HandleMapRequestKeepRaised(None, NULL);
       }
     }
     Scr.flags.windows_captured = 1;

@@ -1232,12 +1232,18 @@ void DeIconify(FvwmWindow *tmp_win)
   }
 
   /* AS dje  RaiseWindow(tmp_win); */
+
+  mark_transient_subtree(tmp_win, MARK_ALL_LAYERS, MARK_ALL, False);
   /* now de-iconify transients */
   for (t = Scr.FvwmRoot.next; t != NULL; t = t->next)
   {
-    if ((t == tmp_win)||
-	((IS_TRANSIENT(t)) && (t->transientfor == tmp_win->w)))
+#if 1
+    if (t == tmp_win || IS_IN_TRANSIENT_SUBTREE(t))
+#else
+    if ((t==tmp_win)||((IS_TRANSIENT(t)) && (t->transientfor == tmp_win->w)))
+#endif
     {
+      SET_IN_TRANSIENT_SUBTREE(t, 0);
       SET_MAPPED(t, 1);
       SET_ICONIFIED_BY_PARENT(t, 0);
       if(Scr.Hilite == t)
@@ -1369,11 +1375,17 @@ void Iconify(FvwmWindow *tmp_win, int def_x, int def_y)
     SetFocusWindow(tmp_win->next, 1);
   }
 
+  mark_transient_subtree(tmp_win, MARK_ALL_LAYERS, MARK_ALL, False);
   /* iconify transients first */
   for (t = Scr.FvwmRoot.next; t != NULL; t = t->next)
   {
+#if 1
+    if (t == tmp_win || IS_IN_TRANSIENT_SUBTREE(t))
+#else
     if ((t==tmp_win)||((IS_TRANSIENT(t)) && (t->transientfor == tmp_win->w)))
+#endif
     {
+      SET_IN_TRANSIENT_SUBTREE(t, 0);
       SET_ICON_ENTERED(t, 0);
       /*
        * Prevent the receipt of an UnmapNotify, since that would
@@ -1392,7 +1404,7 @@ void Iconify(FvwmWindow *tmp_win, int def_x, int def_y)
 
       SetMapStateProp(t, IconicState);
       DrawDecorations(t, DRAW_ALL, False, False, None);
-      if (t == tmp_win)
+      if (t == tmp_win && !IS_ICONIFIED_BY_PARENT(tmp_win))
       {
 	SET_DEICONIFY_PENDING(t, 1);
       }
@@ -1479,7 +1491,7 @@ void Iconify(FvwmWindow *tmp_win, int def_x, int def_y)
     LowerWindow(tmp_win);
   }
 
-  if(tmp_win->Desk == Scr.CurrentDesk)
+  if (tmp_win->Desk == Scr.CurrentDesk)
   {
     if (tmp_win->icon_w != None)
       XMapWindow(dpy, tmp_win->icon_w);
@@ -1487,7 +1499,7 @@ void Iconify(FvwmWindow *tmp_win, int def_x, int def_y)
     if(tmp_win->icon_pixmap_w != None)
       XMapWindow(dpy, tmp_win->icon_pixmap_w);
   }
-  if(HAS_CLICK_FOCUS(tmp_win) || HAS_SLOPPY_FOCUS(tmp_win))
+  if (HAS_CLICK_FOCUS(tmp_win) || HAS_SLOPPY_FOCUS(tmp_win))
   {
     if (tmp_win == Scr.Focus)
     {

@@ -390,6 +390,12 @@ static Bool must_move_transients(
 {
   *found_transient = False;
 
+#if 1
+  if (IS_ICONIFIED(t))
+  {
+    return False;
+  }
+#endif
   /* raise */
   if ((!do_lower && DO_RAISE_TRANSIENT(t)) ||
       (do_lower && DO_LOWER_TRANSIENT(t)))
@@ -528,7 +534,9 @@ static void RaiseOrLowerWindow(
    * recursion stuff for new windows because the must_move_transients() call
    * needs a properly ordered stack ring - but the new window is still at the
    * front of the stack ring. */
-  if (allow_recursion && !is_new_window)
+#if 1
+  if (allow_recursion && !is_new_window && !IS_ICONIFIED(t))
+#endif
   {
     /*
      * This part makes Raise/Lower on a Transient act on its Main and sibling
@@ -548,6 +556,12 @@ static void RaiseOrLowerWindow(
       {
         if (t2->w == t->transientfor)
         {
+#if 1
+	  if (IS_ICONIFIED(t2))
+	  {
+	    break;
+	  }
+#endif
           if ((!do_lower && DO_RAISE_TRANSIENT(t2)) ||
               (do_lower && DO_LOWER_TRANSIENT(t2))  )
           {
@@ -599,8 +613,10 @@ static void RaiseOrLowerWindow(
       for (t2 = Scr.FvwmRoot.stack_next; t2 != &Scr.FvwmRoot; t2 = next)
       {
 	next = t2->stack_next;
+#if 1
 	if ((IS_TRANSIENT(t2)) && (t2->transientfor == t->w) &&
-	    (t2->layer == t->layer))
+	    (t2->layer == t->layer) && !IS_ICONIFIED(t2))
+#endif
 	{
 	  /* t2 is a transient to lower */
 	  count++;
@@ -647,7 +663,10 @@ static void RaiseOrLowerWindow(
     */
     add_window_to_stack_ring_after(t, s->stack_prev);
 
-    if (is_new_window && IS_TRANSIENT(t) && DO_STACK_TRANSIENT_PARENT(t))
+#if 1
+    if (is_new_window && IS_TRANSIENT(t) && DO_STACK_TRANSIENT_PARENT(t) &&
+	!IS_ICONIFIED(t))
+#endif
     {
       /* now that the new transient is properly positioned in the stack ring,
        * raise/lower it again so that its parent is raised/lowered too */
@@ -1068,8 +1087,10 @@ int get_layer(FvwmWindow *t)
 
 /* This function recursively finds the transients of the window t and sets their
  * is_in_transient_subtree flag.  If a layer is given, only windows in this
- * layer are checked.  If the layer is < 0, all windows are considered. */
-static void mark_transient_subtree(FvwmWindow *t, int layer, Bool do_lower)
+ * layer are checked.  If the layer is < 0, all windows are considered.
+ */
+void mark_transient_subtree(
+  FvwmWindow *t, int layer, int mark_mode, Bool do_ignore_icons)
 {
   FvwmWindow *s;
   FvwmWindow *start;
@@ -1113,24 +1134,27 @@ static void mark_transient_subtree(FvwmWindow *t, int layer, Bool do_lower)
   }
   /* now loop over the windows and mark the ones we need to move */
   SET_IN_TRANSIENT_SUBTREE(t, 1);
-  is_finished = True;
+  is_finished = False;
   while (!is_finished)
   {
     FvwmWindow *r;
 
     /* recursively search for all transient windows */
-    is_finished = 1;
+    is_finished = True;
     for (s = start; s != end; s = s->stack_next)
     {
       if (IS_IN_TRANSIENT_SUBTREE(s) || !IS_TRANSIENT(s))
 	continue;
       r = (FvwmWindow *)s->pscratch;
+      if (do_ignore_icons && IS_ICONIFIED(r))
+	continue;
       if (r && IS_IN_TRANSIENT_SUBTREE(r) &&
-	  ((do_lower && DO_LOWER_TRANSIENT(r)) ||
-	   (!do_lower && DO_RAISE_TRANSIENT(r))))
+	  ((mark_mode == MARK_ALL) ||
+	   (mark_mode == MARK_LOWER && DO_LOWER_TRANSIENT(r)) ||
+	   (mark_mode == MARK_RAISE && DO_RAISE_TRANSIENT(r))))
       {
 	/* have to move this one too */
-	SET_IN_TRANSIENT_SUBTREE(t, 1);
+	SET_IN_TRANSIENT_SUBTREE(s, 1);
 	/* need another scan through the list */
 	is_finished = False;
       }
@@ -1146,7 +1170,7 @@ static int collect_transients_recursive(
   FvwmWindow *s;
   int count = 0;
 
-  mark_transient_subtree(t, layer, do_lower);
+  mark_transient_subtree(t, layer, (do_lower) ? MARK_LOWER : MARK_RAISE, True);
   /* now collect the marked windows in a separate list */
   for (s = Scr.FvwmRoot.stack_next; s != &Scr.FvwmRoot; )
   {
