@@ -1163,10 +1163,17 @@ void HandleEnterNotify()
   /* look for a matching leaveNotify which would nullify this enterNotify */
   if(XCheckTypedWindowEvent (dpy, ewp->window, LeaveNotify, &d))
     {
-      StashEventTime(&d);
-      if((d.xcrossing.mode==NotifyNormal)&&
-	 (d.xcrossing.detail!=NotifyInferior))
-	return;
+      /*
+         RBW - if we're in startup, this is a coerced focus, so we don't
+         want to save the event time, or exit prematurely.
+      */
+      if (! fFvwmInStartup)
+        {
+          StashEventTime(&d);
+          if((d.xcrossing.mode==NotifyNormal)&&
+	     (d.xcrossing.detail!=NotifyInferior))
+	    return;
+        }
     }
 
 /* an EnterEvent in one of the PanFrameWindows activates the Paging */
