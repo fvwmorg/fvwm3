@@ -805,7 +805,23 @@ void animate(struct icon_info *item, unsigned long *body)
     int abs_x, abs_y;
     Window junkw;
 
-    XTranslateCoordinates(dpy, holder_win, Root,
+    /* check to see if any corner is displayed in the iconbox window */
+    XTranslateCoordinates(dpy, icon_win, main_win, item->x, item->y, &abs_x,
+			  &abs_y, &junkw);
+    if (junkw == None)
+      XTranslateCoordinates(dpy, icon_win, main_win, item->x + item->icon_w - 1,
+			    item->y, &abs_x, &abs_y, &junkw);
+    if (junkw == None)
+      XTranslateCoordinates(dpy, icon_win, main_win, item->x,
+			    item->y + item->icon_h - 1, &abs_x, &abs_y, &junkw);
+    if (junkw == None)
+      XTranslateCoordinates(dpy, icon_win, main_win, item->x + item->icon_w - 1,
+			    item->y + item->icon_h - 1, &abs_x, &abs_y, &junkw);
+    if (junkw == None)
+      return;
+    
+    /* find out where it is on screen */
+    XTranslateCoordinates(dpy, icon_win, Root,
                           item->x, item->y, &abs_x, &abs_y,
                           &junkw);
     if (IS_ICONIFIED(item))
@@ -1652,11 +1668,10 @@ void ParseOptions(void)
 	  tmp = &tline[Clength+14];
 	  while(((isspace((unsigned char)*tmp))&&(*tmp != '\n'))&&(*tmp != 0))
 	    tmp++;
-    if (AnimCommand) free(AnimCommand);
-
-    if (tmp[strlen(tmp)-1] == '\n') tmp[strlen(tmp) -1] = '\0';
-    AnimCommand = (char *)safemalloc((strlen(tmp) + 1) * sizeof(char));
-    strcpy(AnimCommand, tmp);
+	  if (tmp[strlen(tmp)-1] == '\n') tmp[strlen(tmp) -1] = '\0';
+	  if (AnimCommand) free(AnimCommand);
+	  AnimCommand = (char *)safemalloc((strlen(tmp) + 1) * sizeof(char));
+	  strcpy(AnimCommand, tmp);
 	} else if (strncasecmp(tline,CatString3("*",MyName,
 					      "SBWidth"),Clength+8)==0)
 	  bar_width = max(5,atoi(&tline[Clength+8]));
