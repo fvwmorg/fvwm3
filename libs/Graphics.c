@@ -42,7 +42,10 @@ void RelieveRectangle(Display *dpy, Drawable d, int x,int y,int w,int h,
 
   if (w <= 0 || h <= 0)
   {
-    fprintf(stderr,"RelieveRectangle: called with w = %d, h = %d\n", w, h);
+    if (w < 0 || h < 0)
+    {
+      fprintf(stderr,"RelieveRectangle: called with w = %d, h = %d\n", w, h);
+    }
     return;
   }
   seg = (XSegment*)safemalloc(sizeof(XSegment) * line_width);

@@ -1229,7 +1229,10 @@ void MakeMeWindow(void)
   win=XCreateWindow(dpy, Root, hints.x, hints.y, hints.width, hints.height, 0,
 		    Pdepth, InputOutput, Pvisual,
 		    CWBackPixmap | CWBorderPixel | CWColormap, &attr);
-
+  if (Transient)
+  {
+    XSetTransientForHint(dpy, win, Root);
+  }
 
   wm_del_win=XInternAtom(dpy,"WM_DELETE_WINDOW",False);
   XSetWMProtocols(dpy,win,&wm_del_win,1);

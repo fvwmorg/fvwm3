@@ -1,4 +1,3 @@
-
 /*
  * FvwmButtons, copyright 1996, Jarl Totland
  *
@@ -2019,6 +2018,10 @@ void CreateUberButtonWindow(button_info *ub,int maxx,int maxy)
 			   mysizehints.width,mysizehints.height,0,Pdepth,
 			   InputOutput,Pvisual,
 			   CWColormap|CWBackPixmap|CWBorderPixel,&xswa);
+  if (is_transient)
+  {
+    XSetTransientForHint(Dpy, MyWindow, Root);
+  }
 
 #ifdef DEBUG_INIT
   fprintf(stderr,"colors...");

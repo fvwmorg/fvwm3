@@ -565,6 +565,10 @@ void initialize_pager(void)
 			       valuemask, &attributes);
   XSetWMProtocols(dpy,Scr.Pager_w,&wm_del_win,1);
   XSetWMNormalHints(dpy,Scr.Pager_w,&sizehints);
+  if (is_transient)
+  {
+    XSetTransientForHint(dpy, Scr.Pager_w, Scr.Root);
+  }
 
 #ifdef I18N_MB
   if((desk1==desk2)&&(Desks[0].label != NULL))
@@ -640,7 +644,6 @@ void initialize_pager(void)
   }
   wmhints.icon_window = icon_win;
   wmhints.input = False;
-
   wmhints.flags |= InputHint | StateHint | IconWindowHint;
 
   class1.res_name = MyName;

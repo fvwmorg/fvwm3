@@ -1,8 +1,26 @@
+2001-09-05  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* FvwmIconMan/x.c (xevent_loop):
+	(map_manager):
+	(grab_pointer):
+	make sure the pointer is grabbed for transient icon managers even if
+	mapping does not make them visible
+	(xevent_loop):
+	(X_init_manager):
+	(create_manager_window):
+	IconMan listens to the WM_DELETE protocol
+
+	* FvwmIconMan/x.c (create_manager_window):
+	* FvwmWinList/FvwmWinList.c (MakeMeWindow):
+	* FvwmButtons/FvwmButtons.c (CreateUberButtonWindow):
+	* FvwmPager/x_pager.c (initialize_pager):
+	set transient_for hint when running in transient mode
+
 2001-09-04  olicha  <olivier.chapuis@free.fr>
 
 	* FvwmDebug/FvwmDebug.c (list_add)
 	New windows_ flags is_placed_by_fvwm
-	
+
 2001-09-01  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* FvwmPager/x_pager.c (BorderIconWindow):

@@ -33,6 +33,7 @@ static int shapeEventBase, shapeErrorBase;
 Display *theDisplay;
 Window theRoot;
 int theScreen;
+static Atom _XA_WM_DEL_WIN;
 extern char *MyName;
 
 static enum {
@@ -55,6 +56,7 @@ static void grab_pointer (WinManager *man)
     }
     grab_state = HAVE_GRABBED;
   }
+  return;
 }
 
 static int lookup_color (char *name, Pixel *ans)
@@ -391,11 +393,22 @@ void xevent_loop (void)
 
     case MapNotify:
       ConsoleDebug (X11, "XEVENT: MapNotify\n");
+      if (globals.transient && !grab_state != HAVE_GRABBED) {
+	grab_pointer (man);
+      }
       force_manager_redraw (man);
       break;
 
     case UnmapNotify:
       ConsoleDebug (X11, "XEVENT: UnmapNotify\n");
+      break;
+
+    case ClientMessage:
+      if (theEvent.xclient.format == 32 &&
+	  theEvent.xclient.data.l[0]==_XA_WM_DEL_WIN)
+      {
+	DeadPipe(1);
+      }
       break;
 
     case DestroyNotify:
@@ -483,7 +496,7 @@ void map_manager (WinManager *man)
     set_manager_window_mapping (man, 1);
     XFlush (theDisplay);
     if (globals.transient) {
-      /* wait for an expose event to actually do the grab */
+      /* wait for a map event to actually do the grab */
       grab_state = NEED_TO_GRAB;
     }
   }
@@ -740,6 +753,8 @@ void X_init_manager (int man_id)
     man->geometry.dir |= GROW_DOWN | GROW_RIGHT;
     man->gravity = NorthWestGravity;
   }
+
+  return;
 }
 
 void create_manager_window (int man_id)
@@ -840,6 +855,11 @@ void create_manager_window (int man_id)
 #ifdef SHAPE
   XShapeSelectInput (theDisplay, man->theWindow, ShapeNotifyMask);
 #endif
+  if (globals.transient)
+  {
+    XSetTransientForHint(theDisplay, man->theWindow, theRoot);
+  }
+  XSetWMProtocols(theDisplay, man->theWindow, &_XA_WM_DEL_WIN, 1);
 
   /* We really want the bit gravity to be NorthWest, so that can minimize
      redraws. But, we had to have an appropriate bit gravity when creating
@@ -938,6 +958,7 @@ void init_display (void)
     ShutMeDown (1);
   }
   XSetErrorHandler (handle_error);
+  _XA_WM_DEL_WIN = XInternAtom(theDisplay, "WM_DELETE_WINDOW", 0);
   InitPictureCMap (theDisplay);
   FScreenInit(theDisplay);
   AllocColorset(0);

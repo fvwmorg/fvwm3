@@ -720,6 +720,7 @@ static Bool remove_all_of_style_from_list(char *style_ref)
 void CMD_DestroyStyle(F_CMD_ARGS)
 {
   char *name;
+  FvwmWindow *t;
 
   /* parse style name */
   name = PeekToken(action, &action);
@@ -733,6 +734,17 @@ void CMD_DestroyStyle(F_CMD_ARGS)
   {
     /* compact the current list of styles */
     Scr.flags.do_need_style_list_update = 1;
+  }
+  /* mark windows for update */
+  for (t = Scr.FvwmRoot.next; t != NULL && t != &Scr.FvwmRoot; t = t->next)
+  {
+    if (matchWildcards(name, t->class.res_class) == TRUE ||
+	matchWildcards(name, t->class.res_name) == TRUE ||
+	matchWildcards(name, t->name) == TRUE)
+    {
+      SET_STYLE_DELETED(t, 1);
+      Scr.flags.do_need_window_update = 1;
+    }
   }
 }
 
@@ -2689,7 +2701,7 @@ void check_window_style_change(
   char *sc;
 
   lookup_style(t, ret_style);
-  if (ret_style->has_style_changed == 0)
+  if (!ret_style->has_style_changed && !IS_STYLE_DELETED(t))
   {
     /* nothing to do */
     return;
@@ -2706,6 +2718,14 @@ void check_window_style_change(
   for (i = 0; i < sizeof(SFGET_COMMON_STATIC_FLAGS(*ret_style)); i++)
   {
     wf[i] = (wf[i] & ~sc[i]) | (sf[i] & sc[i]);
+  }
+
+  if (IS_STYLE_DELETED(t))
+  {
+    /* updfate all styles */
+    memset(flags, 0xff, sizeof(*flags));
+    SET_STYLE_DELETED(t, 0);
+    return;
   }
 
   /*

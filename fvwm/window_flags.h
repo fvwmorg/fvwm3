@@ -275,6 +275,9 @@
 #define IS_SIZE_INC_SET(fw)     ((fw)->flags.is_size_inc_set)
 #define SET_SIZE_INC_SET(fw,x)  (fw)->flags.is_size_inc_set = !!(x)
 #define SETM_SIZE_INC_SET(fw,x) (fw)->flag_mask.is_size_inc_set = !!(x)
+#define IS_STYLE_DELETED(fw)     ((fw)->flags.is_style_deleted)
+#define SET_STYLE_DELETED(fw,x)  (fw)->flags.is_style_deleted = !!(x)
+#define SETM_STYLE_DELETED(fw,x) (fw)->flag_mask.is_style_deleted = !!(x)
 #define IS_VIEWPORT_MOVED(fw)  ((fw)->flags.is_viewport_moved)
 #define SET_VIEWPORT_MOVED(fw,x) \
           (fw)->flags.is_viewport_moved = !!(x)

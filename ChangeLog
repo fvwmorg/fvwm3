@@ -1,3 +1,17 @@
+2001-09-05  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* libs/Graphics.c (RelieveRectangle):
+	allow calling the function with w == 0 or h == 0 without a message
+
+	* fvwm/window_flags.h (SET_STYLE_DELETED):
+	* fvwm/style.c (CMD_DestroyStyle):
+	(check_window_style_change):
+	* fvwm/fvwm.h (window_style):
+	update windows when a style is deleted
+
+	* configure.in:
+	fixed xpm detection problem caused by wrong library order
+
 2001-09-05  olicha  <olivier.chapuis@free.fr>
 
 	* NEWS: PlacedByFvwm
@@ -18,7 +32,7 @@
 	* fvwm/fvwm2.1:
 	Added a new windows_flags is_placed_by_fvwm and a new condition
 	PlacedByFvwm
-	
+
 2001-09-03  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* fvwm/focus.c (focus_grab_buttons):

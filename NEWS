@@ -12,6 +12,8 @@ Changes in beta release 2.4.1 (not released yet)
 * New conditions CurrentGlobalPage, CurrentGlobalPageAnyDesk and
   AcceptsFocus for conditional commands.
 
+* The DestroyStyle command takes effect immediately.
+
 * New style option StartsOnScreen.
 
 * New style options NoUSPosition, UseUSPosition,
@@ -26,6 +28,8 @@ Changes in beta release 2.4.1 (not released yet)
 * New Geometry option for FvwmForm.
 
 * New Screen resolution and ShowOnlyIcons options for FvwmIconMan.
+
+* FvwmIconMan can be closed with Delete or Close too.
 
 * New options PageOnly and ScreenOnly for FvwmTaskBar.
 
@@ -43,6 +47,11 @@ Changes in beta release 2.4.1 (not released yet)
 * Fixed bug that caused transient windows to be buried below their
   parents with the "BugOpts RaiseOverUnmanaged on".  This occured
   with the system.fvwm2rc-sample-95 configuration.
+
+* The modules FvwmPager, FvwmIconMan, FvwmWinList and FvwmButtos
+  set the transient_for hint when started with the "transient" option.
+
+* Fixed FvwmIconMan with the transient option when mapped off screen.
 
 * Fixed ClickToFocus focus policy when iconifying the focused window.
 
