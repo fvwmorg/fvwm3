@@ -426,16 +426,13 @@ if ( $STYLE ) {
 # LANG init for UTF-8
 if ($UTF8) {
 	# check if we have perl >= 5.6
-	eval { require v5.6 };
-	if ($@) { $UTF8_TR = ""; }
-	else {
+	if ($] < 5.6) {
+		$UTF8_TR = "";
+	} else {
 		my $l = substr($LANG,0,2);
 		# latin-1: not sure that all these lang are "latin1"!
-		$UTF8_TR = '$label =~ tr/\0-\x{ff}//UC'	
-			if ($l =~ /^ca/ || $l =~ /^de/ || $l =~ /^es/ || $l =~ /^it/ || 
-	   		 $l =~ /^fr/ || $l =~ /^gl/ || $l =~ /^hu/ || $l =~ /^is/ || 
-			 	 $l =~ /^lt/ || $l =~ /^nl/ || $l =~ /^no/ || $l =~ /^pt/ ||
-				 $l =~ /^sv/);
+		$UTF8_TR = '$label =~ tr/\0-\x{ff}//UC'
+			if " ca de es it fr gl hu is lt nl no pt sv " =~ / $l /;
 	}
 }
 
