@@ -689,7 +689,7 @@ void DispatchEvent(XEvent *Event)
       HandleExpose(Event);
       break;
     case ButtonRelease:
-      if (Event->xbutton.button == 3 || is_transient)
+      if (Event->xbutton.button == 3)
 	{
 	  for(i=0;i<ndesks;i++)
 	    {
@@ -706,13 +706,6 @@ void DispatchEvent(XEvent *Event)
 			    &JunkX, &JunkY,&x, &y, &JunkMask);
 	      Scroll(icon_w, icon_h, x, y, -1);
 	    }
-	  if (is_transient)
-	    {
-	      XUngrabPointer(dpy,CurrentTime);
-	      MyXUngrabServer(dpy);
-	      XSync(dpy,0);
-	      exit(0);
-	    }
 	}
       else if((Event->xbutton.button == 1)||
 	 (Event->xbutton.button == 2))
@@ -728,6 +721,13 @@ void DispatchEvent(XEvent *Event)
 	    {
 	      IconSwitchPage(Event);
 	    }
+	}
+      if (is_transient)
+	{
+	  XUngrabPointer(dpy,CurrentTime);
+	  MyXUngrabServer(dpy);
+	  XSync(dpy,0);
+	  exit(0);
 	}
       break;
     case ButtonPress:
@@ -769,7 +769,7 @@ void DispatchEvent(XEvent *Event)
     case MotionNotify:
       while(XCheckMaskEvent(dpy, PointerMotionMask | ButtonMotionMask,Event));
 
-      if(Event->xmotion.state == Button3MotionMask || is_transient)
+      if(Event->xmotion.state == Button3MotionMask)
 	{
 	  for(i=0;i<ndesks;i++)
 	    {

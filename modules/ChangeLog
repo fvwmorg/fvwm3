@@ -1,5 +1,10 @@
 1999-03-21  Dominik Vogt  <dominik_vogt@gmx.de>
 
+	* FvwmPager/x_pager.c (DispatchEvent): Implemented transient pager in
+	a more general way (allows all three buttons to work).
+
+1999-03-21  Dominik Vogt  <dominik_vogt@gmx.de>
+
 	* FvwmPager/x_pager.c (InsertExpand):
 	(GetBalloonLabel): Replaced macro INSERT by function InsertExpand.
 
