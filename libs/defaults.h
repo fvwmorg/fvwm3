@@ -36,7 +36,7 @@
 #define NUMBER_OF_MOUSE_BUTTONS		   5
 /* The "extended" buttons do not provide the full functionality because X has
  * no bit mask value for them.  Things like dragging windows don't work with
- * them.  By default, they are ignoreg, but you can use mouse bindingslike
+ * them.  By default, they are ignored, but you can use mouse bindings like
  * "mouse 7 a a raise" to activate them. */
 #define NUMBER_OF_EXTENDED_MOUSE_BUTTONS   9
 #define DEFAULT_ALL_BUTTONS_MASK	   \

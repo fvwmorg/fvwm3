@@ -34,7 +34,6 @@
 #include "focus.h"
 #include "borders.h"
 #include "frame.h"
-extern void GetWindowSizeHints(FvwmWindow *tmp);
 
 /* ---------------------------- local definitions --------------------------- */
 

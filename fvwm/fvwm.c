@@ -1709,7 +1709,7 @@ int main(int argc, char **argv)
 	setVersionInfo();
 	/* Put the default module directory into the environment so it can be
 	 * used later by the config file, etc.  */
-	putenv("FVWM_MODULEDIR=" FVWM_MODULEDIR);
+	flib_putenv("FVWM_MODULEDIR", "FVWM_MODULEDIR=" FVWM_MODULEDIR);
 
 	/* Figure out user's home directory */
 	home_dir = getenv("HOME");
@@ -1732,10 +1732,14 @@ int main(int argc, char **argv)
 	fvwm_userdir = getenv("FVWM_USERDIR");
 	if (fvwm_userdir == NULL)
 	{
+		char *s;
+
 		fvwm_userdir = safestrdup(CatString2(home_dir, "/.fvwm"));
 		/* Put the user directory into the environment so it can be used
 		 * later everywhere. */
-		putenv(safestrdup(CatString2("FVWM_USERDIR=", fvwm_userdir)));
+		s = safestrdup(CatString2("FVWM_USERDIR=", fvwm_userdir));
+		flib_putenv("FVWM_USERDIR", s);
+		free(s);
 	}
 
 	/* Create FVWM_USERDIR directory if needed */
@@ -2058,13 +2062,11 @@ int main(int argc, char **argv)
 	len = strlen(XDisplayString(dpy));
 	display_string = safemalloc(len+10);
 	sprintf(display_string, "DISPLAY=%s",XDisplayString(dpy));
-	putenv(display_string);
+	flib_putenv("DISPLAY", display_string);
 	/* Add a HOSTDISPLAY environment variable, which is the same as
 	 * DISPLAY, unless display = :0.0 or unix:0.0, in which case the full
 	 * host name will be used for ease in networking.
-	 *
-	 * Note: Can't free the rdisplay_string after putenv, because it
-	 * becomes part of the environment! */
+	 */
 	if (strncmp(display_string, "DISPLAY=:",9)==0)
 	{
 		char client[MAXHOSTNAME], *rdisplay_string;
@@ -2072,24 +2074,28 @@ int main(int argc, char **argv)
 		rdisplay_string = safemalloc(len+14 + strlen(client));
 		sprintf(rdisplay_string, "HOSTDISPLAY=%s:%s", client,
 			&display_string[9]);
-		putenv(rdisplay_string);
+		flib_putenv("HOSTDISPLAY", rdisplay_string);
+		free(rdisplay_string);
 	}
 	else if (strncmp(display_string, "DISPLAY=unix:",13)==0)
 	{
 		char client[MAXHOSTNAME], *rdisplay_string;
 		gethostname(client,MAXHOSTNAME);
 		rdisplay_string = safemalloc(len+14 + strlen(client));
-		sprintf(rdisplay_string, "HOSTDISPLAY=%s:%s",client,
+		sprintf(rdisplay_string, "HOSTDISPLAY=%s:%s", client,
 			&display_string[13]);
-		putenv(rdisplay_string);
+		flib_putenv("HOSTDISPLAY", rdisplay_string);
+		free(rdisplay_string);
 	}
 	else
 	{
 		char *rdisplay_string;
 		rdisplay_string = safemalloc(len+14);
 		sprintf(rdisplay_string, "HOSTDISPLAY=%s",XDisplayString(dpy));
-		putenv(rdisplay_string);
+		flib_putenv("HOSTDISPLAY", rdisplay_string);
+		free(rdisplay_string);
 	}
+	free(display_string);
 
 	Scr.Root = RootWindow(dpy, Scr.screen);
 	if (Scr.Root == None)

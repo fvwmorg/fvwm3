@@ -80,5 +80,17 @@ char *envDupExpand(const char *s, int extra);
  */
 const char* getFirstEnv(const char *s, int *beg, int *end);
 
+/* This function keeps a list of all strings that were set in the environment.
+ * If a variable is written again, the old memory is freed.  This function
+ * should be called instead of putenv().
+ *
+ *   var - environement variable name
+ *   env - environment string ("variable=value")
+ *
+ * Both arguments are copied internally and should be freed after calling this
+ * function.
+ */
+void flib_putenv(char *var, char *env);
+
 
 #endif

@@ -409,15 +409,15 @@ static int do_execute_module(F_CMD_ARGS, Bool desperate)
 #endif
 		if (!Pdefault)
 		{
-			char *visualid, *colormap;
+			char visualid[32];
+			char colormap[32];
 
-			visualid = safemalloc(32);
-			sprintf(visualid, "FVWM_VISUALID=%lx",
+			sprintf(
+				visualid, "FVWM_VISUALID=%lx",
 				XVisualIDFromVisual(Pvisual));
-			putenv(visualid);
-			colormap = safemalloc(32);
+			flib_putenv("FVWM_VISUALID", visualid);
 			sprintf(colormap, "FVWM_COLORMAP=%lx", Pcmap);
-			putenv(colormap);
+			flib_putenv("FVWM_COLORMAP", colormap);
 		}
 
 		/* Why is this execvp??  We've already searched the module

@@ -65,8 +65,6 @@
 
 /* ---------------------------- local definitions --------------------------- */
 
-#define ENV_LIST_INC 10
-
 /* ---------------------------- local macros -------------------------------- */
 
 /* ---------------------------- imports ------------------------------------- */
@@ -78,12 +76,6 @@ extern int cmsDelayDefault;
 /* ---------------------------- included code files ------------------------- */
 
 /* ---------------------------- local types --------------------------------- */
-
-typedef struct
-{
-	char *var;
-	char *env;
-} env_list_item;
 
 /* ---------------------------- forward declarations ------------------------ */
 
@@ -125,53 +117,6 @@ char *ModulePath = FVWM_MODULEDIR;
 int moduleTimeout = DEFAULT_MODULE_TIMEOUT;
 
 /* ---------------------------- local functions ----------------------------- */
-
-/* add_to_env_list
- *   This function keeps a list of all strings that were set in the environment
- *   via SetEnv or UnsetEnv. If a variable is written again, the old memory is
- *   freed. */
-static void add_to_env_list(char *var, char *env)
-{
-	static env_list_item *env_list = NULL;
-	static unsigned int env_len = 0;
-	unsigned int i;
-
-	/* find string in list */
-	if (env_list && env_len)
-	{
-		for (i = 0; i < env_len; i++)
-		{
-			if (strcmp(var, env_list[i].var) == 0)
-			{
-				/* found it - replace old string */
-				free(env_list[i].var);
-				free(env_list[i].env);
-				env_list[i].var = var;
-				env_list[i].env = env;
-				return;
-			}
-		}
-		/* not found, add to list */
-		if (env_len % ENV_LIST_INC == 0)
-		{
-			/* need more memory */
-			env_list = (env_list_item *)saferealloc(
-				(void *)env_list, (env_len + ENV_LIST_INC) *
-				sizeof(env_list_item));
-		}
-	}
-	else if (env_list == NULL)
-	{
-		/* list is still empty */
-		env_list = (env_list_item *)safecalloc(
-			sizeof(env_list_item), ENV_LIST_INC);
-	}
-	env_list[env_len].var = var;
-	env_list[env_len].env = env;
-	env_len++;
-
-	return;
-}
 
 /** Prepend rather than replace the image path.
     Used for obsolete PixmapPath and IconPath **/
@@ -3369,11 +3314,11 @@ void CMD_SetEnv(F_CMD_ARGS)
 		free(szVar);
 		return;
 	}
-	szPutenv = safemalloc(strlen(szVar)+strlen(szValue)+2);
-	sprintf(szPutenv,"%s=%s",szVar,szValue);
-	putenv(szPutenv);
-	add_to_env_list(szVar, szPutenv);
-	/* szVar is stored in the env list. do not free it */
+	szPutenv = safemalloc(strlen(szVar) + strlen(szValue) + 2);
+	sprintf(szPutenv,"%s=%s", szVar, szValue);
+	flib_putenv(szVar, szPutenv);
+	free(szVar);
+	free(szPutenv);
 	free(szValue);
 
 	return;
@@ -3391,9 +3336,9 @@ void CMD_UnsetEnv(F_CMD_ARGS)
 	}
 	szPutenv = (char *)safemalloc(strlen(szVar) + 2);
 	sprintf(szPutenv, "%s=", szVar);
-	putenv(szPutenv);
-	add_to_env_list(szVar, szPutenv);
-	/* szVar is stored in the env list. do not free it */
+	flib_putenv(szVar, szPutenv);
+	free(szVar);
+	free(szPutenv);
 
 	return;
 }

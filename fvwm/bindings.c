@@ -332,9 +332,9 @@ static int ParseBinding(
 						WARN, "ParseBinding",
 						"Got mouse button %d when the"
 						" maximum is %d.\n  You can't"
-						" bind complex function to"
+						" bind complex functions to"
 						" this button.  To suppress"
-						" the warning, use:\n"
+						" this warning, use:\n"
 						"  Silent Mouse %s", button,
 						NUMBER_OF_MOUSE_BUTTONS, tline);
 				}

@@ -1,3 +1,4 @@
+/* -*-c-*- */
 /* This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 2 of the License, or
@@ -30,6 +31,8 @@
  *
  **************************************************************************/
 
+/* ---------------------------- included header files ----------------------- */
+
 #include "config.h"
 #include <stdio.h>
 #include <stdlib.h>
@@ -37,21 +40,34 @@
 
 #include "fvwmlib.h"
 
+/* ---------------------------- local definitions --------------------------- */
+
+/* ---------------------------- local macros -------------------------------- */
+
+#define ENV_LIST_INC 10
 #ifndef NULL
 #define NULL 0
 #endif
 
-/**************************************************************************
- *                                                                        *
- *                       P R I V A T E    D A T A                         *
- *                                                                        *
- **************************************************************************/
+/* ---------------------------- imports ------------------------------------- */
 
-/**************************************************************************
- *                                                                        *
- *                   P R I V A T E    F U N C T I O N S                   *
- *                                                                        *
- **************************************************************************/
+/* ---------------------------- included code files ------------------------- */
+
+/* ---------------------------- local types --------------------------------- */
+
+typedef struct
+{
+	char *var;
+	char *env;
+} env_list_item;
+
+/* ---------------------------- forward declarations ------------------------ */
+
+/* ---------------------------- local variables ----------------------------- */
+
+/* ---------------------------- exported variables (globals) ---------------- */
+
+/* ---------------------------- local functions ----------------------------- */
 
 /*-------------------------------------------------------------------------
  *
@@ -71,21 +87,19 @@
  */
 static void strDel(char *s, int idx, int n)
 {
-    int  l;
-    char *p;
+	int  l;
+	char *p;
 
-    if (idx >= (l = strlen(s)))
-	return;
-    if (idx + n > l)
-	n = l - idx;
-    s += idx;
-    p = s + n;
-    do {
-	*s++ = *p;
-    } while (*p++);
+	if (idx >= (l = strlen(s)))
+		return;
+	if (idx + n > l)
+		n = l - idx;
+	s += idx;
+	p = s + n;
+	do {
+		*s++ = *p;
+	} while (*p++);
 }
-
-
 
 /*-------------------------------------------------------------------------
  *
@@ -107,51 +121,33 @@ static void strDel(char *s, int idx, int n)
  */
 static void strIns(char *s, const char *ins, int idx, int maxstrlen)
 {
-    int  l, li, move;
-    char *p1, *p2;
+	int  l, li, move;
+	char *p1, *p2;
 
-#if 0
-if (strlen(s) + 1 >maxstrlen)fprintf(stderr,"+++++++++++++++ si: old string longer than maxlen: %d > %d\n", strlen(s) + 1, maxstrlen);
-if (strlen(s) + strlen(ins) + 1 >maxstrlen)fprintf(stderr,"++++++++++++ si: new string longer than maxlen: %d > %d\n", strlen(s) + strlen(ins) + 1, maxstrlen);
-#endif
-    if (idx > (l = strlen(s)))
-    {
-	idx = l;
-#if 0
-fprintf(stderr,"++++++ si: index too big\n");
-#endif
-    }
-    li = strlen(ins);
-    move = l - idx + 1; /* include '\0' in move */
-    p1 = s + l;
-    p2 = p1 + li;
-    while (p2 >= s + maxstrlen) {
-	--p1;
-	--p2;
-	--move;
-#if 0
-fprintf(stderr,"++++++ si: combined string too long\n");
-#endif
-    }
-    while (move-- > 0)
-	*p2-- = *p1--;
-    p1 = s + idx;
-    if (idx + li >= maxstrlen)
-    {
-	li = maxstrlen - idx - 1;
-#if 0
-fprintf(stderr,"++++++ si: truncated insert string\n");
-#endif
-    }
-    while (li-- > 0)
-	*p1++ = *ins++;
-#if 0
-if (p1 > s + maxstrlen) fprintf(stderr,"++++++++++++ si: buffer overrun\n");
-#endif
-    s[maxstrlen - 1] = '\0';
+	if (idx > (l = strlen(s)))
+	{
+		idx = l;
+	}
+	li = strlen(ins);
+	move = l - idx + 1; /* include '\0' in move */
+	p1 = s + l;
+	p2 = p1 + li;
+	while (p2 >= s + maxstrlen) {
+		--p1;
+		--p2;
+		--move;
+	}
+	while (move-- > 0)
+		*p2-- = *p1--;
+	p1 = s + idx;
+	if (idx + li >= maxstrlen)
+	{
+		li = maxstrlen - idx - 1;
+	}
+	while (li-- > 0)
+		*p1++ = *ins++;
+	s[maxstrlen - 1] = '\0';
 }
-
-
 
 /*-------------------------------------------------------------------------
  *
@@ -178,38 +174,37 @@ if (p1 > s + maxstrlen) fprintf(stderr,"++++++++++++ si: buffer overrun\n");
  */
 static char *findEnvVar(const char *s, int *len)
 {
-    int   brace = 0;
-    char  *ret = NULL;
-    const char *next;
+	int   brace = 0;
+	char  *ret = NULL;
+	const char *next;
 
-    if (!s)
-	return NULL;
-    while (*s) {
-	next = s + 1;
-	if (*s == '$' && (isalpha(*next) || *next == '_' || *next == '{')) {
-	    ret = (char *) s++;
-	    if (*s == '{') {
-		brace = 1;
-		++s;
-	    }
-	    while (*s && (isalnum(*s) || *s == '_'))
-		++s;
-	    *len = s - ret;
-	    if (brace) {
-		if (*s == '}') {
-		    ++*len;
-		    break;
+	if (!s)
+		return NULL;
+	while (*s) {
+		next = s + 1;
+		if (*s == '$' &&
+		    (isalpha(*next) || *next == '_' || *next == '{')) {
+			ret = (char *) s++;
+			if (*s == '{') {
+				brace = 1;
+				++s;
+			}
+			while (*s && (isalnum(*s) || *s == '_'))
+				++s;
+			*len = s - ret;
+			if (brace) {
+				if (*s == '}') {
+					++*len;
+					break;
+				}
+				ret = NULL;
+			} else
+				break;
 		}
-		ret = NULL;
-	    } else
-		break;
+		++s;
 	}
-	++s;
-    }
-    return ret;
+	return ret;
 }
-
-
 
 /*-------------------------------------------------------------------------
  *
@@ -226,33 +221,27 @@ static char *findEnvVar(const char *s, int *len)
  */
 static const char *getEnv(const char *name, int len)
 {
-    static char *empty = "";
-    char   *ret = NULL, *tmp, *p, *p2;
+	static char *empty = "";
+	char   *ret = NULL, *tmp, *p, *p2;
 
-    if ((tmp = safestrdup(name)) == NULL)
-	return empty;  /* better than no test at all. */
-    p = tmp;
-    if (*p == '$')
-	++p;
-    if (*p == '{') {
-	++p;
-	if ((p2 = strchr(p, '}')) != NULL)
-	    *p2 = '\0';
-    }
-    if (len > 0 && len < strlen(tmp)) tmp[len] = '\0';
-    if ((ret = getenv(p)) == NULL)
-	ret = empty;
-    free(tmp);
-    return ret;
+	if ((tmp = safestrdup(name)) == NULL)
+		return empty;  /* better than no test at all. */
+	p = tmp;
+	if (*p == '$')
+		++p;
+	if (*p == '{') {
+		++p;
+		if ((p2 = strchr(p, '}')) != NULL)
+			*p2 = '\0';
+	}
+	if (len > 0 && len < strlen(tmp)) tmp[len] = '\0';
+	if ((ret = getenv(p)) == NULL)
+		ret = empty;
+	free(tmp);
+	return ret;
 }
 
-
-
-/**************************************************************************
- *                                                                        *
- *                    P U B L I C    F U N C T I O N S                    *
- *                                                                        *
- **************************************************************************/
+/* ---------------------------- interface functions ------------------------- */
 
 /*-------------------------------------------------------------------------
  *
@@ -276,22 +265,20 @@ static const char *getEnv(const char *name, int len)
  */
 int envExpand(char *s, int maxstrlen)
 {
-    char  *var, *s2;
-    const char *env;
-    int   len, ret = 0;
+	char  *var, *s2;
+	const char *env;
+	int   len, ret = 0;
 
-    s2 = s;
-    while ((var = findEnvVar(s2, &len)) != NULL) {
-	++ret;
-	env = getEnv(var, len);
-	strDel(s, var - s, len);
-	strIns(s, env, var - s, maxstrlen);
-	s2 = var + strlen(env);
-    }
-    return ret;
+	s2 = s;
+	while ((var = findEnvVar(s2, &len)) != NULL) {
+		++ret;
+		env = getEnv(var, len);
+		strDel(s, var - s, len);
+		strIns(s, env, var - s, maxstrlen);
+		s2 = var + strlen(env);
+	}
+	return ret;
 }
-
-
 
 /*-------------------------------------------------------------------------
  *
@@ -319,39 +306,37 @@ int envExpand(char *s, int maxstrlen)
  */
 char *envDupExpand(const char *s, int extra)
 {
-    char  *var, *ret;
-    const char *env, *s2;
-    int   len, slen, elen, bufflen;
+	char  *var, *ret;
+	const char *env, *s2;
+	int   len, slen, elen, bufflen;
 
-    /*
-     *  calculate length needed.
-     */
-    s2 = s;
-    slen = strlen(s);
-    bufflen = slen + 1 + extra;
-    while ((var = findEnvVar(s2, &len)) != NULL) {
-	env = getEnv(var, len);
-	elen = strlen(env);
-	/* need to make a buffer the maximum possible size, else we
-	 * may get trouble while expanding. */
-	bufflen += len > elen ? len : elen;
-	s2 = var + len;
-    }
-    if (bufflen < slen + 1)
-	bufflen = slen + 1;
+	/*
+	 *  calculate length needed.
+	 */
+	s2 = s;
+	slen = strlen(s);
+	bufflen = slen + 1 + extra;
+	while ((var = findEnvVar(s2, &len)) != NULL) {
+		env = getEnv(var, len);
+		elen = strlen(env);
+		/* need to make a buffer the maximum possible size, else we
+		 * may get trouble while expanding. */
+		bufflen += len > elen ? len : elen;
+		s2 = var + len;
+	}
+	if (bufflen < slen + 1)
+		bufflen = slen + 1;
 
-    ret = safemalloc(bufflen);
+	ret = safemalloc(bufflen);
 
-    /*
-     *  now do the real expansion.
-     */
-    strcpy(ret, s);
-    envExpand(ret, bufflen - extra);
+	/*
+	 *  now do the real expansion.
+	 */
+	strcpy(ret, s);
+	envExpand(ret, bufflen - extra);
 
-    return ret;
+	return ret;
 }
-
-
 
 /*-------------------------------------------------------------------------
  *
@@ -382,16 +367,75 @@ char *envDupExpand(const char *s, int extra)
  */
 const char* getFirstEnv(const char *s, int *beg, int *end)
 {
-    char *var;
-    const char *env;
-    int len;
+	char *var;
+	const char *env;
+	int len;
 
-    *beg = *end = 0;
-    if ((var = findEnvVar(s, &len)) == NULL) return NULL;
-    env = getEnv(var, len);
+	*beg = *end = 0;
+	if ((var = findEnvVar(s, &len)) == NULL) return NULL;
+	env = getEnv(var, len);
 
-    *beg = var - s;
-    *end = *beg + len;
+	*beg = var - s;
+	*end = *beg + len;
 
-    return env;
+	return env;
+}
+
+/* This function keeps a list of all strings that were set in the environment.
+ * If a variable is written again, the old memory is freed.  This function
+ * should be called instead of putenv().
+ *
+ *   var - environement variable name
+ *   env - environment string ("variable=value")
+ *
+ * Both arguments are copied internally and should be freed after calling this
+ * function.
+ */
+void flib_putenv(char *var, char *env)
+{
+	static env_list_item *env_list = NULL;
+	static unsigned int env_len = 0;
+	unsigned int i;
+	char *s;
+
+	s = safestrdup(var);
+	var = s;
+	s = safestrdup(env);
+	env = s;
+	putenv(env);
+	/* find string in list */
+	if (env_list && env_len)
+	{
+		for (i = 0; i < env_len; i++)
+		{
+			if (strcmp(var, env_list[i].var) == 0)
+			{
+				/* found it - replace old string */
+				free(env_list[i].var);
+				free(env_list[i].env);
+				env_list[i].var = var;
+				env_list[i].env = env;
+				return;
+			}
+		}
+		/* not found, add to list */
+		if (env_len % ENV_LIST_INC == 0)
+		{
+			/* need more memory */
+			env_list = (env_list_item *)saferealloc(
+				(void *)env_list, (env_len + ENV_LIST_INC) *
+				sizeof(env_list_item));
+		}
+	}
+	else if (env_list == NULL)
+	{
+		/* list is still empty */
+		env_list = (env_list_item *)safecalloc(
+			sizeof(env_list_item), ENV_LIST_INC);
+	}
+	env_list[env_len].var = var;
+	env_list[env_len].env = env;
+	env_len++;
+
+	return;
 }

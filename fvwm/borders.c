@@ -1326,7 +1326,7 @@ static void border_fill_pixmap_background(
 	{
 		p = bg->pixmap.p;
 		shape = bg->pixmap.shape;
-		alpha =	bg->pixmap.alpha; 
+		alpha =	bg->pixmap.alpha;
 		src_width = bg->pixmap.g.width;
 		src_height = bg->pixmap.g.height;
 	}
@@ -1436,9 +1436,10 @@ static void border_get_frame_pixmap(
 	}
 	else
 	{
-		dcd->frame_pixmap= CreateBackgroundPixmap(
+		dcd->frame_pixmap = CreateBackgroundPixmap(
 			dpy, Scr.NoFocusWin, frame_g->width, frame_g->height,
-			&Colorset[cd->bg_border_cs], Pdepth, Scr.BordersGC, False);
+			&Colorset[cd->bg_border_cs], Pdepth, Scr.BordersGC,
+			False);
 	}
 	return;
 }
@@ -1707,7 +1708,7 @@ static void border_setup_bar_pixmaps(
 				tsdf->u.mp.solid_flags, False, NULL,
 				&mp_part_right);
 			for (j = 0; j < UTS_TBMP_NUM_PIXMAPS; j++)
-			{ 
+			{
 				if (j != mp_part_left && j != mp_part_right)
 				{
 					continue;
@@ -1759,7 +1760,7 @@ static void border_setup_bar_pixmaps(
 				if (j != mp_part_left && j != mp_part_right)
 				{
 					continue;
-				} 
+				}
 				if (tsdf->u.mp.acs[j].cs >= 0 ||
 				    tsdf->u.mp.pixmaps[j])
 				{
@@ -2024,7 +2025,7 @@ static void border_mp_render_into_pixmap(
 		}
 		if (bg.pixmap.p)
 		{
-			border_fill_pixmap_background(dest, &dest_g, &bg, cd);	
+			border_fill_pixmap_background(dest, &dest_g, &bg, cd);
 		}
 		if (p)
 		{
@@ -2077,11 +2078,11 @@ static void border_mp_render_into_pixmap(
 			bg.pixmap.g.height = src[part]->height;
 			bg.pixmap.stretch_w = dest_g.width - dest_g.x;
 			bg.pixmap.stretch_h = dest_g.height - dest_g.y;
-				
+
 		}
 		if (bg.pixmap.p)
 		{
-			border_fill_pixmap_background(dest, &dest_g, &bg, cd);	
+			border_fill_pixmap_background(dest, &dest_g, &bg, cd);
 		}
 	}
 
@@ -2972,12 +2973,12 @@ static void border_draw_decor_to_pixmap(
 			g.x = 0;
 			g.y = 0;
 		}
-		
+
 		if (part == TBMP_NONE)
 		{
 			break;
 		}
-		
+
 		if (sf & (1 << part))
 		{
 			bg.flags.use_pixmap = 0;
@@ -3343,7 +3344,7 @@ static void border_draw_one_button(
 	{
 		return;
 	}
-	
+
 	p = border_create_decor_pixmap(td->cd, &(td->layout.button_g[button]));
 	/* set the background tile */
 	border_set_button_pixmap(fw, td, button, &p, FW_W_BUTTON(fw, button));
@@ -3397,7 +3398,7 @@ static void border_draw_title_stick_lines(
 			- td->left_end_length;
 		right_length = td->right_main_g.height - td->right_of_text_length
 			- td->right_end_length;
-		
+
 	}
 	else if (!td->has_vt && td->under_text_g.width > 0)
 	{
@@ -3832,7 +3833,7 @@ static void border_rotate_titlebar_descr(
 	if (!td->has_been_saved)
 	{
 		td->has_been_saved = True;
-		memcpy(&saved_td, td, sizeof(titlebar_descr)); 
+		memcpy(&saved_td, td, sizeof(titlebar_descr));
 	}
 	if (!td->td_is_rotated)
 	{
@@ -3858,7 +3859,7 @@ static void border_rotate_titlebar_descr(
 	else
 	{
 		/* restore */
-		memcpy(td, &saved_td, sizeof(titlebar_descr)); 
+		memcpy(td, &saved_td, sizeof(titlebar_descr));
 		td->td_is_rotated = 0;
 		return;
 	}
@@ -4113,7 +4114,7 @@ static window_parts border_get_titlebar_descr(
 		ret_td->bar_g.y = fw->boundary_width;
 		ret_td->bar_g.x = ret_td->layout.title_g.x;
 	}
-	
+
 	/* buttons geometries */
 	if (ret_td->has_vt)
 	{
@@ -4208,7 +4209,7 @@ static window_parts border_get_titlebar_descr(
 		fw, pressed_parts, pressed_button, clear_parts, do_hilight,
 		&(ret_td->tbstate));
 
-	/* get the title string length and position 
+	/* get the title string length and position
 	 * This is not in "tdd" (titlebar_draw_descr), because these are needed
 	 * to draw the buttons with UseTitleStyle */
 	just = TB_JUSTIFICATION(GetDecor(fw, titlebar));
@@ -4578,7 +4579,7 @@ void border_get_part_geometry(
 		*ret_w = FW_W_CORNER(fw, 2);
 		break;
 	case PART_BORDER_SE:
-		ret_g->x = sidebar_g->x + sidebar_g->width;;
+		ret_g->x = sidebar_g->x + sidebar_g->width;
 		ret_g->y = sidebar_g->y + sidebar_g->height;
 		*ret_w = FW_W_CORNER(fw, 3);
 		break;
