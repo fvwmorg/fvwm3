@@ -538,7 +538,9 @@ void list_config_info(unsigned long *body)
 		}
 		if (UsePixmapDrawing)
 		{
+#if 0
 			mw_events &= ~(ExposureMask);
+#endif
 		}
 		else
 		{
@@ -598,8 +600,6 @@ void ProcessXEvent(int x, int y)
 				ey2=max(ey2,
 					Event.xexpose.y + Event.xexpose.height);
 			}
-			if (Event.xexpose.count != 0)
-				break;
 			if (FftSupport && Ffont->fftf.fftfont != NULL)
 			{
 				XClearArea(
@@ -692,7 +692,10 @@ void ProcessXEvent(int x, int y)
 				x = Event.xconfigure.x;
 				y = Event.xconfigure.y;
 				/* flush any expose events */
-				while (FCheckTypedEvent(dpy, Expose, &Event));
+				while (FCheckTypedEvent(dpy, Expose, &Event))
+				{
+					/* nothing */
+				}
 				if (UsePixmapDrawing)
 				{
 					PixmapDrawWindow(
@@ -705,6 +708,7 @@ void ProcessXEvent(int x, int y)
 						main_height,
 						&Colorset[(colorset)], Pdepth,
 						gc, True);
+					DrawItems(main_win, 0, 0, 65535, 65535);
 				}
 			}
 			break;
