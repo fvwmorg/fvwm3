@@ -26,6 +26,8 @@ static int dragx;       /* all these variables are used */
 static int dragy;       /* in resize operations */
 static int dragWidth;
 static int dragHeight;
+static int constrainx;
+static int constrainy;
 
 static int origx;
 static int origy;
@@ -46,7 +48,7 @@ void resize_window(XEvent *eventp,Window w,FvwmWindow *tmp_win,
 		   unsigned long context, char *action,int *Module) 
 {
   Bool finished = FALSE, done = FALSE, abort = FALSE;
-  int x,y,delta_x,delta_y;
+  int x,y,delta_x,delta_y,stashed_x,stashed_y;
   Window ResizeWindow;
   Bool flags;
   int val1, val2, val1_unit,val2_unit,n;
@@ -90,7 +92,7 @@ void resize_window(XEvent *eventp,Window w,FvwmWindow *tmp_win,
       dragWidth += (2*tmp_win->boundary_width);
       dragHeight += (tmp_win->title_height + 2*tmp_win->boundary_width);
  
-
+      constrainx = constrainy = 0; /* size will be less or equal to requested */
       ConstrainSize (tmp_win, &dragWidth, &dragHeight);
       SetupFrame (tmp_win, tmp_win->frame_x, 
 		  tmp_win->frame_y ,dragWidth, dragHeight,FALSE);
@@ -99,13 +101,14 @@ void resize_window(XEvent *eventp,Window w,FvwmWindow *tmp_win,
       return;
     }
 
+  /* Fudge factors so that interactive resize keeps the window outline always
+     outside the pointer.  If the outline is always inside the pointer and
+     there is another PointerFocus window underneath the pointer at the end of
+     the resize the focus will be changed to the window underneath - bad karma */
+  constrainx = tmp_win->hints.width_inc - 1;
+  constrainy = tmp_win->hints.height_inc - 1;
+
   InstallRootColormap();
-  if (menuFromFrameOrWindowOrTitlebar) 
-    {
-      /* warp the pointer to the cursor position from before menu appeared*/
-      /* FIXGJB: XWarpPointer(dpy, None, Scr.Root, 0, 0, 0, 0, Stashed_X,Stashed_Y); */
-      XFlush(dpy);
-    }
 
   if(!GrabEm(MOVE))
     {
@@ -174,6 +177,15 @@ void resize_window(XEvent *eventp,Window w,FvwmWindow *tmp_win,
   MoveOutline (Scr.Root, dragx - tmp_win->bw, dragy - tmp_win->bw, 
 	       dragWidth + 2 * tmp_win->bw,
 	       dragHeight + 2 * tmp_win->bw);
+  /* kick off resizing without requiring any motion if invoked with a key press */
+  if (eventp->type == KeyPress)
+    {
+      XQueryPointer(dpy, Scr.Root, &JunkRoot, &JunkChild,
+                    &stashed_x,&stashed_y,&JunkX, &JunkY, &JunkMask);
+      DoResize(stashed_x, stashed_y, tmp_win);  
+    }
+  else
+    stashed_x = stashed_y = -1;
 
   /* loop to resize */
   while(!finished)
@@ -209,6 +221,9 @@ void resize_window(XEvent *eventp,Window w,FvwmWindow *tmp_win,
 	    {
 	      abort = TRUE;
 	      finished = TRUE;
+	      /* return pointer if aborted resize was invoked with key */
+	      if (stashed_x >= 0)
+	        XWarpPointer(dpy, None, Scr.Root, 0, 0, 0, 0, stashed_x,stashed_y);
 	    }
 	  done = TRUE;
 	  break;
@@ -446,10 +461,10 @@ void ConstrainSize (FvwmWindow *tmp_win, int *widthp, int *heightp)
     
     
     /*
-     * Second, fit to base + N * inc
+     * Second, fit to base + N * inc (<= or >= depending on resize type)
      */
-    dwidth = ((dwidth - baseWidth) / xinc * xinc) + baseWidth;
-    dheight = ((dheight - baseHeight) / yinc * yinc) + baseHeight;
+    dwidth = ((dwidth - baseWidth + constrainx) / xinc * xinc) + baseWidth;
+    dheight = ((dheight - baseHeight + constrainy) / yinc * yinc) + baseHeight;
     
     
     /*

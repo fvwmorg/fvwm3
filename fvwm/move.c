@@ -67,6 +67,7 @@ void AnimatedMoveOfWindow(Window w,int startX,int startY,int endX, int endY,
   lastX = startX;
   lastY = startY;
 
+  if (deltaX == 0 && deltaY == 0) return; /* go nowhere fast */
   do {
     currentX = startX + deltaX * (*ppctMovement);
     currentY = startY + deltaY * (*ppctMovement);
@@ -479,15 +480,19 @@ void DisplayPosition (FvwmWindow *tmp_win, int x, int y,int Init)
 void Keyboard_shortcuts(XEvent *Event, int ReturnEvent)  
 {
   int x,y,x_root,y_root;
-  int move_size,x_move,y_move;
+  int x_move_size,y_move_size,x_move,y_move;
   KeySym keysym;
 
-  /* Pick the size of the cursor movement */
-  move_size = Scr.EntryHeight;
+  /* Pick the size of the cursor movement, window resize increments are first
+     choice followed by height of a menu item */
+  x_move_size = Scr.Hilite->hints.width_inc;
+  y_move_size = Scr.Hilite->hints.height_inc;
+  if (y_move_size < 5) y_move_size = Scr.EntryHeight;
+  if (x_move_size < 5) x_move_size = y_move_size;
   if(Event->xkey.state & ControlMask)
-    move_size = 1;
+    x_move_size = y_move_size = 1;
   if(Event->xkey.state & ShiftMask)
-    move_size = 100;
+    x_move_size = y_move_size = 100;
 
   keysym = XLookupKeysym(&Event->xkey,0);
 
@@ -496,26 +501,47 @@ void Keyboard_shortcuts(XEvent *Event, int ReturnEvent)
   switch(keysym)
     {
     case XK_Up:
+    case XK_KP_8:
     case XK_k:
     case XK_p:
-      y_move = -move_size;
+      y_move = -y_move_size;
       break;
     case XK_Down:
+    case XK_KP_2:
     case XK_n:
     case XK_j:
-      y_move = move_size;
+      y_move = y_move_size;
       break;
     case XK_Left:
+    case XK_KP_4:
     case XK_b:
     case XK_h:
-      x_move = -move_size;
+      x_move = -x_move_size;
       break;
     case XK_Right:
+    case XK_KP_6:
     case XK_f:
     case XK_l:
-      x_move = move_size;
+      x_move = x_move_size;
+      break;
+    case XK_KP_1:
+      x_move = -x_move_size;
+      y_move = y_move_size;
+      break;
+    case XK_KP_3:
+      x_move = x_move_size;
+      y_move = y_move_size;
+      break;
+    case XK_KP_7:
+      x_move = -x_move_size;
+      y_move = -y_move_size;
+      break;
+    case XK_KP_9:
+      x_move = x_move_size;
+      y_move = -y_move_size;
       break;
     case XK_Return:
+    case XK_KP_Enter:
     case XK_space:
       /* beat up the event */
       Event->type = ReturnEvent;
@@ -569,11 +595,10 @@ void InteractiveMove(Window *win, FvwmWindow *tmp_win, int *FinalX, int *FinalY,
 
   DragX = eventp->xbutton.x_root;
   DragY = eventp->xbutton.y_root;
-  /* If this is left commented out, then the move starts from the button press 
-   * location instead of the current location, which seems to be an
-   * improvement */
-  /*  XQueryPointer(dpy, Scr.Root, &JunkRoot, &JunkChild,
-      &DragX, &DragY,	&JunkX, &JunkY, &JunkMask);*/
+  /* If this is commented out, then the move starts from the button press 
+   * location instead of the current location */
+  XQueryPointer(dpy, Scr.Root, &JunkRoot, &JunkChild,
+      &DragX, &DragY,	&JunkX, &JunkY, &JunkMask);
 
   if(!GrabEm(MOVE))
     {

@@ -272,19 +272,19 @@ void WarpOn(FvwmWindow *t,int warp_x, int x_unit, int warp_y, int y_unit)
 
   if(t->flags & ICONIFIED)
   {
-    x = t->icon_xl_loc + t->icon_w_width/2 + 2;
-    y = t->icon_y_loc + t->icon_p_height + ICON_HEIGHT/2 + 2;
+    x = t->icon_xl_loc + t->icon_w_width/2;
+    y = t->icon_y_loc + t->icon_p_height + ICON_HEIGHT/2;
   }
   else
   {
     if (x_unit != Scr.MyDisplayWidth)
-      x = t->frame_x + 2 + warp_x;
+      x = t->frame_x + warp_x;
     else
-      x = t->frame_x + 2 + (t->frame_width - 4) * warp_x / 100;
+      x = t->frame_x + (t->frame_width - 1) * warp_x / 100;
     if (y_unit != Scr.MyDisplayHeight) 
-      y = t->frame_y + 2 + warp_y;
+      y = t->frame_y + warp_y;
     else
-      y = t->frame_y + 2 + (t->frame_height - 4) * warp_y / 100;
+      y = t->frame_y + (t->frame_height - 1) * warp_y / 100;
   }
   if (warp_x >= 0 && warp_y >= 0) {
     XWarpPointer(dpy, None, Scr.Root, 0, 0, 0, 0, x, y);
