@@ -964,9 +964,9 @@ void setup_focus_policy(FvwmWindow *tmp_win)
     /* need to grab all buttons for window */
     for(button = 1; button <= 3; button++)
     {
-      XGrabButton(dpy, button, 0, tmp_win->Parent, True, ButtonPressMask,
+      XGrabButton(dpy, button, 0, tmp_win->w, True, ButtonPressMask,
 		  GrabModeSync, GrabModeAsync, None,
-		  Scr.FvwmCursors[CRS_SYS]);
+		  None);
       if(GetUnusedModifiers() != 0)
       {
 	register unsigned int mods;
@@ -981,9 +981,9 @@ void setup_focus_policy(FvwmWindow *tmp_win)
 	   * modifiers would be zero ==> mods == 0 */
 	  if (mods & living_modifiers)
 	    continue;
-	  XGrabButton(dpy, button, mods, tmp_win->Parent, True,
+	  XGrabButton(dpy, button, mods, tmp_win->w, True,
 		      ButtonPressMask, GrabModeSync, GrabModeAsync, None,
-		      Scr.FvwmCursors[CRS_SYS]);
+		      None);
 	}
       } /* if */
     } /* for */
@@ -992,9 +992,9 @@ void setup_focus_policy(FvwmWindow *tmp_win)
 
 void setup_key_and_button_grabs(FvwmWindow *tmp_win)
 {
-  GrabAllWindowKeysAndButtons(dpy, tmp_win->Parent, Scr.AllBindings,
+  GrabAllWindowKeysAndButtons(dpy, tmp_win->w, Scr.AllBindings,
 			      C_WINDOW, GetUnusedModifiers(),
-			      Scr.FvwmCursors[CRS_DEFAULT],True);
+			      /*!!!*/None, True);
   GrabAllWindowKeys(dpy, tmp_win->decor_w, Scr.AllBindings,
 		    C_TITLE|C_RALL|C_LALL|C_SIDEBAR,
 		    GetUnusedModifiers(), True);

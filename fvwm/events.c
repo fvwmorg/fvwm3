@@ -273,7 +273,7 @@ int GetContext(FvwmWindow *t, XEvent *e, Window *w)
 
   if(*w == Scr.NoFocusWin)
     return C_ROOT;
-  if(e->xkey.subwindow != None)
+  if(e->xkey.subwindow != None && e->xany.window != t->w)
     *w = e->xkey.subwindow;
 
   if (*w == Scr.Root)
@@ -1388,14 +1388,30 @@ void HandleButtonPress(void)
 
   DBUG("HandleButtonPress","Routine Entered");
 
-  eventw = (Event.xbutton.subwindow != None) ?
-    Event.xbutton.subwindow : Event.xany.window;
+  if (!Tmp_win && Event.xany.window != Scr.Root)
+  {
+    /* event in unmanaged window or subwindow of a client */
+    XSync(dpy,0);
+    XAllowEvents(dpy,ReplayPointer,CurrentTime);
+    XSync(dpy,0);
+    return;
+  }
+  if (Event.xbutton.subwindow != None &&
+      (Tmp_win == None || Event.xany.window != Tmp_win->w))
+  {
+    eventw = Event.xbutton.subwindow;
+  }
+  else
+  {
+    eventw = Event.xany.window;
+  }
   if (!XGetGeometry(dpy, eventw, &JunkRoot, &JunkX, &JunkY,
 		    &JunkWidth, &JunkHeight, &JunkBW, &JunkDepth))
   {
     /* The window has already died. Just pass the event to the application. */
     XSync(dpy,0);
     XAllowEvents(dpy,ReplayPointer,CurrentTime);
+    XSync(dpy,0);
     return;
   }
   /* click to focus stuff goes here */
@@ -1403,10 +1419,8 @@ void HandleButtonPress(void)
   {
     SetFocus(Tmp_win->w,Tmp_win,1);
     if (Scr.go.ClickToFocusRaises ||
-	((Event.xany.window != Tmp_win->w)&&
-	 (Event.xbutton.subwindow != Tmp_win->w)&&
-	 (Event.xany.window != Tmp_win->Parent)&&
-	 (Event.xbutton.subwindow != Tmp_win->Parent)))
+	(Event.xany.window != Tmp_win->w &&
+	 Event.xbutton.subwindow != Tmp_win->w))
     {
       RaiseWindow(Tmp_win);
     }
@@ -1434,7 +1448,7 @@ void HandleButtonPress(void)
     }
   }
   else if ((Tmp_win) && !(HAS_CLICK_FOCUS(Tmp_win)) &&
-           (Event.xbutton.window == Tmp_win->Parent) &&
+           (Event.xbutton.window == Tmp_win->w) &&
 	   Scr.go.MouseFocusClickRaises)
   {
     if (((DO_RAISE_TRANSIENT(Tmp_win) && DO_FLIP_TRANSIENT(Tmp_win)) ||
@@ -1487,10 +1501,22 @@ void HandleButtonPress(void)
 			Event.xbutton.state, GetUnusedModifiers(), Context,
 			MOUSE_BINDING);
 #endif /* HAVE_STROKE */
-  if (action != NULL)
+  if (action != NULL && (action[0] != 0))
   {
     ExecuteFunction(action, Tmp_win, &Event, Context, -1, EXPAND_COMMAND);
   }
+#ifdef GNOME
+  else
+  {
+/*-----------------------------------------------------------------------
+    do gnome buttonpress forwarding if win == root
+ -----------------------------------------------------------------------*/
+      if (Scr.Root == Event.xany.window)
+      {
+          GNOME_ProxyButtonEvent(&Event);
+      }
+  }
+#endif
 
   OldPressedW = PressedW;
   PressedW = None;
@@ -1552,8 +1578,23 @@ void HandleButtonRelease()
 /* DEBUG printfs
    printf ("action is %p\n", action);
 */
-   if (action != NULL)
+   if (action != NULL && (action[0] != 0))
+   {
      ExecuteFunction(action,Tmp_win, &Event,Context,-1, EXPAND_COMMAND);
+   }
+#ifdef GNOME
+   else
+   {
+/*-----------------------------------------------------------------------
+    do gnome buttonpress forwarding if win == root
+ -----------------------------------------------------------------------*/
+      if (Scr.Root == Event.xany.window)
+      {
+          GNOME_ProxyButtonEvent(&Event);
+      }
+   }
+#endif
+
 }
 
 /***********************************************************************

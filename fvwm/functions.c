@@ -163,6 +163,7 @@ static const func_type func_config[] =
   {"globalopts",   SetGlobalOptions, F_GLOBAL_OPTS,         0},
 #ifdef GNOME
   {"gnomebutton",  GNOME_ButtonFunc, F_MOUSE,               0},
+  {"gnomeshowdesks", GNOME_ShowDesks, F_DESK,               0},
 #endif /* GNOME */
   {"gotodesk",     changeDesks_func, F_DESK,                0},
   {"gotodeskandpage",  gotoDeskAndPage_func, F_DESK,        0},
