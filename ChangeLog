@@ -1,5 +1,13 @@
 2000-09-07  Dominik Vogt  <dominik.vogt@gmx.de>
 
+	* fvwm/stack.c (raise_over_unmanaged):
+	fixed bug in raising of transients which resulted in only the first
+	transient to be raised with FvwmAuto when the transient paren was
+	entered
+
+	* fvwm/borders.c (SetupTitleBar):
+	fixes drawing of title buttons in windows with very low width
+
 	* fvwm/events.c (HandleButtonPress):
 	fixed redundant raising of non focused ClickToFocus +
 	ClickToFocusRaisesOff windows when clicking on the decorations.

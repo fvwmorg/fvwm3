@@ -1087,8 +1087,8 @@ void SetupTitleBar(FvwmWindow *tmp_win, int w, int h)
   if (ww < buttons * xwc.width)
   {
     xwc.width = ww / buttons;
-    if (xwc.width < 6)
-      xwc.width = 6;
+    if (xwc.width < 1)
+      xwc.width = 1;
     if (xwc.width > tmp_win->title_g.height)
       xwc.width = tmp_win->title_g.height;
     rest = ww - buttons * xwc.width;
@@ -1101,7 +1101,7 @@ void SetupTitleBar(FvwmWindow *tmp_win, int w, int h)
   {
     if (tmp_win->button_w[i] != None)
     {
-      if (xwc.x + tmp_win->title_g.height < w - tmp_win->boundary_width)
+      if (xwc.x + xwc.width < w - tmp_win->boundary_width)
       {
 	XConfigureWindow(dpy, tmp_win->button_w[i], xwcm, &xwc);
 	xwc.x += xwc.width;

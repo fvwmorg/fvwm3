@@ -457,8 +457,8 @@ static void RaiseOrLowerWindow(
 	flags = CWStackMode;
       }
 
-      XRestackWindows (dpy, wins, count);
       XConfigureWindow (dpy, r->stack_next->frame, flags, &changes);
+      XRestackWindows (dpy, wins, count);
 
       /* send out (one or more) M_RESTACK packets for windows between r and s */
       BroadcastRestack (r, s);

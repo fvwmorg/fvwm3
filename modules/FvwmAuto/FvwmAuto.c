@@ -32,7 +32,6 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-
 #define TRUE 1
 #define FALSE
 
@@ -273,7 +272,7 @@ main(int argc, char **argv)
       /* delay is already a NULL pointer */
     }
 #ifdef DEBUG
-    sprintf(big_int_area, "%d usecs", delay->tv_usec);
+    sprintf(big_int_area, "%d usecs", (int)delay->tv_usec);
     myfprintf((stderr, "select: delay = %s\n",
                (have_new_window) ? big_int_area : "infinite" ));
 #endif
@@ -296,7 +295,8 @@ main(int argc, char **argv)
       }
 
       myfprintf((stderr, "pw = 0x%x, fw=0x%x, rw = 0x%x, lw=0x%x\n",
-                packet->body[0], focus_win, raised_win, last_win));
+		 (int)packet->body[0], (int)focus_win, (int)raised_win,
+		 (int)last_win));
 
       switch (packet->type)
       {
@@ -317,7 +317,7 @@ main(int argc, char **argv)
         break;
 
       case M_RAISE_WINDOW:
-        myfprintf((stderr, "raise packet 0x%x\n", packet->body[0]));
+        myfprintf((stderr, "raise packet 0x%x\n", (int)packet->body[0]));
         raised_win = packet->body[0];
         if (have_new_window && focus_win == raised_win)
         {
@@ -327,7 +327,7 @@ main(int argc, char **argv)
         break;
 
       case M_LOWER_WINDOW:
-        myfprintf((stderr, "lower packet 0x%x\n", packet->body[0]));
+        myfprintf((stderr, "lower packet 0x%x\n", (int)packet->body[0]));
         if (have_new_window && focus_win == packet->body[0])
         {
           myfprintf((stderr,
@@ -349,7 +349,7 @@ main(int argc, char **argv)
 
     if (raise_window_now)
     {
-      myfprintf((stderr, "raising 0x%x\n", focus_win));
+      myfprintf((stderr, "raising 0x%x\n", (int)focus_win));
 
       if (last_win && leave_fn)
       {
