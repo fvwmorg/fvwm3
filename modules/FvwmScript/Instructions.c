@@ -1549,20 +1549,23 @@ static void Loop (int NbArg,long *TabArg)
   /*On ajuste la taille de la var pour contenir un nombre */
   TabVVar[TabArg[0]] = (char*)saferealloc(TabVVar[TabArg[0]],sizeof(char)*10);
   /* Calcul des 2 autres arguments */
-  for (i=1; i<NbArg-1; i++)
+  for (i=1; i<NbArg; i++)
   {
     if (TabArg[i] > 100000)     /* Cas du codage d'un nombre */
     {
-      i = (int)TabArg[i] - 200000;
+      int x;
+      x = (int)TabArg[i] - 200000;
       arg[CurrArg] = (char*)safecalloc(1,sizeof(char)*10);
-      sprintf(arg[CurrArg],"%d",i);
+      sprintf(arg[CurrArg],"%d",x);
     }
     else if (TabArg[i] < -100000)       /* Cas d'un id de fonction */
     {
       arg[CurrArg] = TabFunc[TabArg[i]+150000](&i,TabArg);
     }
     else                                /* Cas d'une variable */
+    {
       arg[CurrArg] = safestrdup(TabVVar[TabArg[i]]);
+    }
     CurrArg++;
   }
   limit[0] = atoi(arg[0]);

@@ -1,3 +1,11 @@
+2004-10-03  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* fvwm/window_flags.h:
+	removed useless and broken SETM_ macros
+
+	* fvwm/update.c (init_style):
+	fixed resetting user states
+
 2004-10-02  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* libs/envvar.c (add_to_envlist):

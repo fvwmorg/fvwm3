@@ -73,6 +73,10 @@ static void init_style(
 	memcpy(old_t, t, sizeof(FvwmWindow));
 	/* determine level of decoration */
 	setup_style_and_decor(t, pstyle, pbuttons);
+	/* restore some old values */
+	GET_USER_STATES(t) = GET_USER_STATES(old_t);
+
+	return;
 }
 
 static void apply_window_updates(

@@ -7,6 +7,11 @@ Init
  Begin
   WarpPointer 2
 
+  For $i=3 To 7 Do
+  Begin
+    Do {Exec xcalc &}
+  End
+
   Set $FILE=(GetScriptArgument 1)
   If $FILE=={} Then
    Set $FILE={.xinitrc-fvwm}

@@ -60,19 +60,21 @@
 #define SET_TITLE_DIR(fw,x) \
 	((fw)->flags.common.title_dir = x)
 #define SETM_TITLE_DIR(fw,x) \
-	(fw)->flag_mask.common.title_dir = ((x) ? DIR_MAJOR_MASK : 0)
+	((fw)->flag_mask.common.title_dir = ((x) ? DIR_MAJOR_MASK : 0))
 #define SET_USER_STATES(fw, mask) \
-	(fw)->flags.common.user_states |= (mask)
+	((fw)->flags.common.user_states |= (mask))
 #define CLEAR_USER_STATES(fw, mask) \
-	(fw)->flags.common.user_states &= ~(mask)
+	((fw)->flags.common.user_states &= ~(mask))
 #define TOGGLE_USER_STATES(fw, mask) \
-	(fw)->flags.common.user_states ^= (mask)
+	((fw)->flags.common.user_states ^= (mask))
 #define SETM_USER_STATES(fw, mask) \
-	(fw)->flag_mask.common.user_states |= (mask)
+	((fw)->flag_mask.common.user_states |= (mask))
 #define GET_USER_STATES(fw) \
 	((fw)->flags.common.user_states)
+#define GETM_USER_STATES(fw) \
+	((fw)->flag_mask.common.user_states)
 #define HAS_VERTICAL_TITLE(fw) \
-	(HAS_TITLE_DIR(fw,DIR_W) || HAS_TITLE_DIR(fw,DIR_E))
+	((HAS_TITLE_DIR(fw,DIR_W) || HAS_TITLE_DIR(fw,DIR_E)))
 #define HAS_STIPPLED_TITLE(fw) \
 	((fw)->flags.common.s.has_stippled_title)
 #define SET_HAS_STIPPLED_TITLE(fw,x) \
