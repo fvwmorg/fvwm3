@@ -501,6 +501,21 @@ if test "$with_bidi" != "no"; then
 	fi
 fi
 
+if test "$with_bidi" != "no"; then
+	ac_save_CFLAGS="$CFLAGS"
+	ac_save_LIBS="$LIBS"
+	CFLAGS="$CFLAGS $fribidi_CFLAGS"
+	LIBS="$LIBS $fribidi_LIBS"
+	AC_TRY_RUN([#include <fribidi/fribidi.h>
+int main()
+{
+	return fribidi_parse_charset("utf-8") == FRIBIDI_CHARSET_UTF8 ? 0 : 1;
+}
+], [:], [with_bidi=no; problem_bidi=": Bad headers or libs, see config.log"])
+	CFLAGS="$ac_save_CFLAGS"
+	LIBS="$ac_save_LIBS"
+fi
+
 if test "$with_bidi" = "no"; then
 	fribidi_CFLAGS=
 	fribidi_LIBS=
