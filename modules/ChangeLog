@@ -1,3 +1,8 @@
+1999-04-22  Dominik Vogt  <dominik_vogt@gmx.de>
+
+	* FvwmCommand/FvwmCommandS.c: fixed bug that caused FvwmCommandS to
+	die with 2.2.x Linux kernels.
+
 1999-04-20  Bob Woodside  <proteus@pcnet.com>
 
 	* modules/FvwmTaskbar/FvwmTaskBar.c: GSFR.

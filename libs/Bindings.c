@@ -200,8 +200,6 @@ Binding *AddBinding(Display *dpy, Binding **pblist, BindingType type,
   KeySym tkeysym;
   Binding *temp;
 
-static int count = 0;
-fprintf(stderr,"binding %d: %s\n",++count,action);
   /*
   ** Unfortunately a keycode can be bound to multiple keysyms and a keysym can
   ** be bound to multiple keycodes. Thus we have to check every keycode with
@@ -325,7 +323,6 @@ void GrabWindowKey(Display *dpy, Window w, Binding *binding,
 	    }
 	}
     }
-else { static int count = 0; fprintf(stderr,"kng %d\n", ++count); }
   return;
 }
 
@@ -333,8 +330,6 @@ void GrabAllWindowKeys(Display *dpy, Window w, Binding *blist,
 		       unsigned int contexts, unsigned int dead_modifiers,
 		       Bool fGrab)
 {
-static int count = 0;
-fprintf(stderr,"gak %d, 0x%x\n", ++count, w);
   MyXGrabServer(dpy);
   for ( ; blist != NULL; blist = blist->NextBinding)
     GrabWindowKey(dpy, w, blist, contexts, dead_modifiers, fGrab);
@@ -389,7 +384,6 @@ void GrabWindowButton(Display *dpy, Window w, Binding *binding,
 	    } /* if */
 	} /* for */
     } /* if */
-else { static int count = 0; fprintf(stderr,"bng %d\n", ++count); }
   return;
 }
 
@@ -397,8 +391,6 @@ void GrabAllWindowButtons(Display *dpy, Window w, Binding *blist,
 			  unsigned int contexts, unsigned int dead_modifiers,
 			  Cursor cursor, Bool fGrab)
 {
-static int count = 0;
-fprintf(stderr,"gab %d, 0x%x\n", ++count, w);
   MyXGrabServer(dpy);
   for ( ; blist != NULL; blist = blist->NextBinding)
     GrabWindowButton(dpy, w, blist, contexts, dead_modifiers, cursor, fGrab);
@@ -413,8 +405,6 @@ void GrabAllWindowKeysAndButtons(Display *dpy, Window w, Binding *blist,
 				 unsigned int dead_modifiers,
 				 Cursor cursor, Bool fGrab)
 {
-static int count = 0;
-fprintf(stderr,"gakab %d, 0x%x\n", ++count, w);
   MyXGrabServer(dpy);
   for ( ; blist != NULL; blist = blist->NextBinding)
     if (blist->Context & contexts)

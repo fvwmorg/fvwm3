@@ -1,3 +1,8 @@
+1999-04-21  Dominik Vogt  <dominik_vogt@gmx.de>
+
+	* fvwm/events.c (HandleUnusualStackmodes): commented out two DBUG
+	macros with too many arguments
+
 1999-04-20  Dominik Vogt  <dominik_vogt@gmx.de>
 
 	* fvwm/icons.c (CreateIconWindow): use GrabAllWindowKeysAndButtons

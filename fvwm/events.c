@@ -1404,29 +1404,29 @@ void HandleLeaveNotify(void)
 
 
 
-Bool 
-intersect (int x0, int y0, int w0, int h0, 
+Bool
+intersect (int x0, int y0, int w0, int h0,
            int x1, int y1, int w1, int h1)
 {
   return !((x0 > x1 + w1) || (x0 + w0 < x1) ||
            (y0 > y1 + h1) || (y0 + h0 < y1));
 }
 
-Bool 
+Bool
 overlap_box (FvwmWindow *r, int x, int y, int w, int h)
 {
   if (IS_ICONIFIED(r))
   {
-    return ((r->icon_pixmap_w) && 
-             intersect (x, y, w, h, r->icon_x_loc, r->icon_y_loc, 
+    return ((r->icon_pixmap_w) &&
+             intersect (x, y, w, h, r->icon_x_loc, r->icon_y_loc,
                              r->icon_p_width, r->icon_p_height)) ||
-           ((r->icon_w) && 
+           ((r->icon_w) &&
              intersect (x, y, w, h, r->icon_xl_loc, r->icon_y_loc + r->icon_p_height,
                              r->icon_w_width, r->icon_w_height));
   }
   else
   {
-    return intersect (x, y, w, h, r->frame_x, r->frame_y, 
+    return intersect (x, y, w, h, r->frame_x, r->frame_y,
                            r->frame_width, r->frame_height);
   }
 }
@@ -1441,40 +1441,40 @@ overlap (FvwmWindow *r, FvwmWindow *s)
 
   if (IS_ICONIFIED(r))
   {
-    return ((r->icon_pixmap_w) && 
-             overlap_box (s, r->icon_x_loc, r->icon_y_loc, 
+    return ((r->icon_pixmap_w) &&
+             overlap_box (s, r->icon_x_loc, r->icon_y_loc,
                              r->icon_p_width, r->icon_p_height)) ||
-           ((r->icon_w) && 
+           ((r->icon_w) &&
              overlap_box (s, r->icon_xl_loc, r->icon_y_loc + r->icon_p_height,
                              r->icon_w_width, r->icon_w_height));
   }
   else
   {
-    return overlap_box (s, r->frame_x, r->frame_y, 
+    return overlap_box (s, r->frame_x, r->frame_y,
                            r->frame_width, r->frame_height);
   }
 }
 
 /* return true if stacking order changed */
 Bool
-HandleUnusualStackmodes(unsigned int stack_mode, FvwmWindow *r, Window rw, 
+HandleUnusualStackmodes(unsigned int stack_mode, FvwmWindow *r, Window rw,
                                                  FvwmWindow *s, Window sw)
 {
   Bool restack = 0;
   FvwmWindow *t;
 
-  DBUG("HandleUnusualStackmodes", "called with %d, %lx\n", stack_mode, s);
-	
+/*  DBUG("HandleUnusualStackmodes", "called with %d, %lx\n", stack_mode, s);*/
+
   if (((rw != r->w) ^ IS_ICONIFIED(r)) ||
       (s && (((sw != s->w) ^ IS_ICONIFIED(s)) || (r->Desk != s->Desk))))
   {
     /* one of the relevant windows is unmapped */
     return;
-  } 
+  }
 
   switch (stack_mode)
   {
-   case TopIf: 
+   case TopIf:
     for (t = r->stack_prev; (t != &Scr.FvwmRoot) && !restack; t = t->stack_prev)
     {
       restack = (((s == NULL) || (s == t)) && overlap (t, r));
@@ -1482,7 +1482,7 @@ HandleUnusualStackmodes(unsigned int stack_mode, FvwmWindow *r, Window rw,
     if (restack)
     {
       RaiseWindow (r);
-    }    
+    }
     break;
    case BottomIf:
     for (t = r->stack_next; (t != &Scr.FvwmRoot) && !restack; t = t->stack_next)
@@ -1492,15 +1492,15 @@ HandleUnusualStackmodes(unsigned int stack_mode, FvwmWindow *r, Window rw,
     if (restack)
     {
       LowerWindow (r);
-    }    
+    }
     break;
    case Opposite:
-    restack = (HandleUnusualStackmodes (TopIf, r, rw, s, sw) || 
+    restack = (HandleUnusualStackmodes (TopIf, r, rw, s, sw) ||
                HandleUnusualStackmodes (BottomIf, r, rw, s, sw));
     break;
   }
-  DBUG("HandleUnusualStackmodes", "\t---> %d\n", restack);
-  return restack;	
+/*  DBUG("HandleUnusualStackmodes", "\t---> %d\n", restack);*/
+  return restack;
 }
 
 /***********************************************************************
@@ -1646,7 +1646,7 @@ void HandleConfigureRequest(void)
       SetupFrame (Tmp_win, x, y, width, height, sendEvent, False);
     }
   }
- 
+
   /*  Stacking order change requested...  */
   /*  Handle this *after* geometry changes, since we need the new
       geometry in occlusion calculations */
@@ -1681,36 +1681,36 @@ void HandleConfigureRequest(void)
               break;
 	    }
 	}
-      else 
+      else
 	{
 	  xwc.sibling = otherwin->frame;
 	  xwc.stack_mode = cre->detail;
 	  xwcm = CWSibling | CWStackMode;
 	  XConfigureWindow (dpy, Tmp_win->frame, xwcm, &xwc);
-	
-	  /* Maintain the condition that icon windows are stacked 
+
+	  /* Maintain the condition that icon windows are stacked
 	     immediately below their frame */
 	  /* 1. for Tmp_win */
 	  xwc.sibling = Tmp_win->frame;
 	  xwc.stack_mode = Below;
 	  xwcm = CWSibling | CWStackMode;
 	  if (Tmp_win->icon_w != None)
-	    {      
+	    {
 	      XConfigureWindow(dpy, Tmp_win->icon_w, xwcm, &xwc);
 	    }
 	  if (Tmp_win->icon_pixmap_w != None)
 	    {
 	      XConfigureWindow(dpy, Tmp_win->icon_pixmap_w, xwcm, &xwc);
 	    }
-	  
-	  /* 2. for otherwin */	  
+
+	  /* 2. for otherwin */
 	  if (cre->detail == Below)
 	    {
 	      xwc.sibling = otherwin->frame;
 	      xwc.stack_mode = Below;
 	      xwcm = CWSibling | CWStackMode;
 	      if (otherwin->icon_w != None)
-		{      
+		{
 		  XConfigureWindow(dpy, otherwin->icon_w, xwcm, &xwc);
 		}
 	      if (otherwin->icon_pixmap_w != None)

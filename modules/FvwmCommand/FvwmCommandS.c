@@ -33,7 +33,8 @@ void server( char * );
 void sig_handler( int );
 int  write_f (int fd, char *p, int len);
 
-int main(int argc, char *argv[]) {
+int main(int argc, char *argv[])
+{
   char *fifoname;
 
   if(argc < FARGS)    {
@@ -108,7 +109,7 @@ void server ( char *name ) {
   if (open_fifos (f_stem) < 0) {
     exit (-1);
   }
-  SendText(Fd,"",0); /* tell fvwm that we are here */
+  SendText(Fd," ",0); /* tell fvwm that we are here */
 
   cix = 0;
 
