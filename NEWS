@@ -77,7 +77,8 @@ Changes in *experimental* release 2.5.4 (not released yet)
   each other.  HilightBack without using ActiveFore does no longer
   hilight the item text.
 
-* New WindowList option SortByResource.
+* New WindowList option SortByResource; the previously added
+  SortClassName option is renamed to SortByClass.
 
 * New command PrintInfo for debugging.
 

@@ -17,9 +17,22 @@ Fixed:
 * FvwmIconMan options PlainColorset, IconColorset, FocusColorset
   and SelectColorset are now strictly respected.
 
-* Improved documentation.
-
 * See ChangeLog for more fixes.
+
+Improved:
+---------
+
+* Alpha blending rendering is supported even without XRender
+  support.
+
+* FvwmButtons redrawing improvement: colorsets are now usable with
+  containers.
+
+* The HilightBack and ActiveFore menu styles are independent of
+  each other.  HilightBack without using ActiveFore does no longer
+  hilight the item text.
+
+* Documentation.
 
 New features:
 -------------
@@ -43,12 +56,6 @@ New features:
 * New Colorset options bgTint, fgTint (which complete Tint), Alpha,
   IconTint and IconAlpha.
 
-* Alpha blending rendering is supported even without XRender
-  support.
-
-* FPClickToFocus and FPClickToRaise work with any modifier by
-  default.
-
 * Enhanced commands [Add]ButtonStyle, [Add]TitleStyle. ButtonState.
   Titles and buttons now have 4 main states instead of 3: ActiveUp,
   ActiveDown, InactiveUp and InactiveDown, plus 4 Toggled variants.
@@ -59,6 +66,9 @@ New features:
 * More shortcuts for button states added: AllNormal, AllToggled,
   AllActive, AllInactive, AllUp, AllDown.  These six shortcuts are
   actually different masks for 4 individual states (from 8 total).
+
+* FPClickToFocus and FPClickToRaise work with any modifier by
+  default.
 
 * Perl library API regarding event handlers is changed, so personal
   modules in Perl should be adjusted.
@@ -83,13 +93,7 @@ New features:
 
 * New FvwmBacker option RetainPixmap.
 
-* FvwmButtons redrawing improvement: colorsets are now usable with
-  containers.
+* New WindowList option SortByResource; the previously added
+  SortClassName option is renamed to SortByClass.
 
-* The HilightBack and ActiveFore menu styles are independent of
-  each other.  HilightBack without using ActiveFore does no longer
-  hilight the item text.
-
-* New MenuStyle options HilightRelief and HilightReliefOff.
-
-* New WindowList option SortByResource.
+* New command PrintInfo for debugging.

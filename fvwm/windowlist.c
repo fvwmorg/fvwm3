@@ -53,7 +53,7 @@
 #define NO_DESK_SORT		(1<<6)
 #define SHOW_ICONNAME		(1<<7)
 #define SHOW_ALPHABETIC		(1<<8)
-#define SORT_CLASSNAME		(1<<9)
+#define SORT_BYCLASS		(1<<9)
 #define SORT_BYRESOURCE		(1<<10)
 #define SORT_REVERSE		(1<<11)
 #define SHOW_INFONOTGEO		(1<<12)
@@ -307,9 +307,9 @@ void CMD_WindowList(F_CMD_ARGS)
 			{
 				flags |= SHOW_ALPHABETIC;
 			}
-			else if (StrEquals(tok,"SortClassName"))
+			else if (StrEquals(tok,"SortByClass"))
 			{
-				flags |= SORT_CLASSNAME;
+				flags |= SORT_BYCLASS;
 			}
 			else if (StrEquals(tok,"SortByResource"))
 			{
@@ -609,14 +609,14 @@ void CMD_WindowList(F_CMD_ARGS)
 	}
 
 	/* Do alphabetic sort */
-	if (flags & (SHOW_ALPHABETIC | SORT_CLASSNAME | SORT_BYRESOURCE))
+	if (flags & (SHOW_ALPHABETIC | SORT_BYCLASS | SORT_BYRESOURCE))
 	{
 		/* This will be compare or compareReverse if a reverse order
 		 * is selected. */
 		int (*sort)(const FvwmWindow **a, const FvwmWindow **b);
 
 		switch (flags & (SHOW_ALPHABETIC | SHOW_ICONNAME | \
-			SORT_CLASSNAME | SORT_BYRESOURCE))
+			SORT_BYCLASS | SORT_BYRESOURCE))
 		{
 		case SHOW_ALPHABETIC:
 			compare = visibleCompare;
@@ -626,22 +626,22 @@ void CMD_WindowList(F_CMD_ARGS)
 			break;
 		/* Sorting based on class name produces an alphabetic
 		 * order so the keyword alphabetic is redundant. */
-		case SORT_CLASSNAME:
-		case SORT_CLASSNAME | SHOW_ALPHABETIC:
+		case SORT_BYCLASS:
+		case SORT_BYCLASS | SHOW_ALPHABETIC:
 			compare = classCompare;
 			break;
-		case SORT_CLASSNAME | SHOW_ICONNAME:
-		case SORT_CLASSNAME | SHOW_ICONNAME | SHOW_ALPHABETIC:
+		case SORT_BYCLASS | SHOW_ICONNAME:
+		case SORT_BYCLASS | SHOW_ICONNAME | SHOW_ALPHABETIC:
 			compare = classIconCompare;
 			break;
 		case SORT_BYRESOURCE:
-		case SORT_BYRESOURCE | SORT_CLASSNAME:
-		case SORT_BYRESOURCE | SORT_CLASSNAME | SHOW_ALPHABETIC:
+		case SORT_BYRESOURCE | SORT_BYCLASS:
+		case SORT_BYRESOURCE | SORT_BYCLASS | SHOW_ALPHABETIC:
 			compare = resourceCompare;
 			break;
 		case SORT_BYRESOURCE | SHOW_ICONNAME:
-		case SORT_BYRESOURCE | SHOW_ICONNAME | SORT_CLASSNAME:
-		case SORT_BYRESOURCE | SHOW_ICONNAME | SORT_CLASSNAME | \
+		case SORT_BYRESOURCE | SHOW_ICONNAME | SORT_BYCLASS:
+		case SORT_BYRESOURCE | SHOW_ICONNAME | SORT_BYCLASS | \
 		SHOW_ALPHABETIC:
 			compare = resourceIconCompare;
 			break;
