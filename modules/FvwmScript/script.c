@@ -233,8 +233,8 @@ long *Depile(int NbLevelArg, int *s)
  }
  else
  {
-  return NULL;
   *s=0;
+  return NULL;
  }
 }
 

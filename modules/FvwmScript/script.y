@@ -88,7 +88,7 @@ void InitCase(int cond)
 
  /* Ce case correspond au bloc courant d'instruction: on l'empile */
  PileBloc[0]=&TabIObj[nbobj][CurrCase];
- TopPileB=0; 
+ TopPileB=0;
 }
 
 /* Enleve un niveau d'args dans la pile BuffArg */
@@ -126,8 +126,8 @@ long *Depile(int NbLevelArg, int *s)
  }
  else
  {
-  return NULL;
   *s=0;
+  return NULL;
  }
 }
 
@@ -162,7 +162,7 @@ void AddLevelBufArg()
  NbArg[SPileArg]=-1;
 }
 
-/* Ajout d'un arg dans la couche arg qui est au sommet de la pile TabArg */ 
+/* Ajout d'un arg dans la couche arg qui est au sommet de la pile TabArg */
 void AddBufArg(long *TabLong,int NbLong)
 {
  int i;
@@ -189,7 +189,7 @@ void AddVar(char *Name)		/* ajout de variable a la fin de la derniere commande p
    return ;
   }
 
- if (NbVar>MAX_VARS-2) 	
+ if (NbVar>MAX_VARS-2)
  {
   fprintf(stderr,
     "[%s] Line %d: too many variables (>5120)\n",ScriptName,numligne);
@@ -222,7 +222,7 @@ void AddVar(char *Name)		/* ajout de variable a la fin de la derniere commande p
 }
 
 /* Ajout d'une constante str comme argument */
-void AddConstStr(char *Name)	
+void AddConstStr(char *Name)
 {
  /* On cree une nouvelle variable et on range la constante dedans */
  NbVar++;
@@ -247,7 +247,7 @@ void AddConstStr(char *Name)
 }
 
 /* Ajout d'une constante numerique comme argument */
-void AddConstNum(long num)	
+void AddConstNum(long num)
 {
 
  /* On ne cree pas de nouvelle variable */
@@ -260,7 +260,7 @@ void AddConstNum(long num)
 /* Ajout d'une fonction comme argument */
 /* Enleve les args de func de la pile, */
 /* le concate, et les range dans la pile */
-void AddFunct(int code,int NbLevelArg)	
+void AddFunct(int code,int NbLevelArg)
 {
  int size;
  long *l;
@@ -301,7 +301,7 @@ void AddComBloc(int TypeCond, int NbLevelArg, int NbBloc)
  /* Attention NbArg peur changer si on utilise en arg une fonction */
  OldNA=PileBloc[TopPileB]->TabInstr[CurrInstr].NbArg;
 
- PileBloc[TopPileB]->TabInstr[CurrInstr].TabArg=(long*)realloc( 
+ PileBloc[TopPileB]->TabInstr[CurrInstr].TabArg=(long*)realloc(
 		PileBloc[TopPileB]->TabInstr[CurrInstr].TabArg,sizeof(long)*(OldNA+NbBloc));
  for (i=0;i<NbBloc;i++)
  {
@@ -318,7 +318,7 @@ void EmpilerBloc()
  TmpBloc=(Bloc*)safecalloc(1,sizeof(Bloc));
  TmpBloc->NbInstr=-1;
  TmpBloc->TabInstr=NULL;
- TopPileB++; 
+ TopPileB++;
  PileBloc[TopPileB]=TmpBloc;
 
 }
@@ -330,7 +330,7 @@ void DepilerBloc(int IdBloc)
  Instr *IfInstr;
 
  Bloc1=PileBloc[TopPileB];
- TopPileB--; 
+ TopPileB--;
  IfInstr=&PileBloc[TopPileB]->TabInstr[PileBloc[TopPileB]->NbInstr];
  IfInstr->TabArg[IfInstr->NbArg-IdBloc]=(long)Bloc1;
 }
@@ -345,7 +345,7 @@ int yyerror(char *errmsg)
 
 %}
 
-/* Declaration des types des tokens, tous les types sont assemblés dans union */ 
+/* Declaration des types des tokens, tous les types sont assemblés dans union */
 /* Le type est celui de yyval, yyval est utilisé dans lex explicitement */
 /* Dans bison, il est utlise implicitement avec $1, $2... */
 %union {  char *str;
@@ -381,7 +381,7 @@ initvar: 			{ InitVarGlob(); }
 
 /* Entete du scripte decrivant les options par defaut */
 head:
-/* vide: dans ce cas on utilise les valeurs par défaut */	
+/* vide: dans ce cas on utilise les valeurs par défaut */
 | head WINDOWTITLE GSTR
 {
 	/* Titre de la fenetre */
@@ -441,19 +441,19 @@ head:
 initbloc:		/* cas ou il n'y pas de bloc d'initialisation du script */
 	| INIT creerbloc BEG instr END {
 				 scriptprop->initbloc=PileBloc[TopPileB];
-				 TopPileB--; 
+				 TopPileB--;
 				}
 
 periodictask:		/* cas ou il n'y a pas de tache periodique */
 	    | PERIODICTASK creerbloc BEG instr END {
 				 scriptprop->periodictasks=PileBloc[TopPileB];
-				 TopPileB--; 
+				 TopPileB--;
 				}
 
 quitfunc:		/* case where there are no QuitFunc */
 	    | QUITFUNC creerbloc BEG instr END {
 				 scriptprop->quitfunc=PileBloc[TopPileB];
-				 TopPileB--; 
+				 TopPileB--;
 				}
 
 	    ;
@@ -470,8 +470,8 @@ id: NUMBER			{ nbobj++;
 				    exit(1);}
 				  if (($1<1)||($1>1000))
 				  { yyerror("Choose item id between 1 and 1000\n");
-				    exit(1);} 
-				  if (TabIdObj[$1]!=-1) 
+				    exit(1);}
+				  if (TabIdObj[$1]!=-1)
 				  { i=$1; fprintf(stderr,"Line %d: item id %d already used:\n",numligne,$1);
 				    exit(1);}
 			          TabIdObj[$1]=nbobj;
@@ -535,7 +535,7 @@ init:				/* vide */
     | init FONT			{
 				 (*tabobj)[nbobj].font=$2;
 				}
-    | init FLAGS flags		
+    | init FLAGS flags
     ;
 flags:
      | flags HIDDEN		{
@@ -556,10 +556,10 @@ flags:
      | flags RIGHT		{
 				 (*tabobj)[nbobj].flags[3]=TEXT_POS_RIGHT;
 				}
-    ; 
+    ;
 
 
-verify:				 { 
+verify:				 {
 				  if (!HasPosition)
 				   { yyerror("No position for object");
 				     exit(1);}
@@ -591,7 +591,7 @@ number :  NUMBER		{ InitCase($1); }
 bloc: BEG instr END
     ;
 
-				
+
 /* ensemble d'instructions */
 instr:
     | instr EXEC exec

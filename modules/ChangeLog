@@ -1,5 +1,9 @@
 2002-11-14  Dominik Vogt  <dominik.vogt@gmx.de>
 
+	* FvwmScript/script.y (Depile):
+	* FvwmScript/script.c (Depile):
+	fixed random return code
+
 	* FvwmProxy/FvwmProxy.c (DispatchEvent):
 	(DestroyWindow):
 	(StartProxies):
