@@ -54,8 +54,8 @@ extern struct queue_buff_struct **pipeQueue;
 /* this is a bit long winded to allow MAX_MESSAGE to be 32 and not get an
  * integer overflow with (1 << MAX_MESSAGES) and even with
  * (1<<(MAX_MESSAGES-1)) - 1 */
-#define MAX_MASK   (MAX_MSG_MASK & ~(M_SENDCONFIG))
-#define MAX_XMASK  (MAX_XMSG_MASK)
+#define DEFAULT_MASK   (MAX_MSG_MASK & ~(M_SENDCONFIG))
+#define DEFAULT_XMASK  (DEFAULT_XMSG_MASK)
 
 
 /*

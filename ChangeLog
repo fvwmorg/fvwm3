@@ -1,5 +1,11 @@
 2002-01-27  Dominik Vogt  <dominik.vogt@gmx.de>
 
+	* fvwm/module_interface.h:
+	* fvwm/module_interface.c (do_execute_module):
+	(initModules):
+	* libs/Module.h (MAX_XMSG_MASK):
+	fixed default message mask for modules
+
 	* fvwm/update.c (flush_window_updates):
 	* fvwm/virtual.c (UnmapDesk):
 	(MapDesk):

@@ -179,6 +179,9 @@ int main(int argc, char **argv)
 
   fd_width = GetFdWidth();
 
+  /* select all extended messages */
+  SetMessageMask(fd, M_EXTENDED_MSG | MAX_XMSG_MASK);
+
   /* Create a list of all windows */
   /* Request a list of all windows,
    * wait for ConfigureWindow packets */

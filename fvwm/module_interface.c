@@ -158,8 +158,8 @@ void initModules(void)
     writePipes[i]= -1;
     readPipes[i]= -1;
     pipeOn[i] = -1;
-    PipeMask[i].m1 = MAX_MASK;
-    PipeMask[i].m2 = MAX_XMASK;
+    PipeMask[i].m1 = DEFAULT_MASK;
+    PipeMask[i].m2 = DEFAULT_XMASK;
     SyncMask[i].m1 = 0;
     SyncMask[i].m2 = 0;
     NoGrabMask[i].m1 = 0;
@@ -354,8 +354,8 @@ static int do_execute_module(F_CMD_ARGS, Bool desperate)
     writePipes[i] = fvwm_to_app[1];
     readPipes[i] = app_to_fvwm[0];
     pipeOn[i] = -1;
-    PipeMask[i].m1 = MAX_MASK;
-    PipeMask[i].m2 = MAX_XMASK;
+    PipeMask[i].m1 = DEFAULT_MASK;
+    PipeMask[i].m2 = DEFAULT_XMASK;
     SyncMask[i].m1 = 0;
     SyncMask[i].m2 = 0;
     NoGrabMask[i].m1 = 0;

@@ -1,3 +1,12 @@
+2002-01-27  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* FvwmAuto/FvwmAuto.c (main):
+	implemented new -passid option
+
+	* FvwmDebug/FvwmDebug.c (main):
+	* FvwmEvent/FvwmEvent.c (main):
+	request extended messages
+
 2002-01-24  Dan Espen  <dane@mk.telcordia.com>
 
 	* FvwmPager/x_pager.c (FALLBACK_FONT): Use fixed as the fallback

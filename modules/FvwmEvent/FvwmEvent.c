@@ -280,7 +280,8 @@ int main(int argc, char **argv)
     if (start_audio_delay) last_time = time(0);
     /* tell fvwm we're running */
 
-    /* SetMessageMask(fd, MAX_MASK); */
+    /* SetMessageMask(fd, MAX_MSG_MASK); */
+    SetMessageMask(fd, M_EXTENDED_MSG | MAX_XMSG_MASK);
     /* migo (19-Aug-2000): synchronize on M_DESTROY_WINDOW */
     SetSyncMask(fd, M_DESTROY_WINDOW);
 

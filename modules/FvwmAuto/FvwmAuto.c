@@ -104,6 +104,8 @@ main(int argc, char **argv)
 {
   char *enter_fn="Silent Raise";	/* default */
   char *leave_fn=NULL;
+  char *buf;
+  int len;
   unsigned long m_mask;
   unsigned long last_win = 0;	/* last window handled */
   unsigned long focus_win = 0;	/* current focus */
@@ -113,6 +115,7 @@ main(int argc, char **argv)
   int timeout;
   int sec = 0;
   int usec = 0;
+  int n;
   struct timeval value;
   struct timeval *delay;
   fd_set in_fdset;
@@ -121,14 +124,15 @@ main(int argc, char **argv)
   int count = 0;
   char big_int_area[32];
 #endif
+  Bool do_pass_id = False;
 
 #ifdef DEBUGTOFILE
   freopen(".FvwmAutoDebug","w",stderr);
 #endif
 
-  if(argc < 7 || argc > 9)
+  if(argc < 7 || argc > 10)
   {
-    fprintf(stderr,"FvwmAuto can use one to three arguments.\n");
+    fprintf(stderr,"FvwmAuto can use one to four arguments.\n");
     exit(1);
   }
 
@@ -196,15 +200,27 @@ main(int argc, char **argv)
     delay = NULL;
   }
 
-  if (argv[7])			/* if specified */
+  n = 7;
+  if (argv[n])			/* if specified */
   {
     char *token;
 
-    if (*argv[7] && !StrEquals(argv[7],"NOP")) /* not empty */
-      enter_fn=argv[7];		/* override default */
+    /* -passid option */
+    if (*argv[n] && StrEquals(argv[n], "-passid"))
+    {
+       do_pass_id = True;
+       n++;
+    }
+	/*** enter command ***/
+    if (*argv[n] && !StrEquals(argv[n],"NOP")) /* not empty */
+    {
+      enter_fn = argv[n];		/* override default */
+      n++;
+    }
     else
-      enter_fn=NULL;		/* nop */
-
+    {
+      enter_fn = NULL;		/* nop */
+    }
     /* This is a hack to prevent user interaction with old configs. */
     if (enter_fn)
     {
@@ -212,9 +228,13 @@ main(int argc, char **argv)
       if (!StrEquals(token, "Silent"))
         enter_fn = safestrdup(CatString2("Silent ", enter_fn));
     }
-    if (argv[8] && *argv[8] && !StrEquals(argv[8],"NOP"))
+    /*** leave command ***/
+    if (argv[n] && *argv[n] && !StrEquals(argv[n],"NOP"))
+    {
       /* leave function specified */
-      leave_fn=argv[8];
+      leave_fn=argv[n];
+      n++;
+    }
     if (leave_fn)
     {
       token = PeekToken(leave_fn, NULL);
@@ -248,6 +268,22 @@ main(int argc, char **argv)
 
   fd_width = fd[1] + 1;
   FD_ZERO(&in_fdset);
+
+  /* create the command buffer */
+  len = 0;
+  if (enter_fn != 0)
+  {
+    len = strlen(enter_fn);
+  }
+  if (leave_fn != NULL)
+  {
+    len = max(len, strlen(leave_fn));
+  }
+  if (do_pass_id)
+  {
+    len += 32;
+  }
+  buf = safemalloc(len);
 
   while( !isTerminated )
   {
@@ -351,13 +387,29 @@ main(int argc, char **argv)
       if (last_win && leave_fn)
       {
         /* if focus_win isn't the root */
-        SendInfo(fd, leave_fn, last_win);
+	if (do_pass_id)
+	{
+	  sprintf(buf, "%s 0x%x\n", leave_fn, (int)last_win);
+	}
+	else
+	{
+	  sprintf(buf, "%s\n", leave_fn);
+	}
+        SendInfo(fd, buf, last_win);
       }
 
       if (focus_win && enter_fn)
       {
         /* if focus_win isn't the root */
-        SendInfo(fd, enter_fn, focus_win);
+	if (do_pass_id)
+	{
+	  sprintf(buf, "%s 0x%x\n", enter_fn, (int)focus_win);
+	}
+	else
+	{
+	  sprintf(buf, "%s\n", enter_fn);
+	}
+        SendInfo(fd, buf, focus_win);
         raised_win = focus_win;
       }
 
@@ -369,4 +421,3 @@ main(int argc, char **argv)
 
   return 0;
 }
-

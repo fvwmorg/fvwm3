@@ -112,6 +112,7 @@ typedef struct {
 #define MX_ENTER_WINDOW           ((1<<1) | M_EXTENDED_MSG)
 #define MX_LEAVE_WINDOW           ((1<<2) | M_EXTENDED_MSG)
 #define MAX_EXTENDED_MESSAGES     3
+#define DEFAULT_XMSG_MASK         0x00000000
 #define MAX_XMSG_MASK             0x00000007
 
 #define MAX_TOTAL_MESSAGES   (MAX_MESSAGES + MAX_EXTENDED_MESSAGES)

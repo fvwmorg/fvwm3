@@ -23,7 +23,7 @@
 The correct syntax is:
 .nf
 .EX
-Module FvwmAuto Timeout [EnterCommand [LeaveCommand]]
+Module FvwmAuto Timeout [-passid] [EnterCommand [LeaveCommand]]
 .sp
 AddToMenu Modules
 + "Auto Raise (300 ms)"  Module FvwmAuto 300
@@ -34,6 +34,11 @@ The \fITimeout\fP argument is required. It specifies how long a window must
 retain the keyboard input focus before the command is executed. The
 delay is measured in milliseconds, and any integer 0 or greater is
 acceptable.
+
+If the literal option \fI-passid\fP is given, the window id of the
+window just entered or left is appended to the command that is
+sent to fvwm.  This can be used with the \fBWindowId\fP command of
+fvwm.
 
 \fIEnterCommand\fP and \fILeaveCommand\fP are optional.
 \fIEnterCommand\fP is executed \fITimeout\fP milliseconds after a
