@@ -174,7 +174,7 @@ int main ( int argc, char *argv[]) {
     system (cmd);
   }
 
-  if ((Frun = fopen (Fr_name,"w" )) >= 0) {
+  if ((Frun = fopen (Fr_name,"w" )) != NUll) {
     fprintf (Frun, "%d\n", (int) getpid());
     fclose (Frun);
   }else {

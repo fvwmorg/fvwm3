@@ -858,7 +858,8 @@ void Loop(void)
 		}
 	    break;
 
-	  case UnmapNotify: /* Not really sure if this is abandon all hope.. */
+	  /* Not really sure if this is abandon all hope.. */
+	  /* case UnmapNotify: */
 	  case DestroyNotify:
 	    ub=UberButton;button=-1;
 	    while(NextButton(&ub,&b,&button,0))
