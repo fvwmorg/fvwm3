@@ -90,6 +90,7 @@ char *font_string = "fixed";
 int colorset = -1;
 int Iconcolorset = -1;
 int IconHicolorset = -1;
+Bool UseSkipList = False;
 
 /* same strings as in misc.c */
 char NoClass[] = "NoClass";
@@ -1627,6 +1628,9 @@ void ParseOptions(void)
 					      "HilightFocusWin"),Clength+16)==0)
 	  m_mask |= M_FOCUS_CHANGE;
 	else if (strncasecmp(tline,CatString3("*",MyName,
+					      "UseSkipList"),Clength+10)==0)
+	  UseSkipList = True;
+	else if (strncasecmp(tline,CatString3("*",MyName,
 					      "Resolution"),Clength+11)==0){
 	  tmp = &tline[Clength+11];
 	  while(((isspace((unsigned char)*tmp))&&(*tmp != '\n'))&&(*tmp != 0))
@@ -1974,7 +1978,9 @@ void process_message(unsigned long type, unsigned long *body)
   switch(type){
   case M_CONFIGURE_WINDOW:
     if (ready){
-      if (!(local_flags & CURRENT_ONLY)) break;
+      if (!(local_flags & CURRENT_ONLY) 
+	  || (DO_SKIP_WINDOW_LIST(cfgpacket) && UseSkipList)) 
+	break;
       tmp = Head;
       while(tmp != NULL){
 	if (tmp->id == cfgpacket->w){
@@ -2277,7 +2283,9 @@ Bool AddItem(ConfigWinPacket *cfgpacket)
   struct icon_info *new, *tmp;
   tmp = Head;
 
-  if (cfgpacket->w == main_win || (IS_TRANSIENT(cfgpacket)) || !(IS_ICON_SUPPRESSED(cfgpacket)))
+  if (cfgpacket->w == main_win || (IS_TRANSIENT(cfgpacket)) 
+      || !(IS_ICON_SUPPRESSED(cfgpacket))
+      || (DO_SKIP_WINDOW_LIST(cfgpacket) && UseSkipList))
     return False;
 
   while (tmp != NULL){

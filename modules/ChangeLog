@@ -1,3 +1,14 @@
+1999-11-25  olicha   <olivier.chapuis@free.fr>
+
+	* FvwmIconBox/FvwmIconBox.c (ParseOptions):
+	(process_message):
+	(AddItem):
+	* FvwmIconBox/FvwmIconBox.1
+	Added FvwmIconBoxUseSkipList configuration option
+
+	* FvwmWinList/FvwmWinList.1
+	Fix an obvious typo
+	
 1999-11-25  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* FvwmButtons/FvwmButtons.c (HandlePanelPress):
