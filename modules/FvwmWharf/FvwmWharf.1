@@ -137,7 +137,7 @@ A single extension to the Fvwm built-in command set is provided.
 A command of the form:
 .nf
 .sp
-*FvwmWharf junk clock.xpm Swallow "Clock" asclock -shape -12 &
+*FvwmWharf junk clock.xpm Swallow "Clock" asclock -shape -12
 .sp
 .fi
 will cause FvwmWharf to spawn an asclock process, and capture
@@ -145,6 +145,12 @@ the first window whose name or resource is "Clock", and display it in
 the button-bar. This is handy for applications like xclock, xbiff,
 xload, asclock, and asmail.
 
+Modules can be swallowed by specifying the word Module:
+.nf
+.sp
+*FvwmWharf pager nil Swallow "Desktop" Module FvwmPager 0 0
+.sp
+.fi
 NOTE: if you use xclock for this application, you will want
 to specify xclock -padding 0.
 
@@ -161,9 +167,9 @@ the following format must be used:
 .nf
 .sp
 *FvwmWharf files Folders.xpm Folder
-*FvwmWharf xftp 3DRings.xpm	Exec xftp &
-*FvwmWharf xdir FolderDeposit.xpm Exec xdir &
-*FvwmWharf moxfm FilingCabinet.xpm Exec moxfm &
+*FvwmWharf xftp 3DRings.xpm	Exec xftp
+*FvwmWharf xdir FolderDeposit.xpm Exec xdir
+*FvwmWharf moxfm FilingCabinet.xpm Exec moxfm
 *FvwmWharf ~Folders
 .sp
 .fi
