@@ -239,7 +239,7 @@ Build and test the release tarballs:
   - Run
       make distcheck2
   - Ensure that you see the messages
-      "fvwm-x.y.z.tar.gz ready for distribution"
+      "fvwm-x.y.z.tar.gz is ready for distribution"
     and
       "fvwm-x.y.z.tar.bz2 - ready for distribution"
 

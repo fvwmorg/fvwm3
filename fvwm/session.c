@@ -347,8 +347,8 @@ static Bool VerifyVersionInfo(char *filename)
       {
 	fvwm_msg(
 	  ERR, "VerifyVersionInfo",
-	  "State file version (%s) does not match the current version (%s)\n"
-	  "State file will be ignored", s1, current_v);
+	  "State file version (%s) does not match the current version (%s), "
+	  "state file is ignored.", s1, current_v);
 	break;
       }
     }
