@@ -1839,7 +1839,8 @@ void FlocaleDrawString(
 	}
 
 	/* for superimposition calculate the character positions in pixels */
-	if(comb_chars != NULL)
+	if(comb_chars != NULL && (comb_chars[0].c.byte1 != 0 ||
+				  comb_chars[0].c.byte2 != 0))
 	{
 		/* the second condition is actually redundant, 
 		   but there for clarity, 
@@ -2070,7 +2071,8 @@ void FlocaleDrawString(
 	if(comb_chars != NULL)
 	{
 	        free(comb_chars);
-		free(pixel_pos);
+		if(pixel_pos)
+			free(pixel_pos);
 	}
 
 	return;
@@ -2111,7 +2113,8 @@ void FlocaleDrawUnderline(
 	off1 = FlocaleTextWidth(flf, fws->e_str, voffset) +
 		((voffset == 0)?
 		 FLF_SHADOW_LEFT_SIZE(flf) : - FLF_SHADOW_RIGHT_SIZE(flf) );
-	off2 = FlocaleTextWidth(flf, fws->e_str + voffset, 1) -
+	off2 = FlocaleTextWidth(flf, fws->e_str + voffset, 
+		      FlocaleStringNumberOfBytes(flf, fws->e_str + voffset)) -
 		FLF_SHADOW_WIDTH(flf) - 1 + off1;
 	y = fws->y + 2;
 	x_s = fws->x + off1;
@@ -2152,10 +2155,24 @@ int FlocaleTextWidth(FlocaleFont *flf, char *str, int sl)
 		/* a vertical string: nothing to do! */
 		sl = -sl;
 	}
+		
 	/* FIXME */
-	tmp_str = FlocaleEncodeString(
-		     Pdpy, flf, str, &do_free, sl, &new_l, NULL, &comb_chars, 
-		     NULL);
+	/* to avoid eccesive calls iconv (slow in Solaris 8)
+	   don't bother to encode if string is one byte 
+	   when drawing a string this function is used to calculate 
+	   position of each character (for superimposition) */
+	if(sl == 1)
+	{
+		tmp_str = str;
+		new_l = sl;
+		do_free = False;
+	}
+	else
+	{
+		tmp_str = FlocaleEncodeString(
+			   Pdpy, flf, str, &do_free, sl, &new_l, NULL, 
+			   &comb_chars, NULL);
+	}
 	/* if we get zero-length, check to to see if there if there's any
 	   combining chars, if so use an imagninary space as a 
 	   "base character" */
