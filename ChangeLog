@@ -1,5 +1,12 @@
 2002-05-17  olicha  <olivier.chapuis@free.fr>
 
+	* libs/Flocale.c (FlocaleDrawString):
+	(FlocaleDrawUnderline):
+	* libs/Flocale.h:
+	Removed some unused and debug code  
+
+2002-05-17  olicha  <olivier.chapuis@free.fr>	
+
 	* fvwm/menuitem.c (draw_underline):
 	* libs/Flocale.h:
 	* libs/Flocale.c (FlocaleDrawUnderline):

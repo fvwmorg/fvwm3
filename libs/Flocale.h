@@ -129,8 +129,6 @@ typedef struct
 {
 	char *str;
 	GC gc;
-	Pixel fg;
-	Pixel fgsh;
 	colorset_struct *colorset;
 	Window win;
 	int x;
@@ -140,7 +138,6 @@ typedef struct
 	{
 		unsigned text_rotation : 2;
 		unsigned has_colorset : 1;
-		unsigned has_fore_colors : 1;
 	} flags;
 } FlocaleWinString;
 

@@ -987,14 +987,7 @@ void FlocaleDrawString(
 		fgsh = fws->colorset->fgsh;
 		has_fg_pixels = True;
 	}
-	else if (fws->flags.has_fore_colors)
-	{
-		fg = fws->fg;
-		fgsh = fws->fgsh;
-		has_fg_pixels = True;
-	}
-	fprintf(stderr,"PIXEL %lx,%lx,%i,%i\n", fg,fgsh, has_fg_pixels,
-		fws->flags.has_colorset);
+
 	if (fws->flags.text_rotation != TEXT_ROTATED_0 &&
 	    flf->fftf.fftfont == NULL)
 	{
@@ -1062,8 +1055,8 @@ void FlocaleDrawUnderline(
 				  x_s + i, y + i, x_e + i, y +i);
 			XSetForeground(dpy, fws->gc, fws->colorset->fg);
 		}
-		XDrawLine(dpy, fws->win, fws->gc, x_s, y, x_e, y);
 	}
+	XDrawLine(dpy, fws->win, fws->gc, x_s, y, x_e, y);
 
 	return;
 }
