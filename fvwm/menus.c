@@ -2076,6 +2076,7 @@ static void MenuInteraction(
 	  char *menu_name;
 	  char *action;
 	  extern XEvent Event;
+	  char *missing_action = MR_MISSING_SUBMENU_FUNC(pmp->menu);
 
 	  f = *pdo_warp_to_title;
 	  t = lastTimestamp;
@@ -2084,17 +2085,20 @@ static void MenuInteraction(
 	  {
 	    menu_name = "";
 	  }
-	  is_complex_function =
-	    (FindFunction(MR_MISSING_SUBMENU_FUNC(pmp->menu)) != NULL);
+	  is_complex_function = (FindFunction(missing_action) != NULL);
 	  if (is_complex_function)
 	  {
+	    char *action_ptr;
 	    action =
 	      safemalloc(
-		strlen("Function") + 1 +
-		strlen(MR_MISSING_SUBMENU_FUNC(pmp->menu)) + 1 +
-		strlen(menu_name) + 1);
-	    sprintf(action, "Function %s %s",
-		    MR_MISSING_SUBMENU_FUNC(pmp->menu), menu_name);
+		strlen("Function") + 3 +
+		strlen(missing_action) * 2 + 3 +
+		strlen(menu_name) * 2 + 1);
+	    strcpy(action, "Function ");
+	    action_ptr = action + strlen(action);
+	    action_ptr = QuoteString(action_ptr, missing_action);
+	    *action_ptr++ = ' ';
+	    action_ptr = QuoteString(action_ptr, menu_name);
 	  }
 	  else
 	  {

@@ -741,6 +741,7 @@ static char *expand(
       } /* switch */
       if (is_string && string)
       {
+#if 0
 	out[j++] = '\'';
 	for(k = 0; string[k]; k++)
 	{
@@ -749,6 +750,8 @@ static char *expand(
 	  out[j++] = string[k];
 	}
 	out[j++] = '\'';
+#endif
+	j = QuoteString(&out[j], string) - out;
 	string = NULL;
 	is_string = False;
 	i++;

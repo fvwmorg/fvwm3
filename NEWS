@@ -81,11 +81,14 @@ Changes in beta release 2.4.1 (not released yet)
 * Fixed handling of parentheses in FvwmButtons button actions.
 
 * Work around a key binding problem with keys that generate the same
-  symbol with more than one key code (e.g. shift-F1 = F11).
+  symbol with more than one key code (e.g. Shift-F1 = F11).
 
 * The Desk option of FvwmBacker is compatible to earlier version.
-  Desk or Page coordinates can be committed to indicate that desk
+  Desk or Page coordinates can be omitted to indicate that desk
   or page changes trigger no action at all.
+
+* Fixed several escaping errors in fvwm-menu-directory, so files and
+  directories containing special chars and spaces should work.
 
 _+_A NAME="2.4.0"_-_
 Changes in stable release 2.4.0 (1-Jul-2001)

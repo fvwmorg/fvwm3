@@ -42,5 +42,12 @@ int StrEquals( const char *s1, const char *s2 );
  **/
 int StrHasPrefix( const char* string, const char* prefix );
 
+/**
+ * Adds single quotes arround the string and escapes single quotes with
+ * backslashes.  The result is placed in the given dest, not allocated.
+ * The end of destination, i.e. pointer to '\0' is returned.
+ * You should allocate dest yourself, at least strlen(source) * 2 + 3.
+ **/
+char *QuoteString(char *dest, const char *source);
 
 #endif

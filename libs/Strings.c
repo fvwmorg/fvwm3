@@ -145,3 +145,27 @@ int StrHasPrefix( const char* string, const char* prefix )
     if ( string == NULL ) return 0;
     return strncasecmp( string, prefix, strlen(prefix) ) == 0;
 }
+
+
+/****************************************************************************
+ *
+ * Adds single quotes arround the string and escapes single quotes with
+ * backslashes.  The result is placed in the given dest, not allocated.
+ * The end of destination, i.e. pointer to '\0' is returned.
+ * You should allocate dest yourself, at least strlen(source) * 2 + 3.
+ *
+ ****************************************************************************/
+char *QuoteString(char *dest, const char *source)
+{
+  int i = 0;
+  *dest++ = '\'';
+  for(i = 0; source[i]; i++)
+  {
+    if (source[i] == '\'')
+      *dest++ = '\\';
+    *dest++ = source[i];
+  }
+  *dest++ = '\'';
+  *dest = '\0';
+  return dest;
+}
