@@ -1,3 +1,13 @@
+2002-02-22  Mikhael Goikhman  <migo@homemail.com>
+
+	* fvwm/commands.h:
+	* fvwm/conditional.c (CMD_This):
+	* fvwm/functions.c:
+	* fvwm/functions.h:
+	* fvwm/fvwm2.1:
+	* NEWS:
+	added new conditional command This
+
 2002-02-21  Mikhael Goikhman  <migo@homemail.com>
 
 	* acconfig.h:

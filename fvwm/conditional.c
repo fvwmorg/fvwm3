@@ -681,6 +681,38 @@ void CMD_PointerWindow(F_CMD_ARGS)
 			restofline, t, eventp, C_WINDOW, *Module, 0, NULL);
 	}
 
+	FreeConditionMask(&mask);
+	return;
+}
+
+void CMD_This(F_CMD_ARGS)
+{
+	char *restofline;
+	char *flags;
+	WindowConditionMask mask;
+
+	if (!tmp_win || IS_EWMH_DESKTOP(tmp_win->w))
+	{
+		return;
+	}
+
+	flags = CreateFlagString(action, &restofline);
+	DefaultConditionMask(&mask);
+	mask.my_flags.use_circulate_hit = 1;
+	mask.my_flags.use_circulate_hit_icon = 1;
+	CreateConditionMask(flags, &mask);
+	if (flags)
+	{
+		free(flags);
+	}
+
+	if (MatchesConditionMask(tmp_win, &mask) && restofline)
+	{
+		old_execute_function(
+			restofline, tmp_win, eventp, C_WINDOW, *Module, 0, NULL);
+	}
+
+	FreeConditionMask(&mask);
 	return;
 }
 

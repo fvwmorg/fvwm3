@@ -1001,7 +1001,7 @@ The following commands are built-in to fvwm:
 .EX
 Key Help R A Popup MenuFvwmRoot
 Key F1 R A Popup MenuFvwmRoot
-Key Tab A M WindowList Root c c NoDeskSort, ReverseOrder
+Key Tab A M WindowList Root c c NoDeskSort
 Key Escape A MC EscapeFunc
 Mouse 0 R N Menu MenuFvwmRoot
 Mouse 1 TS A FuncFvwmRaiseLowerX Move
@@ -7946,6 +7946,20 @@ on the previous window which satisfies all
 .IR conditions .
 Conditions are the same as for
 .BR Next .
+
+.TP
+.BI "This [(" conditions ")] " command
+.B This
+executes the specified
+.I command
+in the context of the current operand window.  If there is no operand window
+(i.e. it is invoked in the root window), the command is ignored.
+.B This
+is always silent, i.e. non-interactive.
+The command is executed only if the given
+.I conditions
+are met.  The conditions are the same as for
+.BR Current .
 
 .IP "\fBWindowId [\fP \fIid\fP \
 \fB] [(\fP \fIconditions\fP \

@@ -23,6 +23,8 @@ Font loading and memory management has been improved in the multibyte case.
 * Better support of non ISO-8859-1 window and icon titles. See the
 --disable-compound-text option in INSTALL.fvwm for more details.
 
+* New conditional command This.
+
 Changes in beta release 2.5.0 (27-Jan-2002)
 
 * New commands ResizeMaximize and ResizeMoveMaximize that modify
