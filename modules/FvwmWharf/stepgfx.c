@@ -83,9 +83,9 @@ int MakeColors(Display *dpy, Drawable d, int from[3], int to[3], int maxcols,
 	rv += sr;
 	gv += sg;
 	bv += sb;
-	rv = ((rv > 65535.0) || (rv < 0.0)) ? rv -= sr : rv;
-	gv = ((gv > 65535.0) || (gv < 0.0)) ? gv -= sg : gv;
-	bv = ((bv > 65535.0) || (bv < 0.0)) ? bv -= sb : bv;
+	if ((rv > 65535.0) || (rv < 0.0)) rv -= sr;
+	if ((gv > 65535.0) || (gv < 0.0)) gv -= sg;
+	if ((bv > 65535.0) || (bv < 0.0)) bv -= sb;
     }
     /* allocate 2 colors for the bevel */
     if (alloc_relief) {
