@@ -1,4 +1,4 @@
-#define DEBUG
+/* #define DEBUG */
 /*
  * Copyright (C) 1994 Mark Boyns (boyns@sdsu.edu) and
  *                    Mark Scott (mscott@mcd.mot.com)
