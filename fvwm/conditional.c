@@ -477,6 +477,11 @@ void CreateConditionMask(char *flags, WindowConditionMask *mask)
 			SET_PARTIALLY_VISIBLE(mask, on);
 			SETM_PARTIALLY_VISIBLE(mask, 1);
 		}
+		else if (StrEquals(cond,"Overlapped"))
+		{
+			mask->my_flags.needs_overlapped = on;
+			mask->my_flags.do_check_overlapped = 1;
+		}
 		else if (StrEquals(cond,"PlacedByButton3"))
 		{
 			SET_PLACED_WB3(mask, on);
@@ -954,6 +959,16 @@ Bool MatchesConditionMask(FvwmWindow *fw, WindowConditionMask *mask)
 		}
 		else if (has_pointer &&
 			 mask->my_flags.needs_pointer == NEEDS_FALSE)
+		{
+			return False;
+		}
+	}
+	if (mask->my_flags.do_check_overlapped)
+	{
+		int is_o;
+
+		is_o = (is_on_top_of_layer(fw) == False);
+		if (is_o != mask->my_flags.needs_overlapped)
 		{
 			return False;
 		}

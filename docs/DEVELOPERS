@@ -1,6 +1,8 @@
 			Notes for Developers                         -*-text-*-
 			--------------------
 
+Last updated on 16-Jul-2004
+
 You will need to install several GNU tools to be able to use the
 cvs sources.  If you do not have these tools available, build from
 the tar file distribution instead, available from ftp.fvwm.org.
@@ -213,9 +215,8 @@ Compile tests:
     On some systems, the system include files generate warnings.
     On such a system you have to omit the -Werror option and check
     the output of the compilation run for warnings manually.  It
-    is important to use the -O2 option because some versions of
-    gcc seem to have a bug: when -Wall is used, but not -O2, no
-    warnings are generated at all.
+    is important to use the -O2 option because gcc can not
+    generate some warnings without it.
   - Fix all warnings and problems, commit the changes and repeat
     the previous step until no more warnings occur.
 

@@ -4268,8 +4268,8 @@ static int pop_menu_up(
 static void pop_menu_down(MenuRoot **pmr, MenuParameters *pmp)
 {
 	MenuItem *mi;
-	assert(*pmr);
 
+	assert(*pmr);
 	memset(&(MR_DYNAMIC_FLAGS(*pmr)), 0, sizeof(MR_DYNAMIC_FLAGS(*pmr)));
 	XUnmapWindow(dpy, MR_WINDOW(*pmr));
 	MR_MAPPED_COPIES(*pmr)--;

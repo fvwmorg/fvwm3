@@ -8438,7 +8438,7 @@ refers to which button state should be set.  Button states are
 defined as follows: "ActiveUp" and "ActiveDown" refer to the
 un-pressed and pressed states for buttons on active windows; while
 the "InactiveUp" and "InactiveDown" states denote buttons on
-inactive windows.  Shortcut "Active" denotes both "ActiveUp" and
+inactive windows.  The shortcut "Active" denotes both "ActiveUp" and
 "ActiveDown" states.  Shortcut "Inactive" denotes both "InactiveUp"
 and "InactiveDown" states.
 The similar state names like just described, but with the "Toggled"
@@ -10425,6 +10425,7 @@ Any condition can be negated by using a an exclamation mark ('!')
 directly in front of its name.
 
 .IR AcceptsFocus ,
+.IR AnyScreen ,
 .IR CirculateHit ,
 .IR CirculateHitIcon ,
 .IR CirculateHitShaded ,
@@ -10435,7 +10436,6 @@ directly in front of its name.
 .IR CurrentPage ,
 .IR CurrentPageAnyDesk ,
 .IR CurrentScreen ,
-.IR AnyScreen ,
 .IR FixedSize ,
 .IR Focused ,
 .IR HasHandles ,
@@ -10445,6 +10445,7 @@ directly in front of its name.
 .IR "Layer [n]" ,
 .IR Maximizable ,
 .IR Maximized ,
+.IR Overlapped ,
 .IR PlacedByButton3 ,
 .IR PlacedByFvwm ,
 .IR Raised ,
@@ -10467,6 +10468,19 @@ option of the
 command.  Also, all windows using the
 .I NeverFocus
 style are ignored.
+
+With the
+.I AnyScreen
+condition used together with any of the
+.I Current...
+conditions, windows that do not intersect the Xinerama screen
+containing the mouse pointer are considered for a match too.  For
+example:
+.EX
+# Focus next window on current page,
+# regardless of Xinerama screen
+Next (CurrentPage, AnyScreen) Focus
+.EE
 
 The
 .IR CirculateHit " and " CirculateHitIcon
@@ -10537,19 +10551,6 @@ desk.  If Xinerama support is enabled, they only match windows
 that are at least partially on the Xinerama screen containing the
 mouse pointer.
 
-With the
-.I AnyScreen
-condition used together with any of the
-.I Current...
-conditions, windows that do not intersect the Xinerama screen
-containing the mouse pointer are considered for a match too.  For
-example:
-.EX
-# Focus next window on current page,
-# regardless of Xinerama screen
-Next (CurrentPage, AnyScreen) Focus
-.EE
-
 The
 .I FixedSize
 condition excludes all windows that don't have a fixed size,
@@ -10600,6 +10601,17 @@ condition matches only windows that are allowed to be maximized.
 The
 .I Maximized
 condition matches only maximized windows.
+
+The
+.I Overlapped
+condition matches only windows that are overlapped by other windows
+on the same layer (or unmanaged windows if the option
+.I RaiseOverUnmanaged
+of the
+.B BugOpts
+command is used).  Note that this condition can be slow if you
+have many windows or if RaiseOverUnmanaged is used and the
+connection to the X server is slow.
 
 The
 .I PlacedByButton3

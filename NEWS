@@ -41,7 +41,7 @@ Changes in alpha release 2.5.11 (not released yet)
 * The option CurrentGlobalPageAnyDesk was accidentally named
   CurrentGlobbalPageAnyDesk before.
 
-* New condition AnyScreen.
+* New conditions AnyScreen and Overlapped.
 
 -------------------------------------------------------------------
 

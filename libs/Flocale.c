@@ -41,6 +41,8 @@
 #include <unistd.h>
 #include <stdlib.h>
 
+#include <string.h>
+
 #include <X11/Xlib.h>
 #include <X11/Xutil.h>
 #include <X11/Xatom.h>
@@ -240,8 +242,8 @@ int FlocaleStringByteToCharOffset(FlocaleFont *flf, const unsigned char *str,
 	int coffset = 0;
 	int curr_len;
 
-	for(i = 0 ; 
-	    i < offset && i < len ; 
+	for(i = 0 ;
+	    i < offset && i < len ;
 	    i += curr_len, curr_ptr += curr_len, coffset++)
 	{
 		curr_len = FlocaleStringNumberOfBytes(flf, curr_ptr);
@@ -249,7 +251,7 @@ int FlocaleStringByteToCharOffset(FlocaleFont *flf, const unsigned char *str,
 	return coffset;
 }
 
-/* like above but reversed, ie. return byte offset corresponding to given 
+/* like above but reversed, ie. return byte offset corresponding to given
    charater offset */
 int FlocaleStringCharToByteOffset(FlocaleFont *flf, const unsigned char *str,
 				  int coffset)
@@ -260,8 +262,8 @@ int FlocaleStringCharToByteOffset(FlocaleFont *flf, const unsigned char *str,
 	int offset = 0;
 	int curr_len;
 
-	for(i = 0 ; 
-	    i < coffset && i < len ; 
+	for(i = 0 ;
+	    i < coffset && i < len ;
 	    offset += curr_len, curr_ptr += curr_len, i++)
 	{
 		curr_len = FlocaleStringNumberOfBytes(flf, curr_ptr);
@@ -274,7 +276,7 @@ int FlocaleStringCharLength(FlocaleFont *flf, const unsigned char *str)
 {
 	int i, len;
 	int str_len = strlen(str);
-	for(i = 0, len = 0 ; i < str_len ; 
+	for(i = 0, len = 0 ; i < str_len ;
 	    i += FlocaleStringNumberOfBytes(flf, str+i), len++);
 	return len;
 }
@@ -507,7 +509,7 @@ char *FlocaleEncodeString(
  			(*comb_chars)[0].c.byte1 = 0;
  			(*comb_chars)[0].c.byte2 = 0;
 		}
-				
+
 		/* initialise logic to visual mapping here if that is demanded
 		   (this is default when no combining has been done (1-to-1))
 		*/
@@ -523,9 +525,9 @@ char *FlocaleEncodeString(
 	if (FlocaleGetBidiCharset(dpy, flf->str_fc) != NULL &&
 	    (bidi_charset = FlocaleGetBidiCharset(dpy, flf->fc)) != NULL)
 	{
-		str3 = FBidiConvert(str2, bidi_charset, len1, 
-				    is_rtl, &len2, 
-				    comb_chars != NULL ? *comb_chars : NULL, 
+		str3 = FBidiConvert(str2, bidi_charset, len1,
+				    is_rtl, &len2,
+				    comb_chars != NULL ? *comb_chars : NULL,
 				    l_to_v != NULL ? *l_to_v : NULL);
 		if (str3 != NULL && str3  != str2)
 		{
@@ -713,12 +715,12 @@ void FlocaleRotateDrawString(
 	{
 		while(comb_chars[i].c.byte1 != 0 && comb_chars[i].c.byte2 != 0)
 		{
-			/* draw composing character on top of corresponding 
+			/* draw composing character on top of corresponding
 			   "real" character */
 			FlocaleWinString tmp_fws = *fws;
 			int offset = pixel_pos[comb_chars[i].position];
 			int curr_len = FlocaleChar2bOneCharToUtf8(
-							    comb_chars[i].c, 
+							    comb_chars[i].c,
 							    buf);
 			int out_len;
 			char *buf2 = FiconvUtf8ToCharset(
@@ -737,9 +739,9 @@ void FlocaleRotateDrawString(
 			tmp_fws.str2b = NULL;
 			if(flf->fontset != None)
 			{
-				XmbDrawString(dpy, canvas_pix, flf->fontset, 
+				XmbDrawString(dpy, canvas_pix, flf->fontset,
 					      fws->gc, offset,
-					      height - descent, buf2, 
+					      height - descent, buf2,
 					      strlen(buf2));
 			}
 			else if(flf->font != None)
@@ -755,7 +757,7 @@ void FlocaleRotateDrawString(
 				}
 				else if (flf->flags.is_mb)
 				{
-					tmp_fws.str2b = 
+					tmp_fws.str2b =
 					  FlocaleStringToString2b(
 						    dpy, flf, tmp_fws.e_str,
 						    curr_len, &out_len);
@@ -767,7 +769,7 @@ void FlocaleRotateDrawString(
 				XSetFont(dpy, font_gc, flf->font->fid);
 				FlocaleFontStructDrawString(
 					dpy, flf, canvas_pix, font_gc,
-					offset, height - descent, 
+					offset, height - descent,
 					fg, fgsh, has_fg_pixels, &tmp_fws,
 					out_len, True);
 			}
@@ -1842,13 +1844,13 @@ void FlocaleDrawString(
 	if(comb_chars != NULL && (comb_chars[0].c.byte1 != 0 ||
 				  comb_chars[0].c.byte2 != 0))
 	{
-		/* the second condition is actually redundant, 
-		   but there for clarity, 
+		/* the second condition is actually redundant,
+		   but there for clarity,
 		   ending at 0 is what's expected in a correct
 		   string */
 		pixel_pos = (int *)safemalloc((char_len != 0 ? char_len : 1)
 					      * sizeof(int));
-		
+
 		/* if there is 0 bytes in the encoded string, there might
 		   still be combining character to draw (at position 0) */
 		if(char_len == 0)
@@ -1856,8 +1858,8 @@ void FlocaleDrawString(
 			pixel_pos[0] = 0;
 		}
 
-		for(i = 0, curr_pixel_pos = 0 ; 
-		    i < char_len ; 
+		for(i = 0, curr_pixel_pos = 0 ;
+		    i < char_len ;
 		    i++, curr_str += curr_len)
 		{
 		        curr_len = FlocaleStringNumberOfBytes(flf, curr_str);
@@ -1868,7 +1870,7 @@ void FlocaleDrawString(
 			buf[j] = 0;
 			pixel_pos[i] = curr_pixel_pos;
 			/* need to compensate for shadow width (if any) */
-			curr_pixel_pos += 
+			curr_pixel_pos +=
 				FlocaleTextWidth(flf, buf, curr_len) -
 				FLF_SHADOW_WIDTH(flf);
 		}
@@ -1897,7 +1899,7 @@ void FlocaleDrawString(
 		has_fg_pixels = True;
 	}
 
-	if(flf->font != None && 
+	if(flf->font != None &&
 	   (FLC_ENCODING_TYPE_IS_UTF_8(flf->fc) || flf->flags.is_mb))
 	{
 		/* in this case, length is number of 2-byte chars */
@@ -1960,7 +1962,7 @@ void FlocaleDrawString(
 			int offset = pixel_pos[comb_chars[i].position];
 			char *buf2;
 			int out_len;
-		        curr_len = FlocaleChar2bOneCharToUtf8(comb_chars[i].c, 
+		        curr_len = FlocaleChar2bOneCharToUtf8(comb_chars[i].c,
 							      buf);
 			buf2 = FiconvUtf8ToCharset(
 				dpy, flf->str_fc, (const char *)buf, curr_len);
@@ -1986,7 +1988,7 @@ void FlocaleDrawString(
 			{
 			        int xt = fws->x;
 				int yt = fws->y;
-				FlocaleInitGstpArgs(&gstp_args, flf, fws, 
+				FlocaleInitGstpArgs(&gstp_args, flf, fws,
 						    fws->x, fws->y);
 				if (flf->shadow_size != 0)
 				{
@@ -1995,11 +1997,11 @@ void FlocaleDrawString(
 					       &xt, &yt, &gstp_args))
 					{
 						XmbDrawString(
-							      dpy, fws->win, 
-							      flf->fontset, 
+							      dpy, fws->win,
+							      flf->fontset,
 							      fws->gc,
-							      xt, yt, 
-							      buf2, 
+							      xt, yt,
+							      buf2,
 							      strlen(buf2));
 					}
 					XSetForeground(dpy, fws->gc, fg);
@@ -2096,7 +2098,7 @@ void FlocaleDrawUnderline(
 	}
 
 	/* need to encode the string first to get BIDI and combining chars */
-	FlocaleEncodeWinString(dpy, flf, fws, &do_free, &len, &comb_chars, 
+	FlocaleEncodeWinString(dpy, flf, fws, &do_free, &len, &comb_chars,
 			       &l_to_v);
 	/* we don't need this, only interested in char mapping */
 	free(comb_chars);
@@ -2113,7 +2115,7 @@ void FlocaleDrawUnderline(
 	off1 = FlocaleTextWidth(flf, fws->e_str, voffset) +
 		((voffset == 0)?
 		 FLF_SHADOW_LEFT_SIZE(flf) : - FLF_SHADOW_RIGHT_SIZE(flf) );
-	off2 = FlocaleTextWidth(flf, fws->e_str + voffset, 
+	off2 = FlocaleTextWidth(flf, fws->e_str + voffset,
 		      FlocaleStringNumberOfBytes(flf, fws->e_str + voffset)) -
 		FLF_SHADOW_WIDTH(flf) - 1 + off1;
 	y = fws->y + 2;
@@ -2129,7 +2131,7 @@ void FlocaleDrawUnderline(
 		free(fws->e_str);
 		fws->e_str = NULL;
 	}
-	
+
 	if(fws->str2b != NULL)
 	{
 		free(fws->str2b);
@@ -2149,17 +2151,17 @@ int FlocaleTextWidth(FlocaleFont *flf, char *str, int sl)
 
 	if (!str || sl == 0)
 		return 0;
-	
+
 	if (sl < 0)
 	{
 		/* a vertical string: nothing to do! */
 		sl = -sl;
 	}
-		
+
 	/* FIXME */
 	/* to avoid eccesive calls iconv (slow in Solaris 8)
-	   don't bother to encode if string is one byte 
-	   when drawing a string this function is used to calculate 
+	   don't bother to encode if string is one byte
+	   when drawing a string this function is used to calculate
 	   position of each character (for superimposition) */
 	if(sl == 1)
 	{
@@ -2170,11 +2172,11 @@ int FlocaleTextWidth(FlocaleFont *flf, char *str, int sl)
 	else
 	{
 		tmp_str = FlocaleEncodeString(
-			   Pdpy, flf, str, &do_free, sl, &new_l, NULL, 
+			   Pdpy, flf, str, &do_free, sl, &new_l, NULL,
 			   &comb_chars, NULL);
 	}
 	/* if we get zero-length, check to to see if there if there's any
-	   combining chars, if so use an imagninary space as a 
+	   combining chars, if so use an imagninary space as a
 	   "base character" */
 	if (strlen(tmp_str) == 0 && comb_chars &&
 	    (comb_chars[0].c.byte1 != 0 || comb_chars[0].c.byte2 != 0))
@@ -2229,7 +2231,7 @@ int FlocaleTextWidth(FlocaleFont *flf, char *str, int sl)
 	{
 		free(comb_chars);
 	}
-	
+
 	return result + ((result != 0)? FLF_SHADOW_WIDTH(flf):0);
 }
 

@@ -1221,8 +1221,8 @@ void create_mapping_table(
 }
 
 void finish_ct_init(
-	int call_type, int ctt, int nr, int ng, int nb, int ngrey, int grey_bits,
-	Bool use_named)
+	int call_type, int ctt, int nr, int ng, int nb, int ngrey,
+	int grey_bits, Bool use_named)
 {
 	if (call_type == PICTURE_CALLED_BY_FVWM)
 	{
@@ -1248,9 +1248,10 @@ void finish_ct_init(
 		{
 			ctt++;
 		}
-		env = safemalloc(21+PICTURE_TABLETYPE_LENGHT+1);
-		sprintf(env,"FVWM_COLORTABLE_TYPE=%i",ctt);
-		putenv(env);
+		env = safemalloc(PICTURE_TABLETYPE_LENGHT + 1);
+		sprintf(env, "%i", ctt);
+		flib_putenv("FVWM_COLORTABLE_TYPE", env);
+		free(env);
 		if (Pdepth <= 8)
 		{
 			Pac = (PColor *)safecalloc(
@@ -2330,7 +2331,7 @@ int PictureInitColors(
 		if (call_type == PICTURE_CALLED_BY_FVWM &&
 		    getenv("FVWM_COLORTABLE_TYPE") != NULL)
 		{
-			putenv("FVWM_COLORTABLE_TYPE=");
+			flib_putenv("FVWM_COLORTABLE_TYPE", "");
 		}
 		return PColorLimit;
 	}
@@ -2345,7 +2346,7 @@ int PictureInitColors(
 		if (call_type == PICTURE_CALLED_BY_FVWM &&
 		    getenv("FVWM_COLORTABLE_TYPE") != NULL)
 		{
-			putenv("FVWM_COLORTABLE_TYPE=");
+			flib_putenv("FVWM_COLORTABLE_TYPE", "");
 		}
 		return 0;
 	}

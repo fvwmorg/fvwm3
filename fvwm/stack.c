@@ -1155,8 +1155,6 @@ static Bool is_above_unmanaged(FvwmWindow *fw, Window *umtop)
 	  Called from raise_over_unmanaged and is_on_top_of_layer.
 	*/
 	Bool ontop = True;
-
-
 	Window junk;
 	Window *tops;
 	int i;
@@ -1164,6 +1162,10 @@ static Bool is_above_unmanaged(FvwmWindow *fw, Window *umtop)
 	Window OR_Above = None;
 	XWindowAttributes wa;
 
+	if (fw->Desk != Scr.CurrentDesk)
+	{
+		return True;
+	}
 	if (!XQueryTree(dpy, Scr.Root, &junk, &junk, &tops, &num))
 	{
 		return ontop;
