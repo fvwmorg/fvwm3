@@ -38,7 +38,7 @@
 #include "FvwmScroll.h"
 
 char *MyName;
-int fd_width;
+fd_set_size_t fd_width;
 int fd[2];
 
 Display *dpy;			/* which display are we talking to */

@@ -14,6 +14,9 @@
  */
 
 #include "../types.h"
+#if HAVE_SYS_SELECT_H
+#  include <sys/select.h>
+#endif
 
 extern Display *dpy;
 extern int screen;

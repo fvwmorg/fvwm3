@@ -58,7 +58,6 @@
 
 
 char *MyName;
-int fd_width;
 int fd[2];
 
 PagerStringList *FindDeskStrings(int desk);

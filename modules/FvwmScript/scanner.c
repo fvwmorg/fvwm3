@@ -852,9 +852,9 @@ static char *yy_last_accepting_cpos;
 #define YY_MORE_ADJ 0
 #define YY_RESTORE_YY_MORE_OFFSET
 char *yytext;
-#line 1 "scanner.l"
+#line 1 "../../../fvwm/modules/FvwmScript/scanner.l"
 #define INITIAL 0
-#line 2 "scanner.l"
+#line 2 "../../../fvwm/modules/FvwmScript/scanner.l"
 # include "script.h"
 # include "types.h"
 
@@ -1016,7 +1016,7 @@ YY_DECL
 	register char *yy_cp, *yy_bp;
 	register int yy_act;
 
-#line 26 "scanner.l"
+#line 26 "../../../fvwm/modules/FvwmScript/scanner.l"
 
 #line 1022 "lex.yy.c"
 
@@ -1104,444 +1104,444 @@ do_action:	/* This label is used only to access EOF actions. */
 
 case 1:
 YY_RULE_SETUP
-#line 27 "scanner.l"
+#line 27 "../../../fvwm/modules/FvwmScript/scanner.l"
 ;
 	YY_BREAK
 case 2:
 YY_RULE_SETUP
-#line 28 "scanner.l"
+#line 28 "../../../fvwm/modules/FvwmScript/scanner.l"
 ;
 	YY_BREAK
 case 3:
 YY_RULE_SETUP
-#line 30 "scanner.l"
+#line 30 "../../../fvwm/modules/FvwmScript/scanner.l"
 { return WINDOWTITLE; }
 	YY_BREAK
 case 4:
 YY_RULE_SETUP
-#line 31 "scanner.l"
+#line 31 "../../../fvwm/modules/FvwmScript/scanner.l"
 { return WINDOWSIZE; }
 	YY_BREAK
 case 5:
 YY_RULE_SETUP
-#line 32 "scanner.l"
+#line 32 "../../../fvwm/modules/FvwmScript/scanner.l"
 { return WINDOWPOSITION; }
 	YY_BREAK
 case 6:
 YY_RULE_SETUP
-#line 33 "scanner.l"
+#line 33 "../../../fvwm/modules/FvwmScript/scanner.l"
 { return FORECOLOR; }
 	YY_BREAK
 case 7:
 YY_RULE_SETUP
-#line 34 "scanner.l"
+#line 34 "../../../fvwm/modules/FvwmScript/scanner.l"
 { return BACKCOLOR; }
 	YY_BREAK
 case 8:
 YY_RULE_SETUP
-#line 35 "scanner.l"
+#line 35 "../../../fvwm/modules/FvwmScript/scanner.l"
 { return SHADCOLOR; }
 	YY_BREAK
 case 9:
 YY_RULE_SETUP
-#line 36 "scanner.l"
+#line 36 "../../../fvwm/modules/FvwmScript/scanner.l"
 { return LICOLOR; }
 	YY_BREAK
 case 10:
 YY_RULE_SETUP
-#line 37 "scanner.l"
+#line 37 "../../../fvwm/modules/FvwmScript/scanner.l"
 { return COLORSET; }
 	YY_BREAK
 case 11:
 YY_RULE_SETUP
-#line 38 "scanner.l"
+#line 38 "../../../fvwm/modules/FvwmScript/scanner.l"
 { return OBJECT; }
 	YY_BREAK
 case 12:
 YY_RULE_SETUP
-#line 39 "scanner.l"
+#line 39 "../../../fvwm/modules/FvwmScript/scanner.l"
 { return PROP; }
 	YY_BREAK
 case 13:
 YY_RULE_SETUP
-#line 40 "scanner.l"
+#line 40 "../../../fvwm/modules/FvwmScript/scanner.l"
 { return MAIN; }
 	YY_BREAK
 case 14:
 YY_RULE_SETUP
-#line 41 "scanner.l"
+#line 41 "../../../fvwm/modules/FvwmScript/scanner.l"
 { return END; }
 	YY_BREAK
 case 15:
 YY_RULE_SETUP
-#line 42 "scanner.l"
+#line 42 "../../../fvwm/modules/FvwmScript/scanner.l"
 { return FONT; }
 	YY_BREAK
 case 16:
 YY_RULE_SETUP
-#line 44 "scanner.l"
+#line 44 "../../../fvwm/modules/FvwmScript/scanner.l"
 { return TYPE; }
 	YY_BREAK
 case 17:
 YY_RULE_SETUP
-#line 45 "scanner.l"
+#line 45 "../../../fvwm/modules/FvwmScript/scanner.l"
 { return SIZE; }
 	YY_BREAK
 case 18:
 YY_RULE_SETUP
-#line 46 "scanner.l"
+#line 46 "../../../fvwm/modules/FvwmScript/scanner.l"
 { return POSITION; }
 	YY_BREAK
 case 19:
 YY_RULE_SETUP
-#line 47 "scanner.l"
+#line 47 "../../../fvwm/modules/FvwmScript/scanner.l"
 { return VALUE; }
 	YY_BREAK
 case 20:
 YY_RULE_SETUP
-#line 48 "scanner.l"
+#line 48 "../../../fvwm/modules/FvwmScript/scanner.l"
 { return VALUEMIN; }
 	YY_BREAK
 case 21:
 YY_RULE_SETUP
-#line 49 "scanner.l"
+#line 49 "../../../fvwm/modules/FvwmScript/scanner.l"
 { return VALUEMAX; }
 	YY_BREAK
 case 22:
 YY_RULE_SETUP
-#line 50 "scanner.l"
+#line 50 "../../../fvwm/modules/FvwmScript/scanner.l"
 { return TITLE; }
 	YY_BREAK
 case 23:
 YY_RULE_SETUP
-#line 51 "scanner.l"
+#line 51 "../../../fvwm/modules/FvwmScript/scanner.l"
 { return SWALLOWEXEC; }
 	YY_BREAK
 case 24:
 YY_RULE_SETUP
-#line 52 "scanner.l"
+#line 52 "../../../fvwm/modules/FvwmScript/scanner.l"
 { return ICON; }
 	YY_BREAK
 case 25:
 YY_RULE_SETUP
-#line 53 "scanner.l"
+#line 53 "../../../fvwm/modules/FvwmScript/scanner.l"
 { return FLAGS; }
 	YY_BREAK
 case 26:
 YY_RULE_SETUP
-#line 54 "scanner.l"
+#line 54 "../../../fvwm/modules/FvwmScript/scanner.l"
 { return HIDDEN; }
 	YY_BREAK
 case 27:
 YY_RULE_SETUP
-#line 55 "scanner.l"
+#line 55 "../../../fvwm/modules/FvwmScript/scanner.l"
 { return CANBESELECTED; }
 	YY_BREAK
 case 28:
 YY_RULE_SETUP
-#line 56 "scanner.l"
+#line 56 "../../../fvwm/modules/FvwmScript/scanner.l"
 { return NORELIEFSTRING; }
 	YY_BREAK
 case 29:
 YY_RULE_SETUP
-#line 58 "scanner.l"
+#line 58 "../../../fvwm/modules/FvwmScript/scanner.l"
 { return EXEC; }
 	YY_BREAK
 case 30:
 YY_RULE_SETUP
-#line 59 "scanner.l"
+#line 59 "../../../fvwm/modules/FvwmScript/scanner.l"
 { return HIDE; }
 	YY_BREAK
 case 31:
 YY_RULE_SETUP
-#line 60 "scanner.l"
+#line 60 "../../../fvwm/modules/FvwmScript/scanner.l"
 { return SHOW; }
 	YY_BREAK
 case 32:
 YY_RULE_SETUP
-#line 61 "scanner.l"
+#line 61 "../../../fvwm/modules/FvwmScript/scanner.l"
 { return CHVALUE; }
 	YY_BREAK
 case 33:
 YY_RULE_SETUP
-#line 62 "scanner.l"
+#line 62 "../../../fvwm/modules/FvwmScript/scanner.l"
 { return CHVALUEMAX; }
 	YY_BREAK
 case 34:
 YY_RULE_SETUP
-#line 63 "scanner.l"
+#line 63 "../../../fvwm/modules/FvwmScript/scanner.l"
 { return CHVALUEMIN; }
 	YY_BREAK
 case 35:
 YY_RULE_SETUP
-#line 64 "scanner.l"
+#line 64 "../../../fvwm/modules/FvwmScript/scanner.l"
 { return GETTITLE; }
 	YY_BREAK
 case 36:
 YY_RULE_SETUP
-#line 65 "scanner.l"
+#line 65 "../../../fvwm/modules/FvwmScript/scanner.l"
 { return GETVALUE; }
 	YY_BREAK
 case 37:
 YY_RULE_SETUP
-#line 66 "scanner.l"
+#line 66 "../../../fvwm/modules/FvwmScript/scanner.l"
 { return GETOUTPUT; }
 	YY_BREAK
 case 38:
 YY_RULE_SETUP
-#line 67 "scanner.l"
+#line 67 "../../../fvwm/modules/FvwmScript/scanner.l"
 { return NUMTOHEX; }
 	YY_BREAK
 case 39:
 YY_RULE_SETUP
-#line 68 "scanner.l"
+#line 68 "../../../fvwm/modules/FvwmScript/scanner.l"
 { return HEXTONUM; }
 	YY_BREAK
 case 40:
 YY_RULE_SETUP
-#line 69 "scanner.l"
+#line 69 "../../../fvwm/modules/FvwmScript/scanner.l"
 { return ADD;}
 	YY_BREAK
 case 41:
 YY_RULE_SETUP
-#line 70 "scanner.l"
+#line 70 "../../../fvwm/modules/FvwmScript/scanner.l"
 { return MULT;}
 	YY_BREAK
 case 42:
 YY_RULE_SETUP
-#line 71 "scanner.l"
+#line 71 "../../../fvwm/modules/FvwmScript/scanner.l"
 { return DIV;}
 	YY_BREAK
 case 43:
 YY_RULE_SETUP
-#line 72 "scanner.l"
+#line 72 "../../../fvwm/modules/FvwmScript/scanner.l"
 { return STRCOPY; }
 	YY_BREAK
 case 44:
 YY_RULE_SETUP
-#line 73 "scanner.l"
+#line 73 "../../../fvwm/modules/FvwmScript/scanner.l"
 { return LAUNCHSCRIPT; }
 	YY_BREAK
 case 45:
 YY_RULE_SETUP
-#line 74 "scanner.l"
+#line 74 "../../../fvwm/modules/FvwmScript/scanner.l"
 { return GETSCRIPTFATHER; }
 	YY_BREAK
 case 46:
 YY_RULE_SETUP
-#line 75 "scanner.l"
+#line 75 "../../../fvwm/modules/FvwmScript/scanner.l"
 { return RECEIVFROMSCRIPT; }
 	YY_BREAK
 case 47:
 YY_RULE_SETUP
-#line 76 "scanner.l"
+#line 76 "../../../fvwm/modules/FvwmScript/scanner.l"
 { return REMAINDEROFDIV; }
 	YY_BREAK
 case 48:
 YY_RULE_SETUP
-#line 77 "scanner.l"
+#line 77 "../../../fvwm/modules/FvwmScript/scanner.l"
 { return GETTIME; }
 	YY_BREAK
 case 49:
 YY_RULE_SETUP
-#line 78 "scanner.l"
+#line 78 "../../../fvwm/modules/FvwmScript/scanner.l"
 { return GETSCRIPTARG; }
 	YY_BREAK
 case 50:
 YY_RULE_SETUP
-#line 79 "scanner.l"
+#line 79 "../../../fvwm/modules/FvwmScript/scanner.l"
 { return POSITION; }
 	YY_BREAK
 case 51:
 YY_RULE_SETUP
-#line 80 "scanner.l"
+#line 80 "../../../fvwm/modules/FvwmScript/scanner.l"
 { return SIZE; }
 	YY_BREAK
 case 52:
 YY_RULE_SETUP
-#line 81 "scanner.l"
+#line 81 "../../../fvwm/modules/FvwmScript/scanner.l"
 { return TITLE; }
 	YY_BREAK
 case 53:
 YY_RULE_SETUP
-#line 82 "scanner.l"
+#line 82 "../../../fvwm/modules/FvwmScript/scanner.l"
 { return ICON; }
 	YY_BREAK
 case 54:
 YY_RULE_SETUP
-#line 83 "scanner.l"
+#line 83 "../../../fvwm/modules/FvwmScript/scanner.l"
 { return FONT; }
 	YY_BREAK
 case 55:
 YY_RULE_SETUP
-#line 84 "scanner.l"
+#line 84 "../../../fvwm/modules/FvwmScript/scanner.l"
 { return CHFORECOLOR; }
 	YY_BREAK
 case 56:
 YY_RULE_SETUP
-#line 85 "scanner.l"
+#line 85 "../../../fvwm/modules/FvwmScript/scanner.l"
 { return CHBACKCOLOR; }
 	YY_BREAK
 case 57:
 YY_RULE_SETUP
-#line 86 "scanner.l"
+#line 86 "../../../fvwm/modules/FvwmScript/scanner.l"
 { return CHCOLORSET; }
 	YY_BREAK
 case 58:
 YY_RULE_SETUP
-#line 87 "scanner.l"
+#line 87 "../../../fvwm/modules/FvwmScript/scanner.l"
 { return SET; }
 	YY_BREAK
 case 59:
 YY_RULE_SETUP
-#line 88 "scanner.l"
+#line 88 "../../../fvwm/modules/FvwmScript/scanner.l"
 { return SENDSIGN; }
 	YY_BREAK
 case 60:
 YY_RULE_SETUP
-#line 89 "scanner.l"
+#line 89 "../../../fvwm/modules/FvwmScript/scanner.l"
 { return QUIT; }
 	YY_BREAK
 case 61:
 YY_RULE_SETUP
-#line 90 "scanner.l"
+#line 90 "../../../fvwm/modules/FvwmScript/scanner.l"
 { return INIT; }
 	YY_BREAK
 case 62:
 YY_RULE_SETUP
-#line 91 "scanner.l"
+#line 91 "../../../fvwm/modules/FvwmScript/scanner.l"
 { return PERIODICTASK; }
 	YY_BREAK
 case 63:
 YY_RULE_SETUP
-#line 92 "scanner.l"
+#line 92 "../../../fvwm/modules/FvwmScript/scanner.l"
 { return FOR; }
 	YY_BREAK
 case 64:
 YY_RULE_SETUP
-#line 93 "scanner.l"
+#line 93 "../../../fvwm/modules/FvwmScript/scanner.l"
 { return WARP; }
 	YY_BREAK
 case 65:
 YY_RULE_SETUP
-#line 94 "scanner.l"
+#line 94 "../../../fvwm/modules/FvwmScript/scanner.l"
 { return WRITETOFILE; }
 	YY_BREAK
 case 66:
 YY_RULE_SETUP
-#line 95 "scanner.l"
+#line 95 "../../../fvwm/modules/FvwmScript/scanner.l"
 { return SENDTOSCRIPT; }
 	YY_BREAK
 case 67:
 YY_RULE_SETUP
-#line 96 "scanner.l"
+#line 96 "../../../fvwm/modules/FvwmScript/scanner.l"
 { return SINGLECLIC; }
 	YY_BREAK
 case 68:
 YY_RULE_SETUP
-#line 97 "scanner.l"
+#line 97 "../../../fvwm/modules/FvwmScript/scanner.l"
 { return DOUBLECLIC; }
 	YY_BREAK
 case 69:
 YY_RULE_SETUP
-#line 98 "scanner.l"
+#line 98 "../../../fvwm/modules/FvwmScript/scanner.l"
 { return TO; }
 	YY_BREAK
 case 70:
 YY_RULE_SETUP
-#line 99 "scanner.l"
+#line 99 "../../../fvwm/modules/FvwmScript/scanner.l"
 { return DO; }
 	YY_BREAK
 case 71:
 YY_RULE_SETUP
-#line 100 "scanner.l"
+#line 100 "../../../fvwm/modules/FvwmScript/scanner.l"
 { return IF; }
 	YY_BREAK
 case 72:
 YY_RULE_SETUP
-#line 101 "scanner.l"
+#line 101 "../../../fvwm/modules/FvwmScript/scanner.l"
 { return THEN; }
 	YY_BREAK
 case 73:
 YY_RULE_SETUP
-#line 102 "scanner.l"
+#line 102 "../../../fvwm/modules/FvwmScript/scanner.l"
 { return ELSE; }
 	YY_BREAK
 case 74:
 YY_RULE_SETUP
-#line 104 "scanner.l"
+#line 104 "../../../fvwm/modules/FvwmScript/scanner.l"
 { return INF; }
 	YY_BREAK
 case 75:
 YY_RULE_SETUP
-#line 105 "scanner.l"
+#line 105 "../../../fvwm/modules/FvwmScript/scanner.l"
 { return INFEQ; }
 	YY_BREAK
 case 76:
 YY_RULE_SETUP
-#line 106 "scanner.l"
+#line 106 "../../../fvwm/modules/FvwmScript/scanner.l"
 { return SUPEQ; }
 	YY_BREAK
 case 77:
 YY_RULE_SETUP
-#line 107 "scanner.l"
+#line 107 "../../../fvwm/modules/FvwmScript/scanner.l"
 { return SUP; }
 	YY_BREAK
 case 78:
 YY_RULE_SETUP
-#line 108 "scanner.l"
+#line 108 "../../../fvwm/modules/FvwmScript/scanner.l"
 { return DIFF; }
 	YY_BREAK
 case 79:
 YY_RULE_SETUP
-#line 109 "scanner.l"
+#line 109 "../../../fvwm/modules/FvwmScript/scanner.l"
 { return EQUAL; }
 	YY_BREAK
 case 80:
 YY_RULE_SETUP
-#line 110 "scanner.l"
+#line 110 "../../../fvwm/modules/FvwmScript/scanner.l"
 { return GET; }
 	YY_BREAK
 case 81:
 YY_RULE_SETUP
-#line 112 "scanner.l"
+#line 112 "../../../fvwm/modules/FvwmScript/scanner.l"
 { return WHILE; }
 	YY_BREAK
 case 82:
 YY_RULE_SETUP
-#line 113 "scanner.l"
+#line 113 "../../../fvwm/modules/FvwmScript/scanner.l"
 { return CASE; }
 	YY_BREAK
 case 83:
 YY_RULE_SETUP
-#line 114 "scanner.l"
+#line 114 "../../../fvwm/modules/FvwmScript/scanner.l"
 { return BEG; }
 	YY_BREAK
 case 84:
 YY_RULE_SETUP
-#line 115 "scanner.l"
+#line 115 "../../../fvwm/modules/FvwmScript/scanner.l"
 { return POINT; }
 	YY_BREAK
 case 85:
 YY_RULE_SETUP
-#line 116 "scanner.l"
+#line 116 "../../../fvwm/modules/FvwmScript/scanner.l"
 { return BEGF; }
 	YY_BREAK
 case 86:
 YY_RULE_SETUP
-#line 117 "scanner.l"
+#line 117 "../../../fvwm/modules/FvwmScript/scanner.l"
 { return ENDF; }
 	YY_BREAK
 case 87:
 YY_RULE_SETUP
-#line 120 "scanner.l"
+#line 120 "../../../fvwm/modules/FvwmScript/scanner.l"
 { yylval.number=atoi(yytext);
                   return NUMBER;
                 }
 	YY_BREAK
 case 88:
 YY_RULE_SETUP
-#line 124 "scanner.l"
+#line 124 "../../../fvwm/modules/FvwmScript/scanner.l"
 {
 		  yylval.str=(char*) strdup(yytext+1);
 		  yylval.str[yyleng-1]='\0';
@@ -1550,7 +1550,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 89:
 YY_RULE_SETUP
-#line 129 "scanner.l"
+#line 129 "../../../fvwm/modules/FvwmScript/scanner.l"
 { /* Str entre "" */
 		  yylval.str=(char*) strdup(yytext+1);
 		  yylval.str[yyleng-2]='\0';
@@ -1559,7 +1559,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 90:
 YY_RULE_SETUP
-#line 135 "scanner.l"
+#line 135 "../../../fvwm/modules/FvwmScript/scanner.l"
 { yylval.str=(char*) strdup(yytext);
 		  yylval.str[yyleng]='\0';
                   return STR;
@@ -1567,12 +1567,12 @@ YY_RULE_SETUP
 	YY_BREAK
 case 91:
 YY_RULE_SETUP
-#line 141 "scanner.l"
+#line 141 "../../../fvwm/modules/FvwmScript/scanner.l"
 { numligne++; }
 	YY_BREAK
 case 92:
 YY_RULE_SETUP
-#line 142 "scanner.l"
+#line 142 "../../../fvwm/modules/FvwmScript/scanner.l"
 ECHO;
 	YY_BREAK
 #line 1579 "lex.yy.c"
@@ -2463,4 +2463,4 @@ int main()
 	return 0;
 	}
 #endif
-#line 142 "scanner.l"
+#line 142 "../../../fvwm/modules/FvwmScript/scanner.l"

@@ -1,15 +1,20 @@
+1999-09-28  Paul D. Smith  <psmith@gnu.org>
+
+	* libs/fvwmsignal.h: Add #include <sys/select.h> if needed.  Patch
+	from Harald Dunkel <harri@Synopsys.COM>.
+
 1999-09-28  Hippo
 
 	* libs/Colorset.{h,c}, modules/FvwmTheme/FvwmTheme.c: simplified
 	the colorset structure to allow for expansion.
 
 1999-09-27 Olivier Chapuis <olivier.chapuis@free.fr>
-	
-	* FvwmM4/FvwmM4.c (m4_defs): 
+
+	* FvwmM4/FvwmM4.c (m4_defs):
 	* FvwmM4/FvwmM4.1:
 	* FvwmCpp/FvwmCpp.c (cpp_defs):
 	* FvwmCpp/FvwmCpp.1:
-	Change dir to the "good" directory before popen m4/cpp. 
+	Change dir to the "good" directory before popen m4/cpp.
 	Add FVWM_USERHOME and SESSION_MANAGER.
 
 1999-09-28  Dominik Vogt  <dominik.vogt@gmx.de>
@@ -52,6 +57,7 @@
 	(UpdateMenuColorset):
 	implemented colour set support for menus
 
+>>>>>>> 1.644
 1999-09-24  Paul D. Smith  <psmith@gnu.org>
 
 	* configure.in (perl): Make sure we have perl 5.002 or better for

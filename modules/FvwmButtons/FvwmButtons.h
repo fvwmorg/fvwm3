@@ -230,11 +230,9 @@ extern button_info *UberButton,*CurrentButton;
 extern char *imagePath;
 extern int fd[];
 
-extern int screen;
 extern int new_desk;
 extern GC  NormalGC;
 extern GC  ShadowGC;
-extern int x,y,xneg,yneg,w,h; /* Dirty... */
 
 /* ------------------------------ I18N_MB stuff ---------------------------- */
 #ifdef I18N_MB
