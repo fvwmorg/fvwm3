@@ -1646,7 +1646,16 @@ static void MenuInteraction(
       if (mrMi != pmp->menu && mrMi != mrPopup)
       {
 	/* we're on an item from a prior menu */
-	pmret->rc = MENU_POPDOWN;
+	if (mrMi != MR_PARENT_MENU(pmp->menu))
+	{
+	  /* the event is for a previous menu, just close this one */
+	  pmret->rc = MENU_PROPAGATE_EVENT;
+	  pmret->menu = mrMi;
+	}
+	else
+	{
+	  pmret->rc = MENU_POPDOWN;
+	}
 	pdkp->timestamp = 0;
 	goto DO_RETURN;
       }
@@ -1928,9 +1937,9 @@ static void MenuInteraction(
 	}
       } /* if (flags.do_menu) */
 
-      /* Now check whether we can animate the current popup menu
-	 back to the original place to unobscure the current menu;  this
-	 happens only when using animation */
+      /* Now check whether we can animate the current popup menu back to the
+       * original place to unobscure the current menu;  this happens only when
+       * using animation */
       tmi = find_entry(NULL, &tmrMi);
       if (mrPopup && MR_XANIMATION(mrPopup) && tmi &&
 	  (tmi == MR_SELECTED_ITEM(pmp->menu) || tmrMi != pmp->menu))

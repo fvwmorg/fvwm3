@@ -230,24 +230,10 @@ void UngrabEm(int ungrab_context)
 {
   Window w;
 
-  /* menus.c control itself regarbing */
-  if ((GrabPointerState & GRAB_MENU) && !(ungrab_context & GRAB_MENU))
-  {
-    GrabPointerState = (GrabPointerState & ~ungrab_context) | GRAB_BUSYMENU;
-    return;
-  }
-  /* see if we need to regrab */
-  if ((GrabPointerState & GRAB_BUSY) && !(ungrab_context & GRAB_BUSY))
-  {
-    GrabPointerState &= ~ungrab_context & ~GRAB_BUSY;
-    GrabEm(CRS_WAIT, GRAB_BUSY);
-    return;
-  }
-
   XSync(dpy,0);
   XUngrabPointer(dpy,CurrentTime);
-  GrabPointerState &= ~ungrab_context;
-  if(Scr.PreviousFocus != NULL && !(GRAB_BUSY & ungrab_context))
+
+  if(Scr.PreviousFocus != NULL)
     {
       w = Scr.PreviousFocus->w;
 

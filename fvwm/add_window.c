@@ -617,6 +617,7 @@ void setup_frame_window(
     (ExposureMask | VisibilityChangeMask | ButtonPressMask |
      ButtonReleaseMask);
   pattributes->event_mask |= KeyPressMask;
+pattributes->event_mask |= OwnerGrabButtonMask|ButtonMotionMask|PointerMotionMask;
   /* decor window, parent of all decorative subwindows */
   tmp_win->decor_w =
     XCreateWindow(
@@ -649,6 +650,7 @@ void setup_title_window(
   pattributes->event_mask = (ButtonPressMask | ButtonReleaseMask
 			     | EnterWindowMask | LeaveWindowMask
 			     | ExposureMask);
+pattributes->event_mask |= OwnerGrabButtonMask|ButtonMotionMask|PointerMotionMask;
 
   tmp_win->title_g.x = tmp_win->boundary_width + tmp_win->title_g.height + 1;
   tmp_win->title_g.y = tmp_win->boundary_width;
@@ -694,6 +696,7 @@ void setup_button_windows(
   pattributes->event_mask = (ButtonPressMask | ButtonReleaseMask
 			   | EnterWindowMask | LeaveWindowMask
 			   | ExposureMask);
+pattributes->event_mask |= OwnerGrabButtonMask|ButtonMotionMask|PointerMotionMask;
 
   for (i = 0; i < NUMBER_OF_BUTTONS; i++)
   {

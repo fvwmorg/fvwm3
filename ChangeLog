@@ -1,5 +1,15 @@
 2000-01-16  Dominik Vogt  <dominik.vogt@gmx.de>
 
+	* libs/ColorUtils.c:
+	added some colour caching logic; will fail miserably if used with a
+	non-default colour map
+
+	* fvwm/menus.c (MenuInteraction):
+	prevent some unnecessary menu animations
+
+	* fvwm/update.c:
+	removed debug code
+
 	* fvwm/menus.c (MenuInteraction):
 	eliminate network traffic in idle menus
 
