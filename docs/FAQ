@@ -102,6 +102,7 @@ Contents
     3.24  How to define transparent modules?
     3.25  How to define transparent decorations?
     3.26  How about transparent applications too?
+    3.27  How can I define emacs type multi-keystroke fvwm bindings?
 
 4. Modules
 
@@ -1594,6 +1595,40 @@ A: This is not really an FVWM related question, you should find X
 
    There are a lot of other applications supporting transparency not
    listed here, search in FreshMeat, http://freshmeat.net/.
+
+----------------------------------------------------------------------
+
+3.27  How can I define emacs type multi-keystroke fvwm bindings?
+
+A: In emacs, keys can be set up as prefix keys, so that once
+   you type the prefix key, a subsequent key has a special meaning.
+   For example, Control-a would normally go to the beginning of a line
+   but Control-c Control-a might do something completely different.
+   There are at least 2 ways to do the same thing with fvwm.
+
+   The simplest technique is to use the prefix key to invoke a menu
+   and then use the menu hot keys as the second key in the binding.
+   Since menu hot keys don't include modifiers, you can only use plain
+   keys for the second key in the sequence.
+
+   This second technique lets you use any key for the second key but
+   only works with 2.5.x or later.
+   This approach invokes a function on the first key that defines the
+   action of the second key for a short time and then removes it: 
+
+   DestroyFunc Ctrl-Alt-F-Action
+   AddToFunc   Ctrl-Alt-F-Action
+   + I Key X A A Exec xterm
+   + I Key C A A Exec xcalc
+   # optionally popup a prompt window here
+   + I Schedule 5000 Key X A A -
+   + I Schedule 5000 Key C A A -
+
+   # Press Ctrl-Alt-F and then "x" or "c"
+   Key F A CM Ctrl-Alt-F-Action
+
+   With this, you press the second key in 5 seconds otherwise the
+   binding for the second key is removed.
 
 
 ======================================================================

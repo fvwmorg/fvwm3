@@ -1,6 +1,11 @@
+2004-02-15  Dan Espen  <dane@mk.telcordia.com>
+
+	* FAQ:
+	add emacs type keybindings description.
+
 2004-02-05  Dominik Vogt  <dominik.vogt@gmx.de>
 
-	* FAQ (A):
+	* FAQ:
 	added hint on FvwmBacker's caching capabilities using colour sets
 
 2004-01-17  Marcus Lundblad  <ml@update.uu.se>
