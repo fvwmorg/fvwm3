@@ -1,5 +1,9 @@
 1999-04-02  Dominik Vogt  <dominik_vogt@gmx.de>
 
+	* fvwm/events.c (HandlePropertyNotify): merged duplicate if statement
+
+	* fvwm/icons.c (DrawIconWindow): closed unterminated comment
+
 	* fvwm/add_window.c (AddWindow): temporary fix for sides/corners
 
 1999-04-01  Andrew T. Veliath  <andrewtv@usa.net>

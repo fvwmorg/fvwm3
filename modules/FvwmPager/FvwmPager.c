@@ -1668,7 +1668,6 @@ void ParseOptions(void)
 	  if (BalloonFont)
 	    free(BalloonFont);
 	  CopyString(&BalloonFont, arg1);
-fprintf(stderr,"BalloonFont = %s\n", BalloonFont);
 	}
 
       else if (StrEquals(resource, "BalloonBorderColor"))

@@ -544,13 +544,11 @@ void HandlePropertyNotify()
 
       if((Tmp_win->wmhints->flags & IconPixmapHint)||
 	 (Tmp_win->wmhints->flags & IconWindowHint))
-	if(Tmp_win->icon_bitmap_file == Scr.DefaultIcon)
-	  Tmp_win->icon_bitmap_file = (char *)0;
-
-      if((Tmp_win->wmhints->flags & IconPixmapHint)||
-	 (Tmp_win->wmhints->flags & IconWindowHint))
 	{
-	  if (!(Tmp_win->flags & SUPPRESSICON))
+	  if(Tmp_win->icon_bitmap_file == Scr.DefaultIcon)
+	    Tmp_win->icon_bitmap_file = NULL;
+	  if (!(Tmp_win->flags & SUPPRESSICON) ||
+	      (Tmp_win->wmhints->flags & IconWindowHint))
 	    {
 	      if (Tmp_win->icon_w)
 		XDestroyWindow(dpy,Tmp_win->icon_w);

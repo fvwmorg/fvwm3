@@ -227,7 +227,7 @@ void DrawIconWindow(FvwmWindow *Tmp_win)
 {
   GC Shadow, Relief;
   Pixel TextColor,BackColor;
-  int x ;
+  int x;
 
   if(Tmp_win->flags & SUPPRESSICON)
     return;
@@ -332,12 +332,14 @@ void DrawIconWindow(FvwmWindow *Tmp_win)
     {
       if(Tmp_win->iconDepth == Scr.depth)
 	{
-	  XCopyArea(dpy,Tmp_win->iconPixmap,Tmp_win->icon_pixmap_w,Scr.ScratchGC3,
+	  XCopyArea(dpy,Tmp_win->iconPixmap,Tmp_win->icon_pixmap_w,
+		    Scr.ScratchGC3,
 		    0,0,Tmp_win->icon_p_width-4, Tmp_win->icon_p_height-4,2,2);
 	}
-      else /* fixme: this only copies one plane, should be min(scr,icon)
-	XCopyPlane(dpy,Tmp_win->iconPixmap,Tmp_win->icon_pixmap_w,Scr.ScratchGC3,0,
-		   0,Tmp_win->icon_p_width-4, Tmp_win->icon_p_height-4,2,2,1);
+      else /* fixme: this only copies one plane, should be min(scr,icon) */
+	XCopyPlane(dpy,Tmp_win->iconPixmap,Tmp_win->icon_pixmap_w,
+		   Scr.ScratchGC3,0,0,Tmp_win->icon_p_width-4,
+		   Tmp_win->icon_p_height-4,2,2,1);
     }
 
   if(Tmp_win->icon_w != None)
