@@ -2,14 +2,14 @@
 
 bin_PROGRAMS = @XPMROOT@ xselection
 bin_SCRIPTS = fvwm-config fvwmbug fvwm-menu-xlock fvwm-menu-directory \
-	fvwm-menu-desktop fvwm-menu-headlines
+	fvwm-menu-desktop fvwm-menu-headlines fvwm24_convert
 
 EXTRA_PROGRAMS = xpmroot
 
 man_MANS = xpmroot.1 fvwmbug.1 fvwmrc_convert.1 \
 	fvwm-menu-xlock.1 fvwm-menu-directory.1 \
 	fvwm-menu-desktop.1 fvwm-menu-headlines.1
-EXTRA_DIST = fvwmrc_convert quantize_pixmaps $(man_MANS)
+EXTRA_DIST = fvwmrc_convert fvwm24_convert quantize_pixmaps $(man_MANS)
 
 LDADD = -L$(top_builddir)/libs $(X_LIBS) -lfvwm $(xpm_LIBS) \
 	$(X_PRE_LIBS) -lXext -lX11 $(X_EXTRA_LIBS)
@@ -51,5 +51,11 @@ fvwmbug: fvwmbug.sh
 	    -e 's,xprefixx,$(prefix),' -e 's,xdatadirx,$(datadir),' \
 	    -e 's,xlibexecdirx,$(libexecdir),' -e "s,xBUILDERx,$$BUILDER," \
 	    fvwmbug.sh > $@
+
+# Add the builtin imagepath to the 2.4 conversion script:
+fvwm24_convert: fvwm24_convert.in
+	rm -f $@
+	sed -e 's,FVWM_IMAGEPATH,$(FVWM_IMAGEPATH),' $< > $@
+	chmod a+rx $@
 
 CLEANFILES = $(bin_SCRIPTS)

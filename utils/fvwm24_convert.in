@@ -1,11 +1,9 @@
 #!/bin/sh
 
-# Based on fvwmrc_convert.
 # Convert .fvwm2rc from 2.2.x format to 2.4.x format.
 
-# Originally written by Dan Espen <despen@telcordia.com>
-
-echo ".fvwm2rc to ./fvwm/.fvwm2rc" >&2
+# Originally written by Dan Espen <despen@telcordia.com> Sept 2000
+# Based on fvwmrc_convert.
 
 # gawk has IGNORECASE, so we use it if possible.
 if [ -n "`command -v gawk 2>/dev/null`" ] ; then
@@ -26,31 +24,33 @@ if [ ! -x $AWK ]; then
 fi
 
 source=${1:-$HOME/.fvwm2rc}
-#source=${1:-$HOME/.fvwm2rc.test} # dje, remove this (some test cases in here)
 if [ ! -r $source ] ; then
 	echo "Can't find source file $source, giving up" >&2
 	exit 1
 fi
 
-#dest=${2:-/tmp/.fvwm/.fvwm2rc}  # dje, testing again, remove this.
 dest=${2:-$HOME/.fvwm/.fvwm2rc}
 if [ "$dest" != "-" ] ;then
   echo "Output to $dest" >&2
-  # This may not be the best way to go, if $dest exists, don't run at all...?
   if [ -f $dest ] ; then
-    echo "Saving existing $dest as $dest.bak" >&2
-    cp -p $dest $dest.bak || { echo "Couldn't save; aborting" >&2; exit 1; }
+    echo "Output file $dest already exists, exiting." >&2
+    exit 1
   else
     cp -p $source $dest 2>/dev/null  # try to preserve permissions
   fi
 fi
 cat $source | $AWK '
 BEGIN   {
-  print "# This file passed thru the .fvwm2rc to .fvwm/.fvwm2rc converter";
-  print "# on `date`.";
+  print "# This file changed by the .fvwm2rc to .fvwm/.fvwm2rc converter";
   TRUE=1; FALSE=0;
   # This onlyworks with gawk
   IGNORECASE=TRUE;
+  # create assoc array by imagepath:
+  imagepath="FVWM_IMAGEPATH";
+  isize = split(imagepath,iarray,":");
+  for (i=1;i<=isize; ++i) {
+    iassoc[iarray[i]] = "1";
+  }
 }
 
 /^[#]/ {                    # Comment, pass it thru
@@ -67,11 +67,11 @@ BEGIN   {
 function add_to_path(path) {
   psize = split(path,parray,":");	# split them up
   for (i=1; i<=psize; ++i) {
-    # Here there has to be logic to drop all the built in image paths.
-    # The fvwm24_convert.in file has to be run thru the Makefile to insert
-    # the builtin image path.
-    if (parray[i] == "/u/dane/icons") { continue };  # testing
-    if (parray[i] == "\\") { continue };
+    # Drop any builtin imagepath:
+    if (iassoc[parray[i]] == "1" ) {
+      continue;
+    }
+    if (parray[i] == "\\") { continue }; skip any end of line backslash
     # This next line should probably only skip files starting with $
     # that dont start with  $HOME.
     if (substr(parray[i],1,1) == "$") { continue };  
@@ -116,14 +116,15 @@ function add_to_path(path) {
   next;
 }
 
-/ModulePath/ {
-  # Delete it for now.
-  # Fix this so it deletes continuation lines too, although if there are
+/[Mm]odule[Pp]ath/ {
+  # Deletes continuation lines too, although if there are
   # continuation lines, there might be some part of the path we want to
-  # keep.
+  # Delete them anyway.
+  while (substr($0,length($0),1) == "\\") {
+    getline $0;
+  }
   next;
 }
 
 {print;}			# pass everything else thru
 ' > $dest
-diff $source $dest
