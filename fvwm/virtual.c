@@ -460,9 +460,9 @@ void MoveViewport(int newx, int newy, Bool grab)
 	    tyb = t->frame_y + t->frame_height;
 	    if ((txr >= PageLeft && txl <= PageRight
 	        && tyb >= PageTop && tyt <= PageBottom)
-	        && ! t->ViewportMoved)
+	        && ! t->tmpflags.ViewportMoved)
 	      {
-                t->ViewportMoved = True;    /*  Block double move.  */
+                t->tmpflags.ViewportMoved = True;    /*  Block double move.  */
 	        /* If the window is iconified, and sticky Icons is set,
 	         * then the window should essentially be sticky */
 	        if(!((t->flags & ICONIFIED)&&(t->flags & StickyIcon)) &&
@@ -507,9 +507,9 @@ void MoveViewport(int newx, int newy, Bool grab)
             tyb = t1->frame_y + t1->frame_height;
             if (! (txr >= PageLeft && txl <= PageRight
                 && tyb >= PageTop && tyt <= PageBottom)
-                && ! t1->ViewportMoved)
+                && ! t1->tmpflags.ViewportMoved)
                   {
-                    t1->ViewportMoved = True;    /*  Block double move.  */
+                    t1->tmpflags.ViewportMoved = True; /* Block double move.*/
                     /* If the window is iconified, and sticky Icons is set,
                     * then the window should essentially be sticky */
                      if(!((t1->flags & ICONIFIED)&&(t1->flags & StickyIcon)) &&
@@ -521,7 +521,8 @@ void MoveViewport(int newx, int newy, Bool grab)
 		              t1->icon_xl_loc += deltax;
 		              t1->icon_y_loc += deltay;
 		              if(t1->icon_pixmap_w != None)
-		                XMoveWindow(dpy,t1->icon_pixmap_w,t1->icon_x_loc,
+		                XMoveWindow(dpy,t1->icon_pixmap_w,
+					    t1->icon_x_loc,
 		                  t1->icon_y_loc);
                               if(t1->icon_w != None)
                                 XMoveWindow(dpy,t1->icon_w,t1->icon_x_loc,
@@ -533,10 +534,12 @@ void MoveViewport(int newx, int newy, Bool grab)
                                                 (unsigned long)t1,
                                                 t1->icon_x_loc, t1->icon_y_loc,
                                                 t1->icon_w_width,
-                                                t1->icon_w_height+t1->icon_p_height);
+                                                t1->icon_w_height +
+						t1->icon_p_height);
                                }
 		            }
-	                  SetupFrame (t1, t1->frame_x+ deltax, t1->frame_y + deltay,
+	                  SetupFrame (t1, t1->frame_x+ deltax,
+				      t1->frame_y + deltay,
 		               t1->frame_width, t1->frame_height,FALSE);
 	                }
 	            }
@@ -546,7 +549,7 @@ void MoveViewport(int newx, int newy, Bool grab)
       }
       for (t = Scr.FvwmRoot.next; t != NULL; t = t->next)
 	{
-          t->ViewportMoved = False;  /*  Clear double move blocker.  */
+          t->tmpflags.ViewportMoved = False; /* Clear double move blocker. */
 	  /* If its an icon, and its sticking, autoplace it so
 	   * that it doesn't wind up on top a a stationary
 	   * icon */

@@ -117,6 +117,8 @@ FvwmWindow *AddWindow(Window w)
       return NULL;
     }
   tmp_win->flags = 0;
+  tmp_win->tmpflags.ViewportMoved = 0;
+  tmp_win->tmpflags.IconifiedByParent = 0;
   tmp_win->w = w;
 
   tmp_win->cmap_windows = (Window *)NULL;

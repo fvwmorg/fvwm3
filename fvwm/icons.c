@@ -823,6 +823,7 @@ void DeIconify(FvwmWindow *tmp_win)
 	  ((t->flags & TRANSIENT) &&(t->transientfor == tmp_win->w)))
 	{
 	  t->flags |= MAPPED;
+	  t->tmpflags.IconifiedByParent = 0;
 	  if(Scr.Hilite == t)
 	    SetBorder (t, False,True,True,None);
 
@@ -920,6 +921,7 @@ void Iconify(FvwmWindow *tmp_win, int def_x, int def_y)
 	  if(t != tmp_win)
 	    {
 	      t->flags |= ICONIFIED|ICON_UNMAPPED;
+	      t->tmpflags.IconifiedByParent = 1;
 
 	      BroadcastPacket(M_ICONIFY, 7,
                               t->w, t->frame,

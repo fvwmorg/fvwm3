@@ -200,7 +200,59 @@ typedef struct FvwmWindow
     int DeIconifyDesk;          /* Desk to deiconify to, for StubbornIcons */
     Window transientfor;
 
+#ifdef GSFR
+    struct {
+      start_iconic : 1;
+      staysontop : 1;
+      sticky : 1;
+      listskip : 1;
+      suppressicon : 1;
+      noicon_title : 1;
+      lenience : 1;
+      sticky_icon : 1;
+      circulate_skip_icon : 1;
+      circulateskip : 1;
+      click_focus : 1;
+      sloppy_focus : 1;
+      show_mapping : 1;
+
+      notitle : 1;
+      noborder : 1;
+      icon : 1;
+      startsondesk : 1;
+      bw : 1;
+      nobw : 1;
+      fore_color : 1;
+      back_color : 1;
+      random_place : 1;
+      smart_place : 1;
+      mwm_button : 1;
+      mwm_decor : 1;
+      mwm_functions : 1;
+      mwm_override : 1;
+      mwm_border : 1;
+      decorate_transient : 1;
+      no_pposition : 1;
+      ol_decor : 1;
+
+#ifdef MINI_ICONS
+      miniicon : 1;
+#endif
+    } new_flags;
+#else
     unsigned long flags;
+/*
+    RBW - 11/13/1998 - new flags to supplement the flags word, implemented
+    as named bit fields.
+*/
+    struct {
+      unsigned ViewportMoved : 1; /* To prevent double move in MoveViewport. */
+      unsigned IconifiedByParent : 1; /* To prevent iconified transients in a
+				       * parent icon from counting for Next */
+      unsigned  : 1;
+    } tmpflags;
+#endif /* GSFR */
+
 #ifdef MINI_ICONS
     char *mini_pixmap_file;
     Picture *mini_icon;
@@ -224,11 +276,6 @@ typedef struct FvwmWindow
     Pixel BackPixel;
     unsigned long buttons;
     icon_boxes *IconBoxes;              /* zero or more iconboxes */
-/*
-    RBW - 11/13/1998 - new flags to supplement the flags word, implemented
-    as named bit fields.
-*/
-    unsigned ViewportMoved : 1; /* To prevent double move in MoveViewport. */
 } FvwmWindow;
 
 /* Window mask for Circulate and Direction functions */

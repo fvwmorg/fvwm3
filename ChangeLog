@@ -1,4 +1,21 @@
+1998-12-24  Dominik Vogt  <dominik_vogt@hp.com>
+
+	* fvwm/builtins.c (MatchesContitionMask): rewrote the contition so that
+	a mere mortal can read it (costs a few bytes though).
+
+	* fvwm/builtins.c (MatchesContitionMask):
+	* fvwm/icons.c (DeIconify):
+	(Iconify): bugfix for transient iconification bug
+
 1998-12-23  Dominik Vogt  <dominik_vogt@hp.com>
+
+	* fvwm/virtual.c (MoveViewport): moved ViewportMoved into new tmpflags
+
+	* fvwm/add_window.c (AddWindow): IconifiedByParent flag for transient
+	iconification bug
+
+	* fvwm/fvwm2.1 (Examples): added examples for SetMenuStyle, reformatted
+	SnapAttraction
 
 	* fvwm/menus.c (do_menu):
 	(menuShortcuts): replaced DOUBLECLICK_TIMEOUT with

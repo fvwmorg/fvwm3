@@ -2037,13 +2037,25 @@ window created by the \fIWindowList\fP command) that had not be assigned
 a style using the \fIChangeMenuStyle\fP. See also \fIDestroyMenuStyle\fP.
 When using monochrome color options are ignored.
 
-\fIoptions\fP is a comma separated list containing some of the keywords
-FVWM/MWM/WIN, Foreground, Background, Greyed, HilightBack/HilightBackOff,
-ActiveFore/ActiveForeOff, Hilight3DThick/Hilight3DThin/Hilight3DOff,
-Animation/AnimationOff, Font, MenuFace, PopupDelay, PopupOffset,
-TitleWarp/TitleWarpOff, TitleUnderlines0/TitleUnderlines1/TitleUnderlines2,
-SeparatorsLong/SeparatorsShort, TrianglesSolid/TrianglesRelief,
-PrepopMenus/PrepopMenusOff and DoubleClickTime.
+\fIoptions\fP is a comma separated list containing some of the
+keywords FVWM/MWM/WIN,
+Foreground,
+Background,
+Greyed,
+HilightBack/HilightBackOff,
+ActiveFore/ActiveForeOff,
+Hilight3DThick/Hilight3DThin/Hilight3DOff,
+Animation/AnimationOff,
+Font,
+MenuFace,
+PopupDelay,
+PopupOffset,
+TitleWarp/TitleWarpOff,
+TitleUnderlines0/TitleUnderlines1/TitleUnderlines2,
+SeparatorsLong/SeparatorsShort,
+TrianglesSolid/TrianglesRelief,
+PrepopMenus/PrepopMenusOff,
+DoubleClickTime.
 
 In the above list some options are listed as option pairs or triples
 with a / in between. These options exclude each other.
@@ -2058,9 +2070,9 @@ The same effect can be created by setting all the other options one
 by one.
 
 \fIMWM\fP and \fIWIN\fP style menus popup sub-menus automatically.
-\fIWIN\fP menus indicate the current menu item by changing the
+WIN menus indicate the current menu item by changing the
 background to dark. \fIFVWM\fP sub-menus overlap the parent menu,
-\fIMWM\fP and \fIWIN\fP style menus never overlap the parent menu.
+MWM and WIN style menus never overlap the parent menu.
 
 \fIFVWM\fP style is equivalent to HilightBackOff, Hilight3DThin,
 ActiveForeOff, AnimationOff, Font, MenuFace, PopupOffset 0 67, TitleWarp,
@@ -2095,8 +2107,8 @@ color is based on the menu's background color.
 \fIActiveFore\fP and \fIActiveForeOff\fP switch hilighting the foreground
 of the selected menu item on and off. A specific foreground color
 may be used by providing the color name as an argument to
-\fIActiveFore\fP. Omitting the color name has the same effet as
-using \fIActiveForeOff\fP.
+ActiveFore. Omitting the color name has the same effet as
+using ActiveForeOff.
 
 \fIHilight3DThick\fP, \fIHilight3DThin\fP and \fIHilight3DOff\fP
 determine if the selected menu item is hilighted with a 3D relief.
@@ -2147,7 +2159,7 @@ shifted that many pixels to the right (or left if negative). If the
 second value is non-zero the menu is moved by that many percent of
 the parent menu's width to the right or left.
 
-\fITitleWarp\fP and \fITitleWarpOff\f affect if the pointer warps to
+\fITitleWarp\fP and \fITitleWarpOff\fP affect if the pointer warps to
 the menu title when a sub-menu is opened or not. Not that regardless of
 this setting the pointer will not be warped if the menu does not pop up
 under the pointer.
@@ -2170,6 +2182,28 @@ considered as a double click. The default is 450 milliseconds.
 If the argument is omitted the doucle click time is reset to this
 default.
 
+Examples:
+
+.EX
+SetMenuStyle * mwm
+SetMenuStyle * Foreground Black, Background gray40
+SetMenuStyle * Greyed gray70, ActiveFore White
+SetMenuStyle * HilightBackOff, Hilight3DOff
+SetMenuStyle * Font lucidasanstypewriter-14
+SetMenuStyle * MenuFace DGradient 64 darkgray MidnightBlue
+
+SetMenuStyle gred mwm
+SetMenuStyle gred Foreground Yellow, Background Maroon
+SetMenuStyle gred Greyed Red, ActiveFore Red
+SetMenuStyle gred HilightBackOff, Hilight3DOff
+SetMenuStyle gred Font lucidasanstypewriter-12
+SetMenuStyle gred MenuFace DGradient 64 Red Black
+.EE
+
+Note that all style options could be placed on a single line for each
+style name.
+
+
 .IP "SnapAttraction \fIproximity behavior\fP"
 If during an interactive move the window (or icon) comes within \fIproximity\fP
 pixels of another the window (or icon) will be moved to make the borders
@@ -2179,25 +2213,18 @@ the \fISnapGrid\fP option is used.
 
 The \fIbehavior\fP argument is optional and may be set to one of the four
 following values:
-.in +.5i
-All
-.in +.3i
-Windows snap to both other windows and other icons.  Icons snap to both other
-windows and other icons.
-.in -.3i
-SameType
-.in +.3i
-Windows snap to only other windows.  Icons snap to only other icons.
-.in -.3i
-Windows
-.in +.3i
-Windows snap to only other windows.  Icons do not snap.
-.in -.3i
-Icons
-.in +.3i
-Icons snap to only other icons.  Windows do not snap.
-.in -.3i
-.in -.5i
+
+With \fIAll\fP both icons and windows snap to other windows and other
+icons.
+
+\fISameType\fP lets snap windows only to other windows and icons
+only to other icons.
+
+With \fIWindows\fP windows snap only to other windows.  Icons do not
+snap.
+
+Similarly with \fIIcons\fP icons snap to only other icons and
+windows do not snap.
 
 The default SnapAttraction setting for behavior is "All".
 

@@ -4226,37 +4226,51 @@ void CreateConditionMask(char *flags, WindowConditionMask *mask)
  * Checks whether the given window matches the mask created with
  * CreateConditionMask.
  **********************************************************************/
-Bool MatchesContitionMask(FvwmWindow *fw, WindowConditionMask *mask)
+Bool MatchesConditionMask(FvwmWindow *fw, WindowConditionMask *mask)
 {
-  return
-    ((mask->onFlags & fw->flags) == mask->onFlags) &&
+  if ((mask->onFlags & fw->flags) != mask->onFlags)
+    return 0;
 
-    ((mask->offFlags & fw->flags) == 0) &&
+  if ((mask->offFlags & fw->flags) != 0)
+    return 0;
 
-    (mask->useCirculateHit || !(fw->flags & CirculateSkip)) &&
+  if (!mask->useCirculateHit && (fw->flags & CirculateSkip))
+    return 0;
 
-    ((mask->useCirculateHitIcon &&
-      fw->flags & ICONIFIED && !fw->flags & TRANSIENT) ||
-     !(fw->flags & CirculateSkipIcon && fw->flags & ICONIFIED)) &&
+  /* This logic looks terribly wrong to me, but it was this way before so I
+   * did not change it (domivogt (24-Dec-1998)) */
+  if (!mask->useCirculateHitIcon && fw->flags & ICONIFIED &&
+      fw->flags & CirculateSkipIcon)
+    return 0;
 
-    (!mask->needsCurrentDesk || fw->Desk == Scr.CurrentDesk) &&
+  if (fw->flags & ICONIFIED && fw->flags & TRANSIENT &&
+      fw->tmpflags.IconifiedByParent)
+    return 0;
 
-    (!mask->needsCurrentPage || (fw->frame_x < Scr.MyDisplayWidth &&
-				 fw->frame_y < Scr.MyDisplayHeight &&
-				 fw->frame_x + fw->frame_width > 0 &&
-				 fw->frame_y + fw->frame_height > 0)) &&
+  if (mask->needsCurrentDesk && fw->Desk != Scr.CurrentDesk)
+    return 0;
 
-    (!mask->needsName ||
-     matchWildcards(mask->name, fw->name) ||
-     matchWildcards(mask->name, fw->icon_name) ||
-     fw->class.res_class && matchWildcards(mask->name, fw->class.res_class) ||
-     fw->class.res_name && matchWildcards(mask->name, fw->class.res_name)) &&
+  if (mask->needsCurrentPage && !(fw->frame_x < Scr.MyDisplayWidth &&
+				  fw->frame_y < Scr.MyDisplayHeight &&
+				  fw->frame_x + fw->frame_width > 0 &&
+				  fw->frame_y + fw->frame_height > 0))
+    return 0;
 
-    (!mask->needsNotName ||
-     !(matchWildcards(mask->name, fw->name) ||
+  if (mask->needsName &&
+      !matchWildcards(mask->name, fw->name) &&
+      !matchWildcards(mask->name, fw->icon_name) &&
+      !fw->class.res_class && matchWildcards(mask->name,fw->class.res_class) &&
+      !fw->class.res_name && matchWildcards(mask->name, fw->class.res_name))
+    return 0;
+
+  if (mask->needsNotName &&
+      (matchWildcards(mask->name, fw->name) ||
        matchWildcards(mask->name, fw->icon_name) ||
        fw->class.res_class && matchWildcards(mask->name, fw->class.res_class)||
-       fw->class.res_name && matchWildcards(mask->name, fw->class.res_name)));
+       fw->class.res_name && matchWildcards(mask->name, fw->class.res_name)))
+    return 0;
+
+  return 1;
 }
 
 /**************************************************************************
@@ -4304,7 +4318,7 @@ FvwmWindow *Circulate(char *action, int Direction, char **restofline)
       fvwm_msg(DBG,"Circulate","Trying %s",fw->name);
 #endif /* FVWM_DEBUG_MSGS */
       /* Make CirculateUp and CirculateDown take args. by Y.NOMURA */
-      if (MatchesContitionMask(fw, &mask))
+      if (MatchesConditionMask(fw, &mask))
 	found = fw;
       else
       {
@@ -4479,7 +4493,7 @@ void DirectionFunc(XEvent *eventp,Window junk,FvwmWindow *tmp_win,
     /* Skip every window that does not match conditionals.
      * Skip also currently focused window.  That would be too close. :)
      */
-    if (window == tmp_win || !MatchesContitionMask(window, &mask))
+    if (window == tmp_win || !MatchesConditionMask(window, &mask))
       continue;
 
     /* Calculate relative location of the window. */
