@@ -301,8 +301,8 @@ static Bool
 intersect (int x0, int y0, int w0, int h0,
            int x1, int y1, int w1, int h1)
 {
-  return !((x0 > x1 + w1) || (x0 + w0 < x1) ||
-           (y0 > y1 + h1) || (y0 + h0 < y1));
+  return !((x0 >= x1 + w1) || (x0 + w0 <= x1) ||
+           (y0 >= y1 + h1) || (y0 + h0 <= y1));
 }
 
 static Bool
@@ -624,17 +624,23 @@ void lower_function(F_CMD_ARGS)
 
 void raiselower_func(F_CMD_ARGS)
 {
-  FvwmWindow *s;
-
+  FvwmWindow *x; /* sorry about this name, couldn't think of a better one */
+  Bool ontop = True;
+  
   if (DeferExecution(eventp,&w,&tmp_win,&context, CRS_SELECT,ButtonRelease))
     return;
 
-  /* if RaiseWindow would do nothing then lower it */
-  for (s = Scr.FvwmRoot.stack_prev; s != &Scr.FvwmRoot; s = s->stack_prev)
-    if (tmp_win->layer < s->layer)
+  for (x = tmp_win->stack_prev; x != &Scr.FvwmRoot; x = x->stack_prev) {
+    if (x->layer > tmp_win->layer) {
       break;
-
-  if (s == tmp_win->stack_prev)
+    }
+    if (overlap(tmp_win, x)) {
+      ontop = False;
+      break;
+    }
+  }
+  
+  if (ontop)
     LowerWindow(tmp_win);
   else
     RaiseWindow(tmp_win);
