@@ -335,6 +335,7 @@ AddToFunc WindowList-Func
 
 AddTest "Test Moves" Moves-Func
 AddToFunc Moves-Func
+# AnimatedMove:
  + I Next [window2] WarpToWindow 50 50
  + I Next [window2] AnimatedMove 50 50 warp
  + I Next [window2] AnimatedMove 100 100 warp
@@ -344,34 +345,214 @@ AddToFunc Moves-Func
  + I Next [window2] AnimatedMove 25p 25p warp
 # Need some HideGeometryWindow tests.
 # Need some Layer tests.
+# Lower
  + I Next [window5] Lower
  + I Next [window4] Lower
  + I Next [window3] Lower
  + I Next [window2] Lower
  + I Next [window1] Lower
- + I Move   10    10
- + I Move		-10		-10
- + I MoveToPage
- + I MoveToPage
- + I MoveToPage 1 1
- + I MoveToPage 10000 -12312
- + I MoveToPage 0 0
- + I MoveToDesk
- + I MoveToDesk    2
- + I MoveToDesk		+3
- + I MoveToDesk -2
- + I MoveToDesk 0 1
- + I MoveToDesk   0    3
- + I MoveToDesk		0		1923874
- + I MoveToDesk +1 0 10
- + I MoveToDesk -1 0 10
- + I MoveToDesk 0 0 5 7
- + I MoveToDesk 0 -11111 5 7
- + I MoveToDesk 0 0
+# Move
+ + I Next [window1] Move   w+10    w+10
+ + I Next [window1] Move		w-10		w-10
+ + I Next [window1] Move Keep w+20
+ + I Next [window1] Move Keep w-20
+ + I Next [window1] Move 30p Keep
+ + I Next [window1] Move -30p Keep
+# This may cause paging, depending on the mouse pointer position:
+ + I Next [window1] Move m+0 m+0
+# Test absolute positioning:
+ + I Next [window1] Move 10 10
+ + I Next [window1] Move -10 -10
+# Put window1 back where it started:
+ + I Next [window1] Move 0 0 warp
+# MoveToDesk
+# This seems to be undocumented, no arg moves to main desk:
+ + I Next [window3] MoveToDesk
+ + I Next [window3] MoveToDesk    2
+ + I Next [window3] MoveToDesk		+3
+ + I Next [window3] MoveToDesk -2
+ + I Next [window3] MoveToDesk 0 1
+ + I Next [window3] MoveToDesk   0    3
+ + I Next [window3] MoveToDesk		0		1923874
+ + I Next [window3] MoveToDesk +1 0 10
+ + I Next [window3] MoveToDesk -1 0 10
+ + I Next [window3] MoveToDesk 0 0 5 7
+ + I Next [window3] MoveToDesk 0 -11111 5 7
+ + I Next [window3] MoveToDesk 0 0
+ + I MoveThreshold 0
+ + I MoveThreshold -3
+ + I MoveThreshold 99
+ + I MoveThreshold 3
+ + I Next [window1] MoveToPage
+ + I Next [window1] MoveToPage
+ + I Next [window1] MoveToPage 1 1
+ + I Next [window1] MoveToPage 10000 -12312
+ + I Next [window1] MoveToPage 0 0
  + I Refresh
 
+AddTest "Test OpaqueMoveSize" OpaqueMoveSize-Func
+AddToFunc OpaqueMoveSize-Func
+ + I OpaqueMoveSize
+ + I OpaqueMoveSize    50
+ + I OpaqueMoveSize		50
+ + I OpaqueMoveSize 0
+ + I OpaqueMoveSize 0
+ + I OpaqueMoveSize -1
+ + I OpaqueMoveSize 100
+ + I OpaqueMoveSize 200
+ + I OpaqueMoveSize 75
+ + I OpaqueMoveSize 75
+ + I OpaqueMoveSize 0
+
+AddTest "Test PlaceAgain" PlaceAgain-Func
+AddToFunc PlaceAgain-Func
+ + I Next [window1] move 10 10
+ + I Next [window2] move 10 10
+ + I Next [window3] move 10 10
+ + I Next [window4] move 10 10
+ + I Next [window5] move 10 10
+ + I Next [window1] PlaceAgain
+ + I Next [window2] PlaceAgain Anim
+ + I Next [window3] PlaceAgain
+ + I Next [window4] PlaceAgain Anim
+ + I Next [window5] PlaceAgain Anim
+
+AddTest "Test Raise_RaiseLower_Lower" Raise_RaiseLower_Lower-Func
+AddToFunc Raise_RaiseLower_Lower-Func
+ + I Next [window1] Raise
+ + I Next [window1] Lower
+ + I Next [window1] RaiseLower
+ + I Next [window2] RaiseLower
+ + I Next [window3] Raise
+ + I Next [window3] Lower
+ + I Next [window3] RaiseLower
+ + I Next [window3] RaiseLower
+ + I Next [window3] Raise asöpoi
+ + I Next [window3] Lower asöpoi
+ + I Next [window3] RaiseLower asöpoi
+ + I Next [window3] RaiseLower asöpoi
+ + I Refresh
+
+AddTest "Test Resize" Resize-Func
+AddToFunc Resize-Func
+ + I Next [window1] Resize 50 50
+ + I Next [window5] Resize   80c    24c
+ + I Next [window2] Resize		40p		60p
+ + I Next [window3] Resize 0 keep
+ + I Next [window3] Resize keep 0
+ + I Next [window6] Resize 20p 20p br
+ + I Next [window1] Resize 10c 5c
+ + I Next [window2] Resize 10c 5c
+ + I Next [window3] Resize 10c 5c
+ + I Next [window4] Resize 10c 5c
+ + I Next [window5] Resize 10c 5c
+
+AddTest "Test ResizeMove" ResizeMove-Func
+AddToFunc ResizeMove-Func
+ + I Next [window1] ResizeMove 50 50 30 30
+ + I Next [window1] ResizeMove 10c 5c 0 0
+ + I Next [window3] ResizeMove 10c 5c
+ + I Next [window4] ResizeMove 10c 5c
+ + I Next [window5] ResizeMove 10c 5c
+
+AddTest "Test SetAnimation" SetAnimation-Func
+AddToFunc SetAnimation-Func
+ + I SetAnimation
+ + I SetAnimation  10  -.01 0 .01 .03 .08 .18 .3 .45 .6 .75 .85 .90 .94 .97 .99 1.0
+ + I SetAnimation 10	 -.01 0	 .01 .03 .08 .18 .3 .45 .6 .75 .85 .90 .94 .97 .99 1.0
+ + I SetAnimation 0 -.01 0 .01 .03 .08 .18 .3 .45 .6 .75 .85 .90 .94 .97 .99 1.0
+ + I SetAnimation 20 -.01 0 .01 .03 .08
+ + I SetAnimation 1000 -.01 0 .01 .03 .08
+ + I SetAnimation 10 -.01 0 .01 .03 .08 .18 .3 .45 .6 .75 .85 .90 .94 .97 .99 1.0
+
+AddTest "Test SnapAttraction" SnapAttraction-Func
+AddToFunc SnapAttraction-Func
+ + I SnapAttraction 0 All
+ + I SnapAttraction -1 SameType
+ + I SnapAttraction 15 Windows
+ + I SnapAttraction 8 Icons Screen
+ + I SnapAttraction
+
+AddTest "Test SnapGrid" SnapGrid-Func
+AddToFunc SnapGrid-Func
+ + I SnapGrid 0 0
+ + I SnapGrid 1 1
+ + I SnapGrid 15 15
+ + I SnapGrid 8 Icons Screen
+ + I SnapGrid
+
+# No test for command WindowsDesk, its obsolete
+
+AddTest "Test XorPixmap" XorPixmap-Func
+AddToFunc XorPixmap-Func
+ + I XORPixmap test1.xpm
+ + I XORPixmap test2.xpm
+ + I XORPixmap
+
+AddTest "Test XorValue" XorValue-Func
+AddToFunc XorValue-Func
+ + I XORValue
+ + I XORValue     1
+ + I XORValue		1
+ + I XORValue 0
+ + I XORValue 0
+ + I XORValue 255
+ + I XORValue 255
+ + I XORValue 128
+ + I XORValue 0
+
+AddTest "Test CursorMove" CursorMove-Func
+AddToFunc CursorMove-Func
+# Need an 11x11 desktop to make the 1000% cursor move work predictably:
+ + I DesktopSize 11 11
+ + I CursorMove   10p   10p
+ + I CursorMove   -10p  -10p
+ + I CursorMove 70 70
+ + I CursorMove 		-50		+50
+ + I CursorMove 		50		-50
+ + I CursorMove -70 -70
+ + I CursorMove -0 +0
+ + I CursorMove 50p 50p
+ + I CursorMove -50p -50p
+ + I CursorMove 1000 1000
+ + I CursorMove -1000 -1000
+ + I Echo "Start CursorMove syntax errors"
+ + I CursorMove
+ + I CursorMove 50p
+ + I CursorMove 50p
+ + I Echo "End CursorMove syntax errors"
+
+AddTest "Test FlipFocus" FlipFocus-Func
+AddToFunc FlipFocus-Func
+ + I Next [window6] FlipFocus
+ + I Next [window1] FlipFocus NoWarp
+ + I Next [window1] FlipFocus JUNK
+
+AddTest "Test Focus" Focus-Func
+AddToFunc Focus-Func
+ + I Next [window2] Focus
+ + I Next [window3] Focus NoWarp
+ + I Next [window1] Focus JUNK
+
+AddTest "Test WarpToWindow" WarpToWindow-Func
+AddToFunc WarpToWindow-Func
+ + I Next [window1] WarpToWindow
+ + I Next [window2] WarpToWindow    10     10
+ + I Next [window3] WarpToWindow		50p		75
+ + I Next [window1] WarpToWindow 50 50
+ + I Refresh
 
 # Ending ManPage Order
+
+AddTest "Test Maximize" Maximize-Func
+AddToFunc Maximize-Func
+ + I Maximize
+ + I Maximize   100     100
+ + I Maximize
+ + I Maximize		0	100
+ + I Maximize 50 50
+ + I Maximize
+ + I Refresh
 
 
 AddTest "Test ConfigDestroyModuleConfig" ConfigDestroyModuleConfig-Func
@@ -552,16 +733,6 @@ AddToFunc Beep-Func
  + I Beep
  + I Beep ü30 23äö ü9823r ,l.öapü39
 
-AddTest "Test CursorMove" CursorMove-Func
-AddToFunc CursorMove-Func
- + I CursorMove
- + I CursorMove 50p
- + I CursorMove   10p   -10p
- + I CursorMove 		-50		+50
- + I CursorMove -0 +0
- + I CursorMove -50p -50p
- + I CursorMove -1000 -1000
-
 AddTest "Test Desk" Desk-Func
 AddToFunc Desk-Func
  + I Desk
@@ -718,20 +889,6 @@ AddToFunc Nop-Func
  + I NOP
  + I nOp allöoawqj _Ö:K_ÖL ökq
 
-AddTest "Test OpaqueMoveSize" OpaqueMoveSize-Func
-AddToFunc OpaqueMoveSize-Func
- + I OpaqueMoveSize
- + I OpaqueMoveSize    50
- + I OpaqueMoveSize		50
- + I OpaqueMoveSize 0
- + I OpaqueMoveSize 0
- + I OpaqueMoveSize -1
- + I OpaqueMoveSize 100
- + I OpaqueMoveSize 200
- + I OpaqueMoveSize 75
- + I OpaqueMoveSize 75
- + I OpaqueMoveSize 0
-
 AddTest "Test Scroll" Scroll-Func
 AddToFunc Scroll-Func
  + I Scroll
@@ -741,16 +898,6 @@ AddToFunc Scroll-Func
  + I Scroll -0 +0
  + I Scroll -50p -50p
  + I Scroll -1000 -1000
-
-AddTest "Test SetAnimation" SetAnimation-Func
-AddToFunc SetAnimation-Func
- + I SetAnimation
- + I SetAnimation  10  -.01 0 .01 .03 .08 .18 .3 .45 .6 .75 .85 .90 .94 .97 .99 1.0
- + I SetAnimation 10	 -.01 0	 .01 .03 .08 .18 .3 .45 .6 .75 .85 .90 .94 .97 .99 1.0
- + I SetAnimation 0 -.01 0 .01 .03 .08 .18 .3 .45 .6 .75 .85 .90 .94 .97 .99 1.0
- + I SetAnimation 20 -.01 0 .01 .03 .08
- + I SetAnimation 1000 -.01 0 .01 .03 .08
- + I SetAnimation 10 -.01 0 .01 .03 .08 .18 .3 .45 .6 .75 .85 .90 .94 .97 .99 1.0
 
 AddTest "Test SetEnv" SetEnv-Func
 AddToFunc SetEnv-Func
@@ -774,18 +921,6 @@ AddToFunc Title-Func
  + I Title "lökjads
  + I Title "lökjads
  + I Title -A -köq
-
-AddTest "Test XorValue" XorValue-Func
-AddToFunc XorValue-Func
- + I XORValue
- + I XORValue     1
- + I XORValue		1
- + I XORValue 0
- + I XORValue 0
- + I XORValue 255
- + I XORValue 255
- + I XORValue 128
- + I XORValue 0
 
 AddTest "Test ColormapFocus" ColormapFocus-Func
 AddToFunc ColormapFocus-Func
@@ -1442,36 +1577,6 @@ AddToFunc SendToModule_KillModule-Func
  + I KillModule FvwmBanner
  + I Refresh
 
-AddTest "Test Raise_RaiseLower_Lower" Raise_RaiseLower_Lower-Func
-AddToFunc Raise_RaiseLower_Lower-Func
- + I Raise
- + I Lower
- + I RaiseLower
- + I RaiseLower
- + I Raise
- + I Lower
- + I RaiseLower
- + I RaiseLower
- + I Raise asöpoi
- + I Lower asöpoi
- + I RaiseLower asöpoi
- + I RaiseLower asöpoi
- + I Raise
- + I Refresh
-
-AddTest "Test Resize_Maximize" Resize_Maximize-Func
-AddToFunc Resize_Maximize-Func
- + I Resize 50 50
- + I Resize   45    45
- + I Resize		40		60
- + I Maximize
- + I Maximize   100     100
- + I Maximize
- + I Maximize		0	100
- + I Maximize 50 50
- + I Maximize
- + I Refresh
-
 AddTest "Test Iconify" Iconify-Func
 AddToFunc Iconify-Func
  + I Iconify
@@ -1488,22 +1593,6 @@ AddToFunc Stick-Func
  + I Stick
  + I Stick
  + I Stick öäpqewikrpü8.,.-kl-.294
- + I Refresh
-
-AddTest "Test WarpToWindow" WarpToWindow-Func
-AddToFunc WarpToWindow-Func
- + I CursorMove -100 -100
- + I CursorMove 0 100
- + I WarpToWindow
- + I CursorMove -100 -100
- + I CursorMove 0 100
- + I WarpToWindow    10     10
- + I CursorMove -100 -100
- + I CursorMove 0 100
- + I WarpToWindow		50p		75
- + I CursorMove -100 -100
- + I CursorMove 0 100
- + I WarpToWindow 50 50
  + I Refresh
 
 AddTest "Test DecorCommands" DecorCommands-Func
