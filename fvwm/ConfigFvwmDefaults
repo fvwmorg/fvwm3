@@ -37,7 +37,7 @@ Key Tab A M WindowList Root c c NoDeskSort
 # Default styles
 Style * GrabFocusTransient, LowerTransient, RaiseTransient, StackTransientParent
 Style * TileCascadePlacement, Title, MouseFocus, GrabFocusOff
-Style * UseIconPosition
+Style * UseIconPosition, RightTitleRotatedCW
 Style * EWMHPlacementUseDynamicWorkingArea, EWMHMaximizeUseDynamicWorkingArea
 # Default styles for tear off menus
 Style fvwm_menu NoPPosition, NeverFocus, NoLenience, WindowListSkip
