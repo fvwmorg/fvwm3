@@ -175,7 +175,6 @@ enum
 	F_MOVE_THRESHOLD,
 	F_MOVE_TO_PAGE,
 	F_MOVE_TO_SCREEN,
-	F_PARENTWINDOW,
 	F_PLACEAGAIN,
 	F_RAISE,
 	F_RAISELOWER,
@@ -312,7 +311,6 @@ void CMD_None(F_CMD_ARGS);
 void CMD_Nop(F_CMD_ARGS);
 void CMD_NoWindow(F_CMD_ARGS);
 void CMD_OpaqueMoveSize(F_CMD_ARGS);
-void CMD_ParentWindow(F_CMD_ARGS);
 void CMD_Pick(F_CMD_ARGS);
 void CMD_PipeRead(F_CMD_ARGS);
 void CMD_PixmapPath(F_CMD_ARGS);

@@ -759,43 +759,6 @@ void CMD_ThisWindow(F_CMD_ARGS)
 	return;
 }
 
-void CMD_ParentWindow(F_CMD_ARGS)
-{
-	char *rest;
-	FvwmWindow *t;
-	exec_context_changes_t ecc;
-	int i;
-	int val;
-
-	/* get number of levels */
-	if (GetIntegerArguments(action, &rest, &val, 1) == 1)
-	{
-		if (val < 0)
-		{
-			val = -1;
-		}
-		action = rest;
-	}
-	else
-	{
-		val = -1;
-	}
-	/* get the context window */
-	ecc.w.fw = exc->w.fw;
-	for (i = 0;
-	     i != val && (t = get_transientfor_fvwmwindow(ecc.w.fw)) != NULL;
-	     i++)
-	{
-		ecc.w.fw = t;
-	}
-	if (val == 1 && ecc.w.fw == NULL)
-	exc = exc_clone_context(exc, &ecc, ECC_FW);
-	select_cmd(F_PASS_ARGS);
-	exc_destroy_context(exc);
-
-	return;
-}
-
 void CMD_Pick(F_CMD_ARGS)
 {
 	select_cmd(F_PASS_ARGS);

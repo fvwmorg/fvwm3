@@ -9149,23 +9149,6 @@ exists.  Conditions are the same as for
 .BR Next .
 Returns 1 if no window matches the conditions and 0 otherwise.
 
-.TP
-.BI "ParentWindow [(" conditions ")] " command
-.B Pick
-works like
-.B Function
-if invoked in the context of a window.  If invoked in the root
-window, it first asks the user to pick a window and then executes
-the
-.I command
-in the context of that window.  This avoids annoying multiple
-selections with complex functions.  The command is executed only
-if the given
-.I conditions
-are met.  The conditions are the same as for
-.BR Next .
-Returns -1 if no window was selected.
-
 The
 .B Pick
 command implies the conditions
