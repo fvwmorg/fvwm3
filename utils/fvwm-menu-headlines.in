@@ -733,8 +733,9 @@ accordingly given in the following argument. Default is name
 
 B<--item>, B<--exec> - define menu item or exec format in the following
 argument (what is shown and what is executed when the item is chosen),
-default is '%h\t(%[%Y-%m-%d %H:%M])'. TAB can be specified as '\t', but
-in fvwmrc you should specify a double backslash or a real TAB.
+default is '%h\t(%[%Y-%m-%d %H:%M])'.
+TAB can be specified as '\t', but in .fvwm2rc you should specify a double
+backslash or a real TAB.
 
 Format specifiers for a headline entry:
   %h - headline

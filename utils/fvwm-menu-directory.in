@@ -431,8 +431,9 @@ B<--version> - show version and exit
 B<--name=NAME>  - menu name, used only with --reuse, default is MenuBrowser
 
 B<--title=NAME> - menu title format, default is '%*-40p' - last 40 characters
-of the current full path. TAB can be specified as '\t', but in fvwmrc you
-should specify a double backslash or a real TAB.
+of the current full path.
+TAB can be specified as '\t', but in .fvwm2rc you should specify a double
+backslash or a real TAB.
 
 Format specifiers:
   %d - the current directory name

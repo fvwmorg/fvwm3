@@ -162,8 +162,9 @@ B<--title> title - define menu title in the following argument.
 Default is "XLock Modes".
 
 B<--item> format - define menu item format in the following argument,
-default is '%n\t(%d)'. TAB can be specified as '\t', but in fvwmrc
-you should specify a double backslash or a real TAB.
+default is '%n\t(%d)'.
+TAB can be specified as '\t', but in .fvwm2rc you should specify a double
+backslash or a real TAB.
 
 Format specifiers:
   %n - mode name
