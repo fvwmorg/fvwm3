@@ -1477,7 +1477,6 @@ void InitVariables(void)
 
   Scr.NoBoundaryWidth = 1;
   Scr.BoundaryWidth = BOUNDARY_WIDTH;
-  Scr.CornerWidth = CORNER_WIDTH;
   Scr.Hilite = NULL;
   Scr.Focus = NULL;
   Scr.PreviousFocus = NULL;

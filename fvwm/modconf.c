@@ -195,7 +195,7 @@ void SendDataToModule(XEvent *eventp,Window w,FvwmWindow *tmp_win,
   sprintf(msg2,"ClickTime %d\n", (Scr.ClickTime < 0) ?
 	  -Scr.ClickTime : Scr.ClickTime);
   SendName(*Module,M_CONFIG_INFO,0,0,0,msg2);
-
+  
   t = modlistroot;
   while(t != NULL)
   {
@@ -203,4 +203,8 @@ void SendDataToModule(XEvent *eventp,Window w,FvwmWindow *tmp_win,
     t = t->next;
   }
   SendPacket(*Module,M_END_CONFIG_INFO,0,0,0,0,0,0,0,0);
+
+  /* can't send new_look packet first, it gets eaten by GetConfigLine() */
+  SendLook(*Module);
+  
 }

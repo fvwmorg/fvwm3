@@ -288,7 +288,6 @@ typedef struct ScreenInfo
   GC ScratchGC2;
   GC ScratchGC3;
   int SizeStringWidth;	        /* minimum width of size window */
-  int CornerWidth;	        /* corner width for decoratedwindows */
   int BoundaryWidth;	        /* frame width for decorated windows */
   int NoBoundaryWidth;	        /* frame width for decorated windows */
 

@@ -26,7 +26,6 @@
  * code for launching fvwm modules.
  *
  ***********************************************************************/
-
 #include "config.h"
 
 #include <stdio.h>
@@ -532,6 +531,32 @@ void BroadcastConfig(unsigned long event_type, const FvwmWindow *t)
 {
   BroadcastPacket(event_type, CONFIGARGS(t));
 }
+
+
+#define LOOKPACKET \
+	10,\
+	XVisualIDFromVisual(Scr.viz),\
+	Scr.cmap,\
+	Scr.depth,\
+	Scr.DrawGC ? XGContextFromGC(Scr.DrawGC) : 0,\
+	0,\
+	Scr.StdColors.back,\
+	Scr.StdGC ? XGContextFromGC(Scr.StdGC) : 0,\
+	Scr.StdReliefGC ? XGContextFromGC(Scr.StdReliefGC) : 0,\
+	Scr.StdShadowGC ? XGContextFromGC(Scr.StdShadowGC) : 0,\
+	Scr.StdFont.font ? Scr.StdFont.font->fid : 0
+
+void SendLook(int module)
+{
+  SendPacket(module, M_NEW_LOOK, LOOKPACKET);
+}
+
+
+void BroadcastLook()
+{
+  BroadcastPacket(M_NEW_LOOK, LOOKPACKET);
+}
+
 
 static unsigned long *
 make_named_packet(int *len, unsigned long event_type, const char *name,

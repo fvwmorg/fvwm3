@@ -1334,6 +1334,8 @@ void SetXOR(F_CMD_ARGS)
     DestroyPicture(dpy, Scr.DrawPicture);
     Scr.DrawPicture = NULL;
   }
+  
+  BroadcastLook();
 }
 
 
@@ -1377,6 +1379,8 @@ void SetXORPixmap(F_CMD_ARGS)
     XChangeGC(dpy, Scr.DrawGC, gcm, &gcv);
   else
     Scr.DrawGC = XCreateGC(dpy, Scr.Root, gcm, &gcv);
+
+  BroadcastLook();
 }
 
 void SetOpaque(F_CMD_ARGS)
@@ -1916,27 +1920,24 @@ static void ApplyDefaultFontAndColors(void)
   Scr.StdFont.height = Scr.StdFont.font->ascent + Scr.StdFont.font->descent;
 
   /* make GC's */
-  gcm = GCFunction|GCFont|GCLineWidth|GCForeground|GCBackground;
+  gcm = GCFunction|GCFont|GCLineWidth|GCForeground;
   gcv.function = GXcopy;
   gcv.font = Scr.StdFont.font->fid;
   gcv.line_width = 0;
-
   gcv.foreground = Scr.StdColors.fore;
-  gcv.background = Scr.StdColors.back;
   if(Scr.StdGC)
     XChangeGC(dpy, Scr.StdGC, gcm, &gcv);
   else
     Scr.StdGC = XCreateGC(dpy, Scr.NoFocusWin, gcm, &gcv);
 
+  gcm = GCFunction|GCLineWidth|GCForeground;
   gcv.foreground = Scr.StdRelief.fore;
-  gcv.background = Scr.StdRelief.back;
   if(Scr.StdReliefGC)
     XChangeGC(dpy, Scr.StdReliefGC, gcm, &gcv);
   else
     Scr.StdReliefGC = XCreateGC(dpy, Scr.NoFocusWin, gcm, &gcv);
 
   gcv.foreground = Scr.StdRelief.back;
-  gcv.background = Scr.StdRelief.fore;
   if(Scr.StdShadowGC)
     XChangeGC(dpy, Scr.StdShadowGC, gcm, &gcv);
   else
@@ -1974,6 +1975,19 @@ static void ApplyDefaultFontAndColors(void)
   }
 
   UpdateAllMenuStyles();
+  
+  /* at this point the GC's are changed but need to be flushed to the server
+   * before other modules can use them, XSync() doesn't do it, have to
+   * actually draw something.  Size window is now unampped, use that */
+  RelieveRectangle(dpy, Scr.SizeWindow, 0, 0, 2, 2,
+		   Scr.StdReliefGC, Scr.StdShadowGC, 2);
+  XDrawString(dpy, Scr.SizeWindow, Scr.StdGC,
+	      2, Scr.StdFont.font->ascent + 2,
+  /* contact the author for terms and conditions if you want to place
+   * a subliminal advertisment here */
+	      "FVWM rules OK", 13);
+  BroadcastLook();
+
 }
 
 void SetDefaultColors(F_CMD_ARGS)
