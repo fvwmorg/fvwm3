@@ -1,5 +1,12 @@
 2003-07-09  Marcus Lundblad  <ml@update.uu.se>
 
+	* libs/CombineChars.c (combclass_table): 
+	(CombineChars):
+	fixed supporting drawing marks superimposed that are in a combining
+	class
+	
+2003-07-09  Marcus Lundblad  <ml@update.uu.se>
+
 	* libs/Flocale.c (FlocaleRotateDrawString): 
 	(FlocaleDrawString)
 	fixed core dump when composing characters can't be converted to
