@@ -57,6 +57,15 @@
 
 #include <stdlib.h>
 
+#include "libs/Module.h"
+#include "libs/fvwmsignal.h"
+
+#include "FvwmWinList.h"
+#include "ButtonArray.h"
+#include "List.h"
+#include "Mallocs.h"
+#include "libs/Colorset.h"
+
 #ifdef I18N_MB
 #include <X11/Xlocale.h>
 #ifdef __STDC__
@@ -66,15 +75,6 @@
 #endif
 #define XDrawString(t,u,v,w,x,y,z) XmbDrawString(t,u,ButtonFontset,v,w,x,y,z)
 #endif
-
-#include "libs/Module.h"
-#include "libs/fvwmsignal.h"
-
-#include "FvwmWinList.h"
-#include "ButtonArray.h"
-#include "List.h"
-#include "Mallocs.h"
-#include "libs/Colorset.h"
 
 #define MAX_NO_ICON_ACTION_LENGTH (MAX_MODULE_INPUT_TEXT_LEN - 100)
 

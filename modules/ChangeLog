@@ -1,3 +1,7 @@
+2000-04-22  Dan Espen  <dane@mk.telcordia.com>
+
+	* FvwmWinList/FvwmWinList.c: Another I18N patch.
+
 2000-04-20  olicha <olivier.chapuis@free.fr>
 
 	* modules/FvwmScript/Instruction.c (*LaunchScript, Exec):
