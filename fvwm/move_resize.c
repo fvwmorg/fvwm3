@@ -2040,7 +2040,7 @@ Bool __move_loop(
 			}
 			/*** end of code borrowed from icewm ***/
 
-		} /* if (Event.type == MotionNotify) */
+		} /* if (e.type == MotionNotify) */
 
 		/* Handle a limited number of key press events to allow
 		 * mouseless operation */

@@ -33,14 +33,14 @@
 static unsigned int repeat_depth = 0;
 
 /*
-typedef struct
-{
+  typedef struct
+  {
   char *start;
   char *end;
-} double_ended_string;
+  } double_ended_string;
 
-static struct
-{
+  static struct
+  {
   double_ended_string string;
   double_ended_string old;
   double_ended_string builtin;
@@ -54,16 +54,19 @@ static struct
   int page_y;
   int desk;
   FvwmWindow *fvwm_window;
-} last;
+  } last;
 */
 
 static struct
 {
-  char *command_line;
-  char *menu_name;
-} last = { NULL, NULL };
+	char *command_line;
+	char *menu_name;
+} last = {
+	NULL,
+	NULL
+};
 
-/*
+#if 0
 char *repeat_last_function = NULL;
 char *repeat_last_complex_function = NULL;
 char *repeat_last_builtin_function = NULL;
@@ -71,11 +74,9 @@ char *repeat_last_module = NULL;
 char *repeat_last_top_function = NULL;
 char *repeat_last_menu = NULL;
 FvwmWindow *repeat_last_fvwm_window = NULL;
-*/
+#endif
 
-/* Prcedure: set_repeat_data
- *
- * Stores the contents of the data pointer internally for the repeat command.
+/* Stores the contents of the data pointer internally for the repeat command.
  * The sype of data is determined by the 'type' parameter. If this function is
  * called to set a string value representing a fvwm builtin function the
  * 'func_typetion' can be set to the F_<func_type> value in the function table
@@ -89,69 +90,82 @@ FvwmWindow *repeat_last_fvwm_window = NULL;
  */
 Bool set_repeat_data(void *data, repeat_type type, const func_type *builtin)
 {
-  /* No history recording during startup. */
-  if (fFvwmInStartup)
-    return True;
+	/* No history recording during startup. */
+	if (fFvwmInStartup)
+	{
+		return True;
+	}
 
-  switch(type)
-  {
-  case REPEAT_COMMAND:
-    if (last.command_line == (char *)data)
-      /* Already stored, no need to free the data pointer. */
-      return False;
-    if (data == NULL || repeat_depth != 0)
-      /* Ignoring the data, must free it outside of this call. */
-      return True;
-    if (builtin && (builtin->flags & FUNC_DONT_REPEAT))
-      /* Dont' record functions that have the FUNC_DONT_REPEAT flag set. */
-      return True;
-    if (last.command_line)
-      free(last.command_line);
-    /* Store a backup. */
-    last.command_line = (char *)data;
-    /* Since we stored the pointer the caller must not free it. */
-    return False;
-  case REPEAT_MENU:
-  case REPEAT_POPUP:
-    if (last.menu_name)
-      free(last.menu_name);
-    last.menu_name = (char *)data;
-    /* Since we stored the pointer the caller must not free it. */
-    return False;
-  case REPEAT_PAGE:
-  case REPEAT_DESK:
-  case REPEAT_DESK_AND_PAGE:
-    return True;
-  case REPEAT_FVWM_WINDOW:
-    return True;
-  case REPEAT_NONE:
-  default:
-    return True;
-  }
+	switch(type)
+	{
+	case REPEAT_COMMAND:
+		if (last.command_line == (char *)data)
+		{
+			/* Already stored, no need to free the data pointer. */
+			return False;
+		}
+		if (data == NULL || repeat_depth != 0)
+		{
+			/* Ignoring the data, must free it outside of this
+			 * call. */
+			return True;
+		}
+		if (builtin && (builtin->flags & FUNC_DONT_REPEAT))
+		{
+			/* Dont' record functions that have the
+			 * FUNC_DONT_REPEAT flag set. */
+			return True;
+		}
+		if (last.command_line)
+		{
+			free(last.command_line);
+		}
+		/* Store a backup. */
+		last.command_line = (char *)data;
+		/* Since we stored the pointer the caller must not free it. */
+		return False;
+	case REPEAT_MENU:
+	case REPEAT_POPUP:
+		if (last.menu_name)
+		{
+			free(last.menu_name);
+		}
+		last.menu_name = (char *)data;
+		/* Since we stored the pointer the caller must not free it. */
+		return False;
+	case REPEAT_PAGE:
+	case REPEAT_DESK:
+	case REPEAT_DESK_AND_PAGE:
+		return True;
+	case REPEAT_FVWM_WINDOW:
+		return True;
+	case REPEAT_NONE:
+	default:
+		return True;
+	}
 }
 
 void CMD_Repeat(F_CMD_ARGS)
 {
-  int index;
-  char *optlist[] = {
-    "command",
-    NULL
-  };
+	int index;
+	char *optlist[] = {
+		"command",
+		NULL
+	};
 
-  repeat_depth++;
-  /* Replay the backup, we don't want the repeat command recorded. */
-  GetNextTokenIndex(action, optlist, 0, &index);
-  switch (index)
-  {
-  case 0: /* command */
-  default:
-#if 0
-      fprintf( stderr, "repeating 0x%lx, %s\n",
-	       (unsigned long) last.command_line, last.command_line);
-#endif
-      action = last.command_line;
-      old_execute_function(F_PASS_EXEC_ARGS, FUNC_DONT_EXPAND_COMMAND, NULL);
-    break;
-  }
-  repeat_depth--;
+	repeat_depth++;
+	/* Replay the backup, we don't want the repeat command recorded. */
+	GetNextTokenIndex(action, optlist, 0, &index);
+	switch (index)
+	{
+	case 0: /* command */
+	default:
+		action = last.command_line;
+		execute_function(
+			cond_rc, exc, action, FUNC_DONT_EXPAND_COMMAND);
+		break;
+	}
+	repeat_depth--;
+
+	return;
 }

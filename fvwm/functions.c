@@ -136,7 +136,6 @@ static Bool DeferExecution(
 	exec_context_change_mask_t mask = 0;
 	XEvent e;
 
-/*!!!*/if (FinishEvent == 0) { fprintf(stderr, "bug: DeferExecution called without finish event!\n"); abort(); }
 	*ret_exc = NULL;
 	ecc.w.fw = exc->w.fw;
 	ecc.w.w = exc->w.w;
@@ -408,7 +407,7 @@ static void __execute_function(
 
 	if (exc->w.fw == NULL || IS_EWMH_DESKTOP(FW_W(exc->w.fw)))
 	{
-		if (exec_flags & FUNC_FLAG_IS_UNMANAGED)
+		if (exec_flags & FUNC_IS_UNMANAGED)
 		{
 			w = exc->w.w;
 		}
@@ -1178,27 +1177,53 @@ void execute_function(
 	return;
 }
 
-/*!!!remove*/
-#if 0
-void old_execute_function(
-	fvwm_cond_func_rc *cond_rc, char *action, FvwmWindow *fw,
-	const XEvent *eventp, unsigned long context, int Module,
-	FUNC_FLAGS_TYPE exec_flags, char *args[])
+void execute_function_override_wcontext(
+	fvwm_cond_func_rc *cond_rc, const exec_context_t *exc, char *action,
+	FUNC_FLAGS_TYPE exec_flags, int wcontext)
 {
-	memset(&efa, 0, sizeof(efa));
-	efa.cond_rc = cond_rc;
-	efa.eventp = eventp;
-	efa.fw = fw;
-	efa.action = action;
-	efa.args = args;
-	efa.context = context;
-	efa.module = Module;
-	efa.flags.exec = exec_flags;
-	execute_function(&efa);
+	const exec_context_t *exc2;
+	exec_context_changes_t ecc;
+
+	ecc.w.wcontext = wcontext;
+	exc2 = exc_clone_context(exc, &ecc, ECC_WCONTEXT);
+	execute_function(cond_rc, exc2, action, exec_flags);
+	exc_destroy_context(exc2);
 
 	return;
 }
-#endif
+
+void execute_function_override_window(
+	fvwm_cond_func_rc *cond_rc, const exec_context_t *exc, char *action,
+	FUNC_FLAGS_TYPE exec_flags, FvwmWindow *fw)
+{
+	const exec_context_t *exc2;
+	exec_context_changes_t ecc;
+
+	ecc.w.fw = fw;
+	if (fw != NULL)
+	{
+		ecc.w.w = FW_W(fw);
+		ecc.w.wcontext = C_WINDOW;
+	}
+	else
+	{
+		ecc.w.w = None;
+		ecc.w.wcontext = C_ROOT;
+	}
+	if (exc != NULL)
+	{
+		exc2 = exc_clone_context(
+			exc, &ecc, ECC_FW | ECC_W | ECC_WCONTEXT);
+	}
+	else
+	{
+		exc2 = exc_create_context(&ecc, ECC_FW | ECC_W | ECC_WCONTEXT);
+	}
+	execute_function(cond_rc, exc2, action, exec_flags);
+	exc_destroy_context(exc2);
+
+	return;
+}
 
 void find_func_type(char *action, short *func_type, unsigned char *flags)
 {

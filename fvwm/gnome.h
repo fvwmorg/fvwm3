@@ -20,7 +20,7 @@
 void GNOME_Init(void);
 
 /* client messages; setting hints on a window comes through this mechanism */
-int  GNOME_ProcessClientMessage(const FvwmWindow *fwin, const XEvent *ev);
+int  GNOME_ProcessClientMessage(const exec_context_t *exc);
 
 /* hook into .fvwm2rc functions */
 void GNOME_ButtonFunc(
@@ -52,10 +52,8 @@ void GNOME_SetHints(FvwmWindow *fwin);
 void GNOME_SetLayer(FvwmWindow *fwin);
 void GNOME_SetDesk(FvwmWindow *fwin);
 void GNOME_SetWinArea(FvwmWindow *w);
-void GNOME_HandlePropRequest(unsigned int propm,
-			     unsigned int prop,
-			     Window win,
-			     XEvent *ev);
+void GNOME_HandlePropRequest(
+	const exec_context_t *exc, unsigned int propm, unsigned int prop);
 
 /* update public window manager information */
 void GNOME_SetAreaCount(void);

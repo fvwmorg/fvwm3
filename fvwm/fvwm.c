@@ -511,10 +511,15 @@ void Done(int restart, char *command)
 	exitFuncName = getInitFunctionName(2);
 	if (functions_is_complex_function(exitFuncName))
 	{
+		const exec_context_t *exc;
+		exec_context_changes_t ecc;
+
 		char *action = safestrdup(
 			CatString2("Function ", exitFuncName));
-		old_execute_function(
-			NULL, action, NULL, &Event, C_ROOT, 1, 0, NULL);
+		ecc.w.wcontext = C_ROOT;
+		exc = exc_create_context(&ecc, ECC_WCONTEXT);
+		execute_function(NULL, exc, action, 0);
+		exc_destroy_context(exc);
 		free(action);
 	}
 	if (!restart)
@@ -1308,8 +1313,13 @@ static void SetRCDefaults(void)
 
 	for (i = 0; defaults[i]; i++)
 	{
-		old_execute_function(
-			NULL, defaults[i], NULL, &Event, C_ROOT, 1, 0, NULL);
+		const exec_context_t *exc;
+		exec_context_changes_t ecc;
+
+		ecc.w.wcontext = C_ROOT;
+		exc = exc_create_context(&ecc, ECC_WCONTEXT);
+		execute_function(NULL, exc, defaults[i], 0);
+		exc_destroy_context(exc);
 	}
 
 	return;
@@ -1377,7 +1387,9 @@ void StartupStuff(void)
 #define startFuncName "StartFunction"
 	const char *initFuncName;
 	const exec_context_t *exc;
+	exec_context_changes_t ecc;
 
+	ecc.w.wcontext = C_ROOT;
 	exc = exc_create_null_context();
 	CaptureAllWindows(exc, False);
 	/* Turn off the SM stuff after the initial capture so that new windows
@@ -1410,8 +1422,8 @@ void StartupStuff(void)
 	if (functions_is_complex_function(startFuncName))
 	{
 		char *action = "Function " startFuncName;
-		old_execute_function(
-			NULL, action, NULL, &Event, C_ROOT, 1, 0, NULL);
+
+		execute_function(NULL, exc, action, 0);
 	}
 
 	/* migo (03-Jul-1999): execute [Session]{Init|Restart}Function */
@@ -1420,8 +1432,8 @@ void StartupStuff(void)
 	{
 		char *action = safestrdup(
 			CatString2("Function ", initFuncName));
-		old_execute_function(
-			NULL, action, NULL, &Event, C_ROOT, 1, 0, NULL);
+
+		execute_function(NULL, exc, action, 0);
 		free(action);
 	}
 
@@ -1584,6 +1596,8 @@ int main(int argc, char **argv)
 	Bool option_error = False;
 	int visualClass = -1;
 	int visualId = -1;
+	const exec_context_t *exc;
+	exec_context_changes_t ecc;
 
 	DBUG("main", "Entered, about to parse args");
 
@@ -2152,15 +2166,15 @@ int main(int argc, char **argv)
 	simplify_style_list();
 
 	DBUG("main", "Running config_commands...");
+	ecc.w.wcontext = C_ROOT;
+	exc = exc_create_context(&ecc, ECC_WCONTEXT);
 	if (num_config_commands > 0)
 	{
 		int i;
 		for (i=0;i<num_config_commands;i++)
 		{
 			DoingCommandLine = True;
-			old_execute_function(
-				NULL, config_commands[i], NULL, &Event, C_ROOT,
-				1, 0, NULL);
+			execute_function(NULL, exc, config_commands[i], 0);
 			free(config_commands[i]);
 		}
 		DoingCommandLine = False;
@@ -2171,32 +2185,25 @@ int main(int argc, char **argv)
 		 * FVWM_DATADIR, and for compatibility: ~/.fvwm2rc,
 		 * $sysconfdir/system.fvwm2rc */
 		if (!run_command_file(
-			    CatString3(fvwm_userdir, "/", FVWMRC),
-			    &Event, NULL, C_ROOT, 1) &&
+			    CatString3(fvwm_userdir, "/", FVWMRC), exc) &&
 		    !run_command_file(
-			    CatString3(home_dir, "/", FVWMRC),
-			    &Event, NULL, C_ROOT, 1 ) &&
+			    CatString3(home_dir, "/", FVWMRC), exc) &&
 		    !run_command_file(
-			    CatString3(FVWM_DATADIR, "/", FVWMRC),
-			    &Event, NULL, C_ROOT, 1 ) &&
+			    CatString3(FVWM_DATADIR, "/", FVWMRC), exc) &&
 		    !run_command_file(
-			    CatString3(FVWM_DATADIR, "/system", FVWMRC),
-			    &Event, NULL, C_ROOT, 1 ) &&
+			    CatString3(FVWM_DATADIR, "/system", FVWMRC), exc) &&
 		    !run_command_file(
-			    CatString3(FVWM_CONFDIR, "/system", FVWMRC),
-			    &Event, NULL, C_ROOT, 1 ) )
+			    CatString3(FVWM_CONFDIR, "/system", FVWMRC), exc))
 		{
 			fvwm_msg(
 				ERR, "main", "Cannot read startup file, tried: "
 				"\n\t%s/%s\n\t%s/%s\n\t%s/%s\n\t%s/system"
-				"%s\n\t%s/system%s",
-				fvwm_userdir, FVWMRC,
-				home_dir,     FVWMRC,
-				FVWM_DATADIR, FVWMRC,
-				FVWM_DATADIR, FVWMRC,
-				FVWM_CONFDIR, FVWMRC);
+				"%s\n\t%s/system%s", fvwm_userdir, FVWMRC,
+				home_dir, FVWMRC, FVWM_DATADIR, FVWMRC,
+				FVWM_DATADIR, FVWMRC, FVWM_CONFDIR, FVWMRC);
 		}
 	}
+	exc_destroy_context(exc);
 
 	DBUG("main", "Done running config_commands");
 
@@ -2226,22 +2233,16 @@ int main(int argc, char **argv)
 		InputOutput, Pvisual, valuemask, &attributes);
 	resize_geometry_window();
 	initPanFrames();
-
 	MyXGrabServer(dpy);
 	checkPanFrames();
 	MyXUngrabServer(dpy);
-
 	CoerceEnterNotifyOnCurrentWindow();
-
 	SessionInit();
-
 	GNOME_Init();
-
 	DBUG("main", "Entering HandleEvents loop...");
 
 	HandleEvents();
-
-	switch( fvwmRunState )
+	switch (fvwmRunState)
 	{
 	case FVWM_DONE:
 		Done(0, NULL);     /* does not return */

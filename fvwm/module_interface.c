@@ -636,6 +636,63 @@ void CMD_ModuleSynchronous(F_CMD_ARGS)
 	return;
 }
 
+/* run the command as if it cames from a button press or release */
+static void ExecuteModuleCommand(Window w, int module, char *text)
+{
+	XEvent e;
+	const exec_context_t *exc;
+	exec_context_changes_t ecc;
+
+	if (XFindContext(dpy, w, FvwmContext, (caddr_t *)&ecc.w.fw) == XCNOENT)
+	{
+		ecc.w.fw = NULL;
+		w = None;
+	}
+	/* Query the pointer, the pager-drag-out feature doesn't work properly.
+	 * This is OK now that the Pager uses "Move pointer"
+	 * A real fix would be for the modules to pass the button press coords
+	 */
+	if (FQueryPointer(
+		    dpy, Scr.Root, &JunkRoot, &JunkChild, &JunkX,&JunkY,
+		    &e.xbutton.x_root, &e.xbutton.y_root, &JunkMask) ==
+	    False)
+	{
+		/* pointer is not on this screen */
+		/* If a module does XUngrabPointer(), it can now get proper
+		 * Popups */
+		e.xbutton.window = Scr.Root;
+		ecc.w.fw = NULL;
+	}
+	else
+	{
+		e.xbutton.window = w;
+	}
+	e.xbutton.subwindow = None;
+	e.xbutton.button = 1;
+	/* If a module does XUngrabPointer(), it can now get proper Popups */
+	if (StrEquals(text, "popup"))
+	{
+		e.xbutton.type = ButtonPress;
+	}
+	else
+	{
+		e.xbutton.type = ButtonRelease;
+	}
+	e.xbutton.x = 0;
+	e.xbutton.y = 0;
+	fev_fake_event(&e);
+	ecc.type = EXCT_MODULE;
+	ecc.w.w = w;
+	ecc.w.wcontext = GetContext(NULL, ecc.w.fw, &e, &w);
+	ecc.x.etrigger = &e;
+	exc = exc_create_context(
+		&ecc, ECC_TYPE | ECC_ETRIGGER | ECC_FW | ECC_W | ECC_WCONTEXT);
+	execute_function(NULL, exc, text, 0);
+	exc_destroy_context(exc);
+
+	return;
+}
+
 /* read input from a module and either execute it or queue it
  * returns True and does NOP if the module input matches the expect string */
 Bool HandleModuleInput(Window w, int module, char *expect, Bool queue)
@@ -651,9 +708,10 @@ Bool HandleModuleInput(Window w, int module, char *expect, Bool queue)
 	n = read(channel, &size, sizeof(size));
 	if (n < sizeof(size))
 	{
-		fvwm_msg(ERR, "HandleModuleInput",
-			 "Fail to read (Module: %i, read: %i, size: %i)",
-			 module, n, sizeof(size));
+		fvwm_msg(
+			ERR, "HandleModuleInput",
+			"Fail to read (Module: %i, read: %i, size: %i)",
+			module, n, sizeof(size));
 		KillModule(module);
 		return False;
 	}
@@ -717,58 +775,6 @@ Bool HandleModuleInput(Window w, int module, char *expect, Bool queue)
 	}
 
 	return False;
-}
-
-/* run the command as if it cames from a button press or release */
-void ExecuteModuleCommand(Window w, int module, char *text)
-{
-	int context;
-	FvwmWindow *fw;
-	XEvent e;
-
-	if (XFindContext (dpy, w, FvwmContext, (caddr_t *) &fw) == XCNOENT)
-	{
-		fw = NULL;
-		w = None;
-	}
-
-	/* Query the pointer, the pager-drag-out feature doesn't work properly.
-	 * This is OK now that the Pager uses "Move pointer"
-	 * A real fix would be for the modules to pass the button press coords
-	 */
-	if (FQueryPointer(
-		    dpy, Scr.Root, &JunkRoot, &JunkChild, &JunkX,&JunkY,
-		    &e.xbutton.x_root, &e.xbutton.y_root, &JunkMask) ==
-	    False)
-	{
-		/* pointer is not on this screen */
-		/* If a module does XUngrabPointer(), it can now get proper
-		 * Popups */
-		e.xbutton.window = Scr.Root;
-		fw = NULL;
-	}
-	else
-	{
-		e.xbutton.window = w;
-	}
-	e.xbutton.subwindow = None;
-	e.xbutton.button = 1;
-	/* If a module does XUngrabPointer(), it can now get proper Popups */
-	if (StrEquals(text, "popup"))
-	{
-		e.xbutton.type = ButtonPress;
-	}
-	else
-	{
-		e.xbutton.type = ButtonRelease;
-	}
-	e.xbutton.x = 0;
-	e.xbutton.y = 0;
-	fev_fake_event(&e);
-	context = GetContext(NULL, fw, &e, &w);
-	old_execute_function(NULL, text, fw, &e, context, module, 0, NULL);
-
-	return;
 }
 
 RETSIGTYPE DeadPipe(int sig)
@@ -1918,117 +1924,111 @@ void ExecuteCommandQueue(void)
 void CMD_Send_WindowList(F_CMD_ARGS)
 {
 	FvwmWindow *t;
+	int mod = exc->m.modnum;
 
-	if (*Module >= 0)
+	if (mod < 0)
 	{
-		SendPacket(*Module, M_NEW_DESK, 1, Scr.CurrentDesk);
+		return;
+	}
+	SendPacket(mod, M_NEW_DESK, 1, Scr.CurrentDesk);
+	SendPacket(
+		mod, M_NEW_PAGE, 5, Scr.Vx, Scr.Vy, Scr.CurrentDesk, Scr.VxMax,
+		Scr.VyMax);
+
+	if (Scr.Hilite != NULL)
+	{
 		SendPacket(
-			*Module, M_NEW_PAGE, 5,
-			Scr.Vx, Scr.Vy, Scr.CurrentDesk, Scr.VxMax, Scr.VyMax);
+			mod, M_FOCUS_CHANGE, 5, FW_W(Scr.Hilite),
+			FW_W_FRAME(Scr.Hilite), (unsigned long)True,
+			Scr.Hilite->hicolors.fore, Scr.Hilite->hicolors.back);
+	}
+	else
+	{
+		SendPacket(
+			mod, M_FOCUS_CHANGE, 5, 0, 0, (unsigned long)True,
+			GetColor(DEFAULT_FORE_COLOR),
+			GetColor(DEFAULT_BACK_COLOR));
+	}
+	if (Scr.DefaultIcon != NULL)
+	{
+		SendName(mod, M_DEFAULTICON, 0, 0, 0, Scr.DefaultIcon);
+	}
 
-		if (Scr.Hilite != NULL)
+	for (t = Scr.FvwmRoot.next; t != NULL; t = t->next)
+	{
+		SendConfig(mod,M_CONFIGURE_WINDOW,t);
+		SendName(
+			mod, M_WINDOW_NAME, FW_W(t), FW_W_FRAME(t),
+			(unsigned long)t, t->name.name);
+		SendName(
+			mod, M_ICON_NAME, FW_W(t), FW_W_FRAME(t),
+			(unsigned long)t, t->icon_name.name);
+		SendName(
+			mod, M_VISIBLE_NAME, FW_W(t), FW_W_FRAME(t),
+			(unsigned long)t, t->visible_name);
+		SendName(
+			mod, MX_VISIBLE_ICON_NAME, FW_W(t), FW_W_FRAME(t),
+			(unsigned long)t,t->visible_icon_name);
+		if (t->icon_bitmap_file != NULL
+		    && t->icon_bitmap_file != Scr.DefaultIcon)
 		{
-			SendPacket(
-				*Module, M_FOCUS_CHANGE, 5, FW_W(Scr.Hilite),
-				FW_W_FRAME(Scr.Hilite), (unsigned long)True,
-				Scr.Hilite->hicolors.fore,
-				Scr.Hilite->hicolors.back);
+			SendName(
+				mod, M_ICON_FILE, FW_W(t), FW_W_FRAME(t),
+				(unsigned long)t, t->icon_bitmap_file);
 		}
-		else
+
+		SendName(
+			mod, M_RES_CLASS, FW_W(t), FW_W_FRAME(t),
+			(unsigned long)t, t->class.res_class);
+		SendName(
+			mod, M_RES_NAME, FW_W(t), FW_W_FRAME(t),
+			(unsigned long)t, t->class.res_name);
+
+		if (IS_ICONIFIED(t) && !IS_ICON_UNMAPPED(t))
 		{
-			SendPacket(
-				*Module, M_FOCUS_CHANGE, 5, 0, 0,
-				(unsigned long)True,
-				GetColor(DEFAULT_FORE_COLOR),
-				GetColor(DEFAULT_BACK_COLOR));
-		}
-		if (Scr.DefaultIcon != NULL)
-		{
-			SendName(
-				*Module, M_DEFAULTICON, 0, 0, 0,
-				Scr.DefaultIcon);
-		}
+			rectangle r;
+			Bool rc;
 
-		for (t = Scr.FvwmRoot.next; t != NULL; t = t->next)
-		{
-			SendConfig(*Module,M_CONFIGURE_WINDOW,t);
-			SendName(
-				*Module, M_WINDOW_NAME, FW_W(t), FW_W_FRAME(t),
-				(unsigned long)t, t->name.name);
-			SendName(
-				*Module, M_ICON_NAME, FW_W(t), FW_W_FRAME(t),
-				(unsigned long)t, t->icon_name.name);
-			SendName(
-				*Module, M_VISIBLE_NAME, FW_W(t), FW_W_FRAME(t),
-				(unsigned long)t, t->visible_name);
-			SendName(
-				*Module, MX_VISIBLE_ICON_NAME, FW_W(t),
-				FW_W_FRAME(t),
-				(unsigned long)t,t->visible_icon_name);
-			if (t->icon_bitmap_file != NULL
-			    && t->icon_bitmap_file != Scr.DefaultIcon)
-			{
-				SendName(*Module, M_ICON_FILE, FW_W(t),
-					 FW_W_FRAME(t), (unsigned long)t,
-					 t->icon_bitmap_file);
-			}
-
-			SendName(
-				*Module, M_RES_CLASS, FW_W(t), FW_W_FRAME(t),
-				(unsigned long)t, t->class.res_class);
-			SendName(
-				*Module, M_RES_NAME, FW_W(t), FW_W_FRAME(t),
-				(unsigned long)t, t->class.res_name);
-
-			if ((IS_ICONIFIED(t))&&(!IS_ICON_UNMAPPED(t)))
-			{
-				rectangle r;
-				Bool rc;
-
-				rc = get_visible_icon_geometry(t, &r);
-				if (rc == True)
-				{
-					SendPacket(
-						*Module, M_ICONIFY, 7, FW_W(t),
-						FW_W_FRAME(t), (unsigned long)t,
-						r.x, r.y, r.width, r.height);
-				}
-			}
-
-			if ((IS_ICONIFIED(t))&&(IS_ICON_UNMAPPED(t)))
+			rc = get_visible_icon_geometry(t, &r);
+			if (rc == True)
 			{
 				SendPacket(
-					*Module, M_ICONIFY, 7, FW_W(t),
-					FW_W_FRAME(t), (unsigned long)t, 0, 0,
-					0, 0);
-			}
-			if (FMiniIconsSupported && t->mini_icon != NULL)
-			{
-				SendFvwmPicture(
-					*Module, M_MINI_ICON, FW_W(t),
-					FW_W_FRAME(t), (unsigned long)t,
-					t->mini_icon, t->mini_pixmap_file);
+					mod, M_ICONIFY, 7, FW_W(t),
+					FW_W_FRAME(t), (unsigned long)t, r.x,
+					r.y, r.width, r.height);
 			}
 		}
-
-		if (Scr.Hilite == NULL)
+		if ((IS_ICONIFIED(t))&&(IS_ICON_UNMAPPED(t)))
 		{
-			BroadcastPacket(
-				M_FOCUS_CHANGE, 5, 0, 0, (unsigned long)True,
-				GetColor(DEFAULT_FORE_COLOR),
-				GetColor(DEFAULT_BACK_COLOR));
+			SendPacket(
+				mod, M_ICONIFY, 7, FW_W(t), FW_W_FRAME(t),
+				(unsigned long)t, 0, 0, 0, 0);
 		}
-		else
+		if (FMiniIconsSupported && t->mini_icon != NULL)
 		{
-			BroadcastPacket(
-				M_FOCUS_CHANGE, 5, FW_W(Scr.Hilite),
-				FW_W(Scr.Hilite), (unsigned long)True,
-				Scr.Hilite->hicolors.fore,
-				Scr.Hilite->hicolors.back);
+			SendFvwmPicture(
+				mod, M_MINI_ICON, FW_W(t), FW_W_FRAME(t),
+				(unsigned long)t, t->mini_icon,
+				t->mini_pixmap_file);
 		}
-
-		SendPacket(*Module, M_END_WINDOWLIST, 0);
 	}
+
+	if (Scr.Hilite == NULL)
+	{
+		BroadcastPacket(
+			M_FOCUS_CHANGE, 5, 0, 0, (unsigned long)True,
+			GetColor(DEFAULT_FORE_COLOR),
+			GetColor(DEFAULT_BACK_COLOR));
+	}
+	else
+	{
+		BroadcastPacket(
+			M_FOCUS_CHANGE, 5, FW_W(Scr.Hilite), FW_W(Scr.Hilite),
+			(unsigned long)True, Scr.Hilite->hicolors.fore,
+			Scr.Hilite->hicolors.back);
+	}
+
+	SendPacket(mod, M_END_WINDOWLIST, 0);
 
 	return;
 }
@@ -2037,12 +2037,15 @@ void CMD_set_mask(F_CMD_ARGS)
 {
 	unsigned long val;
 
-	/*GetIntegerArguments(action, NULL, &val, 1);*/
-	if (!action || sscanf(action,"%lu",&val) != 1)
+	if (exc->m.modnum < 0)
+	{
+		return;
+	}
+	if (!action || sscanf(action, "%lu", &val) != 1)
 	{
 		val = 0;
 	}
-	set_message_mask(&PipeMask[*Module], (unsigned long)val);
+	set_message_mask(&PipeMask[exc->m.modnum], (unsigned long)val);
 
 	return;
 }
@@ -2051,11 +2054,15 @@ void CMD_set_sync_mask(F_CMD_ARGS)
 {
 	unsigned long val;
 
+	if (exc->m.modnum < 0)
+	{
+		return;
+	}
 	if (!action || sscanf(action,"%lu",&val) != 1)
 	{
 		val = 0;
 	}
-	set_message_mask(&SyncMask[*Module], (unsigned long)val);
+	set_message_mask(&SyncMask[exc->m.modnum], (unsigned long)val);
 
 	return;
 }
@@ -2064,11 +2071,15 @@ void CMD_set_nograb_mask(F_CMD_ARGS)
 {
 	unsigned long val;
 
+	if (exc->m.modnum < 0)
+	{
+		return;
+	}
 	if (!action || sscanf(action,"%lu",&val) != 1)
 	{
 		val = 0;
 	}
-	set_message_mask(&NoGrabMask[*Module], (unsigned long)val);
+	set_message_mask(&NoGrabMask[exc->m.modnum], (unsigned long)val);
 
 	return;
 }

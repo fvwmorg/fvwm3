@@ -23,7 +23,7 @@
  ****************************************************************************/
 
 /* IMPORTANT NOTE: Do *not* use any constant numbers in this file. All values
- * have to be #defined in the section below or defaults.h to ensure full
+ * have to be #defined in the section below or in defaults.h to ensure full
  * control over the menus. */
 
 /* ---------------------------- included header files ----------------------- */
@@ -42,6 +42,7 @@
 #include "libs/PictureGraphics.h"
 #include "fvwm.h"
 #include "externs.h"
+#include "execcontext.h"
 #include "events.h"
 #include "eventhandler.h"
 #include "eventmask.h"
@@ -66,10 +67,6 @@
 
 /* This external is safe. It's written only during startup. */
 extern XContext MenuContext;
-
-/* We need to use this structure to make sure the other parts of fvwm work with
- * the most recent event. */
-extern XEvent Event;
 
 /* ---------------------------- included code files ------------------------- */
 
@@ -181,7 +178,6 @@ typedef struct
 
 typedef struct
 {
-	XEvent *e;
 	MenuRoot *mrPopup;
 	MenuRoot *mrPopdown;
 	mloop_flags_t mif;
@@ -719,7 +715,7 @@ static void handle_emacs_bindings(
  * Procedure
  *      menuShortcuts() - Menu keyboard processing
  *
- * Function called from __menu_loop instead of Keyboard_Shortcuts()
+ * Function called instead of Keyboard_Shortcuts()
  * when a KeyPress event is received.  If the key is alphanumeric,
  * then the menu is scanned for a matching hot key.  Otherwise if
  * it was the escape key then the menu processing is aborted.
@@ -1215,7 +1211,7 @@ static Bool is_double_click(
 	Time t0, MenuItem *mi, MenuParameters *pmp, MenuReturn *pmret,
 	double_keypress *pdkp, Bool has_mouse_moved)
 {
-	if (Event.type == KeyPress)
+	if (pmp->exc->x.elast->type == KeyPress)
 	{
 		return False;
 	}
@@ -3600,8 +3596,10 @@ static int pop_menu_up(
 		char *menu_name;
 		saved_pos_hints pos_hints;
 		Bool is_busy_grabbed = False;
-		exec_func_args_type efa;
 		int mapped_copies = MR_MAPPED_COPIES(mr);
+		const exec_context_t *exc;
+		exec_context_changes_t ecc;
+		int old_emf;
 
 		/* save variables that we still need but that may be
 		 * overwritten */
@@ -3612,16 +3610,17 @@ static int pop_menu_up(
 			is_busy_grabbed = GrabEm(CRS_WAIT, GRAB_BUSYMENU);
 		}
 		/* Execute the action */
-		memset(&efa, 0, sizeof(efa));
-		efa.cond_rc = NULL;
-		efa.eventp = &Event;
-		efa.fw = *pfw;
-		efa.action = MR_POPUP_ACTION(mr);
-		efa.context = *pcontext;
-		efa.module = -2;
-		efa.flags.do_save_tmpwin = 1;
-		efa.flags.exec = FUNC_DONT_EXPAND_COMMAND;
-		execute_function(&efa);
+		ecc.w.fw = *pfw;
+		ecc.w.w = (*pfw) ? FW_W(*pfw) : None;
+		ecc.w.wcontext = *pcontext;
+		exc = exc_create_context(&ecc, ECC_FW | ECC_W | ECC_WCONTEXT);
+		old_emf = Scr.flags.is_executing_menu_function;
+		Scr.flags.is_executing_menu_function = 1;
+		execute_function(
+			NULL, exc, MR_POPUP_ACTION(mr),
+			FUNC_DONT_EXPAND_COMMAND);
+		Scr.flags.is_executing_menu_function = old_emf;
+		exc_destroy_context(exc);
 		if (is_busy_grabbed)
 		{
 			UngrabEm(GRAB_BUSYMENU);
@@ -4247,22 +4246,25 @@ static void pop_menu_down(MenuRoot **pmr, MenuParameters *pmp)
 	{
 		/* Finally execute the popdown action (if defined). */
 		saved_pos_hints pos_hints;
-		exec_func_args_type efa;
+		const exec_context_t *exc;
+		exec_context_changes_t ecc;
+		int old_emf;
 
 		/* save variables that we still need but that may be
 		 * overwritten */
 		pos_hints = last_saved_pos_hints;
 		/* Execute the action */
-		memset(&efa, 0, sizeof(efa));
-		efa.cond_rc = NULL;
-		efa.eventp = &Event;
-		efa.fw = (*pmp->pfw);
-		efa.action = MR_POPDOWN_ACTION(*pmr);
-		efa.context = *(pmp->pcontext);
-		efa.module = -2;
-		efa.flags.do_save_tmpwin = 1;
-		efa.flags.exec = FUNC_DONT_EXPAND_COMMAND;
-		execute_function(&efa);
+		ecc.w.fw = *pmp->pfw;
+		ecc.w.w = (*pmp->pfw) ? FW_W(*pmp->pfw) : None;
+		ecc.w.wcontext = *pmp->pcontext;
+		exc = exc_create_context(&ecc, ECC_FW | ECC_W | ECC_WCONTEXT);
+		old_emf = Scr.flags.is_executing_menu_function;
+		Scr.flags.is_executing_menu_function = 1;
+		execute_function(
+			NULL, exc, MR_POPDOWN_ACTION(*pmr),
+			FUNC_DONT_EXPAND_COMMAND);
+		Scr.flags.is_executing_menu_function = old_emf;
+		exc_destroy_context(exc);
 		/* restore the stuff we saved */
 		last_saved_pos_hints = pos_hints;
 		if (!check_if_fvwm_window_exists(*(pmp->pfw)))
@@ -4369,7 +4371,6 @@ static void __mloop_init(
 	MenuOptions *pops)
 {
 	memset(in, 0, sizeof(*in));
-	in->e = &Event;
 	in->mif.do_force_reposition = 1;
 	memset(med, 0, sizeof(*med));
 	msi->t0 = fev_get_evtime();
@@ -4395,10 +4396,9 @@ static void __mloop_get_event_timeout_loop(
 	MenuParameters *pmp,
 	mloop_evh_input_t *in, mloop_evh_data_t *med, mloop_static_info_t *msi)
 {
-	XEvent evdummy;
+	XEvent e = *pmp->exc->x.elast;
 
-	while (!FPending(dpy) || !FCheckMaskEvent(
-		       dpy, msi->event_mask, &evdummy))
+	while (!FPending(dpy) || !FCheckMaskEvent(dpy, msi->event_mask, &e))
 	{
 		Bool is_popup_timed_out =
 			(MST_POPUP_DELAY(pmp->menu) > 0 &&
@@ -4480,8 +4480,9 @@ static void __mloop_get_event_timeout_loop(
 		if (do_fake_motion)
 		{
 			/* fake a motion event, and set in->mif.do_popup_now */
-			Event.type = MotionNotify;
-			Event.xmotion.time = fev_get_evtime();
+			e.type = MotionNotify;
+			e.xmotion.time = fev_get_evtime();
+			fev_fake_event(&e);
 			in->mif.is_motion_faked = True;
 			break;
 		}
@@ -4495,6 +4496,8 @@ static mloop_ret_code_t __mloop_get_event(
 	MenuParameters *pmp, MenuReturn *pmret,
 	mloop_evh_input_t *in, mloop_evh_data_t *med, mloop_static_info_t *msi)
 {
+	XEvent e = *pmp->exc->x.elast;
+
 	in->mif.do_popup_and_warp = False;
 	in->mif.do_popup_now = False;
 	in->mif.do_popdown_now = False;
@@ -4503,7 +4506,7 @@ static mloop_ret_code_t __mloop_get_event(
 	if (pmp->event_propagate_to_submenu)
 	{
 		/* handle an event that was passed in from the parent menu */
-		memcpy(&Event, pmp->event_propagate_to_submenu, sizeof(XEvent));
+		fev_fake_event(pmp->event_propagate_to_submenu);
 		pmp->event_propagate_to_submenu = NULL;
 	}
 	else if (in->mif.do_recycle_event)
@@ -4517,18 +4520,18 @@ static mloop_ret_code_t __mloop_get_event(
 			pmret->rc = MENU_PROPAGATE_EVENT;
 			return MENU_MLOOP_RET_END;
 		}
-		if (Event.type == KeyPress)
+		if (pmp->exc->x.elast->type == KeyPress)
 		{
 			/* since the pointer has been warped since the key was
 			 * pressed, fake a different key press position */
 			if (FQueryPointer(
 				    dpy, Scr.Root, &JunkRoot, &JunkChild,
-				    &Event.xkey.x_root, &Event.xkey.y_root,
+				    &e.xkey.x_root, &e.xkey.y_root,
 				    &JunkX, &JunkY, &JunkMask) == False)
 			{
 				/* pointer is on a different screen */
-				Event.xkey.x_root = 0;
-				Event.xkey.y_root = 0;
+				e.xkey.x_root = 0;
+				e.xkey.y_root = 0;
 			}
 			med->mi = MR_SELECTED_ITEM(pmp->menu);
 		}
@@ -4536,7 +4539,7 @@ static mloop_ret_code_t __mloop_get_event(
 	else if (pmp->tear_off_root_menu_window != NULL &&
 		 FCheckTypedWindowEvent(
 			 dpy, FW_W_PARENT(pmp->tear_off_root_menu_window),
-			 ClientMessage, &Event))
+			 ClientMessage, &e))
 	{
 		/* Got a ClientMessage for the tear out menu */
 	}
@@ -4544,13 +4547,13 @@ static mloop_ret_code_t __mloop_get_event(
 	{
 		if (in->mif.do_force_reposition)
 		{
-			Event.type = MotionNotify;
-			Event.xmotion.time = fev_get_evtime();
+			e.type = MotionNotify;
+			e.xmotion.time = fev_get_evtime();
 			in->mif.is_motion_faked = True;
 			in->mif.do_force_reposition = False;
 			in->mif.is_popped_up_by_timeout = False;
 		}
-		else if (!FCheckMaskEvent(dpy,ExposureMask,&Event))
+		else if (!FCheckMaskEvent(dpy, ExposureMask, &e))
 		{
 			Bool is_popdown_timer_active = False;
 			Bool is_popup_timer_active = False;
@@ -4578,7 +4581,7 @@ static mloop_ret_code_t __mloop_get_event(
 			else
 			{
 				/* block until there is an event */
-				FMaskEvent(dpy, msi->event_mask, &Event);
+				FMaskEvent(dpy, msi->event_mask, &e);
 				in->mif.is_popped_up_by_timeout = False;
 			}
 		}
@@ -4589,17 +4592,17 @@ static mloop_ret_code_t __mloop_get_event(
 	} /* !in->mif.do_recycle_event */
 
 	in->mif.is_pointer_in_active_item_area = False;
-	if (Event.type == MotionNotify)
+	if (e.type == MotionNotify)
 	{
 		/* discard any extra motion events before a release */
-		while ((FCheckMaskEvent(
-				dpy,ButtonMotionMask | ButtonReleaseMask,
-				&Event)) &&
-		       (Event.type != ButtonRelease))
+		while (FCheckMaskEvent(
+			       dpy, ButtonMotionMask | ButtonReleaseMask,
+			       &e) && (e.type != ButtonRelease))
 		{
 			/* nop */
 		}
 	}
+	fev_fake_event(&e);
 
 	return MENU_MLOOP_RET_NORMAL;
 }
@@ -4611,7 +4614,7 @@ static mloop_ret_code_t __mloop_handle_event(
 	MenuRoot *tmrMi;
 
 	pmret->rc = MENU_NOP;
-	switch (in->e->type)
+	switch (pmp->exc->x.elast->type)
 	{
 	case ButtonRelease:
 		med->mi = find_entry(
@@ -4627,7 +4630,8 @@ static mloop_ret_code_t __mloop_handle_event(
 		}
 		if (med->mi != NULL)
 		{
-			if (in->e->xbutton.button == 2 && MI_IS_TITLE(med->mi))
+			if (pmp->exc->x.elast->xbutton.button == 2 &&
+			    MI_IS_TITLE(med->mi))
 			{
 				pmret->rc = MENU_TEAR_OFF;
 				return MENU_MLOOP_RET_END;
@@ -4728,8 +4732,11 @@ static mloop_ret_code_t __mloop_handle_event(
 		return MENU_MLOOP_RET_LOOP;
 
 	case KeyRelease:
-		if (in->e->xkey.keycode != MST_SELECT_ON_RELEASE_KEY(pmp->menu))
+		if (pmp->exc->x.elast->xkey.keycode !=
+		    MST_SELECT_ON_RELEASE_KEY(pmp->menu))
+		{
 			return MENU_MLOOP_RET_LOOP;
+		}
 		/* fall through to KeyPress */
 
 	case KeyPress:
@@ -4744,6 +4751,7 @@ static mloop_ret_code_t __mloop_handle_event(
 			MenuItem *l_mi;
 			MenuRoot *l_mrMi;
 			int l_x_offset;
+			XEvent e;
 
 			pmret->flags.is_menu_posted = 0;
 			l_mi = find_entry(
@@ -4760,13 +4768,17 @@ static mloop_ret_code_t __mloop_handle_event(
 				}
 			}
 			med->mi = MR_SELECTED_ITEM(pmp->menu);
-			in->e->xkey.x_root = med->x_offset;
-			in->e->xkey.y_root = menuitem_middle_y_offset(
+			e = *pmp->exc->x.elast;
+			e.xkey.x_root = med->x_offset;
+			e.xkey.y_root = menuitem_middle_y_offset(
 				med->mi, MR_STYLE(pmp->menu));
+			fev_fake_event(&e);
 		}
 
 		/* now handle the actual key press */
-		menuShortcuts(pmp->menu, pmp, pmret, in->e, &med->mi, pdkp);
+		menuShortcuts(
+			pmp->menu, pmp, pmret, pmp->exc->x.elast, &med->mi,
+			pdkp);
 		if (pmret->rc != MENU_NOP)
 		{
 			/* using a key 'unposts' the posted menu */
@@ -4859,17 +4871,18 @@ static mloop_ret_code_t __mloop_handle_event(
 
 	case Expose:
 		/* grab our expose events, let the rest go through */
-		menu_expose(in->e, (*pmp->pfw));
+		menu_expose(pmp->exc->x.elast, (*pmp->pfw));
 		/* we want to dispatch this too so window decorations get
 		 * redrawn after being obscured by menus. */
-		dispatch_event(in->e);
+		dispatch_event(pmp->exc->x.elast);
 		return MENU_MLOOP_RET_LOOP;
 
 	case ClientMessage:
-		if (in->e->xclient.format == 32 &&
-		    in->e->xclient.data.l[0] == _XA_WM_DELETE_WINDOW &&
+		if (pmp->exc->x.elast->xclient.format == 32 &&
+		    pmp->exc->x.elast->xclient.data.l[0] ==
+		    _XA_WM_DELETE_WINDOW &&
 		    pmp->tear_off_root_menu_window != NULL &&
-		    in->e->xclient.window == FW_W_PARENT(
+		    pmp->exc->x.elast->xclient.window == FW_W_PARENT(
 			    pmp->tear_off_root_menu_window))
 		{
 			/* handle deletion of tear out menus */
@@ -4897,14 +4910,14 @@ static mloop_ret_code_t __mloop_handle_event(
 	case UnmapNotify:
 		/* should never happen, but does not hurt */
 		if (pmp->tear_off_root_menu_window != NULL &&
-		    in->e->xunmap.window ==
+		    pmp->exc->x.elast->xunmap.window ==
 		    FW_W(pmp->tear_off_root_menu_window))
 		{
 			/* handle deletion of tear out menus */
 			pmret->rc = MENU_KILL_TEAR_OFF_MENU;
 			/* extra safety: pass event back to main event loop to
 			 * make sure the is destroyed */
-			FPutBackEvent(dpy, in->e);
+			FPutBackEvent(dpy, pmp->exc->x.elast);
 			return MENU_MLOOP_RET_END;
 		}
 		break;
@@ -4915,7 +4928,7 @@ static mloop_ret_code_t __mloop_handle_event(
 		 * structures.  Anyway, no events should ever get here except
 		 * to tear off menus and these must be handled individually. */
 #if 0
-		dispatch_event(in->e);
+		dispatch_event(pmp->exc->x.elast);
 #endif
 		break;
 	}
@@ -5106,7 +5119,7 @@ static mloop_ret_code_t __mloop_get_mi_actions(
 	}
 	else if (med->mi && MI_IS_POPUP(med->mi))
 	{
-		if (Event.type == ButtonPress && is_double_click(
+		if (pmp->exc->x.elast->type == ButtonPress && is_double_click(
 			    msi->t0, med->mi, pmp, pmret, pdkp,
 			    in->mif.has_mouse_moved))
 		{
@@ -5177,8 +5190,6 @@ static mloop_ret_code_t __mloop_do_popup(
 	MenuOptions *pops, MenuRoot *mrMiPopup, Bool *pdoes_submenu_overlap,
 	Bool *pdoes_popdown_submenu_overlap)
 {
-	exec_func_args_type efa;
-
 	if (!MR_IS_PAINTED(pmp->menu))
 	{
 		/* draw the parent menu if it is not already drawn */
@@ -5197,6 +5208,9 @@ static mloop_ret_code_t __mloop_do_popup(
 		char *menu_name;
 		char *action;
 		char *missing_action = MR_MISSING_SUBMENU_FUNC(pmp->menu);
+		const exec_context_t *exc;
+		exec_context_changes_t ecc;
+		int old_emf;
 
 		menu_name = PeekToken(
 			SkipNTokens(MI_ACTION(med->mi), 1), NULL);
@@ -5229,16 +5243,16 @@ static mloop_ret_code_t __mloop_do_popup(
 			is_busy_grabbed = GrabEm(CRS_WAIT, GRAB_BUSYMENU);
 		}
 		/* Execute the action */
-		memset(&efa, 0, sizeof(efa));
-		efa.cond_rc = NULL;
-		efa.eventp = &Event;
-		efa.fw = *(pmp->pfw);
-		efa.action = action;
-		efa.context = *(pmp->pcontext);
-		efa.module = -2;
-		efa.flags.exec = FUNC_DONT_EXPAND_COMMAND;
-		efa.flags.do_save_tmpwin = 1;
-		execute_function(&efa);
+		ecc.w.fw = *pmp->pfw;
+		ecc.w.w = (*pmp->pfw) ? FW_W(*pmp->pfw) : None;
+		ecc.w.wcontext = *pmp->pcontext;
+		exc = exc_create_context(&ecc, ECC_FW | ECC_W | ECC_WCONTEXT);
+		old_emf = Scr.flags.is_executing_menu_function;
+		Scr.flags.is_executing_menu_function = 1;
+		execute_function(
+			NULL, exc, action, FUNC_DONT_EXPAND_COMMAND);
+		Scr.flags.is_executing_menu_function = old_emf;
+		exc_destroy_context(exc);
 		if (is_complex_function)
 		{
 			free(action);
@@ -5327,6 +5341,7 @@ static mloop_ret_code_t __mloop_do_menu(
 
 	memset(&mp, 0, sizeof(mp));
 	mp.menu = in->mrPopup;
+	mp.exc = pmp->exc;
 	mp.parent_menu = pmp->menu;
 	mp.parent_item = med->mi;
 	mp.pfw = pmp->pfw;
@@ -5337,14 +5352,14 @@ static mloop_ret_code_t __mloop_do_menu(
 	mp.flags.is_already_mapped = in->mif.is_submenu_mapped;
 	mp.flags.is_sticky = False;
 	mp.flags.is_submenu = True;
-	mp.eventp = (in->mif.do_popup_and_warp) ? (XEvent *)1 : NULL;
+	mp.flags.is_triggered_by_keypress = !!in->mif.do_popup_and_warp;
 	mp.pops = pops;
 	mp.ret_paction = pmp->ret_paction;
 	mp.screen_origin_x = pmp->screen_origin_x;
 	mp.screen_origin_y = pmp->screen_origin_y;
 	if (in->mif.do_propagate_event_into_submenu)
 	{
-		memcpy(&e, &Event, sizeof(XEvent));
+		e = *pmp->exc->x.elast;
 		mp.event_propagate_to_submenu = &e;
 	}
 	else
@@ -5946,6 +5961,8 @@ static void menu_tear_off(MenuRoot *mr_to_copy)
 	int y = 0;
 	unsigned int add_mask = 0;
 	initial_window_options_type win_opts;
+	evh_args_t ea;
+	exec_context_changes_t ecc;
 
 	/* keep the menu open */
 	discard_window_events(MR_WINDOW(mr_to_copy), SubstructureNotifyMask);
@@ -6006,21 +6023,25 @@ static void menu_tear_off(MenuRoot *mr_to_copy)
 	}
 	free(menuclasshints.res_class);
 	free(menuclasshints.res_name);
+
 	/* manage the window */
+	memset(&win_opts, 0, sizeof(win_opts));
+	win_opts.flags.is_menu = True;
 	ev.type = MapRequest;
 	ev.xmaprequest.send_event = True;
 	ev.xmaprequest.display = dpy;
 	ev.xmaprequest.parent = Scr.Root;
 	ev.xmaprequest.window = MR_WINDOW(mr);
-	Event = ev;
-	memset(&win_opts, 0, sizeof(win_opts));
-	win_opts.flags.is_menu = True;
-	HandleMapRequestKeepRaised(None, NULL, &win_opts);
+	fev_fake_event(&ev);
+	ecc.x.etrigger = &ev;
+	ea.exc = exc_create_context(&ecc, ECC_ETRIGGER);
+	HandleMapRequestKeepRaised(&ea, None, NULL, &win_opts);
+	exc_destroy_context(ea.exc);
 
 	return;
 }
 
-void menu_enter_tear_off_menu(const FvwmWindow *fw)
+void menu_enter_tear_off_menu(const exec_context_t *exc)
 {
 	MenuRoot *mr;
 	FvwmWindow *fw2;
@@ -6029,19 +6050,27 @@ void menu_enter_tear_off_menu(const FvwmWindow *fw)
 	MenuOptions mops;
 	MenuParameters mp;
 	MenuReturn mret;
+	const exec_context_t *exc2;
+	exec_context_changes_t ecc;
 
 	if (XFindContext(
-		    dpy, FW_W(fw), MenuContext, (caddr_t *)&mr) == XCNOENT)
+		    dpy, FW_W(exc->w.fw), MenuContext,
+		    (caddr_t *)&mr) == XCNOENT)
 	{
 		return;
 	}
+	ecc.w.fw = NULL;
+	ecc.w.w = None;
+	ecc.w.wcontext = C_ROOT;
+	exc2 = exc_clone_context(exc, &ecc, ECC_FW | ECC_W | ECC_WCONTEXT);
 	memset(&mops, 0, sizeof(mops));
 	memset(&mret, 0, sizeof(MenuReturn));
 	memset(&mp, 0, sizeof(mp));
 	mp.menu = mr;
+	mp.exc = exc2;
 	fw2 = NULL;
 	mp.pfw = &fw2;
-	mp.tear_off_root_menu_window = fw;
+	mp.tear_off_root_menu_window = exc->w.fw;
 	MR_IS_TEAR_OFF_MENU(mr) = 1;
 	context = C_ROOT;
 	mp.pcontext = &context;
@@ -6049,15 +6078,15 @@ void menu_enter_tear_off_menu(const FvwmWindow *fw)
 	mp.flags.is_already_mapped = True;
 	mp.flags.is_sticky = False;
 	mp.flags.is_submenu = False;
-	mp.eventp = NULL;
 	mp.pops = &mops;
 	mp.ret_paction = &ret_action;
 	do_menu(&mp, &mret);
+	exc_destroy_context(exc2);
 
 	return;
 }
 
-void menu_close_tear_off_menu(const FvwmWindow *fw)
+void menu_close_tear_off_menu(FvwmWindow *fw)
 {
 	MenuRoot *mr;
 	MenuParameters mp;
@@ -6126,8 +6155,7 @@ void do_menu(MenuParameters *pmp, MenuReturn *pmret)
 		pmret->rc = MENU_ERROR;
 		return;
 	}
-	key_press = (pmp->eventp && (pmp->eventp == (XEvent *)1 ||
-				     pmp->eventp->type == KeyPress));
+	key_press = pmp->flags.is_triggered_by_keypress;
 
 	/* Try to pick a root-relative optimal x,y to
 	 * put the mouse right on the title w/o warping */
@@ -6255,11 +6283,11 @@ void do_menu(MenuParameters *pmp, MenuReturn *pmret)
 	}
 	else
 	{
-		if (pmp->eventp && pmp->eventp != (XEvent *)1)
+		if (pmp->flags.is_triggered_by_keypress)
 		{
 			/* we have a real key event */
-			dkp.keystate = pmp->eventp->xkey.state;
-			dkp.keycode = pmp->eventp->xkey.keycode;
+			dkp.keystate = pmp->exc->x.etrigger->xkey.state;
+			dkp.keycode = pmp->exc->x.etrigger->xkey.keycode;
 		}
 		dkp.timestamp =
 			(key_press && pmp->flags.has_default_action) ? t0 : 0;
@@ -6350,12 +6378,16 @@ void do_menu(MenuParameters *pmp, MenuReturn *pmret)
 			 * brought up with a keypress and we're returning from
 			 * a top level menu, and a button release event didn't
 			 * end it */
-			FWarpPointer(dpy, 0, Scr.Root, 0, 0, Scr.MyDisplayWidth,
-				     Scr.MyDisplayHeight, x_start, y_start);
-			if (Event.type == KeyPress)
+			FWarpPointer(
+				dpy, 0, Scr.Root, 0, 0, Scr.MyDisplayWidth,
+				Scr.MyDisplayHeight, x_start, y_start);
+			if (pmp->exc->x.elast->type == KeyPress)
 			{
-				Event.xkey.x_root = x_start;
-				Event.xkey.y_root = y_start;
+				XEvent e = *pmp->exc->x.elast;
+
+				e.xkey.x_root = x_start;
+				e.xkey.y_root = y_start;
+				fev_fake_event(&e);
 			}
 		}
 		if (pmret->rc == MENU_TEAR_OFF)
@@ -6374,20 +6406,31 @@ void do_menu(MenuParameters *pmp, MenuReturn *pmret)
 		{
 			if (pmret->rc == MENU_DONE)
 			{
+				int old_emf;
+
+				old_emf = Scr.flags.is_executing_menu_function;
 				if (pmp->ret_paction && *(pmp->ret_paction))
 				{
-					exec_func_args_type efa;
+					const exec_context_t *exc;
+					exec_context_changes_t ecc;
 
 					indirect_depth++;
-					memset(&efa, 0, sizeof(efa));
-					efa.cond_rc = NULL;
-					efa.eventp = &Event;
-					efa.fw = *(pmp->pfw);
-					efa.action = *(pmp->ret_paction);
-					efa.context = *(pmp->pcontext);
-					efa.module = -1;
-					efa.flags.do_save_tmpwin = 1;
-					execute_function(&efa);
+					/* Execute the action */
+					ecc.w.fw = *pmp->pfw;
+					ecc.w.w = (*pmp->pfw) ?
+						FW_W(*pmp->pfw) : None;
+					ecc.w.wcontext = *pmp->pcontext;
+					exc = exc_create_context(
+						&ecc, ECC_FW | ECC_W |
+						ECC_WCONTEXT);
+					Scr.flags.is_executing_menu_function =
+						1;
+					execute_function(
+						NULL, exc, *pmp->ret_paction,
+						FUNC_DONT_EXPAND_COMMAND);
+					Scr.flags.is_executing_menu_function =
+						old_emf;
+					exc_destroy_context(exc);
 					indirect_depth--;
 					free(*(pmp->ret_paction));
 					*(pmp->ret_paction) = NULL;

@@ -77,7 +77,6 @@ extern msg_masks_type *PipeMask;
  */
 
 void initModules(void);
-void ExecuteModuleCommand(Window w, int channel, char *command);
 Bool HandleModuleInput(Window w, int channel, char *expect, Bool queue);
 void KillModule(int channel);
 void ClosePipes(void);

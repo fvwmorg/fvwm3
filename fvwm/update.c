@@ -22,6 +22,7 @@
 #include "libs/fvwmlib.h"
 #include "fvwm.h"
 #include "externs.h"
+#include "execcontext.h"
 #include "cursor.h"
 #include "bindings.h"
 #include "misc.h"
@@ -79,6 +80,8 @@ static void apply_window_updates(
 	short buttons;
 	Bool is_style_initialised = False;
 	rectangle frame_g;
+	const exec_context_t *exc;
+	exec_context_changes_t ecc;
 
 	frame_g.x = t->frame_g.x;
 	frame_g.y = t->frame_g.y;
@@ -121,6 +124,10 @@ static void apply_window_updates(
 	 *
 	 * These are a bit complicated because they can move windows to a
 	 * different page or desk. */
+	ecc.w.fw = t;
+	ecc.w.w = FW_W_FRAME(t);
+	ecc.w.wcontext = C_FRAME;
+	exc = exc_create_context(&ecc, ECC_FW | ECC_W | ECC_WCONTEXT);
 	if (flags->do_update_stick_icon && IS_ICONIFIED(t) && !IS_STICKY(t))
 	{
 		if (IS_ICON_STICKY(pstyle))
@@ -128,11 +135,9 @@ static void apply_window_updates(
 			/* stick and unstick the window to force the icon on
 			 * the current page */
 			handle_stick(
-				NULL, &Event, FW_W_FRAME(t), t, C_FRAME, "", 0,
-				1);
+				NULL, exc, FW_W_FRAME(t), t, C_FRAME, "", 1);
 			handle_stick(
-				NULL, &Event, FW_W_FRAME(t), t, C_FRAME, "", 0,
-				0);
+				NULL, exc, FW_W_FRAME(t), t, C_FRAME, "", 0);
 		}
 		else
 		{
@@ -142,9 +147,10 @@ static void apply_window_updates(
 	else if (flags->do_update_stick)
 	{
 		handle_stick(
-			NULL, &Event, FW_W_FRAME(t), t, C_FRAME, "", 0,
+			NULL, exc, FW_W_FRAME(t), t, C_FRAME, "",
 			S_IS_STICKY(SCF(*pstyle)));
 	}
+	exc_destroy_context(exc);
 	if (FMiniIconsSupported && flags->do_update_mini_icon)
 	{
 		if (!HAS_EWMH_MINI_ICON(t) || DO_EWMH_MINI_ICON_OVERRIDE(t))
@@ -546,8 +552,9 @@ void destroy_scheduled_windows(void)
 	FvwmWindow *next;
 	Bool do_need_ungrab = False;
 
-	if (Scr.flags.is_executing_complex_function != 0 ||
-	    Scr.flags.is_window_scheduled_for_destroy == 0)
+	if (Scr.flags.is_executing_complex_function ||
+	    Scr.flags.is_executing_menu_function ||
+	    !Scr.flags.is_window_scheduled_for_destroy)
 	{
 		return;
 	}

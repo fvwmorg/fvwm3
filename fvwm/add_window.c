@@ -198,7 +198,7 @@ static void CaptureOneWindow(
 		fev_make_null_event(&e, dpy);
 		e.xmaprequest.window = w;
 		ecc.x.etrigger = &e;
-		ea.exc = exc_create_context(&ecc, ECC_ETRIGGER);
+		ea.exc = exc_clone_context(exc, &ecc, ECC_ETRIGGER);
 		HandleMapRequestKeepRaised(&ea, keep_on_top_win, fw, &win_opts);
 		exc_destroy_context(exc);
 
@@ -1993,7 +1993,8 @@ void setup_focus_policy(FvwmWindow *fw)
  *
  ***********************************************************************/
 FvwmWindow *AddWindow(
-	Window w, FvwmWindow *ReuseWin, initial_window_options_type *win_opts)
+	const exec_context_t *exc, FvwmWindow *ReuseWin,
+	initial_window_options_type * win_opts)
 {
 	/* new fvwm window structure */
 	register FvwmWindow *fw;
@@ -2013,6 +2014,9 @@ FvwmWindow *AddWindow(
 	size_borders b;
 	frame_move_resize_args mr_args;
 	mwtsm_state_args state_args;
+	Window w = exc->w.w;
+	const exec_context_t *exc2;
+	exec_context_changes_t ecc;
 
 	/****** init window structure ******/
 	setup_window_structure(&tmp, w, ReuseWin);
@@ -2293,29 +2297,45 @@ FvwmWindow *AddWindow(
 		 * mapped in the void. */
 		if (!IsRectangleOnThisPage(&fw->frame_g, Scr.CurrentDesk))
 		{
+			ecc.w.fw = fw;
+			ecc.w.w = FW_W_FRAME(fw);
+			ecc.w.wcontext = C_FRAME;
+			exc2 = exc_clone_context(
+				exc, &ecc, ECC_FW | ECC_W | ECC_WCONTEXT);
 			SET_STICKY(fw, 0);
 			handle_stick(
-				NULL, &Event, FW_W_FRAME(fw), fw, C_FRAME, "",
-				0, 1);
+				NULL, exc2, exc2->w.w, exc2->w.fw, C_FRAME, "",
+				1);
+			exc_destroy_context(exc2);
 		}
 	}
 
 	/****** resize window ******/
 	if (do_resize_too)
 	{
-		FWarpPointer(dpy, Scr.Root, Scr.Root, 0, 0, Scr.MyDisplayWidth,
-			     Scr.MyDisplayHeight,
-			     fw->frame_g.x + (fw->frame_g.width>>1),
-			     fw->frame_g.y + (fw->frame_g.height>>1));
-		Event.xany.type = ButtonPress;
-		Event.xbutton.button = 1;
-		Event.xbutton.x_root = fw->frame_g.x + (fw->frame_g.width>>1);
-		Event.xbutton.y_root = fw->frame_g.y + (fw->frame_g.height>>1);
-		Event.xbutton.x = (fw->frame_g.width>>1);
-		Event.xbutton.y = (fw->frame_g.height>>1);
-		Event.xbutton.subwindow = None;
-		Event.xany.window = FW_W(fw);
-		CMD_Resize(NULL, &Event , FW_W(fw), fw, C_WINDOW, "", 0);
+		XEvent e;
+
+		FWarpPointer(
+			dpy, Scr.Root, Scr.Root, 0, 0, Scr.MyDisplayWidth,
+			Scr.MyDisplayHeight,
+			fw->frame_g.x + (fw->frame_g.width>>1),
+			fw->frame_g.y + (fw->frame_g.height>>1));
+		e.xany.type = ButtonPress;
+		e.xbutton.button = 1;
+		e.xbutton.x_root = fw->frame_g.x + (fw->frame_g.width>>1);
+		e.xbutton.y_root = fw->frame_g.y + (fw->frame_g.height>>1);
+		e.xbutton.x = (fw->frame_g.width>>1);
+		e.xbutton.y = (fw->frame_g.height>>1);
+		e.xbutton.subwindow = None;
+		e.xany.window = FW_W(fw);
+		fev_fake_event(&e);
+		ecc.x.etrigger = &e;
+		ecc.w.fw = fw;
+		ecc.w.wcontext = C_WINDOW;
+		exc2 = exc_clone_context(
+			exc, &ecc, ECC_ETRIGGER | ECC_FW | ECC_WCONTEXT);
+		CMD_Resize(NULL, exc2 , FW_W(fw), fw, C_WINDOW, "");
+		exc_destroy_context(exc2);
 	}
 
 	/****** window colormap ******/
@@ -2865,7 +2885,9 @@ void destroy_window(FvwmWindow *fw)
 
 	/****** check if we have to delay window destruction ******/
 
-	if (Scr.flags.is_executing_complex_function && !DO_REUSE_DESTROYED(fw))
+	if ((Scr.flags.is_executing_complex_function ||
+	     Scr.flags.is_executing_menu_function) &&
+	    !DO_REUSE_DESTROYED(fw))
 	{
 		/* mark window for destruction */
 		SET_SCHEDULED_FOR_DESTROY(fw, 1);
@@ -3160,9 +3182,11 @@ void CaptureAllWindows(const exec_context_t *exc, Bool is_recapture)
 	win_opts.flags.is_recapture = 1;
 	if (!(Scr.flags.windows_captured)) /* initial capture? */
 	{
-		/*
-		** weed out icon windows
-		*/
+		evh_args_t ea;
+		exec_context_changes_t ecc;
+		XEvent e;
+
+		/* weed out icon windows */
 		for (i = 0; i < nchildren; i++)
 		{
 			if (children[i])
@@ -3189,18 +3213,22 @@ void CaptureAllWindows(const exec_context_t *exc, Bool is_recapture)
 				}
 			}
 		}
-		/*
-		** map all of the non-override, non-icon windows
-		*/
-		for (i=0;i<nchildren;i++)
+		/* map all of the non-override, non-icon windows */
+		e.type = MapRequest;
+		ecc.x.etrigger = &e;
+		for (i = 0; i < nchildren; i++)
 		{
+
 			if (children[i] &&
 			    MappedNotOverride(children[i], &win_opts))
 			{
 				XUnmapWindow(dpy, children[i]);
-				Event.xmaprequest.window = children[i];
+				e.xmaprequest.window = children[i];
+				ea.exc = exc_clone_context(
+					exc, &ecc, ECC_ETRIGGER);
 				HandleMapRequestKeepRaised(
-					None, NULL, &win_opts);
+					&ea, None, NULL, &win_opts);
+				exc_destroy_context(ea.exc);
 			}
 		}
 		Scr.flags.windows_captured = 1;

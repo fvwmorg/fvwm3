@@ -24,6 +24,7 @@
 #include "libs/FScreen.h"
 #include "fvwm.h"
 #include "externs.h"
+#include "execcontext.h"
 #include "cursor.h"
 #include "events.h"
 #include "eventmask.h"

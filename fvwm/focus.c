@@ -31,6 +31,8 @@
 #include "libs/fvwmlib.h"
 #include "fvwm.h"
 #include "externs.h"
+#include "execcontext.h"
+#include "eventhandler.h"
 #include "bindings.h"
 #include "misc.h"
 #include "screen.h"
@@ -112,7 +114,8 @@ static void __try_program_focus(Window w, const FvwmWindow *fw)
 	return;
 }
 
-static Bool __try_forbid_user_focus(Window w, const FvwmWindow *fw)
+static Bool __try_forbid_user_focus(
+	Window w, FvwmWindow *fw)
 {
 	if (fw == NULL ||
 	    fpol_query_allow_user_focus(&FW_FOCUS_POLICY(fw)) == True)
@@ -136,7 +139,7 @@ static Bool __try_forbid_user_focus(Window w, const FvwmWindow *fw)
 }
 
 static Bool __check_allow_focus(
-	Window w, const FvwmWindow *fw, fpol_set_focus_by_t set_by)
+	Window w, FvwmWindow *fw, fpol_set_focus_by_t set_by)
 {
 	FvwmWindow *sf;
 
@@ -162,7 +165,7 @@ static Bool __check_allow_focus(
 }
 
 static void __update_windowlist(
-	const FvwmWindow *fw, fpol_set_focus_by_t set_by,
+	FvwmWindow *fw, fpol_set_focus_by_t set_by,
 	int is_focus_by_focus_cmd)
 {
 	lastFocusType = !is_focus_by_focus_cmd;
@@ -264,7 +267,7 @@ static Bool __try_other_screen_focus(const FvwmWindow *fw)
  * Sets the input focus to the indicated window.
  ********************************************************************/
 static void __set_focus_to_fwin(
-	Window w, const FvwmWindow *fw, sftfwin_args_t *args)
+	Window w, FvwmWindow *fw, sftfwin_args_t *args)
 {
 	FvwmWindow *sf;
 
@@ -369,7 +372,7 @@ static void __set_focus_to_fwin(
 }
 
 static void set_focus_to_fwin(
-	Window w, const FvwmWindow *fw, sftfwin_args_t *args)
+	Window w, FvwmWindow *fw, sftfwin_args_t *args)
 {
 	FvwmWindow *sf;
 
@@ -412,12 +415,13 @@ static void set_focus_to_fwin(
  *
  *************************************************************************/
 static void warp_to_fvwm_window(
-	const XEvent *eventp, FvwmWindow *t, int warp_x, int x_unit, int warp_y,
+	const exec_context_t *exc, int warp_x, int x_unit, int warp_y,
 	int y_unit)
 {
 	int dx,dy;
 	int cx,cy;
 	int x,y;
+	FvwmWindow *t = exc->w.fw;
 
 	if (t == (FvwmWindow *)0 ||
 	    (IS_ICONIFIED(t) && FW_W_ICON_TITLE(t) == None))
@@ -524,7 +528,7 @@ static void warp_to_fvwm_window(
 	return;
 }
 
-static Bool focus_query_grab_buttons(const FvwmWindow *fw, Bool client_entered)
+static Bool focus_query_grab_buttons(FvwmWindow *fw, Bool client_entered)
 {
 	Bool flag;
 	Bool is_focused;
@@ -701,7 +705,7 @@ static void __activate_window_by_command(
 }
 
 static void __focus_grab_one_button(
-	const FvwmWindow *fw, int button, int grab_buttons)
+	FvwmWindow *fw, int button, int grab_buttons)
 {
 	register Bool do_grab;
 	register unsigned int mods;
@@ -770,7 +774,7 @@ Bool focus_is_focused(const FvwmWindow *fw)
 }
 
 Bool focus_query_click_to_raise(
-	const FvwmWindow *fw, Bool is_focused, int context)
+	FvwmWindow *fw, Bool is_focused, int context)
 {
 	fpol_context_t *c;
 
@@ -787,7 +791,7 @@ Bool focus_query_click_to_raise(
 }
 
 Bool focus_query_click_to_focus(
-	const FvwmWindow *fw, int context)
+	FvwmWindow *fw, int context)
 {
 	fpol_context_t *c;
 
@@ -798,7 +802,7 @@ Bool focus_query_click_to_focus(
 
 /* Takes as input the window that wants the focus and the one that currently
  * has the focus and returns if the new window should get it. */
-Bool focus_query_open_grab_focus(const FvwmWindow *fw, FvwmWindow *focus_win)
+Bool focus_query_open_grab_focus(FvwmWindow *fw, FvwmWindow *focus_win)
 {
 	if (fw == NULL)
 	{
@@ -874,7 +878,7 @@ Bool focus_query_close_release_focus(const FvwmWindow *fw)
 	return False;
 }
 
-void _focus_grab_buttons(const FvwmWindow *fw, Bool client_entered)
+static void _focus_grab_buttons(FvwmWindow *fw, Bool client_entered)
 {
 	int i;
 	Bool do_grab_window = False;
@@ -903,12 +907,12 @@ void _focus_grab_buttons(const FvwmWindow *fw, Bool client_entered)
 	return;
 }
 
-void focus_grab_buttons(const FvwmWindow *fw)
+void focus_grab_buttons(FvwmWindow *fw)
 {
         return _focus_grab_buttons(fw, False);
 }
 
-void focus_grab_buttons_client_entered(const FvwmWindow *fw)
+void focus_grab_buttons_client_entered(FvwmWindow *fw)
 {
         return _focus_grab_buttons(fw, True);
 }
@@ -942,7 +946,7 @@ void focus_grab_buttons_all(void)
 }
 
 void _SetFocusWindow(
-	const FvwmWindow *fw, Bool do_allow_force_broadcast,
+	FvwmWindow *fw, Bool do_allow_force_broadcast,
 	fpol_set_focus_by_t set_by, Bool client_entered)
 {
 	sftfwin_args_t sf_args;
@@ -953,19 +957,19 @@ void _SetFocusWindow(
 	sf_args.do_force = 1;
 	sf_args.set_by = set_by;
         if (client_entered)
-                {
-                        sf_args.client_entered = 1;
-                }
-                else
-                {
-                        sf_args.client_entered = 0;
-                }
+	{
+		sf_args.client_entered = 1;
+	}
+	else
+	{
+		sf_args.client_entered = 0;
+	}
 	set_focus_to_fwin(FW_W(fw), fw, &sf_args);
 
 	return;
 }
 
-void _ReturnFocusWindow(const FvwmWindow *fw)
+void _ReturnFocusWindow(FvwmWindow *fw)
 {
 	sftfwin_args_t sf_args;
 
@@ -1071,7 +1075,7 @@ FvwmWindow *get_focus_window(void)
 	return ScreenFocus;
 }
 
-void set_focus_window(const FvwmWindow *fw)
+void set_focus_window(FvwmWindow *fw)
 {
 	ScreenFocus = fw;
 
@@ -1083,14 +1087,14 @@ FvwmWindow *get_last_screen_focus_window(void)
 	return LastScreenFocus;
 }
 
-void set_last_screen_focus_window(const FvwmWindow *fw)
+void set_last_screen_focus_window(FvwmWindow *fw)
 {
 	LastScreenFocus = fw;
 
 	return;
 }
 
-void update_last_screen_focus_window(const FvwmWindow *fw)
+void update_last_screen_focus_window(FvwmWindow *fw)
 {
 	if (fw == LastScreenFocus)
 	{
@@ -1100,7 +1104,7 @@ void update_last_screen_focus_window(const FvwmWindow *fw)
 	return;
 }
 
-void set_focus_model(const FvwmWindow *fw)
+void set_focus_model(FvwmWindow *fw)
 {
 	if (!focus_does_accept_input_focus(fw))
 	{
@@ -1210,11 +1214,11 @@ void CMD_WarpToWindow(F_CMD_ARGS)
 		if (n == 2)
 		{
 			warp_to_fvwm_window(
-				eventp, fw, val1, val1_unit, val2, val2_unit);
+				exc, val1, val1_unit, val2, val2_unit);
 		}
 		else
 		{
-			warp_to_fvwm_window(eventp, fw, 0, 0, 0, 0);
+			warp_to_fvwm_window(exc, 0, 0, 0, 0);
 		}
 	}
 	else

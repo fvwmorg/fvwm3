@@ -12,13 +12,13 @@ libfvwm_a_SOURCES = \
 	ftime.h fvwmlib.h fvwmrect.h fvwmsignal.h gravity.c gravity.h \
 	lang-strings.h queue.h safemalloc.h setpgrp.h vpacket.h wild.h \
 	\
-	Graphics.c Parse.c PictureBase.c Picture.c Bindings.c Colorset.c \
-	Event.c envvar.c ColorUtils.c XResource.c Module.c WinMagic.c \
-	Target.c System.c FScreen.c Flocale.c Fft.c FlocaleCharset.c Ficonv.c \
-	FBidi.c PictureImageLoader.c PictureGraphics.c PictureUtils.c \
-	FRender.c FRenderInit.c XError.c fvwmsignal.c Strings.c wild.c \
-	safemalloc.c Pointer.c debug.c Grab.c ClientMsg.c fvwmrect.c Cursor.c \
-	setpgrp.c queue.c FShape.c FEvent.c
+	Flocale.c PictureUtils.c FScreen.c Graphics.c PictureGraphics.c \
+	Bindings.c FlocaleCharset.c Parse.c PictureImageLoader.c Colorset.c \
+	ColorUtils.c Module.c FRender.c Ficonv.c envvar.c Fft.c gravity.c \
+	XResource.c FEvent.c WinMagic.c Target.c Picture.c XError.c queue.c \
+	fvwmsignal.c System.c PictureBase.c Cursor.c Strings.c fvwmrect.c \
+	FRenderInit.c debug.c safemalloc.c FBidi.c wild.c Pointer.c Grab.c \
+	Event.c ClientMsg.c setpgrp.c FShape.c
 
 libfvwm_a_LIBADD = @LIBOBJS@ @ALLOCA@
 

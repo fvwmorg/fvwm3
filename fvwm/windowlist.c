@@ -184,7 +184,6 @@ void CMD_WindowList(F_CMD_ARGS)
 	char *tfunc = NULL;
 	char *default_action = NULL;
 	MenuReturn mret;
-	const XEvent *teventp;
 	MenuOptions mops;
 	int low_layer = 0;  /* show all layers by default */
 	int high_layer = INT_MAX;
@@ -955,15 +954,6 @@ void CMD_WindowList(F_CMD_ARGS)
 	{
 		free(iconifiedList);
 	}
-	if (!default_action && eventp && eventp->type == KeyPress)
-	{
-		teventp = (XEvent *)1;
-	}
-	else
-	{
-		teventp = eventp;
-	}
-
 	/* Use the WindowList menu style is there is one */
 	change_mr_menu_style(mr, "WindowList");
 
@@ -987,18 +977,19 @@ void CMD_WindowList(F_CMD_ARGS)
 
 	memset(&mp, 0, sizeof(mp));
 	mp.menu = mr;
+	mp.exc = exc;
 	t = exc->w.fw;
 	mp.pfw = &t;
-	tc = context;
+	tc = exc->w.wcontext;
 	mp.pcontext = &tc;
 	mp.flags.has_default_action = (default_action && *default_action != 0);
-	mp.flags.is_sticky = True;
-	mp.flags.is_submenu = False;
-	mp.flags.is_already_mapped = False;
-	mp.eventp = teventp;
+	mp.flags.is_sticky = 1;
+	mp.flags.is_submenu = 0;
+	mp.flags.is_already_mapped = 0;
+	mp.flags.is_triggered_by_keypress =
+		(!default_action && exc->x.etrigger->type == KeyPress);
 	mp.pops = &mops;
 	mp.ret_paction = &ret_action;
-
 	do_menu(&mp, &mret);
 	/* Restore old menu style */
 	MST_SELECT_ON_RELEASE_KEY(mr) = old_sor_keycode;
@@ -1009,9 +1000,7 @@ void CMD_WindowList(F_CMD_ARGS)
 	DestroyMenu(mr, False, False);
 	if (mret.rc == MENU_DOUBLE_CLICKED && default_action && *default_action)
 	{
-		old_execute_function(
-			cond_rc, default_action, fw, eventp, context, *Module,
-			0, NULL);
+		execute_function(cond_rc, exc, default_action, 0);
 	}
 	if (default_action != NULL)
 	{

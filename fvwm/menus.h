@@ -272,10 +272,12 @@ typedef struct
 	MenuRoot *menu;
 	MenuRoot *parent_menu;
 	MenuItem *parent_item;
+	const exec_context_t *exc;
+	/*!!!remove these for (replaced by exc) */
 	FvwmWindow **pfw;
 	FvwmWindow *tear_off_root_menu_window;
 	int *pcontext;
-	const XEvent *eventp;
+	/*!!!*/
 	char **ret_paction;
 	XEvent *event_propagate_to_submenu;
 	MenuOptions *pops;
@@ -291,6 +293,7 @@ typedef struct
 		unsigned is_invoked_by_key_press : 1;
 		unsigned is_sticky : 1;
 		unsigned is_submenu : 1;
+		unsigned is_triggered_by_keypress : 1;
 	} flags;
 } MenuParameters;
 
@@ -346,8 +349,8 @@ void menus_remove_style_from_menus(MenuStyle *ms);
 MenuRoot *FollowMenuContinuations(MenuRoot *mr,MenuRoot **pmrPrior);
 MenuRoot *NewMenuRoot(char *name);
 void AddToMenu(MenuRoot *, char *, char *, Bool, Bool, Bool);
-void menu_enter_tear_off_menu(const FvwmWindow *fw);
-void menu_close_tear_off_menu(const FvwmWindow *fw);
+void menu_enter_tear_off_menu(const exec_context_t *exc);
+void menu_close_tear_off_menu(FvwmWindow *fw);
 void do_menu(MenuParameters *pmp, MenuReturn *pret);
 char *get_menu_options(
 	char *action, Window w, FvwmWindow *fw, XEvent *e, MenuRoot *mr,

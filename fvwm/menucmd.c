@@ -64,7 +64,6 @@ static void menu_func(F_CMD_ARGS, Bool fStaysUp)
 	char *ret_action = NULL;
 	MenuOptions mops;
 	char *menu_name = NULL;
-	const XEvent *teventp;
 	MenuParameters mp;
 	MenuReturn mret;
 	FvwmWindow *fw2;
@@ -100,34 +99,26 @@ static void menu_func(F_CMD_ARGS, Bool fStaysUp)
 		free(menu_name);
 	}
 
-	if (!action && eventp && eventp->type == KeyPress)
-	{
-		teventp = (XEvent *)1;
-	}
-	else
-	{
-		teventp = eventp;
-	}
-
 	memset(&mp, 0, sizeof(mp));
 	mp.menu = menu;
-	fw2 = fw;
-	tc = context;
+	mp.exc = exc;
+	fw2 = exc->w.fw;
 	mp.pfw = &fw2;
+	tc = exc->w.wcontext;
 	mp.pcontext = &tc;
 	MR_IS_TEAR_OFF_MENU(menu) = 0;
 	mp.flags.has_default_action = (action != NULL);
 	mp.flags.is_sticky = fStaysUp;
 	mp.flags.is_submenu = False;
 	mp.flags.is_already_mapped = False;
-	mp.eventp = teventp;
+	mp.flags.is_triggered_by_keypress =
+		(!action && exc->x.etrigger->type == KeyPress);
 	mp.pops = &mops;
 	mp.ret_paction = &ret_action;
-
 	do_menu(&mp, &mret);
 	if (mret.rc == MENU_DOUBLE_CLICKED && action)
 	{
-		old_execute_function(F_PASS_EXEC_ARGS, 0, NULL);
+		execute_function(cond_rc, exc, action, 0);
 	}
 
 	return;

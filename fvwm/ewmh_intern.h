@@ -30,7 +30,8 @@
 #include "ftime.h"
 #endif
 
-#define EWMH_CMD_ARGS FvwmWindow *fwin, XEvent *ev, window_style *style, unsigned long any
+#define EWMH_CMD_ARGS FvwmWindow *fwin, XEvent *ev, window_style *style, \
+	unsigned long any
 
 typedef struct ewmh_atom
 {

@@ -19,6 +19,7 @@
 #include "config.h"
 
 #include "fvwm.h"
+#include "execcontext.h"
 #include "commands.h"
 #include "cursor.h"
 #include "functions.h"

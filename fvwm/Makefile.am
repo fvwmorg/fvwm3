@@ -20,15 +20,15 @@ fvwm_SOURCES = \
 	read.h repeat.h execcontext.h schedule.h screen.h session.h stack.h \
 	style.h \
 	update.h virtual.h window_flags.h windowlist.h frame.h colorset.h \
-	colorset.c style.c borders.c move_resize.c builtins.c \
-	events.c add_window.c module_interface.c icons.c stack.c functions.c \
-	virtual.c session.c fvwm.c placement.c focus.c read.c misc.c \
-	conditional.c colormaps.c repeat.c decorations.c bindings.c colors.c \
-	cursor.c update.c windowlist.c modconf.c gnome.c geometry.c icccm2.c \
-	ewmh.c ewmh_events.c ewmh_icons.c ewmh_names.c ewmh_conf.c schedule.c \
-	menuitem.c menustyle.c menudim.c menucmd.c windowshade.c frame.c \
-	expand.c functable.c focus_policy.c execcontext.c menus.c
-#!!!menus.c
+	\
+	menus.c style.c events.c move_resize.c add_window.c builtins.c \
+	borders.c icons.c fvwm.c module_interface.c frame.c virtual.c stack.c \
+	ewmh.c menustyle.c session.c colorset.c placement.c functions.c \
+	gnome.c focus.c conditional.c geometry.c ewmh_events.c windowlist.c \
+	menuitem.c ewmh_icons.c decorations.c update.c expand.c misc.c \
+	functable.c bindings.c cursor.c colormaps.c ewmh_conf.c modconf.c \
+	read.c menucmd.c ewmh_names.c icccm2.c schedule.c windowshade.c \
+	focus_policy.c repeat.c execcontext.c colors.c menudim.c
 
 fvwm_DEPENDENCIES = $(top_builddir)/libs/libfvwm.a
 

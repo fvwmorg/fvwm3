@@ -22,6 +22,7 @@
 
 #include "fvwm.h"
 #include "externs.h"
+#include "execcontext.h"
 #include "misc.h"
 #include "screen.h"
 #include "eventmask.h"

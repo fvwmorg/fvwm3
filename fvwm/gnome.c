@@ -126,28 +126,29 @@
 
 /* removed Minimized - no explanation of what it really means - ambiguity */
 /* should not be here if not clear */
-#define WIN_STATE_STICKY          (1<<0)        /* everyone knows sticky */
-#define WIN_STATE_RESERVED_BIT1   (1<<1)        /* removed minimize here */
-#define WIN_STATE_MAXIMIZED_VERT  (1<<2)        /* window in maximized V state */
-#define WIN_STATE_MAXIMIZED_HORIZ (1<<3)        /* window in maximized H state */
-#define WIN_STATE_HIDDEN          (1<<4)        /* not on taskbar but window visible */
-#define WIN_STATE_SHADED          (1<<5)        /* shaded (NeXT style) */
-#define WIN_STATE_HID_WORKSPACE   (1<<6)        /* not on current desktop */
-#define WIN_STATE_HID_TRANSIENT   (1<<7)        /* Owner of transient is hidden */
-#define WIN_STATE_FIXED_POSITION  (1<<8)        /* window is fixed in position even */
-#define WIN_STATE_ARRANGE_IGNORE  (1<<9)        /* ignore for auto arranging */
-					 /* when scrolling about large */
-					 /* virtual desktops ala fvwm */
+#define WIN_STATE_STICKY          (1<<0) /* everyone knows sticky */
+#define WIN_STATE_RESERVED_BIT1   (1<<1) /* removed minimize here */
+#define WIN_STATE_MAXIMIZED_VERT  (1<<2) /* window in maximized V state */
+#define WIN_STATE_MAXIMIZED_HORIZ (1<<3) /* window in maximized H state */
+#define WIN_STATE_HIDDEN          (1<<4) /* not on taskbar but window visible */
+#define WIN_STATE_SHADED          (1<<5) /* shaded (NeXT style) */
+#define WIN_STATE_HID_WORKSPACE   (1<<6) /* not on current desktop */
+#define WIN_STATE_HID_TRANSIENT   (1<<7) /* Owner of transient is hidden */
+#define WIN_STATE_FIXED_POSITION  (1<<8) /* window is fixed in position even */
+#define WIN_STATE_ARRANGE_IGNORE  (1<<9) /* ignore for auto arranging */
+/* when scrolling about large */
+/* virtual desktops ala fvwm */
 #define XA_WIN_STATE              "_WIN_STATE"
 /* WIN_STATE = CARD32 */
 
 /* Preferences for behavior for app */
 /* ONLY the client sets this */
-#define WIN_HINTS_SKIP_FOCUS             (1<<0)         /* "alt-tab" skips this win */
-#define WIN_HINTS_SKIP_WINLIST           (1<<1)         /* not in win list */
-#define WIN_HINTS_SKIP_TASKBAR           (1<<2)         /* not on taskbar */
-#define WIN_HINTS_GROUP_TRANSIENT        (1<<3)         /* ??????? */
-#define WIN_HINTS_FOCUS_ON_CLICK         (1<<4)         /* app only accepts focus when clicked */
+#define WIN_HINTS_SKIP_FOCUS      (1<<0) /* "alt-tab" skips this win */
+#define WIN_HINTS_SKIP_WINLIST    (1<<1) /* not in win list */
+#define WIN_HINTS_SKIP_TASKBAR    (1<<2) /* not on taskbar */
+#define WIN_HINTS_GROUP_TRANSIENT (1<<3) /* ??????? */
+#define WIN_HINTS_FOCUS_ON_CLICK  (1<<4) /* app only accepts focus when clicked
+					  */
 #define XA_WIN_HINTS                     "_WIN_HINTS"
 /* WIN_HINTS = CARD32 */
 
@@ -259,35 +260,32 @@ static unsigned int gnome_max_desk = 1;
 static void *
 AtomGet(Window win, Atom to_get, Atom type, int *size)
 {
-  unsigned char      *retval;
-  Atom                type_ret;
-  unsigned long       bytes_after, num_ret;
-  int                 format_ret;
-  long                length;
-  void               *data;
+	unsigned char *retval;
+	Atom type_ret;
+	unsigned long bytes_after, num_ret;
+	int format_ret;
+	long length;
+	void *data;
 
-  retval = NULL;
-  length = 0x7fffffff;
-  XGetWindowProperty(dpy, win, to_get, 0,
-		     length,
-		     False, type,
-		     &type_ret,
-		     &format_ret,
-		     &num_ret,
-		     &bytes_after,
-		     &retval);
+	retval = NULL;
+	length = 0x7fffffff;
+	XGetWindowProperty(
+		dpy, win, to_get, 0, length, False, type, &type_ret,
+		&format_ret, &num_ret, &bytes_after, &retval);
 
-  if ((retval) && (num_ret > 0) && (format_ret > 0))
-    {
-      data = safemalloc(num_ret * (format_ret >> 3));
-      if (data)
-	memcpy(data, retval, num_ret * (format_ret >> 3));
-      XFree(retval);
-      *size = num_ret * (format_ret >> 3);
-      return data;
-    }
+	if ((retval) && (num_ret > 0) && (format_ret > 0))
+	{
+		data = safemalloc(num_ret * (format_ret >> 3));
+		if (data)
+		{
+			memcpy(data, retval, num_ret * (format_ret >> 3));
+		}
+		XFree(retval);
+		*size = num_ret * (format_ret >> 3);
+		return data;
+	}
 
-  return NULL;
+	return NULL;
 }
 
 
@@ -297,279 +295,321 @@ AtomGet(Window win, Atom to_get, Atom type, int *size)
 static void
 GNOME_GetHintIcons(FvwmWindow *fwin)
 {
-  Atom                 atom_get;
-  CARD32              *retval;
-  int                  size;
-  unsigned int         i;
-  Pixmap               pmap;
-  Pixmap               mask;
+	Atom atom_get;
+	CARD32 *retval;
+	int size;
+	unsigned int i;
+	Pixmap pmap;
+	Pixmap mask;
 
-  atom_get = XInternAtom(dpy, XA_WIN_ICONS, False);
-  retval = AtomGet(FW_W(fwin), atom_get, XA_PIXMAP, &size);
-  if (retval)
-  {
-    for (i = 0; i < (size / (sizeof(CARD32))); i += 2)
-    {
-      pmap = retval[i];
-      mask = retval[i + 1];
-    }
-    free(retval);
-  }
+	atom_get = XInternAtom(dpy, XA_WIN_ICONS, False);
+	retval = AtomGet(FW_W(fwin), atom_get, XA_PIXMAP, &size);
+	if (retval)
+	{
+		for (i = 0; i < (size / (sizeof(CARD32))); i += 2)
+		{
+			pmap = retval[i];
+			mask = retval[i + 1];
+		}
+		free(retval);
+	}
+
+	return;
 }
 
 static void
 GNOME_GetHintLayer(FvwmWindow *fwin)
 {
-  Atom atom_get;
-  CARD32 *retval;
-  int size;
+	Atom atom_get;
+	CARD32 *retval;
+	int size;
 
-  atom_get = XInternAtom(dpy, XA_WIN_LAYER, False);
-  retval = AtomGet(FW_W(fwin), atom_get, XA_CARDINAL, &size);
-  if (retval)
-  {
-    set_layer(fwin, *retval);
-    free(retval);
-  }
+	atom_get = XInternAtom(dpy, XA_WIN_LAYER, False);
+	retval = AtomGet(FW_W(fwin), atom_get, XA_CARDINAL, &size);
+	if (retval)
+	{
+		set_layer(fwin, *retval);
+		free(retval);
+	}
+
+	return;
 }
 
 static void
 GNOME_GetHintState(FvwmWindow *fwin)
 {
-  Atom atom_get;
-  CARD32 *retval;
-  int size;
+	Atom atom_get;
+	CARD32 *retval;
+	int size;
 
-  atom_get = XInternAtom(dpy, XA_WIN_STATE, False);
-  retval = AtomGet(FW_W(fwin), atom_get, XA_CARDINAL, &size);
-  if (retval)
-  {
-    if (*retval & WIN_STATE_STICKY)
-      SET_STICKY(fwin, 1);
+	atom_get = XInternAtom(dpy, XA_WIN_STATE, False);
+	retval = AtomGet(FW_W(fwin), atom_get, XA_CARDINAL, &size);
+	if (retval)
+	{
+		if (*retval & WIN_STATE_STICKY)
+		{
+			SET_STICKY(fwin, 1);
+		}
 
-    if (*retval & WIN_STATE_SHADED)
-    {
-      /* Fixme: how do we find out the correct shade direction here? */
-      SET_SHADED(fwin, 1);
-      SET_SHADED_DIR(fwin, DIR_N);
-    }
+		if (*retval & WIN_STATE_SHADED)
+		{
+			/* Fixme: how do we find out the correct shade
+			 * direction here? */
+			SET_SHADED(fwin, 1);
+			SET_SHADED_DIR(fwin, DIR_N);
+		}
 
-    if (*retval & WIN_STATE_FIXED_POSITION)
-      SET_FIXED(fwin, 1);
+		if (*retval & WIN_STATE_FIXED_POSITION)
+		{
+			SET_FIXED(fwin, 1);
+		}
 
-    free(retval);
-  }
+		free(retval);
+	}
+
+	return;
 }
 
 static void
 GNOME_GetHintAppState(FvwmWindow *fwin)
 {
-  Atom atom_get;
-  unsigned char *retval;
-  int size;
+	Atom atom_get;
+	unsigned char *retval;
+	int size;
 
-  /* have nothing interesting to do with an app state (lamp) right now */
-  atom_get = XInternAtom(dpy, XA_WIN_APP_STATE, False);
-  retval = AtomGet(FW_W(fwin), atom_get, XA_CARDINAL, &size);
-  if (retval)
-  {
-    free(retval);
-  }
+	/* have nothing interesting to do with an app state (lamp) right now */
+	atom_get = XInternAtom(dpy, XA_WIN_APP_STATE, False);
+	retval = AtomGet(FW_W(fwin), atom_get, XA_CARDINAL, &size);
+	if (retval)
+	{
+		free(retval);
+	}
+
+	return;
 }
 
 static void
 GNOME_GetHintDesktop(FvwmWindow *fwin)
 {
-  Atom atom_get;
-  unsigned char *retval;
-  int size;
-  int *desk;
+	Atom atom_get;
+	unsigned char *retval;
+	int size;
+	int *desk;
 
-  atom_get = XInternAtom(dpy, XA_WIN_WORKSPACE, False);
-  retval = AtomGet(FW_W(fwin), atom_get, XA_CARDINAL, &size);
-  if (retval)
-  {
-    desk = (int *)retval;
-    fwin->Desk = *desk;
+	atom_get = XInternAtom(dpy, XA_WIN_WORKSPACE, False);
+	retval = AtomGet(FW_W(fwin), atom_get, XA_CARDINAL, &size);
+	if (retval)
+	{
+		desk = (int *)retval;
+		fwin->Desk = *desk;
 
-    /* XXX: hide window if it's not on the current desktop! */
+		/* XXX: hide window if it's not on the current desktop! */
+		free(retval);
+	}
 
-    free(retval);
-  }
+	return;
 }
 
 static void
 GNOME_GetHint(FvwmWindow *fwin)
 {
-  Atom atom_get;
-  int *retval;
-  int size;
+	Atom atom_get;
+	int *retval;
+	int size;
 
-  atom_get = XInternAtom(dpy, XA_WIN_HINTS, False);
-  retval = AtomGet(FW_W(fwin), atom_get, XA_CARDINAL, &size);
-  if (retval)
-  {
-    if (*retval & WIN_HINTS_SKIP_WINLIST)
-      SET_DO_SKIP_WINDOW_LIST(fwin, 1);
+	atom_get = XInternAtom(dpy, XA_WIN_HINTS, False);
+	retval = AtomGet(FW_W(fwin), atom_get, XA_CARDINAL, &size);
+	if (retval)
+	{
+		if (*retval & WIN_HINTS_SKIP_WINLIST)
+		{
+			SET_DO_SKIP_WINDOW_LIST(fwin, 1);
+		}
+		/* XXX: unimplimented */
+		if (*retval & WIN_HINTS_SKIP_TASKBAR)
+		{
+			;
+		}
+		if (*retval & WIN_HINTS_SKIP_FOCUS)
+		{
+			;
+		}
+		if (*retval & WIN_HINTS_FOCUS_ON_CLICK)
+		{
+			;
+		}
+		/* if (*retval & WIN_HINTS_DO_NOT_COVER);*/
 
-    /* XXX: unimplimented */
-    if (*retval & WIN_HINTS_SKIP_TASKBAR)
-      ;
-    if (*retval & WIN_HINTS_SKIP_FOCUS)
-      ;
-    if (*retval & WIN_HINTS_FOCUS_ON_CLICK)
-      ;
-    /* if (*retval & WIN_HINTS_DO_NOT_COVER);*/
+		free(retval);
+	}
 
-    free(retval);
-  }
+	return;
 }
 
 static void
 GNOME_GetExpandedSize(FvwmWindow *fwin)
 {
-  Atom atom_get;
-  CARD32 *retval;
-  int size;
+	Atom atom_get;
+	CARD32 *retval;
+	int size;
 
-  /* unimplimented */
-  int expanded_x, expanded_y, expanded_width, expanded_height;
+	/* unimplimented */
+	int expanded_x, expanded_y, expanded_width, expanded_height;
 
-  atom_get = XInternAtom(dpy, XA_WIN_EXPANDED_SIZE, False);
-  retval = AtomGet(FW_W(fwin), atom_get, XA_CARDINAL, &size);
-  if (retval)
-  {
-    expanded_x = retval[0];
-    expanded_y = retval[1];
-    expanded_width = retval[2];
-    expanded_height = retval[3];
-    free(retval);
-  }
+	atom_get = XInternAtom(dpy, XA_WIN_EXPANDED_SIZE, False);
+	retval = AtomGet(FW_W(fwin), atom_get, XA_CARDINAL, &size);
+	if (retval)
+	{
+		expanded_x = retval[0];
+		expanded_y = retval[1];
+		expanded_width = retval[2];
+		expanded_height = retval[3];
+		free(retval);
+	}
+
+	return;
 }
 
 void
 GNOME_GetHints(FvwmWindow *fwin)
 {
-  if (DO_IGNORE_GNOME_HINTS(fwin))
-    return;
-  GNOME_GetHintDesktop(fwin);
-  GNOME_GetHintIcons(fwin);
-  GNOME_GetHintLayer(fwin);
-  GNOME_GetHintState(fwin);
-  GNOME_GetHintAppState(fwin);
-  GNOME_GetHint(fwin);
-  GNOME_GetExpandedSize(fwin);
+	if (DO_IGNORE_GNOME_HINTS(fwin))
+	{
+		return;
+	}
+	GNOME_GetHintDesktop(fwin);
+	GNOME_GetHintIcons(fwin);
+	GNOME_GetHintLayer(fwin);
+	GNOME_GetHintState(fwin);
+	GNOME_GetHintAppState(fwin);
+	GNOME_GetHint(fwin);
+	GNOME_GetExpandedSize(fwin);
+
+	return;
 }
 #endif
 
 void
 GNOME_SetHints(FvwmWindow *fwin)
 {
-  Atom atom_set;
-  int val;
+	Atom atom_set;
+	int val;
 
-  atom_set = XInternAtom(dpy, XA_WIN_STATE, False);
-  val = 0;
+	atom_set = XInternAtom(dpy, XA_WIN_STATE, False);
+	val = 0;
 
-  if (IS_STICKY(fwin))
-    val |= WIN_STATE_STICKY;
-  if (IS_SHADED(fwin))
-    val |= WIN_STATE_SHADED;
-  if (!is_function_allowed(F_MOVE, NULL, fwin, True, False))
-    val |= WIN_STATE_FIXED_POSITION;
+	if (IS_STICKY(fwin))
+	{
+		val |= WIN_STATE_STICKY;
+	}
+	if (IS_SHADED(fwin))
+	{
+		val |= WIN_STATE_SHADED;
+	}
+	if (!is_function_allowed(F_MOVE, NULL, fwin, True, False))
+	{
+		val |= WIN_STATE_FIXED_POSITION;
+	}
+	XChangeProperty(dpy, FW_W(fwin), atom_set, XA_CARDINAL, 32,
+			PropModeReplace, (unsigned char *)&val, 1);
 
-  XChangeProperty(dpy, FW_W(fwin), atom_set, XA_CARDINAL, 32,
-		  PropModeReplace, (unsigned char *)&val, 1);
+	return;
 }
 
 
 /* this duplicates most of the above... and it assumes
    that style is inizialized to zero.
- */
+*/
 void
 GNOME_GetStyle (FvwmWindow *fwin, window_style *style)
 {
-  Atom atom_get;
-  unsigned char *retval;
-  int size;
+	Atom atom_get;
+	unsigned char *retval;
+	int size;
 
-  if (S_DO_IGNORE_GNOME_HINTS(SCF(*style)))
-    return;
-  /* Desktop */
-  atom_get = XInternAtom(dpy, XA_WIN_WORKSPACE, False);
-  retval = AtomGet(FW_W(fwin), atom_get, XA_CARDINAL, &size);
-  if (retval)
-  {
-    SSET_START_DESK(*style, *(int*)retval);
-    /* Allow special case of -1 to work. */
-    if (SGET_START_DESK(*style) > -1)
-      SSET_START_DESK(*style, SGET_START_DESK(*style) + 1);
-    style->flags.use_start_on_desk = 1;
-    style->flag_mask.use_start_on_desk = 1;
-    free(retval);
-  }
+	if (S_DO_IGNORE_GNOME_HINTS(SCF(*style)))
+	{
+		return;
+	}
+	/* Desktop */
+	atom_get = XInternAtom(dpy, XA_WIN_WORKSPACE, False);
+	retval = AtomGet(FW_W(fwin), atom_get, XA_CARDINAL, &size);
+	if (retval)
+	{
+		SSET_START_DESK(*style, *(int*)retval);
+		/* Allow special case of -1 to work. */
+		if (SGET_START_DESK(*style) > -1)
+		{
+			SSET_START_DESK(*style, SGET_START_DESK(*style) + 1);
+		}
+		style->flags.use_start_on_desk = 1;
+		style->flag_mask.use_start_on_desk = 1;
+		free(retval);
+	}
 
-  /* Icons - not implemented */
+	/* Icons - not implemented */
 
-  /* Layer */
-  atom_get = XInternAtom(dpy, XA_WIN_LAYER, False);
-  retval = AtomGet(FW_W(fwin), atom_get, XA_CARDINAL, &size);
-  if (retval)
-  {
-    SSET_LAYER(*style, *(int*)retval);
-    style->flags.use_layer = (SGET_LAYER(*style) >= 0) ? 1 : 0;
-    style->flag_mask.use_layer = 1;
-    free(retval);
-  }
+	/* Layer */
+	atom_get = XInternAtom(dpy, XA_WIN_LAYER, False);
+	retval = AtomGet(FW_W(fwin), atom_get, XA_CARDINAL, &size);
+	if (retval)
+	{
+		SSET_LAYER(*style, *(int*)retval);
+		style->flags.use_layer = (SGET_LAYER(*style) >= 0) ? 1 : 0;
+		style->flag_mask.use_layer = 1;
+		free(retval);
+	}
 
-  /* State */
-  atom_get = XInternAtom(dpy, XA_WIN_STATE, False);
-  retval = AtomGet(FW_W(fwin), atom_get, XA_CARDINAL, &size);
-  if (retval)
-  {
-    if (*(int*)retval & WIN_STATE_STICKY)
-    {
-      S_SET_IS_STICKY(SCF(*style), 1);
-      S_SET_IS_STICKY(SCM(*style), 1);
-      S_SET_IS_STICKY(SCC(*style), 1);
-    }
+	/* State */
+	atom_get = XInternAtom(dpy, XA_WIN_STATE, False);
+	retval = AtomGet(FW_W(fwin), atom_get, XA_CARDINAL, &size);
+	if (retval)
+	{
+		if (*(int*)retval & WIN_STATE_STICKY)
+		{
+			S_SET_IS_STICKY(SCF(*style), 1);
+			S_SET_IS_STICKY(SCM(*style), 1);
+			S_SET_IS_STICKY(SCC(*style), 1);
+		}
 
-    if (*(int*)retval & WIN_STATE_SHADED)
-    {
-      /* unimplemented, since we don't have a
-	 start_shaded flag. SM code relies on a
-	 separate do_shade flag, but that is ugly.
-      */
-    }
+		if (*(int*)retval & WIN_STATE_SHADED)
+		{
+			/* unimplemented, since we don't have a
+			   start_shaded flag. SM code relies on a
+			   separate do_shade flag, but that is ugly.
+			*/
+		}
 
-    if ((*(int*)retval & WIN_STATE_FIXED_POSITION))
-    {
-      S_SET_IS_FIXED(SCF(*style), 1);
-      S_SET_IS_FIXED(SCM(*style), 1);
-      S_SET_IS_FIXED(SCC(*style), 1);
-    }
+		if ((*(int*)retval & WIN_STATE_FIXED_POSITION))
+		{
+			S_SET_IS_FIXED(SCF(*style), 1);
+			S_SET_IS_FIXED(SCM(*style), 1);
+			S_SET_IS_FIXED(SCC(*style), 1);
+		}
 
-    free(retval);
-  }
+		free(retval);
+	}
 
-  /* App state - not implemented */
+	/* App state - not implemented */
 
-  /* Hints */
-  atom_get = XInternAtom(dpy, XA_WIN_HINTS, False);
-  retval = AtomGet(FW_W(fwin), atom_get, XA_CARDINAL, &size);
-  if (retval)
-  {
-    if (*retval & WIN_HINTS_SKIP_WINLIST)
-    {
-      S_SET_DO_WINDOW_LIST_SKIP(SCF(*style), 1);
-      S_SET_DO_WINDOW_LIST_SKIP(SCM(*style), 1);
-      S_SET_DO_WINDOW_LIST_SKIP(SCC(*style), 1);
-    }
+	/* Hints */
+	atom_get = XInternAtom(dpy, XA_WIN_HINTS, False);
+	retval = AtomGet(FW_W(fwin), atom_get, XA_CARDINAL, &size);
+	if (retval)
+	{
+		if (*retval & WIN_HINTS_SKIP_WINLIST)
+		{
+			S_SET_DO_WINDOW_LIST_SKIP(SCF(*style), 1);
+			S_SET_DO_WINDOW_LIST_SKIP(SCM(*style), 1);
+			S_SET_DO_WINDOW_LIST_SKIP(SCC(*style), 1);
+		}
 
-    free(retval);
-  }
+		free(retval);
+	}
 
-  /* Expanded size - not implemented */
+	/* Expanded size - not implemented */
+
+	return;
 }
 
 
@@ -577,30 +617,36 @@ GNOME_GetStyle (FvwmWindow *fwin, window_style *style)
 void
 GNOME_SetDesk(FvwmWindow *fwin)
 {
-  Atom atom_set;
-  int val;
+	Atom atom_set;
+	int val;
 
-  atom_set = XInternAtom(dpy, XA_WIN_WORKSPACE, False);
-  val = fwin->Desk;
-  if (val >= gnome_max_desk)
-  {
-    GNOME_SetDeskCount();
-  }
-  XChangeProperty(dpy, FW_W(fwin), atom_set, XA_CARDINAL, 32,
-		  PropModeReplace, (unsigned char *)&val, 1);
+	atom_set = XInternAtom(dpy, XA_WIN_WORKSPACE, False);
+	val = fwin->Desk;
+	if (val >= gnome_max_desk)
+	{
+		GNOME_SetDeskCount();
+	}
+	XChangeProperty(
+		dpy, FW_W(fwin), atom_set, XA_CARDINAL, 32, PropModeReplace,
+		(unsigned char *)&val, 1);
+
+	return;
 }
 
 
 void
 GNOME_SetLayer(FvwmWindow *fwin)
 {
-  Atom atom_set;
-  int val;
+	Atom atom_set;
+	int val;
 
-  atom_set = XInternAtom(dpy, XA_WIN_LAYER, False);
-  val = get_layer(fwin);
-  XChangeProperty(dpy, FW_W(fwin), atom_set, XA_CARDINAL, 32,
-		  PropModeReplace, (unsigned char *)&val, 1);
+	atom_set = XInternAtom(dpy, XA_WIN_LAYER, False);
+	val = get_layer(fwin);
+	XChangeProperty(
+		dpy, FW_W(fwin), atom_set, XA_CARDINAL, 32, PropModeReplace,
+		(unsigned char *)&val, 1);
+
+	return;
 }
 
 
@@ -610,16 +656,17 @@ GNOME_SetLayer(FvwmWindow *fwin)
 void
 GNOME_SetAreaCount(void)
 {
-  Atom atom_set;
-  CARD32 val[2];
+	Atom atom_set;
+	CARD32 val[2];
 
-  atom_set = XInternAtom(dpy, XA_WIN_AREA_COUNT, False);
+	atom_set = XInternAtom(dpy, XA_WIN_AREA_COUNT, False);
+	val[0] = (Scr.VxMax + Scr.MyDisplayWidth) / Scr.MyDisplayWidth;
+	val[1] = (Scr.VyMax + Scr.MyDisplayHeight) / Scr.MyDisplayHeight;
+	XChangeProperty(
+		dpy, Scr.Root, atom_set, XA_CARDINAL, 32, PropModeReplace,
+		(unsigned char *)val, 2);
 
-  val[0] = (Scr.VxMax + Scr.MyDisplayWidth) / Scr.MyDisplayWidth;
-  val[1] = (Scr.VyMax + Scr.MyDisplayHeight) / Scr.MyDisplayHeight;
-
-  XChangeProperty(dpy, Scr.Root, atom_set, XA_CARDINAL, 32, PropModeReplace,
-		  (unsigned char *)val, 2);
+	return;
 }
 
 
@@ -629,16 +676,17 @@ GNOME_SetAreaCount(void)
 void
 GNOME_SetCurrentArea(void)
 {
-  Atom atom_set;
-  CARD32 val[2];
+	Atom atom_set;
+	CARD32 val[2];
 
-  atom_set = XInternAtom(dpy, XA_WIN_AREA, False);
+	atom_set = XInternAtom(dpy, XA_WIN_AREA, False);
+	val[0] = Scr.Vx / Scr.MyDisplayWidth;
+	val[1] = Scr.Vy / Scr.MyDisplayHeight;
+	XChangeProperty(
+		dpy, Scr.Root, atom_set, XA_CARDINAL, 32, PropModeReplace,
+		(unsigned char *)val, 2);
 
-  val[0] = Scr.Vx / Scr.MyDisplayWidth;
-  val[1] = Scr.Vy / Scr.MyDisplayHeight;
-
-  XChangeProperty(dpy, Scr.Root, atom_set, XA_CARDINAL, 32, PropModeReplace,
-		  (unsigned char *)val, 2);
+	return;
 }
 
 /* FIXME: what to do about negative desks ? */
@@ -646,30 +694,34 @@ GNOME_SetCurrentArea(void)
 void
 GNOME_SetDeskCount(void)
 {
-  Atom atom_set;
-  CARD32 val;
-  FvwmWindow *t;
+	Atom atom_set;
+	CARD32 val;
+	FvwmWindow *t;
 
-  atom_set = XInternAtom(dpy, XA_WIN_WORKSPACE_COUNT, False);
-  val = 0;
-  if (Scr.CurrentDesk > 0)
-    val = Scr.CurrentDesk;
-  for (t = get_next_window_in_stack_ring(&Scr.FvwmRoot);
-       t != &Scr.FvwmRoot;
-       t = get_next_window_in_stack_ring(t))
-  {
-    if (t->Desk > val)
-    {
-      val = t->Desk;
-    }
-  }
-  val++;
-  if (gnome_max_desk > val)
-  {
-    val = gnome_max_desk;
-  }
-  XChangeProperty(dpy, Scr.Root, atom_set, XA_CARDINAL, 32, PropModeReplace,
-		  (unsigned char *)&val, 1);
+	atom_set = XInternAtom(dpy, XA_WIN_WORKSPACE_COUNT, False);
+	val = 0;
+	if (Scr.CurrentDesk > 0)
+	{
+		val = Scr.CurrentDesk;
+	}
+	for (t = get_next_window_in_stack_ring(&Scr.FvwmRoot);
+	     t != &Scr.FvwmRoot; t = get_next_window_in_stack_ring(t))
+	{
+		if (t->Desk > val)
+		{
+			val = t->Desk;
+		}
+	}
+	val++;
+	if (gnome_max_desk > val)
+	{
+		val = gnome_max_desk;
+	}
+	XChangeProperty(
+		dpy, Scr.Root, atom_set, XA_CARDINAL, 32, PropModeReplace,
+		(unsigned char *)&val, 1);
+
+	return;
 }
 
 
@@ -677,19 +729,21 @@ GNOME_SetDeskCount(void)
 void
 GNOME_SetCurrentDesk(void)
 {
-  Atom atom_set;
-  CARD32 val;
+	Atom atom_set;
+	CARD32 val;
 
-  atom_set = XInternAtom(dpy, XA_WIN_WORKSPACE, False);
-  val = (CARD32) Scr.CurrentDesk;
-  if (val >= gnome_max_desk)
-  {
-    GNOME_SetDeskCount();
-  }
+	atom_set = XInternAtom(dpy, XA_WIN_WORKSPACE, False);
+	val = (CARD32) Scr.CurrentDesk;
+	if (val >= gnome_max_desk)
+	{
+		GNOME_SetDeskCount();
+	}
+	XChangeProperty(
+		dpy, Scr.Root, atom_set, XA_CARDINAL, 32, PropModeReplace,
+		(unsigned char *)&val, 1);
+	GNOME_SetCurrentArea();
 
-  XChangeProperty(dpy, Scr.Root, atom_set, XA_CARDINAL, 32, PropModeReplace,
-		  (unsigned char *)&val, 1);
-  GNOME_SetCurrentArea();
+	return;
 }
 
 
@@ -697,332 +751,352 @@ GNOME_SetCurrentDesk(void)
 void
 GNOME_SetDeskNames(void)
 {
-  Atom atom_set;
-  XTextProperty text;
-  char *names[1];
+	Atom atom_set;
+	XTextProperty text;
+	char *names[1];
 
-  atom_set = XInternAtom(dpy, XA_WIN_WORKSPACE_NAMES, False);
+	atom_set = XInternAtom(dpy, XA_WIN_WORKSPACE_NAMES, False);
+	names[0] = "GNOME Desktop";
+	if (XStringListToTextProperty(names, 1, &text))
+	{
+		XSetTextProperty(dpy, Scr.Root, &text, atom_set);
+		XFree(text.value);
+	}
 
-  names[0] = "GNOME Desktop";
-
-  if (XStringListToTextProperty(names, 1, &text))
-  {
-    XSetTextProperty(dpy, Scr.Root, &text, atom_set);
-    XFree(text.value);
-  }
+	return;
 }
 
 
 void
 GNOME_SetClientList(void)
 {
-  Atom atom_set;
-  Window wl[256];
-  int i = 0;
-  FvwmWindow *t;
+	Atom atom_set;
+	Window wl[256];
+	int i = 0;
+	FvwmWindow *t;
 
-  atom_set = XInternAtom(dpy, XA_WIN_CLIENT_LIST, False);
+	atom_set = XInternAtom(dpy, XA_WIN_CLIENT_LIST, False);
+	for (t = Scr.FvwmRoot.next; t != NULL; t = t->next)
+	{
+		if (!DO_SKIP_WINDOW_LIST(t))
+		{
+			wl[i++] = FW_W(t);
+		}
+	}
 
-  for (t = Scr.FvwmRoot.next; t != NULL; t = t->next)
-  {
-    if (!DO_SKIP_WINDOW_LIST(t))
-    {
-      wl[i++] = FW_W(t);
-    }
-  }
+	if (i > 0)
+	{
+		XChangeProperty(
+			dpy, Scr.Root, atom_set, XA_CARDINAL, 32,
+			PropModeReplace, (unsigned char *)wl, i);
+	}
+	else
+	{
+		XChangeProperty(
+			dpy, Scr.Root, atom_set, XA_CARDINAL, 32,
+			PropModeReplace, (unsigned char *)NULL, 0);
+	}
 
-  if (i > 0)
-  {
-    XChangeProperty(dpy, Scr.Root, atom_set, XA_CARDINAL, 32,
-		    PropModeReplace, (unsigned char *)wl, i);
-  }
-  else
-  {
-    XChangeProperty(dpy, Scr.Root, atom_set, XA_CARDINAL, 32,
-		    PropModeReplace, (unsigned char *)NULL, 0);
-  }
+	return;
 }
 
 void
 GNOME_SetWinArea(FvwmWindow *w)
 {
-  Atom atom_set;
-  CARD32 val[2];
+	Atom atom_set;
+	CARD32 val[2];
 
-  atom_set = XInternAtom(dpy, XA_WIN_AREA, False);
+	atom_set = XInternAtom(dpy, XA_WIN_AREA, False);
 
-  if (!DO_SKIP_WINDOW_LIST(w))
-  {
-    if (IsRectangleOnThisPage(&(w->frame_g), w->Desk))
-    {
-      val[0] = Scr.Vx / Scr.MyDisplayWidth;
-      val[1] = Scr.Vy / Scr.MyDisplayHeight;
-    }
-    else
-    {
-      val[0] = (w->frame_g.x + Scr.Vx) / Scr.MyDisplayWidth;
-      if (val[0] < 0 && w->frame_g.x + Scr.Vx + w->frame_g.width > 0)
-	val[0] = 0;
-      val[1] = (w->frame_g.y + Scr.Vy) / Scr.MyDisplayHeight;
-      if (val[1] < 0 && w->frame_g.y + Scr.Vy + w->frame_g.height > 0)
-	val[1] = 0;
-    }
-    XChangeProperty(dpy, FW_W(w), atom_set, XA_CARDINAL, 32,
-		    PropModeReplace, (unsigned char *)val, 2);
-  }
+	if (!DO_SKIP_WINDOW_LIST(w))
+	{
+		if (IsRectangleOnThisPage(&(w->frame_g), w->Desk))
+		{
+			val[0] = Scr.Vx / Scr.MyDisplayWidth;
+			val[1] = Scr.Vy / Scr.MyDisplayHeight;
+		}
+		else
+		{
+			val[0] = (w->frame_g.x + Scr.Vx) / Scr.MyDisplayWidth;
+			if (val[0] < 0 &&
+			    w->frame_g.x + Scr.Vx + w->frame_g.width > 0)
+			{
+				val[0] = 0;
+			}
+			val[1] = (w->frame_g.y + Scr.Vy) / Scr.MyDisplayHeight;
+			if (val[1] < 0 &&
+			    w->frame_g.y + Scr.Vy + w->frame_g.height > 0)
+			{
+				val[1] = 0;
+			}
+		}
+		XChangeProperty(
+			dpy, FW_W(w), atom_set, XA_CARDINAL, 32,
+			PropModeReplace, (unsigned char *)val, 2);
+	}
+
+	return;
 }
 
 void
 GNOME_Init(void)
 {
-  int i;
-  Atom atom_set, list[11];
-  CARD32 val;
+	int i;
+	Atom atom_set, list[11];
+	CARD32 val;
 
-  atom_set = XInternAtom(dpy, XA_WIN_PROTOCOLS, False);
+	atom_set = XInternAtom(dpy, XA_WIN_PROTOCOLS, False);
+	/* these indicate what GNOME compliance properties have been
+	 * implemented */
+	i = 0;
+	list[i++] = XInternAtom(dpy, XA_WIN_LAYER, False);
+	list[i++] = XInternAtom(dpy, XA_WIN_STATE, False);
+	list[i++] = XInternAtom(dpy, XA_WIN_HINTS, False);
+	/* list[i++] = XInternAtom(dpy, XA_WIN_APP_STATE, False); */
+	/* list[i++] = XInternAtom(dpy, XA_WIN_EXPANDED_SIZE, False); */
+	/* list[i++] = XInternAtom(dpy, XA_WIN_ICONS, False); */
+	list[i++] = XInternAtom(dpy, XA_WIN_WORKSPACE, False);
+	list[i++] = XInternAtom(dpy, XA_WIN_WORKSPACE_COUNT, False);
+	list[i++] = XInternAtom(dpy, XA_WIN_WORKSPACE_NAMES, False);
+	list[i++] = XInternAtom(dpy, XA_WIN_CLIENT_LIST, False);
+	list[i++] = XInternAtom(dpy, XA_WIN_DESKTOP_BUTTON_PROXY, False);
+	XChangeProperty(
+		dpy, Scr.Root, atom_set, XA_ATOM, 32, PropModeReplace,
+		(unsigned char *)list, i);
 
-  /* these indicate what GNOME compliance properties have been implemented */
-  i = 0;
-  list[i++] = XInternAtom(dpy, XA_WIN_LAYER, False);
-  list[i++] = XInternAtom(dpy, XA_WIN_STATE, False);
-  list[i++] = XInternAtom(dpy, XA_WIN_HINTS, False);
-  /* list[i++] = XInternAtom(dpy, XA_WIN_APP_STATE, False); */
-  /* list[i++] = XInternAtom(dpy, XA_WIN_EXPANDED_SIZE, False); */
-  /* list[i++] = XInternAtom(dpy, XA_WIN_ICONS, False); */
-  list[i++] = XInternAtom(dpy, XA_WIN_WORKSPACE, False);
-  list[i++] = XInternAtom(dpy, XA_WIN_WORKSPACE_COUNT, False);
-  list[i++] = XInternAtom(dpy, XA_WIN_WORKSPACE_NAMES, False);
-  list[i++] = XInternAtom(dpy, XA_WIN_CLIENT_LIST, False);
-  list[i++] = XInternAtom(dpy, XA_WIN_DESKTOP_BUTTON_PROXY, False);
+	/*--------------------------------------------------------------------
+	  why use two windows when one does just fine ?
+	  --------------------------------------------------------------------*/
+	/* create a window which is a child of the root window and set the
+	 * XA_WIN_SUPPORTING_WM_CHECK property on it, and also set the
+	 * same property on the root window with the window ID of of the
+	 * window we just created
+	 */
+	__button_proxy = XCreateWindow(dpy, Scr.Root, -10, -10, 10, 10, 0, 0,
+				       InputOnly, CopyFromParent, 0, NULL);
+	atom_set = XInternAtom(dpy, XA_WIN_SUPPORTING_WM_CHECK, False);
+	val = __button_proxy;
+	XChangeProperty(
+		dpy, Scr.Root, atom_set, XA_CARDINAL, 32, PropModeReplace,
+		(unsigned char *)&val, 1);
+	XChangeProperty(
+		dpy, __button_proxy, atom_set, XA_CARDINAL, 32,
+		PropModeReplace, (unsigned char *)&val, 1);
 
-  XChangeProperty(dpy, Scr.Root, atom_set, XA_ATOM, 32, PropModeReplace,
-		  (unsigned char *)list, i);
+	/* create a window which is the child of the root window for proxying
+	 * root window clicks
+	 */
+	atom_set = XInternAtom(dpy, XA_WIN_DESKTOP_BUTTON_PROXY, False);
+	XChangeProperty(
+		dpy, Scr.Root, atom_set, XA_CARDINAL, 32,
+		PropModeReplace, (unsigned char *)&val, 1);
+	XChangeProperty(
+		dpy, __button_proxy, atom_set, XA_CARDINAL, 32,
+		PropModeReplace, (unsigned char *)&val, 1);
 
+	/* some initial settings */
+	GNOME_SetDeskCount();
+	GNOME_SetCurrentDesk();
+	GNOME_SetDeskNames();
+	GNOME_SetAreaCount();
+	GNOME_SetCurrentArea();
+	GNOME_SetClientList();
 
-/*-----------------------------------------------------------------------
-    why use two windows when one does just fine ?
- -----------------------------------------------------------------------*/
-  /* create a window which is a child of the root window and set the
-   * XA_WIN_SUPPORTING_WM_CHECK property on it, and also set the
-   * same property on the root window with the window ID of of the
-   * window we just created
-   */
-  __button_proxy = XCreateWindow(dpy, Scr.Root, -10, -10, 10, 10, 0, 0,
-				 InputOnly, CopyFromParent, 0, NULL);
-
-  atom_set = XInternAtom(dpy, XA_WIN_SUPPORTING_WM_CHECK, False);
-  val = __button_proxy;
-  XChangeProperty(dpy, Scr.Root, atom_set, XA_CARDINAL, 32, PropModeReplace,
-		  (unsigned char *)&val, 1);
-  XChangeProperty(dpy, __button_proxy, atom_set, XA_CARDINAL, 32,
-		  PropModeReplace, (unsigned char *)&val, 1);
-
-
-  /* create a window which is the child of the root window for proxying
-   * root window clicks
-   */
-
-  atom_set = XInternAtom(dpy, XA_WIN_DESKTOP_BUTTON_PROXY, False);
-
-  XChangeProperty(dpy, Scr.Root, atom_set, XA_CARDINAL, 32,
-		  PropModeReplace, (unsigned char *)&val, 1);
-  XChangeProperty(dpy, __button_proxy, atom_set, XA_CARDINAL, 32,
-		  PropModeReplace, (unsigned char *)&val, 1);
-
-
-  /* some initial settings */
-  GNOME_SetDeskCount();
-  GNOME_SetCurrentDesk();
-  GNOME_SetDeskNames();
-
-  GNOME_SetAreaCount();
-  GNOME_SetCurrentArea();
-
-  GNOME_SetClientList();
+	return;
 }
 
 
 /*-----------------------------------------------------------------------
-    tell gnome how many desks to show
- -----------------------------------------------------------------------*/
+  tell gnome how many desks to show
+  -----------------------------------------------------------------------*/
 void
 CMD_GnomeShowDesks(F_CMD_ARGS)
 {
-  int n;
-  Atom atom_set;
-  CARD32 val[1];
+	int n;
+	Atom atom_set;
+	CARD32 val[1];
 
-  atom_set = XInternAtom(dpy, XA_WIN_WORKSPACE_COUNT, False);
+	atom_set = XInternAtom(dpy, XA_WIN_WORKSPACE_COUNT, False);
+	DBUG("GNOME_ShowDesks","Routine Entered");
+	n = GetIntegerArguments(action, NULL, (int *)val, 1);
+	if(n != 1)
+	{
+		fvwm_msg(ERR,"GnomeShowDesks","requires one argument");
+		return;
+	}
+	gnome_max_desk = val[0];
+	XChangeProperty(
+		dpy, Scr.Root, atom_set, XA_CARDINAL, 32, PropModeReplace,
+		(unsigned char *)(&val[0]), 1);
 
-  DBUG("GNOME_ShowDesks","Routine Entered");
-  n = GetIntegerArguments(action, NULL, (int *)val, 1);
-  if(n != 1)
-  {
-    fvwm_msg(ERR,"GnomeShowDesks","requires one argument");
-    return;
-  }
-  gnome_max_desk = val[0];
-  XChangeProperty(dpy, Scr.Root, atom_set, XA_CARDINAL, 32,
-		  PropModeReplace, (unsigned char *)(&val[0]), 1);
+	return;
 }
 
 
 /*** RECIVING MESSAGES ***/
 int
-GNOME_ProcessClientMessage(const FvwmWindow *fwin, const XEvent *ev)
+GNOME_ProcessClientMessage(const exec_context_t *exc)
 {
-  int x, y;
-  Atom a;
+	int x, y;
+	Atom a;
+	FvwmWindow *fwin = exc->w.fw;
+	XEvent *ev = exc->x.etrigger;
 
-  if (fwin != NULL  && DO_IGNORE_GNOME_HINTS(fwin))
-    return 0;
-  a = XInternAtom(dpy, XA_WIN_AREA, False);
-  if (ev->xclient.message_type == a)
-  {
-    /* convert to integer grid */
-    x = ev->xclient.data.l[0] * Scr.MyDisplayWidth;
-    y = ev->xclient.data.l[1] * Scr.MyDisplayHeight;
+	if (fwin != NULL  && DO_IGNORE_GNOME_HINTS(fwin))
+	{
+		return 0;
+	}
+	a = XInternAtom(dpy, XA_WIN_AREA, False);
+	if (ev->xclient.message_type == a)
+	{
+		/* convert to integer grid */
+		x = ev->xclient.data.l[0] * Scr.MyDisplayWidth;
+		y = ev->xclient.data.l[1] * Scr.MyDisplayHeight;
 
-    MoveViewport(x, y, 1);
-    return 1;
-  }
+		MoveViewport(x, y, 1);
+		return 1;
+	}
+	a = XInternAtom(dpy, XA_WIN_WORKSPACE, False);
+	if (ev->xclient.message_type == a)
+	{
+		goto_desk(ev->xclient.data.l[0]);
+		return 1;
+	}
+	a = XInternAtom(dpy, XA_WIN_LAYER, False);
+	if (ev->xclient.message_type == a && fwin)
+	{
+		new_layer(fwin, ev->xclient.data.l[0]);
+		return 1;
+	}
+	a = XInternAtom(dpy, XA_WIN_STATE, False);
+	if (ev->xclient.message_type == a && fwin)
+	{
+		GNOME_HandlePropRequest(
+			exc, ev->xclient.data.l[0], ev->xclient.data.l[1]);
+		return 1;
+	}
 
-  a = XInternAtom(dpy, XA_WIN_WORKSPACE, False);
-  if (ev->xclient.message_type == a)
-  {
-    goto_desk(ev->xclient.data.l[0]);
-    return 1;
-  }
-
-  a = XInternAtom(dpy, XA_WIN_LAYER, False);
-  if (ev->xclient.message_type == a && fwin)
-  {
-    new_layer(fwin, ev->xclient.data.l[0]);
-    return 1;
-  }
-
-  a = XInternAtom(dpy, XA_WIN_STATE, False);
-  if (ev->xclient.message_type == a && fwin)
-  {
-    GNOME_HandlePropRequest(ev->xclient.data.l[0],
-			    ev->xclient.data.l[1],
-			    ev->xclient.window,
-			    ev);
-    return 1;
-  }
-
-  return 0;
+	return 0;
 }
 
-void GNOME_HandlePropRequest(unsigned int propm,
-			     unsigned int prop,
-			     Window win,
-			     XEvent *ev)
+void GNOME_HandlePropRequest(
+	const exec_context_t *exc, unsigned int propm, unsigned int prop)
 {
-  Atom atype;
-  Atom a;
-  int aformat;
-  FvwmWindow *fwin;
-  unsigned char *indi;
-  unsigned long nitems, bytes_remain, oldprop;
-  indi = (unsigned char *)&oldprop;
-  DBUG("HandleGnomePropRequest","Routine Entered");
+	Atom atype;
+	Atom a;
+	int aformat;
+	FvwmWindow *fwin;
+	unsigned char *indi;
+	unsigned long nitems, bytes_remain, oldprop;
+	indi = (unsigned char *)&oldprop;
+	DBUG("HandleGnomePropRequest","Routine Entered");
 
-  a = XInternAtom(dpy, XA_WIN_STATE, False);
+	a = XInternAtom(dpy, XA_WIN_STATE, False);
 
-  for (fwin = Scr.FvwmRoot.next; fwin; fwin = fwin->next)
-  {
-    if (FW_W(fwin) == win)
-      break;
-  }
-/*-----------------------------------------------------------------------
-    First change the props on the window so the gnome app knows we did
-    somthing.
- -----------------------------------------------------------------------*/
+	for (fwin = Scr.FvwmRoot.next; fwin; fwin = fwin->next)
+	{
+		if (FW_W(fwin) == exc->w.w)
+		{
+			break;
+		}
+	}
+	/*--------------------------------------------------------------------
+	  First change the props on the window so the gnome app knows we did
+	  somthing.
+	  --------------------------------------------------------------------*/
 #ifdef FVWM_DEBUG_MSGS
-  fvwm_msg(DBG, "HandleGnomePropRequest", "window is %d", (int)FW_W(fwin));
+	fvwm_msg(
+		DBG, "HandleGnomePropRequest", "window is %d", (int)FW_W(fwin));
 #endif
-  if (fwin == NULL)
-    return;
-  if (DO_IGNORE_GNOME_HINTS(fwin))
-    return;
+	if (fwin == NULL)
+	{
+		return;
+	}
+	if (DO_IGNORE_GNOME_HINTS(fwin))
+	{
+		return;
+	}
 
 #ifdef FVWM_DEBUG_MSGS
-  fvwm_msg(DBG, "HandleGnomePropRequest", "prop req is %d", prop);
-  fvwm_msg(DBG, "HandleGnomePropRequest", "propm req is %d", propm);
+	fvwm_msg(DBG, "HandleGnomePropRequest", "prop req is %d", prop);
+	fvwm_msg(DBG, "HandleGnomePropRequest", "propm req is %d", propm);
 #endif
-  XGetWindowProperty(dpy, FW_W(fwin), a, 0L, 3L, False, a,
-		     &atype, &aformat, &nitems, &bytes_remain, &indi);
-  oldprop &= ~(propm);
-  oldprop |= (propm & prop);
+	XGetWindowProperty(dpy, FW_W(fwin), a, 0L, 3L, False, a,
+			   &atype, &aformat, &nitems, &bytes_remain, &indi);
+	oldprop &= ~(propm);
+	oldprop |= (propm & prop);
 #ifdef FVWM_DEBUG_MSGS
-  fvwm_msg(DBG, "HandleGnomePropRequest", "oldprop req is %d", (int)oldprop);
+	fvwm_msg(
+		DBG, "HandleGnomePropRequest", "oldprop req is %d",
+		(int)oldprop);
 #endif
-  XChangeProperty(dpy, FW_W(fwin), a, XA_CARDINAL, 32,
-		  PropModeReplace, (unsigned char *)&oldprop, 1);
+	XChangeProperty(
+		dpy, FW_W(fwin), a, XA_CARDINAL, 32, PropModeReplace,
+		(unsigned char *)&oldprop, 1);
 
-/*-----------------------------------------------------------------------
-    Then apply the requests
- -----------------------------------------------------------------------*/
+	/*--------------------------------------------------------------------
+	  Then apply the requests
+	  --------------------------------------------------------------------*/
 
-/*-----------------------------------------------------------------------
-    Sticky
- -----------------------------------------------------------------------*/
-  if (propm & WIN_STATE_STICKY)
-  {
-    if (prop & WIN_STATE_STICKY)
-    {
-      SET_STICKY(fwin, 1);
-    }
-    else
-    {
-      SET_STICKY(fwin, 0);
-    }
-    border_draw_decorations(
-      fwin, PART_TITLE, (Scr.Hilite==fwin), True, CLEAR_ALL, NULL, NULL);
-  }
-/*-----------------------------------------------------------------------
-    WindowShade
- -----------------------------------------------------------------------*/
+	/*--------------------------------------------------------------------
+	  Sticky
+	  --------------------------------------------------------------------*/
+	if (propm & WIN_STATE_STICKY)
+	{
+		if (prop & WIN_STATE_STICKY)
+		{
+			SET_STICKY(fwin, 1);
+		}
+		else
+		{
+			SET_STICKY(fwin, 0);
+		}
+		border_draw_decorations(
+			fwin, PART_TITLE, (Scr.Hilite==fwin), True, CLEAR_ALL,
+			NULL, NULL);
+	}
+	/*--------------------------------------------------------------------
+	  WindowShade
+	  --------------------------------------------------------------------*/
+	if (propm & WIN_STATE_SHADED)
+	{
+		if (prop & WIN_STATE_SHADED)
+		{
+			/* shade up */
+			execute_function_override_window(
+				NULL, exc, "WindowShade True", 0, fwin);
+		}
+		else
+		{
+			/* shade down */
+			execute_function_override_window(
+				NULL, exc, "WindowShade False", 0, fwin);
+		}
+	}
 
-  if (propm & WIN_STATE_SHADED)
-  {
-    if (prop & WIN_STATE_SHADED)
-    {
-      /* shade up */
-      old_execute_function(
-	NULL, "WindowShade True", fwin, ev, C_WINDOW, -1, 0, NULL);
-    }
-    else
-    {
-      /* shade down */
-      old_execute_function(
-	NULL, "WindowShade False", fwin, ev, C_WINDOW, -1, 0, NULL);
-
-    }
-  }
-/*-----------------------------------------------------------------------
-
- -----------------------------------------------------------------------*/
-
+	return;
 }
 
 void
 GNOME_ProxyButtonEvent(const XEvent *ev)
 {
-  switch (ev->type)
-  {
-  case ButtonPress:
-    XUngrabPointer(dpy, CurrentTime);
-    FSendEvent(
-      dpy, __button_proxy, False, SubstructureNotifyMask, (XEvent *)ev);
-    break;
+	switch (ev->type)
+	{
+	case ButtonPress:
+		XUngrabPointer(dpy, CurrentTime);
+		FSendEvent(
+			dpy, __button_proxy, False, SubstructureNotifyMask,
+			(XEvent *)ev);
+		break;
 
-  case ButtonRelease:
-    FSendEvent(
-      dpy, __button_proxy, False, SubstructureNotifyMask, (XEvent *)ev);
-    break;
-  }
+	case ButtonRelease:
+		FSendEvent(
+			dpy, __button_proxy, False, SubstructureNotifyMask,
+			(XEvent *)ev);
+		break;
+	}
+
+	return;
 }
 
 
@@ -1030,8 +1104,10 @@ GNOME_ProxyButtonEvent(const XEvent *ev)
 void
 CMD_GnomeButton(F_CMD_ARGS)
 {
-  /* send off the button press event */
-  GNOME_ProxyButtonEvent(eventp);
+	/* send off the button press event */
+	GNOME_ProxyButtonEvent(exc->x.etrigger);
+
+	return;
 }
 
 #endif /* GNOME */

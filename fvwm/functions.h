@@ -32,7 +32,7 @@ enum
 	FUNC_DECOR               = 0x08,
 	FUNC_ALLOW_UNMANAGED     = 0x10,
 	/* only to be passed to execute_function() */
-	FUNC_FLAG_IS_UNMANAGED   = 0x20,
+	FUNC_IS_UNMANAGED        = 0x20,
 	FUNC_DONT_EXPAND_COMMAND = 0x40
 };
 
@@ -66,5 +66,11 @@ Bool functions_is_complex_function(
 void execute_function(
 	fvwm_cond_func_rc *cond_rc, const exec_context_t *exc, char *action,
 	FUNC_FLAGS_TYPE exec_flags);
+void execute_function_override_wcontext(
+	fvwm_cond_func_rc *cond_rc, const exec_context_t *exc, char *action,
+	FUNC_FLAGS_TYPE exec_flags, int wcontext);
+void execute_function_override_window(
+	fvwm_cond_func_rc *cond_rc, const exec_context_t *exc, char *action,
+	FUNC_FLAGS_TYPE exec_flags, FvwmWindow *fw);
 
 #endif /* FUNCTIONS_H */

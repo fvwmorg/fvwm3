@@ -32,6 +32,7 @@
 #include "libs/ftime.h"
 #include "fvwm.h"
 #include "externs.h"
+#include "execcontext.h"
 #include "cursor.h"
 #include "misc.h"
 #include "screen.h"

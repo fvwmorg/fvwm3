@@ -597,7 +597,7 @@ static void __handle_bpress_on_root(const exec_context_t *exc)
 		exec_context_changes_t ecc;
 
 		ecc.w.wcontext = C_ROOT;
-		exc2 = exc_create_context(&ecc, ECC_WCONTEXT);
+		exc2 = exc_clone_context(exc, &ecc, ECC_WCONTEXT);
 		execute_function(NULL, exc2, action, 0);
 		exc_destroy_context(exc2);
 		WaitForButtonsUp(True);
@@ -763,16 +763,16 @@ void HandleButtonRelease(const evh_args_t *ea)
 void HandleClientMessage(const evh_args_t *ea)
 {
 	const XEvent *te = ea->exc->x.etrigger;
-	const FvwmWindow * const fw = ea->exc->w.fw;
+	FvwmWindow * const fw = ea->exc->w.fw;
 
 	DBUG("HandleClientMessage","Routine Entered");
 
 	/* Process GNOME and EWMH Messages */
-	if (GNOME_ProcessClientMessage(fw, te))
+	if (GNOME_ProcessClientMessage(ea->exc))
 	{
 		return;
 	}
-	else if (EWMH_ProcessClientMessage(fw, te))
+	else if (EWMH_ProcessClientMessage(ea->exc))
 	{
 		return;
 	}
@@ -1730,7 +1730,7 @@ ENTER_DBG((stderr, "en: set mousey focus\n"));
 	/* Check for tear off menus */
 	if (is_tear_off_menu)
 	{
-		menu_enter_tear_off_menu(fw);
+		menu_enter_tear_off_menu(ea->exc);
 	}
 
 	return;
@@ -2250,7 +2250,7 @@ void HandleMapRequestKeepRaised(
 	if (!fw || (fw && DO_REUSE_DESTROYED(fw)))
 	{
 		/* Add decorations. */
-		fw = AddWindow(ew, ReuseWin, win_opts);
+		fw = AddWindow(ea->exc, ReuseWin, win_opts);
 		if (fw == NULL)
 		{
 			return;
@@ -2774,7 +2774,7 @@ ICON_DBG((stderr,"hpn: icon changed '%s'\n", fw->name));
 		}
 		else
 		{
-			EWMH_ProcessPropertyNotify(fw, te);
+			EWMH_ProcessPropertyNotify(ea->exc);
 		}
 		break;
 	}
@@ -3984,7 +3984,7 @@ XGetGeometry(dpy, win, &JunkRoot, &x,&y,&wid,&hei,&JunkBW, &JunkMask);
 fprintf(stderr," %d (%d %d %dx%d)\n", i, x,y,wid,hei);
 	sprintf(cmd, "WindowId 0x%x WarpToWindow 99 99", (int)win);
 	fprintf(stderr, "%s\n", cmd);
-	old_execute_function(NULL, cmd, fw, eventp, C_WINDOW, *Module, 0, NULL);
+	execute_function(NULL, exc, cmd, 0);
 	last_win = win;
 	/*!!!*/
 

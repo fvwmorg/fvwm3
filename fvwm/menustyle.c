@@ -27,6 +27,7 @@
 #include "libs/PictureUtils.h"
 #include "fvwm.h"
 #include "externs.h"
+#include "execcontext.h"
 #include "functions.h"
 #include "misc.h"
 #include "screen.h"

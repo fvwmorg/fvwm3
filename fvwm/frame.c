@@ -25,6 +25,7 @@
 #include "libs/FShape.h"
 #include "fvwm.h"
 #include "externs.h"
+#include "execcontext.h"
 #include "events.h"
 #include "misc.h"
 #include "screen.h"

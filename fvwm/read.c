@@ -120,8 +120,7 @@ const char *get_current_read_dir(void)
  * Read and execute each line from stream.
  **/
 void run_command_stream(
-	FILE* f, const XEvent *eventp, FvwmWindow *fw,
-	unsigned long context, int Module)
+	FILE *f, const exec_context_t *exc)
 {
 	char *tline;
 	char line[1024];
@@ -134,17 +133,19 @@ void run_command_stream(
 	handle_all_expose();
 
 	tline = fgets(line, (sizeof line) - 1, f);
-	while(tline)
+	while (tline)
 	{
 		int l;
-		while(tline && (l = strlen(line)) < sizeof(line) && l >= 2 &&
+		while (tline && (l = strlen(line)) < sizeof(line) && l >= 2 &&
 		      line[l-2]=='\\' && line[l-1]=='\n')
 		{
 			tline = fgets(line+l-2,sizeof(line)-l+1,f);
 		}
 		tline=line;
-		while(isspace((unsigned char)*tline))
+		while (isspace((unsigned char)*tline))
+		{
 			tline++;
+		}
 		l = strlen(tline);
 		if (l > 0 && tline[l - 1] == '\n')
 		{
@@ -155,10 +156,9 @@ void run_command_stream(
 			fvwm_msg(
 				DBG, "ReadSubFunc",
 				"Module switch %d, about to exec: '%s'",
-			Module, tline);
+			exc->m.modnum, tline);
 		}
-		old_execute_function(
-			NULL, tline, fw, eventp, context, Module, 0, NULL);
+		execute_function(NULL, exc, tline, 0);
 		tline = fgets(line, (sizeof line) - 1, f);
 	}
 
@@ -193,7 +193,7 @@ static int parse_filename(
 	/* optional "Quiet" argument -- flag defaults to `off' (noisy) */
 	*quiet_flag = 0;
 	rest = GetNextToken(rest,&option);
-	if ( option != NULL)
+	if (option != NULL)
 	{
 		*quiet_flag = strncasecmp(option, "Quiet", 5) == 0;
 		free(option);
@@ -207,8 +207,7 @@ static int parse_filename(
  * Returns FALSE if file not found
  **/
 int run_command_file(
-	char* filename, const XEvent *eventp, FvwmWindow *fw,
-	unsigned long context, int Module)
+	char *filename, const exec_context_t *exc)
 {
 	char *full_filename;
 	FILE* f;
@@ -220,13 +219,13 @@ int run_command_file(
 	}
 	else
 	{             /* else its a relative path */
-		full_filename = CatString3( fvwm_userdir, "/", filename);
-		f = fopen( full_filename, "r");
-		if ( f == NULL)
+		full_filename = CatString3(fvwm_userdir, "/", filename);
+		f = fopen(full_filename, "r");
+		if (f == NULL)
 		{
 			full_filename = CatString3(
 				FVWM_DATADIR, "/", filename);
-			f = fopen( full_filename, "r");
+			f = fopen(full_filename, "r");
 		}
 	}
 	if (f == NULL)
@@ -237,8 +236,8 @@ int run_command_file(
 	{
 		return FALSE;
 	}
-	run_command_stream( f, eventp, fw, context, Module);
-	fclose( f);
+	run_command_stream(f, exc);
+	fclose(f);
 	pop_read_file();
 
 	return TRUE;
@@ -290,31 +289,31 @@ void CMD_Read(F_CMD_ARGS)
 
 	if (debugging)
 	{
-		fvwm_msg(DBG, "ReadFile", "Module flag %d, about to attempt %s",
-			 *Module, action);
+		fvwm_msg(
+			DBG, "ReadFile", "Module flag %d, about to attempt %s",
+			exc->m.modnum, action);
 	}
 
-	if ( !parse_filename( "Read", action, &filename, &read_quietly))
+	if (!parse_filename("Read", action, &filename, &read_quietly))
 	{
 		return;
 	}
 	cursor_control(True);
-	if ( !run_command_file( filename, eventp, fw, context, *Module) &&
-	     !read_quietly)
+	if (!run_command_file(filename, exc) && !read_quietly)
 	{
 		if (filename[0] == '/')
 		{
-			fvwm_msg( ERR, "Read",
+			fvwm_msg(ERR, "Read",
 				  "file '%s' not found",filename);
 		}
 		else
 		{
-			fvwm_msg( ERR, "Read",
-				  "file '%s' not found in %s or "FVWM_DATADIR,
-				  filename, fvwm_userdir);
+			fvwm_msg(ERR, "Read",
+				 "file '%s' not found in %s or "FVWM_DATADIR,
+				 filename, fvwm_userdir);
 		}
 	}
-	free( filename);
+	free(filename);
 	cursor_control(False);
 
 	return;
@@ -352,7 +351,7 @@ void CMD_PipeRead(F_CMD_ARGS)
 	}
 	free(command);
 
-	run_command_stream(f, eventp, fw, context, *Module);
+	run_command_stream(f, exc);
 	pclose(f);
 	cursor_control(False);
 

@@ -33,6 +33,7 @@
 #include "libs/FScreen.h"
 #include "fvwm.h"
 #include "externs.h"
+#include "execcontext.h"
 #include "functions.h"
 #include "conditional.h"
 #include "misc.h"
@@ -164,7 +165,7 @@ static FvwmWindow *Circulate(char *action, int Direction, char **restofline)
 }
 
 static void circulate_cmd(
-	F_CMD_ARGS, int circ_dir, Bool do_use_found)
+	F_CMD_ARGS, int new_context, int circ_dir, Bool do_use_found)
 {
 	FvwmWindow *found;
 	char *restofline;
@@ -176,10 +177,8 @@ static void circulate_cmd(
 	}
 	if ((!found == !do_use_found) && restofline)
 	{
-		old_execute_function(
-			NULL, restofline,
-			(do_use_found) ? found : fw, eventp,
-			context, *Module, 0, NULL);
+		execute_function_override_wcontext(
+			cond_rc, exc, action, 0, new_context);
 	}
 
 	return;
@@ -214,9 +213,8 @@ static void select_cmd(F_CMD_ARGS)
 		{
 			*cond_rc = COND_RC_OK;
 		}
-		old_execute_function(
-			NULL, restofline, fw, eventp, C_WINDOW, *Module,
-			0, NULL);
+		execute_function_override_wcontext(
+			NULL, exc, restofline, 0, C_WINDOW);
 	}
 	else if (cond_rc != NULL)
 	{
@@ -733,39 +731,35 @@ Bool MatchesConditionMask(FvwmWindow *fw, WindowConditionMask *mask)
 
 void CMD_Prev(F_CMD_ARGS)
 {
-	circulate_cmd(
-		cond_rc, eventp, w, NULL, C_WINDOW, action, Module, -1, True);
+	circulate_cmd(F_PASS_ARGS, C_WINDOW, -1, True);
 
 	return;
 }
 
 void CMD_Next(F_CMD_ARGS)
 {
-	circulate_cmd(
-		cond_rc, eventp, w, NULL, C_WINDOW, action, Module, 1, True);
+	circulate_cmd(F_PASS_ARGS, C_WINDOW, 1, True);
 
 	return;
 }
 
 void CMD_None(F_CMD_ARGS)
 {
-	circulate_cmd(
-		cond_rc, eventp, w, NULL, C_ROOT, action, Module, 1, False);
+	circulate_cmd(F_PASS_ARGS, C_ROOT, 1, False);
 
 	return;
 }
 
 void CMD_Any(F_CMD_ARGS)
 {
-	circulate_cmd(F_PASS_ARGS, 1, False);
+	circulate_cmd(F_PASS_ARGS, exc->w.wcontext, 1, False);
 
 	return;
 }
 
 void CMD_Current(F_CMD_ARGS)
 {
-	circulate_cmd(
-		cond_rc, eventp, w, NULL, C_WINDOW, action, Module, 0, True);
+	circulate_cmd(F_PASS_ARGS, C_WINDOW, 0, True);
 
 	return;
 }
@@ -828,9 +822,8 @@ void CMD_All(F_CMD_ARGS)
 	}
 	for (i = 0; i < num; i++)
 	{
-		old_execute_function(
-			NULL, restofline, g[i], eventp, C_WINDOW, *Module, 0,
-			NULL);
+		execute_function_override_window(
+			NULL, exc, restofline, 0, g[i]);
 	}
 	if (cond_rc != NULL)
 	{
@@ -1027,9 +1020,8 @@ void CMD_Direction(F_CMD_ARGS)
 		{
 			*cond_rc = COND_RC_OK;
 		}
-		old_execute_function(
-			NULL, restofline, best_window, eventp, C_WINDOW,
-			*Module, 0, NULL);
+		execute_function_override_window(
+			NULL, exc, restofline, 0, best_window);
 	}
 	else if (cond_rc != NULL)
 	{
@@ -1130,9 +1122,8 @@ void CMD_WindowId(F_CMD_ARGS)
 				{
 					*cond_rc = COND_RC_OK;
 				}
-				old_execute_function(
-					NULL, action, t, eventp, C_WINDOW,
-					*Module, 0, NULL);
+				execute_function_override_window(
+					NULL, exc, action, 0, t);
 			}
 			else if (cond_rc != NULL)
 			{
@@ -1163,17 +1154,18 @@ void CMD_WindowId(F_CMD_ARGS)
 			}
 			if (action != NULL)
 			{
-				exec_func_args_type efa;
+				const exec_context_t *exc2;
+				exec_context_changes_t ecc;
 
-				memset(&efa, 0, sizeof(efa));
-				efa.cond_rc = NULL;
-				efa.win = win;
-				efa.eventp = eventp;
-				efa.action = action;
-				efa.context = C_UNMANAGED;
-				efa.module = *Module;
-				efa.flags.is_window_unmanaged = 1;
-				execute_function(&efa);
+				ecc.w.fw = NULL;
+				ecc.w.w = win;
+				ecc.w.wcontext = C_UNMANAGED;
+				exc2 = exc_clone_context(
+					exc, &ecc,
+					ECC_FW | ECC_W | ECC_WCONTEXT);
+				execute_function(
+					NULL, exc2, action, FUNC_IS_UNMANAGED);
+				exc_destroy_context(exc2);
 			}
 		}
 		else
@@ -1232,9 +1224,7 @@ void CMD_Cond(F_CMD_ARGS)
 	{
 		/* execute the command in root window context; overwrite the
 		 * return code with the return code of the command */
-		old_execute_function(
-			cond_rc, restofline, fw, eventp, context, *Module,
-			0, NULL);
+		execute_function(cond_rc, exc, restofline, 0);
 	}
 	if (flags != NULL)
 	{
@@ -1249,8 +1239,11 @@ void CMD_CondCase(F_CMD_ARGS)
 	fvwm_cond_func_rc tmp_rc;
 
 	/* same as Cond, but does not modify the return code */
-	tmp_rc = (cond_rc != NULL) ? *cond_rc : COND_RC_OK;
-	CMD_Cond(&tmp_rc, eventp, w, fw, context, action, Module);
+	if (cond_rc == NULL)
+	{
+		cond_rc = &tmp_rc;
+	}
+	CMD_Cond(F_PASS_ARGS);
 
 	return;
 }

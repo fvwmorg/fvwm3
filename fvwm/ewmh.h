@@ -47,10 +47,10 @@ void EWMH_ManageKdeSysTray(Window w, int type);
 void EWMH_SetClientList(void);
 void EWMH_SetClientListStacking(void);
 void EWMH_UpdateWorkArea(void);
-void EWMH_GetWorkAreaIntersection(FvwmWindow *fwin,
-				  int *x, int *y, int *h, int *w, int func);
-float EWMH_GetStrutIntersection(int x11, int y11, int x12, int y12,
-				Bool use_percent);
+void EWMH_GetWorkAreaIntersection(
+	FvwmWindow *fwin, int *x, int *y, int *h, int *w, int func);
+float EWMH_GetStrutIntersection(
+	int x11, int y11, int x12, int y12, Bool use_percent);
 void EWMH_SetFrameStrut(FvwmWindow *fwin);
 void EWMH_SetAllowedActions(FvwmWindow *fwin);
 
@@ -68,8 +68,8 @@ void EWMH_ExitStuff(void);
 /* ewmh_conf.c */
 
 /* ewmh_events.c */
-Bool EWMH_ProcessClientMessage(const FvwmWindow *fwin, const XEvent *ev);
-void EWMH_ProcessPropertyNotify(const FvwmWindow *fwin, const XEvent *ev);
+Bool EWMH_ProcessClientMessage(const exec_context_t *exc);
+void EWMH_ProcessPropertyNotify(const exec_context_t *exc);
 
 /* ewmh_icon.c */
 void EWMH_DeleteWmIcon(FvwmWindow *fwin, Bool mini_icon, Bool icon);

@@ -23,6 +23,7 @@
 #include "libs/fvwmlib.h"
 #include "fvwm.h"
 #include "externs.h"
+#include "execcontext.h"
 #include "misc.h"
 #include "commands.h"
 #include "screen.h"

@@ -1,8 +1,95 @@
+2002-09-11  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* fvwm/stack.c (BroadcastRestack):
+	removed global lastTimestamp
+
+	* fvwm/ewmh_events.c (EWMH_ProcessClientMessage):
+	(EWMH_ProcessPropertyNotify):
+	(ewmh_WMStateShaded):
+	(ewmh_WMStateSticky):
+	(ewmh_WMStateHidden):
+	(ewmh_WMState):
+	(ewmh_MoveResize):
+	(ewmh_WMDesktop):
+	(ewmh_CloseWindow):
+	(ewmh_DesktopGeometry):
+	(ewmh_ActiveWindow):
+	use new function interface
+
+	* fvwm/menus.c (do_menu):
+	* fvwm/menucmd.c (menu_func):
+	* fvwm/windowlist.c (CMD_WindowList):
+	use new function interface
+	replaced "(XEvent *)1" hack with a regular flag
+
 2002-09-10  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* fvwm/add_window.c (destroy_window):
+	* fvwm/update.c (destroy_scheduled_windows):
+	* fvwm/screen.h (ScreenInfo):
+	new member is_executing_menu_function
+
+	* fvwm/windowlist.c (CMD_WindowList):
+	* fvwm/menucmd.c (menu_func):
+	* fvwm/gnome.c (CMD_GnomeButton):
+	(GNOME_ProcessClientMessage):
+	(GNOME_HandlePropRequest):
+	* fvwm/modconf.c (CMD_Send_ConfigInfo):
+	* fvwm/update.c (apply_window_updates):
+	* fvwm/repeat.c (CMD_Repeat):
+	* fvwm/conditional.c (circulate_cmd):
+	(CMD_Prev):
+	(CMD_Next):
+	(CMD_None):
+	(CMD_Any):
+	(CMD_Current):
+	(CMD_Cond):
+	(CMD_CondCase):
+	(select_cmd):
+	(CMD_All):
+	(CMD_Direction):
+	(CMD_WindowId):
+	* fvwm/focus.c (warp_to_fvwm_window):
+	(CMD_WarpToWindow):
+	* fvwm/read.c (run_command_stream):
+	(run_command_file):
+	(CMD_Read):
+	(CMD_PipeRead):
+	* fvwm/fvwm.c (Done):
+	(SetRCDefaults):
+	(StartupStuff):
+	(main):
+	use new function interface
+	(main):
+	fixed running startup script under random module number
+
+	* fvwm/functions.c (execute_function_override_window):
+	* fvwm/functions.c (execute_function_override_wcontext):
+	new convenience functions
+
+	* fvwm/gnome.c:
+	* fvwm/modconf.c:
+	* fvwm/session.c:
+	re-indented
+
+	* fvwm/module_interface.c (CMD_Send_WindowList):
+	(CMD_set_mask):
+	(CMD_set_sync_mask):
+	(CMD_set_nograb_mask):
+	fixed core dumps
+	don't use "Module" argument anymore
+	(ExecuteModuleCommand):
+	made static
+	use new function interface
 
 	* fvwm/add_window.c (CaptureOneWindow):
 	(do_recapture):
 	(CaptureAllWindows):
+	* fvwm/events.c (HandleMapRequestKeepRaised):
+	* fvwm/add_window.c (AddWindow):
+	AddWindow takes executiuon context as its argument instead of the
+	window; changed caller
+	don't use "Event" anymore
 
 	* fvwm/fvwm.c (StartupStuff):
 	generate an execution context for startup
@@ -32,6 +119,18 @@
 	* fvwm/colormaps.c (InstallWindowColormaps):
 	made FvwmWindow * arguments const in many functions
 
+	* fvwm/menus.c (pop_menu_up):
+	(pop_menu_down):
+	(__mloop_do_menu):
+	(__mloop_do_popup):
+	(do_menu):
+	(menu_enter_tear_off_menu):
+	(__mloop_get_event):
+	(__mloop_get_event_timeout_loop):
+	(__mloop_do_menu):
+	(__mloop_get_mi_actions):
+	(is_double_click):
+	* fvwm/events.c (HandleEnterNotify):
 	* fvwm/move_resize.c (AnimatedMoveAnyWindow):
 	(__move_window):
 	(__move_loop):

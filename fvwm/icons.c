@@ -46,6 +46,7 @@
 #include "bindings.h"
 #include "events.h"
 #include "eventmask.h"
+#include "eventhandler.h"
 #include "misc.h"
 #include "screen.h"
 #include "icons.h"

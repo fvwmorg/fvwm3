@@ -39,7 +39,6 @@ typedef enum
 	EXCT_MODULE,
 	EXCT_MENULOOP,
 	EXCT_PAGING,
-	EXCT_CLEANUP,
 	EXCT_SCHEDULE
 } exec_context_type_t;
 

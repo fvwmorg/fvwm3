@@ -25,6 +25,7 @@
 #include <X11/Xmd.h>
 
 #include "fvwm.h"
+#include "execcontext.h"
 #include "functions.h"
 #include "misc.h"
 #include "screen.h"
@@ -52,8 +53,10 @@ int ewmh_CurrentDesktop(EWMH_CMD_ARGS)
 int ewmh_DesktopGeometry(EWMH_CMD_ARGS)
 {
   char action[256];
-  sprintf(action, "%ld %ld", ev->xclient.data.l[0], ev->xclient.data.l[1]);
-  CMD_DesktopSize(NULL, NULL, None, NULL, C_ROOT, action, NULL);
+  sprintf(action, "DesktoSize %ld %ld", ev->xclient.data.l[0],
+	  ev->xclient.data.l[1]);
+  execute_function_override_window(NULL, NULL, action, 0, NULL);
+
   return -1;
 }
 
@@ -84,9 +87,9 @@ int ewmh_ActiveWindow(EWMH_CMD_ARGS)
 {
   if (ev == NULL)
     return 0;
+  execute_function_override_window(
+	  NULL, NULL, "EWMHActivateWindowFunc", 0, fwin);
 
-  old_execute_function(
-    NULL, "EWMHActivateWindowFunc", fwin, ev, C_WINDOW, -1,0,NULL);
   return 0;
 }
 
@@ -94,8 +97,8 @@ int ewmh_CloseWindow(EWMH_CMD_ARGS)
 {
   if (ev == NULL)
     return 0;
+  execute_function_override_window(NULL, NULL, "Close", 0, fwin);
 
-  CMD_Close(NULL, ev, FW_W(fwin), fwin, C_WINDOW, "", NULL);
   return 0;
 }
 
@@ -110,12 +113,12 @@ int ewmh_WMDesktop(EWMH_CMD_ARGS)
     *  however KDE use 0xFFFFFFFE :o) */
     if (d == 0xFFFFFFFE || d == 0xFFFFFFFF)
     {
-      CMD_Stick(NULL, ev, FW_W(fwin), fwin, C_WINDOW, "On", NULL);
+      execute_function_override_window(NULL, NULL, "Stick on", 0, fwin);
     }
     else if (d >= 0)
     {
       if (IS_STICKY(fwin))
-	 CMD_Stick(NULL, ev, FW_W(fwin), fwin, C_WINDOW, "Off", NULL);
+	 execute_function_override_window(NULL, NULL, "Stick off", 0, fwin);
       if (fwin->Desk != d)
 	do_move_window_to_desk(fwin, (int)d);
     }
@@ -212,12 +215,12 @@ int ewmh_MoveResize(EWMH_CMD_ARGS)
 	move = True;
 	break;
     }
-    sprintf(cmd,"%i %i",x_warp,y_warp);
-    CMD_WarpToWindow(NULL, ev, FW_W(fwin), fwin, C_WINDOW, cmd, NULL);
+    sprintf(cmd, "WarpToWindow %i %i",x_warp,y_warp);
+    execute_function_override_window(NULL, NULL, cmd, 0, fwin);
     if (move)
-      CMD_Move(NULL, ev, FW_W(fwin), fwin, C_WINDOW, "", NULL);
+      execute_function_override_window(NULL, NULL, "Move", 0, fwin);
     else
-      CMD_Resize(NULL, ev, FW_W(fwin), fwin, C_WINDOW, "", NULL);
+      execute_function_override_window(NULL, NULL, "Resize", 0, fwin);
 
     return 0;
   }
@@ -289,10 +292,10 @@ int ewmh_WMState(EWMH_CMD_ARGS)
     char cmd[256];
 
     if (maximize & EWMH_MAXIMIZE_REMOVE)
-      sprintf(cmd,"%s", "Off");
+      sprintf(cmd,"Maximize off");
     else
-      sprintf(cmd,"%s %i %i", "On", max_horiz, max_vert);
-    CMD_Maximize(NULL, ev, FW_W(fwin), fwin, C_WINDOW, cmd, NULL);
+      sprintf(cmd,"Maximize on %i %i", max_horiz, max_vert);
+    execute_function_override_window(NULL, NULL, cmd, 0, fwin);
   }
   return 0;
 }
@@ -376,21 +379,21 @@ int ewmh_WMStateHidden(EWMH_CMD_ARGS)
   if (ev != NULL)
   {
     /* client message */
-    char cmd[8];
+    char cmd[16];
     int bool_arg = ev->xclient.data.l[0];
 
     if ((bool_arg == NET_WM_STATE_TOGGLE && !IS_ICONIFIED(fwin)) ||
 	bool_arg == NET_WM_STATE_ADD)
     {
       /* iconify */
-      sprintf(cmd,"%s", "On");
+      sprintf(cmd, "Iconify on");
     }
     else
     {
       /* deiconify */
-      sprintf(cmd,"%s", "Off");
+      sprintf(cmd, "Iconify off");
     }
-    CMD_Iconify(NULL, ev, FW_W(fwin), fwin, C_WINDOW, cmd, NULL);
+    execute_function_override_window(NULL, NULL, cmd, 0, fwin);
   }
   return 0;
 }
@@ -591,11 +594,11 @@ int ewmh_WMStateShaded(EWMH_CMD_ARGS)
     if ((bool_arg == NET_WM_STATE_TOGGLE && !IS_SHADED(fwin)) ||
 	bool_arg == NET_WM_STATE_ADD)
     {
-      CMD_WindowShade(NULL, ev, FW_W(fwin), fwin, C_WINDOW, "True", NULL);
+      execute_function_override_window(NULL, NULL, "Windowshade on", 0, fwin);
     }
     else
     {
-      CMD_WindowShade(NULL, ev, FW_W(fwin), fwin, C_WINDOW, "False", NULL);
+      execute_function_override_window(NULL, NULL, "Windowshade off", 0, fwin);
     }
   }
   return 0;
@@ -847,11 +850,11 @@ int ewmh_WMStateSticky(EWMH_CMD_ARGS)
     if ((bool_arg == NET_WM_STATE_TOGGLE && !IS_STICKY(fwin)) ||
 	bool_arg == NET_WM_STATE_ADD)
     {
-      CMD_Stick(NULL, ev, FW_W(fwin), fwin, C_WINDOW, "On", NULL);
+      execute_function_override_window(NULL, NULL, "Stick on", 0, fwin);
     }
     else
     {
-      CMD_Stick(NULL, ev, FW_W(fwin), fwin, C_WINDOW, "Off", NULL);
+      execute_function_override_window(NULL, NULL, "Stick on", 1, fwin);
     }
   }
   return 0;
@@ -953,9 +956,11 @@ int ewmh_WMStrut(EWMH_CMD_ARGS)
 /* ************************************************************************* *
  *
  * ************************************************************************* */
-Bool EWMH_ProcessClientMessage(const FvwmWindow *fwin, const XEvent *ev)
+Bool EWMH_ProcessClientMessage(const exec_context_t *exc)
 {
   ewmh_atom *ewmh_a = NULL;
+  FvwmWindow *fwin = exc->w.fw;
+  XEvent *ev = exc->x.elast;
 
   if ((ewmh_a =
        (ewmh_atom *)ewmh_GetEwmhAtomByAtom(ev->xclient.message_type,
@@ -985,9 +990,11 @@ Bool EWMH_ProcessClientMessage(const FvwmWindow *fwin, const XEvent *ev)
 /* ************************************************************************* *
  *
  * ************************************************************************* */
-void EWMH_ProcessPropertyNotify(const FvwmWindow *fwin, const XEvent *ev)
+void EWMH_ProcessPropertyNotify(const exec_context_t *exc)
 {
   ewmh_atom *ewmh_a = NULL;
+  FvwmWindow *fwin = exc->w.fw;
+  XEvent *ev = exc->x.elast;
 
   if ((ewmh_a =
        (ewmh_atom *)ewmh_GetEwmhAtomByAtom(ev->xproperty.atom,
