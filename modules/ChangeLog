@@ -1,3 +1,15 @@
+1999-08-31  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* FvwmButtons/FvwmButtons.c (Loop):
+	(HandlePanelPress): moved panel mapping/unmapping code to own function
+
+1999-08-31  Brad Giaccio  <bgiaccio@psrw.com>
+
+	* FvwmIconBox/FvwmIconBox.c (main):
+	(CreateWindow)(process_message):
+	(change_colorset): first cut at colorset support in FvwmIconBox,
+	no pixmap backgrounds used on icon but main window does get the pixmap
+
 Tue Aug 31 13:09:47 1999  DanEspen  <dje@blue>
 
 	* FvwmForm/FvwmForm.1, FvwmForm/FvwmForm.c: Allow the user to set
@@ -6,7 +18,9 @@ Tue Aug 31 13:09:47 1999  DanEspen  <dje@blue>
 1999-08-31  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* FvwmButtons/FvwmButtons.c (recursive_change_colorset): fixed
-	background of swallowed apps without colour sets
+	backgorund of swallowed apps without colour sets
+	(Loop): fixed flashing at the start of sliding
+	panel does not slide if it has been moved or resized
 
 1999-08-31  Dominik Vogt  <dominik_vogt@gmx.de>
 

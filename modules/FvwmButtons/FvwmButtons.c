@@ -119,6 +119,7 @@ void DebugEvents(XEvent*);
 
 panel_info *seekpanel(button_info *);
 void Slide(panel_info *, button_info *);
+static void HandlePanelPress(button_info *b);
 
 /* -------------------------------- globals ---------------------------------*/
 
@@ -856,7 +857,6 @@ int main(int argc, char **argv)
   /* tell fvwm we're running */
   SendFinishedStartupNotification(fd);
 
-XSynchronize(Dpy, 1);
   Loop();
 
   return 0;
@@ -1039,30 +1039,7 @@ void Loop(void)
 
 	if (b && (b->flags & b_Panel))
 	{
-	  int x1, y1, w1, h1;
-	  int x2, y2, w2, h2;
-	  unsigned int d;
-	  Window JunkRoot;
-
-	  if (b->newflags.panel_mapped)
-	  {
-	    /* get the current geometry */
-	    XGetGeometry(Dpy, b->IconWin, &JunkRoot, &b->x, &b->y, &b->w,
-			 &b->h, &b->bw, &d);
-	  }
-	  GetPanelGeometry(!!b->newflags.panel_mapped, b, &x1, &y1, &w1, &h1);
-	  GetPanelGeometry(!b->newflags.panel_mapped, b, &x2, &y2, &w2, &h2);
-	  SlideWindow(Dpy, b->IconWin,
-		      x1, y1, w1, h1,
-		      x2, y2, w2, h2,
-		      b->slide_steps, b->slide_delay_ms, NULL);
-
-	  if (b->newflags.panel_mapped)
-	  {
-	    XUnmapWindow(Dpy, b->IconWin);
-	  }
-	  b->newflags.panel_mapped ^= 1;
-	  RedrawButton(b, 1);
+	  HandlePanelPress(b);
 	}
 	else
 	{
@@ -1574,6 +1551,64 @@ void RecursiveLoadData(button_info *b,int *maxx,int *maxy)
   fprintf(stderr,", size %ux%u, done\n",x,y);
 #endif
 }
+
+
+static void HandlePanelPress(button_info *b)
+{
+  int x1, y1, w1, h1;
+  int x2, y2, w2, h2;
+  int steps = b->slide_steps;
+  unsigned int d;
+  Window JunkW;
+  XSizeHints mysizehints;
+  long supplied;
+
+  if (b->newflags.panel_mapped)
+  {
+      /* get the current geometry */
+      XGetGeometry(Dpy, b->IconWin, &JunkW, &b->x, &b->y, &b->w,
+		   &b->h, &b->bw, &d);
+      XTranslateCoordinates(
+	  Dpy, b->IconWin, Root, b->x, b->y, &b->x, &b->y, &JunkW);
+  }
+  GetPanelGeometry(!!b->newflags.panel_mapped, b, &x1, &y1, &w1, &h1);
+  GetPanelGeometry(!b->newflags.panel_mapped, b, &x2, &y2, &w2, &h2);
+
+  /* to force fvwm to map the window where we want */
+  if (!b->newflags.panel_mapped)
+  {
+      XGetWMNormalHints(Dpy, b->IconWin, &mysizehints, &supplied);
+      mysizehints.flags |= USSize | USPosition;
+      mysizehints.x = x1;
+      mysizehints.y = y1;
+      mysizehints.width  = (w1) ? w1 : 1;
+      mysizehints.height = (h1) ? h1 : 1;
+      XSetWMNormalHints(Dpy, b->IconWin, &mysizehints);
+  }
+  else
+  {
+      /* don't slide the window if it has been moved or resized */
+      if (b->x != x1 || b->y != y1 || b->w != w1 || b->h != h1)
+      {
+	  steps = 0;
+      }
+  }
+
+  SlideWindow(Dpy, b->IconWin,
+	      x1, y1, w1, h1,
+	      x2, y2, w2, h2,
+	      steps, b->slide_delay_ms, NULL, False);
+
+  if (b->newflags.panel_mapped)
+  {
+      XUnmapWindow(Dpy, b->IconWin);
+  }
+  b->newflags.panel_mapped ^= 1;
+  RedrawButton(b, 1);
+
+  return;
+}
+
 
 /**
 *** CreateUberButtonWindow()

@@ -270,21 +270,11 @@ Pixmap CreateGradientPixmapFromString(Display *dpy, Drawable d, GC gc,
  * Slide.c
  ***********************************************************************/
 
-/* Continuously moves and resized window win from start geometry (s_?) to end
- * geometry (e_?). Waits for delay_ms milliseconds after each step except the
- * last (max. 10 seconds per step). The number of steps is determined by the
- * steps argument (min. 1 and max. 10000). If the pointer ppctMovement is NULL
- * the steps are all the same width, if it is given it is interpreted as a
- * pointer to an array of float percent values. These are used to determine the
- * distance of each step counted from the start position, i.e. 0.0 means the
- * start position itself, 50.0 is halfway between start and end position and
- * 100.0 is the end position. Values smaller than 0.0 or bigger than 100.0 are
- * allowed too. */
 void SlideWindow(
   Display *dpy, Window win,
   int s_x, int s_y, unsigned int s_w, unsigned int s_h,
   int e_x, int e_y, unsigned int e_w, unsigned int e_h,
-  int steps, int delay_ms, float *ppctMovement);
+  int steps, int delay_ms, float *ppctMovement, Bool do_flush);
 
 /***********************************************************************
  * Key and mouse bindings

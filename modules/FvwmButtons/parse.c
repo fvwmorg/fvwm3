@@ -832,8 +832,8 @@ static void ParseButton(button_info **uberb,char *s)
 	  b->swallow = b_Respawn;
 	  b->swallow_mask = b_Respawn;
 	  b->slide_direction = SLIDE_UP;
-	  b->slide_steps = 8;
-	  b->slide_delay_ms = 1;
+	  b->slide_steps = 12;
+	  b->slide_delay_ms = 5;
 	}
 	if(*s=='(' && s++)
 	{

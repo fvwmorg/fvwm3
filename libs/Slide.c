@@ -34,12 +34,13 @@
  * distance of each step counted from the start position, i.e. 0.0 means the
  * start position itself, 50.0 is halfway between start and end position and
  * 100.0 is the end position. Values smaller than 0.0 or bigger than 100.0 are
- * allowed too. */
+ * allowed too. The do_flush flag determines of all requests are sent to the
+ * X server immediately (True) or not (False). */
 void SlideWindow(
   Display *dpy, Window win,
   int s_x, int s_y, unsigned int s_w, unsigned int s_h,
   int e_x, int e_y, unsigned int e_w, unsigned int e_h,
-  int steps, int delay_ms, float *ppctMovement)
+  int steps, int delay_ms, float *ppctMovement, Bool do_flush)
 {
   int x;
   int y;
@@ -86,7 +87,8 @@ void SlideWindow(
       XMapWindow(dpy, win);
       XMapSubwindows(dpy, win);
     }
-    XFlush(dpy);
+    if (do_flush)
+      XFlush(dpy);
     return;
   }
 
@@ -149,7 +151,8 @@ void SlideWindow(
       }
     }
     /* make sure everything is updated */
-    XFlush(dpy);
+    if (do_flush)
+      XFlush(dpy);
     if (us && i < steps)
     {
       /* don't sleep after the last step */
