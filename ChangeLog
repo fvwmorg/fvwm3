@@ -1,5 +1,9 @@
 2002-03-09  Dominik Vogt  <dominik.vogt@gmx.de>
 
+	* fvwm/menus.c (menu_tear_off):
+	use the text from a title item as the tear off menu title if the menu
+	begins with a title
+
 	* **/*.[ch]:
 	implemented titleatleft and titleatright styles; titles are not drawn
 	vertically yet

@@ -5558,6 +5558,60 @@ void menus_remove_style_from_menus(MenuStyle *ms)
  * Functions dealing with tear off menus
  */
 
+static char *menu_strip_tear_off_title(MenuRoot *mr)
+{
+	MenuItem *mi_first;
+	int i;
+	int len;
+	char *name;
+
+	mi_first = MR_FIRST_ITEM(mr);
+	if (mi_first == NULL || !MI_IS_TITLE(mi_first) ||
+	    !MI_HAS_TEXT(mi_first) || MI_NEXT_ITEM(mi_first) == NULL)
+	{
+		return NULL;
+	}
+	/* extract the window title from the labels */
+	for (i = 0, len = 0; i < MAX_MENU_ITEM_LABELS; i++)
+	{
+		if (MI_LABEL(mi_first)[i] != 0)
+		{
+			len += strlen(MI_LABEL(mi_first)[i]) + 1;
+		}
+	}
+	if (len == 0)
+	{
+		return NULL;
+	}
+	name = safemalloc(len + 1);
+	*name = 0;
+	for (i = 0; i < MAX_MENU_ITEM_LABELS; i++)
+	{
+		if (MI_LABEL(mi_first)[i] != 0)
+		{
+			strcat(name, MI_LABEL(mi_first)[i]);
+			strcat(name, " ");
+		}
+	}
+	/* strip the last space */
+	name[len - 1] = 0;
+	/* unlink and destroy the item */
+	MR_FIRST_ITEM(mr) = MI_NEXT_ITEM(mi_first);
+	MI_NEXT_ITEM(mi_first) = 0;
+	MR_ITEMS(mr)--;
+	if (MR_LAST_ITEM(mr) == mi_first)
+	{
+		MR_LAST_ITEM(mr) = MR_FIRST_ITEM(mr);
+	}
+	if (MR_FIRST_ITEM(mr) != NULL)
+	{
+		MI_PREV_ITEM(MR_FIRST_ITEM(mr)) = NULL;
+	}
+	menuitem_free(mi_first);
+
+	return name;
+}
+
 static void menu_tear_off(MenuRoot *mr_to_copy)
 {
 	MenuRoot *mr;
@@ -5568,6 +5622,7 @@ static void menu_tear_off(MenuRoot *mr_to_copy)
 	XWMHints menuwmhints;
 	char *list[] ={ NULL, NULL };
 	char *t;
+	char *name = NULL;
 	Atom protocols[1];
 	int x = 0;
 	int y = 0;
@@ -5577,6 +5632,7 @@ static void menu_tear_off(MenuRoot *mr_to_copy)
 	discard_window_events(
 		MR_WINDOW(mr_to_copy), SubstructureNotifyMask);
 	mr = clone_menu(mr_to_copy);
+	name = menu_strip_tear_off_title(mr);
 	/* create the menu window and size the menu */
 	make_menu(mr);
 	/* set position */
@@ -5603,7 +5659,8 @@ static void menu_tear_off(MenuRoot *mr_to_copy)
 	menusizehints.max_width = MR_WIDTH(mr);
 	menusizehints.max_height = MR_HEIGHT(mr);
 	/* class, resource and names */
-	menuclasshints.res_name = safestrdup(MR_NAME(mr));
+	menuclasshints.res_name =
+		(name != NULL) ? name : safestrdup(MR_NAME(mr));
 	menuclasshints.res_class = safestrdup("fvwm_menu");
 	for (t = menuclasshints.res_name; t != NULL && *t != 0; t++)
 	{
