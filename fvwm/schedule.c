@@ -172,7 +172,6 @@ static void execute_obj_func(void *object, void *args)
 	if (obj->command != NULL)
 	{
 		/* execute the command */
-		cond_rc_t cond_rc;
 		const exec_context_t *exc;
 		exec_context_changes_t ecc;
 		exec_context_change_mask_t mask = ECC_TYPE | ECC_WCONTEXT;
@@ -187,7 +186,7 @@ static void execute_obj_func(void *object, void *args)
 			mask |= ECC_FW;
 		}
 		exc = exc_create_context(&ecc, mask);
-		execute_function(&cond_rc, exc, obj->command, 0);
+		execute_function(NULL, exc, obj->command, 0);
 		exc_destroy_context(exc);
 	}
 	XFlush(dpy);
