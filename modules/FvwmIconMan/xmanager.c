@@ -1409,8 +1409,9 @@ void check_in_window (WinData *win)
     if (oldman && newman != oldman && win->button) {
       oldman->we_are_drawing = 1;
       delete_windows_button (win);
-  }
-  win->manager = newman;
+    }
+    win->manager = newman;
+    set_win_displaystring (win);
   }
 
   if (win->manager && win->complete) {

@@ -69,14 +69,28 @@ static void GetIconFromFile(FvwmWindow *fw);
 static void GetIconWindow(FvwmWindow *fw);
 static void GetIconBitmap(FvwmWindow *fw);
 
-/* erase all traces of the last used icon in the window structure */
-void clear_icon(FvwmWindow *fw)
+static void clear_icon_dimensions(FvwmWindow *fw)
 {
 	int px;
 	int py;
 	int tx;
 	int ty;
 
+	px = fw->icon_g.picture_w_g.x;
+	py = fw->icon_g.picture_w_g.y;
+	tx = fw->icon_g.title_w_g.x;
+	ty = fw->icon_g.title_w_g.y;
+	memset(&fw->icon_g, 0, sizeof(fw->icon_g));
+	fw->icon_g.picture_w_g.x = px;
+	fw->icon_g.picture_w_g.y = py;
+	fw->icon_g.title_w_g.x = tx;
+	fw->icon_g.title_w_g.y = ty;
+
+	return;
+}
+/* erase all traces of the last used icon in the window structure */
+void clear_icon(FvwmWindow *fw)
+{
 	FW_W_ICON_PIXMAP(fw) = None;
 	fw->iconPixmap = None;
 	fw->icon_maskPixmap = None;
@@ -86,15 +100,7 @@ void clear_icon(FvwmWindow *fw)
 	fw->icon_no_limit = 0;
 	if (IS_ICON_MOVED(fw))
 	{
-		px = fw->icon_g.picture_w_g.x;
-		py = fw->icon_g.picture_w_g.y;
-		tx = fw->icon_g.title_w_g.x;
-		ty = fw->icon_g.title_w_g.y;
-		memset(&fw->icon_g, 0, sizeof(fw->icon_g));
-		fw->icon_g.picture_w_g.x = px;
-		fw->icon_g.picture_w_g.y = py;
-		fw->icon_g.title_w_g.x = tx;
-		fw->icon_g.title_w_g.y = ty;
+		clear_icon_dimensions(fw);
 	}
 	else
 	{
@@ -1615,10 +1621,15 @@ void AutoPlaceIcon(
   int new_x, new_y;
   Bool do_move_icon = False;
 
+#if 0
+  /* dv (16-Mar-2003):  We need to place the icon even if there is no icon so
+   * the 'position' can be communicated to the modules to decide whether to show
+   * the icon or not. */
   if (FW_W_ICON_PIXMAP(t) == None && FW_W_ICON_TITLE(t) == None)
   {
 	  return;
   }
+#endif
   /* New! Put icon in same page as the center of the window */
   /* Not a good idea for StickyIcons. Neither for icons of windows that are
    * visible on the current page. */
@@ -2090,10 +2101,10 @@ static void GetIconFromFile(FvwmWindow *fw)
 		return;
 	}
 	if (!PImageLoadPixmapFromFile(
-		dpy, Scr.NoFocusWin, path, &fw->iconPixmap, &fw->icon_maskPixmap,
-		&fw->icon_alphaPixmap, &fw->icon_g.picture_w_g.width,
-		&fw->icon_g.picture_w_g.height, &fw->iconDepth,
-		&fw->icon_nalloc_pixels, &fw->icon_alloc_pixels,
+		dpy, Scr.NoFocusWin, path, &fw->iconPixmap,
+		&fw->icon_maskPixmap, &fw->icon_alphaPixmap,
+		&fw->icon_g.picture_w_g.width, &fw->icon_g.picture_w_g.height,
+		&fw->iconDepth, &fw->icon_nalloc_pixels, &fw->icon_alloc_pixels,
 		&fw->icon_no_limit, fpa))
 	{
 		fvwm_msg(ERR, "GetIconFromFile", "Failed to load %s", path);
@@ -2550,7 +2561,7 @@ void Iconify(FvwmWindow *fw, initial_window_options_type *win_opts)
 	 * if there is no icon. */
 	if (HAS_NO_ICON_TITLE(fw) && FW_W_ICON_PIXMAP(fw) == None)
 	{
-		memset(&fw->icon_g, 0, sizeof(fw->icon_g));
+		clear_icon_dimensions(fw);
 	}
 	SET_ICONIFIED(fw, 1);
 	SET_ICON_UNMAPPED(fw, 0);

@@ -1044,7 +1044,7 @@ Bool get_visible_icon_geometry(
 }
 
 /* returns the icon geometry (unexpanded title plus pixmap) if it exists */
-Bool get_icon_geometry(
+void get_icon_geometry(
 	FvwmWindow *fw, rectangle *ret_g)
 {
 	/* valid geometry? */
@@ -1072,10 +1072,9 @@ Bool get_icon_geometry(
 	else
 	{
 		memset(ret_g, 0, sizeof(*ret_g));
-		return False;
 	}
 
-	return True;
+	return;
 }
 
 /* Returns the visible geometry of a window or icon.  This can be used to test
@@ -1178,8 +1177,10 @@ void broadcast_icon_geometry(
 void modify_icon_position(
 	FvwmWindow *fw, int dx, int dy)
 {
-	if (fw->icon_g.picture_w_g.width > 0)
+	if (fw->icon_g.picture_w_g.width > 0 || HAS_NO_ICON_TITLE(fw))
 	{
+		/* picture position is also valid if there is neither a picture
+		 * nor a title */
 		fw->icon_g.picture_w_g.x += dx;
 		fw->icon_g.picture_w_g.y += dy;
 	}
@@ -1225,6 +1226,13 @@ void set_icon_position(
 			 fw->icon_g.picture_w_g.width) / 2;
 		fw->icon_g.title_w_g.y +=
 			fw->icon_g.picture_w_g.height;
+	}
+	else if (fw->icon_g.picture_w_g.width <= 0 && HAS_NO_ICON_TITLE(fw))
+	{
+		/* In case there is no icon, fake the icon position so the
+		 * modules know where its window was iconified. */
+		fw->icon_g.picture_w_g.x = x;
+		fw->icon_g.picture_w_g.y = y;
 	}
 
 	return;

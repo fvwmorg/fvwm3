@@ -455,7 +455,15 @@ static void icon_location(FvwmPacketBody *body)
 	win->icon_g.x = body->icon_data.xpos;
 	win->icon_g.y = body->icon_data.ypos;
 	win->icon_g.width = body->icon_data.icon_width;
+	if (win->icon_g.width <= 0)
+	{
+		win->icon_g.width = 1;
+	}
 	win->icon_g.height = body->icon_data.icon_height;
+	if (win->icon_g.height <= 0)
+	{
+		win->icon_g.height = 1;
+	}
 	check_in_window (win);
 }
 

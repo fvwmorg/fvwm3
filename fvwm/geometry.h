@@ -74,7 +74,7 @@ Bool get_visible_window_or_icon_geometry(
 	FvwmWindow *fw, rectangle *ret_g);
 Bool get_visible_icon_geometry(
 	FvwmWindow *fw, rectangle *ret_g);
-Bool get_icon_geometry(
+void get_icon_geometry(
 	FvwmWindow *fw, rectangle *ret_g);
 Bool get_visible_icon_title_geometry(
 	FvwmWindow *fw, rectangle *ret_g);

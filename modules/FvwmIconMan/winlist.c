@@ -331,7 +331,6 @@ int check_win_complete (WinData *p)
       p->classname &&
       p->iconname &&
       p->titlename &&
-      p->manager &&
       p->app_id_set) {
     p->complete = 1;
     ConsoleDebug (WINLIST, "\tcomplete: 1\n\n");
