@@ -1,3 +1,8 @@
+2003-08-06  Robert Wittek  <r.wittek@gmx.net>
+
+	* fvwm/add_window.c (AddWindow):
+	fixed stickyness across desks over a restart
+
 2003-08-06  olicha  <olivier.chapuis@free.fr>
 
 	* fvwm/ewmh.c (EWMH_WindowInit):

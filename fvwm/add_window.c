@@ -2421,7 +2421,7 @@ FvwmWindow *AddWindow(
 		int stick_desk;
 
 		stick_page = is_window_sticky_across_pages(fw);
-		stick_desk = is_window_sticky_across_pages(fw);
+		stick_desk = is_window_sticky_across_desks(fw);
 		if ((stick_page &&
 		     !IsRectangleOnThisPage(&fw->frame_g, Scr.CurrentDesk)) ||
 		    (stick_desk && fw->Desk != Scr.CurrentDesk))
