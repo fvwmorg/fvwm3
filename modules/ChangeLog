@@ -1,5 +1,16 @@
 2002-05-27  Dominik Vogt  <dominik.vogt@gmx.de>
 
+	* FvwmEvent/FvwmEvent.1 (argument):
+	corrected man page example
+
+2002-05-27  Dave Trollope  <dave.trollope@worldnet.att.net>
+
+	* Modules/FvwmIconMan/xmanager.c (draw_manager):
+	(man_exposed):
+	Fix for background not being redrawn when the window is exposed.
+
+2002-05-27  Dominik Vogt  <dominik.vogt@gmx.de>
+
 	* FvwmM4/FvwmM4.c (m4_defs):
 	* FvwmCpp/FvwmCpp.c (cpp_defs):
 	open tempfile with 0600 mode

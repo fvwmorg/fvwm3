@@ -35,6 +35,7 @@ extern FlocaleWinString *FwinString;
 #define STRING_CHANGED      16
 #define REDRAW_BUTTON       32
 #define GEOMETRY_CHANGED    64
+#define REDRAW_BG           128
 
 /* manager dirty bits: */
 /*      GEOMETRY_CHANGED    64 same as with button */
@@ -1554,9 +1555,12 @@ void draw_manager (WinManager *man)
       set_button_geometry (man, man->buttons.buttons[i]);
   }
 
+  if (force_draw || update_geometry || (man->dirty_flags & REDRAW_BG)) {
+    ConsoleDebug (X11, "\tredrawing background\n");
+    clear_empty_region (man);
+  }
   if (force_draw || update_geometry)
   {
-    clear_empty_region (man);
     /* maybe not usefull but safe */
     if (man->colorsets[DEFAULT] >= 0 &&
 	 Colorset[man->colorsets[DEFAULT]].pixmap == ParentRelative)
@@ -1905,6 +1909,9 @@ void man_exposed (WinManager *man, XEvent *theEvent)
   h2 = man->geometry.boxheight;
 
   bp = man->buttons.buttons;
+
+  /* Background must be redrawn */
+  man->dirty_flags |= REDRAW_BG;
 
   if (FHaveShapeExtension)
   {
