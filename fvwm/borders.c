@@ -77,7 +77,6 @@ typedef struct
 	Pixmap texture_pixmap;
 	XSetWindowAttributes notex_attributes;
 	unsigned long notex_valuemask;
-
 	struct
 	{
 		unsigned has_color_changed : 1;
@@ -94,7 +93,10 @@ typedef struct
 
 typedef struct
 {
-	int relief_width;
+	int offset_tl;
+	int offset_br;
+	int thickness;
+	int length;
 	unsigned has_x_marks : 1;
 	unsigned has_y_marks : 1;
 } border_marks_descr;
@@ -1381,9 +1383,7 @@ static int border_get_parts_and_pos_to_draw(
 	draw_parts |= force_draw_parts;
 	if (old_g == NULL)
 	{
-		/*!!!*/
-		draw_parts |= DRAW_FRAME;
-		return draw_parts;
+		old_g = &fw->frame_g;
 	}
 	if (draw_parts == DRAW_FRAME)
 	{
@@ -1679,10 +1679,28 @@ static void border_get_border_relief_size_descr(
 }
 
 static void border_get_border_marks_descr(
-	common_decorations_type *cd, border_marks_descr *bm, FvwmWindow *fw)
+	common_decorations_type *cd, border_relief_descr *br, FvwmWindow *fw)
 {
-	bm->relief_width = cd->relief_width;
-	/*!!!*/
+	int inset;
+
+	/* get mark's length and thickness */
+	inset = (br->relief.w_shin != 0 || br->relief.w_din != 0);
+	br->marks.length = fw->boundary_width - br->relief.w_dout - inset;
+	if (br->marks.length <= 0)
+	{
+		br->marks.has_x_marks = 0;
+		br->marks.has_y_marks = 0;
+		return;
+	}
+	br->marks.thickness = cd->relief_width;
+	if (br->marks.thickness > br->marks.length)
+	{
+		br->marks.thickness = br->marks.length;
+	}
+	/* get offsets from outer side of window */
+	br->marks.offset_tl = br->relief.w_dout;
+	br->marks.offset_br =
+		-br->relief.w_dout - br->marks.length - br->marks.offset_tl;
 
 	return;
 }
@@ -1762,6 +1780,152 @@ static void border_draw_part_relief(
 	return;
 }
 
+static void border_draw_x_mark(
+	border_relief_descr *br, int x, int y, Pixmap dest_pix,
+	Bool do_draw_shadow)
+{
+	int k;
+	int length;
+	GC gc;
+
+	if (br->marks.has_x_marks == 0)
+	{
+		return;
+	}
+	x += br->marks.offset_tl;
+	gc = (do_draw_shadow) ? br->gcs.shadow : br->gcs.relief;
+	/* draw it */
+	for (k = 0, length = br->marks.length - 1; k < br->marks.thickness;
+	     k++, length--)
+	{
+		int x1;
+		int x2;
+		int y1;
+		int y2;
+
+		if (length < 0)
+		{
+			break;
+		}
+		if (do_draw_shadow)
+		{
+			x1 = x + k;
+			y1 = y - 1 - k;
+		}
+		else
+		{
+			x1 = x;
+			y1 = y + k;
+		}
+		x2 = x1 + length;
+		y2 = y1;
+		XDrawLine(dpy, dest_pix, gc, x1, y1, x2, y2);
+	}
+
+	return;
+}
+
+static void border_draw_y_mark(
+	border_relief_descr *br, int x, int y, Pixmap dest_pix,
+	Bool do_draw_shadow)
+{
+	int k;
+	int length;
+	GC gc;
+
+	if (br->marks.has_y_marks == 0)
+	{
+		return;
+	}
+	y += br->marks.offset_tl;
+	gc = (do_draw_shadow) ? br->gcs.shadow : br->gcs.relief;
+	/* draw it */
+	for (k = 0, length = br->marks.length; k < br->marks.thickness;
+	     k++, length--)
+	{
+		int x1;
+		int x2;
+		int y1;
+		int y2;
+
+		if (length <= 0)
+		{
+			break;
+		}
+		if (do_draw_shadow)
+		{
+			x1 = x - 1 - k;
+			y1 = y + k;
+		}
+		else
+		{
+			x1 = x + k;
+			y1 = y;
+		}
+		x2 = x1;
+		y2 = y1 + length - 1;
+		XDrawLine(dpy, dest_pix, gc, x1, y1, x2, y2);
+	}
+
+	return;
+}
+
+static void border_draw_part_marks(
+	border_relief_descr *br, rectangle *part_g, draw_window_parts part,
+	Pixmap dest_pix)
+{
+	int l;
+	int t;
+	int w;
+	int h;
+	int o;
+
+	l = br->sidebar_g.x;
+	t = br->sidebar_g.y;
+	w = part_g->width;
+	h = part_g->height;
+	o = br->marks.offset_br;
+	switch (part)
+	{
+	case DRAW_BORDER_N:
+		border_draw_y_mark(br, 0, 0, dest_pix, False);
+		border_draw_y_mark(br, w, 0, dest_pix, True);
+		break;
+	case DRAW_BORDER_S:
+		border_draw_y_mark(br, 0, h + o, dest_pix, False);
+		border_draw_y_mark(br, w, h + o, dest_pix, True);
+		break;
+	case DRAW_BORDER_E:
+		border_draw_x_mark(br, w + o, 0, dest_pix, False);
+		border_draw_x_mark(br, w + o, h, dest_pix, True);
+		break;
+	case DRAW_BORDER_W:
+		border_draw_x_mark(br, 0, 0, dest_pix, False);
+		border_draw_x_mark(br, 0, h, dest_pix, True);
+		break;
+	case DRAW_BORDER_NW:
+		border_draw_x_mark(br, 0, t, dest_pix, True);
+		border_draw_y_mark(br, l, 0, dest_pix, True);
+		break;
+	case DRAW_BORDER_NE:
+		border_draw_x_mark(br, l + o, t, dest_pix, True);
+		border_draw_y_mark(br, 0, 0, dest_pix, False);
+		break;
+	case DRAW_BORDER_SW:
+		border_draw_x_mark(br, 0, 0, dest_pix, False);
+		border_draw_y_mark(br, l, t + o, dest_pix, True);
+		break;
+	case DRAW_BORDER_SE:
+		border_draw_x_mark(br, l + o, 0, dest_pix, False);
+		border_draw_y_mark(br, 0, t + o, dest_pix, False);
+		break;
+	default:
+		return;
+	}
+
+	return;
+}
+
 inline static void border_set_part_background(
 	Window w, Pixmap pix)
 {
@@ -1792,9 +1956,10 @@ static void border_draw_one_part(
 	{
 		border_draw_part_relief(br, frame_g, &part_g, p, is_inverted);
 	}
-	/* !!! draw the handle marks */
+	/* draw the handle marks */
 	if (br->marks.has_x_marks || br->marks.has_y_marks)
 	{
+		border_draw_part_marks(br, &part_g, part, p);
 	}
 	/* apply the pixmap and destroy it */
 	border_set_part_background(w, p);
@@ -1814,11 +1979,12 @@ static void border_draw_all_parts(
 
 	/* get the description of the drawing directives */
 	border_get_border_relief_size_descr(&br->relief, fw, do_hilight);
-	border_get_border_marks_descr(cd, &br->marks, fw);
+	border_get_border_marks_descr(cd, br, fw);
 	/* fetch the gcs used to draw the border */
 	border_get_border_gcs(&br->gcs, cd, fw, do_hilight);
 	/* draw everything in a big loop */
 	draw_handles = (draw_parts & DRAW_HANDLES);
+fprintf(stderr, "drawing border parts 0x%04x\n", draw_parts);
 	for (part = DRAW_BORDER_N; (part & DRAW_FRAME); part <<= 1)
 	{
 		if (part & draw_parts)
