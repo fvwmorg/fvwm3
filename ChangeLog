@@ -1,3 +1,14 @@
+2002-07-04  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* libs/vpacket.h (ConfigWinPacket):
+	* fvwm/module_interface.c (CONFIGARGSNEW):
+	* fvwm/fvwm.h (FvwmWindow):
+	fixed bugs in type conversions for transmitting certain information to
+	modules
+
+	* fvwm/functions.c (CheckActionType):
+	fixed window selection problem w/ menus invoked from modules
+
 2002-07-03  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* fvwm/gnome.c (GNOME_HandlePropRequest):

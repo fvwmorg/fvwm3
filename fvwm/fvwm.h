@@ -678,6 +678,8 @@ typedef struct FvwmWindow
 	int wShaped;
 	Pixmap title_background_pixmap;
 
+	/* Note: if the type of this variable is changed, do update the
+	 * CONFIGARGSNEW macro in module_interface.c, libs/vpacket.h too! */
 	short boundary_width;
 	short corner_width;
 	short visual_corner_width;
@@ -687,6 +689,8 @@ typedef struct FvwmWindow
 	/* /Y coordinate to draw the title name */
 	short title_text_offset;
 	short title_length;
+	/* Note: if the type of this variable is changed, do update the
+	 * CONFIGARGSNEW macro in module_interface.c, libs/vpacket.h and too! */
 	short title_thickness;
 	text_rotation_type title_text_rotation;
 	struct
@@ -725,6 +729,8 @@ typedef struct FvwmWindow
 	XWMHints *wmhints;
 	XClassHint class;
 	/* Tells which desktop this window is on */
+	/* Note: if the type of this variable is changed, do update the
+	 * CONFIGARGSNEW macro in module_interface.c, libs/vpacket.h and too! */
 	int Desk;
 	/* Where (if at all) was it focussed */
 	int FocusDesk;
@@ -768,6 +774,8 @@ typedef struct FvwmWindow
 	icon_boxes *IconBoxes;
 
 	int default_layer;
+	/* Note: if the type of this variable is changed, do update the
+	 * CONFIGARGSNEW macro in module_interface.c, libs/vpacket.h and too! */
 	int layer;
 	unsigned char min_icon_width;
 	unsigned char max_icon_width;
@@ -794,6 +802,8 @@ typedef struct FvwmWindow
 #define EWMH_WINDOW_TYPE_MENU_ID      4
 #define EWMH_WINDOW_TYPE_NORMAL_ID    5
 #define EWMH_WINDOW_TYPE_TOOLBAR_ID   6
+	/* Note: if the type of this variable is changed, do update the
+	 * CONFIGARGSNEW macro in module_interface.c, libs/vpacket.h and too! */
 	int ewmh_window_type;
 	/* icon geometry */
 	rectangle ewmh_icon_geometry;
@@ -808,6 +818,8 @@ typedef struct FvwmWindow
 	int ewmh_mini_icon_height;
 	int ewmh_mini_icon_width;
 	/* memory for the initial _NET_WM_STATE */
+	/* Note: if the type of this variable is changed, do update the
+	 * CONFIGARGSNEW macro in module_interface.c, libs/vpacket.h and too! */
 	int ewmh_hint_layer;
 	/* memory for the initial _NET_WM_STATE */
 	unsigned long ewmh_hint_desktop;

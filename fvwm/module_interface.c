@@ -888,19 +888,19 @@ make_new_vpacket(unsigned char *body, unsigned long event_type,
 	for (; num > 0; --num)
 	{
 		arglen = va_arg(ap, unsigned long);
-		if (arglen != 0)
-		{
-			expandint = False;
-		}
-		else
+		if (arglen == 0)
 		{
 			expandint = True;
 			arglen = sizeof(unsigned long);
 		}
+		else
+		{
+			expandint = False;
+		}
 		bodylen += arglen;
 		if (bodylen < FvwmPacketMaxSize_byte)
 		{
-			if (! expandint)
+			if (!expandint)
 			{
 				register char *tmp = (char *)bp;
 				memcpy(tmp, va_arg(ap, char *), arglen);
@@ -1136,9 +1136,9 @@ static void BroadcastNewPacket(unsigned long event_type,
 	    &(*(_t))->Desk,\
 	    (unsigned long)(0),\
 	    &(*(_t))->layer,\
-	    (unsigned long)(0),\
+	    (unsigned long)(sizeof(short)),\
 	    &(*(_t))->title_thickness,\
-	    (unsigned long)(0),\
+	    (unsigned long)(sizeof(short)),\
 	    &(*(_t))->boundary_width,\
 	    (unsigned long)(0),\
 	    &(*(_t))->hints.base_width,\

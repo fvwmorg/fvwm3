@@ -825,7 +825,7 @@ void list_configure(unsigned long *body)
 	    GET_TITLE_DIR( cfgpacket ) );
   }
 
-  printf( "0x%08lx %-20s %ld\n",
+  printf( "0x%08lx %-20s %hd\n",
 	  cfgpacket->w, "title height", cfgpacket->title_height);
   printf( "0x%08lx %-20s %hd\n",
 	  cfgpacket->w, "border width", cfgpacket->border_width);

@@ -36,43 +36,43 @@
 /*  RBW- typedef struct config_win_packet  */
 typedef struct ConfigWinPacket
 {
-Window             w;
-Window             frame;
-FvwmWindow         *fvwmwin;
-unsigned long int  frame_x;
-unsigned long int  frame_y;
-unsigned long int  frame_width;
-unsigned long int  frame_height;
-unsigned long int  desk;
-/*
-  Temp word for alignment - old flags used to be here.
-  - remove before next release.
-  RBW - 05/01/2000 - layer has usurped this slot.
-unsigned long int  dummy;
-*/
-unsigned long int  layer;
+	Window             w;
+	Window             frame;
+	FvwmWindow         *fvwmwin;
+	unsigned long int  frame_x;
+	unsigned long int  frame_y;
+	unsigned long int  frame_width;
+	unsigned long int  frame_height;
+	unsigned long int  desk;
+	/*
+	  Temp word for alignment - old flags used to be here.
+	  - remove before next release.
+	  RBW - 05/01/2000 - layer has usurped this slot.
+	  unsigned long int  dummy;
+	*/
+	unsigned long int  layer;
 
-unsigned long int  title_height;
-unsigned short int border_width;
-unsigned long int  hints_base_width;
-unsigned long int  hints_base_height;
-unsigned long int  hints_width_inc;
-unsigned long int  hints_height_inc;
-unsigned long int  hints_min_width;
-unsigned long int  hints_min_height;
-unsigned long int  hints_max_width;
-unsigned long int  hints_max_height;
-Window             icon_w;
-Window             icon_pixmap_w;
-unsigned long int  hints_win_gravity;
-unsigned long int  TextPixel;
-unsigned long int  BackPixel;
+	unsigned short int title_height;
+	unsigned short int border_width;
+	unsigned long int  hints_base_width;
+	unsigned long int  hints_base_height;
+	unsigned long int  hints_width_inc;
+	unsigned long int  hints_height_inc;
+	unsigned long int  hints_min_width;
+	unsigned long int  hints_min_height;
+	unsigned long int  hints_max_width;
+	unsigned long int  hints_max_height;
+	Window             icon_w;
+	Window             icon_pixmap_w;
+	unsigned long int  hints_win_gravity;
+	unsigned long int  TextPixel;
+	unsigned long int  BackPixel;
 
-/*  Everything below this is post-GSFR  */
-unsigned long int  ewmh_hint_layer;
-unsigned long int  ewmh_hint_desktop;
-unsigned long int  ewmh_window_type;
-window_flags       flags;
+	/*  Everything below this is post-GSFR  */
+	unsigned long int  ewmh_hint_layer;
+	unsigned long int  ewmh_hint_desktop;
+	unsigned long int  ewmh_window_type;
+	window_flags       flags;
 
 } ConfigWinPacket;
 

@@ -545,7 +545,7 @@ void list_configure(const unsigned long *body)
   fprintf(output,"\t frame h %ld\n",p->frame_height);
   fprintf(output,"\t desk %ld\n",p->desk);
   fprintf(output,"\t layer %ld\n",p->layer);
-  fprintf(output,"\t title height %ld\n",p->title_height);
+  fprintf(output,"\t title height %hd\n",p->title_height);
   fprintf(output,"\t border width %hd\n",p->border_width);
   fprintf(output,"\t window base width %ld\n",p->hints_base_width);
   fprintf(output,"\t window base height %ld\n",p->hints_base_height);
