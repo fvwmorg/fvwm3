@@ -1,10 +1,16 @@
+2002-11-15  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* libs/Bindings.c (__compare_binding):
+	(MatchBindingExactly):
+	compoile fixes w/o stroke lib
+
 2002-11-14  olicha  <olivier.chapuis@free.fr>
 
 	* fvwm/fvwm.1.in:
 	* INSTALL.fvwm:
 	* NEWS
 	Removed any reference on "xft and flickering"
-	
+
 2002-11-14  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* fvwm/eventmask.h (XEVMASK_ICONW):
