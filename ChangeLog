@@ -1,3 +1,8 @@
+2001-01-18  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* fvwm/fvwm2.1 (quotes):
+	Tried to clarify expansion a bit
+
 2001-01-17  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* fvwm/menus.c (scanForPixmap):

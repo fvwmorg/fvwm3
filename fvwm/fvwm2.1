@@ -899,8 +899,37 @@ parameter on the command line it expands it to a string indicated
 by the parameter name.  Unknown parameters are left untouched.
 Parameter expansion is performed before quoting.  To quote a '$'
 use "$$".  Note that module configuration lines (i.e. lines
-beginning with '*') are not subject to parameter expansion.  The
-parameters known by fvwm are:
+beginning with '*') are not subject to parameter expansion.
+
+The general idea is to expand single letter parameters as soon
+as possible.  So a "$d" is expanded immediately when read by the
+parser, but "$3" is only expanded in the context of a complex
+function with at least four parameters.  Otherwise it is left
+untouched.  Similarly, "$c" is only expanded in the context of
+a window.
+
+Parameter expansion in the
+.BR +
+command is different than in normal commands.  If the command
+is adding to a function, single letter parameters are expanded
+normally which is often not what was intended.  To suppress
+expansion the '$' has to be doubled.  Parameters enclosed in
+brackets are protected from parameter expansion in these commands
+so the '$' must not be doubled.
+
+Example:
+
+.EX
+# Print the current desk number, horizontal
+# page and the window's class.
+Echo $d $[page.nx] $c
+# But a function that prints $d needs $$,
+# but not before $[page.nx] or $c:
+AddToFunc PrintDeskNumber
++ I Echo $$d $[page.nx] $c
+.EE
+
+The parameters known by fvwm are:
 
 .in +.5i
 $$
@@ -1339,7 +1368,7 @@ ChangeMenuStyle pixmap1 \\
 .TP
 .BI "CopyMenuStyle " "orig-menustyle dest-menustyle"
 Copy
-.IR orig-menustyle to dest-menustyle ,
+.IR orig-menustyle " to " dest-menustyle ,
 where
 .IR orig-menustyle
 is an existing menu style.  If the menu style
