@@ -31,8 +31,7 @@ March
 
   16th
       + Finish the overall schedule.
-      * Post first draft of logo competition rules on fvwm-workers.
-
+      + Post first draft of logo competition rules on fvwm-workers.
   31st
       * Agree on rules for the logo competition.
 
@@ -43,7 +42,6 @@ April
         fvwm-workers.
       * Write the logo competition announcement message and discuss it on
         fvwm-workers.
-
   15th   +++ First announcement day +++
       * Announce the birthday celebrations and kick off the logo competition.
       * Put the announcement on the web page.
@@ -53,17 +51,14 @@ May
 
   15th
       * Make a short term schedule for the week before and after the birthday.
-
   20th
       * Collect pictures of the developers.
       * Write the long announcement for fvwm's birthday; also mention the logo
         competition.
-
   25th  +++ Second announcement day +++
       * Send the birthday message.
       * Make a shiny web page for the celebration and post it on fvwm-workers.
       * Make a web page with the pictures of the developers.
-
   30th
       * Upload the celebration page.
 
@@ -71,7 +66,6 @@ June
 
   1st (Sunday)   +++ 10th birthday +++
       * Gather on #fvwm at irc.freenode.net around 17:00 GMT
-
   30th
       * Remove the celebration page or keep the page but remove references to
         the birthday event.
@@ -80,7 +74,6 @@ July
 
   until 31st
       * Accept contributons and place them on the web site for public viewing.
-
   31st
       * Close the competition.
       * Form the jury and begin judging the logos.
@@ -89,7 +82,6 @@ August
 
   30th
       * Finish evaluation of the logos.
-
   31st
       * Proclaim the winner on the fvwm list and the web site.
       * Put the winning logo on the web site and into FvwmBanner.
@@ -109,7 +101,6 @@ August
        16-Mar
          Finish the overall schedule.
          [done]
-
        15-May
          Make a short term schedule for the week before and after the birthday.
          [pending]
@@ -119,7 +110,7 @@ August
        Goal: Inform the public of the birthday and the logo competition.
        Priority: very high
        Responsible: volunteer needed, Dominik
-       Status: planning schedule
+       Status: pending
 
        10-Apr
         * Write a short announcement message for the 1st of June and discuss it
@@ -128,13 +119,10 @@ August
         * Write the logo competition announcement message and discuss it on
           fvwm-workers.
           [pending]
-
        15-Apr
         * Announce the logo competition and mention the birthday in the same
           message.
           [pending until 15-Apr]
-          [pending]
-
           Recipients:
             fvwm-announce@fvwm.org
             fvwm@fvwm.org
@@ -152,12 +140,10 @@ August
             c't (German magazine)
             ix (German magazine)
             ? other magazines?
-
        20-May
         * Write the long announcement for fvwm's birthday; also mention the logo
           competition.
           [pending]
-
        25-May
         * Send the birthday message.
           [pending until 25-May]
@@ -170,14 +156,13 @@ August
        Goal: Make a shiny new site for the celebration and keep the news up to
              date.
        Priority: high
-       Responsible: volunteer needed, parv?
-       Status: planning schedule
+       Responsible: parv, Uwe Pross, volunteer welcome
+       Status: in progress
 
        10-Apr
         * Write a short announcement message for the 1st of June and discuss it
           on fvwm-workers.
           [pending]
-
        15-Apr
         * Put the announcement on the web page.
           [pending until 15-Apr]
@@ -185,17 +170,14 @@ August
           [pending until 15-Apr]
         * Make a web page for the logo competition.
           [pending]
-
        25-May
         * Make a shiny web site for the celebration and post it on fvwm-workers.
           [pending]
         * Make a web page with the pictures of the developers.
           [pending]
-
        30-May
         * Upload the celebration page.
           [pending until 30-May]
-
        30-Jun
         * Remove the celebration page or keep the page but remove references to
           the birthday event.
@@ -206,39 +188,33 @@ August
        Goal: Competition for a new fvwm logo design; new fvwm logo.
        Priority: very high
        Responsible: volunteer needed, Dominik
-       Status: planning schedule
+       Status: planning rules
 
        16-Mar
         * Write a draft of the logo competition rules and post it on
           fvwm-workers.
-          [ongoing, Dominik]
+          [done]
        31-Mar
         * Agree on the final rules for the logo competition.
           [pending]
-
        10-Apr
         * Write the logo competition announcement message and discuss it on
           fvwm-workers.
           [pending]
-
        15-Apr
         * Make a web page for the logo competition.
         * Announce the logo competition.
           [pending]
-
        31-Jul
         * Accept contributons and place them on the web site for public viewing.
           [pending]
-
        31-Jul
         * Close the competition.
         * Form the jury and begin judging the logos.
           [pending]
-
        30-Aug
         * Finish evaluation of the logos.
           [pending]
-
        31-Aug
         * Proclaim the winner on the fvwm list and the web site.
         * Put the winning logo on the web site and into FvwmBanner.
@@ -252,6 +228,7 @@ August
 
        1-Jun
         * Gather on #fvwm at irc.freenode.net around 17:00 GMT
+        [pending until 1-Jun]
 
   B. Pictures of the developers
 
@@ -265,8 +242,10 @@ August
 
        20-May
         * Collect pictures of the developers.
+          [pending]
        25-May
         * Make a web page with the pictures of the developers.
+          [pending]
 
   C. Find Robert J. Nation
 
