@@ -1,5 +1,7 @@
 Changes in beta release 2.3.8 (September? 1999)
 
+* A long-awaited new default FvwmBanner logo.
+
 * RaiseTransient no longer flips main above/below already raised transients.
   New style FlipTransient turns flipping back on, and additionally does a
   similar job for LowerTransient at the bottom of the layer.

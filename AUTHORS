@@ -2,6 +2,9 @@ To find out what should go in this file, see "Information For
 Maintainers of GNU Software" (maintain.texi), the section called
 "Recording Changes".
 
+Alan F. Ho:
+fvwm-logo-colorful.xpm, a prototype of a current default FvwmBanner logo.
+
 Mark Rainford:
 Handling of transient windows in Raise/Lower: reasonable emulation of
 Motif group behaviour is now possible.
@@ -24,6 +27,11 @@ Neil Bird:
 Add $c, $r, $n variables for Functions.
 Add Next/Prev conditions to WindowId and WindowList.
 Attempted fix of OLDecor hints use for decorations. Add DestroyStyle command.
+
+Mikhael Goikhman:
+Parsing Restart command, Session*Function and StartFunction special functions,
+{Save|Quit}Session commands, some work on restart logic and session stuff,
+FormFvwmRootCursor, fvwm-menu-* scripts, small fixes.
 
 Matthias Clasen:
 Session management, layered stacking order, maximized shaded windows,
