@@ -120,7 +120,7 @@ static char s_g_bits[] = {0x01, 0x02, 0x04, 0x08};
 
 Window icon_win;	       /* icon window */
 
-static int MyVx, MyVx;		/* copy of Scr.Vx/y for drag logic */
+static int MyVx, MyVy;		/* copy of Scr.Vx/y for drag logic */
 
 static char *GetBalloonLabel(const PagerWindow *pw,const char *fmt);
 extern void ExitPager(void);
@@ -1101,7 +1101,7 @@ void DispatchEvent(XEvent *Event)
     {
       /* save initial virtual desk position for drag */
       MyVx=Scr.Vx;
-      MyVy-Scr.Vy;
+      MyVy=Scr.Vy;
       for(i=0;i<ndesks;i++)
       {
 	if(Event->xany.window == Desks[i].w)
