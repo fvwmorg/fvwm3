@@ -1,3 +1,7 @@
+2004-12-11  Dan Espen  <dane@mk.telcordia.com>
+
+	* FvwmIconMan/FvwmIconMan.1.in: Remove lang_check markers.
+
 2004-12-11  Olivier Chapuis  <olivier.chapuis@free.fr>
 
 	* FvwmIconMan/FvwmIconMan.1.in:
