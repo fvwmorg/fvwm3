@@ -1,3 +1,7 @@
+1999-08-10  Mikhael Goikhman  <migo@homemail.com>
+
+	* fvwm/session.c: added missing #ifdef SESSION
+
 1999-08-09  Dominik Vogt  <domivogt@bvstp038.bbn.hp.com>
 
 	* fvwm/screen.h: 

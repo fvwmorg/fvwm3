@@ -403,6 +403,7 @@ LoadWindowStates(char *filename)
   while (fgets(s, sizeof(s), f))
   {
     sscanf(s, "%4000s", s1);
+#ifdef SESSION
 /* migo: temporarily */
 if (!strcmp(s1, "[REAL_STATE_FILENAME]"))
 {
@@ -410,6 +411,7 @@ if (!strcmp(s1, "[REAL_STATE_FILENAME]"))
   setSmProperties (sm_conn, s1, SmRestartIfRunning);
   setRealStateFilename(s1);
 } else
+#endif /* SESSION */
     if (!strcmp(s1, "[CLIENT]"))
     {
       sscanf(s, "%*s %lx", &w);
