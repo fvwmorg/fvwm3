@@ -1,3 +1,11 @@
+2001-03-28  Dan Espen  <dane@mk.telcordia.com>
+
+	* sample.fvwmrc/Makefile.am (EXTRA_DIST): 
+	* sample.fvwmrc/DecorMwm: 
+	* sample.fvwmrc/DecorWin95: 
+	* sample.fvwmrc/decor_examples: Decors come in separate files,
+	Changing to a new decor is remembered.
+
 2001-03-29  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* NEWS, configure.in:
