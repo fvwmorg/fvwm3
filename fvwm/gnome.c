@@ -635,7 +635,7 @@ GNOME_SetCurrentArea(void)
 }
 
 /* FIXME: what to do about negative desks ? */
-/* ignore them!!! */
+/* ignore them! */
 void
 GNOME_SetDeskCount(void)
 {

@@ -123,9 +123,14 @@ Bool GrabEm(int cursor, int grab_context)
    * to the windows. But GRAB_BUSY. */
   if (grab_context != GRAB_BUSY)
   {
-    if(Scr.PreviousFocus == NULL)
-      Scr.PreviousFocus = Scr.Focus;
-    SetFocus(Scr.NoFocusWin,NULL,0);
+    if (!Scr.Focus || do_accept_input_focus(Scr.Focus))
+    {
+      /* But do not grab if the window does not accept input focus from the
+       * window manager */
+      if(Scr.PreviousFocus == NULL)
+	Scr.PreviousFocus = Scr.Focus;
+      SetFocus(Scr.NoFocusWin,NULL,0);
+    }
     grab_win = Scr.Root;
     rep = 500;
   }
@@ -205,16 +210,16 @@ void UngrabEm(int ungrab_context)
 
   GrabPointerState &= ~ungrab_context;
   if(Scr.PreviousFocus != NULL && !(GRAB_BUSY & ungrab_context))
-    {
-      w = Scr.PreviousFocus->w;
+  {
+    w = Scr.PreviousFocus->w;
 
-      /* if the window still exists, focus on it */
-      if (w)
-	{
-	  SetFocus(w,Scr.PreviousFocus,0);
-	}
-      Scr.PreviousFocus = NULL;
+    /* if the window still exists, focus on it */
+    if (w)
+    {
+      SetFocus(w,Scr.PreviousFocus,0);
     }
+    Scr.PreviousFocus = NULL;
+  }
   XSync(dpy,0);
 }
 

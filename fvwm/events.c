@@ -151,6 +151,7 @@ void HandleFocusIn(void)
   Window focus_fw = None;
   Pixel fc = 0;
   Pixel bc = 0;
+  FvwmWindow *ffw_old = Scr.Focus;
   static Window last_focus_w = None;
   static Window last_focus_fw = None;
   static Bool is_never_focused = True;
@@ -219,21 +220,7 @@ void HandleFocusIn(void)
     focus_fw = Tmp_win->frame;
     fc = Tmp_win->hicolors.fore;
     bc = Tmp_win->hicolors.back;
-    if (Scr.Focus != Tmp_win && Scr.Focus != NULL &&
-	(HAS_CLICK_FOCUS(Scr.Focus) || DO_RAISE_MOUSE_FOCUS_CLICK(Scr.Focus)))
-    {
-      int i;
-
-      /* need to grab all buttons for window that we are about to unfocus */
-      XSync(dpy,0);
-      for(i=0;i<3;i++)
-	if(Scr.buttons2grab & (1<<i))
-	  XGrabButton(dpy,(i+1),0,Scr.Focus->Parent,True,
-		      ButtonPressMask, GrabModeSync,GrabModeAsync,None,
-		      Scr.FvwmCursors[CRS_SYS]);
-      Scr.Focus = Tmp_win;
-      Scr.Ungrabbed = NULL;
-    }
+    Scr.Focus = Tmp_win;
     if (Scr.ColormapFocus == COLORMAP_FOLLOWS_FOCUS)
     {
       if((Scr.Hilite)&&(!IS_ICONIFIED(Scr.Hilite)))
@@ -258,6 +245,11 @@ void HandleFocusIn(void)
     last_focus_w = focus_w;
     last_focus_fw = focus_fw;
     is_never_focused = False;
+  }
+  if (Scr.Focus != ffw_old)
+  {
+    focus_grab_buttons(Scr.Focus, True);
+    focus_grab_buttons(ffw_old, False);
   }
 }
 
@@ -1171,12 +1163,12 @@ void HandleUnmapNotify(void)
      (IS_TRANSIENT(Tmp_win) && DO_GRAB_FOCUS_TRANSIENT(Tmp_win)));
 
   if((Tmp_win == Scr.Focus)&&(HAS_CLICK_FOCUS(Tmp_win)))
-    {
-      if(Tmp_win->next)
-	SetFocus(Tmp_win->next->w, Tmp_win->next, 1);
-      else
-	SetFocus(Scr.NoFocusWin,NULL,1);
-    }
+  {
+    if(Tmp_win->next)
+      SetFocus(Tmp_win->next->w, Tmp_win->next, 1);
+    else
+      SetFocus(Scr.NoFocusWin,NULL,1);
+  }
 
   if(Scr.Focus == Tmp_win)
     SetFocus(Scr.NoFocusWin,NULL,1);
@@ -1188,16 +1180,16 @@ void HandleUnmapNotify(void)
     colormap_win = NULL;
 
   if (!IS_MAPPED(Tmp_win) && !IS_ICONIFIED(Tmp_win))
-    {
-      return;
-    }
+  {
+    return;
+  }
 
   MyXGrabServer(dpy);
 
   if(XCheckTypedWindowEvent (dpy, Event.xunmap.window, DestroyNotify,&dummy))
-    {
-      destroy_window(Tmp_win);
-    }
+  {
+    destroy_window(Tmp_win);
+  }
   else
   /*
    * The program may have unmapped the client window, from either
@@ -1209,38 +1201,38 @@ void HandleUnmapNotify(void)
    */
   if (XTranslateCoordinates (dpy, Event.xunmap.window, Scr.Root,
 			     0, 0, &dstx, &dsty, &dumwin))
-    {
-      XEvent ev;
-      Bool reparented;
+  {
+    XEvent ev;
+    Bool reparented;
 
-      reparented = XCheckTypedWindowEvent (dpy, Event.xunmap.window,
-					   ReparentNotify, &ev);
-      SetMapStateProp (Tmp_win, WithdrawnState);
-      if (reparented)
-	{
-	  if (Tmp_win->old_bw)
-	    XSetWindowBorderWidth (dpy, Event.xunmap.window, Tmp_win->old_bw);
-	  if((!IS_ICON_SUPPRESSED(Tmp_win))&&
-	     (Tmp_win->wmhints && (Tmp_win->wmhints->flags & IconWindowHint)))
-	    XUnmapWindow (dpy, Tmp_win->wmhints->icon_window);
-	}
-      else
-	{
-	  RestoreWithdrawnLocation (Tmp_win,False);
-	}
-      XRemoveFromSaveSet (dpy, Event.xunmap.window);
-      XSelectInput (dpy, Event.xunmap.window, NoEventMask);
-      destroy_window(Tmp_win);		/* do not need to mash event before */
-      /*
-       * Flush any pending events for the window.
-       */
-      /* Bzzt! it could be about to re-map */
+    reparented = XCheckTypedWindowEvent (dpy, Event.xunmap.window,
+					 ReparentNotify, &ev);
+    SetMapStateProp (Tmp_win, WithdrawnState);
+    if (reparented)
+    {
+      if (Tmp_win->old_bw)
+	XSetWindowBorderWidth (dpy, Event.xunmap.window, Tmp_win->old_bw);
+      if((!IS_ICON_SUPPRESSED(Tmp_win))&&
+	 (Tmp_win->wmhints && (Tmp_win->wmhints->flags & IconWindowHint)))
+	XUnmapWindow (dpy, Tmp_win->wmhints->icon_window);
+    }
+    else
+    {
+      RestoreWithdrawnLocation (Tmp_win,False);
+    }
+    XRemoveFromSaveSet (dpy, Event.xunmap.window);
+    XSelectInput (dpy, Event.xunmap.window, NoEventMask);
+    destroy_window(Tmp_win);		/* do not need to mash event before */
+    /*
+     * Flush any pending events for the window.
+     */
+    /* Bzzt! it could be about to re-map */
 /*      while(XCheckWindowEvent(dpy, Event.xunmap.window,
 			      StructureNotifyMask | PropertyChangeMask |
 			      ColormapChangeMask | VisibilityChangeMask |
 			      EnterWindowMask | LeaveWindowMask, &dummy));
-      */
-    } /* else window no longer exists and we'll get a destroy notify */
+*/
+  } /* else window no longer exists and we'll get a destroy notify */
   MyXUngrabServer(dpy);
 
   XFlush (dpy);
@@ -1265,7 +1257,6 @@ void HandleButtonPress(void)
   char *action;
   Window OldPressedW;
   Window eventw;
-  int i;
 
   DBUG("HandleButtonPress","Routine Entered");
 
@@ -1355,46 +1346,32 @@ void HandleButtonPress(void)
      * tell it to do so in this case instead of giving it focus. */
     SetFocus(Tmp_win->w, Tmp_win, 1);
   }
-  else if ((Tmp_win) && !(HAS_CLICK_FOCUS(Tmp_win)) &&
-           (Event.xbutton.window == Tmp_win->Parent
-	    /* RBW - I don't think we need these!!! Dominik...if this sems
-	     * to cause a problem, just uncomment them.
-	     * DV - No, I think you are right.
-	    || Event.xbutton.window == Tmp_win->w
-	    || Event.xbutton.window == Tmp_win->frame
-	    */
-	    ) &&
+  else if (Tmp_win && Event.xbutton.window == Tmp_win->Parent &&
+	   (HAS_SLOPPY_FOCUS(Tmp_win) || HAS_MOUSE_FOCUS(Tmp_win)) &&
 	   DO_RAISE_MOUSE_FOCUS_CLICK(Tmp_win))
   {
-      /*
-          RBW - Release the Parent grab here (whether we raise or not). We
-	  have to wait till this point or we would miss the raise click, which
-	  is not contemporaneous with the focus change.
-	  Scr.Ungrabbed should always be NULL here. I don't know anything
-	  useful we could do if it's not, other than ignore this window.
-      */
-      if (Scr.Ungrabbed == NULL)
-	{
-         for(i=0;i<3;i++)
-	  {
-	   if(Scr.buttons2grab & (1<<i))
-	    {
-	     XUngrabButton(dpy,(i+1),0,Tmp_win->Parent);
-	     XUngrabButton(dpy,(i+1),GetUnusedModifiers(),Tmp_win->Parent);
-	    }
-	  }
-	 Scr.Ungrabbed = Tmp_win;
-	}
+    FvwmWindow *tmp = Scr.Ungrabbed;
 
+    /*
+      RBW - Release the Parent grab here (whether we raise or not). We
+      have to wait till this point or we would miss the raise click, which
+      is not contemporaneous with the focus change.
+      Scr.Ungrabbed should always be NULL here. I don't know anything
+      useful we could do if it's not, other than ignore this window.
+    */
     if (!is_on_top_of_layer(Tmp_win) &&
         MaskUsedModifiers(Event.xbutton.state) == 0)
     {
       RaiseWindow(Tmp_win);
+      focus_grab_buttons(Tmp_win, True);
+      Scr.Ungrabbed = tmp;
       XSync(dpy,0);
       XAllowEvents(dpy,ReplayPointer,CurrentTime);
       XSync(dpy,0);
       return;
     }
+    focus_grab_buttons(Tmp_win, True);
+    Scr.Ungrabbed = tmp;
   }
 
   XSync(dpy,0);
@@ -1610,10 +1587,13 @@ void HandleEnterNotify(void)
   {
     SetFocus(Tmp_win->w,Tmp_win,1);
   }
-  else if (HAS_CLICK_FOCUS(Tmp_win) && Tmp_win == Scr.Focus)
+  else if (HAS_CLICK_FOCUS(Tmp_win) && Tmp_win == Scr.Focus &&
+	   do_accept_input_focus(Tmp_win))
   {
     /* We have to refresh the focus window here in case we left the focused
-     * fvwm window.  Motif apps may lose the input focus otherwise. */
+     * fvwm window.  Motif apps may lose the input focus otherwise.  But do not
+     * try to refresh the focus of applications that want to handle it
+     * themselves. */
     FOCUS_SET(Tmp_win->w);
   }
   if (Scr.ColormapFocus == COLORMAP_FOLLOWS_MOUSE)

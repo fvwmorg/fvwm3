@@ -1,5 +1,24 @@
 2000-09-15  Dominik Vogt  <dominik.vogt@gmx.de>
 
+	* fvwm/window_flags.h:
+	* fvwm/fvwm.h:
+	* fvwm/misc.c (GrabEm):
+	* fvwm/add_window.c (regrab_focus_win):
+	(setup_key_and_button_grabs):
+	(setup_focus_policy):
+	* fvwm/events.c (HandleEnterNotify):
+	(HandleButtonPress):
+	(HandleFocusIn):
+	* fvwm/focus.c (focus_grab_buttons):
+	(DoSetFocus):
+	(FocusOn):
+	(do_accept_input_focus):
+	* fvwm/focus.h (focus_grab_buttons):
+	fixed focus problems with xview applications/clicktofocus and cleaned
+	up the whole focus regrabbing code
+
+2000-09-15  Dominik Vogt  <dominik.vogt@gmx.de>
+
 	* configure.in:
 	* libs/strdup.c:
 	new file with configure support for strdup needed for ULTRIX
@@ -28,7 +47,7 @@
 	made static
 
 	* fvwm/fvwm2.1:
-	fixed typo
+	fixed typos
 
 	* fvwm/style.h:
 	* fvwm/window_flags.h (DO_IGNORE_GNOME_HINTS):

@@ -170,6 +170,7 @@ typedef struct
 {
   /* common flags (former flags in bits 0-12) */
   unsigned is_sticky : 1;
+  unsigned has_grabbed_buttons : 1;
   unsigned has_icon_font : 1;
   unsigned has_window_font : 1;
   /* static flags that do not change dynamically after the window has been

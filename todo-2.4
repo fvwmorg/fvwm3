@@ -3,7 +3,7 @@ reporters did not respond to any question.  I am willing to
 ignore these to get 2.4 out the door.  Others are simply
 unreproducible or not worth the time spent:
 
-  122, 123, 127, 129, 130, 156, 158, 162
+  122, 127, 129, 130, 156, 158, 162
 
 Items with highest priority / most severe problems:
 
@@ -11,22 +11,22 @@ Items with highest priority / most severe problems:
 
 New since last update:
 
-148 (re-opened), 162
+
 
 Closed since last update:
 
-121, 124, 128, 138, 139, 152, 157, 159
+123, 127
 
 ---------- Summary: ----------------------------------------------
 
  1 to be verified
-11 to be discussed
+ 9 to be discussed
  8 to do
  3 distribution issues
  9 testing
 ----------------------
-32 open items
-130 items closed
+30 open items
+132 items closed
 162 items in total
 
 ---------- To be verified: ---------------------------------------
@@ -47,11 +47,7 @@ Closed since last update:
 122) Investigate FvwmButtons panel problem.
      [reported by Robert H. Ford II <rhford2@lucent.com> on 18-Feb-2000]
      -> [no usable feedback]
-123) Bug #378 (FvwmPager interferes with xscreensaver)
-     -> [unreproducible]
 126) Bug #489 (icons migrating on restart, ident does not work)
-     -> [unreproducible]
-127) Bug #511 (xpp subwindows not drawn properly)
      -> [unreproducible]
 129) Bug #560 (freeze on Exceed)
      [various reporters, but no usable feedback yet]
@@ -87,7 +83,7 @@ Closed since last update:
 146) Bug #542 (Winch signals).
 148) Losing focus when entering root window bug.
      [reported by Elliot Sowadsky on 29-Dec-1999]
-     [suggested fix: Lenience style... does not help]
+     [confirmed by Dominik]
 
 ---------- Distribution issues: ----------------------------------
 
@@ -112,22 +108,8 @@ Closed since last update:
 
 ========== Closed recently: ======================================
 
-107) "Recapture" while an icon is focused takes several seconds.
-     [reported by Mikhael; confirmed by Dominik]
-     [workaround implemented]
-120) Icons are not always sorted properly; there may be
-     gaps after page switching (with IconBox).
-121) Investigate FvwmPager core dump.
-     [reported by Wing Tung Leung <tg@skynet.be> on 20-Feb-2000]
-     [Dominik: Didn't get any reply, stack trace, ...]
-     [unreproducible]
-124) Bug #477 (closing xbuffy popup window nukes focus)
-133) Bug #602 (window placement w/ 2.3.15)
-138) Bug #593 (key bindings w/ Motif)
-139) Fix TaskBar tips drawing.
-     [reported by gregory@mcst.ru (Gregory A. Shimansky) on
-     14-Apr-2000]
-157) Stack ring still broken sometimes.
+123) Bug #378 (FvwmPager interferes with xscreensaver)
+     [unreproducible, seems to be fixed]
 
 ========== Closed: ===============================================
 
@@ -278,6 +260,9 @@ Closed since last update:
      [finished except UseStyle]
 103) Add recent bug reports to to-do list.
 104) Fix FvwmCommandS core dumps on X server shutdown.
+107) "Recapture" while an icon is focused takes several seconds.
+     [reported by Mikhael; confirmed by Dominik]
+     [workaround implemented]
 108) FvwmPager desk separators are not updated if their colour set
      is changed (*FvwmPagerColorset).
 109) FvwmIconMan titles don't seem to work.
@@ -294,18 +279,32 @@ Closed since last update:
      'xload -g 50x50'.
      [reported by Dominik]
      [not reproducible anymore]
+120) Icons are not always sorted properly; there may be
+     gaps after page switching (with IconBox).
+121) Investigate FvwmPager core dump.
+     [reported by Wing Tung Leung <tg@skynet.be> on 20-Feb-2000]
+     [Dominik: Didn't get any reply, stack trace, ...]
+     [unreproducible]
+124) Bug #477 (closing xbuffy popup window nukes focus)
+127) Bug #511 (xpp subwindows not drawn properly)
+     [not a bug, xpp is broken]
 128) Bug #564 (pasting text goes to window with the mouse, not
      the focused window).
      [either an enhancement request or not in the scope of fvwm]
 131) Sticky windows move to the top in the pager view if the desk is
      changed.
 132) Tru64 sizeof(unsigned long) problem
+133) Bug #602 (window placement w/ 2.3.15)
 135) FvwmWinList doesn't handle negative geometries properly
      with TitleAtBottom.
 136) Implement a FlushUpdates command to apply style changes
      within a function?
      [nope; enhanced Refresh/RefreshWindow instead]
 137) Bug #550 (FvwmAuto raises after 'lower')
+138) Bug #593 (key bindings w/ Motif)
+139) Fix TaskBar tips drawing.
+     [reported by gregory@mcst.ru (Gregory A. Shimansky) on
+     14-Apr-2000]
 140) Remove "Layer" command?  Instead, the "Layer" styles
      can be applied immediately w/o Recapture.
      [3 votes against vs 1 vote for removing]
@@ -336,6 +335,7 @@ Closed since last update:
      [Reported by Brad]
      [did not happoen for several months; fix if it shows up again]
 155) Remove busycursor configure option.
+157) Stack ring still broken sometimes.
 160) Remove FlipTransient style.
 161) Rename MovedButton3 condition to PlacedByButton3.
 159) configure check for gnome.h

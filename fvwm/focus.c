@@ -47,6 +47,12 @@
 
 static Bool lastFocusType;
 
+Bool do_accept_input_focus(FvwmWindow *tmp_win)
+{
+  return (!tmp_win || !tmp_win->wmhints ||
+	  !(tmp_win->wmhints->flags & InputHint) || tmp_win->wmhints->input);
+}
+
 /********************************************************************
  *
  * Sets the input focus to the indicated window.
@@ -54,7 +60,6 @@ static Bool lastFocusType;
  **********************************************************************/
 static void DoSetFocus(Window w, FvwmWindow *Fw, Bool FocusByMouse, Bool NoWarp)
 {
-  int i;
   extern Time lastTimestamp;
 
   if (Fw && HAS_NEVER_FOCUS(Fw))
@@ -132,30 +137,18 @@ static void DoSetFocus(Window w, FvwmWindow *Fw, Bool FocusByMouse, Bool NoWarp)
   }
   lastFocusType = FocusByMouse;
 
-  if(Scr.NumberOfScreens > 1)
+  if (Scr.NumberOfScreens > 1)
   {
     XQueryPointer(dpy, Scr.Root, &JunkRoot, &JunkChild,
 		  &JunkX, &JunkY, &JunkX, &JunkY, &JunkMask);
-    if(JunkRoot != Scr.Root)
+    if (JunkRoot != Scr.Root)
     {
-      if((Scr.Ungrabbed != NULL)&&(HAS_CLICK_FOCUS(Scr.Ungrabbed)))
+      if (focus_grab_buttons(Scr.Ungrabbed, False))
       {
-	/*
-	  RBW - 12/09/1999 - this grab stuff looks way out of sync with
-	  the regular handling - look into this later. I can't test a
-	  multi-head setup just now.
-	*/
-	/* Need to grab buttons for focus window */
-	XSync(dpy,0);
-	for(i=0;i<3;i++)
-	  if(Scr.buttons2grab & (1<<i))
-	  {
-	    XGrabButton(dpy,(i+1),0,Scr.Ungrabbed->Parent,True,
-			ButtonPressMask, GrabModeSync,GrabModeAsync,None,
-			Scr.FvwmCursors[CRS_SYS]);
-	  }
+	/* RBW - 12/09/1999 - this grab stuff looks way out of sync with
+	 * the regular handling - look into this later. I can't test a
+	 * multi-head setup just now. */
 	Scr.Focus = NULL;
-	Scr.Ungrabbed = NULL;
 	FOCUS_SET(Scr.NoFocusWin);
       }
       return;
@@ -191,32 +184,17 @@ static void DoSetFocus(Window w, FvwmWindow *Fw, Bool FocusByMouse, Bool NoWarp)
       window here, or we'll never catch the raise click. For this special case,
       the newly-focused window is ungrabbed in events.c (HandleButtonPress).
   */
-  if ((Scr.Ungrabbed != NULL)&&
-      (HAS_CLICK_FOCUS(Scr.Ungrabbed) ||
-       DO_RAISE_MOUSE_FOCUS_CLICK(Scr.Ungrabbed)) &&
-      (Scr.Ungrabbed != Fw))
+  if (Scr.Ungrabbed != Fw)
   {
     /* need to grab all buttons for window that we are about to
      * unfocus */
-    XSync(dpy,0);
-    for(i=0;i<3;i++)
-      if(Scr.buttons2grab & (1<<i))
-	XGrabButton(dpy,(i+1),0,Scr.Ungrabbed->Parent,True,
-		    ButtonPressMask, GrabModeSync,GrabModeAsync,None,
-		    Scr.FvwmCursors[CRS_SYS]);
-    Scr.Ungrabbed = NULL;
+    focus_grab_buttons(Scr.Ungrabbed, False);
   }
   /* if we do click to focus, remove the grab on mouse events that
    * was made to detect the focus change */
-  if((Fw != NULL)&&(HAS_CLICK_FOCUS(Fw)))
+  if (Fw && HAS_CLICK_FOCUS(Fw))
   {
-    for(i=0;i<3;i++)
-      if(Scr.buttons2grab & (1<<i))
-      {
-	XUngrabButton(dpy,(i+1),0,Fw->Parent);
-	XUngrabButton(dpy,(i+1),GetUnusedModifiers(),Fw->Parent);
-      }
-    Scr.Ungrabbed = Fw;
+    focus_grab_buttons(Fw, True);
   }
   /* RBW - allow focus to go to a NoIconTitle icon window so
    * auto-raise will work on it... */
@@ -265,9 +243,27 @@ static void DoSetFocus(Window w, FvwmWindow *Fw, Bool FocusByMouse, Bool NoWarp)
   XSync(dpy,0);
 }
 
+static void MoveFocus(Window w, FvwmWindow *Fw, Bool FocusByMouse, Bool NoWarp)
+{
+  FvwmWindow *ffw_old = Scr.Focus;
+  Bool accepts_input_focus = do_accept_input_focus(Fw);
+
+  if (Fw == Scr.Focus)
+    return;
+  DoSetFocus(w, Fw, FocusByMouse, NoWarp);
+  if (Scr.Focus != ffw_old)
+  {
+    if (accepts_input_focus)
+    {
+      focus_grab_buttons(Scr.Focus, True);
+    }
+    focus_grab_buttons(ffw_old, False);
+  }
+}
+
 void SetFocus(Window w, FvwmWindow *Fw, Bool FocusByMouse)
 {
-  DoSetFocus(w, Fw, FocusByMouse, False);
+  MoveFocus(w, Fw, FocusByMouse, False);
 }
 
 void SetPointerEventPosition(XEvent *eventp, int x, int y)
@@ -306,7 +302,7 @@ void FocusOn(FvwmWindow *t, Bool FocusByMouse, char *action)
     if (t)
     {
       /* give the window a chance to take the focus itself */
-      DoSetFocus(t->w, t, FocusByMouse, 1);
+      MoveFocus(t->w, t, FocusByMouse, 1);
     }
     return;
   }
@@ -348,7 +344,7 @@ void FocusOn(FvwmWindow *t, Bool FocusByMouse, char *action)
   }
 
   UngrabEm(GRAB_NORMAL);
-  DoSetFocus(t->w, t, FocusByMouse, NoWarp);
+  MoveFocus(t->w, t, FocusByMouse, NoWarp);
 }
 
 /**************************************************************************
@@ -458,4 +454,85 @@ void warp_func(F_CMD_ARGS)
 Bool IsLastFocusSetByMouse(void)
 {
   return lastFocusType;
+}
+
+Bool focus_grab_buttons(FvwmWindow *tmp_win, Bool is_focused)
+{
+  int i;
+  Bool accepts_input_focus;
+  Bool do_grab = False;
+
+  if (!tmp_win)
+  {
+    return False;
+  }
+  accepts_input_focus = do_accept_input_focus(tmp_win);
+
+  if ((HAS_SLOPPY_FOCUS(tmp_win) || HAS_MOUSE_FOCUS(tmp_win)) &&
+      DO_RAISE_MOUSE_FOCUS_CLICK(tmp_win) &&
+      (!is_focused || !is_on_top_of_layer(tmp_win)))
+  {
+    /* do it */
+    do_grab = True;
+  }
+  else if (HAS_CLICK_FOCUS(tmp_win) && !is_focused &&
+	   (!DO_NOT_RAISE_CLICK_FOCUS_CLICK(tmp_win) || accepts_input_focus))
+  {
+    /* do it */
+    do_grab = True;
+  }
+
+  if ((do_grab && !HAS_GRABBED_BUTTONS(tmp_win)) ||
+      (!do_grab && HAS_GRABBED_BUTTONS(tmp_win)))
+  {
+    SET_GRABBED_BUTTONS(tmp_win, do_grab);
+    Scr.Ungrabbed = (do_grab) ? NULL : tmp_win;
+    if (do_grab)
+      XSync(dpy, 0);
+    for (i = 0; i < 3; i++)
+    {
+      if (!(Scr.buttons2grab & (1<<i)))
+	continue;
+
+      if (do_grab)
+      {
+	XGrabButton(
+	  dpy, i + 1, 0, tmp_win->Parent, True, ButtonPressMask, GrabModeSync,
+	  GrabModeAsync, None, Scr.FvwmCursors[CRS_SYS]);
+      }
+      else
+      {
+	XUngrabButton(dpy, (i+1), 0, tmp_win->Parent);
+      }
+      if (GetUnusedModifiers())
+      {
+	register unsigned int mods;
+	register unsigned int max = GetUnusedModifiers();
+	register unsigned int living_modifiers = ~max;
+
+	/* handle all bindings for the dead modifiers */
+	for (mods = 1; mods <= max; mods++)
+	{
+	  /* Since mods starts with 1 we don't need to test if mods
+	   * contains a dead modifier. Otherwise both, dead and living
+	   * modifiers would be zero ==> mods == 0 */
+	  if (!(mods & living_modifiers))
+	  {
+	    if (do_grab)
+	    {
+	      XGrabButton(
+		dpy, i + 1, mods, tmp_win->Parent, True, ButtonPressMask,
+		GrabModeSync, GrabModeAsync, None, None);
+	    }
+	    else
+	    {
+	      XUngrabButton(dpy, (i+1), mods, tmp_win->Parent);
+	    }
+	  }
+	} /* for */
+      } /* if */
+    } /* for */
+  }
+
+  return do_grab;
 }

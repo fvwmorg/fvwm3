@@ -91,6 +91,12 @@
           (fw)->flags.common.s.has_bottom_title = !!(x)
 #define SETM_HAS_BOTTOM_TITLE(fw,x) \
           (fw)->flag_mask.common.s.has_bottom_title = !!(x)
+#define HAS_GRABBED_BUTTONS(fw) \
+          ((fw)->flags.common.has_grabbed_buttons)
+#define SET_GRABBED_BUTTONS(fw,x) \
+          (fw)->flags.common.has_grabbed_buttons = !!(x)
+#define SETM_GRABBED_BUTTONS(fw,x) \
+          (fw)->flag_mask.common.has_grabbed_buttons = !!(x)
 #define HAS_STIPPLED_TITLE(fw)  \
           ((fw)->flags.common.s.has_stippled_title)
 #define SET_HAS_STIPPLED_TITLE(fw,x) \

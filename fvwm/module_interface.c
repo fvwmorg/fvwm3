@@ -1261,7 +1261,7 @@ void PositiveWrite(int module, unsigned long *ptr, int size)
     {
       /*
        * We give the read a long timeout; if the module fails to
-       * respond within this time then it deserves to be KILLED!!!
+       * respond within this time then it deserves to be KILLED!
        *
        * NOTE: rather than impose an arbitrary timeout on the user,
        *       we will make this a configuration parameter.
