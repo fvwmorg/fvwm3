@@ -1,3 +1,10 @@
+1999-08-05  Dominik Vogt  <domivogt@bvstp038.bbn.hp.com>
+
+	* fvwm/events.c (HandleButtonRelease): 
+	* fvwm/session.c (getUniqueStateFilename):
+	(LoadGlobalState):
+	removed unused variables
+
 1999-08-01  Dominik Vogt  <dominik_vogt@gmx.de>
 
 	* fvwm/borders.c (RedrawBorder): fixed window title drawing

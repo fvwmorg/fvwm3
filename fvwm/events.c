@@ -1417,7 +1417,7 @@ void HandleButtonPress(void)
  ************************************************************************/
 void HandleButtonRelease()
 {
-   unsigned int modifier;
+   /* unsigned int modifier; */
    int stroke;
    char *action;
 

@@ -111,6 +111,15 @@
 #include "FvwmForm.h"                   /* common FvwmForm stuff */
 #undef IamTheMain
 
+/* Font/color stuff
+   The colors are:
+   . defaults are changed by commands during parse
+   . copied into items during parse
+   . displayed in the customization dialog
+   */
+static int colorset = 0;
+static int itemcolorset = 0;
+
 /* prototypes */
 static void AssignDrawTable(Item *);
 static void AddItem();

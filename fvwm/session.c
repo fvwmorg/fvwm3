@@ -141,7 +141,6 @@ static void setRealStateFilename(char *filename)
 static char *getUniqueStateFilename(void)
 {
   const char *path = getenv("SM_SAVE_DIR");
-  char *filename;
   struct passwd *pwd;
 
   if (!path) {
@@ -157,7 +156,8 @@ void
 LoadGlobalState(char *filename)
 {
   FILE               *f;
-  char                s[4096], s1[4096], s2[256];
+  char                s[4096], s1[4096];
+  /* char s2[256]; */
   int i1, i2, i3, i4, i5, i6, i7, i8, i9;
 
   if (!filename || !*filename) return;

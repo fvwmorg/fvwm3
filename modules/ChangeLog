@@ -1,3 +1,8 @@
+1999-08-05  Dominik Vogt  <domivogt@bvstp038.bbn.hp.com>
+
+	* FvwmForm/FvwmForm.c: 
+	* FvwmForm/FvwmForm.h: moved colorset statics to .c file	
+
 1999-08-04  Dominik Vogt  <domivogt@bvstp038.bbn.hp.com>
 
 	* FvwmAuto/FvwmAuto.c (main): fixed raising when windows are switched

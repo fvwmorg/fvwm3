@@ -216,15 +216,6 @@ EXTERN int fd_x;                  /* fd for X connection */
 EXTERN Window root, ref;
 EXTERN int screen;
 
-
-/* Font/color stuff
-   The colors are:
-   . defaults are changed by commands during parse
-   . copied into items during parse
-   . displayed in the customization dialog
-   */
-static int colorset = 0;
-static int itemcolorset = 0;
 enum { c_bg, c_fg, c_item_bg, c_item_fg, c_itemlo, c_itemhi };
 #ifdef IamTheMain
 EXTERN char *color_names[4] = {
