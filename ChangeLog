@@ -1,3 +1,13 @@
+1999-04-18  Bob Woodside  <proteus@pcnet.com>
+
+	* fvwm/vpacket.h: new file - this should contain structure descriptions
+	for any new-style module packets (post-GSFR) using the new, variable-
+	length argument packet sending logic. Initially it only contains the new
+	M_CONFIGURE_WINDOW/M_ADD_WINDOW packet.
+
+	* fvwm/virtual.c: changeDesks: fixed segfault caused by use of a NULL
+	FocusWin pointer.
+
 1999-04-18  Dominik Vogt  <dominik_vogt@gmx.de>
 
 	* fvwm/fvwm.c (Done): removed debugging code
