@@ -483,8 +483,9 @@ void executeModuleSync(F_CMD_ARGS)
 int HandleModuleInput(Window w, int channel, char *expect)
 {
   char text[MAX_MODULE_INPUT_TEXT_LEN];
-  int size;
-  int cont,n;
+  unsigned long size;
+  unsigned long cont;
+  int n;
   extern FvwmWindow *ButtonWindow;
 
   /* Already read a (possibly NULL) window id from the pipe,
@@ -502,7 +503,7 @@ int HandleModuleInput(Window w, int channel, char *expect)
   if(size > sizeof(text))
     {
       fvwm_msg(ERR, "HandleModuleInput",
-               "Module(%i) command is too big (%d), limit is %d",
+               "Module(%i) command is too big (%ld), limit is %d",
                channel, size, sizeof(text));
       size=sizeof(text);
     }
@@ -513,16 +514,13 @@ int HandleModuleInput(Window w, int channel, char *expect)
   if(n < size)
     {
       fvwm_msg(ERR, "HandleModuleInput",
-               "Fail to read command (Module: %i, read: %i, size: %i)",
+               "Fail to read command (Module: %i, read: %i, size: %ld)",
                channel, n, size);
       KillModule(channel);
       return 0;
     }
   text[n] = '\0';
-  /* DB(("Module read[%d] (%dy): `%s'", n, size, text)); */
-
   n = read(readPipes[channel],&cont, sizeof(cont));
-  /* DB(("Module read[%d] cont = %d", n, cont)); */
   if(n < sizeof(cont))
     {
       fvwm_msg(ERR, "HandleModuleInput",
