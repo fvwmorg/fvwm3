@@ -59,6 +59,7 @@ static char *function_vars[] =
 	"shadow.cs",
 	"fgsh.cs",
 	"gt.",
+	"desk.n",
 	"desk.name",
 	"desk.width",
 	"desk.height",
@@ -68,6 +69,11 @@ static char *function_vars[] =
 	"vp.height",
 	"page.nx",
 	"page.ny",
+	"w.id",
+	"w.name",
+	"w.iconname",
+	"w.class",
+	"w.resource",
 	"w.x",
 	"w.y",
 	"w.width",
@@ -98,6 +104,9 @@ static char *function_vars[] =
 	"pointer.wy",
 	"pointer.cx",
 	"pointer.cy",
+	"version.num",
+	"version.info",
+	"version.line",
 	NULL
 };
 
@@ -109,6 +118,7 @@ enum
 	VAR_SHADOW_CS,
 	VAR_FGSH_CS,
 	VAR_GT,
+	VAR_DESK_N,
 	VAR_DESK_NAME,
 	VAR_DESK_WIDTH,
 	VAR_DESK_HEIGHT,
@@ -118,6 +128,11 @@ enum
 	VAR_VP_HEIGHT,
 	VAR_PAGE_NX,
 	VAR_PAGE_NY,
+	VAR_W_ID,
+	VAR_W_NAME,
+	VAR_W_ICONNAME,
+	VAR_W_CLASS,
+	VAR_W_RESOURCE,
 	VAR_W_X,
 	VAR_W_Y,
 	VAR_W_WIDTH,
@@ -148,6 +163,9 @@ enum
 	VAR_POINTER_WY,
 	VAR_POINTER_CX,
 	VAR_POINTER_CY,
+	VAR_VERSION_NUM,
+	VAR_VERSION_INFO,
+	VAR_VERSION_LINE,
 } extended_vars;
 
 /* ---------------------------- exported variables (globals) ---------------- */
@@ -170,6 +188,7 @@ static int expand_vars_extended(
 	int y;
 	Pixel pixel = 0;
 	int val = -12345678;
+	const char *string = NULL;
 	Bool is_numeric = False;
 	Bool is_x;
 	Window context_w = Scr.Root;
@@ -222,22 +241,12 @@ static int expand_vars_extended(
 		return pixel_to_color_string(dpy, Pcmap, pixel, target, False);
 	case VAR_GT:
 	{
-		const char *gt;
-
 		if (rest == NULL)
 		{
 			return 0;
 		}
-		gt = _(rest);
-		if (gt == NULL)
-		{
-			return 0;
-		}
-		if (output)
-		{
-			strcpy(output, gt);
-		}
-		return strlen(gt);
+		string = _(rest);
+		break;
 	}
 	case VAR_DESK_NAME:
 		if (sscanf(rest, "%d%n", &cs, &n) < 1)
@@ -267,7 +276,7 @@ static int expand_vars_extended(
 			l = strlen(s);
 			if (output)
 			{
-				strcpy(output,s);
+				strcpy(output, s);
 			}
 		}
 		return l;
@@ -278,6 +287,10 @@ static int expand_vars_extended(
 	/* only exact matches for all other variables */
 	switch ((i = GetTokenIndex(var_name, function_vars, 0, &rest)))
 	{
+	case VAR_DESK_N:
+		is_numeric = True;
+		val = Scr.CurrentDesk;
+		break;
 	case VAR_DESK_WIDTH:
 		is_numeric = True;
 		val = Scr.VxMax + Scr.MyDisplayWidth;
@@ -309,6 +322,37 @@ static int expand_vars_extended(
 	case VAR_PAGE_NY:
 		is_numeric = True;
 		val = (int)(Scr.Vy / Scr.MyDisplayHeight);
+		break;
+	case VAR_W_ID:
+		if (fw && !IS_EWMH_DESKTOP(FW_W(fw)))
+		{
+			sprintf(target, "0x%x", (unsigned int)FW_W(fw));
+			string = target;
+		}
+		break;
+	case VAR_W_NAME:
+		if (fw && !IS_EWMH_DESKTOP(FW_W(fw)))
+		{
+			string = fw->name.name;
+		}
+		break;
+	case VAR_W_ICONNAME:
+		if (fw && !IS_EWMH_DESKTOP(FW_W(fw)))
+		{
+			string = fw->icon_name.name;
+		}
+		break;
+	case VAR_W_CLASS:
+		if (fw && !IS_EWMH_DESKTOP(FW_W(fw)))
+		{
+			string = fw->class.res_class;
+		}
+		break;
+	case VAR_W_RESOURCE:
+		if (fw && !IS_EWMH_DESKTOP(FW_W(fw)))
+		{
+			string = fw->class.res_name;
+		}
 		break;
 	case VAR_W_X:
 	case VAR_W_Y:
@@ -562,6 +606,15 @@ static int expand_vars_extended(
 		}
 		val = (is_x) ? x : y;
 		break;
+	case VAR_VERSION_NUM:
+		string = VERSION;
+		break;
+	case VAR_VERSION_INFO:
+		string = VERSIONINFO;
+		break;
+	case VAR_VERSION_LINE:
+		string = Fvwm_VersionInfo;
+		break;
 	default:
 		/* unknown variable - try to find it in the environment */
 		s = getenv(var_name);
@@ -583,8 +636,14 @@ static int expand_vars_extended(
 		sprintf(target, "%d", val);
 		return strlen(target);
 	}
-
-	return 0;
+	else
+	{
+		if (output && string)
+		{
+			strcpy(output, string);
+		}
+		return string ? strlen(string) : 0;
+	}
 }
 
 /* ---------------------------- interface functions ------------------------- */
@@ -593,7 +652,7 @@ char *expand_vars(
 	char *input, char *arguments[], FvwmWindow *fw, Bool addto, Bool ismod,
 	fvwm_cond_func_rc *cond_rc)
 {
-	int l,i,l2,n,k,j,m;
+	int l, i, l2, n, k, j, m;
 	int xlen;
 	char *out;
 	char *var;
@@ -609,8 +668,8 @@ char *expand_vars(
 	}
 
 	/* Calculate best guess at length of expanded string */
-	i=0;
-	while (i<l)
+	i = 0;
+	while (i < l)
 	{
 		if (input[i] == '$' && (!ismod || !isalpha(input[i+1])))
 		{
@@ -844,6 +903,8 @@ char *expand_vars(
 			case 'w':
 				if (fw && !IS_EWMH_DESKTOP(FW_W(fw)))
 				{
+					fvwm_msg(OLD, "expand_vars",
+						"Use $[w.id] instead of $w");
 					sprintf(&out[j], "0x%x",
 						(unsigned int)FW_W(fw));
 				}
@@ -855,16 +916,22 @@ char *expand_vars(
 				i++;
 				break;
 			case 'd':
+				fvwm_msg(OLD, "expand_vars",
+					"Use $[desk.n] instead of $d");
 				sprintf(&out[j], "%d", Scr.CurrentDesk);
 				j += strlen(&out[j]);
 				i++;
 				break;
 			case 'x':
+				fvwm_msg(OLD, "expand_vars",
+					"Use $[vp.x] instead of $x");
 				sprintf(&out[j], "%d", Scr.Vx);
 				j += strlen(&out[j]);
 				i++;
 				break;
 			case 'y':
+				fvwm_msg(OLD, "expand_vars",
+					"Use $[vp.y] instead of $y");
 				sprintf(&out[j], "%d", Scr.Vy);
 				j += strlen(&out[j]);
 				i++;
@@ -878,6 +945,9 @@ char *expand_vars(
 					switch(input[i+1])
 					{
 					case 'c':
+						fvwm_msg(OLD, "expand_vars",
+							"Use $[w.class] "
+							"instead of $c");
 						if (fw->class.res_class &&
 						    fw->class.res_class[0])
 						{
@@ -886,6 +956,9 @@ char *expand_vars(
 						}
 						break;
 					case 'r':
+						fvwm_msg(OLD, "expand_vars",
+							"Use $[w.resource] "
+							"instead of $r");
 						if (fw->class.res_name &&
 						    fw->class.res_name[0])
 						{
@@ -894,6 +967,9 @@ char *expand_vars(
 						}
 						break;
 					case 'n':
+						fvwm_msg(OLD, "expand_vars",
+							"Use $[w.name] "
+							"instead of $n");
 						if (fw->name.name &&
 						    fw->name.name[0])
 						{
@@ -905,6 +981,8 @@ char *expand_vars(
 				is_string = True;
 				break;
 			case 'v':
+				fvwm_msg(OLD, "expand_vars",
+					"Use $[version.line] instead of $v");
 				sprintf(&out[j], "%s", (Fvwm_VersionInfo) ?
 					Fvwm_VersionInfo : "");
 				j += strlen(&out[j]);

@@ -1,4 +1,13 @@
+2003-01-11  Mikhael Goikhman  <migo@homemail.com>
+
+	* expand.c:
+	* NEWS:
+	deprecate all single letter variables, new variables are supported now
+	$[w.id], $[w.name], $[w.iconname], $[w.class], $[w.resource],
+	$[desk.n], $[version.num], $[version.info], $[version.line].
+
 2003-01-07  Marcus Lundblad <ml@update.uu.se>
+
 	* fvwm/style.c (style_parse_one_style_option):
 	* fvwm/fvwm.1.in:
 	Removed duplicate styles Unclosable,Unmaximizable,Uniconifiable and

@@ -37,9 +37,19 @@ Changes in developement release 2.5.6 (not released yet)
 * New shortcuts for button states: AllActiveUp, AllActiveDown,
   AllInactiveUp, AllInactiveDown.
 
+* New Style options and conditions (the first three):
+
+    Closable, Iconifiable, Maximizable, AllowMaximizeFixedSize
+
 * New conditional command On for non-window related conditions.
 
-* Removed --disable-gnome-hints and --disable-ewmh configure options
+* Removed --disable-gnome-hints and --disable-ewmh configure
+  options.
+
+* All single letter variables are depricated now; new variables:
+
+    $[w.id], $[w.name], $[w.iconname], $[w.class], $[w.resource],
+    $[desk.n], $[version.num], $[version.info], $[version.line]
 
 -------------------------------------------------------------------
 
