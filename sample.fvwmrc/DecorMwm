@@ -20,7 +20,6 @@ Style *		Button 1, Button 2, Button 4
 Mouse 0	1 N	Menu Window-Ops Close
 Mouse 0	2 N	Maximize
 Mouse 0	4 N	Iconify
-Mouse 3	4 N	Replace
 Style *		UseDecor DecorBase, ForeColor Black
 Style *		Font -adobe-helvetica-bold-r-*-*-12-*-*-*-*-*-*-*
 Style *		HilightFore white, HilightBack cyan4

@@ -22,7 +22,6 @@ Mouse 0 1 N     Menu Window-Ops Close
 Mouse 0 2 N     Close
 Mouse 0 4 A     Maximize
 Mouse 0 6 N     Iconify
-Mouse 3 6 N     Replace
 Style "*"       UseDecor DecorBase, Color Black/grey75
 Style "*" HilightFore white, HilightBack grey60
 Style "*" Font -adobe-helvetica-bold-r-*-120-*
