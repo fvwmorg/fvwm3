@@ -1,4 +1,5 @@
-2003-01-12 Marcus Lundblad <ml@update.uu.se>
+2003-01-12  Marcus Lundblad  <ml@update.uu.se>
+
 	* NEWS:
 	Added conditionals Closable,Iconifiable,Maximizable,FixedSize and
 	HasHandles
