@@ -5429,14 +5429,14 @@ The optional
 .I flags
 argument is a space separated list containing the following
 key words:
-.IR ewmhiwa ", " windowlayer ", " layers " and " screen .
+.IR ewmhiwa ", " growonwindowlayer ", " growonlayers " and " screen .
 .I ewmhiwa
 causes fvwm to ignore the EWMH working area.
-.I Windowlayer
+.I Growonwindowlayer
 causes the various grow methods to ignore windows with a layer
 other than the current layer of the window which is maximized.
 The
-.I layers
+.I growonlayers
 option must have two integer arguments.  The first one is the
 minimum layer and the second one the maximum layer to use.
 Windows that are outside of this range of layers are ignored by

@@ -3824,13 +3824,13 @@ void CMD_Maximize(F_CMD_ARGS)
 				ignore_working_area = True;
 				action = taction;
 			}
-			else if (StrEquals(token, "windowlayer"))
+			else if (StrEquals(token, "growonwindowlayer"))
 			{
 				layers[0] = fw->layer;
 				layers[1] = fw->layer;
 				action = taction;
 			}
-			else if (StrEquals(token, "layers"))
+			else if (StrEquals(token, "growonlayers"))
 			{
 				int n;
 
