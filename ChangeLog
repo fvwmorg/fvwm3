@@ -121,6 +121,10 @@ Sat Nov  7 02:01:41 1998  Steve Robbins  <steve@nyongwa.montreal.qc.ca>
 	Remove check for stdarg.h; we'd need a lot fancier config to allow
 	the use of varargs.h or something else; for now assume we have it.
 
+1998-11-05  Bob Woodside  <proteus@pcnet.com>
+
+	* folded in StartsOnPage style modifications.
+
 	* fvwm/module.c (make_vpacket): New function: creates a module
 	packet from a va_list.  This is the most basic function: all
 	packet creating functions will eventually call this one to (at
