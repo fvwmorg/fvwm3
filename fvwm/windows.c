@@ -243,10 +243,11 @@ void do_windowList(XEvent *eventp,Window w,FvwmWindow *tmp_win,
               (t->flags & ONTOP)))
           continue; /* don't want "normal" ones - skip */
 
-        /* put a seperator between desks, but not at the top */
+        /* add separator between desks when geometry shown but not at the top */
         if (t->Desk != last_desk_displayed)
         {
           if (last_desk_displayed != INT_MIN)
+            if (flags & SHOW_GEOMETRY)
             AddToMenu(mr, NULL, NULL, FALSE, FALSE);
           last_desk_displayed = t->Desk;
         }
