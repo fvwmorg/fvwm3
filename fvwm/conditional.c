@@ -434,7 +434,7 @@ void PrevFunc(F_CMD_ARGS)
   found = Circulate(action, -1, &restofline);
   if(found && restofline)
   {
-    ExecuteFunction(
+    old_execute_function(
       restofline, found, eventp, C_WINDOW, *Module, 0, NULL);
   }
 
@@ -448,7 +448,7 @@ void NextFunc(F_CMD_ARGS)
   found = Circulate(action, 1, &restofline);
   if(found && restofline)
   {
-    ExecuteFunction(
+    old_execute_function(
       restofline, found, eventp, C_WINDOW, *Module, 0, NULL);
   }
 
@@ -462,7 +462,7 @@ void NoneFunc(F_CMD_ARGS)
   found = Circulate(action, 1, &restofline);
   if(!found && restofline)
   {
-    ExecuteFunction(
+    old_execute_function(
       restofline, NULL, eventp, C_ROOT, *Module, 0, NULL);
   }
 }
@@ -475,7 +475,7 @@ void CurrentFunc(F_CMD_ARGS)
   found = Circulate(action, 0, &restofline);
   if(found && restofline)
   {
-    ExecuteFunction(
+    old_execute_function(
       restofline, found, eventp, C_WINDOW, *Module, 0, NULL);
   }
 }
@@ -515,7 +515,7 @@ void AllFunc(F_CMD_ARGS)
 
   for (i = 0; i < num; i++)
   {
-    ExecuteFunction(
+    old_execute_function(
       restofline, g[i], eventp, C_WINDOW, *Module, 0, NULL);
   }
 
@@ -686,7 +686,7 @@ void DirectionFunc(F_CMD_ARGS)
 
   if (best_window)
   {
-    ExecuteFunction(
+    old_execute_function(
       restofline, best_window, eventp, C_WINDOW, *Module, 0,
       NULL);
   }
@@ -713,7 +713,7 @@ void PickFunc(F_CMD_ARGS)
     free(flags);
   if (MatchesConditionMask(tmp_win, &mask) && restofline)
   {
-    ExecuteFunction(
+    old_execute_function(
       restofline, tmp_win, eventp, C_WINDOW, *Module, 0, NULL);
   }
 }
@@ -722,8 +722,11 @@ void WindowIdFunc(F_CMD_ARGS)
 {
   FvwmWindow *t;
   char *num;
+  char *token;
+  char *naction;
   unsigned long win;
   Bool use_condition = False;
+  Bool use_screenroot = False;
   WindowConditionMask mask;
   char *flags, *restofline;
 
@@ -731,40 +734,76 @@ void WindowIdFunc(F_CMD_ARGS)
   action = GetNextToken(action, &num);
 
   if (num)
-    {
-      win = (unsigned long)strtol(num,NULL,0); /* SunOS doesn't have strtoul */
-      free(num);
-    }
+  {
+    win = (unsigned long)strtol(num,NULL,0); /* SunOS doesn't have strtoul */
+    free(num);
+  }
   else
     win = 0;
 
-  /* Look for condition - CreateFlagString returns NULL if no '(' or '[' */
-  flags = CreateFlagString(action, &restofline);
-  if (flags)
+  token = PeekToken(action, &naction);
+  if (token && StrEquals(token, "root"))
   {
-    /* Create window mask */
-    use_condition = True;
-    DefaultConditionMask(&mask);
+    int screen = Scr.screen;
 
-    /* override for Current [] */
-    mask.my_flags.use_circulate_hit = 1;
-    mask.my_flags.use_circulate_hit_icon = 1;
+    token = PeekToken(naction, NULL);
+    if (!token || GetIntegerArguments(token, NULL, &screen, 1) != 1)
+      screen = Scr.screen;
+    use_screenroot = True;
+    if (screen < 0 || screen >= Scr.NumberOfScreens)
+      screen = 0;
+    w = XRootWindow(dpy, screen);
+    if (w == None)
+      return;
+  }
+  /* Look for condition - CreateFlagString returns NULL if no '(' or '[' */
+  if (!use_screenroot)
+  {
+    flags = CreateFlagString(action, &restofline);
+    if (flags)
+    {
+      /* Create window mask */
+      use_condition = True;
+      DefaultConditionMask(&mask);
 
-    CreateConditionMask(flags, &mask);
-    free(flags);
+      /* override for Current [] */
+      mask.my_flags.use_circulate_hit = 1;
+      mask.my_flags.use_circulate_hit_icon = 1;
 
-    /* Relocate action */
-    action = restofline;
+      CreateConditionMask(flags, &mask);
+      free(flags);
+
+      /* Relocate action */
+      action = restofline;
+    }
   }
 
   /* Search windows */
   for (t = Scr.FvwmRoot.next; t; t = t->next)
-    if (t->w == win) {
+  {
+    if (t->w == win)
+    {
       /* do it if no conditions or the conditions match */
       if (!use_condition || MatchesConditionMask(t, &mask))
-        ExecuteFunction(
+        old_execute_function(
 	  action, t, eventp, C_WINDOW, *Module, 0, NULL);
       break;
+    }
+  }
+  if (!t && !use_condition)
+  {
+    exec_func_args_type efa;
+
+    /* The window is not managed by fvwm. Still some functions may work on it.
+     */
+    memset(&efa, 0, sizeof(efa));
+    efa.eventp = eventp;
+    efa.win = win;
+    efa.action = action;
+    efa.context = C_UNMANAGED;
+    efa.module = *Module;
+    efa.flags.is_window_unmanaged = 1;
+    execute_function(&efa);
   }
 
   /* Tidy up */

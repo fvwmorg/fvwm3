@@ -190,6 +190,8 @@ static void unmap_window(FvwmWindow *t)
   else
   {
     XUnmapWindow(dpy,t->frame);
+    /* this is required by the ICCCM2 */
+    XUnmapWindow(dpy,t->w);
   }
   if (ret)
   {

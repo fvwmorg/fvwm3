@@ -82,5 +82,6 @@ void DestroyFvwmDecor(FvwmDecor *decor);
 void reset_decor_changes(void);
 Bool ReadDecorFace(char *s, DecorFace *df, int button, int verbose);
 void FreeDecorFace(Display *dpy, DecorFace *df);
+void fake_click(F_CMD_ARGS);
 
 #endif /* BUILTINS_H */

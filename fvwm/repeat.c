@@ -150,7 +150,7 @@ void repeat_function(F_CMD_ARGS)
 	       (unsigned long) last.command_line, last.command_line);
 #endif
       action = last.command_line;
-      ExecuteFunction(F_PASS_EXEC_ARGS, FUNC_DONT_EXPAND_COMMAND, NULL);
+      old_execute_function(F_PASS_EXEC_ARGS, FUNC_DONT_EXPAND_COMMAND, NULL);
     break;
   }
   repeat_depth--;

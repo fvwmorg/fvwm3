@@ -639,7 +639,7 @@ int main(int argc, char **argv)
     for(i=0;i<num_config_commands;i++)
     {
       DoingCommandLine = True;
-      ExecuteFunction(
+      old_execute_function(
 	config_commands[i], NULL, &Event, C_ROOT, 1, 0, NULL);
       free(config_commands[i]);
     }
@@ -774,14 +774,14 @@ void StartupStuff(void)
   /* migo (04-Sep-1999): execute StartFunction */
   if (FindFunction(startFuncName)) {
     char *action = "Function " startFuncName;
-    ExecuteFunction(action, NULL, &Event, C_ROOT, 1, 0, NULL);
+    old_execute_function(action, NULL, &Event, C_ROOT, 1, 0, NULL);
   }
 
   /* migo (03-Jul-1999): execute [Session]{Init|Restart}Function */
   initFuncName = getInitFunctionName(Restarting == True);
   if (FindFunction(initFuncName)) {
     char *action = strdup(CatString2("Function ", initFuncName));
-    ExecuteFunction(action, NULL, &Event, C_ROOT, 1, 0, NULL);
+    old_execute_function(action, NULL, &Event, C_ROOT, 1, 0, NULL);
     free(action);
   }
 
@@ -976,7 +976,7 @@ void SetRCDefaults(void)
 
   while (defaults[i])
   {
-    ExecuteFunction(defaults[i], NULL, &Event, C_ROOT, 1, 0, NULL);
+    old_execute_function(defaults[i], NULL, &Event, C_ROOT, 1, 0, NULL);
     i++;
   }
 } /* SetRCDefaults */
@@ -1628,7 +1628,7 @@ static void InitVariables(void)
   Scr.NumBoxes = 0;
 
   Scr.randomx = Scr.randomy = 0;
-  Scr.buttons2grab = DEFAULT_BUTTONS_TO_GRAB;
+  Scr.buttons2grab = 0;
 
   InitFvwmDecor(&Scr.DefaultDecor);
 #ifdef USEDECOR
@@ -1738,7 +1738,7 @@ void Done(int restart, char *command)
   if (FindFunction(exitFuncName))
   {
     char *action = strdup(CatString2("Function ", exitFuncName));
-    ExecuteFunction(action, NULL, &Event, C_ROOT, 1, 0, NULL);
+    old_execute_function(action, NULL, &Event, C_ROOT, 1, 0, NULL);
     free(action);
   }
 

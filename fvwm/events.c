@@ -281,7 +281,7 @@ void HandleKeyPress(void)
   if (action != NULL)
   {
     ButtonWindow = Tmp_win;
-    ExecuteFunction(action, Tmp_win, &Event, Context, -1, 0, NULL);
+    old_execute_function(action, Tmp_win, &Event, Context, -1, 0, NULL);
     ButtonWindow = NULL;
     return;
   }
@@ -596,14 +596,14 @@ void HandlePropertyNotify(void)
       if (!(old_wmhints_flags & XUrgencyHint) &&
 	  (Tmp_win->wmhints->flags & XUrgencyHint))
 	{
-	  ExecuteFunction(
+	  old_execute_function(
 	    "Function UrgencyFunc", Tmp_win, &Event, C_WINDOW, -1, 0, NULL);
 	}
 
       if ((old_wmhints_flags & XUrgencyHint) &&
 	  !(Tmp_win->wmhints->flags & XUrgencyHint))
 	{
-	  ExecuteFunction(
+	  old_execute_function(
 	    "Function UrgencyDoneFunc", Tmp_win, &Event, C_WINDOW, -1, 0, NULL);
 	}
       break;
@@ -763,7 +763,7 @@ void HandleClientMessage(void)
                    &(button.xmotion.y_root),
                    &JunkX, &JunkY, &JunkMask);
     button.type = 0;
-    ExecuteFunction("Iconify", Tmp_win, &button, C_FRAME, -1, 0, NULL);
+    old_execute_function("Iconify", Tmp_win, &button, C_FRAME, -1, 0, NULL);
     return;
   }
 
@@ -1428,7 +1428,7 @@ void HandleButtonPress(void)
 			MOUSE_BINDING);
   if (action != NULL && (action[0] != 0))
   {
-    ExecuteFunction(
+    old_execute_function(
       action, Tmp_win, &Event, Context, -1, FUNC_DO_SYNC_BUTTONS, NULL);
   }
   else
@@ -1503,7 +1503,7 @@ void HandleButtonRelease()
    /* got a match, now process it */
    if (action != NULL && (action[0] != 0))
    {
-     ExecuteFunction(
+     old_execute_function(
        action, Tmp_win, &Event, Context, -1, FUNC_DO_SYNC_BUTTONS, NULL);
    }
    else
@@ -2246,7 +2246,7 @@ int My_XNextEvent(Display *dpy, XEvent *event)
   /* check for any X events already queued up.
    * Side effect: this does an XFlush if no events are queued
    * Make sure nothing between here and the select causes further X
-   * requests to be sent or the select may block even though there
+   * requests to be sent or the select may block even though there are
    * events in the queue */
   if(XPending(dpy)) {
     DBUG("My_XNextEvent","taking care of queued up events & returning (1)");

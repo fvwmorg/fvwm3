@@ -26,6 +26,7 @@
 #include "defaults.h"
 #include "misc.h"
 #include "screen.h"
+#include "focus.h"
 #ifdef HAVE_STROKE
 #include "stroke.h"
 #endif /* HAVE_STROKE */
@@ -145,7 +146,7 @@ int ParseBinding(
     else
     {
       n1 = sscanf(token, "%d", &button);
-      if (button < 0 || button > NUMBER_OF_MOUSE_BUTTONS)
+     if (button < 0 || button > NUMBER_OF_MOUSE_BUTTONS)
       {
 	fvwm_msg(ERR,"ParseBinding","Illegal mouse button in line %s", tline);
 	free(token);
@@ -248,14 +249,14 @@ int ParseBinding(
       int bcontexts = 0;
 
       if (buttons_grabbed)
-	*buttons_grabbed = DEFAULT_BUTTONS_TO_GRAB;
+	*buttons_grabbed = 0;
       for (b = *pblist; b != NULL; b = b->NextBinding)
       {
 	if(b->type == MOUSE_BINDING && (b->Context & C_WINDOW) &&
 	   (b->Modifier == 0 || b->Modifier == AnyModifier) &&
 	   buttons_grabbed != NULL)
 	{
-	  *buttons_grabbed &= ~(1<<(button-1));
+	  *buttons_grabbed |= (1<<(button-1));
 	}
 	if (nr_left_buttons != NULL || nr_right_buttons != NULL)
 	{
@@ -290,7 +291,7 @@ int ParseBinding(
   if ((type == MOUSE_BINDING)&&(contexts & C_WINDOW)&&
      (((mods==0)||mods == AnyModifier)) && (buttons_grabbed != NULL))
   {
-    *buttons_grabbed &= ~(1<<(button-1));
+    *buttons_grabbed |= (1<<(button-1));
   }
 
   return AddBinding(
@@ -335,20 +336,31 @@ static void activate_binding(
                        GetUnusedModifiers(), do_grab);
     }
   }
+
+  return;
 }
 
 static void binding_cmd(F_CMD_ARGS, BindingType type, Bool do_grab_root)
 {
   Binding *b;
   int count;
+  unsigned char btg = Scr.buttons2grab;
 
-  count = ParseBinding(dpy, &Scr.AllBindings, action, type,
-		       &Scr.nr_left_buttons, &Scr.nr_right_buttons,
-		       &Scr.buttons2grab, do_grab_root);
+  count = ParseBinding(
+    dpy, &Scr.AllBindings, action, type, &Scr.nr_left_buttons,
+    &Scr.nr_right_buttons, &btg, do_grab_root);
+  if (btg != Scr.buttons2grab)
+  {
+    Scr.flags.do_need_window_update = 1;
+    Scr.flags.has_mouse_binding_changed = 1;
+    Scr.buttons2grab = btg;
+  }
   for (b = Scr.AllBindings; count > 0; count--, b = b->NextBinding)
   {
     activate_binding(b, type, True, do_grab_root);
   }
+
+  return;
 }
 
 void key_binding(F_CMD_ARGS)

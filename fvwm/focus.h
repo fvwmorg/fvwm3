@@ -44,7 +44,7 @@ void flip_focus_func(F_CMD_ARGS);
 void focus_func(F_CMD_ARGS);
 void warp_func(F_CMD_ARGS);
 Bool IsLastFocusSetByMouse(void);
-Bool focus_grab_buttons(FvwmWindow *tmp_win, Bool is_focused);
+void focus_grab_buttons(FvwmWindow *tmp_win, Bool is_focused);
 Bool do_accept_input_focus(FvwmWindow *tmp_win);
 
 #endif /* _FOCUS_ */

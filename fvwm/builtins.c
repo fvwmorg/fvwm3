@@ -1780,7 +1780,7 @@ void AddToDecor(FvwmDecor *decor, char *s)
   if (!*s)
     return;
   Scr.cur_decor = decor;
-  ExecuteFunction(s, NULL, &Event, C_ROOT, -1, 0, NULL);
+  old_execute_function(s, NULL, &Event, C_ROOT, -1, 0, NULL);
   Scr.cur_decor = NULL;
 }
 
@@ -1872,7 +1872,7 @@ void DestroyDecor(F_CMD_ARGS)
     {
       if (fw->decor == found)
       {
-	ExecuteFunction(
+	old_execute_function(
 	  "ChangeDecor Default", fw, eventp, C_WINDOW, *Module, 0, NULL);
       }
     }
@@ -2837,6 +2837,152 @@ void setShadeAnim(F_CMD_ARGS)
   return;
 }
 
+void fake_click(F_CMD_ARGS)
+{
+  char *token;
+  char *optlist[] =
+  {
+    "press", "p",
+    "release", "r",
+    "wait", "w",
+    "modifiers", "m",
+    "depth", "d",
+    NULL
+  };
+  unsigned int mask = 0;
+  Window root = Scr.Root;
+  int maxdepth = 0;
+
+  /* get the mask of pressed/released buttons */
+  XQueryPointer(
+    dpy, Scr.Root, &root, &JunkRoot, &JunkX, &JunkY, &JunkX, &JunkY, &mask);
+  token = PeekToken(action, &action);
+  while (token && action)
+  {
+    int index = GetTokenIndex(token, optlist, 0, NULL);
+    int val;
+    XEvent e;
+    Window w;
+    Window child_w;
+    int x = 0;
+    int y = 0;
+    int rx = 0;
+    int ry = 0;
+    Bool do_unset;
+
+    XSync(dpy, 0);
+    if (GetIntegerArguments(action, &action, &val, 1) != 1)
+    {
+      /* error */
+      return;
+    }
+    do_unset = True;
+    switch (index)
+    {
+    case 0:
+    case 1:
+      do_unset = False;
+      /* fall through */
+    case 2:
+    case 3:
+      /* button press or release */
+      if (val >= 1 || val <= NUMBER_OF_MOUSE_BUTTONS)
+      {
+	int depth = 1;
+
+	w = None;
+	child_w = root;
+	for (depth = 1; depth != maxdepth && w != child_w && child_w != None;
+	     depth++)
+	{
+	  w = child_w;
+	  XQueryPointer(dpy, w, &root, &child_w, &rx, &ry, &x, &y, &JunkMask);
+	}
+	if (do_unset)
+	  e.type = ButtonRelease;
+	else
+	  e.type = ButtonPress;
+	e.xbutton.display = dpy;
+	e.xbutton.window = w;
+	e.xbutton.subwindow = None;
+	e.xbutton.root = root;
+	e.xbutton.time = lastTimestamp;
+	e.xbutton.x = x;
+	e.xbutton.y = y;
+	e.xbutton.x_root = rx;
+	e.xbutton.y_root = ry;
+	e.xbutton.button = val;
+	e.xbutton.state = mask;
+	e.xbutton.same_screen = (Scr.Root == root);
+fprintf(stderr,"sending mask 0x%08x to window 0x%08x\n", (int)mask, (int)w);
+	if (!XSendEvent(dpy, PointerWindow, True, SubstructureNotifyMask, &e))
+fprintf(stderr,"...failed\n");
+	XSync(dpy, 0);
+	if (do_unset)
+	  mask &= ~(Button1Mask << (val - 1));
+	else
+	  mask |= (Button1Mask << (val - 1));
+      }
+      else
+      {
+	/* error */
+	return;
+      }
+      break;
+    case 4:
+    case 5:
+      /* wait */
+      if (val > 0 && val <= 1000000)
+      {
+	usleep(1000 * val);
+	XQueryPointer(
+	  dpy, Scr.Root, &root, &JunkRoot, &JunkX, &JunkY, &JunkX, &JunkY,
+	  &mask);
+      }
+      else
+      {
+	/* error */
+	return;
+      }
+      break;
+    case 6:
+    case 7:
+      /* set modifier */
+      do_unset = False;
+      if (val < 0)
+      {
+	do_unset = True;
+	val = -val;
+      }
+      if (val == 6)
+	val = ShiftMask;
+      else if (val == 7)
+	val = LockMask;
+      else if (val == 8)
+	val = ControlMask;
+      else if (val >=1 && val <= 5)
+	val = (Mod1Mask << (val - 1));
+      else
+	/* error */
+	return;
+      if (do_unset)
+	mask &= ~val;
+      else
+	mask |= val;
+      break;
+    case 8:
+    case 9:
+      /* new max depth */
+      maxdepth = val;
+      break;
+    default:
+      /* error */
+      return;
+    }
+    if (action)
+      token = PeekToken(action, &action);
+  }
+}
 
 /* A function to handle stroke (olicha Nov 11, 1999) */
 #ifdef HAVE_STROKE
@@ -2904,7 +3050,9 @@ void strokeFunc(F_CMD_ARGS)
 	fvwm_msg(WARN,"StrokeWidth","needs an integer argument");
       /* we allow stroke_width == 0 which means drawing a `fast' line
        * of width 1; the upper level of 100 is arbitrary */
-      else if (!sscanf(opt, "%d", &stroke_width) || stroke_width < 0 || stroke_width > 100) {
+      else if (!sscanf(opt, "%d", &stroke_width) || stroke_width < 0 ||
+	       stroke_width > 100)
+      {
 	fvwm_msg(WARN,"StrokeWidth","Bad integer argument %d", stroke_width);
 	stroke_width = 1;
       }
@@ -3068,7 +3216,7 @@ void strokeFunc(F_CMD_ARGS)
       usleep(200000);
       UngrabEm(GRAB_BUSY);
     }
-    ExecuteFunction(stroke_action, tmp_win, eventp, context, -1, 0, NULL);
+    old_execute_function(stroke_action, tmp_win, eventp, context, -1, 0, NULL);
   }
 
 }

@@ -160,6 +160,7 @@ static const func_type func_config[] =
   {"escapefunc",   Nop_func,         F_ESCAPE_FUNC,          0},
   {"exec",         exec_function,    F_EXEC,                 0},
   {"execuseshell", exec_setup,       F_EXEC_SETUP,           0},
+  {"fakeclick",    fake_click,       F_FAKE_CLICK,           0},
   {"flipfocus",    flip_focus_func,  F_FLIP_FOCUS,           FUNC_NEEDS_WINDOW},
   {"focus",        focus_func,       F_FOCUS,                FUNC_NEEDS_WINDOW},
   {"function",     NULL,             F_FUNCTION,             0},
@@ -861,9 +862,10 @@ static cfunc_action_type CheckActionType(
  *	context - the context in which the button was pressed
  *
  ***********************************************************************/
-void ExecuteFunction(F_EXEC_ARGS, unsigned int exec_flags, char *args[])
+void execute_function(exec_func_args_type *efa)
 {
   static unsigned int func_depth = 0;
+  FvwmWindow *s_Tmp_win = Tmp_win;
   Window w;
   int j;
   char *function;
@@ -877,19 +879,19 @@ void ExecuteFunction(F_EXEC_ARGS, unsigned int exec_flags, char *args[])
   Bool must_free_string = False;
   Bool must_free_function = False;
 
-  if (!action)
+  if (!efa->action)
   {
     /* impossibly short command */
     return;
   }
   /* ignore whitespace at the beginning of all config lines */
-  action = SkipSpaces(action, NULL, 0);
-  if (!action || action[0] == 0 || action[1] == 0)
+  efa->action = SkipSpaces(efa->action, NULL, 0);
+  if (!efa->action || efa->action[0] == 0 || efa->action[1] == 0)
   {
     /* impossibly short command */
     return;
   }
-  if (action[0] == '#')
+  if (efa->action[0] == '#')
   {
     /* a comment */
     return;
@@ -897,7 +899,7 @@ void ExecuteFunction(F_EXEC_ARGS, unsigned int exec_flags, char *args[])
   /* Note: the module config command, "*" can not be handled by the
    * regular command table because there is no required white space after
    * the asterisk. */
-  if (action[0] == '*')
+  if (efa->action[0] == '*')
   {
 #ifdef USEDECOR
     if (Scr.cur_decor && Scr.cur_decor != &Scr.DefaultDecor)
@@ -905,18 +907,18 @@ void ExecuteFunction(F_EXEC_ARGS, unsigned int exec_flags, char *args[])
       fvwm_msg(
 	WARN, "ExecuteFunction",
 	"Command can not be added to a decor; executing command now: '%s'",
-	action);
+	efa->action);
     }
 #endif
     /* a module config command */
-    ModuleConfig(action);  /* process the command */
+    ModuleConfig(efa->action);  /* process the command */
     return;                             /* done */
   }
   func_depth++;
-  if (args)
+  if (efa->args)
   {
     for(j=0;j<11;j++)
-      arguments[j] = args[j];
+      arguments[j] = efa->args[j];
   }
   else
   {
@@ -924,38 +926,41 @@ void ExecuteFunction(F_EXEC_ARGS, unsigned int exec_flags, char *args[])
       arguments[j] = NULL;
   }
 
-  if(tmp_win == NULL)
+  if (efa->tmp_win == NULL)
   {
-    w = Scr.Root;
+    if (efa->flags.is_window_unmanaged)
+      w = efa->win;
+    else
+      w = Scr.Root;
   }
   else
   {
-    if(eventp)
+    if(efa->eventp)
     {
-      if(eventp->xbutton.subwindow != None &&
-	 eventp->xany.window != tmp_win->w)
+      if(efa->eventp->xbutton.subwindow != None &&
+	 efa->eventp->xany.window != efa->tmp_win->w)
       {
-	w = eventp->xbutton.subwindow;
+	w = efa->eventp->xbutton.subwindow;
       }
       else
       {
-	w = eventp->xany.window;
+	w = efa->eventp->xany.window;
       }
     }
     else
     {
-      w = tmp_win->w;
+      w = efa->tmp_win->w;
     }
   }
 
   set_silent = False;
-  if (action[0] == '-')
+  if (efa->action[0] == '-')
   {
-    exec_flags |= FUNC_DONT_EXPAND_COMMAND;
-    action++;
+    efa->flags.exec |= FUNC_DONT_EXPAND_COMMAND;
+    efa->action++;
   }
 
-  taction = action;
+  taction = efa->action;
   /* parse prefixes */
   trash = PeekToken(taction, &trash2);
   while (trash)
@@ -983,7 +988,7 @@ void ExecuteFunction(F_EXEC_ARGS, unsigned int exec_flags, char *args[])
 
   function = PeekToken(taction, NULL);
   if (function)
-    function = expand(function, arguments, tmp_win, False);
+    function = expand(function, arguments, efa->tmp_win, False);
   if (function)
   {
 #if 1
@@ -1013,12 +1018,12 @@ void ExecuteFunction(F_EXEC_ARGS, unsigned int exec_flags, char *args[])
     fvwm_msg(
       ERR, "ExecuteFunction",
       "Command can not be added to a decor; executing command now: '%s'",
-      action);
+      efa->action);
   }
 #endif
-  if (!(exec_flags & FUNC_DONT_EXPAND_COMMAND))
+  if (!(efa->flags.exec & FUNC_DONT_EXPAND_COMMAND))
   {
-    expaction = expand(taction, arguments, tmp_win,
+    expaction = expand(taction, arguments, efa->tmp_win,
 		       (bif) ? !!(bif->flags & FUNC_ADD_TO) : False);
     if (func_depth <= 1)
       must_free_string = set_repeat_data(expaction, REPEAT_COMMAND, bif);
@@ -1035,7 +1040,7 @@ void ExecuteFunction(F_EXEC_ARGS, unsigned int exec_flags, char *args[])
     char *runaction;
 
     runaction = SkipNTokens(expaction, 1);
-    bif->action(eventp,w,tmp_win,context,runaction,&Module);
+    bif->action(efa->eventp,w,efa->tmp_win,efa->context,runaction,&efa->module);
   }
   else
   {
@@ -1053,11 +1058,11 @@ void ExecuteFunction(F_EXEC_ARGS, unsigned int exec_flags, char *args[])
     }
 
     execute_complex_function(
-      eventp,w,tmp_win,context,runaction, &Module, &desperate);
+      efa->eventp,w,efa->tmp_win,efa->context,runaction, &efa->module, &desperate);
     if (!bif && desperate)
     {
       if (executeModuleDesperate(
-	eventp, w, tmp_win, context, runaction, &Module) == -1 &&
+	efa->eventp, w, efa->tmp_win, efa->context, runaction, &efa->module) == -1&&
 	  *function != 0)
       {
 	fvwm_msg(
@@ -1068,7 +1073,7 @@ void ExecuteFunction(F_EXEC_ARGS, unsigned int exec_flags, char *args[])
 
   /* Only wait for an all-buttons-up condition after calls from
    * regular built-ins, not from complex-functions, menus or modules. */
-  if (Module == -1 && (exec_flags & FUNC_DO_SYNC_BUTTONS))
+  if (efa->module == -1 && (efa->flags.exec & FUNC_DO_SYNC_BUTTONS))
     WaitForButtonsUp(True);
 
   if (set_silent)
@@ -1082,19 +1087,30 @@ void ExecuteFunction(F_EXEC_ARGS, unsigned int exec_flags, char *args[])
   {
     free(function);
   }
-
+  if (efa->flags.do_save_tmpwin)
+    Tmp_win = s_Tmp_win;
   func_depth--;
+
   return;
 }
 
-
-void ExecuteFunctionSaveTmpWin(
-  F_EXEC_ARGS, unsigned int exec_flags, char *args[])
+void old_execute_function(
+  char *action, FvwmWindow *tmp_win, XEvent *eventp, unsigned long context,
+  int Module, FUNC_FLAGS_TYPE exec_flags, char *args[])
 {
-  FvwmWindow *s_Tmp_win = Tmp_win;
+  exec_func_args_type efa;
 
-  ExecuteFunction(action, tmp_win, eventp, context, Module, exec_flags, args);
-  Tmp_win = s_Tmp_win;
+  memset(&efa, 0, sizeof(efa));
+  efa.eventp = eventp;
+  efa.tmp_win = tmp_win;
+  efa.action = action;
+  efa.args = args;
+  efa.context = context;
+  efa.module = Module;
+  efa.flags.exec = exec_flags;
+  execute_function(&efa);
+
+  return;
 }
 
 
@@ -1115,9 +1131,9 @@ void ExecuteFunctionSaveTmpWin(
  *                    terminate on.
  *
  ***********************************************************************/
-int DeferExecution(XEvent *eventp, Window *w,FvwmWindow **tmp_win,
-		   unsigned long *context, cursor_type cursor,
-		   int FinishEvent)
+int DeferExecution(
+  XEvent *eventp, Window *w,FvwmWindow **tmp_win, unsigned long *context,
+  cursor_type cursor, int FinishEvent)
 {
   int done;
   int finished = 0;
@@ -1559,7 +1575,8 @@ static void execute_complex_function(F_CMD_ARGS, Bool *desperate)
 	w = tmp_win->frame;
       else
 	w = None;
-      ExecuteFunction(fi->action, tmp_win, eventp, context, -1, 0, arguments);
+      old_execute_function(
+	fi->action, tmp_win, eventp, context, -1, 0, arguments);
       break;
     case CF_DOUBLE_CLICK:
       HaveDoubleClick = True;
@@ -1678,7 +1695,7 @@ static void execute_complex_function(F_CMD_ARGS, Bool *desperate)
 	w = tmp_win->frame;
       else
 	w = None;
-      ExecuteFunction(
+      old_execute_function(
 	fi->action, tmp_win, ev, context, -1, 0, arguments);
     }
     fi = fi->next_item;

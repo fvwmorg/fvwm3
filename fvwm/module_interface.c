@@ -618,7 +618,7 @@ void ExecuteModuleCommand(Window w, int module, char *text)
   Event.xbutton.subwindow = None;
   Context = GetContext(tmp_win,&Event,&w);
   ButtonWindow = tmp_win;
-  ExecuteFunction(text, tmp_win, &Event, Context, module, 0, NULL);
+  old_execute_function(text, tmp_win, &Event, Context, module, 0, NULL);
   ButtonWindow = NULL;
 }
 

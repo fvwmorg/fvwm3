@@ -58,6 +58,13 @@
  * dje 12/19/98.
  */
 
+#include <X11/Xlib.h>
+#include <X11/Xutil.h>
+#include <X11/cursorfont.h>
+#include <X11/Intrinsic.h>
+#include <libs/Picture.h>
+#include "window_flags.h"
+
 /* Macro for args passed to fvwm commands... */
 #define F_CMD_ARGS XEvent *eventp, Window w, FvwmWindow *tmp_win,\
 unsigned long context,char *action, int *Module
@@ -65,13 +72,31 @@ unsigned long context,char *action, int *Module
 #define F_EXEC_ARGS char *action, FvwmWindow *tmp_win, XEvent *eventp,\
 unsigned long context, int Module
 #define F_PASS_EXEC_ARGS action, tmp_win, eventp, context, *Module
+#define FUNC_FLAGS_TYPE unsigned char
+typedef struct
+{
+  /* pointer to the event that caused the function */
+  XEvent *eventp;
+  /* the fvwm window structure */
+  struct FvwmWindow *tmp_win;
+  /* the action to execute */
+  char *action;
+  char **args;
+  /* the context in which the button was pressed */
+  unsigned long context;
+  int module;
+  /* If tmp_win is NULL, the is_window_unmanaged flag may be set along with
+   * this field to indicate the function should run with an unmanaged window.
+   */
+  Window win;
+  struct
+  {
+    FUNC_FLAGS_TYPE exec;
+    unsigned do_save_tmpwin : 1;
+    unsigned is_window_unmanaged : 1;
+  } flags;
+} exec_func_args_type;
 
-#include <X11/Xlib.h>
-#include <X11/Xutil.h>
-#include <X11/cursorfont.h>
-#include <X11/Intrinsic.h>
-#include <libs/Picture.h>
-#include "window_flags.h"
 
 /* Allow GCC extensions to work, if you have GCC */
 
@@ -163,7 +188,6 @@ typedef struct
 {
   /* common flags (former flags in bits 0-12) */
   unsigned is_sticky : 1;
-  unsigned has_grabbed_buttons : 1;
   unsigned has_icon_font : 1;
   unsigned has_window_font : 1;
   /* static flags that do not change dynamically after the window has been
@@ -473,6 +497,7 @@ typedef struct FvwmWindow
   int max_window_width;
   int max_window_height;
   int shade_anim_steps;
+  unsigned char grabbed_buttons;
 } FvwmWindow;
 
 /* include this down here because FvwmWindows must be defined when including

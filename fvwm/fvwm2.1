@@ -2691,6 +2691,45 @@ used outside the
 command does nothing.
 
 .TP
+.BI "FakeClick [" command value "] ..."
+This command is mainly intended for debugging fvwm and no guarantees
+are made that it will work for you.
+.B FakeClick
+can simulate mouse button press and release events and pass them to
+fvwm or the applications.  The parameters are a list of commands
+which consist of a
+.I command
+token and an integer
+.I value
+each.  The
+.IR press and release
+commands are followed by the appropriate mouse button number and generate
+a button press or release event on the window below the pointer.  The
+.I wait
+commands pauses fvwm for the given number of milliseconds.  The
+.I modifiers
+command allows to simulate pressing or releasing modifier keys.  The
+values 1 to 5 are mapped to
+.SM Mod1
+to
+.SM Mod5
+while 6, 7 and 8 are mapped to
+.SM Shift,
+.SM Lock
+and
+.SM Control
+The modifier will be set for any further button events.  To release a
+modifier key, use the corresponding negative number.  The
+.I depth
+command determines to which window the button events are sent.  With
+a depth of 1, all events go to the root window, regardless of the
+pointer's position.  With 2, the event is passed to the top level
+window under the pointer which is usually the frame window.  With 3,
+events will go to the client windows and so on.  With a value of
+0 the event will go to the smallest window that contains the pointer.
+
+
+.TP
 .BI "GlobalOpts [" options "]"
 As announced in the past, this command has been removed.  Please replace
 the global options in your configuration file according to thi
@@ -3505,7 +3544,14 @@ Warps the cursor to the associated window.  The parameters
 default to percentage of window down and in from the upper left hand
 corner (or number of pixels down and in if
 .RI ' p '
-is appended to the numbers).
+is appended to the numbers).  This command works also with windows
+that are not managed by fvwm.  In this case fvwm is will not bring
+the window onto the screen if it is not visible.  For example it is
+possible to warp the pointer to the center of the root window on
+screen 1:
+.EX
+WindowId root 1 WarpToWindow 50 50
+.EE
 
 
 .SS COMMANDS CONTROLLING WINDOW STATE
@@ -6407,7 +6453,7 @@ Conditions are the same as for
 .BR Next .
 
 .TP
-.BI "WindowId " id " [(" conditions ")] " function
+.BI "WindowId [" id "] | [root " screen "] [(" conditions ")] " function
 The
 .B WindowId
 function is similar to the
@@ -6420,9 +6466,21 @@ on it.  The optional
 .I conditions
 are the same as for
 .BR Current .
+The second form of syntax retrieves the window id of the root
+window of the given
+.IR screen .
+If no
+.I screen
+is given, the current screen is assumed.  The window indicated by
+.I id
+may belong to a window not managed by fvwm or even a window on
+a different screen.  Although most commands can not operate on
+such windows, there are some exceptions, for example the
+.B WarpToWindow
+command.
 .EX
 WindowId 0x34567890 Raise
-WindowId 0x34567890 WarpToWindow 50 50
+WindowId root 1 WarpToWindow 50 50
 WindowId $0 (Silly_Popup) Delete
 .EE
 Mostly this is useful for functions used with the

@@ -3,6 +3,11 @@ _+_A HREF="#2.2.4"_-_2.2.4_+_/A_-_.
 
 Changes in beta release 2.3.24 (not released yet)
 
+* WindowId and WarpToFunction have been enhanced to handle windows on
+  different screens and unmanaged windows.
+
+* New command FakeClick.
+
 Changes in beta release 2.3.23 (2000-11-25)
 
 * New styles UseIconPosition and NoIconPosition (default).

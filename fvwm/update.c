@@ -59,6 +59,7 @@
 #include "move_resize.h"
 #include "add_window.h"
 #include "module_interface.h"
+#include "focus.h"
 
 static void init_style(
   FvwmWindow *old_t, FvwmWindow *t, window_style *pstyle, short *pbuttons)
@@ -75,6 +76,11 @@ static void apply_window_updates(
   FvwmWindow old_t;
   short buttons;
   Bool is_style_initialised = False;
+
+  if (flags->do_update_window_grabs)
+  {
+    focus_grab_buttons(t, False);
+  }
 
   if (IS_TRANSIENT(t) && flags->do_redecorate_transient)
   {
@@ -338,6 +344,10 @@ void flush_window_updates(void)
     {
       flags.do_update_window_font_height = True;
     }
+    if (Scr.flags.has_mouse_binding_changed)
+    {
+      flags.do_update_window_grabs = True;
+    }
     /* now apply the changes */
     apply_window_updates(t, &flags, &style, focus_fw);
   }
@@ -345,15 +355,23 @@ void flush_window_updates(void)
   /* restore the focus; also handles the case that the previously focused
    * window is now NeverFocus */
   if (focus_fw)
+  {
     SetFocusWindow(focus_fw, 1);
+    if (Scr.flags.has_mouse_binding_changed)
+    {
+      focus_grab_buttons(focus_fw, True);
+    }
+  }
   else
     DeleteFocus(1);
+
   /* finally clean up the change flags */
   reset_style_changes();
   reset_decor_changes();
   Scr.flags.do_need_window_update = 0;
   Scr.flags.has_default_font_changed = 0;
   Scr.flags.has_default_color_changed = 0;
+  Scr.flags.has_mouse_binding_changed = 0;
   Scr.flags.has_nr_buttons_changed = 0;
 
   MyXUngrabServer(dpy);

@@ -369,6 +369,7 @@ typedef struct ScreenInfo
     unsigned do_need_style_list_update : 1;
     unsigned has_default_font_changed : 1;
     unsigned has_default_color_changed : 1;
+    unsigned has_mouse_binding_changed : 1;
     unsigned has_nr_buttons_changed : 1;
     unsigned is_pointer_on_this_screen : 1;
     unsigned is_single_screen : 1;

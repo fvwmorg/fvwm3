@@ -538,7 +538,7 @@ void do_windowList(XEvent *eventp,Window w,FvwmWindow *tmp_win,
     free(ret_action);
   DestroyMenu(mr, False);
   if (mret.rc == MENU_DOUBLE_CLICKED && default_action && *default_action)
-    ExecuteFunction(
+    old_execute_function(
       default_action, tmp_win, eventp, context, *Module, 0 , NULL);
   if (default_action != NULL)
     free(default_action);

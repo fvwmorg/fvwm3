@@ -984,13 +984,13 @@ void GNOME_HandlePropRequest(unsigned int propm,
     if (prop & WIN_STATE_SHADED)
     {
       /* shade up */
-      ExecuteFunction(
+      old_execute_function(
 	"WindowShade 1", fwin, ev, C_WINDOW, -1, 0, NULL);
     }
     else
     {
       /* shade down */
-      ExecuteFunction(
+      old_execute_function(
 	"WindowShade 0", fwin, ev, C_WINDOW, -1, 0, NULL);
 
     }

@@ -872,10 +872,17 @@ void do_menu(MenuParameters *pmp, MenuReturn *pmret)
     {
       if (pmp->ret_paction && *(pmp->ret_paction))
       {
+	exec_func_args_type efa;
+
 	indirect_depth++;
-	ExecuteFunctionSaveTmpWin(
-	  *(pmp->ret_paction), pmp->button_window,
-	  &Event, *(pmp->pcontext), -1, 0, NULL);
+	memset(&efa, 0, sizeof(efa));
+	efa.eventp = &Event;
+	efa.tmp_win = pmp->button_window;
+	efa.action = *(pmp->ret_paction);
+	efa.context = *(pmp->pcontext);
+	efa.module = -1;
+	efa.flags.do_save_tmpwin = 1;
+	execute_function(&efa);
 	indirect_depth--;
 	free(*(pmp->ret_paction));
 	*(pmp->ret_paction) = NULL;
@@ -1421,6 +1428,7 @@ static void MenuInteraction(
   int c10msDelays = 0;
   Time t0 = lastTimestamp;
   MenuOptions mops;
+  exec_func_args_type efa;
   struct
   {
     unsigned do_popup_immediately : 1;
@@ -1863,6 +1871,13 @@ static void MenuInteraction(
       if (flags.do_popup)
       {
 	DBUG("MenuInteraction","Popping up");
+	if (!MR_IS_PAINTED(pmp->menu))
+	{
+	  /* draw the parent menu if it is not already drawn */
+	  paint_menu(pmp->menu, NULL, (*pmp->pTmp_win));
+fprintf(stderr,"drawing menu now\n");
+	  flush_expose(MR_WINDOW(pmp->menu));
+	}
 	/* get pos hints for item's action */
 	get_popup_options(pmp->menu, mi, &mops);
 	if (mrMi == pmp->menu && mrMiPopup == NULL && MI_IS_POPUP(mi) &&
@@ -1904,9 +1919,14 @@ static void MenuInteraction(
 	  if (Scr.BusyCursor & BUSY_DYNAMICMENU)
 	    is_busy_grabbed = GrabEm(CRS_WAIT, GRAB_BUSYMENU);
 	  /* Execute the action */
-	  ExecuteFunctionSaveTmpWin(
-	    action, *(pmp->pTmp_win), &Event, *(pmp->pcontext) , -2,
-	    FUNC_DONT_EXPAND_COMMAND, NULL);
+	  memset(&efa, 0, sizeof(efa));
+	  efa.eventp = &Event;
+	  efa.tmp_win = *(pmp->pTmp_win);
+	  efa.action = action;
+	  efa.context = *(pmp->pcontext);
+	  efa.module = -2;
+	  efa.flags.exec = FUNC_DONT_EXPAND_COMMAND;
+	  efa.flags.do_save_tmpwin = 1;
 	  if (is_complex_function)
 	    free(action);
 	  if (is_busy_grabbed)
@@ -2305,6 +2325,7 @@ static int pop_menu_up(
     Bool f;
     Bool is_busy_grabbed = False;
     Time t;
+    exec_func_args_type efa;
     extern XEvent Event;
 
     /* save variables that we still need but that may be overwritten */
@@ -2315,8 +2336,15 @@ static int pop_menu_up(
     if (Scr.BusyCursor & BUSY_DYNAMICMENU)
       is_busy_grabbed = GrabEm(CRS_WAIT, GRAB_BUSYMENU);
     /* Execute the action */
-    ExecuteFunctionSaveTmpWin(MR_POPUP_ACTION(mr), *pfw, &Event,
-			      *pcontext, -2, FUNC_DONT_EXPAND_COMMAND, NULL);
+    memset(&efa, 0, sizeof(efa));
+    efa.eventp = &Event;
+    efa.tmp_win = *pfw;
+    efa.action = MR_POPUP_ACTION(mr);
+    efa.context = *pcontext;
+    efa.module = -2;
+    efa.flags.do_save_tmpwin = 1;
+    efa.flags.exec = FUNC_DONT_EXPAND_COMMAND;
+    execute_function(&efa);
     if (is_busy_grabbed)
       UngrabEm(GRAB_BUSYMENU);
     /* restore the stuff we saved */
@@ -2839,6 +2867,7 @@ static void pop_menu_down(MenuRoot **pmr, MenuParameters *pmp)
   {
     /* Finally execute the popdown action (if defined). */
     saved_pos_hints pos_hints;
+    exec_func_args_type efa;
     Time t;
     extern XEvent Event;
 
@@ -2846,9 +2875,14 @@ static void pop_menu_down(MenuRoot **pmr, MenuParameters *pmp)
     pos_hints = last_saved_pos_hints;
     t = lastTimestamp;
     /* Execute the action */
-    ExecuteFunctionSaveTmpWin(
-      MR_POPDOWN_ACTION(*pmr), (*pmp->pTmp_win), &Event, *(pmp->pcontext), -2,
-      FUNC_DONT_EXPAND_COMMAND, NULL);
+    efa.eventp = &Event;
+    efa.tmp_win = (*pmp->pTmp_win);
+    efa.action = MR_POPDOWN_ACTION(*pmr);
+    efa.context = *(pmp->pcontext);
+    efa.module = -2;
+    efa.flags.do_save_tmpwin = 1;
+    efa.flags.exec = FUNC_DONT_EXPAND_COMMAND;
+    execute_function(&efa);
     /* restore the stuff we saved */
     last_saved_pos_hints = pos_hints;
     lastTimestamp = t;
@@ -5104,7 +5138,7 @@ static void menu_func(F_CMD_ARGS, Bool fStaysUp)
   do_menu(&mp, &mret);
   if (mret.rc == MENU_DOUBLE_CLICKED && action)
   {
-    ExecuteFunction(F_PASS_EXEC_ARGS, 0, NULL);
+    old_execute_function(F_PASS_EXEC_ARGS, 0, NULL);
   }
 }
 

@@ -16,8 +16,6 @@
 #ifndef _FUNCTIONS_
 #define _FUNCTIONS_
 
-struct FvwmFunction;               /* forward declaration */
-
 typedef struct FunctionItem
 {
   struct FvwmFunction *func;       /* the function this item is in */
@@ -25,7 +23,7 @@ typedef struct FunctionItem
   char condition;                  /* the character string displayed on left*/
   char *action;                    /* action to be performed */
   short type;                      /* type of built in function */
-  unsigned char flags;
+  FUNC_FLAGS_TYPE flags;
 } FunctionItem;
 
 typedef struct FvwmFunction
@@ -47,7 +45,7 @@ typedef struct
   void (*action)();
 #endif
   short func_type;
-  unsigned char flags;
+  FUNC_FLAGS_TYPE flags;
 } func_type;
 
 /* Bits for the function flag byte. */
@@ -77,13 +75,12 @@ extern FvwmFunction *NewFvwmFunction(const char *name);
 void DestroyFunction(FvwmFunction *func);
 extern int DeferExecution(XEvent *, Window *,FvwmWindow **, unsigned long *,
 			  cursor_type, int);
-void ExecuteFunction(
-  char *Action, FvwmWindow *tmp_win, XEvent *eventp, unsigned long context,
-  int Module, unsigned int exec_flags, char *args[]);
-void ExecuteFunctionSaveTmpWin(
-  char *Action, FvwmWindow *tmp_win, XEvent *eventp, unsigned long context,
-  int Module, unsigned int exec_flags, char *args[]);
+void execute_function(exec_func_args_type *efa);
+void old_execute_function(
+  char *action, FvwmWindow *tmp_win, XEvent *eventp, unsigned long context,
+  int Module, FUNC_FLAGS_TYPE exec_flags, char *args[]);
 void AddToFunction(FvwmFunction *func, char *action);
+
 
 enum
 {
@@ -125,6 +122,7 @@ enum
   F_ESCAPE_FUNC,
   F_EXEC,
   F_EXEC_SETUP,
+  F_FAKE_CLICK,
   F_FUNCTION,
   F_GLOBAL_OPTS,
   F_GOTO_DESK,

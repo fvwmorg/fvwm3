@@ -374,6 +374,7 @@ int GetEqualSizeChildren(
 #define C_R4          0x2000
 #define C_L5          0x4000
 #define C_R5          0x8000
+#define C_UNMANAGED  0x10000
 #define C_RALL       (C_R1|C_R2|C_R3|C_R4|C_R5)
 #define C_LALL       (C_L1|C_L2|C_L3|C_L4|C_L5)
 #define C_ALL   (C_WINDOW|C_TITLE|C_ICON|C_ROOT|C_FRAME|C_SIDEBAR|\

@@ -357,8 +357,8 @@ void FocusOn(FvwmWindow *t, Bool FocusByMouse, char *action)
  * Moves pointer to specified window
  *
  *************************************************************************/
-static void WarpOn(XEvent *eventp, FvwmWindow *t, int warp_x, int x_unit,
-                   int warp_y, int y_unit)
+static void warp_to_fvwm_window(
+  XEvent *eventp, FvwmWindow *t, int warp_x, int x_unit, int warp_y, int y_unit)
 {
   int dx,dy;
   int cx,cy;
@@ -442,18 +442,48 @@ void focus_func(F_CMD_ARGS)
 
 void warp_func(F_CMD_ARGS)
 {
-   int val1_unit, val2_unit, n;
-   int val1, val2;
+  int val1_unit, val2_unit, n;
+  int val1, val2;
 
-  if (DeferExecution(eventp,&w,&tmp_win,&context,CRS_SELECT,ButtonRelease))
-    return;
+  n = GetTwoArguments(action, &val1, &val2, &val1_unit, &val2_unit);
+  if (context != C_UNMANAGED)
+  {
+    if (DeferExecution(eventp,&w,&tmp_win,&context,CRS_SELECT,ButtonRelease))
+      return;
+    if (n == 2)
+      warp_to_fvwm_window(eventp, tmp_win, val1, val1_unit, val2, val2_unit);
+    else
+      warp_to_fvwm_window(eventp, tmp_win, 0, 0, 0, 0);
+  }
+  else
+  {
+    int x = 0;
+    int y = 0;
 
-   n = GetTwoArguments (action, &val1, &val2, &val1_unit, &val2_unit);
+    if (n == 2)
+    {
+      int wx;
+      int wy;
+      unsigned int ww;
+      unsigned int wh;
 
-   if (n == 2)
-     WarpOn (eventp, tmp_win, val1, val1_unit, val2, val2_unit);
-   else
-     WarpOn (eventp, tmp_win, 0, 0, 0, 0);
+      if (!XGetGeometry(
+	dpy, w, &JunkRoot, &wx, &wy, &ww, &wh, &JunkBW, &JunkDepth))
+      {
+	return;
+      }
+      if (val1_unit != Scr.MyDisplayWidth)
+	x = wx + val1;
+      else
+	x = wx + (ww - 1) * val1 / 100;
+
+      if (val2_unit != Scr.MyDisplayHeight)
+	y = wy + val2;
+      else
+	y = wy + (wh - 1) * val2 / 100;
+    }
+    XWarpPointer(dpy, None, w, 0, 0, 0, 0, x, y);
+  }
 }
 
 Bool IsLastFocusSetByMouse(void)
@@ -461,15 +491,16 @@ Bool IsLastFocusSetByMouse(void)
   return lastFocusType;
 }
 
-Bool focus_grab_buttons(FvwmWindow *tmp_win, Bool is_focused)
+void focus_grab_buttons(FvwmWindow *tmp_win, Bool is_focused)
 {
   int i;
   Bool accepts_input_focus;
-  Bool do_grab = False;
+  Bool do_grab_all = False;
+  unsigned char grab_buttons = Scr.buttons2grab;
 
   if (!tmp_win)
   {
-    return False;
+    return;
   }
   accepts_input_focus = do_accept_input_focus(tmp_win);
 
@@ -478,25 +509,28 @@ Bool focus_grab_buttons(FvwmWindow *tmp_win, Bool is_focused)
       DO_RAISE_MOUSE_FOCUS_CLICK(tmp_win) &&
       (!is_focused || !is_on_top_of_layer(tmp_win)))
   {
-    do_grab = True;
+    grab_buttons = ((1 << NUMBER_OF_MOUSE_BUTTONS) - 1);
+    do_grab_all = True;
   }
   else if (HAS_CLICK_FOCUS(tmp_win) && !is_focused &&
 	   (!DO_NOT_RAISE_CLICK_FOCUS_CLICK(tmp_win) || accepts_input_focus))
   {
-    do_grab = True;
+    grab_buttons = ((1 << NUMBER_OF_MOUSE_BUTTONS) - 1);
+    do_grab_all = True;
   }
 
-  if ((do_grab && !HAS_GRABBED_BUTTONS(tmp_win)) ||
-      (!do_grab && HAS_GRABBED_BUTTONS(tmp_win)))
+  if (grab_buttons != tmp_win->grabbed_buttons)
   {
-    SET_GRABBED_BUTTONS(tmp_win, do_grab);
-    Scr.Ungrabbed = (do_grab) ? NULL : tmp_win;
-    if (do_grab)
+    Bool do_grab;
+
+    Scr.Ungrabbed = (do_grab_all) ? NULL : tmp_win;
+    if (do_grab_all)
       XSync(dpy, 0);
     for (i = 0; i < NUMBER_OF_MOUSE_BUTTONS; i++)
     {
-      if (!(Scr.buttons2grab & (1<<i)))
+      if ((grab_buttons & (1 << i)) == (tmp_win->grabbed_buttons & (1 << i)))
 	continue;
+      do_grab = !!(grab_buttons & (1 << i));
 
       {
 	register unsigned int mods;
@@ -525,7 +559,8 @@ Bool focus_grab_buttons(FvwmWindow *tmp_win, Bool is_focused)
 	} /* for */
       }
     } /* for */
+    tmp_win->grabbed_buttons = grab_buttons;
   }
 
-  return do_grab;
+  return;
 }

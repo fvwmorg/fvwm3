@@ -33,7 +33,6 @@
 /* Fvwm needs at least 3 buttons. X currently supports up to 5 buttons, so you
  * can use 3, 4 or 5 here. */
 #define NUMBER_OF_MOUSE_BUTTONS            5
-#define DEFAULT_BUTTONS_TO_GRAB            ((1 << NUMBER_OF_MOUSE_BUTTONS) - 1)
 #define DEFAULT_ALL_BUTTONS_MASK           \
 ((Button1Mask * (NUMBER_OF_MOUSE_BUTTONS >= 1)) | \
  (Button2Mask * (NUMBER_OF_MOUSE_BUTTONS >= 2)) | \
