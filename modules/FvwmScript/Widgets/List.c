@@ -155,7 +155,6 @@ void DrawCellule(
   r.width =  xobj->width - 16 - SbWidth - BdWidth - 6;
   r.height = xobj->height - r.y - 4 - 2*BdWidth;
 
-  XSetClipRectangles(dpy, xobj->gc, 0, 0, &r, 1, Unsorted);
   for (i = xobj->value2; i < xobj->value2 + NbVisCell; i++)
   {
 	  Title = (char*)GetMenuTitle(xobj->title, i);
