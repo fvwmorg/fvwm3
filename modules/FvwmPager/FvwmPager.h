@@ -159,6 +159,7 @@ int My_XNextEvent(Display *dpy, XEvent *event);
 
 /* Stuff in x_pager.c */
 void initialize_pager(void);
+void initialize_viz_pager(void);
 Pixel GetColor(char *name);
 void nocolor(char *a, char *b);
 void DispatchEvent(XEvent *Event);

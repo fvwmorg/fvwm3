@@ -281,7 +281,8 @@ int main(int argc, char **argv)
 
   Scr.screen = DefaultScreen(dpy);
   Scr.Root = RootWindow(dpy, Scr.screen);
-  Scr.Pager_w = None;
+  /* make a temp window for any pixmaps, deleted later */
+  initialize_viz_pager();
 
 #ifdef DEBUG
   fprintf(stderr,"[main]: Connection to X server established.\n");

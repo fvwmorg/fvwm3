@@ -133,6 +133,27 @@ extern void ExitPager(void);
 /***********************************************************************
  *
  *  Procedure:
+ *	Initialize_viz_pager - creates a temp window of the correct visual
+ *      so that pixmaps may be created for use with the main window
+ ***********************************************************************/
+void initialize_viz_pager(void)
+{
+  XSetWindowAttributes attr;
+  if (G->usingDefaultVisual)
+    Scr.Pager_w = Scr.Root;
+  else {
+    attr.background_pixel = 0;
+    attr.border_pixel = 0;
+    attr.colormap = G->cmap;
+    Scr.Pager_w = XCreateWindow(dpy, Scr.Root, -10, -10, 10, 10, 0, G->depth,
+				InputOutput, G->viz,
+				CWBackPixel|CWBorderPixel|CWColormap,&attr);
+  }
+}
+
+/***********************************************************************
+ *
+ *  Procedure:
  *	Initialize_pager - creates the pager window, if needed
  *
  *  Inputs:
@@ -381,6 +402,8 @@ void initialize_pager(void)
   sizehints.base_width = Columns * n + Columns - 1;
   sizehints.base_height = Rows*(m + label_h+1) - 1;
 
+  /* destroy the temp window first, don't worry if it's the Root */
+  XDestroyWindow(dpy, Scr.Pager_w);
   Scr.Pager_w = XCreateWindow (dpy, Scr.Root, window_x, window_y, window_w,
 			       window_h, (unsigned int) 1, G->depth,
 			       InputOutput, G->viz, valuemask, &attributes);
