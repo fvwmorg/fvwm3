@@ -1210,7 +1210,7 @@ void LoopOnEvents(void)
 	  y = win_y - ScreenHeight;
 	}
 	sprintf(tmp,"Popup %s %d %d", StartPopup, x, y);
-	SendFvwmPipe(Fvwm_fd, tmp, None);
+	SendFvwmPipe(Fvwm_fd, tmp, win);
       } else {
 	StartButtonUpdate(NULL, BUTTON_UP);
 	if (MouseInMail(Event.xbutton.x, Event.xbutton.y)) {

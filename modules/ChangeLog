@@ -1,4 +1,9 @@
-2000-01-10  Mikhael Goikhman  <migo@homemail.com>
+2001-01-14  olicha  <olivier.chapuis@free.fr>
+
+	* FvwmTaskBar/FvwmTaskBar.c (LoopOnEvents):
+	Send TaskBar window in the case of a click on the start button
+	
+2001-01-10  Mikhael Goikhman  <migo@homemail.com>
 
 	* FvwmGtk/expand.c (recursive_replace):
 	fixed FvwmGtk core dump caused by memory leak fixes
