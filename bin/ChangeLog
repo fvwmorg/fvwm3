@@ -1,3 +1,11 @@
+2002-06-02  Mikhael Goikhman  <migo@homemail.com>
+
+	* fvwm-menu-headlines.1:
+	* fvwm-menu-headlines.in:
+	add timeouts on socket reading (default is 20 seconds) and --timeout;
+	updated NewsForge, LinuxFr;
+	disabled SegFault, AppWatch, JustLinux, FreeKDE as non-functional
+
 2002-05-28  Mikhael Goikhman  <migo@homemail.com>
 
 	* fvwm-config.in:
