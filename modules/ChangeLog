@@ -1,3 +1,22 @@
+2004-06-29  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* FvwmTaskBar/Goodies.c (cool_get_inboxstatus):
+	* FvwmScript/script.c:
+	* FvwmScript/script.y:
+	* FvwmScript/Instructions.c (InitCom):
+	* FvwmProxy/FvwmProxy.c (AbortProxies):
+	(ProcessMessage):
+	* FvwmPager/x_pager.c (UpdateWindowShape):
+	* FvwmForm/FvwmForm.c:
+	* FvwmIconMan/fvwm.c (remanage_winlist):
+	* FvwmDragWell/fvwmDragWell.c:
+	* FvwmConsole/getline.c (getline):
+	* FvwmConsole/FvwmConsole.c:
+	* FvwmButtons/FvwmButtons.c:
+	* FvwmBacker/FvwmBacker.c (EndLessLoop):
+	(ReadFvwmPipe):
+	fixed compilation with -Wall -Wstrict-prototypes -Wpointer-arith
+
 2004-06-27  Scott Smedley <ss@aao.gov.au>
 
 	* FvwmWindowMenu/FvwmWindowMenu.in:

@@ -96,7 +96,7 @@ static RETSIGTYPE TerminateHandler(int sig);
 void SetButtonSize(button_info*,int,int);
 /* main */
 void Loop(void);
-void RedrawWindow();
+void RedrawWindow(void);
 void RecursiveLoadData(button_info*,int*,int*);
 void CreateUberButtonWindow(button_info*,int,int);
 int My_FNextEvent(Display *dpy, XEvent *event);

@@ -67,19 +67,19 @@ extern void xdndInit(Display *, Window);
 extern void dragSourceInit(DragSource *,Display *,Window,Window);
 
 void XStartup(char *appName);
-void veryLongLoop();
+void veryLongLoop(void);
 char *shuffleDown(char **,short *,int,int);
 int shrinkList(char **,short *,int,int);
 int dilateList(char **,short *,int,int);
 void changeWindowName(Window, char *);
-void readHistory();
-void writeHistory();
+void readHistory(void);
+void writeHistory(void);
 int dummy(DragWellButton *);
-void createRootMenu();
-void flushHistory();
-void getReliefColors();
-void createBackground();
-void createWindow();
+void createRootMenu(void);
+void flushHistory(void);
+void getReliefColors(void);
+void createBackground(void);
+void createWindow(void);
 void parseOptions(void);
 void parseFvwmMessage(char *msg);
 int myXNextEvent(XEvent *event, char *fvwmMessage);
@@ -203,7 +203,8 @@ int mouseInButton(DragWellButton *but, int x, int y) {
 
 /*dragwellAnimate - does an animation in the dragwell
  *  Does not return anything useful */
-void dragwellAnimate() {
+void dragwellAnimate(void)
+{
   int i;
   int sleepTime;
   /*only one animation type for now*/

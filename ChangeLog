@@ -1,3 +1,14 @@
+2004-06-29  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* libs/Fft.c (FftDrawString):
+	* fvwm/session.c (get_version_string):
+	* fvwm/module_interface.c (FlushMessageQueue):
+	* fvwm/fvwm.c (SaveDesktopState):
+	* fvwm/colorset.h:
+	* fvwm/colorset.c (cleanup_colorsets):
+	* libs/PictureUtils.c (struct):
+	fixed compilation with -Wall -Wstrict-prototypes -Wpointer-arith
+
 2004-06-25  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* fvwm/events.c (__cr_detect_icccm_move):

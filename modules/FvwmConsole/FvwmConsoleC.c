@@ -23,7 +23,7 @@
 int  s;    /* socket handle */
 FILE *sp;
 char *name;  /* name of this program at executing time */
-char *getline();
+char *getline(void);
 
 /*
  *  close socket and exit
@@ -52,7 +52,7 @@ RETSIGTYPE ReapChildren(int sig)
 /*
  * print error message on stderr
  */
-void ErrMsg( char *msg )
+void ErrMsg(char *msg)
 {
   fprintf(stderr, "%s error in %s: %s\n", name , msg, strerror(errno));
   if (sp != NULL) {
@@ -67,7 +67,7 @@ void ErrMsg( char *msg )
  * setup socket.
  * send command to and receive message from the server
  */
-int main( int argc, char *argv[])
+int main(int argc, char *argv[])
 {
   char *cmd;
   char data[MAX_MESSAGE_SIZE];
@@ -90,34 +90,34 @@ int main( int argc, char *argv[])
 
   /* make a socket */
   home = getenv("FVWM_USERDIR");
-  s_name = safemalloc( strlen(home) + sizeof(S_NAME) + 1);
+  s_name = safemalloc(strlen(home) + sizeof(S_NAME) + 1);
   strcpy(s_name, home);
   strcat(s_name, S_NAME);
-  if( (s = socket(AF_UNIX, SOCK_STREAM, 0)) < 0 ) {
+  if ((s = socket(AF_UNIX, SOCK_STREAM, 0)) < 0) {
 	ErrMsg ("socket");
   }
 
   /* name the socket and obtain the size of it*/
   sas.sun_family = AF_UNIX;
-  strcpy( sas.sun_path, s_name );
-  len = sizeof(sas) - sizeof( sas.sun_path) + strlen( sas.sun_path );
+  strcpy(sas.sun_path, s_name);
+  len = sizeof(sas) - sizeof(sas.sun_path) + strlen(sas.sun_path);
 
-  if( connect( s, (struct sockaddr *)&sas, len )< 0 ) {
-	ErrMsg( "connect" );
+  if (connect(s, (struct sockaddr *)&sas, len)< 0) {
+	ErrMsg("connect");
   }
 
-  sp = fdopen( s, "r" );
+  sp = fdopen(s, "r");
   if (sp == NULL) {
-	ErrMsg( "fdopen");
+	ErrMsg("fdopen");
   }
 
   pid = fork();
-  if( pid == -1 ) {
-	ErrMsg( "fork");
+  if (pid == -1) {
+	ErrMsg("fork");
   }
-  if( pid == 0 ) {
+  if (pid == 0) {
 	/* loop of get user's command and send it to server */
-	while( 1 ) {
+	while (1) {
 
 	  cmd = getline();
 	  if (cmd == NULL) {
@@ -125,35 +125,35 @@ int main( int argc, char *argv[])
 	  }
 
 	  clen = strlen(cmd);
-	  if( clen == 1 ) {
+	  if (clen == 1) {
 		continue;    /* empty line */
 	  }
 
 	  /* send the command including null to the server */
 	  usleep(1);
-	  send( s, cmd, strlen(cmd)+1, 0 );
+	  send(s, cmd, strlen(cmd)+1, 0);
 
 	}
-	kill( getppid(), SIGKILL );
+	kill(getppid(), SIGKILL);
 	sclose(0);
   }
-  while( fgets( data, MAX_MESSAGE_SIZE, sp )  ) {
+  while (fgets(data, MAX_MESSAGE_SIZE, sp) ) {
 	/* get the response */
 	/* ignore config lines */
-	if( !strcmp( data, C_BEG ) ) {
-	  while( fgets( data, MAX_MESSAGE_SIZE, sp) ) {
-		if( *data == '\0' || !strcmp(data,C_END) ) {
+	if (!strcmp(data, C_BEG)) {
+	  while (fgets(data, MAX_MESSAGE_SIZE, sp)) {
+		if (*data == '\0' || !strcmp(data,C_END)) {
 		  break;
 		}
 	  }
-	  if( *data != '\0' ) {
+	  if (*data != '\0') {
 		continue;
 	  }
 	}
-	if( *data == '\0' ) {
+	if (*data == '\0') {
 	  break;
 	}
-	printf( "%s",data );
+	printf("%s",data);
   }
   return (0);
 }

@@ -388,7 +388,10 @@ void FftDrawString(
 	Pixel fg, Pixel fgsh, Bool has_fg_pixels, int len, unsigned long flags)
 {
 	FftDraw *fftdraw = NULL;
-	void (*DrawStringFunc)();
+	typedef void (*DrawStringFuncType)(
+		FftDraw *fftdraw, FftColor *fft_fg, FftFont *uf, int xt,
+		int yt, char *str, int len);
+	DrawStringFuncType DrawStringFunc;
 	char *str;
 	Bool free_str = False;
 	XGCValues vr;
@@ -512,26 +515,26 @@ void FftDrawString(
 	str = fws->e_str;
 	if (FftUtf8Support && FLC_ENCODING_TYPE_IS_UTF_8(flf->fc))
 	{
-		DrawStringFunc = FftPDrawStringUtf8;
+		DrawStringFunc = (DrawStringFuncType)FftPDrawStringUtf8;
 	}
 	else if (FLC_ENCODING_TYPE_IS_UTF_8(flf->fc))
 	{
-		DrawStringFunc = FftPDrawString16;
+		DrawStringFunc = (DrawStringFuncType)FftPDrawString16;
 		str = (char *)FftUtf8ToFftString16(
 			  (unsigned char *)fws->e_str, len, &len);
 		free_str = True;
 	}
 	else if (FLC_ENCODING_TYPE_IS_USC_2(flf->fc))
 	{
-		DrawStringFunc = FftPDrawString16;
+		DrawStringFunc = (DrawStringFuncType)FftPDrawString16;
 	}
 	else if (FLC_ENCODING_TYPE_IS_USC_4(flf->fc))
 	{
-		DrawStringFunc = FftPDrawString32;
+		DrawStringFunc = (DrawStringFuncType)FftPDrawString32;
 	}
 	else
 	{
-		DrawStringFunc = FftPDrawString8;
+		DrawStringFunc = (DrawStringFuncType)FftPDrawString8;
 	}
 
 	FlocaleInitGstpArgs(&gstp_args, flf, fws, x, y);
@@ -551,7 +554,9 @@ void FftDrawString(
 	{
 		free(str);
 	}
-	FftDrawDestroy (fftdraw);
+	FftDrawDestroy(fftdraw);
+
+	return;
 }
 
 int FftTextWidth(FlocaleFont *flf, char *str, int len)

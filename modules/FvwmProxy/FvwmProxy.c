@@ -1018,7 +1018,7 @@ static void SelectProxy(void)
 	return;
 }
 
-static void AbortProxies(boid)
+static void AbortProxies(void)
 {
 	HideProxies();
 	send_command_to_fvwm(action_list[PROXY_ACTION_ABORT], None);
@@ -1210,7 +1210,7 @@ static void ProcessMessage(FvwmPacket* packet)
 		}
 		else if(StrEquals(token, "Abort"))
 		{
-			AbortProxies(True);
+			AbortProxies();
 		}
 		else if(StrEquals(token, "Mark"))
 		{

@@ -84,7 +84,7 @@ int ShowTips = False;
 char *statusfont_string = NULL;
 int last_date = -1;
 
-void cool_get_inboxstatus();
+void cool_get_inboxstatus(void);
 
 #define gray_width  8
 #define gray_height 8
@@ -712,7 +712,7 @@ void DestroyTipWindow()
 /* (based on the code of 'coolmail' By Byron C. Darrah */
 /*-----------------------------------------------------*/
 
-void cool_get_inboxstatus()
+void cool_get_inboxstatus(void)
 {
    static off_t oldsize = 0;
    off_t  newsize;

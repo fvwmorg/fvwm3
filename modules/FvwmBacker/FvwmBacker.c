@@ -228,7 +228,7 @@ int main(int argc, char **argv)
 /*
   EndLessLoop - Read until we get killed, blocking when can't read
 */
-void EndLessLoop()
+void EndLessLoop(void)
 {
 	while(1)
 	{
@@ -239,7 +239,7 @@ void EndLessLoop()
 /*
   ReadFvwmPipe - Read a single message from the pipe from Fvwm
 */
-void ReadFvwmPipe()
+void ReadFvwmPipe(void)
 {
 	FvwmPacket* packet = ReadFvwmPacket(Fvwm_fd[1]);
 	if ( packet == NULL )

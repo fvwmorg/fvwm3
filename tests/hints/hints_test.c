@@ -182,7 +182,8 @@ void InitAtom(void)
 	ATOM_MOTIF_WM_HINTS = XIA("_MOTIF_WM_HINTS");
 }
 
-void show_usage() {
+void show_usage(void)
+{
 	printf("Usage: hints_test OPTIONS\n");
 	printf("Options:\n");
 	printf("  --mwm-func <names>\n");

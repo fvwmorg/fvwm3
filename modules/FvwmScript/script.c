@@ -136,7 +136,7 @@ long l;
 extern char* ScriptName;
 
 /* Initialisation globale */
-void InitVarGlob()
+void InitVarGlob(void)
 {
  scriptprop=(ScriptProp*) safecalloc(1,sizeof(ScriptProp));
  scriptprop->x=-1;
@@ -205,7 +205,7 @@ void InitCase(int cond)
 }
 
 /* Enleve un niveau d'args dans la pile BuffArg */
-void RmLevelBufArg()
+void RmLevelBufArg(void)
 {
   SPileArg--;
 }
@@ -268,7 +268,7 @@ void AddCom(int Type, int NbLevelArg)
 
 /* Initialisation du buffer contenant les arguments de la commande courante */
 /* Ajout d'une couche d'argument dans la pile*/
-void AddLevelBufArg()
+void AddLevelBufArg(void)
 {
  /* Agrandissment de la pile */
  SPileArg++;
@@ -424,7 +424,7 @@ void AddComBloc(int TypeCond, int NbLevelArg, int NbBloc)
 }
 
 /* Creer un nouveau bloc, et l'empile: il devient le bloc courant */
-void EmpilerBloc()
+void EmpilerBloc(void)
 {
  Bloc *TmpBloc;
 

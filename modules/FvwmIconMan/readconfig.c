@@ -2003,7 +2003,7 @@ void process_dynamic_config_line(char *line)
 {
 	int manager = 0;
 	char *token;
-	extern void remanage_winlist();
+	extern void remanage_winlist(void);
 
 	/* don't support dynamic config for transient */
 	if (globals.transient)

@@ -94,13 +94,13 @@ int itemcolorset = 0;
 
 /* prototypes */
 static void AssignDrawTable(Item *);
-static void AddItem();
+static void AddItem(void);
 static void PutDataInForm(char *);
-static void ReadFormData();
+static void ReadFormData(void);
 static void FormVarsCheck(char **);
 static RETSIGTYPE TimerHandler(int);
 static int ErrorHandler(Display *dpy, XErrorEvent *error_event);
-static void SetupTimer()
+static void SetupTimer(void)
 {
 #ifdef HAVE_SIGACTION
   {
@@ -1233,7 +1233,7 @@ static void ct_Command(char *cp)
 /* End of ct_ routines */
 
 /* Init constants with values that can be freed later. */
-static void InitConstants () {
+static void InitConstants(void) {
   color_names[0]=safestrdup("Light Gray");
   color_names[1]=safestrdup("Black");
   color_names[2]=safestrdup("Gray50");
@@ -1253,7 +1253,7 @@ static void InitConstants () {
 }
 
 /* read the configuration file */
-static void ReadDefaults ()
+static void ReadDefaults(void)
 {
   char *line_buf;                       /* ptr to curr config line */
 
@@ -1291,7 +1291,7 @@ static void ReadDefaults ()
   }
 } /* done */
 
-static void ReadConfig ()
+static void ReadConfig(void)
 {
   char *line_buf;                       /* ptr to curr config line */
 
@@ -1302,7 +1302,7 @@ static void ReadConfig ()
 } /* done */
 
 /* After this config is read, figure it out */
-static void MassageConfig()
+static void MassageConfig(void)
 {
   int i, extra;
   Line *line;                           /* for scanning form lines */
@@ -1395,7 +1395,7 @@ static void MassageConfig()
 }
 
 /* reset all the values (also done on first display) */
-static void Restart ()
+static void Restart(void)
 {
   Item *item;
 
@@ -2075,7 +2075,7 @@ void DoCommand (Item *cmd)
 }
 
 /* open the windows */
-static void OpenWindows ()
+static void OpenWindows(void)
 {
   int x, y;
   int gravity = NorthWestGravity;
@@ -2283,7 +2283,7 @@ static void process_message(unsigned long, unsigned long *); /* proto */
 static void ParseActiveMessage(char *); /* proto */
 
 /* read something from Fvwm */
-static void ReadFvwm ()
+static void ReadFvwm(void)
 {
 
     FvwmPacket* packet = ReadFvwmPacket(Channel[1]);
@@ -2483,7 +2483,7 @@ static void am_Stop(char *cp)
 }
 
 /* main event loop */
-static void MainLoop (void)
+static void MainLoop(void)
 {
   fd_set fds;
   fd_set_size_t fd_width = GetFdWidth();
@@ -2574,7 +2574,6 @@ TimerHandler(int sig)
 int main (int argc, char **argv)
 {
   int i;
-  FILE *fdopen();
   char *s;
   char cmd[200];
 

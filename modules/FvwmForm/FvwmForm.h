@@ -247,7 +247,7 @@ extern int Channel[2];
 /* From FvwmAnimate end */
 
 /* prototypes */
-void ReadXServer();                      /* ReadXServer.c */
+void ReadXServer(void);                  /* ReadXServer.c */
 void RedrawText(Item *item);             /* FvwmForm.c */
 void RedrawTimeout(Item *item);          /* FvwmForm.c */
 void RedrawItem (

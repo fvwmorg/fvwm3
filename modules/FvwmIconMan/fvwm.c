@@ -214,7 +214,7 @@ static void set_win_configuration(WinData *win, FvwmPacketBody *body)
 		}
 		if (HAS_TITLE_DIR(win, DIR_E))
 		{
-			t_w += body->add_config_data.title_height;	
+			t_w += body->add_config_data.title_height;
 		}
 		win->real_g.x = win->x + wb_x;
 		win->real_g.y = win->y + wb_y;
@@ -583,7 +583,7 @@ static void update_win_in_hashtab(void *arg)
 	check_in_window(p);
 }
 
-void remanage_winlist()
+void remanage_winlist(void)
 {
 	walk_hashtab(update_win_in_hashtab);
 	draw_managers();

@@ -204,7 +204,7 @@ Atom _XA_XSETROOT_ID;
 
 /* ---------------------------- local functions ---------------------------- */
 
-static void SaveDesktopState()
+static void SaveDesktopState(void)
 {
 	FvwmWindow *t;
 	unsigned long data[1];

@@ -1763,7 +1763,6 @@ void FlushMessageQueue(int module)
 	mqueue_object_type *obj;
 	char *dptr;
 	int a;
-	extern int errno;
 
 	if (pipeOn[module] <= 0)
 	{

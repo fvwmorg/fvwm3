@@ -39,6 +39,8 @@
 
 #define PICTURE_DEBUG_COLORS_ALLOC_FAILURE 0
 
+#if 0
+/* dv: unused */
 /* form alloc_in_cmap from the xpm lib */
 #define XPM_DIST(r1,g1,b1,r2,g2,b2) (long)\
                           (3*(abs((long)r1-(long)r2) + \
@@ -47,6 +49,7 @@
 			   abs((long)r1 + (long)g1 + (long)b1 - \
 			       ((long)r2 +  (long)g2 + (long)b2)))
 #define XPM_COLOR_CLOSENESS 40000
+#endif
 
 #define SQUARE(X) ((X)*(X))
 
@@ -127,11 +130,16 @@ typedef struct
 	unsigned short *green_dither;
 	unsigned short *blue_dither;
 	/* colors allocation function */
-	int (*alloc_color)();
-	int (*alloc_color_no_limit)();
-	int (*alloc_color_dither)();
-	void (*free_colors)();
-	void (*free_colors_no_limit)();
+	int (*alloc_color)(Display *dpy, Colormap cmap, XColor *c);
+	int (*alloc_color_no_limit)(Display *dpy, Colormap cmap, XColor *c);
+	int (*alloc_color_dither)(
+		Display *dpy, Colormap cmap, XColor *c, int x, int y);
+	void (*free_colors)(
+		Display *dpy, Colormap cmap, Pixel *pixels, int n,
+		unsigned long planes);
+	void (*free_colors_no_limit)(
+		Display *dpy, Colormap cmap, Pixel *pixels, int n,
+		unsigned long planes);
 } PColorsInfo;
 
 typedef struct {
@@ -673,8 +681,8 @@ int alloc_color_x(
 
 static
 void free_colors_in_table(
-	Display *dpy, Colormap cmap, Pixel *pixels, int n, unsigned long planes,
-	Bool no_limit)
+	Display *dpy, Colormap cmap, Pixel *pixels, int n,
+	unsigned long planes)
 {
 	Pixel *p;
 	int i,j,do_free;
@@ -717,8 +725,8 @@ void free_colors_in_table(
 
 static
 void free_colors_x(
-	Display *dpy, Colormap cmap, Pixel *pixels, int n, unsigned long planes,
-	Bool no_limit)
+	Display *dpy, Colormap cmap, Pixel *pixels, int n,
+	unsigned long planes)
 {
 	XFreeColors(dpy, cmap, pixels, n, planes);
 	if (Pac != NULL)
@@ -1281,9 +1289,10 @@ int PictureAllocColorTable(
 	int strict_cl_set = False;
 	int alloc_table_set = False;
 	int color_limit;
-	int pa_type = (Pvisual->class != GrayScale)? PA_COLOR_CUBE:PA_GRAY_SCALE;
-	int fvwm_type = (Pvisual->class != GrayScale)?
-		FVWM_COLOR_CUBE:FVWM_GRAY_SCALE;
+	int pa_type = (Pvisual->class != GrayScale) ?
+		PA_COLOR_CUBE : PA_GRAY_SCALE;
+	int fvwm_type = (Pvisual->class != GrayScale) ?
+		FVWM_COLOR_CUBE : FVWM_GRAY_SCALE;
 	int cc[][6] =
 	{
 		/* {nr,ng,nb,ngrey,grey_bits,logic} */
@@ -1564,8 +1573,8 @@ int PictureAllocColorTable(
 	while(Pdepth <= 8 && !private_cmap && use_default &&
 	      i < cc_nbr && Pct == NULL && (Pvisual->class & 1))
 	{
-		size = cc[i][0]*cc[i][1]*cc[i][2] + cc[i][3] - 2*(cc[i][3] > 0) +
-			(1 << cc[i][4])*(cc[i][4] != 0);
+		size = cc[i][0]*cc[i][1]*cc[i][2] + cc[i][3] -
+			2*(cc[i][3] > 0) + (1 << cc[i][4])*(cc[i][4] != 0);
 		if (size > nbr_of_color || !(cc[i][5] & pa_type))
 		{
 			i++;
@@ -1574,8 +1583,8 @@ int PictureAllocColorTable(
 		if (free_colors <= nbr_of_color - size)
 		{
 			Pct = alloc_color_cube(
-				cc[i][0], cc[i][1], cc[i][2], cc[i][3], cc[i][4],
-				True);
+				cc[i][0], cc[i][1], cc[i][2], cc[i][3],
+				cc[i][4], True);
 		}
 		if (Pct != NULL)
 		{
@@ -2075,8 +2084,8 @@ void PictureCloseImageColorAllocator(
 }
 
 void PictureFreeColors(
-	Display *dpy, Colormap cmap, Pixel *pixels, int n, unsigned long planes,
-	Bool no_limit)
+	Display *dpy, Colormap cmap, Pixel *pixels, int n,
+	unsigned long planes, Bool no_limit)
 {
 	if (no_limit)
 	{

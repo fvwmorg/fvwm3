@@ -34,15 +34,12 @@ char *getline() {
 #include <readline/readline.h>
 #include <readline/history.h>
 
-extern int rl_bind_key();
-
-
 static char cmd[MAX_COMMAND_SIZE];
 static char *line = (char *)NULL;
 static int done_init = 0;
 static char *h_file;
 
-char *getline()
+char *getline(void)
 {
     char *prompt;
     int len;

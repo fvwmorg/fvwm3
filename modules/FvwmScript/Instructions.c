@@ -1856,7 +1856,7 @@ static char *FuncGettext(int *NbArg,long *TabArg)
 /*
  * Fonction d'initialisation de TabCom et TabFunc
  */
-void InitCom()
+void InitCom(void)
 {
   /* commande */
   TabCom[1]=Exec;

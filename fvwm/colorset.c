@@ -580,7 +580,7 @@ static void parse_simple_tint(
 
 /* ---------------------------- interface functions ------------------------ */
 
-void cleanup_colorsets()
+void cleanup_colorsets(void)
 {
 	struct junklist *oldjunk = junk;
 

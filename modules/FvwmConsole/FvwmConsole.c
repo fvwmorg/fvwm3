@@ -36,11 +36,11 @@ int  Ns = -1; /* socket handles */
 char Name[80]; /* name of this program in executable format */
 char *S_name;  /* socket name */
 
-void server( void );
-RETSIGTYPE DeadPipe( int );
-void CloseSocket();
-void ErrMsg( char *msg );
-void SigHandler( int );
+void server(void);
+RETSIGTYPE DeadPipe(int);
+void CloseSocket(void);
+void ErrMsg(char *msg);
+void SigHandler(int);
 
 void clean_up(void)
 {
@@ -90,38 +90,38 @@ int main(int argc, char *argv[])
   if (s != NULL)
     tmp = s + 1;
 
-  strcpy( Name, tmp );
+  strcpy(Name, tmp);
 
   MyName = safemalloc(strlen(tmp)+2);
   strcpy(MyName,"*");
   strcat(MyName, tmp);
 
   /* construct client's name */
-  strcpy( client, argv[0] );
-  strcat( client, "C" );
+  strcpy(client, argv[0]);
+  strcat(client, "C");
 
-  if(argc < FARGS)    {
+  if (argc < FARGS)    {
 	fprintf(stderr,"%s version %s should only be executed by fvwm!\n",
 		MyName, VERSION);
 	exit(1);
   }
 
-  if( ( eargv =(char **)safemalloc((argc+12)*sizeof(char *)) ) == NULL ) {
-	ErrMsg( "allocation" );
+  if ((eargv =(char **)safemalloc((argc+12)*sizeof(char *))) == NULL) {
+	ErrMsg("allocation");
   }
 
   /* copy arguments */
   eargv[0] = XTERM;
   j = 1;
-  for ( k=0 ; xterm_pre[k] != NULL ; j++, k++ ) {
+  for (k=0 ; xterm_pre[k] != NULL ; j++, k++) {
 	eargv[j] = xterm_pre[k];
   }
 
-  for ( i=FARGS ; i<argc; i++ ) {
-	if( !strcmp ( argv[i], "-e" ) ) {
+  for (i=FARGS ; i<argc; i++) {
+	if (!strcmp (argv[i], "-e")) {
 	  i++;
 	  break;
-	} else if( !strcmp ( argv[i], "-terminal" ) ) {
+	} else if (!strcmp (argv[i], "-terminal")) {
 	  i++;
 	  if (i < argc)
 	    /* use alternative terminal emulator */
@@ -131,12 +131,12 @@ int main(int argc, char *argv[])
 	}
   }
 
-  for ( k=0 ; xterm_post[k] != NULL ; j++, k++ ) {
+  for (k=0 ; xterm_post[k] != NULL ; j++, k++) {
 	eargv[j] = xterm_post[k];
   }
 
   /* copy rest of -e args */
-  for(  ; i<argc; i++, j++ ) {
+  for( ; i<argc; i++, j++) {
 	  eargv[j-1] = argv[i];
   }
 
@@ -153,10 +153,10 @@ int main(int argc, char *argv[])
 
   /* launch xterm with client */
   clpid = fork();
-  if( clpid < 0) {
+  if (clpid < 0) {
 	ErrMsg("client forking");
-  }else if(clpid  == 0 ) {
-	execvp( *eargv, eargv );
+  }else if (clpid  == 0) {
+	execvp(*eargv, eargv);
 	ErrMsg("exec");
   }
 
@@ -170,7 +170,7 @@ int main(int argc, char *argv[])
 /*
  *      signal handler
  */
-RETSIGTYPE DeadPipe( int dummy )
+RETSIGTYPE DeadPipe(int dummy)
 {
 	clean_up();
 	exit(0);
@@ -187,7 +187,7 @@ RETSIGTYPE SigHandler(int dummy)
 /*
  * setup server and communicate with fvwm and the client
  */
-void server ( void )
+void server (void)
 {
   struct sockaddr_un sas, csas;
   int  len;
@@ -201,8 +201,8 @@ void server ( void )
   int msglen;
 
   /* make a socket  */
-  if( (s = socket(AF_UNIX, SOCK_STREAM, 0 )) < 0  ) {
-	ErrMsg( "socket");
+  if ((s = socket(AF_UNIX, SOCK_STREAM, 0)) < 0 ) {
+	ErrMsg("socket");
 	exit(1);
   }
 
@@ -213,30 +213,30 @@ void server ( void )
   strcat(S_name, S_NAME);
 
   sas.sun_family = AF_UNIX;
-  strcpy( sas.sun_path, S_name );
+  strcpy(sas.sun_path, S_name);
 
   /* bind the above name to the socket */
   /* first, erase the old socket */
-  unlink( S_name );
-  len = sizeof(sas) - sizeof( sas.sun_path) + strlen( sas.sun_path );
+  unlink(S_name);
+  len = sizeof(sas) - sizeof(sas.sun_path) + strlen(sas.sun_path);
 
   umask(0077);
-  if( bind(s, (struct sockaddr *)&sas,len) < 0 ) {
-	ErrMsg( "bind" );
+  if (bind(s, (struct sockaddr *)&sas,len) < 0) {
+	ErrMsg("bind");
 	exit(1);
   }
 
   /* listen to the socket */
   /* set backlog to 5 */
-  if ( listen(s,5) < 0 ) {
-    ErrMsg( "listen" );
+  if (listen(s,5) < 0) {
+    ErrMsg("listen");
 	exit(1);
   }
 
   /* accept connections */
   clen = sizeof(csas);
-  if(( Ns = accept(s, (struct sockaddr *)&csas, &clen)) < 0 ) {
-	ErrMsg( "accept");
+  if ((Ns = accept(s, (struct sockaddr *)&csas, &clen)) < 0) {
+	ErrMsg("accept");
 	exit(1);
   }
 
@@ -244,19 +244,19 @@ void server ( void )
   tline = NULL;
   send(Ns, C_BEG, strlen(C_BEG), 0);
   GetConfigLine(Fd,&tline);
-  while(tline != NULL) {
-	if(strlen(tline)>1) {
+  while (tline != NULL) {
+	if (strlen(tline)>1) {
 	  send(Ns, tline, strlen(tline),0);
 	  send(Ns, "\n", 1, 0);
 	}
 	GetConfigLine(Fd,&tline);
   }
   send(Ns, C_END, strlen(C_END), 0);
-  strcpy( ver, MyName);
-  strcat( ver, " version " );
-  strcat( ver, VERSION VERSIONINFO);
-  strcat( ver, "\n" );
-  send(Ns, ver, strlen(ver), 0 );
+  strcpy(ver, MyName);
+  strcat(ver, " version ");
+  strcat(ver, VERSION VERSIONINFO);
+  strcat(ver, "\n");
+  send(Ns, ver, strlen(ver), 0);
 
   while (1){
       FD_ZERO(&fdset);
@@ -267,23 +267,23 @@ void server ( void )
 
       if (FD_ISSET(Fd[1], &fdset)){
 	  FvwmPacket* packet = ReadFvwmPacket(Fd[1]);
-	  if ( packet == NULL ) {
+	  if (packet == NULL) {
 		  clean_up();
 		  exit(0);
 	  } else {
 	      if (packet->type == M_PASS) {
 		  msglen = strlen((char *)&(packet->body[3]));
-		  if ( msglen > MAX_MESSAGE_SIZE-2 ) {
+		  if (msglen > MAX_MESSAGE_SIZE-2) {
 		      msglen = MAX_MESSAGE_SIZE-2;
 		  }
-		  send( Ns, (char *)&(packet->body[3]), msglen, 0 );
+		  send(Ns, (char *)&(packet->body[3]), msglen, 0);
 	      }
 	  }
       }
 
       if (FD_ISSET(Ns, &fdset)){
 	  int len;
-	  if( recv( Ns, buf, MAX_COMMAND_SIZE,0 ) == 0 ) {
+	  if (recv(Ns, buf, MAX_COMMAND_SIZE,0) == 0) {
 		  /* client is terminated */
 		  clean_up();
 		  exit(0);
@@ -303,11 +303,11 @@ void server ( void )
 /*
  * print error message on stderr and exit
  */
-void ErrMsg( char *msg )
+void ErrMsg(char *msg)
 {
 	fprintf(
 		stderr, "%s server error in %s, errno %d: %s\n", Name, msg,
-		errno, strerror(errno) );
+		errno, strerror(errno));
 	clean_up();
 	exit(1);
 }

@@ -917,7 +917,7 @@ void initialize_pager(void)
 }
 
 
-void UpdateWindowShape ()
+void UpdateWindowShape(void)
 {
   if (FHaveShapeExtension)
   {

@@ -42,6 +42,7 @@
 #include "icons.h"
 #include "gnome.h"
 #include "ewmh.h"
+#include "frame.h"
 
 /* ---------------------------- local definitions -------------------------- */
 
@@ -56,8 +57,6 @@
 /* ---------------------------- local macros ------------------------------- */
 
 /* ---------------------------- imports ------------------------------------ */
-
-extern Bool is_frame_hide_window();
 
 /* ---------------------------- included code files ------------------------ */
 
@@ -1193,8 +1192,7 @@ static Bool is_above_unmanaged(FvwmWindow *fw, Window *umtop)
 		if (wa.override_redirect == True
 		    && wa.class != InputOnly
 		    && tops[i] != Scr.NoFocusWin
-		    && (! is_frame_hide_window(tops[i]))
-			)
+		    && (!is_frame_hide_window(tops[i])))
 		{
 			OR_Above = tops[i];
 		}
