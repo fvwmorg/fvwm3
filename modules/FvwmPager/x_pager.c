@@ -1368,7 +1368,6 @@ void MovePage(Bool is_new_desk)
   char str[100],*sptr;
   static int icon_desk_shown = -1000;
 
-XSynchronize(dpy, 1);
   Wait = 0;
   n1 = Scr.Vx/Scr.MyDisplayWidth;
   m1 = Scr.Vy/Scr.MyDisplayHeight;
@@ -1387,7 +1386,9 @@ XSynchronize(dpy, 1);
 	XLowerWindow(dpy,Desks[i].CPagerWin);
       }
       else
+      {
 	XMoveWindow(dpy, Desks[i].CPagerWin, -1000,-1000);
+      }
     }
   }
   DrawIconGrid(1);
@@ -2115,6 +2116,10 @@ void MoveWindow(XEvent *Event)
   wy = (Scr.Vy + t->y) * (desk_h - m) / Scr.VHeight + m1;
   wx1 = wx + (desk_w + 1) * (NewDesk % Columns);
   wy1 = wy + label_h + (desk_h + label_h + 1) * (NewDesk / Columns);
+  if (LabelsBelow)
+  {
+    wy1 -= label_h;
+  }
 
   XReparentWindow(dpy, t->PagerView, Scr.Pager_w, wx1, wy1);
   XRaiseWindow(dpy,t->PagerView);

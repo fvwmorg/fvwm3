@@ -1915,13 +1915,19 @@ void ProcessNewStyle(F_CMD_ARGS)
 	    val1 = val1 * val1_unit / 100;
 	    val2 = val2 * val2_unit / 100;
 	  }
-	  if (val1 < DEFAULT_MIN_MAX_WINDOW_WIDTH ||
-	      val1 > DEFAULT_MAX_MAX_WINDOW_WIDTH)
+	  if (val1 < DEFAULT_MIN_MAX_WINDOW_WIDTH)
+	  {
+	    val1 = DEFAULT_MIN_MAX_WINDOW_WIDTH;
+	  }
+	  if (val1 > DEFAULT_MAX_MAX_WINDOW_WIDTH || val1 <= 0)
 	  {
 	    val1 = DEFAULT_MAX_MAX_WINDOW_WIDTH;
 	  }
-	  if (val2 < DEFAULT_MIN_MAX_WINDOW_HEIGHT ||
-	      val2 > DEFAULT_MAX_MAX_WINDOW_HEIGHT)
+	  if (val2 < DEFAULT_MIN_MAX_WINDOW_HEIGHT)
+	  {
+	    val2 = DEFAULT_MIN_MAX_WINDOW_HEIGHT;
+	  }
+	  if (val2 > DEFAULT_MAX_MAX_WINDOW_HEIGHT || val2 <= 0)
 	  {
 	    val2 = DEFAULT_MAX_MAX_WINDOW_HEIGHT;
 	  }

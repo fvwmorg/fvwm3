@@ -1,5 +1,12 @@
 2001-02-18  Dominik Vogt  <dominik.vogt@gmx.de>
 
+	* fvwm/update.c (apply_window_updates):
+	Changes in MaxWindowSize style are handles properly for shaded and
+	maximized windows
+
+	* fvwm/style.c (ProcessNewStyle):
+	Small values of MaxWindosSize style are no longer ignored
+
 	* fvwm/fvwm.c (InitVariables):
 	* fvwm/screen.h (ScreenInfo):
 	* fvwm/builtins.c (SetBugOptions):

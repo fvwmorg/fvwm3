@@ -251,8 +251,10 @@ void RedrawButton(button_info *b,int clean)
     if(n<4)
     {
       k=sscanf(&b->action[n][4],"%d%d",&i,&j);
-      if(k==2 && i==0 && j==new_desk)
+      if (k == 2 && i == 0 && j == new_desk)
+      {
 	rev=1;
+      }
     }
   }
 

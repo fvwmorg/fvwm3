@@ -1019,6 +1019,13 @@ void Loop(void)
 	  break;	                /* fall through to ButtonPress */
 
       case ButtonPress:
+	if (CurrentButton)
+	{
+	  b = CurrentButton;
+	  CurrentButton = 0;
+	  RedrawButton(b, 0);
+	  break;
+	}
 	CurrentButton = b =
 	  select_button(UberButton,Event.xbutton.x,Event.xbutton.y);
 
@@ -1044,9 +1051,8 @@ void Loop(void)
 
       case KeyRelease:
       case ButtonRelease:
-	b=select_button(UberButton,Event.xbutton.x,Event.xbutton.y);
+	b = select_button(UberButton,Event.xbutton.x,Event.xbutton.y);
 	act = GetButtonAction(b,Event.xbutton.button);
-
 	if (b && !act && (b->flags & b_Panel))
 	{
 	  HandlePanelPress(b);
@@ -1067,14 +1073,14 @@ void Loop(void)
 	{
 	  if (!act)
 	    act=GetButtonAction(b,0);
-	  if(b && b==CurrentButton && act)
+	  if (b && b == CurrentButton && act)
 	  {
 	    if(strncasecmp(act,"Exec",4)==0)
 	    {
 
 	      /* Look for Exec "identifier", in which case the button
 		 stays down until window "identifier" materializes */
-	      i=4;
+	      i = 4;
 	      while(isspace((unsigned char)act[i]))
 		i++;
 	      if(act[i] == '"')
@@ -1149,10 +1155,10 @@ void Loop(void)
 	  free(act);
 	  act = NULL;
 	}
-	b=CurrentButton;
+	b = CurrentButton;
 	CurrentButton=NULL;
-	if(b)
-	  RedrawButton(b,0);
+	if (b)
+	  RedrawButton(b, 0);
 	break;
 
       case ClientMessage:
