@@ -1,8 +1,64 @@
+2002-09-09  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* fvwm/schedule.c (execute_obj_func):
+	* fvwm/colorset.c (add_to_junk):
+	use new function call interface
+
+	* fvwm/fvwm.h (F_EXEC_ARGS):
+	(F_PASS_EXEC_ARGS):
+	removed now unused macros
+
+	* fvwm/functions.c (CheckActionType):
+	(cf_cleanup):
+	(DeferExecution):
+	(__execute_function):
+	(__run_complex_function_items):
+	(execute_complex_function):
+	rewrote function call interface
+
+	* fvwm/functions.c (__run_complex_function_items):
+	new function split off from execute_complex_function
+
+	* fvwm/externs.h:
+	* fvwm/events.c:
+	removed "Event" global
+
 2002-09-08  Dan Espen  <dane@mk.telcordia.com>
 
 	* fvwm/fvwm.1.in: Language check.
 
 2002-09-08  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* fvwm/functions.c (old_execute_function):
+	removed
+
+	* fvwm/module_interface.c (do_execute_module):
+	don't write module argument anymore; code claimed that writing 0 into
+	*Module prevented WaitForButtonsUp from being called, but that was
+	either a lie or a relic of the past
+
+	* fvwm/fvwm.h (exec_func_args_type):
+	removed type
+	(F_CMD_ARGS):
+	(F_PASS_ARGS):
+	removed *Module argument
+
+	* fvwm/functions.c (__execute_function):
+	new interface
+
+	* fvwm/functions.h (enum):
+	added more function execution falgs
+
+	* fvwm/fvwm.h:
+	add exec_context_t *exc to builtin arguments
+
+	* libs/FEvent.c (fev_copy_last_event):
+	new function
+
+	* fvwm/execcontext.h:
+	* fvwm/execcontext.c:
+	new files introducing the "exec_context_t" structure that shall replace
+	the builtin command interface
 
 	* fvwm/stack.c (__RaiseOrLowerWindow):
 	(RaiseOrLowerWindow):

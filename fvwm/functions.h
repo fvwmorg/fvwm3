@@ -19,19 +19,22 @@
 
 /* ---------------------------- included header files ----------------------- */
 
-/* ---------------------------- global definitions -------------------------- */
+#include "execcontext.h"
 
-/* for exec_flags parameter of ExecuteFunction */
-#define FUNC_DONT_EXPAND_COMMAND 0x01
+/* ---------------------------- global definitions -------------------------- */
 
 /* Bits for the function flag byte. */
 enum
 {
-	FUNC_NEEDS_WINDOW    = 0x01,
-	FUNC_DONT_REPEAT     = 0x02,
-	FUNC_ADD_TO          = 0x04,
-	FUNC_DECOR           = 0x08,
-	FUNC_ALLOW_UNMANAGED = 0x10
+	FUNC_NEEDS_WINDOW        = 0x01,
+	FUNC_DONT_REPEAT         = 0x02,
+	FUNC_ADD_TO              = 0x04,
+	FUNC_DECOR               = 0x08,
+	FUNC_ALLOW_UNMANAGED     = 0x10,
+	/* only to be passed to execute_function() */
+	FUNC_FLAG_IS_UNMANAGED   = 0x20,
+	FUNC_FLAG_SO_SAVE_FW     = 0x40,
+	FUNC_DONT_EXPAND_COMMAND = 0x80
 };
 
 /* ---------------------------- global macros ------------------------------- */
@@ -62,10 +65,7 @@ void find_func_type(
 Bool functions_is_complex_function(
 	const char *function_name);
 void execute_function(
-	exec_func_args_type *efa);
-void old_execute_function(
-	fvwm_cond_func_rc *cond_rc, char *action, FvwmWindow *fw,
-	const XEvent *eventp, unsigned long context, int Module,
-	FUNC_FLAGS_TYPE exec_flags, char *args[]);
+	fvwm_cond_func_rc *cond_rc, const exec_context_t *exc, char *action,
+	FUNC_FLAGS_TYPE exec_flags);
 
 #endif /* FUNCTIONS_H */

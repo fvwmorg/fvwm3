@@ -32,6 +32,7 @@
 #include "libs/fvwmlib.h"
 #include "libs/FScreen.h"
 #include "fvwm.h"
+#include "execcontext.h"
 #include "misc.h"
 #include "screen.h"
 #include "update.h"

@@ -32,6 +32,7 @@
 #include "libs/Picture.h"
 #include "libs/PictureGraphics.h"
 #include "fvwm.h"
+#include "execcontext.h"
 #include "externs.h"
 #include "misc.h"
 #include "screen.h"

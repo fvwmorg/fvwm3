@@ -25,13 +25,18 @@
 
 /* ---------------------------- type definitions ---------------------------- */
 
-typedef XEvent FEvent;
-
 /* ---------------------------- forward declarations ------------------------ */
 
 /* ---------------------------- exported variables (globals) ---------------- */
 
-/* ---------------------------- interface functions ------------------------- */
+/* ---------------------------- interface functions (privileged access) ----- */
+
+#ifdef FEVENT_PRIVILEGED_ACCESS
+void fev_copy_last_event(XEvent *dest);
+XEvent *fev_get_last_event_address(void);
+#endif
+
+/* ---------------------------- interface functions (normal_access) --------- */
 
 /* get the latest event time */
 Time fev_get_evtime(void);
@@ -47,6 +52,9 @@ void *fev_save_event(void);
 
 /* restore an event saved with fev_save_event and free the memory it uses */
 void fev_restore_event(void *ev);
+
+/* fill the event structure *ev with a dummy event of no particular type */
+void fev_make_null_event(XEvent *ev, Display *dpy);
 
 /* ---------------------------- X event replacements ------------------------ */
 
@@ -107,7 +115,7 @@ int FWindowEvent(
 
 /* ---------------------------- disable X symbols --------------------------- */
 
-/* FEVENT_C must only be defined in XEvent.c! */
+/* FEVENT_C must only be defined in FEvent.c! */
 #ifndef FEVENT_C
 #define XGetMotionEvents(a, b, c, d, e) use_FGetMotionEvents
 #define XCheckIfEvent(a, b, c, d) use_FCheckIfEvent

@@ -233,10 +233,6 @@ static int do_execute_module(F_CMD_ARGS, Bool desperate)
 		win = None;
 	}
 
-	/* If we execute a module, don't wait for buttons to come up,
-	 * that way, a pop-up menu could be implemented */
-	*Module = 0;
-
 	action = GetNextToken(action, &cptr);
 	if (!cptr)
 	{

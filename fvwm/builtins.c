@@ -356,6 +356,28 @@ static char *ReadTitleButton(
 	return end;
 }
 
+/* Remove the given decor from all windows */
+static void __remove_window_decors(FvwmDecor *d)
+{
+	FvwmWindow *fw;
+
+	for (fw = Scr.FvwmRoot.next; fw; fw = fw->next)
+	{
+		if (fw->decor == d)
+		{
+			/* remove the extra title height now because we delete
+			 * the current decor before calling ChangeDecor(). */
+			fw->frame_g.height -= fw->decor->title_height;
+			fw->decor = NULL;
+			old_execute_function(
+				NULL, "ChangeDecor Default", fw, eventp,
+				C_WINDOW, *Module, 0, NULL);
+		}
+	}
+
+	return;
+}
+
 static void do_title_style(F_CMD_ARGS, Bool do_add)
 {
 	char *parm;
@@ -2616,22 +2638,7 @@ void CMD_DestroyDecor(F_CMD_ARGS)
 
 		if (!do_recreate)
 		{
-			for (fw2 = Scr.FvwmRoot.next; fw2; fw2 = fw2->next)
-			{
-				if (fw2->decor == found)
-				{
-					/* remove the extra title height now
-					 * because we delete the current decor
-					 * before calling ChangeDecor(). */
-					fw2->frame_g.height -=
-						fw2->decor->title_height;
-					fw2->decor = NULL;
-					old_execute_function(
-						NULL, "ChangeDecor Default",
-						fw2, eventp, C_WINDOW, *Module,
-						0, NULL);
-				}
-			}
+			__remove_window_decors(found);
 		}
 		DestroyFvwmDecor(found);
 		if (do_recreate)

@@ -17,10 +17,12 @@
 /* ---------------------------- included header files ----------------------- */
 
 #define FEVENT_C
+#define FEVENT_PRIVILEGED_ACCESS
 #include "config.h"
 #include <X11/Xlib.h>
 #include "FEvent.h"
 #undef FEVENT_C
+#undef FEVENT_PRIVILEGED_ACCESS
 
 #include <stdio.h>
 
@@ -98,7 +100,21 @@ static void fev_update_last_timestamp(const XEvent *ev)
 	return;
 }
 
-/* ---------------------------- interface functions ------------------------- */
+/* ---------------------------- interface functions (privileged access) ----- */
+
+void fev_copy_last_event(XEvent *dest)
+{
+	*dest = fev_event;
+
+	return;
+}
+
+XEvent *fev_get_last_event_address(void)
+{
+	return &fev_event;
+}
+
+/* ---------------------------- interface functions (normal_access) --------- */
 
 Time fev_get_evtime(void)
 {
@@ -133,6 +149,15 @@ void fev_restore_event(void *ev)
 {
 	fev_event = *(XEvent *)ev;
 	free(ev);
+
+	return;
+}
+
+void fev_make_null_event(XEvent *ev, Display *dpy)
+{
+	memset(ev, 0, sizeof(*ev));
+	ev->xany.serial = fev_event.xany.serial;
+	ev->xany.display = dpy;
 
 	return;
 }

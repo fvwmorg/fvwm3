@@ -166,31 +166,23 @@ static int execute_obj_func(void *object, void *args)
 		if (obj->command != NULL)
 		{
 			/* execute the command */
-			exec_func_args_type efa;
-			XEvent ev;
-			FvwmWindow *fw;
+			fvwm_cond_func_rc cond_rc;
+			const exec_context_t *exc;
+			exec_context_changes_t ecc;
+			exec_context_change_mask_t mask = ECC_WCONTEXT;
 
-			obj->flags.is_scheduled_for_destruction = 1;
-			memset(&efa, 0, sizeof(efa));
-			memset(&ev, 0, sizeof(ev));
-			efa.eventp = &ev;
-			efa.fw = NULL;
-			efa.action = obj->command;
-			efa.args = NULL;
-			if (XFindContext(dpy, obj->window, FvwmContext,
-					 (caddr_t *)&fw) == XCNOENT)
+			ecc.w.wcontext = C_ROOT;
+			if (XFindContext(
+				    dpy, obj->window, FvwmContext,
+				    (caddr_t *)&ecc.w.fw) != XCNOENT)
 			{
-				fw = NULL;
-				efa.context = C_ROOT;
+				ecc.w.wcontext = C_WINDOW;
+				mask |= ECC_FW;
 			}
-			else
-			{
-				efa.context = C_WINDOW;
-			}
-			efa.module = -1;
-			efa.flags.exec = 0;
-			execute_function(&efa);
+			exc = exc_create_context(&ecc, mask);
+			execute_function(&cond_rc, exc, obj->command, 0);
 			free(obj->command);
+			exc_destroy_context(exc);
 		}
 		free(obj);
 		XFlush(dpy);
@@ -204,13 +196,15 @@ static int execute_obj_func(void *object, void *args)
 void squeue_execute(void)
 {
 	Time current_time;
+	void *p[2];
 
 	if (FQUEUE_IS_EMPTY(&sq))
 	{
 		return;
 	}
+	p[0] = &current_time;
 	current_time = get_server_time();
-	fqueue_remove_or_operate_all(&sq, execute_obj_func, &current_time);
+	fqueue_remove_or_operate_all(&sq, execute_obj_func, p);
 
 	return;
 }

@@ -85,12 +85,10 @@
  */
 
 /* Macro for args passed to fvwm commands... */
-#define F_CMD_ARGS fvwm_cond_func_rc *cond_rc, Window w, \
-	FvwmWindow *fw, unsigned long context, char *action, int *Module
-#define F_PASS_ARGS cond_rc, w, fw, context, action, Module
-#define F_EXEC_ARGS fvwm_cond_func_rc *cond_rc, char *action, \
-	FvwmWindow *fw, const XEvent *eventp, unsigned long context, int Module
-#define F_PASS_EXEC_ARGS cond_rc, action, fw, eventp, context, *Module
+#define F_CMD_ARGS fvwm_cond_func_rc *cond_rc, \
+	const exec_context_t *exc, Window w, FvwmWindow *fw, \
+	unsigned long context, char *action
+#define F_PASS_ARGS cond_rc, exc, w, fw, context, action
 #define FUNC_FLAGS_TYPE unsigned char
 
 /* access macros */
@@ -107,6 +105,8 @@
 #define FW_W_TRANSIENTFOR(fw) ((fw)->wins.transientfor)
 
 /* ---------------------------- forward declarations ------------------------ */
+
+struct exec_context_t;
 
 #ifdef USEDECOR
 /* definition in screen.h */
@@ -183,32 +183,6 @@ typedef enum
 	COND_RC_NO_MATCH = 0,
 	COND_RC_OK = 1
 } fvwm_cond_func_rc;
-
-typedef struct
-{
-	/* return code for conditional commands only */
-	fvwm_cond_func_rc *cond_rc;
-	/* pointer to the event that caused the function */
-	const XEvent *eventp;
-	/* the fvwm window structure */
-	struct FvwmWindow *fw;
-	/* the action to execute */
-	char *action;
-	char **args;
-	/* the context in which the button was pressed */
-	unsigned long context;
-	int module;
-	/* If fw is NULL, the is_window_unmanaged flag may be set along
-	 * with this field to indicate the function should run with an
-	 * unmanaged window. */
-	Window win;
-	struct
-	{
-		FUNC_FLAGS_TYPE exec;
-		unsigned do_save_tmpwin : 1;
-		unsigned is_window_unmanaged : 1;
-	} flags;
-} exec_func_args_type;
 
 /*
   For 1 style statement, there can be any number of IconBoxes.

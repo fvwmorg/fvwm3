@@ -150,7 +150,6 @@ static PFEH EventHandlerJumpTable[LASTEvent];
 
 /* ---------------------------- exported variables (globals) ---------------- */
 
-XEvent Event;                           /* the current event */
 FvwmWindow *Fw = NULL;                  /* the current fvwm window */
 int last_event_type = 0;
 Window PressedW = None;

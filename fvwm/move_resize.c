@@ -38,6 +38,7 @@
 #include "fvwm.h"
 #include "externs.h"
 #include "cursor.h"
+#include "execcontext.h"
 #include "commands.h"
 #include "misc.h"
 #include "screen.h"

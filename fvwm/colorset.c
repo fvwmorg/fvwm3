@@ -28,21 +28,22 @@
 
 #include "libs/fvwmlib.h"
 #include "libs/PictureBase.h"
-#include "colorset.h"
-#include "externs.h"
-#include "fvwm.h"
-#include "cursor.h"
-#include "functions.h"
-#include "misc.h"
-#include "screen.h"
-#include "module_interface.h"
-#include "commands.h"
 #include "libs/FShape.h"
 #include "libs/Picture.h"
 #include "libs/PictureUtils.h"
 #include "libs/PictureGraphics.h"
 #include "libs/FRenderInit.h"
 #include "libs/Strings.h"
+#include "colorset.h"
+#include "externs.h"
+#include "fvwm.h"
+#include "cursor.h"
+#include "functions.h"
+#include "commands.h"
+#include "misc.h"
+#include "screen.h"
+#include "module_interface.h"
+#include "execcontext.h"
 
 /* ---------------------------- local definitions --------------------------- */
 
@@ -161,8 +162,12 @@ static void add_to_junk(Pixmap pixmap)
 	junk->pixmap = pixmap;
 	if (!cleanup_scheduled)
 	{
+		const exec_context_t *exc;
+
+		exc = exc_create_null_context();
 		CMD_Schedule(
-			NULL, 0, NULL, 0, "3000 CleanupColorsets", NULL);
+			NULL, exc, 0, NULL, 0, "3000 CleanupColorsets");
+		exc_destroy_context(exc);
 		cleanup_scheduled = True;
 	}
 
@@ -1561,4 +1566,3 @@ void CMD_ReadWriteColors(F_CMD_ARGS)
 
 	return;
 }
-
