@@ -1,3 +1,10 @@
+1999-01-20  Paul D. Smith  <psmith@gnu.org>
+
+	* INSTALL.fvwm: Document new install-strip issue and workaround.
+
+	* Makefile.am (AUTOMAKE_OPTIONS): Require automake 1.4.  Needed
+	now that the VERSION and PACKAGE undefs are removed.
+
 Wed Jan 20 01:13:38 1999  Steve Robbins  <steve@nyongwa.montreal.qc.ca>
 
 	* INSTALL.fvwm: Removed doubled paragraph.

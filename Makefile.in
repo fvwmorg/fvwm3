@@ -83,7 +83,7 @@ rplay_LIBS = @rplay_LIBS@
 xpm_CFLAGS = @xpm_CFLAGS@
 xpm_LIBS = @xpm_LIBS@
 
-AUTOMAKE_OPTIONS = 1.3b
+AUTOMAKE_OPTIONS = 1.4
 
 SUBDIRS = libs fvwm modules @EXTRA_MODULES@ utils 	docs icons sample.fvwmrc tests
 

@@ -43,6 +43,13 @@ Thus the default locations are: /usr/local/bin,
 /usr/local/libexec/fvwm2/VERSION, and /usr/local/etc for the FVWM
 binary, modules, and system.fvwm2rc, respectively.
 
+Note that by default, none of the executables are stripped when they're
+installed.  If you'd like them to be, run `make install-strip' instead
+of `make install'.  Note that due to a bug in the current versions of
+autoconf/automake this will fail in some of the modules directories
+trying to strip shell scripts.  We recommend that you run `make -k
+install-strip', which will continue past the failures.
+
 
 Configuration File
 ==================
