@@ -224,6 +224,8 @@ const func_type func_table[] =
 	CMD_ENT("resizemovemaximize", CMD_ResizeMoveMaximize,
 		F_RESIZEMOVE_MAXIMIZE, FUNC_NEEDS_WINDOW, CRS_RESIZE,
 		ButtonPress),
+	CMD_ENT("restacktransients", CMD_RestackTransients, F_RESTACKTRANSIENTS,
+		FUNC_NEEDS_WINDOW, CRS_SELECT, ButtonRelease),
 	CMD_ENT("restart", CMD_Restart, F_RESTART, 0, 0, 0),
 	CMD_ENT("savequitsession", CMD_SaveQuitSession, F_SAVE_QUIT_SESSION,
 		0, 0, 0),

@@ -1,5 +1,25 @@
 2002-10-31  Dominik Vogt  <dominik.vogt@gmx.de>
 
+	* fvwm/commands.h:
+	* fvwm/functable.c:
+	* fvwm/stack.c (enum):
+	(position_new_window_in_stack_ring):
+	(new_layer):
+	(must_move_transients):
+	(restack_windows):
+	(__restack_window):
+	(__raise_lower_recursion):
+	(__raise_or_lower_window):
+	(raise_or_lower_window):
+	(collect_transients_recursive):
+	(__is_restack_transients_needed):
+	(RestackWindow):
+	(CMD_RestackTransients):
+	new command RestackTransients which works like Raise and Lower but does
+	not restack windows that are not transient
+	renamed some functions
+	general cleanup
+
 	* fvwm/fvwm.1.in:
 	corrected cursor movement key bindings
 

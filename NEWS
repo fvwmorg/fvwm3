@@ -7,6 +7,8 @@ Changes in developement release 2.5.5 (not released yet)
 
 * New experimental module FvwmProxy.
 
+* New command RestackTransients.
+
 -------------------------------------------------------------------
 
 Changes in alpha release 2.5.4 (20-Oct-2002)

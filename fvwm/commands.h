@@ -115,6 +115,7 @@ enum
 	F_RECAPTURE_WINDOW,
 	F_REFRESH,
 	F_REPEAT,
+	F_RESTACKTRANSIENTS,
 	F_RESTART,
 	F_SAVE_SESSION,
 	F_SAVE_QUIT_SESSION,
@@ -334,6 +335,7 @@ void CMD_Resize(F_CMD_ARGS);
 void CMD_ResizeMaximize(F_CMD_ARGS);
 void CMD_ResizeMove(F_CMD_ARGS);
 void CMD_ResizeMoveMaximize(F_CMD_ARGS);
+void CMD_RestackTransients(F_CMD_ARGS);
 void CMD_Restart(F_CMD_ARGS);
 void CMD_SaveQuitSession(F_CMD_ARGS);
 void CMD_SaveSession(F_CMD_ARGS);
