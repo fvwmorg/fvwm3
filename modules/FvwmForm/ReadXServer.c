@@ -103,6 +103,9 @@ void ReadXServer ()
         break;
 #endif
       case Expose:
+	while (XCheckTypedWindowEvent(dpy, CF.frame, Expose, &event));
+	if (event.xexpose.count != 0)
+	  break;
 	RedrawFrame();
 	if (CF.grab_server && !CF.server_grabbed) {
 	  if (GrabSuccess ==
@@ -376,7 +379,8 @@ void ReadXServer ()
       if (event.xany.window == item->header.win) {
 	switch (event.type) {
 	case Expose:
-	  RedrawItem(item, 0);
+	  if (event.xexpose.count == 0)
+	    RedrawItem(item, 0);
 	  break;
 	case ButtonPress:
 	  if (item->type == I_INPUT) {

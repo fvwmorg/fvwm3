@@ -617,6 +617,7 @@ static void ct_Message(char *cp)
   AddToLine(item);
   CF.last_error = item;                 /* save location of message item */
 }
+
 /* allocate colors and fonts needed */
 static void CheckAlloc(Item *this_item,DrawTable *dt)
 {
@@ -1343,6 +1344,20 @@ void RedrawFrame ()
 {
   Item *item;
 
+#ifdef HAVE_XFT
+  Bool clear = False;
+  item = root_item_ptr;
+  while(item != 0 && !clear)
+  {
+    if ((item->type == I_TEXT || item->type == I_CHOICE) &&
+	item->header.dt_ptr->dt_Ffont->xftfont != NULL)
+      clear = True;
+    item = item->header.next;
+  }
+  if (clear)
+    XClearWindow(dpy, CF.frame);
+#endif
+
   for (item = root_item_ptr; item != 0;
        item = item->header.next) {      /* all items */
     switch (item->type) {
@@ -1448,11 +1463,12 @@ void RedrawItem (Item *item, int click)
     len = item->input.n - item->input.left;
     XSetForeground(dpy, item->header.dt_ptr->dt_item_GC,
                    item->header.dt_ptr->dt_colors[c_item_fg]);
+    item->header.dt_ptr->dt_Fstr->win = item->header.win;
+    item->header.dt_ptr->dt_Fstr->gc  = item->header.dt_ptr->dt_item_GC;
     if (len > item->input.size)
       len = item->input.size;
     else
-      item->header.dt_ptr->dt_Fstr->win = item->header.win;
-      item->header.dt_ptr->dt_Fstr->gc  = item->header.dt_ptr->dt_item_GC;
+    {
       item->header.dt_ptr->dt_Fstr->str = item->input.blanks;
       item->header.dt_ptr->dt_Fstr->x   = BOX_SPC + TEXT_SPC
                   + item->header.dt_ptr->dt_Ffont->max_char_width
@@ -1463,8 +1479,7 @@ void RedrawItem (Item *item, int click)
       FlocaleDrawString(dpy,
                         item->header.dt_ptr->dt_Ffont,
                         item->header.dt_ptr->dt_Fstr, FWS_HAVE_LENGTH);
-    item->header.dt_ptr->dt_Fstr->win = item->header.win;
-    item->header.dt_ptr->dt_Fstr->gc  = item->header.dt_ptr->dt_item_GC;
+    }
     item->header.dt_ptr->dt_Fstr->str = item->input.value;
     item->header.dt_ptr->dt_Fstr->x   = BOX_SPC + TEXT_SPC;
     item->header.dt_ptr->dt_Fstr->y   = BOX_SPC + TEXT_SPC
@@ -1579,6 +1594,15 @@ void RedrawItem (Item *item, int click)
     item->header.dt_ptr->dt_Fstr->y   = BOX_SPC + TEXT_SPC
       + item->header.dt_ptr->dt_Ffont->ascent;
     item->header.dt_ptr->dt_Fstr->len = item->button.len;
+#ifdef HAVE_XFT
+    if (item->header.dt_ptr->dt_Ffont->xftfont != NULL)
+      XClearArea(dpy, item->header.win,
+		 BOX_SPC + TEXT_SPC - 1, BOX_SPC,
+		 item->header.size_x
+		 - (2 * BOX_SPC) - 2 - TEXT_SPC,
+		 (item->header.size_y - 1)
+		 - 2 * BOX_SPC + 1, False);
+#endif
     FlocaleDrawString(dpy,
                       item->header.dt_ptr->dt_Ffont,
                       item->header.dt_ptr->dt_Fstr, FWS_HAVE_LENGTH);
@@ -1798,6 +1822,7 @@ static void OpenWindows ()
        item = item->header.next) {      /* all items */
     switch (item->type) {
     case I_INPUT:
+      myfprintf((stderr,"Checking alloc during OpenWindow on input\n"));
       CheckAlloc(item,item->header.dt_ptr); /* alloc colors and fonts needed */
       item->header.win =
 	XCreateSimpleWindow(dpy, CF.frame,
@@ -1817,6 +1842,7 @@ static void OpenWindows ()
       }
       break;
     case I_CHOICE:
+      myfprintf((stderr,"Checking alloc during Openwindow on choice\n"));
       CheckAlloc(item,item->header.dt_ptr); /* alloc colors and fonts needed */
       item->header.win =
 	XCreateSimpleWindow(dpy, CF.frame,
@@ -1861,6 +1887,7 @@ static void OpenWindows ()
   Restart();
   if (colorset >= 0)
   {
+    CheckAlloc(root_item_ptr,root_item_ptr->header.dt_ptr);
     SetWindowBackground(dpy, CF.frame, CF.max_width, CF.total_height,
                         &Colorset[(colorset)], Pdepth,
                         root_item_ptr->header.dt_ptr->dt_GC, True);
@@ -2046,6 +2073,7 @@ static void am_Stop(char *cp)
 static void MainLoop (void)
 {
   fd_set fds;
+  fd_set_size_t fd_width = GetFdWidth();
 
   while ( !isTerminated ) {
     FD_ZERO(&fds);
@@ -2053,7 +2081,7 @@ static void MainLoop (void)
     FD_SET(fd_x, &fds);
 
     XFlush(dpy);
-    if (fvwmSelect(32, &fds, NULL, NULL, NULL) > 0) {
+    if (fvwmSelect(fd_width, &fds, NULL, NULL, NULL) > 0) {
       if (FD_ISSET(Channel[1], &fds))
 	ReadFvwm();
       if (FD_ISSET(fd_x, &fds))

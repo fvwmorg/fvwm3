@@ -290,7 +290,14 @@ void RedrawButton(button_info *b,int clean)
       }
     }
   }
-
+#ifdef HAVE_XFT
+  if ((b->flags&b_Title) && Ffont && Ffont->xftfont != NULL)
+  {
+    XClearArea(Dpy, MyWindow, ix, iy, iw, ih, False);
+    clean = 1;
+  }
+#endif
+  
   RelieveButton(MyWindow,f,x,y,BW,BH,hc,sc,rev ^ rev_xor);
 
   /* ----------------------------------------------------------------------- */

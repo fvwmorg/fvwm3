@@ -720,6 +720,11 @@ void RedrawWindow(void)
   FwinString->win = main_win;
   FwinString->gc = gc;
 
+#if HAVE_XFT
+  if (Ffont->xftfont != NULL)
+    XClearWindow(dpy, main_win);
+#endif
+
   while(cur != NULL)
     {
       /* first column */

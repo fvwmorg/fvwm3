@@ -407,6 +407,13 @@ void DoButton(Button *button, int x, int y, int w, int h, Bool clear_bg)
 
   Fontheight=FButtonFont->height;
 
+#ifdef HAVE_XFT
+  if (Ffont->xftfont != NULL)
+  {
+    clear_bg = True;
+  }
+#endif
+
   /* handle transparency by clearing button, otherwise paint with background */
   if (clear_bg) {
     if (colorset[set] >= 0 && Colorset[colorset[set]].pixmap == ParentRelative)

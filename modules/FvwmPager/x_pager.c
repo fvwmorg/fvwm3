@@ -1441,6 +1441,10 @@ void DrawGrid(int desk, int erase)
       XDrawLine(dpy,Desks[desk].w,Desks[desk].DashedGC,x1,y1,x2,y1);
     y += Scr.MyDisplayHeight;
   }
+#ifdef HAVE_XFT
+  if (Ffont->xftfont != NULL)
+    erase = True;
+#endif
   if(((Scr.CurrentDesk - desk1) == desk) && !ShapeLabels)
   {
     if(uselabel)
@@ -2336,6 +2340,10 @@ static void do_label_window(PagerWindow *t, Window w)
   t->window_label = GetBalloonLabel(t, WindowLabelFormat);
   if (w != None)
   {
+#ifdef HAVE_XFT
+    if (FwindowFont != NULL && FwindowFont->xftfont != NULL)
+      XClearWindow(dpy, w);
+#endif
     FwinString->str = t->window_label;
     FwinString->win = w;
     FwinString->gc = Scr.NormalGC;

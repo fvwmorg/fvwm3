@@ -18,11 +18,18 @@
 
 #include "config.h"
 
-#ifdef X_LOCALE
 #include <X11/Xlocale.h>
+
+#ifdef HAVE_XFT
+#define Picture XRenderPicture
+#include <X11/Xft/Xft.h>
+#undef Picture
+#define Picture Picture
+#define XFT_CODE(x) x
 #else
-#include <locale.h>
+#define XFT_CODE(x)
 #endif
+
 
 #ifdef MULTIBYTE
 
@@ -84,6 +91,10 @@ typedef struct flocalefont
 #ifdef MULTIBYTE
   XFontSet fontset;		/* font set */
 #endif
+#ifdef HAVE_XFT
+  XftFont *xftfont;
+  Bool utf8;
+#endif
   int height;			/* height of the font: ascent + descent */
   int ascent;
   int descent;
@@ -93,26 +104,33 @@ typedef struct flocalefont
 
 /*
  * load a FlocaleFont (create it or load it from a cache)
- * fontname: a "," separated list of XFLD font names
+ * fontname: a ";" sperated list of "," separated list of XFLD font names or
+ * either "xft:" followed by a  Xft font name. Examples: 
+ * "xft:Verdana:Bold:pixelsize=14:rgba=rgb"
+ * "xft:Verdana:size=12;-adobe-courier-medium-r-normal--14-*,fixed"
  * module: name of the fvwm module for errors msg
- * If fontname is NULL the "default font" is returned. The following logic
- * is used:
+ * If fontname is NULL the "default font" is loaded (2,3,4).
+ * The following logic is used:
  * 0) If fontname has been has been already loaded the cache is used
- * 1) - If MULTIBYTE and the locale is supported (and fontname is not NULL)
- *      fontname is loaded using XCreateFontSet (or the cache)
- *    - If !MULTIBYTE fontname is loaded using XLoadQueryFont (the first
- *      loadable font in the fontname "," separated list is load)
- * 2) If 1) fail with MULTIBYTE fallback into 1) !MULTIBYTE
- * 3) If 1) and 2) fail:
- *    - If MULTIBYTE try to load MB_FALLBACK_FONT
- *    - If !MULTIBYTE try to load FALLBACK_FONT
- * 4) If MULTIBYTE and 1), 2) and 3) fail fall back to 3) !MULTIBYTE
- * 5) If everything fail the function return NULL.
+ * 1) We try to load each element "fn" of the ";" seprated list until success
+ *    as follows:
+ *    a - if fn begin with "xft:", then if HAVE_XFT fn is loaded as an xft
+ *        font; if !HAVE_XFT fn is skipped (ignored)
+ *    b - If MULTIBYTE and the locale is supported fn is loaded using
+ *        XCreateFontSet. If this fail fallback into 1-c)
+ *    c - If !MULTIBYTE (or the locale is not supported or 1-b) fail) fn is
+ *        loaded using XLoadQueryFont (the first loadable font in the fn ","
+ *        separated list is load)
+ * 2) If 0) and 1) fail:
+ *    - If MULTIBYTE try to load MB_FALLBACK_FONT with XCreateFontSet
+ *    - If !MULTIBYTE try to load FALLBACK_FONT with XLoadQueryFont
+ * 3) If MULTIBYTE and 0), 1) and 2) fail fall back to 2) !MULTIBYTE
+ * 4) If everything fail the function return NULL.
  *
- * If font loading succed. Either the returned FlocaleFont struct has its
- * font member set to NULL and its fontset menber != None or  its font member
- * !=NULL and its fontset menber set to None. The caller should use this to
- * set appropriately the gc member of the FlocaleWinString struct
+ * If font loading succed. Only one of the font, fontset, xftfont member of the
+ * FlocaleFont structure is not NULL/None. The caller should use this to
+ * set appropriately the gc member of the FlocaleWinString struct (the fid
+ * gc member should be set only if font is not NULL).
  *
  * In the MULTIBYTE case, if the locale is not supported by the Xlib,
  * font loading is done as if !MULTIBYTE 
@@ -190,4 +208,17 @@ void FlocaleFreeNameProperty(MULTIBYTE_ARG(char ***ptext_list) char **ptext);
 Bool FlocaleTextListToTextProperty(Display *dpy, char **list, int count,
 				   XICCEncodingStyle style,
 				   XTextProperty *text_prop_return);
+
+
+/* ***************************************************************************
+ * Xft stuff
+ * ***************************************************************************/
+
+#ifdef HAVE_XFT
+FlocaleFont *get_FlocaleXftFont(Display *dpy, char *fontname);
+void FftDrawString(Display *dpy, Window win, FlocaleFont *flf, GC gc,
+		   int x, int y, char *str, int len);
+int FftTextWidth(FlocaleFont *flf, char *str, int len);
+#endif
+
 #endif /* Locale_H */

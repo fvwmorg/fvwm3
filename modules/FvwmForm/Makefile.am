@@ -44,9 +44,10 @@ config_DATA =        \
 ## there are sometimes dependencies through functions in libfvwm
 ## so we might as well link against libXpm, if present.
 LDADD = -L$(top_builddir)/libs $(X_LIBS) -lfvwm $(xpm_LIBS)  \
-	$(X_PRE_LIBS) $(Xinerama_LIBS) -lXext -lX11 $(X_EXTRA_LIBS) -lm
+	$(X_PRE_LIBS) $(Xinerama_LIBS) -lXext -lX11 $(X_EXTRA_LIBS) \
+	$(Xft_LIBS) -lm $(FT2_LIBS)
 
-INCLUDES = -I$(top_srcdir) $(X_CFLAGS) $(xpm_CFLAGS)
+INCLUDES = -I$(top_srcdir) $(X_CFLAGS) $(xpm_CFLAGS) $(FT2_CFLAGS)
 
 FvwmForm-Setup: FvwmForm-Setup.in Makefile
 	rm -f $@

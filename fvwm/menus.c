@@ -4022,6 +4022,7 @@ static void paint_item(MenuRoot *mr, MenuItem *mi, FvwmWindow *fw,
   GC ShadowGC, ReliefGC, currentGC;
   short relief_thickness = MST_RELIEF_THICKNESS(mr);
   Bool is_item_selected;
+  Bool xft_redraw = False;
   int i;
   int sx1;
   int sx2;
@@ -4069,6 +4070,10 @@ static void paint_item(MenuRoot *mr, MenuItem *mi, FvwmWindow *fw,
   /***************************************************************
    * Hilight the item.
    ***************************************************************/
+#ifdef HAVE_XFT
+  if (MST_PSTDFONT(mr)->xftfont != NULL)
+    xft_redraw = True;
+#endif
 
   /* Hilight or clear the background. */
   if (is_item_selected && MST_DO_HILIGHT(mr))
@@ -4084,9 +4089,10 @@ static void paint_item(MenuRoot *mr, MenuItem *mi, FvwmWindow *fw,
 		     y_height - relief_thickness);
     }
   }
-  else if (MI_WAS_DESELECTED(mi) &&
-	   (relief_thickness > 0 || MST_DO_HILIGHT(mr)) &&
-	   (MST_FACE(mr).type != GradientMenu || MST_HAS_MENU_CSET(mr)))
+  else if (xft_redraw ||
+	   (MI_WAS_DESELECTED(mi) &&
+	    (relief_thickness > 0 || MST_DO_HILIGHT(mr)) &&
+	    (MST_FACE(mr).type != GradientMenu || MST_HAS_MENU_CSET(mr))))
   {
     int d = 0;
     if (MI_PREV_ITEM(mi) && MR_SELECTED_ITEM(mr) == MI_PREV_ITEM(mi))

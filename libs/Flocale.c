@@ -167,6 +167,7 @@ FlocaleFont *get_FlocaleFontSet(Display *dpy, char *fontname, char *module)
   flf->count = 1;
   flf->fontset = fontset;
   flf->font = NULL;
+  XFT_CODE(flf->xftfont = NULL);
   fset_extents = XExtentsOfFontSet(fontset);
   flf->height = fset_extents->max_logical_extent.height;
   flf->ascent = - fset_extents->max_logical_extent.y;
@@ -204,6 +205,7 @@ FlocaleFont *get_FlocaleFont(Display *dpy, char *fontname)
   flf = (FlocaleFont *)safemalloc(sizeof(FlocaleFont));
   flf->count = 1;
   MULTIBYTE_CODE(flf->fontset = None);
+  XFT_CODE(flf->xftfont = NULL);
   flf->font = font;
   flf->height = flf->font->ascent + flf->font->descent;
   flf->ascent = flf->font->ascent;
@@ -213,12 +215,22 @@ FlocaleFont *get_FlocaleFont(Display *dpy, char *fontname)
 }
 
 static
-FlocaleFont *get_FlocaleFontOrFontSet(Display *dpy, char *fontname, char *module)
+FlocaleFont *get_FlocaleFontOrFontSet(
+	       Display *dpy, char *fontname, char *fullname, char *module)
 {
   FlocaleFont *flf = NULL;
 
+  if (fontname && strlen(fontname) > 4 && strncasecmp("xft:", fontname, 4) == 0)
+  {
+#ifdef HAVE_XFT
+    flf = get_FlocaleXftFont(dpy, fontname+4);
+#endif
+    if (flf)
+      CopyString(&flf->name, fullname);
+    return flf;
+  }
 #ifdef MULTIBYTE
-  if (Flocale != NULL && fontname)
+  if (flf == NULL && Flocale != NULL && fontname)
   {
     flf = get_FlocaleFontSet(dpy, fontname, module);
   }
@@ -229,51 +241,36 @@ FlocaleFont *get_FlocaleFontOrFontSet(Display *dpy, char *fontname, char *module
   }
   if (flf && fontname)
   {
-    if (StrEquals(fontname,MB_FALLBACK_FONT))
+    if (StrEquals(fullname,MB_FALLBACK_FONT))
       flf->name = MB_FALLBACK_FONT;
-    else if (StrEquals(fontname,FALLBACK_FONT))
+    else if (StrEquals(fullname,FALLBACK_FONT))
       flf->name = FALLBACK_FONT;
     else
-      CopyString(&flf->name, fontname);
+      CopyString(&flf->name, fullname);
     return flf;
   }
-  if (fontname)
-  {
-    fprintf(stderr,"[%s][FlocaleGetFont]: "
-	    "WARNING -- can't get font '%s', try to load default font:\n",
-	    (module)? module:"FVWM", fontname);
-  }
-#ifdef MULTIBYTE
-  if (Flocale != NULL)
-  {
-    if (fontname)
-      fprintf(stderr,"\t %s\n", MB_FALLBACK_FONT);
-    if ((flf = get_FlocaleFontSet(dpy, MB_FALLBACK_FONT, module)) != NULL)
-    {
-      flf->name = MB_FALLBACK_FONT;
-      return flf;
-    }
-  }
-#endif
-  if (fontname)
-    fprintf(stderr,"\t %s\n", FALLBACK_FONT);
-  if ((flf = get_FlocaleFont(dpy, FALLBACK_FONT)) != NULL)
-  {
-    flf->name = FALLBACK_FONT;
-    return flf;
-  }
-  fprintf(stderr,"[%s][FlocaleLoadFont]: ERROR -- can't get font\n",
-	  (module)? module:"FVWM");
-
   return NULL;
 }
 
 FlocaleFont *FlocaleLoadFont(Display *dpy, char *fontname, char *module)
 {
   FlocaleFont *flf = FlocaleFontList;
+  Bool ask_default = False;
+  char *t;
+  char *str,*fn = NULL;
 
-  if (fontname == NULL)
+  /* removing quoting for modules */
+  if (fontname && (t = strchr("\"'`", *fontname)))
   {
+    char c = *t;
+    fontname++;
+    if (fontname[strlen(fontname)-1] == c)
+      fontname[strlen(fontname)-1] = 0;
+  }
+
+  if (fontname == NULL || *fontname == 0)
+  {
+    ask_default = True;
 #ifdef MULTIBYTE
     fontname = MB_FALLBACK_FONT;
 #else
@@ -297,14 +294,81 @@ FlocaleFont *FlocaleLoadFont(Display *dpy, char *fontname, char *module)
     flf = flf->next;
   }
 
-  /* not cached load the font */
-  flf = get_FlocaleFontOrFontSet(dpy, fontname, module);
+  /* not cached load the font as a ; sperated list */
+  str = GetQuotedString(fontname, &fn, ";", NULL, NULL, NULL);
+  while(!flf && (fn && *fn))
+  {
+    flf = get_FlocaleFontOrFontSet(dpy, fn, fontname, module);
+    if (fn != NULL)
+    {
+      free(fn);
+      fn = NULL;
+    }
+    if (!flf)
+      str = GetQuotedString(str, &fn, ";", NULL, NULL, NULL);
+  }
+  if (fn != NULL)
+    free(fn);
+
+  if (flf == NULL)
+  {
+    /* loading fail try default font */
+    if (!ask_default)
+    {
+      fprintf(stderr,"[%s][FlocaleGetFont]: "
+	      "WARNING -- can't get font '%s', try to load default font:\n",
+	      (module)? module:"FVWM", fontname);
+    }
+    else
+    {
+      /* we already try default fonts: try again? yes */
+    }
+#ifdef MULTIBYTE
+    if (Flocale != NULL)
+    {
+      if (!ask_default)
+	fprintf(stderr,"\t %s\n", MB_FALLBACK_FONT);
+      if ((flf = get_FlocaleFontSet(dpy, MB_FALLBACK_FONT, module)) != NULL)
+      {
+	flf->name = MB_FALLBACK_FONT;
+      }
+    }
+#endif
+    if (flf == NULL)
+    {
+      if (!ask_default)
+	fprintf(stderr,"\t %s\n", FALLBACK_FONT);
+      if ((flf = get_FlocaleFont(dpy, FALLBACK_FONT)) != NULL)
+      {
+	flf->name = FALLBACK_FONT;
+      }
+      else
+      {
+	if (!ask_default)
+	{
+	  fprintf(stderr,"[%s][FlocaleLoadFont]: ERROR -- can't get font\n",
+		  (module)? module:"FVWM");
+	}
+	else
+	{
+	  fprintf(stderr,
+		  "[%s][FlocaleLoadFont]: ERROR -- can't get default font:\n",
+		  (module)? module:"FVWM");
+#ifdef MULTIBYTE
+	  fprintf(stderr,"\t %s\n", MB_FALLBACK_FONT);
+#endif
+	  fprintf(stderr,"\t %s\n", FALLBACK_FONT);
+	}
+      }
+    }
+  }
 
   if (flf != NULL)
   {
     flf->next = FlocaleFontList;
     FlocaleFontList = flf;
   }
+
   return flf;
 }
 
@@ -325,6 +389,12 @@ void FlocaleUnloadFont(Display *dpy, FlocaleFont *flf)
   {
     free(flf->name);
   }
+#ifdef HAVE_XFT
+  if (flf->xftfont != NULL)
+  {
+    XftFontClose (dpy, flf->xftfont);
+  }
+#endif
 #ifdef MULTIBYTE
   if (flf->fontset != NULL)
   {
@@ -369,6 +439,12 @@ void FlocaleDrawString(Display *dpy, FlocaleFont *flf, FlocaleWinString *fstring
     len = strlen(fstring->str);
   }
 
+#ifdef HAVE_XFT
+  if (flf->xftfont != NULL)
+    FftDrawString(dpy, fstring->win, flf, fstring->gc,
+		  fstring->x, fstring->y, fstring->str, len);
+  else
+#endif
 #ifdef MULTIBYTE
   if (flf->fontset != None)
     XmbDrawString(dpy, fstring->win, flf->fontset,
@@ -383,8 +459,14 @@ void FlocaleDrawString(Display *dpy, FlocaleFont *flf, FlocaleWinString *fstring
 
 int FlocaleTextWidth(FlocaleFont *flf, char *str, int sl)
 {
-  if (!str)
+  if (!str || sl < 1)
     return 0;
+
+#ifdef HAVE_XFT
+  if (flf->xftfont != NULL)
+    return FftTextWidth(flf, str, sl);
+  else
+#endif
 #ifdef MULTIBYTE
   if (flf->fontset != None)
     return XmbTextEscapement(flf->fontset, str, sl);

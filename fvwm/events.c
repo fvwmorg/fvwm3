@@ -850,10 +850,19 @@ void HandleExpose(void)
 	{
 		draw_parts = DRAW_BUTTONS;
 	}
+#ifdef HAVE_XFT
+	if (Tmp_win->title_font && Tmp_win->title_font->xftfont != NULL &&
+	    draw_parts == DRAW_TITLE)
+	{
+	  draw_clipped_decorations(
+		Tmp_win, draw_parts, (Scr.Hilite == Tmp_win), True,
+		Event.xany.window, NULL, CLEAR_ALL);
+	  return;
+	}
+#endif
 	draw_clipped_decorations(
 		Tmp_win, draw_parts, (Scr.Hilite == Tmp_win), True,
 		Event.xany.window, &r, CLEAR_ALL);
-
 	return;
 }
 

@@ -390,12 +390,17 @@ void CreateMailTipWindow()
 
 void RedrawTipWindow(void)
 {
+  /* FIXME: I am sure that we redraw to often */
   if (Tip.text) {
     FwinString->win = Tip.win;
     FwinString->gc = tipsgc;
     FwinString->str = Tip.text;
     FwinString->x = 3;
     FwinString->y = Tip.th-4;
+#ifdef HAVE_XFT
+    if (FStatusFont->xftfont != NULL)
+      XClearArea(dpy, Tip.win, 0, 0, Tip.w, Tip.h, False);
+#endif
     FlocaleDrawString(dpy, FStatusFont, FwinString, 0);
     XRaiseWindow(dpy, Tip.win);  /*****************/
   }

@@ -213,16 +213,47 @@ fi
 AC_SUBST(Xinerama_LIBS)
 AC_SUBST(Xinerama_CFLAGS)
 
+dnl ********* xft
+problem_xft=" (totally experimental)"
 
-dnl ********* xinerama-emulation
-smr_SWITCH(xinerama-emulation, Xinerama emulation on one screen, off,
-           USE_XINERAMA_EMULATION)
-if test "$enable_xinerama_emulation" = yes; then
-  with_xinerama_emulation=yes
-else
-  with_xinerama_emulation=no
+AC_ARG_ENABLE(xft,
+  [  --enable-xft            enable Xft anti-aliased font rendering],
+  [ if test "$enableval" = yes; then
+    with_xft="check"
+  else
+    with_xft="no"
+    problem_xft=": This is the suggested default"
+  fi ],
+  [ with_xft="no"
+    problem_xft=": This is the suggested default"
+  ]
+)
+
+if test "$with_xft" = "check"; then
+
+  dnl first check for freetype2
+  have_freetype=no
+  AM_CHECK_FT2(6.1.0)
+  if test "x$no_ft" = x; then
+    have_freetype=yes
+  else
+    have_freetype=no
+    problem_xft=": Failed to detect freetype2 (version >= 6.1.0 aka 2.0.6)"
+  fi
+
+  dnl now check for Xft (a priori it is not needed to check for XRender first)
+  if test "x$have_freetype" != "xno" ; then
+    $UNSET ac_cv_lib_Xft_XftFontOpen
+    AC_CHECK_LIB(Xft, XftFontOpen,
+      with_xft=yes; Xft_LIBS=-lXft; AC_DEFINE(HAVE_XFT),
+      with_xft=no; Xft_LIBS=
+      problem_xft=": Failed to detect Xft",
+      [$X_LIBS $X_PRE_LIBS -lXext -lX11 $X_EXTRA_LIBS $FT2_LIBS])
+  fi
+
 fi
-
+AC_SUBST(Xft_LIBS)
+AC_SUBST(Xft_CFLAGS)
 
 dnl ********* xpm
 problem_xpm=": Xpm library or header not found!"
@@ -637,6 +668,7 @@ AC_SUBST(with_rplay)
 AC_SUBST(with_shape)
 AC_SUBST(with_sm)
 AC_SUBST(with_stroke)
+AC_SUBST(with_xft)
 AC_SUBST(with_xinerama)
 AC_SUBST(with_xpm)
 
@@ -745,6 +777,7 @@ FVWM Configuration:
   With Session Management support?    $with_sm$problem_sm
   With Stroke support?                $with_stroke$problem_stroke
   With Xinerama support?              $with_xinerama$problem_xinerama
+  With Xft aa font support?           $with_xft$problem_xft
   With XPM support?                   $with_xpm$problem_xpm
 "
 case "$with_xinerama_emulation" in

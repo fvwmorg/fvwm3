@@ -18,7 +18,8 @@ config_DATA = \
   ConfigFvwmTaskBar
 
 LDADD = -L$(top_builddir)/libs $(X_LIBS) -lfvwm -lm $(xpm_LIBS) \
-	$(X_PRE_LIBS) $(Xinerama_LIBS) -lXext -lX11 $(X_EXTRA_LIBS)
+	$(X_PRE_LIBS) $(Xinerama_LIBS) -lXext -lX11 $(X_EXTRA_LIBS) \
+	$(Xft_LIBS) $(FT2_LIBS)
 
-INCLUDES = -I$(top_srcdir) $(xpm_CFLAGS) $(X_CFLAGS)
+INCLUDES = -I$(top_srcdir) $(xpm_CFLAGS) $(X_CFLAGS) $(FT2_CFLAGS)
 

@@ -25,6 +25,9 @@
 /* Define if Xinerama library is used. */
 #undef HAVE_XINERAMA
 
+/* Define if Xft library is used. */
+#undef HAVE_XFT
+
 /* Define if stroke library is used. */
 #undef HAVE_STROKE
 

@@ -1,3 +1,38 @@
+2002-02-26  olicha  <olivier.chapuis@free.fr>
+
+	* FvwmPager/Makefile.am:
+	* FvwmWinList/Makefile.am: 
+	* FvwmScript/Makefile.am: 
+	* FvwmIdent/Makefile.am:
+	* FvwmIconMan/Makefile.am:
+	* FvwmIconBox/Makefile.am:
+	* FvwmForm/Makefile.am:
+	* FvwmButtons/Makefile.am:
+	* FvwmTaskBar/Makefile.am: 
+	Added Xft_LIBS, Xft_CFLAGS, FT2_CFLAGS and FT2_LIBS
+
+	* FvwmIconMan/xmanager.c (draw_button):
+	Did so that the buttons title fit into the buttons if a xftfont is
+	used
+
+	* FvwmButtons/draw.c (RedrawButton):
+	* FvwmIdent/FvwmIdent.c (RedrawWindow):
+	* FvwmPager/x_pager.c (do_label_window): 
+	(DrawGrid): 
+	* FvwmWinList/ButtonArray.c (DoButton):
+	* FvwmTaskBar/Goodies.c (RedrawTipWindow):
+	* FvwmForm/FvwmForm.c (RedrawFrame): 
+	(RedrawItem):  
+	Always clear the text area before drawing text with an Xft font
+
+	* FvwmForm/FvwmForm.c (RedrawItem):
+	* FvwmForm/FvwmForm.c (MainLoop):
+	* FvwmForm/ReadXServer.c (ReadXServer):
+	* FvwmForm/FvwmForm.c (OpenWindows): 
+	Use GetFdWidth for to set the fd_set_size_t in fvwmSelect.
+	Try to reduce number of redraw. Add a CheckAlloc in OpenWindows.
+	Fixed an if/else
+
 2002-02-22  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* FvwmButtons/FvwmButtons.c (parse_message_line):
