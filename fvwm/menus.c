@@ -3949,6 +3949,12 @@ static void size_menu_vertically(MenuRoot *mr)
       MR_ITEMS(mr) = cItems;
       MI_NEXT_ITEM(mi) = NULL;
 
+      /* migo: propagate missing_submenu_func */
+      if (MR_MISSING_SUBMENU_FUNC(mr)) {
+	MR_MISSING_SUBMENU_FUNC(menuContinuation) =
+	  strdup(MR_MISSING_SUBMENU_FUNC(mr));
+      }
+
       /* And add the entry pointing to the new menu */
       AddToMenu(mr, "More&...", szMenuContinuationActionAndName,
 		False /* no pixmap scan */, False);

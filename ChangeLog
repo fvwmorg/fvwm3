@@ -1,3 +1,8 @@
+1999-08-11  Mikhael Goikhman  <migo@homemail.com>
+
+	* fvwm/menus.c (size_menu_vertically): propagate missing_submenu_func
+	for "More..." submenus
+
 1999-08-10  Dominik Vogt  <domivogt@bvstp038.bbn.hp.com>
 
 	* fvwm/events.c (HandleConfigureRequest): a XEmacs 20.4 patch:
