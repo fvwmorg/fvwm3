@@ -171,6 +171,14 @@ void Destroy(FvwmWindow *Tmp_win)
       for(i=0;i<4;i++)
 	XDeleteContext(dpy, Tmp_win->corners[i], FvwmContext);
     }
+  
+  /*
+      RBW - 11/13/1998 - new: have to unhook the stacking order chain also.
+      There's always a prev and next, since this is a ring anchored on
+      Scr.FvwmRoot
+  */
+  Tmp_win->stack_prev->stack_next = Tmp_win->stack_next;
+  Tmp_win->stack_next->stack_prev = Tmp_win->stack_prev;
 
   Tmp_win->prev->next = Tmp_win->next;
   if (Tmp_win->next != NULL)
@@ -998,7 +1006,18 @@ void RaiseWindow(FvwmWindow *t)
     Scr.LastWindowRaised = t;
 
   if(i > 0)
-    XRaiseWindow(dpy,wins[0]);
+    {
+      XRaiseWindow(dpy,wins[0]);
+      /*
+          RBW - 11/13/1998 - new: maintain the stacking order chain.
+      */
+      t->stack_prev->stack_next = t->stack_next;  /* Pluck from chain.       */
+      t->stack_next->stack_prev = t->stack_prev;
+      t->stack_next = Scr.FvwmRoot.stack_next;    /* Set new pointers.       */
+      t->stack_prev = Scr.FvwmRoot.stack_next->stack_prev;
+      Scr.FvwmRoot.stack_next->stack_prev = t;    /* Insert at top of chain. */
+      Scr.FvwmRoot.stack_next = t;
+    }
 
   XRestackWindows(dpy,wins,i);
   free(wins);
@@ -1018,6 +1037,15 @@ void LowerWindow(FvwmWindow *t)
       XLowerWindow(dpy, t->icon_pixmap_w);
     }
   Scr.LastWindowRaised = (FvwmWindow *)0;
+  /*
+      RBW - 11/13/1998 - new: maintain the stacking order chain.
+  */
+  t->stack_prev->stack_next = t->stack_next;            /* Pluck from chain.       */
+  t->stack_next->stack_prev = t->stack_prev;
+  t->stack_next = Scr.FvwmRoot.stack_prev->stack_next;  /* Set new pointers.       */
+  t->stack_prev = Scr.FvwmRoot.stack_prev;
+  Scr.FvwmRoot.stack_prev->stack_next = t;              /* Insert at end of chain. */
+  Scr.FvwmRoot.stack_prev = t;
 }
 
 

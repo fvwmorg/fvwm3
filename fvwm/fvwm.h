@@ -147,6 +147,8 @@ typedef struct FvwmWindow
 {
     struct FvwmWindow *next;	/* next fvwm window */
     struct FvwmWindow *prev;	/* prev fvwm window */
+    struct FvwmWindow *stack_next;   /* next (lower) fvwm window in stacking order  */
+    struct FvwmWindow *stack_prev;   /* prev (higher) fvwm window in stacking order */
     Window w;			/* the child window */
     int old_bw;			/* border width before reparenting */
     Window frame;		/* the frame window */
@@ -227,6 +229,11 @@ typedef struct FvwmWindow
     Pixel BackPixel;
     unsigned long buttons;
     icon_boxes *IconBoxes;              /* zero or more iconboxes */
+/*
+    RBW - 11/13/1998 - new flags to supplement the flags word, implemented
+    as named bit fields.
+*/
+    unsigned      ViewportMoved        : 1;  /*  To prevent double move in MoveViewport.  */
 } FvwmWindow;
 
 /***************************************************************************

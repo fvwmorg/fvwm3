@@ -374,7 +374,18 @@ FvwmWindow *AddWindow(Window w)
     Scr.FvwmRoot.next->prev = tmp_win;
   tmp_win->prev = &Scr.FvwmRoot;
   Scr.FvwmRoot.next = tmp_win;
-  
+
+  /*
+      RBW - 11/13/1998 - add it into the stacking order chain also.
+      This chain is anchored at both ends on Scr.FvwmRoot, there are
+      no null pointers.
+  */
+  tmp_win->stack_next = Scr.FvwmRoot.stack_next;
+  Scr.FvwmRoot.stack_next->stack_prev = tmp_win;
+  tmp_win->stack_prev = &Scr.FvwmRoot;
+  Scr.FvwmRoot.stack_next = tmp_win;
+
+
   /* create windows */
   tmp_win->frame_x = tmp_win->attr.x + tmp_win->old_bw - tmp_win->bw;
   tmp_win->frame_y = tmp_win->attr.y + tmp_win->old_bw - tmp_win->bw;

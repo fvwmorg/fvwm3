@@ -348,8 +348,14 @@ void initPanFrames()
  ***************************************************************************/
 void MoveViewport(int newx, int newy, Bool grab)
 {
-  FvwmWindow *t;
+  FvwmWindow *t, *t1;
   int deltax,deltay;
+  int PageTop, PageLeft;
+  int PageBottom, PageRight;
+  int txl, txr, tyt, tyb;
+  int i1  =  0;
+  int i2  =  0;
+
 
   if(grab)
     MyXGrabServer(dpy);
@@ -366,6 +372,14 @@ void MoveViewport(int newx, int newy, Bool grab)
 
   deltay = Scr.Vy - newy;
   deltax = Scr.Vx - newx;
+  /*
+      Identify the bounding rectangle that will be moved into
+      the viewport.
+  */
+  PageBottom    =  Scr.MyDisplayHeight - deltay;
+  PageRight     =  Scr.MyDisplayWidth  - deltax;
+  PageTop       =  0 - deltay;
+  PageLeft      =  0 - deltax;
 
   Scr.Vx = newx;
   Scr.Vy = newy;
@@ -374,38 +388,128 @@ void MoveViewport(int newx, int newy, Bool grab)
 
   if((deltax!=0)||(deltay!=0))
     {
-      for (t = Scr.FvwmRoot.next; t != NULL; t = t->next)
-	{
-	  /* If the window is iconified, and sticky Icons is set,
-	   * then the window should essentially be sticky */
-	  if(!((t->flags & ICONIFIED)&&(t->flags & StickyIcon)) &&
-	     (!(t->flags & STICKY)))
-	    {
-              if(!(t->flags & StickyIcon))
-		{
-		  t->icon_x_loc += deltax;
-		  t->icon_xl_loc += deltax;
-		  t->icon_y_loc += deltay;
-		  if(t->icon_pixmap_w != None)
-		    XMoveWindow(dpy,t->icon_pixmap_w,t->icon_x_loc,
-				t->icon_y_loc);
-                  if(t->icon_w != None)
-                    XMoveWindow(dpy,t->icon_w,t->icon_x_loc,
+/**/
+/*  
+    RBW - 05/15/1998  - new:  chase the chain bidirectionally, all at once!
+    The idea is to move the windows that are moving out of the viewport from
+    the bottom of the stacking order up, to minimize the expose-redraw overhead.
+    Windows that will be moving into view will be moved top down, for the same
+    reason.
+    Newer:  use the new  stacking-order chain, rather than the old
+    last-focussed chain.
+*/
+
+      t = Scr.FvwmRoot.stack_next;
+      t1 = Scr.FvwmRoot.stack_prev;
+    while (t != &Scr.FvwmRoot || t1 != &Scr.FvwmRoot)
+      {
+        if (t != &Scr.FvwmRoot)
+          {
+	    /*
+	        If the window is moving into the viewport...
+	    */
+            txl = t->frame_x;
+            tyt = t->frame_y;
+	    txr = t->frame_x + t->frame_width;
+	    tyb = t->frame_y + t->frame_height;
+	    if ((txr >= PageLeft && txl <= PageRight
+	        && tyb >= PageTop && tyt <= PageBottom)
+	        && ! t->ViewportMoved)
+	      {
+                t->ViewportMoved = True;    /*  Block double move.  */
+	        /* If the window is iconified, and sticky Icons is set,
+	         * then the window should essentially be sticky */
+	        if(!((t->flags & ICONIFIED)&&(t->flags & StickyIcon)) &&
+	           (!(t->flags & STICKY)))
+	          {
+                    if(!(t->flags & StickyIcon))
+	             {
+	               t->icon_x_loc += deltax;
+		       t->icon_xl_loc += deltax;
+		       t->icon_y_loc += deltay;
+		       if(t->icon_pixmap_w != None)
+		         XMoveWindow(dpy,t->icon_pixmap_w,t->icon_x_loc,
+			        t->icon_y_loc);
+                       if(t->icon_w != None)
+                         XMoveWindow(dpy,t->icon_w,t->icon_x_loc,
                                 t->icon_y_loc+t->icon_p_height);
-		  if(!(t->flags &ICON_UNMAPPED))
-		    BroadcastPacket(M_ICON_LOCATION, 7,
-                                    t->w, t->frame,
-                                    (unsigned long)t,
-                                    t->icon_x_loc, t->icon_y_loc,
-                                    t->icon_w_width,
-                                    t->icon_w_height+t->icon_p_height);
-		}
-	      SetupFrame (t, t->frame_x+ deltax, t->frame_y + deltay,
-			  t->frame_width, t->frame_height,FALSE);
-	    }
-	}
+		       if(!(t->flags &ICON_UNMAPPED))
+		        BroadcastPacket(M_ICON_LOCATION, 7,
+                                        t->w, t->frame,
+                                        (unsigned long)t,
+                                        t->icon_x_loc, t->icon_y_loc,
+                                        t->icon_w_width,
+                                        t->icon_w_height+t->icon_p_height);
+		     }
+	           SetupFrame (t, t->frame_x+ deltax, t->frame_y + deltay,
+		          t->frame_width, t->frame_height,FALSE);
+	         }
+	      }
+            /*  Bump to next win...    */
+            t = t->stack_next;
+          }
+        if (t1 != &Scr.FvwmRoot)
+          {
+	    /*
+	        If the window is not moving into the viewport...
+	    */
+            txl = t1->frame_x;
+            tyt = t1->frame_y;
+            txr = t1->frame_x + t1->frame_width;
+            tyb = t1->frame_y + t1->frame_height;
+            if (! (txr >= PageLeft && txl <= PageRight
+                && tyb >= PageTop && tyt <= PageBottom)
+                && ! t1->ViewportMoved)
+                  {
+                    t1->ViewportMoved = True;    /*  Block double move.  */
+                    /* If the window is iconified, and sticky Icons is set,
+                    * then the window should essentially be sticky */
+                     if(!((t1->flags & ICONIFIED)&&(t1->flags & StickyIcon)) &&
+                        (!(t1->flags & STICKY)))
+                        {
+                          if(!(t1->flags & StickyIcon))
+                            {
+		              t1->icon_x_loc += deltax;
+		              t1->icon_xl_loc += deltax;
+		              t1->icon_y_loc += deltay;
+		              if(t1->icon_pixmap_w != None)
+		                XMoveWindow(dpy,t1->icon_pixmap_w,t1->icon_x_loc,
+		                  t1->icon_y_loc);
+                              if(t1->icon_w != None)
+                                XMoveWindow(dpy,t1->icon_w,t1->icon_x_loc,
+                                  t1->icon_y_loc+t1->icon_p_height);
+		              if(!(t1->flags &ICON_UNMAPPED))
+			        BroadcastPacket(M_ICON_LOCATION, 7,
+                                                t->w, t->frame,
+                                                (unsigned long)t,
+                                                t->icon_x_loc, t->icon_y_loc,
+                                                t->icon_w_width,
+                                                t->icon_w_height+t->icon_p_height);
+		            }
+	                  SetupFrame (t1, t1->frame_x+ deltax, t1->frame_y + deltay,
+		               t1->frame_width, t1->frame_height,FALSE);
+	                }
+	            }
+            /*  Bump to next win...    */
+            t1 = t1->stack_prev;
+          }
+      }
       for (t = Scr.FvwmRoot.next; t != NULL; t = t->next)
 	{
+          t->ViewportMoved = False;  /*  Clear double move blocker.  */
+	  /* If its an icon, and its sticking, autoplace it so
+	   * that it doesn't wind up on top a a stationary
+	   * icon */
+	  if(((t->flags & STICKY)||(t->flags & StickyIcon))&&
+	     (t->flags & ICONIFIED)&&(!(t->flags & ICON_MOVED))&&
+	     (!(t->flags & ICON_UNMAPPED)))
+	    AutoPlace(t);
+	}
+
+/**/
+      for (t = Scr.FvwmRoot.next; t != NULL; t = t->next)
+	{
+          t->ViewportMoved = False;  /*  Clear double move blocker.  */
 	  /* If its an icon, and its sticking, autoplace it so
 	   * that it doesn't wind up on top a a stationary
 	   * icon */
@@ -516,7 +620,7 @@ void changeDesks_func(XEvent *eventp,Window w,FvwmWindow *tmp_win,
 void changeDesks(int desk)
 {
   int oldDesk;
-  FvwmWindow *FocusWin = 0, *t;
+  FvwmWindow *FocusWin = 0, *t, *t1;
   static FvwmWindow *StickyWin = 0;
 
   oldDesk = Scr.CurrentDesk;
@@ -527,40 +631,67 @@ void changeDesks(int desk)
   /* Scan the window list, mapping windows on the new Desk,
    * unmapping windows on the old Desk */
   MyXGrabServer(dpy);
-  for (t = Scr.FvwmRoot.next; t != NULL; t = t->next)
+
+/*  
+    RBW - 11/13/1998  - new:  chase the chain bidirectionally, unmapping
+    windows bottom-up and mapping them top-down, to minimize expose-redraw
+    overhead.
+    Newer:  use the new  stacking-order chain, rather than the old
+    last-focussed chain.
+*/
+  t = Scr.FvwmRoot.stack_next;
+  t1 = Scr.FvwmRoot.stack_prev;
+  while (t != &Scr.FvwmRoot || t1 != &Scr.FvwmRoot)
     {
-      /* Only change mapping for non-sticky windows */
-      if(!((t->flags & ICONIFIED)&&(t->flags & StickyIcon)) &&
-	 (!(t->flags & STICKY))&&(!(t->flags & ICON_UNMAPPED)))
-	{
-	  if(t->Desk == oldDesk)
-	    {
-	      if (Scr.Focus == t)
-		t->FocusDesk = oldDesk;
-	      else
-		t->FocusDesk = -1;
-	      UnmapIt(t);
-	    }
-	  else if(t->Desk == Scr.CurrentDesk)
-	    {
-	      MapIt(t);
-	      if (t->FocusDesk == Scr.CurrentDesk)
-		{
-		  FocusWin = t;
-		}
-	    }
-	}
-      else
-	{
-	  /* Window is sticky */
-	  t->Desk = Scr.CurrentDesk;
-	  if (Scr.Focus == t)
-	    {
-	      t->FocusDesk =oldDesk;
-	      StickyWin = t;
-	    }
-	}
+      if (t != &Scr.FvwmRoot)
+        {
+              if(!((t->flags & ICONIFIED)&&(t->flags & StickyIcon)) &&
+  	        (!(t->flags & STICKY))&&(!(t->flags & ICON_UNMAPPED)))
+                 {
+	          if(t->Desk == Scr.CurrentDesk) 
+	           {
+	            MapIt(t);
+	            if (t->FocusDesk == Scr.CurrentDesk) 
+	             {
+		      FocusWin = t;
+		     }
+	           }
+	         }
+              else
+	        /*
+		    Only need to do these in one of the passes...
+		*/
+	        {
+	         /* Window is sticky */
+	         t->Desk = Scr.CurrentDesk;
+	         if (Scr.Focus == t) 
+	          {
+	           t->FocusDesk =oldDesk;
+	           StickyWin = t;
+	          }
+	        }
+          t = t->stack_next;
+        }
+      if (t1 != &Scr.FvwmRoot)
+        {
+             /* Only change mapping for non-sticky windows */
+             if(!((t1->flags & ICONIFIED)&&(t1->flags & StickyIcon)) &&
+	        (!(t1->flags & STICKY))&&(!(t1->flags & ICON_UNMAPPED)))
+	      {
+	       if(t1->Desk == oldDesk) 
+	        {
+	         if (Scr.Focus == t1)
+		   t1->FocusDesk = oldDesk;
+	         else
+		   t1->FocusDesk = -1;
+	         UnmapIt(t1);
+	        } 
+	      }
+          t1 = t1->stack_prev;
+        }
     }
+
+
   MyXUngrabServer(dpy);
   for (t = Scr.FvwmRoot.next; t != NULL; t = t->next)
     {
@@ -591,7 +722,7 @@ void changeDesks(int desk)
 
 /**************************************************************************
  *
- * Move to a new desktop
+ * Move a window to a new desktop
  *
  *************************************************************************/
 void changeWindowsDesk(XEvent *eventp,Window w,FvwmWindow *t,
@@ -609,8 +740,9 @@ void changeWindowsDesk(XEvent *eventp,Window w,FvwmWindow *t,
   if(desk == t->Desk)
     return;
 
-  /* Scan the window list, mapping windows on the new Desk,
-   * unmapping windows on the old Desk */
+  /*
+    Set the window's desktop, and map or unmap it as needed.
+  */
   /* Only change mapping for non-sticky windows */
   if(!((t->flags & ICONIFIED)&&(t->flags & StickyIcon)) &&
      (!(t->flags & STICKY))&&(!(t->flags & ICON_UNMAPPED)))

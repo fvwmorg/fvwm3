@@ -1191,6 +1191,11 @@ void InitVariables(void)
   Scr.d_depth = DefaultDepth(dpy, Scr.screen);
   Scr.FvwmRoot.w = Scr.Root;
   Scr.FvwmRoot.next = 0;
+
+  /*  RBW - 11/13/1998 - 2 new fields to init - stacking order chain.  */
+  Scr.FvwmRoot.stack_next  =  &Scr.FvwmRoot;
+  Scr.FvwmRoot.stack_prev  =  &Scr.FvwmRoot;
+
   XGetWindowAttributes(dpy,Scr.Root,&(Scr.FvwmRoot.attr));
   Scr.root_pushes = 0;
   Scr.pushed_window = &Scr.FvwmRoot;
@@ -1293,7 +1298,11 @@ void Reborder(void)
   MyXGrabServer (dpy);
 
   InstallWindowColormaps (&Scr.FvwmRoot);	/* force reinstall */
-  for (tmp = Scr.FvwmRoot.next; tmp != NULL; tmp = tmp->next)
+/*
+    RBW - 05/15/1998
+    Grab the last window and work backwards: preserve stacking order on restart.
+*/
+  for (tmp = Scr.FvwmRoot.stack_prev; tmp != &Scr.FvwmRoot; tmp = tmp->stack_prev)
   {
     RestoreWithdrawnLocation (tmp,True);
     XUnmapWindow(dpy,tmp->frame);
