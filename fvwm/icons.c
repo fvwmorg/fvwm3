@@ -38,8 +38,6 @@
 #include <libs/Picture.h>
 
 
-static void GrabIconButtons(FvwmWindow *, Window);
-static void GrabIconKeys(FvwmWindow *, Window);
 static void GetBitmapFile(FvwmWindow *tmp_win);
 static void GetXPMFile(FvwmWindow *tmp_win);
 
@@ -180,8 +178,11 @@ void CreateIconWindow(FvwmWindow *tmp_win, int def_x, int def_y)
     {
       XSaveContext(dpy, tmp_win->icon_w, FvwmContext, (caddr_t)tmp_win);
       XDefineCursor(dpy, tmp_win->icon_w, Scr.FvwmCursors[DEFAULT]);
-      GrabIconButtons(tmp_win,tmp_win->icon_w);
-      GrabIconKeys(tmp_win,tmp_win->icon_w);
+      GrabAllWindowButtons(dpy, tmp_win->icon_w, Scr.AllBindings, C_ICON,
+			   GetUnusedModifiers(), Scr.FvwmCursors[DEFAULT],
+			   True);
+      GrabAllWindowKeys(dpy, tmp_win->icon_w, Scr.AllBindings, C_ICON,
+			GetUnusedModifiers(), True);
 
 #ifdef SESSION
       {
@@ -196,8 +197,11 @@ void CreateIconWindow(FvwmWindow *tmp_win, int def_x, int def_y)
     {
       XSaveContext(dpy, tmp_win->icon_pixmap_w, FvwmContext, (caddr_t)tmp_win);
       XDefineCursor(dpy, tmp_win->icon_pixmap_w, Scr.FvwmCursors[DEFAULT]);
-      GrabIconButtons(tmp_win,tmp_win->icon_pixmap_w);
-      GrabIconKeys(tmp_win,tmp_win->icon_pixmap_w);
+      GrabAllWindowButtons(dpy, tmp_win->icon_pixmap_w, Scr.AllBindings,
+			   C_ICON, GetUnusedModifiers(),
+			   Scr.FvwmCursors[DEFAULT], True);
+      GrabAllWindowKeys(dpy, tmp_win->icon_pixmap_w, Scr.AllBindings, C_ICON,
+			GetUnusedModifiers(), True);
 
 #ifdef SESSION
       {
@@ -600,75 +604,6 @@ void AutoPlace(FvwmWindow *t)
                     t->icon_w_width, t->icon_w_height+t->icon_p_height);
   }
 
-}
-
-/***********************************************************************
- *
- *  Procedure:
- *	GrabIconButtons - grab needed buttons for the icon window
- *
- *  Inputs:
- *	tmp_win - the fvwm window structure to use
- *
- ***********************************************************************/
-static void GrabIconButtons(FvwmWindow *tmp_win, Window w)
-{
-  Binding *MouseEntry;
-
-  MouseEntry = Scr.AllBindings;
-  while(MouseEntry != (Binding *)0)
-    {
-      if((MouseEntry->Action != NULL)&&(MouseEntry->Context & C_ICON)&&
-	 (MouseEntry->type == MOUSE_BINDING))
-	{
-	  if(MouseEntry->Button_Key >0)
-	    XGrabButton(dpy, MouseEntry->Button_Key, MouseEntry->Modifier, w,
-			True, ButtonPressMask | ButtonReleaseMask,
-			GrabModeAsync, GrabModeAsync, None,
-			Scr.FvwmCursors[DEFAULT]);
-	  else
-	    {
-	      XGrabButton(dpy, 1, MouseEntry->Modifier, w,
-			  True, ButtonPressMask | ButtonReleaseMask,
-			  GrabModeAsync, GrabModeAsync, None,
-			  Scr.FvwmCursors[DEFAULT]);
-	      XGrabButton(dpy, 2, MouseEntry->Modifier, w,
-			  True, ButtonPressMask | ButtonReleaseMask,
-			  GrabModeAsync, GrabModeAsync, None,
-			  Scr.FvwmCursors[DEFAULT]);
-	      XGrabButton(dpy, 3, MouseEntry->Modifier, w,
-			  True, ButtonPressMask | ButtonReleaseMask,
-			  GrabModeAsync, GrabModeAsync, None,
-			  Scr.FvwmCursors[DEFAULT]);
-	    }
-	}
-
-      MouseEntry = MouseEntry->NextBinding;
-    }
-  return;
-}
-
-
-
-/***********************************************************************
- *
- *  Procedure:
- *	GrabIconKeys - grab needed keys for the icon window
- *
- *  Inputs:
- *	tmp_win - the fvwm window structure to use
- *
- ***********************************************************************/
-static void GrabIconKeys(FvwmWindow *tmp_win,Window w)
-{
-  Binding *tmp;
-  for (tmp = Scr.AllBindings; tmp != NULL; tmp = tmp->NextBinding)
-    {
-      if ((tmp->Context & C_ICON)&&(tmp->type == KEY_BINDING))
-	XGrabKey(dpy, tmp->Button_Key, tmp->Modifier, w, True,
-		 GrabModeAsync, GrabModeAsync);
-    }
-  return;
 }
 
 

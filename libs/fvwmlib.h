@@ -213,6 +213,9 @@ void RelieveRectangle(Display *dpy, Window win, int x,int y,int w,int h,
 #define C_ALL   (C_WINDOW|C_TITLE|C_ICON|C_ROOT|C_FRAME|C_SIDEBAR|\
                  C_L1|C_L2|C_L3|C_L4|C_L5|C_R1|C_R2|C_R3|C_R4|C_R5)
 
+#define ALL_MODIFIERS (ShiftMask|LockMask|ControlMask|Mod1Mask|Mod2Mask|\
+                       Mod3Mask|Mod4Mask|Mod5Mask)
+
 /* Possible binding types */
 #define BindingType     Bool
 #define KEY_BINDING     True
@@ -230,16 +233,22 @@ typedef struct Binding
   struct Binding *NextBinding;
 } Binding;
 
-void AddBinding(Display *dpy, Binding **pblist, BindingType type, int button,
-		KeySym keysym, char *key_name, int modifiers, int contexts,
-		void *action, void *action2);
+Binding *AddBinding(Display *dpy, Binding **pblist, BindingType type,
+		    int button, KeySym keysym, char *key_name, int modifiers,
+		    int contexts, void *action, void *action2);
 void RemoveBinding(Display *dpy, Binding **pblist, BindingType type,
 		   int button, KeySym keysym, int modifiers, int contexts);
-void ParseBinding(Display *dpy, Binding ** pblist, char *tline,
-		  BindingType type, int *nr_left_buttons,
-		  int *nr_right_buttons, unsigned char *buttons_grabbed);
-void* CheckBinding(Binding *blist, int button_keycode, unsigned int modifier,
+Binding *ParseBinding(Display *dpy, Binding ** pblist, char *tline,
+		      BindingType type, int *nr_left_buttons,
+		      int *nr_right_buttons, unsigned char *buttons_grabbed);
+void *CheckBinding(Binding *blist, int button_keycode, unsigned int modifier,
 		   int Context, BindingType type);
+void GrabWindowKey(Display *dpy, Window w, Binding *binding,
+		   unsigned int contexts, unsigned int dead_modifiers,
+		   Bool fGrab);
+void GrabAllWindowKeys(Display *dpy, Window w, Binding *blist,
+		       unsigned int contexts, unsigned int dead_modifiers,
+		       Bool fGrab);
 
 
 #endif

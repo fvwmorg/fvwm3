@@ -695,8 +695,11 @@ FvwmWindow *AddWindow(Window w, FvwmWindow *ReuseWin)
    * before creating the icon window
    */
   tmp_win->icon_w = None;
-  GrabButtons(tmp_win);
-  GrabKeys(tmp_win);
+  GrabAllWindowButtons(dpy, tmp_win->frame, Scr.AllBindings, C_WINDOW,
+		       GetUnusedModifiers(), Scr.FvwmCursors[DEFAULT], True);
+  GrabAllWindowKeys(dpy, tmp_win->frame, Scr.AllBindings,
+		    C_WINDOW|C_TITLE|C_RALL|C_LALL|C_SIDEBAR,
+		    GetUnusedModifiers(), True);
 
   XSaveContext(dpy, tmp_win->w, FvwmContext, (caddr_t) tmp_win);
   XSaveContext(dpy, tmp_win->frame, FvwmContext, (caddr_t) tmp_win);
@@ -829,117 +832,6 @@ FvwmWindow *AddWindow(Window w, FvwmWindow *ReuseWin)
   return (tmp_win);
 }
 
-/***********************************************************************
- *
- *  Procedure:
- *	GrabButtons - grab needed buttons for the window
- *
- *  Inputs:
- *	tmp_win - the fvwm window structure to use
- *
- ***********************************************************************/
-void GrabButtons(FvwmWindow *tmp_win)
-{
-  Binding *MouseEntry;
-
-  MouseEntry = Scr.AllBindings;
-  while(MouseEntry != (Binding *)0)
-    {
-      if((MouseEntry->Action != NULL)&&(MouseEntry->Context & C_WINDOW)
-	 &&(MouseEntry->type == MOUSE_BINDING))
-	{
-	  if(MouseEntry->Button_Key >0)
-	    {
-	      XGrabButton(dpy, MouseEntry->Button_Key, MouseEntry->Modifier,
-			  tmp_win->w,
-			  True, ButtonPressMask | ButtonReleaseMask,
-			  GrabModeAsync, GrabModeAsync, None,
-			  Scr.FvwmCursors[DEFAULT]);
-	      if(MouseEntry->Modifier != AnyModifier)
-		{
-		  XGrabButton(dpy, MouseEntry->Button_Key,
-			      (MouseEntry->Modifier | GetUnusedModifiers()),
-			      tmp_win->w,
-			      True, ButtonPressMask | ButtonReleaseMask,
-			      GrabModeAsync, GrabModeAsync, None,
-			      Scr.FvwmCursors[DEFAULT]);
-		}
-	    }
-	  else
-	    {
-	      XGrabButton(dpy, 1, MouseEntry->Modifier,
-			  tmp_win->w,
-			  True, ButtonPressMask | ButtonReleaseMask,
-			  GrabModeAsync, GrabModeAsync, None,
-			  Scr.FvwmCursors[DEFAULT]);
-	      XGrabButton(dpy, 2, MouseEntry->Modifier,
-			  tmp_win->w,
-			  True, ButtonPressMask | ButtonReleaseMask,
-			  GrabModeAsync, GrabModeAsync, None,
-			  Scr.FvwmCursors[DEFAULT]);
-	      XGrabButton(dpy, 3, MouseEntry->Modifier,
-			  tmp_win->w,
-			  True, ButtonPressMask | ButtonReleaseMask,
-			  GrabModeAsync, GrabModeAsync, None,
-			  Scr.FvwmCursors[DEFAULT]);
-	      if(MouseEntry->Modifier != AnyModifier)
-		{
-		  XGrabButton(dpy, 1,
-			      (MouseEntry->Modifier | GetUnusedModifiers()),
-			      tmp_win->w,
-			      True, ButtonPressMask | ButtonReleaseMask,
-			      GrabModeAsync, GrabModeAsync, None,
-			      Scr.FvwmCursors[DEFAULT]);
-		  XGrabButton(dpy, 2,
-			      (MouseEntry->Modifier | GetUnusedModifiers()),
-			      tmp_win->w,
-			      True, ButtonPressMask | ButtonReleaseMask,
-			      GrabModeAsync, GrabModeAsync, None,
-			      Scr.FvwmCursors[DEFAULT]);
-		  XGrabButton(dpy, 3,
-			      (MouseEntry->Modifier | GetUnusedModifiers()),
-			      tmp_win->w,
-			      True, ButtonPressMask | ButtonReleaseMask,
-			      GrabModeAsync, GrabModeAsync, None,
-			      Scr.FvwmCursors[DEFAULT]);
-		}
-	    }
-	}
-      MouseEntry = MouseEntry->NextBinding;
-    }
-  return;
-}
-
-/***********************************************************************
- *
- *  Procedure:
- *	GrabKeys - grab needed keys for the window
- *
- *  Inputs:
- *	tmp_win - the fvwm window structure to use
- *
- ***********************************************************************/
-void GrabKeys(FvwmWindow *tmp_win)
-{
-  Binding *tmp;
-  for (tmp = Scr.AllBindings; tmp != NULL; tmp = tmp->NextBinding)
-    {
-      if((tmp->Context & (C_WINDOW|C_TITLE|C_RALL|C_LALL|C_SIDEBAR))&&
-	 (tmp->type == KEY_BINDING))
-	{
-	  XGrabKey(dpy, tmp->Button_Key, tmp->Modifier, tmp_win->frame, True,
-		   GrabModeAsync, GrabModeAsync);
-	  if(tmp->Modifier != AnyModifier)
-	    {
-	      XGrabKey(dpy, tmp->Button_Key,
-		       tmp->Modifier|GetUnusedModifiers(),
-		       tmp_win->frame, True,
-		       GrabModeAsync, GrabModeAsync);
-	    }
-	}
-    }
-  return;
-}
 
 /***********************************************************************
  *

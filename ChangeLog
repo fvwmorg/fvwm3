@@ -1,3 +1,20 @@
+1999-03-28  Dominik Vogt  <dominik_vogt@gmx.de>
+
+	* fvwm/icons.c (GrabIconButtons):
+	* fvwm/add_window.c (GrabButtons): remove terribly redundant code
+	(GrabButtons): moved functionality into library
+
+	* fvwm/fvwm2.1 (Examples): added a warning about performance downgrade
+
+	* fvwm/bindings.c (key_binding): grab new keys immediately, don't wait
+	for next recapture.
+
+	* libs/Bindings.c (GrabWindowKey):
+	(GrabAllWindowKeys): new functions to handle bindings
+
+	* fvwm/icons.c (GrabIconKeys):
+	* fvwm/add_window.c (GrabKeys): functionality moved into library
+
 1999-03-27  Dominik Vogt  <dominik_vogt@gmx.de>
 
 	* fvwm/events.c (HandleButtonPress): fixed bug in title button drawing
@@ -28,11 +45,11 @@
 
 1999-03-27  Matthias Clasen  <clasen@mathematik.uni-freiburg.de>
 
-	* fvwm/move.c (moveLoop): don't send synthetic 
-	ConfigureNotify containing wrong size information when 
+	* fvwm/move.c (moveLoop): don't send synthetic
+	ConfigureNotify containing wrong size information when
 	moving icons. This caused xterms to think they're 48x48
 	after moving their icon and deiconfying them.
-	
+
 1999-03-26  Steven Michael ROBBINS  <stever@jeff.cs.mcgill.ca>
 
 	* fvwm/builtins.c (SetXOR): added missing semicolon.
@@ -43,9 +60,9 @@
 	while keeping their stacking order; I hope this helps with
 	Exceed and native windows. Someone with access to an Exceed
 	X Server has to replace the XFree vendor id by the Exceed
-	vendor id - I don't know it. 
+	vendor id - I don't know it.
 
-	* configure.in (EXCEED_HACK): New flag to protect the above hack. 
+	* configure.in (EXCEED_HACK): New flag to protect the above hack.
 	It defaults to `off'.
 	* acconfig.h: dito
 

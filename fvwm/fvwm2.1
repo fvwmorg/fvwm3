@@ -1514,7 +1514,9 @@ This command is obsolete. Please use \fIImagePath\fP instead.
 Tells FVWM which modifiers to ignore when matching Mouse or Key
 bindings (if any binding actually have one of those modifiers,
 they will never be matched). \fIIgnoreModifiers\fP affects the
-ClickToFocus style too.
+ClickToFocus style too. This command belongs into your .fvwm2rc.
+If you issue it when your fvwm session is already up and running
+the results are unpredictable.
 
 \fIModifiers\fP has the same syntax as in the Mouse or Key bindings,
 with the addition of L meaning caps lock. The default is 'L'.
@@ -1528,6 +1530,13 @@ pesky modifiers off you can use this command:
 IgnoreModifiers L25
 .EE
 
+Important Note: This command creates a lot of extra network traffic,
+depending on your CPU, network connection, the number of \fIKey\fP
+or \fIMouse\fP commands in you configuration file and the number of
+modifiers you want to ignore. If you do not have a lightning fast
+machine ore very few bindings you should not ignore more than two
+modifiers. E.g. do not ignore scroll-lock if you have no problem with
+it.
 
 .IP "ImagePath \fIpath\fP"
 Specifies a colon separated list of full path names of directories

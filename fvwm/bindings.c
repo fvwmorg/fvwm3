@@ -22,8 +22,36 @@ static unsigned int mods_unused = MODS_UNUSED_DEFAULT;
 
 void key_binding(F_CMD_ARGS)
 {
-  ParseBinding(dpy, &Scr.AllBindings, action, KEY_BINDING,
-	       &Scr.nr_left_buttons, &Scr.nr_right_buttons, &Scr.buttons2grab);
+  Binding *b;
+  FvwmWindow *t;
+
+  b = ParseBinding(dpy, &Scr.AllBindings, action, KEY_BINDING,
+		   &Scr.nr_left_buttons, &Scr.nr_right_buttons,
+		   &Scr.buttons2grab);
+
+  if (fFvwmInStartup == False)
+    return;
+
+  /* grab keys immediately */
+  if (b != NULL)
+    {
+      for (t = Scr.FvwmRoot.next; t != NULL; t = t->next)
+	{
+	  if (b->Context & (C_WINDOW|C_TITLE|C_RALL|C_LALL|C_SIDEBAR))
+	    GrabWindowKey(dpy, t->frame, b,
+			  C_WINDOW|C_TITLE|C_RALL|C_LALL|C_SIDEBAR,
+			  GetUnusedModifiers(), True);
+	  if (b->Context & C_ICON)
+	    {
+	      if(tmp_win->icon_w != None)
+		GrabWindowKey(dpy, tmp_win->icon_w, b, C_ICON,
+			      GetUnusedModifiers(), True);
+	      if(tmp_win->icon_pixmap_w != None)
+		GrabWindowKey(dpy, tmp_win->icon_pixmap_w, b, C_ICON,
+			      GetUnusedModifiers(), True);
+	    }
+	}
+    }
 }
 
 void mouse_binding(F_CMD_ARGS)
