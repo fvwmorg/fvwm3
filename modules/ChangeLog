@@ -1,3 +1,11 @@
+2003-03-12  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* FvwmButtons/parse.c (ParseButton):
+	fixed parsing a button geometry option after a comma
+	(ParseButton):
+	(ParsePanel):
+	use isdigit() instead of "*s >= '0' && *s <= '9'"
+
 2003-03-09  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* FvwmTaskBar/FvwmTaskBar.c (HandleEvents):

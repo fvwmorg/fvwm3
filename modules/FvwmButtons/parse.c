@@ -473,7 +473,7 @@ static void ParsePanel(char **ss, unsigned int *flags, unsigned int *mask,
       {
 	s = trimleft(s);
 	/* get x and y offset */
-	if((*s>='0' && *s<='9') || *s=='+' || *s=='-')
+	if(isdigit(*s) || *s=='+' || *s=='-')
 	{
 	  sscanf(s, "%i%n", rela_x, &n);
 	  s += n;
@@ -809,7 +809,13 @@ static void ParseButton(button_info **uberb,char *s)
     {
       Bool is_swallow = False;
 
-      if((*s>='0' && *s<='9') || *s=='+' || *s=='-')
+      if (*s == ',')
+      {
+	      s++;
+	      s = trimleft(s);
+	      continue;
+      }
+      if(isdigit(*s) || *s=='+' || *s=='-')
       {
 	char *geom;
 	int x,y,flags;
@@ -841,8 +847,6 @@ static void ParseButton(button_info **uberb,char *s)
 	s = trimleft(s);
 	continue;
       }
-      if(*s==',' && s++)
-	s = trimleft(s);
       switch(GetTokenIndex(s,opts,-1,&s))
       {
       case 0: /* Back */
