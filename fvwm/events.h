@@ -16,18 +16,15 @@
 #ifndef _EVENTS_
 #define _EVENTS_
 
-#define XEVMASK_FRAMEW  (SubstructureRedirectMask | EnterWindowMask | \
-                         LeaveWindowMask | VisibilityChangeMask)
+#define XEVMASK_FRAMEW  (SubstructureRedirectMask | VisibilityChangeMask)
 #define XEVMASK_DECORW  (ExposureMask | ButtonPressMask | ButtonReleaseMask | \
-			 KeyPressMask)
+			 KeyPressMask | EnterWindowMask | LeaveWindowMask)
 #define XEVMASK_TITLEW  (ButtonPressMask | ButtonReleaseMask | \
-			 EnterWindowMask | LeaveWindowMask | \
 			 ExposureMask | OwnerGrabButtonMask | \
 			 ButtonMotionMask | PointerMotionMask)
 #define XEVMASK_BUTTONW XEVMASK_TITLEW
 #define XEVMASK_PARENTW (SubstructureRedirectMask)
-#define XEVMASK_BORDERW (ButtonPressMask | ButtonReleaseMask | \
-			 EnterWindowMask | LeaveWindowMask)
+#define XEVMASK_BORDERW (ButtonPressMask | ButtonReleaseMask)
 #define XEVMASK_CLIENTW (StructureNotifyMask | PropertyChangeMask | \
 			 EnterWindowMask | LeaveWindowMask | \
 			 ColormapChangeMask | FocusChangeMask)

@@ -1,3 +1,15 @@
+2001-04-22  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* fvwm/events.c (HandleEnterNotify):
+	a little event handling clean up
+
+	* fvwm/events.h:
+	EnterNotify and LeaveNotify are generated only for the decor_w and the
+	client window
+
+	* fvwm/placement.c (PlaceWindow):
+	do not free window structure in placement code; fixes core dump
+
 2001-04-21  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* fvwm/fvwm.c (FvwmErrorHandler):

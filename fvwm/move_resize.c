@@ -1180,7 +1180,6 @@ Bool moveLoop(FvwmWindow *tmp_win, int XOffset, int YOffset, int Width,
 {
   extern Window bad_window;
   Bool finished = False;
-  Bool done;
   Bool aborted = False;
   int xl,xl2,yt,yt2,delta_x,delta_y,paged;
   unsigned int button_mask = 0;
@@ -1304,7 +1303,6 @@ Bool moveLoop(FvwmWindow *tmp_win, int XOffset, int YOffset, int Width,
 
     } /* if (Event.type == MotionNotify) */
 
-    done = False;
     /* Handle a limited number of key press events to allow mouseless
      * operation */
     if (Event.type == KeyPress)
@@ -1330,14 +1328,12 @@ Bool moveLoop(FvwmWindow *tmp_win, int XOffset, int YOffset, int Width,
 	aborted = True;
 	finished = True;
       }
-      done = True;
       break;
     case ButtonPress:
       if (Event.xbutton.button <= NUMBER_OF_MOUSE_BUTTONS &&
 	  ((Button1Mask << (Event.xbutton.button - 1)) & button_mask))
       {
 	/* No new button was pressed, just a delayed event */
-	done = True;
 	break;
       }
       if(((Event.xbutton.button == 2)&&(!Scr.gs.EmulateMWM))||
@@ -1378,7 +1374,6 @@ Bool moveLoop(FvwmWindow *tmp_win, int XOffset, int YOffset, int Width,
 	  aborted = True;
 	  finished = True;
 	}
-	done = True;
 	break;
       }
     case ButtonRelease:
@@ -1405,7 +1400,6 @@ Bool moveLoop(FvwmWindow *tmp_win, int XOffset, int YOffset, int Width,
       *FinalX = xl;
       *FinalY = yt;
 
-      done = True;
       finished = True;
       break;
 
@@ -1460,21 +1454,23 @@ Bool moveLoop(FvwmWindow *tmp_win, int XOffset, int YOffset, int Width,
 	paged++;
       }  /* end while (paged) */
 
-      done = True;
+      break;
+
+    case Expose:
+      if (!do_move_opaque)
+      {
+	/* must undraw the rubber band in case the event causes some drawing */
+	MoveOutline(0,0,0,0);
+      }
+      DispatchEvent(False);
+      if (!do_move_opaque)
+	MoveOutline(xl, yt, Width - 1, Height - 1);
       break;
 
     default:
+      /* cannot happen */
       break;
     } /* switch */
-    if(!done)
-    {
-      if (!do_move_opaque)
-	/* must undraw the rubber band in case the event causes some drawing */
-	MoveOutline(0,0,0,0);
-      DispatchEvent(False);
-      if(!do_move_opaque)
-	MoveOutline(xl, yt, Width - 1, Height - 1);
-    }
     if (do_move_opaque && !IS_ICONIFIED(tmp_win) && !IS_SHADED(tmp_win))
     {
       /* send configure notify event for windows that care about their
@@ -1486,9 +1482,8 @@ Bool moveLoop(FvwmWindow *tmp_win, int XOffset, int YOffset, int Width,
         sent_cn = True;
 	SendConfigureNotify(tmp_win, xl, yt, Width, Height, 0, False);
 #ifdef FVWM_DEBUG_MSGS
-        fvwm_msg(DBG,"SetupFrame","Sent ConfigureNotify (w == %d, h == %d)",
-                 Width,
-                 Height);
+        fvwm_msg(
+	  DBG, "SetupFrame","Sent ConfigureNotify (w %d, h %d)", Width, Height);
 #endif
       }
     }

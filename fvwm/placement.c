@@ -745,7 +745,6 @@ Bool PlaceWindow(
 			 (unsigned int *)&DragHeight,
 			 &JunkBW,  &JunkDepth) == 0)
         {
-	  free((char *)tmp_win);
 	  MyXUngrabServer(dpy);
 	  return False;
 	}
