@@ -59,11 +59,9 @@ static char *MkNum(char *name,int def);
 static char *cpp_defs(Display *display, const char *host, char *m4_options, char *config_file);
 #define MAXHOSTNAME 255
 #define EXTRA 20
-#ifdef FVWM_CPP
+
 char *cpp_prog = FVWM_CPP;          /* Name of the cpp program */
-#else
-char *cpp_prog = "/usr/lib/cpp";          /* Name of the cpp program */
-#endif
+
 char cpp_options[BUFSIZ];
 char cpp_outfile[BUFSIZ]="";
 

@@ -1,3 +1,10 @@
+Sun Jan  3 14:07:43 1999  Steve Robbins  <steve@nyongwa.montreal.qc.ca>
+
+	* FvwmCpp/FvwmCpp.c: Removed #ifdef defaulting FVWM_CPP to
+	"/usr/lib/cpp", if the symbol was not defined.  The symbol ought
+	to be defined at build time, and if not, an error should be
+	emitted, rather than silently taking a wild guess.
+
 1999-01-02  Dominik Vogt  <dominik_vogt@hp.com>
 
 	* FvwmButtons/FvwmButtons.c (Loop): Deleting panels doesn't delete
