@@ -1351,7 +1351,6 @@ void HandleUnmapNotify(void)
   }
   if (!Tmp_win)
     return;
-fprintf(stderr,"UnmapNotify for 0x%08x (%s)\n", (int)Tmp_win->w, Tmp_win->name);
   if (Event.xunmap.window == Tmp_win->frame)
   {
     SET_DEICONIFY_PENDING(Tmp_win , 0);
