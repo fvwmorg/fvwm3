@@ -1,4 +1,15 @@
+2001-02-18  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* FvwmButtons/FvwmButtons.c (swallow):
+	(Loop):
+	(SetTransparentBackground):
+	transparency works with swallawed windows and also uses the shape mask
+	of swallowed windows
+
 2001-02-17  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* FvwmButtons/FvwmButtons.c (swallow):
+	bad acces safety patch
 
 	* FvwmIconMan/x.c (xevent_loop):
 	fixed eternal redrawing under cetrain circumstances

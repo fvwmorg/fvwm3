@@ -523,18 +523,23 @@ void SetTransparentBackground(button_info *ub,int w,int h)
   XFontStruct *font;
 
   pmap_mask = XCreatePixmap(Dpy,MyWindow,w,h,1);
-
+  if (pmap_mask == None)
+    return;
   if (trans_gc == NULL)
   {
     XGCValues gcv;
 
     /* create a GC for doing transparency */
     trans_gc = fvwmlib_XCreateGC(Dpy,pmap_mask,(unsigned long)0,&gcv);
+    if (trans_gc == NULL)
+      return;
   }
 
   XSetForeground(Dpy,trans_gc,0);
   XFillRectangle(Dpy,pmap_mask,trans_gc,0,0,w,h);
   XSetForeground(Dpy,trans_gc,1);
+  /* apply empty shape first, then add visible parts */
+  XShapeCombineMask(Dpy, MyWindow, ShapeBounding, 0, 0, pmap_mask, ShapeSet);
 
   /*
    * if button has an icon, draw a rect with the same size as the icon
@@ -542,8 +547,8 @@ void SetTransparentBackground(button_info *ub,int w,int h)
    * else draw a rect with the same size as the button.
    */
 
-  i=-1;
-  while(NextButton(&ub,&b,&i,0))
+  i = -1;
+  while (NextButton(&ub,&b,&i,0))
   {
     if (b->flags&b_Icon &&
 	XGetGeometry(Dpy,b->IconWin,&root_return,&x_return,&y_return,
@@ -562,6 +567,19 @@ void SetTransparentBackground(button_info *ub,int w,int h)
 		  b->icon->width,b->icon->height,x_return,y_return);
       }
     }
+    else if (buttonSwallowCount(b) == 3 && (b->flags & b_Swallow))
+    {
+      Window swin = SwallowedWindow(b);
+      Window JunkW;
+
+      if (XTranslateCoordinates(
+	    Dpy, swin, MyWindow, 0, 0, &x_return, &y_return, &JunkW))
+      {
+	XShapeCombineShape(
+	  Dpy, MyWindow, ShapeBounding, x_return, y_return, swin,
+	  ShapeBounding, ShapeUnion);
+      }
+    }
     else
     {
       number=buttonNum(b);
@@ -578,7 +596,10 @@ void SetTransparentBackground(button_info *ub,int w,int h)
       DrawTitle(b,pmap_mask,trans_gc);
     }
   }
-  XShapeCombineMask(Dpy,MyWindow,ShapeBounding,0,0,pmap_mask,ShapeSet);
+  XShapeCombineMask(Dpy, MyWindow, ShapeBounding, 0, 0, pmap_mask, ShapeUnion);
+  XFreePixmap(Dpy, pmap_mask);
+
+  return;
 }
 #endif
 
@@ -983,6 +1004,15 @@ void Loop(void)
       }
       break;
 
+#ifdef SHAPE
+      case ShapeNotify:
+	if (UberButton->c->flags & b_TransBack)
+	{
+	  SetTransparentBackground(UberButton, Width, Height);
+	}
+	break;
+#endif
+
       case KeyPress:
 	XLookupString(&Event.xkey,buffer,10,&keysym,0);
 	if(keysym!=XK_Return && keysym!=XK_KP_Enter && keysym!=XK_Linefeed)
@@ -1167,6 +1197,12 @@ void Loop(void)
 	      if(!XGetWMNormalHints(Dpy,swin,b->hints,&supp))
 		b->hints->flags = 0;
 	      MakeButton(b);
+#ifdef SHAPE
+	      if (UberButton->c->flags & b_TransBack)
+	      {
+		SetTransparentBackground(UberButton, Width, Height);
+	      }
+#endif
 	    }
 	    RedrawButton(b,1);
 	  }
@@ -2657,6 +2693,7 @@ void swallow(unsigned long *body)
 	/* "Swallow" the window! Place it in the void so we don't see it
 	 * until it's MoveResize'd */
 	MyXGrabServer(Dpy);
+	XSync(Dpy, 0);
 	do_allow_bad_access = True;
 	XSelectInput(Dpy,swin,SW_EVENTS);
 	XSync(Dpy, 0);
@@ -2708,6 +2745,13 @@ void swallow(unsigned long *body)
 	  XSync(Dpy, 0);
 	  change_swallowed_window_colorset(b, True);
 	}
+#ifdef SHAPE
+	if (UberButton->c->flags & b_TransBack)
+	{
+	  SetTransparentBackground(UberButton, Width, Height);
+	  XShapeSelectInput(Dpy, swin, ShapeNotifyMask);
+	}
+#endif
 	RedrawButton(b,1);
       }
       else /* (b->flags & b_Panel) */
