@@ -1,4 +1,6 @@
-Changes in alpha release 2.1.5 (December 1998)
+Changes in beta release 2.1.6 (December 1998)
+
+Changes in beta release 2.1.5 (December 1998)
 
 * SnapAttraction works for windows and/or icons. New command SnapGrid.
 
@@ -7,13 +9,12 @@ Changes in alpha release 2.1.5 (December 1998)
   enhanced Desk command, and allows constraining a move within a range
   of desks.
 
-Changes in alpha release 2.1.4 (December 1998)
+Changes in beta release 2.1.4 (December 1998)
 
 * Fvwm creates an environment variable FVWM_MODULEDIR containing the path
   to the default module directory, for use in config files, etc.
 * The extras module FvwmCommand installs its user interface into the
   bindir rather than the moduledir.
-
 
 Changes in alpha release 2.1.3 (November 1998)
 

@@ -71,7 +71,7 @@ static MenuStatus MenuInteraction(MenuRoot *menu,MenuRoot *menuPrior,
 				  Bool fSticks);
 static void WarpPointerToTitle(MenuRoot *menu);
 static MenuItem *MiWarpPointerToItem(MenuItem *mi, Bool fSkipTitle);
-static void PopDownMenu(MenuRoot *mr);
+static void PopDownMenu(MenuRoot *mr, MenuRoot *parent);
 static Bool FPopupMenu(MenuRoot *menu, MenuRoot *menuPrior, int x, int y,
 		       Bool fWarpItem, MenuOptions *pops);
 static void GetPreferredPopupPosition(MenuRoot *mr, int *x, int *y);
@@ -237,7 +237,7 @@ MenuStatus do_menu(MenuRoot *menu, MenuRoot *menuPrior,
   menu->in_use = FALSE;
 
   if (!fWasAlreadyPopped)
-    PopDownMenu(menu);
+    PopDownMenu(menu, NULL);
 
   /* FIX: this global is bad */
   menuFromFrameOrWindowOrTitlebar = FALSE;
@@ -779,7 +779,7 @@ MenuStatus MenuInteraction(MenuRoot *menu,MenuRoot *menuPrior,
 	    /* something else was already selected on this menu */
 	    SetMenuItemSelected(menu->selected,FALSE);
 	    if (mrPopup) {
-	      PopDownMenu(mrPopup);
+	      PopDownMenu(mrPopup, mr);
 	      mrPopup = NULL;
 	    }
 	  } else {
@@ -827,7 +827,7 @@ MenuStatus MenuInteraction(MenuRoot *menu,MenuRoot *menuPrior,
 	  DBUG("MenuInteraction","Popping down");
 	  /* popdown previous popup */
 	  if (mrPopup) {
-	    PopDownMenu(mrPopup);
+	    PopDownMenu(mrPopup, mr);
 	  }
 	  mrPopup = NULL;
 	  fPopdown = FALSE;
@@ -871,7 +871,7 @@ MenuStatus MenuInteraction(MenuRoot *menu,MenuRoot *menuPrior,
 	    goto DO_RETURN;
 	  }
 	  if (fPopdown ||  mr->mf->style == FVWMMenu) {
-	    PopDownMenu(mrPopup);
+	    PopDownMenu(mrPopup, mr);
 	    mrPopup = NULL;
 	  }
 	  if (retval == MENU_POPDOWN) {
@@ -884,8 +884,8 @@ MenuStatus MenuInteraction(MenuRoot *menu,MenuRoot *menuPrior,
 	   over to the right to unobscure the current menu;  this
 	   happens only when using animation */
 	tmi = FindEntry(NULL);
-	if (mrPopup && mrPopup->xanimation && mr->mf->style <= WINMenu && tmi &&
-	  (tmi == menu->selected || tmi->mr != menu)) {
+	if (mrPopup && mrPopup->xanimation && mr->mf->style <= WINMenu &&
+	    tmi && (tmi == menu->selected || tmi->mr != menu)) {
 	  int x_popup, y_popup;
 	  DBUG("MenuInteraction","Moving the popup menu back over");
 	  XGetGeometry(dpy, mrPopup->w, &JunkRoot, &x_popup, &y_popup,
@@ -929,7 +929,7 @@ MenuStatus MenuInteraction(MenuRoot *menu,MenuRoot *menuPrior,
 		(!IS_RIGHT_MENU(mrPopup) && x > mx+mw) ||
 		(!IS_UP_MENU(mrPopup)    && y < my)    ||
 		(!IS_DOWN_MENU(mrPopup)  && y > my+mh)) {
-	      PopDownMenu(mrPopup);
+	      PopDownMenu(mrPopup, mr);
 	      mrPopup = NULL;
 	    } else {
 	      fOffMenuAllowed = TRUE;
@@ -942,7 +942,7 @@ MenuStatus MenuInteraction(MenuRoot *menu,MenuRoot *menuPrior,
 
   DO_RETURN:
   if (mrPopup) {
-    PopDownMenu(mrPopup);
+    PopDownMenu(mrPopup, mr);
   }
   if (retval == MENU_POPDOWN) {
     if (menu->selected)
@@ -1295,14 +1295,27 @@ void GetPopupOptions(MenuItem *mi, MenuOptions *pops)
  *
  *  Procedure:
  *	PopDownMenu - unhighlight the current menu selection and
- *		take down the menus
+ *                    take down the menus
+ *
+ *      mr     - menu to pop down
+ *      parent - the menu that has spawned mr (may be NULL). this is
+ *               used to see if mr was spawned by itself on some level.
+ *               this is a hack to allow specifying 'Popup foo' within
+ *               menu foo. You must use the MenuRoot that is currently
+ *               being processed here. DO NOT USE mr->mrDynamicPrev here!
  *
  ***********************************************************************/
 static
-void PopDownMenu(MenuRoot *mr)
+void PopDownMenu(MenuRoot *mr, MenuRoot *parent)
 {
   MenuItem *mi;
   assert(mr);
+
+  for ( ; parent; parent =  parent->mrDynamicPrev)
+  {
+    if (parent == mr)
+      return;
+  }
 
   mr->flags = 0;
   XUnmapWindow(dpy, mr->w);

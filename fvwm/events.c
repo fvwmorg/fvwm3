@@ -1397,9 +1397,9 @@ DB(("HandleConfigureRequest: reconfiguring frame window 0x%x for CWSibling|CWSta
 
 DB(("HandleConfigureRequest: x=%d, y=%d, width=%d, height=%d",x,y,width,height));
   if (cre->value_mask & CWX)
-    x = cre->x - Tmp_win->boundary_width;
+    x = cre->x - Tmp_win->boundary_width - Tmp_win->bw;
   if (cre->value_mask & CWY)
-    y = cre->y - Tmp_win->boundary_width - Tmp_win->title_height;
+    y = cre->y - Tmp_win->boundary_width - Tmp_win->title_height - Tmp_win->bw;
   if (cre->value_mask & CWWidth)
     width = cre->width + 2*Tmp_win->boundary_width;
   if (cre->value_mask & CWHeight)
