@@ -1,3 +1,12 @@
+1998-12-04  Dominik Vogt  <dominik_vogt@hp.com>
+
+	* FvwmPager/FvwmPager.1: documented new button 3 behaviour
+
+	* FvwmPager/x_pager.c (SwitchToDeskAndPage): removed unnecessary ifdef
+	(Scroll): fixed mouse-button-3 bug with multiple desktops.
+	(DispatchEvent): pressing mouse button 3 allows to switch desktops now.
+	Moving and releasing the mouse still does not switch desktops.
+
 1998-12-04  Paul D. Smith  <psmith@gnu.org>
 
 	* FvwmPager/FvwmPager.c (ParseOptions): Free BalloonFore variable

@@ -1,3 +1,11 @@
+1998-12-05  Dominik Vogt  <dominik_vogt@hp.com>
+
+	* fvwm/builtins.c (ReadButtonFace): fixed memory leak (?)
+	(SetEnv): fixed memory leak
+
+	* fvwm/windows.c (do_windowList): DestroyMenu called as soon as
+	possible (might cause problems with WindowList as doubleclick action).
+
 1998-12-02  Paul D. Smith  <psmith@gnu.org>
 
 	* fvwm/fvwm.c (main): Add FVWM_MODULEDIR to the environment

@@ -330,10 +330,10 @@ void do_windowList(XEvent *eventp,Window w,FvwmWindow *tmp_win,
   else
     teventp = eventp;
   menu_retval = do_menu(mr, NULL, &miExecuteAction, 0, TRUE, teventp, &mops);
+  DestroyMenu(mr);
   if (menu_retval == MENU_DOUBLE_CLICKED && default_action && *default_action)
     ExecuteFunction(default_action,tmp_win,eventp,context,*Module);
   if (default_action != NULL)
     free(default_action);
-  DestroyMenu(mr);
 }
 

@@ -23,6 +23,7 @@
 #include "../../libs/fvwmlib.h"
 #include "../../fvwm/fvwm.h"
 #include "FvwmPager.h"
+
 extern ScreenInfo Scr;
 extern Display *dpy;
 
@@ -597,9 +598,14 @@ void DispatchEvent(XEvent *Event)
 	    {
 	      if(Event->xany.window == Desks[i].w)
 		{
+		  if (Scr.CurrentDesk != i + desk1)
+		    {
+		      SwitchToDeskAndPage(i,Event);
+		    }
 		  XQueryPointer(dpy, Desks[i].w, &JunkRoot, &JunkChild,
 				&JunkX, &JunkY,&x, &y, &JunkMask);
 		  Scroll(i,x,y);
+		  break;
 		}
 	    }
 	  if(Event->xany.window == icon_win)
@@ -975,11 +981,11 @@ void SwitchToDesk(int Desk)
 
 void SwitchToDeskAndPage(int Desk, XEvent *Event)
 {
+#ifndef NON_VIRTUAL
   char command[256];
 
   if (Scr.CurrentDesk != (Desk+desk1))
     {
-#ifndef NON_VIRTUAL
       SendInfo(fd,"Desk 0 10000\n",0);
       sprintf(command,"GotoPage %d %d\n",
 	      Event->xbutton.x*(Scr.VxMax+Scr.MyDisplayWidth)/
@@ -991,11 +997,9 @@ void SwitchToDeskAndPage(int Desk, XEvent *Event)
       sprintf(command,"Desk 0 %d\n",Desk+desk1);
       SendInfo(fd,command,0);
 
-#endif
     }
   else
     {
-#ifndef	NON_VIRTUAL
       sprintf(command,"GotoPage %d %d\n",
 	      Event->xbutton.x*(Scr.VxMax+Scr.MyDisplayWidth)/
 	      (desk_w*Scr.MyDisplayWidth),
@@ -1009,9 +1013,9 @@ void SwitchToDeskAndPage(int Desk, XEvent *Event)
 
 void IconSwitchPage(XEvent *Event)
 {
+#ifndef NON_VIRTUAL
   char command[256];
 
-#ifndef NON_VIRTUAL
   sprintf(command,"GotoPage %d %d\n",
 	  Event->xbutton.x*(Scr.VxMax+Scr.MyDisplayWidth)/
 	  (icon_w*Scr.MyDisplayWidth),
@@ -1305,7 +1309,7 @@ void Scroll(int Desk, int x, int y)
   int sx, sy;
   if(Wait == 0)
     {
-      if(Desk != Scr.CurrentDesk)
+      if(Desk + desk1 != Scr.CurrentDesk)
 	{
 	  return;
 	}

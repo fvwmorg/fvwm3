@@ -2593,6 +2593,8 @@ Boolean ReadButtonFace(char *s, ButtonFace *bf, int button, int verbose)
 #ifdef MINI_ICONS
 	else if (strncasecmp (style, "MiniIcon", 8) == 0) {
 	    bf->style = MiniIconButton;
+	    if (mf->u.p)
+	      DestroyPicture(dpy, mf->u.p);
 	    bf->u.p = NULL; /* pixmap read in when the window is created */
   	}
 #endif
@@ -3498,19 +3500,19 @@ void SetEnv(XEvent *eventp,Window junk,FvwmWindow *tmp_win,
     char *szPutenv = NULL;
 
     action = GetNextToken(action,&szVar);
+    if (!szVar)
+      return;
     action = GetNextToken(action,&szValue);
-    if (!szVar || !szValue)
+    if (!szValue)
       {
-	if (szVar)
-	  free(szVar);
-	if (szValue)
-	  free(szValue);
+	free(szVar);
 	return;
       }
 
     szPutenv = safemalloc(strlen(szVar)+strlen(szValue)+2);
     sprintf(szPutenv,"%s=%s",szVar,szValue);
     putenv(szPutenv);
+    free(szPutenv);
     free(szVar);
     free(szValue);
 }
