@@ -1,5 +1,8 @@
 2000-10-05  Dominik Vogt  <dominik.vogt@gmx.de>
 
+	* fvwm/add_window.c (setup_style_and_decor):
+	fixed UMR in FvwmWindow.wShaped
+
 	* fvwm/fvwm.c (main):
 	* fvwm/move_resize.c (resize_window):
 	(moveLoop):

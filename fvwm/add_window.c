@@ -119,19 +119,19 @@ Bool setup_window_structure(
       old one (on Recapture).
   */
   if (ReuseWin == NULL)
+  {
+    *ptmp_win = (FvwmWindow *)safemalloc(sizeof(FvwmWindow));
+    if (*ptmp_win == (FvwmWindow *)0)
     {
-      *ptmp_win = (FvwmWindow *)safemalloc(sizeof(FvwmWindow));
-      if (*ptmp_win == (FvwmWindow *)0)
-        {
-          return False;
-        }
+      return False;
     }
+  }
   else
-    {
-      *ptmp_win = ReuseWin;
-      savewin = &save_state;
-      memcpy(savewin, ReuseWin, sizeof(FvwmWindow));
-    }
+  {
+    *ptmp_win = ReuseWin;
+    savewin = &save_state;
+    memcpy(savewin, ReuseWin, sizeof(FvwmWindow));
+  }
 
   /*
     RBW - 1999/05/28 - modify this when we implement the preserving of
@@ -394,6 +394,10 @@ void setup_style_and_decor(
 			&boundingShaped, &xws, &yws, &wws, &hws,
 			&clipShaped, &xbs, &ybs, &wbs, &hbs);
     tmp_win->wShaped = boundingShaped;
+  }
+  else
+  {
+    tmp_win->wShaped = None;
   }
 #endif /* SHAPE */
 
