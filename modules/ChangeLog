@@ -1,3 +1,8 @@
+2003-06-27  olicha  <olivier.chapuis@free.fr>
+
+	* FvwmTaskBar/FvwmTaskBar.c (ProcessMessage):
+	Fixed animation when the TaskBar is shaded
+
 2003-06-24  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* FvwmTaskBar/Start.c (StartButtonInit):

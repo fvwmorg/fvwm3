@@ -143,23 +143,23 @@ static Bool is_dead_pipe = False;
 /* Module related information */
 char *Module;
 int  win_width    = 5,
-     win_height   = 5,
-     win_grav,
-     win_x,
-     win_y,
-     win_border = 4,
-     win_has_title = 0,
-     win_title_dir = 0,
-     win_title_height = 0,
-     win_is_shaded = 0,
-     button_width = DEFAULT_BTN_WIDTH,
-     Clength,
-     ButPressed   = -1,
-     ButReleased  = -1,
-     Checked      = 0,
-     WindowState  = -2, /* -2 unmaped, 1 not hidden, -1 hidden,
-			 *  0 hidden -> not hidden (for the events loop) */
-     FocusInWin = 0;    /* 1 if the Taskbar has the focus */
+	win_height   = 5,
+	win_grav,
+	win_x,
+	win_y,
+	win_border = 4,
+	win_has_title = 0,
+	win_title_dir = 0,
+	win_title_height = 0,
+	win_is_shaded = 0,
+	button_width = DEFAULT_BTN_WIDTH,
+	Clength,
+	ButPressed   = -1,
+	ButReleased  = -1,
+	Checked      = 0,
+	WindowState  = -2, /* -2 unmaped, 1 not hidden, -1 hidden,
+			    *  0 hidden -> not hidden (for the events loop) */
+	FocusInWin = 0;    /* 1 if the Taskbar has the focus */
 
 static int auto_stick_y = 0;
 
@@ -610,6 +610,7 @@ void ProcessMessage(unsigned long type,unsigned long *body)
 	win_y += screen_g.y;
 	XMoveWindow(dpy, win, win_x, win_y);
       }
+      win_is_shaded = IS_SHADED(cfgpacket);
       break;
     }
 
@@ -801,6 +802,7 @@ void ProcessMessage(unsigned long type,unsigned long *body)
       Button *temp = find_n(&buttons, i);
       if (temp)
       {
+	Bool do_reshade = False;
 	if (AnimCommand && (AnimCommand[0] != 0)
 	    && IsItemIndexIconSuppressed(&windows,i))
 	{
@@ -809,6 +811,11 @@ void ProcessMessage(unsigned long type,unsigned long *body)
 	  int x, y;
 	  int abs_x, abs_y;
 
+	  if (win_is_shaded)
+	  {
+		  SendText(Fvwm_fd, "WindowShade Off", win);
+		  do_reshade = True;
+	  }
 	  ButtonCoordinates(&buttons, i, &x, &y);
 	  XTranslateCoordinates(dpy, win, Root, x, y,
 				&abs_x, &abs_y, &child);
@@ -827,6 +834,10 @@ void ProcessMessage(unsigned long type,unsigned long *body)
 	temp->needsupdate = 1;
 	temp->iconified = iconified;
 	DrawButtonArray(&buttons, 0, NULL);
+	if (do_reshade)
+	{
+		SendText(Fvwm_fd, "WindowShade On", win);
+	}
       }
       if (AnimCommand && AnimCommand[0] != 0)
 	SendUnlockNotification(Fvwm_fd);
