@@ -1512,7 +1512,7 @@ Bool ReadDecorFace(char *s, DecorFace *df, int button, int verbose)
 
 	/* some variants of scanf do not increase the assign count when %n is
 	 * used, so a return value of 1 is no error. */
-	if (sscanf(s, "%256s%n", style, &offset) < 1)
+	if (sscanf(s, "%255s%n", style, &offset) < 1)
 	{
 		if (verbose)
 		{

@@ -331,7 +331,7 @@ void process_message(
 	case M_STRING:
 		SendUnlockNotification(fvwm_fd);
 		context = body[0]; /* this is fw */
-		sscanf((char*)(&body[3]), "%128s %d", name, &button);
+		sscanf((char*)(&body[3]), "%127s %d", name, &button);
 		widget = g_hash_table_lookup(widgets, name);
 		if (!widget)
 		{
