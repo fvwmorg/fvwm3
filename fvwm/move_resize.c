@@ -2621,7 +2621,7 @@ void CMD_XorValue(F_CMD_ARGS)
 	gcm = GCFunction|GCLineWidth|GCForeground|GCFillStyle|GCSubwindowMode;
 	gcv.subwindow_mode = IncludeInferiors;
 	gcv.function = GXxor;
-	gcv.line_width = 0;
+	gcv.line_width = 1;
 	/* use passed in value, or try to calculate appropriate value if 0 */
 	/* ctwm method: */
 	/*

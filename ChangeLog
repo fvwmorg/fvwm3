@@ -1,5 +1,9 @@
 2004-03-02  Dominik Vogt  <dominik.vogt@gmx.de>
 
+	* fvwm/move_resize.c (CMD_XorValue):
+	fixed a very small outline drawing problem caused by using 0 line width
+	instead of 1
+
 	* NEWS:
 	* configure.in:
 	increased version to 2.5.10
