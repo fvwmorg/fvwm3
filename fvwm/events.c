@@ -2341,7 +2341,7 @@ void HandleFocusOut(const evh_args_t *ea)
 	return;
 }
 
-void HandleKeyPress(const evh_args_t *ea)
+void __handle_key(const evh_args_t *ea, Bool is_press)
 {
 	char *action;
 	FvwmWindow *sf;
@@ -2364,6 +2364,7 @@ void HandleKeyPress(const evh_args_t *ea)
 	kc = XKeysymToKeycode(dpy, XKeycodeToKeysym(dpy, te->xkey.keycode, 0));
 
 	/* Check if there is something bound to the key */
+
 	sf = get_focus_window();
 	if (sf == NULL)
 	{
@@ -2398,12 +2399,18 @@ void HandleKeyPress(const evh_args_t *ea)
 
 	if (action != NULL)
 	{
+		if (!is_press)
+		{
+			XAllowEvents(dpy, AsyncKeyboard, CurrentTime);
+			return;
+		}
 		exc = ea->exc;
 		if (is_second_binding == False)
 		{
 			ecc.w.fw = sf;
 			ecc.w.wcontext = kcontext;
-			exc = exc_clone_context(ea->exc, &ecc, ECC_FW | ECC_WCONTEXT);
+			exc = exc_clone_context(
+				ea->exc, &ecc, ECC_FW | ECC_WCONTEXT);
 		}
 		execute_function(NULL, exc, action, 0);
 		if (is_second_binding == False)
@@ -2423,7 +2430,9 @@ void HandleKeyPress(const evh_args_t *ea)
 
 		e = *te;
 		e.xkey.window = FW_W(sf);
-		FSendEvent(dpy, e.xkey.window, False, KeyPressMask, &e);
+		FSendEvent(
+			dpy, e.xkey.window, False,
+			(is_press)? KeyPressMask:KeyReleaseMask, &e);
 	}
 	else if (fw && te->xkey.window != FW_W(fw))
 	{
@@ -2431,11 +2440,23 @@ void HandleKeyPress(const evh_args_t *ea)
 
 		e = *te;
 		e.xkey.window = FW_W(fw);
-		FSendEvent(dpy, e.xkey.window, False, KeyPressMask, &e);
+		FSendEvent(
+			dpy, e.xkey.window, False,
+			(is_press)? KeyPressMask:KeyReleaseMask, &e);
 	}
 	XAllowEvents(dpy, AsyncKeyboard, CurrentTime);
 
-	return;
+	return;	
+}
+
+void HandleKeyPress(const evh_args_t *ea)
+{
+	__handle_key(ea, True);
+}
+
+void HandleKeyRelease(const evh_args_t *ea)
+{
+	__handle_key(ea, False);
 }
 
 void HandleLeaveNotify(const evh_args_t *ea)
@@ -3631,6 +3652,7 @@ void InitEventHandlerJumpTable(void)
 	EventHandlerJumpTable[ClientMessage] =    HandleClientMessage;
 	EventHandlerJumpTable[PropertyNotify] =   HandlePropertyNotify;
 	EventHandlerJumpTable[KeyPress] =         HandleKeyPress;
+	EventHandlerJumpTable[KeyRelease] =       HandleKeyRelease;
 	EventHandlerJumpTable[VisibilityNotify] = HandleVisibilityNotify;
 	EventHandlerJumpTable[ColormapNotify] =   HandleColormapNotify;
 	if (FShapesSupported)

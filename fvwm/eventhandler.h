@@ -44,6 +44,7 @@ void HandleConfigureRequest(const evh_args_t *ea);
 void HandleClientMessage(const evh_args_t *ea);
 void HandlePropertyNotify(const evh_args_t *ea);
 void HandleKeyPress(const evh_args_t *ea);
+void HandleKeyRelease(const evh_args_t *ea);
 void HandleVisibilityNotify(const evh_args_t *ea);
 STROKE_CODE(void HandleButtonRelease(const evh_args_t *ea));
 STROKE_CODE(void HandleMotionNotify(const evh_args_t *ea));
