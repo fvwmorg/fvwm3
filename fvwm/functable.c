@@ -188,6 +188,8 @@ const func_type func_table[] =
 	CMD_ENT("nop", CMD_Nop, F_NOP, FUNC_DONT_REPEAT, 0, 0),
 	CMD_ENT("nowindow", CMD_NoWindow, F_NOP, 0, 0, 0),
 	CMD_ENT("opaquemovesize", CMD_OpaqueMoveSize, F_OPAQUE, 0, 0, 0),
+	CMD_ENT("parentwindow", CMD_ParentWindow, F_PARENTWINDOW,
+		FUNC_NEEDS_WINDOW, CRS_SELECT, ButtonRelease),
 	CMD_ENT("pick", CMD_Pick, F_PICK, FUNC_NEEDS_WINDOW, CRS_SELECT,
 		ButtonRelease),
 	CMD_ENT("piperead", CMD_PipeRead, F_READ, 0, 0, 0),
