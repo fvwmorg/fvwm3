@@ -70,6 +70,12 @@
 /* this value is used in a bugfix */
 #define WINDOW_FREAKED_OUT_HEIGHT      65500
 
+/* window placement (cleverplacement) */
+#define PLACEMENT_AVOID_STICKY 1
+#define PLACEMENT_AVOID_ONTOP 5
+#define PLACEMENT_AVOID_ICON 10   /*  Try hard no to place windows over icons */
+/*#define PLACEMENT_AVOID_ICON 0*//*  Ignore Icons.  Place windows over them  */
+
 /* movement */
 #define DEFAULT_OPAQUE_MOVE_SIZE           5
 #define DEFAULT_SNAP_ATTRACTION           -1

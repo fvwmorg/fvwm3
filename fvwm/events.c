@@ -1545,6 +1545,7 @@ void HandleEnterNotify(void)
 
   DBUG("HandleEnterNotify","Routine Entered");
 
+XSynchronize(dpy, 1);
   /* Ignore EnterNotify events while a window is resized or moved as a wire
    * frame; otherwise the window list may be screwed up. */
   if (Scr.flags.is_wire_frame_displayed)
@@ -1673,7 +1674,7 @@ void HandleLeaveNotify(void)
    * don't end up with more than one highlighted window at a time */
   if(Event.xcrossing.window == Scr.Root
      /* domivogt (16-May-2000): added this test because somehow fvwm sometimes
-      * get a LeaveNotify on the root window although it is single screen. */
+      * gets a LeaveNotify on the root window although it is single screen. */
      && Scr.NumberOfScreens > 1)
   {
     if(Event.xcrossing.mode == NotifyNormal)

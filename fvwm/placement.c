@@ -56,8 +56,8 @@
 /*  RBW - 11/02/1998  */
 static int get_next_x(FvwmWindow *t, int x, int y, int pdeltax, int pdeltay);
 static int get_next_y(FvwmWindow *t, int y, int pdeltay);
-static int test_fit(
-  FvwmWindow *t, int test_x, int test_y, int aoimin, int pdeltax, int pdeltay);
+static float test_fit(
+  FvwmWindow *t, int x11, int y11, float aoimin, int pdeltax, int pdeltay);
 static void CleverPlacement(
   FvwmWindow *t, int *x, int *y, int pdeltax, int pdeltay);
 
@@ -77,13 +77,6 @@ static void CleverPlacement(
  * place one there.  The same rules apply for the other "AVOID" factors.
  * (for CleverPlacement)
  */
-#define AVOIDONTOP 5
-#define AVOIDSTICKY 1
-#ifdef NO_STUBBORN_PLACEMENT
-#define AVOIDICON 0     /*  Ignore Icons.  Place windows over them  */
-#else
-#define AVOIDICON 10    /*  Try hard no to place windows over icons */
-#endif
 #define NEW_CLEVERPLACEMENT_CODE 1
 
 /*  RBW - 11/02/1998  */
@@ -142,9 +135,8 @@ static int SmartPlacement(FvwmWindow *t,
 	    stickyy = 0;
 	  }
 	  do_test = False;
-#ifndef NO_STUBBORN_PLACEMENT
-          if((IS_ICONIFIED(test_window))&&!(IS_ICON_UNMAPPED(test_window))&&
-             (test_window->icon_w))
+          if(PLACEMENT_AVOID_ICON != 0 && IS_ICONIFIED(test_window) &&
+	     !IS_ICON_UNMAPPED(test_window) && test_window->icon_w)
           {
             tw=test_window->icon_p_width;
             th=test_window->icon_p_height+
@@ -153,7 +145,6 @@ static int SmartPlacement(FvwmWindow *t,
             ty = test_window->icon_g.y - stickyy;
 	    do_test = True;
           }
-#endif /* !NO_STUBBORN_PLACEMENT */
           else if(!IS_ICONIFIED(test_window))
           {
             tw = test_window->frame_g.width;
@@ -205,7 +196,7 @@ static void CleverPlacement(
 /**/
   int test_x = 0,test_y = 0;
   int xbest, ybest;
-  int aoi, aoimin;       /* area of interference */
+  float aoi, aoimin;       /* area of interference */
 
 /*  RBW - 11/02/1998  */
   int PageTop       =  0 - pdeltay;
@@ -370,20 +361,18 @@ static int get_next_y(FvwmWindow *t, int y, int pdeltay)
 }
 
 /*  RBW - 11/02/1998  */
-static int test_fit(FvwmWindow *t, int x11, int y11, int aoimin, int pdeltax,
-		    int pdeltay)
+static float test_fit(
+  FvwmWindow *t, int x11, int y11, float aoimin, int pdeltax, int pdeltay)
 {
 /**/
   FvwmWindow *testw;
   int x12, x21, x22;
   int y12, y21, y22;
   int xl, xr, yt, yb; /* xleft, xright, ytop, ybottom */
-  int aoi = 0;	    /* area of interference */
-#ifdef NEW_CLEVERPLACEMENT_CODE
+  float aoi = 0;      /* area of interference */
   float anew;
-  int norm_factor = 1;
-#else
-  int anew;
+#ifdef NEW_CLEVERPLACEMENT_CODE
+  float norm_factor = 1;
 #endif
   int avoidance_factor;
   int PageBottom    =  Scr.MyDisplayHeight - pdeltay;
@@ -439,16 +428,17 @@ static int test_fit(FvwmWindow *t, int x11, int y11, int aoimin, int pdeltax,
       yb = MIN(y12, y22);
       anew = (xr - xl) * (yb - yt);
       if(IS_ICONIFIED(testw))
-        avoidance_factor = AVOIDICON;
+        avoidance_factor = PLACEMENT_AVOID_ICON;
       else if(compare_window_layers(testw, t) > 0)
-        avoidance_factor = AVOIDONTOP;
+        avoidance_factor = PLACEMENT_AVOID_ONTOP;
       else if(IS_STICKY(testw))
-        avoidance_factor = AVOIDSTICKY;
+        avoidance_factor = PLACEMENT_AVOID_STICKY;
       else
         avoidance_factor = 1;
 #ifdef NEW_CLEVERPLACEMENT_CODE
       /* normalisation */
-      if ((x22-x21)*(y22-y21) != 0 && (x12-x11)*(y12-y11) != 0) {
+      if ((x22-x21)*(y22-y21) != 0 && (x12-x11)*(y12-y11) != 0)
+      {
 	anew = MAX(anew/((x22-x21)*(y22-y21)),anew/((x12-x11)*(y12-y11)))*100;
 	if (anew >= 99)
 	  norm_factor = 12;

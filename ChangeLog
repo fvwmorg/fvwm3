@@ -1,3 +1,18 @@
+2000-11-19  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* libs/defaults.h:
+	* fvwm/placement.c (test_fit):
+	(CleverPlacement):
+	fixed placement rounding error by using floats instead of ints for the
+	score
+	(...AVOID...):
+	moved macros to defaults.h
+	removed the NO_STUBBORN_PLACEMENT option. To get this behaviour, set
+	PLACEMENT_AVOID_ICON to 0 in defaults.h
+
+	* fvwm/focus.c (DoSetFocus):
+	fixed mousey focus transition between multiple screens
+
 2000-11-18  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* fvwm/repeat.c (repeat_function):
@@ -13,7 +28,7 @@
 2000-11-11  olicha  <olivier.chapuis@free.fr>
 
 	* sample.fvwmrc/system.fvwm2rc-sample-95
-	Use more portabel font
+	Use more portable font
 
 2000-11-10  Dan Espen  <dane@mk.telcordia.com>
 

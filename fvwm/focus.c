@@ -143,14 +143,9 @@ static void DoSetFocus(Window w, FvwmWindow *Fw, Bool FocusByMouse, Bool NoWarp)
 		  &JunkX, &JunkY, &JunkX, &JunkY, &JunkMask);
     if (JunkRoot != Scr.Root)
     {
-      if (focus_grab_buttons(Scr.Ungrabbed, False))
-      {
-	/* RBW - 12/09/1999 - this grab stuff looks way out of sync with
-	 * the regular handling - look into this later. I can't test a
-	 * multi-head setup just now. */
-	Scr.Focus = NULL;
-	FOCUS_SET(Scr.NoFocusWin);
-      }
+      focus_grab_buttons(Scr.Ungrabbed, False);
+      Scr.Focus = NULL;
+      FOCUS_SET(Scr.NoFocusWin);
       return;
     }
   }
