@@ -1598,8 +1598,8 @@ void DestroyMenuStyle(XEvent *eventp,Window w,FvwmWindow *tmp_win,
   if(mf == NULL)
        fvwm_msg(ERR,"DestroyMenuStyle", "cannot find style %s", name);
   else if (mf == Scr.DefaultMenuFace)
-       fvwm_msg(ERR,"DestroyMenuStyle", "cannot destroy Default Menu Face", name
-);
+       fvwm_msg(ERR,"DestroyMenuStyle", "cannot destroy Default Menu Face",
+		name);
   else
   {
      MenuRoot *mr;
@@ -1623,9 +1623,9 @@ void DestroyMenuStyle(XEvent *eventp,Window w,FvwmWindow *tmp_win,
      if(mf->MenuShadowGC)
         XFreeGC(dpy, mf->MenuShadowGC);
 
-     while(before->next != mf)  /* Not too many checks, may segfaults in race co
-nditions */
-        before = before->next;
+     while(before->next != mf)
+       /* Not too many checks, may segfaults in race conditions */
+       before = before->next;
 
      before->next = mf->next;
      free(mf->name);
@@ -1729,16 +1729,18 @@ void SetMenuStyle(XEvent *eventp,Window w,FvwmWindow *tmp_win,
     char *end, *tmp;
     int len;
 
-    while(isspace(*action)) ++action;
-    if( '(' != *action )
-    {
-      if (!*action)
+    if (!action)
       {
-	fvwm_msg(ERR,"SetMenuStyle", "error in %s style specification",
-		 action);
+	fvwm_msg(ERR,"SetMenuStyle", "error in %s style specification",action);
 	free(tmpmf);
 	goto etiqueta_final;
       }
+    while(isspace(*action)) ++action;
+    if( *action != '(' )
+    {
+      fvwm_msg(ERR,"SetMenuStyle", "error in %s style specification",action);
+      free(tmpmf);
+      goto etiqueta_final;
     }
     end = strchr(++action, ')');
     if (!end)
@@ -1869,10 +1871,8 @@ void SetMenuStyle(XEvent *eventp,Window w,FvwmWindow *tmp_win,
     hei = Scr.StdFont.height+SIZE_VINDENT*2;
     if(tmpmf->style == MWMMenu)
     {
-      XMoveResizeWindow(dpy,Scr.SizeWindow,
-                        Scr.MyDisplayWidth/2 -wid/2,
-                        Scr.MyDisplayHeight/2 - hei/2,
-                        wid,hei);
+      XMoveResizeWindow(dpy,Scr.SizeWindow, Scr.MyDisplayWidth/2 -wid/2,
+                        Scr.MyDisplayHeight/2 - hei/2, wid, hei);
     }
     else
     {
@@ -1891,69 +1891,70 @@ void SetMenuStyle(XEvent *eventp,Window w,FvwmWindow *tmp_win,
   tmpmf->name = name;
 
 
-  if( Scr.DefaultMenuFace == NULL)  /* First MenuStyle MUST be the default style
- */
+  if( Scr.DefaultMenuFace == NULL)
   {
-     Scr.DefaultMenuFace = tmpmf;
-     tmpmf->next = NULL;
+    /* First MenuStyle MUST be the default style */
+    Scr.DefaultMenuFace = tmpmf;
+    tmpmf->next = NULL;
   }
   else
   {
-      mf = FindMenuStyle(name);
+    mf = FindMenuStyle(name);
 
-      if(mf != NULL)
+    if(mf != NULL)
+    {
+      MenuRoot *mr;
+
+      mr = Scr.AllMenus;
+      while(mr != NULL)
       {
-          MenuRoot *mr;
-
-          mr = Scr.AllMenus;
-          while(mr != NULL)
-          {
-              if(mr->mf == mf) /* Only update default styles */
-                mr->mf = tmpmf;
-              mr = mr->next;
-          }
-
-          if(mf->MenuGC)
-            XFreeGC(dpy, mf->MenuGC);
-
-          if(mf->MenuActiveGC)
-            XFreeGC(dpy, mf->MenuActiveGC);
-          if(mf->MenuReliefGC)
-            XFreeGC(dpy, mf->MenuReliefGC);
-          if(mf->MenuStippleGC)
-            XFreeGC(dpy, mf->MenuStippleGC);
-          if(mf->MenuShadowGC)
-            XFreeGC(dpy, mf->MenuShadowGC);
-
-          tmpmf->next = mf->next;
-
-          if(mf == Scr.DefaultMenuFace)
-            Scr.DefaultMenuFace = tmpmf;
-          else
-          {
-              MenuFace *before = Scr.DefaultMenuFace;
-
-              while(before->next != mf) /* Not too many checks, may segfaults in
- race conditions */
-                before = before->next;
-
-              before->next = tmpmf;
-          }
-
-          free(mf->name);
-          free(mf);
+	if(mr->mf == mf)
+	  /* Only update default styles */
+	  mr->mf = tmpmf;
+	mr = mr->next;
       }
+
+      if(mf->MenuGC)
+	XFreeGC(dpy, mf->MenuGC);
+
+      if(mf->MenuActiveGC)
+	XFreeGC(dpy, mf->MenuActiveGC);
+      if(mf->MenuReliefGC)
+	XFreeGC(dpy, mf->MenuReliefGC);
+      if(mf->MenuStippleGC)
+	XFreeGC(dpy, mf->MenuStippleGC);
+      if(mf->MenuShadowGC)
+	XFreeGC(dpy, mf->MenuShadowGC);
+
+      tmpmf->next = mf->next;
+
+      if(mf == Scr.DefaultMenuFace)
+	Scr.DefaultMenuFace = tmpmf;
       else
       {
-          MenuFace *before = Scr.DefaultMenuFace;
+	MenuFace *before = Scr.DefaultMenuFace;
 
-          tmpmf->next = NULL;
+	while(before->next != mf)
+	  /* Not too many checks, may segfaults in race conditions */
+	  before = before->next;
 
-          while(before->next != NULL)
-            before = before->next;
-
-          before->next = tmpmf;
+	before->next = tmpmf;
       }
+
+      free(mf->name);
+      free(mf);
+    }
+    else
+    {
+      MenuFace *before = Scr.DefaultMenuFace;
+
+      tmpmf->next = NULL;
+
+      while(before->next != NULL)
+	before = before->next;
+
+      before->next = tmpmf;
+    }
   }
 
   MakeMenus();
@@ -3529,6 +3530,200 @@ void SetEnv(XEvent *eventp,Window junk,FvwmWindow *tmp_win,
     free(szValue);
 }
 
+/**********************************************************************
+ * Parses the flag string and returns the text between [ ] or ( ) 
+ * characters.  The start of the rest of the line is put in restptr.
+ * Note that the returned string is allocated here and it must be
+ * freed when it is not needed anymore.
+ **********************************************************************/
+char *CreateFlagString(char *string, char **restptr)
+{
+  char *retval;
+  char *c;
+  char *start;
+  char closeopt;
+  int length;
+  
+  c = string;
+  while (isspace(*c) && (*c != 0))
+    c++;
+
+  if (*c == '[' || *c == '(')
+  {
+    /* Get the text between [ ] or ( ) */
+    if (*c == '[') 
+      closeopt = ']'; 
+    else 
+      closeopt = ')';
+    c++;
+    start = c;
+    length = 0;
+    while (*c != closeopt) {
+      if (*c == 0) {
+	fvwm_msg(ERR, "CreateConditionMask", "Conditionals require closing parenthesis");
+	return NULL;
+      }
+      c++;
+      length++;
+    }
+
+    /* We must allocate a new string because we null terminate the string
+     * between the [ ] or ( ) characters.
+     */
+    retval = safemalloc(length + 1);
+    strncpy(retval, start, length);
+    retval[length] = 0;
+
+    *restptr = c + 1;
+  }
+  else {
+    retval = NULL;
+    *restptr = c;
+  }
+
+  return retval;
+}
+
+/**********************************************************************
+ * The name field of the mask is allocated in CreateConditionMask.
+ * It must be freed.
+ **********************************************************************/
+void FreeConditionMask(WindowConditionMask *mask)
+{
+  if (mask->needsName)
+    free(mask->name);
+  else if (mask->needsNotName)
+    free(mask->name - 1);
+}
+
+/* Assign the default values for the window mask */
+void DefaultConditionMask(WindowConditionMask *mask)
+{
+  mask->name = NULL;
+  mask->needsCurrentDesk = 0;
+  mask->needsCurrentPage = 0;
+  mask->needsName = 0;
+  mask->needsNotName = 0;
+  mask->useCirculateHit = 0;
+  mask->useCirculateHitIcon = 0;
+  mask->onFlags = 0;
+  mask->offFlags = 0;
+}
+
+/**********************************************************************
+ * Note that this function allocates the name field of the mask struct.
+ * FreeConditionMask must be called for the mask when the mask is discarded.
+ **********************************************************************/
+void CreateConditionMask(char *flags, WindowConditionMask *mask)
+{
+  char *condition;
+  char *prev_condition = NULL;
+  char *tmp;
+
+  if (flags == NULL)
+    return;
+
+  /* Next parse the flags in the string. */
+  tmp = flags;
+  tmp = GetNextToken(tmp, &condition);
+
+  while (condition)
+  {
+    if (StrEquals(condition,"Iconic"))
+      mask->onFlags |= ICONIFIED;
+    else if(StrEquals(condition,"!Iconic"))
+      mask->offFlags |= ICONIFIED;
+    else if(StrEquals(condition,"Visible"))
+      mask->onFlags |= VISIBLE;
+    else if(StrEquals(condition,"!Visible"))
+      mask->offFlags |= VISIBLE;
+    else if(StrEquals(condition,"Sticky"))
+      mask->onFlags |= STICKY;
+    else if(StrEquals(condition,"!Sticky"))
+      mask->offFlags |= STICKY;
+    else if(StrEquals(condition,"Maximized"))
+      mask->onFlags |= MAXIMIZED;
+    else if(StrEquals(condition,"!Maximized"))
+      mask->offFlags |= MAXIMIZED;
+    else if(StrEquals(condition,"Transient"))
+      mask->onFlags |= TRANSIENT;
+    else if(StrEquals(condition,"!Transient"))
+      mask->offFlags |= TRANSIENT;
+    else if(StrEquals(condition,"Raised"))
+      mask->onFlags |= RAISED;
+    else if(StrEquals(condition,"!Raised"))
+      mask->offFlags |= RAISED;
+    else if(StrEquals(condition,"CurrentDesk"))
+      mask->needsCurrentDesk = 1;
+    else if(StrEquals(condition,"CurrentPage"))
+    {
+      mask->needsCurrentDesk = 1;
+      mask->needsCurrentPage = 1;
+    }
+    else if(StrEquals(condition,"CurrentPageAnyDesk") ||
+	    StrEquals(condition,"CurrentScreen"))
+      mask->needsCurrentPage = 1;
+    else if(StrEquals(condition,"CirculateHit"))
+      mask->useCirculateHit = 1;
+    else if(StrEquals(condition,"CirculateHitIcon"))
+      mask->useCirculateHitIcon = 1;
+    else if(!mask->needsName && !mask->needsNotName) 
+    {
+      /* only 1st name to avoid mem leak */
+      mask->name = condition;
+      condition = NULL;
+      if (mask->name[0] == '!')
+      {
+	mask->needsNotName = 1;
+	mask->name++;
+      }
+      else
+	mask->needsName = 1;
+    }
+
+    if (prev_condition) 
+      free(prev_condition);
+
+    prev_condition = condition;
+    tmp = GetNextToken(tmp, &condition);
+  }
+
+  if(prev_condition != NULL)
+    free(prev_condition);
+}
+
+/**********************************************************************
+ * Checks whether the given window matches the mask created with
+ * CreateConditionMask.
+ **********************************************************************/
+Bool MatchesContitionMask(FvwmWindow *fw, WindowConditionMask *mask)
+{
+  return 
+    ((mask->onFlags & fw->flags) == mask->onFlags) &&
+    ((mask->offFlags & fw->flags) == 0) &&
+    (mask->useCirculateHit || !(fw->flags & CirculateSkip)) &&
+    ((mask->useCirculateHitIcon && fw->flags & ICONIFIED) ||
+     !(fw->flags & CirculateSkipIcon && fw->flags & ICONIFIED)) &&
+    (!mask->needsCurrentDesk || fw->Desk == Scr.CurrentDesk) &&
+    (!mask->needsCurrentPage || (fw->frame_x < Scr.MyDisplayWidth &&
+				 fw->frame_y < Scr.MyDisplayHeight &&
+				 fw->frame_x + fw->frame_width > 0 &&
+				 fw->frame_y + fw->frame_height > 0)
+      ) &&
+    (!mask->needsName ||
+     matchWildcards(mask->name, fw->name) ||
+     matchWildcards(mask->name, fw->icon_name) ||
+     fw->class.res_class && matchWildcards(mask->name, fw->class.res_class) ||
+     fw->class.res_name && matchWildcards(mask->name, fw->class.res_name)
+      ) &&
+    (!mask->needsNotName ||
+     !(matchWildcards(mask->name, fw->name) ||
+       matchWildcards(mask->name, fw->icon_name) ||
+       fw->class.res_class && matchWildcards(mask->name, fw->class.res_class)||
+       fw->class.res_name && matchWildcards(mask->name, fw->class.res_name)
+       )
+      );
+}
 
 /**************************************************************************
  *
@@ -3539,118 +3734,20 @@ void SetEnv(XEvent *eventp,Window junk,FvwmWindow *tmp_win,
  **************************************************************************/
 FvwmWindow *Circulate(char *action, int Direction, char **restofline)
 {
-  int l,pass = 0;
+  int pass = 0;
   FvwmWindow *fw, *found = NULL;
-  char *t,*tstart,*name = NULL, *expression, *condition, *prev_condition=NULL;
-  char *orig_expr;
-  Bool needsCurrentDesk = 0;
-  Bool needsCurrentPage = 0;
+  WindowConditionMask mask;
+  char *flags;
 
-  Bool needsName = 0;
-  Bool needsNotName = 0;
-  Bool useCirculateHit = (Direction) ? 0 : 1; /* override for Current [] */
-  Bool useCirculateHitIcon = (Direction) ? 0 : 1;
-  unsigned long onFlags = 0;
-  unsigned long offFlags = 0;
-  char closeopt;
-
-  l=0;
-
-  if(action == NULL)
-    return NULL;
-
-  t = action;
-  while(isspace(*t)&&(*t!= 0))
-    t++;
-  if(*t == '[' || *t == '(')
-  {
-    if (*t == '[')
-      closeopt = ']';
-    else
-      closeopt = ')';
-    t++;
-    tstart = t;
-
-    while((*t !=0)&&(*t != closeopt))
-    {
-      t++;
-      l++;
-    }
-    if(*t == 0)
-    {
-      fvwm_msg(ERR,"Circulate","Conditionals require closing parenthesis");
-      return NULL;
-    }
-
-    *restofline = t+1;
-
-    orig_expr = expression = safemalloc(l+1);
-    strncpy(expression,tstart,l);
-    expression[l] = 0;
-    expression = GetNextToken(expression,&condition);
-    while (condition)
-    {
-      if     (StrEquals(condition,"Iconic"))
-        onFlags |= ICONIFIED;
-      else if(StrEquals(condition,"!Iconic"))
-        offFlags |= ICONIFIED;
-      else if(StrEquals(condition,"Visible"))
-        onFlags |= VISIBLE;
-      else if(StrEquals(condition,"!Visible"))
-        offFlags |= VISIBLE;
-      else if(StrEquals(condition,"Sticky"))
-        onFlags |= STICKY;
-      else if(StrEquals(condition,"!Sticky"))
-        offFlags |= STICKY;
-      else if(StrEquals(condition,"Maximized"))
-        onFlags |= MAXIMIZED;
-      else if(StrEquals(condition,"!Maximized"))
-        offFlags |= MAXIMIZED;
-      else if(StrEquals(condition,"Transient"))
-        onFlags |= TRANSIENT;
-      else if(StrEquals(condition,"!Transient"))
-        offFlags |= TRANSIENT;
-      else if(StrEquals(condition,"Raised"))
-        onFlags |= RAISED;
-      else if(StrEquals(condition,"!Raised"))
-        offFlags |= RAISED;
-      else if(StrEquals(condition,"CurrentDesk"))
-        needsCurrentDesk = 1;
-      else if(StrEquals(condition,"CurrentPage"))
-      {
-        needsCurrentDesk = 1;
-        needsCurrentPage = 1;
-      }
-      else if(StrEquals(condition,"CurrentPageAnyDesk") ||
-              StrEquals(condition,"CurrentScreen"))
-        needsCurrentPage = 1;
-      else if(StrEquals(condition,"CirculateHit"))
-        useCirculateHit = 1;
-      else if(StrEquals(condition,"CirculateHitIcon"))
-        useCirculateHitIcon = 1;
-      else if(!needsName && !needsNotName) /* only 1st name to avoid mem leak */
-      {
-        name = condition;
-        condition = NULL;
-        if (name[0] == '!')
-        {
-          needsNotName = 1;
-          name++;
-        }
-        else
-          needsName = 1;
-      }
-      if(prev_condition)free(prev_condition);
-      prev_condition = condition;
-      expression = GetNextToken(expression,&condition);
-    }
-    if(prev_condition != NULL)
-      free(prev_condition);
-    if(orig_expr != NULL)
-      free(orig_expr);
+  /* Create window mask */
+  flags = CreateFlagString(action, restofline);
+  DefaultConditionMask(&mask);
+  if (Direction == 0) { /* override for Current [] */
+    mask.useCirculateHit = 1;
+    mask.useCirculateHitIcon = 1;
   }
-  else
-    *restofline = t;
+  CreateConditionMask(flags, &mask);
+  free(flags);
 
   if(Scr.Focus != NULL)
   {
@@ -3669,48 +3766,21 @@ FvwmWindow *Circulate(char *action, int Direction, char **restofline)
     while((fw != NULL)&&(found==NULL)&&(fw != &Scr.FvwmRoot))
     {
 #ifdef FVWM_DEBUG_MSGS
-	fvwm_msg(DBG,"Circulate","Trying %s",fw->name);
+      fvwm_msg(DBG,"Circulate","Trying %s",fw->name);
 #endif /* FVWM_DEBUG_MSGS */
       /* Make CirculateUp and CirculateDown take args. by Y.NOMURA */
-      if ((onFlags & fw->flags) == onFlags &&
-          (offFlags & fw->flags) == 0 &&
-          (useCirculateHit || !(fw->flags & CirculateSkip)) &&
-          ((useCirculateHitIcon && fw->flags & ICONIFIED) ||
-           !(fw->flags & CirculateSkipIcon && fw->flags & ICONIFIED)) &&
-          (!needsCurrentDesk || fw->Desk == Scr.CurrentDesk) &&
-          (!needsCurrentPage || (fw->frame_x < Scr.MyDisplayWidth &&
-                                 fw->frame_y < Scr.MyDisplayHeight &&
-                                 fw->frame_x + fw->frame_width > 0 &&
-                                 fw->frame_y + fw->frame_height > 0)
-            ) &&
-          (!needsName ||
-           matchWildcards(name, fw->name) ||
-           matchWildcards(name, fw->icon_name) ||
-           fw->class.res_class && matchWildcards(name, fw->class.res_class) ||
-           fw->class.res_name && matchWildcards(name, fw->class.res_name)
-            ) &&
-          (!needsNotName ||
-           !(matchWildcards(name, fw->name) ||
-             matchWildcards(name, fw->icon_name) ||
-             fw->class.res_class && matchWildcards(name, fw->class.res_class)||
-             fw->class.res_name && matchWildcards(name, fw->class.res_name)
-             )
-            )
-        )
-        found = fw;
+      if (MatchesContitionMask(fw, &mask))
+	found = fw;
       else
       {
-        if(Direction == 1)
-          fw = fw->prev;
-        else
-          fw = fw->next;
+	if(Direction == 1)
+	  fw = fw->prev;
+	else
+	  fw = fw->next;
       }
       if (Direction == 0)
       {
-        if (needsName)
-          free(name);
-        else if (needsNotName)
-          free(name - 1);
+	FreeConditionMask(&mask);
         return found;
       }
     }
@@ -3733,12 +3803,8 @@ FvwmWindow *Circulate(char *action, int Direction, char **restofline)
     }
     pass++;
   }
-  if (needsName)
-    free(name);
-  else if (needsNotName)
-    free(name - 1);
+  FreeConditionMask(&mask);
   return found;
-
 }
 
 void PrevFunc(XEvent *eventp,Window junk,FvwmWindow *tmp_win,
@@ -3793,6 +3859,123 @@ void CurrentFunc(XEvent *eventp,Window junk,FvwmWindow *tmp_win,
   {
     ExecuteFunction(restofline,found,eventp,C_WINDOW,*Module);
   }
+}
+
+/**********************************************************************
+ * Execute a function to the closest window in the given
+ * direction.
+ **********************************************************************/
+void DirectionFunc(XEvent *eventp,Window junk,FvwmWindow *tmp_win, 
+	       unsigned long context, char *action, int *Module)
+{
+  int my_x;
+  int my_y;
+  int his_x;
+  int his_y;
+  int score;
+  int offset;
+  int distance;
+  int best_score;
+  FvwmWindow *window;
+  FvwmWindow *best_window;
+  char dir;
+  char *flags;
+  char *restofline;
+  char *tmp;
+  WindowConditionMask mask;
+
+  /* Parse the direction. */
+  action = GetNextToken(action, &tmp);
+  if (StrEquals("North", tmp))
+    dir = 0;
+  else if (StrEquals("East", tmp))
+    dir = 1;
+  else if (StrEquals("South", tmp))
+    dir = 2;
+  else if (StrEquals("West", tmp))
+    dir = 3;
+  else {
+    fvwm_msg(ERR, "Direction","No such direction %s", tmp);
+    free(tmp);
+    return;
+  }
+  free(tmp);
+
+  /* Create the mask for flags */
+  flags = CreateFlagString(action, &restofline);
+  DefaultConditionMask(&mask);
+  CreateConditionMask(flags, &mask);
+  free(flags);
+
+  /* If there is a focused window, use that as a starting point.
+   * Otherwise we use the pointer as a starting point. */
+  if (tmp_win != NULL) {
+    if ((tmp_win->flags & ICONIFIED) != 0)
+    {
+      my_x = tmp_win->icon_x_loc + tmp_win->icon_w_width / 2;
+      my_y = tmp_win->icon_y_loc + tmp_win->icon_w_height / 2;
+    }
+    else
+    {
+      my_x = tmp_win->frame_x + tmp_win->frame_width / 2;
+      my_y = tmp_win->frame_y;
+    }
+  }
+  else
+    XQueryPointer(dpy, Scr.Root, &JunkRoot, &JunkChild, 
+		  &my_x, &my_y, &JunkX, &JunkY, &JunkMask);
+
+  /* Next we iterate through all windows and choose the closest one in
+   * the wanted direction. 
+   */
+  best_window = NULL;
+  best_score = -1;
+  for (window = Scr.FvwmRoot.next; window != NULL; window = window->next) {
+
+    /* Skip every window that does not match conditionals.
+     * Skip also currently focused window.  That would be too close. :) 
+     */
+    if (window == tmp_win) continue;
+    if (!MatchesContitionMask(window, &mask)) continue;
+
+    /* Calculate relative location of the window. */
+    if ((window->flags & ICONIFIED) != 0) {
+      his_x = window->icon_x_loc + window->icon_w_width / 2;
+      his_y = window->icon_y_loc + window->icon_w_height / 2;
+    }
+    else {
+      his_x = window->frame_x + window->frame_width / 2;
+      his_y = window->frame_y;
+    }
+    his_x -= my_x;
+    his_y -= my_y;
+
+    /* Arrange so that distance and offset are positive in desired 
+     * direction. 
+     */
+    if (dir == 0 || dir == 2) {
+      offset = (his_x < 0) ? -his_x : his_x;
+      distance = (dir == 0) ? -his_y : his_y;
+    } else {
+      offset = (his_y < 0) ? -his_y : his_y;
+      distance = (dir == 3) ? -his_x : his_x;
+    }
+	
+    /* Target must be in given direction. */
+    if (distance <= 0) continue;
+
+    /* Calculate score for this window.  The smaller the better. */
+    score = 1000 * offset / distance + distance;
+    if (best_score == -1 || score < best_score) {
+      best_window = window;
+      best_score = score;
+    }
+  }
+
+  if (best_window != NULL)
+    ExecuteFunction(restofline, best_window, eventp, C_WINDOW, *Module);
+  
+  FreeConditionMask(&mask);
 }
 
 void WindowIdFunc(XEvent *eventp,Window junk,FvwmWindow *tmp_win,

@@ -927,14 +927,14 @@ void CreateWindow(void)
     {
       if (xneg)
 	{
-	  mysizehints.x = DisplayWidth(dpy,screen) + x - mysizehints.width-2;
+	  mysizehints.x = DisplayWidth(dpy,screen) + x - mysizehints.width;
 	  gravity = NorthEastGravity;
 	}
       else 
 	mysizehints.x = x;
       if (yneg)
 	{
-	  mysizehints.y = DisplayHeight(dpy,screen) + y - mysizehints.height-2;
+	  mysizehints.y = DisplayHeight(dpy,screen) + y - mysizehints.height;
 	  gravity = SouthWestGravity;
 	}
       else 
@@ -947,7 +947,7 @@ void CreateWindow(void)
     }
 
   mysizehints.win_gravity = gravity;
-#define BW 1
+
   if(d_depth < 2)
     {
       back_pix = icon_back_pix = act_icon_fore_pix = GetColor("white");
@@ -973,7 +973,7 @@ void CreateWindow(void)
 
   main_win = XCreateSimpleWindow(dpy,Root,mysizehints.x,mysizehints.y,
 				 mysizehints.width,mysizehints.height,  
-				 BW,fore_pix,back_pix);
+				 0,fore_pix,back_pix);
   XSetWMProtocols(dpy,main_win,&wm_del_win,1);
   XSelectInput(dpy,main_win,MW_EVENTS);
 

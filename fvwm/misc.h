@@ -526,6 +526,8 @@ void NoneFunc(XEvent *eventp,Window w,FvwmWindow *tmp_win,
 	      unsigned long context, char *action,int* Module);
 void CurrentFunc(XEvent *eventp,Window w,FvwmWindow *tmp_win,
  	      unsigned long context, char *action,int* Module);
+void DirectionFunc(XEvent *eventp,Window junk,FvwmWindow *tmp_win, 
+	       unsigned long context, char *action, int *Module);
 void WindowIdFunc(XEvent *eventp,Window w,FvwmWindow *tmp_win,
                   unsigned long context, char *action,int* Module);
 void ReadFile(XEvent *eventp,Window junk,FvwmWindow *tmp_win,

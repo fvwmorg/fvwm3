@@ -607,9 +607,9 @@ void X_init_manager (int man_id)
   man->geometry.height = man->geometry.rows * man->geometry.boxheight;
 
   if ((geometry_mask & XValue) && (geometry_mask & XNegative))
-    man->geometry.x += globals.screenx - man->geometry.width - 2;
+    man->geometry.x += globals.screenx - man->geometry.width;
   if ((geometry_mask & YValue) && (geometry_mask & YNegative))
-    man->geometry.y += globals.screeny - man->geometry.height - 2;
+    man->geometry.y += globals.screeny - man->geometry.height;
 
   if (globals.transient) {
     Window dummyroot, dummychild;
@@ -708,7 +708,7 @@ void create_manager_window (int man_id)
   man->theWindow = XCreateWindow (theDisplay, theRoot, sizehints.x,
 				  sizehints.y, man->geometry.width,
 				  man->geometry.height,
-				  1, CopyFromParent, InputOutput,
+				  0, CopyFromParent, InputOutput,
 				  (Visual *)CopyFromParent, winattrmask,
 				  &winattr);
 #ifdef SHAPE

@@ -390,13 +390,13 @@ void list_end(void)
 
   if((y+height+100)>ScreenHeight)
     {
-      y = ScreenHeight- 2 - height - 10;
+      y = ScreenHeight - height - 10;
       mysizehints.win_gravity = SouthWestGravity;      
     }
 	
   if((x+lmax+100)>ScreenWidth)
     {
-      x = ScreenWidth - 2 - lmax - 10;
+      x = ScreenWidth - lmax - 10;
       if((y+height+100)>ScreenHeight)
 	mysizehints.win_gravity = SouthEastGravity;            
       else
@@ -406,7 +406,7 @@ void list_end(void)
   mysizehints.y = y;
 
 
-#define BW 1
+
   if(d_depth < 2)
     {
       back_pix = GetColor("white");
@@ -421,7 +421,7 @@ void list_end(void)
 
   main_win = XCreateSimpleWindow(dpy,Root,mysizehints.x,mysizehints.y,
 				 mysizehints.width,mysizehints.height,
-				 BW,fore_pix,back_pix);
+				 0,fore_pix,back_pix);
   XSetTransientForHint(dpy,main_win,app_win);
   wm_del_win = XInternAtom(dpy,"WM_DELETE_WINDOW",False);
   XSetWMProtocols(dpy,main_win,&wm_del_win,1);

@@ -1,3 +1,24 @@
+1998-11-19  Dominik Vogt  <dominik_vogt@hp.com>
+
+	* libs/envvar.c (strIns): fixed array bounds read viaolation
+
+	* fvwm/menus.c (AddToMenu): multiple tabs allowed between left and
+	right part of menu item name; all other tabs are replaced by spaced
+
+	* fvwm/fvwm2.1: updated AddToMenu/AddToFunc syntax
+
+	* fvwm/builtins.c (CreateFlagString): 
+	(FreeConditionMask): 
+	(DefaultConditionMask): 
+	(CreateConditionMask): 
+	(MatchesContitionMask): 
+	(Circulate): 
+	(DirectionFunc):
+ 	Applied 'Direction' patch (added and modified some functions).
+
+	* fvwm/builtins.c (SetMenuStyle): fixed coredump (NULL action
+	referenced with NEXT style).
+
 1998-11-18  Dominik Vogt  <dominik_vogt@hp.com>
 
 	* fvwm/move.c (moveLoop): Applied SnapAttraction update patch
@@ -483,7 +504,7 @@ Wed Nov  4 11:09:11 1998  Steve Robbins  <steve@nyongwa.montreal.qc.ca>
 1998-11-04  Dominik Vogt  <dominik_vogt@hp.com>
 
 	* fvwm/events.c (HandlePropertyNotify): Fixed the fix
-	* for TransientFor Bug
+	for TransientFor Bug
 
 	* extras/fvwmperl/*: Added correct copyright notices.
 

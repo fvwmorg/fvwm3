@@ -151,7 +151,7 @@ MenuStatus do_menu(MenuRoot *menu, MenuRoot *menuPrior,
 
   DBUG("do_menu","called");
 
-   key_press = (eventp && (eventp == (XEvent *)1 || eventp->type == KeyPress));
+  key_press = (eventp && (eventp == (XEvent *)1 || eventp->type == KeyPress));
   /* this condition could get ugly */
   if(menu == NULL || menu->in_use) {
     /* DBUG("do_menu","menu->in_use for %s -- returning",menu->name); */
@@ -2506,12 +2506,24 @@ void AddToMenu(MenuRoot *menu, char *item, char *action, Bool fPixmapsOk,
   if(*end=='\t')
     {
       start = end+1;
+      while(*start == '\t')
+	start++;
+      end = start;
       while(*end != 0)
 	end++;
       if(end-start != 0)
 	{
+	  char *s;
+
 	  tmp->item2 = safemalloc(end-start+1);
 	  strncpy(tmp->item2,start,end-start);
+	  s = tmp->item2;
+	  while (*s)
+	    {
+	      if (*s == '\t')
+		*s = ' ';
+	      s++;
+	    }
 	  tmp->item2[end-start] = 0;
 	}
     }

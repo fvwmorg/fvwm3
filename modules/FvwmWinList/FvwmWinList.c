@@ -26,11 +26,6 @@
  * Moving a window doesnt send M_CONFIGURE, as I thought it should. Desktop
  * for that button is not updated.
 
- * There seems to be something incosistant about Resizing and the value given
- * back as win_x, win_y.  SEE RESIZE_BUG_HACK for my work around. 
- 
- * Don Mahurin (dmahurin@donet.com)
-
 */
 
 #define TRUE 1
@@ -119,8 +114,6 @@ int UseSkipList=0,Anchor=1,UseIconNames=0,LeftJustify=0,TruncateLeft=1;
 
 long CurrentDesk = 0;
 int ShowCurrentDesk = 0;
-
-int RESIZE_BUG_HACK = 0;
 
 int ItemCountD(List *list )
 {
@@ -280,20 +273,24 @@ void ProcessMessage(unsigned long type,unsigned long *body)
     case M_CONFIGURE_WINDOW:
       if (body[0] == win)
       {
-        win_x=(int)body[3];
-        win_y=(int)body[4];
-
+        /* gross hack for anchored resizes, should be able to call XResizeWindow
+           and have fvwm move the window correctly w.r.t. the gravity.  Until this
+           is so this program has to do its own gravity management. */
+        /* what happens here is that fvwm sends the size and position of
+           FvwmWinLists' parent, this has to compensate for the frame
+           to get the position of the WinList window so that when XMoveResize
+           is called the window doesn't creep */
+        /* if fvwm is fixed to handle windows resizing themselves then this
+           whole section can be deleted. */
         win_title=(int)body[9];
         win_border=(int)body[10];
+        win_x = (int)body[3] + win_border;
+        win_y = (int)body[4] + win_border + win_title;
       }
       if ((i = FindItem(&windows,body[0]))!=-1) 
       { 
-/*	printf("does it go here on MOVE %ld, %ld ?\n", i, CurrentDesk);
-*/
 	if(UpdateItemDesk(&windows, i, body[7]) > 0)
         {
-/*         printf("why doesnt it go here on MOVE ?\n");
-*/
           AdjustWindow();
           RedrawWindow(1);
         }
@@ -364,20 +361,6 @@ void ProcessMessage(unsigned long type,unsigned long *body)
       break;
     case M_FOCUS_CHANGE:
 
-/* old coded, before Task bar code spliced in
-
-      i=FindItem(&windows,body[0]);
-      if (i==current_focus) break;
-      if (current_focus!=-1)
-	if ((ItemFlags(&windows,ItemID(&windows,current_focus))&ICONIFIED)==0)
-	  if (UpdateButtonSet(&buttons,current_focus,0)!=-1) redraw=1;
-      current_focus=-1;
-      if (i!=-1&&(ItemFlags(&windows,body[0])&ICONIFIED)) break;
-      current_focus=i;
-      if (current_focus!=-1)
-	if (UpdateButtonSet(&buttons,current_focus,2)!=-1) redraw=1;
-* end of old code */
-
 /* Code copied Straight from TaskBar */
 
     if ((i=FindItem(&windows,body[0]))!=-1)
@@ -398,9 +381,7 @@ void ProcessMessage(unsigned long type,unsigned long *body)
 	CurrentDesk = body[0];
 	if(ShowCurrentDesk)
 	{
-	  RESIZE_BUG_HACK = 1;
 	  AdjustWindow();
-	  RESIZE_BUG_HACK = 0;
 	  RedrawWindow(1);
         }
       break;
@@ -712,10 +693,13 @@ void AdjustWindow()
   }
   new_width=max(new_width, MinWidth);
   new_width=min(new_width, MaxWidth);
-  new_height=(total*(fontheight+6+1)-1);
+  new_height=(total*(fontheight+6+1));
   if (WindowIsUp && (new_height!=win_height  || new_width!=win_width))
   {
     if (Anchor)
+    /* if fvwm is fixed to handle windows with gravity resizing themselves
+       this will be redundant, just a XResizeWindow will work. How to handle
+       NoAnchor in that case is left as an exercise for the reader. */
     {
       if (win_grav==SouthEastGravity || win_grav==NorthEastGravity)
         win_x-=(new_width-win_width);
@@ -723,39 +707,12 @@ void AdjustWindow()
       if (win_grav==SouthEastGravity || win_grav==SouthWestGravity)
         win_y-=(new_height-win_height);
 
-#if 0
-      if(RESIZE_BUG_HACK)
-      {
-        if (win_grav==SouthEastGravity || win_grav==NorthEastGravity)
-		win_x+= win_border - 2;
-	else
-		win_x-=win_border;
-
-	if (win_grav==SouthEastGravity || win_grav==SouthWestGravity)
-		win_y+=win_border - 2;
-	else	
-		win_y-=win_border;
-      }
-#else /* ckh - need to come up w/ better way to calculate win_x & _y */
-        if (win_grav==SouthEastGravity || win_grav==NorthEastGravity)
-		win_x+= win_border-3;
-	else
-		win_x-=win_border;
-
-	if (win_grav==SouthEastGravity || win_grav==SouthWestGravity)
-		win_y+=win_border-3;
-	else	
-		win_y-=win_border;
-#endif /* 0 */
-
-      XMoveResizeWindow(dpy,win,win_x+win_border,win_y+win_title+win_border,
-        new_width,new_height);
+      XMoveResizeWindow(dpy, win, win_x, win_y, new_width, new_height);
 
     }
     else
-      XResizeWindow(dpy, win, new_width,new_height);
+      XResizeWindow(dpy, win, new_width, new_height);
 
-    XSync(dpy,False);
   }
   UpdateArray(&buttons,-1,-1,new_width,-1);
   if (new_height>0) win_height = new_height;
@@ -877,7 +834,7 @@ void MakeMeWindow(void)
     fore[i] = GetColor(ForeColor[i] == NULL ? ForeColor[0] : ForeColor[i]);
   }
 
-  win=XCreateSimpleWindow(dpy,Root,hints.x,hints.y,hints.width,hints.height,1,
+  win=XCreateSimpleWindow(dpy,Root,hints.x,hints.y,hints.width,hints.height,0,
     fore[0],back[0]);
 
   wm_del_win=XInternAtom(dpy,"WM_DELETE_WINDOW",False);

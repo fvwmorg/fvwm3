@@ -892,7 +892,7 @@ void CreateWindow(void)
     }
 
   mysizehints.win_gravity = gravity;
-#define BW 1
+
   if(d_depth < 2)
     {
       back_pix = GetColor("white");
@@ -911,7 +911,7 @@ void CreateWindow(void)
 
   main_win = XCreateSimpleWindow(dpy,Root,mysizehints.x,mysizehints.y,
 				 mysizehints.width,mysizehints.height,
-				 BW,fore_pix,back_pix);
+				 0,fore_pix,back_pix);
   XSetWMProtocols(dpy,main_win,&wm_del_win,1);
 
   XSetWMNormalHints(dpy,main_win,&mysizehints);

@@ -1,3 +1,15 @@
+1998-11-19  Dominik Vogt  <dominik_vogt@hp.com>
+
+	* FvwmWinList/FvwmWinList.c (ProcessMessage): 
+	(AdjustWindow): 
+	(MakeMeWindow): 
+	* FvwmIdent/FvwmIdent.c (list_end): 
+	* FvwmIconMan/x.c (X_init_manager):
+	(create_manager_window):
+	* FvwmIconBox/FvwmIconBox.c (CreateWindow):
+	* FvwmBanner/FvwmBanner.c (main):
+	border size bugfix
+
 1998-11-12  Dominik Vogt  <dominik_vogt@hp.com>
 
 	* FvwmButtons/FvwmButtons.c (CreateWindow):

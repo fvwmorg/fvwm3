@@ -236,6 +236,21 @@ typedef struct FvwmWindow
     unsigned      ViewportMoved        : 1;  /*  To prevent double move in MoveViewport.  */
 } FvwmWindow;
 
+/* Window mask for Circulate and Direction functions */
+typedef struct WindowConditionMask {
+  Bool needsCurrentDesk;
+  Bool needsCurrentPage;
+  Bool needsName;
+  Bool needsNotName;
+  Bool useCirculateHit;
+  Bool useCirculateHitIcon;
+  Bool useCirculateSkip;
+  Bool useCirculateSkipIcon;
+  unsigned long onFlags;
+  unsigned long offFlags;
+  char *name;
+} WindowConditionMask;
+
 /***************************************************************************
  * window flags definitions 
  ***************************************************************************/

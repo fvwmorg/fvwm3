@@ -7,6 +7,7 @@ Changes in release 2.1.2
   make the borders adjoin.
 * ...MenuStyle commands: allow to name different menu styles and apply them
   to individual menus.
+* Direction command
 
 Changes in release 2.1.1
 * Official home page html added to docs directory.

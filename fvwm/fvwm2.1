@@ -456,7 +456,7 @@ decorations are modified; changing Style options requires a Recapture
 instead).  A decor can be destroyed with DestroyDecor.
 
 
-.IP "AddToFunc"
+.IP "AddToFunc [ \fIname\fP [ \fItrigger\fP \fIaction\fP] ]"
 Begins or add to a function definition.  Here's an example:
 .EX
 AddToFunc Move-or-Raise "I" Raise
@@ -514,7 +514,7 @@ AddToFunc PrintFunction
 Note that $$ is expanded to $.
 
 
-.IP "AddToMenu"
+.IP "AddToMenu \fImenu-name\fP [ \fImenu-label\fP \fIaction\fP ]"
 Begins or adds to a menu definition.  Typically a menu definition looks
 like this:
 .EX
@@ -559,6 +559,10 @@ If there was a title already, it is overwritten.
 AddToMenu Utilities "Tools" Title top
 .EE
 
+All text up to the first TAB in the menu label is aligned to the
+left side of the menu, all text right of the first TAB is aligned
+to the right side. All other TABs are replaced by spaces.
+
 If the menu-label contains a sub-string which is set off by stars,
 then the text between the stars is expected to be the name of an
 xpm-icon or bitmap-file to insert in the menu.  For example
@@ -587,7 +591,7 @@ Omits the "Calculator" label, but leaves the picture.  The pictures
 used with this feature should be small (perhaps 16x16).
 
 If the menu-label contains a sub-string which is set off by at signs
-("@"), then the text between them is expected to be the nmae of an
+("@"), then the text between them is expected to be the name of an
 xpm or bitmap file to draw along the left side of the menu (a "side
 pixmap").
 For example

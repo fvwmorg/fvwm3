@@ -184,7 +184,7 @@ int main(int argc, char **argv)
 
   win = XCreateSimpleWindow(dpy,Root,mysizehints.x,mysizehints.y,
 				 mysizehints.width,mysizehints.height,
-				 1,fore_pix ,None);
+				 0,fore_pix ,None);
 
 
   /* Set assorted info for the window */

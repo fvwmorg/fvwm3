@@ -95,7 +95,7 @@ static void strIns(char *s, const char *ins, int idx, int maxstrlen)
     if (idx > (l = strlen(s)))
 	idx = l;
     li = strlen(ins);
-    move = l - idx + 2; /* include '\0' in move */
+    move = l - idx + 1; /* include '\0' in move */
     p1 = s + l;
     p2 = p1 + li;
     while (p2 >= s + maxstrlen) {

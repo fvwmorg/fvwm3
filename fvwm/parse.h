@@ -63,6 +63,7 @@ enum {
     F_BUTTON_STYLE,
     F_READ,
     F_ADDMENU2,
+    F_DIRECTION,
     F_NEXT,
     F_PREV,
     F_NONE,
