@@ -2942,9 +2942,10 @@ of it are silently ignored.
 .in -.3i
 .BR Space ", " Tab ", " %Space " and " %Tab
 .in +.3i
-Add a gap as large as one respectively eight spaces are with the
-font used in the menu items.  The whole string must be quoted if
-spaces or tabs are used.
+Add gap of one space, or a tab, using the width of the menu font.
+When using a tab, the size of the gap can be one to 8 spaces
+since the tab position is a multiple of 8 from the edge of the menu.
+The whole string must be quoted if spaces or tabs are used.
 .in -.3i
 .B %p
 .in +.3i
@@ -4830,10 +4831,13 @@ argument.
 .TP
 .BI "XorValue [" number "]"
 Changes the value with which bits are xor'ed when doing
-rubber-band window moving or resizing.  Setting this value is a
-trial-and-error process.  The default value 0 tries to find a
-value that gives a good contrast to black and white.  It is set if
-the given
+rubber-band window moving or resizing.
+Valid values range from zero to the maximum value of an
+unsigned long integer on your system.
+Setting this value is a trial-and-error process.
+The default value 0 tries to find a
+value that gives a good contrast to black and white.
+The default value is used if the given
 .I number
 is omitted or invalid.
 
