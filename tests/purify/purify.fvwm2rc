@@ -554,17 +554,92 @@ AddToFunc Close_Delete_Destroy-Func
  + I CreateWindows-Func
  + I Refresh
 
-# Ending ManPage Order
+# Starts with all windows open, leaves them that way.
+AddTest "Test Iconify" Iconify-Func
+AddToFunc Iconify-Func
+ + I Next [window1] Iconify
+ + I Next [window2] Iconify   0 üpikü
+ + I Next [window3] Iconify		0
+ + I Next [window4] Iconify -1
+ + I Next [window5] Iconify 1
+ + I Next [window6] Iconify on
+ + I Next [window6] Iconify -102973
+ + I Next [window4] Iconify off
+ + I Next [window6] Iconify False
+ + I Next [window1] Iconify "False"
+ + I Next [window2] Iconify  0 "True" üpikü
+ + I Next [window3] Iconify
+ + I Next [window5] Iconify
+ + I Next [window6] Iconify toggle
+ + I Next [window6] Iconify toggle
+# This next part disabled, windows seem to have a toggling limit,
+# dje 12/22/00.
+# + I Next [window6] Iconify toggle
+# + I Next [window6] Iconify toggle
 
 AddTest "Test Maximize" Maximize-Func
 AddToFunc Maximize-Func
- + I Maximize
- + I Maximize   100     100
- + I Maximize
- + I Maximize		0	100
- + I Maximize 50 50
- + I Maximize
+ + I Next [window1] Maximize
+ + I Next [window2] Maximize   100     100
+ + I Next [window1] Maximize toggle
+ + I Next [window6] Maximize		0	100
+ + I Next [window5] Maximize 50 50
+ + I Next [window2] Maximize False
+ + I Next [window6] Maximize False
+ + I Next [window5] Maximize False
+# Back to normal, pause...
+ + I PipeRead 'sleep 2'
+ + I Next [window1] Maximize 180p 400p
+ + I Next [window1] Maximize false
+ + I Next [window6] Maximize grow grow
+ + I Next [window6] Maximize
+ + I Next [window6] Maximize growleft growup
+ + I Next [window6] Maximize
+ + I Next [window5] Maximize 0 growdown
+ + I Next [window5] Maximize
+ + I Next [window4] Maximize growright 0
+ + I Next [window4] Maximize
+ + I Next [window3] Maximize growright growdown
+ + I Next [window3] Maximize
+ + I Next [window2] Maximize growleft growup
+ + I Next [window2] Maximize
+
+AddTest "Test Recapture_Refresh" Recapture_Refresh-Func
+AddToFunc Recapture_Refresh-Func
+ + I Recapture
+ + I Recapture
+ + I Recapture .-QW,ÖKcäük,.-qköcli qopiuw
+ + I Next [window1] RecaptureWindow
  + I Refresh
+ + I Refresh
+ + I Refresh .-3mölp 9 n a.d.ök3qj0
+ + I Next [window1] RefreshWindow
+ + I Next [window1] RefreshWindow
+ + I Next [window3] RefreshWindow wäepik-ö .-,poci32
+
+AddTest "Test Stick" Stick-Func
+AddToFunc Stick-Func
+# Stick all windows and take them to page 1/1
+ + I All [window*] Stick
+ + I GotoPage 1 1
+# Unstick 1,3,5 and go to another page
+ + I Next [window1] Stick toggle
+ + I Next [window3] Stick off
+ + I Next [window5] Stick false
+ + I GotoPage 0 1
+# Now stick 1,3,5 again and return to main page
+ + I Next [window1] Stick toggle
+ + I Next [window3] Stick on
+ + I Next [window5] Stick true
+ + I GotoPage 0 0
+# Now unstick everyting:
+ + I All [window*] Stick off
+# There are no syntax errors:
+ + I Next [window2] Stick öäpqewikrpü8.,.-kl-.294
+ + I Next [window2] Stick öäpqewikrpü8.,.-kl-.294
+
+# Ending ManPage Order
+
 
 
 AddTest "Test ConfigDestroyModuleConfig" ConfigDestroyModuleConfig-Func
@@ -1589,24 +1664,6 @@ AddToFunc SendToModule_KillModule-Func
  + I KillModule FvwmBanner
  + I Refresh
 
-AddTest "Test Iconify" Iconify-Func
-AddToFunc Iconify-Func
- + I Iconify
- + I Iconify   0 üpikü
- + I Iconify		0
- + I Iconify -1
- + I Iconify 1
- + I Iconify 1
- + I Iconify -102973
- + I Refresh
-
-AddTest "Test Stick" Stick-Func
-AddToFunc Stick-Func
- + I Stick
- + I Stick
- + I Stick öäpqewikrpü8.,.-kl-.294
- + I Refresh
-
 AddTest "Test DecorCommands" DecorCommands-Func
 AddToFunc DecorCommands-Func
  + I DestroyDecor
@@ -1630,19 +1687,6 @@ AddToFunc WindowShade-Func
  + I WindowShade
  + I WindowShade
  + I WindowShade 1
- + I Refresh
-
-AddTest "Test Refresh_Recapture" Refresh_Recapture-Func
-AddToFunc Refresh_Recapture-Func
- + I RefreshWindow
- + I RefreshWindow
- + I RefreshWindow wäepik-ö .-,poci32
- + I Refresh
- + I Refresh
- + I Refresh .-3mölp 9 n a.d.ök3qj0
- + I Recapture
- + I Recapture
- + I Recapture .-QW,ÖKcäük,.-qköcli qopiuw
  + I Refresh
 
 AddTest "Test Next_Prev_Current_None" Next_Prev_Current_None-Func
