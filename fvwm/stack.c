@@ -6,12 +6,12 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307	 USA
  */
 
 #include "config.h"
@@ -53,6 +53,8 @@ static void ResyncFvwmStackRing(void);
 static void ResyncXStackingOrder(void);
 static void BroadcastRestack(FvwmWindow *s1, FvwmWindow *s2);
 static Bool is_above_unmanaged(FvwmWindow *fw, Window *umtop);
+static int collect_transients_recursive(
+	FvwmWindow *t, FvwmWindow *list_head, int layer, Bool do_lower);
 
 #define DEBUG_STACK_RING 1
 #ifdef DEBUG_STACK_RING
@@ -306,7 +308,6 @@ Bool position_new_window_in_stack_ring(FvwmWindow *t, Bool do_lower)
 	return True;
 }
 
-
 /********************************************************************
  * Raise a target and all higher FVWM-managed windows above any
  *  override_redirects:
@@ -333,7 +334,7 @@ static void raise_over_unmanaged(FvwmWindow *t)
 
 	 * Count the windows we need to restack, then build the stack list.
 	 ********************************************************************/
-	if (! is_above_unmanaged(t, &OR_Above))
+	if (!is_above_unmanaged(t, &OR_Above))
 	{
 		for (count = 0, t2 = Scr.FvwmRoot.stack_next;
 		     t2 != &Scr.FvwmRoot; t2 = t2->stack_next)
@@ -387,12 +388,9 @@ static void raise_over_unmanaged(FvwmWindow *t)
 	return;
 }
 
-
 static Bool must_move_transients(
-	FvwmWindow *t, Bool do_lower, Bool *found_transient)
+	FvwmWindow *t, Bool do_lower)
 {
-	*found_transient = False;
-
 	if (IS_ICONIFIED(t))
 	{
 		return False;
@@ -404,19 +402,14 @@ static Bool must_move_transients(
 		Bool scanning_above_window = True;
 		FvwmWindow *q;
 
-		for (q = Scr.FvwmRoot.stack_next; q != &Scr.FvwmRoot;
+		for (q = Scr.FvwmRoot.stack_next;
+		     q != &Scr.FvwmRoot && t->layer <= q->layer;
 		     q = q->stack_next)
 		{
 			if (t->layer < q->layer)
 			{
 				/* We're not interested in higher layers. */
 				continue;
-			}
-			if (t->layer > q->layer)
-			{
-				/* We are at the end of this layer. Stop
-				 * scanning windows. */
-				break;
 			}
 			else if (t == q)
 			{
@@ -427,23 +420,12 @@ static Bool must_move_transients(
 			else if (IS_TRANSIENT(q) &&
 				 FW_W_TRANSIENTFOR(q) == FW_W(t))
 			{
-				/* found a transient */
-				*found_transient = True;
-
-				/* transients are not allowed below main in the
-				 * same layer */
-				if ( !scanning_above_window )
-				{
-					return True;
-				}
+				return True;
 			}
-			else if ((scanning_above_window && !do_lower) ||
-				 (*found_transient && do_lower))
+			else if (scanning_above_window && !do_lower)
 			{
 				/* raise: The window is not raised, so itself
 				 * and all transients will be raised. */
-				/* lower: There is a transient above some other
-				 * window, so we have to lower. */
 				return True;
 			}
 		}
@@ -511,9 +493,7 @@ static void restack_windows(
 	XConfigureWindow (dpy, FW_W_FRAME(r->stack_next), flags, &changes);
 	XRestackWindows (dpy, wins, count);
 	free(wins);
-
 	EWMH_SetClientListStacking();
-
 	if (do_broadcast_all)
 	{
 		/* send out M_RESTACK for all windows, to make sure we don't
@@ -530,15 +510,88 @@ static void restack_windows(
 	return;
 }
 
+static Bool __restack_window(
+	FvwmWindow *t, Bool do_lower, Bool do_restack_transients,
+	Bool is_new_window)
+{
+	FvwmWindow *s, *r, tmp_r;
+	int count;
+	int test_layer;
+
+	/* detach t, so it doesn't make trouble in the loops */
+	remove_window_from_stack_ring(t);
+
+	count = 1;
+	count += get_visible_icon_window_count(t);
+
+	if (do_restack_transients)
+	{
+		/* collect the transients in a temp list */
+		tmp_r.stack_prev = &tmp_r;
+		tmp_r.stack_next = &tmp_r;
+		count = collect_transients_recursive(
+			t, &tmp_r, t->layer, do_lower);
+		if (count == 0)
+		{
+			do_restack_transients = False;
+		}
+		count++;
+	}
+
+	test_layer = t->layer;
+	if (do_lower)
+	{
+		test_layer--;
+	}
+	/* now find the place to reinsert t and friends */
+	for (s = Scr.FvwmRoot.stack_next; s != &Scr.FvwmRoot;
+	     s = s->stack_next)
+	{
+		if (test_layer >= s->layer)
+		{
+			break;
+		}
+	}
+	r = s->stack_prev;
+
+	if (do_restack_transients)
+	{
+		/* insert all transients between r and s. */
+		add_windowlist_to_stack_ring_after(&tmp_r, r);
+	}
+
+	/*
+	** Re-insert t - below transients
+	*/
+	add_window_to_stack_ring_after(t, s->stack_prev);
+
+	if (is_new_window && IS_TRANSIENT(t) &&
+	    DO_STACK_TRANSIENT_PARENT(t) && !IS_ICONIFIED(t))
+	{
+		/* now that the new transient is properly positioned in the
+		 * stack ring, raise/lower it again so that its parent is
+		 * raised/lowered too */
+		RaiseOrLowerWindow(t, do_lower, True, False);
+		/* make sure the stacking order is correct - may be the
+		 * sledge-hammer method, but the recursion ist too hard to
+		 * understand. */
+		ResyncXStackingOrder();
+		return True;
+	}
+	else
+	{
+		/* restack the windows between r and s */
+		restack_windows(r, s, count, do_restack_transients, do_lower);
+	}
+
+	return False;
+}
+
 static void RaiseOrLowerWindow(
 	FvwmWindow *t, Bool do_lower, Bool allow_recursion, Bool is_new_window)
 {
-	FvwmWindow *s, *r, *t2, *next, tmp_r;
-	int count;
+	FvwmWindow *t2;
 	Bool do_move_transients;
-	Bool found_transient;
-	Bool no_movement;
-	int test_layer;
 
 	/* Do not raise this window after command execution (see
 	 * HandleButtonPress()). */
@@ -560,10 +613,7 @@ static void RaiseOrLowerWindow(
 		 * most cases. This code does not handle the case where there
 		 * are trees of Main + Transient (i.e. where a
 		 * Main_window_with_Transients is itself Transient for another
-		 * window).
-		 *
-		 * Another strategy is required to handle trees of
-		 * Main+Transients */
+		 * window). */
 		if (IS_TRANSIENT(t) && DO_STACK_TRANSIENT_PARENT(t))
 		{
 			for (t2 = Scr.FvwmRoot.stack_next; t2 != &Scr.FvwmRoot;
@@ -577,7 +627,7 @@ static void RaiseOrLowerWindow(
 						break;
 					}
 					RaiseOrLowerWindow(
-						t2, do_lower, False, False);
+						t2, do_lower, True, False);
 					if ((!do_lower &&
 					     DO_RAISE_TRANSIENT(t2)) ||
 					    (do_lower &&
@@ -594,114 +644,17 @@ static void RaiseOrLowerWindow(
 
 	if (is_new_window)
 	{
-		no_movement = False;
 		do_move_transients = False;
 	}
 	else
 	{
-		do_move_transients =
-			must_move_transients(t, do_lower, &found_transient);
-
-		/*
-		 * This part implements (Dont)FlipTransient style.
-		 *
-		 * must_move_transients() believes that main should always be
-		 * below its transients. Therefore if it finds a transient but
-		 * does not wish move it, this means main and its superior
-		 * transients are already in the correct position at the top or
-		 * bottom of the layer - depending on do_lower.
-		 */
-		no_movement = found_transient && !do_move_transients;
+		do_move_transients = must_move_transients(t, do_lower);
 	}
-
-	if (!no_movement)
+	if (__restack_window(
+		    t, do_lower, do_move_transients,
+		    is_new_window) == True)
 	{
-		/* detach t, so it doesn't make trouble in the loops */
-		remove_window_from_stack_ring(t);
-
-		count = 1;
-		count += get_visible_icon_window_count(t);
-
-		if (do_move_transients)
-		{
-			/* collect the transients in a temp list */
-			tmp_r.stack_prev = &tmp_r;
-			tmp_r.stack_next = &tmp_r;
-			for (t2 = Scr.FvwmRoot.stack_next; t2 != &Scr.FvwmRoot;
-			     t2 = next)
-			{
-				next = t2->stack_next;
-				if ((IS_TRANSIENT(t2)) &&
-				    (FW_W_TRANSIENTFOR(t2) == FW_W(t)) &&
-				    (t2->layer == t->layer) &&
-				    !IS_ICONIFIED(t2))
-				{
-					/* t2 is a transient to lower */
-					count++;
-					count += get_visible_icon_window_count(
-						t2);
-
-					/* unplug it */
-					remove_window_from_stack_ring(t2);
-					/* put it above tmp_r */
-					add_window_to_stack_ring_after(
-						t2, tmp_r.stack_prev);
-				}
-			}
-			if (tmp_r.stack_next == &tmp_r)
-			{
-				do_move_transients = False;
-			}
-		}
-
-		test_layer = t->layer;
-		if (do_lower)
-		{
-			test_layer--;
-		}
-		/* now find the place to reinsert t and friends */
-		for (s = Scr.FvwmRoot.stack_next; s != &Scr.FvwmRoot;
-		     s = s->stack_next)
-		{
-			if (test_layer >= s->layer)
-			{
-				break;
-			}
-		}
-		r = s->stack_prev;
-
-		if (do_move_transients && tmp_r.stack_next != &tmp_r)
-		{
-			/* insert all transients between r and s. */
-			add_windowlist_to_stack_ring_after(&tmp_r, r);
-		}
-
-		/*
-		** Re-insert t - below transients
-		*/
-		add_window_to_stack_ring_after(t, s->stack_prev);
-
-		if (is_new_window && IS_TRANSIENT(t) &&
-		    DO_STACK_TRANSIENT_PARENT(t) && !IS_ICONIFIED(t))
-		{
-			/* now that the new transient is properly positioned in
-			 * the stack ring, raise/lower it again so that its
-			 * parent is raised/lowered too */
-			RaiseOrLowerWindow(t, do_lower, True, False);
-			/* make sure the stacking order is correct - may be the
-			 * sledge-hammer method, but the recursion ist too hard
-			 * to understand. */
-			ResyncXStackingOrder();
-			return;
-		}
-		else
-		{
-			/* restack the windows between r and s */
-			restack_windows(
-				r, s, count, (do_move_transients &&
-					      tmp_r.stack_next != &tmp_r),
-				do_lower);
-		}
+		return;
 	}
 
 	if (!do_lower)
@@ -714,7 +667,6 @@ static void RaiseOrLowerWindow(
 		{
 			raise_over_unmanaged(t);
 		}
-
 
 		/*
 		 * The following is a hack to raise X windows over native
@@ -750,19 +702,16 @@ static void RaiseOrLowerWindow(
 				XRaiseWindow (dpy, FW_W_FRAME(t2));
 			}
 		}
-
-
 		/*  This needs to be done after all the raise hacks.  */
 		raisePanFrames();
-	}
-	/* If the window has been raised, make sure the decorations are updated
-	 * immediately in case we are in a complex function (e.g. raise,
-	 * unshade). */
-	if (!do_lower)
-	{
+		/* If the window has been raised, make sure the decorations are
+		 * updated immediately in case we are in a complex function
+		 * (e.g. raise, unshade). */
 		XFlush(dpy);
 		handle_all_expose();
 	}
+
+	return;
 }
 
 /* Raise t and its transients to the top of its layer. For the pager to work
@@ -1365,9 +1314,9 @@ void new_layer(FvwmWindow *fw, int layer)
 /*  RBW - 11/13/1998 - 2 new fields to init - stacking order chain.  */
 void init_stack_and_layers(void)
 {
-	Scr.BottomLayer  = DEFAULT_BOTTOM_LAYER;
+	Scr.BottomLayer	 = DEFAULT_BOTTOM_LAYER;
 	Scr.DefaultLayer = DEFAULT_DEFAULT_LAYER;
-	Scr.TopLayer     = DEFAULT_TOP_LAYER;
+	Scr.TopLayer	 = DEFAULT_TOP_LAYER;
 	Scr.FvwmRoot.stack_next = &Scr.FvwmRoot;
 	Scr.FvwmRoot.stack_prev = &Scr.FvwmRoot;
 	set_layer(&Scr.FvwmRoot, DEFAULT_ROOT_WINDOW_LAYER);
@@ -1377,11 +1326,11 @@ void init_stack_and_layers(void)
 
 Bool is_above_unmanaged(FvwmWindow *fw, Window *umtop)
 {
-/*
-          Chase through the entire stack of the server's windows looking
-        for any unmanaged window that's higher than the target.
-          Called from raise_over_unmanaged and is_on_top_of_layer.
-*/
+	/*
+	  Chase through the entire stack of the server's windows looking
+	  for any unmanaged window that's higher than the target.
+	  Called from raise_over_unmanaged and is_on_top_of_layer.
+	*/
 	Bool ontop = True;
 
 
@@ -1414,23 +1363,23 @@ Bool is_above_unmanaged(FvwmWindow *fw, Window *umtop)
 		{
 			continue;
 		}
-                /*
-                    Don't forget to ignore the hidden frame resizing windows...
-                */
+		/*
+		  Don't forget to ignore the hidden frame resizing windows...
+		*/
 		if (wa.override_redirect == True
-                    && wa.class != InputOnly
+		    && wa.class != InputOnly
 		    && tops[i] != Scr.NoFocusWin
-                    && (! is_frame_hide_window(tops[i]))
-                    )
+		    && (! is_frame_hide_window(tops[i]))
+			)
 		{
 			OR_Above = tops[i];
 		}
 	} /* end for */
 
 	if (OR_Above)  {
-        *umtop = OR_Above;
-        ontop = False;
-        }
+		*umtop = OR_Above;
+		ontop = False;
+	}
 
 	XFree (tops);
 
@@ -1449,6 +1398,10 @@ static Bool is_on_top_of_layer_ignore_rom(FvwmWindow *fw)
 		/* stack ring members are no longer valid */
 		return False;
 	}
+	if (DO_RAISE_TRANSIENT(fw))
+	{
+		mark_transient_subtree(fw, fw->layer, MARK_RAISE, True, False);
+	}
 	for (t = fw->stack_prev; t != &Scr.FvwmRoot; t = t->stack_prev)
 	{
 		if (t->layer > fw->layer)
@@ -1465,8 +1418,8 @@ static Bool is_on_top_of_layer_ignore_rom(FvwmWindow *fw)
 		 * would be considered on top. */
 		if (Scr.bo.RaiseOverUnmanaged || overlap(fw, t))
 		{
-			if (!IS_TRANSIENT(t) || !DO_RAISE_TRANSIENT(fw) ||
-			    FW_W_TRANSIENTFOR(t) != FW_W(fw))
+			if (!DO_RAISE_TRANSIENT(fw) ||
+			    (!IS_IN_TRANSIENT_SUBTREE(t) && t != fw))
 			{
 				ontop = False;
 				break;
@@ -1479,73 +1432,77 @@ static Bool is_on_top_of_layer_ignore_rom(FvwmWindow *fw)
 
 Bool _is_on_top_of_layer(FvwmWindow *fw, Bool client_entered)
 {
-Window  junk;
-Bool  ontop     = False;
+	Window	junk;
+	Bool  ontop	= False;
 	if (Scr.bo.RaiseOverUnmanaged)
 	{
 
 #define EXPERIMENTAL_ROU_HANDLING
 #ifdef EXPERIMENTAL_ROU_HANDLING
-/*
-    RBW - 2002/08/15 -
-          RaiseOverUnmanaged adds some overhead. The only way to let our
-        caller know for sure whether we need to grab the mouse buttons
-        because we may need to raise this window is to query the
-        server's tree and look for any override_redirect windows above
-        this one.
-          But this function is called far too often to do this every
-        time. Only if the window is at the top of the FvwmWindow stack do
-        we need more information from the server; and then only at the
-        last moment in HandleEnterNotify when we really need to know
-        whether a raise will be needed if the user clicks in the client
-        window. is_on_top_of_layer_and_above_unmanaged is called in that
-        case.
-*/
-	if (is_on_top_of_layer_ignore_rom(fw))
+		/*
+		  RBW - 2002/08/15 -
+		  RaiseOverUnmanaged adds some overhead. The only way to let our
+		  caller know for sure whether we need to grab the mouse buttons
+		  because we may need to raise this window is to query the
+		  server's tree and look for any override_redirect windows above
+		  this one.
+		  But this function is called far too often to do this every
+		  time. Only if the window is at the top of the FvwmWindow
+		  stack do we need more information from the server; and then
+		  only at the last moment in HandleEnterNotify when we really
+		  need to know whether a raise will be needed if the user
+		  clicks in the client window.
+		  is_on_top_of_layer_and_above_unmanaged is called in that case.
+		*/
+		if (is_on_top_of_layer_ignore_rom(fw))
 		{
-                if (client_entered)
-                /* FIXME! - perhaps we should only do if MFCR  */
-                        {
+			if (client_entered)
+				/* FIXME! - perhaps we should only do if MFCR */
+			{
 #ifdef ROUDEBUG
-                        printf("RBW-iotol  - %8.8lx is on top, checking server tree.  ***\n", FW_W_CLIENT(fw));
+				printf("RBW-iotol  - %8.8lx is on top,"
+				       " checking server tree.  ***\n",
+				       FW_W_CLIENT(fw));
 #endif
-		        ontop = is_above_unmanaged(fw, &junk);
+				ontop = is_above_unmanaged(fw, &junk);
 #ifdef ROUDEBUG
-                        printf("         returning %d\n", (int) ontop);
+				printf("	 returning %d\n", (int) ontop);
 #endif
-                        }
-                        else
-                        {
+			}
+			else
+			{
 #ifdef ROUDEBUG
-                        printf("RBW-iotol  - %8.8lx is on top, *** NOT checking server tree.\n", FW_W_CLIENT(fw));
+				printf("RBW-iotol  - %8.8lx is on top,"
+				       " *** NOT checking server tree.\n",
+				       FW_W_CLIENT(fw));
 #endif
-                        ontop = True;
-                        }
-		return ontop;
+				ontop = True;
+			}
+			return ontop;
 		}
 		else
 		{
-		return False;
+			return False;
 		}
 #else
-		return False;   /*  Old pre-2002/08/22 handling.  */
+		return False;	/*  Old pre-2002/08/22 handling.  */
 #endif
 	}
-        else
-        {
-	return is_on_top_of_layer_ignore_rom(fw);
-        }
+	else
+	{
+		return is_on_top_of_layer_ignore_rom(fw);
+	}
 }
 
 
 Bool is_on_top_of_layer(FvwmWindow *fw)
 {
-        return _is_on_top_of_layer(fw, False);
+	return _is_on_top_of_layer(fw, False);
 }
 
 Bool is_on_top_of_layer_and_above_unmanaged(FvwmWindow *fw)
 {
-        return _is_on_top_of_layer(fw, True);
+	return _is_on_top_of_layer(fw, True);
 }
 
 /* ----------------------------- built in functions ------------------------ */
