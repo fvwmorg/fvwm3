@@ -7,6 +7,8 @@
 #include <stdlib.h>
 #include <ctype.h>
 
+#include <errno.h>
+
 #include "fvwmlib.h"
 #include "../fvwm/module.h"
 
@@ -34,6 +36,7 @@ int ReadFvwmPacket(int fd, unsigned long *header, unsigned long **body)
   char *cbody;
   extern void DeadPipe(int);
 
+  errno = 0;
   if((count = read(fd,header,HEADER_SIZE*sizeof(unsigned long))) >0)
   {
     if(header[0] == START_FLAG)
@@ -45,6 +48,7 @@ int ReadFvwmPacket(int fd, unsigned long *header, unsigned long **body)
       total = 0;
       while(total < body_length*sizeof(unsigned long))
       {
+        errno = 0;
         if((count2=
             read(fd,&cbody[total],
                  body_length*sizeof(unsigned long)-total)) >0)
@@ -53,7 +57,7 @@ int ReadFvwmPacket(int fd, unsigned long *header, unsigned long **body)
         }
         else if(count2 < 0)
         {
-          DeadPipe(1);
+          DeadPipe(errno);
         }
       }
     }
@@ -61,7 +65,7 @@ int ReadFvwmPacket(int fd, unsigned long *header, unsigned long **body)
       count = 0;
   }
   if(count <= 0)
-    DeadPipe(1);
+    DeadPipe(errno);
   return count;
 }
 

@@ -659,7 +659,7 @@ static void AnimateClose(int x, int y, int w, int h)
 #endif
 
 void DeadPipe(int foo) {
-  myfprintf((stderr,"Dead Pipe\n"));
+  myfprintf((stderr,"Dead Pipe, errno %d\n",foo));
   exit(0);
 }
 
