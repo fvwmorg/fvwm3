@@ -1,3 +1,10 @@
+1999-93-22  Matthias Clasen <clasen@mathematik.uni-freiburg.de>
+
+	* fvwm/add_window.c (LookInList): Initialize layer to 
+	Scr.StaysPutLayer. This means that windows without
+	any layer-setting style option (StaysOnTop/StaysPut/Layer)
+	are put in the same layer as those with explicit StaysPut. 
+
 1999-03-22  Dominik Vogt  <dominik_vogt@gmx.de>
 
 	* fvwm/misc.c (GetMenuOptions): another try to fix the UMR

@@ -1107,6 +1107,7 @@ void LookInList(  FvwmWindow *tmp_win, name_list *styles)
   name_list *nptr;
 
   memset(styles, 0, sizeof(name_list)); /* clear callers return area */
+  styles->layer = Scr.StaysPutLayer; /* initialize to default layer */ 
   /* look thru all styles in order defined. */
   for (nptr = Scr.TheList; nptr != NULL; nptr = nptr->next) {
     /* If name/res_class/res_name match, merge */
