@@ -134,8 +134,7 @@ void CMD_WindowShade(F_CMD_ARGS)
   if (tmp_win == NULL || IS_ICONIFIED(tmp_win))
     return;
 
-#ifdef SHAPE
-  if (shape_w == None && FShapesSupported && tmp_win->wShaped)
+  if (FShapesSupported && shape_w == None && tmp_win->wShaped)
   {
     XSetWindowAttributes attributes;
     unsigned long valuemask;
@@ -146,7 +145,6 @@ void CMD_WindowShade(F_CMD_ARGS)
       dpy, Scr.Root, -32768, -32768, 1, 1, 0, CopyFromParent,
       (unsigned int) CopyFromParent, CopyFromParent, valuemask, &attributes);
   }
-#endif
 
   sf = get_focus_window();
   /* parse arguments */
@@ -269,7 +267,6 @@ void CMD_WindowShade(F_CMD_ARGS)
 	frame_g.y += diff.y;
 	frame_g.width += diff.width;
 	frame_g.height += diff.height;
-#ifdef SHAPE
 	if (FShapesSupported && tmp_win->wShaped && shape_w)
 	{
 	  FShapeCombineShape(
@@ -289,7 +286,6 @@ void CMD_WindowShade(F_CMD_ARGS)
 	      Unsorted);
 	  }
 	}
-#endif
 	if (move_parent_too)
 	{
 	  if (FShapesSupported && tmp_win->wShaped && shape_w)
@@ -410,7 +406,6 @@ void CMD_WindowShade(F_CMD_ARGS)
 	frame_g.y += diff.y;
 	frame_g.width += diff.width;
 	frame_g.height += diff.height;
-#ifdef SHAPE
 	if (FShapesSupported && tmp_win->wShaped && shape_w)
 	{
 	  FShapeCombineShape(
@@ -430,7 +425,6 @@ void CMD_WindowShade(F_CMD_ARGS)
 	      Unsorted);
 	  }
 	}
-#endif
 	if (move_parent_too)
 	{
 	  if (FShapesSupported && tmp_win->wShaped && shape_w)

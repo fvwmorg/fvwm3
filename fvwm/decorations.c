@@ -53,6 +53,7 @@
 #include <stdio.h>
 
 #include "libs/fvwmlib.h"
+#include "libs/FShape.h"
 #include "fvwm.h"
 #include "externs.h"
 #include "cursor.h"
@@ -427,13 +428,11 @@ void SelectDecor(FvwmWindow *t, window_style *pstyle, short *buttons)
     decor &= ~(MWM_DECOR_MAXIMIZE|MWM_DECOR_MINIMIZE);
   }
 
-#ifdef SHAPE
-  if (ShapesSupported)
+  if (FShapesSupported)
   {
     if(t->wShaped)
       decor &= ~(MWM_DECOR_BORDER|MWM_DECOR_RESIZEH);
   }
-#endif
   /* Assume no decorations, and build up */
   SET_HAS_TITLE(t, 0);
   SET_HAS_BORDER(t, 0);

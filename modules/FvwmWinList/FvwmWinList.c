@@ -61,6 +61,7 @@
 #include "libs/fvwmsignal.h"
 #include "libs/fvwmlib.h"
 #include "libs/FScreen.h"
+#include "libs/FShape.h"
 
 #include "FvwmWinList.h"
 #include "ButtonArray.h"
@@ -1365,6 +1366,7 @@ void StartMeUp_I(void)
   InitPictureCMap(dpy);
   FScreenInit(dpy);
   AllocColorset(0);
+  FShapeInit(dpy);
   x_fd = XConnectionNumber(dpy);
   screen= DefaultScreen(dpy);
   Root = RootWindow(dpy, screen);

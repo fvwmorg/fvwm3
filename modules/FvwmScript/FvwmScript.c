@@ -22,6 +22,7 @@
 #include "types.h"
 #include "libs/fvwmlib.h"
 #include "libs/FScreen.h"
+#include "libs/FShape.h"
 #include "libs/fvwmsignal.h"
 #include "libs/Picture.h"
 
@@ -301,6 +302,7 @@ void Xinit(int IsFather)
   InitPictureCMap(dpy);
   FScreenInit(dpy);
   AllocColorset(0);
+  FShapeInit(dpy);
   XSetErrorHandler(myErrorHandler);
 
 #ifdef MEMDEBUG

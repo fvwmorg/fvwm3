@@ -472,9 +472,7 @@ typedef struct FvwmWindow
 #endif
   Window icon_w;              /* the icon window */
   Window icon_pixmap_w;       /* the icon window */
-#ifdef SHAPE
   int wShaped;               /* is this a shaped window */
-#endif
   Pixmap title_background_pixmap;
   Pixmap button_background_pixmap[NUMBER_OF_BUTTONS];
 

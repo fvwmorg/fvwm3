@@ -48,6 +48,7 @@
 #include "libs/Module.h"
 #include "libs/fvwmlib.h"
 #include "libs/FScreen.h"
+#include "libs/FShape.h"
 #include "libs/Colorset.h"
 #ifdef DEBUG
 #  define FVWM_DEBUG_MSGS   /* Do we need this? */
@@ -127,9 +128,7 @@ extern DeskInfo *Desks;
 int StartIconic = 0;
 int MiniIcons = 0;
 int LabelsBelow = 0;
-#ifdef SHAPE
 int ShapeLabels = 0;
-#endif
 int Rows = -1, Columns = -1;
 int desk1=0, desk2 =0;
 int ndesks = 0;
@@ -313,6 +312,7 @@ int main(int argc, char **argv)
   InitPictureCMap(dpy);
   FScreenInit(dpy);
   AllocColorset(0);
+  FShapeInit(dpy);
 
   Scr.screen = DefaultScreen(dpy);
   Scr.Root = RootWindow(dpy, Scr.screen);
@@ -1948,16 +1948,14 @@ void ParseOptions(void)
     {
       LabelsBelow = 0;
     }
-#ifdef SHAPE
-    else if (StrEquals(resource, "ShapeLabels"))
+    else if (FHaveShapeExtension && StrEquals(resource, "ShapeLabels"))
     {
       ShapeLabels = 1;
     }
-    else if (StrEquals(resource, "NoShapeLabels"))
+    else if (FHaveShapeExtension && StrEquals(resource, "NoShapeLabels"))
     {
       ShapeLabels = 0;
     }
-#endif
     else if (StrEquals(resource, "Rows"))
     {
       sscanf(arg1,"%d",&Rows);

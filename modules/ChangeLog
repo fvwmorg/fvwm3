@@ -1,7 +1,52 @@
 2001-09-16  Dominik Vogt  <dominik.vogt@gmx.de>
 
-	* FvwmScript/Widgets/Tools.h (EnterKey):
-	* FvwmScript/scanner.l:
+	* FvwmTheme/FvwmTheme.c (parse_colorset):
+	* FvwmM4/FvwmM4.c (m4_defs):
+	* FvwmIconBox/icons.c (CreateIconWindow):
+	(GetIconWindow):
+	(GetIconBitmap):
+	* FvwmIconBox/FvwmIconBox.c (Loop):
+	* FvwmCpp/FvwmCpp.c (cpp_defs):
+	* FvwmBanner/FvwmBanner.c (main):
+	* FvwmPager/x_pager.c (initialize_pager):
+	(UpdateWindowShape):
+	(DrawGrid):
+	* FvwmPager/FvwmPager.c:
+	(ParseOptions):
+	* FvwmIconMan/readconfig.c (read_in_resources):
+	* FvwmIconMan/xmanager.c:
+	(rects_equal):
+	(set_shape):
+	(draw_manager):
+	(man_exposed):
+	* FvwmIconMan/globals.c (init_globals):
+	* FvwmIconMan/x.c (xevent_loop):
+	(create_manager_window):
+	(init_display):
+	* FvwmIconMan/FvwmIconMan.h:
+	* FvwmButtons/icons.c (CreateIconWindow):
+	(CreateIconWindow):
+	(CreateBackIconWindow):
+	(ConfigureIconWindow):
+	* FvwmWinList/FvwmWinList.c (StartMeUp_I):
+	* FvwmWharf/FvwmWharf.c (main):
+	* FvwmTaskBar/FvwmTaskBar.c:
+	* FvwmScroll/FvwmScroll.c (main):
+	* FvwmScript/FvwmScript.c (Xinit):
+	* FvwmPager/FvwmPager.c (main):
+	* FvwmIdent/FvwmIdent.c (main):
+	* FvwmIconMan/x.c:
+	* FvwmIconBox/FvwmIconBox.c (main):
+	* FvwmForm/FvwmForm.c (main):
+	* FvwmDragWell/fvwmDragWell.c (XStartup):
+	* FvwmButtons/FvwmButtons.c (main):
+	(SetTransparentBackground):
+	(main):
+	(Loop):
+	(swallow):
+	* FvwmBacker/FvwmBacker.c (main):
+	moved shape support to library; its no longer necessary to
+	'#ifdef SHAPE' any code
 
 	* FvwmPager/FvwmPager.c (main):
 	fixed grabbing the keyboard in transient mode

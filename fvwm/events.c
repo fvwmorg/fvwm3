@@ -65,6 +65,7 @@
 #include <unistd.h>
 
 #include "libs/fvwmlib.h"
+#include "libs/FShape.h"
 #include "fvwm.h"
 #include "externs.h"
 #include "cursor.h"
@@ -76,9 +77,6 @@
 #include "events.h"
 #include "libs/Colorset.h"
 #include "fvwmsignal.h"
-#ifdef SHAPE
-#include <X11/extensions/shape.h>
-#endif /* SHAPE */
 #include "module_interface.h"
 #include "session.h"
 #include "borders.h"
@@ -118,11 +116,6 @@ static FvwmWindow *xcrossing_last_grab_window = NULL;
 
 STROKE_CODE(static int send_motion;)
 STROKE_CODE(static char sequence[STROKE_MAX_SEQUENCE + 1];)
-
-#ifdef SHAPE
-extern int ShapeEventBase;
-void HandleShapeNotify(void);
-#endif /* SHAPE */
 
 Window PressedW = None;
 
@@ -2202,15 +2195,20 @@ void HandleConfigureRequest(void)
       return;
   }
 
-#ifdef SHAPE
-  if (ShapesSupported)
+  if (FHaveShapeExtension && FShapesSupported)
   {
-    int xws, yws, xbs, ybs;
-    unsigned wws, hws, wbs, hbs;
-    int boundingShaped, clipShaped;
+    int i;
+    unsigned int u;
+    Bool b;
+    int boundingShaped;
 
-    if (XShapeQueryExtents(dpy, Tmp_win->w,&boundingShaped, &xws, &yws, &wws,
-			   &hws,&clipShaped, &xbs, &ybs, &wbs, &hbs))
+    /* suppress compiler warnings w/o shape extension */
+    i = 0;
+    u = 0;
+    b = False;
+
+    if (FShapeQueryExtents(
+	  dpy, Tmp_win->w, &boundingShaped, &i, &i, &u, &u, &b, &i, &i, &u, &u))
     {
       Tmp_win->wShaped = boundingShaped;
     }
@@ -2219,7 +2217,6 @@ void HandleConfigureRequest(void)
       Tmp_win->wShaped = 0;
     }
   }
-#endif /* SHAPE */
 
   if (cre->window == Tmp_win->w)
   {
@@ -2506,24 +2503,22 @@ void SendConfigureNotify(
  *      HandleShapeNotify - shape notification event handler
  *
  ***********************************************************************/
-#ifdef SHAPE
 void HandleShapeNotify (void)
 {
   DBUG("HandleShapeNotify","Routine Entered");
 
-  if (ShapesSupported)
+  if (FShapesSupported)
   {
-    XShapeEvent *sev = (XShapeEvent *) &Event;
+    FShapeEvent *sev = (FShapeEvent *) &Event;
 
     if (!Tmp_win)
       return;
-    if (sev->kind != ShapeBounding)
+    if (sev->kind != FShapeBounding)
       return;
     Tmp_win->wShaped = sev->shaped;
-    SetShape(Tmp_win,Tmp_win->frame_g.width);
+    SetShape(Tmp_win, Tmp_win->frame_g.width);
   }
 }
-#endif  /* SHAPE*/
 
 /***********************************************************************
  *
@@ -2742,10 +2737,8 @@ void InitEventHandlerJumpTable(void)
   EventHandlerJumpTable[KeyPress] =         HandleKeyPress;
   EventHandlerJumpTable[VisibilityNotify] = HandleVisibilityNotify;
   EventHandlerJumpTable[ColormapNotify] =   HandleColormapNotify;
-#ifdef SHAPE
-  if (ShapesSupported)
-    EventHandlerJumpTable[ShapeEventBase+ShapeNotify] = HandleShapeNotify;
-#endif /* SHAPE */
+  if (FShapesSupported)
+    EventHandlerJumpTable[FShapeEventBase+FShapeNotify] = HandleShapeNotify;
   EventHandlerJumpTable[SelectionClear]   = HandleSelectionClear;
   EventHandlerJumpTable[SelectionRequest] = HandleSelectionRequest;
   EventHandlerJumpTable[ReparentNotify] = HandleReparentNotify;

@@ -19,6 +19,8 @@
 
 #include <config.h>
 
+#ifdef SHAPE
+
 #include <X11/Xlib.h>
 #include <X11/Xutil.h>
 #include "FShape.h"
@@ -32,3 +34,5 @@ void FShapeInit(Display *dpy)
   FShapesSupported =
     FShapeQueryExtension(dpy, &FShapeEventBase, &FShapeErrorBase);
 }
+
+#endif /* SHAPE */

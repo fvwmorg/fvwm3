@@ -148,6 +148,5 @@ void init_globals (void)
   globals.focus_win = NULL;
   globals.select_win = NULL;
   globals.transient = 0;
-  globals.shapes_supported = 0;
   globals.got_window_list = 0;
 }

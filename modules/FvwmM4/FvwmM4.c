@@ -51,6 +51,7 @@
 #include "FvwmM4.h"
 #include "libs/Picture.h"
 #include "libs/fvwmlib.h"
+#include "libs/FShape.h"
 #include <X11/StringDefs.h>
 #include <X11/Shell.h>
 #define Resolution(pixels, mm) ((((pixels) * 2000 / (mm)) + 1) / 2)
@@ -463,9 +464,8 @@ static char *m4_defs(
 
   /* Add options together */
   *options = '\0';
-#ifdef	SHAPE
-  strcat(options, "SHAPE ");
-#endif
+  if (FHaveShapeExtension)
+    strcat(options, "SHAPE ");
 #ifdef	XPM
   strcat(options, "XPM ");
 #endif

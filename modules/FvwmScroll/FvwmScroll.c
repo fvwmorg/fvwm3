@@ -33,6 +33,7 @@
 
 #include "libs/Module.h"
 #include "libs/fvwmlib.h"
+#include "libs/FShape.h"
 #include "libs/Picture.h"
 #include "libs/Colorset.h"
 #include "FvwmScroll.h"
@@ -145,6 +146,7 @@ int main(int argc, char **argv)
   InitPictureCMap(dpy);
   /* prevent core dumps if fvwm doesn't provide any colorsets */
   AllocColorset(0);
+  FShapeInit(dpy);
 
   /* scan config file for set-up parameters */
   /* Colors and fonts */

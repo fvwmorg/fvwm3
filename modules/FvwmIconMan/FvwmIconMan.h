@@ -335,9 +335,7 @@ typedef struct win_manager {
   ManGeometry geometry, drawn_geometry;
   Button *select_button, *focus_button;
   Uchar window_mapped, drawn_mapping;
-#ifdef SHAPE
   ShapeState shape, drawn_shape;
-#endif
   ButtonArray buttons;
 
   /* Fvwm state */
@@ -355,7 +353,6 @@ typedef struct {
   int transient;
   WinData *focus_win;
   WinData *select_win;
-  int shapes_supported;
   int got_window_list;
 } GlobalData;
 

@@ -39,6 +39,7 @@
 
 #include "libs/fvwmlib.h"
 #include "libs/FScreen.h"
+#include "libs/FShape.h"
 #include <stdio.h>
 #include "fvwm.h"
 #include "externs.h"
@@ -60,10 +61,6 @@
 #include "libs/Colorset.h"
 #include "gnome.h"
 #include "geometry.h"
-
-#ifdef SHAPE
-#include <X11/extensions/shape.h>
-#endif /* SHAPE */
 
 static int do_all_iconboxes(FvwmWindow *t, icon_boxes **icon_boxes_ptr);
 static void GetBitmapFile(FvwmWindow *tmp_win);
@@ -332,17 +329,18 @@ ICON_DBG((stderr,"ciw: iph%s used '%s'\n", (tmp_win->icon_p_height)?"":" not",tm
     is_old_icon_shaped = False;
   }
 
-#ifdef SHAPE
-  if (ShapesSupported)
+  if (FShapesSupported)
   {
     if (IS_ICON_SHAPED(tmp_win))
     {
       /* when fvwm is using the non-default visual client supplied icon pixmaps
        * are drawn in a window with no relief */
-      int off = (Pdefault || (tmp_win->iconDepth == 1) ||
-		 IS_PIXMAP_OURS(tmp_win)) ? 2 : 0;
-      XShapeCombineMask(dpy, tmp_win->icon_pixmap_w, ShapeBounding, off, off,
-			tmp_win->icon_maskPixmap, ShapeSet);
+      int off;
+      off = (Pdefault || (tmp_win->iconDepth == 1) || IS_PIXMAP_OURS(tmp_win)) ?
+	2 : 0;
+      FShapeCombineMask(
+	dpy, tmp_win->icon_pixmap_w, FShapeBounding, off, off,
+	tmp_win->icon_maskPixmap, FShapeSet);
     }
     else if (is_old_icon_shaped && tmp_win->icon_pixmap_w == old_icon_pixmap_w)
     {
@@ -353,11 +351,10 @@ ICON_DBG((stderr,"ciw: iph%s used '%s'\n", (tmp_win->icon_p_height)?"":" not",tm
       r.y = 0;
       r.width = tmp_win->icon_p_width;
       r.height = tmp_win->icon_p_height;
-      XShapeCombineRectangles(
-	dpy, tmp_win->icon_pixmap_w, ShapeBounding, 0, 0, &r, 1, ShapeSet, 0);
+      FShapeCombineRectangles(
+	dpy, tmp_win->icon_pixmap_w, FShapeBounding, 0, 0, &r, 1, FShapeSet, 0);
     }
   }
-#endif
 
   if (tmp_win->icon_w != None && tmp_win->icon_w != old_icon_w)
   {
@@ -1154,10 +1151,8 @@ static void GetXPMFile(FvwmWindow *tmp_win)
   SET_PIXMAP_OURS(tmp_win, 1);
   tmp_win->iconDepth = Pdepth;
 
-#ifdef SHAPE
-  if (ShapesSupported && tmp_win->icon_maskPixmap)
+  if (FShapesSupported && tmp_win->icon_maskPixmap)
     SET_ICON_SHAPED(tmp_win, 1);
-#endif
 
   XpmFreeXpmImage(&my_image);
 
@@ -1189,8 +1184,7 @@ void GetIconWindow(FvwmWindow *tmp_win)
    * and define the cursor for it).
    */
   tmp_win->icon_pixmap_w = tmp_win->wmhints->icon_window;
-#ifdef SHAPE
-  if (ShapesSupported)
+  if (FShapesSupported)
   {
     if (tmp_win->wmhints->flags & IconMaskHint)
     {
@@ -1198,7 +1192,6 @@ void GetIconWindow(FvwmWindow *tmp_win)
       tmp_win->icon_maskPixmap = tmp_win->wmhints->icon_mask;
     }
   }
-#endif
   /* Make sure that the window is a child of the root window ! */
   /* Olwais screws this up, maybe others do too! */
   XReparentWindow(dpy, tmp_win->icon_pixmap_w, Scr.Root, 0,0);
@@ -1234,8 +1227,7 @@ void GetIconBitmap(FvwmWindow *tmp_win)
   tmp_win->icon_p_height = height;
   tmp_win->iconDepth = depth;
 
-#ifdef SHAPE
-  if (ShapesSupported)
+  if (FShapesSupported)
   {
     if (tmp_win->wmhints->flags & IconMaskHint)
     {
@@ -1243,7 +1235,6 @@ void GetIconBitmap(FvwmWindow *tmp_win)
       tmp_win->icon_maskPixmap = tmp_win->wmhints->icon_mask;
     }
   }
-#endif
 
   SET_PIXMAP_OURS(tmp_win, 0);
 }

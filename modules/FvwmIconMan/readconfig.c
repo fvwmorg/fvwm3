@@ -21,6 +21,7 @@
 #include <libs/defaults.h>
 #include <libs/fvwmlib.h>
 #include <libs/FScreen.h>
+#include <libs/FShape.h>
 #include <libs/Module.h>
 
 static char const rcsid[] =
@@ -1560,7 +1561,7 @@ void read_in_resources (char *file)
 	  ConsoleMessage ("What is this: %s?\n", p);
 	  continue;
 	}
-	if (i && globals.shapes_supported == 0) {
+	if (!FHaveShapeExtension && i) {
 	  ConsoleMessage ("Shape support not compiled in\n");
 	  continue;
 	}

@@ -35,6 +35,7 @@
 #include <string.h>
 
 #include "libs/fvwmlib.h"
+#include "libs/FShape.h"
 #include "fvwm.h"
 #include "externs.h"
 #include "events.h"
@@ -50,10 +51,6 @@
 #include "icons.h"
 #include "module_interface.h"
 #include "libs/Colorset.h"
-
-#ifdef SHAPE
-#include <X11/extensions/shape.h>
-#endif
 
 typedef struct
 {
@@ -2016,12 +2013,10 @@ void SetupFrame(
    * Set up window shape
    */
 
-#ifdef SHAPE
-  if (tmp_win->wShaped && is_resized && ShapesSupported)
+  if (FShapesSupported && tmp_win->wShaped && is_resized)
   {
     SetShape(tmp_win, w);
   }
-#endif /* SHAPE */
 
   /*
    * Send ConfigureNotify
@@ -2110,17 +2105,16 @@ void set_decor_gravity(
  ****************************************************************************/
 void SetShape(FvwmWindow *tmp_win, int w)
 {
-#ifdef SHAPE
-  if (ShapesSupported)
+  if (FShapesSupported)
   {
     if (tmp_win->wShaped)
     {
       XRectangle rect;
 
-      XShapeCombineShape(
-	dpy, tmp_win->frame, ShapeBounding, tmp_win->boundary_width,
+      FShapeCombineShape(
+	dpy, tmp_win->frame, FShapeBounding, tmp_win->boundary_width,
 	tmp_win->title_top_height + tmp_win->boundary_width, tmp_win->w,
-	ShapeBounding, ShapeSet);
+	FShapeBounding, FShapeSet);
       if (tmp_win->title_w)
       {
 	/* windows w/ titles */
@@ -2129,18 +2123,18 @@ void SetShape(FvwmWindow *tmp_win, int w)
 	rect.width = w - 2*tmp_win->boundary_width;
 	rect.height = tmp_win->title_g.height;
 
-	XShapeCombineRectangles(
-	  dpy,tmp_win->frame,ShapeBounding,0,0,&rect,1,ShapeUnion,Unsorted);
+	FShapeCombineRectangles(
+	  dpy, tmp_win->frame, FShapeBounding, 0, 0, &rect, 1, FShapeUnion,
+	  Unsorted);
       }
     }
     else
     {
       /* unset shape */
-      XShapeCombineMask(
-	dpy, tmp_win->frame, ShapeBounding, 0, 0, None, ShapeSet);
+      FShapeCombineMask(
+	dpy, tmp_win->frame, FShapeBounding, 0, 0, None, FShapeSet);
     }
   }
-#endif
 }
 
 /****************************************************************************

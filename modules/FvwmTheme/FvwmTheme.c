@@ -32,11 +32,8 @@
 #include <X11/Xproto.h>
 #include <X11/Intrinsic.h>
 
-#ifdef SHAPE
-#include <X11/extensions/shape.h>
-#endif /* SHAPE */
-
 #include "libs/fvwmlib.h"
+#include "libs/FShape.h"
 #include "libs/Module.h"
 #include "libs/Picture.h"
 #include "libs/Colorset.h"
@@ -567,79 +564,82 @@ static void parse_colorset(char *line)
     case 15: /* Shape */
     case 16: /* TiledShape */
     case 17: /* AspectShape */
-#ifdef SHAPE
-      /* read filename */
-      token = PeekToken(args, &args);
-      has_shape_changed = True;
-      if (cs->shape_mask)
+      if (FHaveShapeExtension)
       {
-	add_to_junk(cs->shape_mask);
-	cs->shape_mask = None;
-      }
-      if (do_remove_shape == True)
-	break;
-      /* set the flags */
-      if (csetopts[i][0] == 'T')
-	cs->shape_type = SHAPE_TILED;
-      else if (csetopts[i][0] == 'A')
-	cs->shape_type = SHAPE_STRETCH_ASPECT;
-      else
-	cs->shape_type = SHAPE_STRETCH;
-
-      /* try to load the shape mask */
-      if (token)
-      {
-        Picture *picture;
-
-	/* load the shape mask */
-	picture = CachePicture(dpy, win, NULL, token, color_limit);
-	if (!picture)
-	  fprintf(stderr, "%s: can't load picture %s\n", name, token);
-	else if (picture->depth != 1 && picture->mask == None)
+	/* read filename */
+	token = PeekToken(args, &args);
+	has_shape_changed = True;
+	if (cs->shape_mask)
 	{
-	  fprintf(stderr, "%s: shape pixmap must be of depth 1\n", name);
-	  SafeDestroyPicture(dpy, picture);
+	  add_to_junk(cs->shape_mask);
+	  cs->shape_mask = None;
 	}
+	if (do_remove_shape == True)
+	  break;
+	/* set the flags */
+	if (csetopts[i][0] == 'T')
+	  cs->shape_type = SHAPE_TILED;
+	else if (csetopts[i][0] == 'A')
+	  cs->shape_type = SHAPE_STRETCH_ASPECT;
 	else
+	  cs->shape_type = SHAPE_STRETCH;
+
+	/* try to load the shape mask */
+	if (token)
 	{
-	  Pixmap mask;
+	  Picture *picture;
 
-	  /* okay, we have what we want */
-	  if (picture->mask != None)
-	    mask = picture->mask;
-	  else
-	    mask = picture->picture;
-	  cs->shape_width = picture->width;
-	  cs->shape_height = picture->height;
-
-	  if (mask != None)
+	  /* load the shape mask */
+	  picture = CachePicture(dpy, win, NULL, token, color_limit);
+	  if (!picture)
+	    fprintf(stderr, "%s: can't load picture %s\n", name, token);
+	  else if (picture->depth != 1 && picture->mask == None)
 	  {
-	    cs->shape_mask = XCreatePixmap(
-	      dpy, mask, picture->width, picture->height, 1);
-	    if (cs->shape_mask != None)
+	    fprintf(stderr, "%s: shape pixmap must be of depth 1\n", name);
+	    SafeDestroyPicture(dpy, picture);
+	  }
+	  else
+	  {
+	    Pixmap mask;
+
+	    /* okay, we have what we want */
+	    if (picture->mask != None)
+	      mask = picture->mask;
+	    else
+	      mask = picture->picture;
+	    cs->shape_width = picture->width;
+	    cs->shape_height = picture->height;
+
+	    if (mask != None)
 	    {
-	      if (mono_gc == None)
+	      cs->shape_mask = XCreatePixmap(
+		dpy, mask, picture->width, picture->height, 1);
+	      if (cs->shape_mask != None)
 	      {
-		xgcv.foreground = 1;
-		xgcv.background = 0;
-		/* create a gc for 1 bit depth */
-		mono_gc = fvwmlib_XCreateGC(
-		  dpy, picture->mask, GCForeground|GCBackground, &xgcv);
+		if (mono_gc == None)
+		{
+		  xgcv.foreground = 1;
+		  xgcv.background = 0;
+		  /* create a gc for 1 bit depth */
+		  mono_gc = fvwmlib_XCreateGC(
+		    dpy, picture->mask, GCForeground|GCBackground, &xgcv);
+		}
+		XCopyPlane(dpy, mask, cs->shape_mask, mono_gc, 0, 0,
+			   picture->width, picture->height, 0, 0, 1);
 	      }
-	      XCopyPlane(dpy, mask, cs->shape_mask, mono_gc, 0, 0,
-			 picture->width, picture->height, 0, 0, 1);
 	    }
 	  }
-	}
-	if (picture)
-	{
-	  SafeDestroyPicture(dpy, picture);
-	  picture = None;
+	  if (picture)
+	  {
+	    SafeDestroyPicture(dpy, picture);
+	    picture = None;
+	  }
 	}
       }
-#else
-      cs->shape_mask = None;
-#endif /* SHAPE */
+      else
+      {
+	cs->shape_mask = None;
+      }
       break;
     case 18: /* Plain */
       has_pixmap_changed = True;

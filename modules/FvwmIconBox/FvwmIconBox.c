@@ -58,13 +58,10 @@
 #include <X11/Xlocale.h>
 #endif
 
-#ifdef SHAPE
-#include <X11/extensions/shape.h>
-#endif /* SHAPE */
-
 #include "libs/defaults.h"
 #include "libs/fvwmlib.h"
 #include "libs/FScreen.h"
+#include "libs/FShape.h"
 #include "libs/Colorset.h"
 #include "fvwm/fvwm.h"
 #include "FvwmIconBox.h"
@@ -286,6 +283,7 @@ int main(int argc, char **argv)
   InitPictureCMap(dpy);
   FScreenInit(dpy);
   AllocColorset(0);
+  FShapeInit(dpy);
   x_fd = XConnectionNumber(dpy);
 
   fd_width = GetFdWidth();
@@ -564,29 +562,31 @@ void Loop(void)
 		  XFree (tmp->wmhints);
 		tmp->wmhints = XGetWMHints(dpy, tmp->id);
 		if (tmp->wmhints && (tmp->wmhints->flags & IconPixmapHint)){
-#ifdef SHAPE
-		/* turn off "old" shape mask */
-		if (tmp->icon_maskPixmap != None)
-		  XShapeCombineMask(dpy, tmp->icon_pixmap_w,
-				    ShapeBounding, 0, 0, None, ShapeSet);
-#endif
+		  /* turn off "old" shape mask */
+		  if (FShapesSupported && tmp->icon_maskPixmap != None)
+		  {
+		    FShapeCombineMask(
+		      dpy, tmp->icon_pixmap_w, FShapeBounding, 0, 0, None,
+		      FShapeSet);
+		  }
 		  if (tmp->iconPixmap != None)
 		    XFreePixmap(dpy, tmp->iconPixmap);
 		  GetIconBitmap(tmp);
-#ifdef SHAPE
-		  if (tmp->icon_maskPixmap != None) {
-		    int hr = (Pdefault | (tmp->icon_depth == 1)
-			      | IS_PIXMAP_OURS(tmp)) ? icon_relief/2 : 0;
+		  if (FShapesSupported && tmp->icon_maskPixmap != None)
+		  {
+		    int hr;
+		    hr =
+		      (Pdefault || (tmp->icon_depth == 1) ||
+		       IS_PIXMAP_OURS(tmp)) ? icon_relief/2 : 0;
 		    /* This XSync is necessary, do not remove */
 		    /* without it the icon window will disappear */
 		    /* server: Exceed, client Sparc/Solaris 2.6 */
 		    /* don't know if this is a server or xlib bug */
 		    XSync(dpy, False);
-		    XShapeCombineMask(dpy, tmp->icon_pixmap_w,
-				      ShapeBounding, hr, hr,
-				      tmp->icon_maskPixmap, ShapeSet);
+		    FShapeCombineMask(
+		      dpy, tmp->icon_pixmap_w, FShapeBounding, hr, hr,
+		      tmp->icon_maskPixmap, FShapeSet);
 		  }
-#endif
 		  AdjustIconWindow(tmp, i);
 		  if (max_icon_height != 0)
 		  RedrawIcon(tmp, 1);

@@ -26,11 +26,8 @@
 #include <stdio.h>
 #include <X11/Intrinsic.h>
 
-#ifdef SHAPE
-#include <X11/extensions/shape.h>
-#endif /* SHAPE */
-
 #include "libs/fvwmlib.h"
+#include "libs/FShape.h"
 #include "libs/Colorset.h"
 #include "libs/Picture.h"
 #include "libs/safemalloc.h"
@@ -134,9 +131,7 @@ void SetWindowBackground(Display *dpy, Window win, int width, int height,
 			 Bool clear_area)
 {
   Pixmap pixmap = None;
-#ifdef SHAPE
   Pixmap mask = None;
-#endif
   XID junk;
 
   if (0 == width || 0 == height)
@@ -149,18 +144,16 @@ void SetWindowBackground(Display *dpy, Window win, int width, int height,
     }
   }
 
-#ifdef SHAPE
-  if (colorset->shape_mask)
+  if (FHaveShapeExtension && colorset->shape_mask)
   {
     mask = CreateBackgroundPixmap(
       dpy, 0, width, height, colorset, 1, None, True);
     if (mask != None)
     {
-      XShapeCombineMask(dpy, win, ShapeBounding, 0, 0, mask, ShapeSet);
+      FShapeCombineMask(dpy, win, FShapeBounding, 0, 0, mask, FShapeSet);
       XFreePixmap(dpy, mask);
     }
   }
-#endif
   if (!colorset->pixmap)
   {
     /* use the bg pixel */
@@ -327,10 +320,8 @@ void SetRectangleBackground(
   static int last_depth = -1;
   static GC last_gc = None;
   XGCValues xgcv;
-#ifdef SHAPE
   Pixmap clipmask = None;
   GC clip_gc = None;
-#endif
   Bool keep_aspect = (colorset->pixmap_type == PIXMAP_STRETCH_ASPECT);
   Bool stretch_x = (colorset->pixmap_type == PIXMAP_STRETCH_X)
 		   || (colorset->pixmap_type == PIXMAP_STRETCH);
@@ -356,8 +347,7 @@ void SetRectangleBackground(
   draw_gc = last_gc;
   last_depth = depth;
 
-#ifdef SHAPE
-  if (colorset->shape_mask != None)
+  if (FHaveShapeExtension && colorset->shape_mask != None)
   {
     clipmask = CreateBackgroundPixmap(
       dpy, 0, width, height, colorset, 1, None, True);
@@ -372,7 +362,6 @@ void SetRectangleBackground(
       draw_gc = clip_gc;
     }
   }
-#endif
 
   if (!colorset->pixmap)
   {
@@ -422,10 +411,11 @@ void SetRectangleBackground(
     }
   }
 
-#ifdef SHAPE
-  if (clipmask != None)
-    XFreePixmap(dpy, clipmask);
-  if (clip_gc != None)
-    XFreeGC(dpy, clip_gc);
-#endif
+  if (FHaveShapeExtension)
+  {
+    if (clipmask != None)
+      XFreePixmap(dpy, clipmask);
+    if (clip_gc != None)
+      XFreeGC(dpy, clip_gc);
+  }
 }

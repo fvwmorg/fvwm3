@@ -49,6 +49,15 @@
 	XShapeInputSelected(dpy, w)
 #define FShapeGetRectangles(dpy, w, kind, count, ordering) \
 	XShapeGetRectangles(dpy, w, kind, count, ordering)
+
+extern int FShapeEventBase;
+extern int FShapeErrorBase;
+/* Shapes compiled in? */
+extern Bool FShapesSupported;
+/* Shapes supported by server? */
+#define FHaveShapeExtension 0
+void FShapeInit(Display *dpy);
+
 #else
 /* drop in replacements if shape support is not compiled in */
 #define X_ShapeQueryVersion		0
@@ -97,6 +106,14 @@ typedef struct
 #define FShapeSelectInput(dpy, w, mask)
 #define FShapeInputSelected(dpy, w) ((unsinged long)0)
 #define FShapeGetRectangles(dpy, w, kind, count, ordering) ((XRectangle *)0)
+/* define empty dummies */
+#define FShapeEventBase          0
+#define FShapeErrorBase          0
+/* Shapes supported by server? */
+#define FShapesSupported         0
+/* Shapes compiled in? */
+#define FHaveShapeExtension      0
+#define FShapeInit(dpy)
 #endif
 
 /* fvwm replacements for shape lib */
@@ -121,10 +138,5 @@ typedef struct
 #define FShapeNumberEvents		ShapeNumberEvents
 typedef XShapeEvent FShapeEvent;
 
-extern int FShapeEventBase;
-extern int FShapeErrorBase;
-extern Bool FShapesSupported;
-
-void FShapeInit(Display *dpy);
 
 #endif /* FVWMLIB_FSHAPE_H */

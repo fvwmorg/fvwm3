@@ -53,6 +53,7 @@
 #include <X11/Xlib.h>
 #include <X11/Intrinsic.h>
 
+#include "libs/FShape.h"
 #include "libs/Module.h"
 #include "libs/Colorset.h"
 #include "libs/Parse.h"
@@ -166,6 +167,7 @@ int main(int argc, char **argv)
 
   /* allocate default colorset */
   AllocColorset(0);
+  FShapeInit(dpy);
 
   signal (SIGPIPE, DeadPipe);
 

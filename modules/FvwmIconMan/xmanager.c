@@ -16,6 +16,8 @@
 #include "config.h"
 
 #include <stdlib.h>
+#include "libs/fvwmlib.h"
+#include "libs/FShape.h"
 #include "libs/Module.h"
 #include "FvwmIconMan.h"
 #include "x.h"
@@ -25,11 +27,6 @@ static char const rcsid[] =
   "$Id$";
 
 extern char *MyName;
-
-#ifdef SHAPE
-#include <X11/extensions/shape.h>
-#endif
-
 
 
 /* button dirty bits: */
@@ -163,13 +160,11 @@ static int index_to_col (WinManager *man, int index)
   return col;
 }
 
-#ifdef SHAPE
 static int rects_equal (XRectangle *x, XRectangle *y)
 {
   return (x->x == y->x) && (x->y == y->y) && (x->width == y->width) &&
     (x->height == y->height);
 }
-#endif
 
 static int top_y_coord (WinManager *man)
 {
@@ -854,64 +849,65 @@ static void clear_empty_region (WinManager *man)
 
 void set_shape (WinManager *man)
 {
-#ifdef SHAPE
-  int n;
-  XRectangle rects[2];
-  int cols = man->geometry.cols;
+  if (FShapesSupported)
+  {
+    int n;
+    XRectangle rects[2];
+    int cols = man->geometry.cols;
 
-  if (!globals.shapes_supported || man->shaped == 0)
-    return;
+    if (man->shaped == 0)
+      return;
 
-  ConsoleDebug (X11, "in set_shape: %s\n", man->titlename);
+    ConsoleDebug (X11, "in set_shape: %s\n", man->titlename);
 
-  n = man->buttons.num_windows;
-  if (n == 0)
-    n = 1;
+    n = man->buttons.num_windows;
+    if (n == 0)
+      n = 1;
 
-  if (cols == 0 || n % cols == 0) {
-    rects[0].x = 0;
-    rects[0].y = top_y_coord (man);
-    rects[0].width = man->geometry.width;
-    rects[0].height = num_visible_rows (n, cols) * man->geometry.boxheight;
-    if (man->shape.num_rects != 1 || !rects_equal (rects, man->shape.rects)) {
-      man->dirty_flags |= SHAPE_CHANGED;
-    }
-    man->shape.num_rects = 1;
-    man->shape.rects[0] = rects[0];
-  }
-  else {
-    if (man->geometry.dir & GROW_DOWN) {
-      rects[0].x = 0;
-      rects[0].y = 0;
-      rects[0].width = man->geometry.width;
-      rects[0].height =
-	(num_visible_rows (n, cols) - 1) * man->geometry.boxheight;
-      rects[1].x = 0;
-      rects[1].y = rects[0].height;
-      rects[1].width = (n % cols) * man->geometry.boxwidth;
-      rects[1].height = man->geometry.boxheight;
-    }
-    else {
+    if (cols == 0 || n % cols == 0) {
       rects[0].x = 0;
       rects[0].y = top_y_coord (man);
-      rects[0].width = (n % cols) * man->geometry.boxwidth;
-      rects[0].height = man->geometry.boxheight;
-      rects[1].x = 0;
-      rects[1].y = rects[0].y + rects[0].height;
-      rects[1].width = man->geometry.width;
-      rects[1].height = (num_visible_rows (n, cols) - 1) *
-	man->geometry.boxheight;
+      rects[0].width = man->geometry.width;
+      rects[0].height = num_visible_rows (n, cols) * man->geometry.boxheight;
+      if (man->shape.num_rects != 1 || !rects_equal (rects, man->shape.rects)) {
+	man->dirty_flags |= SHAPE_CHANGED;
+      }
+      man->shape.num_rects = 1;
+      man->shape.rects[0] = rects[0];
     }
-    if (man->shape.num_rects != 2 ||
-	!rects_equal (rects, man->shape.rects) ||
-	!rects_equal (rects + 1, man->shape.rects + 1)) {
-      man->dirty_flags |= SHAPE_CHANGED;
+    else {
+      if (man->geometry.dir & GROW_DOWN) {
+	rects[0].x = 0;
+	rects[0].y = 0;
+	rects[0].width = man->geometry.width;
+	rects[0].height =
+	  (num_visible_rows (n, cols) - 1) * man->geometry.boxheight;
+	rects[1].x = 0;
+	rects[1].y = rects[0].height;
+	rects[1].width = (n % cols) * man->geometry.boxwidth;
+	rects[1].height = man->geometry.boxheight;
+      }
+      else {
+	rects[0].x = 0;
+	rects[0].y = top_y_coord (man);
+	rects[0].width = (n % cols) * man->geometry.boxwidth;
+	rects[0].height = man->geometry.boxheight;
+	rects[1].x = 0;
+	rects[1].y = rects[0].y + rects[0].height;
+	rects[1].width = man->geometry.width;
+	rects[1].height = (num_visible_rows (n, cols) - 1) *
+	  man->geometry.boxheight;
+      }
+      if (man->shape.num_rects != 2 ||
+	  !rects_equal (rects, man->shape.rects) ||
+	  !rects_equal (rects + 1, man->shape.rects + 1)) {
+	man->dirty_flags |= SHAPE_CHANGED;
+      }
+      man->shape.num_rects = 2;
+      man->shape.rects[0] = rects[0];
+      man->shape.rects[1] = rects[1];
     }
-    man->shape.num_rects = 2;
-    man->shape.rects[0] = rects[0];
-    man->shape.rects[1] = rects[1];
   }
-#endif
 }
 
 void set_manager_window_mapping (WinManager *man, int flag)
@@ -1512,19 +1508,19 @@ void draw_manager (WinManager *man)
     force_draw = 1;
     ConsoleDebug (X11, "manager %s: mapping changed\n", man->titlename);
   }
-#ifdef SHAPE
-
-  if (man->shaped && (redraw_all || (man->dirty_flags & SHAPE_CHANGED) )){
-    XShapeCombineRectangles (theDisplay, man->theWindow, ShapeBounding,
-			     0, 0, man->shape.rects, man->shape.num_rects,
-			     ShapeSet, Unsorted);
-    XShapeCombineRectangles (theDisplay, man->theWindow, ShapeClip,
-			     0, 0, man->shape.rects, man->shape.num_rects,
-			     ShapeSet, Unsorted);
-    shape_changed = 1;
-    update_geometry = 1;
+  if (FShapesSupported && man->shaped)
+  {
+    if (redraw_all || (man->dirty_flags & SHAPE_CHANGED)) {
+      FShapeCombineRectangles(
+	theDisplay, man->theWindow, FShapeBounding, 0, 0, man->shape.rects,
+	man->shape.num_rects, FShapeSet, Unsorted);
+      FShapeCombineRectangles(
+	theDisplay, man->theWindow, FShapeClip, 0, 0, man->shape.rects,
+	man->shape.num_rects, FShapeSet, Unsorted);
+      shape_changed = 1;
+      update_geometry = 1;
+    }
   }
-#endif
   if (redraw_all || (man->dirty_flags & GEOMETRY_CHANGED)) {
     ConsoleDebug (X11, "\tredrawing all buttons\n");
     update_geometry = 1;
@@ -1842,26 +1838,25 @@ void man_exposed (WinManager *man, XEvent *theEvent)
 
   bp = man->buttons.buttons;
 
-#ifdef SHAPE
-  /* There's some weird problem where if we change window shapes, we can't
-     draw into buttons in the area NewShape intersect (not OldShape) until
-     we get our Expose event. So, for now, just redraw everything when we
-     get Expose events. This has the disadvantage of drawing buttons twice,
-     but avoids having to match which expose event results from which shape
-     change */
-
-  if (man->buttons.num_windows) {
-    for (i = 0; i < man->buttons.num_windows; i++) {
-      bp[i]->drawn_state.dirty_flags |= REDRAW_BUTTON;
+  if (FHaveShapeExtension)
+  {
+    /* There's some weird problem where if we change window shapes, we can't
+       draw into buttons in the area NewShape intersect (not OldShape) until
+       we get our Expose event. So, for now, just redraw everything when we
+       get Expose events. This has the disadvantage of drawing buttons twice,
+       but avoids having to match which expose event results from which shape
+       change */
+    if (man->buttons.num_windows) {
+      for (i = 0; i < man->buttons.num_windows; i++) {
+	bp[i]->drawn_state.dirty_flags |= REDRAW_BUTTON;
+      }
     }
-  }
-  else {
-    draw_empty_manager (man);
-  }
+    else {
+      draw_empty_manager (man);
+    }
 
-  return;
-
-#endif
+    return;
+  }
 
   if (man->buttons.num_windows) {
     for (i = 0; i < man->buttons.num_windows; i++) {

@@ -51,16 +51,13 @@
 #endif
 
 #include "libs/fvwmlib.h"
+#include "libs/FShape.h"
 #include "fvwm/fvwm.h"
 #include "FvwmIconBox.h"
 
 #ifdef XPM
 #include <X11/xpm.h>
 #endif /* XPM */
-
-#ifdef SHAPE
-#include <X11/extensions/shape.h>
-#endif /* SHAPE */
 
 extern int save_color_limit;
 
@@ -153,14 +150,14 @@ void CreateIconWindow(struct icon_info *item)
   }
 
 #ifdef XPM
-#ifdef SHAPE
-  if (item->icon_maskPixmap != None) {
-     int hr = (Pdefault | (item->icon_depth == 1) | IS_PIXMAP_OURS(item))
-	      ? icon_relief/2 : 0;
-     XShapeCombineMask(dpy, item->icon_pixmap_w, ShapeBounding,
-			hr, hr, item->icon_maskPixmap, ShapeSet);
+  if (FShapesSupported && item->icon_maskPixmap != None) {
+     int hr;
+     hr = (Pdefault | (item->icon_depth == 1) | IS_PIXMAP_OURS(item)) ?
+       icon_relief/2 : 0;
+     FShapeCombineMask(
+       dpy, item->icon_pixmap_w, FShapeBounding, hr, hr, item->icon_maskPixmap,
+       FShapeSet);
   }
-#endif
 #endif
 
   if(item->icon_depth == -1 ) {
@@ -331,13 +328,11 @@ void GetIconWindow(struct icon_info *item)
 
   item->icon_pixmap_w = item->wmhints->icon_window;
 
-#ifdef SHAPE
-  if (item->wmhints->flags & IconMaskHint)
-    {
-      SET_ICON_SHAPED(item, True);
-      item->icon_maskPixmap = item->wmhints->icon_mask;
-    }
-#endif
+  if (FShapesSupported && (item->wmhints->flags & IconMaskHint))
+  {
+    SET_ICON_SHAPED(item, True);
+    item->icon_maskPixmap = item->wmhints->icon_mask;
+  }
 
   item->icon_w = min(max_icon_width + icon_relief,  item->icon_w);
   item->icon_h = min(max_icon_height + icon_relief, item->icon_h);
@@ -373,13 +368,11 @@ void GetIconBitmap(struct icon_info *item)
                (unsigned int *)&item->icon_h, &bw, &depth))
     return;
 
-#ifdef SHAPE
-  if (item->wmhints->flags & IconMaskHint)
+  if (FShapesSupported && (item->wmhints->flags & IconMaskHint))
   {
     SET_ICON_SHAPED(item, True);
     item->icon_maskPixmap = item->wmhints->icon_mask;
   }
-#endif
 
   item->icon_w = min(max_icon_width, item->icon_w);
   item->icon_h = min(max_icon_height, item->icon_h);

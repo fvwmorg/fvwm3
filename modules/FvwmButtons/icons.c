@@ -52,19 +52,12 @@
 #endif
 
 #include "libs/fvwmlib.h"
+#include "libs/FShape.h"
 #include "FvwmButtons.h"
 
 #ifdef XPM
 #include <X11/xpm.h>
 #endif /* XPM */
-
-#ifdef SHAPE
-#include <X11/extensions/shape.h>
-#endif /* SHAPE */
-
-#ifdef SHAPE
-extern Boolean ShapesSupported;
-#endif /* SHAPE */
 
 /****************************************************************************
  *
@@ -108,16 +101,14 @@ void CreateIconWindow(button_info *b)
   }
 
 #ifdef XPM
-#ifdef SHAPE
-  if (ShapesSupported)
+  if (FShapesSupported)
   {
     if (b->icon->mask!=None)
     {
-      XShapeCombineMask(
-	Dpy, b->IconWin, ShapeBounding, 0, 0, b->icon->mask, ShapeSet);
+      FShapeCombineMask(
+	Dpy, b->IconWin, FShapeBounding, 0, 0, b->icon->mask, FShapeSet);
     }
   }
-#endif
 #endif
 
   if(b->icon->depth==0)
@@ -130,13 +121,11 @@ void CreateIconWindow(button_info *b)
     gcv.foreground=buttonFore(b);
     XChangeGC(Dpy,NormalGC,GCForeground | GCBackground,&gcv);
 
-#ifdef SHAPE
-    if (ShapesSupported)
+    if (FShapesSupported)
     {
-      XShapeCombineMask(Dpy,b->IconWin,ShapeBounding,0,0,
-			b->icon->picture,ShapeSet);
+      FShapeCombineMask(
+	Dpy, b->IconWin, FShapeBounding, 0, 0, b->icon->picture, FShapeSet);
     }
-#endif
 
     temp = XCreatePixmap(Dpy,MyWindow,b->icon->width,
 			 b->icon->height,Pdepth);
@@ -196,16 +185,14 @@ void CreateBackIconWindow(button_info *b)
   }
 
 #ifdef XPM
-#ifdef SHAPE
-  if (ShapesSupported)
+  if (FShapesSupported)
   {
     if (b->icon->mask!=None)
     {
-      XShapeCombineMask(
-	Dpy, b->IconWin, ShapeBounding, 0, 0, b->icon->mask, ShapeSet);
+      FShapeCombineMask(
+	Dpy, b->IconWin, FShapeBounding, 0, 0, b->icon->mask, FShapeSet);
     }
   }
-#endif
 #endif
 
   if(b->icon->depth==0)
@@ -217,13 +204,11 @@ void CreateBackIconWindow(button_info *b)
     gcv.foreground=buttonFore(b);
     XChangeGC(Dpy,NormalGC,GCForeground | GCBackground,&gcv);
 
-#ifdef SHAPE
-    if (ShapesSupported)
+    if (FShapesSupported)
     {
-      XShapeCombineMask(Dpy,b->IconWin,ShapeBounding,0,0,
-			b->icon->picture,ShapeSet);
+      FShapeCombineMask(
+	Dpy, b->IconWin, FShapeBounding, 0, 0, b->icon->picture, FShapeSet);
     }
-#endif
 
     temp = XCreatePixmap(Dpy,MyWindow,b->icon->width,
 			 b->icon->height,Pdepth);
@@ -321,16 +306,14 @@ void ConfigureIconWindow(button_info *b)
   /* Doesn't this belong above? */
 #if 0
 #ifdef XPM
-#ifdef SHAPE
-  if (ShapesSupported)
+  if (FShapesSupported)
   {
     if (b->icon->mask!=None)
     {
-      XShapeCombineMask(Dpy,b->IconWin,ShapeBounding,0,0,
-			b->icon->mask,ShapeSet);
+      FShapeCombineMask(
+	Dpy, b->IconWin, FShapeBounding, 0, 0, b->icon->mask, FShapeSet);
     }
   }
-#endif
 #endif
   if(b->icon->depth==0)
   {
@@ -338,6 +321,5 @@ void ConfigureIconWindow(button_info *b)
   }
   XSetWindowBackgroundPixmap(Dpy,b->IconWin,b->icon->picture);
 #endif
-
 #endif
 }

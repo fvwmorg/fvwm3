@@ -42,7 +42,6 @@
 #include <X11/StringDefs.h>
 #include <X11/Intrinsic.h>
 #include <X11/Shell.h>
-#include <X11/extensions/shape.h>
 
 #include <X11/xpm.h>
 
@@ -50,6 +49,7 @@
 #include <libs/Picture.h>
 #include <libs/Module.h>
 #include <libs/FScreen.h>
+#include <libs/FShape.h>
 
 
 /* migo (16-Sep-1999): How about to do this configurable? */
@@ -201,10 +201,8 @@ int main(int argc, char **argv)
   XMoveResizeWindow(dpy, win, mysizehints.x, mysizehints.y, mysizehints.width,
 		    mysizehints.height);
 
-#ifdef SHAPE
-  if(view.mask != None)
-    XShapeCombineMask(dpy, win, ShapeBounding,0,0,view.mask, ShapeSet);
-#endif
+  if (FHaveShapeExtension && view.mask != None)
+    FShapeCombineMask(dpy, win, FShapeBounding, 0, 0, view.mask, FShapeSet);
 
   XMapWindow(dpy,win);
   XSync(dpy,0);

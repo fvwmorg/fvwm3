@@ -7,6 +7,8 @@ Changes in beta release 2.5.0 (not released yet)
     xterm.desk: 1
     xterm.page: 1 2 3
 
+* Several Shape compilation problems fixed.
+
 Changes in stable release 2.4.1 (15-Sep-2001)
 
 * Added Xinerama and SingleLogicalScreen support.

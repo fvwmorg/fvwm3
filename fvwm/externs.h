@@ -67,7 +67,6 @@ extern Bool DoingCommandLine;
 extern Bool debugging;
 extern Bool debugging_stack_ring;
 extern int GrabPointerState;
-extern Boolean ShapesSupported;
 extern Window JunkRoot, JunkChild;
 extern int JunkX, JunkY;
 extern unsigned int JunkWidth, JunkHeight, JunkBW, JunkDepth, JunkMask;

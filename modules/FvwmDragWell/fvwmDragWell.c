@@ -51,6 +51,7 @@
 #endif /* XPM */
 
 #include "libs/fvwmlib.h"
+#include "libs/FShape.h"
 #include "libs/Module.h"
 #include "libs/Colorset.h"
 #include "libs/Picture.h"
@@ -441,6 +442,7 @@ void XStartup(char *appName)
   InitPictureCMap(xg.dpy);
   FScreenInit(xg.dpy);
   AllocColorset(0);
+  FShapeInit(xg.dpy);
 
   /*get X stuff*/
   xg.xfd = XConnectionNumber(xg.dpy);

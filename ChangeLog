@@ -1,5 +1,34 @@
 2001-09-16  Dominik Vogt  <dominik.vogt@gmx.de>
 
+	* libs/Colorset.c:
+	(SetWindowBackground):
+	(SetRectangleBackground):
+	* fvwm/builtins.c (CMD_WindowShade):
+	* fvwm/add_window.c:
+	(setup_style_and_decor):
+	* fvwm/icons.c:
+	(CreateIconWindow):
+	(GetXPMFile):
+	(GetIconWindow):
+	(GetIconBitmap):
+	* fvwm/events.c:
+	(HandleConfigureRequest):
+	(HandleShapeNotify):
+	(InitEventHandlerJumpTable):
+	* fvwm/borders.c (struct):
+	(SetupFrame):
+	(SetShape):
+	* fvwm/decorations.c (SelectDecor):
+	* fvwm/fvwm.c:
+	(main):
+	(setVersionInfo):
+	* fvwm/externs.h:
+	* fvwm/fvwm.h (FvwmWindow):
+	* libs/FShape.h:
+	* libs/FShape.c:
+	moved shape support to library; its no longer necessary to
+	'#ifdef SHAPE' any code
+
 	* fvwm/borders.c (RedrawButtons):
 	(RedrawTitle):
 	fixed top border hilight drawing of title buttons

@@ -20,15 +20,12 @@
 #include "xmanager.h"
 #include "libs/fvwmlib.h"
 #include "libs/FScreen.h"
+#include "libs/FShape.h"
 
 static char const rcsid[] =
   "$Id$";
 
 #define GRAB_EVENTS (ButtonPressMask|ButtonReleaseMask|ButtonMotionMask|EnterWindowMask|LeaveWindowMask)
-
-#ifdef SHAPE
-static int shapeEventBase, shapeErrorBase;
-#endif
 
 Display *theDisplay;
 Window theRoot;
@@ -405,15 +402,13 @@ void xevent_loop (void)
       break;
 
     default:
-#ifdef SHAPE
-      if (theEvent.type == shapeEventBase + ShapeNotify) {
-	XShapeEvent *xev = (XShapeEvent *)&theEvent;
+      if (FShapesSupported && theEvent.type == FShapeEventBase + FShapeNotify) {
+	FShapeEvent *xev = (FShapeEvent *)&theEvent;
 	ConsoleDebug (X11, "XEVENT: ShapeNotify\n");
 	ConsoleDebug (X11, "\tx, y, w, h = %d, %d, %d, %d\n",
 		      xev->x, xev->y, xev->width, xev->height);
 	break;
       }
-#endif
       ConsoleDebug (X11, "XEVENT: unknown\n");
       break;
     }
@@ -840,9 +835,7 @@ void create_manager_window (int man_id)
 				 0, Pdepth, InputOutput, Pvisual, winattrmask,
 				 &winattr);
   XSetWMNormalHints(theDisplay, man->theWindow, &sizehints);
-#ifdef SHAPE
-  XShapeSelectInput (theDisplay, man->theWindow, ShapeNotifyMask);
-#endif
+  FShapeSelectInput (theDisplay, man->theWindow, FShapeNotifyMask);
   if (globals.transient)
   {
     XSetTransientForHint(theDisplay, man->theWindow, theRoot);
@@ -950,16 +943,12 @@ void init_display (void)
   InitPictureCMap (theDisplay);
   FScreenInit(theDisplay);
   AllocColorset(0);
+  FShapeInit(theDisplay);
   x_fd = XConnectionNumber (theDisplay);
   theScreen = DefaultScreen (theDisplay);
   theRoot = RootWindow (theDisplay, theScreen);
 #ifdef TEST_MONO
   Pdepth = 2;
-#endif
-
-#ifdef SHAPE
-  globals.shapes_supported = XShapeQueryExtension (theDisplay, &shapeEventBase,
-						   &shapeErrorBase);
 #endif
 
   ConsoleDebug (X11, "screen width: %d\n", globals.screen_g.width);

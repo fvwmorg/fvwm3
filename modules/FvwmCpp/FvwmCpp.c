@@ -50,6 +50,7 @@
 
 #include "FvwmCpp.h"
 #include "libs/fvwmlib.h"
+#include "libs/FShape.h"
 #include "libs/Picture.h"
 #include <X11/StringDefs.h>
 #include <X11/Shell.h>
@@ -406,9 +407,8 @@ static char *cpp_defs(Display *display, const char *host, char *cpp_options, cha
 
   /* Add options together */
   *options = '\0';
-#ifdef	SHAPE
-  strcat(options, "SHAPE ");
-#endif
+  if (FHaveShapeExtension)
+    strcat(options, "SHAPE ");
 #ifdef	XPM
   strcat(options, "XPM ");
 #endif

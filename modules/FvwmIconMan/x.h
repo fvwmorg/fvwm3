@@ -16,10 +16,6 @@
 #ifndef IN_X_H
 #define IN_X_H
 
-#ifdef SHAPE
-#include <X11/extensions/shape.h>
-#endif
-
 extern Display *theDisplay;
 extern Window theRoot;
 extern int theScreen;

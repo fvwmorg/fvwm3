@@ -36,12 +36,10 @@
 #include <X11/Xatom.h>
 #include <X11/Intrinsic.h>
 #include <X11/keysym.h>
-#ifdef SHAPE
-#include <X11/extensions/shape.h>
-#endif
 
 #include "libs/fvwmlib.h"
 #include "libs/FScreen.h"
+#include "libs/FShape.h"
 #include <libs/Module.h>
 #include "libs/Colorset.h"
 #include "fvwm/fvwm.h"
@@ -61,11 +59,7 @@ extern int window_w, window_h,window_x,window_y,usposition,uselabel,xneg,yneg;
 extern int StartIconic;
 extern int MiniIcons;
 extern int LabelsBelow;
-#ifdef SHAPE
 extern int ShapeLabels;
-#else
-#define ShapeLabels 0
-#endif
 extern int ShowBalloons, ShowPagerBalloons, ShowIconBalloons;
 extern char *BalloonFormatString;
 extern char *WindowLabelFormat;
@@ -364,14 +358,11 @@ void initialize_pager(void)
 #endif
   label_h = (uselabel) ? font->ascent + font->descent + 2 : 0;
 
-#ifdef SHAPE
   /* Check that shape extension exists. */
-  if (ShapeLabels)
+  if (FHaveShapeExtension && ShapeLabels)
   {
-    int s1, s2;
-    ShapeLabels = (XShapeQueryExtension (dpy, &s1, &s2) ? 1 : 0);
+    ShapeLabels = (FShapesSupported) ? 1 : 0;
   }
-#endif
 
 #ifdef I18N_MB
   if(smallFont != NULL)
@@ -949,58 +940,58 @@ void initialize_pager(void)
 }
 
 
-#ifdef SHAPE
 void UpdateWindowShape ()
 {
-  int i, j, cnt, shape_count, x_pos, y_pos;
-  XRectangle *shape;
-
-  if (!ShapeLabels || !uselabel || label_h<=0)
-    return;
-
-  shape_count =
-    ndesks + ((Scr.CurrentDesk < desk1 || Scr.CurrentDesk >desk2) ? 0 : 1);
-
-  shape = (XRectangle *)alloca (shape_count * sizeof (XRectangle));
-
-  if (shape == NULL)
-    return;
-
-  cnt = 0;
-  y_pos = (LabelsBelow ? 0 : label_h);
-
-  for (i = 0; i < Rows; ++i)
+  if (FHaveShapeExtension)
   {
-    x_pos = 0;
-    for (j = 0; j < Columns; ++j)
+    int i, j, cnt, shape_count, x_pos, y_pos;
+    XRectangle *shape;
+
+    if (!ShapeLabels || !uselabel || label_h<=0)
+      return;
+
+    shape_count =
+      ndesks + ((Scr.CurrentDesk < desk1 || Scr.CurrentDesk >desk2) ? 0 : 1);
+
+    shape = (XRectangle *)alloca (shape_count * sizeof (XRectangle));
+
+    if (shape == NULL)
+      return;
+
+    cnt = 0;
+    y_pos = (LabelsBelow ? 0 : label_h);
+
+    for (i = 0; i < Rows; ++i)
     {
-      if (cnt < ndesks)
+      x_pos = 0;
+      for (j = 0; j < Columns; ++j)
       {
-	shape[cnt].x = x_pos;
-	shape[cnt].y = y_pos;
-	shape[cnt].width = desk_w + 1;
-	shape[cnt].height = desk_h + 2;
-
-	if (cnt == Scr.CurrentDesk - desk1)
+	if (cnt < ndesks)
 	{
-	  shape[ndesks].x = x_pos;
-	  shape[ndesks].y =
-	    (LabelsBelow ? y_pos + desk_h + 2 : y_pos - label_h);
-	  shape[ndesks].width = desk_w;
-	  shape[ndesks].height = label_h + 2;
+	  shape[cnt].x = x_pos;
+	  shape[cnt].y = y_pos;
+	  shape[cnt].width = desk_w + 1;
+	  shape[cnt].height = desk_h + 2;
+
+	  if (cnt == Scr.CurrentDesk - desk1)
+	  {
+	    shape[ndesks].x = x_pos;
+	    shape[ndesks].y =
+	      (LabelsBelow ? y_pos + desk_h + 2 : y_pos - label_h);
+	    shape[ndesks].width = desk_w;
+	    shape[ndesks].height = label_h + 2;
+	  }
 	}
+	++cnt;
+	x_pos += desk_w + 1;
       }
-      ++cnt;
-      x_pos += desk_w + 1;
+      y_pos += desk_h + 2 + label_h;
     }
-    y_pos += desk_h + 2 + label_h;
+
+    FShapeCombineRectangles(
+      dpy, Scr.Pager_w, FShapeBounding, 0, 0, shape, shape_count, FShapeSet, 0);
   }
-
-  XShapeCombineRectangles (dpy, Scr.Pager_w, ShapeBounding, 0, 0,
-			   shape, shape_count, ShapeSet, 0);
 }
-
-#endif
 
 
 
@@ -1551,9 +1542,10 @@ void DrawGrid(int desk, int erase)
 		     ver_off, ptr, strlen (ptr));
 #endif
   }
-#ifdef SHAPE
-  UpdateWindowShape ();
-#endif
+  if (FShapesSupported)
+  {
+    UpdateWindowShape ();
+  }
 }
 
 

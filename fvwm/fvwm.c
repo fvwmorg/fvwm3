@@ -75,10 +75,6 @@
 /* need to get prototype for XrmUniqueQuark for XUniqueContext call */
 #include <X11/Xresource.h>
 
-#ifdef SHAPE
-#include <X11/extensions/shape.h>
-#endif /* SHAPE */
-
 #ifdef I18N_MB
 #include <X11/Xlocale.h>
 #endif
@@ -159,11 +155,6 @@ static char l_g_bits[] = {0x08, 0x02};
 #define s_g_width 4
 #define s_g_height 4
 static char s_g_bits[] = {0x01, 0x02, 0x04, 0x08};
-
-#ifdef SHAPE
-int ShapeEventBase, ShapeErrorBase;
-Boolean ShapesSupported=False;
-#endif
 
 extern XEvent Event;
 Bool Restarting = False;
@@ -546,9 +537,6 @@ int main(int argc, char **argv)
   /* make a copy of the visual stuff so that XorPixmap can swap with root */
   SaveFvwmVisual();
 
-#ifdef SHAPE
-  ShapesSupported = XShapeQueryExtension(dpy, &ShapeEventBase, &ShapeErrorBase);
-#endif /* SHAPE */
   FShapeInit(dpy);
   Scr.pscreen = XScreenOfDisplay(dpy, Scr.screen);
   Scr.use_backing_store = DoesBackingStore(Scr.pscreen);
@@ -1958,9 +1946,8 @@ static void setVersionInfo(void)
 #ifdef GNOME
   strcat(support_str, " GNOME WM hints,");
 #endif
-#ifdef SHAPE
-  strcat(support_str, " Shape,");
-#endif
+  if (FHaveShapeExtension)
+    strcat(support_str, " Shape,");
 #ifdef SESSION
   strcat(support_str, " SM,");
 #endif

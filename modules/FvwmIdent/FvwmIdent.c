@@ -52,6 +52,7 @@
 
 #include "libs/fvwmlib.h"
 #include "libs/FScreen.h"
+#include "libs/FShape.h"
 #include "libs/Module.h"
 #include "libs/Picture.h"
 #include "libs/Colorset.h"
@@ -207,6 +208,7 @@ int main(int argc, char **argv)
   FScreenInit(dpy);
   /* prevent core dumps if fvwm doesn't provide any colorsets */
   AllocColorset(0);
+  FShapeInit(dpy);
 
   SetMessageMask(fd, M_CONFIGURE_WINDOW | M_WINDOW_NAME | M_ICON_NAME
                  | M_RES_CLASS | M_RES_NAME | M_END_WINDOWLIST | M_CONFIG_INFO

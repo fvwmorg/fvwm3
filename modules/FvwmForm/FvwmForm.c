@@ -47,6 +47,7 @@
 #include <libs/Picture.h>               /* for InitPictureCMap */
 #include "libs/Colorset.h"               /* for InitPictureCMap */
 #include "libs/FScreen.h"
+#include "libs/FShape.h"
 
 #include "FvwmForm.h"                   /* common FvwmForm stuff */
 
@@ -1938,6 +1939,7 @@ int main (int argc, char **argv)
   FScreenInit(dpy);
   /* prevent core dumps if fvwm doesn't provide any colorsets */
   AllocColorset(0);
+  FShapeInit(dpy);
 
   fd_x = XConnectionNumber(dpy);
 

@@ -71,6 +71,7 @@
 #include "libs/Module.h"
 #include "libs/fvwmlib.h"  /* for pixmaps routines */
 #include "libs/FScreen.h"
+#include "libs/FShape.h"
 #include "libs/safemalloc.h"
 #include "libs/fvwmsignal.h"
 #include "libs/Colorset.h"
@@ -1154,11 +1155,9 @@ static void ParseConfigLine(char *tline)
       }
       break;
     case 27: /* PageOnly */
-fprintf(stderr,"page only\n");
       PageOnly=True;
       break;
     case 28: /* ScreenOnly */
-fprintf(stderr,"screen only\n");
       ScreenOnly=True;
       break;
     default:
@@ -1813,6 +1812,7 @@ void StartMeUp(void)
      free(XineramaConfig);
    }
    AllocColorset(0);
+   FShapeInit(dpy);
    x_fd = XConnectionNumber(dpy);
    screen= DefaultScreen(dpy);
    Root = RootWindow(dpy, screen);

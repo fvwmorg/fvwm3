@@ -56,6 +56,7 @@
 #include <stdio.h>
 
 #include "libs/fvwmlib.h"
+#include "libs/FShape.h"
 #include "fvwm.h"
 #include "externs.h"
 #include "cursor.h"
@@ -81,10 +82,6 @@
 #include "borders.h"
 #include "colormaps.h"
 #include "decorations.h"
-#ifdef SHAPE
-#include <X11/extensions/shape.h>
-#include <X11/Xresource.h>
-#endif /* SHAPE */
 
 char NoName[] = "Untitled"; /* name if no name in XA_WM_NAME */
 char NoClass[] = "NoClass"; /* Class if no res_class in class hints */
@@ -396,23 +393,26 @@ void setup_style_and_decor(
   /* first copy the static styles into the window struct */
   memcpy(&(FW_COMMON_FLAGS(tmp_win)), &(pstyle->flags.common),
          sizeof(common_flags_type));
-#ifdef SHAPE
-  tmp_win->wShaped = 0;
-  if (ShapesSupported)
+  tmp_win->wShaped = None;
+  if (FShapesSupported)
   {
-    int xws, yws, xbs, ybs;
-    unsigned wws, hws, wbs, hbs;
-    int boundingShaped, clipShaped;
+    int i;
+    unsigned int u;
+    Bool b;
+    int boundingShaped;
 
-    XShapeSelectInput(dpy, tmp_win->w, ShapeNotifyMask);
-    if (XShapeQueryExtents(
-      dpy, tmp_win->w, &boundingShaped, &xws, &yws, &wws, &hws,
-      &clipShaped, &xbs, &ybs, &wbs, &hbs))
+    /* suppress compiler warnings w/o shape extension */
+    i = 0;
+    u = 0;
+    b = False;
+
+    FShapeSelectInput(dpy, tmp_win->w, FShapeNotifyMask);
+    if (FShapeQueryExtents(
+      dpy, tmp_win->w, &boundingShaped, &i, &i, &u, &u, &b, &i, &i, &u, &u))
     {
       tmp_win->wShaped = boundingShaped;
     }
   }
-#endif /* SHAPE */
 
   /*  Assume that we'll decorate */
   SET_HAS_BORDER(tmp_win, 1);
@@ -451,11 +451,12 @@ void setup_style_and_decor(
       SET_HAS_BORDER(tmp_win, 0);
       SET_HAS_TITLE(tmp_win, 0);
   }
-#ifdef SHAPE
   /* set boundary width to zero for shaped windows */
-  if (tmp_win->wShaped)
-    tmp_win->boundary_width = 0;
-#endif /* SHAPE */
+  if (FHaveShapeExtension)
+  {
+    if (tmp_win->wShaped)
+      tmp_win->boundary_width = 0;
+  }
 
   /****** window colors ******/
   update_window_color_style(tmp_win, pstyle);
