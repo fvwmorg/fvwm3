@@ -28,6 +28,7 @@ Display *dpy;			/* which display are we talking to */
 Window Root;
 int screen;
 Graphics *G;
+GC reliefGC, shadowGC;
 int x_fd;
 int ScreenWidth, ScreenHeight;
 
@@ -100,10 +101,7 @@ int main(int argc, char **argv)
   ScreenWidth = DisplayWidth(dpy,screen);
 
   SetMessageMask(fd, M_CONFIG_INFO | M_END_CONFIG_INFO | M_SENDCONFIG);
-  G = CreateGraphics();
-  G->create_reliefGC = True;
-  G->create_shadowGC = True;
-  InitGraphics(dpy, G);
+  G = CreateGraphics(dpy);
 
   /* scan config file for set-up parameters */
   /* Colors and fonts */
@@ -120,7 +118,6 @@ int main(int argc, char **argv)
 			   Clength+4)==0)
 	    {
 	      CopyString(&BackColor,&tline[Clength+4]);
-	      G->useFvwmLook = False;
 	    }
 	}
       GetConfigLine(fd,&tline);

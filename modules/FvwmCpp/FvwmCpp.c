@@ -151,8 +151,7 @@ int main(int argc, char **argv)
     }
 
   /* set up G */
-  G = CreateGraphics();
-  InitGraphics(dpy, G);
+  G = CreateGraphics(dpy);
   
   /* get fvwm to send the DefaultGraphics config line so we get the visuals */
   InitGetConfigLine(fd, "xyzzy");

@@ -94,24 +94,18 @@ void CreateWindow(int x,int y, int w, int h)
   mysizehints.win_gravity = NorthWestGravity;	
 
   attributes.colormap = G->cmap;
-  attributes.background_pixmap = None;
+  attributes.background_pixel = GetColor(BackColor);
   attributes.border_pixel = 0;
   main_win = XCreateWindow(dpy, Root, mysizehints.x, mysizehints.y,
 			   mysizehints.width, mysizehints.height, 0, G->depth,
 			   InputOutput, G->viz,
-			   CWColormap | CWBackPixmap | CWBorderPixel,
+			   CWColormap | CWBackPixel | CWBorderPixel,
 			   &attributes);
 
-  if (!G->useFvwmLook) {
-    InitPictureCMap(dpy, main_win);
-    G->bg->type.bits.is_pixmap = False;
-    G->bg->pixmap = (Pixmap)GetColor(BackColor);
-    hilite_pix = GetHilite((Pixel)G->bg->pixmap);
-    shadow_pix = GetShadow((Pixel)G->bg->pixmap);
-  }
+  InitPictureCMap(dpy, main_win);
+  hilite_pix = GetHilite(attributes.background_pixel);
+  shadow_pix = GetShadow(attributes.background_pixel);
 
-  SetWindowBackground(dpy, main_win, mysizehints.width, mysizehints.height,
-		      G->bg, G->depth, G->shadowGC);
   XSetWMProtocols(dpy,main_win,&wm_del_win,1);
 
   XSetWMNormalHints(dpy,main_win,&mysizehints);
@@ -122,17 +116,16 @@ void CreateWindow(int x,int y, int w, int h)
 			     mysizehints.width - BAR_WIDTH - PAD_WIDTH3,
 			     mysizehints.height - BAR_WIDTH - PAD_WIDTH3,
 			     0, G->depth, InputOutput, G->viz,
-			     CWColormap | CWBackPixmap | CWBorderPixel,
+			     CWColormap | CWBackPixel | CWBorderPixel,
 			     &attributes);
   XMapWindow(dpy,holder_win);
 
-  if (!G->useFvwmLook) {
-    gcm = GCForeground;
-    gcv.foreground = hilite_pix;
-    G->reliefGC = XCreateGC(dpy, holder_win, gcm, &gcv);
-    gcv.foreground = shadow_pix;
-    G->shadowGC = XCreateGC(dpy, holder_win, gcm, &gcv);
-  }
+
+  gcm = GCForeground;
+  gcv.foreground = hilite_pix;
+  reliefGC = XCreateGC(dpy, holder_win, gcm, &gcv);
+  gcv.foreground = shadow_pix;
+  shadowGC = XCreateGC(dpy, holder_win, gcm, &gcv);
 
   _XA_WM_COLORMAP_WINDOWS = XInternAtom (dpy, "WM_COLORMAP_WINDOWS", False);
  }
@@ -523,8 +516,10 @@ void Loop(Window target)
       if (tline != NULL && (strlen(tline) > 1)) {
         if(strncasecmp(tline, DEFGRAPHSTR, DEFGRAPHLEN)==0) {
           if (ParseGraphics(dpy, tline, G)) {
+/* this is where dynamic colorset changinf happens
             SetWindowBackground(dpy, main_win, tw, th, G->bg, G->depth,
 				G->shadowGC);
+*/
           }
         }
       }
@@ -558,7 +553,7 @@ void RedrawWindow(Window target)
   RelieveRectangle(dpy, main_win, PAD_WIDTH3 - 2, PAD_WIDTH3 - 2,
 		   Width-BAR_WIDTH - PAD_WIDTH3 + 3,
 		   Height-BAR_WIDTH - PAD_WIDTH3 + 3,
-		   G->shadowGC, G->reliefGC, 2);
+		   shadowGC, reliefGC, 2);
 
   y = (Height-BAR_WIDTH-PAD_WIDTH3-2*SCROLL_BAR_WIDTH)*
     target_y_offset/target_height
@@ -578,23 +573,23 @@ void RedrawWindow(Window target)
 		 w,Height-BAR_WIDTH-PAD_WIDTH3-2*SCROLL_BAR_WIDTH,False);
 
       RelieveRectangle(dpy, main_win, x, y, w - 1, h - 1,
-		       G->reliefGC, G->shadowGC, 2);
+		       reliefGC, shadowGC, 2);
     }
   if(exposed & 1)
       RelieveRectangle(dpy, main_win, x - 2, PAD_WIDTH2, w + 3,
 		       Height - BAR_WIDTH - PAD_WIDTH2 + 1,
-		       G->shadowGC, G->reliefGC, 2);
+		       shadowGC, reliefGC, 2);
   if(exposed)
     {
       if(motion == TOP)
-	RedrawTopButton(G->shadowGC,G->reliefGC,x,PAD_WIDTH3);
+	RedrawTopButton(shadowGC,reliefGC,x,PAD_WIDTH3);
       else
-	RedrawTopButton(G->reliefGC,G->shadowGC,x,PAD_WIDTH3);
+	RedrawTopButton(reliefGC,shadowGC,x,PAD_WIDTH3);
       if(motion == BOTTOM)
-	RedrawBottomButton(G->shadowGC,G->reliefGC,x,
+	RedrawBottomButton(shadowGC,reliefGC,x,
 			   Height-BAR_WIDTH-SCROLL_BAR_WIDTH);
       else
-	RedrawBottomButton(G->reliefGC,G->shadowGC,x,
+	RedrawBottomButton(reliefGC,shadowGC,x,
 			   Height-BAR_WIDTH-SCROLL_BAR_WIDTH);
     }
 
@@ -613,25 +608,25 @@ void RedrawWindow(Window target)
       XClearArea(dpy,main_win,PAD_WIDTH3+SCROLL_BAR_WIDTH,y,
 		 Width-BAR_WIDTH-PAD_WIDTH3-2*SCROLL_BAR_WIDTH,h,False);
       RelieveRectangle(dpy, main_win, x, y, w - 1, h - 1,
-		       G->reliefGC, G->shadowGC, 2);
+		       reliefGC, shadowGC, 2);
     }
   if(exposed& 1)
     {
       RelieveRectangle(dpy, main_win, PAD_WIDTH2, y - 2,
 		       Width - BAR_WIDTH - PAD_WIDTH2 + 1, h + 2,
-		       G->shadowGC, G->reliefGC, 2);
+		       shadowGC, reliefGC, 2);
     }
   if(exposed)
     {
       if(motion == LEFT)
-	RedrawLeftButton(G->shadowGC,G->reliefGC,PAD_WIDTH3,y);
+	RedrawLeftButton(shadowGC,reliefGC,PAD_WIDTH3,y);
       else
-	RedrawLeftButton(G->reliefGC,G->shadowGC,PAD_WIDTH3,y);
+	RedrawLeftButton(reliefGC,shadowGC,PAD_WIDTH3,y);
       if(motion ==RIGHT)
-	RedrawRightButton(G->shadowGC,G->reliefGC,
+	RedrawRightButton(shadowGC,reliefGC,
 			  Width-BAR_WIDTH-SCROLL_BAR_WIDTH,y);
       else
-	RedrawRightButton(G->reliefGC,G->shadowGC,
+	RedrawRightButton(reliefGC,shadowGC,
 			  Width-BAR_WIDTH-SCROLL_BAR_WIDTH,y);
     }
 
@@ -643,12 +638,12 @@ void RedrawWindow(Window target)
       RelieveRectangle(dpy, main_win, Width - SCROLL_BAR_WIDTH - PAD_WIDTH2 - 4,
 		       Height - SCROLL_BAR_WIDTH - PAD_WIDTH2 - 4,
 		       SCROLL_BAR_WIDTH + 3, SCROLL_BAR_WIDTH + 3,
-		       G->shadowGC, G->reliefGC, 2);
+		       shadowGC, reliefGC, 2);
       else
 	RelieveRectangle(dpy, main_win, Width - SCROLL_BAR_WIDTH - PAD_WIDTH2 - 4,
 		         Height - SCROLL_BAR_WIDTH - PAD_WIDTH2 - 4,
 		         SCROLL_BAR_WIDTH + 3,SCROLL_BAR_WIDTH + 3,
-		         G->reliefGC, G->shadowGC, 2);
+		         reliefGC, shadowGC, 2);
     }
   exposed = 0;
 }

@@ -44,6 +44,9 @@ int fd[2];
 Display *dpy;			/* which display are we talking to */
 Window Root;
 Graphics *G;
+GC gc;
+XFontStruct *font;
+
 int screen;
 int x_fd;
 int ScreenWidth, ScreenHeight;
@@ -123,9 +126,7 @@ int main(int argc, char **argv)
   screen= DefaultScreen(dpy);
   Root = RootWindow(dpy, screen);
 
-  G = CreateGraphics();
-  G->create_foreGC = True;
-  InitGraphics(dpy, G);
+  G = CreateGraphics(dpy);
 
   ScreenHeight = DisplayHeight(dpy,screen);
   ScreenWidth = DisplayWidth(dpy,screen);
@@ -146,15 +147,12 @@ int main(int argc, char **argv)
       }
       else if(strncasecmp(tline, CatString3(MyName,"Font",""),Clength+4)==0) {
         CopyString(&font_string,&tline[Clength+4]);
-        G->useFvwmLook = False;
       }
       else if(strncasecmp(tline,CatString3(MyName,"Fore",""), Clength+4)==0) {
         CopyString(&ForeColor,&tline[Clength+4]);
-        G->useFvwmLook = False;
       }
       else if(strncasecmp(tline,CatString3(MyName, "Back",""), Clength+4)==0) {
         CopyString(&BackColor,&tline[Clength+4]);
-        G->useFvwmLook = False;
       }
     }
     GetConfigLine(fd,&tline);
@@ -353,11 +351,9 @@ void list_end(void)
   SetMessageMask(fd, M_CONFIG_INFO | M_SENDCONFIG);
 
   /* load the font */
-  if (!G->useFvwmLook) {
-    if ((G->font = XLoadQueryFont(dpy, font_string)) == NULL)
-      if ((G->font = XLoadQueryFont(dpy, "fixed")) == NULL)
-	exit(1);
-  }
+  if ((font = XLoadQueryFont(dpy, font_string)) == NULL)
+    if ((font = XLoadQueryFont(dpy, "fixed")) == NULL)
+      exit(1);
 
   /* make window infomation list */
   MakeList();
@@ -365,7 +361,7 @@ void list_end(void)
   /* size and create the window */
   lmax = max_col1 + max_col2 + 15;
 
-  height = ListSize*(G->font->ascent + G->font->descent);
+  height = ListSize*(font->ascent + font->descent);
 
   mysizehints.flags=
     USSize|USPosition|PWinGravity|PResizeInc|PBaseSize|PMinSize|PMaxSize;
@@ -402,27 +398,21 @@ void list_end(void)
   mysizehints.y = y;
 
 
-  if (!G->useFvwmLook) {
-    G->bg->type.bits.is_pixmap = False;
-    if(G->depth < 2) {
-      G->bg->pixmap = (Pixmap)GetColor("white");
-      fore_pix = GetColor("black");
-    } else {
-      G->bg->pixmap = (Pixmap)GetColor(BackColor);
-      fore_pix = GetColor(ForeColor);
-    }
+  if(G->depth < 2) {
+    attributes.background_pixel = GetColor("white");
+    fore_pix = GetColor("black");
+  } else {
+    attributes.background_pixel = GetColor(BackColor);
+    fore_pix = GetColor(ForeColor);
   }
 
   attributes.colormap = G->cmap;
-  attributes.background_pixmap = None;
   attributes.border_pixel = 0;
   main_win = XCreateWindow(dpy, Root, mysizehints.x, mysizehints.y,
 			   mysizehints.width, mysizehints.height, 0, G->depth,
 			   InputOutput, G->viz,
-			   CWColormap | CWBackPixmap | CWBorderPixel,
+			   CWColormap | CWBackPixel | CWBorderPixel,
 			   &attributes);
-  SetWindowBackground(dpy, main_win, mysizehints.width, mysizehints.height,
-		      G->bg, G->depth, G->foreGC);
   wm_del_win = XInternAtom(dpy,"WM_DELETE_WINDOW",False);
   XSetWMProtocols(dpy,main_win,&wm_del_win,1);
 
@@ -430,12 +420,10 @@ void list_end(void)
   XSelectInput(dpy,main_win,MW_EVENTS);
   change_window_name(&MyName[1]);
 
-  if (!G->useFvwmLook) {
-    gcm = GCForeground|GCFont;
-    gcv.foreground = fore_pix;
-    gcv.font =  G->font->fid;
-    G->foreGC = XCreateGC(dpy, main_win, gcm, &gcv);
-  }
+  gcm = GCForeground|GCFont;
+  gcv.foreground = fore_pix;
+  gcv.font = font->fid;
+  gc = XCreateGC(dpy, main_win, gcm, &gcv);
 
   XMapWindow(dpy,main_win);
 
@@ -471,19 +459,18 @@ void list_end(void)
     /* wait for X-event or config line */
     select( fd_width, SELECT_FD_SET_CAST &fdset, NULL, NULL, NULL );
 
-    /* parse any config lines (only the fvwm_look) */
+    /* parse any config lines */
     if (FD_ISSET(fd[1], &fdset)) {
       char *tline;
 
       GetConfigLine(fd, &tline);
-      if (tline != NULL && (strlen(tline) > 1)) {
-	if(strncasecmp(tline, DEFGRAPHSTR, DEFGRAPHLEN)==0) {
-	  if (ParseGraphics(dpy, tline, G)) {
+      if (tline != NULL && (strlen(tline) > 1))
+	if(strncasecmp(tline, DEFGRAPHSTR, DEFGRAPHLEN)==0)
+	  ParseGraphics(dpy, tline, G);
+/* this is where dynamic colorset changing happens
 	    SetWindowBackground(dpy, main_win, mysizehints.width,
 				mysizehints.height, G->bg, G->depth, G->foreGC);
-	  }
-	}
-      }
+*/
 
       /* free up line malloc'd by GetConfigLine */
       if (tline) free(tline);
@@ -542,17 +529,17 @@ void RedrawWindow(void)
   int fontheight,i=0;
   struct Item *cur = itemlistRoot;
 
-  fontheight = G->font->ascent + G->font->descent;
+  fontheight = font->ascent + font->descent;
 
   while(cur != NULL)
     {
       /* first column */
-      XDrawString(dpy, main_win, G->foreGC, 5,
-		  5 + G->font->ascent + i * fontheight, cur->col1,
+      XDrawString(dpy, main_win, gc, 5,
+		  5 + font->ascent + i * fontheight, cur->col1,
 		  strlen(cur->col1));
       /* second column */
-      XDrawString(dpy, main_win, G->foreGC, 10 + max_col1,
-		  5 + G->font->ascent + i * fontheight, cur->col2,
+      XDrawString(dpy, main_win, gc, 10 + max_col1,
+		  5 + font->ascent + i * fontheight, cur->col2,
 		  strlen(cur->col2));
       ++i;
       cur = cur->next;
@@ -587,8 +574,8 @@ void AddToList(char *s1, char* s2)
   int tw1, tw2;
   struct Item* item, *cur = itemlistRoot;
 
-  tw1 = XTextWidth(G->font, s1, strlen(s1));
-  tw2 = XTextWidth(G->font, s2, strlen(s2));
+  tw1 = XTextWidth(font, s1, strlen(s1));
+  tw2 = XTextWidth(font, s2, strlen(s2));
   max_col1 = max_col1 > tw1 ? max_col1 : tw1;
   max_col2 = max_col2 > tw2 ? max_col2 : tw2;
 
