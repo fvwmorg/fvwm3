@@ -27,6 +27,8 @@ typedef struct PictureThing
     unsigned int width;
     unsigned int height;
     unsigned int count;
+    Pixel *alloc_pixels;
+    int nalloc_pixels;
 } Picture;
 
 extern Bool Pdefault;
@@ -39,6 +41,10 @@ extern Display *Pdpy;     /* Save area for display pointer */
 /* This routine called during fvwm and some modules initialization */
 void InitPictureCMap(Display *dpy);
 
+/* these can be used to switch visuals before calling GetPicture */
+/* do NOT use with CachePicture */
+void UseDefaultVisual(void);
+void UseFvwmVisual(void);
 
 /** Returns current setting of the image path **/
 char* GetImagePath( void );
@@ -73,10 +79,6 @@ Picture* LoadPicture( Display* dpy, Window Root,
  **/
 Picture* GetPicture( Display* dpy, Window Root,
 		     char* ImagePath, char* pictureName, int color_limit);
-/* this version frees the colors it allocates, use only in *FvwmAnimatePixmap */
-Picture* GetPictureAndFree(Display* dpy, Window Root,
-			   char* ImagePath, char *pictureFileName, int color_limit);
-
 Picture* CachePicture( Display *dpy, Window Root,
 		       char* ImagePath, char* pictureName, int color_limit);
 

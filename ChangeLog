@@ -1,3 +1,9 @@
+1999-08-31  Hippo
+
+	* fvwm/move_resize.c: different method of doing XORPixmap (fails)
+	* libs/Picture.{h,c}: DestroyPicture now frees the colors allocated
+	by LoadPicture., New functions: UseDefaltVisual, UseFvwmVisual.
+
 1999-08-30  Dominik Vogt  <dominik_vogt@gmx.de>
 
 	* libs/Slide.c (SlideWindow): new file and function for sliding

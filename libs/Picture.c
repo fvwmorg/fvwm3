@@ -72,8 +72,13 @@ static double c400_distance(XColor *, XColor *);
 static Picture *PictureList=NULL;
 Bool Pdefault;
 Visual *Pvisual;
+static Visual *FvwmVisual;
 Colormap Pcmap;
+static Colormap FvwmCmap;
 unsigned int Pdepth;
+static unsigned int FvwmDepth;
+static int PvisualType;
+static int FvwmVisualType;
 Display *Pdpy;            /* Save area for display pointer */
 
 void InitPictureCMap(Display *dpy) {
@@ -101,8 +106,56 @@ void InitPictureCMap(Display *dpy) {
     Pcmap = DefaultColormap(dpy, screen);
     Pdefault = True;
   }
+  FvwmVisual = Pvisual;
+  FvwmDepth = Pdepth;
+  FvwmCmap = Pcmap;
+  /* from the xpm library */
+  switch (FvwmVisual->class) {
+  case StaticGray:
+  case GrayScale:
+    switch (FvwmVisual->map_entries) {
+    case 2:
+      FvwmVisualType = PvisualType = XPM_MONO;
+    case 4:
+      FvwmVisualType = PvisualType = XPM_GRAY4;
+    default:
+      FvwmVisualType = PvisualType = XPM_GRAY;
+    }
+  default:
+    FvwmVisualType = PvisualType = XPM_COLOR;
+  }
 }
 
+void UseDefaultVisual(void)
+{
+  int screen = DefaultScreen(Pdpy);
+
+  Pvisual = DefaultVisual(Pdpy, screen);
+  Pdepth = DefaultDepth(Pdpy, screen);
+  Pcmap = DefaultColormap(Pdpy, screen);  
+  switch (Pvisual->class) {
+  case StaticGray:
+  case GrayScale:
+    switch (Pvisual->map_entries) {
+    case 2:
+      PvisualType = XPM_MONO;
+    case 4:
+      PvisualType = XPM_GRAY4;
+    default:
+      PvisualType = XPM_GRAY;
+    }
+  default:
+    PvisualType = XPM_COLOR;
+  }
+}
+
+void UseFvwmVisual(void)
+{
+  Pvisual = FvwmVisual;
+  Pdepth = FvwmDepth;
+  Pcmap = FvwmCmap;
+  PvisualType = FvwmVisualType;
+}
 
 static char* imagePath = FVWM_IMAGEPATH;
 
@@ -136,8 +189,7 @@ char* findImageFile( const char* icon, const char* pathlist, int type )
 }
 
 
-static Picture *LoadPictureConditional(Display *dpy, Window Root, char *path,
-				       int color_limit, Bool free_colors)
+Picture *LoadPicture(Display *dpy, Window Root, char *path, int color_limit)
 {
   int l;
   Picture *p;
@@ -158,8 +210,9 @@ static Picture *LoadPictureConditional(Display *dpy, Window Root, char *path,
   xpm_attributes.colormap = Pcmap;
   xpm_attributes.depth = Pdepth;
   xpm_attributes.closeness=40000; /* Allow for "similar" colors */
+  xpm_attributes.color_key = PvisualType;
   xpm_attributes.valuemask = XpmSize | XpmReturnAllocPixels | XpmCloseness
-			     | XpmVisual | XpmColormap | XpmDepth;
+			     | XpmVisual | XpmColormap | XpmDepth | XpmColorKey;
 
   rc = XpmReadFileToXpmImage(path, &my_image, NULL);
   if (rc == XpmSuccess) {
@@ -171,14 +224,8 @@ static Picture *LoadPictureConditional(Display *dpy, Window Root, char *path,
       p->height = my_image.height;
       p->depth = Pdepth;
       XpmFreeXpmImage(&my_image);
-      if (free_colors) {
-        XFreeColors(dpy, Pcmap, xpm_attributes.alloc_pixels,
-		    xpm_attributes.nalloc_pixels, 0);
-      }
-      /* fixme: this information should be copied to p-> so that pixels
-       * can be freed by DestroyPicture */
-      /* losing this information means leakage, good job we have ColorLimit */
-      free(xpm_attributes.alloc_pixels);
+      p->alloc_pixels = xpm_attributes.alloc_pixels;
+      p->nalloc_pixels = xpm_attributes.nalloc_pixels;
       return p;
     }
     XpmFreeXpmImage(&my_image);
@@ -191,6 +238,7 @@ static Picture *LoadPictureConditional(Display *dpy, Window Root, char *path,
     {
       p->depth = 0;
       p->mask = None;
+      p->nalloc_pixels = 0;
       return p;
     }
 
@@ -199,14 +247,8 @@ static Picture *LoadPictureConditional(Display *dpy, Window Root, char *path,
 }
 
 
-Picture *LoadPicture(Display *dpy, Window Root, char *path, int color_limit)
-{
-  return LoadPictureConditional(dpy, Root, path, color_limit, False);
-}
-
-static Picture *GetPictureConditional(Display *dpy, Window Root,
-				      char *ImagePath, char *name,
-				      int color_limit, Bool free_colors)
+Picture *GetPicture(Display *dpy, Window Root, char *ImagePath, char *name,
+		    int color_limit)
 {
     char *path = findImageFile( name, ImagePath, R_OK );
     Picture *p;
@@ -214,25 +256,12 @@ static Picture *GetPictureConditional(Display *dpy, Window Root,
     if ( path == NULL )
 	return NULL;
 
-    p = LoadPictureConditional( dpy, Root, path, color_limit, free_colors );
+    p = LoadPicture(dpy, Root, path, color_limit);
     if ( p == NULL )
 	free(path);
 
     return p;
 }
-
-Picture *GetPicture(Display *dpy, Window Root, char *ImagePath, char *name,
-		    int color_limit)
-{
-  return GetPictureConditional(dpy, Root, ImagePath, name, color_limit, False);
-}
-
-Picture *GetPictureAndFree(Display *dpy, Window Root, char *ImagePath,
-			   char *name, int color_limit)
-{
-  return GetPictureConditional(dpy, Root, ImagePath, name, color_limit, True);
-}
-
 
 Picture *CachePicture(Display *dpy, Window Root,
 		      char *ImagePath, char *name, int color_limit)
@@ -263,7 +292,7 @@ Picture *CachePicture(Display *dpy, Window Root,
     }
 
     /* Not previously cached, have to load it ourself. Put it first in list */
-    p=LoadPictureConditional(dpy, Root, path, color_limit, False);
+    p=LoadPicture(dpy, Root, path, color_limit);
     if(p)
     {
 	p->next=PictureList;
@@ -285,6 +314,10 @@ void DestroyPicture(Display *dpy, Picture *p)
     return;
 
   /* Let it fly */
+  if (p->nalloc_pixels != 0) {
+    XFreeColors(dpy, Pcmap, p->alloc_pixels, p->nalloc_pixels, 0);
+    free(p->alloc_pixels);
+  }
   if(p->name!=NULL)
     free(p->name);
   if(p->picture!=None)

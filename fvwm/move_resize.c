@@ -1235,6 +1235,7 @@ void SetSnapGrid(F_CMD_ARGS)
   }
 }
 
+static Pixmap XorPixmap = None;
 
 void SetXOR(F_CMD_ARGS)
 {
@@ -1246,6 +1247,7 @@ void SetXOR(F_CMD_ARGS)
   {
     val = 0;
   }
+
   gcm = GCFunction|GCLineWidth|GCForeground|GCFillStyle|GCSubwindowMode;
   gcv.subwindow_mode = IncludeInferiors;
   gcv.function = GXxor;
@@ -1267,10 +1269,10 @@ void SetXOR(F_CMD_ARGS)
   else
     Scr.DrawGC = XCreateGC(dpy, Scr.Root, gcm, &gcv);
 
-  /* free up XORPixmap if possible */
-  if (Scr.DrawPicture) {
-    DestroyPicture(dpy, Scr.DrawPicture);
-    Scr.DrawPicture = NULL;
+  /* free up XorPixmap if neccesary */
+  if (XorPixmap != None) {
+    XFreePixmap(dpy, XorPixmap);
+    XorPixmap = None;
   }
 }
 
@@ -1278,14 +1280,15 @@ void SetXOR(F_CMD_ARGS)
 void SetXORPixmap(F_CMD_ARGS)
 {
   char *PixmapName;
-  Picture *GCPicture;
+  Picture *xp;
   XGCValues gcv;
   unsigned long gcm;
-  Window root_ret;
-  unsigned int width, height, depth, junk;
-  Pixmap xorpixmap;
-  static Pixmap pixmap = None;
 
+  if (!Pdefault) {
+    fvwm_msg(ERR, "SetXORPixmap", "doesn't work with the -visual option");
+    return;
+  }
+    
   action = GetNextToken(action, &PixmapName);
   if(PixmapName == NULL)
   {
@@ -1294,49 +1297,37 @@ void SetXORPixmap(F_CMD_ARGS)
     return;
   }
 
-  /* free up the old pixmap */
-  if (pixmap)
-    XFreePixmap(dpy, pixmap);
-  pixmap = None;
-
-  /* test for a pixmap id */
-  if (sscanf(PixmapName, "%ld", &xorpixmap) == 1) {
-    XGetGeometry(dpy, xorpixmap, &root_ret, (int *)&junk, (int *)&junk,
-		 &width, &height, &junk, &depth);
-    if ((width > 0) && (height > 0) && (depth = DefaultDepth(dpy,Scr.screen)))
-    {
-      free(PixmapName);
-      pixmap = XCreatePixmap(dpy, Scr.Root, width, height, depth);
-      XCopyArea(dpy, xorpixmap, pixmap, DefaultGC(dpy, Scr.screen), 0, 0,
-		width, height, 0, 0);
-      XSync(dpy, False);
-      gcv.tile = pixmap;
-    }
-  }
-  else
-  {
-    /* search for pixmap */
-    GCPicture = CachePicture(dpy, Scr.NoFocusWin, NULL, PixmapName,
-			     Scr.ColorLimit);
-    if (GCPicture == NULL) {
-      fvwm_msg(ERR,"SetXORPixmap","Can't find pixmap %s", PixmapName);
-      free(PixmapName);
-      return;
-    }
+  /* get the picture in the root visual, colorlimit is ignored because the
+   * pixels will be freed */
+  UseDefaultVisual();
+  xp = GetPicture(dpy, Scr.Root, NULL, PixmapName, 0);
+  if (xp == NULL) {
+    fvwm_msg(ERR,"SetXORPixmap","Can't find pixmap %s", PixmapName);
     free(PixmapName);
-
-    /* free up old one */
-    if (Scr.DrawPicture)
-      DestroyPicture(dpy, Scr.DrawPicture);
-    Scr.DrawPicture = GCPicture;
-    gcv.tile = GCPicture->picture;
+    UseFvwmVisual();
+    return;
   }
+  free(PixmapName);
+
+  /* free up old pixmap */
+  if (XorPixmap != None)
+    XFreePixmap(dpy, XorPixmap);
+
+  /* make a copy of the picture pixmap */
+  XorPixmap = XCreatePixmap(dpy, Scr.Root, xp->width, xp->height, Pdepth);
+  XCopyArea(dpy, xp->picture, XorPixmap, DefaultGC(dpy, Scr.screen), 0, 0,
+	    xp->width, xp->height, 0, 0);
+
+  /* destroy picture and free colors */
+  DestroyPicture(dpy, xp);
+  UseFvwmVisual();
 
   /* create Graphics context */
   gcm = GCFunction|GCLineWidth|GCTile|GCFillStyle|GCSubwindowMode;
   gcv.subwindow_mode = IncludeInferiors;
   gcv.function = GXxor;
   gcv.line_width = 0;
+  gcv.tile = XorPixmap;
   gcv.fill_style = FillTiled;
   gcv.subwindow_mode = IncludeInferiors;
   /* modify DrawGC, only create once */
