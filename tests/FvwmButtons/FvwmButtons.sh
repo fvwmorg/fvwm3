@@ -34,19 +34,21 @@ FC () {
   $TALK "`date '+%m/%d/%y %H:%M:%S'` FvwmCommand $*"
 }
 
+# This doesn't really do it for me...comment out for now
+# was being used at the beginning of Operate.
 # Draw attention to the pointer
-Pointer_Attn () {
-  # Can't use FC here, tracing destroys the effect.
-  x=1
-  while [ $x -lt 40 ] ; do
-   FvwmCommand "WindowId root WarpToWindow $x $x"
-    x=`expr $x + 4`
-  done
-  while [ $x -gt 10 ] ; do
-   FvwmCommand "WindowId root WarpToWindow $x $x"
-    x=`expr $x - 2`
-  done
-}
+# Pointer_Attn () {
+#   # Can't use FC here, tracing destroys the effect.
+#   x=1
+#   while [ $x -lt 40 ] ; do
+#    FvwmCommand "WindowId root WarpToWindow $x $x"
+#     x=`expr $x + 4`
+#   done
+#   while [ $x -gt 10 ] ; do
+#    FvwmCommand "WindowId root WarpToWindow $x $x"
+#     x=`expr $x - 2`
+#   done
+# }
 
 trap_sigint () {
   FC KillModule FvwmButtons FButt
@@ -71,7 +73,7 @@ Push () {
   Delay
   FC 'Next (FButt) WarpToWindow 20p 20p'
   FC "CursorMove `expr $button_size \* $1`p `expr $button_size \* $2`p"
-  FC 'FakeClick Depth 4 press 1 wait 30 release 1'
+  FC 'FakeClick Depth 4 press 1 wait 300 release 1'
 }
 # Push all the buttons,
 # uses globals:
@@ -79,7 +81,6 @@ Push () {
 # rows for number of rows of buttons
 # cols for number of cols of buttons
 Operate () {
-  Pointer_Attn
   rowc=0
   colc=0
   while [ $rowc -lt $rows -a $colc -lt $cols ] ; do
@@ -97,7 +98,7 @@ SLOW=1
 DO_SOME=n
 KILL=1
 CREATE_ONLY=n
-while getopts cdkosS:t123 arg ; do
+while getopts cdkosS:t1234 arg ; do
   case $arg in
     1)
       DO_1=y
@@ -107,6 +108,9 @@ while getopts cdkosS:t123 arg ; do
       DO_SOME=y;;
     3)
       DO_3=y
+      DO_SOME=y;;
+    4)
+      DO_4=y
       DO_SOME=y;;
     c)
       CREATE_ONLY=y;;
@@ -123,6 +127,9 @@ while getopts cdkosS:t123 arg ; do
       SLOW=$OPTARG;;
     t)
       TALK=echo;;
+    *)
+      # usage would be nice here...
+      exit 1;;
   esac
 done
 
@@ -130,14 +137,12 @@ if [ $KILL = 1 ] ; then
   trap trap_sigint 2
 fi
 
-# Test 1 issues:
-# UseTitle doesn't put anything in button
-# Padding makes indicator disappear
-
 # Create shortcut function to create a window
 # arg 0, window name
 FC DestroyFunc W
-FC AddToFunc W I Exec xterm -name '\$0' -g 10x10-20000-20000
+FC AddToFunc W I Exec xterm -font 10x20 -name '\$0' -g 10x10-20000-20000
+# On my system, the window width is 104, the border width is 6
+ww=120
 
 # Setup window style for FvwmButtons
 FC Style FButt CirculateHit, neverfocus, mousefocusclickraisesoff, HandleWidth 6
@@ -163,8 +168,8 @@ if [ "$DO_SOME" = "n" -o "$DO_1" = "y" ] ; then
   FC '*FButt: (Panel(up,    indicator) bu "W bu")'
   FC 'Style br HandleWidth 0'
   FC '*FButt: (Panel(right, indicator, noborder) br "W br")'
-  FC '*FButt: (Panel(left, UseTitle) bl "W bl")'
-  FC '*FButt: (Padding 8, Panel(down,  indicator) bd "W bd")'
+  FC '*FButt: (Title "<<", Panel(left) bl "W bl")'
+  FC '*FButt: (Padding 1 1, Panel(down,  indicator) bd "W bd")'
   FC Module FvwmButtons FButt
 
   if [ $CREATE_ONLY != 'y' ] ; then
@@ -199,7 +204,7 @@ if [ "$DO_SOME" = "n" -o "$DO_2" = "y" ] ; then
   FC '*FButt: (Panel(up,    indicator, delay 250, smooth, steps 3) bu "W bu")'
   FC '*FButt: (Panel(right, indicator, hints)              br "W br")'
   FC '*FButt: (Panel(left,  indicator 16, steps 2) bl "W bl")'
-  FC '*FButt: (Panel(down,  indicator, steps 1) bd "W bd")'
+  FC '*FButt: (Panel(down,  indicator 33, steps 1) bd "W bd")'
   FC Module FvwmButtons FButt
 
   if [ $CREATE_ONLY != 'y' ] ; then
@@ -225,8 +230,6 @@ if [ "$DO_SOME" = "n" -o "$DO_3" = "y" ] ; then
   button_size=48
   rows=3
   cols=3
-  # On my system, the window width is 104, the border width is 6
-  ww=120
   # Create a button box with 4 panels, one for each direction
   FC destroymoduleconfig FButt: \'*\'
   FC '*FButt: Geometry +500+500'
@@ -238,10 +241,10 @@ if [ "$DO_SOME" = "n" -o "$DO_3" = "y" ] ; then
   FC '*FButt: Rows '"$rows"
   FC '*FButt: Font 10x20'
   FC '*FButt: Padding 12'
-  base='indicator, smooth, delay 30, steps 3, smooth, position'
-  FC '*FButt: (Panel(up,    '"$base "'Module top -'"$ww"'p 0) bul "W bul")'
-  FC '*FButt: (Panel(up,    '"$base"' Button top center) buc "W buc")'
-  FC '*FButt: (Panel(up,    '"$base"' Module top '"$ww"'p 0) bur "W bur")'
+  base='indicator, smooth, delay 30, steps 3, position'
+  FC '*FButt: (Panel(up,    '"$base "'Module top -'"$ww"'p 0 mlr mtb) bul "W bul")'
+  FC '*FButt: (Panel(up,    '"$base"' Button top center mlr mtb) buc "W buc")'
+  FC '*FButt: (Panel(up,    '"$base"' Module top '"$ww"'p 0 mlr mtb) bur "W bur")'
   # Root right 0 50 put brl down a page in the middle. isn't that 100?
   # This goes to the bottom right.  why?
   FC '*FButt: (Panel(left,  '"$base"' Root right 0 0) brl "W brl")'
@@ -253,6 +256,34 @@ if [ "$DO_SOME" = "n" -o "$DO_3" = "y" ] ; then
   FC '*FButt: (Panel(down,  '"$base"' Module bottom) bdr "W bdr")'
   FC Module FvwmButtons FButt
 
+  if [ $CREATE_ONLY != 'y' ] ; then
+    Operate
+    Operate
+    # Need a long delay here, or the window just goes away
+    Delay
+    FC Beep
+    FC KillModule FvwmButtons FButt
+  fi
+fi
+
+# Test 4, 1 Button.
+if [ "$DO_SOME" = "n" -o "$DO_4" = "y" ] ; then
+  button_size=180
+  rows=1
+  cols=1
+  # Create a button box with 1 button
+  FC destroymoduleconfig FButt: \'*\'
+  FC '*FButt: Geometry +600+600'
+  FC '*FButt: ButtonGeometry '"${button_size}x${button_size}"
+  FC '*FButt: Back lightblue'
+  FC '*FButt: Fore black'
+  FC '*FButt: BoxSize smart'
+  FC '*FButt: Columns '"$cols"
+  FC '*FButt: Rows '"$rows"
+  FC '*FButt: Font 9x15bold'
+  FC '*FButt: Padding 12'
+  FC '*FButt: (Title "OneButton", Panel(up) bd "W bd")'
+  FC 'Module FvwmButtons FButt'
   if [ $CREATE_ONLY != 'y' ] ; then
     Operate
     Operate
