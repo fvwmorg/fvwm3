@@ -58,6 +58,7 @@ fvwm_userdir='$HOME/.fvwm'
 fvwm_exe='fvwm2'
 
 with_ewmh=@with_ewmh@
+with_fribidi=@with_fribidi@
 with_gnomehints=@with_gnomehints@
 with_gtk=@with_gtk@
 with_gdkimlib=@with_gdkimlib@
@@ -120,6 +121,7 @@ while test $# -gt 0; do
 
 		--supports|-supports|-s)
 			test "$with_ewmh"       = "yes" && echo "ewmh"
+			test "$with_fribidi"    = "yes" && echo "fribidi"
 			test "$with_gnomehints" = "yes" && echo "gnome-hints"
 			test "$with_gtk"        = "yes" && echo "gtk"
 			test "$with_gdkimlib"   = "yes" && echo "gdk-imlib"
@@ -166,6 +168,7 @@ while test $# -gt 0; do
 			echo ""
 			echo "Support for features:"
 			echo "	ewmh (extended window manager hints): $with_ewmh"
+			echo "	fribidi (bi-directionality): $with_fribidi"
 			echo "	gnome-hints (window manager hints): $with_gnomehints"
 			echo "	gtk (FvwmGtk): $with_gtk"
 			echo "	gdk-imlib (in FvwmGtk): $with_gdkimlib"

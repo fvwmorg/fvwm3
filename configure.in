@@ -410,8 +410,8 @@ if test "x$found_iconv" = "xyes"; then
    ICONV_SECOND_ARG
 fi
 
-dnl ******** nl_langinfo and CODESET
 
+dnl ******** nl_langinfo and CODESET
 AC_MSG_CHECKING([for nl_langinfo (CODESET)])
 AC_TRY_COMPILE([#include <langinfo.h>
 #include <locale.h>],
@@ -420,6 +420,16 @@ AC_TRY_COMPILE([#include <langinfo.h>
    have_codeset=yes,
    have_codeset=no)
 AC_MSG_RESULT($have_codeset)
+
+
+dnl ********* fribidi
+$UNSET ac_cv_header_fribidi_fribidi_h
+$UNSET ac_cv_lib_fribidi_fribidi_log2vis
+smr_CHECK_LIB(fribidi, , bi-directional text support, fribidi_log2vis,
+	fribidi/fribidi.h)
+test "$fribidi_LIBS" && AC_DEFINE(HAVE_FRIBIDI)
+AC_SUBST(fribidi_LIBS)
+AC_SUBST(fribidi_CFLAGS)
 
 
 dnl Check for REQUIRED headers and functions before going any
@@ -616,6 +626,7 @@ esac
 
 # mainly for fvwm-config
 AC_SUBST(with_ewmh)
+AC_SUBST(with_fribidi)
 AC_SUBST(with_gnomehints)
 AC_SUBST(with_gtk)
 AC_SUBST(with_gdkimlib)
@@ -723,8 +734,9 @@ FVWM Configuration:
   Data files:  $my_datdir
   Perl lib:    $my_plldir
 
-  With Extended Window Manager hints? $with_ewmh$problem_ewmh
-  With GNOME Window Manager hints?    $with_gnomehints$problem_gnomehints
+  With Extended Window Manager Hints? $with_ewmh$problem_ewmh
+  With Bi-directional support?        $with_fribidi$problem_fribidi
+  With GNOME Window Manager Hints?    $with_gnomehints$problem_gnomehints
   With GTK support for FvwmGtk?       $with_gtk$problem_gtk$fvwmgtk_msg
   With Multibyte support?             $with_multibyte$problem_multibyte
   With ReadLine sup. in FvwmConsole?  $with_readline$problem_readline

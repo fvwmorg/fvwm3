@@ -1,3 +1,8 @@
+2002-02-21  Mikhael Goikhman  <migo@homemail.com>
+
+	* fvwm-config.in:
+	added --supports-fribidi
+
 2002-02-10  Mikhael Goikhman  <migo@homemail.com>
 
 	* fvwm-config.in:

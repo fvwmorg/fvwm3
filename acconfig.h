@@ -69,6 +69,9 @@
  * the currently running X server supports it.  */
 #undef SHAPE
 
+/* Define if fribidi library is used.  */
+#undef HAVE_FRIBIDI
+
 /* Enables the "MiniIcon" Style option to specify a small pixmap which
  * can be used as one of the title-bar buttons, shown in window list,
  * utilized by modules, etc.  Requires PIXMAP_BUTTONS to be defined
