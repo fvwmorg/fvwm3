@@ -1,4 +1,4 @@
-#!/usr/bin/perl
+#! xPERLx
 ####
 # NAME
 #    focus-link.pl - perl FvwmCommand script

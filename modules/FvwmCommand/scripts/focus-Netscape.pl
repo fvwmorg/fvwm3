@@ -1,4 +1,4 @@
-#!/usr/bin/perl
+#! xPERLx
 # FvwmCommand script 
 # Written by Toshi Isogai
 #

@@ -1,4 +1,4 @@
-#!/usr/bin/perl
+#! xPERLx
 # arg1  t to invoke FvwmTalk
 #       td  to kill FvwmTalk
 #       none to move windows

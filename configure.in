@@ -285,6 +285,7 @@ modules/FvwmBacker/Makefile
 modules/FvwmBanner/Makefile
 modules/FvwmButtons/Makefile
 modules/FvwmCommand/Makefile
+modules/FvwmCommand/scripts/Makefile
 modules/FvwmConsole/Makefile
 modules/FvwmCpp/Makefile
 modules/FvwmDebug/Makefile

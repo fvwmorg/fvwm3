@@ -1,4 +1,4 @@
-#!/usr/bin/perl
+#! xPERLx
 # FvwmCommand example - move a group of windows
 
 

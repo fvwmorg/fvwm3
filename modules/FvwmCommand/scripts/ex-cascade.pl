@@ -1,4 +1,4 @@
-#!/usr/bin/perl
+#! xPERLx
 # FvwmCommand example - cascade windows
 
 open( F, "FvwmCommand -ri2 send_windowlist |" ) || die "command" ;

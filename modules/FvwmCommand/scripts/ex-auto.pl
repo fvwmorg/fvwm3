@@ -1,4 +1,4 @@
-#!/usr/bin/perl
+#! xPERLx
 # FvwmCommand example - auto raise small windows
 # arg1 - size ( w * h in pixel)  (default 60000)
 # arg2 - delay (second) (default 1)

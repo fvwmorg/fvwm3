@@ -1,3 +1,7 @@
+Sat Mar 13 15:12:37 1999  Steve Robbins  <steve@nyongwa.montreal.qc.ca>
+
+	* configure.in: add entry for modules/FvwmCommand/scripts/Makefile.
+
 Sat Mar 13 11:04:48 1999  Steve Robbins  <steve@nyongwa.montreal.qc.ca>
 
 	* configure.in: added check for perl. Re-ordered to put tests for
