@@ -3,12 +3,12 @@ dnl
 AC_PREREQ(2.13)
 AC_INIT(fvwm/fvwm.c)
 
-dnl should be 1 only for the release
-ISRELEASED=0
+dnl should be "yes" only within the released distribution
+ISRELEASED=no
 version=2.5.4
 VERSIONINFO=""
 
-dnl date of the released version (please pad a day with zero in the last 2)
+dnl date of the released version (please zero pad the day in the last 2 dates)
 RELDATELONG="25 August 2002"
 RELDATESHORT="25-Aug-2002"
 RELDATENUM="2002-08-25"
@@ -25,7 +25,7 @@ FVWMLIST="fvwm@fvwm.org"
 FVWMWORKERSLIST="fvwm-workers@fvwm.org"
 FVWMWORKERSLISTLONG="fvwm workers list <fvwm-workers@fvwm.org>"
 
-if test x"$ISRELEASED" = x0; then
+if test x"$ISRELEASED" != xyes; then
 	VERSIONINFO=" (from cvs)"
 	RELDATELONG="(not released yet)"
 	RELDATESHORT="(not released yet)"
@@ -48,6 +48,7 @@ if test x"$ISRELEASED" = x0; then
 #	fi
 fi
 
+AC_SUBST(ISRELEASED)
 AC_DEFINE_UNQUOTED(VERSIONINFO, "$VERSIONINFO")
 AC_SUBST(VERSIONINFO)
 AC_SUBST(RELDATELONG)

@@ -34,6 +34,9 @@ Options:
 	[-e]	[--fvwm-exe]     print fvwm executable name (in bindir)
 	[-s]	[--supports]     list supported features, one per line
 	[--supports-<feature>]   return: 0 (yes), 100 (no), 200 (unknown)
+	[--is-final]             print yes or no
+	[--is-stable]            print yes or no
+	[--release-date]         print the release date (if final)
 EOF
 	exit $1
 }
@@ -57,6 +60,9 @@ fvwm_imagepath="@FVWM_IMAGEPATH@"
 fvwm_userdir='$HOME/.fvwm'
 fvwm_exe='fvwm'
 
+VERSIONINFO="@VERSIONINFO@"
+release_date="@RELDATENUM@"
+
 with_bidi=@with_bidi@
 with_ewmh=@with_ewmh@
 with_gnomehints=@with_gnomehints@
@@ -74,6 +80,9 @@ with_xinerama=@with_xinerama@
 with_xft=@with_xft@
 with_xpm=@with_xpm@
 with_xrender=@with_xrender@
+
+is_stable=no
+is_final=@ISRELEASED@
 
 while test $# -gt 0; do
 	case "$1" in
@@ -154,7 +163,7 @@ while test $# -gt 0; do
 
 		--info|-info|-i)
 			echo "Package: $PACKAGE"
-			echo "Version: $VERSION"
+			echo "Version: $VERSION$VERSIONINFO"
 			echo ""
 			echo "Instalation options:"
 			echo "	prefix: $prefix"
@@ -190,6 +199,20 @@ while test $# -gt 0; do
 			echo "	xft (FreeType anti-alias font): $with_xft"
 			echo "	xpm: $with_xpm"
 			echo "	xrender (XFree86 Xrender extention): $with_xrender"
+			;;
+
+		--is-stable|-is-stable)
+			test "$is_stable" = yes && echo yes
+			test "$is_stable" != yes && echo no
+			;;
+
+		--is-final|-is-final)
+			test "$is_final" = yes && echo yes
+			test "$is_final" != yes && echo no
+			;;
+
+		--release-date|-release-date)
+			echo $release_date
 			;;
 
 		*)

@@ -41,6 +41,10 @@ distcheck2: distcheck dist2
 	dashes=`echo "$$banner" | sed s/./=/g`; \
 	echo "$$banner"; \
 	echo "$$dashes"
+	@if test "x$(ISRELEASED)" != xyes; then \
+		echo 'Warning: ISRELEASED is not set to "yes".'; \
+		echo '	So these can not be the official tarballs.'; \
+	fi
 
 distclean2: distclean
 

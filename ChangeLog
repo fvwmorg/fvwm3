@@ -1,3 +1,9 @@
+2002-09-06  Mikhael Goikhman  <migo@homemail.com>
+
+	* configure.in:
+	* Makefile.am:
+	minor improvements in the new release procedure
+
 2002-09-06  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* fvwm/stack.c (RaiseOrLowerWindow):
