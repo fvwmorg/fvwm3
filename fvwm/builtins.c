@@ -3512,7 +3512,6 @@ void SetEnv(XEvent *eventp,Window junk,FvwmWindow *tmp_win,
     szPutenv = safemalloc(strlen(szVar)+strlen(szValue)+2);
     sprintf(szPutenv,"%s=%s",szVar,szValue);
     putenv(szPutenv);
-    free(szPutenv);
     free(szVar);
     free(szValue);
 }
