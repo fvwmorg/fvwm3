@@ -333,7 +333,9 @@ void ProcessMessage(unsigned long type,unsigned long *body)
   static int current_focus=-1;
   struct ConfigWinPacket  *cfgpacket;
 
+#ifdef MINI_ICONS
   Picture p;
+#endif
 
   /* only M_ICONIFY, M_DEICONIFY need synchronous behaviour so send unlock
    * immediately for all other messages */
@@ -402,6 +404,7 @@ void ProcessMessage(unsigned long type,unsigned long *body)
       string=(char *)&body[3];
       flagitem = ItemFlags(&windows,body[0]);
       name=makename(string, (IS_ICONIFIED(flagitem)?True:False));
+      UpdateButtonIconified(&buttons, i, IS_ICONIFIED(flagitem));
       if (UpdateButton(&buttons,i,name,-1)==-1)
       {
 	AddButton(&buttons, name, NULL, 1);
@@ -446,6 +449,7 @@ void ProcessMessage(unsigned long type,unsigned long *body)
 	  SET_ICONIFIED(flagitem, !IS_ICONIFIED(flagitem));
 	  string = ItemName(&windows, i);
 	  name = makename(string, IS_ICONIFIED(flagitem));
+          UpdateButtonIconified(&buttons, i, IS_ICONIFIED(flagitem));
 	  if (UpdateButton(&buttons, i, name, -1) != -1) redraw = 1;
 	  if (i != current_focus || (IS_ICONIFIED(flagitem)))
 	    if (UpdateButtonSet(&buttons, i, (IS_ICONIFIED(flagitem)) ? 1 : 0)
@@ -895,8 +899,8 @@ void AdjustWindow(Bool force)
     temp=ItemName(&windows,i);
     if(temp != NULL)
     {
-	tw=10+XTextWidth(ButtonFont,temp,strlen(temp));
-	tw+=XTextWidth(ButtonFont,"()",2);
+	tw = 8 + XTextWidth(ButtonFont,temp,strlen(temp));
+	tw += XTextWidth(ButtonFont,"()",2);
 #ifdef MINI_ICONS
 	tw+=base_miw;
 #endif

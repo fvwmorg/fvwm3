@@ -41,6 +41,7 @@ typedef struct button
   Picture p;
   int reliefwidth;
   long desk;
+  Bool is_iconified;
 } Button;
 
 typedef struct
@@ -56,6 +57,8 @@ extern void InitArray(ButtonArray *array,int x,int y,int w,int h,int rw);
 extern void UpdateArray(ButtonArray *array,int x,int y,int w, int h);
 extern int AddButton(ButtonArray *array, char *title, Picture *p,int up);
 extern int UpdateButton(ButtonArray *array, int butnum, char *title, int up);
+extern void UpdateButtonIconified(
+    ButtonArray *array, int butnum, int iconified);
 extern void RadioButton(ButtonArray *array, int butnum);
 extern void ReorderButtons(ButtonArray *array, int butnum, int FlipFocus);
 extern int UpdateButtonDesk(ButtonArray *array, int butnum, long desk );

@@ -258,6 +258,19 @@ int UpdateButtonPicture(ButtonArray *array, int butnum, Picture *p)
   return 1;
 }
 
+void UpdateButtonIconified(ButtonArray *array, int butnum, int iconified)
+{
+  Button *temp;
+
+  temp=find_n(array,butnum);
+  if (temp!=NULL)
+  {
+    temp->is_iconified = !!iconified;
+  }
+  return;
+}
+
+
 /******************************************************************************
   UpdateButtonSet - Change colour set of a button between odd and even
 ******************************************************************************/
@@ -415,9 +428,19 @@ void DoButton(Button *button, int x, int y, int w, int h)
   else
   {
     if (LeftJustify)
-      newx=INNER_MARGIN;
+    {
+       newx = INNER_MARGIN;
+      if (!button->is_iconified)
+      {
+        static int icon_offset = -1;
+
+        if (icon_offset == -1)
+          icon_offset = XTextWidth(ButtonFont, "(", 1);
+        newx += icon_offset;
+      }
+    }
     else
-      newx=max((w-button->tw)/2,INNER_MARGIN);
+      newx = max((w - button->tw) / 2 - button->reliefwidth, INNER_MARGIN);
   }
 
   /* check if the string needs to be truncated */

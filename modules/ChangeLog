@@ -1,3 +1,13 @@
+1999-10-12  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* FvwmWinList/ButtonArray.c (UpdateButtonIconified):
+	* FvwmWinList/FvwmWinList.c (AdjustWindow): iconified buttons look a
+	bit better; use a few pixels less space
+
+	* FvwmWinList/ButtonArray.c (DoButton): fixed offset of centered titles
+	so that the closing ')' of an iconified window with the longest title
+	is still visible
+
 1999-10-11  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* FvwmWinList/FvwmWinList.c (ProcessMessage):
