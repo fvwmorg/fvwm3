@@ -1,3 +1,10 @@
+Wed Nov  4 11:09:11 1998  Steve Robbins  <steve@nyongwa.montreal.qc.ca>
+
+	* added some files to cvs: modules/ChangeLog, extras/ChangeLog,
+	NEWS, and AUTHORS.
+
+	* DEVELOPERS: replaces README.autoconf.
+
 1998-11-04  /users/domivogt  <dominik_vogt@hp.com>
 
 	* fvwm/events.c (HandlePropertyNotify): Fixed the fix
