@@ -86,7 +86,6 @@ int main(int argc, char **argv)
   char *display_name = NULL;
   char *filename = NULL;
   char *tmp_file, read_string[80],delete_string[80];
-  char *tline;
   int i,cpp_debug = 0;
 
   strcpy(cpp_options,"");
@@ -167,16 +166,6 @@ int main(int argc, char **argv)
 
   /* set up G */
   G = CreateGraphics(dpy);
-
-  /* get fvwm to send the DefaultGraphics config line so we get the visuals */
-  InitGetConfigLine(fd, "xyzzy");
-  GetConfigLine(fd, &tline);
-  while(tline != (char *)0) {
-    if(strlen(tline) > 1)
-      if(strncasecmp(tline, DEFGRAPHSTR, DEFGRAPHLEN)==0)
-        ParseGraphics(dpy, tline, G);
-    GetConfigLine(fd,&tline);
-  }
 
   tmp_file = cpp_defs(dpy, display_name,cpp_options, filename);
 

@@ -275,8 +275,18 @@ void executeModule(XEvent *eventp,Window w,FvwmWindow *tmp_win,
       close(fvwm_to_app[1]);
       close(app_to_fvwm[0]);
 #endif
-      /* Only modules need to know where userhome is. */
-      putenv( CatString2("FVWM_USERHOME=", user_home_dir) );
+      /* Only modules need to know these */
+      putenv(CatString2("FVWM_USERHOME=", user_home_dir));
+      if (!Scr.usingDefaultVisual) {
+        char *visualid, *colormap;
+        
+        visualid = safemalloc(32);
+	sprintf(visualid, "FVWM_VISUALID=%lx", XVisualIDFromVisual(Scr.viz));
+	putenv(visualid);
+	colormap = safemalloc(32);
+	sprintf(colormap, "FVWM_COLORMAP=%lx", Scr.cmap);
+	putenv(colormap);
+      }
 
       /** Why is this execvp??  We've already searched the module path! **/
       execvp(arg1,args);

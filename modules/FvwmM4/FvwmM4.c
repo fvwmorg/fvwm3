@@ -90,7 +90,6 @@ int main(int argc, char **argv)
   char *display_name = NULL;
   char *filename = NULL;
   char *tmp_file, read_string[80],delete_string[80];
-  char *tline;
   int i,m4_debug = 0;
 
   m4_enable = True;
@@ -182,16 +181,6 @@ int main(int argc, char **argv)
 
   /* set up G */
   G = CreateGraphics(dpy);
-
-  /* get fvwm to send the DefaultGraphics config line so we get the visuals */
-  InitGetConfigLine(fd, "xyzzy");
-  GetConfigLine(fd, &tline);
-  while(tline != (char *)0) {
-    if(strlen(tline) > 1)
-      if(strncasecmp(tline, DEFGRAPHSTR, DEFGRAPHLEN)==0)
-        ParseGraphics(dpy, tline, G);
-    GetConfigLine(fd,&tline);
-  }
 
   tmp_file = m4_defs(dpy, display_name,m4_options, filename);
 

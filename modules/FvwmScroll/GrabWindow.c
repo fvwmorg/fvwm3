@@ -523,19 +523,16 @@ void Loop(Window target)
     /* wait for X-event or config line */
     select( fd_width, SELECT_FD_SET_CAST &fdset, NULL, NULL, NULL );
 
-    /* parse any config lines (only the fvwm_look) */
+    /* parse any config lines (colorsets) */
     if (FD_ISSET(fd[1], &fdset)) {
       char *tline;
 
       GetConfigLine(fd, &tline);
       if (tline != NULL && (strlen(tline) > 1)) {
-        if(strncasecmp(tline, DEFGRAPHSTR, DEFGRAPHLEN)==0) {
-          ParseGraphics(dpy, tline, G);
 /* this is where dynamic colorset changinf happens
             SetWindowBackground(dpy, main_win, tw, th, G->bg, G->depth,
 				G->shadowGC);
 */
-        }
       }
 
       /* free up line malloc'd by GetConfigLine */

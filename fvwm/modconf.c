@@ -183,8 +183,6 @@ void SendDataToModule(XEvent *eventp,Window w,FvwmWindow *tmp_win,
     match_len = strlen(match);
   }
 
-  SendLook(*Module);
-
   if (ImagePath && strlen(ImagePath))
   {
     message=safemalloc(strlen(ImagePath)+12);
@@ -214,24 +212,4 @@ void SendDataToModule(XEvent *eventp,Window w,FvwmWindow *tmp_win,
   }
   SendPacket(*Module,M_END_CONFIG_INFO,0,0,0,0,0,0,0,0);
   free(match);
-}
-
-static char *make_look_packet(void)
-{
-  char *b = safemalloc(DEFGRAPHNUM * (sizeof(long) * 2 + 1) + DEFGRAPHLEN + 3);
-  sprintf(b, "%s %lx %lx\n", DEFGRAPHSTR, XVisualIDFromVisual(Scr.viz),
-	  Scr.cmap);
-  return b;
-}
-
-void SendLook(int module)
-{
-  char *message;
-  
-  if (Scr.usingDefaultVisual)
-    return;
-    
-  message = make_look_packet();
-  SendName(module,M_CONFIG_INFO,0,0,0,message);
-  free(message);
 }

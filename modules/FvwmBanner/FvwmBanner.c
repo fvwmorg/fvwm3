@@ -313,11 +313,6 @@ static void parseOptions (int fd[2])
   InitGetConfigLine(fd,MyName);
   while (GetConfigLine (fd, &tline),tline != NULL) {
     if (strlen (tline) > 1) {
-      if(strncasecmp(tline, DEFGRAPHSTR, DEFGRAPHLEN)==0)  {
-        ParseGraphics(dpy, tline, G);
-        SavePictureCMap(dpy, G->viz, G->cmap, G->depth);
-        continue;
-      }
       if (strncasecmp(tline, "ImagePath",9)==0) {
         CopyString (&imagePath, &tline[9]);
         if (imagePath[0] == 0) {

@@ -127,9 +127,7 @@ int main(int argc, char **argv)
     {
       if(strlen(tline)>1)
 	{
-	  if(strncasecmp(tline, DEFGRAPHSTR, DEFGRAPHLEN)==0)
-	    ParseGraphics(dpy, tline, G);
-	  else if(strncasecmp(tline,CatString3(MyName, "Back",""),
+	  if(strncasecmp(tline,CatString3(MyName, "Back",""),
 			   Clength+4)==0)
 	    {
 	      CopyString(&BackColor,&tline[Clength+4]);

@@ -1015,7 +1015,7 @@ extern int save_color_limit;            /* global for xpm color limiting */
 void ParseOptions(button_info *ub)
 {
   char *s;
-  char *items[]={NULL,DEFGRAPHSTR,"imagepath","colorlimit",NULL};
+  char *items[]={NULL,"imagepath","colorlimit",NULL};
 
   items[0]=mymalloc(strlen(MyName)+2);
   sprintf(items[0],"*%s",MyName);
@@ -1034,15 +1034,11 @@ void ParseOptions(button_info *ub)
 	    ParseConfigLine(&ub,rest);
 	  break;
 	case 1:
-	  ParseGraphics(Dpy, s, G);
-	  SavePictureCMap(Dpy, G->viz, G->cmap, G->depth);
-	  break;
-	case 2:
 	  if (imagePath)
 	    free(imagePath);
 	  CopyString(&imagePath,rest);
 	  break;
-	case 3:                         /* colorlimit */
+	case 2:                         /* colorlimit */
           sscanf(rest,"%d",&save_color_limit);
 	  break;
 	}

@@ -187,11 +187,6 @@ Bool GetResourceString(XrmDatabase db, const char *resource,
  * Stuff for Graphics.c and ModGraph.c
  ***********************************************************************/
 
-/* stuff to enable modules to use fvwm visual/colormap/GCs */
-#define DEFGRAPHSTR "Fvwm_Graphics"
-#define DEFGRAPHLEN 13 /* length of above string */
-#define DEFGRAPHNUM 2 /* number of items sent */
-
 typedef struct _Background {
   union {
     unsigned long word;
@@ -214,7 +209,6 @@ typedef struct GraphicsThing {
 } Graphics;
 
 Graphics *CreateGraphics(Display *dpy);
-void ParseGraphics(Display *dpy, char *line, Graphics *graphics);
 
 void RelieveRectangle(Display *dpy, Drawable d, int x,int y,int w,int h,
 		      GC ReliefGC, GC ShadowGC, int line_width);

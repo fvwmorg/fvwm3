@@ -241,15 +241,10 @@ static void ParseDefaults(char *buf) {
   if (buf[strlen(buf)-1] == '\n') {     /* if line ends with newline */
     buf[strlen(buf)-1] = '\0';	/* strip off \n */
   }
-  /* grok the global config lines sent from fvwm */
-  if (strncasecmp(buf, DEFGRAPHSTR, DEFGRAPHLEN)==0) {
-    ParseGraphics(dpy, buf, G);
-    SavePictureCMap(dpy, G->viz, G->cmap, G->depth); /* for shadow routines */
-  }
   /* Accept commands beginning with "*FvwmFormDefault".
      This is to make sure defaults are read first.
      Note the hack w. bg_state. */
-  else if (strncasecmp(buf, "*FvwmFormDefault", 16) == 0) {
+  if (strncasecmp(buf, "*FvwmFormDefault", 16) == 0) {
     p=buf+16;
     e = FindToken(p,def_table,struct CommandTable);/* find cmd in table */
     if (e != 0) {                       /* if its valid */

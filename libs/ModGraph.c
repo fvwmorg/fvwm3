@@ -21,44 +21,28 @@
  * create and initialize the structure used to stash graphics things
  **************************************************************************/
 Graphics *CreateGraphics(Display *dpy) {
+  char *envp;
   int screen = DefaultScreen(dpy);
   Graphics *G = (Graphics *)safemalloc(sizeof(Graphics));
 
   memset(G, 0, sizeof(Graphics));
-  G->viz = DefaultVisual(dpy, screen);
-  G->cmap = DefaultColormap(dpy, screen);
-  G->depth = DefaultDepth(dpy, screen);
-  G->usingDefaultVisual = True;
+  /* if fvwm has not set this env-var it is using the default visual */
+  if ((envp = getenv("FVWM_VISUALID")) == NULL) {
+    G->viz = DefaultVisual(dpy, screen);
+    G->cmap = DefaultColormap(dpy, screen);
+    G->depth = DefaultDepth(dpy, screen);
+    G->usingDefaultVisual = True;
+  } else {
+    /* convert the env-vars to a visual and colormap */
+    int viscount;
+    XVisualInfo vizinfo, *xvi;
+
+    sscanf(envp, "%lx", &vizinfo.visualid);
+    xvi = XGetVisualInfo(dpy, VisualIDMask, &vizinfo, &viscount);
+    G->viz = xvi->visual;
+    G->depth = xvi->depth;
+    sscanf(getenv("FVWM_COLORMAP"), "%lx", &G->cmap);
+    G->usingDefaultVisual = False;
+  }
   return G;
-}
-
-/***************************************************************************
- * Initialises graphics stuff from a graphics config line sent by fvwm
- **************************************************************************/
-void ParseGraphics(Display *dpy, char *line, Graphics *G) {
-  int viscount;
-  XVisualInfo vizinfo, *xvi;
-  VisualID vid;
-  Colormap cmap;
-
-  /* ignore it if not the first time */
-  if (!G->usingDefaultVisual)
-    return;
-
-  /* bail out on short lines */
-  if (strlen(line) < (size_t)(DEFGRAPHLEN + 2 * DEFGRAPHNUM))
-    return;
-
-  if (sscanf(line + DEFGRAPHLEN + 1, "%lx %lx\n", &vid, &cmap) != DEFGRAPHNUM)
-    return;
-
-  /* if this is the first one grab a visual to use */
-  vizinfo.visualid = vid;
-  xvi = XGetVisualInfo(dpy, VisualIDMask, &vizinfo, &viscount);
-  if (viscount != 1)
-    return;
-  G->viz = xvi->visual;
-  G->depth = xvi->depth;
-  G->cmap = cmap;
-  G->usingDefaultVisual = False;
 }

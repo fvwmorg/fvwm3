@@ -167,10 +167,7 @@ int main(int argc, char **argv)
 
   while(tline != (char *)0) {
     if(strlen(tline)>1) {
-      if(strncasecmp(tline, DEFGRAPHSTR, DEFGRAPHLEN)==0)  {
-        ParseGraphics(dpy, tline, G);
-      }
-      else if(strncasecmp(tline, CatString3(MyName,"Font",""),Clength+4)==0) {
+      if(strncasecmp(tline, CatString3(MyName,"Font",""),Clength+4)==0) {
         CopyString(&font_string,&tline[Clength+4]);
       }
       else if(strncasecmp(tline,CatString3(MyName,"Fore",""), Clength+4)==0) {
@@ -524,9 +521,6 @@ void list_end(void)
 	  --body_count;
 	}
 
-	if (tline != NULL && (strlen(tline) > 1))
-	  if(strncasecmp(tline, DEFGRAPHSTR, DEFGRAPHLEN)==0)
-	    ParseGraphics(dpy, tline, G);
 	/* this is where dynamic colorset changing happens
 	   SetWindowBackground(dpy, main_win, mysizehints.width,
 	   mysizehints.height, G->bg, G->depth, G->foreGC);
