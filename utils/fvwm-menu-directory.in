@@ -61,9 +61,9 @@ GetOptions(
 ) || wrongUsage();
 wrongUsage() if @ARGV;
 
+$name = $dir unless $reuse;
 $dir =~ s:^~(/|$):$home$1:;
 chomp($dir = `cat "$dirFile"`) if $reuse && -f $dirFile;
-$name = $dir unless $reuse;
 
 unless (-d $dir) {
 	# the next line may be commented not to throw error
