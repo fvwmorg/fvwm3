@@ -1,3 +1,7 @@
+2000-05-31  Hippo
+
+	* FvwmPager/x_pager.c: Position of small windows on page boundaries.
+
 2000-05-31  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* FvwmIconMan/xmanager.c:

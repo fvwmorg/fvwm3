@@ -145,32 +145,53 @@ static Pixmap default_pixmap = None;
 static void CalcGeom(PagerWindow *t, int win_w, int win_h,
 		     int *x_ret, int *y_ret, int *w_ret, int *h_ret)
 {
-  int n, m, x, y ,w ,h;
+  int virt, page, edge, size;
+  int max, pos, gap;
 
-  n = (Scr.Vx + t->x) / Scr.MyDisplayWidth;
-  m = (Scr.Vy + t->y) / Scr.MyDisplayHeight;
-  x = (Scr.Vx + t->x) * (win_w - Scr.VxPages) / Scr.VWidth + n;
-  y = (Scr.Vy + t->y) * (win_h - Scr.VyPages) / Scr.VHeight + m;
-  w = (Scr.Vx + t->x + t->width) * (win_w - Scr.VxPages) / Scr.VWidth - x + n;
-  h = (Scr.Vy + t->y + t->height) * (win_h - Scr.VyPages) / Scr.VHeight - y +m;
+  /* coordinate of left hand edge on virtual desktop */
+  virt = Scr.Vx + t->x;
+  /* virtual page that window sits on */
+  page = virt / Scr.MyDisplayWidth;
+  /* position of left hand edge of mini-window on pager window */
+  edge = virt * win_w / Scr.VWidth;
+  /* absolute coordinate of right hand edge on virtual desktop */
+  virt += t->width;
+  /* width of mini window is right hand edge - left hand edge */
+  size = virt * win_w / Scr.VWidth - edge;
+  /* Make size big enough to be visible */
+  if (size < MinSize)
+  {
+    /* maximum amount to adjust left edge of (a right justified) mini window */
+    max = MinSize - size;
+    /* position of window on virtual page */
+    pos = (virt - t->width) % Scr.MyDisplayWidth;
+    /* how far right it would be to be right justified */
+    gap = Scr.MyDisplayWidth - t->width;
+    /* move the window left proportional to how far right on the page it is */
+    edge -= max * pos / gap;
+    /* change the mini-window size */
+    size = MinSize;
+  }
+  /* fill in return values */
+  *x_ret = edge;
+  *w_ret = size;
 
-  /* adjust size and position to keep visible and on page */
-  if (w < MinSize)
+  /* same code for y axis */
+  virt = Scr.Vy + t->y;
+  page = virt / Scr.MyDisplayHeight;
+  edge = virt * win_h / Scr.VHeight;
+  virt += t->height;
+  size = virt * win_h / Scr.VHeight - edge;
+  if (size < MinSize)
   {
-    if (t->x > (Scr.MyDisplayWidth / 2))
-      x -= MinSize - w;
-    w = MinSize;
+    max = MinSize - size;
+    pos = (virt - t->height) % Scr.MyDisplayHeight;
+    gap = Scr.MyDisplayHeight - t->height;
+    edge -= max * pos / gap;
+    size = MinSize;
   }
-  if (h < MinSize)
-  {
-    if (t->y > (Scr.MyDisplayHeight / 2))
-      y -= MinSize - h;
-    h = MinSize;
-  }
-  *x_ret = x;
-  *y_ret = y;
-  *w_ret = w;
-  *h_ret = h;
+  *y_ret = edge;
+  *h_ret = size;
 }
 
 /***********************************************************************
