@@ -549,12 +549,12 @@ typedef struct
   MenuPosHints pos_hints;
   struct
   {
-    unsigned no_warp : 1;
-    unsigned warp_title : 1;
-    unsigned fixed : 1;
-    unsigned select_in_place : 1;
-    unsigned select_warp : 1;
+    unsigned do_not_warp : 1;
+    unsigned do_warp_on_select : 1;
+    unsigned do_warp_title : 1;
+    unsigned do_select_in_place : 1;
     unsigned has_poshints : 1;
+    unsigned is_fixed : 1;
   } flags;
 } MenuOptions;
 
@@ -595,27 +595,31 @@ typedef enum
 {
   MENU_ERROR = -1,
   MENU_NOP = 0,
-  MENU_DONE = 1,
-  MENU_DONE_BUTTON = 2,  /* must be MENU_DONE + 1 */
-  MENU_ABORTED = 3,
-  MENU_ABORTED_BUTTON = 4, /* must be MENU_ABORTED + 1 */
+  MENU_DONE,
+  MENU_ABORTED,
   MENU_SUBMENU_DONE,
   MENU_DOUBLE_CLICKED,
   MENU_POPUP,
   MENU_POPDOWN,
   MENU_SELECTED,
   MENU_NEWITEM,
-  MENU_TEAR_OFF
+  MENU_POST,
+  MENU_TEAR_OFF,
+  /* propagate the event to a different menu */
+  MENU_PROPAGATE_EVENT
 } MenuRC;
 
 typedef struct
 {
   MenuRC rc;
-  MenuRoot *tearoff_menu;
+  MenuRoot *menu;
+  MenuRoot *parent_menu;
   struct
   {
     unsigned is_first_item_selected : 1;
     unsigned is_key_press : 1;
+    unsigned is_menu_pinned : 1;
+    unsigned is_menu_posted : 1;
   } flags;
 } MenuReturn;
 
@@ -635,10 +639,7 @@ typedef struct MenuInfo
 
 extern MenuInfo Menus;
 
-#define IS_MENU_RETURN(x) ((x)>=MENU_DONE && (x)<=MENU_ABORTED_BUTTON)
-#define IS_MENU_BUTTON(x) ((x)==MENU_DONE_BUTTON || (x)==MENU_ABORTED_BUTTON)
-#define MENU_ADD_BUTTON(x) ((x)==MENU_DONE || (x)==MENU_ABORTED?(x)+1:(x))
-#define MENU_ADD_BUTTON_IF(y,x) (y?MENU_ADD_BUTTON((x)):(x))
+#define IS_MENU_RETURN(x) ((x)==MENU_DONE || (x)==MENU_ABORTED)
 
 
 

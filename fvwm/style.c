@@ -1323,7 +1323,7 @@ void ProcessNewStyle(XEvent *eventp, Window w, FvwmWindow *tmp_win,
 	  else
 	  {
 	    val1 = val1 * val1_unit / 100;
-	    val2 = val1 * val1_unit / 100;
+	    val2 = val2 * val2_unit / 100;
 	  }
 	  if (val1 < DEFAULT_MIN_MAX_WINDOW_WIDTH ||
 	      val1 > DEFAULT_MAX_MAX_WINDOW_WIDTH)
