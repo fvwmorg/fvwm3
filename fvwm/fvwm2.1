@@ -656,8 +656,8 @@ If the menu-name contains also a sub-string set of by '^'s, then the
 text between '^'s is expected to be the name a of X11 color and the
 column containing the side picture will be colorized with that
 color. You can set this color for a menu style using the SideColor
-option of the \fIMenuStyle\fP command.  To get a literal '^', insert
-'^^'.  Example:
+option of the \fIMenuStyle\fP command.  To get a literal '^', 
+insert '^^'.  Example:
 .EX
 AddToMenu StartMenu@linux-menu.xpm@^blue^
 .EE
@@ -1505,6 +1505,8 @@ For backwards compatibility, the optional argument may also be a
 positive number to signifiy 'on', and negative to signify 'off'.
 Note that this syntax is obsolete, and will be removed in the future.
 
+There are a number of style options which influence the appearance and
+behaviour of icons (eg \fIStickyIcon\fP, \fINoIcon\fP).
 
 .IP "IconPath \fIpath\fP"
 This command is obsolete. Please use \fIImagePath\fP instead.
