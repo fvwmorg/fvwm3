@@ -18,6 +18,26 @@
 
 #include "Tools.h"
 
+/* helper functions */
+/* get byte offset corresponding to character offset, including 
+   bounds check to represent end of text */
+int getByteOffsetBoundsCheck(FlocaleFont *flf, char *str, int offset)
+{
+	if(offset < FlocaleStringCharLength(flf,str))
+		return FlocaleStringCharToByteOffset(flf, str, offset);
+	else
+		return strlen(str);
+}
+
+/* opposite of the above, return character offset */
+int getCharOffsetBoundsCheck(FlocaleFont *flf, char *str, int offset)
+{
+	if(offset < strlen(str))
+		return FlocaleStringByteToCharOffset(flf, str, offset);
+	else
+		return FlocaleStringCharLength(flf, str);
+}
+
 /*
  * Fonction d'ecriture en relief
  */
@@ -508,7 +528,8 @@ int InsertText(struct XObj *xobj, char *str, int SizeStr)
 	int i;
 
 	/* Insertion du caractere dans le titre */
-	NewPos = xobj->value;
+	NewPos = getByteOffsetBoundsCheck(xobj->Ffont, xobj->title,
+					  xobj->value);
 	Size = strlen(xobj->title);
 	xobj->title = (char*)realloc(
 		xobj->title, (1+SizeStr+Size)*sizeof(char));
@@ -517,7 +538,7 @@ int InsertText(struct XObj *xobj, char *str, int SizeStr)
 	for (i=NewPos; i < NewPos+SizeStr; i++)
 		xobj->title[i] = str[i-NewPos];
 	NewPos = NewPos+SizeStr;
-	return NewPos;
+	return getCharOffsetBoundsCheck(xobj->Ffont, xobj->title, NewPos);
 }
 
 /*
@@ -530,13 +551,17 @@ char *GetText(struct XObj *xobj, int End)
 
 	if (End > xobj->value)
 	{
-		a = xobj->value;
-		b = End;
+		a = getByteOffsetBoundsCheck(xobj->Ffont, xobj->title,
+					     xobj->value);
+		b = getByteOffsetBoundsCheck(xobj->Ffont, xobj->title,
+					     End);
 	}
 	else
 	{
-		b = xobj->value;
-		a = End;
+		b = getByteOffsetBoundsCheck(xobj->Ffont, xobj->title,
+					     xobj->value);
+		a = getByteOffsetBoundsCheck(xobj->Ffont, xobj->title,
+					     End);
 	}
 	str = (char*)calloc(b-a+2,1);
 	memcpy(str, &xobj->title[a], b-a);

@@ -1,3 +1,17 @@
+2004-02-04  Marcus Lundblad  <ml@update.uu.se>
+
+	* FvwmScript/Widgets/TextField.c (InitTextField)
+	(DrawPointText)
+	(DrawTextField)
+	(EvtMouseTextField)
+	(EvtKeyTextField):
+	* FvwmScript/Widgets/Tools.h:
+	* FvwmScript/Widgets/Tools.c (getByteOffsetBoundsCheck)
+	(getCharOffsetBoundsCheck)
+	(InsertText)
+	(GetText):
+	Fixed to work with multibyte character sets
+	
 2004-01-24  Olivier Chapuis  <olivier.chapuis@free.fr>
 
 	* FvwmTaskBar/Start.c (StartButtonParseConfig):

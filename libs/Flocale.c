@@ -189,7 +189,6 @@ int FlocaleChar2bOneCharToUtf8(XChar2b c, char *buf)
 
 /* return number of bytes of character at current position
    (pointed to by str) */
-static
 int FlocaleStringNumberOfBytes(FlocaleFont *flf, const unsigned char *str)
 {
         int bytes = 0;
@@ -230,10 +229,8 @@ int FlocaleStringNumberOfBytes(FlocaleFont *flf, const unsigned char *str)
 	return bytes;
 }
 
-
 /* given a string, font specifying its locale and a byte offset gives
    character offset */
-static
 int FlocaleStringByteToCharOffset(FlocaleFont *flf, const unsigned char *str,
 				  int offset)
 {
@@ -254,7 +251,6 @@ int FlocaleStringByteToCharOffset(FlocaleFont *flf, const unsigned char *str,
 
 /* like above but reversed, ie. return byte offset corresponding to given 
    charater offset */
-static
 int FlocaleStringCharToByteOffset(FlocaleFont *flf, const unsigned char *str,
 				  int coffset)
 {
@@ -271,6 +267,16 @@ int FlocaleStringCharToByteOffset(FlocaleFont *flf, const unsigned char *str,
 		curr_len = FlocaleStringNumberOfBytes(flf, curr_ptr);
 	}
 	return offset;
+}
+
+/* return length of string in characters */
+int FlocaleStringCharLength(FlocaleFont *flf, const unsigned char *str)
+{
+	int i, len;
+	int str_len = strlen(str);
+	for(i = 0, len = 0 ; i < str_len ; 
+	    i += FlocaleStringNumberOfBytes(flf, str+i), len++);
+	return len;
 }
 
 static

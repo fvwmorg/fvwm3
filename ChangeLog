@@ -1,3 +1,12 @@
+2004-02-04  Marcus Lundblad  <ml@update.uu.se>
+
+	* fvwm/libs/Flocale.h:
+	* fvwm/libs/Flocale.c (FlocaleStringNumberOfBytes)
+	(FlocaleStringByteToCharOffset)
+	(FlocaleStringCharToByteOffset)
+	(FlocaleStringCharLength):
+	Made utility functions available outside of Flocale
+	
 2004-01-31  Olivier Chapuis  <olivier.chapuis@free.fr>
 
 	* fvwm/events.c (__test_for_motion):

@@ -4,6 +4,8 @@
 #  include <sys/select.h>
 #endif
 
+#include "libs/Flocale.h"
+
 extern Display *dpy;
 extern int screen;
 extern Window Root;
@@ -29,6 +31,13 @@ extern FlocaleWinString *FwinString;
  * not "menu drag" (use in Menu.c and PopupMenu.c */
 #define MENU_DRAG_TIME 300
 #define GRAB_EVMASK (ButtonPressMask | ButtonReleaseMask | ButtonMotionMask | PointerMotionMask | EnterWindowMask | LeaveWindowMask)
+
+/* helper functions */
+/* get byte offset corresponding to character offset, including 
+   bounds check to represent end of text */
+int getByteOffsetBoundsCheck(FlocaleFont *flf, char *str, int offset);
+/* opposite of the above, return character offset */
+int getCharOffsetBoundsCheck(FlocaleFont *flf, char *str, int offset);
 
 void MyDrawString(
 	Display *dpy, struct XObj *xobj, Window win, int x, int y,
