@@ -332,7 +332,9 @@ static void RedrawBorder(
     &GetDecor(t, BorderStyle.active.style) :
     &GetDecor(t, BorderStyle.inactive.style);
 
+#if 0
   is_reversed = (HAS_DEPRESSABLE_BORDER(t) && PressedW == t->decor_w);
+#endif
   is_reversed ^= (borderstyle->flags.button_relief == DFS_BUTTON_IS_SUNK);
   if (is_reversed)
   {
@@ -535,7 +537,8 @@ static void RedrawBorder(
 
   /* a bit hacky to draw twice but you should see the code it replaces never
    * mind the esoterics, feel the thin-ness */
-  if (HAS_BORDER(t) && HAS_DEPRESSABLE_BORDER(t))
+  if ((HAS_BORDER(t) || PressedW == t->decor_w || PressedW == t->decor_w) &&
+      HAS_DEPRESSABLE_BORDER(t))
   {
     XRectangle r;
     Bool is_pressed = False;
@@ -611,6 +614,15 @@ static void RedrawBorder(
       r.y = t->frame_g.height - t->corner_width;
       r.width = t->corner_width - 1;
       r.height = t->corner_width - 1;
+      is_pressed = True;
+    }
+    else if (PressedW == t->decor_w || PressedW == t->frame)
+    {
+      /* whole border */
+      r.x = 1;
+      r.y = 1;
+      r.width = t->frame_g.width - 2;
+      r.height = t->frame_g.height - 2;
       is_pressed = True;
     }
 
@@ -1156,8 +1168,15 @@ void DrawDecorations(
   }
   else if (expose_win == t->title_w)
     is_title_redraw_allowed = True;
-  else if (expose_win == t->frame || expose_win == t->decor_w)
+  else if (expose_win == t->frame || expose_win == t->decor_w ||
+           (HAS_BORDER(t) &&
+            (expose_win == t->sides[0] || expose_win == t->corners[0] ||
+             expose_win == t->sides[1] || expose_win == t->corners[1] ||
+             expose_win == t->sides[2] || expose_win == t->corners[2] ||
+             expose_win == t->sides[3] || expose_win == t->corners[3])))
+  {
     is_frame_redraw_allowed = True;
+  }
   else if (expose_win != None)
     is_button_redraw_allowed = True;
 
