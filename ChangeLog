@@ -8,6 +8,9 @@
 	* INSTALL.fvwm:
 	added a note for Cygwin users, other minor documentation improvements
 
+	* NEWS:
+	document latest changes
+
 2001-05-03  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* fvwm/events.c (HandleEnterNotify):

@@ -3,6 +3,15 @@ _+_A HREF="#2.2.5"_-_2.2.5_+_/A_-_.
 
 Changes in beta release 2.3.32 (not released yet)
 
+* Fixed several focus problems and several core dumps.
+
+* Again allow full words "Click", "Hold" as function specifiers
+  for backward compatibility.  Please don't use them.
+
+* New configure --enable-command-log option.
+
+* Fixed gdk-imlib configure detection for FvwmGtk.
+
 Changes in beta release 2.3.31 (2001-04-07)
 
 * New option "recreate" to DestroyDecor command.
