@@ -1,11 +1,11 @@
 ## Process this file with automake to create Makefile.in
 
 PERL = @PERL@
-moduledir = @FVWM_MODULEDIR@
 
 SUBDIRS = scripts
 
 bin_PROGRAMS = FvwmCommand
+moduledir = @FVWM_MODULEDIR@
 module_PROGRAMS = FvwmCommandS
 module_DATA = FvwmCommand.sh FvwmCommand.pm
 
@@ -13,13 +13,14 @@ FvwmCommandS_SOURCES = FvwmCommandS.c FvwmCommand.h
 FvwmCommand_SOURCES = FvwmCommand.c FvwmCommand.h
 
 FvwmCommand.sh: findcmd
-	$(SHELL) $(srcdir)/findcmd $(moduledir)		\
+	$(SHELL) $(srcdir)/findcmd $(bindir)		\
 		< $(top_srcdir)/fvwm/functions.c > $@
 
 FvwmCommand.pm: findcmd.pl
-	if test -n "$(PERL)"; then $(PERL) $(srcdir)/findcmd.pl $(moduledir)	\
-		< $(top_srcdir)/fvwm/functions.c > $@;				\
-	else echo Did not find perl during FVWM install > $@; fi
+	if test -n "$(PERL)" -a -x "$(PERL)"; then \
+		$(PERL) $(srcdir)/findcmd.pl $(bindir) \
+		< $(top_srcdir)/fvwm/functions.c > $@; \
+	else echo '# Did not find perl during FVWM install' > $@; fi
 
 CLEANFILES = FvwmCommand.sh FvwmCommand.pm
 

@@ -22,16 +22,19 @@ echo ""
 
 echo "alias FvwmCommand='$1/FvwmCommand'"
 echo 'AM () { '
-echo 'FvwmCommand "+ $*"'
+echo '	FvwmCommand "+ $*"'
 echo '}'
 
 
 awk 'BEGIN { OFS=""; }
-     /struct function/,/""/ {
+    /func_type.*\[\]/,/""/ {
         if ( $0 ~ /\{ *"[a-zA-Z_]/ ) {
 	  split ( $0, a, "\"" );
+	  if ( a[2] == "function" ) { a[2] = "_function"; }
+	  if ( a[2] == "wait" )     { a[2] = "_wait"; }
 	  print  a[2]," () {"
-	  print  "FvwmCommand \"", a[2], " $*\""
+	  print  "	FvwmCommand \"", a[2], " $*\""
 	  print  "}" ;
         }
-}'
+    }
+'

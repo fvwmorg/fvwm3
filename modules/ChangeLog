@@ -1,3 +1,12 @@
+2000-06-30  Mikhael Goikhman  <migo@homemail.com>
+
+	* FvwmCommand/Makefile.am:
+	fixed build error when perl is not found, fixed generation of
+	FvwmCommand.sh and FvwmCommand.pl (since FvwmCommand now in bindir)
+	* FvwmCommand/findcmd:
+	fixed generation of FvwmCommand.sh (function.c was changed) and
+	handle 'function' & 'wait' functions specially not to clash with sh
+
 2000-06-28  olicha  <olivier.chapuis@free.fr>
 
 	* FvwmTaskBar/FvwmTaskBar.c:
