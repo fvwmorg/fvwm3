@@ -710,6 +710,8 @@ typedef struct FvwmWindow
 		int backing_store;
 		int border_width;
 		int depth;
+                int bit_gravity;
+                unsigned is_bit_gravity_stored : 1;
 		Visual *visual;
 		Colormap colormap;
 	} attr_backup;

@@ -556,6 +556,8 @@ static void setup_window_attr(
 	fw->attr_backup.backing_store = ret_attr->backing_store;
 	fw->attr_backup.border_width = ret_attr->border_width;
 	fw->attr_backup.depth = ret_attr->depth;
+	fw->attr_backup.bit_gravity = ret_attr->bit_gravity;
+	fw->attr_backup.is_bit_gravity_stored = 0;
 	fw->attr_backup.visual = ret_attr->visual;
 	fw->attr_backup.colormap = ret_attr->colormap;
 
@@ -1840,7 +1842,6 @@ static void destroy_icon(FvwmWindow *fw)
 			{
 				XFreePixmap(dpy, fw->icon_alphaPixmap);
 			}
-			
 		}
 		XDestroyWindow(dpy, FW_W_ICON_TITLE(fw));
 		XDeleteContext(dpy, FW_W_ICON_TITLE(fw), FvwmContext);

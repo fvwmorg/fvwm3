@@ -1098,7 +1098,7 @@ void HandleConfigureRequest(void)
 		} /* while */
 #endif
 
-#if 1
+#if 0
 		fprintf(stderr,
 			"cre: %d(%d) %d(%d) %d(%d)x%d(%d) fw 0x%08x w 0x%08x "
                         "ew 0x%08x  '%s'\n",
@@ -1237,7 +1237,7 @@ void HandleConfigureRequest(void)
 			{
 				get_shaded_geometry(Fw, &new_g, &new_g);
 			}
-			frame_setup_window(
+			frame_setup_window_app_request(
 				Fw, new_g.x, new_g.y, new_g.width,
 				new_g.height, False);
 			/* make sure the window structure has the new position
@@ -2664,7 +2664,7 @@ ICON_DBG((stderr,"hpn: icon changed '%s'\n", Fw->name));
 				get_relative_geometry(&new_g, &Fw->normal_g);
 				if (IS_SHADED(Fw))
 					get_shaded_geometry(Fw, &new_g, &new_g);
-				frame_setup_window(
+                                frame_setup_window_app_request(
 					Fw, new_g.x, new_g.y, new_g.width,
 					new_g.height, False);
 			}
@@ -2707,7 +2707,7 @@ ICON_DBG((stderr,"hpn: icon changed '%s'\n", Fw->name));
 						get_shaded_geometry(
 							Fw, &new_g, &new_g);
 					}
-					frame_setup_window(
+                                        frame_setup_window_app_request(
 						Fw, new_g.x, new_g.y,
 						new_g.width, new_g.height,
 						False);

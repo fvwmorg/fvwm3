@@ -1,5 +1,16 @@
 2002-05-07  Dominik Vogt  <dominik.vogt@gmx.de>
 
+	* fvwm/frame.c (frame_setup_window):
+	(frame_setup_window_app_request):
+	(frame_force_setup_window):
+	(frame_setup_window_internal):
+	(frame_create_move_resize_args):
+	(frame_free_move_resize_args):
+	* fvwm/add_window.c (setup_window_attr):
+	* fvwm/events.c (HandleConfigureRequest):
+	(HandlePropertyNotify):
+	fixed [?] bit_gravity/resize problem
+
 	* fvwm/events.c (HandleEnterNotify):
 	reformatted EdgeCommand code
 

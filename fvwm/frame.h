@@ -28,6 +28,7 @@
 typedef enum
 {
 	FRAME_MR_SETUP,
+	FRAME_MR_SETUP_BY_APP,
 	FRAME_MR_OPAQUE,
 	FRAME_MR_SHRINK,
 	FRAME_MR_SCROLL,
@@ -73,6 +74,9 @@ int frame_window_id_to_context(
 void frame_move_resize(
 	FvwmWindow *fw, frame_move_resize_args mr_args);
 void frame_setup_window(
+	FvwmWindow *fw, int x, int y, int w, int h,
+	Bool do_send_configure_notify);
+void frame_setup_window_app_request(
 	FvwmWindow *fw, int x, int y, int w, int h,
 	Bool do_send_configure_notify);
 void frame_force_setup_window(

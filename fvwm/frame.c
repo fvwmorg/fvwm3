@@ -88,6 +88,7 @@ typedef struct
 		unsigned do_force : 1;
 		unsigned do_not_configure_client : 1;
 		unsigned do_restore_gravity : 1;
+		unsigned do_set_bit_gravity : 1;
 		unsigned do_update_shape : 1;
 		unsigned had_handles : 1;
 		unsigned is_lazy_shading : 1;
@@ -210,6 +211,7 @@ static void get_resize_decor_gravities_one_axis(
 	case FRAME_MR_FORCE_SETUP:
 	case FRAME_MR_FORCE_SETUP_NO_W:
 	case FRAME_MR_SETUP:
+	case FRAME_MR_SETUP_BY_APP:
 		ret_grav->client_grav = neg_grav;
 		break;
 	}
@@ -352,7 +354,7 @@ static void frame_setup_titlebar(
 
 static void frame_setup_window_internal(
 	FvwmWindow *fw, rectangle *frame_g, Bool do_send_configure_notify,
-	Bool do_force)
+	Bool do_force, Bool is_application_request)
 {
 	frame_move_resize_args mr_args;
 	Bool is_resized = False;
@@ -382,9 +384,22 @@ static void frame_setup_window_internal(
 	/* setup the window */
 	if (is_resized || do_force)
 	{
+                frame_move_resize_mode mode;
+
+                if (is_application_request)
+                {
+                        mode = FRAME_MR_SETUP_BY_APP;
+                }
+                else if (do_force)
+                {
+                        mode = FRAME_MR_FORCE_SETUP;
+                }
+                else
+                {
+                        mode = FRAME_MR_SETUP;
+                }
 		mr_args = frame_create_move_resize_args(
-			fw, (do_force) ? FRAME_MR_FORCE_SETUP : FRAME_MR_SETUP,
-			NULL, &new_g, 0, DIR_NONE);
+			fw, mode, NULL, &new_g, 0, DIR_NONE);
 		frame_move_resize(fw, mr_args);
 		frame_free_move_resize_args(fw, mr_args);
 		fw->frame_g = *frame_g;
@@ -518,16 +533,35 @@ static void frame_get_resize_decor_gravities(
 
 /* sets the gravity for the various parts of the window */
 static void frame_set_decor_gravities(
-	FvwmWindow *fw, frame_decor_gravities_type *grav)
+	FvwmWindow *fw, frame_decor_gravities_type *grav,
+	int do_set1_restore2_bit_gravity)
 {
 	int valuemask;
 	XSetWindowAttributes xcwa;
 	int i;
 
 	/* using bit gravity can reduce redrawing dramatically */
-	valuemask = CWWinGravity | CWBitGravity;
+	valuemask = CWWinGravity;
 	xcwa.win_gravity = grav->client_grav;
-	xcwa.bit_gravity = grav->client_grav;
+	if (do_set1_restore2_bit_gravity == 1)
+	{
+		XWindowAttributes xwa;
+
+		if (!fw->attr_backup.is_bit_gravity_stored &&
+                    XGetWindowAttributes(dpy, FW_W(fw), &xwa))
+		{
+			fw->attr_backup.bit_gravity = xwa.bit_gravity;
+		}
+                fw->attr_backup.is_bit_gravity_stored = 1;
+		valuemask |= CWBitGravity;
+		xcwa.bit_gravity = grav->client_grav;
+	}
+	else if (do_set1_restore2_bit_gravity == 2)
+	{
+                fw->attr_backup.is_bit_gravity_stored = 0;
+		valuemask |= CWBitGravity;
+		xcwa.bit_gravity = fw->attr_backup.bit_gravity;
+	}
 	XChangeWindowAttributes(dpy, FW_W(fw), valuemask, &xcwa);
 	xcwa.win_gravity = grav->parent_grav;
 	valuemask = CWWinGravity;
@@ -1560,10 +1594,19 @@ frame_move_resize_args frame_create_move_resize_args(
 	/* set some variables */
 	mra = (mr_args_internal *)safecalloc(1, sizeof(mr_args_internal));
 	memset(mra, 0, sizeof(*mra));
+        if (mr_mode == FRAME_MR_SETUP_BY_APP)
+        {
+                mr_mode = FRAME_MR_SETUP;
+		mra->flags.do_set_bit_gravity = 0;
+        }
+        else
+        {
+		mra->flags.do_set_bit_gravity = 1;
+        }
 	if (mr_mode == FRAME_MR_FORCE_SETUP_NO_W)
 	{
 		mr_mode = FRAME_MR_FORCE_SETUP;
-		mra->flags.do_not_configure_client = /*1*/0;
+		mra->flags.do_not_configure_client = 1;
 	}
 	mra->mode = mr_mode;
 	mra->shade_dir = (direction_type)shade_dir;
@@ -1629,7 +1672,7 @@ frame_move_resize_args frame_create_move_resize_args(
 		!(mra->flags.is_setup || mra->mode == FRAME_MR_OPAQUE);
 	mra->flags.do_update_shape =
 		(FShapesSupported && mra->flags.is_shading && fw->wShaped);
-	/* Lazy shading does not draw the hadle marks.  Disable them in the
+	/* Lazy shading does not draw the hadle marks.	Disable them in the
 	 * window flags if necessary.  Restores the marks when mr_args are
 	 * freed.  Lazy shading is considerably faster but causes funny looks
 	 * if either the border uses a tiled pixmap background. */
@@ -1657,13 +1700,16 @@ frame_move_resize_args frame_create_move_resize_args(
 		grav.rbutton_grav = StaticGravity;
 		grav.parent_grav = StaticGravity;
 		grav.client_grav = StaticGravity;
-		frame_set_decor_gravities(fw, &grav);
+		frame_set_decor_gravities(
+                        fw, &grav, (mra->flags.do_set_bit_gravity) ? 1 : 0);
 		mra->flags.do_restore_gravity = 1;
 		mra->flags.do_force = 1;
 	}
 	else
 	{
-		frame_set_decor_gravities(fw, &mra->grav);
+		frame_set_decor_gravities(
+                        fw, &mra->grav,
+                        (mra->flags.do_set_bit_gravity) ? 1 : 0);
 	}
 	frame_reparent_hide_windows(FW_W_FRAME(fw));
 
@@ -1728,7 +1774,9 @@ void frame_free_move_resize_args(
 	frame_setup_shape(fw, mra->end_g.width, mra->end_g.height);
 	if (mra->flags.do_restore_gravity)
 	{
-		frame_set_decor_gravities(fw, &mra->grav);
+		frame_set_decor_gravities(
+                        fw, &mra->grav,
+                        (mra->flags.do_set_bit_gravity) ? 2 : 0);
 	}
 	/* In case the window geometry now overlaps the focused window. */
 	sf = get_focus_window();
@@ -1804,7 +1852,23 @@ void frame_setup_window(
 	g.width = w;
 	g.height = h;
 	frame_setup_window_internal(
-		fw, &g, do_send_configure_notify, False);
+		fw, &g, do_send_configure_notify, False, False);
+
+	return;
+}
+
+void frame_setup_window_app_request(
+	FvwmWindow *fw, int x, int y, int w, int h,
+	Bool do_send_configure_notify)
+{
+	rectangle g;
+
+	g.x = x;
+	g.y = y;
+	g.width = w;
+	g.height = h;
+	frame_setup_window_internal(
+		fw, &g, do_send_configure_notify, False, True);
 
 	return;
 }
@@ -1820,7 +1884,7 @@ void frame_force_setup_window(
 	g.width = w;
 	g.height = h;
 	frame_setup_window_internal(
-		fw, &g, do_send_configure_notify, True);
+		fw, &g, do_send_configure_notify, True, False);
 
 	return;
 }
