@@ -381,8 +381,13 @@ void resize_move_window(F_CMD_ARGS)
 
   /* gotta have a window */
   w = tmp_win->frame;
-  XGetGeometry(dpy, w, &JunkRoot, &x, &y, (unsigned int *)&FinalW,
-	       (unsigned int *)&FinalH, &JunkBW, &JunkDepth);
+  if (!XGetGeometry(dpy, w, &JunkRoot, &x, &y, (unsigned int *)&FinalW,
+		    (unsigned int *)&FinalH, &JunkBW, &JunkDepth))
+  {
+    XBell(dpy, 0);
+    return;
+  }
+
   FinalX = x;
   FinalY = y;
 
@@ -481,7 +486,7 @@ static void InteractiveMove(
 		    (unsigned int *)&DragWidth, (unsigned int *)&DragHeight,
 		    &JunkBW,  &JunkDepth))
   {
-    XBell(dpy, 0);
+    UngrabEm(GRAB_NORMAL);
     return;
   }
   if (do_start_at_pointer)
@@ -553,8 +558,12 @@ static void AnimatedMoveAnyWindow(FvwmWindow *tmp_win, Window w, int startX,
 
   if (startX < 0 || startY < 0)
   {
-    XGetGeometry(dpy, w, &JunkRoot, &currentX, &currentY,
-		 &JunkWidth, &JunkHeight, &JunkBW, &JunkDepth);
+    if (!XGetGeometry(dpy, w, &JunkRoot, &currentX, &currentY,
+		      &JunkWidth, &JunkHeight, &JunkBW, &JunkDepth))
+    {
+      XBell(dpy, 0);
+      return;
+    }
     if (startX < 0)
       startX = currentX;
     if (startY < 0)
@@ -696,15 +705,25 @@ void move_window_doit(F_CMD_ARGS, Bool do_animate, Bool do_move_to_page)
   {
     if(tmp_win->icon_pixmap_w != None)
     {
-      XUnmapWindow(dpy,tmp_win->icon_w);
       w = tmp_win->icon_pixmap_w;
+      if (!XGetGeometry(dpy, w, &JunkRoot, &x, &y, &width, &height,
+			&JunkBW, &JunkDepth))
+      {
+	return;
+      }
+      XUnmapWindow(dpy,tmp_win->icon_w);
     }
     else
+    {
       w = tmp_win->icon_w;
+      if (!XGetGeometry(dpy, w, &JunkRoot, &x, &y, &width, &height,
+			&JunkBW, &JunkDepth))
+      {
+	return;
+      }
+    }
   }
 
-  XGetGeometry(dpy, w, &JunkRoot, &x, &y,
-	       &width, &height, &JunkBW, &JunkDepth);
   if (do_move_to_page)
   {
     rectangle r;
@@ -1150,8 +1169,8 @@ Bool moveLoop(FvwmWindow *tmp_win, int XOffset, int YOffset, int Width,
   int dy = Scr.EdgeScrollY ? Scr.EdgeScrollY : Scr.MyDisplayHeight;
   int vx = Scr.Vx;
   int vy = Scr.Vy;
-  int xl_orig;
-  int yt_orig;
+  int xl_orig = 0;
+  int yt_orig = 0;
   int cnx = 0;
   int cny = 0;
   Bool sent_cn = False;
@@ -1178,33 +1197,40 @@ Bool moveLoop(FvwmWindow *tmp_win, int XOffset, int YOffset, int Width,
   {
     move_w = tmp_win->frame;
   }
-  XGetGeometry(dpy, move_w, &JunkRoot, &x_bak, &y_bak, &JunkWidth, &JunkHeight,
-	       &JunkBW,&JunkDepth);
-  if (IS_ICONIFIED(tmp_win))
+  if (!XGetGeometry(dpy, move_w, &JunkRoot, &x_bak, &y_bak,
+		    &JunkWidth, &JunkHeight, &JunkBW,&JunkDepth))
   {
-    orig_icon_x = tmp_win->icon_g.x;
-    orig_icon_y = tmp_win->icon_g.y;
+    /* fall thorugh to end of function */
+    bad_window = tmp_win->w;
   }
+  else
+  {
+    if (IS_ICONIFIED(tmp_win))
+    {
+      orig_icon_x = tmp_win->icon_g.x;
+      orig_icon_y = tmp_win->icon_g.y;
+    }
 
-  /* make a copy of the tmp_win structure for sending to the pager */
-  memcpy(&tmp_win_copy, tmp_win, sizeof(FvwmWindow));
-  /* prevent flicker when paging */
-  SET_WINDOW_BEING_MOVED_OPAQUE(tmp_win, do_move_opaque);
+    /* make a copy of the tmp_win structure for sending to the pager */
+    memcpy(&tmp_win_copy, tmp_win, sizeof(FvwmWindow));
+    /* prevent flicker when paging */
+    SET_WINDOW_BEING_MOVED_OPAQUE(tmp_win, do_move_opaque);
 
-  XQueryPointer(dpy, Scr.Root, &JunkRoot, &JunkChild,&xl, &yt,
-		&JunkX, &JunkY, &button_mask);
-  button_mask &= DEFAULT_ALL_BUTTONS_MASK;
-  xl += XOffset;
-  yt += YOffset;
-  xl_orig = xl;
-  yt_orig = yt;
+    XQueryPointer(dpy, Scr.Root, &JunkRoot, &JunkChild,&xl, &yt,
+		  &JunkX, &JunkY, &button_mask);
+    button_mask &= DEFAULT_ALL_BUTTONS_MASK;
+    xl += XOffset;
+    yt += YOffset;
+    xl_orig = xl;
+    yt_orig = yt;
 
-  /* draw initial outline */
-  if (!IS_ICONIFIED(tmp_win) &&
-      ((!do_move_opaque && !Scr.gs.EmulateMWM) || !IS_MAPPED(tmp_win)))
-    MoveOutline(xl, yt, Width - 1, Height - 1);
+    /* draw initial outline */
+    if (!IS_ICONIFIED(tmp_win) &&
+	((!do_move_opaque && !Scr.gs.EmulateMWM) || !IS_MAPPED(tmp_win)))
+      MoveOutline(xl, yt, Width - 1, Height - 1);
 
-  DisplayPosition(tmp_win,xl,yt,True);
+    DisplayPosition(tmp_win,xl,yt,True);
+  }
 
   while (!finished && bad_window != tmp_win->w)
   {
@@ -1475,7 +1501,7 @@ Bool moveLoop(FvwmWindow *tmp_win, int XOffset, int YOffset, int Width,
       XBell(dpy, 0);
     }
   }
-  if (!aborted && IS_ICONIFIED(tmp_win))
+  if (!aborted && bad_window != tmp_win->w&& IS_ICONIFIED(tmp_win))
   {
     SET_ICON_MOVED(tmp_win, 1);
   }
@@ -1862,7 +1888,7 @@ void resize_window(F_CMD_ARGS)
     tmp_win->boundary_width, tmp_win->title_g.height,
     &(drag->width), &(drag->height));
 
-  if(n == 2)
+  if (n == 2)
   {
     /* size will be less or equal to requested */
     constrain_size(
@@ -1925,9 +1951,15 @@ void resize_window(F_CMD_ARGS)
     drag->width = tmp_win->frame_g.width;
   }
   else
-    XGetGeometry(dpy, (Drawable) ResizeWindow, &JunkRoot,
-		 &drag->x, &drag->y, (unsigned int *)&drag->width,
-		 (unsigned int *)&drag->height, &JunkBW,&JunkDepth);
+  {
+    if (!XGetGeometry(dpy, (Drawable) ResizeWindow, &JunkRoot,
+		      &drag->x, &drag->y, (unsigned int *)&drag->width,
+		      (unsigned int *)&drag->height, &JunkBW,&JunkDepth))
+    {
+      UngrabEm(GRAB_NORMAL);
+      return;
+    }
+  }
 
   orig->x = drag->x;
   orig->y = drag->y;

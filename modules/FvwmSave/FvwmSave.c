@@ -303,96 +303,95 @@ void do_save(void)
   sprintf(tname, "%s/new.xinitrc", getenv( "HOME" ) );
   out = fopen( tname, "w+" );
   for (t = list_root; t != NULL; t = t->next)
+  {
+    tname[0]=0;
+
+    x1 = t->frame_x;
+    x2 = ScreenWidth - x1 - t->frame_width - 2;
+    if(x2 < 0)
+      x2 = 0;
+    y1 = t->frame_y;
+    y2 = ScreenHeight - y1 -  t->frame_height - 2;
+    if(y2 < 0)
+      y2 = 0;
+    dheight = t->frame_height - t->title_height - 2*t->boundary_width;
+    dwidth = t->frame_width - 2*t->boundary_width;
+    dwidth -= t->base_width ;
+    dheight -= t->base_height ;
+    dwidth /= t->width_inc;
+    dheight /= t->height_inc;
+
+    if (IS_STICKY(t))
     {
-      tname[0]=0;
-
-      x1 = t->frame_x;
-      x2 = ScreenWidth - x1 - t->frame_width - 2;
-      if(x2 < 0)
-	x2 = 0;
-      y1 = t->frame_y;
-      y2 = ScreenHeight - y1 -  t->frame_height - 2;
-      if(y2 < 0)
-	y2 = 0;
-      dheight = t->frame_height - t->title_height - 2*t->boundary_width;
-      dwidth = t->frame_width - 2*t->boundary_width;
-      dwidth -= t->base_width ;
-      dheight -= t->base_height ;
-      dwidth /= t->width_inc;
-      dheight /= t->height_inc;
-
-      if (IS_STICKY(t))
-	{
-	  tVx = 0;
-	  tVy = 0;
-	}
-      else
-	{
-	  tVx = Vx;
-	  tVy = Vy;
-	}
-      sprintf(tname,"%dx%d",dwidth,dheight);
-      if ((t->gravity == EastGravity) ||
-	  (t->gravity == NorthEastGravity) ||
-	  (t->gravity == SouthEastGravity))
-	sprintf(loc,"-%d",x2);
-      else
-	sprintf(loc,"+%d",x1+(int)tVx);
-      strcat(tname, loc);
-
-      if((t->gravity == SouthGravity)||
-	 (t->gravity == SouthEastGravity)||
-	 (t->gravity == SouthWestGravity))
-	sprintf(loc,"-%d",y2);
-      else
-	sprintf(loc,"+%d",y1+(int)tVy);
-      strcat(tname, loc);
-
-      if ( XGetCommand( dpy, t->id, &command_list, &command_count ) )
-	{
-	  for (i=0; i < command_count; i++)
-	    {
-	      if ( strncmp( "-geo", command_list[i], 4) == 0)
-		{
-		  i++;
-		  continue;
-		}
-	      if ( strncmp( "-ic", command_list[i], 3) == 0)
-		continue;
-	      if ( strncmp( "-display", command_list[i], 8) == 0)
-		{
-		  i++;
-		  continue;
-		}
-	      write_string(out,command_list[i]);
-	      if(strstr(command_list[i], "xterm"))
-		{
-		  fprintf( out, "-geometry %s ", tname );
-		  if (IS_ICONIFIED(t))
-		    fprintf(out, "-ic ");
-		  xtermline = 1;
-		}
-	    }
-	  if ( command_count > 0 )
-	    {
-	      if ( xtermline == 0 )
-		{
-		  if (IS_ICONIFIED(t))
-		    fprintf(out, "-ic ");
-		  fprintf( out, "-geometry %s &\n", tname );
-		}
-	      else
-		{
-		  fprintf( out, "&\n");
-		}
-	    }
-	  XFreeStringList( command_list );
-	  xtermline = 0;
-	}
+      tVx = 0;
+      tVy = 0;
     }
+    else
+    {
+      tVx = Vx;
+      tVy = Vy;
+    }
+    sprintf(tname,"%dx%d",dwidth,dheight);
+    if ((t->gravity == EastGravity) ||
+	(t->gravity == NorthEastGravity) ||
+	(t->gravity == SouthEastGravity))
+      sprintf(loc,"-%d",x2);
+    else
+      sprintf(loc,"+%d",x1+(int)tVx);
+    strcat(tname, loc);
+
+    if((t->gravity == SouthGravity)||
+       (t->gravity == SouthEastGravity)||
+       (t->gravity == SouthWestGravity))
+      sprintf(loc,"-%d",y2);
+    else
+      sprintf(loc,"+%d",y1+(int)tVy);
+    strcat(tname, loc);
+
+    if ( XGetCommand( dpy, t->id, &command_list, &command_count ) )
+    {
+      for (i=0; i < command_count; i++)
+      {
+	if ( strncmp( "-geo", command_list[i], 4) == 0)
+	{
+	  i++;
+	  continue;
+	}
+	if ( strncmp( "-ic", command_list[i], 3) == 0)
+	  continue;
+	if ( strncmp( "-display", command_list[i], 8) == 0)
+	{
+	  i++;
+	  continue;
+	}
+	write_string(out,command_list[i]);
+	if(strstr(command_list[i], "xterm"))
+	{
+	  fprintf( out, "-geometry %s ", tname );
+	  if (IS_ICONIFIED(t))
+	    fprintf(out, "-ic ");
+	  xtermline = 1;
+	}
+      }
+      if ( command_count > 0 )
+      {
+	if ( xtermline == 0 )
+	{
+	  if (IS_ICONIFIED(t))
+	    fprintf(out, "-ic ");
+	  fprintf( out, "-geometry %s &\n", tname );
+	}
+	else
+	{
+	  fprintf( out, "&\n");
+	}
+      }
+      XFreeStringList( command_list );
+      xtermline = 0;
+    }
+  }
   fprintf(out, "fvwm\n");
   fclose( out );
   exit(0);
-
 }
 

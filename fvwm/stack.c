@@ -110,10 +110,11 @@ static void raise_over_unmanaged(FvwmWindow *t)
   XWindowChanges changes;
   XWindowAttributes wa;
 
+  if (!XQueryTree(dpy, Scr.Root, &junk, &junk, &tops, &num))
+    return;
   topwin = 0;
   topwin = Scr.FvwmRoot.stack_next->frame;
   found = False;
-  XQueryTree(dpy, Scr.Root, &junk, &junk, &tops, &num);
 
   /********************************************************************
    * Locate the highest override_redirect window above our target, and

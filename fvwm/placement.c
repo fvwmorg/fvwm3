@@ -776,7 +776,7 @@ Bool PlaceWindow(
           if (XGetGeometry(dpy, tmp_win->w, &JunkRoot, &JunkX, &JunkY,
 			   (unsigned int *)&DragWidth,
 			   (unsigned int *)&DragHeight,
-                          &JunkBW,  &JunkDepth) == 0)
+			   &JunkBW,  &JunkDepth) == 0)
           {
             free((char *)tmp_win);
             MyXUngrabServer(dpy);

@@ -629,7 +629,7 @@ static void RedrawBorder(
 
       XDrawSegments(dpy, t->decor_w, rgc, marks, i);
 
-      /* shadow marks, reuse the array assuming XDraw doesn't trash it */
+      /* shadow marks, reuse the array (XDrawSegments doesn't trash it) */
       i = 0;
       /* yuck, but j goes 0->1 in the first pass, 1->3 in 2nd */
       j += j + 1;

@@ -1012,10 +1012,13 @@ void GetIconWindow(FvwmWindow *tmp_win)
 void GetIconBitmap(FvwmWindow *tmp_win)
 {
   unsigned int width, height, depth;
-  /* We are guaranteed that wmhints is non-null when calling this
-   * routine */
-  XGetGeometry(dpy, tmp_win->wmhints->icon_pixmap, &JunkRoot, &JunkX, &JunkY,
-	       &width, &height, &JunkBW, &depth);
+
+  /* We are guaranteed that wmhints is non-null when calling this routine */
+  if (!XGetGeometry(dpy, tmp_win->wmhints->icon_pixmap, &JunkRoot,
+		    &JunkX, &JunkY, &width, &height, &JunkBW, &depth))
+  {
+    return;
+  }
 
   /* sanity check the pixmap depth, it must be the same as the root or 1 */
   if ((depth != 1) && (depth != DefaultDepth(dpy,Scr.screen)))
@@ -1198,7 +1201,10 @@ void Iconify(FvwmWindow *tmp_win, int def_x, int def_y)
     return;
   }
 
-  XGetWindowAttributes(dpy, tmp_win->w, &winattrs);
+  if (!XGetWindowAttributes(dpy, tmp_win->w, &winattrs))
+  {
+    return;
+  }
   eventMask = winattrs.your_event_mask;
 
   if((tmp_win == Scr.Hilite)&&(HAS_CLICK_FOCUS(tmp_win))&&(tmp_win->next))

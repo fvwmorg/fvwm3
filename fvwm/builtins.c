@@ -216,7 +216,8 @@ void WindowShade(F_CMD_ARGS)
         {
           tmp_win->frame_g.width = big_g.width;
           tmp_win->frame_g.height = big_g.height;
-          DrawDecorations(tmp_win, DRAW_FRAME, Scr.Focus == tmp_win, True, None);
+          DrawDecorations(
+	    tmp_win, DRAW_FRAME, Scr.Focus == tmp_win, True, None);
         }
       }
       while (frame_g.height + diff.height < big_g.height)

@@ -348,10 +348,11 @@ SaveWindowStates(FILE *f)
       if (ewin->name)
         fprintf(f, "  [WM_NAME] %s\n", ewin->name);
 
-      wm_command = NULL;
-      wm_command_count = 0;
-      XGetCommand (dpy, ewin->w, &wm_command, &wm_command_count);
-
+      if (!XGetCommand (dpy, ewin->w, &wm_command, &wm_command_count))
+      {
+	wm_command = NULL;
+	wm_command_count = 0;
+      }
       if (wm_command && (wm_command_count > 0))
       {
         fprintf(f, "  [WM_COMMAND] %i", wm_command_count);
@@ -586,8 +587,12 @@ static Bool matchWin(FvwmWindow *w, Match *m)
         else
         {
           /* for non-SM-aware clients we also compare WM_COMMAND */
-          XGetCommand (dpy, w->w, &wm_command, &wm_command_count);
 
+	  if (!XGetCommand (dpy, w->w, &wm_command, &wm_command_count))
+	  {
+	    wm_command = NULL;
+	    wm_command_count = 0;
+	  }
           if (wm_command_count == m->wm_command_count)
           {
             for (i = 0; i < wm_command_count; i++)

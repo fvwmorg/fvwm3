@@ -213,7 +213,6 @@ static Status MyXFetchName(Display *dpy, Window win, char **winname)
       {
         /* STRING encoding, use this as it is */
         *winname = (char *)text.value;
-        return 0;
       }
       else
       {
@@ -230,14 +229,20 @@ static Status MyXFetchName(Display *dpy, Window win, char **winname)
           if (list)
 	    XFreeStringList(list);
           XFree(text.value); /* return of XGetWMName() */
-          XGetWMName(dpy, win, &text); /* XXX: read again ? */
-          *winname = (char *)text.value;
+          if (XGetWMName(dpy, win, &text); /* XXX: read again ? */)
+	  {
+	    *winname = (char *)text.value;
+	  }
+	  else
+	  {
+	    *winname = NoName;
+	  }
         }
       }
-      return 0;
+      return 1;
     }
   }
-  return 1;
+  return 0;
 }
 static int MyXFree(void *data)
 {
@@ -536,17 +541,16 @@ void SetTransparentBackground(button_info *ub,int w,int h)
   i=-1;
   while(NextButton(&ub,&b,&i,0))
   {
-    if(b->flags&b_Icon)
+    if (b->flags&b_Icon &&
+	XGetGeometry(Dpy,b->IconWin,&root_return,&x_return,&y_return,
+		     &width_return,&height_return,
+		     &border_width_return,&depth_return))
     {
-      XGetGeometry(Dpy,b->IconWin,&root_return,&x_return,&y_return,
-		   &width_return,&height_return,
-		   &border_width_return,&depth_return);
-
       number=buttonNum(b);
       if (b->icon->mask == None)
       {
-	    XFillRectangle(Dpy,pmap_mask,trans_gc,x_return, y_return,
-			   b->icon->width,b->icon->height);
+	XFillRectangle(Dpy,pmap_mask,trans_gc,x_return, y_return,
+		       b->icon->width,b->icon->height);
       }
       else
       {
@@ -814,9 +818,13 @@ int main(int argc, char **argv)
   fprintf(stderr,"OK\n%s: Configuring windows...",MyName);
 #endif
 
-  XGetGeometry(
+  if (!XGetGeometry(
     Dpy, MyWindow, &root, &x, &y, (unsigned int *)&Width,
-    (unsigned int *)&Height, (unsigned int *)&border_width, &depth);
+    (unsigned int *)&Height, (unsigned int *)&border_width, &depth))
+  {
+    fprintf(stderr, "%s: Failed to get window geometry\n",MyName);
+    exit(0);
+  }
   SetButtonSize(UberButton,Width,Height);
   i=-1;
   ub=UberButton;
@@ -945,8 +953,11 @@ void Loop(void)
 	unsigned int depth,tw,th,border_width;
 	Window root;
 
-	XGetGeometry(Dpy, MyWindow, &root, &x, &y, &tw, &th, &border_width,
-		     &depth);
+	if (!XGetGeometry(Dpy, MyWindow, &root, &x, &y, &tw, &th, &border_width,
+			  &depth))
+	{
+	  break;
+	}
 	if(tw!=Width || th!=Height)
 	{
 	  Width=tw;
@@ -1129,9 +1140,15 @@ void Loop(void)
 	      if(b->flags&b_Title)
 		free(b->title);
 	      b->flags|=b_Title;
-	      XFetchName(Dpy,swin,&tmp);
-	      CopyString(&b->title,tmp);
-	      XFree(tmp);
+	      if (XFetchName(Dpy,swin,&tmp))
+	      {
+		CopyString(&b->title,tmp);
+		XFree(tmp);
+	      }
+	      else
+	      {
+		CopyString(&b->title, "");
+	      }
 	      MakeButton(b);
 	    }
 	    else if((Event.xproperty.atom==XA_WM_NORMAL_HINTS) &&
@@ -1597,14 +1614,16 @@ static void HandlePanelPress(button_info *b)
   XWindowAttributes xwa;
   char cmd[64];
 
-  XGetWindowAttributes(Dpy, b->PanelWin, &xwa);
-  is_mapped = (xwa.map_state == IsViewable);
+  if (XGetWindowAttributes(Dpy, b->PanelWin, &xwa))
+    is_mapped = (xwa.map_state == IsViewable);
+  else
+    is_mapped = False;
 
-  if (is_mapped)
+  if (is_mapped &&
+      XGetGeometry(Dpy, b->PanelWin, &JunkW, &b->x, &b->y, &b->w, &b->h,
+		   &b->bw, &d))
   {
     /* get the current geometry */
-    XGetGeometry(Dpy, b->PanelWin, &JunkW, &b->x, &b->y, &b->w,
-		 &b->h, &b->bw, &d);
     XTranslateCoordinates(
       Dpy, b->PanelWin, Root, b->x, b->y, &b->x, &b->y, &JunkW);
   }
@@ -2364,8 +2383,8 @@ Window GetRealGeometry(
   /* Now, x and y are not correct. They are parent relative, not root... */
   /* Hmm, ever heard of XTranslateCoordinates!? */
   XTranslateCoordinates(dpy,win,root,*x,*y,x,y,&rp);
-
-  XQueryTree(dpy,win,&root,&rp,&children,&n);
+  if (!XQueryTree(dpy,win,&root,&rp,&children,&n))
+    return None;
   if (children)
     XFree(children);
 
@@ -2405,12 +2424,18 @@ static void GetPanelGeometry(
     {
       unsigned int dum, dum2;
 
-      XGetGeometry(
+      if (XGetGeometry(
 	Dpy, MyWindow, &JunkWin, &bx, &by, (unsigned int *)&bw,
-	(unsigned int *)&bh, (unsigned int *)&dum, &dum2);
-      XTranslateCoordinates(Dpy, MyWindow, Root, bx, by, &bx, &by, &JunkWin);
+	(unsigned int *)&bh, (unsigned int *)&dum, &dum2))
+      {
+	XTranslateCoordinates(Dpy, MyWindow, Root, bx, by, &bx, &by, &JunkWin);
+	break;
+      }
+      else
+      {
+	/* fall thorugh to SLIDE_CONTEXT_ROOT */
+      }
     }
-    break;
   case SLIDE_CONTEXT_ROOT: /* slide relatively to the root windows */
     switch (b->slide_direction)
     {
@@ -2629,9 +2654,15 @@ void swallow(unsigned long *body)
 	  if(b->flags&b_Title)
 	    free(b->title);
 	  b->flags|=b_Title;
-	  XFetchName(Dpy,swin,&temp);
-	  CopyString(&b->title,temp);
-	  XFree(temp);
+	  if (XFetchName(Dpy,swin,&temp))
+	  {
+	    CopyString(&b->title,temp);
+	    XFree(temp);
+	  }
+	  else
+	  {
+	    CopyString(&b->title, "");
+	  }
 	}
 	XMapWindow(Dpy,swin);
 	MakeButton(b);
@@ -2653,7 +2684,10 @@ void swallow(unsigned long *body)
       else /* (b->flags & b_Panel) */
       {
 	XSelectInput(Dpy, swin, PA_EVENTS);
-	XWithdrawWindow(Dpy, swin, screen);
+	if (!XWithdrawWindow(Dpy, swin, screen))
+	{
+	  /* oops. what can we do now? let's pretend the unmap worked. */
+	}
 	b->newflags.panel_mapped = 0;
       }
       break;

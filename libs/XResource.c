@@ -121,7 +121,10 @@ static void DoMergeString(char *resource, XrmDatabase *ptarget, Bool override)
   if (!resource)
     return;
   db = XrmGetStringDatabase(resource);
-  XrmCombineDatabase(db, ptarget, override);
+  if (!XrmCombineDatabase(db, ptarget, override))
+  {
+    /* merging failed. can't do anything here */
+  }
 }
 
 /***************************************************************************

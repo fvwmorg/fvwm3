@@ -72,10 +72,10 @@ extern Atom _XA_MwmAtom;
 /* Motif  window hints */
 typedef struct
 {
-    CARD32      flags;
-    CARD32      functions;
-    CARD32      decorations;
-    INT32       inputMode;
+  CARD32      flags;
+  CARD32      functions;
+  CARD32      decorations;
+  INT32       inputMode;
 } PropMotifWmHints;
 
 typedef PropMotifWmHints        PropMwmHints;
@@ -132,12 +132,12 @@ void GetMwmHints(FvwmWindow *t)
   if(XGetWindowProperty (dpy, t->w, _XA_MwmAtom, 0L, 20L, False,
 			 _XA_MwmAtom, &actual_type, &actual_format, &nitems,
 			 &bytesafter,(unsigned char **)&t->mwm_hints)==Success)
+  {
+    if(nitems >= PROP_MOTIF_WM_HINTS_ELEMENTS)
     {
-      if(nitems >= PROP_MOTIF_WM_HINTS_ELEMENTS)
-	{
-	  return;
-	}
+      return;
     }
+  }
 
   t->mwm_hints = NULL;
 }
@@ -283,102 +283,106 @@ void SelectDecor(FvwmWindow *t, style_flags *sflags, int border_width,
   decor = MWM_DECOR_ALL;
   t->functions = MWM_FUNC_ALL;
   if(t->mwm_hints)
+  {
+    prop = (PropMwmHints *)t->mwm_hints;
+    if(SHAS_MWM_DECOR(sflags))
     {
-      prop = (PropMwmHints *)t->mwm_hints;
-      if(SHAS_MWM_DECOR(sflags))
-	if(prop->flags & MWM_HINTS_DECORATIONS)
-	{
-	  decor = 0;
-	  if (prop->decorations & 0x1)
-	    decor |= MWM_DECOR_ALL;
-	  if (prop->decorations & 0x2)
-	    decor |= MWM_DECOR_BORDER;
-	  if (prop->decorations & 0x4)
-	    decor |= MWM_DECOR_RESIZEH;
-	  if (prop->decorations & 0x8)
-	    decor |= MWM_DECOR_TITLE;
-	  if (prop->decorations & 0x10)
-	    decor |= MWM_DECOR_MENU;
-	  if (prop->decorations & 0x20)
-	    decor |= MWM_DECOR_MINIMIZE;
-	  if (prop->decorations & 0x40)
-	    decor |= MWM_DECOR_MAXIMIZE;
-	}
-      if(SHAS_MWM_FUNCTIONS(sflags))
-	if(prop->flags & MWM_HINTS_FUNCTIONS)
-	  t->functions = prop->functions;
+      if(prop->flags & MWM_HINTS_DECORATIONS)
+      {
+	decor = 0;
+	if (prop->decorations & 0x1)
+	  decor |= MWM_DECOR_ALL;
+	if (prop->decorations & 0x2)
+	  decor |= MWM_DECOR_BORDER;
+	if (prop->decorations & 0x4)
+	  decor |= MWM_DECOR_RESIZEH;
+	if (prop->decorations & 0x8)
+	  decor |= MWM_DECOR_TITLE;
+	if (prop->decorations & 0x10)
+	  decor |= MWM_DECOR_MENU;
+	if (prop->decorations & 0x20)
+	  decor |= MWM_DECOR_MINIMIZE;
+	if (prop->decorations & 0x40)
+	  decor |= MWM_DECOR_MAXIMIZE;
+      }
     }
+    if(SHAS_MWM_FUNCTIONS(sflags))
+    {
+      if(prop->flags & MWM_HINTS_FUNCTIONS)
+	t->functions = prop->functions;
+    }
+  }
 
   /* functions affect the decorations! if the user says
    * no iconify function, then the iconify button doesn't show
    * up. */
   if(t->functions & MWM_FUNC_ALL)
-    {
-      /* If we get ALL + some other things, that means to use
-       * ALL except the other things... */
-      t->functions &= ~MWM_FUNC_ALL;
-      t->functions = (MWM_FUNC_RESIZE | MWM_FUNC_MOVE | MWM_FUNC_MINIMIZE |
-		   MWM_FUNC_MAXIMIZE | MWM_FUNC_CLOSE) & (~(t->functions));
-    }
+  {
+    /* If we get ALL + some other things, that means to use
+     * ALL except the other things... */
+    t->functions &= ~MWM_FUNC_ALL;
+    t->functions = (MWM_FUNC_RESIZE | MWM_FUNC_MOVE | MWM_FUNC_MINIMIZE |
+		    MWM_FUNC_MAXIMIZE | MWM_FUNC_CLOSE) & (~(t->functions));
+  }
   if(SHAS_MWM_FUNCTIONS(sflags) && IS_TRANSIENT(t))
-    {
-      t->functions &= ~(MWM_FUNC_MAXIMIZE|MWM_FUNC_MINIMIZE);
-    }
+  {
+    t->functions &= ~(MWM_FUNC_MAXIMIZE|MWM_FUNC_MINIMIZE);
+  }
 
   if(decor & MWM_DECOR_ALL)
-    {
-      /* If we get ALL + some other things, that means to use
-       * ALL except the other things... */
-      decor &= ~MWM_DECOR_ALL;
-      decor = MWM_DECOR_EVERYTHING & (~decor);
-    }
+  {
+    /* If we get ALL + some other things, that means to use
+     * ALL except the other things... */
+    decor &= ~MWM_DECOR_ALL;
+    decor = MWM_DECOR_EVERYTHING & (~decor);
+  }
 
   /* now add/remove any functions specified in the OL hints */
   if (SHAS_OL_DECOR(sflags) && (t->ol_hints & OL_ANY_HINTS))
+  {
+    if (t->ol_hints & OL_DECOR_CLOSE)
     {
-      if (t->ol_hints & OL_DECOR_CLOSE)
-      {
-        t->functions |= MWM_FUNC_MINIMIZE;
-	decor        |= MWM_FUNC_MINIMIZE;
-      }
-      else
-      {
-        t->functions &= ~MWM_FUNC_MINIMIZE;
-	decor        &= ~MWM_FUNC_MINIMIZE;
-      }
-      if (t->ol_hints & OL_DECOR_RESIZEH)
-      {
-        t->functions |= (MWM_FUNC_RESIZE | MWM_FUNC_MAXIMIZE);
-	decor        |= (MWM_FUNC_RESIZE | MWM_FUNC_MAXIMIZE);
-      }
-      else
-      {
-        t->functions &= ~(MWM_FUNC_RESIZE | MWM_FUNC_MAXIMIZE);
-	decor        &= ~(MWM_FUNC_RESIZE | MWM_FUNC_MAXIMIZE);
-      }
-      if (t->ol_hints & OL_DECOR_HEADER)
-      {
-        t->functions |= (MWM_DECOR_MENU | MWM_FUNC_MINIMIZE |
-                         MWM_FUNC_MAXIMIZE | MWM_DECOR_TITLE);
-	decor        |= (MWM_DECOR_MENU | MWM_FUNC_MINIMIZE |
-			 MWM_FUNC_MAXIMIZE | MWM_DECOR_TITLE);
-      }
-      else
-      {
-        t->functions &= ~(MWM_DECOR_MENU | MWM_FUNC_MINIMIZE |
-                          MWM_FUNC_MAXIMIZE | MWM_DECOR_TITLE);
-	decor        &= ~(MWM_DECOR_MENU | MWM_FUNC_MINIMIZE |
-			  MWM_FUNC_MAXIMIZE | MWM_DECOR_TITLE);
-      }
-      if (t->ol_hints & OL_DECOR_ICON_NAME)
-      {
-	SET_HAS_NO_ICON_TITLE(t, 0);
-      }
-      else
-      {
-	SET_HAS_NO_ICON_TITLE(t, 1);
-      }
+      t->functions |= MWM_FUNC_MINIMIZE;
+      decor        |= MWM_FUNC_MINIMIZE;
     }
+    else
+    {
+      t->functions &= ~MWM_FUNC_MINIMIZE;
+      decor        &= ~MWM_FUNC_MINIMIZE;
+    }
+    if (t->ol_hints & OL_DECOR_RESIZEH)
+    {
+      t->functions |= (MWM_FUNC_RESIZE | MWM_FUNC_MAXIMIZE);
+      decor        |= (MWM_FUNC_RESIZE | MWM_FUNC_MAXIMIZE);
+    }
+    else
+    {
+      t->functions &= ~(MWM_FUNC_RESIZE | MWM_FUNC_MAXIMIZE);
+      decor        &= ~(MWM_FUNC_RESIZE | MWM_FUNC_MAXIMIZE);
+    }
+    if (t->ol_hints & OL_DECOR_HEADER)
+    {
+      t->functions |= (MWM_DECOR_MENU | MWM_FUNC_MINIMIZE |
+		       MWM_FUNC_MAXIMIZE | MWM_DECOR_TITLE);
+      decor        |= (MWM_DECOR_MENU | MWM_FUNC_MINIMIZE |
+		       MWM_FUNC_MAXIMIZE | MWM_DECOR_TITLE);
+    }
+    else
+    {
+      t->functions &= ~(MWM_DECOR_MENU | MWM_FUNC_MINIMIZE |
+			MWM_FUNC_MAXIMIZE | MWM_DECOR_TITLE);
+      decor        &= ~(MWM_DECOR_MENU | MWM_FUNC_MINIMIZE |
+			MWM_FUNC_MAXIMIZE | MWM_DECOR_TITLE);
+    }
+    if (t->ol_hints & OL_DECOR_ICON_NAME)
+    {
+      SET_HAS_NO_ICON_TITLE(t, 0);
+    }
+    else
+    {
+      SET_HAS_NO_ICON_TITLE(t, 1);
+    }
+  }
 
   /* Now I have the un-altered decor and functions, but with the
    * ALL attribute cleared and interpreted. I need to modify the
@@ -408,9 +412,9 @@ void SelectDecor(FvwmWindow *t, style_flags *sflags, int border_width,
     decor &= ~MWM_DECOR_RESIZEH;
 
   if(SHAS_MWM_DECOR(sflags) && IS_TRANSIENT(t))
-    {
-      decor &= ~(MWM_DECOR_MAXIMIZE|MWM_DECOR_MINIMIZE);
-    }
+  {
+    decor &= ~(MWM_DECOR_MAXIMIZE|MWM_DECOR_MINIMIZE);
+  }
 
 #ifdef SHAPE
   if (ShapesSupported)
@@ -426,66 +430,66 @@ void SelectDecor(FvwmWindow *t, style_flags *sflags, int border_width,
   t->boundary_width = 0;
 
   if(decor & MWM_DECOR_BORDER)
-    {
-      /* A narrow border is displayed (5 pixels - 2 relief, 1 top,
-       * (2 shadow) */
-      t->boundary_width = border_width;
-    }
+  {
+    /* A narrow border is displayed (5 pixels - 2 relief, 1 top,
+     * (2 shadow) */
+    t->boundary_width = border_width;
+  }
   if(decor & MWM_DECOR_TITLE)
-    {
-      /*  A title bar with no buttons in it
-       * window gets a 1 pixel wide black border. */
-      SET_HAS_TITLE(t, 1);
-    }
+  {
+    /*  A title bar with no buttons in it
+     * window gets a 1 pixel wide black border. */
+    SET_HAS_TITLE(t, 1);
+  }
   if(decor & MWM_DECOR_RESIZEH)
-    {
-      /* A wide border, with corner tiles is desplayed
-       * (10 pixels - 2 relief, 2 shadow) */
-      SET_HAS_BORDER(t, 1);
-      t->boundary_width = handle_width;
-    }
+  {
+    /* A wide border, with corner tiles is desplayed
+     * (10 pixels - 2 relief, 2 shadow) */
+    SET_HAS_BORDER(t, 1);
+    t->boundary_width = handle_width;
+  }
   if(!(decor & MWM_DECOR_MENU))
+  {
+    /*  title-bar menu button omitted
+     * window gets 1 pixel wide black border */
+    /* disable any buttons with the MWMDecorMenu flag */
+    int i;
+    for (i = 0; i < NUMBER_OF_BUTTONS; ++i)
     {
-      /*  title-bar menu button omitted
-       * window gets 1 pixel wide black border */
-      /* disable any buttons with the MWMDecorMenu flag */
-      int i;
-      for (i = 0; i < NUMBER_OF_BUTTONS; ++i)
+      if (TB_HAS_MWM_DECOR_MENU(GetDecor(t, buttons[i])))
       {
-	if (TB_HAS_MWM_DECOR_MENU(GetDecor(t, buttons[i])))
-	{
-          *buttons &= ~(1 << i);
-	}
+	*buttons &= ~(1 << i);
       }
     }
+  }
   if(!(decor & MWM_DECOR_MINIMIZE))
+  {
+    /* title-bar + iconify button, no menu button.
+     * window gets 1 pixel wide black border */
+    /* disable any buttons with the MWMDecorMinimize/MWMDecorShaded flag */
+    int i;
+    for (i = 0; i < NUMBER_OF_BUTTONS; ++i)
     {
-      /* title-bar + iconify button, no menu button.
-       * window gets 1 pixel wide black border */
-      /* disable any buttons with the MWMDecorMinimize/MWMDecorShaded flag */
-      int i;
-      for (i = 0; i < NUMBER_OF_BUTTONS; ++i)
+      if (TB_HAS_MWM_DECOR_MINIMIZE(GetDecor(t, buttons[i])))
       {
-	if (TB_HAS_MWM_DECOR_MINIMIZE(GetDecor(t, buttons[i])))
-	{
-          *buttons &= ~(1 << i);
-	}
+	*buttons &= ~(1 << i);
       }
     }
+  }
   if(!(decor & MWM_DECOR_MAXIMIZE))
+  {
+    /* title-bar + maximize button, no menu button, no iconify.
+     * window has 1 pixel wide black border */
+    /* disable any buttons with the MWMDecorMaximize flag */
+    int i;
+    for (i = 0; i < NUMBER_OF_BUTTONS; ++i)
     {
-      /* title-bar + maximize button, no menu button, no iconify.
-       * window has 1 pixel wide black border */
-      /* disable any buttons with the MWMDecorMaximize flag */
-      int i;
-      for (i = 0; i < NUMBER_OF_BUTTONS; ++i)
+      if (TB_HAS_MWM_DECOR_MAXIMIZE(GetDecor(t, buttons[i])))
       {
-	if (TB_HAS_MWM_DECOR_MAXIMIZE(GetDecor(t, buttons[i])))
-	{
-          *buttons &= ~(1 << i);
-	}
+	*buttons &= ~(1 << i);
       }
     }
+  }
   for (i = (1 << (NUMBER_OF_BUTTONS - 1)); i; i >>= 1)
   {
     if (t->buttons & i)
@@ -507,10 +511,10 @@ void SelectDecor(FvwmWindow *t, style_flags *sflags, int border_width,
   }
 
   if(t->boundary_width <= 0)
-    {
-      t->boundary_width = 0;
-      SET_HAS_BORDER(t, 0);
-    }
+  {
+    t->boundary_width = 0;
+    SET_HAS_BORDER(t, 0);
+  }
 }
 
 /*

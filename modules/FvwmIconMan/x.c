@@ -32,6 +32,7 @@ static int shapeEventBase, shapeErrorBase;
 Display *theDisplay;
 Window theRoot;
 int theScreen;
+extern char *MyName;
 
 static enum {
   NOT_GRABBED = 0,
@@ -141,13 +142,23 @@ Window find_frame_window (Window win, int *off_x, int *off_y)
 
   ConsoleDebug (X11, "In find_frame_window: 0x%lx\n", win);
 
-  while (1) {
-    XQueryTree (theDisplay, win, &root, &parent, &junkw, &junki);
+  while (1)
+  {
+    if (!XQueryTree (theDisplay, win, &root, &parent, &junkw, &junki))
+    {
+      fprintf(stderr, "%s: find_frame_window: XQueryTree failed.\n", MyName);
+      return win;
+    }
     if (junkw)
       XFree (junkw);
     if (parent == root)
       break;
-    XGetWindowAttributes (theDisplay, win, &attr);
+    if (!XGetWindowAttributes (theDisplay, win, &attr))
+    {
+      fprintf(stderr, "%s: find_frame_window: XGetWindowAttrigutes failed.\n",
+	      MyName);
+      return win;
+    }
     ConsoleDebug (X11, "Adding (%d, %d) += (%d, %d)\n",
 		  *off_x, *off_y, attr.x + attr.border_width,
 		  attr.y + attr.border_width);
@@ -865,8 +876,6 @@ void create_manager_window (int man_id)
 
 static int handle_error (Display *d, XErrorEvent *ev)
 {
-  extern char *MyName;
-
   /* BadDrawable is allowed, it happens when colrosets change too fast */
   if (ev->error_code == BadDrawable)
     return 0;

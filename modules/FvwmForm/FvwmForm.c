@@ -1350,7 +1350,12 @@ void DoCommand (Item *cmd)
 
   /* pre-command */
   if (cmd->button.key == IB_QUIT)
-    XWithdrawWindow(dpy, CF.frame, screen);
+  {
+    if (!XWithdrawWindow(dpy, CF.frame, screen))
+    {
+      /* hm, what can we do now? just ignore this situation. */
+    }
+  }
 
   for (k = 0; k < cmd->button.n; k++) {
     char *parsed_command;
@@ -1653,7 +1658,7 @@ static void ParseActiveMessage(char *buf) {
 
   p=p+strlen(e->name);                  /* skip over name */
   while (isspace((unsigned char)*p)) p++;              /* skip whitespace */
-  
+
   FormVarsCheck(&p);
   e->function(p);                       /* call cmd processor */
   return;

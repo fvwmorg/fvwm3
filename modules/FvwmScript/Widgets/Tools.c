@@ -98,7 +98,8 @@ void DrawPMenu(struct XObj *xobj,Window WinPop,int h,int StrtOpt)
  int asc,desc,dir;
  XCharStruct struc;
 
- XGetGeometry(dpy,WinPop,&Root,&x,&y,&width,&height,&i,&i);
+ if (!XGetGeometry(dpy,WinPop,&Root,&x,&y,&width,&height,&i,&i))
+   return;
  for (i=0;i<2;i++)
  {
   segm[0].x1=i;
@@ -157,7 +158,8 @@ void SelectMenu(struct XObj *xobj,Window WinPop,int hOpt,int value)
  unsigned int width,height;
  Window Root;
 
- XGetGeometry(dpy,WinPop,&Root,&x,&y,&width,&height,&i,&i);
+ if (!XGetGeometry(dpy,WinPop,&Root,&x,&y,&width,&height,&i,&i))
+   return;
  y=hOpt*(value-1);
  for (i=0;i<2;i++)
  {

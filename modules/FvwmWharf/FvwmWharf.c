@@ -262,7 +262,7 @@ int main(int argc, char **argv)
 
   if (!(dpy = XOpenDisplay(display_name)))
   {
-    fprintf(stderr,"%s: can't open display %s", MyName,
+    fprintf(stderr,"%s: can't open display %s\n", MyName,
 	    XDisplayName(display_name));
     exit (1);
   }
@@ -278,7 +278,7 @@ int main(int argc, char **argv)
   Root = RootWindow(dpy, screen);
   if(Root == None)
   {
-    fprintf(stderr,"%s: Screen %d is not valid ", MyName, screen);
+    fprintf(stderr,"%s: Screen %d is not valid\n", MyName, screen);
     exit(1);
   }
   display_width = DisplayWidth(dpy, screen);
@@ -319,8 +319,7 @@ int main(int argc, char **argv)
       signal(SIGCHLD,waitchild);
       SoundThread=fork();
       if (SoundThread<0) {
-	fprintf(stderr,"%s: could not fork(). Disabling sound",
-		MyName);
+	fprintf(stderr,"%s: could not fork(). Disabling sound\n", MyName);
 	perror(".");
 	SoundActive=0;
       } else if (SoundThread==0) { /* in the sound player process */
@@ -431,9 +430,13 @@ int main(int argc, char **argv)
   }
   for(i=num_folderbuttons;i<MAX_BUTTONS;i++)
     CreateIconWindow(i, Buttons[i].parent);
-  XGetGeometry(dpy,main_win,&junkroot,&x,&y,
-	       (unsigned int *)&Width,(unsigned int *)&Height,
- 	       (unsigned int *)&border_width,(unsigned int *)&depth);
+  if (!XGetGeometry(dpy,main_win,&junkroot,&x,&y,
+		    (unsigned int *)&Width,(unsigned int *)&Height,
+		    (unsigned int *)&border_width,(unsigned int *)&depth))
+  {
+    fprintf(stderr, "%s: Failed to get window geometry\n",MyName);
+    exit(0);
+  }
 
   configure_all_icon_windows();
   configure_all_icon_windows();
@@ -518,11 +521,9 @@ void Loop(void)
 	      PlaySound(WHEV_OPEN_MAIN);
 #endif
 	      if (AnimationStyle>0 && AnimateMain)
-		OpenFolder(-1,LastX,LastY,Width,Height,
-			   AnimationDir);
+		OpenFolder(-1,LastX,LastY,Width,Height,AnimationDir);
 	      else
-		XMoveResizeWindow(dpy,main_win,LastX,LastY,
-				  Width,Height);
+		XMoveResizeWindow(dpy,main_win,LastX,LastY,Width,Height);
 	      Withdrawn=0;
 	    } else {
 	      Window junk;
@@ -532,11 +533,14 @@ void Loop(void)
 #ifdef ENABLE_SOUND
 	      PlaySound(WHEV_CLOSE_MAIN);
 #endif
-	      XGetGeometry(dpy,main_win,&junk,&LastX,&LastY,
-			   &junk2,&junk3,&junk4,&junk5);
-	      XTranslateCoordinates(dpy,main_win,Root,
-				    LastX,LastY,
-				    &LastX,&LastY,&junk);
+	      if (XGetGeometry(
+		dpy,main_win,&junk,&LastX,&LastY,&junk2,&junk3,&junk4,&junk5))
+	      {
+		LastX = 0;
+		LastY = 0;
+	      }
+	      XTranslateCoordinates(
+		dpy,main_win,Root,LastX,LastY,&LastX,&LastY,&junk);
 	      if (num_rows<num_columns) { /* horizontal */
 		if (LastY > display_height/2) {
 		  CornerY = display_height-BUTTONHEIGHT;
@@ -641,14 +645,18 @@ void Loop(void)
 	    RedrawPushed(CurrentWin, i, j);
 	  }
 	}
-	if (strncasecmp(Buttons[CurrentButton].action,"Folder",6)==0) {
+	if (strncasecmp(Buttons[CurrentButton].action,"Folder",6)==0)
+	{
 	  Window junk;
 	  unsigned int junk2,junk3,junk4,junk5;
-	  XGetGeometry(dpy,main_win,&junk,&x,&y,
-		       &junk2,&junk3,&junk4,&junk5);
-	  XTranslateCoordinates(dpy,main_win,Root,
-				x,y,
-				&x,&y,&junk);
+
+	  if (!XGetGeometry(
+	    dpy,main_win,&junk,&x,&y,&junk2,&junk3,&junk4,&junk5))
+	  {
+	    x = 0;
+	    y = 0;
+	  }
+	  XTranslateCoordinates(dpy,main_win,Root,x,y,&x,&y,&junk);
 	  /* kludge until Beat takes a look */
 	  if ((num_columns == 1) && (num_rows == 1))
 	    MapFolder(Buttons[CurrentButton].folder,
@@ -966,10 +974,11 @@ void CloseFolder(int folder)
     else
       fsize=winc;
   }
-  if (AnimationStyle==0) {
+  if (AnimationStyle==0 ||
+      !XGetGeometry(dpy,win,&junk_win,&x,&y,&w,&h,&junk_bd,&junk_depth))
+  {
     goto end;
   }
-  XGetGeometry(dpy,win,&junk_win,&x,&y,&w,&h,&junk_bd,&junk_depth);
   XTranslateCoordinates(dpy,win,Root,x,y,&x,&y,&junk_win);
   switch (direction) {
   case DIR_TOLEFT:
@@ -2056,7 +2065,7 @@ void change_window_name(char *str)
 
   if (XStringListToTextProperty(&str,1,&name) == 0)
   {
-    fprintf(stderr,"%s: cannot allocate window name",MyName);
+    fprintf(stderr,"%s: cannot allocate window name\n",MyName);
     return;
   }
   XSetWMName(dpy,main_win,&name);
@@ -2353,12 +2362,20 @@ void swallow(unsigned long *body)
 	  int width, height;
 	  int junk1, junk2, junk3, junk4;
 	  Window root;
-	  XGetGeometry(dpy, Buttons[button].IconWin, &root,
-		       &junk1, &junk2, &width, &height, &junk3,
-		       &junk4);
-
-	  if (width  > BUTTONWIDTH)  width  = BUTTONWIDTH;
-	  if (height > BUTTONHEIGHT) height = BUTTONHEIGHT;
+	  if (XGetGeometry(dpy, Buttons[button].IconWin, &root,
+			   &junk1, &junk2, &width, &height, &junk3,
+			   &junk4))
+	  {
+	    if (width  > BUTTONWIDTH)
+	      width = BUTTONWIDTH;
+	    if (height > BUTTONHEIGHT)
+	      height = BUTTONHEIGHT;
+	  }
+	  else
+	  {
+	    width = BUTTONWIDTH;
+	    height = BUTTONHEIGHT;
+	  }
 	  Buttons[button].icons[0].w = width;
 	  Buttons[button].icons[0].h = height;
 	}
@@ -2369,7 +2386,9 @@ void swallow(unsigned long *body)
 	if (!XGetWMNormalHints (dpy, Buttons[button].IconWin,
 				&Buttons[button].hints,
 				&supplied))
+	{
 	  Buttons[button].hints.flags = 0;
+	}
 
 	XResizeWindow(dpy,(Window)body[0], Buttons[button].icons[0].w,
 		      Buttons[button].icons[0].h);
@@ -2379,11 +2398,17 @@ void swallow(unsigned long *body)
 		    i*BUTTONHEIGHT +
 		    (BUTTONHEIGHT - Buttons[button].icons[0].h)/2);
 
-	XFetchName(dpy, Buttons[button].IconWin, &temp);
+	if (XFetchName(dpy, Buttons[button].IconWin, &temp))
+	{
+	  if(strcmp(Buttons[button].title,"-")!=0)
+	    CopyString(&Buttons[button].title, temp);
+	}
+	else
+	{
+	  CopyString(&Buttons[button].title, "");
+	}
 	XClearArea(dpy, main_win,j*BUTTONWIDTH, i*BUTTONHEIGHT,
 		   BUTTONWIDTH,BUTTONHEIGHT,0);
-	if(strcmp(Buttons[button].title,"-")!=0)
-	  CopyString(&Buttons[button].title, temp);
 	RedrawWindow(&main_win,0, -1, num_rows, num_columns);
 	XFree(temp);
       }

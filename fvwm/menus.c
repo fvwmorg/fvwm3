@@ -293,8 +293,16 @@ static void get_prefered_popup_position(
 {
   int menu_x, menu_y;
 
-  XGetGeometry(dpy, MR_WINDOW(mr), &JunkRoot, &menu_x, &menu_y,
-	       &JunkWidth, &JunkHeight, &JunkBW, &JunkDepth);
+  if (!XGetGeometry(dpy, MR_WINDOW(mr), &JunkRoot, &menu_x, &menu_y,
+		    &JunkWidth, &JunkHeight, &JunkBW, &JunkDepth))
+  {
+    *px = 0;
+    *py = 0;
+    *pprefer_left_submenus = False;
+    fvwm_msg(ERR, "get_prefered_popup_position",
+	     "can't get geometry of menu %s", MR_NAME(mr));
+    return;
+  }
   /* set the direction flag */
   *pprefer_left_submenus =
     (MR_HAS_POPPED_UP_LEFT(mr) ||
@@ -351,6 +359,31 @@ static MenuItem *warp_pointer_to_item(MenuRoot *mr, MenuItem *mi,
   XWarpPointer(dpy, 0, MR_WINDOW(mr), 0, 0, 0, 0,
 	       menu_middle_x_offset(mr), item_middle_y_offset(mr, mi));
   return mi;
+}
+
+/***************************************************************
+ * menu animation functions
+ ***************************************************************/
+
+/* Undo the animation of a menu */
+static void animated_move_back(MenuRoot *mr, Bool do_warp_pointer)
+{
+  int act_x;
+  int act_y;
+
+  if (MR_XANIMATION(mr) == 0)
+    return;
+  if (XGetGeometry(dpy, MR_WINDOW(mr), &JunkRoot, &act_x, &act_y,
+		   &JunkWidth, &JunkHeight, &JunkBW, &JunkDepth))
+  {
+    /* move it back */
+    AnimatedMoveOfWindow(
+      MR_WINDOW(mr) ,act_x, act_y, act_x - MR_XANIMATION(mr), act_y,
+      do_warp_pointer, -1, NULL);
+    MR_XANIMATION(mr) = 0;
+  }
+
+  return;
 }
 
 
@@ -557,7 +590,8 @@ static Bool is_submenu_mapped(MenuRoot *parent_menu, MenuItem *parent_item)
 
   if (MR_WINDOW(mr) == None)
     return False;
-  XGetWindowAttributes(dpy, MR_WINDOW(mr), &win_attribs);
+  if (!XGetWindowAttributes(dpy, MR_WINDOW(mr), &win_attribs))
+    return False;
   return (win_attribs.map_state == IsViewable);
 }
 
@@ -1151,16 +1185,24 @@ fprintf(stderr,"menu torn off\n");
   if (!miCurrent &&
       (saction == SA_ENTER || saction == SA_MOVE_ITEMS || saction == SA_SELECT))
   {
-    XGetGeometry(dpy, MR_WINDOW(mr), &JunkRoot, &menu_x, &menu_y,
-		 &menu_width, &menu_height, &JunkBW, &JunkDepth);
-    XQueryPointer(dpy, Scr.Root, &JunkRoot, &JunkChild,
-		  &mx, &my, &JunkX, &JunkY, &JunkMask);
-    if (my < menu_y + MST_BORDER_WIDTH(mr))
-      saction = SA_FIRST;
-    else if (my > menu_y + menu_height - MST_BORDER_WIDTH(mr))
-      saction = SA_LAST;
+    if (XGetGeometry(dpy, MR_WINDOW(mr), &JunkRoot, &menu_x, &menu_y,
+		      &menu_width, &menu_height, &JunkBW, &JunkDepth))
+    {
+      XQueryPointer(dpy, Scr.Root, &JunkRoot, &JunkChild,
+		    &mx, &my, &JunkX, &JunkY, &JunkMask);
+      if (my < menu_y + MST_BORDER_WIDTH(mr))
+	saction = SA_FIRST;
+      else if (my > menu_y + menu_height - MST_BORDER_WIDTH(mr))
+	saction = SA_LAST;
+      else
+	saction = SA_WARPBACK;
+    }
     else
-      saction = SA_WARPBACK;
+    {
+      saction = SA_FIRST;
+      fvwm_msg(
+	ERR, "menuShortcuts", "can't get geometry of menu %s", MR_NAME(mr));
+    }
   }
 
   /*** execute the necessary actions ***/
@@ -1995,33 +2037,20 @@ static void MenuInteraction(
       if (mrPopup && MR_XANIMATION(mrPopup) && tmi &&
 	  (tmi == MR_SELECTED_ITEM(pmp->menu) || tmrMi != pmp->menu))
       {
-	int x_popup, y_popup;
 	DBUG("MenuInteraction","Moving the popup menu back over");
-	XGetGeometry(dpy, MR_WINDOW(mrPopup), &JunkRoot, &x_popup, &y_popup,
-		     &JunkWidth, &JunkHeight, &JunkBW, &JunkDepth);
-	/* move it back */
-	AnimatedMoveOfWindow(MR_WINDOW(mrPopup),x_popup,y_popup,
-			     x_popup - MR_XANIMATION(mrPopup), y_popup,
-			     False /* no warp ptr */,-1,NULL);
-	MR_XANIMATION(mrPopup) = 0;
+	animated_move_back(mrPopup, False);
       }
       /* now check whether we should animate the current real menu
 	 over to the right to unobscure the prior menu; only a very
 	 limited case where this might be helpful and not too disruptive */
+
       if (mrPopup == NULL && pmp->parent_menu != NULL &&
 	  MR_XANIMATION(pmp->menu) != 0 &&
 	  pointer_in_passive_item_area(x_offset, mrMi))
       {
-	int x_menu, y_menu;
 	DBUG("MenuInteraction","Moving the menu back over");
 	/* we have to see if we need menu to be moved */
-	XGetGeometry( dpy, MR_WINDOW(pmp->menu), &JunkRoot, &x_menu, &y_menu,
-		      &JunkWidth, &JunkHeight, &JunkBW, &JunkDepth);
-	/* move it back */
-	AnimatedMoveOfWindow(MR_WINDOW(pmp->menu),x_menu,y_menu,
-			     x_menu - MR_XANIMATION(pmp->menu),y_menu,
-			     True /* warp ptr */,-1,NULL);
-	MR_XANIMATION(pmp->menu) = 0;
+	animated_move_back(mrPopup, True);
       }
 
     } /* if (mi) */
@@ -2036,17 +2065,17 @@ static void MenuInteraction(
 	  unsigned int mw, mh;
 	  XQueryPointer(dpy, Scr.Root, &JunkRoot, &JunkChild,
 			&x, &y, &JunkX, &JunkY, &JunkMask);
-	  XGetGeometry(dpy, MR_WINDOW(pmp->menu), &JunkRoot, &mx, &my,
-		       &mw, &mh, &JunkBW, &JunkDepth);
-	  if ((!MR_IS_LEFT(mrPopup)  && x < mx)	   ||
-	      (!MR_IS_RIGHT(mrPopup) && x > mx + mw) ||
-	      (!MR_IS_UP(mrPopup)    && y < my)	   ||
-	      (!MR_IS_DOWN(mrPopup)  && y > my + mh))
+	  if (XGetGeometry(dpy, MR_WINDOW(pmp->menu), &JunkRoot, &mx, &my,
+			   &mw, &mh, &JunkBW, &JunkDepth) &&
+	      ((!MR_IS_LEFT(mrPopup)  && x < mx)	   ||
+	       (!MR_IS_RIGHT(mrPopup) && x > mx + mw) ||
+	       (!MR_IS_UP(mrPopup)    && y < my)	   ||
+	       (!MR_IS_DOWN(mrPopup)  && y > my + mh)))
 	  {
-	    select_menu_item(pmp->menu, MR_SELECTED_ITEM(pmp->menu), False,
-			     (*pmp->pTmp_win));
-	    pop_menu_down_and_repaint_parent(&mrPopup, &does_submenu_overlap,
-					     pmp);
+	    select_menu_item(
+	      pmp->menu, MR_SELECTED_ITEM(pmp->menu), False, (*pmp->pTmp_win));
+	    pop_menu_down_and_repaint_parent(
+	      &mrPopup, &does_submenu_overlap, pmp);
 	    mrPopup = NULL;
 	  }
 	  else
@@ -2185,9 +2214,11 @@ static int do_menus_overlap(
 
   if (mr == NULL)
     return 0;
-
-  XGetGeometry(dpy,MR_WINDOW(mr), &JunkRoot,&prior_x,&prior_y,
-	       &prior_width,&prior_height, &JunkBW, &JunkDepth);
+  if (!XGetGeometry(dpy,MR_WINDOW(mr), &JunkRoot,&prior_x,&prior_y,
+		    &prior_width,&prior_height, &JunkBW, &JunkDepth))
+  {
+    return 0;
+  }
   x_overlap = 0;
   if (allow_popup_offset_tolerance)
   {
@@ -2244,6 +2275,10 @@ static int pop_menu_up(
   int context;
   int bw = 0;
   int bwp = 0;
+  int prev_x;
+  int prev_y;
+  unsigned int prev_width;
+  unsigned int prev_height;
 
   DBUG("pop_menu_up","called");
   mr = *pmenu;
@@ -2428,24 +2463,18 @@ static int pop_menu_up(
    * Calculate position and animate menus
    ***************************************************************/
 
-  if (parent_menu == NULL)
+  if (parent_menu == NULL ||
+      !XGetGeometry(dpy,MR_WINDOW(parent_menu), &JunkRoot,&prev_x,&prev_y,
+		    &prev_width,&prev_height, &JunkBW, &JunkDepth))
   {
     MR_HAS_POPPED_UP_LEFT(mr) = 0;
     MR_HAS_POPPED_UP_RIGHT(mr) = 0;
   }
   else
   {
-    int prev_x;
-    int prev_y;
     int left_x;
     int right_x;
-    unsigned int prev_width;
-    unsigned int prev_height;
     Bool use_left_submenus = MST_USE_LEFT_SUBMENUS(mr);
-
-    /* try to find a better place */
-    XGetGeometry(dpy,MR_WINDOW(parent_menu), &JunkRoot,&prev_x,&prev_y,
-		 &prev_width,&prev_height, &JunkBW, &JunkDepth);
 
     /* check if menus overlap */
     x_clipped_overlap =
@@ -2861,36 +2890,43 @@ static void pop_menu_down_and_repaint_parent(
 
   if (*fSubmenuOverlaps && parent)
   {
-    XGetGeometry(dpy, MR_WINDOW(*pmr), &JunkRoot, &mr_x, &mr_y,
-		 &mr_width, &mr_height, &JunkBW, &JunkDepth);
-    XGetGeometry(dpy, MR_WINDOW(parent), &JunkRoot, &parent_x, &parent_y,
-		 &parent_width, &parent_height, &JunkBW, &JunkDepth);
     pop_menu_down(pmr, pmp);
+
     /* Create a fake event to pass into paint_menu */
     event.type = Expose;
-    event.xexpose.x = mr_x - parent_x;
-    event.xexpose.width = mr_width;
-    if (event.xexpose.x < 0)
+    if (!XGetGeometry(dpy, MR_WINDOW(*pmr), &JunkRoot, &mr_x, &mr_y,
+		      &mr_width, &mr_height, &JunkBW, &JunkDepth) ||
+	!XGetGeometry(dpy, MR_WINDOW(parent), &JunkRoot, &parent_x, &parent_y,
+		       &parent_width, &parent_height, &JunkBW, &JunkDepth))
     {
-      event.xexpose.width += event.xexpose.x;
-      event.xexpose.x = 0;
+      paint_menu(parent, NULL, (*pmp->pTmp_win));
     }
-    if (event.xexpose.x + event.xexpose.width > parent_width)
+    else
     {
-      event.xexpose.width = parent_width - event.xexpose.x;
+      event.xexpose.x = mr_x - parent_x;
+      event.xexpose.width = mr_width;
+      if (event.xexpose.x < 0)
+      {
+	event.xexpose.width += event.xexpose.x;
+	event.xexpose.x = 0;
+      }
+      if (event.xexpose.x + event.xexpose.width > parent_width)
+      {
+	event.xexpose.width = parent_width - event.xexpose.x;
+      }
+      event.xexpose.y = mr_y - parent_y;
+      event.xexpose.height = mr_height;
+      if (event.xexpose.y < 0)
+      {
+	event.xexpose.height += event.xexpose.y;
+	event.xexpose.y = 0;
+      }
+      if (event.xexpose.y + event.xexpose.height > parent_height)
+      {
+	event.xexpose.height = parent_height - event.xexpose.y;
+      }
+      paint_menu(parent, &event, (*pmp->pTmp_win));
     }
-    event.xexpose.y = mr_y - parent_y;
-    event.xexpose.height = mr_height;
-    if (event.xexpose.y < 0)
-    {
-      event.xexpose.height += event.xexpose.y;
-      event.xexpose.y = 0;
-    }
-    if (event.xexpose.y + event.xexpose.height > parent_height)
-    {
-      event.xexpose.height = parent_height - event.xexpose.y;
-    }
-    paint_menu(parent, &event, (*pmp->pTmp_win));
     flush_expose(MR_WINDOW(parent));
   }
   else

@@ -1,3 +1,45 @@
+2000-10-08  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* libs/XResource.c (DoMergeString):
+	* fvwm/stack.c (raise_over_unmanaged):
+	* fvwm/add_window.c (setup_window_name):
+	* fvwm/virtual.c (unmap_window):
+	* fvwm/menus.c (is_submenu_mapped):
+	* fvwm/icons.c (Iconify):
+	* fvwm/fvwm.c (InitVariables):
+	* fvwm/colormaps.c (HandleColormapNotify):
+	(InstallWindowColormaps):
+	(FetchWmColormapWindows):
+	(EnterSubWindowColormap):
+	* fvwm/menus.c (get_prefered_popup_position):
+	(menuShortcuts):
+	(MenuInteraction):
+	(animated_move_back):
+	(do_menus_overlap):
+	(pop_menu_up):
+	(pop_menu_down_and_repaint_parent):
+	* libs/Colorset.c (SetWindowBackground):
+	* fvwm/move_resize.c (resize_move_window):
+	(AnimatedMoveAnyWindow):
+	(move_window_doit):
+	(moveLoop):
+	(resize_window):
+	* fvwm/icons.c (GetIconBitmap):
+	* fvwm/session.c (matchWin):
+	(SaveWindowStates):
+	honour return code of XGetGeometry(), XGetWindowAttributes(),
+	XGetWMName(), XGetWMNormalHints(), XGetCommand(), XQueryTree(),
+	XrmCombineDatabase()
+
+	* libs/Graphics.c (CalculateGradientDimensions):
+	* fvwm/events.c (HandleConfigureRequest):
+	* fvwm/add_window.c (setup_style_and_decor):
+	fixed wShaped UMR
+	fixed no longer ignore return codes of several X functions
+
+	* fvwm/decorations.c:
+	reindented file
+
 2000-10-06  olicha  <olivier.chapuis@free.fr>
 
 	* fvwm/cursor.c (setBusyCursor):

@@ -79,6 +79,21 @@ struct junklist {
 };
 static struct junklist *junk = NULL;
 
+void MyXParseColor(
+  Display *display, Colormap colormap, char *spec, XColor *exact_def_return)
+{
+  if (!XParseColor(display, colormap, spec, exact_def_return))
+  {
+    fprintf(stderr,"%s: can't parse color \"%s\"", name, (spec) ? spec : "");
+    exact_def_return->red = 0;
+    exact_def_return->green = 0;
+    exact_def_return->blue = 0;
+    exact_def_return->flags |= DoRed | DoGreen | DoBlue;
+  }
+
+  return;
+}
+
 int main(int argc, char **argv)
 {
   XSetWindowAttributes xswa;
@@ -410,17 +425,17 @@ static void parse_colorset(char *line)
   {
     colorset_struct *ncs = &Colorset[nColorsets];
     have_pixels_changed = True;
-    if (privateCells) {
+    if (privateCells &&
+	/* grab four writeable cells */
+	XAllocColorCells(dpy, Pcmap, False, NULL, 0, &(ncs->fg), 4)) {
       XColor *colorp;
 
-      /* grab four writeable cells */
-      XAllocColorCells(dpy, Pcmap, False, NULL, 0, &(ncs->fg), 4);
       /* set the fg color */
-      XParseColor(dpy, Pcmap, black, &color);
+      MyXParseColor(dpy, Pcmap, black, &color);
       color.pixel = ncs->fg;
       XStoreColor(dpy, Pcmap, &color);
       /* set the bg */
-      XParseColor(dpy, Pcmap, gray, &color);
+      MyXParseColor(dpy, Pcmap, gray, &color);
       color.pixel = ncs->bg;
       XStoreColor(dpy, Pcmap, &color);
       /* calculate and set the hilite */
@@ -766,7 +781,7 @@ static void parse_colorset(char *line)
       if (privateCells) {
 	unsigned short red, green, blue;
 
-	XParseColor(dpy, Pcmap, bg, &color);
+	MyXParseColor(dpy, Pcmap, bg, &color);
 	red = color.red;
 	green = color.green;
 	blue = color.blue;
@@ -790,7 +805,7 @@ static void parse_colorset(char *line)
     if (do_set_default_background)
     {
       if (privateCells) {
-        XParseColor(dpy, Pcmap, gray, &color);
+        MyXParseColor(dpy, Pcmap, gray, &color);
         color.pixel = cs->bg;
         XStoreColor(dpy, Pcmap, &color);
       } else {
@@ -836,7 +851,7 @@ static void parse_colorset(char *line)
     {
       /* user specified colour */
       if (privateCells) {
-	XParseColor(dpy, Pcmap, fg, &color);
+	MyXParseColor(dpy, Pcmap, fg, &color);
 	color.pixel = cs->fg;
 	XStoreColor(dpy, Pcmap, &color);
       } else {
@@ -853,7 +868,7 @@ static void parse_colorset(char *line)
       /* default */
       if (privateCells) {
         /* query it */
-        XParseColor(dpy, Pcmap, black, &color);
+        MyXParseColor(dpy, Pcmap, black, &color);
         color.pixel = cs->fg;
         XStoreColor(dpy, Pcmap, &color);
       } else {
@@ -877,7 +892,7 @@ static void parse_colorset(char *line)
     {
       /* user specified colour */
       if (privateCells) {
-	XParseColor(dpy, Pcmap, hi, &color);
+	MyXParseColor(dpy, Pcmap, hi, &color);
 	color.pixel = cs->hilite;
 	XStoreColor(dpy, Pcmap, &color);
       } else {
@@ -918,7 +933,7 @@ static void parse_colorset(char *line)
     {
       /* user specified colour */
       if (privateCells) {
-	XParseColor(dpy, Pcmap, hi, &color);
+	MyXParseColor(dpy, Pcmap, hi, &color);
 	color.pixel = cs->shadow;
 	XStoreColor(dpy, Pcmap, &color);
       } else {

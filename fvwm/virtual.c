@@ -167,14 +167,19 @@ static int GetDeskNumber(char *action)
 static void unmap_window(FvwmWindow *t)
 {
   XWindowAttributes winattrs;
-  unsigned long eventMask;
+  unsigned long eventMask = 0;
+  Status ret;
+
   /*
    * Prevent the receipt of an UnmapNotify, since that would
    * cause a transition to the Withdrawn state.
    */
-  XGetWindowAttributes(dpy, t->w, &winattrs);
-  eventMask = winattrs.your_event_mask;
-  XSelectInput(dpy, t->w, eventMask & ~StructureNotifyMask);
+  ret = XGetWindowAttributes(dpy, t->w, &winattrs);
+  if (ret)
+  {
+    eventMask = winattrs.your_event_mask;
+    XSelectInput(dpy, t->w, eventMask & ~StructureNotifyMask);
+  }
   if(IS_ICONIFIED(t))
   {
     if(t->icon_pixmap_w != None)
@@ -186,7 +191,10 @@ static void unmap_window(FvwmWindow *t)
   {
     XUnmapWindow(dpy,t->frame);
   }
-  XSelectInput(dpy, t->w, eventMask);
+  if (ret)
+  {
+    XSelectInput(dpy, t->w, eventMask);
+  }
 }
 
 /**************************************************************************

@@ -313,116 +313,117 @@ void write_string(FILE *out, char *line)
 void do_save_command(FILE *out, struct list *t, int *curdesk,
                                 int emit_wait, int *isfirstline)
 {
-   char tname[200],loc[30];
-   char **command_list;
-   int dwidth,dheight,xtermline = 0;
-   int x1,x2,y1,y2,i,command_count;
-   long tVx, tVy;
+  char tname[200],loc[30];
+  char **command_list;
+  int dwidth,dheight,xtermline = 0;
+  int x1,x2,y1,y2,i,command_count;
+  long tVx, tVy;
 
-   tname[0]=0;
+  tname[0]=0;
 
-   x1 = t->frame_x;
-   x2 = ScreenWidth - x1 - t->frame_width - 2;
-   if(x2 < 0)
-     x2 = 0;
-   y1 = t->frame_y;
-   y2 = ScreenHeight - y1 -  t->frame_height - 2;
-   if(y2 < 0)
-     y2 = 0;
-   dheight = t->frame_height - t->title_height - 2*t->boundary_width;
-   dwidth = t->frame_width - 2*t->boundary_width;
-   dwidth -= t->base_width ;
-   dheight -= t->base_height ;
-   dwidth /= t->width_inc;
-   dheight /= t->height_inc;
+  x1 = t->frame_x;
+  x2 = ScreenWidth - x1 - t->frame_width - 2;
+  if(x2 < 0)
+    x2 = 0;
+  y1 = t->frame_y;
+  y2 = ScreenHeight - y1 -  t->frame_height - 2;
+  if(y2 < 0)
+    y2 = 0;
+  dheight = t->frame_height - t->title_height - 2*t->boundary_width;
+  dwidth = t->frame_width - 2*t->boundary_width;
+  dwidth -= t->base_width ;
+  dheight -= t->base_height ;
+  dwidth /= t->width_inc;
+  dheight /= t->height_inc;
 
-   if (IS_STICKY(t))
-     {
-       tVx = 0;
-       tVy = 0;
-     }
-   else
-     {
-       tVx = Vx;
-       tVy = Vy;
-     }
-   sprintf(tname,"%dx%d",dwidth,dheight);
-   if ((t->gravity == EastGravity) ||
-       (t->gravity == NorthEastGravity) ||
-       (t->gravity == SouthEastGravity))
-     sprintf(loc,"-%d",x2);
-   else
-     sprintf(loc,"+%d",x1+(int)tVx);
-   strcat(tname, loc);
+  if (IS_STICKY(t))
+  {
+    tVx = 0;
+    tVy = 0;
+  }
+  else
+  {
+    tVx = Vx;
+    tVy = Vy;
+  }
+  sprintf(tname,"%dx%d",dwidth,dheight);
+  if ((t->gravity == EastGravity) ||
+      (t->gravity == NorthEastGravity) ||
+      (t->gravity == SouthEastGravity))
+    sprintf(loc,"-%d",x2);
+  else
+    sprintf(loc,"+%d",x1+(int)tVx);
+  strcat(tname, loc);
 
-   if((t->gravity == SouthGravity)||
-      (t->gravity == SouthEastGravity)||
-      (t->gravity == SouthWestGravity))
-     sprintf(loc,"-%d",y2);
-   else
-     sprintf(loc,"+%d",y1+(int)tVy);
-   strcat(tname, loc);
+  if((t->gravity == SouthGravity)||
+     (t->gravity == SouthEastGravity)||
+     (t->gravity == SouthWestGravity))
+    sprintf(loc,"-%d",y2);
+  else
+    sprintf(loc,"+%d",y1+(int)tVy);
+  strcat(tname, loc);
 
-   if ( XGetCommand( dpy, t->id, &command_list, &command_count ) )
-     {
-       if (*curdesk != t->desk)
-	 {
-	    fprintf( out, "%s\t\"I\" Desk 0 %ld\n", *isfirstline ? "" : "+", t->desk);
-	    fflush ( out );
-	    if (*isfirstline) *isfirstline = 0;
-	    *curdesk = t->desk;
-	 }
+  if ( XGetCommand( dpy, t->id, &command_list, &command_count ) )
+  {
+    if (*curdesk != t->desk)
+    {
+      fprintf( out, "%s\t\"I\" Desk 0 %ld\n", *isfirstline ? "" : "+",
+	       t->desk);
+      fflush ( out );
+      if (*isfirstline) *isfirstline = 0;
+      *curdesk = t->desk;
+    }
 
-       fprintf( out, "%s\t\t\"I\" Exec ",  *isfirstline ? "" : "+");
-       if (*isfirstline) *isfirstline = 0;
-       fflush ( out );
-       for (i=0; i < command_count; i++)
-	 {
-	   if ( strncmp( "-geo", command_list[i], 4) == 0)
-	     {
-	       i++;
-	       continue;
-	     }
-	   if ( strncmp( "-ic", command_list[i], 3) == 0)
-	     continue;
-	   if ( strncmp( "-display", command_list[i], 8) == 0)
-	     {
-	       i++;
-	       continue;
-	     }
-	   write_string(out,command_list[i]);
-	   fflush ( out );
-	   if(strstr(command_list[i], "xterm"))
-	     {
-	       fprintf( out, "-geometry %s ", tname );
-	       if (IS_ICONIFIED(t))
-		 fprintf(out, "-ic ");
-	       xtermline = 1;
-	       fflush ( out );
-	     }
-	 }
-       if ( command_count > 0 )
-	 {
-	  if ( xtermline == 0 )
-	    {
-	      if (IS_ICONIFIED(t))
-		fprintf(out, "-ic ");
-	      fprintf( out, "-geometry %s &\n", tname);
-	    }
-	  else
-	    {
-	      fprintf( out, "&\n");
-	    }
-       }
-       if (emit_wait) {
-	  if (t->name)
-	     fprintf( out, "+\t\t\"I\" Wait %s\n", t->name);
-	  else fprintf( out, "+\t\t\"I\" Wait %s\n", command_list[0]);
-	  fflush( out );
-       }
-       XFreeStringList( command_list );
-       xtermline = 0;
-     }
+    fprintf( out, "%s\t\t\"I\" Exec ",  *isfirstline ? "" : "+");
+    if (*isfirstline) *isfirstline = 0;
+    fflush ( out );
+    for (i=0; i < command_count; i++)
+    {
+      if ( strncmp( "-geo", command_list[i], 4) == 0)
+      {
+	i++;
+	continue;
+      }
+      if ( strncmp( "-ic", command_list[i], 3) == 0)
+	continue;
+      if ( strncmp( "-display", command_list[i], 8) == 0)
+      {
+	i++;
+	continue;
+      }
+      write_string(out,command_list[i]);
+      fflush ( out );
+      if(strstr(command_list[i], "xterm"))
+      {
+	fprintf( out, "-geometry %s ", tname );
+	if (IS_ICONIFIED(t))
+	  fprintf(out, "-ic ");
+	xtermline = 1;
+	fflush ( out );
+      }
+    }
+    if ( command_count > 0 )
+    {
+      if ( xtermline == 0 )
+      {
+	if (IS_ICONIFIED(t))
+	  fprintf(out, "-ic ");
+	fprintf( out, "-geometry %s &\n", tname);
+      }
+      else
+      {
+	fprintf( out, "&\n");
+      }
+    }
+    if (emit_wait) {
+      if (t->name)
+	fprintf( out, "+\t\t\"I\" Wait %s\n", t->name);
+      else fprintf( out, "+\t\t\"I\" Wait %s\n", command_list[0]);
+      fflush( out );
+    }
+    XFreeStringList( command_list );
+    xtermline = 0;
+  }
 }
 
 

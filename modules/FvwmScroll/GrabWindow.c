@@ -225,9 +225,13 @@ void Loop(Window target)
 	  break;
 
 	case ConfigureNotify:
-	  XGetGeometry(dpy, main_win, &root ,&x, &y, &tw, &th, &border_width,
-		       &depth);
-	  if ((tw != Width) || (th != Height)) {
+	  if (!XGetGeometry(dpy, main_win, &root ,&x, &y, &tw, &th,
+			    &border_width, &depth))
+	  {
+	    return;
+	  }
+	  if ((tw != Width) || (th != Height))
+	  {
 	    if (colorset >= 0)
 	      SetWindowBackground(dpy, main_win, tw, th,
 				  &Colorset[(colorset)], Pdepth,
@@ -701,7 +705,7 @@ void change_window_name(char *str)
 
   if (XStringListToTextProperty(&str,1,&name) == 0)
     {
-      fprintf(stderr,"%s: cannot allocate window name",MyName);
+      fprintf(stderr,"%s: cannot allocate window name\n",MyName);
       return;
     }
   XSetWMName(dpy,main_win,&name);
@@ -716,10 +720,11 @@ void change_icon_name(char *str)
 {
   XTextProperty name;
 
-  if(str == NULL)return;
+  if(str == NULL)
+    return;
   if (XStringListToTextProperty(&str,1,&name) == 0)
     {
-      fprintf(stderr,"%s: cannot allocate window name",MyName);
+      fprintf(stderr,"%s: cannot allocate window name\n",MyName);
       return;
     }
   XSetWMIconName(dpy,main_win,&name);
@@ -740,10 +745,14 @@ void GrabWindow(Window target)
 
   XUnmapWindow(dpy,target);
   XSync(dpy,0);
-  XGetGeometry(dpy,target,&root,&x,&y,
-	       (unsigned int *)&tw,(unsigned int *)&th,
-	       (unsigned int *)&border_width,
-	       (unsigned int *)&depth);
+  if (!XGetGeometry(dpy,target,&root,&x,&y,
+		    (unsigned int *)&tw,(unsigned int *)&th,
+		    (unsigned int *)&border_width,
+		    (unsigned int *)&depth))
+  {
+    fprintf(stderr,"%s: cannot get window geometry\n", MyName);
+    exit(0);
+  }
   XSync(dpy,0);
 
   XTranslateCoordinates(dpy, target, Root, 0, 0, &x,&y, &Junk);
@@ -771,10 +780,10 @@ void GrabWindow(Window target)
 
     wmhints = XGetWMHints(dpy,target);
     if(wmhints != NULL)
-      {
-	XSetWMHints(dpy,main_win, wmhints);
-	XFree(wmhints);
-      }
+    {
+      XSetWMHints(dpy,main_win, wmhints);
+      XFree(wmhints);
+    }
   }
 /* FvwmScroll may not share the same visual as the target window
  * and so cannot share its colormap  {

@@ -582,12 +582,15 @@ static void ToggleChoice (Item *item)
 static void ResizeFrame (void) {
 #if 0
   /* unfinished dje. */
+  /* If you ever finish this, please make sure to check the return code of
+   * XGetGeometry below. dv */
   Window root;
   XEvent dummy;
   int x, y;
   unsigned int border, depth, width, height;
   /* get anything queued */
-  while (XCheckTypedWindowEvent(dpy, CF.frame, ConfigureNotify, &dummy));
+  while (XCheckTypedWindowEvent(dpy, CF.frame, ConfigureNotify, &dummy))
+    ;
   XGetGeometry(dpy, CF.frame, &root, &x, &y, &width, &height, &border, &depth);
   if (width != CF.max_width) {
     if (CF.last_error != 0) {           /* if form has message area */

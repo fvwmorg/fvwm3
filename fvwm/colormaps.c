@@ -72,8 +72,8 @@ void HandleColormapNotify(void)
     }
   if(cevent->new)
     {
-      XGetWindowAttributes(dpy,Tmp_win->w,&(Tmp_win->attr));
-      if((Tmp_win  == colormap_win)&&(Tmp_win->number_cmap_windows == 0))
+      if (XGetWindowAttributes(dpy,Tmp_win->w,&(Tmp_win->attr)) &&
+	  (Tmp_win  == colormap_win)&&(Tmp_win->number_cmap_windows == 0))
 	last_cmap = Tmp_win->attr.colormap;
       ReInstall = True;
     }
@@ -91,8 +91,8 @@ void HandleColormapNotify(void)
 	Tmp_win = NULL;
       if((Tmp_win)&&(cevent->new))
 	{
-	  XGetWindowAttributes(dpy,Tmp_win->w,&(Tmp_win->attr));
-	  if((Tmp_win  == colormap_win)&&(Tmp_win->number_cmap_windows == 0))
+	  if (XGetWindowAttributes(dpy,Tmp_win->w,&(Tmp_win->attr)) &&
+	      (Tmp_win  == colormap_win)&&(Tmp_win->number_cmap_windows == 0))
 	    last_cmap = Tmp_win->attr.colormap;
 	  ReInstall = True;
 	}
@@ -176,7 +176,10 @@ void InstallWindowColormaps (FvwmWindow *tmp)
 	  w = tmp->cmap_windows[i];
 	  if(w == tmp->w)
 	    ThisWinInstalled = True;
-	  XGetWindowAttributes(dpy,w,&attributes);
+	  if (!XGetWindowAttributes(dpy,w,&attributes))
+	  {
+	    attributes.colormap = last_cmap;
+	  }
 
           /*
            * On Sun X servers, don't install 24 bit TrueColor colourmaps.
@@ -185,7 +188,8 @@ void InstallWindowColormaps (FvwmWindow *tmp)
            */
 	  if(last_cmap != attributes.colormap
 #if defined(sun) && defined(TRUECOLOR_ALWAYS_INSTALLED)
-             && !(attributes.depth == 24 && attributes.visual->class == TrueColor)
+             && !(attributes.depth == 24 &&
+		  attributes.visual->class == TrueColor)
 #endif
              )
 	    {
@@ -302,12 +306,10 @@ void UninstallFvwmColormap(void)
  ****************************************************************************/
 void FetchWmColormapWindows (FvwmWindow *tmp)
 {
-  /* SUBWINDOW COLORMAP PATCH RANDY FRANK, RSI INC., BOULDER, COLORADO, USA */
    XWindowAttributes      getattribs;
    XSetWindowAttributes   setattribs;
    long int               i;
    unsigned long          valuemask;
-  /* END PATCH*/
 
   if(tmp->cmap_windows != (Window *)NULL)
     XFree((void *)tmp->cmap_windows);
@@ -318,26 +320,24 @@ void FetchWmColormapWindows (FvwmWindow *tmp)
       tmp->number_cmap_windows = 0;
       tmp->cmap_windows = NULL;
     }
-/* SUBWINDOW COLORMAP PATCH BY RANDY FRANK, RSI INC., BOULDER, COLORADO, USA
- * we need to be notified of Enter events into these subwindows
- * so we can set their colormaps
- */
+  /* we need to be notified of Enter events into these subwindows
+   * so we can set their colormaps */
   if (tmp->number_cmap_windows != 0)
   {
     for(i=0;i<tmp->number_cmap_windows;i++)
     {
-      XGetWindowAttributes(dpy, tmp->cmap_windows[i], &getattribs);
-      valuemask = CWEventMask;
-      setattribs.event_mask = getattribs.your_event_mask | EnterWindowMask
-                | LeaveWindowMask;
-      XChangeWindowAttributes(dpy,tmp->cmap_windows[i],valuemask,&setattribs);
+      if (XGetWindowAttributes(dpy, tmp->cmap_windows[i], &getattribs))
+      {
+	valuemask = CWEventMask;
+	setattribs.event_mask = getattribs.your_event_mask | EnterWindowMask
+	  | LeaveWindowMask;
+	XChangeWindowAttributes(dpy,tmp->cmap_windows[i],valuemask,&setattribs);
+      }
     }
   }
   return;
-  /* END PATCH */
 }
 
-/* SUBWINDOW COLORMAP PATCH BY RANDY FRANK, RSI INC., BOULDER, COLORADO, USA*/
 /*****************************************************************************
  *
  * Looks through the window list for any matching COLORMAP_WINDOWS
@@ -358,9 +358,11 @@ void EnterSubWindowColormap(Window win)
       {
 	if (t->cmap_windows[i] == win)
 	{
-	  XGetWindowAttributes(dpy,win,&attribs);
-	  last_cmap = attribs.colormap;
-	  XInstallColormap(dpy, last_cmap);
+	  if (XGetWindowAttributes(dpy,win,&attribs))
+	  {
+	    last_cmap = attribs.colormap;
+	    XInstallColormap(dpy, last_cmap);
+	  }
 	  return;
 	}
       }
@@ -404,4 +406,3 @@ void LeaveSubWindowColormap(Window win)
   }
   return;
 }
-/* END PATCH */

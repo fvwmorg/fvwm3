@@ -362,10 +362,13 @@ void Loop(void)
 	      break;
 
 	    case ConfigureNotify:
-	      XGetGeometry(dpy,main_win,&root,&x,&y,
-			   (unsigned int *)&tw,(unsigned int *)&th,
-			   (unsigned int *)&border_width,
-			   (unsigned int *)&depth);
+	      if (!XGetGeometry(dpy,main_win,&root,&x,&y,
+				(unsigned int *)&tw,(unsigned int *)&th,
+				(unsigned int *)&border_width,
+				(unsigned int *)&depth))
+	      {
+		break;
+	      }
 	      if (ready && (tw != main_width || th != main_height)){
 		main_width = tw;
 		main_height= th;
@@ -1250,14 +1253,14 @@ void CreateWindow(void)
   }
 }
 
-static void change_colorset(int color) {
+static void change_colorset(int color)
+{
   int x, y;
   unsigned int bw, w, h, depth;
   Window Junkroot;
 
-  if (color == colorset) {
-    XGetGeometry(dpy, main_win, &Junkroot,
-                 &x, &y, &w, &h, &bw, &depth);
+  if (color == colorset)
+  {
     fore_pix = (colorset < 0) ? GetColor(Fore)
       : Colorset[colorset].fg;
     back_pix = (colorset < 0) ? GetColor(Back)
@@ -1266,12 +1269,14 @@ static void change_colorset(int color) {
       : Colorset[colorset].hilite;
     shadow_pix = (colorset < 0) ? GetShadow(back_pix)
       : Colorset[colorset].shadow;
-    SetWindowBackground(dpy, main_win, w, h,
-                        &Colorset[(colorset)], Pdepth, NormalGC,
-			True);
-    SetWindowBackground(dpy, icon_win, icon_win_width, icon_win_height,
-                        &Colorset[(colorset)], Pdepth, NormalGC,
-			True);
+    if (XGetGeometry(dpy, main_win, &Junkroot, &x, &y, &w, &h, &bw, &depth))
+    {
+      SetWindowBackground(
+	dpy, main_win, w, h, &Colorset[(colorset)], Pdepth, NormalGC, True);
+    }
+    SetWindowBackground(
+      dpy, icon_win, icon_win_width, icon_win_height, &Colorset[(colorset)],
+      Pdepth, NormalGC, True);
     XSetWindowBackground(dpy, holder_win, back_pix);
     XSetWindowBackground(dpy, h_scroll_bar, back_pix);
     XSetWindowBackground(dpy, v_scroll_bar, back_pix);
@@ -1311,7 +1316,8 @@ static void change_colorset(int color) {
     XSetBackground(dpy, NormalGC, icon_back_pix);
 
     tmp = Head;
-    while(tmp != NULL){
+    while(tmp != NULL)
+    {
       if (max_icon_height != 0 && (IS_ICON_OURS(tmp)))
         XSetWindowBackground(dpy, tmp->icon_pixmap_w, icon_back_pix);
       XSetWindowBackground(dpy, tmp->IconWin, icon_back_pix);
@@ -1320,7 +1326,8 @@ static void change_colorset(int color) {
       tmp = tmp->next;
     }
   }
-  if (color == IconHicolorset) {
+  if (color == IconHicolorset)
+  {
     act_icon_back_pix = (IconHicolorset < 0) ? GetColor(ActIconBack)
       : Colorset[IconHicolorset].bg;
     act_icon_fore_pix = (IconHicolorset < 0) ? GetColor(ActIconFore)

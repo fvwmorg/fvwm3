@@ -132,9 +132,12 @@ void SetWindowBackground(Display *dpy, Window win, int width, int height,
 
   if (0 == width || 0 == height)
   {
-    XGetGeometry(
+    if (!XGetGeometry(
       dpy, win, &junk, (int *)&junk, (int *)&junk, (unsigned int *)&width,
-      (unsigned int *)&height, (unsigned int *)&junk, (unsigned int *)&junk);
+      (unsigned int *)&height, (unsigned int *)&junk, (unsigned int *)&junk))
+    {
+      return;
+    }
   }
 
 #ifdef SHAPE
@@ -172,6 +175,8 @@ void SetWindowBackground(Display *dpy, Window win, int width, int height,
 	XFreePixmap(dpy, pixmap);
     }
   }
+
+  return;
 }
 
 /* create a pixmap suitable for plonking on the background of a window */

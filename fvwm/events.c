@@ -1841,9 +1841,15 @@ void HandleConfigureRequest(void)
     unsigned wws, hws, wbs, hbs;
     int boundingShaped, clipShaped;
 
-    XShapeQueryExtents (dpy, Tmp_win->w,&boundingShaped, &xws, &yws, &wws,
-			&hws,&clipShaped, &xbs, &ybs, &wbs, &hbs);
-    Tmp_win->wShaped = boundingShaped;
+    if (XShapeQueryExtents(dpy, Tmp_win->w,&boundingShaped, &xws, &yws, &wws,
+			   &hws,&clipShaped, &xbs, &ybs, &wbs, &hbs))
+    {
+      Tmp_win->wShaped = boundingShaped;
+    }
+    else
+    {
+      Tmp_win->wShaped = 0;
+    }
   }
 #endif /* SHAPE */
 

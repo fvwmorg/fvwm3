@@ -24,6 +24,8 @@
 static char const rcsid[] =
   "$Id$";
 
+extern char *MyName;
+
 #ifdef SHAPE
 #include <X11/extensions/shape.h>
 #endif
@@ -246,12 +248,30 @@ static ManGeometry *query_geometry (WinManager *man)
   off_x = 0;
   off_y = 0;
   man->theFrame = find_frame_window (man->theWindow, &off_x, &off_y);
-  XGetWindowAttributes (theDisplay, man->theFrame, &frame_attr);
-  g.x = frame_attr.x + off_x + frame_attr.border_width;
-  g.y = frame_attr.y + off_y + frame_attr.border_width;
-  XGetWindowAttributes (theDisplay, man->theWindow, &win_attr);
-  g.width = win_attr.width;
-  g.height = win_attr.height;
+  if (XGetWindowAttributes (theDisplay, man->theFrame, &frame_attr))
+  {
+    g.x = frame_attr.x + off_x + frame_attr.border_width;
+    g.y = frame_attr.y + off_y + frame_attr.border_width;
+  }
+  else
+  {
+    g.x = off_x;
+    g.y = off_y;
+    fprintf(stderr, "%s: query_geometry: failed to get frame attributes.\n",
+	    MyName);
+  }
+  if (XGetWindowAttributes (theDisplay, man->theWindow, &win_attr))
+  {
+    g.width = win_attr.width;
+    g.height = win_attr.height;
+  }
+  else
+  {
+    g.width = 1;
+    g.height = 1;
+    fprintf(stderr, "%s: query_geometry: failed to get window attributes.\n",
+	    MyName);
+  }
 
   return &g;
 }

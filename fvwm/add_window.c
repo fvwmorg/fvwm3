@@ -189,9 +189,15 @@ void setup_window_name(FvwmWindow *tmp_win)
           if (list)
             XFreeStringList(list);
           XFree(text_prop.value); /* return of XGetWMName() */
-          XGetWMName(dpy, tmp_win->w, &text_prop); /* XXX: read again ? */
-          tmp_win->name = (char *)text_prop.value;
-          tmp_win->name_list = NULL;
+	  if (XGetWMName(dpy, tmp_win->w, &text_prop))
+	  {
+	    tmp_win->name = (char *)text_prop.value;
+	    tmp_win->name_list = NULL;
+	  }
+	  else
+	  {
+	    tmp_win->name = NoName;
+	  }
         }
       }
     }
@@ -384,21 +390,20 @@ void setup_style_and_decor(
   memcpy(&(FW_COMMON_FLAGS(tmp_win)), &(pstyle->flags.common),
          sizeof(common_flags_type));
 #ifdef SHAPE
+  tmp_win->wShaped = 0;
   if (ShapesSupported)
   {
     int xws, yws, xbs, ybs;
     unsigned wws, hws, wbs, hbs;
     int boundingShaped, clipShaped;
 
-    XShapeSelectInput (dpy, tmp_win->w, ShapeNotifyMask);
-    XShapeQueryExtents (dpy, tmp_win->w,
-			&boundingShaped, &xws, &yws, &wws, &hws,
-			&clipShaped, &xbs, &ybs, &wbs, &hbs);
-    tmp_win->wShaped = boundingShaped;
-  }
-  else
-  {
-    tmp_win->wShaped = None;
+    XShapeSelectInput(dpy, tmp_win->w, ShapeNotifyMask);
+    if (XShapeQueryExtents(
+      dpy, tmp_win->w, &boundingShaped, &xws, &yws, &wws, &hws,
+      &clipShaped, &xbs, &ybs, &wbs, &hbs))
+    {
+      tmp_win->wShaped = boundingShaped;
+    }
   }
 #endif /* SHAPE */
 
@@ -1484,37 +1489,37 @@ void FetchWmProtocols (FvwmWindow *tmp)
   /* First, try the Xlib function to read the protocols.
    * This is what Twm uses. */
   if (XGetWMProtocols (dpy, tmp->w, &protocols, &n))
+  {
+    for (i = 0, ap = protocols; i < n; i++, ap++)
     {
-      for (i = 0, ap = protocols; i < n; i++, ap++)
-	{
-	  if (*ap == (Atom)_XA_WM_TAKE_FOCUS)
-	    SET_WM_TAKES_FOCUS(tmp, 1);
-	  if (*ap == (Atom)_XA_WM_DELETE_WINDOW)
-	    SET_WM_DELETES_WINDOW(tmp, 1);
-	}
+      if (*ap == (Atom)_XA_WM_TAKE_FOCUS)
+	SET_WM_TAKES_FOCUS(tmp, 1);
+      if (*ap == (Atom)_XA_WM_DELETE_WINDOW)
+	SET_WM_DELETES_WINDOW(tmp, 1);
+    }
+    if (protocols)
+      XFree((char *)protocols);
+  }
+  else
+  {
+    /* Next, read it the hard way. mosaic from Coreldraw needs to
+     * be read in this way. */
+    if ((XGetWindowProperty(dpy, tmp->w, _XA_WM_PROTOCOLS, 0L, 10L, False,
+			    _XA_WM_PROTOCOLS, &atype, &aformat, &nitems,
+			    &bytes_remain,
+			    (unsigned char **)&protocols))==Success)
+    {
+      for (i = 0, ap = protocols; i < nitems; i++, ap++)
+      {
+	if (*ap == (Atom)_XA_WM_TAKE_FOCUS)
+	  SET_WM_TAKES_FOCUS(tmp, 1);
+	if (*ap == (Atom)_XA_WM_DELETE_WINDOW)
+	  SET_WM_DELETES_WINDOW(tmp, 1);
+      }
       if (protocols)
 	XFree((char *)protocols);
     }
-  else
-    {
-      /* Next, read it the hard way. mosaic from Coreldraw needs to
-       * be read in this way. */
-      if ((XGetWindowProperty(dpy, tmp->w, _XA_WM_PROTOCOLS, 0L, 10L, False,
-			      _XA_WM_PROTOCOLS, &atype, &aformat, &nitems,
-			      &bytes_remain,
-			      (unsigned char **)&protocols))==Success)
-	{
-	  for (i = 0, ap = protocols; i < nitems; i++, ap++)
-	    {
-	      if (*ap == (Atom)_XA_WM_TAKE_FOCUS)
-		SET_WM_TAKES_FOCUS(tmp, 1);
-	      if (*ap == (Atom)_XA_WM_DELETE_WINDOW)
-		SET_WM_DELETES_WINDOW(tmp, 1);
-	    }
-	  if (protocols)
-	    XFree((char *)protocols);
-	}
-    }
+  }
   return;
 }
 
@@ -1534,10 +1539,18 @@ void GetWindowSizeHints(FvwmWindow *tmp)
 {
   long supplied = 0;
   char *broken_cause ="";
+  XSizeHints orig_hints;
 
   if (HAS_OVERRIDE_SIZE_HINTS(tmp) ||
-      !XGetWMNormalHints (dpy, tmp->w, &tmp->hints, &supplied))
+      !XGetWMNormalHints(dpy, tmp->w, &tmp->hints, &supplied))
+  {
     tmp->hints.flags = 0;
+    memset(&orig_hints, 0, sizeof(orig_hints));
+  }
+  else
+  {
+    memcpy(&orig_hints, &tmp->hints, sizeof(orig_hints));
+  }
 
   /* Beat up our copy of the hints, so that all important field are
    * filled in! */
@@ -1760,11 +1773,10 @@ void GetWindowSizeHints(FvwmWindow *tmp)
 
   if (*broken_cause != 0)
   {
-    XSizeHints orig_hints;
-    XGetWMNormalHints (dpy, tmp->w, &orig_hints, &supplied);
     fvwm_msg(WARN, "GetWindowSizeHints",
 	     "%s window %#lx has broken (%s) size hints\n"
 	     "Please report this to fvwm-workers@fvwm.org\n"
+	     "hint override = %d\n"
 	     "flags = %lx\n"
 	     "min_width = %d, min_height = %d, "
 	     "max_width = %d, max_height = %d\n"
@@ -1773,6 +1785,7 @@ void GetWindowSizeHints(FvwmWindow *tmp)
 	     "base_width = %d, base_height = %d\n"
 	     "win_gravity = %d\n",
 	     tmp->name, tmp->w, broken_cause,
+	     HAS_OVERRIDE_SIZE_HINTS(tmp),
 	     orig_hints.flags,
 	     orig_hints.min_width, orig_hints.min_height,
 	     orig_hints.max_width, orig_hints.max_height,

@@ -396,7 +396,7 @@ void OpenWindow (void)
   IndicNorm->flags=PSize|PMinSize|PMaxSize|PBaseSize|PPosition;
  }
  else
-  IndicNorm->flags=PSize|PMinSize|PMaxSize|PBaseSize;
+   IndicNorm->flags=PSize|PMinSize|PMaxSize|PBaseSize;
  IndicNorm->width=x11base->size.width;
  IndicNorm->height=x11base->size.height;
  IndicNorm->min_width=x11base->size.width;
@@ -539,7 +539,7 @@ void BuildGUI(int IsFather)
 	   (*tabobj)[i].shadcolor==NULL && (*tabobj)[i].hilicolor==NULL)
     tabxobj[i]->colorset=x11base->colorset;
   else tabxobj[i]->colorset=-1;
-  
+
 
   ChooseFunction(tabxobj[i],(*tabobj)[i].type);
   tabxobj[i]->gc=x11base->gc;

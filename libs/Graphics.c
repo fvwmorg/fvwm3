@@ -508,7 +508,11 @@ Bool CalculateGradientDimensions(
   /* get the best tile size (once) */
   if (!best_width)
   {
-    XQueryBestTile(dpy, d, 1, 1, &best_width, &best_height);
+    if (!XQueryBestTile(dpy, d, 1, 1, &best_width, &best_height))
+    {
+      best_width = 0;
+      best_height = 0;
+    }
     /* this is needed for buggy X servers like XFree 3.3.3.1 */
     if (!best_width)
       best_width = 1;

@@ -530,9 +530,21 @@ void initialize_pager(void)
     XmbTextListToTextProperty(dpy,&pager_name,1,XStdICCTextStyle,&name);
 #else
   if((desk1==desk2)&&(Desks[0].label != NULL))
-    XStringListToTextProperty(&Desks[0].label,1,&name);
+  {
+    if (!XStringListToTextProperty(&Desks[0].label,1,&name))
+    {
+      fprintf(stderr,"%s: fatal error: cannot allocate desk name",MyName);
+      exit(0);
+    }
+  }
   else
-    XStringListToTextProperty(&pager_name,1,&name);
+  {
+    if (!XStringListToTextProperty(&pager_name,1,&name))
+    {
+      fprintf(stderr,"%s: fatal error: cannot allocate pager name",MyName);
+      exit(0);
+    }
+  }
 #endif
 
   attributes.event_mask = (StructureNotifyMask| ExposureMask);
@@ -1207,9 +1219,11 @@ void ReConfigure(void)
   unsigned border_width, depth;
   int n,m,w,h,n1,m1,x,y,i,j,k;
 
-  XGetGeometry(dpy,Scr.Pager_w,&root,&x,&y,
-	       (unsigned *)&window_w,(unsigned *)&window_h,
-	       &border_width,&depth);
+  if (!XGetGeometry(dpy, Scr.Pager_w, &root, &x, &y, (unsigned *)&window_w,
+		    (unsigned *)&window_h, &border_width,&depth))
+  {
+    return;
+  }
 
   n1 = Scr.Vx / Scr.MyDisplayWidth;
   m1 = Scr.Vy / Scr.MyDisplayHeight;

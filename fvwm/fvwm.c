@@ -1515,7 +1515,11 @@ static void InitVariables(void)
 
   init_stack_and_layers();
 
-  XGetWindowAttributes(dpy,Scr.Root,&(Scr.FvwmRoot.attr));
+  if (!XGetWindowAttributes(dpy,Scr.Root,&(Scr.FvwmRoot.attr)))
+  {
+    fvwm_msg(ERR, "InitVariables", "Could not get root window attributes");
+    exit(0);
+  }
   Scr.root_pushes = 0;
   Scr.fvwm_pushes = 0;
   Scr.pushed_window = &Scr.FvwmRoot;
