@@ -1,5 +1,16 @@
 1998-12-27  Dominik Vogt  <dominik_vogt@hp.com>
 
+	* libs/Parse.c (SkipQuote): fixed coredump (random return value)
+
+1998-12-27  Dominik Vogt  <dominik_vogt@hp.com>
+
+	* configure.in: Changed version to 2.1.7.
+	* NEWS: Ditto.
+
+	* Released fvwm 2.1.6 beta (CVS tag version-2_1_6).
+
+1998-12-27  Dominik Vogt  <dominik_vogt@hp.com>
+
 	* BUGS: updated for 2.1.6
 
 	* fvwm/fvwm2.1: updated manpage for SetMenuStyle (see below)

@@ -1,3 +1,5 @@
+Changes in beta release 2.1.7 (December 1998)
+
 Changes in beta release 2.1.6 (December 1998)
 
 * Recapture is now much faster
@@ -11,6 +13,8 @@ Changes in beta release 2.1.6 (December 1998)
 * Removed SetMenuDelay command.
 
 * Popup menus can have a default action too.
+
+* FvwmButtons quoting cleaned up a bit.
 
 Changes in beta release 2.1.5 (December 1998)
 

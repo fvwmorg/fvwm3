@@ -328,6 +328,10 @@ void SetButtonSize(button_info *ub,int w,int h)
 **/
 void AddButtonAction(button_info *b,int n,char *action)
 {
+  int l;
+  char *s;
+  char *t;
+
   if(!b || n<0 || n>3 || !action)
     {
       fprintf(stderr,"%s: BUG: AddButtonAction failed\n",MyName);
@@ -337,16 +341,41 @@ void AddButtonAction(button_info *b,int n,char *action)
     {
       if(b->action[n])
 	free(b->action[n]);
-      b->action[n]=action;
     }
   else
     {
       int i;
       b->action=(char**)mymalloc(4*sizeof(char*));
       for(i=0;i<4;b->action[i++]=NULL);
-      b->action[n]=action;
       b->flags|=b_Action;
     }
+
+  while (*action && isspace(*action))
+    action++;
+  l = strlen(action);
+  if (l > 1)
+    {
+      switch (action[0])
+      {
+      case '\"':
+      case '\'':
+      case '`':
+	s = SkipQuote(action, NULL, "", "");
+	/* Strip outer quotes */
+	if (*s == 0)
+	  {
+	    action++;
+	    l -= 2;
+	  }
+	break;
+      default:
+	break;
+      }
+    }
+  t = (char *)mymalloc(l + 1);
+  memmove(t, action, l);
+  t[l] = 0;
+  b->action[n] = t;
 }
 
 /**
@@ -797,7 +826,7 @@ void Loop(void)
 	    RedrawButton(b,0);
 	    if(strncasecmp(act,"popup",5)!=0)
 	    {
-	      if (strncasecmp(act, "panel", 5) == 0)
+	      if (strncasecmp(act, "panel-", 6) == 0)
                 Slide(seekpanel(b), b);
 	      break;
             }
@@ -825,7 +854,8 @@ void Loop(void)
 		if(strncasecmp(act,"Exec",4)==0)
 		  {
 		    /* close current subpanel */
-		    if (PanelIndex != MainPanel) Slide(PanelIndex, NULL);
+		    if (PanelIndex != MainPanel)
+		      Slide(PanelIndex, NULL);
 
 		    /* Look for Exec "identifier", in which case the button
 		       stays down until window "identifier" materializes */
@@ -1829,29 +1859,33 @@ void Slide (panel_info *p, button_info *b)
                            (ushort*)&iw, (ushort*)&ih,
                            (ushort*)&BW, (ushort*)&depth);
 
-    if (direction  == 'l')
+    switch (direction)
     {
+    case 'l':
       c = iw / PanelPopUpStep;
       xstep = wstep = PanelPopUpStep;
       ystep = hstep = 0;
-    }
-    else if (direction == 'r')
-    {
+      break;
+    case 'r':
       c = iw / PanelPopUpStep;
       wstep = PanelPopUpStep;
       xstep = ystep = hstep = 0;
-                                 }
-    else if (direction == 'd')
-    {
+      break;
+    case 'd':
       c = ih / PanelPopUpStep;
       hstep = PanelPopUpStep;
       xstep = ystep = wstep = 0;
-    }
-    else
-    {
+      break;
+    case 'g':
+      /* just pop down without animation */
+      c = 0;
+      break;
+    case 'u':
+    default:
       c = ih / PanelPopUpStep;
       ystep = hstep = PanelPopUpStep;
       xstep = wstep = 0;
+      break;
     }
 
     for (i = 1; i < c; i++)
@@ -1886,8 +1920,14 @@ void Slide (panel_info *p, button_info *b)
     c = 0;
 
     /* initial position and size */
-    if (direction == 'l')
+    switch (direction)
     {
+    case 'g':
+      /* just pop up without animation */
+      c = 0;
+      break;
+    case 'l':
+    case 'r':
       h = mh;
       w = mw % PanelPopUpStep;
       if (w == 0)
@@ -1895,27 +1935,24 @@ void Slide (panel_info *p, button_info *b)
 	w = PanelPopUpStep;
 	c--;
       }
-      x -= w;
-      c += mw / PanelPopUpStep;
-      xstep = wstep = PanelPopUpStep;
-      ystep = hstep = 0;
-    }
-    else if (direction == 'r')
-    {
-      h = mh;
-      w = mw % PanelPopUpStep;
-      if (w == 0)
+      if (direction == 'l')
       {
-	w = PanelPopUpStep;
-	c--;
+	x -= w;
+	c += mw / PanelPopUpStep;
+	xstep = wstep = PanelPopUpStep;
+	ystep = hstep = 0;
       }
-      x += b->BWidth * b->parent->c->ButtonWidth;
-      c += mw / PanelPopUpStep;
-      wstep = PanelPopUpStep;
-      xstep = ystep = hstep = 0;
-    }
-    else if (direction == 'd')
-    {
+      else
+      {
+	x += b->BWidth * b->parent->c->ButtonWidth;
+	c += mw / PanelPopUpStep;
+	wstep = PanelPopUpStep;
+	xstep = ystep = hstep = 0;
+      }
+      break;
+    case 'd':
+    case 'u':
+    default:
       w = mw;
       h = mh % PanelPopUpStep;
       if (h == 0)
@@ -1923,27 +1960,25 @@ void Slide (panel_info *p, button_info *b)
 	h = PanelPopUpStep;
 	c--;
       }
-      y += b->BHeight * b->parent->c->ButtonHeight;
-      c += mh / PanelPopUpStep;
-      hstep = PanelPopUpStep;
-      xstep = ystep = wstep = 0;
-    }
-    else
-    {
-      w = mw;
-      h = mh % PanelPopUpStep;
-      if (h == 0)
+      if (direction == 'd')
       {
-	h = PanelPopUpStep;
-	c--;
+	y += b->BHeight * b->parent->c->ButtonHeight;
+	c += mh / PanelPopUpStep;
+	hstep = PanelPopUpStep;
+	xstep = ystep = wstep = 0;
       }
-      y -= h;
-      c += mh / PanelPopUpStep;
-      ystep = hstep = PanelPopUpStep;
-      xstep = wstep = 0;
+      else
+      {
+	y -= h;
+	c += mh / PanelPopUpStep;
+	ystep = hstep = PanelPopUpStep;
+	xstep = wstep = 0;
+      }
+      break;
     }
 
-    XMoveResizeWindow(Dpy, PanelWin, x, y, w, h);
+    if (c > 0)
+      XMoveResizeWindow(Dpy, PanelWin, x, y, w, h);
     XMapSubwindows(Dpy, PanelWin);
     XMapWindow(Dpy, PanelWin);
 

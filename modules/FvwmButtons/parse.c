@@ -436,12 +436,24 @@ void match_string(button_info **uberb,char *s)
 	      if (geom)
 		{
 		  flags=XParseGeometry(geom, &x, &y, &w, &h);
-		  if(flags&WidthValue)  b->BWidth=w;
-		  if(flags&HeightValue) b->BHeight=h;
-		  if(flags&XValue) { b->BPosX=x; b->flags|=b_PosFixed; }
-		  if(flags&YValue) { b->BPosY=y; b->flags|=b_PosFixed; }
-		  if(flags&XNegative) b->BPosX=-1-x;
-		  if(flags&YNegative) b->BPosY=-1-y;
+		  if(flags&WidthValue)
+		    b->BWidth=w;
+		  if(flags&HeightValue)
+		    b->BHeight=h;
+		  if(flags&XValue)
+		    {
+		      b->BPosX=x;
+		      b->flags|=b_PosFixed;
+		    }
+		  if(flags&YValue)
+		    {
+		      b->BPosY=y;
+		      b->flags|=b_PosFixed;
+		    }
+		  if(flags&XNegative)
+		    b->BPosX=-1-x;
+		  if(flags&YNegative)
+		    b->BPosY=-1-y;
 		  free(geom);
 		}
 	      s = trimleft(s);
@@ -621,9 +633,12 @@ void match_string(button_info **uberb,char *s)
 		    s++;
 		  if(*s==')')s++;
 		}
-	      t=seekright(&s);
+	      s = GetQuotedString(s, &t, ",)", NULL, NULL, NULL);
 	      if(t)
-		AddButtonAction(b,i,t);
+		{
+		  AddButtonAction(b,i,t);
+		  free(t);
+		}
 	      else
 		fprintf(stderr,"%s: Missing action argument\n",MyName);
 	      break;
@@ -681,13 +696,21 @@ void match_string(button_info **uberb,char *s)
 		    s++;
 		if(*s==')')
 		  s++;
-		if      (strncasecmp(t,"right",5)==0) t = "panel-r";
-		else if (strncasecmp(t,"left" ,4)==0) t = "panel-l";
-		else if (strncasecmp(t,"down" ,4)==0) t = "panel-d";
-		else                                  t = "panel-u";
+		if      (strncasecmp(t,"right",5)==0)
+		  t = "panel-r";
+		else if (strncasecmp(t,"left" ,4)==0)
+		  t = "panel-l";
+		else if (strncasecmp(t,"down" ,4)==0)
+		  t = "panel-d";
+		else if (strncasecmp(t,"geometry",8)==0)
+		  t = "panel-g";
+		else
+		  t = "panel-u";
 	      }
-	      else t = "panel-u";
-	      AddButtonAction(b, 0, (t)? t : strdup(""));
+	      else
+		t = "panel-u";
+	      AddButtonAction(b, 0, t);
+
 	      b->IconWin = None;
 	      t = seekright(&s);
 	      b->hangon = (t)? t : strdup("");  /* which panel to popup */
@@ -798,7 +821,7 @@ void match_string(button_info **uberb,char *s)
 	}
     }
   else if(*s)
-    AddButtonAction(b,0,strdup(s));
+    AddButtonAction(b,0,s);
   return;
 }
 
@@ -825,12 +848,18 @@ void ParseConfigLine(button_info **ubb,char *s)
 	    flags=XParseGeometry(geom,&g_x,&g_y,&width,&height);
 	    UberButton->w = 0;
 	    UberButton->h = 0;
-	    if(flags&WidthValue) w=width;
-	    if(flags&HeightValue) h=height;
-	    if(flags&XValue)    UberButton->x = g_x;
-	    if(flags&YValue)    UberButton->y = g_y;
-	    if(flags&XNegative) UberButton->w = 1;
-	    if(flags&YNegative) UberButton->h = 1;
+	    if(flags&WidthValue)
+	      w=width;
+	    if(flags&HeightValue)
+	      h=height;
+	    if(flags&XValue)
+	      UberButton->x = g_x;
+	    if(flags&YValue)
+	      UberButton->y = g_y;
+	    if(flags&XNegative)
+	      UberButton->w = 1;
+	    if(flags&YNegative)
+	      UberButton->h = 1;
 	  }
 	break;
       }

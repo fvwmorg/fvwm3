@@ -1,3 +1,12 @@
+1998-12-27  Dominik Vogt  <dominik_vogt@hp.com>
+
+	* FvwmButtons/FvwmButtons.1:
+	* FvwmButtons/FvwmButtons.c (Slide):
+	* FvwmButtons/parse.c (match_string): fix for panel geometry
+	* FvwmButtons/FvwmButtons.c (AddButtonAction):
+	(match_string): Action needs not to be quoted anymore; multiple
+	quoting bugfix
+
 1998-12-22  Dominik Vogt  <dominik_vogt@hp.com>
 
 	* FvwmIconMan/FvwmIconMan.c:

@@ -60,6 +60,7 @@ char *SkipQuote(char *s, const char *qlong, const char *qstart,
 	}
       if(*s == c)
 	s++;
+      return s;
     }
   else if (*qstart && (t = strchr(qstart, *s)))
     {
@@ -91,7 +92,7 @@ char *GetQuotedString(char *sin, char **sout, const char *delims,
     t = SkipQuote(t, qlong, qstart, qend);
   len = t - sin;
   *sout = (char *)safemalloc(len + 1);
-  memcpy(*sout, sin, len * sizeof(char));
+  memcpy(*sout, sin, len);
   (*sout)[len] = 0;
   if (*t)
     t++;

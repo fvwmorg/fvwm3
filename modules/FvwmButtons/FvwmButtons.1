@@ -20,7 +20,7 @@ invoked.
 .SH INITIALIZATION
 During initialization, \fIFvwmButtons\fP will search for a configuration
 file which describes the buttonbox geometry, color, icons, and
-actions. The format of 
+actions. The format of
 this files will be described later. The configuration file will be the
 one which fvwm used during its initialization.
 
@@ -30,7 +30,7 @@ as its name instead (e.g "Module FvwmButtons SomeButtons").
 SomeButtons will then read only the lines in the configuration file
 starting with "*SomeButtons", and not the lines belonging to FvwmButtons.
 
-You can also specify an optional configuration file to use instead of 
+You can also specify an optional configuration file to use instead of
 the default fvwm configuration file, by giving a second argument which
 is a filename. This will override the setting "*FvwmButtonsFile", see
 below.
@@ -94,8 +94,9 @@ given specific orders. This setting
 specifies the default horizontal padding to be \fIwidth\fP pixels, and the
 vertical padding to be \fIheight\fP pixels.
 .IP "*FvwmButtonsPanel \fItitle\fP"
-Specifies the title of a panel. This statement acts as a separator.
-The panel will pop up as specified by the following "*FvwmButtonsGeometry".
+Specifies the title of a panel. All following *FvwmButtons
+configuration commands up to the next *FvwmButtonsPanel line
+refer to the panel.
 .IP "*FvwmButtonsPixmap \fIpixmapfile\fP"
 Specifies a background pixmap to use.  Specify "none" for a transparent
 background.
@@ -118,11 +119,12 @@ thos without them. If two or more buttons are forced to overlap by this,
 FvwmButton exits with an error message.
 .IP "  Action [(\fIoptions\fP)] \fIcommand\fP"
 Specifies an fvwm command to be executed when the button is activated
-by pressing return or a mouse button. If \fIcommand\fP contains whitespace
-it must be quoted. The current options are:
+by pressing return or a mouse button. The \fIcommand\fP needs to be
+quoted if it contains a comma or a closing parenthesis. The current
+options are:
 
 Mouse \fIn\fP - this action is only executed for mouse button \fIn\fP.
-One actions can be defined for each mouse button, in addition to the 
+One actions can be defined for each mouse button, in addition to the
 general action.
 .IP "  Back \fIcolor\fP"
 Specifies the background color to be used drawing this box. A relief color
@@ -154,7 +156,7 @@ Typically you will want to at least give the container a size setting
 
 .IP "  End"
 Specifies that no more buttons are defined for the current container, and
-further buttons will be put in the container's parent. This option should 
+further buttons will be put in the container's parent. This option should
 be given on a line by itself, i.e
 
   *FvwmButtons(End)
@@ -164,13 +166,13 @@ Specifies that the font \fIfontname\fP is to be used for labeling this button.
 Specifies a color of the title and monochrome icons in this button.
 .IP "  Frame \fIwidth\fP"
 The relief of the button will be \fIwidth\fP pixels wide. If \fIwidth\fP
-is given as a negative number, the 
+is given as a negative number, the
 relief will at all times be the inverse of the normal relief.
 In effect, you will get a sunken button, which is raised when activated.
 .IP "  Icon \fIfilename\fP"
 The name of an X11 bitmap file or XPM color icon file, containing the
 icon to display on the button. FvwmButtons will search through the path
-specified in the fvwm IconPath or PixmapPath 
+specified in the fvwm IconPath or PixmapPath
 configuration items to find the icon file.
 .IP "  Left"
 The contents of the button will be aligned to the left. The default is to
@@ -182,15 +184,19 @@ that gets just a couple of pixels to large to keep in line, and therefor
 blows up your whole buttonbox. "NoSize" is equivalent to "Size 0 0".
 .IP "  Padding \fIwidth height\fP"
 The amount of free space between the relief of the button and its contents
-is normally 2 pixels to the sides and 4 pixels above and below, except 
-for swallowed windows and containers, which are by default not padded at all. 
+is normally 2 pixels to the sides and 4 pixels above and below, except
+for swallowed windows and containers, which are by default not padded at all.
 This option sets the horizontal padding to \fIwidth\fP and the vertical
 padding to \fIheight\fP.
-.IP "  Panel (\fIdirection\fP) \fItitle\fP"
-Pop up a menu at the position specified by *FvwmButtonsGeometry with respect
-to the upper left corner of the button if direction is up (default) or left,
-the lower left corner if down, and the upper right corner if right. The panel
-is a button bar itself. Its style is specified by "FvwmButtonsPanel".
+.IP "  Panel [ (\fIdirection\fP) ] \fIname\fP"
+Pop up a panel in the specified \fIdirection\fP from the
+invoking button. A position set with *FvwmButtonsGeometry is taken
+as a relative offset to this position. \fIdirection\fP may be
+"up" (the default), "left", "down" od "right". The panel is a
+button bar itself. See \fIFvwmButtonsPanel\fP. To get the panel
+at a specific place on the screen use "geometry" in place of the
+direction. The *FvwmButtonsGeometry line will then be treated as
+a normal X geometry specification.
 .IP "  Right"
 The contents of the button will be aligned to the Right. The default is to
 center the contents on the button.
@@ -209,7 +215,7 @@ An example:
 
   *FvwmButtons(Swallow XClock 'Exec xclock &')
 
-will take the first window whose name, class or resource is "XClock" and 
+will take the first window whose name, class or resource is "XClock" and
 display it in the button. Modules can be swallowed by specifying
 the module instead of 'Exec whatever', like:
 
@@ -218,9 +224,9 @@ the module instead of 'Exec whatever', like:
 The flags that can be given to swallow are:
 
 NoClose / Close -
-Specifies whether the swallowed program in this button will be unswallowed 
+Specifies whether the swallowed program in this button will be unswallowed
 or closed when FvwmButtons exit cleanly. "NoClose" can be combined with
-"UseOld" to have windows survive restart of windowmanager. The default 
+"UseOld" to have windows survive restart of windowmanager. The default
 setting is "Close".
 
 NoHints / Hints -
@@ -228,7 +234,7 @@ Specifies whether hints from the swallowed program in this
 button will be ignored or not, useful in forcing a window to resize itself
 to fit its button. The default value is "Hints".
 
-NoKill / Kill - 
+NoKill / Kill -
 Specifies whether the swallowed program will be closed by killing it or by
 sending a message to it. This can be useful in ending programs that
 doesn't accept window manager protocol. The default value is "NoKill".
@@ -237,7 +243,7 @@ This has no effect if "NoClose" is specified.
 NoRespawn / Respawn -
 Specifies whether the swallowed program is to be respawn if it dies.
 If "Respawn" is specified, the program will be respawned using the original
-\fIcommand\fP. Use this option with care, the program might have a very 
+\fIcommand\fP. Use this option with care, the program might have a very
 legitimate reason to die.
 
 NoOld / UseOld -
@@ -261,7 +267,7 @@ window's title or not. If "UseTitle" is given, the title on the button will
 change dynamically to reflect the window name. The default is "NoTitle".
 
 .IP "  Title [(\fIoptions\fP)] \fIname\fP"
-Specifies the title which will be written on the button. 
+Specifies the title which will be written on the button.
 Whitespace can be included in the title by quoting it.
 If a title at any time is to long for
 its buttons, characters are chopped of one at a time until it fits.
@@ -280,17 +286,17 @@ any icon or swallowed window, instead of below it which is the default.
 If you use small icons, and combine this with the "Left" option, you can
 get a look similar to fvwm's menus.
 .IP "Legacy fields [\fItitle icon command\fP]"
-These fields are kept for compatibility with previous versions of 
+These fields are kept for compatibility with previous versions of
 FvwmButtons, and their use is discouraged.
-The \fItitle\fP field is similar to the option 
+The \fItitle\fP field is similar to the option
 Title \fIname\fP. If the title field is "-", no title will be displayed.
-The \fIicon\fP field is similar to the option 
+The \fIicon\fP field is similar to the option
 Icon \fIfilename\fP. If the icon field is "-" no icon will be displayed.
 The \fIcommand\fP field is similar to the option
 Action \fIcommand\fP or alternatively Swallow "\fIhangon\fP" \fIcommand\fP.
 .IP "The \fIcommand\fP"
 Any fvwm command is recognized by FvwmButtons. See fvwm(1) for more info
-on this. The Exec command has a small extension when used in Actions, 
+on this. The Exec command has a small extension when used in Actions,
 its syntax is here:
 
   Exec ["hangon"] command
@@ -304,9 +310,12 @@ contains no characters, then the button will pop out immediately.
 Note that users can continue pressing the button, and re-executing the
 command, even when it looks "pressed in."
 .IP "Quoting"
-Any string which contains whitespace must be quoted. This include
-commands.
-Quoting can be done with any of the three quotation characters; 
+Any string which contains whitespace must be quoted. Contrary to
+earlier versions commands no longer need to be quoted. In this
+case any quoting character will be passed on to the application
+untouched. Only commas ',' and closing parentheses ')' have to
+be quoted inside a command.
+Quoting can be done with any of the three quotation characters;
 single quote:
 
   'This is a "quote"',
@@ -315,9 +324,9 @@ double quote:
 
   "It's another `quote'",
 
-and backquote: 
+and backquote:
 
-  `This is a strange quote`. 
+  `This is a strange quote`.
 
 The backquoting is purposeful
 if you use a preprocessor like FvwmCpp and want it to get into your
@@ -325,6 +334,9 @@ commands, like this:
 
   #define BG gray60
   *FvwmButtons(Swallow "xload" `Exec xload -bg BG &`)
+
+Furthermore a single character can be quoted with a preceding
+backslash '\'.
 
 .SH ARRANGEMENT ALGORITHM
 
@@ -364,7 +376,7 @@ Additional rows are added below the bottom line of buttons until all buttons
 are placed if necessary if the BoxSize option \fIsmart\fP is used.
 .IP "Containers"
 Containers are arranged by the same algorithm, in fact they are shuffled
-recursively as the algorithm finds them. 
+recursively as the algorithm finds them.
 .IP "Clarifying example"
 An example might be useful here: Suppose you have 6 buttons, all unit sized
 except number two, which is 2x2. This makes for 5 times 1 plus 1 times 4
@@ -392,8 +404,8 @@ equals 9 unit buttons total area. Assume you have requested 3 columns.
 When FvwmButtons has read the icons and fonts that are required by its
 configuration, it can find out which size is needed for every non-swallowing
 button. The unit button size of a container is set to be large enough to
-hold the largest button in it without squeezing it. Swallowed windows 
-are simply expected to be comfortable with the buttonsize they get 
+hold the largest button in it without squeezing it. Swallowed windows
+are simply expected to be comfortable with the buttonsize they get
 from this scheme. If a particular configuration requires more space
 for a swallowed window, it can be set in that button's configuration line
 using the option "Size \fIwidth height\fP". This will tell FvwmButtons
@@ -407,7 +419,7 @@ initialization commands:
 .nf
 .sp
 ##########################################################
-# Load any modules which should be started during fvwm 
+# Load any modules which should be started during fvwm
 # initialization
 
 ModulePath /usr/lib/X11/fvwm:/usr/bin/X11
@@ -416,7 +428,7 @@ ModulePath /usr/lib/X11/fvwm:/usr/bin/X11
 AddToFunc InitFunction     "I" Module FvwmButtons
 AddToFunc RestartFunction  "I" Module FvwmButtons
 
-# Make it titlebar-less, sticky, and give it an icon	
+# Make it titlebar-less, sticky, and give it an icon
 Style "FvwmButtons"	Icon toolbox.xpm, NoTitle, Sticky
 
 # Make the menu/panel look like CDE
@@ -470,8 +482,8 @@ is used, the Pager will be as big as possible within the button's relief.
 
 The final line is even more magic. Note the combination of \fIUseOld\fP
 and \fINoKill\fP, which will try to swallow an existing window with the
-name "xload15" when starting up (if failing: starting one with the 
-specified command), which is unswallowed when ending FvwmButtons. 
+name "xload15" when starting up (if failing: starting one with the
+specified command), which is unswallowed when ending FvwmButtons.
 
 The other panels are specified after the root panel:
 
@@ -482,7 +494,7 @@ The other panels are specified after the root panel:
 *FvwmButtonsBack bisque2
 *FvwmButtonsGeometry -3-3
 *FvwmButtonsColumns 1
- 
+
 *FvwmButtons(Title Resize,Icon resize.xpm ,Action Resize)
 *FvwmButtons(Title Move  ,Icon arrows2.xpm,Action Move  )
 *FvwmButtons(Title Lower ,Icon Down       ,Action Lower )
@@ -493,13 +505,11 @@ The other panels are specified after the root panel:
 *FvwmButtonsBack bisque2
 *FvwmButtonsGeometry -1-1
 *FvwmButtonsColumns 1
- 
+
 *FvwmButtons(Title Kill  ,Icon bomb.xpm   ,Action Destroy)
 .sp
 .fi
 
-The color specification \fIrgb:90/80/90\fP is actually the most
-correct way of specifying independent colors in X, and should be
 The color specification \fIrgb:90/80/90\fP is actually the most
 correct way of specifying independent colors in X, and should be
 used instead of the older \fI#908090\fP. If the latter specification
@@ -514,7 +524,7 @@ this without geometry specs for the buttons:
 .sp
 ##########################################################
 
-# Make it titlebar-less, sticky, and give it an icon	
+# Make it titlebar-less, sticky, and give it an icon
 Style "FvwmButtons"	Icon toolbox.xpm, NoTitle, Sticky
 
 *FvwmButtonsFont        5x7
@@ -569,7 +579,7 @@ the Window Manager, are all original work by Robert Nation
 Copyright 1993, Robert Nation. No guarantees or warranties or anything
 are provided or implied in any way whatsoever. Use this program at your
 own risk. Permission to use this program for any purpose is given,
-as long as the copyright is kept intact. 
+as long as the copyright is kept intact.
 
 Further modifications and patching by Jarl Totland, copyright 1996.
 The statement above still applies.
