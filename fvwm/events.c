@@ -1424,7 +1424,7 @@ void HandleButtonPress(void)
 
   OldPressedW = PressedW;
   PressedW = None;
-  if (ButtonWindow)
+  if (ButtonWindow && check_if_fvwm_window_exists(ButtonWindow))
   {
     if (LocalContext == C_TITLE)
       DrawDecorations(
@@ -1436,8 +1436,8 @@ void HandleButtonPress(void)
     else
       DrawDecorations(
         ButtonWindow, DRAW_FRAME, (Scr.Hilite == ButtonWindow),
-        (HAS_DEPRESSABLE_BORDER(Tmp_win) && HAS_BORDER(Tmp_win)),
-        (Tmp_win) ? Tmp_win->decor_w : 0);
+        (HAS_DEPRESSABLE_BORDER(ButtonWindow) && HAS_BORDER(ButtonWindow)),
+        (ButtonWindow) ? ButtonWindow->decor_w : 0);
   }
   ButtonWindow = NULL;
 }

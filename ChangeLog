@@ -1,5 +1,8 @@
 1999-11-16  Dominik Vogt  <dominik.vogt@gmx.de>
 
+	* fvwm/events.c (HandleButtonPress):
+	fixed coredumps
+
 	* fvem/*.[ch]:
 	* fvwm/borders.c (RedrawBorder):
 	(RedrawButtons):
