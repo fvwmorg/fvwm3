@@ -22,6 +22,7 @@
 #include <libs/vpacket.h>
 
 struct icon_info;
+void MySendFvwmPipe(int *fd, char *message, unsigned long window);
 Bool ExecIconBoxFunction(char *msg);
 extern void   CreateWindow(void);
 extern Pixel  GetColor(char *name);

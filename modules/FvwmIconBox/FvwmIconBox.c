@@ -1358,14 +1358,45 @@ void GetIconwinSize(int *dx, int *dy)
   *dy = icon_win_height - *dy;
 }
 
-/************************************************************************
- * nocolor
- * 	Original work from GoodStuff:
- *		Copyright 1993, Robert Nation.
- ***********************************************************************/
 void nocolor(char *a, char *b)
 {
  fprintf(stderr,"%s: can't %s %s\n", MyName, a,b);
+}
+
+void MySendFvwmPipe(int *fd, char *message, unsigned long window)
+{
+  int w;
+  char *hold, *temp, *temp_msg;
+  hold = message;
+
+  while (1)
+  {
+    temp = strchr(hold, ',');
+    if (temp != NULL)
+    {
+      temp_msg = malloc(temp - hold + 1);
+      strncpy(temp_msg, hold, temp - hold);
+      temp_msg[temp - hold]='\0';
+      hold = temp + 1;
+    }
+    else temp_msg = hold;
+
+    if (!ExecIconBoxFunction(temp_msg))
+    {
+      write(fd[0], &window, sizeof(unsigned long));
+
+      w=strlen(temp_msg);
+      write(fd[0], &w, sizeof(int));
+      write(fd[0], temp_msg, w);
+
+      /* keep going */
+
+      w = 1;
+      write(fd[0], &w, sizeof(int));
+    }
+    if (temp_msg != hold) free(temp_msg);
+    else break;
+  }
 }
 
 Bool ExecIconBoxFunction(char *msg)
@@ -1846,7 +1877,7 @@ void parsemouse(char *tline)
   end = tline;
   while((!isspace((unsigned char)*end))&&(*end!='\n')&&(*end!=0))
     end++;
-  n = scanf(start, "%d", &b);
+  n = sscanf(start, "%d", &b);
   if (n > 0 && b >= 0 && b <= NUMBER_OF_MOUSE_BUTTONS)
     f->mouse = b;
   else
@@ -2812,7 +2843,7 @@ void ExecuteAction(int x, int y, struct icon_info *item)
     if ((tmp->mouse == d.xbutton.button || tmp->mouse == 0) &&
 	tmp->type == type)
     {
-      SendFvwmPipe(fd, tmp->action, item->id);
+      MySendFvwmPipe(fd, tmp->action, item->id);
       return;
     }
     tmp = tmp->next;
@@ -2833,7 +2864,7 @@ void ExecuteKey(XEvent event)
     XKeysymToKeycode(dpy,XKeycodeToKeysym(dpy,event.xkey.keycode,0));
   while (tmp != NULL){
     if (tmp->keycode == event.xkey.keycode){
-      SendFvwmPipe(fd, tmp->action, item->id);
+      MySendFvwmPipe(fd, tmp->action, item->id);
       return;
     }
     tmp = tmp->next;

@@ -8,6 +8,10 @@
 	use script alias names FvwmScript-Flavor instead of ScriptFvwmFlavor;
 	added missing FvwmScript-WidgetDemo to the distribution
 
+	* FvwmIconBox.[ch]:
+	fixed fvwm freeze - s/scanf/sscanf/,
+	fixed internal commands (Next, Left) by restoring [My]SendFvwmPipe()
+
 2000-11-08  Mikhael Goikhman  <migo@homemail.com>
 
 	* FvwmForm/FormFvwm-*:
