@@ -1,3 +1,7 @@
+Sat Feb 27 11:19:51 1999  Steve Robbins  <steve@nyongwa.montreal.qc.ca>
+
+	* DEVELOPERS: document "autoreconf" step upon initial checkout.
+
 1999-02-26  Steven Michael ROBBINS  <stever@jeff.cs.mcgill.ca>
 
 	* cvs.html: 
