@@ -1,3 +1,9 @@
+Sat Apr  3 15:12:50 1999  Steve Robbins  <steve@nyongwa.montreal.qc.ca>
+
+	* FvwmAnimate/ChangeLog:
+	* FvwmEvent/ChangeLog: removed erroneously-created files.  
+	Entries folded into this ChangeLog.
+
 Sat Apr  3 14:34:28 1999  Steve Robbins  <steve@nyongwa.montreal.qc.ca>
 
 	* FvwmScript/scanner.l: define YY_NO_UNPUT to suppress defining
@@ -52,11 +58,17 @@ Sat Apr  3 14:34:28 1999  Steve Robbins  <steve@nyongwa.montreal.qc.ca>
 
 Sat Apr  3 11:52:29 1999  Steve Robbins  <steve@nyongwa.montreal.qc.ca>
 
+	* FvwmEvent/FvwmEvent.c (config): use GetNextOption() rather than
+	GetArgument()
+
 	* FvwmGtk/FvwmGtk.c (parse_arguments): use GetNextOption() rather
 	than GetArgument().
 
 	* FvwmPager/FvwmPager.c (ParseOptions): change GetArgument() to
 	SkipNTokens().
+
+	* FvwmAnimate/FvwmAnimate.c(ParseConfigLine): use GetNextOption
+	rather than GetArgument; remove include of ModParse.h.
 
 1999-04-01  Andi Karrer <karrer@iis.ee.ethz.ch>
 
@@ -500,7 +512,16 @@ Thu Mar  4 00:39:15 1999  Steve Robbins  <steve@nyongwa.montreal.qc.ca>
 	having different backgrounds on different desks work in icon mode
 	as well. Introduced machinery for disabling hilight in icon mode.
 
+1999-03-02  Dan Espen  <dane@mk.bellcore.com>
+
+	* FvwmAnimate/FvwmAnimate.c: Remove fonts and colors from
+	customization form.  These can now be set globally by FvwmForm.
+	Second try, removed another color spec.
+
 1999-03-02  Steven Michael ROBBINS  <stever@hojpoj.cs.mcgill.ca>
+
+	* FvwmEvent/FvwmEvent.c: Finished the removal of Parse.c and
+	Parse.h from FvwmEvent.
 
 	* FvwmWinList/FvwmWinList.c (RedrawWindow): add XFlush() call in
 	RedrawWindow(), for VMS port.  Ifdef this if it causes problems.
@@ -524,6 +545,11 @@ Thu Mar  4 00:39:15 1999  Steve Robbins  <steve@nyongwa.montreal.qc.ca>
 	FVWM_CONFIGDIR, which may be different from sysconfdir.  Also,
 	the data files need to be explicitly listed for EXTRA_DIST.
 
+1999-02-28  Matthias Clasen  <clasen@mathematik.uni-freiburg.de>
+
+	* FvwmEvent/Makefile.am (FvwmEvent_SOURCES: Remove Parse.c and
+	Parse.h, use the corresponding functions from libs/ModParse.c.
+	
 Sun Feb 28 11:49:24 1999  Steve Robbins  <steve@nyongwa.montreal.qc.ca>
 
 	* FvwmWinList/ButtonArray.h:
@@ -649,6 +675,11 @@ Sat Feb 27 11:55:27 1999  DanEspen  <dje@blue>
 	* FvwmIconBox/FvwmIconBox.c (RelieveWindow):
 	* FvwmIconBox/FvwmIconBox.h: removed inline from declaration of
 	RelieveWindow
+
+1999-01-25  Steven Michael ROBBINS  <stever@bongo.cs.mcgill.ca>
+
+	* FvwmAnimate/FvwmAnimate.c: Include config.h first.  Remove
+	include of <strings.h> as not all systems have this.
 
 1999-01-22  Paul D. Smith  <psmith@gnu.org>
 
@@ -799,6 +830,12 @@ Sat Jan  9 08:52:19 1999  Steve Robbins  <steve@nyongwa.montreal.qc.ca>
 
 1999-01-08  Paul D. Smith  <psmith@gnu.org>
 
+	* FvwmEvent/FvwmEvent.c (main): Remove USE_POSIX/USE_BSD stuff and
+	rely on HAVE_SIGACTION to choose between new- and old-style signal
+	handling.
+	(TerminateHandler): Use the autoconf'd return type for signal
+	handlers.
+
 	* FvwmPager/FvwmPager.c (main): Remove USE_POSIX/USE_BSD stuff;
 	use HAVE_SIGACTION etc. to choose between new- and old-style
 	signal handling.
@@ -883,6 +920,8 @@ Sun Jan  3 14:07:43 1999  Steve Robbins  <steve@nyongwa.montreal.qc.ca>
 	b->icon_file[1]
 
 1998-12-17  Dominik Vogt  <dominik_vogt@hp.com>
+
+	* FvwmEvent/Parse.c (PeekArgument): malloc -> safemalloc
 
 	* FvwmPager/FvwmEvent.c:
 	* FvwmPager/FvwmPager.c:
@@ -1014,6 +1053,13 @@ Sun Jan  3 14:07:43 1999  Steve Robbins  <steve@nyongwa.montreal.qc.ca>
 	* FvwmCpp/FvwmCpp.1: Don't use multi-word values with .IP.  Use .TP.
 	* FvwmM4/FvwmM4.1: Ditto.
 
+1998-11-24  Paul D. Smith  <psmith@gnu.org>
+
+	* FvwmEvent/Parse.h (LFindToken): Remove this macro.  It's not
+	used, and it uses a non-standard function lfind().  Best to not
+	use it at all.
+	(search.h): Removed #include.
+
 1998-11-24  Dominik Vogt  <dominik_vogt@hp.com>
 
 	* FvwmButtons/TODO: updated
@@ -1057,11 +1103,6 @@ Thu Nov 19 16:23:33 1998  DanEspen  <dje@blue>
 	* FvwmIconBox/FvwmIconBox.c (CreateWindow):
 	* FvwmBanner/FvwmBanner.c (main):
 	border size bugfix
-
-1998-11-12  Dominik Vogt  <dominik_vogt@hp.com>
-
-	* FvwmButtons/FvwmButtons.c (CreateWindow):
-	applied geometry -0-0 patch by Tim Phipps
 
 Sun Nov 15 11:23:38 1998  DanEspen  <dje@blue>
 
@@ -1130,12 +1171,36 @@ Sat Nov 14 00:10:37 1998  Steve Robbins  <steve@nyongwa.montreal.qc.ca>
 	* FvwmButtons/parse.c (match_string):
 	* FvwmButtons/README: updated panels patch
 
+1998-11-12  Dominik Vogt  <dominik_vogt@hp.com>
+
+	* FvwmButtons/FvwmButtons.c (CreateWindow):
+	applied geometry -0-0 patch by Tim Phipps
+
+1998-11-11  Dan Espen  <dane@mk.bellcore.com>
+
+	* FvwmAnimate/FvwmAnimate.c: Fix bug that stopped zoom3d from
+	being picked.  In general, strcasecmp is now being used instead of
+	strncasecmp.
+
 1998-11-11  Dominik Vogt  <dominik_vogt@hp.com>
 
 	* FvwmIconMan/globals.c (print_managers): fixed coredump with fonts
 
 	* FvwmIconMan/readconfig.c (parse_function): fixed parsing bug:
 	JmpArg's did not work if followed by a comma.
+
+Tue Nov 10 22:20:21 1998  DanEspen  <dje@blue>
+
+	* FvwmEvent/FvwmEvent.c (config): Fix logic on test for cmd needs
+	a parameter.  Thes test for "table != e" was incorrect.  Only try
+	to strip off trailing newline when there is a newline on the
+	command.  It was stripping the last character when commands came
+	in from FvwmTalk.
+
+Tue Nov 10 22:17:50 1998  DanEspen  <dje@blue>
+
+	* FvwmAnimate/FvwmAnimate.c: Handle missing arg on first entry in
+	cmd table.
 
 1998-11-10  Dominik Vogt  <dominik_vogt@hp.com>
 
@@ -1163,6 +1228,11 @@ Tue Nov 10 07:13:07 1998  Steve Robbins  <steve@nyongwa.montreal.qc.ca>
 	* FvwmIconMan/readconfig.c: Fixed bug that prevented function lists
 	from working if they contained a comma. Fixed a memory leak too.
 
+Sat Nov  7 09:43:59 1998  DanEspen  <dje@blue>
+
+	* FvwmAnimate/FvwmAnimate.c: Make color a fully documented and
+	customizable feature.
+
 1998-11-07  Dominik Vogt <dominik_vogt@hp.com>
 
 	* FvwmIconMan/readconfig.c: Removed internal_GetNextToken and
@@ -1170,7 +1240,7 @@ Tue Nov 10 07:13:07 1998  Steve Robbins  <steve@nyongwa.montreal.qc.ca>
 
 1998-11-06  Paul D. Smith  <psmith@gnu.org>
 
-	* FvwmWinList/Makefile.am (FvwmWinList_DEPENDENCIES):
+	* FvwmAnimate/Makefile.am (FvwmAnimate_DEPENDENCIES):
 	* FvwmTile/Makefile.am (FvwmTile_DEPENDENCIES):
 	* FvwmTalk/Makefile.am (FvwmTalk_DEPENDENCIES):
 	* FvwmScroll/Makefile.am (FvwmScroll_DEPENDENCIES):
@@ -1510,3 +1580,10 @@ Mon Nov  9 18:56:50 1998  Steve Robbins  <steve@nyongwa.montreal.qc.ca>
 	* FvwmDebug/Makefile.am (INCLUDES):
 	* FvwmConsole/Makefile.am (INCLUDES): Added xpm_CFLAGS, since
 	xpm.h is included by fvwmlib.h.
+
+1998-11-04  Dan Espen  <dane@mk.bellcore.com>
+
+	* FvwmAnimate/FvwmAnimate.c: Fixed bug where AnimateResizeLine was
+	drawing 5 segments when it only wanted 4.
+
+	
