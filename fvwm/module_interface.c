@@ -116,30 +116,30 @@ void initModules(void)
 
 void ClosePipes(void)
 {
-  int i;
-  for(i=0;i<npipes;i++)
+    int i;
+    for(i=0; i<npipes; ++i)
     {
-      if(writePipes[i]>0)
-	{
-	  close(writePipes[i]);
-	  close(readPipes[i]);
-	}
+      if(writePipes[i] > 0)
+      {
+        close(writePipes[i]);
+        close(readPipes[i]);
+      }
       if(pipeName[i] != NULL)
-	{
-	  free(pipeName[i]);
-	  pipeName[i] = 0;
-	}
+      {
+        free(pipeName[i]);
+        pipeName[i] = 0;
+      }
 #ifndef WITHOUT_KILLMODULE_ALIAS_SUPPORT
       if(pipeAlias[i] != NULL)
-	{
-	  free(pipeAlias[i]);
-	  pipeAlias[i] = NULL;
-	}
+      {
+        free(pipeAlias[i]);
+        pipeAlias[i] = NULL;
+      }
 #endif
       while(pipeQueue[i] != NULL)
-	{
-	  DeleteMessageQueueBuff(i);
-	}
+      {
+        DeleteMessageQueueBuff(i);
+      }
     }
 }
 
@@ -198,7 +198,7 @@ static int do_execute_module(F_CMD_ARGS, Bool desperate)
     if (!desperate)
     {
       fvwm_msg(ERR,"executeModule",
-	       "No such module '%s' in ModulePath '%s'",cptr,ModulePath);
+                   "No such module '%s' in ModulePath '%s'",cptr,ModulePath);
     }
     free(args);
     free(cptr);
@@ -209,7 +209,7 @@ static int do_execute_module(F_CMD_ARGS, Bool desperate)
   {
       char* p = arg1 + strlen( arg1 ) - strlen( EXECUTABLE_EXTENSION );
       if ( strcmp( p, EXECUTABLE_EXTENSION ) ==  0 )
-	  *p = 0;
+        *p = 0;
   }
 #endif
 
@@ -272,7 +272,7 @@ static int do_execute_module(F_CMD_ARGS, Bool desperate)
     {
       const char *ptr = skipModuleAliasToken(args[nargs]);
       if (ptr && *ptr == '\0')
-	pipeAlias[i] = stripcpy(args[nargs]);
+        pipeAlias[i] = stripcpy(args[nargs]);
     }
 #endif
   }
@@ -317,7 +317,7 @@ static int do_execute_module(F_CMD_ARGS, Bool desperate)
     for(i=6;i<nargs;i++)
     {
       if(args[i] != 0)
-	free(args[i]);
+        free(args[i]);
     }
   }
   else if (val ==0)
@@ -356,7 +356,7 @@ static int do_execute_module(F_CMD_ARGS, Bool desperate)
     for(i=6;i<nargs;i++)
     {
       if(args[i] != 0)
-	free(args[i]);
+        free(args[i]);
     }
     free(args);
     return -1;
@@ -384,8 +384,6 @@ void executeModuleSync(F_CMD_ARGS)
   char *next;
   char *token;
   char *expect = ModuleFinished;
-  struct timeval timeout = {0, 1};
-  struct timeval *timeoutP = &timeout; /* use 1 usec timeout in select */
   int pipe_slot;
   fd_set in_fdset;
   fd_set out_fdset;
@@ -452,61 +450,83 @@ void executeModuleSync(F_CMD_ARGS)
 
   while (!done)
   {
-    FD_ZERO(&in_fdset);
-    FD_ZERO(&out_fdset);
-    if(readPipes[pipe_slot] >= 0)
-      FD_SET(readPipes[pipe_slot], &in_fdset);
-    if(pipeQueue[pipe_slot]!= NULL)
-      FD_SET(writePipes[pipe_slot], &out_fdset);
+    struct timeval timeout;
+    int num_fd;
 
-    if (fvwmSelect(fd_width, &in_fdset, &out_fdset, 0, timeoutP) > 0)
+    /* A signal here could interrupt the select call. We would
+     * then need to restart our select, unless the signal was
+     * a "terminate" signal. Note that we need to reinitialise
+     * all of select's parameters after it has returned. */
+    do
+    {
+      FD_ZERO(&in_fdset);
+      FD_ZERO(&out_fdset);
+      if (readPipes[pipe_slot] >= 0)
+        FD_SET(readPipes[pipe_slot], &in_fdset);
+      if (pipeQueue[pipe_slot] != NULL)
+        FD_SET(writePipes[pipe_slot], &out_fdset);
+
+      timeout.tv_sec = 0;
+      timeout.tv_usec = 1;  /* use 1 usec timeout in select */
+      num_fd = fvwmSelect(fd_width, &in_fdset, &out_fdset, 0, &timeout);
+    }
+    while (num_fd < 0);
+
+    /* Exit if we have received a "terminate" signal */
+    if ( isTerminated ) break;
+
+    if (num_fd > 0)
     {
       if ((readPipes[pipe_slot] >= 0) &&
-	  FD_ISSET(readPipes[pipe_slot], &in_fdset))
+           FD_ISSET(readPipes[pipe_slot], &in_fdset))
       {
-	/* Check for module input. */
-	if (read(readPipes[pipe_slot], &targetWindow, sizeof(Window)) > 0)
-	{
-	  if (HandleModuleInput(targetWindow, pipe_slot, expect, False))
-	  {
-	    /* we got the message we were waiting for */
-	    done = True;
-	  }
-	}
-	else
-	{
-	  KillModule(pipe_slot);
-	  done = True;
-	}
+        /* Check for module input. */
+        if (read(readPipes[pipe_slot], &targetWindow, sizeof(Window)) > 0)
+        {
+          if (HandleModuleInput(targetWindow, pipe_slot, expect, False))
+          {
+            /* we got the message we were waiting for */
+            done = True;
+          }
+        }
+        else
+        {
+          KillModule(pipe_slot);
+          done = True;
+        }
       }
+
       if ((writePipes[pipe_slot] >= 0) &&
-	  FD_ISSET(writePipes[pipe_slot], &out_fdset))
+           FD_ISSET(writePipes[pipe_slot], &out_fdset))
       {
         FlushMessageQueue(pipe_slot);
       }
     }
+
     usleep(1000);
     if (difftime(time(NULL), start_time) >= sec && sec)
     {
       /* timeout */
       done = True;
     }
+
     /* Check for "escape function" */
     if (XPending(dpy) && XCheckMaskEvent(dpy, KeyPressMask, &tmpevent))
     {
       escape = CheckBinding(Scr.AllBindings,
-			    STROKE_ARG(0)
-			    tmpevent.xkey.keycode,
-			    tmpevent.xkey.state, GetUnusedModifiers(),
-			    GetContext(Tmp_win, &tmpevent, &targetWindow),
-			    KEY_BINDING);
+                            STROKE_ARG(0)
+                            tmpevent.xkey.keycode,
+                            tmpevent.xkey.state, GetUnusedModifiers(),
+                            GetContext(Tmp_win, &tmpevent, &targetWindow),
+                            KEY_BINDING);
       if (escape != NULL)
       {
-	if (!strcasecmp(escape,"escapefunc"))
-	  done = True;
+        if (!strcasecmp(escape,"escapefunc"))
+          done = True;
       }
     }
   } /* while */
+
   if (need_ungrab)
     UngrabEm(GRAB_BUSY);
 }
@@ -560,8 +580,8 @@ Bool HandleModuleInput(Window w, int module, char *expect, Bool queue)
   if (n < sizeof(cont))
     {
       fvwm_msg(ERR, "HandleModuleInput",
-               "Module %i, Size Problems (read: %d, size: %d)",
-	       module, n, sizeof(cont));
+                    "Module %i, Size Problems (read: %d, size: %d)",
+                    module, n, sizeof(cont));
       KillModule(module);
       return False;
     }
@@ -577,8 +597,8 @@ Bool HandleModuleInput(Window w, int module, char *expect, Bool queue)
   if (strlen(text)>0)
     {
       if (expect && (strncasecmp(text, expect, strlen(expect)) == 0))
-	/* the module sent the expected string */
-	return True;
+        /* the module sent the expected string */
+        return True;
 
       if (queue)
         AddToCommandQueue(w, module, text);

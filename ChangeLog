@@ -1,3 +1,9 @@
+2000-11-28  Chris Rankin  <rankinc@zipworld.com.au>
+
+	* fvwm/module_interface.c (executeModuleSync):
+	Fix select()-handling so that it either exits if FVWM receives
+	a terminate signal, or restarts the select call.
+
 2000-11-28  olicha  <olivier.chapuis@free.fr>
 
 	* fvwm/placement.c (test_fit):
