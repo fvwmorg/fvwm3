@@ -2,6 +2,10 @@ To find out what should go in this file, see "Information For
 Maintainers of GNU Software" (maintain.texi), the section called
 "Recording Changes".
 
+Dan Astoorian:
+Wrote extras/fvwmperl, before X11::Fvwm (available via CPAN) made it
+obsolete.
+
 Johannes Zellner:
 StrokeWidth option for StrokeFunc.
 
@@ -165,8 +169,7 @@ Along with a cast of thousands (well, dozens) mentioned in old
 ChangeLog entries.  If you find your name below, please send an entry
 in the style of the above entries, to the mailing list fvwm-workers@fvwm.org.
 
-Dan Astoorian
-Andrew (a.b.) Atrens
+aAndrew (a.b.) Atrens
 John Aughey
 Graham Barr
 David Barth
