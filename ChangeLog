@@ -1,5 +1,10 @@
 2002-06-24  Mikhael Goikhman  <migo@homemail.com>
 
+	* NEWS, configure.in:
+	changed version to 2.5.3
+
+2002-06-24  Mikhael Goikhman  <migo@homemail.com>
+
 	* INSTALL.fvwm:
 	removed C++ section
 
