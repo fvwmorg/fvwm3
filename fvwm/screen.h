@@ -287,6 +287,8 @@ typedef struct ScreenInfo
   Bool usingDefaultVisual;
   Visual *viz;
   Colormap cmap;
+  unsigned int bestTileWidth;
+  unsigned int bestTileHeight;
   /* this structure defines the default background, used by modules that have
    * been converted to share fvwm's visuals. see libs/ModGraph.h */
   Background *bg;

@@ -1502,6 +1502,8 @@ void InitVariables(void)
   Scr.DrawPicture = NULL;
   Scr.bg->pixmap = (Pixmap)0;
   Scr.bg->type.word = 0;
+  XQueryBestTile(dpy, Scr.NoFocusWin, 0, 0,
+		 &Scr.bestTileWidth, &Scr.bestTileHeight);
 
   /* zero all flags */
   memset(&Scr.flags, 0, sizeof(Scr.flags));
