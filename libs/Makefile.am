@@ -10,7 +10,7 @@ libfvwm_a_SOURCES = ClientMsg.h Colorset.h Grab.h Module.h Parse.h Picture.h \
 	Graphics.c Parse.c Picture.c Bindings.c Colorset.c Event.c envvar.c \
 	ColorUtils.c XResource.c Module.c WinMagic.c Target.c System.c \
 	FScreen.c Flocale.c \
-	XError.c fvwmsignal.c GetFont.c Strings.c wild.c safemalloc.c \
+	XError.c fvwmsignal.c Strings.c wild.c safemalloc.c \
 	Pointer.c debug.c Grab.c ClientMsg.c fvwmrect.c Cursor.c \
 	setpgrp.c setpgrp.h queue.c queue.h
 

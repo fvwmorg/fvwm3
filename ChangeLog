@@ -1,5 +1,9 @@
 2002-02-12  olicha  <olivier.chapuis@free.fr>
 
+	* libs/Makefile.am (libfvwm_a_SOURCES):
+	* libs/GetFont.c:
+	Removed libs/GetFont.c
+
 	* fvwm/menus.c (FreeMenuStyle):
 	(UpdateMenuStyle):
 	(NewMenuStyle):
