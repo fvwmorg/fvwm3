@@ -184,7 +184,7 @@ LoadGlobalState(char *filename)
     if (!strcmp(s1, "[DESKTOP]"))
     {
       sscanf(s, "%*s %i", &i1);
-	changeDesks(i1);
+      changeDesks(i1);
     }
     else if (!strcmp(s1, "[VIEWPORT]"))
     {
@@ -316,6 +316,10 @@ SaveWindowStates(FILE *f)
   for (ewin = Scr.FvwmRoot.stack_next; ewin != &Scr.FvwmRoot;
        ewin = ewin->stack_next)
     {
+      Bool is_icon_sticky;
+
+      is_icon_sticky = (IS_STICKY(ewin) ||
+			(IS_ICONIFIED(ewin) && IS_ICON_STICKY(ewin)));
       fprintf(f, "[CLIENT] %lx\n", ewin->w);
 
       client_id = GetClientID(ewin->w);
@@ -361,12 +365,12 @@ SaveWindowStates(FILE *f)
               ewin->orig_g.y - ewin->old_bw,
 	      ewin->orig_g.width - 2*ewin->boundary_width ,
 	      ewin->orig_g.height -2*ewin->boundary_width-ewin->title_g.height,
-	      ewin->frame_g.x + Scr.Vx,
-              ewin->frame_g.y + Scr.Vy,
+	      ewin->frame_g.x + ((!IS_STICKY(ewin)) ? Scr.Vx : 0),
+              ewin->frame_g.y + ((!IS_STICKY(ewin)) ? Scr.Vy : 0),
               ewin->frame_g.width,
               ewin->maximized_ht,
-	      ewin->icon_x_loc + Scr.Vx,
-	      ewin->icon_y_loc + Scr.Vy);
+	      ewin->icon_x_loc + ((!is_icon_sticky) ? Scr.Vx : 0),
+	      ewin->icon_y_loc + ((!is_icon_sticky) ? Scr.Vy : 0));
       fprintf(f, "  [DESK] %i\n", ewin->Desk);
       fprintf(f, "  [LAYER] %i\n", get_layer(ewin));
       fprintf(f, "  [FLAGS] ");
@@ -404,13 +408,13 @@ LoadWindowStates(char *filename)
   {
     sscanf(s, "%4000s", s1);
 #ifdef SESSION
-/* migo: temporarily */
-if (!strcmp(s1, "[REAL_STATE_FILENAME]"))
-{
-  sscanf(s, "%*s %s", s1);
-  setSmProperties (sm_conn, s1, SmRestartIfRunning);
-  setRealStateFilename(s1);
-} else
+    /* migo: temporarily */
+    if (!strcmp(s1, "[REAL_STATE_FILENAME]"))
+    {
+      sscanf(s, "%*s %s", s1);
+      setSmProperties (sm_conn, s1, SmRestartIfRunning);
+      setRealStateFilename(s1);
+    } else
 #endif /* SESSION */
     if (!strcmp(s1, "[CLIENT]"))
     {
@@ -610,11 +614,11 @@ static Bool matchWin(FvwmWindow *w, Match *m)
     XFreeStringList (wm_command);
 
 #ifdef FVWM_DEBUG_DEVEL
-fprintf(stderr, "\twin(%s, %s, %s, %d)\n[%d]\tmat(%s, %s, %s, %d)\n\n",
-  w->class.res_name, w->class.res_class, w->name, IS_NAME_CHANGED(w),
-  found,
-  m->res_name, m->res_class, m->wm_name, IS_NAME_CHANGED(m)
-);
+  fprintf(stderr, "\twin(%s, %s, %s, %d)\n[%d]\tmat(%s, %s, %s, %d)\n\n",
+	  w->class.res_name, w->class.res_class, w->name, IS_NAME_CHANGED(w),
+	  found,
+	  m->res_name, m->res_class, m->wm_name, IS_NAME_CHANGED(m)
+    );
 #endif
   return found;
 }
@@ -671,75 +675,55 @@ MatchWinToSM(FvwmWindow *ewin,
 	  }
 	  /* this doesn't work very well if Vx/Vy is not on
 	     a page boundary */
-	  ewin->attr.x = matches[i].x - Scr.Vx;
-	  ewin->attr.y = matches[i].y - Scr.Vy;
-
+	  ewin->attr.x = matches[i].x;
+	  ewin->attr.y = matches[i].y;
 	  ewin->attr.width = matches[i].w;
 	  ewin->attr.height = matches[i].h;
-
-	  *x_max = matches[i].x_max - Scr.Vx;
-	  *y_max = matches[i].y_max - Scr.Vy;
+	  *x_max = matches[i].x_max;
+	  *y_max = matches[i].y_max;
 	  *w_max = matches[i].w_max;
 	  *h_max = matches[i].h_max;
+	  SET_STICKY(ewin, IS_STICKY(&(matches[i])));
 
-	  if (IS_STICKY(&(matches[i]))) {
-	    rectangle r;
-	    r.x = ewin->attr.x;
-	    r.y = ewin->attr.y;
-	    r.width = ewin->attr.width;
-	    r.height = ewin->attr.height;
-
-	    SET_STICKY(ewin, 1);
-	    /* force sticky windows on screen */
-	    /* migo (28-Jun-1999): ewin->old_bw will be added in AddWindow */
-	    /* domivogt (08-Jul-1999): but not if the window is already
-	     * visible! */
-	    if (!IsRectangleOnThisPage(&r, Scr.CurrentDesk))
-	    {
-/*
-	      ewin->attr.x += ewin->old_bw;
-	      ewin->attr.y += ewin->old_bw;
-*/
-/* domivogt: debug */
-/*fprintf(stderr,"before truncate: x=%d, y=%d\n",ewin->attr.x,ewin->attr.y);*/
-	      ewin->attr.x -=
-		truncate_to_multiple(ewin->attr.x, Scr.MyDisplayWidth);
-	      ewin->attr.y -=
-		truncate_to_multiple(ewin->attr.y, Scr.MyDisplayHeight);
-/*
-	      ewin->attr.x -= ewin->old_bw;
-	      ewin->attr.y -= ewin->old_bw;
-*/
-/* domivogt: debug */
-/*fprintf(stderr,"after truncate: x=%d, y=%d\n",ewin->attr.x,ewin->attr.y);*/
-	      *x_max -=
-		truncate_to_multiple(*x_max, Scr.MyDisplayWidth);
-	      *y_max -=
-		truncate_to_multiple(*y_max, Scr.MyDisplayHeight);
-	    }
-	  } else {
-	    SET_STICKY(ewin, 0);
+	  if (!IS_STICKY(ewin))
+	  {
+	    *x_max -= Scr.Vx;
+	    *y_max -= Scr.Vy;
+	    ewin->attr.x -= Scr.Vx;
+	    ewin->attr.y -= Scr.Vy;
 	    ewin->Desk = matches[i].desktop;
+	  }
+	  else
+	  {
+	    /* original window position on same page as frame */
+	    ewin->attr.x += truncate_to_multiple(*x_max - ewin->attr.x,
+						 Scr.MyDisplayWidth);
+	    ewin->attr.y += truncate_to_multiple(*y_max - ewin->attr.y,
+						 Scr.MyDisplayHeight);
 	  }
 
 	  set_layer(ewin, matches[i].layer);
 
 	  /* this is not enough to fight fvwms attempts to
 	     put icons on the current page */
-	  ewin->icon_x_loc = matches[i].icon_x - Scr.Vx;
-	  ewin->icon_y_loc = matches[i].icon_y - Scr.Vy;
+	  ewin->icon_x_loc = matches[i].icon_x;
+	  ewin->icon_y_loc = matches[i].icon_y;
+	  if (!IS_STICKY(&(matches[i])) &&
+	      !(IS_ICONIFIED(&(matches[i])) && IS_ICON_STICKY(&(matches[i]))))
+	  {
+	    ewin->icon_x_loc -= Scr.Vx;
+	    ewin->icon_y_loc -= Scr.Vy;
+	  }
 
 	  /* Find the window to stack this one below. */
-
 	  for (j = i-1; j >= 0; j--) {
 
 	    /* matches are sorted in stacking order */
-
 	    if (matches[j].used) {
 
 	      for (t = Scr.FvwmRoot.next; t != NULL; t = t->next) {
 #ifdef FVWM_DEBUG_DEVEL
-if (!Restarting) fprintf(stderr, "[N]");
+  if (!Restarting) fprintf(stderr, "[N]");
 #endif
 		if (matchWin(t, &matches[j])) {
 		  ewin->stack_next->stack_prev = ewin->stack_prev;
@@ -950,32 +934,32 @@ setSmProperties (SmcConn sm_conn, char *filename, char hint)
 #endif
   ;
 
-/*#ifdef XSM_BUGGY_DISCARD_COMMAND*/
-if (xsmDetected) {
-  /* the protocol spec says that the discard command
-     should be LISTofARRAY8 on posix systems, but xsm
-     demands that it be ARRAY8.
-  */
-  char *discardCommand = alloca((10 + strlen(filename)) * sizeof(char));
-  sprintf (discardCommand, "rm -f '%s'", filename);
-  prop6.type = SmARRAY8;
-  prop6.num_vals = 1;
-  prop6.vals = &prop6val;
-  prop6val.value = (SmPointer) discardCommand;
-  prop6val.length = strlen (discardCommand);
-/*#else*/
-} else {
-  prop6.type = SmLISTofARRAY8;
-  prop6.num_vals = 3;
-  prop6.vals = (SmPropValue *) malloc (3 * sizeof (SmPropValue));
-  prop6.vals[0].value = "rm";
-  prop6.vals[0].length = 2;
-  prop6.vals[1].value = "-f";
-  prop6.vals[1].length = 2;
-  prop6.vals[2].value = filename;
-  prop6.vals[2].length = strlen (filename);
-/*#endif*/
-}
+  /*#ifdef XSM_BUGGY_DISCARD_COMMAND*/
+  if (xsmDetected) {
+    /* the protocol spec says that the discard command
+       should be LISTofARRAY8 on posix systems, but xsm
+       demands that it be ARRAY8.
+    */
+    char *discardCommand = alloca((10 + strlen(filename)) * sizeof(char));
+    sprintf (discardCommand, "rm -f '%s'", filename);
+    prop6.type = SmARRAY8;
+    prop6.num_vals = 1;
+    prop6.vals = &prop6val;
+    prop6val.value = (SmPointer) discardCommand;
+    prop6val.length = strlen (discardCommand);
+    /*#else*/
+  } else {
+    prop6.type = SmLISTofARRAY8;
+    prop6.num_vals = 3;
+    prop6.vals = (SmPropValue *) malloc (3 * sizeof (SmPropValue));
+    prop6.vals[0].value = "rm";
+    prop6.vals[0].length = 2;
+    prop6.vals[1].value = "-f";
+    prop6.vals[1].length = 2;
+    prop6.vals[2].value = filename;
+    prop6.vals[2].length = strlen (filename);
+    /*#endif*/
+  }
 
   props[0] = &prop1;
   props[1] = &prop2;

@@ -1,4 +1,15 @@
+1999-09-22  Dominik Vogt  <dominik_vogt@gmx.de>
+
+	* fvwm/session.c (SaveWindowStates):
+	(MatchWinToSM):
+	(SaveWindowStates):
+	fixed position of sticky icons and windows when restarting with
+	session management
+
 1999-09-21  Dominik Vogt  <dominik_vogt@gmx.de>
+
+	* fvwm/move_resize.c (resize_window): redraw window decorations after
+	aborting an opaque resize
 
 	* fvwm/stack.c (inner_RaiseOrLowerWindow): -Wall fix
 	(raise_over_unmanaged): reindented

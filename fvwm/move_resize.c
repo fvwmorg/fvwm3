@@ -1738,6 +1738,7 @@ void resize_window(F_CMD_ARGS)
 	{
 	  DoResize(start_g.x, start_g.y, tmp_win, &start_g, orig,
 		   &xmotion, &ymotion, do_resize_opaque);
+	  SetBorder(tmp_win,True,True,True,None);
 	}
       }
       done = TRUE;
