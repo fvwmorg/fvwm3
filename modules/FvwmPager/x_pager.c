@@ -2773,7 +2773,7 @@ void change_colorset(int colorset)
 
     }
 
-    if (Desks[i].ballooncolorset == colorset)
+    if (ShowBalloons && Desks[i].ballooncolorset == colorset)
     {
       attributes.border_pixel = Colorset[colorset % nColorsets].fg;
       XChangeWindowAttributes(dpy, Desks[i].balloon.w, CWBorderPixel,
