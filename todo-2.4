@@ -1,24 +1,21 @@
-Please look over the "to be discussed" section so we can decide
-which of these will not be done.
-
 Items with highest priority / most severe problems:
 
   117, 134, 146
 
 Closed recently:
 
-  163, 167
+  17, 32, 116, 122, 125, 126, 129, 130, 143, 156, 158
 
 ---------- Summary: ----------------------------------------------
 
  1 to be verified
-11 to be discussed
- 4 to do
+ 0 to be discussed
+ 3 to do
  1 distribution issues
  9 testing
 ----------------------
-26  open items
-141 items closed
+14  open items
+153 items closed/postponed
 167 items in total
 
 ---------- To be verified: ---------------------------------------
@@ -27,6 +24,37 @@ Closed recently:
      [reported by Nadim Shaikli <nadim.shaikli@intel.com>]
 
 ---------- To be discussed ---------------------------------------
+
+--------- To do: ------------------------------------------------
+
+117) Investigate icons disappearing if icon changes while on a
+     different desk.
+     [reported by Julian Gilbey/David Cunningham on 16-Mar-2000]
+134) Investigate DecWindows ConfigureRequest/Notify race condition.
+     [reported by Fabien Viallard on 19-Apr-2000]
+146) Bug #542 (Winch signals).
+
+---------- Distribution issues: ----------------------------------
+
+ 62) Write a new announcement.
+     [in progress]
+
+---------- Testing: ----------------------------------------------
+
+ 33) Test the GNOME patches.
+ 34) Update and run the purify script again.
+     [in progress]
+ 35) Test the strokes patch.
+ 36) Test the new menu styles (ItemFormat!)
+ 92) Test new session management code.
+ 94) Test colour set support in modules and fvwm.
+ 95) Test new panel implementation in FvwmButtons.
+105) Test binding code.
+106) Test window position code.
+
+========== Closed recently: ======================================
+
+========== Postponed until after 2.4: ============================
 
  17) Fix the bug that causes icons to lose management (bug #352).
      [couldn't reproduce this yet; can anybody who has netcool
@@ -45,6 +73,8 @@ Closed recently:
 122) Investigate FvwmButtons panel problem.
      [reported by Robert H. Ford II <rhford2@lucent.com> on 18-Feb-2000]
      -> [no usable feedback]
+125) Bug #479 (windows migrating to page 0 0 during restart w/ xsession)
+     -> [unreproducible]
 126) Bug #489 (icons migrating on restart, ident does not work)
      -> [unreproducible]
 129) Bug #560 (freeze on Exceed)
@@ -64,48 +94,6 @@ Closed recently:
 158) Sometimes a state is not restored for windows with IS_NAME_CHANGED
      flag set under SM - no match in matchWin().
      [Mikhael: investigate/fix if there is a time]
-162) Fix core dump with icon boxes
-     [reported on 25-may-2000 by kibble_98@yahoo.com]
-     [fixed]
-     -> [unreproducible]
-
---------- To do: ------------------------------------------------
-
-117) Investigate icons disappearing if icon changes while on a
-     different desk.
-     [reported by Julian Gilbey/David Cunningham on 16-Mar-2000]
-125) Bug #479 (windows migrating to page 0 0 during restart w/ xsession)
-134) Investigate DecWindows ConfigureRequest/Notify race condition.
-     [reported by Fabien Viallard on 19-Apr-2000]
-146) Bug #542 (Winch signals).
-
----------- Distribution issues: ----------------------------------
-
- 62) Write a new announcement.
-     [in progress]
-
----------- Testing: ----------------------------------------------
-
- 33) Test the GNOME patches.
- 34) Update and run the purify script again (and update it).
- 35) Test the strokes patch.
- 36) Test the new menu styles (ItemFormat!)
- 92) Test new session management code.
- 94) Test colour set support in modules and fvwm.
- 95) Test new panel implementation in FvwmButtons.
-105) Test binding code.
-106) Test window position code.
-
-========== Closed recently: ======================================
-
-123) Bug #378 (FvwmPager interferes with xscreensaver)
-     [unreproducible, seems to be fixed]
-127) Bug #511 (xpp subwindows not drawn properly)
-     [not a bug, xpp is broken]
-148) Losing focus when entering root window bug.
-     [reported by Elliot Sowadsky on 29-Dec-1999]
-     [fixed]
-166) Update purify test scripts with fvwm24_convert
 
 ========== Closed: ===============================================
 
@@ -283,7 +271,11 @@ Closed recently:
      [reported by Wing Tung Leung <tg@skynet.be> on 20-Feb-2000]
      [Dominik: Didn't get any reply, stack trace, ...]
      [unreproducible]
+123) Bug #378 (FvwmPager interferes with xscreensaver)
+     [unreproducible, seems to be fixed]
 124) Bug #477 (closing xbuffy popup window nukes focus)
+127) Bug #511 (xpp subwindows not drawn properly)
+     [not a bug, xpp is broken]
 128) Bug #564 (pasting text goes to window with the mouse, not
      the focused window).
      [either an enhancement request or not in the scope of fvwm]
@@ -318,6 +310,10 @@ Closed recently:
      (ClickToFocus).
 147) Investigate/fix missing windows in pager after Recapture.
      [reported by Paul (PDS) on 06-Jan-2000]
+148) Losing focus when entering root window bug.
+     [reported by Elliot Sowadsky on 29-Dec-1999]
+     [fixed]
+
 149) "date" command confuses keyboard focus.
 150) Mini windows in pager can reach into adjacent pages
      because of the min size of 3x3 pixels.
@@ -335,8 +331,12 @@ Closed recently:
 159) configure check for gnome.h
 160) Remove FlipTransient style.
 161) Rename MovedButton3 condition to PlacedByButton3.
+162) Fix core dump with icon boxes
+     [reported on 25-may-2000 by kibble_98@yahoo.com]
+     [fixed]
+163) Make bzip2 and rpm packages available from our downloads page.
 164) Update ANNOUNCE to identify GlobalOpts as a compatiblity issue
 165) Update fvwm24_convert.in to handle GlobalOpts
-163) Make bzip2 and rpm packages available from our downloads page.
+166) Update purify test scripts with fvwm24_convert
 167) Add a screenshot of Mikhael's new kitten to the fvwm-cats page.
      [obviously a show stopper] :)

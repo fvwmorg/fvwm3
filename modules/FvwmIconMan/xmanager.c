@@ -783,7 +783,7 @@ static void clear_empty_region (WinManager *man)
     {
       rects[0].x = (n % cols) * man->geometry.boxwidth;
       rects[0].y = (num_visible_rows (n, cols) - 1) * man->geometry.boxheight;
-      rects[0].width = man->geometry.width - rects[0].y;
+      rects[0].width = man->geometry.width - rects[0].x;
       rects[0].height = boxheight;
       rects[1].x = 0;
       rects[1].y = rects[0].y + rects[0].height;
@@ -1038,6 +1038,8 @@ static void get_title_geometry (WinManager *man, ButtonGeometry *g)
   g->button_h = man->geometry.boxheight;
   g->text_x = g->button_x + g->button_h / 2;
   g->text_w = g->button_w - 4 - (g->text_x - g->button_x);
+  if (g->text_w <= 0)
+    g->text_w = 1;
   g->text_h = man->fontheight;
   text_pad = center_padding (man->fontheight, g->button_h);
 
@@ -1086,6 +1088,8 @@ static void get_button_geometry (WinManager *man, Button *button,
 
   g->text_x = g->icon_x + g->icon_w + 2;
   g->text_w = g->button_w - 4 - (g->text_x - g->button_x);
+  if (g->text_w <= 0)
+    g->text_w = 1;
   g->text_h = man->fontheight;
 
   text_pad = center_padding (man->fontheight, g->button_h);
@@ -1287,7 +1291,6 @@ static void draw_button (WinManager *man, int button, int force)
   dirty = b->drawn_state.dirty_flags;
 
   if (win && win->button != b) {
-fprintf(stderr,"w 0x%08x, b 0x%08x, wb 0x%08x\n", (int)win, (int)b, (int)win->button);
     ConsoleMessage ("Internal error in draw_button.\n");
     return;
   }

@@ -253,7 +253,7 @@ void do_windowList(XEvent *eventp,Window w,FvwmWindow *tmp_win,
       {
 	high_layer = low_layer = Scr.BottomLayer;
       }
-      else if (StrEquals(tok, "Layers"))
+      else if (StrEquals(tok, "Layer"))
       {
 	free(tok);
         opts = GetNextSimpleOption(opts, &tok);

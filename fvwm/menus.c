@@ -2099,9 +2099,9 @@ static void MenuInteraction(
 			&x, &y, &JunkX, &JunkY, &JunkMask);
 	  if (XGetGeometry(dpy, MR_WINDOW(pmp->menu), &JunkRoot, &mx, &my,
 			   &mw, &mh, &JunkBW, &JunkDepth) &&
-	      ((!MR_IS_LEFT(mrPopup)  && x < mx)	   ||
+	      ((!MR_IS_LEFT(mrPopup)  && x < mx) ||
 	       (!MR_IS_RIGHT(mrPopup) && x > mx + mw) ||
-	       (!MR_IS_UP(mrPopup)    && y < my)	   ||
+	       (!MR_IS_UP(mrPopup)    && y < my) ||
 	       (!MR_IS_DOWN(mrPopup)  && y > my + mh)))
 	  {
 	    select_menu_item(
@@ -2110,9 +2110,15 @@ static void MenuInteraction(
 	      &mrPopup, &does_submenu_overlap, pmp);
 	    mrPopup = NULL;
 	  }
+	  else if (x < mx || x >= mx + mw || y < my || y >= my + mh)
+	  {
+	    /* pointer is outside the menu but do not pop down  */
+	    flags.is_off_menu_allowed = True;
+	  }
 	  else
 	  {
-	    flags.is_off_menu_allowed = True;
+	    /* Pointer is still in the menu. Postpone the decision if we have
+	     * to pop down. */
 	  }
 	} /* if (mrPopup && flags.is_off_menu_allowed == False) */
 	else if (flags.is_off_menu_allowed == False)

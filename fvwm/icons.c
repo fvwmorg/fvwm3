@@ -82,7 +82,13 @@ void CreateIconWindow(FvwmWindow *tmp_win, int def_x, int def_y)
   /* attributes for create windows */
   XSetWindowAttributes attributes;
   XWindowChanges xwc;
+  Window old_icon_pixmap_w;
+  Window old_icon_w;
 
+  old_icon_w = tmp_win->icon_w;
+  old_icon_pixmap_w = (IS_ICON_OURS(tmp_win)) ? tmp_win->icon_pixmap_w : None;
+  if (!IS_ICON_OURS(tmp_win) && tmp_win->icon_pixmap_w)
+    XUnmapWindow(dpy,tmp_win->icon_pixmap_w);
   SET_ICON_OURS(tmp_win, 1);
   SET_PIXMAP_OURS(tmp_win, 0);
   SET_ICON_SHAPED(tmp_win, 0);
@@ -160,13 +166,30 @@ void CreateIconWindow(FvwmWindow *tmp_win, int def_x, int def_y)
 			   | VisibilityChangeMask | ExposureMask | KeyPressMask
 			   | EnterWindowMask | LeaveWindowMask
 			   | FocusChangeMask );
-  if (!HAS_NO_ICON_TITLE(tmp_win))
+  if (HAS_NO_ICON_TITLE(tmp_win))
   {
-    tmp_win->icon_w =
-      XCreateWindow(
-	dpy, Scr.Root, def_x, def_y + tmp_win->icon_p_height,
-	tmp_win->icon_g.width, tmp_win->icon_g.height, 0, Pdepth,
-	InputOutput, Pvisual, valuemask, &attributes);
+    if (tmp_win->icon_w)
+    {
+      XDestroyWindow(dpy, tmp_win->icon_w);
+      XDeleteContext(dpy, tmp_win->icon_w, FvwmContext);
+    }
+  }
+  else
+  {
+    if (!tmp_win->icon_w)
+    {
+      tmp_win->icon_w =
+	XCreateWindow(
+	  dpy, Scr.Root, def_x, def_y + tmp_win->icon_p_height,
+	  tmp_win->icon_g.width, tmp_win->icon_g.height, 0, Pdepth,
+	  InputOutput, Pvisual, valuemask, &attributes);
+    }
+    else
+    {
+      XMoveResizeWindow(
+	dpy, tmp_win->icon_w, def_x, def_y + tmp_win->icon_p_height,
+	  tmp_win->icon_g.width, tmp_win->icon_g.height);
+    }
   }
   if (Scr.DefaultColorset >= 0)
     SetWindowBackground(dpy, tmp_win->icon_w, tmp_win->icon_g.width,
@@ -174,17 +197,27 @@ void CreateIconWindow(FvwmWindow *tmp_win, int def_x, int def_y)
 			Pdepth, Scr.StdGC, False);
 
   /* create a window to hold the picture */
-  if((IS_ICON_OURS(tmp_win)) && (tmp_win->icon_p_width > 0)
-     && (tmp_win->icon_p_height > 0))
+  if (IS_ICON_OURS(tmp_win) && tmp_win->icon_p_width > 0 &&
+      tmp_win->icon_p_height > 0)
   {
     /* use fvwm's visuals in these cases */
     if (Pdefault || (tmp_win->iconDepth == 1) || IS_PIXMAP_OURS(tmp_win))
     {
-      tmp_win->icon_pixmap_w =
-	XCreateWindow(
-	  dpy, Scr.Root, def_x, def_y, tmp_win->icon_p_width,
-	  tmp_win->icon_p_height, 0, Pdepth, InputOutput, Pvisual, valuemask,
-	  &attributes);
+      if (!old_icon_pixmap_w)
+      {
+	tmp_win->icon_pixmap_w =
+	  XCreateWindow(
+	    dpy, Scr.Root, def_x, def_y, tmp_win->icon_p_width,
+	    tmp_win->icon_p_height, 0, Pdepth, InputOutput, Pvisual, valuemask,
+	    &attributes);
+      }
+      else
+      {
+	tmp_win->icon_pixmap_w = old_icon_pixmap_w;
+	XMoveResizeWindow(
+	  dpy, tmp_win->icon_pixmap_w, def_x, def_y, tmp_win->icon_p_width,
+	  tmp_win->icon_p_height);
+      }
       if (Scr.DefaultColorset >= 0)
 	SetWindowBackground(dpy, tmp_win->icon_w, tmp_win->icon_p_width,
 			    tmp_win->icon_p_height,
@@ -218,6 +251,12 @@ void CreateIconWindow(FvwmWindow *tmp_win, int def_x, int def_y)
     valuemask = CWEventMask;
     XChangeWindowAttributes(dpy, tmp_win->icon_pixmap_w, valuemask,&attributes);
   }
+  if (old_icon_pixmap_w && old_icon_pixmap_w != tmp_win->icon_pixmap_w)
+  {
+    /* destroy the old window */
+    XDestroyWindow(dpy, old_icon_pixmap_w);
+    XDeleteContext(dpy, old_icon_pixmap_w, FvwmContext);
+  }
 
 
 #ifdef SHAPE
@@ -232,7 +271,7 @@ void CreateIconWindow(FvwmWindow *tmp_win, int def_x, int def_y)
   }
 #endif
 
-  if(tmp_win->icon_w != None)
+  if (tmp_win->icon_w != None && tmp_win->icon_w != old_icon_w)
   {
     XSaveContext(dpy, tmp_win->icon_w, FvwmContext, (caddr_t)tmp_win);
     XDefineCursor(dpy, tmp_win->icon_w, Scr.FvwmCursors[CRS_DEFAULT]);
@@ -244,7 +283,8 @@ void CreateIconWindow(FvwmWindow *tmp_win, int def_x, int def_y)
     xwc.stack_mode = Below;
     XConfigureWindow(dpy, tmp_win->icon_w, CWSibling|CWStackMode, &xwc);
   }
-  if(tmp_win->icon_pixmap_w != None)
+  if (tmp_win->icon_pixmap_w != None &&
+      tmp_win->icon_pixmap_w != old_icon_pixmap_w)
   {
     XSaveContext(dpy, tmp_win->icon_pixmap_w, FvwmContext, (caddr_t)tmp_win);
     XDefineCursor(dpy, tmp_win->icon_pixmap_w, Scr.FvwmCursors[CRS_DEFAULT]);
@@ -846,8 +886,8 @@ do_all_iconboxes(FvwmWindow *t, icon_boxes **icon_boxes_ptr)
     /* Right now, the global box is hard-coded, fills the screen,
        uses an 80x80 grid, and fills top-bottom, left-right */
     global_icon_box_ptr = calloc(1, sizeof(icon_boxes));
-    global_icon_box_ptr->IconBox[2] = Scr.MyDisplayHeight;
-    global_icon_box_ptr->IconBox[3] = Scr.MyDisplayWidth;
+    global_icon_box_ptr->IconBox[2] = Scr.MyDisplayWidth;
+    global_icon_box_ptr->IconBox[3] = Scr.MyDisplayHeight;
     global_icon_box_ptr->IconGrid[0] = 80;
     global_icon_box_ptr->IconGrid[1] = 80;
     global_icon_box_ptr->IconFlags = ICONFILLHRZ;

@@ -137,6 +137,7 @@ Window PressedW;
 #endif /* !LASTEvent */
 typedef void (*PFEH)(void);
 PFEH EventHandlerJumpTable[LASTEvent];
+static int flush_property_notify(Atom atom, Window w);
 
 /***********************************************************************
  *
@@ -343,397 +344,379 @@ void HandlePropertyNotify(void)
   OnThisPage = IsRectangleOnThisPage(&(Tmp_win->frame_g), Tmp_win->Desk);
 
   switch (Event.xproperty.atom)
+  {
+  case XA_WM_TRANSIENT_FOR:
+    flush_property_notify(XA_WM_TRANSIENT_FOR, Tmp_win->w);
+    if(XGetTransientForHint(dpy, Tmp_win->w, &Tmp_win->transientfor))
     {
-    case XA_WM_TRANSIENT_FOR:
-      {
-        if(XGetTransientForHint(dpy, Tmp_win->w, &Tmp_win->transientfor))
-        {
-	  SET_TRANSIENT(Tmp_win, 1);
-	  RaiseWindow(Tmp_win);
-        }
-        else
-        {
-	  SET_TRANSIENT(Tmp_win, 0);
-        }
-      }
-      break;
+      SET_TRANSIENT(Tmp_win, 1);
+      RaiseWindow(Tmp_win);
+    }
+    else
+    {
+      SET_TRANSIENT(Tmp_win, 0);
+    }
+  break;
 
-    case XA_WM_NAME:
+  case XA_WM_NAME:
+    flush_property_notify(XA_WM_NAME, Tmp_win->w);
 #ifdef I18N_MB
-      if (XGetWindowProperty (dpy, Tmp_win->w, Event.xproperty.atom, 0L,
-			      MAX_WINDOW_NAME_LEN, False, AnyPropertyType,
-			      &actual, &actual_format, &nitems, &bytesafter,
-			      (unsigned char **) &prop) != Success ||
-	  actual == None)
-	return;
-      if (prop) {
-        if (actual == XA_STRING) {
-          /* STRING encoding, use this as it is */
-          free_window_names (Tmp_win, True, False);
-          Tmp_win->name = prop;
-          Tmp_win->name_list = NULL;
-        } else {
-          /* not STRING encoding, try to convert */
-          text_prop.value = prop;
-          text_prop.encoding = actual;
-          text_prop.format = actual_format;
-          text_prop.nitems = nitems;
-          if (
-	    XmbTextPropertyToTextList(dpy, &text_prop, &list, &num) >= Success
-	    && num > 0 && *list) {
-            /* XXX: does not consider the conversion is REALLY succeeded */
-            XFree(prop); /* return of XGetWindowProperty() */
-            free_window_names (Tmp_win, True, False);
-            Tmp_win->name = *list;
-            Tmp_win->name_list = list;
-          } else {
-            if (list) XFreeStringList(list);
-            XFree(prop); /* return of XGetWindowProperty() */
-            if (!XGetWMName(dpy, Tmp_win->w, &text_prop))
-              return; /* why cannot read... */
-            free_window_names (Tmp_win, True, False);
-            Tmp_win->name = (char *)text_prop.value;
-            Tmp_win->name_list = NULL;
-          }
-        }
+    if (XGetWindowProperty (dpy, Tmp_win->w, Event.xproperty.atom, 0L,
+			    MAX_WINDOW_NAME_LEN, False, AnyPropertyType,
+			    &actual, &actual_format, &nitems, &bytesafter,
+			    (unsigned char **) &prop) != Success ||
+	actual == None)
+      return;
+    if (prop) {
+      if (actual == XA_STRING) {
+	/* STRING encoding, use this as it is */
+	free_window_names (Tmp_win, True, False);
+	Tmp_win->name = prop;
+	Tmp_win->name_list = NULL;
       } else {
-        /* XXX: fallback to original behavior, is it needed ? */
-        if (!XGetWMName(dpy, Tmp_win->w, &text_prop))
-	  return;
-        free_window_names (Tmp_win, True, False);
-        Tmp_win->name = (char *)text_prop.value;
-        Tmp_win->name_list = NULL;
+	/* not STRING encoding, try to convert */
+	text_prop.value = prop;
+	text_prop.encoding = actual;
+	text_prop.format = actual_format;
+	text_prop.nitems = nitems;
+	if (
+	  XmbTextPropertyToTextList(dpy, &text_prop, &list, &num) >= Success
+	  && num > 0 && *list) {
+	  /* XXX: does not consider the conversion is REALLY succeeded */
+	  XFree(prop); /* return of XGetWindowProperty() */
+	  free_window_names (Tmp_win, True, False);
+	  Tmp_win->name = *list;
+	  Tmp_win->name_list = list;
+	} else {
+	  if (list) XFreeStringList(list);
+	  XFree(prop); /* return of XGetWindowProperty() */
+	  if (!XGetWMName(dpy, Tmp_win->w, &text_prop))
+	    return; /* why cannot read... */
+	  free_window_names (Tmp_win, True, False);
+	  Tmp_win->name = (char *)text_prop.value;
+	  Tmp_win->name_list = NULL;
+	}
       }
-#else
+    } else {
+      /* XXX: fallback to original behavior, is it needed ? */
       if (!XGetWMName(dpy, Tmp_win->w, &text_prop))
 	return;
       free_window_names (Tmp_win, True, False);
       Tmp_win->name = (char *)text_prop.value;
-      if (Tmp_win->name && strlen(Tmp_win->name) > MAX_WINDOW_NAME_LEN)
-	/* limit to prevent hanging X server */
-	Tmp_win->name[MAX_WINDOW_NAME_LEN] = 0;
-#endif
-
-      SET_NAME_CHANGED(Tmp_win, 1);
-
-      if (Tmp_win->name == NULL)
-        Tmp_win->name = NoName;
-      BroadcastName(M_WINDOW_NAME,Tmp_win->w,Tmp_win->frame,
-		    (unsigned long)Tmp_win,Tmp_win->name);
-
-      /* fix the name in the title bar */
-      if(!IS_ICONIFIED(Tmp_win))
-	DrawDecorations(
-	  Tmp_win, DRAW_TITLE, (Scr.Hilite == Tmp_win), True, None);
-
-      /*
-       * if the icon name is NoName, set the name of the icon to be
-       * the same as the window
-       */
-      if (Tmp_win->icon_name == NoName)
-	{
-	  Tmp_win->icon_name = Tmp_win->name;
-	  BroadcastName(M_ICON_NAME,Tmp_win->w,Tmp_win->frame,
-			(unsigned long)Tmp_win,Tmp_win->icon_name);
-	  RedoIconName(Tmp_win);
-	}
-      break;
-
-    case XA_WM_ICON_NAME:
-#ifdef I18N_MB
-      if (XGetWindowProperty (dpy, Tmp_win->w, Event.xproperty.atom, 0L,
-			      MAX_ICON_NAME_LEN, False, AnyPropertyType,
-			      &actual, &actual_format, &nitems, &bytesafter,
-			      (unsigned char **) &prop) != Success ||
-	  actual == None)
-	return;
-      if (prop) {
-        if (actual == XA_STRING) {
-          /* STRING encoding, use this as it is */
-          free_window_names (Tmp_win, False, True);
-          Tmp_win->icon_name = prop;
-          Tmp_win->icon_name_list = NULL;
-        } else {
-          /* not STRING encoding, try to convert */
-          text_prop.value = prop;
-          text_prop.encoding = actual;
-          text_prop.format = actual_format;
-          text_prop.nitems = nitems;
-          if (XmbTextPropertyToTextList(dpy, &text_prop, &list, &num) >= Success
-              && num > 0 && *list) {
-            /* XXX: does not consider the conversion is REALLY succeeded */
-            XFree(prop); /* return of XGetWindowProperty() */
-            free_window_names (Tmp_win, False, True);
-            Tmp_win->icon_name = *list;
-            Tmp_win->icon_name_list = list;
-          } else {
-            if (list) XFreeStringList(list);
-            XFree(prop); /* return of XGetWindowProperty() */
-            if (!XGetWMIconName (dpy, Tmp_win->w, &text_prop))
-              return; /* why cannot read... */
-            free_window_names (Tmp_win, False, True);
-            Tmp_win->icon_name = (char *)text_prop.value;
-            Tmp_win->icon_name_list = NULL;
-          }
-        }
-      } else {
-        /* XXX: fallback to original behavior, is it needed ? */
-        if (!XGetWMIconName(dpy, Tmp_win->w, &text_prop))
-          return;
-        free_window_names (Tmp_win, False, True);
-        Tmp_win->icon_name = (char *)text_prop.value;
-        Tmp_win->icon_name_list = NULL;
-      }
+      Tmp_win->name_list = NULL;
+    }
 #else
-      if (!XGetWMIconName (dpy, Tmp_win->w, &text_prop))
-	return;
-      free_window_names (Tmp_win, False, True);
-      Tmp_win->icon_name = (char *) text_prop.value;
-      if (Tmp_win->icon_name && strlen(Tmp_win->icon_name) >
-	  MAX_ICON_NAME_LEN)
-	/* limit to prevent hanging X server */
-	Tmp_win->icon_name[MAX_ICON_NAME_LEN] = 0;
+    if (!XGetWMName(dpy, Tmp_win->w, &text_prop))
+      return;
+    free_window_names (Tmp_win, True, False);
+    Tmp_win->name = (char *)text_prop.value;
+    if (Tmp_win->name && strlen(Tmp_win->name) > MAX_WINDOW_NAME_LEN)
+      /* limit to prevent hanging X server */
+      Tmp_win->name[MAX_WINDOW_NAME_LEN] = 0;
 #endif
-      if (Tmp_win->icon_name == NULL)
-        Tmp_win->icon_name = NoName;
+
+    SET_NAME_CHANGED(Tmp_win, 1);
+
+    if (Tmp_win->name == NULL)
+      Tmp_win->name = NoName;
+    BroadcastName(M_WINDOW_NAME,Tmp_win->w,Tmp_win->frame,
+		  (unsigned long)Tmp_win,Tmp_win->name);
+
+    /* fix the name in the title bar */
+    if(!IS_ICONIFIED(Tmp_win))
+      DrawDecorations(
+	Tmp_win, DRAW_TITLE, (Scr.Hilite == Tmp_win), True, None);
+
+    /*
+     * if the icon name is NoName, set the name of the icon to be
+     * the same as the window
+     */
+    if (Tmp_win->icon_name == NoName)
+    {
+      Tmp_win->icon_name = Tmp_win->name;
       BroadcastName(M_ICON_NAME,Tmp_win->w,Tmp_win->frame,
 		    (unsigned long)Tmp_win,Tmp_win->icon_name);
       RedoIconName(Tmp_win);
-      break;
-
-    case XA_WM_HINTS:
-      /* clasen@mathematik.uni-freiburg.de - 02/01/1998 - new -
-	 the urgency flag is an ICCCM 2.0 addition to the WM_HINTS. */
-      old_wmhints_flags = 0;
-      if (Tmp_win->wmhints) {
-        old_wmhints_flags = Tmp_win->wmhints->flags;
-	XFree ((char *) Tmp_win->wmhints);
-      }
-      Tmp_win->wmhints = XGetWMHints(dpy, Event.xany.window);
-
-      if(Tmp_win->wmhints == NULL)
-	return;
-
-      /*
-       * rebuild icon if the client either provides an icon
-       * pixmap or window or has reset the hints to `no icon'.
-       */
-      if ((Tmp_win->wmhints->flags & (IconPixmapHint|IconWindowHint)) ||
-          ((old_wmhints_flags & (IconPixmapHint|IconWindowHint)) !=
-	   (Tmp_win->wmhints->flags & (IconPixmapHint|IconWindowHint))))
-	{
-	  if(Tmp_win->icon_bitmap_file == Scr.DefaultIcon)
-	    Tmp_win->icon_bitmap_file = NULL;
-          if(!Tmp_win->icon_bitmap_file &&
-             !(Tmp_win->wmhints->flags&(IconPixmapHint|IconWindowHint)))
-	  {
-	    Tmp_win->icon_bitmap_file =
-	      (Scr.DefaultIcon) ? strdup(Scr.DefaultIcon) : NULL;
-	  }
-
-	  if (!IS_ICON_SUPPRESSED(Tmp_win) ||
-	      (Tmp_win->wmhints->flags & IconWindowHint))
-	    {
-	      if (Tmp_win->icon_w)
-		XDestroyWindow(dpy,Tmp_win->icon_w);
-	      XDeleteContext(dpy, Tmp_win->icon_w, FvwmContext);
-	      if(IS_ICON_OURS(Tmp_win))
-		{
-		  if(Tmp_win->icon_pixmap_w != None)
-		    {
-		      XDestroyWindow(dpy,Tmp_win->icon_pixmap_w);
-		      XDeleteContext(dpy, Tmp_win->icon_pixmap_w, FvwmContext);
-		    }
-		}
-	      else
-		XUnmapWindow(dpy,Tmp_win->icon_pixmap_w);
-	    }
-	  Tmp_win->icon_w = None;
-	  Tmp_win->icon_pixmap_w = None;
-	  Tmp_win->iconPixmap = (Window)NULL;
-	  if(IS_ICONIFIED(Tmp_win))
-	    {
-	      SET_ICONIFIED(Tmp_win, 0);
-	      SET_ICON_UNMAPPED(Tmp_win, 0);
-	      CreateIconWindow(Tmp_win,
-			       Tmp_win->icon_g.x,Tmp_win->icon_g.y);
-	      BroadcastPacket(M_ICONIFY, 7,
-			      Tmp_win->w, Tmp_win->frame,
-			      (unsigned long)Tmp_win,
-			      Tmp_win->icon_g.x, Tmp_win->icon_g.y,
-			      Tmp_win->icon_g.width, Tmp_win->icon_g.height);
-	      /* domivogt (15-Sep-1999): BroadcastConfig informs modules of the
-	       * configuration change including the iconified flag. So this
-	       * flag must be set here. I'm not sure if the two calls of the
-	       * SET_ICONIFIED macro after BroadcastConfig are necessary, but
-	       * since it's only minimal overhead I prefer to be on the safe
-	       * side. */
-	      SET_ICONIFIED(Tmp_win, 1);
-	      BroadcastConfig(M_CONFIGURE_WINDOW, Tmp_win);
-	      SET_ICONIFIED(Tmp_win, 0);
-
-	      if (!IS_ICON_SUPPRESSED(Tmp_win))
-		{
-		  LowerWindow(Tmp_win);
-		  AutoPlaceIcon(Tmp_win);
-		  if(Tmp_win->Desk == Scr.CurrentDesk)
-		    {
-		      if(Tmp_win->icon_w)
-			XMapWindow(dpy, Tmp_win->icon_w);
-		      if(Tmp_win->icon_pixmap_w != None)
-			XMapWindow(dpy, Tmp_win->icon_pixmap_w);
-		    }
-		}
-	      SET_ICONIFIED(Tmp_win, 1);
-	      DrawIconWindow(Tmp_win);
-	    }
-	}
-
-      /* clasen@mathematik.uni-freiburg.de - 02/01/1998 - new -
-	 the urgency flag is an ICCCM 2.0 addition to the WM_HINTS.
-	 Treat urgency changes by calling user-settable functions.
-	 These could e.g. deiconify and raise the window or temporarily
-	 change the decor. */
-      if (!(old_wmhints_flags & XUrgencyHint) &&
-	  (Tmp_win->wmhints->flags & XUrgencyHint))
-	{
-	  old_execute_function(
-	    "Function UrgencyFunc", Tmp_win, &Event, C_WINDOW, -1, 0, NULL);
-	}
-
-      if ((old_wmhints_flags & XUrgencyHint) &&
-	  !(Tmp_win->wmhints->flags & XUrgencyHint))
-	{
-	  old_execute_function(
-	    "Function UrgencyDoneFunc", Tmp_win, &Event, C_WINDOW, -1, 0, NULL);
-	}
-      break;
-    case XA_WM_NORMAL_HINTS:
-      was_size_inc_set = IS_SIZE_INC_SET(Tmp_win);
-      old_width_inc = Tmp_win->hints.width_inc;
-      old_height_inc = Tmp_win->hints.height_inc;
-      old_base_width = Tmp_win->hints.base_width;
-      old_base_height = Tmp_win->hints.base_height;
-      GetWindowSizeHints(Tmp_win);
-      if (old_width_inc != Tmp_win->hints.width_inc ||
-	  old_height_inc != Tmp_win->hints.height_inc)
-      {
-	int units_w;
-	int units_h;
-	int wdiff;
-	int hdiff;
-
-        if (!was_size_inc_set && old_width_inc == 1 && old_height_inc == 1)
-        {
-          /* This is a hack for xvile.  It sets the _inc hints after it
-           * requested that the window is mapped but before it's really
-           * visible. */
-          /* do nothing */
-        }
-        else
-        {
-          /* we have to resize the unmaximized window to keep the size in
-           * resize increments constant */
-          units_w = Tmp_win->normal_g.width - 2 * Tmp_win->boundary_width -
-            old_base_width;
-          units_h = Tmp_win->normal_g.height - Tmp_win->title_g.height -
-            2 * Tmp_win->boundary_width - old_base_height;
-          units_w /= old_width_inc;
-          units_h /= old_height_inc;
-
-          /* update the 'invisible' geometry */
-          wdiff = units_w * (Tmp_win->hints.width_inc - old_width_inc) +
-            (Tmp_win->hints.base_width - old_base_width);
-          hdiff = units_h * (Tmp_win->hints.height_inc - old_height_inc) +
-            (Tmp_win->hints.base_height - old_base_height);
-          gravity_resize(
-            Tmp_win->hints.win_gravity, &Tmp_win->normal_g, wdiff, hdiff);
-        }
-        gravity_constrain_size(
-          Tmp_win->hints.win_gravity, Tmp_win, &Tmp_win->normal_g);
-        if (!IS_MAXIMIZED(Tmp_win))
-        {
-          rectangle new_g;
-
-          get_relative_geometry(&new_g, &Tmp_win->normal_g);
-          if (IS_SHADED(Tmp_win))
-            get_shaded_geometry(Tmp_win, &new_g, &new_g);
-          ForceSetupFrame(
-            Tmp_win, new_g.x, new_g.y, new_g.width, new_g.height, False);
-        }
-        else
-        {
-	  int w;
-	  int h;
-
-          maximize_adjust_offset(Tmp_win);
-	  /* domivogt (07-Apr-2000): as terrible hack to work around a xterm
-	   * bug: when the font size is changed in a xterm, xterm simply assumes
-	   * that the wm will grant its new size.  Of course this is wrong if
-	   * the xterm is maximised.  To make xterm happy, we first send a
-	   * ConfigureNotify with the current (maximised) geometry + 1 pixel in
-	   * height, then another one with the correct old geometry.  Changing
-	   * the font multiple times will cause the xterm to shrink because
-	   * gravity_constrain_size doesn't know about the initially requested
-	   * dimensions. */
-	  w = Tmp_win->max_g.width;
-	  h = Tmp_win->max_g.height;
-	  gravity_constrain_size(
-	    Tmp_win->hints.win_gravity, Tmp_win, &Tmp_win->max_g);
-	  if (w != Tmp_win->max_g.width ||
-	      h != Tmp_win->max_g.height)
-	  {
-	    rectangle new_g;
-
-	    /* This is in case the size_inc changed and the old dimensions are
-	     * not multiples of the new values. */
-	    get_relative_geometry(&new_g, &Tmp_win->max_g);
-	    if (IS_SHADED(Tmp_win))
-	      get_shaded_geometry(Tmp_win, &new_g, &new_g);
-	    ForceSetupFrame(
-	      Tmp_win, new_g.x, new_g.y, new_g.width, new_g.height, False);
-	  }
-	  else
-	  {
-	    SendConfigureNotify(
-	      Tmp_win, Tmp_win->frame_g.x, Tmp_win->frame_g.y,
-	      Tmp_win->frame_g.width, Tmp_win->frame_g.height+1, 0, False);
-	    XSync(dpy, 0);
-	    /* free some CPU */
-	    usleep(1);
-	    SendConfigureNotify(
-	      Tmp_win, Tmp_win->frame_g.x, Tmp_win->frame_g.y,
-	      Tmp_win->frame_g.width, Tmp_win->frame_g.height, 0, False);
-	    XSync(dpy, 0);
-	  }
-        }
-        GNOME_SetWinArea(Tmp_win);
-      }
-      BroadcastConfig(M_CONFIGURE_WINDOW,Tmp_win);
-      break;
-
-    default:
-      if(Event.xproperty.atom == _XA_WM_PROTOCOLS)
-	FetchWmProtocols (Tmp_win);
-      else if (Event.xproperty.atom == _XA_WM_COLORMAP_WINDOWS)
-	{
-	  FetchWmColormapWindows (Tmp_win);	/* frees old data */
-	  ReInstallActiveColormap();
-	}
-      else if(Event.xproperty.atom == _XA_WM_STATE)
-	{
-	  if((Tmp_win != NULL)&&(HAS_CLICK_FOCUS(Tmp_win))
-	     &&(Tmp_win == Scr.Focus))
-	    {
-              if (OnThisPage)
-              {
-	        Scr.Focus = NULL;
-	        SetFocusWindow(Tmp_win, 0);
-              }
-	    }
-	}
-      break;
     }
+    break;
+
+  case XA_WM_ICON_NAME:
+    flush_property_notify(XA_WM_ICON_NAME, Tmp_win->w);
+#ifdef I18N_MB
+    if (XGetWindowProperty (dpy, Tmp_win->w, Event.xproperty.atom, 0L,
+			    MAX_ICON_NAME_LEN, False, AnyPropertyType,
+			    &actual, &actual_format, &nitems, &bytesafter,
+			    (unsigned char **) &prop) != Success ||
+	actual == None)
+      return;
+    if (prop) {
+      if (actual == XA_STRING) {
+	/* STRING encoding, use this as it is */
+	free_window_names (Tmp_win, False, True);
+	Tmp_win->icon_name = prop;
+	Tmp_win->icon_name_list = NULL;
+      } else {
+	/* not STRING encoding, try to convert */
+	text_prop.value = prop;
+	text_prop.encoding = actual;
+	text_prop.format = actual_format;
+	text_prop.nitems = nitems;
+	if (XmbTextPropertyToTextList(dpy, &text_prop, &list, &num) >= Success
+	    && num > 0 && *list) {
+	  /* XXX: does not consider the conversion is REALLY succeeded */
+	  XFree(prop); /* return of XGetWindowProperty() */
+	  free_window_names (Tmp_win, False, True);
+	  Tmp_win->icon_name = *list;
+	  Tmp_win->icon_name_list = list;
+	} else {
+	  if (list) XFreeStringList(list);
+	  XFree(prop); /* return of XGetWindowProperty() */
+	  if (!XGetWMIconName (dpy, Tmp_win->w, &text_prop))
+	    return; /* why cannot read... */
+	  free_window_names (Tmp_win, False, True);
+	  Tmp_win->icon_name = (char *)text_prop.value;
+	  Tmp_win->icon_name_list = NULL;
+	}
+      }
+    } else {
+      /* XXX: fallback to original behavior, is it needed ? */
+      if (!XGetWMIconName(dpy, Tmp_win->w, &text_prop))
+	return;
+      free_window_names (Tmp_win, False, True);
+      Tmp_win->icon_name = (char *)text_prop.value;
+      Tmp_win->icon_name_list = NULL;
+    }
+#else
+    if (!XGetWMIconName (dpy, Tmp_win->w, &text_prop))
+      return;
+    free_window_names (Tmp_win, False, True);
+    Tmp_win->icon_name = (char *) text_prop.value;
+    if (Tmp_win->icon_name && strlen(Tmp_win->icon_name) >
+	MAX_ICON_NAME_LEN)
+      /* limit to prevent hanging X server */
+      Tmp_win->icon_name[MAX_ICON_NAME_LEN] = 0;
+#endif
+    if (Tmp_win->icon_name == NULL)
+      Tmp_win->icon_name = NoName;
+    BroadcastName(M_ICON_NAME,Tmp_win->w,Tmp_win->frame,
+		  (unsigned long)Tmp_win,Tmp_win->icon_name);
+    RedoIconName(Tmp_win);
+    break;
+
+  case XA_WM_HINTS:
+    flush_property_notify(XA_WM_HINTS, Tmp_win->w);
+    /* clasen@mathematik.uni-freiburg.de - 02/01/1998 - new -
+       the urgency flag is an ICCCM 2.0 addition to the WM_HINTS. */
+    old_wmhints_flags = 0;
+    if (Tmp_win->wmhints)
+    {
+      old_wmhints_flags = Tmp_win->wmhints->flags;
+      XFree ((char *) Tmp_win->wmhints);
+    }
+    Tmp_win->wmhints = XGetWMHints(dpy, Event.xany.window);
+    if(Tmp_win->wmhints == NULL)
+    {
+      return;
+    }
+
+    /*
+     * rebuild icon if the client either provides an icon
+     * pixmap or window or has reset the hints to `no icon'.
+     */
+    if ((Tmp_win->wmhints->flags & (IconPixmapHint|IconWindowHint)) ||
+	(old_wmhints_flags       & (IconPixmapHint|IconWindowHint)))
+    {
+      if(Tmp_win->icon_bitmap_file == Scr.DefaultIcon)
+	Tmp_win->icon_bitmap_file = NULL;
+      if(!Tmp_win->icon_bitmap_file &&
+	 !(Tmp_win->wmhints->flags&(IconPixmapHint|IconWindowHint)))
+      {
+	Tmp_win->icon_bitmap_file =
+	  (Scr.DefaultIcon) ? strdup(Scr.DefaultIcon) : NULL;
+      }
+      Tmp_win->iconPixmap = (Window)NULL;
+      if(IS_ICONIFIED(Tmp_win))
+      {
+	SET_ICONIFIED(Tmp_win, 0);
+	SET_ICON_UNMAPPED(Tmp_win, 0);
+	CreateIconWindow(Tmp_win, Tmp_win->icon_g.x,Tmp_win->icon_g.y);
+	BroadcastPacket(M_ICONIFY, 7,
+			Tmp_win->w, Tmp_win->frame,
+			(unsigned long)Tmp_win,
+			Tmp_win->icon_g.x, Tmp_win->icon_g.y,
+			Tmp_win->icon_g.width, Tmp_win->icon_g.height);
+	/* domivogt (15-Sep-1999): BroadcastConfig informs modules of the
+	 * configuration change including the iconified flag. So this
+	 * flag must be set here. I'm not sure if the two calls of the
+	 * SET_ICONIFIED macro after BroadcastConfig are necessary, but
+	 * since it's only minimal overhead I prefer to be on the safe
+	 * side. */
+	SET_ICONIFIED(Tmp_win, 1);
+	BroadcastConfig(M_CONFIGURE_WINDOW, Tmp_win);
+	SET_ICONIFIED(Tmp_win, 0);
+
+	if (!IS_ICON_SUPPRESSED(Tmp_win))
+	{
+	  LowerWindow(Tmp_win);
+	  AutoPlaceIcon(Tmp_win);
+	  if(Tmp_win->Desk == Scr.CurrentDesk)
+	  {
+	    if(Tmp_win->icon_w)
+	      XMapWindow(dpy, Tmp_win->icon_w);
+	    if(Tmp_win->icon_pixmap_w != None)
+	      XMapWindow(dpy, Tmp_win->icon_pixmap_w);
+	  }
+	}
+	SET_ICONIFIED(Tmp_win, 1);
+	DrawIconWindow(Tmp_win);
+      }
+    }
+
+    /* clasen@mathematik.uni-freiburg.de - 02/01/1998 - new -
+       the urgency flag is an ICCCM 2.0 addition to the WM_HINTS.
+       Treat urgency changes by calling user-settable functions.
+       These could e.g. deiconify and raise the window or temporarily
+       change the decor. */
+    if (!(old_wmhints_flags & XUrgencyHint) &&
+	(Tmp_win->wmhints->flags & XUrgencyHint))
+    {
+      old_execute_function(
+	"Function UrgencyFunc", Tmp_win, &Event, C_WINDOW, -1, 0, NULL);
+    }
+
+    if ((old_wmhints_flags & XUrgencyHint) &&
+	!(Tmp_win->wmhints->flags & XUrgencyHint))
+    {
+      old_execute_function(
+	"Function UrgencyDoneFunc", Tmp_win, &Event, C_WINDOW, -1, 0, NULL);
+    }
+    break;
+  case XA_WM_NORMAL_HINTS:
+    was_size_inc_set = IS_SIZE_INC_SET(Tmp_win);
+    old_width_inc = Tmp_win->hints.width_inc;
+    old_height_inc = Tmp_win->hints.height_inc;
+    old_base_width = Tmp_win->hints.base_width;
+    old_base_height = Tmp_win->hints.base_height;
+    GetWindowSizeHints(Tmp_win);
+    if (old_width_inc != Tmp_win->hints.width_inc ||
+	old_height_inc != Tmp_win->hints.height_inc)
+    {
+      int units_w;
+      int units_h;
+      int wdiff;
+      int hdiff;
+
+      if (!was_size_inc_set && old_width_inc == 1 && old_height_inc == 1)
+      {
+	/* This is a hack for xvile.  It sets the _inc hints after it
+	 * requested that the window is mapped but before it's really
+	 * visible. */
+	/* do nothing */
+      }
+      else
+      {
+	/* we have to resize the unmaximized window to keep the size in
+	 * resize increments constant */
+	units_w = Tmp_win->normal_g.width - 2 * Tmp_win->boundary_width -
+	  old_base_width;
+	units_h = Tmp_win->normal_g.height - Tmp_win->title_g.height -
+	  2 * Tmp_win->boundary_width - old_base_height;
+	units_w /= old_width_inc;
+	units_h /= old_height_inc;
+
+	/* update the 'invisible' geometry */
+	wdiff = units_w * (Tmp_win->hints.width_inc - old_width_inc) +
+	  (Tmp_win->hints.base_width - old_base_width);
+	hdiff = units_h * (Tmp_win->hints.height_inc - old_height_inc) +
+	  (Tmp_win->hints.base_height - old_base_height);
+	gravity_resize(
+	  Tmp_win->hints.win_gravity, &Tmp_win->normal_g, wdiff, hdiff);
+      }
+      gravity_constrain_size(
+	Tmp_win->hints.win_gravity, Tmp_win, &Tmp_win->normal_g);
+      if (!IS_MAXIMIZED(Tmp_win))
+      {
+	rectangle new_g;
+
+	get_relative_geometry(&new_g, &Tmp_win->normal_g);
+	if (IS_SHADED(Tmp_win))
+	  get_shaded_geometry(Tmp_win, &new_g, &new_g);
+	ForceSetupFrame(
+	  Tmp_win, new_g.x, new_g.y, new_g.width, new_g.height, False);
+      }
+      else
+      {
+	int w;
+	int h;
+
+	maximize_adjust_offset(Tmp_win);
+	/* domivogt (07-Apr-2000): as terrible hack to work around a xterm
+	 * bug: when the font size is changed in a xterm, xterm simply assumes
+	 * that the wm will grant its new size.  Of course this is wrong if
+	 * the xterm is maximised.  To make xterm happy, we first send a
+	 * ConfigureNotify with the current (maximised) geometry + 1 pixel in
+	 * height, then another one with the correct old geometry.  Changing
+	 * the font multiple times will cause the xterm to shrink because
+	 * gravity_constrain_size doesn't know about the initially requested
+	 * dimensions. */
+	w = Tmp_win->max_g.width;
+	h = Tmp_win->max_g.height;
+	gravity_constrain_size(
+	  Tmp_win->hints.win_gravity, Tmp_win, &Tmp_win->max_g);
+	if (w != Tmp_win->max_g.width ||
+	    h != Tmp_win->max_g.height)
+	{
+	  rectangle new_g;
+
+	  /* This is in case the size_inc changed and the old dimensions are
+	   * not multiples of the new values. */
+	  get_relative_geometry(&new_g, &Tmp_win->max_g);
+	  if (IS_SHADED(Tmp_win))
+	    get_shaded_geometry(Tmp_win, &new_g, &new_g);
+	  ForceSetupFrame(
+	    Tmp_win, new_g.x, new_g.y, new_g.width, new_g.height, False);
+	}
+	else
+	{
+	  SendConfigureNotify(
+	    Tmp_win, Tmp_win->frame_g.x, Tmp_win->frame_g.y,
+	    Tmp_win->frame_g.width, Tmp_win->frame_g.height+1, 0, False);
+	  XSync(dpy, 0);
+	  /* free some CPU */
+	  usleep(1);
+	  SendConfigureNotify(
+	    Tmp_win, Tmp_win->frame_g.x, Tmp_win->frame_g.y,
+	    Tmp_win->frame_g.width, Tmp_win->frame_g.height, 0, False);
+	  XSync(dpy, 0);
+	}
+      }
+      GNOME_SetWinArea(Tmp_win);
+    }
+    BroadcastConfig(M_CONFIGURE_WINDOW,Tmp_win);
+    break;
+
+  default:
+    if(Event.xproperty.atom == _XA_WM_PROTOCOLS)
+      FetchWmProtocols (Tmp_win);
+    else if (Event.xproperty.atom == _XA_WM_COLORMAP_WINDOWS)
+    {
+      FetchWmColormapWindows (Tmp_win);	/* frees old data */
+      ReInstallActiveColormap();
+    }
+    else if(Event.xproperty.atom == _XA_WM_STATE)
+    {
+      if((Tmp_win != NULL)&&(HAS_CLICK_FOCUS(Tmp_win))
+	 &&(Tmp_win == Scr.Focus))
+      {
+	if (OnThisPage)
+	{
+	  Scr.Focus = NULL;
+	  SetFocusWindow(Tmp_win, 0);
+	}
+      }
+    }
+    break;
+  }
 }
 
 
@@ -2819,6 +2802,25 @@ int discard_events(long event_mask)
   for (count = 0; XCheckMaskEvent(dpy, event_mask, &e); count++)
   {
     StashEventTime(&e);
+  }
+
+  return count;
+}
+
+/* Similar function for certain types of PropertyNotify. */
+static int flush_property_notify(Atom atom, Window w)
+{
+  XEvent e;
+  int count;
+
+  XSync(dpy, 0);
+  for (count = 0; XCheckMaskEvent(dpy, PropertyChangeMask, &e); count++)
+  {
+    if (e.xproperty.atom != atom)
+    {
+      XPutBackEvent(dpy, &e);
+      break;
+    }
   }
 
   return count;
