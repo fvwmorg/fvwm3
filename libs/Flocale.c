@@ -1959,7 +1959,7 @@ void FlocaleDrawUnderline(
 	 */
 
 	/* we don't need this, only interested in char mapping */
-	free(comb_chars);
+	/*free(comb_chars);*/
 
 	off1 = FlocaleTextWidth(flf, fws->str, coffset) +
 		((coffset == 0)?

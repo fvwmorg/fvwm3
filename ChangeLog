@@ -1,5 +1,10 @@
 2003-07-05  Marcus Lundblad  <ml@update.uu.se>
 
+	* libs/Flocale.c (FlocaleDrawUnderline):
+	Commented out some non-working new code
+
+2003-07-05  Marcus Lundblad  <ml@update.uu.se>
+
 	* libs/Flocale.c (FlocaleDrawString):
 	fixed drawing superimposed characters with a fontset
 	
