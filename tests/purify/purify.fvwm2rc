@@ -22,6 +22,3111 @@ ImagePath $HOME/.wm-icons:+
 ImagePath +:/usr/share/icons/mini
 ImagePath +::::/opt/kde/share/icons:/opt/kde/share/apps/kappfinder/pics:
 
+# Starting ManPage Order
+Log "Test ChangeMenuStyle"
+
+# Create new menu using the default style and show it.
+# Add Line to menu and pop it up.
+DestroyMenu Menu-ChangeMenuStyle
+MenuStyle * Background lightblue, Foreground black, ActiveFore Maroon, 
+MenuStyle * Fvwm, Font 6x13bold
+AddToMenu Menu-ChangeMenuStyle "ChangeMenuStyle test menu, using default style"
++ "Press Escape to continue" Echo "Tester selected item on menu to proceed"
+Popup Menu-ChangeMenuStyle
+# Create a new MenuStyle, do ChangeMenuStyle to the new menu and show it
+MenuStyle NewStyle Background white, Foreground black, ActiveFore cyan
+MenuStyle NewStyle Win, Font 9x15bold
+ChangeMenuStyle NewStyle Menu-ChangeMenuStyle
+AddToMenu Menu-ChangeMenuStyle "ChangeMenuStyle: Menu now white/black/cyan, 9x15bold"
++ "Press Escape to continue" Echo "Tester selected item on menu to proceed"
+Popup Menu-ChangeMenuStyle
+# Syntax tests:
+Echo Start intentional errors
+ChangeMenuStyle
+ChangeMenuStyle none_such
+ChangeMenuStyle not_at_all same_here
+ChangeMenuStyle same_here same_here
+ChangeMenuStyle NewStyle
+ChangeMenuStyle NewStyle no_such_style
+ChangeMenuStyle NewStyle NewStyle
+ChangeMenuStyle " a large quoted arg with spaces at the front, middle, end"
+Echo End intentional errors
+
+Log "Test DestroyMenu"
+
+Echo "The next test attempts to popup a menu thats been destroyed w. recreate"
+AddToMenu Menu-ChangeMenuStyle "ChangeMenuStyle: Attempt to pop destroyed menu"
++ "Press Escape to continue" Echo "Tester selected item on menu to proceed"
+DestroyMenu recreate Menu-ChangeMenuStyle
+Popup Menu-ChangeMenuStyle
+AddToMenu Menu-ChangeMenuStyle "ChangeMenuStyle: Same Menu recreated" Title
++ "Press Escape to continue" Echo "Tester selected item on menu to proceed"
+
+Echo "The next test attempts to popup a menu thats been destroyed w/o recreate"
+AddToMenu Menu-ChangeMenuStyle "ChangeMenuStyle: Seond Attempt to pop destroyed menu"
++ "Press Escape to continue" Echo "Tester selected item on menu to proceed"
+DestroyMenu Menu-ChangeMenuStyle
+Popup Menu-ChangeMenuStyle
+
+# Syntax tests (note, doesn't produce errors):
+Echo Start intentional errors (note, doesn't produce message)
+DestroyMenu
+DestroyMenu MenuDoesntExist
+DestroyMenu MenuDoesntExist MenuDoesntExist
+DestroyMenu MenuDoesntExist MenuDoesntExistEither
+Echo End intentional errors (note, doesn't produce message)
+
+# Ending ManPage Order
+
+
+Log "Test CONFIG, DESTROY MODULE CONFIG"
+
+*dummymodule
+*dummymodule
+*dummymodule ÖLq- ö.qljüpßi+123
+*dummymodule1fooqmnld Ä"§k
+*dummymodule1p	o q#köpiü
+*dummymodule1wqwq  lkjöö 13
+*dummymodule1r 13r  g3w
+*dummymodule2r 13r  g3w
+*dummymodule2r 13r  g3w
+*dummymodule2 121 32
+*dummymodule2 qw 124
+
+DestroyModuleConfig
+DestroyModuleConfig
+DestroyModuleConfig  dummymodule1
+DestroyModuleConfig		dummymodule1
+DestroyModuleConfig dummymod*
+DestroyModuleConfig dummymod*
+
+*dummymodule
+*dummymodule
+*dummymodule ÖLq- ö.qljüpßi+123
+*dummymodule1fooqmnld Ä"§k
+*dummymodule1p	o q#köpiü
+*dummymodule1wqwq  lkjöö 13
+*dummymodule1r 13r  g3w
+*dummymodule2r 13r  g3w
+*dummymodule2r 13r  g3w
+*dummymodule2 121 32
+*dummymodule2 qw 124
+
+DestroyModuleConfig *
+
+Log "Test FvwmBanner"
+
+*FvwmBannerTimeout 9182743120348908713204
+*FvwmBannerTimeout 1000
+*FvwmBannerTimeout 10
+
+Module
+Module
+Module FvwmBanner
+Module    FvwmBanner
+Module		FvwmBanner
+
+################# GLOBAL COMMANDS ###################
+
+Log "Test AddToFunc, DestroyFunc, Function"
+
+AddToFunc
+AddToFunc   foo
+AddToFunc		bar
+
+AddToFunc   suicide
+AddToFunc		suicide
+AddToFunc suicide
+ + "I" DestroyFunc suicide
+ + "I" DestroyFunc suicide
+ + "I" DestroyFunc suicide
+AddToFunc suicide
+ + "I" DestroyFunc suicide
+function suicide
+
+### coredump!!
+
+#AddToFunc loop1
+# + "I" function loop2
+#AddToFunc loop2
+# + "I" function loop1
+#function loop1
+
+### coredump!!
+
+#AddToFunc grow1
+# + "I" AddToFunc grow2 nop
+# + "I" function grow2
+#AddToFunc grow2
+# + "I" AddToFunc grow1 nop
+# + "I" function grow1
+#function grow1
+
+addtofunc foo
+ + "I" nop $w $d $1 $10298097
+function
+function   foo
+function		foo
+function nonexist
+
+DestroyFunc
+DestroyFunc    grow2
+DestroyFunc		grow1
+DestroyFunc loop1
+DestroyFunc loop2
+
+Log "Test TO MENU, DESTROY MENU, MENU, POPUP"
+
+AddToMenu menu1 "tt1" title top
+AddToMenu menu1 "t1" title
+AddToMenu menu1 "tt1"   title   top
+AddToMenu menu1 "t1"   title
+AddToMenu menu1 "tt1"		title		top
+AddToMenu menu1 "t1"		title
++ "" ""
++ "" nop
++ "" nop
++ "%test1.xpm%foo%test2.xpm%"
++ "*test1.xpm*fo*test2.xpm*"
++ "^test1.xpm^f^test2.xpm^"
++ "@test1.xpm@oo@test2.xpm@"
++ "%test1.xpm%foo%test2.xpm%"
++ "*test1.xpm*fo*test2.xpm*"
++ "^test1.xpm^f^test2.xpm^"
++ "@test1.xpm@oo@test2.xpm@"
++ "%test2.xpm%foo%test1.xpm%"
++ "*test2.xpm*fo*test1.xpm*"
++ "^test2.xpm^f^test1.xpm^"
++ "@test2.xpm@oo@test1.xpm@"
++ "xx" function xyz
++ "xx" function xyz
++ "xx" function xyz
+
+Menu menu1 root c+0 c+0 beep
+Menu menu1 root c+0 c+0 beep
+popup menu1 root c+0 c+0 beep
+popup menu1 root c+0 c+0 beep
+
+DestroyMenu
+DestroyMenu
+DestroyMenu		 menu1
+
+addtofunc makelongmenu
++ "I" AddToMenu longmenu popup "short menu"
++ "I" AddToMenu longmenu popup "recursive menu"
++ "I" AddToMenu longmenu popup "short menu"
++ "I" AddToMenu longmenu popup "recursive menu"
++ "I" AddToMenu longmenu popup "short menu"
++ "I" AddToMenu longmenu popup "recursive menu"
++ "I" AddToMenu longmenu popup "short menu"
++ "I" AddToMenu longmenu popup "recursive menu"
++ "I" AddToMenu longmenu popup "short menu"
++ "I" AddToMenu longmenu popup "recursive menu"
++ "I" AddToMenu longmenu popup "short menu"
++ "I" AddToMenu longmenu popup "recursive menu"
++ "I" AddToMenu longmenu popup "short menu"
++ "I" AddToMenu longmenu popup "recursive menu"
++ "I" AddToMenu longmenu popup "short menu"
++ "I" AddToMenu longmenu popup "recursive menu"
++ "I" AddToMenu longmenu popup "short menu"
++ "I" AddToMenu longmenu popup "recursive menu"
++ "I" AddToMenu longmenu popup "short menu"
++ "I" AddToMenu longmenu popup "recursive menu"
+
+AddToMenu longmenu "a very long menu" title
+Addtomenu "short menu" "a very short menu" title top
++ "single item" nop
+Addtomenu "recursive menu" "recursion" title top
++ "recurse" popup "recursive menu"
+
+makelongmenu
+makelongmenu
+makelongmenu
+makelongmenu
+makelongmenu
+makelongmenu
+makelongmenu
+makelongmenu
+makelongmenu
+makelongmenu
+
+Menu longmenu
+Popup longmenu
+DestroyMenu longmenu
+
+Log "Test BEEP"
+
+Beep
+Beep
+Beep ü30 23äö ü9823r ,l.öapü39
+
+Log "Test BorderStyle"
+
+BorderStyle
+BorderStyle -- HiddenHandles
+BorderStyle Active -- !HiddenHandles
+BorderStyle Active -- !HiddenHandles
+BorderStyle Simple
+BorderStyle Simple
+BorderStyle Inactive -- HiddenHandles NoInset
+BorderStyle Active TiledPixmap test1.xpm
+BorderStyle Inactive TiledPixmap test2.xpm
+BorderStyle Active -- HiddenHandles NoInset
+
+Log "Test TITLE STYLE"
+
+Log "Test TitleStyle justification and height"
+
+TitleStyle
+TitleStyle LEFtJusTiFied
+TitleStyle LEFtJusTiFied
+TitleStyle   centered
+TitleStyle		rightjustified
+TitleStyle heIGht 20
+TitleStyle heIGht 20
+TitleStyle leftjustified height 37
+TitleStyle leftjustified height 24
+
+Log "Test TitleStyles"
+
+TitleStyle -- raisED
+TitleStyle -- SUNk
+TitleStyle -- flat
+TitleStyle -- flat
+TitleStyle -- !flat
+TitleStyle Activeup -- raised
+TitleStyle Activeup -- raised
+TitleStyle activeDOWN -- sunk
+TitleStyle inactive -- flat
+TitleStyle inactive -- flat
+TitleStyle Activeup -- sunk
+TitleStyle simple
+TitleStyle simple
+TitleStyle default 3
+TitleStyle default 3
+TitleStyle solid blaCK
+TitleStyle solid blaCK
+TitleStyle simple
+
+Log "Test gradients"
+
+TitleStyle hgradient 16 green red
+TitleStyle hgradient 16 green red
+TitleStyle hgradient 16 red blue
+TitleStyle hgradient 32 red blue
+TitleStyle hgradient 128 red blue
+TitleStyle hgradient 2 red blue
+TitleStyle vgradient 16 green red
+TitleStyle vgradient 16 green red
+TitleStyle vgradient 16 red blue
+TitleStyle vgradient 32 red blue
+TitleStyle vgradient 128 red blue
+TitleStyle vgradient 2 red blue
+TitleStyle VGradient 16 3 Red 20 Blue 30 Black 50 Grey
+TitleStyle VGradient 16 3 Red 20 Blue 30 Black 50 Grey
+TitleStyle VGradient 16 4 Red 20 Blue 30 Black 20 Grey 30 yellow
+TitleStyle VGradient 16 2 Red 20 Blue 80
+TitleStyle VGradient 128 2 Red 20 Blue 80
+TitleStyle VGradient 2 2 Red 20 Blue 80
+TitleStyle hGradient 16 3 Red 20 Blue 30 Black 50 Grey
+TitleStyle hGradient 16 3 Red 20 Blue 30 Black 50 Grey
+TitleStyle hGradient 16 4 Red 20 Blue 30 Black 20 Grey 30 yellow
+TitleStyle hGradient 16 2 Red 20 Blue 80
+TitleStyle hGradient 128 2 Red 20 Blue 80
+TitleStyle hGradient 2 2 Red 20 Blue 80
+
+Log "Test vector buttons"
+
+TitleStyle Vector 5 45x60@0 80x60@0 80x80@1 45x80@1 45x60@0
+TitleStyle Vector 5 45x60@0 80x60@0 80x80@1 45x80@1 45x60@0
+TitleStyle 4 50x35@1 65x65@0 35x65@0 50x35@1
+TitleStyle 4 50x65@1 35x35@1 65x35@1 50x65@0
+TitleStyle 5 40x40@1 60x40@1 60x60@0 40x60@0 40x40@1
+TitleStyle 5 40x40@1 60x40@1 60x60@0 40x60@0 40x40@1
+
+Log "Test pixmaps"
+
+TitleStyle Pixmap test1.xpm
+TitleStyle Pixmap test2.xpm
+TitleStyle TiledPixmap test2.xpm
+TitleStyle TiledPixmap test2.xpm
+TitleStyle TiledPixmap test1.xpm
+TitleStyle ActiveUp (Pixmap test3.xpm) ActiveDown (Pixmap test2.xpm)
+TitleStyle Inactive Pixmap nonexistent.xpm
+TitleStyle Inactive Pixmap test3.xpm
+TitleStyle Inactive Pixmap test3.xpm
+TitleStyle Inactive Pixmap
+TitleStyle MiniIcons
+TitleStyle miniicons
+
+Log "Test ADD TITLE STYLE"
+
+AddTitleStyle
+AddTitleStyle -- raisED
+AddTitleStyle -- SUNk
+AddTitleStyle -- flat
+AddTitleStyle -- flat
+AddTitleStyle -- !flat
+AddTitleStyle Activeup -- raised
+AddTitleStyle Activeup -- raised
+AddTitleStyle activeDOWN -- sunk
+AddTitleStyle inactive -- flat
+AddTitleStyle inactive -- flat
+AddTitleStyle Activeup -- sunk
+AddTitleStyle simple
+AddTitleStyle simple
+AddTitleStyle default 3
+AddTitleStyle default 3
+AddTitleStyle solid blaCK
+AddTitleStyle solid blaCK
+AddTitleStyle simple
+
+Log "Test gradients"
+
+AddTitleStyle hgradient 16 green red
+AddTitleStyle hgradient 16 green red
+AddTitleStyle hgradient 16 red blue
+AddTitleStyle hgradient 32 red blue
+AddTitleStyle hgradient 128 red blue
+AddTitleStyle hgradient 2 red blue
+AddTitleStyle vgradient 16 green red
+AddTitleStyle vgradient 16 green red
+AddTitleStyle vgradient 16 red blue
+AddTitleStyle vgradient 32 red blue
+AddTitleStyle vgradient 128 red blue
+AddTitleStyle vgradient 2 red blue
+AddTitleStyle VGradient 16 3 Red 20 Blue 30 Black 50 Grey
+AddTitleStyle VGradient 16 3 Red 20 Blue 30 Black 50 Grey
+AddTitleStyle VGradient 16 4 Red 20 Blue 30 Black 20 Grey 30 yellow
+AddTitleStyle VGradient 16 2 Red 20 Blue 80
+AddTitleStyle VGradient 128 2 Red 20 Blue 80
+AddTitleStyle VGradient 2 2 Red 20 Blue 80
+AddTitleStyle hGradient 16 3 Red 20 Blue 30 Black 50 Grey
+AddTitleStyle hGradient 16 3 Red 20 Blue 30 Black 50 Grey
+AddTitleStyle hGradient 16 4 Red 20 Blue 30 Black 20 Grey 30 yellow
+AddTitleStyle hGradient 16 2 Red 20 Blue 80
+AddTitleStyle hGradient 128 2 Red 20 Blue 80
+AddTitleStyle hGradient 2 2 Red 20 Blue 80
+
+Log "Test vector buttons"
+
+AddTitleStyle Vector 5 45x60@0 80x60@0 80x80@1 45x80@1 45x60@0
+AddTitleStyle Vector 5 45x60@0 80x60@0 80x80@1 45x80@1 45x60@0
+AddTitleStyle 4 50x35@1 65x65@0 35x65@0 50x35@1
+AddTitleStyle 4 50x65@1 35x35@1 65x35@1 50x65@0
+AddTitleStyle 5 40x40@1 60x40@1 60x60@0 40x60@0 40x40@1
+AddTitleStyle 5 40x40@1 60x40@1 60x60@0 40x60@0 40x40@1
+
+Log "Test pixmaps"
+
+AddTitleStyle Pixmap test1.xpm
+AddTitleStyle Pixmap test2.xpm
+AddTitleStyle TiledPixmap test2.xpm
+AddTitleStyle TiledPixmap test2.xpm
+AddTitleStyle TiledPixmap test1.xpm
+AddTitleStyle ActiveUp (Pixmap test3.xpm) ActiveDown (Pixmap test2.xpm)
+AddTitleStyle Inactive Pixmap nonexistent.xpm
+AddTitleStyle Inactive Pixmap test3.xpm
+AddTitleStyle Inactive Pixmap test3.xpm
+AddTitleStyle Inactive Pixmap
+AddTitleStyle MiniIcons
+AddTitleStyle miniicons
+
+Log "Test BUTTON STYLE"
+
+Log "Test various states and styles"
+
+ButtonStyle
+ButtonStyle All -- UseBorderStyle
+ButtonStyle All -- UseTitleStyle
+ButtonStyle Reset
+ButtonStyle All -- raisED
+ButtonStyle All -- SUNk
+ButtonStyle Left -- flat
+ButtonStyle Left -- flat
+ButtonStyle Right -- !flat
+ButtonStyle Left Activeup -- raised
+ButtonStyle Left Activeup -- raised
+ButtonStyle Left activeDOWN -- sunk
+ButtonStyle Left inactive -- flat
+ButtonStyle Left inactive -- flat
+ButtonStyle Left Activeup -- sunk
+ButtonStyle 1 simple
+ButtonStyle 1 simple
+ButtonStyle 1 default 3
+ButtonStyle 1 default 3
+ButtonStyle 1 solid blaCK
+ButtonStyle 1 solid blaCK
+ButtonStyle 1 simple
+
+Log "Test gradients"
+
+ButtonStyle 2 hgradient 16 green red
+ButtonStyle 2 hgradient 16 green red
+ButtonStyle 2 hgradient 16 red blue
+ButtonStyle 2 hgradient 32 red blue
+ButtonStyle 2 hgradient 128 red blue
+ButtonStyle 2 hgradient 2 red blue
+ButtonStyle 2 vgradient 16 green red
+ButtonStyle 2 vgradient 16 green red
+ButtonStyle 2 vgradient 16 red blue
+ButtonStyle 2 vgradient 32 red blue
+ButtonStyle 2 vgradient 128 red blue
+ButtonStyle 2 vgradient 2 red blue
+ButtonStyle 3 VGradient 16 3 Red 20 Blue 30 Black 50 Grey
+ButtonStyle 3 VGradient 16 3 Red 20 Blue 30 Black 50 Grey
+ButtonStyle 3 VGradient 16 4 Red 20 Blue 30 Black 20 Grey 30 yellow
+ButtonStyle 3 VGradient 16 2 Red 20 Blue 80
+ButtonStyle 3 VGradient 128 2 Red 20 Blue 80
+ButtonStyle 3 VGradient 2 2 Red 20 Blue 80
+ButtonStyle 3 hGradient 16 3 Red 20 Blue 30 Black 50 Grey
+ButtonStyle 3 hGradient 16 3 Red 20 Blue 30 Black 50 Grey
+ButtonStyle 3 hGradient 16 4 Red 20 Blue 30 Black 20 Grey 30 yellow
+ButtonStyle 3 hGradient 16 2 Red 20 Blue 80
+ButtonStyle 3 hGradient 128 2 Red 20 Blue 80
+ButtonStyle 3 hGradient 2 2 Red 20 Blue 80
+
+Log "Test vector buttons"
+
+ButtonStyle Reset
+ButtonStyle 1 Vector 5 45x60@0 80x60@0 80x80@1 45x80@1 45x60@0
+ButtonStyle 1 Vector 5 45x60@0 80x60@0 80x80@1 45x80@1 45x60@0
+ButtonStyle 1 4 50x35@1 65x65@0 35x65@0 50x35@1
+ButtonStyle 1 4 50x65@1 35x35@1 65x35@1 50x65@0
+ButtonStyle 1 5 40x40@1 60x40@1 60x60@0 40x60@0 40x40@1
+ButtonStyle 1 5
+ButtonStyle 1 5 40x40@1 60x40@1 60x60@0 40x60@0 40x40@1
+ButtonStyle Reset
+
+Log "Test pixmaps"
+
+ButtonStyle 1 Pixmap test1.xpm
+ButtonStyle 1 Pixmap test2.xpm
+ButtonStyle 1 TiledPixmap test2.xpm
+ButtonStyle 1 TiledPixmap test2.xpm
+ButtonStyle 1 TiledPixmap test1.xpm
+ButtonStyle 1 ActiveUp (Pixmap test3.xpm) ActiveDown (Pixmap test2.xpm)
+ButtonStyle 1 Inactive Pixmap nonexistent.xpm
+ButtonStyle 1 Inactive Pixmap test3.xpm
+ButtonStyle 1 Inactive Pixmap test3.xpm
+ButtonStyle 1 Inactive Pixmap
+ButtonStyle 1 MiniIcons
+ButtonStyle 1 miniicons
+
+Log "Test state-independent flags"
+
+ButtonStyle 1 - MWMDecorMenu MWMDecorMin MWMDecorMax MWMDecorMenu
+ButtonStyle 1 - MWMDecorMenu MWMDecorMin MWMDecorMax MWMDecorMenu
+ButtonStyle 1 - MWMDecorMax
+ButtonStyle 1 - MWMDecorMin
+ButtonStyle 1 -
+
+Log "Test ADD BUTTON STYLE"
+
+Log "Test various states and styles"
+
+AddButtonStyle
+AddButtonStyle Reset
+AddButtonStyle All -- raisED
+AddButtonStyle All -- SUNk
+AddButtonStyle Left -- flat
+AddButtonStyle Left -- flat
+AddButtonStyle Right -- !flat
+AddButtonStyle Left Activeup -- raised
+AddButtonStyle Left Activeup -- raised
+AddButtonStyle Left activeDOWN -- sunk
+AddButtonStyle Left inactive -- flat
+AddButtonStyle Left inactive -- flat
+AddButtonStyle Left Activeup -- sunk
+AddButtonStyle 1 simple
+AddButtonStyle 1 simple
+AddButtonStyle 1 default 3
+AddButtonStyle 1 default 3
+AddButtonStyle 1 solid blaCK
+AddButtonStyle 1 solid blaCK
+AddButtonStyle 1 simple
+
+Log "Test gradients"
+
+AddButtonStyle 2 hgradient 16 green red
+AddButtonStyle 2 hgradient 16 green red
+AddButtonStyle 2 hgradient 16 red blue
+AddButtonStyle 2 hgradient 32 red blue
+AddButtonStyle 2 hgradient 128 red blue
+AddButtonStyle 2 hgradient 2 red blue
+AddButtonStyle 2 vgradient 16 green red
+AddButtonStyle 2 vgradient 16 green red
+AddButtonStyle 2 vgradient 16 red blue
+AddButtonStyle 2 vgradient 32 red blue
+AddButtonStyle 2 vgradient 128 red blue
+AddButtonStyle 2 vgradient 2 red blue
+AddButtonStyle 3 VGradient 16 3 Red 20 Blue 30 Black 50 Grey
+AddButtonStyle 3 VGradient 16 3 Red 20 Blue 30 Black 50 Grey
+AddButtonStyle 3 VGradient 16 4 Red 20 Blue 30 Black 20 Grey 30 yellow
+AddButtonStyle 3 VGradient 16 2 Red 20 Blue 80
+AddButtonStyle 3 VGradient 128 2 Red 20 Blue 80
+AddButtonStyle 3 VGradient 2 2 Red 20 Blue 80
+AddButtonStyle 3 hGradient 16 3 Red 20 Blue 30 Black 50 Grey
+AddButtonStyle 3 hGradient 16 3 Red 20 Blue 30 Black 50 Grey
+AddButtonStyle 3 hGradient 16 4 Red 20 Blue 30 Black 20 Grey 30 yellow
+AddButtonStyle 3 hGradient 16 2 Red 20 Blue 80
+AddButtonStyle 3 hGradient 128 2 Red 20 Blue 80
+AddButtonStyle 3 hGradient 2 2 Red 20 Blue 80
+
+Log "Test vector buttons"
+
+AddButtonStyle Reset
+AddButtonStyle 1 Vector 5 45x60@0 80x60@0 80x80@1 45x80@1 45x60@0
+AddButtonStyle 1 Vector 5 45x60@0 80x60@0 80x80@1 45x80@1 45x60@0
+AddButtonStyle 1 4 50x35@1 65x65@0 35x65@0 50x35@1
+AddButtonStyle 1 4 50x65@1 35x35@1 65x35@1 50x65@0
+AddButtonStyle 1 5 40x40@1 60x40@1 60x60@0 40x60@0 40x40@1
+AddButtonStyle 1 5
+AddButtonStyle 1 5 40x40@1 60x40@1 60x60@0 40x60@0 40x40@1
+AddButtonStyle Reset
+
+Log "Test pixmaps"
+
+AddButtonStyle 1 Pixmap test1.xpm
+AddButtonStyle 1 Pixmap test2.xpm
+AddButtonStyle 1 TiledPixmap test2.xpm
+AddButtonStyle 1 TiledPixmap test2.xpm
+AddButtonStyle 1 TiledPixmap test1.xpm
+AddButtonStyle 1 ActiveUp (Pixmap test3.xpm) ActiveDown (Pixmap test2.xpm)
+AddButtonStyle 1 Inactive Pixmap nonexistent.xpm
+AddButtonStyle 1 Inactive Pixmap test3.xpm
+AddButtonStyle 1 Inactive Pixmap test3.xpm
+AddButtonStyle 1 Inactive Pixmap
+AddButtonStyle 1 MiniIcons
+AddButtonStyle 1 miniicons
+
+Log "Test CLICK TIME test"
+
+ClickTime
+ClickTime 0
+ClickTime    0 # blah
+ClickTime 	 	0
+ClickTime -1
+ClickTime 150
+ClickTime 150
+ClickTime 200
+
+Log "Test COLORMAP FOCUS"
+
+ColormapFocus
+ColormapFocus    FollowsFocus
+ColormapFocus 		FollowsFocus
+ColormapFocus FollowsMouse
+ColormapFocus FollowsFocus
+ColormapFocus FollowsFocus
+ColormapFocus FollowsMouse
+
+Log "Test COLOR LIMIT"
+
+ColorLimit
+ColorLimit 0
+ColorLimit   77
+ColorLimit		77
+ColorLimit 50
+ColorLimit 50
+ColorLimit 40
+ColorLimit -23
+ColorLimit 0
+
+Log "Test CURSOR MOVE"
+
+CursorMove
+CursorMove 50p
+CursorMove   10p   -10p
+CursorMove 		-50		+50
+CursorMove -0 +0
+CursorMove -50p -50p
+CursorMove -1000 -1000
+
+Log "Test CURSOR STYLE"
+
+CursorStyle
+CursorStyle liewud
+CursorStyle BOTTOM 132
+CursorStyle BOTTOM_LEFT 133
+CursorStyle BOTTOM_RIGHT 134
+CursorStyle DEFAULT 64
+CursorStyle DEFAULT 68
+CursorStyle DEFAULT 68
+CursorStyle DESTROY 88
+CursorStyle DESTROY 88
+CursorStyle DESTROY 99
+CursorStyle DESTROY
+CursorStyle DEFAULT
+
+Log "Test DESK"
+
+Desk
+Desk    2
+Desk		+3
+Desk -2
+Desk 0 1
+Desk   0    3
+Desk		0		1923874
+Desk +1 0 10
+Desk -1 0 10
+Desk 0 0 5 7
+Desk 0 -11111 5 7
+Desk 0 0
+
+Log "Test DESK TOP SIZE"
+
+DeskTopSize
+DeskTopSize ödslajf
+DeskTopSize   2x2
+DeskTopSize		 2x2
+DeskTopSize 2x3
+DeskTopSize 2x3
+DeskTopSize 3x3
+DeskTopSize 3x1
+DeskTopSize 1x1
+DeskTopSize 0x2
+DeskTopSize 2x0
+DeskTopSize 0x0
+DeskTopSize 1000x1000
+DeskTopSize 2x2
+
+Log "Test ECHO"
+
+Echo
+Echo
+Echo ädsa		 iopq9 $SHELL "'lksaä"
+
+Log "Test EDGE RESISTANCE"
+
+EdgeResistance
+EdgeResistance     300   10
+EdgeResistance		300		10
+EdgeResistance 400 400
+EdgeResistance 400 400
+EdgeResistance 300 10
+EdgeResistance 0 20
+EdgeResistance -1 20
+EdgeResistance 20 0
+EdgeResistance 20 -1
+
+Log "Test EDGE SCROLL"
+
+EdgeScroll
+EdgeScroll    50    50
+EdgeScroll		50		50
+EdgeScroll 100 100
+EdgeScroll -125 111
+EdgeScroll 100000 100000
+EdgeScroll 0 0
+EdgeScroll 75 75
+
+Log "Test EXEC, EXEC USE SHELL"
+
+Log "Test ExecUseShell"
+
+ExecUseShell
+ExecUseShell
+ExecUseShell     /bin/bash
+ExecUseShell		/bin/bash
+ExecUseShell /bin/bash
+ExecUseShell /nonexistent/foo/bar
+ExecUseShell
+
+Log "Test Exec"
+
+Exec
+Exec  	 	 	""
+Exec echo "Test of exec using echo"
+Exec echo "Exec test, value of \$$d $d, \$$v $v, \$$[screen] $[screen]"
+
+
+Log "Test Old GLOBAL OPTIONS, now styles"
+
+Style "*"  CleverPlacement, SmartPlacement
+Style "*"  ClickToFocusPassesClickOff, CLICKTOFOCUSPASSESCLICK
+Style "*"  ClickToFocusRaisesOff, CLICKTOFOCUSRAISES, MouseFocusClickRaisesOff, MOUSEFOCUSCLICKRAISES, StippledTitleOff, StippledTitle, STARTSONPAGEMODIFIESUSPOSITION, STARTSONPAGEHONORSUSPOSITION, CAPTUREHONORSSTARTSONPAGE, CAPTUREIGNORESSTARTSONPAGE, RECAPTUREHONORSSTARTSONPAGE, RECAPTUREIGNORESSTARTSONPAGE, ACTIVEPLACEMENTHONORSSTARTSONPAGE, ACTIVEPLACEMENTIGNORESSTARTSONPAGE
+Style "*"  äöwwwkjfd, 2wäeöqdpefoeqopweäöööööööööcöäowäjafewjäoäajopfdewjpoafdsjpoafsdäjopfdsjopfdasäjopdfsäjopfdsajpoafds, jäwpouef, päu3pä9, upä43owu, päfoopu, 43päuo, 4w3fuop, af, 4wawä4opufwuä4f, 4wp, apwöejaeäwfpöojwoäpfoejäwpajoeäjopfwejp\aawehoiöoaihöwhawepjpewfpjewfajopäefwjopewfjopajeopfwajopefwajpoewfajpoewfajpoaefwjopaewfjpoeafwjopaefwjopaewfjopafewjopfewajpoafewjfaewihoöwhöfohzfw4öof4whoiaf4ihoaf4ihofa, apwöejaeäwfpöojwoäpfoejäwpajoeäjopfwejp\aawehoiöoaihöwhawepjpewfpjewfajopäefwjopewfjopajeopfwajopefwajpoewfajpoewfajpoaefwjopaewfjpoeafwjopaefwjopaewfjopafewjopfewajpoafewjfaewihoöwhöfohzfw4öof4whoiaf4ihoaf4ihofa
+Log "Test GOTO PAGE"
+
+GotoPage
+GotoPage  2  2
+GotoPage		1		1
+GotoPage -1 -100
+GotoPage 10000 1000000
+GotoPage 2 1
+GotoPage 2 1
+GotoPage 1 1
+
+Log "Test old HilightColor commands, the conversion utility changed them."
+
+Style "*" HilightFore , HilightBack 
+Style "*" HilightFore blue, HilightBack 
+Style "*" HilightFore green, HilightBack 
+Style "*" HilightFore black, HilightBack yellow
+Style "*" HilightFore black, HilightBack yellow
+Style "*" HilightFore gold2, HilightBack SteelBlue
+Style "*" HilightFore gold2, HilightBack SteelBlue
+Style "*" HilightFore , HilightBack 
+Style "*" HilightFore gold2, HilightBack SteelBlue
+
+Log "Test ICON FONT"
+
+IconFont
+IconFont     9x15
+IconFont		9x15
+IconFont /nonexistent/foo/bar
+IconFont -adobe-helvetica-bold-r-*-*-*-140-*-*-*-*-*-*
+IconFont -adobe-helvetica-bold-r-*-*-*-140-*-*-*-*-*-*
+IconFont
+
+Log "Test KEY"
+
+Key
+Key f12
+Key f12 t
+key f12 t cs
+key		f12		t		cs
+Key		f12		a		a		Nop
+Key  f12     a  a     function nonexistent
+Key f12 a a function nonexistent
+Key f12 t a function nonexistent
+Key f12 t a -
+Key f12 t a -
+
+Log "Test MENU STYLE"
+
+MenuStyle
+MenuStyle  red  yellow  green  9x15  mwm  anim
+MenuStyle 	red	 yellow	 green 	9x15	 mwm 	anim
+MenuStyle red yellow green 9x15 mwm anim
+MenuStyle red yellow green 9x15 mwm anim
+MenuStyle red yellow green 6x10 mwm anim
+MenuStyle red yellow green 6x10 mwm
+MenuStyle red yellow green 6x10 fvwm
+MenuStyle red yellow green 6x10 fvwm anim
+MenuStyle yellow black pink 8x13bold fvwm anim
+
+Log "Test ChangeMenuStyle"
+
+# Create new menu style, apply it to the default menu,
+# Add Line to menu and pop it up.
+MenuStyle NewStyle white black cyan 10x20 Win AnimationOff
+ChangeMenuStyle * NewStyle menu1
+AddToMenu menu1 "ChangeMenuStyle: The menu should now be white/black/cyan"
+Popup menu1
+# Syntax tests:
+ChangeMenuStyle
+DestroyFunc Log
+AddToFunc Log I Exec echo "### `date`: $0 ###"
+
+########### PATH section -- must be first #############
+
+
+Log "Test ImagePath"
+
+ImagePath
+ImagePath
+ImagePath /usr/lib/X11/icons/pixmaps:+
+ImagePath		/usr/lib/X11/icons/pixmaps:+
+ImagePath /home/tim/pics/xpm/16:/home/tim/pics/xbm/16:/home/tim/pics/xpm/21:/home/tim/pics/xpm/32:/home/tim/pics/xpm/46:/home/tim/pics/xpm/48:/home/tim/pics/xpm:/home/tim/pics/tiles:+
+ImagePath /root/icons:/usr/X11R6/include/X11/pixmaps:/usr/X11R6/include/X11/bitmaps:/root/pixmaps:/root/gifs:/opt/kde/share/icons:+
+ImagePath /home/tim/pics/xpm/16:/home/tim/pics/xbm/16:/home/tim/pics/xpm/21:/home/tim/pics/xpm/32:/home/tim/pics/xpm/46:/home/tim/pics/xpm/48:/home/tim/pics/xpm:/home/tim/pics/tiles:+
+ImagePath /usr/X11R6/include/X11/3dpixmaps/small:/usr/X11R6/include/X11/susexpm/small:/usr/X11R6/include/X11/susexpm/normal:/usr/X11R6/include/X11/susexpm/mini:/usr/X11R6/include/X11/3dpixmaps/normal:/usr/X11R6/include/X11/pixmaps:/etc/dtpixmaps:+
+ImagePath /tmp:/usr/X11R6/include/X11/3dpixmaps/small:/usr/X11R6/include/X11/susexpm/small:/usr/X11R6/include/X11/susexpm/normal:/usr/X11R6/include/X11/susexpm/mini:/usr/X11R6/include/X11/3dpixmaps/normal:/usr/X11R6/include/X11/pixmaps:/etc/dtpixmaps:+
+
+ImagePath +
+ImagePath /usr/local/share/icons/wm-icons:/usr/share/icons/wm-icons:+:/usr/include/X11/bitmaps:/usr/include/X11/pixmaps
+ImagePath $HOME/.wm-icons:+
+ImagePath +:/usr/share/icons/mini
+ImagePath +::::/opt/kde/share/icons:/opt/kde/share/apps/kappfinder/pics:
+
+Log "Test CONFIG, DESTROY MODULE CONFIG"
+
+*dummymodule
+*dummymodule
+*dummymodule ÖLq- ö.qljüpßi+123
+*dummymodule1fooqmnld Ä"§k
+*dummymodule1p	o q#köpiü
+*dummymodule1wqwq  lkjöö 13
+*dummymodule1r 13r  g3w
+*dummymodule2r 13r  g3w
+*dummymodule2r 13r  g3w
+*dummymodule2 121 32
+*dummymodule2 qw 124
+
+DestroyModuleConfig
+DestroyModuleConfig
+DestroyModuleConfig  dummymodule1
+DestroyModuleConfig		dummymodule1
+DestroyModuleConfig dummymod*
+DestroyModuleConfig dummymod*
+
+*dummymodule
+*dummymodule
+*dummymodule ÖLq- ö.qljüpßi+123
+*dummymodule1fooqmnld Ä"§k
+*dummymodule1p	o q#köpiü
+*dummymodule1wqwq  lkjöö 13
+*dummymodule1r 13r  g3w
+*dummymodule2r 13r  g3w
+*dummymodule2r 13r  g3w
+*dummymodule2 121 32
+*dummymodule2 qw 124
+
+DestroyModuleConfig *
+
+Log "Test FvwmBanner"
+
+*FvwmBannerTimeout 9182743120348908713204
+*FvwmBannerTimeout 1000
+*FvwmBannerTimeout 10
+
+Module
+Module
+Module FvwmBanner
+Module    FvwmBanner
+Module		FvwmBanner
+
+################# GLOBAL COMMANDS ###################
+
+Log "Test AddToFunc, DestroyFunc, Function"
+
+AddToFunc
+AddToFunc   foo
+AddToFunc		bar
+
+AddToFunc   suicide
+AddToFunc		suicide
+AddToFunc suicide
+ + "I" DestroyFunc suicide
+ + "I" DestroyFunc suicide
+ + "I" DestroyFunc suicide
+AddToFunc suicide
+ + "I" DestroyFunc suicide
+function suicide
+
+### coredump!!
+
+#AddToFunc loop1
+# + "I" function loop2
+#AddToFunc loop2
+# + "I" function loop1
+#function loop1
+
+### coredump!!
+
+#AddToFunc grow1
+# + "I" AddToFunc grow2 nop
+# + "I" function grow2
+#AddToFunc grow2
+# + "I" AddToFunc grow1 nop
+# + "I" function grow1
+#function grow1
+
+addtofunc foo
+ + "I" nop $w $d $1 $10298097
+function
+function   foo
+function		foo
+function nonexist
+
+DestroyFunc
+DestroyFunc    grow2
+DestroyFunc		grow1
+DestroyFunc loop1
+DestroyFunc loop2
+
+Log "Test TO MENU, DESTROY MENU, MENU, POPUP"
+
+AddToMenu menu1 "tt1" title top
+AddToMenu menu1 "t1" title
+AddToMenu menu1 "tt1"   title   top
+AddToMenu menu1 "t1"   title
+AddToMenu menu1 "tt1"		title		top
+AddToMenu menu1 "t1"		title
++ "" ""
++ "" nop
++ "" nop
++ "%test1.xpm%foo%test2.xpm%"
++ "*test1.xpm*fo*test2.xpm*"
++ "^test1.xpm^f^test2.xpm^"
++ "@test1.xpm@oo@test2.xpm@"
++ "%test1.xpm%foo%test2.xpm%"
++ "*test1.xpm*fo*test2.xpm*"
++ "^test1.xpm^f^test2.xpm^"
++ "@test1.xpm@oo@test2.xpm@"
++ "%test2.xpm%foo%test1.xpm%"
++ "*test2.xpm*fo*test1.xpm*"
++ "^test2.xpm^f^test1.xpm^"
++ "@test2.xpm@oo@test1.xpm@"
++ "xx" function xyz
++ "xx" function xyz
++ "xx" function xyz
+
+Menu menu1 root c+0 c+0 beep
+Menu menu1 root c+0 c+0 beep
+popup menu1 root c+0 c+0 beep
+popup menu1 root c+0 c+0 beep
+
+DestroyMenu
+DestroyMenu
+DestroyMenu		 menu1
+
+addtofunc makelongmenu
++ "I" AddToMenu longmenu popup "short menu"
++ "I" AddToMenu longmenu popup "recursive menu"
++ "I" AddToMenu longmenu popup "short menu"
++ "I" AddToMenu longmenu popup "recursive menu"
++ "I" AddToMenu longmenu popup "short menu"
++ "I" AddToMenu longmenu popup "recursive menu"
++ "I" AddToMenu longmenu popup "short menu"
++ "I" AddToMenu longmenu popup "recursive menu"
++ "I" AddToMenu longmenu popup "short menu"
++ "I" AddToMenu longmenu popup "recursive menu"
++ "I" AddToMenu longmenu popup "short menu"
++ "I" AddToMenu longmenu popup "recursive menu"
++ "I" AddToMenu longmenu popup "short menu"
++ "I" AddToMenu longmenu popup "recursive menu"
++ "I" AddToMenu longmenu popup "short menu"
++ "I" AddToMenu longmenu popup "recursive menu"
++ "I" AddToMenu longmenu popup "short menu"
++ "I" AddToMenu longmenu popup "recursive menu"
++ "I" AddToMenu longmenu popup "short menu"
++ "I" AddToMenu longmenu popup "recursive menu"
+
+AddToMenu longmenu "a very long menu" title
+Addtomenu "short menu" "a very short menu" title top
++ "single item" nop
+Addtomenu "recursive menu" "recursion" title top
++ "recurse" popup "recursive menu"
+
+makelongmenu
+makelongmenu
+makelongmenu
+makelongmenu
+makelongmenu
+makelongmenu
+makelongmenu
+makelongmenu
+makelongmenu
+makelongmenu
+
+Menu longmenu
+Popup longmenu
+DestroyMenu longmenu
+
+Log "Test BEEP"
+
+Beep
+Beep
+Beep ü30 23äö ü9823r ,l.öapü39
+
+Log "Test BorderStyle"
+
+BorderStyle
+BorderStyle -- HiddenHandles
+BorderStyle Active -- !HiddenHandles
+BorderStyle Active -- !HiddenHandles
+BorderStyle Simple
+BorderStyle Simple
+BorderStyle Inactive -- HiddenHandles NoInset
+BorderStyle Active TiledPixmap test1.xpm
+BorderStyle Inactive TiledPixmap test2.xpm
+BorderStyle Active -- HiddenHandles NoInset
+
+Log "Test TITLE STYLE"
+
+Log "Test TitleStyle justification and height"
+
+TitleStyle
+TitleStyle LEFtJusTiFied
+TitleStyle LEFtJusTiFied
+TitleStyle   centered
+TitleStyle		rightjustified
+TitleStyle heIGht 20
+TitleStyle heIGht 20
+TitleStyle leftjustified height 37
+TitleStyle leftjustified height 24
+
+Log "Test TitleStyles"
+
+TitleStyle -- raisED
+TitleStyle -- SUNk
+TitleStyle -- flat
+TitleStyle -- flat
+TitleStyle -- !flat
+TitleStyle Activeup -- raised
+TitleStyle Activeup -- raised
+TitleStyle activeDOWN -- sunk
+TitleStyle inactive -- flat
+TitleStyle inactive -- flat
+TitleStyle Activeup -- sunk
+TitleStyle simple
+TitleStyle simple
+TitleStyle default 3
+TitleStyle default 3
+TitleStyle solid blaCK
+TitleStyle solid blaCK
+TitleStyle simple
+
+Log "Test gradients"
+
+TitleStyle hgradient 16 green red
+TitleStyle hgradient 16 green red
+TitleStyle hgradient 16 red blue
+TitleStyle hgradient 32 red blue
+TitleStyle hgradient 128 red blue
+TitleStyle hgradient 2 red blue
+TitleStyle vgradient 16 green red
+TitleStyle vgradient 16 green red
+TitleStyle vgradient 16 red blue
+TitleStyle vgradient 32 red blue
+TitleStyle vgradient 128 red blue
+TitleStyle vgradient 2 red blue
+TitleStyle VGradient 16 3 Red 20 Blue 30 Black 50 Grey
+TitleStyle VGradient 16 3 Red 20 Blue 30 Black 50 Grey
+TitleStyle VGradient 16 4 Red 20 Blue 30 Black 20 Grey 30 yellow
+TitleStyle VGradient 16 2 Red 20 Blue 80
+TitleStyle VGradient 128 2 Red 20 Blue 80
+TitleStyle VGradient 2 2 Red 20 Blue 80
+TitleStyle hGradient 16 3 Red 20 Blue 30 Black 50 Grey
+TitleStyle hGradient 16 3 Red 20 Blue 30 Black 50 Grey
+TitleStyle hGradient 16 4 Red 20 Blue 30 Black 20 Grey 30 yellow
+TitleStyle hGradient 16 2 Red 20 Blue 80
+TitleStyle hGradient 128 2 Red 20 Blue 80
+TitleStyle hGradient 2 2 Red 20 Blue 80
+
+Log "Test vector buttons"
+
+TitleStyle Vector 5 45x60@0 80x60@0 80x80@1 45x80@1 45x60@0
+TitleStyle Vector 5 45x60@0 80x60@0 80x80@1 45x80@1 45x60@0
+TitleStyle 4 50x35@1 65x65@0 35x65@0 50x35@1
+TitleStyle 4 50x65@1 35x35@1 65x35@1 50x65@0
+TitleStyle 5 40x40@1 60x40@1 60x60@0 40x60@0 40x40@1
+TitleStyle 5 40x40@1 60x40@1 60x60@0 40x60@0 40x40@1
+
+Log "Test pixmaps"
+
+TitleStyle Pixmap test1.xpm
+TitleStyle Pixmap test2.xpm
+TitleStyle TiledPixmap test2.xpm
+TitleStyle TiledPixmap test2.xpm
+TitleStyle TiledPixmap test1.xpm
+TitleStyle ActiveUp (Pixmap test3.xpm) ActiveDown (Pixmap test2.xpm)
+TitleStyle Inactive Pixmap nonexistent.xpm
+TitleStyle Inactive Pixmap test3.xpm
+TitleStyle Inactive Pixmap test3.xpm
+TitleStyle Inactive Pixmap
+TitleStyle MiniIcons
+TitleStyle miniicons
+
+Log "Test ADD TITLE STYLE"
+
+AddTitleStyle
+AddTitleStyle -- raisED
+AddTitleStyle -- SUNk
+AddTitleStyle -- flat
+AddTitleStyle -- flat
+AddTitleStyle -- !flat
+AddTitleStyle Activeup -- raised
+AddTitleStyle Activeup -- raised
+AddTitleStyle activeDOWN -- sunk
+AddTitleStyle inactive -- flat
+AddTitleStyle inactive -- flat
+AddTitleStyle Activeup -- sunk
+AddTitleStyle simple
+AddTitleStyle simple
+AddTitleStyle default 3
+AddTitleStyle default 3
+AddTitleStyle solid blaCK
+AddTitleStyle solid blaCK
+AddTitleStyle simple
+
+Log "Test gradients"
+
+AddTitleStyle hgradient 16 green red
+AddTitleStyle hgradient 16 green red
+AddTitleStyle hgradient 16 red blue
+AddTitleStyle hgradient 32 red blue
+AddTitleStyle hgradient 128 red blue
+AddTitleStyle hgradient 2 red blue
+AddTitleStyle vgradient 16 green red
+AddTitleStyle vgradient 16 green red
+AddTitleStyle vgradient 16 red blue
+AddTitleStyle vgradient 32 red blue
+AddTitleStyle vgradient 128 red blue
+AddTitleStyle vgradient 2 red blue
+AddTitleStyle VGradient 16 3 Red 20 Blue 30 Black 50 Grey
+AddTitleStyle VGradient 16 3 Red 20 Blue 30 Black 50 Grey
+AddTitleStyle VGradient 16 4 Red 20 Blue 30 Black 20 Grey 30 yellow
+AddTitleStyle VGradient 16 2 Red 20 Blue 80
+AddTitleStyle VGradient 128 2 Red 20 Blue 80
+AddTitleStyle VGradient 2 2 Red 20 Blue 80
+AddTitleStyle hGradient 16 3 Red 20 Blue 30 Black 50 Grey
+AddTitleStyle hGradient 16 3 Red 20 Blue 30 Black 50 Grey
+AddTitleStyle hGradient 16 4 Red 20 Blue 30 Black 20 Grey 30 yellow
+AddTitleStyle hGradient 16 2 Red 20 Blue 80
+AddTitleStyle hGradient 128 2 Red 20 Blue 80
+AddTitleStyle hGradient 2 2 Red 20 Blue 80
+
+Log "Test vector buttons"
+
+AddTitleStyle Vector 5 45x60@0 80x60@0 80x80@1 45x80@1 45x60@0
+AddTitleStyle Vector 5 45x60@0 80x60@0 80x80@1 45x80@1 45x60@0
+AddTitleStyle 4 50x35@1 65x65@0 35x65@0 50x35@1
+AddTitleStyle 4 50x65@1 35x35@1 65x35@1 50x65@0
+AddTitleStyle 5 40x40@1 60x40@1 60x60@0 40x60@0 40x40@1
+AddTitleStyle 5 40x40@1 60x40@1 60x60@0 40x60@0 40x40@1
+
+Log "Test pixmaps"
+
+AddTitleStyle Pixmap test1.xpm
+AddTitleStyle Pixmap test2.xpm
+AddTitleStyle TiledPixmap test2.xpm
+AddTitleStyle TiledPixmap test2.xpm
+AddTitleStyle TiledPixmap test1.xpm
+AddTitleStyle ActiveUp (Pixmap test3.xpm) ActiveDown (Pixmap test2.xpm)
+AddTitleStyle Inactive Pixmap nonexistent.xpm
+AddTitleStyle Inactive Pixmap test3.xpm
+AddTitleStyle Inactive Pixmap test3.xpm
+AddTitleStyle Inactive Pixmap
+AddTitleStyle MiniIcons
+AddTitleStyle miniicons
+
+Log "Test BUTTON STYLE"
+
+Log "Test various states and styles"
+
+ButtonStyle
+ButtonStyle All -- UseBorderStyle
+ButtonStyle All -- UseTitleStyle
+ButtonStyle Reset
+ButtonStyle All -- raisED
+ButtonStyle All -- SUNk
+ButtonStyle Left -- flat
+ButtonStyle Left -- flat
+ButtonStyle Right -- !flat
+ButtonStyle Left Activeup -- raised
+ButtonStyle Left Activeup -- raised
+ButtonStyle Left activeDOWN -- sunk
+ButtonStyle Left inactive -- flat
+ButtonStyle Left inactive -- flat
+ButtonStyle Left Activeup -- sunk
+ButtonStyle 1 simple
+ButtonStyle 1 simple
+ButtonStyle 1 default 3
+ButtonStyle 1 default 3
+ButtonStyle 1 solid blaCK
+ButtonStyle 1 solid blaCK
+ButtonStyle 1 simple
+
+Log "Test gradients"
+
+ButtonStyle 2 hgradient 16 green red
+ButtonStyle 2 hgradient 16 green red
+ButtonStyle 2 hgradient 16 red blue
+ButtonStyle 2 hgradient 32 red blue
+ButtonStyle 2 hgradient 128 red blue
+ButtonStyle 2 hgradient 2 red blue
+ButtonStyle 2 vgradient 16 green red
+ButtonStyle 2 vgradient 16 green red
+ButtonStyle 2 vgradient 16 red blue
+ButtonStyle 2 vgradient 32 red blue
+ButtonStyle 2 vgradient 128 red blue
+ButtonStyle 2 vgradient 2 red blue
+ButtonStyle 3 VGradient 16 3 Red 20 Blue 30 Black 50 Grey
+ButtonStyle 3 VGradient 16 3 Red 20 Blue 30 Black 50 Grey
+ButtonStyle 3 VGradient 16 4 Red 20 Blue 30 Black 20 Grey 30 yellow
+ButtonStyle 3 VGradient 16 2 Red 20 Blue 80
+ButtonStyle 3 VGradient 128 2 Red 20 Blue 80
+ButtonStyle 3 VGradient 2 2 Red 20 Blue 80
+ButtonStyle 3 hGradient 16 3 Red 20 Blue 30 Black 50 Grey
+ButtonStyle 3 hGradient 16 3 Red 20 Blue 30 Black 50 Grey
+ButtonStyle 3 hGradient 16 4 Red 20 Blue 30 Black 20 Grey 30 yellow
+ButtonStyle 3 hGradient 16 2 Red 20 Blue 80
+ButtonStyle 3 hGradient 128 2 Red 20 Blue 80
+ButtonStyle 3 hGradient 2 2 Red 20 Blue 80
+
+Log "Test vector buttons"
+
+ButtonStyle Reset
+ButtonStyle 1 Vector 5 45x60@0 80x60@0 80x80@1 45x80@1 45x60@0
+ButtonStyle 1 Vector 5 45x60@0 80x60@0 80x80@1 45x80@1 45x60@0
+ButtonStyle 1 4 50x35@1 65x65@0 35x65@0 50x35@1
+ButtonStyle 1 4 50x65@1 35x35@1 65x35@1 50x65@0
+ButtonStyle 1 5 40x40@1 60x40@1 60x60@0 40x60@0 40x40@1
+ButtonStyle 1 5
+ButtonStyle 1 5 40x40@1 60x40@1 60x60@0 40x60@0 40x40@1
+ButtonStyle Reset
+
+Log "Test pixmaps"
+
+ButtonStyle 1 Pixmap test1.xpm
+ButtonStyle 1 Pixmap test2.xpm
+ButtonStyle 1 TiledPixmap test2.xpm
+ButtonStyle 1 TiledPixmap test2.xpm
+ButtonStyle 1 TiledPixmap test1.xpm
+ButtonStyle 1 ActiveUp (Pixmap test3.xpm) ActiveDown (Pixmap test2.xpm)
+ButtonStyle 1 Inactive Pixmap nonexistent.xpm
+ButtonStyle 1 Inactive Pixmap test3.xpm
+ButtonStyle 1 Inactive Pixmap test3.xpm
+ButtonStyle 1 Inactive Pixmap
+ButtonStyle 1 MiniIcons
+ButtonStyle 1 miniicons
+
+Log "Test state-independent flags"
+
+ButtonStyle 1 - MWMDecorMenu MWMDecorMin MWMDecorMax MWMDecorMenu
+ButtonStyle 1 - MWMDecorMenu MWMDecorMin MWMDecorMax MWMDecorMenu
+ButtonStyle 1 - MWMDecorMax
+ButtonStyle 1 - MWMDecorMin
+ButtonStyle 1 -
+
+Log "Test ADD BUTTON STYLE"
+
+Log "Test various states and styles"
+
+AddButtonStyle
+AddButtonStyle Reset
+AddButtonStyle All -- raisED
+AddButtonStyle All -- SUNk
+AddButtonStyle Left -- flat
+AddButtonStyle Left -- flat
+AddButtonStyle Right -- !flat
+AddButtonStyle Left Activeup -- raised
+AddButtonStyle Left Activeup -- raised
+AddButtonStyle Left activeDOWN -- sunk
+AddButtonStyle Left inactive -- flat
+AddButtonStyle Left inactive -- flat
+AddButtonStyle Left Activeup -- sunk
+AddButtonStyle 1 simple
+AddButtonStyle 1 simple
+AddButtonStyle 1 default 3
+AddButtonStyle 1 default 3
+AddButtonStyle 1 solid blaCK
+AddButtonStyle 1 solid blaCK
+AddButtonStyle 1 simple
+
+Log "Test gradients"
+
+AddButtonStyle 2 hgradient 16 green red
+AddButtonStyle 2 hgradient 16 green red
+AddButtonStyle 2 hgradient 16 red blue
+AddButtonStyle 2 hgradient 32 red blue
+AddButtonStyle 2 hgradient 128 red blue
+AddButtonStyle 2 hgradient 2 red blue
+AddButtonStyle 2 vgradient 16 green red
+AddButtonStyle 2 vgradient 16 green red
+AddButtonStyle 2 vgradient 16 red blue
+AddButtonStyle 2 vgradient 32 red blue
+AddButtonStyle 2 vgradient 128 red blue
+AddButtonStyle 2 vgradient 2 red blue
+AddButtonStyle 3 VGradient 16 3 Red 20 Blue 30 Black 50 Grey
+AddButtonStyle 3 VGradient 16 3 Red 20 Blue 30 Black 50 Grey
+AddButtonStyle 3 VGradient 16 4 Red 20 Blue 30 Black 20 Grey 30 yellow
+AddButtonStyle 3 VGradient 16 2 Red 20 Blue 80
+AddButtonStyle 3 VGradient 128 2 Red 20 Blue 80
+AddButtonStyle 3 VGradient 2 2 Red 20 Blue 80
+AddButtonStyle 3 hGradient 16 3 Red 20 Blue 30 Black 50 Grey
+AddButtonStyle 3 hGradient 16 3 Red 20 Blue 30 Black 50 Grey
+AddButtonStyle 3 hGradient 16 4 Red 20 Blue 30 Black 20 Grey 30 yellow
+AddButtonStyle 3 hGradient 16 2 Red 20 Blue 80
+AddButtonStyle 3 hGradient 128 2 Red 20 Blue 80
+AddButtonStyle 3 hGradient 2 2 Red 20 Blue 80
+
+Log "Test vector buttons"
+
+AddButtonStyle Reset
+AddButtonStyle 1 Vector 5 45x60@0 80x60@0 80x80@1 45x80@1 45x60@0
+AddButtonStyle 1 Vector 5 45x60@0 80x60@0 80x80@1 45x80@1 45x60@0
+AddButtonStyle 1 4 50x35@1 65x65@0 35x65@0 50x35@1
+AddButtonStyle 1 4 50x65@1 35x35@1 65x35@1 50x65@0
+AddButtonStyle 1 5 40x40@1 60x40@1 60x60@0 40x60@0 40x40@1
+AddButtonStyle 1 5
+AddButtonStyle 1 5 40x40@1 60x40@1 60x60@0 40x60@0 40x40@1
+AddButtonStyle Reset
+
+Log "Test pixmaps"
+
+AddButtonStyle 1 Pixmap test1.xpm
+AddButtonStyle 1 Pixmap test2.xpm
+AddButtonStyle 1 TiledPixmap test2.xpm
+AddButtonStyle 1 TiledPixmap test2.xpm
+AddButtonStyle 1 TiledPixmap test1.xpm
+AddButtonStyle 1 ActiveUp (Pixmap test3.xpm) ActiveDown (Pixmap test2.xpm)
+AddButtonStyle 1 Inactive Pixmap nonexistent.xpm
+AddButtonStyle 1 Inactive Pixmap test3.xpm
+AddButtonStyle 1 Inactive Pixmap test3.xpm
+AddButtonStyle 1 Inactive Pixmap
+AddButtonStyle 1 MiniIcons
+AddButtonStyle 1 miniicons
+
+Log "Test CLICK TIME test"
+
+ClickTime
+ClickTime 0
+ClickTime    0 # blah
+ClickTime 	 	0
+ClickTime -1
+ClickTime 150
+ClickTime 150
+ClickTime 200
+
+Log "Test COLORMAP FOCUS"
+
+ColormapFocus
+ColormapFocus    FollowsFocus
+ColormapFocus 		FollowsFocus
+ColormapFocus FollowsMouse
+ColormapFocus FollowsFocus
+ColormapFocus FollowsFocus
+ColormapFocus FollowsMouse
+
+Log "Test COLOR LIMIT"
+
+ColorLimit
+ColorLimit 0
+ColorLimit   77
+ColorLimit		77
+ColorLimit 50
+ColorLimit 50
+ColorLimit 40
+ColorLimit -23
+ColorLimit 0
+
+Log "Test CURSOR MOVE"
+
+CursorMove
+CursorMove 50p
+CursorMove   10p   -10p
+CursorMove 		-50		+50
+CursorMove -0 +0
+CursorMove -50p -50p
+CursorMove -1000 -1000
+
+Log "Test CURSOR STYLE"
+
+CursorStyle
+CursorStyle liewud
+CursorStyle BOTTOM 132
+CursorStyle BOTTOM_LEFT 133
+CursorStyle BOTTOM_RIGHT 134
+CursorStyle DEFAULT 64
+CursorStyle DEFAULT 68
+CursorStyle DEFAULT 68
+CursorStyle DESTROY 88
+CursorStyle DESTROY 88
+CursorStyle DESTROY 99
+CursorStyle DESTROY
+CursorStyle DEFAULT
+
+Log "Test DESK"
+
+Desk
+Desk    2
+Desk		+3
+Desk -2
+Desk 0 1
+Desk   0    3
+Desk		0		1923874
+Desk +1 0 10
+Desk -1 0 10
+Desk 0 0 5 7
+Desk 0 -11111 5 7
+Desk 0 0
+
+Log "Test DESK TOP SIZE"
+
+DeskTopSize
+DeskTopSize ödslajf
+DeskTopSize   2x2
+DeskTopSize		 2x2
+DeskTopSize 2x3
+DeskTopSize 2x3
+DeskTopSize 3x3
+DeskTopSize 3x1
+DeskTopSize 1x1
+DeskTopSize 0x2
+DeskTopSize 2x0
+DeskTopSize 0x0
+DeskTopSize 1000x1000
+DeskTopSize 2x2
+
+Log "Test ECHO"
+
+Echo
+Echo
+Echo ädsa		 iopq9 $SHELL "'lksaä"
+
+Log "Test EDGE RESISTANCE"
+
+EdgeResistance
+EdgeResistance     300   10
+EdgeResistance		300		10
+EdgeResistance 400 400
+EdgeResistance 400 400
+EdgeResistance 300 10
+EdgeResistance 0 20
+EdgeResistance -1 20
+EdgeResistance 20 0
+EdgeResistance 20 -1
+
+Log "Test EDGE SCROLL"
+
+EdgeScroll
+EdgeScroll    50    50
+EdgeScroll		50		50
+EdgeScroll 100 100
+EdgeScroll -125 111
+EdgeScroll 100000 100000
+EdgeScroll 0 0
+EdgeScroll 75 75
+
+Log "Test EXEC, EXEC USE SHELL"
+
+Log "Test ExecUseShell"
+
+ExecUseShell
+ExecUseShell
+ExecUseShell     /bin/bash
+ExecUseShell		/bin/bash
+ExecUseShell /bin/bash
+ExecUseShell /nonexistent/foo/bar
+ExecUseShell
+
+Log "Test Exec"
+
+Exec
+Exec  	 	 	""
+Exec echo "Test of exec using echo"
+Exec echo "Exec test, value of \$$d $d, \$$v $v, \$$[screen] $[screen]"
+
+
+Log "Test Old GLOBAL OPTIONS, now styles"
+
+Style "*"  CleverPlacement, SmartPlacement
+Style "*"  ClickToFocusPassesClickOff, CLICKTOFOCUSPASSESCLICK
+Style "*"  ClickToFocusRaisesOff, CLICKTOFOCUSRAISES, MouseFocusClickRaisesOff, MOUSEFOCUSCLICKRAISES, StippledTitleOff, StippledTitle, STARTSONPAGEMODIFIESUSPOSITION, STARTSONPAGEHONORSUSPOSITION, CAPTUREHONORSSTARTSONPAGE, CAPTUREIGNORESSTARTSONPAGE, RECAPTUREHONORSSTARTSONPAGE, RECAPTUREIGNORESSTARTSONPAGE, ACTIVEPLACEMENTHONORSSTARTSONPAGE, ACTIVEPLACEMENTIGNORESSTARTSONPAGE
+Style "*"  äöwwwkjfd, 2wäeöqdpefoeqopweäöööööööööcöäowäjafewjäoäajopfdewjpoafdsjpoafsdäjopfdsjopfdasäjopdfsäjopfdsajpoafds, jäwpouef, päu3pä9, upä43owu, päfoopu, 43päuo, 4w3fuop, af, 4wawä4opufwuä4f, 4wp, apwöejaeäwfpöojwoäpfoejäwpajoeäjopfwejp\aawehoiöoaihöwhawepjpewfpjewfajopäefwjopewfjopajeopfwajopefwajpoewfajpoewfajpoaefwjopaewfjpoeafwjopaefwjopaewfjopafewjopfewajpoafewjfaewihoöwhöfohzfw4öof4whoiaf4ihoaf4ihofa, apwöejaeäwfpöojwoäpfoejäwpajoeäjopfwejp\aawehoiöoaihöwhawepjpewfpjewfajopäefwjopewfjopajeopfwajopefwajpoewfajpoewfajpoaefwjopaewfjpoeafwjopaefwjopaewfjopafewjopfewajpoafewjfaewihoöwhöfohzfw4öof4whoiaf4ihoaf4ihofa
+Log "Test GOTO PAGE"
+
+GotoPage
+GotoPage  2  2
+GotoPage		1		1
+GotoPage -1 -100
+GotoPage 10000 1000000
+GotoPage 2 1
+GotoPage 2 1
+GotoPage 1 1
+
+Log "Test old HilightColor commands, the conversion utility changed them."
+
+Style "*" HilightFore , HilightBack 
+Style "*" HilightFore blue, HilightBack 
+Style "*" HilightFore green, HilightBack 
+Style "*" HilightFore black, HilightBack yellow
+Style "*" HilightFore black, HilightBack yellow
+Style "*" HilightFore gold2, HilightBack SteelBlue
+Style "*" HilightFore gold2, HilightBack SteelBlue
+Style "*" HilightFore , HilightBack 
+Style "*" HilightFore gold2, HilightBack SteelBlue
+
+Log "Test ICON FONT"
+
+IconFont
+IconFont     9x15
+IconFont		9x15
+IconFont /nonexistent/foo/bar
+IconFont -adobe-helvetica-bold-r-*-*-*-140-*-*-*-*-*-*
+IconFont -adobe-helvetica-bold-r-*-*-*-140-*-*-*-*-*-*
+IconFont
+
+Log "Test KEY"
+
+Key
+Key f12
+Key f12 t
+key f12 t cs
+key		f12		t		cs
+Key		f12		a		a		Nop
+Key  f12     a  a     function nonexistent
+Key f12 a a function nonexistent
+Key f12 t a function nonexistent
+Key f12 t a -
+Key f12 t a -
+
+Log "Test MENU STYLE"
+
+MenuStyle
+MenuStyle  red  yellow  green  9x15  mwm  anim
+MenuStyle 	red	 yellow	 green 	9x15	 mwm 	anim
+MenuStyle red yellow green 9x15 mwm anim
+MenuStyle red yellow green 9x15 mwm anim
+MenuStyle red yellow green 6x10 mwm anim
+MenuStyle red yellow green 6x10 mwm
+MenuStyle red yellow green 6x10 fvwm
+MenuStyle red yellow green 6x10 fvwm anim
+MenuStyle yellow black pink 8x13bold fvwm anim
+
+Log "Test ChangeMenuStyle"
+
+# Create new menu style, apply it to the default menu,
+# Add Line to menu and pop it up.
+MenuStyle NewStyle white black cyan 10x20 Win AnimationOff
+ChangeMenuStyle * NewStyle menu1
+AddToMenu menu1 "ChangeMenuStyle: The menu should now be white/black/cyan"
+Popup menu1
+# Syntax tests:
+ChangeMenuStyle
+DestroyFunc Log
+AddToFunc Log I Exec echo "### `date`: $0 ###"
+
+########### PATH section -- must be first #############
+
+
+Log "Test ImagePath"
+
+ImagePath
+ImagePath
+ImagePath /usr/lib/X11/icons/pixmaps:+
+ImagePath		/usr/lib/X11/icons/pixmaps:+
+ImagePath /home/tim/pics/xpm/16:/home/tim/pics/xbm/16:/home/tim/pics/xpm/21:/home/tim/pics/xpm/32:/home/tim/pics/xpm/46:/home/tim/pics/xpm/48:/home/tim/pics/xpm:/home/tim/pics/tiles:+
+ImagePath /root/icons:/usr/X11R6/include/X11/pixmaps:/usr/X11R6/include/X11/bitmaps:/root/pixmaps:/root/gifs:/opt/kde/share/icons:+
+ImagePath /home/tim/pics/xpm/16:/home/tim/pics/xbm/16:/home/tim/pics/xpm/21:/home/tim/pics/xpm/32:/home/tim/pics/xpm/46:/home/tim/pics/xpm/48:/home/tim/pics/xpm:/home/tim/pics/tiles:+
+ImagePath /usr/X11R6/include/X11/3dpixmaps/small:/usr/X11R6/include/X11/susexpm/small:/usr/X11R6/include/X11/susexpm/normal:/usr/X11R6/include/X11/susexpm/mini:/usr/X11R6/include/X11/3dpixmaps/normal:/usr/X11R6/include/X11/pixmaps:/etc/dtpixmaps:+
+ImagePath /tmp:/usr/X11R6/include/X11/3dpixmaps/small:/usr/X11R6/include/X11/susexpm/small:/usr/X11R6/include/X11/susexpm/normal:/usr/X11R6/include/X11/susexpm/mini:/usr/X11R6/include/X11/3dpixmaps/normal:/usr/X11R6/include/X11/pixmaps:/etc/dtpixmaps:+
+
+ImagePath +
+ImagePath /usr/local/share/icons/wm-icons:/usr/share/icons/wm-icons:+:/usr/include/X11/bitmaps:/usr/include/X11/pixmaps
+ImagePath $HOME/.wm-icons:+
+ImagePath +:/usr/share/icons/mini
+ImagePath +::::/opt/kde/share/icons:/opt/kde/share/apps/kappfinder/pics:
+
+Log "Test CONFIG, DESTROY MODULE CONFIG"
+
+*dummymodule
+*dummymodule
+*dummymodule ÖLq- ö.qljüpßi+123
+*dummymodule1fooqmnld Ä"§k
+*dummymodule1p	o q#köpiü
+*dummymodule1wqwq  lkjöö 13
+*dummymodule1r 13r  g3w
+*dummymodule2r 13r  g3w
+*dummymodule2r 13r  g3w
+*dummymodule2 121 32
+*dummymodule2 qw 124
+
+DestroyModuleConfig
+DestroyModuleConfig
+DestroyModuleConfig  dummymodule1
+DestroyModuleConfig		dummymodule1
+DestroyModuleConfig dummymod*
+DestroyModuleConfig dummymod*
+
+*dummymodule
+*dummymodule
+*dummymodule ÖLq- ö.qljüpßi+123
+*dummymodule1fooqmnld Ä"§k
+*dummymodule1p	o q#köpiü
+*dummymodule1wqwq  lkjöö 13
+*dummymodule1r 13r  g3w
+*dummymodule2r 13r  g3w
+*dummymodule2r 13r  g3w
+*dummymodule2 121 32
+*dummymodule2 qw 124
+
+DestroyModuleConfig *
+
+Log "Test FvwmBanner"
+
+*FvwmBannerTimeout 9182743120348908713204
+*FvwmBannerTimeout 1000
+*FvwmBannerTimeout 10
+
+Module
+Module
+Module FvwmBanner
+Module    FvwmBanner
+Module		FvwmBanner
+
+################# GLOBAL COMMANDS ###################
+
+Log "Test AddToFunc, DestroyFunc, Function"
+
+AddToFunc
+AddToFunc   foo
+AddToFunc		bar
+
+AddToFunc   suicide
+AddToFunc		suicide
+AddToFunc suicide
+ + "I" DestroyFunc suicide
+ + "I" DestroyFunc suicide
+ + "I" DestroyFunc suicide
+AddToFunc suicide
+ + "I" DestroyFunc suicide
+function suicide
+
+### coredump!!
+
+#AddToFunc loop1
+# + "I" function loop2
+#AddToFunc loop2
+# + "I" function loop1
+#function loop1
+
+### coredump!!
+
+#AddToFunc grow1
+# + "I" AddToFunc grow2 nop
+# + "I" function grow2
+#AddToFunc grow2
+# + "I" AddToFunc grow1 nop
+# + "I" function grow1
+#function grow1
+
+addtofunc foo
+ + "I" nop $w $d $1 $10298097
+function
+function   foo
+function		foo
+function nonexist
+
+DestroyFunc
+DestroyFunc    grow2
+DestroyFunc		grow1
+DestroyFunc loop1
+DestroyFunc loop2
+
+Log "Test TO MENU, DESTROY MENU, MENU, POPUP"
+
+AddToMenu menu1 "tt1" title top
+AddToMenu menu1 "t1" title
+AddToMenu menu1 "tt1"   title   top
+AddToMenu menu1 "t1"   title
+AddToMenu menu1 "tt1"		title		top
+AddToMenu menu1 "t1"		title
++ "" ""
++ "" nop
++ "" nop
++ "%test1.xpm%foo%test2.xpm%"
++ "*test1.xpm*fo*test2.xpm*"
++ "^test1.xpm^f^test2.xpm^"
++ "@test1.xpm@oo@test2.xpm@"
++ "%test1.xpm%foo%test2.xpm%"
++ "*test1.xpm*fo*test2.xpm*"
++ "^test1.xpm^f^test2.xpm^"
++ "@test1.xpm@oo@test2.xpm@"
++ "%test2.xpm%foo%test1.xpm%"
++ "*test2.xpm*fo*test1.xpm*"
++ "^test2.xpm^f^test1.xpm^"
++ "@test2.xpm@oo@test1.xpm@"
++ "xx" function xyz
++ "xx" function xyz
++ "xx" function xyz
+
+Menu menu1 root c+0 c+0 beep
+Menu menu1 root c+0 c+0 beep
+popup menu1 root c+0 c+0 beep
+popup menu1 root c+0 c+0 beep
+
+DestroyMenu
+DestroyMenu
+DestroyMenu		 menu1
+
+addtofunc makelongmenu
++ "I" AddToMenu longmenu popup "short menu"
++ "I" AddToMenu longmenu popup "recursive menu"
++ "I" AddToMenu longmenu popup "short menu"
++ "I" AddToMenu longmenu popup "recursive menu"
++ "I" AddToMenu longmenu popup "short menu"
++ "I" AddToMenu longmenu popup "recursive menu"
++ "I" AddToMenu longmenu popup "short menu"
++ "I" AddToMenu longmenu popup "recursive menu"
++ "I" AddToMenu longmenu popup "short menu"
++ "I" AddToMenu longmenu popup "recursive menu"
++ "I" AddToMenu longmenu popup "short menu"
++ "I" AddToMenu longmenu popup "recursive menu"
++ "I" AddToMenu longmenu popup "short menu"
++ "I" AddToMenu longmenu popup "recursive menu"
++ "I" AddToMenu longmenu popup "short menu"
++ "I" AddToMenu longmenu popup "recursive menu"
++ "I" AddToMenu longmenu popup "short menu"
++ "I" AddToMenu longmenu popup "recursive menu"
++ "I" AddToMenu longmenu popup "short menu"
++ "I" AddToMenu longmenu popup "recursive menu"
+
+AddToMenu longmenu "a very long menu" title
+Addtomenu "short menu" "a very short menu" title top
++ "single item" nop
+Addtomenu "recursive menu" "recursion" title top
++ "recurse" popup "recursive menu"
+
+makelongmenu
+makelongmenu
+makelongmenu
+makelongmenu
+makelongmenu
+makelongmenu
+makelongmenu
+makelongmenu
+makelongmenu
+makelongmenu
+
+Menu longmenu
+Popup longmenu
+DestroyMenu longmenu
+
+Log "Test BEEP"
+
+Beep
+Beep
+Beep ü30 23äö ü9823r ,l.öapü39
+
+Log "Test BorderStyle"
+
+BorderStyle
+BorderStyle -- HiddenHandles
+BorderStyle Active -- !HiddenHandles
+BorderStyle Active -- !HiddenHandles
+BorderStyle Simple
+BorderStyle Simple
+BorderStyle Inactive -- HiddenHandles NoInset
+BorderStyle Active TiledPixmap test1.xpm
+BorderStyle Inactive TiledPixmap test2.xpm
+BorderStyle Active -- HiddenHandles NoInset
+
+Log "Test TITLE STYLE"
+
+Log "Test TitleStyle justification and height"
+
+TitleStyle
+TitleStyle LEFtJusTiFied
+TitleStyle LEFtJusTiFied
+TitleStyle   centered
+TitleStyle		rightjustified
+TitleStyle heIGht 20
+TitleStyle heIGht 20
+TitleStyle leftjustified height 37
+TitleStyle leftjustified height 24
+
+Log "Test TitleStyles"
+
+TitleStyle -- raisED
+TitleStyle -- SUNk
+TitleStyle -- flat
+TitleStyle -- flat
+TitleStyle -- !flat
+TitleStyle Activeup -- raised
+TitleStyle Activeup -- raised
+TitleStyle activeDOWN -- sunk
+TitleStyle inactive -- flat
+TitleStyle inactive -- flat
+TitleStyle Activeup -- sunk
+TitleStyle simple
+TitleStyle simple
+TitleStyle default 3
+TitleStyle default 3
+TitleStyle solid blaCK
+TitleStyle solid blaCK
+TitleStyle simple
+
+Log "Test gradients"
+
+TitleStyle hgradient 16 green red
+TitleStyle hgradient 16 green red
+TitleStyle hgradient 16 red blue
+TitleStyle hgradient 32 red blue
+TitleStyle hgradient 128 red blue
+TitleStyle hgradient 2 red blue
+TitleStyle vgradient 16 green red
+TitleStyle vgradient 16 green red
+TitleStyle vgradient 16 red blue
+TitleStyle vgradient 32 red blue
+TitleStyle vgradient 128 red blue
+TitleStyle vgradient 2 red blue
+TitleStyle VGradient 16 3 Red 20 Blue 30 Black 50 Grey
+TitleStyle VGradient 16 3 Red 20 Blue 30 Black 50 Grey
+TitleStyle VGradient 16 4 Red 20 Blue 30 Black 20 Grey 30 yellow
+TitleStyle VGradient 16 2 Red 20 Blue 80
+TitleStyle VGradient 128 2 Red 20 Blue 80
+TitleStyle VGradient 2 2 Red 20 Blue 80
+TitleStyle hGradient 16 3 Red 20 Blue 30 Black 50 Grey
+TitleStyle hGradient 16 3 Red 20 Blue 30 Black 50 Grey
+TitleStyle hGradient 16 4 Red 20 Blue 30 Black 20 Grey 30 yellow
+TitleStyle hGradient 16 2 Red 20 Blue 80
+TitleStyle hGradient 128 2 Red 20 Blue 80
+TitleStyle hGradient 2 2 Red 20 Blue 80
+
+Log "Test vector buttons"
+
+TitleStyle Vector 5 45x60@0 80x60@0 80x80@1 45x80@1 45x60@0
+TitleStyle Vector 5 45x60@0 80x60@0 80x80@1 45x80@1 45x60@0
+TitleStyle 4 50x35@1 65x65@0 35x65@0 50x35@1
+TitleStyle 4 50x65@1 35x35@1 65x35@1 50x65@0
+TitleStyle 5 40x40@1 60x40@1 60x60@0 40x60@0 40x40@1
+TitleStyle 5 40x40@1 60x40@1 60x60@0 40x60@0 40x40@1
+
+Log "Test pixmaps"
+
+TitleStyle Pixmap test1.xpm
+TitleStyle Pixmap test2.xpm
+TitleStyle TiledPixmap test2.xpm
+TitleStyle TiledPixmap test2.xpm
+TitleStyle TiledPixmap test1.xpm
+TitleStyle ActiveUp (Pixmap test3.xpm) ActiveDown (Pixmap test2.xpm)
+TitleStyle Inactive Pixmap nonexistent.xpm
+TitleStyle Inactive Pixmap test3.xpm
+TitleStyle Inactive Pixmap test3.xpm
+TitleStyle Inactive Pixmap
+TitleStyle MiniIcons
+TitleStyle miniicons
+
+Log "Test ADD TITLE STYLE"
+
+AddTitleStyle
+AddTitleStyle -- raisED
+AddTitleStyle -- SUNk
+AddTitleStyle -- flat
+AddTitleStyle -- flat
+AddTitleStyle -- !flat
+AddTitleStyle Activeup -- raised
+AddTitleStyle Activeup -- raised
+AddTitleStyle activeDOWN -- sunk
+AddTitleStyle inactive -- flat
+AddTitleStyle inactive -- flat
+AddTitleStyle Activeup -- sunk
+AddTitleStyle simple
+AddTitleStyle simple
+AddTitleStyle default 3
+AddTitleStyle default 3
+AddTitleStyle solid blaCK
+AddTitleStyle solid blaCK
+AddTitleStyle simple
+
+Log "Test gradients"
+
+AddTitleStyle hgradient 16 green red
+AddTitleStyle hgradient 16 green red
+AddTitleStyle hgradient 16 red blue
+AddTitleStyle hgradient 32 red blue
+AddTitleStyle hgradient 128 red blue
+AddTitleStyle hgradient 2 red blue
+AddTitleStyle vgradient 16 green red
+AddTitleStyle vgradient 16 green red
+AddTitleStyle vgradient 16 red blue
+AddTitleStyle vgradient 32 red blue
+AddTitleStyle vgradient 128 red blue
+AddTitleStyle vgradient 2 red blue
+AddTitleStyle VGradient 16 3 Red 20 Blue 30 Black 50 Grey
+AddTitleStyle VGradient 16 3 Red 20 Blue 30 Black 50 Grey
+AddTitleStyle VGradient 16 4 Red 20 Blue 30 Black 20 Grey 30 yellow
+AddTitleStyle VGradient 16 2 Red 20 Blue 80
+AddTitleStyle VGradient 128 2 Red 20 Blue 80
+AddTitleStyle VGradient 2 2 Red 20 Blue 80
+AddTitleStyle hGradient 16 3 Red 20 Blue 30 Black 50 Grey
+AddTitleStyle hGradient 16 3 Red 20 Blue 30 Black 50 Grey
+AddTitleStyle hGradient 16 4 Red 20 Blue 30 Black 20 Grey 30 yellow
+AddTitleStyle hGradient 16 2 Red 20 Blue 80
+AddTitleStyle hGradient 128 2 Red 20 Blue 80
+AddTitleStyle hGradient 2 2 Red 20 Blue 80
+
+Log "Test vector buttons"
+
+AddTitleStyle Vector 5 45x60@0 80x60@0 80x80@1 45x80@1 45x60@0
+AddTitleStyle Vector 5 45x60@0 80x60@0 80x80@1 45x80@1 45x60@0
+AddTitleStyle 4 50x35@1 65x65@0 35x65@0 50x35@1
+AddTitleStyle 4 50x65@1 35x35@1 65x35@1 50x65@0
+AddTitleStyle 5 40x40@1 60x40@1 60x60@0 40x60@0 40x40@1
+AddTitleStyle 5 40x40@1 60x40@1 60x60@0 40x60@0 40x40@1
+
+Log "Test pixmaps"
+
+AddTitleStyle Pixmap test1.xpm
+AddTitleStyle Pixmap test2.xpm
+AddTitleStyle TiledPixmap test2.xpm
+AddTitleStyle TiledPixmap test2.xpm
+AddTitleStyle TiledPixmap test1.xpm
+AddTitleStyle ActiveUp (Pixmap test3.xpm) ActiveDown (Pixmap test2.xpm)
+AddTitleStyle Inactive Pixmap nonexistent.xpm
+AddTitleStyle Inactive Pixmap test3.xpm
+AddTitleStyle Inactive Pixmap test3.xpm
+AddTitleStyle Inactive Pixmap
+AddTitleStyle MiniIcons
+AddTitleStyle miniicons
+
+Log "Test BUTTON STYLE"
+
+Log "Test various states and styles"
+
+ButtonStyle
+ButtonStyle All -- UseBorderStyle
+ButtonStyle All -- UseTitleStyle
+ButtonStyle Reset
+ButtonStyle All -- raisED
+ButtonStyle All -- SUNk
+ButtonStyle Left -- flat
+ButtonStyle Left -- flat
+ButtonStyle Right -- !flat
+ButtonStyle Left Activeup -- raised
+ButtonStyle Left Activeup -- raised
+ButtonStyle Left activeDOWN -- sunk
+ButtonStyle Left inactive -- flat
+ButtonStyle Left inactive -- flat
+ButtonStyle Left Activeup -- sunk
+ButtonStyle 1 simple
+ButtonStyle 1 simple
+ButtonStyle 1 default 3
+ButtonStyle 1 default 3
+ButtonStyle 1 solid blaCK
+ButtonStyle 1 solid blaCK
+ButtonStyle 1 simple
+
+Log "Test gradients"
+
+ButtonStyle 2 hgradient 16 green red
+ButtonStyle 2 hgradient 16 green red
+ButtonStyle 2 hgradient 16 red blue
+ButtonStyle 2 hgradient 32 red blue
+ButtonStyle 2 hgradient 128 red blue
+ButtonStyle 2 hgradient 2 red blue
+ButtonStyle 2 vgradient 16 green red
+ButtonStyle 2 vgradient 16 green red
+ButtonStyle 2 vgradient 16 red blue
+ButtonStyle 2 vgradient 32 red blue
+ButtonStyle 2 vgradient 128 red blue
+ButtonStyle 2 vgradient 2 red blue
+ButtonStyle 3 VGradient 16 3 Red 20 Blue 30 Black 50 Grey
+ButtonStyle 3 VGradient 16 3 Red 20 Blue 30 Black 50 Grey
+ButtonStyle 3 VGradient 16 4 Red 20 Blue 30 Black 20 Grey 30 yellow
+ButtonStyle 3 VGradient 16 2 Red 20 Blue 80
+ButtonStyle 3 VGradient 128 2 Red 20 Blue 80
+ButtonStyle 3 VGradient 2 2 Red 20 Blue 80
+ButtonStyle 3 hGradient 16 3 Red 20 Blue 30 Black 50 Grey
+ButtonStyle 3 hGradient 16 3 Red 20 Blue 30 Black 50 Grey
+ButtonStyle 3 hGradient 16 4 Red 20 Blue 30 Black 20 Grey 30 yellow
+ButtonStyle 3 hGradient 16 2 Red 20 Blue 80
+ButtonStyle 3 hGradient 128 2 Red 20 Blue 80
+ButtonStyle 3 hGradient 2 2 Red 20 Blue 80
+
+Log "Test vector buttons"
+
+ButtonStyle Reset
+ButtonStyle 1 Vector 5 45x60@0 80x60@0 80x80@1 45x80@1 45x60@0
+ButtonStyle 1 Vector 5 45x60@0 80x60@0 80x80@1 45x80@1 45x60@0
+ButtonStyle 1 4 50x35@1 65x65@0 35x65@0 50x35@1
+ButtonStyle 1 4 50x65@1 35x35@1 65x35@1 50x65@0
+ButtonStyle 1 5 40x40@1 60x40@1 60x60@0 40x60@0 40x40@1
+ButtonStyle 1 5
+ButtonStyle 1 5 40x40@1 60x40@1 60x60@0 40x60@0 40x40@1
+ButtonStyle Reset
+
+Log "Test pixmaps"
+
+ButtonStyle 1 Pixmap test1.xpm
+ButtonStyle 1 Pixmap test2.xpm
+ButtonStyle 1 TiledPixmap test2.xpm
+ButtonStyle 1 TiledPixmap test2.xpm
+ButtonStyle 1 TiledPixmap test1.xpm
+ButtonStyle 1 ActiveUp (Pixmap test3.xpm) ActiveDown (Pixmap test2.xpm)
+ButtonStyle 1 Inactive Pixmap nonexistent.xpm
+ButtonStyle 1 Inactive Pixmap test3.xpm
+ButtonStyle 1 Inactive Pixmap test3.xpm
+ButtonStyle 1 Inactive Pixmap
+ButtonStyle 1 MiniIcons
+ButtonStyle 1 miniicons
+
+Log "Test state-independent flags"
+
+ButtonStyle 1 - MWMDecorMenu MWMDecorMin MWMDecorMax MWMDecorMenu
+ButtonStyle 1 - MWMDecorMenu MWMDecorMin MWMDecorMax MWMDecorMenu
+ButtonStyle 1 - MWMDecorMax
+ButtonStyle 1 - MWMDecorMin
+ButtonStyle 1 -
+
+Log "Test ADD BUTTON STYLE"
+
+Log "Test various states and styles"
+
+AddButtonStyle
+AddButtonStyle Reset
+AddButtonStyle All -- raisED
+AddButtonStyle All -- SUNk
+AddButtonStyle Left -- flat
+AddButtonStyle Left -- flat
+AddButtonStyle Right -- !flat
+AddButtonStyle Left Activeup -- raised
+AddButtonStyle Left Activeup -- raised
+AddButtonStyle Left activeDOWN -- sunk
+AddButtonStyle Left inactive -- flat
+AddButtonStyle Left inactive -- flat
+AddButtonStyle Left Activeup -- sunk
+AddButtonStyle 1 simple
+AddButtonStyle 1 simple
+AddButtonStyle 1 default 3
+AddButtonStyle 1 default 3
+AddButtonStyle 1 solid blaCK
+AddButtonStyle 1 solid blaCK
+AddButtonStyle 1 simple
+
+Log "Test gradients"
+
+AddButtonStyle 2 hgradient 16 green red
+AddButtonStyle 2 hgradient 16 green red
+AddButtonStyle 2 hgradient 16 red blue
+AddButtonStyle 2 hgradient 32 red blue
+AddButtonStyle 2 hgradient 128 red blue
+AddButtonStyle 2 hgradient 2 red blue
+AddButtonStyle 2 vgradient 16 green red
+AddButtonStyle 2 vgradient 16 green red
+AddButtonStyle 2 vgradient 16 red blue
+AddButtonStyle 2 vgradient 32 red blue
+AddButtonStyle 2 vgradient 128 red blue
+AddButtonStyle 2 vgradient 2 red blue
+AddButtonStyle 3 VGradient 16 3 Red 20 Blue 30 Black 50 Grey
+AddButtonStyle 3 VGradient 16 3 Red 20 Blue 30 Black 50 Grey
+AddButtonStyle 3 VGradient 16 4 Red 20 Blue 30 Black 20 Grey 30 yellow
+AddButtonStyle 3 VGradient 16 2 Red 20 Blue 80
+AddButtonStyle 3 VGradient 128 2 Red 20 Blue 80
+AddButtonStyle 3 VGradient 2 2 Red 20 Blue 80
+AddButtonStyle 3 hGradient 16 3 Red 20 Blue 30 Black 50 Grey
+AddButtonStyle 3 hGradient 16 3 Red 20 Blue 30 Black 50 Grey
+AddButtonStyle 3 hGradient 16 4 Red 20 Blue 30 Black 20 Grey 30 yellow
+AddButtonStyle 3 hGradient 16 2 Red 20 Blue 80
+AddButtonStyle 3 hGradient 128 2 Red 20 Blue 80
+AddButtonStyle 3 hGradient 2 2 Red 20 Blue 80
+
+Log "Test vector buttons"
+
+AddButtonStyle Reset
+AddButtonStyle 1 Vector 5 45x60@0 80x60@0 80x80@1 45x80@1 45x60@0
+AddButtonStyle 1 Vector 5 45x60@0 80x60@0 80x80@1 45x80@1 45x60@0
+AddButtonStyle 1 4 50x35@1 65x65@0 35x65@0 50x35@1
+AddButtonStyle 1 4 50x65@1 35x35@1 65x35@1 50x65@0
+AddButtonStyle 1 5 40x40@1 60x40@1 60x60@0 40x60@0 40x40@1
+AddButtonStyle 1 5
+AddButtonStyle 1 5 40x40@1 60x40@1 60x60@0 40x60@0 40x40@1
+AddButtonStyle Reset
+
+Log "Test pixmaps"
+
+AddButtonStyle 1 Pixmap test1.xpm
+AddButtonStyle 1 Pixmap test2.xpm
+AddButtonStyle 1 TiledPixmap test2.xpm
+AddButtonStyle 1 TiledPixmap test2.xpm
+AddButtonStyle 1 TiledPixmap test1.xpm
+AddButtonStyle 1 ActiveUp (Pixmap test3.xpm) ActiveDown (Pixmap test2.xpm)
+AddButtonStyle 1 Inactive Pixmap nonexistent.xpm
+AddButtonStyle 1 Inactive Pixmap test3.xpm
+AddButtonStyle 1 Inactive Pixmap test3.xpm
+AddButtonStyle 1 Inactive Pixmap
+AddButtonStyle 1 MiniIcons
+AddButtonStyle 1 miniicons
+
+Log "Test CLICK TIME test"
+
+ClickTime
+ClickTime 0
+ClickTime    0 # blah
+ClickTime 	 	0
+ClickTime -1
+ClickTime 150
+ClickTime 150
+ClickTime 200
+
+Log "Test COLORMAP FOCUS"
+
+ColormapFocus
+ColormapFocus    FollowsFocus
+ColormapFocus 		FollowsFocus
+ColormapFocus FollowsMouse
+ColormapFocus FollowsFocus
+ColormapFocus FollowsFocus
+ColormapFocus FollowsMouse
+
+Log "Test COLOR LIMIT"
+
+ColorLimit
+ColorLimit 0
+ColorLimit   77
+ColorLimit		77
+ColorLimit 50
+ColorLimit 50
+ColorLimit 40
+ColorLimit -23
+ColorLimit 0
+
+Log "Test CURSOR MOVE"
+
+CursorMove
+CursorMove 50p
+CursorMove   10p   -10p
+CursorMove 		-50		+50
+CursorMove -0 +0
+CursorMove -50p -50p
+CursorMove -1000 -1000
+
+Log "Test CURSOR STYLE"
+
+CursorStyle
+CursorStyle liewud
+CursorStyle BOTTOM 132
+CursorStyle BOTTOM_LEFT 133
+CursorStyle BOTTOM_RIGHT 134
+CursorStyle DEFAULT 64
+CursorStyle DEFAULT 68
+CursorStyle DEFAULT 68
+CursorStyle DESTROY 88
+CursorStyle DESTROY 88
+CursorStyle DESTROY 99
+CursorStyle DESTROY
+CursorStyle DEFAULT
+
+Log "Test DESK"
+
+Desk
+Desk    2
+Desk		+3
+Desk -2
+Desk 0 1
+Desk   0    3
+Desk		0		1923874
+Desk +1 0 10
+Desk -1 0 10
+Desk 0 0 5 7
+Desk 0 -11111 5 7
+Desk 0 0
+
+Log "Test DESK TOP SIZE"
+
+DeskTopSize
+DeskTopSize ödslajf
+DeskTopSize   2x2
+DeskTopSize		 2x2
+DeskTopSize 2x3
+DeskTopSize 2x3
+DeskTopSize 3x3
+DeskTopSize 3x1
+DeskTopSize 1x1
+DeskTopSize 0x2
+DeskTopSize 2x0
+DeskTopSize 0x0
+DeskTopSize 1000x1000
+DeskTopSize 2x2
+
+Log "Test ECHO"
+
+Echo
+Echo
+Echo ädsa		 iopq9 $SHELL "'lksaä"
+
+Log "Test EDGE RESISTANCE"
+
+EdgeResistance
+EdgeResistance     300   10
+EdgeResistance		300		10
+EdgeResistance 400 400
+EdgeResistance 400 400
+EdgeResistance 300 10
+EdgeResistance 0 20
+EdgeResistance -1 20
+EdgeResistance 20 0
+EdgeResistance 20 -1
+
+Log "Test EDGE SCROLL"
+
+EdgeScroll
+EdgeScroll    50    50
+EdgeScroll		50		50
+EdgeScroll 100 100
+EdgeScroll -125 111
+EdgeScroll 100000 100000
+EdgeScroll 0 0
+EdgeScroll 75 75
+
+Log "Test EXEC, EXEC USE SHELL"
+
+Log "Test ExecUseShell"
+
+ExecUseShell
+ExecUseShell
+ExecUseShell     /bin/bash
+ExecUseShell		/bin/bash
+ExecUseShell /bin/bash
+ExecUseShell /nonexistent/foo/bar
+ExecUseShell
+
+Log "Test Exec"
+
+Exec
+Exec  	 	 	""
+Exec echo "Test of exec using echo"
+Exec echo "Exec test, value of \$$d $d, \$$v $v, \$$[screen] $[screen]"
+
+
+Log "Test Old GLOBAL OPTIONS, now styles"
+
+Style "*"  CleverPlacement, SmartPlacement
+Style "*"  ClickToFocusPassesClickOff, CLICKTOFOCUSPASSESCLICK
+Style "*"  ClickToFocusRaisesOff, CLICKTOFOCUSRAISES, MouseFocusClickRaisesOff, MOUSEFOCUSCLICKRAISES, StippledTitleOff, StippledTitle, STARTSONPAGEMODIFIESUSPOSITION, STARTSONPAGEHONORSUSPOSITION, CAPTUREHONORSSTARTSONPAGE, CAPTUREIGNORESSTARTSONPAGE, RECAPTUREHONORSSTARTSONPAGE, RECAPTUREIGNORESSTARTSONPAGE, ACTIVEPLACEMENTHONORSSTARTSONPAGE, ACTIVEPLACEMENTIGNORESSTARTSONPAGE
+Style "*"  äöwwwkjfd, 2wäeöqdpefoeqopweäöööööööööcöäowäjafewjäoäajopfdewjpoafdsjpoafsdäjopfdsjopfdasäjopdfsäjopfdsajpoafds, jäwpouef, päu3pä9, upä43owu, päfoopu, 43päuo, 4w3fuop, af, 4wawä4opufwuä4f, 4wp, apwöejaeäwfpöojwoäpfoejäwpajoeäjopfwejp\aawehoiöoaihöwhawepjpewfpjewfajopäefwjopewfjopajeopfwajopefwajpoewfajpoewfajpoaefwjopaewfjpoeafwjopaefwjopaewfjopafewjopfewajpoafewjfaewihoöwhöfohzfw4öof4whoiaf4ihoaf4ihofa, apwöejaeäwfpöojwoäpfoejäwpajoeäjopfwejp\aawehoiöoaihöwhawepjpewfpjewfajopäefwjopewfjopajeopfwajopefwajpoewfajpoewfajpoaefwjopaewfjpoeafwjopaefwjopaewfjopafewjopfewajpoafewjfaewihoöwhöfohzfw4öof4whoiaf4ihoaf4ihofa
+Log "Test GOTO PAGE"
+
+GotoPage
+GotoPage  2  2
+GotoPage		1		1
+GotoPage -1 -100
+GotoPage 10000 1000000
+GotoPage 2 1
+GotoPage 2 1
+GotoPage 1 1
+
+Log "Test old HilightColor commands, the conversion utility changed them."
+
+Style "*" HilightFore , HilightBack 
+Style "*" HilightFore blue, HilightBack 
+Style "*" HilightFore green, HilightBack 
+Style "*" HilightFore black, HilightBack yellow
+Style "*" HilightFore black, HilightBack yellow
+Style "*" HilightFore gold2, HilightBack SteelBlue
+Style "*" HilightFore gold2, HilightBack SteelBlue
+Style "*" HilightFore , HilightBack 
+Style "*" HilightFore gold2, HilightBack SteelBlue
+
+Log "Test ICON FONT"
+
+IconFont
+IconFont     9x15
+IconFont		9x15
+IconFont /nonexistent/foo/bar
+IconFont -adobe-helvetica-bold-r-*-*-*-140-*-*-*-*-*-*
+IconFont -adobe-helvetica-bold-r-*-*-*-140-*-*-*-*-*-*
+IconFont
+
+Log "Test KEY"
+
+Key
+Key f12
+Key f12 t
+key f12 t cs
+key		f12		t		cs
+Key		f12		a		a		Nop
+Key  f12     a  a     function nonexistent
+Key f12 a a function nonexistent
+Key f12 t a function nonexistent
+Key f12 t a -
+Key f12 t a -
+
+Log "Test MENU STYLE"
+
+MenuStyle
+MenuStyle  red  yellow  green  9x15  mwm  anim
+MenuStyle 	red	 yellow	 green 	9x15	 mwm 	anim
+MenuStyle red yellow green 9x15 mwm anim
+MenuStyle red yellow green 9x15 mwm anim
+MenuStyle red yellow green 6x10 mwm anim
+MenuStyle red yellow green 6x10 mwm
+MenuStyle red yellow green 6x10 fvwm
+MenuStyle red yellow green 6x10 fvwm anim
+MenuStyle yellow black pink 8x13bold fvwm anim
+
+Log "Test ChangeMenuStyle"
+
+# Create new menu style, apply it to the default menu,
+# Add Line to menu and pop it up.
+MenuStyle NewStyle white black cyan 10x20 Win AnimationOff
+ChangeMenuStyle * NewStyle menu1
+AddToMenu menu1 "ChangeMenuStyle: The menu should now be white/black/cyan"
+Popup menu1
+# Syntax tests:
+ChangeMenuStyle
+DestroyFunc Log
+AddToFunc Log I Exec echo "### `date`: $0 ###"
+
+########### PATH section -- must be first #############
+
+
+Log "Test ImagePath"
+
+ImagePath
+ImagePath
+ImagePath /usr/lib/X11/icons/pixmaps:+
+ImagePath		/usr/lib/X11/icons/pixmaps:+
+ImagePath /home/tim/pics/xpm/16:/home/tim/pics/xbm/16:/home/tim/pics/xpm/21:/home/tim/pics/xpm/32:/home/tim/pics/xpm/46:/home/tim/pics/xpm/48:/home/tim/pics/xpm:/home/tim/pics/tiles:+
+ImagePath /root/icons:/usr/X11R6/include/X11/pixmaps:/usr/X11R6/include/X11/bitmaps:/root/pixmaps:/root/gifs:/opt/kde/share/icons:+
+ImagePath /home/tim/pics/xpm/16:/home/tim/pics/xbm/16:/home/tim/pics/xpm/21:/home/tim/pics/xpm/32:/home/tim/pics/xpm/46:/home/tim/pics/xpm/48:/home/tim/pics/xpm:/home/tim/pics/tiles:+
+ImagePath /usr/X11R6/include/X11/3dpixmaps/small:/usr/X11R6/include/X11/susexpm/small:/usr/X11R6/include/X11/susexpm/normal:/usr/X11R6/include/X11/susexpm/mini:/usr/X11R6/include/X11/3dpixmaps/normal:/usr/X11R6/include/X11/pixmaps:/etc/dtpixmaps:+
+ImagePath /tmp:/usr/X11R6/include/X11/3dpixmaps/small:/usr/X11R6/include/X11/susexpm/small:/usr/X11R6/include/X11/susexpm/normal:/usr/X11R6/include/X11/susexpm/mini:/usr/X11R6/include/X11/3dpixmaps/normal:/usr/X11R6/include/X11/pixmaps:/etc/dtpixmaps:+
+
+ImagePath +
+ImagePath /usr/local/share/icons/wm-icons:/usr/share/icons/wm-icons:+:/usr/include/X11/bitmaps:/usr/include/X11/pixmaps
+ImagePath $HOME/.wm-icons:+
+ImagePath +:/usr/share/icons/mini
+ImagePath +::::/opt/kde/share/icons:/opt/kde/share/apps/kappfinder/pics:
+
+Log "Test CONFIG, DESTROY MODULE CONFIG"
+
+*dummymodule
+*dummymodule
+*dummymodule ÖLq- ö.qljüpßi+123
+*dummymodule1fooqmnld Ä"§k
+*dummymodule1p	o q#köpiü
+*dummymodule1wqwq  lkjöö 13
+*dummymodule1r 13r  g3w
+*dummymodule2r 13r  g3w
+*dummymodule2r 13r  g3w
+*dummymodule2 121 32
+*dummymodule2 qw 124
+
+DestroyModuleConfig
+DestroyModuleConfig
+DestroyModuleConfig  dummymodule1
+DestroyModuleConfig		dummymodule1
+DestroyModuleConfig dummymod*
+DestroyModuleConfig dummymod*
+
+*dummymodule
+*dummymodule
+*dummymodule ÖLq- ö.qljüpßi+123
+*dummymodule1fooqmnld Ä"§k
+*dummymodule1p	o q#köpiü
+*dummymodule1wqwq  lkjöö 13
+*dummymodule1r 13r  g3w
+*dummymodule2r 13r  g3w
+*dummymodule2r 13r  g3w
+*dummymodule2 121 32
+*dummymodule2 qw 124
+
+DestroyModuleConfig *
+
+Log "Test FvwmBanner"
+
+*FvwmBannerTimeout 9182743120348908713204
+*FvwmBannerTimeout 1000
+*FvwmBannerTimeout 10
+
+Module
+Module
+Module FvwmBanner
+Module    FvwmBanner
+Module		FvwmBanner
+
+################# GLOBAL COMMANDS ###################
+
+Log "Test AddToFunc, DestroyFunc, Function"
+
+AddToFunc
+AddToFunc   foo
+AddToFunc		bar
+
+AddToFunc   suicide
+AddToFunc		suicide
+AddToFunc suicide
+ + "I" DestroyFunc suicide
+ + "I" DestroyFunc suicide
+ + "I" DestroyFunc suicide
+AddToFunc suicide
+ + "I" DestroyFunc suicide
+function suicide
+
+### coredump!!
+
+#AddToFunc loop1
+# + "I" function loop2
+#AddToFunc loop2
+# + "I" function loop1
+#function loop1
+
+### coredump!!
+
+#AddToFunc grow1
+# + "I" AddToFunc grow2 nop
+# + "I" function grow2
+#AddToFunc grow2
+# + "I" AddToFunc grow1 nop
+# + "I" function grow1
+#function grow1
+
+addtofunc foo
+ + "I" nop $w $d $1 $10298097
+function
+function   foo
+function		foo
+function nonexist
+
+DestroyFunc
+DestroyFunc    grow2
+DestroyFunc		grow1
+DestroyFunc loop1
+DestroyFunc loop2
+
+Log "Test TO MENU, DESTROY MENU, MENU, POPUP"
+
+AddToMenu menu1 "tt1" title top
+AddToMenu menu1 "t1" title
+AddToMenu menu1 "tt1"   title   top
+AddToMenu menu1 "t1"   title
+AddToMenu menu1 "tt1"		title		top
+AddToMenu menu1 "t1"		title
++ "" ""
++ "" nop
++ "" nop
++ "%test1.xpm%foo%test2.xpm%"
++ "*test1.xpm*fo*test2.xpm*"
++ "^test1.xpm^f^test2.xpm^"
++ "@test1.xpm@oo@test2.xpm@"
++ "%test1.xpm%foo%test2.xpm%"
++ "*test1.xpm*fo*test2.xpm*"
++ "^test1.xpm^f^test2.xpm^"
++ "@test1.xpm@oo@test2.xpm@"
++ "%test2.xpm%foo%test1.xpm%"
++ "*test2.xpm*fo*test1.xpm*"
++ "^test2.xpm^f^test1.xpm^"
++ "@test2.xpm@oo@test1.xpm@"
++ "xx" function xyz
++ "xx" function xyz
++ "xx" function xyz
+
+Menu menu1 root c+0 c+0 beep
+Menu menu1 root c+0 c+0 beep
+popup menu1 root c+0 c+0 beep
+popup menu1 root c+0 c+0 beep
+
+DestroyMenu
+DestroyMenu
+DestroyMenu		 menu1
+
+addtofunc makelongmenu
++ "I" AddToMenu longmenu popup "short menu"
++ "I" AddToMenu longmenu popup "recursive menu"
++ "I" AddToMenu longmenu popup "short menu"
++ "I" AddToMenu longmenu popup "recursive menu"
++ "I" AddToMenu longmenu popup "short menu"
++ "I" AddToMenu longmenu popup "recursive menu"
++ "I" AddToMenu longmenu popup "short menu"
++ "I" AddToMenu longmenu popup "recursive menu"
++ "I" AddToMenu longmenu popup "short menu"
++ "I" AddToMenu longmenu popup "recursive menu"
++ "I" AddToMenu longmenu popup "short menu"
++ "I" AddToMenu longmenu popup "recursive menu"
++ "I" AddToMenu longmenu popup "short menu"
++ "I" AddToMenu longmenu popup "recursive menu"
++ "I" AddToMenu longmenu popup "short menu"
++ "I" AddToMenu longmenu popup "recursive menu"
++ "I" AddToMenu longmenu popup "short menu"
++ "I" AddToMenu longmenu popup "recursive menu"
++ "I" AddToMenu longmenu popup "short menu"
++ "I" AddToMenu longmenu popup "recursive menu"
+
+AddToMenu longmenu "a very long menu" title
+Addtomenu "short menu" "a very short menu" title top
++ "single item" nop
+Addtomenu "recursive menu" "recursion" title top
++ "recurse" popup "recursive menu"
+
+makelongmenu
+makelongmenu
+makelongmenu
+makelongmenu
+makelongmenu
+makelongmenu
+makelongmenu
+makelongmenu
+makelongmenu
+makelongmenu
+
+Menu longmenu
+Popup longmenu
+DestroyMenu longmenu
+
+Log "Test BEEP"
+
+Beep
+Beep
+Beep ü30 23äö ü9823r ,l.öapü39
+
+Log "Test BorderStyle"
+
+BorderStyle
+BorderStyle -- HiddenHandles
+BorderStyle Active -- !HiddenHandles
+BorderStyle Active -- !HiddenHandles
+BorderStyle Simple
+BorderStyle Simple
+BorderStyle Inactive -- HiddenHandles NoInset
+BorderStyle Active TiledPixmap test1.xpm
+BorderStyle Inactive TiledPixmap test2.xpm
+BorderStyle Active -- HiddenHandles NoInset
+
+Log "Test TITLE STYLE"
+
+Log "Test TitleStyle justification and height"
+
+TitleStyle
+TitleStyle LEFtJusTiFied
+TitleStyle LEFtJusTiFied
+TitleStyle   centered
+TitleStyle		rightjustified
+TitleStyle heIGht 20
+TitleStyle heIGht 20
+TitleStyle leftjustified height 37
+TitleStyle leftjustified height 24
+
+Log "Test TitleStyles"
+
+TitleStyle -- raisED
+TitleStyle -- SUNk
+TitleStyle -- flat
+TitleStyle -- flat
+TitleStyle -- !flat
+TitleStyle Activeup -- raised
+TitleStyle Activeup -- raised
+TitleStyle activeDOWN -- sunk
+TitleStyle inactive -- flat
+TitleStyle inactive -- flat
+TitleStyle Activeup -- sunk
+TitleStyle simple
+TitleStyle simple
+TitleStyle default 3
+TitleStyle default 3
+TitleStyle solid blaCK
+TitleStyle solid blaCK
+TitleStyle simple
+
+Log "Test gradients"
+
+TitleStyle hgradient 16 green red
+TitleStyle hgradient 16 green red
+TitleStyle hgradient 16 red blue
+TitleStyle hgradient 32 red blue
+TitleStyle hgradient 128 red blue
+TitleStyle hgradient 2 red blue
+TitleStyle vgradient 16 green red
+TitleStyle vgradient 16 green red
+TitleStyle vgradient 16 red blue
+TitleStyle vgradient 32 red blue
+TitleStyle vgradient 128 red blue
+TitleStyle vgradient 2 red blue
+TitleStyle VGradient 16 3 Red 20 Blue 30 Black 50 Grey
+TitleStyle VGradient 16 3 Red 20 Blue 30 Black 50 Grey
+TitleStyle VGradient 16 4 Red 20 Blue 30 Black 20 Grey 30 yellow
+TitleStyle VGradient 16 2 Red 20 Blue 80
+TitleStyle VGradient 128 2 Red 20 Blue 80
+TitleStyle VGradient 2 2 Red 20 Blue 80
+TitleStyle hGradient 16 3 Red 20 Blue 30 Black 50 Grey
+TitleStyle hGradient 16 3 Red 20 Blue 30 Black 50 Grey
+TitleStyle hGradient 16 4 Red 20 Blue 30 Black 20 Grey 30 yellow
+TitleStyle hGradient 16 2 Red 20 Blue 80
+TitleStyle hGradient 128 2 Red 20 Blue 80
+TitleStyle hGradient 2 2 Red 20 Blue 80
+
+Log "Test vector buttons"
+
+TitleStyle Vector 5 45x60@0 80x60@0 80x80@1 45x80@1 45x60@0
+TitleStyle Vector 5 45x60@0 80x60@0 80x80@1 45x80@1 45x60@0
+TitleStyle 4 50x35@1 65x65@0 35x65@0 50x35@1
+TitleStyle 4 50x65@1 35x35@1 65x35@1 50x65@0
+TitleStyle 5 40x40@1 60x40@1 60x60@0 40x60@0 40x40@1
+TitleStyle 5 40x40@1 60x40@1 60x60@0 40x60@0 40x40@1
+
+Log "Test pixmaps"
+
+TitleStyle Pixmap test1.xpm
+TitleStyle Pixmap test2.xpm
+TitleStyle TiledPixmap test2.xpm
+TitleStyle TiledPixmap test2.xpm
+TitleStyle TiledPixmap test1.xpm
+TitleStyle ActiveUp (Pixmap test3.xpm) ActiveDown (Pixmap test2.xpm)
+TitleStyle Inactive Pixmap nonexistent.xpm
+TitleStyle Inactive Pixmap test3.xpm
+TitleStyle Inactive Pixmap test3.xpm
+TitleStyle Inactive Pixmap
+TitleStyle MiniIcons
+TitleStyle miniicons
+
+Log "Test ADD TITLE STYLE"
+
+AddTitleStyle
+AddTitleStyle -- raisED
+AddTitleStyle -- SUNk
+AddTitleStyle -- flat
+AddTitleStyle -- flat
+AddTitleStyle -- !flat
+AddTitleStyle Activeup -- raised
+AddTitleStyle Activeup -- raised
+AddTitleStyle activeDOWN -- sunk
+AddTitleStyle inactive -- flat
+AddTitleStyle inactive -- flat
+AddTitleStyle Activeup -- sunk
+AddTitleStyle simple
+AddTitleStyle simple
+AddTitleStyle default 3
+AddTitleStyle default 3
+AddTitleStyle solid blaCK
+AddTitleStyle solid blaCK
+AddTitleStyle simple
+
+Log "Test gradients"
+
+AddTitleStyle hgradient 16 green red
+AddTitleStyle hgradient 16 green red
+AddTitleStyle hgradient 16 red blue
+AddTitleStyle hgradient 32 red blue
+AddTitleStyle hgradient 128 red blue
+AddTitleStyle hgradient 2 red blue
+AddTitleStyle vgradient 16 green red
+AddTitleStyle vgradient 16 green red
+AddTitleStyle vgradient 16 red blue
+AddTitleStyle vgradient 32 red blue
+AddTitleStyle vgradient 128 red blue
+AddTitleStyle vgradient 2 red blue
+AddTitleStyle VGradient 16 3 Red 20 Blue 30 Black 50 Grey
+AddTitleStyle VGradient 16 3 Red 20 Blue 30 Black 50 Grey
+AddTitleStyle VGradient 16 4 Red 20 Blue 30 Black 20 Grey 30 yellow
+AddTitleStyle VGradient 16 2 Red 20 Blue 80
+AddTitleStyle VGradient 128 2 Red 20 Blue 80
+AddTitleStyle VGradient 2 2 Red 20 Blue 80
+AddTitleStyle hGradient 16 3 Red 20 Blue 30 Black 50 Grey
+AddTitleStyle hGradient 16 3 Red 20 Blue 30 Black 50 Grey
+AddTitleStyle hGradient 16 4 Red 20 Blue 30 Black 20 Grey 30 yellow
+AddTitleStyle hGradient 16 2 Red 20 Blue 80
+AddTitleStyle hGradient 128 2 Red 20 Blue 80
+AddTitleStyle hGradient 2 2 Red 20 Blue 80
+
+Log "Test vector buttons"
+
+AddTitleStyle Vector 5 45x60@0 80x60@0 80x80@1 45x80@1 45x60@0
+AddTitleStyle Vector 5 45x60@0 80x60@0 80x80@1 45x80@1 45x60@0
+AddTitleStyle 4 50x35@1 65x65@0 35x65@0 50x35@1
+AddTitleStyle 4 50x65@1 35x35@1 65x35@1 50x65@0
+AddTitleStyle 5 40x40@1 60x40@1 60x60@0 40x60@0 40x40@1
+AddTitleStyle 5 40x40@1 60x40@1 60x60@0 40x60@0 40x40@1
+
+Log "Test pixmaps"
+
+AddTitleStyle Pixmap test1.xpm
+AddTitleStyle Pixmap test2.xpm
+AddTitleStyle TiledPixmap test2.xpm
+AddTitleStyle TiledPixmap test2.xpm
+AddTitleStyle TiledPixmap test1.xpm
+AddTitleStyle ActiveUp (Pixmap test3.xpm) ActiveDown (Pixmap test2.xpm)
+AddTitleStyle Inactive Pixmap nonexistent.xpm
+AddTitleStyle Inactive Pixmap test3.xpm
+AddTitleStyle Inactive Pixmap test3.xpm
+AddTitleStyle Inactive Pixmap
+AddTitleStyle MiniIcons
+AddTitleStyle miniicons
+
+Log "Test BUTTON STYLE"
+
+Log "Test various states and styles"
+
+ButtonStyle
+ButtonStyle All -- UseBorderStyle
+ButtonStyle All -- UseTitleStyle
+ButtonStyle Reset
+ButtonStyle All -- raisED
+ButtonStyle All -- SUNk
+ButtonStyle Left -- flat
+ButtonStyle Left -- flat
+ButtonStyle Right -- !flat
+ButtonStyle Left Activeup -- raised
+ButtonStyle Left Activeup -- raised
+ButtonStyle Left activeDOWN -- sunk
+ButtonStyle Left inactive -- flat
+ButtonStyle Left inactive -- flat
+ButtonStyle Left Activeup -- sunk
+ButtonStyle 1 simple
+ButtonStyle 1 simple
+ButtonStyle 1 default 3
+ButtonStyle 1 default 3
+ButtonStyle 1 solid blaCK
+ButtonStyle 1 solid blaCK
+ButtonStyle 1 simple
+
+Log "Test gradients"
+
+ButtonStyle 2 hgradient 16 green red
+ButtonStyle 2 hgradient 16 green red
+ButtonStyle 2 hgradient 16 red blue
+ButtonStyle 2 hgradient 32 red blue
+ButtonStyle 2 hgradient 128 red blue
+ButtonStyle 2 hgradient 2 red blue
+ButtonStyle 2 vgradient 16 green red
+ButtonStyle 2 vgradient 16 green red
+ButtonStyle 2 vgradient 16 red blue
+ButtonStyle 2 vgradient 32 red blue
+ButtonStyle 2 vgradient 128 red blue
+ButtonStyle 2 vgradient 2 red blue
+ButtonStyle 3 VGradient 16 3 Red 20 Blue 30 Black 50 Grey
+ButtonStyle 3 VGradient 16 3 Red 20 Blue 30 Black 50 Grey
+ButtonStyle 3 VGradient 16 4 Red 20 Blue 30 Black 20 Grey 30 yellow
+ButtonStyle 3 VGradient 16 2 Red 20 Blue 80
+ButtonStyle 3 VGradient 128 2 Red 20 Blue 80
+ButtonStyle 3 VGradient 2 2 Red 20 Blue 80
+ButtonStyle 3 hGradient 16 3 Red 20 Blue 30 Black 50 Grey
+ButtonStyle 3 hGradient 16 3 Red 20 Blue 30 Black 50 Grey
+ButtonStyle 3 hGradient 16 4 Red 20 Blue 30 Black 20 Grey 30 yellow
+ButtonStyle 3 hGradient 16 2 Red 20 Blue 80
+ButtonStyle 3 hGradient 128 2 Red 20 Blue 80
+ButtonStyle 3 hGradient 2 2 Red 20 Blue 80
+
+Log "Test vector buttons"
+
+ButtonStyle Reset
+ButtonStyle 1 Vector 5 45x60@0 80x60@0 80x80@1 45x80@1 45x60@0
+ButtonStyle 1 Vector 5 45x60@0 80x60@0 80x80@1 45x80@1 45x60@0
+ButtonStyle 1 4 50x35@1 65x65@0 35x65@0 50x35@1
+ButtonStyle 1 4 50x65@1 35x35@1 65x35@1 50x65@0
+ButtonStyle 1 5 40x40@1 60x40@1 60x60@0 40x60@0 40x40@1
+ButtonStyle 1 5
+ButtonStyle 1 5 40x40@1 60x40@1 60x60@0 40x60@0 40x40@1
+ButtonStyle Reset
+
+Log "Test pixmaps"
+
+ButtonStyle 1 Pixmap test1.xpm
+ButtonStyle 1 Pixmap test2.xpm
+ButtonStyle 1 TiledPixmap test2.xpm
+ButtonStyle 1 TiledPixmap test2.xpm
+ButtonStyle 1 TiledPixmap test1.xpm
+ButtonStyle 1 ActiveUp (Pixmap test3.xpm) ActiveDown (Pixmap test2.xpm)
+ButtonStyle 1 Inactive Pixmap nonexistent.xpm
+ButtonStyle 1 Inactive Pixmap test3.xpm
+ButtonStyle 1 Inactive Pixmap test3.xpm
+ButtonStyle 1 Inactive Pixmap
+ButtonStyle 1 MiniIcons
+ButtonStyle 1 miniicons
+
+Log "Test state-independent flags"
+
+ButtonStyle 1 - MWMDecorMenu MWMDecorMin MWMDecorMax MWMDecorMenu
+ButtonStyle 1 - MWMDecorMenu MWMDecorMin MWMDecorMax MWMDecorMenu
+ButtonStyle 1 - MWMDecorMax
+ButtonStyle 1 - MWMDecorMin
+ButtonStyle 1 -
+
+Log "Test ADD BUTTON STYLE"
+
+Log "Test various states and styles"
+
+AddButtonStyle
+AddButtonStyle Reset
+AddButtonStyle All -- raisED
+AddButtonStyle All -- SUNk
+AddButtonStyle Left -- flat
+AddButtonStyle Left -- flat
+AddButtonStyle Right -- !flat
+AddButtonStyle Left Activeup -- raised
+AddButtonStyle Left Activeup -- raised
+AddButtonStyle Left activeDOWN -- sunk
+AddButtonStyle Left inactive -- flat
+AddButtonStyle Left inactive -- flat
+AddButtonStyle Left Activeup -- sunk
+AddButtonStyle 1 simple
+AddButtonStyle 1 simple
+AddButtonStyle 1 default 3
+AddButtonStyle 1 default 3
+AddButtonStyle 1 solid blaCK
+AddButtonStyle 1 solid blaCK
+AddButtonStyle 1 simple
+
+Log "Test gradients"
+
+AddButtonStyle 2 hgradient 16 green red
+AddButtonStyle 2 hgradient 16 green red
+AddButtonStyle 2 hgradient 16 red blue
+AddButtonStyle 2 hgradient 32 red blue
+AddButtonStyle 2 hgradient 128 red blue
+AddButtonStyle 2 hgradient 2 red blue
+AddButtonStyle 2 vgradient 16 green red
+AddButtonStyle 2 vgradient 16 green red
+AddButtonStyle 2 vgradient 16 red blue
+AddButtonStyle 2 vgradient 32 red blue
+AddButtonStyle 2 vgradient 128 red blue
+AddButtonStyle 2 vgradient 2 red blue
+AddButtonStyle 3 VGradient 16 3 Red 20 Blue 30 Black 50 Grey
+AddButtonStyle 3 VGradient 16 3 Red 20 Blue 30 Black 50 Grey
+AddButtonStyle 3 VGradient 16 4 Red 20 Blue 30 Black 20 Grey 30 yellow
+AddButtonStyle 3 VGradient 16 2 Red 20 Blue 80
+AddButtonStyle 3 VGradient 128 2 Red 20 Blue 80
+AddButtonStyle 3 VGradient 2 2 Red 20 Blue 80
+AddButtonStyle 3 hGradient 16 3 Red 20 Blue 30 Black 50 Grey
+AddButtonStyle 3 hGradient 16 3 Red 20 Blue 30 Black 50 Grey
+AddButtonStyle 3 hGradient 16 4 Red 20 Blue 30 Black 20 Grey 30 yellow
+AddButtonStyle 3 hGradient 16 2 Red 20 Blue 80
+AddButtonStyle 3 hGradient 128 2 Red 20 Blue 80
+AddButtonStyle 3 hGradient 2 2 Red 20 Blue 80
+
+Log "Test vector buttons"
+
+AddButtonStyle Reset
+AddButtonStyle 1 Vector 5 45x60@0 80x60@0 80x80@1 45x80@1 45x60@0
+AddButtonStyle 1 Vector 5 45x60@0 80x60@0 80x80@1 45x80@1 45x60@0
+AddButtonStyle 1 4 50x35@1 65x65@0 35x65@0 50x35@1
+AddButtonStyle 1 4 50x65@1 35x35@1 65x35@1 50x65@0
+AddButtonStyle 1 5 40x40@1 60x40@1 60x60@0 40x60@0 40x40@1
+AddButtonStyle 1 5
+AddButtonStyle 1 5 40x40@1 60x40@1 60x60@0 40x60@0 40x40@1
+AddButtonStyle Reset
+
+Log "Test pixmaps"
+
+AddButtonStyle 1 Pixmap test1.xpm
+AddButtonStyle 1 Pixmap test2.xpm
+AddButtonStyle 1 TiledPixmap test2.xpm
+AddButtonStyle 1 TiledPixmap test2.xpm
+AddButtonStyle 1 TiledPixmap test1.xpm
+AddButtonStyle 1 ActiveUp (Pixmap test3.xpm) ActiveDown (Pixmap test2.xpm)
+AddButtonStyle 1 Inactive Pixmap nonexistent.xpm
+AddButtonStyle 1 Inactive Pixmap test3.xpm
+AddButtonStyle 1 Inactive Pixmap test3.xpm
+AddButtonStyle 1 Inactive Pixmap
+AddButtonStyle 1 MiniIcons
+AddButtonStyle 1 miniicons
+
+Log "Test CLICK TIME test"
+
+ClickTime
+ClickTime 0
+ClickTime    0 # blah
+ClickTime 	 	0
+ClickTime -1
+ClickTime 150
+ClickTime 150
+ClickTime 200
+
+Log "Test COLORMAP FOCUS"
+
+ColormapFocus
+ColormapFocus    FollowsFocus
+ColormapFocus 		FollowsFocus
+ColormapFocus FollowsMouse
+ColormapFocus FollowsFocus
+ColormapFocus FollowsFocus
+ColormapFocus FollowsMouse
+
+Log "Test COLOR LIMIT"
+
+ColorLimit
+ColorLimit 0
+ColorLimit   77
+ColorLimit		77
+ColorLimit 50
+ColorLimit 50
+ColorLimit 40
+ColorLimit -23
+ColorLimit 0
+
+Log "Test CURSOR MOVE"
+
+CursorMove
+CursorMove 50p
+CursorMove   10p   -10p
+CursorMove 		-50		+50
+CursorMove -0 +0
+CursorMove -50p -50p
+CursorMove -1000 -1000
+
+Log "Test CURSOR STYLE"
+
+CursorStyle
+CursorStyle liewud
+CursorStyle BOTTOM 132
+CursorStyle BOTTOM_LEFT 133
+CursorStyle BOTTOM_RIGHT 134
+CursorStyle DEFAULT 64
+CursorStyle DEFAULT 68
+CursorStyle DEFAULT 68
+CursorStyle DESTROY 88
+CursorStyle DESTROY 88
+CursorStyle DESTROY 99
+CursorStyle DESTROY
+CursorStyle DEFAULT
+
+Log "Test DESK"
+
+Desk
+Desk    2
+Desk		+3
+Desk -2
+Desk 0 1
+Desk   0    3
+Desk		0		1923874
+Desk +1 0 10
+Desk -1 0 10
+Desk 0 0 5 7
+Desk 0 -11111 5 7
+Desk 0 0
+
+Log "Test DESK TOP SIZE"
+
+DeskTopSize
+DeskTopSize ödslajf
+DeskTopSize   2x2
+DeskTopSize		 2x2
+DeskTopSize 2x3
+DeskTopSize 2x3
+DeskTopSize 3x3
+DeskTopSize 3x1
+DeskTopSize 1x1
+DeskTopSize 0x2
+DeskTopSize 2x0
+DeskTopSize 0x0
+DeskTopSize 1000x1000
+DeskTopSize 2x2
+
+Log "Test ECHO"
+
+Echo
+Echo
+Echo ädsa		 iopq9 $SHELL "'lksaä"
+
+Log "Test EDGE RESISTANCE"
+
+EdgeResistance
+EdgeResistance     300   10
+EdgeResistance		300		10
+EdgeResistance 400 400
+EdgeResistance 400 400
+EdgeResistance 300 10
+EdgeResistance 0 20
+EdgeResistance -1 20
+EdgeResistance 20 0
+EdgeResistance 20 -1
+
+Log "Test EDGE SCROLL"
+
+EdgeScroll
+EdgeScroll    50    50
+EdgeScroll		50		50
+EdgeScroll 100 100
+EdgeScroll -125 111
+EdgeScroll 100000 100000
+EdgeScroll 0 0
+EdgeScroll 75 75
+
+Log "Test EXEC, EXEC USE SHELL"
+
+Log "Test ExecUseShell"
+
+ExecUseShell
+ExecUseShell
+ExecUseShell     /bin/bash
+ExecUseShell		/bin/bash
+ExecUseShell /bin/bash
+ExecUseShell /nonexistent/foo/bar
+ExecUseShell
+
+Log "Test Exec"
+
+Exec
+Exec  	 	 	""
+Exec echo "Test of exec using echo"
+Exec echo "Exec test, value of \$$d $d, \$$v $v, \$$[screen] $[screen]"
+
+
+Log "Test Old GLOBAL OPTIONS, now styles"
+
+Style "*"  CleverPlacement, SmartPlacement
+Style "*"  ClickToFocusPassesClickOff, CLICKTOFOCUSPASSESCLICK
+Style "*"  ClickToFocusRaisesOff, CLICKTOFOCUSRAISES, MouseFocusClickRaisesOff, MOUSEFOCUSCLICKRAISES, StippledTitleOff, StippledTitle, STARTSONPAGEMODIFIESUSPOSITION, STARTSONPAGEHONORSUSPOSITION, CAPTUREHONORSSTARTSONPAGE, CAPTUREIGNORESSTARTSONPAGE, RECAPTUREHONORSSTARTSONPAGE, RECAPTUREIGNORESSTARTSONPAGE, ACTIVEPLACEMENTHONORSSTARTSONPAGE, ACTIVEPLACEMENTIGNORESSTARTSONPAGE
+Style "*"  äöwwwkjfd, 2wäeöqdpefoeqopweäöööööööööcöäowäjafewjäoäajopfdewjpoafdsjpoafsdäjopfdsjopfdasäjopdfsäjopfdsajpoafds, jäwpouef, päu3pä9, upä43owu, päfoopu, 43päuo, 4w3fuop, af, 4wawä4opufwuä4f, 4wp, apwöejaeäwfpöojwoäpfoejäwpajoeäjopfwejp\aawehoiöoaihöwhawepjpewfpjewfajopäefwjopewfjopajeopfwajopefwajpoewfajpoewfajpoaefwjopaewfjpoeafwjopaefwjopaewfjopafewjopfewajpoafewjfaewihoöwhöfohzfw4öof4whoiaf4ihoaf4ihofa, apwöejaeäwfpöojwoäpfoejäwpajoeäjopfwejp\aawehoiöoaihöwhawepjpewfpjewfajopäefwjopewfjopajeopfwajopefwajpoewfajpoewfajpoaefwjopaewfjpoeafwjopaefwjopaewfjopafewjopfewajpoafewjfaewihoöwhöfohzfw4öof4whoiaf4ihoaf4ihofa
+Log "Test GOTO PAGE"
+
+GotoPage
+GotoPage  2  2
+GotoPage		1		1
+GotoPage -1 -100
+GotoPage 10000 1000000
+GotoPage 2 1
+GotoPage 2 1
+GotoPage 1 1
+
+Log "Test old HilightColor commands, the conversion utility changed them."
+
+Style "*" HilightFore , HilightBack 
+Style "*" HilightFore blue, HilightBack 
+Style "*" HilightFore green, HilightBack 
+Style "*" HilightFore black, HilightBack yellow
+Style "*" HilightFore black, HilightBack yellow
+Style "*" HilightFore gold2, HilightBack SteelBlue
+Style "*" HilightFore gold2, HilightBack SteelBlue
+Style "*" HilightFore , HilightBack 
+Style "*" HilightFore gold2, HilightBack SteelBlue
+
+Log "Test ICON FONT"
+
+IconFont
+IconFont     9x15
+IconFont		9x15
+IconFont /nonexistent/foo/bar
+IconFont -adobe-helvetica-bold-r-*-*-*-140-*-*-*-*-*-*
+IconFont -adobe-helvetica-bold-r-*-*-*-140-*-*-*-*-*-*
+IconFont
+
+Log "Test KEY"
+
+Key
+Key f12
+Key f12 t
+key f12 t cs
+key		f12		t		cs
+Key		f12		a		a		Nop
+Key  f12     a  a     function nonexistent
+Key f12 a a function nonexistent
+Key f12 t a function nonexistent
+Key f12 t a -
+Key f12 t a -
+
+Log "Test MENU STYLE"
+
+MenuStyle
+MenuStyle  red  yellow  green  9x15  mwm  anim
+MenuStyle 	red	 yellow	 green 	9x15	 mwm 	anim
+MenuStyle red yellow green 9x15 mwm anim
+MenuStyle red yellow green 9x15 mwm anim
+MenuStyle red yellow green 6x10 mwm anim
+MenuStyle red yellow green 6x10 mwm
+MenuStyle red yellow green 6x10 fvwm
+MenuStyle red yellow green 6x10 fvwm anim
+MenuStyle yellow black pink 8x13bold fvwm anim
+
+Log "Test ChangeMenuStyle"
+
+# Create new menu style, apply it to the default menu,
+# Add Line to menu and pop it up.
+MenuStyle NewStyle white black cyan 10x20 Win AnimationOff
+ChangeMenuStyle * NewStyle menu1
+AddToMenu menu1 "ChangeMenuStyle: The menu should now be white/black/cyan"
+Popup menu1
+# Syntax tests:
+ChangeMenuStyle
+DestroyFunc Log
+AddToFunc Log I Exec echo "### `date`: $0 ###"
+
+########### PATH section -- must be first #############
+
+
+Log "Test ImagePath"
+
+ImagePath
+ImagePath
+ImagePath /usr/lib/X11/icons/pixmaps:+
+ImagePath		/usr/lib/X11/icons/pixmaps:+
+ImagePath /home/tim/pics/xpm/16:/home/tim/pics/xbm/16:/home/tim/pics/xpm/21:/home/tim/pics/xpm/32:/home/tim/pics/xpm/46:/home/tim/pics/xpm/48:/home/tim/pics/xpm:/home/tim/pics/tiles:+
+ImagePath /root/icons:/usr/X11R6/include/X11/pixmaps:/usr/X11R6/include/X11/bitmaps:/root/pixmaps:/root/gifs:/opt/kde/share/icons:+
+ImagePath /home/tim/pics/xpm/16:/home/tim/pics/xbm/16:/home/tim/pics/xpm/21:/home/tim/pics/xpm/32:/home/tim/pics/xpm/46:/home/tim/pics/xpm/48:/home/tim/pics/xpm:/home/tim/pics/tiles:+
+ImagePath /usr/X11R6/include/X11/3dpixmaps/small:/usr/X11R6/include/X11/susexpm/small:/usr/X11R6/include/X11/susexpm/normal:/usr/X11R6/include/X11/susexpm/mini:/usr/X11R6/include/X11/3dpixmaps/normal:/usr/X11R6/include/X11/pixmaps:/etc/dtpixmaps:+
+ImagePath /tmp:/usr/X11R6/include/X11/3dpixmaps/small:/usr/X11R6/include/X11/susexpm/small:/usr/X11R6/include/X11/susexpm/normal:/usr/X11R6/include/X11/susexpm/mini:/usr/X11R6/include/X11/3dpixmaps/normal:/usr/X11R6/include/X11/pixmaps:/etc/dtpixmaps:+
+
+ImagePath +
+ImagePath /usr/local/share/icons/wm-icons:/usr/share/icons/wm-icons:+:/usr/include/X11/bitmaps:/usr/include/X11/pixmaps
+ImagePath $HOME/.wm-icons:+
+ImagePath +:/usr/share/icons/mini
+ImagePath +::::/opt/kde/share/icons:/opt/kde/share/apps/kappfinder/pics:
+
 Log "Test CONFIG, DESTROY MODULE CONFIG"
 
 *dummymodule
