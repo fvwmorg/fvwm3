@@ -1,7 +1,4 @@
 2005-01-10  Olivier Chapuis  <olivier.chapuis@free.fr>
-	
-	* FvwmIconMan/x.c (xevent_loop):
-	Ignored non NotifyNormal Enter and Leave Events. This fixes a flickering
 
 	* FvwmIconMan/xmanager.c (set_win_displaystring):
 	Fixed flickering by setting the string dirty flags only if the displayed
