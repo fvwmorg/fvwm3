@@ -1,3 +1,8 @@
+1999-03-31  Dan Espen  <dane@mk.bellcore.com>
+
+	* FvwmForm/ReadXServer.c (ReadXServer): Fix bug. Function keys wouldn't
+	operate buttons on forms with no input fields.
+
 1999-03-28  Dominik Vogt  <dominik_vogt@gmx.de>
 
 	* FvwmCpp/FvwmCpp.1 (BUGS): C comment update

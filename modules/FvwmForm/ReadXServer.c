@@ -130,7 +130,7 @@ void ReadXServer ()
 	if (!CF.cur_input) {  /* no text input fields */
 	  for (item = root_item_ptr; item != 0;
                item = item->header.next) {/* all items */
-	    if (item->type == I_BUTTON && item->button.keypress == buf[0]) {
+	    if (item->type == I_BUTTON && item->button.keypress == keypress) {
 	      RedrawItem(item, 1);
 	      usleep(MICRO_S_FOR_10MS);
 	      RedrawItem(item, 0);
