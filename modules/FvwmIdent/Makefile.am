@@ -3,7 +3,7 @@
 moduledir = @FVWM_MODULEDIR@
 module_PROGRAMS = FvwmIdent
 man_MANS = FvwmIdent.1
-EXTRA_DIST = $(man_MANS) FvwmIdent-de.c FvwmIdent-foo.c
+EXTRA_DIST = $(man_MANS)
 
 FvwmIdent_SOURCES = FvwmIdent.c FvwmIdent.h
 FvwmIdent_DEPENDENCIES = $(top_builddir)/libs/libfvwm.a
