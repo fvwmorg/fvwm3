@@ -1,3 +1,25 @@
+1999-04-15  Dominik Vogt  <dominik_vogt@gmx.de>
+
+	* FvwmButtons/FvwmButtons.c (Loop):
+	reactivated resizing code for FvwmButtons
+
+	* FvwmButtons/parse.h:
+	* FvwmButtons/parse.c:
+	* FvwmButtons/misc.h:
+	* FvwmButtons/misc.c:
+	* FvwmButtons/output.c:
+	* FvwmButtons/icons.h:
+	* FvwmButtons/icons.c:
+	* FvwmButtons/draw.h:
+	* FvwmButtons/draw.c:
+	* FvwmButtons/button.h:
+	* FvwmButtons/button.c:
+	* FvwmButtons/FvwmButtons.c:
+	* FvwmButtons/FvwmButtons.h:
+	removed nonsense version number (Jarl must have read the 'Hitchhiker'
+	once too often :-)
+	implemented GPL
+
 1999-04-12  Hippo
 
 	* FvwmIdent/FvwmIdent.{c,h}: Uses Fvwm default colors and font if
@@ -5,7 +27,7 @@
 
 Sun Apr 11 15:17:47 1999  Steve Robbins  <steve@nyongwa.montreal.qc.ca>
 
-	* FvwmM4/Makefile.am (AM_CFLAGS): 
+	* FvwmM4/Makefile.am (AM_CFLAGS):
 	* FvwmCpp/Makefile.am (AM_CFLAGS): fixed definition of FVWM_CONFIGDIR.
 
 1999-04-09  Dominik Vogt  <dominik_vogt@gmx.de>

@@ -1,3 +1,18 @@
+1999-04-15  Dominik Vogt  <dominik_vogt@gmx.de>
+
+	* fvwm/add_window.c: fix for broken size hints
+
+	* fvwm/style.c (ProcessNewStyle):
+	* fvwm/fvwm.h:
+	* fvwm/resize.c (ConstrainSize):
+	* fvwm/style.h:
+	* fvwm/gsfr.h:
+	implemented (No)ResizeHintOverride style as a hack to make broken
+	applications happy
+
+	* fvwm/events.c (HandleButtonPress): clicktofocusclickraises raises
+	neverfocus windows too
+
 1999-04-14  Dominik Vogt  <dominik_vogt@gmx.de>
 
 	* fvwm/fvwm2.1:
@@ -59,9 +74,9 @@
 
 1999-04-14  Matthias Clasen  <clasen@mathematik.uni-freiburg.de>
 
-	* fvwm/misc.h: 
-	* fvwm/parse.h: 
-	* fvwm/builtins.c (SetDefaultIcon): 
+	* fvwm/misc.h:
+	* fvwm/parse.h:
+	* fvwm/builtins.c (SetDefaultIcon):
 	* fvwm/functions.c (func_config): Add DefaultIcon command.
 
 	* fvwm/style.c (ProcessNewStyle): Change Icon style option
@@ -71,13 +86,13 @@
 1999-04-13  Matthias Clasen  <clasen@mathematik.uni-freiburg.de>
 
 	* fvwm/events.c (HandlePropertyNotify): Make sure disabling
-	an active icon restores the default icon. 
+	an active icon restores the default icon.
 
 Tue Apr 13 23:13:24 1999  DanEspen  <dje@blue>
 
 	* fvwm/fvwm.c (main): Read command just $HOME or $FVWM_USERHOME.
 
-	* fvwm/read.c (ReadSubFunc): Read command just $HOME or $FVWM_USERHOME.	
+	* fvwm/read.c (ReadSubFunc): Read command just $HOME or $FVWM_USERHOME.
 
 	* fvwm/fvwm2.1 (sub-menu): Read command just $HOME or $FVWM_USERHOME.
 

@@ -636,26 +636,42 @@ void ConstrainSize (FvwmWindow *tmp_win, int *widthp, int *heightp,
     minWidth = tmp_win->hints.min_width;
     minHeight = tmp_win->hints.min_height;
 
-    baseWidth = tmp_win->hints.base_width;
-    baseHeight = tmp_win->hints.base_height;
-
     maxWidth = tmp_win->hints.max_width;
     maxHeight =  tmp_win->hints.max_height;
 
-/*    maxWidth = Scr.VxMax + Scr.MyDisplayWidth;
-    maxHeight = Scr.VyMax + Scr.MyDisplayHeight;*/
+    baseWidth = tmp_win->hints.base_width;
+    baseHeight = tmp_win->hints.base_height;
 
     xinc = tmp_win->hints.width_inc;
     yinc = tmp_win->hints.height_inc;
 
+    /* A hack to fix broken applications. */
+    if (HAS_OVERRIDE_SIZE_HINTS(tmp_win))
+      {
+	if(tmp_win->hints.flags & PMinSize)
+	  {
+	    minWidth = 1;
+	    minHeight = 1;
+	  }
+	if(tmp_win->hints.flags & PMaxSize)
+	  {
+	    maxWidth = MAX_WINDOW_WIDTH;
+	    maxHeight = MAX_WINDOW_HEIGHT;
+	  }
+      }
+
     /*
      * First, clamp to min and max values
      */
-    if (dwidth < minWidth) dwidth = minWidth;
-    if (dheight < minHeight) dheight = minHeight;
+    if (dwidth < minWidth)
+      dwidth = minWidth;
+    if (dheight < minHeight)
+      dheight = minHeight;
 
-    if (dwidth > maxWidth) dwidth = maxWidth;
-    if (dheight > maxHeight) dheight = maxHeight;
+    if (dwidth > maxWidth)
+      dwidth = maxWidth;
+    if (dheight > maxHeight)
+      dheight = maxHeight;
 
 
     /*

@@ -1188,7 +1188,7 @@ commands.
 .IP "DefaultIcon \fIfilename\fP"
 sets the default icon which is used if a window has neither an
 client-supplied icon nor an icon supplied via the Icon option
-of the Style command. 
+of the Style command.
 
 
 .IP "DefaultLayers \fIontop\fP \fIput\fP"
@@ -2645,6 +2645,7 @@ StartIconic/StartNormal, Color, ForeColor, BackColor,
 StartsOnDesk/StartsOnPage/StartsAnyWhere, IconTitle/NoIconTitle,
 MWMButtons/FvwmButtons, MWMBorder/FvwmBorder, MWMDecor/NoDecorHint,
 MWMFunctions/NoFuncHint, HintOverride/NoOverride, NoButton/Button,
+ResizeHintOverride/NoResizeOverride,
 OLDecor/NoOLDecor, StickyIcon/SlipperyIcon,
 SmartPlacement/DumbPlacement, RandomPlacement/ActivePlacement,
 DecorateTransient/NakedTransient, SkipMapping/ShowMapping, UseDecor,
@@ -2669,7 +2670,7 @@ buttons to the sides and the client window of an undecorated window
 
 \fIIcon\fP takes an (optional) unquoted string argument which is the icon
 bitmap or pixmap to use. Icons specified this way override icons
-provided by the client in the WM_HINTS property. 
+provided by the client in the WM_HINTS property.
 
 \fIIconBox\fP takes four numeric arguments or an X11 geometry string:
 .EX
@@ -2793,6 +2794,10 @@ decoration hints that applications occasionally use.
 prohibited operations hints that applications occasionally use.
 HintOverride makes fvwm2 shade out operations that mwm would prohibit,
 but it lets you perform the operation anyway.
+
+\fIResizeHintOverride\fP instructs fvwm to ignore the program supplied
+minimum and maximum size. This can be handy for broken applications that
+refuse to be resized. Don't use it if you don't need it.
 
 \fIOLDecor\fP makes fvwm2 attempt to recognize and respect the olwm and olvwm
 hints that many older XView and OLIT applications use.

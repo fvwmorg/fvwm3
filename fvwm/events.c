@@ -568,12 +568,12 @@ void HandlePropertyNotify(void)
           ((old_wmhints_flags & (IconPixmapHint|IconWindowHint)) !=
 	   (Tmp_win->wmhints->flags & (IconPixmapHint|IconWindowHint))))
 	{
-	  if(Tmp_win->icon_bitmap_file == Scr.DefaultIcon) 
+	  if(Tmp_win->icon_bitmap_file == Scr.DefaultIcon)
 	    Tmp_win->icon_bitmap_file = NULL;
           if(!Tmp_win->icon_bitmap_file &&
              !(Tmp_win->wmhints->flags&(IconPixmapHint|IconWindowHint)))
 	    Tmp_win->icon_bitmap_file = Scr.DefaultIcon;
-             
+
 	  if (!IS_ICON_SUPPRESSED(Tmp_win) ||
 	      (Tmp_win->wmhints->flags & IconWindowHint))
 	    {
@@ -1230,7 +1230,6 @@ void HandleButtonPress(void)
     }
   }
   else if ((Tmp_win) && !(HAS_CLICK_FOCUS(Tmp_win)) &&
-	   !HAS_NEVER_FOCUS(Tmp_win) &&
            (Event.xbutton.window == Tmp_win->frame) &&
 	   Scr.go.MouseFocusClickRaises)
   {

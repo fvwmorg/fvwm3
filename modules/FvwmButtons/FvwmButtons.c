@@ -1,5 +1,5 @@
 /*
-   FvwmButtons v2.0.41-plural-Z-alpha, copyright 1996, Jarl Totland
+   FvwmButtons, copyright 1996, Jarl Totland
 
  * This module, and the entire GoodStuff program, and the concept for
  * interfacing this module to the Window Manager, are all original work
@@ -12,9 +12,23 @@
 
 */
 
+/* This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ */
+
 /* ------------------------------- includes -------------------------------- */
 #include "config.h"
-
 #ifdef HAVE_SYS_BSDTYPES_H
 #include <sys/bsdtypes.h> /* Saul */
 #endif
@@ -779,7 +793,11 @@ void Loop(void)
 	    break;
 
 	  case ConfigureNotify:
-	    /* XGetGeometry(Dpy, MyWindow, &root, &x, &y,
+	  {
+	    unsigned int depth,tw,th,border_width;
+	    Window root;
+
+	    XGetGeometry(Dpy, MyWindow, &root, &x, &y,
 			 (ushort*)&tw,(ushort*)&th,
 			 (ushort*)&border_width,(ushort*)&depth);
 	    if(tw!=Width || th!=Height)
@@ -790,9 +808,10 @@ void Loop(void)
 		button=-1;ub=UberButton;
 		while(NextButton(&ub,&b,&button,0))
 		  MakeButton(b);
-                RedrawWindow(NULL);
-	      } */ /* I don't like to change its size after it started */
-	    break;
+		RedrawWindow(NULL);
+	      }
+	  }
+	  break;
 
 	  case KeyPress:
 	    XLookupString(&Event.xkey,buffer,10,&keysym,0);

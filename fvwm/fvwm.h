@@ -149,6 +149,7 @@ typedef struct
   unsigned has_mwm_border : 1;
   unsigned has_mwm_buttons : 1;
   unsigned has_mwm_override : 1;
+  unsigned has_override_size : 1;
   unsigned has_no_icon_title : 1;
   unsigned is_icon_sticky : 1;
   unsigned is_icon_suppressed : 1;

@@ -42,6 +42,7 @@
 #define SHAS_MWM_BORDER(sf)           ((sf)->common.has_mwm_border)
 #define SHAS_MWM_BUTTONS(sf)          ((sf)->common.has_mwm_buttons)
 #define SHAS_MWM_OVERRIDE_HINTS(sf)   ((sf)->common.has_mwm_override)
+#define SHAS_OVERRIDE_SIZE_HINTS(sf)  ((sf)->common.has_override_size)
 
 /* access to the special flags of a style */
 /* call these with a pointer to a style_flags struct */

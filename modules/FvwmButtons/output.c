@@ -1,5 +1,5 @@
 /*
-   FvwmButtons v2.0.41-plural-Z-alpha, copyright 1996, Jarl Totland
+   FvwmButtons, copyright 1996, Jarl Totland
 
  * This module, and the entire GoodStuff program, and the concept for
  * interfacing this module to the Window Manager, are all original work
@@ -11,6 +11,21 @@
  * as long as the copyright is kept intact.
 
 */
+
+/* This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ */
 
 #include <unistd.h>
 #include <ctype.h>
@@ -40,7 +55,7 @@ void DumpButtons(button_info *b)
   else
     fprintf(stderr,"0x%lx(%ix%i@,0x%04lx): ",(unsigned long)b,
 	    b->BWidth,b->BHeight,b->flags);
-    
+
   if(b->flags&b_Font)
     fprintf(stderr,"Font(%s,0x%lx) ",b->font_string,(unsigned long)b->font);
   if(b->flags&b_Padding)
@@ -152,7 +167,7 @@ void SaveButtons(button_info *b)
 	    else
 		fprintf(stderr,"NoKill ");
 	  }
-	  
+
 	  if(b->swallow_mask&b_NoClose)
 	  {
 	    if(b->swallow&b_NoClose)
@@ -160,7 +175,7 @@ void SaveButtons(button_info *b)
 	    else
 		fprintf(stderr,"Close ");
 	  }
-	  
+
 	  if(b->swallow_mask&b_Respawn)
 	  {
 	    if(b->swallow&b_Respawn)
@@ -176,7 +191,7 @@ void SaveButtons(button_info *b)
 	    else
 		fprintf(stderr,"NoOld ");
 	  }
-	  
+
 	  if(b->swallow_mask&b_UseTitle)
 	  {
 	    if(b->swallow&b_UseTitle)
@@ -184,7 +199,7 @@ void SaveButtons(button_info *b)
 	    else
 		fprintf(stderr,"NoTitle ");
 	  }
-	  
+
 	  fprintf(stderr,") ");
 	}
       fprintf(stderr,"\"%s\" \"%s\" ",b->hangon,b->spawn);
@@ -244,7 +259,7 @@ void SaveButtons(button_info *b)
 		else
 		    fprintf(stderr,"Hints ");
 	      }
-	      
+
 	      if(b->c->swallow_mask&b_Kill)
 	      {
 		if(b->c->swallow&b_Kill)
@@ -252,7 +267,7 @@ void SaveButtons(button_info *b)
 		else
 		    fprintf(stderr,"NoKill ");
 	      }
-	      
+
 	      if(b->c->swallow_mask&b_NoClose)
 	      {
 		if(b->c->swallow&b_NoClose)
@@ -260,7 +275,7 @@ void SaveButtons(button_info *b)
 		else
 		    fprintf(stderr,"Close ");
 	      }
-	      
+
 	      if(b->c->swallow_mask&b_Respawn)
 	      {
 		if(b->c->swallow&b_Respawn)
@@ -268,7 +283,7 @@ void SaveButtons(button_info *b)
 		else
 		    fprintf(stderr,"NoRespawn ");
 	      }
-	      
+
 	      if(b->c->swallow_mask&b_UseOld)
 	      {
 		if(b->c->swallow&b_UseOld)
@@ -276,7 +291,7 @@ void SaveButtons(button_info *b)
 		else
 		    fprintf(stderr,"NoOld ");
 	      }
-	      
+
 	      if(b->c->swallow_mask&b_UseTitle)
 	      {
 		if(b->c->swallow&b_UseTitle)
@@ -284,14 +299,14 @@ void SaveButtons(button_info *b)
 		else
 		    fprintf(stderr,"NoTitle ");
 	      }
-	      
+
 	      fprintf(stderr,") ");
 	    }
 	}
       fprintf(stderr,")");
     }
   fprintf(stderr,"\n");
-  
+
   if(b->flags&b_Container)
     {
       i=0;

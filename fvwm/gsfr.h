@@ -83,6 +83,8 @@
 #define HAS_MWM_BUTTONS(fw)    ((fw)->gsfr_flags.common.has_mwm_buttons)
 #define HAS_MWM_OVERRIDE_HINTS(fw)  \
                                ((fw)->gsfr_flags.common.has_mwm_override)
+#define HAS_OVERRIDE_SIZE_HINTS(fw)  \
+                               ((fw)->gsfr_flags.common.has_override_size)
 
 
 /* access to the special flags of a window */

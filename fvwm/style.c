@@ -886,6 +886,12 @@ void ProcessNewStyle(XEvent *eventp, Window w, FvwmWindow *tmp_win,
           tmpstyle.flags.common.has_mwm_override = 0;
           tmpstyle.flag_mask.common.has_mwm_override = 1;
         }
+        else if(StrEquals(token, "NORESIZEOVERRIDE"))
+        {
+	  found = True;
+          tmpstyle.flags.common.has_override_size = 0;
+          tmpstyle.flag_mask.common.has_override_size = 1;
+        }
         else if(StrEquals(token, "NOHANDLES"))
         {
 	  found = True;
@@ -945,6 +951,12 @@ void ProcessNewStyle(XEvent *eventp, Window w, FvwmWindow *tmp_win,
 	  found = True;
           tmpstyle.flags.do_place_random = 1;
           tmpstyle.flag_mask.do_place_random = 1;
+        }
+        else if(StrEquals(token, "RESIZEHINTOVERRIDE"))
+        {
+	  found = True;
+          tmpstyle.flags.common.has_override_size = 1;
+          tmpstyle.flag_mask.common.has_override_size = 1;
         }
         break;
 

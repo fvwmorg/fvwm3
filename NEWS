@@ -1,6 +1,10 @@
 Changes in alpha release 2.3.0 (February 1999)
 
-* NeverFocus style.
+* ResizeHintOverride style: a window with this style can be resized beyond the
+  program supplied minimum and maximum size. This is a hack to make fvwm
+  cooperate with broken applications.
+
+* NeverFocus style: windows with this style never receive the focus.
 
 * New command: DefaultIcon to set the default icon.
 

@@ -949,6 +949,22 @@ void GetWindowSizeHints(FvwmWindow *tmp)
       tmp->hints.max_width = MAX_WINDOW_WIDTH;
       tmp->hints.max_height = MAX_WINDOW_HEIGHT;
     }
+  if (tmp->hints.flags & PBaseSize)
+    {
+      if (((tmp->hints.flags & PMinSize) &&
+	   tmp->hints.base_width < tmp->hints.min_width ||
+	   tmp->hints.base_height < tmp->hints.min_height) ||
+	  ((tmp->hints.flags & PMaxSize) &&
+	   tmp->hints.base_width > tmp->hints.max_width ||
+	   tmp->hints.base_height > tmp->hints.max_height))
+	{
+	  /* The size hints are broken. Ignore min and max hints! */
+	  tmp->hints.max_width = MAX_WINDOW_WIDTH;
+	  tmp->hints.max_height = MAX_WINDOW_HEIGHT;
+	  tmp->hints.min_height = 1;
+	  tmp->hints.min_width = 1;
+	}
+    }
   if(tmp->hints.max_width < tmp->hints.min_width)
     tmp->hints.max_width = MAX_WINDOW_WIDTH;
   if(tmp->hints.max_height < tmp->hints.min_height)

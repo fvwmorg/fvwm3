@@ -1,5 +1,5 @@
 /*
-   FvwmButtons v2.0.41-plural-Z-alpha, copyright 1996, Jarl Totland
+   FvwmButtons, copyright 1996, Jarl Totland
 
  * This module, and the entire GoodStuff program, and the concept for
  * interfacing this module to the Window Manager, are all original work
@@ -11,6 +11,21 @@
  * as long as the copyright is kept intact.
 
 */
+
+/* This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ */
 
 #include "misc.h"
 
@@ -58,7 +73,7 @@ void ConstrainSize (XSizeHints *hints, int *widthp, int *heightp)
       baseWidth = 1;
       baseHeight = 1;
     }
-  
+
   if(hints->flags & PMaxSize)
     {
       maxWidth = hints->max_width;
@@ -79,24 +94,24 @@ void ConstrainSize (XSizeHints *hints, int *widthp, int *heightp)
       xinc = 1;
       yinc = 1;
     }
-  
+
   /*
    * First, clamp to min and max values
    */
   if (dwidth < minWidth) dwidth = minWidth;
   if (dheight < minHeight) dheight = minHeight;
-  
+
   if (dwidth > maxWidth) dwidth = maxWidth;
   if (dheight > maxHeight) dheight = maxHeight;
-  
-  
+
+
   /*
    * Second, fit to base + N * inc
    */
   dwidth = ((dwidth - baseWidth) / xinc * xinc) + baseWidth;
   dheight = ((dheight - baseHeight) / yinc * yinc) + baseHeight;
-  
-  
+
+
   /*
    * Third, adjust for aspect ratio
    */
@@ -116,16 +131,16 @@ void ConstrainSize (XSizeHints *hints, int *widthp, int *heightp)
    *
    * minAspectX * dheight > minAspectY * dwidth
    * maxAspectX * dheight < maxAspectY * dwidth
-   * 
+   *
    */
-  
+
   if (hints->flags & PAspect)
     {
       if (minAspectX * dheight > minAspectY * dwidth)
 	{
 	  delta = makemult(minAspectX * dheight / minAspectY - dwidth,
 			   xinc);
-	  if (dwidth + delta <= maxWidth) 
+	  if (dwidth + delta <= maxWidth)
 	    dwidth += delta;
 	  else
 	    {
@@ -134,7 +149,7 @@ void ConstrainSize (XSizeHints *hints, int *widthp, int *heightp)
 	      if (dheight - delta >= minHeight) dheight -= delta;
 	    }
 	}
-      
+
       if (maxAspectX * dheight < maxAspectY * dwidth)
 	{
 	  delta = makemult(dwidth * maxAspectY / maxAspectX - dheight,
@@ -149,7 +164,7 @@ void ConstrainSize (XSizeHints *hints, int *widthp, int *heightp)
 	    }
 	}
     }
-  
+
   *widthp = dwidth;
   *heightp = dheight;
   return;
