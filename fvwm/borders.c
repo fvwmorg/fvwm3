@@ -337,6 +337,38 @@ static void RedrawBorder(
    * draw the inside relief
    */
 
+  if (borderstyle->flags.button_relief == DFS_BUTTON_IS_FLAT)
+    return;
+
+  /*
+   * draw the inside relief
+   */
+
+  if (t->boundary_width > 2 + !DFS_HAS_NO_INSET(*borderstyle))
+  {
+    /* Don't draw a relief if the relief would cover the complete border. This
+     * ensures that the border has the correct colour. */
+    if (HAS_MWM_BORDER(t))
+    {
+      RelieveRectangle(
+	dpy, t->decor_w, 0, 0, t->frame_g.width - 1, t->frame_g.height - 1,
+	rgc, sgc, 2);
+    }
+    else
+    {
+      /* FVWMBorder style has an extra line of shadow on top and left */
+      if (t->boundary_width > 4 + !DFS_HAS_NO_INSET(*borderstyle))
+      {
+	RelieveRectangle(
+	  dpy, t->decor_w, 1, 1, t->frame_g.width - 2, t->frame_g.height - 2,
+	  rgc, sgc, 2);
+      }
+      RelieveRectangle(
+	dpy, t->decor_w, 0, 0, t->frame_g.width - 1, t->frame_g.height - 1,
+	sgc, sgc, 1);
+    }
+  }
+
   if(t->boundary_width > 2 && !DFS_HAS_NO_INSET(*borderstyle))
   {
     int height = t->frame_g.height - (t->boundary_width * 2 ) + 1;
@@ -356,36 +388,12 @@ static void RedrawBorder(
     }
   }
 
-  if (borderstyle->flags.button_relief == DFS_BUTTON_IS_FLAT)
-    return;
-
-  /*
-   * draw the inside relief
-   */
-
-  if (HAS_MWM_BORDER(t))
-  {
-    RelieveRectangle(
-      dpy, t->decor_w, 0, 0, t->frame_g.width - 1, t->frame_g.height - 1,
-      rgc, sgc, 2);
-  }
-  else
-  {
-    /* FVWMBorder style has an extra line of shadow on top and left */
-    RelieveRectangle(
-      dpy, t->decor_w, 1, 1, t->frame_g.width - 2, t->frame_g.height - 2,
-      rgc, sgc, 2);
-    RelieveRectangle(
-      dpy, t->decor_w, 0, 0, t->frame_g.width - 1, t->frame_g.height - 1,
-      sgc, sgc, 1);
-  }
-
   /*
    * draw the handle marks
    */
 
   /* draw the handles as eight marks rectangles around the border */
-  if (HAS_BORDER(t) && (t->boundary_width > 2) &&
+  if (HAS_BORDER(t) && (t->boundary_width > 1) &&
       !DFS_HAS_HIDDEN_HANDLES(*borderstyle))
   {
     /* MWM border windows have thin 3d effects

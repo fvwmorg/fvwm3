@@ -1587,7 +1587,7 @@ static void InitVariables(void)
   Scr.StdGC = 0;
   Scr.StdReliefGC = 0;
   Scr.StdShadowGC = 0;
-  Scr.DrawGC = 0;
+  Scr.XorGC = 0;
 
   /* zero all flags */
   memset(&Scr.flags, 0, sizeof(Scr.flags));

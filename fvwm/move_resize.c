@@ -1435,11 +1435,11 @@ void SetXOR(F_CMD_ARGS)
   gcv.fill_style = FillSolid;
   gcv.subwindow_mode = IncludeInferiors;
 
-  /* modify DrawGC, only create once */
-  if (Scr.DrawGC)
-    XChangeGC(dpy, Scr.DrawGC, gcm, &gcv);
+  /* modify XorGC, only create once */
+  if (Scr.XorGC)
+    XChangeGC(dpy, Scr.XorGC, gcm, &gcv);
   else
-    Scr.DrawGC = XCreateGC(dpy, Scr.Root, gcm, &gcv);
+    Scr.XorGC = XCreateGC(dpy, Scr.Root, gcm, &gcv);
 
   /* free up XorPixmap if neccesary */
   if (XorPixmap != None) {
@@ -1495,11 +1495,11 @@ void SetXORPixmap(F_CMD_ARGS)
   gcv.tile = XorPixmap;
   gcv.fill_style = FillTiled;
   gcv.subwindow_mode = IncludeInferiors;
-  /* modify DrawGC, only create once */
-  if (Scr.DrawGC)
-    XChangeGC(dpy, Scr.DrawGC, gcm, &gcv);
+  /* modify XorGC, only create once */
+  if (Scr.XorGC)
+    XChangeGC(dpy, Scr.XorGC, gcm, &gcv);
   else
-    Scr.DrawGC = XCreateGC(dpy, Scr.Root, gcm, &gcv);
+    Scr.XorGC = XCreateGC(dpy, Scr.Root, gcm, &gcv);
 }
 
 
@@ -2495,7 +2495,7 @@ void MoveOutline(int x, int  y, int  width, int height)
     rects[4 * interleave + offset].height = (lastHeight-6);
   }
 
-  XDrawRectangles(dpy, Scr.Root, Scr.DrawGC, rects, interleave * 5);
+  XDrawRectangles(dpy, Scr.Root, Scr.XorGC, rects, interleave * 5);
 
   lastx = x;
   lasty = y;
