@@ -1,5 +1,11 @@
 2002-08-10  Dominik Vogt  <dominik.vogt@gmx.de>
 
+	* fvwm/fvwm.c:
+	reformatted and cleaned up
+
+	* fvwm/fvwm.1:
+	formatting fixes
+
 	* fvwm/focus.c (focus_query_click_to_raise):
 	(focus_query_click_to_focus):
 	* fvwm/style.c (parse_and_set_window_style):

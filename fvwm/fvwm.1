@@ -2019,8 +2019,8 @@ DestroyMenuStyle pixamp1
 .EE
 
 .IP "\fBMenu\fP \fImenu-name\fP \
-\fB[\fP \fIposition\fP \
-\fB] [\fP \fIdouble-click-action\fP \
+\fB[\fP\fIposition\fP\
+\fB] [\fP\fIdouble-click-action\fP\
 \fB]\fP"
 Causes a previously defined menu to be popped up in a sticky
 manner. That is, if the user invokes the menu with a click action
@@ -3193,12 +3193,12 @@ ColormapFocus FollowsFocus
 then the installed colormap is the one for the window that
 currently has the keyboard focus.
 
-.IP "\fBCursorStyle\fP \fIcontext\fP \fB[\fP \fInumber\fP \
+.IP "\fBCursorStyle\fP \fIcontext\fP \fB[\fP\fInumber\fP\
 \fB|\fP \fIname\fP \
 \fB|\fP \fIxpm\fP \
 \fB|\fP \fINone\fP \
 \fB|\fP \fITiny\fP \
-\fB[\fP \fIfore back\fP \
+\fB[\fP\fIfore back\fP\
 \fB]]\fP"
 Defines a new cursor for the specified context.  Note that this
 command can not control the shapes an applications uses, for
@@ -3427,7 +3427,7 @@ is omitted, the value of the variable $[schedule.last] is used as
 the id.
 
 .TP
-.BI "Emulate " Fvwm | Mwm | Win
+.BI "Emulate " Fvwm " | " Mwm " | " Win
 This command affects how miscellaneous things are done by
 fvwm. For example where the move/resize feedback window appears
 depends on this command.  To have more Mwm- or Win-like behavior
@@ -3752,10 +3752,10 @@ Style * Font fontname
 .EE
 instead.
 
-.IP "\fBWindowList [(\fP \fIconditions\fP \
-\fB)] [\fP \fIposition\fP \
-\fB] [\fP \fIoptions\fP \
-\fB] [\fP \fIdouble-click-action\fP \
+.IP "\fBWindowList [(\fP\fIconditions\fP\
+\fB)] [\fP\fIposition\fP\
+\fB] [\fP\fIoptions\fP\
+\fB] [\fP\fIdouble-click-action\fP\
 \fB]\fP"
 Generates a pop-up menu (and pops it up) in which the title and
 geometry of each of the windows currently on the desktop are
@@ -4028,7 +4028,7 @@ interactively and animatedly.  If the optional argument
 is specified the pointer is warped with the window.
 
 .TP
-.BI "HideGeometryWindow [" Never | Move | Resize "]"
+.BI "HideGeometryWindow [" Never " | " Move " | " Resize "]"
 Hides the position or size window that is usually shown when a
 window is moved or resized interactively.  To switch it off only
 for move or resize operations the optional parameters
@@ -4065,11 +4065,11 @@ AddToFunc lower-to-bottom
 .EE
 
 .IP "\fBMove [[\fP\fIw\fP\
-\fB|\fP\fIm\fP\
+\fB | \fP\fIm\fP\
 \fB]\fP\fIx\fP\
 \fB[\fP\fIp\fP\
 \fB] [\fP\fIw\fP\
-\fB|\fP\fIm\fP\
+\fB | \fP\fIm\fP\
 \fB]\fP\fIy\fP\
 \fB[\fP\fIp\fP\
 \fB] [\fP\fIWarp\fP\
@@ -4174,11 +4174,11 @@ to 3, which is now the default value.  If
 is negative or omitted the default value (which might be increased
 when 16000x9000 pixel displays become affordable) is restored.
 
-.IP "\fBMoveToPage [\fP \fIx\fP \
-\fB[\fP \fIp\fP \
-\fB]\fP \fIy\fP \
-\fB[\fP \fIp\fP \
-\fB]] | [\fIprev\fP \
+.IP "\fBMoveToPage [\fP\fIx\fP\
+\fB[\fP\fIp\fP\
+\fB]\fP \fIy\fP\
+\fB[\fP\fIp\fP\
+\fB]] | [\fIprev\fP\
 \fB]\fP"
 Moves the selected window to another page (x,y).  The upper left
 page is (0,0), the upper right is (M,0), where M is one less than
@@ -4215,7 +4215,7 @@ MoveToPage +2p -1p
 .EE
 
 .TP
-.BI "MoveToScreen [ " screen " ]"
+.BI "MoveToScreen [" screen "]"
 Moves the selected window to another Xinerama screen.  The
 .I screen
 argument can be 'p' for the primary screen, 'c' for the current
@@ -4282,14 +4282,14 @@ style is used; see
 .B Style
 command) otherwise it is lowered.
 
-.IP "\fBResize [ [\fIframe\fP] \fIwidth\fP \
-\fB[\fP \fIp\fP \
-\fB|\fP \fIc\fP \
+.IP "\fBResize [[\fIframe\fP] \fIwidth\fP \
+\fB[\fP\fIp\fP \
+\fB|\fP \fIc\fP\
 \fB]\fP \fIheight\fP \
-\fB[\fP \fIp\fP \
-\fB|\fP \fIc\fP \
-\fB]] | [\fP \fIbottomright\fP \
-\fB|\fP \fIbr x y\fP \
+\fB[\fP\fIp\fP \
+\fB|\fP \fIc\fP\
+\fB]] | [\fP\fIbottomright\fP \
+\fB|\fP \fIbr x y\fP\
 \fB]\fP"
 Allows to resize a window.  If called from somewhere in a window
 or its border, then that window is resized.  If called from the
@@ -4342,7 +4342,7 @@ arguments of the
 command.
 
 .TP
-.BI "ResizeMaximize [ " "resize-arguments" " ]"
+.BI "ResizeMaximize [" resize-arguments "]"
 Combines the effects of
 .BR Resize " and " Maximize
 in a single command.  When used on a maximized window, the window
@@ -4422,9 +4422,9 @@ motion appear more cartoonish, by briefly moving slightly in the
 opposite direction of the main motion.  The above settings are the
 default.
 
-.IP "\fBSnapAttraction [\fP \fIproximity\fP \
-\fB[\fP \fIbehavior\fP \
-\fB] [\fP \fIScreen\fP \
+.IP "\fBSnapAttraction [\fP\fIproximity\fP \
+\fB[\fP\fIbehavior\fP \
+\fB] [\fP\fIScreen\fP\
 \fB]]\fP"
 If during an interactive move the window or icon comes within
 .I proximity
@@ -4663,7 +4663,13 @@ positive number instead of "True", or a negative number instead of
 in the future.
 
 .TP
-.BI "Maximize [" flags "] [" bool "] [" horizontal "[" p "]] [" vertical "[" p "]]"
+.IP "\fBMaximize [\fP\fIflags\fP\
+\fB] [\fP\fIbool\fP\
+\fB] [\fP\fIhorizontal\fP\
+\fB[\fP\fIp\fP\
+\fB]] [\fP\fIvertical\fP \
+\fB[\fP\fIp\fP\
+\fB]]\fP"
 Without its optional arguments (or if the
 .I bool
 bit has the value "toggle")
@@ -4920,7 +4926,7 @@ if you have no problem with it.  In the
 you can find a better solution of this problem.
 
 .TP
-.BI "EdgeCommand " "[direction [Function]]"
+.BI "EdgeCommand [" direction " [" Function "]]"
 Binds a specified fvwm built-in function
 .I Function
 to an edge of the screen. Direction may be one of
@@ -4949,26 +4955,32 @@ The following example raises
 .I FvwmButtons
 if the mouse pointer enters the top edge of the screen.
 .EX
-## Disable EdgeScrolling but make it possible to move
-## windows over the screen edge
+# Disable EdgeScrolling but make it possible
+# to move windows over the screen edge
 EdgeResistance 10000 20
 
-## Set thickness of the edge of the screen to 1
+# Set thickness of the edge of the screen to 1
 EdgeThickness 1
 
-## Give focus to FvwmButtons if the mouse hits top edge
+# Give focus to FvwmButtons if the mouse
+# hits top edge
 EdgeCommand Top Next (FvwmButtons) Focus
 
 Module FvwmButtons
-Module FvwmAuto 100 "Silent AutoRaiseFunction" "Silent AutoLowerFunction"
+Module FvwmAuto 100 \\
+	"Silent AutoRaiseFunction" \\
+	"Silent AutoLowerFunction"
 
-## If any window except FvwmButtons has focus when calling
-## this function FvwmButtons are lowered
+# If any window except FvwmButtons has
+# focus when calling this function
+# FvwmButtons are lowered
 DestroyFunc AutoLowerFunction
 AddToFunc AutoLowerFunction
-+ I Current (!FvwmButtons) All (FvwmButtons) Lower
++ I Current (!FvwmButtons) \\
+	All (FvwmButtons) Lower
 
-## If FvwmButtons has focus when calling this function raise it
+# If FvwmButtons has focus when calling \\
+# this function raise it
 DestroyFunc AutoRaiseFunction
 AddToFunc AutoRaiseFunction
 + I Current (FvwmButtons) Raise
@@ -6563,11 +6575,10 @@ Style * StackTransientParent
 
 .\" +++++++++++++++ Extended WM Hints styles
 .TP
-.B Extended Window Manager Hints Styles
-To understand some terminologies used in this sub section you
-should read the
-.B EXTENDED WINDOW MANAGER HINTS
-section.
+.B Extended Window Manager Hints styles
+To understand the used terminology in this sub section, please
+read the section
+.BR "EXTENDED WINDOW MANAGER HINTS" .
 
 .I EWMHDonateIcon
 instructs fvwm to set the application ewmh icon hint with the icon
@@ -6848,8 +6859,8 @@ all styles starting with "Application".
 .SS OTHER COMMANDS CONTROLLING WINDOW STYLES
 
 .IP "\fBAddButtonStyle\fP \fIbutton\fP \
-\fB[\fP \fIstate\fP \
-\fB] [\fP \fIstyle\fP \
+\fB[\fP\fIstate\fP\
+\fB] [\fP\fIstyle\fP\
 \fB] [-- [!]\fP \fIflag\fP \
 \fB...]\fP"
 
@@ -6907,8 +6918,8 @@ is used to place additional pixmaps for both "ActiveUp" and
 "ActiveDown" states and a vector button style is drawn on top of
 all state.
 
-.IP "\fBAddTitleStyle [\fP \fIstate\fP \
-\fB] [\fP \fIstyle\fP \
+.IP "\fBAddTitleStyle [\fP\fIstate\fP\
+\fB] [\fP\fIstyle\fP\
 \fB] [-- [!]\fP \fIflag\fP \
 \fB...]\fP"
 Adds a title style to the title-bar.
@@ -7008,8 +7019,8 @@ and now apply the style again:
 Style xterm UseStyle FlatStyle
 .EE
 
-.IP "\fBBorderStyle [\fP \fIstate\fP \
-\fB] [\fP \fIstyle\fP \
+.IP "\fBBorderStyle [\fP\fIstate\fP\
+\fB] [\fP\fIstyle\fP\
 \fB] [-- [!]\fP \fIflag\fP \
 \fB...]\fP"
 This command is deprecated and will be removed in the future.  There
@@ -7108,8 +7119,8 @@ different button and title styles for inactive windows.  Otherwise
 the "ActiveUp" state is used instead.
 
 .IP "\fBButtonStyle\fP \fIbutton\fP \
-\fB[\fP \fIstate\fP \
-\fB] [\fP \fIstyle\fP \
+\fB[\fP\fIstate\fP\
+\fB] [\fP\fIstyle\fP\
 \fB] [-- [!]\fP \fIflag\fP \
 \fB...]\fP"
 This command is deprecated and will be removed in the future.  There
@@ -7514,8 +7525,8 @@ keyword.  Example:
 TitleStyle LeftJustified Height 24
 .EE
 
-.IP "\fBTitleStyle [\fP \fIstate\fP \
-\fB] [\fP \fIstyle\fP \
+.IP "\fBTitleStyle [\fP\fIstate\fP\
+\fB] [\fP\fIstyle\fP\
 \fB] [-- [!]\fP \fIflag\fP \
 \fB...]\fP"
 This command is deprecated and will be removed in the future.  There
@@ -7666,8 +7677,8 @@ does.
 .SS COMMANDS CONTROLLING THE VIRTUAL DESKTOP
 
 .IP "\fBDesk\fP \fIarg1\fP \
-\fB[\fP \fIarg2\fP \
-\fB] [\fP \fImin max\fP \
+\fB[\fP\fIarg2\fP\
+\fB] [\fP\fImin max\fP\
 \fB]\fP"
 This command has been renamed.  Please see
 .B GotoDesk
@@ -7808,8 +7819,8 @@ treated as clicks on the root window.
 
 .IP "\fBGotoDesk\fP \fIprev\fP \
 \fB|\fP \fIarg1\fP \
-\fB[\fP \fIarg2\fP \
-\fB] [\fP \fImin max\fP \
+\fB[\fP\fIarg2\fP\
+\fB] [\fP\fImin max\fP\
 \fB]\fP"
 Switches the current viewport to another desktop (workspace,
 room).
@@ -7931,9 +7942,9 @@ and the new page is
 
 .IP "\fBGotoPage\fP \fIprev\fP \
 \fB|\fP \fIx\fP \
-\fB[\fP \fIp\fP \
+\fB[\fP\fIp\fP\
 \fB]\fP \fIy\fP \
-\fB[\fP \fIp\fP \
+\fB[\fP\fIp\fP\
 \fB]\fP"
 Moves the desktop viewport to page (x,y).  The upper left page is
 (0,0), the upper right is (M,0), where M is one less than the
@@ -7969,9 +7980,9 @@ GotoPage +2p -1p
 .EE
 
 .IP "\fBScroll\fP \fIhorizonal\fP \
-\fB[\fP \fIp\fP \
+\fB[\fP\fIp\fP\
 \fB]\fP \fIvertical\fP \
-\fB[\fP \fIp\fP \
+\fB[\fP\fIp\fP\
 \fB]\fP"
 Scrolls the virtual desktop's viewport by
 .I horizontal
@@ -8105,12 +8116,12 @@ XineramaOn
 
 .SS COMMANDS FOR USER FUNCTIONS AND SHELL COMMANDS
 
-.IP "\fBAddToFunc [\fP \fIname\fP \
-\fB[\fP \fII\fP \
+.IP "\fBAddToFunc [\fP\fIname\fP \
+\fB[\fP\fII\fP \
 \fB|\fP \fIM\fP \
 \fB|\fP \fIC\fP \
 \fB|\fP \fIH\fP \
-\fB|\fP \fID action\fP \
+\fB|\fP \fID action\fP\
 \fB]]\fP"
 Begins or adds to a function definition.  Here is an example:
 .EX
@@ -8553,7 +8564,7 @@ the
 .IR command.
 
 .TP
-.BI "Current [(" condition ... ")] " command
+.BI "Current [(" "condition ..." ")] " command
 Performs
 .I command
 on the currently focused window if it satisfies all
@@ -8764,10 +8775,10 @@ are met.  The conditions are the same as for
 .BR Current .
 It returns -1 if used outside a window context.
 
-.IP "\fBWindowId [\fP \fIid\fP \
-\fB] [(\fP \fIconditions\fP \
-\fB)] | [\fP \fIroot\fP \
-\fB[\fP \fIscreen\fP \
+.IP "\fBWindowId [\fP\fIid\fP\
+\fB] [(\fP\fIconditions\fP\
+\fB)] | [\fP\fIroot\fP \
+\fB[\fP\fIscreen\fP\
 \fB]]\fP \fIcommand"
 The
 .B WindowId
