@@ -81,6 +81,7 @@
 #define b_SizeSmart  0x00100000 /* Improved button box sizing */
 #define b_Colorset   0x00200000 /* use colorset instead of fore/back colours */
 #define b_ColorsetParent 0x00400000 /* Parent has a colorset background */
+#define b_Panel      0x00800000 /* similar to swallow, but drawn differently */
 
 /* Flags for b->swallow */
 #define b_Count       0x03 /* Init counter for swallowing */
@@ -179,6 +180,19 @@ struct button_info_struct
   char *spawn;             /* b_Swallow */
   int x,y;                 /* b_Swallow */
   ushort w,h,bw;           /* b_Swallow */
+
+  struct
+  {
+    unsigned is_panel : 1;     /* b_Panel */
+    unsigned panel_mapped : 1; /* b_Panel */
+  } newflags;
+#define SLIDE_UP 0
+#define SLIDE_DOWN 1
+#define SLIDE_LEFT 2
+#define SLIDE_RIGHT 3
+  char slide_direction;        /* b_Panel */
+  int slide_steps;             /* b_Panel */
+  int slide_delay_ms;          /* b_Panel */
 };
 
 struct panel_info_struct

@@ -141,7 +141,7 @@ void MakeButton(button_info *b)
     ConfigureIconWindow(b);
 
   /* For now, hardcoded window centered, title bottom centered, below window */
-  else if(buttonSwallowCount(b)==3)
+  else if(buttonSwallowCount(b)==3 && (b->flags & b_Swallow))
   {
     long supplied;
     if(!b->IconWin)
@@ -203,13 +203,17 @@ void RedrawButton(button_info *b,int clean)
 
   /* This probably isn't the place for this, but it seems to work here and not
      elsewhere, so... */
-  if((buttonSwallowCount(b)==3) && b->IconWin!=None)
+  if((b->flags & b_Swallow) && (buttonSwallowCount(b)==3) && b->IconWin!=None)
     XSetWindowBorderWidth(Dpy,b->IconWin,0);
 
   /* ----------------------------------------------------------------------- */
 
-  if(b->flags&b_Hangon || b==CurrentButton)  /* Hanging or held down by user */
+  if((b->flags & b_Hangon && b->flags & b_Swallow) || b == CurrentButton ||
+     (b->flags & b_Panel && b->newflags.panel_mapped))
+  {
+    /* Hanging swallow or held down by user or mappen panel */
     rev=1;
+  }
   if(b->flags&b_Action) /* If this is a Desk button that takes you to here.. */
   {
     int n=0;
@@ -327,7 +331,7 @@ void DrawTitle(button_info *b,Window win,GC gc)
       ix+=b->icon->width+buttonXPad(b);
       iw-=b->icon->width+buttonXPad(b);
     }
-    else if (buttonSwallowCount(b)==3)
+    else if ((b->flags & b_Swallow) && buttonSwallowCount(b)==3)
     {
       ix += b->icon_w+buttonXPad(b);
       iw -= b->icon_w+buttonXPad(b);
@@ -362,7 +366,8 @@ void DrawTitle(button_info *b,Window win,GC gc)
   {
     /* If there is more than the title, put it at the bottom */
     /* Unless stack flag is set, put it to the right of icon */
-    if((b->flags&b_Icon || (buttonSwallowCount(b)==3)) &&
+    if((b->flags&b_Icon ||
+	((buttonSwallowCount(b)==3) && (b->flags&b_Swallow))) &&
        !(justify&b_Horizontal))
     {
       XDrawString(Dpy, win, gc, xpos, iy+ih-font->descent, s, l);

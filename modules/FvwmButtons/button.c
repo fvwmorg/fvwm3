@@ -76,7 +76,7 @@ int buttonHeight(button_info *b)
 
 int buttonSwallowCount(button_info *b)
 {
-  return (b->flags & b_Swallow) ? (b->swallow & b_Count) : 0;
+  return (b->flags & (b_Swallow | b_Panel)) ? (b->swallow & b_Count) : 0;
 }
 
 
@@ -317,14 +317,14 @@ Pixel buttonShadow(button_info *b)
 byte buttonSwallow(button_info *b)
 {
   byte s=0,t=0;
-  if(b->flags&b_Swallow)
+  if(b->flags & (b_Swallow | b_Panel))
   {
     s=b->swallow;
     t=b->swallow_mask;
   }
   while((b=b->parent))
   {
-    if(b->c->flags&b_Swallow)
+    if(b->c->flags & (b_Swallow | b_Panel))
     {
       s&=~(b->c->swallow_mask&~t);
       s|=(b->c->swallow&b->c->swallow_mask&~t);

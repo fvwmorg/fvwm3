@@ -1,3 +1,8 @@
+1999-08-30  Dominik Vogt  <dominik_vogt@gmx.de>
+
+	* libs/Slide.c (SlideWindow): new file and function for sliding
+	animations and simple animated moves
+
 1999-08-30  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* libs/Colorset.c (SetRectangleBackground): fixed stretching/tiling

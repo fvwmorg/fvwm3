@@ -284,7 +284,43 @@ for swallowed windows and containers, which are by default not padded at all.
 This option sets the horizontal padding to \fIwidth\fP and the vertical
 padding to \fIheight\fP.
 
-.IP "  Panel [ (\fIdirection\fP) ] \fIname\fP"
+
+.IP "  Panel [ (\fIoptions\fP) ] \fIhangon\fP \fIcommand\fP"
+Panels can be swallowed exactly like windows are swallowed by
+buttons with the \fISwallow\fP command below, but they are not displayed
+within the button.  Instead they are hidden until the user presses
+the panel's button.  Then the panel (i.e. the window of the swallowed
+appication) opens with a sliding animation.  The \fIoptions\fP can
+be any of the \fIflags\fP described for the Swallow command. In addition
+a direction 'left', 'right', 'up' or 'down' can be used to specify the
+direction where from the button the panel shall be posted.
+
+The \fIsteps animation-steps\fP option defines the number of
+animation steps.
+
+The \fIdelay ms\fP option sets the delay between the steps
+of the animation in milliseconds.
+
+The defaults are sliding up with a delay of one millisecond and
+eight animation steps. To post the panel without any animation,
+set the number of steps to zero.
+
+Example:
+.nf
+.sp
+  # To include the panel in a button
+  *FvwmButtons(Panel(down, delay 0, steps 16) \\
+    SubPanel "Module FvwmButtons Panel1")
+
+  # To define the panel as an instance of
+  # FvwmButtons with a different name:
+  *Panel1(Icon my_lock.xpm, Action Exec xlock)
+  *Panel1(Icon my_move.xpm, Action Move)
+  ...
+.sp
+.fi
+
+.IP "  OldPanel [ (\fIdirection\fP) ] \fIname\fP"
 Pop up a panel in the specified \fIdirection\fP from the
 invoking button. A position set with *FvwmButtonsGeometry is taken
 as a relative offset to this position. \fIdirection\fP may be

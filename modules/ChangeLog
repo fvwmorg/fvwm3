@@ -1,3 +1,26 @@
+1999-08-31  Dominik Vogt  <dominik_vogt@gmx.de>
+
+	* FvwmButtons/parse.c (ParsePanel):
+	* FvwmButtons/FvwmButtons.c (Loop): slideup/down/left/right,
+ 	slidedelay and slidesteps options to Panel command
+
+1999-08-30  Dominik Vogt  <dominik_vogt@gmx.de>
+
+	* FvwmButtons/draw.c (RedrawButton):
+	(DrawTitle):
+	(RedrawButton):
+	* FvwmButtons/FvwmButtons.c (swallow):
+	* FvwmButtons/FvwmButtons.h (struct button_info_struct):
+	* FvwmButtons/output.c (DumpButtons):
+	(SaveButtons):
+	* FvwmButtons/parse.c (ParseContainer):
+	(ParseButton):
+	* FvwmButtons/button.c (buttonSwallow):
+	(buttonSwallowCount): New 'Panel' option works like 'Swallow' but maps
+	or unmaps the application every time the button is pressed instead of
+	swallowing it in a button. Positioning and sliding such panels is not
+	implemented yet.
+
 1999-08-30  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* FvwmButtons/FvwmButtons.c (Loop): resizing updates colour sets

@@ -287,7 +287,117 @@ static void ParseSwallow(char **ss,byte *flags,byte *mask)
       break;
     default:
       t=seekright(&s);
-      fprintf(stderr,"%s: Illegal swallow option \"%s\"\n",MyName,
+      fprintf(stderr,"%s: Illegal Swallow option \"%s\"\n",MyName,
+	      (t)?t:"");
+      if (t)
+	free(t);
+    }
+  }
+  if(*s) s++;
+  *ss=s;
+}
+
+/**
+*** ParsePanel()
+*** Parses the options possible to Panel
+**/
+static void ParsePanel(char **ss, byte *flags, byte *mask, char *direction,
+		       int *steps, int *delay)
+{
+  char *swallowopts[] =
+  {
+    "nohints", "hints",
+    "nokill","kill",
+    "noclose", "close",
+    "respawn","norespawn",
+    "useold", "noold",
+    "usetitle", "notitle",
+    "up", "down", "left", "right",
+    "steps",
+    "delay",
+    NULL
+  };
+  char *t,*s=*ss;
+  int n;
+
+  while(*s && *s!=')')
+  {
+    s = trimleft(s);
+    if(*s==',')
+      s++;
+    else switch(GetTokenIndex(s,swallowopts,-1,&s))
+    {
+    case 0: /* NoHints */
+      *flags|=b_NoHints;
+      *mask|=b_NoHints;
+      break;
+    case 1: /* Hints */
+      *flags&=~b_NoHints;
+      *mask|=b_NoHints;
+      break;
+    case 2: /* NoKill */
+      *flags&=~b_Kill;
+      *mask|=b_Kill;
+      break;
+    case 3: /* Kill */
+      *flags|=b_Kill;
+      *mask|=b_Kill;
+      break;
+    case 4: /* NoClose */
+      *flags|=b_NoClose;
+      *mask|=b_NoClose;
+      break;
+    case 5: /* Close */
+      *flags&=~b_NoClose;
+      *mask|=b_NoClose;
+      break;
+    case 6: /* Respawn */
+      *flags|=b_Respawn;
+      *mask|=b_Respawn;
+      break;
+    case 7: /* NoRespawn */
+      *flags&=~b_Respawn;
+      *mask|=b_Respawn;
+      break;
+    case 8: /* UseOld */
+      *flags|=b_UseOld;
+      *mask|=b_UseOld;
+      break;
+    case 9: /* NoOld */
+      *flags&=~b_UseOld;
+      *mask|=b_UseOld;
+      break;
+    case 10: /* UseTitle */
+      *flags|=b_UseTitle;
+      *mask|=b_UseTitle;
+      break;
+    case 11: /* NoTitle */
+      *flags&=~b_UseTitle;
+      *mask|=b_UseTitle;
+      break;
+    case 12: /* up */
+      *direction = SLIDE_UP;
+      break;
+    case 13: /* down */
+      *direction = SLIDE_DOWN;
+      break;
+    case 14: /* left */
+      *direction = SLIDE_LEFT;
+      break;
+    case 15: /* right */
+      *direction = SLIDE_RIGHT;
+      break;
+    case 16: /* steps */
+      sscanf(s, "%d%n", steps, &n);
+      s += n;
+      break;
+    case 17: /* delay */
+      sscanf(s, "%d%n", delay, &n);
+      s += n;
+      break;
+    default:
+      t=seekright(&s);
+      fprintf(stderr,"%s: Illegal Panel option \"%s\"\n",MyName,
 	      (t)?t:"");
       if (t)
 	free(t);
@@ -414,23 +524,41 @@ static void ParseContainer(char **ss,button_info *b)
       }
       break;
     case 8: /* Swallow - flags */
-      s = trimleft(s);
-      if(*s=='(' && s++)
       {
-	b->c->swallow=0;
-	b->c->swallow_mask=0;
-	ParseSwallow(&s,&b->c->swallow,&b->c->swallow_mask);
-	if(b->c->swallow_mask)
-	  b->c->flags|=b_Swallow;
-      }
-      else
-      {
-	char *temp;
-	fprintf(stderr,"%s: Illegal swallow in container options\n",
-		MyName);
-	temp = seekright(&s);
-	if (temp)
-	  free(temp);
+	Bool failed = False;
+
+	s = trimleft(s);
+	if (b->c->flags & (b_Swallow | b_Panel))
+	{
+	  fprintf(stderr, "%s: Multiple Swallow or Panel options are not"
+		" allowed in a signle button", MyName);
+	  failed = True;
+	}
+	else if(*s=='(' && s++)
+	{
+	  b->c->swallow=0;
+	  b->c->swallow_mask=0;
+	  ParseSwallow(&s, &b->c->swallow, &b->c->swallow_mask);
+	  if(b->c->swallow_mask)
+	  {
+	    b->c->flags |= b_Swallow;
+	  }
+	}
+	else
+	{
+	  fprintf(stderr,
+		  "%s: Illegal swallow or panel in container options\n",
+		  MyName);
+	  failed = True;
+	}
+	if (failed)
+	{
+	  char *temp;
+
+	  temp = seekright(&s);
+	  if (temp)
+	    free(temp);
+	}
       }
       break;
     case 9: /* NoSize */
@@ -509,21 +637,24 @@ static void ParseButton(button_info **uberb,char *s)
       "frame",
       "padding",
       "swallow",
+      "panel",
       "action",
       "container",
       "end",
       "nosize",
       "size",
-      "panel",
       "left",
       "right",
       "center",
       "colorset",
+      "oldpanel",
       NULL
     };
     s = trimleft(s);
     while(*s && *s!=')')
     {
+      Bool is_swallow = False;
+
       if((*s>='0' && *s<='9') || *s=='+' || *s=='-')
       {
 	char *geom;
@@ -686,11 +817,32 @@ static void ParseButton(button_info **uberb,char *s)
 	/* -------------------------- swallow ------------------------ */
 
       case 7: /* Swallow */
+	is_swallow = True;
+	/* fall through */
+      case 8: /* Panel */
 	s = trimleft(s);
-	b->swallow=0;
-	b->swallow_mask=0;
+	if (is_swallow)
+	{
+	  b->swallow=0;
+	  b->swallow_mask=0;
+	}
+	else
+	{
+	  /* set defaults */
+	  b->swallow = b_Respawn;
+	  b->swallow_mask = b_Respawn;
+	  b->slide_direction = SLIDE_UP;
+	  b->slide_steps = 8;
+	  b->slide_delay_ms = 1;
+	}
 	if(*s=='(' && s++)
-	  ParseSwallow(&s,&b->swallow,&b->swallow_mask);
+	{
+	  if (is_swallow)
+	    ParseSwallow(&s, &b->swallow,&b->swallow_mask);
+	  else
+	    ParsePanel(&s, &b->swallow, &b->swallow_mask, &b->slide_direction,
+		       &b->slide_steps, &b->slide_delay_ms);
+	}
 	t=seekright(&s);
 	o=seekright(&s);
 	if(t)
@@ -698,8 +850,14 @@ static void ParseButton(button_info **uberb,char *s)
 	  if (b->hangon)
 	    free(b->hangon);
 	  b->hangon=t;
-	  b->flags|=b_Hangon;
-	  b->flags|=b_Swallow;
+	  if (is_swallow)
+	    b->flags |= (b_Swallow | b_Hangon);
+	  else
+	  {
+	    b->flags |= (b_Panel | b_Hangon);
+	    b->newflags.is_panel = 1;
+	    b->newflags.panel_mapped = 0;
+	  }
 	  b->swallow|=1;
 	  if(!(b->swallow&b_NoHints))
 	    b->hints=(XSizeHints*)mymalloc(sizeof(XSizeHints));
@@ -731,7 +889,7 @@ static void ParseButton(button_info **uberb,char *s)
 
 	/* --------------------------- action ------------------------ */
 
-      case 8: /* Action */
+      case 9: /* Action */
 	s = trimleft(s);
 	i=0;
 	if(*s=='(')
@@ -760,7 +918,7 @@ static void ParseButton(button_info **uberb,char *s)
 
 	/* -------------------------- container ---------------------- */
 
-      case 9: /* Container */
+      case 10: /* Container */
 	b->flags&=b_Frame|b_Back|b_Fore|b_Padding|b_Action;
 	MakeContainer(b);
 	*uberb=b;
@@ -769,7 +927,7 @@ static void ParseButton(button_info **uberb,char *s)
 	  ParseContainer(&s,b);
 	break;
 
-      case 10: /* End */
+      case 11: /* End */
 	*uberb=ub->parent;
 	ub->c->buttons[--(ub->c->num_buttons)]=NULL;
 	if(!ub->parent)
@@ -779,12 +937,12 @@ static void ParseButton(button_info **uberb,char *s)
 	}
 	break;
 
-      case 11: /* NoSize */
+      case 12: /* NoSize */
 	b->flags|=b_Size;
 	b->minx=b->miny=0;
 	break;
 
-      case 12: /* Size */
+      case 13: /* Size */
 	i=strtol(s,&t,10);
 	j=strtol(t,&o,10);
 	if(t>s && o>t)
@@ -796,39 +954,6 @@ static void ParseButton(button_info **uberb,char *s)
 	}
 	else
 	  fprintf(stderr,"%s: Illegal size arguments\n",MyName);
-	break;
-
-	/* --------------------------- panel ------------------------ */
-
-      case 13: /* Panel */
-	s = trimleft(s);
-	if(*s=='(')
-	{
-	  s++;
-	  t = seekright(&s);
-	  if (terminator != ')')
-	    while(*s && *s!=')')
-	      s++;
-	  if(*s==')')
-	    s++;
-	  if      (strncasecmp(t,"right",5)==0)
-	    t = "panel-r";
-	  else if (strncasecmp(t,"left" ,4)==0)
-	    t = "panel-l";
-	  else if (strncasecmp(t,"down" ,4)==0)
-	    t = "panel-d";
-	  else if (strncasecmp(t,"geometry",8)==0)
-	    t = "panel-g";
-	  else
-	    t = "panel-u";
-	}
-	else
-	  t = "panel-u";
-	AddButtonAction(b, 0, t);
-
-	b->IconWin = None;
-	t = seekright(&s);
-	b->hangon = (t)? t : strdup("");  /* which panel to popup */
 	break;
 
       case 14: /* Left */
@@ -857,6 +982,39 @@ static void ParseButton(button_info **uberb,char *s)
 	{
 	  b->flags &= ~b_Colorset;
 	}
+	break;
+
+	/* ------------------------ oldpanel ------------------------ */
+
+      case 18: /* oldPanel */
+	s = trimleft(s);
+	if(*s=='(')
+	{
+	  s++;
+	  t = seekright(&s);
+	  if (terminator != ')')
+	    while(*s && *s!=')')
+	      s++;
+	  if(*s==')')
+	    s++;
+	  if      (strncasecmp(t,"right",5)==0)
+	    t = "panel-r";
+	  else if (strncasecmp(t,"left" ,4)==0)
+	    t = "panel-l";
+	  else if (strncasecmp(t,"down" ,4)==0)
+	    t = "panel-d";
+	  else if (strncasecmp(t,"geometry",8)==0)
+	    t = "panel-g";
+	  else
+	    t = "panel-u";
+	}
+	else
+	  t = "panel-u";
+	AddButtonAction(b, 0, t);
+
+	b->IconWin = None;
+	t = seekright(&s);
+	b->hangon = (t)? t : strdup("");  /* which panel to popup */
 	break;
 
       default:
@@ -916,9 +1074,9 @@ static void ParseButton(button_info **uberb,char *s)
   s = trimleft(s);
 
   /* Swallow hangon command */
-  if(strncasecmp(s,"swallow",7)==0)
+  if (strncasecmp(s,"swallow",7)==0 || strncasecmp(s,"panel",7)==0)
   {
-    if(b->flags&b_Swallow)
+    if(b->flags & (b_Swallow | b_Panel))
     {
       fprintf(stderr,"%s: Illegal with both old and new swallow!\n",
 	      MyName);
@@ -937,7 +1095,11 @@ static void ParseButton(button_info **uberb,char *s)
     b->hangon=seekright(&s);
     if (!b->hangon)
       b->hangon = strdup("");
-    b->flags|=(b_Swallow|b_Hangon);
+    b->flags |= b_Hangon;
+    if (tolower(*s) == 's')
+      b->flags |= b_Swallow;
+    else
+      b->flags |= b_Panel;
     b->swallow|=1;
     s = trimleft(s);
     if(!(b->swallow&b_NoHints))

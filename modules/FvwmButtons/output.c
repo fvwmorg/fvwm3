@@ -78,6 +78,12 @@ void DumpButtons(button_info *b)
     if(b->swallow&b_Respawn)
       fprintf(stderr,"\n  Respawn(%s) ",b->spawn);
   }
+  if(b->flags&b_Panel)
+  {
+    fprintf(stderr,"Panel(0x%02x) ",b->swallow);
+    if(b->swallow&b_Respawn)
+      fprintf(stderr,"\n  Respawn(%s) ",b->spawn);
+  }
   if(b->flags&b_Hangon)
     fprintf(stderr,"Hangon(%s) ",b->hangon);
   fprintf(stderr,"\n");
@@ -146,9 +152,12 @@ void SaveButtons(button_info *b)
   }
   if(b->flags&b_Icon)
     fprintf(stderr,"Icon \"%s\" ",b->icon_file);
-  if(b->flags&b_Swallow)
+  if(b->flags & (b_Swallow | b_Panel))
   {
-    fprintf(stderr,"Swallow ");
+    if (b->flags & b_Swallow)
+      fprintf(stderr,"Swallow ");
+    else
+      fprintf(stderr,"Panel ");
     if(b->swallow_mask)
     {
       fprintf(stderr,"(");

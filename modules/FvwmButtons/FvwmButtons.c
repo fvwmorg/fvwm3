@@ -108,6 +108,8 @@ void CheckForHangon(unsigned long*);
 static Window GetRealGeometry(
   Display*,Window,int*,int*,unsigned int*,unsigned int*, unsigned int*,
   unsigned int*);
+static void GetPanelGeometry(
+  Bool get_big, button_info *b, int *x, int *y, int *w, int *h);
 void swallow(unsigned long*);
 void AddButtonAction(button_info*,int,char*);
 char *GetButtonAction(button_info*,int);
@@ -853,6 +855,7 @@ int main(int argc, char **argv)
   /* tell fvwm we're running */
   SendFinishedStartupNotification(fd);
 
+XSynchronize(Dpy, 1);
   Loop();
 
   return 0;
@@ -1005,8 +1008,10 @@ void Loop(void)
 	RedrawButton(b,0);
 	if(strncasecmp(act,"popup",5)!=0)
 	{
+#ifndef NO_OLD_PANELS
 	  if (strncasecmp(act, "panel-", 6) == 0)
 	    Slide(seekpanel(b), b);
+#endif
 	  free(act);
 	  act = NULL;
 	  break;
@@ -1031,63 +1036,93 @@ void Loop(void)
 	  }
 	} while (!b && (PanelIndex = PanelIndex->next));
 
-	if(!(act=GetButtonAction(b,Event.xbutton.button)))
-	  act=GetButtonAction(b,0);
-	if(b && b==CurrentButton && act)
+	if (b && (b->flags & b_Panel))
 	{
-	  if(strncasecmp(act,"Exec",4)==0)
+	  int x1, y1, w1, h1;
+	  int x2, y2, w2, h2;
+	  unsigned int d;
+	  Window JunkRoot;
+
+	  if (b->newflags.panel_mapped)
 	  {
-	    /* close current subpanel */
-	    if (PanelIndex != MainPanel &&
-		!PanelIndex->flags.stay_up_on_select)
-	      Slide(PanelIndex, NULL);
+	    /* get the current geometry */
+	    XGetGeometry(Dpy, b->IconWin, &JunkRoot, &b->x, &b->y, &b->w,
+			 &b->h, &b->bw, &d);
+	  }
+	  GetPanelGeometry(!!b->newflags.panel_mapped, b, &x1, &y1, &w1, &h1);
+	  GetPanelGeometry(!b->newflags.panel_mapped, b, &x2, &y2, &w2, &h2);
+	  SlideWindow(Dpy, b->IconWin,
+		      x1, y1, w1, h1,
+		      x2, y2, w2, h2,
+		      b->slide_steps, b->slide_delay_ms, NULL);
 
-	    /* Look for Exec "identifier", in which case the button
-	       stays down until window "identifier" materializes */
-	    i=4;
-	    while(isspace((unsigned char)act[i]))
-	      i++;
-	    if(act[i] == '"')
-	    {
-	      i2=i+1;
-	      while(act[i2]!=0 && act[i2]!='"')
-		i2++;
-
-	      if(i2-i>1)
-	      {
-		b->flags|=b_Hangon;
-		b->hangon = mymalloc(i2-i);
-		strncpy(b->hangon,&act[i+1],i2-i-1);
-		b->hangon[i2-i-1] = 0;
-	      }
-	      i2++;
-	    }
-	    else
-	      i2=i;
-
-	    tmp=mymalloc(strlen(act)+1);
-	    strcpy(tmp,"Exec ");
-	    while(act[i2]!=0 && isspace((unsigned char)act[i2]))
-	      i2++;
-	    strcat(tmp,&act[i2]);
-	    MySendText(fd,tmp,0);
-	    free(tmp);
-	  } /* exec */
-	  else if(strncasecmp(act,"DumpButtons",11)==0)
-	    DumpButtons(UberButton);
-	  else if(strncasecmp(act,"SaveButtons",11)==0)
-	    SaveButtons(UberButton);
-	  else if(strncasecmp(act,"panel",5) != 0)
-	    MySendText(fd,act,0);
-	  if(strncasecmp(act,"panel",5) != 0 &&
-	     PanelIndex != MainPanel &&
-	     PanelIndex->flags.close_on_select)
-	    Slide(PanelIndex, NULL);
-	} /* act */
-	if (act != NULL)
+	  if (b->newflags.panel_mapped)
+	  {
+	    XUnmapWindow(Dpy, b->IconWin);
+	  }
+	  b->newflags.panel_mapped ^= 1;
+	  RedrawButton(b, 1);
+	}
+	else
 	{
-	  free(act);
-	  act = NULL;
+	  if(!(act=GetButtonAction(b,Event.xbutton.button)))
+	    act=GetButtonAction(b,0);
+	  if(b && b==CurrentButton && act)
+	  {
+	    if(strncasecmp(act,"Exec",4)==0)
+	    {
+	      /* close current subpanel */
+	      if (PanelIndex != MainPanel &&
+		  !PanelIndex->flags.stay_up_on_select)
+		Slide(PanelIndex, NULL);
+
+	      /* Look for Exec "identifier", in which case the button
+		 stays down until window "identifier" materializes */
+	      i=4;
+	      while(isspace((unsigned char)act[i]))
+		i++;
+	      if(act[i] == '"')
+	      {
+		i2=i+1;
+		while(act[i2]!=0 && act[i2]!='"')
+		  i2++;
+
+		if(i2-i>1)
+		{
+		  b->flags|=b_Hangon;
+		  b->hangon = mymalloc(i2-i);
+		  strncpy(b->hangon,&act[i+1],i2-i-1);
+		  b->hangon[i2-i-1] = 0;
+		}
+		i2++;
+	      }
+	      else
+		i2=i;
+
+	      tmp=mymalloc(strlen(act)+1);
+	      strcpy(tmp,"Exec ");
+	      while(act[i2]!=0 && isspace((unsigned char)act[i2]))
+		i2++;
+	      strcat(tmp,&act[i2]);
+	      MySendText(fd,tmp,0);
+	      free(tmp);
+	    } /* exec */
+	    else if(strncasecmp(act,"DumpButtons",11)==0)
+	      DumpButtons(UberButton);
+	    else if(strncasecmp(act,"SaveButtons",11)==0)
+	      SaveButtons(UberButton);
+	    else if(strncasecmp(act,"panel",5) != 0)
+	      MySendText(fd,act,0);
+	    if(strncasecmp(act,"panel",5) != 0 &&
+	       PanelIndex != MainPanel &&
+	       PanelIndex->flags.close_on_select)
+	      Slide(PanelIndex, NULL);
+	  } /* act */
+	  if (act != NULL)
+	  {
+	    free(act);
+	    act = NULL;
+	  }
 	}
 
 	/* recover the old record */
@@ -1170,12 +1205,15 @@ void Loop(void)
 	      fprintf(stderr,", respawning\n");
 #endif
 	      b->swallow|=1;
-	      b->flags|=b_Swallow|b_Hangon;
+	      if (!b->newflags.is_panel)
+		b->flags |= (b_Swallow | b_Hangon);
+	      else
+		b->flags |= (b_Panel | b_Hangon);
 	      MySendText(fd,b->spawn,0);
 	    }
 	    else
 	    {
-	      b->flags&=~b_Swallow;
+	      b->flags &= ~(b_Swallow | b_Panel);
 #ifdef DEBUG_HANGON
 	      fprintf(stderr,"\n");
 #endif
@@ -1981,8 +2019,9 @@ static void recursive_change_colorset(container_info *c, int colorset)
     else if (b->flags & b_Swallow)
     {
       /* swallowed window */
-      if ((buttonSwallowCount(b) == 3) && (b->IconWin != None) &&
-	  (b->flags & b_Colorset) && (colorset == b->colorset))
+      if ((buttonSwallowCount(b) == 3) && (b->flags & b_Swallow) &&
+	  (b->IconWin != None) && (b->flags & b_Colorset) &&
+	  (colorset == b->colorset))
       {
 	/* re-apply colorset to window background */
 	change_swallowed_window_colorset(b);
@@ -2162,6 +2201,78 @@ Window GetRealGeometry(
   return rp;
 }
 
+static void GetPanelGeometry(
+  Bool get_big, button_info *b, int *x, int *y, int *w, int *h)
+{
+  Window JunkChild;
+  int bx = buttonXPos(b, b->n);
+  int by = buttonYPos(b, b->n);
+  int bw = buttonWidth(b);
+  int bh = buttonHeight(b);
+
+  XTranslateCoordinates(Dpy, MyWindow, Root, bx, by, &bx, &by, &JunkChild);
+  switch (b->slide_direction)
+  {
+  case SLIDE_UP:
+    *x = bx + (int)(bw - b->w) / 2;
+    *w = b->w;
+    if (get_big)
+    {
+      *y = by - (int)b->h - 2;
+      *h = b->h;
+    }
+    else
+    {
+      *y = by - 2;
+      *h = 0;
+    }
+    break;
+  case SLIDE_DOWN:
+    *x = bx + (int)(bw - b->w) / 2;
+    *y = by + (int)bh + 2;
+    *w = b->w;
+    if (get_big)
+    {
+      *h = b->h;
+    }
+    else
+    {
+      *h = 0;
+    }
+    break;
+  case SLIDE_LEFT:
+    *y = by + (int)(bh - b->h) / 2;
+    *h = b->h;
+    if (get_big)
+    {
+      *x = bx - (int)b->w - 2;
+      *w = b->w;
+    }
+    else
+    {
+      *x = bx - 2;
+      *w = 0;
+    }
+    break;
+  case SLIDE_RIGHT:
+    *y = by + (int)(bh - b->h) / 2;
+    *x = bx + (int)bw + 2;
+    *h = b->h;
+    if (get_big)
+    {
+      *w = b->w;
+    }
+    else
+    {
+      *w = 0;
+    }
+    break;
+  }
+
+  return;
+}
+
+
 /**
 *** swallow()
 *** Executed when swallowed windows get mapped
@@ -2189,7 +2300,7 @@ void swallow(unsigned long *body)
 	fprintf(stderr,"%s: Window 0x%lx (\"%s\") disappeared %s\n",
 		MyName,b->IconWin,b->hangon,"before swallow complete");
 	/* Now what? Nothing? For now: give up that button */
-	b->flags&=~(b_Hangon|b_Swallow);
+	b->flags&=~(b_Hangon|b_Swallow|b_Panel);
 	return;
       }
 
@@ -2217,28 +2328,37 @@ void swallow(unsigned long *body)
       b->swallow&=~b_Count;
       b->swallow|=3;
 
-      /* "Swallow" the window! Place it in the void so we don't see it
-	 until it's MoveResize'd */
-      XReparentWindow(Dpy,b->IconWin,MyWindow,-1500,-1500);
-      XSelectInput(Dpy,b->IconWin,SW_EVENTS);
-      if(buttonSwallow(b)&b_UseTitle)
+      if (b->flags & b_Swallow)
       {
-	if(b->flags&b_Title)
-	  free(b->title);
-	b->flags|=b_Title;
-	XFetchName(Dpy,b->IconWin,&temp);
-	CopyString(&b->title,temp);
-	XFree(temp);
-      }
-      XMapWindow(Dpy,b->IconWin);
-      MakeButton(b);
+	/* "Swallow" the window! Place it in the void so we don't see it
+	 * until it's MoveResize'd */
+	XReparentWindow(Dpy,b->IconWin,MyWindow,-32768,-32768);
+	XSelectInput(Dpy,b->IconWin,SW_EVENTS);
+	if(buttonSwallow(b)&b_UseTitle)
+	{
+	  if(b->flags&b_Title)
+	    free(b->title);
+	  b->flags|=b_Title;
+	  XFetchName(Dpy,b->IconWin,&temp);
+	  CopyString(&b->title,temp);
+	  XFree(temp);
+	}
+	XMapWindow(Dpy,b->IconWin);
+	MakeButton(b);
 
-      change_swallowed_window_colorset(b);
-      RedrawButton(b,1);
+	change_swallowed_window_colorset(b);
+	RedrawButton(b,1);
+      }
+      else /* (b->flags & b_Panel) */
+      {
+	XUnmapWindow(Dpy, b->IconWin);
+	b->newflags.panel_mapped = 0;
+      }
       break;
     }
 }
 
+#ifndef NO_OLD_PANELS
 /*
  * Button
  *   b->flags     |= b_Action (though b->hangon is ilegally used)
@@ -2430,3 +2550,4 @@ void Slide(panel_info *p, button_info *b)
     p->uber->swallow = 1;
   }
 }
+#endif
