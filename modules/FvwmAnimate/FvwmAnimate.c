@@ -901,7 +901,7 @@ void ParseConfigLine(char *buf) {
           && (strncasecmp(*e,"Save",4) != 0)) { /* no arg commands */
         p+=strlen(*e);		/* skip matched token */
         q=GetArgument(&p);
-        if ((e!=table) && !q) {
+        if (!q) {                       /* If arg not found */
           fprintf(stderr,"%s: %s%s needs a parameter\n",
                   MyName+1, MyName+1,*e);
           return;

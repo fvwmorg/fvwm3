@@ -1,0 +1,8 @@
+Tue Nov 10 22:20:21 1998  DanEspen  <dje@blue>
+
+	* FvwmEvent.c  (config):   Fix logic on  test   for  cmd  needs  a
+ 	parameter.  Thes test for "table != e" was incorrect.  Only try to
+ 	strip off trailing newline when there is a newline on the command.
+  	It was stripping the  last  character when  commands came in  from
+ 	FvwmTalk.
+

@@ -368,8 +368,9 @@ void	config(void)
 
     while (GetConfigLine(fd,&buf), buf != NULL)
     {
-	buf[strlen(buf)-1] = '\0';	/* strip off \n */
-
+        if (buf[strlen(buf)-1] == '\n') {     /* if line ends with newline */
+	  buf[strlen(buf)-1] = '\0';	/* strip off \n */
+        }
 
 	/* Search for MyName (normally *FvwmAudio) */
 	if (strncasecmp(buf, MyName, MyNameLen) == 0)
@@ -381,7 +382,7 @@ INFO("\n");
 	    {
                 p+=strlen(*e);		/* skip matched token */
 		q=GetArgument(&p);
-		if ((e!=table) && !q)
+		if (!q)
 		{
 		  fprintf(stderr,"%s: %s%s needs a parameter\n",
 			  MyName+1, MyName+1,*e);

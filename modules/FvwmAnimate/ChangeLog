@@ -1,3 +1,7 @@
+Tue Nov 10 22:17:50 1998  DanEspen  <dje@blue>
+
+	* FvwmAnimate.c: Handle missing arg on first entry in cmd table.
+
 Sat Nov  7 09:43:59 1998  DanEspen  <dje@blue>
 
 	* FvwmAnimate.c: Make color a fully documented and customizable feature.
@@ -9,5 +13,5 @@ Sat Nov  7 09:43:59 1998  DanEspen  <dje@blue>
 
 1998-11-04  Dan Espen  <dane@mk.bellcore.com>
 
-	* FvwmAnimate/FvwmAnimate.c: Fixed bug where AnimateResizeLine was
+	* FvwmAnimate.c: Fixed bug where AnimateResizeLine was
 	drawing 5 segments when it only wanted 4.
