@@ -54,7 +54,8 @@
 /* The first option of the default menu style must be fvwm/win/mwm/....
  * fvwm may crash if not. */
 #define DEFAULT_MENU_STYLE               \
- "MenuStyle * fvwm, Foreground black, Background grey, Greyed slategrey"
+ "MenuStyle * fvwm, Foreground black, Background grey, Greyed slategrey, " \
+ "MenuColorset, ActiveColorset, GreyedColorset"
 #define DEFAULT_CLICKTIME		 150 /* ms */
 #define DEFAULT_POPUP_DELAY		  15 /* ms*10 */
 #define DEFAULT_POPDOWN_DELAY		  15 /* ms*10 */
