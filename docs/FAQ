@@ -235,7 +235,7 @@ A: "Fill_in_the_blank_with_whatever_f_word_you_like_at_the_time
    Know what? I found another one while stroking my cats: FEEDING :-)
 
    Check this link:
-   _+_A HREF="http://fvwm.org/fvwm-cats/"_-_fvwm-cats_+_/A_-_
+   	http://fvwm.org/fvwm-cats/
 
 ----------------------------------------------------------------------
 
@@ -461,7 +461,7 @@ A: Sure - here's one from Graeme McCaffery:
      On the other hand, here is a link to a web page that describes how to
      add multiple window managers to the CDE login menu:
 
-       _+_A HREF="http://twirl.mcc.ac.uk/~zzassgl/wm.html"_-_CDE login Link_+_/A_-_
+     	http://twirl.mcc.ac.uk/~zzassgl/wm.html
 
 ----------------------------------------------------------------------
 
@@ -1873,10 +1873,8 @@ A: This problem might occur on other applications besides the one
    There are 2 Mainsoft Knowledgebase pages that relate to UNIX
    window managers:
 
-   _+_A HREF="http://www.mainsoft.com/kb_mainwin/kbmw0027.html"
-   _-_http://www.mainsoft.com/kb_mainwin/kbmw0027.html_+_/A_-_
-   _+_A HREF="http://www.mainsoft.com/kb_mainwin/kbmw0034.html"
-   _-_http://www.mainsoft.com/kb_mainwin/kbmw0034.html_+_/A_-_
+	http://www.mainsoft.com/kb_mainwin/kbmw0027.html
+	http://www.mainsoft.com/kb_mainwin/kbmw0034.html
 
    These pages suggest that you export MWWM=allwm or MWWM=MWM before
    starting the application.
@@ -1986,7 +1984,7 @@ A: This is not our primary mission, but we think fvwm does a pretty
    good job of producing these appearances.
 
    You may want to take a look at the
-   _+_A HREF="http://fvwm-themes.sourceforge.net/"_-_fvwm-themes_+_/A_-_
+   	http://fvwm-themes.sourceforge.net/
    package.
 
 ----------------------------------------------------------------------
@@ -2004,7 +2002,7 @@ A: If you want more color icons, grab the ones out of the ctwm
    links at the fvwm web site to other sources of icons.
 
    You may want to take a look at the
-   _+_A HREF="http://wm-icons.sourceforge.net/"_-_wm-icons_+_/A_-_
+   	http://wm-icons.sourceforge.net/
    package.
 
 ----------------------------------------------------------------------
@@ -2065,7 +2063,7 @@ A: Under this heading we've had questions about FvwmForm being all
    it at once.
 
    This is explained in excruciating detail in the
-   _+_A HREF="http://www.sunhelp.org/faq/FrameBuffer.html"_-_Frame Buffer FAQ_+_/A_-_
+   	http://www.sunhelp.org/faq/FrameBuffer.html
 
    If your display can support more than 256 colors, that's the way to
    go.  Look up the documentation for your X server.  You may want to

@@ -1,5 +1,4 @@
-Note, the changes for the last STABLE release start with release
-_+_A HREF="#2.4.15"_-_2.4.15_+_/A_-_.
+Note, the changes for the last STABLE release start with release 2.4.15
 
 -------------------------------------------------------------------
 
@@ -534,9 +533,7 @@ Changes in alpha release 2.5.0 (27-Jan-2002)
 
 -------------------------------------------------------------------
 
-_+_A NAME="2.4.15"_-_
 Changes in stable release 2.4.15 (24-Jan-2003)
-_+_/A_-_
 
 * Fix for gmplayer launched by fvwm.  Close stdin on Exec so the
   exec'd process knows its not running interactively.
@@ -1983,9 +1980,7 @@ Changes in alpha release 2.3.0 (February 1999)
 
 -------------------------------------------------------------------
 
-_+_A NAME="2.2.5"_-_
 Changes in official release 2.2.5 (February 2001)
-_+_/A_-_
 
 * When fvwm is run remotely, startup is noticably faster.
 
