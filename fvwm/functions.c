@@ -739,7 +739,7 @@ void ComplexFunction2(F_CMD_ARGS, Bool *desperate)
   *desperate = 0;
   /* Get the argument list */
   for(i=0;i<10;i++)
-    action = GetNextToken(action,&arguments[i]);
+    taction = GetNextToken(taction,&arguments[i]);
   /* see functions.c to find out which functions need a window to operate on */
   ev = eventp;
   /* In case we want to perform an action on a button press, we
