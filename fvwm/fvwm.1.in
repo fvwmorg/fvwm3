@@ -6396,7 +6396,7 @@ The above three styles are accompanied by
 .IR FPReleaseFocus ", " FPReleaseFocusTransient " and "
 .IR FPOverrideReleaseFocus .
 These control if the focus is returned to another window when the
-window is close.  Otherwise no window or the window under the
+window is closed.  Otherwise no window or the window under the
 pointer will receive the focus.
 
 .IR ClickToFocusPassesClickOff " and " ClickToFocusPassesClick
