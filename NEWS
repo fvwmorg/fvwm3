@@ -1,8 +1,10 @@
+Changes in alpha release 2.3.0 (February 1999)
+
 Changes in official release 2.2 (February 1999)
 
-Changes in beta release 2.1.13 (February 1999)
+Changes in alpha release 2.1.13 (February 1999)
 
-Changes in beta release 2.1.12 (February 1999)
+Changes in alpha release 2.1.12 (February 1999)
 
 * Enhanced and changed the syntax for menu position hints. If you use negative
   offsets you will have to change your configuration now.

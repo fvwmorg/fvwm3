@@ -1,3 +1,11 @@
+1999-02-23  Dominik Vogt  <dominik_vogt@hp.com>
+
+	* AUTHORS: updated
+
+	* configure.in: changed version to 2.3.0
+
+	* *: fvwm 2.2 has been released :-))
+
 1999-02-22  Dominik Vogt  <dominik_vogt@hp.com>
 
 	* fvwm/fvwm2.1 (WindowsDesk): some clarification that this command has

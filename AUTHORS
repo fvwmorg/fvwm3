@@ -2,6 +2,14 @@ To find out what should go in this file, see "Information For
 Maintainers of GNU Software" (maintain.texi), the section called
 "Recording Changes".
 
+Greg J. Badros:
+Substantial rewrite of fvwm2.0 menuing code to support arbitrary depth
+menus, animated menus, Win95 look, better logically-based shortcut keys,
+auto-splitting of long menus, check for re-used hot-keys, integrated
+LEFT_MENUS option.  Added primitives: animated-moves, SetEnv, fix to
+Echo. Improve modules: Make FvwmM4 pass args on to m4, font-related
+seg-fault bug fix in FvwmButtons
+
 Dan Espen:
 Color Limiting, Multiple IconBoxes, Iconification Animation, new 3d
 hilight/shadow calc from scwm as a library routine, updated web docs.
@@ -43,7 +51,6 @@ in the style of the above entries, to the mailing list fvwm-workers@fvwm.org.
 Dan Astoorian
 Andrew (a.b.) Atrens
 John Aughey
-Greg Badros
 Graham Barr
 David Barth
 Mike Blatchley
@@ -51,6 +58,7 @@ Mark Boyns
 Eli Burke
 Martin Cartwright
 Beat Christen
+Matthias Claasen
 Frederic Cordier
 Andrew Davison
 Frederic Devernay
