@@ -2,6 +2,10 @@
 
 	* NEWS:
 	* configure.in:
+	released 2.5.6, set version to 2.5.7
+
+	* NEWS:
+	* configure.in:
 	updated for 2.5.6
 
 2003-02-26  Tony Finch  <dot@dotat.at>
