@@ -2490,7 +2490,6 @@ static void do_button_style(F_CMD_ARGS, Bool do_add)
   }
 
   /* mark button style and decor as changed */
-  Scr.flags.do_need_window_update = 1;
   decor->flags.has_changed = 1;
 
   if (multi == 0)
