@@ -40,7 +40,7 @@ void SlideWindow(
   Display *dpy, Window win,
   int s_x, int s_y, unsigned int s_w, unsigned int s_h,
   int e_x, int e_y, unsigned int e_w, unsigned int e_h,
-  int steps, int delay_ms, float *ppctMovement, Bool do_flush)
+  int steps, int delay_ms, float *ppctMovement, Bool do_sync)
 {
   int x;
   int y;
@@ -87,8 +87,8 @@ void SlideWindow(
       XMapWindow(dpy, win);
       XMapSubwindows(dpy, win);
     }
-    if (do_flush)
-      XFlush(dpy);
+    if (do_sync)
+      XSync(dpy, 0);
     return;
   }
 
@@ -151,8 +151,8 @@ void SlideWindow(
       }
     }
     /* make sure everything is updated */
-    if (do_flush)
-      XFlush(dpy);
+    if (do_sync)
+      XSync(dpy, 0);
     if (us && i < steps)
     {
       /* don't sleep after the last step */
