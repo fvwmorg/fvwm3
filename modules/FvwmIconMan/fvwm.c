@@ -401,6 +401,10 @@ static void destroy_window (FvwmPacketBody *body)
     ConsoleDebug (FVWM, "destroy_window: deleting windows_button\n");
     delete_windows_button (win);
   }
+  if (win == fvwm_focus_win)
+  {
+    fvwm_focus_win = NULL;
+  }
   free_windata (win);
 }
 

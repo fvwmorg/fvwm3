@@ -590,6 +590,7 @@ void X_init_manager (int man_id)
   }
 
   for ( i = 0; i < NUM_CONTEXTS; i++ ) {
+    man->pixmap[i] = None;
     if (man->colorsets[i] > -1) {
       man->backcolor[i] = Colorset[man->colorsets[i] % nColorsets].bg;
     }
@@ -667,8 +668,9 @@ void X_init_manager (int man_id)
 
   if (man->button_geometry_str) {
     int val;
+    x = y = width = height = 0;
     val = XParseGeometry (man->button_geometry_str, &x, &y, &width, &height);
-    ConsoleDebug (X11, "button x, y, w, h = %d %d %d %d\n", x, y, width,
+    ConsoleDebug (X11, "button x, y, w, h = %d %d %u %u\n", x, y, width,
 		  height);
     if (val & WidthValue)
       man->geometry.boxwidth = width;
