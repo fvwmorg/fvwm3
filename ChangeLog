@@ -1,5 +1,11 @@
 2000-01-03  Dominik Vogt  <dominik.vogt@gmx.de>
 
+	* fvwm/update.c (flush_window_updates):
+	fixed similar problem
+
+	* fvwm/builtins.c (do_recapture):
+	fixed hang when recapture is called while an icon is focused
+
 	* fvwm/geometry.c (gravity_constrain_size):
 	* fvwm/update.c (apply_window_updates):
 	changing maxwindowsize style applies to normal_g and max_g too

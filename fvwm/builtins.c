@@ -2275,10 +2275,10 @@ static void do_recapture(F_CMD_ARGS, Bool fSingle)
     if (DeferExecution(eventp,&w,&tmp_win,&context, CRS_SELECT,ButtonRelease))
       return;
 
-  MyXGrabServer(dpy);
   if (BUSY_RECAPTURE & Scr.BusyCursor)
     if (GrabEm(CRS_WAIT, GRAB_BUSY))
       need_ungrab = True;
+  MyXGrabServer(dpy);
   XSync(dpy,0);
   if (fSingle)
     CaptureOneWindow(tmp_win, tmp_win->w);
@@ -2286,15 +2286,15 @@ static void do_recapture(F_CMD_ARGS, Bool fSingle)
     CaptureAllWindows();
   /* Throw away queued up events. We don't want user input during a
    * recapture. The window the user clicks in might disapper at the very same
-   * moment and the click goes through to the root window. Not goot */
+   * moment and the click goes through to the root window. Not good */
   while (XCheckMaskEvent(dpy, ButtonPressMask|ButtonReleaseMask|
 			 ButtonMotionMask|PointerMotionMask|EnterWindowMask|
 			 LeaveWindowMask|KeyPressMask|KeyReleaseMask,
 			 &event) != False)
     ;
+  MyXUngrabServer(dpy);
   if (need_ungrab)
     UngrabEm(GRAB_BUSY);
-  MyXUngrabServer(dpy);
   XSync(dpy, 0);
 }
 

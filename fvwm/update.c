@@ -277,19 +277,15 @@ void flush_window_updates(void)
   window_style style;
   Window focus_w;
   FvwmWindow *focus_fw;
-#if 0
   Bool do_need_ungrab = False;
-#endif
   update_win flags;
 
   memset(&flags, 0, sizeof(update_win));
-#if 0
   /* Grab the server during the style update! */
-  MyXGrabServer(dpy);
   if (GrabEm(CRS_WAIT, GRAB_BUSY))
     do_need_ungrab = True;
+  MyXGrabServer(dpy);
   XSync(dpy,0);
-#endif
 
   /* This is necessary in case the focus policy changes. With ClickToFocus some
    * buttons have to be grabbed/ungrabbed. */
@@ -340,12 +336,10 @@ void flush_window_updates(void)
   Scr.flags.has_default_color_changed = 0;
   Scr.flags.has_nr_buttons_changed = 0;
 
-#if 0
+  MyXUngrabServer(dpy);
   if (do_need_ungrab)
     UngrabEm(GRAB_BUSY);
-  MyXUngrabServer(dpy);
   XSync(dpy, 0);
-#endif
 
   return;
 }
