@@ -1481,9 +1481,11 @@ static void get_common_decorations(
     if(IS_STICKY(t))
       cd->back_pixmap = Scr.sticky_gray_pixmap;
     else
-    cd->back_pixmap = Scr.light_gray_pixmap;
-    if (is_border) draw_colors = &(t->border_colors);
-    else draw_colors = &(t->colors);
+      cd->back_pixmap = Scr.light_gray_pixmap;
+    if (is_border)
+      draw_colors = &(t->border_colors);
+    else
+      draw_colors = &(t->colors);
   }
   cd->fore_color = draw_colors->fore;
   cd->back_color = draw_colors->back;
@@ -1584,7 +1586,7 @@ void draw_clipped_decorations(
       {
 	/* make sure that the previously highlighted window got
 	 * unhighlighted */
-	DrawDecorations(Scr.Hilite, DRAW_ALL, False, False, None);
+	DrawDecorations(Scr.Hilite, DRAW_ALL, False, True, None);
       }
       Scr.Hilite = t;
     }
