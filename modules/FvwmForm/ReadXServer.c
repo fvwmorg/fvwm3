@@ -485,8 +485,8 @@ static void process_regular_char_input(unsigned char *buf) {
   if (++(CF.cur_input->input.n) >= CF.cur_input->input.buf) {
     CF.cur_input->input.buf += CF.cur_input->input.size;
     CF.cur_input->input.value =
-      (char *)realloc(CF.cur_input->input.value,
-                      CF.cur_input->input.buf);
+      (char *)saferealloc(CF.cur_input->input.value,
+			  CF.cur_input->input.buf);
   }
   dp = CF.cur_input->input.value + CF.cur_input->input.n;
   sp = dp - 1;

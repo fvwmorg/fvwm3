@@ -312,6 +312,13 @@
 #define SFSET_IS_LENIENT(st,x) ((st).flags.common.s.is_lenient = !!(x))
 #define SMSET_IS_LENIENT(st,x) ((st).flag_mask.common.s.is_lenient = !!(x))
 #define SCSET_IS_LENIENT(st,x) ((st).change_mask.common.s.is_lenient = !!(x))
+#define SUSE_ICON_POSITION_HINT(sf) ((sf).common.s.use_icon_position_hint)
+#define SFUSE_ICON_POSITION_HINT(st) ((st).flags.common.s.use_icon_position_hint)
+#define SMUSE_ICON_POSITION_HINT(st) ((st).flag_mask.common.s.use_icon_position_hint)
+#define SCUSE_ICON_POSITION_HINT(st) ((st).change_mask.common.s.use_icon_position_hint)
+#define SFSET_USE_ICON_POSITION_HINT(st,x) ((st).flags.common.s.use_icon_position_hint = !!(x))
+#define SMSET_USE_ICON_POSITION_HINT(st,x) ((st).flag_mask.common.s.use_icon_position_hint = !!(x))
+#define SCSET_USE_ICON_POSITION_HINT(st,x) ((st).change_mask.common.s.use_icon_position_hint = !!(x))
 
 
 

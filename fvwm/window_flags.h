@@ -107,6 +107,12 @@
 #define SET_ICON_STICKY(fw,x)  (fw)->flags.common.s.is_icon_sticky = !!(x)
 #define SETM_ICON_STICKY(fw,x) \
           (fw)->flag_mask.common.s.is_icon_sticky = !!(x)
+#define USE_ICON_POSITION_HINT(fw) \
+          ((fw)->flags.common.s.use_icon_position_hint)
+#define SET_USE_ICON_POSITION_HINT(fw,x) \
+          (fw)->flags.common.s.use_icon_position_hint = !!(x)
+#define SETM_USE_ICON_POSITION_HINT(fw,x) \
+          (fw)->flag_mask.common.s.use_icon_position_hint = !!(x)
 #define IS_ICON_SUPPRESSED(fw) \
           ((fw)->flags.common.s.is_icon_suppressed)
 #define SET_ICON_SUPPRESSED(fw,x)  \

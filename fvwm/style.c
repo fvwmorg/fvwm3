@@ -1851,6 +1851,13 @@ void ProcessNewStyle(F_CMD_ARGS)
           ptmpstyle->flag_mask.use_no_pposition = 1;
           ptmpstyle->change_mask.use_no_pposition = 1;
         }
+        else if (StrEquals(token, "NoIconPosition"))
+        {
+	  found = True;
+	  SFSET_USE_ICON_POSITION_HINT(*ptmpstyle, 0);
+	  SMSET_USE_ICON_POSITION_HINT(*ptmpstyle, 1);
+	  SCSET_USE_ICON_POSITION_HINT(*ptmpstyle, 1);
+        }
         else if (StrEquals(token, "NakedTransient"))
         {
 	  found = True;
@@ -2282,6 +2289,13 @@ void ProcessNewStyle(F_CMD_ARGS)
           ptmpstyle->flags.use_no_pposition = 0;
           ptmpstyle->flag_mask.use_no_pposition = 1;
           ptmpstyle->change_mask.use_no_pposition = 1;
+        }
+        else if (StrEquals(token, "UseIconPosition"))
+        {
+	  found = True;
+	  SFSET_USE_ICON_POSITION_HINT(*ptmpstyle, 1);
+	  SMSET_USE_ICON_POSITION_HINT(*ptmpstyle, 1);
+	  SCSET_USE_ICON_POSITION_HINT(*ptmpstyle, 1);
         }
 #ifdef USEDECOR
         if (StrEquals(token, "UseDecor"))

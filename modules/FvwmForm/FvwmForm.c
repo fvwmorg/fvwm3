@@ -170,12 +170,14 @@ static char *CopySolidString (char *cp)
 }
 
 /* get the font height */
-static int FontHeight (XFontStruct *xfs) {
+static int FontHeight (XFontStruct *xfs)
+{
   return (xfs->ascent + xfs->descent);
 }
 
 /* get the font width, for fixed-width font only */
-int FontWidth (XFontStruct *xfs) {
+int FontWidth (XFontStruct *xfs)
+{
   return (xfs->per_char[0].width);
 }
 
@@ -183,7 +185,8 @@ int FontWidth (XFontStruct *xfs) {
 /* Command parsing section */
 
 /* FvwmAnimate++ type command table */
-typedef struct CommandTable {
+typedef struct CommandTable
+{
   char *name;
   void (*function)(char *);
 } ct;
@@ -213,7 +216,8 @@ static void ct_Colorset(char *);
 static void ct_ItemColorset(char *);
 
 /* Must be in Alphabetic order (caseless) */
-static struct CommandTable ct_table[] = {
+static struct CommandTable ct_table[] =
+{
   {"Back",ct_Back},
   {"Button",ct_Button},
   {"ButtonFont",ct_ButtonFont},
@@ -240,7 +244,8 @@ static struct CommandTable ct_table[] = {
 };
 /* These commands are the default setting commands,
    read before the other form defining commands. */
-static struct CommandTable def_table[] = {
+static struct CommandTable def_table[] =
+{
   {"Back",ct_Back},
   {"ButtonFont",ct_ButtonFont},
   {"Colorset",ct_Colorset},
@@ -255,14 +260,15 @@ static struct CommandTable def_table[] = {
 
 /* If there were vars on the command line, do env var sustitution on
    all input. */
-static void FormVarsCheck(char **p) {
+static void FormVarsCheck(char **p)
+{
   if (CF.have_env_var) {                /* if cmd line vars */
     if (strlen(*p) + 200 > CF.expand_buffer_size) { /* fast and loose */
       CF.expand_buffer_size = strlen(*p) + 2000; /* new size */
       if (CF.expand_buffer) {           /* already have one */
-        CF.expand_buffer = realloc(CF.expand_buffer, CF.expand_buffer_size);
+        CF.expand_buffer = saferealloc(CF.expand_buffer, CF.expand_buffer_size);
       } else {                          /* first time */
-        CF.expand_buffer = malloc(CF.expand_buffer_size);
+        CF.expand_buffer = safemalloc(CF.expand_buffer_size);
       }
     }
     strcpy(CF.expand_buffer,*p);
@@ -271,7 +277,8 @@ static void FormVarsCheck(char **p) {
   }
 }
 
-static void ParseDefaults(char *buf) {
+static void ParseDefaults(char *buf)
+{
   char *p;
   struct CommandTable *e;
   if (buf[strlen(buf)-1] == '\n') {     /* if line ends with newline */
@@ -294,7 +301,8 @@ static void ParseDefaults(char *buf) {
 } /* end function */
 
 
-static void ParseConfigLine(char *buf) {
+static void ParseConfigLine(char *buf)
+{
   char *p;
   struct CommandTable *e;
   if (buf[strlen(buf)-1] == '\n') {     /* if line ends with newline */
@@ -328,22 +336,19 @@ static void ParseConfigLine(char *buf) {
 } /* end function */
 
 /* Expands item array */
-static void ExpandArray(Line *this_line) {
+static void ExpandArray(Line *this_line)
+{
   if (this_line->n + 1 >= this_line->item_array_size) { /* no empty space */
     this_line->item_array_size += ITEMS_PER_EXPANSION; /* get bigger */
-    this_line->items = realloc(this_line->items,
-                               (sizeof(Item *) *
-                               this_line->item_array_size));
-    if (this_line->items == 0) {
-      fprintf(stderr, "%s: For line items couldn't malloc %d bytes\n",
-              MyName+1, this_line->item_array_size);
-      exit (1);                         /* Give up */
-    } /* end malloc failure */
+    this_line->items =
+      (Item **)saferealloc((void *)this_line->items,
+			  (sizeof(Item *) * this_line->item_array_size));
   } /* end array full */
 }
 
 /* Function to add an item to the current line */
-static void AddToLine(Item *newItem) {
+static void AddToLine(Item *newItem)
+{
   ExpandArray(cur_line);                /* expand item array if needed */
   cur_line->items[cur_line->n++] = newItem; /* add to lines item array */
   cur_line->size_x += newItem->header.size_x; /* incr lines width */
@@ -355,13 +360,16 @@ static void AddToLine(Item *newItem) {
 
 /* All the functions starting with "ct_" (command table) are called thru
    their function pointers. Arg 1 is always the rest of the command. */
-static void ct_GrabServer(char *cp) {
+static void ct_GrabServer(char *cp)
+{
   CF.grab_server = 1;
 }
-static void ct_WarpPointer(char *cp) {
+static void ct_WarpPointer(char *cp)
+{
   CF.warp_pointer = 1;
 }
-static void ct_Position(char *cp) {
+static void ct_Position(char *cp)
+{
   CF.have_geom = 1;
   CF.gx = atoi(cp);
   while (!isspace((unsigned char)*cp)) cp++;
@@ -369,58 +377,82 @@ static void ct_Position(char *cp) {
   CF.gy = atoi(cp);
   myfprintf((stderr, "Position @ (%d, %d)\n", CF.gx, CF.gy));
 }
-static void ct_Fore(char *cp) {
+static void ct_Fore(char *cp)
+{
+  if (color_names[c_fg])
+    free(color_names[c_fg]);
   color_names[c_fg] = strdup(cp);
   colorset = -1;
   myfprintf((stderr, "ColorFore: %s\n", color_names[c_fg]));
 }
-static void ct_Back(char *cp) {
+static void ct_Back(char *cp)
+{
+  if (color_names[c_bg])
+    free(color_names[c_bg]);
   color_names[c_bg] = strdup(cp);
-  if (bg_state == 'd') {
+  if (bg_state == 'd')
+  {
+    if (screen_background_color)
+      free(screen_background_color);
     screen_background_color = strdup(color_names[c_bg]);
     bg_state = 's';                     /* indicate set by command */
   }
   colorset = -1;
   myfprintf((stderr, "ColorBack: %s, screen background %s, bg_state %c\n",
-          color_names[c_bg],screen_background_color,(int)bg_state));
+	     color_names[c_bg],screen_background_color,(int)bg_state));
 }
-static void ct_Colorset(char *cp) {
+static void ct_Colorset(char *cp)
+{
   sscanf(cp, "%d", &colorset);
   AllocColorset(colorset);
 }
-static void ct_ItemFore(char *cp) {
+static void ct_ItemFore(char *cp)
+{
+  if (color_names[c_item_fg])
+    free(color_names[c_item_fg]);
   color_names[c_item_fg] = strdup(cp);
   itemcolorset = -1;
   myfprintf((stderr, "ColorItemFore: %s\n", color_names[c_item_fg]));
 }
-static void ct_ItemBack(char *cp) {
+static void ct_ItemBack(char *cp)
+{
+  if (color_names[c_item_bg])
+    free(color_names[c_item_bg]);
   color_names[c_item_bg] = strdup(cp);
   itemcolorset = -1;
   myfprintf((stderr, "ColorItemBack: %s\n", color_names[c_item_bg]));
 }
-static void ct_ItemColorset(char *cp) {
+static void ct_ItemColorset(char *cp)
+{
   sscanf(cp, "%d", &itemcolorset);
   AllocColorset(itemcolorset);
 }
-static void ct_Font(char *cp) {
+static void ct_Font(char *cp)
+{
+  if (font_names[f_text])
+    free(font_names[f_text]);
   font_names[f_text] = strdup(cp);
   myfprintf((stderr, "Font: %s\n", font_names[f_text]));
 }
-static void ct_ButtonFont(char *cp) {
+static void ct_ButtonFont(char *cp)
+{
+  if (font_names[f_button])
+    free(font_names[f_button]);
   font_names[f_button] = strdup(cp);
   myfprintf((stderr, "ButtonFont: %s\n", font_names[f_button]));
 }
-static void ct_InputFont(char *cp) {
+static void ct_InputFont(char *cp)
+{
+  if (font_names[f_input])
+    free(font_names[f_input]);
   font_names[f_input] = strdup(cp);
   myfprintf((stderr, "InputFont: %s\n", font_names[f_input]));
 }
-static void ct_Line(char *cp) {
-  cur_line->next=calloc(sizeof(struct _line),1); /* malloc new line */
-  if (cur_line->next == 0) {
-    fprintf(stderr, "%s: Malloc for line, (%d bytes) failed. exiting.\n",
-            MyName+1, (int)sizeof(struct _line));
-    exit (1);
-  }
+static void ct_Line(char *cp)
+{
+  /* malloc new line */
+  cur_line->next = (struct _line *)safemalloc(sizeof(struct _line));
+  memset(cur_line->next, 0, sizeof(struct _line));
   cur_line = cur_line->next;            /* new current line */
   cur_line->next = &root_line;          /* new next ptr, (actually root) */
 
@@ -440,7 +472,8 @@ static void ct_Line(char *cp) {
    font,fg.bg default to text.
   */
 
-static void ct_Message(char *cp) {
+static void ct_Message(char *cp)
+{
   AddItem();
   bg_state = 'u';                       /* indicate b/g color now used. */
   item->type = I_TEXT;
@@ -464,7 +497,8 @@ static void ct_Message(char *cp) {
   CF.last_error = item;                 /* save location of message item */
 }
 /* allocate colors and fonts needed */
-static void CheckAlloc(Item *this_item,DrawTable *dt) {
+static void CheckAlloc(Item *this_item,DrawTable *dt)
+{
   static XGCValues xgcv;
   static int xgcv_mask = GCBackground | GCForeground | GCFont;
 
@@ -515,7 +549,8 @@ static void CheckAlloc(Item *this_item,DrawTable *dt) {
 
 
 /* Input is the current item.  Assign a drawTable entry to it. */
-static void AssignDrawTable(Item *adt_item) {
+static void AssignDrawTable(Item *adt_item)
+{
   DrawTable *find_dt, *last_dt;
   char *match_text_fore;
   char *match_text_back;
@@ -551,13 +586,9 @@ static void AssignDrawTable(Item *adt_item) {
   } /* end all drawtables checked, no match */
 
   /* Time to add a DrawTable */
-  new_dt = malloc(sizeof(struct _drawtable)); /* get one */
-  if (new_dt == 0) {                /* malloc failed? */
-    fprintf(stderr,
-            "%s: Malloc for DrawTable, (%d bytes) failed. exiting.\n",
-            MyName+1, (int)sizeof(struct _drawtable));
-    exit (1);                           /* give up */
-  }
+  /* get one */
+  new_dt = (struct _drawtable *)safemalloc(sizeof(struct _drawtable));
+  memset(new_dt, 0, sizeof(struct _drawtable));
   new_dt->dt_next = 0;                  /* new end of list */
   if (CF.roots_dt == 0) {                  /* If first entry in list */
     CF.roots_dt = new_dt;                  /* set root pointer */
@@ -582,15 +613,11 @@ static void AssignDrawTable(Item *adt_item) {
 }
 
 /* input/output is global "item" - currently allocated last item */
-static void AddItem() {
+static void AddItem()
+{
   Item *save_item;
   save_item = (Item *)item;             /* save current item */
-  item = calloc(sizeof(Item),1);        /* get a new item */
-  if (item == 0) {                      /* if out of mem */
-    fprintf(stderr, "%s: Malloc for item, (%d bytes) failed. exiting.\n",
-            MyName+1, (int)sizeof(Item));
-    exit (1);                           /* give up */
-  }
+  item = (Item *)safecalloc(sizeof(Item),1); /* get a new item */
   if (save_item == 0) {                 /* if first item */
     root_item_ptr = item;               /* save root item */
   } else {                              /* else not first item */
@@ -598,7 +625,8 @@ static void AddItem() {
   }
 }
 
-static void ct_Text(char *cp) {
+static void ct_Text(char *cp)
+{
   /* syntax: *FFText "<text>" */
   AddItem();
   bg_state = 'u';                       /* indicate b/g color now used. */
@@ -626,7 +654,8 @@ static void ct_Text(char *cp) {
 /* Set the form's title.
    The default is the aliasname.
    If there is no quoted string, create a blank title. */
-static void ct_Title(char *cp) {
+static void ct_Title(char *cp)
+{
   /* syntax: *FFTitle "<text>" */
   if (*cp == '\"')
     CF.title = CopyQuotedString(++cp);
@@ -634,12 +663,14 @@ static void ct_Title(char *cp) {
     CF.title = "";
   myfprintf((stderr, "Title \"%s\"\n", CF.title));
 }
-static void ct_padVText(char *cp) {
+static void ct_padVText(char *cp)
+{
   /* syntax: *FFText "<padVText pixels>" */
   CF.padVText = atoi(cp);
   myfprintf((stderr, "Text Vertical Padding %d\n", CF.padVText));
 }
-static void ct_Input(char *cp) {
+static void ct_Input(char *cp)
+{
   int j;
   /* syntax: *FFInput <name> <size> "<init_value>" */
   AddItem();
@@ -651,8 +682,9 @@ static void ct_Input(char *cp) {
   item->input.size = atoi(cp);
   while (!isspace((unsigned char)*cp)) cp++;
   while (isspace((unsigned char)*cp)) cp++;
-  item->input.init_value = "";          /* init */
+  item->input.init_value = strdup("");          /* init */
   if (*cp == '\"') {
+    free(item->input.init_value);
     item->input.init_value = CopyQuotedString(++cp);
   }
   item->input.blanks = (char *)safemalloc(item->input.size);
@@ -683,7 +715,8 @@ static void ct_Input(char *cp) {
           item->input.size, item->input.init_value));
   AddToLine(item);
 }
-static void ct_Read(char *cp) {
+static void ct_Read(char *cp)
+{
   /* syntax: *FFRead 0 | 1 */
   myfprintf((stderr,"Got read command, char is %c\n",(int)*cp));
   endDefaultsRead = *cp;                /* copy whatever it is */
@@ -691,7 +724,8 @@ static void ct_Read(char *cp) {
 /* read and save vars from a file for later use in form
    painting.
 */
-static void ct_UseData(char *cp) {
+static void ct_UseData(char *cp)
+{
   /* syntax: *FFUseData filename cmd_prefix */
   CF.file_to_read = CopySolidString(cp);
   if (*CF.file_to_read == 0) {
@@ -709,7 +743,8 @@ static void ct_UseData(char *cp) {
   /* Cant do the actual reading of the data file here,
      we are already in a readconfig loop. */
 }
-static void ReadFormData() {
+static void ReadFormData()
+{
   int leading_len;
   char *line_buf;                       /* ptr to curr config line */
   char cmd_buffer[200];
@@ -735,7 +770,8 @@ static void ReadFormData() {
   Search form for matching input fields and set values.
   If you don't get a match on an input field, try a choice.
 */
-static void PutDataInForm(char *cp) {
+static void PutDataInForm(char *cp)
+{
   char *var_name;
   char *var_value;
   int var_len, i;
@@ -754,9 +790,13 @@ static void PutDataInForm(char *cp) {
     do {
       if (strcasecmp(var_name,item->header.name) == 0) {
         var_len = strlen(cp);
-        item->input.init_value = safemalloc(var_len+1); /* leak! */
+	if (item->input.init_value)
+	  free(item->input.init_value);
+        item->input.init_value = safemalloc(var_len+1);
         strcpy(item->input.init_value,cp); /* new initial value in field */
-        item->input.value = safemalloc(var_len+1); /* leak! */
+	if (item->input.value)
+	  free(item->input.value);
+        item->input.value = safemalloc(var_len+1);
         strcpy(item->input.value,cp);     /* new value in field */
         /* New value, but don't change length */
         free(var_name);                 /* goto's have their uses */
@@ -784,7 +824,8 @@ static void PutDataInForm(char *cp) {
   } while (line != &root_line);         /* do all lines */
   free(var_name);                       /* not needed now */
 }
-static void ct_Selection(char *cp) {
+static void ct_Selection(char *cp)
+{
   /* syntax: *FFSelection <name> single | multiple */
   AddItem();
   cur_sel = item;                       /* save ptr as cur_sel */
@@ -797,7 +838,8 @@ static void ct_Selection(char *cp) {
   else
     cur_sel->selection.key = IS_SINGLE;
 }
-static void ct_Choice(char *cp) {
+static void ct_Choice(char *cp)
+{
   /* syntax: *FFChoice <name> <value> [on | _off_] ["<text>"] */
   /* This next edit is a liitle weak, the selection should be right
      before the choice. At least a core dump is avoided. */
@@ -833,9 +875,9 @@ static void ct_Choice(char *cp) {
       <= cur_sel->selection.n) {           /* no room */
     cur_sel->selection.choices_array_count += CHOICES_PER_SEL_EXPANSION;
     cur_sel->selection.choices =
-      (Item **)realloc(cur_sel->selection.choices,
-                       sizeof(Item *) *
-                       cur_sel->selection.choices_array_count); /* expand */
+      (Item **)saferealloc((void *)cur_sel->selection.choices,
+			   sizeof(Item *) *
+			   cur_sel->selection.choices_array_count); /* expand */
   }
 
   cur_sel->selection.choices[cur_sel->selection.n++] = item;
@@ -850,7 +892,8 @@ static void ct_Choice(char *cp) {
           item->choice.text, item->header.size_x, item->header.size_y));
   AddToLine(item);
 }
-static void ct_Button(char *cp) {
+static void ct_Button(char *cp)
+{
   /* syntax: *FFButton continue | restart | quit "<text>" */
   AddItem();
   item->type = I_BUTTON;
@@ -889,23 +932,18 @@ static void ct_Button(char *cp) {
              item->header.dt_ptr->dt_color_names[c_item_bg],
              item->button.text));
 }
-static void ct_Command(char *cp) {
+static void ct_Command(char *cp)
+{
   /* syntax: *FFCommand <command> */
-  if (cur_button->button.button_array_size <= cur_button->button.n) {
+  if (cur_button->button.button_array_size <= cur_button->button.n)
+  {
     cur_button->button.button_array_size += BUTTON_COMMAND_EXPANSION;
     cur_button->button.commands =
-      (char **)realloc(cur_button->button.commands,
-                       sizeof(char *) *
-                       cur_button->button.button_array_size);
-    if (cur_button->button.commands == 0) {
-      fprintf(stderr,"%s: realloc button array size %d failed\n",
-              MyName+1, cur_button->button.button_array_size *
-              (int)sizeof(char *));
-      exit (1);
-    }
+      (char **)saferealloc((void *)cur_button->button.commands,
+			   sizeof(char *) *
+			   cur_button->button.button_array_size);
   }
-  cur_button->button.commands[cur_button->button.n++] =
-    strdup(cp);
+  cur_button->button.commands[cur_button->button.n++] = strdup(cp);
 }
 
 /* End of ct_ routines */
@@ -962,7 +1000,8 @@ static void ReadConfig ()
 } /* done */
 
 /* After this config is read, figure it out */
-static void MassageConfig() {
+static void MassageConfig()
+{
   int i, extra;
   Line *line;                           /* for scanning form lines */
 
@@ -1070,7 +1109,8 @@ static void Restart ()
       /* save old input values in a recall ring. */
       if (item->input.value && item->input.value[0] != 0) { /* ? to save */
         if (item->input.value_history_ptr == 0) {  /* no history yet */
-          item->input.value_history_ptr = calloc(sizeof(char *), 50);
+          item->input.value_history_ptr =
+	    (char **)safecalloc(sizeof(char *), 50);
           item->input.value_history_ptr[0] = strdup(item->input.value);
           item->input.value_history_count = 1; /* next insertion point */
           myfprintf((stderr,"Initial save of %s in slot 0\n",
@@ -1125,7 +1165,8 @@ static void Restart ()
 }
 
 /* redraw the frame */
-void RedrawFrame () {
+void RedrawFrame ()
+{
   int x, y;
   Item *item;
 
@@ -1147,7 +1188,8 @@ void RedrawFrame () {
   }
 }
 
-void RedrawText(Item *item) {
+void RedrawText(Item *item)
+{
   int x, y;
   CheckAlloc(item,item->header.dt_ptr); /* alloc colors and fonts needed */
   x = item->header.pos_x + TEXT_SPC;
@@ -1551,7 +1593,8 @@ static void process_message(unsigned long, unsigned long *); /* proto */
 static void ParseActiveMessage(char *); /* proto */
 
 /* read something from Fvwm */
-static void ReadFvwm () {
+static void ReadFvwm ()
+{
 
     FvwmPacket* packet = ReadFvwmPacket(Channel[1]);
     if ( packet == NULL )
@@ -1559,7 +1602,8 @@ static void ReadFvwm () {
     else
 	process_message( packet->type, packet->body );
 }
-static void process_message(unsigned long type, unsigned long *body) {
+static void process_message(unsigned long type, unsigned long *body)
+{
   switch (type) {
   case M_CONFIG_INFO:                   /* any module config command */
     myfprintf((stderr,"process_message: Got command: %s\n", (char *)&body[3]));
@@ -1584,8 +1628,8 @@ static void process_message(unsigned long type, unsigned long *body) {
         msg_ptr[msg_len-1] = '\0'; /* strip off \n */
       }
       if (CF.last_error->text.n <= msg_len) { /* if message wont fit */
-        CF.last_error->text.value = realloc(CF.last_error->text.value,
-                                            msg_len * 2);
+        CF.last_error->text.value = saferealloc(CF.last_error->text.value,
+						msg_len * 2);
         CF.last_error->text.n = msg_len * 2;
       }
       strncpy(CF.last_error->text.value,msg_ptr,
@@ -1601,7 +1645,8 @@ static void process_message(unsigned long type, unsigned long *body) {
 static void am_Map(char *);
 static void am_UnMap(char *);
 static void am_Stop(char *);
-static struct CommandTable am_table[] = {
+static struct CommandTable am_table[] =
+{
   {"Map",am_Map},
   {"Stop",am_Stop},
   {"UnMap",am_UnMap}
@@ -1670,7 +1715,8 @@ static void ParseActiveMessage(char *buf)
   return;
 } /* end function */
 
-static void am_Map(char *cp) {
+static void am_Map(char *cp)
+{
   XMapRaised(dpy, CF.frame);
   XMapSubwindows(dpy, CF.frame);
   if (CF.warp_pointer) {
@@ -1679,11 +1725,13 @@ static void am_Map(char *cp) {
   }
   myfprintf((stderr, "Map: got it\n"));
 }
-static void am_UnMap(char *cp) {
+static void am_UnMap(char *cp)
+{
   XUnmapWindow(dpy, CF.frame);
   myfprintf((stderr, "UnMap: got it\n"));
 }
-static void am_Stop(char *cp) {
+static void am_Stop(char *cp)
+{
   /* syntax: *FFStop */
   myfprintf((stderr,"Got stop command.\n"));
   exit (0);                             /* why bother, just exit. */
@@ -1858,7 +1906,8 @@ int main (int argc, char **argv)
 }
 
 
-void DeadPipe(int nonsense) {
+void DeadPipe(int nonsense)
+{
   exit(0);
 }
 

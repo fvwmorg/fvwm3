@@ -28,10 +28,9 @@ AddToFunc UrgencyDoneFunc I Nop
 # Alt-Tab:
 Key Tab A M WindowList Root c c NoDeskSort
 # Default styles
-Style * GrabFocusTransient
-Style * LowerTransient, RaiseTransient, StackTransientParent
-Style * RandomPlacement, SmartPlacement
-Style * Title, MouseFocus, GrabFocusOff
+Style * GrabFocusTransient, LowerTransient, RaiseTransient, StackTransientParent
+Style * RandomPlacement, SmartPlacement, Title, MouseFocus, GrabFocusOff
+Style * NoIconPosition
 # Basic Mouse controls:
 Mouse 1 TS A FuncFvwmRaiseLowerX Move
 Mouse 1 F  A FuncFvwmRaiseLowerX Resize

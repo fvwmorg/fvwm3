@@ -580,7 +580,8 @@ void AutoPlaceIcon(FvwmWindow *t)
     do_move_pixmap = True;
     do_move_title = True;
   }
-  else if (t->wmhints && t->wmhints->flags & IconPositionHint)
+  else if (USE_ICON_POSITION_HINT(t) && t->wmhints &&
+	   t->wmhints->flags & IconPositionHint)
   {
     t->icon_g.x = t->wmhints->icon_x;
     t->icon_g.y = t->wmhints->icon_y;

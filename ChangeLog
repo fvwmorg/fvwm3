@@ -1,5 +1,16 @@
 2000-11-21  Dominik Vogt  <dominik.vogt@gmx.de>
 
+	* fvwm/ConfigFvwmDefaults:
+	* NEWS:
+	* fvwm/fvwm2.1:
+	* fvwm/icons.c (AutoPlaceIcon):
+	* fvwm/style.h:
+	* fvwm/window_flags.h:
+	* fvwm/fvwm.h:
+	new style NoIconPosition/UseIconPosition which works exactly like
+	...PPosition except that it works for the icon position hint and is
+	off by default
+
 	* libs/ColorUtils.c (GetHiliteColor):
 	(GetShadowColor):
 	(BRIGHTNESS):

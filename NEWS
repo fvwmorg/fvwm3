@@ -3,6 +3,8 @@ _+_A HREF="#2.2.4"_-_2.2.4_+_/A_-_.
 
 Changes in beta release 2.3.23 (not released yet)
 
+* New styles UseIconPosition and NoIconPosition (default).
+
 Changes in beta release 2.3.22 (2000-11-10)
 
 * Configuration samples of FvwmForm and FvwmScript installed with fvwm are

@@ -206,6 +206,7 @@ typedef struct
     unsigned is_icon_sticky : 1;
     unsigned is_icon_suppressed : 1;
     unsigned is_lenient : 1;
+    unsigned use_icon_position_hint : 1;
   } s;
 } common_flags_type;
 

@@ -1,5 +1,30 @@
 2000-11-21  Dominik Vogt  <dominik.vogt@gmx.de>
 
+	* FvwmForm/FvwmForm.c (ct_ButtonFont):
+	(ct_InputFont):
+	(ct_Line):
+	(ct_Back):
+	(ct_Colorset):
+	(ct_ItemBack):
+	(ct_ItemColorset):
+	fixed memory leaks
+	(FormVarsCheck):
+	(AssignDrawTable):
+	(ct_Line):
+	(AddItem):
+	(Restart):
+	use safemalloc/safecalloc
+	(AssignDrawTable):
+	core dump/UMR fix
+	(ct_Line):
+	safety patch
+
+	* FvwmForm/FvwmForm.c:
+	* FvwmForm/ReadXServer.c:
+	* FvwmForm/ParseCommand.c (AddChar):
+	fixed memory leaks
+	replaced realloc with saferealloc
+
 	* FvwmPager/FvwmPager.c (main):
 	(list_add):
 	UMR fixes
