@@ -274,7 +274,7 @@ int main(int argc, char **argv)
   if (font_string == NULL)
     font_string = strdup("fixed");
 
-  if ((HilightC == NULL) && (HilightPixmap == NULL)) 
+  if ((HilightC == NULL) && (HilightPixmap == NULL))
     HilightDesks = 0;
 
   if (BalloonFont == NULL)
@@ -298,7 +298,7 @@ int main(int argc, char **argv)
   /* Create a list of all windows */
   /* Request a list of all windows,
    * wait for ConfigureWindow packets */
-  SendInfo(fd,"Send_WindowList",0);
+  SendInfo(fd,"SendWindowList",0);
 #ifdef DEBUG
   fprintf(stderr,"[main]: back from getting window list, looping\n");
 #endif
@@ -680,23 +680,23 @@ void list_new_desk(unsigned long *body)
 
 
       if (Desks[0].bgPixmap != NULL)
-	{	      
+	{
 	  DestroyPicture(dpy, Desks[0].bgPixmap);
 	  Desks[0].bgPixmap = NULL;
 	}
 
       if (Desks[0].Dcolor != NULL)
-	{	      
+	{
 	  free (Desks[0].Dcolor);
 	  Desks[0].Dcolor = NULL;
 	}
 
-      if (item->next != NULL && item->next->bgPixmap != NULL) 
+      if (item->next != NULL && item->next->bgPixmap != NULL)
 	{
 	  Desks[0].bgPixmap = item->next->bgPixmap;
-	  Desks[0].bgPixmap->count++; 
+	  Desks[0].bgPixmap->count++;
 	  XSetWindowBackgroundPixmap(dpy, Desks[0].w, Desks[0].bgPixmap->picture);
-	} 
+	}
       else if (item->next != NULL && item->next->Dcolor != NULL)
 	{
 	  CopyString(&Desks[0].Dcolor, item->next->Dcolor);
@@ -705,22 +705,22 @@ void list_new_desk(unsigned long *body)
       else if (PixmapBack != NULL)
 	{
 	  Desks[0].bgPixmap = PixmapBack;
-	  Desks[0].bgPixmap->count++; 
+	  Desks[0].bgPixmap->count++;
 	  XSetWindowBackgroundPixmap(dpy, Desks[0].w, Desks[0].bgPixmap->picture);
 	}
-      else 
+      else
 	{
 	  CopyString(&Desks[0].Dcolor, PagerBack);
 	  XSetWindowBackground(dpy, Desks[0].w, GetColor(Desks[0].Dcolor));
 	}
-      
+
 
       if (item->next != NULL && item->next->Dcolor != NULL)
 	{
 	  CopyString(&Desks[0].Dcolor, item->next->Dcolor);
 	  XSetWindowBackground(dpy, Desks[0].title_w, GetColor(Desks[0].Dcolor));
 	}
-      else 
+      else
 	{
 	  CopyString(&Desks[0].Dcolor, PagerBack);
 	  XSetWindowBackground(dpy, Desks[0].title_w, GetColor(Desks[0].Dcolor));
@@ -1108,7 +1108,7 @@ void ParseOptions(void)
       char *tline2;
 
       resource_string = arg1 = arg2 = NULL;
-      
+
       if (MatchToken(tline, "ImagePath")) {
 	  char *tmp;
 
@@ -1116,7 +1116,7 @@ void ParseOptions(void)
 	      free(ImagePath);
 	      ImagePath = NULL;
 	  }
-	  
+
 	  free(GetArgument(&tline));
 	  CopyString(&ImagePath, tline);
 
@@ -1302,7 +1302,7 @@ void ParseOptions(void)
 	      free(Desks[desk - desk1].Dcolor);
 	      CopyString(&Desks[desk - desk1].Dcolor, arg2);
 	    }
-	}      
+	}
       else if (StrEquals(resource, "DeskPixmap"))
 	{
 	  if (StrEquals(arg1, "*"))
@@ -1319,7 +1319,7 @@ void ParseOptions(void)
 	      PagerStringList *item;
 
 	      item = FindDeskStrings(desk);
-	      
+
 	      if (item->next != NULL)
 		{
 		  if (item->next->bgPixmap != NULL)
@@ -1346,7 +1346,7 @@ void ParseOptions(void)
 		      DestroyPicture(dpy, Desks[0].bgPixmap);
 		      Desks[0].bgPixmap = NULL;
 		    }
-		  
+
 		  Desks[0].bgPixmap = CachePicture (dpy, Scr.Root,
 						    ImagePath,
 						    arg2, 0);
@@ -1414,7 +1414,7 @@ void ParseOptions(void)
       else if (StrEquals(resource, "DeskHilight"))
 	{
 	  HilightDesks = 1;
-	}       
+	}
       else if (StrEquals(resource, "NoDeskHilight"))
 	{
 	  HilightDesks = 0;

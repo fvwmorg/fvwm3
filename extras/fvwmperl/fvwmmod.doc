@@ -74,7 +74,7 @@ A: An example should be instructive.  The following is a complete (but
 
        print "---start of window list---\n";
        # Ask FVWM to send us its list of windows
-       &SendInfo(0, "Send_WindowList");
+       &SendInfo(0, "SendWindowList");
 
        # Enter the main loop
        &EventLoop;
@@ -134,7 +134,7 @@ A: With the &SendInfo subroutine.  The arguments to &SendInfo are:
 Q: What is a packet handler?
 
 A: A handler is simply a Perl subroutine which is invoked by the event
-   loop whenever a packet arrives and needs to be processed. 
+   loop whenever a packet arrives and needs to be processed.
 
    Handlers are registered via &AddHandler, as follows:
        $handler = &AddHandler ( $types, 'subroutine' );
@@ -206,7 +206,7 @@ A: For questions, comments, bug reports, feature requests, documentation
    corrections, or anything else related to fvwmmod.pl, send e-mail to
    the author and current maintainer of fvwmmod.pl:
       Dan Astoorian <djast@utopia.csas.com>
-   
+
    Please also send me any modules you have written using fvwmmod.pl
    which you would like to see distributed with it.
 

@@ -877,7 +877,7 @@ ButtonStyle 4 ActiveUp (Pixmap up.xpm) \\
 ButtonStyle 4 Inactive Pixmap inactive.xpm
 .EE
 The pixmap specification can be given as an absolute or relative
-pathname (see ImagePath).  If the pixmap cannot be found, the button
+pathname (see \fIImagePath\fP).  If the pixmap cannot be found, the button
 style reverts to Simple.  Flags specific to the Pixmap style are
 "Left," "Right," "Top," and "Bottom."  These can be used to justify
 the pixmap (default is centered for both directions).  Pixmap
@@ -1445,6 +1445,10 @@ this font to the default font (see \fIDefaultFont\fP) you may omit
 \fIfontname\fP.
 
 
+.IP "IconPath \fIpath\fP"
+This command is obsolete. Please use \IImagePath\fP instead.
+
+
 .IP "Iconify [ \fImode\fP ]"
 Iconifies a window if it is not already iconified or de-iconifies it
 if it is already iconified.  If the optional argument \fImode\fP is
@@ -1458,8 +1462,11 @@ positive number to signifiy 'on', and negative to signify 'off'.
 Note that this syntax is obsolete, and will be removed in the future.
 
 
-.IP "ImagePath \fIpath\fP"
+.IP "IconPath \fIpath\fP"
+This command is obsolete. Please use \IImagePath\fP instead.
 
+
+.IP "ImagePath \fIpath\fP"
 Specifies a colon separated list of full path names of directories
 where images (both monochrome and pixmap) can be found.  Each path should start
 with a slash.  Environment variables can be used here as well (i.e.
@@ -2137,6 +2144,10 @@ annoying multiple selections with complex functions.
 Causes fvwm2 to read commands output from the program named
 \fIcmd\fP.  Useful for building up dynamic menu entries based on a
 directories contents, for example.
+
+
+.IP "PixmapPath \fIpath\fP"
+This command is obsolete. Please use \IImagePath\fP instead.
 
 
 .IP "Popup \fIPopupName\fP [ \fIposition\fP ] [ \fIdefault-action\fP ]"

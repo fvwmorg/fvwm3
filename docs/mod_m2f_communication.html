@@ -30,7 +30,7 @@ messages to fvwm:
 <FONT COLOR="YELLOW"><PRE>
 void SendText(int *fd, char *message, unsigned long window) {
   int w;
-  if (message != NULL) {	
+  if (message != NULL) {
       write(fd[0],&amp;win,sizeof(Window));
       w=strlen(message);                /* calc the length of the message */
       write(fd[0],&amp;w,sizeof(int));  /* send the message length */
@@ -47,9 +47,9 @@ For compatibility with older code, there is a macro "SendInfo"
 which can be used instead of the function name SentText.
 
 <H2> <font color="turquoise">Module information requests</font></h2>
-There are special built-in functions, Send_WindowList and
-Send_ConfigInfo.
-Send_WindowList causes fvwm to transmit everything that it is
+There are special built-in functions, SendWindowList and
+SendConfigInfo.
+SendWindowList causes fvwm to transmit everything that it is
 currently thinking about to the module which requests the information.
 This information contains the paging status (enabled/disabled),
 current desktop number, position on the desktop, current focus and,
@@ -58,9 +58,9 @@ names, and, if the window is iconified, the icon location and size.
 For example, some modules during start up want to know the state of
 all current windows.  The would ask fvwm for this information like this:
 <font color="yellow"><pre>
-SendText(Channel,"Send_WindowList",0);
+SendText(Channel,"SendWindowList",0);
 </pre></font>
-Send_ConfigInfo causes fvwm to send the module a list of all
+SendConfigInfo causes fvwm to send the module a list of all
 commands it has received which start with a ``*'', as well as the
 ImagePath, ColorLimit, and ClickTime commands that fvwm is
 currently using.
@@ -68,7 +68,7 @@ This is implemented in fvwm/modconf.c.
 Note that "SendConfigInfo" is sort of a memory dump type request,
 and the number of commands a module might get from this request
 may change over time.  The module should be prepared to ignore commands
-it is not interested in without generating a warning or error. 
+it is not interested in without generating a warning or error.
 This request is normally made during module startup for a module
 to read its current configuration and some general information.
 Fvwm provides some subroutines to make this process fairly painless.

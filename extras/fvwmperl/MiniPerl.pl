@@ -19,7 +19,7 @@ require 'fvwmmod.pl';
 
 print "---start of window list---\n";
 # Ask FVWM to send us its list of windows
-&SendInfo(0, "Send_WindowList");
+&SendInfo(0, "SendWindowList");
 
 &EventLoop;
 &EndModule;

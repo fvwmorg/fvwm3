@@ -127,7 +127,7 @@ sub InitModule {
     @argv=@ARGV;
 
     @argv >= 5 || die "$0 should only be run from fvwm/fvwm2.\n";
-    ($outFd, $inFd, $fvwmRcfile, $hwinId, $fvwmContxt) = 
+    ($outFd, $inFd, $fvwmRcfile, $hwinId, $fvwmContxt) =
 	splice(@argv,0,5);
     $fvwmWinId  = hex($hwinId);
 
@@ -207,7 +207,7 @@ sub EventLoop {
 	    last if ($FvwmMod'closing);
 	}
     } else {
-	# This eval is so that the syntax will be valid in Perl4 
+	# This eval is so that the syntax will be valid in Perl4
 	eval <<'PERL5'
 	    Tk::fileevent(FvwmMod'FVWMIN, 'readable', \&ProcessPacket);
 	    for (;;) {
@@ -254,7 +254,7 @@ sub AddHandler {
 
     if (defined(&$handler)) {
 	++$id;
-	$FvwmMod'handlerTable{$id} = 
+	$FvwmMod'handlerTable{$id} =
 	    "if(\$type & $htype) { &$handler(\$type, \@args) || return 0 }";
 	&GenHandlerList;
 	$id;
@@ -304,7 +304,7 @@ sub SetModOptions {
 sub GetConfigInfo {
     local($name, $value, @args);
 
-    &SendInfo(0, "Send_ConfigInfo");
+    &SendInfo(0, "SendConfigInfo");
 
     while (1) {
 	($len, $packet, $type) = &ReadPacket;

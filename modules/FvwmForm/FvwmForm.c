@@ -1,5 +1,5 @@
 /* FvwmForm is original work of Thomas Zuwei Feng.
- * 
+ *
  * Copyright Feb 1995, Thomas Zuwei Feng.  No guarantees or warantees are
  * provided or implied in any way whatsoever.  Use this program at your own
  * risk.  Permission to use, modify, and redistribute this program is hereby
@@ -356,7 +356,7 @@ static void ct_Line(char *cp) {
    len default is 70
    font,fg.bg default to text.
   */
-   
+
 static void ct_Message(char *cp) {
   AddItem();
   bg_state = 'u';                       /* indicate b/g color now used. */
@@ -561,7 +561,7 @@ static void ct_Input(char *cp) {
     * item->input.size + 2 * TEXT_SPC + 2 * BOX_SPC;
   item->header.size_y = FontHeight(item->header.dt_ptr->dt_font_struct)
     + 3 * TEXT_SPC + 2 * BOX_SPC;
-                                  
+
   if (CF.cur_input == 0) {                 /* first input field */
     item->input.next_input = item;      /* ring, next field is first field */
     item->input.prev_input = item;      /* ring, prev field is first field */
@@ -630,7 +630,7 @@ static void ct_Choice(char *cp) {
   if (cur_sel->selection.choices_array_count
       <= cur_sel->selection.n) {           /* no room */
     cur_sel->selection.choices_array_count += CHOICES_PER_SEL_EXPANSION;
-    cur_sel->selection.choices = 
+    cur_sel->selection.choices =
       (Item **)realloc(cur_sel->selection.choices,
                        sizeof(Item *) *
                        cur_sel->selection.choices_array_count); /* expand */
@@ -741,7 +741,7 @@ static void ReadDefaults ()
   } /* end defaults read already */
   SendText(Channel,"read .FvwmForm Quiet",0); /* read default config */
   SendText(Channel,"*FvwmFormDefaultRead y",0); /* remember you read it */
-  SendInfo(Channel,"Send_ConfigInfo",0); /* trick it into another serving */
+  SendInfo(Channel,"SendConfigInfo",0); /* trick it into another serving */
 
   while (GetConfigLine(Channel,&line_buf),line_buf) { /* get config from fvwm */
     ParseDefaults(line_buf);             /* process default config lines 1st */
@@ -752,7 +752,7 @@ static void ReadConfig ()
 {
   char *line_buf;                       /* ptr to curr config line */
 
-  SendInfo(Channel,"Send_ConfigInfo",0); /* trick it into a second serving */
+  SendInfo(Channel,"SendConfigInfo",0); /* trick it into a second serving */
   while (GetConfigLine(Channel,&line_buf),line_buf) { /* get config from fvwm */
     ParseConfigLine(line_buf);          /* process config lines */
   }
@@ -963,7 +963,7 @@ void RedrawItem (Item *item, int click)
                        + item->header.dt_ptr->dt_font_struct->ascent,
 		       item->input.blanks, item->input.size - len);
     XDrawImageString(dpy, item->header.win, item->header.dt_ptr->dt_item_GC,
-		     BOX_SPC + TEXT_SPC, 
+		     BOX_SPC + TEXT_SPC,
 		     BOX_SPC + TEXT_SPC +
                      item->header.dt_ptr->dt_font_struct->ascent,
 		     item->input.value + item->input.left, len);
@@ -1064,7 +1064,7 @@ void RedrawItem (Item *item, int click)
     XSetForeground(dpy, item->header.dt_ptr->dt_item_GC,
                    item->header.dt_ptr->dt_colors[c_item_fg]);
     XDrawImageString(dpy, item->header.win, item->header.dt_ptr->dt_item_GC,
-		     BOX_SPC + TEXT_SPC, 
+		     BOX_SPC + TEXT_SPC,
 		     BOX_SPC + TEXT_SPC +
                      item->header.dt_ptr->dt_font_struct->ascent,
 		     item->button.text, item->button.len);
@@ -1099,7 +1099,7 @@ void DoCommand (Item *cmd)
       SendText(Channel,parsed_command, ref);
     }
   }
-  
+
   /* post-command */
   if (cmd->button.key == IB_QUIT) {
     if (CF.grab_server)
@@ -1147,7 +1147,7 @@ static void OpenWindows ()
     MyGetColor(screen_background_color,MyName+1,0);
   XQueryColor(dpy, PictureCMap, &xcb);
   XRecolorCursor(dpy, xc_ibeam, &xcf, &xcb);
-  
+
   /* the frame window first */
   if (CF.have_geom) {
     if (CF.gx >= 0)
@@ -1190,7 +1190,7 @@ static void OpenWindows ()
       break;
     case I_CHOICE:
       CheckAlloc(item,item->header.dt_ptr); /* alloc colors and fonts needed */
-      item->header.win = 
+      item->header.win =
 	XCreateSimpleWindow(dpy, CF.frame,
 			    item->header.pos_x, item->header.pos_y,
 			    item->header.size_y, item->header.size_y,
@@ -1203,13 +1203,13 @@ static void OpenWindows ()
     case I_BUTTON:
       myfprintf((stderr,"Checking alloc during Openwindow on button\n"));
       CheckAlloc(item,item->header.dt_ptr); /* alloc colors and fonts needed */
-      item->header.win = 
+      item->header.win =
 	XCreateSimpleWindow(dpy, CF.frame,
 			    item->header.pos_x, item->header.pos_y,
 			    item->header.size_x, item->header.size_y,
 			    0, CF.screen_background,
                             item->header.dt_ptr->dt_colors[c_item_bg]);
-      XSelectInput(dpy, item->header.win, 
+      XSelectInput(dpy, item->header.win,
 		   ButtonPressMask | ExposureMask);
       xswa.cursor = xc_hand;
       XChangeWindowAttributes(dpy, item->header.win, CWCursor, &xswa);
@@ -1221,7 +1221,7 @@ static void OpenWindows ()
     XMapRaised(dpy, CF.frame);
     XMapSubwindows(dpy, CF.frame);
     if (CF.warp_pointer) {
-      XWarpPointer(dpy, None, CF.frame, 0, 0, 0, 0, 
+      XWarpPointer(dpy, None, CF.frame, 0, 0, 0, 0,
                    CF.max_width / 2, CF.total_height - 1);
     }
   }
@@ -1309,12 +1309,12 @@ static void ParseActiveMessage(char *buf) {
   e->function(p);                       /* call cmd processor */
   return;
 } /* end function */
-  
+
 static void am_Map(char *cp) {
   XMapRaised(dpy, CF.frame);
   XMapSubwindows(dpy, CF.frame);
   if (CF.warp_pointer) {
-    XWarpPointer(dpy, None, CF.frame, 0, 0, 0, 0, 
+    XWarpPointer(dpy, None, CF.frame, 0, 0, 0, 0,
                  CF.max_width / 2, CF.total_height - 1);
   }
   myfprintf((stderr, "Map: got it\n"));
@@ -1348,7 +1348,7 @@ static void MainLoop ()
     }
   }
 }
-    
+
 
 /* main procedure */
 int main (int argc, char **argv)
@@ -1405,7 +1405,7 @@ int main (int argc, char **argv)
   myfprintf((stderr, "ref == %d\n", (int)ref));
 
   fd_x = XConnectionNumber(dpy);
-  
+
   screen = DefaultScreen(dpy);
   root = RootWindow(dpy, screen);
   scr_depth = DefaultDepth(dpy, screen);
@@ -1446,7 +1446,7 @@ void DeadPipe(int nonsense) {
  * Would make a generic subroutine if dpy,  screen, scr_depth are handled
  * somehow.
  * *************************************************************************
- */ 
+ */
 static Pixel MyGetColor(char *name, char *ModName, int bw)
 {
   XColor color;
@@ -1457,9 +1457,9 @@ static Pixel MyGetColor(char *name, char *ModName, int bw)
   }
   XGetWindowAttributes(dpy,root,&attributes);
   color.pixel = 0;
-  if (!XParseColor (dpy, attributes.colormap, name, &color)) 
+  if (!XParseColor (dpy, attributes.colormap, name, &color))
     nocolor("parse",name,ModName);
-  else if(!XAllocColor (dpy, attributes.colormap, &color)) 
+  else if(!XAllocColor (dpy, attributes.colormap, &color))
     nocolor("alloc",name,ModName);
   return color.pixel;
 }

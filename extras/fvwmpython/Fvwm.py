@@ -136,8 +136,8 @@ Flags = {'STARTICONIC':       (1<<0),
 for k, v in Flags.items():
     Flags[v] = k
 
-ALL_COMMON_FLAGS = (Flags['STARTICONIC']    | Flags['ONTOP'] | 
-		    Flags['STICKY']         | Flags['WINDOWLISTSKIP'] | 
+ALL_COMMON_FLAGS = (Flags['STARTICONIC']    | Flags['ONTOP'] |
+		    Flags['STICKY']         | Flags['WINDOWLISTSKIP'] |
 		    Flags['SUPPRESSICON']   | Flags['NOICON_TITLE'] |
 		    Flags['Lenience']       |
 		    Flags['StickyIcon']     | Flags['CirculateSkipIcon'] |
@@ -213,7 +213,7 @@ class PacketReader:
 		map(string.capitalize,
 		    string.splitfields(Types[typenum], '_')[1:]),
 		'')
-    
+
 	def _read(self, fp, *attrs):
 	    attrcnt = len(attrs)
 	    fmt = '%dl' % attrcnt
@@ -223,17 +223,17 @@ class PacketReader:
 	    for a in attrs:
 		setattr(self, a, attrvals[i])
 		i = i+1
-    
+
     class NewPagePacket(_Packet):
 	def __init__(self, type, fp):
 	    PacketReader._Packet.__init__(self, type, fp)
 	    self._read(fp, 'x', 'y', 'desk', 'max_x', 'max_y')
-    
+
     class NewDeskPacket(_Packet):
 	def __init__(self, type, fp):
 	    PacketReader._Packet.__init__(self, type, fp)
 	    self._read(fp, 'desk')
-    
+
     class AddWindowPacket(_Packet):
 	def __init__(self, type, fp):
 	    PacketReader._Packet.__init__(self, type, fp)
@@ -247,40 +247,40 @@ class PacketReader:
 		       'icon_label_id', 'icon_pixmap_id',
 		       'gravity',
 		       'text_color', 'border_color')
-    
+
     class ConfigureWindowPacket(AddWindowPacket):
 	pass
-    
+
     class LowerWindowPacket(_Packet):
 	def __init__(self, type, fp):
 	    PacketReader._Packet.__init__(self, type, fp)
 	    self._read(fp, 'top_id', 'frame_id', 'db_entry')
-    
+
     class RaiseWindowPacket(LowerWindowPacket):
 	pass
-    
+
     class DestroyWindowPacket(LowerWindowPacket):
 	pass
-    
+
     class FocusChangePacket(LowerWindowPacket):
 	def __init__(self, type, fp):
 	    PacketReader.LowerWindowPacket.__init__(self, type, fp)
 	    self._read(fp, 'text_color', 'border_color')
-    
+
     class IconifyPacket(LowerWindowPacket):
 	def __init__(self, type, fp):
 	    PacketReader.LowerWindowPacket.__init__(self, type, fp)
 	    self._read(fp, 'x', 'y', 'width', 'height')
-    
+
     class IconLocationPacket(IconifyPacket):
 	pass
-    
+
     class DeiconifyPacket(LowerWindowPacket):
 	pass
-    
+
     class MapPacket(LowerWindowPacket):
 	pass
-    
+
     class _VariableLenStringPacket:
 	"""Can only be used for multiple inheritance with Packet"""
 	def __init__(self, fp, extraskip=3):
@@ -290,25 +290,25 @@ class PacketReader:
 	    if index >= 0:
 		data = data[:index]
 	    self.data = string.strip(data)
-    
+
     class WindowNamePacket(LowerWindowPacket, _VariableLenStringPacket):
 	def __init__(self, type, fp):
 	    PacketReader.LowerWindowPacket.__init__(self, type, fp)
 	    PacketReader._VariableLenStringPacket.__init__(self, fp)
 	    self.name = self.data
-    
+
     class IconNamePacket(WindowNamePacket):
 	pass
-    
+
     class ResClassPacket(WindowNamePacket):
 	pass
-    
+
     class ResNamePacket(WindowNamePacket):
 	pass
-    
+
     class EndWindowlistPacket(_Packet):
 	pass
-    
+
     class StringPacket(_Packet, _VariableLenStringPacket):
 	def __init__(self, type, fp):
 	    PacketReader._Packet.__init__(self, type, fp)
@@ -319,10 +319,10 @@ class PacketReader:
 	def __init__(self, type, fp):
 	    PacketReader.StringPacket.__init__(self, type, fp)
 	    self.errmsg = self.data
-    
+
     class ConfigInfoPacket(StringPacket):
 	pass
-    
+
     class EndConfigInfoPacket(_Packet):
 	pass
 
@@ -501,7 +501,7 @@ class FvwmModule:
 		if hasattr(self, methodname) or \
 		   self.__dispatch.has_key(methodname):
 		    mask = mask | flag
-	self.send('Set_Mask ' + `mask`)
+	self.send('SetMask ' + `mask`)
 
     def unhandled_packet(self, pkt):
 	debug('Unhandled packet type: %s' % Types[pkt.msgtype])
@@ -537,7 +537,7 @@ class FvwmModule:
 		error('Unexpected packet type: %s' % pktname)
 
 	cache = self.__override(callback)
-	self.send('Send_ConfigInfo')
+	self.send('SendConfigInfo')
 	self.start()
 	self.__restore(cache)
 	return ConfigInfo(info)
@@ -553,7 +553,7 @@ class FvwmModule:
 		tracker.feed_pkt(pkt)
 
 	cache = self.__override(callback)
-	self.send('Send_WindowList')
+	self.send('SendWindowList')
 	self.start()
 	self.__restore(cache)
 	return t

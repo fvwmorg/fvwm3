@@ -265,7 +265,7 @@ int main(int argc, char **argv)
   SetMessageMask(fd, M_NEW_DESK | M_END_WINDOWLIST | M_MAP | M_WINDOW_NAME |
 		 M_RES_CLASS | M_CONFIG_INFO | M_END_CONFIG_INFO | M_RES_NAME);
 /*
-  sprintf(set_mask_mesg,"SET_MASK %lu\n",
+  sprintf(set_mask_mesg,"SetMask %lu\n",
 	  (unsigned long)(M_NEW_DESK |
 			  M_END_WINDOWLIST|
 			  M_MAP|
@@ -423,7 +423,7 @@ Solid:
   /* request a window list, since this triggers a response which
    * will tell us the current desktop and paging status, needed to
    * indent buttons correctly */
-  SendText(fd,"Send_WindowList",0);
+  SendText(fd,"SendWindowList",0);
   Loop();
   return 0;
 }
@@ -1501,11 +1501,13 @@ void DeadPipe(int nonsense)
     for(j=0;j<num_columns; j++)
       {
 	button = i*num_columns + j;
-        /* delete swallowed windows, but not modules (afterstep handles those) */
+        /* delete swallowed windows, but not modules
+	   (afterstep handles those) */
 	if(((Buttons[button].swallow == 3)||(Buttons[button].swallow == 4))&&
 	    (Buttons[button].module == 0))
 	  {
-	    my_send_clientmessage(Buttons[button].IconWin,wm_del_win,CurrentTime);
+	    my_send_clientmessage(Buttons[button].IconWin,wm_del_win,
+				  CurrentTime);
 	    XSync(dpy,0);
 	  }
       }

@@ -1,3 +1,16 @@
+1999-03-05  Dominik Vogt  <dominik_vogt@hp.com>
+
+	* fvwm/fvwm2.1: marked IconPath and PixmapPath as obsolete and added a
+	hint to the ImagePath command
+
+	* libs/Module.c (GetConfigLine):
+	(SetMessageMask):
+	* fvwm/functions.c (func_config):
+	Renamed builtin functions
+	  Send_ConfigInfo -> SendConfigInfo
+	  Send_WindowList -> SendWindowList
+	  set_mask        -> SetMask
+
 1999-03-05  Johan Bengtsson  <johanb@DoCS.UU.SE>
 
 	* libs/System.c (searchPath): Fixed a potential off by two error.

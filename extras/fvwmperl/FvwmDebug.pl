@@ -40,8 +40,8 @@ if (defined $opt_h) {
 -f <file>: Send output to <file> instead of FVWM's stdout
 -m <mask>: Show only packets with types in <mask>
 -M <mask>: Show only packets with types NOT in <mask>
--c:        Send an initial Send_ConfigInfo packet to FVWM
--w:        Send an initial Send_WindowList packet to FVWM
+-c:        Send an initial SendConfigInfo packet to FVWM
+-w:        Send an initial SendWindowList packet to FVWM
 END
     &EndModule;
     exit;
@@ -81,8 +81,8 @@ if (defined $opt_m || defined $opt_M) {
     &SendInfo(0, "Set_Mask $mask");
 }
 
-&SendInfo(0, "Send_ConfigInfo") if (defined $opt_c);
-&SendInfo(0, "Send_WindowList") if (defined $opt_w);
+&SendInfo(0, "SendConfigInfo") if (defined $opt_c);
+&SendInfo(0, "SendWindowList") if (defined $opt_w);
 
 &EventLoop;
 
@@ -105,7 +105,7 @@ sub Quit {
     exit;
 }
 
-sub ListNewPage { 
+sub ListNewPage {
     local($type, $x, $y, $desk) = @_;
     print "new page\n\t x $x\n\t y $y\n\t desk $desk\n";
     1;
@@ -116,7 +116,7 @@ sub ListNewDesk {
     1;
 }
 
-sub ListConfigWin { 
+sub ListConfigWin {
     local($type, $id, $fid, $ptr, $x, $y, $w, $h,
 	$desk, $flags, $th, $bw, $wbw, $wbh,
 	$wrwi, $wrhi, $minw, $minh, $maxw, $maxh,
@@ -167,7 +167,7 @@ sub ListWindow {
     1;
 }
 
-sub ListFocus { 
+sub ListFocus {
     ($type, $id, $fid, $ptr, $tc, $bc) = @_;
     &tohex($id, $fix, $ptr);
     print "focus\n\t ID $id\n\t frame ID $fid\n\t fvwm ptr $ptr\n";

@@ -1,5 +1,13 @@
 1999-03-05  Dominik Vogt  <dominik_vogt@hp.com>
 
+	* mod_initialization.html (descriptors):
+	* mod_m2f_communication.html:
+	* mod_f2m_communication.html:
+	Renamed builtin functions
+	  Send_ConfigInfo -> SendConfigInfo
+	  Send_WindowList -> SendWindowList
+	  set_mask        -> SetMask
+
 	* features.html:
 	* BUGS: updated "ICCCM 1.1" to "ICCCM 2"
 

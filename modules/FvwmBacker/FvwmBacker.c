@@ -140,7 +140,7 @@ char *temp, *s;
   /*
   ** we really only want the current desk, and window list sends it
   */
-  SendInfo(Fvwm_fd,"Send_WindowList",0);
+  SendInfo(Fvwm_fd,"SendWindowList",0);
 
 
   /* Recieve all messages from Fvwm */

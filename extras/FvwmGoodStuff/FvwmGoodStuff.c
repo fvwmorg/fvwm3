@@ -236,7 +236,7 @@ int main(int argc, char **argv)
   /* request a window list, since this triggers a response which
    * will tell us the current desktop and paging status, needed to
    * indent buttons correctly */
-  SendText(fd,"Send_WindowList",0);
+  SendText(fd,"SendWindowList",0);
 
   Loop();
   return 0;
@@ -1053,7 +1053,8 @@ void DeadPipe(int nonsense)
         /* the above doesn't seem to hold true any more - CKH */
 	if(Buttons[button].swallow == 3)
 	  {
-	    send_clientmessage(dpy,Buttons[button].IconWin,wm_del_win,CurrentTime);
+	    send_clientmessage(dpy,Buttons[button].IconWin,wm_del_win,
+			       CurrentTime);
 	    XSync(dpy,0);
 	  }
       }

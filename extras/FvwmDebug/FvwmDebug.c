@@ -119,7 +119,7 @@ int main(int argc, char **argv)
   /* Create a list of all windows */
   /* Request a list of all windows,
    * wait for ConfigureWindow packets */
-  SendInfo(fd,"Send_WindowList",0);
+  SendInfo(fd,"SendWindowList",0);
 
   Loop(fd);
   return 0;
@@ -534,6 +534,6 @@ void list_res_name(unsigned long *body)
  ***********************************************************************/
 void list_end(void)
 {
-  fprintf(stderr,"Send_WindowList End\n");
+  fprintf(stderr,"SendWindowList End\n");
 }
 

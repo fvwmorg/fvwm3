@@ -82,7 +82,7 @@ descriptors:
 <FONT COLOR="YELLOW"><PRE>
 int fd[2];
 void main(int argc, char **argv) {
-  if((argc &lt; 6)) {	
+  if((argc &lt; 6)) {
     fprintf(stderr,
       &quot;%s: Should only be executed by fvwm!\n&quot;, argv[0]);
     exit(1);
@@ -98,7 +98,7 @@ to fvwm with the construct "SendText(fd,"Command",0);".
 Of course, they really mean "SendText(&amp;fd[0],"Command",0);".
 <H2> <font color="turquoise">Pipe Status</font></h2>
 Special attention is paid to the status of the pipe. If Fvwm gets a
-read error on a module-to-fvwm  pipe, then it assumes that the module 
+read error on a module-to-fvwm  pipe, then it assumes that the module
 is terminating,
 and all communication with the module is terminated. Similarly, if a
 module gets a read error on an fvwm-to-module pipe, then it should
@@ -113,7 +113,7 @@ parse the .fvwmrc file by themselves. This caused some difficulty if a
 pre-processor was used on the .fvwmrc file. In fvwm-2.0 and later,
 fvwm retains the module command lines (those which start with a
 ``*''), and passes them to any module on request. Modules can
-request the command list by sending a ``Send_ConfigInfo'' command to
+request the command list by sending a ``SendConfigInfo'' command to
 fvwm.  Modules can request configuration commands interactively,
 see M_SENDCONFIG in
 <A href="mod_f2m_communication.html">Fvwm-to-Module Communication</a>

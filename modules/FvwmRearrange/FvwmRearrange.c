@@ -106,13 +106,13 @@ int is_suitable_window(unsigned long *body)
 
     if ((flags&MAXIMIZED) && !maximized)
 	return 0;
-    
+
     if ((flags&STICKY) && !sticky)
 	return 0;
-    
+
     if (!XGetWindowAttributes(dpy, (Window)body[1], &xwa))
 	return 0;
-    
+
     if (xwa.map_state != IsViewable)
 	return 0;
 
@@ -129,7 +129,7 @@ int is_suitable_window(unsigned long *body)
 	      && (x + w > 0) && (y + h > 0)))
 	    return 0;
     }
-	    
+
     if (!(flags&TITLE) && !untitled)
 	return 0;
 
@@ -165,12 +165,12 @@ int get_window(void)
 	    }
 	    last = 1;
 	    break;
-	    
+
 	case M_END_WINDOWLIST:
 	    break;
-	    
+
 	default:
-	    fprintf(console, 
+	    fprintf(console,
 		    "%s: internal inconsistency: unknown message\n",
 		    argv0);
 	    break;
@@ -189,7 +189,7 @@ void wait_configure(window_item *wi)
     FD_ZERO(&infds);
     FD_SET(fd[1], &infds);
     select(fd_width,&infds, 0, 0, NULL);
-    while (!found)	
+    while (!found)
 	if ((count = ReadFvwmPacket(fd[1],header,&body)) > 0) {
 	    if  ((header[1] == M_CONFIGURE_WINDOW)
 		 && (Window)body[1] == wi->frame)
@@ -205,7 +205,7 @@ int atopixel(char *s, unsigned long f)
     if (isalpha(s[l - 1])) {
 	char s2[24];
 	strcpy(s2,s);
-	s2[strlen(s2) - 1] = 0;	
+	s2[strlen(s2) - 1] = 0;
 	return atoi(s2);
     }
     return (atoi(s) * f) / 100;
@@ -216,7 +216,7 @@ void tile_windows(void)
     char msg[128];
     int cur_x = ofsx, cur_y = ofsy;
     int wdiv, hdiv, i, j, count = 1;
-    window_item *w = reversed ? wins_tail : wins;    
+    window_item *w = reversed ? wins_tail : wins;
 
     if (horizontal) {
 	if ((maxnum > 0) && (maxnum < wins_count)) {
@@ -233,7 +233,7 @@ void tile_windows(void)
 	    for (j = 0; w && (j < maxnum); ++j) {
 		int nw = wdiv - w->bw * 2;
 		int nh = hdiv - w->bw * 2 - w->th;
-		
+
 		if (resize) {
 		    if (nostretch) {
 			if (nw > w->width)
@@ -243,7 +243,7 @@ void tile_windows(void)
 		    }
 		    sprintf(msg, "Resize %lup %lup",
 			    (nw > 0) ? nw : w->width,
-			    (nh > 0) ? nh : w->height);	
+			    (nh > 0) ? nh : w->height);
 		    SendInfo(fd,msg,w->frame);
 		}
 		sprintf(msg, "Move %up %up", cur_x, cur_y);
@@ -272,7 +272,7 @@ void tile_windows(void)
 	    for (j = 0; w && (j < maxnum); ++j) {
 		int nw = wdiv - w->bw * 2;
 		int nh = hdiv - w->bw * 2 - w->th;
-		
+
 		if (resize) {
 		    if (nostretch) {
 			if (nw > w->width)
@@ -296,7 +296,7 @@ void tile_windows(void)
 	    cur_x = ofsx;
 	    cur_y += hdiv;
 	}
-    }    
+    }
 }
 
 void cascade_windows(void)
@@ -312,7 +312,7 @@ void cascade_windows(void)
 	sprintf(msg, "Move %up %up", cur_x, cur_y);
 	SendInfo(fd,msg,w->frame);
 	if (resize) {
-	    if (nostretch) {		
+	    if (nostretch) {
 		if (maxw
 		    && (w->width > maxw))
 		    nw = maxw;
@@ -320,12 +320,12 @@ void cascade_windows(void)
 		    && (w->height > maxh))
 		    nh = maxh;
 	    } else {
-		nw = maxw; 
+		nw = maxw;
 		nh = maxh;
 	    }
 	    if (nw || nh) {
-		sprintf(msg, "Resize %lup %lup", 
-			nw ? nw : w->width, 
+		sprintf(msg, "Resize %lup %lup",
+			nw ? nw : w->width,
 			nh ? nh : w->height);
 		SendInfo(fd,msg,w->frame);
 	    }
@@ -497,7 +497,7 @@ int main(int argc, char *argv[])
 
     if (!(argv0 = strrchr(argv[0],'/')))
 	argv0 = argv[0];
-    else 
+    else
 	++argv0;
 
     if (argc < 6) {
@@ -529,7 +529,7 @@ int main(int argc, char *argv[])
     }
 
     fd_width = GetFdWidth();
-    
+
 #ifdef USERC
     strcpy(match, "*");
     strcat(match, argv0);
@@ -538,7 +538,7 @@ int main(int argc, char *argv[])
     if ((config_line = GetConfigLine(argv[3], match))) {
 	char **args = NULL;
 	config_line_count = parse_line(config_line, &args);
-	parse_args("config args", 
+	parse_args("config args",
 		   config_line_count, args, 0);
 	free(config_line);
 	free(args);
@@ -552,7 +552,7 @@ int main(int argc, char *argv[])
 	    if (config_line[cllen - 1] == '\n')
 		config_line[cllen - 1] = 0;
 	    config_line_count = parse_line(config_line, &args);
-	    parse_args("config args", 
+	    parse_args("config args",
 		       config_line_count, args, 0);
 	    free(args);
 	}
@@ -584,7 +584,7 @@ int main(int argc, char *argv[])
 	    M_END_WINDOWLIST
 	    ));
 	SendInfo(fd,msg,0);
-	
+
 #ifdef FVWM1_MOVENULL
 	/* avoid interactive placement in fvwm version 1 */
 	if (!ofsx) ++ofsx;
@@ -593,7 +593,7 @@ int main(int argc, char *argv[])
     }
 #else
     SetMessageMask(fd,
-		   M_CONFIGURE_WINDOW 
+		   M_CONFIGURE_WINDOW
 		   | M_END_WINDOWLIST
 	);
 #endif
@@ -604,7 +604,7 @@ int main(int argc, char *argv[])
       if (!maxy) maxy = dheight;
     }
 
-    SendInfo(fd,"Send_WindowList",0);
+    SendInfo(fd,"SendWindowList",0);
     while (get_window());
     if (wins_count)
     {

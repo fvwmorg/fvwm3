@@ -12,9 +12,9 @@
 Fvwm
 can send messages to the modules in either a broadcast mode, or a
 module specific mode. Certain messages regarding important window or
-desktop manipulations are broadcast to all modules, whether they 
+desktop manipulations are broadcast to all modules, whether they
 want it or not. Modules are able to request information about current windows
-from fvwm, via the Send_WindowList built-in. When invoked this way,
+from fvwm, via the SendWindowList built-in. When invoked this way,
 only requesting module receives the data.
 <H2> <font color="turquoise">Communication packet format</font></h2>
 Packets from fvwm to modules conform to a standard format, so modules
@@ -93,58 +93,58 @@ Format for Add and Configure Window Packets</TD></TR>
 <TR><TD VALIGN=BASELINE ALIGN=LEFT NOWRAP>Byte </TD><TD VALIGN=BASELINE ALIGN=LEFT NOWRAP>Significance </TD></TR>
 </TBODY><TBODY>
 <TR><TD VALIGN=BASELINE ALIGN=LEFT NOWRAP>0    </TD><TD VALIGN=BASELINE ALIGN=LEFT NOWRAP> 0xffffffff - Start of packet </TD></TR>
-<TR><TD VALIGN=BASELINE ALIGN=LEFT NOWRAP> 
+<TR><TD VALIGN=BASELINE ALIGN=LEFT NOWRAP>
 1    </TD><TD VALIGN=BASELINE ALIGN=LEFT NOWRAP> packet type </TD></TR>
-<TR><TD VALIGN=BASELINE ALIGN=LEFT NOWRAP> 
+<TR><TD VALIGN=BASELINE ALIGN=LEFT NOWRAP>
 2    </TD><TD VALIGN=BASELINE ALIGN=LEFT NOWRAP> length of packet, including header, expressed in long integers
 </TD></TR>
 </TBODY><TBODY>
 <TR><TD VALIGN=BASELINE ALIGN=LEFT NOWRAP>3    </TD><TD VALIGN=BASELINE ALIGN=LEFT NOWRAP> ID of the application's top level window </TD></TR>
-<TR><TD VALIGN=BASELINE ALIGN=LEFT NOWRAP> 
+<TR><TD VALIGN=BASELINE ALIGN=LEFT NOWRAP>
 4    </TD><TD VALIGN=BASELINE ALIGN=LEFT NOWRAP> ID of the Fvwm frame window </TD></TR>
-<TR><TD VALIGN=BASELINE ALIGN=LEFT NOWRAP> 
+<TR><TD VALIGN=BASELINE ALIGN=LEFT NOWRAP>
 5    </TD><TD VALIGN=BASELINE ALIGN=LEFT NOWRAP> Pointer to the Fvwm database entry </TD></TR>
-<TR><TD VALIGN=BASELINE ALIGN=LEFT NOWRAP> 
+<TR><TD VALIGN=BASELINE ALIGN=LEFT NOWRAP>
 6    </TD><TD VALIGN=BASELINE ALIGN=LEFT NOWRAP> X location of the window's frame </TD></TR>
-<TR><TD VALIGN=BASELINE ALIGN=LEFT NOWRAP> 
+<TR><TD VALIGN=BASELINE ALIGN=LEFT NOWRAP>
 7    </TD><TD VALIGN=BASELINE ALIGN=LEFT NOWRAP> Y location of the window's frame</TD></TR>
-<TR><TD VALIGN=BASELINE ALIGN=LEFT NOWRAP> 
+<TR><TD VALIGN=BASELINE ALIGN=LEFT NOWRAP>
 8    </TD><TD VALIGN=BASELINE ALIGN=LEFT NOWRAP> Width of the window's frame (pixels) </TD></TR>
-<TR><TD VALIGN=BASELINE ALIGN=LEFT NOWRAP> 
+<TR><TD VALIGN=BASELINE ALIGN=LEFT NOWRAP>
 9    </TD><TD VALIGN=BASELINE ALIGN=LEFT NOWRAP> Height of the window's frame (pixels) </TD></TR>
-<TR><TD VALIGN=BASELINE ALIGN=LEFT NOWRAP> 
+<TR><TD VALIGN=BASELINE ALIGN=LEFT NOWRAP>
 10   </TD><TD VALIGN=BASELINE ALIGN=LEFT NOWRAP> Desktop number</TD></TR>
-<TR><TD VALIGN=BASELINE ALIGN=LEFT NOWRAP>  
+<TR><TD VALIGN=BASELINE ALIGN=LEFT NOWRAP>
 11   </TD><TD VALIGN=BASELINE ALIGN=LEFT NOWRAP> Windows flags field</TD></TR>
-<TR><TD VALIGN=BASELINE ALIGN=LEFT NOWRAP> 
+<TR><TD VALIGN=BASELINE ALIGN=LEFT NOWRAP>
 12   </TD><TD VALIGN=BASELINE ALIGN=LEFT NOWRAP> Window Title Height (pixels) </TD></TR>
-<TR><TD VALIGN=BASELINE ALIGN=LEFT NOWRAP> 
+<TR><TD VALIGN=BASELINE ALIGN=LEFT NOWRAP>
 13   </TD><TD VALIGN=BASELINE ALIGN=LEFT NOWRAP> Window Border Width (pixels) </TD></TR>
-<TR><TD VALIGN=BASELINE ALIGN=LEFT NOWRAP> 
+<TR><TD VALIGN=BASELINE ALIGN=LEFT NOWRAP>
 14   </TD><TD VALIGN=BASELINE ALIGN=LEFT NOWRAP> Window Base Width (pixels) </TD></TR>
-<TR><TD VALIGN=BASELINE ALIGN=LEFT NOWRAP>   
+<TR><TD VALIGN=BASELINE ALIGN=LEFT NOWRAP>
 15   </TD><TD VALIGN=BASELINE ALIGN=LEFT NOWRAP> Window Base Height (pixels) </TD></TR>
-<TR><TD VALIGN=BASELINE ALIGN=LEFT NOWRAP>   
+<TR><TD VALIGN=BASELINE ALIGN=LEFT NOWRAP>
 16   </TD><TD VALIGN=BASELINE ALIGN=LEFT NOWRAP> Window Resize Width Increment(pixels) </TD></TR>
-<TR><TD VALIGN=BASELINE ALIGN=LEFT NOWRAP>   
+<TR><TD VALIGN=BASELINE ALIGN=LEFT NOWRAP>
 17   </TD><TD VALIGN=BASELINE ALIGN=LEFT NOWRAP> Window Resize Height Increment (pixels) </TD></TR>
-<TR><TD VALIGN=BASELINE ALIGN=LEFT NOWRAP>   
+<TR><TD VALIGN=BASELINE ALIGN=LEFT NOWRAP>
 18   </TD><TD VALIGN=BASELINE ALIGN=LEFT NOWRAP> Window Minimum Width (pixels) </TD></TR>
-<TR><TD VALIGN=BASELINE ALIGN=LEFT NOWRAP>   
+<TR><TD VALIGN=BASELINE ALIGN=LEFT NOWRAP>
 19   </TD><TD VALIGN=BASELINE ALIGN=LEFT NOWRAP> Window Minimum Height (pixels) </TD></TR>
-<TR><TD VALIGN=BASELINE ALIGN=LEFT NOWRAP>   
+<TR><TD VALIGN=BASELINE ALIGN=LEFT NOWRAP>
 20   </TD><TD VALIGN=BASELINE ALIGN=LEFT NOWRAP> Window Maximum Width Increment(pixels) </TD></TR>
-<TR><TD VALIGN=BASELINE ALIGN=LEFT NOWRAP>   
+<TR><TD VALIGN=BASELINE ALIGN=LEFT NOWRAP>
 21   </TD><TD VALIGN=BASELINE ALIGN=LEFT NOWRAP> Window Maximum Height Increment (pixels) </TD></TR>
-<TR><TD VALIGN=BASELINE ALIGN=LEFT NOWRAP> 
+<TR><TD VALIGN=BASELINE ALIGN=LEFT NOWRAP>
 22   </TD><TD VALIGN=BASELINE ALIGN=LEFT NOWRAP> Icon Label Window ID, or 0</TD></TR>
-<TR><TD VALIGN=BASELINE ALIGN=LEFT NOWRAP> 
+<TR><TD VALIGN=BASELINE ALIGN=LEFT NOWRAP>
 23   </TD><TD VALIGN=BASELINE ALIGN=LEFT NOWRAP> Icon Pixmap Window ID, or 0</TD></TR>
-<TR><TD VALIGN=BASELINE ALIGN=LEFT NOWRAP>  
+<TR><TD VALIGN=BASELINE ALIGN=LEFT NOWRAP>
 24   </TD><TD VALIGN=BASELINE ALIGN=LEFT NOWRAP> Window Gravity</TD></TR>
 <TR><TD VALIGN=BASELINE ALIGN=LEFT NOWRAP>   \
 25   </TD><TD VALIGN=BASELINE ALIGN=LEFT NOWRAP> Pixel value of the text color </TD></TR>
-<TR><TD VALIGN=BASELINE ALIGN=LEFT NOWRAP> 
+<TR><TD VALIGN=BASELINE ALIGN=LEFT NOWRAP>
 26   </TD><TD VALIGN=BASELINE ALIGN=LEFT NOWRAP> Pixel value of the window border color </TD></TR>
 </TBODY>
 </TABLE>
@@ -170,16 +170,16 @@ Format for Lower, Raise, and Focus Change Packets</TD></TR>
 <TR><TD VALIGN=BASELINE ALIGN=LEFT NOWRAP>Byte </TD><TD VALIGN=BASELINE ALIGN=LEFT NOWRAP>Significance </TD></TR>
 </TBODY><TBODY>
 <TR><TD VALIGN=BASELINE ALIGN=LEFT NOWRAP>0    </TD><TD VALIGN=BASELINE ALIGN=LEFT NOWRAP> 0xffffffff - Start of packet </TD></TR>
-<TR><TD VALIGN=BASELINE ALIGN=LEFT NOWRAP> 
+<TR><TD VALIGN=BASELINE ALIGN=LEFT NOWRAP>
 1    </TD><TD VALIGN=BASELINE ALIGN=LEFT NOWRAP> packet type </TD></TR>
-<TR><TD VALIGN=BASELINE ALIGN=LEFT NOWRAP> 
+<TR><TD VALIGN=BASELINE ALIGN=LEFT NOWRAP>
 2    </TD><TD VALIGN=BASELINE ALIGN=LEFT NOWRAP> length of packet, including header, expressed in long integers
 </TD></TR>
 </TBODY><TBODY>
 <TR><TD VALIGN=BASELINE ALIGN=LEFT NOWRAP>3    </TD><TD VALIGN=BASELINE ALIGN=LEFT NOWRAP> ID of the application's top level window </TD></TR>
-<TR><TD VALIGN=BASELINE ALIGN=LEFT NOWRAP> 
+<TR><TD VALIGN=BASELINE ALIGN=LEFT NOWRAP>
 4    </TD><TD VALIGN=BASELINE ALIGN=LEFT NOWRAP> ID of the Fvwm frame window </TD></TR>
-<TR><TD VALIGN=BASELINE ALIGN=LEFT NOWRAP> 
+<TR><TD VALIGN=BASELINE ALIGN=LEFT NOWRAP>
 5    </TD><TD VALIGN=BASELINE ALIGN=LEFT NOWRAP> Pointer to the Fvwm database entry </TD></TR>
 </TBODY>
 </TABLE>
@@ -229,24 +229,24 @@ Format for Iconify and Icon Location Packets</TD></TR>
 <TR><TD VALIGN=BASELINE ALIGN=LEFT NOWRAP>Byte </TD><TD VALIGN=BASELINE ALIGN=LEFT NOWRAP>Significance </TD></TR>
 </TBODY><TBODY>
 <TR><TD VALIGN=BASELINE ALIGN=LEFT NOWRAP>0    </TD><TD VALIGN=BASELINE ALIGN=LEFT NOWRAP> 0xffffffff - Start of packet </TD></TR>
-<TR><TD VALIGN=BASELINE ALIGN=LEFT NOWRAP> 
+<TR><TD VALIGN=BASELINE ALIGN=LEFT NOWRAP>
 1    </TD><TD VALIGN=BASELINE ALIGN=LEFT NOWRAP> packet type </TD></TR>
-<TR><TD VALIGN=BASELINE ALIGN=LEFT NOWRAP> 
+<TR><TD VALIGN=BASELINE ALIGN=LEFT NOWRAP>
 2    </TD><TD VALIGN=BASELINE ALIGN=LEFT NOWRAP> length of packet, including header, expressed in long integers
 </TD></TR>
 </TBODY><TBODY>
 <TR><TD VALIGN=BASELINE ALIGN=LEFT NOWRAP>3    </TD><TD VALIGN=BASELINE ALIGN=LEFT NOWRAP> ID of the application's top level window </TD></TR>
-<TR><TD VALIGN=BASELINE ALIGN=LEFT NOWRAP> 
+<TR><TD VALIGN=BASELINE ALIGN=LEFT NOWRAP>
 4    </TD><TD VALIGN=BASELINE ALIGN=LEFT NOWRAP> ID of the Fvwm frame window </TD></TR>
-<TR><TD VALIGN=BASELINE ALIGN=LEFT NOWRAP> 
+<TR><TD VALIGN=BASELINE ALIGN=LEFT NOWRAP>
 5    </TD><TD VALIGN=BASELINE ALIGN=LEFT NOWRAP> Pointer to the Fvwm database entry </TD></TR>
-<TR><TD VALIGN=BASELINE ALIGN=LEFT NOWRAP> 
+<TR><TD VALIGN=BASELINE ALIGN=LEFT NOWRAP>
 6    </TD><TD VALIGN=BASELINE ALIGN=LEFT NOWRAP> X location of the window's frame </TD></TR>
-<TR><TD VALIGN=BASELINE ALIGN=LEFT NOWRAP> 
+<TR><TD VALIGN=BASELINE ALIGN=LEFT NOWRAP>
 7    </TD><TD VALIGN=BASELINE ALIGN=LEFT NOWRAP> Y location of the window's frame</TD></TR>
-<TR><TD VALIGN=BASELINE ALIGN=LEFT NOWRAP> 
+<TR><TD VALIGN=BASELINE ALIGN=LEFT NOWRAP>
 8    </TD><TD VALIGN=BASELINE ALIGN=LEFT NOWRAP> Width of the window's frame </TD></TR>
-<TR><TD VALIGN=BASELINE ALIGN=LEFT NOWRAP> 
+<TR><TD VALIGN=BASELINE ALIGN=LEFT NOWRAP>
 9    </TD><TD VALIGN=BASELINE ALIGN=LEFT NOWRAP> Height of the window's frame </TD></TR>
 </TBODY>
 </TABLE>
@@ -279,13 +279,13 @@ unsigned long. The RES_CLASS and RES_NAME fields are fields in the
 XClass structure for the window. Icon and Window name packets will
 will be sent upon window creation or whenever the name is changed. The
 RES_CLASS and RES_NAME packets are sent on window creation. All
-packets are sent in response to a Send_WindowList request from a module.
+packets are sent in response to a SendWindowList request from a module.
 <P>
 <H2><A NAME="M_END_WINDOWLIST">M_END_WINDOWLIST</A></H2>
 <P>
 These packets contain no values. This packet is sent to mark the end
-of transmission in response to  a Send_WindowList request. A module
-which request Send_WindowList, and processes all packets received
+of transmission in response to  a SendWindowList request. A module
+which request SendWindowList, and processes all packets received
 between the request and the M_END_WINDOWLIST will have a snapshot of
 the status of the desktop.
 <P>
@@ -299,7 +299,7 @@ by a variable length string which contains the error message.
 <P>
 Fvwm records all configuration commands that it encounters which
 begins with the character ``*''. When the built-in command
-``Send_ConfigInfo'' is invoked by a module, this entire list is
+``SendConfigInfo'' is invoked by a module, this entire list is
 transmitted to the module in packets (one line per packet) of this
 type. The packet consists of three zeros, followed by a variable
 length character string. In addition, the ImagePath, and

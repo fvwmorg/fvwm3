@@ -1,7 +1,7 @@
 #!/usr/bin/perl
 ####
 # NAME
-#    focus-link.pl - perl FvwmCommand script 
+#    focus-link.pl - perl FvwmCommand script
 ####
 # SYNOPSIS
 #    focus-link.pl [-v]
@@ -24,20 +24,20 @@
 #    Sleep is used in order to avoid un-necessary reaction during initial
 #    window creation. A shell is invoked to avoid fvwm2 itself sleeps for
 #    2 seconds.
-#   
-#    Default behavior is listed below. 
+#
+#    Default behavior is listed below.
 #    In order to change the behavior, modify user_function using user
 #    functions.
-#     1. When a window is opened up, focus the window and move the pointer 
-#        to it. The parent window regains focus when a window is closed. 
-#        Parenthood is determined when a window is opened. It is the last 
+#     1. When a window is opened up, focus the window and move the pointer
+#        to it. The parent window regains focus when a window is closed.
+#        Parenthood is determined when a window is opened. It is the last
 #        focused window with the same X class.
 #     2. #1 would not occur to AcroRead opening window.
 #     3. #1 would not occur when SkipMapping is set and the window is the
 #        only window of its class.
 #     4. For Netscape find dialog window, addition to #1, resize the window
 #        to 300x150 pixels and move it to East edge of the screen.
-#        Download/upload windows will not be focused nor be in focus link 
+#        Download/upload windows will not be focused nor be in focus link
 #        list.
 #     5. Move appletviewer to NorthWest corner.
 #     6. Xterm won't focus back to its parent after closed.
@@ -58,7 +58,7 @@ if (! -x $FVWMCOMMAND) {
 }
 
 #********** user configurable function **************************
-sub user_function {	
+sub user_function {
   if (action_was ("add")) {
     # don't do anything to opening window of acrobat reader
     return if class_matches ("AcroRead", "splashScreen_popup");
@@ -125,7 +125,7 @@ init();
 #	      &action_was
 #	      &get_parent_window
 #	      &no_parent_window
-#	      &delete_from_list 
+#	      &delete_from_list
 #              &init );
 #
 
@@ -135,7 +135,7 @@ init();
 #
 
 ###
-# move_window [<id>] <direction> 
+# move_window [<id>] <direction>
 #  or
 ###
 # move_window [<id>] <x> <y>
@@ -145,11 +145,11 @@ init();
 #
 #    If <y> is present, move window to <x> <y> in percentage of screen.
 #
-#    If 'p' is appended to <width> or <height>, it specifies in 
+#    If 'p' is appended to <width> or <height>, it specifies in
 #    pixel count. And, if <width'p'> or <height'p'> is lead with '-',
 #    it signifies that pixel count from right or bottom edge.
 #
-#    If <y> does not exist, <dir> must be one of North Northeast East 
+#    If <y> does not exist, <dir> must be one of North Northeast East
 #    Southeast South Southwest West Northwest to move window to edge.
 
 sub move_window {
@@ -163,10 +163,10 @@ sub move_window {
     $id = $W->{id};
   }
   return undef if ($id eq $NULLWINDOW || $id eq ''
-		   || !defined $Window{$id} 
+		   || !defined $Window{$id}
 		   || defined $Window{$id}{destroy} );
 
-  ($dir,$y) = @a; 
+  ($dir,$y) = @a;
 
   if (defined $y) {
     $x = $dir;
@@ -182,7 +182,7 @@ sub move_window {
 
   }else{
     ($x,$y,$width,$height) =
-      ($Window{$id}{frame} 
+      ($Window{$id}{frame}
        =~ /x (-?\d+), y (-?\d+), width (\d+), height (\d+)/);
 
     if ($dir =~ /[Ee]ast/) {
@@ -195,7 +195,7 @@ sub move_window {
     }elsif ($dir =~ /[Ss]outh/) {
       $y = $SH - $height;
     }
-  
+
     send_cmd("windowid $id move ${x}p ${y}p\n", $id, "^$id $ACTPAIR{frame}");
   }
   !defined $Window{$id}{'destroy'};
@@ -209,7 +209,7 @@ sub move_window {
 #    If <id> is not null, resize <id>. Otherwise resize the
 #    window in question.
 #
-#    Letter 'p' can be appended to <width> and <height> to specify in 
+#    Letter 'p' can be appended to <width> and <height> to specify in
 #    pixel count.
 
 sub resize_window {
@@ -220,7 +220,7 @@ sub resize_window {
     $id = $W->{id};
   }
   return undef if ($id eq $NULLWINDOW || $id eq ''
-		   || !defined $Window{$id} 
+		   || !defined $Window{$id}
 		   || defined $Window{$id}{destroy} );
   send_cmd("windowid $id resize $wd $ht\n", $id, "^$id $ACTPAIR{frame}");
   !defined $Window{$id}{'destroy'};
@@ -240,7 +240,7 @@ sub focus_window {
     $id = $W->{id};
   }
   return undef if ($id eq $NULLWINDOW || $id eq ''
-		   || !defined $Window{$id} 
+		   || !defined $Window{$id}
 		   || defined $Window{$id}{destroy} );
 
   send_cmd("windowid $id focus\n");
@@ -256,10 +256,10 @@ sub focus_window {
 #    If <id> is a window id, warp to <id>.
 #    Otherwise, warp to the window in question.
 #
-#    If <x> and <y> are present, warp to <x> and <y> percentage of window 
-#    size down and in from the upper left hand corner. 
+#    If <x> and <y> are present, warp to <x> and <y> percentage of window
+#    size down and in from the upper left hand corner.
 #
-#    Letter 'p' can be appended to <width> and <height> to specify in pixel 
+#    Letter 'p' can be appended to <width> and <height> to specify in pixel
 #    count.
 
 sub warp_to_window {
@@ -272,11 +272,11 @@ sub warp_to_window {
     shift @a;
   }
   return undef if ($id eq $NULLWINDOW || $id eq ''
-		   || !defined $Window{$id} 
+		   || !defined $Window{$id}
 		   || defined $Window{$id}{destroy} );
 
   my ($x, $y) = @a;
-  
+
   # ensure both exists or none
   if (!defined $x || !defined $y) {
     $x = $y = '';
@@ -284,13 +284,13 @@ sub warp_to_window {
   send_cmd ("windowid $id WarpToWindow $x $y");
   !defined $Window{$id}{'destroy'};
 }
-  
+
 ###
 # class_matches <class> [<resource>]
 #
 #    Check if window class and optional resource match.
 #
-#    If arg1 is present, and if class matches with <class> and resource 
+#    If arg1 is present, and if class matches with <class> and resource
 #    matches with <resource>, then return 1.
 #
 #    If arg1 is not present, and if class matches with <class> then
@@ -309,7 +309,7 @@ sub class_matches {
 #
 #    Return 1 if <flag> is true in the window in question.
 #    If <id> is not null, check on <id>. Otherwise check on the
-#    window in question. 
+#    window in question.
 #    <flag> must be a exact match to one of these:
 #
 #  StartIconic
@@ -366,7 +366,7 @@ sub resource_matches {
 
 ###
 # action_was <action>
-#    Check if <action> was taken place. 
+#    Check if <action> was taken place.
 #
 #    <action> must be a exact match to one of these:
 #
@@ -381,7 +381,7 @@ sub resource_matches {
 #  deiconify
 #  windowshade
 #  dewindowshade
-#  end windowlist 
+#  end windowlist
 #  icon location
 #  end configinfo
 #  string
@@ -405,7 +405,7 @@ sub get_parent_window {
   return $NULLWINDOW if ($id eq $NULLWINDOW || $id eq ''
 			 || !defined $Window{$id} );
 
-  if (defined $Window{$id}{parent}) { 
+  if (defined $Window{$id}{parent}) {
     $Window{$id}{parent};
   }else{
     $NULLWINDOW;  # must be an orphan
@@ -424,7 +424,7 @@ sub no_parent_window {
 }
 
 ###
-# delete_from_list 
+# delete_from_list
 #
 #    Delete the window from link list
 sub delete_from_list {
@@ -459,8 +459,8 @@ sub delete_from_list {
 # Supporting routines
 #
 
-# add_to_list 
-#    Add the window to link list. 
+# add_to_list
+#    Add the window to link list.
 #    Link points back to the last focused window among the same class
 sub add_to_list {
   return if ( $W->{id} eq '' || $W->{id} eq $NULLWINDOW);
@@ -481,7 +481,7 @@ sub add_to_list {
 }
 
 
-# Send command 
+# Send command
 # Optionally wait for a keyword to come back
 sub send_cmd {
   my($cmd,$id,$key)=@_;
@@ -498,7 +498,7 @@ sub send_cmd {
 
   print FCC	$cmd;
   print STDERR	$cmd if $Debug & 2;
-  
+
   # if specified wait  for the keyword
   if (defined $key) {
     read_message($id,$key);
@@ -508,7 +508,7 @@ sub send_cmd {
 # Wait until action defined in $STATUS occure, then call process.
 # If a window focused, keep in focus list as the last window
 # among the class.
-# Create current window info from lines leaded with the same id 
+# Create current window info from lines leaded with the same id
 # number.
 sub next_action {
   my ($act, $id);
@@ -520,12 +520,12 @@ sub next_action {
   if (!$act) {
     ($id, $act) = (/^($HEX) ($STATUS)/);
   }
-  
+
   #undef $W;
   if ($id ne '') {
     if ($act eq 'add') {
       # create new window info
-      $Window{"$id"} = {id=>"$id"}; 
+      $Window{"$id"} = {id=>"$id"};
     }
     $W = $Window{"$id"};
     if (defined $ACTPAIR{$act}) {
@@ -554,12 +554,12 @@ sub read_message {
       }else{
 	$_ = <FCM>;
 	if (/^$/ && eof(FCM)) {
-	  eof_quit() 
+	  eof_quit()
 	}
       }
     } while (/^\s*$/);
     if (/^($HEX) ($STATUS)\s*(.*)/ && $1 ne $NULLWINDOW) {
-      $Window{$1}{$2} = $3; 
+      $Window{$1}{$2} = $3;
       if ($2 eq 'class') {
 	$Window{$1}{id} = $1;
 	$Window{$1}{parent} = $NULLWINDOW;
@@ -571,7 +571,7 @@ sub read_message {
     if ($id ne '') {
       if (!/^$id/) {
 	push (@Message,$_);
-	$sk = 1;  # don't read from @Message 
+	$sk = 1;  # don't read from @Message
 	redo LOOP_ID;
       }
       return undef if !defined $Window{$id};
@@ -593,8 +593,8 @@ sub keep_last_focused {
   my ($l);
 
   return undef if ($id eq ''
-		   || $id eq $NULLWINDOW 
-		   || !defined $Window{$id} 
+		   || $id eq $NULLWINDOW
+		   || !defined $Window{$id}
 		   || defined $Window{$id}{destroy} );
 
 
@@ -661,7 +661,7 @@ sub print_focused_list {
 #   get screen size - to move
 #   get window list
 #
-#   debug option -d<N>  
+#   debug option -d<N>
 #         1 to print window info
 #         2 to print command sent
 #         4 to print focused window list
@@ -675,10 +675,10 @@ sub init {
     exit;
   }
   if ($ARGV[0] =~ /^-d(\d+)/) {
-    $Debug = $1; 
-    shift @ARGV; 
+    $Debug = $1;
+    shift @ARGV;
   }
-    
+
   $SIG{'TTIN'} = "IGNORE";
   $SIG{'TTOUT'} = "IGNORE";
   $SIG{'QUIT'} = "sig_quit";
@@ -688,8 +688,8 @@ sub init {
 
   $STATUS = '(?:\w+(?:\s\w+)?)';   #status to be captured
   # matching pair for some action
-  %ACTPAIR = ('add'=>'map', 
-	      'deiconify'=>'map', 
+  %ACTPAIR = ('add'=>'map',
+	      'deiconify'=>'map',
 	      'iconify'=>'lower',
 	      'frame'=>'pixel' );
 
@@ -707,12 +707,12 @@ sub init {
     $SW = 1024;
     $SH = 786;
   }
-  
+
   # start a dedicated server
   # start a client monitoring (-m option ) all fvwm transaction (-i3 option )
   # unlinking and verifying M FIFO ensures that new FvwmCommand is running
   unlink( "${FIFO}M" );
-  open( FCM, "$main::FVWMCOMMAND -S $FIFO -f $FIFO  -m -i3 </dev/null|" ) 
+  open( FCM, "$main::FVWMCOMMAND -S $FIFO -f $FIFO  -m -i3 </dev/null|" )
     || die "FCM $FIFO";
   while (! -p "${FIFO}M") {
     sleep(1);
@@ -723,21 +723,21 @@ sub init {
 
   # send command through the new fifo which is "$FIFO" + "C"
   open( FCC, ">${FIFO}C" ) || die "FCC $FIFO" ;
-   
+
   # appearantly, it has to be unbuffered
   select( FCC ); $| = 1;
   select( STDOUT ); $| = 1;
-  
+
   %Focus = (); # last focused windows for each class
   @Message = (); # message queue
 
-  %Window = (); 
+  %Window = ();
 
   #get current screen info
-  send_cmd("Send_WindowList\n");
+  send_cmd("SendWindowList\n");
 
 #  while(<FCM>) {
-#    last if /^end windowlist/;   
+#    last if /^end windowlist/;
 #
 #    # create window list
 #    if (/^($HEX) ($STATUS)\s*(.*)/) {

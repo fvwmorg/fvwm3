@@ -1,3 +1,29 @@
+1999-03-05  Dominik Vogt  <dominik_vogt@hp.com>
+
+	* FvwmWharf/FvwmWharf.c (main):
+	* fvwmperl/fvwmmod.pl (GetConfigInfo):
+	* fvwmperl/FvwmForm.pl (parseline):
+	* fvwmpython/Manual/fvwm_man.html:
+	* fvwmpython/Fvwm.py (FvwmModule.callback):
+	(FvwmModule.callback):
+	(FvwmModule.set_mask):
+	* fvwmperl/MiniPerl.pl:
+	* fvwmperl/FvwmDebug.pl:
+	* FvwmDebug/FvwmDebug.1:
+	* FvwmConfig/FvwmConfig.C (main):
+	* FvwmCommand/scripts/focus-link.pl (init):
+	* FvwmWharf/FvwmWharf.c (main):
+	* FvwmTaskBar/FvwmTaskBar.c (main):
+	* FvwmScript/FvwmScript.c (main):
+	* fvwmperl/fvwmmod.doc:
+	* FvwmGoodStuff/FvwmGoodStuff.c (main):
+	* FvwmDebug/FvwmDebug.c (main):
+	(list_end):
+	Renamed builtin functions
+	  Send_ConfigInfo -> SendConfigInfo
+	  Send_WindowList -> SendWindowList
+	  set_mask        -> SetMask
+
 1999-03-04  Dominik Vogt  <dominik_vogt@hp.com>
 
 	* FvwmTaskBar/FvwmTaskBar.1:
@@ -6,9 +32,9 @@
 
 Thu Mar  4 01:41:47 1999  Steve Robbins  <steve@nyongwa.montreal.qc.ca>
 
-	* FvwmWharf/icons.c: 
-	* FvwmWharf/FvwmWharf.c (main): 
-	* FvwmScript/FvwmScript.c (LoadIcon): 
+	* FvwmWharf/icons.c:
+	* FvwmWharf/FvwmWharf.c (main):
+	* FvwmScript/FvwmScript.c (LoadIcon):
 	* FvwmGoodStuff/icons.c: replace findIconFile with findImageFile.
 
 Thu Mar  4 00:36:35 1999  Steve Robbins  <steve@nyongwa.montreal.qc.ca>
@@ -18,31 +44,31 @@ Thu Mar  4 00:36:35 1999  Steve Robbins  <steve@nyongwa.montreal.qc.ca>
 
 Thu Mar  4 00:34:31 1999  Steve Robbins  <steve@nyongwa.montreal.qc.ca>
 
-	* FvwmTaskBar/FvwmTaskBar.c: 
+	* FvwmTaskBar/FvwmTaskBar.c:
 	* FvwmTaskBar/Start.c: replaced IconPath by ImagePath.
 
 Wed Mar  3 23:56:22 1999  Steve Robbins  <steve@nyongwa.montreal.qc.ca>
 
-	* FvwmScript/FvwmScript.c (LoadIcon): 
-	* FvwmScript/Widgets/Tools.h: 
-	* FvwmWharf/Wharf.h: 
-	* FvwmWharf/FvwmWharf.c: 
-	* FvwmWharf/FvwmWharf.1: 
-	* FvwmWharf/icons.c: 
-	* FvwmGoodStuff/icons.c (GetXPMFile): 
-	* FvwmGoodStuff/FvwmGoodStuff.1: 
-	* FvwmGoodStuff/FvwmGoodStuff.h: 
+	* FvwmScript/FvwmScript.c (LoadIcon):
+	* FvwmScript/Widgets/Tools.h:
+	* FvwmWharf/Wharf.h:
+	* FvwmWharf/FvwmWharf.c:
+	* FvwmWharf/FvwmWharf.1:
+	* FvwmWharf/icons.c:
+	* FvwmGoodStuff/icons.c (GetXPMFile):
+	* FvwmGoodStuff/FvwmGoodStuff.1:
+	* FvwmGoodStuff/FvwmGoodStuff.h:
 	* FvwmGoodStuff/FvwmGoodStuff.c: replaced iconPath and pixmapPath
 	by imagePath.
 
 Sun Feb 28 12:10:31 1999  Steve Robbins  <steve@nyongwa.montreal.qc.ca>
 
 	* FvwmTaskBar/ButtonArray.h: include libs/Picture.h for Picture
-	defintion. 
+	defintion.
 
 Sun Feb 28 11:02:46 1999  Steve Robbins  <steve@nyongwa.montreal.qc.ca>
 
-	* FvwmTaskBar/Start.c: 
+	* FvwmTaskBar/Start.c:
 	* FvwmTaskBar/FvwmTaskBar.c: removed all traces of PixmapPath; use
 	IconPath only.
 

@@ -22,7 +22,7 @@ char *MyName;
 
 extern "C" void SetupPipeHandler(void);
 
- 
+
 WinInput *inwin;
 WinButton * cfocus, *cmouse,*fmouse, *fclick, *fsloppy, *nescroll, *escroll;
 WinColorSelector *hibackselwin, *hiforeselwin, *backselwin, *foreselwin;
@@ -69,7 +69,7 @@ void testaction(int newstate, WinButton *which)
   else if(focus == 0)
     SendInfo(fd,"Style \"*\" MouseFocus\n",0);
   else if(focus == 2)
-    SendInfo(fd,"Style \"*\" SloppyFocus\n",0);    
+    SendInfo(fd,"Style \"*\" SloppyFocus\n",0);
 
   if(colormap == 1)
     SendInfo(fd,"ColormapFocus FollowsFocus",0);
@@ -119,8 +119,8 @@ void testaction(int newstate, WinButton *which)
   if(edgescroll == 1)
     SendInfo(fd,"EdgeScroll 100 100",0);
   else if (edgescroll == 0)
-    SendInfo(fd,"EdgeScroll 0 0",0);	     
-  
+    SendInfo(fd,"EdgeScroll 0 0",0);
+
   if((focus == 1)||(focus == 0)||(fore_red >= 0)||(back_red >=0))
     SendInfo(fd,"Recapture",0);
 }
@@ -149,24 +149,24 @@ void commitaction(int newstate, WinButton *which)
       else if(focus == 0)
 	fprintf(nfd,"Style \"*\" MouseFocus\n");
       else if(focus == 2)
-	fprintf(nfd,"Style \"*\" SloppyFocus\n");          
+	fprintf(nfd,"Style \"*\" SloppyFocus\n");
 
       if(colormap == 1)
 	fprintf(nfd,"ColormapFocus FollowsFocus\n");
       else if (colormap == 0)
 	fprintf(nfd,"ColormapFocus FollowsMouse\n");
-      
+
       t = inwin->GetLine();
       if(strlen(inwin->GetLine()) > 2)
 	{
 	  if(sscanf(t,"%dx%d", &i, &i) == 2)
 	    fprintf(nfd,"DeskTopSize %s\n",inwin->GetLine());
 	}
-      
+
       if(edgescroll == 1)
 	fprintf(nfd,"EdgeScroll 100 100\n");
       else if (edgescroll == 0)
-	fprintf(nfd,"EdgeScroll 0 0\n");	     
+	fprintf(nfd,"EdgeScroll 0 0\n");
       if(fore_red >= 0)
 	{
 	  fprintf(nfd,"Style \"*\" ForeColor #%04x%04x%04x\n",(int)fore_red,
@@ -176,7 +176,7 @@ void commitaction(int newstate, WinButton *which)
 	{
 	  fprintf(nfd,"Style \"*\" BackColor #%04x%04x%04x\n",(int)back_red,
 		  (int)back_green, (int)back_blue);
-	}      
+	}
       if((hi_fore_red >= 0)||(hi_back_red >= 0))
 	{
 	  fprintf(nfd,"HilightColor #%04x%04x%04x #%04x%04x%04x\n",
@@ -188,7 +188,7 @@ void commitaction(int newstate, WinButton *which)
   exit(0);
 }
 
-void backcolorhandler(float red, float green, float blue, 
+void backcolorhandler(float red, float green, float blue,
 		      WinColorSelector *which)
 {
   back_red = red;
@@ -196,7 +196,7 @@ void backcolorhandler(float red, float green, float blue,
   back_blue = blue;
 }
 
-void forecolorhandler(float red, float green, float blue, 
+void forecolorhandler(float red, float green, float blue,
 		     WinColorSelector *which)
 {
   fore_red = red;
@@ -204,7 +204,7 @@ void forecolorhandler(float red, float green, float blue,
   fore_blue = blue;
 }
 
-void hibackcolorhandler(float red, float green, float blue, 
+void hibackcolorhandler(float red, float green, float blue,
 		      WinColorSelector *which)
 {
   hi_back_red = red;
@@ -212,7 +212,7 @@ void hibackcolorhandler(float red, float green, float blue,
   hi_back_blue = blue;
 }
 
-void hiforecolorhandler(float red, float green, float blue, 
+void hiforecolorhandler(float red, float green, float blue,
 		     WinColorSelector *which)
 {
   hi_fore_red = red;
@@ -229,11 +229,11 @@ void  colormapmouseaction(int newstate, WinButton *which)
     }
   else
     {
-      cfocus->PopOut(); 
+      cfocus->PopOut();
       colormap = 0;
       cfocus->RedrawWindow(0);
     }
- 
+
 }
 
 void  Scrollaction(int newstate, WinButton *which)
@@ -273,7 +273,7 @@ void  colormapfocusaction(int newstate, WinButton *which)
     }
   else
     {
-      cmouse->PopOut(); 
+      cmouse->PopOut();
       colormap = 1;
       cmouse->RedrawWindow(0);
     }
@@ -337,7 +337,7 @@ void ReadPacket(int fd)
   int n;
 
   ReadFvwmPacket(fd, header, &body);
-  
+
   if(header[1] == M_FOCUS_CHANGE)
     {
       if(hi_fore_red < 0)
@@ -345,7 +345,7 @@ void ReadPacket(int fd)
 	  hipixel = body[3];
 	  hibackpixel = body[4];
 	  colorcell.pixel = hipixel;
-	  n = XQueryColor(hiforeselwin->dpy, 
+	  n = XQueryColor(hiforeselwin->dpy,
 			  DefaultColormap(hiforeselwin->dpy,
 					  hiforeselwin->Screen),
 			  &colorcell);
@@ -354,7 +354,7 @@ void ReadPacket(int fd)
 	  hi_fore_blue = colorcell.blue & 0xffff;
 	  hiforeselwin->SetCurrentValue(hi_fore_red, hi_fore_green, hi_fore_blue);
 	  colorcell.pixel = hibackpixel;
-	  XQueryColor(hibackselwin->dpy, 
+	  XQueryColor(hibackselwin->dpy,
 		      DefaultColormap(hiforeselwin->dpy,
 				      hiforeselwin->Screen),
 		      &colorcell);
@@ -387,7 +387,7 @@ void ReadPacket(int fd)
 	  back_red = colorcell.red & 0xffff;
 	  back_green = colorcell.green & 0xffff;
 	  back_blue = colorcell.blue & 0xffff;
-	  backselwin->SetCurrentValue(back_red, back_green, back_blue);      
+	  backselwin->SetCurrentValue(back_red, back_green, back_blue);
 	  if(body[8] & ClickToFocus)
 	    focus = 1;
 	  if(body[8] & SloppyFocus)
@@ -419,7 +419,7 @@ void ReadPacket(int fd)
 	      fsloppy->PopOut();
 	      fsloppy->RedrawWindow(0);
 	    }
-	  
+
 	}
     }
   else if(header[1] == M_NEW_PAGE)
@@ -436,7 +436,7 @@ void ReadPacket(int fd)
 	  nx = vxmax/sx + 1;
 	  ny = vymax/sy + 1;
 	  sprintf(size,"%dx%d",nx,ny);
-	  inwin->SetLabel(size);    
+	  inwin->SetLabel(size);
 	  size_read = 1;
 	}
     }
@@ -453,17 +453,17 @@ int main(int argc, char **argv)
   s=strrchr(argv[0], '/');
   if (s != NULL)
     temp = s + 1;
-  
+
   MyName = safemalloc(strlen(temp)+2);
   strcpy(MyName, temp);
-  
+
   if(argc  < 6)
     {
       fprintf(stderr,"%s Version %s should only be executed by fvwm!\n",MyName,
 	      VERSION);
       exit(1);
     }
-  
+
   /* Dead pipe == Fvwm died */
   SetupPipeHandler();
   fd[0] = atoi(argv[1]);
@@ -471,7 +471,7 @@ int main(int argc, char **argv)
 
   WinInitialize(argv,argc);
   WinAddInput(fd[1],ReadPacket);
-  SendInfo(fd,"Send_WindowList",0);
+  SendInfo(fd,"SendWindowList",0);
   WinBase a(NULL,300,WINDOW_HEIGHT,0,0);
   pwin = a.win;
   base = &a;
@@ -480,7 +480,7 @@ int main(int argc, char **argv)
   a.SetBevelWidth(3);
   a.SetGeometry((a.ScreenWidth() - 200)/2,(a.ScreenHeight()-200)/2,
 		300,WINDOW_HEIGHT,
-		1,1,500,500,1,1,1,1,CenterGravity); 
+		1,1,500,500,1,1,1,1,CenterGravity);
 
   WinText keyboard(&a,280,20,10,6,"Keyboard Focus");
   keyboard.SetBevelWidth(0);
@@ -545,7 +545,7 @@ int main(int argc, char **argv)
   hibackcolor.SetMotionAction(hibackcolorhandler);
   hiforecolor.SetMotionAction(hiforecolorhandler);
 
-  
+
   WinButton testbutton(&a,60,20,30,WINDOW_HEIGHT-30,"Test");
   WinButton commitbutton(&a,60,20,120,WINDOW_HEIGHT-30,"Commit");
   testbutton.MakeMomentary();

@@ -741,13 +741,13 @@ int main (int argc, char **argv)
 
  ParseOptions();
 
- SendText(fd,"Send_WindowList",0);
+ SendText(fd,"SendWindowList",0);
 
- ReadConfig(ScriptName);	/* Lecture et analyse du script */
+ ReadConfig(ScriptName);   /* Lecture et analyse du script */
 
- InitCom();			/* Fonction d'initialisation de TabCom et TabFunc   */
+ InitCom();		   /* Fonction d'initialisation de TabCom et TabFunc */
 
- BuildGUI(IsFather);			/* Construction des boutons et de la fenetre */
+ BuildGUI(IsFather);	   /* Construction des boutons et de la fenetre */
 
  ReadFvwmScriptArg(argc,argv,IsFather);
 

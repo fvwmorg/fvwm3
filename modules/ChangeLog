@@ -1,3 +1,24 @@
+1999-03-05  Dominik Vogt  <dominik_vogt@hp.com>
+
+	* FvwmForm/FvwmForm.c (ReadDefaults):
+	(ReadConfig):
+
+	* FvwmWinList/FvwmWinList.c (main):
+	* FvwmSave/FvwmSave.c (main):
+	* FvwmSaveDesk/FvwmSaveDesk.c (main):
+	* FvwmRearrange/FvwmRearrange.c (main):
+	* FvwmPager/FvwmPager.c (main):
+	* FvwmIdent/FvwmIdent.c (main):
+	* FvwmIconMan/FvwmIconMan.c (main):
+	* FvwmIconBox/FvwmIconBox.c (main):
+	* FvwmButtons/FvwmButtons.c (main):
+	(swallow):
+	* FvwmBacker/FvwmBacker.c (main):
+	Renamed builtin functions
+	  Send_ConfigInfo -> SendConfigInfo
+	  Send_WindowList -> SendWindowList
+	  set_mask        -> SetMask
+
 Thu Mar  4 19:31:11 1999  Steve Robbins  <steve@nyongwa.montreal.qc.ca>
 
 	* FvwmPager/FvwmPager.c: replaced IconPath and PixmapPath code
@@ -5,27 +26,27 @@ Thu Mar  4 19:31:11 1999  Steve Robbins  <steve@nyongwa.montreal.qc.ca>
 
 Thu Mar  4 01:43:06 1999  Steve Robbins  <steve@nyongwa.montreal.qc.ca>
 
-	* FvwmIconBox/icons.c: 
+	* FvwmIconBox/icons.c:
 	* FvwmBanner/FvwmBanner.c (GetXPMFile): replace findIconFile with
-	findImageFile. 
+	findImageFile.
 
 Thu Mar  4 00:39:54 1999  Steve Robbins  <steve@nyongwa.montreal.qc.ca>
 
 	* FvwmSaveDesk/example/fvwm2rc: removed Pixmap, Icon, and Module
-	paths. 
+	paths.
 
 Thu Mar  4 00:39:15 1999  Steve Robbins  <steve@nyongwa.montreal.qc.ca>
 
-	* FvwmIconBox/FvwmIconBox.1: 
-	* FvwmButtons/FvwmButtons.1: 
-	* FvwmBanner/FvwmBanner.c: 
+	* FvwmIconBox/FvwmIconBox.1:
+	* FvwmButtons/FvwmButtons.1:
+	* FvwmBanner/FvwmBanner.c:
 	* FvwmIconBox/icons.c:
-	* FvwmBanner/FvwmBanner.c: 
-	* FvwmIconBox/FvwmIconBox.h: 
-	* FvwmButtons/FvwmButtons.h: 
-	* FvwmIconBox/icons.c (GetBackPixmap): 
-	* FvwmIconBox/FvwmIconBox.c (ParseOptions): 
-	* FvwmButtons/parse.c (ParseOptions): 
+	* FvwmBanner/FvwmBanner.c:
+	* FvwmIconBox/FvwmIconBox.h:
+	* FvwmButtons/FvwmButtons.h:
+	* FvwmIconBox/icons.c (GetBackPixmap):
+	* FvwmIconBox/FvwmIconBox.c (ParseOptions):
+	* FvwmButtons/parse.c (ParseOptions):
 	* FvwmButtons/FvwmButtons.c: replace IconPath by ImagePath.
 
 1999-03-03  Johan Bengtsson  <johanb@DoCS.UU.SE>
@@ -36,16 +57,16 @@ Thu Mar  4 00:39:15 1999  Steve Robbins  <steve@nyongwa.montreal.qc.ca>
  	they are mentioned above. In order to do this, the Dcolor and
 	bgPixmap fields in the desk structure are now only used if the
 	desk has been assigned a specific colour or pixmap.
-	
+
 	Introduced an option to disable hilighting of the current desk.
-		
+
 	* FvwmPager/FvwmPager.1
 	Added sections for the new configuration options.
 
 	* FvwmPager/FvwmPager.c:
 	(main): The Dcolor and bgPixmap fields of the desks are now
-	initialised to NULL. 
-	Hilighting is turned off if no hilight colour or pixmap is specified. 
+	initialised to NULL.
+	Hilighting is turned off if no hilight colour or pixmap is specified.
 	Setting the colour and font variables to default values are now
 	only done if they have not been set by the configuration file.
 	(list_new_desk): Introduced the new ordering of backgrounds, and
@@ -78,15 +99,15 @@ Thu Mar  4 00:39:15 1999  Steve Robbins  <steve@nyongwa.montreal.qc.ca>
 
 Sun Feb 28 11:49:24 1999  Steve Robbins  <steve@nyongwa.montreal.qc.ca>
 
-	* FvwmWinList/ButtonArray.h: 
-	* FvwmPager/FvwmPager.h: 
+	* FvwmWinList/ButtonArray.h:
+	* FvwmPager/FvwmPager.h:
 	* FvwmIconMan/FvwmIconMan.h: include libs/Picture.h to get Picture
-	definitions. 
+	definitions.
 
 Sun Feb 28 10:24:53 1999  Steve Robbins  <steve@nyongwa.montreal.qc.ca>
 
 	* FvwmButtons/parse.c
-	* FvwmButtons/FvwmButtons.c: 
+	* FvwmButtons/FvwmButtons.c:
 	* FvwmButtons/FvwmButtons.h: removed all traces of pixmapPath, as
 	it is no longer used.
 
@@ -155,21 +176,21 @@ Sat Feb 27 11:55:27 1999  DanEspen  <dje@blue>
 
 	* FvwmPager: Added configuration options; Pixmap,
 	DeskPixmap, HilightPixmap, LabelsBelow, LabelsAbove, ShapeLabels,
-	NoShapeLabels. 
+	NoShapeLabels.
 
 	* FvwmPager/FvwmPager.c:
- 	(main): Added initialisation of picture handling from fvwmlib. 
+ 	(main): Added initialisation of picture handling from fvwmlib.
         (list_new_desk): If a pixmap background is defined for a desk it
-	is installed instead of a background colour. Now the label colour is 
+	is installed instead of a background colour. Now the label colour is
 	updated according to the used desk.
 	(ParseOptions): Added code to read IconPath and PixmapPath from
 	the configuration file.
 	  Added code to recognise the new configuration options and
-        NoStartIconic. 
-	
+        NoStartIconic.
+
 	* FvwmPager/FvwmPager.h:
  	(desk_info): Added field bgPixmap, to keep track of background
-	pixmap of this specific desk. Removed unused fields x and y. 
+	pixmap of this specific desk. Removed unused fields x and y.
 	(pager_string_list): Added field bgPixmap to keep track of
 	background pixmap for this specific desk.
 
@@ -181,11 +202,11 @@ Sat Feb 27 11:55:27 1999  DanEspen  <dje@blue>
 	  If a hilight pixmap is defined, it is used instead of a hilight
 	colour.
 	(UpdateWindowShape): Added a function adding a shape mask,
-	containing the defined desks and the label of the current desk, to 
+	containing the defined desks and the label of the current desk, to
 	the pager window if ShapeLabels is on.
 	(DrawGrid): Modified to hilighting code to turn off hilighting of
  	the label of the current desk if ShapeLabels is on.
-          Modified the label drawing code to draw the desk label below the 
+          Modified the label drawing code to draw the desk label below the
 	desk if LabelsBelow is on
 	  Added call to UpdateWindowShape at the end of the function.
 

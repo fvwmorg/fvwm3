@@ -225,7 +225,7 @@ int main(int argc, char **argv)
 
   /* Request a list of all windows,
    * wait for ConfigureWindow packets */
-  SendFvwmPipe("Send_WindowList",0);
+  SendFvwmPipe("SendWindowList",0);
 
   /* Receive all messages from Fvwm */
   EndLessLoop();

@@ -230,7 +230,7 @@ int main(int argc, char **argv)
 
   CreateWindow();
 
-  SendFvwmPipe(fd,"Send_WindowList",0);
+  SendFvwmPipe(fd,"SendWindowList",0);
 
   Loop();
   return 0;

@@ -88,7 +88,8 @@ void nocolor(const char *a, const char *b) __attribute__((__noreturn__));
 Pixel GetColor(char *name);
 int My_XNextEvent(Display *dpy, XEvent *event);
 void process_message(unsigned long type,unsigned long *body);
-extern void send_clientmessage (Display *disp, Window w, Atom a, Time timestamp);
+extern void send_clientmessage (Display *disp, Window w, Atom a,
+				Time timestamp);
 void CheckForHangon(unsigned long*);
 Window GetRealGeometry(Display*,Window,int*,int*,ushort*,ushort*,
 		       ushort*,ushort*);
@@ -666,7 +667,7 @@ int main(int argc, char **argv)
   /* request a window list, since this triggers a response which
    * will tell us the current desktop and paging status, needed to
    * indent buttons correctly */
-  MySendText(fd,"Send_WindowList",0);
+  MySendText(fd,"SendWindowList",0);
 
 # ifdef DEBUG_INIT
   fprintf(stderr,"OK\n%s: Startup complete\n",MyName);
@@ -1767,7 +1768,7 @@ void swallow(unsigned long *body)
 
 	    /* Request a new windowlist, we might have ignored another
 	       matching window.. */
-	    SendText(fd,"Send_WindowList",0);
+	    SendText(fd,"SendWindowList",0);
 
 	    /* Back one square and lose one turn */
 	    b->swallow&=~b_Count;
