@@ -258,7 +258,13 @@ static int ParseBinding(
 
 	/* tline points after the key word "Mouse" or "Key" */
 	token = p = PeekToken(tline, &ptr);
-	/* check to see if a window name has been specified. */
+ 	/* check to see if a window name has been specified. */
+	if (p == NULL)
+	{
+		fvwm_msg(
+			ERR, "ParseBinding", "empty %s binding, ignored\n",tline);
+		return 0;
+	}
 	if (*p == '(')
 	{
 		/* A window name has been specified for the binding. */

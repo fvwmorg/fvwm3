@@ -1034,6 +1034,17 @@ static void direction_cmd(F_CMD_ARGS, Bool is_scan)
 	{
 		cycle = True;
 		tmp = PeekToken(action, &action);
+		if ( ! tmp )
+		{
+			fvwm_msg(
+				ERR, "Direction", "Missing minor direction %s",
+				(tmp) ? tmp : "");
+			if (cond_rc != NULL)
+			{
+				cond_rc->rc = COND_RC_ERROR;
+			}
+			return;
+		}
 		dir2 = gravity_parse_dir_argument(tmp, NULL, -1);
 		/* if enum direction_t changes, this is trashed. */
 		if (dir2 == -1 || dir2 > DIR_NW ||
