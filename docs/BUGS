@@ -68,7 +68,7 @@ later versions.
 
 ----------------------------------------------------------------------
 
-Fvwm attempts to be ICCCM 1.1 compliant.  In addition, ICCCM
+Fvwm attempts to be ICCCM 2 compliant.  In addition, ICCCM
 states that it should be possible for applications to receive ANY
 keystroke, which is not consistent with the keyboard shortcut approach
 used in fvwm and most other window managers. In particular you

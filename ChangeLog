@@ -1,3 +1,10 @@
+1999-03-05  Johan Bengtsson  <johanb@DoCS.UU.SE>
+
+	* libs/System.c (searchPath): Fixed a potential off by two error.
+	When space was allocated for the file name, a directory separator
+	and the null termination was not taken into account. This was only
+	triggered when the path only contained one directory.
+
 Thu Mar  4 19:18:26 1999  Steve Robbins  <steve@nyongwa.montreal.qc.ca>
 
 	* fvwm/fvwm2.1 (Iconify): re-worded to put the current syntax
@@ -73,8 +80,8 @@ Thu Mar  4 00:55:34 1999  Steve Robbins  <steve@nyongwa.montreal.qc.ca>
 Thu Mar  4 00:44:06 1999  Steve Robbins  <steve@nyongwa.montreal.qc.ca>
 
 	* fvwm/fvwm2.1:
-	* libs/XResource.c: 
-	* configure.in: 
+	* libs/XResource.c:
+	* configure.in:
 	* fvwm/builtins.c:
 	* fvwm/functions.c:
 	* fvwm/misc.h:
@@ -83,7 +90,7 @@ Thu Mar  4 00:44:06 1999  Steve Robbins  <steve@nyongwa.montreal.qc.ca>
 
 Wed Mar  3 21:05:11 1999  Steve Robbins  <steve@nyongwa.montreal.qc.ca>
 
-	* sample.fvwmrc/system.fvwm2rc-sample-2: 
+	* sample.fvwmrc/system.fvwm2rc-sample-2:
 	* sample.fvwmrc/new-features: changed PixmapPath and IconPath to
 	ImagePath.
 
@@ -202,14 +209,14 @@ Sun Feb 28 11:03:42 1999  Steve Robbins  <steve@nyongwa.montreal.qc.ca>
 	PixmapPath.  The path parameter may be NULL, in which case the
 	default path -- the one set by SetIconPath() -- is used.
 
-	* fvwm/add_window.c: 
+	* fvwm/add_window.c:
 	* fvwm/builtins.c:
 	* fvwm/functions.c:
 	* fvwm/fvwm.h:
 	* fvwm/icons.c:
 	* fvwm/menus.c:
-	* fvwm/misc.h: 
-	* fvwm/modconf.c: 
+	* fvwm/misc.h:
+	* fvwm/modconf.c:
 	Fixes for the findIconFile(), GetPicture(), and CachePicture()
 	changes.  The PixmapPath command is temporarily retained; it gives
 	a warning, and then calls IconPath.

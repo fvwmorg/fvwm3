@@ -1,11 +1,16 @@
+1999-03-05  Dominik Vogt  <dominik_vogt@hp.com>
+
+	* features.html:
+	* BUGS: updated "ICCCM 1.1" to "ICCCM 2"
+
 Thu Mar  4 00:42:09 1999  Steve Robbins  <steve@nyongwa.montreal.qc.ca>
 
 	* TODO: removed item about coalescing PixmapPath with IconPath.
 
 Thu Mar  4 00:31:59 1999  Steve Robbins  <steve@nyongwa.montreal.qc.ca>
 
-	* mod_m2f_communication.html: 
-	* mod_f2m_communication.html: 
+	* mod_m2f_communication.html:
+	* mod_f2m_communication.html:
 	* FAQ: documented IconPath, PixmapPath change to ImagePath.
 
 Sun Feb 28 08:29:59 1999  Steve Robbins  <steve@nyongwa.montreal.qc.ca>
@@ -18,9 +23,9 @@ Sat Feb 27 11:19:51 1999  Steve Robbins  <steve@nyongwa.montreal.qc.ca>
 
 1999-02-26  Steven Michael ROBBINS  <stever@jeff.cs.mcgill.ca>
 
-	* cvs.html: 
+	* cvs.html:
 	* DEVELOPERS: document "automake --add-missing" step upon initial
-	checkout. 
+	checkout.
 
 Tue Feb 23 10:31:22 1999  Steve Robbins  <steve@nyongwa.montreal.qc.ca>
 

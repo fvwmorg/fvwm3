@@ -63,7 +63,8 @@ char* searchPath( char* pathlist, char* filename, char* suffix, int type )
     l = (pathlist) ? strlen(pathlist) : 0;
     l += (suffix) ? strlen(suffix) : 0;
     
-    path = safemalloc( strlen(filename) + l );
+    /* +1 for extra / and +1 for null termination */
+    path = safemalloc( strlen(filename) + l + 2 );
     *path = '\0';
 
     if (*filename == '/' || pathlist == NULL || *pathlist == '\0')
