@@ -246,7 +246,7 @@ shape_n_join(FriBidiChar *str_visual, int str_len)
 				 * 2-characters that become 1 */
 				combined = get_shaped_combined_char(
 					curr->base, next->base,	prev != NULL);
-#if 0
+
 				if (combined)
 				{
 					str_visual[i] = combined;
@@ -280,11 +280,9 @@ shape_n_join(FriBidiChar *str_visual, int str_len)
 						curr->initial:
 						curr->isolated;
 				}
-#endif
 			}
 			else
 			{
-#if 0
 				if (prev)
 				{
 					if (!prev->initial || !prev->medial)
@@ -303,13 +301,12 @@ shape_n_join(FriBidiChar *str_visual, int str_len)
 				{
 					str_visual[i] = curr->isolated;
 				}
-#endif
 			}
 		}
 	}
 
 	free(list-1);
-	return 1;
+	return str_len;
 }
 
 #endif /* HAVE_BIDI */

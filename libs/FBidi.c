@@ -28,6 +28,7 @@
 #include "FBidiJoin.h"
 #include <fribidi/fribidi.h>
 #include "safemalloc.h"
+#include <stdio.h>
 
 Bool FBidiIsApplicable(const char *charset)
 {
@@ -42,22 +43,19 @@ char *FBidiConvert(
 	const char *logical_str, const char *charset, int str_len, Bool *is_rtl,
 	int *out_len)
 {
-
 	char *visual_str;
 	FriBidiCharSet fribidi_charset;
 	FriBidiChar *logical_unicode_str;
 	FriBidiChar *visual_unicode_str;
 	FriBidiCharType pbase_dir = FRIBIDI_TYPE_ON;
 
-	if (logical_str == NULL)
-		return NULL;
-
-	if (str_len < 0)
-		str_len = strlen(logical_str);
-
-	if (charset == NULL)
+	if (logical_str == NULL || charset == NULL)
 	{
 		return NULL;
+	}
+	if (str_len < 0)
+	{
+		str_len = strlen(logical_str);
 	}
 	if (is_rtl != NULL)
 	{
@@ -70,11 +68,9 @@ char *FBidiConvert(
 		return NULL;
 	}
 
-	visual_str = (char *)safemalloc((str_len + 1) * sizeof(char));
-
 	/* it is possible that we allocate a bit more here, if utf-8 */
 	logical_unicode_str =
-		(FriBidiChar *)alloca((str_len + 1) * sizeof(FriBidiChar));
+		(FriBidiChar *)safemalloc((str_len + 1) * sizeof(FriBidiChar));
 
 	/* convert to unicode first */
 	str_len = fribidi_charset_to_unicode(
@@ -82,7 +78,7 @@ char *FBidiConvert(
 		logical_unicode_str);
 
 	visual_unicode_str =
-		(FriBidiChar *)alloca((str_len + 1) * sizeof(FriBidiChar));
+		(FriBidiChar *)safemalloc((str_len + 1) * sizeof(FriBidiChar));
 
 	/* apply bidi algorithm, convert logical string to visual string */
 	fribidi_log2vis(
@@ -90,7 +86,9 @@ char *FBidiConvert(
 		visual_unicode_str, NULL, NULL, NULL);
 
 	/* character shape/join - will get pulled into fribidi with time */
-	(void)shape_n_join(visual_unicode_str, str_len);
+	str_len = shape_n_join(visual_unicode_str, str_len);
+
+	visual_str = (char *)safemalloc((4 * str_len + 1) * sizeof(char));
 
 	/* convert from unicode finally */
 	*out_len = fribidi_unicode_to_charset(
@@ -101,6 +99,8 @@ char *FBidiConvert(
 		*is_rtl = True;
 	}
 
+	free(logical_unicode_str);
+	free(visual_unicode_str);
 	return visual_str;
 }
 
