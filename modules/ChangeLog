@@ -1,3 +1,16 @@
+1999-05-09  Matthias Clasen  <clasen@mathematik.uni-freiburg.de>
+
+	* FvwmGtk/FvwmGtk.c: improved window list; it displays
+	geometry and mini-icon now and knows the options
+	"NoGeometry", "NoMiniIcon", "Desk n", "CurrentDesk", 
+	"UseIconName", "Icons/NoIcons/OnlyIcons", 
+	"Sticky/NoSticky/OnlySticky", "Normal/NoNormal/OnlyNormal".
+
+	* FvwmGtk/FvwmGtk.c: split off a couple of smaller files: 
+	{dialog,expand,menu,windowlist}.[ch].
+	
+	* FvwmGtk/Makefile.am: add the new files.
+
 Sat May  8 11:55:10 1999  DanEspen  <dje@blue>
 
 	* FvwmEvent/Makefile.am  (install-exec-local): rm FvwmAudio before

@@ -115,7 +115,10 @@ also used by fvwm for its builtin window-list.
 
 .IP "*FvwmGtkWindowList \fBname\fP [ \fBoption\fP... ]"
 Creates a window-list bound to \fBname\fP. The window-list will be 
-formatted according to the given options. 
+formatted according to the given options. Currently supported options are
+"NoGeometry", "NoMiniIcon", "UseIconName", "Desk n", "CurrentDesk", 
+"Icons/NoIcons/OnlyIcons", "Sticky/NoSticky/OnlySticky", 
+"Normal/NoNormal/OnlyNormal".
 
 
 .SH DIALOGS
@@ -242,7 +245,6 @@ Appends a separator to the currently open menu, row or column.
 
 .IP "*FvwmGtkDestroy \fBname\fP"
 Destroys the specified menu or dialog. 
-.SH GTK RC FILES
 
 .IP "*FvwmGtkRCFile \fBfile\fP"
 Note that this command should be issued before defining any menus
@@ -251,15 +253,15 @@ standard GNOME rc files, switching themes via the control-center will
 apply to FvwmGtk widets as well, giving a very integrated appearance
 of the desktop.
 
-.IP "*FvwmGtkIconSize [ \fBw\fP \fBh\fP ]"
+.IP "*FvwmGtkIconSize [ \fBwidth\fP \fBheight\fP ]"
 If FvwmGtk has been compiled with imlib support, icons will be scaled
-to the size set by this command. Omitting the arguments disables the
-scaling. Note that there is currently no way to change the amount of room
-which is free for icons, thus using a w of more than 20 will not be very
+to the size set by this command. Omitting the arguments disables scaling. 
+Note that there is currently no way to change the amount of room left 
+free for icons, thus using a width of more than 20 will not be very
 useful.
 
 .SH COMMANDS
-To pop up one of the previously defined menus or dialogs, use the fvwm2 
+To invoke one of the previously defined menus or dialogs, use the fvwm2 
 command \fISendToModule\fP.
 
 .IP "SendToModule FvwmGtk \fBname\fP \fBbutton\fP"
@@ -278,7 +280,8 @@ Mouse 1 R A SendToModule FvwmGtk Quit-Verify-Dialog
 \fIMatthias Clasen\fP <clasen@mathematik.uni-freiburg.de>
 
 .SH ACKNOWLEDGMENTS
-The gtkpixmapmenuitem code is taken from libgnomeui.
+The gtkpixmapmenuitem code and the code for underline accelerators is 
+taken from libgnomeui.
 
 .SH BUGS
 \fBFvwmGtk\fP should be turned into a Gnome application.
