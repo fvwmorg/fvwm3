@@ -21,8 +21,9 @@
 #ifdef HAVE_EWMH
 /* Extended window manager hints support */
 
-/* #define EWMH_DEBUG */
+/*#include "fvwm.h"*/
 
+/* #define EWMH_DEBUG */
 #ifdef EWMH_DEBUG
 #include <stdarg.h>
 #include <time.h>
@@ -84,6 +85,17 @@ typedef enum
   _NET_WM_MOVERESIZE_MOVE
 } ewmh_move_resize;
 
+typedef struct ewmh_info
+{
+  unsigned NumberOfDesktops;
+  unsigned MaxDesktops;
+  unsigned CurrentNumberOfDesktops;
+  Bool NeedsToCheckDesk;
+  ewmh_strut BaseStrut;
+} ewmhInfo;
+
+extern ewmhInfo ewmhc;
+
 #define EWMH_CMD_ARGS FvwmWindow *fwin, XEvent *ev, window_style *style
 
 ewmh_atom *ewmh_GetEwmhAtomByAtom(Atom atom, ewmh_atom_list_name list_name);
@@ -114,7 +126,7 @@ void ewmh_HandleWindowType(FvwmWindow *fwin, window_style *style);
 int ewmh_CurrentDesktop(EWMH_CMD_ARGS);
 int ewmh_DesktopGeometry(EWMH_CMD_ARGS);
 int ewmh_DesktopViewPort(EWMH_CMD_ARGS);
-int ewmh_NumberOfDesktop(EWMH_CMD_ARGS);
+int ewmh_NumberOfDesktops(EWMH_CMD_ARGS);
 
 int ewmh_ActiveWindow(EWMH_CMD_ARGS);
 int ewmh_CloseWindow(EWMH_CMD_ARGS);

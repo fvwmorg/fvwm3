@@ -103,13 +103,8 @@ static int SmartPlacement(
       test_window = Scr.FvwmRoot.next;
       for ( ; test_window != NULL && loc_ok; test_window = test_window->next)
       {
-	if (t == test_window)
+	if (t == test_window || IS_EWMH_DESKTOP(test_window->w))
 	  continue;
-
-#ifdef HAVE_EWMH
-	if (Scr.EwmhDesktop && test_window->w == Scr.EwmhDesktop->w)
-	  continue;
-#endif
 
         /*  RBW - account for sticky windows...  */
         if (test_window->Desk == t->Desk || IS_STICKY(test_window))
@@ -251,13 +246,9 @@ static int get_next_x(
   /* Test the values of the right edges of every window */
   for (testw = Scr.FvwmRoot.next ; testw != NULL ; testw = testw->next)
   {
-    if (testw == t || (testw->Desk != t->Desk && !IS_STICKY(testw)))
+    if (testw == t || (testw->Desk != t->Desk && !IS_STICKY(testw)) ||
+	IS_EWMH_DESKTOP(testw->w))
       continue;
-
-#ifdef HAVE_EWMH
-    if (Scr.EwmhDesktop && testw->w == Scr.EwmhDesktop->w)
-      continue;
-#endif
 
     if (IS_STICKY(testw))
     {
@@ -318,13 +309,9 @@ static int get_next_y(
   /* Test the values of the bottom edge of every window */
   for (testw = Scr.FvwmRoot.next ; testw != NULL ; testw = testw->next)
   {
-    if (testw == t || (testw->Desk != t->Desk && !IS_STICKY(testw)))
+    if (testw == t || (testw->Desk != t->Desk && !IS_STICKY(testw))
+	|| IS_EWMH_DESKTOP(testw->w))
       continue;
-
-#ifdef HAVE_EWMH
-    if (Scr.EwmhDesktop && testw->w == Scr.EwmhDesktop->w)
-      continue;
-#endif
 
     if (IS_STICKY(testw))
     {
@@ -395,13 +382,9 @@ static float test_fit(
     return -2;
   for (testw = Scr.FvwmRoot.next ; testw != NULL ; testw = testw->next)
   {
-    if (testw == t || (testw->Desk != t->Desk && !IS_STICKY(testw)))
+    if (testw == t || (testw->Desk != t->Desk && !IS_STICKY(testw))
+	|| IS_EWMH_DESKTOP(testw->w))
        continue;
-
-#ifdef HAVE_EWMH
-    if (Scr.EwmhDesktop && testw->w == Scr.EwmhDesktop->w)
-      continue;
-#endif
 
     if (IS_STICKY(testw))
     {

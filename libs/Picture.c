@@ -342,7 +342,6 @@ void DestroyPicture(Display *dpy, Picture *p)
   free(p);
 }
 
-#ifdef HAVE_EWMH
 Picture *LoadPictureFromPixmap(Display *dpy, Window Root, char *name,
 			       Pixmap pixmap, Pixmap mask, int width, int height)
 {
@@ -393,7 +392,6 @@ Picture *CachePictureFromPixmap(Display *dpy, Window Root,char *name,
 
   return p;
 }
-#endif
 
 #ifdef XPM
 /* This structure is used to quickly access the RGB values of the colors */

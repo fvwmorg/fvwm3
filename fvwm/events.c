@@ -2926,12 +2926,10 @@ int GetContext(FvwmWindow *t, XEvent *e, Window *w)
   {
     if (*w == t->title_w)
       Context = C_TITLE;
-#ifdef HAVE_EWMH
     else if (Scr.EwmhDesktop &&
 	     (*w == Scr.EwmhDesktop->w || *w == Scr.EwmhDesktop->Parent ||
 	      *w == Scr.EwmhDesktop->frame))
       Context = C_EWMH_DESKTOP;
-#endif
     else if (*w == t->w || *w == t->Parent || *w == t->frame)
       Context = C_WINDOW;
     else if (*w == t->icon_w || *w == t->icon_pixmap_w)

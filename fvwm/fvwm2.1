@@ -750,8 +750,10 @@ style can be used.
 
 .SH EXTENDED WINDOW MANAGER HINTS
 
-Fvwm attempts to respect the extended window manager hints specification:
-.BR http://www.freedesktop.org/standards/wm-spec.html "."
+Fvwm attempts to respect the extended window manager hints 
+(ewmh or EWMH for short) specification:
+.BR http://www.freedesktop.org/standards/wm-spec.html
+and some extensions of this specification.
 This allows fvwm to work with
 .SM KDE
 version >= 2,
@@ -759,17 +761,59 @@ version >= 2,
 version 2 and others applications which respect this specification (as
 any application based on
 .SM GTK+
-version 2).
-This support is a compile time option which is off by default 
-(use the --enable-ewmh option to configure to enable it).
-The commands which concern this support can be found
-in the section
-.B EXTENDED WM HINTS COMMANDS
-(not yet written as nothing is configurable yet).
+version 2). Applications which respect this specification will
+be called an ewmh compliant applications.
+
+This support is configurable with styles and commands. 
+All these styles and commands have
+.SM EWMH
+as prefix (so you can find them easily in this man page).
+
 You must be award that there is a new Context 'D' for the 
 .BR Key ", " PointerKey ", " Mouse " and " Stroke
 commands. This context is for desktop
 applications (as kdesktop and Nautilus desktop).
+
+When a compliant taskbar ask fvwm to activate a window (typically
+when you click on a button which represents a window in such taskbar),
+then fvwm call the complex function
+.B EWMHActivateWindowFunc
+which by default Iconify Off, Focus and Raise. You can redefine this
+function:
+.EX
+DestroyFunc EWMHActivateWindowFunc
+AddToFunc EWMHActivateWindowFunc I Iconify Off
++ I Focus
++ I Raise
++ I WarpToWindow 50 50
+.EE
+additionally warp the cursor in the center of the window.
+
+The
+.SM EWMH
+specification introduce the notion of Working Area.
+Without ewmh support the Working Area is the full visible screen
+(or all your screens if you have a multi head setup and you use Xinerama).
+However, compliant applications (as a panel) can ask to reserve space
+at the edge of the screen.
+If it is the case, the Working Area is your
+full visible screen minus these reserved spaces. If a panel can be
+hidden by clicking by a button the Working Area does not change (as
+you can unhide the panel at any time), but the Dynamic Working Area
+is updated: the reserved space by the panel is removed (and added
+again if you pop up the panel). The (Dynamic) Working Area may be used
+when fvwm places or maximizes a window.  
+To know if an application reserve some space you can type
+"xprop | grep _NET_WM_STRUT" in a terminal and select the application.
+If four numbers appear then these numbers define the reserved space
+as it is explained in the
+.B EWMHBaseStrut
+command.
+
+This support can be disabled at compile time
+(use the --disable-ewmh option to configure).
+.\" This support is a compile time option which is off by default 
+.\" (use the --enable-ewmh option to configure to enable it).
 
 .SH MWM COMPATIBILITY
 
@@ -4263,7 +4307,8 @@ is the mouse button number.  If
 is zero then any button performs the specified function.
 .I Context
 describes where the binding applies.  Valid contexts are 'R' for
-the root window, 'W' for an application window, 'T' for a window
+the root window, 'W' for an application window, 'D' for a desktop
+application (as kdesktop or Nautilus desktop), 'T' for a window
 title-bar, 'S' for a window side, top, or bottom bar, 'F' for a
 window frame (the corners), 'I' for an Icon window, or '0' through
 '9' for title-bar buttons, or any combination of these letters.
@@ -6601,6 +6646,69 @@ The number of active desktops is determined dynamically.  Only
 desktops which contain windows or are currently being displayed
 are active.  Desktop numbers must be between 2147483647 and
 -2147483648 (is that enough?).
+
+.TP
+.BI "EWMHBaseStrut " left " " right " " top " " bottom
+Where left, right, top and bottom are positive or null integers which
+define bands at the edge of the screen.
+.I left
+defines a band on the left of your screen of width
+.IR left ","
+.I right
+defines a band on the right of your screen of width
+.IR right ","
+.I top
+defines a band on the top of your screen of height
+.I top
+and
+.I bottom
+defines a band on the bottom of your screen of height
+.IR bottom "."
+The unit is the pixel and the default is 0 0 0 0.
+These areas define additional reserved space to the reserved space
+defined by some ewmh compliant applications. This is used to compute
+the Working Area. See the
+.B EXTENDED WINDOW MANAGER HINTS
+section for a definition of the Working Area.
+.\" You can override the Working Area by using this command together
+.\" with the command "Style * IgnoreWmStrut"
+
+.TP
+.BI "EWMHNumberOfDesktops " num "  [" max "]"
+This command is useful only for an ewmh compliant pager or taskbar
+(as kpager or kicker taskbar) and not for an fvwm module (as FvwmPager
+or FvwmIconMan). It causes a compliant application to
+consider at least
+.I num
+desktops (desktop 0 to desktop
+.IR num "-1)."
+The optional argument
+.I max
+causes a compliant application to never consider more than
+.I max
+desktops. If
+.I max
+is 0 (the default) there is no limitation.
+The actual mumbler of desktops is determined dynamically.
+It is at least
+.IR num ","
+but it can be d if there is a window on desktop d-1 (or if
+the current desktop is desktop d-1) and d is less or equal to
+.I max
+or 
+.I max
+is null.
+Moreover, a compliant pager can ask to change
+.I num
+itself.
+This will be accepted by fvwm only if this number is
+less or equal to
+.I max
+or if
+.I max
+is null.
+Note that negative desktops are not supported by the ewmh specification. 
+The default is 4 0.
 
 .TP
 .BI "GotoDeskAndPage " prev " | " "desk xpage ypage"

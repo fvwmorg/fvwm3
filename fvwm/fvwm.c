@@ -1466,6 +1466,13 @@ static void InitVariables(void)
   Scr.randomx = Scr.randomy = 0;
   Scr.buttons2grab = 0;
 
+  /* ewmh variables */
+  Scr.EwmhDesktop = NULL;
+  Scr.dyn_work_area.x = Scr.work_area.x = 0;
+  Scr.dyn_work_area.y = Scr.work_area.y = 0;
+  Scr.dyn_work_area.width = Scr.work_area.width = Scr.MyDisplayWidth; 
+  Scr.dyn_work_area.height = Scr.work_area.height = Scr.MyDisplayHeight;
+
   InitFvwmDecor(&Scr.DefaultDecor);
 #ifdef USEDECOR
   Scr.DefaultDecor.tag = "Default";

@@ -376,13 +376,13 @@ static void activate_binding(
 	  None, do_grab);
       }
     }
-#ifdef HAVE_EWMH
     if (IS_EWMH_DESKTOP(t->w) && (binding->Context & C_EWMH_DESKTOP))
+    {
       GrabWindowKeyOrButton(
 	dpy, t->Parent, binding,
 	C_EWMH_DESKTOP,
 	GetUnusedModifiers(), None, do_grab);
-#endif
+    }
   }
 
   return;

@@ -139,12 +139,10 @@ Bool setup_window_structure(
     SET_PLACED_BY_FVWM(*ptmp_win, IS_PLACED_BY_FVWM(savewin));
     SET_HAS_EWMH_ICON(*ptmp_win, HAS_EWMH_ICON(savewin));
     SET_HAS_EWMH_MINI_ICON(*ptmp_win, HAS_EWMH_MINI_ICON(savewin));
-#ifdef HAVE_EWMH
     (*ptmp_win)->ewmh_mini_icon_width = savewin->ewmh_mini_icon_width;
     (*ptmp_win)->ewmh_mini_icon_height = savewin->ewmh_mini_icon_height;
     (*ptmp_win)->ewmh_icon_width = savewin->ewmh_icon_width;
     (*ptmp_win)->ewmh_icon_height = savewin->ewmh_icon_height;
-#endif
   }
 
   (*ptmp_win)->cmap_windows = (Window *)NULL;

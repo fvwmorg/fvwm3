@@ -32,7 +32,7 @@ typedef struct
   unsigned do_update_icon_placement : 1;
   unsigned do_update_icon_title : 1;
   unsigned do_update_mini_icon : 1;
-  EWMH_CODE(unsigned do_update_list_skip : 1;)
+  unsigned do_update_list_skip : 1;
   unsigned do_update_stick : 1;
   unsigned do_update_stick_icon : 1;
   unsigned do_update_window_color : 1;

@@ -51,9 +51,21 @@ typedef struct kst_item
   struct  kst_item *next;
 } KstItem;
 
+
 Atom XA_UTF8_STRING = None;
-unsigned ewmh_NumberOfDesktops = 4;
 KstItem *ewmh_KstWinList = NULL;
+
+/* ************************************************************************* *
+ * Default
+ * ************************************************************************* */
+ewmhInfo ewmhc =
+{
+  4,            /* NumberOfDesktops */
+  0,            /* MaxDesktops limit the number od desktops*/
+  0,            /* CurrentNumberOfDesktops */
+  False,        /* NeedsToCheckDesk */
+  {0, 0, 0, 0}, /* BaseStrut */
+};
 
 /* ************************************************************************* *
  * The ewmh atoms lists
@@ -73,7 +85,7 @@ ewmh_atom ewmh_atom_client_root[] =
   ENTRY("_NET_CURRENT_DESKTOP",    XA_CARDINAL, ewmh_CurrentDesktop),
   ENTRY("_NET_DESKTOP_GEOMETRY",   XA_CARDINAL, ewmh_DesktopGeometry),
   ENTRY("_NET_DESKTOP_VIEWPORT",   XA_CARDINAL, ewmh_DesktopViewPort),
-  ENTRY("_NET_NUMBER_OF_DESKTOPS", XA_CARDINAL, ewmh_NumberOfDesktop),
+  ENTRY("_NET_NUMBER_OF_DESKTOPS", XA_CARDINAL, ewmh_NumberOfDesktops),
   {NULL,0,0,0}
 };
 
@@ -321,6 +333,18 @@ void *ewmh_AtomGetByName(Window win, const char *atom_name,
 /* ************************************************************************* *
  *  client_root: here the client is fvwm2
  * ************************************************************************* */
+int check_desk(void)
+{
+  int d = -1;
+  FvwmWindow *t;
+
+  for (t = Scr.FvwmRoot.next; t != NULL; t = t->next)
+  {
+    if (!IS_STICKY(t))
+      d = max(d,t->Desk);
+  }
+  return d;
+}
 
 void EWMH_SetCurrentDesktop(void)
 {
@@ -328,23 +352,42 @@ void EWMH_SetCurrentDesktop(void)
 
   val = Scr.CurrentDesk;
 
-  if (val >= ewmh_NumberOfDesktops)
+  if (val < 0 || (val >= ewmhc.MaxDesktops && ewmhc.MaxDesktops != 0))
+    return;
+
+  if (val >= ewmhc.CurrentNumberOfDesktops ||
+      (ewmhc.NumberOfDesktops != ewmhc.CurrentNumberOfDesktops &&
+       val < ewmhc.CurrentNumberOfDesktops))
     EWMH_SetNumberOfDesktops();
 
-  if (val >= 0)
-    ewmh_ChangeProperty(Scr.Root,"_NET_CURRENT_DESKTOP",
-			EWMH_ATOM_LIST_CLIENT_ROOT,
-			(unsigned char *)&val, 1);
+  ewmh_ChangeProperty(Scr.Root,"_NET_CURRENT_DESKTOP",
+		      EWMH_ATOM_LIST_CLIENT_ROOT,
+		      (unsigned char *)&val, 1);
 }
 
 void EWMH_SetNumberOfDesktops(void)
 {
   CARD32 val;
 
-  if (Scr.CurrentDesk >= ewmh_NumberOfDesktops && Scr.CurrentDesk >= 0)
-    ewmh_NumberOfDesktops = Scr.CurrentDesk + 1;
+  if (ewmhc.CurrentNumberOfDesktops < ewmhc.NumberOfDesktops)
+    ewmhc.CurrentNumberOfDesktops = ewmhc.NumberOfDesktops;
 
-  val = (CARD32)ewmh_NumberOfDesktops;
+  if (ewmhc.CurrentNumberOfDesktops > ewmhc.NumberOfDesktops ||
+      ewmhc.NeedsToCheckDesk)
+  {
+    int d = check_desk();
+
+    ewmhc.NeedsToCheckDesk = False;
+    if (d >= ewmhc.MaxDesktops && ewmhc.MaxDesktops != 0)
+      d = 0;
+    ewmhc.CurrentNumberOfDesktops = max(ewmhc.NumberOfDesktops, d+1);
+  }
+
+  if (Scr.CurrentDesk >= ewmhc.CurrentNumberOfDesktops &&
+      (Scr.CurrentDesk < ewmhc.MaxDesktops || ewmhc.MaxDesktops == 0))
+    ewmhc.CurrentNumberOfDesktops = Scr.CurrentDesk + 1;
+
+  val = (CARD32)ewmhc.CurrentNumberOfDesktops;
   ewmh_ChangeProperty(Scr.Root, "_NET_NUMBER_OF_DESKTOPS",
 		      EWMH_ATOM_LIST_CLIENT_ROOT,
 		      (unsigned char *)&val, 1);
@@ -367,6 +410,11 @@ void EWMH_SetWMDesktop(FvwmWindow *fwin)
   if (IS_STICKY(fwin))
   {
     desk = 0xFFFFFFFE;
+  }
+  else if (desk >= ewmhc.CurrentNumberOfDesktops)
+  {
+    ewmhc.NeedsToCheckDesk = True;
+    EWMH_SetNumberOfDesktops();
   }
   ewmh_ChangeProperty(fwin->w, "_NET_WM_DESKTOP", EWMH_ATOM_LIST_CLIENT_WIN,
 		      (unsigned char *)&desk, 1);
@@ -436,7 +484,7 @@ void delete_kst_item(Window w)
 
   if(prev != NULL)
     *prev = t->next;
-  
+
   free(t);
 }
 
@@ -493,6 +541,23 @@ void ewmh_AddToKdeSysTray(FvwmWindow *fwin)
   set_kde_sys_tray();
 }
 
+#if 0
+/* not used at present time */
+void ewmh_FreeKdeSysTray(void)
+{
+  KstItem *t;
+
+  t = ewmh_KstWinList;
+  while(t != NULL)
+  {
+    XSelectInput(dpy, t->w, NoEventMask);
+    delete_kst_item(t->w);
+    t = ewmh_KstWinList;
+  }
+  set_kde_sys_tray();
+}
+#endif
+
 int EWMH_IsKdeSysTrayWindow(Window w)
 {
   KstItem *t;
@@ -523,6 +588,7 @@ void EWMH_ManageKdeSysTray(Window w, Bool is_destroy)
   }
   else
   {
+    XSelectInput(dpy, t->w, NoEventMask);
     delete_kst_item(w);
     set_kde_sys_tray();
   }
@@ -579,7 +645,7 @@ void ewmh_SetWorkArea(void)
   CARD32 val[256][4]; /* no more than 256 desktops */
   int i = 0;
 
-  while(i < ewmh_NumberOfDesktops && i < 256)
+  while(i < ewmhc.NumberOfDesktops && i < 256)
   {
     val[i][0] = Scr.work_area.x;
     val[i][1] = Scr.work_area.y;
@@ -593,7 +659,10 @@ void ewmh_SetWorkArea(void)
 
 void ewmh_ComputeAndSetWorkArea(void)
 {
-  int left = 0 , right = 0, top = 0, bottom = 0;
+  int left = ewmhc.BaseStrut.left;
+  int right = ewmhc.BaseStrut.right;
+  int top = ewmhc.BaseStrut.top;
+  int bottom = ewmhc.BaseStrut.bottom;
   int x,y,width,height;
   FvwmWindow *t;
 
@@ -624,7 +693,10 @@ void ewmh_ComputeAndSetWorkArea(void)
 
 void ewmh_HandleDynamicWorkArea(void)
 {
-  int dyn_left = 0 , dyn_right = 0, dyn_top = 0, dyn_bottom = 0;
+  int dyn_left = ewmhc.BaseStrut.left;
+  int dyn_right = ewmhc.BaseStrut.right;
+  int dyn_top = ewmhc.BaseStrut.top;
+  int dyn_bottom = ewmhc.BaseStrut.bottom;
   int x,y,width,height;
   FvwmWindow *t;
 
@@ -906,9 +978,7 @@ int ksmserver_workarround(FvwmWindow *fwin)
       strcmp(fwin->class.res_name,"unnamed") == 0)
   {
     int layer = 0;
-    if (IS_TRANSIENT(fwin) &&
-	  fwin->frame_g.width < Scr.MyDisplayWidth - 100 &&
-	fwin-> frame_g.height < Scr.MyDisplayHeight - 100)
+    if (IS_TRANSIENT(fwin))
       layer = Scr.TopLayer + 2;
     else
       layer = Scr.TopLayer + 1;
@@ -952,12 +1022,16 @@ void EWMH_DestroyWindow(FvwmWindow *fwin)
 {
   if (IS_EWMH_DESKTOP(fwin->w))
     Scr.EwmhDesktop = NULL;
+  if (fwin->Desk >= ewmhc.NumberOfDesktops)
+    ewmhc.NeedsToCheckDesk = True;
 }
 
 /* a window has been destroyed */
 void EWMH_WindowDestroyed(void)
 {
   EWMH_SetClientList();
+  if (ewmhc.NeedsToCheckDesk)
+    EWMH_SetNumberOfDesktops();
   ewmh_ComputeAndSetWorkArea();
   ewmh_HandleDynamicWorkArea();
 }
@@ -1054,16 +1128,6 @@ void EWMH_Init(void)
 		      (unsigned char *)&utf_name, 5);
 
   clean_up();
-
-  /* the desktop */
-  Scr.EwmhDesktop = NULL;
-
-  /* initialistaion of the work area */
-  Scr.dyn_work_area.x = Scr.work_area.x = 0;
-  Scr.dyn_work_area.y = Scr.work_area.y = 0;
-  Scr.dyn_work_area.width = Scr.work_area.width = Scr.MyDisplayWidth; 
-  Scr.dyn_work_area.height = Scr.work_area.height = Scr.MyDisplayHeight;
-  ewmh_SetWorkArea();
 
   EWMH_SetCurrentDesktop();
   EWMH_SetNumberOfDesktops();

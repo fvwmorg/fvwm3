@@ -107,15 +107,14 @@ smr_SWITCH(gnome-hints, GNOME window manager hints, on, GNOME)
 dnl AM_CONDITIONAL(GNOME, test "x$enable_gnome_hints" != "xno")
 
 dnl ******** ewmh
-with_ewmh=no
-smr_SWITCH(ewmh, Extended WM Hints Support, off, HAVE_EWMH)
+smr_SWITCH(ewmh, Extended WM Hints Support, on, HAVE_EWMH)
 
-if test "x$enable_ewmh" = "xyes"; then
+if test "x$enable_ewmh" != "xno"; then
   with_ewmh=yes
-  problem_ewmh=": warning, not yet completed"
+  problem_ewmh=""
 else
   with_ewmh=no
-  problem_ewmh=": This is the default"
+  problem_ewmh=": Explicitly disabled"
 fi
 
 dnl ********* session management

@@ -2871,7 +2871,7 @@ void check_window_style_change(
   if (SCDO_WINDOW_LIST_SKIP(*ret_style))
   {
     flags->do_update_modules_flags = True;
-    EWMH_CODE(flags->do_update_list_skip = True;)
+    flags->do_update_list_skip = True;
   }
   /*
    * has_icon

@@ -41,7 +41,6 @@
 #include "ewmh.h"
 #include "ewmh_intern.h"
 
-extern unsigned ewmh_NumberOfDesktops;
 extern ewmh_atom ewmh_atom_wm_state[];
 
 /* ************************************************************************* *
@@ -67,12 +66,14 @@ int ewmh_DesktopViewPort(EWMH_CMD_ARGS)
   return -1;
 }
 
-int ewmh_NumberOfDesktop(EWMH_CMD_ARGS)
+int ewmh_NumberOfDesktops(EWMH_CMD_ARGS)
 {
+  int d = ev->xclient.data.l[0];
+
   /* not a lot of sinification for FVWM */
-  if (ev->xclient.data.l[0] > 0) 
+  if (d > 0 && (d <= ewmhc.MaxDesktops || ewmhc.MaxDesktops == 0)) 
   {
-    ewmh_NumberOfDesktops = ev->xclient.data.l[0];
+    ewmhc.NumberOfDesktops = d;
     EWMH_SetNumberOfDesktops();
   }
   return -1;
@@ -86,10 +87,8 @@ int ewmh_ActiveWindow(EWMH_CMD_ARGS)
 {
   if (ev == NULL)
     return 0;
-
-  CMD_Iconify(ev, fwin->w, fwin, C_WINDOW, "Off", NULL);
-  FocusOn(fwin, FALSE, "");
-  RaiseWindow(fwin);
+  
+  old_execute_function("EWMHActivateWindowFunc", fwin, ev, C_WINDOW, -1,0,NULL);
   return 0;
 }
 
@@ -343,9 +342,12 @@ int ewmh_WMStateListSkip(EWMH_CMD_ARGS)
 
   if (ev == NULL && style != NULL)
   {
-    SFSET_DO_WINDOW_LIST_SKIP(*style, 1);
-    SMSET_DO_WINDOW_LIST_SKIP(*style, 1);
-    SCSET_DO_WINDOW_LIST_SKIP(*style, 1);
+    if (!SCDO_WINDOW_LIST_SKIP(*style))
+    {
+      SFSET_DO_WINDOW_LIST_SKIP(*style, 1);
+      SMSET_DO_WINDOW_LIST_SKIP(*style, 1);
+      SCSET_DO_WINDOW_LIST_SKIP(*style, 1);
+    }
     return 0;
   }
   
@@ -377,9 +379,13 @@ int ewmh_WMStateStaysOnTop(EWMH_CMD_ARGS)
 
   if (ev == NULL && style != NULL)
   {
-    SSET_LAYER(*style, Scr.TopLayer);
-    style->flags.use_layer = 1;
-    style->flag_mask.use_layer = 1;
+    if (!style->change_mask.use_layer)
+    {
+      SSET_LAYER(*style, Scr.TopLayer);
+      style->flags.use_layer = 1;
+      style->flag_mask.use_layer = 1;
+      style->change_mask.use_layer = 1;
+    }
     return 0;
   }
 
@@ -410,9 +416,12 @@ int ewmh_WMStateSticky(EWMH_CMD_ARGS)
 
   if (ev == NULL && style != NULL)
   {
-    SFSET_IS_STICKY(*style, 1);
-    SMSET_IS_STICKY(*style, 1);
-    SCSET_IS_STICKY(*style, 1);
+    if (!SCIS_STICKY(*style))
+    {
+      SFSET_IS_STICKY(*style, 1);
+      SMSET_IS_STICKY(*style, 1);
+      SCSET_IS_STICKY(*style, 1);
+    }
     return 0;
   }
 

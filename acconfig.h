@@ -10,12 +10,6 @@
 /* define if extanded WM hints are enabled */
 #undef HAVE_EWMH
 
-#ifdef HAVE_EWMH
-#    define EWMH_CODE(x) x
-#else
-#    define EWMH_CODE(x)
-#endif
-
 /* Where to search for images.  */
 #undef FVWM_IMAGEPATH
 

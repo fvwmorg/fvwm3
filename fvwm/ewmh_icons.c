@@ -119,7 +119,7 @@ CARD32 *EWMH_SetWmIconFromPixmap(FvwmWindow *fwin,
   CARD32 *new_icon = NULL;
   unsigned char *c_new_icon;
   int keep_start = 0, keep_length = 0;
-  int width, height;
+  int width = 0, height = 0;
   unsigned int i,j,k,l,m;
   int s;
   Pixmap pixmap = None;

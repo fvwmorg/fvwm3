@@ -124,16 +124,14 @@ static void apply_window_updates(
 #ifdef MINI_ICONS
   if (flags->do_update_mini_icon && HAS_EWMH_MINI_ICON(t) == EWMH_FVWM_ICON)
   {
+    unsigned int sd;
+    char *dummy;
+
     change_mini_icon(t, pstyle);
-#ifdef HAVE_EWMH
-    {
-      unsigned int sd = 0;
-      CARD32 *dummy = NULL;
-      dummy = EWMH_SetWmIconFromPixmap(t, NULL, &sd, True, True);
-      if (dummy != NULL)
-	free(dummy);
-    }
-#endif
+    sd = 0;
+    dummy = (char *)EWMH_SetWmIconFromPixmap(t, NULL, &sd, True, True);
+    if (dummy != NULL)
+      free(dummy);
   }
 #endif
 
@@ -294,12 +292,10 @@ static void apply_window_updates(
   {
     setup_frame_attributes(t, pstyle);
   }
-#ifdef HAVE_EWMH
   if (flags->do_update_list_skip)
   {
     EWMH_SetWMState(t);
   }
-#endif
   if (flags->do_update_modules_flags)
   {
     BroadcastConfig(M_CONFIGURE_WINDOW,t);

@@ -84,14 +84,12 @@ Picture* GetPicture( Display* dpy, Window Root,
 Picture* CachePicture( Display *dpy, Window Root,
 		       char* ImagePath, char* pictureName, int color_limit);
 
-#ifdef HAVE_EWMH
 Picture *LoadPictureFromPixmap(Display *dpy, Window Root, char *name,
 			       Pixmap pixmap, Pixmap mask,
 			       int width, int height);
 Picture *CachePictureFromPixmap(Display *dpy, Window Root,char *name,
 				Pixmap pixmap, Pixmap mask,
 				int width, int height);
-#endif
 
 void DestroyPicture(Display* dpy, Picture* p);
 

@@ -18,6 +18,9 @@
 #ifndef _EWMH_
 #define _EWMH_
 
+void CMD_EwmhNumberOfDesktops(F_CMD_ARGS);
+void CMD_EwmhBaseStrut(F_CMD_ARGS);
+
 #ifdef HAVE_EWMH
 /* Extended window manager hints support */
 
@@ -71,7 +74,6 @@ int EWMH_WMIconName(FvwmWindow *fwin, XEvent *ev, window_style *style);
 #define EWMH_WMIconName(x,y,z) 0
 #endif /* HAVE_ICONV */
 
-
 #else /* HAVE_EWMH */
 
 
@@ -101,7 +103,7 @@ int EWMH_WMIconName(FvwmWindow *fwin, XEvent *ev, window_style *style);
 #define EWMH_ProcessPropertyNotify(x, y)
 
 /* ewmh_icon.c */
-#define EWMH_SetWmIconFromPixmap(x,y,z,t,u) 0
+#define EWMH_SetWmIconFromPixmap(x,y,z,t,u) NULL
 #define EWMH_SetIconFromWMIcon(x,y,z,t)   0
 
 /* ewmh_name.c */

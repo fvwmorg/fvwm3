@@ -165,7 +165,6 @@ typedef struct
   Pixel shadow;
 } color_quad;
 
-#ifdef HAVE_EWMH
 typedef struct
 {
   int left;
@@ -173,7 +172,6 @@ typedef struct
   int top;
   int bottom;
 } ewmh_strut;
-#endif
 
 #ifdef USEDECOR
 struct FvwmDecor;		/* definition in screen.h */
@@ -306,13 +304,11 @@ typedef struct
 #define EWMH_TRUE_ICON   1 /* the application does provied an ewmh icon */
 #define EWMH_FVWM_ICON   2 /* the ewmh icon has been set by fvwm */
 #define EWMH_WINDOW_ICON 3 /* the application have an icon window */
-#ifdef HAVE_EWMH
   /* I do not know if it is a good idea to ifdef this code (restart pb)*/
   unsigned has_ewmh_wm_name : 1;
   unsigned has_ewmh_wm_icon_name : 1;
   unsigned has_ewmh_mini_icon : 2;
   unsigned has_ewmh_icon : 2;
-#endif
 } window_flags;
 
 /* Window mask for Circulate and Direction functions */
@@ -556,17 +552,15 @@ typedef struct FvwmWindow
   int shade_anim_steps;
   unsigned char grabbed_buttons;
 
-#ifdef HAVE_EWMH
   Atom ewmh_window_type;
   rectangle ewmh_icon_geometry;
   ewmh_strut strut;            /* for computing the working area */
-  ewmh_strut dyn_strut;         /* for dynamic working area */
+  ewmh_strut dyn_strut;        /* for dynamic working area */
   int ewmh_icon_height;
   int ewmh_icon_width;
 #ifdef MINI_ICONS
   int ewmh_mini_icon_height;
   int ewmh_mini_icon_width;
-#endif
 #endif
 
   void *pscratch;             /* multi purpose scratch pointer */

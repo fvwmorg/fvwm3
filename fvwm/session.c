@@ -64,10 +64,8 @@ typedef struct _match
   int                 x_max, y_max, w_max, h_max;
   int                 width_defect_max, height_defect_max;
   int                 max_x_offset, max_y_offset;
-#ifdef HAVE_EWMH
   int                 ewmh_mini_icon_width, ewmh_mini_icon_height;
   int                 ewmh_icon_width, ewmh_icon_height;
-#endif
   int                 desktop;
   int                 layer;
   int                 used;
@@ -318,11 +316,7 @@ char *get_version_string()
   /* migo (14-Mar-2001): it is better to manually update a version string
    * in the stable branch, othervise saving sessions becomes useless */
   /*return CatString3(VERSION, ", ",__DATE__);*/
-#ifdef HAVE_EWMH
-  return "2.5-0ewmh";
-#else
-  return "2.5-0";
-#endif
+  return "2.5-1";
 }
 
 /*
@@ -474,14 +468,12 @@ SaveWindowStates(FILE *f)
       ewin->icon_g.y + ((!is_icon_sticky) ? Scr.Vy : 0),
       ewin->hints.win_gravity,
       ewin->max_offset.x, ewin->max_offset.y);
-#ifdef HAVE_EWMH
     fprintf(
       f, "  [EWMH] %i %i %i %i\n",
       ewin->ewmh_mini_icon_width,
       ewin->ewmh_mini_icon_height,
       ewin->ewmh_icon_width,
       ewin->ewmh_icon_height);
-#endif
     fprintf(f, "  [DESK] %i\n", ewin->Desk);
     fprintf(f, "  [LAYER] %i\n", get_layer(ewin));
     fprintf(f, "  [FLAGS] ");
@@ -588,7 +580,6 @@ LoadWindowStates(char *filename)
 	     &(matches[num_match - 1].max_x_offset),
 	     &(matches[num_match - 1].max_y_offset));
     }
-#ifdef HAVE_EWMH
     else if (!strcmp(s1, "[EWMH]"))
     {
       sscanf(s, "%*s %i %i %i %i",
@@ -597,7 +588,6 @@ LoadWindowStates(char *filename)
 	     &(matches[num_match - 1].ewmh_icon_width),
 	     &(matches[num_match - 1].ewmh_icon_height));
     }
-#endif
     else if (!strcmp(s1, "[DESK]"))
     {
       sscanf(s, "%*s %i",
@@ -858,12 +848,10 @@ MatchWinToSM(FvwmWindow *ewin, int *do_shade, int *do_max)
 	ewin->icon_g.x -= Scr.Vx;
 	ewin->icon_g.y -= Scr.Vy;
       }
-#ifdef HAVE_EWMH
       ewin->ewmh_mini_icon_width = matches[i].ewmh_mini_icon_width;
       ewin->ewmh_mini_icon_height = matches[i].ewmh_mini_icon_height;
       ewin->ewmh_icon_width = matches[i].ewmh_icon_width;
       ewin->ewmh_icon_height = matches[i].ewmh_icon_height;
-#endif
       return True;
     }
   }

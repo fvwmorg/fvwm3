@@ -1,3 +1,44 @@
+2001-11-22  olicha  <olivier.chapuis@free.fr>
+
+	* fvwm/ewmh_icons.c (EWMH_SetWmIconFromPixmap):
+	a -Wall fix
+
+	* fvwm/ewmh_events.c:
+	Fixed some styles update
+
+	* fvwm/ewmh_conf.c:
+	* fvwm/function.{c,h} (func_config):
+	* fvwm/ewmh.{c,h}:
+	* fvwm/ewmh_events.c:
+	* fvwm/ewmh_intern.h:
+	* fvwm/Makefile.am:
+	* fvwm/fvwm2.1:
+	New file for ewmh styles and commands. New commands EWMHBaseStrut and
+	EWMHNumberOfDesktops. More documentation in ewmh man page section.
+
+	* fvwm/add_window.c:
+	* fvwm/bindings.c:
+	* fvwm/events.c:
+	* fvwm/functions.c:
+	* fvwm/ewmh.c (EWMH_Init):
+	* fvwm/fvwm.h:
+	* fvwm/fvwm.c (InitVariables):
+	* fvwm/placement.c
+	* fvwm/sceen.h:
+	* fvwm/session.c:
+	* fvwm/styles.c:
+	* fvwm/update.{c,h}:
+	* fvwm/window_flags.c:
+	* libs/Bindings.c:
+	* libs/Picture.{c,h}:
+	* libs/fvwmlib.h:
+	* configure.in:
+	* acconfig.h:
+	Remove all the HAVE_EWMH ifdef but the two in virtual.c (which
+	are maybe problematic) and those in the ewmh* files to allow
+	to disbale the ewmh code: with --disable-ewmh all the ewmh code
+	should be dummy. --enable-ewmh is now the default.
+
 2001-11-20  olicha  <olivier.chapuis@free.fr>
 
 	* fvwm/icons.c (GetIcon):

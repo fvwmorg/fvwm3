@@ -50,6 +50,7 @@
 #include "read.h"
 #include "virtual.h"
 #include "libs/Colorset.h"
+#include "ewmh.h"
 
 extern XEvent Event;
 extern FvwmWindow *Tmp_win;
@@ -146,6 +147,9 @@ static const func_type func_config[] =
   CMD_ENTRY("edgethickness", CMD_EdgeThickness, F_NOP, 0),
   CMD_ENTRY("emulate", CMD_Emulate, F_EMULATE, 0),
   CMD_ENTRY("escapefunc", CMD_EscapeFunc, F_ESCAPE_FUNC, 0),
+  CMD_ENTRY("ewmhbasestrut", CMD_EwmhBaseStrut, F_EWMH_BASE_STRUT, 0),
+  CMD_ENTRY("ewmhnumberofdesktops", CMD_EwmhNumberOfDesktops,
+    F_EWMH_NUMBER_OF_DESKTOPS, 0),
   CMD_ENTRY("exec", CMD_Exec, F_EXEC, 0),
   CMD_ENTRY("execuseshell", CMD_ExecUseShell, F_EXEC_SETUP, 0),
   CMD_ENTRY("fakeclick", CMD_FakeClick, F_FAKE_CLICK, 0),
@@ -1206,7 +1210,7 @@ int DeferExecution(
   original_w = *w;
 
   if((*context != C_ROOT)&&(*context != C_NO_CONTEXT)&&(*tmp_win != NULL)
-     EWMH_CODE(&& *context != C_EWMH_DESKTOP))
+     && *context != C_EWMH_DESKTOP)
   {
     if((FinishEvent == ButtonPress)||((FinishEvent == ButtonRelease) &&
                                       (eventp->type != ButtonPress)))

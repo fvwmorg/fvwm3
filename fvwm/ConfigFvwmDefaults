@@ -20,6 +20,11 @@ AddToFunc WindowListFunc I WindowId $0 Iconify off
 + I WindowId $0 Raise
 + I WindowId $0 WarpToWindow 5p 5p
 
+# Needed by the ewmh support
+AddToFunc EWMHActivateWindowFunc I Iconify off
++ I Focus
++ I Raise
+
 # Also in fvwm man page.
 AddToFunc UrgencyFunc I Iconify off
 + I FlipFocus

@@ -39,9 +39,7 @@ static Bool is_grabbing_everything = False;
 static struct charstring win_contexts[]=
 {
   {'w',C_WINDOW},
-#ifdef HAVE_EWMH
   {'d',C_EWMH_DESKTOP},
-#endif
   {'t',C_TITLE},
   {'i',C_ICON},
   {'r',C_ROOT},
