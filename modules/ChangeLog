@@ -1,3 +1,18 @@
+2002-09-23  olicha  <olivier.chapuis@free.fr>
+
+	* FvwmButtons/dynamic.c (parse_message_line):
+	* FvwmButtons/FvwmButtons.c (SetTransparentBackground):
+	(Loop):
+	(RedrawWindow):
+	(HandlePanelPress):
+	(recursive_change_colorset):
+	(CheckForHangon):
+	(swallow):
+	* FvwmButtons/draw.c (DrawTitle):
+	(RedrawButton):
+	* FvwmButtons/draw.h:
+	Some preparation for clipping
+
 2002-09-21  Mikhael Goikhman  <migo@homemail.com>
 
 	* FvwmPager/x_pager.c:

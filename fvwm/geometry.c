@@ -1089,7 +1089,7 @@ void move_icon_to_position(
 			fw->icon_g.title_w_g.y);
 		if (fw->icon_alphaPixmap)
 		{
-			DrawIconWindow(fw);
+			DrawIconWindow(fw, NULL);
 		}
 	}
 

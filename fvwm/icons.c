@@ -39,6 +39,7 @@
 #include "libs/Picture.h"
 #include "libs/PictureGraphics.h"
 #include "libs/FRenderInit.h"
+#include "libs/Rectangles.c"
 #include "fvwm.h"
 #include "externs.h"
 #include "cursor.h"
@@ -594,7 +595,7 @@ void CreateIconWindow(FvwmWindow *fw, int def_x, int def_y)
  * Draws the icon window
  *
  ****************************************************************************/
-void DrawIconWindow(FvwmWindow *fw)
+void DrawIconWindow(FvwmWindow *fw, XEvent *pev)
 {
 	GC Shadow;
 	GC Relief;
@@ -604,17 +605,19 @@ void DrawIconWindow(FvwmWindow *fw)
 	int cs;
 	int is_expanded = IS_ICON_ENTERED(fw);
 	FlocaleWinString fstr;
+	Region region = None;
+	XRectangle clip, r;
 
 	if (IS_ICON_SUPPRESSED(fw))
 	{
 		return;
 	}
 
-	if (FW_W_ICON_TITLE(fw) != None)
+	if (!pev && FW_W_ICON_TITLE(fw) != None)
 	{
 		flush_expose(FW_W_ICON_TITLE(fw));
 	}
-	if (FW_W_ICON_PIXMAP(fw) != None)
+	if (!pev && FW_W_ICON_PIXMAP(fw) != None)
 	{
 		flush_expose(FW_W_ICON_PIXMAP(fw));
 	}
@@ -664,6 +667,7 @@ void DrawIconWindow(FvwmWindow *fw)
 		int w_stipple = 0;
 		int is_sticky = (IS_STICKY(fw) || IS_ICON_STICKY(fw));
 		int use_unexpanded_size = 1;
+		Bool draw_string = True;
 
 		if (is_expanded && FW_W_ICON_PIXMAP(fw) != None)
 		{
@@ -746,16 +750,36 @@ void DrawIconWindow(FvwmWindow *fw)
 		XMoveResizeWindow(
 			dpy, FW_W_ICON_TITLE(fw), fw->icon_g.title_w_g.x,
 			fw->icon_g.title_w_g.y, w_title_w, ICON_HEIGHT(fw));
-		XSetWindowBackground(dpy, FW_W_ICON_TITLE(fw), BackColor);
-		XClearWindow(dpy,FW_W_ICON_TITLE(fw));
 
+      /* why not? Should implement:
+       * {Hilight,}IconTitleStyle Colorset int [sunk, flat, raised]
+       */
+#if 0
+		if (cs >= 0)
+		{
+			SetWindowBackground(
+				dpy, FW_W_ICON_TITLE(fw), w_title_w,
+				ICON_HEIGHT(fw), &Colorset[cs], Pdepth,
+				Scr.TitleGC, False);
+		}
+		else
+#endif
+		{
+			XSetWindowBackground(
+				dpy, FW_W_ICON_TITLE(fw), BackColor);
+		}
+		
 		/* text position */
 		x_title = (w_title_w - w_title) / 2;
 		if (x_title < x_title_min)
 			x_title = x_title_min;
+		/* text rectangle */
+		r.x = x_title;
+		r.y = ICON_RELIEF_WIDTH;
+		r.width = w_title_w - x_title - ICON_RELIEF_WIDTH;
+		r.height = ICON_HEIGHT(fw) - 2*ICON_RELIEF_WIDTH;
 		if (is_sticky)
 		{
-			XRectangle r;
 
 			if (w_stipple == 0)
 			{
@@ -773,31 +797,84 @@ void DrawIconWindow(FvwmWindow *fw)
 					w_title_text_gap;
 			}
 			r.x = x_title;
-			r.y = 0;
 			r.width = w_title_w - 2 * x_title;
 			if (r.width < 1)
 				r.width = 1;
-			r.height = ICON_HEIGHT(fw);
-			XSetClipRectangles(dpy, Scr.TitleGC, 0, 0, &r, 1,
-					   Unsorted);
 		}
+
 		memset(&fstr, 0, sizeof(fstr));
-		fstr.str = fw->visible_icon_name;
-		fstr.win =  FW_W_ICON_TITLE(fw);
-		fstr.gc = Scr.TitleGC;
-		if (cs >= 0)
+
+		if (pev || is_sticky)
 		{
-			fstr.colorset = &Colorset[cs];
-			fstr.flags.has_colorset = 1;
+			if (pev)
+			{
+				if (!frect_get_intersection(
+					pev->xexpose.x, pev->xexpose.y,
+					pev->xexpose.width, pev->xexpose.height,
+					r.x, r.y, r.width, r.height, &clip))
+				{
+					draw_string = False;
+				}
+			}
+			else
+			{
+				clip.x = r.x;
+				clip.y = r.y;
+				clip.width = r.width;
+				clip.height = r.height;
+			}
+			XSetClipRectangles(
+				dpy, Scr.TitleGC, 0, 0, &clip, 1,
+				Unsorted);
+			region = XCreateRegion();
+			XUnionRectWithRegion (&clip, region, region);
+			fstr.flags.has_clip_region = True;
+			fstr.clip_region = region;
 		}
-		fstr.x = x_title;
-		fstr.y = fw->icon_g.title_w_g.height -
-			fw->icon_font->height +
-			fw->icon_font->ascent + ICON_TITLE_VERT_TEXT_OFFSET;
-		FlocaleDrawString(dpy, fw->icon_font, &fstr, 0);
+		if (!pev)
+		{
+			clip.x = ICON_RELIEF_WIDTH;
+			clip.y = ICON_RELIEF_WIDTH;
+			clip.width = w_title_w - 2*ICON_RELIEF_WIDTH;
+			clip.height = ICON_HEIGHT(fw) - 2*ICON_RELIEF_WIDTH;
+		}
+
+		if (draw_string)
+		{
+			if (!pev || (fw->icon_font->fftf.fftfont != NULL))
+			{
+			    XClearArea(
+				    dpy, FW_W_ICON_TITLE(fw),
+				    clip.x, clip.y, clip.width, clip.height,
+				    False);
+			}
+			fstr.str = fw->visible_icon_name;
+			fstr.win =  FW_W_ICON_TITLE(fw);
+			fstr.gc = Scr.TitleGC;
+			if (cs >= 0)
+			{
+				fstr.colorset = &Colorset[cs];
+				fstr.flags.has_colorset = 1;
+			}
+			fstr.x = x_title;
+			fstr.y = fw->icon_g.title_w_g.height -
+				fw->icon_font->height +
+				fw->icon_font->ascent +
+				ICON_TITLE_VERT_TEXT_OFFSET;
+			FlocaleDrawString(dpy, fw->icon_font, &fstr, 0);
+			if (pev || is_sticky)
+			{
+				XSetClipMask(dpy, Scr.TitleGC, None);
+				if (region)
+				{
+					XDestroyRegion(region);
+				}
+			}
+		}
 		RelieveRectangle(
 			dpy, FW_W_ICON_TITLE(fw), 0, 0, w_title_w - 1,
-			ICON_HEIGHT(fw) - 1, Relief, Shadow, ICON_RELIEF_WIDTH);
+			ICON_HEIGHT(fw) - 1, Relief,
+			Shadow, ICON_RELIEF_WIDTH);
 		if (is_sticky)
 		{
 			/* an odd number of lines every 4 pixels */
@@ -821,7 +898,6 @@ void DrawIconWindow(FvwmWindow *fw)
 					w_stipple - 1, 1, Shadow, Relief,
 					ICON_TITLE_STICK_HEIGHT);
 			}
-			XSetClipMask(dpy, Scr.TitleGC, None);
 		}
 	}
 
@@ -849,6 +925,7 @@ void DrawIconWindow(FvwmWindow *fw)
 		if (fw->iconDepth == 1 || Pdefault || IS_PIXMAP_OURS(fw))
 		{
 			FvwmRenderAttributes fra;
+			Bool draw_icon = True;
 
 			fra.mask = FRAM_DEST_IS_A_WINDOW;
 			if (cs >= 0)
@@ -856,31 +933,49 @@ void DrawIconWindow(FvwmWindow *fw)
 				fra.mask |= FRAM_HAVE_ICON_CSET;
 				fra.colorset = &Colorset[cs];
 			}
-			if (fw->icon_alphaPixmap ||
-			    (cs >= 0 && Colorset[cs].icon_alpha < 100))
+			r.x = r.y = ICON_RELIEF_WIDTH;
+			r.width = fw->icon_g.picture_w_g.width -
+				2 * ICON_RELIEF_WIDTH;
+			r.height = fw->icon_g.picture_w_g.height -
+				2 * ICON_RELIEF_WIDTH;
+			if (pev)
 			{
-				XClearArea(
+				if (!frect_get_intersection(
+					pev->xexpose.x, pev->xexpose.y,
+					pev->xexpose.width, pev->xexpose.height,
+					r.x, r.y, r.width, r.height, &clip))
+				{
+					draw_icon = False;
+				}
+			}
+			else
+			{
+				clip.x = r.x;
+				clip.y = r.y;
+				clip.width = r.width;
+				clip.height = r.height;
+			}
+			if (draw_icon)
+			{
+				if (fw->icon_alphaPixmap ||
+				    (cs >= 0 && Colorset[cs].icon_alpha < 100))
+				{
+					XClearArea(
+						dpy, FW_W_ICON_PIXMAP(fw),
+						clip.x, clip.y, clip.width,
+						clip.height, False);
+				}
+				PGraphicsRenderPixmaps(
 					dpy, FW_W_ICON_PIXMAP(fw),
-					ICON_RELIEF_WIDTH, ICON_RELIEF_WIDTH,
-					fw->icon_g.picture_w_g.width -
-					2 * ICON_RELIEF_WIDTH,
-					fw->icon_g.picture_w_g.height -
-					2 * ICON_RELIEF_WIDTH,
+					fw->iconPixmap, fw->icon_maskPixmap,
+					fw->icon_alphaPixmap, fw->iconDepth,
+					&fra, FW_W_ICON_PIXMAP(fw),
+					Scr.TitleGC, Scr.MonoGC, None,
+					clip.x - r.x, clip.y - r.y,
+					clip.width, clip.height,
+					clip.x, clip.y, clip.width, clip.height,
 					False);
 			}
-			PGraphicsRenderPixmaps(
-				dpy, FW_W_ICON_PIXMAP(fw),
-				fw->iconPixmap, fw->icon_maskPixmap,
-				fw->icon_alphaPixmap, fw->iconDepth, &fra,
-				FW_W_ICON_PIXMAP(fw),
-				Scr.TitleGC, Scr.MonoGC, None,
-				0, 0,
-				fw->icon_g.picture_w_g.width -
-				2 * ICON_RELIEF_WIDTH,
-				fw->icon_g.picture_w_g.height -
-				2 * ICON_RELIEF_WIDTH,
-				ICON_RELIEF_WIDTH, ICON_RELIEF_WIDTH, 0, 0,
-				False);
 		}
 		else
 		{
@@ -978,7 +1073,7 @@ ICON_DBG((stderr,"hpn: postpone icon change '%s'\n", fw->name));
       }
     }
     SET_ICONIFIED(fw, 1);
-    DrawIconWindow(fw);
+    DrawIconWindow(fw, NULL);
   }
 }
 
@@ -998,7 +1093,7 @@ void RedoIconName(FvwmWindow *fw)
   /* clear the icon window, and trigger a re-draw via an expose event */
   if (IS_ICONIFIED(fw))
   {
-    DrawIconWindow(fw);
+    DrawIconWindow(fw, NULL);
     XClearArea(dpy, FW_W_ICON_TITLE(fw), 0, 0, 0, 0, True);
   }
 

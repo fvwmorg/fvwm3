@@ -1,3 +1,20 @@
+2002-09-23  olicha  <olivier.chapuis@free.fr>
+
+	* libs/FRender.c (*):
+	Fixed(?) XRender rendering with some Xserver
+
+	* fvwm/update.c (apply_window_updates):
+	* fvwm/geometry.c (move_icon_to_position):
+	* fvwm/events.c (HandleEnterNotify):
+	(HandleExpose):
+	(HandleLeaveNotify):
+	(HandlePropertyNotify):
+	* fvwm/add_window.c (setup_icon_font):
+	* fvwm/icons.c (DrawIconWindow):
+	(ChangeIconPixmap):
+	(RedoIconName):
+	Clip text and icon drawing for the icons
+
 2002-09-21  Mikhael Goikhman  <migo@homemail.com>
 
 	* NEWS:

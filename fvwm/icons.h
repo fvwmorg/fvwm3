@@ -30,7 +30,7 @@ void AutoPlaceIcon(
 	Bool do_move_immediately);
 void ChangeIconPixmap(FvwmWindow *fw);
 void RedoIconName(FvwmWindow *);
-void DrawIconWindow(FvwmWindow *);
+void DrawIconWindow(FvwmWindow *fw, XEvent *pev);
 void SetIconPixmapSize(
 	Pixmap *icon, unsigned int width, unsigned int height,
 	unsigned int depth, unsigned int newWidth, unsigned int newHeight,

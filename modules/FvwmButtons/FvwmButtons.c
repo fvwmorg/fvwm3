@@ -582,7 +582,7 @@ void SetTransparentBackground(button_info *ub,int w,int h)
       {
 	if (Ffont->font)
 	  XSetFont(Dpy,trans_gc,Ffont->font->fid);
-	DrawTitle(b,pmap_mask,trans_gc);
+	DrawTitle(b,pmap_mask,trans_gc,NULL);
       }
     }
     XSetRegion(Dpy, trans_gc, shape_r);
@@ -960,7 +960,7 @@ void Loop(void)
 	  {
 	    if(!ready && !(b->flags&b_Container))
 	      MakeButton(b);
-	    RedrawButton(b,1);
+	    RedrawButton(b, 1, &Event);
 	  }
 	  if(!ready)
 	    ready++;
@@ -1004,7 +1004,7 @@ void Loop(void)
 	    {
 	      if(ready<1 && !(b->flags&b_Container))
 		MakeButton(b);
-	      RedrawButton(b,1);
+	      RedrawButton(b,1,&Event);
 	    }
 	  }
 	  if(ready<1)
@@ -1072,7 +1072,7 @@ void Loop(void)
 	     select_button(UberButton, Event.xmotion.x, Event.xmotion.y));
 	  if (CurrentButton && is_pointer_in_current_button != f)
 	  {
-	    RedrawButton(b, 0);
+	    RedrawButton(b, 0, NULL);
 	  }
 	}
 	break;
@@ -1087,7 +1087,7 @@ void Loop(void)
 	{
 	  b = CurrentButton;
 	  CurrentButton = 0;
-	  RedrawButton(b, 0);
+	  RedrawButton(b, 0, NULL);
 	  break;
 	}
 	if (Event.xbutton.state & DEFAULT_ALL_BUTTONS_MASK)
@@ -1120,7 +1120,7 @@ void Loop(void)
 	  CurrentButton=NULL;
 	  break;
 	}
-	RedrawButton(b,0);
+	RedrawButton(b, 0, NULL);
 	if (!act)
 	{
 	  break;
@@ -1271,7 +1271,7 @@ void Loop(void)
 	b = CurrentButton;
 	CurrentButton=NULL;
 	if (b)
-	  RedrawButton(b, 0);
+	  RedrawButton(b, 0, NULL);
 	break;
 
       case ClientMessage:
@@ -1325,7 +1325,7 @@ void Loop(void)
 		}
 	      }
 	    }
-	    RedrawButton(b,1);
+	    RedrawButton(b, 1, NULL);
 	  }
 	}
 	break;
@@ -1340,7 +1340,7 @@ void Loop(void)
 	  {
 	    /* A panel has been unmapped, update the button */
 	    b->newflags.panel_mapped = (Event.type == MapNotify);
-	    RedrawButton(b, 1);
+	    RedrawButton(b, 1, NULL);
 	    break;
 	  }
 	}
@@ -1392,7 +1392,7 @@ void Loop(void)
 		SendText(fd, p, 0);
 		free(p);
 	      }
-	      RedrawButton(b,1);
+	      RedrawButton(b, 1, NULL);
 	      if (is_transient_panel)
 	      {
 		XWithdrawWindow(Dpy, MyWindow, screen);
@@ -1401,7 +1401,7 @@ void Loop(void)
 	    else
 	    {
 	      b->flags &= ~(b_Swallow | b_Panel);
-	      RedrawButton(b,2);
+	      RedrawButton(b, 2, NULL);
 #ifdef DEBUG_HANGON
 	      fprintf(stderr,"\n");
 #endif
@@ -1443,7 +1443,7 @@ void RedrawWindow(button_info *b)
 
   if(b)
   {
-    RedrawButton(b,0);
+    RedrawButton(b, 0, NULL);
     return;
   }
 
@@ -1462,7 +1462,7 @@ void RedrawWindow(button_info *b)
   button=-1;
   ub=UberButton;
   while(NextButton(&ub,&b,&button,1))
-    RedrawButton(b,1);
+    RedrawButton(b, 1, NULL);
 }
 
 /**
@@ -1779,7 +1779,7 @@ static void HandlePanelPress(button_info *b)
 	/* the window has been destroyed */
 	XUnmapWindow(Dpy, b->PanelWin);
 	XSync(Dpy, 0);
-	RedrawButton(b, 1);
+	RedrawButton(b, 1, NULL);
 	return;
       }
       if (xwa.map_state == IsViewable)
@@ -1796,7 +1796,7 @@ static void HandlePanelPress(button_info *b)
       /* give up after one second */
       XUnmapWindow(Dpy, b->PanelWin);
       XSync(Dpy, 0);
-      RedrawButton(b, 1);
+      RedrawButton(b, 1, NULL);
       return;
     }
   }
@@ -1868,7 +1868,7 @@ static void HandlePanelPress(button_info *b)
   }
   tmp = CurrentButton;
   CurrentButton = NULL;
-  RedrawButton(b, 1);
+  RedrawButton(b, 1, NULL);
   CurrentButton = tmp;
   XSync(Dpy, 0);
   /* Give fvwm a chance to update the window.  Otherwise the window may end up
@@ -2319,7 +2319,7 @@ static void recursive_change_colorset(container_info *c, int colorset,
 			if (bg_change)
 			{
 				/* re-apply colorset to button */
-				RedrawButton(b, True);
+				RedrawButton(b, True, NULL);
 			}
 			/* recursively update containers */
 			recursive_change_colorset(b->c, colorset, Event);
@@ -2330,7 +2330,7 @@ static void recursive_change_colorset(container_info *c, int colorset,
 			if (buttonSwallowCount(b) == 3 && b->IconWin != None &&
 			    bg_change)
 			{
-				RedrawButton(b, True);
+				RedrawButton(b, True, NULL);
 				if (Event == NULL && (b->swallow & b_FvwmModule))
 				{
 					XSync(Dpy, 0);
@@ -2348,7 +2348,7 @@ static void recursive_change_colorset(container_info *c, int colorset,
 			if (bg_change)
 			{
 				/* re-apply colorset to button */
-				RedrawButton(b, True);
+				RedrawButton(b, True, NULL);
 			}
 			if (Event == NULL && b->flags & b_Icon)
 			{
@@ -2527,7 +2527,7 @@ void CheckForHangon(unsigned long *body)
 	b->flags&=~b_Hangon;
 	free(b->hangon);
 	b->hangon=NULL;
-	RedrawButton(b,0);
+	RedrawButton(b, 0, NULL);
       }
       break;
     }
@@ -2911,7 +2911,7 @@ void swallow(unsigned long *body)
 	}
 	/* Redraw and force cleaning the background to erase the old button
 	 * title. */
-	RedrawButton(b, 2);
+	RedrawButton(b, 2, NULL);
       }
       else /* (b->flags & b_Panel) */
       {

@@ -332,7 +332,7 @@ void parse_message_line(char *line)
 			}
 		}
 
-		RedrawButton(b, 2);
+		RedrawButton(b, 2, NULL);
 		if (FShapesSupported)
 		{
 			if (UberButton->c->flags & b_TransBack)

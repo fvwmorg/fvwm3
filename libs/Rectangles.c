@@ -75,3 +75,10 @@ Bool frect_get_seg_intersection(
 	}
 	return False;
 }
+
+Bool frect_get_rect_intersection(
+	XRectangle a, XRectangle b, XRectangle *r)
+{
+	return frect_get_intersection(
+		a.x, a.y, a.width, a.height, b.x, b.y, b.width, b.height, r);
+}
