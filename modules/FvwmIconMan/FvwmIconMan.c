@@ -205,7 +205,7 @@ main(int argc, char **argv)
     else
     {
       MyName = argv[6];
-    } 
+    }
   }
   ModuleLen = strlen(MyName) + 1;
   Module = safemalloc(ModuleLen+1);

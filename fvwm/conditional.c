@@ -483,7 +483,7 @@ void AllFunc(F_CMD_ARGS)
        num++;
     }
 
-  g = (FvwmWindow **) malloc (num * sizeof(FvwmWindow *));
+  g = (FvwmWindow **) safemalloc (num * sizeof(FvwmWindow *));
 
   num = 0;
   for (t = Scr.FvwmRoot.next; t; t = t->next)

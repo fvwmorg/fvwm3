@@ -3787,7 +3787,7 @@ static void size_menu_horizontally(MenuRoot *mr)
   Bool is_last_object_left = True;
 
   memset(&max, 0, sizeof(max));
-  memset(&item_order, 0, sizeof(item_order));
+  memset(item_order, 0, sizeof(item_order));
   for (i = 0; i < MAX_ITEM_LABELS; i++)
     lcr_column[i] = 'l';
 

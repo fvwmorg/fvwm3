@@ -63,8 +63,6 @@
 #define AS_PI 3.14159265358979323846
 
 static Display *dpy;
-static int scr;
-static Window root;
 GC gc;
 static char *MyName;
 static int MyNameLen;
@@ -77,6 +75,17 @@ static int animate_none = 0;            /* count bypassed animations */
 static Bool stop_recvd = False;         /* got stop command */
 static Bool running = False;            /* whether we are initiialized or not */
 static Bool custom_recvd = False;       /* got custom command */
+
+static struct
+{
+    int screen;
+    Window root;
+    int MyDisplayWidth;
+    int MyDisplayHeight;
+    int Vx;
+    int Vy;
+    int CurrentDesk;
+} Scr;
 
 /* here is the old double parens trick. */
 /* #define DEBUG */
@@ -155,19 +164,40 @@ struct AnimateEffects effects[] = {
 };
 #define NUM_EFFECTS sizeof(effects) / sizeof(struct AnimateEffects)
 
+static Bool is_animation_visible(
+    int x, int y, int w, int h, int fx, int fy, int fw, int fh)
+{
+    Bool is_start_visible = True;
+    Bool is_end_visible = True;
+
+    if (x >= Scr.MyDisplayWidth || x + w < 0 ||
+        y >= Scr.MyDisplayWidth || y + h < 0)
+    {
+        is_start_visible = False;
+    }
+    if (fx >= Scr.MyDisplayWidth || fx + fw < 0 ||
+        fy >= Scr.MyDisplayWidth || fy + fh < 0)
+    {
+        is_end_visible = False;
+    }
+    return (is_start_visible || is_end_visible);
+}
+
 /*
  * This makes a twisty iconify/deiconify animation for a window, similar to
  * MacOS.  Parameters specify the position and the size of the initial
  * window and the final window
  */
-static void AnimateResizeTwist(int x, int y, int w, int h,
-                               int fx, int fy, int fw, int fh)
+static void AnimateResizeTwist(
+    int x, int y, int w, int h, int fx, int fy, int fw, int fh)
 {
     float cx, cy, cw, ch;
     float xstep, ystep, wstep, hstep;
     XPoint points[5];
     float angle, angle_finite, a, d;
 
+    if (!is_animation_visible(x, y, w, h, fx, fy, fw, fh))
+      return;
     x += w/2;
     y += h/2;
     fx += fw/2;
@@ -201,10 +231,10 @@ static void AnimateResizeTwist(int x, int y, int w, int h,
         points[3].y = cy+sin(angle+a+AS_PI)*d;
         points[4].x = cx+cos(angle-a)*d;
         points[4].y = cy+sin(angle-a)*d;
-	XDrawLines(dpy, root, gc, points, 5, CoordModeOrigin);
+	XDrawLines(dpy, Scr.root, gc, points, 5, CoordModeOrigin);
 	XFlush(dpy);
 	usleep(Animate.delay*1000);
-	XDrawLines(dpy, root, gc, points, 5, CoordModeOrigin);
+	XDrawLines(dpy, Scr.root, gc, points, 5, CoordModeOrigin);
 	cx+=xstep;
 	cy+=ystep;
 	cw+=wstep;
@@ -226,7 +256,8 @@ static void AnimateResizeTwist(int x, int y, int w, int h,
  * Idea: how about texture mapped, user definable free 3D movement
  * during a resize? That should get X on its knees all right! :)
  */
-void AnimateResizeFlip(int x, int y, int w, int h, int fx, int fy, int fw, int fh)
+void AnimateResizeFlip(
+    int x, int y, int w, int h, int fx, int fy, int fw, int fh)
 {
   float cx, cy, cw, ch;
   float xstep, ystep, wstep, hstep;
@@ -237,6 +268,9 @@ void AnimateResizeFlip(int x, int y, int w, int h, int fx, int fy, int fw, int f
   float midy;
 
   float angle, angle_finite;
+
+    if (!is_animation_visible(x, y, w, h, fx, fy, fw, fh))
+      return;
 
   xstep = (float) (fx - x) / Animate.iterations;
   ystep = (float) (fy - y) / Animate.iterations;
@@ -251,7 +285,8 @@ void AnimateResizeFlip(int x, int y, int w, int h, int fx, int fy, int fw, int f
   angle_finite = 2 * AS_PI * Animate.twist;
   XGrabServer(dpy);
   XInstallColormap(dpy, Pcmap);
-  for (angle = 0;; angle += (float) (2 * AS_PI * Animate.twist / Animate.iterations)) {
+  for (angle = 0; ;
+       angle += (float) (2 * AS_PI * Animate.twist / Animate.iterations)) {
     if (angle > angle_finite)
       angle = angle_finite;
 
@@ -270,10 +305,10 @@ void AnimateResizeFlip(int x, int y, int w, int h, int fx, int fy, int fw, int f
     points[4].x = points[0].x;
     points[4].y = points[0].y;
 
-    XDrawLines(dpy, root, gc, points, 5, CoordModeOrigin);
+    XDrawLines(dpy, Scr.root, gc, points, 5, CoordModeOrigin);
     XFlush(dpy);
     usleep(Animate.delay * 1000);
-    XDrawLines(dpy, root, gc, points, 5, CoordModeOrigin);
+    XDrawLines(dpy, Scr.root, gc, points, 5, CoordModeOrigin);
     cx += xstep;
     cy += ystep;
     cw += wstep;
@@ -289,7 +324,8 @@ void AnimateResizeFlip(int x, int y, int w, int h, int fx, int fy, int fw, int f
 /*
  * And another one, this time around the Y-axis.
  */
-void AnimateResizeTurn(int x, int y, int w, int h, int fx, int fy, int fw, int fh)
+void AnimateResizeTurn(
+    int x, int y, int w, int h, int fx, int fy, int fw, int fh)
 {
     float cx, cy, cw, ch;
     float xstep, ystep, wstep, hstep;
@@ -300,6 +336,9 @@ void AnimateResizeTurn(int x, int y, int w, int h, int fx, int fy, int fw, int f
     float midx;
 
     float angle, angle_finite;
+
+    if (!is_animation_visible(x, y, w, h, fx, fy, fw, fh))
+      return;
 
     xstep = (float) (fx - x) / Animate.iterations;
     ystep = (float) (fy - y) / Animate.iterations;
@@ -314,7 +353,8 @@ void AnimateResizeTurn(int x, int y, int w, int h, int fx, int fy, int fw, int f
     angle_finite = 2 * AS_PI * Animate.twist;
     XGrabServer(dpy);
     XInstallColormap(dpy, Pcmap);
-    for (angle = 0;; angle += (float) (2 * AS_PI * Animate.twist / Animate.iterations)) {
+    for (angle = 0; ;
+         angle += (float) (2 * AS_PI * Animate.twist / Animate.iterations)) {
 	if (angle > angle_finite)
 	    angle = angle_finite;
 
@@ -333,10 +373,10 @@ void AnimateResizeTurn(int x, int y, int w, int h, int fx, int fy, int fw, int f
 	points[4].x = points[0].x;
 	points[4].y = points[0].y;
 
-	XDrawLines(dpy, root, gc, points, 5, CoordModeOrigin);
+	XDrawLines(dpy, Scr.root, gc, points, 5, CoordModeOrigin);
 	XFlush(dpy);
 	usleep(Animate.delay * 1000);
-	XDrawLines(dpy, root, gc, points, 5, CoordModeOrigin);
+	XDrawLines(dpy, Scr.root, gc, points, 5, CoordModeOrigin);
 	cx += xstep;
 	cy += ystep;
 	cw += wstep;
@@ -360,6 +400,9 @@ static void AnimateResizeZoom(int x, int y, int w, int h,
     float xstep, ystep, wstep, hstep;
     int i;
 
+    if (!is_animation_visible(x, y, w, h, fx, fy, fw, fh))
+      return;
+
     xstep = (float)(fx-x)/Animate.iterations;
     ystep = (float)(fy-y)/Animate.iterations;
     wstep = (float)(fw-w)/Animate.iterations;
@@ -372,10 +415,10 @@ static void AnimateResizeZoom(int x, int y, int w, int h,
     XGrabServer(dpy);
     XInstallColormap(dpy, Pcmap);
     for (i=0; i<Animate.iterations; i++) {
-	XDrawRectangle(dpy, root, gc, (int)cx, (int)cy, (int)cw, (int)ch);
+	XDrawRectangle(dpy, Scr.root, gc, (int)cx, (int)cy, (int)cw, (int)ch);
 	XFlush(dpy);
 	usleep(Animate.delay*1000);
-	XDrawRectangle(dpy, root, gc, (int)cx, (int)cy, (int)cw, (int)ch);
+	XDrawRectangle(dpy, Scr.root, gc, (int)cx, (int)cy, (int)cw, (int)ch);
 	cx+=xstep;
 	cy+=ystep;
 	cw+=wstep;
@@ -392,11 +435,15 @@ static void AnimateResizeZoom(int x, int y, int w, int h,
  *
  * Andy Parker <parker_andy@hotmail.com>
  */
-void AnimateResizeZoom3D(int x, int y, int w, int h, int fx, int fy, int fw, int fh)
+void AnimateResizeZoom3D(
+    int x, int y, int w, int h, int fx, int fy, int fw, int fh)
 {
     float cx, cy, cw, ch;
     float xstep, ystep, wstep, hstep, srca, dsta;
     int i;
+
+    if (!is_animation_visible(x, y, w, h, fx, fy, fw, fh))
+      return;
 
     xstep = (float) (fx - x) / Animate.iterations;
     ystep = (float) (fy - y) / Animate.iterations;
@@ -417,29 +464,29 @@ void AnimateResizeZoom3D(int x, int y, int w, int h, int fx, int fy, int fw, int
   /* We are going from a Window to an Icon */
     {
 	for (i = 0; i < Animate.iterations; i++) {
-	    XDrawRectangle(dpy, root, gc, (int) cx, (int) cy, (int) cw,
+	    XDrawRectangle(dpy, Scr.root, gc, (int) cx, (int) cy, (int) cw,
 			   (int) ch);
-	    XDrawRectangle(dpy, root, gc, (int) fx, (int) fy, (int) fw,
+	    XDrawRectangle(dpy, Scr.root, gc, (int) fx, (int) fy, (int) fw,
 			   (int) fh);
-	    XDrawLine(dpy, root, gc, (int) cx, (int) cy, fx, fy);
-	    XDrawLine(dpy, root, gc, ((int) cx + (int) cw), (int) cy,
+	    XDrawLine(dpy, Scr.root, gc, (int) cx, (int) cy, fx, fy);
+	    XDrawLine(dpy, Scr.root, gc, ((int) cx + (int) cw), (int) cy,
 			    (fx + fw), fy);
-	    XDrawLine(dpy, root, gc, ((int) cx + (int) cw),
+	    XDrawLine(dpy, Scr.root, gc, ((int) cx + (int) cw),
 			    ((int) cy + (int) ch), (fx + fw), (fy + fh));
-	    XDrawLine(dpy, root, gc, (int) cx, ((int) cy + (int) ch), fx,
+	    XDrawLine(dpy, Scr.root, gc, (int) cx, ((int) cy + (int) ch), fx,
 			    (fy + fh));
 	    XFlush(dpy);
 	    usleep(Animate.delay);
-	    XDrawRectangle(dpy, root, gc, (int) cx, (int) cy, (int) cw,
+	    XDrawRectangle(dpy, Scr.root, gc, (int) cx, (int) cy, (int) cw,
 			   (int) ch);
-	    XDrawRectangle(dpy, root, gc, (int) fx, (int) fy, (int) fw,
+	    XDrawRectangle(dpy, Scr.root, gc, (int) fx, (int) fy, (int) fw,
 			   (int) fh);
-	    XDrawLine(dpy, root, gc, (int) cx, (int) cy, fx, fy);
-	    XDrawLine(dpy, root, gc, ((int) cx + (int) cw), (int) cy,
+	    XDrawLine(dpy, Scr.root, gc, (int) cx, (int) cy, fx, fy);
+	    XDrawLine(dpy, Scr.root, gc, ((int) cx + (int) cw), (int) cy,
 			    (fx + fw), fy);
-	    XDrawLine(dpy, root, gc, ((int) cx + (int) cw),
+	    XDrawLine(dpy, Scr.root, gc, ((int) cx + (int) cw),
 			    ((int) cy + (int) ch), (fx + fw), (fy + fh));
-	    XDrawLine(dpy, root, gc, (int) cx, ((int) cy + (int) ch), fx,
+	    XDrawLine(dpy, Scr.root, gc, (int) cx, ((int) cy + (int) ch), fx,
 			    (fy + fh));
 	    cx += xstep;
 	    cy += ystep;
@@ -450,27 +497,27 @@ void AnimateResizeZoom3D(int x, int y, int w, int h, int fx, int fy, int fw, int
     if (dsta > srca) {
 /* We are going from an Icon to a Window */
 	for (i = 0; i < Animate.iterations; i++) {
-	    XDrawRectangle(dpy, root, gc, (int) cx, (int) cy, (int) cw,
+	    XDrawRectangle(dpy, Scr.root, gc, (int) cx, (int) cy, (int) cw,
 			   (int) ch);
-	    XDrawRectangle(dpy, root, gc, x, y, w, h);
-	    XDrawLine(dpy, root, gc, (int) cx, (int) cy, x, y);
-	    XDrawLine(dpy, root, gc, ((int) cx + (int) cw), (int) cy,
+	    XDrawRectangle(dpy, Scr.root, gc, x, y, w, h);
+	    XDrawLine(dpy, Scr.root, gc, (int) cx, (int) cy, x, y);
+	    XDrawLine(dpy, Scr.root, gc, ((int) cx + (int) cw), (int) cy,
 			    (x + w), y);
-	    XDrawLine(dpy, root, gc, ((int) cx + (int) cw), ((int) cy +
+	    XDrawLine(dpy, Scr.root, gc, ((int) cx + (int) cw), ((int) cy +
 					    (int) ch), (x + w), (y + h));
-	    XDrawLine(dpy, root, gc, (int) cx, ((int) cy + (int) ch), x,
+	    XDrawLine(dpy, Scr.root, gc, (int) cx, ((int) cy + (int) ch), x,
 			    (y + h));
 	    XFlush(dpy);
 	    usleep(Animate.delay);
-	    XDrawRectangle(dpy, root, gc, (int) cx, (int) cy, (int) cw,
+	    XDrawRectangle(dpy, Scr.root, gc, (int) cx, (int) cy, (int) cw,
 			   (int) ch);
-	    XDrawRectangle(dpy, root, gc, x, y, w, h);
-	    XDrawLine(dpy, root, gc, (int) cx, (int) cy, x, y);
-	    XDrawLine(dpy, root, gc, ((int) cx + (int) cw), (int) cy,
+	    XDrawRectangle(dpy, Scr.root, gc, x, y, w, h);
+	    XDrawLine(dpy, Scr.root, gc, (int) cx, (int) cy, x, y);
+	    XDrawLine(dpy, Scr.root, gc, ((int) cx + (int) cw), (int) cy,
 			    (x + w), y);
-	    XDrawLine(dpy, root, gc, ((int) cx + (int) cw),
+	    XDrawLine(dpy, Scr.root, gc, ((int) cx + (int) cw),
 			    ((int) cy + (int) ch), (x + w), (y + h));
-	    XDrawLine(dpy, root, gc, (int) cx, ((int) cy + (int) ch), x,
+	    XDrawLine(dpy, Scr.root, gc, (int) cx, ((int) cy + (int) ch), x,
 			    (y + h));
 	    cx += xstep;
 	    cy += ystep;
@@ -485,8 +532,12 @@ void AnimateResizeZoom3D(int x, int y, int w, int h, int fx, int fy, int fw, int
 /*
  * This picks one of the animations and calls it.
  */
-void AnimateResizeRandom(int x, int y, int w, int h, int fx, int fy, int fw, int fh)
+void AnimateResizeRandom(
+    int x, int y, int w, int h, int fx, int fy, int fw, int fh)
 {
+  if (!is_animation_visible(x, y, w, h, fx, fy, fw, fh))
+    return;
+
   /* Note, first 2 effects "None" and "Random" should never be chosen */
   effects[(rand() + (x * y + w * h + fx)) % (NUM_EFFECTS - 2) + 2].function
     (x, y, w, h, fx, fy, fw, fh);
@@ -510,7 +561,7 @@ void AnimateResizeRandom(int x, int y, int w, int h, int fx, int fy, int fw, int
  * high, it looks a little like ants crawling across the screen.
  */
 static void AnimateResizeLines(int x, int y, int w, int h,
-                         int fx, int fy, int fw, int fh) {
+                               int fx, int fy, int fw, int fh) {
   int i, j;
   int ants = 1, ant_ctr;
   typedef struct {
@@ -518,6 +569,9 @@ static void AnimateResizeLines(int x, int y, int w, int h,
     XSegment incr[4];                  /* x/y increments */
   } Endpoints;
   Endpoints ends[2];
+
+  if (!is_animation_visible(x, y, w, h, fx, fy, fw, fh))
+    return;
 
   /* define the array occurances */
 #define UR seg[0]
@@ -578,8 +632,8 @@ static void AnimateResizeLines(int x, int y, int w, int h,
         BEG.seg[j].y2 = BEG.seg[j].y1 + INC.seg[j].y2; /* calc end points */
       }
       myaprintf((stderr,
-                 "Lines %dx%d-%dx%d, %dx%d-%dx%d, %dx%d-%dx%d, %dx%d-%dx%d,\
-ant_ctr %d\n",
+                 "Lines %dx%d-%dx%d, %dx%d-%dx%d, %dx%d-%dx%d, %dx%d-%dx%d,"
+                 "ant_ctr %d\n",
                  BEG.UR.x1, BEG.UR.y1, BEG.UR.x2, BEG.UR.y2,
                  BEG.UL.x1, BEG.UL.y1, BEG.UL.x2, BEG.UL.y2,
                  BEG.LR.x1, BEG.LR.y1, BEG.LR.x2, BEG.LR.y2,
@@ -588,13 +642,13 @@ ant_ctr %d\n",
         XGrabServer(dpy);
 	XInstallColormap(dpy, Pcmap);
       }
-      XDrawSegments(dpy, root, gc, BEG.seg, 4);
+      XDrawSegments(dpy, Scr.root, gc, BEG.seg, 4);
       XFlush(dpy);
       if (ant_ctr == 0) {               /* only pause on draw cycle */
         usleep(Animate.delay*1000);
       }
       if (ants==0) {
-        XDrawSegments(dpy, root, gc, BEG.seg, 4);
+        XDrawSegments(dpy, Scr.root, gc, BEG.seg, 4);
         XUngrabServer(dpy);
       }
       for (j=0;j<4;j++) {                 /* all 4 lines segs */
@@ -617,8 +671,9 @@ ant_ctr %d\n",
  * just exited immediately, you couldn't use  this module to turn it back
  * on.)
  */
-static void AnimateResizeNone(int x, int y, int w, int h,
-                              int fx, int fy, int fw, int fh) {
+static void AnimateResizeNone(
+    int x, int y, int w, int h, int fx, int fy, int fw, int fh)
+{
   (void)x;
   (void)y;
   (void)w;
@@ -627,6 +682,9 @@ static void AnimateResizeNone(int x, int y, int w, int h,
   (void)fy;
   (void)fw;
   (void)fh;
+
+  if (!is_animation_visible(x, y, w, h, fx, fy, fw, fh))
+    return;
 
   ++animate_none;
   return;
@@ -643,16 +701,19 @@ static void AnimateClose(int x, int y, int w, int h)
 {
     int i, step;
 
+    if (!is_animation_visible(x, y, w, h, fx, fy, fw, fh)
+      return;
+
     if (h>4) {
 	step = h*4/Animate.iterations;
 	if (step==0) {
 	    step = 2;
 	}
 	for (i=h; i>=2; i-=step) {
-	    XDrawRectangle(dpy, root, gc, x, y, w, i);
+	    XDrawRectangle(dpy, Scr.root, gc, x, y, w, i);
 	    XFlush(dpy);
 	    usleep(ANIM_DELAY2*600);
-	    XDrawRectangle(dpy, root, gc, x, y, w, i);
+	    XDrawRectangle(dpy, Scr.root, gc, x, y, w, i);
 	    y+=step/2;
 	}
     }
@@ -662,10 +723,10 @@ static void AnimateClose(int x, int y, int w, int h)
 	step = 2;
     }
     for (i=w; i>=0; i-=step) {
-	XDrawRectangle(dpy, root, gc, x, y, i, 2);
+	XDrawRectangle(dpy, Scr.root, gc, x, y, i, 2);
 	XFlush(dpy);
 	usleep(ANIM_DELAY2*1000);
-	XDrawRectangle(dpy, root, gc, x, y, i, 2);
+	XDrawRectangle(dpy, Scr.root, gc, x, y, i, 2);
 	x+=step/2;
     }
     usleep(100000);
@@ -757,13 +818,13 @@ int main(int argc, char **argv) {
   /* FvwmAnimate must use the root visuals so trash the fvwm one */
   putenv("FVWM_VISUALID=");
   InitPictureCMap(dpy);
-  root = DefaultRootWindow(dpy);
-  scr = DefaultScreen(dpy);
+  Scr.root = DefaultRootWindow(dpy);
+  Scr.screen = DefaultScreen(dpy);
 
   sprintf(cmd,"read .%s Quiet",MyName+1); /* read quiet modules config */
   SendText(Channel,cmd,0);
   ParseOptions();                       /* get cmds fvwm has parsed */
-  
+
   SetMessageMask(Channel, M_ICONIFY|M_DEICONIFY|M_STRING|M_SENDCONFIG
 		 |M_CONFIG_INFO);        /* tell fvwm about our mask */
   CreateDrawGC();			/* create initial GC if necc. */
@@ -793,6 +854,14 @@ static void Loop(void) {
 	break;                    /* FVWM is gone */
 
       switch (packet->type) {
+      case M_NEW_PAGE:
+          Scr.Vx = packet->body[0];
+          Scr.Vy = packet->body[1];
+          Scr.CurrentDesk = packet->body[2];
+          break;
+      case M_NEW_DESK:
+          Scr.CurrentDesk = packet->body[0];
+          break;
       case M_DEICONIFY:
         if (packet->size < 15            /* If not all info needed, */
             || packet->body[5] == 0) {   /* or a "noicon" icon */
@@ -960,6 +1029,12 @@ static const char *table[]= {
 static void ParseOptions(void) {
   char *buf;
 
+  Scr.MyDisplayWidth = DisplayWidth(dpy, Scr.screen);
+  Scr.MyDisplayHeight = DisplayHeight(dpy, Scr.screen);
+  Scr.Vx = 0;
+  Scr.Vy = 0;
+  Scr.CurrentDesk = 0;
+
   myfprintf((stderr,"Reading options\n"));
   InitGetConfigLine(Channel,MyName);
   while (GetConfigLine(Channel,&buf), buf != NULL) {
@@ -1032,12 +1107,12 @@ void ParseConfigLine(char *buf) {
           XFreePixmap(dpy, pixmap);
           pixmap = None;
         }
-        CreateDrawGC();                 /* update GC */
+        CreateDrawGC();                /* update GC */
         break;
       case Pixmap_arg:
         if (Animate.pixmap) {
-          free(Animate.pixmap);          /* release storage holding pixmap name */
-          Animate.pixmap = 0;            /* show its gone */
+          free(Animate.pixmap);        /* release storage holding pixmap name */
+          Animate.pixmap = 0;          /* show its gone */
         }
         if (strcasecmp(q,"None") != 0) { /* If not pixmap "none"  */
           Animate.pixmap = (char *)strdup(q); /* make copy of name */
@@ -1105,31 +1180,32 @@ static void CreateDrawGC(void) {
   if (gc != NULL) {
     XFreeGC(dpy,gc);                /* free old GC */
   }
-  color = (BlackPixel(dpy,scr) ^ WhitePixel(dpy,scr));  /* From builtins.c: */
+  /* From builtins.c: */
+  color = (BlackPixel(dpy, Scr.screen) ^ WhitePixel(dpy, Scr.screen));
   pixmap = None;
   gcv.function = GXxor;                 /* default is to xor the lines */
   if (Animate.pixmap) {                 /* if pixmap called for */
     Picture *picture;
-    
-    picture = GetPicture(dpy, RootWindow(dpy,scr), 0, Animate.pixmap, 0);
+
+    picture = GetPicture(dpy, RootWindow(dpy,Scr.screen), 0, Animate.pixmap, 0);
     if (!picture)
       fprintf(stderr, "%s: Could not load pixmap '%s'\n",
 	      MyName + 1, Animate.pixmap);
     else {
-      if (picture->depth == DefaultDepth(dpy, scr)) {
-	pixmap = XCreatePixmap(dpy, RootWindow(dpy, scr), picture->width,
+      if (picture->depth == DefaultDepth(dpy, Scr.screen)) {
+	pixmap = XCreatePixmap(dpy, RootWindow(dpy, Scr.screen), picture->width,
 			       picture->height, picture->depth);
-	XCopyArea(dpy, picture->picture, pixmap, DefaultGC(dpy, scr), 0, 0,
-		  picture->width, picture->height, 0, 0);
+	XCopyArea(dpy, picture->picture, pixmap, DefaultGC(dpy, Scr.screen), 0,
+                  0, picture->width, picture->height, 0, 0);
       }
       DestroyPicture(dpy, picture);
     }
   } else if (Animate.color) {           /* if color called for */
-    if (XParseColor(dpy,DefaultColormap(dpy,scr),Animate.color, &xcol)) {
-      if (XAllocColor(dpy, DefaultColormap(dpy,scr), &xcol)) {
+    if (XParseColor(dpy,DefaultColormap(dpy,Scr.screen),Animate.color, &xcol)) {
+      if (XAllocColor(dpy, DefaultColormap(dpy,Scr.screen), &xcol)) {
         color = xcol.pixel;
         /* free it now, only interested in the pixel */
-	XFreeColors(dpy, DefaultColormap(dpy,scr), &xcol.pixel, 1, 0);
+	XFreeColors(dpy, DefaultColormap(dpy,Scr.screen), &xcol.pixel, 1, 0);
         /*         gcv.function = GXequiv;  Afterstep used this. */
       } else {
         fprintf(stderr,"%s: could not allocate color '%s'\n",
@@ -1148,7 +1224,7 @@ static void CreateDrawGC(void) {
     gcv.tile = pixmap;
     gcv.fill_style = FillTiled;
   }
-  gc=XCreateGC(dpy, root, GCFunction | GCForeground | GCLineWidth
+  gc=XCreateGC(dpy, Scr.root, GCFunction | GCForeground | GCLineWidth
 	       | GCSubwindowMode | (pixmap ? GCFillStyle | GCTile : 0), &gcv);
 }
 

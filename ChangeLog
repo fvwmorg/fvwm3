@@ -1,8 +1,18 @@
+2000-01-20  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* fvwm/menus.c (size_menu_horizontally):
+	removed a stray '&'
+
+	* fvwm/fvwm.c (startFuncName):
+	reindented #define
+
 2000-01-19  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* fvwm/fvwm2.1 (Examples):
 	* fvwm/conditional.c (PickFunc):
 	Pick command can handle a condition mask.
+	(AllFunc):
+	replaced a malloc call by safemalloc
 
 2000-01-19  Hippo
 

@@ -629,7 +629,9 @@ void ReadFvwmPipe (void)
     ConsoleDebug(FVWM, "DEBUG: entering ReadFvwmPipe\n");
 
     if ( (packet = ReadFvwmPacket(Fvwm_fd[1])) == NULL )
+    {
 	exit(0);
+    }
     else
 	ProcessMessage( packet->type, (FvwmPacketBody*) packet->body );
 

@@ -734,7 +734,7 @@ int main(int argc, char **argv)
 */
 void StartupStuff(void)
 {
-  #define startFuncName "StartFunction"
+#define startFuncName "StartFunction"
   const char *initFuncName;
 
   CaptureAllWindows();
