@@ -476,7 +476,7 @@ int main(int argc, char **argv)
     Scr.viz = DefaultVisual(dpy, Scr.screen);
     Scr.depth = DefaultDepth(dpy, Scr.screen);
     Scr.cmap = DefaultColormap(dpy, Scr.screen);
-  } else
+  }
 
 #ifdef SHAPE
   ShapesSupported=XShapeQueryExtension(dpy, &ShapeEventBase, &ShapeErrorBase);
