@@ -27,12 +27,15 @@ AddToFunc FvwmProxy_Circulate
 + I WindowId $[FvwmProxy_S] $0 $1 FvwmProxy_Mark
 + I CondCase (Error) $0 $1 FvwmProxy_Mark
 
-Key Alt_L	A N	SendToModule	FvwmProxy	Show
-Key -Alt_L	A A	SendToModule	FvwmProxy	Hide
+# !!!This shouldn't be the default.  It's too dangerous and annoying for people
+# who actually use the tab key.
+#Key Meta_L	A N	SendToModule	FvwmProxy	Show
+#Key -Meta_L	A A	SendToModule	FvwmProxy	Hide
 
-*FvwmProxy: Font		-*-helvetica-bold-r-*-*-18-*-*-*-*-*-*-*
+# Rather, default to 'fixed' and let user change it
+#*FvwmProxy: Font		-*-helvetica-bold-r-*-*-18-*-*-*-*-*-*-*
 *FvwmProxy: ShowMiniIcons	true
-*FvwmProxy: EnterSelect		false
+*FvwmProxy: EnterSelect		true
 *FvwmProxy: ProxyMove		false
 *FvwmProxy: Width		180
 *FvwmProxy: Height		60

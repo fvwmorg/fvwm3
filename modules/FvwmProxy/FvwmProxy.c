@@ -185,15 +185,15 @@ static Bool parse_options(void)
 		}
 		else if (StrEquals(resource, "ShowMiniIcons"))
 		{
-			showMiniIcons=!strcmp(tline,"true");
+			showMiniIcons = ParseToggleArgument(tline, NULL, 0, 1);
 		}
 		else if (StrEquals(resource, "EnterSelect"))
 		{
-			enterSelect=!strcmp(tline,"true");
+			enterSelect = ParseToggleArgument(tline, NULL, 0, 1);
 		}
 		else if (StrEquals(resource, "ProxyMove"))
 		{
-			proxyMove=!strcmp(tline,"true");
+			proxyMove = ParseToggleArgument(tline, NULL, 0, 1);
 		}
 		else if (StrEquals(resource, "Width"))
 		{
@@ -407,7 +407,7 @@ static void DrawWindow(
 		edge = w / 2;
 	}
 	top=(h+ Ffont->ascent - Ffont->descent)/2;	/* center */
-	if(showMiniIcons)
+	if(showMiniIcons && proxy->picture.picture != None)
 		top+=8;					/* HACK tweak */
 
 	if(edge<5)
@@ -419,18 +419,11 @@ static void DrawWindow(
 	XSetForeground(dpy,sh_gc,Colorset[cset].shadow);
 	XSetForeground(dpy,hi_gc,Colorset[cset].hilite);
 
-#if TRUE
-	/* XClearWindow version doesn't seem to use the select bg.  */
-	XSetForeground(dpy,fg_gc,Colorset[cset].bg);
-	XFillRectangle(dpy,proxy->proxy,fg_gc,0,0,w-1,h-1);
-	XSetForeground(dpy,fg_gc,Colorset[cset].fg);
-#else
 	/* FIXME: use clip redrawing (not really essential here) */
 	if (FLF_FONT_HAS_ALPHA(Ffont,cset) || PICTURE_HAS_ALPHA(picture,cset))
 	{
 		XClearWindow(dpy,proxy->proxy);
 	}
-#endif
 	RelieveRectangle(
 		dpy, proxy->proxy, 0, 0, w - 1, h - 1, hi_gc, sh_gc, 2);
 	if (proxy->iconname != NULL)
@@ -448,7 +441,7 @@ static void DrawWindow(
 		}
 		FlocaleDrawString(dpy, Ffont, FwinString, 0);
 	}
-	if(showMiniIcons)
+	if(showMiniIcons && proxy->picture.picture != None)
 		DrawPicture(proxy->proxy, (w-16)/2, 8, picture, cset);
 }
 

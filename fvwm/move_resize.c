@@ -1962,7 +1962,11 @@ Bool __move_loop(
 	{
 		int rc = 0;
 		XEvent e;
+		int old_xl;
+		int old_yt;
 
+		old_xl = xl;
+		old_yt = yt;
 		/* wait until there is an interesting event */
 		while (rc != -1 &&
 		       (!FPending(dpy) ||
@@ -2330,10 +2334,13 @@ Bool __move_loop(
 				fw_copy.frame_g.x = xl;
 				fw_copy.frame_g.y = yt;
 			}
-			/* only do this with opaque moves, (i.e. the server is
-			 * not grabbed) */
-			BroadcastConfig(M_CONFIGURE_WINDOW, &fw_copy);
-			FlushAllMessageQueues();
+			if (xl != old_xl || yt != old_yt)
+			{
+				/* only do this with opaque moves, (i.e. the
+				 * server is not grabbed) */
+				BroadcastConfig(M_CONFIGURE_WINDOW, &fw_copy);
+				FlushAllMessageQueues();
+			}
 		}
 	} /* while (!finished) */
 

@@ -1,3 +1,8 @@
+2002-11-18  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* fvwm/move_resize.c (__move_loop):
+	send M_CONFIGURE_WINDOW only when the window actually moves
+
 2002-11-16  Mikhael Goikhman  <migo@homemail.com>
 
 	* libs/FBidi.c:
