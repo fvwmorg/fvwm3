@@ -2030,7 +2030,7 @@ void SetBorderStyle(XEvent *eventp,Window w,FvwmWindow *tmp_win,
 	    tmpbf.next = NULL;
 #endif
 #ifdef MINI_ICONS
-	    tmpbf->u.p = NULL;
+	    tmpbf.u.p = NULL;
 #endif
 	    if (StrEquals(parm,"active"))
 		bf = &fl->BorderStyle.active;
@@ -2078,7 +2078,7 @@ void SetBorderStyle(XEvent *eventp,Window w,FvwmWindow *tmp_win,
 	    tmpbf.next = NULL;
 #endif
 #ifdef MINI_ICONS
-	    tmpbf->u.p = NULL;
+	    tmpbf.u.p = NULL;
 #endif
 	    if (ReadButtonFace(prev, &tmpbf,-1,True)) {
 		FreeButtonFace(dpy,&fl->BorderStyle.active);
@@ -2799,7 +2799,7 @@ char *ReadTitleButton(char *s, TitleButton *tb, Boolean append, int button)
     tmpbf.next = NULL;
 #endif
 #ifdef MINI_ICONS
-    tmpbf->u.p = NULL;
+    tmpbf.u.p = NULL;
 #endif
 
     if (strncmp(spec, "--",2)==0) {
@@ -3161,7 +3161,7 @@ void DestroyDecor(XEvent *eventp,Window junk,FvwmWindow *tmp_win,
 void add_item_to_decor(XEvent *eventp,Window junk,FvwmWindow *tmp_win,
 		      unsigned long context, char *action,int* Module)
 {
-    FvwmDecor *f, *found = NULL;
+    FvwmDecor *fl, *found = NULL;
     char *item = NULL, *s = action;
 
     last_menu = NULL;
