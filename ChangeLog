@@ -1,3 +1,9 @@
+2001-08-16  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* libs/XError.c (error_name):
+	(request_name):
+	fixed core dump in error handling
+
 2001-08-15  Mikhael Goikhman  <migo@homemail.com>
 
 	* configure.in:

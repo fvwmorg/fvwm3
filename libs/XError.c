@@ -26,6 +26,7 @@
 
 static char *error_name(unsigned char code);
 static char *request_name(unsigned char code);
+static char unknown[32];
 
 #define USE_GET_ERROT_TEXT 1
 void PrintXErrorAndCoredump(Display *dpy, XErrorEvent *error, char *MyName)
@@ -86,8 +87,11 @@ static char *error_names[] = {
 
 static char *error_name(unsigned char code)
 {
-  if (code > (sizeof(error_names) / sizeof(char *)))
-    return "Unknown";
+  if (code == 0 || code > (sizeof(error_names) / sizeof(char *)))
+  {
+    sprintf(unknown, "Unknown: %d", (int)code);
+    return unknown;
+  }
   return error_names[code - 1];
 }
 #endif
@@ -218,7 +222,10 @@ static char *code_names[] = {
 
 static char *request_name(unsigned char code)
 {
-  if (code > (sizeof(code_names) / sizeof(char *)))
-    return "Unknown";
+  if (code == 0 || code > (sizeof(code_names) / sizeof(char *)))
+  {
+    sprintf(unknown, "Unknown: %d", (int)code);
+    return unknown;
+  }
   return code_names[code - 1];
 }
