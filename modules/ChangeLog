@@ -1,4 +1,17 @@
-1999-11-22  olicha   <olivier.chapuis@free.fr>
+1999-11-23  Mikhael Goikhman  <migo@hoomemail.com>
+
+	Applied a FvwmBacker patch from Michael Han, fixed and modified.
+
+	* FvwmBacker/FvwmBacker.[ch]:
+	* FvwmBacker/ConfigFvwmBacker:
+	* FvwmBacker/FvwmBacker.1:
+	Added page-awareness; converted to linked list of commands instead of
+	table (to fix bugs caused if DesktopSize changes or if desktop is
+	negative).
+	A new syntax: *FvwmBackerCommand (Page x y, Desk d) command.
+	Support for dynamic config changes; some clean up.
+
+1999-11-22  olicha  <olivier.chapuis@free.fr>
 
 	* FvwmTaskBar/Goodies.c (CreateOrUpdateGoody):
 	(CreateMailTipWidow):
@@ -9,7 +22,7 @@
 	* FvwmTaskBar/FvwmTaskBar.c (LoopOnEvents):
 	Fixed an AutoHide bug: no hide after a "StartMenu" Popup
 
-1999-11-22  olicha   <olivier.chapuis@free.fr>
+1999-11-22  olicha  <olivier.chapuis@free.fr>
 
 	* FvwmTaskBar/FvwmTaskBar.c (ProcessMessage):
 	(LoopOnEvents):
@@ -21,14 +34,14 @@
 	* FvwmIconMan/fvwm.c (new_window):
 	removed debug 'sleep'
 
-1999-11-21  olicha   <olivier.chapuis@free.fr>
+1999-11-21  olicha  <olivier.chapuis@free.fr>
 
 	* FvwmWinList/FvwmWinList.c (AdjustWindow):
 	Fixed a core dump. I hope I have not completely reverted the last
  	WinList commit.
 
 
-1999-11-21  olicha   <olivier.chapuis@free.fr>
+1999-11-21  olicha  <olivier.chapuis@free.fr>
 
 	* FvwmTaskBar/FvwmTaskBar.c (ProcessMessage):
 	(ParseConfigLine):
@@ -77,7 +90,7 @@
 	* FvwmTaskBar/FvwmTaskBar.1: Some adjustment and hopefully
 	clarification on the geometry specification.
 
-1999-11-18  olicha <olivier.chapuis@free.fr>
+1999-11-18  olicha  <olivier.chapuis@free.fr>
 
 	* FvwmBacker/FvwmBacker.{c,h}:
 	* FvwmIconBox/FvwmIconBox.{c,h}:
@@ -158,21 +171,21 @@
 	* FvwmWinList/FvwmWinList.c (ProcessMessage):
 	redraw window list when mini icon changes
 
-1999-11-12 olicha <olivier.chapuis@free.fr>
+1999-11-12  olicha  <olivier.chapuis@free.fr>
 
 	* FvwmGtk/FvwmGtk.c (main):
 	(ProcessMessage):
 	Use SetSyncMask in the place of M_LOCKONSEND. Lock on send
 	only for M_STRING
 
-1999-11-12 olicha <olivier.chapuis@free.fr>
+1999-11-12  olicha  <olivier.chapuis@free.fr>
 
 	* FvwmAnimate/FvwmAnimate.c (main):
         (Loop):
 	* FvwmAuto/FvwmAuto.c (main):
         Use SetSyncMask in the place of M_LOCKONSEND
 
-1999-11-12 olicha <olivier.chapuis@free.fr>
+1999-11-12  olicha  <olivier.chapuis@free.fr>
 
 	* FvwmTaskBar/FvwmTaskBar.c (main):
         (ParseConfig):
@@ -181,21 +194,21 @@
 	* FvwmTaskBar/ButtonArray.{c,h} (ButtonCoordinates):
         New configuration option NoIconAction for animation
 
-1999-11-12 olicha <olivier.chapuis@free.fr>
+1999-11-12  olicha  <olivier.chapuis@free.fr>
 
 	* FvwmIconMan/FvwmIconMan.c (main):
 	* FvwmIconMan/fvwm.c (ProcessMessage):
 	Use SetSyncMask in the place of M_LOCKONSEND for synchronize its
 	processing with fvwm only for M_ICONIFY and M_DEICONIFY messages
 
-1999-11-11 olicha <olivier.chapuis@free.fr>
+1999-11-11  olicha  <olivier.chapuis@free.fr>
 
 	* FvwmWinList/FvwmWinList.c (main):
 	(ProcessMessage):
 	Use SetSyncMask in the place of M_LOCKONSEND for NoIconAction
 	configuration command
 
-1999-11-09  olicha   <olivier.chapuis@free.fr>
+1999-11-09  olicha  <olivier.chapuis@free.fr>
 
 	* FvwmTaskBar/FvwmTaskBar.c (redraw_buttons):
 	(ProcessMessage):

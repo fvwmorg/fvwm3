@@ -1,5 +1,7 @@
 Changes in beta release 2.3.10
 
+* FvwmBacker is now page-aware, a new configuration syntax.
+
 * New styles TitleAtBottom and TitleAtTop.
 
 * FvwmIconMan, FvwmTaskBar and FvwmWinList support animatation via

@@ -40,7 +40,8 @@
 
 void EndLessLoop();
 void ReadFvwmPipe();
-void ProcessMessage(unsigned long type,unsigned long *body);
+void ProcessMessage(unsigned long type, unsigned long *body);
 void DeadPipe(int nonsense);
 void ParseConfig(void);
-void AddCommand(char *string);
+void ParseConfigLine(char *line);
+void AddCommand(char *line);

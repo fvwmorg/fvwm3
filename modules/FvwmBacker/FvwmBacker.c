@@ -55,42 +55,70 @@
 
 #include "libs/Module.h"
 #include "libs/Colorset.h"
+#include "libs/Parse.h"
 #include "FvwmBacker.h"
+
+/* migo (22-Nov-1999): Temporarily until fvwm_msg is moved to libs */
+#define ERR
+#define fvwm_msg(t,l,f) fprintf(stderr, "[FVWM][FvwmBacker]: <<ERROR>> %s\n", f)
 
 unsigned long BackerGetColor(char *color);
 
-typedef struct
+struct Command
 {
-  int type; /* The command type.
-	     * -1 = no command.
-	     *  0 = command to be spawned
-	     *  1 = a solid color to be set
-	     *  2 = use background from colorset */
+  int desk;
+  int deskglob; /* Set in case desk is globbed, boolean */
+  int x;	/* Page X coordinate; -1 for glob */
+  int y;	/* Page Y coordinate; -1 for glob */
+  /* The command type:
+   * -1 = no command
+   *  0 = command to be spawned
+   *  1 = use a solid color background
+   *  2 = use a colorset background
+   */
+  int type;
   char*	cmdStr; /* The command string (Type 0)   */
   unsigned long solidColor; /* A solid color after X parsing (Type 1) */
-  int colorset; /* the colorset to be used */
-} Command;
+  int colorset; /* The colorset to be used (Type 2) */
+  struct Command *next;
+};
 
-Command *commands;
-int DeskCount=0;
+typedef struct Command Command;
+
+typedef struct
+{
+  Command *first;
+  Command *last;
+} CommandChain;
+
+CommandChain *commands;
+
+/* int DeskCount=0; */
 int current_desk = 0;
+int current_x = 0;
+int current_y = 0;
 
 int Fvwm_fd[2];
 int fd_width;
 
-char *Module;
+char *Module;        /* i.e. "FvwmBacker" */
+char *configPrefix;  /* i.e. "*FvwmBacker" */
+
 
 /* X Display information. */
 
 Display* 	dpy;
 Window		root;
 int			screen;
+int MyDisplayHeight;
+int MyDisplayWidth;
 
 FILE*	logFile;
 
 /* Comment this out if you don't want a logfile. */
 
-/* #define LOGFILE "/tmp/FvwmBacker.log"*/
+/* #define LOGFILE "/tmp/FvwmBacker.log" */
+/* #define FVWM_DEBUG_MSGS 1 */
 
 
 int main(int argc, char **argv)
@@ -98,7 +126,8 @@ int main(int argc, char **argv)
   char *temp, *s;
   char* displayName = NULL;
 
-  commands=NULL;
+  commands = (CommandChain*)safemalloc(sizeof(CommandChain));
+  commands->first = commands->last = NULL;
 
   /* Save the program name for error messages and config parsing */
   temp = argv[0];
@@ -107,6 +136,7 @@ int main(int argc, char **argv)
     temp = s + 1;
 
   Module=temp;
+  configPrefix = CatString2("*", Module);
 
   if((argc != 6)&&(argc != 7))
   {
@@ -129,6 +159,8 @@ int main(int argc, char **argv)
   }
   screen = DefaultScreen(dpy);
   root = RootWindow(dpy, screen);
+  MyDisplayHeight = DisplayHeight(dpy, screen);
+  MyDisplayWidth = DisplayWidth(dpy, screen);
 
   /* allocate default colorset */
   AllocColorset(0);
@@ -146,8 +178,8 @@ int main(int argc, char **argv)
 
   fd_width = GetFdWidth();
 
-  SetMessageMask(Fvwm_fd,
-		 M_NEW_DESK|M_CONFIG_INFO|M_END_CONFIG_INFO|M_SENDCONFIG);
+  SetMessageMask(Fvwm_fd, M_NEW_DESK|M_NEW_PAGE|
+                 M_CONFIG_INFO|M_END_CONFIG_INFO|M_SENDCONFIG);
 
   /*
   ** we really only want the current desk, and window list sends it
@@ -190,13 +222,13 @@ void ReadFvwmPipe()
 }
 
 
-void set_desk_background(int desk)
+void SetDeskPageBackground(const Command *c)
 {
-  switch (commands[desk].type)
+  switch (c->type)
   {
   case 1:
     /* Process a solid color request */
-    XSetWindowBackground(dpy, root, commands[desk].solidColor);
+    XSetWindowBackground(dpy, root, c->solidColor);
     XClearWindow(dpy, root);
     XFlush(dpy);
 #ifdef LOGFILE
@@ -206,26 +238,41 @@ void set_desk_background(int desk)
     break;
   case 2:
     SetWindowBackground(
-      dpy, root, DisplayWidth(dpy, screen), DisplayHeight(dpy, screen),
-      &Colorset[commands[desk].colorset],
+      dpy, root, MyDisplayWidth, MyDisplayHeight, &Colorset[c->colorset],
       DefaultDepth(dpy, screen), DefaultGC(dpy, screen), True);
     XFlush(dpy);
     break;
   case 0:
   case -1:
   default:
-    if(commands[desk].cmdStr != NULL)
+    if(c->cmdStr != NULL)
     {
-      SendFvwmPipe(Fvwm_fd, commands[desk].cmdStr, (unsigned long)0);
+      SendFvwmPipe(Fvwm_fd, c->cmdStr, (unsigned long)0);
     }
     break;
   } /* switch */
 }
 
+/*
+ * migo (23-11-1999): Maybe execute only first (or last?) matching command?
+ */
+int ExecuteMatchingCommands(int colorset)
+{
+  const Command *command;
+  for (command = commands->first; command; command = command->next)
+  {
+    if (
+      (command->deskglob || command->desk     == current_desk) &&
+      (command->x < 0    || command->x        == current_x)    &&
+      (command->y < 0    || command->y        == current_y)    &&
+      (colorset   < 0    || command->colorset == colorset)
+    )
+      SetDeskPageBackground(command);
+  }
+}
+
 /******************************************************************************
   ProcessMessage - Process the message coming from Fvwm
-    Skeleton based on processmessage() from FvwmIdent:
-      Copyright 1994, Robert Nation and Nobutaka Suzuki.
 ******************************************************************************/
 void ProcessMessage(unsigned long type,unsigned long *body)
 {
@@ -236,160 +283,251 @@ void ProcessMessage(unsigned long type,unsigned long *body)
   {
   case M_CONFIG_INFO:
     tline = (char*)&(body[3]);
+#ifdef FVWM_DEBUG_MSGS
+    fprintf(stderr, "\t[FvwmBacker] M_CONFIG_INFO: %s\n", tline);
+#endif
     if (strncasecmp(tline, "colorset", 8) == 0)
     {
       colorset = LoadColorset(tline + 8);
-      if (commands[current_desk].colorset == colorset)
-      {
-	set_desk_background(current_desk);
-      }
+      ExecuteMatchingCommands(colorset);
+    }
+    else
+    {
+      ParseConfigLine(tline);
+      ExecuteMatchingCommands(-1);
     }
     break;
 
   case M_NEW_DESK:
-    if (body[0]>DeskCount || commands[body[0]].type == -1)
-    {
-      return;
-    }
-#ifdef LOGFILE
-    fprintf(logFile,"Desk: %d\n",body[0]);
-    fprintf(logFile,"Command type: %d\n",commands[body[0]].type);
-    if (commands[body[0]].type == 0)
-      fprintf(logFile,"Command String: %s\n",commands[body[0]].cmdStr);
-    else if (commands[body[0]].type == 1)
-      fprintf(logFile,"Color Number: %d\n",commands[body[0]].solidColor);
-    else if (commands[body[0]].type == -1)
-      fprintf(logFile,"No Command\n");
-    else if (commands[body[0]].type == 2)
-      fprintf(logFile,"Use Colorset %d\n",commands[body[0]].colorset);
-    else
-    {
-      fprintf(logFile,"Illegal command type !\n");
-      exit(1);
-    }
-    fflush(logFile);
-#endif
-    set_desk_background(body[0]);
     current_desk = body[0];
+#ifdef FVWM_DEBUG_MSGS
+    fprintf(stderr, "\t[FvwmBacker] M_NEW_DESK: d=%d p=[%d, %d]\n", current_desk, current_x, current_y);
+#endif
+/*
+    ExecuteMatchingCommands(-1);
+*/
     break;
+
+  case M_NEW_PAGE:
+    current_desk = body[2];
+    current_x = body[0]/MyDisplayWidth;
+    current_y = body[1]/MyDisplayHeight;
+#ifdef FVWM_DEBUG_MSGS
+    fprintf(stderr, "\t[FvwmBacker] M_NEW_PAGE: d=%d p=(%d, %d)\n", current_desk, current_x, current_y);
+#endif
+    ExecuteMatchingCommands(-1);
+    break;
+
   default:
     break;
   } /* switch */
 }
 
-/***********************************************************************
+/******************************************************************************
   Detected a broken pipe - time to exit
-    Based on DeadPipe() from FvwmIdent:
-      Copyright 1994, Robert Nation and Nobutaka Suzuki.
- **********************************************************************/
+******************************************************************************/
 void DeadPipe(int nonsense)
 {
   exit(1);
 }
 
 /******************************************************************************
+  ParseConfigLine - Parse the configuration line fvwm to us to use
+******************************************************************************/
+void ParseConfigLine(char *line)
+{
+  if (strlen(line) > 1)
+  {
+    if (strncasecmp(line, configPrefix, strlen(configPrefix)) == 0)
+      AddCommand(line + strlen(configPrefix));
+    else if (strncasecmp(line, "colorset", 8) == 0)
+      LoadColorset(line + 8);
+  }
+}
+
+/******************************************************************************
   ParseConfig - Parse the configuration file fvwm to us to use
-    Based on part of main() from FvwmIdent:
-      Copyright 1994, Robert Nation and Nobutaka Suzuki.
 ******************************************************************************/
 void ParseConfig()
 {
-  char line2[40];
+  char *line_start;
   char *tline;
 
-  sprintf(line2,"*%sDesk",Module);
+  line_start=safemalloc(strlen(Module)+1);
+  strcpy(line_start,"*");
+  strcat(line_start, Module);
 
-  InitGetConfigLine(Fvwm_fd,line2);
+  InitGetConfigLine(Fvwm_fd,line_start);
   GetConfigLine(Fvwm_fd,&tline);
 
   while(tline != (char *)0)
   {
-    if(strlen(tline)>1)
-    {
-      if(strncasecmp(tline,line2,strlen(line2))==0)
-	AddCommand(&tline[strlen(line2)]);
-      else if (strncasecmp(tline, "colorset", 8) == 0)
-	LoadColorset(tline + 8);
-    }
+    ParseConfigLine(tline);
     GetConfigLine(Fvwm_fd,&tline);
   }
+  free(line_start);
 }
 
 /******************************************************************************
   AddCommand - Add a command to the correct spot on the dynamic array.
 ******************************************************************************/
-void AddCommand(char *string)
+void AddCommand(char *line)
 {
-  char *temp;
+  char *token;
+  Command *this;
   int num = 0;
 
-  temp=string;
-  while(isspace((unsigned char)*temp))
-    temp++;
-  num=atoi(temp);
-  while(!isspace((unsigned char)*temp))
-    temp++;
-  while(isspace((unsigned char)*temp))
-    temp++;
-  if (DeskCount<1)
+  this = (Command*)safemalloc(sizeof(Command));
+  this->desk = 0;
+  this->deskglob = 1;
+  this->x = -1;
+  this->y = -1;
+  this->type = -1;
+  this->cmdStr = NULL;
+  this->next = NULL;
+
+  if (strncasecmp(line,"Desk",4)==0)
   {
-    commands=(Command*)safemalloc((num+1)*sizeof(Command));
-    while(DeskCount<num+1) commands[DeskCount++].type= -1;
+    /* Old command style */
+
+    line += 4;
+    line = GetNextToken(line, &token);
+    if (strcasecmp(token, "*") != 0)
+    {
+      this->deskglob = 0;
+      this->desk = atoi(token);
+    }
+    free(token);
+  }
+  else if (strncasecmp(line,"Command",7)==0)
+  {
+    /* New command style */
+
+    line += 7;
+    while (*line && isspace(*line)) line++;
+    if (*line == '(')
+    {
+      char *parens, *option;
+      char *parens_run;
+      line++;
+      line = GetQuotedString(line, &parens, ")", NULL, NULL, NULL);
+      if (line == NULL)
+      {
+	fvwm_msg(ERR, "FvwmBacker", "Syntax error: no closing brace");
+	return;
+      }
+      parens_run = parens;
+
+      while (*parens_run &&
+	(parens_run = GetNextFullOption(parens_run, &option)) != NULL)
+      {
+	char *name, *value;
+	char *option_val;
+
+	if (!*option)
+	{
+	  free(option);
+	  break;
+	}
+	option_val = GetNextToken(option, &name);
+
+	if (StrEquals(name, "Desk")) {
+	  if (GetNextToken(option_val, &value) == NULL)
+	  {
+	    fvwm_msg(ERR, "FvwmBacker", "Desk option requires a value");
+	    return;
+	  }
+	  if (!StrEquals(value, "*"))
+	  {
+	    this->deskglob = 0;
+	    this->desk = atoi(value);
+	  }
+	  free(value);
+	}
+	else
+
+	if (StrEquals(name, "Page")) {
+	  if ((option_val = GetNextToken(option_val, &value)) == NULL)
+	  {
+	    fvwm_msg(ERR, "FvwmBacker", "Page option requires 2 values");
+	    return;
+	  }
+	  if (!StrEquals(value, "*"))
+	    this->x = atoi(value);
+	  free(value);
+
+	  if (GetNextToken(option_val, &value) == NULL)
+	  {
+	    fvwm_msg(ERR, "FvwmBacker", "Desk option requires 2 values");
+	    return;
+	  }
+	  if (!StrEquals(value, "*"))
+	    this->y = atoi(value);
+	  free(value);
+	}
+
+	free(name);
+	free(option);
+      }
+      free(parens);
+      line++;
+    }
   }
   else
   {
-    if (num+1>DeskCount)
-    {
-      commands=(Command*)realloc(commands,(num+1)*sizeof(Command));
-      while(DeskCount<num+1) commands[DeskCount++].type= -1;
-    }
+    fvwm_msg(ERR, "FvwmBacker", CatString2("Unknown directive: ", line));
+    return;
   }
-/*  commands[num]=(Command*)safemalloc(sizeof(Command));
-*/
+
 
   /* Now check the type of command... */
-  /* strcpy(commands[num],temp);*/
 
-  if (strncasecmp(temp,"-solid",6)==0)
+  while (*line && isspace(*line)) line++;
+  if (strncasecmp(line, "-solid", 6) == 0)
   {
-    char* color;
-    char* tmp;
     /* Process a solid color request */
 
-    color = &temp[7];
-    while (isspace((unsigned char)*color))
-      color++;
-    tmp= color;
-    while (!isspace((unsigned char)*tmp))
-      tmp++;
-    *tmp = 0;
-    commands[num].type = 1;
-    commands[num].solidColor = (!color || !*color) ?
+    line += 6;
+    line = GetNextToken(line, &token);
+    this->type = 1;
+    this->solidColor = (!token || !*token) ?
       BlackPixel(dpy, screen) :
-      BackerGetColor(color);
+      BackerGetColor(token);
 #ifdef LOGFILE
-    fprintf(logFile,"Adding color: %s as number %d to desk %d\n",
-	    color,commands[num].solidColor, num);
+    fprintf(logFile,"Adding color: %s as number %d\n",
+	    token,this->solidColor);
     fflush(logFile);
 #endif
+    free(token);
   }
-  else if (strncasecmp(temp, "colorset", 8) == 0)
+  else if (strncasecmp(line, "colorset", 8) == 0)
   {
-    if (sscanf(temp + 8, "%d", &commands[num].colorset) < 1)
+    if (sscanf(line + 8, "%d", &this->colorset) < 1)
     {
-      commands[num].colorset = 0;
+      this->colorset = 0;
     }
-    AllocColorset(commands[num].colorset);
-    commands[num].type = 2;
+    AllocColorset(this->colorset);
+    this->type = 2;
   }
   else
   {
 #ifdef LOGFILE
-    fprintf(logFile,"Adding command: %s to desk %d\n",temp, num);
+    fprintf(logFile,"Adding command: %s\n",line);
     fflush(logFile);
 #endif
-    commands[num].type = 0;
-    commands[num].cmdStr = (char *)safemalloc(strlen(temp)+1);
-    strcpy(commands[num].cmdStr,temp);
+    this->type = 0;
+    this->cmdStr = (char *)safemalloc(strlen(line)+1);
+    strcpy(this->cmdStr,line);
   }
+
+#ifdef FVWM_DEBUG_MSGS
+  fprintf(stderr, "[FvwmBacker] d=%d, dg=%d, x=%d, y=%d, type=%d, cmd=%s\n",
+    this->desk, this->deskglob, this->x, this->y, this->type, this->cmdStr);
+#endif
+
+  if (commands->first == NULL)
+    commands->first = this;
+  if (commands->last != NULL)
+    commands->last->next = this;
+  commands->last = this;
 }
