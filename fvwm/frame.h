@@ -31,8 +31,9 @@ typedef enum
 	FRAME_MR_OPAQUE,
 	FRAME_MR_SHRINK,
 	FRAME_MR_SCROLL,
-        /* used internally only, do not set this in any calls */
-	FRAME_MR_FORCE_SETUP
+        /* used internally only, do not set these in any calls */
+	FRAME_MR_FORCE_SETUP,
+	FRAME_MR_FORCE_SETUP_NO_W
 } frame_move_resize_mode;
 
 typedef struct

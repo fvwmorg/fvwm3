@@ -336,6 +336,8 @@ typedef struct
 	common_flags_type common;
 	unsigned does_wm_delete_window : 1;
 	unsigned does_wm_take_focus : 1;
+	unsigned do_force_next_cr : 1;
+	unsigned do_force_next_pn : 1;
 	unsigned do_iconify_after_map : 1;
 	/* Reuse this struct, don't free it, when destroying/recapturing
 	 * window. */

@@ -86,12 +86,13 @@ typedef struct
 	struct
 	{
 		unsigned do_force : 1;
+		unsigned do_not_configure_client : 1;
 		unsigned do_restore_gravity : 1;
+		unsigned do_update_shape : 1;
 		unsigned had_handles : 1;
 		unsigned is_lazy_shading : 1;
 		unsigned is_setup : 1;
 		unsigned is_shading : 1;
-		unsigned do_update_shape : 1;
 	} flags;
 	/* used during the animation */
 	int next_titlebar_compression;
@@ -207,6 +208,7 @@ static void get_resize_decor_gravities_one_axis(
 		break;
 	case FRAME_MR_OPAQUE:
 	case FRAME_MR_FORCE_SETUP:
+	case FRAME_MR_FORCE_SETUP_NO_W:
 	case FRAME_MR_SETUP:
 		ret_grav->client_grav = neg_grav;
 		break;
@@ -892,7 +894,8 @@ static void frame_mrs_resize_move_windows(
 	/* setup the parent, the frame and the client window */
 	if (!mra->flags.is_shading)
 	{
-		if (!mra->step_flags.is_hidden)
+		if (!mra->step_flags.is_hidden &&
+		    !mra->flags.do_not_configure_client)
 		{
 			XMoveResizeWindow(
 				dpy, FW_W(fw), 0, 0, mra->parent_s.width,
@@ -1556,6 +1559,11 @@ frame_move_resize_args frame_create_move_resize_args(
 	/* set some variables */
 	mra = (mr_args_internal *)safecalloc(1, sizeof(mr_args_internal));
 	memset(mra, 0, sizeof(*mra));
+	if (mr_mode == FRAME_MR_FORCE_SETUP_NO_W)
+	{
+		mr_mode = FRAME_MR_FORCE_SETUP;
+		mra->flags.do_not_configure_client = /*1*/0;
+	}
 	mra->mode = mr_mode;
 	mra->shade_dir = (direction_type)shade_dir;
 	mra->w_with_focus = (fw == get_focus_window()) ? FW_W(fw) : None;

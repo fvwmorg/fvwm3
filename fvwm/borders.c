@@ -2597,10 +2597,10 @@ void border_draw_decorations(
 	{
 		force_parts = PART_NONE;
 	}
-	if (has_focus && Scr.Hilite != fw)
+	if (has_focus)
 	{
 		/* don't re-draw just for kicks */
-		if (Scr.Hilite != NULL)
+		if (Scr.Hilite != fw && Scr.Hilite != NULL)
 		{
 			FvwmWindow *t = Scr.Hilite;
 
@@ -2612,6 +2612,14 @@ void border_draw_decorations(
 				NULL);
 		}
 		Scr.Hilite = fw;
+	}
+	else if (fw == Scr.Hilite)
+	{
+		Scr.Hilite = NULL;
+	}
+	if (fw->Desk != Scr.CurrentDesk)
+	{
+		return;
 	}
 	if (IS_ICONIFIED(fw))
 	{
@@ -2653,6 +2661,14 @@ void border_draw_decorations(
 			(force_parts & (PART_FRAME | PART_HANDLES)),
 			clear_parts, old_g, new_g, has_focus);
 	}
+
+	return;
+}
+
+void border_undraw_decorations(
+	FvwmWindow *fw)
+{
+	memset(&fw->decor_state, 0, sizeof(fw->decor_state));
 
 	return;
 }

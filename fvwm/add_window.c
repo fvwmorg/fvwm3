@@ -183,6 +183,7 @@ static void CaptureOneWindow(
 		XSelectInput(dpy, FW_W(fw), NoEventMask);
 		w = FW_W(fw);
 		XUnmapWindow(dpy, FW_W_FRAME(fw));
+		border_undraw_decorations(fw);
 		RestoreWithdrawnLocation(fw, is_recapture, parent_win);
 		SET_DO_REUSE_DESTROYED(fw, 1); /* RBW - 1999/03/20 */
 		destroy_window(fw);
@@ -1961,6 +1962,7 @@ FvwmWindow *AddWindow(
 	Bool used_sm = False;
 	Bool do_resize_too = False;
 	size_borders b;
+	frame_move_resize_args mr_args;
 
 	/****** init window structure ******/
 	if (!setup_window_structure(&tmpfw, w, ReuseWin))
@@ -2189,9 +2191,25 @@ FvwmWindow *AddWindow(
         }
 
 	/****** arrange the frame ******/
-	frame_force_setup_window(
-		fw, fw->frame_g.x, fw->frame_g.y,
-		fw->frame_g.width, fw->frame_g.height, True);
+
+	if (is_resizing_event_pending(fw) == True)
+	{
+		SET_FORCE_NEXT_CR(fw, 1);
+		SET_FORCE_NEXT_PN(fw, 1);
+		mr_args = frame_create_move_resize_args(
+			fw, FRAME_MR_FORCE_SETUP_NO_W, NULL, &fw->frame_g, 0,
+			DIR_NONE);
+	}
+	else
+	{
+		mr_args = frame_create_move_resize_args(
+			fw, FRAME_MR_FORCE_SETUP, NULL, &fw->frame_g, 0,
+			DIR_NONE);
+	}
+	mr_args = frame_create_move_resize_args(
+		fw, FRAME_MR_FORCE_SETUP, NULL, &fw->frame_g, 0, DIR_NONE);
+	frame_move_resize(fw, mr_args);
+	frame_free_move_resize_args(fw, mr_args);
 
 	/****** grab keys and buttons ******/
 	setup_key_and_button_grabs(fw);

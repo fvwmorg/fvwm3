@@ -1729,6 +1729,7 @@ void Iconify(FvwmWindow *fw, initial_window_options_type *win_opts)
       XUnmapWindow(dpy, FW_W(t));
       XSelectInput(dpy, FW_W(t), eventMask);
       XUnmapWindow(dpy, FW_W_FRAME(t));
+      border_undraw_decorations(t);
       t->DeIconifyDesk = t->Desk;
       if (FW_W_ICON_TITLE(t))
 	XUnmapWindow(dpy, FW_W_ICON_TITLE(t));

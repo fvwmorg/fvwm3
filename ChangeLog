@@ -1,3 +1,33 @@
+2002-03-31  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* fvwm/events.c (test_resizing_event):
+	(HandleConfigureRequest):
+	* fvwm/frame.c (frame_create_move_resize_args):
+	* fvwm/add_window.c (AddWindow):
+	* fvwm/fvwm.h:
+	* fvwm/window_flags.h:
+	tried to improve ConfigureRequest handling
+
+	* fvwm/events.c (HandlePropertyNotify):
+	recalculate window size when the base_width or base_height hint changes;
+	fixes some problems with xemacs
+
+	* fvwm/virtual.c (map_window):
+	redraw decorations
+
+	* fvwm/borders.c (border_draw_decorations):
+	don't redraw windows on a different desk
+	keep track of Scr.Hilite
+
+2002-03-31  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* fvwm/virtual.c (unmap_window):
+	* fvwm/move_resize.c (resize_window):
+	* fvwm/icons.c (Iconify):
+	* fvwm/add_window.c (CaptureOneWindow):
+	* fvwm/borders.c (border_undraw_decorations):
+	mark window decorations as not drawn whenever the frame is unmapped
+
 2002-03-30  Dan Espen  <dane@mk.telcordia.com>
 
 	* fvwm/fvwm2.1: Fixup IconBox geometry examples.

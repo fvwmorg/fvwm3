@@ -371,8 +371,7 @@ void restore_focus_after_unmap(
 	}
       }
     }
-    if (set_focus_to && set_focus_to != fw &&
-	set_focus_to->Desk == fw->Desk)
+    if (set_focus_to && set_focus_to != fw && set_focus_to->Desk == fw->Desk)
     {
       /* Don't transfer focus to windows on other desks */
       SetFocusWindow(set_focus_to, True, True);

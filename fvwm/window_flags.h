@@ -421,6 +421,12 @@
           (fw)->flags.does_wm_take_focus = !!(x)
 #define SETM_WM_TAKES_FOCUS(fw,x) \
           (fw)->flag_mask.does_wm_take_focus = !!(x)
+#define DO_FORCE_NEXT_CR(fw)        ((fw)->flags.do_force_next_cr)
+#define SET_FORCE_NEXT_CR(fw,x)  (fw)->flags.do_force_next_cr = !!(x)
+#define SETM_FORCE_NEXT_CR(fw,x) (fw)->flag_mask.do_force_next_cr = !!(x)
+#define DO_FORCE_NEXT_PN(fw)     ((fw)->flags.do_force_next_pn)
+#define SET_FORCE_NEXT_PN(fw,x)  (fw)->flags.do_force_next_pn = !!(x)
+#define SETM_FORCE_NEXT_PN(fw,x) (fw)->flag_mask.do_force_next_pn = !!(x)
 #define USING_DEFAULT_WINDOW_FONT(fw) \
           ((fw)->flags.using_default_window_font)
 #define SET_USING_DEFAULT_WINDOW_FONT(fw,x) \

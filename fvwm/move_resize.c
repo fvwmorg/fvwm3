@@ -2785,6 +2785,7 @@ static Bool resize_window(F_CMD_ARGS)
   if (bad_window == FW_W(fw))
   {
     XUnmapWindow(dpy, FW_W_FRAME(fw));
+    border_undraw_decorations(fw);
     XBell(dpy, 0);
   }
 

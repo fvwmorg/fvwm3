@@ -2013,6 +2013,7 @@ void MoveWindow(XEvent *Event)
   Window JunkRoot, JunkChild;
   int JunkX, JunkY;
   unsigned JunkMask;
+  int do_switch_desk_later = 0;
 
   t = Start;
   while ((t != NULL)&&(t->PagerView != Event->xbutton.subwindow))
@@ -2107,9 +2108,6 @@ void MoveWindow(XEvent *Event)
       XMoveWindow(dpy, IS_ICONIFIED(t) ? t->icon_w : t->w,
 		  Scr.VWidth, Scr.VHeight);
       XSync(dpy, False);
-      sprintf(command, "Silent MoveToDesk 0 %d", NewDesk);
-      SendInfo(fd, command, t->w);
-      t->desk = NewDesk;
     }
     if((NewDesk>=desk1)&&(NewDesk<=desk2))
       XReparentWindow(dpy, t->PagerView, Desks[NewDesk-desk1].w,0,0);
@@ -2129,6 +2127,12 @@ void MoveWindow(XEvent *Event)
     XSync(dpy,0);
     sprintf(command, "Silent Move %dp %dp", x, y);
     SendInfo(fd,command,t->w);
+    if (NewDesk != t->desk)
+    {
+      sprintf(command, "Silent MoveToDesk 0 %d", NewDesk);
+      SendInfo(fd, command, t->w);
+      t->desk = NewDesk;
+    }
     SendInfo(fd,"Silent Raise",t->w);
     SendInfo(fd,"Silent Move Pointer",t->w);
     return;
@@ -2194,11 +2198,15 @@ void MoveWindow(XEvent *Event)
 	if(t->desk != Scr.CurrentDesk)
 	  ChangeDeskForWindow(t,Scr.CurrentDesk);
       }
-      else
+      else if (NewDesk + desk1 != Scr.CurrentDesk)
       {
 	sprintf(command,"Silent MoveToDesk 0 %d", NewDesk + desk1);
 	SendInfo(fd,command,t->w);
 	t->desk = NewDesk + desk1;
+      }
+      else
+      {
+	do_switch_desk_later = 1;
       }
     }
 
@@ -2235,6 +2243,12 @@ void MoveWindow(XEvent *Event)
       else
 	MoveResizePagerView(t, True);
       SendInfo(fd, "Silent Raise", t->w);
+    }
+    if (do_switch_desk_later)
+    {
+      sprintf(command,"Silent MoveToDesk 0 %d", NewDesk + desk1);
+      SendInfo(fd,command,t->w);
+      t->desk = NewDesk + desk1;
     }
     if(Scr.CurrentDesk == t->desk)
     {
