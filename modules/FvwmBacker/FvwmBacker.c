@@ -64,10 +64,19 @@
 
 unsigned long BackerGetColor(char *color);
 
+#define EXEC_CHANGED_PAGE  0x01
+#define EXEC_CHANGED_DESK  0x02
+#define EXEC_ALWAYS        0x04
+
 struct Command
 {
   int desk;
-  int deskglob; /* Set in case desk is globbed, boolean */
+  struct
+  {
+    unsigned do_ignore_desk : 1;
+    unsigned do_ignore_page : 1;
+    unsigned do_match_any_desk : 1;
+  } flags;
   int x;	/* Page X coordinate; -1 for glob */
   int y;	/* Page Y coordinate; -1 for glob */
   /* The command type:
@@ -242,18 +251,26 @@ void SetDeskPageBackground(const Command *c)
  * migo (23-Nov-1999): Maybe execute only first (or last?) matching command?
  * migo (03-Apr-2001): Yes, execute only the last matching command.
  */
-void ExecuteMatchingCommands(int colorset)
+void ExecuteMatchingCommands(int colorset, int changed)
 {
   const Command *matching_command = NULL;
   const Command *command;
   for (command = commands->first; command; command = command->next)
   {
-    if ((command->deskglob || command->desk == current_desk) &&
+    if (!(changed & EXEC_ALWAYS) &&
+	(command->flags.do_ignore_desk || !(changed & EXEC_CHANGED_DESK)) &&
+	(command->flags.do_ignore_page || !(changed & EXEC_CHANGED_PAGE)))
+    {
+      continue;
+    }
+    if ((command->flags.do_match_any_desk || command->desk == current_desk) &&
 	(command->x < 0 || command->x == current_x) &&
 	(command->y < 0 || command->y == current_y) &&
 	(colorset < 0 || (colorset == current_colorset &&
 			  colorset == command->colorset)))
+    {
       matching_command = command;
+    }
   }
   if (matching_command)
     SetDeskPageBackground(matching_command);
@@ -265,24 +282,48 @@ void ExecuteMatchingCommands(int colorset)
 void ProcessMessage(unsigned long type, unsigned long *body)
 {
   char *tline;
+  int change = 0;
+  static Bool is_initial = True;
 
   switch (type)
   {
   case M_CONFIG_INFO:
     tline = (char*)&(body[3]);
-    ExecuteMatchingCommands(ParseConfigLine(tline));
+    ExecuteMatchingCommands(ParseConfigLine(tline), EXEC_ALWAYS);
     break;
 
   case M_NEW_DESK:
-    current_desk = body[0];
-    ExecuteMatchingCommands(-1);
+    if (is_initial)
+    {
+      change = EXEC_ALWAYS;
+      is_initial = False;
+    }
+    else if (current_desk != body[0])
+    {
+      current_desk = body[0];
+      change |= EXEC_CHANGED_DESK;
+    }
+    ExecuteMatchingCommands(-1, change);
     break;
 
   case M_NEW_PAGE:
-    current_desk = body[2];
-    current_x = body[0]/MyDisplayWidth;
-    current_y = body[1]/MyDisplayHeight;
-    ExecuteMatchingCommands(-1);
+    if (is_initial)
+    {
+      change = EXEC_ALWAYS;
+      is_initial = False;
+    }
+    if (current_desk != body[2])
+    {
+      current_desk = body[2];
+      change |= EXEC_CHANGED_DESK;
+    }
+    if (current_x != body[0] || current_y != body[1])
+    {
+      current_x = body[0] / MyDisplayWidth;
+      current_y = body[1] / MyDisplayHeight;
+      change |= EXEC_CHANGED_PAGE;
+    }
+    ExecuteMatchingCommands(-1, change);
     break;
 
   }
@@ -341,10 +382,13 @@ void AddCommand(char *line)
 {
   char *token;
   Command *this;
+  Bool do_ignore_desk = True;
+  Bool do_ignore_page = True;
 
   this = (Command*)safemalloc(sizeof(Command));
   this->desk = 0;
-  this->deskglob = 1;
+  memset(&(this->flags), 0, sizeof(this->flags));
+  this->flags.do_match_any_desk = 1;
   this->x = -1;
   this->y = -1;
   this->type = -1;
@@ -359,9 +403,10 @@ void AddCommand(char *line)
     line = GetNextToken(line, &token);
     if (strcasecmp(token, "*") != 0)
     {
-      this->deskglob = 0;
+      this->flags.do_match_any_desk = 0;
       this->desk = atoi(token);
     }
+    do_ignore_desk = False;
     free(token);
   }
   else if (strncasecmp(line, "Command", 7) == 0)
@@ -404,9 +449,10 @@ void AddCommand(char *line)
 	  }
 	  if (!StrEquals(value, "*"))
 	  {
-	    this->deskglob = 0;
+	    this->flags.do_match_any_desk = 0;
 	    this->desk = atoi(value);
 	  }
+	  do_ignore_desk = False;
 	  free(value);
 	}
 	else
@@ -428,6 +474,7 @@ void AddCommand(char *line)
 	  }
 	  if (!StrEquals(value, "*"))
 	    this->y = atoi(value);
+	  do_ignore_page = False;
 	  free(value);
 	}
 
@@ -443,7 +490,8 @@ void AddCommand(char *line)
     fvwm_msg(ERR, "FvwmBacker", CatString2("Unknown directive: ", line));
     return;
   }
-
+  this->flags.do_ignore_desk = do_ignore_desk;
+  this->flags.do_ignore_page = do_ignore_page;
 
   /* Now check the type of command... */
 

@@ -53,6 +53,14 @@ arguments for the desk d, page x coordinate and y coordinate. Any or all of
 these three numeric arguments can be replaced with an asterisk (*) to indicate
 that any value matches, in this case Desk or Page parts can be skipped.
 
+If either the \fIDesk\fP or the \fIPage\fP parts are omitted, the
+command is not executed if only the desk or the page is switched.  If
+neither is given, the command is executed only once when the module is
+started.  This is not the same as using asterisks for the numeric
+arguments:  if asterisks are used, the command is always executed when
+only the desk or page changes, if the corresponding part is omitted, the
+command is never executed when only the desk or page changes.
+
 If the \fIcommand\fP is \fI-solid\fP FvwmBacker uses the next
 argument as a color in the X database and sets the background to that
 color without generating a system call to xsetroot (only single word
@@ -64,23 +72,20 @@ the man page of the FvwmTheme module for details about colorsets.
 
 Otherwise the command is sent to fvwm to execute.
 
-Note these three lines are equivalent:
-
-.nf
-.sp
-*FvwmBacker: Command (Page * *, Desk *) -solid navy
-*FvwmBacker: Command () -solid navy
-*FvwmBacker: Command -solid navy
-.sp
-.fi
 
 .SH OLD-STYLE OPTIONS
 There is continued support for the now deprecated option:
 
 .IP "*FvwmBacker: Desk \fId command\fP"
 
-It is functionally equivalent to using an asterisk for both page
-coordinates with \fI*FvwmBacker: Command\fP.
+It is functionally equivalent to omitting the page coordinates with
+\fI*FvwmBacker: Command\fP:
+
+.nf
+.sp
+*FvwmBacker: Command (Desk Id) command
+.sp
+.fi
 
 .SH SAMPLE CONFIGURATION
 The following are excepts from an .fvwm2rc file which describe
