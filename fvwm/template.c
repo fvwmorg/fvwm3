@@ -16,7 +16,7 @@
 
 /* ---------------------------- included header files ----------------------- */
 
-#include <config.h>
+#include "config.h"
 #include <stdio.h>
 
 /* ---------------------------- local definitions --------------------------- */
