@@ -254,6 +254,10 @@ void EvtMouseList(struct XObj *xobj, XButtonEvent *EvtButton)
   pt.x = EvtButton->x-xobj->x;
   pt.y = EvtButton->y-xobj->y;
 
+  HeightCell = xobj->Ffont->height + 3;
+  NbVisCell = (xobj->height-6-BdWidth)/HeightCell;
+  NbCell = CountOption(xobj->title);
+
   /* Clic dans une cellule */
   rect.x = 4 + BdWidth;
   rect.y = rect.x;
@@ -266,6 +270,10 @@ void EvtMouseList(struct XObj *xobj, XButtonEvent *EvtButton)
     NPosCell = xobj->value2 + (pt.y/(xobj->Ffont->height+3));
     if (NPosCell > CountOption(xobj->title))
       NPosCell = 0;
+    else if (NPosCell >= xobj->value2 + NbVisCell)
+    {
+      NPosCell--;
+    }
     if (NPosCell != xobj->value)
     {
       xobj->value = NPosCell;
@@ -274,10 +282,6 @@ void EvtMouseList(struct XObj *xobj, XButtonEvent *EvtButton)
     SendMsg(xobj, SingleClic);
     return ;
   }
-
-  HeightCell = xobj->Ffont->height + 3;
-  NbVisCell = (xobj->height-6-BdWidth)/HeightCell;
-  NbCell = CountOption(xobj->title);
 
   /* Clic fleche haute asc vertical */
   rect.y = 5 + BdWidth;
@@ -500,6 +504,10 @@ void EvtKeyList(struct XObj *xobj, XKeyEvent *EvtKey)
       NPosCell = xobj->value2 + (pt.y/(xobj->Ffont->height + 3));
       if (NPosCell > CountOption(xobj->title))
 	NPosCell = 0;
+      else if (NPosCell >= xobj->value2 + NbVisCell)
+      {
+	NPosCell--;
+      }
       if (NPosCell != xobj->value)
       {
 	xobj->value = NPosCell;
