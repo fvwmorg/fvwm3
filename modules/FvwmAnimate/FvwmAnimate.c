@@ -57,6 +57,7 @@
 #include <limits.h>                     /* For time() */
 #include "libs/Module.h"
 #include "libs/fvwmlib.h"
+#include "libs/Picture.h"
 #include "FvwmAnimate.h"
 
 #define AS_PI 3.14159265358979323846
@@ -70,6 +71,8 @@ static int MyNameLen;
 static int Channel[2];
 static XColor xcol;
 static unsigned long color;             /* color for animation */
+static Pixmap pixmap = None;		/* pixmap for weirdness */
+static Bool transmit_pixmap = False;	/* tell fvwm to use the pixmap */
 static XGCValues gcv;
 static int animate_none = 0;            /* count bypassed animations */
 static Bool stop_recvd = False;         /* got stop command */
@@ -127,7 +130,7 @@ static void AnimateResizeNone(int, int, int, int, int, int, int, int);
 static void AnimateResizeTwist(int, int, int, int, int, int, int, int);
 static void DefineForm(void);
 
-struct ASAnimate Animate = { NULL, ANIM_ITERATIONS, ANIM_DELAY,
+struct ASAnimate Animate = { NULL, NULL, ANIM_ITERATIONS, ANIM_DELAY,
                              ANIM_TWIST, ANIM_WIDTH,
                              AnimateResizeTwist, ANIM_TIME };
 
@@ -695,6 +698,9 @@ int main(int argc, char **argv) {
     fprintf(stderr,"%s: could not open display\n",MyName+1);
     exit(1);
   }
+  /* FvwmAnimate must use the root visuals so trash the fvwm one */
+  putenv("FVWM_VISUALID=");
+  InitPictureCMap(dpy);
   root = DefaultRootWindow(dpy);
   scr = DefaultScreen(dpy);
 
@@ -812,6 +818,7 @@ static void Loop() {
         {
           int locs[8];
           int matched;
+          /* fixme: make this case insensitive */
           matched = sscanf((char *)&packet->body[3],
                            " animate %5d %5d %5d %5d %5d %5d %5d %5d",
                            &locs[0], &locs[1], &locs[2], &locs[3],
@@ -879,18 +886,22 @@ static char *table[]= {
 #define Effect_arg 3
   "Iterations",
 #define Iterations_arg 4
+  "Pixmap",
+#define Pixmap_arg 5
   "Resize",
-#define Resize_arg 5
+#define Resize_arg 6
   "Save",
-#define Save_arg 6
+#define Save_arg 7
   "Stop",
-#define Stop_arg 7
+#define Stop_arg 8
   "Time",
-#define Time_arg 8
+#define Time_arg 9
+  "TransmitPixmap",
+#define TransmitPixmap_arg 10
   "Twist",
-#define Twist_arg 9
+#define Twist_arg 11
   "Width"
-#define Width_arg 10
+#define Width_arg 12
 };	/* Keep list in alphabetic order, using binary search! */
 static void ParseOptions() {
   char *buf;
@@ -912,14 +923,19 @@ void ParseConfigLine(char *buf) {
   if (buf[strlen(buf)-1] == '\n') {     /* if line ends with newline */
     buf[strlen(buf)-1] = '\0';	/* strip off \n */
   }
+  /* capture the ImagePath setting, don't worry about ColorLimit */
+  if (strncasecmp(buf, "ImagePath",9)==0) {
+    SetImagePath(&buf[9]);
+  }
   /* Search for MyName (normally *FvwmAnimate) */
-  if (strncasecmp(buf, MyName, MyNameLen) == 0) {/* If its for me */
+  else if (strncasecmp(buf, MyName, MyNameLen) == 0) {/* If its for me */
     myfprintf((stderr,"Found line for me: %s\n", buf));
     p = buf+MyNameLen;              /* starting point */
     q = NULL;
     if ((e = FindToken(p,table,char *))) { /* config option ? */
       if ((strcasecmp(*e,"Stop") != 0)
           && (strcasecmp(*e,"Custom") != 0)
+          && (strcasecmp(*e,"TransmitPixmap") != 0)
           && (strcasecmp(*e,"Save") != 0)) { /* no arg commands */
         p+=strlen(*e);		/* skip matched token */
 	p = GetNextSimpleOption( p, &q );
@@ -954,6 +970,29 @@ void ParseConfigLine(char *buf) {
             && (strcasecmp(q,"White^Black") != 0)) {
           Animate.color = (char *)strdup(q); /* make copy of name */
         }
+        /* override the pixmap option */
+        if (Animate.pixmap) {
+          free(Animate.pixmap);
+          Animate.pixmap = 0;
+        }
+        if (pixmap) {
+          XFreePixmap(dpy, pixmap);
+          pixmap = None;
+        }
+        CreateDrawGC();                 /* update GC */
+        break;
+      case Pixmap_arg:
+        if (Animate.pixmap) {
+          free(Animate.pixmap);          /* release storage holding pixmap name */
+          Animate.pixmap = 0;            /* show its gone */
+        }
+        if (strcasecmp(q,"None") != 0) { /* If not pixmap "none"  */
+          Animate.pixmap = (char *)strdup(q); /* make copy of name */
+        }
+        if (pixmap) {
+          XFreePixmap(dpy, pixmap);
+          pixmap = None;
+        }
         CreateDrawGC();                 /* update GC */
         break;
       case Delay_arg:                   /* Delay */
@@ -985,6 +1024,9 @@ void ParseConfigLine(char *buf) {
       case Time_arg:                  /* Time in milliseconds */
         Animate.time = (clock_t)atoi(q);
         break;
+      case TransmitPixmap_arg:
+        transmit_pixmap = True;
+        break;
       case Twist_arg:                 /* Twist */
         Animate.twist = atof(q);
         break;
@@ -1014,8 +1056,26 @@ static void CreateDrawGC() {
     XFreeGC(dpy,gc);                /* free old GC */
   }
   color = (BlackPixel(dpy,scr) ^ WhitePixel(dpy,scr));  /* From builtins.c: */
+  pixmap = None;
   gcv.function = GXxor;                 /* default is to xor the lines */
-  if (Animate.color) {                  /* if color called for */
+  if (Animate.pixmap) {                 /* if pixmap called for */
+    Picture *picture;
+    
+    picture = GetPictureAndFree(dpy, RootWindow(dpy,scr), 0, Animate.pixmap, 0);
+    if (!picture)
+      fprintf(stderr, "%s: Could not load pixmap '%s'\n",
+	      MyName + 1, Animate.pixmap);
+    else {
+      if (picture->depth == DefaultDepth(dpy, scr)) {
+	pixmap = XCreatePixmap(dpy, RootWindow(dpy, scr), picture->width,
+			       picture->height, picture->depth);
+	XCopyArea(dpy, picture->picture, pixmap, DefaultGC(dpy, scr), 0, 0,
+		  picture->width, picture->height, 0, 0);
+	XSync(dpy, False);
+      }
+      DestroyPicture(dpy, picture);
+    }
+  } else if (Animate.color) {           /* if color called for */
     if (XParseColor(dpy,DefaultColormap(dpy,scr),Animate.color, &xcol)) {
       if (XAllocColor(dpy, DefaultColormap(dpy,scr), &xcol)) {
         color = xcol.pixel;
@@ -1036,8 +1096,21 @@ static void CreateDrawGC() {
   gcv.background = color;
   myfprintf((stderr,"Color is %ld\n",gcv.foreground));
   gcv.subwindow_mode = IncludeInferiors;
-  gc=XCreateGC(dpy, root, GCFunction | GCForeground | GCLineWidth
-		      |GCBackground | GCSubwindowMode, &gcv);
+  if (pixmap) {
+    gcv.tile = pixmap;
+    gcv.fill_style = FillTiled;
+  } else {
+    gcv.tile = None;
+    gcv.fill_style = FillSolid;
+  }
+  gc=XCreateGC(dpy, root, GCFunction | GCForeground | GCLineWidth | GCBackground
+	       | GCSubwindowMode | GCFillStyle | (pixmap ? GCTile : 0), &gcv);
+  XSync(dpy, False);
+  if (pixmap && transmit_pixmap) {
+    char cmd[32];
+    sprintf(cmd, "XORPixmap %ld", pixmap);
+    SendText(Channel, cmd, 0);
+  }
 }
 
 /*

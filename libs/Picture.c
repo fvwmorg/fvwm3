@@ -136,7 +136,8 @@ char* findImageFile( const char* icon, const char* pathlist, int type )
 }
 
 
-Picture *LoadPicture(Display *dpy,Window Root,char *path, int color_limit)
+static Picture *LoadPictureConditional(Display *dpy, Window Root, char *path,
+				       int color_limit, Bool free_colors)
 {
   int l;
   Picture *p;
@@ -157,7 +158,7 @@ Picture *LoadPicture(Display *dpy,Window Root,char *path, int color_limit)
   xpm_attributes.colormap = Pcmap;
   xpm_attributes.depth = Pdepth;
   xpm_attributes.closeness=40000; /* Allow for "similar" colors */
-  xpm_attributes.valuemask = XpmSize | XpmReturnPixels | XpmCloseness
+  xpm_attributes.valuemask = XpmSize | XpmReturnAllocPixels | XpmCloseness
 			     | XpmVisual | XpmColormap | XpmDepth;
 
   rc = XpmReadFileToXpmImage(path, &my_image, NULL);
@@ -170,6 +171,14 @@ Picture *LoadPicture(Display *dpy,Window Root,char *path, int color_limit)
       p->height = my_image.height;
       p->depth = Pdepth;
       XpmFreeXpmImage(&my_image);
+      if (free_colors) {
+        XFreeColors(dpy, Pcmap, xpm_attributes.alloc_pixels,
+		    xpm_attributes.nalloc_pixels, 0);
+      }
+      /* fixme: this information should be copied to p-> so that pixels
+       * can be freed by DestroyPicture */
+      /* losing this information means leakage, good job we have ColorLimit */
+      free(xpm_attributes.alloc_pixels);
       return p;
     }
     XpmFreeXpmImage(&my_image);
@@ -190,8 +199,14 @@ Picture *LoadPicture(Display *dpy,Window Root,char *path, int color_limit)
 }
 
 
-Picture *GetPicture(Display *dpy, Window Root,
-		    char *ImagePath, char *name, int color_limit)
+Picture *LoadPicture(Display *dpy, Window Root, char *path, int color_limit)
+{
+  return LoadPictureConditional(dpy, Root, path, color_limit, False);
+}
+
+static Picture *GetPictureConditional(Display *dpy, Window Root,
+				      char *ImagePath, char *name,
+				      int color_limit, Bool free_colors)
 {
     char *path = findImageFile( name, ImagePath, R_OK );
     Picture *p;
@@ -199,11 +214,23 @@ Picture *GetPicture(Display *dpy, Window Root,
     if ( path == NULL )
 	return NULL;
 
-    p = LoadPicture( dpy, Root, path, color_limit );
+    p = LoadPictureConditional( dpy, Root, path, color_limit, free_colors );
     if ( p == NULL )
 	free(path);
 
     return p;
+}
+
+Picture *GetPicture(Display *dpy, Window Root, char *ImagePath, char *name,
+		    int color_limit)
+{
+  return GetPictureConditional(dpy, Root, ImagePath, name, color_limit, False);
+}
+
+Picture *GetPictureAndFree(Display *dpy, Window Root, char *ImagePath,
+			   char *name, int color_limit)
+{
+  return GetPictureConditional(dpy, Root, ImagePath, name, color_limit, True);
 }
 
 
@@ -236,7 +263,7 @@ Picture *CachePicture(Display *dpy, Window Root,
     }
 
     /* Not previously cached, have to load it ourself. Put it first in list */
-    p=LoadPicture(dpy, Root, path, color_limit);
+    p=LoadPictureConditional(dpy, Root, path, color_limit, False);
     if(p)
     {
 	p->next=PictureList;

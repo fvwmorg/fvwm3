@@ -77,6 +77,14 @@ by fvwm for move and resize frames.
 Other colors can be specified using standard X color notation.  Ie. color
 names like "LightBlue", or RGB values like "#FFFFFF".
 
+.IP "*FvwmAnimatePixmap \fBpixmap\fP"
+Tells \fBFvwmAnimate\fP to use \fBpixmap\fP to draw with. This can be useful
+if \fB*FvwmAnimateColor\fP gives poor results.
+
+.IP "*FvwmAnimateTransmitPixmap"
+Tells \fBFvwmAnimate\fP to share the \fB*FvwmAnimatePixmap\fP with fvwm.  See
+XORPixmap in the fvwm2 man page.
+
 .IP "*FvwmAnimateDelay \fBmsecs\fP"
 Tells \fBFvwmAnimate\fP how many milliseconds to sleep
 between frames of animation.

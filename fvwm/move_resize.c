@@ -1246,7 +1246,6 @@ void SetXOR(F_CMD_ARGS)
   {
     val = 0;
   }
-
   gcm = GCFunction|GCLineWidth|GCForeground|GCFillStyle|GCSubwindowMode;
   gcv.subwindow_mode = IncludeInferiors;
   gcv.function = GXxor;
@@ -1282,6 +1281,10 @@ void SetXORPixmap(F_CMD_ARGS)
   Picture *GCPicture;
   XGCValues gcv;
   unsigned long gcm;
+  Window root_ret;
+  unsigned int width, height, depth, junk;
+  Pixmap xorpixmap;
+  static Pixmap pixmap = None;
 
   action = GetNextToken(action, &PixmapName);
   if(PixmapName == NULL)
@@ -1291,27 +1294,46 @@ void SetXORPixmap(F_CMD_ARGS)
     return;
   }
 
-  /* search for pixmap */
-  GCPicture = CachePicture(dpy, Scr.NoFocusWin, NULL, PixmapName,
-			   Scr.ColorLimit);
-  if (GCPicture == NULL) {
-    fvwm_msg(ERR,"SetXORPixmap","Can't find pixmap %s", PixmapName);
+  /* free up the old pixmap */
+  if (pixmap)
+    XFreePixmap(dpy, pixmap);
+  pixmap = None;
+  
+  /* test for a pixmap id */
+  if (sscanf(PixmapName, "%ld", &xorpixmap) == 1) {
+    XGetGeometry(dpy, xorpixmap, &root_ret, (int *)&junk, (int *)&junk,
+		 &width, &height, &junk, &depth);
+    if ((width > 0) && (height > 0) && (depth = DefaultDepth(dpy,Scr.screen))) {
+      free(PixmapName);
+      pixmap = XCreatePixmap(dpy, Scr.Root, width, height, depth);
+      XCopyArea(dpy, xorpixmap, pixmap, DefaultGC(dpy, Scr.screen), 0, 0,
+		width, height, 0, 0);
+      XSync(dpy, False);
+      gcv.tile = pixmap;
+    }
+  } else {
+    /* search for pixmap */
+    GCPicture = CachePicture(dpy, Scr.NoFocusWin, NULL, PixmapName,
+			     Scr.ColorLimit);
+    if (GCPicture == NULL) {
+      fvwm_msg(ERR,"SetXORPixmap","Can't find pixmap %s", PixmapName);
+      free(PixmapName);
+      return;
+    }
     free(PixmapName);
-    return;
-  }
-  free(PixmapName);
 
-  /* free up old one */
-  if (Scr.DrawPicture)
-    DestroyPicture(dpy, Scr.DrawPicture);
-  Scr.DrawPicture = GCPicture;
+    /* free up old one */
+    if (Scr.DrawPicture)
+      DestroyPicture(dpy, Scr.DrawPicture);
+    Scr.DrawPicture = GCPicture;
+    gcv.tile = GCPicture->picture;
+  }
 
   /* create Graphics context */
   gcm = GCFunction|GCLineWidth|GCTile|GCFillStyle|GCSubwindowMode;
   gcv.subwindow_mode = IncludeInferiors;
   gcv.function = GXxor;
   gcv.line_width = 0;
-  gcv.tile = GCPicture->picture;
   gcv.fill_style = FillTiled;
   gcv.subwindow_mode = IncludeInferiors;
   /* modify DrawGC, only create once */

@@ -37,6 +37,7 @@
 
 struct ASAnimate {
   char *color;
+  char *pixmap;
   int iterations;
   int delay;
   float twist;

@@ -1,3 +1,10 @@
+1999-08-27  Hippo
+
+	* FvwmAnimate/FvwmAnimate.c: Frees the color it allocates as soon
+	as it has the pixel value.
+	* FvwmAnimate/FvwmAnimate.{c,1}: New options *FvwmAnimatePixmap,
+	*FvwmAnimateTransmitPixmap.
+
 1999-08-26  Dominik Vogt  <dominik_vogt@gmx.de>
 
 	* FvwmButtons/button.c (alloc_button):

@@ -1,3 +1,9 @@
+1999-08-27 Hippo
+
+	* libs/Picture.{h,c}: New function GetPictureAndFree() === {
+	GetPicture() then free all colors }, used by FvwmAnimate.
+	* fvwm/move_resize.c: SetXORPixmap can use the pixmap from FvwmAnimate.
+
 1999-08-26  Dominik Vogt  <dominik_vogt@gmx.de>
 
 	* fvwm/move_resize.c (resize_window): disabled warping when resizing,

@@ -73,6 +73,9 @@ Picture* LoadPicture( Display* dpy, Window Root,
  **/
 Picture* GetPicture( Display* dpy, Window Root,
 		     char* ImagePath, char* pictureName, int color_limit);
+/* this version frees the colors it allocates, use only in *FvwmAnimatePixmap */
+Picture* GetPictureAndFree(Display* dpy, Window Root,
+			   char* ImagePath, char *pictureFileName, int color_limit);
 
 Picture* CachePicture( Display *dpy, Window Root,
 		       char* ImagePath, char* pictureName, int color_limit);
