@@ -32,9 +32,9 @@
 extern ScriptProp *scriptprop;
 extern int nbobj;			/* Nombre d'objets */
 extern int numligne;			/* Numero de ligne */
-extern TabObj *tabobj;			/* Tableau d'objets, limite=100 */
+extern TabObj *tabobj;			/* Tableau d'objets, limite=1000 */
 extern char **TabVVar;			/* Tableau des variables du sript */
-extern int TabIdObj[101];
+extern int TabIdObj[1001];
 extern Bloc **TabIObj;
 extern CaseObj *TabCObj;
 #ifdef MEMDEBUG
@@ -66,7 +66,7 @@ int screen;
 X11base *x11base;		/* Pour le serveur X */
 TypeBuffSend BuffSend;		/* Pour les communication entre script */
 int grab_server = 0;
-struct XObj *tabxobj[100];
+struct XObj *tabxobj[1000];
 char *Scrapt;
 Atom propriete,type;
 static Atom wm_del_win;
@@ -658,12 +658,12 @@ void ReadXServer (void)
     switch (event.type)
     {
       case Expose:
-	   if (event.xexpose.count==0) {
-	    for (i=0;i<nbobj;i++)
-	     if (event.xexpose.window == tabxobj[i]->win) {
-	      tabxobj[i]->DrawObj(tabxobj[i]);
-	      break;
-	     }
+	    if (event.xexpose.count==0) {
+	      for (i=0;i<nbobj;i++)
+		if (event.xexpose.window == tabxobj[i]->win) {
+		  tabxobj[i]->DrawObj(tabxobj[i]);
+		  break;
+		}
 	    /* handle exposes on x11base that need an object to render */
 	    if (event.xexpose.window == x11base->win) {
 	     /* redraw first menu item to get the 3d menubar */
@@ -733,8 +733,10 @@ void ReadXServer (void)
              break;
              default:evnt_sel.xselection.property=None;
             }
+	    fprintf(stderr,"before\n");
             XSendEvent(dpy,evnt_sel.xselection.requestor,
 		       False,0,&evnt_sel);
+	    fprintf(stderr,"after\n");
            }
 	   else
 	    SendMsgToScript(event);

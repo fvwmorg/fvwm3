@@ -1,111 +1,110 @@
 
 /*  A Bison parser, made from script.y
- by  GNU Bison version 1.25
-  */
+    by GNU Bison version 1.28  */
 
 #define YYBISON 1  /* Identify Bison output.  */
 
-#define	STR	258
-#define	GSTR	259
-#define	VAR	260
-#define	NUMBER	261
-#define	WINDOWTITLE	262
-#define	WINDOWSIZE	263
-#define	WINDOWPOSITION	264
-#define	FONT	265
-#define	FORECOLOR	266
-#define	BACKCOLOR	267
-#define	SHADCOLOR	268
-#define	LICOLOR	269
-#define	COLORSET	270
-#define	OBJECT	271
-#define	INIT	272
-#define	PERIODICTASK	273
-#define	MAIN	274
-#define	END	275
-#define	PROP	276
-#define	TYPE	277
-#define	SIZE	278
-#define	POSITION	279
-#define	VALUE	280
-#define	VALUEMIN	281
-#define	VALUEMAX	282
-#define	TITLE	283
-#define	SWALLOWEXEC	284
-#define	ICON	285
-#define	FLAGS	286
-#define	WARP	287
-#define	WRITETOFILE	288
-#define	HIDDEN	289
-#define	CANBESELECTED	290
-#define	NORELIEFSTRING	291
-#define	CASE	292
-#define	SINGLECLIC	293
-#define	DOUBLECLIC	294
-#define	BEG	295
-#define	POINT	296
-#define	EXEC	297
-#define	HIDE	298
-#define	SHOW	299
-#define	CHFORECOLOR	300
-#define	CHBACKCOLOR	301
-#define	CHCOLORSET	302
-#define	GETVALUE	303
-#define	GETMINVALUE	304
-#define	GETMAXVALUE	305
-#define	GETFORE	306
-#define	GETBACK	307
-#define	GETHILIGHT	308
-#define	GETSHADOW	309
-#define	CHVALUE	310
-#define	CHVALUEMAX	311
-#define	CHVALUEMIN	312
-#define	ADD	313
-#define	DIV	314
-#define	MULT	315
-#define	GETTITLE	316
-#define	GETOUTPUT	317
-#define	STRCOPY	318
-#define	NUMTOHEX	319
-#define	HEXTONUM	320
-#define	QUIT	321
-#define	LAUNCHSCRIPT	322
-#define	GETSCRIPTFATHER	323
-#define	SENDTOSCRIPT	324
-#define	RECEIVFROMSCRIPT	325
-#define	GET	326
-#define	SET	327
-#define	SENDSIGN	328
-#define	REMAINDEROFDIV	329
-#define	GETTIME	330
-#define	GETSCRIPTARG	331
-#define	IF	332
-#define	THEN	333
-#define	ELSE	334
-#define	FOR	335
-#define	TO	336
-#define	DO	337
-#define	WHILE	338
-#define	BEGF	339
-#define	ENDF	340
-#define	EQUAL	341
-#define	INFEQ	342
-#define	SUPEQ	343
-#define	INF	344
-#define	SUP	345
-#define	DIFF	346
+#define	STR	257
+#define	GSTR	258
+#define	VAR	259
+#define	NUMBER	260
+#define	WINDOWTITLE	261
+#define	WINDOWSIZE	262
+#define	WINDOWPOSITION	263
+#define	FONT	264
+#define	FORECOLOR	265
+#define	BACKCOLOR	266
+#define	SHADCOLOR	267
+#define	LICOLOR	268
+#define	COLORSET	269
+#define	OBJECT	270
+#define	INIT	271
+#define	PERIODICTASK	272
+#define	MAIN	273
+#define	END	274
+#define	PROP	275
+#define	TYPE	276
+#define	SIZE	277
+#define	POSITION	278
+#define	VALUE	279
+#define	VALUEMIN	280
+#define	VALUEMAX	281
+#define	TITLE	282
+#define	SWALLOWEXEC	283
+#define	ICON	284
+#define	FLAGS	285
+#define	WARP	286
+#define	WRITETOFILE	287
+#define	HIDDEN	288
+#define	CANBESELECTED	289
+#define	NORELIEFSTRING	290
+#define	CASE	291
+#define	SINGLECLIC	292
+#define	DOUBLECLIC	293
+#define	BEG	294
+#define	POINT	295
+#define	EXEC	296
+#define	HIDE	297
+#define	SHOW	298
+#define	CHFORECOLOR	299
+#define	CHBACKCOLOR	300
+#define	CHCOLORSET	301
+#define	GETVALUE	302
+#define	GETMINVALUE	303
+#define	GETMAXVALUE	304
+#define	GETFORE	305
+#define	GETBACK	306
+#define	GETHILIGHT	307
+#define	GETSHADOW	308
+#define	CHVALUE	309
+#define	CHVALUEMAX	310
+#define	CHVALUEMIN	311
+#define	ADD	312
+#define	DIV	313
+#define	MULT	314
+#define	GETTITLE	315
+#define	GETOUTPUT	316
+#define	STRCOPY	317
+#define	NUMTOHEX	318
+#define	HEXTONUM	319
+#define	QUIT	320
+#define	LAUNCHSCRIPT	321
+#define	GETSCRIPTFATHER	322
+#define	SENDTOSCRIPT	323
+#define	RECEIVFROMSCRIPT	324
+#define	GET	325
+#define	SET	326
+#define	SENDSIGN	327
+#define	REMAINDEROFDIV	328
+#define	GETTIME	329
+#define	GETSCRIPTARG	330
+#define	IF	331
+#define	THEN	332
+#define	ELSE	333
+#define	FOR	334
+#define	TO	335
+#define	DO	336
+#define	WHILE	337
+#define	BEGF	338
+#define	ENDF	339
+#define	EQUAL	340
+#define	INFEQ	341
+#define	SUPEQ	342
+#define	INF	343
+#define	SUP	344
+#define	DIFF	345
 
 #line 1 "script.y"
 
 #include "types.h"
 
-#define MAX_VARS 512
+#define MAX_VARS 5120
 extern int numligne;
 ScriptProp *scriptprop;
 int nbobj=-1;			/* Nombre d'objets */
 int HasPosition,HasType=0;
-TabObj *tabobj;		/* Tableau d'objets, limite=100 */
-int TabIdObj[101]; 	/* Tableau d'indice des objets */
+TabObj *tabobj;		/* Tableau d'objets, limite=1000 */
+int TabIdObj[1001]; 	/* Tableau d'indice des objets */
 Bloc **TabIObj;		/* TabIObj[Obj][Case] -> bloc attache au case */
 Bloc *PileBloc[10];	/* Au maximum 10 imbrications de boucle conditionnelle */
 int TopPileB=0;		/* Sommet de la pile des blocs */
@@ -130,7 +129,7 @@ void InitVarGlob()
  scriptprop->initbloc=NULL;
 
  tabobj=(TabObj*) calloc(1,sizeof(TabObj));
- for (i=0;i<101;i++)
+ for (i=0;i<1001;i++)
   TabIdObj[i]=-1;
  TabNVar=NULL;
  TabVVar=NULL;
@@ -457,7 +456,7 @@ typedef union {  char *str;
 #define	YYFLAG		-32768
 #define	YYNTBASE	92
 
-#define YYTRANSLATE(x) ((unsigned)(x) <= 346 ? yytranslate[x] : 155)
+#define YYTRANSLATE(x) ((unsigned)(x) <= 345 ? yytranslate[x] : 155)
 
 static const char yytranslate[] = {     0,
      2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
@@ -485,16 +484,16 @@ static const char yytranslate[] = {     0,
      2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
      2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
      2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
-     2,     2,     2,     2,     2,     1,     2,     3,     4,     5,
-     6,     7,     8,     9,    10,    11,    12,    13,    14,    15,
-    16,    17,    18,    19,    20,    21,    22,    23,    24,    25,
-    26,    27,    28,    29,    30,    31,    32,    33,    34,    35,
-    36,    37,    38,    39,    40,    41,    42,    43,    44,    45,
-    46,    47,    48,    49,    50,    51,    52,    53,    54,    55,
-    56,    57,    58,    59,    60,    61,    62,    63,    64,    65,
-    66,    67,    68,    69,    70,    71,    72,    73,    74,    75,
-    76,    77,    78,    79,    80,    81,    82,    83,    84,    85,
-    86,    87,    88,    89,    90,    91
+     2,     2,     2,     2,     2,     1,     3,     4,     5,     6,
+     7,     8,     9,    10,    11,    12,    13,    14,    15,    16,
+    17,    18,    19,    20,    21,    22,    23,    24,    25,    26,
+    27,    28,    29,    30,    31,    32,    33,    34,    35,    36,
+    37,    38,    39,    40,    41,    42,    43,    44,    45,    46,
+    47,    48,    49,    50,    51,    52,    53,    54,    55,    56,
+    57,    58,    59,    60,    61,    62,    63,    64,    65,    66,
+    67,    68,    69,    70,    71,    72,    73,    74,    75,    76,
+    77,    78,    79,    80,    81,    82,    83,    84,    85,    86,
+    87,    88,    89,    90,    91
 };
 
 #if YYDEBUG != 0
@@ -1017,7 +1016,8 @@ static const short yycheck[] = {    34,
     25,    26,    27,    28,    29,    30,    31
 };
 /* -*-C-*-  Note some compilers choke on comments on `#line' lines.  */
-#line 3 "/usr/lib/bison.simple"
+#line 3 "//usr/lib/bison.simple"
+/* This file comes from bison-1.28.  */
 
 /* Skeleton output parser for bison,
    Copyright (C) 1984, 1989, 1990 Free Software Foundation, Inc.
@@ -1034,46 +1034,66 @@ static const short yycheck[] = {    34,
 
    You should have received a copy of the GNU General Public License
    along with this program; if not, write to the Free Software
-   Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.  */
+   Foundation, Inc., 59 Temple Place - Suite 330,
+   Boston, MA 02111-1307, USA.  */
 
 /* As a special exception, when this file is copied by Bison into a
    Bison output file, you may use that output file without restriction.
    This special exception was added by the Free Software Foundation
    in version 1.24 of Bison.  */
 
-#ifndef alloca
-#ifdef __GNUC__
-#define alloca __builtin_alloca
-#else /* not GNU C.  */
-#if (!defined (__STDC__) && defined (sparc)) || defined (__sparc__) || defined (__sparc) || defined (__sgi)
-#include <alloca.h>
-#else /* not sparc */
-#if defined (MSDOS) && !defined (__TURBOC__)
-#include <malloc.h>
-#else /* not MSDOS, or __TURBOC__ */
-#if defined(_AIX)
-#include <malloc.h>
- #pragma alloca
-#else /* not MSDOS, __TURBOC__, or _AIX */
-#ifdef __hpux
-#ifdef __cplusplus
-extern "C" {
-void *alloca (unsigned int);
-};
-#else /* not __cplusplus */
-void *alloca ();
-#endif /* not __cplusplus */
-#endif /* __hpux */
-#endif /* not _AIX */
-#endif /* not MSDOS, or __TURBOC__ */
-#endif /* not sparc.  */
-#endif /* not GNU C.  */
-#endif /* alloca not defined.  */
-
 /* This is the parser code that is written into each bison parser
   when the %semantic_parser declaration is not specified in the grammar.
   It was written by Richard Stallman by simplifying the hairy parser
   used when %semantic_parser is specified.  */
+
+#ifndef YYSTACK_USE_ALLOCA
+#ifdef alloca
+#define YYSTACK_USE_ALLOCA
+#else /* alloca not defined */
+#ifdef __GNUC__
+#define YYSTACK_USE_ALLOCA
+#define alloca __builtin_alloca
+#else /* not GNU C.  */
+#if (!defined (__STDC__) && defined (sparc)) || defined (__sparc__) || defined (__sparc) || defined (__sgi) || (defined (__sun) && defined (__i386))
+#define YYSTACK_USE_ALLOCA
+#include <alloca.h>
+#else /* not sparc */
+/* We think this test detects Watcom and Microsoft C.  */
+/* This used to test MSDOS, but that is a bad idea
+   since that symbol is in the user namespace.  */
+#if (defined (_MSDOS) || defined (_MSDOS_)) && !defined (__TURBOC__)
+#if 0 /* No need for malloc.h, which pollutes the namespace;
+	 instead, just don't use alloca.  */
+#include <malloc.h>
+#endif
+#else /* not MSDOS, or __TURBOC__ */
+#if defined(_AIX)
+/* I don't know what this was needed for, but it pollutes the namespace.
+   So I turned it off.   rms, 2 May 1997.  */
+/* #include <malloc.h>  */
+ #pragma alloca
+#define YYSTACK_USE_ALLOCA
+#else /* not MSDOS, or __TURBOC__, or _AIX */
+#if 0
+#ifdef __hpux /* haible@ilog.fr says this works for HPUX 9.05 and up,
+		 and on HPUX 10.  Eventually we can turn this on.  */
+#define YYSTACK_USE_ALLOCA
+#define alloca __builtin_alloca
+#endif /* __hpux */
+#endif
+#endif /* not _AIX */
+#endif /* not MSDOS, or __TURBOC__ */
+#endif /* not sparc */
+#endif /* not GNU C */
+#endif /* alloca not defined */
+#endif /* YYSTACK_USE_ALLOCA not defined */
+
+#ifdef YYSTACK_USE_ALLOCA
+#define YYSTACK_ALLOC alloca
+#else
+#define YYSTACK_ALLOC malloc
+#endif
 
 /* Note: there must be only one dollar sign in this file.
    It is replaced by the list of actions, each action
@@ -1083,8 +1103,8 @@ void *alloca ();
 #define yyclearin	(yychar = YYEMPTY)
 #define YYEMPTY		-2
 #define YYEOF		0
-#define YYACCEPT	return(0)
-#define YYABORT 	return(1)
+#define YYACCEPT	goto yyacceptlab
+#define YYABORT 	goto yyabortlab
 #define YYERROR		goto yyerrlab1
 /* Like YYERROR except do call yyerror.
    This remains here temporarily to ease the
@@ -1165,12 +1185,12 @@ int yydebug;			/*  nonzero means print parse trace	*/
 #ifndef YYMAXDEPTH
 #define YYMAXDEPTH 10000
 #endif
-
-/* Prevent warning if -Wstrict-prototypes.  */
-#ifdef __GNUC__
-int yyparse (void);
-#endif
 
+/* Define __yy_memcpy.  Note that the size argument
+   should be passed with type unsigned int, because that is what the non-GCC
+   definitions require.  With GCC, __builtin_memcpy takes an arg
+   of type size_t, but it can handle unsigned int.  */
+
 #if __GNUC__ > 1		/* GNU C and GNU C++ define this.  */
 #define __yy_memcpy(TO,FROM,COUNT)	__builtin_memcpy(TO,FROM,COUNT)
 #else				/* not GNU C or C++ */
@@ -1182,7 +1202,7 @@ static void
 __yy_memcpy (to, from, count)
      char *to;
      char *from;
-     int count;
+     unsigned int count;
 {
   register char *f = from;
   register char *t = to;
@@ -1197,10 +1217,10 @@ __yy_memcpy (to, from, count)
 /* This is the most reliable way to avoid incompatibilities
    in available built-in functions on various systems.  */
 static void
-__yy_memcpy (char *to, char *from, int count)
+__yy_memcpy (char *to, char *from, unsigned int count)
 {
-  register char *f = from;
   register char *t = to;
+  register char *f = from;
   register int i = count;
 
   while (i-- > 0)
@@ -1210,7 +1230,7 @@ __yy_memcpy (char *to, char *from, int count)
 #endif
 #endif
 
-#line 196 "/usr/lib/bison.simple"
+#line 217 "//usr/lib/bison.simple"
 
 /* The user can define YYPARSE_PARAM as the name of an argument to be passed
    into yyparse.  The argument should have type void *.
@@ -1230,6 +1250,15 @@ __yy_memcpy (char *to, char *from, int count)
 #define YYPARSE_PARAM_ARG
 #define YYPARSE_PARAM_DECL
 #endif /* not YYPARSE_PARAM */
+
+/* Prevent warning if -Wstrict-prototypes.  */
+#ifdef __GNUC__
+#ifdef YYPARSE_PARAM
+int yyparse (void *);
+#else
+int yyparse (void);
+#endif
+#endif
 
 int
 yyparse(YYPARSE_PARAM_ARG)
@@ -1259,6 +1288,7 @@ yyparse(YYPARSE_PARAM_ARG)
 #endif
 
   int yystacksize = YYINITDEPTH;
+  int yyfree_stacks = 0;
 
 #ifdef YYPURE
   int yychar;
@@ -1343,18 +1373,32 @@ yynewstate:
       if (yystacksize >= YYMAXDEPTH)
 	{
 	  yyerror("parser stack overflow");
+	  if (yyfree_stacks)
+	    {
+	      free (yyss);
+	      free (yyvs);
+#ifdef YYLSP_NEEDED
+	      free (yyls);
+#endif
+	    }
 	  return 2;
 	}
       yystacksize *= 2;
       if (yystacksize > YYMAXDEPTH)
 	yystacksize = YYMAXDEPTH;
-      yyss = (short *) alloca (yystacksize * sizeof (*yyssp));
-      __yy_memcpy ((char *)yyss, (char *)yyss1, size * sizeof (*yyssp));
-      yyvs = (YYSTYPE *) alloca (yystacksize * sizeof (*yyvsp));
-      __yy_memcpy ((char *)yyvs, (char *)yyvs1, size * sizeof (*yyvsp));
+#ifndef YYSTACK_USE_ALLOCA
+      yyfree_stacks = 1;
+#endif
+      yyss = (short *) YYSTACK_ALLOC (yystacksize * sizeof (*yyssp));
+      __yy_memcpy ((char *)yyss, (char *)yyss1,
+		   size * (unsigned int) sizeof (*yyssp));
+      yyvs = (YYSTYPE *) YYSTACK_ALLOC (yystacksize * sizeof (*yyvsp));
+      __yy_memcpy ((char *)yyvs, (char *)yyvs1,
+		   size * (unsigned int) sizeof (*yyvsp));
 #ifdef YYLSP_NEEDED
-      yyls = (YYLTYPE *) alloca (yystacksize * sizeof (*yylsp));
-      __yy_memcpy ((char *)yyls, (char *)yyls1, size * sizeof (*yylsp));
+      yyls = (YYLTYPE *) YYSTACK_ALLOC (yystacksize * sizeof (*yylsp));
+      __yy_memcpy ((char *)yyls, (char *)yyls1,
+		   size * (unsigned int) sizeof (*yylsp));
 #endif
 #endif /* no yyoverflow */
 
@@ -1602,11 +1646,11 @@ case 17:
 case 20:
 #line 442 "script.y"
 { nbobj++;
-				  if (nbobj>100)
+				  if (nbobj>1000)
 				  { yyerror("Too many items\n");
 				    exit(1);}
-				  if ((yyvsp[0].number<1)||(yyvsp[0].number>100))
-				  { yyerror("Choose item id between 1 and 100\n");
+				  if ((yyvsp[0].number<1)||(yyvsp[0].number>1000))
+				  { yyerror("Choose item id between 1 and 1000\n");
 				    exit(1);} 
 				  if (TabIdObj[yyvsp[0].number]!=-1) 
 				  { i=yyvsp[0].number; fprintf(stderr,"Line %d: item id %d already used:\n",numligne,yyvsp[0].number);
@@ -2020,7 +2064,7 @@ case 192:
     break;}
 }
    /* the action file gets copied in in place of this dollarsign */
-#line 498 "/usr/lib/bison.simple"
+#line 543 "//usr/lib/bison.simple"
 
   yyvsp -= yylen;
   yyssp -= yylen;
@@ -2215,6 +2259,30 @@ yyerrhandle:
 
   yystate = yyn;
   goto yynewstate;
+
+ yyacceptlab:
+  /* YYACCEPT comes here.  */
+  if (yyfree_stacks)
+    {
+      free (yyss);
+      free (yyvs);
+#ifdef YYLSP_NEEDED
+      free (yyls);
+#endif
+    }
+  return 0;
+
+ yyabortlab:
+  /* YYABORT comes here.  */
+  if (yyfree_stacks)
+    {
+      free (yyss);
+      free (yyvs);
+#ifdef YYLSP_NEEDED
+      free (yyls);
+#endif
+    }
+  return 1;
 }
 #line 779 "script.y"
 

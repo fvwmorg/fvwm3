@@ -1,13 +1,13 @@
 %{
 #include "types.h"
 
-#define MAX_VARS 512
+#define MAX_VARS 5120
 extern int numligne;
 ScriptProp *scriptprop;
 int nbobj=-1;			/* Nombre d'objets */
 int HasPosition,HasType=0;
-TabObj *tabobj;		/* Tableau d'objets, limite=100 */
-int TabIdObj[101]; 	/* Tableau d'indice des objets */
+TabObj *tabobj;		/* Tableau d'objets, limite=1000 */
+int TabIdObj[1001]; 	/* Tableau d'indice des objets */
 Bloc **TabIObj;		/* TabIObj[Obj][Case] -> bloc attache au case */
 Bloc *PileBloc[10];	/* Au maximum 10 imbrications de boucle conditionnelle */
 int TopPileB=0;		/* Sommet de la pile des blocs */
@@ -32,7 +32,7 @@ void InitVarGlob()
  scriptprop->initbloc=NULL;
 
  tabobj=(TabObj*) calloc(1,sizeof(TabObj));
- for (i=0;i<101;i++)
+ for (i=0;i<1001;i++)
   TabIdObj[i]=-1;
  TabNVar=NULL;
  TabVVar=NULL;
@@ -440,11 +440,11 @@ object :			/* Vide */
     ;
 
 id: NUMBER			{ nbobj++;
-				  if (nbobj>100)
+				  if (nbobj>1000)
 				  { yyerror("Too many items\n");
 				    exit(1);}
-				  if (($1<1)||($1>100))
-				  { yyerror("Choose item id between 1 and 100\n");
+				  if (($1<1)||($1>1000))
+				  { yyerror("Choose item id between 1 and 1000\n");
 				    exit(1);} 
 				  if (TabIdObj[$1]!=-1) 
 				  { i=$1; fprintf(stderr,"Line %d: item id %d already used:\n",numligne,$1);

@@ -27,12 +27,12 @@ extern Display *dpy;
 extern int screen;
 extern X11base *x11base;
 extern int grab_serve;
-extern struct XObj *tabxobj[100];
+extern struct XObj *tabxobj[1000];
 extern void LoadIcon(struct XObj *xobj);
 
 extern int nbobj;
 extern char **TabVVar;
-extern int TabIdObj[101];
+extern int TabIdObj[1001];
 extern char *ScriptName;
 extern char *ModuleName;
 extern TypeBuffSend BuffSend;
@@ -657,7 +657,7 @@ static char *ReceivFromScript (int *NbArg,long *TabArg)
  XConvertSelection(dpy,ASend,AReceiv,propriete,x11base->win,CurrentTime);
  while ((!XCheckTypedEvent(dpy,SelectionNotify,&event))&&(NbEssai<10))
  {
-  usleep(1);
+   usleep(1);
   NbEssai++;
  }
  if (event.xselection.property!=None)

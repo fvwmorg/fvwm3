@@ -151,7 +151,7 @@ typedef struct			/* Type pour les boutons */
   int value3;
 } MyObject;
 
-typedef MyObject TabObj[100];
+typedef MyObject TabObj[1000];
 
 
 typedef struct
@@ -171,7 +171,7 @@ typedef struct
   char *title;
   Bloc *periodictasks;
   int HaveXSelection;
-  char* TabScriptId[99];
+  char* TabScriptId[999];
   int NbChild;
   time_t BeginTime;
   char *TabArg[20];
