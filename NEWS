@@ -666,6 +666,8 @@ Changes in alpha release 2.5.0 (27-Jan-2002)
 
 * New conditions Focused, !Focused, HasPointer and !HasPointer.
 
+* New commands EWMHBaseStruts and EWMHNumberOfDesktops.
+
 -------------------------------------------------------------------
 
 Changes in stable release 2.4.18 (19-Mar-2004)

@@ -2266,7 +2266,7 @@ To assign some other button for tearoff, use:
 Mouse 1 M N TearOff
 
 Note that the Modifier, must be "N" (none) and that the
-notation "Mouse 9" (for any mouse button cannot be used.)
+notation "Mouse 0" (for any mouse button cannot be used.)
 
 The window containing the menu is placed as any other window would
 be.  If you find it confusing to have your tear off menus appear
@@ -5799,6 +5799,8 @@ EdgeThickness 1
 # Give focus to FvwmButtons if the mouse
 # hits top edge
 EdgeCommand Top Next (FvwmButtons) Focus
+# Make sure the Next command matches the window
+Style FvwmButtons CirculateHit
 
 Module FvwmButtons
 Module FvwmAuto 100 \\
@@ -5889,9 +5891,14 @@ Defines a mouse binding, or removes the binding if
 .I Function
 is '-'.
 .I Button
-is the mouse button number.  If
+is the mouse button number (1 - 9).  If
 .I Button
-is zero then any button performs the specified function.
+is zero then any button performs the specified function.  Note
+that only mouse buttons 1 to 5 are fully supported by X11.  Any
+number above this works only partially.  Complex functions can not
+be used with these buttons and neither any operation that requires
+dragging the pointer with the button held.  This is due to
+limitations of X11.
 
 .I Context
 describes where the binding applies.  Valid contexts are 'R' for
