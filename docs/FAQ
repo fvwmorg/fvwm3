@@ -2329,7 +2329,19 @@ A: Setting the background image is not really part of the window
    .fvwm2rc.
 
    The fvwm module FvwmBacker can be used to change the background
-   depending on the desk you are currently on.
+   depending on the desk you are currently on by calling an external
+   program.  One big disadvantage of external programs is that
+   changing the beckground on the fly can be pretty slow.  FvwmBacker
+   can use the image defined in a colorset and cached by fvwm for fast
+   background changing.  For example:
+
+     Colorset 10 TiledPixmap foo.xpm
+     Colorset 11 Pixmap bar.png
+     FvwmBacker: Command (Desk *, Page * 0) Colorset 10
+     FvwmBacker: Command (Desk *, Page * 1) Colorset 11
+
+   However, fvwm can handle only xpm, xbm and png images.  Other
+   formats must be converted before they can be used in fvwm.
 
 ----------------------------------------------------------------------
 
