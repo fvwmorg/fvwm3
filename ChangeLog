@@ -1,5 +1,8 @@
 2002-03-21  Dominik Vogt  <dominik.vogt@gmx.de>
 
+	* fvwm/functions.c (execute_complex_function):
+	removed debug code
+
 	* fvwm/move_resize.c (resize_window):
 	fixed aboting of a opaque resize w/ maximized windows
 	(ParseOneResizeArgument):
