@@ -1637,6 +1637,10 @@ void ParseOptions(void)
       if (font_string)
 	free(font_string);
       CopyString(&font_string,next);
+      if (font_string[0] == '\"')
+        font_string++;
+      if (font_string[strlen(font_string)-1] == '\"' )
+        font_string[strlen(font_string)-1] = 0;
       if(strncasecmp(font_string,"none",4) == 0)
 	uselabel = 0;
     }
