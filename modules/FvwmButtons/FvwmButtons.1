@@ -269,6 +269,17 @@ no guarantee for anything.  I have tested three applications:
 xosview works nicely with a colorset background, xload works only
 with a VGradient or solid background and an analog xclock leaves a
 trail painted in the background color after its hands.
+\"needs_lang_check
+If the swallowed window is a fvwm module (see the (No)FvwmModule
+option to Swallow), then the
+.I colorset
+is not applied to the swallowed module. You should use the
+.I colorset
+in the module configuration. However, if the swallowed module
+has a Transparent colorset background, then the FvwmButtons
+background (and not the button colorset) is seen by transparency
+of the background of the swallowed module.
+\"end
 Refer to the man page of the FvwmTheme module for details
 about colorsets.
 
@@ -543,6 +554,18 @@ NoTitle / UseTitle -
 Specifies whether the title of the button will be taken from the swallowed
 window's title or not. If "UseTitle" is given, the title on the button
 changes dynamically to reflect the window name. The default is "NoTitle".
+
+\"needs_check_lang maybe the last sentence is not needed 
+NoFvwmModule / FvwmModule -
+By default, FvwmButtons considers that the swallowed window is a fvwm module
+if the 4 first letter of the 
+.I command
+is "Fvwm" or the 6 first letter of the
+.I command
+is "Module". NoFvwmModule and FvwmModule allow to override this logic.
+FvwmModule (respectively, NoFvwmModule) forces FvwmButtons to consider
+that the swallowed window is (respectively, is not) a fvwm module.
+\"end
 
 .IP "Title [(\fIoptions\fP)] \fIname\fP"
 Specifies the title to be written on the button.

@@ -12,6 +12,8 @@ Changes in beta release 2.5.1 (not released yet)
 * In interactive move/placement when Alt/Meta modifier is pressed, snap
   attraction (SnapAttraction, SnapGrid and EdgeResistance) is ignored.
 
+* New flags (No)FvwmModule to FvwmButtons Swallow option
+
 Changes in beta release 2.5.0 (27-Jan-2002)
 
 * New commands ResizeMaximize and ResizeMoveMaximize that modify
