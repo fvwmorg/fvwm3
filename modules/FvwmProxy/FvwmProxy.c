@@ -52,7 +52,10 @@
 #define PROXY_MOVE		False	/* move window when proxy is dragged */
 #define PROXY_WIDTH		180
 #define PROXY_HEIGHT		60
-#define PROXY_SEPARATE		10
+#define PROXY_SEPARATION	10
+
+#define PROXY_MINWIDTH		15
+#define PROXY_MINHEIGHT		10
 
 #define CMD_SHOW                "Function FvwmProxyShowFunc"
 #define CMD_HIDE                "Function FvwmProxyHideFunc"
@@ -98,7 +101,13 @@ static int cset_normal = 0;
 static int cset_select = 0;
 static char *font_name = NULL;
 static FlocaleFont *Ffont;
+static int enterSelect=True;
+static int proxyMove=PROXY_MOVE;
+static int proxyWidth=PROXY_WIDTH;
+static int proxyHeight=PROXY_HEIGHT;
+static int proxySeparation=PROXY_SEPARATION;
 
+static char commandBuffer[256];
 static char *show_command;
 static char *hide_command;
 static char *mark_command;
@@ -173,6 +182,29 @@ static Bool parse_options(void)
 		else if (StrEquals(resource, "Font"))
 		{
 			CopyStringWithQuotes(&font_name, tline);
+		}
+		else if (StrEquals(resource, "EnterSelect"))
+		{
+			enterSelect=!strcmp(tline,"true");
+		}
+		else if (StrEquals(resource, "ProxyMove"))
+		{
+			proxyMove=!strcmp(tline,"true");
+		}
+		else if (StrEquals(resource, "Width"))
+		{
+			if (sscanf(tline, "%d", &proxyWidth) < 1)
+				proxyWidth=PROXY_MINWIDTH;
+		}
+		else if (StrEquals(resource, "Height"))
+		{
+			if (sscanf(tline, "%d", &proxyHeight) < 1)
+				proxyHeight=PROXY_MINHEIGHT;
+		}
+		else if (StrEquals(resource, "Separation"))
+		{
+			if (sscanf(tline, "%d", &proxySeparation) < 1)
+				proxySeparation=False;
 		}
 		else if (StrEquals(resource, "ShowCommand"))
 		{
@@ -381,11 +413,19 @@ static void DrawWindow(
 	XSetBackground(dpy,fg_gc,Colorset[cset].bg);
 	XSetForeground(dpy,sh_gc,Colorset[cset].shadow);
 	XSetForeground(dpy,hi_gc,Colorset[cset].hilite);
+
+#if TRUE
+	/* XClearWindow version doesn't seem to use the select bg.  */
+	XSetForeground(dpy,fg_gc,Colorset[cset].bg);
+	XFillRectangle(dpy,proxy->proxy,fg_gc,0,0,w-1,h-1);
+	XSetForeground(dpy,fg_gc,Colorset[cset].fg);
+#else
 	/* FIXME: use clip redrawing (not really essential here) */
 	if (FLF_FONT_HAS_ALPHA(Ffont,cset) || PICTURE_HAS_ALPHA(picture,cset))
 	{
 		XClearWindow(dpy,proxy->proxy);
 	}
+#endif
 	RelieveRectangle(
 		dpy, proxy->proxy, 0, 0, w - 1, h - 1, hi_gc, sh_gc, 2);
 	if (proxy->iconname != NULL)
@@ -452,15 +492,17 @@ static void OpenOneWindow(ProxyWindow *proxy)
 	}
 	if (proxy->proxy == None)
 	{
+		long eventMask=ButtonPressMask|ExposureMask|ButtonMotionMask;
+		if(enterSelect)
+			eventMask|=EnterWindowMask;
+
 		attributes.override_redirect = True;
 		proxy->proxy = XCreateWindow(
 			dpy, rootWindow, proxy->proxyx, proxy->proxyy,
 			proxy->proxyw, proxy->proxyh,border,
 			DefaultDepth(dpy,screen), InputOutput, Pvisual,
 			valuemask, &attributes);
-		XSelectInput(
-			dpy, proxy->proxy, ButtonPressMask | ExposureMask |
-			ButtonMotionMask | EnterWindowMask);
+		XSelectInput(dpy,proxy->proxy,eventMask);
 	}
 	else
 	{
@@ -566,24 +608,24 @@ static Bool AdjustOneWindow(ProxyWindow *proxy)
 	{
 		int dx=abs(proxy->proxyx-other->proxyx);
 		int dy=abs(proxy->proxyy-other->proxyy);
-		if(dx<(PROXY_WIDTH+PROXY_SEPARATE) &&
-		   dy<PROXY_HEIGHT+PROXY_SEPARATE )
+		if(dx<(proxyWidth+proxySeparation) &&
+		   dy<proxyHeight+proxySeparation )
 		{
 			rc = True;
-			if(PROXY_WIDTH-dx<PROXY_HEIGHT-dy)
+			if(proxyWidth-dx<proxyHeight-dy)
 			{
 				fprintf(errorFile,"Adjust X\n");
 				if(proxy->proxyx<other->proxyx)
 				{
 					other->proxyx=
 						proxy->proxyx+ proxy->proxyw+
-						PROXY_SEPARATE;
+						proxySeparation;
 				}
 				else
 				{
 					proxy->proxyx=
 						other->proxyx+ other->proxyw+
-						PROXY_SEPARATE;
+						proxySeparation;
 				}
 			}
 			else
@@ -593,13 +635,13 @@ static Bool AdjustOneWindow(ProxyWindow *proxy)
 				{
 					other->proxyy=
 						proxy->proxyy+ proxy->proxyh+
-						PROXY_SEPARATE;
+						proxySeparation;
 				}
 				else
 				{
 					proxy->proxyy=
 						other->proxyy+ other->proxyh+
-						PROXY_SEPARATE;
+						proxySeparation;
 				}
 			}
 		}
@@ -689,8 +731,8 @@ static void ConfigureWindow(FvwmPacket *packet)
 	proxy->desk=desk;
 	proxy->w=wsx;
 	proxy->h=wsy;
-	proxy->proxyw=PROXY_WIDTH;
-	proxy->proxyh=PROXY_HEIGHT;
+	proxy->proxyw=proxyWidth;
+	proxy->proxyh=proxyHeight;
 	proxy->proxyx=proxy->x + (proxy->w-proxy->proxyw)/2;
 	proxy->proxyy=proxy->y + (proxy->h-proxy->proxyh)/2;
 	proxy->flags.is_iconified = !!IS_ICONIFIED(cfgpacket);
@@ -957,13 +999,17 @@ static void ProcessMessage(FvwmPacket* packet)
 		{
 			ProxyWindow *lastSelect=selectProxy;
 			if(selectProxy)
+				selectProxy=selectProxy->next;
+			if(!selectProxy)
+				selectProxy=firstWindow;
+			while(selectProxy!=lastSelect &&
+				selectProxy->desk!=deskNumber)
 			{
 				selectProxy=selectProxy->next;
+				if(!selectProxy && lastSelect)
+					selectProxy=firstWindow;
 			}
-			else
-			{
-				selectProxy=firstWindow;
-			}
+
 			DrawProxy(lastSelect);
 			DrawProxy(selectProxy);
 		}
@@ -1093,13 +1139,11 @@ static void DispatchEvent(XEvent *pEvent)
 			pEvent->xmotion.x_root,pEvent->xmotion.y_root);
 		dx=pEvent->xbutton.x_root-mousex;
 		dy=pEvent->xbutton.y_root-mousey;
-		if(proxy)
+		if(proxy && proxyMove)
 		{
-#if PROXY_MOVE
-			sprintf(command,"Silent Move w%dp w%dp",dx,dy);
-			SendText(fd,command,proxy->window);
-			fprintf(errorFile,">>> %s\n",command);
-#endif
+			sprintf(commandBuffer,"Silent Move w%dp w%dp",dx,dy);
+			SendText(fd,commandBuffer,proxy->window);
+			fprintf(errorFile,">>> %s\n",commandBuffer);
 		}
 
 		mousex=pEvent->xbutton.x_root;
