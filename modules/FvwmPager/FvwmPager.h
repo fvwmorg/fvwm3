@@ -1,4 +1,5 @@
 #include <libs/Picture.h>
+#include <fvwm/vpacket.h>
 
 typedef struct ScreenInfo
 {
@@ -53,7 +54,7 @@ typedef struct pager_window
   int icon_height;
   Pixel text;
   Pixel back;
-  unsigned long flags;
+  window_flags flags;
   Window icon_w;
   Window icon_pixmap_w;
   char *icon_name;

@@ -36,8 +36,9 @@
 #include "fvwm/module.h"
 #include "libs/fvwmlib.h"
 
-#include "FvwmPager.h"
 #include "fvwm/fvwm.h"
+#include "FvwmPager.h"
+
 
 char *MyName;
 int fd_width;
@@ -466,6 +467,7 @@ void list_add(unsigned long *body)
 {
   PagerWindow *t,**prev;
   int i=0;
+  struct ConfigWinPacket  *cfgpacket = (void *) body;
 
   t = Start;
   prev = &Start;
@@ -476,16 +478,7 @@ void list_add(unsigned long *body)
       i++;
     }
   *prev = (PagerWindow *)safemalloc(sizeof(PagerWindow));
-  (*prev)->w = body[0];
-  (*prev)->t = (char *)body[2];
-  (*prev)->frame = body[1];
-  (*prev)->x = body[3];
-  (*prev)->y = body[4];
-  (*prev)->width = body[5];
-  (*prev)->height = body[6];
-  (*prev)->desk = body[7];
   (*prev)->next = NULL;
-  (*prev)->flags = body[8];
   (*prev)->pager_view_width = 0;
   (*prev)->pager_view_height = 0;
   (*prev)->icon_view_width = 0;
@@ -496,10 +489,21 @@ void list_add(unsigned long *body)
   (*prev)->res_class = NULL;
   (*prev)->window_label = NULL;
   (*prev)->mini_icon.picture = 0;
-  (*prev)->title_height = body[9];
-  (*prev)->border_width = body[10];
-  (*prev)->icon_w = body[19];
-  (*prev)->icon_pixmap_w = body[20];
+
+  (*prev)->w = cfgpacket->w;
+  (*prev)->frame = cfgpacket->frame;
+  (*prev)->t = (char *) cfgpacket->fvwmwin;
+  (*prev)->x = cfgpacket->frame_x;
+  (*prev)->y = cfgpacket->frame_y;
+  (*prev)->width = cfgpacket->frame_width;
+  (*prev)->height = cfgpacket->frame_height;
+  (*prev)->desk = cfgpacket->desk;
+  memcpy(&((*prev)->flags), &(cfgpacket->flags), sizeof(cfgpacket->flags)); 
+  (*prev)->title_height = cfgpacket->title_height;
+  (*prev)->border_width = cfgpacket->border_width;
+  (*prev)->icon_w = cfgpacket->icon_w;
+  (*prev)->icon_pixmap_w = cfgpacket->icon_pixmap_w;
+
   if ((win_fore_pix != -1) && (win_back_pix != -1))
   {
         (*prev)->text = win_fore_pix;
@@ -523,8 +527,9 @@ void list_configure(unsigned long *body)
 {
   PagerWindow *t;
   Window target_w;
+  struct ConfigWinPacket  *cfgpacket = (void *) body;
 
-  target_w = body[0];
+  target_w = cfgpacket->w;
   t = Start;
   while((t!= NULL)&&(t->w != target_w))
     {
@@ -536,17 +541,19 @@ void list_configure(unsigned long *body)
     }
   else
     {
-      t->t = (char *)body[2];
-      t->frame = body[1];
-      t->frame_x = body[3];
-      t->frame_y = body[4];
-      t->frame_width = body[5];
-      t->frame_height = body[6];
-      t->title_height = body[9];
-      t->border_width = body[10];
-      t->flags = body[8];
-      t->icon_w = body[19];
-      t->icon_pixmap_w = body[20];
+      t->t = (char *) cfgpacket->fvwmwin;
+      t->frame = cfgpacket->frame;
+      t->frame_x = cfgpacket->frame_x;
+      t->frame_y = cfgpacket->frame_y;
+      t->frame_width = cfgpacket->frame_width;
+      t->frame_height = cfgpacket->frame_height;
+      t->title_height = cfgpacket->title_height;
+      t->border_width = cfgpacket->border_width;
+      memcpy(&(t->flags), &(cfgpacket->flags), sizeof(cfgpacket->flags)); 
+      t->icon_w = cfgpacket->icon_w;
+      t->icon_pixmap_w = cfgpacket->icon_pixmap_w;
+
+
         if ((win_fore_pix != -1) && (win_back_pix != -1))
         {
             t->text = win_fore_pix;
@@ -557,13 +564,13 @@ void list_configure(unsigned long *body)
 	      t->text = body[22];
 	      t->back = body[23];
         }
-      if(t->flags & ICONIFIED)
+      if(IS_ICONIFIED(t))
 	{
 	  t->x = t->icon_x;
 	  t->y = t->icon_y;
 	  t->width = t->icon_width;
 	  t->height = t->icon_height;
-	  if(t->flags & SUPPRESSICON)
+	  if(IS_ICON_SUPPRESSED(t))
 	    {
 	      t->x = -10000;
 	      t->y = -10000;
@@ -576,9 +583,9 @@ void list_configure(unsigned long *body)
 	  t->width = t->frame_width;
 	  t->height = t->frame_height;
 	}
-      if(t->desk != body[7])
+      if(t->desk != cfgpacket->desk)
 	{
-	  ChangeDeskForWindow(t,body[7]);
+	  ChangeDeskForWindow(t, cfgpacket->desk);
 	}
 
       else
@@ -888,10 +895,10 @@ void list_iconify(unsigned long *body)
       t->icon_y = body[4];
       t->icon_width = body[5];
       t->icon_height = body[6];
-      t->flags |= ICONIFIED;
+      SET_ICONIFIED(t, True);
       t->x = t->icon_x;
       t->y = t->icon_y;
-      if(t->flags & SUPPRESSICON)
+      if(IS_ICON_SUPPRESSED(t))
 	{
 	  t->x = -10000;
 	  t->y = -10000;
@@ -932,7 +939,7 @@ void list_deiconify(unsigned long *body)
     }
   else
     {
-      t->flags &= ~ICONIFIED;
+      SET_ICONIFIED(t, False);
       t->x = t->frame_x;
       t->y = t->frame_y;
       t->width = t->frame_width;

@@ -106,9 +106,15 @@ extern struct queue_buff_struct **pipeQueue;
  * send a copy of the command in an M_CONFIG_INFO command.
  */
 
+/*  RBW - 04/16/1999 - GSFR changes.  */
 #define HEADER_SIZE         4
-#define MAX_BODY_SIZE      (24)
+/* #define MAX_BODY_SIZE      (24) */
+#define MAX_BODY_SIZE      (256 - HEADER_SIZE)
 #define MAX_PACKET_SIZE    (HEADER_SIZE+MAX_BODY_SIZE)
+
+#define MAX_NEW_BODY_SIZE      (MAX_BODY_SIZE * sizeof(unsigned long))
+#define MAX_NEW_PACKET_SIZE    ((HEADER_SIZE * sizeof(unsigned long)) + MAX_NEW_BODY_SIZE)
+
 
 void KillModuleByName(char *name);
 void AddToModList(char *tline);

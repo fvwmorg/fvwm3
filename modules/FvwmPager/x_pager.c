@@ -1433,8 +1433,8 @@ void MoveStickyWindows(void)
   t = Start;
   while(t!= NULL)
     {
-      if(((t->flags & ICONIFIED)&&(t->flags & StickyIcon))||
-	 (t->flags & STICKY))
+      if(((IS_ICONIFIED(t))&&(IS_ICON_STICKY(t)))||
+	 (IS_STICKY(t)))
 	{
 	  if(t->desk != Scr.CurrentDesk)
 	    {
@@ -1465,7 +1465,7 @@ void Hilight(PagerWindow *t, int on)
 	}
       else
 	{
-	  if(t->flags & STICKY)
+	  if(IS_STICKY(t))
 	    {
 	      if(t->PagerView != None)
 		XSetWindowBackgroundPixmap(dpy,t->PagerView,
@@ -1657,7 +1657,9 @@ void MoveWindow(XEvent *Event)
 	  XMoveWindow(dpy,t->w,Scr.MyDisplayWidth+Scr.VxMax,
 		      Scr.MyDisplayHeight+Scr.VyMax);
 	  XSync(dpy,0);
-	  sprintf(command,"Silent MoveToDesk 0 %d", NewDesk);
+/* RBW Temp - for GSFR testing - Silent seems to be broken at the moment. */
+/*	  sprintf(command,"Silent MoveToDesk 0 %d", NewDesk);  */
+	  sprintf(command,"MoveToDesk 0 %d", NewDesk);
 	  SendInfo(fd,command,t->w);
 	  t->desk = NewDesk;
 	}
@@ -1682,7 +1684,9 @@ void MoveWindow(XEvent *Event)
 	SendInfo(fd,"Silent Move",t->icon_w);
       else
 #endif
-	SendInfo(fd,"Silent Move",t->w);
+/* RBW Temp - for GSFR testing - Silent seems to be broken at the moment. */
+/*	SendInfo(fd,"Silent Move",t->w);  */
+	SendInfo(fd,"Move",t->w);
       return;
     }
   else
@@ -1714,8 +1718,8 @@ void MoveWindow(XEvent *Event)
 	x = Scr.MyDisplayWidth + Scr.VxMax - t->frame_width - Scr.Vx;
       if(y +Scr.Vy> Scr.MyDisplayHeight+Scr.VyMax)
 	y = Scr.MyDisplayHeight+ Scr.VyMax - t->frame_height - Scr.Vy;
-      if(((t->flags & ICONIFIED)&&(t->flags & StickyIcon))||
-	 (t->flags & STICKY))
+      if(((IS_ICONIFIED(t))&&(IS_ICON_STICKY(t)))||
+	 (IS_STICKY(t)))
 	{
 	  NewDesk = Scr.CurrentDesk - desk1;
 	  if(x > Scr.MyDisplayWidth -16)
@@ -1729,8 +1733,8 @@ void MoveWindow(XEvent *Event)
 	}
       if(NewDesk +desk1 != t->desk)
 	{
-	  if(((t->flags & ICONIFIED)&&(t->flags & StickyIcon))||
-	     (t->flags & STICKY))
+	  if(((IS_ICONIFIED(t))&&(IS_ICON_STICKY(t)))||
+	     (IS_STICKY(t)))
 	    {
 	      NewDesk = Scr.CurrentDesk - desk1;
 	      if(t->desk != Scr.CurrentDesk)
@@ -1738,7 +1742,9 @@ void MoveWindow(XEvent *Event)
 	    }
 	  else
 	    {
-	      sprintf(command,"Silent MoveToDesk 0 %d", NewDesk + desk1);
+/* RBW Temp - for GSFR testing - Silent seems to be broken at the moment. */
+/*	      sprintf(command,"Silent MoveToDesk 0 %d", NewDesk + desk1);  */
+	      sprintf(command,"MoveToDesk 0 %d", NewDesk + desk1);
 	      SendInfo(fd,command,t->w);
 	      t->desk = NewDesk + desk1;
 	    }
@@ -1749,7 +1755,7 @@ void MoveWindow(XEvent *Event)
 	  XReparentWindow(dpy, t->PagerView, Desks[NewDesk].w,x,y);
 	  if(moved)
 	    {
-	      if(t->flags & ICONIFIED)
+	      if(IS_ICONIFIED(t))
 		XMoveWindow(dpy,t->icon_w,x,y);
 	      else
 		XMoveWindow(dpy,t->w,x+t->border_width,
@@ -1758,14 +1764,16 @@ void MoveWindow(XEvent *Event)
 	    }
 	  else
 	    MoveResizePagerView(t);
-	  SendInfo(fd,"Silent Raise",t->w);
+/* RBW Temp - for GSFR testing - Silent seems to be broken at the moment. */
+/*	  SendInfo(fd,"Silent Raise",t->w);  */
+	  SendInfo(fd,"Raise",t->w);
 	}
       if(Scr.CurrentDesk == t->desk)
 	{
           XSync(dpy,0);
           usleep(5000);
           XSync(dpy,0);
-	  if(t->flags & ICONIFIED)
+	  if(IS_ICONIFIED(t))
             {
 /*
     RBW - reverting to old code for 2.2...
@@ -2094,7 +2102,7 @@ void IconMoveWindow(XEvent *Event,PagerWindow *t)
 			    x, y, &x1, &y1, &dumwin);
       XUngrabPointer(dpy,CurrentTime);
       XSync(dpy,0);
-      if(t->flags & ICONIFIED)
+      if(IS_ICONIFIED(t))
 	SendInfo(fd,"Move",t->icon_w);
       else
 	SendInfo(fd,"Move",t->w);
@@ -2110,8 +2118,8 @@ void IconMoveWindow(XEvent *Event,PagerWindow *t)
       y = (y-m1)*
 	(Scr.VyMax + Scr.MyDisplayHeight)/(icon_h-m) - Scr.Vy;
 
-      if(((t->flags & ICONIFIED)&&(t->flags & StickyIcon))||
-	 (t->flags & STICKY))
+      if(((IS_ICONIFIED(t))&&(IS_ICON_STICKY(t)))||
+	 (IS_STICKY(t)))
 	{
 	  if(x > Scr.MyDisplayWidth -16)
 	    x = Scr.MyDisplayWidth - 16;
@@ -2124,7 +2132,7 @@ void IconMoveWindow(XEvent *Event,PagerWindow *t)
 	}
       if(moved)
 	{
-	  if(t->flags & ICONIFIED)
+	  if(IS_ICONIFIED(t))
 	    XMoveWindow(dpy,t->icon_w,x,y);
 	  else
 	    XMoveWindow(dpy,t->w,x,y);
@@ -2136,7 +2144,7 @@ void IconMoveWindow(XEvent *Event,PagerWindow *t)
 	}
       SendInfo(fd,"Raise",t->w);
 
-      if(t->flags & ICONIFIED)
+      if(IS_ICONIFIED(t))
         {
 /*
     RBW - reverting to old code for 2.2...temporarily. See note above, in

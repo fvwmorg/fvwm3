@@ -50,6 +50,9 @@ int *readPipes;
 int *writePipes;
 int *pipeOn;
 char **pipeName;
+/*  RBW - hack for gsfr new config args  */
+unsigned long junkzero = 0;
+unsigned long junkone  = 1;
 
 unsigned long *PipeMask;
 struct queue_buff_struct **pipeQueue;
@@ -467,6 +470,51 @@ make_vpacket(unsigned long *body, unsigned long event_type,
   return body;
 }
 
+
+
+/* ===========================================================
+    RBW - 04/16/1999 - new packet builder for GSFR --
+    Arguments are pairs of lengths and argument data pointers.
+   =========================================================== */
+static unsigned long
+make_new_vpacket(unsigned char *body, unsigned long event_type,
+             unsigned long num, va_list ap)
+{
+  extern Time lastTimestamp;
+  unsigned long arglen;
+  unsigned long bodylen = 0;
+  void *bp = body;
+  void *bp1 = bp;
+  unsigned long plen = 0;
+
+  *(((unsigned long *)bp)++) = START_FLAG;
+  *(((unsigned long *)bp)++) = event_type;
+  /*  Skip length field, we don't know it yet. */
+  ((unsigned long *)bp)++;
+  *(((unsigned long *)bp)++) = lastTimestamp;
+
+  for (; num > 0; --num)  {
+      arglen = va_arg(ap, unsigned long);
+      bodylen += arglen;
+      if (bodylen < MAX_NEW_PACKET_SIZE) {
+        memcpy((char *) bp, va_arg(ap, char *), arglen);
+        (char *) bp += arglen;
+        }
+    }
+
+  /*
+      Round up to a long word boundary. Most of the module interface
+      still thinks in terms of an array of long ints, so let's humor it.
+  */
+  plen = (unsigned long) ((char *)bp - (char *)bp1);
+  plen = ((plen + (sizeof(long) - 1)) / sizeof(long)) * sizeof(long);
+  *(((unsigned long*)bp1)+2) = (plen / (sizeof(unsigned long)));
+
+  return plen;
+}
+
+
+
 void
 SendPacket(int module, unsigned long event_type, unsigned long num_datum, ...)
 {
@@ -494,6 +542,43 @@ BroadcastPacket(unsigned long event_type, unsigned long num_datum, ...)
   for (i=0; i<npipes; i++)
     PositiveWrite(i, body, (num_datum+HEADER_SIZE)*sizeof(body[0]));
 }
+
+
+/* ============================================================
+    RBW - 04/16/1999 - new style packet senders for GSFR --
+   ============================================================ */
+void
+SendNewPacket(int module, unsigned long event_type, unsigned long num_datum, ...)
+{
+  char body[MAX_NEW_PACKET_SIZE];
+  va_list ap;
+  unsigned long plen;
+
+  va_start(ap,num_datum);
+  plen = make_new_vpacket(body, event_type, num_datum, ap);
+  va_end(ap);
+
+  PositiveWrite(module, (void *) &body, plen);
+}
+
+void
+BroadcastNewPacket(unsigned long event_type, unsigned long num_datum, ...)
+{
+  char body[MAX_NEW_PACKET_SIZE];
+  va_list ap;
+  int i;
+  unsigned long plen;
+  unsigned long *lp1;
+
+  va_start(ap,num_datum);
+  plen = make_new_vpacket(body, event_type, num_datum, ap);
+  va_end(ap);
+
+  for (i=0; i<npipes; i++)  {
+    PositiveWrite(i, (void *) &body, plen);
+    }
+}
+
 
 /* this is broken, the flags may not fit in a word */
 #define CONFIGARGS(_t) 24,\
@@ -585,9 +670,81 @@ BroadcastPacket(unsigned long event_type, unsigned long num_datum, ...)
   old_flags |= HAS_MWM_BORDER(t)		? i : 0; }
 #endif /* DISABLE_MBC */
 
+
+
+/* ===============================================================
+    RBW - 04/16/1999 - new version for GSFR --
+        - args are now pairs:
+          - length of arg data
+          - pointer to arg data
+        - number of arguments is the number of length/pointer pairs.
+        - the 9th field, where flags used to be, is temporarily left
+        as a dummy to preserve alignment of the other fields in the
+        old packet: we should drop this before the next release.
+   =============================================================== */
+#define CONFIGARGSNEW(_t) 25,\
+	    (unsigned long)(sizeof(unsigned long)),\
+            &(*(_t))->w,\
+	    (unsigned long)(sizeof(unsigned long)),\
+            &(*(_t))->frame,\
+	    (unsigned long)(sizeof(unsigned long)),\
+            &(_t),\
+	    (unsigned long)(sizeof(unsigned long)),\
+            &(*(_t))->frame_x,\
+	    (unsigned long)(sizeof(unsigned long)),\
+            &(*(_t))->frame_y,\
+	    (unsigned long)(sizeof(unsigned long)),\
+            &(*(_t))->frame_width,\
+	    (unsigned long)(sizeof(unsigned long)),\
+            &(*(_t))->frame_height,\
+	    (unsigned long)(sizeof(unsigned long)),\
+            &(*(_t))->Desk,\
+ \
+/* RBW - temp hack to preserve old alignment */ \
+	    (unsigned long)(sizeof(unsigned long)),\
+            (void *) &junkzero,\
+ \
+	    (unsigned long)(sizeof(unsigned long)),\
+            &(*(_t))->title_height,\
+	    (unsigned long)(sizeof(unsigned long)),\
+            &(*(_t))->boundary_width,\
+	    (unsigned long)(sizeof(unsigned long)),\
+            ((*(_t))->hints.flags & PBaseSize) ? &(*(_t))->hints.base_width : (void *) &junkzero,\
+	    (unsigned long)(sizeof(unsigned long)),\
+            ((*(_t))->hints.flags & PBaseSize) ? &(*(_t))->hints.base_height: (void *) &junkzero,\
+	    (unsigned long)(sizeof(unsigned long)),\
+            ((*(_t))->hints.flags & PResizeInc)? &(*(_t))->hints.width_inc  : (void *) &junkone,\
+	    (unsigned long)(sizeof(unsigned long)),\
+            ((*(_t))->hints.flags & PResizeInc)? &(*(_t))->hints.height_inc : (void *) &junkone,\
+	    (unsigned long)(sizeof(unsigned long)),\
+            &(*(_t))->hints.min_width,\
+	    (unsigned long)(sizeof(unsigned long)),\
+            &(*(_t))->hints.min_height,\
+	    (unsigned long)(sizeof(unsigned long)),\
+            &(*(_t))->hints.max_width,\
+	    (unsigned long)(sizeof(unsigned long)),\
+            &(*(_t))->hints.max_height,\
+	    (unsigned long)(sizeof(unsigned long)),\
+            &(*(_t))->icon_w,\
+	    (unsigned long)(sizeof(unsigned long)),\
+            &(*(_t))->icon_pixmap_w,\
+	    (unsigned long)(sizeof(unsigned long)),\
+            &(*(_t))->hints.win_gravity,\
+	    (unsigned long)(sizeof(unsigned long)),\
+            &(*(_t))->TextPixel,\
+	    (unsigned long)(sizeof(unsigned long)),\
+            &(*(_t))->BackPixel,\
+	    (unsigned long)(sizeof((*(_t))->flags)),\
+            &(*(_t))->flags
+
+
+
 void SendConfig(int module, unsigned long event_type, const FvwmWindow *t)
 {
-  SendPacket(module, event_type, CONFIGARGS(t));
+const FvwmWindow **t1 = &t;
+
+/*  RBW-  SendPacket(module, event_type, CONFIGARGS(t)); */
+  SendNewPacket(module, event_type, CONFIGARGSNEW(t1));
 #ifndef DISABLE_MBC
   /* send out an old version of the packet to keep old mouldules happy */
   /* fixme: should test to see if module wants this packet first */
@@ -604,7 +761,10 @@ void SendConfig(int module, unsigned long event_type, const FvwmWindow *t)
 
 void BroadcastConfig(unsigned long event_type, const FvwmWindow *t)
 {
-  BroadcastPacket(event_type, CONFIGARGS(t));
+const FvwmWindow **t1 = &t;
+
+/*  RBW-  BroadcastPacket(event_type, CONFIGARGS(t)); */
+  BroadcastNewPacket(event_type, CONFIGARGSNEW(t1));
 #ifndef DISABLE_MBC
   /* send out an old version of the packet to keep old mouldules happy */
   {

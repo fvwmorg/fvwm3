@@ -1,3 +1,16 @@
+1999-04-19  Bob Woodside  <proteus@pcnet.com>
+
+	* fvwm/module.c: New-style variable packet building logic for GSFR -
+	used for the M_ADD_WINDOW/M_CONFIGURE_WINDOW packets.
+	* fvwm/module.h: Ibid.
+	* modules/FvwmPager/FvwmPager.c: Changed to handle the new-style packet,
+	and changed all the flags references to their GSFR equivalents.
+	* modules/FvwmPager/FvwmPager.h: Ibid.
+	* modules/FvwmPager/x_pager.c: Ibid. Also, I termporarily reverted all
+	the "Silent" commands to their non-silent versions so the GSFR changes
+	can be tested; "Silent" handling seems to be broken at the moment - FVWM
+	segfaults whenever Pager sends a Silent command.
+
 1999-04-19  Matthias Clasen  <clasen@mathematik.uni-freiburg.de>
 
 	* fvwm/events.c (HandleConfigureRequest): 
