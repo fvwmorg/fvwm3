@@ -1,3 +1,8 @@
+2002-04-26  Mikhael Goikhman  <migo@homemail.com>
+
+	* NEWS, configure.in:
+	changed version to 2.5.2
+
 2002-04-25  Mikhael Goikhman  <migo@homemail.com>
 
 	* fvwm/fvwm.1:

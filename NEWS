@@ -3,7 +3,11 @@ _+_A HREF="#2.4.7"_-_2.4.7_+_/A_-_.
 
 ---------------------------------------------------------------------
 
-Changes in alpha release 2.5.1 (not released yet)
+Changes in alpha release 2.5.2 (not released yet)
+
+---------------------------------------------------------------------
+
+Changes in alpha release 2.5.1 (26-Apr-2002)
 
 * Changed the executable and the man page names from fvwm2 to fvwm.
   The old names are still supported by symlinking.
