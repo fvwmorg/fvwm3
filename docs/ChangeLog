@@ -1,3 +1,11 @@
+1999-01-04  Dan Espen  <dane@mk.bellcore.com>
+
+	* version.html: Changed to ask for bug reports to be entered into
+	the Fvwm bug tracking system.
+
+	* download.html: Changed to ask for bug reports to be entered into
+	the Fvwm bug tracking system.
+
 Tue Dec  1 15:33:26 1998  DanEspen  <dje@blue>
 
 	* download.html: Updated beta download URL to 2.1.4.
