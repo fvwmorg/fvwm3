@@ -334,7 +334,6 @@ int main(int argc, char **argv)
  **********************************************************************/
 void execute_event(short event, unsigned long *body)
 {
-  fprintf(stderr, "execute %d\n", event);
 #ifdef HAVE_RPLAY
 
   if (rplay_fd != -1)		/* this is the sign that rplay is used */
