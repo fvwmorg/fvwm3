@@ -247,7 +247,7 @@ if [ "$DO_SOME" = "n" -o "$DO_3" = "y" ] ; then
   FC '*FButt: (Panel(up,    '"$base"' Module top 100 0 mlr mtb) bur "W bur")'
   # Root right 0 50 put brl down a page in the middle. isn't that 100?
   # This goes to the bottom right.  why?
-  FC '*FButt: (Panel(left,  '"$base"' Root tight 0 0) brl "W brl")'
+  FC '*FButt: (Panel(left,  '"$base"' Root right 0 0) brl "W brl")'
   FC '*FButt: (Panel(right, '"$base"' Module right) brc "W brc")'
   # This ends up on the left bottom, -10p off screen, 20p up from the bottom
   FC '*FButt: (Panel(right, '"$base"' Root right -5p -100p) brr "W brr")'
