@@ -306,14 +306,23 @@ GetClientID(Window window)
   return client_id;
 }
 
+char *get_version_string()
+{
+  /* migo (14-Mar-2001): it is better to manually update a version string
+   * in the stable branch, othervise saving sessions becomes useless */
+  /*return CatString3(VERSION, ", ",__DATE__);*/
+
+  return "2.4-1";
+}
+
 /*
 **  Verify the current fvwm version with the version that stroed the state file.
 **  No state will be restored if versions don't match.
 */
 static Bool VerifyVersionInfo(char *filename)
 {
-  FILE               *f;
-  char                s[4096], s1[4096];
+  FILE *f;
+  char s[4096], s1[4096];
 
   if (!filename || !*filename)
     return False;
@@ -325,11 +334,9 @@ static Bool VerifyVersionInfo(char *filename)
     sscanf(s, "%4000s", s1);
     if (!strcmp(s1, "[FVWM_VERSION]"))
     {
-      char v[256];
-
-      sprintf(v, "%s,%s", VERSION, __DATE__);
+      char *current_v = get_version_string();
       sscanf(s, "%*s %[^\n]", s1);
-      if (strcmp(s1, v) == 0)
+      if (strcmp(s1, current_v) == 0)
       {
 	does_file_version_match = True;
       }
@@ -337,8 +344,8 @@ static Bool VerifyVersionInfo(char *filename)
       {
 	fvwm_msg(
 	  ERR, "VerifyVersionInfo",
-	  "State file version (%s) does not match fvwm version (%s)\n"
-	  "State file will be ignored", s1, v);
+	  "State file version (%s) does not match the current version (%s)\n"
+	  "State file will be ignored", s1, current_v);
 	break;
       }
     }
@@ -351,9 +358,27 @@ static Bool VerifyVersionInfo(char *filename)
 static int
 SaveVersionInfo(FILE *f)
 {
-  fprintf(f, "[FVWM_VERSION] %s,%s\n", VERSION, __DATE__);
+  fprintf(f, "[FVWM_VERSION] %s\n", get_version_string());
 
   return 1;
+}
+
+char *unspace_string(const char *str)
+{
+  static const char *spaces = " \t\n";
+  char *tr_str = CatString2(str, NULL);
+  int i;
+
+  if (!tr_str)
+    return NULL;
+
+  for (i = 0; i < strlen(spaces); i++)
+  {
+    char *ptr = tr_str;
+    while ((ptr = strchr(ptr, spaces[i])) != NULL)
+      *(ptr++) = '_';
+  }
+  return tr_str;
 }
 
 static int
@@ -414,7 +439,7 @@ SaveWindowStates(FILE *f)
       {
         fprintf(f, "  [WM_COMMAND] %i", wm_command_count);
         for (i = 0; i < wm_command_count; i++)
-          fprintf(f, " %s", wm_command[i]);
+          fprintf(f, " %s", unspace_string(wm_command[i]));
         fprintf(f, "\n");
         XFreeStringList (wm_command);
       }
@@ -664,7 +689,7 @@ static Bool matchWin(FvwmWindow *w, Match *m)
           {
             for (i = 0; i < wm_command_count; i++)
             {
-              if (strcmp(wm_command[i], m->wm_command[i]) != 0)
+              if (strcmp(unspace_string(wm_command[i]), m->wm_command[i]) != 0)
                 break;
             }
 
@@ -735,7 +760,8 @@ MatchWinToSM(FvwmWindow *ewin, int *do_shade, int *do_max)
 	  ewin, DO_SKIP_SHADED_CIRCULATE(&(matches[i])));
 	SET_DO_SKIP_CIRCULATE(ewin, DO_SKIP_CIRCULATE(&(matches[i])));
 	SET_FOCUS_MODE(ewin, GET_FOCUS_MODE(&(matches[i])));
-	ewin->name = matches[i].wm_name;
+	if (matches[i].wm_name)
+	  ewin->name = matches[i].wm_name;
       }
       *do_shade = IS_SHADED(&(matches[i]));
       *do_max = IS_MAXIMIZED(&(matches[i]));
