@@ -344,10 +344,6 @@ typedef struct FvwmWindow
   int nr_right_buttons;
   Window button_w[NUMBER_OF_BUTTONS];
 #define BUTTON_INDEX(b) (((b) == 0) ? (NUMBER_OF_BUTTONS - 1) : ((b) - 1))
-#if 0
-#define BUTTON_INDEX(i) (((i) == 0) ? (NUMBER_OF_BUTTONS - 1) : ((i) / 2 + ((!((i) & 1)) ? NR_LEFT_BUTTONS - 1 : 0)))
-#define HAS_BUTTON(t, i) ((t)->button_w[i] && (((i) < NR_LEFT_BUTTONS && (i) < Scr.nr_left_buttons)||((i) >= NR_LEFT_BUTTONS && (i) - NR_LEFT_BUTTONS < Scr.nr_right_buttons)))
-#endif
 #ifdef USEDECOR
   struct FvwmDecor *decor;
 #endif

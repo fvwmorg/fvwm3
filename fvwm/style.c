@@ -1966,25 +1966,8 @@ void ProcessNewStyle(XEvent *eventp, Window w, FvwmWindow *tmp_win,
               if (StrEquals(token, SGET_NAME(*add_style)))
 	      {
 		/* match style */
-                if (!hit)
-                {
-		  /* first match */
-                  char *save_name;
-                  save_name = SGET_NAME(*ptmpstyle);
-		  /* copy everything */
-                  memcpy((void*)ptmpstyle, (const void*)add_style,
-			 sizeof(window_style));
-		  /* except the next pointer */
-                  SSET_NEXT_STYLE(*ptmpstyle, NULL);
-		  /* and the name */
-                  SSET_NAME(*ptmpstyle, save_name);
-		  /* set not first match */
-                  hit = 1;
-                }
-                else
-                {
-		  merge_styles(ptmpstyle, add_style, True);
-                } /* end hit/not hit */
+                hit = 1;
+                merge_styles(ptmpstyle, add_style, True);
               } /* end found matching style */
             } /* end looking at all styles */
 

@@ -184,7 +184,7 @@ typedef struct
   struct
   {
     unsigned has_changed : 1;
-    mwm_flags mwm_decor_flags : 5;
+    mwm_flags mwm_decor_flags : 9;
   } flags;
   DecorFace state[MaxButtonState];
 } TitleButton;

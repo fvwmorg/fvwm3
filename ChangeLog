@@ -1,3 +1,17 @@
+2000-01-10  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* fvwm/borders.c (SetupFrame):
+	fixed size of corner windows after the windows was very small
+	(SetupTitleBar):
+	fixed resizing the button windows that resized icons and other parts of
+	the window too :-)
+
+	* fvwm/style.c (ProcessNewStyle):
+	fixed UseStyle core dump
+
+	* fvwm/screen.h (struct):
+	-Wall fix
+
 2000-01-10 Ben Winslow <rain@insane.loonybin.net>
 
 	* fvwm/gnome.c (GNOME_SetWinArea): Brad applied Ben's patch

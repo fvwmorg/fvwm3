@@ -1044,7 +1044,7 @@ void SetupTitleBar(FvwmWindow *tmp_win, int w, int h)
   }
   /* left */
   xwc.x = tmp_win->boundary_width;
-  for(i = 0; i / 2 < NUMBER_OF_BUTTONS; i += 2)
+  for(i = 0; i < NUMBER_OF_BUTTONS; i += 2)
   {
     if (tmp_win->button_w[i] != None)
     {
@@ -1062,7 +1062,7 @@ void SetupTitleBar(FvwmWindow *tmp_win, int w, int h)
   }
   /* right */
   xwc.x = w - tmp_win->boundary_width - xwc.width;
-  for (i = 1 ; i / 2 < NUMBER_OF_BUTTONS; i += 2)
+  for (i = 1 ; i < NUMBER_OF_BUTTONS; i += 2)
   {
     if (tmp_win->button_w[i] != None)
     {
@@ -1467,13 +1467,15 @@ void SetupFrame(
     if(HAS_BORDER(tmp_win))
     {
       int add;
+      int corner_width;
 
+      corner_width = tmp_win->corner_width;
       if(w < 2*tmp_win->corner_width)
-        tmp_win->corner_width = w/3;
-      if((h < 2*tmp_win->corner_width) && (!shaded))
-        tmp_win->corner_width = h/3;
-      xwidth = w - 2*tmp_win->corner_width;
-      ywidth = h - 2*tmp_win->corner_width;
+        corner_width = w / 3;
+      if (h < 2*tmp_win->corner_width && !shaded)
+        corner_width = h / 3;
+      xwidth = w - 2 * corner_width;
+      ywidth = h - 2 * corner_width;
       xwcm = CWWidth | CWHeight | CWX | CWY;
       if(xwidth<2)
         xwidth = 2;
@@ -1481,14 +1483,14 @@ void SetupFrame(
         ywidth = 2;
 
       if (IS_SHADED(tmp_win))
-	add = tmp_win->corner_width / 3;
+	add = corner_width / 3;
       else
 	add = 0;
       for(i = 0; i < 4; i++)
       {
         if(i==0)
         {
-          xwc.x = tmp_win->corner_width;
+          xwc.x = corner_width;
           xwc.y = 0;
           xwc.height = tmp_win->boundary_width;
           xwc.width = xwidth;
@@ -1496,7 +1498,7 @@ void SetupFrame(
         else if (i==1)
         {
 	  xwc.x = w - tmp_win->boundary_width;
-          xwc.y = tmp_win->corner_width;
+          xwc.y = corner_width;
 	  if (IS_SHADED(tmp_win))
 	  {
 	    xwc.y /= 3;
@@ -1511,7 +1513,7 @@ void SetupFrame(
         }
         else if(i==2)
         {
-          xwc.x = tmp_win->corner_width;
+          xwc.x = corner_width;
           xwc.y = h - tmp_win->boundary_width;
           xwc.height = tmp_win->boundary_width;
           xwc.width = xwidth;
@@ -1519,7 +1521,7 @@ void SetupFrame(
         else
         {
 	  xwc.x = 0;
-          xwc.y = tmp_win->corner_width;
+          xwc.y = corner_width;
 	  if (IS_SHADED(tmp_win))
 	  {
 	    xwc.y /= 3;
@@ -1535,23 +1537,22 @@ void SetupFrame(
       }
 
       xwcm = CWX|CWY|CWWidth|CWHeight;
-      xwc.width = tmp_win->corner_width;
-      xwc.height = tmp_win->corner_width;
+      xwc.width = corner_width;
+      xwc.height = corner_width;
       for(i = 0; i < 4; i++)
       {
         if (i & 0x1)
-          xwc.x = w - tmp_win->corner_width;
+          xwc.x = w - corner_width;
         else
           xwc.x = 0;
 
         if (i & 0x2)
-          xwc.y = h - tmp_win->corner_width + add;
+          xwc.y = h - corner_width + add;
         else
           xwc.y = -add;
 
 	XConfigureWindow(dpy, tmp_win->corners[i], xwcm, &xwc);
       }
-
     }
   }
 
