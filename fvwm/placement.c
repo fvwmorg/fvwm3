@@ -539,17 +539,6 @@ Bool PlaceWindow(
       flags.do_honor_starts_on_screen = False;
     }
     /*
-     * we have a USPosition, and overriding it is disallowed...
-     */
-#if 0
-    /* Scr.go.ModifyUSP was always 1.  How is it supposed to be set? */
-    if (!PPosOverride && (USPosition && !Scr.go.ModifyUSP))
-    {
-      flags.do_honor_starts_on_page = False;
-      flags.do_honor_starts_on_screen = False;
-    }
-#endif
-    /*
      * it's ActivePlacement and SkipMapping, and that's disallowed.
      */
     if (!PPosOverride &&
@@ -703,67 +692,67 @@ Bool PlaceWindow(
     }
   }
 
-  /* Desk has been selected, now pick a location for the window */
-  /*
-   *  If
-   *     o  the window is a transient, or
+  /* Desk has been selected, now pick a location for the window.
    *
-   *     o  a USPosition was requested
+   * Windows use the position hint if these conditions are met:
    *
-   *   then put the window where requested.
+   *  The program specified a USPosition hint and it is not overridden with
+   *  the No(Transient)USPosition style.
    *
-   *   If RandomPlacement was specified,
-   *       then place the window in a psuedo-random location
+   * OR
+   *
+   *  The program specified a PPosition hint and it is not overridden with
+   *  the No(Transient)PPosition style.
+   *
+   * Windows without a position hint are placed using wm placement.
+   *
+   * If RandomPlacement was specified, then place the window in a
+   * psuedo-random location
    */
-  if (mode == PLACE_AGAIN)
   {
-    flags.do_not_use_wm_placement = False;
-  }
-  else if (IS_TRANSIENT(tmp_win) &&
-	   !((tmp_win->hints.flags & PPosition) &&
-	     SUSE_NO_TRANSIENT_PPOSITION(sflags)) &&
-	   !((tmp_win->hints.flags & USPosition) &&
-	     SUSE_NO_TRANSIENT_USPOSITION(sflags)))
-  {
-    /* Transient windows use the position hint if these conditions are met:
-     *
-     *  The program specified a USPosition hint and it is not overridden with
-     *  the NoTransientUSPosition style.
-     *
-     * OR
-     *
-     *  The program specified a PPosition hint and it is not overridden with
-     *  the NoTransientPPosition style.
-     */
-    flags.do_not_use_wm_placement = True;
-  }
-  else if (!IS_TRANSIENT(tmp_win) &&
-	   !((tmp_win->hints.flags & PPosition) &&
-	     SUSE_NO_PPOSITION(sflags)) &&
-	   !((tmp_win->hints.flags & USPosition) &&
-	     SUSE_NO_USPOSITION(sflags)) &&
-	   (tmp_win->hints.flags & (USPosition | PPosition)))
-  {
-    /* Same applies to non transient windows, but use different style flags. */
-    flags.do_not_use_wm_placement = True;
-  }
-  else if (PPosOverride)
-  {
-    flags.do_not_use_wm_placement = True;
-  }
-  else if (!flags.do_honor_starts_on_page &&
-	   tmp_win->wmhints && (tmp_win->wmhints->flags & StateHint) &&
-	   tmp_win->wmhints->initial_state == IconicState)
-  {
-    flags.do_forbid_manual_placement = True;
-#if 0
-    /* DV (30-Dec-2000): Why? With this code, new windows that are started
-     * iconic  will always be created where the application wishes.  Instead we
-     * should use the normal placement algorithm. Right? */
-    flags.do_not_use_wm_placement = True;
-#endif
-  }
+    Bool override_ppos;
+    Bool override_uspos;
+    Bool has_ppos = False;
+    Bool has_uspos = False;
 
+    if (IS_TRANSIENT(tmp_win))
+    {
+      override_ppos = SUSE_NO_TRANSIENT_PPOSITION(sflags);
+      override_uspos = SUSE_NO_TRANSIENT_USPOSITION(sflags);
+    }
+    else
+    {
+      override_ppos = SUSE_NO_PPOSITION(sflags);
+      override_uspos = SUSE_NO_USPOSITION(sflags);
+    }
+    if ((tmp_win->hints.flags & PPosition) && !override_ppos)
+    {
+      has_ppos = True;
+    }
+    if ((tmp_win->hints.flags & USPosition) && !override_uspos)
+    {
+      has_uspos = True;
+    }
+
+    if (mode == PLACE_AGAIN)
+    {
+      flags.do_not_use_wm_placement = False;
+    }
+    else if (has_ppos || has_uspos)
+    {
+      flags.do_not_use_wm_placement = True;
+    }
+    else if (PPosOverride)
+    {
+      flags.do_not_use_wm_placement = True;
+    }
+    else if (!flags.do_honor_starts_on_page &&
+	     tmp_win->wmhints && (tmp_win->wmhints->flags & StateHint) &&
+	     tmp_win->wmhints->initial_state == IconicState)
+    {
+      flags.do_forbid_manual_placement = True;
+    }
+  }
 
   if (!flags.do_not_use_wm_placement)
   {

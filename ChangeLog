@@ -1,8 +1,15 @@
+2001-09-01  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* fvwm/placement.c (PlaceWindow):
+	take care of windows that have both, PPosition and USPosition set
+	take care of transient windows that have neither PPosition nor
+	USPosition set
+
 2001-07-23  olicha  <olivier.chapuis@free.fr>
 
 	* libs/FScreen.c (FScreenInit):
 	Fixed the position of the xinerama emulation delimiters
-	
+
 2001-08-31  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* fvwm/fvwm2.1:
