@@ -1,39 +1,41 @@
-# This file gets installed in the "sysconfdir" during fvwm
+# This file gets installed in the "datadir" during fvwm
 # installation.  Do not remove or change this file.
 
 #  Modification History
 
-#  Created on 03/21/99 by DanEspen (dje):
+#  Created on 21/Mar/1999 by DanEspen (dje):
 #  - FvwmDefaults file.  Contains fvwm defaults, and enough to help out
 #  the new user with no configuration file.
-#  This picks up from where the builtin table in fvwm.c SetUpRCDefaults ends.
+#  This picks up from where the builtin table in fvwm.c SetRCDefaults ends.
 
 # Set at least 2 root keys to bring up the builtin menu:
 Silent Key Help R A Popup MenuFvwmRoot
 Key F1 R A Popup MenuFvwmRoot
-# Ctrl-Alt-Escape for aboring Wait pause and ModuleSynchronous command
+
+# Ctrl-Alt-Escape for aborting Wait pause and ModuleSynchronous command
 Key Escape A MC EscapeFunc
 
-# Needed by the builtin WindowList command, this should match the manpage.
-AddToFunc WindowListFunc I WindowId $0 Iconify off
+# Needed by the builtin WindowList command, this should match the manpage
+AddToFunc WindowListFunc
++ I WindowId $0 Iconify off
 + I WindowId $0 FlipFocus
 + I WindowId $0 Raise
 + I WindowId $0 WarpToWindow 5p 5p
 
 # Needed by the ewmh support
-AddToFunc EWMHActivateWindowFunc I Iconify off
+AddToFunc EWMHActivateWindowFunc
++ I Iconify off
 + I Focus
 + I Raise
 
-# Also in fvwm man page.
-AddToFunc UrgencyFunc I Iconify off
+# Also in the fvwm man page
+AddToFunc UrgencyFunc
++ I Iconify off
 + I FlipFocus
 + I Raise
 + I WarpToWindow 5p 5p
 AddToFunc UrgencyDoneFunc I Nop
 
-# Alt-Tab:
-Key Tab A M WindowList Root c c NoDeskSort
 # Default styles
 Style * GrabFocusTransient, LowerTransient, RaiseTransient, StackTransientParent
 Style * TileCascadePlacement, Title, MouseFocus, GrabFocusOff
@@ -41,10 +43,15 @@ Style * UseIconPosition, RightTitleRotatedCW
 Style * EWMHPlacementUseDynamicWorkingArea, EWMHMaximizeUseDynamicWorkingArea
 # Default styles for tear off menus
 Style fvwm_menu NoPPosition, NeverFocus, NoLenience, WindowListSkip
+
+# Alt-Tab:
+Key Tab A M WindowList Root c c NoDeskSort
+
 # Basic Mouse controls:
 Mouse 1 T  A FuncFvwmRaiseLowerX Move
 Mouse 1 FS A FuncFvwmRaiseLowerX Resize
-AddToFunc FuncFvwmRaiseLowerX I Raise
+AddToFunc FuncFvwmRaiseLowerX
++ I Raise
 + M $0
 + D Lower
 

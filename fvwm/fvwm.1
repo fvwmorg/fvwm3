@@ -141,7 +141,7 @@ to be changed at any time.
 
 Other noteworthy differences between Fvwm and other X11 window
 managers are the introduction of the
-.I SloppyFocus " and " NeverFocus
+.IR SloppyFocus " and " NeverFocus
 focus methods.  Focus policy can be specified for individual
 windows.  Windows using
 .I SloppyFocus
@@ -369,7 +369,7 @@ invoke the application from the same page.
 
 A better way to place windows on a different page, screen or desk
 from the currently mapped viewport is to use the
-.IR StartsOnPage or StartsOnScreen
+.IR StartsOnPage " or " StartsOnScreen
 style specification (the successors to the older
 .I StartsOnDesk
 style) in the
@@ -1703,11 +1703,11 @@ The keyword
 has a similar meaning.  It is executed whenever you try to pop up
 a sub-menu that does not exist.  With this function you can define
 and destroy menus on the fly.  You can use any command after the
-keyword, but the name of a function defined with
+keyword, but the name of an item (that is a submenu) defined with
 .B AddToFunc
 follows it, fvwm executes this command:
 .EX
-Function <function-name> <menu-name>
+Function <function-name> <submenu-name>
 .EE
 I.e. the name is passed to the function as its first argument and
 can be referred to with "$0".

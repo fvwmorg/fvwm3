@@ -411,7 +411,7 @@ void execute_event(short event, unsigned long *body)
 	  {
 	    if(PassID && (event_table[event].action_arg != -1))
 	    {
-	      if (M_NEW_DESK == (1 << event))
+	      if ((M_NEW_DESK == (1 << event)) && event < MAX_EXTENDED_MESSAGES)
 		sprintf(buf, "%s %s %ld", cmd_line, action_table[event],
 			body[event_table[event].action_arg]);
 	      else
