@@ -51,6 +51,50 @@ Item *new;
 }
 
 /******************************************************************************
+  ReorderList - Make the list order matcht the internal fvwm winlist
+  FlipFocus is False when the Focus command has been used, True for all other
+  cases of Focus change.
+  If true the item is plucked from the list and placed at the start
+  If false the list is closed into a loop, rotated around to bring id to
+  the top and then opened up into a terminated line again.
+******************************************************************************/
+void ReorderList(List *list, long id, long FlipFocus)
+{
+  Item *temp = list->head, *prev = NULL;
+  int i = 0;
+
+  if (!id) return; /* this is a NOP if id == 0 */
+  
+  /* find the item */
+  while (temp && i != id) {
+    prev = temp;
+    temp = temp->next;
+    i++;
+  }
+  
+  if (!temp) return; /* we fell off the list */
+
+  /* prev is guaranteed to be !NULL */
+  if (FlipFocus) {
+    /* take care of the tail of the list */
+    if (list->tail == temp) list->tail = prev;
+    /* pluck it */
+    prev->next = temp->next;
+    /* shove it */
+    temp->next = list->head;
+    list->head = temp;
+  } else {
+    /* close the end */
+    list->tail->next = list->head;
+    /* rotate around by changing the list pointers */
+    list->head = temp;
+    list->tail = prev;
+    /* unclose the end */
+    prev->next = NULL;
+  }
+}
+
+/******************************************************************************
   FindItem - Find the item in the list matching the id
 ******************************************************************************/
 int FindItem(List *list, long id)
@@ -103,16 +147,10 @@ int UpdateItemDesk(List *list, long id, long desk)
   int i;
 
   for(i=0,temp=list->head;temp != NULL && temp->id != id ;i++,temp=temp->next);
-/*  	printf("sk=%ld %ld \n", id, temp->id);
-*/
   if (temp ==NULL ) return -1;
 
-/*  printf("dsk=%d\n", temp->desk);
-*/
   if(temp->desk != desk)
   {
-/*	printf("got a nonmatch\n");
-*/
     temp->desk = desk;
     return 1;
   }

@@ -98,6 +98,50 @@ void UpdateArray(ButtonArray *array,int x,int y,int w, int h)
 }
 
 /******************************************************************************
+  Reorder buttons in window list order (see List.c:ReorderList()
+******************************************************************************/
+void ReorderButtons(ButtonArray *array, int ButNum, int FlipFocus)
+{
+  Button *temp = array->head, *prev = NULL;
+  int i = 0;
+
+  if (!ButNum) return; /* this is a NOP if ButNum == 0 */
+  /* find the item, marking everything from the top as needing update */
+  while (temp && i != ButNum) {
+    prev = temp;
+    temp->needsupdate = True;
+    temp = temp->next;
+    i++;
+  }
+  
+  if (!temp) return; /* we fell off the list */
+
+  /* prev is guaranteed to be !NULL */
+  if (FlipFocus) {
+    /* take care of the tail of the list */
+    if (array->tail == temp) array->tail = prev;
+    /* pluck it */
+    prev->next = temp->next;
+    /* shove it */
+    temp->next = array->head;
+    array->head = temp;
+  } else {
+    /* close the end */
+    array->tail->next = array->head;
+    /* rotate around by changing the list pointers */
+    array->head = temp;
+    array->tail = prev;
+    /* unclose the end */
+    prev->next = NULL;
+  }
+
+  /* Focus requires the entire array to be redrawn */
+  if (!FlipFocus)
+    for (temp = array->head; temp; temp = temp->next)
+      temp->needsupdate = True;
+}
+
+/******************************************************************************
   AddButton - Allocate space for and add the button to the bottom
 ******************************************************************************/
 int AddButton(ButtonArray *array, char *title, Picture *p, int up)

@@ -1,5 +1,9 @@
 Changes in alpha release 2.3.0 (February 1999)
 
+* FvwmWinList option *FvwmWinListFollowWindowList to display the order that
+  fvwm keeps windows in. You can now see the order that Next/Prev will take,
+  Prev goes down the list, Next goes up (from the bottom).
+
 * WindowID command now takes conditions like Current
 
 * Improved cursor support: CursorStyle now supports changing

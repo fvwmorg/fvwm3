@@ -82,9 +82,17 @@ is used.
 By default FvwmWinlist will show the button for the window that has the
 input focus as pressed in. This option disables that feature.
 
+.IP "*FvwmWinListFollowWindowList"
+Specifies that FvwmWinList will keep its list in the same order as FVWM. This is
+the order displayed by the "WindowList NoDeskSort" FVWM command. This is not the
+default as it is more visually disturbing when the focus changes.
+
 .IP "*FvwmWinListUseSkipList
 Tells FvwmWinList to not show the windows that are listed on a WindowListSkip
 line if the configuration file.
+
+.IP "*FvwmWinListShowCurrentDesk"
+Specifies that only windows on the current desk are displayed.
 
 .IP "*FvwmWinListNoAnchor
 By default, FvwmWinList will anchor the gravity corner so the window will grow

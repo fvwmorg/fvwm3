@@ -30,7 +30,8 @@ typedef struct
 
 /* Function Prototypes */
 void InitList(List *list);
-void AddItem(List *list, long id, long flags, long desk );
+void ReorderList(List *list, long id, long FlipFocus);
+void AddItem(List *list, long id, long flags, long desk);
 int FindItem(List *list, long id);
 int FindItemDesk(List *list, long id, long desk);
 

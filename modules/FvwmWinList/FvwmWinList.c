@@ -109,7 +109,9 @@ char *ClickAction[3]={"Iconify -1,Raise","Iconify","Lower"},*EnterAction,
       *ForeColor[MAX_COLOUR_SETS] = { "black" },
       *geometry="";
 char *font_string = "fixed";
-int UseSkipList=0,Anchor=1,UseIconNames=0,LeftJustify=0,TruncateLeft=0,ShowFocus=1;
+Bool UseSkipList = False, Anchor = True, UseIconNames = False,
+     LeftJustify = False, TruncateLeft = False, ShowFocus = True,
+     Follow = False;
 
 long CurrentDesk = 0;
 int ShowCurrentDesk = 0;
@@ -364,15 +366,19 @@ void ProcessMessage(unsigned long type,unsigned long *body)
       free(name);
       break;
     case M_FOCUS_CHANGE:
+      redraw = 1;
       if ((i=FindItem(&windows,body[0]))!=-1)
       {
         flags=ItemFlags(&windows,body[0]);
         UpdateItemFlags(&windows,body[0],flags);
         RadioButton(&buttons,i);
+        if (Follow && i) { /* rearrange order */
+          ReorderList(&windows,i,body[2]);
+          if (WindowIsUp) ReorderButtons(&buttons,i,body[2]);
+        }
       }
       else
         RadioButton(&buttons,-1);
-      redraw = 1;
       break;
     case M_END_WINDOWLIST:
       if (!WindowIsUp) MakeMeWindow();
@@ -558,25 +564,27 @@ void ParseConfig(void)
 	      CopyString(&BackColor[3],&tline[Clength+9]);
 	    }
 	  else if(strncasecmp(tline,CatString3(Module, "NoAnchor",""),
-				Clength+8)==0) Anchor=0;
+				Clength+8)==0) Anchor = False;
 	  else if(strncasecmp(tline,CatString3(Module, "Action",""), Clength+6)==0)
 	    LinkAction(&tline[Clength+6]);
 	  else if(strncasecmp(tline,CatString3(Module, "UseSkipList",""),
-				Clength+11)==0) UseSkipList=1;
+				Clength+11)==0) UseSkipList = True;
 	  else if(strncasecmp(tline,CatString3(Module, "UseIconNames",""),
-				Clength+12)==0) UseIconNames=1;
+				Clength+12)==0) UseIconNames = True;
 	  else if(strncasecmp(tline,CatString3(Module, "ShowCurrentDesk",""),
 				Clength+15)==0) ShowCurrentDesk=1;
 	  else if(strncasecmp(tline,CatString3(Module, "LeftJustify",""),
-				Clength+11)==0) LeftJustify=1;
+				Clength+11)==0) LeftJustify = True;
 	  else if(strncasecmp(tline,CatString3(Module, "TruncateLeft",""),
-				Clength+12)==0) TruncateLeft=1;
+				Clength+12)==0) TruncateLeft = True;
           else if(strncasecmp(tline,CatString3(Module, "MinWidth",""),
                                 Clength+8)==0) MinWidth=atoi(&tline[Clength+8]);
           else if(strncasecmp(tline,CatString3(Module, "MaxWidth",""),
                                 Clength+8)==0) MaxWidth=atoi(&tline[Clength+8]);
 	  else if(strncasecmp(tline,CatString3(Module, "DontDepressFocus",""),
-				Clength+16)==0) ShowFocus=0;
+				Clength+16)==0) ShowFocus = False;
+	  else if(strncasecmp(tline,CatString3(Module, "FollowWindowList",""),
+				Clength+16)==0) Follow = True;
 	}
       GetConfigLine(Fvwm_fd,&tline);
     }

@@ -40,6 +40,7 @@ void InitArray(ButtonArray *array,int x,int y,int w,int h);
 void UpdateArray(ButtonArray *array,int x,int y,int w, int h);
 int AddButton(ButtonArray *array, char *title, Picture *p,int up);
 int UpdateButton(ButtonArray *array, int butnum, char *title, int up);
+void ReorderButtons(ButtonArray *array, int butnum, int FlipFocus);
 int UpdateButtonPicture(ButtonArray *array, int butnum, Picture *p);
 int UpdateButtonSet(ButtonArray *array, int butnum, int set);
 void RemoveButton(ButtonArray *array, int butnum);

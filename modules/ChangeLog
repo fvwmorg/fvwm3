@@ -1,3 +1,9 @@
+1999-03-19  Hippo
+
+	* FvwmWinList/*: new option FollowWindowList: shows the windows in the
+	order that Next/Prev will search (apart from WindowListSkip/CirculateSkip
+	differences). Documented ShowCurrrentDesk option.
+
 1999-03-18  Paul D. Smith  <psmith@gnu.org>
 
 	* FvwmCommand/findcmd: Rewrite to use only very basic awk.  This
