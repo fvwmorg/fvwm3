@@ -377,7 +377,7 @@ void move_window_doit(F_CMD_ARGS, Bool fAnimated, Bool fMoveToPage)
   Bool fWarp = FALSE;
 
   if (DeferExecution(eventp,&w,&tmp_win,&context,
-		     (fMoveToPage) ? CRS_MOVE : CRS_SELECT,ButtonPress))
+		     (fMoveToPage) ? CRS_SELECT : CRS_MOVE, ButtonPress))
     return;
 
   if (tmp_win == NULL)
@@ -406,11 +406,15 @@ void move_window_doit(F_CMD_ARGS, Bool fAnimated, Bool fMoveToPage)
     fAnimated = FALSE;
     FinalX = x % Scr.MyDisplayWidth;
     FinalY = y % Scr.MyDisplayHeight;
+    if(FinalX < 0)
+      FinalX += Scr.MyDisplayWidth;
+    if(FinalY < 0)
+      FinalY += Scr.MyDisplayHeight;
     if (get_page_arguments(action, &page_x, &page_y))
     {
       SET_STICKY(tmp_win, 0);
       FinalX += page_x - Scr.Vx;
-	  FinalY += page_y - Scr.Vy;
+      FinalY += page_y - Scr.Vy;
     }
   }
   else

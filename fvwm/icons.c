@@ -1011,21 +1011,6 @@ void DeIconify(FvwmWindow *tmp_win)
 	XUnmapWindow(dpy, t->icon_pixmap_w);
       if (t->icon_w)
 	XUnmapWindow(dpy, t->icon_w);
-      if (t == tmp_win)
-	BroadcastPacket(M_DEICONIFY, 11,
-			t->w, t->frame,
-			(unsigned long)t,
-			t->icon_x_loc, t->icon_y_loc,
-			t->icon_p_width, t->icon_p_height+t->icon_w_height,
-			t->frame_g.x, t->frame_g.y,
-			t->frame_g.width, t->frame_g.height);
-      else
-	BroadcastPacket(M_DEICONIFY, 7,
-			t->w, t->frame,
-			(unsigned long)t,
-			t->icon_x_loc, t->icon_y_loc,
-			t->icon_p_width,
-			t->icon_p_height+t->icon_w_height);
       XFlush(dpy);
       /* End AS */
       XMapWindow(dpy, t->w);
@@ -1047,6 +1032,24 @@ void DeIconify(FvwmWindow *tmp_win)
 	    truncate_to_multiple(t->frame_g.y,Scr.MyDisplayHeight);
 	  XMoveWindow(dpy, t->frame, t->frame_g.x, t->frame_g.y);
 	}
+      }
+      if (t == tmp_win)
+	BroadcastPacket(M_DEICONIFY, 11,
+			t->w, t->frame,
+			(unsigned long)t,
+			t->icon_x_loc, t->icon_y_loc,
+			t->icon_p_width, t->icon_p_height+t->icon_w_height,
+			t->frame_g.x, t->frame_g.y,
+			t->frame_g.width, t->frame_g.height);
+      else
+	BroadcastPacket(M_DEICONIFY, 7,
+			t->w, t->frame,
+			(unsigned long)t,
+			t->icon_x_loc, t->icon_y_loc,
+			t->icon_p_width,
+			t->icon_p_height+t->icon_w_height);
+      if(t->Desk == Scr.CurrentDesk)
+      {
 	XMapWindow(dpy, t->frame);
 	SET_MAP_PENDING(t, 1);
       }

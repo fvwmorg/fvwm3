@@ -1067,6 +1067,10 @@ void list_deiconify(unsigned long *body)
       t->y = t->frame_y;
       t->width = t->frame_width;
       t->height = t->frame_height;
+      t->frame_x = body[7];
+      t->frame_y = body[8];
+      t->frame_width = body[9];
+      t->frame_height = body[10];
 
       /* if deiconifying main pager window turn balloons on or off */
       if ( t->w == Scr.Pager_w )

@@ -1,3 +1,11 @@
+1999-10-07  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* fvwm/icons.c (DeIconify): fixed deiconifying on wrong page
+
+	* fvwm/move_resize.c (move_window_doit): fixed reversed cursors for
+	move/movetopage
+	(move_window_doit): fixed movetopage if window had negative coordinates
+
 1999-10-04 Olivier Chapuis <olivier.chapuis@free.fr>
 	* FvwmCpp/FvwmCpp.c (main):
 	* FvwmCpp/FvwmCpp.1:
