@@ -1,3 +1,8 @@
+1999-11-12  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* fvwm/add_window.c (AddWindow):
+	fixed handling of border width during window placement
+
 1999-11-11 olicha <olivier.chapuis@free.fr>
 
 	* fvwm/module_interface.{c,h} (initModules):
@@ -6,11 +11,11 @@
 	(setSyncMaskFunc):
 	* fvwm/function.{c,h} (functions):
 	* libs/Module.{c,h} (SetSyncMask):
-	Implemented a synchronous mask that lists the messages that fvwm 
+	Implemented a synchronous mask that lists the messages that fvwm
 	will treat as synchronous. See FvwmWinList for an example.
 
 1999-11-11 olicha <olivier.chapuis@free.fr>
-	
+
 	* NEWS: New builtin function StrokeFunc
 	* fvwm/builtins.{c,h} (strokeFunc): New builtin function StrokeFunc
 	* fvwm/cursor.{c,h}: New context CRS_STROKE, default: XC_plus

@@ -822,6 +822,11 @@ FvwmWindow *AddWindow(Window w, FvwmWindow *ReuseWin)
     return NULL;
   }
 
+  /****** border width ******/
+
+  tmp_win->old_bw = tmp_win->attr.border_width;
+  XSetWindowBorderWidth (dpy, tmp_win->w,0);
+
   /****** window name ******/
 
   setup_window_name(tmp_win);
@@ -904,11 +909,6 @@ FvwmWindow *AddWindow(Window w, FvwmWindow *ReuseWin)
     MyXUngrabServer(dpy);
     return NULL;
   }
-
-  /****** border width ******/
-
-  tmp_win->old_bw = tmp_win->attr.border_width;
-  XSetWindowBorderWidth (dpy, tmp_win->w,0);
 
   /****** state setup ******/
 
@@ -1079,16 +1079,6 @@ FvwmWindow *AddWindow(Window w, FvwmWindow *ReuseWin)
                       tmp_win->mini_icon->mask,
                       tmp_win->mini_pixmap_file);
 #endif
-
-  /******  ******/
-
-  FetchWmProtocols (tmp_win);
-  FetchWmColormapWindows (tmp_win);
-
-  /****** colormap ******/
-
-  if(!(XGetWindowAttributes(dpy,tmp_win->w,&(tmp_win->attr))))
-    tmp_win->attr.colormap = Pcmap;
 
   /****** resize window ******/
 
