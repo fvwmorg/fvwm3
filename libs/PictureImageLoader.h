@@ -34,7 +34,7 @@
  * </description>
  */
 Bool PImageCreatePixmapFromArgbData(
-	Display *dpy, Window Root, unsigned char *data, int start, int width,
+	Display *dpy, Window win, unsigned char *data, int start, int width,
 	int height, Pixmap pixmap, Pixmap mask, Pixmap alpha, int *have_alpha,
 	FvwmPictureAttributes fpa);
 /*
@@ -44,7 +44,7 @@ Bool PImageCreatePixmapFromArgbData(
  * </description>
  */
 Bool PImageLoadPixmapFromFile(
-	Display *dpy, Window Root, char *file, Pixmap *pixmap, Pixmap *mask,
+	Display *dpy, Window win, char *file, Pixmap *pixmap, Pixmap *mask,
 	Pixmap *alpha, int *width, int *height, int *depth, int *nalloc_pixels,
 	Pixel **alloc_pixels, FvwmPictureAttributes fpa);
 
@@ -55,7 +55,7 @@ Bool PImageLoadPixmapFromFile(
  * </description>
  */
 FvwmPicture *PImageLoadFvwmPictureFromFile(
-	Display *dpy, Window Root, char *path, FvwmPictureAttributes fpa);
+	Display *dpy, Window win, char *path, FvwmPictureAttributes fpa);
 
 /*
  * <pubfunc>PImageLoadPixmapFromFile
@@ -64,7 +64,7 @@ FvwmPicture *PImageLoadFvwmPictureFromFile(
  * </description>
  */
 Bool PImageLoadCursorPixmapFromFile(
-	Display *dpy, Window Root, char *path, Pixmap *source, Pixmap *mask,
+	Display *dpy, Window win, char *path, Pixmap *source, Pixmap *mask,
 	unsigned int *x, unsigned int *y);
 
 /*
@@ -74,7 +74,7 @@ Bool PImageLoadCursorPixmapFromFile(
  * </description>
  */
 Bool PImageLoadPixmapFromXpmData(
-	Display *dpy, Window Root, int color_limit, char **data,
+	Display *dpy, Window win, int color_limit, char **data,
 	Pixmap *pixmap, Pixmap *mask, int *width, int *height, int *depth);
 
 #endif /* PICTURE_IMAGE_LOADER_H  */

@@ -196,6 +196,7 @@ const func_type func_table[] =
 	CMD_ENT("pointerwindow", CMD_PointerWindow, F_POINTERWINDOW, 0, 0, 0),
 	CMD_ENT("popup", CMD_Popup, F_POPUP, 0, 0, 0),
 	CMD_ENT("prev", CMD_Prev, F_PREV, 0, 0, 0),
+	CMD_ENT("printinfo", CMD_PrintInfo, F_PRINTINFO, 0, 0, 0),
 	CMD_ENT("propertychange", CMD_PropertyChange, F_NOP, 0, 0, 0),
 	CMD_ENT("quit", CMD_Quit, F_QUIT, 0, 0, 0),
 	CMD_ENT("quitscreen", CMD_QuitScreen, F_QUIT_SCREEN, 0, 0, 0),

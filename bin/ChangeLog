@@ -1,3 +1,8 @@
+2002-10-15  olicha  <olivier.chapuis@free.fr>
+
+	* fvwm-root.c (SetRootWindow): 
+	Updated PictureInitCMapRoot
+
 2002-10-12  Mikhael Goikhman  <migo@homemail.com>
 
 	* fvwm-bug.in:

@@ -1982,8 +1982,16 @@ int main(int argc, char **argv)
 			XFree(vizinfo);
 			/* have to have a colormap for non-default visual
 			 * windows */
-			Pcmap = XCreateColormap(
-				dpy, Scr.Root, Pvisual, AllocNone);
+			if (Pvisual->class == DirectColor)
+			{
+				Pcmap = XCreateColormap(
+					dpy, Scr.Root, Pvisual, AllocAll);
+			}
+			else
+			{
+				Pcmap = XCreateColormap(
+					dpy, Scr.Root, Pvisual, AllocNone);
+			}
 			Pdefault = False;
 		}
 		else
@@ -2009,14 +2017,21 @@ int main(int argc, char **argv)
 		if (total)
 		{
 			/* visualID's are unique so there will only be one */
-			Pdpy = dpy;
 			Pvisual = vizinfo[0].visual;
 			Pdepth = vizinfo[0].depth;
 			XFree(vizinfo);
 			/* have to have a colormap for non-default visual
 			 * windows */
-			Pcmap = XCreateColormap(
-				dpy, Scr.Root, Pvisual, AllocNone);
+			if (Pvisual->class == DirectColor)
+			{
+				Pcmap = XCreateColormap(
+					dpy, Scr.Root, Pvisual, AllocAll);
+			}
+			else
+			{
+				Pcmap = XCreateColormap(
+					dpy, Scr.Root, Pvisual, AllocNone);
+			}
 			Pdefault = False;
 		}
 		else
@@ -2031,10 +2046,54 @@ int main(int argc, char **argv)
 	/* use default visuals if none found so far */
 	if (visualClass == -1 && visualId == -1)
 	{
-		Pvisual = DefaultVisual(dpy, Scr.screen);
-		Pdepth = DefaultDepth(dpy, Scr.screen);
-		Pcmap = DefaultColormap(dpy, Scr.screen);
-		Pdefault = True;
+		Colormap *cmap_list = NULL;
+		int num, i;
+
+		Pdepth = 0;
+		
+		/* Detection of a card with 2 hardware colormaps (8+24) which use
+		 * depth 8 for the default. We can use our own depth 24 cmap
+		 * without affecting other applications. */
+		if (DefaultDepth(dpy, Scr.screen) <= 8 &&
+		    (cmap_list = XListInstalledColormaps(dpy, Scr.Root, &num))
+		    && num > 1)
+		{
+			XVisualInfo template, *vizinfo;
+			int total;
+				
+			template.screen = Scr.screen;
+			template.class = TrueColor;
+			vizinfo = XGetVisualInfo(
+				dpy, VisualScreenMask|VisualClassMask,
+				&template, &total);
+			for(i = 0; i<total; i++)
+			{
+				if (Pdepth < vizinfo[i].depth &&
+				    vizinfo[i].depth >= 8)
+				{
+					Pvisual = vizinfo[i].visual;
+					Pdepth = vizinfo[i].depth;
+				}
+			}
+			XFree(vizinfo);
+			if (Pdepth > 0)
+			{
+				Pcmap = XCreateColormap(
+					dpy, Scr.Root, Pvisual, AllocNone);
+				Pdefault = False;
+			}
+		}
+		if (cmap_list)
+		{
+			XFree(cmap_list);
+		}
+		if (Pdepth == 0)
+		{
+			Pvisual = DefaultVisual(dpy, Scr.screen);
+			Pdepth = DefaultDepth(dpy, Scr.screen);
+			Pcmap = DefaultColormap(dpy, Scr.screen);
+			Pdefault = True;
+		}
 	}
 
 	PictureSetupWhiteAndBlack();
@@ -2045,16 +2104,11 @@ int main(int argc, char **argv)
 
 	Scr.ColorLimit = 0;
 	PUseDynamicColors = 0;
-	/* dynamically changeable visual class are odd numbered */
-	if (Pdepth <= 8 && (Pvisual->class & 1))
+	Scr.ColorLimit = PictureInitColors(
+		PICTURE_CALLED_BY_FVWM, True, opt_color_limit, True, True);
+	if (opt_color_limit)
 	{
-		/* limit the number of colors */
-		Scr.ColorLimit = PictureAllocColorTable(
-			opt_color_limit, PICTURE_CALLED_BY_FVWM);
-		if (opt_color_limit)
-		{
-			free(opt_color_limit);
-		}
+		free(opt_color_limit);
 	}
 
 	FShapeInit(dpy);

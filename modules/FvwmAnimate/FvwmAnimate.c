@@ -815,7 +815,7 @@ int main(int argc, char **argv) {
   }
   /* FvwmAnimate must use the root visuals so do not call
    * PictureInitCMap but PictureInitCMapRoot. Color Limit is not needed */
-  PictureInitCMapRoot(dpy, False, NULL);
+  PictureInitCMapRoot(dpy, False, NULL, False, False);
   FRenderInit(dpy);
   Scr.root = DefaultRootWindow(dpy);
   Scr.screen = DefaultScreen(dpy);

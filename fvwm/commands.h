@@ -106,6 +106,7 @@ enum
 	F_POINTERWINDOW,
 	F_POPUP,
 	F_PREV,
+	F_PRINTINFO,
 	F_QUIT,
 	F_QUIT_SESSION,
 	F_QUIT_SCREEN,
@@ -315,6 +316,7 @@ void CMD_PointerKey(F_CMD_ARGS);
 void CMD_PointerWindow(F_CMD_ARGS);
 void CMD_Popup(F_CMD_ARGS);
 void CMD_Prev(F_CMD_ARGS);
+void CMD_PrintInfo(F_CMD_ARGS);
 void CMD_PropertyChange(F_CMD_ARGS);
 void CMD_Quit(F_CMD_ARGS);
 void CMD_QuitScreen(F_CMD_ARGS);

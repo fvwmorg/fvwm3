@@ -31,6 +31,9 @@ void PictureFreeColors(
 	Display *dpy, Colormap cmap, Pixel *pixels, int n, unsigned long planes,
 	Bool no_limit);
 Pixel PictureGetNextColor(Pixel p, int n);
-int PictureAllocColorTable(char *opt, int call_type);
+int PictureInitColors(
+	int call_type, Bool init_color_limit, char *opt,
+	Bool use_my_color_limit, Bool init_dither);
+void PicturePrintColorInfo(int verbose);
 
 #endif

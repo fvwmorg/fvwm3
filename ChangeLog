@@ -1,3 +1,38 @@
+2002-10-15  olicha  <olivier.chapuis@free.fr>
+
+	* libs/PictureUtils.c (PicturePrintColorInfo): 
+	(print_colormap): 
+	* fvwm/commands.h:
+	* fvwm/functable.c (func_table):
+	* fvwm/builtins.c (CMD_PrintInfo):
+	* fvwm/fvwm.1.in:
+	New cmd PrintInfo. Only one arg at present time: "Colors"
+
+	* fvwm/fvwm.c (main):
+	Auto detect card with 2 hardware colormaps and choose the best
+	visual and colormap
+
+	* libs/PictureUtils.c (PictureInitColors):
+	(*):
+	* libs/PictureUtils.h:
+	* fvwm/fvwm.c (main):
+	* libs/PictureBase.c (PictureInitCMapRoot):
+	(PictureInitCMap):
+	* libs/PictureBase.h:
+	Try to support DirectColor visual in a good way, I do not think
+	this is really useful.
+	Added a flexible interface function PictureInitColors for
+	colors allocation initialization.
+	Some cleanup in color allocation and some preparation for a new
+	method for saving and freeing colors allocated by images and gradients.
+	Removed some ifdefed to 0 debug code.
+
+	* libs/Picture.c (*):
+	* libs/Picture.h:
+	* libs/PictureImageLoader.c (*):
+	* libs/PictureImageLoader.h:
+	Replace Root by win
+
 2002-10-14  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* fvwm/add_window.c (setup_key_and_button_grabs):

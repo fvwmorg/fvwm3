@@ -104,15 +104,13 @@ void PictureInitCMap(Display *dpy) {
 
 	/* initialise color limit */
 	PUseDynamicColors = 0;
-	if (Pdepth <= 8 && (Pvisual->class & 1))
-	{
-		/* initialise color limit */
-		PictureAllocColorTable(NULL, PICTURE_CALLED_BY_MODULE);
-	}
+	PictureInitColors(PICTURE_CALLED_BY_MODULE, True, NULL, False, True);
 	return;
 }
 
-void PictureInitCMapRoot(Display *dpy, Bool color_limit, char *color_limit_arg)
+void PictureInitCMapRoot(
+	Display *dpy, Bool init_color_limit, char *color_limit_arg,
+	Bool use_my_color_limit, Bool init_dither)
 {
 	int screen = DefaultScreen(dpy);
 
@@ -128,10 +126,9 @@ void PictureInitCMapRoot(Display *dpy, Bool color_limit, char *color_limit_arg)
 
 	/* initialise color limit */
 	PUseDynamicColors = 1;
-	if (color_limit && Pdepth <= 8 && (Pvisual->class & 1))
-	{
-		PictureAllocColorTable(color_limit_arg, PICTURE_CALLED_BY_FVWM);
-	}
+	PictureInitColors(
+		PICTURE_CALLED_BY_MODULE, init_color_limit, color_limit_arg,
+		use_my_color_limit, init_dither);
 	return;
 }
 

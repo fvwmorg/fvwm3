@@ -2245,6 +2245,29 @@ void CMD_Echo(F_CMD_ARGS)
 	return;
 }
 
+void CMD_PrintInfo(F_CMD_ARGS)
+{
+	int verbose;
+	char *rest,*subject;
+	
+	rest = GetNextToken(action, &subject);
+	if (!rest || GetIntegerArguments(rest, NULL, &verbose, 1) != 1)
+	{
+		verbose = 0;
+	}
+	if (StrEquals(subject,"Colors"))
+	{
+		PicturePrintColorInfo(verbose);
+	}
+	else
+	{
+		fvwm_msg(ERR, "PrintInfo",
+			 "Unkonwn subject '%s'", action);
+	}
+
+	return;
+}
+
 void CMD_ColormapFocus(F_CMD_ARGS)
 {
 	if (MatchToken(action,"FollowsFocus"))

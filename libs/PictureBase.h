@@ -47,9 +47,11 @@ extern Bool PUseDynamicColors;
  * in fvwm.c */
 void PictureInitCMap(Display *dpy);
 
-/* as above but force to use the default visual. If color_limit is True also
- * enable color limitation (independent than the fvwm one). */
-void PictureInitCMapRoot(Display *dpy, Bool color_limit, char *color_limit_arg);
+/* as above but force to use the default visual. If use_my_color_limit is True
+ * also enable color limitation (independent than the fvwm one). */
+void PictureInitCMapRoot(
+	Display *dpy, Bool init_color_limit, char *color_limit_arg,
+	Bool use_my_color_limit, Bool init_dither);
 
 /* Analogue of the Xlib WhitePixel and BlackPixel functions but use the
    Pvisual */

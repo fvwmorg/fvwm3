@@ -167,7 +167,8 @@ void SetRootWindow(char *tline)
 
 	if (use_our_color_limit)
 	{
-		PictureInitCMapRoot(dpy, !NoColorLimit, opt_color_limit);
+		PictureInitCMapRoot(
+			dpy, !NoColorLimit, opt_color_limit, True, True);
 	}
 	else
 	{

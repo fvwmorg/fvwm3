@@ -65,7 +65,7 @@
 static FvwmPicture *FvwmPictureList=NULL;
 
 FvwmPicture *PGetFvwmPicture(
-	Display *dpy, Window Root, char *ImagePath, const char *name,
+	Display *dpy, Window win, char *ImagePath, const char *name,
 	FvwmPictureAttributes fpa)
 {
 	char *path = PictureFindImageFile(name, ImagePath, R_OK);
@@ -75,7 +75,7 @@ FvwmPicture *PGetFvwmPicture(
 	{
 		return NULL;
 	}
-	p = PImageLoadFvwmPictureFromFile(dpy, Root, path, fpa);
+	p = PImageLoadFvwmPictureFromFile(dpy, win, path, fpa);
 	if (p == NULL)
 	{
 		free(path);
@@ -85,7 +85,7 @@ FvwmPicture *PGetFvwmPicture(
 }
 
 FvwmPicture *PCacheFvwmPicture(
-	Display *dpy, Window Root, char *ImagePath, const char *name,
+	Display *dpy, Window win, char *ImagePath, const char *name,
 	FvwmPictureAttributes fpa)
 {
 	char *path;
@@ -123,7 +123,7 @@ FvwmPicture *PCacheFvwmPicture(
 
 	/* Not previously cached, have to load it ourself. Put it first in list
 	 */
-	p = PImageLoadFvwmPictureFromFile(dpy, Root, path, fpa);
+	p = PImageLoadFvwmPictureFromFile(dpy, win, path, fpa);
 	if(p)
 	{
 		p->next=FvwmPictureList;
@@ -201,7 +201,7 @@ void PDestroyFvwmPicture(Display *dpy, FvwmPicture *p)
 }
 
 FvwmPicture *PLoadFvwmPictureFromPixmap(
-	Display *dpy, Window Root, char *name, Pixmap pixmap,
+	Display *dpy, Window win, char *name, Pixmap pixmap,
 	Pixmap mask, Pixmap alpha, int width, int height)
 {
 	FvwmPicture *q;
@@ -225,7 +225,7 @@ FvwmPicture *PLoadFvwmPictureFromPixmap(
 }
 
 FvwmPicture *PCacheFvwmPictureFromPixmap(
-	Display *dpy, Window Root, char *name, Pixmap pixmap,
+	Display *dpy, Window win, char *name, Pixmap pixmap,
 	Pixmap mask, Pixmap alpha, int width, int height)
 {
 	FvwmPicture *p = FvwmPictureList;
@@ -244,7 +244,7 @@ FvwmPicture *PCacheFvwmPictureFromPixmap(
 	}
 
 	/* Not previously cached, have to load. Put it first in list */
-	p = PLoadFvwmPictureFromPixmap(dpy, Root, name, pixmap, mask,
+	p = PLoadFvwmPictureFromPixmap(dpy, win, name, pixmap, mask,
 				       alpha, width, height);
 	if(p)
 	{

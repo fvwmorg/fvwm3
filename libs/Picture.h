@@ -33,7 +33,7 @@
  * </description>
  */
 FvwmPicture* PGetFvwmPicture(
-	Display* dpy, Window Root, char* ImagePath, const char* pictureName,
+	Display* dpy, Window win, char* ImagePath, const char* pictureName,
 	FvwmPictureAttributes fpa);
 
 /* <pubfunc>PCacheFvwmPicture
@@ -47,7 +47,7 @@ FvwmPicture* PGetFvwmPicture(
  * </description>
  */
 FvwmPicture* PCacheFvwmPicture(
-	Display *dpy, Window Root, char* ImagePath, const char* pictureName,
+	Display *dpy, Window win, char* ImagePath, const char* pictureName,
 	FvwmPictureAttributes fpa);
 
 /* <pubfunc>PLoadFvwmPictureFromPixmap
@@ -56,7 +56,7 @@ FvwmPicture* PCacheFvwmPicture(
  * </description>
  */
 FvwmPicture *PLoadFvwmPictureFromPixmap(
-	Display *dpy, Window Root, char *name, Pixmap pixmap, Pixmap mask,
+	Display *dpy, Window win, char *name, Pixmap pixmap, Pixmap mask,
 	Pixmap alpha, int width, int height);
 
 /* <pubfunc>PDestroyFvwmPicture
@@ -67,7 +67,7 @@ FvwmPicture *PLoadFvwmPictureFromPixmap(
  * </description>
  */
 FvwmPicture *PCacheFvwmPictureFromPixmap(
-	Display *dpy, Window Root, char *name, Pixmap pixmap,
+	Display *dpy, Window win, char *name, Pixmap pixmap,
 	Pixmap mask, Pixmap alpha, int width, int height);
 
 /* <pubfunc>PDestroyFvwmPicture
