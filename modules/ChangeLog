@@ -1,3 +1,17 @@
+2000-05-12  Hippo
+
+	* modules/FvwmAnimate/FvwmAnimate.c:
+	* modules/FvwmAuto/FvwmAuto.c:
+	* modules/FvwmConsole/FvwmConsole.1:
+	* modules/FvwmForm/FvwmForm.c:
+	* modules/FvwmGtk/FvwmGtk.c:
+	* modules/FvwmIconBox/FvwmIconBox.c:
+	* modules/FvwmIconMan/fvwm.c:
+	* modules/FvwmTaskBar/FvwmTaskBar.c:
+	* modules/FvwmWinList/FvwmWinList.c:
+	  Replaced FINISHED_STARTUP, UNLOCK & KILLME commands.
+	* modules/FvwmCommand/FvwmCommandS.c: does it's own killme processing.
+
 2000-05-10  olicha	<olivier.chapuis@free.fr>
 
 	* FvwmScript/Instruction.c (ReceivFromScript):

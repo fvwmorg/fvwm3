@@ -69,8 +69,9 @@ struct queue_buff_struct **pipeQueue;
 
 extern fd_set init_fdset;
 
-static void DeleteQueueBuff(int module);
-static void AddToQueue(int module, unsigned long *ptr, int size, int done);
+static void DeleteMessageQueueBuff(int module);
+static void AddToMessageQueue(int module, unsigned long *ptr, int size, int done);
+static void AddToCommandQueue(Window w, int module, char * command);
 
 void initModules(void)
 {
@@ -120,7 +121,7 @@ void ClosePipes(void)
 	}
       while(pipeQueue[i] != NULL)
 	{
-	  DeleteQueueBuff(i);
+	  DeleteMessageQueueBuff(i);
 	}
     }
 }
@@ -344,10 +345,11 @@ void executeModule(F_CMD_ARGS)
 
 void executeModuleSync(F_CMD_ARGS)
 {
+  extern char *ModuleFinished;		/* defined in libs/Module.c */
   int sec = 0;
   char *next;
   char *token;
-  char *expect = NULL;
+  char *expect = ModuleFinished;
   struct timeval timeout = {0, 1};
   struct timeval *timeoutP = &timeout; /* use 1 usec timeout in select */
   int pipe_slot;
@@ -432,7 +434,7 @@ void executeModuleSync(F_CMD_ARGS)
 	/* Check for module input. */
 	if (read(readPipes[pipe_slot], &targetWindow, sizeof(Window)) > 0)
 	{
-	  if (HandleModuleInput(targetWindow, pipe_slot, expect) == 77)
+	  if (HandleModuleInput(targetWindow, pipe_slot, expect, False))
 	  {
 	    /* we got the message we were waiting for */
 	    done = True;
@@ -447,7 +449,7 @@ void executeModuleSync(F_CMD_ARGS)
       if ((writePipes[pipe_slot] >= 0) &&
 	  FD_ISSET(writePipes[pipe_slot], &out_fdset))
       {
-        FlushQueue(pipe_slot);
+        FlushMessageQueue(pipe_slot);
       }
     }
     usleep(1000);
@@ -476,96 +478,89 @@ void executeModuleSync(F_CMD_ARGS)
     UngrabEm(GRAB_BUSY);
 }
 
-
-/* Changed message from module from 255 to 1000. dje */
-int HandleModuleInput(Window w, int channel, char *expect)
+/* read input from a module and either execute it or queue it
+ * returns True and does NOP if the module input matches the expect string */
+Bool HandleModuleInput(Window w, int module, char *expect, Bool queue)
 {
   char text[MAX_MODULE_INPUT_TEXT_LEN];
   unsigned long size;
   unsigned long cont;
   int n;
-  extern FvwmWindow *ButtonWindow;
+  int channel = readPipes[module];
 
   /* Already read a (possibly NULL) window id from the pipe,
    * Now read an fvwm bultin command line */
-  n = read(readPipes[channel], &size, sizeof(size));
-  if(n < sizeof(size))
+  n = read(channel, &size, sizeof(size));
+  if (n < sizeof(size))
     {
       fvwm_msg(ERR, "HandleModuleInput",
                "Fail to read (Module: %i, read: %i, size: %i)",
-               channel, n, sizeof(size));
-      KillModule(channel);
-      return 0;
+               module, n, sizeof(size));
+      KillModule(module);
+      return False;
     }
 
-  if(size > sizeof(text))
+  if (size > sizeof(text))
     {
       fvwm_msg(ERR, "HandleModuleInput",
                "Module(%i) command is too big (%ld), limit is %d",
-               channel, size, sizeof(text));
-      size=sizeof(text);
+               module, size, sizeof(text));
+      /* The rest of the output from this module is going to be scrambled
+       * so let's kill it rather than risk interpreting garbage */
+      KillModule(module);
+      return False;
     }
 
-  pipeOn[channel] = 1;
+  pipeOn[module] = 1;
 
-  n = read(readPipes[channel],text, size);
-  if(n < size)
+  n = read(channel, text, size);
+  if (n < size)
     {
       fvwm_msg(ERR, "HandleModuleInput",
                "Fail to read command (Module: %i, read: %i, size: %ld)",
-               channel, n, size);
-      KillModule(channel);
-      return 0;
+               module, n, size);
+      KillModule(module);
+      return False;
     }
   text[n] = '\0';
-  n = read(readPipes[channel],&cont, sizeof(cont));
-  if(n < sizeof(cont))
+  n = read(channel, &cont, sizeof(cont));
+  if (n < sizeof(cont))
     {
       fvwm_msg(ERR, "HandleModuleInput",
                "Module %i, Size Problems (read: %d, size: %d)",
-	       channel, n, sizeof(cont));
-      KillModule(channel);
-      return 0;
+	       module, n, sizeof(cont));
+      KillModule(module);
+      return False;
     }
-  if(cont == 0)
+  if (cont == 0)
     {
+      /* this is documented as a valid way for a module to quit
+       * so let's not complain
       fvwm_msg(ERR, "HandleModuleInput",
-               "Module %i, Size Problem: cont is zero", channel);
-      KillModule(channel);
+               "Module %i, Size Problem: cont is zero", module);
+       */
+      KillModule(module);
     }
-  if(strlen(text)>0)
+  if (strlen(text)>0)
     {
-      extern int Context;
-      FvwmWindow *tmp_win;
-
-      if(strncasecmp(text,"UNLOCK",6)==0) { /* synchronous response */
-        return 66;
-      }
-
-      if (expect && strncasecmp(text, expect, strlen(expect)) == 0)
-      {
+      if (expect && (strncasecmp(text, expect, strlen(expect)) == 0))
 	/* the module sent the expected string */
-	return 77;
-      }
-      else if (!expect && strncasecmp(text, "FINISHED_STARTUP", 16) == 0)
-      {
-	/* module has finished startup */
-	return 77;
-      }
+	return True;
 
-      /* perhaps the module would like us to kill it? */
-      if(strncasecmp(text,"KillMe",6)==0)
-      {
-        KillModule(channel);
-        return 0;
-      }
-
-      /* If a module does XUngrabPointer(), it can now get proper Popups */
-      if(StrEquals(text, "popup"))
-	Event.xany.type = ButtonPress;
+      if (queue)
+        AddToCommandQueue(w, module, text);
       else
-	Event.xany.type = ButtonRelease;
-      Event.xany.window = w;
+        ExecuteModuleCommand(w, module, text);
+    }
+  return False;
+}
+
+/* run the command as if it cames from a button press or release */
+void ExecuteModuleCommand(Window w, int module, char *text)
+{
+  extern FvwmWindow *ButtonWindow;
+  extern int Context;
+  FvwmWindow *tmp_win;
 
       if (XFindContext (dpy, w, FvwmContext, (caddr_t *) &tmp_win) == XCNOENT)
 	{
@@ -573,45 +568,25 @@ int HandleModuleInput(Window w, int channel, char *expect)
 	  w = None;
 	}
 
-#if 0
-      /* With this you can't start a move from the WindowList module (or any
-       * other module. The move code expects the location from the event to
-       * be related to the real pointer position, otherwise the window will
-       * appear somewhere, but not where we want. */
-      if(tmp_win)
-	{
-	  if (!IS_ICONIFIED(tmp_win))
-	  {
-	    Event.xbutton.x_root = tmp_win->frame_g.x;
-	    Event.xbutton.y_root = tmp_win->frame_g.y;
-	  }
-	  else
-	  {
-	    Event.xbutton.x_root = tmp_win->icon_g.x;
-	    Event.xbutton.y_root = tmp_win->icon_g.y;
-	  }
-	}
-      else
-	{
-          XQueryPointer(dpy, Scr.Root, &JunkRoot, &JunkChild, &JunkX,&JunkY,
-                        &Event.xbutton.x_root,&Event.xbutton.y_root,&JunkMask);
-	}
-#else
-      /* On the other hand, if we always query the pointer, the pager-drag-out
-       * feature doesn't work properly. */
+      /* Query the pointer, the pager-drag-out feature doesn't work properly.*/
+      /* This is OK now that the Pager uses "Move pointer" */
+      /* A real fix would be for the modules to pass the button press coords */
       XQueryPointer(dpy, Scr.Root, &JunkRoot, &JunkChild, &JunkX,&JunkY,
 		    &Event.xbutton.x_root,&Event.xbutton.y_root,&JunkMask);
-#endif
+      /* If a module does XUngrabPointer(), it can now get proper Popups */
+      if(StrEquals(text, "popup"))
+	Event.xbutton.type = ButtonPress;
+      else
+	Event.xbutton.type = ButtonRelease;
+      Event.xbutton.window = w;
       Event.xbutton.button = 1;
       Event.xbutton.x = 0;
       Event.xbutton.y = 0;
       Event.xbutton.subwindow = None;
       Context = GetContext(tmp_win,&Event,&w);
       ButtonWindow = tmp_win;
-      ExecuteFunction(text,tmp_win,&Event,Context,channel,EXPAND_COMMAND,NULL);
+      ExecuteFunction(text,tmp_win,&Event,Context,module,EXPAND_COMMAND,NULL);
       ButtonWindow = NULL;
-    }
-  return 0;
 }
 
 
@@ -629,7 +604,7 @@ void KillModule(int channel)
   pipeOn[channel] = -1;
   while(pipeQueue[channel] != NULL)
     {
-      DeleteQueueBuff(channel);
+      DeleteMessageQueueBuff(channel);
     }
   if(pipeName[channel] != NULL)
     {
@@ -1176,7 +1151,7 @@ void SendStrToModule(XEvent *eventp,Window junk,FvwmWindow *tmp_win,
     if((pipeName[i] != NULL)&&(matchWildcards(module,pipeName[i])))
     {
       SendName(i,M_STRING,data0,data1,data2,str);
-      FlushQueue(i);
+      FlushMessageQueue(i);
     }
   }
 
@@ -1189,25 +1164,26 @@ void SendStrToModule(XEvent *eventp,Window junk,FvwmWindow *tmp_win,
    when I added the lockonsend logic.  The routine seems to big to
    want to inline.  dje 9/4/98 */
 extern int myxgrabcount;                /* defined in libs/Grab.c */
-int PositiveWrite(int module, unsigned long *ptr, int size)
+extern char *ModuleUnlock;		/* defined in libs/Module.c */
+void PositiveWrite(int module, unsigned long *ptr, int size)
 {
   extern int moduleTimeout;
 
   if((pipeOn[module]<0)||(!((PipeMask[module]) & ptr[1])))
   {
-    return -1;
+    return;
   }
 
   /* a dirty hack to prevent FvwmAnimate triggering during Recapture */
   /* would be better to send RecaptureStart and RecaptureEnd messages. */
-  /* If module is lock on send for iconify message and its an
+  /* If module is lock on send for iconify message and it's an
    * iconify event and server grabbed, then return */
   if ((NoGrabMask[module] & SyncMask[module] & ptr[1]) && (myxgrabcount != 0))
   {
-    return -1;
+    return;
   }
 
-  AddToQueue(module,ptr,size,0);
+  AddToMessageQueue(module,ptr,size,0);
 
   /* dje, from afterstep, for FvwmAnimate, allows modules to sync with fvwm.
    * this is disabled when the server is grabbed, otherwise deadlocks happen.
@@ -1219,8 +1195,9 @@ int PositiveWrite(int module, unsigned long *ptr, int size)
     Window targetWindow;
     fd_set readSet;
     struct timeval timeout;
+    int channel = readPipes[module];
 
-    FlushQueue(module);
+    FlushMessageQueue(module);
 
     FD_ZERO(&readSet);
     do
@@ -1234,60 +1211,46 @@ int PositiveWrite(int module, unsigned long *ptr, int size)
        */
       timeout.tv_sec = moduleTimeout;
       timeout.tv_usec = 0;
-      FD_SET(readPipes[module], &readSet);
+      FD_SET(channel, &readSet);
 
-      /*
-       * Wait for input to arrive on our descriptor, but not too long
-       * since we really don't want to block here.
-       */
-      if (
-          /*
-           * Our descriptor set only contains one descriptor, so if
-           * any watched descriptors receive readable data then there
-           * is only one candidate ...
-           */
-          (fvwmSelect(readPipes[module] + 1,
-                      &readSet,
-                      NULL,
-                      NULL,
-                      &timeout) <= 0)
-          ||
-          /*
-           * We really shouldn't see any errors here - the only thing
-           * that I can think of is that the remote end of our
-           * descriptor was closed and we receive an end-of-file ...
-           */
-          (read(readPipes[module],
-                &targetWindow,
-                sizeof(targetWindow)) != sizeof(targetWindow))
-         )
+      /* Wait for input to arrive on just one descriptor, with a timeout */
+      /* (fvwmSelect <= 0) or read() returning wrong size is bad news */
+      if ((fvwmSelect(channel + 1, &readSet, NULL, NULL, &timeout) <= 0)
+          || (read(channel, &targetWindow, sizeof(targetWindow))
+              != sizeof(targetWindow)))
       {
-        /*
-         * Something has gone wrong - get rid of the offender!!
-         */
+        /* Doh! Something has gone wrong - get rid of the offender!! */
         fvwm_msg(ERR, "PositiveWrite",
                  "Failed to read descriptor:\n"
                  "- data available=%c\n"
                  "- terminate signal=%c\n",
-                 (FD_ISSET(readPipes[module], &readSet) ? 'Y' : 'N'),
+                 (FD_ISSET(channel, &readSet) ? 'Y' : 'N'),
                  isTerminated ? 'Y' : 'N');
         KillModule(module);
         break;
       }
 
-      /*
-       * NOTE: this function can call PositiveWrite, so we could
-       *       get some really nasty recursion here!!!
+      /* Execute all messages from the module until UNLOCK is received
+       * N.B. This may cause recursion if a command results in a sync message
+       * to another module, which in turn may send a command that results in
+       * another sync message to this module.
+
+       * Hippo: I don't think this will cause deadlocks, but the third time we
+       * get here the first times UNLOCK will be read and then on returning up
+       * the third level UNLOCK will be read at the first level. This could be
+       * difficult to fix without turning queueing on.  Turning queueing on
+       * may be bad because it can be useful for modules to be able to inject
+       * commands from modules in a synchronous manner. e.g. FvwmIconMan
+       * can tell FvwmAnimate to do an animation when a window is de-iconified
+       * from the IconMan, queueing make s this happen too late.
        */
     }
-    while (HandleModuleInput(targetWindow, module, NULL) != 66);
+    while (!HandleModuleInput(targetWindow, module, ModuleUnlock, False));
   }
-
-  return size;
 }
 
 
-static void AddToQueue(int module, unsigned long *ptr, int size, int done)
+static void AddToMessageQueue(int module, unsigned long *ptr, int size, int done)
 {
   struct queue_buff_struct *c,*e;
   unsigned long *d;
@@ -1311,7 +1274,7 @@ static void AddToQueue(int module, unsigned long *ptr, int size, int done)
   e->next = c;
 }
 
-static void DeleteQueueBuff(int module)
+static void DeleteMessageQueueBuff(int module)
 {
   struct queue_buff_struct *a;
 
@@ -1324,7 +1287,7 @@ static void DeleteQueueBuff(int module)
   return;
 }
 
-void FlushQueue(int module)
+void FlushMessageQueue(int module)
 {
   char *dptr;
   struct queue_buff_struct *d;
@@ -1358,19 +1321,88 @@ void FlushQueue(int module)
 	      return;
 	    }
 	}
-      DeleteQueueBuff(module);
+      DeleteMessageQueueBuff(module);
     }
 }
 
-void FlushOutputQueues(void)
+void FlushAllMessageQueues(void)
 {
   int i;
 
   for(i = 0; i < npipes; i++) {
     if(writePipes[i] >= 0) {
-      FlushQueue(i);
+      FlushMessageQueue(i);
     }
   }
+}
+
+/* A queue of commands from the modules */
+typedef struct CommandQueue
+{
+  struct CommandQueue *next;
+  Window window;
+  int module;
+  char *command;
+} CommandQueue;
+
+static CommandQueue *CQstart = NULL;
+static CommandQueue *CQlast = NULL;
+
+/***********************************************************************
+ *
+ *  Procedure:
+ *	AddToCommandQueue - add a module command to the command queue
+ *
+ ************************************************************************/
+
+static void AddToCommandQueue(Window window, int module, char *command)
+{
+  CommandQueue *new;
+
+  if (!command)
+    return;
+
+  new = (CommandQueue *)safemalloc(sizeof(CommandQueue));
+
+  new->window = window;
+  new->module = module;
+  new->command = strdup(command);
+  new->next = NULL;
+
+  DBUG("AddToCommandQueue", command);
+
+  if (CQlast)
+    CQlast->next = new;
+  CQlast = new;
+  if (!CQstart)
+    CQstart = CQlast;
+}
+
+/***********************************************************************
+ *
+ *  Procedure:
+ *	EmptyCommandQueue - runs command from the module command queue
+ *
+ ************************************************************************/
+void ExecuteCommandQueue(void)
+{
+  CommandQueue *temp;
+
+  while (CQstart)
+  {
+    if (CQstart->command)
+    {
+      DBUG("EmptyCommandQueue", CQstart->command);
+      ExecuteModuleCommand(CQstart->window, CQstart->module, CQstart->command);
+      free(CQstart->command);
+    }
+    temp = CQstart;
+    CQstart = CQstart->next;
+    free(temp);
+  }
+
+  /* the queue is now empty so the end pointer must be changed */
+  CQlast = NULL;
 }
 
 void send_list_func(XEvent *eventp, Window w, FvwmWindow *tmp_win,

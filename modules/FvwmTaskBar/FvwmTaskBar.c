@@ -604,7 +604,7 @@ void ProcessMessage(unsigned long type,unsigned long *body)
 	|| (type == M_ICONIFY   &&   tb_flags & F_ICONIFIED))
     {
       if (AnimCommand && AnimCommand[0] != 0)
-	SendText(Fvwm_fd, "Unlock 1", 0);
+	SendUnlockNotification(Fvwm_fd);
       break;
     }
     tb_flags ^= F_ICONIFIED;
@@ -645,7 +645,7 @@ void ProcessMessage(unsigned long type,unsigned long *body)
 	DrawButtonArray(&buttons, 0);
       }
       if (AnimCommand && AnimCommand[0] != 0)
-	SendText(Fvwm_fd, "Unlock 1", 0);
+	SendUnlockNotification(Fvwm_fd);
     }
     if (type == M_ICONIFY && i == ButReleased) {
       RadioButton(&buttons, -1, BUTTON_UP);

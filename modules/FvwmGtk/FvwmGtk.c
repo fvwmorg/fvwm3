@@ -347,7 +347,7 @@ process_message (unsigned long type,
   switch (type)
     {
     case M_STRING:
-      SendText (fvwm_fd, "UNLOCK", 0);
+      SendUnlockNotification(fvwm_fd);
       context = body[0]; /* this is tmp_win->w */
       sscanf ((char*) (&body[3]), "%128s %d", name, &button);
       widget = g_hash_table_lookup (widgets, name);

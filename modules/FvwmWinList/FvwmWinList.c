@@ -488,7 +488,7 @@ void ProcessMessage(unsigned long type,unsigned long *body)
 	  free(name);
 	}
       }
-      SendText(Fvwm_fd, "Unlock 1", 0);
+      SendUnlockNotification(Fvwm_fd);
       break;
     case M_FOCUS_CHANGE:
       redraw = 1;

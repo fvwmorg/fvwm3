@@ -1,3 +1,18 @@
+2000-05-12  Hippo
+
+	* fvwm/builtins.c
+	* fvwm/events.c
+	* fvwm/fvwm2.1
+	* fvwm/module_interface.c
+	* fvwm/module_interface.h
+	* fvwm/move_resize.c
+	* libs/Module.c
+	  Added queueing system for module commands.
+	  Speeded up module command processing.
+	  New convenience functions SendUnlockNotification() &
+	  SendQuitNotification() for use by modules.
+	  Removed FINISHED_STARTUP, UNLOCK & KILLME commands.
+
 2000-05-11  Dominik Vogt  <dominik_vogt@gmx.de>
 
 	* configure.in: changed version to 2.3.17

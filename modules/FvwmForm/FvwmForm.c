@@ -1383,9 +1383,9 @@ void DoCommand (Item *cmd)
     if (CF.grab_server)
       XUngrabServer(dpy);
     /* This is a temporary bug workaround for the pipe drainage problem */
-    SendText(Channel,"KillMe", ref);    /* let commands complete */
+    SendQuitNotification(Channel);    /* let commands complete */
     /* Note how the window is withdrawn, but execution continues until
-       the KillMe command catches up with this module...
+       the quit notifcation catches up with this module...
        Should not be a problem, there shouldn't be any more commands
        coming into FvwmForm.  dje */
   }

@@ -611,7 +611,7 @@ static void AnimatedMoveAnyWindow(FvwmWindow *tmp_win, Window w, int startX,
       update_absolute_geometry(tmp_win);
       maximize_adjust_offset(tmp_win);
       BroadcastConfig(M_CONFIGURE_WINDOW, tmp_win);
-      FlushOutputQueues();
+      FlushAllMessageQueues();
     }
 
     usleep(cmsDelay * 1000); /* usleep takes microseconds */
@@ -1470,7 +1470,7 @@ Bool moveLoop(FvwmWindow *tmp_win, int XOffset, int YOffset, int Width,
       }
       /* only do this with opaque moves, (i.e. the server is not grabbed) */
       BroadcastConfig(M_CONFIGURE_WINDOW, &tmp_win_copy);
-      FlushOutputQueues();
+      FlushAllMessageQueues();
     }
   } /* while (!finished) */
 
@@ -2273,7 +2273,7 @@ void resize_window(F_CMD_ARGS)
 	/* only do this with opaque resizes, (i.e. the server is not grabbed)
 	 */
 	BroadcastConfig(M_CONFIGURE_WINDOW, tmp_win);
-	FlushOutputQueues();
+	FlushAllMessageQueues();
       }
     }
   }

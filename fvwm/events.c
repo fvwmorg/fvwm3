@@ -2142,6 +2142,10 @@ int My_XNextEvent(Display *dpy, XEvent *event)
     return 1;
   }
 
+  /* execute any commands queued due to the sync module message protocol */
+  DBUG("My_XNextEvent", "executing module comand queue");
+  ExecuteCommandQueue();
+
   DBUG("My_XNextEvent","no X events waiting - about to reap children");
   /* Zap all those zombies! */
   /* If we get to here, then there are no X events waiting to be processed.
@@ -2183,15 +2187,16 @@ int My_XNextEvent(Display *dpy, XEvent *event)
       if ((readPipes[i] >= 0) && FD_ISSET(readPipes[i], &in_fdset)) {
         if (read(readPipes[i], &targetWindow, sizeof(Window)) > 0) {
           DBUG("My_XNextEvent","calling HandleModuleInput");
-          HandleModuleInput(targetWindow, i, NULL);
+          /* Add one module message to the queue */
+          HandleModuleInput(targetWindow, i, NULL, True);
 	} else {
           DBUG("My_XNextEvent","calling KillModule");
           KillModule(i);
         }
       }
       if ((writePipes[i] >= 0) && FD_ISSET(writePipes[i], &out_fdset)) {
-        DBUG("My_XNextEvent","calling FlushQueue");
-        FlushQueue(i);
+        DBUG("My_XNextEvent","calling FlushMessageQueue");
+        FlushMessageQueue(i);
       }
     }
 

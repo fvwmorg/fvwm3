@@ -82,9 +82,35 @@ FvwmPacket* ReadFvwmPacket( int fd )
  * finished its startup procedures and is fully operational now.
  *
  ***********************************************************************/
+char *ModuleFinished = "NOP FINISHED STARTUP";
 void SendFinishedStartupNotification(int *fd)
 {
-  SendText(fd, "FINISHED_STARTUP", 0);
+  SendText(fd, ModuleFinished, 0);
+}
+
+/************************************************************************
+ *
+ * SendUnlockNotification - informs fvwm that the module has
+ * finished it's procedures and fvwm may proceed.
+ *
+ ***********************************************************************/
+char *ModuleUnlock = "NOP UNLOCK";
+void SendUnlockNotification(int *fd)
+{
+  SendText(fd, ModuleUnlock, 0);
+}
+
+/************************************************************************
+ *
+ * SendQuitNotification - informs fvwm that the module has
+ * finished and may be killed.
+ *
+ ***********************************************************************/
+static unsigned long ModuleContinue = 1;
+void SendQuitNotification(int *fd)
+{
+  ModuleContinue = 0;
+  SendText(fd, ModuleUnlock, 0); /* unlock just in case */
 }
 
 /************************************************************************
@@ -115,8 +141,7 @@ void SendText(int *fd, const char *message, unsigned long window)
   strcpy(p, message);
   p += len;
 
-  len = 1;
-  memcpy(p, &len, sizeof(unsigned long));
+  memcpy(p, &ModuleContinue, sizeof(unsigned long));
   p += sizeof(unsigned long);
 
   /* Send it!  */

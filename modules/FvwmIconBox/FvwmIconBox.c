@@ -2191,7 +2191,7 @@ void process_message(unsigned long type, unsigned long *body)
     if (ready && (tmp = SetFlag(body[0], type)) != NULL)
       RedrawIcon(tmp, 2);
     animate(tmp,body);
-    SendText(fd, "Unlock 1", 0);
+    SendUnlockNotification(fd);
     break;
   case M_FOCUS_CHANGE:
     if (!ready)

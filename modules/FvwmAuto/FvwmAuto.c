@@ -336,7 +336,7 @@ main(int argc, char **argv)
         }
         break;
       } /* switch */
-      SendInfo(fd, "UNLOCK", 0);
+      SendUnlockNotification(fd);
     }
     else
     {

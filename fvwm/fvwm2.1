@@ -6467,7 +6467,7 @@ The
 command is very similar to
 .BI Module .
 Fvwm stops processing any commands and user input until the module
-sends a string beginning with "FINISHED_STARTUP" back to fvwm.  If
+sends a string beginning with "NOP FINISHED STARTUP" back to fvwm.  If
 the optional
 .I Timeout
 is given fvwm gives up if the module sent no input back to fvwm
@@ -6489,7 +6489,7 @@ modules are started.
 Warning: It is quite easy to hang fvwm with this command, even if
 a timeout is given.  Be extra careful choosing the string to wait for.
 Although all modules in the fvwm distribution send back the
-"FINISHED_STARTUP" string once they have properly started up,
+"NOP FINISHED STARTUP" string once they have properly started up,
 this may not be the case for third party modules.  Moreover,
 you can try to escape from a locked
 .B ModuleSynchronous

@@ -527,13 +527,13 @@ static void ProcessMessage (Ulong type, FvwmPacketBody *body)
   case M_DEICONIFY:
     ConsoleDebug (FVWM, "DEBUG::M_DEICONIFY\n");
     iconify (body, 0);
-    SendText(Fvwm_fd, "Unlock 1", 0);
+    SendUnlockNotification(Fvwm_fd);
     break;
 
   case M_ICONIFY:
     ConsoleDebug (FVWM, "DEBUG::M_ICONIFY\n");
     iconify (body, 1);
-    SendText(Fvwm_fd, "Unlock 1", 0);
+    SendUnlockNotification(Fvwm_fd);
     break;
 
   case M_END_WINDOWLIST:

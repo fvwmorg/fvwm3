@@ -119,9 +119,6 @@ int main(int argc, char *argv[])
   Fd[0] = atoi(argv[1]);
   Fd[1] = atoi(argv[2]);
 
-  /* tell fvwm we're running */
-  SendFinishedStartupNotification(Fd);
-
   server(fifoname);
   return 1;
 }
@@ -186,9 +183,11 @@ void server (char *name)
   {
     exit (-1);
   }
-  SendText(Fd, "NOP", 0); /* tell fvwm that we are here */
 
   cix = 0;
+
+  /* tell fvwm we're running */
+  SendFinishedStartupNotification(Fd);
 
   while (!isTerminated)
   {
@@ -230,9 +229,13 @@ void server (char *name)
         cmd[cix] = buf[ix];
         if (cmd[cix] == '\n')
 	{
-          cmd[cix+1] = '\0';
+          cmd[cix] = '\0';
           cix = 0;
-	  SendText(Fd,cmd,0);
+          if (StrEquals(cmd, "killme"))
+            /* fvwm will close our pipes when it has processed this */
+            SendQuitNotification(Fd);
+          else
+	    SendText(Fd,cmd,0);
         }
 	else if (cix >= MAX_MODULE_INPUT_TEXT_LEN)
 	{

@@ -238,7 +238,7 @@ void WindowShade(F_CMD_ARGS)
 	XMoveResizeWindow(
 	  dpy, tmp_win->frame, frame_g.x, frame_g.y, frame_g.width,
 	  frame_g.height);
-        FlushOutputQueues();
+        FlushAllMessageQueues();
         XSync(dpy, 0);
       }
       if (client_grav == SouthEastGravity && move_parent_too)
@@ -332,7 +332,7 @@ void WindowShade(F_CMD_ARGS)
 	    dpy, tmp_win->frame, frame_g.x, frame_g.y, frame_g.width,
 	    frame_g.height);
 	}
-        FlushOutputQueues();
+        FlushAllMessageQueues();
         XSync(dpy, 0);
       }
     }
@@ -364,7 +364,7 @@ void WindowShade(F_CMD_ARGS)
   }
   DrawDecorations(
     tmp_win, DRAW_FRAME | DRAW_BUTTONS, (Scr.Hilite == tmp_win), True, None);
-  FlushOutputQueues();
+  FlushAllMessageQueues();
   XSync(dpy, 0);
 
   GNOME_SetHints(tmp_win);

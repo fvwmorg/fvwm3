@@ -966,7 +966,7 @@ static void Loop(void) {
 
     myfprintf((stderr,"Sending unlock\n"));
     if (packet->type != M_CONFIG_INFO)
-      SendInfo(Channel, "UNLOCK 1\n", 0); /* fvwm can continue now! */
+      SendUnlockNotification(Channel);	/* fvwm can continue now! */
     if ((Animate.resize == AnimateResizeNone  /* If no animation desired */
         && animate_none >= 1)		/* and 1 animation(s) */
         || stop_recvd) {		/* or stop cmd */
