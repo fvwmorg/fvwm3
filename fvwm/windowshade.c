@@ -167,6 +167,10 @@ void CMD_WindowShade(F_CMD_ARGS)
 		}
 	}
 
+	if (toggle == 1)
+	{
+		SET_USED_TITLE_DIR_FOR_SHADING(fw, !has_dir);
+	}
 	/* draw the animation */
 	start_g = fw->frame_g;
 	get_unshaded_geometry(fw, &end_g);

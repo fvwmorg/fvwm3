@@ -405,6 +405,8 @@ static Bool setup_window_structure(
 	{
 		(*pfw)->Desk = savewin->Desk;
 		SET_SHADED(*pfw, IS_SHADED(savewin));
+		SET_USED_TITLE_DIR_FOR_SHADING(
+			*pfw, USED_TITLE_DIR_FOR_SHADING(savewin));
 		SET_SHADED_DIR(*pfw, SHADED_DIR(savewin));
 		SET_PLACED_WB3(*pfw,IS_PLACED_WB3(savewin));
 		SET_PLACED_BY_FVWM(*pfw, IS_PLACED_BY_FVWM(savewin));
@@ -1964,13 +1966,11 @@ FvwmWindow *AddWindow(
 	/* used for faster access */
 	style_flags *sflags;
 	short buttons;
-	int do_shade = 0;
-	int shade_dir = 0;
-	int do_maximize = 0;
 	Bool used_sm = False;
 	Bool do_resize_too = False;
 	size_borders b;
 	frame_move_resize_args mr_args;
+	mwtsm_state_args state_args;
 
 	/****** init window structure ******/
 	if (!setup_window_structure(&tmpfw, w, ReuseWin))
@@ -2083,8 +2083,8 @@ FvwmWindow *AddWindow(
 	 * stacking order initialization.
 	 */
 	get_window_borders(fw, &b);
-	used_sm = MatchWinToSM(
-		fw, &do_shade, &shade_dir, &do_maximize, win_opts);
+	memset(&state_args, 0, sizeof(state_args));
+	used_sm = MatchWinToSM(fw, &state_args, win_opts);
 	if (used_sm)
 	{
 		/* read the requested absolute geometry */
@@ -2105,7 +2105,7 @@ FvwmWindow *AddWindow(
 			(unsigned int *)&fw->frame_g.height, 0, 0, 0);
 
 		/****** maximize ******/
-		if (do_maximize)
+		if (state_args.do_max)
 		{
 			SET_MAXIMIZED(fw, 1);
 			constrain_size(
@@ -2125,8 +2125,10 @@ FvwmWindow *AddWindow(
 
 		if (IS_SHADED(fw))
 		{
-			do_shade = 1;
-			shade_dir = SHADED_DIR(fw);
+			state_args.do_shade = 1;
+			state_args.used_title_dir_for_shading =
+				USED_TITLE_DIR_FOR_SHADING(fw);
+			state_args.shade_dir = SHADED_DIR(fw);
 			SET_SHADED(fw, 0);
 		}
 		/* Tentative size estimate */
@@ -2214,8 +2216,6 @@ FvwmWindow *AddWindow(
 			fw, FRAME_MR_FORCE_SETUP, NULL, &fw->frame_g, 0,
 			DIR_NONE);
 	}
-	mr_args = frame_create_move_resize_args(
-		fw, FRAME_MR_FORCE_SETUP, NULL, &fw->frame_g, 0, DIR_NONE);
 	frame_move_resize(fw, mr_args);
 	frame_free_move_resize_args(fw, mr_args);
 
@@ -2301,20 +2301,26 @@ FvwmWindow *AddWindow(
 	GNOME_SetWinArea(fw);
 
 	/****** windowshade ******/
-	if (do_shade)
+	if (state_args.do_shade)
 	{
 		rectangle big_g;
 		rectangle new_g;
 		frame_move_resize_args mr_args;
 
+		if (state_args.used_title_dir_for_shading)
+		{
+			state_args.shade_dir = GET_TITLE_DIR(fw);
+		}
 		big_g = (IS_MAXIMIZED(fw)) ? fw->max_g : fw->frame_g;
 		new_g = big_g;
-		get_shaded_geometry_with_dir(fw, &new_g, &new_g, shade_dir);
+		get_shaded_geometry_with_dir(
+			fw, &new_g, &new_g, state_args.shade_dir);
 		mr_args = frame_create_move_resize_args(
-			fw, FRAME_MR_SHRINK, &big_g, &new_g, 0, shade_dir);
+			fw, FRAME_MR_SHRINK, &big_g, &new_g, 0,
+			state_args.shade_dir);
 		frame_move_resize(fw, mr_args);
 		SET_SHADED(fw, 1);
-		SET_SHADED_DIR(fw, shade_dir);
+		SET_SHADED_DIR(fw, state_args.shade_dir);
 		frame_free_move_resize_args(fw, mr_args);
 	}
 	if (!XGetGeometry(dpy, FW_W(fw), &JunkRoot, &JunkX, &JunkY, &JunkWidth,

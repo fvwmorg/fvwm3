@@ -319,35 +319,50 @@ void get_shaded_geometry(
 	 * small_g == big_g */
 	int big_width = big_g->width;
 	int big_height = big_g->height;
+	int d;
 
 	get_window_borders(fw, &b);
 	*small_g = *big_g;
+	d = 0;
 	switch (SHADED_DIR(fw))
 	{
 	case DIR_S:
 	case DIR_SW:
 	case DIR_SE:
 		small_g->y = big_g->y + big_height - b.total_size.height;
+		d = 1;
 		/* fall through */
 	case DIR_N:
 	case DIR_NW:
 	case DIR_NE:
 		small_g->height = b.total_size.height;
+		if (small_g->height == 0)
+		{
+			small_g->height = 1;
+			small_g->y -= d;
+		}
 		break;
 	default:
 		break;
 	}
+	d = 0;
 	switch (SHADED_DIR(fw))
 	{
 	case DIR_E:
 	case DIR_NE:
 	case DIR_SE:
 		small_g->x = big_g->x + big_width - b.total_size.width;
+		d = 1;
 		/* fall through */
 	case DIR_W:
 	case DIR_NW:
 	case DIR_SW:
 		small_g->width = b.total_size.width;
+		if (small_g->width == 0)
+		{
+			small_g->width = 1;
+			small_g->y -= d;
+		}
 		break;
 	default:
 		break;

@@ -413,6 +413,7 @@ typedef struct
 	unsigned is_window_being_moved_opaque : 1;
 	unsigned is_window_font_loaded : 1;
 	unsigned is_window_shaded : 1;
+	unsigned used_title_dir_for_shading : 1;
 	unsigned shaded_dir : 3;
 	unsigned using_default_icon_font : 1;
 	unsigned using_default_window_font : 1;

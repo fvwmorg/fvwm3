@@ -792,7 +792,7 @@ static Bool matchWin(FvwmWindow *w, Match *m)
 */
 Bool
 MatchWinToSM(
-	FvwmWindow *ewin, int *do_shade, int *shade_dir, int *do_max,
+	FvwmWindow *ewin, mwtsm_state_args *ret_state_args,
 	initial_window_options_type *win_opts)
 {
   int i;
@@ -830,9 +830,11 @@ MatchWinToSM(
       }
       SET_PLACED_WB3(ewin,IS_PLACED_WB3(&(matches[i])));
       SET_PLACED_BY_FVWM(ewin,IS_PLACED_BY_FVWM(&(matches[i])));
-      *do_shade = IS_SHADED(&(matches[i]));
-      *shade_dir = SHADED_DIR(&(matches[i]));
-      *do_max = IS_MAXIMIZED(&(matches[i]));
+      ret_state_args->do_shade = IS_SHADED(&(matches[i]));
+      ret_state_args->used_title_dir_for_shading =
+	      USED_TITLE_DIR_FOR_SHADING(&(matches[i]));
+      ret_state_args->shade_dir = SHADED_DIR(&(matches[i]));
+      ret_state_args->do_max = IS_MAXIMIZED(&(matches[i]));
       SET_USER_STATES(ewin, GET_USER_STATES(&(matches[i])));
       SET_ICON_MOVED(ewin, IS_ICON_MOVED(&(matches[i])));
       if (IS_ICONIFIED(&(matches[i])))

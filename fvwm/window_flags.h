@@ -356,6 +356,9 @@
 #define IS_SCHEDULED_FOR_RAISE(fw)    ((fw)->flags.is_scheduled_for_raise)
 #define SET_SCHEDULED_FOR_RAISE(fw,x) (fw)->flags.is_scheduled_for_raise = !!(x)
 #define IS_SHADED(fw)	       ((fw)->flags.is_window_shaded)
+#define USED_TITLE_DIR_FOR_SHADING(fw) ((fw)->flags.used_title_dir_for_shading)
+#define SET_USED_TITLE_DIR_FOR_SHADING(fw,x) \
+	((fw)->flags.used_title_dir_for_shading = !!(x))
 #define SHADED_DIR(fw)	       ((fw)->flags.shaded_dir)
 #define SET_SHADED(fw,x)       (fw)->flags.is_window_shaded = !!(x)
 #define SET_SHADED_DIR(fw,x)   (fw)->flags.shaded_dir = (x)

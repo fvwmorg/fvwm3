@@ -265,7 +265,8 @@ static void apply_window_updates(
 			{
 				frame_g = t->max_g;
 				gravity_resize(
-					t->hints.win_gravity, &t->max_g, dw, dh);
+					t->hints.win_gravity, &t->max_g, dw,
+					dh);
 				gravity_constrain_size(
 					t->hints.win_gravity, t, &t->max_g,
 					CS_UPDATE_MAX_DEFECT);
@@ -279,6 +280,10 @@ static void apply_window_updates(
 		if (IS_SHADED(t))
 		{
 			get_unshaded_geometry(t, new_g);
+			if (USED_TITLE_DIR_FOR_SHADING(t))
+			{
+				SET_SHADED_DIR(t, GET_TITLE_DIR(t));
+			}
 			get_shaded_geometry(t, &frame_g, new_g);
 		}
 		else
