@@ -1,3 +1,10 @@
+2002-06-19  olicha  <olivier.chapuis@free.fr>
+
+	* fvwm/fvwm.c (InitVariables):
+	(StartupStuff):
+	Allocate colorset 0 in InitVariable in the place of StartupStuff.
+	This fix a "null expression" at init in menustyle.c (menustyle_update)
+
 2002-06-19  Mikhael Goikhman  <migo@homemail.com>
 
 	* configure.in:

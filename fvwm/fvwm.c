@@ -760,10 +760,6 @@ void StartupStuff(void)
 #define startFuncName "StartFunction"
   const char *initFuncName;
 
-  /* make sure colorset 0 exists in case modules get started that use colorsets
-   * and the startup files/commands have not created any */
-  alloc_colorset(0);
-
   CaptureAllWindows(False);
   /* Turn off the SM stuff after the initial capture so that new windows will
    * not be matched by accident. */
@@ -1528,6 +1524,9 @@ static void InitVariables(void)
   Scr.flags.is_pointer_on_this_screen = !!XQueryPointer(
 	  dpy, Scr.Root, &JunkRoot, &JunkChild, &JunkX, &JunkY, &JunkX, &JunkY,
 	  &JunkMask);
+
+  /* make sure colorset 0 exists */
+  alloc_colorset(0);
 
   return;
 }
