@@ -77,4 +77,11 @@ typedef enum {
 } last_added_item_type;
 void set_last_added_item(last_added_item_type type, void *item);
 
+#ifdef ICON_DEBUG
+#define ICON_DBG(X) \
+  fprintf X;
+#else
+#define ICON_DBG(X)
+#endif
+
 #endif /* MISC_H */

@@ -68,8 +68,6 @@ static int do_all_iconboxes(FvwmWindow *t, icon_boxes **icon_boxes_ptr);
 static void GetBitmapFile(FvwmWindow *tmp_win);
 static void GetXPMFile(FvwmWindow *tmp_win);
 
-
-
 /****************************************************************************
  *
  * Creates an icon window as needed
@@ -110,7 +108,7 @@ void CreateIconWindow(FvwmWindow *tmp_win, int def_x, int def_y)
     icon_order[1] = 1;
     icon_order[2] = 2;
     icon_order[3] = 3;
-fprintf(stderr,"ciw: hint order: xpm bmp iwh iph '%s'\n", tmp_win->name);
+ICON_DBG((stderr,"ciw: hint order: xpm bmp iwh iph '%s'\n", tmp_win->name));
   }
 #if 1
   else if (ICON_OVERRIDE_MODE(tmp_win) == NO_ACTIVE_ICON_OVERRIDE)
@@ -124,7 +122,7 @@ fprintf(stderr,"ciw: hint order: xpm bmp iwh iph '%s'\n", tmp_win->name);
       icon_order[1] = 3;
       icon_order[2] = 0;
       icon_order[3] = 1;
-fprintf(stderr,"ciw: hint order: iwh iph xpm bmp '%s'\n", tmp_win->name);
+ICON_DBG((stderr,"ciw: hint order: iwh iph xpm bmp '%s'\n", tmp_win->name));
     }
     else
     {
@@ -134,7 +132,7 @@ fprintf(stderr,"ciw: hint order: iwh iph xpm bmp '%s'\n", tmp_win->name);
       icon_order[1] = 0;
       icon_order[2] = 1;
       icon_order[3] = 3;
-fprintf(stderr,"ciw: hint order: iwh xpm bmp iph '%s'\n", tmp_win->name);
+ICON_DBG((stderr,"ciw: hint order: iwh xpm bmp iph '%s'\n", tmp_win->name));
     }
   }
 #endif
@@ -145,7 +143,7 @@ fprintf(stderr,"ciw: hint order: iwh xpm bmp iph '%s'\n", tmp_win->name);
     icon_order[1] = 3;
     icon_order[2] = 0;
     icon_order[3] = 1;
-fprintf(stderr,"ciw: hint order: iwh iph bmp xpm '%s'\n", tmp_win->name);
+ICON_DBG((stderr,"ciw: hint order: iwh iph bmp xpm '%s'\n", tmp_win->name));
   }
   tmp_win->icon_p_height = 0;
   tmp_win->icon_p_width = 0;
@@ -160,7 +158,7 @@ fprintf(stderr,"ciw: hint order: iwh iph bmp xpm '%s'\n", tmp_win->name);
       {
 	GetXPMFile(tmp_win);
       }
-fprintf(stderr,"ciw: xpm%s used '%s'\n", (tmp_win->icon_p_height)?"":" not",tmp_win->name);
+ICON_DBG((stderr,"ciw: xpm%s used '%s'\n", (tmp_win->icon_p_height)?"":" not",tmp_win->name));
 #endif /* XPM */
       break;
     case 1:
@@ -169,7 +167,7 @@ fprintf(stderr,"ciw: xpm%s used '%s'\n", (tmp_win->icon_p_height)?"":" not",tmp_
       {
 	GetBitmapFile(tmp_win);
       }
-fprintf(stderr,"ciw: bmp%s used '%s'\n", (tmp_win->icon_p_height)?"":" not",tmp_win->name);
+ICON_DBG((stderr,"ciw: bmp%s used '%s'\n", (tmp_win->icon_p_height)?"":" not",tmp_win->name));
       break;
     case 2:
       /* Next, See if the app supplies its own icon window */
@@ -177,7 +175,7 @@ fprintf(stderr,"ciw: bmp%s used '%s'\n", (tmp_win->icon_p_height)?"":" not",tmp_
       {
 	GetIconWindow(tmp_win);
       }
-fprintf(stderr,"ciw: iwh%s used '%s'\n", (tmp_win->icon_p_height)?"":" not",tmp_win->name);
+ICON_DBG((stderr,"ciw: iwh%s used '%s'\n", (tmp_win->icon_p_height)?"":" not",tmp_win->name));
       break;
     case 3:
       /* Finally, try to get icon bitmap from the application */
@@ -185,7 +183,7 @@ fprintf(stderr,"ciw: iwh%s used '%s'\n", (tmp_win->icon_p_height)?"":" not",tmp_
       {
 	GetIconBitmap(tmp_win);
       }
-fprintf(stderr,"ciw: iph%s used '%s'\n", (tmp_win->icon_p_height)?"":" not",tmp_win->name);
+ICON_DBG((stderr,"ciw: iph%s used '%s'\n", (tmp_win->icon_p_height)?"":" not",tmp_win->name));
       break;
     default:
       /* can't happen */
