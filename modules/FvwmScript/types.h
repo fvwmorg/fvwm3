@@ -119,6 +119,8 @@ typedef struct                  /* Type pour la gestion X */
   int colorset;
   char *font;                   /* Police utilisee */
   char *icon;                   /* Icone pour l'application iconisee */
+  Bool usegettext;              /* Utilisation de gettext? */       
+  char *localepath;             /* path pour gettext */
   Bloc *periodictasks;          /* Tableau de taches periodiques */
   Bloc *initbloc;               /* Bloc d'initalisation */
   Bloc *quitfunc;               /* Bloc executed at exit */

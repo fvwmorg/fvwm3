@@ -1,10 +1,7 @@
-WindowTitle {Bell Setup}
-WindowSize 360 190		# Taille
-#ForeColor	{black}
-#BackColor	{grey85}
-#ShadowColor	{grey55}
-#HilightColor	{grey100}
-#Font		-adobe-helvetica-bold-r-*-*-12-*
+UseGettext
+WindowLocaleTitle {Bell Setup}
+WindowSize 410 190		# Taille
+Font "xft:monospace:pixelsize=11;"
 
 Init
  Begin
@@ -40,11 +37,11 @@ Init
 
 Widget 1
 Property
- Size 50 30
- Position 100 150
+ Size 85 20
+ Position 115 150
  Flags NoReliefString
  Type PushButton
- Title {Apply}
+ LocaleTitle {Apply}
 Main
  Case message of
   SingleClic :
@@ -58,11 +55,11 @@ End
 
 Widget 2
 Property
- Size 50 30
- Position 190 150
+ Size 85 20
+ Position 210 150
  Flags NoReliefString
  Type PushButton
- Title {OK}
+ LocaleTitle {Save}
 Main
  Case message of
   SingleClic :
@@ -70,17 +67,17 @@ Main
    Do {Exec xset b } (GetValue 4) { } (GetTitle 6) { } (GetTitle 8)
    WriteToFile $FILE {xset b } (GetValue 4) { } (GetTitle 6) { } (GetTitle 8)
    Do {Exec chmod +x ~/} $FILE
-   Quit
+   #Quit
   End
 End
 
 Widget 3
 Property
- Size 50 30
- Position 280 150
+ Size 85 20
+ Position 305 150
  Flags NoReliefString
  Type PushButton
- Title {Cancel}
+ LocaleTitle {Quit}
 Main
  Case message of
   SingleClic :
@@ -91,11 +88,11 @@ End
 
 Widget 12
 Property
- Size 50 30
+ Size 85 20
  Position 20 150
  Flags NoReliefString
  Type PushButton
- Title {Beep}
+ LocaleTitle {Beep}
 Main
   Case message of
   SingleClic :
@@ -112,7 +109,7 @@ End
 Widget 4
 Property
  Size 250 1
- Position 90 30
+ Position 120 20
  Flags NoReliefString
  Type HScrollBar
  MinValue 0
@@ -127,10 +124,10 @@ End
 
 Widget 5
 Property
- Position 20 53
+ Position 20 43
  Flags NoReliefString NoFocus
  Type ItemDraw
- Title {Volume:}
+ LocaleTitle {Volume:}
 Main
  Case message of
   SingleClic :
@@ -141,7 +138,7 @@ End
 Widget 6
 Property
  Size 60 1
- Position 90 90
+ Position 120 90
  Flags NoReliefString
  Type TextField
 Main
@@ -156,7 +153,7 @@ Property
  Position 20 95
  Flags NoReliefString NoFocus
  Type ItemDraw
- Title {Pitch(Hz):}
+ LocaleTitle {Pitch(Hz):}
 Main
  Case message of
   SingleClic :
@@ -167,7 +164,7 @@ End
 Widget 8
 Property
  Size 60 1
- Position 280 90
+ Position 310 90
  Flags NoReliefString
  Type TextField
 Main
@@ -179,10 +176,10 @@ End
 
 Widget 9
 Property
- Position 190 95
+ Position 220 95
  Flags NoReliefString NoFocus
  Type ItemDraw
- Title {Duration(ms):}
+ LocaleTitle {Duration(ms):}
 Main
  Case message of
   SingleClic :
@@ -192,7 +189,7 @@ End
 
 Widget 10
 Property
- Size 340 130
+ Size 390 130
  Position 10 10
  Type Rectangle
 Main
@@ -207,7 +204,7 @@ Property
  Position 15 3
  Flags NoReliefString NoFocus
  Type ItemDraw
- Title {Bell}
+ LocaleTitle {Bell}
 Main
  Case message of
   SingleClic :

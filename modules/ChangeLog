@@ -1,3 +1,24 @@
+2003-04-14  olicha  <olivier.chapuis@free.fr>
+
+	* FvwmScript/Scripts/FvwmScript-FileBrowser:
+	* FvwmScript/Scripts/FvwmScript-BellSetup:
+	* FvwmScript/Scripts/FvwmScript-ScreenSetup:
+	* FvwmScript/Scripts/FvwmScript-PointerSetup:
+	* FvwmScript/Scripts/FvwmScript-KeyboardSetup:
+	Added gettext support. Relayout.
+
+	* FvwmScript/FvwmScript.1:
+	* FvwmScript/script.y:
+	* FvwmScript/scanner.l:
+	* FvwmScript/script.c:
+	* FvwmScript/scanner.c:
+	* FvwmScript/Instructions.c (ChangeLocaleTitle):
+	(InitCom):
+	(FuncGettext):
+	New head script instruction UseGettext and WindowLocaleTitle.
+	New Widget instruction LocaleTitle. New instruction ChangeLocaleTitle.
+	New function Gettext.
+
 2003-04-06  Dan Espen  <dane@mk.telcordia.com>
 
 	* FvwmForm/ReadXServer.c (ReadXServer): 

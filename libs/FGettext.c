@@ -206,6 +206,18 @@ const char *FGettext(char *str)
 	return str;
 }
 
+char *FGettextCopy(char *str)
+{
+	const char *trans;
+	char *r = NULL;
+
+	trans = FGettext(str);
+	if (trans != NULL)
+	{
+		CopyString(&r, trans);
+	}
+	return r;
+}
 
 void FGettextSetLocalePath(const char *path)
 {

@@ -7,7 +7,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2002-11-28 12:23+0100\n"
+"POT-Creation-Date: 2003-04-11 12:43+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -27,6 +27,6 @@ msgstr ""
 msgid "You have mail"
 msgstr ""
 
-#: ../modules/FvwmTaskBar/FvwmTaskBar.c:1308
+#: ../modules/FvwmTaskBar/FvwmTaskBar.c:1320
 msgid "Click here to start"
 msgstr ""

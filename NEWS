@@ -22,6 +22,14 @@ Changes in development release 2.5.7 (not released yet)
   the '@<screen>' bit in the module geometry specification where
   applicable.
 
+* Documented variable $[gt.any_string] and LocalePath command
+  (new in 2.5.5).
+
+* Added gettext support to FvwmScript. New head instruction
+  UseGettext and WindowLocaleTitle. New widget instruction
+  LocaleTitle. New instruction ChangeLocaleTitle and new function
+  Gettext.
+
 -------------------------------------------------------------------
 
 Changes in development release 2.5.6 (28-Feb-2003)
@@ -124,6 +132,9 @@ Changes in development release 2.5.5 (2-Dec-2002)
   conditions
 
 * New MinHeight option to TitleStyle
+
+* Added gettext support. New command LocalePath and new variable
+  $[gt.string]
 
 -------------------------------------------------------------------
 

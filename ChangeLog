@@ -1,3 +1,19 @@
+2003-04-14  olicha  <olivier.chapuis@free.fr>
+
+	* fvwm/fvwm.1.in:
+	* NEWS:
+	Documented LocalePath and $[gt.str]. FvwmScript news.
+
+	* fvwm/expand.c (expand_vars_extended):
+	Fixed $[gt.str] expansion
+
+	* configure.in:
+	New gettext domain FvwmScript
+
+	* libs/FGettext.c (FGettextCopy):
+	* libs/FGettext.h:
+	New interface function which copies the string
+
 2003-04-14  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* fvwm/conditional.c (CMD_Cond):

@@ -82,6 +82,7 @@
 
 void FGettextInit(const char *domain, const char *dir, const char *module);
 const char *FGettext(char *str);
+char *FGettextCopy(char *str);
 void FGettextSetLocalePath(const char *path);
 void FGettextPrintLocalePath(int verbose);
 

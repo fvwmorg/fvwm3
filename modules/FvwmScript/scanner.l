@@ -27,7 +27,9 @@ get		=
 {bl}		;
 {commentaire}	;
 
+^{bl}+UseGettext	{ return USEGETTEXT; }
 ^{bl}+WindowTitle	{ return WINDOWTITLE; }
+^{bl}+WindowLocaleTitle	{ return WINDOWLOCALETITLE; }
 ^{bl}+WindowSize	{ return WINDOWSIZE; }
 ^{bl}+WindowPosition	{ return WINDOWPOSITION; }
 ^{bl}+ForeColor		{ return FORECOLOR; }
@@ -56,6 +58,7 @@ get		=
 ^{bl}+MinValue		{ return VALUEMIN; }
 ^{bl}+MaxValue		{ return VALUEMAX; }
 ^{bl}+Title		{ return TITLE; }
+^{bl}+LocaleTitle	{ return LOCALETITLE; }
 ^{bl}+SwallowExec	{ return SWALLOWEXEC; }
 ^{bl}+Icon		{ return ICON; }
 ^{bl}+Flags		{ return FLAGS; }
@@ -97,9 +100,11 @@ GetPid			{ return GETPID; }
 SendMsgAndGet		{ return SENDMSGANDGET; }
 Parse			{ return PARSE; }
 LastString		{ return LASTSTRING; }
+Gettext                 { return GETTEXT; }
 ^{bl}+ChangePosition	{ return POSITION; }
 ^{bl}+ChangeSize	{ return SIZE; }
 ^{bl}+ChangeTitle	{ return TITLE; }
+^{bl}+ChangeLocaleTitle	{ return LOCALETITLE; }
 ^{bl}+ChangeIcon	{ return ICON; }
 ^{bl}+ChangeFont	{ return CHFONT; }
 ^{bl}+ChangeForeColor	{ return CHFORECOLOR; }

@@ -1877,6 +1877,19 @@ in the command list.
 .in -.5i
 
 .in +.5i
+$[gt.str]
+.in +.3i
+return the translation of
+.I str
+by looking in the current locale catalog(s). If no translation is found
+.I str
+is returned as is. See the
+.B LocalePath
+command.
+.in -.3i
+.in -.5i
+
+.in +.5i
 $[...]
 .in +.3i
 If the string within the braces is neither of the above, fvwm
@@ -3936,6 +3949,71 @@ option to force all
 directives to have a prefix of "m4_" (see the
 .B FvwmM4
 man page).
+
+.\"needs_lang_check
+.TP
+.BI "LocalePath " path
+Specifies a colon separated list of "locale path" in which to search
+for string translation. A locale path is constituted by a directory
+path and a text domain separated by a ";". As an example the default locale
+path is:
+.EX
+/install_prefix/share/locale;fvwm
+.EE
+where install_prefix is the fvwm installation directory. With such
+a locale path translation is searched in
+.EX
+/install_prefix/share/locale/lang/LC_MESSAGES/fvwm.mo
+.EE
+where "lang" depends on the locale. If no directory is given the
+default directory path is assumed. If no text domain is given, "fvwm"
+is assumed. Without argument the default locale path is restored.
+
+As for the
+.B ImagePath
+command,
+.I path
+may contain environment variables and a '+' for appending
+or prepending locale path easily.
+
+For example, the fvwm-themes package use (in fact will use):
+.EX
+LocalePath ";fvwm-themes:+"
+.EE
+for adding locale catalogs.
+
+The default fvwm catalog contains a few strings used by the fvwm executable
+itself (Desk and Geometry) and strings used in some default configuration
+files and FvwmForm configuration. You can take a look at the po/ subdirectory
+of the fvwm source to get the list of the strings with a possible
+translation in various lang.
+At the present time very few languages are supported.
+
+The main use of locale catalogs is via the "$[gt.string]" parameter:
+.EX
+DestroyMenu MenuFvwmWindowOps
+AddToMenu   MenuFvwmWindowOps "$[gt.Window Ops]" Title
++ "$[gt.&Move]"              Move
++ "$[gt.&Resize]"            Resize
++ "$[gt.R&aise]"             Raise
++ "$[gt.&Lower]"             Lower
++ "$[gt.(De)&Iconify]"       Iconify
++ "$[gt.(Un)&Stick]"         Stick
++ "$[gt.(Un)Ma&ximize]"      Maximize
++ "" Nop
++ "$[gt.&Close]"             Close
++ "$[gt.&Destroy]"            Destroy
+.EE
+gives a menu in the locale languages if translations are available.
+
+Note that the
+.B FvwmTaskBar
+module has its own catalog and that the
+.B FvwmScript
+module has a set of special instructions for string translation. 
+It is out of the scoop of this documentation to explain how to
+build locale catalogs. We refer the user to the GNU gettext documentation.
+.\"end
 
 .TP
 .BI "PixmapPath " path

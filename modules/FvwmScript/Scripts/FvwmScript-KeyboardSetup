@@ -1,10 +1,7 @@
-WindowTitle {Keyboard Setup}
-WindowSize 360 240		# Taille
-#ForeColor	{black}
-#BackColor	{grey85}
-#ShadowColor	{grey55}
-#HilightColor	{grey100}
-#Font		-adobe-helvetica-bold-r-*-*-12-*
+UseGettext
+WindowLocaleTitle {Keyboard Setup}
+WindowSize 365 265		# Taille
+Font "xft:monospace:pixelsize=11;"
 
 Init
  Begin
@@ -39,11 +36,11 @@ Init
  
 Widget 1
 Property
- Size 50 30
- Position 55 200
+ Size 85 20
+ Position 30 225
  Flags NoReliefString
  Type PushButton
- Title {Apply}
+ LocaleTitle {Apply}
 Main
  Case message of
   SingleClic :
@@ -58,11 +55,11 @@ End
 
 Widget 2
 Property
- Size 50 30
- Position 155 200
+ Size 85 25
+ Position 140 225
  Flags NoReliefString
  Type PushButton
- Title {OK}
+ LocaleTitle {Save}
 Main
  Case message of
   SingleClic :
@@ -79,17 +76,17 @@ Main
     WriteToFile $FILE {xset r off c } (GetValue 4)
    End
    Do {Exec chmod +x ~/} $FILE
-   Quit
+   #Quit
   End
 End
 
 Widget 3
 Property
- Size 50 30
- Position 255 200
+ Size 85 25
+ Position 250 225
  Flags NoReliefString
  Type PushButton
- Title {Cancel}
+ LocaleTitle {Quit}
 Main
  Case message of
   SingleClic :
@@ -101,7 +98,7 @@ End
 Widget 4
 Property
  Size 300 1
- Position 30 120
+ Position 35 145
  Flags NoReliefString
  Type HScrollBar
  MinValue 0
@@ -116,10 +113,11 @@ End
 
 Widget 5
 Property
- Position 130 100
- Flags NoReliefString NoFocus
+ Position 30 125
+ Size 300 20 
+ Flags NoReliefString NoFocus Center
  Type ItemDraw
- Title {Click Volume (%)}
+ LocaleTitle {Click Volume (%)}
 Main
  Case message of
   SingleClic :
@@ -129,10 +127,10 @@ End
 
 Widget 6
 Property
- Position 30 40
+ Position 30 30
  Flags NoReliefString
  Type CheckBox
- Title {AutoRepeat On}
+ LocaleTitle {AutoRepeat On}
 Main
  Case message of
   SingleClic :
@@ -143,7 +141,7 @@ End
 Widget 7
 Property
  Size 60 1
- Position 270 35
+ Position 220 60
  Flags NoReliefString
  Type TextField
 Main
@@ -155,10 +153,10 @@ End
 
 Widget 8
 Property
- Position 170 40
+ Position 40 65
  Flags NoReliefString NoFocus
  Type ItemDraw
- Title {Start Delay:  }
+ LocaleTitle {Start Delay:  }
 Main
  Case message of
   SingleClic :
@@ -169,7 +167,7 @@ End
 Widget 9
 Property
  Size 60 1
- Position 270 60
+ Position 220 90
  Flags NoReliefString
  Type TextField
 Main
@@ -181,10 +179,10 @@ End
 
 Widget 10
 Property
- Position 170 65
+ Position 40 95
  Flags NoReliefString NoFocus
  Type ItemDraw
- Title {Repeat Delay:}
+ LocaleTitle {Repeat Delay:}
 Main
  Case message of
   SingleClic :
@@ -194,7 +192,7 @@ End
 
 Widget 11
 Property
- Size 340 180
+ Size 345 205
  Position 10 10
  Type Rectangle
 Main
@@ -209,7 +207,7 @@ Property
  Position 15 3
  Flags NoReliefString NoFocus
  Type ItemDraw
- Title {Keyboard}
+ LocaleTitle {Keyboard}
 Main
  Case message of
   SingleClic :

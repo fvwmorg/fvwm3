@@ -25,7 +25,7 @@ INCLUDES = -I$(top_srcdir) $(xpm_CFLAGS) $(Xft_CFLAGS) $(X_CFLAGS) \
 	$(Xrender_CFLAGS) $(iconv_CFLAGS) $(Bidi_CFLAGS) $(png_CFLAGS)
 
 # Need this to get datadir into FvwmScript.c:
-AM_CFLAGS = -DFVWM_DATADIR=\"$(FVWM_DATADIR)\"
+AM_CFLAGS = -DFVWM_DATADIR=\"$(FVWM_DATADIR)\" -DLOCALEDIR=\"$(LOCALEDIR)\"
 
 .PHONY: syntax
 

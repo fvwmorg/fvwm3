@@ -20,7 +20,7 @@ Property
  Position 190 320
  Flags NoReliefString
  Type PushButton
- Title {OK}
+ Title {Save}
 Main
  Case message of
   SingleClic :
@@ -39,7 +39,7 @@ Property
  Position 280 320
  Flags NoReliefString
  Type PushButton
- Title {Cancel}
+ Title {Quit}
 Main
  Case message of
   SingleClic :

@@ -1,11 +1,7 @@
-WindowTitle {File Browser}
+UseGettext
+WindowLocaleTitle {File Browser}
 WindowSize 360 340		# Taille
-#WindowPosition 191 50		# Position
-#ForeColor	{black}
-#BackColor	{grey85}
-#ShadowColor	{grey55}
-#HilightColor	{grey100}
-Font		-adobe-helvetica-bold-r-*-*-12-*
+Font {}
 
 Init
  Begin
@@ -39,11 +35,11 @@ Init
 
 Widget 1
 Property
- Size 50 30
- Position 190 300
+ Size 85 20
+ Position 60 300
  Flags NoReliefString
  Type PushButton
- Title {OK}
+ LocaleTitle {OK}
 Main
  Case message of
   SingleClic :
@@ -55,11 +51,11 @@ End
 
 Widget 2
 Property
- Size 50 30
- Position 250 300
+ Size 85 20
+ Position 195 300
  Flags NoReliefString
  Type PushButton
- Title {Cancel}
+ LocaleTitle {Cancel}
 Main
  Case message of
   SingleClic :
@@ -83,10 +79,11 @@ End
 
 Widget 4
 Property
- Position 20 42
- Flags NoReliefString NoFocus
+ Position 20 15
+ Size 320 20
+ Flags NoReliefString NoFocus Left
  Type ItemDraw
- Title {Path:}
+ LocaleTitle {Path:}
 Main
  Case message of
   SingleClic :
@@ -96,8 +93,8 @@ End
 
 Widget 5
 Property
- Position 65 42
- Flags NoReliefString NoFocus
+ Position 25 42
+ Flags NoReliefString NoFocus Left
  Size 270 0
  Type ItemDraw
  Title {*}
@@ -110,8 +107,8 @@ End
 
 Widget 10
 Property
- Position 60 40
- Size 279 20
+ Position 20 40
+ Size 320 20
  Type Rectangle
 Main
  Case message of
@@ -181,7 +178,7 @@ Property
  Position 180 72
  Flags NoReliefString
  Type CheckBox
- Title { Show hidden files}
+ LocaleTitle { Show hidden files}
 Main
  Case message of
   SingleClic :
@@ -246,7 +243,7 @@ Property
  Position 20 220
  Flags NoReliefString NoFocus
  Type ItemDraw
- Title {Selected file:}
+ LocaleTitle {Selected file:}
 Main
  Case message of
   SingleClic :

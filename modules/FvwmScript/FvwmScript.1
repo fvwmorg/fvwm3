@@ -129,6 +129,24 @@ This option sets the default colorset for all widgets.
 .IP "Font {\fIfont\fP}"
 This option sets the default font color for all widgets.
 
+.IP "UseGettext  [\fIlocale_path\fP]"
+Enable the use of the gettext mechanism which is used by the
+WindowLocaleTitle, LocaleTitle, ChangeLocaleTitle instructions and
+the Gettext function.
+If no argument is given, the default FvwmScript locale catalog is used.
+This catalog is under the locale fvwm installation directory and the text
+domain is FvwmScript (install_prefix/share/locale/*/LC_MESSAGES/FvwmScript.mo).
+You can reset this catalog or add some catalogs exactly in the same way
+than with the
+.B LocalePath
+fvwm command (see the fvwm manual page).
+This instruction should be placed before the WindowLocaleTitle
+instruction.
+
+.IP "WindowLocaleTitle \fIstring\fP"
+This option sets the window title, but use the locale catalog(s) defined
+with UseGettext.
+
 .SH INITIALISATION
 This part contains instructions which will be executed at the startup.
 For example:
@@ -224,6 +242,9 @@ PopupMenu and PushButton. The default is
 for ItemDraw and PushButton and
 .I Left
 for the others widgets.
+
+LocaleTitle can be used in place of Title, for using the locale catalog(s)
+defined with UseGettext.
 
 The position of every widget must be specified.
 
@@ -431,6 +452,9 @@ Set the minimum value of the widget numbered \fIid1\fP to \fIid2\fP.
 .IP "ChangeTitle \fIid1 id2\fP"
 Set the title of the widget numbered \fIid1\fP to \fIid2\fP.
 
+.IP "ChangeLocaleTitle \fIid1 id2\fP"
+As ChangeTitle but use the locale catalog(s) defined with UseGettext.
+
 .IP "ChangeIcon \fIid1 id2\fP"
 Set the icon of the widget numbered \fIid1\fP to \fIid2\fP.
 
@@ -583,6 +607,12 @@ This function returns the time in seconds.
 .TP
 .RI "(GetPid)"
 This function returns the process id of the script.
+
+.TP
+.RI "(Gettext {\fIstr\fP})"
+This function return the translation of
+.I str
+by using the locale catalog(s) defined with UseGettext.
 
 .TP
 .RI "(SendMsgAndGet {" comId "} {" cmd "} " bool ")"

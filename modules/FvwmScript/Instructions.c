@@ -16,6 +16,7 @@
 #include "types.h"
 #include "libs/fvwmsignal.h"
 #include "libs/ftime.h"
+#include "libs/FGettext.h"
 #ifdef HAVE_GETPWUID
 #  include <pwd.h>
 #endif
@@ -23,8 +24,8 @@
 extern int fd[2];
 extern Window ref;
 
-void (*TabCom[26]) (int NbArg,long *TabArg);
-char *(*TabFunc[26]) (int *NbArg, long *TabArg);
+void (*TabCom[27]) (int NbArg,long *TabArg);
+char *(*TabFunc[27]) (int *NbArg, long *TabArg);
 int (*TabComp[7]) (char *arg1,char *arg2);
 
 extern Display *dpy;
@@ -1228,6 +1229,28 @@ static void ChangeTitle (int NbArg,long *TabArg)
   free(arg[1]);
 }
 
+/******* ChangeLocaleTitle *******/
+static void ChangeLocaleTitle (int NbArg,long *TabArg)
+{
+  int i=0;
+  char *arg[2];
+  int IdItem;
+
+  arg[0] = CalcArg(TabArg,&i);
+  i++;
+  arg[1] = CalcArg(TabArg,&i);
+  IdItem = TabIdObj[atoi(arg[0])];
+
+  if (tabxobj[IdItem]->title)
+    free(tabxobj[IdItem]->title);
+  tabxobj[IdItem]->title=safestrdup(FGettext(arg[1]));
+  if (tabxobj[IdItem]->TypeWidget != SwallowExec)
+    XClearWindow(dpy, tabxobj[IdItem]->win);
+  tabxobj[IdItem]->DrawObj(tabxobj[IdItem],NULL);
+  free(arg[0]);
+  free(arg[1]);
+}
+
 /******* ChangeIcon *******/
 static void ChangeIcon (int NbArg,long *TabArg)
 {
@@ -1804,6 +1827,26 @@ static void Key (int NbArg,long *TabArg)
 }
 
 /****************************************************/
+/* GetText Support                                  */
+/****************************************************/
+
+static char *FuncGettext(int *NbArg,long *TabArg)
+{
+	char *str;
+	char *string;
+
+	(*NbArg)++;
+	str = CalcArg(TabArg,NbArg);
+
+	string = FGettextCopy(str);
+	if (str && string != str)
+	{
+		free(str);
+	}
+	return (char *)string;
+}
+
+/****************************************************/
 /* Fonction d'initialisation de TabCom et TabFunc   */
 /****************************************************/
 void InitCom()
@@ -1833,6 +1876,7 @@ void InitCom()
   TabCom[23]=SendToScript;
   TabCom[24]=ChangeColorset;
   TabCom[25]=Key;
+  TabCom[26]=ChangeLocaleTitle;
 
   /* Fonction */
   TabFunc[1]=FuncGetValue;
@@ -1860,6 +1904,7 @@ void InitCom()
   TabFunc[23]=FuncSendMsgAndGet;
   TabFunc[24]=FuncParse;
   TabFunc[25]=FuncGetLastString;
+  TabFunc[26]=FuncGettext;
 
   /* Fonction de comparaison */
   TabComp[1]=Inf;

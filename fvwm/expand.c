@@ -250,6 +250,12 @@ static int expand_vars_extended(
 			return 0;
 		}
 		string = _(rest);
+		l = strlen(string);
+		if (output)
+		{
+			strcpy(output, string);
+		}
+		return l;
 		break;
 	}
 	case VAR_DESK_NAME:

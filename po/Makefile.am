@@ -15,9 +15,16 @@ FVWMTASKBAR_POT_FILES = \
 	../modules/FvwmTaskBar/Goodies.c \
 	../modules/FvwmTaskBar/FvwmTaskBar.c
 
+FVWMSCRIPT_POT_FILES = \
+	../modules/FvwmScript/Scripts/FvwmScript-BellSetup \
+	../modules/FvwmScript/Scripts/FvwmScript-KeyboardSetup \
+	../modules/FvwmScript/Scripts/FvwmScript-PointerSetup \
+	../modules/FvwmScript/Scripts/FvwmScript-ScreenSetup \
+	../modules/FvwmScript/Scripts/FvwmScript-FileBrowser
+
 EXTRA_DIST = \
-	@POFILES@ @GMOFILES@ fvwm.pot FvwmTaskBar.pot remove-potcdate.sed \
-	remove-potcdate.sin
+	@POFILES@ @GMOFILES@ fvwm.pot FvwmTaskBar.pot FvwmScript.pot \
+	remove-potcdate.sed remove-potcdate.sin
 
 COPYRIGHT_HOLDER = fvwm workers
 
@@ -128,7 +135,25 @@ $(FVWMTASKBAR_DOMAIN).pot-update: $(FVWMTASKBAR_POT_FILES) \
 $(srcdir)/$(FVWMTASKBAR_DOMAIN).pot:
 	$(MAKE) $(FVWMTASKBAR_DOMAIN).pot-update
 
-$(POFILES): $(srcdir)/$(FVWM_DOMAIN).pot $(srcdir)/$(FVWMTASKBAR_DOMAIN).pot
+$(FVWMSCRIPT_DOMAIN).pot-update: $(FVWMSCRIPT_POT_FILES) \
+	remove-potcdate.sed
+	potfiles='$(FVWMSCRIPT_POT_FILES)'; \
+	rm -f duplicate; \
+	for file in $$potfiles; do \
+	  perl -ne 's/LocaleTitle\s+\{((\\.|.)+?)\}/ print \
+	  "\#$$ARGV: line $$.\n"."msgid \"$$1\"\n"."msgstr \"\"\n\n"/ge' \
+	  $$file >> duplicate; \
+	done; \
+	msguniq duplicate > duplicate.pot; \
+	cat pot_head_sample >  $(FVWMSCRIPT_DOMAIN).pot; \
+	cat duplicate.pot >> $(FVWMSCRIPT_DOMAIN).pot; \
+	rm -f duplicate duplicate.pot;
+
+$(srcdir)/$(FVWMSCRIPT_DOMAIN).pot:
+	$(MAKE) $(FVWMSCRIPT_DOMAIN).pot-update
+
+$(POFILES): $(srcdir)/$(FVWM_DOMAIN).pot $(srcdir)/$(FVWMTASKBAR_DOMAIN).pot \
+	$(srcdir)/$(FVWMSCRIPT_DOMAIN).pot
 	dlang=`echo $@ | sed -e 's,.*/,,' -e 's/\.po$$//'`; \
 	dom=`echo $$dlang | sed -e 's/\..*$$//'`; \
 	test "$(srcdir)" = . && cdcmd="" || cdcmd="cd $(srcdir) && "; \
@@ -157,45 +182,47 @@ install-data-local-yes: all
 	      then realcat=$$cat; \
 	    else realcat=$(srcdir)/$$cat; \
 	    fi; \
-	    $(INSTALL_DATA) $$realcat $(DESTDIR)$$dir/$$dom.mo; \
-	    echo "installing $$realcat as $(DESTDIR)$$dir/$$dom.mo"; \
-	    for lc in '' $(EXTRA_LOCALE_CATEGORIES); do \
-	      if test -n "$$lc"; then \
-	        if (cd $(DESTDIR)$(localedir)/$$lang && \
-	            LC_ALL=C ls -l -d $$lc 2>/dev/null) | grep ' -> ' \
-                    >/dev/null; then \
-	          link=`cd $(DESTDIR)$(localedir)/$$lang && \
-                       LC_ALL=C ls -l -d $$lc | sed -e 's/^.* -> //'`; \
-	          mv $(DESTDIR)$(localedir)/$$lang/$$lc \
-                     $(DESTDIR)$(localedir)/$$lang/$$lc.old; \
-	          mkdir $(DESTDIR)$(localedir)/$$lang/$$lc; \
-	          (cd $(DESTDIR)$(localedir)/$$lang/$$lc.old && \
-	           for file in *; do \
-	             if test -f $$file; then \
-	               ln -s ../$$link/$$file \
-                             $(DESTDIR)$(localedir)/$$lang/$$lc/$$file; \
-	             fi; \
-	           done); \
-	          rm -f $(DESTDIR)$(localedir)/$$lang/$$lc.old; \
-	        else \
-	          if test -d $(DESTDIR)$(localedir)/$$lang/$$lc; then \
-	            :; \
-	          else \
-	            rm -f $(DESTDIR)$(localedir)/$$lang/$$lc; \
+	    if test -f $$realcat; then \
+	      $(INSTALL_DATA) $$realcat $(DESTDIR)$$dir/$$dom.mo; \
+	      echo "installing $$realcat as $(DESTDIR)$$dir/$$dom.mo"; \
+	      for lc in '' $(EXTRA_LOCALE_CATEGORIES); do \
+	        if test -n "$$lc"; then \
+	          if (cd $(DESTDIR)$(localedir)/$$lang && \
+	              LC_ALL=C ls -l -d $$lc 2>/dev/null) | grep ' -> ' \
+                      >/dev/null; then \
+	            link=`cd $(DESTDIR)$(localedir)/$$lang && \
+                         LC_ALL=C ls -l -d $$lc | sed -e 's/^.* -> //'`; \
+	            mv $(DESTDIR)$(localedir)/$$lang/$$lc \
+                       $(DESTDIR)$(localedir)/$$lang/$$lc.old; \
 	            mkdir $(DESTDIR)$(localedir)/$$lang/$$lc; \
+	            (cd $(DESTDIR)$(localedir)/$$lang/$$lc.old && \
+	             for file in *; do \
+	               if test -f $$file; then \
+	                 ln -s ../$$link/$$file \
+                               $(DESTDIR)$(localedir)/$$lang/$$lc/$$file; \
+	               fi; \
+	             done); \
+	            rm -f $(DESTDIR)$(localedir)/$$lang/$$lc.old; \
+	          else \
+	            if test -d $(DESTDIR)$(localedir)/$$lang/$$lc; then \
+	              :; \
+	            else \
+	              rm -f $(DESTDIR)$(localedir)/$$lang/$$lc; \
+	              mkdir $(DESTDIR)$(localedir)/$$lang/$$lc; \
+	            fi; \
 	          fi; \
+	          rm -f $(DESTDIR)$(localedir)/$$lang/$$lc/$$dom.mo; \
+	          ln -s ../LC_MESSAGES/$$dom.mo \
+	             $(DESTDIR)$(localedir)/$$lang/$$lc/$$dom.mo 2>/dev/null || \
+	          ln $(DESTDIR)$(localedir)/$$lang/LC_MESSAGES/$$dom.mo \
+	             $(DESTDIR)$(localedir)/$$lang/$$lc/$$dom.mo 2>/dev/null || \
+	          cp -p $(DESTDIR)$(localedir)/$$lang/LC_MESSAGES/$$dom.mo \
+	             $(DESTDIR)$(localedir)/$$lang/$$lc/$$dom.mo; \
+	          echo "installing $$realcat link as \
+	          $(DESTDIR)$(localedir)/$$lang/$$lc/$$dom.mo"; \
 	        fi; \
-	        rm -f $(DESTDIR)$(localedir)/$$lang/$$lc/$$dom.mo; \
-	        ln -s ../LC_MESSAGES/$$dom.mo \
-	           $(DESTDIR)$(localedir)/$$lang/$$lc/$$dom.mo 2>/dev/null || \
-	        ln $(DESTDIR)$(localedir)/$$lang/LC_MESSAGES/$$dom.mo \
-	           $(DESTDIR)$(localedir)/$$lang/$$lc/$$dom.mo 2>/dev/null || \
-	        cp -p $(DESTDIR)$(localedir)/$$lang/LC_MESSAGES/$$dom.mo \
-	           $(DESTDIR)$(localedir)/$$lang/$$lc/$$dom.mo; \
-	        echo "installing $$realcat link as \
-	        $(DESTDIR)$(localedir)/$$lang/$$lc/$$dom.mo"; \
-	      fi; \
-	    done; \
+	      done; \
+	    fi; \
 	  done; \
 	done
 
@@ -261,6 +288,7 @@ uninstall-local-yes:
 
 update-po: Makefile
 	$(MAKE) $(FVWM_DOMAIN).pot-update
+	$(MAKE) $(FVWMTASKBAR_DOMAIN).pot-update
 	$(MAKE) $(FVWMTASKBAR_DOMAIN).pot-update
 	$(MAKE) $(UPDATEPOFILES)
 	$(MAKE) update-gmo

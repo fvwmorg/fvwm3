@@ -1,3 +1,13 @@
+2003-04-14  olicha  <olivier.chapuis@free.fr>
+
+	* Makefile.am:
+	* FvwmScript.pot (new file):
+	Adding FvwmScript pot and rules
+
+	* FvwmScript.fr.po (new file):
+	* FvwmScript.fr.gmo (new file):
+	French translation
+
 2002-12-06  olicha  <olivier.chapuis@free.fr>
 
 	* fvwm.ar.gmo (new file):

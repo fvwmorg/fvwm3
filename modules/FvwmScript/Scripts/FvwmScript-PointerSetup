@@ -1,10 +1,7 @@
-WindowTitle {Pointer Setup}
-WindowSize 320 250		# Taille
-#ForeColor	{black}
-#BackColor	{grey85}
-#ShadowColor	{grey55}
-#HilightColor	{grey100}
-#Font		-adobe-helvetica-bold-r-*-*-12-*
+UseGettext
+WindowLocaleTitle {Pointer Setup}
+WindowSize 365 265		# Taille
+Font "xft:monospace:pixelsize=11;"
 
 Init
  Begin
@@ -43,11 +40,11 @@ Init
  
 Widget 1
 Property
- Size 50 30
- Position 45 210
+ Size 85 20
+ Position 30 225
  Flags NoReliefString
  Type PushButton
- Title {Apply}
+ LocaleTitle {Apply}
 Main
  Case message of
   SingleClic :
@@ -62,11 +59,11 @@ End
 
 Widget 2
 Property
- Size 50 30
- Position 135 210
+ Size 85 25
+ Position 140 225
  Flags NoReliefString
  Type PushButton
- Title {OK}
+ LocaleTitle {Save}
 Main
  Case message of
   SingleClic :
@@ -90,11 +87,11 @@ End
 
 Widget 3
 Property
- Size 50 30
- Position 225 210
+ Size 85 25
+ Position 250 225
  Flags NoReliefString
  Type PushButton
- Title {Cancel}
+ LocaleTitle {Quit}
 Main
  Case message of
   SingleClic :
@@ -105,10 +102,10 @@ End
 
 Widget 4
 Property
- Position 150 140
+ Position 185 155
  Flags NoReliefString
  Type PopupMenu
- Title {Right-handed user|Left-handed user}
+ LocaleTitle {Right-handed user|Left-handed user}
  Value 1
 Main
  Case message of
@@ -119,10 +116,10 @@ End
 
 Widget 5
 Property
- Position 20 145
+ Position 20 160
  Flags NoReliefString NoFocus
  Type ItemDraw
- Title {Mouse configuration:}
+ LocaleTitle {Mouse configuration:}
 Main
  Case message of
   SingleClic :
@@ -133,7 +130,7 @@ End
 Widget 6
 Property
  Size 188 1
- Position 110 25
+ Position 150 25
  Flags NoReliefString
  MinValue 5
  MaxValue 100
@@ -150,7 +147,7 @@ Property
  Position 20 45
  Flags NoReliefString NoFocus
  Type ItemDraw
- Title {Acceleration:}
+ LocaleTitle {Acceleration:}
 Main
  Case message of
   SingleClic :
@@ -161,7 +158,7 @@ End
 Widget 8
 Property
  Size 60 1
- Position 150 90
+ Position 185 100
  Flags NoReliefString
  Type TextField
 Main
@@ -174,10 +171,10 @@ End
 Widget 9
 Property
  Size 110 1
- Position 20 95
+ Position 20 105
  Flags NoReliefString NoFocus
  Type ItemDraw
- Title {Threshold (pixels):}
+ LocaleTitle {Threshold (pixels):}
 Main
  Case message of
   SingleClic :
@@ -187,7 +184,7 @@ End
 
 Widget 10
 Property
- Size 300 190
+ Size 345 205
  Position 10 10
  Type Rectangle
 Main
@@ -202,22 +199,10 @@ Property
  Position 15 3
  Flags NoReliefString NoFocus
  Type ItemDraw
- Title {Pointer}
+ LocaleTitle {Pointer}
 Main
  Case message of
   SingleClic :
   Begin
   End
 End
-
-
-
-
-
-
-
-
-
-
-
-

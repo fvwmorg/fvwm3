@@ -1,5 +1,6 @@
 %{
 #include "types.h"
+#include "libs/FGettext.h"
 
 #define MAX_VARS 5120
 extern int numligne;
@@ -40,6 +41,7 @@ void InitVarGlob()
  NbVar=-1;
 
  SPileArg=-1;
+ scriptprop->usegettext = False;
  scriptprop->periodictasks=NULL;
  scriptprop->quitfunc=NULL;
 }
@@ -356,10 +358,10 @@ int yyerror(char *errmsg)
 %token <str> STR GSTR VAR FONT
 %token <number> NUMBER	/* Nombre pour communiquer les dimensions */
 
-%token WINDOWTITLE WINDOWSIZE WINDOWPOSITION FONT
+%token WINDOWTITLE WINDOWLOCALETITLE WINDOWSIZE WINDOWPOSITION FONT USEGETTEXT
 %token FORECOLOR BACKCOLOR SHADCOLOR LICOLOR COLORSET
 %token OBJECT INIT PERIODICTASK QUITFUNC MAIN END PROP
-%token TYPE SIZE POSITION VALUE VALUEMIN VALUEMAX TITLE SWALLOWEXEC ICON FLAGS WARP WRITETOFILE
+%token TYPE SIZE POSITION VALUE VALUEMIN VALUEMAX TITLE SWALLOWEXEC ICON FLAGS WARP WRITETOFILE LOCALETITLE
 %token HIDDEN NOFOCUS NORELIEFSTRING CENTER LEFT RIGHT
 %token CASE SINGLECLIC DOUBLECLIC BEG POINT
 %token EXEC HIDE SHOW CHFONT CHFORECOLOR CHBACKCOLOR CHCOLORSET KEY
@@ -367,7 +369,7 @@ int yyerror(char *errmsg)
 %token ADD DIV MULT GETTITLE GETOUTPUT STRCOPY NUMTOHEX HEXTONUM QUIT
 %token LAUNCHSCRIPT GETSCRIPTFATHER SENDTOSCRIPT RECEIVFROMSCRIPT
 %token GET SET SENDSIGN REMAINDEROFDIV GETTIME GETSCRIPTARG
-%token GETPID SENDMSGANDGET PARSE LASTSTRING
+%token GETPID SENDMSGANDGET PARSE LASTSTRING GETTEXT
 %token IF THEN ELSE FOR TO DO WHILE
 %token BEGF ENDF
 %token EQUAL INFEQ SUPEQ INF SUP DIFF
@@ -381,11 +383,26 @@ initvar: 			{ InitVarGlob(); }
 
 /* Entete du scripte decrivant les options par defaut */
 head:
+| head USEGETTEXT GSTR
+{
+	FGettextInit("FvwmScript", LOCALEDIR, "FvwmScript");
+	FGettextSetLocalePath($3);
+}
+| head USEGETTEXT
+{
+	fprintf(stderr,"UseGettext!\n");
+	FGettextInit("FvwmScript", LOCALEDIR, "FvwmScript");
+}
 /* vide: dans ce cas on utilise les valeurs par défaut */
 | head WINDOWTITLE GSTR
 {
 	/* Titre de la fenetre */
 	scriptprop->titlewin=$3;
+}
+| head WINDOWLOCALETITLE GSTR
+{
+	/* Titre de la fenetre */
+	scriptprop->titlewin=(char *)FGettext($3);
 }
 | head ICON STR
 {
@@ -504,7 +521,10 @@ init:				/* vide */
 				 (*tabobj)[nbobj].value3=$3;
 				}
     | init TITLE GSTR		{
-				 (*tabobj)[nbobj].title=$3;
+				 (*tabobj)[nbobj].title= $3;
+				}
+    | init LOCALETITLE GSTR     {
+				 (*tabobj)[nbobj].title= FGettextCopy($3);
 				}
     | init SWALLOWEXEC GSTR	{
 				 (*tabobj)[nbobj].swallow=$3;
@@ -605,6 +625,7 @@ instr:
     | instr POSITION position
     | instr SIZE size
     | instr TITLE title
+    | instr LOCALETITLE localetitle
     | instr ICON icon
     | instr CHFONT font
     | instr CHFORECOLOR chforecolor
@@ -632,6 +653,7 @@ oneinstr: EXEC exec
 	| POSITION position
 	| SIZE size
 	| TITLE title
+	| LOCALETITLE localetitle
 	| ICON icon
 	| CHFONT font
 	| CHFORECOLOR chforecolor
@@ -688,6 +710,8 @@ writetofile: addlbuff strarg addlbuff args	{ AddCom(18,2);}
 	   ;
 key: addlbuff strarg addlbuff strarg addlbuff numarg addlbuff numarg addlbuff args { AddCom(25,5);}
 	   ;
+localetitle: addlbuff numarg addlbuff gstrarg	{ AddCom(26,2);}
+     ;
 ifthenelse: headif creerbloc bloc1 else
           ;
 loop: headloop creerbloc bloc2
@@ -760,6 +784,7 @@ function: GETVALUE numarg	{ AddFunct(1,1); }
 	| SENDMSGANDGET gstrarg gstrarg numarg { AddFunct(23,1); }
 	| PARSE gstrarg numarg { AddFunct(24,1); }
 	| LASTSTRING { AddFunct(25,1); }
+	| GETTEXT gstrarg { AddFunct(26,1); }
 	;
 
 

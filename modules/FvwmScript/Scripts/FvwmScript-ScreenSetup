@@ -1,10 +1,7 @@
-WindowTitle {Screen Setup}
+UseGettext
+WindowLocaleTitle {Screen Setup}
 WindowSize 695 400		# Taille
-#ForeColor	{black}
-#BackColor	{grey85}
-#ShadowColor	{grey55}
-#HilightColor	{grey100}
-#Font		-adobe-helvetica-bold-r-*-*-12-*
+Font "xft:monospace:pixelsize=11;"
 
 Init
  Begin
@@ -84,8 +81,8 @@ Init
   ChangeValue 5 0
   ChangeValue 50 1
   Set $BColor={#0EC4B8}
-  ChangeTitle 7 {/usr/include/X11/pixmaps/fvwm2.xpm}
-  ChangeIcon 8 /usr/include/X11/pixmaps/fvwm2.xpm
+  ChangeTitle 7 {~/}
+  #ChangeIcon 8 /usr/include/X11/pixmaps/fvwm2.xpm
   Set $pos=(Add $pos 1)
   Set $test=(GetOutput  $CAT $pos 1)
   If $test=={fvwm-root} Then
@@ -128,11 +125,11 @@ PeriodicTasks
 
 Widget 1
 Property
- Size 70 30
- Position 180 355
+ Size 85 20
+ Position 110 355
  Type PushButton
  Flags NoReliefString
- Title {Apply}
+ LocaleTitle {Apply}
 Main
  Case message of
   SingleClic :
@@ -166,11 +163,11 @@ End
 
 Widget 2
 Property
- Size 70 30
- Position 315 355
+ Size 85 20
+ Position 305 355
  Type PushButton
  Flags NoReliefString
- Title {OK}
+ LocaleTitle {Save}
 Main
  Case message of
   SingleClic :
@@ -225,17 +222,17 @@ Main
    End
    
    Do {Exec chmod +x } $FILE
-   Quit
+   #Quit
   End
 End
 
 Widget 3
 Property
- Size 70 30
- Position 450 355
+ Size 85 20
+ Position 500 355
  Type PushButton
  Flags NoReliefString
- Title {Cancel}
+ LocaleTitle {Quit}
 Main
  Case message of
   SingleClic :
@@ -261,10 +258,10 @@ End
 
 Widget 18
 Property
- Position 15 10
+ Position 15 5
  Type ItemDraw
  Flags NoReliefString NoFocus	
- Title {Background}
+ LocaleTitle {Background}
 Main
  Case message of
   SingleClic :
@@ -279,7 +276,7 @@ Property
  Position 30 30
  Type RadioButton
  Flags NoReliefString
- Title {Uniform color:}
+ LocaleTitle {Uniform color:}
 Main
  Case message of
   SingleClic :
@@ -332,8 +329,8 @@ End
 
 Widget 20
 Property
- Size 250 20
- Position 155 20
+ Size 200 20
+ Position 195 20
  Type HScrollBar
  Flags NoReliefString
  Value 14
@@ -351,8 +348,8 @@ End
 
 Widget 21
 Property
- Size 250 20
- Position 155 75
+ Size 200 20
+ Position 195 75
  Type HScrollBar
  Flags NoReliefString
  Value 196
@@ -370,8 +367,8 @@ End
 
 Widget 22
 Property
- Size 250 20
- Position 155 130
+ Size 200 20
+ Position 195 130
  Type HScrollBar
  Flags NoReliefString
  Value 184
@@ -394,7 +391,7 @@ Property
  Position 30 220
  Type RadioButton
  Flags NoReliefString
- Title {Pixmap:}
+ LocaleTitle {Pixmap:}
 Main
  Case message of
   SingleClic :
@@ -407,11 +404,11 @@ End
 
 Widget 7
 Property
- Size 280 30
+ Size 230 30
  Position 30 280
  Type TextField
  Flags NoReliefString
- Title {/usr/X11/include/X11/pixmaps/fvwm2.xpm}
+ Title {~/}
 Main
  Case message of
   SingleClic :
@@ -422,10 +419,10 @@ End
 
 Widget 25
 Property
- Position 327 279
+ Position 300 279
  Type PushButton
  Flags NoReliefString
- Title {Browser...}
+ LocaleTitle {Browser...}
 Main
  Case message of
   SingleClic :
@@ -468,7 +465,7 @@ Property
  Position 30 320
  Type RadioButton
  Flags NoReliefString
- Title {Disable xinit background}
+ LocaleTitle {Disable xinit background}
 Main
  Case message of
   SingleClic :
@@ -497,10 +494,10 @@ End
 
 Widget 19
 Property
- Position 430 10
+ Position 430 5
  Type ItemDraw
  Flags NoReliefString NoFocus
- Title {Screen-saver}
+ LocaleTitle {Screen-saver}
 Main
  Case message of
   SingleClic :
@@ -511,10 +508,10 @@ End
 
 Widget 10
 Property
- Position 440 40
+ Position 430 40
  Type RadioButton
  Flags NoReliefString
- Title {Blank}
+ LocaleTitle {Blank}
 Main
  Case message of
   SingleClic :
@@ -525,10 +522,10 @@ End
 
 Widget 12
 Property
- Position 505 40
+ Position 520 40
  Type ItemDraw
  Flags NoReliefString NoFocus
- Title {Timeout(s):}
+ LocaleTitle {Timeout(s):}
 Main
  Case message of
   SingleClic :
@@ -538,8 +535,8 @@ End
 
 Widget 14
 Property
- Size 80 79
- Position 590 37
+ Size 60 79
+ Position 615 37
  Flags NoReliefString
  Type TextField
 Main
@@ -551,10 +548,10 @@ End
 
 Widget 11
 Property
- Position 440 85
+ Position 430 85
  Type RadioButton
  Flags NoReliefString
- Title {Pattern}
+ LocaleTitle {Pattern}
 Main
  Case message of
   SingleClic :
@@ -566,10 +563,10 @@ End
 
 Widget 13
 Property
- Position 525 85
+ Position 520 85
  Type ItemDraw
  Flags NoReliefString NoFocus
- Title {Cycle(s):}
+ LocaleTitle {Cycle(s):}
 Main
  Case message of
   SingleClic :
@@ -580,8 +577,8 @@ End
 
 Widget 15
 Property
- Size 80 79
- Position 590 82
+ Size 60 79
+ Position 615 82
  Flags NoReliefString
  Type TextField
 Main
@@ -614,7 +611,7 @@ Property
  Position 430 120
  Type ItemDraw
  Flags NoReliefString NoFocus
- Title {DPMS}
+ LocaleTitle {DPMS}
 Main
  Case message of
   SingleClic :
@@ -628,7 +625,7 @@ Property
  Position 440 150
  Type RadioButton
  Flags NoReliefString
- Title {Enable}
+ LocaleTitle {Enable}
 Main
  Case message of
   SingleClic :
@@ -643,7 +640,7 @@ Property
  Position 580 150
  Type RadioButton
  Flags NoReliefString
- Title {Disable}
+ LocaleTitle {Disable}
 Main
  Case message of
   SingleClic :
@@ -657,7 +654,7 @@ Property
  Position 440 180
  Type ItemDraw
  Flags NoReliefString NoFocus
- Title {Standby(s):}
+ LocaleTitle {Standby(s):}
 Main
  Case message of
   SingleClic :
@@ -668,10 +665,10 @@ End
 Widget 63
 Property
  Size 60 20
- Position 530 177
+ Position 560 177
  Type TextField
  Flags NoReliefString
- Title{1000}
+ LocaleTitle{1000}
 Main
  Case message of
   SingleClic :
@@ -684,7 +681,7 @@ Property
  Position 440 205
  Type ItemDraw
  Flags NoReliefString NoFocus
- Title {Suspend(s):}
+ LocaleTitle {Suspend(s):}
 Main
  Case message of
   SingleClic :
@@ -695,7 +692,7 @@ End
 Widget 65
 Property
  Size 60 20
- Position 530 202
+ Position 560 202
  Type TextField
  Flags NoReliefString
  Title{1000}
@@ -711,7 +708,7 @@ Property
  Position 440 230
  Type ItemDraw
  Flags NoReliefString NoFocus
- Title {Off(s):}
+ LocaleTitle {Off(s):}
 Main
  Case message of
   SingleClic :
@@ -722,7 +719,7 @@ End
 Widget 67
 Property
  Size 60 20
- Position 530 227
+ Position 560 227
  Type TextField
  Flags NoReliefString
  Title{1000}
@@ -754,7 +751,7 @@ Property
  Position 430 270
  Type ItemDraw
  Flags NoReliefString NoFocus
- Title {xscreensaver}
+ LocaleTitle {xscreensaver}
 Main
  Case message of
   SingleClic :
@@ -768,7 +765,7 @@ Property
  Position 440 298
  Type CheckBox
  Flags NoReliefString
- Title {Enable}
+ LocaleTitle {Enable}
 Main
  Case message of
   SingleClic :
@@ -794,7 +791,7 @@ Property
  Position 550 295
  Type PushButton
  Flags NoReliefString
- Title {Config and Demo}
+ LocaleTitle {Config and Demo}
 Main
  Case message of
   SingleClic :

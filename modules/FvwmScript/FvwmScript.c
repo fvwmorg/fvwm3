@@ -28,6 +28,7 @@
 #include "libs/PictureGraphics.h"
 #include "libs/FRender.h"
 #include "libs/FRenderInit.h"
+#include "libs/FGettext.h"
 
 #ifdef MEMDEBUG                 /* For debugging */
 #include <unchecked.h>
