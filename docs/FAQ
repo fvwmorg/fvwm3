@@ -43,6 +43,7 @@ INDEX
        19) How do I set the Sun keyboard key xxxx to an FVWM command?
            Or more generally, I'm having problems defining key
            bindings for FVWM - what can I do?
+
        20) (Question gone)
 
        21) I heard about this FvwmFileMgr module.  Where can I find it?
@@ -66,7 +67,7 @@ INDEX
        31) I try to run some program under FVWM, but it dies with an
            X11 error like BadAccess.  The same program works just fine
            under MWM or OLWM.  What's going on?
-       32) I'm want to use FVWM, but I don't have root access on my
+       32) I want to use FVWM, but I don't have root access on my
            machine.  Can I still install and run it?
 
        33) (Question gone)
@@ -939,7 +940,9 @@ A: A couple of different ideas spring to mind:
 41) Linux XF86 virtual screen size & fvwm interaction...
 
 A: Turn off the Linux Virtual Screen stuff in your XF86Config file if
-   you don't like it...
+   you don't like it.... The XFree86 virtual screen feature and hardware
+   panning support in certain video cards is a pretty useless kluge when
+   you're using a window manager that implements virtual desktops.
 
 ----------------------------------------------------------------------
 
