@@ -88,7 +88,16 @@ static void DoSetFocus(Window w, FvwmWindow *Fw, Bool FocusByMouse, Bool NoWarp)
       Fw->wmhints && (Fw->wmhints->flags & InputHint) && !Fw->wmhints->input &&
       (sf = get_focus_window()) && sf->Desk == Scr.CurrentDesk)
   {
-    /* window doesn't want focus */
+    if (Fw && WM_TAKES_FOCUS(Fw))
+    {
+      /* "Globally Active" input model (see ICCCM2 4.1.7) */
+      send_clientmessage(dpy, w, _XA_WM_TAKE_FOCUS, lastTimestamp);
+      XSync(dpy,0);
+    }
+    else
+    {
+      /* "No Input" input model (see ICCCM2 4.1.7) */
+    }
     return;
   }
 
@@ -240,13 +249,13 @@ static void DoSetFocus(Window w, FvwmWindow *Fw, Bool FocusByMouse, Bool NoWarp)
     FOCUS_SET(Scr.NoFocusWin);
     set_focus_window(NULL);
   }
-
   if (Fw && WM_TAKES_FOCUS(Fw))
   {
     send_clientmessage(dpy, w, _XA_WM_TAKE_FOCUS, lastTimestamp);
   }
-
   XSync(dpy,0);
+
+  return;
 }
 
 static void MoveFocus(
