@@ -995,6 +995,10 @@ void Loop(void)
 	  SetButtonSize(UberButton,Width,Height);
 	  button=-1;
 	  ub=UberButton;
+	  if (UberButton->c->flags & b_TransBack)
+	  {
+	    SetTransparentBackground(UberButton, Width, Height);
+	  }
 	  for (i = 0; i < nColorsets; i++)
 	    change_colorset(i);
 	  while(NextButton(&ub,&b,&button,0))
