@@ -445,6 +445,7 @@ static void setup_window_structure(
 		SET_USED_TITLE_DIR_FOR_SHADING(
 			*pfw, USED_TITLE_DIR_FOR_SHADING(savewin));
 		SET_SHADED_DIR(*pfw, SHADED_DIR(savewin));
+		SET_NAME_CHANGED(*pfw,IS_NAME_CHANGED(savewin));
 		SET_PLACED_WB3(*pfw,IS_PLACED_WB3(savewin));
 		SET_PLACED_BY_FVWM(*pfw, IS_PLACED_BY_FVWM(savewin));
 		SET_HAS_EWMH_WM_ICON_HINT(*pfw, HAS_EWMH_WM_ICON_HINT(savewin));
