@@ -216,6 +216,10 @@ static void map_window(FvwmWindow *t)
   unsigned long eventMask = 0;
   Status ret;
 
+  if (IS_SCHEDULED_FOR_DESTROY(t))
+  {
+    return;
+  }
   /*
    * Prevent the receipt of an UnmapNotify, since that would
    * cause a transition to the Withdrawn state.
