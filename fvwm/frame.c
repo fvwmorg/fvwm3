@@ -878,6 +878,7 @@ frame_move_resize_args frame_create_move_resize_args(
 	Bool dummy;
 	int whdiff;
 
+/*!!!disable animated window shading for now*/if (mr_mode==FRAME_MR_SHRINK||mr_mode==FRAME_MR_SCROLL)mr_mode=FRAME_MR_FORCE_SETUP;
 	mra = (mr_args_internal *)safecalloc(1, sizeof(mr_args_internal));
 	mra->mode = mr_mode;
 	get_window_borders(fw, &mra->b_g);
@@ -1065,9 +1066,9 @@ static void frame_move_resize_step(
 	mra->flags.is_hidden =
 		(frame_is_parent_hidden(fw, &mra->next_g) == True);
 	flags.do_hide_parent =
-		(mra->flags.was_hidden && !mra->flags.is_hidden);
-	flags.do_unhide_parent =
 		(!mra->flags.was_hidden && mra->flags.is_hidden);
+	flags.do_unhide_parent =
+		(mra->flags.was_hidden && !mra->flags.is_hidden);
         if (is_setup && mra->dstep_g.x == 0 && mra->dstep_g.y == 0 &&
             mra->dstep_g.width == 0 && mra->dstep_g.height == 0)
         {
@@ -1176,8 +1177,8 @@ static void frame_move_resize_step(
 		XLowerWindow(dpy, FW_W_PARENT(fw));
 		XMapWindow(dpy, FW_W_PARENT(fw));
 	}
-	/*!!! update the window shape*/
-        /*!!! have to do this the right way later */
+	/* update the window shape*/
+        /*!!! may have to change this for window shading */
         if (FShapesSupported && fw->wShaped)
         {
                 frame_setup_shape(fw, mra->next_g.width, mra->next_g.height);
