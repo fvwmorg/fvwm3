@@ -67,37 +67,19 @@ In fvwm 2.4, the ColorLimit command is automatic.  If you have a limited
 colormap, color limiting is the default.
 .B fvwm24_convert
 removes any ColorLimit command that it finds.
+.TP 4
+.B Read
+Prints a message identifying any read commands found.  The files
+being read my need to be converted also.
 .SH BUGS
 
-Depending on the version of awk installed on your system,
-this command may not detect odd spellings of fvwm commands.
-If you are using GNU awk, there should be no problem.  Other
-versions of awk may correctly find
-.I ColorLimit,
-.I colorlimit,
-and
-.I Colorlimit,
-but not
-.I COLORLIMIT.
-(The same applies to
-.I ModulePath,
-.I PixmapPath,
-and
-.I IconPath.)
-
-This command pays no attention to
-.I Read
-commands.  Only the files
-this command is run against are converted.  If your
-.I ~/.fvwm2rc
-reads other configuration files,
-you may want to run this command against them also.
+You need Perl to be installed.
 
 .I WindowFont
 and
 .I HilightColor
-commands not starting in column 1  are not changed.
-If you have either of these commands in macros, they are not detected.
+commands embedded in functions are not found.
+If you have either of these commands in functions, they are not detected.
 
 Known bugs can be found in the fvwm bug tracking system (accessible
 from the fvwm home page).
