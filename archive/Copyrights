@@ -36,9 +36,6 @@ The offending files or modules for 4) are:
 		Alfredo K. Kojima
 		Robert Nation
 
-	extras/fvwmperl
-		Dan Astoorian <djast@utopia.csas.com>
-
 	extras/fvwmpython
 		Barry A. Warsaw <bwarsaw@python.org>
 
@@ -73,28 +70,28 @@ m4_hacks: (hint to Motif copyright violation)
 
 extras:
 -------
-FvwmCommand: (->GPL ok?)
+FvwmCommand: 
 	Toshi Isogai
 
-FvwmConfig: (->GPL ok?)
+FvwmConfig: 
 	Robert Nation
 
-FvwmConsole: (->GPL ok?)
+FvwmConsole: 
 	Toshi Isogai
 
-FvwmDebug: (->GPL ok?)
+FvwmDebug: 
 	Robert Nation
 
-FvwmGoodStuff: (->GPL ok?)
+FvwmGoodStuff: 
 	Robert Nation
 
 !!!FvwmPipe:
 	Matthias Ettrich (ettrich@informatik.uni-tuebingen.de)
 
-FvwmScript: (->GPL ok?)
+FvwmScript: 
 	Frederic Cordier
 
-FvwmTaskBar: (->GPL ok?)
+FvwmTaskBar: 
 	Mike Finger (mfinger@mermaid.micro.umn.edu or Mike_Finger@atk.com)
 	Nobutaka Suzuki
 	Robert Nation
@@ -107,9 +104,10 @@ FvwmTaskBar: (->GPL ok?)
 	Alfredo K. Kojima
 	Robert Nation
 
-!!!fvwmperl:
+fvwmperl: (public domain)
 	Dan Astoorian <djast@utopia.csas.com>
-	--> Dan gives us explicit permission to distribute
+	--> Dan gives us explicit permission to distribute as
+	    public domain
 
 !!!fvwmpython:
 	Barry A. Warsaw <bwarsaw@python.org>
@@ -138,7 +136,7 @@ icons:
 
 libs:
 -----
-Picture.c: (->GPL ok?)
+Picture.c: 
 	Romano Giannetti <romano@iet.unipi.it>
 	                 <http://www.iet.unipi.it/~romano>
 	Robert Nation
@@ -156,7 +154,7 @@ FvwmAudio: GPL
 	Mark Boyns (boyns@sdsu.edu) and
 	Mark Scott (mscott@mcd.mot.com)
 
-FvwmAuto: (->GPL ok?)
+FvwmAuto: 
 	Robert Nation
 
 FvwmBacker: (depends on FvwmIdent, ->GPL ok?)
@@ -173,46 +171,46 @@ FvwmButtons: (?? ->GPL ok?)
 !!!FvwmCascade:
 	Andrew Veliath
 
-FvwmCpp: (->GPL ok?)
+FvwmCpp: 
 	Robert Nation
 
 FvwmEvent: GPL
 
-FvwmForm: (->GPL ok?)
+FvwmForm: 
 	Thomas Zuwei Feng
 
-FvwmIconBox: (->GPL ok?)
+FvwmIconBox: 
 	 Nobutaka Suzuki
 
 FvwmIconMan: GPL
 
-FvwmIdent: (->GPL ok?)
+FvwmIdent: 
 	Nobutaka Suzuki
 	Robert Nation
 
-FvwmM4: (->GPL ok?)
+FvwmM4: 
 	Robert Nation
 
-FvwmPager: (->GPL ok?)
+FvwmPager: 
 	Robert Nation
 
-FvwmSave: (->GPL ok?)
+FvwmSave: 
 	Robert Nation
 
-FvwmSaveDesk: (->GPL ok?)
+FvwmSaveDesk: 
 	Carsten Paeth
 	Robert Nation
 
-FvwmScroll: (->GPL ok?)
+FvwmScroll: 
 	Robert Nation
 
-FvwmTalk: (->GPL ok?)
+FvwmTalk: 
 	Robert Nation
 
 !!!FvwmTile:
 	Andrew Veliath
 
-FvwmWinList: (->GPL ok?)
+FvwmWinList: 
 	Mike Finger (mfinger@mermaid.micro.umn.edu or Mike_Finger@atk.com)
 	Nobutaka Suzuki
 	Robert Nation
@@ -223,11 +221,11 @@ sample.fvwmrc: none
 textures: none
 ---------
 
-utils: (->GPL ok?)
+utils: 
 ------
 	Dan Espen
 
-xpmroot: (->GPL ok?)
+xpmroot: 
 --------
 	Robert Nation
 
