@@ -1,3 +1,9 @@
+2001-06-23  Mikhael Goikhman  <migo@homemail.com>
+
+	* fvwm/fvwm2:
+	improve the WindowList double press example to work with all focus
+	policies
+
 2001-06-22  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* NEWS, configure.in:

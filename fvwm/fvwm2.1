@@ -3120,7 +3120,11 @@ The
 is useful to define a default window if you have bound the window
 list to a key (or button) like this:
 .EX
-Key Tab A M WindowList "Prev FlipFocus"
+# Here we call an existing function, but it may be different
+AddToFunc SwitchToWindow
++ I WindowListFunc $w
+
+Key Tab A M WindowList "Prev SwitchToWindow"
 .EE
 Hitting
 .SM Alt-Tab

@@ -1,3 +1,9 @@
+2001-06-23  Mikhael Goikhman  <migo@homemail.com>
+
+	* fvwm-menu-directory.1:
+	* fvwm-menu-directory.in:
+	be consistent in code and doc: s/--check-subdir/--check-subdirs/
+
 2001-06-23  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* make_fvwmdist.sh:
