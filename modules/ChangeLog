@@ -1,3 +1,9 @@
+Wed Apr 28 20:45:51 1999  Steve Robbins  <steve@nyongwa.montreal.qc.ca>
+
+	* FvwmRearrange/Makefile.am (FvwmCascade): 
+	* FvwmRearrange/Makefile.am (FvwmTile): 
+	* FvwmForm/Makefile.am (FvwmTalk): force generation each time.
+
 1999-04-28  Hippo
 
 	* FvwmScroll/*.c: uses ModGraph.c, does dynamic color changing.
@@ -47,9 +53,15 @@
 	dynamic color changing with the fvwm DefaultColors command.
 	* FvwmAnimate/FvwmAnimate.C: ditto
 
+Tue Apr 27 09:50:46 1999  Steve Robbins  <steve@nyongwa.montreal.qc.ca>
+
+	* FvwmEvent/FvwmEvent.c (table): leave the Rplay* entries in
+	the command table even if HAVE_RPLAY not defined, to avoid a
+	coredump in parsing.  [PR#318]
+
 Mon Apr 26 12:20:54 1999  Steve Robbins  <steve@nyongwa.montreal.qc.ca>
 
-	* FvwmForm/FormFvwmSetup.in: Don't require trailing slash in
+	* FvwmForm/FormFvwmSetup.in: don't require trailing slash in
  	FVWM_USERHOME variable.
 
 1999-04-26  Matthias Clasen  <clasen@pong.mathematik.uni-freiburg.de>

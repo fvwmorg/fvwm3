@@ -7,14 +7,19 @@ module_PROGRAMS = FvwmRearrange
 ## These modules were made obsolete in November, 1998.
 ## Remove from fvwm distribution no later than October, 1999.
 module_SCRIPTS = FvwmCascade FvwmTile
-FvwmCascade:
+
+FvwmCascade: FORCE
 	echo "#!/bin/sh" > $@
 	echo echo Obsolete module '$$0', replace with FvwmRearrange. >> $@
 	echo exec ${moduledir}/FvwmRearrange -cascade '$$@' >> $@
-FvwmTile:
+
+FvwmTile: FORCE
 	echo "#!/bin/sh" > $@
 	echo echo Obsolete module '$$0', replace with FvwmRearrange. >> $@
 	echo exec ${moduledir}/FvwmRearrange -tile '$$@' >> $@
+
+# do nothing, just force the above rules that depend on it...
+FORCE:
 
 EXTRA_DIST = $(man_MANS)
 man_MANS = FvwmRearrange.1

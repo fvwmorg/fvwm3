@@ -9,9 +9,12 @@ man_MANS = FvwmForm.1
 ## FvwmTalk was made obsolete in March 1999.
 ## This provides compatibility.
 module_SCRIPTS = FvwmTalk
-FvwmTalk:
+
+FvwmTalk: FORCE
 	echo "#!/bin/sh" > $@
 	echo exec ${moduledir}/FvwmForm '$$@' FormFvwmTalk.>> $@
+
+FORCE:
 
 ## NB: Neither _MANS nor _DATA are included by default in
 ## distributions! 

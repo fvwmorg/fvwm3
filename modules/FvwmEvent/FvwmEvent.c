@@ -394,13 +394,10 @@ char *table[]=
 {
     "Cmd",
     "Delay",
-    "PassID"
-#ifdef HAVE_RPLAY
-	,
+    "PassID",
     "RplayHost",
     "RplayPriority",
     "RplayVolume"
-#endif
 };	/* define entries here, if this list becomes unsorted, use LFindToken */
 
 
