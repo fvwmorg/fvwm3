@@ -1,5 +1,10 @@
 2002-09-13  Mikhael Goikhman  <migo@homemail.com>
 
+	* perl/module-example:
+	add a 0.5 sec delay to autoraising
+
+2002-09-13  Mikhael Goikhman  <migo@homemail.com>
+
 	* perl/module-*:
 	updated to use a new event handler API
 

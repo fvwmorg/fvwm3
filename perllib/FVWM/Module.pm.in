@@ -332,7 +332,7 @@ sub invokeHandler ($$) {
 		if ($type eq $_ || $type & $_) {
 			my $handler;
 			for $handler (@{$self->{handlers}->{$category}->{$_}}) {
-				last unless $event->propogationAllowed;
+				last unless $event->propagationAllowed;
 				next unless defined $handler;  # skip deleted ones
 
 				eval { &$handler($self, $event); };

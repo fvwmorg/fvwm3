@@ -34,9 +34,11 @@ alarm(60);
 
 # auto-iconify new windows
 $module->addHandler(M_ADD_WINDOW, $newWindowHandler);
-# auto-raise all windows
-$module->addHandler(M_FOCUS_CHANGE,
-	sub { $_[0]->send("Raise", $_[1]->_win_id) });
+# auto-raise all windows with delay of 500 msec
+$module->addHandler(M_FOCUS_CHANGE, sub {
+	my $winId = $_[1]->_win_id;
+	$_[0]->send("Deschedule 1234\nSchedule 500 1234 WindowId $winId Raise");
+});
 # do a clean-up on exit
 $module->addHandler(ON_EXIT, $onExit);
 

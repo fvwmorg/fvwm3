@@ -23,6 +23,7 @@ use lib $perllibdir;
 use General::FileSystem '-die';
 
 my $version = "@VERSION@";
+my $versionInfo = "@VERSIONINFO@";
 
 my $pager = $ENV{PAGER} || "less -e";
 my $doMan = 0;
@@ -56,14 +57,17 @@ $internalPods->{index} = qq{
 
 	:head1 DESCRIPTION
 
-	You may run this script as:
+	Recent I<fvwm> versions install the Perl library that makes creating
+	FVWM modules in Perl possible and easy.
+
+	You may read the Perl library documentation by running:
 
 	    % fvwm-perllib $manOrCatStr <topic>
 
 	Available topics:
 
 	    index
-	    examples
+	    tutorial
 	    {{CLASS_NAMES}}
 
 	For example:
@@ -75,12 +79,36 @@ $internalPods->{index} = qq{
 	Mikhael Goikhman <migo\@homemail.com>.
 };
 
-$internalPods->{examples} = qq{
+$internalPods->{tutorial} = qq{
 	:head1 NAME
 
-	examples - shows some common techniques for writting FVWM modules
+	tutorial - common techniques for writting FVWM modules
 
-	:head1 DESCRIPTION
+	:head1 WHAT IS A WINDOW MANAGER
+
+	A window manager is a program that runs on top of the X Window
+	System and manages windows, menus, key and mouse bindings, virtual
+	desktops and pages, draws window decorations using defined colors or
+	images, title-bar buttons and fonts.  It may also manage such things
+	like root background, mouse cursors, sounds, run applications and
+	do a lot of other nice things.
+
+	:head1 WHAT IS A MODULE
+
+	In the best unix traditions different functionality may be achieved
+	by separate programs to reduce a bloat. A module is an optional
+	program that is intended to extend the window manager using a defined
+	module protocol.
+
+	FVWM modules are spawned by the main I<fvwm> executable. They
+	usually listen to the window manager events, do some useful work and
+	send back commands for execution. There are transient modules that
+	exit immediately or after some short time and persistent modules
+	that exit together with a window manager or when a user requests.
+	Some modules may manage windows or other modules. Some modules may
+	supply a GUI, some may be non interactive.
+
+	:head1 EXAMPLES
 
 	Currently see I<ftp://ftp.fvwm.org/pub/fvwm/devel/sources/tests/perl/>
 	for examples.
@@ -107,7 +135,7 @@ if (exists $internalPods->{$topic}) {
 }
 
 open(MANPIPE, $doCat? "| pod2text '$file' | $pager":
-	"| pod2man --section 3 --release 'FVWM $version'" .
+	"| pod2man --section 3 --release 'FVWM $version$versionInfo'" .
 		" --center 'FVWM Perl library' '$file'" .
 		" | sed 's/<STANDARD INPUT>/perllib/ig' | nroff -man | $pager")
 	or die "Can't open pipe to pod/man viewer\n";

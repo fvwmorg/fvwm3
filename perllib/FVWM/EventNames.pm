@@ -282,4 +282,18 @@ $EVENTS_INFO = {
 
 };
 
+=head1 NAME
+
+FVWM::EventNames - names of all FVWM event arguments
+
+=head1 SYNOPSIS
+
+Please use L<FVWM::Event> instead.
+
+=head1 DESCRIPTION
+
+To be written.
+
+=cut
+
 1;
