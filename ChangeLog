@@ -1,3 +1,67 @@
+2000-11-25  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* fvwm/fvwm2.1 (Examples):
+	documented inability to handle whitespace in function names
+
+	* fvwm/functions.c (ExecuteFunction):
+	reverted back to old quoting of command names (see last patch there)
+
+	* fvwm/events.c (HandleEnterNotify):
+	(HandleLeaveNotify):
+	* fvwm/fvwm.c (InitVariables):
+	* fvwm/add_window.c (destroy_window):
+	* fvwm/screen.h (ScreenInfo):
+	remember last focused window when leaving screen and thus fixed the last
+	known multi head focus problem
+
+	* fvwm/icons.c (Iconify):
+	* fvwm/misc.c (GrabEm):
+	(UngrabEm):
+	* fvwm/update.c (flush_window_updates):
+	* fvwm/virtual.c (MapDesk):
+	* fvwm/events.c (HandlePropertyNotify):
+	(HandleMapNotify):
+	(HandleMapRequestKeepRaised):
+	(HandleUnmapNotify):
+	(HandleButtonPress):
+	(HandleEnterNotify):
+	(HandleLeaveNotify):
+	* fvwm/add_window.c (destroy_window):
+	use new focus functions
+
+	* fvwm/focus.c (DoSetFocus):
+	(SetFocusWindow):
+	(DeleteFocus):
+	(ForceDeleteFocus):
+	replaced SetFocus() with SetFocusWindow(), DeleteFocus() and
+	ForceDeleteFocus()
+
+	* fvwm/events.c (HandleEnterNotify):
+	* fvwm/screen.h (ScreenInfo):
+
+	* fvwm/builtins.c (ReadDecorFace):
+	Guess I got the memory leak this time. Code allocated 6 =
+	MaxButtonState button states but freed only three when destroying the
+	decor.
+
+	* fvwm/fvwm.c (LoadDefaultRightButton):
+	(LoadDefaultLeftButton):
+	* fvwm/builtins.c (ReadDecorFace):
+	* fvwm/borders.c (DrawButton):
+	* fvwm/builtins.c (FreeDecorFace):
+	* fvwm/screen.h (DecorFace):
+	removed vector button patch from 22-Nov
+
+	* fvwm/fvwm.c (DestroyAllButtons):
+	(ResetAllButtons):
+	rewritten
+
+	* fvwm/update.c (init_style):
+	fixed core dump
+
+	* fvwm/fvwm.c (SetRCDefaults):
+	default menu is called with 'Menu' instead of 'Popup'
+
 2000-11-24  Dan Espen  <dane@mk.telcordia.com>
 
 	* tests/purify/purify.fvwm2rc: Add DestroyMenuStyle, fix duplications.
@@ -10,6 +74,9 @@
 	Added ChangeMenuStyle, DestroyMenu.
 
 2000-11-23  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* libs/defaults.h (NUMBER_OF_MOUSE_BUTTONS):
+	fvwm now supports 5 mouse buttons
 
 	* fvwm/focus.c:
 	removed debug code; my focus problems are not the fault of fvwm - it

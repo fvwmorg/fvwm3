@@ -181,9 +181,9 @@ static void DrawButton(FvwmWindow *t, Window win, int w, int h,
 	 ((stateflags & MWM_DECOR_MAXIMIZE && IS_MAXIMIZED(t)) ||
 	  (stateflags & MWM_DECOR_SHADE && IS_SHADED(t)) ||
 	  (stateflags & MWM_DECOR_STICK && IS_STICKY(t))))
-	DrawLinePattern(win, ShadowGC, ReliefGC, &df->vector, w, h);
+	DrawLinePattern(win, ShadowGC, ReliefGC, &df->u.vector, w, h);
       else
-	DrawLinePattern(win, ReliefGC, ShadowGC, &df->vector, w, h);
+	DrawLinePattern(win, ReliefGC, ShadowGC, &df->u.vector, w, h);
       break;
 
 #ifdef MINI_ICONS

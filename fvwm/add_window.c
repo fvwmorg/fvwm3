@@ -1861,6 +1861,8 @@ void destroy_window(FvwmWindow *tmp_win)
 
   if(Scr.PreviousFocus == tmp_win)
     Scr.PreviousFocus = NULL;
+  if(Scr.LastScreenFocus == tmp_win)
+    Scr.LastScreenFocus = NULL;
 
   if(ButtonWindow == tmp_win)
     ButtonWindow = NULL;
@@ -1879,7 +1881,7 @@ void destroy_window(FvwmWindow *tmp_win)
       }
       if (t)
       {
-	SetFocus(t->w, t, 1);
+	SetFocusWindow(t, 1);
 	focus_set = True;
       }
     }
@@ -1888,12 +1890,12 @@ void destroy_window(FvwmWindow *tmp_win)
       if(HAS_CLICK_FOCUS(tmp_win))
       {
 	if(tmp_win->next)
-	  SetFocus(tmp_win->next->w, tmp_win->next, 1);
+	  SetFocusWindow(tmp_win->next, 1);
 	else
-	  SetFocus(Scr.NoFocusWin, NULL,1);
+	  DeleteFocus(1);
       }
       else
-	SetFocus(Scr.NoFocusWin, NULL,1);
+	DeleteFocus(1);
     }
   }
 

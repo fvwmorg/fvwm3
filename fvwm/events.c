@@ -727,7 +727,7 @@ void HandlePropertyNotify(void)
               if (OnThisPage)
               {
 	        Scr.Focus = NULL;
-	        SetFocus(Tmp_win->w,Tmp_win,0);
+	        SetFocusWindow(Tmp_win, 0);
               }
 	    }
 	}
@@ -941,7 +941,7 @@ void HandleMapRequestKeepRaised(Window KeepRaised, FvwmWindow *ReuseWin)
 	{
 	  if (OnThisPage)
 	  {
-	    SetFocus(Tmp_win->w, Tmp_win, 1);
+	    SetFocusWindow(Tmp_win, 1);
 	  }
 	}
       }
@@ -1090,7 +1090,7 @@ void HandleMapNotify(void)
   {
     if (OnThisPage)
     {
-      SetFocus(Tmp_win->w,Tmp_win,1);
+      SetFocusWindow(Tmp_win, 1);
     }
   }
   if((!(HAS_BORDER(Tmp_win)|HAS_TITLE(Tmp_win)))&&(Tmp_win->boundary_width <2))
@@ -1185,13 +1185,13 @@ void HandleUnmapNotify(void)
   if((Tmp_win == Scr.Focus)&&(HAS_CLICK_FOCUS(Tmp_win)))
   {
     if(Tmp_win->next)
-      SetFocus(Tmp_win->next->w, Tmp_win->next, 1);
+      SetFocusWindow(Tmp_win->next, 1);
     else
-      SetFocus(Scr.NoFocusWin,NULL,1);
+      DeleteFocus(1);
   }
 
   if(Scr.Focus == Tmp_win)
-    SetFocus(Scr.NoFocusWin,NULL,1);
+    DeleteFocus(1);
 
   if(Tmp_win == Scr.pushed_window)
     Scr.pushed_window = NULL;
@@ -1311,12 +1311,12 @@ void HandleButtonPress(void)
     /* It might seem odd to try to focus a window that never is given focus by
      * fvwm, but the window might want to take focus itself, and SetFocus will
      * tell it to do so in this case instead of giving it focus. */
-    SetFocus(Tmp_win->w, Tmp_win, 1);
+    SetFocusWindow(Tmp_win, 1);
   }
   /* click to focus stuff goes here */
   if((Tmp_win)&&(HAS_CLICK_FOCUS(Tmp_win))&&(Tmp_win != Scr.Ungrabbed))
   {
-    SetFocus(Tmp_win->w,Tmp_win,1);
+    SetFocusWindow(Tmp_win, 1);
     /* RBW - 12/09/.1999- I'm not sure we need to check both cases, but
        I'll leave this as is for now.  */
     if (!DO_NOT_RAISE_CLICK_FOCUS_CLICK(Tmp_win)
@@ -1585,9 +1585,24 @@ void HandleEnterNotify(void)
 
   if (ewp->window == Scr.Root)
   {
-    if (!Scr.Focus || HAS_MOUSE_FOCUS(Scr.Focus))
+    if (!Scr.flags.is_pointer_on_this_screen)
     {
-      SetFocus(Scr.NoFocusWin,NULL,1);
+      Scr.flags.is_pointer_on_this_screen = 1;
+      if (Scr.LastScreenFocus &&
+	  (HAS_SLOPPY_FOCUS(Scr.LastScreenFocus) ||
+	   HAS_CLICK_FOCUS(Scr.LastScreenFocus)))
+      {
+	SetFocusWindow(Scr.LastScreenFocus, 1);
+      }
+      else
+      {
+	ForceDeleteFocus(1);
+      }
+      Scr.LastScreenFocus = NULL;
+    }
+    else if (!Scr.Focus || HAS_MOUSE_FOCUS(Scr.Focus))
+    {
+      DeleteFocus(1);
     }
     if (Scr.ColormapFocus == COLORMAP_FOLLOWS_MOUSE)
     {
@@ -1606,7 +1621,7 @@ void HandleEnterNotify(void)
 
   if (HAS_MOUSE_FOCUS(Tmp_win) || HAS_SLOPPY_FOCUS(Tmp_win))
   {
-    SetFocus(Tmp_win->w,Tmp_win,1);
+    SetFocusWindow(Tmp_win, 1);
   }
   else if (HAS_NEVER_FOCUS(Tmp_win))
   {
@@ -1683,9 +1698,11 @@ void HandleLeaveNotify(void)
     {
       if (Event.xcrossing.detail != NotifyInferior)
       {
-	if(Scr.Focus != NULL)
-	  SetFocus(Scr.NoFocusWin, NULL, 1);
-	if(Scr.Hilite != NULL)
+	Scr.flags.is_pointer_on_this_screen = 0;
+	Scr.LastScreenFocus = Scr.Focus;
+	if (Scr.Focus != NULL)
+	  DeleteFocus(1);
+	if (Scr.Hilite != NULL)
 	  DrawDecorations(Scr.Hilite, DRAW_ALL, False, True, None);
       }
     }

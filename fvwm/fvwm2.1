@@ -5958,7 +5958,7 @@ then the scroll amount will be measured in pixels.
 
 .TP
 .BI "AddToFunc [" name " [" I | M | C | H | "D action" "]]"
-Begins or adds to a function definition.  Here's an example:
+Begins or adds to a function definition.  Here is an example:
 .EX
 AddToFunc Move-or-Raise I Raise
  + M Move
@@ -5969,7 +5969,11 @@ or a mouse binding or key binding:
 .EX
 Mouse 1 TS A Move-or-Raise
 .EE
-The letter before the
+The
+.I name
+must not contain embedded whitespace.  No guarantees are made whether
+function names with embedded whitespace work or not.  This behaviour
+may also change in the future without further notice.  The letter before the
 .I action
 tells what kind of action will trigger the command which follows it.
 .RI ' I '

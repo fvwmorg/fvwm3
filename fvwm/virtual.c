@@ -1065,11 +1065,11 @@ static void MapDesk(int desk, Bool grab)
     /*  Otherwise, handle remembering the last-focused clicky window.  */
     if(FocusWin && HAS_CLICK_FOCUS(FocusWin))
     {
-      SetFocus(FocusWin->w, FocusWin, True);
+      SetFocusWindow(FocusWin, 1);
     }
     else if (FocusWin && !HAS_NEVER_FOCUS(FocusWin))
     {
-      SetFocus(Scr.NoFocusWin, NULL, 1);
+      DeleteFocus(1);
     }
   }
 

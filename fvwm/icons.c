@@ -1210,7 +1210,7 @@ void Iconify(FvwmWindow *tmp_win, int def_x, int def_y)
 
   if((tmp_win == Scr.Hilite)&&(HAS_CLICK_FOCUS(tmp_win))&&(tmp_win->next))
   {
-    SetFocus(tmp_win->next->w,tmp_win->next,1);
+    SetFocusWindow(tmp_win->next, 1);
   }
 
   /* iconify transients first */
@@ -1338,9 +1338,9 @@ void Iconify(FvwmWindow *tmp_win, int def_x, int def_y)
       if(Scr.PreviousFocus == Scr.Focus)
 	Scr.PreviousFocus = NULL;
       if(HAS_CLICK_FOCUS(tmp_win) && tmp_win->next)
-	SetFocus(tmp_win->next->w, tmp_win->next,1);
+	SetFocusWindow(tmp_win->next, 1);
       else
-	SetFocus(Scr.NoFocusWin, NULL,1);
+	DeleteFocus(1);
     }
   }
 }

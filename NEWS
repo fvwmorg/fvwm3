@@ -5,6 +5,8 @@ Changes in beta release 2.3.23 (not released yet)
 
 * New styles UseIconPosition and NoIconPosition (default).
 
+* Better focus handling on multi head displays.
+
 Changes in beta release 2.3.22 (2000-11-10)
 
 * Configuration samples of FvwmForm and FvwmScript installed with fvwm are

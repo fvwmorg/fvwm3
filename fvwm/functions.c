@@ -677,7 +677,7 @@ static char *expand(
 	{
 	  i++;
 #if 0
-	  /* dv: Whoa! Better live with the extra whitespace. */
+	  /* DV: Whoa! Better live with the extra whitespace. */
 	  if (isspace(input[i+1]))
 	    i++; /*eliminates extra white space*/
 #endif
@@ -986,10 +986,11 @@ void ExecuteFunction(F_EXEC_ARGS, unsigned int exec_flags, char *args[])
     function = expand(function, arguments, tmp_win, False);
   if (function)
   {
-#if 0
-    /* dv: with this piece of code it is impossible to have a complex function
+#if 1
+    /* DV: with this piece of code it is impossible to have a complex function
      * with embedded whitespace that begins with a builtin function name, e.g. a
      * function "echo hello". */
+    /* DV: ... and without it some of the complex functions will fail */
     char *tmp = function;
 
     while (*tmp && !isspace(*tmp))

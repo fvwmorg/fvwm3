@@ -64,7 +64,7 @@ static void init_style(
   FvwmWindow *old_t, FvwmWindow *t, window_style *pstyle, short *pbuttons)
 {
   /* copy the window structure because we still need some old values. */
-  memcpy(old_t, t, sizeof(t->hints));
+  memcpy(old_t, t, sizeof(FvwmWindow));
   /* determine level of decoration */
   setup_style_and_decor(t, pstyle, pbuttons);
 }
@@ -294,7 +294,6 @@ void flush_window_updates(void)
 {
   FvwmWindow *t;
   window_style style;
-  Window focus_w;
   FvwmWindow *focus_fw;
   Bool do_need_ungrab = False;
   update_win flags;
@@ -309,8 +308,7 @@ void flush_window_updates(void)
   /* This is necessary in case the focus policy changes. With ClickToFocus some
    * buttons have to be grabbed/ungrabbed. */
   focus_fw = Scr.Focus;
-  focus_w = (focus_fw) ? focus_fw->w : Scr.NoFocusWin;
-  SetFocus(Scr.NoFocusWin, NULL, 1);
+  DeleteFocus(1);
 
   /* Apply the new default font and colours first */
   if (Scr.flags.has_default_color_changed || Scr.flags.has_default_font_changed)
@@ -346,7 +344,10 @@ void flush_window_updates(void)
 
   /* restore the focus; also handles the case that the previously focused
    * window is now NeverFocus */
-  SetFocus(focus_w, focus_fw, 1);
+  if (focus_fw)
+    SetFocusWindow(focus_fw, 1);
+  else
+    DeleteFocus(1);
   /* finally clean up the change flags */
   reset_style_changes();
   reset_decor_changes();

@@ -129,14 +129,14 @@ typedef struct DecorFace
       Pixel *pixels;
       char gradient_type;
     } grad;
+    struct vector_coords
+    {
+      int num;
+      int *x;
+      int *y;
+      unsigned long line_style;
+    } vector;
   } u;
-  struct vector_coords
-  {
-    int num;
-    int *x;
-    int *y;
-    unsigned long line_style;
-  } vector;
 
 #ifdef MULTISTYLE
   struct DecorFace *next;
@@ -304,6 +304,8 @@ typedef struct ScreenInfo
   FvwmWindow *Ungrabbed;
   FvwmWindow *PreviousFocus;    /* Window which had focus before fvwm stole it
 				 * to do moves/menus/etc. */
+  FvwmWindow *LastScreenFocus;  /* Window which had focus before the pointer
+				 * moved to a different screen. */
   int EdgeScrollX;              /* #pixels to scroll on screen edge */
   int EdgeScrollY;              /* #pixels to scroll on screen edge */
   unsigned char buttons2grab;   /* buttons to grab in click to focus mode */
@@ -368,6 +370,7 @@ typedef struct ScreenInfo
     unsigned has_default_font_changed : 1;
     unsigned has_default_color_changed : 1;
     unsigned has_nr_buttons_changed : 1;
+    unsigned is_pointer_on_this_screen : 1;
     unsigned is_single_screen : 1;
     unsigned is_wire_frame_displayed : 1;
     unsigned silent_functions : 1;

@@ -967,7 +967,7 @@ void SetRCDefaults(void)
     "+ \"&4. Issue FVWM commands\" Module FvwmConsole",
     "+ \"&R. Restart FVWM\" Restart",
     "+ \"&X. Exit FVWM\" Quit",
-    "Mouse 0 R N Popup MenuFvwmRoot",
+    "Mouse 0 R N Menu MenuFvwmRoot",
     "Read "FVWM_DATADIR"/ConfigFvwmDefaults",
     NULL
   };
@@ -1202,7 +1202,7 @@ RETSIGTYPE Restart(int sig)
 
 static void LoadDefaultLeftButton(DecorFace *df, int i)
 {
-  struct vector_coords *v = &df->vector;
+  struct vector_coords *v = &df->u.vector;
 
   memset(&df->style, 0, sizeof(df->style));
   DFS_FACE_TYPE(df->style) = VectorButton;
@@ -1295,7 +1295,7 @@ static void LoadDefaultLeftButton(DecorFace *df, int i)
  ************************************************************************/
 static void LoadDefaultRightButton(DecorFace *df, int i)
 {
-  struct vector_coords *v = &df->vector;
+  struct vector_coords *v = &df->u.vector;
 
   memset(&df->style, 0, sizeof(df->style));
   DFS_FACE_TYPE(df->style) = VectorButton;
@@ -1403,26 +1403,37 @@ extern void FreeDecorFace(Display *dpy, DecorFace *df);
  *                              destroys existing buttons
  *
  ************************************************************************/
-static void ResetOrDestroyAllButtons(FvwmDecor *decor, Bool do_free_only)
+void DestroyAllButtons(FvwmDecor *decor)
 {
   TitleButton *tbp;
   DecorFace *face;
   int i;
   int j;
 
-  for (tbp = decor->buttons, i = 0; i < NUMBER_OF_BUTTONS; ++i, ++tbp)
+  for (tbp = decor->buttons, i = 0; i < NUMBER_OF_BUTTONS; i++, tbp++)
+  {
+    for (j = 0, face = TB_STATE(*tbp); j < MaxButtonState; j++, face++)
+    {
+      FreeDecorFace(dpy, face);
+    }
+  }
+
+  return;
+}
+void ResetAllButtons(FvwmDecor *decor)
+{
+  TitleButton *tbp;
+  DecorFace *face;
+  int i;
+  int j;
+
+  for (tbp = decor->buttons, i = 0; i < NUMBER_OF_BUTTONS; i++, tbp++)
   {
     memset(&TB_FLAGS(*tbp), 0, sizeof(TB_FLAGS(*tbp)));
     TB_JUSTIFICATION(*tbp) = JUST_CENTER;
-    face = TB_STATE(*tbp);
-    FreeDecorFace(dpy, face);
-    if (!do_free_only)
-      LoadDefaultButton(face++, i);
-    for (j = 1; j < MaxButtonState; ++j, ++face)
+    for (face = TB_STATE(*tbp), j = 0; j < MaxButtonState; j++, face++)
     {
-      FreeDecorFace(dpy, face);
-      if (!do_free_only)
-	LoadDefaultButton(face, i);
+      LoadDefaultButton(face, i);
     }
   }
 
@@ -1431,14 +1442,6 @@ static void ResetOrDestroyAllButtons(FvwmDecor *decor, Bool do_free_only)
   TB_MWM_DECOR_FLAGS(decor->buttons[0]) |= MWM_DECOR_MENU;
   TB_MWM_DECOR_FLAGS(decor->buttons[1]) |= MWM_DECOR_MAXIMIZE;
   TB_MWM_DECOR_FLAGS(decor->buttons[3]) |= MWM_DECOR_MINIMIZE;
-}
-void DestroyAllButtons(FvwmDecor *decor)
-{
-  ResetOrDestroyAllButtons(decor, True);
-}
-void ResetAllButtons(FvwmDecor *decor)
-{
-  ResetOrDestroyAllButtons(decor, False);
 }
 
 /***********************************************************************
@@ -1539,6 +1542,7 @@ static void InitVariables(void)
   Scr.Hilite = NULL;
   Scr.Focus = NULL;
   Scr.PreviousFocus = NULL;
+  Scr.LastScreenFocus = NULL;
   Scr.Ungrabbed = NULL;
 
   Scr.DefaultFont.font = NULL;

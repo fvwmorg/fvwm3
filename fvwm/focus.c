@@ -137,17 +137,14 @@ static void DoSetFocus(Window w, FvwmWindow *Fw, Bool FocusByMouse, Bool NoWarp)
   }
   lastFocusType = FocusByMouse;
 
-  if (Scr.NumberOfScreens > 1)
+  if (!Fw && !Scr.flags.is_pointer_on_this_screen)
   {
-    XQueryPointer(dpy, Scr.Root, &JunkRoot, &JunkChild,
-		  &JunkX, &JunkY, &JunkX, &JunkY, &JunkMask);
-    if (JunkRoot != Scr.Root)
-    {
-      focus_grab_buttons(Scr.Ungrabbed, False);
-      Scr.Focus = NULL;
-      FOCUS_SET(Scr.NoFocusWin);
-      return;
-    }
+    focus_grab_buttons(Scr.Ungrabbed, False);
+    Scr.Focus = NULL;
+    /* DV (25-Nov-2000): Don't give the Scr.NoFocusWin the focus here. This
+     * would steal the focus from the other screen's root window again. */
+    /* FOCUS_SET(Scr.NoFocusWin); */
+    return;
   }
 
   if(Fw != NULL && !NoWarp)
@@ -230,7 +227,7 @@ static void DoSetFocus(Window w, FvwmWindow *Fw, Bool FocusByMouse, Bool NoWarp)
     Scr.Focus = NULL;
   }
 
-  if ((  Fw)&&(WM_TAKES_FOCUS(Fw)))
+  if (Fw && WM_TAKES_FOCUS(Fw))
   {
     send_clientmessage(dpy, w, _XA_WM_TAKE_FOCUS, lastTimestamp);
   }
@@ -238,13 +235,16 @@ static void DoSetFocus(Window w, FvwmWindow *Fw, Bool FocusByMouse, Bool NoWarp)
   XSync(dpy,0);
 }
 
-static void MoveFocus(Window w, FvwmWindow *Fw, Bool FocusByMouse, Bool NoWarp)
+static void MoveFocus(
+  Window w, FvwmWindow *Fw, Bool FocusByMouse, Bool NoWarp, Bool do_force)
 {
   FvwmWindow *ffw_old = Scr.Focus;
   Bool accepts_input_focus = do_accept_input_focus(Fw);
 
-  if (Fw == Scr.Focus)
+  if (!do_force && Fw == Scr.Focus)
+  {
     return;
+  }
   DoSetFocus(w, Fw, FocusByMouse, NoWarp);
   if (Scr.Focus != ffw_old)
   {
@@ -256,9 +256,19 @@ static void MoveFocus(Window w, FvwmWindow *Fw, Bool FocusByMouse, Bool NoWarp)
   }
 }
 
-void SetFocus(Window w, FvwmWindow *Fw, Bool FocusByMouse)
+void SetFocusWindow(FvwmWindow *Fw, Bool FocusByMouse)
 {
-  MoveFocus(w, Fw, FocusByMouse, False);
+  MoveFocus(Fw->w, Fw, FocusByMouse, False, False);
+}
+
+void DeleteFocus(Bool FocusByMouse)
+{
+  MoveFocus(Scr.NoFocusWin, NULL, FocusByMouse, False, False);
+}
+
+void ForceDeleteFocus(Bool FocusByMouse)
+{
+  MoveFocus(Scr.NoFocusWin, NULL, FocusByMouse, False, True);
 }
 
 void SetPointerEventPosition(XEvent *eventp, int x, int y)
@@ -297,7 +307,7 @@ void FocusOn(FvwmWindow *t, Bool FocusByMouse, char *action)
     if (t)
     {
       /* give the window a chance to take the focus itself */
-      MoveFocus(t->w, t, FocusByMouse, 1);
+      MoveFocus(t->w, t, FocusByMouse, 1, 0);
     }
     return;
   }
@@ -339,7 +349,7 @@ void FocusOn(FvwmWindow *t, Bool FocusByMouse, char *action)
   }
 
   UngrabEm(GRAB_NORMAL);
-  MoveFocus(t->w, t, FocusByMouse, NoWarp);
+  MoveFocus(t->w, t, FocusByMouse, NoWarp, 0);
 }
 
 /**************************************************************************

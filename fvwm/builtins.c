@@ -1285,35 +1285,22 @@ void FreeDecorFace(Display *dpy, DecorFace *df)
        df->u.grad.pixels, df->u.grad.npixels,
        AllPlanes); */
     free(df->u.grad.pixels);
-    df->u.grad.pixels = NULL;
     break;
 
   case PixmapButton:
   case TiledPixmapButton:
     if (df->u.p)
       DestroyPicture(dpy, df->u.p);
-    df->u.p = NULL;
     break;
 
   case VectorButton:
+    if (df->u.vector.x)
+      free (df->u.vector.x);
+    if (df->u.vector.y)
+      free (df->u.vector.y);
   default:
     /* see below */
     break;
-  }
-  /* always free the vector buttons */
-  if (df->vector.x)
-  {
-#if 0
-    free (df->vector.x);
-#endif
-    df->vector.x = NULL;
-  }
-  if (df->vector.y)
-  {
-#if 0
-    free (df->vector.y);
-#endif
-    df->vector.y = NULL;
   }
 #ifdef MULTISTYLE
   /* delete any compound styles */
@@ -1325,6 +1312,7 @@ void FreeDecorFace(Display *dpy, DecorFace *df)
   df->next = NULL;
 #endif
   memset(&df->style, 0, sizeof(df->style));
+  memset(&df->u, 0, sizeof(df->u));
   DFS_FACE_TYPE(df->style) = SimpleButton;
 }
 
@@ -1394,7 +1382,7 @@ Bool ReadDecorFace(char *s, DecorFace *df, int button, int verbose)
     {
       /* normal coordinate list button style */
       int i, num_coords, num, line_style;
-      struct vector_coords *vc = &df->vector;
+      struct vector_coords *vc = &df->u.vector;
 
       /* get number of points */
       if (strncasecmp(style,"Vector",6)==0)
@@ -1671,23 +1659,28 @@ static char *ReadTitleButton(
 {
   char *end = NULL, *spec;
   DecorFace tmpdf;
-  enum ButtonState bs = MaxButtonState;
-  int i = 0, all = 0, pstyle = 0;
+  enum ButtonState bs;
+  int i;
+  int all = 0;
+  int pstyle = 0;
 
-  while(isspace((unsigned char)*s))++s;
-  for (; i < MaxButtonState; ++i)
-    if (strncasecmp(button_states[i],s,
-		    strlen(button_states[i]))==0)
+  while(isspace((unsigned char)*s))
+    s++;
+  for (i = 0, bs = MaxButtonState; i < MaxButtonState; ++i)
+  {
+    if (strncasecmp(button_states[i], s, strlen(button_states[i]))==0)
     {
       bs = i;
       break;
     }
+  }
   if (bs != MaxButtonState)
     s += strlen(button_states[bs]);
   else
     all = 1;
-  while(isspace((unsigned char)*s))++s;
-  if ('(' == *s)
+  while(isspace((unsigned char)*s))
+    s++;
+  if (*s == '(')
   {
     int len;
     pstyle = 1;
@@ -1707,17 +1700,10 @@ static char *ReadTitleButton(
     spec = s;
 
   while(isspace((unsigned char)*spec))
-    ++spec;
+    spec++;
   /* setup temporary in case button read fails */
-  memset(&DFS_FLAGS(tmpdf.style), 0, sizeof(DFS_FLAGS(tmpdf.style)));
+  memset(&tmpdf, 0, sizeof(DecorFace));
   DFS_FACE_TYPE(tmpdf.style) = SimpleButton;
-
-#ifdef MULTISTYLE
-  tmpdf.next = NULL;
-#endif
-#ifdef MINI_ICONS
-  tmpdf.u.p = NULL;
-#endif
 
   if (strncmp(spec, "--",2)==0)
   {
@@ -1729,21 +1715,24 @@ static char *ReadTitleButton(
 	ReadDecorFace(spec, &TB_STATE(*tb)[i],-1,False);
     }
   }
-  else if (ReadDecorFace(spec, &tmpdf,button,True))
+  else if (ReadDecorFace(spec, &tmpdf, button, True))
   {
     int b = all ? 0 : bs;
 #ifdef MULTISTYLE
     if (append)
     {
       DecorFace *tail = &TB_STATE(*tb)[b];
-      while (tail->next) tail = tail->next;
+      while (tail->next)
+	tail = tail->next;
       tail->next = (DecorFace *)safemalloc(sizeof(DecorFace));
-      *tail->next = tmpdf;
+      memcpy(tail->next, &tmpdf, sizeof(DecorFace));
       if (all)
+      {
 	for (i = 1; i < MaxButtonState; ++i)
 	{
 	  tail = &TB_STATE(*tb)[i];
-	  while (tail->next) tail = tail->next;
+	  while (tail->next)
+	    tail = tail->next;
 	  tail->next = (DecorFace *)safemalloc(sizeof(DecorFace));
 	  memset(&DFS_FLAGS(tail->next->style), 0,
 		 sizeof(DFS_FLAGS(tail->next->style)));
@@ -1751,25 +1740,26 @@ static char *ReadTitleButton(
 	  tail->next->next = NULL;
 	  ReadDecorFace(spec, tail->next, button, False);
 	}
+      }
     }
     else
+#endif
     {
-#endif
       FreeDecorFace(dpy, &TB_STATE(*tb)[b]);
-      TB_STATE(*tb)[b] = tmpdf;
+      memcpy(&(TB_STATE(*tb)[b]), &tmpdf, sizeof(DecorFace));
       if (all)
+      {
 	for (i = 1; i < MaxButtonState; ++i)
-	  ReadDecorFace(spec, &TB_STATE(*tb)[i],button,False);
-#ifdef MULTISTYLE
+	  ReadDecorFace(spec, &TB_STATE(*tb)[i], button, False);
+      }
     }
-#endif
-
   }
   if (pstyle)
   {
     free(spec);
-    ++end;
-    while(isspace((unsigned char)*end))++end;
+    end++;
+    while(isspace((unsigned char)*end))
+      end++;
   }
   return end;
 }
@@ -1863,26 +1853,28 @@ void DestroyDecor(F_CMD_ARGS)
   for (; decor; decor = decor->next)
   {
     if (decor->tag)
+    {
       if (StrEquals(item, decor->tag))
       {
 	found = decor;
 	break;
       }
+    }
     prev = decor;
   }
   free(item);
 
   if (found && (found != &Scr.DefaultDecor))
   {
-    FvwmWindow *fw = Scr.FvwmRoot.next;
-    while(fw)
+    FvwmWindow *fw;
+
+    for (fw = Scr.FvwmRoot.next; fw; fw = fw->next)
     {
       if (fw->decor == found)
       {
 	ExecuteFunction(
 	  "ChangeDecor Default", fw, eventp, C_WINDOW, *Module, 0, NULL);
       }
-      fw = fw->next;
     }
     prev->next = found->next;
     DestroyFvwmDecor(found);
@@ -1962,7 +1954,7 @@ void DestroyFvwmDecor(FvwmDecor *decor)
   int i;
   /* reset to default button set (frees allocated mem) */
   DestroyAllButtons(decor);
-  for (i = 0; i < 3; ++i)
+  for (i = 0; i < MaxButtonState; ++i)
   {
     int j = 0;
     for (; j < MaxButtonState; ++j)
@@ -2021,7 +2013,9 @@ void add_item_to_decor(F_CMD_ARGS)
       decor->next = found;
     }
     else
+    {
       free(item);
+    }
 
     if (found)
     {
@@ -2043,14 +2037,14 @@ void UpdateDecor(F_CMD_ARGS)
 {
   FvwmWindow *fw = Scr.FvwmRoot.next;
 #ifdef USEDECOR
-  FvwmDecor *decor = &Scr.DefaultDecor, *found = NULL;
+  FvwmDecor *decor, *found = NULL;
   FvwmWindow *hilight = Scr.Hilite;
   char *item = NULL;
   action = GetNextToken(action, &item);
   if (item)
   {
     /* search for tag */
-    for (; decor; decor = decor->next)
+    for (decor = &Scr.DefaultDecor; decor; decor = decor->next)
       if (decor->tag)
 	if (strcasecmp(item, decor->tag)==0)
 	{

@@ -22,10 +22,12 @@
 
 /********************************************************************
  *
- * Sets the input focus to the indicated window.
+ * Sets/deletes the input focus to the indicated window.
  *
  **********************************************************************/
-void SetFocus(Window, FvwmWindow *, Bool FocusByMouse);
+void SetFocusWindow(FvwmWindow *Fw, Bool FocusByMouse);
+void DeleteFocus(Bool FocusByMouse);
+void ForceDeleteFocus(Bool FocusByMouse);
 
 
 /**************************************************************************

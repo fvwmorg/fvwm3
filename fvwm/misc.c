@@ -162,7 +162,7 @@ Bool GrabEm(int cursor, int grab_context)
        * window manager */
       if(Scr.PreviousFocus == NULL)
 	Scr.PreviousFocus = Scr.Focus;
-      SetFocus(Scr.NoFocusWin,NULL,0);
+      DeleteFocus(0);
     }
     grab_win = Scr.Root;
     rep = 500;
@@ -274,7 +274,7 @@ void UngrabEm(int ungrab_context)
     {
       /* if the window still exists, focus on it */
       if (Scr.PreviousFocus->w)
-	SetFocus(Scr.PreviousFocus->w, Scr.PreviousFocus, 0);
+	SetFocusWindow(Scr.PreviousFocus, 0);
       Scr.PreviousFocus = NULL;
     }
   }
