@@ -228,6 +228,7 @@ static const func_type func_config[] =
   {"send_windowlist",send_list_func, F_SEND_WINDOW_LIST,     FUNC_DONT_REPEAT},
   {"sendtomodule", SendStrToModule,  F_SEND_STRING,          FUNC_DONT_REPEAT},
   {"set_mask",     set_mask_function,F_SET_MASK,             FUNC_DONT_REPEAT},
+  {"set_nograb_mask",setNoGrabMaskFunc,F_SET_NOGRAB_MASK,    FUNC_DONT_REPEAT},
   {"set_sync_mask",setSyncMaskFunc,  F_SET_SYNC_MASK,        FUNC_DONT_REPEAT},
   {"setanimation", set_animation,    F_SET_ANIMATION,	     0},
   {"setenv",       SetEnv,           F_SETENV,               0},

@@ -494,7 +494,8 @@ static void ProcessMessage (Ulong type, FvwmPacketBody *body)
 
   ConsoleDebug (FVWM, "FVWM Message type: %ld\n", type);
 
-  switch(type) {
+  switch(type)
+  {
   case M_CONFIG_INFO:
     ConsoleDebug (FVWM, "DEBUG::M_CONFIG_INFO\n");
     configure_colorsets ((unsigned long*)body);

@@ -64,6 +64,7 @@ char **pipeName;
 
 unsigned long *PipeMask;
 unsigned long *SyncMask;
+unsigned long *NoGrabMask;
 struct queue_buff_struct **pipeQueue;
 
 extern fd_set init_fdset;
@@ -82,6 +83,7 @@ void initModules(void)
   pipeOn = (int *)safemalloc(sizeof(int)*npipes);
   PipeMask = (unsigned long *)safemalloc(sizeof(unsigned long)*npipes);
   SyncMask = (unsigned long *)safemalloc(sizeof(unsigned long)*npipes);
+  NoGrabMask = (unsigned long *)safemalloc(sizeof(unsigned long)*npipes);
   pipeName = (char **)safemalloc(sizeof(char *)*npipes);
   pipeQueue=(struct queue_buff_struct **)
     safemalloc(sizeof(struct queue_buff_struct *)*npipes);
@@ -93,6 +95,7 @@ void initModules(void)
       pipeOn[i] = -1;
       PipeMask[i] = MAX_MASK;
       SyncMask[i] = 0;
+      NoGrabMask[i] = 0;
       pipeQueue[i] = (struct queue_buff_struct *)NULL;
       pipeName[i] = NULL;
     }
@@ -260,6 +263,7 @@ static int do_execute_module(F_CMD_ARGS, Bool desperate)
       pipeOn[i] = -1;
       PipeMask[i] = MAX_MASK;
       SyncMask[i] = 0;
+      NoGrabMask[i] = 0;
       free(arg1);
       pipeQueue[i] = NULL;
       if (DoingCommandLine) {
@@ -1185,7 +1189,7 @@ int PositiveWrite(int module, unsigned long *ptr, int size)
   /* would be better to send RecaptureStart and RecaptureEnd messages. */
   /* If module is lock on send for iconify message and its an
    * iconify event and server grabbed, then return */
-  if ((SyncMask[module] & M_ICONIFY & ptr[1]) && (myxgrabcount != 0))
+  if ((NoGrabMask[module] & SyncMask[module] & ptr[1]) && (myxgrabcount != 0))
   {
     return -1;
   }
@@ -1462,4 +1466,12 @@ void setSyncMaskFunc(F_CMD_ARGS)
 
   GetIntegerArguments(action, NULL, &val, 1);
   SyncMask[*Module] = (unsigned long)val;
+}
+
+void setNoGrabMaskFunc(F_CMD_ARGS)
+{
+  int val = 0;
+
+  GetIntegerArguments(action, NULL, &val, 1);
+  NoGrabMask[*Module] = (unsigned long)val;
 }

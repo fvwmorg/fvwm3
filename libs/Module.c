@@ -125,9 +125,9 @@ void SendText(int *fd, const char *message, unsigned long window)
 
 /************************************************************************
  *
- * SendFvwmPipe - Sends message to fvwm:  The message is a comma-delimited 
+ * SendFvwmPipe - Sends message to fvwm:  The message is a comma-delimited
  * string separated into its component sections and sent one by one to fvwm.
- * It is discouraged to use this function with a "synchronous" module. 
+ * It is discouraged to use this function with a "synchronous" module.
  * (Form FvwmIconMan)
  *
  ***********************************************************************/
@@ -156,7 +156,7 @@ void SendFvwmPipe(int *fd, const char *message, unsigned long window)
    * NOTE: this makes this second call to SendText()
    *       distinct from the first call. Two calls is
    *       cleaner than hacking the loop to make only
-   *       one call. 
+   *       one call.
    */
   SendText(fd, hold, window);
 }
@@ -175,6 +175,14 @@ void SetSyncMask(int *fd, unsigned long mask)
 
   sprintf(set_syncmask_mesg,"SET_SYNC_MASK %lu\n",mask);
   SendText(fd,set_syncmask_mesg,0);
+}
+
+void SetNoGrabMask(int *fd, unsigned long mask)
+{
+  char set_nograbmask_mesg[50];
+
+  sprintf(set_nograbmask_mesg,"SET_NOGRAB_MASK %lu\n",mask);
+  SendText(fd,set_nograbmask_mesg,0);
 }
 
 /*

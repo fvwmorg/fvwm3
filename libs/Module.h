@@ -91,9 +91,9 @@ typedef struct {
 #define M_MINI_ICON          (1<<23)
 #define M_WINDOWSHADE        (1<<24)
 #define M_DEWINDOWSHADE      (1<<25)
-/* The next one is not used, so we have a place for a new type (it was 
+/* The next one is not used, so we have a place for a new type (it was
  * M_LOCKONSEND which is no more needed). olicha Nov 13, 1999 */
-#define M_NOTUSED            (1<<26) 
+#define M_NOTUSED            (1<<26)
 #define M_SENDCONFIG         (1<<27)
 #define M_RESTACK            (1<<28)
 #define M_ADD_WINDOW         (1<<29)
@@ -131,9 +131,9 @@ void SendText(int *fd, const char *message, unsigned long window);
 
 /************************************************************************
  *
- * SendFvwmPipe - Sends message to fvwm:  The message is a comma-delimited 
+ * SendFvwmPipe - Sends message to fvwm:  The message is a comma-delimited
  * string separated into its component sections and sent one by one to fvwm.
- * It is discouraged to use this function with a "synchronous" module. 
+ * It is discouraged to use this function with a "synchronous" module.
  * (Form FvwmIconMan)
  *
  ***********************************************************************/
@@ -152,6 +152,14 @@ void SetMessageMask(int *fd, unsigned long mask);
  *
  **************************************************************************/
 void SetSyncMask(int *fd, unsigned long mask);
+
+/***************************************************************************
+ *
+ * Sets the which-message-types-I-do-not-want while the server is grabbed
+ * and module transmission is locked at the same time.
+ *
+ **************************************************************************/
+void SetNoGrabMask(int *fd, unsigned long mask);
 
 /*
  * Used to ask for subset of module configuration lines.

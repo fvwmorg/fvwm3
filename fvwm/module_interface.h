@@ -59,8 +59,8 @@ extern struct queue_buff_struct **pipeQueue;
 
 /*
  * M_NOTUSED is not used. It was M_LOCKONSEND which is not more needed: it
- * has been replaced by a separated mask which defines on which messages 
- * the fvwm-to-module communication need to be lock. olicha Nov 13 1999. 
+ * has been replaced by a separated mask which defines on which messages
+ * the fvwm-to-module communication need to be lock. olicha Nov 13 1999.
  *
  * M_SENDCONFIG for   modules to tell  fvwm that  they  want to  see each
  * module configuration command as   it is entered.  Causes  modconf.c to
@@ -100,5 +100,6 @@ int PositiveWrite(int module, unsigned long *ptr, int size);
 RETSIGTYPE DeadPipe(int nonsense);
 void set_mask_function(F_CMD_ARGS);
 void setSyncMaskFunc(F_CMD_ARGS);
+void setNoGrabMaskFunc(F_CMD_ARGS);
 
 #endif /* MODULE_H */

@@ -225,6 +225,7 @@ void process_message(unsigned long type, const unsigned long *body)
     case M_ICON_FILE:
     default:
       list_unknown(body);
+      fprintf(stderr, " 0x%x\n", (int)type);
       break;
     }
 }
@@ -404,7 +405,7 @@ void list_lower(const unsigned long *body)
 void list_unknown(const unsigned long *body)
 {
   (void)body;
-  fprintf(stderr,"Unknown packet type\n");
+  fprintf(stderr,"Unknown packet type");
 }
 
 /***********************************************************************

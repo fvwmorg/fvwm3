@@ -1,3 +1,14 @@
+2000-03-24  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* fvwm/functions.c (func_config):
+	* libs/Module.h:
+	* libs/Module.c (SetNoGrabMask):
+	introduced SET_NOGRAB_MASK command to specify the packets that are not
+	sent to the module while the server is grabbed and transmission is in
+	locked mode; the mask must be a subset of the SET_SYNC_MASK mask.
+	fixes problem that icons forget iconified state during recapture or
+	when applications start up iconic
+
 2000-03-17  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* fvwm/placement.c (PlaceWindow):

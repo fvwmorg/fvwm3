@@ -1143,6 +1143,7 @@ void HandleMapRequestKeepRaised(Window KeepRaised, FvwmWindow *ReuseWin)
 	    {
 	      Iconify(Tmp_win, Tmp_win->wmhints->icon_x,
 		      Tmp_win->wmhints->icon_y);
+fprintf(stderr,"initial iconify\n");
 	    }
 	  else
 	    {
