@@ -897,73 +897,73 @@ void HandleMapRequestKeepRaised(Window KeepRaised, FvwmWindow *ReuseWin)
     XRaiseWindow(dpy,KeepRaised);
   /* If it's not merely iconified, and we have hints, use them. */
   if (!IS_ICONIFIED(Tmp_win))
+  {
+    int state;
+
+    if(Tmp_win->wmhints && (Tmp_win->wmhints->flags & StateHint))
+      state = Tmp_win->wmhints->initial_state;
+    else
+      state = NormalState;
+
+    if(DO_START_ICONIC(Tmp_win))
+      state = IconicState;
+
+    if(isIconicState != DontCareState)
+      state = isIconicState;
+
+    MyXGrabServer(dpy);
+    switch (state)
     {
-      int state;
-
-      if(Tmp_win->wmhints && (Tmp_win->wmhints->flags & StateHint))
-	state = Tmp_win->wmhints->initial_state;
-      else
-	state = NormalState;
-
-      if(DO_START_ICONIC(Tmp_win))
-	state = IconicState;
-
-      if(isIconicState != DontCareState)
-	state = isIconicState;
-
-      MyXGrabServer(dpy);
-      switch (state)
+    case DontCareState:
+    case NormalState:
+    case InactiveState:
+    default:
+      if (Tmp_win->Desk == Scr.CurrentDesk)
+      {
+	XMapWindow(dpy, Tmp_win->w);
+	XMapWindow(dpy, Tmp_win->frame);
+	SET_MAP_PENDING(Tmp_win, 1);
+	SetMapStateProp(Tmp_win, NormalState);
+	if(((!IS_TRANSIENT(Tmp_win) ||
+	     Tmp_win->transientfor == Scr.Root) &&
+	    DO_GRAB_FOCUS(Tmp_win)) ||
+	   (IS_TRANSIENT(Tmp_win) && DO_GRAB_FOCUS_TRANSIENT(Tmp_win) &&
+	    Scr.Focus && Scr.Focus->w == Tmp_win->transientfor))
 	{
-	case DontCareState:
-	case NormalState:
-	case InactiveState:
-	default:
-	  if (Tmp_win->Desk == Scr.CurrentDesk)
+	  if (OnThisPage && !HAS_NEVER_FOCUS(Tmp_win))
 	  {
-	      XMapWindow(dpy, Tmp_win->w);
-	      XMapWindow(dpy, Tmp_win->frame);
-	      SET_MAP_PENDING(Tmp_win, 1);
-	      SetMapStateProp(Tmp_win, NormalState);
-	      if(((!IS_TRANSIENT(Tmp_win) ||
-                   Tmp_win->transientfor == Scr.Root) &&
-                  DO_GRAB_FOCUS(Tmp_win)) ||
-		 (IS_TRANSIENT(Tmp_win) && DO_GRAB_FOCUS_TRANSIENT(Tmp_win) &&
-		  Scr.Focus && Scr.Focus->w == Tmp_win->transientfor))
-		{
-                  if (OnThisPage && !HAS_NEVER_FOCUS(Tmp_win))
-                    {
-		      SetFocus(Tmp_win->w, Tmp_win, 1);
-                    }
-		}
-	    }
-	  else
-	    {
-	      XMapWindow(dpy, Tmp_win->w);
-	      SetMapStateProp(Tmp_win, NormalState);
-	    }
-	  break;
-
-	case IconicState:
-	  if (isIconifiedByParent)
-	  {
-	    isIconifiedByParent = False;
-	    SET_ICONIFIED_BY_PARENT(Tmp_win, 1);
+	    SetFocus(Tmp_win->w, Tmp_win, 1);
 	  }
-	  if (Tmp_win->wmhints)
-	  {
-	    Iconify(Tmp_win, Tmp_win->wmhints->icon_x,
-		    Tmp_win->wmhints->icon_y);
-	  }
-	  else
-	  {
-	    Iconify(Tmp_win, 0, 0);
-	  }
-	  break;
 	}
-      if(!PPosOverride)
-	XSync(dpy,0);
-      MyXUngrabServer(dpy);
+      }
+      else
+      {
+	XMapWindow(dpy, Tmp_win->w);
+	SetMapStateProp(Tmp_win, NormalState);
+      }
+      break;
+
+    case IconicState:
+      if (isIconifiedByParent)
+      {
+	isIconifiedByParent = False;
+	SET_ICONIFIED_BY_PARENT(Tmp_win, 1);
+      }
+      if (Tmp_win->wmhints)
+      {
+	Iconify(Tmp_win, Tmp_win->wmhints->icon_x,
+		Tmp_win->wmhints->icon_y);
+      }
+      else
+      {
+	Iconify(Tmp_win, 0, 0);
+      }
+      break;
     }
+    if(!PPosOverride)
+      XSync(dpy,0);
+    MyXUngrabServer(dpy);
+  }
   /* If no hints, or currently an icon, just "deiconify" */
   else
   {
@@ -1002,15 +1002,15 @@ void HandleMapNotify(void)
   DBUG("HandleMapNotify","Routine Entered");
 
   if (!Tmp_win)
+  {
+    if((Event.xmap.override_redirect == True)&&
+       (Event.xmap.window != Scr.NoFocusWin))
     {
-      if((Event.xmap.override_redirect == True)&&
-	 (Event.xmap.window != Scr.NoFocusWin))
-	{
-	  XSelectInput(dpy,Event.xmap.window,FocusChangeMask);
-	  Scr.UnknownWinFocused = Event.xmap.window;
-	}
-      return;
+      XSelectInput(dpy,Event.xmap.window,FocusChangeMask);
+      Scr.UnknownWinFocused = Event.xmap.window;
     }
+    return;
+  }
 
   /* Except for identifying over-ride redirect window mappings, we
    * don't need or want windows associated with the substructurenotifymask */
@@ -1059,16 +1059,16 @@ void HandleMapNotify(void)
   if((!IS_TRANSIENT(Tmp_win) && DO_GRAB_FOCUS(Tmp_win)) ||
      (IS_TRANSIENT(Tmp_win) && DO_GRAB_FOCUS_TRANSIENT(Tmp_win) &&
       Scr.Focus && Scr.Focus->w == Tmp_win->transientfor))
+  {
+    if (OnThisPage && !HAS_NEVER_FOCUS(Tmp_win))
     {
-      if (OnThisPage && !HAS_NEVER_FOCUS(Tmp_win))
-        {
-          SetFocus(Tmp_win->w,Tmp_win,1);
-        }
+      SetFocus(Tmp_win->w,Tmp_win,1);
     }
+  }
   if((!(HAS_BORDER(Tmp_win)|HAS_TITLE(Tmp_win)))&&(Tmp_win->boundary_width <2))
-    {
-      DrawDecorations(Tmp_win, DRAW_ALL, False, True, Tmp_win->decor_w);
-    }
+  {
+    DrawDecorations(Tmp_win, DRAW_ALL, False, True, Tmp_win->decor_w);
+  }
   XSync(dpy,0);
   MyXUngrabServer (dpy);
   XFlush (dpy);

@@ -438,25 +438,25 @@ void Loop(int *fd)
   XEvent Event;
 
   while( !isTerminated )
+  {
+    if(My_XNextEvent(dpy,&Event))
+      DispatchEvent(&Event);
+    if (error_occured)
     {
-      if(My_XNextEvent(dpy,&Event))
-	DispatchEvent(&Event);
-      if (error_occured)
-      {
-	Window root;
-	unsigned border_width, depth;
-	int x,y;
+      Window root;
+      unsigned border_width, depth;
+      int x,y;
 
-	if(XGetGeometry(dpy,Scr.Pager_w,&root,&x,&y,
-			(unsigned *)&window_w,(unsigned *)&window_h,
-			&border_width,&depth)==0)
-	  {
-	    /* does not return */
-	    ExitPager();
-	  }
-	error_occured = False;
+      if(XGetGeometry(dpy,Scr.Pager_w,&root,&x,&y,
+		      (unsigned *)&window_w,(unsigned *)&window_h,
+		      &border_width,&depth)==0)
+      {
+	/* does not return */
+	ExitPager();
       }
+      error_occured = False;
     }
+  }
 }
 
 

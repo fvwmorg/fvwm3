@@ -775,7 +775,11 @@ void do_menu(MenuParameters *pmp, MenuReturn *pmret)
   do_warp_to_title = False;
 
   /* Remember the key that popped up the root menu. */
-  if (!pmp->flags.is_submenu)
+  if (pmp->flags.is_submenu)
+  {
+    dkp.timestamp = 0;
+  }
+  else
   {
     if (pmp->eventp && pmp->eventp != (XEvent *)1)
     {

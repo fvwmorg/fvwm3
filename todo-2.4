@@ -1,8 +1,9 @@
 Items with highest priority / most severe problems:
 
- - #158 (IS_NAME_CHANGED flag) Mikhael (later)
- - What should we do with #128 (bug #564)?  Can fvwm do anything
-   about the window that receives the selection?
+ - Bug #511 = item #127
+   [need somebody with xpp to verify this]
+ - Buf #477 = item #124
+   [need a Linux 2.2.14 xbuffy executable to test this]
  - Do we want to set up bzip2 tarballs (#12)?  We'd have to put
    links on the downloads page then.  Definitely saves a lot of
    space (compressed with bzip2 -9):
@@ -11,39 +12,30 @@ Items with highest priority / most severe problems:
 
 New since last update:
 
-160, 161
+
 
 Closed since last update:
 
-48, 107, 120, 133, 145, 148, 150, 157, 160, 161
+121, 124, 128, 138
 
 ---------- Summary: ----------------------------------------------
 
- 2 to be verified
- 2 to be discussed
-21 to do
+ 1 to be verified
+ 0 to be discussed
+20 to do
  3 distribution issues
  9 testing
 ----------------------
-37 open items
-124 items closed
+33 open items
+128 items closed
 161 items in total
 
 ---------- To be verified: ---------------------------------------
 
 118) Investigate "FvwmPager & StaysOnTop" bug (#543).
      [reported by Nadim Shaikli <nadim.shaikli@intel.com>]
-138) Bug #593 (key bindings w/ Motif)
-     [confirmed by Dominik]
 
 ---------- To be discussed ---------------------------------------
-
-128) Bug #564 (pasting text goes to window with the mouse, not
-     the focused window).
-121) Investigate FvwmPager core dump.
-     [reported by Wing Tung Leung <tg@skynet.be> on 20-Feb-2000]
-     [Dominik: Didn't get any reply, stack trace, ...]
-     [Dominik: I suggest to close it as unreproducible]
 
 --------- To do: ------------------------------------------------
 
@@ -62,7 +54,6 @@ Closed since last update:
 122) Investigate FvwmButtons panel problem.
      [reported by Robert H. Ford II <rhford2@lucent.com> on 18-Feb-2000]
 123) Bug #378 (FvwmPager interferes with xscreensaver)
-124) Bug #477 (closing xbuffy popup window nukes focus)
 125) Bug #479 (windows migrating to page 0 0 during restart)
 126) Bug #489 (icons migrating on restart, ident does not work)
 127) Bug #511 (xpp subwindows not drawn properly)
@@ -84,8 +75,10 @@ Closed since last update:
      [various reporters, but no usable feedback yet]
 156) xterm client window cursor corrupted.
      [reported by Nagi Aboulenein on 2-Nov-1999]
+157) Stack ring still broken sometimes.
+     [Mike Han]
 158) IS_NAME_CHANGED flag still broken?
-     [Mikhael?]
+     [Mikhael]
 159) configure check for gnome.h
 
 ---------- Distribution issues: ----------------------------------
@@ -111,48 +104,22 @@ Closed since last update:
 
 ========== Closed recently: ======================================
 
- 14) Figure out what the problem with Amaya is.
-     [reported on 3-Jun-1999 by Rob Urban <urban@spielwiese.de>]
-     [still unreproducible; not relevant for 2.4]
- 16) Try to fix the 'netscape stuck on page' problem.
-     [reported on 17-May-1999 by <jason@sdf.lonestar.org>]
-     [still unreproducible; not relevant for 2.4]
- 48) Finish Windoze 95 like config file.
- 90) Icon distribution.
 107) "Recapture" while an icon is focused takes several seconds.
      [reported by Mikhael; confirmed by Dominik]
      [workaround implemented]
-110) Running two FvwmAuto modules at one freezes fvwm.
-119) MaxSwallow does not work in FvwmWharf e.g. with
-     'xload -g 50x50'.
-     [reported by Dominik]
-     [not reproducible anymore]
 120) Icons are not always sorted properly; there may be
      gaps after page switching (with IconBox).
+121) Investigate FvwmPager core dump.
+     [reported by Wing Tung Leung <tg@skynet.be> on 20-Feb-2000]
+     [Dominik: Didn't get any reply, stack trace, ...]
+     [unreproducible]
+124) Bug #477 (closing xbuffy popup window nukes focus)
 133) Bug #602 (window placement w/ 2.3.15)
-140) Remove "Layer" command?  Instead, the "Layer" styles
-     can be applied immediately w/o Recapture.
-     [3 votes against vs 1 vote for removing]
-     [maybe after 2.4]
-141) Remove "MoveSmoothness" command?  I wrote it back when
-     window motion was very jerky due to excessive network
-     traffic, but I guess it's not very useful.
-142) Remove copyright disclaimers from individual files
-     (smaller tarball).
-     [saves only 15k tarball size; not worth the effort]
-145) Modules lose focus when a Netscape transient is opened
-     (ClickToFocus).
+138) Bug #593 (key bindings w/ Motif)
 148) Losing focus when entering root window bug.
      [reported by Elliot Sowadsky on 29-Dec-1999]
      [suggested fix: Lenience style... does not help]
      [implemented a workaround that cures the symptom]
-153) Investigate/reduce excessive colour allocation traffic
-     on startup.
-     [reported by Dan]
-     [perhaps after 2.4]
-157) Stack ring still broken sometimes.
-160) Remove FlipTransient style.
-161) Rename MovedButton3 condition to PlacedByButton3.
 
 ========== Closed: ===============================================
 
@@ -172,7 +139,13 @@ Closed since last update:
  11) Add FvwmKb module?
      [delayed until after 2.4]
  13) Use a 'busy' pointer during startup.
+ 14) Figure out what the problem with Amaya is.
+     [reported on 3-Jun-1999 by Rob Urban <urban@spielwiese.de>]
+     [still unreproducible; not relevant for 2.4]
  15) Get restart straight (sometimes an application vanishes over restarts)
+ 16) Try to fix the 'netscape stuck on page' problem.
+     [reported on 17-May-1999 by <jason@sdf.lonestar.org>]
+     [still unreproducible; not relevant for 2.4]
  18) Check if there are still growing windows as reported for 2.13.
      [bug #184 reported by Michael Hughes <mhughes@bridge.com>]
      [no bug; doesn't happen for 2.2 and up]
@@ -216,6 +189,7 @@ Closed since last update:
      [given up; I think I could reproduce the problem - it was a
      configuration mistake, but the reporter didn't care to answer
      if my suggestion helped; Dominik]
+ 48) Finish Windoze 95 like config file.
  49) Implement a 'H'old trigger for complex functions.
  50) Implement a 'ButtonGeometry' option for FvwmButtons.
  51) Fix constraining the window size when a window is maximized or
@@ -278,6 +252,7 @@ Closed since last update:
  87) Describe what to do for colour set support in the module docs.
  88) Investigate 'pager out of sync' problem
  89) Make FvwmScript use the same visual as fvwm (prerequisite for 80)
+ 90) Icon distribution.
  91) Fix Xpm version problem (bug #463).
  93) Finish 'CREATING PANELS' section in FvwmButtons man page.
  96) Make flat titlestyle work again.
@@ -298,6 +273,7 @@ Closed since last update:
 108) FvwmPager desk separators are not updated if their colour set
      is changed (*FvwmPagerColorset).
 109) FvwmIconMan titles don't seem to work.
+110) Running two FvwmAuto modules at one freezes fvwm.
 111) Fix position hints not working with menus invoked
      from a menu like this: 'addtomenu foo foo menu foo root c c'
 112) Fix desk flipping with
@@ -306,6 +282,13 @@ Closed since last update:
 113) FvwmForm sets no class/resource.
 114) FvwmIdent sets no class/resource.
 115) FvwmWharf sets no class/resource.
+119) MaxSwallow does not work in FvwmWharf e.g. with
+     'xload -g 50x50'.
+     [reported by Dominik]
+     [not reproducible anymore]
+128) Bug #564 (pasting text goes to window with the mouse, not
+     the focused window).
+     [either an enhancement request or not in the scope of fvwm]
 131) Sticky windows move to the top in the pager view if the desk is
      changed.
 132) Tru64 sizeof(unsigned long) problem
@@ -315,16 +298,34 @@ Closed since last update:
      within a function?
      [nope; enhanced Refresh/RefreshWindow instead]
 137) Bug #550 (FvwmAuto raises after 'lower')
+140) Remove "Layer" command?  Instead, the "Layer" styles
+     can be applied immediately w/o Recapture.
+     [3 votes against vs 1 vote for removing]
+     [maybe after 2.4]
+141) Remove "MoveSmoothness" command?  I wrote it back when
+     window motion was very jerky due to excessive network
+     traffic, but I guess it's not very useful.
+142) Remove copyright disclaimers from individual files
+     (smaller tarball).
+     [saves only 15k tarball size; not worth the effort]
 144) Bug #604 (ActivePlacements doesn't work if FvwmAnimate
      is running).
      [Style * DumbPlacement fixes it]
+145) Modules lose focus when a Netscape transient is opened
+     (ClickToFocus).
 147) Investigate/fix missing windows in pager after Recapture.
      [reported by Paul (PDS) on 06-Jan-2000]
 149) "date" command confuses keyboard focus.
 150) Mini windows in pager can reach into adjacent pages
      because of the min size of 3x3 pixels.
 151) Colours in FvwmIconMan screwed up.
+153) Investigate/reduce excessive colour allocation traffic
+     on startup.
+     [reported by Dan]
+     [perhaps after 2.4]
 154) Investigate/fix move lockups.
      [Reported by Brad]
      [did not happoen for several months; fix if it shows up again]
 155) Remove busycursor configure option.
+160) Remove FlipTransient style.
+161) Rename MovedButton3 condition to PlacedByButton3.

@@ -1928,31 +1928,34 @@ void destroy_window(FvwmWindow *tmp_win)
 
   /****** adjust focus ******/
 
-  if (tmp_win->transientfor != None && tmp_win->transientfor != Scr.Root)
+  if (tmp_win == Scr.Focus)
   {
-    FvwmWindow *t;
-    for (t = Scr.FvwmRoot.next; t != NULL; t = t->next)
+    if (tmp_win->transientfor != None && tmp_win->transientfor != Scr.Root)
     {
-      if (t->w == tmp_win->transientfor)
-	break;
+      FvwmWindow *t;
+      for (t = Scr.FvwmRoot.next; t != NULL; t = t->next)
+      {
+	if (t->w == tmp_win->transientfor)
+	  break;
+      }
+      if (t)
+      {
+	SetFocus(t->w, t, 1);
+	focus_set = True;
+      }
     }
-    if (t)
+    if (!focus_set)
     {
-      SetFocus(t->w, t, 1);
-      focus_set = True;
-    }
-  }
-  if (!focus_set)
-  {
-    if((tmp_win == Scr.Focus)&&(HAS_CLICK_FOCUS(tmp_win)))
-    {
-      if(tmp_win->next)
-	SetFocus(tmp_win->next->w, tmp_win->next, 1);
+      if(HAS_CLICK_FOCUS(tmp_win))
+      {
+	if(tmp_win->next)
+	  SetFocus(tmp_win->next->w, tmp_win->next, 1);
+	else
+	  SetFocus(Scr.NoFocusWin, NULL,1);
+      }
       else
 	SetFocus(Scr.NoFocusWin, NULL,1);
     }
-    else if(Scr.Focus == tmp_win)
-      SetFocus(Scr.NoFocusWin, NULL,1);
   }
 
   /****** adjust fvwm internal windows II ******/
