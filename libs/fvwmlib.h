@@ -155,9 +155,12 @@ char* searchPath( const char* path, const char* filename,
  * Stuff for dealing w/ bitmaps & pixmaps:
  ***********************************************************************/
 
-Pixel    GetShadow(Pixel);              /* 3d.c */
-Pixel    GetHilite(Pixel);              /* 3d.c */
-
+#define DARKNESS_FACTOR 0.5
+#define BRIGHTNESS_FACTOR 1.4
+Pixel GetShadow(Pixel);
+Pixel GetHilite(Pixel);
+void color_mult (unsigned short *red, unsigned short *green,
+		 unsigned short *blue, double k);
 
 /***********************************************************************
  * Wrappers around various X11 routines

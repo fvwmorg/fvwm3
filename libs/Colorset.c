@@ -124,7 +124,7 @@ static int LoadColorsetConditional(char *line, Bool free)
     if (cs->mask && (cs->mask != mask)) {
       XFreePixmap(Pdpy, cs->mask);
     }
-    if (cs->shape_mask && (cs->shape_mask != mask)) {
+    if (cs->shape_mask && (cs->shape_mask != shape_mask)) {
       XFreePixmap(Pdpy, cs->shape_mask);
     }
   }

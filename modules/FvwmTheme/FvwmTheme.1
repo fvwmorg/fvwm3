@@ -39,14 +39,16 @@ to run more than one FvwmTheme so there is no provision for using an
 alias name.
 
 .SH CONFIGURATION OPTIONS
-FvwmTheme supports only one configuration option.
+FvwmTheme supports some configuration options.
 
-.B "*FvwmThemeColorset" "\fIn\fP \fIfg\fP \fIbg\fP [\fIshape option\fP] [\fIpixmap option\fP]"
+.IP "*FvwmThemeColorset \fIn\fP \fIfg\fP \fIbg\fP [\fIshape option\fP] [\fIpixmap option\fP]"
 Will create or modify colorset \fIn\fP. Each colorset has a foreground and
 background color specified by \fIfg\fP and \fIbg\fP respectively.  If
 either \fIfg\fP or \fIbg\fP is specified as "-" it is not altered. If \fIbg\fP
 is specified as "average" it is calculated as the average color of the
-backround pixmap. Colors may be specified by name e.g. Liver or "Fava bean" or
+backround pixmap. If \fIfg\fP is specified as "contrast" one of white, cyan,
+magenta, yellow, red, green, blue or black is chosen depending on the
+background. Colors may be specified by name e.g. Liver or "Fava bean" or
 as an RGB hexadecimal triplet "#RRGGBB" e.g. "#551111" for a nice Chianti.
 
 Each colorset may also have a pixmap associated with it as an adjunct to the
@@ -83,6 +85,15 @@ and Y is a Yin Yang style (but without the dots).  Please refer to the
 \fICOLOR GRADIENTS\fP section in the \fIfvwm2\fP man page for the syntax
 of gradients.
 
+
+.IP "*FvwmThemeReadWriteColors"
+Tells FvwmTheme to use read/write color cells for the foreground and background
+pixels. This can make changing colorsets much faster but can only be used with
+PseudoColor displays. This option must be specified first and it cannot be
+turned off. Colorset changes can be made without requiring modules
+to redraw by specifying a colorset in the form
+"Colorset \fIn\fP \fIfg\fP \fIbg\fP -"
+
 .SH COMMANDS
 The following FVWM command may be executed at any time to alter the colorsets.
 It may be bound to a menu item or typed into a module such as FvwmTalk.
@@ -92,18 +103,29 @@ The syntax is the same as the configuration option.
 
 .SH EXAMPLES
 
-*FvwmThemeColorset 3 black gray
+  *FvwmThemeColorset 3 black gray
 
 If necessary this will create colorsets 0, 1, 2 and 3 and then change colorset
 3 to have a foreground of black, a background of gray and delete the optional
 pixmap.
 
-*FvwmThemeColorset 3 - "navy blue" -
+  *FvwmThemeColorset 3 - "navy blue" -
 
 Will change the background color of colorset 3 to navy blue. The foreground and
 pixmap will be unchanged.
 
-*FvwmThemeColorset 3 - - YGradient 200 3 blue 49 navy 1 blue 50 navy
+  *FvwmThemeColorset 3 - - YGradient 200 3 blue 1000 navy 1 blue 1000 navy
 
 Will add a Yin Yang gradient background pixmap to colorset 3.
 
+  #!/bin/sh
+  FvwmCommand "SendToModule FvwmTheme Colorset 7 navy gray"
+  while true
+  do
+    FvwmCommand "SendToModule FvwmTheme Colorset 7 gray - -"
+    sleep 1
+    FvwmCommand "SendToModule FvwmTheme Colorset 7 navy - -"
+    sleep 1
+  done
+
+will make colorset 7 blink if used with the *FvwmThemeReadWiriteColors option.

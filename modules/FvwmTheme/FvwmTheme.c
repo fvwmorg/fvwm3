@@ -42,11 +42,14 @@
 
 /* Globals */
 static Display *dpy;
-static Window win;	/* need a window to create pixmaps */
-static GC gc;		/* ditto */
+static Window win;			/* need a window to create pixmaps */
+static GC gc;				/* ditto */
 static char *name;
 static int color_limit = 0;
-static int fd[2];	/* communication pipes */
+static int fd[2];			/* communication pipes */
+static Bool privateCells = False;	/* set when read/write colors used */
+static Bool sharedCells = False;	/* set after a shared color is used */
+static int nSets = 0;			/* how many read/write sets allocated */
 
 /* forward declarations */
 static RETSIGTYPE signal_handler(int signal);
@@ -153,12 +156,14 @@ static void main_loop(void)
 }
 
 /* config options, the first NULL is replaced with *FvwmThemeColorset */
+/* the second NULL is replaced with *FvwmThemeReadWriteColors */
 /* the "Colorset" config option is what gets reflected by fvwm */
 static char *config_options[] =
 {
   "ImagePath",
   "ColorLimit",
   "Colorset",
+  NULL,
   NULL,
   NULL
 };
@@ -168,19 +173,32 @@ static void parse_config_line(char *line)
   char *rest;
 
   switch(GetTokenIndex(line, config_options, -1, &rest)) {
-  case 0:
+  case 0: /* ImagePath */
     SetImagePath(rest);
     break;
-  case 1:
+  case 1: /* ColorLimit */
     sscanf(rest, "%d", &color_limit);
     break;
-  case 2:
-    /* got a colorset config line from fvwm, maybe Defaultcolors: load it */
-    LoadColorsetAndFree(rest);
+  case 2: /* Colorset */
+    /* got a colorset config line from fvwm, this may be due to FvwmTheme
+     * sending one in or it may be another module (or fvwm itself)
+     * if using read/write cells ignore it so the pixels are not forgotten
+     * if not load the colorset and free any pixels/pixmaps that differ */
+    if (!privateCells)
+      LoadColorsetAndFree(rest);
     break;
-  case 3:
+  case 3: /* *FvwmThemColorset */
     parse_colorset(rest);
     break;
+  case 4: /* *FvwmThemeReadWriteColors */
+    if (sharedCells)
+      fprintf(stderr, "%s: must come first, already allocated shared pixels\n",
+	      config_options[4]);
+    else if (Pvisual->class != PseudoColor)
+      fprintf(stderr, "%s: only works with PseudoColor visuals\n",
+	      config_options[4]);
+    else
+      privateCells = True;
   }
 }
 
@@ -202,6 +220,7 @@ static char *shape_options[] =
 
 static char *dash = "-";
 static char *average = "Average";
+static char *contrast = "Contrast";
 
 /* translate a colorset spec into a colorset structure */
 static void parse_colorset(char *line)
@@ -211,6 +230,8 @@ static void parse_colorset(char *line)
   colorset_struct *cs;
   char *token, *fg, *bg;
   Picture *picture;
+  Bool update = False;
+  XColor color;
 
   /* find out which colorset and make sure it exists */
   token = PeekToken(line, &line);
@@ -221,6 +242,14 @@ static void parse_colorset(char *line)
   if (ret)
     return;
   cs = AllocColorset(n);
+  /* grab cells */
+  if (privateCells) {
+    while (nSets <= n) {
+      update = True;
+      XAllocColorCells(dpy, Pcmap, False, NULL, 0, &Colorset[nSets].fg, 4);
+      nSets++;
+    }
+  }
 
   /* get the mandatory foreground and background color names */
   line = GetNextToken(line, &fg);
@@ -233,22 +262,53 @@ static void parse_colorset(char *line)
   }
 
   /* fill in the structure if color name is specified */
-  if (!StrEquals(fg, dash)) {
-    XFreeColors(dpy, Pcmap, &cs->fg, 1, 0);
-    cs->fg = GetColor(fg);
+  if (!(StrEquals(fg, dash) || StrEquals(fg, contrast))) {
+    if (privateCells) {
+      XParseColor(dpy, Pcmap, fg, &color);
+      color.pixel = cs->fg;
+      XStoreColor(dpy, Pcmap, &color);
+    } else {
+      XFreeColors(dpy, Pcmap, &cs->fg, 1, 0);
+      cs->fg = GetColor(fg);
+      update = sharedCells = True;
+    }   
   }
-  if (!StrEquals(bg, dash) && !StrEquals(bg, average)) {
-    XFreeColors(dpy, Pcmap, &cs->bg, 3, 0);
-    cs->bg = GetColor(bg);
-    cs->hilite = GetHilite(cs->bg);
-    cs->shadow = GetShadow(cs->bg);
+
+  if (!(StrEquals(bg, dash) || StrEquals(bg, average))) {
+    if (privateCells) {
+      unsigned short red, green, blue;
+
+      XParseColor(dpy, Pcmap, bg, &color);
+      red = color.red;
+      green = color.green;
+      blue = color.blue;
+      color.pixel = cs->bg;
+      XStoreColor(dpy, Pcmap, &color);
+      color_mult(&color.red, &color.green, &color.blue, BRIGHTNESS_FACTOR);
+      color.pixel = cs->hilite;
+      XStoreColor(dpy, Pcmap, &color);
+      color.red = red;
+      color.green = green;
+      color.blue = blue;
+      color_mult(&color.red, &color.green, &color.blue, DARKNESS_FACTOR);
+      color.pixel = cs->shadow;
+      XStoreColor(dpy, Pcmap, &color);
+    } else {
+      XFreeColors(dpy, Pcmap, &cs->bg, 3, 0);
+      cs->bg = GetColor(bg);
+      cs->hilite = GetHilite(cs->bg);
+      cs->shadow = GetShadow(cs->bg);
+      update = sharedCells = True;
+    }   
   }
 
   /* look for a pixmap specifier, if not "-" remove the existing one */
+  /* ret is guaranteed false at this point */
   token = PeekToken(line, &line);
   if (token) {
     ret = StrEquals(token, dash);
   }
+  /* ret is only true if the rest of the line is "-" */
   if (!ret) {
     XFreePixmap(dpy, cs->pixmap);
     XFreePixmap(dpy, cs->mask);
@@ -256,6 +316,7 @@ static void parse_colorset(char *line)
     cs->pixmap = None;
     cs->mask = None;
     cs->shape_mask = None;
+    update = True;
   }
 
   i = GetTokenIndex(token, shape_options, 0, NULL);
@@ -273,7 +334,7 @@ static void parse_colorset(char *line)
       cs->shape_keep_aspect = 1;
 
     /* try to load the shape mask */
-    if (token && !ret)
+    if (token)
     {
       /* load the shape mask */
       picture = GetPicture(dpy, win, NULL, token, color_limit);
@@ -294,7 +355,7 @@ static void parse_colorset(char *line)
 	else
 	  mask = picture->picture;
 	/* Need to set width and height here in case there was no other pixmap
-	 * specified! Will be overwritten if we have a pixmat or gradient on
+	 * specified! Will be overwritten if we have a pixmap or gradient on
 	 * the same line. */
 	cs->width = picture->width;
 	cs->height = picture->height;
@@ -426,7 +487,6 @@ static void parse_colorset(char *line)
 
   /* calculate average background color */
   if (StrEquals(bg, average) && cs->pixmap) {
-    XColor color;
     XColor *colors;
     XImage *image;
     unsigned int i, j, k = 0;
@@ -453,23 +513,55 @@ static void parse_colorset(char *line)
     }
     free(colors);
     /* get it */
-    XFreeColors(dpy, Pcmap, &cs->bg, 3, 0);
-    k = cs->width * cs->height;
     color.red = red / k;
     color.green = green / k;
     color.blue = blue / k;
-    color.flags = DoRed | DoGreen | DoBlue;
-    XAllocColor(dpy, Pcmap, &color);
-    cs->bg = color.pixel;
-    cs->hilite = GetHilite(cs->bg);
-    cs->shadow = GetShadow(cs->bg);
+    if (privateCells) {
+      color.pixel = cs->bg;
+      XStoreColor(dpy, Pcmap, &color);
+      color_mult(&color.red, &color.green, &color.blue, BRIGHTNESS_FACTOR);
+      color.pixel = cs->hilite;
+      XStoreColor(dpy, Pcmap, &color);
+      color.red = red / k;
+      color.green = green / k;
+      color.blue = blue / k;
+      color_mult(&color.red, &color.green, &color.blue, DARKNESS_FACTOR);
+      color.pixel = cs->shadow;
+      XStoreColor(dpy, Pcmap, &color);
+    } else {
+      XFreeColors(dpy, Pcmap, &cs->bg, 3, 0);
+      XAllocColor(dpy, Pcmap, &color);
+      cs->bg = color.pixel;
+      cs->hilite = GetHilite(cs->bg);
+      cs->shadow = GetShadow(cs->bg);
+      update = sharedCells = True;
+    }
+  }
+
+  /* calculate contrasting foreground color */
+  if (StrEquals(fg, contrast)) {
+    color.pixel = cs->bg;
+    XQueryColor(dpy, Pcmap, &color);
+    color.red = (color.red > 32767) ? 0 : 65535;
+    color.green = (color.green > 32767) ? 0 : 65535;
+    color.blue = (color.blue > 32767) ? 0 : 65535;
+    if (privateCells) {
+      color.pixel = cs->fg;
+      XStoreColor(dpy, Pcmap, &color);
+    } else {
+      XFreeColors(dpy, Pcmap, &cs->fg, 1, 0);
+      XAllocColor(dpy, Pcmap, &color);
+      cs->fg = color.pixel;
+      update = sharedCells = True;
+    }
   }
 
   /* make sure the server has this to avoid races */
   XSync(dpy, False);
 
   /* inform fvwm of the change */
-  SendText(fd, DumpColorset(n), 0);
+  if (update)
+    SendText(fd, DumpColorset(n), 0);
 }
 
 /* SendToMessage options */
@@ -491,10 +583,15 @@ static void parse_config(void) {
   /* prepare the tokenizer array, [0,1] are ImagePath and ColorLimit */
   config_options[3] = safemalloc(strlen(name) + 10);
   sprintf(config_options[3], "*%sColorset", name);
+  config_options[4] = safemalloc(strlen(name) + 17);
+  sprintf(config_options[4], "*%sReadWriteColors", name);
 
   /* set a filter on the config lines sent */
-  InitGetConfigLine(fd, config_options[3]);
-
+  line = safemalloc(strlen(name + 2));
+  sprintf(line, "*%s", name);
+  InitGetConfigLine(fd, line);
+/*  free(line);
+*/
   /* tell fvwm what we want to receive */
   SetMessageMask(fd, M_CONFIG_INFO | M_END_CONFIG_INFO
 		 | M_SENDCONFIG | M_STRING);

@@ -72,8 +72,7 @@ typedef enum {
    fvwm algorithm. */
 
 /* FIXMS: This can probably be optimized more, examine later. */
-
-static void
+void
 color_mult (unsigned short *red,
 	    unsigned short *green,
 	    unsigned short *blue, double k)
@@ -250,12 +249,9 @@ adjust_pixel_brightness(Pixel pixel, double factor)
  * library closeness stuff may be the ideal model.
  * (dje 11/15/98)
  */
-#define DARKNESS_FACTOR 0.5
 Pixel GetShadow(Pixel background) {
   return adjust_pixel_brightness(background, DARKNESS_FACTOR);
 }
-
-#define BRIGHTNESS_FACTOR 1.4
 Pixel GetHilite(Pixel background) {
   return adjust_pixel_brightness(background, BRIGHTNESS_FACTOR);
 }
