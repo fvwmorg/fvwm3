@@ -165,65 +165,65 @@ Bool EWMH_CMD_Style(char *token, window_style *ptmpstyle)
   if (StrEquals(token, "EWMHDonateIcon"))
   {
     found = True;
-    SFSET_DO_EWMH_DONATE_ICON(*ptmpstyle, 1);
-    SMSET_DO_EWMH_DONATE_ICON(*ptmpstyle, 1);
-    SCSET_DO_EWMH_DONATE_ICON(*ptmpstyle, 1);
+    S_SET_DO_EWMH_DONATE_ICON(SCF(*ptmpstyle), 1);
+    S_SET_DO_EWMH_DONATE_ICON(SCM(*ptmpstyle), 1);
+    S_SET_DO_EWMH_DONATE_ICON(SCC(*ptmpstyle), 1);
   }
   else if (StrEquals(token, "EWMHDonateMiniIcon"))
   {
     found = True;
-    SFSET_DO_EWMH_DONATE_MINI_ICON(*ptmpstyle, 1);
-    SMSET_DO_EWMH_DONATE_MINI_ICON(*ptmpstyle, 1);
-    SCSET_DO_EWMH_DONATE_MINI_ICON(*ptmpstyle, 1);
+    S_SET_DO_EWMH_DONATE_MINI_ICON(SCF(*ptmpstyle), 1);
+    S_SET_DO_EWMH_DONATE_MINI_ICON(SCM(*ptmpstyle), 1);
+    S_SET_DO_EWMH_DONATE_MINI_ICON(SCC(*ptmpstyle), 1);
   }
   else if (StrEquals(token, "EWMHDontDonateIcon"))
   {
     found = True;
-    SFSET_DO_EWMH_DONATE_ICON(*ptmpstyle, 0);
-    SMSET_DO_EWMH_DONATE_ICON(*ptmpstyle, 1);
-    SCSET_DO_EWMH_DONATE_ICON(*ptmpstyle, 1);
+    S_SET_DO_EWMH_DONATE_ICON(SCF(*ptmpstyle), 0);
+    S_SET_DO_EWMH_DONATE_ICON(SCM(*ptmpstyle), 1);
+    S_SET_DO_EWMH_DONATE_ICON(SCC(*ptmpstyle), 1);
   }
   else if (StrEquals(token, "EWMHDontDonateMiniIcon"))
   {
     found = True;
-    SFSET_DO_EWMH_DONATE_MINI_ICON(*ptmpstyle, 0);
-    SMSET_DO_EWMH_DONATE_MINI_ICON(*ptmpstyle, 1);
-    SCSET_DO_EWMH_DONATE_MINI_ICON(*ptmpstyle, 1);
+    S_SET_DO_EWMH_DONATE_MINI_ICON(SCF(*ptmpstyle), 0);
+    S_SET_DO_EWMH_DONATE_MINI_ICON(SCM(*ptmpstyle), 1);
+    S_SET_DO_EWMH_DONATE_MINI_ICON(SCC(*ptmpstyle), 1);
   }
   else if (StrEquals(token, "EWMHMaximizeIgnoreWorkingArea"))
   {
     found = True;
-    SFSET_EWMH_MAXIMIZE_MODE(*ptmpstyle, EWMH_IGNORE_WORKING_AREA);
-    SMSET_EWMH_MAXIMIZE_MODE(*ptmpstyle, EWMH_WORKING_AREA_MASK);
-    SCSET_EWMH_MAXIMIZE_MODE(*ptmpstyle, EWMH_WORKING_AREA_MASK);
+    S_SET_EWMH_MAXIMIZE_MODE(SCF(*ptmpstyle), EWMH_IGNORE_WORKING_AREA);
+    S_SET_EWMH_MAXIMIZE_MODE(SCM(*ptmpstyle), EWMH_WORKING_AREA_MASK);
+    S_SET_EWMH_MAXIMIZE_MODE(SCC(*ptmpstyle), EWMH_WORKING_AREA_MASK);
   }
   else if (StrEquals(token, "EWMHMaximizeUseWorkingArea"))
   {
     found = True;
-    SFSET_EWMH_MAXIMIZE_MODE(*ptmpstyle, EWMH_USE_WORKING_AREA);
-    SMSET_EWMH_MAXIMIZE_MODE(*ptmpstyle, EWMH_WORKING_AREA_MASK);
-    SCSET_EWMH_MAXIMIZE_MODE(*ptmpstyle, EWMH_WORKING_AREA_MASK);
+    S_SET_EWMH_MAXIMIZE_MODE(SCF(*ptmpstyle), EWMH_USE_WORKING_AREA);
+    S_SET_EWMH_MAXIMIZE_MODE(SCM(*ptmpstyle), EWMH_WORKING_AREA_MASK);
+    S_SET_EWMH_MAXIMIZE_MODE(SCC(*ptmpstyle), EWMH_WORKING_AREA_MASK);
   }
   else if (StrEquals(token, "EWMHMaximizeUseDynamicWorkingArea"))
   {
     found = True;
-    SFSET_EWMH_MAXIMIZE_MODE(*ptmpstyle, EWMH_USE_DYNAMIC_WORKING_AREA);
-    SMSET_EWMH_MAXIMIZE_MODE(*ptmpstyle, EWMH_WORKING_AREA_MASK);
-    SCSET_EWMH_MAXIMIZE_MODE(*ptmpstyle, EWMH_WORKING_AREA_MASK);
+    S_SET_EWMH_MAXIMIZE_MODE(SCF(*ptmpstyle), EWMH_USE_DYNAMIC_WORKING_AREA);
+    S_SET_EWMH_MAXIMIZE_MODE(SCM(*ptmpstyle), EWMH_WORKING_AREA_MASK);
+    S_SET_EWMH_MAXIMIZE_MODE(SCC(*ptmpstyle), EWMH_WORKING_AREA_MASK);
   }
   else if (StrEquals(token, "EWMHMiniIconOverride"))
   {
     found = True;
-    SFSET_DO_EWMH_MINI_ICON_OVERRIDE(*ptmpstyle, 1);
-    SMSET_DO_EWMH_MINI_ICON_OVERRIDE(*ptmpstyle, 1);
-    SCSET_DO_EWMH_MINI_ICON_OVERRIDE(*ptmpstyle, 1);
+    S_SET_DO_EWMH_MINI_ICON_OVERRIDE(SCF(*ptmpstyle), 1);
+    S_SET_DO_EWMH_MINI_ICON_OVERRIDE(SCM(*ptmpstyle), 1);
+    S_SET_DO_EWMH_MINI_ICON_OVERRIDE(SCC(*ptmpstyle), 1);
   }
   else if (StrEquals(token, "EWMHNoMiniIconOverride"))
   {
     found = True;
-    SFSET_DO_EWMH_MINI_ICON_OVERRIDE(*ptmpstyle, 0);
-    SMSET_DO_EWMH_MINI_ICON_OVERRIDE(*ptmpstyle, 1);
-    SCSET_DO_EWMH_MINI_ICON_OVERRIDE(*ptmpstyle, 1);
+    S_SET_DO_EWMH_MINI_ICON_OVERRIDE(SCF(*ptmpstyle), 0);
+    S_SET_DO_EWMH_MINI_ICON_OVERRIDE(SCM(*ptmpstyle), 1);
+    S_SET_DO_EWMH_MINI_ICON_OVERRIDE(SCC(*ptmpstyle), 1);
   }
   else if (StrEquals(token, "EWMHPlacementIgnoreWorkingArea"))
   {
@@ -249,44 +249,44 @@ Bool EWMH_CMD_Style(char *token, window_style *ptmpstyle)
   else if (StrEquals(token, "EWMHUseStackingOrderHints"))
   {
     found = True;
-    SFSET_DO_EWMH_USE_STACKING_HINTS(*ptmpstyle, 1);
-    SMSET_DO_EWMH_USE_STACKING_HINTS(*ptmpstyle, 1);
-    SCSET_DO_EWMH_USE_STACKING_HINTS(*ptmpstyle, 1);
+    S_SET_DO_EWMH_USE_STACKING_HINTS(SCF(*ptmpstyle), 1);
+    S_SET_DO_EWMH_USE_STACKING_HINTS(SCM(*ptmpstyle), 1);
+    S_SET_DO_EWMH_USE_STACKING_HINTS(SCC(*ptmpstyle), 1);
   }
   else if (StrEquals(token, "EWMHIgnoreStackingOrderHints"))
   {
     found = True;
-    SFSET_DO_EWMH_USE_STACKING_HINTS(*ptmpstyle, 0);
-    SMSET_DO_EWMH_USE_STACKING_HINTS(*ptmpstyle, 1);
-    SCSET_DO_EWMH_USE_STACKING_HINTS(*ptmpstyle, 1);
+    S_SET_DO_EWMH_USE_STACKING_HINTS(SCF(*ptmpstyle), 0);
+    S_SET_DO_EWMH_USE_STACKING_HINTS(SCM(*ptmpstyle), 1);
+    S_SET_DO_EWMH_USE_STACKING_HINTS(SCC(*ptmpstyle), 1);
   }
   else if (StrEquals(token, "EWMHUseStateHints"))
   {
     found = True;
-    SFSET_DO_EWMH_IGNORE_STATE_HINTS(*ptmpstyle, 0);
-    SMSET_DO_EWMH_IGNORE_STATE_HINTS(*ptmpstyle, 1);
-    SCSET_DO_EWMH_IGNORE_STATE_HINTS(*ptmpstyle, 1);
+    S_SET_DO_EWMH_IGNORE_STATE_HINTS(SCF(*ptmpstyle), 0);
+    S_SET_DO_EWMH_IGNORE_STATE_HINTS(SCM(*ptmpstyle), 1);
+    S_SET_DO_EWMH_IGNORE_STATE_HINTS(SCC(*ptmpstyle), 1);
   }
   else if (StrEquals(token, "EWMHIgnoreStateHints"))
   {
     found = True;
-    SFSET_DO_EWMH_IGNORE_STATE_HINTS(*ptmpstyle, 1);
-    SMSET_DO_EWMH_IGNORE_STATE_HINTS(*ptmpstyle, 1);
-    SCSET_DO_EWMH_IGNORE_STATE_HINTS(*ptmpstyle, 1);
+    S_SET_DO_EWMH_IGNORE_STATE_HINTS(SCF(*ptmpstyle), 1);
+    S_SET_DO_EWMH_IGNORE_STATE_HINTS(SCM(*ptmpstyle), 1);
+    S_SET_DO_EWMH_IGNORE_STATE_HINTS(SCC(*ptmpstyle), 1);
   }
   else if (StrEquals(token, "EWMHUseStrutHints"))
   {
     found = True;
-    SFSET_DO_EWMH_IGNORE_STRUT_HINTS(*ptmpstyle, 0);
-    SMSET_DO_EWMH_IGNORE_STRUT_HINTS(*ptmpstyle, 1);
-    SCSET_DO_EWMH_IGNORE_STRUT_HINTS(*ptmpstyle, 1);
+    S_SET_DO_EWMH_IGNORE_STRUT_HINTS(SCF(*ptmpstyle), 0);
+    S_SET_DO_EWMH_IGNORE_STRUT_HINTS(SCM(*ptmpstyle), 1);
+    S_SET_DO_EWMH_IGNORE_STRUT_HINTS(SCC(*ptmpstyle), 1);
   }
   else if (StrEquals(token, "EWMHIgnoreStrutHints"))
   {
     found = True;
-    SFSET_DO_EWMH_IGNORE_STRUT_HINTS(*ptmpstyle, 1);
-    SMSET_DO_EWMH_IGNORE_STRUT_HINTS(*ptmpstyle, 1);
-    SCSET_DO_EWMH_IGNORE_STRUT_HINTS(*ptmpstyle, 1);
+    S_SET_DO_EWMH_IGNORE_STRUT_HINTS(SCF(*ptmpstyle), 1);
+    S_SET_DO_EWMH_IGNORE_STRUT_HINTS(SCM(*ptmpstyle), 1);
+    S_SET_DO_EWMH_IGNORE_STRUT_HINTS(SCC(*ptmpstyle), 1);
   }
   return found;
 }

@@ -99,725 +99,225 @@
 #define SHAS_PLACEMENT_PERCENTAGE_PENALTY(sf) \
 	((sf)->has_placement_percentage_penalty)
 
-/* access to common flags */
-#define SFGET_COMMON_FLAGS(st) \
+/* access the various copies of the common flags structure. */
+#define SCF(st) \
 	((st).flags.common)
-#define SFGET_COMMON_STATIC_FLAGS(st) \
+#define SCFS(st) \
 	((st).flags.common.s)
-#define SMGET_COMMON_FLAGS(st) \
+#define SCM(st) \
 	((st).flag_mask.common)
-#define SMGET_COMMON_STATIC_FLAGS(st) \
+#define SCMS(st) \
 	((st).flag_mask.common.s)
-#define SCGET_COMMON_FLAGS(st) \
+#define SCD(st) \
+	((st).flag_default.common)
+#define SCDS(st) \
+	((st).flag_default.common.s)
+#define SCC(st) \
 	((st).change_mask.common)
-#define SCGET_COMMON_STATIC_FLAGS(st) \
+#define SCCS(st) \
 	((st).change_mask.common.s)
-#define SF_FOCUS_POLICY(st) \
-	((st).flags.common.s.focus_policy)
-#define SM_FOCUS_POLICY(st) \
-	((st).flag_mask.common.s.focus_policy)
-#define SC_FOCUS_POLICY(st) \
-	((st).change_mask.common.s.focus_policy)
-#define STITLE_DIR(sf) \
-	((sf).common.title_dir)
-#define SFTITLE_DIR(st) \
-	((st).flags.common.title_dir)
-#define SMTITLE_DIR(st) \
-	((st).flag_mask.common.title_dir)
-#define SCTITLE_DIR(st) \
-	((st).change_mask.common.title_dir)
-#define SFSET_TITLE_DIR(st,x) \
-	((st).flags.common.title_dir = x)
-#define SMSET_TITLE_DIR(st,x) \
-	((st).flag_mask.common.title_dir = DIR_MAJOR_MASK * !!(x))
-#define SCSET_TITLE_DIR(st,x) \
-	((st).change_mask.common.title_dir = DIR_MAJOR_MASK * !!(x))
-#define SIS_STICKY(sf) \
-	((sf).common.is_sticky)
-#define SFIS_STICKY(st) \
-	((st).flags.common.is_sticky)
-#define SMIS_STICKY(st) \
-	((st).flag_mask.common.is_sticky)
-#define SCIS_STICKY(st) \
-	((st).change_mask.common.is_sticky)
-#define SFSET_IS_STICKY(st,x) \
-	((st).flags.common.is_sticky = !!(x))
-#define SMSET_IS_STICKY(st,x) \
-	((st).flag_mask.common.is_sticky = !!(x))
-#define SCSET_IS_STICKY(st,x) \
-	((st).change_mask.common.is_sticky = !!(x))
-#define SDO_CIRCULATE_SKIP(sf) \
-	((sf).common.s.do_circulate_skip)
-#define SFDO_CIRCULATE_SKIP(st) \
-	((st).flags.common.s.do_circulate_skip)
-#define SMDO_CIRCULATE_SKIP(st) \
-	((st).flag_mask.common.s.do_circulate_skip)
-#define SCDO_CIRCULATE_SKIP(st) \
-	((st).change_mask.common.s.do_circulate_skip)
-#define SFSET_DO_CIRCULATE_SKIP(st,x) \
-	((st).flags.common.s.do_circulate_skip = !!(x))
-#define SMSET_DO_CIRCULATE_SKIP(st,x) \
-	((st).flag_mask.common.s.do_circulate_skip = !!(x))
-#define SCSET_DO_CIRCULATE_SKIP(st,x) \
-	((st).change_mask.common.s.do_circulate_skip = !!(x))
-#define SDO_CIRCULATE_SKIP_ICON(sf) \
-	((sf).common.s.do_circulate_skip_icon)
-#define SFDO_CIRCULATE_SKIP_ICON(st) \
-	((st).flags.common.s.do_circulate_skip_icon)
-#define SMDO_CIRCULATE_SKIP_ICON(st) \
-	((st).flag_mask.common.s.do_circulate_skip_icon)
-#define SCDO_CIRCULATE_SKIP_ICON(st) \
-	((st).change_mask.common.s.do_circulate_skip_icon)
-#define SFSET_DO_CIRCULATE_SKIP_ICON(st,x) \
-	((st).flags.common.s.do_circulate_skip_icon = !!(x))
-#define SMSET_DO_CIRCULATE_SKIP_ICON(st,x) \
-	((st).flag_mask.common.s.do_circulate_skip_icon = !!(x))
-#define SCSET_DO_CIRCULATE_SKIP_ICON(st,x) \
-	((st).change_mask.common.s.do_circulate_skip_icon = !!(x))
-#define SDO_CIRCULATE_SKIP_SHADED(sf) \
-	((sf).common.s.do_circulate_skip_shaded)
-#define SFDO_CIRCULATE_SKIP_SHADED(st) \
-	((st).flags.common.s.do_circulate_skip_shaded)
-#define SMDO_CIRCULATE_SKIP_SHADED(st) \
-	((st).flag_mask.common.s.do_circulate_skip_shaded)
-#define SCDO_CIRCULATE_SKIP_SHADED(st) \
-	((st).change_mask.common.s.do_circulate_skip_shaded)
-#define SFSET_DO_CIRCULATE_SKIP_SHADED(st,x) \
-	((st).flags.common.s.do_circulate_skip_shaded = !!(x))
-#define SMSET_DO_CIRCULATE_SKIP_SHADED(st,x) \
-	((st).flag_mask.common.s.do_circulate_skip_shaded = !!(x))
-#define SCSET_DO_CIRCULATE_SKIP_SHADED(st,x) \
-	((st).change_mask.common.s.do_circulate_skip_shaded = !!(x))
-#define SDO_ICONIFY_WINDOW_GROUPS(sf) \
-	((sf).common.s.do_iconify_window_groups)
-#define SFDO_ICONIFY_WINDOW_GROUPS(st) \
-	((st).flags.common.s.do_iconify_window_groups)
-#define SMDO_ICONIFY_WINDOW_GROUPS(st) \
-	((st).flag_mask.common.s.do_iconify_window_groups)
-#define SCDO_ICONIFY_WINDOW_GROUPS(st) \
-	((st).change_mask.common.s.do_iconify_window_groups)
-#define SFSET_DO_ICONIFY_WINDOW_GROUPS(st,x) \
-	((st).flags.common.s.do_iconify_window_groups = !!(x))
-#define SMSET_DO_ICONIFY_WINDOW_GROUPS(st,x) \
-	((st).flag_mask.common.s.do_iconify_window_groups = !!(x))
-#define SCSET_DO_ICONIFY_WINDOW_GROUPS(st,x) \
-	((st).change_mask.common.s.do_iconify_window_groups = !!(x))
-#define SDO_IGNORE_GNOME_HINTS(sf) \
-	((sf).common.s.do_ignore_gnome_hints)
-#define SFDO_IGNORE_GNOME_HINTS(st) \
-	((st).flags.common.s.do_ignore_gnome_hints)
-#define SMDO_IGNORE_GNOME_HINTS(st) \
-	((st).flag_mask.common.s.do_ignore_gnome_hints)
-#define SCDO_IGNORE_GNOME_HINTS(st) \
-	((st).change_mask.common.s.do_ignore_gnome_hints)
-#define SFSET_DO_IGNORE_GNOME_HINTS(st,x) \
-	((st).flags.common.s.do_ignore_gnome_hints = !!(x))
-#define SMSET_DO_IGNORE_GNOME_HINTS(st,x) \
-	((st).flag_mask.common.s.do_ignore_gnome_hints = !!(x))
-#define SCSET_DO_IGNORE_GNOME_HINTS(st,x) \
-	((st).change_mask.common.s.do_ignore_gnome_hints = !!(x))
-#define SDO_IGNORE_ICON_BOXES(sf) \
-	((sf).common.s.do_ignore_icon_boxes)
-#define SFDO_IGNORE_ICON_BOXES(st) \
-	((st).flags.common.s.do_ignore_icon_boxes)
-#define SMDO_IGNORE_ICON_BOXES(st) \
-	((st).flag_mask.common.s.do_ignore_icon_boxes)
-#define SCDO_IGNORE_ICON_BOXES(st) \
-	((st).change_mask.common.s.do_ignore_icon_boxes)
-#define SFSET_DO_IGNORE_ICON_BOXES(st,x) \
-	((st).flags.common.s.do_ignore_icon_boxes = !!(x))
-#define SMSET_DO_IGNORE_ICON_BOXES(st,x) \
-	((st).flag_mask.common.s.do_ignore_icon_boxes = !!(x))
-#define SCSET_DO_IGNORE_ICON_BOXES(st,x) \
-	((st).change_mask.common.s.do_ignore_icon_boxes = !!(x))
-#define SDO_IGNORE_RESTACK(sf) \
-	((sf).common.s.do_ignore_restack)
-#define SFDO_IGNORE_RESTACK(st) \
-	((st).flags.common.s.do_ignore_restack)
-#define SMDO_IGNORE_RESTACK(st) \
-	((st).flag_mask.common.s.do_ignore_restack)
-#define SCDO_IGNORE_RESTACK(st) \
-	((st).change_mask.common.s.do_ignore_restack)
-#define SFSET_DO_IGNORE_RESTACK(st,x) \
-	((st).flags.common.s.do_ignore_restack = !!(x))
-#define SMSET_DO_IGNORE_RESTACK(st,x) \
-	((st).flag_mask.common.s.do_ignore_restack = !!(x))
-#define SCSET_DO_IGNORE_RESTACK(st,x) \
-	((st).change_mask.common.s.do_ignore_restack = !!(x))
-#define SDO_USE_WINDOW_GROUP_HINT(sf) \
-	((sf).common.s.do_use_window_group_hint)
-#define SFDO_USE_WINDOW_GROUP_HINT(st) \
-	((st).flags.common.s.do_use_window_group_hint)
-#define SMDO_USE_WINDOW_GROUP_HINT(st) \
-	((st).flag_mask.common.s.do_use_window_group_hint)
-#define SCDO_USE_WINDOW_GROUP_HINT(st) \
-	((st).change_mask.common.s.do_use_window_group_hint)
-#define SFSET_DO_USE_WINDOW_GROUP_HINT(st,x) \
-	((st).flags.common.s.do_use_window_group_hint = !!(x))
-#define SMSET_DO_USE_WINDOW_GROUP_HINT(st,x) \
-	((st).flag_mask.common.s.do_use_window_group_hint = !!(x))
-#define SCSET_DO_USE_WINDOW_GROUP_HINT(st,x) \
-	((st).change_mask.common.s.do_use_window_group_hint = !!(x))
-#define SDO_LOWER_TRANSIENT(sf) \
-	((sf).common.s.do_lower_transient)
-#define SFDO_LOWER_TRANSIENT(st) \
-	((st).flags.common.s.do_lower_transient)
-#define SMDO_LOWER_TRANSIENT(st) \
-	((st).flag_mask.common.s.do_lower_transient)
-#define SCDO_LOWER_TRANSIENT(st) \
-	((st).change_mask.common.s.do_lower_transient)
-#define SFSET_DO_LOWER_TRANSIENT(st,x) \
-	((st).flags.common.s.do_lower_transient = !!(x))
-#define SMSET_DO_LOWER_TRANSIENT(st,x) \
-	((st).flag_mask.common.s.do_lower_transient = !!(x))
-#define SCSET_DO_LOWER_TRANSIENT(st,x) \
-	((st).change_mask.common.s.do_lower_transient = !!(x))
-#define SDO_NOT_SHOW_ON_MAP(sf) \
-	((sf).common.s.do_not_show_on_map)
-#define SFDO_NOT_SHOW_ON_MAP(st) \
-	((st).flags.common.s.do_not_show_on_map)
-#define SMDO_NOT_SHOW_ON_MAP(st) \
-	((st).flag_mask.common.s.do_not_show_on_map)
-#define SCDO_NOT_SHOW_ON_MAP(st) \
-	((st).change_mask.common.s.do_not_show_on_map)
-#define SFSET_DO_NOT_SHOW_ON_MAP(st,x) \
-	((st).flags.common.s.do_not_show_on_map = !!(x))
-#define SMSET_DO_NOT_SHOW_ON_MAP(st,x) \
-	((st).flag_mask.common.s.do_not_show_on_map = !!(x))
-#define SCSET_DO_NOT_SHOW_ON_MAP(st,x) \
-	((st).change_mask.common.s.do_not_show_on_map = !!(x))
-#define SDO_RAISE_TRANSIENT(sf) \
-	((sf).common.s.do_raise_transient)
-#define SFDO_RAISE_TRANSIENT(st) \
-	((st).flags.common.s.do_raise_transient)
-#define SMDO_RAISE_TRANSIENT(st) \
-	((st).flag_mask.common.s.do_raise_transient)
-#define SCDO_RAISE_TRANSIENT(st) \
-	((st).change_mask.common.s.do_raise_transient)
-#define SFSET_DO_RAISE_TRANSIENT(st,x) \
-	((st).flags.common.s.do_raise_transient = !!(x))
-#define SMSET_DO_RAISE_TRANSIENT(st,x) \
-	((st).flag_mask.common.s.do_raise_transient = !!(x))
-#define SCSET_DO_RAISE_TRANSIENT(st,x) \
-	((st).change_mask.common.s.do_raise_transient = !!(x))
-#define SDO_RESIZE_OPAQUE(sf) \
-	((sf).common.s.do_resize_opaque)
-#define SFDO_RESIZE_OPAQUE(st) \
-	((st).flags.common.s.do_resize_opaque)
-#define SMDO_RESIZE_OPAQUE(st) \
-	((st).flag_mask.common.s.do_resize_opaque)
-#define SCDO_RESIZE_OPAQUE(st) \
-	((st).change_mask.common.s.do_resize_opaque)
-#define SFSET_DO_RESIZE_OPAQUE(st,x) \
-	((st).flags.common.s.do_resize_opaque = !!(x))
-#define SMSET_DO_RESIZE_OPAQUE(st,x) \
-	((st).flag_mask.common.s.do_resize_opaque = !!(x))
-#define SCSET_DO_RESIZE_OPAQUE(st,x) \
-	((st).change_mask.common.s.do_resize_opaque = !!(x))
-#define SDO_SHRINK_WINDOWSHADE(sf ) \
-	((sf).common.s.do_shrink_windowshade)
-#define SFDO_SHRINK_WINDOWSHADE(st) \
-	((st).flags.common.s.do_shrink_windowshade)
-#define SMDO_SHRINK_WINDOWSHADE(st) \
-	((st).flag_mask.common.s.do_shrink_windowshade)
-#define SCDO_SHRINK_WINDOWSHADE(st) \
-	((st).change_mask.common.s.do_shrink_windowshade)
-#define SFSET_DO_SHRINK_WINDOWSHADE(st,x) \
-	((st).flags.common.s.do_shrink_windowshade = !!(x))
-#define SMSET_DO_SHRINK_WINDOWSHADE(st,x) \
-	((st).flag_mask.common.s.do_shrink_windowshade = !!(x))
-#define SCSET_DO_SHRINK_WINDOWSHADE(st,x) \
-	((st).change_mask.common.s.do_shrink_windowshade = !!(x))
-#define SDO_STACK_TRANSIENT_PARENT(sf) \
-	((sf).common.s.do_stack_transient_parent)
-#define SFDO_STACK_TRANSIENT_PARENT(st) \
-	((st).flags.common.s.do_stack_transient_parent)
-#define SMDO_STACK_TRANSIENT_PARENT(st) \
-	((st).flag_mask.common.s.do_stack_transient_parent)
-#define SCDO_STACK_TRANSIENT_PARENT(st) \
-	((st).change_mask.common.s.do_stack_transient_parent)
-#define SFSET_DO_STACK_TRANSIENT_PARENT(st,x) \
-	((st).flags.common.s.do_stack_transient_parent = !!(x))
-#define SMSET_DO_STACK_TRANSIENT_PARENT(st,x) \
-	((st).flag_mask.common.s.do_stack_transient_parent = !!(x))
-#define SCSET_DO_STACK_TRANSIENT_PARENT(st,x) \
-	((st).change_mask.common.s.do_stack_transient_parent = !!(x))
-#define SDO_WINDOW_LIST_SKIP(sf) \
-	((sf).common.s.do_window_list_skip)
-#define SFDO_WINDOW_LIST_SKIP(st) \
-	((st).flags.common.s.do_window_list_skip)
-#define SMDO_WINDOW_LIST_SKIP(st) \
-	((st).flag_mask.common.s.do_window_list_skip)
-#define SCDO_WINDOW_LIST_SKIP(st) \
-	((st).change_mask.common.s.do_window_list_skip)
-#define SFSET_DO_WINDOW_LIST_SKIP(st,x) \
-	((st).flags.common.s.do_window_list_skip = !!(x))
-#define SMSET_DO_WINDOW_LIST_SKIP(st,x) \
-	((st).flag_mask.common.s.do_window_list_skip = !!(x))
-#define SCSET_DO_WINDOW_LIST_SKIP(st,x) \
-	((st).change_mask.common.s.do_window_list_skip = !!(x))
-#define SFOCUS_MODE(sf) \
-	((sf).common.s.focus_mode)
-#define SFFOCUS_MODE(st) \
-	((st).flags.common.s.focus_mode)
-#define SMFOCUS_MODE(st) \
-	((st).flag_mask.common.s.focus_mode)
-#define SCFOCUS_MODE(st) \
-	((st).change_mask.common.s.focus_mode)
-#define SFSET_FOCUS_MODE(st,x) \
-	((st).flags.common.s.focus_mode = (x))
-#define SMSET_FOCUS_MODE(st,x) \
-	((st).flag_mask.common.s.focus_mode = (x))
-#define SCSET_FOCUS_MODE(st,x) \
-	((st).change_mask.common.s.focus_mode = (x))
-#define SHAS_NO_BORDER(sf) \
-	((sf).common.has_no_border)
-#define SFHAS_NO_BORDER(st) \
-	((st).flags.common.has_no_border)
-#define SMHAS_NO_BORDER(st) \
-	((st).flag_mask.common.has_no_border)
-#define SCHAS_NO_BORDER(st) \
-	((st).change_mask.common.has_no_border)
-#define SFSET_HAS_NO_BORDER(st,x) \
-	((st).flags.common.has_no_border = !!(x))
-#define SMSET_HAS_NO_BORDER(st,x) \
-	((st).flag_mask.common.has_no_border = !!(x))
-#define SCSET_HAS_NO_BORDER(st,x) \
-	((st).change_mask.common.has_no_border = !!(x))
-#define SHAS_DEPRESSABLE_BORDER(sf) \
-	((sf).common.s.has_depressable_border)
-#define SFHAS_DEPRESSABLE_BORDER(st) \
-	((st).flags.common.s.has_depressable_border)
-#define SMHAS_DEPRESSABLE_BORDER(st) \
-	((st).flag_mask.common.s.has_depressable_border)
-#define SCHAS_DEPRESSABLE_BORDER(st) \
-	((st).change_mask.common.s.has_depressable_border)
-#define SFSET_HAS_DEPRESSABLE_BORDER(st,x) \
-	((st).flags.common.s.has_depressable_border = !!(x))
-#define SMSET_HAS_DEPRESSABLE_BORDER(st,x) \
-	((st).flag_mask.common.s.has_depressable_border = !!(x))
-#define SCSET_HAS_DEPRESSABLE_BORDER(st,x) \
-	((st).change_mask.common.s.has_depressable_border = !!(x))
-#define SHAS_ICON_FONT(sf) \
-	((sf).common.has_icon_font)
-#define SFHAS_ICON_FONT(st) \
-	((st).flags.common.has_icon_font)
-#define SMHAS_ICON_FONT(st) \
-	((st).flag_mask.common.has_icon_font)
-#define SCHAS_ICON_FONT(st) \
-	((st).change_mask.common.has_icon_font)
-#define SFSET_HAS_ICON_FONT(st,x) \
-	((st).flags.common.has_icon_font = !!(x))
-#define SMSET_HAS_ICON_FONT(st,x) \
-	((st).flag_mask.common.has_icon_font = !!(x))
-#define SCSET_HAS_ICON_FONT(st,x) \
-	((st).change_mask.common.has_icon_font = !!(x))
-#define SHAS_MWM_BORDER(sf) \
-	((sf).common.s.has_mwm_border)
-#define SFHAS_MWM_BORDER(st) \
-	((st).flags.common.s.has_mwm_border)
-#define SMHAS_MWM_BORDER(st) \
-	((st).flag_mask.common.s.has_mwm_border)
-#define SCHAS_MWM_BORDER(st) \
-	((st).change_mask.common.s.has_mwm_border)
-#define SFSET_HAS_MWM_BORDER(st,x) \
-	((st).flags.common.s.has_mwm_border = !!(x))
-#define SMSET_HAS_MWM_BORDER(st,x) \
-	((st).flag_mask.common.s.has_mwm_border = !!(x))
-#define SCSET_HAS_MWM_BORDER(st,x) \
-	((st).change_mask.common.s.has_mwm_border = !!(x))
-#define SHAS_MWM_BUTTONS(sf) \
-	((sf).common.s.has_mwm_buttons)
-#define SFHAS_MWM_BUTTONS(st) \
-	((st).flags.common.s.has_mwm_buttons)
-#define SMHAS_MWM_BUTTONS(st) \
-	((st).flag_mask.common.s.has_mwm_buttons)
-#define SCHAS_MWM_BUTTONS(st) \
-	((st).change_mask.common.s.has_mwm_buttons)
-#define SFSET_HAS_MWM_BUTTONS(st,x) \
-	((st).flags.common.s.has_mwm_buttons = !!(x))
-#define SMSET_HAS_MWM_BUTTONS(st,x) \
-	((st).flag_mask.common.s.has_mwm_buttons = !!(x))
-#define SCSET_HAS_MWM_BUTTONS(st,x) \
-	((st).change_mask.common.s.has_mwm_buttons = !!(x))
-#define SHAS_MWM_OVERRIDE(sf) \
-	((sf).common.s.has_mwm_override)
-#define SFHAS_MWM_OVERRIDE(st) \
-	((st).flags.common.s.has_mwm_override)
-#define SMHAS_MWM_OVERRIDE(st) \
-	((st).flag_mask.common.s.has_mwm_override)
-#define SCHAS_MWM_OVERRIDE(st) \
-	((st).change_mask.common.s.has_mwm_override)
-#define SFSET_HAS_MWM_OVERRIDE(st,x) \
-	((st).flags.common.s.has_mwm_override = !!(x))
-#define SMSET_HAS_MWM_OVERRIDE(st,x) \
-	((st).flag_mask.common.s.has_mwm_override = !!(x))
-#define SCSET_HAS_MWM_OVERRIDE(st,x) \
-	((st).change_mask.common.s.has_mwm_override = !!(x))
-#define SHAS_NO_ICON_TITLE(sf) \
-	((sf).common.s.has_no_icon_title)
-#define SFHAS_NO_ICON_TITLE(st) \
-	((st).flags.common.s.has_no_icon_title)
-#define SMHAS_NO_ICON_TITLE(st) \
-	((st).flag_mask.common.s.has_no_icon_title)
-#define SCHAS_NO_ICON_TITLE(st) \
-	((st).change_mask.common.s.has_no_icon_title)
-#define SFSET_HAS_NO_ICON_TITLE(st,x) \
-	((st).flags.common.s.has_no_icon_title = !!(x))
-#define SMSET_HAS_NO_ICON_TITLE(st,x) \
-	((st).flag_mask.common.s.has_no_icon_title = !!(x))
-#define SCSET_HAS_NO_ICON_TITLE(st,x) \
-	((st).change_mask.common.s.has_no_icon_title = !!(x))
-#define SHAS_OVERRIDE_SIZE(sf) \
-	((sf).common.s.has_override_size)
-#define SFHAS_OVERRIDE_SIZE(st) \
-	((st).flags.common.s.has_override_size)
-#define SMHAS_OVERRIDE_SIZE(st) \
-	((st).flag_mask.common.s.has_override_size)
-#define SCHAS_OVERRIDE_SIZE(st) \
-	((st).change_mask.common.s.has_override_size)
-#define SFSET_HAS_OVERRIDE_SIZE(st,x) \
-	((st).flags.common.s.has_override_size = !!(x))
-#define SMSET_HAS_OVERRIDE_SIZE(st,x) \
-	((st).flag_mask.common.s.has_override_size = !!(x))
-#define SCSET_HAS_OVERRIDE_SIZE(st,x) \
-	((st).change_mask.common.s.has_override_size = !!(x))
-#define SHAS_STIPPLED_TITLE(sf) \
-	((sf).common.s.has_stippled_title)
-#define SFHAS_STIPPLED_TITLE(st) \
-	((st).flags.common.s.has_stippled_title)
-#define SMHAS_STIPPLED_TITLE(st) \
-	((st).flag_mask.common.s.has_stippled_title)
-#define SCHAS_STIPPLED_TITLE(st) \
-	((st).change_mask.common.s.has_stippled_title)
-#define SFSET_HAS_STIPPLED_TITLE(st,x) \
-	((st).flags.common.s.has_stippled_title = !!(x))
-#define SMSET_HAS_STIPPLED_TITLE(st,x) \
-	((st).flag_mask.common.s.has_stippled_title = !!(x))
-#define SCSET_HAS_STIPPLED_TITLE(st,x) \
-	((st).change_mask.common.s.has_stippled_title = !!(x))
-#define SHAS_WINDOW_FONT(sf) \
-	((sf).common.has_window_font)
-#define SFHAS_WINDOW_FONT(st) \
-	((st).flags.common.has_window_font)
-#define SMHAS_WINDOW_FONT(st) \
-	((st).flag_mask.common.has_window_font)
-#define SCHAS_WINDOW_FONT(st) \
-	((st).change_mask.common.has_window_font)
-#define SFSET_HAS_WINDOW_FONT(st,x) \
-	((st).flags.common.has_window_font = !!(x))
-#define SMSET_HAS_WINDOW_FONT(st,x) \
-	((st).flag_mask.common.has_window_font = !!(x))
-#define SCSET_HAS_WINDOW_FONT(st,x) \
-	((st).change_mask.common.has_window_font = !!(x))
-#define SICON_OVERRIDE(sf) \
-	((sf).common.s.icon_override)
-#define SFICON_OVERRIDE(st) \
-	((st).flags.common.s.icon_override)
-#define SMICON_OVERRIDE(st) \
-	((st).flag_mask.common.s.icon_override)
-#define SCICON_OVERRIDE(st) \
-	((st).change_mask.common.s.icon_override)
-#define SFSET_ICON_OVERRIDE(st,x) \
-	((st).flags.common.s.icon_override = (x))
-#define SMSET_ICON_OVERRIDE(st,x) \
-	((st).flag_mask.common.s.icon_override = (x))
-#define SCSET_ICON_OVERRIDE(st,x) \
-	((st).change_mask.common.s.icon_override = (x))
-#define SIS_BOTTOM_TITLE_ROTATED(sf) \
-	((sf).common.s.is_bottom_title_rotated)
-#define SFIS_BOTTOM_TITLE_ROTATED(st) \
-	((st).flags.common.s.is_bottom_title_rotated)
-#define SMIS_BOTTOM_TITLE_ROTATED(st) \
-	((st).flag_mask.common.s.is_bottom_title_rotated)
-#define SCIS_BOTTOM_TITLE_ROTATED(st) \
-	((st).change_mask.common.s.is_bottom_title_rotated)
-#define SFSET_IS_BOTTOM_TITLE_ROTATED(st,x) \
-	((st).flags.common.s.is_bottom_title_rotated = !!(x))
-#define SMSET_IS_BOTTOM_TITLE_ROTATED(st,x) \
-	((st).flag_mask.common.s.is_bottom_title_rotated = !!(x))
-#define SCSET_IS_BOTTOM_TITLE_ROTATED(st,x) \
-	((st).change_mask.common.s.is_bottom_title_rotated = !!(x))
-#define SIS_FIXED(sf) \
-	((sf).common.s.is_fixed)
-#define SFIS_FIXED(st) \
-	((st).flags.common.s.is_fixed)
-#define SMIS_FIXED(st) \
-	((st).flag_mask.common.s.is_fixed)
-#define SCIS_FIXED(st) \
-	((st).change_mask.common.s.is_fixed)
-#define SFSET_IS_FIXED(st,x) \
-	((st).flags.common.s.is_fixed = !!(x))
-#define SMSET_IS_FIXED(st,x) \
-	((st).flag_mask.common.s.is_fixed = !!(x))
-#define SCSET_IS_FIXED(st,x) \
-	((st).change_mask.common.s.is_fixed = !!(x))
-#define SIS_FIXED_PPOS(sf) \
-	((sf).common.s.is_fixed_ppos)
-#define SFIS_FIXED_PPOS(st) \
-	((st).flags.common.s.is_fixed_ppos)
-#define SMIS_FIXED_PPOS(st) \
-	((st).flag_mask.common.s.is_fixed_ppos)
-#define SCIS_FIXED_PPOS(st) \
-	((st).change_mask.common.s.is_fixed_ppos)
-#define SFSET_IS_FIXED_PPOS(st,x) \
-	((st).flags.common.s.is_fixed_ppos = !!(x))
-#define SMSET_IS_FIXED_PPOS(st,x) \
-	((st).flag_mask.common.s.is_fixed_ppos = !!(x))
-#define SCSET_IS_FIXED_PPOS(st,x) \
-	((st).change_mask.common.s.is_fixed_ppos = !!(x))
-#define SIS_ICON_STICKY(sf) \
-	((sf).common.s.is_icon_sticky)
-#define SFIS_ICON_STICKY(st) \
-	((st).flags.common.s.is_icon_sticky)
-#define SMIS_ICON_STICKY(st) \
-	((st).flag_mask.common.s.is_icon_sticky)
-#define SCIS_ICON_STICKY(st) \
-	((st).change_mask.common.s.is_icon_sticky)
-#define SFSET_IS_ICON_STICKY(st,x) \
-	((st).flags.common.s.is_icon_sticky = !!(x))
-#define SMSET_IS_ICON_STICKY(st,x) \
-	((st).flag_mask.common.s.is_icon_sticky = !!(x))
-#define SCSET_IS_ICON_STICKY(st,x) \
-	((st).change_mask.common.s.is_icon_sticky = !!(x))
-#define SIS_ICON_SUPPRESSED(sf) \
-	((sf).common.s.is_icon_suppressed)
-#define SFIS_ICON_SUPPRESSED(st) \
-	((st).flags.common.s.is_icon_suppressed)
-#define SMIS_ICON_SUPPRESSED(st) \
-	((st).flag_mask.common.s.is_icon_suppressed)
-#define SCIS_ICON_SUPPRESSED(st) \
-	((st).change_mask.common.s.is_icon_suppressed)
-#define SFSET_IS_ICON_SUPPRESSED(st,x) \
-	((st).flags.common.s.is_icon_suppressed = !!(x))
-#define SMSET_IS_ICON_SUPPRESSED(st,x) \
-	((st).flag_mask.common.s.is_icon_suppressed = !!(x))
-#define SCSET_IS_ICON_SUPPRESSED(st,x) \
-	((st).change_mask.common.s.is_icon_suppressed = !!(x))
-#define SIS_LEFT_TITLE_ROTATED_CW(sf) \
-	((sf).common.s.is_left_title_rotated_cw)
-#define SFIS_LEFT_TITLE_ROTATED_CW(st) \
-	((st).flags.common.s.is_left_title_rotated_cw)
-#define SMIS_LEFT_TITLE_ROTATED_CW(st) \
-	((st).flag_mask.common.s.is_left_title_rotated_cw)
-#define SCIS_LEFT_TITLE_ROTATED_CW(st) \
-	((st).change_mask.common.s.is_left_title_rotated_cw)
-#define SFSET_IS_LEFT_TITLE_ROTATED_CW(st,x) \
-	((st).flags.common.s.is_left_title_rotated_cw = !!(x))
-#define SMSET_IS_LEFT_TITLE_ROTATED_CW(st,x) \
-	((st).flag_mask.common.s.is_left_title_rotated_cw = !!(x))
-#define SCSET_IS_LEFT_TITLE_ROTATED_CW(st,x) \
-	((st).change_mask.common.s.is_left_title_rotated_cw = !!(x))
-#define SIS_SIZE_FIXED(sf) \
-	((sf).common.s.is_size_fixed)
-#define SFIS_SIZE_FIXED(st) \
-	((st).flags.common.s.is_size_fixed)
-#define SMIS_SIZE_FIXED(st) \
-	((st).flag_mask.common.s.is_size_fixed)
-#define SCIS_SIZE_FIXED(st) \
-	((st).change_mask.common.s.is_size_fixed)
-#define SFSET_IS_SIZE_FIXED(st,x) \
-	((st).flags.common.s.is_size_fixed = !!(x))
-#define SMSET_IS_SIZE_FIXED(st,x) \
-	((st).flag_mask.common.s.is_size_fixed = !!(x))
-#define SCSET_IS_SIZE_FIXED(st,x) \
-	((st).change_mask.common.s.is_size_fixed = !!(x))
-#define SIS_PSIZE_FIXED(sf) \
-	((sf).common.s.is_psize_fixed)
-#define SFIS_PSIZE_FIXED(st) \
-	((st).flags.common.s.is_psize_fixed)
-#define SMIS_PSIZE_FIXED(st) \
-	((st).flag_mask.common.s.is_psize_fixed)
-#define SCIS_PSIZE_FIXED(st) \
-	((st).change_mask.common.s.is_psize_fixed)
-#define SFSET_IS_PSIZE_FIXED(st,x) \
-	((st).flags.common.s.is_psize_fixed = !!(x))
-#define SMSET_IS_PSIZE_FIXED(st,x) \
-	((st).flag_mask.common.s.is_psize_fixed = !!(x))
-#define SCSET_IS_PSIZE_FIXED(st,x) \
-	((st).change_mask.common.s.is_psize_fixed = !!(x))
-#define SIS_RIGHT_TITLE_ROTATED_CW(sf) \
-	((sf).common.s.is_right_title_rotated_cw)
-#define SFIS_RIGHT_TITLE_ROTATED_CW(st) \
-	((st).flags.common.s.is_right_title_rotated_cw)
-#define SMIS_RIGHT_TITLE_ROTATED_CW(st) \
-	((st).flag_mask.common.s.is_right_title_rotated_cw)
-#define SCIS_RIGHT_TITLE_ROTATED_CW(st) \
-	((st).change_mask.common.s.is_right_title_rotated_cw)
-#define SFSET_IS_RIGHT_TITLE_ROTATED_CW(st,x) \
-	((st).flags.common.s.is_right_title_rotated_cw = !!(x))
-#define SMSET_IS_RIGHT_TITLE_ROTATED_CW(st,x) \
-	((st).flag_mask.common.s.is_right_title_rotated_cw = !!(x))
-#define SCSET_IS_RIGHT_TITLE_ROTATED_CW(st,x) \
-	((st).change_mask.common.s.is_right_title_rotated_cw = !!(x))
-#define SIS_TOP_TITLE_ROTATED(sf) \
-	((sf).common.s.is_top_title_rotated)
-#define SFIS_TOP_TITLE_ROTATED(st) \
-	((st).flags.common.s.is_top_title_rotated)
-#define SMIS_TOP_TITLE_ROTATED(st) \
-	((st).flag_mask.common.s.is_top_title_rotated)
-#define SCIS_TOP_TITLE_ROTATED(st) \
-	((st).change_mask.common.s.is_top_title_rotated)
-#define SFSET_IS_TOP_TITLE_ROTATED(st,x) \
-	((st).flags.common.s.is_top_title_rotated = !!(x))
-#define SMSET_IS_TOP_TITLE_ROTATED(st,x) \
-	((st).flag_mask.common.s.is_top_title_rotated = !!(x))
-#define SCSET_IS_TOP_TITLE_ROTATED(st,x) \
-	((st).change_mask.common.s.is_top_title_rotated = !!(x))
-#define SUSE_ICON_POSITION_HINT(sf) \
-	((sf).common.s.use_icon_position_hint)
-#define SFUSE_ICON_POSITION_HINT(st) \
-	((st).flags.common.s.use_icon_position_hint)
-#define SMUSE_ICON_POSITION_HINT(st) \
-	((st).flag_mask.common.s.use_icon_position_hint)
-#define SCUSE_ICON_POSITION_HINT(st) \
-	((st).change_mask.common.s.use_icon_position_hint)
-#define SFSET_USE_ICON_POSITION_HINT(st,x) \
-	((st).flags.common.s.use_icon_position_hint = !!(x))
-#define SMSET_USE_ICON_POSITION_HINT(st,x) \
-	((st).flag_mask.common.s.use_icon_position_hint = !!(x))
-#define SCSET_USE_ICON_POSITION_HINT(st,x) \
-	((st).change_mask.common.s.use_icon_position_hint = !!(x))
-#define SUSE_INDEXED_WINDOW_NAME(sf) \
-	((sf).common.s.use_indexed_window_name)
-#define SFUSE_INDEXED_WINDOW_NAME(st) \
-	((st).flags.common.s.use_indexed_window_name)
-#define SMUSE_INDEXED_WINDOW_NAME(st) \
-	((st).flag_mask.common.s.use_indexed_window_name)
-#define SCUSE_INDEXED_WINDOW_NAME(st) \
-	((st).change_mask.common.s.use_indexed_window_name)
-#define SFSET_USE_INDEXED_WINDOW_NAME(st,x) \
-	((st).flags.common.s.use_indexed_window_name = !!(x))
-#define SMSET_USE_INDEXED_WINDOW_NAME(st,x) \
-	((st).flag_mask.common.s.use_indexed_window_name = !!(x))
-#define SCSET_USE_INDEXED_WINDOW_NAME(st,x) \
-	((st).change_mask.common.s.use_indexed_window_name = !!(x))
-#define SUSE_INDEXED_ICON_NAME(sf) \
-	((sf).common.s.use_indexed_icon_name)
-#define SFUSE_INDEXED_ICON_NAME(st) \
-	((st).flags.common.s.use_indexed_icon_name)
-#define SMUSE_INDEXED_ICON_NAME(st) \
-	((st).flag_mask.common.s.use_indexed_icon_name)
-#define SCUSE_INDEXED_ICON_NAME(st) \
-	((st).change_mask.common.s.use_indexed_icon_name)
-#define SFSET_USE_INDEXED_ICON_NAME(st,x) \
-	((st).flags.common.s.use_indexed_icon_name = !!(x))
-#define SMSET_USE_INDEXED_ICON_NAME(st,x) \
-	((st).flag_mask.common.s.use_indexed_icon_name = !!(x))
-#define SCSET_USE_INDEXED_ICON_NAME(st,x) \
-	((st).change_mask.common.s.use_indexed_icon_name = !!(x))
-#define SWINDOWSHADE_LAZINESS(sf) \
-	((sf).common.s.windowshade_laziness)
-#define SFWINDOWSHADE_LAZINESS(st) \
-	((st).flags.common.s.windowshade_laziness)
-#define SMWINDOWSHADE_LAZINESS(st) \
-	((st).flag_mask.common.s.windowshade_laziness)
-#define SCWINDOWSHADE_LAZINESS(st) \
-	((st).change_mask.common.s.windowshade_laziness)
-#define SFSET_WINDOWSHADE_LAZINESS(st,x) \
-	((st).flags.common.s.windowshade_laziness = (x))
-#define SMSET_WINDOWSHADE_LAZINESS(st,x) \
-	((st).flag_mask.common.s.windowshade_laziness = (x))
-#define SCSET_WINDOWSHADE_LAZINESS(st,x) \
-	((st).change_mask.common.s.windowshade_laziness = (x))
-#define SDO_EWMH_MINI_ICON_OVERRIDE(sf) \
-	((sf).common.s.do_ewmh_mini_icon_override)
-#define SFDO_EWMH_MINI_ICON_OVERRIDE(st) \
-	((st).flags.common.s.do_ewmh_mini_icon_override)
-#define SMDO_EWMH_MINI_ICON_OVERRIDE(st) \
-	((st).flag_mask.common.s.do_ewmh_mini_icon_override)
-#define SCDO_EWMH_MINI_ICON_OVERRIDE(st) \
-	((st).change_mask.common.s.do_ewmh_mini_icon_override)
-#define SFSET_DO_EWMH_MINI_ICON_OVERRIDE(st,x) \
-	((st).flags.common.s.do_ewmh_mini_icon_override = !!(x))
-#define SMSET_DO_EWMH_MINI_ICON_OVERRIDE(st,x) \
-	((st).flag_mask.common.s.do_ewmh_mini_icon_override = !!(x))
-#define SCSET_DO_EWMH_MINI_ICON_OVERRIDE(st,x) \
-	((st).change_mask.common.s.do_ewmh_mini_icon_override = !!(x))
-#define SDO_EWMH_DONATE_ICON(sf) \
-	((sf).common.s.do_ewmh_donate_icon)
-#define SFDO_EWMH_DONATE_ICON(st) \
-	((st).flags.common.s.do_ewmh_donate_icon)
-#define SMDO_EWMH_DONATE_ICON(st) \
-	((st).flag_mask.common.s.do_ewmh_donate_icon)
-#define SCDO_EWMH_DONATE_ICON(st) \
-	((st).change_mask.common.s.do_ewmh_donate_icon)
-#define SFSET_DO_EWMH_DONATE_ICON(st,x) \
-	((st).flags.common.s.do_ewmh_donate_icon = !!(x))
-#define SMSET_DO_EWMH_DONATE_ICON(st,x) \
-	((st).flag_mask.common.s.do_ewmh_donate_icon = !!(x))
-#define SCSET_DO_EWMH_DONATE_ICON(st,x) \
-	((st).change_mask.common.s.do_ewmh_donate_icon = !!(x))
-#define SDO_EWMH_DONATE_MINI_ICON(sf) \
-	((sf).common.s.do_ewmh_donate_mini_icon)
-#define SFDO_EWMH_DONATE_MINI_ICON(st) \
-	((st).flags.common.s.do_ewmh_donate_mini_icon)
-#define SMDO_EWMH_DONATE_MINI_ICON(st) \
-	((st).flag_mask.common.s.do_ewmh_donate_mini_icon)
-#define SCDO_EWMH_DONATE_MINI_ICON(st) \
-	((st).change_mask.common.s.do_ewmh_donate_mini_icon)
-#define SFSET_DO_EWMH_DONATE_MINI_ICON(st,x) \
-	((st).flags.common.s.do_ewmh_donate_mini_icon = !!(x))
-#define SMSET_DO_EWMH_DONATE_MINI_ICON(st,x) \
-	((st).flag_mask.common.s.do_ewmh_donate_mini_icon = !!(x))
-#define SCSET_DO_EWMH_DONATE_MINI_ICON(st,x) \
-	((st).change_mask.common.s.do_ewmh_donate_mini_icon = !!(x))
-#define SDO_EWMH_USE_STACKING_HINTS(sf) \
-	((sf).common.s.do_ewmh_use_stacking_hints)
-#define SFDO_EWMH_USE_STACKING_HINTS(st) \
-	((st).flags.common.s.do_ewmh_use_stacking_hints)
-#define SMDO_EWMH_USE_STACKING_HINTS(st) \
-	((st).flag_mask.common.s.do_ewmh_use_stacking_hints)
-#define SCDO_EWMH_USE_STACKING_HINTS(st) \
-	((st).change_mask.common.s.do_ewmh_use_stacking_hints)
-#define SFSET_DO_EWMH_USE_STACKING_HINTS(st,x) \
-	((st).flags.common.s.do_ewmh_use_stacking_hints = !!(x))
-#define SMSET_DO_EWMH_USE_STACKING_HINTS(st,x) \
-	((st).flag_mask.common.s.do_ewmh_use_stacking_hints = !!(x))
-#define SCSET_DO_EWMH_USE_STACKING_HINTS(st,x) \
-	((st).change_mask.common.s.do_ewmh_use_stacking_hints = !!(x))
-#define SDO_EWMH_IGNORE_STRUT_HINTS(sf) \
-	((sf).common.s.do_ewmh_ignore_strut_hints)
-#define SFDO_EWMH_IGNORE_STRUT_HINTS(st) \
-	((st).flags.common.s.do_ewmh_ignore_strut_hints)
-#define SMDO_EWMH_IGNORE_STRUT_HINTS(st) \
-	((st).flag_mask.common.s.do_ewmh_ignore_strut_hints)
-#define SCDO_EWMH_IGNORE_STRUT_HINTS(st) \
-	((st).change_mask.common.s.do_ewmh_ignore_strut_hints)
-#define SFSET_DO_EWMH_IGNORE_STRUT_HINTS(st,x) \
-	((st).flags.common.s.do_ewmh_ignore_strut_hints = !!(x))
-#define SMSET_DO_EWMH_IGNORE_STRUT_HINTS(st,x) \
-	((st).flag_mask.common.s.do_ewmh_ignore_strut_hints = !!(x))
-#define SCSET_DO_EWMH_IGNORE_STRUT_HINTS(st,x) \
-	((st).change_mask.common.s.do_ewmh_ignore_strut_hints = !!(x))
-#define SDO_EWMH_IGNORE_STATE_HINTS(sf) \
-	((sf).common.s.do_ewmh_ignore_state_hints)
-#define SFDO_EWMH_IGNORE_STATE_HINTS(st) \
-	((st).flags.common.s.do_ewmh_ignore_state_hints)
-#define SMDO_EWMH_IGNORE_STATE_HINTS(st) \
-	((st).flag_mask.common.s.do_ewmh_ignore_state_hints)
-#define SCDO_EWMH_IGNORE_STATE_HINTS(st) \
-	((st).change_mask.common.s.do_ewmh_ignore_state_hints)
-#define SFSET_DO_EWMH_IGNORE_STATE_HINTS(st,x) \
-	((st).flags.common.s.do_ewmh_ignore_state_hints = !!(x))
-#define SMSET_DO_EWMH_IGNORE_STATE_HINTS(st,x) \
-	((st).flag_mask.common.s.do_ewmh_ignore_state_hints = !!(x))
-#define SCSET_DO_EWMH_IGNORE_STATE_HINTS(st,x) \
-	((st).change_mask.common.s.do_ewmh_ignore_state_hints = !!(x))
-#define SEWMH_MAXIMIZE_MODE(sf) \
-	((sf).common.s.ewmh_maximize_mode)
-#define SFEWMH_MAXIMIZE_MODE(st) \
-	((st).flags.common.s.ewmh_maximize_mode)
-#define SMEWMH_MAXIMIZE_MODE(st) \
-	((st).flag_mask.common.s.ewmh_maximize_mode)
-#define SCEWMH_MAXIMIZE_MODE(st) \
-	((st).change_mask.common.s.ewmh_maximize_mode)
-#define SFSET_EWMH_MAXIMIZE_MODE(st,x) \
-	((st).flags.common.s.ewmh_maximize_mode = (x))
-#define SMSET_EWMH_MAXIMIZE_MODE(st,x) \
-	((st).flag_mask.common.s.ewmh_maximize_mode = (x))
-#define SCSET_EWMH_MAXIMIZE_MODE(st,x) \
-	((st).change_mask.common.s.ewmh_maximize_mode = (x))
+#define SFC(sf) \
+	((sf).common)
+
+/* access to common flags */
+#define S_FOCUS_POLICY(c) \
+	((c).s.focus_policy)
+#define S_TITLE_DIR(c) \
+	((c).title_dir)
+#define S_SET_TITLE_DIR(c,x) \
+	((c).title_dir = x)
+#define S_IS_STICKY(c) \
+	((c).is_sticky)
+#define S_SET_IS_STICKY(c,x) \
+	((c).is_sticky = !!(x))
+#define S_DO_CIRCULATE_SKIP(c) \
+	((c).s.do_circulate_skip)
+#define S_SET_DO_CIRCULATE_SKIP(c,x) \
+	((c).s.do_circulate_skip = !!(x))
+#define S_DO_CIRCULATE_SKIP_ICON(c) \
+	((c).s.do_circulate_skip_icon)
+#define S_SET_DO_CIRCULATE_SKIP_ICON(c,x) \
+	((c).s.do_circulate_skip_icon = !!(x))
+#define S_DO_CIRCULATE_SKIP_SHADED(c) \
+	((c).s.do_circulate_skip_shaded)
+#define S_SET_DO_CIRCULATE_SKIP_SHADED(c,x) \
+	((c).s.do_circulate_skip_shaded = !!(x))
+#define S_DO_ICONIFY_WINDOW_GROUPS(c) \
+	((c).s.do_iconify_window_groups)
+#define S_SET_DO_ICONIFY_WINDOW_GROUPS(c,x) \
+	((c).s.do_iconify_window_groups = !!(x))
+#define S_DO_IGNORE_GNOME_HINTS(c) \
+	((c).s.do_ignore_gnome_hints)
+#define S_SET_DO_IGNORE_GNOME_HINTS(c,x) \
+	((c).s.do_ignore_gnome_hints = !!(x))
+#define S_DO_IGNORE_ICON_BOXES(c) \
+	((c).s.do_ignore_icon_boxes)
+#define S_SET_DO_IGNORE_ICON_BOXES(c,x) \
+	((c).s.do_ignore_icon_boxes = !!(x))
+#define S_DO_IGNORE_RESTACK(c) \
+	((c).s.do_ignore_restack)
+#define S_SET_DO_IGNORE_RESTACK(c,x) \
+	((c).s.do_ignore_restack = !!(x))
+#define S_DO_USE_WINDOW_GROUP_HINT(c) \
+	((c).s.do_use_window_group_hint)
+#define S_SET_DO_USE_WINDOW_GROUP_HINT(c,x) \
+	((c).s.do_use_window_group_hint = !!(x))
+#define S_DO_LOWER_TRANSIENT(c) \
+	((c).s.do_lower_transient)
+#define S_SET_DO_LOWER_TRANSIENT(c,x) \
+	((c).s.do_lower_transient = !!(x))
+#define S_DO_NOT_SHOW_ON_MAP(c) \
+	((c).s.do_not_show_on_map)
+#define S_SET_DO_NOT_SHOW_ON_MAP(c,x) \
+	((c).s.do_not_show_on_map = !!(x))
+#define S_DO_RAISE_TRANSIENT(c) \
+	((c).s.do_raise_transient)
+#define S_SET_DO_RAISE_TRANSIENT(c,x) \
+	((c).s.do_raise_transient = !!(x))
+#define S_DO_RESIZE_OPAQUE(c) \
+	((c).s.do_resize_opaque)
+#define S_SET_DO_RESIZE_OPAQUE(c,x) \
+	((c).s.do_resize_opaque = !!(x))
+#define S_DO_SHRINK_WINDOWSHADE(c) \
+	((c).s.do_shrink_windowshade)
+#define S_SET_DO_SHRINK_WINDOWSHADE(c,x) \
+	((c).s.do_shrink_windowshade = !!(x))
+#define S_DO_STACK_TRANSIENT_PARENT(c) \
+	((c).s.do_stack_transient_parent)
+#define S_SET_DO_STACK_TRANSIENT_PARENT(c,x) \
+	((c).s.do_stack_transient_parent = !!(x))
+#define S_DO_WINDOW_LIST_SKIP(c) \
+	((c).s.do_window_list_skip)
+#define S_SET_DO_WINDOW_LIST_SKIP(c,x) \
+	((c).s.do_window_list_skip = !!(x))
+#define S_HAS_NO_BORDER(c) \
+	((c).has_no_border)
+#define S_SET_HAS_NO_BORDER(c,x) \
+	((c).has_no_border = !!(x))
+#define S_HAS_DEPRESSABLE_BORDER(c) \
+	((c).s.has_depressable_border)
+#define S_SET_HAS_DEPRESSABLE_BORDER(c,x) \
+	((c).s.has_depressable_border = !!(x))
+#define S_HAS_ICON_FONT(c) \
+	((c).has_icon_font)
+#define S_SET_HAS_ICON_FONT(c,x) \
+	((c).has_icon_font = !!(x))
+#define S_HAS_MWM_BORDER(c) \
+	((c).s.has_mwm_border)
+#define S_SET_HAS_MWM_BORDER(c,x) \
+	((c).s.has_mwm_border = !!(x))
+#define S_HAS_MWM_BUTTONS(c) \
+	((c).s.has_mwm_buttons)
+#define S_SET_HAS_MWM_BUTTONS(c,x) \
+	((c).s.has_mwm_buttons = !!(x))
+#define S_HAS_MWM_OVERRIDE(c) \
+	((c).s.has_mwm_override)
+#define S_SET_HAS_MWM_OVERRIDE(c,x) \
+	((c).s.has_mwm_override = !!(x))
+#define S_HAS_NO_ICON_TITLE(c) \
+	((c).s.has_no_icon_title)
+#define S_SET_HAS_NO_ICON_TITLE(c,x) \
+	((c).s.has_no_icon_title = !!(x))
+#define S_HAS_OVERRIDE_SIZE(c) \
+	((c).s.has_override_size)
+#define S_SET_HAS_OVERRIDE_SIZE(c,x) \
+	((c).s.has_override_size = !!(x))
+#define S_HAS_STIPPLED_TITLE(c) \
+	((c).s.has_stippled_title)
+#define S_SET_HAS_STIPPLED_TITLE(c,x) \
+	((c).s.has_stippled_title = !!(x))
+#define S_HAS_WINDOW_FONT(c) \
+	((c).has_window_font)
+#define S_SET_HAS_WINDOW_FONT(c,x) \
+	((c).has_window_font = !!(x))
+#define S_ICON_OVERRIDE(c) \
+	((c).s.icon_override)
+#define S_SET_ICON_OVERRIDE(c,x) \
+	((c).s.icon_override = (x))
+#define S_IS_BOTTOM_TITLE_ROTATED(c) \
+	((c).s.is_bottom_title_rotated)
+#define S_SET_IS_BOTTOM_TITLE_ROTATED(c,x) \
+	((c).s.is_bottom_title_rotated = !!(x))
+#define S_IS_FIXED(c) \
+	((c).s.is_fixed)
+#define S_SET_IS_FIXED(c,x) \
+	((c).s.is_fixed = !!(x))
+#define S_IS_FIXED_PPOS(c) \
+	((c).s.is_fixed_ppos)
+#define S_SET_IS_FIXED_PPOS(c,x) \
+	((c).s.is_fixed_ppos = !!(x))
+#define S_IS_ICON_STICKY(c) \
+	((c).s.is_icon_sticky)
+#define S_SET_IS_ICON_STICKY(c,x) \
+	((c).s.is_icon_sticky = !!(x))
+#define S_IS_ICON_SUPPRESSED(c) \
+	((c).s.is_icon_suppressed)
+#define S_SET_IS_ICON_SUPPRESSED(c,x) \
+	((c).s.is_icon_suppressed = !!(x))
+#define S_IS_LEFT_TITLE_ROTATED_CW(c) \
+	((c).s.is_left_title_rotated_cw)
+#define S_SET_IS_LEFT_TITLE_ROTATED_CW(c,x) \
+	((c).s.is_left_title_rotated_cw = !!(x))
+#define S_IS_SIZE_FIXED(c) \
+	((c).s.is_size_fixed)
+#define S_SET_IS_SIZE_FIXED(c,x) \
+	((c).s.is_size_fixed = !!(x))
+#define S_IS_PSIZE_FIXED(c) \
+	((c).s.is_psize_fixed)
+#define S_SET_IS_PSIZE_FIXED(c,x) \
+	((c).s.is_psize_fixed = !!(x))
+#define S_IS_RIGHT_TITLE_ROTATED_CW(c) \
+	((c).s.is_right_title_rotated_cw)
+#define S_SET_IS_RIGHT_TITLE_ROTATED_CW(c,x) \
+	((c).s.is_right_title_rotated_cw = !!(x))
+#define S_IS_TOP_TITLE_ROTATED(c) \
+	((c).s.is_top_title_rotated)
+#define S_SET_IS_TOP_TITLE_ROTATED(c,x) \
+	((c).s.is_top_title_rotated = !!(x))
+#define S_USE_ICON_POSITION_HINT(c) \
+	((c).s.use_icon_position_hint)
+#define S_SET_USE_ICON_POSITION_HINT(c,x) \
+	((c).s.use_icon_position_hint = !!(x))
+#define S_USE_INDEXED_WINDOW_NAME(c) \
+	((c).s.use_indexed_window_name)
+#define S_SET_USE_INDEXED_WINDOW_NAME(c,x) \
+	((c).s.use_indexed_window_name = !!(x))
+#define S_USE_INDEXED_ICON_NAME(c) \
+	((c).s.use_indexed_icon_name)
+#define S_SET_USE_INDEXED_ICON_NAME(c,x) \
+	((c).s.use_indexed_icon_name = !!(x))
+#define S_WINDOWSHADE_LAZINESS(c) \
+	((c).s.windowshade_laziness)
+#define S_SET_WINDOWSHADE_LAZINESS(c,x) \
+	((c).s.windowshade_laziness = (x))
+#define S_DO_EWMH_MINI_ICON_OVERRIDE(c) \
+	((c).s.do_ewmh_mini_icon_override)
+#define S_SET_DO_EWMH_MINI_ICON_OVERRIDE(c,x) \
+	((c).s.do_ewmh_mini_icon_override = !!(x))
+#define S_DO_EWMH_DONATE_ICON(c) \
+	((c).s.do_ewmh_donate_icon)
+#define S_SET_DO_EWMH_DONATE_ICON(c,x) \
+	((c).s.do_ewmh_donate_icon = !!(x))
+#define S_DO_EWMH_DONATE_MINI_ICON(c) \
+	((c).s.do_ewmh_donate_mini_icon)
+#define S_SET_DO_EWMH_DONATE_MINI_ICON(c,x) \
+	((c).s.do_ewmh_donate_mini_icon = !!(x))
+#define S_DO_EWMH_USE_STACKING_HINTS(c) \
+	((c).s.do_ewmh_use_stacking_hints)
+#define S_SET_DO_EWMH_USE_STACKING_HINTS(c,x) \
+	((c).s.do_ewmh_use_stacking_hints = !!(x))
+#define S_DO_EWMH_IGNORE_STRUT_HINTS(c) \
+	((c).s.do_ewmh_ignore_strut_hints)
+#define S_SET_DO_EWMH_IGNORE_STRUT_HINTS(c,x) \
+	((c).s.do_ewmh_ignore_strut_hints = !!(x))
+#define S_DO_EWMH_IGNORE_STATE_HINTS(c) \
+	((c).s.do_ewmh_ignore_state_hints)
+#define S_SET_DO_EWMH_IGNORE_STATE_HINTS(c,x) \
+	((c).s.do_ewmh_ignore_state_hints = !!(x))
+#define S_EWMH_MAXIMIZE_MODE(c) \
+	((c).s.ewmh_maximize_mode)
+#define S_SET_EWMH_MAXIMIZE_MODE(c,x) \
+	((c).s.ewmh_maximize_mode = (x))
 
 /* access to other parts of a style (call with the style itself) */
 #define SGET_NEXT_STYLE(s) \

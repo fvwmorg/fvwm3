@@ -204,6 +204,22 @@ static int Get_TBLR(char *token, unsigned char *IconFill)
 	return 1;
 }
 
+void cleanup_style_defaults(window_style *style)
+{
+	int i;
+	char *dflt;
+	char *mask;
+
+	mask = (char *)&(style->flag_mask);
+	dflt = (char *)&(style->flag_default);
+	for (i = 0; i < sizeof(style_flags); i++)
+	{
+		dflt[i] &= ~mask[i];
+	}
+
+	return;
+}
+
 /* merge_styles - For a matching style, merge window_style to window_style
  *
  *  Returned Value:
@@ -229,6 +245,8 @@ static void merge_styles(
 	char *add_flags;
 	char *merge_mask;
 	char *add_mask;
+	char *merge_dflt;
+	char *add_dflt;
 	char *merge_change_mask;
 	char *add_change_mask;
 
@@ -281,7 +299,7 @@ static void merge_styles(
 		}
 	}
 #endif
-	if (SFHAS_ICON_FONT(*add_style))
+	if (S_HAS_ICON_FONT(SCF(*add_style)))
 	{
 		if (do_free_src_and_alloc_copy)
 		{
@@ -296,7 +314,7 @@ static void merge_styles(
 				*merged_style, SGET_ICON_FONT(*add_style));
 		}
 	}
-	if (SFHAS_WINDOW_FONT(*add_style))
+	if (S_HAS_WINDOW_FONT(SCF(*add_style)))
 	{
 		if (do_free_src_and_alloc_copy)
 		{
@@ -512,24 +530,33 @@ static void merge_styles(
 	add_flags = (char *)&(add_style->flags);
 	merge_mask = (char *)&(merged_style->flag_mask);
 	add_mask = (char *)&(add_style->flag_mask);
+	merge_dflt = (char *)&(merged_style->flag_default);
+	add_dflt = (char *)&(add_style->flag_default);
 	merge_change_mask = (char *)&(merged_style->change_mask);
 	add_change_mask = (char *)&(add_style->change_mask);
 	for (i = 0; i < sizeof(style_flags); i++)
 	{
+		char m;
+
+		/* overwrite set styles */
 		merge_flags[i] |= (add_flags[i] & add_mask[i]);
 		merge_flags[i] &= (add_flags[i] | ~add_mask[i]);
-		merge_mask[i] |= add_mask[i];
+		/* overwrite default values */
+		m = add_dflt[i] & ~add_mask[i] & ~merge_mask[i];
+		merge_flags[i] |= (add_flags[i] & m);
+		merge_flags[i] &= (add_flags[i] | ~m);
+		/* overwrite even weaker default values */
+		m = ~add_dflt[i] & ~add_mask[i] & ~merge_dflt[i] &
+			~merge_mask[i];
+		merge_flags[i] |= (add_flags[i] & m);
+		merge_flags[i] &= (add_flags[i] | ~m);
+		/* other flags */
 		merge_change_mask[i] &= ~(add_mask[i]);
 		merge_change_mask[i] |= add_change_mask[i];
-		/* This allowes for default values to be copied when both
-		 * styles don't haven't set that bit in the mask. */
-		merge_flags[i] |=
-			(add_flags[i] & ~add_mask[i] & ~merge_mask[i]);
-		merge_flags[i] &=
-			(add_flags[i] | add_mask[i] | merge_mask[i]);
-
+		merge_mask[i] |= add_mask[i];
+		merge_dflt[i] |= add_dflt[i];
+		merge_dflt[i] &= ~merge_mask[i];
 	}
-	merged_style->has_style_changed |= add_style->has_style_changed;
 
 	return;
 }
@@ -607,6 +634,8 @@ static void free_style_mask(window_style *style, style_flags *mask)
 	}
 	/* remove styles from definitiion */
 	blockunmask((char *)&style->flag_mask, (char *)&style->flag_mask,
+		    (char *)pmask, sizeof(style_flags));
+	blockunmask((char *)&style->flag_default, (char *)&style->flag_default,
 		    (char *)pmask, sizeof(style_flags));
 	blockunmask((char *)&style->change_mask, (char *)&style->change_mask,
 		    (char *)pmask, sizeof(style_flags));
@@ -715,12 +744,14 @@ static Bool __simplify_style_list(void)
 		style_flags dummyflags;
 		/* incremental flags set in styles with the same name */
 		style_flags sumflags;
+		style_flags sumdflags;
 		/* incremental flags set in styles with other names */
 		style_flags interflags;
 		window_style *cmp;
 
 		memset(&interflags, 0, sizeof(style_flags));
 		memcpy(&sumflags, &cur->flag_mask, sizeof(style_flags));
+		memcpy(&sumdflags, &cur->flag_default, sizeof(style_flags));
 		cmp = SGET_PREV_STYLE(*cur);
 		while (cmp)
 		{
@@ -730,17 +761,24 @@ static Bool __simplify_style_list(void)
 					(char *)&interflags,
 					(char *)&cmp->flag_mask,
 					sizeof(style_flags));
+				blockor((char *)&interflags,
+					(char *)&interflags,
+					(char *)&cmp->flag_default,
+					sizeof(style_flags));
 				cmp = SGET_PREV_STYLE(*cmp);
 				continue;
 			}
 			if (blockissubset(
 				    (char *)&cmp->flag_mask,
 				    (char *)&sumflags,
+				    sizeof(style_flags)) &&
+			    blockissubset(
+				    (char *)&cmp->flag_default,
+				    (char *)&sumdflags,
 				    sizeof(style_flags)))
 			{
-				/* The style is a subset of
-				 * later style definitions;
-				 * nuke it */
+				/* The style is a subset of later style
+				 * definitions; nuke it */
 				window_style *tmp = SGET_PREV_STYLE(*cmp);
 				remove_style_from_list(cmp, True);
 				cmp = tmp;
@@ -751,18 +789,36 @@ static Bool __simplify_style_list(void)
 				/* remove all styles that are overridden later
 				 * from the style */
 				free_style_mask(cmp, &sumflags);
-
+				blockunmask((char *)&dummyflags,
+					(char *)&sumdflags,
+					(char *)&cmp->flag_mask,
+					sizeof(style_flags));
+				free_style_mask(cmp, &dummyflags);
 				/* Add the style to the set */
 				blockor((char *)&sumflags,
 					(char *)&sumflags,
 					(char *)&cmp->flag_mask,
 					sizeof(style_flags));
+				blockor((char *)&sumdflags,
+					(char *)&sumflags,
+					(char *)&cmp->flag_mask,
+					sizeof(style_flags));
+				blockor((char *)&sumdflags,
+					(char *)&sumdflags,
+					(char *)&cmp->flag_default,
+					sizeof(style_flags));
 				if (is_merge_allowed &&
 				    !blockand(
 					    (char *)&dummyflags,
-					    (char *)&sumflags,
+					    (char *)&cmp->flag_mask,
 					    (char *)&interflags,
-					    sizeof(style_flags)))
+					    sizeof(style_flags)) &&
+				    !blockand(
+					    (char *)&dummyflags,
+					    (char *)&cmp->flag_default,
+					    (char *)&interflags,
+					    sizeof(style_flags))
+					)
 				{
 					window_style *tmp =
 						SGET_PREV_STYLE(*cmp);
@@ -771,19 +827,18 @@ static Bool __simplify_style_list(void)
 					window_style *next =
 						SGET_NEXT_STYLE(*cur);
 
-					/* merge cmp into cur and
-					 * delete it afterwards */
+					/* merge cmp into cur and delete it
+					 * afterwards */
 					merge_styles(cmp, cur, True);
 					memcpy(cur, cmp, sizeof(window_style));
-					/* restore fields overwritten
-					 * by memcpy */
+					/* restore fields overwritten by
+					 * memcpy */
 					SSET_PREV_STYLE(*cur, prev);
 					SSET_NEXT_STYLE(*cur, next);
-					/* remove the style without
-					 * freeing the memory */
+					/* remove the style without freeing the
+					 * memory */
 					remove_style_from_list(cmp, False);
-					/* release the style structure
-					 */
+					/* release the style structure */
 					free(cmp);
 					cmp = tmp;
 					has_modified = True;
@@ -808,12 +863,12 @@ static void style_set_old_focus_policy(window_style *ps, int policy)
 	{
 	case 0:
 		/* ClickToFocus */
-		FPS_FOCUS_ENTER(SF_FOCUS_POLICY(*ps), 0);
-		FPS_UNFOCUS_LEAVE(SF_FOCUS_POLICY(*ps), 0);
-		FPS_FOCUS_CLICK_CLIENT(SF_FOCUS_POLICY(*ps), 1);
-		FPS_FOCUS_CLICK_DECOR(SF_FOCUS_POLICY(*ps), 1);
-		FPS_FOCUS_CLICK_ICON(SF_FOCUS_POLICY(*ps), 1);
-		FPS_FOCUS_BY_FUNCTION(SF_FOCUS_POLICY(*ps), 1);
+		FPS_FOCUS_ENTER(S_FOCUS_POLICY(SCF(*ps)), 0);
+		FPS_UNFOCUS_LEAVE(S_FOCUS_POLICY(SCF(*ps)), 0);
+		FPS_FOCUS_CLICK_CLIENT(S_FOCUS_POLICY(SCF(*ps)), 1);
+		FPS_FOCUS_CLICK_DECOR(S_FOCUS_POLICY(SCF(*ps)), 1);
+		FPS_FOCUS_CLICK_ICON(S_FOCUS_POLICY(SCF(*ps)), 1);
+		FPS_FOCUS_BY_FUNCTION(S_FOCUS_POLICY(SCF(*ps)), 1);
 		FPS_FOCUS_BY_PROGRAM(fp, 1);
 		FPS_GRAB_FOCUS(fp, 1);
 		FPS_RELEASE_FOCUS(fp, 1);
@@ -830,12 +885,12 @@ static void style_set_old_focus_policy(window_style *ps, int policy)
 		break;
 	case 1:
 		/* MouseFocus */
-		FPS_FOCUS_ENTER(SF_FOCUS_POLICY(*ps), 1);
-		FPS_UNFOCUS_LEAVE(SF_FOCUS_POLICY(*ps), 1);
-		FPS_FOCUS_CLICK_CLIENT(SF_FOCUS_POLICY(*ps), 0);
-		FPS_FOCUS_CLICK_DECOR(SF_FOCUS_POLICY(*ps), 0);
-		FPS_FOCUS_CLICK_ICON(SF_FOCUS_POLICY(*ps), 0);
-		FPS_FOCUS_BY_FUNCTION(SF_FOCUS_POLICY(*ps), 1);
+		FPS_FOCUS_ENTER(S_FOCUS_POLICY(SCF(*ps)), 1);
+		FPS_UNFOCUS_LEAVE(S_FOCUS_POLICY(SCF(*ps)), 1);
+		FPS_FOCUS_CLICK_CLIENT(S_FOCUS_POLICY(SCF(*ps)), 0);
+		FPS_FOCUS_CLICK_DECOR(S_FOCUS_POLICY(SCF(*ps)), 0);
+		FPS_FOCUS_CLICK_ICON(S_FOCUS_POLICY(SCF(*ps)), 0);
+		FPS_FOCUS_BY_FUNCTION(S_FOCUS_POLICY(SCF(*ps)), 1);
 		FPS_FOCUS_BY_PROGRAM(fp, 1);
 		FPS_GRAB_FOCUS(fp, 0);
 		FPS_RELEASE_FOCUS(fp, 0);
@@ -852,12 +907,12 @@ static void style_set_old_focus_policy(window_style *ps, int policy)
 		break;
 	case 2:
 		/* SloppyFocus */
-		FPS_FOCUS_ENTER(SF_FOCUS_POLICY(*ps), 1);
-		FPS_UNFOCUS_LEAVE(SF_FOCUS_POLICY(*ps), 0);
-		FPS_FOCUS_CLICK_CLIENT(SF_FOCUS_POLICY(*ps), 0);
-		FPS_FOCUS_CLICK_DECOR(SF_FOCUS_POLICY(*ps), 0);
-		FPS_FOCUS_CLICK_ICON(SF_FOCUS_POLICY(*ps), 0);
-		FPS_FOCUS_BY_FUNCTION(SF_FOCUS_POLICY(*ps), 1);
+		FPS_FOCUS_ENTER(S_FOCUS_POLICY(SCF(*ps)), 1);
+		FPS_UNFOCUS_LEAVE(S_FOCUS_POLICY(SCF(*ps)), 0);
+		FPS_FOCUS_CLICK_CLIENT(S_FOCUS_POLICY(SCF(*ps)), 0);
+		FPS_FOCUS_CLICK_DECOR(S_FOCUS_POLICY(SCF(*ps)), 0);
+		FPS_FOCUS_CLICK_ICON(S_FOCUS_POLICY(SCF(*ps)), 0);
+		FPS_FOCUS_BY_FUNCTION(S_FOCUS_POLICY(SCF(*ps)), 1);
 		FPS_FOCUS_BY_PROGRAM(fp, 1);
 		FPS_GRAB_FOCUS(fp, 0);
 		FPS_RELEASE_FOCUS(fp, 1);
@@ -874,12 +929,12 @@ static void style_set_old_focus_policy(window_style *ps, int policy)
 		break;
 	case 3:
 		/* NeverFocus */
-		FPS_FOCUS_ENTER(SF_FOCUS_POLICY(*ps), 0);
-		FPS_UNFOCUS_LEAVE(SF_FOCUS_POLICY(*ps), 0);
-		FPS_FOCUS_CLICK_CLIENT(SF_FOCUS_POLICY(*ps), 0);
-		FPS_FOCUS_CLICK_DECOR(SF_FOCUS_POLICY(*ps), 0);
-		FPS_FOCUS_CLICK_ICON(SF_FOCUS_POLICY(*ps), 0);
-		FPS_FOCUS_BY_FUNCTION(SF_FOCUS_POLICY(*ps), 0);
+		FPS_FOCUS_ENTER(S_FOCUS_POLICY(SCF(*ps)), 0);
+		FPS_UNFOCUS_LEAVE(S_FOCUS_POLICY(SCF(*ps)), 0);
+		FPS_FOCUS_CLICK_CLIENT(S_FOCUS_POLICY(SCF(*ps)), 0);
+		FPS_FOCUS_CLICK_DECOR(S_FOCUS_POLICY(SCF(*ps)), 0);
+		FPS_FOCUS_CLICK_ICON(S_FOCUS_POLICY(SCF(*ps)), 0);
+		FPS_FOCUS_BY_FUNCTION(S_FOCUS_POLICY(SCF(*ps)), 0);
 		FPS_FOCUS_BY_PROGRAM(fp, 1);
 		FPS_GRAB_FOCUS(fp, 0);
 		FPS_RELEASE_FOCUS(fp, 0);
@@ -895,101 +950,117 @@ static void style_set_old_focus_policy(window_style *ps, int policy)
 		FPS_SORT_WINDOWLIST_BY(fp, FPOL_SORT_WL_BY_FOCUS);
 		break;
 	}
-	FPS_FOCUS_ENTER(SM_FOCUS_POLICY(*ps), 1);
-	FPS_FOCUS_ENTER(SC_FOCUS_POLICY(*ps), 1);
-	FPS_UNFOCUS_LEAVE(SM_FOCUS_POLICY(*ps), 1);
-	FPS_UNFOCUS_LEAVE(SC_FOCUS_POLICY(*ps), 1);
-	FPS_FOCUS_CLICK_CLIENT(SM_FOCUS_POLICY(*ps), 1);
-	FPS_FOCUS_CLICK_CLIENT(SC_FOCUS_POLICY(*ps), 1);
-	FPS_FOCUS_CLICK_DECOR(SM_FOCUS_POLICY(*ps), 1);
-	FPS_FOCUS_CLICK_DECOR(SC_FOCUS_POLICY(*ps), 1);
-	FPS_FOCUS_CLICK_ICON(SM_FOCUS_POLICY(*ps), 1);
-	FPS_FOCUS_CLICK_ICON(SC_FOCUS_POLICY(*ps), 1);
-	FPS_FOCUS_BY_FUNCTION(SM_FOCUS_POLICY(*ps), 1);
-	FPS_FOCUS_BY_FUNCTION(SC_FOCUS_POLICY(*ps), 1);
+	FPS_FOCUS_ENTER(S_FOCUS_POLICY(SCM(*ps)), 1);
+	FPS_FOCUS_ENTER(S_FOCUS_POLICY(SCC(*ps)), 1);
+	FPS_UNFOCUS_LEAVE(S_FOCUS_POLICY(SCM(*ps)), 1);
+	FPS_UNFOCUS_LEAVE(S_FOCUS_POLICY(SCC(*ps)), 1);
+	FPS_FOCUS_CLICK_CLIENT(S_FOCUS_POLICY(SCM(*ps)), 1);
+	FPS_FOCUS_CLICK_CLIENT(S_FOCUS_POLICY(SCC(*ps)), 1);
+	FPS_FOCUS_CLICK_DECOR(S_FOCUS_POLICY(SCM(*ps)), 1);
+	FPS_FOCUS_CLICK_DECOR(S_FOCUS_POLICY(SCC(*ps)), 1);
+	FPS_FOCUS_CLICK_ICON(S_FOCUS_POLICY(SCM(*ps)), 1);
+	FPS_FOCUS_CLICK_ICON(S_FOCUS_POLICY(SCC(*ps)), 1);
+	FPS_FOCUS_BY_FUNCTION(S_FOCUS_POLICY(SCM(*ps)), 1);
+	FPS_FOCUS_BY_FUNCTION(S_FOCUS_POLICY(SCC(*ps)), 1);
 
-	if (!FP_DO_FOCUS_BY_PROGRAM(SM_FOCUS_POLICY(*ps)))
+	if (!FP_DO_FOCUS_BY_PROGRAM(S_FOCUS_POLICY(SCM(*ps))))
 	{
 		FPS_FOCUS_BY_PROGRAM(
-			SF_FOCUS_POLICY(*ps), FP_DO_FOCUS_BY_PROGRAM(fp));
-		FPS_FOCUS_BY_PROGRAM(SC_FOCUS_POLICY(*ps), 1);
+			S_FOCUS_POLICY(SCF(*ps)), FP_DO_FOCUS_BY_PROGRAM(fp));
+		FPS_FOCUS_BY_PROGRAM(S_FOCUS_POLICY(SCD(*ps)), 1);
+		FPS_FOCUS_BY_PROGRAM(S_FOCUS_POLICY(SCC(*ps)), 1);
 	}
-	if (!FP_DO_GRAB_FOCUS(SM_FOCUS_POLICY(*ps)))
+	if (!FP_DO_GRAB_FOCUS(S_FOCUS_POLICY(SCM(*ps))))
 	{
-		FPS_GRAB_FOCUS(SF_FOCUS_POLICY(*ps), FP_DO_GRAB_FOCUS(fp));
-		FPS_GRAB_FOCUS(SC_FOCUS_POLICY(*ps), 1);
+		FPS_GRAB_FOCUS(S_FOCUS_POLICY(SCF(*ps)), FP_DO_GRAB_FOCUS(fp));
+		FPS_GRAB_FOCUS(S_FOCUS_POLICY(SCD(*ps)), 1);
+		FPS_GRAB_FOCUS(S_FOCUS_POLICY(SCC(*ps)), 1);
 	}
-	if (!FP_DO_RELEASE_FOCUS(SM_FOCUS_POLICY(*ps)))
+	if (!FP_DO_RELEASE_FOCUS(S_FOCUS_POLICY(SCM(*ps))))
 	{
 		FPS_RELEASE_FOCUS(
-			SF_FOCUS_POLICY(*ps), FP_DO_RELEASE_FOCUS(fp));
-		FPS_RELEASE_FOCUS(SC_FOCUS_POLICY(*ps), 1);
+			S_FOCUS_POLICY(SCF(*ps)), FP_DO_RELEASE_FOCUS(fp));
+		FPS_RELEASE_FOCUS(S_FOCUS_POLICY(SCD(*ps)), 1);
+		FPS_RELEASE_FOCUS(S_FOCUS_POLICY(SCC(*ps)), 1);
 	}
-	if (!FP_DO_RAISE_FOCUSED_CLIENT_CLICK(SM_FOCUS_POLICY(*ps)))
+	if (!FP_DO_RAISE_FOCUSED_CLIENT_CLICK(S_FOCUS_POLICY(SCM(*ps))))
 	{
 		FPS_RAISE_FOCUSED_CLIENT_CLICK(
-			SF_FOCUS_POLICY(*ps),
+			S_FOCUS_POLICY(SCF(*ps)),
 			FP_DO_RAISE_FOCUSED_CLIENT_CLICK(fp));
-		FPS_RAISE_FOCUSED_CLIENT_CLICK(SC_FOCUS_POLICY(*ps), 1);
+		FPS_RAISE_FOCUSED_CLIENT_CLICK(S_FOCUS_POLICY(SCD(*ps)), 1);
+		FPS_RAISE_FOCUSED_CLIENT_CLICK(S_FOCUS_POLICY(SCC(*ps)), 1);
 	}
-	if (!FP_DO_RAISE_UNFOCUSED_CLIENT_CLICK(SM_FOCUS_POLICY(*ps)))
+	if (!FP_DO_RAISE_UNFOCUSED_CLIENT_CLICK(S_FOCUS_POLICY(SCM(*ps))))
 	{
 		FPS_RAISE_UNFOCUSED_CLIENT_CLICK(
-			SF_FOCUS_POLICY(*ps),
+			S_FOCUS_POLICY(SCF(*ps)),
 			FP_DO_RAISE_UNFOCUSED_CLIENT_CLICK(fp));
-		FPS_RAISE_UNFOCUSED_CLIENT_CLICK(SC_FOCUS_POLICY(*ps), 1);
+		FPS_RAISE_UNFOCUSED_CLIENT_CLICK(S_FOCUS_POLICY(SCD(*ps)), 1);
+		FPS_RAISE_UNFOCUSED_CLIENT_CLICK(S_FOCUS_POLICY(SCC(*ps)), 1);
 	}
-	if (!FP_DO_RAISE_FOCUSED_DECOR_CLICK(SM_FOCUS_POLICY(*ps)))
+	if (!FP_DO_RAISE_FOCUSED_DECOR_CLICK(S_FOCUS_POLICY(SCM(*ps))))
 	{
 		FPS_RAISE_FOCUSED_DECOR_CLICK(
-			SF_FOCUS_POLICY(*ps),
+			S_FOCUS_POLICY(SCF(*ps)),
 			FP_DO_RAISE_FOCUSED_DECOR_CLICK(fp));
-		FPS_RAISE_FOCUSED_DECOR_CLICK(SC_FOCUS_POLICY(*ps), 1);
+		FPS_RAISE_FOCUSED_DECOR_CLICK(S_FOCUS_POLICY(SCD(*ps)), 1);
+		FPS_RAISE_FOCUSED_DECOR_CLICK(S_FOCUS_POLICY(SCC(*ps)), 1);
 	}
-	if (!FP_DO_RAISE_UNFOCUSED_DECOR_CLICK(SM_FOCUS_POLICY(*ps)))
+	if (!FP_DO_RAISE_UNFOCUSED_DECOR_CLICK(S_FOCUS_POLICY(SCM(*ps))))
 	{
 		FPS_RAISE_UNFOCUSED_DECOR_CLICK(
-			SF_FOCUS_POLICY(*ps),
+			S_FOCUS_POLICY(SCF(*ps)),
 			FP_DO_RAISE_UNFOCUSED_DECOR_CLICK(fp));
-		FPS_RAISE_UNFOCUSED_DECOR_CLICK(SC_FOCUS_POLICY(*ps), 1);
+		FPS_RAISE_UNFOCUSED_DECOR_CLICK(S_FOCUS_POLICY(SCD(*ps)), 1);
+		FPS_RAISE_UNFOCUSED_DECOR_CLICK(S_FOCUS_POLICY(SCC(*ps)), 1);
 	}
-	if (!FP_DO_PASS_FOCUS_CLICK(SM_FOCUS_POLICY(*ps)))
+	if (!FP_DO_PASS_FOCUS_CLICK(S_FOCUS_POLICY(SCM(*ps))))
 	{
 		FPS_PASS_FOCUS_CLICK(
-			SF_FOCUS_POLICY(*ps), FP_DO_PASS_FOCUS_CLICK(fp));
-		FPS_PASS_FOCUS_CLICK(SC_FOCUS_POLICY(*ps), 1);
+			S_FOCUS_POLICY(SCF(*ps)), FP_DO_PASS_FOCUS_CLICK(fp));
+		FPS_PASS_FOCUS_CLICK(S_FOCUS_POLICY(SCD(*ps)), 1);
+		FPS_PASS_FOCUS_CLICK(S_FOCUS_POLICY(SCC(*ps)), 1);
 	}
-	if (!FP_DO_PASS_RAISE_CLICK(SM_FOCUS_POLICY(*ps)))
+	if (!FP_DO_PASS_RAISE_CLICK(S_FOCUS_POLICY(SCM(*ps))))
 	{
 		FPS_PASS_RAISE_CLICK(
-			SF_FOCUS_POLICY(*ps), FP_DO_PASS_RAISE_CLICK(fp));
-		FPS_PASS_RAISE_CLICK(SC_FOCUS_POLICY(*ps), 1);
+			S_FOCUS_POLICY(SCF(*ps)), FP_DO_PASS_RAISE_CLICK(fp));
+		FPS_PASS_RAISE_CLICK(S_FOCUS_POLICY(SCD(*ps)), 1);
+		FPS_PASS_RAISE_CLICK(S_FOCUS_POLICY(SCC(*ps)), 1);
 	}
-	if (!FP_DO_ALLOW_FUNC_FOCUS_CLICK(SM_FOCUS_POLICY(*ps)))
+	if (!FP_DO_ALLOW_FUNC_FOCUS_CLICK(S_FOCUS_POLICY(SCM(*ps))))
 	{
 		FPS_ALLOW_FUNC_FOCUS_CLICK(
-			SF_FOCUS_POLICY(*ps), FP_DO_ALLOW_FUNC_FOCUS_CLICK(fp));
-		FPS_ALLOW_FUNC_FOCUS_CLICK(SC_FOCUS_POLICY(*ps), 1);
+			S_FOCUS_POLICY(SCF(*ps)),
+			FP_DO_ALLOW_FUNC_FOCUS_CLICK(fp));
+		FPS_ALLOW_FUNC_FOCUS_CLICK(S_FOCUS_POLICY(SCD(*ps)), 1);
+		FPS_ALLOW_FUNC_FOCUS_CLICK(S_FOCUS_POLICY(SCC(*ps)), 1);
 	}
-	if (!FP_DO_ALLOW_FUNC_RAISE_CLICK(SM_FOCUS_POLICY(*ps)))
+	if (!FP_DO_ALLOW_FUNC_RAISE_CLICK(S_FOCUS_POLICY(SCM(*ps))))
 	{
 		FPS_ALLOW_FUNC_RAISE_CLICK(
-			SF_FOCUS_POLICY(*ps), FP_DO_ALLOW_FUNC_RAISE_CLICK(fp));
-		FPS_ALLOW_FUNC_RAISE_CLICK(SC_FOCUS_POLICY(*ps), 1);
+			S_FOCUS_POLICY(SCF(*ps)),
+			FP_DO_ALLOW_FUNC_RAISE_CLICK(fp));
+		FPS_ALLOW_FUNC_RAISE_CLICK(S_FOCUS_POLICY(SCD(*ps)), 1);
+		FPS_ALLOW_FUNC_RAISE_CLICK(S_FOCUS_POLICY(SCC(*ps)), 1);
 	}
 	if (!FP_DO_WARP_POINTER_ON_FOCUS_FUNC(
-		    SM_FOCUS_POLICY(*ps)))
+		    S_FOCUS_POLICY(SCM(*ps))))
 	{
 		FPS_WARP_POINTER_ON_FOCUS_FUNC(
-			SF_FOCUS_POLICY(*ps),
+			S_FOCUS_POLICY(SCF(*ps)),
 			FP_DO_WARP_POINTER_ON_FOCUS_FUNC(fp));
-		FPS_WARP_POINTER_ON_FOCUS_FUNC(SC_FOCUS_POLICY(*ps), 1);
+		FPS_WARP_POINTER_ON_FOCUS_FUNC(S_FOCUS_POLICY(SCD(*ps)), 1);
+		FPS_WARP_POINTER_ON_FOCUS_FUNC(S_FOCUS_POLICY(SCC(*ps)), 1);
 	}
-	if (!FP_DO_SORT_WINDOWLIST_BY(SM_FOCUS_POLICY(*ps)))
+	if (!FP_DO_SORT_WINDOWLIST_BY(S_FOCUS_POLICY(SCM(*ps))))
 	{
 		FPS_SORT_WINDOWLIST_BY(
-			SF_FOCUS_POLICY(*ps), FP_DO_SORT_WINDOWLIST_BY(fp));
-		FPS_SORT_WINDOWLIST_BY(SC_FOCUS_POLICY(*ps), 1);
+			S_FOCUS_POLICY(SCF(*ps)),
+			FP_DO_SORT_WINDOWLIST_BY(fp));
+		FPS_SORT_WINDOWLIST_BY(S_FOCUS_POLICY(SCD(*ps)), 1);
+		FPS_SORT_WINDOWLIST_BY(S_FOCUS_POLICY(SCC(*ps)), 1);
 	}
 
 	return;
@@ -1374,15 +1445,15 @@ static void style_parse_icon_box_style(
 		if (option)
 		{
 			/* disable default icon box */
-			SFSET_DO_IGNORE_ICON_BOXES(*ps, 1);
+			S_SET_DO_IGNORE_ICON_BOXES(SCF(*ps), 1);
 		}
 		else
 		{
 			/* use default icon box */
-			SFSET_DO_IGNORE_ICON_BOXES(*ps, 0);
+			S_SET_DO_IGNORE_ICON_BOXES(SCF(*ps), 0);
 		}
-		SMSET_DO_IGNORE_ICON_BOXES(*ps, 1);
-		SCSET_DO_IGNORE_ICON_BOXES(*ps, 1);
+		S_SET_DO_IGNORE_ICON_BOXES(SCM(*ps), 1);
+		S_SET_DO_IGNORE_ICON_BOXES(SCC(*ps), 1);
 		ps->flags.has_icon_boxes = 0;
 		ps->flag_mask.has_icon_boxes = 1;
 		ps->change_mask.has_icon_boxes = 1;
@@ -1540,9 +1611,9 @@ static void style_parse_icon_box_style(
 		/* new current box. save for grid */
 		(*ret_ib) = IconBoxes;
 	} /* end no error */
-	SFSET_DO_IGNORE_ICON_BOXES(*ps, 0);
-	SMSET_DO_IGNORE_ICON_BOXES(*ps, 1);
-	SCSET_DO_IGNORE_ICON_BOXES(*ps, 1);
+	S_SET_DO_IGNORE_ICON_BOXES(SCF(*ps), 0);
+	S_SET_DO_IGNORE_ICON_BOXES(SCM(*ps), 1);
+	S_SET_DO_IGNORE_ICON_BOXES(SCC(*ps), 1);
 	ps->flags.has_icon_boxes = !!(SGET_ICON_BOXES(*ps));
 	ps->flag_mask.has_icon_boxes = 1;
 	ps->change_mask.has_icon_boxes = 1;
@@ -1691,9 +1762,9 @@ static Bool style_parse_one_style_option(
 			/* parse focus policy options */
 			found = style_parse_focus_policy_style(
 				token + 3, rest, True,
-				&SF_FOCUS_POLICY(*ps),
-				&SM_FOCUS_POLICY(*ps),
-				&SC_FOCUS_POLICY(*ps));
+				&S_FOCUS_POLICY(SCF(*ps)),
+				&S_FOCUS_POLICY(SCM(*ps)),
+				&S_FOCUS_POLICY(SCC(*ps)));
 		}
 		else
 		{
@@ -1725,9 +1796,9 @@ static Bool style_parse_one_style_option(
 		}
 		else if (StrEquals(token, "AllowRestack"))
 		{
-			SFSET_DO_IGNORE_RESTACK(*ps, 0);
-			SMSET_DO_IGNORE_RESTACK(*ps, 1);
-			SCSET_DO_IGNORE_RESTACK(*ps, 1);
+			S_SET_DO_IGNORE_RESTACK(SCF(*ps), 0);
+			S_SET_DO_IGNORE_RESTACK(SCM(*ps), 1);
+			S_SET_DO_IGNORE_RESTACK(SCC(*ps), 1);
 		}
 		else
 		{
@@ -1824,21 +1895,21 @@ static Bool style_parse_one_style_option(
 		}
 		else if (StrEquals(token, "BottomTitleRotated"))
 		{
-			SFSET_IS_BOTTOM_TITLE_ROTATED(*ps, 1);
-			SMSET_IS_BOTTOM_TITLE_ROTATED(*ps, 1);
-			SCSET_IS_BOTTOM_TITLE_ROTATED(*ps, 1);
+			S_SET_IS_BOTTOM_TITLE_ROTATED(SCF(*ps), 1);
+			S_SET_IS_BOTTOM_TITLE_ROTATED(SCM(*ps), 1);
+			S_SET_IS_BOTTOM_TITLE_ROTATED(SCC(*ps), 1);
 		}
 		else if (StrEquals(token, "BottomTitleNotRotated"))
 		{
-			SFSET_IS_BOTTOM_TITLE_ROTATED(*ps, 0);
-			SMSET_IS_BOTTOM_TITLE_ROTATED(*ps, 1);
-			SCSET_IS_BOTTOM_TITLE_ROTATED(*ps, 1);
+			S_SET_IS_BOTTOM_TITLE_ROTATED(SCF(*ps), 0);
+			S_SET_IS_BOTTOM_TITLE_ROTATED(SCM(*ps), 1);
+			S_SET_IS_BOTTOM_TITLE_ROTATED(SCC(*ps), 1);
 		}
 		else if (StrEquals(token, "Border"))
 		{
-			SFSET_HAS_NO_BORDER(*ps, 0);
-			SMSET_HAS_NO_BORDER(*ps, 1);
-			SCSET_HAS_NO_BORDER(*ps, 1);
+			S_SET_HAS_NO_BORDER(SCF(*ps), 0);
+			S_SET_HAS_NO_BORDER(SCM(*ps), 1);
+			S_SET_HAS_NO_BORDER(SCC(*ps), 1);
 		}
 		else
 		{
@@ -1981,27 +2052,27 @@ static Bool style_parse_one_style_option(
 		}
 		else if (StrEquals(token, "CirculateSkipIcon"))
 		{
-			SFSET_DO_CIRCULATE_SKIP_ICON(*ps, 1);
-			SMSET_DO_CIRCULATE_SKIP_ICON(*ps, 1);
-			SCSET_DO_CIRCULATE_SKIP_ICON(*ps, 1);
+			S_SET_DO_CIRCULATE_SKIP_ICON(SCF(*ps), 1);
+			S_SET_DO_CIRCULATE_SKIP_ICON(SCM(*ps), 1);
+			S_SET_DO_CIRCULATE_SKIP_ICON(SCC(*ps), 1);
 		}
 		else if (StrEquals(token, "CirculateSkipShaded"))
 		{
-			SFSET_DO_CIRCULATE_SKIP_SHADED(*ps, 1);
-			SMSET_DO_CIRCULATE_SKIP_SHADED(*ps, 1);
-			SCSET_DO_CIRCULATE_SKIP_SHADED(*ps, 1);
+			S_SET_DO_CIRCULATE_SKIP_SHADED(SCF(*ps), 1);
+			S_SET_DO_CIRCULATE_SKIP_SHADED(SCM(*ps), 1);
+			S_SET_DO_CIRCULATE_SKIP_SHADED(SCC(*ps), 1);
 		}
 		else if (StrEquals(token, "CirculateHitShaded"))
 		{
-			SFSET_DO_CIRCULATE_SKIP_SHADED(*ps, 0);
-			SMSET_DO_CIRCULATE_SKIP_SHADED(*ps, 1);
-			SCSET_DO_CIRCULATE_SKIP_SHADED(*ps, 1);
+			S_SET_DO_CIRCULATE_SKIP_SHADED(SCF(*ps), 0);
+			S_SET_DO_CIRCULATE_SKIP_SHADED(SCM(*ps), 1);
+			S_SET_DO_CIRCULATE_SKIP_SHADED(SCC(*ps), 1);
 		}
 		else if (StrEquals(token, "CirculateHitIcon"))
 		{
-			SFSET_DO_CIRCULATE_SKIP_ICON(*ps, 0);
-			SMSET_DO_CIRCULATE_SKIP_ICON(*ps, 1);
-			SCSET_DO_CIRCULATE_SKIP_ICON(*ps, 1);
+			S_SET_DO_CIRCULATE_SKIP_ICON(SCF(*ps), 0);
+			S_SET_DO_CIRCULATE_SKIP_ICON(SCM(*ps), 1);
+			S_SET_DO_CIRCULATE_SKIP_ICON(SCC(*ps), 1);
 		}
 		else if (StrEquals(token, "ClickToFocus"))
 		{
@@ -2009,57 +2080,63 @@ static Bool style_parse_one_style_option(
 		}
 		else if (StrEquals(token, "ClickToFocusPassesClick"))
 		{
-			FPS_PASS_FOCUS_CLICK(SF_FOCUS_POLICY(*ps), 1);
-			FPS_PASS_FOCUS_CLICK(SM_FOCUS_POLICY(*ps), 1);
-			FPS_PASS_FOCUS_CLICK(SC_FOCUS_POLICY(*ps), 1);
-			FPS_PASS_RAISE_CLICK(SF_FOCUS_POLICY(*ps), 1);
-			FPS_PASS_RAISE_CLICK(SM_FOCUS_POLICY(*ps), 1);
-			FPS_PASS_RAISE_CLICK(SC_FOCUS_POLICY(*ps), 1);
+			FPS_PASS_FOCUS_CLICK(S_FOCUS_POLICY(SCF(*ps)), 1);
+			FPS_PASS_FOCUS_CLICK(S_FOCUS_POLICY(SCM(*ps)), 1);
+			FPS_PASS_FOCUS_CLICK(S_FOCUS_POLICY(SCC(*ps)), 1);
+			FPS_PASS_RAISE_CLICK(S_FOCUS_POLICY(SCF(*ps)), 1);
+			FPS_PASS_RAISE_CLICK(S_FOCUS_POLICY(SCM(*ps)), 1);
+			FPS_PASS_RAISE_CLICK(S_FOCUS_POLICY(SCC(*ps)), 1);
 		}
 		else if (StrEquals(token, "ClickToFocusPassesClickOff"))
 		{
-			FPS_PASS_FOCUS_CLICK(SF_FOCUS_POLICY(*ps), 0);
-			FPS_PASS_FOCUS_CLICK(SM_FOCUS_POLICY(*ps), 1);
-			FPS_PASS_FOCUS_CLICK(SC_FOCUS_POLICY(*ps), 1);
-			FPS_PASS_RAISE_CLICK(SF_FOCUS_POLICY(*ps), 0);
-			FPS_PASS_RAISE_CLICK(SM_FOCUS_POLICY(*ps), 1);
-			FPS_PASS_RAISE_CLICK(SC_FOCUS_POLICY(*ps), 1);
+			FPS_PASS_FOCUS_CLICK(S_FOCUS_POLICY(SCF(*ps)), 0);
+			FPS_PASS_FOCUS_CLICK(S_FOCUS_POLICY(SCM(*ps)), 1);
+			FPS_PASS_FOCUS_CLICK(S_FOCUS_POLICY(SCC(*ps)), 1);
+			FPS_PASS_RAISE_CLICK(S_FOCUS_POLICY(SCF(*ps)), 0);
+			FPS_PASS_RAISE_CLICK(S_FOCUS_POLICY(SCM(*ps)), 1);
+			FPS_PASS_RAISE_CLICK(S_FOCUS_POLICY(SCC(*ps)), 1);
 		}
 		else if (StrEquals(token, "ClickToFocusRaises"))
 		{
-			FPS_RAISE_FOCUSED_CLIENT_CLICK(SF_FOCUS_POLICY(*ps), 1);
-			FPS_RAISE_FOCUSED_CLIENT_CLICK(SM_FOCUS_POLICY(*ps), 1);
-			FPS_RAISE_FOCUSED_CLIENT_CLICK(SC_FOCUS_POLICY(*ps), 1);
+			FPS_RAISE_FOCUSED_CLIENT_CLICK(
+				S_FOCUS_POLICY(SCF(*ps)), 1);
+			FPS_RAISE_FOCUSED_CLIENT_CLICK(
+				S_FOCUS_POLICY(SCM(*ps)), 1);
+			FPS_RAISE_FOCUSED_CLIENT_CLICK(
+				S_FOCUS_POLICY(SCC(*ps)), 1);
 			FPS_RAISE_UNFOCUSED_CLIENT_CLICK(
-				SF_FOCUS_POLICY(*ps), 1);
+				S_FOCUS_POLICY(SCF(*ps)), 1);
 			FPS_RAISE_UNFOCUSED_CLIENT_CLICK(
-				SM_FOCUS_POLICY(*ps), 1);
+				S_FOCUS_POLICY(SCM(*ps)), 1);
 			FPS_RAISE_UNFOCUSED_CLIENT_CLICK(
-				SC_FOCUS_POLICY(*ps), 1);
+				S_FOCUS_POLICY(SCC(*ps)), 1);
 		}
 		else if (StrEquals(token, "ClickToFocusRaisesOff"))
 		{
-			FPS_RAISE_FOCUSED_CLIENT_CLICK(SF_FOCUS_POLICY(*ps), 0);
-			FPS_RAISE_FOCUSED_CLIENT_CLICK(SM_FOCUS_POLICY(*ps), 1);
-			FPS_RAISE_FOCUSED_CLIENT_CLICK(SC_FOCUS_POLICY(*ps), 1);
+			FPS_RAISE_FOCUSED_CLIENT_CLICK(
+				S_FOCUS_POLICY(SCF(*ps)), 0);
+			FPS_RAISE_FOCUSED_CLIENT_CLICK(
+				S_FOCUS_POLICY(SCM(*ps)), 1);
+			FPS_RAISE_FOCUSED_CLIENT_CLICK(
+				S_FOCUS_POLICY(SCC(*ps)), 1);
 			FPS_RAISE_UNFOCUSED_CLIENT_CLICK(
-				SF_FOCUS_POLICY(*ps), 0);
+				S_FOCUS_POLICY(SCF(*ps)), 0);
 			FPS_RAISE_UNFOCUSED_CLIENT_CLICK(
-				SM_FOCUS_POLICY(*ps), 1);
+				S_FOCUS_POLICY(SCM(*ps)), 1);
 			FPS_RAISE_UNFOCUSED_CLIENT_CLICK(
-				SC_FOCUS_POLICY(*ps), 1);
+				S_FOCUS_POLICY(SCC(*ps)), 1);
 		}
 		else if (StrEquals(token, "CirculateSkip"))
 		{
-			SFSET_DO_CIRCULATE_SKIP(*ps, 1);
-			SMSET_DO_CIRCULATE_SKIP(*ps, 1);
-			SCSET_DO_CIRCULATE_SKIP(*ps, 1);
+			S_SET_DO_CIRCULATE_SKIP(SCF(*ps), 1);
+			S_SET_DO_CIRCULATE_SKIP(SCM(*ps), 1);
+			S_SET_DO_CIRCULATE_SKIP(SCC(*ps), 1);
 		}
 		else if (StrEquals(token, "CirculateHit"))
 		{
-			SFSET_DO_CIRCULATE_SKIP(*ps, 0);
-			SMSET_DO_CIRCULATE_SKIP(*ps, 1);
-			SCSET_DO_CIRCULATE_SKIP(*ps, 1);
+			S_SET_DO_CIRCULATE_SKIP(SCF(*ps), 0);
+			S_SET_DO_CIRCULATE_SKIP(SCM(*ps), 1);
+			S_SET_DO_CIRCULATE_SKIP(SCC(*ps), 1);
 		}
 		else
 		{
@@ -2070,9 +2147,9 @@ static Bool style_parse_one_style_option(
 	case 'd':
 		if (StrEquals(token, "DepressableBorder"))
 		{
-			SFSET_HAS_DEPRESSABLE_BORDER(*ps, 1);
-			SMSET_HAS_DEPRESSABLE_BORDER(*ps, 1);
-			SCSET_HAS_DEPRESSABLE_BORDER(*ps, 1);
+			S_SET_HAS_DEPRESSABLE_BORDER(SCF(*ps), 1);
+			S_SET_HAS_DEPRESSABLE_BORDER(SCM(*ps), 1);
+			S_SET_HAS_DEPRESSABLE_BORDER(SCC(*ps), 1);
 		}
 		else if (StrEquals(token, "DecorateTransient"))
 		{
@@ -2088,21 +2165,21 @@ static Bool style_parse_one_style_option(
 		}
 		else if (StrEquals(token, "DONTRAISETRANSIENT"))
 		{
-			SFSET_DO_RAISE_TRANSIENT(*ps, 0);
-			SMSET_DO_RAISE_TRANSIENT(*ps, 1);
-			SCSET_DO_RAISE_TRANSIENT(*ps, 1);
+			S_SET_DO_RAISE_TRANSIENT(SCF(*ps), 0);
+			S_SET_DO_RAISE_TRANSIENT(SCM(*ps), 1);
+			S_SET_DO_RAISE_TRANSIENT(SCC(*ps), 1);
 		}
 		else if (StrEquals(token, "DONTLOWERTRANSIENT"))
 		{
-			SFSET_DO_LOWER_TRANSIENT(*ps, 0);
-			SMSET_DO_LOWER_TRANSIENT(*ps, 1);
-			SCSET_DO_LOWER_TRANSIENT(*ps, 1);
+			S_SET_DO_LOWER_TRANSIENT(SCF(*ps), 0);
+			S_SET_DO_LOWER_TRANSIENT(SCM(*ps), 1);
+			S_SET_DO_LOWER_TRANSIENT(SCC(*ps), 1);
 		}
 		else if (StrEquals(token, "DontStackTransientParent"))
 		{
-			SFSET_DO_STACK_TRANSIENT_PARENT(*ps, 0);
-			SMSET_DO_STACK_TRANSIENT_PARENT(*ps, 1);
-			SCSET_DO_STACK_TRANSIENT_PARENT(*ps, 1);
+			S_SET_DO_STACK_TRANSIENT_PARENT(SCF(*ps), 0);
+			S_SET_DO_STACK_TRANSIENT_PARENT(SCM(*ps), 1);
+			S_SET_DO_STACK_TRANSIENT_PARENT(SCC(*ps), 1);
 		}
 		else
 		{
@@ -2113,15 +2190,15 @@ static Bool style_parse_one_style_option(
 	case 'e':
 		if (StrEquals(token, "ExactWindowName"))
 		{
-			SFSET_USE_INDEXED_WINDOW_NAME(*ps, 0);
-			SMSET_USE_INDEXED_WINDOW_NAME(*ps, 1);
-			SCSET_USE_INDEXED_WINDOW_NAME(*ps, 1);
+			S_SET_USE_INDEXED_WINDOW_NAME(SCF(*ps), 0);
+			S_SET_USE_INDEXED_WINDOW_NAME(SCM(*ps), 1);
+			S_SET_USE_INDEXED_WINDOW_NAME(SCC(*ps), 1);
 		}
 		else if (StrEquals(token, "ExactIconName"))
 		{
-			SFSET_USE_INDEXED_ICON_NAME(*ps, 0);
-			SMSET_USE_INDEXED_ICON_NAME(*ps, 1);
-			SCSET_USE_INDEXED_ICON_NAME(*ps, 1);
+			S_SET_USE_INDEXED_ICON_NAME(SCF(*ps), 0);
+			S_SET_USE_INDEXED_ICON_NAME(SCM(*ps), 1);
+			S_SET_USE_INDEXED_ICON_NAME(SCC(*ps), 1);
 		}
 		else
 		{
@@ -2135,18 +2212,18 @@ static Bool style_parse_one_style_option(
 			/* parse focus policy options */
 			found = style_parse_focus_policy_style(
 				token + 2, rest, False,
-				&SF_FOCUS_POLICY(*ps),
-				&SM_FOCUS_POLICY(*ps),
-				&SC_FOCUS_POLICY(*ps));
+				&S_FOCUS_POLICY(SCF(*ps)),
+				&S_FOCUS_POLICY(SCM(*ps)),
+				&S_FOCUS_POLICY(SCC(*ps)));
 		}
 		else if (StrEquals(token, "Font"))
 		{
 			SAFEFREE(SGET_WINDOW_FONT(*ps));
 			GetNextToken(rest, &token);
 			SSET_WINDOW_FONT(*ps, token);
-			SFSET_HAS_WINDOW_FONT(*ps, (token != NULL));
-			SMSET_HAS_WINDOW_FONT(*ps, 1);
-			SCSET_HAS_WINDOW_FONT(*ps, 1);
+			S_SET_HAS_WINDOW_FONT(SCF(*ps), (token != NULL));
+			S_SET_HAS_WINDOW_FONT(SCM(*ps), 1);
+			S_SET_HAS_WINDOW_FONT(SCC(*ps), 1);
 
 		}
 		else if (StrEquals(token, "ForeColor"))
@@ -2172,15 +2249,15 @@ static Bool style_parse_one_style_option(
 		}
 		else if (StrEquals(token, "FVWMBUTTONS"))
 		{
-			SFSET_HAS_MWM_BUTTONS(*ps, 0);
-			SMSET_HAS_MWM_BUTTONS(*ps, 1);
-			SCSET_HAS_MWM_BUTTONS(*ps, 1);
+			S_SET_HAS_MWM_BUTTONS(SCF(*ps), 0);
+			S_SET_HAS_MWM_BUTTONS(SCM(*ps), 1);
+			S_SET_HAS_MWM_BUTTONS(SCC(*ps), 1);
 		}
 		else if (StrEquals(token, "FVWMBORDER"))
 		{
-			SFSET_HAS_MWM_BORDER(*ps, 0);
-			SMSET_HAS_MWM_BORDER(*ps, 1);
-			SCSET_HAS_MWM_BORDER(*ps, 1);
+			S_SET_HAS_MWM_BORDER(SCF(*ps), 0);
+			S_SET_HAS_MWM_BORDER(SCM(*ps), 1);
+			S_SET_HAS_MWM_BORDER(SCC(*ps), 1);
 		}
 		else if (StrEquals(token, "FocusFollowsMouse"))
 		{
@@ -2188,35 +2265,35 @@ static Bool style_parse_one_style_option(
 		}
 		else if (StrEquals(token, "FirmBorder"))
 		{
-			SFSET_HAS_DEPRESSABLE_BORDER(*ps, 0);
-			SMSET_HAS_DEPRESSABLE_BORDER(*ps, 1);
-			SCSET_HAS_DEPRESSABLE_BORDER(*ps, 1);
+			S_SET_HAS_DEPRESSABLE_BORDER(SCF(*ps), 0);
+			S_SET_HAS_DEPRESSABLE_BORDER(SCM(*ps), 1);
+			S_SET_HAS_DEPRESSABLE_BORDER(SCC(*ps), 1);
 		}
 		else if (StrEquals(token, "FixedPosition") ||
 			 StrEquals(token, "FixedUSPosition"))
 		{
-			SFSET_IS_FIXED(*ps, 1);
-			SMSET_IS_FIXED(*ps, 1);
-			SCSET_IS_FIXED(*ps, 1);
+			S_SET_IS_FIXED(SCF(*ps), 1);
+			S_SET_IS_FIXED(SCM(*ps), 1);
+			S_SET_IS_FIXED(SCC(*ps), 1);
 		}
 		else if (StrEquals(token, "FixedPPosition"))
 		{
-			SFSET_IS_FIXED_PPOS(*ps, 1);
-			SMSET_IS_FIXED_PPOS(*ps, 1);
-			SCSET_IS_FIXED_PPOS(*ps, 1);
+			S_SET_IS_FIXED_PPOS(SCF(*ps), 1);
+			S_SET_IS_FIXED_PPOS(SCM(*ps), 1);
+			S_SET_IS_FIXED_PPOS(SCC(*ps), 1);
 		}
 		else if (StrEquals(token, "FixedSize") ||
 			 StrEquals(token, "FixedUSSize"))
 		{
-			SFSET_IS_SIZE_FIXED(*ps, 1);
-			SMSET_IS_SIZE_FIXED(*ps, 1);
-			SCSET_IS_SIZE_FIXED(*ps, 1);
+			S_SET_IS_SIZE_FIXED(SCF(*ps), 1);
+			S_SET_IS_SIZE_FIXED(SCM(*ps), 1);
+			S_SET_IS_SIZE_FIXED(SCC(*ps), 1);
 		}
 		else if (StrEquals(token, "FixedPSize"))
 		{
-			SFSET_IS_PSIZE_FIXED(*ps, 1);
-			SMSET_IS_PSIZE_FIXED(*ps, 1);
-			SCSET_IS_PSIZE_FIXED(*ps, 1);
+			S_SET_IS_PSIZE_FIXED(SCF(*ps), 1);
+			S_SET_IS_PSIZE_FIXED(SCM(*ps), 1);
+			S_SET_IS_PSIZE_FIXED(SCC(*ps), 1);
 		}
 		else
 		{
@@ -2227,39 +2304,39 @@ static Bool style_parse_one_style_option(
 	case 'g':
 		if (StrEquals(token, "GrabFocusOff"))
 		{
-			FPS_GRAB_FOCUS(SF_FOCUS_POLICY(*ps), 0);
-			FPS_GRAB_FOCUS(SM_FOCUS_POLICY(*ps), 1);
-			FPS_GRAB_FOCUS(SC_FOCUS_POLICY(*ps), 1);
+			FPS_GRAB_FOCUS(S_FOCUS_POLICY(SCF(*ps)), 0);
+			FPS_GRAB_FOCUS(S_FOCUS_POLICY(SCM(*ps)), 1);
+			FPS_GRAB_FOCUS(S_FOCUS_POLICY(SCC(*ps)), 1);
 		}
 		else if (StrEquals(token, "GrabFocus"))
 		{
-			FPS_GRAB_FOCUS(SF_FOCUS_POLICY(*ps), 1);
-			FPS_GRAB_FOCUS(SM_FOCUS_POLICY(*ps), 1);
-			FPS_GRAB_FOCUS(SC_FOCUS_POLICY(*ps), 1);
+			FPS_GRAB_FOCUS(S_FOCUS_POLICY(SCF(*ps)), 1);
+			FPS_GRAB_FOCUS(S_FOCUS_POLICY(SCM(*ps)), 1);
+			FPS_GRAB_FOCUS(S_FOCUS_POLICY(SCC(*ps)), 1);
 		}
 		else if (StrEquals(token, "GrabFocusTransientOff"))
 		{
-			FPS_GRAB_FOCUS_TRANSIENT(SF_FOCUS_POLICY(*ps), 0);
-			FPS_GRAB_FOCUS_TRANSIENT(SM_FOCUS_POLICY(*ps), 1);
-			FPS_GRAB_FOCUS_TRANSIENT(SC_FOCUS_POLICY(*ps), 1);
+			FPS_GRAB_FOCUS_TRANSIENT(S_FOCUS_POLICY(SCF(*ps)), 0);
+			FPS_GRAB_FOCUS_TRANSIENT(S_FOCUS_POLICY(SCM(*ps)), 1);
+			FPS_GRAB_FOCUS_TRANSIENT(S_FOCUS_POLICY(SCC(*ps)), 1);
 		}
 		else if (StrEquals(token, "GrabFocusTransient"))
 		{
-			FPS_GRAB_FOCUS_TRANSIENT(SF_FOCUS_POLICY(*ps), 1);
-			FPS_GRAB_FOCUS_TRANSIENT(SM_FOCUS_POLICY(*ps), 1);
-			FPS_GRAB_FOCUS_TRANSIENT(SC_FOCUS_POLICY(*ps), 1);
+			FPS_GRAB_FOCUS_TRANSIENT(S_FOCUS_POLICY(SCF(*ps)), 1);
+			FPS_GRAB_FOCUS_TRANSIENT(S_FOCUS_POLICY(SCM(*ps)), 1);
+			FPS_GRAB_FOCUS_TRANSIENT(S_FOCUS_POLICY(SCC(*ps)), 1);
 		}
 		else if (StrEquals(token, "GNOMEIgnoreHints"))
 		{
-			SFSET_DO_IGNORE_GNOME_HINTS(*ps, 1);
-			SMSET_DO_IGNORE_GNOME_HINTS(*ps, 1);
-			SCSET_DO_IGNORE_GNOME_HINTS(*ps, 1);
+			S_SET_DO_IGNORE_GNOME_HINTS(SCF(*ps), 1);
+			S_SET_DO_IGNORE_GNOME_HINTS(SCM(*ps), 1);
+			S_SET_DO_IGNORE_GNOME_HINTS(SCC(*ps), 1);
 		}
 		else if (StrEquals(token, "GNOMEUseHints"))
 		{
-			SFSET_DO_IGNORE_GNOME_HINTS(*ps, 0);
-			SMSET_DO_IGNORE_GNOME_HINTS(*ps, 1);
-			SCSET_DO_IGNORE_GNOME_HINTS(*ps, 1);
+			S_SET_DO_IGNORE_GNOME_HINTS(SCF(*ps), 0);
+			S_SET_DO_IGNORE_GNOME_HINTS(SCM(*ps), 1);
+			S_SET_DO_IGNORE_GNOME_HINTS(SCC(*ps), 1);
 		}
 		else
 		{
@@ -2270,9 +2347,9 @@ static Bool style_parse_one_style_option(
 	case 'h':
 		if (StrEquals(token, "HintOverride"))
 		{
-			SFSET_HAS_MWM_OVERRIDE(*ps, 1);
-			SMSET_HAS_MWM_OVERRIDE(*ps, 1);
-			SCSET_HAS_MWM_OVERRIDE(*ps, 1);
+			S_SET_HAS_MWM_OVERRIDE(SCF(*ps), 1);
+			S_SET_HAS_MWM_OVERRIDE(SCM(*ps), 1);
+			S_SET_HAS_MWM_OVERRIDE(SCC(*ps), 1);
 		}
 		else if (StrEquals(token, "Handles"))
 		{
@@ -2378,37 +2455,37 @@ static Bool style_parse_one_style_option(
 			ps->flag_mask.has_icon = 1;
 			ps->change_mask.has_icon = 1;
 
-			SFSET_IS_ICON_SUPPRESSED(*ps, 0);
-			SMSET_IS_ICON_SUPPRESSED(*ps, 1);
-			SCSET_IS_ICON_SUPPRESSED(*ps, 1);
+			S_SET_IS_ICON_SUPPRESSED(SCF(*ps), 0);
+			S_SET_IS_ICON_SUPPRESSED(SCM(*ps), 1);
+			S_SET_IS_ICON_SUPPRESSED(SCC(*ps), 1);
 		}
 		else if (StrEquals(token, "IconFont"))
 		{
 			SAFEFREE(SGET_ICON_FONT(*ps));
 			GetNextToken(rest, &token);
 			SSET_ICON_FONT(*ps, token);
-			SFSET_HAS_ICON_FONT(*ps, (token != NULL));
-			SMSET_HAS_ICON_FONT(*ps, 1);
-			SCSET_HAS_ICON_FONT(*ps, 1);
+			S_SET_HAS_ICON_FONT(SCF(*ps), (token != NULL));
+			S_SET_HAS_ICON_FONT(SCM(*ps), 1);
+			S_SET_HAS_ICON_FONT(SCC(*ps), 1);
 
 		}
 		else if (StrEquals(token, "IconOverride"))
 		{
-			SFSET_ICON_OVERRIDE(*ps, ICON_OVERRIDE);
-			SMSET_ICON_OVERRIDE(*ps, ICON_OVERRIDE_MASK);
-			SCSET_ICON_OVERRIDE(*ps, ICON_OVERRIDE_MASK);
+			S_SET_ICON_OVERRIDE(SCF(*ps), ICON_OVERRIDE);
+			S_SET_ICON_OVERRIDE(SCM(*ps), ICON_OVERRIDE_MASK);
+			S_SET_ICON_OVERRIDE(SCC(*ps), ICON_OVERRIDE_MASK);
 		}
 		else if (StrEquals(token, "IgnoreRestack"))
 		{
-			SFSET_DO_IGNORE_RESTACK(*ps, 1);
-			SMSET_DO_IGNORE_RESTACK(*ps, 1);
-			SCSET_DO_IGNORE_RESTACK(*ps, 1);
+			S_SET_DO_IGNORE_RESTACK(SCF(*ps), 1);
+			S_SET_DO_IGNORE_RESTACK(SCM(*ps), 1);
+			S_SET_DO_IGNORE_RESTACK(SCC(*ps), 1);
 		}
 		else if (StrEquals(token, "IconTitle"))
 		{
-			SFSET_HAS_NO_ICON_TITLE(*ps, 0);
-			SMSET_HAS_NO_ICON_TITLE(*ps, 1);
-			SCSET_HAS_NO_ICON_TITLE(*ps, 1);
+			S_SET_HAS_NO_ICON_TITLE(SCF(*ps), 0);
+			S_SET_HAS_NO_ICON_TITLE(SCM(*ps), 1);
+			S_SET_HAS_NO_ICON_TITLE(SCC(*ps), 1);
 		}
 		else if (StrEquals(token, "IconSize"))
 		{
@@ -2428,27 +2505,27 @@ static Bool style_parse_one_style_option(
 		} /* end iconfill */
 		else if (StrEquals(token, "IconifyWindowGroups"))
 		{
-			SFSET_DO_ICONIFY_WINDOW_GROUPS(*ps, 1);
-			SMSET_DO_ICONIFY_WINDOW_GROUPS(*ps, 1);
-			SCSET_DO_ICONIFY_WINDOW_GROUPS(*ps, 1);
+			S_SET_DO_ICONIFY_WINDOW_GROUPS(SCF(*ps), 1);
+			S_SET_DO_ICONIFY_WINDOW_GROUPS(SCM(*ps), 1);
+			S_SET_DO_ICONIFY_WINDOW_GROUPS(SCC(*ps), 1);
 		}
 		else if (StrEquals(token, "IconifyWindowGroupsOff"))
 		{
-			SFSET_DO_ICONIFY_WINDOW_GROUPS(*ps, 0);
-			SMSET_DO_ICONIFY_WINDOW_GROUPS(*ps, 1);
-			SCSET_DO_ICONIFY_WINDOW_GROUPS(*ps, 1);
+			S_SET_DO_ICONIFY_WINDOW_GROUPS(SCF(*ps), 0);
+			S_SET_DO_ICONIFY_WINDOW_GROUPS(SCM(*ps), 1);
+			S_SET_DO_ICONIFY_WINDOW_GROUPS(SCC(*ps), 1);
 		}
 		else if (StrEquals(token, "IndexedWindowName"))
 		{
-			SFSET_USE_INDEXED_WINDOW_NAME(*ps, 1);
-			SMSET_USE_INDEXED_WINDOW_NAME(*ps, 1);
-			SCSET_USE_INDEXED_WINDOW_NAME(*ps, 1);
+			S_SET_USE_INDEXED_WINDOW_NAME(SCF(*ps), 1);
+			S_SET_USE_INDEXED_WINDOW_NAME(SCM(*ps), 1);
+			S_SET_USE_INDEXED_WINDOW_NAME(SCC(*ps), 1);
 		}
 		else if (StrEquals(token, "IndexedIconName"))
 		{
-			SFSET_USE_INDEXED_ICON_NAME(*ps, 1);
-			SMSET_USE_INDEXED_ICON_NAME(*ps, 1);
-			SCSET_USE_INDEXED_ICON_NAME(*ps, 1);
+			S_SET_USE_INDEXED_ICON_NAME(SCF(*ps), 1);
+			S_SET_USE_INDEXED_ICON_NAME(SCM(*ps), 1);
+			S_SET_USE_INDEXED_ICON_NAME(SCC(*ps), 1);
 		}
 		else
 		{
@@ -2469,9 +2546,9 @@ static Bool style_parse_one_style_option(
 	case 'k':
 		if (StrEquals(token, "KeepWindowGroupsOnDesk"))
 		{
-			SFSET_DO_USE_WINDOW_GROUP_HINT(*ps, 1);
-			SMSET_DO_USE_WINDOW_GROUP_HINT(*ps, 1);
-			SCSET_DO_USE_WINDOW_GROUP_HINT(*ps, 1);
+			S_SET_DO_USE_WINDOW_GROUP_HINT(SCF(*ps), 1);
+			S_SET_DO_USE_WINDOW_GROUP_HINT(SCM(*ps), 1);
+			S_SET_DO_USE_WINDOW_GROUP_HINT(SCC(*ps), 1);
 		}
 		else
 		{
@@ -2482,21 +2559,21 @@ static Bool style_parse_one_style_option(
 	case 'l':
 		if (StrEquals(token, "LeftTitleRotatedCW"))
 		{
-			SFSET_IS_LEFT_TITLE_ROTATED_CW(*ps, 1);
-			SMSET_IS_LEFT_TITLE_ROTATED_CW(*ps, 1);
-			SCSET_IS_LEFT_TITLE_ROTATED_CW(*ps, 1);
+			S_SET_IS_LEFT_TITLE_ROTATED_CW(SCF(*ps), 1);
+			S_SET_IS_LEFT_TITLE_ROTATED_CW(SCM(*ps), 1);
+			S_SET_IS_LEFT_TITLE_ROTATED_CW(SCC(*ps), 1);
 		}
 		else if (StrEquals(token, "LeftTitleRotatedCCW"))
 		{
-			SFSET_IS_LEFT_TITLE_ROTATED_CW(*ps, 0);
-			SMSET_IS_LEFT_TITLE_ROTATED_CW(*ps, 1);
-			SCSET_IS_LEFT_TITLE_ROTATED_CW(*ps, 1);
+			S_SET_IS_LEFT_TITLE_ROTATED_CW(SCF(*ps), 0);
+			S_SET_IS_LEFT_TITLE_ROTATED_CW(SCM(*ps), 1);
+			S_SET_IS_LEFT_TITLE_ROTATED_CW(SCC(*ps), 1);
 		}
 		else if (StrEquals(token, "Lenience"))
 		{
-			FPS_LENIENT(SF_FOCUS_POLICY(*ps), 1);
-			FPS_LENIENT(SM_FOCUS_POLICY(*ps), 1);
-			FPS_LENIENT(SC_FOCUS_POLICY(*ps), 1);
+			FPS_LENIENT(S_FOCUS_POLICY(SCF(*ps)), 1);
+			FPS_LENIENT(S_FOCUS_POLICY(SCM(*ps)), 1);
+			FPS_LENIENT(S_FOCUS_POLICY(SCC(*ps)), 1);
 		}
 		else if (StrEquals(token, "Layer"))
 		{
@@ -2524,9 +2601,9 @@ static Bool style_parse_one_style_option(
 		}
 		else if (StrEquals(token, "LOWERTRANSIENT"))
 		{
-			SFSET_DO_LOWER_TRANSIENT(*ps, 1);
-			SMSET_DO_LOWER_TRANSIENT(*ps, 1);
-			SCSET_DO_LOWER_TRANSIENT(*ps, 1);
+			S_SET_DO_LOWER_TRANSIENT(SCF(*ps), 1);
+			S_SET_DO_LOWER_TRANSIENT(SCM(*ps), 1);
+			S_SET_DO_LOWER_TRANSIENT(SCC(*ps), 1);
 		}
 		else
 		{
@@ -2571,9 +2648,9 @@ static Bool style_parse_one_style_option(
 		}
 		else if (StrEquals(token, "MWMBUTTONS"))
 		{
-			SFSET_HAS_MWM_BUTTONS(*ps, 1);
-			SMSET_HAS_MWM_BUTTONS(*ps, 1);
-			SCSET_HAS_MWM_BUTTONS(*ps, 1);
+			S_SET_HAS_MWM_BUTTONS(SCF(*ps), 1);
+			S_SET_HAS_MWM_BUTTONS(SCM(*ps), 1);
+			S_SET_HAS_MWM_BUTTONS(SCC(*ps), 1);
 		}
 		else if (StrEquals(token, "MINIICON"))
 		{
@@ -2598,9 +2675,9 @@ static Bool style_parse_one_style_option(
 		}
 		else if (StrEquals(token, "MWMBORDER"))
 		{
-			SFSET_HAS_MWM_BORDER(*ps, 1);
-			SMSET_HAS_MWM_BORDER(*ps, 1);
-			SCSET_HAS_MWM_BORDER(*ps, 1);
+			S_SET_HAS_MWM_BORDER(SCF(*ps), 1);
+			S_SET_HAS_MWM_BORDER(SCM(*ps), 1);
+			S_SET_HAS_MWM_BORDER(SCC(*ps), 1);
 		}
 		else if (StrEquals(token, "MWMDECOR"))
 		{
@@ -2620,27 +2697,33 @@ static Bool style_parse_one_style_option(
 		}
 		else if (StrEquals(token, "MouseFocusClickRaises"))
 		{
-			FPS_RAISE_FOCUSED_CLIENT_CLICK(SF_FOCUS_POLICY(*ps), 1);
-			FPS_RAISE_FOCUSED_CLIENT_CLICK(SM_FOCUS_POLICY(*ps), 1);
-			FPS_RAISE_FOCUSED_CLIENT_CLICK(SC_FOCUS_POLICY(*ps), 1);
+			FPS_RAISE_FOCUSED_CLIENT_CLICK(
+				S_FOCUS_POLICY(SCF(*ps)), 1);
+			FPS_RAISE_FOCUSED_CLIENT_CLICK(
+				S_FOCUS_POLICY(SCM(*ps)), 1);
+			FPS_RAISE_FOCUSED_CLIENT_CLICK(
+				S_FOCUS_POLICY(SCC(*ps)), 1);
 			FPS_RAISE_UNFOCUSED_CLIENT_CLICK(
-				SF_FOCUS_POLICY(*ps), 1);
+				S_FOCUS_POLICY(SCF(*ps)), 1);
 			FPS_RAISE_UNFOCUSED_CLIENT_CLICK(
-				SM_FOCUS_POLICY(*ps), 1);
+				S_FOCUS_POLICY(SCM(*ps)), 1);
 			FPS_RAISE_UNFOCUSED_CLIENT_CLICK(
-				SC_FOCUS_POLICY(*ps), 1);
+				S_FOCUS_POLICY(SCC(*ps)), 1);
 		}
 		else if (StrEquals(token, "MouseFocusClickRaisesOff"))
 		{
-			FPS_RAISE_FOCUSED_CLIENT_CLICK(SF_FOCUS_POLICY(*ps), 0);
-			FPS_RAISE_FOCUSED_CLIENT_CLICK(SM_FOCUS_POLICY(*ps), 1);
-			FPS_RAISE_FOCUSED_CLIENT_CLICK(SC_FOCUS_POLICY(*ps), 1);
+			FPS_RAISE_FOCUSED_CLIENT_CLICK(
+				S_FOCUS_POLICY(SCF(*ps)), 0);
+			FPS_RAISE_FOCUSED_CLIENT_CLICK(
+				S_FOCUS_POLICY(SCM(*ps)), 1);
+			FPS_RAISE_FOCUSED_CLIENT_CLICK(
+				S_FOCUS_POLICY(SCC(*ps)), 1);
 			FPS_RAISE_UNFOCUSED_CLIENT_CLICK(
-				SF_FOCUS_POLICY(*ps), 0);
+				S_FOCUS_POLICY(SCF(*ps)), 0);
 			FPS_RAISE_UNFOCUSED_CLIENT_CLICK(
-				SM_FOCUS_POLICY(*ps), 1);
+				S_FOCUS_POLICY(SCM(*ps)), 1);
 			FPS_RAISE_UNFOCUSED_CLIENT_CLICK(
-				SC_FOCUS_POLICY(*ps), 1);
+				S_FOCUS_POLICY(SCC(*ps)), 1);
 		}
 		else if (StrEquals(token, "MAXWINDOWSIZE"))
 		{
@@ -2692,27 +2775,27 @@ static Bool style_parse_one_style_option(
 	case 'n':
 		if (StrEquals(token, "NoActiveIconOverride"))
 		{
-			SFSET_ICON_OVERRIDE(*ps, NO_ACTIVE_ICON_OVERRIDE);
-			SMSET_ICON_OVERRIDE(*ps, ICON_OVERRIDE_MASK);
-			SCSET_ICON_OVERRIDE(*ps, ICON_OVERRIDE_MASK);
+			S_SET_ICON_OVERRIDE(SCF(*ps), NO_ACTIVE_ICON_OVERRIDE);
+			S_SET_ICON_OVERRIDE(SCM(*ps), ICON_OVERRIDE_MASK);
+			S_SET_ICON_OVERRIDE(SCC(*ps), ICON_OVERRIDE_MASK);
 		}
 		else if (StrEquals(token, "NoIconOverride"))
 		{
-			SFSET_ICON_OVERRIDE(*ps, NO_ICON_OVERRIDE);
-			SMSET_ICON_OVERRIDE(*ps, ICON_OVERRIDE_MASK);
-			SCSET_ICON_OVERRIDE(*ps, ICON_OVERRIDE_MASK);
+			S_SET_ICON_OVERRIDE(SCF(*ps), NO_ICON_OVERRIDE);
+			S_SET_ICON_OVERRIDE(SCM(*ps), ICON_OVERRIDE_MASK);
+			S_SET_ICON_OVERRIDE(SCC(*ps), ICON_OVERRIDE_MASK);
 		}
 		else if (StrEquals(token, "NoIconTitle"))
 		{
-			SFSET_HAS_NO_ICON_TITLE(*ps, 1);
-			SMSET_HAS_NO_ICON_TITLE(*ps, 1);
-			SCSET_HAS_NO_ICON_TITLE(*ps, 1);
+			S_SET_HAS_NO_ICON_TITLE(SCF(*ps), 1);
+			S_SET_HAS_NO_ICON_TITLE(SCM(*ps), 1);
+			S_SET_HAS_NO_ICON_TITLE(SCC(*ps), 1);
 		}
 		else if (StrEquals(token, "NOICON"))
 		{
-			SFSET_IS_ICON_SUPPRESSED(*ps, 1);
-			SMSET_IS_ICON_SUPPRESSED(*ps, 1);
-			SCSET_IS_ICON_SUPPRESSED(*ps, 1);
+			S_SET_IS_ICON_SUPPRESSED(SCF(*ps), 1);
+			S_SET_IS_ICON_SUPPRESSED(SCM(*ps), 1);
+			S_SET_IS_ICON_SUPPRESSED(SCC(*ps), 1);
 		}
 		else if (StrEquals(token, "NOTITLE"))
 		{
@@ -2746,9 +2829,9 @@ static Bool style_parse_one_style_option(
 		}
 		else if (StrEquals(token, "NoIconPosition"))
 		{
-			SFSET_USE_ICON_POSITION_HINT(*ps, 0);
-			SMSET_USE_ICON_POSITION_HINT(*ps, 1);
-			SCSET_USE_ICON_POSITION_HINT(*ps, 1);
+			S_SET_USE_ICON_POSITION_HINT(SCF(*ps), 0);
+			S_SET_USE_ICON_POSITION_HINT(SCM(*ps), 1);
+			S_SET_USE_ICON_POSITION_HINT(SCC(*ps), 1);
 		}
 		else if (StrEquals(token, "NakedTransient"))
 		{
@@ -2770,15 +2853,15 @@ static Bool style_parse_one_style_option(
 		}
 		else if (StrEquals(token, "NOOVERRIDE"))
 		{
-			SFSET_HAS_MWM_OVERRIDE(*ps, 0);
-			SMSET_HAS_MWM_OVERRIDE(*ps, 1);
-			SCSET_HAS_MWM_OVERRIDE(*ps, 1);
+			S_SET_HAS_MWM_OVERRIDE(SCF(*ps), 0);
+			S_SET_HAS_MWM_OVERRIDE(SCM(*ps), 1);
+			S_SET_HAS_MWM_OVERRIDE(SCC(*ps), 1);
 		}
 		else if (StrEquals(token, "NORESIZEOVERRIDE"))
 		{
-			SFSET_HAS_OVERRIDE_SIZE(*ps, 0);
-			SMSET_HAS_OVERRIDE_SIZE(*ps, 1);
-			SCSET_HAS_OVERRIDE_SIZE(*ps, 1);
+			S_SET_HAS_OVERRIDE_SIZE(SCF(*ps), 0);
+			S_SET_HAS_OVERRIDE_SIZE(SCM(*ps), 1);
+			S_SET_HAS_OVERRIDE_SIZE(SCC(*ps), 1);
 		}
 		else if (StrEquals(token, "NOHANDLES"))
 		{
@@ -2788,9 +2871,9 @@ static Bool style_parse_one_style_option(
 		}
 		else if (StrEquals(token, "NOLENIENCE"))
 		{
-			FPS_LENIENT(SF_FOCUS_POLICY(*ps), 0);
-			FPS_LENIENT(SM_FOCUS_POLICY(*ps), 1);
-			FPS_LENIENT(SC_FOCUS_POLICY(*ps), 1);
+			FPS_LENIENT(S_FOCUS_POLICY(SCF(*ps)), 0);
+			FPS_LENIENT(S_FOCUS_POLICY(SCM(*ps)), 1);
+			FPS_LENIENT(S_FOCUS_POLICY(SCC(*ps)), 1);
 		}
 		else if (StrEquals(token, "NoButton"))
 		{
@@ -2822,9 +2905,9 @@ static Bool style_parse_one_style_option(
 		}
 		else if (StrEquals(token, "NoBorder"))
 		{
-			SFSET_HAS_NO_BORDER(*ps, 1);
-			SMSET_HAS_NO_BORDER(*ps, 1);
-			SCSET_HAS_NO_BORDER(*ps, 1);
+			S_SET_HAS_NO_BORDER(SCF(*ps), 1);
+			S_SET_HAS_NO_BORDER(SCM(*ps), 1);
+			S_SET_HAS_NO_BORDER(SCC(*ps), 1);
 		}
 		else
 		{
@@ -2954,9 +3037,9 @@ static Bool style_parse_one_style_option(
 	case 'r':
 		if (StrEquals(token, "RAISETRANSIENT"))
 		{
-			SFSET_DO_RAISE_TRANSIENT(*ps, 1);
-			SMSET_DO_RAISE_TRANSIENT(*ps, 1);
-			SCSET_DO_RAISE_TRANSIENT(*ps, 1);
+			S_SET_DO_RAISE_TRANSIENT(SCF(*ps), 1);
+			S_SET_DO_RAISE_TRANSIENT(SCM(*ps), 1);
+			S_SET_DO_RAISE_TRANSIENT(SCC(*ps), 1);
 		}
 		else if (StrEquals(token, "RANDOMPLACEMENT"))
 		{
@@ -2978,33 +3061,33 @@ static Bool style_parse_one_style_option(
 		}
 		else if (StrEquals(token, "RESIZEHINTOVERRIDE"))
 		{
-			SFSET_HAS_OVERRIDE_SIZE(*ps, 1);
-			SMSET_HAS_OVERRIDE_SIZE(*ps, 1);
-			SCSET_HAS_OVERRIDE_SIZE(*ps, 1);
+			S_SET_HAS_OVERRIDE_SIZE(SCF(*ps), 1);
+			S_SET_HAS_OVERRIDE_SIZE(SCM(*ps), 1);
+			S_SET_HAS_OVERRIDE_SIZE(SCC(*ps), 1);
 		}
 		else if (StrEquals(token, "ResizeOpaque"))
 		{
-			SFSET_DO_RESIZE_OPAQUE(*ps, 1);
-			SMSET_DO_RESIZE_OPAQUE(*ps, 1);
-			SCSET_DO_RESIZE_OPAQUE(*ps, 1);
+			S_SET_DO_RESIZE_OPAQUE(SCF(*ps), 1);
+			S_SET_DO_RESIZE_OPAQUE(SCM(*ps), 1);
+			S_SET_DO_RESIZE_OPAQUE(SCC(*ps), 1);
 		}
 		else if (StrEquals(token, "ResizeOutline"))
 		{
-			SFSET_DO_RESIZE_OPAQUE(*ps, 0);
-			SMSET_DO_RESIZE_OPAQUE(*ps, 1);
-			SCSET_DO_RESIZE_OPAQUE(*ps, 1);
+			S_SET_DO_RESIZE_OPAQUE(SCF(*ps), 0);
+			S_SET_DO_RESIZE_OPAQUE(SCM(*ps), 1);
+			S_SET_DO_RESIZE_OPAQUE(SCC(*ps), 1);
 		}
 		else if (StrEquals(token, "RightTitleRotatedCW"))
 		{
-			SFSET_IS_RIGHT_TITLE_ROTATED_CW(*ps, 1);
-			SMSET_IS_RIGHT_TITLE_ROTATED_CW(*ps, 1);
-			SCSET_IS_RIGHT_TITLE_ROTATED_CW(*ps, 1);
+			S_SET_IS_RIGHT_TITLE_ROTATED_CW(SCF(*ps), 1);
+			S_SET_IS_RIGHT_TITLE_ROTATED_CW(SCM(*ps), 1);
+			S_SET_IS_RIGHT_TITLE_ROTATED_CW(SCC(*ps), 1);
 		}
 		else if (StrEquals(token, "RightTitleRotatedCCW"))
 		{
-			SFSET_IS_RIGHT_TITLE_ROTATED_CW(*ps, 0);
-			SMSET_IS_RIGHT_TITLE_ROTATED_CW(*ps, 1);
-			SCSET_IS_RIGHT_TITLE_ROTATED_CW(*ps, 1);
+			S_SET_IS_RIGHT_TITLE_ROTATED_CW(SCF(*ps), 0);
+			S_SET_IS_RIGHT_TITLE_ROTATED_CW(SCM(*ps), 1);
+			S_SET_IS_RIGHT_TITLE_ROTATED_CW(SCC(*ps), 1);
 		}
 		else
 		{
@@ -3021,33 +3104,33 @@ static Bool style_parse_one_style_option(
 		}
 		else if (StrEquals(token, "SkipMapping"))
 		{
-			SFSET_DO_NOT_SHOW_ON_MAP(*ps, 1);
-			SMSET_DO_NOT_SHOW_ON_MAP(*ps, 1);
-			SCSET_DO_NOT_SHOW_ON_MAP(*ps, 1);
+			S_SET_DO_NOT_SHOW_ON_MAP(SCF(*ps), 1);
+			S_SET_DO_NOT_SHOW_ON_MAP(SCM(*ps), 1);
+			S_SET_DO_NOT_SHOW_ON_MAP(SCC(*ps), 1);
 		}
 		else if (StrEquals(token, "ShowMapping"))
 		{
-			SFSET_DO_NOT_SHOW_ON_MAP(*ps, 0);
-			SMSET_DO_NOT_SHOW_ON_MAP(*ps, 1);
-			SCSET_DO_NOT_SHOW_ON_MAP(*ps, 1);
+			S_SET_DO_NOT_SHOW_ON_MAP(SCF(*ps), 0);
+			S_SET_DO_NOT_SHOW_ON_MAP(SCM(*ps), 1);
+			S_SET_DO_NOT_SHOW_ON_MAP(SCC(*ps), 1);
 		}
 		else if (StrEquals(token, "StackTransientParent"))
 		{
-			SFSET_DO_STACK_TRANSIENT_PARENT(*ps, 1);
-			SMSET_DO_STACK_TRANSIENT_PARENT(*ps, 1);
-			SCSET_DO_STACK_TRANSIENT_PARENT(*ps, 1);
+			S_SET_DO_STACK_TRANSIENT_PARENT(SCF(*ps), 1);
+			S_SET_DO_STACK_TRANSIENT_PARENT(SCM(*ps), 1);
+			S_SET_DO_STACK_TRANSIENT_PARENT(SCC(*ps), 1);
 		}
 		else if (StrEquals(token, "StickyIcon"))
 		{
-			SFSET_IS_ICON_STICKY(*ps, 1);
-			SMSET_IS_ICON_STICKY(*ps, 1);
-			SCSET_IS_ICON_STICKY(*ps, 1);
+			S_SET_IS_ICON_STICKY(SCF(*ps), 1);
+			S_SET_IS_ICON_STICKY(SCM(*ps), 1);
+			S_SET_IS_ICON_STICKY(SCC(*ps), 1);
 		}
 		else if (StrEquals(token, "SlipperyIcon"))
 		{
-			SFSET_IS_ICON_STICKY(*ps, 0);
-			SMSET_IS_ICON_STICKY(*ps, 1);
-			SCSET_IS_ICON_STICKY(*ps, 1);
+			S_SET_IS_ICON_STICKY(SCF(*ps), 0);
+			S_SET_IS_ICON_STICKY(SCM(*ps), 1);
+			S_SET_IS_ICON_STICKY(SCC(*ps), 1);
 		}
 		else if (StrEquals(token, "SloppyFocus"))
 		{
@@ -3088,15 +3171,15 @@ static Bool style_parse_one_style_option(
 		}
 		else if (StrEquals(token, "Sticky"))
 		{
-			SFSET_IS_STICKY(*ps, 1);
-			SMSET_IS_STICKY(*ps, 1);
-			SCSET_IS_STICKY(*ps, 1);
+			S_SET_IS_STICKY(SCF(*ps), 1);
+			S_SET_IS_STICKY(SCM(*ps), 1);
+			S_SET_IS_STICKY(SCC(*ps), 1);
 		}
 		else if (StrEquals(token, "Slippery"))
 		{
-			SFSET_IS_STICKY(*ps, 0);
-			SMSET_IS_STICKY(*ps, 1);
-			SCSET_IS_STICKY(*ps, 1);
+			S_SET_IS_STICKY(SCF(*ps), 0);
+			S_SET_IS_STICKY(SCM(*ps), 1);
+			S_SET_IS_STICKY(SCC(*ps), 1);
 		}
 		else if (StrEquals(token, "STARTSONDESK"))
 		{
@@ -3228,21 +3311,21 @@ static Bool style_parse_one_style_option(
 		}
 		else if (StrEquals(token, "StippledTitle"))
 		{
-			SFSET_HAS_STIPPLED_TITLE(*ps, 1);
-			SMSET_HAS_STIPPLED_TITLE(*ps, 1);
-			SCSET_HAS_STIPPLED_TITLE(*ps, 1);
+			S_SET_HAS_STIPPLED_TITLE(SCF(*ps), 1);
+			S_SET_HAS_STIPPLED_TITLE(SCM(*ps), 1);
+			S_SET_HAS_STIPPLED_TITLE(SCC(*ps), 1);
 		}
 		else if (StrEquals(token, "StippledTitleOff"))
 		{
-			SFSET_HAS_STIPPLED_TITLE(*ps, 0);
-			SMSET_HAS_STIPPLED_TITLE(*ps, 1);
-			SCSET_HAS_STIPPLED_TITLE(*ps, 1);
+			S_SET_HAS_STIPPLED_TITLE(SCF(*ps), 0);
+			S_SET_HAS_STIPPLED_TITLE(SCM(*ps), 1);
+			S_SET_HAS_STIPPLED_TITLE(SCC(*ps), 1);
 		}
 		else if (StrEquals(token, "ScatterWindowGroups"))
 		{
-			SFSET_DO_USE_WINDOW_GROUP_HINT(*ps, 0);
-			SMSET_DO_USE_WINDOW_GROUP_HINT(*ps, 1);
-			SCSET_DO_USE_WINDOW_GROUP_HINT(*ps, 1);
+			S_SET_DO_USE_WINDOW_GROUP_HINT(SCF(*ps), 0);
+			S_SET_DO_USE_WINDOW_GROUP_HINT(SCM(*ps), 1);
+			S_SET_DO_USE_WINDOW_GROUP_HINT(SCC(*ps), 1);
 		}
 		else
 		{
@@ -3271,39 +3354,39 @@ static Bool style_parse_one_style_option(
 		}
 		else if (StrEquals(token, "TitleAtBottom"))
 		{
-			SFSET_TITLE_DIR(*ps, DIR_S);
-			SMSET_TITLE_DIR(*ps, 1);
-			SCSET_TITLE_DIR(*ps, 1);
+			S_SET_TITLE_DIR(SCF(*ps), DIR_S);
+			S_SET_TITLE_DIR(SCM(*ps), 1);
+			S_SET_TITLE_DIR(SCC(*ps), 1);
 		}
 		else if (StrEquals(token, "TitleAtTop"))
 		{
-			SFSET_TITLE_DIR(*ps, DIR_N);
-			SMSET_TITLE_DIR(*ps, 1);
-			SCSET_TITLE_DIR(*ps, 1);
+			S_SET_TITLE_DIR(SCF(*ps), DIR_N);
+			S_SET_TITLE_DIR(SCM(*ps), 1);
+			S_SET_TITLE_DIR(SCC(*ps), 1);
 		}
 		else if (StrEquals(token, "TitleAtLeft"))
 		{
-			SFSET_TITLE_DIR(*ps, DIR_W);
-			SMSET_TITLE_DIR(*ps, 1);
-			SCSET_TITLE_DIR(*ps, 1);
+			S_SET_TITLE_DIR(SCF(*ps), DIR_W);
+			S_SET_TITLE_DIR(SCM(*ps), 1);
+			S_SET_TITLE_DIR(SCC(*ps), 1);
 		}
 		else if (StrEquals(token, "TitleAtRight"))
 		{
-			SFSET_TITLE_DIR(*ps, DIR_E);
-			SMSET_TITLE_DIR(*ps, 1);
-			SCSET_TITLE_DIR(*ps, 1);
+			S_SET_TITLE_DIR(SCF(*ps), DIR_E);
+			S_SET_TITLE_DIR(SCM(*ps), 1);
+			S_SET_TITLE_DIR(SCC(*ps), 1);
 		}
 		else if (StrEquals(token, "TopTitleRotated"))
 		{
-			SFSET_IS_TOP_TITLE_ROTATED(*ps, 1);
-			SMSET_IS_TOP_TITLE_ROTATED(*ps, 1);
-			SCSET_IS_TOP_TITLE_ROTATED(*ps, 1);
+			S_SET_IS_TOP_TITLE_ROTATED(SCF(*ps), 1);
+			S_SET_IS_TOP_TITLE_ROTATED(SCM(*ps), 1);
+			S_SET_IS_TOP_TITLE_ROTATED(SCC(*ps), 1);
 		}
 		else if (StrEquals(token, "TopTitleNotRotated"))
 		{
-			SFSET_IS_TOP_TITLE_ROTATED(*ps, 0);
-			SMSET_IS_TOP_TITLE_ROTATED(*ps, 1);
-			SCSET_IS_TOP_TITLE_ROTATED(*ps, 1);
+			S_SET_IS_TOP_TITLE_ROTATED(SCF(*ps), 0);
+			S_SET_IS_TOP_TITLE_ROTATED(SCM(*ps), 1);
+			S_SET_IS_TOP_TITLE_ROTATED(SCC(*ps), 1);
 		}
 		else
 		{
@@ -3338,9 +3421,9 @@ static Bool style_parse_one_style_option(
 		}
 		else if (StrEquals(token, "UseIconPosition"))
 		{
-			SFSET_USE_ICON_POSITION_HINT(*ps, 1);
-			SMSET_USE_ICON_POSITION_HINT(*ps, 1);
-			SCSET_USE_ICON_POSITION_HINT(*ps, 1);
+			S_SET_USE_ICON_POSITION_HINT(SCF(*ps), 1);
+			S_SET_USE_ICON_POSITION_HINT(SCM(*ps), 1);
+			S_SET_USE_ICON_POSITION_HINT(SCC(*ps), 1);
 		}
 #ifdef USEDECOR
 		else if (StrEquals(token, "UseDecor"))
@@ -3395,28 +3478,28 @@ static Bool style_parse_one_style_option(
 		if (StrEquals(token, "VariablePosition") ||
 		    StrEquals(token, "VariableUSPosition"))
 		{
-			SFSET_IS_FIXED(*ps, 0);
-			SMSET_IS_FIXED(*ps, 1);
-			SCSET_IS_FIXED(*ps, 1);
+			S_SET_IS_FIXED(SCF(*ps), 0);
+			S_SET_IS_FIXED(SCM(*ps), 1);
+			S_SET_IS_FIXED(SCC(*ps), 1);
 		}
 		else if (StrEquals(token, "VariablePPosition"))
 		{
-			SFSET_IS_FIXED_PPOS(*ps, 0);
-			SMSET_IS_FIXED_PPOS(*ps, 1);
-			SCSET_IS_FIXED_PPOS(*ps, 1);
+			S_SET_IS_FIXED_PPOS(SCF(*ps), 0);
+			S_SET_IS_FIXED_PPOS(SCM(*ps), 1);
+			S_SET_IS_FIXED_PPOS(SCC(*ps), 1);
 		}
 		else if (StrEquals(token, "VariableSize") ||
 			 StrEquals(token, "VariableUSSize"))
 		{
-			SFSET_IS_SIZE_FIXED(*ps, 0);
-			SMSET_IS_SIZE_FIXED(*ps, 1);
-			SCSET_IS_SIZE_FIXED(*ps, 1);
+			S_SET_IS_SIZE_FIXED(SCF(*ps), 0);
+			S_SET_IS_SIZE_FIXED(SCM(*ps), 1);
+			S_SET_IS_SIZE_FIXED(SCC(*ps), 1);
 		}
 		else if (StrEquals(token, "VariablePSize"))
 		{
-			SFSET_IS_PSIZE_FIXED(*ps, 0);
-			SMSET_IS_PSIZE_FIXED(*ps, 1);
-			SCSET_IS_PSIZE_FIXED(*ps, 1);
+			S_SET_IS_PSIZE_FIXED(SCF(*ps), 0);
+			S_SET_IS_PSIZE_FIXED(SCM(*ps), 1);
+			S_SET_IS_PSIZE_FIXED(SCC(*ps), 1);
 		}
 		else
 		{
@@ -3427,15 +3510,15 @@ static Bool style_parse_one_style_option(
 	case 'w':
 		if (StrEquals(token, "WindowListSkip"))
 		{
-			SFSET_DO_WINDOW_LIST_SKIP(*ps, 1);
-			SMSET_DO_WINDOW_LIST_SKIP(*ps, 1);
-			SCSET_DO_WINDOW_LIST_SKIP(*ps, 1);
+			S_SET_DO_WINDOW_LIST_SKIP(SCF(*ps), 1);
+			S_SET_DO_WINDOW_LIST_SKIP(SCM(*ps), 1);
+			S_SET_DO_WINDOW_LIST_SKIP(SCC(*ps), 1);
 		}
 		else if (StrEquals(token, "WindowListHit"))
 		{
-			SFSET_DO_WINDOW_LIST_SKIP(*ps, 0);
-			SMSET_DO_WINDOW_LIST_SKIP(*ps, 1);
-			SCSET_DO_WINDOW_LIST_SKIP(*ps, 1);
+			S_SET_DO_WINDOW_LIST_SKIP(SCF(*ps), 0);
+			S_SET_DO_WINDOW_LIST_SKIP(SCM(*ps), 1);
+			S_SET_DO_WINDOW_LIST_SKIP(SCC(*ps), 1);
 		}
 		else if (StrEquals(token, "WindowShadeSteps"))
 		{
@@ -3458,34 +3541,40 @@ static Bool style_parse_one_style_option(
 		}
 		else if (StrEquals(token, "WindowShadeScrolls"))
 		{
-			SFSET_DO_SHRINK_WINDOWSHADE(*ps, 0);
-			SMSET_DO_SHRINK_WINDOWSHADE(*ps, 1);
-			SCSET_DO_SHRINK_WINDOWSHADE(*ps, 1);
+			S_SET_DO_SHRINK_WINDOWSHADE(SCF(*ps), 0);
+			S_SET_DO_SHRINK_WINDOWSHADE(SCM(*ps), 1);
+			S_SET_DO_SHRINK_WINDOWSHADE(SCC(*ps), 1);
 		}
 		else if (StrEquals(token, "WindowShadeShrinks"))
 		{
-			SFSET_DO_SHRINK_WINDOWSHADE(*ps, 1);
-			SMSET_DO_SHRINK_WINDOWSHADE(*ps, 1);
-			SCSET_DO_SHRINK_WINDOWSHADE(*ps, 1);
+			S_SET_DO_SHRINK_WINDOWSHADE(SCF(*ps), 1);
+			S_SET_DO_SHRINK_WINDOWSHADE(SCM(*ps), 1);
+			S_SET_DO_SHRINK_WINDOWSHADE(SCC(*ps), 1);
 		}
 		else if (StrEquals(token, "WindowShadeLazy"))
 		{
-			SFSET_WINDOWSHADE_LAZINESS(*ps, WINDOWSHADE_LAZY);
-			SMSET_WINDOWSHADE_LAZINESS(*ps, WINDOWSHADE_LAZY_MASK);
-			SCSET_WINDOWSHADE_LAZINESS(*ps, WINDOWSHADE_LAZY_MASK);
+			S_SET_WINDOWSHADE_LAZINESS(SCF(*ps), WINDOWSHADE_LAZY);
+			S_SET_WINDOWSHADE_LAZINESS(
+				SCM(*ps), WINDOWSHADE_LAZY_MASK);
+			S_SET_WINDOWSHADE_LAZINESS(
+				SCC(*ps), WINDOWSHADE_LAZY_MASK);
 		}
 		else if (StrEquals(token, "WindowShadeAlwaysLazy"))
 		{
-			SFSET_WINDOWSHADE_LAZINESS(
-				*ps, WINDOWSHADE_ALWAYS_LAZY);
-			SMSET_WINDOWSHADE_LAZINESS(*ps, WINDOWSHADE_LAZY_MASK);
-			SCSET_WINDOWSHADE_LAZINESS(*ps, WINDOWSHADE_LAZY_MASK);
+			S_SET_WINDOWSHADE_LAZINESS(
+				SCF(*ps), WINDOWSHADE_ALWAYS_LAZY);
+			S_SET_WINDOWSHADE_LAZINESS(
+				SCM(*ps), WINDOWSHADE_LAZY_MASK);
+			S_SET_WINDOWSHADE_LAZINESS(
+				SCC(*ps), WINDOWSHADE_LAZY_MASK);
 		}
 		else if (StrEquals(token, "WindowShadeBusy"))
 		{
-			SFSET_WINDOWSHADE_LAZINESS(*ps, WINDOWSHADE_BUSY);
-			SMSET_WINDOWSHADE_LAZINESS(*ps, WINDOWSHADE_LAZY_MASK);
-			SCSET_WINDOWSHADE_LAZINESS(*ps, WINDOWSHADE_LAZY_MASK);
+			S_SET_WINDOWSHADE_LAZINESS(SCF(*ps), WINDOWSHADE_BUSY);
+			S_SET_WINDOWSHADE_LAZINESS(
+				SCM(*ps), WINDOWSHADE_LAZY_MASK);
+			S_SET_WINDOWSHADE_LAZINESS(
+				SCC(*ps), WINDOWSHADE_LAZY_MASK);
 		}
 		else
 		{
@@ -3703,8 +3792,8 @@ void check_window_style_change(
 	 *
 	 * must handle these first because they may alter the style
 	 */
-	if (SCDO_IGNORE_GNOME_HINTS(*ret_style) &&
-	    !SDO_IGNORE_GNOME_HINTS(ret_style->flags))
+	if (S_DO_IGNORE_GNOME_HINTS(SCC(*ret_style)) &&
+	    !S_DO_IGNORE_GNOME_HINTS(SCF(*ret_style)))
 	{
 		GNOME_GetStyle(t, ret_style);
 		/* may need further treatment for some styles */
@@ -3716,10 +3805,10 @@ void check_window_style_change(
 	/* All static common styles can simply be copied. For some there is
 	 * additional work to be done below. */
 	wf = (char *)(&FW_COMMON_STATIC_FLAGS(t));
-	sf = (char *)(&SFGET_COMMON_STATIC_FLAGS(*ret_style));
-	sc = (char *)(&SCGET_COMMON_STATIC_FLAGS(*ret_style));
+	sf = (char *)(&SCFS(*ret_style));
+	sc = (char *)(&SCCS(*ret_style));
 	/* copy the static common window flags */
-	for (i = 0; i < sizeof(SFGET_COMMON_STATIC_FLAGS(*ret_style)); i++)
+	for (i = 0; i < sizeof(SCFS(*ret_style)); i++)
 	{
 		wf[i] = (wf[i] & ~sc[i]) | (sf[i] & sc[i]);
 		sf[i] = wf[i];
@@ -3737,11 +3826,12 @@ void check_window_style_change(
 	 * is_sticky
 	 * is_icon_sticky
 	 */
-	if (SCIS_STICKY(*ret_style))
+	if (S_IS_STICKY(SCC(*ret_style)))
 	{
 		flags->do_update_stick = True;
 	}
-	if (SCIS_ICON_STICKY(*ret_style) && IS_ICONIFIED(t) && !IS_STICKY(t))
+	if (S_IS_ICON_STICKY(SCC(*ret_style)) && IS_ICONIFIED(t) &&
+	    !IS_STICKY(t))
 	{
 		flags->do_update_stick_icon = True;
 	}
@@ -3749,7 +3839,7 @@ void check_window_style_change(
 	/*
 	 * focus policy
 	 */
-	if (fpol_is_policy_changed(&SC_FOCUS_POLICY(*ret_style)))
+	if (fpol_is_policy_changed(&S_FOCUS_POLICY(SCC(*ret_style))))
 	{
 		flags->do_setup_focus_policy = True;
 	}
@@ -3760,10 +3850,10 @@ void check_window_style_change(
 	 * is_top_title_rotated
 	 * is_bottom_title_rotated
 	 */
-	if (SCIS_LEFT_TITLE_ROTATED_CW(*ret_style) ||
-	    SCIS_RIGHT_TITLE_ROTATED_CW(*ret_style) ||
-	    SCIS_TOP_TITLE_ROTATED(*ret_style) ||
-	    SCIS_BOTTOM_TITLE_ROTATED(*ret_style))
+	if (S_IS_LEFT_TITLE_ROTATED_CW(SCC(*ret_style)) ||
+	    S_IS_RIGHT_TITLE_ROTATED_CW(SCC(*ret_style)) ||
+	    S_IS_TOP_TITLE_ROTATED(SCC(*ret_style)) ||
+	    S_IS_BOTTOM_TITLE_ROTATED(SCC(*ret_style)))
 	{
 		flags->do_update_title_text_dir = True;
 	}
@@ -3771,7 +3861,7 @@ void check_window_style_change(
 	/*
 	 * title_dir
 	 */
-	if (SCTITLE_DIR(*ret_style))
+	if (S_TITLE_DIR(SCC(*ret_style)))
 	{
 		flags->do_update_title_dir = True;
 	}
@@ -3780,8 +3870,8 @@ void check_window_style_change(
 	 * has_mwm_border
 	 * has_mwm_buttons
 	 */
-	if (SCHAS_MWM_BORDER(*ret_style) ||
-	    SCHAS_MWM_BUTTONS(*ret_style))
+	if (S_HAS_MWM_BORDER(SCC(*ret_style)) ||
+	    S_HAS_MWM_BUTTONS(SCC(*ret_style)))
 	{
 		flags->do_redecorate = True;
 	}
@@ -3789,7 +3879,7 @@ void check_window_style_change(
 	/*
 	 * has_icon_font
 	 */
-	if (SCHAS_ICON_FONT(*ret_style))
+	if (S_HAS_ICON_FONT(SCC(*ret_style)))
 	{
 		flags->do_update_icon_font = True;
 	}
@@ -3797,7 +3887,7 @@ void check_window_style_change(
 	/*
 	 * has_window_font
 	 */
-	if (SCHAS_WINDOW_FONT(*ret_style))
+	if (S_HAS_WINDOW_FONT(SCC(*ret_style)))
 	{
 		flags->do_update_window_font = True;
 	}
@@ -3805,7 +3895,7 @@ void check_window_style_change(
 	/*
 	 * has_stippled_title
 	 */
-	if (SCHAS_STIPPLED_TITLE(*ret_style))
+	if (S_HAS_STIPPLED_TITLE(SCC(*ret_style)))
 	{
 		flags->do_redraw_decoration = True;
 	}
@@ -3846,7 +3936,7 @@ void check_window_style_change(
 	/*
 	 * do_window_list_skip
 	 */
-	if (SCDO_WINDOW_LIST_SKIP(*ret_style))
+	if (S_DO_WINDOW_LIST_SKIP(SCC(*ret_style)))
 	{
 		flags->do_update_modules_flags = True;
 		flags->do_update_ewmh_state_hints = True;
@@ -3856,7 +3946,7 @@ void check_window_style_change(
 	 * icon_override
 	 */
 	if (ret_style->change_mask.has_icon ||
-	    SCICON_OVERRIDE(*ret_style))
+	    S_ICON_OVERRIDE(SCC(*ret_style)))
 	{
 		flags->do_update_icon_font = True;
 		flags->do_update_icon = True;
@@ -3866,8 +3956,8 @@ void check_window_style_change(
 	 * has_no_icon_title
 	 * is_icon_suppressed
 	 */
-	if (SCHAS_NO_ICON_TITLE(*ret_style) ||
-	    SCIS_ICON_SUPPRESSED(*ret_style))
+	if (S_HAS_NO_ICON_TITLE(SCC(*ret_style)) ||
+	    S_IS_ICON_SUPPRESSED(SCC(*ret_style)))
 	{
 		flags->do_update_icon_font = True;
 		flags->do_update_icon_title = True;
@@ -3887,7 +3977,7 @@ void check_window_style_change(
 	/*
 	 * do_ewmh_donate_icon
 	 */
-	if (SCDO_EWMH_DONATE_ICON(*ret_style))
+	if (S_DO_EWMH_DONATE_ICON(SCC(*ret_style)))
 	{
 		flags->do_update_ewmh_icon = True;
 	}
@@ -3897,7 +3987,7 @@ void check_window_style_change(
 	 * do_ewmh_mini_icon_override
 	 */
 	if (FMiniIconsSupported && ret_style->change_mask.has_mini_icon ||
-	    SCDO_EWMH_MINI_ICON_OVERRIDE(*ret_style))
+	    S_DO_EWMH_MINI_ICON_OVERRIDE(SCC(*ret_style)))
 	{
 		flags->do_update_mini_icon = True;
 		flags->do_update_ewmh_mini_icon = True;
@@ -3907,7 +3997,7 @@ void check_window_style_change(
 	/*
 	 * do_ewmh_donate_mini_icon
 	 */
-	if (FMiniIconsSupported && SCDO_EWMH_DONATE_MINI_ICON(*ret_style))
+	if (FMiniIconsSupported && S_DO_EWMH_DONATE_MINI_ICON(SCC(*ret_style)))
 	{
 		flags->do_update_ewmh_mini_icon = True;
 	}
@@ -3995,7 +4085,7 @@ void check_window_style_change(
 	 * has_no_handles
 	 * is_button_disabled
 	 */
-	if (SCHAS_NO_BORDER(*ret_style) ||
+	if (S_HAS_NO_BORDER(SCC(*ret_style)) ||
 	    ret_style->change_mask.has_border_width ||
 	    ret_style->change_mask.has_handle_width ||
 	    ret_style->change_mask.has_mwm_decor ||
@@ -4034,7 +4124,7 @@ void check_window_style_change(
 	/*
 	 * do_ewmh_ignore_strut_hints
 	 */
-	if (SCDO_EWMH_IGNORE_STRUT_HINTS(*ret_style))
+	if (S_DO_EWMH_IGNORE_STRUT_HINTS(SCC(*ret_style)))
 	{
 		flags->do_update_working_area = True;
 	}
@@ -4042,7 +4132,7 @@ void check_window_style_change(
 	/*
 	 * do_ewmh_ignore_state_hints
 	 */
-	if (SCDO_EWMH_IGNORE_STATE_HINTS(*ret_style))
+	if (S_DO_EWMH_IGNORE_STATE_HINTS(SCC(*ret_style)))
 	{
 		flags->do_update_ewmh_state_hints = True;
 		flags->do_update_modules_flags = True;
@@ -4051,7 +4141,7 @@ void check_window_style_change(
 	/*
 	 * do_ewmh_use_staking_hints
 	 */
-	if (SCDO_EWMH_USE_STACKING_HINTS(*ret_style))
+	if (S_DO_EWMH_USE_STACKING_HINTS(SCC(*ret_style)))
 	{
 		flags->do_update_ewmh_stacking_hints = True;
 	}
@@ -4059,7 +4149,7 @@ void check_window_style_change(
 	/*
 	 *  use_indexed_window_name
 	 */
-	if (SCUSE_INDEXED_WINDOW_NAME(*ret_style))
+	if (S_USE_INDEXED_WINDOW_NAME(SCC(*ret_style)))
 	{
 		flags->do_update_visible_window_name = True;
 		flags->do_redecorate = True;
@@ -4068,7 +4158,7 @@ void check_window_style_change(
 	/*
 	 *  use_indexed_icon_name
 	 */
-	if (SCUSE_INDEXED_ICON_NAME(*ret_style))
+	if (S_USE_INDEXED_ICON_NAME(SCC(*ret_style)))
 	{
 		flags->do_update_visible_icon_name = True;
 		flags->do_update_icon_title = True;
@@ -4077,11 +4167,11 @@ void check_window_style_change(
 	/*
 	 *  is_fixed
 	 */
-	if (SCIS_FIXED(*ret_style) ||
-	    SCIS_FIXED_PPOS(*ret_style) ||
-	    SCIS_SIZE_FIXED(*ret_style) ||
-	    SCIS_PSIZE_FIXED(*ret_style) ||
-	    SCHAS_OVERRIDE_SIZE(*ret_style))
+	if (S_IS_FIXED(SCC(*ret_style)) ||
+	    S_IS_FIXED_PPOS(SCC(*ret_style)) ||
+	    S_IS_SIZE_FIXED(SCC(*ret_style)) ||
+	    S_IS_PSIZE_FIXED(SCC(*ret_style)) ||
+	    S_HAS_OVERRIDE_SIZE(SCC(*ret_style)))
 	{
 		flags->do_update_ewmh_allowed_actions = True;
 	}
@@ -4097,8 +4187,7 @@ void reset_style_changes(void)
 	for (temp = all_styles; temp != NULL; temp = SGET_NEXT_STYLE(*temp))
 	{
 		temp->has_style_changed = 0;
-		memset(&SCGET_COMMON_STATIC_FLAGS(*temp), 0,
-		       sizeof(SCGET_COMMON_STATIC_FLAGS(*temp)));
+		memset(&SCCS(*temp), 0, sizeof(SCCS(*temp)));
 		memset(&(temp->change_mask), 0, sizeof(temp->change_mask));
 	}
 
@@ -4272,7 +4361,7 @@ void CMD_Style(F_CMD_ARGS)
 	/* init temp window_style area */
 	memset(ps, 0, sizeof(window_style));
 	/* init default focus policy */
-	fpol_init_default_fp(&SF_FOCUS_POLICY(*ps));
+	fpol_init_default_fp(&S_FOCUS_POLICY(SCF(*ps)));
 	/* mark style as changed */
 	ps->has_style_changed = 1;
 	/* set global flag */
@@ -4303,7 +4392,9 @@ void CMD_Style(F_CMD_ARGS)
 		if (ps->flags.has_icon == 1)
 		{
 			if (Scr.DefaultIcon)
+			{
 				free(Scr.DefaultIcon);
+			}
 			Scr.DefaultIcon = SGET_ICON_NAME(*ps);
 			ps->flags.has_icon = 0;
 			ps->flag_mask.has_icon = 0;
@@ -4323,6 +4414,7 @@ void CMD_Style(F_CMD_ARGS)
 	{
 		/* add temp name list to list */
 		add_style_to_list(ps);
+		cleanup_style_defaults(ps);
 	}
 
 	return;

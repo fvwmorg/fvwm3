@@ -1175,7 +1175,7 @@ static void setup_icon(FvwmWindow *fw, window_style *pstyle)
 	if ((fw->wmhints) && (fw->wmhints->flags & IconWindowHint))
 	{
 		if (SHAS_ICON(&pstyle->flags) &&
-		    SICON_OVERRIDE(pstyle->flags) == ICON_OVERRIDE)
+		    S_ICON_OVERRIDE(SCF(*pstyle)) == ICON_OVERRIDE)
 		{
 			ICON_DBG((stderr,"si: iwh ignored '%s'\n",
 				  fw->name.name));
@@ -1191,7 +1191,7 @@ static void setup_icon(FvwmWindow *fw, window_style *pstyle)
 	else if ((fw->wmhints) && (fw->wmhints->flags & IconPixmapHint))
 	{
 		if (SHAS_ICON(&pstyle->flags) &&
-		    SICON_OVERRIDE(pstyle->flags) != NO_ICON_OVERRIDE)
+		    S_ICON_OVERRIDE(SCF(*pstyle)) != NO_ICON_OVERRIDE)
 		{
 			ICON_DBG((stderr,"si: iph ignored '%s'\n",
 				  fw->name.name));
@@ -1598,11 +1598,11 @@ void setup_title_geometry(
 	int offset;
 
 	get_title_font_size_and_offset(
-		fw, STITLE_DIR(pstyle->flags),
-		SIS_LEFT_TITLE_ROTATED_CW(pstyle->flags),
-		SIS_RIGHT_TITLE_ROTATED_CW(pstyle->flags),
-		SIS_TOP_TITLE_ROTATED(pstyle->flags),
-		SIS_BOTTOM_TITLE_ROTATED(pstyle->flags),
+		fw, S_TITLE_DIR(SCF(*pstyle)),
+		S_IS_LEFT_TITLE_ROTATED_CW(SCF(*pstyle)),
+		S_IS_RIGHT_TITLE_ROTATED_CW(SCF(*pstyle)),
+		S_IS_TOP_TITLE_ROTATED(SCF(*pstyle)),
+		S_IS_BOTTOM_TITLE_ROTATED(SCF(*pstyle)),
 		&width, &offset);
 	fw->title_thickness = width;
 	fw->title_text_offset = offset;
@@ -1627,7 +1627,8 @@ void setup_window_font(
 	/* load new font */
 	if (!IS_WINDOW_FONT_LOADED(fw))
 	{
-		if (SFHAS_WINDOW_FONT(*pstyle) && SGET_WINDOW_FONT(*pstyle) &&
+		if (S_HAS_WINDOW_FONT(SCF(*pstyle)) &&
+		    SGET_WINDOW_FONT(*pstyle) &&
 		    (fw->title_font =
 		     FlocaleLoadFont(dpy, SGET_WINDOW_FONT(*pstyle), "FVWM")))
 		{
@@ -1672,7 +1673,7 @@ void setup_icon_font(
 	/* load new font */
 	if (!IS_ICON_FONT_LOADED(fw))
 	{
-		if (SFHAS_ICON_FONT(*pstyle) && SGET_ICON_FONT(*pstyle) &&
+		if (S_HAS_ICON_FONT(SCF(*pstyle)) && SGET_ICON_FONT(*pstyle) &&
 		    (fw->icon_font =
 		     FlocaleLoadFont(dpy, SGET_ICON_FONT(*pstyle), "FVWM")))
 		{
@@ -1703,7 +1704,7 @@ void setup_style_and_decor(
 	FvwmWindow *fw, window_style *pstyle, short *buttons)
 {
 	/* first copy the static styles into the window struct */
-	memcpy(&(FW_COMMON_FLAGS(fw)), &(pstyle->flags.common),
+	memcpy(&(FW_COMMON_FLAGS(fw)), &(SCF(*pstyle)),
 	       sizeof(common_flags_type));
 	fw->wShaped = None;
 	if (FShapesSupported)
@@ -1778,7 +1779,7 @@ void setup_style_and_decor(
 	fw->shade_anim_steps = pstyle->shade_anim_steps;
 
 	/****** GNOME style hints ******/
-	if (!SDO_IGNORE_GNOME_HINTS(pstyle->flags))
+	if (!S_DO_IGNORE_GNOME_HINTS(SCF(*pstyle)))
 	{
 		GNOME_GetStyle(fw, pstyle);
 	}

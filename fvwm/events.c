@@ -1188,7 +1188,7 @@ void HandleConfigureRequest(void)
 		}
 #endif
 
-#if 1
+#if 0
 		fprintf(stderr,
 			"cre: %d(%d) %d(%d) %d(%d)x%d(%d) fw 0x%08x w 0x%08x "
 			"ew 0x%08x  '%s'\n",
@@ -1971,6 +1971,8 @@ void HandleKeyPress(void)
 		Event.xkey.window = FW_W(Fw);
 		XSendEvent(dpy, FW_W(Fw), False, KeyPressMask, &Event);
 	}
+
+	return;
 }
 
 /***********************************************************************

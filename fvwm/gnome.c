@@ -493,7 +493,7 @@ GNOME_GetStyle (FvwmWindow *fwin, window_style *style)
   unsigned char *retval;
   int size;
 
-  if (SDO_IGNORE_GNOME_HINTS(style->flags))
+  if (S_DO_IGNORE_GNOME_HINTS(SCF(*style)))
     return;
   /* Desktop */
   atom_get = XInternAtom(dpy, XA_WIN_WORKSPACE, False);
@@ -529,9 +529,9 @@ GNOME_GetStyle (FvwmWindow *fwin, window_style *style)
   {
     if (*(int*)retval & WIN_STATE_STICKY)
     {
-      SFSET_IS_STICKY(*style, 1);
-      SMSET_IS_STICKY(*style, 1);
-      SCSET_IS_STICKY(*style, 1);
+      S_SET_IS_STICKY(SCF(*style), 1);
+      S_SET_IS_STICKY(SCM(*style), 1);
+      S_SET_IS_STICKY(SCC(*style), 1);
     }
 
     if (*(int*)retval & WIN_STATE_SHADED)
@@ -544,9 +544,9 @@ GNOME_GetStyle (FvwmWindow *fwin, window_style *style)
 
     if ((*(int*)retval & WIN_STATE_FIXED_POSITION))
     {
-      SFSET_IS_FIXED(*style, 1);
-      SMSET_IS_FIXED(*style, 1);
-      SCSET_IS_FIXED(*style, 1);
+      S_SET_IS_FIXED(SCF(*style), 1);
+      S_SET_IS_FIXED(SCM(*style), 1);
+      S_SET_IS_FIXED(SCC(*style), 1);
     }
 
     free(retval);
@@ -561,9 +561,9 @@ GNOME_GetStyle (FvwmWindow *fwin, window_style *style)
   {
     if (*retval & WIN_HINTS_SKIP_WINLIST)
     {
-      SFSET_DO_WINDOW_LIST_SKIP(*style, 1);
-      SMSET_DO_WINDOW_LIST_SKIP(*style, 1);
-      SCSET_DO_WINDOW_LIST_SKIP(*style, 1);
+      S_SET_DO_WINDOW_LIST_SKIP(SCF(*style), 1);
+      S_SET_DO_WINDOW_LIST_SKIP(SCM(*style), 1);
+      S_SET_DO_WINDOW_LIST_SKIP(SCC(*style), 1);
     }
 
     free(retval);

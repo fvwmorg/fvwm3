@@ -1,5 +1,20 @@
 2002-08-20  Dominik Vogt  <dominik.vogt@gmx.de>
 
+	* fvwm/style.c (merge_styles):
+	(free_style_mask):
+	(__simplify_style_list):
+	fixed default style calculations
+
+	* fvwm/events.c (HandleConfigureRequest):
+	disabled debug output
+
+	* fvwm/style.c (merge_styles):
+	* fvwm/fvwm.h (window_style):
+	new style member default_mask to allow two levels of defaults;
+	fixes focus policy defaults
+	* fvwm/style.h:
+	rewrote many of the macros; changed all callers
+
 	* fvwm/borders.c (RenderIntoPixmap):
 	(DrawMultiPixmapTitlebar):
 	(border_render_into_pixmap):

@@ -105,7 +105,7 @@ static void apply_window_updates(
 	}
 	if (flags->do_update_gnome_styles)
 	{
-		if (!SDO_IGNORE_GNOME_HINTS(pstyle->flags))
+		if (!S_DO_IGNORE_GNOME_HINTS(SCF(*pstyle)))
 		{
 			GNOME_GetStyle(t, pstyle);
 		}
@@ -148,7 +148,7 @@ static void apply_window_updates(
 	{
 		handle_stick(
 			NULL, &Event, FW_W_FRAME(t), t, C_FRAME, "", 0,
-			SFIS_STICKY(*pstyle));
+			S_IS_STICKY(SCF(*pstyle)));
 	}
 	if (FMiniIconsSupported && flags->do_update_mini_icon)
 	{
@@ -235,7 +235,7 @@ static void apply_window_updates(
 		{
 			/* new border sizes */
 			get_window_borders(t, &b_old);
-			SET_TITLE_DIR(t, STITLE_DIR(pstyle->flags));
+			SET_TITLE_DIR(t, S_TITLE_DIR(SCF(*pstyle)));
 			setup_title_geometry(t, pstyle);
 			get_window_borders(t, &b_new);
 
@@ -325,7 +325,7 @@ static void apply_window_updates(
 
 		get_unshaded_geometry(t, &unshaded_g);
 		get_window_borders(t, &b_old);
-		SET_TITLE_DIR(t, STITLE_DIR(pstyle->flags));
+		SET_TITLE_DIR(t, S_TITLE_DIR(SCF(*pstyle)));
 		setup_title_geometry(t, pstyle);
 		get_window_borders(t, &b_new);
 		dw = b_new.total_size.width - b_old.total_size.width;

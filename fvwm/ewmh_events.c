@@ -154,9 +154,9 @@ int ewmh_WMDesktop(EWMH_CMD_ARGS)
     {
       if ((val[0] == 0xFFFFFFFE || val[0] == 0xFFFFFFFF))
       {
-	SFSET_IS_STICKY(*style, 1);
-	SMSET_IS_STICKY(*style, 1);
-	SCSET_IS_STICKY(*style, 1);
+	S_SET_IS_STICKY(SCF(*style), 1);
+	S_SET_IS_STICKY(SCM(*style), 1);
+	S_SET_IS_STICKY(SCC(*style), 1);
       }
       else if (val[0] < 256)
       {
@@ -516,18 +516,18 @@ int ewmh_WMStateModal(EWMH_CMD_ARGS)
       SET_EWMH_MODAL(fwin, True);
       /* the window is a modal transient window so we grab the focus
        * it will be good to raise it but ... */
-      FPS_GRAB_FOCUS_TRANSIENT(SF_FOCUS_POLICY(*style), 1);
-      FPS_GRAB_FOCUS_TRANSIENT(SM_FOCUS_POLICY(*style), 1);
-      FPS_GRAB_FOCUS_TRANSIENT(SC_FOCUS_POLICY(*style), 1);
+      FPS_GRAB_FOCUS_TRANSIENT(S_FOCUS_POLICY(SCF(*style)), 1);
+      FPS_GRAB_FOCUS_TRANSIENT(S_FOCUS_POLICY(SCM(*style)), 1);
+      FPS_GRAB_FOCUS_TRANSIENT(S_FOCUS_POLICY(SCC(*style)), 1);
     }
     else
     {
       SET_EWMH_MODAL(fwin, False);
-      if (!FP_DO_GRAB_FOCUS_TRANSIENT(SF_FOCUS_POLICY(*style)))
+      if (!FP_DO_GRAB_FOCUS_TRANSIENT(S_FOCUS_POLICY(SCF(*style))))
       {
-	FPS_GRAB_FOCUS_TRANSIENT(SF_FOCUS_POLICY(*style), 0);
-	FPS_GRAB_FOCUS_TRANSIENT(SM_FOCUS_POLICY(*style), 1);
-	FPS_GRAB_FOCUS_TRANSIENT(SC_FOCUS_POLICY(*style), 1);
+	FPS_GRAB_FOCUS_TRANSIENT(S_FOCUS_POLICY(SCF(*style)), 0);
+	FPS_GRAB_FOCUS_TRANSIENT(S_FOCUS_POLICY(SCM(*style)), 1);
+	FPS_GRAB_FOCUS_TRANSIENT(S_FOCUS_POLICY(SCC(*style)), 1);
       }
     }
     SET_HAS_EWMH_INIT_MODAL_STATE(fwin, EWMH_STATE_HAS_HINT);
@@ -643,15 +643,15 @@ int ewmh_WMStateSkipPager(EWMH_CMD_ARGS)
 
     if (!DO_EWMH_IGNORE_STATE_HINTS(style))
     {
-      SFSET_DO_WINDOW_LIST_SKIP(*style, 1);
-      SMSET_DO_WINDOW_LIST_SKIP(*style, 1);
-      SCSET_DO_WINDOW_LIST_SKIP(*style, 1);
+      S_SET_DO_WINDOW_LIST_SKIP(SCF(*style), 1);
+      S_SET_DO_WINDOW_LIST_SKIP(SCM(*style), 1);
+      S_SET_DO_WINDOW_LIST_SKIP(SCC(*style), 1);
     }
     else if (!DO_SKIP_WINDOW_LIST(style))
     {
-      SFSET_DO_WINDOW_LIST_SKIP(*style, 0);
-      SMSET_DO_WINDOW_LIST_SKIP(*style, 1);
-      SCSET_DO_WINDOW_LIST_SKIP(*style, 1);
+      S_SET_DO_WINDOW_LIST_SKIP(SCF(*style), 0);
+      S_SET_DO_WINDOW_LIST_SKIP(SCM(*style), 1);
+      S_SET_DO_WINDOW_LIST_SKIP(SCC(*style), 1);
     }
     SET_HAS_EWMH_INIT_SKIP_PAGER_STATE(fwin, EWMH_STATE_HAS_HINT);
     return 0;
@@ -710,15 +710,15 @@ int ewmh_WMStateSkipTaskBar(EWMH_CMD_ARGS)
 
     if (!DO_EWMH_IGNORE_STATE_HINTS(style))
     {
-      SFSET_DO_WINDOW_LIST_SKIP(*style, 1);
-      SMSET_DO_WINDOW_LIST_SKIP(*style, 1);
-      SCSET_DO_WINDOW_LIST_SKIP(*style, 1);
+      S_SET_DO_WINDOW_LIST_SKIP(SCF(*style), 1);
+      S_SET_DO_WINDOW_LIST_SKIP(SCM(*style), 1);
+      S_SET_DO_WINDOW_LIST_SKIP(SCC(*style), 1);
     }
     else if (!DO_SKIP_WINDOW_LIST(style))
     {
-      SFSET_DO_WINDOW_LIST_SKIP(*style, 0);
-      SMSET_DO_WINDOW_LIST_SKIP(*style, 1);
-      SCSET_DO_WINDOW_LIST_SKIP(*style, 1);
+      S_SET_DO_WINDOW_LIST_SKIP(SCF(*style), 0);
+      S_SET_DO_WINDOW_LIST_SKIP(SCM(*style), 1);
+      S_SET_DO_WINDOW_LIST_SKIP(SCC(*style), 1);
     }
     SET_HAS_EWMH_INIT_SKIP_TASKBAR_STATE(fwin, EWMH_STATE_HAS_HINT);
     return 0;
@@ -837,9 +837,9 @@ int ewmh_WMStateSticky(EWMH_CMD_ARGS)
     }
     if (!DO_EWMH_IGNORE_STATE_HINTS(style))
     {
-      SFSET_IS_STICKY(*style, 1);
-      SMSET_IS_STICKY(*style, 1);
-      SCSET_IS_STICKY(*style, 1);
+      S_SET_IS_STICKY(SCF(*style), 1);
+      S_SET_IS_STICKY(SCM(*style), 1);
+      S_SET_IS_STICKY(SCC(*style), 1);
     }
     SET_HAS_EWMH_INIT_STICKY_STATE(fwin, EWMH_STATE_HAS_HINT);
     return 0;

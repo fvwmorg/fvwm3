@@ -596,6 +596,7 @@ typedef struct window_style
 	float placement_penalty[6];
 	int placement_percentage_penalty[4];
 	style_flags flags;
+	style_flags flag_default;
 	style_flags flag_mask;
 	style_flags change_mask;
 	unsigned has_style_changed : 1;

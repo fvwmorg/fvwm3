@@ -671,7 +671,7 @@ Bool PlaceWindow(
   {
     fw->Desk = Scr.CurrentDesk;
   }
-  if (SIS_STICKY(*sflags))
+  if (S_IS_STICKY(SFC(*sflags)))
     fw->Desk = Scr.CurrentDesk;
   else if (SUSE_START_ON_DESK(sflags) && Desk && flags.do_honor_starts_on_page)
     fw->Desk = (Desk > -1) ? Desk - 1 : Desk;
@@ -748,7 +748,7 @@ Bool PlaceWindow(
    * adjust the coordinates later. Otherwise, just switch to the target
    * page - it's ever so much simpler.
    */
-  if (!SIS_STICKY(*sflags) && SUSE_START_ON_DESK(sflags))
+  if (!S_IS_STICKY(SFC(*sflags)) && SUSE_START_ON_DESK(sflags))
   {
     if (PageX && PageY)
     {
