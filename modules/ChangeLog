@@ -1,3 +1,10 @@
+1999-05-24  Bob Woodside <proteus@pcnet.com>
+
+	* FvwmPager/x_pager.c: Changed to use the new GoToDeskAndPage command.
+	This prevents flashing of windows that shouldn't be seen during the
+	simultaneous transition to a new desk and page, without the side
+	effects of the old "GoToDesk 0 10000" hack.
+
 Sun May 23 11:52:33 1999  DanEspen  <dje@blue>
 
 	* FvwmRearrange/FvwmRearrange.c (main): Use InitGetConfigLine to

@@ -30,6 +30,9 @@
 #include "focus.h"
 #include "move_resize.h"
 
+static void UnmapDesk(int desk, Bool grab);
+static void MapDesk(int desk, Bool grab);
+
 /*
  * dje 12/19/98
  *
@@ -746,6 +749,34 @@ void changeDesks_func(F_CMD_ARGS)
 
 void changeDesks(int desk)
 {
+/*
+    RBW -
+    This is the new desk switch handling. If you'd like to do some performance
+    comparisons with the old version, add a define for OLD_DESKSWITCH.
+*/
+#ifndef OLD_DESKSWITCH
+/*=======================================*/
+if (Scr.CurrentDesk != desk)
+  {
+    UnmapDesk(Scr.CurrentDesk, True);
+    Scr.CurrentDesk = desk;
+    MapDesk(desk, True);
+    BroadcastPacket(M_NEW_DESK, 1, Scr.CurrentDesk);
+#ifdef GNOME
+    GNOME_SetCurrentDesk();
+    GNOME_SetDeskCount();
+#endif
+  }
+/*=======================================*/
+
+#else
+/*
+    This is the old desk switch code. It is left here temporarily for testing.
+    If you compile with this version, note that it is not invoked by changing
+    desks with the Pager - you'll have to invoke a GoToDesk via a key binding
+    or something - maybe issue the command from FvwmConsole. Pager now uses
+    the new GoToDeskAndPage command.
+*/
   int oldDesk;
   FvwmWindow *FocusWin = 0, *t, *t1;
   static FvwmWindow *StickyWin = 0;
@@ -847,8 +878,188 @@ void changeDesks(int desk)
   GNOME_SetCurrentDesk();
   GNOME_SetDeskCount();
 #endif
+#endif
+
+return;
 }
 
+
+
+/*=========================================================================
+ *
+ * Unmap all windows on a desk - 
+ *   - Part 1 of a desktop switch
+ *   - must eventually be followed by a call to MapDesk
+ *   - unmaps from the bottom of the stack up
+ *
+ *=======================================================================*/
+void UnmapDesk(int desk, Bool grab)
+{
+FvwmWindow  *t;
+
+
+if (grab) {
+  MyXGrabServer(dpy);
+  }
+for (t = Scr.FvwmRoot.stack_prev; t != &Scr.FvwmRoot; t = t->stack_prev)
+  {
+  /* Only change mapping for non-sticky windows */
+    if(!(IS_ICONIFIED(t) && IS_ICON_STICKY(t)) &&
+       !(IS_STICKY(t)) && !IS_ICON_UNMAPPED(t))
+      {
+        if(t->Desk == desk)
+        {
+         if (Scr.Focus == t)
+	   t->FocusDesk = desk;
+         else
+	   t->FocusDesk = -1;
+         UnmapIt(t);
+        }
+      }
+    else
+      {
+        /*  If a sticky window has the focus,remember it.  */
+        if (Scr.Focus == t)
+          {
+            t->FocusDesk = desk;
+          }
+        else
+          {
+            t->FocusDesk = -1;
+          }
+      }
+  }
+if (grab) {
+  MyXUngrabServer(dpy);
+  }
+
+
+return;
+}
+
+
+/*========================================================================
+ *
+ * Map all windows on a desk - 
+ *   - Part 2 of a desktop switch
+ *   - only use if UnmapDesk has previously been called
+ *   - maps from the top of the stack down
+ *
+ *=======================================================================*/
+void MapDesk(int desk, Bool grab)
+{
+FvwmWindow    *t;
+FvwmWindow    *FocusWin = NULL;
+FvwmWindow    *StickyWin = NULL;
+
+
+if (grab) {
+  MyXGrabServer(dpy);
+  }
+for (t = Scr.FvwmRoot.stack_next; t != &Scr.FvwmRoot; t = t->stack_next)
+  {
+  /* Only change mapping for non-sticky windows */
+    if(!(IS_ICONIFIED(t) && IS_ICON_STICKY(t)) &&
+       !(IS_STICKY(t)) && !IS_ICON_UNMAPPED(t))
+      {
+        if(t->Desk == desk)
+        {
+          MapIt(t);
+        }
+      }
+    else
+      {
+        /*  If window is sticky, just update its desk (it's still mapped).  */
+        t->Desk = desk;
+        if (Scr.Focus == t)
+          {
+            t->FocusDesk = desk;
+            StickyWin = t;
+          }
+      }
+  }
+if (grab) {
+  MyXUngrabServer(dpy);
+  }
+
+
+for (t = Scr.FvwmRoot.next; t != NULL; t = t->next)
+  {
+    /* 
+       Autoplace any sticky icons, so that sticky icons from the old
+       desk don't land on top of stationary ones on the new desk.
+    */
+    if((IS_STICKY(t) || IS_ICON_STICKY(t)) &&
+      IS_ICONIFIED(t) && !IS_ICON_MOVED(t) &&
+      !IS_ICON_UNMAPPED(t))
+      {
+	AutoPlaceIcon(t);
+      }
+    /*  Keep track of the last-focused window on the new desk.  */
+    if (t->FocusDesk == desk)
+      {
+        FocusWin = t;
+      }
+  }
+
+/*  If a sticky window has focus, don't disturb it.  */
+if (! StickyWin)
+ {
+  /*  Otherwise, handle remembering the last-focused clicky window.  */
+  if((FocusWin)&&(HAS_CLICK_FOCUS(FocusWin)))
+   {
+#ifndef NO_REMEMBER_FOCUS
+    SetFocus(FocusWin->w, FocusWin, True);
+   }
+  else if ((FocusWin) && (!HAS_NEVER_FOCUS(FocusWin)))
+   {
+#endif
+    SetFocus(Scr.NoFocusWin, NULL, 1);
+   }
+ }
+
+
+return;
+}
+
+
+/*=========================================================================
+ *
+ * Move to a new desktop and page at the same time.
+ *   This function is designed for use by the Pager, and replaces the old
+ *   GoToDesk 0 10000 hack.
+ *   - unmap all windows on the current desk so they don't flash when the
+ *     viewport is moved, then switch the viewport, then the desk.
+ *
+ *=======================================================================*/
+void gotoDeskAndPage_func(F_CMD_ARGS)
+{
+int val[3];
+
+if (GetIntegerArguments(action, NULL, val, 3) != 3)
+  return;
+
+/* MyXGrabServer(dpy); */
+if (Scr.CurrentDesk != val [0])
+  {
+    UnmapDesk(Scr.CurrentDesk, True);
+  }
+MoveViewport((val[1] * Scr.MyDisplayWidth), (val[2] * Scr.MyDisplayHeight), True);
+if (Scr.CurrentDesk != val [0])
+  {
+    Scr.CurrentDesk = val[0];
+    MapDesk(val[0], True);
+  }
+/* MyXUngrabServer(dpy); */
+BroadcastPacket(M_NEW_DESK, 1, Scr.CurrentDesk);
+
+#ifdef GNOME
+GNOME_SetCurrentDesk();
+GNOME_SetDeskCount();
+#endif
+
+return;
+}
 
 
 /**************************************************************************

@@ -150,6 +150,7 @@ static const struct functions func_config[] =
   {"gnomebutton",  GNOME_ButtonFunc, F_MOUSE,               0},
 #endif /* GNOME */
   {"gotodesk",     changeDesks_func, F_DESK,                0},
+  {"gotodeskandpage",  gotoDeskAndPage_func, F_DESK,        0},
   {"gotopage",     goto_page_func,   F_GOTO_PAGE,           0},
   {"hilightcolor", SetHiColor,       F_HICOLOR,             0},
   {"iconfont",     LoadIconFont,     F_ICONFONT,            0},

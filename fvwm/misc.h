@@ -206,6 +206,7 @@ void move_window_to_desk(F_CMD_ARGS);
 void scroll(F_CMD_ARGS);
 Bool get_page_arguments(char *action, int *page_x, int *page_y);
 void goto_page_func(F_CMD_ARGS);
+void gotoDeskAndPage_func(F_CMD_ARGS);
 /* --- end of virtual.c --- */
 
 int GetMoveArguments(char *action, int x, int y, int w, int h,

@@ -1,3 +1,11 @@
+1995-05-24  Bob Woodside <proteus@pcnet.com>
+
+	* fvwm/functions.c:
+	* fvwm/misc.h:
+	* fvwm/virtual.c: New GoToDeskAndPage command to replace the Pager's
+	old "GoToDesk 0 10000" hack. Most of changeDesks is removed to 2 new
+	functions, UnmapDesk and MapDesk.
+
 Mon May 24 20:13:34 1999  Steve Robbins  <steve@nyongwa.montreal.qc.ca>
 
 	* utils/Makefile.am (fvwmbug): fix build rule that had the

@@ -1200,9 +1200,7 @@ void SwitchToDeskAndPage(int Desk, XEvent *Event)
 	(desk_h*Scr.MyDisplayHeight);
       Scr.Vx = vx * Scr.MyDisplayWidth;
       Scr.Vy = vy * Scr.MyDisplayHeight;
-      sprintf(command,"GotoPage %d %d\n", vx, vy);
-      SendInfo(fd,command,0);
-      sprintf(command,"GoToDesk 0 %d\n",Desk+desk1);
+      sprintf(command,"GoToDeskAndPage %d %d %d\n", Desk+desk1, vx, vy);
       SendInfo(fd,command,0);
 
     }
