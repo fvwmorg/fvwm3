@@ -58,6 +58,8 @@
 #include "eventhandler.h"
 #include "eventmask.h"
 #include "colormaps.h"
+#include "update.h"
+#include "stack.h"
 
 /* ----- move globals ----- */
 
@@ -901,6 +903,14 @@ static Bool resize_move_window(F_CMD_ARGS)
 
 void CMD_ResizeMove(F_CMD_ARGS)
 {
+	FvwmWindow *fw = exc->w.fw;
+
+	if (IS_EWMH_FULLSCREEN(fw))
+	{
+		/* do not unmaximize ! */ 
+		CMD_ResizeMoveMaximize(F_PASS_ARGS);
+		return;
+	}
 	resize_move_window(F_PASS_ARGS);
 
 	return;
@@ -3450,6 +3460,15 @@ static Bool __resize_window(F_CMD_ARGS)
 
 void CMD_Resize(F_CMD_ARGS)
 {
+	FvwmWindow *fw = exc->w.fw;
+
+	if (IS_EWMH_FULLSCREEN(fw))
+	{
+		/* do not unmaximize ! */ 
+		CMD_ResizeMaximize(F_PASS_ARGS);
+		return;
+	}
+
 	__resize_window(F_PASS_ARGS);
 
 	return;
@@ -3682,7 +3701,15 @@ static void unmaximize_fvwm_window(
 	}
 	frame_setup_window(
 		fw, new_g.x, new_g.y, new_g.width, new_g.height, True);
-
+	if (IS_EWMH_FULLSCREEN(fw))
+	{
+		SET_EWMH_FULLSCREEN(fw, False);
+		if (DO_EWMH_USE_STACKING_HINTS(fw))
+		{
+			new_layer(fw, fw->ewmh_normal_layer);
+		}
+		apply_decor_change(fw);
+	}
 	return;
 }
 
@@ -3712,7 +3739,7 @@ static void maximize_fvwm_window(
 	fw->max_offset.x = fw->normal_g.x - fw->max_g.x;
 	fw->max_offset.y = fw->normal_g.y - fw->max_g.y;
 #if 0
-fprintf(stderr,"%d %d %d %d, max_offset.x = %d, max_offset.y = %d\n", fw->max_g.x, fw->max_g.y, fw->max_g.width, fw->max_g.height, fw->max_offset.x, fw->max_offset.y);
+fprintf(stderr,"%d %d %d %d, max_offset.x = %d, max_offset.y = %d, %d %d %d %d\n", fw->max_g.x, fw->max_g.y, fw->max_g.width, fw->max_g.height, fw->max_offset.x, fw->max_offset.y, fw->normal_g.x,  fw->normal_g.y, fw->normal_g.width, fw->normal_g.height);
 #endif
 
     return;
@@ -4011,6 +4038,7 @@ void CMD_ResizeMaximize(F_CMD_ARGS)
 		/* and mark it as maximized */
 		maximize_fvwm_window(fw, &max_g);
 	}
+	EWMH_SetWMState(fw, False);
 
 	return;
 }
@@ -4037,6 +4065,7 @@ void CMD_ResizeMoveMaximize(F_CMD_ARGS)
 		/* and mark it as maximized */
 		maximize_fvwm_window(fw, &max_g);
 	}
+	EWMH_SetWMState(fw, False);
 
 	return;
 }

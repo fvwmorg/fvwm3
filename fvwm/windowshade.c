@@ -78,7 +78,7 @@ void CMD_WindowShade(F_CMD_ARGS)
 	Bool has_dir;
 	FvwmWindow * const fw = exc->w.fw;
 
-	if (IS_ICONIFIED(fw))
+	if (IS_ICONIFIED(fw) || IS_EWMH_FULLSCREEN(fw))
 	{
 		return;
 	}

@@ -523,14 +523,22 @@ static void apply_window_updates(
 			if (t->ewmh_hint_layer > 0 &&
 			    t->layer != t->ewmh_hint_layer)
 			{
+				t->ewmh_normal_layer = t->layer;
 				new_layer(t, t->ewmh_hint_layer);
 			}
 		}
 		else
 		{
-			if (t->ewmh_hint_layer > 0)
+			if (t->ewmh_hint_layer > 0 && t->ewmh_normal_layer)
 			{
-				new_layer(t, Scr.DefaultLayer);
+				if (t->ewmh_normal_layer)
+				{
+					new_layer(t, t->ewmh_normal_layer);
+				}
+				else
+				{
+					new_layer(t, Scr.DefaultLayer);
+				}
 			}
 		}
 	}

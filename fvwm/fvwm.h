@@ -382,6 +382,7 @@ typedef struct
 	/* the ewmh icon is used as icon pixmap */
 	unsigned use_ewmh_icon : 1;
 	unsigned is_ewmh_modal : 1;
+	unsigned is_ewmh_fullscreen : 1;
 #define EWMH_STATE_UNDEFINED_HINT 0
 #define EWMH_STATE_NO_HINT        1
 #define EWMH_STATE_HAS_HINT       2
@@ -824,6 +825,7 @@ typedef struct FvwmWindow
 	 * CONFIGARGSNEW macro in module_interface.c, libs/vpacket.h and too!
 	 */
 	int ewmh_hint_layer;
+	int ewmh_normal_layer; /* for restoring non ewmh layer */
 	/* memory for the initial _NET_WM_STATE */
 	unsigned long ewmh_hint_desktop;
 

@@ -397,12 +397,11 @@ int ewmh_WMState(EWMH_CMD_ARGS)
 	return 0;
 }
 
-/* not yet implemented */
 int ewmh_WMStateFullScreen(EWMH_CMD_ARGS)
 {
 	if (ev == NULL && style == NULL)
 	{
-		return 0;
+		return (IS_EWMH_FULLSCREEN(fwin));
 	}
 
 	if (ev == NULL && style != NULL)
@@ -429,6 +428,7 @@ int ewmh_WMStateFullScreen(EWMH_CMD_ARGS)
 		}
 		if (!DO_EWMH_IGNORE_STATE_HINTS(style))
 		{
+			SET_EWMH_FULLSCREEN(fwin,True);
 			ret = EWMH_MAXIMIZE_FULLSCREEN;
 		}
 		SET_HAS_EWMH_INIT_FULLSCREEN_STATE(fwin, EWMH_STATE_HAS_HINT);
@@ -440,8 +440,10 @@ int ewmh_WMStateFullScreen(EWMH_CMD_ARGS)
 		/* client message */
 		char cmd[128];
 		int bool_arg = ev->xclient.data.l[0];
+		int is_full_screen;
 
-		if ((bool_arg == NET_WM_STATE_TOGGLE && !IS_MAXIMIZED(fwin)) ||
+		is_full_screen = IS_EWMH_FULLSCREEN(fwin);
+		if ((bool_arg == NET_WM_STATE_TOGGLE && !is_full_screen) ||
 		    bool_arg == NET_WM_STATE_ADD)
 		{
 			fscreen_scr_arg fscr;
@@ -450,12 +452,32 @@ int ewmh_WMStateFullScreen(EWMH_CMD_ARGS)
 			int page_x;
 			int page_y;
 
-			/* maximize */
+			/* maximize with ResizeMoveMaximize */
 			if (!is_function_allowed(
-				    F_MAXIMIZE, NULL, fwin, True, False))
+				    F_MAXIMIZE, NULL, fwin, True, False) ||
+			    !is_function_allowed(
+				    F_MOVE, NULL, fwin, True, False) ||
+			    !is_function_allowed(
+				    F_RESIZE, NULL, fwin, True, True))
 			{
 				return 0;
 			}
+			if (IS_ICONIFIED(fwin))
+			{
+				execute_function_override_window(
+					NULL, NULL, "Iconify off", 0, fwin);
+			}
+			if (IS_SHADED(fwin))
+			{
+				int sas = fwin->shade_anim_steps;
+
+				fwin->shade_anim_steps = 0;
+				execute_function_override_window(
+					NULL, NULL, "WindowShade off", 0, fwin);
+				fwin->shade_anim_steps = sas;
+			}
+			SET_EWMH_FULLSCREEN(fwin,True);
+			apply_decor_change(fwin);
 			fscr.xypos.x =
 				fwin->frame_g.x + fwin->frame_g.width / 2;
 			fscr.xypos.y =
@@ -470,13 +492,39 @@ int ewmh_WMStateFullScreen(EWMH_CMD_ARGS)
 				scr_g.width, scr_g.height,
 				scr_g.x - b.top_left.width + page_x,
 				scr_g.y - b.top_left.height + page_y);
+			if (DO_EWMH_USE_STACKING_HINTS(fwin))
+			{
+				int sl = fwin->ewmh_normal_layer;
+
+				new_layer(fwin, Scr.TopLayer);
+				if (sl == 0)
+				{
+					fwin->ewmh_normal_layer =
+						Scr.DefaultLayer;
+				}
+				else
+				{
+					fwin->ewmh_normal_layer = sl;
+				}
+			}
 		}
 		else
 		{
-			/* unmaximize */
+			/* unmaximize will restore is_ewmh_fullscreen, layer
+			 * and apply_decor_change */
 			sprintf(cmd, "Maximize off");
 		}
 		execute_function_override_window(NULL, NULL, cmd, 0, fwin);
+		if ((IS_EWMH_FULLSCREEN(fwin) &&
+		     !DO_EWMH_USE_STACKING_HINTS(fwin)) ||
+		    (!IS_EWMH_FULLSCREEN(fwin) &&
+		     DO_EWMH_USE_STACKING_HINTS(fwin)))
+		{
+			/* On: if not raised by a layer cmd raise 
+			 * Off: if lowered by a layer cmd raise */
+			execute_function_override_window(
+				NULL, NULL, "Raise", 0, fwin);	
+		}
 	}
 
 	return 0;
@@ -561,7 +609,7 @@ int ewmh_WMStateMaxHoriz(EWMH_CMD_ARGS)
 
 	if (ev == NULL && style == NULL)
 	{
-		return IS_MAXIMIZED(fwin);
+		return (IS_MAXIMIZED(fwin) && !IS_EWMH_FULLSCREEN(fwin));
 	}
 
 	if (ev == NULL && style != NULL)
@@ -585,7 +633,7 @@ int ewmh_WMStateMaxHoriz(EWMH_CMD_ARGS)
 			SET_HAS_EWMH_INIT_MAXHORIZ_STATE(
 				fwin, EWMH_STATE_NO_HINT);
 			{
-			return 0;
+				return 0;
 			}
 		}
 		if (!DO_EWMH_IGNORE_STATE_HINTS(style))
@@ -616,7 +664,7 @@ int ewmh_WMStateMaxVert(EWMH_CMD_ARGS)
 
 	if (ev == NULL && style == NULL)
 	{
-		return IS_MAXIMIZED(fwin);
+		return (IS_MAXIMIZED(fwin) && !IS_EWMH_FULLSCREEN(fwin));
 	}
 
 	if (ev == NULL && style != NULL)
@@ -1013,6 +1061,7 @@ int ewmh_WMStateStaysOnTop(EWMH_CMD_ARGS)
 		}
 		else if (!style->change_mask.use_layer)
 		{
+			fwin->ewmh_normal_layer = Scr.DefaultLayer;
 			SSET_LAYER(*style, Scr.DefaultLayer);
 			style->flags.use_layer = 1;
 			style->flag_mask.use_layer = 1;

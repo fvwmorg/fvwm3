@@ -22,19 +22,12 @@
  * Not Implemented (draft 1.3 - 2003-01-03):
  *
  * _NET_DESKTOP_LAYOUT
- *
  * _NET_SHOWING_DESKTOP
- *
- * _NET_MOVERESIZE_WINDOW
  *
  * Some _NET_WINDOW_TYPE:
  *         _NET_WM_WINDOW_TYPE_SPLASH
  *         _NET_WM_WINDOW_TYPE_UTILITIES
- *
- * One _NET_WINDOW_STATE:
- *         _NET_WM_STATE_FULLSCREEN
- *
- * One _NET_WM_ALLOWED_ACTIONS: _NET_WM_ACTION_FULLSCREEN
+ *         _KDE_NET_WM_WINDOW_TYPE_OVERRIDE
  *
  * The kill huge process protocol: _NET_WM_PID and _NET_WM_PING
  *
@@ -43,8 +36,7 @@
  * Problems:
  * - _NET_WM_WINDOW_TYPE_TOOLBAR is interpreted in a different way
  * in GNOME (the spec) and in KDE 2/3.0 (~ simple dock?).
- * - What is a window of TYPE MENU ?
- * - the _NET_WM_ACTION_FULLSCREEN (_NET_WM_ALLOWED_ACTIONS) is not perfect
+ *
  */
 
 #include "config.h"
@@ -167,6 +159,7 @@ ewmh_atom ewmh_atom_allowed_actions[] =
 {
 	ENTRY("_NET_WM_ACTION_CHANGE_DESKTOP", XA_ATOM, ewmh_AllowsYes),
 	ENTRY("_NET_WM_ACTION_CLOSE",          XA_ATOM, ewmh_AllowsClose),
+	ENTRY("_NET_WM_ACTION_FULLSCREEN",     XA_ATOM, ewmh_AllowsFullScreen),
 	ENTRY("_NET_WM_ACTION_MAXIMIZE_HORZ",  XA_ATOM, ewmh_AllowsMaximize),
 	ENTRY("_NET_WM_ACTION_MAXIMIZE_VERT",  XA_ATOM, ewmh_AllowsMaximize),
 	ENTRY("_NET_WM_ACTION_MINIMIZE",       XA_ATOM, ewmh_AllowsMinimize),
@@ -1056,6 +1049,17 @@ Bool ewmh_AllowsClose(EWMH_CMD_ARGS)
 	return is_function_allowed(F_CLOSE, NULL, fwin, True, False);
 }
 
+Bool ewmh_AllowsFullScreen(EWMH_CMD_ARGS)
+{
+	if (!is_function_allowed(F_MAXIMIZE, NULL, fwin, True, False) ||
+	    !is_function_allowed(F_MOVE, NULL, fwin, True, False) ||
+	    !is_function_allowed(F_RESIZE, NULL, fwin, True, True))
+	{
+		return False;
+	}
+	return True;
+}
+
 Bool ewmh_AllowsMinimize(EWMH_CMD_ARGS)
 {
 	return is_function_allowed(F_ICONIFY, NULL, fwin, True, False);
@@ -1263,14 +1267,7 @@ int ewmh_HandleMenu(EWMH_CMD_ARGS)
 {
 	fwin->ewmh_window_type = EWMH_WINDOW_TYPE_MENU_ID;
 
-	/* ???? */
-
-	S_SET_IS_STICKY_ACROSS_PAGES(SCF(*style), 1);
-	S_SET_IS_STICKY_ACROSS_PAGES(SCM(*style), 1);
-	S_SET_IS_STICKY_ACROSS_PAGES(SCC(*style), 1);
-	S_SET_IS_STICKY_ACROSS_DESKS(SCF(*style), 1);
-	S_SET_IS_STICKY_ACROSS_DESKS(SCM(*style), 1);
-	S_SET_IS_STICKY_ACROSS_DESKS(SCC(*style), 1);
+	/* tear off menu */
 
 	S_SET_DO_WINDOW_LIST_SKIP(SCF(*style), 1);
 	S_SET_DO_WINDOW_LIST_SKIP(SCM(*style), 1);
@@ -1280,20 +1277,30 @@ int ewmh_HandleMenu(EWMH_CMD_ARGS)
 	S_SET_DO_CIRCULATE_SKIP(SCM(*style), 1);
 	S_SET_DO_CIRCULATE_SKIP(SCC(*style), 1);
 
-	/* no title */
-	style->flags.has_no_title = 1;
-	style->flag_mask.has_no_title = 1;
-	style->change_mask.has_no_title = 1;
+	/* NeverFocus */
+	FPS_LENIENT(S_FOCUS_POLICY(SCF(*style)), 0);
+	FPS_LENIENT(S_FOCUS_POLICY(SCM(*style)), 1);
+	FPS_LENIENT(S_FOCUS_POLICY(SCC(*style)), 1);
 
-	SSET_BORDER_WIDTH(*style, 0);
-	style->flags.has_border_width = 1;
-	style->flag_mask.has_border_width = 1;
-	style->change_mask.has_border_width = 1;
+	FPS_FOCUS_ENTER(S_FOCUS_POLICY(SCF(*style)), 0);
+	FPS_UNFOCUS_LEAVE(S_FOCUS_POLICY(SCF(*style)), 0);
+	FPS_FOCUS_CLICK_CLIENT(S_FOCUS_POLICY(SCF(*style)), 0);
+	FPS_FOCUS_CLICK_DECOR(S_FOCUS_POLICY(SCF(*style)), 0);
+	FPS_FOCUS_CLICK_ICON(S_FOCUS_POLICY(SCF(*style)), 0);
+	FPS_FOCUS_BY_FUNCTION(S_FOCUS_POLICY(SCF(*style)), 0);
 
-	SSET_HANDLE_WIDTH(*style, 0);
-	style->flags.has_handle_width = 1;
-	style->flag_mask.has_handle_width = 1;
-	style->change_mask.has_handle_width = 1;
+	FPS_FOCUS_ENTER(S_FOCUS_POLICY(SCM(*style)), 1);
+	FPS_FOCUS_ENTER(S_FOCUS_POLICY(SCC(*style)), 1);
+	FPS_UNFOCUS_LEAVE(S_FOCUS_POLICY(SCM(*style)), 1);
+	FPS_UNFOCUS_LEAVE(S_FOCUS_POLICY(SCC(*style)), 1);
+	FPS_FOCUS_CLICK_CLIENT(S_FOCUS_POLICY(SCM(*style)), 1);
+	FPS_FOCUS_CLICK_CLIENT(S_FOCUS_POLICY(SCC(*style)), 1);
+	FPS_FOCUS_CLICK_DECOR(S_FOCUS_POLICY(SCM(*style)), 1);
+	FPS_FOCUS_CLICK_DECOR(S_FOCUS_POLICY(SCC(*style)), 1);
+	FPS_FOCUS_CLICK_ICON(S_FOCUS_POLICY(SCM(*style)), 1);
+	FPS_FOCUS_CLICK_ICON(S_FOCUS_POLICY(SCC(*style)), 1);
+	FPS_FOCUS_BY_FUNCTION(S_FOCUS_POLICY(SCM(*style)), 1);
+	FPS_FOCUS_BY_FUNCTION(S_FOCUS_POLICY(SCC(*style)), 1);
 
 	return 1;
 }
@@ -1402,6 +1409,14 @@ int ksmserver_workarround(FvwmWindow *fwin)
 
 void EWMH_GetStyle(FvwmWindow *fwin, window_style *style)
 {
+	if (style->change_mask.use_layer)
+	{
+		fwin->ewmh_normal_layer = SGET_LAYER(*style);	
+	}
+	else if (fwin->ewmh_normal_layer == 0)
+	{
+		fwin->ewmh_normal_layer = Scr.DefaultLayer;
+	}
 	ewmh_WMState(fwin, NULL, style, 0);
 	ewmh_WMDesktop(fwin, NULL, style, 0);
 	/* the window type override the state hint */

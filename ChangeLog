@@ -1,3 +1,41 @@
+2003-08-14  olicha  <olivier.chapuis@free.fr>
+
+	* fvwm/ewmh.c (ewmh_HandleMenu):
+	Fixed the MENU window type, they are tear off menus
+
+	* fvwm/fvwm.h:
+	* fvwm/update.c (apply_window_updates):
+	* fvwm/stack.c (new_layer):
+	* fvwm/ewmh.c (EWMH_GetStyle): 
+	Fixed EWMHUseStackingHints update
+
+	* fvwm/window_flags.h:
+	* fvwm/fvwm.h:
+	* fvwm/ewmh_events.c (ewmh_WMStateFullScreen):
+	(ewmh_WMStateMaxHoriz):
+	(ewmh_WMStateMaxVert):
+	* fvwm/move_resize.c (unmaximize_fvwm_window):
+	Fixed _NET_WM_STATE_FULLSCREEN: set the correct _NET_WM_STATE,
+	uniconify and unshade when putting a window fullscreen
+
+	* fvwm/ewmh_intern.h:
+	* fvwm/ewmh.c (ewmh_AllowsFullScreen):
+	Added _NET_WM_ACTION_FULLSCREEN as we have _NET_WM_STATE_FULLSCREEN
+
+	* fvwm/move_resize.c (unmaximize_fvwm_window):
+	(CMD_Resize):
+	(CMD_ResizeMove):
+	* fvwm/ewmh_events.c (ewmh_WMStateFullScreen):
+	* fvwm/decorations.c (SelectDecor):
+	* fvwm/windowshade.c (CMD_WindowShade):
+	Removed the decor for EWMH fullscreen windows, forbid shading and
+	allows Resize and MoveResize without unsetting the fullscreen/maximized
+	state
+
+	* fvwm/move_resize.c (CMD_ResizeMoveMaximize):
+	(CMD_ResizeMaximize):
+	Fixed ewmh state which was not set after these cmds
+
 2003-08-09  olicha  <olivier.chapuis@free.fr>
 
 	* todo-2.6: 

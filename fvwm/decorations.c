@@ -512,6 +512,11 @@ void SelectDecor(FvwmWindow *t, window_style *pstyle, short *buttons)
 			decor &= ~(MWM_DECOR_BORDER|MWM_DECOR_RESIZEH);
 		}
 	}
+	if (IS_EWMH_FULLSCREEN(t))
+	{
+		decor &=~(MWM_DECOR_BORDER|MWM_DECOR_RESIZEH|MWM_DECOR_TITLE);
+	}
+
 	/* Assume no decorations, and build up */
 	SET_HAS_TITLE(t, 0);
 	SET_HAS_HANDLES(t, 0);

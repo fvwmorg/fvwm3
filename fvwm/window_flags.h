@@ -644,6 +644,12 @@
 	(fw)->flags.is_ewmh_modal = !!(x)
 #define SETM_EWMH_MODAL(fw,x) \
 	(fw)->flag_mask.is_ewmh_modal = !!(x)
+#define IS_EWMH_FULLSCREEN(fw) \
+	((fw)->flags.is_ewmh_fullscreen)
+#define SET_EWMH_FULLSCREEN(fw,x) \
+	(fw)->flags.is_ewmh_fullscreen = !!(x)
+#define SETM_EWMH_FULLSCREEN(fw,x) \
+	(fw)->flag_mask.is_ewmh_fullscreen = !!(x)
 #define SET_HAS_EWMH_INIT_FULLSCREEN_STATE(fw,x) \
 	(fw)->flags.has_ewmh_init_fullscreen_state = (x)
 #define SETM_HAS_EWMH_INIT_FULLSCREEN_STATE(fw,x) \

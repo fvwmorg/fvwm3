@@ -138,6 +138,7 @@ int ewmh_WMStrut(EWMH_CMD_ARGS);
 
 Bool ewmh_AllowsYes(EWMH_CMD_ARGS);
 Bool ewmh_AllowsClose(EWMH_CMD_ARGS);
+Bool ewmh_AllowsFullScreen(EWMH_CMD_ARGS);
 Bool ewmh_AllowsMinimize(EWMH_CMD_ARGS);
 Bool ewmh_AllowsMaximize(EWMH_CMD_ARGS);
 Bool ewmh_AllowsMove(EWMH_CMD_ARGS);
