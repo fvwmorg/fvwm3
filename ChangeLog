@@ -255,6 +255,9 @@
 
 2002-03-13  Dominik Vogt  <dominik.vogt@gmx.de>
 
+	* fvwm/fvwm.h:
+	removed inclusion of fvwmdebug.h
+
 	* libs/gravity.c (ParseDirectionArgument):
 	fixed direction parsing
 
