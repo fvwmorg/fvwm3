@@ -1,4 +1,30 @@
+1999-12-17  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* fvwm/icons.c:
+	sticy icons are marked just like sticky windows
+
+	* fvwm/cursor.c (CursorStyle):
+	omit cursor name to reset to default
+
+	* fvwm/windowlist.c (do_windowList):
+	new WindowList option 'NoHotkey'
+
+	* fvwm/cursor.c (CursorStyle):
+	cursor xpm doesn't need to have a hot spot defined
+
 1999-12-16  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* fvwm/builtins.c (refresh_window):
+	new function called by refresh_function and refresh_win_function; saves
+	some bytes
+
+	* fvwm/add_window.c (setup_frame_attributes):
+	* fvwm/fvwm.c (main):
+	* fvwm/style.c (ProcessNewStyle):
+	(handle_window_style_change):
+	* fvwm/fvwm.h:
+	* fvwm/style.h:
+	new styles BackingStore/BackingStoreOff and SaveUnder/SaveUnderOff
 
 	* fvwm/borders.c (RedrawBorder):
 	finished border drawing updates

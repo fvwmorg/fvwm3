@@ -667,6 +667,20 @@ void ProcessNewStyle(XEvent *eventp, Window w, FvwmWindow *tmp_win,
 	    ptmpstyle->change_mask.has_border_width = 1;
 	  }
         }
+        else if(StrEquals(token, "BackingStore"))
+        {
+          found = True;
+	  ptmpstyle->flags.use_backing_store = 1;
+	  ptmpstyle->flag_mask.use_backing_store = 1;
+	  ptmpstyle->change_mask.use_backing_store = 1;
+        }
+        else if(StrEquals(token, "BackingStoreOff"))
+        {
+          found = True;
+	  ptmpstyle->flags.use_backing_store = 0;
+	  ptmpstyle->flag_mask.use_backing_store = 1;
+	  ptmpstyle->change_mask.use_backing_store = 1;
+        }
         break;
 
       case 'c':
@@ -1754,10 +1768,24 @@ void ProcessNewStyle(XEvent *eventp, Window w, FvwmWindow *tmp_win,
           ptmpstyle->flag_mask.do_start_lowered = 1;
           ptmpstyle->change_mask.do_start_lowered = 1;
         }
+        else if(StrEquals(token, "SaveUnder"))
+        {
+          found = True;
+	  ptmpstyle->flags.do_save_under = 1;
+	  ptmpstyle->flag_mask.do_save_under = 1;
+	  ptmpstyle->change_mask.do_save_under = 1;
+        }
+        else if(StrEquals(token, "SaveUnderOff"))
+        {
+          found = True;
+	  ptmpstyle->flags.do_save_under = 0;
+	  ptmpstyle->flag_mask.do_save_under = 1;
+	  ptmpstyle->change_mask.do_save_under = 1;
+        }
         break;
 
       case 't':
-        if(StrEquals(token, "TITLE"))
+        if(StrEquals(token, "Title"))
         {
 	  found = True;
           ptmpstyle->flags.has_no_title = 0;
@@ -1930,6 +1958,7 @@ static void handle_window_style_change(FvwmWindow *t)
   Bool do_setup_focus_policy = False;
   Bool do_resize_window = False;
   Bool do_setup_frame = False;
+  Bool do_update_frame_attributes = False;
 
   lookup_style(t, &style);
   if (style.has_style_changed == 0)
@@ -2107,6 +2136,12 @@ static void handle_window_style_change(FvwmWindow *t)
     do_redecorate = True;
   }
 
+  if (style.change_mask.do_save_under ||
+      style.change_mask.use_backing_store)
+  {
+    do_update_frame_attributes = True;
+  }
+
   /****** clean up, redraw, etc. ******/
 
   if (do_redecorate)
@@ -2191,6 +2226,10 @@ static void handle_window_style_change(FvwmWindow *t)
   if (do_setup_focus_policy)
   {
     setup_focus_policy(t);
+  }
+  if (do_update_frame_attributes)
+  {
+    setup_frame_attributes(t, &style);
   }
 
   return;

@@ -1,36 +1,46 @@
   ___  __  __ __      __   _  _     ___       __ __
  | __| ||  || ||      ||  /\\//\   // \\      || ||
- ||_   ||  || ||      || // \/ \\     //      || ||
- | _|  ||  || ||      || ||    ||    //       \|=||
+ ||_   ||  || ||      || // \/ \\     //      ||_||
+ | _|  ||  || ||      || ||    ||    //       \__ |
  ||     \\//   \\ /\ //  ||    ||   //__   _     ||
  ||      \/     \//\\/   ||    ||  /____| |_|    ||
 
 The FVWM-Workers list is pleased to announce FVWM version 2.4 "F2K"
+%% domivogt: Ha ha ha 8-). "F2K" reminds me a bit of "F**k"
+%% domivogt: how about "Fvwm 3000 - The window manager of the next millenium"
+%% domivogt: ;-)
 
 Available at http://www.fvwm.org/ it includes the following
 
 Highlights:
 
- ** A new "Themes" module and "colorsets" including 6 kinds of gradients
-    and pixmap support controlling the appearance of borders, titlebars,
-    frames, menus, and modules.
+ ** A new "Themes" module called FvwmTheme and "colorsets" including
+    8 kinds of gradients and pixmap support controlling the appearance
+    of borders, titlebars, frames, menus and modules.
 
- ** Gnome compliance, ICCCM2 compliance.
+ ** Gnome compliance as a compile time option.
+
+ ** ICCCM2 compliance.
 
  ** Optional session management.
 
  ** FvwmAnimate support in FvwmIconBox, FvwmIconMan, FvwmTaskBar, and
     FvwmWinList.
 
- ** Stroke support.
+ ** Mouse stroke support.
+%% domivogt: add a pointer to libstroke here?
 
- ** Titlebars at the top or bottom of windows.
+ ** Titlebars at the bottom or the top of windows with the
+    TitleAtBottom and TitleAtTop styles.
 
  ** The root cursor now indicates when Fvwm is busy.
 
  ** New command to configure a way to abort Fvwm.
+%% domivogt: What does this mean? Which command?
 
  ** Menus on the fly and some menu generating scripts.
+%% What are 'Menus on the fly'? Do I get these if I use fvwm on a laptop
+   when traveling with a plane?
 
  ** Much more flexibility and control in menu definition.
 
@@ -43,19 +53,23 @@ Highlights:
  ** Key and mouse bindings and style commands take effect immediately,
     recapture is no longer needed to make most changes.
 
- ** Most users can remove the Colorlimit command.  It takes the best
+ ** Most users can remove the ColorLimit command.  It takes the best
     setting depending on the color depth.
 
  ** Control over mouse pointer colors and pixmap pointers.
 
- ** New module FvwmGtk.
+ ** New module FvwmGtk for Gtk style menus.
 
  ** VMS port.
+%% domivogt: we should definitely try it out first!
 
- ** Animated window shading.
+ ** Animated window shading with the WindowShadeAnimate command.
 
  ** Layers.
+%% domivogt: we need an introduction about layers somewhere
 
+ ** The WindowList command has more option to allow better
+    control of which windows are shown.
 
 
 More detailed information on the contents of this release can be

@@ -1784,7 +1784,7 @@ keyboard focus.
 
 
 .TP
-.B "CursorStyle" "\fIcontext\fP \fInumber-or-name-or-xpm\fP [\fIfore\fP \fIback\fP]"
+.B "CursorStyle" "\fIcontext\fP [\fInumber-or-name-or-xpm\fP [\fIfore\fP \fIback\fP]]"
 Defines a new cursor for the specified context.  The various contexts
 are:
 
@@ -1910,12 +1910,15 @@ used during a StrokeFunc command.
 .in -.3i
 .in -.5i
 
-The defaults are shown in parenthesis above.
+The defaults are shown in parenthesis above.  Is you ever want to
+restore the default cursor for a specific context you can omit the
+\fInumber-or-name-or-xpm\fP argument.
 
 The \fInumber-or-name-or-xpm\fP is either the numeric value of the
 cursor as defined in the include file X11/cursorfont.h or its name
 (without the XC_ prefix) or the name of an xpm file containing a pixmap
-of depth 1 with a mask and a hot-spot.  For example:
+of depth 1 with a mask and an optional hot-spot (if no hot-spot is defined,
+the hot-spot is placed in the center of the image).  For example:
 .EX
 # make the kill cursor be XC_gumby (both forms work):
 CursorStyle DESTROY 56
@@ -2170,7 +2173,7 @@ The \fIoptions\fP passed to WindowList can be "NoGeometry",
 "Normal", "OnlyNormal", "NoSticky", "Sticky", "OnlySticky",
 "NoOnTop", "OnTop", "OnlyOnTop", "Layer m [n]", "UseListSkip",
 "OnlyListSkip", "NoDeskSort", "UseIconName", "Alphabetic",
-"NotAlphabetic".
+"NotAlphabetic", "NoHotkeys".
 
 (Note - normal means not iconic, sticky, or on top)
 
@@ -2845,9 +2848,9 @@ Strokes sequences are defined in a telephone grid like this:
 or in a numeric pad grid like this:
 .EX
  7  8  9
- 
+
  4  5  6
- 
+
  1  2  3
 .EE
 The telephone grid is used by default, to use the numeric pad grid
@@ -2923,11 +2926,11 @@ before the end of the stroke recording in the case of a mouse binding
 and if you used, say, a title bar context the mouse motion can go through an
 application window). The keys Escape and Delete allow you to abort the command.
 
-The StrokeFunc command has four options \fINotStayPressed\fP, 
-\fIEchoSequence\fP, \fIDrawMotion\fP and \fIFeedBack\fP. These options are 
-disabled by default. \fIEchoSequence\fP causes fvwm to Echo the recorded 
+The StrokeFunc command has four options \fINotStayPressed\fP,
+\fIEchoSequence\fP, \fIDrawMotion\fP and \fIFeedBack\fP. These options are
+disabled by default. \fIEchoSequence\fP causes fvwm to Echo the recorded
 stroke sequence. \fIDrawMotion\fP causes fvwm to draw the mouse motion on the
-screen. \fIFeedBack\fP causes fvwm to display during a fraction of second 
+screen. \fIFeedBack\fP causes fvwm to display during a fraction of second
 the cursor of the WAIT context of the CursorStyle command if the recorded
 stroke sequence corresponds to a Stroke binding.
 
@@ -3412,8 +3415,7 @@ Note - windows that have no name (WM_NAME) are given a name of
 are given Class = "NoClass" and those that don't have a resource
 (WM_CLASS, res_name) are given Resource = "NoResource".
 
-\fIoptions\fP is a comma separated list containing some or all of the
-keywords
+\fIoptions\fP is a comma separated list containing one or more of the keywords
 BorderWidth, HandleWidth,
 NoIcon / Icon, MiniIcon,
 IconBox, IconGrid, IconFill,
@@ -3464,7 +3466,9 @@ FixedPosition / VariablePosition,
 IconOverride / NoIconOverride / NoActiveIconOverride,
 DepressableBorder / FirmBorder,
 MaxWindowSize,
-ResizeOpaque / ResizeOutline.
+ResizeOpaque / ResizeOutline,
+BackingStore / BackingStoreOff,
+SaveUnder / SaveUnderOff.
 
 In the above list some options are listed as
 style-option/opposite-style-option.  The opposite-style-option for
@@ -3933,6 +3937,15 @@ allows only the FvwmPager module icon to exist:
 Style * NoIcon
 Style FvwmPager Icon
 .EE
+
+The \fIBackingStore\fP and \fISaveUnder\fP styles enable the corresponding
+window attributes in the X server.  BackingStore means that the X server
+tries to keep the obscured parts of a window in memory while windows
+with SaveUnder store the graphics below them.  Either option can speed
+up fvwm if the connection to the X server is slow (e.g. over a modem
+link).  By default both styles are turned off.  To switch them off
+explicitly you can use the \fIBackingStoreOff\fP and \fISaveUnderOff\fP
+styles.
 
 
 .TP

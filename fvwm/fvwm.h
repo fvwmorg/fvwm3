@@ -241,6 +241,7 @@ typedef struct
   unsigned do_decorate_transient : 1;
   unsigned do_place_random : 1;
   unsigned do_place_smart : 1;
+  unsigned do_save_under : 1;
   unsigned do_start_lowered : 1;
   unsigned has_border_width : 1;
   unsigned has_color_back : 1;
@@ -259,6 +260,7 @@ typedef struct
   unsigned has_no_title : 1;
   unsigned has_ol_decor : 1;
   unsigned is_button_disabled : 10;
+  unsigned use_backing_store : 1;
   unsigned use_colorset : 1;
   unsigned use_layer : 1;
   unsigned use_no_pposition : 1;

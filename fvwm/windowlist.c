@@ -106,6 +106,7 @@ void do_windowList(XEvent *eventp,Window w,FvwmWindow *tmp_win,
   int high_layer = INT_MAX;
   int tc;
   int show_listskip = 0; /* do not show listskip by default */
+  Bool use_hotkey = True;
 
   /* Condition vars. */
   Bool use_condition = False;
@@ -147,6 +148,10 @@ void do_windowList(XEvent *eventp,Window w,FvwmWindow *tmp_win,
       if (!tok)
 	break;
 
+      if (StrEquals(tok,"NoHotkeys"))
+      {
+	use_hotkey = False;
+      }
       if (StrEquals(tok,"Function"))
       {
         line = GetNextSimpleOption(line, &func);
@@ -355,14 +360,24 @@ void do_windowList(XEvent *eventp,Window w,FvwmWindow *tmp_win,
           name = t->icon_name;
         else
           name = t->name;
+
         t_hot = safemalloc(strlen(name) + 48);
-
-        if(flags & SHOW_INFONOTGEO)
+	if (use_hotkey)
           sprintf(t_hot, "&%c. ", scut);         /* Generate label */
-        else
-          sprintf(t_hot, "&%c. %s", scut, name); /* Generate label */
+	else
+	  *t_hot = 0;
+        if(!(flags & SHOW_INFONOTGEO))
+	  strcat(t_hot, name);
+	if (*t_hot == 0)
+	  strcpy(t_hot, " ");
 
-        if (scut++ == '9') scut = 'A';	/* Next shortcut key */
+	/* Next shortcut key */
+	if (scut == '9')
+	  scut = 'A';
+	else if (scut == 'Z')
+	  scut = '0';
+	else
+	  scut++;
 
         if (flags & SHOW_INFONOTGEO)
         {

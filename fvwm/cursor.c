@@ -15,6 +15,7 @@
 
 #include "config.h"
 
+#include <stdio.h>
 #include "fvwm.h"
 #include "cursor.h"
 #include "functions.h"
@@ -337,13 +338,11 @@ void CursorStyle(F_CMD_ARGS)
   action = GetNextToken(action,&cname);
   action = GetNextToken(action,&newcursor);
 
-  if (!cname || !newcursor)
+  if (!cname)
   {
     fvwm_msg(ERR,"CursorStyle","Bad cursor style");
     if (cname)
       free(cname);
-    if (newcursor)
-      free(newcursor);
     return;
   }
   if (StrEquals("POSITION",cname)) index = CRS_POSITION;
@@ -380,7 +379,10 @@ void CursorStyle(F_CMD_ARGS)
   free(cname);
 
   /* check if the cursor is given by X11 name */
-  my_nc = myCursorNameToIndex(newcursor);
+  if (newcursor)
+    my_nc = myCursorNameToIndex(newcursor);
+  else
+    my_nc = default_cursors[index];
 
   if (my_nc == -1)
   {
@@ -413,6 +415,8 @@ void CursorStyle(F_CMD_ARGS)
 #ifdef XPM
       XpmAttributes xpm_attributes;
       Pixmap source, mask;
+      unsigned int x;
+      unsigned int y;
 
       path = findImageFile (newcursor, NULL, R_OK);
       if (!path)
@@ -439,11 +443,15 @@ void CursorStyle(F_CMD_ARGS)
 
       if (Scr.FvwmCursors[index])
 	XFreeCursor (dpy, Scr.FvwmCursors[index]);
+      x = xpm_attributes.x_hotspot;
+      if (x >= xpm_attributes.width)
+	x = xpm_attributes.width / 2;
+      y = xpm_attributes.y_hotspot;
+      if (y >= xpm_attributes.height)
+	y = xpm_attributes.height / 2;
       Scr.FvwmCursors[index] =
-	XCreatePixmapCursor (dpy, source, mask,
-			     &(colors[0]), &(colors[1]),
-			     xpm_attributes.x_hotspot,
-			     xpm_attributes.y_hotspot);
+	XCreatePixmapCursor(
+	  dpy, source, mask, &(colors[0]), &(colors[1]), x, y);
 
       free (newcursor);
       free (path);

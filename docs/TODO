@@ -65,10 +65,6 @@ New stuff:
     desks only, or perhaps a StaysOnDesk <num> style, to replace
     StartsOnDesk and work with the Sticky attribute, I'm not sure...
     Either way, multiple values need to be allowed
-  - Need to indicate sticky icons somehow, and perhaps sticky windows
-    that don't have a titlebar.  I'd like to bring back the different
-    color for the sticky windows as an option, if I can do it cleanly.
-    Perhaps a special Decor now?
 
   - Function to simulate button presses, to go with CursorMove?  Might
     not be possible since many apps ignore SYNTHETIC events...

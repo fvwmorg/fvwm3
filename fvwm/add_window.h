@@ -27,6 +27,8 @@ void setup_style_and_decor(
 void setup_auxiliary_windows(
   FvwmWindow *tmp_win, Bool setup_frame_and_parent, char left_buttons,
   char right_buttons);
+void setup_frame_attributes(
+  FvwmWindow *tmp_win, window_style *pstyle);
 void destroy_auxiliary_windows(
   FvwmWindow *Tmp_win, Bool destroy_frame_and_parent);
 void change_auxiliary_windows(

@@ -645,58 +645,40 @@ void exec_function(F_CMD_ARGS)
   return;
 }
 
-void refresh_function(F_CMD_ARGS)
+static void refresh_window(Window w)
 {
   XSetWindowAttributes attributes;
   unsigned long valuemask;
 
-#if 0
-  valuemask = (CWBackPixel);
-  attributes.background_pixel = 0;
-#else /* CKH - i'd like to try this a little differently (clear window)*/
   valuemask = CWOverrideRedirect | CWBackingStore | CWSaveUnder | CWBackPixmap;
   attributes.override_redirect = True;
   attributes.save_under = False;
   attributes.background_pixmap = None;
-#endif
   attributes.backing_store = NotUseful;
-  w = XCreateWindow (dpy, Scr.Root, 0, 0,
-		     (unsigned int) Scr.MyDisplayWidth,
-		     (unsigned int) Scr.MyDisplayHeight,
-		     (unsigned int) 0,
-		     CopyFromParent, (unsigned int) CopyFromParent,
-		     CopyFromParent, valuemask,
-		     &attributes);
-  XMapWindow (dpy, w);
-  XDestroyWindow (dpy, w);
-  XFlush (dpy);
+  w = XCreateWindow(dpy,
+		    w,
+		    0, 0,
+		    (unsigned int) Scr.MyDisplayWidth,
+		    (unsigned int) Scr.MyDisplayHeight,
+		    (unsigned int) 0,
+		    CopyFromParent, (unsigned int) CopyFromParent,
+		    CopyFromParent, valuemask,
+		    &attributes);
+  XMapWindow(dpy, w);
+  XDestroyWindow(dpy, w);
+  XFlush(dpy);
+}
+
+void refresh_function(F_CMD_ARGS)
+{
+  refresh_window(Scr.Root);
 }
 
 void refresh_win_function(F_CMD_ARGS)
 {
-  XSetWindowAttributes attributes;
-  unsigned long valuemask;
-
   if (DeferExecution(eventp,&w,&tmp_win,&context,CRS_SELECT,ButtonRelease))
     return;
-
-  valuemask = CWOverrideRedirect | CWBackingStore | CWSaveUnder | CWBackPixmap;
-  attributes.override_redirect = True;
-  attributes.save_under = False;
-  attributes.background_pixmap = None;
-  attributes.backing_store = NotUseful;
-  w = XCreateWindow (dpy,
-                     (context == C_ICON)?(tmp_win->icon_w):(tmp_win->frame),
-                     0, 0,
-		     (unsigned int) Scr.MyDisplayWidth,
-		     (unsigned int) Scr.MyDisplayHeight,
-		     (unsigned int) 0,
-		     CopyFromParent, (unsigned int) CopyFromParent,
-		     CopyFromParent, valuemask,
-		     &attributes);
-  XMapWindow (dpy, w);
-  XDestroyWindow (dpy, w);
-  XFlush (dpy);
+  refresh_window((context == C_ICON)? tmp_win->icon_w : tmp_win->frame);
 }
 
 

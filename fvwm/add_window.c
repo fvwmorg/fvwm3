@@ -441,9 +441,8 @@ void setup_frame_window(
   Pixmap TexturePixmap = None;
   Pixmap TexturePixmapSave;
 
-  valuemask |= CWCursor|CWColormap|CWBorderPixel|CWEventMask|CWBackingStore;
+  valuemask |= CWCursor|CWColormap|CWBorderPixel|CWEventMask;
 
-  pattributes->backing_store = NotUseful;
   pattributes->cursor = Scr.FvwmCursors[CRS_DEFAULT];
   pattributes->colormap = Pcmap;
   pattributes->border_pixel = 0;
@@ -774,6 +773,20 @@ void setup_auxiliary_windows(
   /****** setup frame stacking order ******/
   setup_frame_stacking(tmp_win);
   XMapSubwindows (dpy, tmp_win->frame);
+}
+
+void setup_frame_attributes(
+  FvwmWindow *tmp_win, window_style *pstyle)
+{
+  XSetWindowAttributes xswa;
+  unsigned long valuemask;
+
+  valuemask = CWBackingStore | CWSaveUnder;
+  xswa.backing_store =
+    (pstyle->flags.use_backing_store) ? Scr.use_backing_store : NotUseful;
+  xswa.save_under =
+    (pstyle->flags.do_save_under) ? Scr.flags.do_save_under : NotUseful;
+  XChangeWindowAttributes(dpy, tmp_win->frame, valuemask, &xswa);
 }
 
 void destroy_auxiliary_windows(FvwmWindow *tmp_win,
@@ -1247,6 +1260,9 @@ FvwmWindow *AddWindow(Window w, FvwmWindow *ReuseWin)
 
   /****** auxiliary window setup ******/
   setup_auxiliary_windows(tmp_win, True, left_buttons, right_buttons);
+
+  /****** 'backing store' and 'save under' window setup ******/
+  setup_frame_attributes(tmp_win, &style);
 
   /****** reparent the window ******/
   XReparentWindow(dpy, tmp_win->w, tmp_win->Parent, 0, 0);

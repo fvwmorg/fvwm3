@@ -872,8 +872,8 @@ void RedrawTitle(common_decorations_type *cd, FvwmWindow *t, Bool has_focus)
     w = XTextWidth(GetDecor(t,WindowFont.font),t->name,
 		   strlen(t->name));
 #endif
-    if (w > t->title_g.width-12)
-      w = t->title_g.width-4;
+    if (w > t->title_g.width - 12)
+      w = t->title_g.width - 4;
     if (w < 0)
       w = 0;
   }

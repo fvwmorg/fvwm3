@@ -523,12 +523,15 @@ int main(int argc, char **argv)
 #ifdef SHAPE
   ShapesSupported = XShapeQueryExtension(dpy, &ShapeEventBase, &ShapeErrorBase);
 #endif /* SHAPE */
+  Scr.pscreen = XScreenOfDisplay(dpy, Scr.screen);
+  Scr.use_backing_store = DoesBackingStore(Scr.pscreen);
+  Scr.flags.do_save_under = DoesSaveUnders(Scr.pscreen);
 
   InternUsefulAtoms ();
 
   /* Make sure property priority colors is empty */
-  XChangeProperty (dpy, Scr.Root, _XA_MIT_PRIORITY_COLORS,
-                   XA_CARDINAL, 32, PropModeReplace, NULL, 0);
+  XChangeProperty(dpy, Scr.Root, _XA_MIT_PRIORITY_COLORS,
+		  XA_CARDINAL, 32, PropModeReplace, NULL, 0);
 
   /* create a window which will accept the keyboard focus when no other
      windows have it */

@@ -231,6 +231,7 @@ typedef struct FvwmDecor
 typedef struct ScreenInfo
 {
   unsigned long screen;
+  Screen *pscreen;
   int NumberOfScreens;          /* number of screens on display */
   int MyDisplayWidth;		/* my copy of DisplayWidth(dpy, screen) */
   int MyDisplayHeight;	        /* my copy of DisplayHeight(dpy, screen) */
@@ -331,6 +332,8 @@ typedef struct ScreenInfo
   int ColorLimit;              /* Limit on colors used in pixmaps */
   int DefaultColorset;         /* Default Colorset used by feedback window */
 
+  int use_backing_store;
+
   /*
   ** some additional global options which will probably become window
   ** specific options later on:
@@ -368,6 +371,7 @@ typedef struct ScreenInfo
   } gs; /* global style structure */
   struct
   {
+    Bool do_save_under : 1;
     unsigned has_any_style_changed : 1;
     unsigned has_icon_font : 1;
     unsigned has_window_font : 1;

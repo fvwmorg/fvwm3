@@ -3,6 +3,16 @@ _+_A HREF="#2.2.4"_-_2.2.4_+_/A_-_.
 
 Changes in beta release 2.3.11 (not released yet)
 
+* Sticky icon titles are drawn similar to sticky window titles.
+
+* New option NoHotkeys to WindowList command.
+
+* The CursorStyle command has been improved.  It is now possible to restore
+  the default cursors.  Xpm images without a hot spot can be used as
+  cursors.
+
+* New styles BackingStore/BackingStoreOff and SaveUnder/SaveUnderOff.
+
 * Any changes in your configuration file are applied during a restart now.
   (This obsoletes the contrary entry for 2.3.6.)
 

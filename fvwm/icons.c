@@ -37,6 +37,7 @@
 #include <X11/xpm.h>
 #endif /* XPM */
 
+#include <stdio.h>
 #include "fvwm.h"
 #include "cursor.h"
 #include "functions.h"
@@ -117,9 +118,9 @@ void CreateIconWindow(FvwmWindow *tmp_win, int def_x, int def_y)
   /* figure out the icon window size */
   if (!(HAS_NO_ICON_TITLE(tmp_win))||(tmp_win->icon_p_height == 0))
   {
-    tmp_win->icon_t_width = XTextWidth(Scr.IconFont.font,
-				       tmp_win->icon_name,
-				       strlen(tmp_win->icon_name));
+    tmp_win->icon_t_width =
+      XTextWidth(Scr.IconFont.font, tmp_win->icon_name,
+		 strlen(tmp_win->icon_name));
     tmp_win->icon_w_height = ICON_HEIGHT;
   }
   else
@@ -315,7 +316,9 @@ void DrawIconWindow(FvwmWindow *tmp_win)
     if (IS_ICON_ENTERED(tmp_win))
     {
       /* resize the icon name window */
-      tmp_win->icon_w_width = tmp_win->icon_t_width+6;
+      tmp_win->icon_w_width = tmp_win->icon_t_width + 8;
+      if (IS_STICKY(tmp_win) || IS_ICON_STICKY(tmp_win))
+	tmp_win->icon_w_width += 10;
       if(tmp_win->icon_w_width < tmp_win->icon_p_width)
 	tmp_win->icon_w_width = tmp_win->icon_p_width;
       tmp_win->icon_xl_loc = tmp_win->icon_x_loc -
@@ -350,10 +353,23 @@ void DrawIconWindow(FvwmWindow *tmp_win)
                       tmp_win->icon_w_width,ICON_HEIGHT);
     XSetWindowBackground(dpy, tmp_win->icon_w, BackColor);
     XClearWindow(dpy,tmp_win->icon_w);
+
     /* text position */
     x = (tmp_win->icon_w_width - tmp_win->icon_t_width) / 2;
-    if(x < 3)
-      x = 3;
+    if(x < 5)
+      x = 5;
+    if ((IS_STICKY(tmp_win) || IS_ICON_STICKY(tmp_win)))
+    {
+      XRectangle r;
+
+      if (x < 7)
+	x = 7;
+      r.x = 0;
+      r.y = 0;
+      r.width = tmp_win->icon_w_width - 7;
+      r.height = ICON_HEIGHT;
+      XSetClipRectangles(dpy, Scr.ScratchGC3, 0, 0, &r, 1, Unsorted);
+    }
 #ifdef I18N_MB
     XmbDrawString (dpy, tmp_win->icon_w, Scr.IconFont.fontset,
 #else
@@ -364,6 +380,27 @@ void DrawIconWindow(FvwmWindow *tmp_win)
 		 - 3, tmp_win->icon_name, strlen(tmp_win->icon_name));
     RelieveRectangle(dpy, tmp_win->icon_w, 0, 0, tmp_win->icon_w_width - 1,
 		     ICON_HEIGHT - 1, Relief, Shadow, 2);
+    if (IS_STICKY(tmp_win) || IS_ICON_STICKY(tmp_win))
+    {
+      /* an odd number of lines every 4 pixels */
+      int num = (ICON_HEIGHT / 8) * 2 - 1;
+      int min = ICON_HEIGHT / 2 - num * 2 + 1;
+      int max = ICON_HEIGHT / 2 + num * 2 - 3;
+      int i;
+      int stipple_w = x - 6;
+
+      if (stipple_w < 3)
+	stipple_w = 3;
+      for(i = min; i <= max; i += 4)
+      {
+	RelieveRectangle(
+	  dpy, tmp_win->icon_w, 2, i, stipple_w, 1, Shadow, Relief, 1);
+	RelieveRectangle(
+	  dpy, tmp_win->icon_w, tmp_win->icon_w_width - 3 - stipple_w, i,
+	  stipple_w, 1, Shadow, Relief, 1);
+      }
+      XSetClipMask(dpy, Scr.ScratchGC3, None);
+    }
   }
 
   if(tmp_win->icon_pixmap_w != None)
@@ -1179,7 +1216,7 @@ void Iconify(FvwmWindow *tmp_win, int def_x, int def_y)
     tmp_win->icon_t_width =
       XTextWidth(Scr.IconFont.font,tmp_win->icon_name,
                  strlen(tmp_win->icon_name));
-    tmp_win->icon_p_width = tmp_win->icon_t_width+6;
+    tmp_win->icon_p_width = tmp_win->icon_t_width+6 + 4;
     tmp_win->icon_w_width = tmp_win->icon_p_width;
   }
 

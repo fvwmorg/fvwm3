@@ -85,6 +85,15 @@
  */
 
 #include "config.h"
+
+/*
+ * rplay includes:
+ */
+#ifdef HAVE_RPLAY
+#include <rplay.h>
+#undef M_ERROR /* Solaris fix */
+#endif
+
 #include <libs/Module.h>
 #include <libs/fvwmlib.h>
 
@@ -96,15 +105,6 @@
 #include <sys/wait.h>
 #include <sys/time.h>
 #include <ctype.h>
-
-/*
- * rplay includes:
- */
-#ifdef HAVE_RPLAY
-#include <rplay.h>
-#undef M_ERROR /* Solaris fix */
-#endif
-
 
 #ifdef DEBUG
 #define INFO(x) fprintf(stderr,x)
