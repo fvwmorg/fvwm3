@@ -1185,7 +1185,6 @@ void SwitchToDesk(int Desk)
 
 void SwitchToDeskAndPage(int Desk, XEvent *Event)
 {
-#ifndef NON_VIRTUAL
   char command[256];
 
   if (Scr.CurrentDesk != (Desk+desk1))
@@ -1214,14 +1213,12 @@ void SwitchToDeskAndPage(int Desk, XEvent *Event)
 	      (desk_h*Scr.MyDisplayHeight));
       SendInfo(fd,command,0);
     }
-#endif
   Wait = 1;
 }
 
 void IconSwitchPage(XEvent *Event)
 {
-#ifndef NON_VIRTUAL
-  char command[256];
+  char command[34];
 
   sprintf(command,"GotoPage %d %d\n",
 	  Event->xbutton.x*(Scr.VxMax+Scr.MyDisplayWidth)/
@@ -1229,7 +1226,6 @@ void IconSwitchPage(XEvent *Event)
 	  Event->xbutton.y*(Scr.VyMax+Scr.MyDisplayHeight)/
 	  (icon_h*Scr.MyDisplayHeight));
   SendInfo(fd,command,0);
-#endif
   Wait = 1;
 }
 
@@ -1512,7 +1508,6 @@ void Hilight(PagerWindow *t, int on)
 /* Use Desk == -1 to scroll the icon window */
 void Scroll(int window_w, int window_h, int x, int y, int Desk)
 {
-#ifndef NON_VIRTUAL
   char command[256];
   int sx, sy;
   if(Wait == 0)
@@ -1554,7 +1549,6 @@ void Scroll(int window_w, int window_h, int x, int y, int Desk)
       SendInfo(fd,command,0);
       Wait = 1;
     }
-#endif
 }
 
 void MoveWindow(XEvent *Event)
@@ -1767,32 +1761,9 @@ void MoveWindow(XEvent *Event)
           XSync(dpy,0);
           usleep(5000);
           XSync(dpy,0);
-	  if(IS_ICONIFIED(t))
-            {
-/*
-    RBW - reverting to old code for 2.2...
-    The new handling causes an unwanted viewport change whenever Button2
-    is used; the old handling causes focus to be sent to No Input windows
-    regardless of the Lenience setting. After 2.2 we will revisit this issue.
-    I suspect it will involve expanding the module message to include wmhints
-    and such.
-*/
-#if 0
-            SendInfo(fd, "Silent FlipFocus", t->icon_w);
-#else
-            XSetInputFocus (dpy, t->icon_w, RevertToParent,
-              Event->xbutton.time);
-#endif
-            }
-	  else
-            {
-#if 0
-	    SendInfo(fd, "Silent FlipFocus", t->w);
-#else
-            XSetInputFocus (dpy, t->w, RevertToParent,
-              Event->xbutton.time);
-#endif
-            }
+
+	  SendInfo(fd, "Silent Focus NoWarp",
+		   IS_ICONIFIED(t) ? t->icon_w : t->w);
 	}
     }
   if (is_transient)
@@ -2096,10 +2067,7 @@ void IconMoveWindow(XEvent *Event,PagerWindow *t)
 			    x, y, &x1, &y1, &dumwin);
       XUngrabPointer(dpy,CurrentTime);
       XSync(dpy,0);
-      if(IS_ICONIFIED(t))
-	SendInfo(fd,"Move",t->icon_w);
-      else
-	SendInfo(fd,"Move",t->w);
+      SendInfo(fd, "Silent Move", IS_ICONIFIED(t) ? t->icon_w : t->w);
     }
   else
     {
@@ -2133,31 +2101,9 @@ void IconMoveWindow(XEvent *Event,PagerWindow *t)
 	  XSync(dpy,0);
 	}
       else
-	{
-	  MoveResizePagerView(t);
-	}
-      SendInfo(fd,"Raise",t->w);
-
-      if(IS_ICONIFIED(t))
-        {
-/*
-    RBW - reverting to old code for 2.2...temporarily. See note above, in
-    MoveWindow.
-*/
-#if 0
-          SendInfo(fd, "Silent FlipFocus", t->icon_w);
-#else
-          XSetInputFocus (dpy, t->icon_w, RevertToParent, Event->xbutton.time);
-#endif
-        }
-      else
-        {
-#if 0
-          SendInfo(fd, "Silent FlipFocus", t->w);
-#else
-          XSetInputFocus (dpy, t->w, RevertToParent, Event->xbutton.time);
-#endif
-        }
+	MoveResizePagerView(t);
+      SendInfo(fd, "Silent Raise",t->w);
+      SendInfo(fd, "Silent Focus NoWarp", IS_ICONIFIED(t) ? t->icon_w : t->w);
     }
   if (is_transient)
     {

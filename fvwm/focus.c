@@ -45,7 +45,8 @@ static Bool lastFocusType;
  * Sets the input focus to the indicated window.
  *
  **********************************************************************/
-void SetFocus(Window w, FvwmWindow *Fw, Bool FocusByMouse)
+static void DoSetFocus(Window w, FvwmWindow *Fw, Bool FocusByMouse,
+		       Bool NoWarp)
 {
   int i;
   extern Time lastTimestamp;
@@ -61,19 +62,21 @@ void SetFocus(Window w, FvwmWindow *Fw, Bool FocusByMouse)
     if (FocusByMouse) /* pluck window from list and deposit at top */
     {
       /* remove Fw from list */
-      if (Fw->prev) Fw->prev->next = Fw->next;
-      if (Fw->next) Fw->next->prev = Fw->prev;
+      if (Fw->prev)
+	Fw->prev->next = Fw->next;
+      if (Fw->next)
+	Fw->next->prev = Fw->prev;
 
       /* insert Fw at start */
       Fw->next = Scr.FvwmRoot.next;
-      if (Scr.FvwmRoot.next) Scr.FvwmRoot.next->prev = Fw;
+      if (Scr.FvwmRoot.next)
+	Scr.FvwmRoot.next->prev = Fw;
       Scr.FvwmRoot.next = Fw;
       Fw->prev = &Scr.FvwmRoot;
     }
     else
     {
       /* move the windowlist around so that Fw is at the top */
-
       FvwmWindow *tmp_win;
 
       /* find the window on the windowlist */
@@ -130,7 +133,7 @@ void SetFocus(Window w, FvwmWindow *Fw, Bool FocusByMouse)
 	}
     }
 
-  if((Fw != NULL)&&(!IsWindowOnThisPage(Fw)))
+  if((Fw != NULL)&&(!IsWindowOnThisPage(Fw))&&(!NoWarp))
     {
       Fw = NULL;
       w = Scr.NoFocusWin;
@@ -211,73 +214,60 @@ void SetFocus(Window w, FvwmWindow *Fw, Bool FocusByMouse)
 
 }
 
+void SetFocus(Window w, FvwmWindow *Fw, Bool FocusByMouse)
+{
+  DoSetFocus(w, Fw, FocusByMouse, False);
+}
+
 /**************************************************************************
  *
  * Moves focus to specified window
  *
  *************************************************************************/
-void FocusOn(FvwmWindow *t,Bool FocusByMouse)
+void FocusOn(FvwmWindow *t, Bool FocusByMouse, char *action)
 {
   int dx,dy;
   int cx,cy;
-#if 0
-  /* not used anymore (see below) */
-  int x,y;
-#endif
+  Bool NoWarp;
 
   if(t == NULL || HAS_NEVER_FOCUS(t))
     return;
 
-  if(t->Desk != Scr.CurrentDesk)
+  if (!(NoWarp = StrEquals(PeekToken(action, NULL), "NoWarp")))
   {
-    changeDesks(t->Desk);
+    if(t->Desk != Scr.CurrentDesk)
+    {
+      changeDesks(t->Desk);
+    }
+
+    if(IS_ICONIFIED(t))
+    {
+      cx = t->icon_xl_loc + t->icon_w_width/2;
+      cy = t->icon_y_loc + t->icon_p_height + ICON_HEIGHT/2;
+    }
+    else
+    {
+      cx = t->frame_x + t->frame_width/2;
+      cy = t->frame_y + t->frame_height/2;
+    }
+
+    dx = (cx + Scr.Vx)/Scr.MyDisplayWidth*Scr.MyDisplayWidth;
+    dy = (cy +Scr.Vy)/Scr.MyDisplayHeight*Scr.MyDisplayHeight;
+
+    MoveViewport(dx,dy,True);
+
+    /* If the window is still not visible, make it visible! */
+    if(((t->frame_x + t->frame_height)< 0)||(t->frame_y + t->frame_width < 0)||
+       (t->frame_x >Scr.MyDisplayWidth)||(t->frame_y>Scr.MyDisplayHeight))
+    {
+      SetupFrame(t,0,0,t->frame_width, t->frame_height,False,False);
+      if(HAS_MOUSE_FOCUS(t) || HAS_SLOPPY_FOCUS(t))
+	XWarpPointer(dpy, None, Scr.Root, 0, 0, 0, 0, 2,2);
+    }
   }
 
-  if(IS_ICONIFIED(t))
-  {
-    cx = t->icon_xl_loc + t->icon_w_width/2;
-    cy = t->icon_y_loc + t->icon_p_height + ICON_HEIGHT/2;
-  }
-  else
-  {
-    cx = t->frame_x + t->frame_width/2;
-    cy = t->frame_y + t->frame_height/2;
-  }
-
-  dx = (cx + Scr.Vx)/Scr.MyDisplayWidth*Scr.MyDisplayWidth;
-  dy = (cy +Scr.Vy)/Scr.MyDisplayHeight*Scr.MyDisplayHeight;
-
-  MoveViewport(dx,dy,True);
-
-#if 0
-  /* x and y not used anymore (see below) */
-  if(IS_ICONIFIED(t))
-  {
-    x = t->icon_xl_loc + t->icon_w_width/2;
-    y = t->icon_y_loc + t->icon_p_height + ICON_HEIGHT/2;
-  }
-  else
-  {
-    x = t->frame_x;
-    y = t->frame_y;
-  }
-  /* don't want to warp the pointer by default anymore */
-  if(!(t->flags & ClickToFocus))
-    XWarpPointer(dpy, None, Scr.Root, 0, 0, 0, 0, x+2,y+2);
-  /* don't want to raise anymore either */
-  RaiseWindow(t);
-#endif /* 0 */
-
-  /* If the window is still not visible, make it visible! */
-  if(((t->frame_x + t->frame_height)< 0)||(t->frame_y + t->frame_width < 0)||
-     (t->frame_x >Scr.MyDisplayWidth)||(t->frame_y>Scr.MyDisplayHeight))
-  {
-    SetupFrame(t,0,0,t->frame_width, t->frame_height,False,False);
-    if(HAS_MOUSE_FOCUS(t) || HAS_SLOPPY_FOCUS(t))
-      XWarpPointer(dpy, None, Scr.Root, 0, 0, 0, 0, 2,2);
-  }
   UngrabEm();
-  SetFocus(t->w,t,FocusByMouse);
+  DoSetFocus(t->w, t, FocusByMouse, NoWarp);
 }
 
 /**************************************************************************
@@ -353,7 +343,7 @@ void flip_focus_func(F_CMD_ARGS)
     return;
 
   /* Reorder the window list */
-  FocusOn(tmp_win,TRUE);
+  FocusOn(tmp_win, TRUE, action);
 }
 
 void focus_func(F_CMD_ARGS)
@@ -361,7 +351,7 @@ void focus_func(F_CMD_ARGS)
   if (DeferExecution(eventp,&w,&tmp_win,&context,SELECT,ButtonRelease))
     return;
 
-  FocusOn(tmp_win,FALSE);
+  FocusOn(tmp_win, FALSE, action);
 }
 
 void warp_func(F_CMD_ARGS)

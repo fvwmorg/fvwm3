@@ -1,7 +1,10 @@
-Changes in alpha release 2.3.0 (February 1999)
+Changes in alpha release 2.3.1 (April 1999)
+
+* The NoWarp option to the Focus command allow focusing window on a different
+  page without switching to that page.
 
 * Fvwm raises icon titles when the pointer is over the icon.
- 
+
 * The cursors used for the pan frames at the edge of the screen can be changed.
 
 * StaysOnBottom style.
@@ -18,6 +21,8 @@ Changes in alpha release 2.3.0 (February 1999)
 
 * GrabFocusTransient is a new style that does the same as GrabFocus, but only
   for transient windows.
+
+Changes in alpha release 2.3.0 (February 1999)
 
 * New command: RecaptureWindow captures a single window.
 

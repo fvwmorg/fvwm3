@@ -476,6 +476,12 @@ void SetTransparentBackground(button_info *ub,int w,int h)
 XErrorHandler oldErrorHandler=NULL;
 int myErrorHandler(Display *dpy, XErrorEvent *event)
 {
+  /* some errors are acceptable, mostly they're caused by
+   * trying to update a lost  window */
+  if((event->error_code == BadWindow)||(event->request_code == X_GetGeometry)||
+     (event->error_code==BadDrawable)||(event->request_code==X_GrabButton))
+    return 0 ;
+
   fprintf(stderr,"%s: Cause of next X Error.\n",MyName);
   /* return (*oldErrorHandler)(dpy,event); */
   return 0;

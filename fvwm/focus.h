@@ -17,7 +17,7 @@
 #define _FOCUS_
 
 void SetFocus(Window, FvwmWindow *, Bool FocusByMouse);
-void FocusOn(FvwmWindow *t, Bool FocusByMouse);
+void FocusOn(FvwmWindow *t, Bool FocusByMouse, char *action);
 void WarpOn(FvwmWindow *t,int warp_x, int x_unit, int warp_y, int y_unit);
 void flip_focus_func(F_CMD_ARGS);
 void focus_func(F_CMD_ARGS);

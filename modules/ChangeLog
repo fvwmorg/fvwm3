@@ -1,3 +1,16 @@
+1999-04-20  Dominik Vogt  <dominik_vogt@gmx.de>
+
+	* FvwmButtons/FvwmButtons.c (myErrorHandler): suppress some error
+	messages
+
+	* FvwmPager/x_pager.c: removed NON_VIRTUAL option
+	(IconSwitchPage): reduced memory usage
+
+	* FvwmPager/x_pager.c (MoveWindow):
+	(IconMoveWindow): reactivated bugfix for no-focus windows. It works now
+	using the NoWarp option to 'Focus'
+	Fixed some SendInfo commands missing the 'Silent' prefix
+
 1999-04-19  Dominik Vogt  <dominik_vogt@gmx.de>
 
 	* FvwmPager/x_pager.c (DispatchEvent): reindented some code

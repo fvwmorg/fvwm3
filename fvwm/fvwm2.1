@@ -113,7 +113,7 @@ a window in a lower layer will never obscure a window in a higher layer.
 The layer of a window can be changed by using the Layer built-in command.
 The concept of layers is a generalization of the StaysOnTop flag of older
 fvwm versions. The StaysOnTop and StaysPut style options are now implemented
-by putting the windows in suitable layers and the previously missing 
+by putting the windows in suitable layers and the previously missing
 StaysOnBottom style option has been added.
 
 "Sticky" windows are windows which transcend the virtual desktop by
@@ -1412,8 +1412,8 @@ recommended for use with the \fIDirection\fP command and in the function
 invoked from \fIWindowList\fP.
 
 
-.IP "Focus [ \fIfixed\fP ]"
-Sets the keyboard focus to the selected window. If the \fIfixed\fP
+.IP "Focus [ \fINoWarp\fP ]"
+Sets the keyboard focus to the selected window. If the \fINoWarp\fP
 argument is given, this is all it does. Otherwise it also moves the
 viewport or window as needed to make the selected window visible and
 raises the window if needed to make it visible.  Does not warp the pointer
@@ -1421,10 +1421,10 @@ into the selected window (see WarpToWindow function).  Does not de-iconify.
 This command does not alter the order of the windowlist, it rotates the
 windowlist around so that the target window is at the start.
 
-When the \fIfixed\fP argument is given, Focus cannot transfer the
+When the \fINoWarp\fP argument is given, Focus cannot transfer the
 keyboard focus to windows on other desks.
 
-.IP "Function \fI\FunctionName\\fP"
+.IP "Function \fIFunctionName\fP"
 Used to bind a previously defined function to a key or mouse button.
 
 The following example binds mouse button 1 to a function called
@@ -2670,7 +2670,7 @@ are given Class = "NoClass" and those that don't have a resource
 keywords BorderWidth, HandleWidth, NoIcon/Icon, MiniIcon, IconBox,
 IconGrid, IconFill,
 NoTitle/Title, NoHandles/Handles, WindowListSkip/WindowListHit,
-CirculateSkip/CirculateHit, Layer, StaysOnTop/StaysOnBottom/StaysPut, 
+CirculateSkip/CirculateHit, Layer, StaysOnTop/StaysOnBottom/StaysPut,
 Sticky/Slippery, StartIconic/StartNormal, Color, ForeColor, BackColor,
 StartsOnDesk/StartsOnPage/StartsAnyWhere, IconTitle/NoIconTitle,
 MWMButtons/FvwmButtons, MWMBorder/FvwmBorder, MWMDecor/NoDecorHint,
@@ -2701,12 +2701,12 @@ buttons to the sides and the client window of an undecorated window
 \fIIcon\fP takes an (optional) unquoted string argument which is the icon
 bitmap or pixmap to use. Icons specified this way override icons
 provided by the client in the WM_HINTS property. There is one exception
-to this rule, namely 
+to this rule, namely
 .EX
 Style * Icon unknown.xpm
 .EE
-doesn't force the unknown.xpm icon on every window, it just sets the 
-default icon like the DefaultIcon command. If you really want all 
+doesn't force the unknown.xpm icon on every window, it just sets the
+default icon like the DefaultIcon command. If you really want all
 windows to have the same icon, you can use
 .EX
 Style ** Icon unknown.xpm

@@ -1,3 +1,13 @@
+1999-04-20  Dominik Vogt  <dominik_vogt@gmx.de>
+
+	* fvwm/icons.c (DeIconify):
+	* fvwm/focus.c (FocusOn):
+	(flip_focus_func):
+	(focus_func):
+	(SetFocus):
+	(DoSetFocus): Focus and FlipFocus commands take 'NoWarp' as parameter
+	to prevent warping to the desk/page the window is on
+
 1999-04-19  Dominik Vogt  <dominik_vogt@gmx.de>
 
 	* fvwm/icons.c (AutoPlaceIcon):
