@@ -532,10 +532,6 @@ void Done(int restart, char *command)
 {
 	const char *exitFuncName;
 
-	/* XFree freeze hack */
-	XUngrabPointer(dpy, CurrentTime);
-	XUngrabKeyboard(dpy, CurrentTime);
-	XUngrabServer(dpy);
 	if (!restart)
 	{
 		MoveViewport(0,0,False);
@@ -556,6 +552,10 @@ void Done(int restart, char *command)
 		exc_destroy_context(exc);
 		free(action);
 	}
+	/* XFree freeze hack */
+	XUngrabPointer(dpy, CurrentTime);
+	XUngrabKeyboard(dpy, CurrentTime);
+	XUngrabServer(dpy);
 	if (!restart)
 	{
 		Reborder();
@@ -1496,10 +1496,17 @@ void StartupStuff(void)
 		Scr.ClickTime = -Scr.ClickTime;
 	}
 
-	/* It is safe to Ungrab here: if not and one of the init functions not
-	 * finish we've got a complete freeze ! */
+# if 0
+	/* It is safe to ungrab here: if not, and one of the init functions
+	 * does not finish, we've got a complete freeze! */
+	/* DV (15-Jul-2004): No, it is not safe to ungrab.  If another
+	 * application grabs the pointer before execute_function gets it, the
+	 * start functions are not executed.  And the pointer is grabbed
+	 * during function execution anyway, so releasing it here buys us
+	 * nothing. */
 	UngrabEm(GRAB_STARTUP);
 	XUngrabPointer(dpy, CurrentTime);
+#endif
 
 	/* migo (04-Sep-1999): execute StartFunction */
 	if (functions_is_complex_function(startFuncName))
@@ -1519,11 +1526,12 @@ void StartupStuff(void)
 		execute_function(NULL, exc, action, 0);
 		free(action);
 	}
+	/* see comment above */
+	UngrabEm(GRAB_STARTUP);
+	XUngrabPointer(dpy, CurrentTime);
 
-	/*
-	  This should be done after the initialization is finished, since
-	  it directly changes the global state.
-	*/
+	/* This should be done after the initialization is finished, since
+	 * it directly changes the global state. */
 	LoadGlobalState(state_filename);
 
 	/*

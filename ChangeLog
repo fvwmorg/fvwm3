@@ -1,5 +1,12 @@
 2004-07-15  Dominik Vogt  <dominik.vogt@gmx.de>
 
+	* fvwm/fvwm.c (StartupStuff):
+	do not ungrab the pointer while the startup functions execute
+	(Done):
+	ungrab the pointer only after executing the RestartFunction or
+	ExitFunciton.  Otherwise these functions may not be executed if some
+	other application grabs the pointer.
+
 	* fvwm/fvwm.h:
 	* fvwm/conditional.c (CreateConditionMask):
 	renamed CurrentGlobbalPageAnyDesk to CurrentGlobalPageAnyDesk
