@@ -1,5 +1,17 @@
 Changes in alpha release 2.3.0 (February 1999)
 
+* New command XORPixmap for increased visibility of the rubber band lines and
+  general spangly-ness.
+  
+* New start up sequence: all start up scripts etc. are read before the initial
+  capture so windows styles will be correct, no need for a recapture.
+  
+* EdgeThickness can resize/hide/show panframes in mid function
+
+* Support for transparent Eterms etc. during opaque/animated moves
+
+* FvwmPager tracks windows during opaque/animated moves.
+
 * Session management. Fvwm talks to a session manager 
   and saves and restores its state.
 
@@ -18,6 +30,7 @@ Changes in alpha release 2.3.0 (February 1999)
   You can control vertical spacing on text so spacing is OK for help panels.
   A button can execute a synchronous shell command.
 
+>>>>>>> 1.36
 Changes in official release 2.2 (February 1999)
 
 Changes in alpha release 2.1.13 (February 1999)

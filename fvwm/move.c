@@ -82,9 +82,8 @@ void AnimatedMoveAnyWindow(FvwmWindow *tmp_win, Window w, int startX, int startY
       XWarpPointer(dpy,None,Scr.Root,0,0,0,0,
 		   pointerX,pointerY);
     }
-#ifndef NO_ETERM_SUPPORT
-    if (tmp_win)
-    { /* send configure notify event for Eterm */
+    if (tmp_win && !(tmp_win->buttons & WSHADE))
+    { /* send configure notify event for windows that care about their location */
       XEvent client_event;
       client_event.type = ConfigureNotify;
       client_event.xconfigure.display = dpy;
@@ -105,7 +104,6 @@ void AnimatedMoveAnyWindow(FvwmWindow *tmp_win, Window w, int startX, int startY
                client_event.xconfigure.width,client_event.xconfigure.height);
 #endif
     }
-#endif /* NO_ETERM_SUPPORT */
     XFlush(dpy);
     if (tmp_win) {
       tmp_win->frame_x = currentX;
@@ -668,9 +666,8 @@ void moveLoop(FvwmWindow *tmp_win, int XOffset, int YOffset, int Width,
 	    MoveOutline(Scr.Root, xl, yt, Width - 1 + 2 * bw, Height - 1 + 2 * bw);
 
 	}
-#ifndef NO_ETERM_SUPPORT
-      if (opaque_move)
-        { /* send configure notify event for Eterm */
+      if (opaque_move && !(tmp_win->buttons & WSHADE))
+        { /* send configure notify event for windows that care about their location */
           XEvent client_event;
           client_event.type = ConfigureNotify;
           client_event.xconfigure.display = dpy;
@@ -691,7 +688,6 @@ void moveLoop(FvwmWindow *tmp_win, int XOffset, int YOffset, int Width,
                    client_event.xconfigure.width,client_event.xconfigure.height);
 #endif
 	}
-#endif /* NO_ETERM_SUPPORT */
       if(opaque_move) { /* no point in doing this if server grabbed */
         tmp_win_copy.frame_x = xl;
         tmp_win_copy.frame_y = yt;
