@@ -23,6 +23,8 @@ New module FvwmWindowLister.
 
 Marcus Lundblad:
 Vector button offsets patch.
+New styles restricting window operations (Close,Maximize,Iconify).
+Implemented support for combining charaters.
 
 Jason Weber:
 FvwmProxy module.
