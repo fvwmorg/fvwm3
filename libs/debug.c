@@ -44,14 +44,84 @@ int f_db_level = 0;
 
 #ifdef DEBUG
 
+/* Global variable filled by callers of the DB library.  */
 struct f_db_info f_db_info;
+
+static int is_db_initialized = 0;
+static FILE *f_db_file;
+
+/* Initializes the DB library.  You can't make any DB calls until this
+ * function has been called.
+ */
+static void
+f_db_init()
+{
+  const char *evp;
+  int err = 0;
+
+  f_db_file = stderr;
+
+  if ((evp = getenv(FVWM_DB_FILE)) != NULL) {
+    FILE *fp;
+
+    if ((fp = fopen(evp, "w")) == NULL)
+      err = errno;
+    else
+      f_db_file = fp;
+  }
+
+#ifdef HAVE_SETVBUF
+# ifdef SETVBUF_REVERSED
+  setvbuf(f_db_file, NULL, BUFSIZ, _IOLBF);
+# else
+  setvbuf(f_db_file, NULL, _IOLBF, BUFSIZ);
+# endif
+#endif
+
+  if (err)
+    fprintf(stderr, "FVWM f_db_init(): %s\n", strerror(err));
+
+  if ((evp = getenv(FVWM_DB_LEVEL)) != NULL) {
+    int lev;
+
+    if (sscanf(evp, "%d", &lev) != 1)
+      fprintf(stderr,
+              "FVWM f_db_init(): Invalid value for " FVWM_DB_LEVEL ": %s\n",
+              evp);
+    else
+      f_db_level = lev;
+  }
+
+  is_db_initialized = 1;
+}
 
 void
 f_db_print(const char *fmt, ...)
 {
   va_list ap;
 
-  fprintf(stderr, "%s:%ld: ", f_db_info.filenm, f_db_info.lineno);
+  if (!is_db_initialized)
+    f_db_init();
+
+  if (f_db_info.filenm) {
+    fputs(f_db_info.filenm, stderr);
+    fputc(':', stderr);
+  }
+
+  if (f_db_info.lineno < 0)
+    fprintf(stderr, "%ld:", f_db_info.lineno);
+
+  if (f_db_info.module) {
+    fputs(f_db_info.module, stderr);
+    fputc(':', stderr);
+  }
+
+  if (f_db_info.funcnm)
+    fputs(f_db_info.funcnm, stderr);
+    fputc(':', stderr);
+  }
+
+  fputc(' ', stderr);
 
   va_start(ap, fmt);
   VA_PRINTF(stderr, fmt, ap);

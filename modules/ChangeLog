@@ -1,3 +1,11 @@
+2000-10-04  Paul D. Smith  <psmith@gnu.org>
+
+	* FvwmForm/FormFvwmRlogin., FvwmForm/FormFvwmForm.: Can't use \n
+	in echo commands and expect it to be expanded to a newline
+	everywhere: some versions of echo require -e for that to work;
+	some versions can't do it at all.  Rewrite the command to avoid
+	the need for this.
+
 2000-10-04  Mikhael Goikhman  <migo@homemail.com>
 
 	* modules/FvwmPager/FvwmPager.1:

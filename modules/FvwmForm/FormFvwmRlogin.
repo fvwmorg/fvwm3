@@ -16,13 +16,13 @@ DestroyModuleConfig         FormFvwmRlogin.*
 # Before saving the data, remove any previously saved data:
 *FormFvwmRlogin.Command DestroyModuleConfig FvwmRloginDefault*
 # The "Login" button causes a login and a saving of the current data:
-*FormFvwmRlogin.Command !/bin/echo "# This file last created by\
- FormFvwmRlogin on: `/bin/date`.\n\
-*FvwmRloginDefaultHostName $(HostName)\n\
-*FvwmRloginDefaultUserName $(UserName)\n\
-*FvwmRloginDefaultDefault $(Default?on)\n\
-*FvwmRloginDefaultCustom $(Custom?on)"\
-  > ${FVWM_USERDIR}/.FvwmRlogin
+*FormFvwmRlogin.Command !(/bin/echo "# This file last created by\
+ FormFvwmRlogin on: `/bin/date`."; /bin/echo \
+'*FvwmRloginDefaultHostName $(HostName)'; /bin/echo \
+'*FvwmRloginDefaultUserName $(UserName)'; /bin/echo \
+'*FvwmRloginDefaultDefault $(Default?on)'; /bin/echo \
+'*FvwmRloginDefaultCustom $(Custom?on)'\
+) > ${FVWM_USERDIR}/.FvwmRlogin
 *FormFvwmRlogin.Button       restart "Clear"
 *FormFvwmRlogin.Button       quit    "Cancel"        ^[
 *FormFvwmRlogin.Command      Nop
