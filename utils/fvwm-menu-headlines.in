@@ -58,7 +58,9 @@ local (%smonthHash, %lmonthHash) = ();
 foreach (0 .. 11) { $smonthHash{$smonths[$_]} = $_; $lmonthHash{$lmonths[$_]} = $_; }
 
 my $home  = $ENV{'HOME'} || '/tmp';
-my $workHome = "$home/.fvwm-menu-headlines";
+my $fvwmUserDir = $ENV{'FVWM_USERDIR'} || "$home/.fvwm";
+$fvwmUserDir = $home unless -d $fvwmUserDir;
+my $workHome = "$fvwmUserDir/.fvwm-menu-headlines";
 
 require "$workHome/extension.pl" if -r "$workHome/extension.pl";
 
@@ -69,6 +71,7 @@ my $name  = undef;
 my $title = undef;
 my $itemF = '%h\t(%[%Y-%m-%d %H:%M])';
 my $execF = q(netscape -remote 'openURL(%u, new-window)' || netscape '%u');
+my $commF = undef;
 my $iconT = '';
 my $iconI = '';
 my $iconH = '';
@@ -92,6 +95,7 @@ GetOptions(
 	"title=s"  => \$title,
 	"item=s"   => \$itemF,
 	"exec=s"   => \$execF,
+	"command=s"    => \$commF,
 	"icon-title=s" => \$iconT,
 	"icon-item=s"  => \$iconI,
 	"icon-home=s"  => \$iconH,
@@ -131,9 +135,11 @@ my $siteHost = $siteInfo->{$site}->{'host'};
 my $sitePath = $siteInfo->{$site}->{'path'};
 my $siteFunc = $siteInfo->{$site}->{'func'};
 
+$commF ||= "Exec $execF";
+
 $title =~ s/\\t/\t/g;
 $itemF =~ s/\\t/\t/g;
-$execF =~ s/\\t/\t/g;
+$commF =~ s/\\t/\t/g;
 
 if ($wmIcons) {
 	$iconT ||= "";
@@ -168,8 +174,8 @@ $content .= qq(DestroyMenu $name\n);
 $content .= qq(AddToMenu $name "$iconTStr$title" Title\n);
 
 if (defined $frontpage && $frontpage !~ /^b/) {
-	my $exec = expandAllWidthSpecifiers($execF, {'u' => "http://$siteHost/"});
-	$content .= qq(+ "$iconHStr$siteName Frontpage" Exec $exec\n);
+	my $cmd = expandAllWidthSpecifiers($commF, {'u' => "http://$siteHost/"});
+	$content .= qq(+ "$iconHStr$siteName Frontpage" $cmd\n);
 	$content .= qq(+ "" Nop\n);
 }
 
@@ -206,14 +212,14 @@ close(SOCK) || dieSys("Error closing socket");
 
 foreach (@$entries) {
 	$content .= qq(+ "$iconIStr) .
-		expandAllWidthSpecifiers($itemF, $_) . '" Exec ' .
-		expandAllWidthSpecifiers($execF, $_) . "\n";
+		expandAllWidthSpecifiers($itemF, $_) . '" ' .
+		expandAllWidthSpecifiers($commF, $_) . "\n";
 }
 
 if (defined $frontpage && $frontpage =~ /^b/) {
-	my $exec = expandAllWidthSpecifiers($execF, {'u' => "http://$siteHost/"});
+	my $cmd = expandAllWidthSpecifiers($commF, {'u' => "http://$siteHost/"});
 	$content .= qq(+ "" Nop\n);
-	$content .= qq(+ "$iconHStr$siteName Frontpage" Exec $exec\n);
+	$content .= qq(+ "$iconHStr$siteName Frontpage" $cmd\n);
 }
 
 if (defined $menuFile) {
@@ -438,8 +444,9 @@ sub showHelp {
 	print "\t--site=NAME      headlines site, default is $site\n";
 	print "\t--name=NAME      menu name,  default is '$name'\n";
 	print "\t--title=NAME     menu title, default is '$title'\n";
-	print "\t--item=NAME      menu item format, default is '$itemF'\n";
-	print "\t--exec=NAME      action, default is {$execF}\n";
+	print "\t--item=FORMAT    menu item format, default is '$itemF'\n";
+	print "\t--exec=FORMAT    exec command, default is {$execF}\n";
+	print "\t--command=FORMAT fvwm command, default is no\n";
 	print "\t--icon-title=XPM menu title icon, default is no\n";
 	print "\t--icon-item=XPM  menu item  icon, default is no\n";
 	print "\t--icon-home=XPM  menu home  icon, default is no\n";
@@ -480,8 +487,9 @@ B<fvwm-menu-headlines>
 [ B<--site>|B<-s> site ]
 [ B<--name>|B<-n> name ]
 [ B<--title>|B<-t> title ]
-[ B<--item> name ]
-[ B<--exec>|B<-e> action ]
+[ B<--item> item ]
+[ B<--exec>|B<-e> exec-command ]
+[ B<--command>|B<-e> fvwm-command ]
 [ B<--icon-title> icon ]
 [ B<--icon-item> icon ]
 [ B<--icon-home> icon ]
@@ -536,6 +544,12 @@ with "...", example: %*30x. Both can be combined: %-10*-20x, this instructs to
 get only the 20 last characters, but if the length is less then 10 - to fill
 with up to 10 spaces on the right.
 
+B<--command> like B<--exec> above, but enables to specify any fvwm command,
+for example, "Function FuncFvwmShowURL '%u'" not only Exec.
+
+In fact, --exec="mozilla '%u'" is equivalent
+to --command="Exec mozilla '%u'"
+
 B<--icon-title>, B<--icon-item>, B<--icon-home> - define menu icon for
 title, regular item and home item respectively given in the following argument.
 Default is no menu icons (equivalent to an empty icon argument).
@@ -564,7 +578,8 @@ segfault.in (downloaded http://segfault.org/stories.txt) and saves output
 to segfault.menu (both files are in WORK_HOME):
   fvwm-menu-headlines --site segfault --fake --file
 
-WORK_HOME of this script is ~/.fvwm-menu-headlines. It is created if needed.
+WORK_HOME of this script is ~/.fvwm/.fvwm-menu-headlines.
+It is created if needed.
 
 Option parameters can be specified both using '=' and in the next argument.
 Short options are ok if not ambiguous: C<-h>, C<-t>; but be careful with

@@ -1,9 +1,16 @@
+2000-10-09  Mikhael Goikhman  <migo@homemail.com>
+
+	* fvwm-menu-directory.{in,1}:
+	* fvwm-menu-headlines.{in,1}:
+	added --command options, which enhance --exec ones;
+	use ~/.fvwm ($FVWM_USERDIR) for state files/dirs, not $HOME
+
 2000-10-08  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* xpmroot.c (SetRootWindow):
 	honour return code of XGetWindowAttributes()
 
-2000-09-04  Mikhael Goikhman  <migo@homemail.com>
+2000-10-04  Mikhael Goikhman  <migo@homemail.com>
 
 	* utils/fvwm-menu-desktop.in:
 	use a non-conflicting module syntax; be more tolerant to read
