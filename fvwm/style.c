@@ -1988,6 +1988,20 @@ void parse_and_set_window_style(char *action, window_style *ptmpstyle)
 	  SMSET_DO_RAISE_MOUSE_FOCUS_CLICK(*ptmpstyle, 1);
 	  SCSET_DO_RAISE_MOUSE_FOCUS_CLICK(*ptmpstyle, 1);
         }
+        else if (StrEquals(token, "MouseFocusClickIgnoreMotion"))
+        {
+	  found = True;
+	  SFSET_DO_IGNORE_MOUSE_FOCUS_CLICK_MOTION(*ptmpstyle, 1);
+	  SMSET_DO_IGNORE_MOUSE_FOCUS_CLICK_MOTION(*ptmpstyle, 1);
+	  SCSET_DO_IGNORE_MOUSE_FOCUS_CLICK_MOTION(*ptmpstyle, 1);
+        }
+        else if (StrEquals(token, "MouseFocusClickIgnoreMotionOff"))
+        {
+	  found = True;
+	  SFSET_DO_IGNORE_MOUSE_FOCUS_CLICK_MOTION(*ptmpstyle, 0);
+	  SMSET_DO_IGNORE_MOUSE_FOCUS_CLICK_MOTION(*ptmpstyle, 1);
+	  SCSET_DO_IGNORE_MOUSE_FOCUS_CLICK_MOTION(*ptmpstyle, 1);
+        }
         else if (StrEquals(token, "MAXWINDOWSIZE"))
 	{
 	  int val1;

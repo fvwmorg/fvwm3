@@ -1674,14 +1674,70 @@ void HandleButtonPress(void)
     if (!is_on_top_of_layer(Tmp_win) &&
         MaskUsedModifiers(Event.xbutton.state) == 0)
     {
-      RaiseWindow(Tmp_win);
-      focus_grab_buttons(Tmp_win, True);
-      Scr.Ungrabbed = tmp;
-      XSync(dpy,0);
-      XAllowEvents(dpy,ReplayPointer,CurrentTime);
-      XSync(dpy,0);
-      UngrabEm(GRAB_PASSIVE);
-      return;
+      if (!DO_IGNORE_MOUSE_FOCUS_CLICK_MOTION(Tmp_win))
+      {
+	/* raise immediately and pass the click to the application */
+	RaiseWindow(Tmp_win);
+	focus_grab_buttons(Tmp_win, True);
+	Scr.Ungrabbed = tmp;
+	XSync(dpy,0);
+	XAllowEvents(dpy,ReplayPointer,CurrentTime);
+	XSync(dpy,0);
+	UngrabEm(GRAB_PASSIVE);
+	return;
+      }
+      else
+      {
+	Bool is_click = False;
+	Bool is_done = False;
+	int x0 = Event.xbutton.x_root;
+	int y0 = Event.xbutton.y_root;
+	int x = Event.xbutton.x_root;
+	int y = Event.xbutton.y_root;
+	unsigned int mask;
+
+	/* pass further events to the application and check if a button release
+	 * or motion event occurs next */
+	XAllowEvents(dpy, ReplayPointer, CurrentTime);
+	/* query the pointer to do this. we can't check for events here since
+	 * the events are still needed if the pointer moves */
+	while (!is_done && XQueryPointer(
+		       dpy, Scr.Root, &JunkRoot, &JunkChild,
+		       &JunkX, &JunkY, &x, &y, &mask) == True)
+	{
+	  if ((mask & DEFAULT_ALL_BUTTONS_MASK) == 0)
+	  {
+	    /* all buttons are released */
+	    is_done = True;
+	    is_click = True;
+	  }
+	  else if (abs(x - x0) >= Scr.MoveThreshold ||
+		   abs(y - y0) >= Scr.MoveThreshold)
+	  {
+	    /* the pointer has moved */
+	    is_done = True;
+	    is_click = False;
+	  }
+	  else
+	  {
+	    usleep(20000);
+	  }
+	}
+	if (is_done == False || is_click == True)
+	{
+	  /* raise the window and exit */
+	  RaiseWindow(Tmp_win);
+	  focus_grab_buttons(Tmp_win, True);
+	  Scr.Ungrabbed = tmp;
+	  XSync(dpy,0);
+	  UngrabEm(GRAB_PASSIVE);
+	  return;
+	}
+	else
+	{
+	  /* the pointer was moved, process event normally */
+	}
+      }
     }
     focus_grab_buttons(Tmp_win, True);
     Scr.Ungrabbed = tmp;
@@ -1705,7 +1761,8 @@ void HandleButtonPress(void)
     if (Context == C_TITLE)
     {
       DrawDecorations(
-        Tmp_win, DRAW_TITLE, (Scr.Hilite == Tmp_win), True, PressedW, CLEAR_ALL);
+        Tmp_win, DRAW_TITLE, (Scr.Hilite == Tmp_win), True, PressedW,
+	CLEAR_ALL);
     }
     else if (Context & (C_LALL | C_RALL))
     {
@@ -2012,6 +2069,8 @@ void HandleEnterNotify(void)
     return;
   }
 
+  BroadcastPacket(
+    MX_ENTER_WINDOW, 3, Tmp_win->w, Tmp_win->frame, (unsigned long)Tmp_win);
   sf = get_focus_window();
   if (sf && Tmp_win != sf && HAS_MOUSE_FOCUS(sf))
   {
@@ -2142,6 +2201,13 @@ void HandleLeaveNotify(void)
     /* handle a subwindow cmap */
     LeaveSubWindowColormap(Event.xany.window);
   }
+  if (Tmp_win != NULL)
+  {
+    BroadcastPacket(
+      MX_LEAVE_WINDOW, 3, Tmp_win->w, Tmp_win->frame, (unsigned long)Tmp_win);
+  }
+
+  return;
 }
 
 

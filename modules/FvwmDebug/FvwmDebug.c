@@ -270,7 +270,7 @@ void process_message(unsigned long type, const unsigned long *body)
       fprintf(output,"icon name\n");
       list_window_name(body);
       break;
-    case M_VISIBLE_ICON_NAME:
+    case MX_VISIBLE_ICON_NAME:
       fprintf(output,"visible icon name\n");
       list_window_name(body);
       break;

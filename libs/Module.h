@@ -97,9 +97,24 @@ typedef struct {
 #define M_RESTACK            (1<<28)
 #define M_ADD_WINDOW         (1<<29)
 #define M_CONFIGURE_WINDOW   (1<<30)
-#define M_VISIBLE_ICON_NAME  (1<<31)
-#define MAX_MESSAGES         32
+#define M_EXTENDED_MSG       (1<<31)
+#define MAX_MESSAGES         31
+#define MAX_MSG_MASK         0x7fffffff
 
+/* to get more than the old maximum of 32 messages, the 32nd bit is reserved to
+ * mark another 31 messages that have this bit and another one set.
+ * When handling received messages, the message type can be compared to the
+ * MX_... macro.  When using one of the calls that accepts a message mask, a
+ * separate call has to be made that ors the MX_... macros.  The normal
+ * M_... and MX_... macros must *never* be or'ed in one of these operations'
+ */
+#define MX_VISIBLE_ICON_NAME      ((1<<0) | M_EXTENDED_MSG)
+#define MX_ENTER_WINDOW           ((1<<1) | M_EXTENDED_MSG)
+#define MX_LEAVE_WINDOW           ((1<<2) | M_EXTENDED_MSG)
+#define MAX_EXTENDED_MESSAGES     3
+#define MAX_XMSG_MASK             0x00000007
+
+#define MAX_TOTAL_MESSAGES   (MAX_MESSAGES + MAX_EXTENDED_MESSAGES)
 
 /**
  * Reads a single packet of info from FVWM.

@@ -84,7 +84,8 @@ static void SendConfigToModule(
  * Some modules request that module config commands be sent to them
  * as the commands are entered.  Send to modules that want it.
  */
-void  ModuleConfig(char *action) {
+void ModuleConfig(char *action)
+{
   int module, end;
   struct moduleInfoList *new_entry;
 
@@ -94,7 +95,8 @@ void  ModuleConfig(char *action) {
   new_entry = AddToModList(action);              /* save for config request */
   for (module = 0; module < npipes; module++) /* look at all possible pipes */
   {
-    if (PipeMask[module] & M_SENDCONFIG)    /* does module want config cmds */
+    if (is_message_selected(module, M_SENDCONFIG)) /* does module want config
+						    * cmds */
     {
       extern char **pipeName;
       char *name = pipeName[module];

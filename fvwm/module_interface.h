@@ -54,9 +54,8 @@ extern struct queue_buff_struct **pipeQueue;
 /* this is a bit long winded to allow MAX_MESSAGE to be 32 and not get an
  * integer overflow with (1 << MAX_MESSAGES) and even with
  * (1<<(MAX_MESSAGES-1)) - 1 */
-#define MAX_MASK             ( (((1<<(MAX_MESSAGES-2))-1) + \
-                                (1<<(MAX_MESSAGES-2)) + \
-                                (1<<(MAX_MESSAGES-1))) & ~(M_SENDCONFIG) )
+#define MAX_MASK   (MAX_MSG_MASK & ~(M_SENDCONFIG))
+#define MAX_XMASK  (MAX_XMSG_MASK)
 
 
 /*
@@ -99,5 +98,6 @@ void PositiveWrite(int module, unsigned long *ptr, int size);
 RETSIGTYPE DeadPipe(int nonsense);
 char *skipModuleAliasToken(const char *string);
 int executeModuleDesperate(F_CMD_ARGS);
+int is_message_selected(int module, unsigned long msg_mask);
 
 #endif /* MODULE_H */

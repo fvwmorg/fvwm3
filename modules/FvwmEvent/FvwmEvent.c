@@ -113,9 +113,9 @@
 #define INFO(x)
 #endif
 
-#define BUILTIN_STARTUP		MAX_MESSAGES
-#define BUILTIN_SHUTDOWN	MAX_MESSAGES+1
-#define BUILTIN_UNKNOWN		MAX_MESSAGES+2
+#define BUILTIN_STARTUP		(MAX_TOTAL_MESSAGES)
+#define BUILTIN_SHUTDOWN	(MAX_TOTAL_MESSAGES + 1)
+#define BUILTIN_UNKNOWN		(MAX_TOTAL_MESSAGES + 2)
 #define MAX_BUILTIN		3
 
 /* globals */
@@ -148,7 +148,7 @@ typedef struct
   int action_arg;
 } event_entry;
 
-event_entry event_table[MAX_MESSAGES+MAX_BUILTIN] =
+event_entry event_table[MAX_TOTAL_MESSAGES+MAX_BUILTIN] =
 {
   { "new_page",	-1 },
   { "new_desk", 0 },
@@ -181,7 +181,11 @@ event_entry event_table[MAX_MESSAGES+MAX_BUILTIN] =
   { "restack", -1 },
   { "add_window", 0 },
   { "configure_window", 0 },
+  /* begin of extended message area */
   { "visible_icon_name", 0 },
+  { "enter_window", 0 },
+  { "leave_window", 0 },
+  /* built in events */
 #ifdef M_BELL
   { "beep", -1 },
 #endif
@@ -195,11 +199,11 @@ event_entry event_table[MAX_MESSAGES+MAX_BUILTIN] =
 };
 
 /* define the action table  */
-char	*action_table[MAX_MESSAGES+MAX_BUILTIN];
+char	*action_table[MAX_TOTAL_MESSAGES+MAX_BUILTIN];
 
 #ifdef HAVE_RPLAY
 /* define the rplay table */
-RPLAY	*rplay_table[MAX_MESSAGES+MAX_BUILTIN];
+RPLAY	*rplay_table[MAX_TOTAL_MESSAGES+MAX_BUILTIN];
 #endif
 
 static volatile sig_atomic_t isTerminated = False;
@@ -208,7 +212,8 @@ int main(int argc, char **argv)
 {
   char *s;
   unsigned long	header[FvwmPacketHeaderSize], body[FvwmPacketBodyMaxSize];
-  int			total, remaining, count, event;
+  int total, remaining, count, event;
+  int is_extended_msg;
 
   INFO("--- started ----\n");
 
@@ -275,8 +280,8 @@ int main(int argc, char **argv)
     if (start_audio_delay) last_time = time(0);
     /* tell fvwm we're running */
 
-    /* migo (19-Aug-2000): synchronize on M_DESTROY_WINDOW */
     /* SetMessageMask(fd, MAX_MASK); */
+    /* migo (19-Aug-2000): synchronize on M_DESTROY_WINDOW */
     SetSyncMask(fd, M_DESTROY_WINDOW);
 
     SendFinishedStartupNotification(fd);
@@ -326,14 +331,24 @@ int main(int argc, char **argv)
        */
       event = -1;
       msg_bit = header[1];
-      while (msg_bit)
+      is_extended_msg = (msg_bit & M_EXTENDED_MSG);
+      msg_bit &= ~M_EXTENDED_MSG;
+      if (msg_bit & M_EXTENDED_MSG)
       {
-	event++;
-	msg_bit >>= 1;
+	while (msg_bit)
+	{
+	  event++;
+	  msg_bit >>= 1;
+	}
       }
-      if (event < 0 || event >= MAX_MESSAGES)
-	event=BUILTIN_UNKNOWN;
-
+      if (event == -1)
+	event = BUILTIN_UNKNOWN;
+      else if (event >= MAX_MESSAGES && !is_extended_msg)
+	event = BUILTIN_UNKNOWN;
+      else if (event >= MAX_EXTENDED_MESSAGES && is_extended_msg)
+	event = BUILTIN_UNKNOWN;
+      else if (is_extended_msg)
+	event += MAX_MESSAGES;
       execute_event(event, body);		/* execute action */
 
 CONTINUE:
@@ -452,7 +467,7 @@ void config(void)
 
   /* Intialize all the actions */
 
-  for (i = 0; i < MAX_MESSAGES+MAX_BUILTIN; i++)
+  for (i = 0; i < MAX_TOTAL_MESSAGES+MAX_BUILTIN; i++)
   {
     action_table[i] = NULL;
 #ifdef HAVE_RPLAY
@@ -598,7 +613,7 @@ void config(void)
 	  continue;
 	}
 
-	for (found = 0,i = 0; !found && i < MAX_MESSAGES+MAX_BUILTIN;
+	for (found = 0,i = 0; !found && i < MAX_TOTAL_MESSAGES+MAX_BUILTIN;
 	     i++)
 	{
 	  INFO(event_table[i].name);

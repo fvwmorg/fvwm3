@@ -4800,6 +4800,7 @@ is a comma separated list containing one or more of the keywords
 .IR ClickToFocusPassesClickOff " / " ClickToFocusPassesClick ,
 .IR ClickToFocusRaisesOff " / " ClickToFocusRaises ,
 .IR MouseFocusClickRaises " / " MouseFocusClickRaisesOff ,
+.IR MouseFocusClickIgnoreMotion " / " MouseFocusClickIgnoreMotionOff,
 .IR StartsLowered " / " StartsRaised ,
 .IR GrabFocus " / " GrabFocusOff ,
 .IR GrabFocusTransient " / " GrabFocusTransientOff ,
@@ -4870,9 +4871,28 @@ control if the window is raised, while
 .IR MouseFocusClickRaises " and " MouseFocusClickRaisesOff
 are equivalent but apply only to windows using
 .IR SloppyFocus ", " MouseFocus " and " NeverFocus .
+With
+.I MouseFocusClickIgnoreMotion
+the click that would normally raise a window with the
+.I MouseFocusClickRaises
+style is ignored if the pointer moves too far while the button is
+pressed (see
+.B MoveThreshold
+command).  This is useful to select text in a terminal window with
+the mouse without raising the window.  However, mouse bindings on
+the client window are not guaranteed to work anymore (see
+.B Mouse
+command).  If
+.I MouseFocusClickRaisesOff
+is used,
+.I MouseFocusClickIgnoreMotion
+has no meaning.  With
+.I  MouseFocusClickIgnoreMotionOff
+The window is always raised, regardless of pointer motion.
 The defaults are
 .IR ClickToFocusPassesClick ,
-.IR ClickToFocusRaises " and " MouseFocusClickRaisesOff .
+.IR ClickToFocusRaises ,
+.IR MouseFocusClickRaisesOff " and " MouseFocusClickIgnoreMotionOff .
 
 .I GrabFocus
 causes a newly mapped window to grab the focus, while

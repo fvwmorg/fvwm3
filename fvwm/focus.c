@@ -647,14 +647,14 @@ void focus_grab_buttons(FvwmWindow *tmp_win, Bool is_focused)
       DO_RAISE_MOUSE_FOCUS_CLICK(tmp_win) &&
       (!is_focused || !is_on_top_of_layer(tmp_win)))
   {
-    grab_buttons = ((1 << NUMBER_OF_MOUSE_BUTTONS) - 1);
+    grab_buttons = (char)(DEFAULT_ALL_BUTTONS_MOTION_MASK / Button1Mask);
     do_grab_window = True;
   }
   else if (HAS_CLICK_FOCUS(tmp_win) &&
 	   (!is_focused || !is_on_top_of_layer(tmp_win)) &&
 	   (!DO_NOT_RAISE_CLICK_FOCUS_CLICK(tmp_win) || accepts_input_focus))
   {
-    grab_buttons = ((1 << NUMBER_OF_MOUSE_BUTTONS) - 1);
+    grab_buttons = (char)(DEFAULT_ALL_BUTTONS_MOTION_MASK / Button1Mask);
     do_grab_window = True;
   }
 
@@ -710,8 +710,8 @@ void focus_grab_buttons(FvwmWindow *tmp_win, Bool is_focused)
 	    if (do_grab)
 	    {
 	      XGrabButton(
-		dpy, i + 1, mods, tmp_win->Parent, True, ButtonPressMask,
-		GrabModeSync, GrabModeAsync, None, None);
+		      dpy, i + 1, mods, tmp_win->Parent, True, ButtonPressMask,
+		      GrabModeSync, GrabModeAsync, None, None);
               /*  Set each FvwmWindow flag accordingly, as we grab or ungrab. */
               tmp_win->grabbed_buttons |= (1<<i);
 	    }
@@ -725,7 +725,6 @@ void focus_grab_buttons(FvwmWindow *tmp_win, Bool is_focused)
       }
     } /* for */
     MyXUngrabServer (dpy);
-
   }
 
   return;

@@ -40,6 +40,7 @@
 #include "libs/fvwmlib.h"
 #include "libs/Colorset.h"
 #include "libs/FScreen.h"
+#include "libs/Module.h"
 #include "fvwm.h"
 #include "externs.h"
 #include "cursor.h"
@@ -69,9 +70,15 @@ char **pipeName;
 char **pipeAlias;  /* as given in: Module FvwmPager MyAlias */
 #endif
 
-unsigned long *PipeMask;
-static unsigned long *SyncMask;
-static unsigned long *NoGrabMask;
+typedef struct
+{
+	unsigned long m1;
+	unsigned long m2;
+} msg_masks_type;
+
+static msg_masks_type *PipeMask;
+static msg_masks_type *SyncMask;
+static msg_masks_type *NoGrabMask;
 struct queue_buff_struct **pipeQueue;
 
 extern fd_set init_fdset;
@@ -79,6 +86,53 @@ extern fd_set init_fdset;
 static void DeleteMessageQueueBuff(int module);
 static void AddToMessageQueue(int module, unsigned long *ptr, int size, int done);
 static void AddToCommandQueue(Window w, int module, char * command);
+
+/*
+ * Returns zero if the msg is not selected by the mask. Takes care of normal
+ * and extended messages.
+ */
+static int is_message_in_mask(msg_masks_type *mask, unsigned long msg)
+{
+	unsigned long rc;
+
+	if (msg & M_EXTENDED_MSG)
+	{
+		rc = (mask->m2 & msg);
+	}
+	else
+	{
+		rc = (mask->m1 & msg);
+	}
+
+	return rc;
+}
+
+/*
+ * Sets the mask to the specific value.  If M_EXTENDED_MSG is set in mask, the
+ * function operates only on the extended messages, otherwise it operates only
+ * on normal messages.
+ */
+static void set_message_mask(msg_masks_type *mask, unsigned long msg)
+{
+	if (msg & M_EXTENDED_MSG)
+	{
+		mask->m2 = (msg & ~M_EXTENDED_MSG);
+	}
+	else
+	{
+		mask->m1 = msg;
+	}
+
+	return;
+}
+
+/*
+ * Returns non zero if one of the specified messages is selected for the module
+ */
+int is_message_selected(int module, unsigned long msg_mask)
+{
+	return is_message_in_mask(&PipeMask[module], msg_mask);
+}
 
 void initModules(void)
 {
@@ -89,9 +143,9 @@ void initModules(void)
   writePipes = (int *)safemalloc(sizeof(int)*npipes);
   readPipes = (int *)safemalloc(sizeof(int)*npipes);
   pipeOn = (int *)safemalloc(sizeof(int)*npipes);
-  PipeMask = (unsigned long *)safemalloc(sizeof(unsigned long)*npipes);
-  SyncMask = (unsigned long *)safemalloc(sizeof(unsigned long)*npipes);
-  NoGrabMask = (unsigned long *)safemalloc(sizeof(unsigned long)*npipes);
+  PipeMask = (msg_masks_type *)safemalloc(sizeof(msg_masks_type)*npipes);
+  SyncMask = (msg_masks_type *)safemalloc(sizeof(msg_masks_type)*npipes);
+  NoGrabMask = (msg_masks_type *)safemalloc(sizeof(msg_masks_type)*npipes);
   pipeName = (char **)safemalloc(sizeof(char *)*npipes);
 #ifndef WITHOUT_KILLMODULE_ALIAS_SUPPORT
   pipeAlias= (char **)safemalloc(sizeof(char *)*npipes);
@@ -104,9 +158,12 @@ void initModules(void)
     writePipes[i]= -1;
     readPipes[i]= -1;
     pipeOn[i] = -1;
-    PipeMask[i] = MAX_MASK;
-    SyncMask[i] = 0;
-    NoGrabMask[i] = 0;
+    PipeMask[i].m1 = MAX_MASK;
+    PipeMask[i].m2 = MAX_XMASK;
+    SyncMask[i].m1 = 0;
+    SyncMask[i].m2 = 0;
+    NoGrabMask[i].m1 = 0;
+    NoGrabMask[i].m2 = 0;
     pipeQueue[i] = (struct queue_buff_struct *)NULL;
     pipeName[i] = NULL;
 #ifndef WITHOUT_KILLMODULE_ALIAS_SUPPORT
@@ -297,9 +354,12 @@ static int do_execute_module(F_CMD_ARGS, Bool desperate)
     writePipes[i] = fvwm_to_app[1];
     readPipes[i] = app_to_fvwm[0];
     pipeOn[i] = -1;
-    PipeMask[i] = MAX_MASK;
-    SyncMask[i] = 0;
-    NoGrabMask[i] = 0;
+    PipeMask[i].m1 = MAX_MASK;
+    PipeMask[i].m2 = MAX_XMASK;
+    SyncMask[i].m1 = 0;
+    SyncMask[i].m2 = 0;
+    NoGrabMask[i].m1 = 0;
+    NoGrabMask[i].m2 = 0;
     free(arg1);
     pipeQueue[i] = NULL;
     if (DoingCommandLine) {
@@ -1177,12 +1237,13 @@ BroadcastWindowIconNames(FvwmWindow *t, Bool window, Bool icon)
   if (window)
   {
     BroadcastName(M_WINDOW_NAME,t->w,t->frame,(unsigned long)t,t->name);
-    BroadcastName(M_VISIBLE_NAME,t->w,t->frame,(unsigned long)t,t->visible_name);
+    BroadcastName(M_VISIBLE_NAME,t->w,t->frame,(unsigned long)t,
+		  t->visible_name);
   }
   if (icon)
   {
     BroadcastName(M_ICON_NAME,t->w,t->frame,(unsigned long)t,t->icon_name);
-    BroadcastName(M_VISIBLE_ICON_NAME,t->w,t->frame,
+    BroadcastName(MX_VISIBLE_ICON_NAME,t->w,t->frame,
 		  (unsigned long)t,t->visible_icon_name);
   }
 }
@@ -1342,12 +1403,17 @@ extern char *ModuleUnlock;		/* defined in libs/Module.c */
 void PositiveWrite(int module, unsigned long *ptr, int size)
 {
   extern int moduleTimeout;
+  msg_masks_type mask;
 
   if(ptr == NULL)
   {
    return;
   }
-  if((pipeOn[module]<0)||(!((PipeMask[module]) & ptr[1])))
+  if (pipeOn[module] < 0)
+  {
+    return;
+  }
+  if (!is_message_in_mask(&PipeMask[module], ptr[1]))
   {
     return;
   }
@@ -1356,7 +1422,9 @@ void PositiveWrite(int module, unsigned long *ptr, int size)
   /* would be better to send RecaptureStart and RecaptureEnd messages. */
   /* If module is lock on send for iconify message and it's an
    * iconify event and server grabbed, then return */
-  if ((NoGrabMask[module] & SyncMask[module] & ptr[1]) && (myxgrabcount != 0))
+  mask.m1 = (NoGrabMask[module].m1 & SyncMask[module].m1);
+  mask.m2 = (NoGrabMask[module].m2 & SyncMask[module].m2);
+  if (is_message_in_mask(&mask, ptr[1]) && myxgrabcount != 0)
   {
     return;
   }
@@ -1371,7 +1439,7 @@ void PositiveWrite(int module, unsigned long *ptr, int size)
   /* migo (19-Aug-2000): removed !myxgrabcount to sync M_DESTROY_WINDOW */
 /*if ((SyncMask[module] & ptr[1]) && !myxgrabcount) */
 
-  if ((SyncMask[module] & ptr[1]))
+  if (is_message_in_mask(&SyncMask[module], ptr[1]))
   {
     Window targetWindow;
     fd_set readSet;
@@ -1646,7 +1714,7 @@ void CMD_Send_WindowList(F_CMD_ARGS)
 		   (unsigned long)t,t->icon_name);
 	  SendName(*Module,M_VISIBLE_NAME,t->w,t->frame,
 		   (unsigned long)t,t->visible_name);
-	  SendName(*Module,M_VISIBLE_ICON_NAME,t->w,t->frame,
+	  SendName(*Module,MX_VISIBLE_ICON_NAME,t->w,t->frame,
 		   (unsigned long)t,t->visible_icon_name);
           if (t->icon_bitmap_file != NULL
               && t->icon_bitmap_file != Scr.DefaultIcon)
@@ -1716,7 +1784,7 @@ void CMD_set_mask(F_CMD_ARGS)
   /*GetIntegerArguments(action, NULL, &val, 1);*/
   if (!action || sscanf(action,"%lu",&val) != 1)
     val = 0;
-  PipeMask[*Module] = (unsigned long)val;
+  set_message_mask(&PipeMask[*Module], (unsigned long)val);
 }
 
 void CMD_set_sync_mask(F_CMD_ARGS)
@@ -1725,7 +1793,7 @@ void CMD_set_sync_mask(F_CMD_ARGS)
 
   if (!action || sscanf(action,"%lu",&val) != 1)
     val = 0;
-  SyncMask[*Module] = (unsigned long)val;
+  set_message_mask(&SyncMask[*Module], (unsigned long)val);
 }
 
 void CMD_set_nograb_mask(F_CMD_ARGS)
@@ -1734,7 +1802,7 @@ void CMD_set_nograb_mask(F_CMD_ARGS)
 
   if (!action || sscanf(action,"%lu",&val) != 1)
     val = 0;
-  NoGrabMask[*Module] = (unsigned long)val;
+  set_message_mask(&NoGrabMask[*Module], (unsigned long)val);
 }
 
 /*
@@ -1759,3 +1827,4 @@ char *skipModuleAliasToken(const char *string)
   }
   return NULL;
 }
+

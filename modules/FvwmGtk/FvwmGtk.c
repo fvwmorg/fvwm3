@@ -413,7 +413,7 @@ process_message (unsigned long type,
 	wle->name = safestrdup ((char*) (&body[3]));
       }
       break;
-    case M_VISIBLE_ICON_NAME:
+    case MX_VISIBLE_ICON_NAME:
       {
 	window_list_entry *wle = lookup_window_list_entry (body[0]);
 	if (wle->icon_name)
@@ -498,6 +498,7 @@ main (int argc, char **argv)
 
   parse_options ();
 
+  /* normal messages */
   SetMessageMask (fvwm_fd,
 		  M_STRING |
 		  M_CONFIG_INFO |
@@ -507,8 +508,11 @@ main (int argc, char **argv)
 		  M_CONFIGURE_WINDOW |
 		  M_NEW_DESK |
 		  M_VISIBLE_NAME |
-		  M_VISIBLE_ICON_NAME |
 		  M_MINI_ICON);
+  /* extended messages */
+  SetMessageMask (fvwm_fd,
+		  MX_VISIBLE_ICON_NAME);
+
 
   SendText (fvwm_fd, "Send_WindowList", 0);
 

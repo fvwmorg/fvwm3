@@ -153,7 +153,7 @@ static void apply_window_updates(
   if (flags->do_update_visible_icon_name)
   {
     setup_visible_name(t, True);
-    BroadcastName(M_VISIBLE_ICON_NAME,t->w,t->frame,
+    BroadcastName(MX_VISIBLE_ICON_NAME,t->w,t->frame,
 		  (unsigned long)t,t->visible_icon_name);
     EWMH_SetVisibleName(t, True);
   }

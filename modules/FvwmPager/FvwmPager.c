@@ -328,7 +328,6 @@ int main(int argc, char **argv)
 
   SetMessageMask(fd,
 		 M_VISIBLE_NAME |
-		 M_VISIBLE_ICON_NAME |
                  M_ADD_WINDOW|
                  M_CONFIGURE_WINDOW|
                  M_DESTROY_WINDOW|
@@ -347,6 +346,8 @@ int main(int argc, char **argv)
 		 M_MINI_ICON|
 		 M_END_WINDOWLIST|
 		 M_RESTACK);
+  SetMessageMask(fd,
+		 MX_VISIBLE_ICON_NAME);
 #ifdef DEBUG
   fprintf(stderr,"[main]: calling ParseOptions\n");
 #endif
@@ -550,7 +551,7 @@ void process_message( FvwmPacket* packet )
     case M_VISIBLE_NAME:
       list_window_name(body,type);
       break;
-    case M_VISIBLE_ICON_NAME:
+    case MX_VISIBLE_ICON_NAME:
       list_icon_name(body);
       break;
     case M_MINI_ICON:

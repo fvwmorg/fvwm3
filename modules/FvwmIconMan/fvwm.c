@@ -611,7 +611,7 @@ static void ProcessMessage (Ulong type, FvwmPacketBody *body)
     icon_name (body);
     break;
 
-  case M_VISIBLE_ICON_NAME:
+  case MX_VISIBLE_ICON_NAME:
     ConsoleDebug (FVWM, "DEBUG::M_VISIBLE_ICON_NAME\n");
     visible_icon_name (body);
     break;

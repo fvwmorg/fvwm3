@@ -125,9 +125,10 @@ int UWidth, UHeight;
 		       LeaveWindowMask | PointerMotionMask)
 
 unsigned long m_mask = M_CONFIGURE_WINDOW|M_ADD_WINDOW|M_DESTROY_WINDOW|
-		 M_END_WINDOWLIST| M_ICONIFY|M_DEICONIFY|M_VISIBLE_ICON_NAME|
-		 M_RES_NAME|M_RES_CLASS|M_VISIBLE_NAME|M_ICON_FILE|
-		 M_DEFAULTICON|M_CONFIG_INFO|M_END_CONFIG_INFO;
+  M_END_WINDOWLIST| M_ICONIFY|M_DEICONIFY|
+  M_RES_NAME|M_RES_CLASS|M_VISIBLE_NAME|M_ICON_FILE|
+  M_DEFAULTICON|M_CONFIG_INFO|M_END_CONFIG_INFO;
+unsigned long mx_mask = MX_VISIBLE_ICON_NAME;
 
 struct icon_info *Hilite;
 int main_width, main_height;
@@ -299,11 +300,10 @@ int main(int argc, char **argv)
 
   XSetErrorHandler(myErrorHandler);
 
-  /* SetMessageMask(fd, m_mask); */
-
   ParseOptions();
-
-  SetMessageMask(fd, m_mask); /* it may have changed */
+  /* m_mask/mx_mask may have changed in the ParseOptions call*/
+  SetMessageMask(fd, m_mask);
+  SetMessageMask(fd, mx_mask);
 
   if ((local_flags & SETWMICONSIZE) && (size = XAllocIconSize()) != NULL){
     size->max_width  = size->min_width  = max_icon_width + icon_relief;
@@ -2369,7 +2369,7 @@ void process_message(unsigned long type, unsigned long *body)
     }
     }
     break;
-  case M_VISIBLE_ICON_NAME:
+  case MX_VISIBLE_ICON_NAME:
     tmp = UpdateItem(type, body[0], (char *)&body[3]);
     if (!ready || tmp == NULL)
     break;
@@ -2660,7 +2660,7 @@ struct icon_info *UpdateItem(unsigned long type, unsigned long id, char *item)
       strcpy(str, item);
 
       switch (type){
-      case M_VISIBLE_ICON_NAME:
+      case MX_VISIBLE_ICON_NAME:
 	if (tmp->name)
 	  free(tmp->name);
 	tmp->name = str;

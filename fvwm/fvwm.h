@@ -195,6 +195,7 @@ typedef struct
     unsigned do_iconify_window_groups : 1;
     unsigned do_ignore_gnome_hints : 1;
     unsigned do_ignore_icon_boxes : 1;
+    unsigned do_ignore_mouse_focus_click_motion : 1;
     unsigned do_ignore_restack : 1;
     unsigned do_use_window_group_hint : 1;
     unsigned do_lower_transient : 1;

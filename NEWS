@@ -59,6 +59,15 @@ Changes in beta release 2.5.0 (not released yet)
   now. Fvwm no longer disables backing store on windows by
   default.
 
+* New styles MouseFocusClickIgnoreMotion and
+  MouseFocusClickIgnoreMotionOff.
+
+* The module interface now supports up to 63 message types.
+
+* New module messages MX_ENTER_WINDOW and MX_LEAVE_WINDOW.
+
+* New events "enter_window" and "leave_window" in FvwmEvent.c.
+
 _+_A NAME="2.4.4"_-_
 Changes in stable release 2.4.4 (16-Dec-2001)
 _+_/A_-_

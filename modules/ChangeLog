@@ -1,3 +1,21 @@
+2002-01-19  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* FvwmEvent/FvwmEvent.c (main):
+	* FvwmWinList/FvwmWinList.c (main):
+	(ProcessMessage):
+	* FvwmTaskBar/FvwmTaskBar.c (main):
+	(ProcessMessage):
+	* FvwmPager/FvwmPager.c (main):
+	(process_message):
+	* FvwmIconMan/fvwm.c (ProcessMessage):
+	* FvwmIconMan/FvwmIconMan.c (main):
+	* FvwmIconBox/FvwmIconBox.c (main):
+	* FvwmGtk/FvwmGtk.c (process_message):
+	(main):
+	* FvwmDebug/FvwmDebug.c (process_message):
+	use new extended message interface
+	new events enter_window and leave_window in FvwmEvent.c
+
 2002-01-19  Dan Espen  <dane@mk.telcordia.com>
 
 	* FvwmTheme/FvwmTheme.1 (Warning): Language check done.
@@ -18,18 +36,18 @@
 	* FvwmIconMan/fvwm.c (handle_config_info):
 	* FvwmIconBox/FvwmIconBox.c (process_message):
 	* FvwmForm/FvwmForm.h:
-	* FvwmForm/FvwmForm.c (UpdateRootTransapency): 
-	(ParseActiveMessage): 
-	(ReadXServer): 
+	* FvwmForm/FvwmForm.c (UpdateRootTransapency):
+	(ParseActiveMessage):
+	(ReadXServer):
 	* FvwmButtons/FvwmButtons.c (Loop):
 	(update_root_transparency):
 	* FvwmTaskBar/FvwmTaskBar.c (ProcessMessage):
 	* FvwmBacker/FvwmBacker.c (ProcessMessage):
-	* FvwmTheme/FvwmTheme.1: 
+	* FvwmTheme/FvwmTheme.1:
 	Handle the ROOT_BG_CHANGE_STRING config info message
 
-	* FvwmBacker/FvwmBacker.c (SetXsetRoot): 
-	(SetDeskPageBackground): 
+	* FvwmBacker/FvwmBacker.c (SetXsetRoot):
+	(SetDeskPageBackground):
 	Kill the _XSETROOT_ID pixmap and set it to None in the case of
 	a solid or a colorset background
 
