@@ -273,10 +273,10 @@ void executeModule(XEvent *eventp,Window w,FvwmWindow *tmp_win,
   return;
 }
 
-/* Changed to return 66, Locking code AS dje */
+/* Changed message from module from 255 to 1000. dje */
 int HandleModuleInput(Window w, int channel)
 {
-  char text[256];
+  char text[1000];
   int size;
   int cont,n;
 
@@ -289,11 +289,12 @@ int HandleModuleInput(Window w, int channel)
       return 0;
     }
 
-  if(size >255)
+  if(size > sizeof(text))
     {
       fvwm_msg(ERR, "HandleModuleInput",
-               "Module command is too big (%d)", size);
-      size=255;
+               "Module command is too big (%d), limit is %d",
+               size, sizeof(text));
+      size=sizeof(text);
     }
 
   pipeOn[channel] = 1;
@@ -348,22 +349,18 @@ int HandleModuleInput(Window w, int channel)
 	}
       if(tmp_win)
 	{
-	  Event.xbutton.button = 1;
 	  Event.xbutton.x_root = tmp_win->frame_x;
 	  Event.xbutton.y_root = tmp_win->frame_y;
-	  Event.xbutton.x = 0;
-	  Event.xbutton.y = 0;
-	  Event.xbutton.subwindow = None;
 	}
       else
 	{
-	  Event.xbutton.button = 1;
 	  Event.xbutton.x_root = 0;
 	  Event.xbutton.y_root = 0;
-	  Event.xbutton.x = 0;
-	  Event.xbutton.y = 0;
-	  Event.xbutton.subwindow = None;
 	}
+      Event.xbutton.button = 1;
+      Event.xbutton.x = 0;
+      Event.xbutton.y = 0;
+      Event.xbutton.subwindow = None;
       Context = GetContext(tmp_win,&Event,&w);
       ExecuteFunction(text,tmp_win,&Event,Context ,channel);
     }

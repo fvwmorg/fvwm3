@@ -1,3 +1,9 @@
+1999-02-25  Dan Espen  <dane@mk.bellcore.com>
+
+	* fvwm/module.c  (HandleModuleInput): Increased max message from a
+ 	module from 255  to  999, needed  for FvwmForm.   Removed a little
+ 	redundant code.
+
 Tue Feb 23 13:02:33 1999  Steve Robbins  <steve@nyongwa.montreal.qc.ca>
 
 	* fvwm/module.c: include <sys/time.h> to ensure that FD_SET and
