@@ -275,7 +275,7 @@ AddToFunc MenuStyle-Func
  + I MenuStyle WinStyle Hilight3DOff, PopupImmediately
 
  + I MenuStyle XStyle Hilight3DThickness -3, MenuFace Solid Maroon
- + I MenuStyle XStyle TitleUnderlines2, SidePic test1.xpm, SideColor cyan
+ + I MenuStyle XStyle TitleUnderlines2, SidePic xtrek_fed_e.xbm, SideColor cyan
 # I have no idea what this will do but its in the man page:
  + I MenuStyle XStyle ItemFormat "%.1|%3.2<%5i%5l%5l%5r%5i%1|%4s"
 
@@ -448,6 +448,7 @@ AddTest "Test DefaultIcon" DefaultIcon-Func
 AddToFunc DefaultIcon-Func
  + I DefaultIcon
  + I DefaultIcon test1.xpm
+ + I DefaultIcon xtrek_fed_e.xbm
  + I DefaultIcon
  + I Refresh
 
