@@ -2147,21 +2147,26 @@ int My_XNextEvent(Display *dpy, XEvent *event)
 
   DBUG("My_XNextEvent","Routine Entered");
 
+/* include this next bit if HandleModuleInput() gets called anywhere else
+ * with queueing turned on.  Because this routine is the only place that
+ * queuing is on _and_ ExecuteCommandQueue is always called immediately after
+ * it is impossible for there to be anything in the queue at this point */
+#if 0
+  /* execute any commands queued up */
+  DBUG("My_XNextEvent", "executing module comand queue");
+  ExecuteCommandQueue()
+#endif
+
+  /* check for any X events already queued up.
+   * Side effect: this does an XFlush if no events are queued
+   * Make sure nothing between here and the select causes further X
+   * requests to be sent or the select may block even though there
+   * events in the queue */
   if(XPending(dpy)) {
-    DBUG("My_XNextEvent","taking care of queued up events & returning");
+    DBUG("My_XNextEvent","taking care of queued up events & returning (1)");
     XNextEvent(dpy,event);
     StashEventTime(event);
     return 1;
-  }
-
-  /* execute any commands queued due to the sync module message protocol */
-  DBUG("My_XNextEvent", "executing module comand queue");
-  if (ExecuteCommandQueue())
-  {
-    /* restart the event loop, otherwise we'll block in the select call below -
-     * even if there are events pending because of the functions executed in
-     * ExecuteCommandQueue() */
-    return 0;
   }
 
   DBUG("My_XNextEvent","no X events waiting - about to reap children");
@@ -2178,17 +2183,18 @@ int My_XNextEvent(Display *dpy, XEvent *event)
     if (i == npipes || writePipes[i+1] == 0)
     {
       DBUG("My_XNextEvent", "Starting up after command lines modules\n");
-      StartupStuff();
       timeoutP = NULL; /* set an infinite timeout to stop ticking */
+      StartupStuff(); /* This may cause X requests to be sent */
+      return 0; /* so return without select()ing */
     }
   }
 
   FD_ZERO(&in_fdset);
+  FD_ZERO(&out_fdset);
   FD_SET(x_fd,&in_fdset);
-  /* nothing is done here if fvem was compiled without session support */
+  /* nothing is done here if fvwm was compiled without session support */
   if (sm_fd >= 0)
     FD_SET(sm_fd, &in_fdset);
-  FD_ZERO(&out_fdset);
   for(i=0; i<npipes; i++) {
     if(readPipes[i]>=0)
       FD_SET(readPipes[i], &in_fdset);
@@ -2197,7 +2203,6 @@ int My_XNextEvent(Display *dpy, XEvent *event)
   }
 
   DBUG("My_XNextEvent","waiting for module input/output");
-  XFlush(dpy);
   if (fvwmSelect(fd_width, &in_fdset, &out_fdset, 0, timeoutP) > 0) {
 
     /* Check for module input. */
@@ -2218,6 +2223,10 @@ int My_XNextEvent(Display *dpy, XEvent *event)
       }
     }
 
+    /* execute any commands queued up */
+    DBUG("My_XNextEvent", "executing module comand queue");
+    ExecuteCommandQueue();
+
     /* nothing is done here if fvwm was compiled without session support */
     if ((sm_fd >= 0) && (FD_ISSET(sm_fd, &in_fdset)))
       ProcessICEMsgs();
@@ -2235,14 +2244,17 @@ int My_XNextEvent(Display *dpy, XEvent *event)
     }
   }
 
+  /* check for X events again, rather than return 0 and get called again */
+  if(XPending(dpy)) {
+    DBUG("My_XNextEvent","taking care of queued up events & returning (2)");
+    XNextEvent(dpy,event);
+    StashEventTime(event);
+    return 1;
+  }
+
   DBUG("My_XNextEvent","leaving My_XNextEvent");
   return 0;
 }
-
-
-
-
-
 
 /*
 ** Procedure:
