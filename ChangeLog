@@ -1,3 +1,8 @@
+1999-02-12  Dominik Vogt  <dominik_vogt@hp.com>
+
+	* libs/Module.c (SendText): applied patch by Adam Rice to make fvwm2
+	work with 2.2.x Linux kernels (trivial patch).
+
 1999-02-11  Dominik Vogt  <dominik_vogt@hp.com>
 
 	* fvwm/misc.c (GetOneMenuPositionArgument): rewrote syntax of menu

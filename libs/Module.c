@@ -84,7 +84,8 @@ void SendText(int *fd,char *message,unsigned long window)
 
     w=strlen(message);
     write(fd[0],&w,sizeof(int));
-    write(fd[0],message,w);
+    if (w)
+      write(fd[0],message,w);
 
     /* keep going */
     w = 1;
