@@ -14,6 +14,7 @@
 	(func_config): changed function table entries to lower case. Since most
 	letters in config files are lower case anyway this saves some CPU
 	cycles.
+	(DeferExecution): ungrab cursor too when pressing escape
 
 	* fvwm/repeat.c (update_last_string): function replaced with new
 	function set_repeat_data
