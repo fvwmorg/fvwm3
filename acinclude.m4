@@ -128,8 +128,8 @@ AC_DEFUN(smr_SWITCH, [
     AC_ARG_ENABLE(
         $1,
         ifelse($3, on,
-            [  --disable-[$1]substr([             ], len([$1])) disable [$2]],
-            [  --enable-[$1] substr([             ], len([$1])) enable [$2]]),
+            [  --disable-[$1]m4_substr([             ], m4_len([$1])) disable [$2]],
+            [  --enable-[$1] m4_substr([             ], m4_len([$1])) enable [$2]]),
         [ if test "$enableval" = yes; then
             AC_MSG_RESULT(yes)
             ifelse($4, , , [AC_DEFINE($4)])
@@ -851,7 +851,7 @@ AC_DEFUN([GNOME_INIT_HOOK],[
 	])
 
 	AC_ARG_WITH(gnome,
-	[  --with-gnome            no, yes or prefix for GNOME files (FvwmGtk only)],
+	[  --with-gnome            no, yes or prefix for GNOME files (for FvwmGtk only)],
 		if test x$withval = xyes; then
 	    		with_gnomelibs=yes
 	    		dnl Note that an empty true branch is not
@@ -1012,13 +1012,13 @@ AC_DEFUN(AM_CHECK_FT2,
 dnl Get the cflags and libraries from the freetype-config script
 dnl
 AC_ARG_WITH(freetype-prefix,
-[  --with-freetype-prefix=PFX Prefix where FreeType is installed (for Xft)],
+[  --with-freetype-prefix=PFX  prefix where FreeType is installed (for Xft)],
             ft_config_prefix="$withval", ft_config_prefix="")
 AC_ARG_WITH(freetype-exec-prefix,
-[  --with-freetype-exec-prefix=PFX Exec prefix where FreeType is installed],
+[  --with-freetype-exec-prefix=PFX  exec prefix where FreeType is installed],
             ft_config_exec_prefix="$withval", ft_config_exec_prefix="")
 AC_ARG_ENABLE(freetypetest,
-[  --disable-freetypetest  Do not try to compile and run a test FreeType program],
+[  --disable-freetypetest  do not try to compile and run a test FreeType program],
             [], enable_fttest=yes)
 
 if test x$ft_config_exec_prefix != x ; then
@@ -1147,13 +1147,13 @@ AC_DEFUN(AM_CHECK_FC,
 dnl Get the cflags and libraries from the fontconfig-config script
 dnl
 AC_ARG_WITH(fontconfig-prefix,
-[  --with-fontconfig-prefix=PFX Prefix where fontconfig is installed (for Xft2)],
+[  --with-fontconfig-prefix=PFX  prefix where fontconfig is installed (for Xft2)],
             fc_config_prefix="$withval", fc_config_prefix="")
 AC_ARG_WITH(fontconfig-exec-prefix,
-[  --with-fontconfig-exec-prefix=PFX Exec prefix where fontconfig is installed],
+[  --with-fontconfig-exec-prefix=PFX  exec prefix where fontconfig is installed],
             fc_config_exec_prefix="$withval", fc_config_exec_prefix="")
 AC_ARG_ENABLE(fontconfigtest,
-[  --disable-fontconfigtest  Do not try to compile and run a test fontconfig program],
+[  --disable-fontconfigtest  do not try to compile and run a test fontconfig program],
             [], enable_fctest=yes)
 
 if test x$fc_config_exec_prefix != x ; then
@@ -1277,13 +1277,13 @@ AC_DEFUN(AM_CHECK_XFT,
 dnl Get the cflags and libraries from the xft-config script
 dnl
 AC_ARG_WITH(xft-prefix,
-[  --with-xft-prefix=PFX    Prefix where Xft2 is installed (optional)],
+[  --with-xft-prefix=PFX    prefix where Xft2 is installed (optional)],
             xft_config_prefix="$withval", xft_config_prefix="")
 AC_ARG_WITH(xft-exec-prefix,
-[  --with-xft-exec-prefix=PFX Exec prefix where Xft2 is installed],
+[  --with-xft-exec-prefix=PFX  exec prefix where Xft2 is installed],
             xft_config_exec_prefix="$withval", xft_config_exec_prefix="")
 AC_ARG_ENABLE(xfttest,
-[  --disable-xfttest  Do not try to compile and run a test Xft program],
+[  --disable-xfttest       do not try to compile and run a test Xft program],
             [], enable_xfttest=yes)
 
 if test x$xft_config_exec_prefix != x ; then

@@ -137,7 +137,7 @@ The sections below explain these options.
   With Asian bi-direct. text support?  bidi          --disable-bidi
   With Extended Window Manager Hints?  ewmh          --disable-ewmh
   With GNOME Window Manager Hints?     gnome-hints   --disable-gnome-hints
-  With GTK required for FvwmGtk?       gtk           --with-gtk
+  With GTK+ required for FvwmGtk?      gtk           --with-gtk
   With GDK image support in FvwmGtk?   gdk-imlib     --with-imlib-*
   With GNOME libs support in FvwmGtk?  gnome-libs    --with-gnome
   With PNG image support?              png           --with-png-*
@@ -224,18 +224,18 @@ Only one version of the --with-foo-library flag may be specified.
 Optional libraries used by FvwmGtk
 ==================================
 
-FvwmGtk module requires GTK and optionally GDK-Imlib and GNOME libraries.
+FvwmGtk module requires GTK+ and optionally GDK-Imlib and GNOME libraries.
 GDK-Imlib library that is a part of Imlib version 1 is used to have images.
 
 Note, FVWM itself has an ability to support GNOME Window Manager hints
 (which is enabled by default), this has nothing to do with GNOME library
 support compiled into FvwmGtk (which is autoprobed and used if passed).
 
-To disable autoprobing of GTK, Imlib and GNOME libraries, use:
+To disable autoprobing of GTK+, Imlib and GNOME libraries, use:
 
   --disable-gtktest --disable-imlibtest --without-gnome
 
-This does not turn GTK and Imlib support off, instead, one part of the
+This does not turn GTK+ and Imlib support off, instead, one part of the
 checking, precisely compilation, is quietly considered to be passed.
 
 Run './configure --help' for more information about configure options.
@@ -426,4 +426,14 @@ You may also specify the location of GNOME headers and libs using
 needed, since all required info should be returned by gnome-config
 if GNOME is properly installed.  In case the GNOME installation works
 and you don't want to be dependant on GNOME, specify --without-gnome.
+
+
+  --enable-xinerama-emulation   enable Xinerama emulation on one screen
+  ~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+This option is only useful for developers.  Usually the Xinerama support
+is only activated at run time when it is compiled in and X supports it
+and X is run with Xinerama extension.  This option enables the Xinerama
+emulation even when X does not support it or fvwm is run on one screen.
+This divides the screen to 2 non equivalent parts and one black area.
 

@@ -1,3 +1,12 @@
+2002-10-28  Mikhael Goikhman  <migo@homemail.com>
+
+	* acinclude.m4:
+	* configure.in:
+	corrected and lined up several help lines
+
+	* INSTALL.fvwm:
+	added --enable-xinerama-emulation description
+
 2002-10-27  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* fvwm/stack.c (restack_windows):

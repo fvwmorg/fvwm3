@@ -311,7 +311,7 @@ fi
 dnl ********* xrender
 problem_xrender=""
 AC_ARG_ENABLE(xrender,
-  [  --disable-xrender      disable Xrender alpha-blend rendering ],
+  [  --disable-xrender       disable Xrender alpha-blend rendering ],
   [ if test x"$enableval" = xyes; then
     with_xrender="yes, check"
   else
@@ -336,7 +336,7 @@ dnl ********* xft
 problem_xft=""
 
 AC_ARG_ENABLE(xft,
-  [  --disable-xft            disable Xft anti-aliased font rendering],
+  [  --disable-xft           disable Xft anti-aliased font rendering],
   [ if test x"$enableval" = xyes; then
     with_xft="yes, check"
   else
@@ -1075,7 +1075,7 @@ FVWM Configuration:
   With Asian bi-direct. text support? $with_bidi$problem_bidi
   With Extended Window Manager Hints? $with_ewmh$problem_ewmh
   With GNOME Window Manager Hints?    $with_gnomehints$problem_gnomehints
-  With GTK required for FvwmGtk?      $with_gtk$problem_gtk$fvwmgtk_msg
+  With GTK+ required for FvwmGtk?     $with_gtk$problem_gtk$fvwmgtk_msg
   With PNG image support?             $with_png$problem_png
   With ReadLine sup. in FvwmConsole?  $with_readline$problem_readline
   With RPlay support in FvwmEvent?    $with_rplay$problem_rplay
