@@ -1,5 +1,7 @@
 ## Process this file with automake to create Makefile.in
 
+SUBDIRS = Module
+
 configdir = @FVWM_PERLLIBDIR@/FVWM
 
 config_DATA = Module.pm Constants.pm

@@ -35,10 +35,10 @@ $VERSION = '1.1';
 my $PACKET_TYPE_ARGS = {
 	&M_NEW_PAGE             => "l5",
 	&M_NEW_DESK             => "l",
-#	&M_OLD_ADD_WINDOW       => "l24",
+	&M_OLD_ADD_WINDOW       => "l24",
 	&M_RAISE_WINDOW         => "l3",
 	&M_LOWER_WINDOW         => "l3",
-#	&M_OLD_CONFIGURE_WINDOW => "l24",
+	&M_OLD_CONFIGURE_WINDOW => "l24",
 	&M_FOCUS_CHANGE         => "l5",
 	&M_DESTROY_WINDOW       => "l3",
 	&M_ICONIFY              => "l7",
@@ -87,11 +87,19 @@ sub isExtended ($$) {
 	return $type & M_EXTENDED_MSG? 1: 0;
 }
 
+sub internalDie ($$) {
+	my $self = shift;
+	my $msg = shift;
+	$msg =~ s/([^\.!?])$/$1./;
+	die $self->name . ": $msg Exiting.\n";
+}
+
 sub getPacketArgs ($$) {
 	my $self = shift;
 	my $type = shift;
 	my $args = $PACKET_TYPE_ARGS->{$type};
-	die "Unsupported packet type ($type)\n" unless defined $args;
+	$self->internalDie("Unsupported packet type ($type)")
+		unless defined $args;
 	return $args;
 }
 
@@ -119,7 +127,7 @@ sub new ($@) {
 
 	if (@ARGV && ref($params{'EnableOptions'}) eq 'HASH') {
 		# save time by lazy loading Getopt::Long only if needed
-		eval "use Getopt::Long;"; die $@ if $@;
+		eval "use Getopt::Long;"; die "$name: $@" if $@;
 		GetOptions(%{$params{'EnableOptions'}})
 			or die "$name: Incorrect options given.\n";
 	}
@@ -153,11 +161,20 @@ sub new ($@) {
 	return $self;
 }
 
+sub destroy ($) {
+	my $self = shift;
+	if (defined $self->{ostream}) {
+		$self->sendText(0, "Nop", 0);
+		close $self->{ostream};
+	}
+	if (defined $self->{istream}) {
+		close $self->{istream};
+	}
+}
+
 sub DESTROY ($) {
 	my $self = shift;
-	$self->sendText(0, "Nop", 0);
-	close $self->{istream};
-	close $self->{ostream};
+	$self->destroy;
 }
 
 sub name ($;$) {
@@ -171,9 +188,13 @@ sub mask ($;$) {
 	my $self = shift;
 	my $mask = shift;
 	if (defined $mask) {
-		$self->sendText(0, "Set_Mask $mask");
-		my $oldMask = $self->{mask};
-		$self->{mask} = $mask;
+		my $maskId = $self->isExtended($mask)? "xmask": "mask";
+		my $oldMask = $self->{$maskId};
+		return $oldMask
+			if $mask == M_EXTENDED_MSG;
+		$self->sendText(0, "Set_Mask $mask")
+			unless defined $oldMask && $oldMask == $mask;
+		$self->{$maskId} = $mask;
 		return $oldMask;
 	}
 	return $self->{mask};
@@ -211,16 +232,16 @@ sub sendText ($$$) {
 	my $self = shift;
 	my ($winId, $data) = @_;
 
-	die "sendText requires 2 params: winId and data\n"
+	$self->internalDie("sendText requires 2 params: winId and data")
 		unless defined $winId && defined $data;
 
-	my @parts = split(/,/, $data);
+	my @lines = split(/\n/s, $data);
 
-	my $part;
-	for $part (@parts) {
-		my $len = length $part;
+	my $line;
+	for $line (@lines) {
+		my $len = length $line;
 		$self->{ostream}->print(
-			pack("lla${len}l", $winId, $len, $part, 1)
+			pack("lla${len}l", $winId, $len, $line, 1)
 		);
 	}
 }
@@ -242,7 +263,8 @@ sub readPacket ($) {
 
 	my ($magic, $type, $len, $timestamp) =
 		unpack(sprintf("L%d", HEADER_SIZE), $header);
-	die "Bad magic number $magic\n" unless $magic == START_FLAG;
+	$self->internalDie("Bad magic number $magic in packet")
+		unless $magic == START_FLAG;
 
 	# $len is number of words in packet, including header;
 	# we need this as number of bytes.
@@ -254,11 +276,11 @@ sub readPacket ($) {
 		while ($off < $len) {
 			$got = sysread($self->{istream}, $packet, $len, $off);
 			if (!defined $got) {
-				die "$self->{NAME} process ($$) exiting due to read error\n";
+				$self->internalDie("sysread error: $!");
 			}
 			$off += $got;
 		}
-		die "Internal error, got packet len $off while expecting $len\n"
+		$self->internalDie("Got packet len $off while expecting $len")
 			if $off != $len;
 	}
 
@@ -312,6 +334,7 @@ sub eventLoop ($) {
 		$self->processPacket($self->readPacket) || last;
 	}
 	$self->invokeHandler(ON_EXIT);
+	$self->destroy;
 }
 
 sub addHandler ($$$) {
@@ -319,8 +342,8 @@ sub addHandler ($$$) {
 	my $type = shift;
 	my $handler = shift;
 
-	die "addHandler: no handler type\n" unless defined $type;
-	die "addHandler: no handler code\n" unless ref($handler) eq 'CODE';
+	$self->internalDie("addHandler: no handler type") unless defined $type;
+	$self->internalDie("addHandler: no handler code") unless ref($handler) eq 'CODE';
 
 	my $category = $self->getHandlerCategory($type);
 	$self->{handlers}->{$category}->{$type} = []
@@ -340,6 +363,17 @@ sub deleteHandler ($$) {
 
 	$self->{handlers}->{$category}->{$type}->[$index] = undef;
 	return 1;
+}
+
+sub addDefaultErrorHandler ($) {
+	my $self = shift;
+
+	$self->addHandler(M_ERROR, sub {
+		my ($self, $type, @args) = @_;
+		my $error = $args[3];
+		print STDERR "[", $self->name, "]: got FVWM error: $error\n";
+		#die "quit";
+	});
 }
 
 sub getConfigInfo ($@) {

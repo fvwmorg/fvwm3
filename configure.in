@@ -650,7 +650,7 @@ utils/fvwm-menu-xlock utils/fvwm-menu-directory
 utils/fvwm-menu-desktop utils/fvwm-menu-headlines
 utils/fvwm24_convert utils/fvwmbug
 perllib/Makefile perllib/FVWM/Makefile
-perllib/FVWM/Module.pm
+perllib/FVWM/Module/Makefile perllib/FVWM/Module.pm
 rpm/Makefile rpm/fvwm.spec docs/fvwm.lsm
 docs/Makefile sample.fvwmrc/Makefile tests/Makefile
 dnl

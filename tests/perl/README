@@ -8,4 +8,8 @@ These are 2 small FVWM modules written in perl:
 	Prints window names and ids to stderr and exits.
 	If -x flag is given, do this in xmessage instead of stderr.
 
+* module-tkdesker:
+	A simple version of pager, does not show mini-windows or pages;
+	shows only buttons, one per desk. Using Perl/Tk.
+
 You may just run these modules in FvwmConsole using their full path.

@@ -1,0 +1,192 @@
+#!/usr/bin/perl -w
+
+#
+# A simpler version of the pager, that only switches between desktops without
+# the outlines of windows. Patterned after the built-in pager that comes with
+# tkGoodStuff.
+#
+# Randy J. Ray, adapted by Mikhael Goikhman.
+#
+# Usage:
+#
+#   *FvwmPerlTkDesker: Rows 2
+#   *FvwmPerlTkDesker: Background bisque
+#   *FvwmPerlTkDesker: Font 7x14
+#   *FvwmPerlTkDesker: Title Perl/Tk Desker
+#   Style *Desker Sticky
+#   /path/to/tests/perl/module-tkdesker 0 3
+#
+
+use 5.003;
+use strict;
+use vars qw($TOP $desker %opts $current_desk $frame @buttons @desk_focus);
+use Tk;
+
+use lib `fvwm-config -p | tr -d '\n'`;
+use FVWM::Module::Tk;
+
+my $TOP = new MainWindow;
+my $desker = new FVWM::Module::Tk($TOP,
+	Name => "FvwmPerlTkDesker",
+	Mask => (M_NEW_DESK | M_FOCUS_CHANGE | M_ERROR),
+);
+&ReadDeskerOptions($desker, $TOP);
+
+$frame = $TOP->Frame;
+$TOP->title($opts{Title} || $desker->name);
+$TOP->geometry($opts{Geometry}) if (defined $opts{Geometry});
+&makeButtons($frame, $desker);
+$frame->pack(-expand => 1, -fill => 'both', -anchor => 'nw');
+
+$desker->addHandler(M_NEW_DESK, sub {
+	my ($self, $type, $desk) = @_;
+
+	&unhilite($current_desk);
+	return if $desk < $opts{START} or $desk > $opts{'END'};
+	$current_desk = $desk;
+	&hilite($current_desk, $self);
+});
+$desker->addHandler(M_FOCUS_CHANGE, sub {
+	my ($self, $type, $id, $frameid, $ptr) = @_;
+
+	$desk_focus[$current_desk] = $id;
+});
+$desker->addDefaultErrorHandler;
+
+#
+# Any signals we need to be wary of?
+#
+$SIG{PIPE} = sub { exit };
+
+$current_desk = &currentDesk($desker);
+&hilite($current_desk);
+
+$desker->eventLoop; # Never returns
+
+exit;
+
+sub ReadDeskerOptions ($$) {
+	my $mod = shift;
+	my $top = shift;
+
+	my @args = $mod->argv;
+
+	die "Usage: $0 #start #end [ -name name_string ]\n"
+		if (@args < 2);
+
+	my $START = shift(@args);
+	my $END   = shift(@args);
+
+	for ($START .. $END) { $desk_focus[$_] = undef }
+
+	if ($args[0] && $args[0] eq '-name' && $args[1]) {
+		$mod->name($args[1]);
+	}
+
+	### To fix
+	%opts = ();  #$mod->getConfigInfo();
+
+	$top->optionAdd('*foreground', $opts{Foreground})
+		if (exists $opts{Foreground});
+	$top->optionAdd('*background', $opts{Background})
+		if (exists $opts{Background});
+	$top->optionAdd('*font', $opts{Font}) if (exists $opts{Font});
+
+	$opts{ROWS} = $opts{Rows} || 1;
+	$opts{COLS} = $opts{Columns} || int(($END - $START + 1) / $opts{ROWS});
+	$opts{START} = $START;
+	$opts{'END'} = $END;
+}
+
+sub makeButtons ($$) {
+	my $top = shift;
+	my $mod = shift;
+
+	my ($start, $end, $cols, $rows) =
+		($opts{START}, $opts{'END'}, $opts{COLS},  $opts{ROWS});
+	my ($x, $y, $text, $button, $frame, @labels);
+
+	die "Managed desks ($start to $end) must exactly fit in ${cols}x$rows "
+		. "space, stopped.\n"
+		if $cols * $rows != $end - $start + 1;
+
+	if (exists $opts{Label} and ref($opts{Label}) eq 'ARRAY') {
+		my ($each, $pos, $string);
+
+		for $each (@{$opts{Label}}) {
+			($pos, $string) = split(/ /, $each, 2);
+			$labels[$pos] = $string;
+		}
+	}
+
+	for ($x = 0; $x < $cols; $x++) {
+		$frame = $top->Frame;
+		for ($y = 0; $y < $rows; $y++) {
+			my $pos = $start + $x + ($y * $cols);
+
+			$button = $frame->Label(-relief => 'raised');
+			$button->bind('<1>', sub {
+				$mod->sendText(0, "Desk 0 $pos");
+			});
+			$text = $labels[$pos] || "Desk $pos";
+			$button->configure('text' => "$text")
+				unless (exists $opts{NoLabels} and $opts{NoLabels} !~ /no/oi);
+
+			$button->pack(-side => 'top', -expand => 1, -fill => 'both');
+
+			# This index happens to match the desk #, for (un)hilite
+			$buttons[$pos] = $button;
+		}
+		$frame->pack(-side => 'left', -expand => 1, -fill => 'both');
+	}
+}
+
+sub hilite ($$) {
+	my $desk = shift;
+	my $mod = shift;
+
+	my $button = $buttons[$desk];
+
+	if (exists $opts{CurrentDeskBackground}) {
+		$button->configure(-background => $opts{CurrentDeskBackground});
+		$button->configure(-foreground => $opts{CurrentDeskForeground})
+			if exists $opts{CurrentDeskForeground};
+	} else {
+		$button->configure(-relief => 'sunken');
+	}
+	#$mod->sendText($desk_focus[$desk], "Focus")
+	#	if (defined $desk_focus[$desk]);
+}
+
+sub unhilite ($) {
+	my $desk = shift;
+
+	my $button = $buttons[$desk];
+
+	if (exists $opts{CurrentDeskBackground}) {
+		$button->configure(-background => $opts{Background});
+		$button->configure(-foreground => $opts{Foreground})
+			if exists $opts{CurrentDeskForeground};
+	} else {
+		$button->configure(-relief => 'raised');
+	}
+}
+
+sub currentDesk ($) {
+	my $mod = shift;
+
+	my ($len, $packet, $type, @args);
+	my $current = 0;
+
+#	my $old_mask = $mod->mask(M_CONFIGURE_WINDOW | M_END_WINDOWLIST);
+#	$mod->sendText(0, "Send_WindowList");
+#	while (1) {
+#		($len, $packet, $type) = $mod->readPacket;
+#		last if ($type & M_END_WINDOWLIST);
+#		last if ($len < 0);
+#
+#		@args = unpack($self->{packetTypes}->{$type}, $packet);
+#	if ($args[2] == $self->{
+
+	return $current;
+}
