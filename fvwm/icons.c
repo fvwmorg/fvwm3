@@ -205,7 +205,7 @@ ICON_DBG((stderr,"ciw: hint order: iwh file iph '%s'\n", fw->name));
 		icon_order[1] = 2;
 		icon_order[2] = 3;
 		icon_order[3] = 0;
-CON_DBG((stderr,"ciw: hint order: iwh iph file '%s'\n", fw->name));
+ICON_DBG((stderr,"ciw: hint order: iwh iph file '%s'\n", fw->name));
 	}
 
 	fw->icon_g.picture_w_g.width = 0;

@@ -20,15 +20,15 @@
 
 #include "config.h"
 
+#include <X11/Xlib.h>
+#include <stdio.h>
+#include <math.h>
+
 #include "defaults.h"
 #include "libs/fvwmlib.h"
 #include "libs/PictureBase.h"
 #include "libs/PictureUtils.h"
 #include "libs/PictureGraphics.h"
-
-#include <X11/Xlib.h>
-#include <stdio.h>
-#include <math.h>
 
 /* ---------------------------- local definitions --------------------------- */
 
