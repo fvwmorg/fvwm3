@@ -1,3 +1,11 @@
+Tue Apr 13 23:13:24 1999  DanEspen  <dje@blue>
+
+	* fvwm/fvwm.c (main): Read command just $HOME or $FVWM_USERHOME.
+
+	* fvwm/read.c (ReadSubFunc): Read command just $HOME or $FVWM_USERHOME.	
+
+	* fvwm/fvwm2.1 (sub-menu): Read command just $HOME or $FVWM_USERHOME.
+
 1999-04-13  Dan Espen  <dane@mk.bellcore.com>
 
 	* fvwm/fvwm2.1 (Examples): fix description of IconFill default

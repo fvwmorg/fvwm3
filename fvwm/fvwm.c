@@ -33,8 +33,6 @@
 #include <fcntl.h>
 #include <string.h>
 #include <unistd.h>
-#include <sys/types.h>                  /* for stat() */
-#include <sys/stat.h>                   /* for stat() */
 #include <pwd.h>
 
 #include "fvwm.h"
@@ -176,7 +174,7 @@ int main(int argc, char **argv)
   int visualClass = -1;
   int visualId = -1;
   int x, y;
-  struct stat statbuf;
+  char *home_ptr;
 
   g_argv = argv;
   g_argc = argc;
@@ -186,17 +184,31 @@ int main(int argc, char **argv)
   /* Put the default module directory into the environment so it can be used
      later by the config file, etc.  */
   putenv("FVWM_MODULEDIR=" FVWM_MODULEDIR);
-#define DIR_URW (S_IFDIR | S_IWUSR | S_IRUSR)
-  /* Note the way this next bit uses the current directory */
+
+  /* Figure out where to read and write config files. */
+  home_ptr = getenv("HOME");
+  if (home_ptr == NULL) {
+    home_ptr=".";
+  }
   user_home_ptr = getenv("FVWM_USERHOME");
-  if (user_home_ptr == NULL) {          /* if not already set */
-    if ((stat(".fvwm",&statbuf) == 0) && /* if ".fvwm" exists */
-        ((statbuf.st_mode & DIR_URW) == DIR_URW)) { /* and its a good dir */
-      user_home_ptr = ".fvwm/";         /* use it  */
-    } else {                            /* else it doesnt exist */
-    user_home_ptr = ".";                /* use a hidden file */
-    } /* end exist */
-  } /* end not already set */
+  if (user_home_ptr != NULL) {
+    if (user_home_ptr[0] != '/') {
+      char *work_ptr;
+      work_ptr = safemalloc(strlen(home_ptr) + strlen(user_home_ptr) + 3);
+      strcpy (work_ptr, home_ptr);
+      strcat (work_ptr, "/");
+      strcat (work_ptr, user_home_ptr);
+      /* must have trailing slash like $HOME does. */
+      if (work_ptr[strlen(work_ptr)-1] != '/') {
+        strcat(work_ptr,"/");
+      }
+      user_home_ptr = work_ptr;
+    }
+  } else {
+    user_home_ptr = safemalloc(strlen(home_ptr) + 2);
+    strcpy(user_home_ptr,home_ptr);
+    strcat(user_home_ptr,"/");
+  }
   for (i = 1; i < argc; i++)
   {
     if (strncasecmp(argv[i],"-debug",6)==0)
