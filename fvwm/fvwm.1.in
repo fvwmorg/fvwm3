@@ -7296,7 +7296,7 @@ styles.
 .I MinOverlapPlacementPenalties
 takes at most 6 positive or null decimal arguments:
 .EX
-.I norm ontop icon sticky below strut
+.I normal ontop icon sticky below strut
 .EE
 if trailing arguments are missing
 the default is used which is:
@@ -7307,13 +7307,15 @@ This style configures the
 .IR MinOverlapPlacement " and " MinOverlapPercentPlacement
 placement policy.
 The
-.I norm
+.I normal
 factor affects normal windows, the
 .I ontop
 factor affects windows with a greater layer than the window being
 placed, the
 .I icon
 factor affects icons, the
+.I sticky
+factor affects sticky windows, the
 .I below
 factor affects windows with a smaller layer than the window being
 placed, the
