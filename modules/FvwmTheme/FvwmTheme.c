@@ -590,8 +590,8 @@ static void parse_config(void) {
   line = safemalloc(strlen(name + 2));
   sprintf(line, "*%s", name);
   InitGetConfigLine(fd, line);
-/*  free(line);
-*/
+  free(line);
+
   /* tell fvwm what we want to receive */
   SetMessageMask(fd, M_CONFIG_INFO | M_END_CONFIG_INFO
 		 | M_SENDCONFIG | M_STRING);
