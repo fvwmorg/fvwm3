@@ -1983,6 +1983,7 @@ FvwmWindow *AddWindow(
 {
 	/* new fvwm window structure */
 	register FvwmWindow *fw;
+	FvwmWindow *tmp;
 	/* mask for create windows */
 	unsigned long valuemask;
 	/* attributes for create windows */
@@ -2000,7 +2001,8 @@ FvwmWindow *AddWindow(
 	mwtsm_state_args state_args;
 
 	/****** init window structure ******/
-	setup_window_structure(&fw, w, ReuseWin);
+	setup_window_structure(&tmp, w, ReuseWin);
+	fw = tmp;
 
 	/****** Make sure the client window still exists.  We don't want to
 	 * leave an orphan frame window if it doesn't.  Since we now have the
