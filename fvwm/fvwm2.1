@@ -4261,7 +4261,20 @@ placement to be automatically placed in a smart location - a location
 in which they do not overlap any other windows on the screen.  If no
 such position can be found user placement or random placement (if
 specified) will be used as a fall-back method.  For the best of all
-possible worlds use both RandomPlacement and SmartPlacement.
+possible worlds use both
+.IR RandomPlacement " and " SmartPlacement .
+
+.I CleverPlacement
+augments the
+.I SmartPlacement
+style so that it tries to avoid overlapping icons, sticky windows
+and windows on higher layers.  If
+.I SmartPlacement
+is not used,
+.I CleverPlacement
+has no effect.  To switch this style off again, use the
+.I CleverPlacementOff
+style.
 
 \fIStartsLowered\fP instructs fvwm to put the window initially at the
 bottom of its layer rather than the default \fIStartsRaised\fP.

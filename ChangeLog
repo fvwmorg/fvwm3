@@ -1,5 +1,11 @@
 2000-01-31  Dominik Vogt  <dominik.vogt@gmx.de>
 
+	* fvwm/style.c (ProcessNewStyle):
+	(check_window_style_change):
+	* fvwm/style.h:
+	* fvwm/window_flags.h:
+	* fvwm/fvwm.h:
+	* fvwm/style.c (ProcessNewStyle):
 	* fvwm/placement.c (PlaceWindow):
 	* fvwm/session.c (SaveGlobalState):
 	(LoadGlobalState):
@@ -8,6 +14,7 @@
 	(regrab_focus_win):
 	* fvwm/events.c (HandleButtonPress):
 	* fvwm/builtins.c (SetGlobalOptions):
+	removed GlobalOpts and WIndowShadeAnimate commands in favour of styles
 
 	* fvwm/add_window.c (AddWindow):
 	fixed placement to honouring the layer
@@ -18,12 +25,6 @@
 	a hack to workaround buggy apps that map their window and then change
 	the width_inc/height_inc hints before the window is mapped and expect
 	that the window doesn't change its size.
-
-	* fvwm/style.c (ProcessNewStyle):
-	(check_window_style_change):
-	* fvwm/style.h:
-	* fvwm/window_flags.h:
-	* fvwm/fvwm.h:
 
 2000-01-31  Brad Giaccio  <bgiaccio@psrw.com>
 

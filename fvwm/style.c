@@ -754,6 +754,13 @@ void ProcessNewStyle(XEvent *eventp, Window w, FvwmWindow *tmp_win,
           ptmpstyle->flag_mask.placement_mode |= PLACE_CLEVERNESS_MASK;
           ptmpstyle->change_mask.placement_mode |= PLACE_CLEVERNESS_MASK;
         }
+        else if(StrEquals(token, "CleverPlacementOff"))
+        {
+	  found = True;
+          ptmpstyle->flags.placement_mode &= (~PLACE_CLEVER);
+          ptmpstyle->flag_mask.placement_mode |= PLACE_CLEVERNESS_MASK;
+          ptmpstyle->change_mask.placement_mode |= PLACE_CLEVERNESS_MASK;
+        }
 	else if(StrEquals(token, "CAPTUREHONORSSTARTSONPAGE"))
 	{
 	  found = True;
@@ -942,10 +949,10 @@ void ProcessNewStyle(XEvent *eventp, Window w, FvwmWindow *tmp_win,
           ptmpstyle->flag_mask.do_decorate_transient = 1;
           ptmpstyle->change_mask.do_decorate_transient = 1;
         }
-        else if(StrEquals(token, "DUMBPLACEMENT"))
+        else if(StrEquals(token, "DumbPlacement"))
         {
 	  found = True;
-          ptmpstyle->flags.placement_mode &= (~PLACE_CLEVERNESS_MASK);
+          ptmpstyle->flags.placement_mode &= (~PLACE_SMART);
           ptmpstyle->flag_mask.placement_mode |= PLACE_CLEVERNESS_MASK;
           ptmpstyle->change_mask.placement_mode |= PLACE_CLEVERNESS_MASK;
         }
