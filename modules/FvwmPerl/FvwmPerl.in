@@ -1,4 +1,4 @@
-#!@PERL@
+#!@PERL@ -w
 
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -50,7 +50,7 @@ my (%a, %b, %c, %d, %e, %f, %g, %h);
 
 sub command ($) {
 	my $command = shift;
-	$module->sendText(0, $command);
+	$module->sendText($command);
 }
 
 # ----------------------------------------------------------------------------
@@ -60,19 +60,21 @@ sub processString ($$$$$$) {
 	my $self = $_[0];
 	my $string = $_[5];
 
-	my ($command, $rest) = split(/ /, $string, 2);
-	$command = lc($command);
+	$string =~ s/^\s+//;
+	my ($action, $rest) = split(/\s+/, $string, 2);
+	$action = lc($action);
 
-	if ($command eq "eval") {
+	if ($action eq "eval") {
+		return unless defined $rest;
 		eval $rest;
 		if ($@) {
-			print STDERR "[", $self->name, "]: Error in eval: $@\n";
+			print STDERR "[", $self->name, "][eval]: $@";
 		}
 	}
-	if ($command eq "load") {
+	elsif ($action eq "load") {
 		# not yet
 	}
-	if ($command eq "stop") {
+	elsif ($action eq "stop") {
 		die "quit";
 	}
 }

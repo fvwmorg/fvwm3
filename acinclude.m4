@@ -841,6 +841,8 @@ AC_DEFUN([GNOME_INIT_HOOK],[
 	[  --with-gnome-includes   location of GNOME headers],[
 	CFLAGS="$CFLAGS -I$withval"
 	])
+
+	gnome_prefix=$ac_default_prefix/lib
 	
 	AC_ARG_WITH(gnome-libs,
 	[  --with-gnome-libs       location of GNOME libs],[
@@ -889,15 +891,16 @@ AC_DEFUN([GNOME_INIT_HOOK],[
               fi
             fi
 
-	    if test x$exec_prefix = xNONE; then
-	        if test x$prefix = xNONE; then
-		    gnome_prefix=$ac_default_prefix/lib
-	        else
- 		    gnome_prefix=$prefix/lib
-	        fi
-	    else
-	        gnome_prefix=`eval echo \`echo $libdir\``
-	    fi
+	    # migo: disable this destructive logic
+#	    if test x$exec_prefix = xNONE; then
+#	        if test x$prefix = xNONE; then
+#		    gnome_prefix=$ac_default_prefix/lib
+#	        else
+# 		    gnome_prefix=$prefix/lib
+#	        fi
+#	    else
+#	        gnome_prefix=`eval echo \`echo $libdir\``
+#	    fi
 	
 	    if test "$no_gnome_config" = "yes"; then
               AC_MSG_CHECKING(for gnomeConf.sh file in $gnome_prefix)

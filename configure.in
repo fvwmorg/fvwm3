@@ -454,10 +454,33 @@ AC_MSG_RESULT($have_codeset)
 
 
 dnl ********* fribidi
-$UNSET ac_cv_header_fribidi_fribidi_h
-$UNSET ac_cv_lib_fribidi_fribidi_log2vis
-smr_CHECK_LIB(fribidi, , bi-directional text support, fribidi_log2vis,
-	fribidi/fribidi.h)
+dnl $UNSET ac_cv_header_fribidi_fribidi_h
+dnl $UNSET ac_cv_lib_fribidi_fribidi_log2vis
+dnl smr_CHECK_LIB(fribidi, , bi-directional text support, fribidi_log2vis,
+dnl 	fribidi/fribidi.h)
+
+# This may be a macro somewhen
+AC_ARG_WITH(fribidi-bindir,
+	[  --with-fribidi-bindir=DIR  directory of fribidi-config if not in PATH],
+	FRIBIDI_BINDIR="$withval", FRIBIDI_BINDIR=".")
+AC_PATH_PROG(FRIBIDI_CONFIG, fribidi-config, , "${FRIBIDI_BINDIR}:$PATH")
+
+if test -z "$FRIBIDI_CONFIG"; then
+	with_fribidi=no
+	problem_fribidi=": No fribidi-config found in PATH"
+else
+	fribidi_CFLAGS=`$FRIBIDI_CONFIG --cflags`
+	fribidi_LIBS=`$FRIBIDI_CONFIG --libs`
+	AC_CHECK_LIB(fribidi, fribidi_log2vis,
+		with_fribidi=yes; problem_fribidi=,
+		with_fribidi=no; problem_fribidi=": No good libs via fribidi-config",
+		[$fribidi_LIBS $fribidi_CFLAGS])
+fi
+
+if test "$with_fribidi" = "no"; then
+	fribidi_CFLAGS=
+	fribidi_LIBS=
+fi
 test "$fribidi_LIBS" && AC_DEFINE(HAVE_FRIBIDI)
 AC_SUBST(fribidi_LIBS)
 AC_SUBST(fribidi_CFLAGS)

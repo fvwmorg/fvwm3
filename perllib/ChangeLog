@@ -1,3 +1,12 @@
+2002-02-26  Mikhael Goikhman  <migo@homemail.com>
+
+	* FVWM/Makefile.am:
+	* FVWM/Module/Makefile.am:
+	fixed "make distcheck"
+
+	* FVWM/Module.pm.in:
+	parameters of sendText() switched
+
 2002-02-25  Mikhael Goikhman  <migo@homemail.com>
 
 	* FVWM/Module/Gtk.pm:

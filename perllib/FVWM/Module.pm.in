@@ -164,7 +164,7 @@ sub new ($@) {
 sub destroy ($) {
 	my $self = shift;
 	if (defined $self->{ostream}) {
-		$self->sendText(0, "Nop", 0);
+		$self->sendText("Nop", 0, 0);
 		close $self->{ostream};
 	}
 	if (defined $self->{istream}) {
@@ -192,7 +192,7 @@ sub mask ($;$) {
 		my $oldMask = $self->{$maskId};
 		return $oldMask
 			if $mask == M_EXTENDED_MSG;
-		$self->sendText(0, "Set_Mask $mask")
+		$self->sendText("Set_Mask $mask")
 			unless defined $oldMask && $oldMask == $mask;
 		$self->{$maskId} = $mask;
 		return $oldMask;
@@ -227,21 +227,23 @@ sub getHandlerCategory ($$) {
 	return "regular";
 }
 
-# params: winId, data
-sub sendText ($$$) {
+# params: text, [winId], [continue=0/1]
+sub sendText ($$;$$) {
 	my $self = shift;
-	my ($winId, $data) = @_;
+	my $text = shift;
+	my $winId = shift || 0;
+	my $continue = @_? shift(): 1;
 
-	$self->internalDie("sendText requires 2 params: winId and data")
-		unless defined $winId && defined $data;
+	$self->internalDie("sendText requires at least text param")
+		unless defined $text;
 
-	my @lines = split(/\n/s, $data);
+	my @lines = split(/\n/s, $text);
 
 	my $line;
 	for $line (@lines) {
 		my $len = length $line;
 		$self->{ostream}->print(
-			pack("lla${len}l", $winId, $len, $line, 1)
+			pack("lla${len}l", $winId, $len, $line, $continue)
 		);
 	}
 }

@@ -28,13 +28,13 @@ sub requestWindowList () {
 	$creatingWindowList = 1;
 	$clist->freeze;
 	$clist->clear;
-	$module->sendText(0, "Send_WindowList");
+	$module->sendText("Send_WindowList");
 }
 
 sub doCommand ($) {
 	my $command = shift;
 	foreach ($clist->selection) {
-		$module->sendText(hex($clist->get_text($_, 0)), $command);
+		$module->sendText($command, hex($clist->get_text($_, 0)));
 	}
 }
 

@@ -1,3 +1,11 @@
+2002-02-26  Mikhael Goikhman  <migo@homemail.com>
+
+	* acinclude.m4:
+	disabled a destructing gnome_prefix logic
+
+	* configure.in:
+	replaced fribidi detection mechanism, now fribidi-config is used
+
 2002-02-26  olicha  <olivier.chapuis@free.fr>
 
 	* acconfig.h (HAVE_XFT):
