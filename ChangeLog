@@ -1,3 +1,8 @@
+2002-05-18  Mikhael Goikhman  <migo@homemail.com>
+
+	* fvwm/functions.c (expand_extended_var):
+	expand $[fgsh.csN], use constants instead of numbers
+
 2002-05-17  olicha  <olivier.chapuis@free.fr>
 
 	* libs/Flocale.c (FlocaleDrawString):

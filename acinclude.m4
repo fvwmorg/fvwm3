@@ -128,8 +128,8 @@ AC_DEFUN(smr_SWITCH, [
     AC_ARG_ENABLE(
         $1,
         ifelse($3, on,
-            [  --disable-[$1]substr([             ], len([$1])) disable [$2]],
-            [  --enable-[$1] substr([             ], len([$1])) enable [$2]]),
+            [  --disable-$1substr(x             x, len($1)) disable $2],
+            [  --enable-$1 substr(x             x, len($1)) enable $2]),
         [ if test "$enableval" = yes; then
             AC_MSG_RESULT(yes)
             ifelse($4, , , AC_DEFINE($4))
@@ -142,7 +142,6 @@ AC_DEFUN(smr_SWITCH, [
             ifelse($4, , , AC_DEFINE($4)) ],
            [ AC_MSG_RESULT(no)
             ifelse($5, , , AC_DEFINE($5))]))])
-
 
 dnl Allow argument for optional libraries; wraps AC_ARG_WITH, to
 dnl provide a "--with-foo-library" option in the configure script, where foo

@@ -67,9 +67,10 @@ sub printActionError ($$) {
 
 my $version = "@VERSION@";
 
-my ($a, $b, $c, $d, $e, $f, $g, $h) = ("", "", "", "", "", "", "", "");
-my (@a, @b, @c, @d, @e, @f, @g, @h);
-my (%a, %b, %c, %d, %e, %f, %g, %h);
+my ($a, $b, $c, $d, $e, $f, $g, $h, $i, $j, $k, $l, $m, $n, $o, $p)
+	= ("", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "");
+my (@a, @b, @c, @d, @e, @f, @g, @h, @i, @j, @k, @l, @m, @n, @o, @p);
+my (%a, %b, %c, %d, %e, %f, %g, %h, %i, %j, %k, %l, %m, %n, %o, %p);
 
 sub command ($) {
 	my $command = shift;

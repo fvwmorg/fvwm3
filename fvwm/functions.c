@@ -325,470 +325,492 @@ static const func_type *FindBuiltinFunction(char *func)
 
 static char *function_vars[] =
 {
-  "fg.cs",
-  "bg.cs",
-  "hilight.cs",
-  "shadow.cs",
-  "desk.width",
-  "desk.height",
-  "vp.x",
-  "vp.y",
-  "vp.width",
-  "vp.height",
-  "page.nx",
-  "page.ny",
-  "w.x",
-  "w.y",
-  "w.width",
-  "w.height",
-  "cw.x",
-  "cw.y",
-  "cw.width",
-  "cw.height",
-  "it.x",
-  "it.y",
-  "it.width",
-  "it.height",
-  "ip.x",
-  "ip.y",
-  "ip.width",
-  "ip.height",
-  "i.x",
-  "i.y",
-  "i.width",
-  "i.height",
-  "screen",
-  "desk.name",
-  "schedule.last",
-  "schedule.next",
-  "cond.rc",
-  "pointer.x",
-  "pointer.y",
-  "pointer.wx",
-  "pointer.wy",
-  "pointer.cx",
-  "pointer.cy",
-  NULL
+	"fg.cs",
+	"bg.cs",
+	"hilight.cs",
+	"shadow.cs",
+	"fgsh.cs",
+	"desk.name",
+	"desk.width",
+	"desk.height",
+	"vp.x",
+	"vp.y",
+	"vp.width",
+	"vp.height",
+	"page.nx",
+	"page.ny",
+	"w.x",
+	"w.y",
+	"w.width",
+	"w.height",
+	"cw.x",
+	"cw.y",
+	"cw.width",
+	"cw.height",
+	"it.x",
+	"it.y",
+	"it.width",
+	"it.height",
+	"ip.x",
+	"ip.y",
+	"ip.width",
+	"ip.height",
+	"i.x",
+	"i.y",
+	"i.width",
+	"i.height",
+	"screen",
+	"schedule.last",
+	"schedule.next",
+	"cond.rc",
+	"pointer.x",
+	"pointer.y",
+	"pointer.wx",
+	"pointer.wy",
+	"pointer.cx",
+	"pointer.cy",
+	NULL
 };
 
-static int expand_extended_var(
-  char *var_name, char *output, FvwmWindow *fw,
-  fvwm_cond_func_rc *cond_rc)
+enum
 {
-  char *s;
-  char *rest;
-  char dummy[64];
-  char *target = (output) ? output : dummy;
-  int cs = -1;
-  int n;
-  int i;
-  int l;
-  int x;
-  int y;
-  Pixel pixel = 0;
-  int val = -12345678;
-  Bool is_numeric = False;
-  Bool is_x;
-  Window context_w = Scr.Root;
+	VAR_FG_CS,
+	VAR_BG_CS,
+	VAR_HILIGHT_CS,
+	VAR_SHADOW_CS,
+	VAR_FGSH_CS,
+	VAR_DESK_NAME,
+	VAR_DESK_WIDTH,
+	VAR_DESK_HEIGHT,
+	VAR_VP_X,
+	VAR_VP_Y,
+	VAR_VP_WIDTH,
+	VAR_VP_HEIGHT,
+	VAR_PAGE_NX,
+	VAR_PAGE_NY,
+	VAR_W_X,
+	VAR_W_Y,
+	VAR_W_WIDTH,
+	VAR_W_HEIGHT,
+	VAR_CW_X,
+	VAR_CW_Y,
+	VAR_CW_WIDTH,
+	VAR_CW_HEIGHT,
+	VAR_IT_X,
+	VAR_IT_Y,
+	VAR_IT_WIDTH,
+	VAR_IT_HEIGHT,
+	VAR_IP_X,
+	VAR_IP_Y,
+	VAR_IP_WIDTH,
+	VAR_IP_HEIGHT,
+	VAR_I_X,
+	VAR_I_Y,
+	VAR_I_WIDTH,
+	VAR_I_HEIGHT,
+	VAR_SCREEN,
+	VAR_SCHEDULE_LAST,
+	VAR_SCHEDULE_NEXT,
+	VAR_COND_RC,
+	VAR_POINTER_X,
+	VAR_POINTER_Y,
+	VAR_POINTER_WX,
+	VAR_POINTER_WY,
+	VAR_POINTER_CX,
+	VAR_POINTER_CY,
+} extended_vars;
 
-  /* allow partial matches for *.cs variables */
-  switch ((i = GetTokenIndex(var_name, function_vars, -1, &rest)))
-  {
-  case 0:
-  case 1:
-  case 2:
-  case 3:
-    if (!isdigit(*rest) || (*rest == '0' && *(rest + 1) != 0))
-      /* not a non-negative integer without leading zeros */
-      return 0;
-    if (sscanf(rest, "%d%n", &cs, &n) < 1)
-      return 0;
-    if (*(rest + n) != 0)
-      /* trailing characters */
-      return 0;
-    if (cs < 0)
-      return 0;
-    alloc_colorset(cs);
-    switch (i)
-    {
-    case 0:
-      /* fg.cs */
-      pixel = Colorset[cs].fg;
-      break;
-    case 1:
-      /* bg.cs */
-      pixel = Colorset[cs].bg;
-      break;
-    case 2:
-      /* hilight.cs */
-      pixel = Colorset[cs].hilite;
-      break;
-    case 3:
-      /* shadow.cs */
-      pixel = Colorset[cs].shadow;
-      break;
-    }
-    return pixel_to_color_string(dpy, Pcmap, pixel, target, False);
-    break;
-  case 33:
-    if (sscanf(rest, "%d%n", &cs, &n) < 1)
-      return 0;
-    if (*(rest + n) != 0)
-      /* trailing characters */
-      return 0;
-    s = GetDesktopName(cs);
-    if (s == NULL)
-    {
-      s = (char *)safemalloc(23*sizeof(char));
-      sprintf(s,"Desk %i", cs);
-      l = strlen(s);
-      if (output)
-      {
-	strcpy(output,s);
-      }
-      free(s);
-    }
-    else
-    {
-      l = strlen(s);
-      if (output)
-      {
-	strcpy(output,s);
-      }
-    }
-    return l;
-    break;
-  default:
-    break;
-  }
+static int expand_extended_var(
+	char *var_name, char *output, FvwmWindow *fw,
+	fvwm_cond_func_rc *cond_rc)
+{
+	char *s;
+	char *rest;
+	char dummy[64];
+	char *target = (output) ? output : dummy;
+	int cs = -1;
+	int n;
+	int i;
+	int l;
+	int x;
+	int y;
+	Pixel pixel = 0;
+	int val = -12345678;
+	Bool is_numeric = False;
+	Bool is_x;
+	Window context_w = Scr.Root;
 
-  /* only exact matches for all other variables */
-  switch ((i = GetTokenIndex(var_name, function_vars, 0, &rest)))
-  {
-  case 4:
-    /* desk.width */
-    is_numeric = True;
-    val = Scr.VxMax + Scr.MyDisplayWidth;
-    break;
-  case 5:
-    /* desk.height */
-    is_numeric = True;
-    val = Scr.VyMax + Scr.MyDisplayHeight;
-    break;
-  case 6:
-    /* vp.x */
-    is_numeric = True;
-    val = Scr.Vx;
-    break;
-  case 7:
-    /* vp.y */
-    is_numeric = True;
-    val = Scr.Vy;
-    break;
-  case 8:
-    /* vp.width */
-    is_numeric = True;
-    val = Scr.MyDisplayWidth;
-    break;
-  case 9:
-    /* vp.height */
-    is_numeric = True;
-    val = Scr.MyDisplayHeight;
-    break;
-  case 10:
-    /* page.nx */
-    is_numeric = True;
-    val = (int)(Scr.Vx / Scr.MyDisplayWidth);
-    break;
-  case 11:
-    /* page.ny */
-    is_numeric = True;
-    val = (int)(Scr.Vy / Scr.MyDisplayHeight);
-    break;
-  case 12:
-  case 13:
-  case 14:
-  case 15:
-    if (!fw || IS_ICONIFIED(fw) || IS_EWMH_DESKTOP(FW_W(fw)))
-      return 0;
-    else
-    {
-      rectangle g;
+	/* allow partial matches for *.cs variables */
+	switch ((i = GetTokenIndex(var_name, function_vars, -1, &rest)))
+	{
+	case VAR_FG_CS:
+	case VAR_BG_CS:
+	case VAR_HILIGHT_CS:
+	case VAR_SHADOW_CS:
+	case VAR_FGSH_CS:
+		if (!isdigit(*rest) || (*rest == '0' && *(rest + 1) != 0))
+			/* not a non-negative integer without leading zeros */
+			return 0;
+		if (sscanf(rest, "%d%n", &cs, &n) < 1)
+			return 0;
+		if (*(rest + n) != 0)
+			/* trailing characters */
+			return 0;
+		if (cs < 0)
+			return 0;
+		alloc_colorset(cs);
+		switch (i)
+		{
+		case VAR_FG_CS:
+			pixel = Colorset[cs].fg;
+			break;
+		case VAR_BG_CS:
+			pixel = Colorset[cs].bg;
+			break;
+		case VAR_HILIGHT_CS:
+			pixel = Colorset[cs].hilite;
+			break;
+		case VAR_SHADOW_CS:
+			pixel = Colorset[cs].shadow;
+			break;
+		case VAR_FGSH_CS:
+			pixel = Colorset[cs].fgsh;
+			break;
+		}
+		return pixel_to_color_string(dpy, Pcmap, pixel, target, False);
+		break;
+	case VAR_DESK_NAME:
+		if (sscanf(rest, "%d%n", &cs, &n) < 1)
+			return 0;
+		if (*(rest + n) != 0)
+			/* trailing characters */
+			return 0;
+		s = GetDesktopName(cs);
+		if (s == NULL)
+		{
+			s = (char *)safemalloc(23 * sizeof(char));
+			sprintf(s, "Desk %i", cs);
+			l = strlen(s);
+			if (output)
+			{
+				strcpy(output, s);
+			}
+			free(s);
+		}
+		else
+		{
+			l = strlen(s);
+			if (output)
+			{
+				strcpy(output,s);
+			}
+		}
+		return l;
+		break;
+	default:
+		break;
+	}
 
-      is_numeric = True;
-      get_unshaded_geometry(fw, &g);
-      switch (i)
-      {
-      case 12:
-	/* w.x */
-	val = g.x;
-	break;
-      case 13:
-	/* w.y */
-	val = g.y;
-	break;
-      case 14:
-	/* w.width */
-	val = g.width;
-	break;
-      case 15:
-	/* w.height */
-	val = g.height;
-	break;
-      default:
-	return 0;
-      }
-    }
-    break;
-  case 16:
-  case 17:
-  case 18:
-  case 19:
-    if (!fw || IS_ICONIFIED(fw) || IS_EWMH_DESKTOP(FW_W(fw)))
-      return 0;
-    else
-    {
-      rectangle g;
+	/* only exact matches for all other variables */
+	switch ((i = GetTokenIndex(var_name, function_vars, 0, &rest)))
+	{
+	case VAR_DESK_WIDTH:
+		is_numeric = True;
+		val = Scr.VxMax + Scr.MyDisplayWidth;
+		break;
+	case VAR_DESK_HEIGHT:
+		is_numeric = True;
+		val = Scr.VyMax + Scr.MyDisplayHeight;
+		break;
+	case VAR_VP_X:
+		is_numeric = True;
+		val = Scr.Vx;
+		break;
+	case VAR_VP_Y:
+		is_numeric = True;
+		val = Scr.Vy;
+		break;
+	case VAR_VP_WIDTH:
+		is_numeric = True;
+		val = Scr.MyDisplayWidth;
+		break;
+	case VAR_VP_HEIGHT:
+		is_numeric = True;
+		val = Scr.MyDisplayHeight;
+		break;
+	case VAR_PAGE_NX:
+		is_numeric = True;
+		val = (int)(Scr.Vx / Scr.MyDisplayWidth);
+		break;
+	case VAR_PAGE_NY:
+		is_numeric = True;
+		val = (int)(Scr.Vy / Scr.MyDisplayHeight);
+		break;
+	case VAR_W_X:
+	case VAR_W_Y:
+	case VAR_W_WIDTH:
+	case VAR_W_HEIGHT:
+		if (!fw || IS_ICONIFIED(fw) || IS_EWMH_DESKTOP(FW_W(fw)))
+			return 0;
+		else
+		{
+			rectangle g;
 
-      is_numeric = True;
-      get_client_geometry(fw, &g);
-      switch (i)
-      {
-      case 16:
-	/* cw.x */
-	val = g.x;
-	break;
-      case 17:
-	/* cw.y */
-	val = g.y;
-	break;
-      case 18:
-	/* cw.width */
-	val = g.width;
-	break;
-      case 19:
-	/* cw.height */
-	val = g.height;
-	break;
-      default:
-	return 0;
-      }
-    }
-    break;
-  case 20:
-  case 21:
-  case 22:
-  case 23:
-    if (!fw || IS_EWMH_DESKTOP(FW_W(fw)))
-      return 0;
-    else
-    {
-      rectangle g;
+			is_numeric = True;
+			get_unshaded_geometry(fw, &g);
+			switch (i)
+			{
+			case VAR_W_X:
+				val = g.x;
+				break;
+			case VAR_W_Y:
+				val = g.y;
+				break;
+			case VAR_W_WIDTH:
+				val = g.width;
+				break;
+			case VAR_W_HEIGHT:
+				val = g.height;
+				break;
+			default:
+				return 0;
+			}
+		}
+		break;
+	case VAR_CW_X:
+	case VAR_CW_Y:
+	case VAR_CW_WIDTH:
+	case VAR_CW_HEIGHT:
+		if (!fw || IS_ICONIFIED(fw) || IS_EWMH_DESKTOP(FW_W(fw)))
+			return 0;
+		else
+		{
+			rectangle g;
 
-      if (get_visible_icon_title_geometry(fw, &g) == False)
-      {
-	return 0;
-      }
-      is_numeric = True;
-      switch (i)
-      {
-      case 20:
-	/* it.x */
-	val = g.x;
-	break;
-      case 21:
-	/* it.y */
-	val = g.y;
-	break;
-      case 22:
-	/* it.width */
-	val = g.width;
-	break;
-      case 23:
-	/* it.height */
-	val = g.height;
-	break;
-      default:
-	return 0;
-      }
-    }
-    break;
-  case 24:
-  case 25:
-  case 26:
-  case 27:
-    if (!fw || IS_EWMH_DESKTOP(FW_W(fw)))
-      return 0;
-    else
-    {
-      rectangle g;
+			is_numeric = True;
+			get_client_geometry(fw, &g);
+			switch (i)
+			{
+			case VAR_CW_X:
+				val = g.x;
+				break;
+			case VAR_CW_Y:
+				val = g.y;
+				break;
+			case VAR_CW_WIDTH:
+				val = g.width;
+				break;
+			case VAR_CW_HEIGHT:
+				val = g.height;
+				break;
+			default:
+				return 0;
+			}
+		}
+		break;
+	case VAR_IT_X:
+	case VAR_IT_Y:
+	case VAR_IT_WIDTH:
+	case VAR_IT_HEIGHT:
+		if (!fw || IS_EWMH_DESKTOP(FW_W(fw)))
+			return 0;
+		else
+		{
+			rectangle g;
 
-      if (get_visible_icon_picture_geometry(fw, &g) == False)
-      {
-	return 0;
-      }
-      is_numeric = True;
-      switch (i)
-      {
-      case 24:
-	/* ip.x */
-	val = g.x;
-	break;
-      case 25:
-	/* ip.y */
-	val = g.y;
-	break;
-      case 26:
-	/* ip.width */
-	val = g.width;
-	break;
-      case 27:
-	/* ip.height */
-	val = g.height;
-	break;
-      default:
-	return 0;
-      }
-    }
-    break;
-  case 28:
-  case 29:
-  case 30:
-  case 31:
-    if (!fw || IS_EWMH_DESKTOP(FW_W(fw)))
-      return 0;
-    else
-    {
-      rectangle g;
+			if (get_visible_icon_title_geometry(fw, &g) == False)
+			{
+				return 0;
+			}
+			is_numeric = True;
+			switch (i)
+			{
+			case VAR_IT_X:
+				val = g.x;
+				break;
+			case VAR_IT_Y:
+				val = g.y;
+				break;
+			case VAR_IT_WIDTH:
+				val = g.width;
+				break;
+			case VAR_IT_HEIGHT:
+				val = g.height;
+				break;
+			default:
+				return 0;
+			}
+		}
+		break;
+	case VAR_IP_X:
+	case VAR_IP_Y:
+	case VAR_IP_WIDTH:
+	case VAR_IP_HEIGHT:
+		if (!fw || IS_EWMH_DESKTOP(FW_W(fw)))
+			return 0;
+		else
+		{
+			rectangle g;
 
-      if (get_visible_icon_geometry(fw, &g) == False)
-      {
-	return 0;
-      }
-      is_numeric = True;
-      switch (i)
-      {
-      case 28:
-	/* i.x */
-	val = g.x;
-	break;
-      case 29:
-	/* i.y */
-	val = g.y;
-	break;
-      case 30:
-	/* i.width */
-	val = g.width;
-	break;
-      case 31:
-	/* i.height */
-	val = g.height;
-	break;
-      default:
-	return 0;
-      }
-    }
-    break;
-  case 32:
-    /* screen */
-    is_numeric = True;
-    val = Scr.screen;
-    break;
-  case 34:
-    /* schedule.last */
-    is_numeric = True;
-    val = squeue_get_last_id();
-    break;
-  case 35:
-    /* schedule.next */
-    is_numeric = True;
-    val = squeue_get_next_id();
-    break;
-  case 36:
-    /* cond.rc */
-    if (cond_rc == NULL)
-    {
-      return 0;
-    }
-    switch (*cond_rc)
-    {
-    case COND_RC_OK:
-    case COND_RC_NO_MATCH:
-    case COND_RC_ERROR:
-      val = (int)(*cond_rc);
-      break;
-    default:
-      return 0;
-    }
-    is_numeric = True;
-    break;
-  case 37:
-  case 38:
-    /* pointer.x and pointer.y */
-    if (is_numeric == False)
-    {
-      is_numeric = True;
-      context_w = Scr.Root;
-    }
-    /* fall through */
-  case 39:
-  case 40:
-    /* pointer.wx and pointer.wy */
-    if (is_numeric == False)
-    {
-      if (!fw || IS_ICONIFIED(fw) || IS_EWMH_DESKTOP(FW_W(fw)))
-      {
-        return 0;
-      }
-      is_numeric = True;
-      context_w = FW_W_FRAME(fw);
-    }
-    /* fall through */
-  case 41:
-  case 42:
-    /* pointer.cx and pointer.cy */
-    if (is_numeric == False)
-    {
-      if (!fw || IS_ICONIFIED(fw) || IS_SHADED(fw) ||
-          IS_EWMH_DESKTOP(FW_W(fw)))
-      {
-        return 0;
-      }
-      is_numeric = True;
-      context_w = FW_W(fw);
-    }
-    is_x = (i & 1) ? True : False;
-    if (XQueryPointer(dpy, context_w, &JunkRoot, &JunkChild,
-                      &JunkX, &JunkY, &x, &y, &JunkMask) == False)
-    {
-      /* pointer is on a different screen, don't expand */
-      return 0;
-    }
-    val = (is_x) ? x : y;
-    break;
-  default:
-    /* unknown variable - try to find it in the environment */
-    s = getenv(var_name);
-    if (s)
-    {
-      if (output)
-      {
-	strcpy(output, s);
-      }
-      return strlen(s);
-    }
-    else
-    {
-      return 0;
-    }
-  }
-  if (is_numeric)
-  {
-    sprintf(target, "%d", val);
-    return strlen(target);
-  }
+			if (get_visible_icon_picture_geometry(fw, &g) == False)
+			{
+				return 0;
+			}
+			is_numeric = True;
+			switch (i)
+			{
+			case VAR_IP_X:
+				val = g.x;
+				break;
+			case VAR_IP_Y:
+				val = g.y;
+				break;
+			case VAR_IP_WIDTH:
+				val = g.width;
+				break;
+			case VAR_IP_HEIGHT:
+				val = g.height;
+				break;
+			default:
+				return 0;
+			}
+		}
+		break;
+	case VAR_I_X:
+	case VAR_I_Y:
+	case VAR_I_WIDTH:
+	case VAR_I_HEIGHT:
+		if (!fw || IS_EWMH_DESKTOP(FW_W(fw)))
+			return 0;
+		else
+		{
+			rectangle g;
 
-  return 0;
+			if (get_visible_icon_geometry(fw, &g) == False)
+			{
+				return 0;
+			}
+			is_numeric = True;
+			switch (i)
+			{
+			case VAR_I_X:
+				val = g.x;
+				break;
+			case VAR_I_Y:
+				val = g.y;
+				break;
+			case VAR_I_WIDTH:
+				val = g.width;
+				break;
+			case VAR_I_HEIGHT:
+				val = g.height;
+				break;
+			default:
+				return 0;
+			}
+		}
+		break;
+	case VAR_SCREEN:
+		is_numeric = True;
+		val = Scr.screen;
+		break;
+	case VAR_SCHEDULE_LAST:
+		is_numeric = True;
+		val = squeue_get_last_id();
+		break;
+	case VAR_SCHEDULE_NEXT:
+		is_numeric = True;
+		val = squeue_get_next_id();
+		break;
+	case VAR_COND_RC:
+		if (cond_rc == NULL)
+		{
+			return 0;
+		}
+		switch (*cond_rc)
+		{
+		case COND_RC_OK:
+		case COND_RC_NO_MATCH:
+		case COND_RC_ERROR:
+			val = (int)(*cond_rc);
+			break;
+		default:
+			return 0;
+		}
+		is_numeric = True;
+		break;
+	case VAR_POINTER_X:
+	case VAR_POINTER_Y:
+		if (is_numeric == False)
+		{
+			is_numeric = True;
+			context_w = Scr.Root;
+		}
+		/* fall through */
+	case VAR_POINTER_WX:
+	case VAR_POINTER_WY:
+		if (is_numeric == False)
+		{
+			if (!fw || IS_ICONIFIED(fw)
+				|| IS_EWMH_DESKTOP(FW_W(fw)))
+			{
+				return 0;
+			}
+			is_numeric = True;
+			context_w = FW_W_FRAME(fw);
+		}
+		/* fall through */
+	case VAR_POINTER_CX:
+	case VAR_POINTER_CY:
+		if (is_numeric == False)
+		{
+			if (!fw || IS_ICONIFIED(fw) || IS_SHADED(fw)
+				|| IS_EWMH_DESKTOP(FW_W(fw)))
+			{
+				return 0;
+			}
+			is_numeric = True;
+			context_w = FW_W(fw);
+		}
+		is_x = False;
+		switch (i)
+		{
+		case VAR_POINTER_X:
+		case VAR_POINTER_WX:
+		case VAR_POINTER_CX:
+			is_x = True;
+		}
+		if (XQueryPointer(dpy, context_w, &JunkRoot, &JunkChild,
+		          &JunkX, &JunkY, &x, &y, &JunkMask) == False)
+		{
+			/* pointer is on a different screen, don't expand */
+			return 0;
+		}
+		val = (is_x) ? x : y;
+		break;
+	default:
+		/* unknown variable - try to find it in the environment */
+		s = getenv(var_name);
+		if (s)
+		{
+			if (output)
+			{
+				strcpy(output, s);
+			}
+			return strlen(s);
+		}
+		else
+		{
+			return 0;
+		}
+	}
+	if (is_numeric)
+	{
+		sprintf(target, "%d", val);
+		return strlen(target);
+	}
+
+	return 0;
 }
 
 static char *expand(
