@@ -1,5 +1,8 @@
 2004-03-30  Dominik Vogt  <dominik.vogt@gmx.de>
 
+	* fvwm/expand.c (expand_vars_extended):
+	new extended variable $[w.layer]
+
 	* fvwm/move_resize.c (MaximizeHeight):
 	(MaximizeWidth):
 	(CMD_Maximize):

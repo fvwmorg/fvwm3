@@ -1776,6 +1776,13 @@ window is sticky the current desk number is used.
 .in -.5i
 
 .in +.5i
+$[w.layer]
+.in +.3i
+The layer of the window.
+.in -.3i
+.in -.5i
+
+.in +.5i
 $[cw.x]
 $[cw.y]
 $[cw.width]
@@ -5468,10 +5475,10 @@ To expand a window horizontally until any other window is found:
 .EX
 Mouse 0 4 A Maximize 0 grow
 .EE
-To expand a window until any other window with a larger layer is
-found:
+To expand a window until any other window on the same or a higher
+layer is hit.
 .EX
-Mouse 0 4 A Maximize layer grow grow
+Mouse 0 4 A Maximize growonlayers $[w.layer] -1 grow grow
 .EE
 To expand a window but leave the lower 60 pixels of the screen
 unoccupied:

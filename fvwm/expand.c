@@ -118,6 +118,7 @@ static char *function_vars[] =
 	"w.x",
 	"w.y",
 	"w.desk",
+	"w.layer",
 	NULL
 };
 
@@ -186,7 +187,8 @@ enum
 	VAR_W_WIDTH,
 	VAR_W_X,
 	VAR_W_Y,
-	VAR_W_DESK
+	VAR_W_DESK,
+	VAR_W_LAYER
 } extended_vars;
 
 /* ---------------------------- exported variables (globals) --------------- */
@@ -590,6 +592,14 @@ static signed int expand_vars_extended(
 		{
 			val = fw->Desk;
 		}
+		break;
+	case VAR_W_LAYER:
+		if (!fw || IS_EWMH_DESKTOP(FW_W(fw)))
+		{
+			return -1;
+		}
+		is_numeric = True;
+		val = fw->layer;
 		break;
 	case VAR_SCREEN:
 		is_numeric = True;
