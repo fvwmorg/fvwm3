@@ -1243,6 +1243,22 @@ The defaults are shown in parenthesis above.
 The optional \fIfg\fP and \fIbg\fP arguments specify the foreground
 and background colors for the cursor, defaulting to black and white.
 
+.IP "DefaultBackground [ \fI type args... \fP ]"
+\fIDefaultBackground\fP sets the default background pattern of some \fIfvwm2\fP
+windows and some modules (if no color is specified for them).  If used without
+any arguments it sets the background to be a solid color from the
+\fIDefaultColors\fP background color.  If \fItype\fP is Pixmap or TiledPixmap
+then next argument is assumed to be a filename of a pixmap to be used.
+TiledPixmap tiles the pixmap, Pixmap stretches the pixmap to fit the window.
+If \fItype\fP is one of HGradient, VGradient, DGradient, BGradient, SGradient,
+CGradient, RGradient or YGradient the following arsuments are assumed to
+specify a gradient (see \fIButtonStyle\fP). This type of background will create
+a pixmap of appropriate size and stretch it to fit the window. The gradient
+types are as follows: H is horizontal; V is vertical; D is diagonal from top
+left to bottom right; B is a backwards diagonal from bottom left to top right;
+S is concentric squares; C is concentic circles; R is a radar like pattern and
+Y is a Yin Yang style (but without the dots).
+
 .IP "DefaultColors [ \fI foreground background\fP ]"
 \fIDefaultColors\fP sets the default forground and background
 colors used in miscellaneous windows created by fvwm2, for example

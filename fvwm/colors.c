@@ -298,8 +298,8 @@ Pixmap CreateGradientPixmap(Display *dpy, Drawable d, unsigned int depth, GC gc,
     return None;
 
   /* create an XImage structure */
-  image = XCreateImage(dpy, Scr.viz, Scr.depth, ZPixmap, 0, 0, width, height,
-		       Scr.depth > 16 ? 32 : (Scr.depth > 8 ? 16 : 8), 0);
+  image = XCreateImage(dpy, Scr.viz, depth, ZPixmap, 0, 0, width, height,
+		       depth > 16 ? 32 : (depth > 8 ? 16 : 8), 0);
   if (!image){
     fvwm_msg(ERR, me, "%cGradient couldn't get image", type);
     XFreePixmap(dpy, pixmap);
@@ -307,15 +307,6 @@ Pixmap CreateGradientPixmap(Display *dpy, Drawable d, unsigned int depth, GC gc,
   }
   /* create space for drawing the image locally */
   image->data = safemalloc(image->bytes_per_line * height);
-
-  /* set the gc style */
-  xgcv.function = GXcopy;
-  xgcv.plane_mask = AllPlanes;
-  xgcv.foreground = pixels[0];
-  xgcv.fill_style = FillSolid;
-  xgcv.clip_mask = None;
-  XChangeGC(dpy, gc, GCFunction | GCPlaneMask | GCForeground | GCFillStyle
-		     | GCClipMask, &xgcv);
 
   /* now do the fancy drawing */
   /* draw one pixel further than expected in case line style is CapNotLast */
@@ -369,19 +360,68 @@ Pixmap CreateGradientPixmap(Display *dpy, Drawable d, unsigned int depth, GC gc,
 	}
       break;
     case 'R':
-      /* width == height, both are odd, therefore x is never 0 */
-      for (i = 0; i < width; i++)
-	for (j = 0; j < width; j++) {
-	  register double x = (i - width / 2.0), y = (width / 2.0 - j);
-	  /* angle ranges from -pi/2 to +pi/2 */
-	  register double angle = atan(y / x);
-	  /* extend to -pi/2 to 3pi/2 */
-	  angle += (x > 0) ? 0.0 : M_PI;
-	  /* move range from -pi/2:3*pi/2 to 0:2*pi */
-	  angle += (angle < 0.0) ? M_PI * 2.0 : 0.0;
-	  /* normalize to gradient */
-	  XPutPixel(image, i, j, pixels[(int)(angle * M_1_PI * 0.5 * ncolors)]);
+      {
+	register int r = (width - 1) / 2;
+	/* width == height, both are odd, therefore x can be 0.0 */
+	for (i = 0; i < width; i++) {
+	  for (j = 0; j < width; j++) {
+	    register double x = (i - r), y = (r - j);
+	    /* angle ranges from -pi/2 to +pi/2 */
+	    register double angle;
+	    if (x != 0.0) {
+	      angle = atan(y / x);
+	    } else {
+	      angle = (y < 0) ? - M_PI_2 : M_PI_2;
+	    }
+	    /* extend to -pi/2 to 3pi/2 */
+	    if (x < 0)
+	      angle += M_PI;
+	    /* move range from -pi/2:3*pi/2 to 0:2*pi */
+	    if (angle < 0.0)
+	      angle += M_PI * 2.0;
+	    /* normalize to gradient */
+	    XPutPixel(image,i,j, pixels[(int)(angle * M_1_PI * 0.5 * ncolors)]);
+	  }
 	}
+      }
+      break;
+/* *************************************************************************
+ * The Yin Yang gradient style and the following code are:
+ * Copyright 1999 Sir Boris. (email to sir_boris@bigfoot.com may be read by
+ * his groom but is not guaranteed to elicit a response)
+ * No restrictions are placed on this code,
+ * as long as the copyright notice is preserved.
+ * ************************************************************************/
+    case 'Y':
+      {
+	register int r = (width - 1) / 2;
+	/* width == height, both are odd, therefore x can be 0.0 */
+	for (i = 0; i < width; i++) {
+	  for (j = 0; j < width; j++) {
+	    register double x = (i - r), y = (r - j);
+	    register double dist = sqrt(x * x + y * y);
+	    /* angle ranges from -pi/2 to +pi/2 */
+	    register double angle;
+	    if (x != 0.0) {
+	      angle = atan(y / x);
+	    } else {
+	      angle = (y < 0) ? - M_PI_2 : M_PI_2;
+	    }
+	    /* extend to -pi/2 to 3pi/2 */
+	    if (x < 0)
+	      angle += M_PI;
+	    /* warp the angle within the yinyang circle */
+	    if (dist <= r) {
+	      angle -= acos(dist / r);
+	    }
+	    /* move range from -pi/2:3*pi/2 to 0:2*pi */
+	    if (angle < 0.0)
+	      angle += M_PI * 2.0;
+	    /* normalize to gradient */
+	    XPutPixel(image,i,j, pixels[(int)(angle * M_1_PI * 0.5 * ncolors)]);
+	  }
+	}
+      }
       break;
     default:
       /* placeholder function, just fills the pixmap with the first color */
@@ -389,6 +429,13 @@ Pixmap CreateGradientPixmap(Display *dpy, Drawable d, unsigned int depth, GC gc,
       XAddPixel(image, pixels[0]);
       break;
   }
+
+  /* set the gc style */
+  xgcv.function = GXcopy;
+  xgcv.plane_mask = AllPlanes;
+  xgcv.fill_style = FillSolid;
+  xgcv.clip_mask = None;
+  XChangeGC(dpy, gc, GCFunction|GCPlaneMask|GCFillStyle|GCClipMask, &xgcv);
 
   /* copy the image to the server */
   XPutImage(dpy, pixmap, gc, image, 0, 0, 0, 0, width, height);

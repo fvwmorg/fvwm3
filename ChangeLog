@@ -1,3 +1,9 @@
+1999-06-02  Hippo
+
+	* fvwm/colors.c: new gradient styles for the DefaultBackground
+	command: S = concentric squares, C = concentric circles, R = radar &
+	Y = Yin Yang (without the dots, I am not that manic).
+
 1999-06-02  Matthias Clasen  <clasen@pong.mathematik.uni-freiburg.de>
 
 	* fvwm/session.c (LoadGlobalState): Make restarting return to
