@@ -125,7 +125,7 @@ MenuItem *menuitem_clone(MenuItem *mi);
 MenuItem *menuitem_create(void);
 void menuitem_free(MenuItem *mi);
 void menuitem_get_size(
-	MenuItem *mi, MenuItemPartSizesT *mips, FlocaleFont *font,
+	MenuItem *mi, MenuItemPartSizesT *mipst, FlocaleFont *font,
 	Bool do_reverse_icon_order);
 void menuitem_paint(
 	MenuItem *mi, MenuPaintItemParameters *mpip);
