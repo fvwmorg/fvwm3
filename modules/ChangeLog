@@ -1,3 +1,60 @@
+2002-01-28  olicha  <olivier.chapuis@free.fr>
+
+	* FvwmButtons/FvwmButtons.c (ProcessMessage):
+	* FvwmButtons/FvwmButtons.h:
+	Rewrite the non OLD_EXPOSE code and undef OLD_EXPOSE
+
+	* FvwmButtons/FvwmButtons.c (recursive_change_colorset):
+	(swallow):
+	(DeadPipeCleanup):
+	* FvwmButtons/parse.c (ParseSwallow): 
+	(ParseButton):
+	(ParsePanel):
+	* FvwmButtons/FvwmButtons.h: 
+	Added a (no)FvwmModule flags to Swallow
+
+	* FvwmButtons/FvwmButtons.c (main):
+	(process_message):
+	(handle_config_info_packet):
+	(change_colorset):
+	(DeadPipeCleanup):
+	(recursive_change_colorset):
+	(swallow):
+	(send_bg_change_to_module):
+	* FvwmButtons/draw.c (RedrawButton):
+	* FvwmBacker/FvwmBacker.c (ProcessMessage):
+	* FvwmDragWell/fvwmDragWell.c (myXNextEvent):
+	* FvwmWinList/FvwmWinList.c (ProcessMessage):
+	(main):
+	* FvwmTaskBar/FvwmTaskBar.c (main): 
+	(ProcessMessage): 
+	* FvwmScript/FvwmScript.c (main):
+	(MainLoop):
+	FvwmScript/types.h:
+	* FvwmIdent/FvwmIdent.c (list_end):
+	(main):
+	(list_property_change):
+	FvwmIdent/FvwmIdent.h:
+	* FvwmIconMan/FvwmIconMan.h:
+	* FvwmIconMan/fvwm.c (property_change): 
+	(handle_config_info): 
+	* FvwmPager/FvwmPager.c (list_property_change):
+	(process_message):
+	(main):
+	* FvwmPager/FvwmPager.h:
+	* FvwmIconBox/FvwmIconBox.c (process_message):
+	(Loop):
+	* FvwmForm/FvwmForm.c (main): 
+	(process_message):
+	(ParseActiveMessage):
+	FvwmButtons and fvwm2 can send a MX_PROPERTY_CHANGE message with
+	MX_PROPERTY_CHANGE_BACKGROUND and a window id as argument to modules.
+	Then, the modules update their background if needed.
+	FvwmButtons sends a MX_PROPERTY_CHANGE message with 
+	MX_PROPERTY_CHANGE_SWALLOW and the id the modules when it
+	swallow a fvwm module. Swallowable modules handle this message.
+	Removed the ROOT_BG_CHANGE_STRING stuff.
+
 2002-01-27  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* FvwmAuto/FvwmAuto.c (main):
