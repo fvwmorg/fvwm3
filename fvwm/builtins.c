@@ -228,22 +228,14 @@ void Maximize(F_CMD_ARGS)
     SET_MAXIMIZED(tmp_win, 0);
     /* Unmaximizing is slightly tricky since we want the window to
      * stay on the same page, even if we have moved to a different page
-     * in the meantime. the orig values are absolute! */
+     * in the meantime. The orig values are absolute! */
     if (IsRectangleOnThisPage(&(tmp_win->frame_g), tmp_win->Desk))
       {
-	if (IsRectangleOnThisPage(&(tmp_win->orig_g), tmp_win->Desk))
-	{
-	  new_x = tmp_win->orig_g.x;
-	  new_y = tmp_win->orig_g.y;
-	}
-	else
-	{
-	  /* make sure we keep it on screen while unmaximizing */
-	  new_x = tmp_win->orig_g.x -
-	    truncate_to_multiple(tmp_win->orig_g.x,Scr.MyDisplayWidth);
-	  new_y = tmp_win->orig_g.y -
-	    truncate_to_multiple(tmp_win->orig_g.y,Scr.MyDisplayHeight);
-	}
+	/* make sure we keep it on screen while unmaximizing */
+	new_x = tmp_win->orig_g.x -
+	  truncate_to_multiple(tmp_win->orig_g.x,Scr.MyDisplayWidth);
+	new_y = tmp_win->orig_g.y -
+	  truncate_to_multiple(tmp_win->orig_g.y,Scr.MyDisplayHeight);
       }
     else
       {

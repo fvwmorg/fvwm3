@@ -1,3 +1,12 @@
+1999-05-17  Matthias Clasen  <clasen@pong.mathematik.uni-freiburg.de>
+
+	* fvwm/icons.c (AutoPlaceIcon): don't move window unless it is
+	sticky.
+
+	* fvwm/builtins.c (Maximize): remove (harmless) bug: applying
+	IsRectangleOnThisPage to orig_g is never correct, since the
+	orig_g values are desk-relative, not page-relative.
+
 1999-05-17 Hippo
 
 	* libs/ModGraph.{h,c}: new structure Background: contains useful stuff

@@ -482,8 +482,7 @@ void AutoPlaceIcon(FvwmWindow *t)
   /* New! Put icon in same page as the center of the window */
   /* Not a good idea for StickyIcons. Neither for icons of windows that are
    * visible on the current page. */
-  if((IS_ICON_STICKY(t))||(IS_STICKY(t))||
-     (IsRectangleOnThisPage(&(t->frame_g), t->Desk)))
+  if(IS_ICON_STICKY(t)||IS_STICKY(t))
     {
       base_x = 0;
       base_y = 0;
@@ -497,6 +496,11 @@ void AutoPlaceIcon(FvwmWindow *t)
       SetupFrame(t,new_x,new_y,
 		 t->frame_g.width,t->frame_g.height,False,False);
       t->Desk = Scr.CurrentDesk;
+    }
+  else if (IsRectangleOnThisPage(&(t->frame_g), t->Desk))
+    {
+      base_x = 0;
+      base_y = 0;
     }
   else
     {
