@@ -977,6 +977,7 @@ void set_win_displaystring(WinData *win)
 {
   WinManager *man = win->manager;
   int maxlen;
+  char *tmp;
 
   if (man && win->button && win->button == man->tipped_button)
   {
@@ -997,8 +998,15 @@ void set_win_displaystring(WinData *win)
   else {
     maxlen = 0;
   }
-  copy_string(
-    &win->display_string, make_display_string(win, man->formatstring, maxlen));
+
+  tmp = make_display_string(win, man->formatstring, maxlen);
+  if ((tmp == NULL && win->display_string == NULL) ||
+      (tmp != NULL && win->display_string != NULL &&
+       strcmp(tmp, win->display_string) == 0))
+  {
+	  return;
+  }
+  copy_string(&win->display_string, tmp);
   if (win->button)
     win->button->drawn_state.dirty_flags |= STRING_CHANGED;
 }

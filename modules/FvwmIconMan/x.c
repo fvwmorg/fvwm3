@@ -330,23 +330,25 @@ void xevent_loop (void)
 
     case EnterNotify:
       ConsoleDebug (X11, "XEVENT: EnterNotify\n");
+      if (theEvent.xcrossing.mode != NotifyNormal)
+      {
+	      break;
+      }
       man->cursor_in_window = 1;
       b = xy_to_button (man, theEvent.xcrossing.x, theEvent.xcrossing.y);
       move_highlight (man, b);
       run_binding (man, SELECT);
       draw_managers();
-      if (theEvent.xcrossing.mode == NotifyNormal)
-      {
-	      tips_on(man, b);
-      }
+      tips_on(man, b);
       break;
 
     case LeaveNotify:
       ConsoleDebug (X11, "XEVENT: LeaveNotify\n");
-      if (theEvent.xcrossing.mode == NotifyNormal)
+      if (theEvent.xcrossing.mode != NotifyNormal)
       {
-	      tips_cancel(man);
+	      break;
       }
+      tips_cancel(man);
       move_highlight (man, NULL);
       break;
 
