@@ -828,7 +828,8 @@ void ExecuteFunction(
   skip = taction - Action;
 
   function = PeekToken(taction, &action);
-  function = expand(function, arguments, tmp_win, False);
+  if (function)
+    function = expand(function, arguments, tmp_win, False);
   if (function)
     bif = FindBuiltinFunction(function);
   else

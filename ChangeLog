@@ -1,3 +1,8 @@
+2000-05-10  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* fvwm/functions.c (ExecuteFunction):
+	core dump fix
+
 2000-05-09  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* fvwm/fvwm2.1:
