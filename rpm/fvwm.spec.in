@@ -29,7 +29,7 @@ Requires:  perl >= 5.002
 # GTK, Imlib, stroke
 
 # RedHat should stop using name "fvwm" to refer to fvwm1 package.
-Provides:  fvwm, fvwm2
+Provides:  fvwm
 
 Docdir:    %{prefix}/share/doc
 
@@ -37,7 +37,13 @@ Docdir:    %{prefix}/share/doc
 FVWM is a powerful ICCCM-compliant multiple virtual desktop window manager
 for the X Window System.
 
-This 2.4 version includes new features like colorsets, ICCCM2 and GNOME
+This 2.4 version includes new features like full support of the EWMH
+(Enhanced Window Manager Hints) specification, internalization, improved
+window decoration code (no flickering anymore), bi-directional asian text
+support, FreeType font support (antialiasing), improved Xinerama support,
+perl-based module library, support for PNG images, side titles and much more.
+
+colorsets, ICCCM2 and GNOME
 compliance, session management, improvements in all modules, several
 new modules, revised menu code, stroke support and much more.
 
@@ -45,23 +51,24 @@ new modules, revised menu code, stroke support and much more.
 FVWM est un gestionnaire de fenЙtres puissant et extrЙmement configurable
 pour le systХme X Window.
 
-La version 2.4 contient un grand nombre de nouvelles fonctionnalitИs.
+La version 2.5 contient un grand nombre de nouvelles fonctionnalitИs.
 Voici quelques exemples:
-gestion des ensembles de couleurs (colorset),
-respect de l'ICCCM2 et du protocole GNOME,
-support pour les gestionnaires de sessions,
-amИlioration des modules ainsi que de nouveaux modules,
-le code pour les menus a ИtИ entiХrement refondu, 
-les mouvements de souris peuvent Йtre liИs Ю des actions (stroke).
+full support of the EWMH
+(Enhanced Window Manager Hints) specification, internalization, improved
+window decoration code (no flickering anymore), bi-directional asian text
+support, FreeType font support (antialiasing), improved Xinerama support,
+perl-based module library, support for PNG images, side titles and much more.
 
 %description -l ru
 FVWM является мощным оконным менеджером для X Window System, соответствующим
 стандартам ICCCM, с поддержкой множественных виртуальных десктопов.
 
-Версия 2.4 включает в себя новые особенности, такие как цветовые комплекты
-(colorsets), соответствие ICCCM2 и совместимость с GNOME, управление сессиями,
-улучшения во всех модулях, несколько новых модулей, переработанный код меню,
-поддержка stroke и многое другое.
+Версия 2.5 включает в себя новые особенности, такие как полная поддержка
+спецификации EWMH (Enhanced Window Manager Hints), интернационализация,
+улучшение оконных декораций (полное отсутствие мигания), поддержка
+дву-направленного азиатского текста, поддержка фонтов FreeType (сглаживание),
+улучшенная поддержка Xinerama, библиотека для написания модулей на perl,
+поддержка изображений в формате PNG, боковые заголовки окон и многое другое.
 
 %prep
 %setup

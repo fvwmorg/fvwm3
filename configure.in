@@ -669,21 +669,24 @@ AC_PROG_RANLIB
 dnl lex+yacc now only needed for FvwmScript developers when syntax is changed
 dnl AM_PROG_LEX
 dnl AC_PROG_YACC
-AC_PATH_PROG(PERL, perl)
 
+if test ! -z "$PERL"; then
+	AC_PATH_PROG(PERL, perl)
+fi
 dnl We need at least perl 5.002 for FvwmConsoleC.pl and fvwm-menu-headlines.
 if test ! -z "$PERL"; then
-  AC_MSG_CHECKING(for perl 5.002 or better)
-  if ("$PERL" -e "require 5.002;") 2>/dev/null; then
-    AC_MSG_RESULT(yes)
-  else
-    AC_MSG_RESULT(no)
-    AC_MSG_WARN($PERL not found or too old)
-  fi
+	AC_MSG_CHECKING(for perl 5.002 or better)
+	if ("$PERL" -e "require 5.002;") 2>/dev/null; then
+		AC_MSG_RESULT(yes)
+	else
+		AC_MSG_RESULT(no)
+		AC_MSG_WARN($PERL not found or too old)
+	fi
 else
-  AC_MSG_WARN(perl not found; you can't run some extra scripts)
-  PERL=/usr/bin/perl
+	AC_MSG_WARN(perl not found; you can't run some extra scripts)
+	PERL=/usr/bin/perl
 fi
+AC_SUBST(PERL)
 
 dnl Checks for header files.
 AC_HEADER_STDC

@@ -1,3 +1,8 @@
+2002-04-12  Mikhael Goikhman  <migo@homemail.com>
+
+	* fvwm.spec.in:
+	replaced description of 2.4.x features with 2.5.x features
+
 2001-12-24  Mikhael Goikhman  <migo@homemail.com>
 
 	* fvwm.spec.in:

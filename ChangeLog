@@ -1,3 +1,8 @@
+2002-04-12  Mikhael Goikhman  <migo@homemail.com>
+
+	* configure.in:
+	configure now uses $PERL if set
+
 2002-04-11  Mikhael Goikhman  <migo@homemail.com>
 
 	* **:
