@@ -1636,7 +1636,7 @@ void ParseOptions(void)
     {
       if (font_string)
 	free(font_string);
-      CopyString(&font_string,arg1);
+      CopyString(&font_string,next);
       if(strncasecmp(font_string,"none",4) == 0)
 	uselabel = 0;
     }
@@ -1831,7 +1831,7 @@ void ParseOptions(void)
     {
       if (smallFont)
 	free(smallFont);
-      CopyString(&smallFont,arg1);
+      CopyString(&smallFont,next);
       if(strncasecmp(smallFont,"none",4) == 0)
       {
 	free(smallFont);
@@ -1993,7 +1993,7 @@ void ParseOptions(void)
     {
       if (BalloonFont)
 	free(BalloonFont);
-      CopyString(&BalloonFont, arg1);
+      CopyString(&BalloonFont, next);
     }
 
     else if (StrEquals(resource, "BalloonBorderColor"))

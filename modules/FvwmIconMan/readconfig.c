@@ -1368,12 +1368,13 @@ void read_in_resources (char *file)
 	SET_MANAGER (manager, followFocus, i);
       }
       else if (!strcasecmp (option1, "font")) {
-	p = read_next_cmd (READ_ARG);
+	p = read_next_cmd (READ_REST_OF_LINE);
 	if (!p) {
 	  ConsoleMessage ("Bad line: %s\n", current_line);
 	  continue;
 	}
 	ConsoleDebug (CONFIG, "font: %s\n", p);
+	fprintf (stderr, "font: %s\n", p);
 
 	SET_MANAGER (manager, fontname,
 		     copy_string (&globals.managers[id].fontname, p));
