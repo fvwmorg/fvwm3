@@ -1,3 +1,9 @@
+1999-11-17  olicha  <olivier.chapuis@free.fr>
+
+	* fvwm/module_interface.c (HandleModuleInput):
+	Added some ERR fvwm_msg to indicate that fvwm2 decides to kill
+	a module because of a communication problem.
+	
 1999-11-16  Dan Espen  <dane@mk.telcordia.com>
 
 	* fvwm/fvwm2.1: Minor adjustment to man page.

@@ -488,6 +488,9 @@ int HandleModuleInput(Window w, int channel, char *expect)
   n = read(readPipes[channel], &size, sizeof(size));
   if(n < sizeof(size))
     {
+      fvwm_msg(ERR, "HandleModuleInput",
+               "Fail to read (Module: %i, read: %i, size: %i)",
+               channel, n, sizeof(size));
       KillModule(channel);
       return 0;
     }
@@ -495,8 +498,8 @@ int HandleModuleInput(Window w, int channel, char *expect)
   if(size > sizeof(text))
     {
       fvwm_msg(ERR, "HandleModuleInput",
-               "Module command is too big (%d), limit is %d",
-               size, sizeof(text));
+               "Module(%i) command is too big (%d), limit is %d",
+               channel, size, sizeof(text));
       size=sizeof(text);
     }
 
@@ -505,6 +508,9 @@ int HandleModuleInput(Window w, int channel, char *expect)
   n = read(readPipes[channel],text, size);
   if(n < size)
     {
+      fvwm_msg(ERR, "HandleModuleInput",
+               "Fail to read command (Module: %i, read: %i, size: %i)",
+               channel, n, size);
       KillModule(channel);
       return 0;
     }
@@ -515,11 +521,16 @@ int HandleModuleInput(Window w, int channel, char *expect)
   /* DB(("Module read[%d] cont = %d", n, cont)); */
   if(n < sizeof(cont))
     {
+      fvwm_msg(ERR, "HandleModuleInput",
+               "Module %i, Size Problems (read: %d, size: %d)", 
+	       channel, n, sizeof(cont));
       KillModule(channel);
       return 0;
     }
   if(cont == 0)
     {
+      fvwm_msg(ERR, "HandleModuleInput",
+               "Module %i, Size Problem: cont is zero", channel);
       KillModule(channel);
     }
   if(strlen(text)>0)
