@@ -1,3 +1,8 @@
+2000-04-15  olicha <olivier.chapuis@free.fr>
+	
+	* modules/FvwmForm/FvwmFormQuitVerify.
+	Added restart
+	
 2000-04-13  olicha <olivier.chapuis@free.fr>
 	
 	* modules/FvwmScript/Scripts/ScriptFvwmSetup95.in:

@@ -7,5 +7,7 @@ DestroyModuleConfig               FormFvwmQuitVerify.*
 *FormFvwmQuitVerify.Line        expand
 *FormFvwmQuitVerify.Button      quit "Logout" ^M
 *FormFvwmQuitVerify.Command     Quit 
+*FormFvwmQuitVerify.Button	restart   "Restart" ^R
+*FormFvwmQuitVerify.Command	Restart
 *FormFvwmQuitVerify.Button      quit "Cancel" ^[
 *FormFvwmQuitVerify.Command     Nop
