@@ -643,8 +643,16 @@ Bool PlaceWindow(FvwmWindow *tmp_win, unsigned long tflag,int Desk, int PageX, i
         Scr.randomy = 0;
       }
 
-      tmp_win->xdiff = tmp_win->attr.x - tmp_win->bw;
-      tmp_win->ydiff = tmp_win->attr.y - tmp_win->bw;
+      tmp_win->xdiff = tmp_win->attr.x;
+      tmp_win->ydiff = tmp_win->attr.y;
+      /* put it where asked, mod title bar */
+      /* if the gravity is towards the top, move it by the title height */
+      tmp_win->ydiff += gravy*(tmp_win->bw-tmp_win->old_bw);
+      tmp_win->xdiff += gravx*(tmp_win->bw-tmp_win->old_bw);
+      if(gravy > 0)
+        tmp_win->ydiff += 2*tmp_win->boundary_width + tmp_win->title_height;
+      if(gravx > 0)
+        tmp_win->xdiff += 2*tmp_win->boundary_width;
     }
     else
     {
@@ -748,6 +756,7 @@ Bool PlaceWindow(FvwmWindow *tmp_win, unsigned long tflag,int Desk, int PageX, i
     Noticed a quirk here. With some apps (e.g., xman), we find the
     placement has moved 1 pixel away from where we originally put it when we
     come through here. Why is this happening?
+    Probably old_bw, try xclock -borderwidth 100
 */
           if (tmp_win->attr.y < 0)
             {
@@ -763,7 +772,7 @@ Bool PlaceWindow(FvwmWindow *tmp_win, unsigned long tflag,int Desk, int PageX, i
 /**/
 
     tmp_win->xdiff = tmp_win->attr.x;
-    tmp_win->ydiff =  tmp_win->attr.y;
+    tmp_win->ydiff = tmp_win->attr.y;
     /* put it where asked, mod title bar */
     /* if the gravity is towards the top, move it by the title height */
     tmp_win->attr.y -= gravy*(tmp_win->bw-tmp_win->old_bw);

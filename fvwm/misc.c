@@ -244,21 +244,21 @@ int flush_expose (Window w)
 void RestoreWithdrawnLocation (FvwmWindow *tmp,Bool restart)
 {
   int a,b,w2,h2;
-  unsigned int bw,mask;
+  unsigned int mask;
   XWindowChanges xwc;
 
   if(!tmp)
     return;
 
   if (XGetGeometry (dpy, tmp->w, &JunkRoot, &xwc.x, &xwc.y,
-		    &JunkWidth, &JunkHeight, &bw, &JunkDepth))
+		    &JunkWidth, &JunkHeight, &JunkBW, &JunkDepth))
     {
       XTranslateCoordinates(dpy,tmp->frame,Scr.Root,xwc.x,xwc.y,
 			    &a,&b,&JunkChild);
       xwc.x = a + tmp->xdiff;
       xwc.y = b + tmp->ydiff;
       xwc.border_width = tmp->old_bw;
-      mask = (CWX | CWY|CWBorderWidth);
+      mask = (CWX | CWY| CWBorderWidth);
 
       /* We can not assume that the window is currently on the screen.
        * Although this is normally the case, it is not always true.  The
