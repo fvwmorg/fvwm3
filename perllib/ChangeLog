@@ -1,3 +1,8 @@
+2002-11-02  Mikhael Goikhman  <migo@homemail.com>
+
+	* FVWM/TrackerFactory.pm:
+	preliminary outlines of new tracker/grabber classes
+
 2002-10-25  Mikhael Goikhman  <migo@homemail.com>
 
 	* FVWM/Module.pm.in:
