@@ -108,13 +108,14 @@ managergeometry size of manager in buttons 0x1
 noiconaction    animate iconification      NOP
 plainbutton     style for normal buttons   up black grey
 plaincolorset
-resolution      global/desk/page/screen    global
+resolution      global/desk/page/screen    page
 reverse         normal, icon or none	   none
 selectbutton    style for selected buttons flat black grey
 selectcolorset
 shape           use shape extension        false
 show            list of windows to show
 showonlyicons   only icons visible         false
+showtransient   transient windows visible  false
 sort            keep managers sorted       name
 sortweight      weight for sorting
 title           manager title              FvwmIconMan
@@ -153,75 +154,75 @@ Since FvwmIconMan would like to know how many managers there are before
 handling any manager specific options, this should come first. The default
 is 1.
 
-.IP "*FvwmIconMan: [id ]action \fItype\fP \fIbinding\fP"
+.IP "*FvwmIconMan: [id] action \fItype\fP \fIbinding\fP"
 Binds an FvwmIconMan command to an event. \fIType\fP may be one of the values:
 Key, Mouse, or Select. Actions are described in the following section ACTIONS.
 
-.IP "*FvwmIconMan: [id ]background \fIbackground\fP"
+.IP "*FvwmIconMan: [id] background \fIbackground\fP"
 Specifies the default background color.
 
-.IP "*FvwmIconMan: [id ]buttongeometry \fIgeometry\fP"
+.IP "*FvwmIconMan: [id] buttongeometry \fIgeometry\fP"
 Specifies the initial geometry of an individual button in pixels. If the
 specified height is 0, then the button height is determined from the font
 size. X and Y coordinates are ignored.
 
-.IP "*FvwmIconMan: [id ]colorset \fIcolorset\fP"
+.IP "*FvwmIconMan: [id] colorset \fIcolorset\fP"
 The default colorset used. Overrides background and foreground. See FvwmTheme.
 
-.IP "*FvwmIconMan: [id ]drawicons \fIvalue\fP"
+.IP "*FvwmIconMan: [id] drawicons \fIvalue\fP"
 If your version of fvwm is capable of using mini icons, then this option
 determines if FvwmIconMan displays the mini icons. Otherwise, it generates
 an error message.  "true" means that mini icons are shown for iconified
 windows, "false" that mini icons are never shown, and "always" that mini icons
 are shown for all windows.
 
-.IP "*FvwmIconMan: [id ]focusandselectbutton \fIstyle\fP [\fIforecolor\fP \fIbackcolor\fP]"
+.IP "*FvwmIconMan: [id] focusandselectbutton \fIstyle\fP [\fIforecolor\fP \fIbackcolor\fP]"
 Same as the plainbutton option, but specifies the look of buttons which are
 both selected, and have the keyboard focus.
 
-.IP "*FvwmIconMan: [id ]focusandselectcolorset \fIcolorset\fP"
+.IP "*FvwmIconMan: [id] focusandselectcolorset \fIcolorset\fP"
 Works like focusandselectbutton but uses colorsets instead.  The style setting can
 still only be applied with focusandselectbutton.  See FvwmTheme.
 
-.IP "*FvwmIconMan: [id ]focusbutton \fIstyle\fP [\fIforecolor\fP \fIbackcolor\fP]"
+.IP "*FvwmIconMan: [id] focusbutton \fIstyle\fP [\fIforecolor\fP \fIbackcolor\fP]"
 Same as the plainbutton option, but specifies the look of buttons whose
 windows have the keyboard focus.
 
-.IP "*FvwmIconMan: [id ]focuscolorset \fIcolorset\fP"
+.IP "*FvwmIconMan: [id] focuscolorset \fIcolorset\fP"
 Works like focusbutton but uses colorsets instead.  The style setting can still
 only be applied with focusbutton.  See FvwmTheme.
 
-.IP "*FvwmIconMan: [id ]followfocus \fIboolean\fP"
+.IP "*FvwmIconMan: [id] followfocus \fIboolean\fP"
 If \fItrue\fP, then the button appearance reflects
 which window currently has focus.  Default is false.
 
-.IP "*FvwmIconMan: [id ]font \fIfont\fP"
+.IP "*FvwmIconMan: [id] font \fIfont\fP"
 Specifies the font to be used for labeling the buttons. The default is 8x13.
 
-.IP "*FvwmIconMan: [id ]foreground \fIforeground\fP"
+.IP "*FvwmIconMan: [id] foreground \fIforeground\fP"
 Specifies the default foreground color.
 
-.IP "*FvwmIconMan: [id ]format \fIformatstring\fP"
+.IP "*FvwmIconMan: [id] format \fIformatstring\fP"
 A printf like format string which describes the string to be printed in the
 manager window for each managed window. Possible flags are: %t, %i, %c, and
 %r for the window's title, icon, class, or resource name, respectively.
 The default is "%c: %i". \fBWarning\fP: m4 reserves the word \fIformat\fP,
 so if you use m4, take appropriate action.
 
-.IP "*FvwmIconMan: [id ]iconname \fIiconstring\fP"
+.IP "*FvwmIconMan: [id] iconname \fIiconstring\fP"
 Specifies the window icon name for that manager window. \fIIconstring\fP
 may either be a single word, or a string enclosed in quotes. The default is
 "FvwmIconMan".
 
-.IP "*FvwmIconMan: [id ]iconbutton \fIstyle\fP [\fIforecolor\fP \fIbackcolor\fP]"
+.IP "*FvwmIconMan: [id] iconbutton \fIstyle\fP [\fIforecolor\fP \fIbackcolor\fP]"
 Same as the plainbutton option, but specifies the look of buttons whose
 windows are iconified.
 
-.IP "*FvwmIconMan: [id ]iconcolorset \fIcolorset\fP"
+.IP "*FvwmIconMan: [id] iconcolorset \fIcolorset\fP"
 Works like iconbutton but uses colorsets instead.  The style setting can still
 only be applied with iconbutton.  See FvwmTheme.
 
-.IP "*FvwmIconMan: [id ]managergeometry \fIgeometry\fP"
+.IP "*FvwmIconMan: [id] managergeometry \fIgeometry\fP"
 Specifies the initial geometry of the manager, in units of buttons. If
 \fIheight\fP is 0, then the manager will use \fIwidth\fP columns, and will
 grow vertically once it has more than \fIwidth\fP windows. Likewise, if
@@ -231,25 +232,25 @@ that way. As columns are created, the buttons will narrow to accommodate.  If
 the geometry is specified with a negative y coordinate, then the window
 manager will grow upwards. Otherwise, it will grow downwards.
 
-.IP "*FvwmIconMan: [id ]noiconaction  \fIaction\fP"
+.IP "*FvwmIconMan: [id] noiconaction  \fIaction\fP"
 Tells FvwmIconMan to do \fIaction\fP when a NoIcon style window is
 iconified or de-iconified. Relevant coordinates are appended to \fIaction\fP so
 that the icon can be traced to an FvwmIconMan button. An example action
 is "*FvwwmIconMan: NoIconAction SendToModule FvwmAnimate animate". A blank or null
 action turns this feature off.
 
-.IP "*FvwmIconMan: [id ]plainbutton \fIstyle\fP [\fIforecolor\fP \fIbackcolor\fP]"
+.IP "*FvwmIconMan: [id] plainbutton \fIstyle\fP [\fIforecolor\fP \fIbackcolor\fP]"
 Specifies how normal buttons look. \fIstyle\fP may be one of \fIflat\fP,
 \fIup\fP, \fIdown\fP, \fIraisededge\fP, or \fIsunkedge\fP, and describes how
 the button is drawn. The color options are both optional, and if not set, then
 the default colors are used. If on a monochrome screen, then the \fIstyle\fP
 option is ignored, but must still be set.
 
-.IP "*FvwmIconMan: [id ]plaincolorset \fIcolorset\fP"
+.IP "*FvwmIconMan: [id] plaincolorset \fIcolorset\fP"
 Works like plainbutton but uses colorsets instead.  The style setting can
 still only be applied with plainbutton.  See FvwmTheme.
 
-.IP "*FvwmIconMan: [id ]resolution \fIresolution\fP"
+.IP "*FvwmIconMan: [id] resolution \fIresolution\fP"
 Specifies when the manager will display an entry for a certain
 window. \fIresolution\fP may take one of the following values:
 global, desk, page, screen, !desk, !page, or !screen. If global,
@@ -261,34 +262,34 @@ windows on the current Xinerama screen are shown. !desk reverses
 the sense of desk, displaying only those windows not on the
 current desk. Likewise, !page shows only those windows not on the
 current page and !screen shows only those windows not on the
-current Xinerama screen. The default is global. If Xinerama is not
+current Xinerama screen. The default is page. If Xinerama is not
 active or only a single screen is used, page and screen are
 equivalent.
 
 This configuration line is respected when FvwmIconMan is running
 as well, the resolution is changed dynamically.
 
-.IP "*FvwmIconMan: [id ]reverse \fIclass\fP"
+.IP "*FvwmIconMan: [id] reverse \fIclass\fP"
 Causes certain classes of buttons to have their relief lines reversed so that
 up and down styles are reversed. This has no affect on flat buttons. The class
 can be icon, normal or none. The default is none.
 
-.IP "*FvwmIconMan: [id ]selectbutton \fIstyle\fP [\fIforecolor\fP \fIbackcolor\fP]"
+.IP "*FvwmIconMan: [id] selectbutton \fIstyle\fP [\fIforecolor\fP \fIbackcolor\fP]"
 Same as the plainbutton option, but specifies the look of buttons when the
 mouse is over them.
 
-.IP "*FvwmIconMan: [id ]selectcolorset \fIcolorset\fP"
+.IP "*FvwmIconMan: [id] selectcolorset \fIcolorset\fP"
 Works like selectbutton but uses colorsets instead.  The style setting can
 still only be applied with selectbutton.  See FvwmTheme.
 
-.IP "*FvwmIconMan: [id ]shape \fIboolean\fP"
+.IP "*FvwmIconMan: [id] shape \fIboolean\fP"
 If \fITrue\fP, then use make the window shaped. Probably only useful if you
 have multiple columns or rows. If FvwmIconMan wasn't compiled to support the
 Shape extension, this generates an error message. When using shaped windows,
 it's recommended that a fvwm style is made for FvwmIconMan that has no borders.
 Otherwise, fvwm will get confused.
 
-.IP "*FvwmIconMan: [id ]sort \fIvalue\fP"
+.IP "*FvwmIconMan: [id] sort \fIvalue\fP"
 If \fIname\fP, then the manager list is sorted by name. If \fInamewithcase\fP,
 then it is sorted by name sensitive to case. If \fIid\fP, then
 the manager list is sorted by the window id, which never changes after the
@@ -296,7 +297,7 @@ window is created. If \fIweighted\fP, then the manager list is sorted by
 weight (see the description of \fIsortweight\fP below). Or it can be set to
 \fInone\fP, which results in no sorting. Default is \fIname\fP.
 
-.IP "*FvwmIconMan: [id ]sortweight \fIweight\fP \fIpattern-list\fP"
+.IP "*FvwmIconMan: [id] sortweight \fIweight\fP \fIpattern-list\fP"
 Assigns the specified \fIweight\fP to windows that match \fIpattern-list\fP.
 The list is made up of patterns of the form \fItype=pattern\fP, where type
 is one of \fIclass\fP, \fIresource\fP, \fItitle\fP, or \fIicon\fP, and pattern
@@ -317,19 +318,19 @@ other xterms (weight 10) are listed last. If no default weight (empty pattern
 list) is given, the default weight is 0. Only relevant if the sort type is
 set to \fIweighted\fP.
 
-.IP "*FvwmIconMan: [id ]title \fItitlestring\fP"
+.IP "*FvwmIconMan: [id] title \fItitlestring\fP"
 Specifies the window title string for that manager window. \fITitlestring\fP
 may either be a single word, or a string enclosed in quotes. The default is
 "FvwmIconMan". This will be drawn in the title bar of the manager window, if
 any, and in the title button, which is the button drawn when the manager is
 empty.
 
-.IP "*FvwmIconMan: [id ]titlebutton \fIstyle\fP [\fIforecolor\fP \fIbackcolor\fP]"
+.IP "*FvwmIconMan: [id] titlebutton \fIstyle\fP [\fIforecolor\fP \fIbackcolor\fP]"
 Same as the plainbutton option, but specifies the look of the title button
 (the button drawn when the manager is empty). The manager's title is drawn
 in the title button.
 
-.IP "*FvwmIconMan: [id ]usewinlist \fIboolean\fP"
+.IP "*FvwmIconMan: [id] usewinlist \fIboolean\fP"
 If \fItrue\fP, then honor the WinListSkip style flag. Otherwise, all windows
 are subject to possible management according to the show and dontshow lists.
 
@@ -349,19 +350,22 @@ matching). Quotes around the pattern will be taken as part of the
 expression. If a window could be handled by more than one manager, then the
 manager with the lowest id gets it.
 
-.IP "*FvwmIconMan: [id ]show \fIpattern list\fP"
+.IP "*FvwmIconMan: [id] show \fIpattern list\fP"
 If a window matches one of the patterns in the list, then it may be handled
 by this manager.
 
-.IP "*FvwmIconMan: [id ]show \fIpattern list\fP"
+.IP "*FvwmIconMan: [id] show \fIpattern list\fP"
 If a window matches one of the patterns in the list, then it may be handled
 by this manager.
 
-.IP "*FvwmIconMan: [id ]dontshow \fIpattern list\fP"
+.IP "*FvwmIconMan: [id] dontshow \fIpattern list\fP"
 If a window matches one of the patterns in the list, then it may not be
 handled by this manager.
 
-.IP "*FvwmIconMan: [id ]showonlyicons \fIboolean\fP"
+.IP "*FvwmIconMan: [id] showtransient \fIboolean\fP"
+Show transient windows in the list (default false).
+
+.IP "*FvwmIconMan: [id] showonlyicons \fIboolean\fP"
 Only iconified windows are shown if \fIboolean\fP is true.
 
 .SH ACTIONS

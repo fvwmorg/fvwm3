@@ -1363,7 +1363,9 @@ void check_in_window (WinData *win)
   int is_state_selected;
 
   if (win->manager && win->complete) {
-    is_state_selected = (!win->manager->showonlyiconic || win->iconified);
+    is_state_selected =
+	    ((!win->manager->showonlyiconic || win->iconified) &&
+	     (win->manager->showtransient || !IS_TRANSIENT(win)));
     in_viewport = win_in_viewport (win);
     if (win->manager->usewinlist && DO_SKIP_WINDOW_LIST(win))
       in_viewport = 0;
@@ -1521,7 +1523,7 @@ static void draw_button(WinManager *man, int button, int force)
 		if (dirty & GEOMETRY_CHANGED)
 		{
 			ConsoleDebug (X11, "\tGeometry changed\n");
-			/* Determine if geometry has changed relative 
+			/* Determine if geometry has changed relative
 			 * to the window gravity */
 			if (b->w != b->drawn_state.w ||
 			    b->h != b->drawn_state.h ||
@@ -1671,7 +1673,7 @@ static void draw_button(WinManager *man, int button, int force)
 			ConsoleDebug(
 				X11, "\tDrawing text: %s\n",
 				b->drawn_state.display_string);
-			
+
 			tr = GetRegion(
 				g.text_x, g.text_y, g.text_w, g.text_h);
 			XIntersectRegion(tr, b_region, tr);
@@ -1680,7 +1682,7 @@ static void draw_button(WinManager *man, int button, int force)
 			if (!cleared_button)
 			{
 				XRectangle r;
-				
+
 				GetRectangleIntersection(
 					bounding.x, bounding.y,
 					bounding.width, bounding.height,
@@ -2250,9 +2252,9 @@ void man_exposed (WinManager *man, XEvent *theEvent)
 
 	if (0 && FHaveShapeExtension && man->shaped)
 	{
-		/* There's some weird problem where if we change window shapes, 
-		 * we can't draw into buttons in the area NewShape intersect 
-		 * (not OldShape) until we get our Expose event. So, for now, 
+		/* There's some weird problem where if we change window shapes,
+		 * we can't draw into buttons in the area NewShape intersect
+		 * (not OldShape) until we get our Expose event. So, for now,
 		 * just redraw everything when we get Expose events. This has
 		 * the disadvantage of drawing buttons twice, but avoids having
 		 * to match which expose event results from which shape change.*/

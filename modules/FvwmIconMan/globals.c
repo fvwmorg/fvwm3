@@ -78,6 +78,7 @@ static void init_win_manager (int id)
   globals.managers[id].bindings[MOUSE] = ParseMouseEntry (DEFAULT_MOUSE);
   globals.managers[id].we_are_drawing = 1;
   globals.managers[id].showonlyiconic = 0;
+  globals.managers[id].showtransient = 0;
 }
 
 void print_managers (void)

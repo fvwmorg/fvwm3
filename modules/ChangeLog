@@ -1,3 +1,18 @@
+2002-10-10  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* FvwmIconMan/xmanager.c (check_in_window):
+	* FvwmIconMan/fvwm.c (new_window):
+	* FvwmIconMan/globals.c (init_win_manager):
+	* FvwmIconMan/readconfig.c (read_in_resources):
+	new FvwmIconMan option "ShowTransient"
+
+	* FvwmIconMan/FvwmIconMan.1:
+	documented that the default resolution is page, not global
+	corrected "id" syntax
+
+	* FvwmIconMan/fvwm.c (new_window):
+	transient windows no longer appear in FvwmIconMan when they are moved
+
 2002-10-09  olicha  <olivier.chapuis@free.fr>
 
 	* FvwmPager/x_pager.c (DrawGrid):
@@ -14,19 +29,19 @@
 	(main):
 	(CreateUberButtonWindow):
 	Image should be loaded with the module main window not the root
-	window! 
+	window!
 
 2002-10-08  olicha  <olivier.chapuis@free.fr>
 
 	* FvwmTaskBar/Goodies.c (DrawGoodies):
 	Removed some testing code
 
-	* FvwmPager/x_pager.c (initialize_viz_pager): 
+	* FvwmPager/x_pager.c (initialize_viz_pager):
 	* FvwmForm/FvwmForm.c (InitConstants):
 	(CheckAlloc):
 	* FvwmBanner/FvwmBanner.c (main):
 	* FvwmTaskBar/Goodies.c (CreateOrUpdateGoodyGC):
-	(DrawGoodies): 
+	(DrawGoodies):
 	* FvwmTaskBar/FvwmTaskBar.c (StartMeUp):
 	(CreateOrUpdateGCs):
 	(CreateTipWindow):

@@ -198,6 +198,7 @@ int win_in_viewport (WinData *win)
 static WinData *id_to_win (Ulong id)
 {
   WinData *win;
+
   win = find_win_hashtab (id);
   if (win == NULL) {
     win = new_windata ();
@@ -205,6 +206,7 @@ static WinData *id_to_win (Ulong id)
     win->app_id_set = 1;
     insert_win_hashtab (win);
   }
+
   return win;
 }
 
@@ -360,7 +362,8 @@ static void visible_icon_name (FvwmPacketBody *body)
 
   win = id_to_win (app_id);
 
-  if (win->visible_icon_name && !strcmp (win->visible_icon_name, (char *)name)) {
+  if (win->visible_icon_name && !strcmp (win->visible_icon_name, (char *)name))
+  {
     ConsoleDebug (FVWM, "No icon change: %s %s\n", win->iconname, name);
     return;
   }
@@ -436,22 +439,12 @@ static void new_window (FvwmPacketBody *body)
 {
   WinData *win;
 
-  win = new_windata();
+  win = id_to_win (body->add_config_data.w);
   memcpy(&(win->flags), &(body->add_config_data.flags), sizeof(win->flags));
-  if (!(IS_TRANSIENT(win)))
-  {
-    win->app_id = body->add_config_data.w;
-    win->app_id_set = 1;
-    set_win_configuration (win, body);
-
-    insert_win_hashtab (win);
-    check_win_complete (win);
-    check_in_window (win);
-  }
-  else
-  {
-    Free(win);
-  }
+  set_win_configuration (win, body);
+  got_configure (win->manager);
+  check_win_complete (win);
+  check_in_window (win);
 }
 
 static void destroy_window (FvwmPacketBody *body)
