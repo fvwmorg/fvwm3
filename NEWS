@@ -1,5 +1,5 @@
 Note, the changes for the last STABLE release start with release
-_+_A HREF="#2.4.8"_-_2.4.8_+_/A_-_.
+_+_A HREF="#2.4.9"_-_2.4.9_+_/A_-_.
 
 -------------------------------------------------------------------
 
@@ -274,6 +274,81 @@ Changes in alpha release 2.5.0 (27-Jan-2002)
 * New conditional commands Any and PointerWindow.
 
 * New conditions Focused, !Focused, HasPointer and !HasPointer.
+
+-------------------------------------------------------------------
+
+_+_A NAME="2.4.9"_-_
+Changes in stable release 2.4.9 (11-Aug-2002)
+_+_/A_-_
+
+* Fixed interaction bug between CascadePlacement and StartsOnPage -
+  if the target page was at a negative x or y page displacement
+  from the current viewport, the window would be placed on the
+  wrong page.
+
+* Fixed a problem with colormap transition when a transient window
+  died.
+
+* Fixed a FvwmScript crash with Swallow widget and very long window
+  names.
+
+* Restored old way of handling clicks in windows with ClickToFocus
+  and ClickToFocusPassesClickOff.  This fixes a problem with
+  click+drag in an unfocused rxvt or aterm window.
+
+* Fixed problems with $fg and $bg variables in FvwmButtons when the
+  UseOld option was used.
+
+* Fixed wrong warp coordinates when WarpToWindow was used with two
+  arguments on an unmanaged window.
+
+* Added a workaround for popup menus in TK applications that appear
+  on some random position.
+
+* Fixed problems with wish scripts creating windows that start
+  iconic.
+
+* Fixed the NoClose option with unmapped panels in FvwmButtons.
+
+* A number of drawing fixes in FvwmPager.
+
+* Fixed a slight bug when waiting until all buttons are released,
+  for example after executing a complex function.
+
+* Fixed potentially harmful change in module interface.
+
+* Fixed displaying menu items with icons when using the MenuStyle
+  SubmmenusLeft.
+
+* Fixed problems with the pointer moving off screen in a multi
+  head setup.
+
+* Fixed a potential crash with windows being destroyed during a
+  recapture operation.
+
+* Fixed a memory leak in some modules when not using glibc.
+
+* Applications using Mwm hints can now enforce that a window can
+  not be moved.
+
+* Fixed negative arguments of WarpToWindow when used on an
+  unmanaged window.
+
+* DESTDIR may be fully used again (only useful for distributors).
+
+* Fixed a key binding problem with key symbols that are generated
+  by several keys.
+
+* Fixed a possible crash when a window was recaptured and the
+  focus could not be transfered to another window.
+
+* Fixed a minor problem with clicks on focused windows being
+  ignored.
+
+* fvwm-menu-headlines: added support for CNN and BBC headlines.
+
+* Fixed a performance problem with large numbers of mouse binding
+  commands.
 
 -------------------------------------------------------------------
 

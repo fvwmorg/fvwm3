@@ -1,5 +1,8 @@
 2002-08-11  Dominik Vogt  <dominik.vogt@gmx.de>
 
+	* NEWS:
+	updated for 2.4.9
+
 	* fvwm/frame.c (frame_mrs_resize_move_windows):
 	backed out anti-flicker patch that slowed down command processing
 

@@ -173,6 +173,7 @@ Preparations:
     usually done by copying all entries from the NEWS file.  Don't
     forget to proof read the file as it will be sent to the
     fvwm-announce mailing list.
+  - Update the ChangeLog for all the changes above.
 
 Configuration tests:
 
