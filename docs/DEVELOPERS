@@ -17,9 +17,12 @@ need to execute the following commands from the top of the source
 tree.
 
     automake --add-missing
+    autoconf
     autoreconf
-        ^^
-Be careful!  The second command is autoREconf, not simply autoconf.
+
+(The 'autoconf' invocation is necessary for some reason to get a proper
+Makefile with 'make dist'.  If it is not called, config.h.in is missing
+from the package).
 
 There will be some warnings, which are ignorable as long as you get a
 working configure script: the configure script will fix all those

@@ -22,6 +22,7 @@
 
 /* ---------------------------- included header files ----------------------- */
 
+#include "config.h"
 #include "fvwmrect.h"
 
 /* ---------------------------- local definitions --------------------------- */

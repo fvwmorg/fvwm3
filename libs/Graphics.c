@@ -16,6 +16,8 @@
 /* Graphics.c: misc convenience functions for drawing stuff
  */
 
+#include "config.h"
+
 #include "defaults.h"
 #include "libs/fvwmlib.h"
 #include "libs/Picture.h"

@@ -13,12 +13,10 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
 
+#include "config.h"
+
 #include <X11/Xlib.h>
 #include <stdio.h>
-
-#ifdef HAVE_CONFIG_H
-#include "config.h"
-#endif
 
 extern Display *dpy;
 extern int screen;

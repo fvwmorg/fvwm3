@@ -17,6 +17,8 @@
 ** MyXGrabServer & MyXUngrabServer - to handle nested grab server calls
 */
 
+#include "config.h"
+
 #include "Grab.h"
 
 /* Made into global for module interface.  See module.c. */

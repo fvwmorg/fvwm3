@@ -1,5 +1,8 @@
 2001-09-15  Dominik Vogt  <dominik.vogt@gmx.de>
 
+	* FvwmBacker/root_bits.c:
+	include config.h unconditionally
+
 	* FvwmPager/x_pager.c (change_colorset):
 	fixed changing the hilight colorset
 

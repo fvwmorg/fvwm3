@@ -21,6 +21,8 @@
 ** fashion.
 */
 
+#include "config.h"
+
 #include <X11/Xlib.h>
 #include <fvwmlib.h>
 #include <stdio.h>
