@@ -99,7 +99,6 @@ Bool fFvwmInStartup = True;     /* Set to False when startup has finished */
 Bool DoingCommandLine = False;	/* Set True before each cmd line arg */
 
 /* Grab pointer state. Set by GrabEm, UngrabEm, menus.c and StartupStuff */
-Bool GrabPointerState = GRAB_STARTUP;
 #define MAX_CFG_CMDS 10
 static char *config_commands[MAX_CFG_CMDS];
 static int num_config_commands=0;
@@ -470,7 +469,7 @@ int main(int argc, char **argv)
   {
     Cursor cursor = XCreateFontCursor(dpy, XC_watch);
     XGrabPointer(dpy, Scr.Root, 0, 0, GrabModeSync, GrabModeSync,
-               None, cursor, CurrentTime);
+		 None, cursor, CurrentTime);
   }
 
   if (visualClass != -1) {
@@ -767,8 +766,8 @@ void StartupStuff(void)
     Scr.ClickTime = -Scr.ClickTime;
 
   /* It is safe to Ungrab here: if not and one of the init functions not
-   * finish we've got a complet freeze ! */
-  GrabPointerState = GRAB_NONE;
+   * finish we've got a complete freeze ! */
+  UngrabEm(GRAB_STARTUP);
   XUngrabPointer(dpy, CurrentTime);
 
   /* migo (04-Sep-1999): execute StartFunction */

@@ -1498,9 +1498,11 @@ Bool moveLoop(FvwmWindow *tmp_win, int XOffset, int YOffset, int Width,
     SET_ICON_MOVED(tmp_win, 1);
   }
   if (!do_resize_too)
+  {
     /* Don't wait for buttons to come up when user is placing a new window
      * and wants to resize it. */
     WaitForButtonsUp(True);
+  }
   SET_WINDOW_BEING_MOVED_OPAQUE(tmp_win, 0);
   bad_window = None;
 

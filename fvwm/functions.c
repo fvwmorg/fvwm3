@@ -1445,6 +1445,20 @@ FvwmFunction *FindFunction(const char *function_name)
 }
 
 
+static void cf_cleanup(unsigned int *depth, char **arguments)
+{
+  int i;
+
+  (*depth)--;
+  if (*depth == 0)
+    WaitForButtonsUp(False);
+  for (i = 0; i < 11; i++)
+    if(arguments[i] != NULL)
+      free(arguments[i]);
+
+  return;
+}
+
 static void execute_complex_function(F_CMD_ARGS, Bool *desperate)
 {
   cfunc_action_type type = CF_MOTION;
@@ -1460,6 +1474,7 @@ static void execute_complex_function(F_CMD_ARGS, Bool *desperate)
   int x, y ,i;
   XEvent d, *ev;
   FvwmFunction *func;
+  static unsigned int depth = 0;
 
   /* FindFunction expects a token, not just a quoted string */
   taction = GetNextToken(action,&func_name);
@@ -1477,6 +1492,7 @@ static void execute_complex_function(F_CMD_ARGS, Bool *desperate)
       fvwm_msg(ERR,"ComplexFunction","No such function %s",action);
     return;
   }
+  depth++;
   *desperate = 0;
   /* duplicate the whole argument list for use as '$*' */
   if (taction)
@@ -1525,10 +1541,7 @@ static void execute_complex_function(F_CMD_ARGS, Bool *desperate)
     if (DeferExecution(eventp,&w,&tmp_win,&context, CRS_SELECT,ButtonPress))
     {
       func->use_depth--;
-      WaitForButtonsUp(False);
-      for(i=0;i<11;i++)
-        if(arguments[i] != NULL)
-          free(arguments[i]);
+      cf_cleanup(&depth, arguments);
       return;
     }
     NeedsTarget = False;
@@ -1567,6 +1580,7 @@ static void execute_complex_function(F_CMD_ARGS, Bool *desperate)
     for(i=0;i<11;i++)
       if(arguments[i] != NULL)
 	free(arguments[i]);
+    depth--;
     return;
   }
 
@@ -1577,10 +1591,7 @@ static void execute_complex_function(F_CMD_ARGS, Bool *desperate)
     if (DeferExecution(eventp,&w,&tmp_win,&context, CRS_SELECT,ButtonPress))
     {
       func->use_depth--;
-      WaitForButtonsUp(False);
-      for(i=0;i<11;i++)
-	if(arguments[i] != NULL)
-	  free(arguments[i]);
+      cf_cleanup(&depth, arguments);
       return;
     }
   }
@@ -1589,9 +1600,7 @@ static void execute_complex_function(F_CMD_ARGS, Bool *desperate)
   {
     func->use_depth--;
     XBell(dpy, 0);
-    for(i=0;i<11;i++)
-      if(arguments[i] != NULL)
-	free(arguments[i]);
+    cf_cleanup(&depth, arguments);
     return;
   }
   switch (eventp->xany.type)
@@ -1674,9 +1683,9 @@ static void execute_complex_function(F_CMD_ARGS, Bool *desperate)
     fi = fi->next_item;
   }
   /* This is the right place to ungrab the pointer (see comment above). */
-  UngrabEm(GRAB_NORMAL);
-  for(i=0;i<11;i++)
-    if(arguments[i] != NULL)
-      free(arguments[i]);
   func->use_depth--;
+  cf_cleanup(&depth, arguments);
+  UngrabEm(GRAB_NORMAL);
+
+  return;
 }

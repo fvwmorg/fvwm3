@@ -42,6 +42,100 @@ static void RaiseOrLowerWindow(
 static void ResyncFvwmStackRing(void);
 static void ResyncXStackingOrder(void);
 
+/* debugging function */
+static void dump_stack_ring(void)
+{
+  FvwmWindow *t1;
+
+  XBell(dpy, 0);
+  fprintf(stderr,"dumping stack ring:\n");
+  for (t1 = Scr.FvwmRoot.stack_next; t1 != &Scr.FvwmRoot; t1 = t1->stack_next)
+  {
+    fprintf(stderr,"    l=%d fw=0x%08x f=0x%08x '%s'\n", t1->layer,
+	    (int)t1, (int)t1->frame, t1->name);
+  }
+
+  return;
+}
+
+/* debugging function */
+static void verify_stack_ring_consistency(void)
+{
+  Window root, parent, *children;
+  unsigned int nchildren, i;
+  FvwmWindow *t1, *t2;
+  int last_layer;
+  int last_index;
+
+  XSync(dpy, 0);
+  t2 = Scr.FvwmRoot.stack_next;
+  if (!t2)
+    return;
+  last_layer = t2->layer;
+
+  for (t1 = t2->stack_next; t1 != &Scr.FvwmRoot; t2 = t1, t1 = t1->stack_next)
+  {
+    if (t1->layer > last_layer)
+    {
+      fprintf(
+	stderr,
+	"stack ring is corrupt! '%s' (layer %d) is above '%s' (layer %d)\n",
+	t1->name, t1->layer, t2->name, t2->layer);
+      dump_stack_ring();
+      return;
+    }
+    last_layer = t1->layer;
+  }
+  MyXGrabServer (dpy);
+  if (!XQueryTree (dpy, Scr.Root, &root, &parent, &children, &nchildren))
+  {
+    MyXUngrabServer (dpy);
+    return;
+  }
+
+  last_index = nchildren;
+  for (t1 = Scr.FvwmRoot.stack_next; t1 != &Scr.FvwmRoot; t1 = t1->stack_next)
+  {
+    /* find window in window list */
+    for (i = 0; i < nchildren && t1->frame != children[i]; i++)
+      ;
+    if (i == nchildren)
+    {
+      fprintf(stderr,"window already died: fw=0x%08x w=0x%08x '%s'\n",
+	      (int)t1, (int)t1->frame, t1->name);
+    }
+    else if (i >= last_index)
+    {
+      fprintf(
+	stderr, "window is at wrong position in stack ring: "
+	"fw=0x%08x f=0x%08x '%s'\n", (int)t1, (int)t1->frame, t1->name);
+      dump_stack_ring();
+      fprintf(stderr,"dumping X stacking order:\n");
+      for (i = nchildren; i-- > 0; )
+      {
+	for (t1 = Scr.FvwmRoot.stack_next; t1 != &Scr.FvwmRoot;
+	     t1 = t1->stack_next)
+	{
+	  /* only dump frame windows */
+	  if (t1->frame == children[i])
+	  {
+	    fprintf(stderr,"  f=0x%08x\n", (int)children[i]);
+	    break;
+	  }
+	}
+      }
+      MyXUngrabServer (dpy);
+      XFree (children);
+      return;
+    }
+    last_index = i;
+  }
+  MyXUngrabServer(dpy);
+  XFree(children);
+
+  return;
+}
+
 /* Remove a window from the stack ring */
 void remove_window_from_stack_ring(FvwmWindow *t)
 {
@@ -536,12 +630,14 @@ static void RaiseOrLowerWindow(
 void RaiseWindow(FvwmWindow *t)
 {
   RaiseOrLowerWindow(t, False, True, False);
+  verify_stack_ring_consistency();
   return;
 }
 
 void LowerWindow(FvwmWindow *t)
 {
   RaiseOrLowerWindow(t, True, True, False);
+  verify_stack_ring_consistency();
   return;
 }
 
@@ -645,6 +741,7 @@ HandleUnusualStackmodes(unsigned int stack_mode, FvwmWindow *r, Window rw,
     break;
   }
 /*  DBUG("HandleUnusualStackmodes", "\t---> %d\n", restack);*/
+  verify_stack_ring_consistency();
   return restack;
 }
 
@@ -787,21 +884,23 @@ void BroadcastRestack (FvwmWindow *s1, FvwmWindow *s2)
   *(bp++) = length;
   *(bp++) = lastTimestamp;
   for (t2 = t; t2 != s2; t2 = t2->stack_next)
-   {
-     *(bp++) = t2->w;
-     *(bp++) = t2->frame;
-     *(bp++) = (unsigned long)t2;
-   }
-   for (i = 0; i < npipes; i++)
-     PositiveWrite(i, body, length*sizeof(unsigned long));
+  {
+    *(bp++) = t2->w;
+    *(bp++) = t2->frame;
+    *(bp++) = (unsigned long)t2;
+  }
+  for (i = 0; i < npipes; i++)
+    PositiveWrite(i, body, length*sizeof(unsigned long));
 
-   free (body);
+  free (body);
+  verify_stack_ring_consistency();
 }
 
 /* send RESTACK packets for t, t->stack_prev and t->stack_next */
 void BroadcastRestackThisWindow(FvwmWindow *t)
 {
   BroadcastRestack(t->stack_prev, t->stack_next);
+  verify_stack_ring_consistency();
   return;
 }
 
@@ -831,8 +930,7 @@ int get_layer(FvwmWindow *t)
   return t->layer;
 }
 
-void
-new_layer (FvwmWindow *tmp_win, int layer)
+void new_layer (FvwmWindow *tmp_win, int layer)
 {
   FvwmWindow *t2, *next;
 
@@ -965,35 +1063,35 @@ void change_layer(F_CMD_ARGS)
 
   token = PeekToken(action, NULL);
   if (StrEquals("default", token))
+  {
+    layer = tmp_win->default_layer;
+  }
+  else
+  {
+    n = GetIntegerArguments(action, NULL, val, 2);
+
+    layer = tmp_win->layer;
+    if ((n == 1) ||
+	((n == 2) && (val[0] != 0)))
+    {
+      layer += val[0];
+    }
+    else if ((n == 2) && (val[1] >= 0))
+    {
+      layer = val[1];
+    }
+    else
     {
       layer = tmp_win->default_layer;
     }
-  else
-    {
-      n = GetIntegerArguments(action, NULL, val, 2);
-
-      layer = tmp_win->layer;
-      if ((n == 1) ||
-	  ((n == 2) && (val[0] != 0)))
-	{
-	  layer += val[0];
-	}
-      else if ((n == 2) && (val[1] >= 0))
-	{
-	  layer = val[1];
-	}
-      else
-	{
-	  layer = tmp_win->default_layer;
-	}
-    }
-
+  }
   if (layer < 0)
-    {
-      layer = 0;
-    }
+  {
+    layer = 0;
+  }
+  new_layer(tmp_win, layer);
 
-  new_layer (tmp_win, layer);
+  verify_stack_ring_consistency();
 }
 
 void SetDefaultLayers(F_CMD_ARGS)
@@ -1005,43 +1103,45 @@ void SetDefaultLayers(F_CMD_ARGS)
 
   bot = PeekToken(action, &action);
   if (bot)
+  {
+    i = atoi (bot);
+    if (i < 0)
     {
-       i = atoi (bot);
-       if (i < 0)
-         {
-           fvwm_msg(ERR,"DefaultLayers", "Layer must be non-negative." );
-         }
-       else
-         {
-           Scr.BottomLayer = i;
-         }
+      fvwm_msg(ERR,"DefaultLayers", "Layer must be non-negative." );
     }
+    else
+    {
+      Scr.BottomLayer = i;
+    }
+  }
 
   def = PeekToken(action, &action);
   if (def)
+  {
+    i = atoi (def);
+    if (i < 0)
     {
-       i = atoi (def);
-       if (i < 0)
-         {
-           fvwm_msg(ERR,"DefaultLayers", "Layer must be non-negative." );
-         }
-       else
-         {
-           Scr.DefaultLayer = i;
-         }
+      fvwm_msg(ERR,"DefaultLayers", "Layer must be non-negative." );
     }
+    else
+    {
+      Scr.DefaultLayer = i;
+    }
+  }
 
   top = PeekToken(action, &action);
   if (top)
+  {
+    i = atoi (top);
+    if (i < 0)
     {
-       i = atoi (top);
-       if (i < 0)
-         {
-           fvwm_msg(ERR,"DefaultLayers", "Layer must be non-negative." );
-         }
-       else
-         {
-           Scr.TopLayer = i;
-         }
+      fvwm_msg(ERR,"DefaultLayers", "Layer must be non-negative." );
     }
+    else
+    {
+      Scr.TopLayer = i;
+    }
+  }
+
+  verify_stack_ring_consistency();
 }

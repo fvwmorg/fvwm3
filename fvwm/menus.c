@@ -1872,6 +1872,7 @@ static void MenuInteraction(
 	   * user defined missing_submenu_action may create it. */
 	  Bool is_complex_function;
 	  Bool f;
+	  Bool is_busy_grabbed = False;
 	  Time t;
 	  char *menu_name;
 	  char *action;
@@ -1900,28 +1901,16 @@ static void MenuInteraction(
 	  {
 	    action = MR_MISSING_SUBMENU_FUNC(pmp->menu);
 	  }
-	  /* Busy cursor stuff */
 	  if (Scr.BusyCursor & BUSY_DYNAMICMENU)
-	    GrabEm(CRS_WAIT, GRAB_BUSYMENU);
+	    is_busy_grabbed = GrabEm(CRS_WAIT, GRAB_BUSYMENU);
 	  /* Execute the action */
 	  ExecuteFunctionSaveTmpWin(
 	    action, *(pmp->pTmp_win), &Event, *(pmp->pcontext) , -2,
 	    FUNC_DONT_EXPAND_COMMAND, NULL);
 	  if (is_complex_function)
 	    free(action);
-	  /* Busy cursor stuff	*/
-	  if (GrabPointerState & GRAB_BUSYMENU)
-	  {
-	    /* if we can't regrab then we can freeze fvwm */
-	    GrabPointerState &= ~GRAB_BUSYMENU;
-	    if (!GrabEm(CRS_MENU, GRAB_MENU))
-	    {
-	      XBell(dpy, 0);
-	      UngrabEm(GRAB_MENU);
-	      pmret->rc = MENU_ABORTED;
-	      return;
-	    }
-	  }
+	  if (is_busy_grabbed)
+	    UngrabEm(GRAB_BUSYMENU);
 	  /* restore the stuff we saved */
 	  lastTimestamp = t;
 	  *pdo_warp_to_title = f;
@@ -2314,6 +2303,7 @@ static int pop_menu_up(
     char *menu_name;
     saved_pos_hints pos_hints;
     Bool f;
+    Bool is_busy_grabbed = False;
     Time t;
     extern XEvent Event;
 
@@ -2323,20 +2313,12 @@ static int pop_menu_up(
     f = *pdo_warp_to_title;
     t = lastTimestamp;
     if (Scr.BusyCursor & BUSY_DYNAMICMENU)
-      GrabEm(CRS_WAIT, GRAB_BUSYMENU);
+      is_busy_grabbed = GrabEm(CRS_WAIT, GRAB_BUSYMENU);
     /* Execute the action */
     ExecuteFunctionSaveTmpWin(MR_POPUP_ACTION(mr), *pfw, &Event,
 			      *pcontext, -2, FUNC_DONT_EXPAND_COMMAND, NULL);
-    if (GrabPointerState & GRAB_BUSYMENU)
-    {
-      GrabPointerState &= ~GRAB_BUSYMENU;
-      if (!GrabEm(CRS_MENU, GRAB_MENU))
-      {
-	XBell(dpy, 0);
-	UngrabEm(GRAB_MENU);
-	return MENU_ABORTED;
-      }
-    }
+    if (is_busy_grabbed)
+      UngrabEm(GRAB_BUSYMENU);
     /* restore the stuff we saved */
     lastTimestamp = t;
     *pdo_warp_to_title = f;

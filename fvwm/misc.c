@@ -50,6 +50,10 @@
 #include "events.h"
 #include "focus.h"
 
+static unsigned int grab_count[GRAB_MAXVAL] = { 1, 1, 0, 0, 0, 0 };
+#define GRAB_EVMASK (ButtonPressMask | ButtonReleaseMask | ButtonMotionMask | PointerMotionMask | EnterWindowMask | LeaveWindowMask)
+
+
 int GetTwoArguments(char *action, int *val1, int *val2, int *val1_unit,
 		    int *val2_unit)
 {
@@ -72,9 +76,9 @@ void WaitForButtonsUp(Bool do_handle_expose)
   XEvent JunkEvent;
   unsigned int mask;
 
-  while(!AllUp)
+  while (!AllUp)
   {
-    XAllowEvents(dpy,ReplayPointer,CurrentTime);
+    XAllowEvents(dpy,AsyncPointer,CurrentTime);
     XQueryPointer(dpy, Scr.Root, &JunkRoot, &JunkChild, &JunkX, &JunkY, &JunkX,
 		  &JunkY, &mask);
     if(!(mask&(DEFAULT_ALL_BUTTONS_MASK)))
@@ -97,32 +101,61 @@ void WaitForButtonsUp(Bool do_handle_expose)
 }
 
 /*****************************************************************************
- *
- * Grab the pointer and keyboard.
+ * Change the appearance of the grabbed cursor.
+ ****************************************************************************/
+static void change_grab_cursor(int cursor)
+{
+  if (cursor != None)
+    XChangeActivePointerGrab(
+      dpy, GRAB_EVMASK, Scr.FvwmCursors[cursor], CurrentTime);
+
+  return;
+}
+
+/*****************************************************************************
+ * Grab the pointer.
  * grab_context: GRAB_NORMAL, GRAB_BUSY, GRAB_MENU, GRAB_BUSYMENU.
  * GRAB_STARTUP and GRAB_NONE are used at startup but are not made
  * to be grab_context.
  ****************************************************************************/
 Bool GrabEm(int cursor, int grab_context)
 {
-  int i=0,val=0;
-  Window grab_win;
-  unsigned int mask;
+  int i = 0;
+  int val = 0;
   int rep;
+  Window grab_win;
 
-  /* menus.c control itself its busy stuff. No busy stuff at start up.
-   * Only one busy grab */
-  if ( ((GrabPointerState & (GRAB_MENU | GRAB_STARTUP))
-	                 && (grab_context & GRAB_BUSY)) ||
-       ((GrabPointerState & GRAB_BUSY) && (grab_context & GRAB_BUSY)) )
+  if (grab_context <= GRAB_STARTUP || grab_context >= GRAB_MAXVAL)
+  {
+    fvwm_msg(
+      ERR, "GrabEm", "Bug: Called with illegal context %d", grab_context);
     return False;
+  }
 
-  XSync(dpy,0);
+  if (grab_count[GRAB_ALL] != 0)
+  {
+    /* already grabbed, just change the grab cursor */
+    grab_count[grab_context]++;
+    grab_count[GRAB_ALL]++;
+    if (grab_context != GRAB_BUSY || grab_count[GRAB_STARTUP] == 0)
+      change_grab_cursor(cursor);
+    return True;
+  }
+
   /* move the keyboard focus prior to grabbing the pointer to
    * eliminate the enterNotify and exitNotify events that go
    * to the windows. But GRAB_BUSY. */
-  if (grab_context != GRAB_BUSY)
+  switch (grab_context)
   {
+  case GRAB_BUSY:
+    if ( Scr.Hilite != NULL )
+      grab_win = Scr.Hilite->w;
+    else
+      grab_win = Scr.Root;
+    /* retry to grab the busy cursor only once */
+    rep = 2;
+    break;
+  default:
     if (!Scr.Focus || do_accept_input_focus(Scr.Focus))
     {
       /* But do not grab if the window does not accept input focus from the
@@ -133,29 +166,21 @@ Bool GrabEm(int cursor, int grab_context)
     }
     grab_win = Scr.Root;
     rep = 500;
+    break;
   }
-  else
-  {
-    if ( Scr.Hilite != NULL )
-      grab_win = Scr.Hilite->w;
-    else
-      grab_win = Scr.Root;
-    /* retry to grab the busy cursor only once */
-    rep = 2;
-  }
-  mask = ButtonPressMask|ButtonReleaseMask|ButtonMotionMask|PointerMotionMask
-    | EnterWindowMask | LeaveWindowMask;
+
+  XSync(dpy,0);
   while((i < rep)&&
 	(val = XGrabPointer(
-	  dpy, grab_win, True, mask, GrabModeAsync, GrabModeAsync, Scr.Root,
-	  Scr.FvwmCursors[cursor], CurrentTime) != GrabSuccess))
+	  dpy, grab_win, True, GRAB_EVMASK, GrabModeAsync, GrabModeAsync,
+	  Scr.Root, Scr.FvwmCursors[cursor], CurrentTime) != GrabSuccess))
   {
     switch (val)
     {
     case GrabInvalidTime:
     case GrabNotViewable:
       /* give up */
-      i += 100000;
+      i += rep;
       break;
     case GrabSuccess:
       break;
@@ -169,60 +194,94 @@ Bool GrabEm(int cursor, int grab_context)
       break;
     }
   }
+  XSync(dpy,0);
 
   /* If we fall out of the loop without grabbing the pointer, its
      time to give up */
-  XSync(dpy,0);
-  if(val!=GrabSuccess)
+  if (val != GrabSuccess)
   {
     return False;
   }
-  GrabPointerState |= grab_context;
+  grab_count[grab_context]++;
+  grab_count[GRAB_ALL]++;
   return True;
 }
 
 
 /*****************************************************************************
  *
- * UnGrab the pointer and keyboard
+ * UnGrab the pointer
  *
  ****************************************************************************/
 void UngrabEm(int ungrab_context)
 {
-  Window w;
-
-  /* menus.c control itself regarbing */
-  if ((GrabPointerState & GRAB_MENU) && !(ungrab_context & GRAB_MENU))
+  if (ungrab_context <= GRAB_ALL || ungrab_context >= GRAB_MAXVAL)
   {
-    GrabPointerState = (GrabPointerState & ~ungrab_context) | GRAB_BUSYMENU;
-    return;
-  }
-  /* see if we need to regrab */
-  if ((GrabPointerState & GRAB_BUSY) && !(ungrab_context & GRAB_BUSY))
-  {
-    GrabPointerState &= ~ungrab_context & ~GRAB_BUSY;
-    GrabEm(CRS_WAIT, GRAB_BUSY);
+    fvwm_msg(
+      ERR, "UngrabEm", "Bug: Called with illegal context %d", ungrab_context);
     return;
   }
 
+  if (grab_count[ungrab_context] == 0 || grab_count[GRAB_ALL] == 0)
+  {
+    /* context is not grabbed */
+    return;
+  }
+
+  grab_count[ungrab_context]--;
+  grab_count[GRAB_ALL]--;
   XSync(dpy,0);
-  XUngrabPointer(dpy,CurrentTime);
-
-  GrabPointerState &= ~ungrab_context;
-  if(Scr.PreviousFocus != NULL && !(GRAB_BUSY & ungrab_context))
+  if (grab_count[GRAB_ALL] > 0)
   {
-    w = Scr.PreviousFocus->w;
+    int new_cursor = None;
 
-    /* if the window still exists, focus on it */
-    if (w)
+    /* there are still grabs left - switch grab cursor */
+    switch (ungrab_context)
     {
-      SetFocus(w,Scr.PreviousFocus,0);
+    case GRAB_NORMAL:
+    case GRAB_BUSY:
+      if (grab_count[GRAB_BUSYMENU] > 0)
+	new_cursor = CRS_WAIT;
+      else if (grab_count[GRAB_BUSY] > 0)
+	new_cursor = CRS_WAIT;
+      else
+	new_cursor = None;
+      break;
+    case GRAB_MENU:
+      if (grab_count[GRAB_BUSY] > 0)
+	new_cursor = CRS_WAIT;
+      else if (grab_count[GRAB_BUSYMENU] > 0)
+	new_cursor = CRS_MENU;
+      else if (grab_count[GRAB_MENU] > 0)
+	new_cursor = CRS_MENU;
+      else
+	new_cursor = None;
+      break;
+    case GRAB_BUSYMENU:
+      /* switch back from busymenu cursor to normal menu cursor */
+      new_cursor = CRS_MENU;
+      break;
+    default:
+      new_cursor = None;
+      break;
     }
-    Scr.PreviousFocus = NULL;
+    change_grab_cursor(new_cursor);
+  }
+  else
+  {
+    XUngrabPointer(dpy, CurrentTime);
+    if (Scr.PreviousFocus && ungrab_context != GRAB_BUSY)
+    {
+      /* if the window still exists, focus on it */
+      if (Scr.PreviousFocus->w)
+	SetFocus(Scr.PreviousFocus->w, Scr.PreviousFocus, 0);
+      Scr.PreviousFocus = NULL;
+    }
   }
   XSync(dpy,0);
-}
 
+  return;
+}
 
 #ifndef fvwm_msg /* Some ports (i.e. VMS) define their own version */
 /*

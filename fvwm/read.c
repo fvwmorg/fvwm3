@@ -41,6 +41,7 @@
 #include "externs.h"
 #include "cursor.h"
 #include "functions.h"
+#include "events.h"
 #include "bindings.h"
 #include "misc.h"
 #include "screen.h"
@@ -118,6 +119,10 @@ void run_command_stream( FILE* f, XEvent *eventp, FvwmWindow *tmp_win,
 
   /* Set close-on-exec flag */
   fcntl(fileno(f), F_SETFD, 1);
+
+  /* Update window decorations in case we were called from a menu that has now
+   * popped down. */
+  handle_all_expose();
 
   tline = fgets(line, (sizeof line) - 1, f);
   while(tline)

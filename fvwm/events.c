@@ -2577,6 +2577,27 @@ int flush_expose (Window w)
 }
 
 
+/**************************************************************************
+ *
+ * Removes all expose events from the queue and does the necessary redraws
+ *
+ *************************************************************************/
+void handle_all_expose(void)
+{
+  XEvent old_event;
+
+  memcpy(&old_event, &Event, sizeof(XEvent));
+  XPending(dpy);
+  while (XCheckMaskEvent(dpy, ExposureMask, &Event))
+  {
+    DispatchEvent(True);
+  }
+  memcpy(&Event, &old_event, sizeof(XEvent));
+
+  return;
+}
+
+
 /****************************************************************************
  *
  * Records the time of the last processed event. Used in XSetInputFocus

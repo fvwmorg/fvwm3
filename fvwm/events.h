@@ -20,6 +20,7 @@ void DispatchEvent(Bool preserve_Tmp_win);
 int GetContext(FvwmWindow *, XEvent *, Window *dummy);
 int My_XNextEvent(Display *dpy, XEvent *event);
 int flush_expose(Window w);
+void handle_all_expose(void);
 Bool StashEventTime(XEvent *ev);
 void CoerceEnterNotifyOnCurrentWindow(void);
 void InitEventHandlerJumpTable(void);

@@ -36,13 +36,14 @@
 
 void ReapChildren(void);
 
-/* bits for GrabPointerState */
-#define GRAB_NONE 0           /* the cursor is not grabed */
-#define GRAB_NORMAL (1<<0)    /* DeferExecution, Move, Resize, ... */
-#define GRAB_BUSY (1<<1)      /* BusyCursor stuff */
-#define GRAB_MENU (1<<2)      /* a menus.c grabing */
-#define GRAB_BUSYMENU (1<<3)  /* Allows menus.c to regrab the cursor */
-#define GRAB_STARTUP (1<<4)   /* Startup busy cursor */
+#define GRAB_ALL      0       /* sum of all grabs */
+#define GRAB_STARTUP  1       /* Startup busy cursor */
+#define GRAB_NORMAL   2       /* DeferExecution, Move, Resize, ... */
+#define GRAB_MENU     3       /* a menus.c grabing */
+#define GRAB_BUSY     4       /* BusyCursor stuff */
+#define GRAB_BUSYMENU 5       /* Allows menus.c to regrab the cursor */
+#define GRAB_MAXVAL   6       /* last GRAB macro + 1 */
+
 
 Bool GrabEm(int cursor, int grab_context);
 void UngrabEm(int ungrab_context);

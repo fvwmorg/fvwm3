@@ -1,8 +1,34 @@
+2000-11-21  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* fvwm/stack.c:
+	added stack ring debugging code
+
+2000-11-20  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* fvwm/fvwm.c:
+	(StartupStuff):
+	* fvwm/misc.c (GrabEm):
+	(UngrabEm):
+	(change_grab_cursor):
+	(WaitForButtonsUp):
+	* fvwm/menus.c (pop_menu_up):
+	(MenuInteraction):
+	* fvwm/misc.h:
+	Rewrote pointer grabbing code. The old code may have released a grab
+	although it was still needed. The busy cursor patch in the menu code is
+	now nicely integrated into the normal grabbing code.
+
+	* fvwm/read.c (run_command_stream):
+	workaround for redrawing in long term PipeRead commands from a menu
+
+	* fvwm/events.c (handle_all_expose):
+	new function
+
 2000-11-20  olicha  <olivier.chapuis@free.fr>
 
 	* utils/fvwm-menu-desktop.in:
 	More kde2 fixes
-	
+
 2000-11-20  Dan Espen  <dane@mk.telcordia.com>
 
 	* tests/purify/purify.fvwm2rc: Change timing on FvwmBanner test to
