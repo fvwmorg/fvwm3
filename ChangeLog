@@ -1,3 +1,8 @@
+2000-11-04  Mikhael Goikhman  <migo@homemail.com>
+
+	* fvwm/style.c (ProcessNewStyle):
+	fixed incomplete IconFill style option
+
 2000-11-01  Mikhael Goikhman  <migo@homemail.com>
 
 	* fvwm/style.c (merge_styles):

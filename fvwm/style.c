@@ -1624,8 +1624,10 @@ void ProcessNewStyle(F_CMD_ARGS)
             unsigned char IconFill_2;
 	    token = PeekToken(rest, &rest);
 	    /* top/bot/lft/rgt */
-            if (Get_TBLR(token, &IconFill_1) == 0) {
+            if (!token || Get_TBLR(token, &IconFill_1) == 0) {
 	      /* its wrong */
+              if (!token)
+                token = "(none)";
               fvwm_msg(ERR,"ProcessNewStyle",
 		       "IconFill must be followed by T|B|R|L, found %s.",
                        token);
@@ -1634,8 +1636,10 @@ void ProcessNewStyle(F_CMD_ARGS)
 	      /* read in second word */
 	      token = PeekToken(rest, &rest);
 	      /* top/bot/lft/rgt */
-              if (Get_TBLR(token, &IconFill_2) == 0) {
+              if (!token || Get_TBLR(token, &IconFill_2) == 0) {
 		/* its wrong */
+                if (!token)
+                  token = "(none)";
                 fvwm_msg(ERR,"ProcessNewStyle",
                          "IconFill must be followed by T|B|R|L, found %s.",
                          token);
