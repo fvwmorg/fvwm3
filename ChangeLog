@@ -1,3 +1,11 @@
+2002-08-12  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* fvwm/bindings.c (update_nr_buttons):
+	fixed extra buttons on window decorations
+
+	* fvwm/style.c (style_parse_one_style_option):
+	fixed parsing of the FP... and !FP... styles
+
 2002-08-12  Bob Woodside  <dumbledore@woodsway.com>
 
 	* fvwm/style.c (style_parse_one_style_option):

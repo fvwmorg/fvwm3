@@ -62,6 +62,10 @@ static void update_nr_buttons(
 	int l = *nr_left_buttons;
 	int r = *nr_right_buttons;
 
+	if (contexts == C_ALL)
+	{
+		return;
+	}
 	/* check for nr_left_buttons */
 	for (i = 0; i < NUMBER_OF_BUTTONS; i += 2)
 	{
@@ -452,7 +456,7 @@ int ParseBinding(
 			int bcontext;
 
 			bcontext = bind_get_bound_button_contexts(
-				pblist, button, type, buttons_grabbed);
+				pblist, button, MOUSE_BINDING, buttons_grabbed);
 			update_nr_buttons(
 				bcontext, nr_left_buttons, nr_right_buttons,
 				True);

@@ -1494,11 +1494,11 @@ static Bool style_parse_one_style_option(
 	switch (tolower(token[0]))
 	{
 	case '!':
-		if (StrEquals(token, "!fp"))
+		if (strncasecmp(token, "!fp", 3) == 0)
 		{
 			/* parse focus policy options */
 			found = style_parse_focus_policy_style(
-				token, rest, True,
+				token + 3, rest, True,
 				&SF_FOCUS_POLICY(*ps),
 				&SM_FOCUS_POLICY(*ps),
 				&SC_FOCUS_POLICY(*ps));
@@ -2019,11 +2019,11 @@ static Bool style_parse_one_style_option(
 		break;
 
 	case 'f':
-		if (StrEquals(token, "fp"))
+		if (strncasecmp(token, "fp", 2) == 0)
 		{
 			/* parse focus policy options */
 			found = style_parse_focus_policy_style(
-				token, rest, False,
+				token + 2, rest, False,
 				&SF_FOCUS_POLICY(*ps),
 				&SM_FOCUS_POLICY(*ps),
 				&SC_FOCUS_POLICY(*ps));
