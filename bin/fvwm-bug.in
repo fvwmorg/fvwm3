@@ -83,7 +83,7 @@ Configuration Information [Automatically generated, do not change]:
 uname: $UN
 compiler flags: @CC@ @CFLAGS@
 
-FVWM Version:	@VERSION@
+FVWM Version:	@VERSION@@VERSIONINFO@
 FVWM_MODULEDIR:	$FVWM_MODULEDIR
 FVWM_DATADIR:	$FVWM_DATADIR
 FVWM_USERDIR:	$FVWM_USERDIR

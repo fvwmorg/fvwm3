@@ -1,3 +1,8 @@
+2002-10-12  Mikhael Goikhman  <migo@homemail.com>
+
+	* fvwm-bug.in:
+	show VERSIONINFO
+
 2002-10-09  Mikhael Goikhman  <migo@homemail.com>
 
 	* fvwm-perllib.in:
