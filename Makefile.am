@@ -30,7 +30,7 @@ EXTRA_DIST = INSTALL.fvwm \
 #    make distclean2  # instead of make distclean
 
 dist2: dist
-	gzip -dc $(distdir).tar.gz | bzip2 -9c >$(distdir).tar.bz2
+	gzip -dc $(distdir).tar.gz | bzip2 -9 >$(distdir).tar.bz2
 
 distcheck2: dist2 distcheck
 	@banner="$(distdir).tar.bz2 - ready for distribution"; \

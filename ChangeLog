@@ -2,7 +2,7 @@
 
 	* NEWS:
 	* fvwm/fvwm2.1:
-	* fvwm/read.c (expand):
+	* fvwm/functions.c (expand):
 	(execute_function):
 	Module configuration commands are now processed like any other
 	commands (so "+ I $0" when $0 is "*FvwmPager..." is now recognized
@@ -10,6 +10,12 @@
 	This also means that parameters are expanded now in module lines,
 	except for single alphabetical-letter parameters, which are not
 	expanded for backward compatibility.
+
+	* Makefile.am:
+	make older bzip2 work too
+
+	* fvwm/read.c (run_command_stream):
+	strip trailing end of line in commands
 
 2001-05-22  Dominik Vogt  <dominik.vogt@gmx.de>
 
