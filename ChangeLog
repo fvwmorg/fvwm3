@@ -227,10 +227,6 @@
 
 2000-09-24  Mikhael Goikhman  <migo@homemail.com>
 
-	* rpm/Makefile.am:
-	* rpm/fvwm.spec.in:
-	updated to work with older /bin/rpm, don't compile with -g and more
-
 	* fvwm/modconf.c (SendConfigToModule):
 	fixed sending new module config to existing modules, which want it,
 	now it only sends to modules with the matching name/alias
@@ -268,8 +264,6 @@
 
 	* NEWS: s/Sped/Speed/, some more
 
-	* rpm/Makefile.am:
-	* rpm/fvwm.spec.in:
 	* Makefile.am:
 	added files and rules for generating bzip2 and rpm archives
 

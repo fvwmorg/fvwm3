@@ -3,6 +3,8 @@
 
 %define ver @VERSION@
 %define rel 1
+%define c_p --disable-kanji
+%define m_p CFLAGS="-O2"
 
 Summary:   F(?) Virtual Window Manager
 Name:      fvwm
@@ -41,8 +43,8 @@ several new modules, revised menu code, stroke support and more.
 %build
 # gnome libs are only used in FvwmGtk, probably it is overhead to require it
 # compiling without -g saves about 7Mb
-./configure --prefix=%{prefix} --without-gnome
-make CFLAGS=-O2
+./configure --prefix=%{prefix} %{c_p}
+make %{m_p}
 
 %install
 rm -rf $RPM_BUILD_ROOT

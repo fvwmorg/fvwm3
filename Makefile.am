@@ -47,6 +47,7 @@ distclean2: distclean
 #    make release=1 rpm-dist
 #    make rpm-this
 #    make version=2.3.22 release=2 rpm-this
+#    make rpm-dist cparams='--enable-kanji --quiet' mparams='CFLAGS="-O2 -g"'
 
 rpm-dist: dist rpm-this
 
