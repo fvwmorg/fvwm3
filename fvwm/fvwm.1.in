@@ -130,9 +130,9 @@ version 2.x a long time ago we simply call version 2.x and all
 versions to come, fvwm, throughout this document, and the
 executable program is named fvwm.  There is an fvwm offspring
 called fvwm95, it is mostly a patched version of fvwm-2.0.43.  The
-main goal of fvwm95 was to supply a Windows 95 like look and feel.
-Since then, fvwm has been greatly enhanced and practically all
-fvwm95 features can be achieved by fvwm.
+main goal of fvwm95 was to supply a Windows 95 like look and
+feel. Since then, fvwm has been greatly enhanced and practically
+all fvwm95 features can be achieved by fvwm.
 
 Fvwm provides both, a large
 .I virtual desktop
@@ -152,9 +152,9 @@ including moving and resizing windows, and operating the menus,
 using keyboard shortcuts.
 
 Fvwm has also overcome the distinction between configuration
-commands and action commands that most window managers make.
-Configuration commands typically set fonts, colors, menu contents,
-key and mouse function bindings, while action commands
+commands and action commands that most window managers
+make. Configuration commands typically set fonts, colors, menu
+contents, key and mouse function bindings, while action commands
 do things like raise and lower windows.  Fvwm makes no such
 distinction, and allows anything to be changed at any time.
 
@@ -197,10 +197,10 @@ as its initialization command.  (Note that up to 10
 parameters can be given, and they are executed in the order
 specified.)
 
-Any module started by command line arguments is assumed to be
-a module that sends back config commands.  All command line
-modules have to quit before fvwm proceeds on to the StartFunction
-and setting border decorations and styles.  There is a potential
+Any module started by command line arguments is assumed to be a
+module that sends back config commands.  All command line modules
+have to quit before fvwm proceeds on to the StartFunction and
+setting border decorations and styles.  There is a potential
 deadlock if you start a module other than FvwmCpp/FvwmM4/FvwmPerl
 but there is a timeout so fvwm will eventually get going.
 
@@ -290,22 +290,23 @@ page of xdpyinfo for a list of supported visuals.
 Specifies a
 .I limit
 on the colors used in image, gradient and possibly simple colors
-used by fvwm. In fact, fvwm (and all the modules) uses a palette with
-at most
+used by fvwm. In fact, fvwm (and all the modules) uses a palette
+with at most
 .I limit
 colors. This option is only useful with screens that display 256
 colors (or less) with a dynamic visual (PseudoColor, GrayScale or
 DirectColor). The default depends on your X server and how you run
 fvwm. In most case this default is reasonable. The
 .B "-l"
-option should be used only if you encounter problems with colors.  By
-default, fvwm tries to detect "large" pre-allocated palettes. If such a
-palette is detected fvwm uses it and a priori the
+option should be used only if you encounter problems with colors.
+By default, fvwm tries to detect "large" pre-allocated
+palettes. If such a palette is detected fvwm uses it and a priori
+the
 .B "-l"
 must not be used. Moreover, in this case the
 .BR "-A" " and " "-S"
-options are forced. Note that XFree-4.2 pre-allocate 244 colors (if
-you use a driver with Render support) leaving only a few free
+options are forced. Note that XFree-4.2 pre-allocate 244 colors
+(if you use a driver with Render support) leaving only a few free
 colors. This may leads to some colors problems (and nothing can be
 done). XFree-4.3 or better pre-allocate only 85 colors.  If no
 pre-allocated palette is auto detected the defaults are as follow:
@@ -325,26 +326,28 @@ private color map (i.e., fvwm is started with the
 .BR "-C" " or the " "-I"
 options), then others defaults are used.
 
-Now what to do if you encounter problems with colors? The first thing
-to do is to check if you really cannot run your X server with depth
-15, 16 or better.  Check your X server documentation. Note that some
-hardware can support two different depths on the same screen
-(typically depth 8 and depth 24). If depth 8 is the default, you can
-force fvwm to use the best depth by using the
+Now what to do if you encounter problems with colors? The first
+thing to do is to check if you really cannot run your X server
+with depth 15, 16 or better.  Check your X server
+documentation. Note that some hardware can support two different
+depths on the same screen (typically depth 8 and depth 24). If
+depth 8 is the default, you can force fvwm to use the best depth
+by using the
 .B C
 option with
 .I TrueColor
-as argument.  So now we assume that you are forced to run in depth 8
-with a dynamic visual because your hardware/driver cannot do better or
-because you need to use an application which needs to run under this
-mode (e.g., because this application needs read-write colors). What
-it should be understand is that you have only 256 colors and that all
-the applications which uses the default color map must share these
-colors. The main problem is that there are applications which use a
-lot or even all the colors.  If you use such application you will
-have no more free colors and some applications (which used only a few
-colors) may fail to start or are unusable. There are three things
-that can be done (and fvwm does not really play a particular role, all
+as argument.  So now we assume that you are forced to run in depth
+8 with a dynamic visual because your hardware/driver cannot do
+better or because you need to use an application which needs to
+run under this mode (e.g., because this application needs
+read-write colors). What it should be understand is that you have
+only 256 colors and that all the applications which uses the
+default color map must share these colors. The main problem is
+that there are applications which use a lot or even all the
+colors.  If you use such application you will have no more free
+colors and some applications (which used only a few colors) may
+fail to start or are unusable. There are three things that can be
+done (and fvwm does not really play a particular role, all
 applications are concerned). The first is to run the applications
 which waste your (default) color map with a private color map. For
 example, run netscape with the -install option, run KDE/QT
@@ -353,34 +356,35 @@ applications with the --cmap option, use the
 option for fvwm. The disadvantage of this method is that it is
 visually disturbing (see the
 .B ColormapFocus
-command for a better control of the color maps switching). The second
-method is to limit the number of colors that the applications used.
-Again, some applications have options to specify a given color limit.
-With fvwm you may try various values, 61 (a special "visual" palette),
-56 (a 4x4x3 color cubes plus 6 grey), 29 (a 3x3x3 color cube plus 2
-grey), 10 or 9. Also, you may use the
+command for a better control of the color maps switching). The
+second method is to limit the number of colors that the
+applications used. Again, some applications have options to
+specify a given color limit. With fvwm you may try various values,
+61 (a special "visual" palette), 56 (a 4x4x3 color cubes plus 6
+grey), 29 (a 3x3x3 color cube plus 2 grey), 10 or 9. Also, you may
+use the
 .B "-L"
-option.  However, limiting the number of colors is not the definitive
-solution. The definitive solution is to try cause applications
-which use a lot of colors use the same colors. This is a
-difficult task as there are no formal standards for this goal.
-However, some toolkits as QT and GTK use color cubes as palettes.
-So, the idea is to configure your applications/toolkits to all
-use the same color cube. Moreover, you can use the colors in
-this color cube in your X resources configuration files and/or
+option.  However, limiting the number of colors is not the
+definitive solution. The definitive solution is to try cause
+applications which use a lot of colors use the same colors. This
+is a difficult task as there are no formal standards for this
+goal. However, some toolkits as QT and GTK use color cubes as
+palettes. So, the idea is to configure your applications/toolkits
+to all use the same color cube. Moreover, you can use the colors
+in this color cube in your X resources configuration files and/or
 as arguments to colors options.
-fvwm can use any color cube of the form RxGxB with 2 <= R <= 6, R = G,
-R-1 =< B <= R and B >= 2. To get an RxGxB color cube give an argument
-to
+Fvwm can use any color cube of the form RxGxB with 2 <= R <= 6, R
+= G, R-1 =< B <= R and B >= 2. To get an RxGxB color cube give an
+argument to
 .B "-l"
 an integer c >= R*G*B and < (R+1)*(G+1)*B if B=R and < R*G*(B+1)
-if B < R (and different from 61). If c > R*G*B, then some grey may be added
-to the color cube.
-You can use the
+if B < R (and different from 61). If c > R*G*B, then some grey may
+be added to the color cube. You can use the
 .BI "PrintInfo " Colors " " [1]
-command to get information on your fvwm colors setting. In particular,
-this command prints the palette used by fvwm in rgb format (the last integer
-gives the number of times fvwm has allocated the colors).
+command to get information on your fvwm colors setting. In
+particular, this command prints the palette used by fvwm in rgb
+format (the last integer gives the number of times fvwm has
+allocated the colors).
 .TP
 .BR "-L" " | " "--strict-color-limit"
 If the screens display 256 colors (or less) and has a dynamic visual,
@@ -958,7 +962,8 @@ Fvwm attempts to be
 .SM GNOME
 (version 1) compliant.  Check
 .B http://www.gnome.org
-for what that may mean. To disable GNOME hints for some or all windows, the
+for what that may mean. To disable GNOME hints for some or all
+windows, the
 .I GNOMEIgnoreHints
 style can be used.
 
@@ -1146,15 +1151,16 @@ package demonstrating the powerful fvwm functionality.
 
 .SH FONT NAMES AND FONT LOADING
 
-The fonts used for the text of a window title, icon titles,
-menus and geometry window can be specified by using the Font
-and IconFont Style, the Font MenuStyle and the DefaultFont
+The fonts used for the text of a window title, icon titles, menus
+and geometry window can be specified by using the Font and
+IconFont Style, the Font MenuStyle and the DefaultFont
 command. Also, all the Modules which use text have configuration
-command(s) to specify font(s). All these styles and commands take a
-font name as an argument. This section explains what
-is a font name for fvwm and which fonts fvwm loads.
+command(s) to specify font(s). All these styles and commands take
+a font name as an argument. This section explains what is a font
+name for fvwm and which fonts fvwm loads.
 
-First, you can use what we can call a usual font name, for example,
+First, you can use what we can call a usual font name, for
+example,
 .EX
 -adobe-courier-bold-r-normal--10-100-75-75-m-60-ISO8859-1
 -adobe-courier-bold-r-normal--10-*
@@ -1163,8 +1169,8 @@ First, you can use what we can call a usual font name, for example,
 That is, you can use an X Logical Font Description (XLFD for
 short).  Then the "first" font which matches the description is
 loaded and used. This "first" font depends of your font path and
-also of your locale. Fonts which match the locale charset are loaded in
-priority order. For example with
+also of your locale. Fonts which match the locale charset are
+loaded in priority order. For example with
 .EX
 -adobe-courier-bold-r-normal--10-*
 .EE
@@ -1183,17 +1189,18 @@ is a comma separated list of (simple) XLFD font names, for example:
 .EX
 -adobe-courier-bold-r-normal--14-*,-*-courier-medium-r-normal--14-*
 .EE
-Each simple font name is tried until a matching font with the locale
-charset is found and if this fails each simple font name is tried without
-constraint on the charset.
+Each simple font name is tried until a matching font with the
+locale charset is found and if this fails each simple font name is
+tried without constraint on the charset.
 
-More details on the XLFD can be found in the X
-manual page, the X Logical Font Description Conventions document
-(called xlfd) and the XLoadFont and XCreateFontSet manual pages.
-Some useful font utilities are: xlsfonts, xfontsel, xfd and xset.
+More details on the XLFD can be found in the X manual page, the X
+Logical Font Description Conventions document (called xlfd) and
+the XLoadFont and XCreateFontSet manual pages. Some useful font
+utilities are: xlsfonts, xfontsel, xfd and xset.
 
-If you have Xft support you can specify an Xft font name (description)
-of a true type (or Type1) font prefixed by "xft:", for example:
+If you have Xft support you can specify an Xft font name
+(description) of a true type (or Type1) font prefixed by "xft:",
+for example:
 .EX
 "xft:Luxi Mono"
 "xft:Luxi Mono:Medium:Roman:size=14:encoding=iso8859-1"
@@ -1201,15 +1208,16 @@ of a true type (or Type1) font prefixed by "xft:", for example:
 The "first" font which matches the description is loaded.  This
 first font depends on the XftConfig configuration file with Xft1
 and on the /etc/fonts/fonts.conf file with Xft2.
-One may read the Xft manual page and the fontconfig man page with Xft2.
-The first string which follows "xft:" is always considered as the family.
-With the second example Luxi Mono is the Family (Other XFree TTF families:
-"Luxi Serif", "Luxi Sans"), Medium is the Weight (other possible
-weights: Light, DemiBold, Bold, Black), Roman is the slant or the
-style (other possibility: Regular, Oblique, Italic) size specifies
-the point size (for a pixel size use pixelsize=), encoding allows
-for enforce a charset (iso8859-1 or iso10646-1 only; if no encoding
-is given the locale charset is assumed).
+One may read the Xft manual page and the fontconfig man page with
+Xft2. The first string which follows "xft:" is always considered
+as the family. With the second example Luxi Mono is the Family
+(Other XFree TTF families: "Luxi Serif", "Luxi Sans"), Medium is
+the Weight (other possible weights: Light, DemiBold, Bold, Black),
+Roman is the slant or the style (other possibility: Regular,
+Oblique, Italic) size specifies the point size (for a pixel size
+use pixelsize=), encoding allows for enforce a charset (iso8859-1
+or iso10646-1 only; if no encoding is given the locale charset is
+assumed).
 An important parameter is "minspace=bool" where bool is True or
 False. If bool is False (the default?) Xft gives a greater font
 height to fvwm than if bool is True. This may modify text
@@ -1217,19 +1225,18 @@ placement, icon and window title height, line spacing in menus and
 FvwmIdent, button height in some fvwm modules ...etc.  With a LCD
 monitor you may try to add "rgba=mode" where mode is either rgb,
 bgr, vrgb or vbgr to enable subpixel rendering. The best mode
-depends on the way your LCD cells are arranged.
-You can pass other specifications
-in between ":", as "foundry=foundry_name", "spacing=type" where
-type can be monospace, proportional or charcell,
-"charwidth=integer", "charheight=integer" or "antialias=bool"
-where bool is True or False. It seems that these
+depends on the way your LCD cells are arranged. You can pass other
+specifications in between ":", as "foundry=foundry_name",
+"spacing=type" where type can be monospace, proportional or
+charcell, "charwidth=integer", "charheight=integer" or
+"antialias=bool" where bool is True or False. It seems that these
 parameters are not always taken in account.
 To determine which Xft fonts are really loaded you can export
 XFT_DEBUG=1 before starting fvwm and take a look to the error
-log. With Xft2 you may use fc-list to list the available fonts.
-Anyway, Xft support is experimental (from the X and the fvwm
-point of view) and the quality of the rendering depends on number
-of parameters (the XFree and the freetype versions and your
+log. With Xft2 you may use fc-list to list the available
+fonts. Anyway, Xft support is experimental (from the X and the
+fvwm point of view) and the quality of the rendering depends on
+number of parameters (the XFree and the freetype versions and your
 video card(s)).
 
 After an Xft font name you can add after a ";" an XLFD
@@ -1237,30 +1244,34 @@ font name (simple or extended) as:
 .EX
 xft:Verdana:pixelsize=14;-adobe-courier-bold-r-normal--14-*
 .EE
-then, if either loading the Xft font fails or fvwm has no Xft support,
-fvwm loads the font "-adobe-courier-bold-r-normal--14-*". This
-allows for writing portable configuration files.
+then, if either loading the Xft font fails or fvwm has no Xft
+support, fvwm loads the font
+"-adobe-courier-bold-r-normal--14-*". This allows for writing
+portable configuration files.
 
 .SH FONT AND STRING ENCODING
 
-Once a font is loaded, fvwm finds its encoding (or charset) using its
-name (the last two fields of the name). fvwm assumes that the strings
-which are displayed with this font use this encoding (an exception is
-that if an iso10646-1 font is loaded, then UTF-8 is assumed for string
-encoding).
+Once a font is loaded, fvwm finds its encoding (or charset) using
+its name (the last two fields of the name). fvwm assumes that the
+strings which are displayed with this font use this encoding (an
+exception is that if an iso10646-1 font is loaded, then UTF-8 is
+assumed for string encoding).
 In a normal situation,
-(i) a font is loaded by giving a font name without specifying the encoding,
-(ii) the encoding of the loaded font is the locale encoding, and then
-(iii) the strings in the fvwm configuration files should use the locale
-encoding as well as the window and icon name.
-With Xft the situation is bit different as Xft supports only iso10646-1
-and iso8859-1. If you do not specify one of these encodings in the Xft font
-name, then fvwm does strings conversion using (iii).
-Note that with multibyte fonts (and in particular with "CJK" fonts) for
-good text rendering, the locale encoding should be the charset of the font.
+(i) a font is loaded by giving a font name without specifying the
+encoding,
+(ii) the encoding of the loaded font is the locale encoding, and
+then
+(iii) the strings in the fvwm configuration files should use the
+locale encoding as well as the window and icon name. With Xft the
+situation is bit different as Xft supports only iso10646-1 and
+iso8859-1. If you do not specify one of these encodings in the Xft
+font name, then fvwm does strings conversion using (iii). Note
+that with multibyte fonts (and in particular with "CJK" fonts) for
+good text rendering, the locale encoding should be the charset of
+the font.
 
-To override the previous rules, it is possible to specify the string encoding
-in the beginning of a font description as follow:
+To override the previous rules, it is possible to specify the
+string encoding in the beginning of a font description as follow:
 .EX
 StringEncoding=enc:_full_font_name_
 .EE
@@ -1269,12 +1280,11 @@ where
 is an encoding supported by fvwm (usually font name charset plus some
 unicode encodings: UTF-8, USC-2, USC-4 and UTF-16).
 
-For example,
-you may use an iso8859-1 locale charset and have an FvwmForm in Russian using
-koi8-r encoding. In this case, you just have to ask FvwmForm to load
-a koi8-r font by specifying the encoding in the font name.
-With a multibyte language,
-(as multibyte font works well only if the locale encoding is the
+For example, you may use an iso8859-1 locale charset and have an
+FvwmForm in Russian using koi8-r encoding. In this case, you just
+have to ask FvwmForm to load a koi8-r font by specifying the
+encoding in the font name. With a multibyte language, (as
+multibyte font works well only if the locale encoding is the
 charset of the font), you should use an iso10646-1 font:
 .EX
 StringEncoding=jisx0208.1983-0:-*-fixed-medium-r-*-ja-*-iso10646-1
@@ -1283,8 +1293,10 @@ or
 .EX
 "StringEncoding=jisx0208.1983-0:xft:Bitstream Cyberbit"
 .EE
-if your FvwmForm configuration uses jisx0208.1983-0 encoding. Another
-possibility is to use UTF-8 encoding for your FvwmForm configuration and use
+if your
+.B FvwmForm
+configuration uses jisx0208.1983-0 encoding. Another possibility
+is to use UTF-8 encoding for your FvwmForm configuration and use
 an iso10646-1 font:
 .EX
 -*-fixed-medium-r-*-ja-*-iso10646-1
@@ -1297,44 +1309,45 @@ or equivalently
 .EX
 "xft:Bitstream Cyberbit:encoding=iso10646-1"
 .EE
-In general iso10646-1 fonts together with UTF-8 string encoding allows the
-display of any characters in a given menu, FvwmForm ...etc.
+In general iso10646-1 fonts together with UTF-8 string encoding
+allows the display of any characters in a given menu, FvwmForm
+...etc.
 
-More and more, unicode is used and text files use UTF-8 encoding.
-However, in practice the characters used range over your locale charset
-(this is the case when you generate a menu with fvwm-menu-desktop with
-recent versions of KDE and GNOME).
-For saving memory (an iso10646-1 font may have a very large number
-of characters) or because you have a pretty font without an iso10646-1
-charset, you can specify the string encoding to be UTF-8 and use a font
-in the locale charset:
+More and more, unicode is used and text files use UTF-8
+encoding. However, in practice the characters used range over your
+locale charset (this is the case when you generate a menu with
+fvwm-menu-desktop with recent versions of KDE and GNOME). For
+saving memory (an iso10646-1 font may have a very large number of
+characters) or because you have a pretty font without an
+iso10646-1 charset, you can specify the string encoding to be
+UTF-8 and use a font in the locale charset:
 .EX
 StringEncoding=UTF-8:-*-pretty_font-*-12-*
 .EE
 
-In most cases, fvwm correctly determines the encoding of the font. However,
-some fonts don't end with valid encoding names. When the font name isn't
-normal, for example:
+In most cases, fvwm correctly determines the encoding of the
+font. However, some fonts don't end with valid encoding
+names. When the font name isn't normal, for example:
 .EX
 -misc-fixed-*--20-*-my_utf8-36
 .EE
-you need to add the encoding after the font name using a slash as a delimiter.
-For example:
+you need to add the encoding after the font name using a slash as
+a delimiter. For example:
 .EX
 MenuStyle * Font -misc-fixed-*--20-*-my_utf8-36/iso10646-1
 .EE
-If fvwm finds an encoding, fvwm uses the iconv system functions to do
-conversion between encodings.
-Unfortunately, there are no standards. For conversion between
-iso8859-1 and UTF-8: a GNU system uses "ISO-8859-1" and other
-systems use "iso881" to define the converters (these two names are
-supported by fvwm). Moreover, in some cases it may be necessary
-to use machine specific converters. So, if you experience problems
-you can try to get information on your iconv implementation ("man iconv"
-may help) and put the name which defines the converter between the font
-encoding and UTF-8 at the end of the font name after the encoding hint
-and a / (another possible solution is to use GNU libiconv).
-For example use:
+If fvwm finds an encoding, fvwm uses the iconv system functions to
+do conversion between encodings. Unfortunately, there are no
+standards. For conversion between iso8859-1 and UTF-8: a GNU
+system uses "ISO-8859-1" and other systems use "iso881" to define
+the converters (these two names are supported by fvwm). Moreover,
+in some cases it may be necessary to use machine specific
+converters. So, if you experience problems you can try to get
+information on your iconv implementation ("man iconv" may help)
+and put the name which defines the converter between the font
+encoding and UTF-8 at the end of the font name after the encoding
+hint and a / (another possible solution is to use GNU
+libiconv). For example use:
 .EX
 Style * Font -misc-fixed-*--14-*-iso8859-1/*/latin1
 .EE
@@ -1350,9 +1363,8 @@ and to use local_iso8859_6_iconv for defining the converters.
 
 .SH FONT SHADOW EFFECTS
 
-Fonts can be given 3d effects.
-At the beginning of the font name (or just after a possible StringEncoding
-specification) add
+Fonts can be given 3d effects. At the beginning of the font name
+(or just after a possible StringEncoding specification) add
 .EX
 Shadow=size [offset] [directions]:
 .EE
@@ -1627,11 +1639,11 @@ kinds of quotes.
 
 Whenever an fvwm command line is executed, fvwm performs parameter
 expansion.  A parameter is a '$' followed by a word enclosed in
-brackets ($[...]) or a single special character.  If fvwm encounters
-an unquoted parameter on the command line it expands it to a string
-indicated by the parameter name.  Unknown parameters are left
-untouched.  Parameter expansion is performed before quoting.  To
-get a literal '$' use "$$".
+brackets ($[...]) or a single special character.  If fvwm
+encounters an unquoted parameter on the command line it expands it
+to a string indicated by the parameter name.  Unknown parameters
+are left untouched.  Parameter expansion is performed before
+quoting.  To get a literal '$' use "$$".
 
 In the past, some single letter variables were supported.  It is
 deprecated now, since they cause a number of problems.  You should
@@ -1703,7 +1715,8 @@ The version number, like "2.6.0".
 .in +.5i
 $[version.info]
 .in +.3i
-The version info, like " (from cvs)", empty for the official releases.
+The version info, like " (from cvs)", empty for the official
+releases.
 .in -.3i
 .in -.5i
 
@@ -1773,8 +1786,8 @@ The current page numbers, by X and Y axes, starting from 0.
 $[w.id]
 .in +.3i
 The window-id (expressed in hex, e.g. 0x10023c) of the window the
-command was called for or "$[w.id]" if no window is associated with
-the command.
+command was called for or "$[w.id]" if no window is associated
+with the command.
 .in -.3i
 .in -.5i
 
@@ -1789,10 +1802,10 @@ $[w.resource]
 The window's name, icon name, file name of its icon or mini icon
 defined with the
 .IR Icon " or " MiniIcon
-style including the path information if the file was found on disk,
-resource class or resource name respectivelly, or
-unexpended "$[w.<attribute>]" string if no window is associated
-with the command.
+style including the path information if the file was found on
+disk, resource class or resource name respectivelly, or unexpanded
+"$[w.<attribute>]" string if no window is associated with the
+command.
 
 .in -.3i
 .in -.5i
@@ -1861,9 +1874,9 @@ pointer is not on the screen, these variables are not expanded.
 $[pointer.wx]
 $[pointer.wy]
 .in +.3i
-These return the position of the pointer in the selected window.  If the
-pointer is not on the screen, the window is iconified  or no
-window is selected, these variables are not expanded.
+These return the position of the pointer in the selected window.
+If the pointer is not on the screen, the window is iconified  or
+no window is selected, these variables are not expanded.
 .in -.3i
 .in -.5i
 
@@ -1899,12 +1912,12 @@ $[hilight.cs<n>]
 .in +.5i
 $[shadow.cs<n>]
 .in +.3i
-These parameters are replaced with the name of the
-foreground (fg), background (bg), hilight (hilight) or shadow
-(shadow) color that is defined in colorset <n> (replace <n> with
-zero or a positive integer).  For example "$[fg.cs3]" is expanded
-to the name of the foreground color of colorset 3 (in
-rgb:rrrr/gggg/bbbb form).  Please refer to the
+These parameters are replaced with the name of the foreground
+(fg), background (bg), hilight (hilight) or shadow (shadow) color
+that is defined in colorset <n> (replace <n> with zero or a
+positive integer).  For example "$[fg.cs3]" is expanded to the
+name of the foreground color of colorset 3 (in rgb:rrrr/gggg/bbbb
+form).  Please refer to the
 .B COLORSETS
 section for details about colorsets.
 .in -.3i
@@ -1957,7 +1970,8 @@ $[gt.str]
 .in +.3i
 return the translation of
 .I str
-by looking in the current locale catalog(s). If no translation is found
+by looking in the current locale catalog(s). If no translation is
+found
 .I str
 is returned as is. See the
 .B LocalePath
@@ -2940,8 +2954,8 @@ keyword is followed by a number equal to zero or greater, this
 number is taken as the number of the colorset to use.  If the
 number is omitted, the colorset is switched off and the regular
 menu styles are used again.  The foreground and background colors
-of the menu items are replaced by the colors from the colorset.
-If the colorset has a pixmap defined, this pixmap is used as the
+of the menu items are replaced by the colors from the colorset. If
+the colorset has a pixmap defined, this pixmap is used as the
 background of the menu.  Note that the
 .I MenuFace
 menu style has been optimized for memory consumption and may use
@@ -3093,10 +3107,10 @@ styles win when using mouse navigation and the
 styles win when navigating with the keyboard.
 
 .I PopupOffset
-requires two integer arguments.  Both values affect where
-sub menus are placed relative to the parent menu.  If both values
-are zero, the left edge of the sub menu overlaps the left edge of
-the parent menu.  If the first value is non-zero the sub menu is
+requires two integer arguments.  Both values affect where sub
+menus are placed relative to the parent menu.  If both values are
+zero, the left edge of the sub menu overlaps the left edge of the
+parent menu.  If the first value is non-zero the sub menu is
 shifted that many pixels to the right (or left if negative).  If
 the second value is non-zero the menu is moved by that many
 percent of the parent menu's width to the right or left.
@@ -3552,10 +3566,10 @@ option on or off, or "toggle" to switch is back and forth.  If
 is omitted, the default setting is restored.
 
 .I FlickeringMoveWorkaround
-disables ConfigureNotify events that are usually sent to
-an application while it is moved.  If some windows flicker
-annoyingly while being moved, this option may help you.  Note that
-if this problem occurs it is not an fvwm bug, it is a problem of the
+disables ConfigureNotify events that are usually sent to an
+application while it is moved.  If some windows flicker annoyingly
+while being moved, this option may help you.  Note that if this
+problem occurs it is not an fvwm bug, it is a problem of the
 application.
 
 .I MixedVisualWorkaround
@@ -3572,9 +3586,9 @@ The
 option controls whether Motif applications have the ability to
 have modal dialogs (dialogs that force you to close them first
 before you can do anything else).  The default is to not allow
-applications to have modal dialogs.  Use this option with care.
-Once this option is turned on, you have to restart fvwm to turn it
-off.
+applications to have modal dialogs.  Use this option with
+care. Once this option is turned on, you have to restart fvwm to
+turn it off.
 
 .I RaiseOverNativeWindows
 makes fvwm try to raise the windows it manages over native windows
@@ -3903,11 +3917,11 @@ second argument.
 The second is either the numeric value of the cursor as defined in
 the include file
 .I X11/cursorfont.h
-or its name (without the XC_ prefix).
-Alternativelly the xpm file name may be specified.  This xpm file
-should contain a pixmap using 3 colors (None, black, white) and
-an optional hot-spot.  If no hot-spot is defined, the hot-spot is
-placed in the center of the image.  Furthermore the name can be
+or its name (without the XC_ prefix). Alternativelly the xpm file
+name may be specified.  This xpm file should contain a pixmap
+using 3 colors (None, black, white) and an optional hot-spot.  If
+no hot-spot is defined, the hot-spot is placed in the center of
+the image.  Furthermore the name can be
 .I None
 (no cursor) or
 .I Tiny
@@ -3962,10 +3976,10 @@ example, the hot-spot is in the second row, and second column.
 sets the default foreground and background colors used in
 miscellaneous windows created by fvwm, for example in the geometry
 feedback windows during a move or resize operation. If you don't
-want to change one color or the other, use - as its color name.
-To revert to the built-in default colors omit both color names.
-Note that the default colors are not used in menus, window titles
-or icon titles.
+want to change one color or the other, use - as its color name. To
+revert to the built-in default colors omit both color names. Note
+that the default colors are not used in menus, window titles or
+icon titles.
 
 .TP
 .BI "DefaultColorset [" num "]"
@@ -4026,11 +4040,10 @@ the id.
 
 .TP
 .BI "Emulate " Fvwm | Mwm | Win
-This command is a catch all for how miscellaneous things are done by fvwm.
-Right now this command affects where the move/resize feedback window appears
-and how window placement is aborted.
-To have more Mwm- or Win-like behavior
-you can call
+This command is a catch all for how miscellaneous things are done
+by fvwm. Right now this command affects where the move/resize
+feedback window appears and how window placement is aborted. To
+have more Mwm- or Win-like behavior you can call
 .BI Emulate
 with
 .IR Mwm " or " Win
@@ -4104,13 +4117,14 @@ and
 The modifier is set for any further button events.  To release a
 modifier key, use the corresponding negative number.  The
 .I depth
-command determines to which window the button events are sent.
-With a depth of 1, all events go to the root window, regardless of
-the pointer's position.  With 2, the event is passed to the top
-level window under the pointer which is usually the frame window.
-With 3, events go to the client window. Higher numbers go to
-successive sub windows.  Zero (0) goes to the smallest window that
-contains the pointer.  Note that events propagate upward.
+command determines to which window the button events are
+sent. With a depth of 1, all events go to the root window,
+regardless of the pointer's position.  With 2, the event is passed
+to the top level window under the pointer which is usually the
+frame window. With 3, events go to the client window. Higher
+numbers go to successive sub windows.  Zero (0) goes to the
+smallest window that contains the pointer.  Note that events
+propagate upward.
 .EX
  FakeClick depth 2 press 1 wait 250 release 1
 .EE
@@ -4301,10 +4315,11 @@ turn, and uses the first file found.
 If a directory is given in the form "/some/dir;.ext", this means
 all images in this directory have the extension ".ext" that should
 be forced.  The original image name (that may contain another
-extension or no extension at all) is not probed, instead ".ext"
-is added or replaces the original extension.  This is useful, for
+extension or no extension at all) is not probed, instead ".ext" is
+added or replaces the original extension.  This is useful, for
 example, if a user has some image directories with ".xpm" images
-and other image directories with the same names, but ".png" images.
+and other image directories with the same names, but ".png"
+images.
 
 The
 .I path
@@ -4340,46 +4355,51 @@ directives to have a prefix of "m4_" (see the
 .B FvwmM4
 man page).
 
-.\"needs_lang_check
 .TP
 .BI "LocalePath " path
-Specifies a colon separated list of "locale path" in which to search
-for string translation. A locale path is constituted by a directory
-path and a text domain separated by a ";". As an example the default locale
-path is:
+Specifies a colon separated list of "locale path" in which to
+search for string translations. A locale path is constituted by a
+directory path and a text domain separated by a semicolon
+(';'). As an example the default locale path is:
 .EX
 /install_prefix/share/locale;fvwm
 .EE
 where install_prefix is the fvwm installation directory. With such
-a locale path translation is searched in
+a locale path translations are searched for in
 .EX
 /install_prefix/share/locale/lang/LC_MESSAGES/fvwm.mo
 .EE
-where "lang" depends on the locale. If no directory is given the
-default directory path is assumed. If no text domain is given, "fvwm"
+where
+.I lang
+depends on the locale. If no directory is given the default
+directory path is assumed. If no text domain is given,
+.I fvwm
 is assumed. Without argument the default locale path is restored.
 
 As for the
 .B ImagePath
 command,
 .I path
-may contain environment variables and a '+' for appending
-or prepending locale path easily.
+may contain environment variables and a '+' to append or prepend
+the locale path easily.
 
-For example, the fvwm-themes package use (in fact will use):
+For example, the fvwm-themes package uses
 .EX
 LocalePath ";fvwm-themes:+"
 .EE
-for adding locale catalogs.
+to add locale catalogs.
 
-The default fvwm catalog contains a few strings used by the fvwm executable
-itself (Desk and Geometry) and strings used in some default configuration
-files and FvwmForm configuration. You can take a look at the po/ subdirectory
-of the fvwm source to get the list of the strings with a possible
-translation in various lang.
-At the present time very few languages are supported.
+The default fvwm catalog contains a few strings used by the fvwm
+executable itself (Desk and Geometry) and strings used in some
+default configuration files and
+.B FvwmForm
+configuration. You can take a look at the po/ subdirectory of the
+fvwm source to get the list of the strings with a possible
+translation in various languages. At present, very few languages
+are supported.
 
-The main use of locale catalogs is via the "$[gt.string]" parameter:
+The main use of locale catalogs is via the "$[gt.string]"
+parameter:
 .EX
 DestroyMenu MenuFvwmWindowOps
 AddToMenu   MenuFvwmWindowOps "$[gt.Window Ops]" Title
@@ -4394,16 +4414,17 @@ AddToMenu   MenuFvwmWindowOps "$[gt.Window Ops]" Title
 + "$[gt.&Close]"             Close
 + "$[gt.&Destroy]"            Destroy
 .EE
-gives a menu in the locale languages if translations are available.
+gives a menu in the locale languages if translations are
+available.
 
 Note that the
 .B FvwmTaskBar
 module has its own catalog and that the
 .B FvwmScript
-module has a set of special instructions for string translation.
-It is out of the scoop of this documentation to explain how to
-build locale catalogs. We refer the user to the GNU gettext documentation.
-.\"end
+module has a set of special instructions for string
+translation. It is out of the scope of this discussion to explain
+how to build locale catalogs. Please refer to the GNU gettext
+documentation.
 
 .TP
 .BI "PixmapPath " path
@@ -4488,7 +4509,8 @@ is finally executed, it is expanded again.  It may therefore be
 necessary to quote the parts of the command that must not be
 expanded twice.
 
-Note:  A window's id as it is returned with $[w.id] can be used as the
+Note:  A window's id as it is returned with $[w.id] can be used as
+the
 .IR command_id .
 Example:
 .EX
@@ -4621,7 +4643,7 @@ key.
 
 The
 .I options
-passed to WindowList can be
+passed to WindowList are separated by commas and can be
 .IR Geometry " / " NoGeometry " / " NoGeometryWithInfo ,
 .IR NoDeskNum,
 .IR NoNumInDeskTitle ,
@@ -4697,13 +4719,13 @@ option the order of the windows in the list is reversed.
 
 With the
 .I CurrentAtEnd
-option the currently focused window (if any) is shown at the bottom
-of the list.  This is mostly intended for simulating the Alt-Tab
-behavior in another GUI.
+option the currently focused window (if any) is shown at the
+bottom of the list.  This is mostly intended for simulating the
+Alt-Tab behavior in another GUI.
 
 .I IconifiedAtEnd
-makes iconified windows be moved to the end of the list.  This is also
-from another GUI.
+makes iconified windows be moved to the end of the list.  This is
+also from another GUI.
 
 The
 .I NoGeometry
@@ -4722,10 +4744,8 @@ is only useful if a desktop name is defined with the
 .B DesktopName
 command. It causes fvwm to not display the desktop number before
 the desktop name.  By default, the WindowList menu have a title
-which indicates the current desk or the selected desktop if the
-.I Desk
-condition is used.
-The
+which indicates the current desk or the selected desktop if the .I
+Desk condition is used. The
 .I NoCurrentDeskTitle
 option removes this title.
 .I TitleForAllDesks
@@ -5713,8 +5733,8 @@ very strange.  Windows that were shaded without a
 .I direction
 argument stay shaded in the direction of the title bar.
 
-For backward compatibility, the optional argument may also be 1
-to signify "on", and 2 to signify "off". Note that this syntax is
+For backward compatibility, the optional argument may also be 1 to
+signify "on", and 2 to signify "off". Note that this syntax is
 obsolete, and will be removed in the future.
 
 .TP
@@ -5776,10 +5796,10 @@ default value "L".
 This command creates a lot of extra network traffic, depending on
 your CPU, network connection, the number of
 .BR Key " or " Mouse
-commands in your configuration file and the number of modifiers you
-want to ignore.  If you do not have a lightning fast machine or
-very few bindings you should not ignore more than two modifiers.
-I.e. do not ignore
+commands in your configuration file and the number of modifiers
+you want to ignore.  If you do not have a lightning fast machine
+or very few bindings you should not ignore more than two
+modifiers. I.e. do not ignore
 .SM scroll-lock
 if you have no problem with it.  In the
 .I FAQ
@@ -5847,9 +5867,9 @@ DestroyFunc AutoRaiseFunction
 AddToFunc AutoRaiseFunction
 + I Current (FvwmButtons) Raise
 .EE
-Normally, the invisible pan frames are only on the screen edges that
-border virtual pages.  If a screen edge has a command bound to it,
-the pan frame is always created on that edge.
+Normally, the invisible pan frames are only on the screen edges
+that border virtual pages.  If a screen edge has a command bound
+to it, the pan frame is always created on that edge.
 
 .TP
 .BI "EdgeLeaveCommand [" direction " [" Function "]]"
@@ -5859,8 +5879,9 @@ to an edge of the screen. Direction may be one of
 "North", "Top", "West", "Left", "South", "Bottom", "Right"
 and "East". If
 .I Function
-is omitted the binding for this edge is removed. If EdgeLeaveCommand is
-called without any arguments all edge bindings are removed.
+is omitted the binding for this edge is removed. If
+EdgeLeaveCommand is called without any arguments all edge bindings
+are removed.
 
 .I Function
 is executed when the mouse pointer
@@ -5880,9 +5901,9 @@ can be used get a delay when raising or lowering windows.
 See example for
 .I EdgeCommand
 .EE
-Normally, the invisible pan frames are only on the screen edges that
-border virtual pages.  If a screen edge has a command bound to it,
-the pan frame is always created on that edge.
+Normally, the invisible pan frames are only on the screen edges
+that border virtual pages.  If a screen edge has a command bound
+to it, the pan frame is always created on that edge.
 
 .TP
 .BI "GnomeButton"
@@ -5978,10 +5999,11 @@ The special context 'M' for menus can only be used to control
 which mouse button is used to tear off menus.  See the section
 "Tear Off Menus" for details.
 
-By default, the binding applies to all windows. You can specify that
-a binding only applies to specific windows by specifying the
-window name in brackets. The window name is a wildcard pattern specifying
-the class, resource or name of the window you want the binding to apply to.
+By default, the binding applies to all windows. You can specify
+that a binding only applies to specific windows by specifying the
+window name in brackets. The window name is a wildcard pattern
+specifying the class, resource or name of the window you want the
+binding to apply to.
 
 The following example shows how the same key-binding can be used to
 perform different functions depending on the window that is focussed:
@@ -5992,9 +6014,9 @@ Key (*vim)  V A C --
 Key         V A C Echo ctrl-V-elsewhere
 .EE
 
-Note that a '--' action indicates that the event should not be intercepted by
-Fvwm and passed through to the underlying window instead. This is only a valid
-action for window-specific bindings.
+Note that a '--' action indicates that the event should not be
+intercepted by Fvwm and passed through to the underlying window
+instead. This is only a valid action for window-specific bindings.
 
 This example shows how to display the WindowList when Button 3 is
 pressed on an rxvt window:
@@ -6757,8 +6779,8 @@ reverts back to the default.
 
 With the
 .I StippledTitle
-style, titles are drawn with the same effect that is usually reserved for
-windows with the
+style, titles are drawn with the same effect that is usually
+reserved for windows with the
 .IR Sticky ", " StickyAcrossPages " or " StickyAcrossDesks
 style.
 .I StippledTitleOff
@@ -6825,28 +6847,29 @@ To stop using this colorset, the argument is omitted.
 
 .IR IconBackgroundColorset
 takes the colorset number as its sole argument and uses it to set
-a background for the icon picture. By default the icon picture is not
-drawn onto a background image. To restore the default, the argument is
-omitted.
+a background for the icon picture. By default the icon picture is
+not drawn onto a background image. To restore the default, the
+argument is omitted.
 
 .IR IconTitleRelief
-takes one numeric argument that may be between -50 and +50 pixels and
-defines the thickness of the 3D relief drawn around the icon
-title. With negative values the icon title gets a pressed in look.
-The default is 2 and it is restored if the argument is omitted.
+takes one numeric argument that may be between -50 and +50 pixels
+and defines the thickness of the 3D relief drawn around the icon
+title. With negative values the icon title gets a pressed in
+look. The default is 2 and it is restored if the argument is
+omitted.
 
 .IR IconBackgroundRelief
-takes one numeric argument that may be between -50 and +50 pixels and
-defines the thickness of the 3D relief drawn around the icon picture
-background (if any). With negative values the icon background gets a
-pressed in look.  The default is 2 and it is restored if the argument
-is omitted.
+takes one numeric argument that may be between -50 and +50 pixels
+and defines the thickness of the 3D relief drawn around the icon
+picture background (if any). With negative values the icon
+background gets a pressed in look.  The default is 2 and it is
+restored if the argument is omitted.
 
 .IR IconBackgroundPadding
 takes one numeric argument that may be between 0 and 50 pixels and
-defines the amount of free space between the relief of the icon background
-picture (if any) and the icon picture. The default is 2 and it is restored if
-the argument is omitted.
+defines the amount of free space between the relief of the icon
+background picture (if any) and the icon picture. The default is 2
+and it is restored if the argument is omitted.
 
 The
 .IR Font " and " IconFont
@@ -7227,7 +7250,8 @@ default, fvwm uses lazy mode if there are no bad visual effects
 (not counting the window handles) and busy mode otherwise.  Use
 the
 .I WindowShadeAlwaysLazy " or " WindowShadeBusy
-to force using the lazy or busy mode.  The default setting is restored with
+to force using the lazy or busy mode.  The default setting is
+restored with
 .IR WindowShadeLazy .
 
 .I ResizeOpaque
@@ -7579,8 +7603,9 @@ until it hits the bottom screen border.
 .I Old placement styles
 DumbPlacement / SmartPlacement / SmartPlacementOff,
 ActivePlacement / RandomPlacement,
-ActivePlacementsHonorsStartsOnPage / ActivePlacementsHonorsStartsOnPageOff,
-GlobalOpts SmartPlacementIsReallySmart / GlobalOpts SmartPlacementIsNormal
+ActivePlacementsHonorsStartsOnPage /
+ActivePlacementsHonorsStartsOnPageOff, GlobalOpts
+SmartPlacementIsReallySmart / GlobalOpts SmartPlacementIsNormal
 are still supported but will be removed in the future. The old and
 new styles can be translated according to the following table:
 .EX
@@ -8694,11 +8719,11 @@ style fills the button with the Colorset
 .IR cs .
 The optional
 .I alpha
-argument is a percentage between 0 and 100.
-It causes fvwm to merge the colorset background onto the button using this
-percentage. If the percentage is 0 the colorset background is hidden and
-if it is 100 the colorset background is fully applied. The default is 100.
-So, the destructivity depends on the
+argument is a percentage between 0 and 100. It causes fvwm to
+merge the colorset background onto the button using this
+percentage. If the percentage is 0 the colorset background is
+hidden and if it is 100 the colorset background is fully
+applied. The default is 100. So, the destructivity depends on the
 .I alpha
 argument.
 
@@ -8794,15 +8819,15 @@ The
 .I ShrunkPixmap
 style is similar to the
 .I Pixmap
-style. But if the image is bigger than the button the image is resized
-to fit into the button.
+style. But if the image is bigger than the button the image is
+resized to fit into the button.
 
 The
 .I StretchedPixmap
 style is similar to the
 .I Pixmap
-style. But if the image is smaller than the button the image is resized
-to cover the button.
+style. But if the image is smaller than the button the image is
+resized to cover the button.
 
 The
 .I TiledPixmap
@@ -9622,8 +9647,8 @@ AddToFunc Move-or-Raise I Raise
  + M Move
  + D Lower
 .EE
-The function name is "Move-or-Raise", and could be invoked from a menu
-or a mouse binding or key binding:
+The function name is "Move-or-Raise", and could be invoked from a
+menu or a mouse binding or key binding:
 .EX
 Mouse 1 TS A Move-or-Raise
 .EE
@@ -10265,7 +10290,8 @@ the starting point.  The
 may be one of "North", "NorthEast", "East", "SouthEast", "South",
 "SouthWest", "West", and "NorthWest".  Which window
 .B ScanForWindow
-selects depends first on the position along the primary axis given by
+selects depends first on the position along the primary axis given
+by
 .IR direction .
 If any windows have the exact same coordinate along the primary
 axis, the secondary direction is used to order the windows.  The
@@ -11133,155 +11159,183 @@ xsm remotely.
 
 .SS COLORSETS
 
-Colorsets are a powerful method to control colors.
-Colorsets create appearance resources that are shared by fvwm and
-its modules.
-When a colorset is modified all parts of fvwm react to that
-change.
-A colorset includes a
-foreground color, background color, shadow and highlight color
-(often based on the background color), background face (this
-includes images and all kinds of gradients).  There is a way to
-render background face and specify other color operations.
+Colorsets are a powerful method to control colors. Colorsets
+create appearance resources that are shared by fvwm and its
+modules.  When a colorset is modified all parts of fvwm react to
+that change. A colorset includes a foreground color, background
+color, shadow and highlight color (often based on the background
+color), background face (this includes images and all kinds of
+gradients).  There is a way to render background face and specify
+other color operations.
 
 In the 2.4.x versions a special module
 .B FvwmTheme
-was introduced to manage colorsets.  Starting with the 2.5.x
-beta version, the FvwmTheme functionality
-was moved to the core fvwm, so this module became obsolete.
+was introduced to manage colorsets.  Starting with the 2.5.x beta
+version, the FvwmTheme functionality was moved to the core fvwm,
+so this module became obsolete.
 
-Old syntax:
-
-  DestroyModuleConfig FvwmTheme: *
-  *FvwmTheme: Colorset 0 fg black, bg rgb:b4/aa/94
-  *FvwmTheme: Colorset 1 fg black, bg rgb:a1/b2/c8
-
+The old syntax:
+.EX
+DestroyModuleConfig FvwmTheme: *
+*FvwmTheme: Colorset 0 fg black, bg rgb:b4/aa/94
+*FvwmTheme: Colorset 1 fg black, bg rgb:a1/b2/c8
+.EE
 corresponds to the new syntax:
-
-  CleanupColorsets
-  Colorset 0 fg black, bg rgb:b4/aa/94
-  Colorset 1 fg black, bg rgb:a1/b2/c8
+.EX
+CleanupColorsets
+Colorset 0 fg black, bg rgb:b4/aa/94
+Colorset 1 fg black, bg rgb:a1/b2/c8
+.EE
 
 .TP
 .BI "Colorset " num " [" options "]"
-Creates or modifies colorset \fIn\fP.
-Colorsets are identified by this number.
-The number can start at zero and can be a very large number.
+Creates or modifies colorset
+.IR num .
+Colorsets are identified by this number. The number can start at
+zero and can be a very large number.
 
-Warning: The highest colorset number used determines memory consumption.
-Thus if you define 'Colorset 100000', the memory for 100001 colorsets are
-used.  Keep your colorset numbers as small as possible.
+Warning: The highest colorset number used determines memory
+consumption. Thus, if you define 'Colorset 100000', the memory for
+100001 colorsets is used.  Keep your colorset numbers as small as
+possible.
 
 By convention, colorsets are numbered like this:
 .EX
- # 0 = Default colors
- # 1 = Inactive windows
- # 2 = Active windows
- # 3 = Inactive menu entry and menu background
- # 4 = Active menu entry
- # 5 = greyed out menu entry (only bg used)
- # 6 = module foreground and background
- # 7 = hilight colors
+# 0 = Default colors
+# 1 = Inactive windows
+# 2 = Active windows
+# 3 = Inactive menu entry and menu background
+# 4 = Active menu entry
+# 5 = greyed out menu entry (only bg used)
+# 6 = module foreground and background
+# 7 = hilight colors
 .EE
 
-If you need to have more colors and don't want to reinvent the wheel,
-you may use the convention used in fvwm-themes, it defines the meaning
-of the first 40 colorsets for nearly all purposes:
+If you need to have more colors and do not want to reinvent the
+wheel, you may use the convention used in fvwm-themes, it defines
+the meaning of the first 40 colorsets for nearly all purposes:
 
- \fBhttp://fvwm-themes.sourceforge.net/doc/colorsets\fP
+.B http://fvwm-themes.sourceforge.net/doc/colorsets
 
-Each colorset has four colors, an
-optional pixmap and an optional shape mask.  The four colors are used by
-modules as the foreground, background, highlight and shadow colors.  When
-a colorset is created it defaults to a foreground of black and background of
-gray.  The background and foreground are marked as "average" and "contrast"
-(see later) so that just specifying a pixmap or gradient gives sensible
-results.
+Each colorset has four colors, an optional pixmap and an optional
+shape mask.  The four colors are used by modules as the
+foreground, background, highlight and shadow colors.  When a
+colorset is created it defaults to a foreground of black and
+background of gray.  The background and foreground are marked as
+"average" and "contrast" (see later) so that just specifying a
+pixmap or gradient gives sensible results.
 
-\fIoptions\fP is a comma separated list containing some of the keywords:
-fg, Fore, Foreground, bg, Back, Background, hi, Hilite, Hilight, sh,
-Shade, Shadow, fgsh, Pixmap, TiledPixmap, AspectPixmap, Transparent,
-RootTransparent, Shape, TiledShape, AspectShape, NoShape, ?Gradient,
-Tint, fgTint, bgTint, Alpha, fgAlpha, Dither, NoDither, IconTint,
-IconAlpha, NoShape and Plain.
+.I options
+is a comma separated list containing some of the keywords:
+fg, Fore, Foreground,
+bg, Back, Background,
+hi, Hilite, Hilight,
+sh, Shade, Shadow,
+fgsh,
+Pixmap, TiledPixmap, AspectPixmap,
+Transparent, RootTransparent,
+Shape, TiledShape, AspectShape, NoShape,
+?Gradient,
+Tint, fgTint, bgTint,
+Alpha, fgAlpha,
+Dither, NoDither,
+IconTint,
+IconAlpha,
+Plain.
 
-\fIfg\fP, \fIFore\fP and \fIForeground\fP take a color name as an argument and
-set the foreground color.  The special name \fIContrast\fP may be used to
-select a color that contrasts well with the background color.  To reset
-the foreground color to the default value you can simply omit the color
-name.
+.IR fg ", " Fore " and " Foreground
+take a color name as an argument and set the foreground color.
+The special name
+.I Contrast
+may be used to select a color that contrasts well with the
+background color.  To reset the foreground color to the default
+value you can simply omit the color name.
 
-\fIbg\fP, \fIBack\fP and \fIBackground\fP take a color name as an argument and
-set the background color.  It also sets the highlight and shadow colors to
-values that give a 3d effect unless these have been explicitly set with the
-options below.  The special name \fIAverage\fP may be used to select a color
-that is the average color of the pixmap.
-If the pixmap is tinted with the
+.IR bg ", " Back " and " Background
+take a color name as an argument and set the background color.  It
+also sets the highlight and shadow colors to values that give a 3d
+effect unless these have been explicitly set with the options
+below.  The special name
+.I Average
+may be used to select a color that is the average color of the
+pixmap.  If the pixmap is tinted with the
 .I Tint
-option, the tint is not taken in account in the computation of the average
-color. You should use the
+option, the tint is not taken in account in the computation of the
+average color. You should use the
 .I bgTint
-option to get the "real" average color.
-The background color is reset to the default value if the color name is omitted.
+option to get the "real" average color.  The background color is
+reset to the default value if the color name is omitted.
 
-\fIhi\fP, \fIHilite\fP and \fIHilight\fP take a color name as as argument and
-set the highlight color.  If the highlight color is not explicitly set,
-the default is to calculate it from the background color.  To switch back
-to the default behavior the color name can be omitted.
+.IR hi ", " Hilite " and " Hilight
+take a color name as as argument and set the highlight color.  If
+the highlight color is not explicitly set, the default is to
+calculate it from the background color.  To switch back to the
+default behavior the color name can be omitted.
 
-\fIsh\fP, \fIShade\fP and \fIShadow\fP take a color name as as argument and
-set the shadow color.  If the shadow color is not explicitly set,
-the default is to calculate it from the background color.  To switch back
-to the default behavior the color name can be omitted.
+.I sh ", " Shade " and " Shadow
+take a color name as as argument and set the shadow color.  If the
+shadow color is not explicitly set, the default is to calculate it
+from the background color.  To switch back to the default behavior
+the color name can be omitted.
 
 .I fgsh
 takes a color name as an argument and sets the color used by the
 shadowing font effect. See the
 .B FONT SHADOW EFFECTS
-section of the fvwm man page. By default this color is computed from
-the foreground and background colors.
-To switch back to the default the color name can be omitted.
+section of the fvwm man page.  By default this color is computed
+from the foreground and background colors.  To switch back to the
+default the color name can be omitted.
 
-\fIPixmap\fP, \fITiledPixmap\fP and \fIAspectPixmap\fP take a file name as
-an argument, search the \fIImagePath\fP and use it as the background pixmap.
-Any transparent parts are filled with the background color.  Not specifying a
-file name removes any existing image from the colorset.  \fITiledPixmap\fP
-produces repeated copies of the image with no scaling, \fIPixmap\fP
-causes the image to be stretched to fit whatever object the colorset is applied
-to and \fIAspectPixmap\fP stretches to fit but retains the image
-aspect ratio.
+.IR Pixmap ", " TiledPixmap " and " AspectPixmap
+take a file name as an argument, search the
+.B ImagePath
+and use it as the background pixmap.  Any transparent parts are
+filled with the background color.  Not specifying a file name
+removes any existing image from the colorset.
+.I TiledPixmap
+produces repeated copies of the image with no scaling,
+.I Pixmap
+causes the image to be stretched to fit whatever object the
+colorset is applied to and
+.I AspectPixmap
+stretches to fit but retains the image aspect ratio.
 
-\fITransparent\fP creates a transparent background pixmap.
-The pixmap is used as a window background to achieve root transparency.
-For this you should use the
-.B ParentalRelativity
-fvwm style.
-A subsequent root background change may be detected or not, this depends on the program
-used to set the background. If you use fvwm-root, xsetbg (xli),
-FvwmBacker with solid or colorset colors or a recent version of Esetroot
-(>= 9.2) a background change is detected. If background changes are not
-detected (e.g., if you use xv or xsetroot) you can force detection by using
-the -d option of fvwm-root:
+.I Transparent
+creates a transparent background pixmap.  The pixmap is used as a
+window background to achieve root transparency.  For this you
+should use the
+.I ParentalRelativity
+option to the
+.B Style
+command.
+A subsequent root background change may be detected or not, this
+depends on the program used to set the background.  If you use
+fvwm-root, xsetbg (xli), FvwmBacker with solid or colorset colors
+or a recent version of Esetroot (>= 9.2) a background change is
+detected. If background changes are not detected (e.g., if you use
+xv or xsetroot) you can force detection by using the -d option of
+fvwm-root:
 .EX
 xv -root -quit mybg.png; fvwm-root -d
 .EE
 Due to the way X implements transparency no guarantees can be made
-that the desired effect can be achieved. The application may even
-crash.  If you experience any problems with this option, do not use
-it.
+that the desired effect can be achieved.  The application may even
+crash.  If you experience any problems with this option, do not
+use it.
 
 Using outline move and resize (see the
 .B OpaqueMoveSize
 command and the
 .I ResizeOpaque
-style) as well as setting the
+.B Style
+option) as well as setting the
 .I WindowShadeShrinks
-style may help. The transparency achieved with
+style may help.  The transparency achieved with
 .I Transparent
-depends on whether the colorset is applied to the foreground or the
-background of a window. In the second case the transparency is
-relative to the parent window of the window on which the colorset is
-defined. For example:
+depends on whether the colorset is applied to the foreground or
+the background of a window. In the second case the transparency is
+relative to the parent window of the window on which the colorset
+is defined.  For example:
 .EX
 Colorset 12 VGradient 200 grey30 gery60
 Colorset 17 Transparent
@@ -11289,8 +11343,8 @@ Colorset 17 Transparent
 *FvwmIconMan: PlainColorset 17
 .EE
 gives an IconMan with a vertical grey gradient background and the
-buttons use the background (by transparency). To obtain a
-(root) transparent IconMan:
+buttons use the background (by transparency). To obtain a (root)
+transparent IconMan:
 .EX
 Colorset 12 Transparent
 Colorset 17 Transparent
@@ -11302,194 +11356,217 @@ Colorset 19 Transparent
 *FvwmIconMan: FocusColorset 18
 *FvwmIconMan: IconColorset  19
 .EE
-The Colorset IconMan option defines the IconMan window background, but
-the PlainColorset and the FocusColorset are drawn on the
-foreground. So, the transparency of the IconMan buttons is achieved
-by drawing nothing.  Now if this IconMan is swallowed in an
-FvwmButtons as:
+The Colorset IconMan option defines the IconMan window background,
+but the PlainColorset and the FocusColorset are drawn on the
+foreground. So, the transparency of the IconMan buttons is
+achieved by drawing nothing.  Now if this IconMan is swallowed in
+an FvwmButtons as:
 .EX
-FvwmButtons:(Colorset 10, Swallow "FvwmIconMan" 'FvwmIconMan')
+FvwmButtons:(Colorset 10, Swallow \\
+  "FvwmIconMan" 'FvwmIconMan')
 .EE
-then, IconMan become a child of FvwmButtons and it is transparent
-relative to FvwmButtons. So, in this case IconMan uses Colorset
-10 as background. If you want root transparency
-use the
+then,
+.B FvwmIconMan
+becomes a child of
+.B FvwmButtons
+and it is transparent relative to
+.BR FvwmButtons .
+So, in this case
+.B FvwmIconMan
+uses Colorset 10 as background. If you want root transparency use
+the
 .I RootTransparent
-option. FvwmButtons, FvwmIconMan, FvwmIdent, FvwmScroll and
-FvwmTaskBar are relatively simple. There is one main colorset option
-which defines the background of the window and the other colorsets
-(if any) are drawn on the foreground. The case of FvwmWinList and
-FvwmProxy are simpler. With FvwmWinList all the colorsets are drawn on
-the foreground and with FvwmProxy the two colorsets refer to the
-window backgrounds. FvwmPager is more
-complicated as almost everything in the pager are windows with some parental
-relations (the mini windows are the child and the desktops are the
-parents and all this is complicated by the hilighted page). So, the
-colorsets apply to the background of these windows. You should
-experiment. For FvwmForm and FvwmScript the situation is similar.
-There is a main window (a child of the root window) which corresponds
-to the main colorset and most of the widgets are windows which are
-children of the main window.
+option.
+.BR FvwmButtons ", " FvwmIconMan ", " FvwmIdent ", " FvwmScroll
+and
+.B FvwmTaskBar
+are relatively simple. There is one main colorset option which
+defines the background of the window and the other colorsets (if
+any) are drawn on the foreground. The case of
+.BR FvwmWinList " and " FvwmProxy
+are simpler. With
+.B FvwmWinList
+all the colorsets are drawn on the foreground and with
+.B FvwmProxy
+the two colorsets refer to the window backgrounds.
+.B FvwmPager
+is more complicated as almost everything in the pager are windows
+with some parental relations (the mini windows are the child and
+the desktops are the parents and all this is complicated by the
+hilighted page). So, the colorsets apply to the background of
+these windows. You should experiment. For
+.BR FvwmForm " and " FvwmScript
+the situation is similar. There is a main window (a child of the
+root window) which corresponds to the main colorset and most of
+the widgets are windows which are children of the main window.
 .I Tint
 may work or not with the
 .I Transparent
 option. When the colorset is drawn on the foreground
 .I Tint
-should work. In some cases, tinting may be very slow.
-Tinting may work with fvwm menu (without
-animation). Tinting may work better if your X server has
-backing store enabled (try xdpyinfo to see if this the case).
-There is a chance that the backing store support of your
-X server does not work well with the terrible hack used to Tint
-the ParentRelative Pixmap. So, to get tinted root transparency
-it is more safe to use the
+should work. In some cases, tinting may be very slow. Tinting may
+work with fvwm menu (without animation). Tinting may work better
+if your X server has backing store enabled (try xdpyinfo to see if
+this the case). There is a chance that the backing store support
+of your X server does not work well with the terrible hack used to
+Tint the ParentRelative Pixmap. So, to get tinted root
+transparency it is more safe to use the
 .I RootTransparent
 option.
 
 .IR RootTransparent " [ " buffer " ] "
-creates a root transparent background. To make this option work, you
-must use an Esetroot compatible program, fvwm-root with the
---retain-pixmap option or FvwmBacker with the RetainPixmap option (and
-colorset or solid backgrounds).  The
+creates a root transparent background. To make this option work,
+you must use an Esetroot compatible program, fvwm-root with the
+--retain-pixmap option or FvwmBacker with the RetainPixmap option
+(and colorset or solid backgrounds).  The
 .I buffer
 keyword is useful only when the
 .I Tint
-option is used too. This speeds up creation of windows which use the
-colorset (useful for fvwm menus) at the cost of memory usage.
-It also speeds up opaque move and resize which can be unacceptably slow
-without
+option is used too. This speeds up creation of windows which use
+the colorset (useful for fvwm menus) at the cost of memory
+usage. It also speeds up opaque move and resize which can be
+unacceptably slow without
 .IR buffer .
-However, this option may add a lot of memory to your X server (depending
-on the size of the image used to set the background). In summary, using
-outline move and resize for modules which use such a colorset may be
-a good idea.
+However, this option may add a lot of memory to your X server
+(depending on the size of the image used to set the
+background). In summary, using outline move and resize for modules
+which use such a colorset may be a good idea.
 
-\fIShape\fP, \fITiledShape\fP and \fIAspectShape\fP take a file name as
-an argument, search the \fIImagePath\fP and use it as the shape bitmap.
-\fITiledShape\fP produces repeated copies of the bitmap with no scaling,
-\fIShape\fP causes the bitmap to be stretched to fit whatever object the
-colorset is applied to and \fIAspectShape\fP stretches to fit but
-retains the bitmap aspect ratio.  If the file is a pixmap in xpm format,
-the shape mask of the pixmap is used.
+.IR Shape ", " TiledShape " and " AspectShape
+take a file name as an argument, search the
+.B ImagePath
+and use it as the shape bitmap.
+.I TiledShape
+produces repeated copies of the bitmap with no scaling,
+.I Shape
+causes the bitmap to be stretched to fit whatever object the
+colorset is applied to and
+.I AspectShape
+stretches to fit but retains the bitmap aspect ratio.  If the file
+is a pixmap in xpm format, the shape mask of the pixmap is used.
 
-Warning: Due to the way X11 implements shapes
-you cannot take back making windows shaped.
-You may have to restart fvwm or the shaped application.
+Warning: Due to the way X11 implements shapes you cannot take back
+making windows shaped. You may have to restart fvwm or the shaped
+application.
 
-\fI?Gradient ...\fP creates a pixmap and stretches it to fit the window.
-\fI?Gradient\fP may be one of HGradient, VGradient, DGradient, BGradient,
-SGradient, CGradient, RGradient or YGradient.  The gradient types are as
-follows:  H is horizontal; V is vertical; D is diagonal from top left to
-bottom right; B is a backwards diagonal from bottom left to top right; S
-is concentric squares; C is concentric circles; R is a radar like pattern
-and Y is a Yin Yang style (but without the dots, we are not \fIthat\fP mad).
-Please refer to the \fICOLOR GRADIENTS\fP section
-for the syntax of gradients.
+.I ?Gradient ...
+creates a pixmap and stretches it to fit the window.
+.I ?Gradient
+may be one of HGradient, VGradient, DGradient, BGradient,
+SGradient, CGradient, RGradient or YGradient.  The gradient types
+are as follows:  H is horizontal; V is vertical; D is diagonal
+from top left to bottom right; B is a backwards diagonal from
+bottom left to top right; S is concentric squares; C is concentric
+circles; R is a radar like pattern and Y is a Yin Yang style (but
+without the dots).
+Please refer to the
+.B COLOR GRADIENTS
+section for the syntax of gradients.
 
 .I Tint
-takes 2 arguments, a color and a percentage between 0 and 100.
-It causes the image defined using
+takes 2 arguments, a color and a percentage between 0 and 100. It
+causes the image defined using
 .I ?Pixmap
 or
 .I ?Gradient
-to be tinted with the specified color using the percentage.
-If the image is transparent
+to be tinted with the specified color using the percentage. If the
+image is transparent
 .I Tint
-tints only the image part.
-Unfortunately, a colorset background specified using the
+tints only the image part. Unfortunately, a colorset background
+specified using the
 .I Transparent
 option can give strange results. See the
 .I Transparent
-option for details.
-With no arguments this option removes the tint.
+option for details. With no arguments this option removes the
+tint.
 
 .I fgTint
-takes 2 arguments, a color and a percentage between 0 and 100.
-It causes the color defined using
+takes 2 arguments, a color and a percentage between 0 and 100. It
+causes the color defined using
 .I fg
-to be tinted with the specified color using the percentage.
-With no arguments this option removes the tint.
+to be tinted with the specified color using the percentage. With
+no arguments this option removes the tint.
 
 .I bgTint
-takes 2 arguments, a color and a percentage between 0 and 100.
-It causes the color defined using
+takes 2 arguments, a color and a percentage between 0 and 100. It
+causes the color defined using
 .I bg
-to be tinted with the specified color using the percentage.
-If the
+to be tinted with the specified color using the percentage. If the
 .I sh
 and
 .I hi
-colors are not specified, they are recomputed from the tinted bg color.
-With no arguments this option removes the tint.
+colors are not specified, they are recomputed from the tinted bg
+color. With no arguments this option removes the tint.
 
 .I Alpha
-takes a percentage between 0 and 100 as an argument.
-It causes fvwm to merge the image defined using
+takes a percentage between 0 and 100 as an argument. It causes
+fvwm to merge the image defined using
 .I ?Pixmap
 or
 .I ?Gradient
 with the
 .I bg
-color using the percentage. If the percentage is 0 the image is hidden and
-if it is 100 the image is displayed as usual (no merge).
-The default is 100 and it is restored if no argument is given.
+color using the percentage. If the percentage is 0 the image is
+hidden and if it is 100 the image is displayed as usual (no
+merge). The default is 100 and it is restored if no argument is
+given.
 
 .I fgAlpha
-takes a percentage between 0 and 100 as an argument.
-It causes fvwm to merge the text and the colorset background using the
-percentage. If the percentage is 0 the text is hidden and if it is 100
-the text is displayed as usual (no merge).
-This option has an effect only with fonts loaded by Xft, see the
+takes a percentage between 0 and 100 as an argument. It causes
+fvwm to merge the text and the colorset background using the
+percentage. If the percentage is 0 the text is hidden and if it is
+100 the text is displayed as usual (no merge). This option has an
+effect only with fonts loaded by Xft, see the
 .B FONT NAMES AND FONT LOADING
-section.
-The default is 100 and it is restored if no argument is given.
+section. The default is 100 and it is restored if no argument is
+given.
 
 .I Dither
 causes fvwm to dither the image defined using
 .I ?Pixmap
 or
 .I ?Gradient.
-This is useful only with displays with depth less than or equal to 16 (i.e.,
-on displays which can only display less than 65537 colors at once).
-The dithering effect lets you simulate having more colors
-available that you actually have.
+This is useful only with displays with depth less than or equal to
+16 (i.e., on displays which can only display less than 65537
+colors at once). The dithering effect lets you simulate having
+more colors available that you actually have.
 .I NoDither
 causes fvwm to do not dither the images.
 .I Dither
-is the default if the depth is less than or equal to 8
-(a screen with 256 colors or less).
-In depth 15 (32768 colors) and 16 (65536 colors), the
-default is
+is the default if the depth is less than or equal to 8 (a screen
+with 256 colors or less). In depth 15 (32768 colors) and 16 (65536
+colors), the default is
 .IR NoDither ,
-however this effect can be useful with images which contain
-a lot of close colors. For example a fine gradient will look
-more smooth.
+however this effect can be useful with images which contain a lot
+of close colors. For example a fine gradient will look more
+smooth.
 
 .I IconTint
-takes 2 arguments, a color and a percentage between 0 and 100.
-It causes fvwm or a module to tint the "icons" which are rendered
-into the colorset background with the specified color using a percentage.
-Here "icons" means, fvwm Icons, fvwm menu icons,
+takes 2 arguments, a color and a percentage between 0 and 100. It
+causes fvwm or a module to tint the "icons" which are rendered
+into the colorset background with the specified color using a
+percentage. Here "icons" means, fvwm Icons, fvwm menu icons,
 MiniIcons which represent applications in various modules, images
 loaded by modules (e.g., images specified by the
 .I Icon
-FvwmButtons button option) ...etc.
-With no arguments this option removes the icon tint.
+.B FvwmButtons
+button option) ...etc. With no arguments this option removes the
+icon tint.
 
 .I IconAlpha
-takes a percentage between 0 and 100 as an argument.
-It causes fvwm to merge the "icons" which are rendered
-into the colorset background using this percentage.
-The default is 100 and it is restored if no argument is given.
+takes a percentage between 0 and 100 as an argument. It causes
+fvwm to merge the "icons" which are rendered into the colorset
+background using this percentage. The default is 100 and it is
+restored if no argument is given.
 
 .IR Note :
-It is equivalent to use "Tint a_color rate" and "Alpha a" if a = 100
-and the bg color is a_color. This equivalence does not hold for IconAlpha
-and IconTint as the background can be an image or a gradient (and not a
-uniform color background).
-However, in some cases you can achieve (almost) the same effect by using
-IconTint in the place of IconAlpha. This is preferable as, in general,
-IconAlpha generates more redrawing than IconTint.
+It is equivalent to use "Tint a_color rate" and "Alpha a" if a =
+100 and the bg color is a_color. This equivalence does not hold
+for IconAlpha and IconTint as the background can be an image or a
+gradient (and not a uniform color background).
+However, in some cases you can achieve (almost) the same effect by
+using IconTint in the place of IconAlpha. This is preferable as,
+in general, IconAlpha generates more redrawing than IconTint.
 
 .I NoShape
 removes the shape mask from the colorset while
@@ -11502,15 +11579,15 @@ removes the background pixmap or gradient.
 Colorset 3 fg tan, bg navy
 .EE
 
-If necessary this creates colorsets 0, 1, 2 and 3 and then changes colorset
-3 to have a foreground of tan, a background of navy.
+If necessary this creates colorsets 0, 1, 2 and 3 and then changes
+colorset 3 to have a foreground of tan, a background of navy.
 
 .EX
 Colorset 3 bg "navy blue"
 .EE
 
-changes the background color of colorset 3 to navy blue. The foreground and
-pixmap are unchanged.
+changes the background color of colorset 3 to navy blue. The
+foreground and pixmap are unchanged.
 
 .EX
 Colorset 3 AspectPixmap large_murky_dungeon.xpm
@@ -11522,42 +11599,40 @@ Causes depression.
 Colorset 3 bg Average
 .EE
 
-Sets the background color and the relief colors to match the background
-pixmap. This is the default setting but it must be used if a background color
-was specified and is now not required.
-
+Sets the background color and the relief colors to match the
+background pixmap. This is the default setting but it must be used
+if a background color was specified and is now not required.
 .EX
 Colorset 3 YGradient 200 3 blue 1000 navy 1 blue 1000 navy
 .EE
-
 Adds a Yin Yang gradient background pixmap to colorset 3.  If the
-background is set to average it is recomputed along with the foreground
-if that is set to contrast.
+background is set to average it is recomputed along with the
+foreground if that is set to contrast.
 
 .EX
- #!/bin/sh
- FvwmCommand "Colorset 7 fg navy, bg gray"
- while true
- do
-   FvwmCommand "Colorset 7 fg gray"
-   sleep 1
-   FvwmCommand "Colorset 7 fg navy"
-   sleep 1
- done
+#!/bin/sh
+FvwmCommand "Colorset 7 fg navy, bg gray"
+while true
+do
+  FvwmCommand "Colorset 7 fg gray"
+  sleep 1
+  FvwmCommand "Colorset 7 fg navy"
+  sleep 1
+done
 .EE
-
 Makes colorset 7 blink.
 
-The color names used in colorsets are saved as fvwm variables
-can be substituted in any fvwm command.
-For example:
+The color names used in colorsets are saved as fvwm variables can
+be substituted in any fvwm command. For example:
 .EX
- AddToFunc InitFunction
- + I Exec exec xterm -fg $[fg.cs0] -bg $[bg.cs0]
+AddToFunc InitFunction
++ I Exec exec xterm -fg $[fg.cs0] -bg $[bg.cs0]
 .EE
-Where $[fg.cs0] is the foreground color of colorset zero.
-Please refer to the \fICOMMAND EXPANSION\fP
+Where $[fg.cs0] is the foreground color of colorset zero. Please
+refer to the
+.B COMMAND EXPANSION
 section for more information.
+
 .TP
 .B CleanupColorsets
 Resets a definition of all colorsets.
@@ -11712,7 +11787,3 @@ or reported through the bug tracking system.
 
 The official fvwm homepage is
 .BR @FVWMHOMEPAGE@ .
-
-\" LocalWords:  XTerm xterm rc fvwm Linux ICCCM CDE XView XINERAMA Xinerama
-\" LocalWords:  EdgeResistance fvwm's IconBox MoveToScreen FvwmConsole
-\" LocalWords:  FvwmCommand

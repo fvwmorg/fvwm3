@@ -38,7 +38,7 @@ static int FfdC; /* command fifo file discriptors */
 static int FfdM; /* message fifo file discriptors */
 static struct stat stat_buf;
 
-static char *FfdC_name, *FfdM_name; /* fifo names */
+static char *FfdC_name = NULL, *FfdM_name = NULL; /* fifo names */
 
 static ino_t FfdC_ino, FfdM_ino; /* fifo inode numbers */
 

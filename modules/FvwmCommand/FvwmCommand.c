@@ -36,7 +36,7 @@
 static int  Fdr, Fdw;  /* file discriptor for fifo */
 static int  Fdrun;     /* file discriptor for run file */
 static struct stat stat_buf;
-static char *Fr_name;
+static char *Fr_name = NULL;
 static fd_set fdset;
 
 static struct timeval Tv;
@@ -211,6 +211,7 @@ int main ( int argc, char *argv[])
     char *dpy_name;
     char dpy_name_add[3];
     int i;
+    char *s;
 
     /* default name */
     dpy_name = getenv("DISPLAY");
@@ -266,9 +267,9 @@ int main ( int argc, char *argv[])
   fc_name = safemalloc( strlen(f_stem) + 2 );
   strcpy(fc_name,f_stem);
   strcat(fc_name, "C");
-  Fr_name = safemalloc( strlen(f_stem) + 2 );
-  strcpy(Fr_name,f_stem);
-  strcat(Fr_name, "R");
+  s = safemalloc( strlen(f_stem) + 2 );
+  strcpy(s,f_stem);
+  strcat(s, "R");
 
   Fdrun = open(Fr_name, O_WRONLY | O_CREAT | O_EXCL, 0600);
   if (Fdrun < 0)
@@ -295,6 +296,7 @@ int main ( int argc, char *argv[])
       err_quit ("writing lock file");
     }
   }
+  Fr_name = s;
 
   if( Opt_Serv )
   {
@@ -419,9 +421,9 @@ int main ( int argc, char *argv[])
  */
 void close_fifos (void)
 {
+  unlink (Fr_name);
   close(Fdr);
   close(Fdw);
-  unlink (Fr_name);
 }
 
 /*
@@ -1019,4 +1021,3 @@ void list_iconify(unsigned long *body)
   printf( "0x%08lx %-20s x %ld, y %ld, width %ld, hight %ld\n",
 	  body[0], "iconify", body[3], body[4], body[5], body[6] );
 }
-

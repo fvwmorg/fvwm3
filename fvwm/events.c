@@ -1272,7 +1272,7 @@ static Bool __test_for_motion(int x0, int y0)
 	 * finger on the touchpad). Bascially, when you execute a
 	 * double click the first button release is queued after the
 	 * second _physical_ mouse release happen. It seems that
-	 * XQueryPointer may not work as espected: it does not see
+	 * FQueryPointer may not work as expected: it does not see
 	 * that the button is released on a double click.  So, we need
 	 * to check for a button press in the future to avoid a fvwm
 	 * lockup! (olicha 2004-01-31) */

@@ -2250,9 +2250,9 @@ void CMD_CursorMove(F_CMD_ARGS)
 	{
 		y = pan_y;
 	}
-
 	FWarpPointer(dpy, None, Scr.Root, 0, 0, Scr.MyDisplayWidth,
 		     Scr.MyDisplayHeight, x, y);
+
 	return;
 }
 
@@ -2845,34 +2845,6 @@ void CMD_AddTitleStyle(F_CMD_ARGS)
 	do_title_style(F_PASS_ARGS, True);
 
 	return;
-}
-
-void CMD_Colorset(F_CMD_ARGS)
-{
-	int n;
-	char *token;
-
-	if (GetIntegerArguments(action, &token, &n, 1) != 1)
-	{
-		return;
-	}
-	if (n < 0)
-	{
-		return;
-	}
-	if (token == NULL)
-	{
-		return;
-	}
-	parse_colorset(n, token);
-	update_fvwm_colorset(n);
-
-	return;
-}
-
-void CMD_CleanupColorsets(F_CMD_ARGS)
-{
-	cleanup_colorsets();
 }
 
 void CMD_PropertyChange(F_CMD_ARGS)

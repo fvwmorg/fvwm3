@@ -1777,3 +1777,31 @@ void CMD_ReadWriteColors(F_CMD_ARGS)
 
 	return;
 }
+
+void CMD_Colorset(F_CMD_ARGS)
+{
+	int n;
+	char *token;
+
+	if (GetIntegerArguments(action, &token, &n, 1) != 1)
+	{
+		return;
+	}
+	if (n < 0)
+	{
+		return;
+	}
+	if (token == NULL)
+	{
+		return;
+	}
+	parse_colorset(n, token);
+	update_fvwm_colorset(n);
+
+	return;
+}
+
+void CMD_CleanupColorsets(F_CMD_ARGS)
+{
+	cleanup_colorsets();
+}

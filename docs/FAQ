@@ -2968,12 +2968,12 @@ your applications request.
    not use precious desktop space.  It is possible to write some
    small functions in fvwm that can hide any window you like:
 
-   fvwm-2.5.8 or later:
+   fvwm-2.5.11 or later:
 
      # The autohiding functions
      AddToFunc autohide
      + I ThisWindow ($0) Deschedule $[w.id]
-     + I ThisWindow ($0) ThisWindow (shaded) WindowShade off
+     + I ThisWindow ($0) KeepRc ThisWindow (shaded) WindowShade off
      + I TestRc (!Match) All ($0, !shaded) autohide_hide $1 $2
 
      AddToFunc autohide_hide
@@ -3004,12 +3004,13 @@ your applications request.
    difference is that showing the window does not happen
    immediately, but can be delayed too.
 
-   fvwm-2.5.8 or later:
+   fvwm-2.5.11 or later:
 
      AddToFunc autohide
      + I ThisWindow ($0) Deschedule $[w.id]
      + I TestRc (!Match) Deschedule -$[w.id]
-     + I ThisWindow ($0) ThisWindow (shaded) autohide_show $1 $3
+     + I ThisWindow ($0) KeepRc ThisWindow (shaded) \
+         autohide_show $1 $3
      + I TestRc (!Match) All ($0, !shaded) autohide_hide $2 $3
 
      AddToFunc autohide_show
@@ -3032,6 +3033,10 @@ your applications request.
      #            |           |   |______  Hide delay
      #            |           |__________  Show delay
      #            |______________________  Unique window name/resource
+
+   These functions work too in 2.5.8 to 2.5.10, but you may have
+   to remove the KeepRc command from the autohide function in both
+   versions.
 
 ----------------------------------------------------------------------
 
