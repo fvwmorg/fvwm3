@@ -101,9 +101,6 @@ static const func_type func_config[] =
   {"+",            add_another_item, F_ADDMENU2,             0},
 #ifdef MULTISTYLE
   {"addbuttonstyle",AddButtonStyle,  F_ADD_BUTTON_STYLE,     FUNC_DECOR},
-#endif /* MULTISTYLE */
-  {"addmoduleconfig",  AddModConfig, F_ADD_MOD,              0},
-#ifdef MULTISTYLE
   {"addtitlestyle",AddTitleStyle,    F_ADD_TITLE_STYLE,      FUNC_DECOR},
 #endif /* MULTISTYLE */
 #ifdef USEDECOR
@@ -872,7 +869,7 @@ void ExecuteFunction(
     }
 #endif
     /* a module config command */
-    ModuleConfig(NULL,0,0,0,Action,0);  /* process the command */
+    ModuleConfig(Action);  /* process the command */
     return;                             /* done */
   }
   func_depth++;

@@ -78,10 +78,12 @@ static void AddToModList(char *tline);         /* prototypes */
  * Some modules request that module config commands be sent to them
  * as the commands are entered.  Send to modules that want it.
  */
-void  ModuleConfig(XEvent *eventp,Window w,FvwmWindow *tmp_win,
-                   unsigned long context,
-                   char *action, int *Module) {
-  int module;
+void  ModuleConfig(char *action) {
+  int module, end;
+
+  end = strlen(action) - 1;
+  if (action[end] == '\n')
+    action[end] = '\0';
   AddToModList(action);                 /* save for config request */
   for (module=0;module<npipes;module++) {/* look at all possible pipes */
     if (PipeMask[module] & M_SENDCONFIG) { /* does module want config cmds */
@@ -114,14 +116,6 @@ static void AddToModList(char *tline)
   }
   else
     prev->next = this;
-}
-
-/* interface function for AddToModList */
-/* dje, this doesn't seem to be used? */
-void AddModConfig(XEvent *eventp,Window junk,FvwmWindow *tmp_win,
-                  unsigned long context, char *action,int* Module)
-{
-  AddToModList( action );
 }
 
 /**************************************************************/

@@ -225,6 +225,7 @@ void server ( void )
   while(tline != NULL) {
 	if(strlen(tline)>1) {
 	  send(Ns, tline, strlen(tline),0);
+	  send(Ns, "\n", 1, 0);
 	}
 	GetConfigLine(Fd,&tline);
   }
@@ -260,16 +261,16 @@ void server ( void )
 
       if (FD_ISSET(Ns, &fdset)){
 	  if( recv( Ns, buf, MAX_COMMAND_SIZE,0 ) == 0 ) {
-	      /* client is terminated */
-	      break;
+	    /* client is terminated */
+	    close(Ns);
+	    unlink(S_name);
+	    exit(0);
 	  }
 
 	  /* process the own unique commands */
 	  SendText(Fd,buf,0); /* send command */
       }
   }
-  CloseSocket();
-  exit(0);
 }
 
 /******************************************/

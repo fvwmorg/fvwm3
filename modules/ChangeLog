@@ -1,3 +1,8 @@
+2000-06-15  Happy Hippo
+
+	* FvwmConsole/FvwmConsole.c: Fixed failure to relay message due to
+	some config line not ending in new line. Cleans up socket.
+
 2000-06-15  Mikhael Goikhman  <migo@homemail.com>
 
 	* Temporary disabled locking FvwmTheme config and messages.

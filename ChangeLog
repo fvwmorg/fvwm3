@@ -1,3 +1,8 @@
+2000-06-15  Happy Hippo
+
+	* fvwm/functions.*: Removed undocumented command AddModuleConfig.
+	* fvwm/modconf.*: Removed trailing newlines from module config lines.
+
 2000-06-15  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* fvwm/builtins.c (WindowShade):

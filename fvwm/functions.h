@@ -195,7 +195,6 @@ enum
   /* functions that need a window to operate on */
   F_ADD_BUTTON_STYLE,
   F_ADD_DECOR,
-  F_ADD_MOD,
   F_ADD_TITLE_STYLE,
   F_ANIMATED_MOVE,
   F_BORDERSTYLE,

@@ -17,8 +17,7 @@
 #define MODCONF_H
 
 void DestroyModConfig(F_CMD_ARGS);
-void AddModConfig(F_CMD_ARGS);
-void ModuleConfig(F_CMD_ARGS);
+void ModuleConfig(char *action);
 void SendDataToModule(F_CMD_ARGS);
 
 #endif /* MODCONF_H */
