@@ -18,6 +18,7 @@ SUBDIRS = \
 	tests
 
 EXTRA_DIST = \
+	ETHICAL_LICENSE \
 	INSTALL.fvwm \
 	vms/README \
 	vms/config.h \

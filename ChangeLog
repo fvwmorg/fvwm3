@@ -1,5 +1,8 @@
 2003-03-28  Dominik Vogt  <dominik.vogt@gmx.de>
 
+	* ETHICAL_LICENSE:
+	added file
+
 	* fvwm/menucmd.c (menu_func):
 	fixed double key presses to choose default menu action
 
