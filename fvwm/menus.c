@@ -271,6 +271,7 @@ MenuStatus do_menu(MenuRoot *menu, MenuRoot *menuPrior, char **ret_paction,
 	ExecuteFunction(*ret_paction,ButtonWindow, &Event,Context, -1,
 			EXPAND_COMMAND);
 	cindirectDeep--;
+	free(*ret_paction);
       }
       fIgnorePosHints = FALSE;
       fLastMenuPosHintsValid = FALSE;
@@ -3140,7 +3141,7 @@ static void menu_func(F_CMD_ARGS, Bool fStaysUp)
 {
   extern int menuFromFrameOrWindowOrTitlebar;
   MenuRoot *menu;
-  MenuItem *miExecuteAction = NULL;
+  char *ret_action = NULL;
   MenuOptions mops;
   char *menu_name = NULL;
   XEvent *teventp;
@@ -3172,7 +3173,7 @@ static void menu_func(F_CMD_ARGS, Bool fStaysUp)
     teventp = (XEvent *)1;
   else
     teventp = eventp;
-  if ((do_menu(menu, NULL, &miExecuteAction, 0, fStaysUp, teventp, &mops) ==
+  if ((do_menu(menu, NULL, &ret_action, 0, fStaysUp, teventp, &mops) ==
        MENU_DOUBLE_CLICKED) && action)
   {
     ExecuteFunction(action,tmp_win,eventp,context,*Module,EXPAND_COMMAND);

@@ -1,3 +1,8 @@
+1999-05-07  Dominik Vogt  <dominik_vogt@gmx.de>
+
+	* fvwm/menus.c (do_menu): fixed memory leak
+	(menu_func): miExecuteAction -> ret_action
+
 Fri May  7 00:43:44 1999  Steve Robbins  <steve@nyongwa.montreal.qc.ca>
 
 	* utils/Makefile.am (BuildXLockMenu.1): build and distribute manpage.
