@@ -1,5 +1,8 @@
 1999-12-14  Dominik Vogt  <dominik.vogt@gmx.de>
 
+	* fvwm/icons.c (DeIconify):
+	reactivated raising after deiconify
+
 	* libs/Colorset.c (SetWindowBackground):
 	removed latest shaping patch
 

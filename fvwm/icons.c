@@ -1083,7 +1083,7 @@ void DeIconify(FvwmWindow *tmp_win)
     }
   }
 
-#if 0
+#if 1
   RaiseWindow(tmp_win); /* moved dje */
 #endif
 
