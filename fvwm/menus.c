@@ -2745,28 +2745,30 @@ static void paint_item(MenuRoot *mr, MenuItem *mi, FvwmWindow *fw,
 	  (MI_HEIGHT(mi) + ((MI_IS_SELECTABLE(mi)) ? relief_thickness : 0) -
 	   MI_MINI_ICON(mi)[i]->height) / 2;
       }
+      Globalgcm = GCClipMask | GCClipXOrigin | GCClipYOrigin;
+      Globalgcv.clip_x_origin = MR_ICON_X_OFFSET(mr)[k];
+      Globalgcv.clip_y_origin = y;
       if(MI_MINI_ICON(mi)[i]->depth == Pdepth) /* pixmap */
       {
-	Globalgcm = GCClipMask | GCClipXOrigin | GCClipYOrigin;
 	Globalgcv.clip_mask = MI_MINI_ICON(mi)[i]->mask;
-	Globalgcv.clip_x_origin = MR_ICON_X_OFFSET(mr)[k];
-	Globalgcv.clip_y_origin = y;
-	XChangeGC(dpy,ReliefGC,Globalgcm,&Globalgcv);
+	XChangeGC(dpy,currentGC,Globalgcm,&Globalgcv);
 	XCopyArea(
-	  dpy, MI_MINI_ICON(mi)[i]->picture, MR_WINDOW(mr), ReliefGC,
+	  dpy, MI_MINI_ICON(mi)[i]->picture, MR_WINDOW(mr), currentGC,
 	  0, 0, MI_MINI_ICON(mi)[i]->width, MI_MINI_ICON(mi)[i]->height,
 	  MR_ICON_X_OFFSET(mr)[k], y);
-	Globalgcm = GCClipMask;
-	Globalgcv.clip_mask = None;
-	XChangeGC(dpy, ReliefGC, Globalgcm, &Globalgcv);
       }
       else
       {
+	Globalgcv.clip_mask = MI_MINI_ICON(mi)[i]->picture;
+	XChangeGC(dpy,currentGC,Globalgcm,&Globalgcv);
 	XCopyPlane(
 	  dpy, MI_MINI_ICON(mi)[i]->picture, MR_WINDOW(mr), currentGC,
 	  0, 0, MI_MINI_ICON(mi)[i]->width, MI_MINI_ICON(mi)[i]->height,
 	  MR_ICON_X_OFFSET(mr)[k], y, 1);
       }
+      Globalgcm = GCClipMask;
+      Globalgcv.clip_mask = None;
+      XChangeGC(dpy, currentGC, Globalgcm, &Globalgcv);
     }
   }
 
