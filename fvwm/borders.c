@@ -514,14 +514,14 @@ static void get_common_decorations(
 	window_parts draw_parts, Bool has_focus, Bool is_border,
 	Bool do_change_gcs)
 {
+	DecorFace *df;
 	color_quad *draw_colors;
 
+	df = border_get_border_style(t, has_focus);
 	if (has_focus)
 	{
 		/* are we using textured borders? */
-		if (DFS_FACE_TYPE(
-			    GetDecor(t, BorderStyle.active.style)) ==
-		    TiledPixmapButton)
+		if (DFS_FACE_TYPE(df->style) == TiledPixmapButton)
 		{
 			cd->texture_pixmap = GetDecor(
 				t, BorderStyle.active.u.p->picture);
@@ -538,8 +538,7 @@ static void get_common_decorations(
 	}
 	else
 	{
-		if (DFS_FACE_TYPE(GetDecor(t, BorderStyle.inactive.style)) ==
-		    TiledPixmapButton)
+		if (DFS_FACE_TYPE(df->style) == TiledPixmapButton)
 		{
 			cd->texture_pixmap = GetDecor(
 				t, BorderStyle.inactive.u.p->picture);
@@ -2376,6 +2375,58 @@ static void border_draw_border_parts(
 
 /* ---------------------------- interface functions ------------------------- */
 
+DecorFace *border_get_border_style(
+	FvwmWindow *fw, Bool has_focus)
+{
+	DecorFace *df;
+
+	if (has_focus == True)
+	{
+		df = &(GetDecor(fw, BorderStyle.active));
+	}
+	else
+	{
+		df = &(GetDecor(fw, BorderStyle.inactive));
+	}
+
+	return df;
+}
+
+int border_is_using_border_style(
+	FvwmWindow *fw, Bool has_focus)
+{
+	ButtonState bs;
+	int is_pressed;
+	int is_toggled;
+	int i;
+
+	/* title */
+	is_pressed = (FW_W_TITLE(fw) == PressedW);
+	bs = border_flags_to_button_state(is_pressed, has_focus, 0);
+	if (DFS_USE_BORDER_STYLE(TB_STATE(GetDecor(fw, titlebar))[bs].style))
+	{
+		return 1;
+	}
+	for (i = 0; i < NUMBER_OF_BUTTONS; i++)
+	{
+		if (FW_W_BUTTON(fw, i) == None)
+		{
+			continue;
+		}
+		is_pressed = (FW_W_BUTTON(fw, i) == PressedW);
+		is_toggled = (is_button_toggled(fw, i) == True);
+		bs = border_flags_to_button_state(
+			is_pressed, (has_focus == True), is_toggled);
+		if (DFS_USE_BORDER_STYLE(
+			    TB_STATE(GetDecor(fw, buttons[i]))[bs].style))
+		{
+			return 1;
+		}
+	}
+
+	return 0;
+}
+
 int border_context_to_parts(
 	int context)
 {
@@ -2520,7 +2571,6 @@ int get_button_number(int context)
 
 	return -1;
 }
-
 
 void border_draw_decorations(
 	FvwmWindow *fw, window_parts draw_parts, Bool has_focus, Bool do_force,

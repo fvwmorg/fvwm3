@@ -102,9 +102,10 @@
 #define ICON_OVERRIDE_MODE(fw)  \
           ((fw)->flags.common.s.icon_override)
 #define SET_ICON_OVERRIDE_MODE(fw,x)  \
-          (fw)->flags.common.s.icon_override = !!(x)
+          (fw)->flags.common.s.icon_override = ((x) & ICON_OVERRIDE_MASK)
 #define SETM_ICON_OVERRIDE_MODE(fw,x) \
-          (fw)->flag_mask.common.s.icon_override = !!(x)
+          (fw)->flag_mask.common.s.icon_override = \
+                  ((x) ? ICON_OVERRIDE_MASK : 0)
 #define IS_ICON_STICKY(fw)     ((fw)->flags.common.s.is_icon_sticky)
 #define SET_ICON_STICKY(fw,x)  (fw)->flags.common.s.is_icon_sticky = !!(x)
 #define SETM_ICON_STICKY(fw,x) \
@@ -127,6 +128,14 @@
           (fw)->flags.common.s.use_indexed_icon_name = !!(x)
 #define SETM_USE_INDEXED_ICON_NAME(fw,x) \
           (fw)->flag_mask.common.s.use_indexed_icon_name = !!(x)
+#define WINDOWSHADE_LAZINESS(fw)  \
+          ((fw)->flags.common.s.windowshade_laziness)
+#define SET_WINDOWSHADE_LAZINESS(fw,x)  \
+          (fw)->flags.common.s.windowshade_laziness = \
+		((x) & WINDOWSHADE_LAZY_MASK)
+#define SETM_WINDOWSHADE_LAZINESS(fw,x) \
+          (fw)->flag_mask.common.s.windowshade_laziness = \
+		((x) ? WINDOWSHADE_LAZY_MASK : 0)
 #define DO_EWMH_MINI_ICON_OVERRIDE(fw) \
           ((fw)->flags.common.s.do_ewmh_mini_icon_override)
 #define SET_DO_EWMH_MINI_ICON_OVERRIDE(fw,x) \

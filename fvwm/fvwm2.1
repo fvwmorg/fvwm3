@@ -4614,12 +4614,16 @@ the usual one or two letters "N", "NW", etc.  Using a direction on
 a window that was already shaded unshades the window.  To shade it
 in a different direction, use the
 .I ShadeAgain
-option.  Windows without titles can be shaded too.  See also
-.I WindowShadeSteps
+option.  Windows without titles can be shaded too.  Please refer
+also to the options
+.IR WindowShadeSteps ", " WindowShadeShrinks ,
+.IR WindowShadeScrolls ", " WindowShadeLazy ,
+.IR WindowShadeAlwaysLazy " and " WindowShadeBusy .
 option of the
 .B Style
 command.  Exmaples:
 .EX
+Style * WindowShadeShrinks, WindowShadeSteps 20, WindowShadeLazy
 Mouse 1 S - WindowShade North
 Mouse 1 S [ WindowShade West
 Mouse 1 S ] WindowShade E
@@ -5151,6 +5155,7 @@ slashes ('/').  The last style in these groups is the default.
 .IR SaveUnder " / " SaveUnderOff ,
 .IR WindowShadeShrinks " / " WindowShadeScrolls ,
 .IR WindowShadeSteps ,
+.IR WindowShadeAlwaysLazy " / " WindowShadeBusy " / " WindowShadeLazy,
 .IR EWMHDonateIcon " / " EWMHDontDonateIcon ,
 .IR EWMHDonateMiniIcon " / " EWMHDontDonateMiniIcon ,
 .IR EWMHMiniIconOverride " / " EWMHNoMiniIconOverride ,
@@ -5608,7 +5613,8 @@ It takes the name of a pixmap as an argument.
 .I WindowShadeShrinks " and " WindowShadeScrolls
 control if the contents of a window that is being shaded with the
 .B WindowShade
-command are scrolled (default) or if they stay in place.
+command are scrolled (default) or if they stay in place.  The
+shrinking mode is a bit faster
 
 The
 .I WindowShadeSteps
@@ -5620,6 +5626,18 @@ It takes one number as its argument.  If the number has a trailing
 it sets the number of pixels to use as the step size instead of
 a fixed number of steps.  0 disables the animation.  This happens
 too if the argument is omitted or invalid.
+
+The
+.B WindowShade
+command has two modes of operation: busy and lazy shading.  Busy
+shading can be 50% slower than lazy shading, but the latter can
+look strange under some conditions, for example, if the window
+borders, buttons or the title are filled with a tiled pixmap.
+Also, the window handles are not drawn in lazy mode.  By default,
+fvwm uses lazy mode if there are no bad visual effects (not counting the window handles) and busy mode otherwise.  Use the
+.I WindowShadeAlwaysLazy " or " WindowShadeBusy
+to force using the lazy or busy mode.  The default setting is restored with
+.IR WindowShadeLazy .
 
 .I ResizeOpaque
 instructs fvwm to resize the corresponding windows with their

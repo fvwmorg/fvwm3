@@ -67,6 +67,10 @@ typedef enum
 
 /* ---------------------------- interface functions ------------------------- */
 
+DecorFace *border_get_border_style(
+	FvwmWindow *fw, Bool has_focus);
+int border_is_using_border_style(
+	FvwmWindow *fw, Bool has_focus);
 int border_context_to_parts(
 	int context);
 void border_get_part_geometry(

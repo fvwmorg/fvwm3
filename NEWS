@@ -61,6 +61,10 @@ Changes in alpha release 2.5.1 (not released yet)
 * Added direction options to WindowShade command.  Windows can be
   shaded in any of the eight compass directions.
 
+* Styles WindowShadeLazy (default), WindowShadeBusy and
+  WindowShadeAlwaysLazy to optimize performance of the WindowShade
+  command.
+
 * The DO_START_ICONIC flag is no longer supported in the module
   interface.
 

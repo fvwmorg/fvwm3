@@ -325,7 +325,7 @@ typedef struct
 #define NO_ACTIVE_ICON_OVERRIDE 0
 #define ICON_OVERRIDE           1
 #define NO_ICON_OVERRIDE        2
-#define ICON_OVERRIDE_MASK      3
+#define ICON_OVERRIDE_MASK    0x3
 		unsigned is_fixed : 1;
 		unsigned is_fixed_ppos : 1;
 		unsigned is_icon_sticky : 1;
@@ -338,6 +338,11 @@ typedef struct
 		unsigned use_icon_position_hint : 1;
 		unsigned use_indexed_window_name : 1;
 		unsigned use_indexed_icon_name : 1;
+#define WINDOWSHADE_LAZY          0
+#define WINDOWSHADE_ALWAYS_LAZY   1
+#define WINDOWSHADE_BUSY          2
+#define WINDOWSHADE_LAZY_MASK   0x3
+		unsigned windowshade_laziness : 2;
 	} s;
 } common_flags_type;
 

@@ -2857,6 +2857,27 @@ void parse_and_set_window_style(char *action, window_style *ptmpstyle)
 	  SMSET_DO_SHRINK_WINDOWSHADE(*ptmpstyle, 1);
 	  SCSET_DO_SHRINK_WINDOWSHADE(*ptmpstyle, 1);
 	}
+	else if (StrEquals(token, "WindowShadeLazy"))
+	{
+	  found = True;
+	  SFSET_WINDOWSHADE_LAZINESS(*ptmpstyle, WINDOWSHADE_LAZY);
+	  SMSET_WINDOWSHADE_LAZINESS(*ptmpstyle, WINDOWSHADE_LAZY_MASK);
+	  SCSET_WINDOWSHADE_LAZINESS(*ptmpstyle, WINDOWSHADE_LAZY_MASK);
+	}
+	else if (StrEquals(token, "WindowShadeAlwaysLazy"))
+	{
+	  found = True;
+	  SFSET_WINDOWSHADE_LAZINESS(*ptmpstyle, WINDOWSHADE_ALWAYS_LAZY);
+	  SMSET_WINDOWSHADE_LAZINESS(*ptmpstyle, WINDOWSHADE_LAZY_MASK);
+	  SCSET_WINDOWSHADE_LAZINESS(*ptmpstyle, WINDOWSHADE_LAZY_MASK);
+	}
+	else if (StrEquals(token, "WindowShadeBusy"))
+	{
+	  found = True;
+	  SFSET_WINDOWSHADE_LAZINESS(*ptmpstyle, WINDOWSHADE_BUSY);
+	  SMSET_WINDOWSHADE_LAZINESS(*ptmpstyle, WINDOWSHADE_LAZY_MASK);
+	  SCSET_WINDOWSHADE_LAZINESS(*ptmpstyle, WINDOWSHADE_LAZY_MASK);
+	}
         break;
 
       case 'x':
