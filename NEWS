@@ -1,5 +1,7 @@
 Changes in beta release 2.3.4 (June 1999)
 
+* Fvwm2 is GNOME compliant.
+
 * Dynamic menus enhancement: The special menu item name 'MissingSubmenuFunc'
   alows to create submenus on the fly. See manpage on 'AddToMenu' for details.
 
