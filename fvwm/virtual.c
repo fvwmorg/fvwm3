@@ -845,6 +845,7 @@ void changeDesks(int desk)
 
 #ifdef GNOME
   GNOME_SetCurrentDesk();
+  GNOME_SetDeskCount();
 #endif
 }
 
@@ -884,6 +885,10 @@ void do_move_window_to_desk(FvwmWindow *tmp_win, int desk)
 	tmp_win->Desk = desk;
       BroadcastConfig(M_CONFIGURE_WINDOW,tmp_win);
     }
+#ifdef GNOME
+  GNOME_SetDeskCount();
+  GNOME_SetDesk(tmp_win);
+#endif
 }
 
 /* function with parsing of command line */

@@ -548,8 +548,6 @@ MatchWinToSM(FvwmWindow *ewin,
   int                 i, j;
   FvwmWindow *t;
 
-  *do_shade = 0;
-  *do_max = 0;
   for (i = 0; i < num_match; i++)
     {
       if (!matches[i].used && matchWin(ewin, &matches[i]))

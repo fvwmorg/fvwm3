@@ -156,6 +156,7 @@ typedef struct
   unsigned is_lenient : 1;
   unsigned is_sticky : 1;
   unsigned ignore_restack : 1;
+  unsigned is_fixed : 1;
 } common_flags_type;
 
 typedef struct

@@ -66,6 +66,8 @@ void AnimatedMoveAnyWindow(FvwmWindow *tmp_win, Window w, int startX,
   int lastX, lastY;
   int deltaX, deltaY;
 
+  if (IS_FIXED(tmp_win)) return;
+
   /* set our defaults */
   if (ppctMovement == NULL) ppctMovement = rgpctMovementDefault;
   if (cmsDelay < 0)         cmsDelay     = cmsDelayDefault;
@@ -192,6 +194,9 @@ void move_window_doit(F_CMD_ARGS, Bool fAnimated, Bool fMoveToPage)
     return;
 
   if (tmp_win == NULL)
+    return;
+
+  if (IS_FIXED (tmp_win)) 
     return;
 
   /* gotta have a window */

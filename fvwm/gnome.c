@@ -28,6 +28,7 @@
 #include "fvwm.h"
 #include "screen.h"
 #include "misc.h"
+#include "stack.h"
 
 
 
@@ -337,6 +338,9 @@ GNOME_GetHintState(FvwmWindow *fwin)
       if (*retval & WIN_STATE_SHADED)
 	SET_SHADED(fwin, 1);
 
+      if (*retval & WIN_STATE_FIXED_POSITION)
+	SET_FIXED(fwin, 1);
+
       free(retval);
     }
 }
@@ -420,6 +424,9 @@ GNOME_SetHints(FvwmWindow *fwin)
   if (IS_SHADED(fwin))
     val |= WIN_STATE_SHADED;
 
+  if (IS_FIXED(fwin))
+    val |= WIN_STATE_FIXED_POSITION;
+
   XChangeProperty(dpy, fwin->w, atom_set, XA_CARDINAL, 32,
 		  PropModeReplace, (unsigned char *)&val, 1);
 }
@@ -458,6 +465,85 @@ GNOME_GetHints(FvwmWindow *fwin)
   GNOME_GetHintAppState(fwin);
   GNOME_GetHint(fwin);
   GNOME_GetExpandedSize(fwin);
+}
+
+/* this duplicates most of the above... and it assumes
+   that style is inizialized to zero.
+ */
+void 
+GNOME_GetStyle (FvwmWindow *fwin, window_style *style)
+{
+  Atom atom_get;
+  unsigned char *retval;
+  int size;
+
+  /* Desktop */
+  atom_get = XInternAtom(dpy, XA_WIN_WORKSPACE, False);
+  retval = AtomGet(fwin->w, atom_get, XA_CARDINAL, &size);
+  if (retval)
+    {
+      style->start_desk = *(int*)retval;
+      style->flags.use_start_on_desk = 1;
+      style->flag_mask.use_start_on_desk = 1;
+      free(retval);
+    }
+
+  /* Icons - not implemented */
+  
+  /* Layer */
+  atom_get = XInternAtom(dpy, XA_WIN_LAYER, False);
+  retval = AtomGet(fwin->w, atom_get, XA_CARDINAL, &size);
+  if (retval)
+    {
+      style->layer = *(int*)retval;
+      free(retval);
+    }
+
+  /* State */
+  atom_get = XInternAtom(dpy, XA_WIN_STATE, False);
+  retval = AtomGet(fwin->w, atom_get, XA_CARDINAL, &size);
+  if (retval)
+    {
+      if (*(int*)retval & WIN_STATE_STICKY) 
+	{
+          style->flags.common.is_sticky = 1;
+          style->flag_mask.common.is_sticky = 1;
+	}
+      
+      if (*(int*)retval & WIN_STATE_SHADED)
+	{
+	  /* unimplemented, since we don't have a
+	     start_shaded flag. SM code relies on a
+	     separate do_shade flag, but that is ugly.
+	  */
+	}
+
+      if (*(int*)retval & WIN_STATE_FIXED_POSITION)
+	{
+          style->flags.common.is_fixed = 1;
+          style->flag_mask.common.is_fixed = 1;	  
+	}
+
+      free(retval);
+    }
+
+  /* App state - not implemented */
+
+  /* Hints */
+  atom_get = XInternAtom(dpy, XA_WIN_HINTS, False);
+  retval = AtomGet(fwin->w, atom_get, XA_CARDINAL, &size);
+  if (retval)
+    {
+      if (*retval & WIN_HINTS_SKIP_WINLIST)
+	{
+	  style->flags.common.do_window_list_skip = 1;
+	  style->flag_mask.common.do_window_list_skip = 1;
+	}
+
+      free(retval);
+    }
+
+  /* Expanded size - not implemented */
 }
 
 
@@ -526,15 +612,24 @@ GNOME_SetCurrentArea(void)
 }
 
 
-/* XXX: this function is hard-coded to one desktop! -JMP */
+/* FIXME: what to do about negative desks ? */
 void
 GNOME_SetDeskCount(void)
 {
   Atom atom_set;
   CARD32 val;
+  FvwmWindow *t;
 
   atom_set = XInternAtom(dpy, XA_WIN_WORKSPACE_COUNT, False);
-  val = 1;
+  val = Scr.CurrentDesk;
+  for (t = Scr.FvwmRoot.stack_next; t != &Scr.FvwmRoot; t = t->stack_next)
+    {
+      if (t->Desk > val)
+	{
+	  val = t->Desk;
+	}
+    }
+  val++;
   XChangeProperty(dpy, Scr.Root, atom_set, XA_CARDINAL, 32, PropModeReplace,
 		  (unsigned char *)&val, 1);
 }

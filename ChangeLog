@@ -1,3 +1,53 @@
+1999-04-24  Matthias Clasen  <clasen@mathematik.uni-freiburg.de>
+
+	* fvwm/virtual.c (changeDesks): update number of workspaces,
+	since it may have changed.
+	(do_move_window_to_desk): update number of workspaces,
+	since it may have changed. Also update the workspace of the window.
+
+	* fvwm/gnome.c (GNOME_GetStyle): new function to initialize
+	a window_style struct from GNOME hints.
+	(GNOME_SetDeskCount): find the maximal populated desk, then
+	use to set the number of workspaces to a reasonable value.
+
+	* fvwm/style.c (lookup_style): call GNOME_GetStyle to 
+	initialize the window_style.
+	* fvwm/add_window.c (AddWindow): initialize do_shade,
+	do_max to 0. Don't call GNOME_GetHints before unconditionally
+	overwriting the flags. Instead rely on lookup_styles to take
+	GNOME hints into account.	
+	* fvwm/session.c (MatchWinToSM): don't modify do_shade,
+	do_max unless a match was found.
+
+	
+	* fvwm/builtins.c (stick_function): 
+	(WindowShade): update gnome hints.
+
+	* fvwm/fvwm.h (common_flags_type): new flag is_fixed. 
+	* fvwm/gsfr.h: and corresponding macros.
+	* fvwm/style.c (ProcessNewStyle): new style option
+	VariablePosition/FixedPosition to set the new flag.
+	* fvwm/gnome.c (GNOME_GetHintState):
+	(GNOME_SetHints): also use the is_fixed flag.
+	* fvwm/move.c (AnimatedMoveAnyWindow): 
+	(move_window_doit): refuse to move unless is_fixed is set.
+	* fvwm/fvwm2.1:
+	* NEWS: document the new style options.
+	
+
+	* fvwm/stack.c: 
+	* fvwm/stack.h: new files.
+	* fvwm/events.c: move HandleUnusualStackmodes, its helper
+	functions and ResyncFvwmStackRing to stack.c, include stack.h.
+	* fvwm/misc.c: move RaiseWindow and LowerWindow to stack.c
+	and BroadcastRestack to module.c.
+	* fvwm/misc.h: remove RaiseWindow and LowerWindow.
+	* fvwm/builtins.c: move new_layer to stack.c, include stack.h.
+	* fvwm/add_window.c:
+	* fvwm/focus.c:
+	* fvwm/gnome.c:
+	* fvwm/icons.c: include stack.h.
+	
 Fri Apr 23 17:32:45 1999  DanEspen  <dje@blue>
 
 	* libs/Bindings.c (AddBinding): Only add one entry to the binding

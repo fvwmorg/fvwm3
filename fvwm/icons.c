@@ -48,6 +48,7 @@
 #include "bindings.h"
 #include "module.h"
 #include "focus.h"
+#include "stack.h"
 
 #ifdef SHAPE
 #include <X11/extensions/shape.h>

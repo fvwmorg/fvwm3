@@ -38,6 +38,7 @@
 #include "icons.h"
 #include "screen.h"
 #include "bindings.h"
+#include "stack.h"
 
 
 static Bool lastFocusType;

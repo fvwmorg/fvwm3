@@ -68,6 +68,7 @@
 #endif /* SHAPE */
 #include "module.h"
 #include "session.h"
+#include "stack.h"
 
 
 /* Used to parse command line of clients for specific desk requests. */
@@ -128,7 +129,8 @@ FvwmWindow *AddWindow(Window w, FvwmWindow *ReuseWin)
   XTextProperty text_prop;
   extern Boolean PPosOverride;
 
-  int do_shade, do_maximize;
+  int do_shade = 0;
+  int do_maximize = 0;
   int x_max, y_max, w_max, h_max;
 
   NeedToResizeToo = False;
@@ -231,6 +233,7 @@ FvwmWindow *AddWindow(Window w, FvwmWindow *ReuseWin)
 
   /* get merged styles */
   lookup_style(tmp_win, &style);
+
   sflags = SGET_FLAGS_POINTER(style);
 
   /* copy iconboxes ptr (if any) */
@@ -263,11 +266,6 @@ FvwmWindow *AddWindow(Window w, FvwmWindow *ReuseWin)
 
   SelectDecor(tmp_win, sflags, SGET_BORDER_WIDTH(style),
 	      SGET_HANDLE_WIDTH(style));
-
-#ifdef GNOME
-  /* set GNOME window hints & FVWM flags translated from those hints */
-  GNOME_GetHints(tmp_win);
-#endif
 
 #ifdef SHAPE
   /* set boundary width to zero for shaped windows */

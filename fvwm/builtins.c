@@ -38,6 +38,7 @@
 #include "parse.h"
 #include "screen.h"
 #include "module.h"
+#include "stack.h"
 
 static int shade_anim_steps=0;
 
@@ -444,6 +445,9 @@ void WindowShade(F_CMD_ARGS)
   FlushOutputQueues();
   XSync(dpy, 0);
 
+#ifdef GNOME
+  GNOME_SetHints (tmp_win);
+#endif
 }
 
 void Bell(F_CMD_ARGS)
@@ -854,6 +858,10 @@ void stick_function(F_CMD_ARGS)
   }
   BroadcastConfig(M_CONFIGURE_WINDOW,tmp_win);
   SetTitleBar(tmp_win,(Scr.Hilite==tmp_win),True);
+  
+#ifdef GNOME
+  GNOME_SetHints (tmp_win);
+#endif
 }
 
 void wait_func(F_CMD_ARGS)
@@ -3997,44 +4005,6 @@ void setShadeAnim(F_CMD_ARGS)
   fvwm_msg(ERR,"setShadeAnim","WindowShadeAnimate requires 1 argument");
   return;
 }
-
-void
-new_layer (FvwmWindow *tmp_win, int layer)
-{
-  FvwmWindow *t2, *next;
-
-  if (layer < tmp_win->layer)
-    {
-      tmp_win->layer = layer;
-      RaiseWindow(tmp_win);
-    }
-  else if (layer > tmp_win->layer)
-    {
-#ifndef DONT_RAISE_TRANSIENTS
-      /* this could be done much more efficiently */
-      for (t2 = Scr.FvwmRoot.stack_next; t2 != &Scr.FvwmRoot; t2 = next)
-	{
-	  next = t2->stack_next;
-	  if ((IS_TRANSIENT(t2)) &&
-	      (t2->transientfor == tmp_win->w) &&
-	      (t2 != tmp_win) &&
-	      (t2->layer >= tmp_win->layer) &&
-              (t2->layer < layer))
-	    {
-	      t2->layer = layer;
-	      LowerWindow(t2);
-	    }
-	}
-#endif
-      tmp_win->layer = layer;
-      LowerWindow(tmp_win);
-    }
-
-#ifdef GNOME
-  GNOME_SetLayer (tmp_win);
-#endif
-}
-
 
 void change_layer(F_CMD_ARGS)
 {

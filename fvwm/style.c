@@ -224,6 +224,10 @@ void lookup_style(FvwmWindow *tmp_win, window_style *styles)
   memset(styles, 0, sizeof(window_style));
   /* initialize to default layer */
   styles->layer = Scr.DefaultLayer;
+#ifdef GNOME
+  /* initialize with GNOME hints */
+  GNOME_GetStyle (tmp_win, styles);
+#endif
   /* look thru all styles in order defined. */
   for (nptr = all_styles; nptr != NULL; nptr = nptr->next) {
     /* If name/res_class/res_name match, merge */
@@ -467,7 +471,13 @@ void ProcessNewStyle(XEvent *eventp, Window w, FvwmWindow *tmp_win,
         break;
 
       case 'f':
-        if(StrEquals(token, "FORECOLOR"))
+        if(StrEquals(token, "FixedPosition"))
+	  {
+	    found = True;
+            tmpstyle.flags.common.is_fixed = 1;
+            tmpstyle.flag_mask.common.is_fixed = 1;
+	  }
+        else if(StrEquals(token, "FORECOLOR"))
         {
 	  found = True;
 	  GetNextToken(rest, &token);
@@ -1200,6 +1210,12 @@ void ProcessNewStyle(XEvent *eventp, Window w, FvwmWindow *tmp_win,
         break;
 
       case 'v':
+        if(StrEquals(token, "VariablePosition"))
+	  {
+	    found = True;
+            tmpstyle.flags.common.is_fixed = 0;
+            tmpstyle.flag_mask.common.is_fixed = 1;
+	  }
         break;
 
       case 'w':

@@ -87,6 +87,10 @@
                                ((fw)->flags.common.has_override_size)
 #define IGNORE_RESTACK(fw)  \
                                ((fw)->flags.common.ignore_restack)
+#define IS_FIXED(fw)  \
+                               ((fw)->flags.common.is_fixed)
+#define SET_FIXED(fw,x)        (fw)->flags.common.is_fixed = !!(x)
+#define SETM_FIXED(fw,x)       (fw)->flag_mask.common.is_fixed = !!(x)
 
 
 /* access to the special flags of a window */

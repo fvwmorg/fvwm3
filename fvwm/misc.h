@@ -119,8 +119,6 @@ void Maximize(F_CMD_ARGS);
 void WindowShade(F_CMD_ARGS);
 void setShadeAnim(F_CMD_ARGS);
 
-extern void       RaiseWindow(FvwmWindow *t);
-extern void       LowerWindow(FvwmWindow *t);
 extern Bool       GrabEm(int);
 extern void       UngrabEm(void);
 extern void       CaptureOneWindow(FvwmWindow *fw, Window window);
@@ -334,7 +332,6 @@ void SetEnv(F_CMD_ARGS);
 
 void CoerceEnterNotifyOnCurrentWindow(void);
 
-void new_layer(FvwmWindow *t, int layer);
 void change_layer(F_CMD_ARGS);
 void SetDefaultLayers(F_CMD_ARGS);
 
@@ -367,12 +364,18 @@ void GNOME_ButtonFunc(
 
 /* get hints on a window; sets parameters in a FvwmWindow */
 void GNOME_GetHints(FvwmWindow *fwin);
+/* get hints on a window, set parameters in style */
+void GNOME_GetStyle(FvwmWindow *fwin, window_style *style);
 
 /* set hints on a window from parameters in FvwmWindow */
 void GNOME_SetHints(FvwmWindow *fwin);
 
+void GNOME_SetLayer(FvwmWindow *fwin);
+void GNOME_SetDesk(FvwmWindow *fwin);
+
 /* update public window manager information */
 void GNOME_SetAreaCount(void);
+void GNOME_SetDeskCount(void);
 void GNOME_SetCurrentArea(void);
 void GNOME_SetCurrentDesk(void);
 void GNOME_SetClientList(void);

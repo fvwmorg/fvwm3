@@ -1,5 +1,7 @@
 Changes in alpha release 2.3.1 (April 1999)
 
+* FixedPosition style: disables moving the window.
+
 * IgnoreRestack style: forbids clients to change their own stacking
   order position.
  
