@@ -1,5 +1,7 @@
 1998-12-27  Dominik Vogt  <dominik_vogt@hp.com>
 
+	* BUGS: updated for 2.1.6
+
 	* fvwm/fvwm2.1: updated manpage for SetMenuStyle (see below)
 
 	* fvwm/menus.c (PaintEntry):
@@ -90,7 +92,7 @@
 
 1998-12-21  Dominik Vogt  <dominik_vogt@hp.com>
 
-	* fvwm/menus.c (PaintEntry): Why the hell were the popup tringles
+	* fvwm/menus.c (PaintEntry): Why the hell were the popup triangles
 	placed dynamically? An offset of five pixels from the right edge of
 	the menu siply has to do. The dynamic placement might put the tringle
 	over the text of the menu item.

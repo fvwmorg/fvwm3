@@ -13,19 +13,19 @@ Known bugs section for the beta tests: (will be removed in 2.2)
 
 Known bugs and problems as of fvwm-2.1.3:
 
+ - No geometry can be specified for FvwmButtons panels.
+ - Running fvwm2 on an XNest X server does not work well.
+ - For FvwmButtons you may have to quote backslashes twice:
+   "\(...\)" does not work anymore. Use "\\(...\\)" instead. The double quotes
+   are part of the example.
  - FvwmSave and FvwmSaveDesk are not up to date.
- - Windows may grow a few pixels from time to time. If you see this, please
-   try to find a way to reproduce it 100% of the time and post it to
-   fvwm-workers@hpc.uh.edu
- - FvwmWinList creeps around the screen in some setups (this should have
-   been fixed, but if you see it again, please try to find a way to reproduce
-   it and report it to fvwm-workers@hpc.uh.edu).
+ - Windows may grow a few pixels from time to time although we think this is
+   fixed. If you see this, please report it to fvwm-workers@hpc.uh.edu
  - xscreensaver may not be able to allocate a private colormap
- - FvwmIconMan may crash during a 'Recapture'
  - FvwmButtons (and possibly other modules) may survive shutdown of the X
    server.
- - AutoHide in FvwmTaskBar does not work well. Should work if you set
-   'EdgeScroll 0 0' in .fvwm2rc.
+ - AutoHide in FvwmTaskBar does not work well. See 'EdgeThickness' command in
+   the manpage.
  - DestroyMenu/DestroyFunc causes a coredump if a function/menu destroys
    itself.
  - Maximize does not work well when applied to a window that is not on
