@@ -348,8 +348,13 @@ typedef struct WindowConditionMask
     unsigned needs_current_desk : 1;
     unsigned needs_current_page : 1;
     unsigned needs_current_global_page : 1;
+#define NEEDS_ANY        0
+#define NEEDS_TRUE       1
+#define NEEDS_FALSE      2
+    unsigned needs_focus : 2;
     unsigned needs_name : 1;
     unsigned needs_not_name : 1;
+    unsigned needs_pointer : 2;
     unsigned use_circulate_hit : 1;
     unsigned use_circulate_hit_icon : 1;
     unsigned use_circulate_hit_shaded : 1;

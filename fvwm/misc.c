@@ -488,3 +488,46 @@ Bool intersect_xrectangles(XRectangle *r1, XRectangle *r2)
   else
     return False;
 }
+
+/* returns the FvwmWindow that contains the pointer or NULL if none */
+FvwmWindow *get_pointer_fvwm_window(void)
+{
+	int x,y;
+	Window win;
+	Window ancestor;
+	FvwmWindow *t;
+
+	if (XQueryPointer(
+		    dpy, Scr.Root, &JunkRoot, &win, &JunkX, &JunkY,
+		    &x, &y, &JunkMask) == False)
+	{
+		/* pointer is on a different screen */
+		return NULL;
+	}
+	for (t = NULL ; win != Scr.Root && win != None; win = ancestor)
+	{
+		Window root = None;
+		Window *children;
+		unsigned int nchildren;
+
+		if (XFindContext(dpy, win, FvwmContext, (caddr_t *) &t) !=
+		    XCNOENT)
+		{
+			/* found a matching window context */
+			return t;
+		}
+		/* get next higher ancestor window */
+		children = NULL;
+		if (!XQueryTree(
+			    dpy, win, &root, &ancestor, &children, &nchildren))
+		{
+			return NULL;
+		}
+		if (children)
+		{
+			XFree(children);
+		}
+	}
+
+	return t;
+}

@@ -7654,6 +7654,15 @@ are used exactly as with the
 command.
 
 .TP
+.BI "Any [(" conditions ")] " command
+Performs
+.I command
+if any window which satisfies all
+.I conditions
+exists.  Conditions are the same as for
+.BR Next .
+
+.TP
 .BI "Current [(" condition ... ")] " command
 Performs
 .I command
@@ -7663,7 +7672,9 @@ The
 .IR conditions
 are a list of keywords from the list below and are separated by
 commas or whitespace.  Conditions include
-"AcceptsFocus", "!AcceptsFocus"
+"AcceptsFocus", "!AcceptsFocus",
+"Focused", "!Focused",
+"HasPointer", "!HasPointer",
 "Iconic", "!Iconic",
 "Visible", "!Visible",
 "Raised", "!Raised",
@@ -7694,6 +7705,14 @@ option of the
 command.  Also, all windows using the
 .I NoFocus
 style are ignored.
+
+The "Focused" condition excludes all windows but the one that
+currently has the keyboard focus.  This is not useful for the
+.B Current
+command but can be used with the other conditional commands.
+
+The "HasPointer" condition excludes all windows that do not
+contain the pointer.
 
 The "CurrentDesk" condition excludes all window that are not on
 the current desk.

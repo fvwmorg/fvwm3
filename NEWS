@@ -73,6 +73,10 @@ Changes in beta release 2.5.0 (not released yet)
 
 * New command line option -passid to FvwmAuto.
 
+* New conditional commands Any and PointerWindow.
+
+* New conditions Focused, !Focused, HasPointer and !HasPointer.
+
 _+_A NAME="2.4.4"_-_
 Changes in stable release 2.4.4 (16-Dec-2001)
 _+_/A_-_

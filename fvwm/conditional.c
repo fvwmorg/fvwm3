@@ -150,6 +150,22 @@ void CreateConditionMask(char *flags, WindowConditionMask *mask)
       mask->my_flags.do_accept_focus = 0;
       mask->my_flags.use_do_accept_focus = 1;
     }
+    else if (StrEquals(condition,"Focused"))
+    {
+      mask->my_flags.needs_focus = NEEDS_TRUE;
+    }
+    else if (StrEquals(condition,"!Focused"))
+    {
+      mask->my_flags.needs_focus = NEEDS_FALSE;
+    }
+    else if (StrEquals(condition,"HasPointer"))
+    {
+      mask->my_flags.needs_pointer = NEEDS_TRUE;
+    }
+    else if (StrEquals(condition,"!HasPointer"))
+    {
+      mask->my_flags.needs_pointer = NEEDS_FALSE;
+    }
     else if (StrEquals(condition,"Iconic"))
     {
       SET_ICONIFIED(mask, 1);
@@ -294,7 +310,7 @@ void CreateConditionMask(char *flags, WindowConditionMask *mask)
       free(prev_condition);
 
     prev_condition = condition;
-    tmp = GetNextToken(tmp, &condition);
+    tmp = GetNextSimpleOption(tmp, &condition);
   }
 
   if (prev_condition)
@@ -317,49 +333,59 @@ Bool MatchesConditionMask(FvwmWindow *fw, WindowConditionMask *mask)
 
   if (!blockcmpmask((char *)&(fw->flags), (char *)&(mask->flags),
                     (char *)&(mask->flag_mask), sizeof(fw->flags)))
+  {
     return 0;
-
-  /*
-  if ((mask->onFlags & fw->flags) != mask->onFlags)
-    return 0;
-
-  if ((mask->offFlags & fw->flags) != 0)
-    return 0;
-  */
+  }
 
   if (!mask->my_flags.use_circulate_hit && DO_SKIP_CIRCULATE(fw))
+  {
     return 0;
+  }
 
   if (!mask->my_flags.use_circulate_hit_icon && IS_ICONIFIED(fw) &&
       DO_SKIP_ICON_CIRCULATE(fw))
+  {
     return 0;
+  }
 
   if (!mask->my_flags.use_circulate_hit_shaded && IS_SHADED(fw) &&
       DO_SKIP_SHADED_CIRCULATE(fw))
+  {
     return 0;
+  }
 
   if (IS_ICONIFIED(fw) && IS_TRANSIENT(fw) && IS_ICONIFIED_BY_PARENT(fw))
+  {
     return 0;
+  }
 
   if (mask->my_flags.needs_current_desk && fw->Desk != Scr.CurrentDesk)
+  {
     return 0;
+  }
   if (mask->my_flags.needs_current_page)
   {
     if (FScreenIsEnabled())
     {
       if (!FScreenIsRectangleOnScreen(NULL, FSCREEN_CURRENT, &(fw->frame_g)))
+      {
 	return 0;
+      }
     }
     else
     {
       if (!IsRectangleOnThisPage(&(fw->frame_g), Scr.CurrentDesk))
+      {
 	return 0;
+      }
     }
   }
   else if (mask->my_flags.needs_current_global_page)
   {
     if (!IsRectangleOnThisPage(&(fw->frame_g), Scr.CurrentDesk))
+    {
       return 0;
+    }
   }
 
   /* Yes, I know this could be shorter, but it's hard to understand then */
@@ -373,16 +399,24 @@ Bool MatchesConditionMask(FvwmWindow *fw, WindowConditionMask *mask)
 	      fMatchesResource);
 
   if (mask->my_flags.needs_name && !fMatches)
+  {
     return 0;
+  }
 
   if (mask->my_flags.needs_not_name && fMatches)
+  {
     return 0;
+  }
 
   if ((mask->layer == -1) && (sf) && (fw->layer != sf->layer))
+  {
     return 0;
+  }
 
   if ((mask->layer >= 0) && (fw->layer != mask->layer))
+  {
     return 0;
+  }
 
   if (mask->my_flags.use_do_accept_focus)
   {
@@ -398,6 +432,43 @@ Bool MatchesConditionMask(FvwmWindow *fw, WindowConditionMask *mask)
       f = 1;
     }
     if (!f != !mask->my_flags.do_accept_focus)
+    {
+      return 0;
+    }
+  }
+  if (mask->my_flags.needs_focus != NEEDS_ANY)
+  {
+    int is_focused;
+
+    is_focused = (fw == get_focus_window());
+    if (!is_focused && mask->my_flags.needs_focus == NEEDS_TRUE)
+    {
+      return 0;
+    }
+    else if (is_focused && mask->my_flags.needs_focus == NEEDS_FALSE)
+    {
+      return 0;
+    }
+  }
+  if (mask->my_flags.needs_pointer != NEEDS_ANY)
+  {
+    int has_pointer;
+    FvwmWindow *t;
+
+    t = get_pointer_fvwm_window();
+    if (t != NULL && t == fw)
+    {
+	    has_pointer = 1;
+    }
+    else
+    {
+	    has_pointer = 0;
+    }
+    if (!has_pointer && mask->my_flags.needs_pointer == NEEDS_TRUE)
+    {
+      return 0;
+    }
+    else if (has_pointer && mask->my_flags.needs_pointer == NEEDS_FALSE)
     {
       return 0;
     }
@@ -533,6 +604,19 @@ void CMD_None(F_CMD_ARGS)
   }
 }
 
+void CMD_Any(F_CMD_ARGS)
+{
+  FvwmWindow *found;
+  char *restofline;
+
+  found = Circulate(action, 1, &restofline);
+  if(found && restofline)
+  {
+    old_execute_function(
+      restofline, NULL, eventp, C_ROOT, *Module, 0, NULL);
+  }
+}
+
 void CMD_Current(F_CMD_ARGS)
 {
   FvwmWindow *found;
@@ -544,6 +628,36 @@ void CMD_Current(F_CMD_ARGS)
     old_execute_function(
       restofline, found, eventp, C_WINDOW, *Module, 0, NULL);
   }
+}
+
+void CMD_PointerWindow(F_CMD_ARGS)
+{
+	char *restofline;
+	FvwmWindow *t;
+	WindowConditionMask mask;
+	char *flags;
+
+	t = get_pointer_fvwm_window();
+	if (t == NULL)
+	{
+		return;
+	}
+	flags = CreateFlagString(action, &restofline);
+	DefaultConditionMask(&mask);
+	CreateConditionMask(flags, &mask);
+	if (flags)
+	{
+		free(flags);
+	}
+	mask.my_flags.use_circulate_hit = 1;
+	mask.my_flags.use_circulate_hit_icon = 1;
+	if (MatchesConditionMask(t, &mask))
+	{
+		old_execute_function(
+			restofline, t, eventp, C_WINDOW, *Module, 0, NULL);
+	}
+
+	return;
 }
 
 void CMD_All(F_CMD_ARGS)
