@@ -1750,9 +1750,9 @@ void Done(int restart, char *command)
 
     if (command == NULL) command = "";
     if (
-      command[0] == '\0' || strcmp(command, g_argv[0]) ||
+      command[0] == '\0' || strcmp(command, g_argv[0]) == 0 ||
       (getBasename(command) == command || getBasename(g_argv[0]) == g_argv[0])
-      && strcmp(getBasename(command), getBasename(g_argv[0])) != 0
+      && strcmp(getBasename(command), getBasename(g_argv[0])) == 0
     ) native = 1;
 
     if (native) {
@@ -1781,19 +1781,19 @@ void Done(int restart, char *command)
     if (command[0] != '\0') {
       const int MAX_ARG_SIZE = 20;
       char *my_argv[MAX_ARG_SIZE];
-        const char *errorMsg;
+      const char *errorMsg;
       int n = parseCommandArgs(command, my_argv, MAX_ARG_SIZE, &errorMsg);
       if (n <= 0) {
-        fvwm_msg(ERR, "Done", "Restart command parsing error in (%s): [%s]",
-            command, errorMsg);
-        } else {
-          command = my_argv[0];
-        execvp(command, my_argv);
-          fvwm_msg(ERR, "Done", "Call of '%s' failed!!!! (restarting '%s' instead)",
-            command, g_argv[0]);
-          perror("  system error description");
-        }
+	fvwm_msg(ERR, "Done", "Restart command parsing error in (%s): [%s]",
+		 command, errorMsg);
+      } else {
+	command = my_argv[0];
+	execvp(command, my_argv);
+	fvwm_msg(ERR, "Done", "Call of '%s' failed!!!! (restarting '%s' instead)",
+		 command, g_argv[0]);
+	perror("  system error description");
       }
+    }
 
     execvp(g_argv[0], g_argv);    /* that _should_ work */
     fvwm_msg(ERR,"Done","Call of '%s' failed!!!!", g_argv[0]);

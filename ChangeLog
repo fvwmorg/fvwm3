@@ -1,3 +1,7 @@
+1999-06-17  Dominik Vogt  <domimik.vogt@gmx.de>
+
+	* fvwm/fvwm.c (Done): applied another restart patch by Mikhael
+
 1999-06-10  Mikhael Goikhman  <migo@homemail.com>
 
 	* fvwm/fvwm.h, fvwm/fvwm.c, fvwm/placement.c:
