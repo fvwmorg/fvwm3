@@ -67,6 +67,46 @@ static char  *button_states[MaxButtonState]={
 #endif
 };
 
+static void move_sticky_window_to_same_page(
+  int *x11, int *x12, int *y11, int *y12, int x21, int x22, int y21, int y22)
+{
+  /* make sure the x coordinate is on the same page as the reference window */
+  if (*x11 >= x22)
+  {
+    while (*x11 >= x22)
+    {
+      *x11 -= Scr.MyDisplayWidth;
+      *x12 -= Scr.MyDisplayWidth;
+    }
+  }
+  else if (*x12 <= x21)
+  {
+    while (*x12 <= x21)
+    {
+      *x11 += Scr.MyDisplayWidth;
+      *x12 += Scr.MyDisplayWidth;
+    }
+  }
+  /* make sure the y coordinate is on the same page as the reference window */
+  if (*y11 >= y22)
+  {
+    while (*y11 >= y22)
+    {
+      *y11 -= Scr.MyDisplayHeight;
+      *y12 -= Scr.MyDisplayHeight;
+    }
+  }
+  else if (*y12 <= y21)
+  {
+    while (*y12 <= y21)
+    {
+      *y11 += Scr.MyDisplayHeight;
+      *y12 += Scr.MyDisplayHeight;
+    }
+  }
+
+}
+
 static void MaximizeHeight(FvwmWindow *win, int win_width, int win_x,
 			   int *win_height, int *win_y)
 {
@@ -74,19 +114,26 @@ static void MaximizeHeight(FvwmWindow *win, int win_width, int win_x,
   int x11, x12, x21, x22;
   int y11, y12, y21, y22;
   int new_y1, new_y2;
+  Bool is_sticky;
 
   x11 = win_x;             /* Start x */
   y11 = *win_y;            /* Start y */
   x12 = x11 + win_width;   /* End x   */
   y12 = y11 + *win_height; /* End y   */
-  new_y1 = 0;
-  new_y2 = Scr.MyDisplayHeight;
+  if (y11 >= 0)
+    new_y1 = (y11 / Scr.MyDisplayHeight) * Scr.MyDisplayHeight;
+  else
+    new_y1 = ((y11 + 1) / Scr.MyDisplayHeight) * Scr.MyDisplayHeight -
+      Scr.MyDisplayHeight;
+  new_y2 = new_y1 + Scr.MyDisplayHeight;
 
   for (cwin = Scr.FvwmRoot.next; cwin; cwin = cwin->next) {
-    if ((cwin == win) ||
-	((cwin->Desk != win->Desk) && (!IS_STICKY(cwin)))) {
+    if (IS_STICKY(cwin) || (IS_ICONIFIED(cwin) && IS_ICON_STICKY(cwin)))
+      is_sticky = True;
+    else
+      is_sticky = False;
+    if (cwin == win || (cwin->Desk != win->Desk && !is_sticky))
       continue;
-    }
     if (IS_ICONIFIED(cwin)) {
       if(cwin->icon_w == None || IS_ICON_UNMAPPED(cwin))
 	continue;
@@ -99,6 +146,11 @@ static void MaximizeHeight(FvwmWindow *win, int win_width, int win_x,
       y21 = cwin->frame_g.y;
       x22 = x21 + cwin->frame_g.width;
       y22 = y21 + cwin->frame_g.height;
+    }
+    if (is_sticky)
+    {
+      move_sticky_window_to_same_page(
+	&x21, &x22, &new_y1, &new_y2, x11, x12, y11, y12);
     }
 
     /* Are they in the same X space? */
@@ -121,19 +173,26 @@ static void MaximizeWidth(FvwmWindow *win, int *win_width, int *win_x,
   int x11, x12, x21, x22;
   int y11, y12, y21, y22;
   int new_x1, new_x2;
+  Bool is_sticky;
 
   x11 = *win_x;            /* Start x */
   y11 = win_y;             /* Start y */
   x12 = x11 + *win_width;  /* End x   */
   y12 = y11 + win_height;  /* End y   */
-  new_x1 = 0;
-  new_x2 = Scr.MyDisplayWidth;
+  if (x11 >= 0)
+    new_x1 = (x11 / Scr.MyDisplayWidth) * Scr.MyDisplayWidth;
+  else
+    new_x1 = ((x11 + 1) / Scr.MyDisplayWidth) * Scr.MyDisplayWidth -
+      Scr.MyDisplayWidth;
+  new_x2 = new_x1 + Scr.MyDisplayWidth;
 
   for (cwin = Scr.FvwmRoot.next; cwin; cwin = cwin->next) {
-    if ((cwin == win) ||
-	((cwin->Desk != win->Desk) && (!IS_STICKY(cwin)))) {
+    if (IS_STICKY(cwin) || (IS_ICONIFIED(cwin) && IS_ICON_STICKY(cwin)))
+      is_sticky = True;
+    else
+      is_sticky = False;
+    if (cwin == win || (cwin->Desk != win->Desk && !is_sticky))
       continue;
-    }
     if (IS_ICONIFIED(cwin)) {
       if(cwin->icon_w == None || IS_ICON_UNMAPPED(cwin))
 	continue;
@@ -146,6 +205,11 @@ static void MaximizeWidth(FvwmWindow *win, int *win_width, int *win_x,
       y21 = cwin->frame_g.y;
       x22 = x21 + cwin->frame_g.width;
       y22 = y21 + cwin->frame_g.height;
+    }
+    if (is_sticky)
+    {
+      move_sticky_window_to_same_page(
+	&new_x1, &new_x2, &y21, &y21, x11, x12, y11, y12);
     }
 
     /* Are they in the same Y space? */
@@ -190,9 +254,14 @@ void Maximize(F_CMD_ARGS)
     return;
   }
   toggle = ParseToggleArgument(action, &action, -1, 0);
-  if ((toggle == 1 && IS_MAXIMIZED(tmp_win)) ||
-      (toggle == 0 && !IS_MAXIMIZED(tmp_win)))
+  if (toggle == 0 && !IS_MAXIMIZED(tmp_win))
     return;
+
+  if (toggle == 1 && IS_MAXIMIZED(tmp_win))
+  {
+    /* Fake that the window is not maximized. */
+    SET_MAXIMIZED(tmp_win, 0);
+  }
 
   /* parse first parameter */
   val1_unit = Scr.MyDisplayWidth;
@@ -255,7 +324,7 @@ void Maximize(F_CMD_ARGS)
     SetupFrame(tmp_win, new_x, new_y, new_width, new_height, TRUE, False);
     SetBorder(tmp_win, True, True, True, None);
   }
-  else
+  else /* maximize */
   {
     if (IS_SHADED(tmp_win))
       new_height = tmp_win->orig_g.height;
@@ -3651,17 +3720,6 @@ void WindowIdFunc(F_CMD_ARGS)
   }
 }
 
-
-void module_zapper(F_CMD_ARGS)
-{
-  char *condition;
-
-  GetNextToken(action,&condition);
-  if (!condition)
-    return;
-  KillModuleByName(condition);
-  free(condition);
-}
 
 /***********************************************************************
  *

@@ -145,6 +145,15 @@ typedef struct MenuLook
     unsigned char ReliefThickness;
     unsigned char TitleUnderlines;
     unsigned char BorderWidth;
+    struct
+    {
+      signed char item_above;
+      signed char item_below;
+      signed char title_above;
+      signed char title_below;
+      signed char separator_above;
+      signed char separator_below;
+    } vertical_spacing;
     Picture *side_picture;
     Pixel side_color;
     GC MenuGC;
@@ -206,6 +215,18 @@ typedef struct MenuStyle
 #define MST_TITLE_UNDERLINES(m)       ((m)->s->ms->look.TitleUnderlines)
 #define ST_BORDER_WIDTH(s)            ((s)->look.BorderWidth)
 #define MST_BORDER_WIDTH(m)           ((m)->s->ms->look.BorderWidth)
+#define ST_ITEM_GAP_ABOVE(s)          ((s)->look.vertical_spacing.item_above)
+#define MST_ITEM_GAP_ABOVE(m)         ((m)->s->ms->look.vertical_spacing.item_above)
+#define ST_ITEM_GAP_BELOW(s)          ((s)->look.vertical_spacing.item_below)
+#define MST_ITEM_GAP_BELOW(m)         ((m)->s->ms->look.vertical_spacing.item_below)
+#define ST_TITLE_GAP_ABOVE(s)         ((s)->look.vertical_spacing.title_above)
+#define MST_TITLE_GAP_ABOVE(m)        ((m)->s->ms->look.vertical_spacing.title_above)
+#define ST_TITLE_GAP_BELOW(s)         ((s)->look.vertical_spacing.title_below)
+#define MST_TITLE_GAP_BELOW(m)        ((m)->s->ms->look.vertical_spacing.title_below)
+#define ST_SEPARATOR_GAP_ABOVE(s)     ((s)->look.vertical_spacing.separator_above)
+#define MST_SEPARATOR_GAP_ABOVE(m)    ((m)->s->ms->look.vertical_spacing.separator_above)
+#define ST_SEPARATOR_GAP_BELOW(s)     ((s)->look.vertical_spacing.separator_below)
+#define MST_SEPARATOR_GAP_BELOW(m)    ((m)->s->ms->look.vertical_spacing.separator_below)
 #define ST_SIDEPIC(s)                 ((s)->look.side_picture)
 #define MST_SIDEPIC(m)                ((m)->s->ms->look.side_picture)
 #define ST_SIDE_COLOR(s)              ((s)->look.side_color)

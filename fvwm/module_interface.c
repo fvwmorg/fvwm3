@@ -422,6 +422,7 @@ void KillModule(int channel, int place)
 {
 #if 0
   /* this causes a coredump (why?) */
+  /* domivogt (06-Jul-1999): because the parameters are illegal */
   DBUG("KillModule %i\n", place);
 #endif
   close(readPipes[channel]);
@@ -449,7 +450,7 @@ void KillModule(int channel, int place)
   return;
 }
 
-void KillModuleByName(char *name)
+static void KillModuleByName(char *name)
 {
   int i = 0;
 
@@ -467,6 +468,16 @@ void KillModuleByName(char *name)
   return;
 }
 
+void module_zapper(F_CMD_ARGS)
+{
+  char *module;
+
+  GetNextToken(action,&module);
+  if (!module)
+    return;
+  KillModuleByName(module);
+  free(module);
+}
 
 static unsigned long *
 make_vpacket(unsigned long *body, unsigned long event_type,
@@ -1157,6 +1168,7 @@ void send_list_func(XEvent *eventp, Window w, FvwmWindow *tmp_win,
       SendPacket(*Module, M_END_WINDOWLIST, 0);
     }
 }
+
 void set_mask_function(XEvent *eventp,Window w,FvwmWindow *tmp_win,
 		       unsigned long context, char *action,int* Module)
 {

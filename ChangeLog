@@ -1,3 +1,30 @@
+1999-07-07  Dominik Vogt  <dominik_vogt@gmx.de>
+
+	* fvwm/menus.c: menu menu styles VerticalItemSpacing and
+	VerticalTitleSpacing
+
+	* fvwm/builtins.c (MaximizeWidth):
+	(MaximizeHeight): maximize grow didn't work with sticky icons
+	fixed maximize grow on other pages than the current one
+	handle sticky windows properly
+
+1999-07-06  Dominik Vogt  <dominik_vogt@gmx.de>
+
+	* fvwm/functions.c:
+	* fvwm/fvwm.c: include module_interface.h
+
+	* fvwm/misc.h:
+	* fvwm/module_interface.h: moved function declarations to
+	module_interface.h
+
+	* fvwm/module_interface.c (KillModuleByName): now static
+
+	* fvwm/builtins.c (module_zapper): function moved to module_interface.c
+
+	* fvwm/defaults.h:
+	* fvwm/virtual.c (HandlePaging): Do not page while the mouse is moving
+	along one of the sides.
+
 1999-07-07
 
 	* fvwm/menus.c: paint_menu(): fixed an expose bug

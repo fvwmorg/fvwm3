@@ -68,8 +68,12 @@ extern struct queue_buff_struct **pipeQueue;
  * send a copy of the command in an M_CONFIG_INFO command.
  */
 
-
-void KillModuleByName(char *name);
+void module_zapper(F_CMD_ARGS);
+void executeModule(F_CMD_ARGS);
+void initModules(void);
+int HandleModuleInput(Window w, int channel);
+void KillModule(int channel, int place);
+void ClosePipes(void);
 void AddToModList(char *tline);
 void BroadcastMiniIcon(unsigned long event_type,
 		       unsigned long data1, unsigned long data2,

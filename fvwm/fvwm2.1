@@ -2130,6 +2130,8 @@ PopupAsRootMenu/PopupAsSubmenu,
 DeleteSubmenus/HoldSubmenus,
 SubmenusRight/SubmenusLeft,
 ItemFormat,
+VerticalItemSpacing,
+VerticalTitleSpacing,
 AutomaticHotkeys/AutomaticHotkeysOff.
 
 In the above list some options are listed as option pairs or triples
@@ -2408,6 +2410,16 @@ Is the default string used by fvwm: (side picture + 4 pixels gap)
 MenuStyle * ItemFormat "%.1|%3.2<%5i%5l%5l%5r%5i%1|%4s"
 .EE
 Is used by fvwm with the \fISubmenusLeft\fP option below.
+
+\fIVerticalItemSpacing\fP and \fIVerticalTitleSpacing\fP control the
+vertical spacing of menu items and titles like \fIItemFormat\fP
+controls the horizontal spacing.  Both take two numeric arguments
+that may range from -5 to +100.  The first is the gap in pixels
+above a normal menu item (or a menu title), se second is the gap
+in pixels below it.  Negative numbers do not make much sense and may
+screw up your menu completely.  If no arguments are given or the
+given arguments are invalid, the built in defaults are used: one pixel
+above the item or title and two below.
 
 \fISubmenusLeft\fP mirrors the menu layout and behaviour. Submenus pop up
 to the left, the submenu triangle is drawn left and the mini icon and

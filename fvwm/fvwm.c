@@ -51,6 +51,7 @@
 #include "virtual.h"
 #include "stack.h"
 #include "gnome.h"
+#include "module_interface.h"
 
 #include <X11/Xproto.h>
 #include <X11/Xatom.h>

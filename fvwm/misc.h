@@ -105,13 +105,8 @@ void SetTimer(int);
 int flush_expose(Window w);
 
 void do_windowList(F_CMD_ARGS);
-void executeModule(F_CMD_ARGS);
-void initModules(void);
-int HandleModuleInput(Window w, int channel);
 void match_string(struct config *, char *, char *, FILE *);
 void no_popup(char *ptr);
-void KillModule(int channel, int place);
-void ClosePipes(void);
 /*  RBW - 11/02/1998  */
 int SmartPlacement(FvwmWindow *t, int width, int height,int *x,int *y,
 			  int pdeltax, int pdeltay);
@@ -264,7 +259,6 @@ void PickFunc(F_CMD_ARGS);
 void AllFunc(F_CMD_ARGS);
 void ReadFile(F_CMD_ARGS);
 void PipeRead(F_CMD_ARGS);
-void module_zapper(F_CMD_ARGS);
 void Recapture(F_CMD_ARGS);
 void RecaptureWindow(F_CMD_ARGS);
 void DestroyModConfig(F_CMD_ARGS);

@@ -52,6 +52,7 @@
 #include "stack.h"
 #include "gnome.h"
 #include "borders.h"
+#include "module_interface.h"
 
 extern XEvent Event;
 extern FvwmWindow *Tmp_win;

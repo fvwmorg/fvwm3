@@ -183,6 +183,9 @@ Bool HandlePaging(int HorWarpSize, int VertWarpSize, int *xl, int *yt,
   static Time my_timestamp = 0;
   static Time my_last_timestamp = 0;
   static Bool is_timestamp_valid = False;
+  static int last_x = 0;
+  static int last_y = 0;
+  static Bool is_last_position_valid = False;
 
   *delta_x = 0;
   *delta_y = 0;
@@ -216,7 +219,10 @@ Bool HandlePaging(int HorWarpSize, int VertWarpSize, int *xl, int *yt,
     {
       is_timestamp_valid = True;
       my_timestamp = lastTimestamp;
+      is_last_position_valid = False;
       add_time = 0;
+      last_x = -1;
+      last_y = -1;
     }
   else if (my_last_timestamp != lastTimestamp)
     {
@@ -247,6 +253,24 @@ Bool HandlePaging(int HorWarpSize, int VertWarpSize, int *xl, int *yt,
 	  add_time = 0;
 	  return False;
 	}
+      if (is_last_position_valid &&
+	  ((x - last_x) > MAX_PAGING_MOVE_DISTANCE ||
+	   (x - last_x) < -MAX_PAGING_MOVE_DISTANCE ||
+	   (y - last_y) > MAX_PAGING_MOVE_DISTANCE ||
+	   (y - last_y) < -MAX_PAGING_MOVE_DISTANCE))
+	{
+	  /* The pointer is moving too fast, prevent paging until it slows
+	   * down. */
+	  is_timestamp_valid = True;
+	  my_timestamp = lastTimestamp;
+	  add_time = 0;
+	  last_x = x;
+	  last_y = y;
+	  return False;
+	}
+      last_x = x;
+      last_y = y;
+      is_last_position_valid = True;
       usleep(10000);
       add_time += 10;
     } while (fLoop &&

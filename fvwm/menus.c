@@ -111,13 +111,12 @@
 #define SEPARATOR_TOTAL_HEIGHT    (SEPARATOR_HEIGHT + SEPARATOR_Y_OFFSET)
 
 /* gap above item text */
-#define ITEM_TEXT_Y_OFFSET        0
+#define DEFAULT_ITEM_TEXT_Y_OFFSET       1
 /* gap below item text */
-#define ITEM_TEXT_Y_OFFSET2       2
-#define ITEM_EXTRA_HEIGHT        (ITEM_TEXT_Y_OFFSET + ITEM_TEXT_Y_OFFSET2)
-
-#define TITLE_TEXT_Y_OFFSET       ITEM_TEXT_Y_OFFSET
-#define TITLE_TEXT_Y_OFFSET2      ITEM_TEXT_Y_OFFSET2
+#define DEFAULT_ITEM_TEXT_Y_OFFSET2      2
+/* same for titles */
+#define DEFAULT_TITLE_TEXT_Y_OFFSET      DEFAULT_ITEM_TEXT_Y_OFFSET
+#define DEFAULT_TITLE_TEXT_Y_OFFSET2     DEFAULT_ITEM_TEXT_Y_OFFSET2
 
 #define ROUNDING_ERROR_TOLERANCE  0.005
 
@@ -2478,7 +2477,7 @@ static void paint_item(MenuRoot *mr, MenuItem *mi, FvwmWindow *fw,
   }
   else
   {
-    text_y = y_offset + MST_PSTDFONT(mr)->y + TITLE_TEXT_Y_OFFSET;
+    text_y = y_offset + MST_PSTDFONT(mr)->y + MST_TITLE_GAP_ABOVE(mr);
   }
   /* center text vertically if the pixmap is taller */
   if (MI_PICTURE(mi))
@@ -3812,10 +3811,10 @@ static void size_menu_vertically(MenuRoot *mr)
   int i;
 
   MR_ITEM_TEXT_Y_OFFSET(mr) =
-    MST_PSTDFONT(mr)->y + relief_thickness + ITEM_TEXT_Y_OFFSET;
+    MST_PSTDFONT(mr)->y + relief_thickness + MST_ITEM_GAP_ABOVE(mr);
 
   simple_entry_height =	MST_PSTDFONT(mr)->height +
-    ITEM_TEXT_Y_OFFSET + ITEM_TEXT_Y_OFFSET2;
+    MST_ITEM_GAP_ABOVE(mr) + MST_ITEM_GAP_BELOW(mr);
 
   /* mi_prev trails one behind mi, since we need to move that
      into a newly-made menu if we run out of space */
@@ -3834,7 +3833,7 @@ static void size_menu_vertically(MenuRoot *mr)
     if(MI_IS_TITLE(mi))
     {
       MI_HEIGHT(mi) = MST_PSTDFONT(mr)->height +
-	TITLE_TEXT_Y_OFFSET + TITLE_TEXT_Y_OFFSET2;
+	MST_TITLE_GAP_ABOVE(mr) + MST_TITLE_GAP_BELOW(mr);
       switch (MST_TITLE_UNDERLINES(mr))
       {
       case 0:
@@ -3875,7 +3874,7 @@ static void size_menu_vertically(MenuRoot *mr)
       }
       else
       {
-	MI_HEIGHT(mi) = ITEM_TEXT_Y_OFFSET + ITEM_TEXT_Y_OFFSET2 +
+	MI_HEIGHT(mi) = MST_ITEM_GAP_ABOVE(mr) + MST_ITEM_GAP_BELOW(mr) +
 	  relief_thickness;
       }
     }
@@ -5082,6 +5081,26 @@ void UpdateAllMenuStyles(void)
   }
 }
 
+static void parse_vertical_spacing_line(
+  char *args, signed char *above, signed char *below,
+  signed char above_default, signed char below_default)
+{
+  int val[2];
+
+  if (GetIntegerArguments(args, NULL, val, 2) != 2 ||
+      val[0] < -5 || val[0] > 100 ||
+      val[1] < -5 || val[1] > 100)
+  {
+    /* illegal or missing parameters, return to default */
+    *above = above_default;
+    *below = below_default;
+    return;
+  }
+  *above = val[0];
+  *below = val[1];
+  return;
+}
+
 static int GetMenuStyleIndex(char *option)
 {
   char *optlist[] = {
@@ -5108,6 +5127,8 @@ static int GetMenuStyleIndex(char *option)
     "Hilight3DThickness",
     "ItemFormat",
     "AutomaticHotkeys", "AutomaticHotkeysOff",
+    "VerticalItemSpacing",
+    "VerticalTitleSpacing",
     NULL
   };
   return GetTokenIndex(option, optlist, 0, NULL);
@@ -5244,6 +5265,10 @@ static void NewMenuStyle(F_CMD_ARGS)
 
       /* common settings */
       ST_BORDER_WIDTH(tmpms) = DEFAULT_MENU_BORDER_WIDTH;
+      ST_ITEM_GAP_ABOVE(tmpms) = DEFAULT_ITEM_TEXT_Y_OFFSET;
+      ST_ITEM_GAP_BELOW(tmpms) = DEFAULT_ITEM_TEXT_Y_OFFSET2;
+      ST_TITLE_GAP_ABOVE(tmpms) = DEFAULT_TITLE_TEXT_Y_OFFSET;
+      ST_TITLE_GAP_BELOW(tmpms) = DEFAULT_TITLE_TEXT_Y_OFFSET2;
       ST_USE_LEFT_SUBMENUS(tmpms) = 0;
       ST_IS_ANIMATED(tmpms) = 0;
       ST_USE_AUTOMATIC_HOTKEYS(tmpms) = 0;
@@ -5600,6 +5625,18 @@ static void NewMenuStyle(F_CMD_ARGS)
 
     case 43: /* AutomaticHotkeysOff */
       ST_USE_AUTOMATIC_HOTKEYS(tmpms) = 0;
+      break;
+
+    case 44: /* VerticalItemSpacing */
+      parse_vertical_spacing_line(
+	args, &ST_ITEM_GAP_ABOVE(tmpms), &ST_ITEM_GAP_BELOW(tmpms),
+	DEFAULT_ITEM_TEXT_Y_OFFSET, DEFAULT_ITEM_TEXT_Y_OFFSET2);
+      break;
+
+    case 45: /* VerticalTitleSpacing */
+      parse_vertical_spacing_line(
+	args, &ST_TITLE_GAP_ABOVE(tmpms), &ST_TITLE_GAP_BELOW(tmpms),
+	DEFAULT_TITLE_TEXT_Y_OFFSET, DEFAULT_TITLE_TEXT_Y_OFFSET2);
       break;
 
 #if 0
