@@ -437,20 +437,24 @@ Bool check_if_fvwm_window_exists(FvwmWindow *fw)
  *      t       - the window (FvwmWindow) to test against
  *
  ***********************************************************************/
-int ButtonPosition(int context, FvwmWindow * t)
+int ButtonPosition(int context, FvwmWindow *t)
 {
   int i;
   int buttons = -1;
 
   for (i = 0; i < NUMBER_OF_BUTTONS; i++)
   {
+    if (i == NR_LEFT_BUTTONS)
+      buttons = -1;
     if (t->button_w[i])
     {
       buttons++;
     }
     /* is this the button ? */
     if (((1 << i) * C_L1) & context)
-      return(buttons);
+    {
+      return buttons;
+    }
   }
 
   /* you never know... */

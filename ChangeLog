@@ -1,5 +1,9 @@
 2000-01-05  Dominik Vogt  <dominik.vogt@gmx.de>
 
+	* fvwm/misc.c (ButtonPosition):
+	* fvwm/borders.c (SetupTitleBar):
+	fixed number of buttons on windows
+
 	* libs/ColorUtils.c (GetShadowColor):
 	(GetHilightColor):
 	Use old code for 'medium' colours.

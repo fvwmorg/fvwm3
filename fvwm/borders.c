@@ -1001,8 +1001,8 @@ void SetupTitleBar(FvwmWindow *tmp_win, int w, int h)
   int i;
 
   xwcm = CWWidth | CWX | CWY | CWHeight;
-  tmp_win->title_g.x = tmp_win->boundary_width+
-    (Scr.nr_left_buttons)*tmp_win->title_g.height;
+  tmp_win->title_g.x = tmp_win->boundary_width +
+    tmp_win->nr_left_buttons * tmp_win->title_g.height;
   if(tmp_win->title_g.x >=  w - tmp_win->boundary_width)
     tmp_win->title_g.x = -10;
   if (HAS_BOTTOM_TITLE(tmp_win))
@@ -1028,7 +1028,7 @@ void SetupTitleBar(FvwmWindow *tmp_win, int w, int h)
 
   /* left */
   xwc.x = tmp_win->boundary_width;
-  for(i = 0; i < Scr.nr_left_buttons; i++)
+  for(i = 0; i < tmp_win->nr_left_buttons; i++)
   {
     if(tmp_win->button_w[i] != None)
     {
@@ -1046,7 +1046,8 @@ void SetupTitleBar(FvwmWindow *tmp_win, int w, int h)
   }
   /* right */
   xwc.x = w - tmp_win->boundary_width;
-  for(i = NR_LEFT_BUTTONS ; i < Scr.nr_right_buttons + NR_LEFT_BUTTONS; i++)
+  for(i = NR_LEFT_BUTTONS ; i < tmp_win->nr_right_buttons + NR_LEFT_BUTTONS;
+      i++)
   {
     if(tmp_win->button_w[i] != None)
     {
