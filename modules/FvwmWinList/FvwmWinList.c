@@ -375,7 +375,8 @@ void ProcessMessage(unsigned long type,unsigned long *body)
       p.mask = body[7];
 
       UpdateButtonPicture(&buttons, i, &p);
-      AdjustWindow(True);
+
+      AdjustWindow(False);
       redraw = 1;
     }
     break;
@@ -879,8 +880,8 @@ void AdjustWindow(Bool force)
   new_width=max(new_width, MinWidth);
   new_width=min(new_width, MaxWidth);
   new_height=(total * buttonheight);
-  if (WindowState && (force || new_height != win_height || 
-		      new_width != win_width)) {
+
+  if (WindowState && force) {
     for (i = 0; i != MAX_COLOUR_SETS; i++) {
       int cset = colorset[i];
 
@@ -891,6 +892,15 @@ void AdjustWindow(Bool force)
 	XSetForeground(dpy, background[i], back[i]);
 	XSetForeground(dpy, hilite[i], Colorset[cset].hilite);
 	XSetForeground(dpy, shadow[i], Colorset[cset].shadow);
+      }
+    }
+  }
+  /* change the pixmap if forced or if width changed (the height is fixed) */
+  if (WindowState && (force || new_width != win_width)) {
+    for (i = 0; i != MAX_COLOUR_SETS; i++) {
+      int cset = colorset[i];
+
+      if (cset >= 0) {
 	if (pixmap[i])
 	  XFreePixmap(dpy, pixmap[i]);
 	if (Colorset[cset].pixmap) {
@@ -1057,8 +1067,8 @@ void MakeMeWindow(void)
     else
     {
       if (colorset[i] >= 0) {
-        back[i] = Colorset[colorset[i]].bg;
-        fore[i] = Colorset[colorset[i]].fg;
+	back[i] = Colorset[colorset[i]].bg;
+	fore[i] = Colorset[colorset[i]].fg;
       } else {
 	back[i] = GetColor(BackColor[i] == NULL ? BackColor[0] : BackColor[i]);
 	fore[i] = GetColor(ForeColor[i] == NULL ? ForeColor[0] : ForeColor[i]);
@@ -1127,6 +1137,14 @@ void MakeMeWindow(void)
     gcval.foreground=back[i];
     gcmask=GCForeground;
     background[i]=XCreateGC(dpy,win,gcmask,&gcval);
+
+    if ((colorset[i] >= 0) && Colorset[colorset[i]].pixmap) {
+      pixmap[i] = CreateBackgroundPixmap(dpy, win, win_width, buttonheight,
+					 &Colorset[colorset[i]], Pdepth,
+					 background[i], False);
+      XSetTile(dpy, background[i], pixmap[i]);
+      XSetFillStyle(dpy, background[i], FillTiled);
+    }
   }
   AdjustWindow(True);
   XSelectInput(dpy,win,(StructureNotifyMask | ExposureMask | KeyPressMask));
@@ -1271,7 +1289,13 @@ PropMwmHints prop;
 ************************************************************************/
 int ErrorHandler(Display *d, XErrorEvent *event)
 {
-    PrintXErrorAndCoredump(d, event, Module);
+  /* some errors are OK=ish */
+  if (event->error_code == BadPixmap)
     return 0;
+  if (event->error_code == BadDrawable)
+    return 0;
+
+  PrintXErrorAndCoredump(d, event, Module);
+  return 0;
 }
 
