@@ -703,7 +703,7 @@ void ProcessMessage(unsigned long type,unsigned long *body)
 	redraw = 1;
       }
     }
-    else
+    else if (!UseSkipList || !DO_SKIP_WINDOW_LIST(cfgpacket))
     {
       AddItem(&windows, cfgpacket->w,
 	      cfgpacket, cfgpacket->desk, Count++);
@@ -1455,7 +1455,7 @@ void HandleButtonRelease(
 				Fvwm_fd, "Focus 0", ItemID(&windows, num));
 	}
 	ButPressed = -1;
-	*redraw = 0;	
+	*redraw = 0;
 }
 
 /******************************************************************************
