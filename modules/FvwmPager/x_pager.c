@@ -440,6 +440,7 @@ void initialize_pager(void)
   int n,m,w,h,i,x,y;
   XGCValues gcv;
   char dash_list[2];
+  FlocaleFont *balloon_font;
 
   /* I don't think that this is necessary - just let pager die */
   /* domivogt (07-mar-1999): But it is! A window being moved in the pager
@@ -742,6 +743,7 @@ void initialize_pager(void)
     Scr.asGC = fvwmlib_XCreateGC(dpy, Scr.Pager_w, GCForeground, &gcv);
   }
 
+  balloon_font = FlocaleLoadFont(dpy, BalloonFont, MyName);
   for(i=0;i<ndesks;i++)
   {
     w = window_w / Columns;
@@ -902,7 +904,7 @@ void initialize_pager(void)
     XMapRaised(dpy,Desks[i].title_w);
 
     /* get font for balloon */
-    Desks[i].balloon.Ffont = FlocaleLoadFont(dpy, BalloonFont, MyName);
+    Desks[i].balloon.Ffont = balloon_font;
     if (Desks[i].balloon.Ffont == NULL)
     {
       fprintf(stderr, "%s: No fonts available, giving up!.\n", MyName);
@@ -2234,7 +2236,7 @@ void Scroll(int window_w, int window_h, int x, int y, int Desk,
 	int adjx,adjy;
 
 	/* Desk < 0 means we want to scroll an icon window */
-	if(Desk >= 0 && Desk + desk1 != Scr.CurrentDesk)
+	if (Desk >= 0 && Desk + desk1 != Scr.CurrentDesk)
 	{
 		return;
 	}
@@ -2246,39 +2248,39 @@ void Scroll(int window_w, int window_h, int x, int y, int Desk,
 	y-=adjy/2;
 
 	/* adjust for pointer going out of range */
-	if(x < 0)
+	if (x < 0)
 	{
 		x = 0;
 	}
-	if(y < 0)
+	if (y < 0)
 	{
 		y = 0;
 	}
 
-	if(x > window_w-adjx)
+	if (x > window_w-adjx)
 	{
 		x = window_w-adjx;
 	}
-	if(y > window_h-adjy)
+	if (y > window_h-adjy)
 	{
 		y = window_h-adjy;
 	}
 
 	sx = 0;
 	sy = 0;
-	if(window_w != 0)
+	if (window_w != 0)
 	{
 		sx = 100 * (x * Scr.VWidth / window_w - MyVx) /
 			Scr.MyDisplayWidth;
 	}
-	if(window_h != 0)
+	if (window_h != 0)
 	{
 		sy = 100 * (y * Scr.VHeight / window_h - MyVy) /
 			Scr.MyDisplayHeight;
 	}
 	MYFPRINTF((stderr,"[scroll]: %d %d %d %d %d %d\n", window_w, window_h, x,
 		y, sx, sy));
-	/* Make sure weExecuteCommandQueue(); don't get stuck a few pixels fromt
+	/* Make sure weExecuteCommandQueue(); don't get stuck a few pixels from
 	 * the top/left border. Since sx/sy are ints, values between 0 and 1 are
 	 * rounded down. */
 	if (sx == 0 && x == 0 && MyVx != 0)
@@ -2289,7 +2291,10 @@ void Scroll(int window_w, int window_h, int x, int y, int Desk,
 	{
 		sy = -1;
 	}
-	if (sx==0&&sy==0) return;
+	if (sx == 0 && sy == 0)
+	{
+		return;
+	}
 	if (Wait == 0 || last_sx != sx || last_sy != sy)
 	{
 		sprintf(command, "Scroll %d %d", sx, sy);
@@ -2297,8 +2302,16 @@ void Scroll(int window_w, int window_h, int x, int y, int Desk,
 		/* Here we need to track the view offset on the desk. */
 		/* sx/y are are a percent of the screen to scroll. */
 		/* We don't use Scr.Vx/y since they lag the true position. */
-		MyVx+=Scr.MyDisplayWidth*sx/100;
-		MyVy+=Scr.MyDisplayHeight*sy/100;
+		MyVx += Scr.MyDisplayWidth * sx / 100;
+		if (MyVx < 0)
+		{
+			MyVx = 0;
+		}
+		MyVy += Scr.MyDisplayHeight * sy / 100;
+		if (MyVy < 0)
+		{
+			MyVy = 0;
+		}
 		Wait = 1;
 	}
 	if (Wait == 0)

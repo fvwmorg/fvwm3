@@ -310,6 +310,8 @@ int main(int argc, char **argv)
 	      XDisplayName(display_name));
       exit (1);
     }
+
+XSynchronize(dpy, 1);
   x_fd = XConnectionNumber(dpy);
   PictureInitCMap(dpy);
   FScreenInit(dpy);

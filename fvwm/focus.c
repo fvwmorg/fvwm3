@@ -575,7 +575,8 @@ static FvwmWindow *__restore_focus_after_unmap(
 			if (!FP_DO_OVERRIDE_RELEASE_FOCUS(
 				    FW_FOCUS_POLICY(t)) &&
 			    t->Desk == fw->Desk && !DO_SKIP_CIRCULATE(t) &&
-			    !(DO_SKIP_ICON_CIRCULATE(t) && IS_ICONIFIED(t)) &&
+			    !(IS_ICONIFIED(t) && (DO_SKIP_ICON_CIRCULATE(t) ||
+			      IS_ICON_SUPPRESSED(t))) &&
 			    (!do_skip_marked_transients ||
 			     !IS_IN_TRANSIENT_SUBTREE(t)))
 			{

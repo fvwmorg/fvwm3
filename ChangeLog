@@ -1,3 +1,8 @@
+2003-04-04  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* fvwm/focus.c (__restore_focus_after_unmap):
+	iconified windows without an icon do not receive focus
+
 2003-03-29  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* fvwm/virtual (CMD_GotoDeskAndPage):

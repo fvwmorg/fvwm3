@@ -1521,13 +1521,13 @@ int FlocaleGetMinOffset(
 	{
 	case ROTATION_270:
 	case ROTATION_180:
-		/* better than descent */ 
+		/* better than descent */
 		min_offset = (flf->descent + flf->height - flf->ascent)/2;
 		break;
 	case ROTATION_0:
-	case ROTATION_90:	
+	case ROTATION_90:
 	default:
-		/* better than ascent */ 
+		/* better than ascent */
 		min_offset = (flf->ascent + flf->height - flf->descent)/2;
 		break;
 	}
@@ -1536,13 +1536,13 @@ int FlocaleGetMinOffset(
 	{
 	case ROTATION_180:
 	case ROTATION_90:
-		/* better than descent */ 
+		/* better than descent */
 		min_offset = (flf->descent + flf->height - flf->ascent)/2;
 		break;
 	case ROTATION_270:
 	case ROTATION_0:
 	default:
-		/* better than ascent */ 
+		/* better than ascent */
 		min_offset = (flf->ascent + flf->height - flf->descent)/2;
 		break;
 	}

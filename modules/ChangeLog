@@ -1,3 +1,8 @@
+2003-04-04  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* FvwmPager/x_pager.c (Scroll):
+	fixed shaking of viewport when scrolling past top/left border
+
 2003-03-22  Mikhael Goikhman  <migo@homemail.com>
 
 	* FvwmPager/FvwmPager.1:
