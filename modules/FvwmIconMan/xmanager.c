@@ -1475,7 +1475,8 @@ void draw_manager (WinManager *man)
     update_geometry = 1;
     force_draw = 1;
   }
-  clear_empty_region (man);
+  if (force_draw || man->buttons.num_windows != 0)
+    clear_empty_region (man);
 
   if (redraw_all || (man->dirty_flags & MAPPING_CHANGED)) {
     force_draw = 1;

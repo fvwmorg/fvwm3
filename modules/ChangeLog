@@ -1,3 +1,7 @@
+2000-04-19  Hippo
+
+	* FvwmIconMan/xmanager.c: fixed disappearing title button (todo 109)
+
 1999-04-18  Mikhael Goikhman  <migo@homemail.com>
 
 	* FvwmM4/FvwmM4.c (main):
