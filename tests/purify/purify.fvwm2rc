@@ -976,6 +976,306 @@ AddToFunc DestroyStyle-Func
 # The man page says not to do this, to-do-2.4 #130
  + I DestroyStyle *
 
+AddTest "Test AddButtonStyleMisc" AddButtonStyleMisc-Func
+AddToFunc AddButtonStyleMisc-Func
+# Need to add a buttonstyle command to get the buttons
+# in a known state.
+# Look at putting all these styles in a decor as shown in the man page.
+# The "Toggled" feature needs to be tested, need shaded/maximized/sticky
+# windows with corresponding mwmdecors set.
+ + I AddButtonStyle
+ + I AddButtonStyle Reset
+ + I AddButtonStyle All -- raisED
+ + I AddButtonStyle All -- SUNk
+ + I AddButtonStyle Left -- flat
+ + I AddButtonStyle Left -- flat
+ + I AddButtonStyle Right -- !flat
+ + I AddButtonStyle Left Activeup -- raised
+ + I AddButtonStyle Left Activeup -- raised
+ + I AddButtonStyle Left activeDOWN -- sunk
+ + I AddButtonStyle Left inactive -- flat
+ + I AddButtonStyle Left inactive -- flat
+ + I AddButtonStyle Left Activeup -- sunk
+ + I AddButtonStyle 1 simple
+ + I AddButtonStyle 1 simple
+ + I AddButtonStyle 1 default 3
+ + I AddButtonStyle 1 default 3
+ + I AddButtonStyle 1 solid blaCK
+ + I AddButtonStyle 1 solid blaCK
+ + I AddButtonStyle 1 simple
+
+AddTest "Test AddButtonStyleGradients" AddButtonStyleGradients-Func
+AddToFunc AddButtonStyleGradients-Func
+ + I AddButtonStyle 2 hgradient 16 green red
+ + I AddButtonStyle 2 hgradient 16 green red
+ + I AddButtonStyle 2 hgradient 16 red blue
+ + I AddButtonStyle 2 hgradient 32 red blue
+ + I AddButtonStyle 2 hgradient 128 red blue
+ + I AddButtonStyle 2 hgradient 2 red blue
+ + I AddButtonStyle 2 vgradient 16 green red
+ + I AddButtonStyle 2 vgradient 16 green red
+ + I AddButtonStyle 2 vgradient 16 red blue
+ + I AddButtonStyle 2 vgradient 32 red blue
+ + I AddButtonStyle 2 vgradient 128 red blue
+ + I AddButtonStyle 2 vgradient 2 red blue
+ + I AddButtonStyle 3 VGradient 16 3 Red 20 Blue 30 Black 50 Grey
+ + I AddButtonStyle 3 VGradient 16 3 Red 20 Blue 30 Black 50 Grey
+ + I AddButtonStyle 3 VGradient 16 4 Red 20 Blue 30 Black 20 Grey 30 yellow
+ + I AddButtonStyle 3 VGradient 16 2 Red 20 Blue 80
+ + I AddButtonStyle 3 VGradient 128 2 Red 20 Blue 80
+ + I AddButtonStyle 3 VGradient 2 2 Red 20 Blue 80
+ + I AddButtonStyle 3 hGradient 16 3 Red 20 Blue 30 Black 50 Grey
+ + I AddButtonStyle 3 hGradient 16 3 Red 20 Blue 30 Black 50 Grey
+ + I AddButtonStyle 3 hGradient 16 4 Red 20 Blue 30 Black 20 Grey 30 yellow
+ + I AddButtonStyle 3 hGradient 16 2 Red 20 Blue 80
+ + I AddButtonStyle 3 hGradient 128 2 Red 20 Blue 80
+ + I AddButtonStyle 3 hGradient 2 2 Red 20 Blue 80
+
+AddTest "Test AddButtonStyleVectors" AddButtonStyleVectors-Func
+AddToFunc AddButtonStyleVectors-Func
+ + I AddButtonStyle Reset
+ + I AddButtonStyle 1 Vector 5 45x60@0 80x60@0 80x80@1 45x80@1 45x60@0
+ + I AddButtonStyle 1 Vector 5 45x60@0 80x60@0 80x80@1 45x80@1 45x60@0
+ + I AddButtonStyle 1 4 50x35@1 65x65@0 35x65@0 50x35@1
+ + I AddButtonStyle 1 4 50x65@1 35x35@1 65x35@1 50x65@0
+ + I AddButtonStyle 1 5 40x40@1 60x40@1 60x60@0 40x60@0 40x40@1
+ + I AddButtonStyle 1 5
+ + I AddButtonStyle 1 5 40x40@1 60x40@1 60x60@0 40x60@0 40x40@1
+ + I AddButtonStyle Reset
+
+AddTest "Test AddButtonStylePixmaps" AddButtonStylePixmaps-Func
+AddToFunc AddButtonStylePixmaps-Func
+ + I AddButtonStyle 1 Pixmap test1.xpm
+ + I AddButtonStyle 1 Pixmap test2.xpm
+ + I AddButtonStyle 1 TiledPixmap test2.xpm
+ + I AddButtonStyle 1 TiledPixmap test2.xpm
+ + I AddButtonStyle 1 TiledPixmap test1.xpm
+ + I AddButtonStyle 1 ActiveUp (Pixmap test3.xpm) ActiveDown (Pixmap test2.xpm)
+ + I AddButtonStyle 1 Inactive Pixmap nonexistent.xpm
+ + I AddButtonStyle 1 Inactive Pixmap test3.xpm
+ + I AddButtonStyle 1 Inactive Pixmap test3.xpm
+ + I AddButtonStyle 1 Inactive Pixmap
+ + I AddButtonStyle 1 MiniIcons
+ + I AddButtonStyle 1 miniicons
+
+AddTest "Test AddTitleStyle" AddTitleStyle-Func
+AddToFunc AddTitleStyle-Func
+# Need a "toggled" test
+# The TitleStyle should first be cleared with "TitleStyle"
+ + I AddTitleStyle
+ + I AddTitleStyle -- raisED
+ + I AddTitleStyle -- SUNk
+ + I AddTitleStyle -- flat
+ + I AddTitleStyle -- flat
+ + I AddTitleStyle -- !flat
+ + I AddTitleStyle Activeup -- raised
+ + I AddTitleStyle Activeup -- raised
+ + I AddTitleStyle activeDOWN -- sunk
+ + I AddTitleStyle inactive -- flat
+ + I AddTitleStyle inactive -- flat
+ + I AddTitleStyle Activeup -- sunk
+ + I AddTitleStyle simple
+ + I AddTitleStyle simple
+ + I AddTitleStyle default 3
+ + I AddTitleStyle default 3
+ + I AddTitleStyle solid blaCK
+ + I AddTitleStyle solid blaCK
+ + I AddTitleStyle simple
+
+AddTest "Test AddTitleStyleGradients" AddTitleStyleGradients-Func
+AddToFunc AddTitleStyleGradients-Func
+ + I AddTitleStyle hgradient 16 green red
+ + I AddTitleStyle hgradient 16 green red
+ + I AddTitleStyle hgradient 16 red blue
+ + I AddTitleStyle hgradient 32 red blue
+ + I AddTitleStyle hgradient 128 red blue
+ + I AddTitleStyle hgradient 2 red blue
+ + I AddTitleStyle vgradient 16 green red
+ + I AddTitleStyle vgradient 16 green red
+ + I AddTitleStyle vgradient 16 red blue
+ + I AddTitleStyle vgradient 32 red blue
+ + I AddTitleStyle vgradient 128 red blue
+ + I AddTitleStyle vgradient 2 red blue
+ + I AddTitleStyle VGradient 16 3 Red 20 Blue 30 Black 50 Grey
+ + I AddTitleStyle VGradient 16 3 Red 20 Blue 30 Black 50 Grey
+ + I AddTitleStyle VGradient 16 4 Red 20 Blue 30 Black 20 Grey 30 yellow
+ + I AddTitleStyle VGradient 16 2 Red 20 Blue 80
+ + I AddTitleStyle VGradient 128 2 Red 20 Blue 80
+ + I AddTitleStyle VGradient 2 2 Red 20 Blue 80
+ + I AddTitleStyle hGradient 16 3 Red 20 Blue 30 Black 50 Grey
+ + I AddTitleStyle hGradient 16 3 Red 20 Blue 30 Black 50 Grey
+ + I AddTitleStyle hGradient 16 4 Red 20 Blue 30 Black 20 Grey 30 yellow
+ + I AddTitleStyle hGradient 16 2 Red 20 Blue 80
+ + I AddTitleStyle hGradient 128 2 Red 20 Blue 80
+ + I AddTitleStyle hGradient 2 2 Red 20 Blue 80
+
+AddTest "Test AddTitleStyleVectorButtons" AddTitleStyleVectorButtons-Func
+AddToFunc AddTitleStyleVectorButtons-Func
+ + I AddTitleStyle Vector 5 45x60@0 80x60@0 80x80@1 45x80@1 45x60@0
+ + I AddTitleStyle Vector 5 45x60@0 80x60@0 80x80@1 45x80@1 45x60@0
+ + I AddTitleStyle 4 50x35@1 65x65@0 35x65@0 50x35@1
+ + I AddTitleStyle 4 50x65@1 35x35@1 65x35@1 50x65@0
+ + I AddTitleStyle 5 40x40@1 60x40@1 60x60@0 40x60@0 40x40@1
+ + I AddTitleStyle 5 40x40@1 60x40@1 60x60@0 40x60@0 40x40@1
+
+AddTest "Test AddTitleStylePixmaps" AddTitleStylePixmaps-Func
+AddToFunc AddTitleStylePixmaps-Func
+ + I AddTitleStyle Pixmap test1.xpm
+ + I AddTitleStyle Pixmap test2.xpm
+ + I AddTitleStyle TiledPixmap test2.xpm
+ + I AddTitleStyle TiledPixmap test2.xpm
+ + I AddTitleStyle TiledPixmap test1.xpm
+ + I AddTitleStyle ActiveUp (Pixmap test3.xpm) ActiveDown (Pixmap test2.xpm)
+ + I AddTitleStyle Inactive Pixmap nonexistent.xpm
+ + I AddTitleStyle Inactive Pixmap test3.xpm
+ + I AddTitleStyle Inactive Pixmap test3.xpm
+ + I AddTitleStyle Inactive Pixmap
+ + I AddTitleStyle MiniIcons
+ + I AddTitleStyle miniicons
+
+AddTest "Test AddToDecor" AddToDecor-Func
+AddToFunc AddToDecor-Func
+ + I AddToDecor
+# This test needs to apply the Decor to some windows using "UseDecor".
+ + I DestroyDecor bar
+ + I AddToDecor bar
+ + I AddToDecor bar AddButtonStyle All ActiveUp (-- flat) Inactive (-- flat)
+ + I AddToDecor bar ButtonStyle All ActiveUp (-- flat) Inactive (-- flat)
+ + I AddToDecor bar AddTitleStyle -- flat
+ + I AddToDecor bar TitleStyle -- flat
+ + I AddToDecor bar BorderStyle -- HiddenHandles NoInset
+ + I DestroyDecor foo
+ + I AddToDecor foo
+ + I AddToDecor foo AddButtonStyle All ActiveUp (-- flat) Inactive (-- flat)
+ + I AddToDecor foo ButtonStyle All ActiveUp (-- flat) Inactive (-- flat)
+ + I AddToDecor foo AddTitleStyle -- flat
+ + I AddToDecor foo TitleStyle -- flat
+ + I AddToDecor foo BorderStyle -- HiddenHandles NoInset
+ + I Echo "Testing a removed command, will generate a message"
+ + I AddToDecor foo HilightColor white navy
+ + I AddToDecor foo
+ + I AddToDecor foo AddButtonStyle All ActiveUp (-- flat) Inactive (-- flat)
+ + I AddToDecor foo ButtonStyle All ActiveUp (-- flat) Inactive (-- flat)
+ + I AddToDecor foo AddTitleStyle -- flat
+ + I AddToDecor foo TitleStyle -- flat
+ + I AddToDecor foo BorderStyle -- HiddenHandles NoInset
+
+AddTest "Test BorderStyle" BorderStyle-Func
+AddToFunc BorderStyle-Func
+# Need a test with args in parens
+# Need a ! (negated) test
+# Need a raised/sunk/flat test
+ + I BorderStyle
+ + I BorderStyle -- HiddenHandles
+ + I BorderStyle Active -- !HiddenHandles
+ + I BorderStyle Active -- !HiddenHandles
+# Clear all states
+ + I BorderStyle Simple
+# Clear Active state
+ + I BorderStyle Active Simple
+ + I BorderStyle Inactive -- HiddenHandles NoInset
+# Clear NoInset flag
+ + I BorderStyle Inactive -- !NoInset
+ + I BorderStyle Active TiledPixmap test1.xpm
+ + I BorderStyle Inactive TiledPixmap test2.xpm
+ + I BorderStyle Active -- HiddenHandles NoInset
+
+AddTest "Test ButtonState" ButtonState-Func
+AddToFunc ButtonState-Func
++ I ButtonState ActiveDown true Inactive f
++ I ButtonState
++ I Echo "Intentional error, ButtonState with a long arg:"
++ I ButtonState "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+
+# Note to self, resume here, check these to the man page. dje
+AddTest "Test ButtonStyle" ButtonStyle-Func
+AddToFunc ButtonStyle-Func
+ + I ButtonStyle
+ + I ButtonStyle All -- UseBorderStyle
+ + I ButtonStyle All -- UseTitleStyle
+ + I ButtonStyle Reset
+ + I ButtonStyle All -- raisED
+ + I ButtonStyle All -- SUNk
+ + I ButtonStyle Left -- flat
+ + I ButtonStyle Left -- flat
+ + I ButtonStyle Right -- !flat
+ + I ButtonStyle Left Activeup -- raised
+ + I ButtonStyle Left Activeup -- raised
+ + I ButtonStyle Left activeDOWN -- sunk
+ + I ButtonStyle Left inactive -- flat
+ + I ButtonStyle Left inactive -- flat
+ + I ButtonStyle Left Activeup -- sunk
+ + I ButtonStyle 1 simple
+ + I ButtonStyle 1 simple
+ + I ButtonStyle 1 default 3
+ + I ButtonStyle 1 default 3
+ + I ButtonStyle 1 solid blaCK
+ + I ButtonStyle 1 solid blaCK
+ + I ButtonStyle 1 simple
+ + I Refresh
+
+AddTest "Test ButtonStyleGradients" ButtonStyleGradients-Func
+AddToFunc ButtonStyleGradients-Func
+ + I ButtonStyle 2 hgradient 16 green red
+ + I ButtonStyle 2 hgradient 16 green red
+ + I ButtonStyle 2 hgradient 16 red blue
+ + I ButtonStyle 2 hgradient 32 red blue
+ + I ButtonStyle 2 hgradient 128 red blue
+ + I ButtonStyle 2 hgradient 2 red blue
+ + I ButtonStyle 2 vgradient 16 green red
+ + I ButtonStyle 2 vgradient 16 green red
+ + I ButtonStyle 2 vgradient 16 red blue
+ + I ButtonStyle 2 vgradient 32 red blue
+ + I ButtonStyle 2 vgradient 128 red blue
+ + I ButtonStyle 2 vgradient 2 red blue
+ + I ButtonStyle 3 VGradient 16 3 Red 20 Blue 30 Black 50 Grey
+ + I ButtonStyle 3 VGradient 16 3 Red 20 Blue 30 Black 50 Grey
+ + I ButtonStyle 3 VGradient 16 4 Red 20 Blue 30 Black 20 Grey 30 yellow
+ + I ButtonStyle 3 VGradient 16 2 Red 20 Blue 80
+ + I ButtonStyle 3 VGradient 128 2 Red 20 Blue 80
+ + I ButtonStyle 3 VGradient 2 2 Red 20 Blue 80
+ + I ButtonStyle 3 hGradient 16 3 Red 20 Blue 30 Black 50 Grey
+ + I ButtonStyle 3 hGradient 16 3 Red 20 Blue 30 Black 50 Grey
+ + I ButtonStyle 3 hGradient 16 4 Red 20 Blue 30 Black 20 Grey 30 yellow
+ + I ButtonStyle 3 hGradient 16 2 Red 20 Blue 80
+ + I ButtonStyle 3 hGradient 128 2 Red 20 Blue 80
+ + I ButtonStyle 3 hGradient 2 2 Red 20 Blue 80
+
+AddTest "Test ButtonStyleVectors" ButtonStyleVectors-Func
+AddToFunc ButtonStyleVectors-Func
+ + I ButtonStyle Reset
+ + I ButtonStyle 1 Vector 5 45x60@0 80x60@0 80x80@1 45x80@1 45x60@0
+ + I ButtonStyle 1 Vector 5 45x60@0 80x60@0 80x80@1 45x80@1 45x60@0
+ + I ButtonStyle 1 4 50x35@1 65x65@0 35x65@0 50x35@1
+ + I ButtonStyle 1 4 50x65@1 35x35@1 65x35@1 50x65@0
+ + I ButtonStyle 1 5 40x40@1 60x40@1 60x60@0 40x60@0 40x40@1
+ + I ButtonStyle 1 5
+ + I ButtonStyle 1 5 40x40@1 60x40@1 60x60@0 40x60@0 40x40@1
+ + I ButtonStyle Reset
+
+AddTest "Test ButtonStylePixmaps" ButtonStylePixmaps-Func
+AddToFunc ButtonStylePixmaps-Func
+ + I ButtonStyle 1 Pixmap test1.xpm
+ + I ButtonStyle 1 Pixmap test2.xpm
+ + I ButtonStyle 1 TiledPixmap test2.xpm
+ + I ButtonStyle 1 TiledPixmap test2.xpm
+ + I ButtonStyle 1 TiledPixmap test1.xpm
+ + I ButtonStyle 1 ActiveUp (Pixmap test3.xpm) ActiveDown (Pixmap test2.xpm)
+ + I ButtonStyle 1 Inactive Pixmap nonexistent.xpm
+ + I ButtonStyle 1 Inactive Pixmap test3.xpm
+ + I ButtonStyle 1 Inactive Pixmap test3.xpm
+ + I ButtonStyle 1 Inactive Pixmap
+ + I ButtonStyle 1 MiniIcons
+ + I ButtonStyle 1 miniicons
+
+AddTest "Test ButtonStyleDash" ButtonStyleDash-Func
+AddToFunc ButtonStyleDash-Func
+ + I ButtonStyle 1 - MWMDecorMenu MWMDecorMin MWMDecorMax MWMDecorMenu
+ + I ButtonStyle 1 - MWMDecorMenu MWMDecorMin MWMDecorMax MWMDecorMenu
+ + I ButtonStyle 1 - MWMDecorMax
+ + I ButtonStyle 1 - MWMDecorMin
+ + I ButtonStyle 1 -
+
 # Ending ManPage Order
 
 
@@ -1397,19 +1697,6 @@ AddToFunc DefaultLayers-Func
  + I DefaultLayers 2 4 6
  + I Refresh
 
-AddTest "Test BorderStyle" BorderStyle-Func
-AddToFunc BorderStyle-Func
- + I BorderStyle
- + I BorderStyle -- HiddenHandles
- + I BorderStyle Active -- !HiddenHandles
- + I BorderStyle Active -- !HiddenHandles
- + I BorderStyle Simple
- + I BorderStyle Simple
- + I BorderStyle Inactive -- HiddenHandles NoInset
- + I BorderStyle Active TiledPixmap test1.xpm
- + I BorderStyle Inactive TiledPixmap test2.xpm
- + I BorderStyle Active -- HiddenHandles NoInset
- + I Refresh
 
 AddTest "Test TitleStyle_justify" TitleStyle_justify-Func
 AddToFunc TitleStyle_justify-Func
@@ -1500,255 +1787,7 @@ AddToFunc pixmaps-Func
  + I TitleStyle miniicons
  + I Refresh
 
-AddTest "Test AddTitleStyle" AddTitleStyle-Func
-AddToFunc AddTitleStyle-Func
- + I AddTitleStyle
- + I AddTitleStyle -- raisED
- + I AddTitleStyle -- SUNk
- + I AddTitleStyle -- flat
- + I AddTitleStyle -- flat
- + I AddTitleStyle -- !flat
- + I AddTitleStyle Activeup -- raised
- + I AddTitleStyle Activeup -- raised
- + I AddTitleStyle activeDOWN -- sunk
- + I AddTitleStyle inactive -- flat
- + I AddTitleStyle inactive -- flat
- + I AddTitleStyle Activeup -- sunk
- + I AddTitleStyle simple
- + I AddTitleStyle simple
- + I AddTitleStyle default 3
- + I AddTitleStyle default 3
- + I AddTitleStyle solid blaCK
- + I AddTitleStyle solid blaCK
- + I AddTitleStyle simple
- + I Refresh
 
-AddTest "Test AddTitleStyleGradients" AddTitleStyleGradients-Func
-AddToFunc AddTitleStyleGradients-Func
- + I AddTitleStyle hgradient 16 green red
- + I AddTitleStyle hgradient 16 green red
- + I AddTitleStyle hgradient 16 red blue
- + I AddTitleStyle hgradient 32 red blue
- + I AddTitleStyle hgradient 128 red blue
- + I AddTitleStyle hgradient 2 red blue
- + I AddTitleStyle vgradient 16 green red
- + I AddTitleStyle vgradient 16 green red
- + I AddTitleStyle vgradient 16 red blue
- + I AddTitleStyle vgradient 32 red blue
- + I AddTitleStyle vgradient 128 red blue
- + I AddTitleStyle vgradient 2 red blue
- + I AddTitleStyle VGradient 16 3 Red 20 Blue 30 Black 50 Grey
- + I AddTitleStyle VGradient 16 3 Red 20 Blue 30 Black 50 Grey
- + I AddTitleStyle VGradient 16 4 Red 20 Blue 30 Black 20 Grey 30 yellow
- + I AddTitleStyle VGradient 16 2 Red 20 Blue 80
- + I AddTitleStyle VGradient 128 2 Red 20 Blue 80
- + I AddTitleStyle VGradient 2 2 Red 20 Blue 80
- + I AddTitleStyle hGradient 16 3 Red 20 Blue 30 Black 50 Grey
- + I AddTitleStyle hGradient 16 3 Red 20 Blue 30 Black 50 Grey
- + I AddTitleStyle hGradient 16 4 Red 20 Blue 30 Black 20 Grey 30 yellow
- + I AddTitleStyle hGradient 16 2 Red 20 Blue 80
- + I AddTitleStyle hGradient 128 2 Red 20 Blue 80
- + I AddTitleStyle hGradient 2 2 Red 20 Blue 80
- + I Refresh
-
-AddTest "Test AddTitleStyleVectorButtons" AddTitleStyleVectorButtons-Func
-AddToFunc AddTitleStyleVectorButtons-Func
- + I AddTitleStyle Vector 5 45x60@0 80x60@0 80x80@1 45x80@1 45x60@0
- + I AddTitleStyle Vector 5 45x60@0 80x60@0 80x80@1 45x80@1 45x60@0
- + I AddTitleStyle 4 50x35@1 65x65@0 35x65@0 50x35@1
- + I AddTitleStyle 4 50x65@1 35x35@1 65x35@1 50x65@0
- + I AddTitleStyle 5 40x40@1 60x40@1 60x60@0 40x60@0 40x40@1
- + I AddTitleStyle 5 40x40@1 60x40@1 60x60@0 40x60@0 40x40@1
- + I Refresh
-
-AddTest "Test AddTitleStylePixmaps" AddTitleStylePixmaps-Func
-AddToFunc AddTitleStylePixmaps-Func
- + I AddTitleStyle Pixmap test1.xpm
- + I AddTitleStyle Pixmap test2.xpm
- + I AddTitleStyle TiledPixmap test2.xpm
- + I AddTitleStyle TiledPixmap test2.xpm
- + I AddTitleStyle TiledPixmap test1.xpm
- + I AddTitleStyle ActiveUp (Pixmap test3.xpm) ActiveDown (Pixmap test2.xpm)
- + I AddTitleStyle Inactive Pixmap nonexistent.xpm
- + I AddTitleStyle Inactive Pixmap test3.xpm
- + I AddTitleStyle Inactive Pixmap test3.xpm
- + I AddTitleStyle Inactive Pixmap
- + I AddTitleStyle MiniIcons
- + I AddTitleStyle miniicons
- + I Refresh
-
-AddTest "Test ButtonStyle" ButtonStyle-Func
-AddToFunc ButtonStyle-Func
- + I ButtonStyle
- + I ButtonStyle All -- UseBorderStyle
- + I ButtonStyle All -- UseTitleStyle
- + I ButtonStyle Reset
- + I ButtonStyle All -- raisED
- + I ButtonStyle All -- SUNk
- + I ButtonStyle Left -- flat
- + I ButtonStyle Left -- flat
- + I ButtonStyle Right -- !flat
- + I ButtonStyle Left Activeup -- raised
- + I ButtonStyle Left Activeup -- raised
- + I ButtonStyle Left activeDOWN -- sunk
- + I ButtonStyle Left inactive -- flat
- + I ButtonStyle Left inactive -- flat
- + I ButtonStyle Left Activeup -- sunk
- + I ButtonStyle 1 simple
- + I ButtonStyle 1 simple
- + I ButtonStyle 1 default 3
- + I ButtonStyle 1 default 3
- + I ButtonStyle 1 solid blaCK
- + I ButtonStyle 1 solid blaCK
- + I ButtonStyle 1 simple
- + I Refresh
-
-AddTest "Test ButtonStyleGradients" ButtonStyleGradients-Func
-AddToFunc ButtonStyleGradients-Func
- + I ButtonStyle 2 hgradient 16 green red
- + I ButtonStyle 2 hgradient 16 green red
- + I ButtonStyle 2 hgradient 16 red blue
- + I ButtonStyle 2 hgradient 32 red blue
- + I ButtonStyle 2 hgradient 128 red blue
- + I ButtonStyle 2 hgradient 2 red blue
- + I ButtonStyle 2 vgradient 16 green red
- + I ButtonStyle 2 vgradient 16 green red
- + I ButtonStyle 2 vgradient 16 red blue
- + I ButtonStyle 2 vgradient 32 red blue
- + I ButtonStyle 2 vgradient 128 red blue
- + I ButtonStyle 2 vgradient 2 red blue
- + I ButtonStyle 3 VGradient 16 3 Red 20 Blue 30 Black 50 Grey
- + I ButtonStyle 3 VGradient 16 3 Red 20 Blue 30 Black 50 Grey
- + I ButtonStyle 3 VGradient 16 4 Red 20 Blue 30 Black 20 Grey 30 yellow
- + I ButtonStyle 3 VGradient 16 2 Red 20 Blue 80
- + I ButtonStyle 3 VGradient 128 2 Red 20 Blue 80
- + I ButtonStyle 3 VGradient 2 2 Red 20 Blue 80
- + I ButtonStyle 3 hGradient 16 3 Red 20 Blue 30 Black 50 Grey
- + I ButtonStyle 3 hGradient 16 3 Red 20 Blue 30 Black 50 Grey
- + I ButtonStyle 3 hGradient 16 4 Red 20 Blue 30 Black 20 Grey 30 yellow
- + I ButtonStyle 3 hGradient 16 2 Red 20 Blue 80
- + I ButtonStyle 3 hGradient 128 2 Red 20 Blue 80
- + I ButtonStyle 3 hGradient 2 2 Red 20 Blue 80
- + I Refresh
-
-AddTest "Test ButtonStyleVectors" ButtonStyleVectors-Func
-AddToFunc ButtonStyleVectors-Func
- + I ButtonStyle Reset
- + I ButtonStyle 1 Vector 5 45x60@0 80x60@0 80x80@1 45x80@1 45x60@0
- + I ButtonStyle 1 Vector 5 45x60@0 80x60@0 80x80@1 45x80@1 45x60@0
- + I ButtonStyle 1 4 50x35@1 65x65@0 35x65@0 50x35@1
- + I ButtonStyle 1 4 50x65@1 35x35@1 65x35@1 50x65@0
- + I ButtonStyle 1 5 40x40@1 60x40@1 60x60@0 40x60@0 40x40@1
- + I ButtonStyle 1 5
- + I ButtonStyle 1 5 40x40@1 60x40@1 60x60@0 40x60@0 40x40@1
- + I ButtonStyle Reset
- + I Refresh
-
-AddTest "Test ButtonStylePixmaps" ButtonStylePixmaps-Func
-AddToFunc ButtonStylePixmaps-Func
- + I ButtonStyle 1 Pixmap test1.xpm
- + I ButtonStyle 1 Pixmap test2.xpm
- + I ButtonStyle 1 TiledPixmap test2.xpm
- + I ButtonStyle 1 TiledPixmap test2.xpm
- + I ButtonStyle 1 TiledPixmap test1.xpm
- + I ButtonStyle 1 ActiveUp (Pixmap test3.xpm) ActiveDown (Pixmap test2.xpm)
- + I ButtonStyle 1 Inactive Pixmap nonexistent.xpm
- + I ButtonStyle 1 Inactive Pixmap test3.xpm
- + I ButtonStyle 1 Inactive Pixmap test3.xpm
- + I ButtonStyle 1 Inactive Pixmap
- + I ButtonStyle 1 MiniIcons
- + I ButtonStyle 1 miniicons
- + I Refresh
-
-AddTest "Test ButtonStyleDash" ButtonStyleDash-Func
-AddToFunc ButtonStyleDash-Func
- + I ButtonStyle 1 - MWMDecorMenu MWMDecorMin MWMDecorMax MWMDecorMenu
- + I ButtonStyle 1 - MWMDecorMenu MWMDecorMin MWMDecorMax MWMDecorMenu
- + I ButtonStyle 1 - MWMDecorMax
- + I ButtonStyle 1 - MWMDecorMin
- + I ButtonStyle 1 -
- + I Refresh
-
-AddTest "Test AddButtonStyleMisc" AddButtonStyleMisc-Func
-AddToFunc AddButtonStyleMisc-Func
- + I AddButtonStyle
- + I AddButtonStyle Reset
- + I AddButtonStyle All -- raisED
- + I AddButtonStyle All -- SUNk
- + I AddButtonStyle Left -- flat
- + I AddButtonStyle Left -- flat
- + I AddButtonStyle Right -- !flat
- + I AddButtonStyle Left Activeup -- raised
- + I AddButtonStyle Left Activeup -- raised
- + I AddButtonStyle Left activeDOWN -- sunk
- + I AddButtonStyle Left inactive -- flat
- + I AddButtonStyle Left inactive -- flat
- + I AddButtonStyle Left Activeup -- sunk
- + I AddButtonStyle 1 simple
- + I AddButtonStyle 1 simple
- + I AddButtonStyle 1 default 3
- + I AddButtonStyle 1 default 3
- + I AddButtonStyle 1 solid blaCK
- + I AddButtonStyle 1 solid blaCK
- + I AddButtonStyle 1 simple
- + I Refresh
-
-AddTest "Test AddButtonStyleGradients" AddButtonStyleGradients-Func
-AddToFunc AddButtonStyleGradients-Func
- + I AddButtonStyle 2 hgradient 16 green red
- + I AddButtonStyle 2 hgradient 16 green red
- + I AddButtonStyle 2 hgradient 16 red blue
- + I AddButtonStyle 2 hgradient 32 red blue
- + I AddButtonStyle 2 hgradient 128 red blue
- + I AddButtonStyle 2 hgradient 2 red blue
- + I AddButtonStyle 2 vgradient 16 green red
- + I AddButtonStyle 2 vgradient 16 green red
- + I AddButtonStyle 2 vgradient 16 red blue
- + I AddButtonStyle 2 vgradient 32 red blue
- + I AddButtonStyle 2 vgradient 128 red blue
- + I AddButtonStyle 2 vgradient 2 red blue
- + I AddButtonStyle 3 VGradient 16 3 Red 20 Blue 30 Black 50 Grey
- + I AddButtonStyle 3 VGradient 16 3 Red 20 Blue 30 Black 50 Grey
- + I AddButtonStyle 3 VGradient 16 4 Red 20 Blue 30 Black 20 Grey 30 yellow
- + I AddButtonStyle 3 VGradient 16 2 Red 20 Blue 80
- + I AddButtonStyle 3 VGradient 128 2 Red 20 Blue 80
- + I AddButtonStyle 3 VGradient 2 2 Red 20 Blue 80
- + I AddButtonStyle 3 hGradient 16 3 Red 20 Blue 30 Black 50 Grey
- + I AddButtonStyle 3 hGradient 16 3 Red 20 Blue 30 Black 50 Grey
- + I AddButtonStyle 3 hGradient 16 4 Red 20 Blue 30 Black 20 Grey 30 yellow
- + I AddButtonStyle 3 hGradient 16 2 Red 20 Blue 80
- + I AddButtonStyle 3 hGradient 128 2 Red 20 Blue 80
- + I AddButtonStyle 3 hGradient 2 2 Red 20 Blue 80
- + I Refresh
-
-AddTest "Test AddButtonStyleVectors" AddButtonStyleVectors-Func
-AddToFunc AddButtonStyleVectors-Func
- + I AddButtonStyle Reset
- + I AddButtonStyle 1 Vector 5 45x60@0 80x60@0 80x80@1 45x80@1 45x60@0
- + I AddButtonStyle 1 Vector 5 45x60@0 80x60@0 80x80@1 45x80@1 45x60@0
- + I AddButtonStyle 1 4 50x35@1 65x65@0 35x65@0 50x35@1
- + I AddButtonStyle 1 4 50x65@1 35x35@1 65x35@1 50x65@0
- + I AddButtonStyle 1 5 40x40@1 60x40@1 60x60@0 40x60@0 40x40@1
- + I AddButtonStyle 1 5
- + I AddButtonStyle 1 5 40x40@1 60x40@1 60x60@0 40x60@0 40x40@1
- + I AddButtonStyle Reset
- + I Refresh
-
-AddTest "Test AddButtonStylePixmaps" AddButtonStylePixmaps-Func
-AddToFunc AddButtonStylePixmaps-Func
- + I AddButtonStyle 1 Pixmap test1.xpm
- + I AddButtonStyle 1 Pixmap test2.xpm
- + I AddButtonStyle 1 TiledPixmap test2.xpm
- + I AddButtonStyle 1 TiledPixmap test2.xpm
- + I AddButtonStyle 1 TiledPixmap test1.xpm
- + I AddButtonStyle 1 ActiveUp (Pixmap test3.xpm) ActiveDown (Pixmap test2.xpm)
- + I AddButtonStyle 1 Inactive Pixmap nonexistent.xpm
- + I AddButtonStyle 1 Inactive Pixmap test3.xpm
- + I AddButtonStyle 1 Inactive Pixmap test3.xpm
- + I AddButtonStyle 1 Inactive Pixmap
- + I AddButtonStyle 1 MiniIcons
- + I AddButtonStyle 1 miniicons
- + I Refresh
 
 AddTest "Test Read_PipeRead" Read_PipeRead-Func
 AddToFunc Read_PipeRead-Func
@@ -1765,31 +1804,6 @@ AddToFunc Read_PipeRead-Func
  + I piperead " 	cat	  /tmp/purify.read"
  + I Refresh
 
-AddTest "Test AddToDecor" AddToDecor-Func
-AddToFunc AddToDecor-Func
- + I AddToDecor
- + I AddToDecor bar
- + I AddToDecor bar AddButtonStyle All ActiveUp (-- flat) Inactive (-- flat)
- + I AddToDecor bar ButtonStyle All ActiveUp (-- flat) Inactive (-- flat)
- + I AddToDecor bar AddTitleStyle -- flat
- + I AddToDecor bar TitleStyle -- flat
- + I AddToDecor bar BorderStyle -- HiddenHandles NoInset
- + I AddToDecor bar HilightColor white navy
- + I AddToDecor foo
- + I AddToDecor foo AddButtonStyle All ActiveUp (-- flat) Inactive (-- flat)
- + I AddToDecor foo ButtonStyle All ActiveUp (-- flat) Inactive (-- flat)
- + I AddToDecor foo AddTitleStyle -- flat
- + I AddToDecor foo TitleStyle -- flat
- + I AddToDecor foo BorderStyle -- HiddenHandles NoInset
- + I AddToDecor foo HilightColor white navy
- + I AddToDecor foo
- + I AddToDecor foo AddButtonStyle All ActiveUp (-- flat) Inactive (-- flat)
- + I AddToDecor foo ButtonStyle All ActiveUp (-- flat) Inactive (-- flat)
- + I AddToDecor foo AddTitleStyle -- flat
- + I AddToDecor foo TitleStyle -- flat
- + I AddToDecor foo BorderStyle -- HiddenHandles NoInset
- + I AddToDecor foo HilightColor white navy
- + I Refresh
 
 AddTest "Test SendToModule_KillModule" SendToModule_KillModule-Func
 AddToFunc SendToModule_KillModule-Func
