@@ -719,7 +719,8 @@ static FvwmFunction *find_complex_function(const char *function_name)
  * clicking, but is moving the cursor
  */
 static cfunc_action_t CheckActionType(
-	int x, int y, XEvent *d, Bool may_time_out, Bool is_button_pressed)
+	int x, int y, XEvent *d, Bool may_time_out, Bool is_button_pressed,
+	int *ret_button)
 {
 	int xcurrent,ycurrent,total = 0;
 	Time t0;
@@ -758,6 +759,7 @@ static cfunc_action_t CheckActionType(
 			switch (d->xany.type)
 			{
 			case ButtonRelease:
+				*ret_button = d->xbutton.button;
 				return CF_CLICK;
 			case MotionNotify:
 				if (d->xmotion.same_screen == False)
@@ -874,6 +876,7 @@ static void execute_complex_function(
 	exec_context_changes_t ecc;
 	exec_context_change_mask_t mask;
 	int trigger_evtype;
+	int button;
 	XEvent *te;
 
 	if (cond_rc == NULL)
@@ -1051,6 +1054,7 @@ static void execute_complex_function(
 	case ButtonRelease:
 		x = te->xbutton.x_root;
 		y = te->xbutton.y_root;
+		button = eventp->xbutton.button;
 		/* Take the click which started this fuction off the
 		 * Event queue.  -DDN- Dan D Niles dniles@iname.com */
 		FCheckMaskEvent(dpy, ButtonPressMask, &d);
@@ -1064,24 +1068,37 @@ static void execute_complex_function(
 			x = 0;
 			y = 0;
 		}
+		button = 0;
 		break;
 	}
 
 	/* Wait and see if we have a click, or a move */
 	/* wait forever, see if the user releases the button */
-	type = CheckActionType(x, y, &d, HaveHold, True);
+	type = CheckActionType(x, y, &d, HaveHold, True, &button);
 	if (type == CF_CLICK)
 	{
+		int button2;
+
 		/* If it was a click, wait to see if its a double click */
 		if (HaveDoubleClick)
 		{
-			type = CheckActionType(x, y, &d, True, False);
+			type = CheckActionType(
+				x, y, &d, True, False, &button2);
 			switch (type)
 			{
-			case CF_CLICK:
 			case CF_HOLD:
 			case CF_MOTION:
 				type = CF_DOUBLE_CLICK;
+				break;
+			case CF_CLICK:
+				if (button == button2)
+				{
+					type = CF_DOUBLE_CLICK;
+				}
+				else
+				{
+					type = CF_CLICK;
+				}
 				break;
 			case CF_TIMEOUT:
 				type = CF_CLICK;
