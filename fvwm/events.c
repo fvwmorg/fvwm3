@@ -1289,16 +1289,16 @@ void HandleConfigureRequest()
       (CWX | CWY | CWWidth | CWHeight | CWBorderWidth);
     xwc.x = cre->x;
     xwc.y = cre->y;
+    if((Tmp_win)&&((Tmp_win->icon_pixmap_w == cre->window)))
+    {
+      Tmp_win->icon_p_height = cre->height+ cre->border_width +
+	cre->border_width;
+    }
     if((Tmp_win)&&((Tmp_win->icon_w == cre->window)))
     {
       Tmp_win->icon_xl_loc = cre->x;
       Tmp_win->icon_x_loc = cre->x +
         (Tmp_win->icon_w_width - Tmp_win->icon_p_width)/2;
-      if((Tmp_win)&&((Tmp_win->icon_pixmap_w == cre->window)))
-      {
-	Tmp_win->icon_p_height = cre->height+ cre->border_width +
-	  cre->border_width;
-      }
       Tmp_win->icon_y_loc = cre->y - Tmp_win->icon_p_height;
       if(!(Tmp_win->flags & ICON_UNMAPPED))
         BroadcastPacket(M_ICON_LOCATION, 7,
