@@ -1,3 +1,8 @@
+1999-04-22  Bob Woodside  <proteus@pcnet.com>
+
+	* modules/FvwmPager/x_pager.c: Changed "Desk" command (which we've
+	documented as obsolete) to "GoToDesk".
+
 1999-04-22  Dominik Vogt  <dominik_vogt@gmx.de>
 
 	* FvwmCommand/FvwmCommandS.c: fixed bug that caused FvwmCommandS to

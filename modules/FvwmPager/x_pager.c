@@ -960,7 +960,7 @@ void MovePage(void)
 	sptr = Desks[Scr.CurrentDesk -desk1].label;
       else
 	{
-	  sprintf(str,"Desk %d",Scr.CurrentDesk);
+	  sprintf(str,"GoToDesk %d",Scr.CurrentDesk);
 	  sptr = &str[0];
 	}
       if (XStringListToTextProperty(&sptr,1,&name) == 0)
@@ -1177,7 +1177,7 @@ void SwitchToDesk(int Desk)
 {
   char command[256];
 
-  sprintf(command,"Desk 0 %d\n",Desk+desk1);
+  sprintf(command,"GoToDesk 0 %d\n",Desk+desk1);
 
   SendInfo(fd,command,0);
 }
@@ -1190,7 +1190,7 @@ void SwitchToDeskAndPage(int Desk, XEvent *Event)
   if (Scr.CurrentDesk != (Desk+desk1))
     {
       int vx, vy;
-      SendInfo(fd,"Desk 0 10000\n",0);
+      SendInfo(fd,"GoToDesk 0 10000\n",0);
       /* patch to let mouse button 3 change desks and do not cling to a page */
       vx = Event->xbutton.x*(Scr.VxMax+Scr.MyDisplayWidth)/
 	(desk_w*Scr.MyDisplayWidth);
@@ -1200,7 +1200,7 @@ void SwitchToDeskAndPage(int Desk, XEvent *Event)
       Scr.Vy = vy * Scr.MyDisplayHeight;
       sprintf(command,"GotoPage %d %d\n", vx, vy);
       SendInfo(fd,command,0);
-      sprintf(command,"Desk 0 %d\n",Desk+desk1);
+      sprintf(command,"GoToDesk 0 %d\n",Desk+desk1);
       SendInfo(fd,command,0);
 
     }
