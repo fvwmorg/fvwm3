@@ -292,6 +292,7 @@ static char *csetopts[] =
   /* switch off shape */
   "NoShape",
 
+  /* Make the background transparent, it copies the root window background */
   "Transparent",
 
   NULL
@@ -579,6 +580,15 @@ static void parse_colorset(char *line)
       }
       break;
     case 20: /* Transparent */
+      /* this is only allowable when the root depth == fvwm visual depth
+       * otherwise bad match errors happen, it may be even more restrictive
+       * but my tests (on exceed 6.2) show that only == depth is necessary */
+      if (Pdepth != DefaultDepth(dpy, (DefaultScreen(dpy))))
+      {
+	fprintf(stderr, "%s: can't do Transparent when root_depth != fvwm_depth\n",
+		name);
+	break;
+      }
       has_pixmap_changed = True;
       free_colorset_background(cs);
       cs->pixmap = ParentRelative;
@@ -648,7 +658,7 @@ static void parse_colorset(char *line)
       if (cs->mask != None)
 	mask_image = XGetImage(dpy, cs->mask, 0, 0, cs->width, cs->height,
 			       AllPlanes, ZPixmap);
-      /* only fetch the pixels that are not transparent */
+      /* only fetch the pixels that are not masked out */
       for (i = 0; i < cs->width; i++)
 	for (j = 0; j < cs->height; j++)
 	  if ((cs->mask == None) || (XGetPixel(mask_image, i, j) == 0))
@@ -881,13 +891,12 @@ static void parse_colorset(char *line)
   } /* has_sh_changed */
 
   /*
-   * ---------- change the transparent parts of the background pixmap ----------
+   * ---------- change the masked out parts of the background pixmap ----------
    */
   if ((cs->mask != None) && (has_pixmap_changed || has_bg_changed))
   {
     /* Now that we know the background colour we can update the pixmap
      * background. */
-    /* default to background colour where pixmap is transparent */
     XSetForeground(dpy, gc, cs->bg);
     XSetClipMask(dpy, gc, cs->mask);
     XFillRectangle(dpy, cs->pixmap, gc, 0, 0, cs->width, cs->height);
