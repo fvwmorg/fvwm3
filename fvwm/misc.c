@@ -471,6 +471,9 @@ int GetPositionArguments(char *action, int x, int y, int w, int h, int *pFinalX,
   int scrWidth = Scr.MyDisplayWidth;
   int scrHeight = Scr.MyDisplayHeight;
 
+  if( strlen(action) <= 0 )
+    return 0;
+
   s1 = strtok(action," \t\n");
   s2 = strtok(NULL," \t\n");
   /* DEBUG_FPRINTF((stderr,"GPA: 1=\"%s\", 2=\"%s\"\n",s1,s2)); */

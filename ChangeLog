@@ -1,5 +1,11 @@
 1998-11-03  /users/domivogt  <dominik_vogt@hp.com>
 
+	* fvwm/misc.c (GetPositionArguments): Added MkLinux fix
+	* from Mike Tilstra
+
+	* fvwm/events.c (HandlePropertyNotify): Added bugfix for
+	* TransientFor problem by Duane Guingrich.
+
 	* TO-DO (Cleanups): Updated the TO-DO list
 
 Tue Nov  2 00:35:30 1998  Dominik Vogt  <dominik_vogt@hp.com>
