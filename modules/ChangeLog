@@ -1,3 +1,12 @@
+Mon Mar 15 22:43:35 1999  Steve Robbins  <steve@nyongwa.montreal.qc.ca>
+
+	* Makefile.am: always recurse into all subdirectories.
+
+	* FvwmBanner/Makefile.am:
+	* FvwmGtk/Makefile.am:
+	* FvwmScript/Makefile.am: change _PROGRAMS to configure variable,
+	put real program name into EXTRA_PROGRAMS.
+
 1999-03-13  Matthias Clasen  <clasen@mathematik.uni-freiburg.de>
 
 	* FvwmGtk: New module. It implements menus, dialogs and 

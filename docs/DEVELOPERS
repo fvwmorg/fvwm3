@@ -146,18 +146,7 @@ If this is to be an "official" release, then do also the following:
        8. notify fvwm-owner@fvwm.org of the upload
 
 
-One thing I've learned the hard way:
-
-        You have to configure with ALL THE OPTIONAL SUBDIRECTORIES
-        in order to build a distribution!
-
-In short, this means you need Xpm, as a couple of subdirectories are
-only built when using Xpm (xpmroot, for example).  It is fine for end
-users to not build these.  However, the distribution-maker has to have
-all the directories enabled, else the files don't make it into the
-distribution tar file.
-
-Similarly, you need to have actually built everything before packing
+Note that you need to have actually built everything before packing
 the distribution, hence step 2.  Among other things, this generates
 the proper dependency information for insertion into Makefile.in's
 generated in step 3.

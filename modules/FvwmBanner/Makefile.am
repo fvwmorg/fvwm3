@@ -1,7 +1,10 @@
 ## Process this file with automake to create Makefile.in
 
 moduledir = @FVWM_MODULEDIR@
-module_PROGRAMS = FvwmBanner
+
+module_PROGRAMS = @FVWMBANNER@
+EXTRA_PROGRAMS = FvwmBanner
+
 man_MANS = FvwmBanner.1
 EXTRA_DIST = $(man_MANS)
 

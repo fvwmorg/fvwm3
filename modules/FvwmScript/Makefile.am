@@ -4,7 +4,9 @@
 SUBDIRS = Scripts Widgets
 
 moduledir = @FVWM_MODULEDIR@
-module_PROGRAMS = FvwmScript
+
+module_PROGRAMS = @FVWMSCRIPT@
+EXTRA_PROGRAMS = FvwmScript
 
 FvwmScript_SOURCES = FvwmScript.c Instructions.c libyywrap.c \
 	script.y scanner.l types.h
