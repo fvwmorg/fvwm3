@@ -297,19 +297,20 @@ char *PeekToken(char *indata, char **outdata)
 /* Tries to seek up to n tokens in indata. Returns the number of tokens
  * actually found (up to a maximum of n). */
 
-/* int CheckNTokens(char *indata, unsigned int n) */
-/* { */
-/*   unsigned int i; */
-/*   char *token; */
+#if 0
+int CheckNTokens(char *indata, unsigned int n)
+{
+  unsigned int i;
+  char *token;
 
-/*   for (i = 0; i < n; i++) */
-/*     { */
-/*       token = PeekToken(indata, NULL); */
-/*       if (token == NULL) */
-/* 	break; */
-/*     } */
-/*   return i; */
-/* } */
+  for (i = 0, token = (char *)1; i < n && token != NULL; i++)
+  {
+    token = PeekToken(indata, NULL);
+  }
+
+  return i;
+}
+#endif
 
 /*
 ** MatchToken: does case-insensitive compare on next token in string, leaving

@@ -241,59 +241,118 @@ static void send_desktop_names(int modnum)
   }
 }
 
-void CMD_Send_ConfigInfo(F_CMD_ARGS)
+static void send_desktop_geometry(int modnum)
 {
-  struct moduleInfoList *t;
-  char *message, msg2[32];
-  char *match;                          /* matching criteria for module cmds */
-  int match_len = 0;                    /* get length once for efficiency */
-  int n;
+  char msg[32];
+
+  sprintf(msg, "DesktopSize %d %d\n", Scr.VxMax / Scr.MyDisplayWidth + 1,
+	  Scr.VyMax / Scr.MyDisplayHeight + 1);
+  SendName(modnum, M_CONFIG_INFO, 0, 0, 0, msg);
+
+  return;
+}
+
+static void send_image_path(int modnum)
+{
+  char *msg;
   char *ImagePath = GetImagePath();
 
-  GetNextToken(action, &match);
-  if (match) {
-    match_len = strlen(match);
-  }
-
-  /* send desktop geometry */
-  sprintf(msg2,"DesktopSize %d %d\n", Scr.VxMax / Scr.MyDisplayWidth + 1,
-	  Scr.VyMax / Scr.MyDisplayHeight + 1);
-  SendName(*Module,M_CONFIG_INFO,0,0,0,msg2);
-
-  /* send ImagePath and ColorLimit first */
-  if (ImagePath && strlen(ImagePath))
+  if (ImagePath && *ImagePath != 0)
   {
-    message=safemalloc(strlen(ImagePath)+12);
-    sprintf(message,"ImagePath %s\n",ImagePath);
-    SendName(*Module,M_CONFIG_INFO,0,0,0,message);
-    free(message);
+    msg = safemalloc(strlen(ImagePath) + 12);
+    sprintf(msg, "ImagePath %s\n", ImagePath);
+    SendName(modnum, M_CONFIG_INFO, 0, 0, 0, msg);
+    free(msg);
   }
+
+  return;
+}
+
+static void send_color_limit(int modnum)
+{
+  char msg[32];
+
 #ifdef XPM
-  {
-    sprintf(msg2,"ColorLimit %d\n",Scr.ColorLimit);
-    SendName(*Module,M_CONFIG_INFO,0,0,0,msg2);
-  }
+  sprintf(msg, "ColorLimit %d\n", Scr.ColorLimit);
+  SendName(modnum, M_CONFIG_INFO, 0, 0, 0, msg);
 #endif
-  send_xinerama_state(*Module);
-  /* now dump the colorsets (0 first as others copy it) */
+
+  return;
+}
+
+static void send_colorsets(int modnum)
+{
+  int n;
+
+  /* dump the colorsets (0 first as others copy it) */
   for (n = 0; n < nColorsets; n++)
-    SendName(*Module, M_CONFIG_INFO, 0, 0, 0, DumpColorset(n, &Colorset[n]));
+    SendName(modnum, M_CONFIG_INFO, 0, 0, 0, DumpColorset(n, &Colorset[n]));
+
+  return;
+}
+
+static void send_click_time(int modnum)
+{
+  char msg[32];
 
   /* Dominik Vogt (8-Nov-1998): Scr.ClickTime patch to set ClickTime to
    * 'not at all' during InitFunction and RestartFunction. */
-  sprintf(msg2,"ClickTime %d\n", (Scr.ClickTime < 0) ?
+  sprintf(msg,"ClickTime %d\n", (Scr.ClickTime < 0) ?
 	  -Scr.ClickTime : Scr.ClickTime);
-  SendName(*Module,M_CONFIG_INFO,0,0,0,msg2);
-  sprintf(msg2,"MoveThreshold %d\n", Scr.MoveThreshold);
-  SendName(*Module,M_CONFIG_INFO,0,0,0,msg2);
+  SendName(modnum, M_CONFIG_INFO, 0, 0, 0, msg);
 
+  return;
+}
+
+static void send_move_threshold(int modnum)
+{
+  char msg[32];
+
+  sprintf(msg, "MoveThreshold %d\n", Scr.MoveThreshold);
+  SendName(modnum, M_CONFIG_INFO, 0, 0, 0, msg);
+
+  return;
+}
+
+void send_ignore_modifiers(int modnum)
+{
+  char msg[32];
+
+  sprintf(msg, "IgnoreModifiers %d", GetUnusedModifiers());
+  SendName(modnum, M_CONFIG_INFO, 0, 0, 0, msg);
+
+  return;
+}
+
+
+void CMD_Send_ConfigInfo(F_CMD_ARGS)
+{
+  struct moduleInfoList *t;
+  char *match;                          /* matching criteria for module cmds */
+  int match_len = 0;                    /* get length once for efficiency */
+
+  send_desktop_geometry(*Module);
+  /* send ImagePath and ColorLimit first */
+  send_image_path(*Module);
+  send_color_limit(*Module);
+  send_xinerama_state(*Module);
+  send_colorsets(*Module);
+  send_click_time(*Module);
+  send_move_threshold(*Module);
+  match = PeekToken(action, &action);
+  if (match)
+  {
+    match_len = strlen(match);
+  }
   for (t = modlistroot; t != NULL; t = t->next)
   {
     SendConfigToModule(*Module, t, match, match_len);
   }
   send_desktop_names(*Module);
-  SendPacket(*Module,M_END_CONFIG_INFO,0,0,0,0,0,0,0,0);
-  free(match);
+  send_ignore_modifiers(*Module);
+  SendPacket(*Module, M_END_CONFIG_INFO, 0, 0, 0, 0, 0, 0, 0, 0);
+
+  return;
 }
 
 static void SendConfigToModule(
@@ -310,4 +369,6 @@ static void SendConfigToModule(
       return;
   }
   SendName(module, M_CONFIG_INFO, 0, 0, 0, entry->data);
+
+  return;
 }

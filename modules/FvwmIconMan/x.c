@@ -119,7 +119,7 @@ static void handle_buttonevent (XEvent *theEvent, WinManager *man)
 	if(((MouseEntry->Button_Key == theEvent->xbutton.button)||
 	    (MouseEntry->Button_Key == 0))&&
 	   ((MouseEntry->Modifier == AnyModifier)||
-	    (MouseEntry->Modifier == (modifier& (~LockMask)))))
+	    (MouseEntry->Modifier == (modifier& (~mods_unused)))))
 	{
 	  Function *ftype = (Function *)(MouseEntry->Action2);
 	  ConsoleDebug (X11, "\tgot a mouse binding\n");
@@ -232,7 +232,7 @@ void xevent_loop (void)
       for (key = man->bindings[KEYPRESS]; key != NULL; key = key->NextBinding)
       {
 	if ((key->Button_Key == theEvent.xkey.keycode) &&
-	    ((key->Modifier == (modifier&(~LockMask)))||
+	    ((key->Modifier == (modifier&(~mods_unused)))||
 	     (key->Modifier == AnyModifier)))
 	{
 	  Function *ftype = (Function *)(key->Action2);

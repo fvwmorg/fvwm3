@@ -62,15 +62,15 @@
 int npipes;
 int *readPipes;
 int *writePipes;
-int *pipeOn;
+static int *pipeOn;
 char **pipeName;
 #ifndef WITHOUT_KILLMODULE_ALIAS_SUPPORT
 char **pipeAlias;  /* as given in: Module FvwmPager MyAlias */
 #endif
 
 unsigned long *PipeMask;
-unsigned long *SyncMask;
-unsigned long *NoGrabMask;
+static unsigned long *SyncMask;
+static unsigned long *NoGrabMask;
 struct queue_buff_struct **pipeQueue;
 
 extern fd_set init_fdset;
@@ -98,20 +98,20 @@ void initModules(void)
   pipeQueue=(struct queue_buff_struct **)
     safemalloc(sizeof(struct queue_buff_struct *)*npipes);
 
-  for(i=0;i<npipes;i++)
-    {
-      writePipes[i]= -1;
-      readPipes[i]= -1;
-      pipeOn[i] = -1;
-      PipeMask[i] = MAX_MASK;
-      SyncMask[i] = 0;
-      NoGrabMask[i] = 0;
-      pipeQueue[i] = (struct queue_buff_struct *)NULL;
-      pipeName[i] = NULL;
+  for (i=0; i < npipes; i++)
+  {
+    writePipes[i]= -1;
+    readPipes[i]= -1;
+    pipeOn[i] = -1;
+    PipeMask[i] = MAX_MASK;
+    SyncMask[i] = 0;
+    NoGrabMask[i] = 0;
+    pipeQueue[i] = (struct queue_buff_struct *)NULL;
+    pipeName[i] = NULL;
 #ifndef WITHOUT_KILLMODULE_ALIAS_SUPPORT
-      pipeAlias[i] = NULL;
+    pipeAlias[i] = NULL;
 #endif
-    }
+  }
   DBUG("initModules", "Zeroing init module array\n");
   FD_ZERO(&init_fdset);
 }
@@ -1268,6 +1268,20 @@ void BroadcastConfigInfoString(char *string)
 void broadcast_xinerama_state(void)
 {
   BroadcastConfigInfoString((char *)FScreenGetConfiguration());
+  return;
+}
+
+
+/**********************************************************************
+ * Broadcasts the ignored modifiers to all modules as M_CONFIG_INFO.
+ **********************************************************************/
+void broadcast_ignore_modifiers(void)
+{
+  char msg[32];
+
+  sprintf(msg, "IgnoreModifiers %d", GetUnusedModifiers());
+  BroadcastConfigInfoString(msg);
+
   return;
 }
 

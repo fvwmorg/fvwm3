@@ -239,6 +239,10 @@ static void handle_config_info (unsigned long *body)
   {
     FScreenConfigureModule(tline);
   }
+  else if (StrEquals(token, "IgnoreModifiers"))
+  {
+    sscanf(tline, "%d", &mods_unused);
+  }
 }
 
 static void configure_window (FvwmPacketBody *body)

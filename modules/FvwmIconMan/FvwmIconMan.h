@@ -375,6 +375,7 @@ extern Display *theDisplay;
 extern char *Module;
 extern int ModuleLen;
 extern ContextDefaults contextDefaults[];
+extern int mods_unused;
 
 extern void ReadFvwmPipe(void);
 extern void *Malloc (size_t size);

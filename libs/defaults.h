@@ -50,6 +50,7 @@
  (Button3MotionMask * (NUMBER_OF_MOUSE_BUTTONS >= 3)) | \
  (Button4MotionMask * (NUMBER_OF_MOUSE_BUTTONS >= 4)) | \
  (Button5MotionMask * (NUMBER_OF_MOUSE_BUTTONS >= 5)))
+#define DEFAULT_MODS_UNUSED                LockMask
 
 
 /***************************************************************

@@ -24,6 +24,7 @@
 #include "functions.h"
 #include "bindings.h"
 #include "defaults.h"
+#include "module_interface.h"
 #include "misc.h"
 #include "screen.h"
 #include "focus.h"
@@ -34,8 +35,7 @@
 static void activate_binding(
   Binding *binding, BindingType type, Bool do_grab, Bool do_grab_root);
 
-#define MODS_UNUSED_DEFAULT LockMask
-static int mods_unused = MODS_UNUSED_DEFAULT;
+static int mods_unused = DEFAULT_MODS_UNUSED;
 
 
 static void update_nr_buttons(
@@ -465,22 +465,26 @@ unsigned int GetUnusedModifiers(void)
 void CMD_IgnoreModifiers(F_CMD_ARGS)
 {
   char *token;
+  int mods_unused_old = mods_unused;
 
-  mods_unused = 0;
-  GetNextToken(action, &token);
+  token = PeekToken(action, &action);
   if (!token)
-    return;
-
-  if (StrEquals(token, "default"))
   {
-    free(token);
-    mods_unused = MODS_UNUSED_DEFAULT;
-    return;
+    mods_unused = 0;
+  }
+  else if (StrEquals(token, "default"))
+  {
+    mods_unused = DEFAULT_MODS_UNUSED;
+  }
+  else if (ParseModifiers(token, &mods_unused))
+  {
+    fvwm_msg(ERR, "ignore_modifiers", "illegal modifier in line %s\n", action);
+  }
+  if (mods_unused != mods_unused_old)
+  {
+    /* broadcast config to modules */
+    broadcast_ignore_modifiers();
   }
 
-  if (ParseModifiers(token, &mods_unused))
-    fvwm_msg(ERR, "ignore_modifiers", "illegal modifier in line %s\n", action);
-
-  free(token);
   return;
 }

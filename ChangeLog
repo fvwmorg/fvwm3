@@ -1,3 +1,28 @@
+2002-01-07  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* fvwm/modconf.c (send_ignore_modifiers):
+	(send_move_threshold):
+	(send_click_time):
+	(send_colorsets):
+	(send_color_limit):
+	(send_image_path):
+	(send_desktop_geometry):
+	(CMD_Send_ConfigInfo):
+	moved code into new functions
+
+	* libs/defaults.h (DEFAULT_MODS_UNUSED):
+	moved to defaults.h
+
+	* fvwm/bindings.c (CMD_IgnoreModifiers):
+	* fvwm/module_interface.c (broadcast_xinerama_state):
+	* fvwm/modconf.c (send_ignore_modifiers):
+	broadcast IgnoreModifiers to modules
+
+	* fvwm/bindings.c (CMD_IgnoreModifiers):
+	fixed IgnoreModifiers command without arguments
+	* fvwm/fvwm2.1:
+	corrected documentation of IgnoreModifiers command
+
 2002-01-06  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* fvwm/add_window.c:

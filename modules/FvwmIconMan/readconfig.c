@@ -726,7 +726,8 @@ Binding *ParseMouseEntry (char *tline)
 
   find_context(modifiers,&mods,key_modifiers,tline);
   if((mods & AnyModifier)&&(mods&(~AnyModifier))) {
-    ConsoleMessage ("Binding specified AnyModifier and other modifers too. Excess modifiers will be ignored.");
+    ConsoleMessage ("Binding specified AnyModifier and other modifers too. "
+                    "Excess modifiers will be ignored.");
   }
 
   new = (Binding *)safemalloc(sizeof(Binding));
@@ -897,14 +898,19 @@ static int GetConfigLineWrapper (int *fd, char **tline)
 
   GetConfigLine (fd, tline);
   if (*tline) {
-    if (strncasecmp(*tline, "Colorset", 8) == 0) {
-         LoadColorset(&(*tline)[8]);
+    if (strncasecmp(*tline, "Colorset", 8) == 0)
+    {
+      LoadColorset(&(*tline)[8]);
     }
     else if (strncasecmp(*tline, XINERAMA_CONFIG_STRING,
 			 sizeof(XINERAMA_CONFIG_STRING) - 1) == 0)
     {
       FScreenConfigureModule(
 	(*tline) + sizeof(XINERAMA_CONFIG_STRING) - 1);
+    }
+    else if (strncasecmp(*tline, "IgnoreModifiers", 15) == 0)
+    {
+      sscanf((*tline) + 16, "%d", &mods_unused);
     }
     temp = strchr (*tline, '\n');
     if (temp) {

@@ -28,6 +28,7 @@
 
 
 const char *MyName;
+int mods_unused = DEFAULT_MODS_UNUSED;
 
 static RETSIGTYPE TerminateHandler(int);
 

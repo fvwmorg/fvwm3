@@ -85,6 +85,8 @@ void BroadcastMiniIcon(unsigned long event_type,
 void BroadcastColorset(int n);
 void BroadcastConfigInfoString(char *string);
 void broadcast_xinerama_state(void);
+void broadcast_ignore_modifiers(void);
+
 void SendPacket(int channel, unsigned long event_type,
                 unsigned long num_datum, ...);
 void SendConfig(int Module, unsigned long event_type, const FvwmWindow *t);
