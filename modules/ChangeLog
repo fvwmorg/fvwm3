@@ -1,3 +1,10 @@
+2002-05-29  olicha  <olivier.chapuis@free.fr>
+
+	* FvwmForm/FvwmForm.1:
+	* FvwmForm/ReadXServer.c (ReadXServer): 
+	Fixed Input cursor position for mouse click. Removed fixed font
+	requirement for InputFont
+
 2002-05-29  Mikhael Goikhman  <migo@homemail.com>
 
 	* FvwmButtons/parse.c (ParseContainer):

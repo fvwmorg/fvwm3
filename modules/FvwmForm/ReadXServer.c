@@ -402,10 +402,33 @@ void ReadXServer ()
 	    old_item->input.o_cursor = CF.rel_cursor;
 	    CF.cur_input = item;
 	    RedrawItem(old_item, 1);
+#ifdef ONLY_FIXED_FONT_FOR_INPUT
 	    CF.abs_cursor = (event.xbutton.x - BOX_SPC -
                              TEXT_SPC +
                              item->header.dt_ptr->dt_Ffont->max_char_width / 2)
 	      / item->header.dt_ptr->dt_Ffont->max_char_width;
+#else
+	    {
+	      Bool done = False;
+
+	      CF.abs_cursor = 0;
+	      while(CF.abs_cursor <= item->input.size && !done)
+	      {
+		if (FlocaleTextWidth(item->header.dt_ptr->dt_Ffont,
+				     item->input.value,
+				     CF.abs_cursor) >=
+		    event.xbutton.x - BOX_SPC - TEXT_SPC)
+		{
+		  done = True;
+		  CF.abs_cursor--;
+		}
+		else
+		{
+		  CF.abs_cursor++;
+		}
+	      }
+	    }
+#endif
 	    if (CF.abs_cursor < 0)
 	      CF.abs_cursor = 0;
 	    if (CF.abs_cursor > item->input.size)
