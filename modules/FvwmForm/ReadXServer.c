@@ -59,7 +59,6 @@
 static void process_regular_char_input(unsigned char *buf);
 static int process_tabtypes(unsigned char * buf);
 static void process_history(int direction);
-static void process_button_release(XEvent *event, Item *item);
 static void process_paste_request (XEvent *event, Item *item);
 static void ToggleChoice (Item *item);
 static void ResizeFrame (void);
@@ -372,14 +371,17 @@ void ReadXServer ()
 	  if (item->type == I_CHOICE)
 	    ToggleChoice(item);
 	  if (item->type == I_BUTTON) {
-	    RedrawItem(item, 1);
-	    XGrabPointer(dpy, item->header.win, False, ButtonReleaseMask,
-			 GrabModeAsync, GrabModeAsync,
-			 None, None, CurrentTime);
+	    RedrawItem(item, 1);        /* push button in */
+            usleep(MICRO_S_FOR_10MS);   /* make sure its visible */
+            RedrawItem(item, 0);        /* pop button out */
+            DoCommand(item);            /* execute the button command */
 	  }
 	  break;
 	case ButtonRelease:
-          process_button_release(&event, item);
+          /* There used to be logic in here to execute the button action
+             only on release.  It missed some release events, and I didn't
+             see the value to the feature.  So now buttons are handled with
+             only the press event.  dje 11/26/99. */
 	  break;
 	}
       }
@@ -497,22 +499,6 @@ static void process_regular_char_input(unsigned char *buf) {
     else
       CF.abs_cursor = CF.cur_input->input.size;
     CF.cur_input->input.left = CF.rel_cursor - CF.abs_cursor;
-  }
-}
-static void process_button_release(XEvent *event, Item *item) {
-  RedrawItem(item, 0);
-  if (CF.grab_server && CF.server_grabbed) {
-    XGrabPointer(dpy, CF.frame, True, 0, GrabModeAsync, GrabModeAsync,
-                 None, None, CurrentTime);
-  } else {
-    XUngrabPointer(dpy, CurrentTime);
-  }
-  XFlush(dpy);
-  if (event->xbutton.x >= 0 &&
-      event->xbutton.x < item->header.size_x &&
-      event->xbutton.y >= 0 &&
-      event->xbutton.y < item->header.size_y) {
-    DoCommand(item);
   }
 }
 /* Process a paste.  This can be any size.
