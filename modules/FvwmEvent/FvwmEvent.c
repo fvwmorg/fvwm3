@@ -454,7 +454,7 @@ void config(void)
 	  {
 	    fprintf(stderr,
 		    "%s: PlayCmd supported only when invoked as FvwmAudio\n",
-		    MyName+1,MyName+1);
+		    MyName+1);
 	    break;
 	  }
 	  if (cmd_line)
@@ -483,7 +483,7 @@ void config(void)
 	  if (! audio_compat)		       /* Dir */
 	    fprintf(stderr,
 		    "%s: Dir supported only when invoked as FvwmAudio\n",
-		    MyName+1,MyName+1);
+		    MyName+1);
 	  else
 	    if (token)
 	    {

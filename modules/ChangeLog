@@ -1,3 +1,8 @@
+1999-05-07  Steven Michael ROBBINS  <stever@jeff.cs.mcgill.ca>
+
+	* FvwmEvent/FvwmEvent.c (config): fix two printfs that had too
+	many arguments.
+
 Fri May  7 15:43:36 1999  DanEspen  <dje@blue>
 
 	* FvwmWinList/FvwmWinList.1: .TH line fixup.

@@ -72,7 +72,7 @@ void do_windowList(XEvent *eventp,Window w,FvwmWindow *tmp_win,
 		unsigned long context, char *action,int *Module)
 {
   MenuRoot *mr;
-  MenuItem *ret_action = NULL;
+  char* ret_action = NULL;
   FvwmWindow *t;
   FvwmWindow **windowList;
   int numWindows;
