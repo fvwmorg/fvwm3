@@ -100,7 +100,7 @@ char *FBidiConvert(const char *logical_str, const char *charset, Bool *is_rtl);
 
 #define FBidiIsApplicable(c) False
 
-#define FBidiConvert(y,s,c,d) NULL
+#define FBidiConvert(s,c,r) NULL
 
 #endif /* HAVE_BIDI */
 
