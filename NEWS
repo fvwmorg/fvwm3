@@ -388,7 +388,7 @@ _+_/A_-_
 
 -------------------------------------------------------------------
 
-Changes in stable release 2.4.10 (11-Aug-2002)
+Changes in stable release 2.4.9 (11-Aug-2002)
 
 * Fixed interaction bug between CascadePlacement and StartsOnPage -
   if the target page was at a negative x or y page displacement
