@@ -1,5 +1,11 @@
+1999-01-19  Paul D. Smith  <psmith@gnu.org>
+
+	* README: Update new URLs; a few spelling corrections; specify
+	that the fvwm-workers maintain FVWM now.
+
 1999-01-19  Steven Michael ROBBINS  <stever@jeff.cs.mcgill.ca>
 
+	* configure.in:
 	* README: Changed "care and feeding" info from Brady Montz to the
 	Fvwm Workers.
 
@@ -7,7 +13,7 @@
 	optional libraries (xpm, rplay, and readline).  Other small
 	wording changes.
 
-	* configure.in: 
+	* configure.in:
 	* */Makefile.am: Make sure xpm_CFLAGS preceeds X_CFLAGS, so that
 	the include directory for xpm-includes is searched ahead of the
 	system's X11 include directory.

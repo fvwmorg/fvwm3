@@ -16,8 +16,12 @@ make install'.  (You must do a build from the top-level directory
 first, so that `libs' is built.)
 
 If you prefer to treat the extras as first-class modules, give
---enable-extras option to configure.  Then `make' and `make install'
+`--enable-extras' option to configure.  Then `make' and `make install'
 will recurse into the `extras' directory.
+
+If you prefer to treat the extras as first-class modules, give the
+`--enable-extras' option to configure.  Then `make' and `make install'
+will recurse into the `extras' directory automatically.
 
 
 What gets installed, and Where
@@ -28,7 +32,7 @@ What gets installed, and Where
 * all the modules (and extra modules) are installed
   into ${libexecdir}/fvwm2/${VERSION}
 
-Where VERSION is the version string of fvwm2, typically something like
+Where VERSION is the version string of FVWM, typically something like
 "2.2.0".  No other files are installed.  There are sample
 system.fvwm2rc files which you may copy manually to ${sysconfdir} ---
 see below.
@@ -40,7 +44,7 @@ Unless you used configure options,
 * ${libexecdir} is ${prefix}/libexec
 
 Thus the default locations are: /usr/local/bin,
-/usr/local/libexec/fvwm2/VERSION, and /usr/local/etc for the fvwm2
+/usr/local/libexec/fvwm2/VERSION, and /usr/local/etc for the FVWM
 binary, modules, and system.fvwm2rc, respectively.
 
 
@@ -74,11 +78,11 @@ doesn't do the right thing, specify one or the other of these flags:
 CPP
 ===
 
-One of FVWM's modules, FvwmCpp, requires a C preprocessor program.
-The configuration will look in various common places for cpp.  If one
-is not found, FvwmCpp will still compile but you'll need to invoke it
-with the -cpppath option to tell it where to find cpp.  FvwmCpp will
-exit with an error message if no path to cpp is known.
+One of FVWM's modules, FvwmCpp, requires a C preprocessor program.  The
+configuration will look in various common places for cpp.  If one is not
+found, FvwmCpp will still compile but you'll need to invoke it with the
+-cpppath option to tell it where to find cpp.  FvwmCpp will exit with an
+error message if no path to cpp is known.
 
 You can tell configure what cpp to use by setting the FVWM_CPP
 environment variable before invoking configure:
@@ -123,7 +127,7 @@ Only one version of the --with-foo-library flag may be specified.
 Shared Libraries in Non-standard Places
 ---------------------------------------
 
-Note that at this time, autoconf and fvwm don't handle systems which
+Note that at this time, autoconf and FVWM don't handle systems which
 require a runtime library path separate from the link path very
 gracefully.  If you have such a system (e.g., Solaris) and you have
 installed the optional libraries in places not normally searched (e.g.,
@@ -136,15 +140,15 @@ runs to contain the -R option.  For example:
   $ LDFLAGS=-R/opt/xpm ./configure --with-xpm-library=/opt/xpm \
                                    --with-xpm-includes=/opt/xpm
 
-In the future, hopefully, fvwm's configuration will perform this step
+In the future, hopefully, FVWM's configuration will perform this step
 automatically.
 
 
 Compile-time Options
 ====================
 
-Fvwm2 has a multitude of options selectable only at compile time.
-These are intended to keep fvwm2's memory footprint small, by compiling
+FVWM has a multitude of options selectable only at compile time.
+These are intended to keep FVWM's memory footprint small, by compiling
 in the code only if requested.
 
 Each such option, say "foo", is selectable by an "--enable-foo" or a
@@ -270,7 +274,7 @@ up so only the title-bar remains.  See the man page entry for
 
   --enable-debug-msgs		enable debugging messages
 
-If you would like to see lots of debug messages from fvwm2, for
+If you would like to see lots of debug messages from FVWM, for
 debugging purposes, enable this option.
 
 

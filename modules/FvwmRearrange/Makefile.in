@@ -84,7 +84,7 @@ xpm_CFLAGS = @xpm_CFLAGS@
 xpm_LIBS = @xpm_LIBS@
 
 moduledir = @FVWM_MODULEDIR@
-module_PROGRAMS = FvwmRearrange 
+module_PROGRAMS = FvwmRearrange
 
 module_SCRIPTS = FvwmCascade FvwmTile
 

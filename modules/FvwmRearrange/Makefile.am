@@ -2,7 +2,7 @@
 ## Process this file with automake to create Makefile.in
 
 moduledir = @FVWM_MODULEDIR@
-module_PROGRAMS = FvwmRearrange 
+module_PROGRAMS = FvwmRearrange
 
 ## These modules were made obsolete in November, 1998.
 ## Remove from fvwm distribution no later than October, 1999.

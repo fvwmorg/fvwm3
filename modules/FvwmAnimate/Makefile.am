@@ -14,5 +14,4 @@ FvwmAnimate_DEPENDENCIES = $(top_builddir)/libs/libfvwm.a
 LDADD = -L$(top_builddir)/libs -lfvwm $(xpm_LIBS) $(rplay_LIBS) \
     $(X_LIBS) $(X_PRE_LIBS) -lXext -lX11 $(X_EXTRA_LIBS) -lm
 
-INCLUDES = -I$(top_srcdir)/libs $(xpm_CFLAGS) $(X_CFLAGS) $(rplay_CFLAGS)
-
+INCLUDES = -I$(top_srcdir)/libs $(xpm_CFLAGS) $(rplay_CFLAGS) $(X_CFLAGS)

@@ -149,17 +149,17 @@ A: New main distribution site (official + beta code):
                 ftp://ftp.loria.fr/pub/unix/fvwm/
 
    BTW, 1.24r was the last released version of the 1.xx series and the
-   first official release of 2.xx will be 2.2. After that an odd second
-   digit denote development releases and even numbers denote officially
-   stable releases.
+   first official release of 2.xx will be 2.2.  As of 2.2, an odd second
+   digit denotes development releases and even numbers denote stable
+   releases.
 
 ----------------------------------------------------------------------
 
 3) Any WWW Sites about FVWM?
 
-A: Yup.  The official site is currently:
+A: Yup.  The official site is:
 
-        http://fvwm.math.uh.edu/fvwm/
+        http://www.fvwm.org/
 
    There are links on the official site to other related fvwm sites.
 
@@ -644,7 +644,7 @@ A: Creating a patch -
            cursor into the function you changed and hit <ctrl>-x 4 a.
            This will generate an empty ChangeLog entry in the right
            file (there are several ChangeLogs). Add a description of
-           what you did. Do this each time you change a function or 
+           what you did. Do this each time you change a function or
            file (for changes outside of funtions). You should update
            the AUTHORS and NEWS files too if appropriate.
            Please take the time to add the ChangeLog entries, it makes
@@ -818,7 +818,7 @@ A: The error message usually looks something like this:
 32) I want to use FVWM, but I don't have root access on my machine.
     Can I still install and run it?
 
-A: Very easily, using the '--prefix' flag at configure time.  
+A: Very easily, using the '--prefix' flag at configure time.
 
    Suppose your home directory is /home/sam.  After unpacking the
    fvwm2 sources, do "./configure --prefix=/home/sam [other options as
@@ -1046,9 +1046,9 @@ A: The built in command WindowList provides a very close approximation
    to the Alt-Tab feature found in another GUI.  It doesn't look the
    same but the following .fvwm2rc sample will provide a similar
    interface:
-   
+
       Key Tab A M WindowList Root c c NoDeskSort
-   
+
    Hitting Alt-Tab will pop up the WindowList menu. Unlike another GUI
    you should not keep the Alt key held down, the menu will stay up
    until you hit Return/Enter or Escape.  You can change focus to a
@@ -1057,19 +1057,19 @@ A: The built in command WindowList provides a very close approximation
    close the menu without doing anything. The WindowList menu has hot
    keys assigned for the first 26 windows and you can use the hot key to
    go directly to the window.
-   
+
    The menu invoked with the above line will show all windows in
    most recently focused order unless you have used the Focus
    command (see the next question). It shows each windows name and
    geometry with some extra flags to indicate Sticky, OnTop and
    iconified windows.
-   
+
    A simpler style can be used with the following:
-   
+
       Key Tab A M WindowList Root c c CurrentDesk NoGeometry
 
    This will just list the windows on the current desk (titles only).
-   
+
    The other GUI has the feature of selecting the previous window if
    Alt-TAB is hit and released quickly. This behaviour cannot be exactly
    duplicated but similar functionality can be assigned to hitting
@@ -1080,7 +1080,7 @@ A: The built in command WindowList provides a very close approximation
       DestroyFunc my_dbltab
       AddToFunc my_dbltab "I" Prev (CurrentDesk) my_dbltab2
       Key Tab A M WindowList Root c c CurrentDesk NoGeometry my_dbltab
-   
+
    There are a lot of options to the WindowList command to control which
    windows are listed in which order and it may not be possible to set
    conditions for the Prev command to reliably select the second item
@@ -1105,12 +1105,12 @@ A: Both of these commands change the keyboard focus to the target
    the beginning. The behaviour of FlipFocus is also used when changing
    focus with the mouse and the automatic focus changing when using
    ClickToFocus style.
-   
+
    If you never use the Focus command the list will remain in most
    recently focused order. If you do use the Focus command the list will
    gradually get back to most recently focused order as you use
    FlipFocus.
-   
+
    The Focus command is very useful in conjunction with the Next and
    Prev commands. e.g.
 
@@ -1120,7 +1120,7 @@ A: Both of these commands change the keyboard focus to the target
    These bindings allow you to circulate the focus around the windows on
    the current desk in both directions. If Prev FlipFocus were used the
    focus would toggle between the top two windows on the window list.
-   
+
    If you have several windows on a desk and you want to set the
    circulation order for the Next and Prev commands you should focus on
    the windows using the mouse or FlipFocus in the order you want. Fvwm2
@@ -1139,5 +1139,5 @@ A: The application won't allow it. This has only been observed with
    window, according to the ICCCM rules. (Netscape can be persuaded to
    start iconic, however, by invoking it with the -iconic command line
    flag.)
-   
+
 ----------------------------------------------------------------------
