@@ -1,3 +1,9 @@
+2003-03-29  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* fvwm/virtual (CMD_GotoDeskAndPage):
+	different "GotoDeskAndPage prev" fix that works with any viewports, not
+	just multiples of the screen size
+
 2003-03-29  Mikhael Goikhman  <migo@homemail.com>
 
 	* fvwm/virtual (CMD_GotoDeskAndPage):
