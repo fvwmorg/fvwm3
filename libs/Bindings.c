@@ -152,6 +152,19 @@ void FreeBindingStruct(Binding *b)
   free(b);
 }
 
+void FreeBindingList(Binding *b)
+{
+  Binding *t;
+
+  for (; b != NULL; b = t)
+  {
+    t = b->NextBinding;
+    FreeBindingStruct(b);
+  }
+
+  return;
+}
+
 /* Unlink a binding b from a binding list pblist.  The previous binding in the
  * list (prev) must be given also.  Pass NULL at the beginning of the list.
  * The *pblist pointer may be modified by this function. */
@@ -195,6 +208,10 @@ void RemoveBinding(Binding **pblist, Binding *b, Binding *prev)
   FreeBindingStruct(b);
 }
 
+#if 0
+/***
+ *** This code is outdated, do not use it!
+ ***/
 /* To remove a binding from the global list (probably needs more processing
  * for mouse binding lines though, like when context is a title bar button).
  * Specify either button or keysym, depending on type. */
@@ -213,7 +230,7 @@ Bool RemoveMatchingBinding(
 
   for (t = *pblist, prev = NULL; t; prev = t, t = t->NextBinding)
   {
-    if (MatchBindingExactly(dpy, t, STROKE_ARG(stroke)
+    if (MatchBindingExactly(t, STROKE_ARG(stroke)
                             button, keycode, modifiers, contexts, type))
     {
       /* found a matching binding - remove it */
@@ -227,161 +244,11 @@ Bool RemoveMatchingBinding(
 
   return False;
 }
-
-
-/****************************************************************************
- *
- *  Actually adds a new binding to a list (pblist) of existing bindings.
- *  Specify either button or keysym/key_name, depending on type.
- *  The parameters action and action2 are assumed to reside in malloced memory
- *  that will be freed in RemoveBinding. The key_name is copied into private
- *  memory and has to be freed by the caller.
- *
- ****************************************************************************/
-int AddBinding(Display *dpy, Binding **pblist, BindingType type,
-	       STROKE_ARG(void *stroke)
-	       int button, KeySym keysym, char *key_name,
-	       int modifiers, int contexts, void *action, void *action2)
-{
-  int i;
-  int min;
-  int max;
-  int maxmods;
-  int m;
-  int count = 0;
-  KeySym tkeysym;
-  Binding *temp;
-
-  /*
-  ** Unfortunately a keycode can be bound to multiple keysyms and a keysym can
-  ** be bound to multiple keycodes. Thus we have to check every keycode with
-  ** any single modifier.
-  */
-  if (type == KEY_BINDING)
-  {
-    if (key_max == 0) {
-      XDisplayKeycodes(dpy, &key_min, &key_max);
-    }
-    min=key_min;
-    max=key_max;
-    maxmods = 8;
-  }
-  else
-  {
-    min = button;
-    max = button;
-    maxmods = 0;
-  }
-  for (i = min; i <= max; i++)
-  {
-    /* If this is a mouse binding we'll fall through the for loop (maxmods is
-     * zero) and the if condition is always true (type is zero). Since min ==
-     * max == button there is no loop at all is case of a mouse binding. */
-    for (m = 0, tkeysym = XK_Left; m <= maxmods && tkeysym != NoSymbol; m++)
-    {
-
-      if (type == MOUSE_BINDING ||
-	  STROKE_CODE(type == STROKE_BINDING ||)
-	  (tkeysym = XKeycodeToKeysym(dpy, i, m)) == keysym)
-      {
-	unsigned int add_modifiers = 0;
-
-	switch (m)
-	{
-	case 0:
-	  /* key generates the key sym with no modifiers depressed - bind it */
-	  break;
-	case 1:
-	  /* key generates the key sym with shift depressed */
-	  if (modifiers != AnyModifier)
-	  {
-	    add_modifiers = ShiftMask;
-	  }
-	  break;
-	case 2:
-	  /* key generates the key sym with caps-lock depressed */
-	  if (modifiers != AnyModifier)
-	  {
-	    add_modifiers = LockMask;
-	  }
-	  break;
-	default:
-	  /* key generates the key sym with unknown modifiers depressed -
-	  * can't map that to specific modifiers - trat as no modifiers */
-	  break;
-	}
-	if (i == 1)
-	{
-	}
-	temp = *pblist;
-	(*pblist) = (Binding *)safemalloc(sizeof(Binding));
-	(*pblist)->type = type;
-	(*pblist)->Button_Key = i;
-	STROKE_CODE((*pblist)->Stroke_Seq =
-		    (stroke) ? (void *)stripcpy((char *)stroke) : NULL);
-	if (type == KEY_BINDING && key_name != NULL)
-	  (*pblist)->key_name = stripcpy(key_name);
-	else
-	  (*pblist)->key_name = NULL;
-	(*pblist)->Context = contexts;
-	(*pblist)->Modifier = modifiers | add_modifiers;
-	(*pblist)->Action = (action) ? stripcpy(action) : NULL;
-	(*pblist)->Action2 = (action2) ? stripcpy(action2) : NULL;
-	(*pblist)->NextBinding = temp;
-#if 0
-        fprintf(stderr,
-   "Bindings: added binding type %c, key %X, key name %s, ctx %X mod %X act1 %s, act2 %s\n",
-                (*pblist)->type,
-                (*pblist)->Button_Key,
-                (*pblist)->key_name ? (*pblist)->key_name : "",
-                (*pblist)->Context,
-                (*pblist)->Modifier,
-                (*pblist)->Action ? (*pblist)->Action : "",
-                (*pblist)->Action2 ? (*pblist)->Action2 : "");
 #endif
-	count++;
-	/* Add the binding only once for each KeySym value. */
-	break;
-      }
-    }
-  }
-  return count;
-}
-
-
-/* Check if something is bound to a key or button press and return the action
- * to be executed or NULL if not. */
-void *CheckBinding(Binding *blist,
-		   STROKE_ARG(char *stroke)
-		   int button_keycode,
-		   unsigned int modifier,unsigned int dead_modifiers,
-		   int Context, BindingType type)
-{
-  Binding *b;
-  unsigned int used_modifiers = ~dead_modifiers;
-
-  modifier &= used_modifiers;
-
-  for (b = blist; b != NULL; b = b->NextBinding)
-  {
-    if ((
-      ((type == MOUSE_BINDING || type == KEY_BINDING) &&
-       b->Button_Key == button_keycode) ||
-      STROKE_CODE((type == STROKE_BINDING &&
-		   (strcmp(b->Stroke_Seq,stroke) == 0) &&
-		   b->Button_Key == button_keycode) ||)
-      (type == MOUSE_BINDING && b->Button_Key == 0))
-	&& (((b->Modifier & used_modifiers) == modifier) ||
-	    (b->Modifier == AnyModifier))
-	&& (b->Context & Context)
-	&& (b->type == type))
-    {
-      return b->Action;
-    }
-  }
-  return NULL;
-}
-
+#if 0
+/***
+ *** This code is outdated, do not use it!
+ ***/
 /* Check if something is bound to a key or button press */
 Bool MatchBinding(Display *dpy, Binding *b,
 		  STROKE_ARG(void *stroke)
@@ -460,11 +327,242 @@ Bool MatchBinding(Display *dpy, Binding *b,
   }
   return False;
 }
+#endif
+
+
+/****************************************************************************
+ *
+ *  Actually adds a new binding to a list (pblist) of existing bindings.
+ *  Specify either button or keysym/key_name, depending on type.
+ *  The parameters action and action2 are assumed to reside in malloced memory
+ *  that will be freed in RemoveBinding. The key_name is copied into private
+ *  memory and has to be freed by the caller.
+ *
+ ****************************************************************************/
+int AddBinding(
+  Display *dpy, Binding **pblist, BindingType type, STROKE_ARG(void *stroke)
+  int button, KeySym keysym, char *key_name, int modifiers, int contexts,
+  void *action, void *action2)
+{
+  int i;
+  int min;
+  int max;
+  int maxmods;
+  int m;
+  int count = 0;
+  KeySym tkeysym;
+  Binding *temp;
+
+  /*
+  ** Unfortunately a keycode can be bound to multiple keysyms and a keysym can
+  ** be bound to multiple keycodes. Thus we have to check every keycode with
+  ** any single modifier.
+  */
+  if (type == KEY_BINDING)
+  {
+    if (key_max == 0) {
+      XDisplayKeycodes(dpy, &key_min, &key_max);
+    }
+    min=key_min;
+    max=key_max;
+    maxmods = 8;
+  }
+  else
+  {
+    min = button;
+    max = button;
+    maxmods = 0;
+  }
+  for (i = min; i <= max; i++)
+  {
+    /* If this is a mouse binding we'll fall through the for loop (maxmods is
+     * zero) and the if condition is always true (type is zero). Since min ==
+     * max == button there is no loop at all is case of a mouse binding. */
+    for (m = 0, tkeysym = XK_Left; m <= maxmods && tkeysym != NoSymbol; m++)
+    {
+
+      if (type == MOUSE_BINDING ||
+	  STROKE_CODE(type == STROKE_BINDING ||)
+	  (tkeysym = XKeycodeToKeysym(dpy, i, m)) == keysym)
+      {
+	unsigned int add_modifiers = 0;
+
+	switch (m)
+	{
+	case 0:
+	  /* key generates the key sym with no modifiers depressed - bind it */
+	  break;
+	case 1:
+	  /* key generates the key sym with shift depressed */
+	  if (modifiers != AnyModifier)
+	  {
+	    add_modifiers = ShiftMask;
+	  }
+	  break;
+	case 2:
+	  /* key generates the key sym with caps-lock depressed */
+	  if (modifiers != AnyModifier)
+	  {
+	    add_modifiers = LockMask;
+	  }
+	  break;
+	default:
+	  /* key generates the key sym with unknown modifiers depressed -
+	  * can't map that to specific modifiers - trat as no modifiers */
+	  break;
+	}
+	temp = *pblist;
+	(*pblist) = (Binding *)safemalloc(sizeof(Binding));
+	(*pblist)->type = type;
+	(*pblist)->Button_Key = i;
+	STROKE_CODE((*pblist)->Stroke_Seq =
+		    (stroke) ? (void *)stripcpy((char *)stroke) : NULL);
+	if (type == KEY_BINDING && key_name != NULL)
+	  (*pblist)->key_name = stripcpy(key_name);
+	else
+	  (*pblist)->key_name = NULL;
+	(*pblist)->Context = contexts;
+	(*pblist)->Modifier = modifiers | add_modifiers;
+	(*pblist)->Action = (action) ? stripcpy(action) : NULL;
+	(*pblist)->Action2 = (action2) ? stripcpy(action2) : NULL;
+	(*pblist)->NextBinding = temp;
+#if 0
+        fprintf(stderr,
+   "Bindings: added binding type %c, key %X, key name %s, ctx %X mod %X act1 %s, act2 %s\n",
+                (*pblist)->type,
+                (*pblist)->Button_Key,
+                (*pblist)->key_name ? (*pblist)->key_name : "",
+                (*pblist)->Context,
+                (*pblist)->Modifier,
+                (*pblist)->Action ? (*pblist)->Action : "",
+                (*pblist)->Action2 ? (*pblist)->Action2 : "");
+#endif
+	count++;
+	/* Add the binding only once for each KeySym value. */
+	break;
+      }
+    }
+  }
+  return count;
+}
+
+
+static Bool AreBindingsEqual(Binding *b1, Binding *b2)
+{
+  if (b1->type != b2->type)
+    return False;
+  if (b1->Context != b2->Context)
+    return False;
+  if (b1->Modifier != b2->Modifier)
+    return False;
+  if (b1->Button_Key != b2->Button_Key)
+    return False;
+  switch (b1->type)
+  {
+  case KEY_BINDING:
+  case MOUSE_BINDING:
+    return True;
+  default:
+    if (1 STROKE_CODE(&& b1->type == STROKE_BINDING &&
+		      strcmp(b1->Stroke_Seq, b2->Stroke_Seq) == 0))
+    {
+      return True;
+    }
+    break;
+  }
+
+  return False;
+}
+
+/****************************************************************************
+ *
+ *  Does exactly the opposite of AddBinding: It removes the bindings that
+ *  AddBinding would have added to the *pblist_src and collects them in the
+ *  *pblist_dest.  This can be used to remove a binding completely from the
+ *  list.  The bindings still have to be freed.
+ *
+ ****************************************************************************/
+void CollectBindingList(
+  Display *dpy, Binding **pblist_src, Binding **pblist_dest, BindingType type,
+  STROKE_ARG(void *stroke)
+  int button, KeySym keysym, int modifiers, int contexts)
+{
+  Binding *tmplist = NULL;
+  Binding *btmp;
+  Binding *bold;
+  Binding *tmpprev;
+  Binding *oldprev;
+
+  /* generate a private list of bindings to be removed */
+  AddBinding(
+    dpy, &tmplist, type, STROKE_ARG(stroke)
+    button, keysym, NULL, modifiers, contexts, NULL, NULL);
+  /* now find equivalent bindings in the given binding list and move them to
+   * the new clist */
+  for (bold = *pblist_src, oldprev = NULL; bold != NULL;
+       oldprev = bold, bold = bold->NextBinding)
+  {
+    for (btmp = tmplist, tmpprev = NULL; btmp != NULL;
+	 tmpprev = btmp, btmp = btmp->NextBinding)
+    {
+      if (AreBindingsEqual(btmp, bold))
+      {
+	/* move matched binding from src list to dest list */
+	UnlinkBinding(pblist_src, bold, oldprev);
+	bold->NextBinding = *pblist_dest;
+	*pblist_dest = bold;
+	/* throw away the tmp binding */
+	UnlinkBinding(&tmplist, btmp, tmpprev);
+	FreeBindingStruct(btmp);
+	/* stop searching for this binding */
+	break;
+      }
+    }
+  }
+  /* throw away the temporary list */
+  FreeBindingList(tmplist);
+
+  return;
+}
+
+
+/* Check if something is bound to a key or button press and return the action
+ * to be executed or NULL if not. */
+void *CheckBinding(Binding *blist,
+		   STROKE_ARG(char *stroke)
+		   int button_keycode,
+		   unsigned int modifier,unsigned int dead_modifiers,
+		   int Context, BindingType type)
+{
+  Binding *b;
+  unsigned int used_modifiers = ~dead_modifiers;
+
+  modifier &= used_modifiers;
+
+  for (b = blist; b != NULL; b = b->NextBinding)
+  {
+    if ((
+      ((type == MOUSE_BINDING || type == KEY_BINDING) &&
+       b->Button_Key == button_keycode) ||
+      STROKE_CODE((type == STROKE_BINDING &&
+		   (strcmp(b->Stroke_Seq,stroke) == 0) &&
+		   b->Button_Key == button_keycode) ||)
+      (type == MOUSE_BINDING && b->Button_Key == 0))
+	&& (((b->Modifier & used_modifiers) == modifier) ||
+	    (b->Modifier == AnyModifier))
+	&& (b->Context & Context)
+	&& (b->type == type))
+    {
+      return b->Action;
+    }
+  }
+  return NULL;
+}
 
 /* same as above, but only returns exactly matching bindings, i.e. wildcards for
  * mouse buttons and modifiers must match exactly. */
 Bool MatchBindingExactly(
-  Display *dpy, Binding *b, STROKE_ARG(void *stroke)
+  Binding *b, STROKE_ARG(void *stroke)
   int button, KeyCode keycode, unsigned int modifier, int Context,
   BindingType type)
 {

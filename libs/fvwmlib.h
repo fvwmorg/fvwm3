@@ -422,11 +422,16 @@ typedef struct Binding
 
 Bool ParseContext(char *in_context, int *out_context_mask);
 Bool ParseModifiers(char *in_modifiers, int *out_modifier_mask);
-int AddBinding(Display *dpy, Binding **pblist, BindingType type,
-	       STROKE_ARG(void *stroke)
-	       int button, KeySym keysym, char *key_name,
-	       int modifiers, int contexts, void *action, void *action2);
-void FreeBinding(Binding *b);
+void CollectBindingList(
+  Display *dpy, Binding **pblist_src, Binding **pblist_dest, BindingType type,
+  STROKE_ARG(void *stroke)
+  int button, KeySym keysym, int modifiers, int contexts);
+int AddBinding(
+  Display *dpy, Binding **pblist, BindingType type, STROKE_ARG(void *stroke)
+  int button, KeySym keysym, char *key_name, int modifiers, int contexts,
+  void *action, void *action2);
+void FreeBindingStruct(Binding *b);
+void FreeBindingList(Binding *b);
 void RemoveBinding(Binding **pblist, Binding *b, Binding *prev);
 Bool RemoveMatchingBinding(
   Display *dpy, Binding **pblist, BindingType type, STROKE_ARG(char *stroke)
@@ -442,7 +447,7 @@ Bool MatchBinding(Display *dpy, Binding *b,
 		  unsigned int modifier,unsigned int dead_modifiers,
 		  int Context, BindingType type);
 Bool MatchBindingExactly(
-  Display *dpy, Binding *b, STROKE_ARG(void *stroke)
+  Binding *b, STROKE_ARG(void *stroke)
   int button, KeyCode keycode, unsigned int modifier, int Context,
   BindingType type);
 void GrabWindowKey(Display *dpy, Window w, Binding *binding,

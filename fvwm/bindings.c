@@ -89,16 +89,16 @@ int ParseBinding(
   int *nr_left_buttons, int *nr_right_buttons, unsigned char *buttons_grabbed,
   Bool do_ungrab_root)
 {
-  char *action, context[20], modifiers[20], *ptr, *token;
-  char key[20] = "";
+  char *action, context_string[20], modifier_string[20], *ptr, *token;
+  char key_string[20] = "";
   int button = 0;
   STROKE_CODE(char stroke[STROKE_MAX_SEQUENCE + 1] = "";)
   int n1=0,n2=0,n3=0;
   STROKE_CODE(int n4=0;)
   STROKE_CODE(int i;)
   KeySym keysym = NoSymbol;
-  int contexts;
-  int mods;
+  int context;
+  int modifier;
   Bool is_unbind_request = False;
 
   /* tline points after the key word "Mouse" or "Key" */
@@ -106,7 +106,7 @@ int ParseBinding(
   if (token != NULL)
   {
     if (type == KEY_BINDING)
-      n1 = sscanf(token,"%19s",key);
+      n1 = sscanf(token,"%19s", key_string);
 #ifdef HAVE_STROKE
     else if (type == STROKE_BINDING)
     {
@@ -146,7 +146,7 @@ int ParseBinding(
     else
     {
       n1 = sscanf(token, "%d", &button);
-     if (button < 0 || button > NUMBER_OF_MOUSE_BUTTONS)
+      if (button < 0 || button > NUMBER_OF_MOUSE_BUTTONS)
       {
 	fvwm_msg(ERR,"ParseBinding","Illegal mouse button in line %s", tline);
 	free(token);
@@ -171,14 +171,14 @@ int ParseBinding(
   ptr = GetNextToken(ptr, &token);
   if (token != NULL)
   {
-    n2 = sscanf(token, "%19s", context);
+    n2 = sscanf(token, "%19s", context_string);
     free(token);
   }
 
   action = GetNextToken(ptr, &token);
   if (token != NULL)
   {
-    n3 = sscanf(token, "%19s", modifiers);
+    n3 = sscanf(token, "%19s", modifier_string);
     free(token);
   }
 
@@ -189,14 +189,14 @@ int ParseBinding(
     return 0;
   }
 
-  if (ParseContext(context, &contexts))
+  if (ParseContext(context_string, &context))
     fvwm_msg(WARN,"ParseBinding","Illegal context in line %s", tline);
-  if (ParseModifiers(modifiers, &mods))
+  if (ParseModifiers(modifier_string, &modifier))
     fvwm_msg(WARN,"ParseBinding","Illegal modifier in line %s", tline);
 
   if (type == KEY_BINDING)
   {
-    keysym = FvwmStringToKeysym(dpy, key);
+    keysym = FvwmStringToKeysym(dpy, key_string);
     /*
      * Don't let a 0 keycode go through, since that means AnyKey to the
      * XGrabKey call.
@@ -220,33 +220,29 @@ int ParseBinding(
   {
     Bool is_binding_removed = False;
     Binding *b;
-    Binding *prev;
-    Binding *tmp;
-    KeyCode keycode = 0;
+    Binding *rmlist = NULL;
 
-    if (type == KEY_BINDING)
-      keycode = XKeysymToKeycode(dpy, keysym);
-    for (b = *pblist, prev = NULL; b != NULL; prev = b, b = tmp)
+    CollectBindingList(
+      dpy, pblist, &rmlist, type, STROKE_ARG((void *)stroke)
+      button, keysym, modifier, context);
+    if (rmlist != NULL)
     {
-      tmp = b->NextBinding;
-      if (MatchBindingExactly(
-	dpy, b, STROKE_ARG(stroke)
-	button, keycode, mods, contexts, type))
+      is_binding_removed = True;
+      if (is_unbind_request)
       {
-	/* found a matching binding */
-	if (is_unbind_request && !is_binding_removed)
+	/* remove the grabs for the key for unbind requests */
+	for (b = rmlist; b != NULL; b = b->NextBinding)
 	{
 	  /* release the grab */
 	  activate_binding(b, type, False, do_ungrab_root);
 	}
-	RemoveBinding(pblist, b, prev);
-	is_binding_removed = True;
       }
+      FreeBindingList(rmlist);
     }
 
     if (is_binding_removed)
     {
-      int bcontexts = 0;
+      int bcontext = 0;
 
       if (buttons_grabbed)
 	*buttons_grabbed = 0;
@@ -270,7 +266,7 @@ int ParseBinding(
 	  if (b->Context != C_ALL && (b->Context & (C_LALL | C_RALL)) &&
 	      b->type == MOUSE_BINDING)
 	  {
-	    bcontexts |= b->Context;
+	    bcontext |= b->Context;
 	  }
 	}
       }
@@ -278,7 +274,7 @@ int ParseBinding(
 	*nr_left_buttons = 0;
       if (nr_right_buttons)
 	*nr_right_buttons = 0;
-      update_nr_buttons(bcontexts, nr_left_buttons, nr_right_buttons);
+      update_nr_buttons(bcontext, nr_left_buttons, nr_right_buttons);
     }
   }
 
@@ -286,17 +282,17 @@ int ParseBinding(
   if (is_unbind_request)
     return 0;
 
-  update_nr_buttons(contexts, nr_left_buttons, nr_right_buttons);
+  update_nr_buttons(context, nr_left_buttons, nr_right_buttons);
 
-  if((mods & AnyModifier)&&(mods&(~AnyModifier)))
+  if((modifier & AnyModifier)&&(modifier&(~AnyModifier)))
   {
     fvwm_msg(WARN,"ParseBinding","Binding specified AnyModifier and other "
 	     "modifers too. Excess modifiers will be ignored.");
-    mods = AnyModifier;
+    modifier = AnyModifier;
   }
 
-  if ((type == MOUSE_BINDING)&&(contexts & C_WINDOW)&&
-     (((mods==0)||mods == AnyModifier)) && (buttons_grabbed != NULL))
+  if ((type == MOUSE_BINDING)&&(context & C_WINDOW)&&
+     (((modifier==0)||modifier == AnyModifier)) && (buttons_grabbed != NULL))
   {
     if (button == 0)
     {
@@ -310,7 +306,7 @@ int ParseBinding(
 
   return AddBinding(
     dpy, pblist, type, STROKE_ARG((void *)stroke)
-    button, keysym, key, mods, contexts, (void *)action, NULL);
+    button, keysym, key_string, modifier, context, (void *)action, NULL);
 }
 
 static void activate_binding(
