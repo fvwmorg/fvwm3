@@ -2282,7 +2282,7 @@ void CMD_Wait(F_CMD_ARGS)
 					e.xkey.keycode, e.xkey.state,
 					GetUnusedModifiers(),
 					GetContext(&t, t, &e, &nonewin),
-					KEY_BINDING);
+					BIND_KEYPRESS);
 				if (escape != NULL)
 				{
 					if (!strcasecmp(escape,"escapefunc"))
@@ -3891,7 +3891,7 @@ void CMD_StrokeFunc(F_CMD_ARGS)
 	/* check for a binding */
 	stroke_action = CheckBinding(
 		Scr.AllBindings, sequence, 0, modifiers, GetUnusedModifiers(),
-		exc->w.wcontext, STROKE_BINDING);
+		exc->w.wcontext, BIND_STROKE);
 
 	/* execute the action */
 	if (stroke_action != NULL)

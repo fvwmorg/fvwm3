@@ -595,7 +595,7 @@ static void __handle_bpress_on_root(const exec_context_t *exc)
 	action = CheckBinding(
 		Scr.AllBindings, STROKE_ARG(0) exc->x.etrigger->xbutton.button,
 		exc->x.etrigger->xbutton.state, GetUnusedModifiers(), C_ROOT,
-		MOUSE_BINDING);
+		BIND_BUTTONPRESS);
 	if (action && *action)
 	{
 		const exec_context_t *exc2;
@@ -668,7 +668,7 @@ static void __handle_bpress_on_managed(const exec_context_t *exc)
 		action = CheckBinding(
 			Scr.AllBindings, STROKE_ARG(0) e->xbutton.button,
 			e->xbutton.state, GetUnusedModifiers(), exc->w.wcontext,
-			MOUSE_BINDING);
+			BIND_BUTTONPRESS);
 		if (__handle_bpress_action(exc, action))
 		{
 			f.do_swallow_click = 1;
@@ -743,7 +743,7 @@ void HandleButtonRelease(const evh_args_t *ea)
 	/* need to search for an appropriate stroke binding */
 	action = CheckBinding(
 		Scr.AllBindings, sequence, te->xbutton.button, real_modifier,
-		GetUnusedModifiers(), ea->exc->w.wcontext, STROKE_BINDING);
+		GetUnusedModifiers(), ea->exc->w.wcontext, BIND_STROKE);
 	/* got a match, now process it */
 	if (action != NULL && (action[0] != 0))
 	{
@@ -1935,9 +1935,11 @@ void HandleKeyPress(const evh_args_t *ea)
 {
 	char *action;
 	FvwmWindow *sf;
-	const XEvent *te = ea->exc->x.etrigger;
 	KeyCode kc;
+	int context2;
+	const XEvent *te = ea->exc->x.etrigger;
 	const FvwmWindow * const fw = ea->exc->w.fw;
+	Bool is_second_binding;
 
 	DBUG("HandleKeyPress","Routine Entered");
 
@@ -1950,12 +1952,31 @@ void HandleKeyPress(const evh_args_t *ea)
 		dpy, XKeycodeToKeysym(dpy, te->xkey.keycode, 0));
 
 	/* Check if there is something bound to the key */
-	action = CheckBinding(
-		Scr.AllBindings, STROKE_ARG(0) kc, te->xkey.state,
-		GetUnusedModifiers(), ea->exc->w.wcontext, KEY_BINDING);
+	sf = get_focus_window();
+	context2 = (sf != NULL && sf != ea->exc->w.fw) ?
+		C_WINDOW : ea->exc->w.wcontext;
+	action = CheckTwoBindings(
+		&is_second_binding, Scr.AllBindings, STROKE_ARG(0) kc,
+		te->xkey.state, GetUnusedModifiers(), ea->exc->w.wcontext,
+		BIND_PKEYPRESS, context2, BIND_KEYPRESS);
 	if (action != NULL)
 	{
-		execute_function(NULL, ea->exc, action, 0);
+		const exec_context_t *exc;
+		exec_context_changes_t ecc;
+
+		exc = ea->exc;
+		if (is_second_binding == True)
+		{
+			ecc.w.fw = sf;
+			ecc.w.wcontext = C_WINDOW;
+			exc = exc_clone_context(
+				ea->exc, &ecc, ECC_FW | ECC_WCONTEXT);
+		}
+		execute_function(NULL, exc, action, 0);
+		if (is_second_binding == True)
+		{
+			exc_destroy_context(exc);
+		}
 		return;
 	}
 

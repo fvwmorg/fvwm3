@@ -1,7 +1,15 @@
+2002-11-13  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* FvwmScript/Instructions.c (Key):
+	* FvwmScript/FvwmScript.c (ReadXServer):
+	* FvwmIconMan/readconfig.c (ParseKeyEntry):
+	(ParseMouseEntry):
+	(ParseSimpleEntry):
+
 2002-11-13  olicha  <olivier.chapuis@free.fr>
 
 	* FvwmIconBox/FvwmIconBox.c:
-	(Loop): 
+	(Loop):
 	(HScroll):
 	(VScroll):
 	(process_message):
@@ -17,7 +25,7 @@
 	* FvwmForm/FvwmForm.c (UpdateRootTransapency):
 	(process_message):
 	(DoCommand):
-	(RedrawFrame): 
+	(RedrawFrame):
 	(RedrawItem):
 	* FvwmForm/ReadXServer.c (ReadXServer):
 	(process_tabtypes):
@@ -48,6 +56,7 @@
 
 	* FvwmTaskBar/ButtonArray.c (DrawButtonArray):
 	-Wall fix
+
 2002-11-12  olicha  <olivier.chapuis@free.fr>
 
 	* FvwmTaskBar/Goodies.c (DrawGoodies):

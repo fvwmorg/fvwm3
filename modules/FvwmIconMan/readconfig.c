@@ -730,7 +730,7 @@ Binding *ParseMouseEntry (char *tline)
 
   new = (Binding *)safemalloc(sizeof(Binding));
   memset(new, 0, sizeof(Binding));
-  new->type = MOUSE_BINDING;
+  new->type = BIND_BUTTONPRESS;
   new->Button_Key = button;
   new->Modifier = mods;
   new->Action = stripcpy(action);
@@ -810,7 +810,7 @@ static Binding *ParseKeyEntry (char *tline)
       temp = new;
       new  = (Binding *)safemalloc(sizeof(Binding));
       memset(new, 0, sizeof(Binding));
-      new->type = KEY_BINDING;
+      new->type = BIND_KEYPRESS;
       new->Button_Key = i;
       new->key_name = keystring;
       new->Modifier = mods;
@@ -839,7 +839,7 @@ static Binding *ParseSimpleEntry (char *tline)
 
   new = (Binding *)safemalloc (sizeof (Binding));
   memset(new, 0, sizeof(Binding));
-  new->type = KEY_BINDING;
+  new->type = BIND_KEYPRESS;
   new->key_name = "select";
   new->Action = stripcpy (tline);
   new->Action2 = func;

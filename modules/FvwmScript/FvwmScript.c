@@ -879,10 +879,10 @@ void ReadXServer (void)
 	XKeysymToKeycode(dpy,XKeycodeToKeysym(dpy,event.xkey.keycode,0));
 
       /* check for bindings defined by the Key instruction */
-      if ((action = CheckBinding(BindingsList, STROKE_ARG(0)
-				 event.xkey.keycode,
-				 event.xkey.state, LockMask,
-				 C_WINDOW, KEY_BINDING)) != NULL)
+      if ((action = CheckBinding(
+		   BindingsList, STROKE_ARG(0) event.xkey.keycode,
+		   event.xkey.state, LockMask, C_WINDOW, BIND_KEYPRESS)) !=
+	  NULL)
       {
 	SendMsgAndString(action, "CheckBinding");
 	break;
