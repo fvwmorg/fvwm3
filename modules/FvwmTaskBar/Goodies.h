@@ -39,17 +39,17 @@ typedef struct {
   Window win;
 } TipStruct;
 
-void GoodiesParseConfig(char *tline, char *Module);
-void InitGoodies();
-void DrawGoodies();
+void GoodiesParseConfig(const char *tline, char *Module);
+void InitGoodies(void);
+void DrawGoodies(void);
 int MouseInClock(int x, int y);
 int MouseInMail(int x, int y);
-void CreateDateWindow();
-void CreateMailTipWindow();
-void PopupTipWindow(int px, int py, char *text);
+void CreateDateWindow(void);
+void CreateMailTipWindow(void);
+void PopupTipWindow(int px, int py, const char *text);
 void CreateTipWindow(int x, int y, int w, int h);
-void RedrawTipWindow();
-void DestroyTipWindow();
+void RedrawTipWindow(void);
+void DestroyTipWindow(void);
 void ShowTipWindow(int open);
 void HandleMouseClick(XEvent event);
 void HandleMailClick(XEvent event);

@@ -82,7 +82,7 @@ TipStruct Tip = { 0, 0, 0, 0,  0, 0,   0,   0, NULL, None };
 
 
 /* Parse 'goodies' specific resources */
-void GoodiesParseConfig(char *tline, char *Module)
+void GoodiesParseConfig(const char *tline, char *Module)
 {
   if(strncasecmp(tline,CatString3(Module, "BellVolume",""),
 				Clength+10)==0) {
@@ -129,7 +129,7 @@ void GoodiesParseConfig(char *tline, char *Module)
   }
 }
 
-void InitGoodies() {
+void InitGoodies(void) {
   struct passwd *pwent;
   char tmp[1024];
   XGCValues gcval;
@@ -214,7 +214,7 @@ void Draw3dBox(Window wn, int x, int y, int w, int h)
   XDrawLine(dpy, win, hilite, x+w-1, y+h-1, x+w-1, y);
 }
 
-void DrawGoodies() {
+void DrawGoodies(void) {
   struct tm *tms;
   static char str[40];
   static time_t timer;
@@ -281,7 +281,7 @@ int MouseInMail(int x, int y) {
   return (x>=maill && x<mailr && y>1 && y<RowHeight-2);
 }
 
-void CreateDateWindow() {
+void CreateDateWindow(void) {
   struct tm *tms;
   static time_t timer;
   static char str[40];
@@ -302,7 +302,7 @@ void CreateMailTipWindow() {
   PopupTipWindow(win_width, 0, str);
 }
 
-void RedrawTipWindow() {
+void RedrawTipWindow(void) {
   if (Tip.text) {
 #ifdef I18N_MB
     XmbDrawString(dpy, Tip.win, StatusFontset, dategc, 3, Tip.th-4,
@@ -314,7 +314,7 @@ void RedrawTipWindow() {
   }
 }
 
-void PopupTipWindow(int px, int py, char *text) {
+void PopupTipWindow(int px, int py, const char *text) {
   int newx, newy;
   Window child;
 

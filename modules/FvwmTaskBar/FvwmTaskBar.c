@@ -10,7 +10,7 @@
  * Merciless hack by RBW for the Great Style Flag Rewrite - 04/20/1999.
  * This module slightly abused the old flags word, inventing new meanings for
  * certain bits. Therefore, I'm leaving all that infrastructure alone, only
- * changing the private flag word's name and insuring that it contains a bit
+ * changing the private flag word's name and ensuring that it contains a bit
  * for the ICONIFIED state,which is all the module cares about once the flags
  * are added to its Item struct. The Item field is renamed to tb_flags.
  * For possible future use, I'm adding a field to the struct to carry the *real*
@@ -303,10 +303,12 @@ int main(int argc, char **argv)
 
   /* Receive all messages from Fvwm */
   EndLessLoop();
+#ifdef FVWM_DEBUG_MSGS
   if ( isTerminated )
   {
     ConsoleMessage("Received signal: exiting...\n");
   }
+#endif
   return 0;
 }
 
@@ -834,7 +836,7 @@ Alarm(int nonsense)
     event.xmotion.x = -1;
     event.xmotion.y = -1;
     event.xany.type = MotionNotify;
-    XSendEvent(dpy, win, False, EnterNotify, &event);
+    XSendEvent(dpy, win, False, EnterWindowMask, &event);
   }
   AlarmSet = NOT_SET;
 #if !defined(HAVE_SIGACTION) && !defined(USE_BSD_SIGNALS)
@@ -863,9 +865,9 @@ void CheckForTip(int x, int y) {
   }
   else {
     num = LocateButton(&buttons, x, y, &bx, &by, &name, &trunc);
-    if (num != -1 && trunc) {
+    if (num != -1) {
       if ((Tip.type != num)  ||
-          (Tip.text == NULL) || (strcmp(name, Tip.text) != 0))
+          (Tip.text == NULL) || (!trunc && (strcmp(name, Tip.text) != 0)))
         PopupTipWindow(bx+3, by, name);
       Tip.type = num;
     } else {
@@ -1113,13 +1115,13 @@ void AdjustWindow(int width, int height)
 /******************************************************************************
   makename - Based on the flags return me '(name)' or 'name'
 ******************************************************************************/
-char *makename(char *string,long flags)
+char *makename(const char *string,long flags)
 {
   char *ptr;
 
   ptr=safemalloc(strlen(string)+3);
   *ptr = '\0';
-  if (flags&F_ICONIFIED) strcpy(ptr,"(");
+  if (flags&F_ICONIFIED) *ptr = '(';
   strcat(ptr,string);
   if (flags&F_ICONIFIED) strcat(ptr,")");
   return ptr;
@@ -1128,10 +1130,9 @@ char *makename(char *string,long flags)
 /******************************************************************************
   LinkAction - Link an response to a users action
 ******************************************************************************/
-void LinkAction(char *string)
+void LinkAction(const char *string)
 {
-char *temp;
-  temp=string;
+  const char *temp=string;
   while(isspace((unsigned char)*temp)) temp++;
   if(strncasecmp(temp, "Click1", 6)==0)
     CopyString(&ClickAction[0],&temp[6]);
@@ -1605,6 +1606,7 @@ void HideTaskBar(void) {
  ************************************************************************/
 static void
 SetAlarm(int event) {
+  alarm(0);  /* remove a race-condition */
   AlarmSet = event;
   alarm(1);
 }

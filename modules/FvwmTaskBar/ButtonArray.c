@@ -106,7 +106,7 @@ void Draw3dRect(Window wn, int x, int y, int w, int h, int state)
 /* -------------------------------------------------------------------------
    ButtonNew - Allocates and fills a new button structure
    ------------------------------------------------------------------------- */
-Button *ButtonNew(char *title, Picture *p, int state)
+Button *ButtonNew(const char *title, Picture *p, int state)
 {
   Button *new;
 
@@ -242,12 +242,12 @@ void ButtonDraw(Button *button, int x, int y, int w, int h)
 /* -------------------------------------------------------------------------
    ButtonUpdate - Change the name/state of a button
    ------------------------------------------------------------------------- */
-int ButtonUpdate(Button *button, char *title, int state)
+int ButtonUpdate(Button *button, const char *title, int state)
 {
   if (button == NULL) return -1;
 
   if ((title != NULL) && (button->title != title)) {
-    button->title = (char *)realloc(button->title,strlen(title)+1);
+    button->title = (char *)saferealloc(button->title,strlen(title)+1);
     strcpy(button->title,title);
     button->needsupdate = 1;
   }
@@ -321,7 +321,7 @@ void UpdateArray(ButtonArray *array,int x,int y,int w, int h, int tw)
 /* -------------------------------------------------------------------------
    AddButton - Allocate space for and add the button to the list
    ------------------------------------------------------------------------- */
-void AddButton(ButtonArray *array, char *title, Picture *p, int state)
+void AddButton(ButtonArray *array, const char *title, Picture *p, int state)
 {
   Button *new;
 
@@ -367,7 +367,7 @@ void ArrangeButtonArray (ButtonArray *array)
 /* -------------------------------------------------------------------------
    UpdateButton - Change the name/state of a button
    ------------------------------------------------------------------------- */
-int UpdateButton(ButtonArray *array, int butnum, char *title, int state)
+int UpdateButton(ButtonArray *array, int butnum, const char *title, int state)
 {
   Button *temp;
 

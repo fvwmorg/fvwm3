@@ -55,13 +55,13 @@ typedef struct {
 /* Function Prototypes */
 
 void Draw3dRect(Window wn, int x, int y, int w, int h, int state);
-Button *ButtonNew(char *title, Picture *p, int state);
-int ButtonUpdate(Button *button, char *title, int state);
+Button *ButtonNew(const char *title, Picture *p, int state);
+int ButtonUpdate(Button *button, const char *title, int state);
 char *ButtonName(Button *button);
 void InitArray(ButtonArray *array, int x, int y, int w, int h, int tw);
 void UpdateArray(ButtonArray *array, int x, int y, int w, int h, int tw);
-void AddButton(ButtonArray *array, char *title, Picture *p, int state);
-int UpdateButton(ButtonArray *array, int butnum, char *title, int state);
+void AddButton(ButtonArray *array, const char *title, Picture *p, int state);
+int UpdateButton(ButtonArray *array, int butnum, const char *title, int state);
 int UpdateButtonPicture(ButtonArray *array, int butnum, Picture *p);
 void RemoveButton(ButtonArray *array, int butnum);
 Button *find_n(ButtonArray *array, int n);

@@ -41,7 +41,7 @@ char *StartName     = NULL,
      *StartIconName = NULL;
 
 
-void StartButtonParseConfig(char *tline, char *Module)
+void StartButtonParseConfig(const char *tline, char *Module)
 {
   if(strncasecmp(tline,CatString3(Module,"StartName",""), Clength+9)==0)
     CopyString(&StartName,&tline[Clength+9]);
@@ -76,7 +76,7 @@ void StartButtonInit(int height)
   StartButtonHeight = height;
 }
 
-int StartButtonUpdate(char *title, int state)
+int StartButtonUpdate(const char *title, int state)
 {
 #if 0
   if (title != NULL)
