@@ -17,7 +17,7 @@
 	* fvwm/move_resize.c (MaximizeHeight):
 	(MaximizeWidth):
 	(CMD_Maximize):
-	applied modified layer patch for maximize by Rafal Bisinger
+	applied modified layer patch for maximize by Rafal Bisingier
 
 2004-03-29  Dominik Vogt  <dominik.vogt@gmx.de>
 
