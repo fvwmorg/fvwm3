@@ -1,3 +1,8 @@
+1999-09-07  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* fvwm/decorations.c (SelectDecor): applied another OL hints patch by
+	Neil Bird
+
 1999-09-06  Hippo
 
 	* fvwm/builtins.c:

@@ -311,28 +311,51 @@ void SelectDecor(FvwmWindow *t, style_flags *sflags, int border_width,
 	& (~decor);
     }
 
-  /* now remove any functions specified in the OL hints */
+  /* now add/remove any functions specified in the OL hints */
   if (SHAS_OL_DECOR(sflags))
     {
-      if (!(t->ol_hints & OL_DECOR_CLOSE))
+      if (t->ol_hints & OL_DECOR_CLOSE)
+      {
+        t->functions |= MWM_FUNC_MINIMIZE;
+	decor        |= MWM_FUNC_MINIMIZE;
+      }
+      else
       {
         t->functions &= ~MWM_FUNC_MINIMIZE;
 	decor        &= ~MWM_FUNC_MINIMIZE;
       }
-      if (!(t->ol_hints & OL_DECOR_RESIZEH))
+      if (t->ol_hints & OL_DECOR_RESIZEH)
+      {
+        t->functions |= (MWM_FUNC_RESIZE | MWM_FUNC_MAXIMIZE);
+	decor        |= (MWM_FUNC_RESIZE | MWM_FUNC_MAXIMIZE);
+      }
+      else
       {
         t->functions &= ~(MWM_FUNC_RESIZE | MWM_FUNC_MAXIMIZE);
 	decor        &= ~(MWM_FUNC_RESIZE | MWM_FUNC_MAXIMIZE);
       }
-      if (!(t->ol_hints & OL_DECOR_HEADER))
+      if (t->ol_hints & OL_DECOR_HEADER)
+      {
+        t->functions |= (MWM_DECOR_MENU | MWM_FUNC_MINIMIZE |
+                         MWM_FUNC_MAXIMIZE | MWM_DECOR_TITLE);
+	decor        |= (MWM_DECOR_MENU | MWM_FUNC_MINIMIZE |
+			 MWM_FUNC_MAXIMIZE | MWM_DECOR_TITLE);
+      }
+      else
       {
         t->functions &= ~(MWM_DECOR_MENU | MWM_FUNC_MINIMIZE |
                           MWM_FUNC_MAXIMIZE | MWM_DECOR_TITLE);
 	decor        &= ~(MWM_DECOR_MENU | MWM_FUNC_MINIMIZE |
 			  MWM_FUNC_MAXIMIZE | MWM_DECOR_TITLE);
       }
-      if (!(t->ol_hints & OL_DECOR_ICON_NAME))
+      if (t->ol_hints & OL_DECOR_ICON_NAME)
+      {
+	SET_HAS_NO_ICON_TITLE(t, 0);
+      }
+      else
+      {
 	SET_HAS_NO_ICON_TITLE(t, 1);
+    }
     }
 
   /* Now I have the un-altered decor and functions, but with the
