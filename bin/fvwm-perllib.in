@@ -31,12 +31,12 @@ my $doCat = 0;
 my $doRaw = 0;
 
 GetOptions(
-	"help"     => \&showHelp,
-	"version"  => \&showVersion,
-	"man"      => \$doMan,
-	"cat"      => \$doCat,
-	"raw"      => \$doRaw,
-	"dir"      => sub { print $perllibdir; exit(0); },
+	"help|h|?"    => \&showHelp,
+	"version|v|V" => \&showVersion,
+	"man"         => \$doMan,
+	"cat"         => \$doCat,
+	"raw"         => \$doRaw,
+	"dir"         => sub { print $perllibdir; exit(0); },
 ) || wrongUsage();
 
 if ($ARGV[0] eq 'man') {
@@ -373,8 +373,8 @@ fvwm-perllib - shows the documentation of the FVWM Perl library
 =head1 SYNOPSIS
 
 B<fvwm-perllib>
-[ B<--help>|B<-h> ]
-[ B<--version>|B<-v> ]
+[ B<--help>|B<-h>|B<-?> ]
+[ B<--version>|B<-v>|B<-V> ]
 [ B<man> [ I<Perl::Class> ] ]
 [ B<cat> [ I<Perl::Class> ] ]
 [ B<raw> [ I<Perl::Class> ] ]

@@ -13,8 +13,8 @@ This script is a part of $PACKAGE-$VERSION package.
 
 Usage: $script [OPTIONS]
 Options:
-	[-h]	[--help]
-	[-v]	[--version]
+	[-h]	[--help] [-?]
+	[-v]	[--version] [-V]
 	[-i]	[--info]
 
 	[-P]	[--prefix]
@@ -86,10 +86,10 @@ is_final=@ISRELEASED@
 
 while test $# -gt 0; do
 	case "$1" in
-		--help|-help|-h)
+		--help|-help|-h|-\?)
 			usage 0 ;;
 
-		--version|-version|-v)
+		--version|-version|-v|-V)
 			echo "$VERSION" ;;
 
 		--prefix|-prefix|-P)
@@ -216,7 +216,8 @@ while test $# -gt 0; do
 			;;
 
 		*)
-			echo "$script: unknown parameter [$1]" 1>&2
+			echo >&2 "$script: unknown argument '$1'."
+			echo >&2 "Run '$script --help' to get the usage."
 			exit 1
 			;;
 

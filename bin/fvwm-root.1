@@ -17,7 +17,8 @@ fvwm-root \- Sets the root window of the current X display to image
 .RB [ "--color-limit"
 .RI       [ ncolors "] ]"
 .RB [ "--no-color-limit" ]
-.RB [ "--help" | "-h" ]
+.RB [ "--help" | "-h" | "-?" ]
+.RB [ "--version" | "-V" ]
 .I image_file
 
 .SH DESCRIPTION
@@ -84,8 +85,11 @@ is not specified a default is used.
 .BI "--no-color-limit"
 Causes fvwm-root NOT to limit its color use.
 .TP
-.BR "--help" " | " "-h"
+.BI "--help"
 Shows a short usage.
+.TP
+.BI "--version"
+Shows a version number.
 
 .SH COMPATIBILITY
 In the past this utility was called

@@ -170,8 +170,8 @@ my @checkMiniIconsPath = ();
 # Read the options
 
 GetOptions(
-	"help"                     => \&showHelp,
-	"version"                  => \&showVersion,
+	"help|h|?"                 => \&showHelp,
+	"version|v|V"              => \&showVersion,
 	"install-prefix:s"         => $OPT_INSTALL_PREFIX,
 	"desktop:s"                => \$MENU_NAME,
 	"type:s"                   => \$MENU_TYPE,

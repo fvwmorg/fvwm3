@@ -30,8 +30,9 @@ Bool use_our_color_limit = False;
 
 void usage(int verbose)
 {
+	FILE *output = verbose ? stdout : stderr;
 	fprintf(
-		stderr, "fvwm-root version %s with support for: XBM"
+		output, "fvwm-root version %s with support for: XBM"
 #ifdef XPM
 		", XPM"
 #endif
@@ -39,11 +40,11 @@ void usage(int verbose)
 		", PNG"
 #endif
 		"\n", VERSION);
-	fprintf(stderr,
-		"Usage: fvwm-root [ options ] file\n");
+	fprintf(output,
+		"\nUsage: fvwm-root [ options ] file\n");
 	if (verbose)
 	{
-		fprintf(stderr,
+		fprintf(output,
 			"Options:\n"
 			"\t--dither\n"
 			"\t--no-dither\n"
@@ -53,7 +54,8 @@ void usage(int verbose)
 			"\t--no-color-limit\n"
 			"\t--dummy\n"
 			"\t--no-dummy\n"
-			"\t--help\n");
+			"\t--help\n"
+			"\t--version\n");
 	}
 }
 
@@ -145,11 +147,22 @@ int main(int argc, char **argv)
 			usage(1);
 			exit(0);
 		}
+		else if (
+			strcasecmp(argv[i], "-V") == 0 ||
+			strcasecmp(argv[i], "--version") == 0)
+		{
+			fprintf(stdout, "%s\n", VERSION);
+			exit(0);
+		}
 		else
 		{
 			fprintf(
 				stderr, "fvwm-root: unknown option '%s'\n",
 				argv[i]);
+			fprintf(
+				stderr, "Run '%s --help' to get the usage.\n",
+				argv[0]);
+			exit(1);
 		}
 	}
 
@@ -162,9 +175,17 @@ int main(int argc, char **argv)
 	}
 	else if (
 		strcasecmp(argv[argc-1], "-h") == 0 ||
+		strcasecmp(argv[argc-1], "-?") == 0 ||
 		strcasecmp(argv[argc-1], "--help") == 0)
 	{
 		usage(1);
+		exit(0);
+	}
+	else if (
+		strcasecmp(argv[argc-1], "-V") == 0 ||
+		strcasecmp(argv[argc-1], "--version") == 0)
+	{
+		fprintf(stdout, "%s\n", VERSION);
 		exit(0);
 	}
 	else

@@ -44,8 +44,8 @@ my $dirFile = "$fvwmUserDir/.fvwm-menu-directory.dir";
 my $changeMenuStyle = "";
 
 GetOptions(
-	"help"         => \&showHelp,
-	"version"      => \&showVersion,
+	"help|h|?"     => \&showHelp,
+	"version|v|V"  => \&showVersion,
 	"name=s"       => \$name,
 	"title=s"      => \$title,
 	"item=s"       => \$itemF,
@@ -390,8 +390,8 @@ fvwm-menu-directory - builds a directory browsing menu for FVWM
 =head1 SYNOPSIS
 
 B<fvwm-menu-directory>
-[ B<--help>|B<-h> ]
-[ B<--version>|B<-v> ]
+[ B<--help>|B<-h>|B<-?> ]
+[ B<--version>|B<-v>|B<-V> ]
 [ B<--name>|B<-na> NAME ]
 [ B<--title>|B<-t> NAME ]
 [ B<--item>|B<-it> NAME ]
@@ -424,13 +424,23 @@ fvwm menu containing a directory listing. Almost everything can be configured.
 
 =head1 OPTIONS
 
-B<--help>    - show the usage and exit
+=over 4
 
-B<--version> - show version and exit
+=item B<--help>
 
-B<--name=NAME>  - menu name, used only with --reuse, default is MenuBrowser
+show the usage and exit
 
-B<--title=NAME> - menu title format, default is '%*-40p' - last 40 characters
+=item B<--version>
+
+show version and exit
+
+=item B<--name> name
+
+menu name, used only with --reuse, default is MenuBrowser
+
+=item B<--title> title
+
+menu title format, default is '%*-40p' - last 40 characters
 of the current full path.
 TAB can be specified as '\t', but in .fvwm2rc you should specify a double
 backslash or a real TAB.
@@ -447,11 +457,14 @@ with "...", example: %*30x. Both can be combined: %-10*-20x, this instructs to
 get only the 20 last characters, but if the length is less then 10 - to fill
 with up to 10 spaces on the right.
 
-B<--item=NAME> - menu item format, default is '%n'. TAB and width modifiers
+=item B<--item> format
+
+menu item format, default is '%n'. TAB and width modifiers
 for %n, %N and %s can be specified as described in B<--title> above.
 Note, specifying a non default format slows the script.
 
 Format specifiers:
+
   %n - file/dir name (without the path)
   %N - file/dir name (full with the path)
   %d - file/dir date (yyyy-mm-dd HH:MM:SS)
@@ -462,88 +475,127 @@ Format specifiers:
 
 Example: --title '%*-40p\tDate, Type\tSize' --item '%*40n\t%d %t\t%s'
 
-B<--icon-title=XPM> - menu title icon, default is no
+=item B<--icon-title> icon
 
-B<--icon-dir=XPM>   - menu dir   icon, default is no
+menu title icon, default is no
 
-B<--icon-file=XPM>  - menu file  icon, default is no
+=item B<--icon-dir> icon
 
-B<--icon-app=XPM>   - menu application icon, default is no
+menu dir icon, default is no
 
-B<--wm-icons> - define icon names suitable for use with wm-icons package.
+=item B<--icon-file> icon
+
+menu file icon, default is no
+
+=item B<--icon-app> icon
+
+menu application icon, default is no
+
+=item B<--wm-icons>
+
+define icon names suitable for use with wm-icons package.
 Currently this is equivalent to: --icon-title menu/folder-open.xpm --icon-item
 menu/file.xpm --icon-dir menu/folder.xpm --icon-app menu/utility.xpm.
 
-B<--dir=NAME> - starting dir, default is ${HOME-.}
+=item B<--dir> dir
 
-B<--order=NUM> - NUM (-6 .. 6), default is 5.
+starting dir, default is ${HOME-.}
+
+=item B<--order> number
+
+in the range (-6 .. 6), default is 5:
+
   1 - do not sort,  2 - dirs first, 3 - files first
   4 - sort by name, 5 - dirs first, 6 - files first
   Negative number represents reverse order.
 
-B<--[no]all> - show hidden files, like in 'ls -A', default is --noall
+=item B<--[no]all>
 
-B<--[no]links> - follow linked directories, default is --nolinks
+show hidden files, like in 'ls -A', default is --noall
 
-B<--xterm=CMD> - X terminal call, default is 'xterm -e'
+=item B<--[no]links>
 
-B<--exec-title=CMD> - an fvwm Exec command on directory title (usually the
+follow linked directories, default is --nolinks
+
+=item B<--xterm> command
+
+X terminal call, default is 'xterm -e'
+
+=item B<--exec-title> command
+
+an fvwm Exec command on directory title (usually the
 shell), default is ${SHELL-/bin/sh}.
 '-' means no Exec command, i.e. Nop.
 If the command is not started with '^' X terminal call is prepended.
 The command is started in the currently browsed directory.
 
-B<--exec-file=CMD> - an fvwm Exec command on regular files,
+=item B<--exec-file> command
+
+an fvwm Exec command on regular files,
 default is ${EDITOR-vi}.
 '-' means no Exec command, i.e. Nop.
 If the command is not started with '^' X terminal call is prepended.
 The actual file name is appended to the command.
 
-B<--exec-app[=CMD]> - an fvwm Exec command on +x files, default is '-',
-which means the same command as on regular files. If no CMD is given,
+=item B<--exec-app> [command]
+
+an fvwm Exec command on +x files, default is '-',
+which means the same command as on regular files. If no command is given,
 it is assumed to be empty - simply run the +x file.
 If the command is not started with '^' X terminal call is prepended.
 The actual file name is appended to the command.
 
-B<--command-title=CMD> - an fvwm command to execute on title.
-If this option is not given (or CMD is '-'), the C<--exec-title>
+=item B<--command-title> command
+
+an fvwm command to execute on title.
+If this option is not given (or command is '-'), the C<--exec-title>
 is used instead.
-In the CMD, %d is substituted with the full directory path.
+In the command, %d is substituted with the full directory path.
 
 In fact, --exec-title=tcsh is equivalent
 to --command-title='Exec cd "%d"; xterm -e tcsh'
 
-B<--command-file=CMD> - an fvwm command to execute on regular files.
-If this option is not given (or CMD is '-'), the C<--exec-file>
+=item B<--command-file> command
+
+an fvwm command to execute on regular files.
+If this option is not given (or command is '-'), the C<--exec-file>
 is used instead.
-In the CMD, %f is substituted with the full file path.
+In the command, %f is substituted with the full file path.
 
 In fact, --exec-file=vi is equivalent
 to --command-file='Exec xterm -e vi "%f"'
 
-B<--command-app=CMD> - an fvwm command to execute on +x files.
-If this option is not given (or CMD is '-'), the C<--command-app>
+=item B<--command-app> command
+
+an fvwm command to execute on +x files.
+If this option is not given (or command is '-'), the C<--command-app>
 is used instead.
-In the CMD, %f is substituted with the full file path.
+In the command, %f is substituted with the full file path.
 
 In fact, --exec-app=^exec is equivalent
 to --command-app='Exec exec "%f"'
 
-B<--[no]reuse> - no pop-up menus, reuse the same menu, default is --noreuse.
+=item B<--[no]reuse>
+
+no pop-up menus, reuse the same menu, default is --noreuse.
 When you specify this option the Menu action is used, not Popup. Also,
 the --name parameter is not ignored, and --dir parameter is ignored
 if there is ~/.fvwm/.fvwm-menu-directory.dir file. This file is only created
 or used with this option specified, it is the only solution for the current
 fvwm menu state.
 
-B<--[no]check-subdirs> - check all subdirs for having execute (+x) permission
+=item B<--[no]check-subdirs>
+
+check all subdirs for having execute (+x) permission
 and replace "Popup"/"Menu" command with "Nop" for these without permissions.
 This has a visual effect of disabling popup triangle in the subdirectory item.
 The default is --nocheck-subdirs, because: 1) enabling this slows a bit the
 script, 2) with this option enabled, if no icons used and no dir/file separate
 sorting used there is no way to know that the item is directory and not file.
 
-B<--special-dirs>[=VALUE] - add .. or ~ or / special directories according to
+=item B<--special-dirs> value
+
+add .. or ~ or / special directories according to
 given optional value. Without with option these directories are not added.
 Default value if not specified is "1,2". The value is comma separated ordered
 special directory indexes, where 1 is parent directory, 2 is home directory,
@@ -551,15 +603,20 @@ special directory indexes, where 1 is parent directory, 2 is home directory,
 are added at the bottom of menu instead of top. Value "0" or any bad value
 is equivalent to non-specifying this option at all.
 
-B<--[no]memory-for-speed> - use speed optimization, i.e. use previously
+=item B<--[no]memory-for-speed>
+
+use speed optimization, i.e. use previously
 created directory menus without destroying it when closed, default is
 --nomemory-for-speed
 
     Warning: speed optimization takes up a lot of memory
     that is never free'd again while fvwm is running.
 
-B<--menu-style=NAME> - assign MenuStyle NAME to the menus
+=item B<--menu-style> name
 
+assign MenuStyle name to the menus
+
+=cut
 
 Option parameters can be specified both using '=' and in the next argument.
 Short options are ok if not ambiguous: C<-a>, C<-x>, C<-icon-f>; but be

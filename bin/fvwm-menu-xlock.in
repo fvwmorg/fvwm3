@@ -16,8 +16,8 @@ my $wmIcons = 0;
 my $specialFirst = 0;
 
 GetOptions(
-	"help"     => \&showHelp,
-	"version"  => \&showVersion,
+	"help|h|?"    => \&showHelp,
+	"version|v|V" => \&showVersion,
 	"name=s"   => \$name,
 	"title=s"  => \$title,
 	"item=s"   => \$itemF,
@@ -134,8 +134,8 @@ fvwm-menu-xlock - builds xlock menu definition for FVWM
 =head1 SYNOPSIS
 
 B<fvwm-menu-xlock>
-[ B<--help>|B<-h> ]
-[ B<--version>|B<-v> ]
+[ B<--help>|B<-h>|B<-?> ]
+[ B<--version>|B<-v>|B<-V> ]
 [ B<--name>|B<-n> name ]
 [ B<--title>|B<-t> title ]
 [ B<--item> format ]
@@ -151,22 +151,35 @@ menu definition of all xlock's modes.
 
 =head1 OPTIONS
 
-B<--help>    - show the help and exit
+=over 4
 
-B<--version> - show the version and exit
+=item B<--help>
 
-B<--name> name - define menu name in the following argument.
+show the help and exit
+
+=item B<--version>
+
+show the version and exit
+
+=item B<--name> name
+
+define menu name in the following argument.
 Default is "XLockMenu"
 
-B<--title> title - define menu title in the following argument.
+=item B<--title> title
+
+define menu title in the following argument.
 Default is "XLock Modes".
 
-B<--item> format - define menu item format in the following argument,
+=item B<--item> format
+
+define menu item format in the following argument,
 default is '%n\t(%d)'.
 TAB can be specified as '\t', but in .fvwm2rc you should specify a double
 backslash or a real TAB.
 
 Format specifiers:
+
   %n - mode name
   %d - mode description
   %D - mode description without "Shows " prefix if any
@@ -179,16 +192,24 @@ with "...", example: %*30x. Both can be combined: %-10*-20x, this instructs to
 get only the 20 last characters, but if the length is less then 10 - to fill
 with up to 10 spaces on the right.
 
-B<--icon-title>, B<--icon-item> - define menu icon for title and regular item
-accordingly given in the following argument. Default is no menu icons
-(equivalent to an empty icon argument).
+=item B<--icon-title> icon
 
-B<--wm-icons> - define icon names suitable for use with wm-icons package.
+=item B<--icon-item> icon
+
+define menu icon for title and regular item accordingly.
+Default is no menu icons (equivalent to an empty icon argument).
+
+=item B<--wm-icons>
+
+define icon names suitable for use with wm-icons package.
 Currently this is equivalent to: --icon-title '' --icon-item
 menu/lock.xpm.
 
-B<--special-first> - instructs to include special modes (usually black,
-bomb and random) first.
+=item B<--special-first>
+
+instructs to include special modes (usually black, bomb and random) first.
+
+=cut
 
 Option parameters can be specified both using '=' and in the next argument.
 Short options are ok if not ambiguous: -h, -t; but be careful with
