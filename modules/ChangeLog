@@ -1,3 +1,8 @@
+1999-08-19  Dominik Vogt  <dominik_vogt@gmx.de>
+
+	* FvwmTheme/FvwmTheme.1 (INVOCATION): updated for ModuleSynchronous
+	command
+
 1999-08-17  Dominik Vogt  <dominik_vogt@gmx.de>
 
 	* FvwmTheme/FvwmTheme.c (main): FvwmTheme sends "FINISHED_STARTUP" to
