@@ -2295,7 +2295,6 @@ FvwmWindow *AddWindow(
 		fw->frame_g.height = wattr.height + b.total_size.height;
 		gravity_constrain_size(
 			fw->hints.win_gravity, fw, &fw->frame_g, 0);
-
 		update_absolute_geometry(fw);
 	}
 
@@ -2769,6 +2768,28 @@ void GetWindowSizeHints(FvwmWindow *tmp)
 	if (!(tmp->hints.flags & PWinGravity))
 	{
 		tmp->hints.win_gravity = NorthWestGravity;
+	}
+
+
+	if ((tmp->hints.flags & PMaxSize) &&
+	    ((tmp->hints.flags & PMinSize) || (tmp->hints.flags & PBaseSize)))
+	{
+		if (tmp->hints.max_width < tmp->hints.base_width)
+		{
+			tmp->hints.max_width = DEFAULT_MAX_MAX_WINDOW_WIDTH;
+			if (!*broken_cause)
+			{
+				broken_cause = "max_width";
+			}
+		}
+		if (tmp->hints.max_height < tmp->hints.base_height)
+		{
+			tmp->hints.max_height = DEFAULT_MAX_MAX_WINDOW_HEIGHT;
+			if (!*broken_cause)
+			{
+				broken_cause = "max_height";
+			}
+		}
 	}
 
 	if (tmp->hints.flags & PAspect)

@@ -1,3 +1,14 @@
+2003-02-28  olicha  <olivier.chapuis@free.fr>
+
+	* libs/defaults.h:
+	* fvwm/events.c (HandleConfigureRequest): 
+	Added a workaround for application with broken max/min size hints
+	vs a size configure request. This "fixes" floating java JToolBar.
+	
+	* fvwm/add_window.c (GetWindowSizeHints):
+	Check that the max size hint is not broken relatively to the the base
+	size hint
+
 2003-02-28  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* NEWS:

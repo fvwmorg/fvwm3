@@ -160,6 +160,9 @@
 
 /* this value is used in a bugfix */
 #define WINDOW_FREAKED_OUT_SIZE	       65500 /* pixels */
+/* Used in Workaround for broken min and max size hints vs a size request */
+#define BROKEN_MAXSIZE_LIMIT 1
+#define BROKEN_MINSIZE_LIMIT 30000
 
 /* geometry window */
 #define GEOMETRY_WINDOW_BW		   2 /* pixels */

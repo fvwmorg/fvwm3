@@ -1223,6 +1223,39 @@ void HandleConfigureRequest(const evh_args_t *ea)
 			GetWindowSizeHints(fw);
 			SET_HAS_NEW_WM_NORMAL_HINTS(fw, 0);
 		}
+		if (!HAS_OVERRIDE_SIZE_HINTS(fw) && (fw->hints.flags & PMaxSize))
+		{
+			/* Java workaround */
+			if (cre.height > fw->hints.max_height &&
+			    fw->hints.max_height <= BROKEN_MAXSIZE_LIMIT)
+			{
+				fw->hints.max_height =
+					DEFAULT_MAX_MAX_WINDOW_HEIGHT;
+				cre.value_mask |= CWHeight;
+			}
+			if (cre.width > fw->hints.max_width &&
+			    fw->hints.max_width <= BROKEN_MAXSIZE_LIMIT)
+			{
+				fw->hints.max_width =
+					DEFAULT_MAX_MAX_WINDOW_WIDTH;
+				cre.value_mask |= CWWidth;
+			}
+		}
+		if (!HAS_OVERRIDE_SIZE_HINTS(fw) && (fw->hints.flags & PMinSize))
+		{
+			if (cre.height < fw->hints.min_height &&
+			    fw->hints.min_height >= BROKEN_MINSIZE_LIMIT)
+			{
+				fw->hints.min_height = 1;
+				cre.value_mask |= CWHeight;
+			}
+			if (cre.width < fw->hints.max_width &&
+			    fw->hints.max_width >= BROKEN_MINSIZE_LIMIT)
+			{
+				fw->hints.min_width = 1;
+				cre.value_mask |= CWWidth;
+			}
+		}
 		if (IS_SHADED(fw) ||
 		    !is_function_allowed(F_MOVE, NULL, fw, False, False))
 		{
@@ -1237,8 +1270,6 @@ void HandleConfigureRequest(const evh_args_t *ea)
 			cre.value_mask &= ~(CWWidth | CWHeight);
 			/* resend the old geometry */
 			do_send_event = True;
-			dw = fw->max_g_defect.width;
-			dh = fw->max_g_defect.width;
 			dw = 0;
 			dh = 0;
 		}
