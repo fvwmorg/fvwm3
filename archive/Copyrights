@@ -95,7 +95,7 @@ FvwmTaskBar:
 	Nobutaka Suzuki
 	Robert Nation
 
-!!!FvwmWharf:
+FvwmWharf:
 	Bo Yang
 	Frank Fejes
 	Beat Christen
@@ -108,7 +108,7 @@ fvwmperl: (public domain)
 	--> Dan gives us explicit permission to distribute as
 	    public domain
 
-!!!fvwmpython:
+fvwmpython:
 	Barry A. Warsaw <bwarsaw@python.org>
 
 fvwm:
@@ -167,7 +167,7 @@ FvwmButtons: (?? ->GPL ok?)
 	Robert Nation
 	Jarl Totland
 
-!!!FvwmCascade:
+FvwmCascade:
 	Andrew Veliath
 
 FvwmCpp: 
@@ -206,7 +206,7 @@ FvwmScroll:
 FvwmTalk: 
 	Robert Nation
 
-!!!FvwmTile:
+FvwmTile:
 	Andrew Veliath
 
 FvwmWinList: 

@@ -1,37 +1,36 @@
 /* Wharf.c. by Bo Yang. 
+ *
+ * Copyright 1993, Robert Nation. 
+ *
  * Modifications: Copyright 1995 by Bo Yang.
  *
- * modifications made by Frank Fejes for AfterStep 
- * Copyright 1996
+ * modifications made by Frank Fejes for AfterStep Copyright 1996
  *
  * folder code Copyright 1996 by Beat Christen.
  *
  * swallowed button actions Copyright 1996 by Kaj Groner
+ *
+ * Various enhancements Copyright 1996 Alfredo K. Kojima
+ * 
+ *   button pushing styles
+ *   configurable border drawing
+ *   Change of icon creation code. Does not use shape extension anymore.
+ *     each icon window now contains the whole background 
+ *   OffiX drop support added
+ *   animation added
+ *   withdraw on button2 click
+ *   icon overlaying
+ *   sound bindings
  * 
  * based on GoodStuff.c by Robert Nation 
  * The GoodStuff module, and the entire GoodStuff program, and the concept for
  * interfacing that module to the Window Manager, are all original work
  * by Robert Nation
  *
- * Copyright 1993, Robert Nation. 
  * No guarantees or warantees or anything
  * are provided or implied in any way whatsoever. Use this program at your
  * own risk. Permission to use this program for any purpose is given,
  * as long as the copyright is kept intact.  */
-
-/* 
- * Various enhancements Copyright 1996 Alfredo K. Kojima
- * 
- * button pushing styles
- * configurable border drawing
- * Change of icon creation code. Does not use shape extension anymore.
- * 	each icon window now contains the whole background 
- * OffiX drop support added
- * animation added
- * withdraw on button2 click
- * icon overlaying
- * sound bindings
- */
 
 #define TRUE 1
 #define FALSE 0
