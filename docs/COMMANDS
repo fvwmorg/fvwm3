@@ -1,0 +1,173 @@
+The currently recognized fvwm commands:
+
+  #                     - a comment line (ignored)
+  *                     - a module configuration line (no space after asterisk)
+  +                     - continue the last AddToFunc, AddToMenu or AddToDecor
+  AddButtonStyle        - add to a button style (see ButtonStyle)
+  AddTitleStyle         - add to a title style (see TitleStyle)
+  AddToDecor            - add a decor definition (will be obsolete)
+  AddToFunc             - add a function definition
+  AddToMenu             - add a menu definition
+  Alias                 - replace a builtin command (not really implemented)
+  All                   - operate on all windows matching the given condition
+  AnimatedMove          - like Move, but uses animation to move windows
+  Any                   - operate if there is any window matching the condition
+  Beep                  - produce a bell
+  Break                 - stop executing the current (but not parent) function
+  BorderStyle           - define a window border look (will be reworked)
+  BugOpts               - set some application bug workarounds
+  BusyCursor            - show/don't show the wait cursor in certain operations
+  ButtonState           - disable some titlebar button states (not recommended)
+  ButtonStyle           - define a window button look (will be reworked)
+  ChangeDecor           - attach decor to a window (will be obsolete)
+  ChangeMenuStyle       - attach menu style to a menu (see MenuStyle)
+  CleanupColorsets      - reset all used colorsets with the default gray colors
+  ClickTime             - set a time in milliseconds for click and double click
+  Close                 - try to Delete a window, if this fails, Destroy it
+  ColorLimit            - set limit on colors used (obsolete)
+  ColormapFocus         - change the colormap behaviour for low-depth X servers
+  Colorset              - manage colors used like fg, bg, image bg, gradient bg
+  Cond                  - conditional switch (may be changed)
+  CondCase              - conditional switch (may be changed)
+  CopyMenuStyle         - copy the existing menu style to new or existing one
+  Current               - operate on the currently focused window
+  CursorMove            - move the cursor pointer non interactively
+  CursorStyle           - define different cursor pointer shapes and colors
+  DefaultColors         - set colors for the feedback window (will be obsolete)
+  DefaultColorset       - set colors for the Move/Resize feedback window
+  DefaultFont           - the default font to use (mainly for feedback window)
+  DefaultIcon           - 
+  DefaultLayers         - 
+  Delete                - 
+  Deschedule            - 
+  Desk                  - 
+  DesktopName           - 
+  DesktopSize           - 
+  Destroy               - 
+  DestroyDecor          - 
+  DestroyFunc           - 
+  DestroyMenu           - 
+  DestroyMenuStyle      - 
+  DestroyModuleConfig   - 
+  DestroyStyle          - 
+  Direction             - 
+  Echo                  - 
+  EdgeCommand           - 
+  EdgeResistance        - 
+  EdgeScroll            - 
+  EdgeThickness         - 
+  Emulate               - 
+  EscapeFunc            - 
+  EwmhBaseStrut         - 
+  EwmhNumberOfDesktops  - 
+  Exec                  - 
+  ExecUseShell          - 
+  FakeClick             - 
+  FlipFocus             - 
+  Focus                 - 
+  Function              - 
+  GlobalOpts            - 
+  GnomeButton           - 
+  GnomeShowDesks        - 
+  GotoDesk              - 
+  GotoDeskAndPage       - 
+  GotoPage              - 
+  HideGeometryWindow    - 
+  HilightColor          - 
+  HilightColorset       - 
+  IconFont              - 
+  Iconify               - 
+  IconPath              - 
+  IgnoreModifiers       - 
+  ImagePath             - 
+  Key                   - 
+  KillModule            - 
+  Layer                 - 
+  Lower                 - 
+  Maximize              - 
+  Menu                  - 
+  MenuStyle             - 
+  Module                - 
+  ModulePath            - 
+  ModuleSynchronous     - 
+  ModuleTimeout         - 
+  Mouse                 - 
+  Move                  - 
+  MoveThreshold         - 
+  MoveToDesk            - 
+  MoveToPage            - 
+  MoveToScreen          - 
+  Next                  - 
+  None                  - 
+  Nop                   - 
+  OpaqueMoveSize        - 
+  Pick                  - 
+  PipeRead              - 
+  PixmapPath            - 
+  PlaceAgain            - 
+  PointerKey            - 
+  PointerWindow         - 
+  Popup                 - 
+  Prev                  - 
+  PropertyChange        - 
+  Quit                  - 
+  QuitScreen            - 
+  QuitSession           - 
+  Raise                 - 
+  RaiseLower            - 
+  Read                  - 
+  ReadWriteColors       - 
+  Recapture             - 
+  RecaptureWindow       - 
+  Refresh               - 
+  RefreshWindow         - 
+  Repeat                - 
+  Resize                - 
+  ResizeMaximize        - 
+  ResizeMove            - 
+  ResizeMoveMaximize    - 
+  Restart               - 
+  SaveQuitSession       - 
+  SaveSession           - 
+  Schedule              - 
+  Scroll                - 
+  Send_ConfigInfo       - 
+  Send_WindowList       - 
+  SendToModule          - 
+  set_mask              - 
+  set_nograb_mask       - 
+  set_sync_mask         - 
+  SetAnimation          - 
+  SetEnv                - 
+  Silent                - 
+  SnapAttraction        - 
+  SnapGrid              - 
+  State                 - 
+  Stick                 - 
+  Stroke                - 
+  StrokeFunc            - 
+  Style                 - 
+  TearMenuOff           - 
+  ThisWindow            - 
+  Title                 - 
+  TitleStyle            - 
+  Unalias               - 
+  UnsetEnv              - 
+  UpdateDecor           - 
+  UpdateStyles          - 
+  Wait                  - 
+  WarpToWindow          - 
+  WindowFont            - 
+  WindowId              - 
+  WindowList            - 
+  WindowShade           - 
+  WindowShadeAnimate    - 
+  Xinerama              - 
+  XineramaPrimaryScreen - 
+  XineramaSls           - 
+  XineramaSlsScreens    - 
+  XineramaSlsSize       - 
+  XorPixmap             - 
+  XorValue              - 
+  XSync                 - 
+  XSynchronize          - 

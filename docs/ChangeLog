@@ -1,3 +1,11 @@
+2002-08-26  Mikhael Goikhman  <migo@homemail.com>
+
+	* COMMANDS:
+	a new file with one line description for all existing commands
+
+	* ANNOUNCE:
+	added missing 2.5.3 announce
+
 2002-08-23  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* DEVELOPERS:
