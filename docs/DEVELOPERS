@@ -18,11 +18,9 @@ tree.
 
     automake --add-missing
     autoreconf
-    autoreconf
 
 If the config.h.in file is not present (after the sources have been
-checked out initially), autoreconf has to be called twice due to a bug
-in the autoconf package.
+checked out initially), use 'autoconf' instead of 'autoreconf'.
 
 There will be some warnings, which are ignorable as long as you get a
 working configure script: the configure script will fix all those
@@ -161,9 +159,12 @@ Steps: 1. When building a release, update the CVS sources first. For a
           been added to CVS.
        2. Make sure you have XPM, the strokes library and a X server with
           the shape extension.
-       3. Rerun automake --add-missing; autoreconf; autoreconf
+       3. If you checked out fresh sources in step 1, run
+            automake --add-missing; autoconf
+          otherwise run
+            automake --add-missing; autoreconf
        4. If building a stable release, remove the config.cache file.
-       5. Rerun ./configure
+       5. ./configure
        6. make clean
        7. Double check that you get no warnings during the build (the
           options for compilers other than gcc may be different):
