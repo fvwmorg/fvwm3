@@ -1786,27 +1786,27 @@ int main(int argc, char **argv)
 			{
 				usage();
 			}
-			if (StrEquals(argv[i], "staticg"))
+			if (strncasecmp(argv[i], "staticg", 7) == 0)
 			{
 				visualClass = StaticGray;
 			}
-			else if (StrEquals(argv[i], "g"))
+			else if (strncasecmp(argv[i], "g", 1) == 0)
 			{
 				visualClass = GrayScale;
 			}
-			else if (StrEquals(argv[i], "staticc"))
+			else if (strncasecmp(argv[i], "staticc", 7) == 0)
 			{
 				visualClass = StaticColor;
 			}
-			else if (StrEquals(argv[i], "p"))
+			else if (strncasecmp(argv[i], "p", 1) == 0)
 			{
 				visualClass = PseudoColor;
 			}
-			else if (StrEquals(argv[i], "t"))
+			else if (strncasecmp(argv[i], "t", 1) == 0)
 			{
 				visualClass = TrueColor;
 			}
-			else if (StrEquals(argv[i], "d"))
+			else if (strncasecmp(argv[i], "d", 1) == 0)
 			{
 				visualClass = DirectColor;
 			}
@@ -1830,14 +1830,6 @@ int main(int argc, char **argv)
 			printf("%s\n%s\n\n%s\n", Fvwm_VersionInfo,
 			       Fvwm_SupportInfo, Fvwm_LicenseInfo);
 			exit(0);
-		}
-		else if (StrEquals(argv[i], "-color-limit"))
-		{
-			if (++i >= argc)
-			{
-				usage();
-			}
-			CopyString(&opt_color_limit,argv[i]);
 		}
 		else
 		{

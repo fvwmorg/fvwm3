@@ -1,3 +1,14 @@
+2002-10-04  olicha  <olivier.chapuis@free.fr>
+
+	* libs/PictureUtils.c (*): 
+	Used a better color approximation for color cube when we do not dither.
+	Added some new colors tables: color cube with some grey colors.
+	Change the default to a 4x4x3 cc with 6 grey (54 colors).
+	Some visual fixes.
+
+	* fvwm/fvwm.c (main): 
+	Fixed the visual option
+
 2002-10-03  Mikhael Goikhman  <migo@homemail.com>
 
 	* configure.in:

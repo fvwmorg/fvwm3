@@ -252,6 +252,7 @@ int my_dither(int x, int y, XColor *c)
 
 	if (Pcsi.grey_bits != 0)
 	{
+		/* Grey Scale */
 		int prec = Pcsi.grey_bits;
 
 		if (Pcsi.grey_bits == 1)
@@ -267,6 +268,7 @@ int my_dither(int x, int y, XColor *c)
 	}
 	else
 	{
+		/* color cube */
 		int dith, rs, gs, bs, gb, b;
 
 		if (Pcsi.d_nr > 0)
@@ -431,6 +433,7 @@ int get_color_index(int r, int g, int b, int is_8)
 	}
 	if (Pcsi.grey_bits > 0)
 	{
+		/* FIXME: Use other proporition ? */
 		index = ((r+g+b)/3) >> (8 - Pcsi.grey_bits);
 	}
 	else
@@ -568,18 +571,35 @@ int get_nbr_of_free_colors(int max_check)
 
 static
 PColor *alloc_color_cube(
-	int nr, int ng, int nb, int grey_bits, Bool do_allocate)
+	int nr, int ng, int nb, int ngrey, int grey_bits, Bool do_allocate)
 {
-	int r, g, b, grey, i;
+	int r, g, b, grey, i, start_grey, end_grey;
 	PColor *color_table;
 	XColor color;
-	int size = nr*ng*nb + (1 << grey_bits)*(grey_bits != 0);
+	int size;
+
+	size = nr*ng*nb + ngrey + (1 << grey_bits)*(grey_bits != 0);
+	if (grey_bits)
+	{
+		ngrey = (1 << grey_bits);
+	}
+	if (nr > 0 && ngrey > 0)
+	{
+		start_grey = 1;
+		end_grey = ngrey - 1;
+		size = size - 2;
+	}
+	else
+	{
+		start_grey = 0;
+		end_grey = ngrey;
+	}
 
 	color_table = (PColor *)safemalloc((size+1) * sizeof(PColor));
 
 	i = 0;
 
-	if (grey_bits == 0)
+	if (nr > 0)
 	{
 		for (r = 0; r < nr; r++)
 		{
@@ -616,12 +636,13 @@ PColor *alloc_color_cube(
 			}
 		}
 	}
-	else /*grey_bits > 0 */
+	
+	if (ngrey > 0)
 	{
-		for (grey = 0; grey < size; grey++)
+		for (grey = start_grey; grey < end_grey; grey++)
 		{
 			color.red = color.green = color.blue =
-				grey * 65535 / (size - 1);
+				grey * 65535 / (ngrey - 1);
 			if (do_allocate)
 			{
 				if (!XAllocColor(Pdpy, Pcmap, &color))
@@ -811,26 +832,18 @@ void print_colormap(void)
 
 static
 void create_mapping_table(
-	int nr, int ng, int nb, int grey_bits, Bool use_named)
+	int nr, int ng, int nb, int ngrey, int grey_bits, Bool use_named)
 {
-	Pcsi.d_nr = Pcsi.d_ng = Pcsi.d_nb = 0;
-	if (!use_named || PColorLimit == 0)
+	Pcsi.d_nr = Pcsi.d_ng = Pcsi.d_nb = Pcsi.grey_bits = 0;
+	if (!use_named)
 	{
-		/* pure color cube */
-		Pcsi.nr = nr;
-		Pcsi.ng = ng;
-		Pcsi.nb = nb;
+		/* */
+		Pcsi.d_nr = nr;
+		Pcsi.d_ng = ng;
+		Pcsi.d_nb = nb;
 		Pcsi.grey_bits = grey_bits;
 	}
-	else if (PColorLimit == 2)
-	{
-		/* ok */
-		Pcsi.nr = 0;
-		Pcsi.ng = 0;
-		Pcsi.nb = 0;
-		Pcsi.grey_bits = 1;
-	}
-	else /* named table */
+	else
 	{
 		/* dither table should be small */
 		if (PColorLimit <= 9)
@@ -845,8 +858,26 @@ void create_mapping_table(
 			Pcsi.d_ng = 4;
 			Pcsi.d_nb = 4;
 		}
-		PDitherMappingTable =
-			build_mapping_table(Pcsi.d_nr, Pcsi.d_ng, Pcsi.d_nb);
+		PDitherMappingTable = build_mapping_table(
+			Pcsi.d_nr, Pcsi.d_ng, Pcsi.d_nb);
+	}
+	if (PColorLimit == 2)
+	{
+		/* ok */
+		Pcsi.nr = 0;
+		Pcsi.ng = 0;
+		Pcsi.nb = 0;
+		Pcsi.grey_bits = 1;
+	}
+	else if (grey_bits > 0)
+	{
+		Pcsi.nr = 0;
+		Pcsi.ng = 0;
+		Pcsi.nb = 0;
+		Pcsi.grey_bits = grey_bits;
+	}
+	else
+	{
 		if (PColorLimit <= 9)
 		{
 			Pcsi.nr = 8;
@@ -861,11 +892,10 @@ void create_mapping_table(
 		}
 		PMappingTable = build_mapping_table(Pcsi.nr, Pcsi.ng, Pcsi.nb);
 	}
-
 }
 
 void finish_ct_init(
-	int call_type, int ctt, int nr, int ng, int nb, int grey_bits,
+	int call_type, int ctt, int nr, int ng, int nb, int ngrey, int grey_bits,
 	Bool use_named)
 {
 #if PICTURE_DEBUG_COLORS_PRINT_CMAP
@@ -920,7 +950,7 @@ void finish_ct_init(
 		{
 			free_table_colors(Pct, PColorLimit);
 		}
-		create_mapping_table(nr,ng,nb,grey_bits,use_named);
+		create_mapping_table(nr,ng,nb,ngrey,grey_bits,use_named);
 	}
 }
 
@@ -933,14 +963,15 @@ int PictureAllocColor(Display *dpy, Colormap cmap, XColor *c, int no_limit)
 	{
 		no_limit = 0;
 	}
-	if (Pdepth <= 8 && (no_limit || Pct == NULL) &&
+	if (Pdepth <= 8 && (no_limit || Pct == NULL) && (Pvisual->class & 1) &&
 	    XAllocColor(dpy, cmap, c))
 	{
 		return 1;
 	}
-	else if (Pdepth <= 8 && (no_limit || Pct == NULL))
+	else if (Pdepth <= 8 && no_limit && (Pvisual->class & 1))
 	{
-		/* color allocation fail */
+		/* color allocation fail, The Pct != NULL is here to check
+		 * that we */
 #if PICTURE_DEBUG_COLORS_ALLOC_FAILURE
 		fprintf(stderr,"Color allocation fail for %x %x %x\n",
 			c->red >> 8, c->green >> 8, c->blue >> 8);
@@ -968,15 +999,26 @@ int PictureAllocColor(Display *dpy, Colormap cmap, XColor *c, int no_limit)
 			return 1;
 		}
 	}
-	else if (Pct != NULL) /* and PColorLimit > 0 && Pdepth <= 8 */
+	else if (Pct != NULL) /* and PColorLimit > 0 && Pdepth <= 8 &&
+				 Pvisual->class & 1*/
 	{
 		int index;
 
 		index = get_color_index(c->red,c->green,c->blue, False);
 		return alloc_color_in_pct(c, index);
 	}
-	/* Pdepth > 8 */
-	if (Pcsi.red_shift == 0)
+	/* Pdepth > 8 or static colors */
+	if (Pvisual->class == StaticGray)
+	{
+		/* FIXME: is this ok in general? */
+		c->pixel = ((c->red + c->green + c->blue)/3);
+		if (Pdepth < 16)
+		{
+			c->pixel = c->pixel >> (16 - Pdepth);
+		}
+		return 1;
+	}
+	if (Pcsi.red_shift == 0 && Pvisual->class != StaticGray)
 	{
 		decompose_mask(
 			Pvisual->red_mask,&Pcsi.red_shift,&Pcsi.red_prec);
@@ -986,9 +1028,9 @@ int PictureAllocColor(Display *dpy, Colormap cmap, XColor *c, int no_limit)
 			Pvisual->blue_mask,&Pcsi.blue_shift,&Pcsi.blue_prec);
 	}
 	c->pixel = (Pixel)(
-		((c->red   >> (16 - Pcsi.red_prec))   << Pcsi.red_shift) +
-		((c->green >> (16 - Pcsi.green_prec)) << Pcsi.green_shift) +
-		((c->blue  >> (16 - Pcsi.blue_prec))  << Pcsi.blue_shift)
+		((c->red   >> (16 - Pcsi.red_prec))<< Pcsi.red_shift) +
+		((c->green >> (16 - Pcsi.green_prec))<< Pcsi.green_shift) +
+		((c->blue  >> (16 - Pcsi.blue_prec))<< Pcsi.blue_shift)
 		);
 	return 1;
 }
@@ -1002,7 +1044,7 @@ int PictureAllocColorAllProp(
 	static int dither_ok = 0; /* not initalized, 1 ok, 2 init fail */
 	int switcher =
 		(do_dither && dither_ok != 2 && !no_limit &&
-		 Pdepth <= 16)? Pdepth:0;
+		 Pdepth <= 16 && (Pdepth > 8 || Pct != NULL))? Pdepth:0;
 
 	if (dither_ok == 0 && (switcher == 15 || switcher == 16))
 	{
@@ -1222,6 +1264,7 @@ int PictureAllocColorTable(char *opt, int call_type)
 	int use_named_table = 0;
 	int do_allocate = 0;
 	int use_default = 1;
+	int private_cmap = !(Pdefault);
 	int dyn_cl_set = False;
 	int strict_cl_set = False;
 	int alloc_table_set = False;
@@ -1229,45 +1272,59 @@ int PictureAllocColorTable(char *opt, int call_type)
 	int pa_type = (Pvisual->class != GrayScale)? PA_COLOR_CUBE:PA_GRAY_SCALE;
 	int fvwm_type = (Pvisual->class != GrayScale)?
 		FVWM_COLOR_CUBE:FVWM_GRAY_SCALE;
-	int cc[][5] =
+	int cc[][6] =
 	{
-		/* {nr,ng,nb,grey_bits,logic} */
+		/* {nr,ng,nb,ngrey,grey_bits,logic} */
 
 		/* 256 grey scale */
-		{0, 0, 0, 8, ANY_GRAY_SCALE},
+		{0, 0, 0, 0, 8, ANY_GRAY_SCALE},
+		/* 244 Xrender XFree-4.2 */
+		{6, 6, 6, 30, 0, ANY_COLOR_CUBE},
 		/* 216 Xrender XFree-4.2,GTK/QT "default cc" */
-		{6, 6, 6, 0, ANY_COLOR_CUBE},
+		{6, 6, 6, 0, 0, ANY_COLOR_CUBE},
 		/* 180 (GTK) */
-		{6, 6, 5, 0, ANY_COLOR_CUBE},
+		{6, 6, 5, 0, 0, ANY_COLOR_CUBE},
 		/* 144 (GTK) */
-		{6, 6, 4, 0, ANY_COLOR_CUBE},
+		{6, 6, 4, 0, 0, ANY_COLOR_CUBE},
 		/* 128 grey scale */
-		{0, 0, 0, 7, ANY_GRAY_SCALE},
+		{0, 0, 0, 0, 7, ANY_GRAY_SCALE},
 		/* 125 GTK mini default cc (may change? 444) */
-		{5, 5, 5, 0, ANY_COLOR_CUBE},
+		{5, 5, 5, 0, 0, ANY_COLOR_CUBE},
 		/* 100 (GTK with color limit) */
-		{5, 5, 4, 0, ANY_COLOR_CUBE},
+		{5, 5, 4, 0, 0, ANY_COLOR_CUBE},
+		/* 85 Xrender XFree-4.3 */
+		{4, 4, 4, 23, 0, ANY_COLOR_CUBE},
+		/* 78 (in fact 76)  a good default ??*/
+		{4, 4, 4, 16, 0, FVWM_COLOR_CUBE},
+		/* 68  a good default ?? */
+		{4, 4, 4, 6, 0, ANY_COLOR_CUBE},
 		/* 64 Xrender XFree-4.3 (GTK wcl) */
-		{4, 4, 4, 0, ANY_COLOR_CUBE},
+		{4, 4, 4, 0, 0, ANY_COLOR_CUBE},
 		/* 64 grey scale */
-		{0, 0, 0, 6, ANY_GRAY_SCALE},
+		{0, 0, 0, 0, 6, ANY_GRAY_SCALE},
+		/* 54, maybe a good default? */
+		{4, 4, 3, 8, 0, FVWM_COLOR_CUBE},
 		/* 48, (GTK wcl) no grey but ok */
-		{4, 4, 3, 0, FVWM_COLOR_CUBE},
+		{4, 4, 3, 0, 0, FVWM_COLOR_CUBE},
 		/* 32 xrender xfree-4.2 */
-		{0, 0, 0, 5, ANY_GRAY_SCALE},
+		{0, 0, 0, 0, 6, ANY_GRAY_SCALE},
+		/* 29 */
+		{3, 3, 3, 4, 0, FVWM_COLOR_CUBE},
 		/* 27 (xrender in depth 6&7(hypo) GTK wcl) */
-		{3, 3, 3, 0, FVWM_COLOR_CUBE|PA_COLOR_CUBE*(Pdepth<8)},
+		{3, 3, 3, 0, 0, FVWM_COLOR_CUBE|PA_COLOR_CUBE*(Pdepth<8)},
 		/* 16 grey scale */
-		{0, 0, 0, 4, FVWM_GRAY_SCALE},
+		{0, 0, 0, 0, 4, FVWM_GRAY_SCALE},
+		/* 10 */
+		{2, 2, 2, 4, 0, FVWM_COLOR_CUBE},
                 /* 8 (xrender/qt/gtk wcl) */
-		{2, 2, 2, 0, FVWM_COLOR_CUBE},
+		{2, 2, 2, 0, 0, FVWM_COLOR_CUBE},
 		/* 8 grey scale Xrender depth 4 and XFree-4.3 */
-		{0, 0, 0, 3, FVWM_GRAY_SCALE|PA_GRAY_SCALE*(Pdepth<5)},
+		{0, 0, 0, 0, 3, FVWM_GRAY_SCALE|PA_GRAY_SCALE*(Pdepth<5)},
 		/* 4 grey scale*/
-		{0, 0, 0, 2,
+		{0, 0, 0, 0, 2,
 		 FVWM_GRAY_SCALE|FVWM_COLOR_CUBE|PA_COLOR_CUBE*(Pdepth<4)},
 		/* 2 */
-		{0, 0, 0, 1, FVWM_COLOR_CUBE|FVWM_GRAY_SCALE}
+		{0, 0, 0, 0, 1, FVWM_COLOR_CUBE|FVWM_GRAY_SCALE}
 	};
 
 	cc_nbr = sizeof(cc)/(sizeof(cc[0]));
@@ -1282,6 +1339,11 @@ int PictureAllocColorTable(char *opt, int call_type)
 	{
 		PColorLimit = 0;
 		PUseDynamicColors = 0;
+		if (call_type == PICTURE_CALLED_BY_FVWM &&
+		    getenv("FVWM_COLORTABLE_TYPE") != NULL)
+		{
+			putenv("FVWM_COLORTABLE_TYPE=");
+		}
 		return 0;
 	}
 
@@ -1294,7 +1356,7 @@ int PictureAllocColorTable(char *opt, int call_type)
 	if (call_type == PICTURE_CALLED_BY_MODULE &&
 	     (envp = getenv("FVWM_COLORTABLE_TYPE")) != NULL)
 	{
-		int nr = 0, ng = 0, nb = 0, grey_bits = 0;
+		int nr = 0, ng = 0, nb = 0, grey_bits = 0, ngrey = 0;
 		int ctt = atoi(envp);
 
 		if (ctt >= PICTURE_PAllocTable)
@@ -1329,17 +1391,19 @@ int PictureAllocColorTable(char *opt, int call_type)
 			ctt--;
 			Pct = alloc_color_cube(
 				cc[ctt][0], cc[ctt][1], cc[ctt][2], cc[ctt][3],
+				cc[ctt][4],
 				False);
 			nr = cc[ctt][0];
 			ng = cc[ctt][1];
 			nb = cc[ctt][2];
-			grey_bits = cc[ctt][3];
+			ngrey = cc[ctt][3];
+			grey_bits = cc[ctt][4];
 		}
 		if (Pct != NULL)
 		{
 			/* should always happen */
 			finish_ct_init(
-				call_type, ctt, nr, ng, nb, grey_bits,
+				call_type, ctt, nr, ng, nb, ngrey, grey_bits,
 				use_named_table);
 			return PColorLimit;
 		}
@@ -1410,6 +1474,7 @@ int PictureAllocColorTable(char *opt, int call_type)
 	{
 		/* should we forbid that ? Yes!*/
 		use_default = 1;
+		color_limit = 256;
 #if 0
 		PColorLimit = 0;
 		finish_ct_init(
@@ -1441,17 +1506,17 @@ int PictureAllocColorTable(char *opt, int call_type)
 	 * 452, ...,693, ...)
 	 * imlib2 try to allocate the 666 cube if this fail it try more
 	 * exotic table (see rend.c and rgba.c) */
-	i = -1;
-	while(use_default && i < cc_nbr && Pct == NULL)
+	i = 0;
+	while(!private_cmap && use_default && i < cc_nbr && Pct == NULL)
 	{
-		i++;
-		size = cc[i][0]*cc[i][1]*cc[i][2] +
-			(1 << cc[i][3])*(cc[i][3] != 0);
-		if ((cc[i][4] & pa_type) && size <= map_entries &&
+		size = cc[i][0]*cc[i][1]*cc[i][2] + cc[i][3] - 2*(cc[i][3] > 0) +
+			(1 << cc[i][4])*(cc[i][4] != 0);
+		if ((cc[i][5] & pa_type) && size <= map_entries &&
 		    free_colors < map_entries - size)
 		{
 			Pct = alloc_color_cube(
-				cc[i][0], cc[i][1], cc[i][2], cc[i][3], True);
+				cc[i][0], cc[i][1], cc[i][2], cc[i][3], cc[i][4],
+				True);
 		}
 		if (Pct != NULL)
 		{
@@ -1467,6 +1532,7 @@ int PictureAllocColorTable(char *opt, int call_type)
 				Pct = NULL;
 			}
 		}
+		i++;
 	}
 	if (Pct != NULL)
 	{
@@ -1478,8 +1544,10 @@ int PictureAllocColorTable(char *opt, int call_type)
 		{
 			PAllocTable = 1;
 		}
+		i = i - 1;
 		finish_ct_init(
-			call_type, i, cc[i][0], cc[i][1], cc[i][2], cc[i][3], 0);
+			call_type, i, cc[i][0], cc[i][1], cc[i][2], cc[i][3],
+			cc[i][4], 0);
 		return PColorLimit;
 	}
 
@@ -1488,12 +1556,66 @@ int PictureAllocColorTable(char *opt, int call_type)
 	 */
 
 	limit = (color_limit >= map_entries)? map_entries:color_limit;
-	if (use_default)
+	if (use_default && !private_cmap)
 	{
+		/* XRender cvs default: */
+#if 0
 		if (limit > 100)
 			limit = map_entries/3;
 		else
 			limit = map_entries/2;
+		/* depth 8: 85 */
+		/* depth 4: 8 */
+#endif
+		if (limit == 256)
+		{
+			if (Pvisual->class == GrayScale)
+			{
+				limit = 64;
+			}
+			else
+			{
+				limit = 54; /* 4x4x3 + 6 grey */
+				/* other candidate:
+				 * limit = 61 (named table)
+				 * limit = 85 current XRender default 4cc + 21
+				 * limit = 76 future(?) XRender default 4cc + 16
+				 * limit = 68 4x4x4 + 4
+				 * limit = 64 4x4x4 + 0 */
+			}
+			
+		}
+		else if (limit == 128 || limit == 64)
+		{
+			
+			if (Pvisual->class == GrayScale)
+			{
+				limit = 32;
+			}
+			else
+			{
+				limit = 31;
+			}
+		}
+		else if (limit >= 16)
+		{
+			if (Pvisual->class == GrayScale)
+			{
+				limit = 8;
+			}
+			else
+			{
+				limit = 10;
+			}
+		}
+		else if (limit >= 8)
+		{
+			limit = 4;
+		}
+		else
+		{
+			limit = 2;
+		}
 	}
 	if (limit < 2)
 	{
@@ -1521,33 +1643,104 @@ int PictureAllocColorTable(char *opt, int call_type)
 	if (Pct != NULL)
 	{
 		finish_ct_init(
-			call_type, PColorLimit, 0, 0, 0, 0, 1);
+			call_type, PColorLimit, 0, 0, 0, 0, 0, 1);
 		return PColorLimit;
 	}
 
 	/* color cube or regular grey scale */
-	i = -1;
+	i = 0;
 	while(i < cc_nbr && Pct == NULL)
 	{
-		i++;
-		if ((cc[i][4] & fvwm_type) &&
-		    cc[i][0]*cc[i][1]*cc[i][2] +
-		    (1 << cc[i][3])*(cc[i][3] != 0) <= limit)
+		if ((cc[i][5] & fvwm_type) &&
+		    cc[i][0]*cc[i][1]*cc[i][2] + cc[i][3] - 2*(cc[i][3] > 0) +
+		    (1 << cc[i][4])*(cc[i][4] != 0) <= limit)
 		{
 			Pct = alloc_color_cube(
-				cc[i][0], cc[i][1], cc[i][2], cc[i][3],
+				cc[i][0], cc[i][1], cc[i][2], cc[i][3], cc[i][4],
 				do_allocate);
 		}
+		i++;
 	}
 	if (Pct != NULL)
 	{
+		i = i-1;
 		finish_ct_init(
-			call_type, i, cc[i][0], cc[i][1], cc[i][2], cc[i][3], 0);
+			call_type, i, cc[i][0], cc[i][1], cc[i][2], cc[i][3],
+			cc[i][4], 0);
 		return PColorLimit;
 	}
 
 	/* I do not think we can be here */
-	Pct = alloc_color_cube(0, 0, 0, 1, False);
-	finish_ct_init(call_type, cc_nbr-1, 0, 0, 0, 1, 0);
+	Pct = alloc_color_cube(0, 0, 0, 0, 1, False);
+	finish_ct_init(call_type, cc_nbr-1, 0, 0, 0, 0, 1, 0);
 	return PColorLimit;
+}
+
+void PicturePrintColorInfo(int verbose)
+{
+	fprintf(stderr, "FVWM info on colors\n");
+	fprintf(stderr, "  Visual -- ID: 0x%x, default: %s, Class:",
+		(int)(Pvisual->visualid),
+		(Pdefault)? "Yes":"No");
+	if (Pvisual->class == TrueColor)
+	{
+		fprintf(stderr,"TrueColor");
+	}
+	else if (Pvisual->class == PseudoColor)
+	{
+		fprintf(stderr,"PseudoColor");
+	}
+	else if (Pvisual->class == DirectColor)
+	{
+		fprintf(stderr,"DirectColor");
+	}
+	else if (Pvisual->class == StaticColor)
+	{
+		fprintf(stderr,"StaticColor");
+	}
+	else if (Pvisual->class == GrayScale)
+	{
+		fprintf(stderr,"GrayScale");
+	}
+	else if (Pvisual->class == StaticGray)
+	{
+		fprintf(stderr,"StaticGray");
+	}
+	fprintf(stderr, "\n");
+	fprintf(stderr, "  Depth: %i, Number of colors: %lu",
+		Pdepth, (unsigned long)(1 << Pdepth));
+	if (Pdepth > 8)
+	{
+		fprintf(stderr,  ", No Pallet (as depth > 8)\n");
+		return;
+	}
+	else if (Pct == NULL)
+	{
+		fprintf(stderr,  ", No Pallet (static colors)\n");
+		/* print the Pcmap ? */
+		return;
+	}
+	else
+	{
+		fprintf(stderr,"\n  Pallet with: %i colors", PColorLimit);
+		fprintf(stderr,"  Number of free color cell: %i colors\n",
+			get_nbr_of_free_colors(Pvisual->map_entries));
+		if (verbose)
+		{
+			int i;
+
+			fprintf(stderr,"\n");
+			for (i = 0; i < PColorLimit; i++)
+			{
+				fprintf(
+					stderr,"    rgb:%i/%i/%i\t%lu\n",
+					Pct[i].color.red,
+					Pct[i].color.green,
+					Pct[i].color.blue,
+					Pct[i].alloc_count);
+			}
+		}
+	}
+
+	/* print the default cmap if !Pdefault ? */
 }
