@@ -4098,7 +4098,7 @@ static void paint_menu(
 		}
 	}
 	paint_side_pic(mr, pevent);
-	XSync(dpy, 0);
+	XFlush(dpy);
 
 	return;
 }
@@ -6362,7 +6362,7 @@ Bool DestroyMenu(MenuRoot *mr, Bool do_recreate, Bool is_command_request)
 		XDestroyWindow(MR_CREATE_DPY(mr), MR_WINDOW(mr));
 		MR_WINDOW(mr) = None;
 		XDeleteContext(dpy, MR_WINDOW(mr), MenuContext);
-		XSync(MR_CREATE_DPY(mr), 0);
+		XFlush(MR_CREATE_DPY(mr));
 	}
 	if (MR_CREATE_DPY(mr) != NULL && MR_CREATE_DPY(mr) != dpy)
 	{

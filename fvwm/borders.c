@@ -1393,35 +1393,39 @@ static int border_get_parts_and_pos_to_draw(
 	frame_get_sidebar_geometry(
 		fw, borderstyle, old_g, &sidebar_g_old, &has_x_marks_old,
 		&has_y_marks_old);
-	if (sidebar_g_old.x != br->sidebar_g.x ||
-	    sidebar_g_old.y != br->sidebar_g.y)
+	if (sidebar_g_old.x != br->sidebar_g.x)
 	{
-		draw_parts |= DRAW_FRAME;
-		return draw_parts;
+		draw_parts |= (DRAW_FRAME & (~DRAW_BORDER_W));
 	}
-	if (has_x_marks_old != has_x_marks ||
-	    has_y_marks_old != has_y_marks)
+	if (sidebar_g_old.y != br->sidebar_g.y)
 	{
-		/* handle marks are drawn into the corner handles */
-		draw_parts |= DRAW_CORNERS;
+		draw_parts |= (DRAW_FRAME & (~DRAW_BORDER_N));
 	}
-	if ((cd->valuemask & CWBackPixmap) &&
-	    sidebar_g_old.width != br->sidebar_g.width)
+	if (has_x_marks_old != has_x_marks)
 	{
-		/* update the pixmap origin */
+		draw_parts |= (DRAW_FRAME & (~(DRAW_BORDER_N | DRAW_BORDER_S)));
+	}
+	if (has_y_marks_old != has_y_marks)
+	{
+		draw_parts |= (DRAW_FRAME & (~(DRAW_BORDER_W | DRAW_BORDER_E)));
+	}
+	if (sidebar_g_old.width != br->sidebar_g.width)
+	{
 		draw_parts |=
+			DRAW_BORDER_N |
 			DRAW_BORDER_NE |
 			DRAW_BORDER_E |
-			DRAW_BORDER_SE;
+			DRAW_BORDER_SE |
+			DRAW_BORDER_S;
 	}
-	if ((cd->valuemask & CWBackPixmap) &&
-	    sidebar_g_old.height != br->sidebar_g.height)
+	if (sidebar_g_old.height != br->sidebar_g.height)
 	{
-		/* update the pixmap origin */
 		draw_parts |=
+			DRAW_BORDER_W |
 			DRAW_BORDER_SW |
 			DRAW_BORDER_S |
-			DRAW_BORDER_SE;
+			DRAW_BORDER_SE |
+			DRAW_BORDER_E;
 	}
 
 	return draw_parts;
@@ -1724,7 +1728,7 @@ static void border_set_part_pixmap_back(
 	return;
 }
 
-inline static Pixmap border_create_part_pixmap(
+static Pixmap border_create_part_pixmap(
 	common_decorations_type *cd, rectangle *part_g)
 {
 	Pixmap p;
@@ -1964,7 +1968,9 @@ static void border_draw_one_part(
 	/* apply the pixmap and destroy it */
 	border_set_part_background(w, p);
 	XFreePixmap(dpy, p);
-	XClearWindow(dpy, w); XSync(dpy, 0); /*!!!*/
+#if 1
+	XClearWindow(dpy, w); /*!!! remove this later when the border gets automatically exposed */
+#endif
 
 	return;
 }
@@ -2271,27 +2277,16 @@ void draw_clipped_decorations_with_geom(
 
 		get_common_decorations(
 			&cd, t, draw_parts, has_focus, force, True, True);
-		if ((clear_parts & CLEAR_FRAME) && !IS_WINDOW_BORDER_DRAWN(t))
-		{
-			/*!!!change_window_background(
-			  t->decor_w, cd.valuemask, &cd.attributes);*/
-			SET_WINDOW_BORDER_DRAWN(t, 1);
-			rclip = NULL;
-		}
-		/*!!!*/
 		context = frame_window_id_to_context(t, PressedW, &i);
 		pressed_parts = border_context_to_parts(context);
 		force_parts = (force) ? (draw_parts & DRAW_FRAME) : DRAW_NONE;
-
-
-
 		border_draw_border_parts(
 			&cd, t, pressed_parts, force_parts, old_g, new_g,
 			has_focus);
 	}
 
 	/* Sync to make the change look fast! */
-	XSync(dpy,0);
+	XFlush(dpy);
 
 	return;
 }
@@ -2326,13 +2321,6 @@ void RedrawDecorations(FvwmWindow *fw)
 {
 	FvwmWindow *u = Scr.Hilite;
 
-#if 0
-	/*!!!*/
-	if (IS_SHADED(fw))
-	{
-		XRaiseWindow(dpy, fw->decor_w);
-	}
-#endif
 	/* domivogt (6-Jun-2000): Don't check if the window is visible here.
 	 * If we do, some updates are not applied and when the window becomes
 	 * visible again, the X Server may not redraw the window. */
@@ -2341,506 +2329,6 @@ void RedrawDecorations(FvwmWindow *fw)
 
 	return;
 }
-
-#if 0
-void RedrawBorder(
-	common_decorations_type *cd, FvwmWindow *t, Bool has_focus,
-	 Window expose_win, XRectangle *rclip)
-{
-	static GC tgc = None;
-	int i;
-	GC rgc;
-	GC sgc;
-	DecorFaceStyle *borderstyle;
-	Bool is_reversed = False;
-	Bool is_clipped = False;
-	int w_dout;
-	int w_hiout;
-	int w_trout;
-	int w_c;
-	int w_trin;
-	int w_shin;
-	int w_din;
-	int sum;
-	int trim;
-
-	if (tgc == None && !HAS_MWM_BORDER(t))
-	{
-		XGCValues xgcv;
-
-		xgcv.function = GXnoop;
-		xgcv.plane_mask = 0;
-		tgc = fvwmlib_XCreateGC(
-			dpy, FW_W_FRAME(t), GCFunction | GCPlaneMask, &xgcv);
-	}
-	/*
-	 * draw the border; resize handles are InputOnly so draw in the decor_w
-	 * and it will show through. The entire border is redrawn so flush all
-	 * exposes up to this point.
-	 */
-#if 0
-	flush_expose(t->decor_w);
-#endif
-
-	if (is_window_border_minimal(t))
-	{
-		/* just set the background pixmap */
-		XSetWindowBackgroundPixmap(
-			dpy, t->decor_w, cd->texture_pixmap);
-		XClearWindow(dpy, t->decor_w);
-		XSetWindowBackgroundPixmap(
-		dpy, t->decor_w, cd->back_pixmap);
-		XClearWindow(dpy, t->decor_w);
-
-		return;
-	}
-
-	/*
-	 * for color, make it the color of the decoration background
-	 */
-
-	/* get the border style bits */
-	borderstyle = (do_hilight) ?
-		&GetDecor(t, BorderStyle.active.style) :
-		&GetDecor(t, BorderStyle.inactive.style);
-
-	is_reversed ^= (borderstyle->flags.button_relief == DFS_BUTTON_IS_SUNK);
-	if (is_reversed)
-	{
-		sgc = cd->relief_gc;
-		rgc = cd->shadow_gc;
-	}
-	else
-	{
-		rgc = cd->relief_gc;
-		sgc = cd->shadow_gc;
-	}
-
-	/*
-	 * remove any lines drawn in the border if hidden handles or noinset
-	 * and if a handle was pressed
-	 */
-
-	if (PressedW == None &&
-	    (DFS_HAS_NO_INSET(*borderstyle) ||
-	     DFS_HAS_HIDDEN_HANDLES(*borderstyle)))
-	{
-		ClipClear(t->decor_w, NULL, False);
-	}
-
-	/*
-	 * Nothing to do if flat
-	 */
-
-	if (borderstyle->flags.button_relief == DFS_BUTTON_IS_FLAT)
-	{
-		return;
-	}
-
-	/*
-	 * draw the inside relief
-	 */
-
-	if (HAS_MWM_BORDER(t))
-	{
-		/* MWM borders look like this:
-		 *
-		 * HHCCCCS  from outside to inside on the left and top border
-		 * SSCCCCH  from outside to inside on the bottom and right
-		 *          border
-		 * |||||||
-		 * |||||||__ w_shin       (inner shadow area)
-		 * ||||||___ w_c          (transparent area)
-		 * |||||____ w_c          (transparent area)
-		 * ||||_____ w_c          (transparent area)
-		 * |||______ w_c          (transparent area)
-		 * ||_______ w_hiout      (outer hilight area)
-		 * |________ w_hiout      (outer hilight area)
-		 *
-		 *
-		 * C = original colour
-		 * H = hilight
-		 * S = shadow
-		 */
-		w_dout = 0;
-		w_hiout = 2;
-		w_trout = 0;
-		w_trin = 0;
-		w_shin = 1;
-		w_din = 0;
-		sum = 3;
-		trim = sum - t->boundary_width + 1;
-	}
-	else
-	{
-		/* Fvwm borders look like this:
-		 *
-		 * SHHCCSS  from outside to inside on the left and top border
-		 * SSCCHHS  from outside to inside on the bottom and right
-		 *          border
-		 * |||||||
-		 * |||||||__ w_din        (inner dark area)
-		 * ||||||___ w_shin       (inner shadow area)
-		 * |||||____ w_trin       (inner transparent/shadow area)
-		 * ||||_____ w_c          (transparent area)
-		 * |||______ w_trout      (outer transparent/hilight area)
-		 * ||_______ w_hiout      (outer hilight area)
-		 * |________ w_dout       (outer dark area)
-		 *
-		 * C = original colour
-		 * H = hilight
-		 * S = shadow
-		 *
-		 * reduced to 5 pixels it looks like this:
-		 *
-		 * SHHCS
-		 * SSCHS
-		 * |||||
-		 * |||||__ w_din        (inner dark area)
-		 * ||||___ w_trin       (inner transparent/shadow area)
-		 * |||____ w_trout      (outer transparent/hilight area)
-		 * ||_____ w_hiout      (outer hilight area)
-		 * |______ w_dout       (outer dark area)
-		 */
-		w_dout = 1;
-		w_hiout = 1;
-		w_trout = 1;
-		w_trin = 1;
-		w_shin = 1;
-		w_din = 1;
-		/* w_trout + w_trin counts only as one pixel of border because
-		 * they let one pixel of the original colour shine through. */
-		sum = 6;
-		trim = sum - t->boundary_width;
-	}
-	if (DFS_HAS_NO_INSET(*borderstyle))
-	{
-		w_shin = 0;
-		sum--;
-		trim--;
-		if (w_trin)
-		{
-			w_trout = 0;
-			w_trin = 0;
-			w_din = 0;
-			w_hiout = 1;
-			sum -= 2;
-			trim -= 2;
-		}
-	}
-	/* If the border is too thin to accomodate the standard look, we remove
-	 * parts of the border so that at least one pixel of the original
-	 * colour is visible. We make an exception for windows with a border
-	 * width of 2, though. */
-	if ((!IS_SHADED(t) || HAS_TITLE(t)) && t->boundary_width == 2)
-	{
-		trim--;
-	}
-	if (trim < 0)
-	{
-		trim = 0;
-	}
-	for ( ; trim > 0; trim--)
-	{
-		if (w_hiout > 1)
-		{
-			w_hiout--;
-		}
-		else if (w_shin > 0)
-		{
-			w_shin--;
-		}
-		else if (w_hiout > 0)
-		{
-			w_hiout--;
-		}
-		else if (w_trout > 0)
-		{
-			w_trout = 0;
-			w_trin = 0;
-			w_din = 0;
-			w_hiout = 1;
-		}
-		sum--;
-	}
-	w_c = t->boundary_width - sum;
-	draw_frame_relief(
-		t, rgc, sgc, tgc, sgc,
-		w_dout, w_hiout, w_trout, w_c, w_trin, w_shin, w_din);
-
-	/*
-	 * draw the handle marks
-	 */
-
-	/* draw the handles as eight marks around the border */
-	if (HAS_BORDER(t) && !DFS_HAS_HIDDEN_HANDLES(*borderstyle))
-	{
-		/* MWM border windows have thin 3d effects
-		 * FvwmBorders have 3 pixels top/left, 2 bot/right so this makes
-		 * calculating the length of the marks difficult, top and bottom
-		 * marks for FvwmBorders are different if NoInset is specified
-		 */
-		int inset = (w_shin || w_din);
-		XSegment marks[8];
-		int k;
-
-		/*
-		 * draw the relief
-		 */
-		for (k = 0; k < cd->relief_width; k++)
-		{
-			int loff = k;
-			int boff = k + w_dout + 1;
-			int length = t->boundary_width - boff - inset;
-
-			if (length < 0)
-			{
-				break;
-			}
-			/* hilite marks */
-			i = 0;
-			/* top left */
-			marks[i].x1 = t->visual_corner_width + loff;
-			marks[i].x2 = t->visual_corner_width + loff;
-			marks[i].y1 = w_dout;
-			marks[i].y2 = marks[i].y1 + length;
-			i++;
-			/* top right */
-			marks[i].x1 = t->frame_g.width -
-				t->visual_corner_width + loff;
-			marks[i].x2 = t->frame_g.width -
-				t->visual_corner_width + loff;
-			marks[i].y1 = w_dout;
-			marks[i].y2 = marks[i].y1 + length;
-			i++;
-			/* bot left */
-			marks[i].x1 = t->visual_corner_width + loff;
-			marks[i].x2 = t->visual_corner_width + loff;
-			marks[i].y1 = t->frame_g.height - boff;
-			marks[i].y2 = marks[i].y1 - length;
-			i++;
-			/* bot right */
-			marks[i].x1 = t->frame_g.width -
-				t->visual_corner_width + loff;
-			marks[i].x2 = t->frame_g.width -
-				t->visual_corner_width + loff;
-			marks[i].y1 = t->frame_g.height - boff;
-			marks[i].y2 = marks[i].y1 - length;
-			i++;
-			if (!IS_SHADED(t))
-			{
-				/* left top */
-				marks[i].x1 = w_dout;
-				marks[i].x2 = marks[i].x1 + length;
-				marks[i].y1 = t->visual_corner_width + loff;
-				marks[i].y2 = t->visual_corner_width + loff;
-				i++;
-				/* left bot */
-				marks[i].x1 = w_dout;
-				marks[i].x2 = marks[i].x1 + length;
-				marks[i].y1 = t->frame_g.height -
-					t->visual_corner_width + loff;
-				marks[i].y2 = t->frame_g.height -
-					t->visual_corner_width + loff;
-				i++;
-				/* right top */
-				marks[i].x1 = t->frame_g.width - boff;
-				marks[i].x2 = marks[i].x1 - length;
-				marks[i].y1 = t->visual_corner_width + loff;
-				marks[i].y2 = t->visual_corner_width + loff;
-				i++;
-				/* right bot */
-				marks[i].x1 = t->frame_g.width - boff;
-				marks[i].x2 = marks[i].x1 - length;
-				marks[i].y1 = t->frame_g.height -
-					t->visual_corner_width + loff;
-				marks[i].y2 = t->frame_g.height -
-					t->visual_corner_width + loff;
-				i++;
-			}
-			XDrawSegments(dpy, t->decor_w, rgc, marks, i);
-
-			/* shadow marks, reuse the array (XDrawSegments doesn't
-			 * trash it) */
-			i = 0;
-			loff = 1 + k + k;
-			/* top left */
-			marks[i].x1 -= loff;
-			marks[i].x2 -= loff;
-			marks[i].y1 += k;
-			marks[i].y2 += k;
-			i++;
-			/* top right */
-			marks[i].x1 -= loff;
-			marks[i].x2 -= loff;
-			marks[i].y1 += k;
-			marks[i].y2 += k;
-			i++;
-			/* bot left */
-			marks[i].x1 -= loff;
-			marks[i].x2 -= loff;
-			marks[i].y1 += k;
-			marks[i].y2 += k;
-			i++;
-			/* bot right */
-			marks[i].x1 -= loff;
-			marks[i].x2 -= loff;
-			marks[i].y1 += k;
-			marks[i].y2 += k;
-			i++;
-			if (!IS_SHADED(t))
-			{
-				/* left top */
-				marks[i].x1 += k;
-				marks[i].x2 += k;
-				marks[i].y1 -= loff;
-				marks[i].y2 -= loff;
-				i++;
-				/* left bot */
-				marks[i].x1 += k;
-				marks[i].x2 += k;
-				marks[i].y1 -= loff;
-				marks[i].y2 -= loff;
-				i++;
-				/* right top */
-				marks[i].x1 += k;
-				marks[i].x2 += k;
-				marks[i].y1 -= loff;
-				marks[i].y2 -= loff;
-				i++;
-				/* right bot */
-				marks[i].x1 += k;
-				marks[i].x2 += k;
-				marks[i].y1 -= loff;
-				marks[i].y2 -= loff;
-				i++;
-			}
-			XDrawSegments(dpy, t->decor_w, sgc, marks, i);
-		}
-	}
-
-	/*
-	 * now draw the pressed in part on top if we have depressable borders
-	 */
-
-	/* a bit hacky to draw twice but you should see the code it replaces,
-	 * never mind the esoterics, feel the thin-ness */
-	if ((HAS_BORDER(t) || PressedW == t->decor_w ||
-	     PressedW == FW_W_FRAME(t)) && HAS_DEPRESSABLE_BORDER(t))
-	{
-		XRectangle r;
-		Bool is_pressed = False;
-
-		if (PressedW == FW_W_SIDE(t, 0))
-		{
-			/* top */
-			r.x = t->visual_corner_width;
-			r.y = 1;
-			r.width = t->frame_g.width - 2 * t->visual_corner_width;
-			r.height = t->boundary_width - 1;
-			is_pressed = True;
-		}
-		else if (PressedW == FW_W_SIDE(t, 1))
-		{
-			/* right */
-			if (!IS_SHADED(t))
-			{
-				r.x = t->frame_g.width - t->boundary_width;
-				r.y = t->visual_corner_width;
-				r.width = t->boundary_width - 1;
-				r.height = t->frame_g.height -
-					2 * t->visual_corner_width;
-				is_pressed = True;
-			}
-		}
-		else if (PressedW == FW_W_SIDE(t, 2))
-		{
-			/* bottom */
-			r.x = t->visual_corner_width;
-			r.y = t->frame_g.height - t->boundary_width;
-			r.width = t->frame_g.width - 2 * t->visual_corner_width;
-			r.height = t->boundary_width - 1;
-			is_pressed = True;
-		}
-		else if (PressedW == FW_W_SIDE(t, 3))
-		{
-			/* left */
-			if (!IS_SHADED(t))
-			{
-				r.x = 1;
-				r.y = t->visual_corner_width;
-				r.width = t->boundary_width - 1;
-				r.height = t->frame_g.height -
-					2 * t->visual_corner_width;
-				is_pressed = True;
-			}
-		}
-		else if (PressedW == FW_W_CORNER(t, 0))
-		{
-			/* top left */
-			r.x = 1;
-			r.y = 1;
-			r.width = t->visual_corner_width - 1;
-			r.height = t->visual_corner_width - 1;
-			is_pressed = True;
-		}
-		else if (PressedW == FW_W_CORNER(t, 1))
-		{
-			/* top right */
-			r.x = t->frame_g.width - t->visual_corner_width;
-			r.y = 1;
-			r.width = t->visual_corner_width - 1;
-			r.height = t->visual_corner_width - 1;
-			is_pressed = True;
-		}
-		else if (PressedW == FW_W_CORNER(t, 2))
-		{
-			/* bottom left */
-			r.x = 1;
-			r.y = t->frame_g.height - t->visual_corner_width;
-			r.width = t->visual_corner_width - 1;
-			r.height = t->visual_corner_width - 1;
-			is_pressed = True;
-		}
-		else if (PressedW == FW_W_CORNER(t, 3))
-		{
-			/* bottom right */
-			r.x = t->frame_g.width - t->visual_corner_width;
-			r.y = t->frame_g.height - t->visual_corner_width;
-			r.width = t->visual_corner_width - 1;
-			r.height = t->visual_corner_width - 1;
-			is_pressed = True;
-		}
-		else if (PressedW == t->decor_w || PressedW == FW_W_FRAME(t))
-		{
-			/* whole border */
-			r.x = 1;
-			r.y = 1;
-			r.width = t->frame_g.width - 2;
-			r.height = t->frame_g.height - 2;
-			is_pressed = True;
-		}
-
-		if (is_pressed == True)
-		{
-			XSetClipRectangles(dpy, rgc, 0, 0, &r, 1, Unsorted);
-			XSetClipRectangles(dpy, sgc, 0, 0, &r, 1, Unsorted);
-			draw_frame_relief(
-				t, sgc, rgc, tgc, sgc,
-				w_dout, w_hiout, w_trout, w_c, w_trin,
-				w_shin, w_din);
-			is_clipped = True;
-		}
-	}
-	if (is_clipped)
-	{
-		XSetClipMask(dpy, rgc, None);
-		XSetClipMask(dpy, sgc, None);
-	}
-
-	return;
-}
-#endif
 
 /* ---------------------------- builtin commands ---------------------------- */
 

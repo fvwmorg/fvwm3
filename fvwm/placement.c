@@ -538,8 +538,8 @@ static float test_fit(
  *
  **************************************************************************/
 Bool PlaceWindow(
-  FvwmWindow *fw, style_flags *sflags,
-  int Desk, int PageX, int PageY, int XineramaScreen, int mode)
+	FvwmWindow *fw, style_flags *sflags, rectangle *attr_g,
+	int Desk, int PageX, int PageY, int XineramaScreen, int mode)
 {
   FvwmWindow *t;
   int xl = -1;
@@ -933,8 +933,8 @@ Bool PlaceWindow(
         xl -= pdeltax;
         yt -= pdeltay;
       }
-      fw->attr.y = yt;
-      fw->attr.x = xl;
+      attr_g->y = yt;
+      attr_g->x = xl;
       break;
     case PLACE_MINOVERLAPPERCENT:
       CleverPlacement(
@@ -965,23 +965,23 @@ Bool PlaceWindow(
       {
 	Scr.randomy = 2 * fw->title_thickness;
       }
-      fw->attr.x = Scr.randomx + PageLeft - pdeltax;
-      fw->attr.y = Scr.randomy + PageTop - pdeltay;
+      attr_g->x = Scr.randomx + PageLeft - pdeltax;
+      attr_g->y = Scr.randomy + PageTop - pdeltay;
       /* try to keep the window on the screen */
-      fw->frame_g.x = PageLeft + fw->attr.x + fw->old_bw + 10;
-      fw->frame_g.y = PageTop + fw->attr.y + fw->old_bw + 10;
+      fw->frame_g.x = PageLeft + attr_g->x + fw->attr_backup.border_width + 10;
+      fw->frame_g.y = PageTop + attr_g->y + fw->attr_backup.border_width + 10;
 
       get_window_borders(fw, &b);
-      if (fw->attr.x + fw->frame_g.width >= PageRight)
+      if (attr_g->x + fw->frame_g.width >= PageRight)
       {
-	fw->attr.x = PageRight - fw->attr.width
-	  - fw->old_bw - b.total_size.width;
+	attr_g->x = PageRight - attr_g->width - fw->attr_backup.border_width -
+		b.total_size.width;
 	Scr.randomx = 0;
       }
-      if (fw->attr.y + fw->frame_g.height >= PageBottom)
+      if (attr_g->y + fw->frame_g.height >= PageBottom)
       {
-	fw->attr.y = PageBottom - fw->attr.height
-	  - fw->old_bw - b.total_size.height;
+	attr_g->y = PageBottom - attr_g->height - fw->attr_backup.border_width -
+		b.total_size.height;
 	Scr.randomy = 0;
       }
       break;
@@ -998,8 +998,8 @@ Bool PlaceWindow(
     if (flags.is_smartly_placed)
     {
       /* "smart" placement succed, we have done ... */
-      fw->attr.x = xl;
-      fw->attr.y = yt;
+      attr_g->x = xl;
+      attr_g->y = yt;
     }
   } /* !flags.do_not_use_wm_placement */
   else
@@ -1026,8 +1026,7 @@ Bool PlaceWindow(
        */
 
       FScreenTranslateCoordinates(
-	NULL, XineramaScreen, NULL, FSCREEN_GLOBAL,
-	&fw->attr.x, &fw->attr.y);
+	NULL, XineramaScreen, NULL, FSCREEN_GLOBAL, &attr_g->x, &attr_g->y);
     }
 
     /*
@@ -1059,32 +1058,30 @@ Bool PlaceWindow(
        * were only one page, no virtual desktop), then 2) readjust
        * relative to the current page.
        */
-      if (fw->attr.x < 0)
+      if (attr_g->x < 0)
       {
-	fw->attr.x =
-	  ((Scr.MyDisplayWidth + fw->attr.x) % Scr.MyDisplayWidth);
+	attr_g->x = ((Scr.MyDisplayWidth + attr_g->x) % Scr.MyDisplayWidth);
       }
       else
       {
-	fw->attr.x = fw->attr.x % Scr.MyDisplayWidth;
+	attr_g->x = attr_g->x % Scr.MyDisplayWidth;
       }
       /*
        * Noticed a quirk here. With some apps (e.g., xman), we find the
        * placement has moved 1 pixel away from where we originally put it when
        * we come through here. Why is this happening?
-       * Probably old_bw, try xclock -borderwidth 100
+       * Probably attr_backup.border_width, try xclock -borderwidth 100
        */
-      if (fw->attr.y < 0)
+      if (attr_g->y < 0)
       {
-	fw->attr.y =
-	  ((Scr.MyDisplayHeight + fw->attr.y) % Scr.MyDisplayHeight);
+	attr_g->y = ((Scr.MyDisplayHeight + attr_g->y) % Scr.MyDisplayHeight);
       }
       else
       {
-	fw->attr.y = fw->attr.y % Scr.MyDisplayHeight;
+	attr_g->y = attr_g->y % Scr.MyDisplayHeight;
       }
-      fw->attr.x -= pdeltax;
-      fw->attr.y -= pdeltay;
+      attr_g->x -= pdeltax;
+      attr_g->y -= pdeltay;
     }
 
     /* put it where asked, mod title bar */
@@ -1095,8 +1092,8 @@ Bool PlaceWindow(
       int gravy;
 
       gravity_get_offsets(fw->hints.win_gravity, &gravx, &gravy);
-      final_g.x = fw->attr.x + gravx * fw->old_bw;
-      final_g.y = fw->attr.y + gravy * fw->old_bw;
+      final_g.x = attr_g->x + gravx * fw->attr_backup.border_width;
+      final_g.y = attr_g->y + gravy * fw->attr_backup.border_width;
       /* Virtually all applications seem to share a common bug: they request
        * the top left pixel of their *border* as their origin instead of the
        * top left pixel of their client window, e.g. 'xterm -g +0+0' creates an
@@ -1105,8 +1102,8 @@ Bool PlaceWindow(
        * at (1 1) instead.  This clearly violates the ICCCM, but trying to
        * change this is like tilting at windmills.  So we have to add the
        * border width here. */
-      final_g.x += fw->old_bw;
-      final_g.y += fw->old_bw;
+      final_g.x += fw->attr_backup.border_width;
+      final_g.y += fw->attr_backup.border_width;
       final_g.width = 0;
       final_g.height = 0;
       if (mode == PLACE_INITIAL)
@@ -1116,8 +1113,8 @@ Bool PlaceWindow(
           fw->hints.win_gravity, &final_g,
           b.total_size.width, b.total_size.height);
       }
-      fw->attr.x = final_g.x;
-      fw->attr.y = final_g.y;
+      attr_g->x = final_g.x;
+      attr_g->y = final_g.y;
     }
   }
 
@@ -1127,32 +1124,43 @@ Bool PlaceWindow(
 
 void CMD_PlaceAgain(F_CMD_ARGS)
 {
-  int x;
-  int y;
-  char *token;
-  float noMovement[1] = {1.0};
-  float *ppctMovement = noMovement;
-  window_style style;
+	char *token;
+	float noMovement[1] = {1.0};
+	float *ppctMovement = noMovement;
+	window_style style;
+	rectangle attr_g;
+	XWindowAttributes attr;
 
-  if (DeferExecution(eventp, &w, &fw, &context, CRS_SELECT,
-		     ButtonRelease))
-    return;
+	if (DeferExecution(
+		    eventp, &w, &fw, &context, CRS_SELECT, ButtonRelease))
+	{
+		return;
+	}
+	if (!XGetWindowAttributes(dpy, FW_W(fw), &attr))
+	{
+		return;
+	}
 
-  lookup_style(fw, &style);
-  PlaceWindow(
-    fw, &style.flags,
-    SGET_START_DESK(style), SGET_START_PAGE_X(style), SGET_START_PAGE_Y(style),
-    SGET_START_SCREEN(style), PLACE_AGAIN);
-  x = fw->attr.x;
-  y = fw->attr.y;
+	lookup_style(fw, &style);
+	attr_g.x = attr.x;
+	attr_g.y = attr.y;
+	attr_g.width = attr.width;
+	attr_g.height = attr.height;
+	PlaceWindow(
+		fw, &style.flags, &attr_g, SGET_START_DESK(style),
+		SGET_START_PAGE_X(style), SGET_START_PAGE_Y(style),
+		SGET_START_SCREEN(style), PLACE_AGAIN);
 
-  /* Possibly animate the movement */
-  token = PeekToken(action, NULL);
-  if(token && StrEquals("ANIM", token))
-    ppctMovement = NULL;
+	/* Possibly animate the movement */
+	token = PeekToken(action, NULL);
+	if (token && StrEquals("Anim", token))
+	{
+		ppctMovement = NULL;
+	}
 
-  AnimatedMoveFvwmWindow(
-	  fw, FW_W_FRAME(fw), -1, -1, x, y, False, -1, ppctMovement);
+	AnimatedMoveFvwmWindow(
+		fw, FW_W_FRAME(fw), -1, -1, attr_g.x, attr_g.y, False, -1,
+		ppctMovement);
 
-  return;
+	return;
 }

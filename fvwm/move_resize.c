@@ -681,7 +681,7 @@ static Bool resize_move_window(F_CMD_ARGS)
   DrawDecorations(fw, DRAW_ALL, has_focus, True, None, CLEAR_ALL);
   update_absolute_geometry(fw);
   maximize_adjust_offset(fw);
-  XSync(dpy, 0);
+  XFlush(dpy);
   GNOME_SetWinArea(fw);
 
   return True;
@@ -1105,7 +1105,7 @@ static void move_window_doit(F_CMD_ARGS, Bool do_animate, int mode)
     }
     update_absolute_geometry(fw);
     maximize_adjust_offset(fw);
-    XSync(dpy, 0);
+    XFlush(dpy);
     GNOME_SetWinArea(fw);
   }
   else /* icon window */
@@ -1155,7 +1155,7 @@ static void move_window_doit(F_CMD_ARGS, Bool do_animate, int mode)
 	  XWarpPointer(dpy, None, None, 0, 0, 0, 0, FinalX - x, FinalY - y);
       }
     }
-    XSync(dpy, 0);
+    XFlush(dpy);
   }
   return;
 }
@@ -3017,7 +3017,7 @@ static void draw_move_resize_grid(int x, int  y, int  width, int height)
   if (nrects > 0)
   {
     XDrawRectangles(dpy, Scr.Root, Scr.XorGC, rects, 10);
-    XSync(dpy, 0);
+    XFlush(dpy);
   }
 
   return;

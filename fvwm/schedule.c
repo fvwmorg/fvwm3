@@ -193,7 +193,7 @@ static int execute_obj_func(void *object, void *args)
 			free(obj->command);
 		}
 		free(obj);
-		XSync(dpy, 0);
+		XFlush(dpy);
 		return 1;
 	}
 

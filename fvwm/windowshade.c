@@ -106,9 +106,10 @@ void CMD_WindowShade(F_CMD_ARGS)
 {
 	int toggle;
 	int shade_dir;
-	resize_mode_type resize_mode;
+	frame_move_resize_mode resize_mode;
 	rectangle start_g;
 	rectangle end_g;
+	frame_move_resize_args mr_args;
 
 fprintf(stderr,"toggle: %s\n", (action) ? action : "default");
 	if (DeferExecution(
@@ -197,9 +198,11 @@ print_g("end2 ", &end_g);
 	 * do the animation
 	 */
 	resize_mode = (DO_SHRINK_WINDOWSHADE(fw)) ?
-		FRAME_RESIZE_SHRINK : FRAME_RESIZE_SCROLL;
-	frame_resize(
-		fw, &start_g, &end_g, resize_mode, fw->shade_anim_steps);
+		FRAME_MR_SHRINK : FRAME_MR_SCROLL;
+	mr_args = frame_create_move_resize_args(
+		fw, resize_mode, &start_g, &end_g, fw->shade_anim_steps);
+	frame_move_resize(fw, mr_args);
+	frame_free_move_resize_args(mr_args);
 
 	/*
 	 * update hints and inform modules
@@ -209,7 +212,7 @@ print_g("end2 ", &end_g);
 		(toggle == 1) ? M_WINDOWSHADE : M_DEWINDOWSHADE, 3, FW_W(fw),
 		FW_W_FRAME(fw), (unsigned long)fw);
 	FlushAllMessageQueues();
-	XSync(dpy, 0);
+	XFlush(dpy);
 	EWMH_SetWMState(fw, False);
 	GNOME_SetHints(fw);
 	GNOME_SetWinArea(fw);

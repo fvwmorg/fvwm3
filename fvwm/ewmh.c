@@ -632,14 +632,14 @@ void EWMH_ManageKdeSysTray(Window w, int type)
     fprintf(stderr,"KST_UNMAP: 0x%lx\n", w);
 #endif
     XSelectInput(dpy, w, StructureNotifyMask);
-    XSync(dpy, 0);
+    XFlush(dpy);
     break;
   case DestroyNotify:
 #ifdef DEBUG_KST
     fprintf(stderr,"KST_DESTROY: 0x%lx\n", w);
 #endif
     XSelectInput(dpy, t->w, NoEventMask);
-    XSync(dpy, 0);
+    XFlush(dpy);
     delete_kst_item(w);
     set_kde_sys_tray();
     break;
@@ -648,7 +648,7 @@ void EWMH_ManageKdeSysTray(Window w, int type)
     fprintf(stderr,"KST_Reparent: 0x%lx\n", w);
 #endif
     XSelectInput(dpy, w, StructureNotifyMask);
-    XSync(dpy, 0);
+    XFlush(dpy);
     break;
   default:
 #ifdef DEBUG_KST

@@ -153,7 +153,7 @@ Bool GrabEm(int cursor, int grab_context)
     break;
   }
 
-  XSync(dpy,0);
+  XFlush(dpy);
   while((i < rep)&&
 	(val = XGrabPointer(
 	  dpy, grab_win, True, GRAB_EVMASK, GrabModeAsync, GrabModeAsync,
@@ -178,7 +178,7 @@ Bool GrabEm(int cursor, int grab_context)
       break;
     }
   }
-  XSync(dpy,0);
+  XFlush(dpy);
 
   /* If we fall out of the loop without grabbing the pointer, its
    * time to give up */
@@ -215,7 +215,7 @@ Bool UngrabEm(int ungrab_context)
     return False;
   }
 
-  XSync(dpy,0);
+  XFlush(dpy);
   grab_count[ungrab_context]--;
   grab_count[GRAB_ALL]--;
   if (grab_count[GRAB_ALL] > 0)
@@ -260,7 +260,7 @@ print_grab_stats("-ungrab");
 #endif
     XUngrabPointer(dpy, CurrentTime);
   }
-  XSync(dpy,0);
+  XFlush(dpy);
 
   return True;
 }

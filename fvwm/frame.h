@@ -27,11 +27,11 @@
 
 typedef enum
 {
-	FRAME_RESIZE_SETUP,
-	FRAME_RESIZE_OPAQUE,
-	FRAME_RESIZE_SHRINK,
-	FRAME_RESIZE_SCROLL
-} resize_mode_type;
+	FRAME_MR_SETUP,
+	FRAME_MR_OPAQUE,
+	FRAME_MR_SHRINK,
+	FRAME_MR_SCROLL
+} frame_move_resize_mode;
 
 typedef struct
 {
@@ -41,27 +41,37 @@ typedef struct
 	int rbutton_grav;
 	int parent_grav;
 	int client_grav;
-} decor_gravities_type;
+} frame_decor_gravities_type;
+
+/* details are hidden in frame.c */
+typedef void *frame_move_resize_args;
 
 /* ---------------------------- exported variables (globals) ---------------- */
 
 /* ---------------------------- interface functions ------------------------- */
 
+void frame_init(void);
+void frame_destroyed_frame(
+	Window frame_w);
+frame_move_resize_args frame_create_move_resize_args(
+	FvwmWindow *fw, frame_move_resize_mode mr_mode,
+	rectangle *start_g, rectangle *end_g, int anim_steps);
+void frame_update_move_resize_args(
+	frame_move_resize_args mr_args, rectangle *end_g);
+void frame_free_move_resize_args(
+	frame_move_resize_args mr_args);
 void frame_get_sidebar_geometry(
 	FvwmWindow *fw, DecorFaceStyle *borderstyle, rectangle *frame_g,
 	rectangle *ret_g, Bool *ret_has_x_marks, Bool *ret_has_y_marks);
 int frame_window_id_to_context(
 	FvwmWindow *fw, Window w, int *ret_num);
-Bool frame_is_decoration_window(
-	FvwmWindow *fw, Window w);
-void frame_resize(
-	FvwmWindow *fw, rectangle *start_g, rectangle *end_g,
-	resize_mode_type rmode, int anim_steps);
+void frame_move_resize(
+	FvwmWindow *fw, frame_move_resize_args mr_args);
 void frame_get_resize_decor_gravities(
-	decor_gravities_type *ret_grav, direction_type title_dir,
-	resize_mode_type rmode);
+	frame_decor_gravities_type *ret_grav, direction_type title_dir,
+	frame_move_resize_mode rmode);
 void frame_set_decor_gravities(
-	FvwmWindow *fw, decor_gravities_type *grav);
+	FvwmWindow *fw, frame_decor_gravities_type *grav);
 void frame_setup_window(
 	FvwmWindow *fw, int x, int y, int w, int h,
 	Bool do_send_configure_notify);

@@ -123,7 +123,7 @@ CloseICCCM2 (void)
 {
   DBUG("CloseICCCM2", "good luck, new wm");
   XSelectInput(dpy, Scr.Root, NoEventMask);
-  XSync(dpy, 0);
+  XFlush(dpy);
 }
 
 /* FIXME: property change actually succeeded */
@@ -149,7 +149,8 @@ convertProperty (Window w, Atom target, Atom property)
      and send the SelectionNotify once we are sure the property
      has arrived. Problem: this needs a list of pending
      SelectionNotifys. */
-  XSync (dpy, 0);
+  XFlush(dpy);
+
   return True;
 }
 
@@ -193,8 +194,10 @@ HandleSelectionRequest (void)
       reply.property = ev.property;
   }
 
-  XSync (dpy, 0);
   XSendEvent (dpy, ev.requestor, False, 0L, (XEvent*)&reply);
+  XFlush(dpy);
+
+  return;
 }
 
 /* If another wm is requesting ownership of the selection,
@@ -207,8 +210,3 @@ HandleSelectionClear (void)
   DBUG("HandleSelectionClear", "I lost my selection!");
   Done(0, NULL);
 }
-
-
-
-
-

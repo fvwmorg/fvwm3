@@ -360,8 +360,6 @@ typedef struct
 	/* To prevent double move in MoveViewport.*/
 	unsigned is_viewport_moved : 1;
 	unsigned is_window_being_moved_opaque : 1;
-	/* 0 at first, set to 1 after border has been drawn once */
-	unsigned is_window_border_drawn : 1;
 	unsigned is_window_font_loaded : 1;
 	unsigned is_window_shaded : 1;
 	unsigned shaded_dir : 3;
@@ -582,7 +580,6 @@ typedef struct FvwmWindow
 	/* prev (higher) fvwm window in stacking order */
 	struct FvwmWindow *stack_prev;
 	/* border width before reparenting */
-	int old_bw;
 	struct
 	{
 		/* the frame window */
@@ -653,8 +650,15 @@ typedef struct FvwmWindow
 	Pixmap icon_maskPixmap;
 	FlocaleFont *icon_font;
 
-	/* the child window attributes */
-	XWindowAttributes attr;
+	/* some parts of the window attributes */
+	struct
+	{
+		int backing_store;
+		int border_width;
+		int depth;
+		Visual *visual;
+		Colormap colormap;
+	} attr_backup;
 	/* normal hints */
 	XSizeHints hints;
 	/* WM hints */
@@ -723,7 +727,6 @@ typedef struct FvwmWindow
 #define EWMH_WINDOW_TYPE_MENU_ID      4
 #define EWMH_WINDOW_TYPE_NORMAL_ID    5
 #define EWMH_WINDOW_TYPE_TOOLBAR_ID   6
-
 	int ewmh_window_type;
 	/* icon geometry */
 	rectangle ewmh_icon_geometry;
@@ -737,13 +740,10 @@ typedef struct FvwmWindow
 	int ewmh_icon_width;
 	int ewmh_mini_icon_height;
 	int ewmh_mini_icon_width;
-
 	/* memory for the initial _NET_WM_STATE */
 	int ewmh_hint_layer;
 	/* memory for the initial _NET_WM_STATE */
 	unsigned long ewmh_hint_desktop;
-
-	unsigned char initial_backing_store;
 
 	/* multi purpose scratch pointer */
 	void *pscratch;

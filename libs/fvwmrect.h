@@ -59,5 +59,12 @@ typedef struct
 
 /* Returns 1 if the given rectangles intersect and 0 otherwise */
 int fvwmrect_do_rectangles_intersect(rectangle *r, rectangle *s);
+/* Subtracts the values in s2_ from the ones in s1_g and stores the result in
+ * diff_g. */
+void fvwmrect_subtract_rectangles(
+	rectangle *rdiff, rectangle *r1, rectangle *r2);
+/* Returns 1 is the rectangles are identical and 0 if not */
+int fvwmrect_rectangles_equal(
+	rectangle *r1, rectangle *r2);
 
 #endif /* FVWMRECT_H */

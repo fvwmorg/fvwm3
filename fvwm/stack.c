@@ -82,7 +82,7 @@ void verify_stack_ring_consistency(void)
 
   if (!debugging_stack_ring)
     return;
-  XSync(dpy, 0);
+  XFlush(dpy);
   t2 = Scr.FvwmRoot.stack_next;
   if (t2 == &Scr.FvwmRoot)
     return;
@@ -717,7 +717,7 @@ static void RaiseOrLowerWindow(
    * immediately in case we are in a complex function (e.g. raise, unshade). */
   if (!do_lower)
   {
-    XSync(dpy, 0);
+    XFlush(dpy);
     handle_all_expose();
   }
 }

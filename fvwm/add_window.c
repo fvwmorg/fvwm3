@@ -240,7 +240,11 @@ static void hide_screen(
 	{
 		xswa.override_redirect = True;
 		xswa.cursor = Scr.FvwmCursors[CRS_WAIT];
-		valuemask = CWOverrideRedirect|CWCursor;
+		xswa.backing_store = NotUseful;
+		xswa.save_under = False;
+		xswa.background_pixmap = None;
+		valuemask = CWOverrideRedirect | CWCursor | CWSaveUnder |
+			CWBackingStore | CWBackPixmap;
 		hide_win = XCreateWindow(
 			dpy, Scr.Root, 0, 0, Scr.MyDisplayWidth,
 			Scr.MyDisplayHeight, 0, CopyFromParent, InputOutput,
@@ -264,7 +268,7 @@ static void hide_screen(
 			else
 			{
 				XMapWindow(dpy, hide_win);
-				XSync(dpy, 0);
+				XFlush(dpy);
 			}
 		}
 	}
@@ -278,7 +282,7 @@ static void hide_screen(
 		{
 			XDestroyWindow(dpy, parent_win);
 		}
-		XSync(dpy,0);
+		XFlush(dpy);
 		hide_win = None;
 		parent_win = None;
 	}
@@ -547,10 +551,23 @@ static void setup_class_and_resource(FvwmWindow *fw)
 	}
 	FetchWmProtocols (fw);
 	FetchWmColormapWindows (fw);
-	if (!(XGetWindowAttributes(dpy, FW_W(fw), &(fw->attr))))
+
+	return;
+}
+
+static void setup_window_attr(
+	FvwmWindow *fw, XWindowAttributes *ret_attr)
+{
+	if (XGetWindowAttributes(dpy, FW_W(fw), ret_attr) == 0)
 	{
-		fw->attr.colormap = Pcmap;
+		/* can't happen because fvwm has grabbed the server and does
+		 * not destroy the window itself */
 	}
+	fw->attr_backup.backing_store = ret_attr->backing_store;
+	fw->attr_backup.border_width = ret_attr->border_width;
+	fw->attr_backup.depth = ret_attr->depth;
+	fw->attr_backup.visual = ret_attr->visual;
+	fw->attr_backup.colormap = ret_attr->colormap;
 
 	return;
 }
@@ -601,6 +618,7 @@ static void adjust_fvwm_internal_windows(FvwmWindow *fw)
 		ButtonWindow = NULL;
 	}
 	restore_focus_after_unmap(fw, False);
+	frame_destroyed_frame(FW_W(fw));
 
 	return;
 }
@@ -989,7 +1007,8 @@ void setup_frame_size_limits(FvwmWindow *fw, window_style *pstyle)
 	return;
 }
 
-Bool setup_window_placement(FvwmWindow *fw, window_style *pstyle)
+Bool setup_window_placement(
+	FvwmWindow *fw, window_style *pstyle, rectangle *attr_g)
 {
 	int client_argc = 0;
 	char **client_argv = NULL;
@@ -1085,7 +1104,7 @@ Bool setup_window_placement(FvwmWindow *fw, window_style *pstyle)
 	}
 
 	return PlaceWindow(
-		fw, &pstyle->flags, SGET_START_DESK(*pstyle),
+		fw, &pstyle->flags, attr_g, SGET_START_DESK(*pstyle),
 		SGET_START_PAGE_X(*pstyle), SGET_START_PAGE_Y(*pstyle),
 		SGET_START_SCREEN(*pstyle), PLACE_INITIAL);
 }
@@ -1558,7 +1577,7 @@ void setup_frame_attributes(
 	switch (pstyle->flags.use_backing_store)
 	{
 	case BACKINGSTORE_DEFAULT:
-		xswa.backing_store = fw->initial_backing_store;
+		xswa.backing_store = fw->attr_backup.backing_store;
 		break;
 	case BACKINGSTORE_ON:
 		xswa.backing_store = Scr.use_backing_store;
@@ -1904,6 +1923,7 @@ FvwmWindow *AddWindow(
 	unsigned long valuemask;
 	/* attributes for create windows */
 	XSetWindowAttributes attributes;
+	XWindowAttributes wattr;
 	/* area for merged styles */
 	window_style style;
 	/* used for faster access */
@@ -1954,10 +1974,8 @@ FvwmWindow *AddWindow(
 	/****** window name ******/
 	setup_window_name(fw);
 	setup_class_and_resource(fw);
+	setup_window_attr(fw, &wattr);
 	setup_wm_hints(fw);
-
-	/* save a copy of the backing store attribute */
-	fw->initial_backing_store = fw->attr.backing_store;
 
 	/****** basic style and decor ******/
 	/* If the window is in the NoTitle list, or is a transient, dont
@@ -2021,7 +2039,6 @@ FvwmWindow *AddWindow(
 	GetWindowSizeHints(fw);
 
 	/****** border width ******/
-	fw->old_bw = fw->attr.border_width;
 	XSetWindowBorderWidth(dpy, FW_W(fw), 0);
 
 	/***** placement penalities *****/
@@ -2069,6 +2086,8 @@ FvwmWindow *AddWindow(
 	}
 	else
 	{
+		rectangle attr_g;
+
 		if (IS_SHADED(fw))
 		{
 			do_shade = 1;
@@ -2076,8 +2095,8 @@ FvwmWindow *AddWindow(
 			SET_SHADED(fw, 0);
 		}
 		/* Tentative size estimate */
-		fw->frame_g.width = fw->attr.width + b.total_size.width;
-		fw->frame_g.height = fw->attr.height + b.total_size.height;
+		fw->frame_g.width = wattr.width + b.total_size.width;
+		fw->frame_g.height = wattr.height + b.total_size.height;
 
 		/****** calculate frame size ******/
 		setup_frame_size_limits(fw, &style);
@@ -2086,13 +2105,19 @@ FvwmWindow *AddWindow(
 		setup_layer(fw, &style);
 
 		/****** window placement ******/
-		do_resize_too = setup_window_placement(fw, &style);
+		attr_g.x = wattr.x;
+		attr_g.y = wattr.y;
+		attr_g.width = wattr.width;
+		attr_g.height = wattr.height;
+		do_resize_too = setup_window_placement(fw, &style, &attr_g);
+		wattr.x = attr_g.x;
+		wattr.y = attr_g.y;
 
 		/* set up geometry */
-		fw->frame_g.x = fw->attr.x;
-		fw->frame_g.y = fw->attr.y;
-		fw->frame_g.width = fw->attr.width + b.total_size.width;
-		fw->frame_g.height = fw->attr.height + b.total_size.height;
+		fw->frame_g.x = wattr.x;
+		fw->frame_g.y = wattr.y;
+		fw->frame_g.width = wattr.width + b.total_size.width;
+		fw->frame_g.height = wattr.height + b.total_size.height;
 		gravity_constrain_size(
 			fw->hints.win_gravity, fw, &fw->frame_g, 0);
 
@@ -2774,7 +2799,7 @@ void destroy_window(FvwmWindow *fw)
 
 	if (!PPosOverride)
 	{
-		XSync(dpy,0);
+		XFlush(dpy);
 	}
 
 	/* already done above? */
@@ -2868,7 +2893,7 @@ void destroy_window(FvwmWindow *fw)
 
 	if (!PPosOverride)
 	{
-		XSync(dpy,0);
+		XFlush(dpy);
 	}
 
 	return;
@@ -2907,7 +2932,7 @@ void RestoreWithdrawnLocation(
 	xwc.y = naked_g.y;
 	xwc.width = naked_g.width;
 	xwc.height = naked_g.height;
-	xwc.border_width = fw->old_bw;
+	xwc.border_width = fw->attr_backup.border_width;
 	mask = (CWX | CWY | CWWidth | CWHeight | CWBorderWidth);
 
 	/* We can not assume that the window is currently on the screen.
@@ -2960,7 +2985,7 @@ void RestoreWithdrawnLocation(
 	}
 
 	/* restore initial backing store setting on window */
-	xswa.backing_store = fw->initial_backing_store;
+	xswa.backing_store = fw->attr_backup.backing_store;
 	XChangeWindowAttributes(dpy, FW_W(fw), CWBackingStore, &xswa);
 	/* reparent to root window */
 	XReparentWindow(
@@ -2983,7 +3008,7 @@ void RestoreWithdrawnLocation(
 	if (!is_restart_or_recapture)
 	{
 		/* must be initial capture */
-		XSync(dpy,0);
+		XFlush(dpy);
 	}
 
 	return;
@@ -3024,7 +3049,7 @@ void Reborder(void)
 
 	MyXUngrabServer (dpy);
 	FOCUS_RESET();
-	XSync(dpy,0);
+	XFlush(dpy);
 
 	return;
 }

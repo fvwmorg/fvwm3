@@ -82,7 +82,7 @@ static void DoSetFocus(
     if (WM_TAKES_FOCUS(fw))
     {
       /* give it a chance to take the focus itself */
-      XSync(dpy, 0);
+      XFlush(dpy);
     }
     else
     {
@@ -249,7 +249,7 @@ static void DoSetFocus(
     FOCUS_SET(Scr.NoFocusWin);
     set_focus_window(NULL);
   }
-  XSync(dpy,0);
+  XFlush(dpy);
 
   return;
 }

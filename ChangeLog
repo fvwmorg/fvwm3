@@ -1,4 +1,83 @@
+2002-03-17  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* fvwm/windowshade.c (CMD_WindowShade):
+	* fvwm/stack.c (verify_stack_ring_consistency):
+	(RaiseOrLowerWindow):
+	* fvwm/move_resize.c (resize_move_window):
+	(move_window_doit):
+	(draw_move_resize_grid):
+	* fvwm/icons.c (DrawIconWindow):
+	* fvwm/icccm2.c (CloseICCCM2):
+	(convertProperty):
+	(HandleSelectionRequest):
+	* fvwm/fvwm.c (main):
+	(SaveDesktopState):
+	* fvwm/focus.c (DoSetFocus):
+	* fvwm/ewmh.c (EWMH_ManageKdeSysTray):
+	* fvwm/events.c (HandlePropertyNotify):
+	(HandleButtonPress):
+	(HandleConfigureRequest):
+	* fvwm/add_window.c (RestoreWithdrawnLocation):
+	(Reborder):
+	* fvwm/builtins.c (CMD_Delete):
+	(CMD_Destroy):
+	(CMD_Close):
+	(CMD_FakeClick):
+	* fvwm/menus.c (paint_menu):
+	(DestroyMenu):
+	* fvwm/misc.c (UngrabEm):
+	(GrabEm):
+	* fvwm/schedule.c (execute_obj_func):
+	* fvwm/add_window.c (hide_screen):
+	(destroy_window):
+	use XFlush instead of XSync when the latter is not necessary
+
+	* libs/fvwmrect.c (fvwmrect_rectangles_equal):
+	new function
+
+	* fvwm/add_window.c (adjust_fvwm_internal_windows):
+	inform frame module if the window with the hide windows dies
+
+	* fvwm/placement.c (PlaceWindow):
+	(CMD_PlaceAgain):
+	* fvwm/add_window.c (setup_window_attr):
+	(setup_frame_attributes):
+	(AddWindow):
+	(RestoreWithdrawnLocation):
+	(setup_window_placement):
+	* fvwm/geometry.c (gravity_translate_to_northwest_geometry):
+	(get_title_geometry):
+	* fvwm/fvwm.c (InitVariables):
+	* fvwm/frame.c (frame_setup_frame):
+	* fvwm/colormaps.c (HandleColormapNotify):
+	(InstallWindowColormaps):
+	* fvwm/events.c (HandleConfigureRequest):
+	(HandleUnmapNotify):
+	* fvwm/fvwm.h (FvwmWindow):
+	removed attr member of FvwmWindow and replaced by a structure defined
+	ourselves that is much smaller
+
+	* fvwm/add_window.c (hide_screen):
+	don't use save_unders and backing_store for the window used in recapture
+
+	* fvwm/frame.c (frame_init):
+	* fvwm/fvwm.c (main):
+	new function to initialise frame module
+
+	* libs/fvwmrect.c (fvwmrect_subtract_rectangles):
+	new function
+
 2002-03-16  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* fvwm/frame.c:
+	clean up
+
+	* fvwm/borders.h (enum):
+	* fvwm/borders.c (draw_clipped_decorations_with_geom):
+	(border_get_parts_and_pos_to_draw):
+	* fvwm/fvwm.h (struct):
+	some clean up
+	fixed calculations of which border parts to draw
 
 	* fvwm/fvwm2.1:
 	corrected some typos

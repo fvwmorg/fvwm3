@@ -64,7 +64,7 @@ void HandleColormapNotify(void)
 {
 	XColormapEvent *cevent = (XColormapEvent *)&Event;
 	Bool ReInstall = False;
-
+	XWindowAttributes attr;
 
 	if (!Fw)
 	{
@@ -72,12 +72,16 @@ void HandleColormapNotify(void)
 	}
 	if (cevent->new)
 	{
-		if (XGetWindowAttributes(dpy,FW_W(Fw),&(Fw->attr)) &&
-		    (Fw  == colormap_win)&&(Fw->number_cmap_windows == 0))
+		if (XGetWindowAttributes(dpy, FW_W(Fw), &attr) != 0)
 		{
-			last_cmap = Fw->attr.colormap;
+			Fw->attr_backup.colormap = attr.colormap;
+			if (Fw == colormap_win &&
+			    Fw->number_cmap_windows == 0)
+			{
+				last_cmap = attr.colormap;
+			}
+			ReInstall = True;
 		}
-		ReInstall = True;
 	}
 	else if ((cevent->state == ColormapUninstalled)&&
 		(last_cmap == cevent->colormap))
@@ -96,12 +100,16 @@ void HandleColormapNotify(void)
 		}
 		if ((Fw)&&(cevent->new))
 		{
-			if (XGetWindowAttributes(dpy,FW_W(Fw),&(Fw->attr)) &&
-			    Fw  == colormap_win && Fw->number_cmap_windows == 0)
+			if (XGetWindowAttributes(dpy, FW_W(Fw), &attr) != 0)
 			{
-				last_cmap = Fw->attr.colormap;
+				Fw->attr_backup.colormap = attr.colormap;
+				if (Fw == colormap_win &&
+				    Fw->number_cmap_windows == 0)
+				{
+					last_cmap = attr.colormap;
+				}
+				ReInstall = True;
 			}
-			ReInstall = True;
 		}
 		else if ((Fw)&&
 			(cevent->state == ColormapUninstalled)&&
@@ -156,7 +164,7 @@ void ReInstallActiveColormap(void)
  *
  ************************************************************************/
 
-void InstallWindowColormaps (FvwmWindow *fw)
+void InstallWindowColormaps(FvwmWindow *fw)
 {
 	int i;
 	XWindowAttributes attributes;
@@ -215,14 +223,14 @@ void InstallWindowColormaps (FvwmWindow *fw)
 
 	if (!ThisWinInstalled)
 	{
-		if (last_cmap != fw->attr.colormap
+		if (last_cmap != fw->attr_backup.colormap
 #if defined(sun) && defined(TRUECOLOR_ALWAYS_INSTALLED)
-		   && !(fw->attr.depth == 24 &&
-			fw->attr.visual->class == TrueColor)
+		   && !(fw->attr_backup.depth == 24 &&
+			fw->attr_backup.visual->class == TrueColor)
 #endif
 			)
 		{
-			last_cmap = fw->attr.colormap;
+			last_cmap = fw->attr_backup.colormap;
 			XInstallColormap(dpy, last_cmap);
 		}
 	}

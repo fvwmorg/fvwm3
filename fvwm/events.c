@@ -679,13 +679,13 @@ ICON_DBG((stderr,"hpn: icon changed '%s'\n", Fw->name));
 	  SendConfigureNotify(
 	    Fw, Fw->frame_g.x, Fw->frame_g.y,
 	    Fw->frame_g.width, Fw->frame_g.height+1, 0, False);
-	  XSync(dpy, 0);
+	  XFlush(dpy);
 	  /* free some CPU */
 	  usleep(1);
 	  SendConfigureNotify(
 	    Fw, Fw->frame_g.x, Fw->frame_g.y,
 	    Fw->frame_g.width, Fw->frame_g.height, 0, False);
-	  XSync(dpy, 0);
+	  XFlush(dpy);
 	}
       }
       GNOME_SetWinArea(Fw);
@@ -1418,11 +1418,16 @@ void HandleUnmapNotify(void)
     EWMH_RestoreInitialStates(Fw, Event.type);
     if (XCheckTypedWindowEvent(dpy, Event.xunmap.window, ReparentNotify, &ev))
     {
-      if (Fw->old_bw)
-	XSetWindowBorderWidth (dpy, Event.xunmap.window, Fw->old_bw);
+      if (Fw->attr_backup.border_width)
+      {
+	XSetWindowBorderWidth(
+		dpy, Event.xunmap.window, Fw->attr_backup.border_width);
+      }
       if((!IS_ICON_SUPPRESSED(Fw))&&
 	 (Fw->wmhints && (Fw->wmhints->flags & IconWindowHint)))
-	XUnmapWindow (dpy, Fw->wmhints->icon_window);
+      {
+	XUnmapWindow(dpy, Fw->wmhints->icon_window);
+      }
     }
     else
     {
@@ -1514,9 +1519,8 @@ void HandleButtonPress(void)
       Event.xbutton.window != Scr.Root)
   {
     /* event in unmanaged window or subwindow of a client */
-    XSync(dpy,0);
     XAllowEvents(dpy,ReplayPointer,CurrentTime);
-    XSync(dpy,0);
+    XFlush(dpy);
     UngrabEm(GRAB_PASSIVE);
     return;
   }
@@ -1533,9 +1537,8 @@ void HandleButtonPress(void)
 		    &JunkWidth, &JunkHeight, &JunkBW, &JunkDepth))
   {
     /* The window has already died. Just pass the event to the application. */
-    XSync(dpy,0);
     XAllowEvents(dpy,ReplayPointer,CurrentTime);
-    XSync(dpy,0);
+    XFlush(dpy);
     UngrabEm(GRAB_PASSIVE);
     return;
   }
@@ -1586,7 +1589,7 @@ void HandleButtonPress(void)
       }
       if (do_regrab_buttons)
 	focus_grab_buttons(Fw, (Fw == get_focus_window()));
-      XSync(dpy,0);
+      XFlush(dpy);
       /* Pass click event to just clicked to focus window? Do not swallow the
        * click if the window didn't accept the focus. */
       if (!DO_NOT_PASS_CLICK_FOCUS_CLICK(Fw) ||
@@ -1629,9 +1632,8 @@ void HandleButtonPress(void)
 	RaiseWindow(Fw);
 	focus_grab_buttons(Fw, True);
 	Scr.Ungrabbed = tmp;
-	XSync(dpy,0);
 	XAllowEvents(dpy,ReplayPointer,CurrentTime);
-	XSync(dpy,0);
+	XFlush(dpy);
 	UngrabEm(GRAB_PASSIVE);
 	return;
       }
@@ -1678,7 +1680,7 @@ void HandleButtonPress(void)
 	  RaiseWindow(Fw);
 	  focus_grab_buttons(Fw, True);
 	  Scr.Ungrabbed = tmp;
-	  XSync(dpy,0);
+	  XFlush(dpy);
 	  UngrabEm(GRAB_PASSIVE);
 	  return;
 	}
@@ -1722,9 +1724,7 @@ void HandleButtonPress(void)
     else
     {
       DrawDecorations(
-        Fw, DRAW_FRAME, (Scr.Hilite == Fw), 0
-        /*!!!(HAS_DEPRESSABLE_BORDER(Fw) && PressedW != None)*/,
-	PressedW, CLEAR_ALL);
+	      Fw, DRAW_FRAME, (Scr.Hilite == Fw), 0, PressedW, CLEAR_ALL);
     }
   }
 
@@ -1756,9 +1756,8 @@ void HandleButtonPress(void)
 
   if (do_pass_click)
   {
-    XSync(dpy,0);
     XAllowEvents(dpy,ReplayPointer,CurrentTime);
-    XSync(dpy,0);
+    XFlush(dpy);
   }
 
   if (ButtonWindow && IS_SCHEDULED_FOR_RAISE(ButtonWindow) && has_binding)
@@ -1792,8 +1791,8 @@ void HandleButtonPress(void)
     else
     {
       DrawDecorations(
-        ButtonWindow, DRAW_FRAME, (Scr.Hilite == ButtonWindow),
-        0/*!!!HAS_DEPRESSABLE_BORDER(ButtonWindow)*/, None, CLEAR_NONE);
+        ButtonWindow, DRAW_FRAME, (Scr.Hilite == ButtonWindow), 0, None,
+	CLEAR_NONE);
     }
   }
   ButtonWindow = NULL;
@@ -2396,7 +2395,7 @@ fprintf(stderr, "cre: %d(%d) %d(%d) %d(%d)x%d(%d) w 0x%08x '%s'\n",
     /* for restoring */
     if (cre->value_mask & CWBorderWidth)
     {
-      Fw->old_bw = cre->border_width;
+      Fw->attr_backup.border_width = cre->border_width;
     }
     /* override even if border change */
     get_window_borders(Fw, &b);
@@ -2604,7 +2603,7 @@ fprintf(stderr, "cre: %d(%d) %d(%d) %d(%d)x%d(%d) w 0x%08x '%s'\n",
     SendConfigureNotify(
       Fw, Fw->frame_g.x, Fw->frame_g.y,
       new_g.width, new_g.height, cre->border_width, True);
-    XSync(dpy,0);
+    XFlush(dpy);
   }
 #endif
 }
@@ -3248,52 +3247,52 @@ void CoerceEnterNotifyOnCurrentWindow(void)
  * ButtonMotion events. */
 int discard_events(long event_mask)
 {
-  XEvent e;
-  int count;
+	XEvent e;
+	int count;
 
-  XSync(dpy, 0);
-  for (count = 0; XCheckMaskEvent(dpy, event_mask, &e); count++)
-  {
-    StashEventTime(&e);
-  }
+	XSync(dpy, 0);
+	for (count = 0; XCheckMaskEvent(dpy, event_mask, &e); count++)
+	{
+		StashEventTime(&e);
+	}
 
-  return count;
+	return count;
 }
 
 /* This function discards all queued up ButtonPress, ButtonRelease and
  * ButtonMotion events. */
 int discard_window_events(Window w, long event_mask)
 {
-  XEvent e;
-  int count;
+	XEvent e;
+	int count;
 
-  XSync(dpy, 0);
-  for (count = 0; XCheckWindowEvent(dpy, w, event_mask, &e); count++)
-  {
-    StashEventTime(&e);
-  }
+	XSync(dpy, 0);
+	for (count = 0; XCheckWindowEvent(dpy, w, event_mask, &e); count++)
+	{
+		StashEventTime(&e);
+	}
 
-  return count;
+	return count;
 }
 
 /* Similar function for certain types of PropertyNotify. */
 int flush_property_notify(Atom atom, Window w)
 {
-  XEvent e;
-  int count;
+	XEvent e;
+	int count;
 
-  XSync(dpy, 0);
-  for (count = 0; XCheckTypedWindowEvent(dpy, w, PropertyNotify, &e);
-       count++)
-  {
-    if (e.xproperty.atom != atom)
-    {
-      XPutBackEvent(dpy, &e);
-      break;
-    }
-  }
+	XSync(dpy, 0);
+	for (count = 0; XCheckTypedWindowEvent(dpy, w, PropertyNotify, &e);
+	     count++)
+	{
+		if (e.xproperty.atom != atom)
+		{
+			XPutBackEvent(dpy, &e);
+			break;
+		}
+	}
 
-  return count;
+	return count;
 }
 
 /***************************************************************************

@@ -42,6 +42,7 @@
 #include "libs/FScreen.h"
 #include "libs/FShape.h"
 #include "libs/Flocale.h"
+#include <libs/gravity.h>
 #include "fvwm.h"
 #include "externs.h"
 #include "cursor.h"
@@ -71,6 +72,7 @@
 #include "update.h"
 #include "window_flags.h"
 #include "move_resize.h"
+#include "frame.h"
 
 #include <X11/Xproto.h>
 #include <X11/Xatom.h>
@@ -557,21 +559,21 @@ int main(int argc, char **argv)
                                CWEventMask | CWOverrideRedirect | CWColormap
                                | CWBackPixmap | CWBorderPixel, &attributes);
   XMapWindow(dpy, Scr.NoFocusWin);
-
   SetMWM_INFO(Scr.NoFocusWin);
   FOCUS_SET(Scr.NoFocusWin);
 
-  XSync(dpy, 0);
+  frame_init();
+  XFlush(dpy);
   if(debugging)
   {
 	  sync_server(1);
   }
 
-  SetupICCCM2 (replace_wm);
+  SetupICCCM2(replace_wm);
   XSetErrorHandler(CatchRedirectError);
   XSetIOErrorHandler(CatchFatal);
   XSelectInput(dpy, Scr.Root, XEVMASK_ROOTW);
-  XSync(dpy, 0);
+  XFlush(dpy);
 
   XSetErrorHandler(FvwmErrorHandler);
 
@@ -1414,11 +1416,6 @@ static void InitVariables(void)
 
   init_stack_and_layers();
 
-  if (!XGetWindowAttributes(dpy,Scr.Root,&(Scr.FvwmRoot.attr)))
-  {
-    fvwm_msg(ERR, "InitVariables", "Could not get root window attributes");
-    exit(0);
-  }
   Scr.root_pushes = 0;
   Scr.fvwm_pushes = 0;
   Scr.pushed_window = &Scr.FvwmRoot;
@@ -1780,7 +1777,7 @@ void SaveDesktopState()
   XChangeProperty (dpy, Scr.Root, _XA_WM_DESKTOP, _XA_WM_DESKTOP, 32,
                    PropModeReplace, (unsigned char *) data, 1);
 
-  XSync(dpy, 0);
+  XFlush(dpy);
 }
 
 

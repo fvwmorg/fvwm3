@@ -104,9 +104,11 @@ void gravity_translate_to_northwest_geometry(
 
 	gravity_get_offsets(gravity, &xoff, &yoff);
 	dest_g->x = orig_g->x -
-		((xoff + 1) * (orig_g->width - 1 + 2 * t->old_bw)) / 2;
+		((xoff + 1) * (orig_g->width - 1 +
+			       2 * t->attr_backup.border_width)) / 2;
 	dest_g->y = orig_g->y -
-		((yoff + 1) * (orig_g->height - 1 + 2 * t->old_bw)) / 2;
+		((yoff + 1) * (orig_g->height - 1 +
+			       2 * t->attr_backup.border_width)) / 2;
 	dest_g->width = orig_g->width;
 	dest_g->height = orig_g->height;
 
@@ -116,11 +118,11 @@ void gravity_translate_to_northwest_geometry(
 void gravity_translate_to_northwest_geometry_no_bw(
 	int gravity, FvwmWindow *t, rectangle *dest_g, rectangle *orig_g)
 {
-	int bw = t->old_bw;
+	int bw = t->attr_backup.border_width;
 
-	t->old_bw = 0;
+	t->attr_backup.border_width = 0;
 	gravity_translate_to_northwest_geometry(gravity, t, dest_g, orig_g);
-	t->old_bw = bw;
+	t->attr_backup.border_width = bw;
 
 	return;
 }

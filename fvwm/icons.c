@@ -771,7 +771,7 @@ void DrawIconWindow(FvwmWindow *fw)
   }
   /* wait for pending EnterNotify/LeaveNotify events to suppress race condition
    * w/ expanding/collapsing icon titles */
-  XSync(dpy, 0);
+  XFlush(dpy);
 }
 
 /***********************************************************************
