@@ -81,6 +81,8 @@ void CreateIconWindow(FvwmWindow *tmp_win, int def_x, int def_y)
   tmp_win->icon_pixmap_w = None;
   tmp_win->iconPixmap = None;
   tmp_win->iconDepth = 0;
+  tmp_win->iconCMap = Scr.cmap;
+  tmp_win->iconViz = Scr.viz;
 
   if(IS_ICON_SUPPRESSED(tmp_win))
     return;
@@ -126,7 +128,7 @@ void CreateIconWindow(FvwmWindow *tmp_win, int def_x, int def_y)
   if((IS_ICON_OURS(tmp_win))&&(tmp_win->icon_p_height >0))
     {
       tmp_win->icon_p_width += 4;
-      tmp_win->icon_p_height +=4;
+      tmp_win->icon_p_height += 4;
     }
 
   if(tmp_win->icon_p_width == 0)
@@ -170,13 +172,17 @@ void CreateIconWindow(FvwmWindow *tmp_win, int def_x, int def_y)
 
   if((IS_ICON_OURS(tmp_win)) && (tmp_win->icon_p_width > 0)
      && (tmp_win->icon_p_height > 0)) {
-      /* fixme: if a client pixmap is supplied use it's depth, visual and
-       * colormap */
+      /* fixme: should create a window of the same visual, colormap and depth
+         as the pixmap but how? */
+      if (tmp_win->iconDepth != Scr.depth) /* don't want garbage */
+        attributes.background_pixel = 0;
+      attributes.colormap = tmp_win->iconCMap;
       tmp_win->icon_pixmap_w = XCreateWindow(dpy, Scr.Root, final_x, final_y,
 					     tmp_win->icon_p_width,
 					     tmp_win->icon_p_height, 0,
-					     Scr.depth, InputOutput, Scr.viz,
-					     valuemask,&attributes);
+					     tmp_win->iconDepth, InputOutput,
+					     tmp_win->iconViz, valuemask,
+					     &attributes);
     }
   else
     {
@@ -325,18 +331,20 @@ void DrawIconWindow(FvwmWindow *Tmp_win)
         }
     }
 
-  if((IS_ICON_OURS(Tmp_win))&&(Tmp_win->icon_pixmap_w != None))
-    XSetWindowBackground(dpy,Tmp_win->icon_pixmap_w,
-			 BackColor);
+  if((IS_ICON_OURS(Tmp_win)) && (Tmp_win->icon_pixmap_w != None)
+      && (Tmp_win->iconDepth == Scr.depth)) {
+    XSetWindowBackground(dpy, Tmp_win->icon_pixmap_w, BackColor);
+  }
   if(Tmp_win->icon_w != None)
-    XSetWindowBackground(dpy,Tmp_win->icon_w,BackColor);
+    XSetWindowBackground(dpy, Tmp_win->icon_w, BackColor);
 
   /* write the icon label */
   NewFontAndColor(Scr.IconFont.font->fid,TextColor,BackColor);
 
-  if(Tmp_win->icon_pixmap_w != None)
-    XMoveWindow(dpy,Tmp_win->icon_pixmap_w,Tmp_win->icon_x_loc,
-                Tmp_win->icon_y_loc);
+  if(Tmp_win->icon_pixmap_w != None) {
+    XMoveWindow(dpy, Tmp_win->icon_pixmap_w, Tmp_win->icon_x_loc,
+		Tmp_win->icon_y_loc);
+  }
   if(Tmp_win->icon_w != None)
     {
       Tmp_win->icon_w_height = ICON_HEIGHT;
@@ -347,26 +355,25 @@ void DrawIconWindow(FvwmWindow *Tmp_win)
       XClearWindow(dpy,Tmp_win->icon_w);
     }
 
-  if((Tmp_win->iconPixmap != None)&&(!(IS_ICON_SHAPED(Tmp_win))))
+  if((Tmp_win->iconPixmap != None) && (!(IS_ICON_SHAPED(Tmp_win)))
+     && (Tmp_win->iconDepth == Scr.depth)) {
     RelieveRectangle(dpy,Tmp_win->icon_pixmap_w,0,0,
 	             Tmp_win->icon_p_width - 1, Tmp_win->icon_p_height - 1,
 	             Relief,Shadow,2);
+  }
 
   /* need to locate the icon pixmap */
-  if(Tmp_win->iconPixmap != None)
-    {
-      if(Tmp_win->iconDepth == Scr.depth)
-	{
-	  XCopyArea(dpy,Tmp_win->iconPixmap,Tmp_win->icon_pixmap_w,
-		    Scr.ScratchGC3,
-		    0,0,Tmp_win->icon_p_width-4, Tmp_win->icon_p_height-4,2,2);
-	}
-      else /* fixme: this only copies one plane, should be min(scr,icon) */
-           /* even if fixed the result will probabaly be garbage */
-	XCopyPlane(dpy,Tmp_win->iconPixmap,Tmp_win->icon_pixmap_w,
-		   Scr.ScratchGC3,0,0,Tmp_win->icon_p_width-4,
-		   Tmp_win->icon_p_height-4,2,2,1);
+  if(Tmp_win->iconPixmap != None) {
+    if (Tmp_win->iconDepth != Scr.depth) {
+      XCopyArea(dpy, Tmp_win->iconPixmap, Tmp_win->icon_pixmap_w,
+		DefaultGC(dpy, Scr.screen), 0, 0, Tmp_win->icon_p_width - 4,
+		Tmp_win->icon_p_height - 4, 2, 2);
+    } else {
+      XCopyArea(dpy, Tmp_win->iconPixmap, Tmp_win->icon_pixmap_w,
+		Scr.ScratchGC3, 0, 0, Tmp_win->icon_p_width - 4,
+		Tmp_win->icon_p_height - 4, 2, 2);
     }
+  }
 
   if(Tmp_win->icon_w != None)
     {
@@ -380,6 +387,31 @@ void DrawIconWindow(FvwmWindow *Tmp_win)
                    Tmp_win->icon_name, strlen(Tmp_win->icon_name));
       RelieveRectangle(dpy,Tmp_win->icon_w,0,0,Tmp_win->icon_w_width - 1,
                        ICON_HEIGHT - 1,Relief,Shadow,2);
+    }
+
+  if (IS_ICON_ENTERED(Tmp_win))
+    {
+      if (Tmp_win->icon_w != None)
+	{
+	  XRaiseWindow (dpy, Tmp_win->icon_w);
+	  raisePanFrames ();
+	}
+    }
+  else
+    {
+      XWindowChanges xwc;
+      int mask;
+      xwc.sibling = Tmp_win->frame;
+      xwc.stack_mode = Below;
+      mask = CWSibling|CWStackMode;
+      if (Tmp_win->icon_w != None)
+	{
+	  XConfigureWindow(dpy, Tmp_win->icon_w, mask, &xwc);
+	}
+      if (Tmp_win->icon_pixmap_w != None)
+	{
+	  XConfigureWindow(dpy, Tmp_win->icon_pixmap_w, mask, &xwc);
+	}
     }
 
   if (IS_ICON_ENTERED(Tmp_win))
@@ -849,6 +881,16 @@ void GetIconBitmap(FvwmWindow *tmp_win)
 	       (unsigned int *)&tmp_win->icon_p_height, &JunkBW, &JunkDepth);
   tmp_win->iconPixmap = tmp_win->wmhints->icon_pixmap;
   tmp_win->iconDepth = JunkDepth;
+  if (tmp_win->iconDepth != Scr.depth) {
+    /* have to find a suitable visual, assume the root one */
+    if (tmp_win->iconDepth != DefaultDepth(dpy, Scr.screen)) {
+      fvwm_msg(ERR, "GetIconBitmap", "Help! Bad client supplied icon pixmap");
+    } else {
+      tmp_win->iconCMap = DefaultColormap(dpy, Scr.screen);
+      tmp_win->iconViz = DefaultVisual(dpy, Scr.screen);
+    }
+  }
+  
 #ifdef SHAPE
   if (ShapesSupported)
   {
