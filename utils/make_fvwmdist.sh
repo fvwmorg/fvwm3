@@ -196,7 +196,7 @@ if [ $IS_RELEASE = 0 ] ; then
 else
   echo updating NEWS file
   NNEWS="new-NEWS"
-  perl -pe 's/^(.*) '$VRELNUM' (\(not released yet\))$/$1 '$VRELNUMP' $2\n\n$1 '$VRELNUM' (@{[substr(`date "+%d-%b-%Y"`,0,12)]})/' \
+  perl -pe 's/^(.*) '$VRELNUM' (\(not released yet\))$/$1 '$VRELNUMP' $2\n\n$1 '$VRELNUM' (@{[substr(`date "+%d-%b-%Y"`,0,11)]})/' \
       < NEWS > $NNEWS || exit 41
   mv $NNEWS NEWS || exit 42
   echo updating FAQ file

@@ -1,7 +1,7 @@
 Note, the changes for the last STABLE release start with release
 _+_A HREF="#2.4.0"_-_2.4.0_+_/A_-_.
 
-Changes in beta 2.5.0 (not released yet)
+Changes in stable release 2.4.4 (not released yet)
 
 * Window titlebars may now be designed using a new powerful TitleStyle
   option MultiPixmap, that enables to specify separate pixmaps for
@@ -32,7 +32,7 @@ Changes in beta 2.5.0 (not released yet)
 
 * Restored the default Alt-Tab behaviour from 2.4.0.
 
-Changes in stable 2.4.3 (8-Oct-2001)
+Changes in stable release 2.4.3 (08-Oct-2001)
 
 * Fixed activation of shape extension.
 
@@ -53,7 +53,7 @@ Changes in stable 2.4.3 (8-Oct-2001)
 
 * Some icon placement improvements with Xinerama.
 
-Changes in stable 2.4.2 (16-Sep-2001)
+Changes in stable release 2.4.2 (16-Sep-2001)
 
 * Desk and page can be given as X resources in .Xdefaults, for example:
     xterm.desk: 1
