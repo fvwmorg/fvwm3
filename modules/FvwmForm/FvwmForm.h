@@ -44,12 +44,14 @@
 #define ITEMS_PER_EXPANSION 32
 #define CHOICES_PER_SEL_EXPANSION 8
 #define BUTTON_COMMAND_EXPANSION 8
+#define TIMEOUT_COMMAND_EXPANSION 8
 
 #define I_TEXT          1
 #define I_INPUT         2
 #define I_SELECT        3
 #define I_CHOICE        4
 #define I_BUTTON        5
+#define I_TIMEOUT       6
 
 #define IS_SINGLE       1
 #define IS_MULTIPLE     2
@@ -138,6 +140,15 @@ typedef union _item {
     int button_array_size;              /* current size of next array */
     char **commands;    /* Fvwm command to execute */
   } button;
+  struct {
+    struct _head head;
+    int timeleft;       /* seconds left on timer */
+    int len;            /* text length */
+    char *text;         /* text string */
+    int numcommands;	/* # of commands */
+    int timeout_array_size;  /* current size of next array */
+    char **commands;    /* Fvwm command(s) to execute */
+  } timeout;
 } Item;
 
 #define L_LEFT        1
@@ -224,8 +235,8 @@ enum { c_bg, c_fg, c_item_bg, c_item_fg, c_itemlo, c_itemhi };
 extern char *color_names[4];
 extern char bg_state;
 extern char endDefaultsRead;
-enum { f_text, f_input, f_button };
-extern char *font_names[3];
+enum { f_text, f_input, f_button, f_timeout };
+extern char *font_names[4];
 extern char *screen_background_color;
 
 extern int colorset;
@@ -255,6 +266,7 @@ extern int Channel[2];
 /* prototypes */
 void ReadXServer();                     /* ReadXServer.c */
 void RedrawText(Item *item);            /* FvwmForm.c */
+void RedrawTimeout(Item *item);         /* FvwmForm.c */
 void RedrawItem (Item *item, int click); /* FvwmForm.c */
 void UpdateRootTransapency(void);        /* FvwmForm.c */
 void DoCommand (Item *cmd);             /* FvwmForm.c */

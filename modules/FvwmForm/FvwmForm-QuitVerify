@@ -11,3 +11,4 @@ DestroyModuleConfig  FvwmForm-QuitVerify: *
 *FvwmForm-QuitVerify: Command     Restart
 *FvwmForm-QuitVerify: Button      quit "Cancel" ^[
 *FvwmForm-QuitVerify: Command     Nop
+*FvwmForm-QuitVerify: Timeout     20 Quit "Automatic logout will occur in %% seconds."

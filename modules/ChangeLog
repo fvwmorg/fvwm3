@@ -1,3 +1,18 @@
+2002-03-14  Daniel Henninger  <daniel@ncsu.edu>
+
+	* FvwmForm/FvwmForm.1:
+	Added TimeoutFont and Timeout description.
+
+	* FvwmForm/FvwmForm-QuitVerify:
+	Added a 20 second timeout.
+
+	* FvwmForm/FvwmForm-Form:
+	Customize timeout font.
+
+	* FvwmForm/FvwmForm.h:
+	* FvwmForm/FvwmForm.c:
+	Added Timeout feature.
+
 2002-03-15  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* FvwmIconMan/xmanager.c (draw_empty_manager):

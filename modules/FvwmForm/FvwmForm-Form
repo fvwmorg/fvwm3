@@ -15,6 +15,9 @@ DestroyModuleConfig FvwmForm-Form: *
 *FvwmForm-Form: Text  "Font for button:"
 *FvwmForm-Form: Input ButtonFont 63 "8x13bold"
 *FvwmForm-Form: Line  left
+*FvwmForm-Form: Text  "Font for timeout text:"
+*FvwmForm-Form: Input TimeoutFont 63 "8x13bold"
+*FvwmForm-Form: Line  left
 *FvwmForm-Form: Text  "Color of text f/g:   "
 *FvwmForm-Form: Input Fore 15 "Wheat"
 *FvwmForm-Form: Text  "b/g:"
@@ -70,6 +73,7 @@ DestroyModuleConfig FvwmForm-Form: *
  '*FvwmFormDefault: Font $(Font)'            ; /bin/echo \
  '*FvwmFormDefault: InputFont $(InputFont)'  ; /bin/echo \
  '*FvwmFormDefault: ButtonFont $(ButtonFont)'; /bin/echo \
+ '*FvwmFormDefault: TimeoutFont $(TimeoutFont)'; /bin/echo \
  '*FvwmFormDefault: Fore $(Fore)'            ; /bin/echo \
  '*FvwmFormDefault: Back $(Back)'            ; /bin/echo \
  '*FvwmFormDefault: Colorset $(Colorset)'    ; /bin/echo \

@@ -62,6 +62,7 @@ Line *cur_line = &root_line;            /* curr line in parse rtns */
 char preload_yorn='n';           /* init to non-preload */
 Item *item;                             /* current during parse */
 Item *cur_sel, *cur_button;             /* current during parse */
+Item *timer = NULL;			/* timeout tracking */
 Display *dpy;
 int fd_x;                  /* fd for X connection */
 Window root, ref;
@@ -72,7 +73,7 @@ char bg_state = 'd';                    /* in default state */
   /* s = set by command (must be in "d" state for first "back" cmd to set it) */
   /* u = used (color allocated, too late to accept "back") */
 char endDefaultsRead = 'n';
-char *font_names[3];
+char *font_names[4];
 char *screen_background_color;
 char *MyName;
 int MyNameLen;
@@ -94,6 +95,37 @@ static void AddItem();
 static void PutDataInForm(char *);
 static void ReadFormData();
 static void FormVarsCheck(char **);
+static RETSIGTYPE TimerHandler(int);
+
+static void SetupTimer()
+{
+#ifdef HAVE_SIGACTION
+  {
+    struct sigaction  sigact;
+
+#ifdef SA_INTERRUPT
+    sigact.sa_flags = SA_INTERRUPT;
+#else
+    sigact.sa_flags = 0;
+#endif
+    sigemptyset(&sigact.sa_mask);
+    sigaddset(&sigact.sa_mask, SIGALRM);
+    sigact.sa_handler = TimerHandler;
+
+    sigaction(SIGALRM, &sigact, NULL);
+  }
+#else
+#ifdef USE_BSD_SIGNALS
+  fvwmSetSignalMask( sigmask(SIGALRM) );
+#endif
+  signal(SIGALRM, TimerHandler);  /* Dead pipe == Fvwm died */
+#ifdef HAVE_SIGINTERRUPT
+  siginterrupt(SIGALRM, 1);
+#endif
+#endif
+
+  alarm(1);
+}
 
 /* copy a string until '"', or '\n', or '\0' */
 static char *CopyQuotedString (char *cp)
@@ -173,6 +205,8 @@ static void ct_Text(char *);
 static void ct_InputPointer(char *);
 static void ct_InputPointerBack(char *);
 static void ct_InputPointerFore(char *);
+static void ct_Timeout(char *);
+static void ct_TimeoutFont(char *);
 static void ct_Title(char *);
 static void ct_UseData(char *);
 static void ct_padVText(char *);
@@ -214,6 +248,8 @@ static struct CommandTable ct_table[] =
   {"Position",ct_Position},
   {"Selection",ct_Selection},
   {"Text",ct_Text},
+  {"Timeout",ct_Timeout},
+  {"TimeoutFont",ct_TimeoutFont},
   {"Title",ct_Title},
   {"UseData",ct_UseData},
   {"WarpPointer",ct_WarpPointer}
@@ -241,7 +277,8 @@ static struct CommandTable def_table[] =
   {"ItemBack",ct_ItemBack},
   {"ItemColorset",ct_ItemColorset},
   {"ItemFore",ct_ItemFore},
-  {"Read",ct_Read}
+  {"Read",ct_Read},
+  {"TimeoutFont",ct_TimeoutFont}
 };
 
 /* If there were vars on the command line, do env var sustitution on
@@ -497,6 +534,13 @@ static void ct_Font(char *cp)
   font_names[f_text] = safestrdup(cp);
   myfprintf((stderr, "Font: %s\n", font_names[f_text]));
 }
+static void ct_TimeoutFont(char *cp)
+{
+  if (font_names[f_timeout])
+    free(font_names[f_timeout]);
+  font_names[f_timeout] = safestrdup(cp);
+  myfprintf((stderr, "TimeoutFont: %s\n", font_names[f_timeout]));
+}
 static void ct_ButtonFont(char *cp)
 {
   if (font_names[f_button])
@@ -647,7 +691,8 @@ static void CheckAlloc(Item *this_item,DrawTable *dt)
 
     dt->dt_used = 1;                    /* fore/back font allocated */
   }
-  if (this_item->type == I_TEXT) {      /* If no shadows needed */
+  if (this_item->type == I_TEXT
+      || this_item->type == I_TIMEOUT) {      /* If no shadows needed */
     return;
   }
   dt->dt_colors[c_item_fg] = (itemcolorset < 0)
@@ -697,6 +742,8 @@ static void AssignDrawTable(Item *adt_item)
   match_item_back = color_names[c_item_bg];
   if (adt_item->type == I_TEXT) {
     match_font = font_names[f_text];
+  } else if (adt_item->type == I_TIMEOUT) {
+    match_font = font_names[f_timeout];
   } else if (adt_item->type == I_INPUT) {
     match_font = font_names[f_input];
   } else {
@@ -794,6 +841,73 @@ static void ct_Title(char *cp)
   else
     CF.title = "";
   myfprintf((stderr, "Title \"%s\"\n", CF.title));
+}
+static void ct_Timeout(char *cp)
+{
+  /* syntax: *FFTimeout seconds <Command> "Text" */
+  char *tmpcp, *tmpbuf;
+
+  if (timer != NULL) {
+    fprintf(stderr,"Only one timeout per form allowed, skipped %s.\n",cp);
+    return;
+  }
+  AddItem();
+  bg_state = 'u';                       /* indicate b/g color now used. */
+  item->type = I_TIMEOUT;
+  /* Item now added to list of items, now it needs a pointer
+     to the correct DrawTable. */
+  AssignDrawTable(item);
+  item->header.name = "";
+
+  item->timeout.timeleft = atoi(cp);
+  if (item->timeout.timeleft < 0)
+  {
+    item->timeout.timeleft = 0;
+  }
+  else if (item->timeout.timeleft > 99999)
+  {
+    item->timeout.timeleft = 99999;
+  }
+  timer = item;
+
+  while (!isspace((unsigned char)*cp)) cp++; /* skip timeout */
+  while (isspace((unsigned char)*cp)) cp++; /* move up to command */
+
+  tmpbuf = safestrdup(cp);
+  tmpcp = tmpbuf;
+  while (!isspace((unsigned char)*tmpcp)) tmpcp++;
+  /* question */
+  /* This next piece assumes the command is one word, That no
+     good, treat it as a word or a quoted string. */
+  *tmpcp = '\0';                        /* cutoff command at first word */
+  /* question */
+  /* This pretends that there can be more than one command
+     per timeout, but I don't see how. */
+  item->timeout.timeout_array_size += TIMEOUT_COMMAND_EXPANSION;
+  item->timeout.commands =
+    (char **)saferealloc((void *)item->timeout.commands,
+			   sizeof(char *) *
+			   item->timeout.timeout_array_size);
+  item->timeout.commands[item->timeout.numcommands++] = safestrdup(tmpbuf);
+  free(tmpbuf);
+
+  while (!isspace((unsigned char)*cp)) cp++; /* move past command again */
+  while (isspace((unsigned char)*cp)) cp++; /* move up to start of text */
+
+  if (*cp == '\"') {
+    item->timeout.text = CopyQuotedString(++cp);
+  } else
+    item->timeout.text = "";
+  item->timeout.len = strlen(item->timeout.text);
+
+  item->header.size_x = FlocaleTextWidth(item->header.dt_ptr->dt_Ffont,
+                                   item->timeout.text,
+                                   item->timeout.len) + 2 * TEXT_SPC;
+  item->header.size_y = item->header.dt_ptr->dt_Ffont->height
+     + CF.padVText;
+  myfprintf((stderr, "Timeout %d \"%s\" [%d, %d]\n", item->timeout.timeleft,
+		item->timeout.text, item->header.size_x, item->header.size_y));
+  AddToLine(item);
 }
 static void ct_padVText(char *cp)
 {
@@ -1115,6 +1229,7 @@ static void InitConstants () {
   font_names[0]=safestrdup("8x13bold");
   font_names[1]=safestrdup("8x13bold");
   font_names[2]=safestrdup("8x13bold");
+  font_names[3]=safestrdup("8x13bold");
   screen_background_color=safestrdup("Light Gray");
   CF.p_c[input_fore].pointer_color.pixel = WhitePixel(dpy, screen);
   CF.p_c[input_back].pointer_color.pixel = BlackPixel(dpy, screen);
@@ -1365,6 +1480,9 @@ void RedrawFrame ()
     case I_TEXT:
       RedrawText(item);
       break;
+    case I_TIMEOUT:
+      RedrawTimeout(item);
+      break;
     case I_CHOICE:
       item->header.dt_ptr->dt_Fstr->win = CF.frame;
       item->header.dt_ptr->dt_Fstr->gc  = item->header.dt_ptr->dt_GC;
@@ -1400,6 +1518,60 @@ void RedrawText(Item *item)
   FlocaleDrawString(dpy,
                     item->header.dt_ptr->dt_Ffont,
                     item->header.dt_ptr->dt_Fstr, FWS_HAVE_LENGTH);
+  return;
+}
+
+void RedrawTimeout(Item *item)
+{
+  char *p;
+  char *tmpbuf, *tmpptr, *tmpbptr;
+  int reallen;
+
+  XClearArea(dpy, CF.frame,
+               item->header.pos_x, item->header.pos_y,
+               item->header.size_x, item->header.size_y,
+               False);
+
+  tmpbuf = safemalloc(item->timeout.len + 6);
+  tmpbptr = tmpbuf;
+  for (tmpptr = item->timeout.text; *tmpptr != '\0' &&
+		!(tmpptr[0] == '%' && tmpptr[1] == '%'); tmpptr++) {
+    *tmpbptr = *tmpptr;
+    tmpbptr++;
+  }
+  if (tmpptr[0] == '%') {
+    tmpptr++; tmpptr++;
+    sprintf(tmpbptr, "%d", item->timeout.timeleft);
+    tmpbptr += strlen(tmpbptr);
+  }
+  for (; *tmpptr != '\0'; tmpptr++) {
+    *tmpbptr = *tmpptr;
+    tmpbptr++;
+  }
+  *tmpbptr = '\0';
+  
+  reallen = strlen(tmpbuf);
+  item->header.size_x = FlocaleTextWidth(item->header.dt_ptr->dt_Ffont,
+                                   tmpbuf, reallen) + 2 * TEXT_SPC;
+  item->header.size_y = item->header.dt_ptr->dt_Ffont->height + CF.padVText;
+
+  CheckAlloc(item,item->header.dt_ptr); /* alloc colors and fonts needed */
+  item->header.dt_ptr->dt_Fstr->len = reallen;
+  if ((p = memchr(item->timeout.text, '\0', item->header.dt_ptr->dt_Fstr->len))
+      != NULL)
+    item->header.dt_ptr->dt_Fstr->len = p - tmpbuf;
+  item->header.dt_ptr->dt_Fstr->win = CF.frame;
+  item->header.dt_ptr->dt_Fstr->gc  = item->header.dt_ptr->dt_GC;
+  if (item->header.dt_ptr->dt_Fstr->str != NULL)
+    free(item->header.dt_ptr->dt_Fstr->str);
+  item->header.dt_ptr->dt_Fstr->str = safestrdup(tmpbuf);
+  item->header.dt_ptr->dt_Fstr->x   = item->header.pos_x + TEXT_SPC;
+  item->header.dt_ptr->dt_Fstr->y   = item->header.pos_y + ( CF.padVText / 2 ) +
+    item->header.dt_ptr->dt_Ffont->ascent;
+  FlocaleDrawString(dpy,
+                    item->header.dt_ptr->dt_Ffont,
+                    item->header.dt_ptr->dt_Fstr, FWS_HAVE_LENGTH);
+  free(tmpbuf);
   return;
 }
 
@@ -1657,6 +1829,7 @@ void DoCommand (Item *cmd)
     /* construct command */
     parsed_command = ParseCommand(0, cmd->button.commands[k], '\0', &dn, &sp);
     myfprintf((stderr, "Final command[%d]: [%s]\n", k, parsed_command));
+    fprintf(stderr, "Final command[%d]: [%s]\n", k, parsed_command);
 
     /* send command */
     if ( parsed_command[0] == '!') {    /* If command starts with ! */
@@ -2100,6 +2273,64 @@ TerminateHandler(int sig)
   fvwmSetTerminate(sig);
 }
 
+/* signal-handler to make the timer work */
+static RETSIGTYPE
+TimerHandler(int sig)
+{
+  int k, dn;
+  char *sp;
+
+  timer->timeout.timeleft--;
+  if (timer->timeout.timeleft <= 0) {
+    /* pre-command */
+    if (!XWithdrawWindow(dpy, CF.frame, screen))
+    {
+      /* hm, what can we do now? just ignore this situation. */
+    }
+
+    for (k = 0; k < timer->timeout.numcommands; k++) {
+      char *parsed_command;
+      /* construct command */
+      parsed_command = ParseCommand(0, timer->timeout.commands[k],
+                                    '\0', &dn, &sp);
+      myfprintf((stderr, "Final command[%d]: [%s]\n", k, parsed_command));
+
+      /* send command */
+      if ( parsed_command[0] == '!') {    /* If command starts with ! */
+        system(parsed_command+1);         /* Need synchronous execution */
+      } else {
+        SendText(Channel,parsed_command, ref);
+      }
+    }
+
+    /* post-command */
+    if (CF.last_error) {                  /* if form has last_error field */
+      memset(CF.last_error->text.value, ' ', CF.last_error->text.n); /* clear */
+      /* To do this more elegantly, the window resize logic should recalculate
+         size_x for the Message as the window resizes.  Right now, just clear
+         a nice wide area. dje */
+      XClearArea(dpy,CF.frame,
+                 CF.last_error->header.pos_x,
+                 CF.last_error->header.pos_y,
+                 /* CF.last_error->header.size_x, */
+                 2000,
+                 CF.last_error->header.size_y, False);
+    } /* end form has last_error field */
+    if (CF.grab_server)
+      XUngrabServer(dpy);
+    /* This is a temporary bug workaround for the pipe drainage problem */
+    SendQuitNotification(Channel);    /* let commands complete */
+    /* Note how the window is withdrawn, but execution continues until
+       the quit notifcation catches up with this module...
+       Should not be a problem, there shouldn't be any more commands
+       coming into FvwmForm.  dje */
+  }
+  else {
+    RedrawTimeout(timer);
+    alarm(1);
+  }
+}
+
 
 /* main procedure */
 int main (int argc, char **argv)
@@ -2225,6 +2456,9 @@ int main (int argc, char **argv)
   SetMessageMask(Channel, MX_PROPERTY_CHANGE);
   OpenWindows();                        /* create initial window */
   SendFinishedStartupNotification(Channel);/* tell fvwm we're running */
+  if (timer != NULL) {
+     SetupTimer();
+  }
   MainLoop();                           /* start */
 
   return 0;                             /* */

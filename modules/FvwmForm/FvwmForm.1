@@ -12,7 +12,7 @@
 .if n .sp 1
 .if t .sp .5
 ..
-.TH FvwmForm 1 "6 October 2001"
+.TH FvwmForm 1 "14 March 2002"
 .SH NAME
 FvwmForm - input form module for Fvwm
 .SH SYNOPSIS
@@ -36,6 +36,11 @@ with a very flexible layout.
 
 A text label only serves the purpose of explanation.
 It cannot accept any input.
+
+A timeout entry provides a mechanism for timing out the form
+and performing a certain action when the timeout occurs.  The countdown
+is displayed similar to a text label except that it updates with the
+amount of time left.
 
 A text input field can be used to edit a single-line string.
 FvwmForm accepts Emacs-style cursor movement keys.
@@ -126,6 +131,7 @@ An example of what this file might contain after a save is:
   *FvwmFormDefault: Font 10x20
   *FvwmFormDefault: InputFont 8x13bold
   *FvwmFormDefault: ButtonFont 10x20
+  *FvwmFormDefault: TimeoutFont 10x20
   *FvwmFormDefault: Fore white
   *FvwmFormDefault: Back cornflowerblue
   *FvwmFormDefault: Colorset -1
@@ -218,6 +224,8 @@ PadVText
 Position
 Selection
 Text
+Timeout
+TimeoutFont
 Title
 UseData
 WarpPointer
@@ -306,8 +314,12 @@ See DEFAULTS.
 Specifies the font for text in the action buttons.
 See DEFAULTS.
 .TP 4
-.B *FvwmForm: Inputfont \fIfont\fP
+.B *FvwmForm: InputFont \fIfont\fP
 Specifies the font for text input.  This font must have fixed width.
+See DEFAULTS.
+.TP 4
+.B *FvwmForm: TimeoutFont \fIfont\fP
+Specifies the font for display the timeout counter and related text.
 See DEFAULTS.
 .TP 4
 .B *FvwmForm: Line \fIjustification\fP
@@ -560,6 +572,16 @@ Change the default mouse pointer foreground and background colors
 used while the pointer is over a text field.
 See DEFAULTS.
 
+.TP 4
+.B *FvwmForm: Timeout \fIseconds\fP \fIcommand\fP \fI"text"\fP
+Set up FvwmForm to time out after the amount of \fIseconds\fP
+specified.  When the timer hits zero, \fIcommand\fP executes.  The
+\fItext\fP field is displayed much like a \fIText\fP
+field, except that a '%%' in the line is replaced automatically by
+the amount of time left on the timer.  The value gets updated every
+second as the timer counts down.
+There can only be one timeout field per form.
+
 .SH EXAMPLES
 All of the following "examples" are installed in the
 read-only architecture-independent data directory,
@@ -576,7 +598,8 @@ AddToMenu Forms "&T. Talk"       Module FvwmForm FvwmForm-Talk
 .EE
 .SH EXAMPLE 1 - Quit Verify
 This example simulates the mwm way of confirming logout.
-Return does the logout, Escape cancels logout.
+Return does the logout, Escape cancels logout.  It times out after 20
+seconds and performs the equivalent of the 'Logout' button.
 .EX
 DestroyModuleConfig  FvwmForm-QuitVerify: *
 *FvwmForm-QuitVerify: GrabServer
@@ -591,6 +614,7 @@ DestroyModuleConfig  FvwmForm-QuitVerify: *
 *FvwmForm-QuitVerify: Command     Restart
 *FvwmForm-QuitVerify: Button      quit "Cancel" ^[
 *FvwmForm-QuitVerify: Command     Nop
+*FvwmForm-QuitVerify: Timeout     20 Quit "Automatic logout will occur in %% seconds."
 .EE
 
 .SH EXAMPLE 2 - Remote Login
