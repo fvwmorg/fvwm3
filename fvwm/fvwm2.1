@@ -25,11 +25,13 @@
 .\"  acronyms:                          small (.SM)     .SM ICCCM
 .\"
 .\"
+.\" The name fvwm is written in lower case throughout this man page.
+.\"
 .\" Note that the word "will" is rarely correct in a man page or any document.
 .\" Describe what fvwm does, not what it will do, even if you haven't
 .\" written the feature yet. dje 2/3/01.
 .\"
-.\" @(#)fvwm2.3 8/14/1999
+.\" @(#)fvwm2.3 24 March 2001
 .de EX		\"Begin example
 .ne 5
 .if n .sp 1
@@ -354,7 +356,7 @@ XTerm*Page: 3 2 1
 
 .SH INITIALIZATION
 
-During initialization, fvwm searchs for a configuration file
+During initialization, fvwm searches for a configuration file
 which describes key and button bindings, and many other things.
 The format of these files is described later.  Fvwm first
 searches for configuration files using the command
@@ -562,7 +564,7 @@ provides a window-style,
 which allows fvwm to overlook this
 .SM ICCCM
 rule.  Even with this window-style it is not guaranteed that the
-application will accept focus.
+application accepts focus.
 
 The differences between
 .SM ICCCM
@@ -767,7 +769,7 @@ after saving and restarting the session.  To become permanent, such
 changes have to be added to the configuration file.
 
 Note further that the current implementation has the following
-anomally when used on a multi-screen display: Starting fvwm
+anomaly when used on a multi-screen display: Starting fvwm
 for the first time, fvwm manages all screens by forking a copy
 of itself for each screen.  Every copy knows its parent and issuing a
 .B Quit
@@ -863,7 +865,7 @@ HelpMe
 Fvwm looks for a built-in command called "HelpMe", and
 fails.  Next it looks for a user-defined complex
 function called "HelpMe".  If no such user defined function
-exists, Fvwm trys to execute a module called "HelpMe".
+exists, Fvwm tries to execute a module called "HelpMe".
 
 Note: There are many commands that affect look and feel of
 specific, some or all windows, like
@@ -1221,7 +1223,7 @@ crash fvwm.
 
 Example (File browser):
 .EX
-# You will find the shell script
+# You can find the shell script
 # fvwm_make_browse_menu.sh in the utils
 # directory of the distribution.
 AddToMenu BrowseMenu
@@ -1622,7 +1624,7 @@ AddToMenu foobar-menu
 Note that you can put a sub-menu far off the current menu so you could
 not reach it with the mouse without leaving the menu.  If the pointer
 leaves the current menu in the general direction of the sub-menu the
-menu will stay up.
+menu stays up.
 
 The
 .IR special-options :
@@ -1769,7 +1771,7 @@ to reset these colors to the built in default.
 .I Greyed
 may have a color name as an argument.  This color is the
 one used to draw a menu-selection which is prohibited (or not
-recommended) by the mwm-hints which an application has specified.
+recommended) by the Mwm hints which an application has specified.
 If the color is omitted the color of greyed menu entries is based
 on the background color of the menu.
 
@@ -1891,7 +1893,7 @@ menus being redrawn every time a sub-menu pops up or down.
 .EX
 MenuStyle <style> PopupOffset 1 100
 .EE
-Run you X server with backing storage.  If your Xserver is started
+Run you X server with backing storage.  If your X Server is started
 with the -bs option, turn it off.  If not try the -wm option.
 .EX
 startx -- -wm
@@ -2237,7 +2239,7 @@ use the new syntax as described above.
 Sets the menu style.  When using monochrome the colors are ignored.  The
 .I shadecolor
 is the one used to draw a menu-selection which is prohibited (or
-not recommended) by the mwm-hints which an application has
+not recommended) by the Mwm hints which an application has
 specified.  The style option is either
 .IR Fvwm ", " Mwm " or " Win ,
 which changes the appearance and operation of the menus.
@@ -2790,7 +2792,7 @@ command does nothing.
 .TP
 .BI "FakeClick [" command value "] ..."
 This command is mainly intended for debugging fvwm and no guarantees
-are made that it will work for you.
+are made that it works for you.
 .B FakeClick
 can simulate mouse button press and release events and pass them to
 fvwm or the applications.  The parameters are a list of commands
@@ -2823,7 +2825,7 @@ a depth of 1, all events go to the root window, regardless of the
 pointer's position.  With 2, the event is passed to the top level
 window under the pointer which is usually the frame window.  With 3,
 events go to the client window.
-Higher numbers go to successive subwindows.  Zero (0)
+Higher numbers go to successive sub windows.  Zero (0)
 goes to the smallest window that contains the pointer.
 Note that events propagate upward.
 .EX
@@ -3613,7 +3615,7 @@ argument.
 Changes the value with which bits are xor'ed when doing rubber-band
 window moving or resizing.  Setting this value is a trial-and-error
 process.  The default value 0 tries to find a value that gives a
-good contrast to balck and white.  It is set if the given
+good contrast to black and white.  It is set if the given
 .I number
 is omitted or invalid.
 
@@ -3932,7 +3934,7 @@ I.e. do not ignore
 .SM scroll-lock
 if you have no problem with it.  In the
 .I FAQ
-you will find a better solution of this problem.
+you can find a better solution of this problem.
 
 .TP
 .BI "GnomeButton"
@@ -4445,7 +4447,7 @@ all windows have a title-bar.
 
 Windows with the
 .I TitleAtBottom
-style will have a title-bar below the window instead of above as
+style have a title-bar below the window instead of above as
 usual. The
 .I TitleAtTop
 style restores the default placement.  Even if the window has the
@@ -4533,7 +4535,7 @@ style.
 .TP
 .B Borders
 .I MwmBorder
-makes the 3-D bevel more closely match mwm's.
+makes the 3-D bevel more closely match Mwm's.
 .I FvwmBorder
 turns off the previous option.
 
@@ -4566,8 +4568,8 @@ style changes the behavior to override any client-provided icons; the
 style changes the behavior to not override any client-provided icons;
 the default overriding behavior can be activated with the
 .I NoActiveIconOverride
-style.  With this style, fvwm will use application provided icons if
-the icon is changed but will use the icon provided in the configuration
+style.  With this style, fvwm uses application provided icons if
+the icon is changed but uses the icon provided in the configuration
 file until then.
 
 There is one exception to these rules, namely
@@ -4582,7 +4584,7 @@ Style ** Icon unknown.xpm
 .EE
 If the
 .I NoIcon
-attribute is set then the specified window will simply disappear
+attribute is set then the specified window simply disappears
 when it is iconified.  The window can be recovered through the
 window-list.  If
 .I Icon
@@ -4761,13 +4763,13 @@ Style rxvt ResizeOutline
 Style emacs ResizeOutline
 .EE
 .I Sticky
-makes the window sticky, i.e. it will always be visible on each
+makes the window sticky, i.e. it is always visible on each
 page and each desk.  The opposite style,
 .I Slippery
 reverts back to the default.
 
 .I StickyIcon
-makes the window sticky when its iconified.  It will de-iconify
+makes the window sticky when its iconified.  It de-iconifies
 on top the active desktop.
 .I SlipperIcon
 reverts back to the default.
@@ -4804,7 +4806,7 @@ their values are invalid, both limits are set to 32767 pixels
 
 With
 .I IconifyWindowGroups
-all windows in the same window group will be iconifed at once
+all windows in the same window group are iconified at once
 when group leader is iconified.  The default is
 .IR IconifyWindowGroupsOff ,
 which disables this behaviour.  Although a number of applications
@@ -4982,12 +4984,12 @@ other page and continue with what you were doing, rather than
 waiting for it to appear.
 
 .I StartsOnPageIncludesTransients
-will cause the
+causes the
 .I StartsOnPage
 style to be applied even for transient windows.  This is not
 usually useful, since transients are usually pop ups that you
 want to appear in your visible viewport; but occasionally an
-application will use a transient for something like a startup
+application uses a transient for something like a startup
 window that needs to be coerced into place.
 
 .I ManualPlacementIgnoresStartsOnPage
@@ -5002,7 +5004,7 @@ page.
 .I ManualPlacementHonorsStartsOnPage
 allows this to happen anyway.  The option has no effect if
 .I SkipMapping
-is not in effect, because fvwm will switch to the proper
+is not in effect, because fvwm switches to the proper
 desk/page to perform interactive placement.  The default is
 .IR ManualPlacementIgnoresStartsOnPage "; "
 .I ManualPlacementHonorsStartsOnPage
@@ -5090,7 +5092,7 @@ commands).
 
 A window with the
 .I RaiseTransient
-style that has transient windows will raise all its transients
+style that has transient windows raises all its transients
 when it is raised.  The
 .I DontRaiseTransient
 style disables this behavior.  All windows are then treated as
@@ -5098,7 +5100,7 @@ if they had no transients.
 
 A window with the
 .I LowerTransient
-style that has transient windows will lower all its transients
+style that has transient windows lowers all its transients
 when it is lowered.  The
 .I DontLowerTransient
 style disables this behavior.  All windows are then treated as
@@ -5156,7 +5158,7 @@ enables clients that use a background pixmap of type
 to achieve transparency. Fvwm modules that support transparent colorsets
 require this setting.
 .I Opacity
-is the default and should be used for all non-tranparent clients for better
+is the default and should be used for all non-transparent clients for better
 performance.
 
 .I MwmDecor
@@ -5199,7 +5201,7 @@ is not specified, the "Default" decor is used.  Windows do not
 actually contain decors, but are always assigned to one.  If
 the decor is later modified with
 .BR AddToDecor ,
-the changes will be visible for all windows which are assigned
+the changes are visible for all windows which are assigned
 to it.  The decor for a window can be reassigned with
 .BR ChangeDecor .
 
@@ -5263,15 +5265,15 @@ Style signal      StartsOnDesk 3
 Style Netscape* SkipMapping,              \\
                 StartsOnPage 1 1 1
 .EE
-Note that all properties for a window will be or'ed together.  In the
+Note that all properties for a window are or'ed together.  In the
 above example "FvwmPager" gets the property StaysOnTop via an exact
 window name match but also gets NoHandles, Sticky, and WindowListSkip
-by a match to "Fvwm*".  It will get NoTitle by virtue of a match to
+by a match to "Fvwm*".  It gets NoTitle by virtue of a match to
 "*".  If conflicting styles are specified for a window, then the last
-style specified will be used.
+style specified is used.
 
-If the NoIcon attribute is set then the specified window will simply
-disappear when it is iconified.  The window can be recovered through
+If the NoIcon attribute is set then the specified window simply
+disappears when it is iconified.  The window can be recovered through
 the window-list.  If Icon is set without an argument then the NoIcon
 attribute is cleared but no icon is specified.  An example which
 allows only the FvwmPager module icon to exist:
@@ -5279,22 +5281,22 @@ allows only the FvwmPager module icon to exist:
 Style * NoIcon
 Style FvwmPager Icon
 .EE
-Note that all properties for a window will be or'ed together.  In the
+Note that all properties for a window are or'ed together.  In the
 above example "FvwmPager" gets the property
 .I StaysOnTop
 via an exact window name match but also gets
 .IR NoHandles ", " Sticky " and " WindowListSkip
-by a match to "Fvwm*".  It will get
+by a match to "Fvwm*".  It gets
 .I NoTitle
 by virtue of a match to "*".  If conflicting styles are specified
-for a window, then the last style specified will be used.
+for a window, then the last style specified are used.
 
 .TP
 .BI "DestroyStyle " style
 Deletes the style named
 .IR style .
-This will not affect currently visible windows (they each have a
-copy of their styles, which will remain unaffected).  Note that
+This does not affect currently visible windows (they each have a
+copy of their styles, which remains unaffected).  Note that
 .I style
 is not a wild-carded search string, but rather a case-sensitive
 string that should exactly match the original
@@ -5306,7 +5308,7 @@ For example:
 .EX
 DestroyStyle Application*
 .EE
-This will remove all settings for the style named "Application*", NOT all
+This removes all settings for the style named "Application*", NOT all
 styles starting with "Application".
 
 .SS OTHER COMMANDS CONTROLLING WINDOW STYLES
@@ -5415,7 +5417,7 @@ windows with the
 .I UseDecor
 option of the
 .B Style
-command.  Modifying an existing decor will affect all windows which
+command.  Modifying an existing decor affects all windows which
 are currently assigned to it.
 
 .B AddToDecor
@@ -5497,7 +5499,7 @@ flag supplements
 .IR HiddenHandles .
 If given, the inner bevel around the window frame is not drawn.  If
 .I HiddenHandles
-is not specified, the frame will look a little strange.
+is not specified, the frame looks a little strange.
 
 .I Raised
 causes a raised relief pattern to be drawn (default).
@@ -5709,7 +5711,7 @@ The
 style conditionally accepts one argument: a number which specifies
 the default button number to load.  If the style command given is
 .BR ButtonStyle " or " AddButtonStyle ,
-the argument is optional (if given, will override the current
+the argument is optional (if given, overrides the current
 button).  If a command other than
 .BR ButtonStyle " or " AddButtonStyle
 is used, the number must be specified.
@@ -5730,7 +5732,7 @@ is optional.  The specification is a little cumbersome:
 ButtonStyle 2 Vector 4 50x30@1 70x70@0 \\
   30x70@0 50x30@1
 .EE
-then the button 2 decoration will use a 4-point pattern consisting of
+then the button 2 decoration uses a 4-point pattern consisting of
 a line from (x=50,y=30) to (70,70) in the shadow color (@0), and then
 to (30,70) in the shadow color, and finally to (50,30) in the
 highlight color (@1).  Is that too confusing?  See the fvwm web pages
@@ -5816,7 +5818,7 @@ should be assigned to title-bar buttons which display a menu.  The
 default assignment is the leftmost button.  When a window with the
 .I MwmFunctions
 .B Style
-option requests not to show this button, it will be hidden.
+option requests not to show this button, it is hidden.
 
 .I MwmDecorMin
 should be assigned to title-bar buttons which minimize or iconify
@@ -5824,7 +5826,7 @@ the window.  The default assignment is the second button over from
 the rightmost button.  When a window with the
 .I MwmFunctions
 .B Style
-option requests not to show this button, it will be hidden.
+option requests not to show this button, it is hidden.
 
 .I MwmDecorMax
 should be assigned to title-bar buttons which maximize the window.
@@ -5832,7 +5834,7 @@ The default assignment is the rightmost button.  When a window with
 the
 .I MwmFunctions
 .B Style
-option requests not to show this button, it will be hidden.  When
+option requests not to show this button, it is hidden.  When
 the window is maximized, the vector pattern on the button looks
 pressed in.
 
@@ -5858,7 +5860,7 @@ If
 .I decor
 is invalid, nothing occurs.  If called from somewhere in a window
 or its border, then that window is affected.  If called from the
-root window the user will be allowed to select the target window.
+root window the user is allowed to select the target window.
 .B ChangeDecor
 only affects attributes which can be set using the
 .B AddToDecor
@@ -5877,7 +5879,7 @@ so that subsequent references to it are no longer valid.  Windows
 using this
 .I decor
 revert to the "Default" decor.  If the decor is created again later,
-windows will not use it before the
+windows do not use it before the
 .I UseDecor
 style is applied again.  The decor named "Default" cannot be
 destroyed.
@@ -5966,7 +5968,7 @@ is an optional argument which specifies the
 .I decor
 to update.  If given, only windows which are assigned to that particular
 .I decor
-will be updated.  This command is useful, for instance, after a
+are updated.  This command is useful, for instance, after a
 .BR ButtonStyle ", " TitleStyle " or " BorderStyle
 (possibly used in conjunction with
 .BR AddToDecor ).
@@ -5997,7 +5999,7 @@ the mouse over the edge of the screen and how hard it should be to
 move a window over the edge of the screen.
 
 The first parameter tells how many milliseconds the pointer must spend on
-the screen edge before fvwm will move the viewport.  This is
+the screen edge before fvwm moves the viewport.  This is
 intended for people who use
 .EX
 EdgeScroll 100 100
@@ -6009,7 +6011,7 @@ a window's edge must move before it actually moves partially off the
 screen.  By default the viewport is moved a full page in the requested
 direction, but if you used
 .B EdgeScroll
-and set any values other than zero they will be used instead.
+and set any values other than zero they is used instead.
 
 Note that, with
 .EX
@@ -6050,12 +6052,12 @@ should be positive numbers.
 
 If the
 .IR horizontal " and " vertical
-percentages are multiplied by 1000 then scrolling will wrap
+percentages are multiplied by 1000 then scrolling wraps
 around at the edge of the desktop.  If
 .EX
 EdgeScroll 100000 100000
 .EE
-is used fvwm will scroll by whole pages, wrapping around at the
+is used fvwm scrolls by whole pages, wrapping around at the
 edge of the desktop.
 
 .TP
@@ -6106,13 +6108,13 @@ used.
 
 If
 .I arg1
-is non zero then the next desktop number will be the current
+is non zero then the next desktop number is the current
 desktop number plus
 .IR arg1 .
 
 If
 .I arg1
-is zero then the new desktop number will be
+is zero then the new desktop number is
 .IR arg2 .
 (If
 .I arg2
@@ -6120,7 +6122,7 @@ is not present, then the command has no effect.)
 
 If
 .IR min " and " max
-are given, the new desktop number will be no smaller than
+are given, the new desktop number is no smaller than
 .I min
 and no bigger than
 .IR max .
@@ -6202,20 +6204,20 @@ stops at the edge of the desktop.
 
 If the
 .IR horizontal " and " vertical
-percentages are multiplied by 1000 then scrolling will wrap around
+percentages are multiplied by 1000 then scrolling wraps around
 at the edge of the desktop.  If
 .EX
 Scroll 100000 0
 .EE
-is executed over and over fvwm will move to the next desktop page
-on each execution and will wrap around at the edge of the desktop,
+is executed over and over fvwm moves to the next desktop page
+on each execution and wraps around at the edge of the desktop,
 so that every page is hit in turn.
 
 If the letter
 .RI ' p '
 is appended to each coordinate
 .RI ( horizontal " and/or " vertical ),
-then the scroll amount will be measured in pixels.
+then the scroll amount is measured in pixels.
 
 
 .SS COMMANDS FOR USER FUNCTIONS AND SHELL COMMANDS
@@ -6239,7 +6241,7 @@ must not contain embedded whitespace.  No guarantees are made whether
 function names with embedded whitespace work or not.  This behaviour
 may also change in the future without further notice.  The letter before the
 .I action
-tells what kind of action will trigger the command which follows it.
+tells what kind of action triggers the command which follows it.
 .RI ' I '
 stands for "Immediate", and is executed as soon as the function is
 invoked.
@@ -6256,7 +6258,7 @@ milliseconds.
 stands for "Double-click".
 The action
 .RI ' I '
-will cause an action to be performed on the button-press,
+causes an action to be performed on the button-press,
 if the function is invoked with prior knowledge of which window
 to act on.
 
@@ -6342,8 +6344,8 @@ You should not use an ampersand '&' at the end of the command.
 You probably want to use an additional "exec" at the beginning
 of
 .IR command .
-Without that, the shell that fvwm invokes to run your command will
-stay until the command exits.  In effect, you'll have twice as
+Without that, the shell that fvwm invokes to run your command
+stays until the command exits.  In effect, you'll have twice as
 many processes running as you need.  Note that some shells are
 smart enough to avoid this, but it never hurts to include the
 "exec" anyway.
@@ -6351,7 +6353,7 @@ smart enough to avoid this, but it never hurts to include the
 The following example binds function key
 .SM F1
 in the root window, with no modifiers, to the exec function.
-The program rxvt will be started with an assortment of options.
+The program rxvt is started with an assortment of options.
 .EX
 Key F1 R N Exec exec rxvt -fg yellow -bg blue \\
   -e /bin/tcsh
@@ -6384,7 +6386,7 @@ ExecUseShell /usr/local/bin/tcsh
 Used to bind a previously defined function to a key or mouse button.
 The following example binds mouse button 1 to a function called
 "Move-or-Raise", whose definition was provided as an example earlier
-in this man page.  After performing this binding fvwm will execute
+in this man page.  After performing this binding fvwm executes
 the "move-or-raise" function whenever button 1 is pressed in a
 window's title-bar.
 .EX
@@ -6464,7 +6466,7 @@ module; e.g.
 .EX
 SetEnv height HEIGHT
 .EE
-will make the FvwmM4-set variable
+makes the FvwmM4-set variable
 .I HEIGHT
 usable by processes started by fvwm as the environment
 variable
@@ -6559,7 +6561,7 @@ Performs
 on the currently focused window if it satisfies all
 .IR conditions .
 The
-.IR contidions
+.IR conditions
 are a list of keywords from the list below and are separated
 by commas or whitespace.  Conditions include
 "Iconic", "!Iconic",
@@ -6576,8 +6578,8 @@ In addition, the
 .I condition
 may include one window name to match to.  The window name may
 include the wildcards '*' and '?'.  The window name, icon name,
-class, and resource will be considered when attempting to find
-a match.  The window name can begin with '!' which will prevent
+class, and resource are considered when attempting to find
+a match.  The window name can begin with '!' which prevents
 .I command
 if any of the window name, icon name, class or resource match.
 
@@ -6821,14 +6823,15 @@ out on there as well.
 Note,
 .B FvwmTheme
 is a special module which manages colorsets. Most of other modules and fvwm
-itself support colorsets and changing colors dynamically. Colorsets will be
-the only method to specify colors in the next stable fvwm release, and then
-the functionality of FvwmTheme will be moved to the core fvwm.
+itself support colorsets and changing colors dynamically. Colorsets will
+probably be the only method to specify colors in the next stable fvwm
+release, and then the functionality of FvwmTheme will be moved to the
+core fvwm.
 
 
 Modules can be short lived transient programs or, like
 .BR FvwmButtons ,
-can remain for the duration of the X session.  Modules will be
+can remain for the duration of the X session.  Modules are
 terminated by the window manager prior to restarts and quits, if
 possible.  See the introductory section on modules.  The keyword
 .B Module
@@ -6902,11 +6905,11 @@ command by using the key sequence
 
 .TP
 .BI "ModuleTimeout " timeout
-Specifies how many seconds fvwm will wait for a module to respond.
+Specifies how many seconds fvwm waits for a module to respond.
 If the module does not respond within the time limit then fvwm
-will kill it.
+kills it.
 .I timeout
-must be greater than zero, or it will be reset to the default value
+must be greater than zero, or it is reset to the default value
 of 30 seconds.
 
 .TP
@@ -6950,7 +6953,7 @@ path, then you should use the full path name for
 This command should not have a trailing ampersand.  The command can
 have optional parameters with simple shell-like syntax.  You can use
 .I ~
-(will be expanded to the user home directory) and environmental variables
+(is expanded to the user home directory) and environmental variables
 .IR $VAR " or " ${VAR} .
 Here are several examples:
 .EX
@@ -6966,7 +6969,7 @@ If you need a native restart, we suggest only to use
 command without parameters unless there is a reason not to.
 If you use 'Restart fvwm2', all current command line arguments are lost,
 while on Restart without parameters or with --pass-args, they are preserved.
-Here are some cases when 'Restart fvwm2' will cause troubles:
+Here are some cases when 'Restart fvwm2' causes troubles:
 .EX
 * running FVWM under a session manager
 * running FVWM with multi headed displays
@@ -6977,7 +6980,7 @@ This is why we are issuing a warning on an old usage. If you really want
 to restart to fvwm2 with no additional arguments, you may get rid of this
 warning by using 'Restart fvwm2 -s' or 'Restart /full/path/fvwm2'.
 
-Note, currently with multi headed displays, restart of FVWMs on different
+Note, currently with multi headed displays, restart of fvwms on different
 screens works independently.
 
 .TP
@@ -7160,7 +7163,7 @@ plan on passing this thing on to our children....
 
 Known bugs can be found in the fvwm bug tracking system (accessible
 from the fvwm home page) and in the
-.IR BUGS " or " TO-DO
+.IR BUGS " or " TODO
 files in the distribution.  These files are no longer maintained
 and may be out of date.
 
@@ -7171,4 +7174,4 @@ or reported through the bug tracking system.
 The official FVWM homepage is
 .BR http://www.fvwm.org/ .
 
-\" LocalWords:  XTerm xterm rc fvwm fvwm2 Linux ICCCM ICCCM2 CDE XView
+\" LocalWords:  XTerm xterm rc fvwm Linux ICCCM CDE XView
