@@ -1,7 +1,12 @@
+2004-09-03  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* fvwm/placement.c (__place_window):
+	fixed starting desk output with bugopts explainwindowplacement
+
 2004-09-03  Olivier Chapuis  <olivier.chapuis@free.fr>
 
 	* fvwm/eventhandler.h:
-	* fvwm/events.c (InitEventHandlerJumpTable): 
+	* fvwm/events.c (InitEventHandlerJumpTable):
 	(__handle_key):
 	(HandleKeyPress):
 	(HandleKeyRelease):

@@ -1446,7 +1446,7 @@ static Bool __place_window(
 			}
 		}
 	}
-	reason->desk.desk = Scr.CurrentDesk;
+	reason->desk.desk = fw->Desk;
 	/* I think it would be good to switch to the selected desk
 	 * whenever a new window pops up, except during initialization */
 	/*  RBW - 11/02/1998  --  I dont. */
