@@ -163,8 +163,33 @@ Pixmap CreateBackgroundPixmap(Display *dpy, Window win, int width, int height,
 {
   Pixmap pixmap = None;
 
-  /* fixme: test for keep_aspect here */
-  if (!colorset->stretch_x && !colorset->stretch_y) {
+  if (colorset->keep_aspect) {
+    Bool trim_side;
+    int big_width, big_height;
+    Pixmap big_pixmap;
+    int x, y;
+
+    /* do sides need triming or top/bottom? */
+    trim_side = (colorset->width * height > colorset->height * width);
+
+    /* make a pixmap big enough to cover the destination but with the aspect
+     * ratio of the colorset->pixmap */
+    big_width = trim_side ? height * colorset->width / colorset->height : width;
+    big_height = trim_side ? height : width * colorset->width / colorset->width;
+    big_pixmap = CreateStretchPixmap(dpy, colorset->pixmap, colorset->width,
+				     colorset->height, depth, big_width,
+				     big_height, gc);
+
+    /* work out where to trim */
+    x = trim_side ? (big_width - width) / 2 : 0;
+    y = trim_side ? 0 : (big_height - height) / 2;
+
+    pixmap = XCreatePixmap(dpy, colorset->pixmap, width, height, depth);
+    if (pixmap && big_pixmap)
+      XCopyArea(dpy, big_pixmap, pixmap, gc, x, y, width, height, 0, 0);
+    if (big_pixmap)
+      XFreePixmap(dpy, big_pixmap);
+  } else if (!colorset->stretch_x && !colorset->stretch_y) {
     /* it's a tiled pixmap, create an unstretched one */
     pixmap = XCreatePixmap(dpy, colorset->pixmap, colorset->width,
 			   colorset->height, depth);
@@ -172,7 +197,7 @@ Pixmap CreateBackgroundPixmap(Display *dpy, Window win, int width, int height,
       XCopyArea(dpy, colorset->pixmap, pixmap, gc, 0, 0, colorset->width,
 		colorset->height, 0, 0);
   } else if (!colorset->stretch_x) {
-    /* it's an VGradient */
+    /* it's an HGradient */
     pixmap = CreateStretchYPixmap(dpy, colorset->pixmap, colorset->width,
 				  colorset->height, depth, height, gc);
   } else if (!colorset->stretch_y) {
