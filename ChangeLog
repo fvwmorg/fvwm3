@@ -1,5 +1,9 @@
 2004-03-02  Dominik Vogt  <dominik.vogt@gmx.de>
 
+	* configure.in:
+	* NEWS:
+	updated for 2.5.9 release
+
 	* fvwm/functions.c (execute_function_override_window):
 	* fvwm/module_interface.c (ExecuteModuleCommand):
 	* fvwm/conditional.c (circulate_cmd):

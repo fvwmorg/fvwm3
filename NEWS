@@ -3,7 +3,7 @@ Note, the changes for the last STABLE release start with release
 
 -------------------------------------------------------------------
 
-Changes in development release 2.5.9 (not released yet)
+Changes in alpha release 2.5.9 (2-Mar-2004)
 
 * New MenuStyle options PopupIgnore and PopupClose.
 
