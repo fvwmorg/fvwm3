@@ -244,6 +244,13 @@ void FlocaleDrawString(
  */
 void FlocaleDrawUnderline(
 	     Display *dpy, FlocaleFont *flf, FlocaleWinString *fws, int coffset);
+
+/*
+ * Get the position for shadow text
+ */
+Bool FlocaleGetShadowTextPosition(FlocaleFont *flf, FlocaleWinString *fws,
+			    int orig_x, int orig_y,
+			    int *x, int *y, int *step);
 /*
  * Call XmbTextEscapement(ff->fontset, str, sl) if ff->fontset is not None.
  * Call XTextWith(ff->font, str, sl) if ff->font is not NULL.
