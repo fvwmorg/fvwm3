@@ -176,7 +176,7 @@ char *ClickAction[NUMBER_OF_MOUSE_BUTTONS] =
      *IconForeColor  = "black",
      *FocusBackColor = NULL,
      *FocusForeColor = NULL,
-     *geometry       = "+0-0",
+     *geometry       = NULL,
      *font_string    = "fixed",
      *selfont_string = NULL;
 
@@ -1708,6 +1708,8 @@ void StartMeUp(void)
    win_height = RowHeight+(RowsNumber-1)*(RowHeight+2);
    win_width = ScreenWidth - (win_border << 1);
 
+   if (geometry == NULL)
+     UpdateString(&geometry, "+0-0");
    ret = XParseGeometry(geometry, &hints.x, &hints.y,
 	 	        (unsigned int *)&hints.width,
 		        (unsigned int *)&hints.height);

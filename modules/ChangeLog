@@ -1,9 +1,14 @@
+2000-10-11  olicha  <olivier.chapuis@free.fr>
+
+	* FvwmTaskBar/FvwmTaskBar.c:
+	Fixed my previous commit
+
 2000-10-11  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* FvwmButtons/FvwmButtons.c (MyXFree):
 	fixed compile error
 
-2000-10-01  olicha  <olivier.chapuis@free.fr>
+2000-10-11  olicha  <olivier.chapuis@free.fr>
 
 	* FvwmTaskBar/FvwmTaskBar.c:
 	Fixed a geometry problem.
