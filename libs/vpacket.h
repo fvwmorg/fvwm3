@@ -55,9 +55,6 @@ typedef struct ConfigWinPacket
 	unsigned long int  ewmh_hint_desktop;
 	unsigned long int  ewmh_window_type;
 
-	/*** Put structures here ***/
-	window_flags       flags;
-
 	/*** Put int here, fill with dummies to a multiple of 2 ***/
 
 	/*** Put short int here, fill with dummies to a multiple of 4 ***/
@@ -65,6 +62,9 @@ typedef struct ConfigWinPacket
 	unsigned short int border_width;
 	unsigned short int short_dummy_3;
 	unsigned short int short_dummy_4;
+
+	/*** Put structures here ***/
+	window_flags       flags;
 
 } ConfigWinPacket;
 

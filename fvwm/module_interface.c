@@ -1099,8 +1099,6 @@ static void BroadcastNewPacket(unsigned long event_type,
 	    &(*(_t))->ewmh_hint_desktop,\
 	    (unsigned long)(0),\
 	    &(*(_t))->ewmh_window_type,\
-	    (unsigned long)(sizeof((*(_t))->flags)),\
-	    &(*(_t))->flags,\
 	    (unsigned long)(sizeof(short)),\
 	    &(*(_t))->title_thickness,\
 	    (unsigned long)(sizeof(short)),\
@@ -1108,7 +1106,9 @@ static void BroadcastNewPacket(unsigned long event_type,
 	    (unsigned long)(sizeof(short)),\
 	    &dummy,\
 	    (unsigned long)(sizeof(short)),\
-	    &dummy
+	    &dummy,\
+	    (unsigned long)(sizeof((*(_t))->flags)),\
+	    &(*(_t))->flags
 
 void SendConfig(int module, unsigned long event_type, const FvwmWindow *t)
 {
