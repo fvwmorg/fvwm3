@@ -1,7 +1,19 @@
+1999-08-17  Mikhael Goikhman  <migo@homemail.com>
+
+	* BuildXLockMenu: created the compatibility wrapper to fvwm-menu-xlock
+	* fvwm_make_browse_menu.sh:
+	* fvwm_make_directory_menu.sh:
+	restored (used by fvwm2.1) with a pointer to fvwm-menu-directory
+	* fvwm-menu-xlock.in:
+	* fvwm-menu-directory.in:
+	* fvwm-menu-desktop.in:
+	* fvwm-menu-desktop.1:
+	some small documentation fixes, added some useful xlock options
+
 1999-08-17  Dominik Vogt  <dominik_vogt@gmx.de>
 
-	* fvwm-menu-xlock.in (wrongUsage):
-	* fvwm-menu-directory.in (makeFolderItem):
+	* fvwm-menu-xlock.in:
+	* fvwm-menu-directory.in:
 	use FVWM instead of F{ine,antastic,eline} VWM
 
 1999-08-16  Dominik Vogt  <domivogt@bvstp038.bbn.hp.com>

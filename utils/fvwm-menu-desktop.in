@@ -1,8 +1,8 @@
 #!@PERL@
 # 
 # ---------------------------------------------------------------------------
-#  fvwm-menu-desktop 
-#  see the man page fvwm-menu-desktop.1 for instructions
+#  fvwm-menu-desktop
+#  See the man page fvwm-menu-desktop.1 for instructions.
 #
 #  Created on 22/07/1999 by Olivier Chapuis
 #
@@ -19,7 +19,7 @@
 #
 #  * migo (15/08/1999): Prepared for inclusion into fvwm. Many small fixes
 #    in the script and the man page. All 'fvwm2' replaced with 'fvwm' except
-#    for file names and fvwm2gnome.
+#    for file names and fvwm2gnome. New --fvwm-gtk-name option.
 #
 #  * 13/08/1999: Rename the script and some options. Use strict. Bug fixes.
 #    Add showHelp and showVersion.
@@ -31,14 +31,12 @@
 #
 #----------------------------------------------------------------------------
 # TODO MUST:
-#    1. Correct the english of the man page.
-#    2. (none)installation procedure for fvwm distribution
-#    3. --fvwm-gtk-name MyFvwmGtk or --type gtk:MyFvwmGtk
+#    1. Correct the english of the man page (partially done).
 #
 # TODO:
 #    1. Prevent "inconsistent" conjonctions of options (perhaps we can do
 #       GetOptions with hands (in my machine I think I will win 0.15 sec).
-#    2. Better default ? 
+#    2. Better default ?
 #    3. Add other desktops ?? CDE ???? (need to be at work to see
 #       if we can do that).
 #    4. Make a general clean up II.

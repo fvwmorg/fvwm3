@@ -2,10 +2,10 @@
 ''' $RCSfile$$Revision$$Date$
 '''
 ''' $Log$
-''' Revision 1.4  1999/08/17 19:57:04  domivogt
-''' * New MoveSmoothness command.
-''' * General cleanup and -Wall fixes; every .c file has a header.
-''' * Minor bugfixes.
+''' Revision 1.5  1999/08/17 21:27:51  migo
+''' * BuildXLockMenu: the compatibility wrapper to fvwm-menu-xlock
+''' * restored old menu shell scripts used as examples in the man page
+''' * some small documentation fixes
 '''
 ''' Revision 1.8  1999/08/23 20:37:24  migo
 ''' * fixed bad allocation and fvwm hang for menu labels with more than two TABs
@@ -98,7 +98,7 @@
 'br\}
 .\"	If the F register is turned on, we'll generate
 .\"	index entries out stderr for the following things:
-.TH FVWM-MENU-XLOCK 1 "perl 5.005, patch 02" "17/Aug/99" "Fvwm Utility"
+.TH FVWM-MENU-XLOCK 1 "perl 5.005, patch 01" "17/Aug/99" "Fvwm Utility"
 .\"		SH	Header
 .\"		Sh	Subsection 
 .\"		Ip	Item
@@ -216,6 +216,8 @@ title \*(L"XLock Modes\*(R" and no mini-icon (equivalent to an empty icon argume
 Short options are ok if not ambiguous: \-h, \-n.
 double backslash or a real TAB.
 .PP
+Format specifiers:
+  \f(CW%n\fR \- mode name
   \f(CW%d\fR \- mode description
   \f(CW%D\fR \- mode description without \*(L"Shows \*(L" prefix if any
 .PP

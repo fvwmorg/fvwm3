@@ -15,7 +15,7 @@ sub showHelp {
 	# GNU says it must be \*STDOUT, but this is not very good for us
 	my $out = \*STDERR;
 	print $out "A small perl script which builds xlock menu for fvwm.\n\n";
-	print $out "Usage: $0 [OPTIONS] [-- xlock-params]\n";
+	print $out "Usage: $0 [OPTIONS] [-- XLOCK-OPTIONS]\n";
 	print $out "Options:\n";
 	print $out "\t--help        show this help and exit\n";
 	print $out "\t--version     show the version and exit\n";
@@ -23,6 +23,12 @@ sub showHelp {
 	print $out "\t--title=NAME  menu title, default is '$title'\n";
 	print $out "\t--icon=XPM    menu icon,  default is no\n";
 	print $out "Short options are ok if not ambiguous: -h, -n.\n";
+	print $out "\nSome useful xlock(1) options, 'xlock -h' for more:\n";
+	print $out "\t-delay usecs  delay between batches of animations\n";
+	print $out "\t-nolock       screensaver, don't lock the display\n";
+	print $out "\t-inwindow     run in window as opposite to -inroot\n";
+	print $out "\t-sound        turn on sound if enabled\n";
+	print $out "\t-nice level   decrease the process priority (0 .. 19)\n";
 	exit 0;
 }
 
@@ -106,6 +112,8 @@ Option parameters can be specified both using '=' and in the next argument.
 Short options are ok if not ambiguous: -h, -n.
 
 Additional arguments (after B<-->) will be passed to xlock.
+
+Please see the B<xlock>(1) man page for the xlock options.
 
 =head1 USAGE
 
