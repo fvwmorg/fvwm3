@@ -2577,7 +2577,9 @@ void HandlePropertyNotify(const evh_args_t *ea)
 			}
 			if (t->icon_alphaPixmap != None ||
 			    (cs >= 0 && Colorset[cs].icon_alpha_percent < 100) ||
-			    CSET_IS_TRANSPARENT_PR(b_cs))
+			    CSET_IS_TRANSPARENT_PR(b_cs) ||
+			    (!IS_ICON_SHAPED(t) &&
+			     t->icon_background_padding > 0))
 			{
 				draw_picture = True;
 			}
