@@ -358,7 +358,6 @@ static MenuItem *find_entry(
   if (pmr)
     *pmr = NULL;
 
-XSync(dpy, 0);
   XQueryPointer(dpy, Scr.Root, &JunkRoot, &Child,
 		&root_x,&root_y, &JunkX, &JunkY, &JunkMask);
   if (XFindContext(dpy, Child, MenuContext, (caddr_t *)&mr) == XCNOENT)
@@ -2241,7 +2240,6 @@ static void MenuInteraction(
 	{
 	  /* Warping didn't take us to the correct menu, i.e. the spot we want
 	   * to warp to is obscured. So raise our window first. */
-fprintf(stderr,"wrong menu: '%s' expected '%s'\n", tmrMi?MR_NAME(tmrMi):"", MR_NAME(pmp->parent_menu));
 	  XRaiseWindow(dpy, MR_WINDOW(pmp->parent_menu));
 	}
       }
