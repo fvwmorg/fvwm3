@@ -188,34 +188,6 @@
 	((st).flag_mask.common.s.do_circulate_skip_shaded = !!(x))
 #define SCSET_DO_CIRCULATE_SKIP_SHADED(st,x) \
 	((st).change_mask.common.s.do_circulate_skip_shaded = !!(x))
-#define SDO_GRAB_FOCUS_WHEN_CREATED(sf) \
-	((sf).common.s.do_grab_focus_when_created)
-#define SFDO_GRAB_FOCUS_WHEN_CREATED(st) \
-	((st).flags.common.s.do_grab_focus_when_created)
-#define SMDO_GRAB_FOCUS_WHEN_CREATED(st) \
-	((st).flag_mask.common.s.do_grab_focus_when_created)
-#define SCDO_GRAB_FOCUS_WHEN_CREATED(st) \
-	((st).change_mask.common.s.do_grab_focus_when_created)
-#define SFSET_DO_GRAB_FOCUS_WHEN_CREATED(st,x) \
-	((st).flags.common.s.do_grab_focus_when_created = !!(x))
-#define SMSET_DO_GRAB_FOCUS_WHEN_CREATED(st,x) \
-	((st).flag_mask.common.s.do_grab_focus_when_created = !!(x))
-#define SCSET_DO_GRAB_FOCUS_WHEN_CREATED(st,x) \
-	((st).change_mask.common.s.do_grab_focus_when_created = !!(x))
-#define SDO_GRAB_FOCUS_WHEN_TRANSIENT_CREATED(sf) \
-	((sf).common.s.do_grab_focus_when_transient_created)
-#define SFDO_GRAB_FOCUS_WHEN_TRANSIENT_CREATED(st) \
-	((st).flags.common.s.do_grab_focus_when_transient_created)
-#define SMDO_GRAB_FOCUS_WHEN_TRANSIENT_CREATED(st) \
-	((st).flag_mask.common.s.do_grab_focus_when_transient_created)
-#define SCDO_GRAB_FOCUS_WHEN_TRANSIENT_CREATED(st) \
-	((st).change_mask.common.s.do_grab_focus_when_transient_created)
-#define SFSET_DO_GRAB_FOCUS_WHEN_TRANSIENT_CREATED(st,x) \
-	((st).flags.common.s.do_grab_focus_when_transient_created = !!(x))
-#define SMSET_DO_GRAB_FOCUS_WHEN_TRANSIENT_CREATED(st,x) \
-	((st).flag_mask.common.s.do_grab_focus_when_transient_created = !!(x))
-#define SCSET_DO_GRAB_FOCUS_WHEN_TRANSIENT_CREATED(st,x) \
-	((st).change_mask.common.s.do_grab_focus_when_transient_created = !!(x))
 #define SDO_ICONIFY_WINDOW_GROUPS(sf) \
 	((sf).common.s.do_iconify_window_groups)
 #define SFDO_ICONIFY_WINDOW_GROUPS(st) \

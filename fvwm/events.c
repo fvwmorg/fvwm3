@@ -396,19 +396,7 @@ void HandleButtonPress(void)
 		}
 		/* RBW - 12/09/.1999- I'm not sure we need to check both cases,
 		 * but I'll leave this as is for now.  */
-		if (!DO_NOT_RAISE_CLICK_FOCUS_CLICK(Fw)
-#if 0
-		    /* DV - this forces that every focus click on the
-		     * decorations raises the window.  This somewhat negates
-		     * the ClickToFocusRaisesOff style.
-		     */
-		    ||
-		    ((Event.xany.window != FW_W(Fw))&&
-		     (Event.xbutton.subwindow != FW_W(Fw))&&
-		     (Event.xany.window != FW_W_PARENT(Fw))&&
-		     (Event.xbutton.subwindow != FW_W_PARENT(Fw)))
-#endif
-			)
+		if (!DO_NOT_RAISE_CLICK_FOCUS_CLICK(Fw))
 		{
 			/* We can't raise the window immediately because the
 			 * action bound to the click might be "Lower" or
@@ -2051,8 +2039,10 @@ void HandleMapNotify(void)
 			M_MAP, 3, FW_W(Fw), FW_W_FRAME(Fw), (unsigned long)Fw);
 	}
 
-	if ((!IS_TRANSIENT(Fw) && DO_GRAB_FOCUS(Fw)) ||
-	   (IS_TRANSIENT(Fw) && DO_GRAB_FOCUS_TRANSIENT(Fw) &&
+	if ((!IS_TRANSIENT(Fw) &&
+	     FP_DO_GRAB_FOCUS(FW_FOCUS_POLICY(Fw))) ||
+	   (IS_TRANSIENT(Fw) &&
+	    FP_DO_GRAB_FOCUS_TRANSIENT(FW_FOCUS_POLICY(Fw)) &&
 	    get_focus_window() &&
 	    FW_W(get_focus_window()) == FW_W_TRANSIENTFOR(Fw)))
 	{
@@ -2233,14 +2223,16 @@ void HandleMapRequestKeepRaised(
 				{
 					do_grab_focus = False;
 				}
-				else if (DO_GRAB_FOCUS(Fw) &&
+				else if (FP_DO_GRAB_FOCUS(
+						 FW_FOCUS_POLICY(Fw)) &&
 					 (!IS_TRANSIENT(Fw) ||
 					  FW_W_TRANSIENTFOR(Fw) == Scr.Root))
 				{
 					do_grab_focus = True;
 				}
 				else if (IS_TRANSIENT(Fw) &&
-					 DO_GRAB_FOCUS_TRANSIENT(Fw) &&
+					 FP_DO_GRAB_FOCUS_TRANSIENT(
+						 FW_FOCUS_POLICY(Fw)) &&
 					 (sf = get_focus_window()) &&
 					 FW_W(sf) == FW_W_TRANSIENTFOR(Fw))
 				{
@@ -2249,7 +2241,8 @@ void HandleMapRequestKeepRaised(
 					do_grab_focus = True;
 				}
 				else if (IS_TRANSIENT(Fw) &&
-					 DO_GRAB_FOCUS(Fw) &&
+					 FP_DO_GRAB_FOCUS(
+						 FW_FOCUS_POLICY(Fw)) &&
 					 !(XGetGeometry(
 						   dpy, FW_W_TRANSIENTFOR(Fw),
 						   &JunkRoot, &JunkX, &JunkY,
@@ -3051,8 +3044,9 @@ void HandleUnmapNotify(void)
 		Scr.Hilite = NULL;
 	}
 	focus_grabbed = (Fw == get_focus_window()) &&
-		((!IS_TRANSIENT(Fw) && DO_GRAB_FOCUS(Fw)) ||
-		 (IS_TRANSIENT(Fw) && DO_GRAB_FOCUS_TRANSIENT(Fw)));
+		((!IS_TRANSIENT(Fw) && FP_DO_GRAB_FOCUS(FW_FOCUS_POLICY(Fw))) ||
+		 (IS_TRANSIENT(Fw) &&
+		  FP_DO_GRAB_FOCUS_TRANSIENT(FW_FOCUS_POLICY(Fw))));
 	restore_focus_after_unmap(Fw, False);
 	if (!IS_MAPPED(Fw) && !IS_ICONIFIED(Fw))
 	{

@@ -516,18 +516,18 @@ int ewmh_WMStateModal(EWMH_CMD_ARGS)
       SET_EWMH_MODAL(fwin, True);
       /* the window is a modal transient window so we grab the focus
        * it will be good to raise it but ... */
-      SFSET_DO_GRAB_FOCUS_WHEN_TRANSIENT_CREATED(*style, 1);
-      SMSET_DO_GRAB_FOCUS_WHEN_TRANSIENT_CREATED(*style, 1);
-      SCSET_DO_GRAB_FOCUS_WHEN_TRANSIENT_CREATED(*style, 1);
+      FPS_GRAB_FOCUS_TRANSIENT(SF_FOCUS_POLICY(*style), 1);
+      FPS_GRAB_FOCUS_TRANSIENT(SM_FOCUS_POLICY(*style), 1);
+      FPS_GRAB_FOCUS_TRANSIENT(SC_FOCUS_POLICY(*style), 1);
     }
     else
     {
       SET_EWMH_MODAL(fwin, False);
-      if (!DO_GRAB_FOCUS_TRANSIENT(style))
+      if (!FP_DO_GRAB_FOCUS_TRANSIENT(SF_FOCUS_POLICY(*style)))
       {
-	SFSET_DO_GRAB_FOCUS_WHEN_TRANSIENT_CREATED(*style, 0);
-	SMSET_DO_GRAB_FOCUS_WHEN_TRANSIENT_CREATED(*style, 1);
-	SCSET_DO_GRAB_FOCUS_WHEN_TRANSIENT_CREATED(*style, 1);
+	FPS_GRAB_FOCUS_TRANSIENT(SF_FOCUS_POLICY(*style), 0);
+	FPS_GRAB_FOCUS_TRANSIENT(SM_FOCUS_POLICY(*style), 1);
+	FPS_GRAB_FOCUS_TRANSIENT(SC_FOCUS_POLICY(*style), 1);
       }
     }
     SET_HAS_EWMH_INIT_MODAL_STATE(fwin, EWMH_STATE_HAS_HINT);

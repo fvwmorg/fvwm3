@@ -99,14 +99,14 @@
 	((fp).do_allow_func_raise_click)
 #define FPS_ALLOW_FUNC_RAISE_CLICK(fp,x) \
 	((fp).do_allow_func_raise_click = !!(x))
-#define FP_DO_GRAB_FOCUS_WHEN_CREATED(fp) \
-	((fp).do_grab_focus_when_created)
-#define FPS_GRAB_FOCUS_WHEN_CREATED(fp,x) \
-	((fp).do_grab_focus_when_created = !!(x))
-#define FP_DO_GRAB_FOCUS_WHEN_TRANSIENT_CREATED(fp) \
-	((fp).do_grab_focus_when_transient_created)
-#define FPS_GRAB_FOCUS_WHEN_TRANSIENT_CREATED(fp,x) \
-	((fp).do_grab_focus_when_transient_created = !!(x))
+#define FP_DO_GRAB_FOCUS(fp) \
+	((fp).do_grab_focus)
+#define FPS_GRAB_FOCUS(fp,x) \
+	((fp).do_grab_focus = !!(x))
+#define FP_DO_GRAB_FOCUS_TRANSIENT(fp) \
+	((fp).do_grab_focus_transient)
+#define FPS_GRAB_FOCUS_TRANSIENT(fp,x) \
+	((fp).do_grab_focus_transient = !!(x))
 
 /* ---------------------------- type definitions ---------------------------- */
 
@@ -137,8 +137,8 @@ typedef struct
 	unsigned do_allow_func_focus_click : 1;
 	unsigned do_allow_func_raise_click : 1;
 	/* initial focus */
-	unsigned do_grab_focus_when_created : 1;
-	unsigned do_grab_focus_when_transient_created : 1;
+	unsigned do_grab_focus : 1;
+	unsigned do_grab_focus_transient : 1;
 } focus_policy_t;
 
 /* ---------------------------- forward declarations ------------------------ */

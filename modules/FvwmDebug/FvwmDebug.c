@@ -571,9 +571,10 @@ void list_configure(const unsigned long *body)
 	    DO_SKIP_ICON_CIRCULATE(p));
     fprintf(output,"\t\tdo_circulate_skip_shaded: %d\n",
 	    DO_SKIP_SHADED_CIRCULATE(p));
-    fprintf(output,"\t\tdo_grab_focus_when_created: %d\n", DO_GRAB_FOCUS(p));
+    fprintf(output,"\t\tdo_grab_focus_when_created: %d\n",
+	    FP_DO_GRAB_FOCUS(FW_FOCUS_POLICY(p)));
     fprintf(output,"\t\tdo_grab_focus_when_transient_created: %d\n",
-	    DO_GRAB_FOCUS_TRANSIENT(p));
+	    FP_DO_GRAB_FOCUS_TRANSIENT(FW_FOCUS_POLICY(p)));
     fprintf(output,"\t\tdo_ignore_restack: %d\n", DO_IGNORE_RESTACK(p));
     fprintf(output,"\t\tdo_lower_transient: %d\n", DO_LOWER_TRANSIENT(p));
     fprintf(output,"\t\tdo_not_show_on_map: %d\n", DO_NOT_SHOW_ON_MAP(p));

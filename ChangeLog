@@ -1,3 +1,13 @@
+2002-07-24  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* fvwm/events.c (HandleMapNotify):
+	(HandleMapRequestKeepRaised):
+	(HandleUnmapNotify):
+	* fvwm/ewmh_events.c (ewmh_WMStateModal):
+	* fvwm/ewmh.c (ewmh_HandleDesktop):
+	* fvwm/style.c (parse_and_set_window_style):
+	removed old do_grab_focus_when_created and *_when_transient_* flags
+
 2002-07-23  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* fvwm/conditional.c (MatchesConditionMask):

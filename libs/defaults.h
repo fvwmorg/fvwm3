@@ -306,26 +306,26 @@
 #define MAX_WINDOW_NAME_NUMBER_DIGITS      3 /* number/digits of above number */
 
 /* focus policy defaults */
-#define DEF_FP_FOCUS_ENTER                       1
-#define DEF_FP_UNFOCUS_LEAVE                     1
-#define DEF_FP_FOCUS_CLICK_CLIENT                0
-#define DEF_FP_FOCUS_CLICK_DECOR                 0
-#define DEF_FP_FOCUS_BY_PROGRAM                  1
-#define DEF_FP_FOCUS_BY_FUNCTION                 1
-#define DEF_FP_LENIENT                           0
-#define DEF_FP_RAISE_FOCUSED_CLIENT_CLICK        0
-#define DEF_FP_RAISE_UNFOCUSED_CLIENT_CLICK      0
-#define DEF_FP_RAISE_FOCUSED_DECOR_CLICK         0
-#define DEF_FP_RAISE_UNFOCUSED_DECOR_CLICK       0
-#define DEF_FP_MOUSE_BUTTONS                     0
-#define DEF_FP_MODIFIERS                         0
-#define DEF_FP_PASS_FOCUS_CLICK                  1
-#define DEF_FP_PASS_RAISE_CLICK                  1
-#define DEF_FP_IGNORE_FOCUS_CLICK_MOTION         0
-#define DEF_FP_IGNORE_RAISE_CLICK_MOTION         0
-#define DEF_FP_ALLOW_FUNC_FOCUS_CLICK            1
-#define DEF_FP_ALLOW_FUNC_RAISE_CLICK            1
-#define DEF_FP_GRAB_FOCUS_WHEN_CREATED           0
-#define DEF_FP_GRAB_FOCUS_WHEN_TRANSIENT_CREATED 1
+#define DEF_FP_FOCUS_ENTER			 1
+#define DEF_FP_UNFOCUS_LEAVE			 1
+#define DEF_FP_FOCUS_CLICK_CLIENT		 0
+#define DEF_FP_FOCUS_CLICK_DECOR		 0
+#define DEF_FP_FOCUS_BY_PROGRAM			 1
+#define DEF_FP_FOCUS_BY_FUNCTION		 1
+#define DEF_FP_LENIENT				 0
+#define DEF_FP_RAISE_FOCUSED_CLIENT_CLICK	 0
+#define DEF_FP_RAISE_UNFOCUSED_CLIENT_CLICK	 0
+#define DEF_FP_RAISE_FOCUSED_DECOR_CLICK	 0
+#define DEF_FP_RAISE_UNFOCUSED_DECOR_CLICK	 0
+#define DEF_FP_MOUSE_BUTTONS			 0
+#define DEF_FP_MODIFIERS			 0
+#define DEF_FP_PASS_FOCUS_CLICK			 1
+#define DEF_FP_PASS_RAISE_CLICK			 1
+#define DEF_FP_IGNORE_FOCUS_CLICK_MOTION	 0
+#define DEF_FP_IGNORE_RAISE_CLICK_MOTION	 0
+#define DEF_FP_ALLOW_FUNC_FOCUS_CLICK		 1
+#define DEF_FP_ALLOW_FUNC_RAISE_CLICK		 1
+#define DEF_FP_GRAB_FOCUS			 0
+#define DEF_FP_GRAB_FOCUS_TRANSIENT		 1
 
 #endif /* _DEFAULTS_ */

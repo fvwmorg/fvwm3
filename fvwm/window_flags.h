@@ -26,10 +26,6 @@
 #define FW_FOCUS_POLICY(fw) \
 	((fw)->flags.common.s.focus_policy)
 
-#define DO_GRAB_FOCUS(fw) \
-	((fw)->flags.common.s.do_grab_focus_when_created)
-#define DO_GRAB_FOCUS_TRANSIENT(fw) \
-	((fw)->flags.common.s.do_grab_focus_when_transient_created)
 #define DO_LOWER_TRANSIENT(fw) \
 	((fw)->flags.common.s.do_lower_transient)
 #define DO_NOT_SHOW_ON_MAP(fw) \

@@ -712,9 +712,9 @@ void list_configure(unsigned long *body)
     printf( "do_circulate_skip_shaded: %d\n",
 	    DO_SKIP_SHADED_CIRCULATE( cfgpacket ) );
     printf( "do_grab_focus_when_created: %d\n",
-	    DO_GRAB_FOCUS( cfgpacket ) );
+	    FP_DO_GRAB_FOCUS( FW_FOCUS_POLICY(cfgpacket) ) );
     printf( "do_grab_focus_when_transient_created: %d\n",
-	    DO_GRAB_FOCUS_TRANSIENT( cfgpacket ) );
+	    FP_DO_GRAB_FOCUS_TRANSIENT( FW_FOCUS_POLICY(cfgpacket) ) );
     printf( "do_ignore_restack: %d\n",
 	    DO_IGNORE_RESTACK( cfgpacket ) );
     printf( "do_lower_transient: %d\n",
