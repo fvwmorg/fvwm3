@@ -1,5 +1,7 @@
 Installation
 
+0. Un-tar the tar file under fvwm2/extras directory.
+
 1. Edit Imake file to specify directory names to install
    function collection files.
 

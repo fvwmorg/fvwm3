@@ -1,16 +1,5 @@
-FvwmCommand is an interface to send commands to Fvwm 
-from processes which are not Fvwm modules.
-
-Version 1.4
-
-- Returns error messages and Fvwm window transaction. Its output can
-  be used for scripts.
-
-- Uses fifo instead of inet port. Multiple users can use FvwmCommand
-  without interference. Also multiple FvwmCommands can be used for
-  background jobs.
-
-- Exits cleaner. It erases files it creates.
+FvwmCommand is an interface to send commands to and receive
+information from Fvwm2 from processes which are not Fvwm modules.
 
 
 Examples
@@ -29,6 +18,26 @@ Examples
   Above examples are not meant to be practical but to show how it can
   be done.
 
+
+  
+  focus-link.pl
+     This is a user programmable window focus script.
+     Default behavior is:
+      1. When a window is opened up, focus the window and move the pointer 
+         to it. The parent window regains focus when a window is closed. 
+         Parenthood is determined when a window is opened. It is the last 
+         focused window with the same X class.
+      2. #1 would not occur to AcroRead opening window.
+      3. #1 would not occur when SkipMapping is set and the window is the
+         only window of its class.
+      4. For Netscape find dialog window, addition to #1, resize the window
+         to 300x150 pixels and move it to East edge of the screen.
+         Download/upload windows will not be focused nor be in focus link 
+         list.
+      5. Move appletviewer to NorthWest corner.
+      6. Xterm won't focus back to its parent after closed.
+      7. When a window is de-iconified, focus it and move the pointer.
+
   focus-Netscape.pl  
       Focuses pop-up windows, such as 'open URL' or 'find' whenever 
       opened up. This let the user to type in immediately without 
@@ -36,12 +45,13 @@ Examples
       right edge to keep it visible. If this is invoked from 
       .fvwm2rc, use as:
 
-          AddToFunc "InitFunction" "I" Exec $HOME/scripts/focus-Netscape.pl &
+          AddToFunc "InitFunction" "I" Module  FvwmCommandS
+          + "I" Exec $HOME/scripts/focus-Netscape.pl
 
   push-away.pl <direction> <window name>
       Pushes windows away to avoid overlapping. use as:
 
-          push-away.pl up 'Fvwm Pager' &
+          push-away.pl up 'Fvwm Pager'
 
 
 
@@ -49,7 +59,7 @@ Your comments will be appreciated.
 
 
 Toshi Isogai  
-              isogai@enshin.com
+              isogai@ucsub.colorado.edu
 
 
-July 19 '97
+May 11 '98

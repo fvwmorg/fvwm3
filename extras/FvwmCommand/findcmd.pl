@@ -6,7 +6,7 @@ sub getcmd {
 	$/ = "\n\n";
 	while(<FF>) {
 		#find "struct functions func_config[] =" in various spacing
-		if (s/^\s*struct\s+functions.*\[\]\s+=(\s|\n)+\{// ) {
+		if (s/struct\s+functions.*\[\]\s+=(\s|\n)+\{// ) {
 			return listcmd();
 		}
 	}
