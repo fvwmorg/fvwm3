@@ -3226,8 +3226,14 @@ void HandleShapeNotify(const evh_args_t *ea)
 		{
 			return;
 		}
-		fw->wShaped = sev->shaped;
-		frame_setup_shape(fw, fw->frame_g.width, fw->frame_g.height);
+		frame_setup_shape(
+			fw, fw->frame_g.width, fw->frame_g.height, sev->shaped);
+		GNOME_SetWinArea(fw);
+		EWMH_SetFrameStrut(fw);
+		if (!IS_ICONIFIED(fw))
+		{
+			border_redraw_decorations(fw);
+		}
 	}
 
 	return;

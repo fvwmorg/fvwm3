@@ -1727,7 +1727,7 @@ void setup_style_and_decor(
 	{
 		if (fw->wShaped)
 		{
-			set_window_border_size(fw, 0);
+			set_window_border_size(fw, fw->unshaped_boundary_width);
 			SET_HAS_NO_BORDER(fw, 1);
 			SET_HAS_HANDLES(fw, 0);
 		}

@@ -192,8 +192,7 @@ static void apply_window_updates(
 		EWMH_SetVisibleName(t, True);
 	}
 
-	if (flags->do_update_window_font ||
-	    flags->do_update_window_font_height)
+	if (flags->do_update_window_font || flags->do_update_window_font_height)
 	{
 		if (!is_style_initialised)
 		{
@@ -279,7 +278,7 @@ static void apply_window_updates(
 					NorthWestGravity, t, &t->max_g,
 					&naked_g);
 				/* prevent random paging when unmaximizing
-				 * after e.g.the border width has changed */
+				 * after e.g. the border width has changed */
 				new_off_x = t->normal_g.x - t->max_g.x;
 				new_off_y = t->normal_g.y - t->max_g.y;
 				t->max_offset.x += new_off_x - off_x;
@@ -324,52 +323,6 @@ static void apply_window_updates(
 			flags->do_setup_frame = True;
 			flags->do_redraw_decoration = True;
 		}
-	}
-	if (0 && flags->do_update_title_dir)
-	{
-		size_borders b_old;
-		size_borders b_new;
-		rectangle unshaded_g;
-		int dw;
-		int dh;
-
-		get_unshaded_geometry(t, &unshaded_g);
-		get_window_borders(t, &b_old);
-		SET_TITLE_DIR(t, S_TITLE_DIR(SCF(*pstyle)));
-		setup_title_geometry(t, pstyle);
-		get_window_borders(t, &b_new);
-		dw = b_new.total_size.width - b_old.total_size.width;
-		dh = b_new.total_size.height - b_old.total_size.height;
-
-		frame_g = t->normal_g;
-		gravity_resize(t->hints.win_gravity, &frame_g, dw, dh);
-		gravity_constrain_size(t->hints.win_gravity, t, &frame_g, 0);
-		t->normal_g = frame_g;
-		if (IS_MAXIMIZED(t))
-		{
-			frame_g = t->max_g;
-			gravity_resize(
-				t->hints.win_gravity, &frame_g, dw, dh);
-			gravity_constrain_size(
-				t->hints.win_gravity, t, &frame_g,
-				CS_UPDATE_MAX_DEFECT);
-			t->max_g = frame_g;
-		}
-		if (IS_SHADED(t))
-		{
-			get_shaded_geometry(t, &frame_g, &unshaded_g);
-		}
-		else if (IS_MAXIMIZED(t))
-		{
-			get_relative_geometry(&frame_g, &t->max_g);
-		}
-		else
-		{
-			get_relative_geometry(&frame_g, &t->normal_g);
-		}
-
-		flags->do_setup_frame = True;
-		flags->do_redraw_decoration = True;
 	}
 	if (flags->do_resize_window)
 	{

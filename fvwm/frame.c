@@ -36,6 +36,8 @@
 #include "focus.h"
 #include "borders.h"
 #include "frame.h"
+#include "gnome.h"
+#include "ewmh.h"
 
 /* ---------------------------- local definitions -------------------------- */
 
@@ -1180,6 +1182,68 @@ static int frame_get_shading_laziness(
 	}
 }
 
+static void frame_reshape_border(FvwmWindow *fw)
+{
+	int dw;
+	int dh;
+	int grav;
+	int off_x = 0;
+	int off_y = 0;
+	rectangle naked_g;
+	rectangle *new_g;
+	size_borders b_old;
+	size_borders b_new;
+
+	get_window_borders(fw, &b_old);
+	dw = b_new.total_size.width - b_old.total_size.width;
+	dh = b_new.total_size.height - b_old.total_size.height;
+	/* calculate the new offsets */
+	if (!IS_MAXIMIZED(fw))
+	{
+		grav = fw->hints.win_gravity;
+		new_g = &fw->normal_g;
+	}
+	else
+	{
+		/* maximized windows are always considered to have
+		 * NorthWestGravity */
+		grav = NorthWestGravity;
+		new_g = &fw->max_g;
+		off_x = fw->normal_g.x - fw->max_g.x;
+		off_y = fw->normal_g.y - fw->max_g.y;
+	}
+	gravity_get_naked_geometry(grav, fw, &naked_g, new_g);
+	gravity_translate_to_northwest_geometry_no_bw(
+		grav, fw, &naked_g, &naked_g);
+	set_window_border_size(fw, fw->unshaped_boundary_width);
+	get_window_borders(fw, &b_new);
+	gravity_add_decoration(grav, fw, new_g, &naked_g);
+	if (IS_MAXIMIZED(fw))
+	{
+		/* prevent random paging when unmaximizing after the border
+		 * width has changed */
+		fw->max_offset.x += fw->normal_g.x - fw->max_g.x - off_x;
+		fw->max_offset.y += fw->normal_g.y - fw->max_g.y - off_y;
+	}
+	if (IS_SHADED(fw))
+	{
+		get_unshaded_geometry(fw, new_g);
+		if (USED_TITLE_DIR_FOR_SHADING(fw))
+		{
+			SET_SHADED_DIR(fw, GET_TITLE_DIR(fw));
+		}
+		get_shaded_geometry(fw, &fw->frame_g, new_g);
+	}
+	else
+	{
+		get_relative_geometry(&fw->frame_g, new_g);
+	}
+	frame_force_setup_window(
+		fw, new_g->x, new_g->y, new_g->width, new_g->height, True);
+
+	return;
+}
+
 /* ---------------------------- interface functions ------------------------ */
 
 /* Initialise structures local to frame.c */
@@ -1850,7 +1914,7 @@ void frame_free_move_resize_args(
 			dpy, FW_W_FRAME(fw), FShapeBounding, 0, 0, None,
 			FShapeSet);
 	}
-	frame_setup_shape(fw, mra->end_g.width, mra->end_g.height);
+	frame_setup_shape(fw, mra->end_g.width, mra->end_g.height, fw->wShaped);
 	if (mra->flags.do_restore_gravity)
 	{
 		mra->grav.client_grav = fw->hints.win_gravity;
@@ -1974,7 +2038,7 @@ void frame_force_setup_window(
  * Sets up the shaped window borders
  *
  ****************************************************************************/
-void frame_setup_shape(FvwmWindow *fw, int w, int h)
+void frame_setup_shape(FvwmWindow *fw, int w, int h, int shape_mode)
 {
 	XRectangle rect;
 	rectangle r;
@@ -1984,32 +2048,39 @@ void frame_setup_shape(FvwmWindow *fw, int w, int h)
 	{
 		return;
 	}
-	if (!fw->wShaped)
+	if (fw->wShaped != shape_mode)
+	{
+		fw->wShaped = shape_mode;
+		frame_reshape_border(fw);
+	}
+	if (!shape_mode)
 	{
 		/* unset shape */
 		FShapeCombineMask(
 			dpy, FW_W_FRAME(fw), FShapeBounding, 0, 0, None,
 			FShapeSet);
-		return;
 	}
-	/* shape the window */
-	get_window_borders(fw, &b);
-	FShapeCombineShape(
-		dpy, FW_W_FRAME(fw), FShapeBounding, b.top_left.width,
-		b.top_left.height, FW_W(fw), FShapeBounding, FShapeSet);
-	if (FW_W_TITLE(fw))
+	else
 	{
-		/* windows w/ titles */
-		r.width = w;
-		r.height = h;
-		get_title_geometry(fw, &r);
-		rect.x = r.x;
-		rect.y = r.y;
-		rect.width = r.width;
-		rect.height = r.height;
-		FShapeCombineRectangles(
-			dpy, FW_W_FRAME(fw), FShapeBounding, 0, 0, &rect, 1,
-			FShapeUnion, Unsorted);
+		/* shape the window */
+		get_window_borders(fw, &b);
+		FShapeCombineShape(
+			dpy, FW_W_FRAME(fw), FShapeBounding, b.top_left.width,
+			b.top_left.height, FW_W(fw), FShapeBounding, FShapeSet);
+		if (FW_W_TITLE(fw))
+		{
+			/* windows w/ titles */
+			r.width = w;
+			r.height = h;
+			get_title_geometry(fw, &r);
+			rect.x = r.x;
+			rect.y = r.y;
+			rect.width = r.width;
+			rect.height = r.height;
+			FShapeCombineRectangles(
+				dpy, FW_W_FRAME(fw), FShapeBounding, 0, 0,
+				&rect, 1, FShapeUnion, Unsorted);
+		}
 	}
 
 	return;

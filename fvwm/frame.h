@@ -70,6 +70,6 @@ void frame_force_setup_window(
 	FvwmWindow *fw, int x, int y, int w, int h,
 	Bool do_send_configure_notify);
 void frame_setup_shape(
-	FvwmWindow *fw, int w, int h);
+	FvwmWindow *fw, int w, int h, int shape_mode);
 
 #endif /* FRAME_H */

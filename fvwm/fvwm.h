@@ -665,6 +665,7 @@ typedef struct FvwmWindow
 	/* Note: if the type of this variable is changed, do update the
 	 * CONFIGARGSNEW macro in module_interface.c, libs/vpacket.h too! */
 	short boundary_width;
+	short unshaped_boundary_width;
 	short corner_width;
 	short visual_corner_width;
 
