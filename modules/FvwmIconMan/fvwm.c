@@ -545,17 +545,14 @@ static void window_shade(FvwmPacketBody *body, int do_shade)
 	}
 	if (do_shade)
 	{
-fprintf(stderr,"manager shaded\n");
 		man->flags.needs_resize_after_unshade = 0;
 		man->flags.is_shaded = 1;
 	}
 	else
 	{
-fprintf(stderr,"manager unshaded\n");
 		man->flags.is_shaded = 0;
 		if (man->flags.needs_resize_after_unshade)
 		{
-fprintf(stderr,"redrawing\n");
 			draw_manager(man);
 			man->flags.needs_resize_after_unshade = 0;
 		}
