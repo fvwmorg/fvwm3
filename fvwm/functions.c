@@ -315,6 +315,7 @@ static char *function_vars[] =
   "w.width",
   "w.height",
   "screen",
+  "desk.name",
   NULL
 };
 
@@ -328,6 +329,7 @@ static int expand_extended_var(
   int cs = -1;
   int n;
   int i;
+  int l;
   Pixel pixel = 0;
   int val = -12345678;
   Bool is_numeric = False;
@@ -370,6 +372,35 @@ static int expand_extended_var(
       break;
     }
     return pixel_to_color_string(dpy, Pcmap, pixel, target, False);
+    break;
+  case 17:
+    if (sscanf(rest, "%d%n", &cs, &n) < 1)
+      return 0;
+    if (*(rest + n) != 0)
+      /* trailing characters */
+      return 0;
+    s = GetDesktopName(cs);
+    if (s == NULL)
+    {
+      s = (char *)safemalloc(23*sizeof(char));
+      sprintf(s,"Desk %i", cs);
+      l = strlen(s);
+      if (output)
+      {
+	strcpy(output,s);
+      }
+      free(s);
+    }
+    else
+    {
+      l = strlen(s);
+      if (output)
+      {
+	strcpy(output,s);
+      }
+    }
+    return l;
+    break;
   default:
     break;
   }

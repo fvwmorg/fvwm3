@@ -111,7 +111,7 @@ Bool is_move_allowed(
 {
 	if (tmp_win == NULL)
 	{
-		return False;
+		return True;  /* this logic come from animated menu */
 	}
 	if (is_user_request && IS_FIXED(tmp_win))
 	{
@@ -121,7 +121,8 @@ Bool is_move_allowed(
 	{
 		return False;
 	}
-	if (!check_if_function_allowed(F_MOVE, tmp_win, False, NULL))
+	if (is_user_request && 
+	    !check_if_function_allowed(F_MOVE, tmp_win, False, NULL))
 	{
 		return False;
 	}
@@ -151,7 +152,8 @@ Bool is_resize_allowed(
 	{
 		return False;
 	}
-	if (!check_if_function_allowed(F_RESIZE, tmp_win, False, NULL))
+	if (is_user_request && 
+	    !check_if_function_allowed(F_RESIZE, tmp_win, False, NULL))
 	{
 		return False;
 	}
@@ -166,7 +168,8 @@ Bool is_maximize_allowed(
 	{
 		return False;
 	}
-	if (!check_if_function_allowed(F_MAXIMIZE, tmp_win, False, NULL))
+	if (is_user_request &&
+	    !check_if_function_allowed(F_MAXIMIZE, tmp_win, False, NULL))
 	{
 		return False;
 	}
@@ -867,7 +870,7 @@ static void AnimatedMoveAnyWindow(
   int lastX, lastY;
   int deltaX, deltaY;
 
-  if (!is_resize_allowed(tmp_win, True))
+  if (!is_move_allowed(tmp_win, True))
     return;
 
   /* set our defaults */
@@ -3087,7 +3090,7 @@ static void move_sticky_window_to_same_page(
 static void MaximizeHeight(
   FvwmWindow *win, unsigned int win_width, int win_x, unsigned int *win_height,
   int *win_y, Bool grow_up, Bool grow_down,
-  int top_border, int bottom_border)
+  int top_border, int bottom_border, Bool layer_grow)
 {
   FvwmWindow *cwin;
   int x11, x12, x21, x22;
@@ -3108,7 +3111,8 @@ static void MaximizeHeight(
       is_sticky = True;
     else
       is_sticky = False;
-    if (cwin == win || (cwin->Desk != win->Desk && !is_sticky))
+    if (cwin == win || (cwin->Desk != win->Desk && !is_sticky) ||
+	(layer_grow && cwin->layer <= win->layer))
       continue;
     if (IS_ICONIFIED(cwin))
     {
@@ -3156,7 +3160,7 @@ static void MaximizeHeight(
 static void MaximizeWidth(
   FvwmWindow *win, unsigned int *win_width, int *win_x, unsigned int win_height,
   int win_y, Bool grow_left, Bool grow_right,
-  int left_border, int right_border)
+  int left_border, int right_border, Bool layer_grow)
 {
   FvwmWindow *cwin;
   int x11, x12, x21, x22;
@@ -3177,7 +3181,8 @@ static void MaximizeWidth(
       is_sticky = True;
     else
       is_sticky = False;
-    if (cwin == win || (cwin->Desk != win->Desk && !is_sticky))
+    if (cwin == win || (cwin->Desk != win->Desk && !is_sticky) ||
+	(layer_grow && cwin->layer <= win->layer))
       continue;
     if (IS_ICONIFIED(cwin))
     {
@@ -3241,12 +3246,15 @@ void CMD_Maximize(F_CMD_ARGS)
   Bool grow_right = False;
   Bool do_force_maximize = False;
   Bool is_screen_given = False;
+  Bool ignore_working_area = False;
+  Bool layer_grow = False;
+  Bool global_flag_parsed = False;
   int  scr_x, scr_y, scr_w, scr_h;
   int sx, sy, sw, sh;
   rectangle new_g;
   FvwmWindow *sf;
 
-  if (DeferExecution(eventp,&w,&tmp_win,&context, CRS_SELECT,ButtonRelease))
+  if (DeferExecution(eventp, &w, &tmp_win, &context, CRS_SELECT, ButtonRelease))
     return;
   if (tmp_win == NULL || IS_ICONIFIED(tmp_win))
     return;
@@ -3257,17 +3265,38 @@ void CMD_Maximize(F_CMD_ARGS)
     return;
   }
   /* Check for "global" flag ("absolute" is for compatibility with E) */
-  token = PeekToken(action, &taction);
-  if (token)
+  while (!global_flag_parsed)
   {
-    if (StrEquals(token, "screen"))
+    token = PeekToken(action, &taction);
+    if (!token)
     {
-      int scr;
+      global_flag_parsed = True;
+    }
+    else
+    {
+      if (StrEquals(token, "screen"))
+      {
+	int scr;
 
-      is_screen_given = True;
-      token = PeekToken(taction, &action);
-      scr = FScreenGetScreenArgument(token, FSCREEN_SPEC_PRIMARY);
-      FScreenGetScrRect(NULL, scr, &scr_x, &scr_y, &scr_w, &scr_h);
+	is_screen_given = True;
+	token = PeekToken(taction, &action);
+	scr = FScreenGetScreenArgument(token, FSCREEN_SPEC_PRIMARY);
+	FScreenGetScrRect(NULL, scr, &scr_x, &scr_y, &scr_w, &scr_h);
+      }
+      else if (StrEquals(token, "ewmhiwa"))
+      {
+	ignore_working_area = True;
+	action = taction;
+      }
+      else if (StrEquals(token, "layer"))
+      {
+	layer_grow = True;
+	action = taction;
+      }
+      else
+      {
+	global_flag_parsed = True;
+      }
     }
   }
   toggle = ParseToggleArgument(action, &action, -1, 0);
@@ -3319,9 +3348,12 @@ void CMD_Maximize(F_CMD_ARGS)
   sy = scr_y;
   sw = scr_w;
   sh = scr_h;
-  EWMH_GetWorkAreaIntersection(tmp_win,
-			       &sx, &sy, &sw, &sh,
-			       EWMH_MAXIMIZE_MODE(tmp_win));
+  if (!ignore_working_area)
+  {
+    EWMH_GetWorkAreaIntersection(tmp_win,
+				 &sx, &sy, &sw, &sh,
+				 EWMH_MAXIMIZE_MODE(tmp_win));
+  }
 #if 0
   fprintf(stderr, "%s: page=(%d,%d), scr=(%d,%d, %dx%d)\n", __FUNCTION__,
           page_x, page_y, scr_x, scr_y, scr_w, scr_h);
@@ -3448,7 +3480,7 @@ void CMD_Maximize(F_CMD_ARGS)
       MaximizeHeight(
 	tmp_win, new_g.width, new_g.x, (unsigned int *)&new_g.height,
 	&new_g.y, grow_up, grow_down,
-	page_y + scr_y, page_y + scr_y + scr_h);
+	page_y + scr_y, page_y + scr_y + scr_h, layer_grow);
     }
     else if(val2 > 0)
     {
@@ -3460,7 +3492,7 @@ void CMD_Maximize(F_CMD_ARGS)
       MaximizeWidth(
 	tmp_win, (unsigned int *)&new_g.width, &new_g.x, new_g.height,
 	new_g.y, grow_left, grow_right,
-	page_x + scr_x, page_x + scr_x + scr_w);
+	page_x + scr_x, page_x + scr_x + scr_w, layer_grow);
     }
     else if(val1 >0)
     {

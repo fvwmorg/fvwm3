@@ -941,17 +941,17 @@ Bool ewmh_AllowsClose(EWMH_CMD_ARGS)
 
 Bool ewmh_AllowsMaximize(EWMH_CMD_ARGS)
 {
-  return is_maximize_allowed(fwin, False);
+  return is_maximize_allowed(fwin, True);
 }
 
 Bool ewmh_AllowsMove(EWMH_CMD_ARGS)
 {
-  return is_move_allowed(fwin, False);
+  return is_move_allowed(fwin, True);
 }
 
 Bool ewmh_AllowsResize(EWMH_CMD_ARGS)
 {
-  return is_resize_allowed(fwin, False);
+  return is_resize_allowed(fwin, True);
 }
 
 void EWMH_SetAllowedActions(FvwmWindow *fwin)

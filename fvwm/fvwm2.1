@@ -1335,6 +1335,16 @@ Style * HilightFore $[fg.cs0], HilightBack $[bg.cs0]
 .in -.5i
 
 .in +.5i
+$[desk.name<n>]
+.in -.5i
+\"needs_lang_check
+These class of parameters is replaced with the name of the desktop 
+number <n> that is defined with the
+.B DesktopName
+command. If no name is defined, then the default name is returned.
+\"end
+
+.in +.5i
 $[...]
 .in +.3i
 If the string within the braces is neither of the above, fvwm
@@ -4094,13 +4104,8 @@ positive number instead of "True", or a negative number instead of
 "False".  Note that this syntax is obsolete, and will be removed
 in the future.
 
-.IP "\fBMaximize [\fP \fIscreen screen-spec\fP \
-\fB] [\fP \fIhorizontal\fP \
-\fB] [\fP \fIbool\fP \
-\fB[\fP \fIp\fP \
-\fB]\fP \fIvertical\fP \
-\fB[\fP \fIp\fP \
-\fB]]\fP"
+.TP
+.BI "Maximize [" flags "] [" bool "] [" horizontal " [" p "]] [" vertical "[" p "]]"
 Without its optional arguments (or if the
 .I bool
 bit has the value "toggle")
@@ -4128,7 +4133,30 @@ finding any obstacle.  The vertical resizing is similar.  If both
 horizontal and vertical values are "grow", it expands vertically
 first, then horizontally to find space.  Instead of the horizontal
 "grow" argument, "growleft" or "growright" can be used
-respectively "growup" and "growdown".  For example, the following
+respectively "growup" and "growdown".
+\"needs_lang_check
+The optional
+.I flags
+argument can be a space separated list containing the following
+key word:
+.IR ewmhiwa ", " layer " and " screen .
+.I ewmhiwa forces to ignore the EWMH working area.
+.I layer
+causes the various grow methods to ignore the windows with a layer less
+or equal to the layer of the window which is maximized.
+.I screen
+should take an argument which specifies the Xinerama screen on which
+to operate.
+\"end
+It can be 'p' for the primary screen, 'c' for the current
+screen (containing the mouse pointer), 'g' for the global screen
+or the screen number itself (counting from zero).  This option is
+only useful with multiple Xinerama screens.
+
+\"needs_lang_check
+Let us give some examples.
+\"end
+The following
 adds a title-bar button to switch a window to the full vertical
 size of the screen:
 .EX
@@ -4147,22 +4175,18 @@ To expand a window horizontally until any other window is found:
 .EX
 Mouse 0 4 A Maximize 0 grow
 .EE
+\"needs_lang_check
+To expand a window until any other window with a larger layer is found:
+\"end
+.EX
+Mouse 0 4 A Maximize layer grow grow
+.EE
 To expand a window but leave the lower 60 pixels of the screen
 unoccupied
 .EX
 Mouse 0 4 A Maximize 100 -60p
 .EE
 Values larger than 100 can be used with caution.
-
-If the first argument is the word
-.IR screen ,
-the
-.I screen-spec
-argument specifies the Xinerama screen on which to operate.
-It can be 'p' for the primary screen, 'c' for the current
-screen (containing the mouse pointer), 'g' for the global screen
-or the screen number itself (counting from zero).  This option is
-only useful with multiple Xinerama screens.
 
 .TP
 .BI "Recapture"
