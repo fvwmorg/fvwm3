@@ -6088,7 +6088,7 @@ static void NewMenuStyle(F_CMD_ARGS)
     if (!is_initialised)
     {
       /* some default configuration goes here for the new menu style */
-      ST_MENU_COLORS(tmpms).back = GetColor("white");
+      ST_MENU_COLORS(tmpms).back = GetColor("grey");
       ST_MENU_COLORS(tmpms).fore = GetColor("black");
       ST_PSTDFONT(tmpms) = &Scr.DefaultFont;
       ST_FACE(tmpms).type = SimpleMenu;

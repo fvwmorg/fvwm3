@@ -1,5 +1,9 @@
 2001-03-10  Dominik Vogt  <dominik.vogt@gmx.de>
 
+	* libs/Colorset.c (AllocColorset):
+	hardware portability patch; don't assume layout of the colorset_struct
+	type
+
 	* libs/envvar.c (getEnv):
 	initialise a temporary variable
 

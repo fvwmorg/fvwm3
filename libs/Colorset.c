@@ -60,8 +60,15 @@ void AllocColorset(int n)
   /* copy colorset 0 pixels into new members so that if undefined ones are
    * referenced at least they don't give black on black */
   if (n > 1)
-    while (nColorsets < n)
-      memcpy(&Colorset[nColorsets++], &Colorset[0], sizeof(Pixel) * 4);
+  {
+    for ( ; nColorsets < n; nColorsets++)
+    {
+      Colorset[nColorsets].fg = Colorset[0].fg;
+      Colorset[nColorsets].bg = Colorset[0].bg;
+      Colorset[nColorsets].hilite = Colorset[0].hilite;
+      Colorset[nColorsets].shadow = Colorset[0].shadow;
+    }
+  }
 
   nColorsets = n;
 }
