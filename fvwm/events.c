@@ -205,7 +205,12 @@ void HandleFocusIn(void)
     fc = GetColor("White");
     bc = GetColor("Black");
   }
-  else if (Tmp_win != Scr.Hilite)
+  else if (Tmp_win != Scr.Hilite
+	   /* domivogt (16-May-2000): This check is necessary to force sending
+	    * a M_FOCUS_CHANGE packet after an unmanaged window was focused.
+	    * Otherwise fvwm would believe that Scr.Hilite was still focused and
+	    * not send any info to the modules. */
+	   || last_focus_fw == None)
   {
     DrawDecorations(Tmp_win, DRAW_ALL, True, True, None);
     focus_w = Tmp_win->w;
@@ -228,7 +233,8 @@ void HandleFocusIn(void)
   {
     return;
   }
-  if (is_never_focused || focus_w != last_focus_w || focus_fw != last_focus_fw)
+  if (is_never_focused || last_focus_fw == None ||
+      focus_w != last_focus_w || focus_fw != last_focus_fw)
   {
     BroadcastPacket(M_FOCUS_CHANGE, 6, focus_w, focus_fw,
                     (unsigned long)IsLastFocusSetByMouse(), fc, bc);
@@ -1497,19 +1503,19 @@ void HandleEnterNotify(void)
 
   /* look for a matching leaveNotify which would nullify this enterNotify */
   if(XCheckTypedWindowEvent (dpy, ewp->window, LeaveNotify, &d))
+  {
+    /*
+     * RBW - if we're in startup, this is a coerced focus, so we don't
+     * want to save the event time, or exit prematurely.
+     */
+    if (!fFvwmInStartup)
     {
-      /*
-         RBW - if we're in startup, this is a coerced focus, so we don't
-         want to save the event time, or exit prematurely.
-      */
-      if (! fFvwmInStartup)
-        {
-          StashEventTime(&d);
-          if((d.xcrossing.mode==NotifyNormal)&&
-	     (d.xcrossing.detail!=NotifyInferior))
-	    return;
-        }
+      StashEventTime(&d);
+      if((d.xcrossing.mode==NotifyNormal)&&
+	 (d.xcrossing.detail!=NotifyInferior))
+	return;
     }
+  }
 
   /* an EnterEvent in one of the PanFrameWindows activates the Paging */
   if (ewp->window==Scr.PanFrameTop.win
@@ -1526,7 +1532,10 @@ void HandleEnterNotify(void)
   }
 
   /* multi screen? */
-  if (ewp->window == Scr.Root)
+  if (ewp->window == Scr.Root
+      /* domivogt (16-May-2000): added this test because somehow fvwm sometimes
+       * get an EnterNotify on the root window although it is single screen. */
+       && Scr.NumberOfScreens > 1)
   {
     if (!Scr.Focus || HAS_MOUSE_FOCUS(Scr.Focus))
     {
@@ -1596,16 +1605,19 @@ void HandleLeaveNotify(void)
   /* CDE-like behaviour of raising the icon title if the icon
      gets the focus (in particular if the cursor is over the icon) */
   if (Tmp_win && IS_ICONIFIED(Tmp_win))
-    {
-      SET_ICON_ENTERED(Tmp_win,0);
-      DrawIconWindow (Tmp_win);
-    }
+  {
+    SET_ICON_ENTERED(Tmp_win,0);
+    DrawIconWindow (Tmp_win);
+  }
 
   /* If we leave the root window, then we're really moving
    * another screen on a multiple screen display, and we
    * need to de-focus and unhighlight to make sure that we
    * don't end up with more than one highlighted window at a time */
-  if(Event.xcrossing.window == Scr.Root)
+  if(Event.xcrossing.window == Scr.Root
+     /* domivogt (16-May-2000): added this test because somehow fvwm sometimes
+      * get a LeaveNotify on the root window although it is single screen. */
+     && Scr.NumberOfScreens > 1)
   {
     if(Event.xcrossing.mode == NotifyNormal)
     {
