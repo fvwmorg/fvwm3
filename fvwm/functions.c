@@ -534,7 +534,7 @@ void ExecuteFunction(char *Action, FvwmWindow *tmp_win, XEvent *eventp,
     }
 
   /* Only wait for an all-buttons-up condition after calls from
-   * regular built-ins, not from complex-functions or modules. */
+   * regular built-ins, not from complex-functions, menus or modules. */
   if(Module == -1)
     WaitForButtonsUp();
 

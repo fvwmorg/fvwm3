@@ -207,9 +207,10 @@ typedef struct MenuRoot
     char *name;			/* name of root */
     Window w;			/* the window of the menu */
     short height;		/* height of the menu */
+    short width0;               /* width of the menu-left-picture col */
     short width;		/* width of the menu for 1st col */
     short width2;		/* width of the menu for 2nd col */
-    short width0;               /* width of the menu-left-picture col */
+    short width3;               /* width of the submenu triangle col */
     short items;		/* number of items in the menu */
     Picture *sidePic;
     Pixel sideColor;
@@ -324,7 +325,7 @@ void AddToMenu(MenuRoot *, char *, char *, Bool, Bool);
 void MakeMenu(MenuRoot *);
 Bool PopUpMenu(MenuRoot *, int, int);
 MenuStatus do_menu (MenuRoot *menu,MenuRoot *menuPrior,
-		    MenuItem **pmiExecuteAction, int cmenuDeep, Bool fSticks,
+		    char **ret_paction, int cmenuDeep, Bool fSticks,
 		    XEvent *eventp, MenuOptions *pops);
 MenuRoot *FindPopup(char *popup_name);
 char *GetMenuOptions(char *action, Window w, FvwmWindow *tmp_win,

@@ -1,4 +1,34 @@
+1999-05-07  Dominik Vogt  <dominik_vogt@gmx.de>
+
+	* fvwm/menus.c (MenuInteraction):
+	(do_menu):
+	(MenuInteraction): fixed destroying in dynamicpopdownaction; fixed a
+	bug with 'selectinplace' and multiple recursive submenus with position
+	hints (saves some CPU).
+
+	* fvwm/windowlist.c (do_windowList):
+
+	* fvwm/menus.c (FPopupMenu): fixed calling interactive functions in
+	dynamic menus
+
+	* fvwm/menus.c (PopDownMenu):
+	(FPopupMenu): fixed dynamic 'popup' menus
+
+	* fvwm/functions.c (ExecuteFunction):
+
+	* fvwm/menus.c (FPopupMenu):
+	(do_menu):
+	(MenuInteraction): fixed position hints with dynamic menus
+
+	* fvwm/menus.c (paint_menu_item):
+	(MakeMenu):
+	* fvwm/menus.h (MenuRoot): fixed right justification for menu items
+
 1999-05-06  Dominik Vogt  <dominik_vogt@gmx.de>
+
+	* fvwm/menus.c (paint_menu_item): hilight items without a left text too
+	(MakeMenu): right menu item text does not draw into submenu triangles
+	any more
 
 	* fvwm/menus.c (FPopupMenu): dynamic menus don't need an item initially
 

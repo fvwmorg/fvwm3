@@ -72,7 +72,7 @@ void do_windowList(XEvent *eventp,Window w,FvwmWindow *tmp_win,
 		unsigned long context, char *action,int *Module)
 {
   MenuRoot *mr;
-  MenuItem *miExecuteAction;
+  MenuItem *ret_action = NULL;
   FvwmWindow *t;
   FvwmWindow **windowList;
   int numWindows;
@@ -379,7 +379,9 @@ void do_windowList(XEvent *eventp,Window w,FvwmWindow *tmp_win,
     teventp = (XEvent *)1;
   else
     teventp = eventp;
-  menu_retval = do_menu(mr, NULL, &miExecuteAction, 0, TRUE, teventp, &mops);
+  menu_retval = do_menu(mr, NULL, &ret_action, 0, TRUE, teventp, &mops);
+  if (ret_action)
+    free(ret_action);
   DestroyMenu(mr, False);
   if (menu_retval == MENU_DOUBLE_CLICKED && default_action && *default_action)
     ExecuteFunction(default_action,tmp_win,eventp,context,*Module,
