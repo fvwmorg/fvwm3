@@ -1,5 +1,8 @@
 Changes in beta release 2.3.9
 
+* FvwmTaskBar supports colorsets with the options Colorset, IconColorset and
+  TipsColorset.
+
 * New function variable $v.
 
 * Menus can use colorsets with the new MenuStyle options MenuColorset,
@@ -294,7 +297,7 @@ Changes in alpha release 2.3.0 (February 1999)
   fvwm keeps windows in. You can now see the order that Next/Prev will take,
   Prev goes down the list, Next goes up (from the bottom).
 
-* WindowID command now takes conditions like Current
+* WindowID command now takes conditions like Current.
 
 * Improved cursor support: CursorStyle now supports changing
   cursor colors and creating cursors from xpm files.

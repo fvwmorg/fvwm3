@@ -612,6 +612,10 @@ void ParseConfig(void)
 void
 ParseConfigLine(char *tline)
 {
+  static Bool has_icon_back = False;
+  static Bool has_icon_fore = False;
+  static Bool has_icon_cset = False;
+
   if (!tline)
     return;
 
@@ -622,10 +626,19 @@ ParseConfigLine(char *tline)
 	     == 0) {
       CopyString(&ForeColor[0], &tline[Clength + 4]);
       colorset[0] = -1;
+      if (!has_icon_cset)
+	colorset[1] = -1;
+      if (!has_icon_fore)
+	CopyString(&ForeColor[1], &tline[Clength + 4]);
     } else if (strncasecmp(tline, CatString3(Module, "IconFore", ""),
 			   Clength + 8) == 0) {
       CopyString(&ForeColor[1], &tline[Clength + 8]);
-      colorset[1] = -1;
+      if (colorset[0] >= 0)
+	colorset[1] = colorset[0];
+      else
+	colorset[1] = -1;
+      has_icon_fore = True;
+      has_icon_cset = False;
     } else if (strncasecmp(tline, CatString3(Module, "FocusFore", ""),
 			   Clength + 9) == 0) {
       CopyString(&ForeColor[2], &tline[Clength + 9]);
@@ -638,10 +651,19 @@ ParseConfigLine(char *tline)
 			 == 0) {
       CopyString(&BackColor[0], &tline[Clength + 4]);
       colorset[0] = -1;
+      if (!has_icon_cset)
+	colorset[1] = -1;
+      if (!has_icon_back)
+	CopyString(&BackColor[1], &tline[Clength + 4]);
     } else if (strncasecmp(tline, CatString3(Module, "IconBack", ""),
 			   Clength + 8) == 0) {
       CopyString(&BackColor[1], &tline[Clength + 8]);
-      colorset[1] = -1;
+      if (colorset[0] >= 0)
+	colorset[1] = colorset[0];
+      else
+	colorset[1] = -1;
+      has_icon_fore = True;
+      has_icon_cset = False;
     } else if (strncasecmp(tline, CatString3(Module, "FocusBack", ""),
 			   Clength + 9) == 0) {
       CopyString(&BackColor[2], &tline[Clength + 9]);
@@ -694,10 +716,16 @@ ParseConfigLine(char *tline)
       colorset[0] = atoi(&tline[Clength + 8]);
     else if (strncasecmp(tline, CatString3(Module, "IconColorset", ""),
 			 Clength + 12) == 0)
+    {
       colorset[1] = atoi(&tline[Clength + 12]);
+      has_icon_cset = True;
+    }
     else if (strncasecmp(tline, CatString3(Module, "FocusColorset", ""),
 			 Clength + 13) == 0)
+    {
       colorset[2] = colorset[3] = atoi(&tline[Clength + 13]);
+      has_icon_cset = True;
+    }
     else if (strncasecmp(tline, "Colorset", 8) == 0) {
       int cset = LoadColorset(&tline[8]);
 

@@ -1,3 +1,8 @@
+1999-09-29  Dominik Vogt  <dominik_vogt@gmx.de>
+
+	* libs/Colorset.c (SetRectangleBackground): fixed stretching of
+	v and h gradients that was broken with last commit
+
 1999-09-28  Paul D. Smith  <psmith@gnu.org>
 
 	* libs/fvwmsignal.h: Add #include <sys/select.h> if needed.  Patch

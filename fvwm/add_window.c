@@ -233,19 +233,13 @@ FvwmWindow *AddWindow(Window w, FvwmWindow *ReuseWin)
     tmp_win->name = NoName;
 
   /* removing NoClass change for now... */
-#if 0
-  tmp_win->class.res_name = tmp_win->class.res_class = NULL;
-#else
   tmp_win->class.res_name = NoResource;
   tmp_win->class.res_class = NoClass;
-#endif /* 0 */
   XGetClassHint(dpy, tmp_win->w, &tmp_win->class);
-#if 1
   if (tmp_win->class.res_name == NULL)
     tmp_win->class.res_name = NoResource;
   if (tmp_win->class.res_class == NULL)
     tmp_win->class.res_class = NoClass;
-#endif /* 1 */
 
   FetchWmProtocols (tmp_win);
   FetchWmColormapWindows (tmp_win);

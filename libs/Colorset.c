@@ -392,14 +392,14 @@ void SetRectangleBackground(
     }
     if (stretch_x || stretch_y)
     {
-      if (stretch_x && colorset->width != width)
+      if (!stretch_x && colorset->width != width)
       {
 	pixmap2 = CreateStretchXPixmap(
 	  dpy, pixmap, colorset->width, height, depth, width, gc);
 	XFreePixmap(dpy, pixmap);
 	pixmap = pixmap2;
       }
-      if (stretch_y && colorset->height != height)
+      if (!stretch_y && colorset->height != height)
       {
 	pixmap2 = CreateStretchYPixmap(
 	  dpy, pixmap, width, colorset->height, depth, width, gc);
