@@ -2,6 +2,9 @@ To find out what should go in this file, see "Information For
 Maintainers of GNU Software" (maintain.texi), the section called
 "Recording Changes".
 
+Johan Svedberg:
+Swedish translations.
+
 Andrei Mitrofanow:
 German translations. Debian package creation procedure.
 
@@ -19,7 +22,7 @@ Fixed the GNOME1 patch. WindowList class name sorting.
 
 Nadim Shaikli:
 Added joining and shaping in bi-directional languages that need
-this, arabic translations.
+this; Arabic translations.
 
 Richard Lister:
 New module FvwmWindowMenu.
