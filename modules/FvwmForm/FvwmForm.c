@@ -732,14 +732,15 @@ static void ReadFormData() {
 /*
   Input is a line with varname space value.
   Search form for matching input fields and set values.
+  If you don't get a match on an input field, try a choice.
 */
 static void PutDataInForm(char *cp) {
   char *var_name;
   char *var_value;
-  int var_len;
+  int var_len, i;
   Item *item;
+  Line *line;
 
-  if (CF.cur_input == 0) return;        /* if no input, leave */
   var_name = CopySolidString(cp);       /* var */
   if (*var_name == 0) {
     return;
@@ -747,18 +748,39 @@ static void PutDataInForm(char *cp) {
   cp += strlen(var_name);
   while (isspace((unsigned char)*cp)) cp++;
   var_value = cp;
-  item = CF.cur_input;
-  do {
-    if (strcasecmp(var_name,item->header.name) == 0) {
-      var_len = strlen(cp);
-      item->input.init_value = safemalloc(var_len+1); /* leak! */
-      strcpy(item->input.init_value,cp); /* new initial value in field */
-      item->input.value = safemalloc(var_len+1); /* leak! */
-      strcpy(item->input.value,cp);     /* new value in field */
-      /* New value, but don't change length */
-    }
-    item=item->input.next_input;        /* next input field */
-  } while (item != CF.cur_input);       /* while not end of ring */
+  if (CF.cur_input != 0) {
+    item = CF.cur_input;
+    do {
+      if (strcasecmp(var_name,item->header.name) == 0) {
+        var_len = strlen(cp);
+        item->input.init_value = safemalloc(var_len+1); /* leak! */
+        strcpy(item->input.init_value,cp); /* new initial value in field */
+        item->input.value = safemalloc(var_len+1); /* leak! */
+        strcpy(item->input.value,cp);     /* new value in field */
+        /* New value, but don't change length */
+        free(var_name);                 /* goto's have their uses */
+        return;
+      }
+      item=item->input.next_input;        /* next input field */
+    } while (item != CF.cur_input);       /* while not end of ring */
+  }
+  /* You have a matching line, but it doesn't match an input
+     field.  What to do?  I know, try a choice. */
+  line = &root_line;                     /* start at first line */
+  do {                                  /* for all lines */
+    for (i = 0; i < line->n; i++) {     /* all items on line */
+      item = line->items[i];
+      if (item->type == I_CHOICE) {     /* choice is good */
+        if (strcasecmp(var_name,item->header.name) == 0) { /* match */
+          item->choice.init_on = 0;
+          if (strncasecmp(cp, "on", 2) == 0) {
+            item->choice.init_on = 1;   /* set default state */
+          }
+        }
+      }
+    } /* end all items in line */
+    line = line->next;                  /* go to next line */
+  } while (line != &root_line);         /* do all lines */
   free(var_name);                       /* not needed now */
 }
 static void ct_Selection(char *cp) {

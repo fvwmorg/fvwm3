@@ -1,3 +1,15 @@
+1999-12-07  Dan Espen  <dane@mk.telcordia.com>
+
+	* FvwmForm/FvwmForm.c: You can save and  use the previous setting
+ 	of a choice.
+
+	* FvwmForm/FvwmForm.1: Document the saving of choices.
+
+	* FvwmForm/FormFvwmRlogin.: Change the   rlogin  form so that  it
+ 	remembers how it was last used.
+
+1999-12-06  olicha   <olivier.chapuis@free.fr>
+
 1999-12-07  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* Makefile.am:
@@ -39,8 +51,8 @@
 
 1999-12-05  Dan Espen  <dane@mk.telcordia.com>
 
-	* FvwmForm/FvwmForm.c (DoCommand): Fixed overprinting in output message area.
-	Theres still an overprinting problem in pasting.
+	*  FvwmForm/FvwmForm.c (DoCommand): Fixed  overprinting in  output
+ 	message area.  Theres still an overprinting problem in pasting.
 
 1999-12-03  olicha   <olivier.chapuis@free.fr>
 

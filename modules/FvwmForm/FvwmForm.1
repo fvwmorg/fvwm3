@@ -472,12 +472,15 @@ The same as the above, except that the converse conditions are taken.
 .B *FvwmFormUseData \fIdatafile\fP \fIleading\fP
 Tells FvwmForm to read a data file and extract data from module
 commands that match the "leading" argument and an input
-variable in a form.
+or choice variable in a form.
 
 This lets a form display current fvwm module configuration data.
-For an example of how this works, examine the file "FormFvwmForm."
+For an example of how this works, examine the file "FormFvwmRlogin."
 which is installed in read-only architecture-independent data directory,
-[PREFIX/etc/fvwm].
+[PREFIX/etc/fvwm] and shown below.
+
+Note that for choices, the setting of the button is represented as the
+word "on",  all other values for a setting are treated as off.
 
 .SH EXAMPLES
 All of the following "examples" are installed in the
@@ -529,9 +532,21 @@ DestroyModuleConfig         FormFvwmRlogin.*
 *FormFvwmRlogin.Line         expand
 *FormFvwmRlogin.Button       quit    "Login"         ^M
 *FormFvwmRlogin.Command      Exec exec rsh $(Custom?-l $(UserName)) $(HostName) xterm -T xterm@$(HostName) -display $HOSTDISPLAY &
+# Before saving the data, remove any previously saved data:
+*FormFvwmRlogin.Command DestroyModuleConfig FvwmRloginDefault*
+# The "Login" button causes a login and a saving of the current data:
+*FormFvwmRlogin.Command !/bin/echo "# This file last created by\
+ FormFvwmRlogin on: `/bin/date`.\n\
+*FvwmRloginDefaultHostName $(HostName)\n\
+*FvwmRloginDefaultUserName $(UserName)\n\
+*FvwmRloginDefaultDefault $(Default?on)\n\
+*FvwmRloginDefaultCustom $(Custom?on)"\
+  > ${FVWM_USERHOME}/.FvwmRlogin
 *FormFvwmRlogin.Button       restart "Clear"
 *FormFvwmRlogin.Button       quit    "Cancel"        ^[
 *FormFvwmRlogin.Command      Nop
+# Tell FvwmForm to read vars from the .FvwmRlogin file:
+*FormFvwmRlogin.UseData .FvwmRlogin *FvwmRloginDefault
 .EE
 .SH EXAMPLE 3 - Capture Window
 This example provides a front-end to xwd, xwud, and xpr.
