@@ -20,16 +20,6 @@
 	in the place of the 32 tinting method (which can be enabled by defining
 	USE_ABSOLUTE_FORMATE)
 
-	* fvwm/menus.c (get_menu_repaint_transparent_parameters):
-	(animated_move_back):
-	(pop_menu_up):
-	(repaint_transparent_menu):
-	* fvwm/move_resize.c (AnimatedMoveOfWindow):
-	(AnimatedMoveAnyWindow):
-	* fvwm/move_resize.h:
-	Support the new colorset transparent options. Fixed greyed item
-	of transparent animated menus
-
 2002-09-19  olicha  <olivier.chapuis@free.fr>
 
 	* fvwm/menus.c (get_menu_repaint_transparent_parameters):
