@@ -630,6 +630,54 @@ static void adjust_fvwm_internal_windows(FvwmWindow *fw)
 	return;
 }
 
+static void broadcast_mini_icon(FvwmWindow *fw)
+{
+        if (!FMiniIconsSupported)
+        {
+                return;
+        }
+	if (fw->mini_pixmap_file && fw->mini_icon)
+	{
+		BroadcastMiniIcon(
+			M_MINI_ICON,
+			FW_W(fw), FW_W_FRAME(fw), (unsigned long)fw,
+			fw->mini_icon->width, fw->mini_icon->height,
+			fw->mini_icon->depth, fw->mini_icon->picture,
+			fw->mini_icon->mask, fw->mini_pixmap_file);
+	}
+
+	return;
+}
+
+static void setup_mini_icon(FvwmWindow *fw, window_style *pstyle)
+{
+        if (!FMiniIconsSupported)
+        {
+                return;
+        }
+	if (SHAS_MINI_ICON(&pstyle->flags))
+	{
+		fw->mini_pixmap_file = SGET_MINI_ICON_NAME(*pstyle);
+	}
+	else
+	{
+		fw->mini_pixmap_file = NULL;
+	}
+
+	if (fw->mini_pixmap_file)
+	{
+		fw->mini_icon = CachePicture(
+			dpy, Scr.NoFocusWin, NULL, fw->mini_pixmap_file,
+			Scr.ColorLimit);
+	}
+	else
+	{
+		fw->mini_icon = NULL;
+	}
+
+	return;
+}
+
 /* ---------------------------- interface functions ------------------------- */
 
 void setup_visible_name(FvwmWindow *fw, Bool is_icon)
@@ -1808,44 +1856,6 @@ void change_icon(FvwmWindow *fw, window_style *pstyle)
 	return;
 }
 
-void setup_mini_icon(FvwmWindow *fw, window_style *pstyle)
-{
-        if (!FMiniIconsSupported)
-        {
-                return;
-        }
-	if (SHAS_MINI_ICON(&pstyle->flags))
-	{
-		fw->mini_pixmap_file = SGET_MINI_ICON_NAME(*pstyle);
-	}
-	else
-	{
-		fw->mini_pixmap_file = NULL;
-	}
-
-	if (fw->mini_pixmap_file)
-	{
-		fw->mini_icon = CachePicture(dpy, Scr.NoFocusWin, NULL,
-					     fw->mini_pixmap_file,
-					     Scr.ColorLimit);
-		if (fw->mini_icon != NULL)
-		{
-			BroadcastMiniIcon(
-				M_MINI_ICON,
-				FW_W(fw), FW_W_FRAME(fw), (unsigned long)fw,
-				fw->mini_icon->width, fw->mini_icon->height,
-				fw->mini_icon->depth, fw->mini_icon->picture,
-				fw->mini_icon->mask, fw->mini_pixmap_file);
-		}
-	}
-	else
-	{
-		fw->mini_icon = NULL;
-	}
-
-	return;
-}
-
 void destroy_mini_icon(FvwmWindow *fw)
 {
 	if (fw->mini_icon)
@@ -1862,6 +1872,7 @@ void change_mini_icon(FvwmWindow *fw, window_style *pstyle)
 	Picture *old_mi = fw->mini_icon;
 	destroy_mini_icon(fw);
 	setup_mini_icon(fw, pstyle);
+	broadcast_mini_icon(fw);
 	if (old_mi != NULL && fw->mini_icon == 0)
 	{
 		/* this case is not handled in setup_mini_icon, so we must
@@ -2168,21 +2179,11 @@ FvwmWindow *AddWindow(
 	/****** now we can sefely ungrab the server ******/
 	MyXUngrabServer(dpy);
 
-	/* these are sent and broadcast before res_{class,name} for the benefit
-	 * of FvwmIconBox which can't handle M_ICON_FILE after M_RES_NAME */
-	/****** icon and mini icon ******/
-	/* migo (20-Jan-2000): the logic is to unset this flag on NULL values */
-	SET_WAS_ICON_NAME_PROVIDED(fw, 1);
-	setup_icon(fw, &style);
+	/* need to set up the mini icon before drawing */
         if (FMiniIconsSupported)
         {
                 setup_mini_icon(fw, &style);
         }
-
-	BroadcastName(M_RES_CLASS,FW_W(fw),FW_W_FRAME(fw),
-		      (unsigned long)fw,fw->class.res_class);
-	BroadcastName(M_RES_NAME,FW_W(fw),FW_W_FRAME(fw),
-		      (unsigned long)fw,fw->class.res_name);
 
 	/****** arrange the frame ******/
 	frame_force_setup_window(
@@ -2205,6 +2206,21 @@ FvwmWindow *AddWindow(
 	/****** inform modules of new window ******/
 	BroadcastConfig(M_ADD_WINDOW,fw);
 	BroadcastWindowIconNames(fw, True, False);
+
+	/* these are sent and broadcast before res_{class,name} for the benefit
+	 * of FvwmIconBox which can't handle M_ICON_FILE after M_RES_NAME */
+	/****** icon and mini icon ******/
+	/* migo (20-Jan-2000): the logic is to unset this flag on NULL values */
+	SET_WAS_ICON_NAME_PROVIDED(fw, 1);
+	setup_icon(fw, &style);
+        if (FMiniIconsSupported)
+        {
+                broadcast_mini_icon(fw);
+        }
+	BroadcastName(M_RES_CLASS,FW_W(fw),FW_W_FRAME(fw),
+		      (unsigned long)fw,fw->class.res_class);
+	BroadcastName(M_RES_NAME,FW_W(fw),FW_W_FRAME(fw),
+		      (unsigned long)fw,fw->class.res_name);
 
 	/****** stick window ******/
 	if (IS_STICKY(fw) && (!(fw->hints.flags & USPosition) || used_sm))
