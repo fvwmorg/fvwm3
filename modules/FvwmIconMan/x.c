@@ -689,7 +689,10 @@ void X_init_manager (int man_id)
     if (val & WidthValue)
       man->geometry.boxwidth = width;
     if (val & HeightValue)
-      man->geometry.boxheight = max (man->geometry.boxheight, height);
+    {
+      if (height >= man->geometry.boxheight - 4)
+        man->geometry.boxheight = height;
+    }
   }
   if (man->geometry_str) {
     geometry_mask = XParseGeometry (man->geometry_str, &man->geometry.x,

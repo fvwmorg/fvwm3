@@ -1,3 +1,9 @@
+2000-01-04  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* FvwmIconMan/x.c (X_init_manager):
+	allow the buttongeometry option to reduce the button height to a minimum
+	of the font height
+
 2000-01-04  olicha <olivier.chapuis@free.fr>
 
 	* FvwmScript/Scripts/ScriptFvwmDefaultStyle:
@@ -11,7 +17,7 @@
 
 	* FvwmScript/Instructions.c (GetScriptArg):
 	Fixed GetScriptArg core dump
-	
+
 2000-01-02  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* FvwmTaskBar/FvwmTaskBar.h:
@@ -37,7 +43,7 @@
 
 	* FvwmScript/FvwmScript.1
 	New section EXAMPLES
-	
+
 1999-12-31  olicha  <olivier.chapuis@free.fr>
 
 	* FvwmScript/FvwmScript.c (BuildGUI):
