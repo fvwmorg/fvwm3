@@ -1,3 +1,24 @@
+Sat Apr  3 14:12:26 1999  Steve Robbins  <steve@nyongwa.montreal.qc.ca>
+
+	* libs/Parse.c (SkipNTokens): removed unused variable.
+
+	* fvwm/functions.c: removed unused variables.
+
+	* fvwm/menus.c: removed unused variables, initialized variable
+	`newItem'.
+
+Sat Apr  3 02:06:01 1999  Steve Robbins  <steve@nyongwa.montreal.qc.ca>
+
+	* libs/Parse.c (XCmpToken): add function from ModParse.c
+
+	* libs/fvwmlib.h: add macro FindToken from ModParse.h
+
+	* libs/Makefile.am (libfvwm_a_SOURCES): removed ModParse.c and
+	ModParse.h.
+
+	* libs/Parse.c (GetNextOption): treat comma as a `delimiter',
+	rather than a `space'.
+
 1999-04-02  Dominik Vogt  <dominik_vogt@gmx.de>
 
 	* fvwm/events.c (HandlePropertyNotify): merged duplicate if statement
@@ -415,9 +436,10 @@ Sun Mar 28 11:44:29 1999  Steve Robbins  <steve@nyongwa.montreal.qc.ca>
 
 	* libs/Parse.c (GetSuffixedIntegerArguments): Correctly initialize
 	"suffixes" variable to correct a UMR detected by Purify.
-	(DoPeekToken): Made tmptok static since its address is being returned.
-	This is probably not the right way to fix this.
-	(GetSuffixedIntegerArguments): Remove extra code from suffixlist change.
+	(DoPeekToken): Made tmptok static since its address is being
+	returned.  This is probably not the right way to fix this.
+	(GetSuffixedIntegerArguments): Remove extra code from suffixlist
+	change.
 
 1999-03-23  Tomas Ogren  <stric@ing.umu.se>
 
@@ -427,9 +449,9 @@ Sun Mar 28 11:44:29 1999  Steve Robbins  <steve@nyongwa.montreal.qc.ca>
 1999-03-22  Matthias Clasen <clasen@mathematik.uni-freiburg.de>
 
 	* fvwm/add_window.c (LookInList): Initialize layer to
-	Scr.StaysPutLayer. This means that windows without
-	any layer-setting style option (StaysOnTop/StaysPut/Layer)
-	are put in the same layer as those with explicit StaysPut.
+	Scr.StaysPutLayer. This means that windows without any
+	layer-setting style option (StaysOnTop/StaysPut/Layer) are put in
+	the same layer as those with explicit StaysPut.
 
 1999-03-22  Dominik Vogt  <dominik_vogt@gmx.de>
 

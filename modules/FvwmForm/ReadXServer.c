@@ -51,7 +51,7 @@ static void ResizeFrame (void);
 void ReadXServer ()
 {
   static XEvent event;
-  int old_cursor, keypress;
+  int old_cursor = 0, keypress;
   int shft;                             /* keyboard shift state */
   Item *item, *old_item;
   KeySym ks;
@@ -81,7 +81,8 @@ void ReadXServer ()
 	RedrawFrame();
 	if (CF.grab_server && !CF.server_grabbed) {
 	  if (GrabSuccess == 
-	      XGrabPointer(dpy, CF.frame, True, 0, GrabModeAsync, GrabModeAsync,
+	      XGrabPointer(dpy, CF.frame, True, 0, 
+			   GrabModeAsync, GrabModeAsync,
 			   None, None, CurrentTime))
 	    CF.server_grabbed = 1;
 	}

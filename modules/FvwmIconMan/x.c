@@ -89,10 +89,10 @@ static void handle_buttonevent (XEvent *theEvent, WinManager *man)
     win = b->drawn_state.win;
     if (win != NULL) {
       ConsoleDebug (X11, "Found the window:\n");
-      ConsoleDebug (X11, "\tid:        %d\n", win->app_id);
-      ConsoleDebug (X11, "\tdesknum:   %d\n", win->desknum);
-      ConsoleDebug (X11, "\tx, y:      %d %d\n", win->x, win->y);
-      ConsoleDebug (X11, "\ticon:      %d\n", win->iconname);
+      ConsoleDebug (X11, "\tid:        %ld\n", win->app_id);
+      ConsoleDebug (X11, "\tdesknum:   %ld\n", win->desknum);
+      ConsoleDebug (X11, "\tx, y:      %ld %ld\n", win->x, win->y);
+      ConsoleDebug (X11, "\ticon:      %ld\n", (unsigned long)win->iconname);
       ConsoleDebug (X11, "\ticonified: %d\n", win->iconified);
       ConsoleDebug (X11, "\tcomplete:  %d\n", win->complete);
 
@@ -124,7 +124,7 @@ Window find_frame_window (Window win, int *off_x, int *off_y)
   unsigned int junki;
   XWindowAttributes attr;
 
-  ConsoleDebug (X11, "In find_frame_window: 0x%x\n", win);
+  ConsoleDebug (X11, "In find_frame_window: 0x%lx\n", win);
 
   while (1) {
     XQueryTree (theDisplay, win, &root, &parent, &junkw, &junki);
@@ -809,6 +809,6 @@ void init_display (void)
 
   InitPictureCMap (theDisplay, theRoot);
 
-  ConsoleDebug (X11, "screen width: %d\n", globals.screenx);
-  ConsoleDebug (X11, "screen height: %d\n", globals.screeny);
+  ConsoleDebug (X11, "screen width: %ld\n", globals.screenx);
+  ConsoleDebug (X11, "screen height: %ld\n", globals.screeny);
 }

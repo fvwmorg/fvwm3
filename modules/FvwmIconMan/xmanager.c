@@ -12,11 +12,8 @@ static char const rcsid[] =
 #include <X11/extensions/shape.h>
 #endif
 
-#ifdef COMPILE_STANDALONE
-#include "fvwm.h"
-#else
 #include "fvwm/fvwm.h"
-#endif
+
 
 /* button dirty bits: */
 #define ICON_STATE_CHANGED  1
@@ -405,7 +402,7 @@ Button *button_right (WinManager *man, Button *b)
 
 Button *button_left (WinManager *man, Button *b)
 {
-  int i;
+  int i = -1;
   if (index_to_col (man, b->index) > 0) {
     i = box_to_index (man, index_to_box (man, b->index) - 1);
   }

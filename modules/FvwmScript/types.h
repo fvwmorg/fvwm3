@@ -37,6 +37,10 @@
 
 #include <X11/X.h>
 
+/* Prototype for yylex().  There must be a way to get this automatically from
+   yacc/bison.  */
+extern int yylex(void);
+
 
 /* Constante de couleurs */
 #define black 0

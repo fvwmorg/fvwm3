@@ -81,7 +81,6 @@ static int ButtonPosition(int context, FvwmWindow * t);
 static Bool FMenuMapped(MenuRoot *menu);
 
 Bool menuFromFrameOrWindowOrTitlebar = FALSE;
-static Bool fShowPopupTimedout = FALSE;
 static Bool mouse_moved = FALSE;
 
 extern int Context,Button;
@@ -413,7 +412,7 @@ MenuStatus menuShortcuts(MenuRoot *menu,XEvent *Event,MenuItem **pmiCurrent)
   int fShiftedKey = Event->xkey.state & ShiftMask? TRUE: FALSE;
   KeySym keysym;
   char keychar;
-  MenuItem *newItem;
+  MenuItem *newItem = NULL;
   MenuItem *miCurrent = pmiCurrent?*pmiCurrent:NULL;
   int index;
 

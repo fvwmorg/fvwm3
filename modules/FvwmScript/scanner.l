@@ -2,6 +2,9 @@
 # include "script.h"
 # include "types.h"
 
+/* Suppress definition of yyunput(), as we do not use it. */
+#define YY_NO_UNPUT
+
 int numligne=1;
 %}
 

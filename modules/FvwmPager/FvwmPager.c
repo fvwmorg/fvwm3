@@ -35,7 +35,6 @@
 
 #include "fvwm/module.h"
 #include "libs/fvwmlib.h"
-#include "libs/ModParse.h"
 
 #include "FvwmPager.h"
 #include "fvwm/fvwm.h"
@@ -130,7 +129,6 @@ int main(int argc, char **argv)
   Window JunkRoot, JunkChild;
   int JunkX, JunkY;
   unsigned JunkMask;
-  int val;
 
   /* Save our program  name - for error messages */
   temp = argv[0];
@@ -350,7 +348,7 @@ int main(int argc, char **argv)
       Event.xany.type = ButtonPress;
       Event.xbutton.state = 0;
       Event.xbutton.button = 3;
-      Event.xany.window == Desks[0].w;
+      Event.xany.window = Desks[0].w;
       DispatchEvent(&Event);
     }
   Loop(fd);
@@ -1187,7 +1185,7 @@ int My_XNextEvent(Display *dpy, XEvent *event)
 void ParseOptions(void)
 {
   char *tline= NULL;
-  int Clength,n,desk;
+  int Clength,desk;
 
   Scr.FvwmRoot = NULL;
   Scr.Hilite = NULL;
@@ -1220,14 +1218,13 @@ void ParseOptions(void)
       resource_string = arg1 = arg2 = NULL;
 
       if (MatchToken(tline, "ImagePath")) {
-	  char *tmp;
-
 	  if (ImagePath != NULL) {
 	      free(ImagePath);
 	      ImagePath = NULL;
 	  }
 
-	  free(GetArgument(&tline));
+	  tline = SkipNTokens( tline, 1 );
+	  
 	  CopyString(&ImagePath, tline);
 
 #ifdef DEBUG

@@ -31,10 +31,7 @@
 static char *last_function = NULL;
 static char *last_complex_function = NULL;
 static char *last_builtin_function = NULL;
-static char *last_top_function = NULL;
 static char *last_module = NULL;
-static char *last_menu = NULL;
-static FvwmWindow *last_fvwm_window = NULL;
 
 extern XEvent Event;
 extern FvwmWindow *Tmp_win;
@@ -413,12 +410,10 @@ void ExecuteFunction(char *Action, FvwmWindow *tmp_win, XEvent *eventp,
   int matched,j;
   char *function;
   char *action, *taction, *t2action;
-  char *next;
   static char *expaction = NULL;
   char *arguments[10];
   struct functions *bif;
   Bool set_silent;
-  Bool exp_malloced;
   Bool no_expand;
   Bool no_store;
   int skip;

@@ -117,47 +117,49 @@ void DrawVSbList(struct XObj *xobj,int NbCell,int NbVisCell,int press)
 
 void DrawCellule(struct XObj *xobj,int NbCell,int NbVisCell,int HeightCell,int asc)
 {
- XRectangle r;
- char *Title;
- int i;
+    XRectangle r;
+    char *Title;
+    int i;
 
- r.x=4+BdWidth;
- r.y=r.x;
- r.width=xobj->width-r.x-10-2*BdWidth-SbWidth;
- r.height=xobj->height-r.y-4-2*BdWidth;
+    r.x=4+BdWidth;
+    r.y=r.x;
+    r.width=xobj->width-r.x-10-2*BdWidth-SbWidth;
+    r.height=xobj->height-r.y-4-2*BdWidth;
 
- /* Dessin des cellules */ 
- XSetClipRectangles(xobj->display,xobj->gc,0,0,&r,1,Unsorted);
- for (i=xobj->value2;i<xobj->value2+NbVisCell;i++)
- {
-  Title=GetMenuTitle(xobj->title,i);
-  if (strlen(Title)!=0)
-   if (xobj->value==i)
-   {
-    XSetForeground(xobj->display,xobj->gc,xobj->TabColor[shad].pixel);
-    XFillRectangle(xobj->display,xobj->win,xobj->gc,r.x+2,r.y+(i-xobj->value2)*HeightCell+2,
-		xobj->width-2,HeightCell-2);
-    DrawString(xobj->display,xobj->gc,xobj->win,5+r.x,(i-xobj->value2)*HeightCell+asc+2+r.y,Title,
-		strlen(Title),xobj->TabColor[fore].pixel,xobj->TabColor[back].pixel,
-		xobj->TabColor[shad].pixel,!xobj->flags[1]);
-   }
-   else
-   {
-    XSetForeground(xobj->display,xobj->gc,xobj->TabColor[back].pixel);
-    XFillRectangle(xobj->display,xobj->win,xobj->gc,r.x+2,r.y+(i-xobj->value2)*HeightCell+2,
-		xobj->width-2,HeightCell-2);
-    DrawString(xobj->display,xobj->gc,xobj->win,5+r.x,(i-xobj->value2)*HeightCell+asc+2+r.y,Title,
-		strlen(Title),xobj->TabColor[fore].pixel,xobj->TabColor[li].pixel,
-		xobj->TabColor[back].pixel,!xobj->flags[1]);
-   }
-  else
-  {
-   XSetForeground(xobj->display,xobj->gc,xobj->TabColor[back].pixel);
-   XFillRectangle(xobj->display,xobj->win,xobj->gc,r.x+2,r.y+(i-xobj->value2)*HeightCell+2,
-	xobj->width-2,HeightCell-2);
-  }
- }
- XSetClipMask(xobj->display,xobj->gc,None); 
+    /* Dessin des cellules */ 
+    XSetClipRectangles(xobj->display,xobj->gc,0,0,&r,1,Unsorted);
+    for (i=xobj->value2;i<xobj->value2+NbVisCell;i++)
+    {
+	Title=GetMenuTitle(xobj->title,i);
+	if (strlen(Title)!=0)
+	{
+	    if (xobj->value==i)
+	    {
+		XSetForeground(xobj->display,xobj->gc,xobj->TabColor[shad].pixel);
+		XFillRectangle(xobj->display,xobj->win,xobj->gc,r.x+2,r.y+(i-xobj->value2)*HeightCell+2,
+			       xobj->width-2,HeightCell-2);
+		DrawString(xobj->display,xobj->gc,xobj->win,5+r.x,(i-xobj->value2)*HeightCell+asc+2+r.y,Title,
+			   strlen(Title),xobj->TabColor[fore].pixel,xobj->TabColor[back].pixel,
+			   xobj->TabColor[shad].pixel,!xobj->flags[1]);
+	    }
+	    else
+	    {
+		XSetForeground(xobj->display,xobj->gc,xobj->TabColor[back].pixel);
+		XFillRectangle(xobj->display,xobj->win,xobj->gc,r.x+2,r.y+(i-xobj->value2)*HeightCell+2,
+			       xobj->width-2,HeightCell-2);
+		DrawString(xobj->display,xobj->gc,xobj->win,5+r.x,(i-xobj->value2)*HeightCell+asc+2+r.y,Title,
+			   strlen(Title),xobj->TabColor[fore].pixel,xobj->TabColor[li].pixel,
+			   xobj->TabColor[back].pixel,!xobj->flags[1]);
+	    }
+	}
+	else
+	{
+	    XSetForeground(xobj->display,xobj->gc,xobj->TabColor[back].pixel);
+	    XFillRectangle(xobj->display,xobj->win,xobj->gc,r.x+2,r.y+(i-xobj->value2)*HeightCell+2,
+			   xobj->width-2,HeightCell-2);
+	}
+    }
+    XSetClipMask(xobj->display,xobj->gc,None); 
 }
 
 void DestroyList(struct XObj *xobj)

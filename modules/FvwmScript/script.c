@@ -1,5 +1,6 @@
 
-/*  A Bison parser, made from ../../../../modules/FvwmScript/script.y with Bison version GNU Bison version 1.24
+/*  A Bison parser, made from ../../../modules/FvwmScript/script.y
+ by  GNU Bison version 1.25
   */
 
 #define YYBISON 1  /* Identify Bison output.  */
@@ -86,7 +87,7 @@
 #define	SUP	337
 #define	DIFF	338
 
-#line 1 "../../../../modules/FvwmScript/script.y"
+#line 1 "../../../modules/FvwmScript/script.y"
 
 #include "types.h"
 
@@ -428,27 +429,10 @@ int yyerror(char *errmsg)
 
 
 
-#line 346 "../../../../modules/FvwmScript/script.y"
+#line 346 "../../../modules/FvwmScript/script.y"
 typedef union {  char *str;
           int number;
        } YYSTYPE;
-
-#ifndef YYLTYPE
-typedef
-  struct yyltype
-    {
-      int timestamp;
-      int first_line;
-      int first_column;
-      int last_line;
-      int last_column;
-      char *text;
-   }
-  yyltype;
-
-#define YYLTYPE yyltype
-#endif
-
 #include <stdio.h>
 
 #ifndef __cplusplus
@@ -615,6 +599,10 @@ static const short yyrline[] = { 0,
    727,   731,   732,   733,   737,   741,   742,   743,   744,   745,
    746
 };
+#endif
+
+
+#if YYDEBUG != 0 || defined (YYERROR_VERBOSE)
 
 static const char * const yytname[] = {   "$","error","$undefined.","STR","GSTR",
 "VAR","NUMBER","WINDOWTITLE","WINDOWSIZE","WINDOWPOSITION","FONT","FORECOLOR",
@@ -633,7 +621,7 @@ static const char * const yytname[] = {   "$","error","$undefined.","STR","GSTR"
 "chbackcolor","set","sendsign","quit","warp","sendtoscript","writetofile","ifthenelse",
 "loop","while","headif","else","creerbloc","bloc1","bloc2","headloop","headwhile",
 "var","str","gstr","num","singleclic2","doubleclic2","addlbuff","function","args",
-"arg","numarg","strarg","gstrarg","vararg","compare",""
+"arg","numarg","strarg","gstrarg","vararg","compare", NULL
 };
 #endif
 
@@ -955,7 +943,7 @@ static const short yycheck[] = {    42,
     -1,    -1,    -1,    -1,    72,    -1,    -1,    75
 };
 /* -*-C-*-  Note some compilers choke on comments on `#line' lines.  */
-#line 3 "/freeware/share/bison.simple"
+#line 3 "/usr/share/bison.simple"
 
 /* Skeleton output parser for bison,
    Copyright (C) 1984, 1989, 1990 Free Software Foundation, Inc.
@@ -1110,16 +1098,16 @@ int yyparse (void);
 #endif
 
 #if __GNUC__ > 1		/* GNU C and GNU C++ define this.  */
-#define __yy_memcpy(FROM,TO,COUNT)	__builtin_memcpy(TO,FROM,COUNT)
+#define __yy_memcpy(TO,FROM,COUNT)	__builtin_memcpy(TO,FROM,COUNT)
 #else				/* not GNU C or C++ */
 #ifndef __cplusplus
 
 /* This is the most reliable way to avoid incompatibilities
    in available built-in functions on various systems.  */
 static void
-__yy_memcpy (from, to, count)
-     char *from;
+__yy_memcpy (to, from, count)
      char *to;
+     char *from;
      int count;
 {
   register char *f = from;
@@ -1135,7 +1123,7 @@ __yy_memcpy (from, to, count)
 /* This is the most reliable way to avoid incompatibilities
    in available built-in functions on various systems.  */
 static void
-__yy_memcpy (char *from, char *to, int count)
+__yy_memcpy (char *to, char *from, int count)
 {
   register char *f = from;
   register char *t = to;
@@ -1148,7 +1136,7 @@ __yy_memcpy (char *from, char *to, int count)
 #endif
 #endif
 
-#line 192 "/freeware/share/bison.simple"
+#line 196 "/usr/share/bison.simple"
 
 /* The user can define YYPARSE_PARAM as the name of an argument to be passed
    into yyparse.  The argument should have type void *.
@@ -1157,14 +1145,20 @@ __yy_memcpy (char *from, char *to, int count)
    to the proper pointer type.  */
 
 #ifdef YYPARSE_PARAM
-#define YYPARSE_PARAM_DECL void *YYPARSE_PARAM;
-#else
-#define YYPARSE_PARAM
+#ifdef __cplusplus
+#define YYPARSE_PARAM_ARG void *YYPARSE_PARAM
 #define YYPARSE_PARAM_DECL
-#endif
+#else /* not __cplusplus */
+#define YYPARSE_PARAM_ARG YYPARSE_PARAM
+#define YYPARSE_PARAM_DECL void *YYPARSE_PARAM;
+#endif /* not __cplusplus */
+#else /* not YYPARSE_PARAM */
+#define YYPARSE_PARAM_ARG
+#define YYPARSE_PARAM_DECL
+#endif /* not YYPARSE_PARAM */
 
 int
-yyparse(YYPARSE_PARAM)
+yyparse(YYPARSE_PARAM_ARG)
      YYPARSE_PARAM_DECL
 {
   register int yystate;
@@ -1281,12 +1275,12 @@ yynewstate:
       if (yystacksize > YYMAXDEPTH)
 	yystacksize = YYMAXDEPTH;
       yyss = (short *) alloca (yystacksize * sizeof (*yyssp));
-      __yy_memcpy ((char *)yyss1, (char *)yyss, size * sizeof (*yyssp));
+      __yy_memcpy ((char *)yyss, (char *)yyss1, size * sizeof (*yyssp));
       yyvs = (YYSTYPE *) alloca (yystacksize * sizeof (*yyvsp));
-      __yy_memcpy ((char *)yyvs1, (char *)yyvs, size * sizeof (*yyvsp));
+      __yy_memcpy ((char *)yyvs, (char *)yyvs1, size * sizeof (*yyvsp));
 #ifdef YYLSP_NEEDED
       yyls = (YYLTYPE *) alloca (yystacksize * sizeof (*yylsp));
-      __yy_memcpy ((char *)yyls1, (char *)yyls, size * sizeof (*yylsp));
+      __yy_memcpy ((char *)yyls, (char *)yyls1, size * sizeof (*yylsp));
 #endif
 #endif /* no yyoverflow */
 
@@ -1447,81 +1441,81 @@ yyreduce:
   switch (yyn) {
 
 case 2:
-#line 372 "../../../../modules/FvwmScript/script.y"
+#line 372 "../../../modules/FvwmScript/script.y"
 { InitVarGlob(); ;
     break;}
 case 4:
-#line 377 "../../../../modules/FvwmScript/script.y"
+#line 377 "../../../modules/FvwmScript/script.y"
 {		/* Titre de la fenetre */
 				 scriptprop->titlewin=yyvsp[-1].str;
 				;
     break;}
 case 5:
-#line 380 "../../../../modules/FvwmScript/script.y"
+#line 380 "../../../modules/FvwmScript/script.y"
 {
 				 scriptprop->icon=yyvsp[-1].str;
 				;
     break;}
 case 6:
-#line 384 "../../../../modules/FvwmScript/script.y"
+#line 384 "../../../modules/FvwmScript/script.y"
 {		/* Position et taille de la fenetre */
 				 scriptprop->x=yyvsp[-2].number;
 				 scriptprop->y=yyvsp[-1].number;
 				;
     break;}
 case 7:
-#line 389 "../../../../modules/FvwmScript/script.y"
+#line 389 "../../../modules/FvwmScript/script.y"
 {		/* Position et taille de la fenetre */
 				 scriptprop->width=yyvsp[-2].number;
 				 scriptprop->height=yyvsp[-1].number;
 				;
     break;}
 case 8:
-#line 393 "../../../../modules/FvwmScript/script.y"
+#line 393 "../../../modules/FvwmScript/script.y"
 { 		/* Couleur de fond */
 				 scriptprop->backcolor=yyvsp[-1].str;
 				;
     break;}
 case 9:
-#line 396 "../../../../modules/FvwmScript/script.y"
+#line 396 "../../../modules/FvwmScript/script.y"
 { 		/* Couleur des lignes */
 				 scriptprop->forecolor=yyvsp[-1].str;
 				;
     break;}
 case 10:
-#line 399 "../../../../modules/FvwmScript/script.y"
+#line 399 "../../../modules/FvwmScript/script.y"
 { 		/* Couleur des lignes */
 				 scriptprop->shadcolor=yyvsp[-1].str;
 				;
     break;}
 case 11:
-#line 402 "../../../../modules/FvwmScript/script.y"
+#line 402 "../../../modules/FvwmScript/script.y"
 { 		/* Couleur des lignes */
 				 scriptprop->licolor=yyvsp[-1].str;
 				;
     break;}
 case 12:
-#line 405 "../../../../modules/FvwmScript/script.y"
+#line 405 "../../../modules/FvwmScript/script.y"
 {
 				 scriptprop->font=yyvsp[-1].str;
 				;
     break;}
 case 14:
-#line 412 "../../../../modules/FvwmScript/script.y"
+#line 412 "../../../modules/FvwmScript/script.y"
 {
 				 scriptprop->initbloc=PileBloc[TopPileB];
 				 TopPileB--; 
 				;
     break;}
 case 16:
-#line 418 "../../../../modules/FvwmScript/script.y"
+#line 418 "../../../modules/FvwmScript/script.y"
 {
 				 scriptprop->periodictasks=PileBloc[TopPileB];
 				 TopPileB--; 
 				;
     break;}
 case 19:
-#line 431 "../../../../modules/FvwmScript/script.y"
+#line 431 "../../../modules/FvwmScript/script.y"
 { nbobj++;
 				  if (nbobj>100)
 				  { yyerror("Too many items\n");
@@ -1537,21 +1531,21 @@ case 19:
 				;
     break;}
 case 21:
-#line 447 "../../../../modules/FvwmScript/script.y"
+#line 447 "../../../modules/FvwmScript/script.y"
 {
 				 (*tabobj)[nbobj].type=yyvsp[-1].str;
 				 HasType=1;
 				;
     break;}
 case 22:
-#line 451 "../../../../modules/FvwmScript/script.y"
+#line 451 "../../../modules/FvwmScript/script.y"
 {
 				 (*tabobj)[nbobj].width=yyvsp[-2].number;
 				 (*tabobj)[nbobj].height=yyvsp[-1].number;
 				;
     break;}
 case 23:
-#line 455 "../../../../modules/FvwmScript/script.y"
+#line 455 "../../../modules/FvwmScript/script.y"
 {
 				 (*tabobj)[nbobj].x=yyvsp[-2].number;
 				 (*tabobj)[nbobj].y=yyvsp[-1].number;
@@ -1559,91 +1553,91 @@ case 23:
 				;
     break;}
 case 24:
-#line 460 "../../../../modules/FvwmScript/script.y"
+#line 460 "../../../modules/FvwmScript/script.y"
 {
 				 (*tabobj)[nbobj].value=yyvsp[-1].number;
 				;
     break;}
 case 25:
-#line 463 "../../../../modules/FvwmScript/script.y"
+#line 463 "../../../modules/FvwmScript/script.y"
 {
 				 (*tabobj)[nbobj].value2=yyvsp[-1].number;
 				;
     break;}
 case 26:
-#line 466 "../../../../modules/FvwmScript/script.y"
+#line 466 "../../../modules/FvwmScript/script.y"
 {
 				 (*tabobj)[nbobj].value3=yyvsp[-1].number;
 				;
     break;}
 case 27:
-#line 469 "../../../../modules/FvwmScript/script.y"
+#line 469 "../../../modules/FvwmScript/script.y"
 {
 				 (*tabobj)[nbobj].title=yyvsp[-1].str;
 				;
     break;}
 case 28:
-#line 472 "../../../../modules/FvwmScript/script.y"
+#line 472 "../../../modules/FvwmScript/script.y"
 {
 				 (*tabobj)[nbobj].swallow=yyvsp[-1].str;
 				;
     break;}
 case 29:
-#line 475 "../../../../modules/FvwmScript/script.y"
+#line 475 "../../../modules/FvwmScript/script.y"
 {
 				 (*tabobj)[nbobj].icon=yyvsp[-1].str;
 				;
     break;}
 case 30:
-#line 478 "../../../../modules/FvwmScript/script.y"
+#line 478 "../../../modules/FvwmScript/script.y"
 {
 				 (*tabobj)[nbobj].backcolor=yyvsp[-1].str;
 				;
     break;}
 case 31:
-#line 481 "../../../../modules/FvwmScript/script.y"
+#line 481 "../../../modules/FvwmScript/script.y"
 {
 				 (*tabobj)[nbobj].forecolor=yyvsp[-1].str;
 				;
     break;}
 case 32:
-#line 484 "../../../../modules/FvwmScript/script.y"
+#line 484 "../../../modules/FvwmScript/script.y"
 {
 				 (*tabobj)[nbobj].shadcolor=yyvsp[-1].str;
 				;
     break;}
 case 33:
-#line 487 "../../../../modules/FvwmScript/script.y"
+#line 487 "../../../modules/FvwmScript/script.y"
 {
 				 (*tabobj)[nbobj].licolor=yyvsp[-1].str;
 				;
     break;}
 case 34:
-#line 490 "../../../../modules/FvwmScript/script.y"
+#line 490 "../../../modules/FvwmScript/script.y"
 {
 				 (*tabobj)[nbobj].font=yyvsp[-1].str;
 				;
     break;}
 case 37:
-#line 496 "../../../../modules/FvwmScript/script.y"
+#line 496 "../../../modules/FvwmScript/script.y"
 {
 				 (*tabobj)[nbobj].flags[0]=True;
 				;
     break;}
 case 38:
-#line 499 "../../../../modules/FvwmScript/script.y"
+#line 499 "../../../modules/FvwmScript/script.y"
 {
 				 (*tabobj)[nbobj].flags[1]=True;
 				;
     break;}
 case 39:
-#line 502 "../../../../modules/FvwmScript/script.y"
+#line 502 "../../../modules/FvwmScript/script.y"
 {
 				 (*tabobj)[nbobj].flags[2]=True;
 				;
     break;}
 case 40:
-#line 508 "../../../../modules/FvwmScript/script.y"
+#line 508 "../../../modules/FvwmScript/script.y"
 { 
 				  if (!HasPosition)
 				   { yyerror("No position for object");
@@ -1656,252 +1650,252 @@ case 40:
 				 ;
     break;}
 case 41:
-#line 519 "../../../../modules/FvwmScript/script.y"
+#line 519 "../../../modules/FvwmScript/script.y"
 { InitObjTabCase(0); ;
     break;}
 case 43:
-#line 523 "../../../../modules/FvwmScript/script.y"
+#line 523 "../../../modules/FvwmScript/script.y"
 { InitObjTabCase(1); ;
     break;}
 case 47:
-#line 530 "../../../../modules/FvwmScript/script.y"
+#line 530 "../../../modules/FvwmScript/script.y"
 { InitCase(-1); ;
     break;}
 case 48:
-#line 531 "../../../../modules/FvwmScript/script.y"
+#line 531 "../../../modules/FvwmScript/script.y"
 { InitCase(-2); ;
     break;}
 case 49:
-#line 534 "../../../../modules/FvwmScript/script.y"
+#line 534 "../../../modules/FvwmScript/script.y"
 { InitCase(yyvsp[0].number); ;
     break;}
 case 95:
-#line 591 "../../../../modules/FvwmScript/script.y"
+#line 591 "../../../modules/FvwmScript/script.y"
 { AddCom(1,1); ;
     break;}
 case 96:
-#line 593 "../../../../modules/FvwmScript/script.y"
+#line 593 "../../../modules/FvwmScript/script.y"
 { AddCom(2,1);;
     break;}
 case 97:
-#line 595 "../../../../modules/FvwmScript/script.y"
+#line 595 "../../../modules/FvwmScript/script.y"
 { AddCom(3,1);;
     break;}
 case 98:
-#line 597 "../../../../modules/FvwmScript/script.y"
+#line 597 "../../../modules/FvwmScript/script.y"
 { AddCom(4,2);;
     break;}
 case 99:
-#line 599 "../../../../modules/FvwmScript/script.y"
+#line 599 "../../../modules/FvwmScript/script.y"
 { AddCom(21,2);;
     break;}
 case 100:
-#line 601 "../../../../modules/FvwmScript/script.y"
+#line 601 "../../../modules/FvwmScript/script.y"
 { AddCom(22,2);;
     break;}
 case 101:
-#line 603 "../../../../modules/FvwmScript/script.y"
+#line 603 "../../../modules/FvwmScript/script.y"
 { AddCom(5,3);;
     break;}
 case 102:
-#line 605 "../../../../modules/FvwmScript/script.y"
+#line 605 "../../../modules/FvwmScript/script.y"
 { AddCom(6,3);;
     break;}
 case 103:
-#line 607 "../../../../modules/FvwmScript/script.y"
+#line 607 "../../../modules/FvwmScript/script.y"
 { AddCom(7,2);;
     break;}
 case 104:
-#line 609 "../../../../modules/FvwmScript/script.y"
+#line 609 "../../../modules/FvwmScript/script.y"
 { AddCom(8,2);;
     break;}
 case 105:
-#line 611 "../../../../modules/FvwmScript/script.y"
+#line 611 "../../../modules/FvwmScript/script.y"
 { AddCom(9,2);;
     break;}
 case 106:
-#line 613 "../../../../modules/FvwmScript/script.y"
+#line 613 "../../../modules/FvwmScript/script.y"
 { AddCom(10,2);;
     break;}
 case 107:
-#line 615 "../../../../modules/FvwmScript/script.y"
+#line 615 "../../../modules/FvwmScript/script.y"
 { AddCom(19,2);;
     break;}
 case 108:
-#line 617 "../../../../modules/FvwmScript/script.y"
+#line 617 "../../../modules/FvwmScript/script.y"
 { AddCom(11,2);;
     break;}
 case 109:
-#line 619 "../../../../modules/FvwmScript/script.y"
+#line 619 "../../../modules/FvwmScript/script.y"
 { AddCom(12,2);;
     break;}
 case 110:
-#line 621 "../../../../modules/FvwmScript/script.y"
+#line 621 "../../../modules/FvwmScript/script.y"
 { AddCom(13,0);;
     break;}
 case 111:
-#line 623 "../../../../modules/FvwmScript/script.y"
+#line 623 "../../../modules/FvwmScript/script.y"
 { AddCom(17,1);;
     break;}
 case 112:
-#line 625 "../../../../modules/FvwmScript/script.y"
+#line 625 "../../../modules/FvwmScript/script.y"
 { AddCom(23,2);;
     break;}
 case 113:
-#line 627 "../../../../modules/FvwmScript/script.y"
+#line 627 "../../../modules/FvwmScript/script.y"
 { AddCom(18,2);;
     break;}
 case 117:
-#line 637 "../../../../modules/FvwmScript/script.y"
+#line 637 "../../../modules/FvwmScript/script.y"
 { AddComBloc(14,3,2); ;
     break;}
 case 120:
-#line 642 "../../../../modules/FvwmScript/script.y"
+#line 642 "../../../modules/FvwmScript/script.y"
 { EmpilerBloc(); ;
     break;}
 case 121:
-#line 644 "../../../../modules/FvwmScript/script.y"
+#line 644 "../../../modules/FvwmScript/script.y"
 { DepilerBloc(2); ;
     break;}
 case 122:
-#line 645 "../../../../modules/FvwmScript/script.y"
+#line 645 "../../../modules/FvwmScript/script.y"
 { DepilerBloc(2); ;
     break;}
 case 123:
-#line 648 "../../../../modules/FvwmScript/script.y"
+#line 648 "../../../modules/FvwmScript/script.y"
 { DepilerBloc(1); ;
     break;}
 case 124:
-#line 649 "../../../../modules/FvwmScript/script.y"
+#line 649 "../../../modules/FvwmScript/script.y"
 { DepilerBloc(1); ;
     break;}
 case 125:
-#line 653 "../../../../modules/FvwmScript/script.y"
+#line 653 "../../../modules/FvwmScript/script.y"
 { AddComBloc(15,3,1); ;
     break;}
 case 126:
-#line 657 "../../../../modules/FvwmScript/script.y"
+#line 657 "../../../modules/FvwmScript/script.y"
 { AddComBloc(16,3,1); ;
     break;}
 case 127:
-#line 662 "../../../../modules/FvwmScript/script.y"
+#line 662 "../../../modules/FvwmScript/script.y"
 { AddVar(yyvsp[0].str); ;
     break;}
 case 128:
-#line 664 "../../../../modules/FvwmScript/script.y"
+#line 664 "../../../modules/FvwmScript/script.y"
 { AddConstStr(yyvsp[0].str); ;
     break;}
 case 129:
-#line 666 "../../../../modules/FvwmScript/script.y"
+#line 666 "../../../modules/FvwmScript/script.y"
 { AddConstStr(yyvsp[0].str); ;
     break;}
 case 130:
-#line 668 "../../../../modules/FvwmScript/script.y"
+#line 668 "../../../modules/FvwmScript/script.y"
 { AddConstNum(yyvsp[0].number); ;
     break;}
 case 131:
-#line 670 "../../../../modules/FvwmScript/script.y"
+#line 670 "../../../modules/FvwmScript/script.y"
 { AddConstNum(-1); ;
     break;}
 case 132:
-#line 672 "../../../../modules/FvwmScript/script.y"
+#line 672 "../../../modules/FvwmScript/script.y"
 { AddConstNum(-2); ;
     break;}
 case 133:
-#line 674 "../../../../modules/FvwmScript/script.y"
+#line 674 "../../../modules/FvwmScript/script.y"
 { AddLevelBufArg(); ;
     break;}
 case 134:
-#line 676 "../../../../modules/FvwmScript/script.y"
+#line 676 "../../../modules/FvwmScript/script.y"
 { AddFunct(1,1); ;
     break;}
 case 135:
-#line 677 "../../../../modules/FvwmScript/script.y"
+#line 677 "../../../modules/FvwmScript/script.y"
 { AddFunct(2,1); ;
     break;}
 case 136:
-#line 678 "../../../../modules/FvwmScript/script.y"
+#line 678 "../../../modules/FvwmScript/script.y"
 { AddFunct(3,1); ;
     break;}
 case 137:
-#line 679 "../../../../modules/FvwmScript/script.y"
+#line 679 "../../../modules/FvwmScript/script.y"
 { AddFunct(4,1); ;
     break;}
 case 138:
-#line 680 "../../../../modules/FvwmScript/script.y"
+#line 680 "../../../modules/FvwmScript/script.y"
 { AddFunct(5,1); ;
     break;}
 case 139:
-#line 681 "../../../../modules/FvwmScript/script.y"
+#line 681 "../../../modules/FvwmScript/script.y"
 { AddFunct(6,1); ;
     break;}
 case 140:
-#line 682 "../../../../modules/FvwmScript/script.y"
+#line 682 "../../../modules/FvwmScript/script.y"
 { AddFunct(7,1); ;
     break;}
 case 141:
-#line 683 "../../../../modules/FvwmScript/script.y"
+#line 683 "../../../modules/FvwmScript/script.y"
 { AddFunct(8,1); ;
     break;}
 case 142:
-#line 684 "../../../../modules/FvwmScript/script.y"
+#line 684 "../../../modules/FvwmScript/script.y"
 { AddFunct(9,1); ;
     break;}
 case 143:
-#line 685 "../../../../modules/FvwmScript/script.y"
+#line 685 "../../../modules/FvwmScript/script.y"
 { AddFunct(10,1); ;
     break;}
 case 144:
-#line 686 "../../../../modules/FvwmScript/script.y"
+#line 686 "../../../modules/FvwmScript/script.y"
 { AddFunct(11,1); ;
     break;}
 case 145:
-#line 687 "../../../../modules/FvwmScript/script.y"
+#line 687 "../../../modules/FvwmScript/script.y"
 { AddFunct(12,1); ;
     break;}
 case 146:
-#line 688 "../../../../modules/FvwmScript/script.y"
+#line 688 "../../../modules/FvwmScript/script.y"
 { AddFunct(13,1); ;
     break;}
 case 147:
-#line 689 "../../../../modules/FvwmScript/script.y"
+#line 689 "../../../modules/FvwmScript/script.y"
 { AddFunct(14,1); ;
     break;}
 case 148:
-#line 690 "../../../../modules/FvwmScript/script.y"
+#line 690 "../../../modules/FvwmScript/script.y"
 { AddFunct(15,1); ;
     break;}
 case 149:
-#line 695 "../../../../modules/FvwmScript/script.y"
+#line 695 "../../../modules/FvwmScript/script.y"
 { ;
     break;}
 case 176:
-#line 741 "../../../../modules/FvwmScript/script.y"
+#line 741 "../../../modules/FvwmScript/script.y"
 { l=1-250000; AddBufArg(&l,1); ;
     break;}
 case 177:
-#line 742 "../../../../modules/FvwmScript/script.y"
+#line 742 "../../../modules/FvwmScript/script.y"
 { l=2-250000; AddBufArg(&l,1); ;
     break;}
 case 178:
-#line 743 "../../../../modules/FvwmScript/script.y"
+#line 743 "../../../modules/FvwmScript/script.y"
 { l=3-250000; AddBufArg(&l,1); ;
     break;}
 case 179:
-#line 744 "../../../../modules/FvwmScript/script.y"
+#line 744 "../../../modules/FvwmScript/script.y"
 { l=4-250000; AddBufArg(&l,1); ;
     break;}
 case 180:
-#line 745 "../../../../modules/FvwmScript/script.y"
+#line 745 "../../../modules/FvwmScript/script.y"
 { l=5-250000; AddBufArg(&l,1); ;
     break;}
 case 181:
-#line 746 "../../../../modules/FvwmScript/script.y"
+#line 746 "../../../modules/FvwmScript/script.y"
 { l=6-250000; AddBufArg(&l,1); ;
     break;}
 }
    /* the action file gets copied in in place of this dollarsign */
-#line 487 "/freeware/share/bison.simple"
+#line 498 "/usr/share/bison.simple"
 
   yyvsp -= yylen;
   yyssp -= yylen;
@@ -2097,7 +2091,7 @@ yyerrhandle:
   yystate = yyn;
   goto yynewstate;
 }
-#line 749 "../../../../modules/FvwmScript/script.y"
+#line 749 "../../../modules/FvwmScript/script.y"
 
 
 

@@ -236,6 +236,32 @@ int MatchToken(char *pstr,char *tok)
 }
 
 /*
+   function:		XCmpToken
+   description:	        compare 1st word of s to 1st word of t
+   returns:		< 0  if s < t
+                        = 0  if s = t
+                        > 0  if s > t
+*/
+
+int XCmpToken(const char *s, const char **t)
+{
+    register const char *w=*t;
+
+    if (w==NULL) return 1;		/* non existant word */
+    if (s==NULL) return -1;		/* non existant string */
+
+    while ( *w && (*s==*w || toupper(*s)==toupper(*w)) )
+	s++,w++;
+
+    if ((*s=='\0' && (ispunct(*w) || isspace(*w)))||
+	(*w=='\0' && (ispunct(*s) || isspace(*s))) )
+	return 0;			/* 1st word equal */
+    else 
+	return toupper(*s)-toupper(*w);	/* smaller/greater */
+}
+
+
+/*
 ** NukeToken: removes next token from string
 */
 void NukeToken(char **pstr)
@@ -296,13 +322,11 @@ char *GetNextToken(char *indata, char **token)
 
 char *GetNextOption(char *indata, char **token)
 {
-  return DoGetNextToken(indata, token, ",", NULL, NULL);
+  return DoGetNextToken(indata, token, NULL, ",", NULL);
 }
 
 char *SkipNTokens(char *indata, unsigned int n)
 {
-  char *junk;
-
   for ( ; n > 0 ; n--)
     PeekToken(indata, &indata);
   return indata;
@@ -348,6 +372,7 @@ char *GetModuleResource(char *indata, char **resource, char *module_name)
   free(tmp);
   return next;
 }
+
 
 /****************************************************************************
  *

@@ -95,7 +95,7 @@ void EvtMouseCheckBox(struct XObj *xobj,XButtonEvent *EvtButton)
  int x1,x2,y1,y2;
  Window Win1,Win2;
  Window WinBut=0;
- int In;
+ int In = 0;
  XSegment segm[2];
  int asc,desc,dir;
  XCharStruct struc;

@@ -164,6 +164,7 @@ void print_args (int numargs, BuiltinArg *args)
 #endif
 }
 
+#ifdef PRINT_DEBUG
 static void print_binding (Binding *binding)
 {
   int i;
@@ -199,15 +200,18 @@ static void print_binding (Binding *binding)
 
 void print_bindings (Binding *list)
 {
-#ifdef PRINT_DEBUG
   ConsoleDebug (CONFIG, "binding list:\n");
   while (list != NULL) {
     print_binding (list);
     ConsoleDebug (CONFIG, "\n");
     list = list->NextBinding;
   }
-#endif
 }
+#else
+void print_bindings (Binding *list)
+{
+}
+#endif
 
 static int iswhite (char c)
 {
@@ -588,7 +592,7 @@ static Function *parse_function_list (char *line)
 
   JmpArgs=0;
   while (line && (f = parse_function(&line, &stop_char))) {
-    ConsoleDebug (CONFIG, "parse_function: 0x%x\n", f->func);
+    ConsoleDebug (CONFIG, "parse_function: 0x%lx\n", (unsigned long)f->func);
     /* extra code to check for and remove a 'label' pseudo-function */
     if (f->func==builtin_label) {
       /* scan backwards to fix up references */
@@ -702,7 +706,7 @@ Binding *ParseMouseEntry (char *tline)
   }
 
   ConsoleDebug (CONFIG, "Mouse: %d %d %s\n", new->Button_Key,
-		new->Modifier, new->Action);
+		new->Modifier, (char*)new->Action);
 
   return new;
 }
@@ -762,6 +766,8 @@ static Binding *ParseKeyEntry (char *tline)
 	}
 	actionstring = stripcpy(action);
 	keystring = stripcpy(key);
+      } else {
+	actionstring = keystring = NULL;
       }
       temp = new;
       new  = (Binding *)safemalloc(sizeof(Binding));
@@ -777,7 +783,7 @@ static Binding *ParseKeyEntry (char *tline)
       }
 
       ConsoleDebug (CONFIG, "Key: %d %s %d %s\n", i, new->key_name,
-		    mods, new->Action);
+		    mods, (char*)new->Action);
     }
   }
   return new;
@@ -1067,7 +1073,7 @@ void read_in_resources (char *file)
   char *p, *q;
   int i, n, manager;
   char *option1;
-  Binding *binding;
+  Binding *binding = NULL;
   Resolution r;
 
   if (!init_config_file (file))

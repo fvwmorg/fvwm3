@@ -44,7 +44,7 @@ int fd_err;
 int x_fd;			/* fd for X */
 Window ref;
 
-
+extern int yyparse(void);
 extern void (*TabCom[30]) (int NbArg,long *TabArg);
 
 X11base *x11base;		/* Pour le serveur X */

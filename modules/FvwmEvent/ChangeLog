@@ -1,3 +1,7 @@
+Sat Apr  3 02:16:42 1999  Steve Robbins  <steve@nyongwa.montreal.qc.ca>
+
+	* FvwmEvent.c (config): use GetNextOption() rather than GetArgument()
+
 1999-03-02  Steven Michael ROBBINS  <stever@hojpoj.cs.mcgill.ca>
 
 	* FvwmEvent.c: Finished the removal of Parse.c and Parse.h from

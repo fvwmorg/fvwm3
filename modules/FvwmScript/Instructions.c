@@ -516,16 +516,18 @@ char *ReceivFromScript (int *NbArg,long *TabArg)
  }
 
  if ((send>=0)&&(send<99))
-  if (x11base->TabScriptId[send]!=NULL)
-  {
-   ASend=XInternAtom(x11base->display,x11base->TabScriptId[send],True);
-   if (ASend==None)
-    fprintf(stderr,"Error with atome\n");
-  }
-  else
-   return msg;
+ {
+     if (x11base->TabScriptId[send]!=NULL)
+     {
+	 ASend=XInternAtom(x11base->display,x11base->TabScriptId[send],True);
+	 if (ASend==None)
+	     fprintf(stderr,"Error with atome\n");
+     }
+     else
+	 return msg;
+ }
  else
-  return msg;
+     return msg;
 
  /* Recuperation du message */
  XConvertSelection(x11base->display,ASend,AReceiv,propriete,x11base->win,CurrentTime);

@@ -2165,34 +2165,28 @@ void MapBalloonWindow (XEvent *event)
 {
   PagerWindow *t;
   XWindowChanges window_changes;
-  Window view, dummy;
-  int view_width, view_height;
-  int matched_window = 0;
+  Window view = -1, dummy;
+  int view_width = -1, view_height = -1;
   int x, y;
   extern char *BalloonBack;
 
   /* is this the best way to match X event window ID to PagerWindow ID? */
-  t = Start;
-
-  while ( ! matched_window ) {
-    if (t == NULL) {
-      return;
-    }
-    else if ( t->PagerView == event->xcrossing.window ) {
+  for ( t = Start; t != NULL; t = t->next ) {
+    if ( t->PagerView == event->xcrossing.window ) {
       view = t->PagerView;
       view_width = t->pager_view_width;
       view_height = t->pager_view_height;
-      matched_window = 1;
+      break;
     }
-    else if ( t->IconView == event->xcrossing.window ) {
+    if ( t->IconView == event->xcrossing.window ) {
       view = t->IconView;
       view_width = t->icon_view_width;
       view_height = t->icon_view_height;
-      matched_window = 1;
+      break;
     }
-    else {
-      t = t->next;
-    }
+  }
+  if (t == NULL) {
+    return;
   }
 
   /* associate balloon with its pager window */
@@ -2284,8 +2278,6 @@ static void InsertExpand(char **dest, char *s)
 char *GetBalloonLabel(const PagerWindow *pw,const char *fmt)
 {
   char *dest = strdup("");
-  unsigned int allocSize = 0;
-  const unsigned int enlargeSize = 32;
   const char *pos = fmt;
   char buffer[2];
 

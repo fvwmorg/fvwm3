@@ -1,3 +1,63 @@
+Sat Apr  3 14:34:28 1999  Steve Robbins  <steve@nyongwa.montreal.qc.ca>
+
+	* FvwmScript/scanner.l: define YY_NO_UNPUT to suppress defining
+	useless function.
+
+	* FvwmScript/types.h: add prototype for yylex().
+
+	* FvwmScript/Instructions.c (ReceivFromScript): 
+	* FvwmScript/Widgets/List.c (DrawCellule): reformat and insert
+	braces to avoid ambiguous `else'.
+
+	* FvwmScript/Widgets/CheckBox.c (EvtMouseCheckBox): 
+	* FvwmPager/x_pager.c (MapBalloonWindow): initialize variables to
+	placate gcc -Wall.
+
+	* FvwmPager/FvwmPager.c:
+	* FvwmPager/x_pager.c: removed unused variables.
+
+	* FvwmPager/FvwmPager.c (main): `==' should be `='.
+
+	* FvwmIconMan/xmanager.c (button_left): initialize variable `i'
+	before use.
+
+	* FvwmIconMan/xmanager.c: removed COMPILE_STANDALONE nonsense
+	around include fvwm.h.
+
+	* FvwmIconMan/x.c: 
+	* FvwmIconMan/winlist.c (check_win_complete): fix debugging printf
+	arguments.
+
+	* FvwmIconMan/readconfig.c (parse_function_list): cast pointer to
+	unsigned long for debugging printf.
+
+	* FvwmIconMan/readconfig.c (ParseKeyEntry): initialize variables
+	`actionstring' and `keystring'.
+
+	* FvwmIconMan/readconfig.c (ParseMouseEntry): 
+	* FvwmIconMan/readconfig.c (ParseKeyEntry): cast Action to char*
+	for debugging printf.
+
+	* FvwmIconMan/readconfig.c (read_in_resources): initialize
+	variable `binding'.
+
+	* FvwmIconMan/readconfig.c (print_binding,print_bindings): wrapped
+	inside #ifdef PRINT_DEBUG.
+
+	* FvwmForm/ReadXServer.c (ReadXServer): initialize old_cursor,
+	otherwise it might be used uninitialized.
+
+	* FvwmPager/FvwmPager.c:
+	* FvwmForm/FvwmForm.c: include <libs/ModParse.h> removed.
+
+Sat Apr  3 11:52:29 1999  Steve Robbins  <steve@nyongwa.montreal.qc.ca>
+
+	* FvwmGtk/FvwmGtk.c (parse_arguments): use GetNextOption() rather
+	than GetArgument().
+
+	* FvwmPager/FvwmPager.c (ParseOptions): change GetArgument() to
+	SkipNTokens().
+
 1999-04-01  Andi Karrer <karrer@iis.ee.ethz.ch>
 
 	* FvwmIconBox/FvwmIconBox.c (main):

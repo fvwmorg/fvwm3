@@ -87,7 +87,6 @@
 #include "config.h"
 #include <fvwm/module.h>
 #include <libs/fvwmlib.h>
-#include <libs/ModParse.h>
 
 /*
  * fvwm includes:
@@ -372,7 +371,7 @@ int execute_event(short event, unsigned long *body)
     if (action_table[event])
     {
         if(PassID && (action_arg[event] != -1))
-          sprintf(buf,"%s %s %d", cmd_line, action_table[event], body[action_arg[event]]);
+          sprintf(buf,"%s %s %ld", cmd_line, action_table[event], body[action_arg[event]]);
         else
           sprintf(buf,"%s %s", cmd_line, action_table[event]);
 INFO(buf);
@@ -442,7 +441,7 @@ INFO("\n");
 	    if ((e= FindToken(p,table,char *))) /* config option ? */
 	    {
                 p+=strlen(*e);		/* skip matched token */
-		q=GetArgument(&p);
+		p = GetNextOption( p, &q );
 
 		switch (e - (char**)table)
 		{
@@ -472,8 +471,9 @@ INFO("<-\n");
 	    }
 	    else  /* test for isspace(*p) ??? */
 	    {
-		event = GetArgument(&p);
-		action = GetArgument(&p);
+		p = GetNextOption( p, &event );
+		p = GetNextOption( p, &action );
+		
 INFO(event);
 INFO("  ");
 INFO(action);

@@ -85,7 +85,6 @@
 #include "fvwm/module.h"                /* for headersize, etc. */
 #include "libs/fvwmlib.h"
 
-#include <libs/ModParse.h>              /* for FindToken */
 #include <libs/Picture.h>               /* for InitPictureCMap */
 
 #define IamTheMain 1                    /* in FvwmForm.h, chg extern to "" */

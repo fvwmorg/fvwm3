@@ -846,7 +846,7 @@ static void Loop() {
  * Used FvwmEvent as a model.
  *
  ****************************************************************************/
-#include <libs/ModParse.h>
+
 static char *table[]= {
   "Color",
 #define Color_arg 0
@@ -900,7 +900,7 @@ void ParseConfigLine(char *buf) {
           && (strcasecmp(*e,"Custom") != 0)
           && (strcasecmp(*e,"Save") != 0)) { /* no arg commands */
         p+=strlen(*e);		/* skip matched token */
-        q=GetArgument(&p);
+	p = GetNextOption( p, &q );
         if (!q) {                       /* If arg not found */
           fprintf(stderr,"%s: %s%s needs a parameter\n",
                   MyName+1, MyName+1,*e);

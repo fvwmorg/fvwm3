@@ -1,3 +1,8 @@
+Sat Apr  3 02:48:04 1999  Steve Robbins  <steve@nyongwa.montreal.qc.ca>
+
+	* FvwmAnimate.c(ParseConfigLine): use GetNextOption rather than
+	GetArgument; remove include of ModParse.h.
+
 1999-03-02  Dan Espen  <dane@mk.bellcore.com>
 
 	* FvwmAnimate.c: Remove fonts and colors from customization form.

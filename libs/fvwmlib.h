@@ -127,6 +127,25 @@ int GetTwoPercentArguments(char *action, int *val1, int *val2, int *val1_unit,
 int ParseToggleArgument(char *action, char **ret_action, int default_ret,
 			char no_toggle);
 
+/*
+   function:            FindToken
+   description:         find the entry of type 'struct_entry'
+                        holding 'key' in 'table'
+   returns:             pointer to the matching entry
+                        NULL if not found
+
+   table must be sorted in ascending order for FindToken.
+*/
+
+#define FindToken(key,table,struct_entry)                               \
+        (struct_entry *) bsearch(key,                                   \
+                                 (char *)(table),                       \
+                                 sizeof(table) / sizeof(struct_entry),  \
+                                 sizeof(struct_entry),                  \
+                                 XCmpToken)
+
+extern int XCmpToken(); //const char *s, const char **t); 
+
 
 /***********************************************************************
  * Various system related utils
