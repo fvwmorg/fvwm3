@@ -1,4 +1,10 @@
-2001-04-07  2.3.31  <dane@mk.telcordia.com>
+2001-04-08  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* fvwm/borders.c (draw_clipped_decorations):
+	(get_common_decorations):
+	force redrawing
+
+2001-04-07  Dan Espen  <dane@mk.telcordia.com>
 
 	* NEWS, configure.in:
 	changed version to 2.3.32
