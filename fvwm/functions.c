@@ -1514,10 +1514,16 @@ static void cf_cleanup(unsigned int *depth, char **arguments)
 
   (*depth)--;
   if (!(*depth))
+  {
     Scr.flags.is_executing_complex_function = 0;
+  }
   for (i = 0; i < 11; i++)
+  {
     if(arguments[i] != NULL)
+    {
       free(arguments[i]);
+    }
+  }
 
   return;
 }
@@ -1612,6 +1618,16 @@ static void execute_complex_function(F_CMD_ARGS, Bool *desperate)
     NeedsTarget = False;
   }
 
+  /* we have to grab buttons before executing immediate actions because these
+   * actions can move the window away from the pointer so that a button
+   * release would go to the application below. */
+  if (!GrabEm(CRS_NONE, GRAB_NORMAL))
+  {
+    func->use_depth--;
+    XBell(dpy, 0);
+    cf_cleanup(&depth, arguments);
+    return;
+  }
   for (fi = func->first_item; fi != NULL; fi = fi->next_item)
   {
     /* c is already lowercase here */
@@ -1644,6 +1660,7 @@ static void execute_complex_function(F_CMD_ARGS, Bool *desperate)
   {
     func->use_depth--;
     cf_cleanup(&depth, arguments);
+    UngrabEm(GRAB_NORMAL);
     return;
   }
 
@@ -1655,17 +1672,11 @@ static void execute_complex_function(F_CMD_ARGS, Bool *desperate)
     {
       func->use_depth--;
       cf_cleanup(&depth, arguments);
+      UngrabEm(GRAB_NORMAL);
       return;
     }
   }
 
-  if(!GrabEm(CRS_NONE, GRAB_NORMAL))
-  {
-    func->use_depth--;
-    XBell(dpy, 0);
-    cf_cleanup(&depth, arguments);
-    return;
-  }
   switch (eventp->xany.type)
   {
   case ButtonPress:
