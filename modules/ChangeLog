@@ -1,3 +1,14 @@
+Wed Mar 10 22:55:43 1999  DanEspen  <dje@blue>
+
+	* FvwmForm/ReadXServer.c (ToggleChoice): You can now paste multiple
+ 	lines into a form.  If the form contains buttons activated by
+ 	the Return Key the paste can activate the button.
+
+	* FvwmForm/.FormFvwmTalk.: Changed the built-in form to reset the
+	command field on Return key, necessary for pasting many lines to
+ 	look right.  Not the best for typing a line at a time, there is
+	no feedback.  Pasting lots of config lines at once works well.	
+	
 1999-03-11  Dominik Vogt  <dominik_vogt@gmx.de>
 
 	* FvwmPager/x_pager.c (DispatchEvent):

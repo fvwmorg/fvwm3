@@ -1,7 +1,24 @@
+/*
+ * This file  is  partly derived from   FvwmForm.c, this is  the original
+ * copyright:
+ *
+ * FvwmForm is original work of Thomas Zuwei Feng.
+ *
+ * Copyright Feb 1995, Thomas Zuwei Feng.  No guarantees or warantees are
+ * provided or implied in any way whatsoever.  Use this program at your own
+ * risk.  Permission to use, modify, and redistribute this program is hereby
+ * given, provided that this copyright is kept intact.
+ *
+ * And the same goes for me, Dan Espen, March 10, 1999.
+ */
 /*  Modification History */
+
+/*  Changed on 03/10/99 by DanEspen (dje): */
+/*  - Make button 2 paste work. */
 
 /*  Changed on 02/27/99 by DanEspen (dje): */
 /*  - Add logic to allow international characters, bug id 179 */
+/*  - Split into separate file. */
 
 #include "config.h"
 #include "libs/fvwmlib.h"
@@ -46,15 +63,17 @@ void ReadXServer ()
       case ConfigureNotify:             /* has window be reconfigured */
         ResizeFrame();                  /* adjust yourself... */
         break;
+#if 0
       case SelectionClear:
-/*         selection_clear (); */
+         selection_clear ();
         break;
       case SelectionNotify:
-/*  selection_paste (ev.xselection.requestor, ev.xselection.property, True); */
+        selection_paste ();
         break;
       case SelectionRequest:
-/*         selection_send (&(ev.xselectionrequest)); */
+         selection_send ();
         break;
+#endif
       case Expose:
 	RedrawFrame();
 	if (CF.grab_server && !CF.server_grabbed) {
@@ -472,10 +491,12 @@ static void process_paste_request (XEvent *event, Item *item) {
     for (c = data; c != data + nitems; c++) { /* each char */
       switch (*c) {
       case '\t':
-      case '\n':
       case '\015':
-      case '\016':  /* LINEFEED, TAB, RETURN, ^N, jump to the next field */
+      case '\016':  /* LINEFEED, TAB, ^N, jump to the next field */
         process_tabtypes(c);
+        break;
+      case '\n':
+        process_tabtypes("\r");         /* change \n to \r for pasting */
         break;
       default:
         process_regular_char_input(c);
