@@ -137,7 +137,7 @@ extern void ExitPager(void);
 static Pixmap default_pixmap = None;
 
 /* discard certain events on a window */
-static void discard_events(long event_type, Window w)
+static void discard_events(long event_type, Window w, XEvent *last_ev)
 {
   XEvent e;
 
@@ -145,6 +145,10 @@ static void discard_events(long event_type, Window w)
   while (XCheckTypedWindowEvent(dpy, w, event_type, &e))
   {
     /* do nothing */
+    if (last_ev)
+    {
+      memcpy(last_ev, &e, sizeof(XEvent));
+    }
   }
 
   return;
@@ -1014,10 +1018,10 @@ void DispatchEvent(XEvent *Event)
         UnmapBalloonWindow();
       break;
     case ConfigureNotify:
+      discard_events(ConfigureNotify, Event->xconfigure.window, Event);
       w = Event->xconfigure.window;
       ReConfigure();
-      discard_events(ConfigureNotify, w);
-      discard_events(Expose, w);
+      discard_events(Expose, w, NULL);
       break;
     case Expose:
       HandleExpose(Event, False);
@@ -1253,7 +1257,7 @@ void HandleExpose(XEvent *Event, Bool redraw_subwindows)
     }
   }
 
-  discard_events(Expose, Event->xany.window);
+  discard_events(Expose, Event->xany.window, NULL);
 }
 
 

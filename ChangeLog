@@ -1,5 +1,8 @@
 2001-02-11  Dominik Vogt  <dominik.vogt@gmx.de>
 
+	* fvwm/menus.c (MenuInteraction):
+	Fixed PopupDelay 0
+
 	* fvwm/borders.c:
 	* libs/safemalloc.c:
 	* libs/strdup.c:

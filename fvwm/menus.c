@@ -1403,6 +1403,7 @@ static void MenuInteraction(
     unsigned is_item_entered_by_key_press : 1;
     unsigned is_motion_faked : 1;
     unsigned is_popped_up_by_timeout : 1;
+    unsigned is_pointer_in_active_item_area : 1;
     unsigned is_motion_first : 1;
     unsigned is_release_first : 1;
     unsigned is_submenu_mapped : 1;
@@ -1466,7 +1467,8 @@ static void MenuInteraction(
       else if (!XCheckMaskEvent(dpy,ExposureMask,&Event))
       {
 	/* handle exposure events first */
-	if (flags.do_force_popup ||
+	if (flags.do_force_popup || flags.is_pointer_in_active_item_area ||
+	    MST_POPDOWN_DELAY(pmp->menu) > 0 ||
 	    (MST_POPUP_DELAY(pmp->menu) > 0 && !flags.is_popped_up_by_timeout))
 	{
 	  while (!XPending(dpy) || !XCheckMaskEvent(
@@ -1507,6 +1509,11 @@ static void MenuInteraction(
 		    !MST_DO_POPDOWN_IMMEDIATELY(pmp->menu) &&
 		    MST_POPUP_DELAY(pmp->menu) <= MST_POPDOWN_DELAY(pmp->menu)
 		    && popup_delay_10ms == popdown_delay_10ms)
+		{
+		  flags.do_popup_now = True;
+		  flags.is_popped_up_by_timeout = True;
+		}
+		if (flags.is_pointer_in_active_item_area)
 		{
 		  flags.do_popup_now = True;
 		  flags.is_popped_up_by_timeout = True;
@@ -1552,6 +1559,7 @@ static void MenuInteraction(
       }
     } /* !flags.do_recycle_event */
 
+    flags.is_pointer_in_active_item_area = False;
     StashEventTime(&Event);
     if (Event.type == MotionNotify)
     {
@@ -1907,6 +1915,10 @@ static void MenuInteraction(
 		MST_DO_POPDOWN_IMMEDIATELY(pmp->menu) || !mrPopdown)
 	    {
 	      do_it_now = True;
+	    }
+	    else
+	    {
+	      flags.is_pointer_in_active_item_area = True;
 	    }
 	  }
 	  if (do_it_now)
