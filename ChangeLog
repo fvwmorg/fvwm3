@@ -1,3 +1,25 @@
+1998-12-27  Dominik Vogt  <dominik_vogt@hp.com>
+
+	* fvwm/fvwm2.1: updated manpage for SetMenuStyle (see below)
+
+	* fvwm/menus.c (PaintEntry):
+	(SetMenuItemSelected):
+	(FPopupMenu):
+	(PaintMenu): gradients work with other kinds of hilighting
+
+	* fvwm/misc.c (GetMenuOptions): fixed select_warp (didn't work at all).
+
+	* fvwm/windows.c:
+	* fvwm/builtins.c:
+	* fvwm/misc.c:
+	* fvwm/menus.h:
+	* fvwm/menus.c: GSFR for menus (just a small test for the real GSFR).
+
+1998-12-26  Dominik Vogt  <dominik_vogt@hp.com>
+
+	* fvwm/move.c (moveLoop): Position in feedback window relative to
+	current page, not the whole desktop
+
 1998-12-24  Dominik Vogt  <dominik_vogt@hp.com>
 
 	* fvwm/builtins.c (MatchesContitionMask): rewrote the contition so that

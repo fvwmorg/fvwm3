@@ -119,10 +119,10 @@ Time dkp_timestamp;
 #define IS_REAL_SEPARATOR_MENU_ITEM(mi) ((mi)?((mi)->fIsSeparator && StrEquals((mi)->action,"nop") && !((mi)->strlen) && !((mi)->strlen2)):FALSE)
 #define IS_LABEL_MENU_ITEM(mi) ((mi)?((mi)->fIsSeparator && StrEquals((mi)->action,"nop") && ((mi)->strlen || ((mi)->strlen2))):FALSE)
 #define MENU_MIDDLE_OFFSET(menu) ((menu)->xoffset + ((menu)->width - (menu)->xoffset)/2)
-#define IS_LEFT_MENU(menu) ((menu)->flags & MENU_IS_LEFT)
-#define IS_RIGHT_MENU(menu) ((menu)->flags & MENU_IS_RIGHT)
-#define IS_UP_MENU(menu) ((menu)->flags & MENU_IS_UP)
-#define IS_DOWN_MENU(menu) ((menu)->flags & MENU_IS_DOWN)
+#define IS_LEFT_MENU(menu) ((menu)->flags.f.is_left)
+#define IS_RIGHT_MENU(menu) ((menu)->flags.f.is_right)
+#define IS_UP_MENU(menu) ((menu)->flags.f.is_up)
+#define IS_DOWN_MENU(menu) ((menu)->flags.f.is_down)
 
 /****************************************************************************
  *
@@ -180,7 +180,7 @@ MenuStatus do_menu(MenuRoot *menu, MenuRoot *menuPrior,
     }
   }
   /* calculate position from positioning hints */
-  if ((pops->flags & MENU_HAS_POSHINTS) && !fIgnorePosHints) {
+  if ((pops->flags.f.has_poshints) && !fIgnorePosHints) {
     pops->pos_hints.x += pops->pos_hints.x_factor * menu->width;
     pops->pos_hints.y += pops->pos_hints.y_factor * menu->height;
   }
@@ -189,7 +189,7 @@ MenuStatus do_menu(MenuRoot *menu, MenuRoot *menuPrior,
     if(cmenuDeep > 0) {
       /* this is a submenu popup */
       assert(menuPrior);
-      if ((pops->flags & MENU_HAS_POSHINTS) && !fIgnorePosHints) {
+      if ((pops->flags.f.has_poshints) && !fIgnorePosHints) {
 	x = pops->pos_hints.x;
 	y = pops->pos_hints.y;
       } else {
@@ -202,7 +202,7 @@ MenuStatus do_menu(MenuRoot *menu, MenuRoot *menuPrior,
 	XBell(dpy, 0);
 	return MENU_ABORTED;
       }
-      if ((pops->flags & MENU_HAS_POSHINTS) && !fIgnorePosHints) {
+      if ((pops->flags.f.has_poshints) && !fIgnorePosHints) {
 	x = pops->pos_hints.x;
 	y = pops->pos_hints.y;
       } else {
@@ -611,7 +611,7 @@ MenuStatus MenuInteraction(MenuRoot *menu,MenuRoot *menuPrior,
   Bool fReleaseFirst = FALSE;
   Bool fFakedMotion = FALSE;
 
-  mops.flags = 0;
+  mops.flags.allflags = 0;
   fPopupImmediately = (menu->ms->feel.f.PrepopMenus &&
 		       (Scr.menus.PopupDelay10ms > 0));
 
@@ -842,7 +842,7 @@ MenuStatus MenuInteraction(MenuRoot *menu,MenuRoot *menuPrior,
 		 unpopped; do_menu pops down any menus it pops up, but we
 		 want to be able to popdown w/o actually removing the menu */
 	      int x, y;
-	      if (mops.flags & MENU_HAS_POSHINTS) {
+	      if (mops.flags.f.has_poshints) {
 		x = mops.pos_hints.x + mops.pos_hints.x_factor*mrPopup->width;
 		y = mops.pos_hints.y + mops.pos_hints.y_factor*mrPopup->height;
 	      } else {
@@ -977,10 +977,10 @@ MenuStatus MenuInteraction(MenuRoot *menu,MenuRoot *menuPrior,
     f_type = find_func_type((*pmiExecuteAction)->action);
     if (f_type == F_POPUP || f_type == F_STAYSUP || f_type == F_WINDOWLIST) {
       GetPopupOptions(mi, &mops);
-      if (!(mops.flags & MENU_SELECTINPLACE)) {
+      if (!(mops.flags.f.select_in_place)) {
 	fIgnorePosHints = TRUE;
       } else {
-	if (mops.flags & MENU_HAS_POSHINTS) {
+	if (mops.flags.f.has_poshints) {
 	  lastMenuPosHints = mops.pos_hints;
 	} else {
 	  GetPreferredPopupPosition(
@@ -990,10 +990,10 @@ MenuStatus MenuInteraction(MenuRoot *menu,MenuRoot *menuPrior,
 	  lastMenuPosHints.fRelative = FALSE;
 	}
 	fLastMenuPosHintsValid = TRUE;
-	if (mops.flags & MENU_SELECTWARP) {
+	if (mops.flags.f.select_warp) {
 	  fWarpPointerToTitle = TRUE;
 	}
-      } /* else (mops.flags & MENU_SELECTINPLACE) */
+      } /* else (mops.flags.f.select_in_place) */
     } /* if (f_type == F_POPUP ||... */
   } /* ((retval == MENU_DONE ||... */
   return MENU_ADD_BUTTON_IF(fKeyPress,retval);
@@ -1080,7 +1080,13 @@ Bool FPopupMenu (MenuRoot *menu, MenuRoot *menuPrior, int x, int y,
     return False;
   }
   menu->mrDynamicPrev = menuPrior;
-  menu->flags &= ~(MENU_IS_LEFT | MENU_IS_RIGHT | MENU_IS_UP | MENU_IS_DOWN);
+#ifdef GRADIENT_BUTTONS
+  menu->flags.f.painted = 0;
+#endif
+  menu->flags.f.is_left = 0;
+  menu->flags.f.is_right = 0;
+  menu->flags.f.is_up = 0;
+  menu->flags.f.is_down = 0;
   menu->xanimation = 0;
 
   /*  RepaintAlreadyReversedMenuItems(menu); */
@@ -1089,7 +1095,7 @@ Bool FPopupMenu (MenuRoot *menu, MenuRoot *menuPrior, int x, int y,
 
   /* First handle popups from button clicks on buttons in the title bar,
      or the title bar itself. Position hints override this. */
-  if (!(pops->flags & MENU_HAS_POSHINTS)) {
+  if (!(pops->flags.f.has_poshints)) {
     if((Tmp_win)&&(menuPrior == NULL)&&(Context&C_LALL))
       {
 	y = Tmp_win->frame_y+Tmp_win->boundary_width+Tmp_win->title_height+1;
@@ -1112,7 +1118,7 @@ Bool FPopupMenu (MenuRoot *menu, MenuRoot *menuPrior, int x, int y,
 	  x = Tmp_win->frame_x + Tmp_win->title_x +Tmp_win->title_width-
 	    menu->width +1;
       }
-  } /* if (pops->flags & MENU_HAS_POSHINTS) */
+  } /* if (pops->flags.f.has_poshints) */
   x_overlap = DoMenusOverlap(menuPrior, x, y,menu->width,menu->height, 3);
   /* clip to screen */
   if (x + menu->width > Scr.MyDisplayWidth - 2)
@@ -1134,7 +1140,7 @@ Bool FPopupMenu (MenuRoot *menu, MenuRoot *menuPrior, int x, int y,
     x_clipped_overlap = DoMenusOverlap(menuPrior, x, y,
 				       menu->width, menu->height, 3);
     if (x_clipped_overlap &&
-	(!(pops->flags & MENU_HAS_POSHINTS) ||
+	(!(pops->flags.f.has_poshints) ||
 	 pops->pos_hints.fRelative == FALSE || x_overlap == 0)) {
       /* menus do overlap, but do not reposition if overlap was caused by
 	 relative positioning hints */
@@ -1181,7 +1187,7 @@ Bool FPopupMenu (MenuRoot *menu, MenuRoot *menuPrior, int x, int y,
 			     TRUE, -1, NULL);
       } /* if (menu->ms->feel.f.Animated) */
       else if ((menu->ms->feel.PopupOffsetPercent >= 100) &&
-	       !(pops->flags & MENU_FIXED)) {
+	       !(pops->flags.f.fixed)) {
 	Bool fLeftIsOK = FALSE;
 	Bool fRightIsOK = FALSE;
 	Bool fUseLeft = FALSE;
@@ -1201,15 +1207,18 @@ Bool FPopupMenu (MenuRoot *menu, MenuRoot *menuPrior, int x, int y,
     } /* if (x_clipped_overlap && ...) */
 
     if (x < prev_x)
-      menu->flags |= MENU_IS_LEFT;
+      menu->flags.f.is_left = 1;
     if (x + menu->width > prev_x + prev_width)
-      menu->flags |= MENU_IS_RIGHT;
+      menu->flags.f.is_right = 1;
     if (y < prev_y)
-      menu->flags |= MENU_IS_UP;
+      menu->flags.f.is_up = 1;
     if (y + menu->height > prev_y + prev_height)
-      menu->flags |= MENU_IS_DOWN;
-    if (!(menu->flags & (MENU_IS_LEFT | MENU_IS_RIGHT)))
-      menu->flags |= MENU_IS_LEFT | MENU_IS_RIGHT;
+      menu->flags.f.is_down = 1;
+    if (!menu->flags.f.is_left && !menu->flags.f.is_right)
+    {
+      menu->flags.f.is_left = 1;
+      menu->flags.f.is_right = 1;
+    }
   } /* if (menuPrior) */
 
   /* popup the menu */
@@ -1227,9 +1236,9 @@ Bool FPopupMenu (MenuRoot *menu, MenuRoot *menuPrior, int x, int y,
     }
   } /* if (!fWarpItem) */
 
-  if (pops->flags & MENU_NOWARP) {
+  if (pops->flags.f.no_warp) {
     fWarpTitle = FALSE;
-  } else if (pops->flags & MENU_WARPTITLE) {
+  } else if (pops->flags.f.warp_title) {
     fWarpTitle = TRUE;
   }
   if (fWarpPointerToTitle) {
@@ -1239,6 +1248,8 @@ Bool FPopupMenu (MenuRoot *menu, MenuRoot *menuPrior, int x, int y,
   if (fWarpItem) {
     /* also warp */
     DBUG("FPopupMenu","Warping to item");
+    menu->selected = MiWarpPointerToItem(menu->first, TRUE /* skip Title */);
+    menu->selected->state = True;
     SetMenuItemSelected(
       MiWarpPointerToItem(menu->first, TRUE /* skip Title */),TRUE);
   } else if(fWarpTitle) {
@@ -1254,11 +1265,68 @@ Bool FPopupMenu (MenuRoot *menu, MenuRoot *menuPrior, int x, int y,
 static
 void SetMenuItemSelected(MenuItem *mi, Bool f)
 {
-  Bool fNeedsPainting = mi->state != f; /* paint only if it is changing */
+  if (f == True && mi->mr->selected != NULL && mi->mr->selected != mi)
+    SetMenuItemSelected(mi->mr->selected, False);
+  if (f == False && mi->mr->selected == NULL)
+    return;
+
+  if (mi->state == f)
+    return;
+
+#ifdef GRADIENT_BUTTONS
+  switch (mi->mr->ms->look.face.type)
+  {
+  case HGradMenu:
+  case VGradMenu:
+  case DGradMenu:
+  case BGradMenu:
+    if (f == True && mi->mr->flags.f.painted)
+    {
+      int iy, ih;
+      int mw, mh;
+
+      iy = mi->y_offset - 2;
+      ih = mi->y_height + 4;
+      if (iy < 0)
+      {
+	ih += iy;
+	iy = 0;
+      }
+      XGetGeometry(dpy, mi->mr->w, &JunkRoot, &JunkX, &JunkY,
+		   &mw, &mh, &JunkBW, &JunkDepth);
+      if (iy + ih > mh)
+	ih = mh - iy;
+      /* grab image */
+      mi->mr->stored_item.image = XGetImage(dpy, mi->mr->w, 0, iy, mw, ih,
+					    AllPlanes, XYPixmap);
+      mi->mr->stored_item.y = iy;
+    }
+    else if (f == False && mi->mr->stored_item.image != None)
+    {
+      /* ungrab image */
+      XPutImage(dpy, mi->mr->w, mi->mr->ms->look.MenuGC,
+		mi->mr->stored_item.image,
+		0, 0,
+		0, mi->mr->stored_item.y,
+		mi->mr->stored_item.image->width,
+		mi->mr->stored_item.image->height);
+      XDestroyImage(mi->mr->stored_item.image);
+      mi->mr->stored_item.image = None;
+    }
+    break;
+  default:
+    if (mi->mr->stored_item.image != None)
+    {
+      XDestroyImage(mi->mr->stored_item.image);
+      mi->mr->stored_item.image = None;
+    }
+    break;
+  }
+#endif
+
   mi->state = f;
-  mi->mr->selected = f?mi:NULL;
-  if (fNeedsPainting)
-    PaintEntry(mi);
+  mi->mr->selected = (f) ? mi : NULL;
+  PaintEntry(mi);
 }
 
 /* Returns a menu root that a given menu item pops up */
@@ -1285,7 +1353,7 @@ void GetPopupOptions(MenuItem *mi, MenuOptions *pops)
 {
   if (!mi)
     return;
-  pops->flags &= ~MENU_HAS_POSHINTS;
+  pops->flags.f.has_poshints = 0;
   /* just look past "Popup <name>" in the action */
   GetMenuOptions(SkipNTokens(mi->action, 2), mi->mr->w, NULL, mi, pops);
 }
@@ -1311,7 +1379,7 @@ void PopDownMenu(MenuRoot *mr)
   MenuItem *mi;
   assert(mr);
 
-  mr->flags = 0;
+  mr->flags.allflags = 0;
   XUnmapWindow(dpy, mr->w);
 
   UninstallRootColormap();
@@ -1377,6 +1445,22 @@ void PaintEntry(MenuItem *mi)
   MenuRoot *mr = mi->mr;
   char th = mr->ms->look.ReliefThickness;
   Bool fClear = False;
+#ifdef GRADIENT_BUTTONS
+  Bool fGradient;
+
+  switch (mi->mr->ms->look.face.type)
+  {
+  case HGradMenu:
+  case VGradMenu:
+  case DGradMenu:
+  case BGradMenu:
+    fGradient = True;
+    break;
+  default:
+    fGradient = False;
+    break;
+  }
+#endif
 
   y_offset = mi->y_offset;
   y_height = mi->y_height;
@@ -1407,8 +1491,11 @@ void PaintEntry(MenuItem *mi)
       XFillRectangle(dpy, mr->w, mr->ms->look.MenuActiveBackGC, mr->xoffset+3,
 		       y_offset + d, mr->width - mr->xoffset-6, y_height - d);
     } else if (th == 0) {
-      XClearArea(dpy,mr->w,mr->xoffset+3,y_offset,mr->width -mr->xoffset-6,
-		 y_height,0);
+#ifdef GRADIENT_BUTTONS
+      if (!fGradient)
+#endif
+	XClearArea(dpy,mr->w,mr->xoffset+3,y_offset,mr->width -mr->xoffset-6,
+		   y_height,0);
     } else {
       fClear = True;
     }
@@ -1420,6 +1507,9 @@ void PaintEntry(MenuItem *mi)
 
   if (mr->ms->look.ReliefThickness > 0 && (fClear || !mr->ms->look.f.Hilight)){
     /* background was already painted above? */
+#ifdef GRADIENT_BUTTONS
+    if (!fGradient)
+#endif
       if (th == 2 && mi->prev && mi->prev->state)
 	XClearArea(dpy, mr->w,mr->xoffset,y_offset+1,mr->width,y_height-1,0);
       else
@@ -1738,6 +1828,9 @@ void PaintMenu(MenuRoot *mr, XEvent *e)
   Picture *p;
   int border = 0;
   int width, height, x, y;
+#endif
+#ifdef GRADIENT_BUTTONS
+  mr->flags.f.painted = 1;
 #endif
   if( ms )
     {
@@ -2212,7 +2305,7 @@ void MakeMenu(MenuRoot *mr)
   mr->in_use = 0;
   /* allow two pixels for top border */
   mr->height = y + ((mr->ms->look.ReliefThickness == 1) ? 2 : 3);
-  mr->flags = 0;
+  mr->flags.allflags = 0;
   mr->xanimation = 0;
 
 #ifndef NO_SAVEUNDERS
@@ -2668,6 +2761,9 @@ MenuRoot *NewMenuRoot(char *name, Bool fFunction)
   tmp->first = NULL;
   tmp->last = NULL;
   tmp->selected = NULL;
+#ifdef GRADIENT_BUTTONS
+  tmp->stored_item.image = None;
+#endif
   tmp->next  = Scr.menus.all;
   tmp->continuation = NULL;
   tmp->mrDynamicPrev = NULL;
@@ -2685,7 +2781,7 @@ MenuRoot *NewMenuRoot(char *name, Bool fFunction)
   scanForColor(tmp->name, &tmp->sideColor, &tmp->colorize,'^');
   tmp->xoffset = 0;
   tmp->ms = Scr.menus.DefaultStyle;
-  tmp->flags = 0;
+  tmp->flags.allflags = 0;
   tmp->xanimation = 0;
 
   Scr.menus.all = tmp;

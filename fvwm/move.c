@@ -427,7 +427,7 @@ void moveLoop(FvwmWindow *tmp_win, int XOffset, int YOffset, int Width,
   if(((!opaque_move)&&(!Scr.gs.EmulateMWM))||(AddWindow))
     MoveOutline(Scr.Root, xl, yt, Width - 1 + 2 * bw, Height - 1 + 2 * bw);
 
-  DisplayPosition(tmp_win,xl+Scr.Vx,yt+Scr.Vy,True);
+  DisplayPosition(tmp_win,xl,yt,True);
 
   while (!finished)
     {
@@ -579,7 +579,7 @@ void moveLoop(FvwmWindow *tmp_win, int XOffset, int YOffset, int Width,
 		  else
 		    XMoveWindow(dpy,tmp_win->frame,xl,yt);
 		}
-	      DisplayPosition(tmp_win,xl+Scr.Vx,yt+Scr.Vy,False);
+	      DisplayPosition(tmp_win,xl,yt,False);
 
 	      /* prevent window from lagging behind mouse when paging - mab */
 	      if(paged==0)

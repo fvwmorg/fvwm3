@@ -176,6 +176,13 @@ typedef struct MenuRoot
     MenuItem *first;	/* first item in menu */
     MenuItem *last;	/* last item in menu */
     MenuItem *selected;	/* the selected item in menu */
+#ifdef GRADIENT_BUTTONS
+    struct
+    {
+      XImage *image; /* storage pointer for selected item */
+      int y;
+    } stored_item;
+#endif
 
     struct MenuRoot *next;	/* next in list of root menus */
     struct MenuRoot *continuation; /* continuation of this menu
@@ -198,7 +205,22 @@ typedef struct MenuRoot
     Bool colorize;
     short xoffset;
     MenuStyle *ms;        /* Menu Face    */
-    unsigned char flags; /* internal flags, deleted when menu pops down! */
+    union                 /* internal flags, deleted when menu pops down! */
+    {
+      /* need to change that type if we have more than 8 flags.
+       * more that a word will entail some changes in the code! */
+      unsigned char allflags;
+      struct
+      {
+#ifdef GRADIENT_BUTTONS
+	unsigned painted : 1;
+#endif
+	unsigned is_left : 1;   /* menu direction relative to parent menu */
+	unsigned is_right : 1;
+	unsigned is_up : 1;
+	unsigned is_down : 1;
+      } f;
+    } flags;
     int xanimation;      /* x distance window was moved by animation     */
 } MenuRoot;
 /* don't forget to initialise new members in NewMenuRoot()! */
@@ -234,16 +256,22 @@ typedef struct
 typedef struct
 {
   MenuPosHints pos_hints;
-  unsigned char flags;
+  union
+  {
+    /* need to change that type if we have more than 8 flags.
+     * more that a word will entail some changes in the code! */
+    unsigned char allflags;
+    struct
+    {
+      unsigned no_warp : 1;
+      unsigned warp_title : 1;
+      unsigned fixed : 1;
+      unsigned select_in_place : 1;
+      unsigned select_warp : 1;
+      unsigned has_poshints : 1;
+    } f;
+  } flags;
 } MenuOptions;
-
-/* menu options flags */
-#define MENU_NOWARP           0x01
-#define MENU_WARPTITLE        0x02
-#define MENU_FIXED            0x04
-#define MENU_SELECTINPLACE    0x08
-#define MENU_SELECTWARP       0x10
-#define MENU_HAS_POSHINTS     0x20
 
 extern MenuPosHints lastMenuPosHints;
 extern Bool fLastMenuPosHintsValid;

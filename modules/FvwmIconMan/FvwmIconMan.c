@@ -6,6 +6,8 @@
 #include <unistd.h>
 #include <stdlib.h>
 #include <signal.h>
+#include <setjmp.h>
+#include <errno.h>
 #include "FvwmIconMan.h"
 #include "readconfig.h"
 #include "x.h"
@@ -18,10 +20,16 @@
 #endif
 
 static int fd_width;
+static sigjmp_buf    deadjump;
+static sig_atomic_t  canJump = False;
+
 static char *IM_VERSION = "1.3";
 
 static char const rcsid[] =
   "$Id$";
+
+
+static void DeadPipeHandler(int);
 
 char *copy_string (char **target, char *src)
 {
@@ -82,6 +90,16 @@ void PrintMemuse (void)
 #endif
 
 
+static void DeadPipeHandler(int sig)
+{
+  if (canJump)
+  {
+    canJump = False;
+    siglongjmp(deadjump,1);
+  }
+  _exit(0);  /* Does NOT call the chain of exit-procedures */
+}
+ 
 
 void ShutMeDown (int flag)
 {
@@ -91,11 +109,7 @@ void ShutMeDown (int flag)
 
 void DeadPipe (int nothing)
 {
-#if 0 /* can't do printf's or X stuff in a signal handler, so just bag out */
-  ConsoleDebug (CORE, "Bye Bye\n");
-  ShutMeDown (0);
-#endif
-  exit (0);
+  ShutMeDown(0);
 }
 
 void SendFvwmPipe (char *message,unsigned long window)
@@ -122,39 +136,37 @@ void SendFvwmPipe (char *message,unsigned long window)
 static int main_loop (void)
 {
   fd_set readset, saveset;
-  struct timeval tv;
-  int n;
 
   FD_ZERO (&saveset);
   FD_SET (Fvwm_fd[1], &saveset);
   FD_SET (x_fd, &saveset);
 
   while(1) {
+    /* Check the pipes for anything to read, and block if
+     * there is nothing there yet ...
+     */
     readset = saveset;
-    tv.tv_sec=0;
-    tv.tv_usec=0;
-    if (!(n = select(fd_width,&readset,NULL,NULL,&tv))) {
-      XPending (theDisplay);
-      readset = saveset;
-      n = select(fd_width,&readset,NULL,NULL,NULL);
+    if (select(fd_width,&readset,NULL,NULL,NULL) < 0) {
+      ConsoleMessage ("Internal error with select: errno=%d\n",errno);
     }
+    else {
 
-    if (n < 0) {
-      ConsoleMessage ("Internal error with select\n");
-    }
+      if (FD_ISSET (x_fd, &readset) || XPending (theDisplay)) {
+        xevent_loop();
+      }
+      if (FD_ISSET(Fvwm_fd[1],&readset)) {
+        ReadFvwmPipe();
+      }
 
-    if (FD_ISSET (x_fd, &readset) || XPending (theDisplay)) {
-      xevent_loop();
     }
-    if (FD_ISSET(Fvwm_fd[1],&readset)) {
-      ReadFvwmPipe();
-    }
-  }
+  } /* while */
 }
+
 int main (int argc, char **argv)
 {
   char *temp, *s;
   int i;
+  struct sigaction  sigact;
 
 #ifdef ELECTRIC_FENCE
   extern int EF_PROTECT_BELOW, EF_PROTECT_FREE;
@@ -208,7 +220,26 @@ int main (int argc, char **argv)
   init_display();
   init_boxes();
 
-  signal (SIGPIPE, DeadPipe);
+  /*
+   * These 5 signals share a common handler which uses static data.
+   * Therefore we need to ensure that no two of these signals can
+   * be delivered at the same time.
+   */
+  sigemptyset(&sigact.sa_mask);
+  sigaddset(&sigact.sa_mask, SIGPIPE);
+  sigaddset(&sigact.sa_mask, SIGINT);
+  sigaddset(&sigact.sa_mask, SIGHUP);
+  sigaddset(&sigact.sa_mask, SIGTERM);
+  sigaddset(&sigact.sa_mask, SIGQUIT);
+
+  sigact.sa_flags = 0;
+  sigact.sa_handler = DeadPipeHandler;
+
+  sigaction(SIGPIPE, &sigact, NULL);
+  sigaction(SIGINT,  &sigact, NULL);
+  sigaction(SIGHUP,  &sigact, NULL);
+  sigaction(SIGTERM, &sigact, NULL);
+  sigaction(SIGQUIT, &sigact, NULL);
 
   read_in_resources (argv[3]);
 
@@ -224,15 +255,17 @@ int main (int argc, char **argv)
                  M_DEICONIFY | M_ICONIFY | M_END_WINDOWLIST |
                  M_NEW_DESK | M_NEW_PAGE | M_FOCUS_CHANGE | M_WINDOW_NAME |
 #ifdef MINI_ICONS
-		 M_MINI_ICON | M_STRING);
-#else
-		 M_STRING);
+		 M_MINI_ICON |
 #endif
+		 M_STRING);
 
   SendInfo (Fvwm_fd, "Send_WindowList", 0);
-  main_loop();
 
-  ConsoleMessage ("Shouldn't be here\n");
+  if ( !sigsetjmp(deadjump,1) )
+  {
+    canJump = True;
+    main_loop();
+  }
 
   return 0;
 }

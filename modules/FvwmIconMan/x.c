@@ -171,13 +171,11 @@ static void reparentnotify_event (WinManager *man, XEvent *ev)
 void xevent_loop (void)
 {
   XEvent theEvent;
-  int glob_x, glob_y, x, y, mask;
   unsigned int modifier;
   Binding *key;
   Button *b;
   static int flag = 0;
   WinManager *man;
-  Window root, child;
 
   if (flag == 0) {
     flag = 1;
@@ -319,6 +317,11 @@ void xevent_loop (void)
 
     case UnmapNotify:
       ConsoleDebug (X11, "XEVENT: UnmapNotify\n");
+      break;
+
+    case DestroyNotify:
+      ConsoleDebug(X11, "XEVENT: DestroyNotify\n");
+      DeadPipe(0);
       break;
 
     default:

@@ -82,7 +82,7 @@ void do_windowList(XEvent *eventp,Window w,FvwmWindow *tmp_win,
   XEvent *teventp;
   MenuOptions mops;
 
-  mops.flags = 0;
+  mops.flags.allflags = 0;
   if (action && *action)
   {
     /* parse postitioning args */
@@ -250,7 +250,7 @@ void do_windowList(XEvent *eventp,Window w,FvwmWindow *tmp_win,
             AddToMenu(mr, NULL, NULL, FALSE, FALSE);
           last_desk_displayed = t->Desk;
         }
-        
+
         if(flags & SHOW_ICONNAME)
           name = t->icon_name;
         else

@@ -1044,7 +1044,7 @@ static void menu_func(XEvent *eventp,Window w,FvwmWindow *tmp_win,
   XEvent *teventp;
   Bool fHasDefaultAction = False;
 
-  mops.flags = 0;
+  mops.flags.allflags = 0;
   action = GetNextToken(action,&menu_name);
   action = GetMenuOptions(action,w,tmp_win,NULL,&mops);
   while (action && *action && isspace(*action))

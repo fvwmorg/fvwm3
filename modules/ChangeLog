@@ -1,5 +1,9 @@
 1998-12-22  Dominik Vogt  <dominik_vogt@hp.com>
 
+	* FvwmIconMan/FvwmIconMan.c:
+	* FvwmIconMan/FvwmIconMan.h:
+	* FvwmIconMan/x.c: applied signal handling patch by Chrin Rankin
+
 	* FvwmButtons/FvwmButtons.c: coredump fixed: if an action was defined
 	only for a specific button but another button was pressed a NULL
 	pointer was referenced.

@@ -350,11 +350,11 @@ extern char *Module;
 extern int ModuleLen;
 extern ContextDefaults contextDefaults[];
 
-extern void ReadFvwmPipe();
+extern void ReadFvwmPipe(void);
 extern void *Malloc (size_t size);
 extern void Free (void *p);
-extern void ShutMeDown (int flag);
-extern void DeadPipe (int nothing);
+extern void ShutMeDown (int flag) __attribute__ ((__noreturn__));
+extern void DeadPipe (int nothing) __attribute__ ((__noreturn__));
 extern void SendFvwmPipe(char *message, unsigned long window);
 extern char *copy_string (char **target, char *src);
 

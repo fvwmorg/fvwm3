@@ -538,7 +538,7 @@ char *GetMenuOptions(char *action, Window w, FvwmWindow *tmp_win,
   while (action != NULL) {
     /* ^ just to be able to jump to end of loop without 'goto' */
     gflags = NoValue;
-    pops->flags = 0;
+    pops->flags.allflags = 0;
     pops->pos_hints.fRelative = FALSE;
     /* parse context argument (if present) */
     naction = GetNextToken(taction, &tok);
@@ -649,7 +649,7 @@ char *GetMenuOptions(char *action, Window w, FvwmWindow *tmp_win,
       break;
     }
     taction = naction;
-    pops->flags |= MENU_HAS_POSHINTS;
+    pops->flags.f.has_poshints = 1;
     if (fValidPosHints == TRUE && pops->pos_hints.fRelative == TRUE) {
       pops->pos_hints = lastMenuPosHints;
     }
@@ -657,9 +657,9 @@ char *GetMenuOptions(char *action, Window w, FvwmWindow *tmp_win,
     break;
   } /* while (1) */
 
-  if (!(pops->flags & MENU_HAS_POSHINTS) && fValidPosHints) {
+  if (!pops->flags.f.has_poshints && fValidPosHints) {
     DBUG("GetMenuOptions","recycling position hints");
-    pops->flags |= MENU_HAS_POSHINTS;
+    pops->flags.f.has_poshints = 1;
     pops->pos_hints = lastMenuPosHints;
     pops->pos_hints.fRelative = FALSE;
   }
@@ -668,27 +668,29 @@ char *GetMenuOptions(char *action, Window w, FvwmWindow *tmp_win,
   /* parse additional options */
   while (naction && *naction) {
     naction = GetNextToken(action, &tok);
+    if (!tok)
+      break;
     if (StrEquals(tok, "WarpTitle")) {
-      pops->flags = (pops->flags | MENU_WARPTITLE) & ~MENU_NOWARP;
+      pops->flags.f.warp_title = 1;
+      pops->flags.f.no_warp = 0;
     } else if (StrEquals(tok, "NoWarp")) {
-      pops->flags = (pops->flags | MENU_NOWARP) & ~MENU_WARPTITLE;
+      pops->flags.f.warp_title = 0;
+      pops->flags.f.no_warp = 1;
     } else if (StrEquals(tok, "Fixed")) {
-      pops->flags |= MENU_FIXED;
+      pops->flags.f.fixed = 1;
     } else if (StrEquals(tok, "SelectInPlace")) {
-      pops->flags = pops->flags|MENU_SELECTINPLACE;
+      pops->flags.f.select_in_place = 1;
     } else if (StrEquals(tok, "SelectWarp")) {
-      pops->flags = pops->flags|MENU_SELECTWARP;
+      pops->flags.f.select_warp = 1;
     } else {
-      if (tok)
-	free(tok);
+      free (tok);
       break;
     }
     action = naction;
-    if (tok)
-      free (tok);
+    free (tok);
   }
-  if (!(pops->flags|MENU_SELECTINPLACE)) {
-    pops->flags &= ~MENU_SELECTWARP;
+  if (!pops->flags.f.select_in_place) {
+    pops->flags.f.select_warp = 0;
   }
 
   return action;
