@@ -2403,6 +2403,7 @@ void ProcessNewStyle(F_CMD_ARGS)
   {
     /* merge with previous style */
     merge_styles(last_style_in_list, ptmpstyle, True);
+    free(ptmpstyle);
   }
   else
   {

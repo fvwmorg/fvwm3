@@ -489,12 +489,16 @@ void CursorStyle(F_CMD_ARGS)
   action = GetNextToken(action, &fore);
   action = GetNextToken(action, &back);
   if (fore && back)
-    {
-      colors[0].pixel = GetColor (fore);
-      colors[1].pixel = GetColor (back);
-      XQueryColors (dpy, Pcmap, colors, 2);
-      XRecolorCursor (dpy, Scr.FvwmCursors[index], &(colors[0]), &(colors[1]));
-    }
+  {
+    colors[0].pixel = GetColor(fore);
+    colors[1].pixel = GetColor(back);
+    XQueryColors (dpy, Pcmap, colors, 2);
+    XRecolorCursor (dpy, Scr.FvwmCursors[index], &(colors[0]), &(colors[1]));
+  }
+  if (fore)
+    free(fore);
+  if (back)
+    free(back);
 
   /* redefine all the windows using cursors */
   fw = Scr.FvwmRoot.next;

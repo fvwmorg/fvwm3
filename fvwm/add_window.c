@@ -186,7 +186,8 @@ void setup_window_name(FvwmWindow *tmp_win)
         }
 	else
 	{
-          if (list) XFreeStringList(list);
+          if (list)
+            XFreeStringList(list);
           XFree(text_prop.value); /* return of XGetWMName() */
           XGetWMName(dpy, tmp_win->w, &text_prop); /* XXX: read again ? */
           tmp_win->name = (char *)text_prop.value;
@@ -1030,6 +1031,7 @@ void setup_icon(FvwmWindow *tmp_win, window_style *pstyle)
 
 void destroy_icon(FvwmWindow *tmp_win)
 {
+  free_window_names(tmp_win, False, True);
   if (tmp_win->icon_w)
   {
     if (IS_PIXMAP_OURS(tmp_win))
