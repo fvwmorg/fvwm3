@@ -18,11 +18,11 @@
 # parts of this file between the marks "#SEG foo" and "#SEG xyz" into a
 # file foo and add "Read foo" to this file (until the "#SEG END" mark). 
 #
-# You "need" the fvwm_icons distribution installed in the FVWM image path.
+# You do need the fvwm_icons distribution installed in the FVWM image path.
 # If they are installed in another directory use the ImagePath command 
 # below or set this directory via the Setup95 Script.
 #
-# For the "sound effects" to work you need the fvwm_sounds distribution 
+# For the sound effects to work you need the fvwm_sounds distribution 
 # installed and an .au player. The Setup95 Script allows you to set the 
 # installation directory of this distribution as your sound player (if not, 
 # manually edit the *FvwmEvent commands). Note that if you use rplay, the 
@@ -34,7 +34,7 @@
 # x lines that follow the #WIN x lines and uncomment the x lines that
 # follow the #FVWM x lines.
 #
-# There is an option for machines with a "slow" X server (comment #FAST and
+# There is an option for machines with a "low X server (comment #FAST and
 # uncomment #SLOW). You may have to use some intermediate values (Base
 # Configuration can help and if you "rebuild Sample-95" .FvwmBaseConfig
 # may over write the effect of this option). See also the BackingStore and 
@@ -486,10 +486,10 @@ Style xpostit                                  WindowListSkip
 Style PostitNote                               WindowListSkip
 Style Postit       NoHandles,                  WindowListSkip
 #gnome panel & icons
-Style "panel"        Sticky, NoTitle, WindowListSkip, CirculateSkip
-Style "desktop_icon" CirculateSkip, WindowListSkip,  NoTitle
-# xsm "panel"
-Style "xsm"	     Sticky, NoTitle, WindowListSkip, CirculateSkip
+Style panel        Sticky, NoTitle, WindowListSkip, CirculateSkip
+Style desktop_icon CirculateSkip, WindowListSkip,  NoTitle
+# xsm panel
+Style xsm          Sticky, NoTitle, WindowListSkip, CirculateSkip
 
 Style FvwmForm-QuitVerify NoButton 1, NoButton 2, NoButton 4, NoButton 6, \
 				StaysOnTop, NoHandles, WindowListSkip
@@ -3198,9 +3198,9 @@ DestroyModuleConfig FvwmWinList*
 #
 # * Who wrote this configuration file?
 #
-# The starting point is "the" fvwm95 configuration file. Then, domivogt did
-# some work on it and in particular did so that it works fine with fvwm-2.4.x.
-# Then, olicha did a lot of work on it and in particular wrote the Setup95
+# The starting point is "the" fvwm95 configuration file. Then, Dominik
+# did some work on it and in particular so that it worked fine with
+# fvwm-2.3.x.  Later, olicha spent a lot of time with it, wrote the Setup95
 # Script and rewrote all the "Settings" stuff. Some ideas came from
 # fvwm-themes (thanks to the fvww-themes workers, and in particular migo).
 # Probably, some others fvwm-workers have added improvement but did not take

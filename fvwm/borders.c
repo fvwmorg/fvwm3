@@ -1545,6 +1545,20 @@ void SetupFrame(
 	/* This reduces flickering */
 	XSync(dpy, 0);
       }
+      else if (HAS_BOTTOM_TITLE(tmp_win))
+      {
+	rectangle big_g;
+
+	big_g = (IS_MAXIMIZED(tmp_win)) ? tmp_win->max_g : tmp_win->normal_g;
+	get_relative_geometry(&big_g, &big_g);
+	XMoveWindow(dpy, tmp_win->w, 0, 1 - big_g.height +
+		    2 * tmp_win->boundary_width + tmp_win->title_g.height);
+      }
+      else
+      {
+	XMoveWindow(dpy, tmp_win->w, 0, 0);
+      }
+
       break;
     case 3:
       XMoveResizeWindow(dpy, tmp_win->decor_w, dx, dy, w, h);

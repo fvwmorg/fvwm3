@@ -905,7 +905,7 @@ void CaptureOneWindow(
     XSelectInput(dpy, fw->w, 0);
     w = fw->w;
     XUnmapWindow(dpy, fw->frame);
-    RestoreWithdrawnLocation(fw, True, parent_win);
+    RestoreWithdrawnLocation(fw, False, parent_win);
     SET_DO_REUSE_DESTROYED(fw, 1); /* RBW - 1999/03/20 */
     destroy_window(fw);
     Event.xmaprequest.window = w;

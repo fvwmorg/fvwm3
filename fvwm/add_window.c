@@ -2145,7 +2145,7 @@ void RestoreWithdrawnLocation(FvwmWindow *tmp, Bool restart, Window parent)
   XReparentWindow(
     dpy, tmp->w, (parent == None) ? Scr.Root : parent, xwc.x, xwc.y);
 
-  if(IS_ICONIFIED(tmp) && !IS_ICON_SUPPRESSED(tmp))
+  if (IS_ICONIFIED(tmp) && !IS_ICON_SUPPRESSED(tmp))
   {
     if (tmp->icon_w)
       XUnmapWindow(dpy, tmp->icon_w);
@@ -2153,7 +2153,7 @@ void RestoreWithdrawnLocation(FvwmWindow *tmp, Bool restart, Window parent)
       XUnmapWindow(dpy, tmp->icon_pixmap_w);
   }
 
-  XConfigureWindow (dpy, tmp->w, mask, &xwc);
+  XConfigureWindow(dpy, tmp->w, mask, &xwc);
   if(!restart)
     XSync(dpy,0);
 }

@@ -344,6 +344,16 @@ void WindowShade(F_CMD_ARGS)
     XMoveWindow(dpy, tmp_win->decor_w, 0, 0);
     XRaiseWindow(dpy, tmp_win->decor_w);
     XMapWindow(dpy, tmp_win->Parent);
+
+    if (HAS_BOTTOM_TITLE(tmp_win))
+    {
+      XMoveWindow(dpy, tmp_win->w, 0, 1 - ch);
+    }
+    else
+    {
+      XMoveWindow(dpy, tmp_win->w, 0, 0);
+    }
+
     /* domivogt (28-Dec-1999): For some reason the XMoveResize() on the frame
      * window removes the input focus from the client window.  I have no idea
      * why, but if we explicitly restore the focus here everything works fine.
