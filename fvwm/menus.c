@@ -2061,6 +2061,7 @@ void PaintMenu(MenuRoot *mr, XEvent *pevent)
 	  float ds;
 	  int cindex = 0;
 
+	  XSetClipMask(dpy, Scr.TransMaskGC, None);
 	  if( mr->width > mr->height )
           {
 	    ds = (float) mr->height / mr->width;
@@ -2070,7 +2071,7 @@ void PaintMenu(MenuRoot *mr, XEvent *pevent)
 	      if( i % dc == 0 )
 		XSetForeground(dpy, Scr.TransMaskGC,
 			       ms->look.face.u.grad.pixels[cindex++]);
-	      XDrawLine(dpy, mr->w, Scr.TransMaskGC, 0, i*ds, i, 0);
+	      XDrawLine(dpy, mr->w, Scr.TransMaskGC, 0, (int)(i*ds), i, 0);
 	    }
 	    for(i = 0; i < mr->width; i++)
 	    {
@@ -2078,7 +2079,7 @@ void PaintMenu(MenuRoot *mr, XEvent *pevent)
 		XSetForeground(dpy, Scr.TransMaskGC,
 			       ms->look.face.u.grad.pixels[cindex++]);
 	      XDrawLine(dpy, mr->w, Scr.TransMaskGC, i, mr->height, mr->width,
-			i*ds);
+			(int)(i*ds));
 	    }
 	  }
 	  else
@@ -2090,14 +2091,14 @@ void PaintMenu(MenuRoot *mr, XEvent *pevent)
 	      if( i % dc == 0 )
 		XSetForeground(dpy, Scr.TransMaskGC,
 			       ms->look.face.u.grad.pixels[cindex++]);
-	      XDrawLine(dpy, mr->w, Scr.TransMaskGC, 0, i, i*ds, 0);
+	      XDrawLine(dpy, mr->w, Scr.TransMaskGC, 0, i, (int)(i*ds), 0);
 	    }
 	    for(i = 0; i < mr->height; i++)
 	    {
 	      if( i % dc == 0 )
 		XSetForeground(dpy, Scr.TransMaskGC,
 			       ms->look.face.u.grad.pixels[cindex++]);
-	      XDrawLine(dpy, mr->w, Scr.TransMaskGC, i*ds, mr->height,
+	      XDrawLine(dpy, mr->w, Scr.TransMaskGC, (int)(i*ds), mr->height,
 			mr->width, i);
 	    }
 	  }
@@ -2108,6 +2109,7 @@ void PaintMenu(MenuRoot *mr, XEvent *pevent)
 	  float ds;
 	  int cindex = 0;
 
+	  XSetClipMask(dpy, Scr.TransMaskGC, None);
 	  if( mr->width > mr->height )
           {
 	    ds = (float) mr->height / mr->width;
@@ -2117,7 +2119,7 @@ void PaintMenu(MenuRoot *mr, XEvent *pevent)
 	      if( i % dc == 0 )
 		XSetForeground(dpy, Scr.TransMaskGC,
 			       ms->look.face.u.grad.pixels[cindex++]);
-	      XDrawLine(dpy, mr->w, Scr.TransMaskGC, 0, mr->height - i*ds, i,
+	      XDrawLine(dpy, mr->w, Scr.TransMaskGC, 0, mr->height - (int)(i*ds), i,
 			mr->height);
 	    }
 	    for(i = 0; i < mr->width; i++)
@@ -2126,7 +2128,7 @@ void PaintMenu(MenuRoot *mr, XEvent *pevent)
 		XSetForeground(dpy, Scr.TransMaskGC,
 			       ms->look.face.u.grad.pixels[cindex++]);
 	      XDrawLine(dpy, mr->w, Scr.TransMaskGC, i, 0, mr->width,
-			mr->height - i*ds);
+			mr->height - (int)(i*ds));
 	    }
 	  }
 	  else
@@ -2138,7 +2140,7 @@ void PaintMenu(MenuRoot *mr, XEvent *pevent)
 	      if( i % dc == 0 )
 		XSetForeground(dpy, Scr.TransMaskGC,
 			       ms->look.face.u.grad.pixels[cindex++]);
-	      XDrawLine(dpy, mr->w, Scr.TransMaskGC, 0, mr->height - i, i*ds,
+	      XDrawLine(dpy, mr->w, Scr.TransMaskGC, 0, mr->height - i, (int)(i*ds),
 			mr->height);
 	    }
 	    for(i = 0; i < mr->height; i++)
@@ -2146,7 +2148,7 @@ void PaintMenu(MenuRoot *mr, XEvent *pevent)
 	      if( i % dc == 0 )
 		XSetForeground(dpy, Scr.TransMaskGC,
 			       ms->look.face.u.grad.pixels[cindex++]);
-	      XDrawLine(dpy, mr->w, Scr.TransMaskGC, i*ds, 0, mr->width,
+	      XDrawLine(dpy, mr->w, Scr.TransMaskGC, (int)(i*ds), 0, mr->width,
 			mr->height - i);
 	    }
 	  }

@@ -1,3 +1,9 @@
+1999-01-29  Hippo
+
+	* fvwm/menus.c (PaintMenu): Fixed {D,B}Gradient's being clipped by the
+	last mini-icon, fixed drawing errors with some compilers not
+	auto-casting from float to int very well.
+
 1999-01-28  Dominik Vogt  <dominik_vogt@hp.com>
 
 	* fvwm/menus.c (PaintEntry): Prevent menu titles from being hilighted
