@@ -80,7 +80,7 @@ void DeadPipe(int nonsense)
  ***********************************************************************/
 int main(int argc, char **argv)
 {
-  char *enter_fn="Raise";	/* default */
+  char *enter_fn="Silent Raise";	/* default */
   char *leave_fn=NULL;
   char mask_mesg[80];
   unsigned long last_win = 0;	/* last window handled */
@@ -133,14 +133,9 @@ int main(int argc, char **argv)
       leave_fn=argv[8];
   }
 
-#ifdef DEBUG
-  fprintf(stderr,"[FvwmAuto]: timeout: %d EnterFn: >%s< LeaveFn: >%s<\n",
-	  timeout,enter_fn,leave_fn);
-#endif
-
   fd_width = GetFdWidth();
   sprintf(mask_mesg,"SET_MASK %lu\n",
-	  (unsigned long)(M_FOCUS_CHANGE|M_RAISE_WINDOW));
+	  (unsigned long)(M_FOCUS_CHANGE|M_RAISE_WINDOW|M_LOCKONSEND));
   SendInfo(fd,mask_mesg,0);
   /* tell fvwm we're running */
   SendFinishedStartupNotification(fd);
@@ -149,16 +144,33 @@ int main(int argc, char **argv)
   {
     char raise_window_now;
     static char have_new_window = 0;
+#ifdef DEBUG
+static int count = 0;
+#endif
 
     FD_ZERO(&in_fdset);
     FD_SET(fd[1],&in_fdset);
 
+#ifdef DEBUG
+fprintf(stderr,"\nstart %d (ri = %d, hnw = %d, usec = %d)\n", count++, raise_immediately, have_new_window, usec);
+#endif
     if (!raise_immediately)
     {
       /* fill in struct - modified by select() */
       delay->tv_sec = sec;
       delay->tv_usec = usec;
     }
+    else
+    {
+      delay->tv_sec = 0;
+      delay->tv_usec = 0;
+    }
+#ifdef DEBUG
+fprintf(stderr,"select: delay = ");
+if (have_new_window)
+fprintf(stderr,"%d usecs\n", delay->tv_usec);
+else fprintf(stderr,"infinite\n");
+#endif
 
     select(fd_width, SELECT_FD_SET_CAST &in_fdset, 0, 0,
 	   (have_new_window) ? delay : NULL);
@@ -167,6 +179,9 @@ int main(int argc, char **argv)
     if (FD_ISSET(fd[1], &in_fdset))
     {
       FvwmPacket *packet = ReadFvwmPacket(fd[1]);
+#ifdef DEBUG
+fprintf(stderr,"pw = 0x%x, fw=0x%x, rw = 0x%x, lw=0x%x\n", packet->body[0],focus_win,raised_win,last_win);
+#endif
       if ( packet == NULL )
       {
 	exit(0);
@@ -176,30 +191,52 @@ int main(int argc, char **argv)
       case M_FOCUS_CHANGE:
 	/* it's a focus package */
 	focus_win = packet->body[0];
+#ifdef DEBUG
+fprintf(stderr,"focus change\n");
+#endif
 	if (focus_win != raised_win)
 	{
+#ifdef DEBUG
+fprintf(stderr,"its a new window\n");
+#endif
 	  have_new_window = 1;
+	  raise_window_now = raise_immediately;
 	}
-	raise_window_now = raise_immediately;
+#ifdef DEBUG
+else fprintf(stderr,"no new wondow\n");
+#endif
 	break;
       case M_RAISE_WINDOW:
+#ifdef DEBUG
+fprintf(stderr,"raise packet 0x%x\n", packet->body[0]);
+#endif
 	raised_win = packet->body[0];
 	if (have_new_window && focus_win == raised_win)
 	{
+#ifdef DEBUG
+fprintf(stderr,"its the old window: don't raise\n");
+#endif
 	  have_new_window = 0;
 	}
 	break;
       }
+      SendInfo(fd, "UNLOCK", 0);
     }
     else
     {
       if (have_new_window)
       {
+#ifdef DEBUG
+fprintf(stderr,"must raise now\n");
+#endif
 	raise_window_now = 1;
       }
     }
     if (raise_window_now)
     {
+#ifdef DEBUG
+fprintf(stderr,"raising 0x%x\n", focus_win);
+#endif
       if (last_win && leave_fn)
       {
 	/* if focus_win isn't the root */

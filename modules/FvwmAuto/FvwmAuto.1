@@ -43,8 +43,12 @@ acceptable.
 \fIEnterCommand\fP is executed \fITimeout\fP milliseconds after a
 window gets the input focus, \fILeaveCommand\fP is executed
 \fITimeout\fP milliseconds after the window has lost focus.
+Note that you always should use the 'Silent' keyword before
+the command itself.  Otherwise fvwm will ask you for a window
+to act on if the window has died before the command sent by
+FvwmAuto has been processed by fvwm.
 
-"Raise" is the default for \fIEnterCommand\fP, but any fvwm function
+"Silent Raise" is the default for \fIEnterCommand\fP, but any fvwm function
 is allowed. I would not use "Close" or "Destroy" with a low timeout,
 though.
 The \fILeaveCommand\fP can be handy for a tidy desktop. Experiment with:
