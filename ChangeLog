@@ -1,3 +1,8 @@
+1999-09-14  Mikhael Goikhman  <migo@homemail.com>
+
+	* move_resize.c (Maximize): fixed redudant two and one pixel
+	gaps on Maximize X Y
+
 1999-09-09  Dominik Vogt  <dominik_vogt@gmx.de>
 
 	* libs/Graphics.c (CreateGradientPixmap):
@@ -165,6 +170,7 @@
 
 	* fvwm/borders.c (RedrawBorder): fixed border drawing with HandleWidth
 	1
+
 
 1999-08-23  Mikhael Goikhman  <migo@homemail.com>
 

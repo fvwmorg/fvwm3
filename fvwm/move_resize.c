@@ -2574,7 +2574,7 @@ void Maximize(F_CMD_ARGS)
     }
     else if(val2 > 0)
     {
-      new_height = val2 * val2_unit / 100 - 2;
+      new_height = val2 * val2_unit / 100;
       new_y = page_y;
     }
     if (grow_x)
@@ -2583,17 +2583,18 @@ void Maximize(F_CMD_ARGS)
     }
     else if(val1 >0)
     {
-      new_width = val1 * val1_unit / 100 - 2;
+      new_width = val1 * val1_unit / 100;
       new_x = page_x;
     }
     if((val1==0)&&(val2==0))
     {
       new_x = page_x;
       new_y = page_y;
-      new_height = Scr.MyDisplayHeight - 1;
-      new_width = Scr.MyDisplayWidth - 1;
+      new_height = Scr.MyDisplayHeight;
+      new_width = Scr.MyDisplayWidth;
     }
     SET_MAXIMIZED(tmp_win, 1);
+
     ConstrainSize(tmp_win, &new_width, &new_height, 0, 0, False);
     tmp_win->maximized_ht = new_height;
     if (IS_SHADED(tmp_win))
