@@ -920,9 +920,9 @@ void execute_function(exec_func_args_type *efa)
 	efa->action);
     }
 #endif
-    /* a module config command */
-    ModuleConfig(efa->action);  /* process the command */
-    return;                             /* done */
+    /* process a module config command */
+    ModuleConfig(efa->action);
+    return;
   }
   func_depth++;
   if (efa->args)

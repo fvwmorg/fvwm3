@@ -685,21 +685,32 @@ Bool PlaceWindow(
    *       then place the window in a psuedo-random location
    */
   if (mode == PLACE_AGAIN)
+  {
     use_wm_placement = True;
+  }
   else if (IS_TRANSIENT(tmp_win))
+  {
     use_wm_placement = False;
+  }
   else if (tmp_win->hints.flags & USPosition)
+  {
     use_wm_placement = False;
+  }
   else if (!SUSE_NO_PPOSITION(sflags) && (tmp_win->hints.flags & PPosition))
+  {
     use_wm_placement = False;
+  }
   else if (PPosOverride)
+  {
     use_wm_placement = False;
+  }
   else if (!((!(tmp_win->wmhints && (tmp_win->wmhints->flags & StateHint) &&
                 tmp_win->wmhints->initial_state == IconicState))
              || HonorStartsOnPage))
   {
     use_wm_placement = False;
   }
+
   if (use_wm_placement)
   {
     /* Get user's window placement, unless RandomPlacement is specified */

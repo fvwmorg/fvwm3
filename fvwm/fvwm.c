@@ -133,7 +133,7 @@ Window JunkRoot, JunkChild;		/* junk window */
 unsigned int JunkWidth, JunkHeight, JunkBW, JunkDepth, JunkMask;
 
 Bool debugging = False;
-Bool PPosOverride;
+Bool PPosOverride = False;
 
 Window bad_window = None;
 
@@ -469,7 +469,7 @@ int main(int argc, char **argv)
 
   {
     Cursor cursor = XCreateFontCursor(dpy, XC_watch);
-    XGrabPointer(dpy, Scr.Root, 0, 0, GrabModeSync, GrabModeSync,
+    XGrabPointer(dpy, Scr.Root, 0, 0, GrabModeAsync, GrabModeAsync,
 		 None, cursor, CurrentTime);
   }
 
@@ -821,8 +821,10 @@ void CaptureOneWindow(FvwmWindow *fw, Window window)
 
   if (fw == NULL)
     return;
-  if(XFindContext(dpy, window, FvwmContext, (caddr_t *)&fw)!=XCNOENT)
+  if (XFindContext(dpy, window, FvwmContext, (caddr_t *)&fw) != XCNOENT)
   {
+    Bool f = PPosOverride;
+
     PPosOverride = True;
     isIconicState = DontCareState;
     if(XGetWindowProperty(dpy, fw->w, _XA_WM_STATE, 0L, 3L, False,
@@ -858,9 +860,11 @@ void CaptureOneWindow(FvwmWindow *fw, Window window)
     /* Clean out isIconicState here, otherwise all new windos may start
      * iconified. */
     isIconicState = DontCareState;
-    PPosOverride = False;
-    return;
+    /* restore previous value */
+    PPosOverride = f;
   }
+
+  return;
 }
 
 void CaptureAllWindows(void)
@@ -879,7 +883,6 @@ void CaptureAllWindows(void)
   }
 
   PPosOverride = True;
-
   if (!(Scr.flags.windows_captured)) /* initial capture? */
   {
     /*
@@ -926,7 +929,7 @@ void CaptureAllWindows(void)
     /* reborder all windows */
     for (i=0;i<nchildren;i++)
     {
-      if(XFindContext(dpy, children[i], FvwmContext, (caddr_t *)&tmp)!=XCNOENT)
+      if (XFindContext(dpy, children[i], FvwmContext, (caddr_t *)&tmp)!=XCNOENT)
       {
         CaptureOneWindow(tmp, children[i]);
       }

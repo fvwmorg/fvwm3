@@ -1,3 +1,9 @@
+2000-12-03  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* fvwm/fvwm.c (main):
+	grap pointer asynchronously to prevent lockup in window placement now
+	that most XAllowEvents() calls are gone
+
 2000-12-02  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* libs/Parse.c (CopyToken):
