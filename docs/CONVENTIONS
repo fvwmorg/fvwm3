@@ -55,7 +55,7 @@ C. File Names
  * Files in the libs directory may begin with a capital 'F'.  This
    letter is reserver for wrapper files for third party libraries
    or modules.  For example, FShape is an abstraction of the
-   XSpahe X server extension and FBidi is a wrapper for the
+   XShape X server extension and FBidi is a wrapper for the
    fribidi library.  Do not use the 'F' for other purposes.
    [dv]
 
@@ -123,7 +123,7 @@ F. Coding
    up the definition.
    [dv]
 
- o The names of locval helper funtions with limited functionality
+ o The names of local helper funtions with limited functionality
    may begin with two underscores.  For example
    "__local_function".  These funtions *must* be declared static
    and *must not* be ever exported.

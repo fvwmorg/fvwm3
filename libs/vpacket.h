@@ -19,6 +19,8 @@
 typedef struct ConfigWinPacket
 {
 	/*** Alignment notes ***/
+	/*** Note that this packet format will break on future 128 bit
+	 *** platforms. ***/
 	/*** Put long int, Window, and pointers  here ***/
 	Window             w;
 	Window             frame;
