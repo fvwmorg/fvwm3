@@ -128,7 +128,7 @@ static struct functions func_config[] =
   {"FUNCTION",     ComplexFunction,  F_FUNCTION,            FUNC_NO_WINDOW},
   {"GLOBALOPTS",   SetGlobalOptions, F_GLOBAL_OPTS,         FUNC_NO_WINDOW},
 #ifdef GNOME
-  {"GNOMEButton",  GNOME_ButtonFunc, F_MOUSE,               FUNC_NO_WINDOW},
+  {"GNOMEBUTTON",  GNOME_ButtonFunc, F_MOUSE,               FUNC_NO_WINDOW},
 #endif /* GNOME */
   {"GOTOPAGE",     goto_page_func,   F_GOTO_PAGE,           FUNC_NO_WINDOW},
   {"HILIGHTCOLOR", SetHiColor,       F_HICOLOR,             FUNC_NO_WINDOW},
