@@ -455,10 +455,10 @@ There are several actions that FvwmPerl may perform:
 Evaluate a line of perl code.
 
 A special function B<command(>"command"B<)> may be used in perl code to send
-back commands to fvwm.
+commands back to fvwm.
 
 If perl code contains an error, it is printed to the standard error stream
-and prepended with the I<[FvwmPerl][eval]:> header.
+with the I<[FvwmPerl][eval]:> header prepended.
 
 =item B<load> file-name
 
@@ -468,10 +468,10 @@ directory $FVWM_USERDIR (usually ~/.fvwm) and the system wide
 data directory $FVWM_DATADIR.
 
 A special function B<command(>"command"B<)> may be used in perl code to send
-back commands to fvwm.
+commands back to fvwm.
 
 If perl code contains an error, it is printed to the standard error stream
-and prepended with the I<[FvwmPerl][load]:> header.
+with the I<[FvwmPerl][load]:> header prepended.
 
 =item B<preprocess> [-q|--quote char] [-c|--command] [I<line> | I<file>]
 
@@ -498,7 +498,7 @@ The variables and function in the I<main> package are still available,
 like ::command() or ::skip(), but it is just not a good idea to access them
 while preprocessing.
 
-There is a special function B>include>(I<file>) that loads a file,
+There is a special function B<include>(I<file>) that loads a file,
 preprocesses it and returns the preprocessed result. Avoid recursion.
 
 If any embedded perl code contains an error, it is printed to the standard
@@ -607,7 +607,8 @@ with the given parameters and the file $fileName described above.
 
 =head1 VARIABLES
 
-There are several global variable that may be used in perl code:
+There are several global variables in the I<main> namespace that may be used
+in the perl code:
 
     $a, $b, ... $h
     @a, @b, ... @h
@@ -616,8 +617,8 @@ There are several global variable that may be used in perl code:
 They all are initialized to the empty value and may be used to store a state
 between different calls to FvwmPerl actions (B<eval> and B<load>).
 
-If you need more readable variable names, either write "no strict vars" at the
-start of every perl code or use a hash for this, like:
+If you need more readable variable names, either write "no strict 'vars';"
+at the start of every perl code or use a hash for this, like:
 
     $h{id} = $h{firstName} . " " . $h{secondName}
 

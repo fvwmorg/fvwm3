@@ -3,6 +3,12 @@
 	* fvwm/menuitem.c (menuitem_paint):
 	fixed fg color of the inactive disabled menu item
 
+	* NEWS:
+	old typo
+	* fvwm/fvwm.1:
+	removed a mention of RedHat (I don't think it is correct),
+	reworded a mention of fvwm95
+
 2002-06-26  Mikhael Goikhman  <migo@homemail.com>
 
 	* **/*.c:

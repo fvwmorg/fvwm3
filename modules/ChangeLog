@@ -4,6 +4,11 @@
 	* FvwmTaskBar/FvwmTaskBar.1:
 	fixed MailCheck option, enhanced its description
 
+	* FvwmPerl/Makefile.am:
+	added _FvwmPerl.1 rule
+	* FvwmPerl/FvwmPerl.*:
+	updated man page
+
 2002-06-25  olicha  <olivier.chapuis@free.fr>
 
 	* FvwmIdent/FvwmIdent.c (MakeList):
