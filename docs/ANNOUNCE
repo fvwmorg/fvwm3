@@ -1,3 +1,6 @@
+Over two busy years have passed since fvwm 2.2 was released. Bugs,
+floods, and cats had to be mastered, but:
+
 The people on the FVWM-Workers list are very pleased to announce
 
   ___  __  __ __      __   _  _        ___       __ __      _
@@ -7,9 +10,6 @@ The people on the FVWM-Workers list are very pleased to announce
  ||     \\//   \\ /\ //  ||    ||      //__   _     ||      _
  ||      \/     \//\\/   ||    ||     /____| |_|    ||     |_|
 
-
-Over two busy years have passed since fvwm 2.2 was released. Bugs,
-cats Floods, bugs and cats had
 
 Available at http://www.fvwm.org/ it includes the following
 
@@ -28,9 +28,6 @@ Highlights:
  ** Mouse stroke support.
     You will need the libstroke library, found at
     http://www.etla.net/~willey/projects/libstroke/
-
-    ^_^ I wonder why fvwm has mouse stroke support but no cat
-        stroke support?  Seems far more important to me.  ^_^
 
  ** Much more flexibility and control in menu definition and menu
     styles including dynamically generated menus and some menu
