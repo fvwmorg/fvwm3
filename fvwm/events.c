@@ -418,8 +418,6 @@ static Bool __handle_focus_raise_click(
 				RaiseWindow(Fw);
 				focus_grab_buttons(Fw);
 				XAllowEvents(dpy,ReplayPointer,CurrentTime);
-				XFlush(dpy);
-				UngrabEm(GRAB_PASSIVE);
 				return True;
 			}
 			else
@@ -470,8 +468,6 @@ static Bool __handle_focus_raise_click(
 					/* raise the window and exit */
 					RaiseWindow(Fw);
 					focus_grab_buttons(Fw);
-					XFlush(dpy);
-					UngrabEm(GRAB_PASSIVE);
 					return True;
 				}
 				else
@@ -548,6 +544,8 @@ void HandleButtonPress(void)
 		    Fw, &do_pass_click, &do_regrab_buttons,
 		    &do_wait_for_button_release) == True)
 	{
+		XFlush(dpy);
+		UngrabEm(GRAB_PASSIVE);
 		return;
 	}
 
