@@ -649,7 +649,8 @@ void set_win_iconified (WinData *win, int iconified)
      * all iconified windows to the far left of whereever thae manager would
      * eventually be. */
     if (win->manager->AnimCommand && (win->manager->AnimCommand[0] != 0)
-	&& (win->button->w != 0) && (win->button->h !=0) )
+	&& IS_ICON_SUPPRESSED(win) && (win->button->w != 0) 
+	&& (win->button->h !=0) )
     {
       int abs_x, abs_y;
       Window junkw;
@@ -1174,9 +1175,10 @@ void check_in_window (WinData *win)
 {
   int in_viewport;
 
-  if (win->manager && win->complete &&
-      !(win->manager->usewinlist && (DO_SKIP_WINDOW_LIST(win)))) {
+  if (win->manager && win->complete) {
     in_viewport = win_in_viewport (win);
+    if (win->manager->usewinlist && DO_SKIP_WINDOW_LIST(win))
+      in_viewport = 0;
     if (win->button == NULL && in_viewport) {
       insert_windows_button (win);
       if (win->manager->window_up == 0 && globals.got_window_list)

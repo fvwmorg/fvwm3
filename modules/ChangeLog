@@ -1,4 +1,9 @@
 2000-05-26  olicha <olivier.chapuis@free.fr>
+	
+	* FvwmIconMan/xmanager.c (check_in_window, set_win_iconified):
+	Fixed NoIconAction and WindowListSkip/Hit style Change
+
+2000-05-26  olicha <olivier.chapuis@free.fr>
 
 	* FvwmWinList/*:
 	Fixed Sticky window and WinList width for ShowCurrentDesk
