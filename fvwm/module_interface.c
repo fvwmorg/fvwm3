@@ -397,14 +397,14 @@ int HandleModuleInput(Window w, int channel)
 }
 
 
-RETSIGTYPE DeadPipe(int nonsense)
+RETSIGTYPE DeadPipe(int sig)
 {
   /*
    * This function might not return - it could "long-jump"
    * right out, so we need to do everything we need to do
    * BEFORE we call it ...
    */
-  fvwmSetTerminate();
+  fvwmSetTerminate(sig);
 }
 
 

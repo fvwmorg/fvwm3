@@ -36,12 +36,15 @@
  * Global variables
  */
 extern volatile sig_atomic_t isTerminated;
+#ifdef FVWM_DEBUG_MSGS
+extern volatile sig_atomic_t debug_term_signal;
+#endif
 
 
 /***************************************************************************
  * Module prototypes
  */
-extern void fvwmSetTerminate(void);
+extern void fvwmSetTerminate(int sig);
 
 #ifdef USE_BSD_SIGNALS
 extern void fvwmSetSignalMask(int);

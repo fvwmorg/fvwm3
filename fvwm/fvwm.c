@@ -650,6 +650,12 @@ int main(int argc, char **argv)
   DBUG("main","Entering HandleEvents loop...");
 
   HandleEvents();
+#ifdef FVWM_DEBUG_MSGS
+  if ( debug_term_signal )
+  {
+    fvwm_msg(DBG, "main", "Terminated by signal %d", debug_term_signal);
+  }
+#endif
   switch( fvwmRunState )
   {
   case FVWM_DONE:
@@ -1082,7 +1088,7 @@ InstallSignals(void)
 /*************************************************************************
  * Restart on a signal
  ************************************************************************/
-RETSIGTYPE Restart(int nonsense)
+RETSIGTYPE Restart(int sig)
 {
   fvwmRunState = FVWM_RESTART;
 
@@ -1091,7 +1097,7 @@ RETSIGTYPE Restart(int nonsense)
    * right out, so we need to do everything we need to do
    * BEFORE we call it ...
    */
-  fvwmSetTerminate();
+  fvwmSetTerminate(sig);
 }
 
 /***********************************************************************
@@ -1674,7 +1680,7 @@ void Reborder(void)
  *
  ***********************************************************************
  */
-RETSIGTYPE SigDone(int nonsense)
+RETSIGTYPE SigDone(int sig)
 {
   fvwmRunState = FVWM_DONE;
 
@@ -1683,7 +1689,7 @@ RETSIGTYPE SigDone(int nonsense)
    * right out, so we need to do everything we need to do
    * BEFORE we call it ...
    */
-  fvwmSetTerminate();
+  fvwmSetTerminate(sig);
 }
 
 void Done(int restart, char *command)
@@ -1764,7 +1770,7 @@ void Done(int restart, char *command)
       sleep(1);
       ReapChildren();
       if (command)
-	execvp(command,my_argv);
+        execvp(command,my_argv);
     }
     if (command)
     {

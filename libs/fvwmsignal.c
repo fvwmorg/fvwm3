@@ -17,6 +17,9 @@
 typedef enum { SIG_INIT=0, SIG_DONE } SIG_STATUS;
 
 volatile sig_atomic_t isTerminated = false;
+#ifdef FVWM_DEBUG_MSGS
+volatile sig_atomic_t debug_term_signal = 0;
+#endif
 
 static volatile sig_atomic_t canJump = false;
 static sigjmp_buf deadJump;
@@ -51,12 +54,15 @@ fvwmSetSignalMask(int sigmask)
  * NOTE: This is NOT a signal handler function in its own right!
  */
 void
-fvwmSetTerminate(void)
+fvwmSetTerminate(int sig)
 {
 #ifdef USE_BSD_SIGNALS
   int old_mask = sigblock(term_sigs);
 #endif
   isTerminated = true;
+#ifdef DEBUG
+  debug_term_signal = sig;
+#endif
 
   if (canJump)
   {
