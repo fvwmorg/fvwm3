@@ -32,8 +32,8 @@ Style * GrabFocusTransient, LowerTransient, RaiseTransient, StackTransientParent
 Style * TileCascadePlacement, Title, MouseFocus, GrabFocusOff
 Style * UseIconPosition
 # Basic Mouse controls:
-Mouse 1 TS A FuncFvwmRaiseLowerX Move
-Mouse 1 F  A FuncFvwmRaiseLowerX Resize
+Mouse 1 T  A FuncFvwmRaiseLowerX Move
+Mouse 1 FS A FuncFvwmRaiseLowerX Resize
 AddToFunc FuncFvwmRaiseLowerX I Raise
 + M $0
 + D Lower

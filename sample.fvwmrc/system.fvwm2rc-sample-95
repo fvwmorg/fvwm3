@@ -390,7 +390,7 @@ BusyCursor DynamicMenu True, Read True
 #
 
 #KFM_ICONS 1 uncomment the next line if you use the KFM "icons"
-#BugOpts RaiseOverUnmanaged
+#BugOpts RaiseOverUnmanaged on
 
 #PANEL_PUT 1 you may try this for a "stays put" gnome panel
 #DefaultLayers 6 8 10

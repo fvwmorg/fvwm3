@@ -277,100 +277,88 @@ static void raise_over_unmanaged(FvwmWindow *t)
   Window *tops;
   int i;
   unsigned int num;
-  Bool found = False;
-  Window OR_Above  =  0;
-  Window topwin;
+  Window OR_Above = None;
   Window *wins;
   int count = 0;
-  FvwmWindow  *t2       =  NULL;
-  FvwmWindow  *junkwin  =  NULL;
+  FvwmWindow *t2 = NULL;
   unsigned int flags;
   XWindowChanges changes;
   XWindowAttributes wa;
 
   if (!XQueryTree(dpy, Scr.Root, &junk, &junk, &tops, &num))
     return;
-  topwin = 0;
-  topwin = Scr.FvwmRoot.stack_next->frame;
-  found = False;
 
   /********************************************************************
    * Locate the highest override_redirect window above our target, and
    * the highest of our windows below it.
    ********************************************************************/
-  for (i = 0; i < num; i++)  {
-    if (tops[i] == t->frame)  {
-      found = True;
+  for (i = 0; i < num && tops[i] != t->frame; i++)
+  {
+    /* look for target window in list */
+  }
+  for (; i < num; i++)
+  {
+    /* It might be just as well (and quicker) just to check for the absence of
+     * an FvwmContext instead of for override_redirect... */
+    if (!XGetWindowAttributes(dpy, tops[i], &wa))
+    {
+      continue;
     }
-    if (found)  {
-      /*
-	It might be just as well (and quicker) just to check for the absence of
-	an FvwmContext instead of for override_redirect...
-      */
-      if (XGetWindowAttributes(dpy, tops[i], &wa))  {
-	if (wa.override_redirect == True)  {
-	  /*  There's always at least 1 OR lurking somewhere...NoFocusWin.  */
-	  if (i > 0)  {
-	    if (XFindContext(dpy, tops[i - 1],
-			     FvwmContext, (caddr_t *) &junkwin) != XCNOENT)  {
-	      /*  save next lower non-OR win below highest OR...  */
-	      topwin = tops[i - 1];
-            }
-          }
-          OR_Above = tops[i];
-        }
-      }
-      /*
-	else  {
-	DBUG("raise_over_unmanaged",
-	"Error -  XGetWindowAttributes failed for window %8.8lx!\n",
-	tops[i]);
-	}
-      */
-    }    /*  end  if found  */
-  }      /*  end  for  */
+    if (wa.override_redirect == True && wa.class != InputOnly &&
+	tops[i] != Scr.NoFocusWin)
+    {
+      OR_Above = tops[i];
+    }
+  } /* end for */
 
   /********************************************************************
    * Count the windows we need to restack, then build the stack list.
    ********************************************************************/
   if (OR_Above)
   {
-    i = 0;
-    count = 0;
-    found = False;
-    for (t2 = t; (t2 != &Scr.FvwmRoot && ! found); t2 = t2->stack_prev)  {
+    for (count = 0, t2 = Scr.FvwmRoot.stack_next; t2 != &Scr.FvwmRoot;
+	 t2 = t2->stack_next)
+    {
       count++;
-      if (IS_ICONIFIED(t2) && ! IS_ICON_SUPPRESSED(t2))  {
-	if (t2->icon_w != None)  {
+      if (IS_ICONIFIED(t2) && ! IS_ICON_SUPPRESSED(t2))
+      {
+	if (t2->icon_w != None)
+	{
 	  count++;
         }
-	if (t2->icon_pixmap_w != None)  {
+	if (t2->icon_pixmap_w != None)
+	{
 	  count++;
         }
       }
-      if (t2->frame == topwin)  {
-	found = True;
+      if (t2 == t)
+      {
+	break;
       }
     }
 
-    i = 0;
-    found = False;
-    if (count > 0)  {
-      topwin = Scr.FvwmRoot.stack_next->frame;
+    if (count > 0)
+    {
       wins = (Window*) safemalloc (count * sizeof (Window));
-      for (t2 = t; t2 != &Scr.FvwmRoot && ! found; t2 = t2->stack_prev)  {
+      for (i = 0, t2 = Scr.FvwmRoot.stack_next; t2 != &Scr.FvwmRoot;
+	   t2 = t2->stack_next)
+      {
 	wins[i++] = t2->frame;
-	if (IS_ICONIFIED(t2) && ! IS_ICON_SUPPRESSED(t2))  {
-	  if (t2->icon_w != None)  {
+	if (IS_ICONIFIED(t2) && ! IS_ICON_SUPPRESSED(t2))
+	{
+	  if (t2->icon_w != None)
+	  {
 	    wins[i++] = t2->icon_w;
           }
-	  if (t2->icon_pixmap_w != None)  {
+	  if (t2->icon_pixmap_w != None)
+	  {
 	    wins[i++] = t2->icon_pixmap_w;
           }
         }
-	if (t2->frame == topwin)  {
-	  found = True;
-        }
+	if (t2 == t)
+	{
+	  break;
+	}
       }
 
       memset(&changes, '\0', sizeof(changes));
@@ -378,12 +366,11 @@ static void raise_over_unmanaged(FvwmWindow *t)
       changes.stack_mode = Above;
       flags = CWSibling|CWStackMode;
 
-      XConfigureWindow (dpy, topwin, flags, &changes);
+      XConfigureWindow (dpy, t->frame/*topwin*/, flags, &changes);
       XRestackWindows (dpy, wins, i);
       free (wins);
     }
-  }       /*  end - we found an OR above our target  */
-
+  }/*  end - we found an OR above our target  */
 
   XFree (tops);
   return;

@@ -14,6 +14,13 @@ Changes in beta release 2.4.1 (not released yet)
 
 * Improved detection of the Shape library.
 
+* Fixed bug that caused transient windows to be buried below their
+  parents with the "BugOpts RaiseOverUnmanaged on".  This occured
+  with the system.fvwm2rc-sample-95 configuration.
+
+* Fixed some focus problems in conjunction with unclutter vx xv/xmms
+  and Open Look applications.
+
 * Fixed a problem that could cause windows to be lost off screen
   with interactive window motion.
 

@@ -1411,7 +1411,6 @@ static void DoSnapAttract(
     }
     if (do_recalc_rectangle)
     {
-fprintf(stderr,"recalc\n");
       /* Snapping in X direction can move the window off a screen.  Thus, it
        * may no longer be necessary to snap in Y direction. */
       XineramaSupportGetResistanceRect(

@@ -1898,7 +1898,7 @@ void HandleEnterNotify(void)
   }
 
   sf = get_focus_window();
-  if (sf && HAS_MOUSE_FOCUS(sf))
+  if (sf && Tmp_win != sf && HAS_MOUSE_FOCUS(sf))
   {
     DeleteFocus(1);
   }

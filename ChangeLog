@@ -1,4 +1,25 @@
+2001-07-29  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* fvwm/stack.c (raise_over_unmanaged):
+	fixed restacking of windows with RaiseOverUnmanaged - windows were
+	raised in reverse order so that the top window became the bottom
+	window of the ones that were raised
+	also, ignore Scr.NoFocusWin and all InputOnly windows for raising since
+	these are invisible
+
 2001-07-28  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* sample.fvwmrc/system.fvwm2rc-sample-95:
+	fixed syntax of BugOpts command
+
+	* fvwm/ConfigFvwmDefaults:
+	resize window when clicking on the sides of the window by default
+	instead of moving it
+
+	* fvwm/events.c (HandleEnterNotify):
+	do not delete MouseFocus when pointer moves from one particular sub
+	window of a frame to another one.  Helps with xv/xmms vs unclutter
+	interaction and also with MouseFocus vs. Open Look applications
 
 	* fvwm/move_resize.c (DoSnapAttract):
 	* libs/XineramaSupport.c (XineramaSupportGetResistanceRect):

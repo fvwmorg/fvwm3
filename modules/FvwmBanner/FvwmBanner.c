@@ -140,11 +140,11 @@ int main(int argc, char **argv)
 
   /* Open the display */
   if (!(dpy = XOpenDisplay(display_name)))
-    {
-      fprintf(stderr,"FvwmBanner: can't open display %s",
-	      XDisplayName(display_name));
-      exit (1);
-    }
+  {
+    fprintf(stderr,"FvwmBanner: can't open display %s",
+	    XDisplayName(display_name));
+    exit (1);
+  }
   screen= DefaultScreen(dpy);
   Root = RootWindow(dpy, screen);
   x_fd = XConnectionNumber(dpy);
@@ -360,10 +360,10 @@ void change_window_name(char *str)
   XTextProperty name;
 
   if (XStringListToTextProperty(&str,1,&name) == 0)
-    {
-      fprintf(stderr,"FvwmBanner: cannot allocate window name");
-      return;
-    }
+  {
+    fprintf(stderr,"FvwmBanner: cannot allocate window name");
+    return;
+  }
   XSetWMName(dpy,win,&name);
   XSetWMIconName(dpy,win,&name);
   XFree(name.value);
