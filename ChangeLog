@@ -1,5 +1,10 @@
 2002-12-03  olicha  <olivier.chapuis@free.fr>
 
+	* fvwm/borders.c (border_draw_decor_to_pixmap):
+	(border_get_border_background):
+	(get_common_decorations):
+	BorderGC cleanup
+
 	* fvwm/builtins.c (CMD_PrintInfo):
 	New subject nls to PrintInfo
 

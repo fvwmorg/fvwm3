@@ -115,8 +115,6 @@ typedef struct
 	GC shadow_gc;
 	Pixel fore_color;
 	Pixel back_color;
-	Pixel border_fore_color; /* for UseBorderStyle */
-	Pixel border_back_color; /* for UseBorderStyle */
 	int cs;
 	int border_cs;           /* for UseBorderStyle */
 	int bg_border_cs;        /* for UseBorderStyle */
@@ -546,10 +544,9 @@ static void get_common_decorations(
 	Bool do_change_gcs)
 {
 	DecorFace *df;
-	color_quad *draw_colors, *border_draw_colors;
+	color_quad *draw_colors;
 
 	df = border_get_border_style(t, has_focus);
-	cd->border_cs = -1;
 	cd->bg_border_cs = -1;
 	cd->cs = -1;
 	if (has_focus)
@@ -567,8 +564,6 @@ static void get_common_decorations(
 				t, BorderStyle.active.u.acs.cs);
 		}
 		cd->back_pixmap = Scr.gray_pixmap;
-		cd->border_cs = t->border_cs_hi;
-		border_draw_colors = &(t->border_hicolors);
 		if (is_border)
 		{
 			draw_colors = &(t->border_hicolors);
@@ -601,8 +596,6 @@ static void get_common_decorations(
 		{
 			cd->back_pixmap = Scr.light_gray_pixmap;
 		}
-		cd->border_cs = t->border_cs;
-		border_draw_colors = &(t->border_colors);
 		if (is_border)
 		{
 			draw_colors = &(t->border_colors);
@@ -616,8 +609,6 @@ static void get_common_decorations(
 	}
 	cd->fore_color = draw_colors->fore;
 	cd->back_color = draw_colors->back;
-	cd->border_fore_color = border_draw_colors->fore;
-	cd->border_back_color = border_draw_colors->back;
 	if (do_change_gcs)
 	{
 		Globalgcv.foreground = draw_colors->hilight;
@@ -1609,8 +1600,7 @@ static void border_get_border_background(
 				dpy, bg->pixmap.p, Scr.BordersGC, 0, 0,
 				part_g->width, part_g->height);
 			xgcv.fill_style = FillSolid;
-			xgcv.tile = None;
-			XChangeGC(dpy, Scr.BordersGC, GCTile|GCFillStyle, &xgcv);
+			XChangeGC(dpy, Scr.BordersGC, GCFillStyle, &xgcv);
 		}
 		bg->flags.use_pixmap = 1;
 		bg->pixmap.shape = None;
@@ -2142,8 +2132,7 @@ static void border_draw_decor_to_pixmap(
 				dpy, tmp, Scr.BordersGC, 0, 0,
 				pixmap_g->width, pixmap_g->height);
 			xgcv.fill_style = FillSolid;
-			xgcv.tile = None;
-			XChangeGC(dpy, Scr.BordersGC, GCTile|GCFillStyle, &xgcv);
+			XChangeGC(dpy, Scr.BordersGC, GCFillStyle, &xgcv);
 			bg.pixmap.p = tmp;
 			bg.pixmap.g.width = pixmap_g->width;
 			bg.pixmap.g.height = pixmap_g->height;
