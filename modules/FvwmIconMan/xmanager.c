@@ -1241,6 +1241,38 @@ static void get_button_geometry (WinManager *man, Button *button,
   g->text_base = g->text_y + man->FButtonFont->ascent;
 }
 
+static void draw_button_background(
+	WinManager *man, XRectangle bounding, Contexts button_state)
+{
+	int cset = man->colorsets[button_state];
+
+	if (CSET_IS_TRANSPARENT_PR_PURE(cset) ||
+	    man->backContext[button_state] == None)
+	{
+		XClearArea(
+			theDisplay, man->theWindow,
+			bounding.x, bounding.y,
+			bounding.width, bounding.height,
+			False);
+	}
+	else if (CSET_IS_TRANSPARENT_PR_TINT(cset))
+	{
+		SetRectangleBackground(
+			theDisplay, man->theWindow,
+			bounding.x, bounding.y,
+			bounding.width, bounding.height,
+			&Colorset[cset], Pdepth, man->backContext[button_state]);
+	}
+	else
+	{
+		XFillRectangle(
+			theDisplay, man->theWindow,
+			man->backContext[button_state],
+			bounding.x, bounding.y,
+			bounding.width, bounding.height);
+	}
+}
+
 static void draw_3d_icon (WinManager *man, int box, ButtonGeometry *g,
 			  int iconified, Contexts contextId)
 {
@@ -1260,6 +1292,8 @@ static void iconify_box (WinManager *man, WinData *win, int box,
 			 int button_already_cleared, XRectangle bounding)
 {
 	XRectangle inter;
+	int cset = man->colorsets[contextId];
+	Bool erase = False;
 
 	if (!man->window_up)
 	{
@@ -1270,32 +1304,28 @@ static void iconify_box (WinManager *man, WinData *win, int box,
 		g->icon_x, g->icon_y, g->icon_w, g->icon_h,
 		&inter);
 
+	if (inter.width <= 0 || inter.height <= 0)
+	{
+		return;
+	}
+
         /* [BV 16-Apr-97] Mini Icons work on black-and-white too */
 	if (FMiniIconsSupported && man->draw_icons && win->pic.picture)
 	{
 		if (iconified == 0 && man->draw_icons != 2)
 		{
-				XFillRectangle (
-					theDisplay, man->theWindow,
-					man->backContext[contextId],
-					g->icon_x, g->icon_y, g->icon_w,
-					g->icon_h);
+			erase = True;
 		}
 		else
 		{
 			FvwmRenderAttributes fra;
-			int cs = man->colorsets[contextId];
 			int p_x = 0, p_y = 0;
 
 			fra.mask = FRAM_DEST_IS_A_WINDOW;
-			if (cs >= 0)
+			if (cset >= 0)
 			{
 				fra.mask |= FRAM_HAVE_ICON_CSET;
-				fra.colorset = &Colorset[cs];
-			}
-			if (inter.width <= 0 || inter.height <= 0)
-			{
-				return;
+				fra.colorset = &Colorset[cset];
 			}
 			if (inter.x > g->icon_x)
 			{
@@ -1324,11 +1354,7 @@ static void iconify_box (WinManager *man, WinData *win, int box,
 		{
 			if (iconified == 0)
 			{
-				XFillArc (
-					theDisplay, man->theWindow,
-					man->backContext[contextId],
-					g->icon_x, g->icon_y, g->icon_w,
-					g->icon_h, 0, 360 * 64);
+				erase = True;
 			}
 			else
 			{
@@ -1339,6 +1365,10 @@ static void iconify_box (WinManager *man, WinData *win, int box,
 					g->icon_h, 0, 360 * 64);
 			}
 		}
+	}
+	if (erase)
+	{
+		draw_button_background(man, inter, contextId);
 	}
 }
 
@@ -1445,39 +1475,6 @@ static void draw_relief (WinManager *man, int button_state, ButtonGeometry *g,
     RelieveRectangle (theDisplay, man->theWindow, g->button_x, g->button_y,
 		      g->button_w - 1, g->button_h - 1, context1, context2, 2);
   }
-}
-
-static void draw_button_background(
-	WinManager *man, XRectangle bounding, ButtonGeometry g,
-	Contexts button_state)
-{
-	int cset = man->colorsets[button_state];
-
-	if (CSET_IS_TRANSPARENT_PR_PURE(cset) ||
-	    man->backContext[button_state] == None)
-	{
-		XClearArea(
-			theDisplay, man->theWindow,
-			bounding.x, bounding.y,
-			bounding.width, bounding.height,
-			False);
-	}
-	else if (CSET_IS_TRANSPARENT_PR_TINT(cset))
-	{
-		SetRectangleBackground(
-			theDisplay, man->theWindow,
-			bounding.x, bounding.y,
-			bounding.width, bounding.height,
-			&Colorset[cset], Pdepth, man->backContext[button_state]);
-	}
-	else
-	{
-		XFillRectangle(
-			theDisplay, man->theWindow,
-			man->backContext[button_state],
-			bounding.x, bounding.y,
-			bounding.width, bounding.height);
-	}
 }
 
 static void draw_button(WinManager *man, int button, int force)
@@ -1626,7 +1623,7 @@ static void draw_button(WinManager *man, int button, int force)
 		if (draw_background)
 		{
 			ConsoleDebug (X11, "\tDrawing background\n");
-			draw_button_background(man, bounding, g, button_state);
+			draw_button_background(man, bounding, button_state);
 			cleared_button = 1
 ;
 			if (!PictureUseBWOnly())
@@ -1662,7 +1659,7 @@ static void draw_button(WinManager *man, int button, int force)
 				if (r.width > 0)
 				{
 					draw_button_background(
-						man, r, g, button_state);
+						man, r, button_state);
 				}
 			}
 		}
@@ -1695,7 +1692,7 @@ static void draw_button(WinManager *man, int button, int force)
 					bounding.width, bounding.height,
 					g.text_x, g.text_y, g.text_w, g.text_h,
 					&r);
-				draw_button_background(man, r, g, button_state);
+				draw_button_background(man, r, button_state);
 			}
 			FwinString->str =  b->drawn_state.display_string;
 			FwinString->win = man->theWindow;
@@ -1761,7 +1758,7 @@ static void draw_empty_manager (WinManager *man)
 		r.y = g.button_y;
 		r.width = g.button_w;
 		r.height = g.button_h;
-		draw_button_background(man, r, g, state);
+		draw_button_background(man, r, state);
 	}
 	if (!PictureUseBWOnly())
 	{

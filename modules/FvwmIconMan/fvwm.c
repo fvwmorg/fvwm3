@@ -150,7 +150,7 @@ int win_in_viewport (WinData *win)
 
   assert (manager);
 
-  if (IS_ICONIFIED(win))
+  if (IS_ICONIFIED(win) && !IS_ICON_SUPPRESSED(win))
   {
 	  g = win->icon_g;
   }

@@ -1,3 +1,15 @@
+2002-12-02  olicha  <olivier.chapuis@free.fr>
+
+	* FvwmIconMan/fvwm.c (win_in_viewport):
+	Do not use the icon position to decide whether a window is managed or
+	not when IS_ICON_SUPPRESSED
+
+	* FvwmIconMan/xmanager.c (draw_button_background): 
+	(iconify_box):
+	(draw_button):
+	(draw_empty_manager):
+	Fixed drawing icon background
+
 2002-12-01  olicha  <olivier.chapuis@free.fr>
 
 	* FvwmScript/Instructions.c (ChangeIcon):
