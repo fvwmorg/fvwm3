@@ -1,5 +1,11 @@
 2001-07-28  Dominik Vogt  <dominik.vogt@gmx.de>
 
+	* fvwm/move_resize.c (DoSnapAttract):
+	* libs/XineramaSupport.c (XineramaSupportGetResistanceRect):
+	fixed snapping to Xinerama screen edges
+	(XineramaSupportIsEnabled):
+	return False is the X server provides only a single screen
+
 	* fvwm/fvwm2.1:
 	Added descriptions of conditions CurrentDesk, CurrentPage,
 	CurrentScreen, CurrentGlobalPage, CurrentPageAnyDesk and

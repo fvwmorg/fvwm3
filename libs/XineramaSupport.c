@@ -147,7 +147,7 @@ static Window blank_w, vert_w;
 
 Bool XineramaSupportIsEnabled(void)
 {
-  return (is_xinerama_disabled) ? False : True;
+  return (is_xinerama_disabled || num_screens == 0) ? False : True;
 }
 
 static void XineramaSupportSetState(Bool onoff)
@@ -543,15 +543,15 @@ void XineramaSupportGetResistanceRect(int wx, int wy, int ww, int wh,
        Otherwise this algorithm would behave badly in case of
        non-regularly-tiled screens (i.e. when they don't form a regular
        grid). */
-    if (sx0 <= ww  &&  sx1 >= wx  &&  sy0 <= wh  &&  sy1 >= wy)
+    if (sx0 < ww && sx1 > wx && sy0 < wh && sy1 > wy)
     {
-      if (sx0 >= wx  &&  sx0 - wx < *x0 - wx)
+      if (sx0 >= wx && sx0 - wx < *x0 - wx)
 	*x0 = sx0;
-      if (sy0 >= wy  &&  sy0 - wy < *y0 - wy)
+      if (sy0 >= wy && sy0 - wy < *y0 - wy)
 	*y0 = sy0;
-      if (sx1 <= ww  &&  ww - sx1 < ww - *x1)
+      if (sx1 <= ww && ww - sx1 < ww - *x1)
 	*x1 = sx1;
-      if (sy1 <= wh  &&  wh - sy1 < wh - *y1)
+      if (sy1 <= wh && wh - sy1 < wh - *y1)
 	*y1 = sy1;
     }
   }

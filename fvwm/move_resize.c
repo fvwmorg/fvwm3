@@ -1363,41 +1363,72 @@ static void DoSnapAttract(
    */
   if (Scr.MoveResistance > 0)
   {
+    /* snap to right edge */
     if (((*px + Width) >= Scr.MyDisplayWidth)
 	&& ((*px + Width) < Scr.MyDisplayWidth + Scr.MoveResistance))
+    {
       *px = Scr.MyDisplayWidth - Width;
-    if ((*px <= 0) && (*px > -Scr.MoveResistance))
+    }
+    /* snap to left edge */
+    else if ((*px <= 0) && (*px > -Scr.MoveResistance))
+    {
       *px = 0;
+    }
+    /* snap to bottom edge */
     if (((*py + Height) >= Scr.MyDisplayHeight)
 	&& ((*py + Height) < Scr.MyDisplayHeight + Scr.MoveResistance))
+    {
       *py = Scr.MyDisplayHeight - Height;
-    if ((*py <= 0) && (*py > -Scr.MoveResistance))
+    }
+    /* snap to top edge */
+    else if ((*py <= 0) && (*py > -Scr.MoveResistance))
+    {
       *py = 0;
+    }
   }
   /* Resist moving windows between xineramascreens */
-  if (Scr.XiMoveResistance > 0)
+  if (Scr.XiMoveResistance > 0 && XineramaSupportIsEnabled())
   {
     int scr_x0, scr_y0, scr_x1, scr_y1;
+    Bool do_recalc_rectangle = False;
 
-    XineramaSupportGetResistanceRect(*px, *py, Width, Height,
-				     &scr_x0, &scr_y0, &scr_x1, &scr_y1);
+    XineramaSupportGetResistanceRect(
+      *px, *py, Width, Height, &scr_x0, &scr_y0, &scr_x1, &scr_y1);
 
+    /* snap to right edge */
     if (scr_x1 != Scr.MyDisplayWidth  &&
-	*px + Width >= scr_x1         &&
-	*px + Width <  scr_x1 + Scr.XiMoveResistance)
+	*px + Width >= scr_x1 && *px + Width <  scr_x1 + Scr.XiMoveResistance)
+    {
       *px = scr_x1 - Width;
-    if (scr_x0 != 0                   &&
-	*px <= scr_x0                 &&
-	scr_x0 - *px < Scr.XiMoveResistance)
+      do_recalc_rectangle = True;
+    }
+    /* snap to left edge */
+    else if (scr_x0 != 0 &&
+	     *px <= scr_x0 && scr_x0 - *px < Scr.XiMoveResistance)
+    {
       *px = scr_x0;
-    if (scr_y1 != Scr.MyDisplayHeight  &&
-	*py + Height >= scr_y1         &&
-	*py + Height <  scr_y1 + Scr.XiMoveResistance)
+      do_recalc_rectangle = True;
+    }
+    if (do_recalc_rectangle)
+    {
+fprintf(stderr,"recalc\n");
+      /* Snapping in X direction can move the window off a screen.  Thus, it
+       * may no longer be necessary to snap in Y direction. */
+      XineramaSupportGetResistanceRect(
+	*px, *py, Width, Height, &scr_x0, &scr_y0, &scr_x1, &scr_y1);
+    }
+    /* snap to bottom edge */
+    if (scr_y1 != Scr.MyDisplayHeight &&
+	*py + Height >= scr_y1 && *py + Height <  scr_y1 + Scr.XiMoveResistance)
+    {
       *py = scr_y1 - Height;
-    if (scr_y0 != 0                   &&
-	*py <= scr_y0                 &&
-	scr_y0 - *py < Scr.XiMoveResistance)
+    }
+    /* snap to top edge */
+    else if (scr_y0 != 0 &&
+	     *py <= scr_y0 && scr_y0 - *py < Scr.XiMoveResistance)
+    {
       *py = scr_y0;
+    }
   }
 
   return;
