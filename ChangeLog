@@ -1,3 +1,8 @@
+2000-10-08  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* libs/Bindings.c (AddBinding):
+	* fvwm/bindings.c (ParseBinding):
+	fixed core dump
 2000-10-08  Chris Rankin  <rankinc@zipworld.com.au>
 
 	* libs/XResource.c
@@ -5,7 +10,6 @@
 
 2000-10-08  Dominik Vogt  <dominik.vogt@gmx.de>
 
-	* libs/XResource.c (DoMergeString):
 	* fvwm/stack.c (raise_over_unmanaged):
 	* fvwm/add_window.c (setup_window_name):
 	* fvwm/virtual.c (unmap_window):
@@ -33,8 +37,7 @@
 	* fvwm/session.c (matchWin):
 	(SaveWindowStates):
 	honour return code of XGetGeometry(), XGetWindowAttributes(),
-	XGetWMName(), XGetWMNormalHints(), XGetCommand(), XQueryTree(),
-	XrmCombineDatabase()
+	XGetWMName(), XGetWMNormalHints(), XGetCommand(), XQueryTree()
 
 	* libs/Graphics.c (CalculateGradientDimensions):
 	* fvwm/events.c (HandleConfigureRequest):

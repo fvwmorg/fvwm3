@@ -293,9 +293,9 @@ int ParseBinding(
     *buttons_grabbed &= ~(1<<(button-1));
   }
 
-  return AddBinding(dpy, pblist, type, STROKE_ARG((void *)(stripcpy(stroke)))
-		    button, keysym, key, mods, contexts,
-		    (void *)(stripcpy(action)), NULL);
+  return AddBinding(
+    dpy, pblist, type, STROKE_ARG((void *)stroke)
+    button, keysym, key, mods, contexts, (void *)action, NULL);
 }
 
 static void activate_binding(

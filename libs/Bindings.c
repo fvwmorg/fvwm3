@@ -300,15 +300,16 @@ int AddBinding(Display *dpy, Binding **pblist, BindingType type,
 	(*pblist) = (Binding *)safemalloc(sizeof(Binding));
 	(*pblist)->type = type;
 	(*pblist)->Button_Key = i;
-	STROKE_CODE((*pblist)->Stroke_Seq = stroke);
+	STROKE_CODE((*pblist)->Stroke_Seq =
+		    (stroke) ? (void *)stripcpy((char *)stroke) : NULL);
 	if (type == KEY_BINDING && key_name != NULL)
 	  (*pblist)->key_name = stripcpy(key_name);
 	else
 	  (*pblist)->key_name = NULL;
 	(*pblist)->Context = contexts;
 	(*pblist)->Modifier = modifiers;
-	(*pblist)->Action = action;
-	(*pblist)->Action2 = action2;
+	(*pblist)->Action = (action) ? stripcpy(action) : NULL;
+	(*pblist)->Action2 = (action2) ? stripcpy(action2) : NULL;
 	(*pblist)->NextBinding = temp;
 	count++;
       }
