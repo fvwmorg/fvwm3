@@ -1,5 +1,6 @@
 1999-08-14  Dominik Vogt  <dominik_vogt@gmx.de>
 
+	* fvwm/bindings.c (activate_binding):
 	* fvwm/add_window.c (AddWindow):
 	* fvwm/icons.c (CreateIconWindow): disabled root bindings fix for
 	SloppyFocus that cause problems with non-SloppyFocus.
