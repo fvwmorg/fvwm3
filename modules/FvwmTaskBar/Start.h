@@ -41,7 +41,7 @@ extern void StartButtonInit(int height);
 extern void StartAndLaunchButtonItemInit(StartAndLaunchButtonItem *item);
 extern void AddStartAndLaunchButtonItem(StartAndLaunchButtonItem *item);
 extern int StartButtonUpdate(const char *title, int index, int state);
-extern void StartButtonDraw(int force);
+extern void StartButtonDraw(int force, XEvent *evp);
 extern int  MouseInStartButton(int x, int y, int *whichButton, Bool *startButtonPressed);
 extern void getButtonCommand(int whichButton, char *tmp, int mouseButton);
 #endif

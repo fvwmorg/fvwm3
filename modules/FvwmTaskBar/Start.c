@@ -420,33 +420,40 @@ int StartButtonUpdate(const char *title, int index, int state)
 }
 
 
-void StartButtonDraw(int force)
+void StartButtonDraw(int force, XEvent *evp)
 {
-  int tempsum, j, i = 0;
-  StartAndLaunchButtonItem *tempPtr = First_Start_Button;
-  StartAndLaunchButtonItem *tempPtr2 = First_Start_Button;
+	int tempsum, j, i = 0;
+	StartAndLaunchButtonItem *tempPtr = First_Start_Button;
+	StartAndLaunchButtonItem *tempPtr2 = First_Start_Button;
 
-  while(tempPtr != NULL)
-  {
-    if(tempPtr->buttonItem->needsupdate || force)
-    {
-      tempsum = 0;
-      j=0;
-      tempPtr2 = First_Start_Button;
-      while((tempPtr2 != NULL) && (j<i))
-      {
-	tempsum+=tempPtr2->width;
-	tempPtr2 = tempPtr2->tail;	
-	j++;
-      }
-      if (!(tempPtr->isStartButton))
-	ButtonDraw(tempPtr->buttonItem, tempsum+StartButtonRightMargin, 0, tempPtr->width, First_Start_Button->height);
-      else
-	ButtonDraw(tempPtr->buttonItem, tempsum, 0, tempPtr->width, First_Start_Button->height);
-    }
-    tempPtr = tempPtr->tail;
-    i++;
-  }
+	while(tempPtr != NULL)
+	{
+		if(tempPtr->buttonItem->needsupdate || force)
+		{
+			tempsum = 0;
+			j=0;
+			tempPtr2 = First_Start_Button;
+			while((tempPtr2 != NULL) && (j<i))
+			{
+				tempsum+=tempPtr2->width;
+				tempPtr2 = tempPtr2->tail;	
+				j++;
+			}
+			if (!(tempPtr->isStartButton))
+				ButtonDraw(
+					tempPtr->buttonItem,
+					tempsum+StartButtonRightMargin, 0,
+					tempPtr->width,
+					First_Start_Button->height, evp);
+			else
+				ButtonDraw(
+					tempPtr->buttonItem,
+					tempsum, 0, tempPtr->width,
+					First_Start_Button->height, evp);
+		}
+		tempPtr = tempPtr->tail;
+		i++;
+	}
 }
 
 /* Returns 1 if in the start or a minibutton, 0 if not; index of button

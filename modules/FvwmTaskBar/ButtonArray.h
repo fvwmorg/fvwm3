@@ -72,13 +72,13 @@ Button *find_n(ButtonArray *array, int n);
 void FreeButton(Button *ptr);
 void FreeAllButtons(ButtonArray *array);
 void DoButton(ButtonArray *array, Button *ptr, int x, int y, int w, int h);
-void DrawButtonArray(ButtonArray *array, int all);
+void DrawButtonArray(ButtonArray *array, int all, XEvent *evp);
 void RadioButton(ButtonArray *array, int butnum, int state);
 int WhichButton(ButtonArray *array, int x, int y);
 int LocateButton(ButtonArray *array, int xp,  int yp,
 				     int *xb, int *yb,
 				     char **name, int *trunc);
 void ArrangeButtonArray(ButtonArray *array);
-void ButtonDraw(Button *button, int x, int y, int w, int h);
+void ButtonDraw(Button *button, int x, int y, int w, int h, XEvent *evp);
 void ButtonCoordinates(ButtonArray *array, int numbut, int *xc, int *yc);
 void ButtonDimensions(ButtonArray *array, int *width, int *height);

@@ -114,7 +114,7 @@ void ClearAlarm(void);
 void CheckForTip(int x, int y);
 void MakeMeWindow(void);
 void WaitForExpose(void);
-void RedrawWindow(int force);
+void RedrawWindow(int force, XEvent *evp);
 void StartMeUp(void);
 void ConsoleMessage(char *fmt,...);
 void LoopOnEvents(void);

@@ -1234,7 +1234,7 @@ static void usage(int is_verbose)
 		" [-s]"
 		" [-I vis-id | -C vis-class]"
 		" [-l colors"
-		" [-L|A|S|N] ...]"
+		" [-L|A|S|P] ...]"
 		" [-r]"
 		" [OTHER OPTIONS] ..."
 		"\n");
@@ -1258,7 +1258,7 @@ static void usage(int is_verbose)
 		" -I vis-id:    use visual <vis-id>\n"
 		" -l colors:    try to use no more than <colors> colors\n"
 		" -L:           strict color limit\n"
-		" -N:           named palette\n"
+		" -P:           visual palette\n"
 		" -r:           replace running window manager\n"
 		" -s:           manage a single screen\n"
 		" -S:           static palette\n"
@@ -1929,9 +1929,9 @@ int main(int argc, char **argv)
 		{
 			colorLimitop.not_dynamic = True;
 		}
-		else if (strcmp(argv[i], "-N") == 0 ||
-			 strcmp(argv[i], "-named-palette") == 0 ||
-			 strcmp(argv[i], "--named-palette") == 0)
+		else if (strcmp(argv[i], "-P") == 0 ||
+			 strcmp(argv[i], "-visual-palette") == 0 ||
+			 strcmp(argv[i], "--visual-palette") == 0)
 		{
 			colorLimitop.use_named_table = True;
 		}

@@ -41,6 +41,7 @@
 #include "libs/Flocale.h"
 #include "libs/Picture.h"
 #include "libs/PictureGraphics.h"
+#include "libs/Rectangles.h"
 
 #include "ButtonArray.h"
 #include "Mallocs.h"
@@ -211,7 +212,7 @@ Button *ButtonNew(const char *title, FvwmPicture *p, int state, int count)
 /* -------------------------------------------------------------------------
    ButtonDraw - Draws the specified button
    ------------------------------------------------------------------------- */
-void ButtonDraw(Button *button, int x, int y, int w, int h)
+void ButtonDraw(Button *button, int x, int y, int w, int h, XEvent *evp)
 {
 	char *t3p = "...\0";
 	int state, x3p, newx;
@@ -221,10 +222,29 @@ void ButtonDraw(Button *button, int x, int y, int w, int h)
 	unsigned long gcm;
 	GC *drawgc;
 	int cs;
+	XRectangle rect;
 
 	if (button == NULL)
 	{
 		return;
+	}
+	if (evp)
+	{
+		if (!frect_get_intersection(
+			x, y, w, h,
+			evp->xexpose.x, evp->xexpose.y,
+			evp->xexpose.width, evp->xexpose.height,
+			&rect))
+		{
+			return;
+		}
+	}
+	else
+	{
+		rect.x = x;
+		rect.y = y;
+		rect.width = w;
+		rect.height = h;
 	}
 	button->needsupdate = 0;
 	state = button->state;
@@ -596,21 +616,37 @@ void FreeAllButtons(ButtonArray *array)
 /* ------------------------------------------------------------------------
    DrawButtonArray - Draw the whole array (all=1), or only those that need.
    ------------------------------------------------------------------------ */
-void DrawButtonArray(ButtonArray *array, int all)
+void DrawButtonArray(ButtonArray *array, int all, XEvent *evp)
 {
-  Button *temp;
-  int x, y, n;
+	Button *temp;
+	int x, y, n;
+	static exposed = False;
 
-  x = 0;
-  y = array->y;
-  n = 1;
-  for(temp=array->head; temp!=NULL; temp=temp->next) {
-    if ((x + array->tw > array->w) && (n < NRows))
-      { x = 0; y += RowHeight+2; ++n; }
-    if (temp->needsupdate || all)
-      ButtonDraw(temp, x + array->x, y, array->tw-3, array->h);
-    x += array->tw;
-  }
+	if (!exposed && evp)
+	{
+		exposed = True;
+	}
+	if (!exposed)
+	{
+		return;
+	}
+	x = 0;
+	y = array->y;
+	n = 1;
+	for(temp=array->head; temp!=NULL; temp=temp->next)
+	{
+		if ((x + array->tw > array->w) && (n < NRows))
+		{
+			x = 0;
+			y += RowHeight+2;
+			++n;
+		}
+		if (temp->needsupdate || all)
+			ButtonDraw(
+				temp, x + array->x, y, array->tw-3, array->h,
+				(temp->needsupdate)? NULL:evp);
+		x += array->tw;
+	}
 }
 
 /* -------------------------------------------------------------------------

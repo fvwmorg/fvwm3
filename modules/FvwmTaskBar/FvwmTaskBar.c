@@ -568,6 +568,8 @@ void ProcessMessage(unsigned long type,unsigned long *body)
 		    - WindowButtonsLeftMargin - WindowButtonsRightMargin,
 		    -1, -1);
 	ArrangeButtonArray (&buttons);
+	AdjustWindow(win_width, win_height);
+	redraw = 1;
       }
       if (AutoStick && win_is_shaded != IS_SHADED(cfgpacket))
       {
@@ -820,7 +822,7 @@ void ProcessMessage(unsigned long type,unsigned long *body)
 	}
 	temp->needsupdate = 1;
 	temp->iconified = iconified;
-	DrawButtonArray(&buttons, 0);
+	DrawButtonArray(&buttons, 0, NULL);
       }
       if (AnimCommand && AnimCommand[0] != 0)
 	SendUnlockNotification(Fvwm_fd);
@@ -885,7 +887,7 @@ void ProcessMessage(unsigned long type,unsigned long *body)
   } /* switch */
 
   if (redraw >= 0)
-    RedrawWindow(redraw);
+    RedrawWindow(redraw, NULL);
 }
 
 void redraw_buttons()
@@ -905,7 +907,7 @@ void redraw_buttons()
     }
   }
 
-  RedrawWindow(1);
+  RedrawWindow(1, NULL);
 }
 
 
@@ -932,6 +934,7 @@ TerminateHandler(int sig)
   fvwmSetTerminate(sig);
 }
 
+#if 0
 /******************************************************************************
   WaitForExpose - Used to wait for expose event so we don't draw too early
 ******************************************************************************/
@@ -946,33 +949,45 @@ void WaitForExpose(void)
     }
   }
 }
+#endif
 
 /******************************************************************************
   RedrawWindow - Update the needed lines and erase any old ones
 ******************************************************************************/
-void RedrawWindow(int force)
+void RedrawWindow(int force, XEvent *evp)
 {
-  if (Tip.open)
-  {
-    RedrawTipWindow();
+	if (Tip.open)
+	{
+		RedrawTipWindow();
 
-    /* 98-11-21 13:45, Mohsin_Ahmed, mailto:mosh@sasi.com. */
-    if( Tip.type >= 0 && AutoFocus )
-    {
-      SendFvwmPipe(Fvwm_fd, "Iconify off, Raise, Focus",
-		    ItemID( &windows, Tip.type ) );
-    }
-  }
+		/* 98-11-21 13:45, Mohsin_Ahmed, mailto:mosh@sasi.com. */
+		if( Tip.type >= 0 && AutoFocus )
+		{
+			SendFvwmPipe(
+				Fvwm_fd, "Iconify off, Raise, Focus",
+				ItemID( &windows, Tip.type ) );
+		}
+	}
 
-  if (force)
-  {
-    XClearArea (dpy, win, 0, 0, win_width, win_height, False);
-    DrawGoodies();
-  }
-  DrawButtonArray(&buttons, force);
-  StartButtonDraw(force);
-  if (FQLength(dpy) && !force)
-    LoopOnEvents();
+	if (force)
+	{
+		if (evp)
+		{
+			XClearArea(
+				dpy, win, evp->xexpose.x, evp->xexpose.y,
+				evp->xexpose.width, evp->xexpose.height, False);
+		}
+		else
+		{
+			XClearArea(
+				dpy, win, 0, 0, win_width, win_height, False);
+		}
+		DrawGoodies();
+	}
+	DrawButtonArray(&buttons, force, evp);
+	StartButtonDraw(force, evp);
+	if (FQLength(dpy) && !force)
+		LoopOnEvents();
 }
 
 static char *configopts[] =
@@ -1321,290 +1336,416 @@ void CheckForTip(int x, int y)
 }
 
 /******************************************************************************
+   HandleButtonRelease - Process a ButtonRelease X event
+******************************************************************************/
+void HandleButtonRelease(
+	XEvent *evp, Time *NewTimestamp, int *redraw)
+{
+	int  num = 0;
+	char *tmp;
+
+	*NewTimestamp = evp->xbutton.time;
+	num = WhichButton(
+		&buttons, evp->xbutton.x, evp->xbutton.y);
+	StartButtonUpdate(NULL, -1, BUTTON_UP);
+	if (num == -1)
+	{
+		if (MouseInStartButton(
+			evp->xbutton.x, evp->xbutton.y,
+			&whichButton, &startButtonPressed))
+		{
+			if (whichButton == ButtonPressed)
+			{
+				if ((First_Start_Button->buttonStartCommand
+				     != NULL) && (startButtonPressed))
+				{
+					rectangle r;
+					Window tmpw;
+					r.x = 0;
+					r.y = 0;
+					r.width =
+						StartAndLaunchButtonsWidth;
+					r.height = StartAndLaunchButtonsHeight;
+					XTranslateCoordinates(
+						dpy, win, Root, r.x, r.y,
+						&r.x, &r.y, &tmpw);
+					tmp = module_expand_action(
+						dpy, screen,
+						First_Start_Button->
+						buttonStartCommand, &r,
+						NULL, NULL);
+					if (tmp)
+					{
+						SendText(Fvwm_fd, tmp, 0);
+						free(tmp);
+					}
+					else
+					{
+						SendText(
+							Fvwm_fd,
+							First_Start_Button->
+							buttonStartCommand, 0);
+					}
+				}
+				else
+				{
+					tmp = (char *)safemalloc(
+						100 * sizeof(char));
+					/* fix this later */
+					getButtonCommand(
+						whichButton, tmp,
+						evp->xbutton.button);
+					SendText(Fvwm_fd, tmp, 0);
+					free(tmp);
+				}
+			}
+		}
+	}
+	else
+	{
+		ButReleased = ButPressed; /* Avoid race fvwm pipe */
+		if (evp->xbutton.button >= 1 &&
+		    evp->xbutton.button <= NUMBER_OF_MOUSE_BUTTONS)
+		{
+			rectangle r;
+			Window tmpw;
+
+			ButtonCoordinates(&buttons, num, &r.x, &r.y);
+			ButtonDimensions(&buttons, &r.width, &r.height);
+			XTranslateCoordinates(
+				dpy, win, Root, r.x, r.y, &r.x, &r.y, &tmpw);
+			tmp = module_expand_action(
+				dpy, screen, ClickAction[evp->xbutton.button-1],
+				&r, NULL, NULL);
+			if (tmp)
+			{
+				SendFvwmPipe(
+					Fvwm_fd, tmp, ItemID(&windows, num));
+				free(tmp);
+			}
+			else
+			{
+				SendFvwmPipe(
+					Fvwm_fd,
+					ClickAction[evp->xbutton.button-1],
+					ItemID(&windows, num));
+			}
+		}
+	}
+
+	if (MouseInStartButton(
+		evp->xbutton.x, evp->xbutton.y, &whichButton,
+		&startButtonPressed))
+	{
+		*redraw = 0;
+		usleep(50000);
+	}
+	if (HighlightFocus)
+	{
+		if (num == ButPressed)
+			RadioButton(&buttons, num, BUTTON_DOWN);
+		if (num != -1)
+			SendText(
+				Fvwm_fd, "Focus 0", ItemID(&windows, num));
+	}
+	ButPressed = -1;
+	*redraw = 0;	
+}
+
+/******************************************************************************
+  HandleEvents - Process an X event
+******************************************************************************/
+void HandleEvents(
+	XEvent *evp, Time *NewTimestamp, int *redraw, int *expose_redraw)
+{
+	int  num = 0;
+	XEvent *evp_save;
+	int x, y;
+	int ex=10000, ey=10000, ex2=0, ey2=0;
+
+	*redraw = -1;
+	*expose_redraw = False;
+
+	switch(evp->type)
+	{
+	case ButtonRelease:
+		HandleButtonRelease(evp, NewTimestamp, redraw);
+		break;
+	case ButtonPress:
+		*NewTimestamp = evp->xbutton.time;
+		RadioButton(&buttons, -1, BUTTON_UP); /* no windows focused
+						       * anymore */
+		if (MouseInStartButton(
+			evp->xbutton.x, evp->xbutton.y, &whichButton,
+			&startButtonPressed))
+		{
+			StartButtonUpdate(NULL, whichButton, BUTTON_DOWN);
+			ButtonPressed = whichButton;
+			x = win_x;
+			if (win_y < Midline)
+			{
+				/* bar in top half of the screen */
+				y = win_y + RowHeight;
+			}
+			else
+			{
+				/* bar in bottom of the screen */
+				y = win_y - screen_g.height;
+			}
+		}
+		else
+		{
+			StartButtonUpdate(NULL, whichButton, BUTTON_UP);
+			if (MouseInMail(evp->xbutton.x, evp->xbutton.y))
+			{
+				HandleMailClick(*evp);
+			}
+			else
+			{
+				num = WhichButton(
+					&buttons, evp->xbutton.x,
+					evp->xbutton.y);
+				UpdateButton(&buttons, num, NULL,
+					     (ButPressed == num) ?
+					     BUTTON_BRIGHT : BUTTON_DOWN);
+				ButPressed = num;
+			}
+		}
+		*redraw = 0;
+		break;
+
+	case Expose:
+		if (evp->xexpose.window == Tip.win)
+		{
+			while (FCheckTypedWindowEvent(
+				dpy, evp->xexpose.window, Expose, evp));
+			if (Tip.open)
+			{
+				RedrawTipWindow();
+			}
+			break;
+		}
+		/* eat up excess Expose events. */
+		ex = evp->xexpose.x;
+		ey = evp->xexpose.y;
+		ex2 = evp->xexpose.x + evp->xexpose.width;
+		ey2 = evp->xexpose.y + evp->xexpose.height;
+		while (FCheckTypedWindowEvent(dpy, win, Expose, evp))
+		{
+			ex = min(ex, evp->xexpose.x);
+			ey = min(ey, evp->xexpose.y);
+			ex2 = max(ex2, evp->xexpose.x + evp->xexpose.width);
+			ey2= max(ey2 , evp->xexpose.y + evp->xexpose.height);
+		}
+		evp->xexpose.x = ex;
+		evp->xexpose.y = ey;
+		evp->xexpose.width = ex2 - ex;
+		evp->xexpose.height = ey2 - ey;
+		*redraw = 1;
+		*expose_redraw = True;
+		break;
+
+	case ClientMessage:
+		if ((evp->xclient.format==32) &&
+		    (evp->xclient.data.l[0]==wm_del_win))
+			exit(0);
+		break;
+
+	case EnterNotify:
+		*NewTimestamp = evp->xcrossing.time;
+		if (AutoHide)
+		{
+			RevealTaskBar();
+		}
+		if (evp->xcrossing.mode != NotifyNormal)
+			break;
+		num = WhichButton(
+			&buttons, evp->xcrossing.x, evp->xcrossing.y);
+		if (!HighlightFocus)
+		{
+			if (SomeButtonDown(evp->xcrossing.state))
+			{
+				if (num != -1)
+				{
+					RadioButton(&buttons, num, BUTTON_DOWN);
+					ButPressed = num;
+					*redraw = 0;
+				}
+				else
+				{
+					ButPressed = -1;
+				}
+			}
+		}
+		else
+		{
+			if (num != -1 && num != ButPressed)
+				SendText(
+					Fvwm_fd, "Focus 0",
+					ItemID(&windows, num));
+		}
+
+		CheckForTip(evp->xmotion.x, evp->xmotion.y);
+		break;
+
+	case LeaveNotify:
+		*NewTimestamp = evp->xcrossing.time;
+		ClearAlarm(SHOW_TIP);
+		if (Tip.open)
+			ShowTipWindow(0);
+
+		if (AutoHide)
+			SetAlarm(HIDE_TASK_BAR);
+
+		if (evp->xcrossing.mode != NotifyNormal)
+			break;
+
+		if (!HighlightFocus)
+		{
+			if (SomeButtonDown(evp->xcrossing.state))
+			{
+				if (ButPressed != -1)
+				{
+					RadioButton(&buttons, -1, BUTTON_UP);
+					ButPressed = -1;
+					*redraw = 0;
+				}
+			}
+			else
+			{
+				if (ButReleased != -1)
+				{
+					RadioButton(&buttons, -1, BUTTON_UP);
+					ButReleased = -1;
+					*redraw = 0;
+				}
+			}
+		}
+		break;
+
+	case MotionNotify:
+		*NewTimestamp = evp->xmotion.time;
+		if (MouseInStartButton(
+			evp->xmotion.x, evp->xbutton.y, &whichButton,
+			&startButtonPressed))
+		{
+			CheckForTip(evp->xmotion.x, evp->xmotion.y);
+			break;
+		}
+		num = WhichButton(&buttons, evp->xmotion.x, evp->xmotion.y);
+		if (!HighlightFocus)
+		{
+			if (SomeButtonDown(evp->xmotion.state) &&
+			    num != ButPressed)
+			{
+				if (num != -1)
+				{
+					RadioButton(&buttons, num, BUTTON_DOWN);
+					ButPressed = num;
+				}
+				else
+				{
+					RadioButton(&buttons, num, BUTTON_UP);
+					ButPressed = -1;
+				}
+				*redraw = 0;
+			}
+		}
+		else if (num != -1 && num != ButPressed)
+			SendText(Fvwm_fd, "Focus 0", ItemID(&windows, num));
+
+		CheckForTip(evp->xmotion.x, evp->xmotion.y);
+		break;
+
+	case ConfigureNotify:
+	{
+		Bool moved = False;
+		int cx = win_x, cy = win_y;
+
+		/* eat up excess ConfigureNotify events. */
+		if (evp->xconfigure.send_event)
+		{
+			moved = True;
+			cx = evp->xconfigure.x;
+			cy = evp->xconfigure.y;
+		}
+		evp_save = evp;
+		while (FCheckTypedWindowEvent(dpy, win, ConfigureNotify, evp))
+		{
+			evp_save = evp;
+			if (evp->xconfigure.send_event)
+			{
+				moved = True;
+				cx = evp->xconfigure.x;
+				cy = evp->xconfigure.y;
+			}
+		}
+		evp = evp_save;
+		if (evp->xconfigure.height != win_height)
+		{
+			AdjustWindow(
+				evp->xconfigure.width, evp->xconfigure.height);
+			*redraw = 1;
+		}
+		/* useful because of dynamic style change */
+		if (!moved)
+		{
+			break;
+		}
+		else if (cx != win_x || cy != win_y)
+		{
+			if (CSET_IS_TRANSPARENT(colorset))
+			{
+				*redraw = 1;
+			}
+			if (AutoStick)
+			{
+				SetAlarm(STICK_TASK_BAR);
+				auto_stick_y = evp->xconfigure.y;
+			}
+			else
+			{
+				win_x = cx;
+				win_y = cy;
+			}
+		}
+	}
+	break;
+	} /* switch evp->type */
+
+	XSync(dpy,0); /* needed (tips) */ 
+}
+
+/******************************************************************************
   LoopOnEvents - Process all the X events we get
 ******************************************************************************/
 void LoopOnEvents(void)
 {
-  int  num = 0;
-  char *tmp;
-  XEvent Event;
-  XEvent Event2;
-  int x, y, redraw;
-  static unsigned long lasttime = 0L;
-  Time NewTimestamp = lasttime;
+	XEvent Event;
+	int redraw, expose_redraw;
+	static unsigned long lasttime = 0L;
+	Time NewTimestamp = lasttime;
 
-  while(FPending(dpy))
-  {
-    redraw = -1;
-    FNextEvent(dpy, &Event);
-    if (Event.xany.type == ConfigureNotify)
-    {
-      /* Purge all but the last configure events */
-      while (FCheckTypedEvent(dpy, ConfigureNotify, &Event))
-	;
-    }
-
-    NewTimestamp = lasttime;
-    switch(Event.type)
-    {
-    case ButtonRelease:
-      NewTimestamp = Event.xbutton.time;
-      num = WhichButton(&buttons, Event.xbutton.x, Event.xbutton.y);
-      StartButtonUpdate(NULL, -1, BUTTON_UP);
-      if (num == -1)
-      {
-	if (MouseInStartButton(Event.xbutton.x, Event.xbutton.y, &whichButton, &startButtonPressed))
+	while(FPending(dpy))
 	{
-	  if (whichButton == ButtonPressed)
-	  {
-	    if ((First_Start_Button->buttonStartCommand != NULL) && (startButtonPressed))
-	    {
-	      rectangle r;
-	      Window tmpw;
-	      r.x = 0;
-	      r.y = 0;
-	      r.width = StartAndLaunchButtonsWidth;
-	      r.height = StartAndLaunchButtonsHeight;
-	      XTranslateCoordinates(dpy, win, Root, r.x, r.y, &r.x, &r.y, &tmpw);
-	      tmp = module_expand_action(dpy, screen, First_Start_Button->buttonStartCommand, &r, NULL, NULL);
-	      if (tmp)
-	      {
-		SendText(Fvwm_fd, tmp, 0);
-		free(tmp);
-	      }
-	      else
-	      {
-		SendText(Fvwm_fd, First_Start_Button->buttonStartCommand, 0);
-	      }
-	    }
-	    else
-	    {
-	      tmp = (char *)safemalloc(100 * sizeof(char)); /* fix this later */
-	      getButtonCommand(whichButton, tmp, Event.xbutton.button);
-	      SendText(Fvwm_fd, tmp, 0);
-	      free(tmp);
-	    }
-	  }
+		redraw = -1;
+		expose_redraw = False,
+
+		FNextEvent(dpy, &Event);
+		NewTimestamp = lasttime;
+		HandleEvents(&Event, &NewTimestamp, &redraw, &expose_redraw);
+		if (redraw >= 0)
+		{
+			RedrawWindow(redraw, (expose_redraw)? &Event:NULL);
+		}
+		DoAlarmAction();
+		if (NewTimestamp - lasttime > UpdateInterval*1000L)
+		{
+			DrawGoodies();
+			lasttime = NewTimestamp;
+		}
 	}
-      }
-      else
-      {
-	ButReleased = ButPressed; /* Avoid race fvwm pipe */
-	if (Event.xbutton.button >= 1 &&
-	    Event.xbutton.button <= NUMBER_OF_MOUSE_BUTTONS)
-	{
-	  rectangle r;
-	  Window tmpw;
-
-	  ButtonCoordinates(&buttons, num, &r.x, &r.y);
-	  ButtonDimensions(&buttons, &r.width, &r.height);
-	  XTranslateCoordinates(dpy, win, Root, r.x, r.y, &r.x, &r.y, &tmpw);
-	  tmp = module_expand_action(
-		  dpy, screen, ClickAction[Event.xbutton.button-1], &r, NULL,
-		  NULL);
-	  if (tmp)
-	  {
-	    SendFvwmPipe(Fvwm_fd, tmp, ItemID(&windows, num));
-	    free(tmp);
-	  }
-	  else
-	  {
-	    SendFvwmPipe(
-		    Fvwm_fd, ClickAction[Event.xbutton.button-1],
-		    ItemID(&windows, num));
-	  }
-	}
-      }
-
-      if (MouseInStartButton(Event.xbutton.x, Event.xbutton.y, &whichButton, &startButtonPressed)) {
-	redraw = 0;
-	usleep(50000);
-      }
-      if (HighlightFocus) {
-	if (num == ButPressed)
-	  RadioButton(&buttons, num, BUTTON_DOWN);
-	if (num != -1)
-	  SendText(Fvwm_fd, "Focus 0", ItemID(&windows, num));
-      }
-      ButPressed = -1;
-      redraw = 0;
-      break;
-
-    case ButtonPress:
-      NewTimestamp = Event.xbutton.time;
-      RadioButton(&buttons, -1, BUTTON_UP); /* no windows focused anymore */
-      if (MouseInStartButton(Event.xbutton.x, Event.xbutton.y, &whichButton, &startButtonPressed))
-      {
-	StartButtonUpdate(NULL, whichButton, BUTTON_DOWN);
-	ButtonPressed = whichButton;
-	x = win_x;
-	if (win_y < Midline) {
-	  /* bar in top half of the screen */
-	  y = win_y + RowHeight;
-	} else {
-	  /* bar in bottom of the screen */
-	  y = win_y - screen_g.height;
-	}
-      } else {
-	StartButtonUpdate(NULL, whichButton, BUTTON_UP);
-	if (MouseInMail(Event.xbutton.x, Event.xbutton.y)) {
-	  HandleMailClick(Event);
-	} else {
-	  num = WhichButton(&buttons, Event.xbutton.x, Event.xbutton.y);
-	  UpdateButton(&buttons, num, NULL, (ButPressed == num) ?
-		       BUTTON_BRIGHT : BUTTON_DOWN);
-
-	  ButPressed = num;
-	}
-      }
-      redraw = 0;
-      break;
-
-    case Expose:
-      memcpy(&Event2, &Event, sizeof(Event));
-      /* eat up excess Expose events. */
-      while (FCheckTypedWindowEvent(dpy, win, Expose, &Event2))
-      {
-	memcpy(&Event, &Event2, sizeof(Event));
-      }
-      if (Event.xexpose.count == 0)
-      {
-	if (Event.xexpose.window == Tip.win)
-	  redraw = 0;
-	else
-	  redraw = 1;
-      }
-      break;
-
-    case ClientMessage:
-      if ((Event.xclient.format==32) && (Event.xclient.data.l[0]==wm_del_win))
-	exit(0);
-      break;
-
-    case EnterNotify:
-      NewTimestamp = Event.xcrossing.time;
-      if (AutoHide)
-	RevealTaskBar();
-
-      if (Event.xcrossing.mode != NotifyNormal)
-	break;
-      num = WhichButton(&buttons, Event.xcrossing.x, Event.xcrossing.y);
-      if (!HighlightFocus) {
-	if (SomeButtonDown(Event.xcrossing.state)) {
-	  if (num != -1) {
-	    RadioButton(&buttons, num, BUTTON_DOWN);
-	    ButPressed = num;
-	    redraw = 0;
-	  } else {
-	    ButPressed = -1;
-	  }
-	}
-      } else {
-	if (num != -1 && num != ButPressed)
-	  SendText(Fvwm_fd, "Focus 0", ItemID(&windows, num));
-      }
-
-      CheckForTip(Event.xmotion.x, Event.xmotion.y);
-      break;
-
-    case LeaveNotify:
-      NewTimestamp = Event.xcrossing.time;
-      ClearAlarm(SHOW_TIP);
-      if (Tip.open)
-	ShowTipWindow(0);
-
-      if (AutoHide)
-	SetAlarm(HIDE_TASK_BAR);
-
-      if (Event.xcrossing.mode != NotifyNormal)
-	break;
-
-      if (!HighlightFocus) {
-	if (SomeButtonDown(Event.xcrossing.state)) {
-	  if (ButPressed != -1) {
-	    RadioButton(&buttons, -1, BUTTON_UP);
-	    ButPressed = -1;
-	    redraw = 0;
-	  }
-	} else {
-	  if (ButReleased != -1) {
-	    RadioButton(&buttons, -1, BUTTON_UP);
-	    ButReleased = -1;
-	    redraw = 0;
-	  }
-	}
-      }
-      break;
-
-    case MotionNotify:
-      NewTimestamp = Event.xmotion.time;
-      if (MouseInStartButton(Event.xmotion.x, Event.xbutton.y, &whichButton, &startButtonPressed)) {
-	CheckForTip(Event.xmotion.x, Event.xmotion.y);
-	break;
-      }
-      num = WhichButton(&buttons, Event.xmotion.x, Event.xmotion.y);
-      if (!HighlightFocus) {
-	if (SomeButtonDown(Event.xmotion.state) && num != ButPressed) {
-	  if (num != -1) {
-	    RadioButton(&buttons, num, BUTTON_DOWN);
-	    ButPressed = num;
-	  } else {
-	    RadioButton(&buttons, num, BUTTON_UP);
-	    ButPressed = -1;
-	  }
-	  redraw = 0;
-	}
-      } else if (num != -1 && num != ButPressed)
-	SendText(Fvwm_fd, "Focus 0", ItemID(&windows, num));
-
-      CheckForTip(Event.xmotion.x, Event.xmotion.y);
-      break;
-
-    case ConfigureNotify:
-      memcpy(&Event2, &Event, sizeof(Event));
-      /* eat up excess ConfigureNotify events. */
-      while (FCheckTypedWindowEvent(dpy, win, ConfigureNotify, &Event2))
-      {
-	memcpy(&Event, &Event2, sizeof(Event));
-      }
-      if (Event.xconfigure.height != win_height) {
-	AdjustWindow(Event.xconfigure.width, Event.xconfigure.height);
-	redraw = 1;
-      }
-      /* useful because of dynamic style change */
-      if (!Event.xconfigure.send_event)
-      {
-	break;
-      }
-      else if (Event.xconfigure.x != win_x || Event.xconfigure.y != win_y)
-      {
-	if (colorset > -1 && Colorset[colorset].pixmap == ParentRelative)
-	  redraw = 1;
-	if (AutoStick)
-	{
-	  SetAlarm(STICK_TASK_BAR);
-	  auto_stick_y = Event.xconfigure.y;
-	}
-	else
-	{
-	  win_x = Event.xconfigure.x;
-	  win_y = Event.xconfigure.y;
-	}
-      }
-      break;
-    } /* switch (Event.type) */
-
-    if (redraw >= 0)
-      RedrawWindow(redraw);
-    DoAlarmAction();
-    if (NewTimestamp - lasttime > UpdateInterval*1000L)
-    {
-      DrawGoodies();
-      lasttime = NewTimestamp;
-    }
-  }
-
-  return;
+	return;
 }
 
 /***********************************
@@ -2245,7 +2386,7 @@ void HideTaskBar()
   if (WindowState == -1 || win_is_shaded)
     return;
 
-  if (FocusInWin)
+  if (1||FocusInWin)
   {
     if (FQueryPointer(
 		dpy, win, &d_rt,&d_ch, &d_x, &d_y, &wx, &wy, &mask) == False)
