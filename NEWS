@@ -1,4 +1,12 @@
+Changes in alpha release 2.1.5 (December 1998)
+
+
 Changes in alpha release 2.1.4 (December 1998)
+
+* Fvwm creates an environment variable FVWM_MODULEDIR containing the path
+  to the default module directory, for use in config files, etc.
+* The extras module FvwmCommand installs its user interface into the
+  bindir rather than the moduledir.
 
 
 Changes in alpha release 2.1.3 (November 1998)
