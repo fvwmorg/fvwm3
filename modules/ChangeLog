@@ -1,8 +1,13 @@
+2001-07-24  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* FvwmTheme/FvwmTheme.c (parse_colorset):
+	applied shadow/hilight patch from Hippo
+
 2001-07-23  olicha  <olivier.chapuis@free.fr>
 
 	* FvwmTaskBar/*:
 	Applied D.Y. Bolkhovityanov AutoHide TaskBar patch
-	
+
 2001-07-22  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* FvwmScript/Instructions.c:

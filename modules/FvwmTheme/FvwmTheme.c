@@ -930,11 +930,11 @@ static void parse_colorset(char *line)
   if (has_sh_changed || has_bg_changed)
   {
     has_sh_changed = 1;
-    if ((cs->color_flags & HI_SUPPLIED) && sh != NULL)
+    if ((cs->color_flags & SH_SUPPLIED) && sh != NULL)
     {
       /* user specified colour */
       if (privateCells) {
-	MyXParseColor(dpy, Pcmap, hi, &color);
+	MyXParseColor(dpy, Pcmap, sh, &color);
 	color.pixel = cs->shadow;
 	XStoreColor(dpy, Pcmap, &color);
       } else {
