@@ -313,7 +313,14 @@ void fvwm_msg(int type,char *id,char *msg,...)
 
   va_start(args,msg);
 
-  fprintf(stderr,"[FVWM][%s]: %s ",id,typestr);
+  if (Scr.NumberOfScreens > 1)
+  {
+    fprintf(stderr,"[FVWM.%d][%s]: %s ",Scr.screen,id,typestr);
+  }
+  else
+  {
+    fprintf(stderr,"[FVWM][%s]: %s ",id,typestr);
+  }
   vfprintf(stderr, msg, args);
   fprintf(stderr,"\n");
 

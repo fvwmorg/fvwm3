@@ -583,6 +583,7 @@ static char *expand(char *input, char *arguments[], FvwmWindow *tmp_win,
 	break;
       case 'v':
 	sprintf(&out[j], "%s", (Fvwm_VersionInfo) ? Fvwm_VersionInfo : "");
+	j += strlen(&out[j]);
 	i++;
 	break;
       case '$':
