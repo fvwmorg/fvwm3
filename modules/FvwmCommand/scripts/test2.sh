@@ -28,16 +28,15 @@ elif [ "$1" = 'kb' ] ; then
 elif [ "$1" = 'r' ] ; then
   n=$2
   DestroyModuleConfig '*FvwmButtonsRows'
-  AddModuleConfig "*FvwmButtonsRows $n"
+  FvwmCommand "*FvwmButtonsRows $n"
 elif [ "$1" = 'c' ] ; then
   n=$2
   DestroyModuleConfig '*FvwmButtonsColumns'
-  AddModuleConfig "*FvwmButtonsColumns $n"
+  FvwmCommand "*FvwmButtonsColumns $n"
 else
  echo " arg1  b  to invoke FvwmButtons"
  echo "       kb to kill FvwmButtons"
- ehco "       r  to change button rows"
+ echo "       r  to change button rows"
  echo "       c  to change button columns"
 
 fi
-
