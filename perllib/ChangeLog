@@ -1,3 +1,8 @@
+2002-02-28  Mikhael Goikhman  <migo@homemail.com>
+
+	* FVWM/Makefile.am:
+	don't automatically generate Constants.pm for now
+
 2002-02-26  Mikhael Goikhman  <migo@homemail.com>
 
 	* FVWM/Makefile.am:

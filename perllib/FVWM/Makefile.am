@@ -8,6 +8,6 @@ config_DATA = Module.pm Constants.pm
 
 EXTRA_DIST = create-constants Constants.pm
 
-Constants.pm: Makefile.am $(top_srcdir)/libs/Module.h
+_Constants.pm: Makefile.am $(top_srcdir)/libs/Module.h
 	cd $(top_builddir)/perllib/FVWM && \
 	(fvwm_libdir=$(top_builddir)/libs ./create-constants)
