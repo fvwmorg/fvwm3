@@ -47,7 +47,7 @@ fvwm's initialization, or can be bound to a menu or mouse
 button or keystroke to invoke it later.
 
 .SH CONFIGURATION OPTIONS
-The following options can be placed in the .fvwm2rc file. They are used
+The following commands can be placed in the .fvwm2rc file. They are used
 only if the corresponding script commands are not used in the script.
 
 .IP "*FvwmScriptDefaultFont \fIfont\fP"
@@ -71,8 +71,8 @@ Specifies the default shadow color to be used. If not specified with this
 command or in the script with the ShadowColor command, grey55 is used.
 
 .IP "*FvwmScriptDefaultColorset \fIcolorset\fP"
-Tells the module to use colorset \fIcolorset\fP as default colorset.
-Please refer to the man page of the FvwmTheme module for details about 
+Tells the module to use colorset \fIcolorset\fP as the default colorset.
+Refer to the FvwmTheme man page for details about 
 colorsets.
 
 .SH ANATOMY OF A SCRIPT
@@ -80,13 +80,13 @@ FvwmScript uses a particular programming language. A script is composed of
 four parts. Heading contains general characteristics of the window and
 default properties for all widgets. The second part contains
 instructions whom are executed at the  startup of the script. The third
-part contains periodic tasks whom is executed every 1 second. And the last
-one contains the description of widgets.  A widget consists of eleven
+part contains periodic tasks which are executed every second. And the last
+part contains the description of widgets.  A widget consists of eleven
 types of items: text labels, single-line text inputs, radio buttons,
 checkbox, push buttons, horizontal and vertical scrollbars, rectangles,
 pop up menus, swallowexecs and mini scrollbars.
 .SH HEADING OF A SCRIPT
-The syntax is as follow:
+The syntax is as follows:
 
 .IP "WindowTitle \fIstring\fP"
 This option sets the window title.
@@ -526,27 +526,27 @@ End
 You will find examples of scripts in the fvwm configuration directory.
 
 ScriptFvwmBellSetup, ScriptFvwmKeyboardSetup, ScriptFvwmPointerSetup and
-ScriptFvwmScreenSetup is a set of scripts that allow to modify some X setting.
+ScriptFvwmScreenSetup is a set of scripts that allow to modify some X settings.
 These scripts save preferences into a file named ~/.xinit-fvwmrc. If you want 
 to load these preferences at every startup, you have to include the line 
 ".xinit-fvwmrc" in your .xinitrc (or .xsession) file before starting fvwm.
 
 ScriptFvwmDefaultStyle allows to modify some fvwm preferences: 
 focus, colormap and paging mouse policy, opacity of the move and resize
-commands, windows placement, snap attraction and shading animation.
-This script save preferences into a file named .fvwmrc-script-setting in the
+commands, window placement, snap attraction and shading animation.
+This script saves preferences into a file named .fvwmrc-script-setting in the
 user configuration directory (i.e., $HOME or $FVWM_USERHOME if set). 
 If you want to load these preferences at every startup you must add
 the line "Read .fvwmrc-script-setting" in your fvwm configuration file.
 
 ScriptFvwmButtons is a buttons panel which can replace FvwmButtons (this 
-script support popup menu and requires xload, xclock, FvwmPager, TkDesk).
-ScriptFvwmColorset allows to edit your colorset (see FvwmTheme).
-ScriptFvwmDate allows to setup date and time.
-ScriptFvwmFileBrowser is a file browser used by the others scripts.
-ScriptFvwmFind is an elementary front-end to find. 
-ScriptFvwmQuit allows to quit fvwm, restart fvwm or an other windows 
-manager, shut down and reboot the computer.
+script supports popup menus and requires xload, xclock, FvwmPager, TkDesk).
+ScriptFvwmColorset allows you to edit your colorset (see FvwmTheme).
+ScriptFvwmDate allows you to set date and time.
+ScriptFvwmFileBrowser is a file browser used by the other scripts.
+ScriptFvwmFind is an elementary front-end to find.
+ScriptFvwmQuit allows to quit fvwm, restart fvwm or some other window 
+manager, or shut down and reboot the computer.
 ScriptFvwmScreenDump is a screen dumper. ScriptFvwmWidgetDemo is a pure
 example script.
 
