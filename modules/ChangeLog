@@ -1,3 +1,8 @@
+1999-12-20  Brad Giaccio  <bgiaccio@psrw.com>
+
+	* FvwmIconMan/globals.c: Fix for defaults styles I forgot to add
+	one for iconbutton
+
 1999-12-18  olicha   <olivier.chapuis@free.fr>
 
 	* FvwmTaskBar/FvwmTaskBar.c (EndLessLoop):

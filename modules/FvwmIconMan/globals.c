@@ -30,6 +30,7 @@ ContextDefaults contextDefaults[] = {
   { "select", BUTTON_FLAT, { "black", "black" }, { "white", "gray" } },
   { "focusandselect", BUTTON_FLAT, { "white", "gray" }, { "black", "black" } },
   { "title", BUTTON_EDGEUP, { "black", "black"}, {"white", "gray"} },
+  { "icon", BUTTON_FLAT, { "black", "black"}, {"white", "gray"} },
   { "default", BUTTON_FLAT, { "black", "black"}, {"white", "gray"} }
 };
 
