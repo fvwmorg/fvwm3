@@ -469,7 +469,7 @@ GNOME_SetHints(FvwmWindow *fwin)
     val |= WIN_STATE_STICKY;
   if (IS_SHADED(fwin))
     val |= WIN_STATE_SHADED;
-  if (is_move_allowed(fwin, False))
+  if (!is_move_allowed(fwin, True))
     val |= WIN_STATE_FIXED_POSITION;
 
   XChangeProperty(dpy, fwin->w, atom_set, XA_CARDINAL, 32,

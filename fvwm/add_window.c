@@ -249,9 +249,9 @@ void setup_window_name_count(FvwmWindow *tmp_win)
     {
       if (t == tmp_win)
 	continue;
-      if ((t->name && strcmp(t->name, tmp_win->name) == 0 && 
+      if ((t->name && strcmp(t->name, tmp_win->name) == 0 &&
 	  t->name_count == count) ||
-	  (t->icon_name && strcmp(t->icon_name, tmp_win->name) == 0 && 
+	  (t->icon_name && strcmp(t->icon_name, tmp_win->name) == 0 &&
 	   t->icon_name_count == count))
       {
 	count++;
@@ -283,7 +283,7 @@ void setup_icon_name_count(FvwmWindow *tmp_win)
 	continue;
       if ((t->icon_name && strcmp(t->icon_name, tmp_win->icon_name) == 0 &&
 	  t->icon_name_count == count) ||
-	  (t->name && strcmp(t->name, tmp_win->icon_name) == 0 && 
+	  (t->name && strcmp(t->name, tmp_win->icon_name) == 0 &&
 	   t->name_count == count))
       {
 	count++;

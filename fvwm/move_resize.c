@@ -1910,8 +1910,8 @@ Bool moveLoop(FvwmWindow *tmp_win, int XOffset, int YOffset, int Width,
       /* cannot happen */
       break;
     } /* switch */
-xl += x_virtual_offset;
-yt += y_virtual_offset;
+    xl += x_virtual_offset;
+    yt += y_virtual_offset;
     if (do_move_opaque && !IS_ICONIFIED(tmp_win) && !IS_SHADED(tmp_win))
     {
       /* send configure notify event for windows that care about their

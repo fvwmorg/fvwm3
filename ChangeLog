@@ -1,3 +1,8 @@
+2001-12-18  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* fvwm/gnome.c (GNOME_SetHints):
+	fixed window getting frozen into position upon a recapture or restart
+
 2001-12-17  Dan Espen  <dane@mk.telcordia.com>
 
 	* fvwm/fvwm2.1: Fixup wording in EWMHIconicStateWorkaround.
@@ -7,17 +12,17 @@
 	* fvwm/fvwm2.1:
 	Tried to clarify the EWMHIconicStateWorkaround BugOpts
 
-	* fvwm/ewmh.c (delete_kst_item): 
-	(set_kde_sys_tray): 
-	(EWMH_IsKdeSysTrayWindow): 
-	(EWMH_ManageKdeSysTray): 
-	* fvwm/events.c (HandleReparentNotify): 
+	* fvwm/ewmh.c (delete_kst_item):
+	(set_kde_sys_tray):
+	(EWMH_IsKdeSysTrayWindow):
+	(EWMH_ManageKdeSysTray):
+	* fvwm/events.c (HandleReparentNotify):
 	Fixed reparenting management of kde system tray windows and
 	added some off debugging code
 
 	* fvwm/virtual.c (CMD_DesktopName):
 	Removed some debugging code
-	
+
 2001-12-16  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* fvwm/fvwm.h (struct):
