@@ -2538,7 +2538,7 @@ DestroyModuleConfig BarButtons*
 		-geometry -1500-1500")
 *BarButtons(1x2, Title "xclock", Swallow "xclock" "Exec \
 		exec xclock -padding 0 -geometry -1500-1500")
-*BarButtons(2x2, Swallow FvwmPager 'FvwmPager * *')
+*BarButtons(2x2, Swallow "FvwmPagerPager" 'FvwmPager FvwmPagerPager * *')
 
 #------------------------------------------------------------------------------
 #------------------ FvwmButtons: MiniButtons
@@ -2583,6 +2583,7 @@ DestroyModuleConfig DeskerPanelButtons*
 *DeskerPanelButtons(Panel(right, steps 12, delay 0, position module top, indicator10) "FvwmDesker" 'Module FvwmPager FvwmDesker 0 3')
 #SLOW 1
 #*DeskerPanelButtons(Panel(right, steps 0, position module top, indicator10) "FvwmDesker" 'Module FvwmPager FvwmDesker 0 3')
+
 #------------------------------------------------------------------------------
 #------------------ FvwmButtons: WinMakerAppButtons & WinMakerAppPanelCd
 #------------------------------------------------------------------------------
@@ -2799,27 +2800,27 @@ Style "FvwmIdent"   Sticky, NoButton 2, NoButton 4, NoButton 6
 #------------------------------------------------------------------------------
 #------------------ FvwmPager:  Swallowed by ButtonBar
 #------------------------------------------------------------------------------
-Style "FvwmPager"   NoTitle, NoHandles, Sticky, WindowListSkip, CirculateSkip
+Style "FvwmPagerPager"   NoTitle, NoHandles, Sticky, WindowListSkip, CirculateSkip
 
-DestroyModuleConfig FvwmPager*
-*FvwmPagerBack grey60
-*FvwmPagerFore black
-*FvwmPagerFont -adobe-helvetica-bold-r-*-*-10-*-*-*-*-*-*-*
-*FvwmPagerHilight white
-*FvwmPagerMiniIcons
-*FvwmPagerBalloons
-*FvwmPagerBalloonFore black
-*FvwmPagerBalloonBack bisque
-*FvwmPagerGeometry 319x69+5000+5000
+DestroyModuleConfig FvwmPagerPager*
+*FvwmPagerPagerBack grey60
+*FvwmPagerPagerFore black
+*FvwmPagerPagerFont -adobe-helvetica-bold-r-*-*-10-*-*-*-*-*-*-*
+*FvwmPagerPagerHilight white
+*FvwmPagerPagerMiniIcons
+*FvwmPagerPagerBalloons
+*FvwmPagerPagerBalloonFore black
+*FvwmPagerPagerBalloonBack bisque
+*FvwmPagerPagerGeometry 319x69+5000+5000
 #WIN 1
-*FvwmPagerWindowColors white grey51 white Blue4
+*FvwmPagerPagerWindowColors white grey51 white Blue4
 #FVWM 1
-#*FvwmPagerWindowColors white grey51 white SlateBlue
-*FvwmPagerLabel 0 Fvwm
-*FvwmPagerLabel 1 Development
-*FvwmPagerLabel 2 Internet
-*FvwmPagerLabel 3 Misc
-*FvwmPagerSmallFont 5x8
+#*FvwmPagerPagerWindowColors white grey51 white SlateBlue
+*FvwmPagerPagerLabel 0 Fvwm
+*FvwmPagerPagerLabel 1 Development
+*FvwmPagerPagerLabel 2 Internet
+*FvwmPagerPagerLabel 3 Misc
+*FvwmPagerPagerSmallFont 5x8
 
 #------------------------------------------------------------------------------
 #------------------ FvwmPager: FvwmDesker, the panel of StartPagerButtons
@@ -2926,7 +2927,7 @@ DestroyModuleConfig FvwmWharf*
 *FvwmWharf xclock nil  MaxSwallow "xclock" xclock -padding 0 -bg white
 *FvwmWharf xload nil  MaxSwallow "xload" \
 		xload -nolabel -update 5  -bg grey51 -geometry -1500-1500
-*FvwmWharf pager nil MaxSwallowModule "Fvwm" Module FvwmPager * *
+*FvwmWharf pager nil MaxSwallowModule "FvwmPagerPager" FvwmPager FvwmPagerPager * *
 
 #------------------------------------------------------------------------------
 #------------------ FvwmWinList
