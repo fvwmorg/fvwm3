@@ -711,16 +711,20 @@ void GetXPMFile(FvwmWindow *tmp_win)
   if (rc != XpmSuccess) {
     fvwm_msg(ERR,"GetXPMFile",
              "XpmCreatePixmapFromXpmImage failed, rc %d\n", rc);
+    XpmFreeXpmImage(&my_image);
     return;
   }
   tmp_win->icon_p_width = my_image.width;
   tmp_win->icon_p_height = my_image.height;
   tmp_win->flags |= PIXMAP_OURS;
   tmp_win->iconDepth = Scr.d_depth;
+
 #ifdef SHAPE
   if (ShapesSupported && tmp_win->icon_maskPixmap)
     tmp_win->flags |= SHAPED_ICON;
 #endif
+
+  XpmFreeXpmImage(&my_image);
   free(path);
 #endif /* XPM */
 }
