@@ -264,18 +264,18 @@ Pixmap CreateGradientPixmap(Display *dpy, Drawable d, unsigned int depth, GC gc,
       break;
     case 'D':
     case 'B':
-      /* diagonal gradients are square with an odd number of colors and
-       * one pixel taller than wide with even numbers */
-      width = ncolors / 2;
+      /* diagonal gradients are rendered into a rectangle for which the
+       * width plus the height is equal to ncolors + 1. The rectangle is square
+       * when ncolors is odd and one pixel taller than wide with even numbers */
+      width = (ncolors + 1) / 2;
       height = ncolors + 1 - width;
       break;
     case 'S':
-      /* square gradients have a single pixel in the middle */
-      width = height = 2 * ncolors - 1;
+      width = height = 2 * ncolors;
       break;
     case 'C':
       /* circular gradients have the last color as a pixel in each corner */
-      width = height = ncolors * SQRT2;
+      width = height = ncolors;
       break;
     case 'R':
     case 'Y':
@@ -304,47 +304,69 @@ Pixmap CreateGradientPixmap(Display *dpy, Drawable d, unsigned int depth, GC gc,
   switch (type) {
     case 'H':
       for (i = 0; i < ncolors; i++) {
-        xgcv.foreground = pixels[i];
-        XChangeGC(dpy, gc, GCForeground, &xgcv);
-        XDrawLine(dpy, pixmap, gc, i, 0, i, height);
+	xgcv.foreground = pixels[i];
+	XChangeGC(dpy, gc, GCForeground, &xgcv);
+	XDrawLine(dpy, pixmap, gc, i, 0, i, height);
       }
       break;
     case 'V':
       for (i = 0; i < ncolors; i++) {
-        xgcv.foreground = pixels[i];
-        XChangeGC(dpy, gc, GCForeground, &xgcv);
-        XDrawLine(dpy, pixmap, gc, 0, i, width, i);
+	xgcv.foreground = pixels[i];
+	XChangeGC(dpy, gc, GCForeground, &xgcv);
+	XDrawLine(dpy, pixmap, gc, 0, i, width, i);
       }
       break;
     case 'D':
       /* split into two stages for top left corner then bottom right corner */
-      for (i = 0; i < ncolors / 2; i++) {
-        xgcv.foreground = pixels[i];
-        XChangeGC(dpy, gc, GCForeground, &xgcv);
-        XDrawLine(dpy, pixmap, gc, 0, i, i + 1, -1);
+      /* drawn in a height by height rectangle (though width may be < height) */
+      for (i = 0; i < height - 1; i++) {
+	xgcv.foreground = pixels[i];
+	XChangeGC(dpy, gc, GCForeground, &xgcv);
+	XDrawLine(dpy, pixmap, gc, 0, i, i + 1, -1);
       }
-      for (; i < ncolors; i++) {
-        xgcv.foreground = pixels[i];
-        XChangeGC(dpy, gc, GCForeground, &xgcv);
-        XDrawLine(dpy, pixmap, gc,  i - ncolors / 2, ncolors / 2,
-		  ncolors / 2 + 1, i - ncolors / 2 - 1);
+      for (i = 0; i <= ncolors - height; i++) {
+	xgcv.foreground = pixels[i + height - 1];
+	XChangeGC(dpy, gc, GCForeground, &xgcv);
+	XDrawLine(dpy, pixmap, gc, i, height - 1, height, i - 1);
       }
       break;
     case 'B':
       /* split into two stages for bottom left corner then top right corner */
-      for (i = 0; i < ncolors / 2; i++) {
-        xgcv.foreground = pixels[i];
-        XChangeGC(dpy, gc, GCForeground, &xgcv);
-        XDrawLine(dpy, pixmap, gc, 0, ncolors / 2 + 1 - i, i + 1, -1);
+      /* drawn in a height by height rectangle (though width may be < height) */
+      for (i = 0; i < height - 1; i++) {
+	xgcv.foreground = pixels[i];
+	XChangeGC(dpy, gc, GCForeground, &xgcv);
+	XDrawLine(dpy, pixmap, gc, 0, height - 1 - i, i + 1, height);
       }
-/*      for (; i < ncolors; i++) {
-        xgcv.foreground = pixels[i];
-        XChangeGC(dpy, gc, GCForeground, &xgcv);
-        XDrawLine(dpy, pixmap, gc,  i - ncolors / 2, ncolors / 2,
-		  ncolors / 2 + 1, i - ncolors / 2 - 1);
+      for (i = 0; i <= ncolors - height; i++) {
+	xgcv.foreground = pixels[i + height - 1];
+	XChangeGC(dpy, gc, GCForeground, &xgcv);
+	XDrawLine(dpy, pixmap, gc, i, 0, height, height - i);
       }
       break;
-*/    default:
+    case 'S':
+      for (i = 0; i < ncolors; i++) {
+	xgcv.foreground = pixels[i];
+	XChangeGC(dpy, gc, GCForeground, &xgcv);
+	XDrawRectangle(dpy, pixmap, gc, ncolors - 1 - i, ncolors - 1 - i,
+		       2 * i + 2, 2 * i + 2);
+      }
+      break;
+    case 'C':
+      /* seem to need fat lines to avoid missing pixels */
+      xgcv.line_width = 3;
+      XChangeGC(dpy, gc, GCLineWidth, &xgcv);
+      for (i = 0; i < ncolors; i++) {
+	register double j = (1.0 / SQRT2) * (double)i;
+	xgcv.foreground = pixels[i];
+	XChangeGC(dpy, gc, GCForeground, &xgcv);
+	XDrawArc(dpy, pixmap, gc, width / 2 - 1 - j, width / 2 - 1 - j,
+		 2.0 * j + 2.0, 2.0 * j + 2.0, 0, 64 * 360);
+      }
+      xgcv.line_width = 0;
+      XChangeGC(dpy, gc, GCLineWidth, &xgcv);
+      break;
+    default:
       /* placeholder function, just fills the pixmap */
       XFillRectangle(dpy, pixmap, gc, 0, 0, width, height);
       break;
