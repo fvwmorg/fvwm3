@@ -41,10 +41,11 @@
  *
  **********************************************************************/
 void SetFocusWindow(
-	FvwmWindow *Fw, Bool FocusByMouse, Bool do_allow_force_broadcast);
-void ReturnFocusWindow(FvwmWindow *Fw, Bool FocusByMouse);
-void DeleteFocus(Bool FocusByMouse, Bool do_allow_force_broadcast);
-void ForceDeleteFocus(Bool FocusByMouse);
+	FvwmWindow *fw, Bool do_allow_force_broadcast,
+	fpol_set_focus_by_t set_by);
+void ReturnFocusWindow(FvwmWindow *Fw);
+void DeleteFocus(Bool do_allow_force_broadcast);
+void ForceDeleteFocus(void);
 void restore_focus_after_unmap(
 	FvwmWindow *fw, Bool do_skip_marked_transients);
 

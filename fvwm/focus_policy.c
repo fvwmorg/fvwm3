@@ -88,16 +88,18 @@ int fpol_query_allow_set_focus(
 {
 	switch (set_by_mode)
 	{
-	case FOCUS_SET_BY_CLICK_CLIENT:
-		return FP_DO_FOCUS_ENTER(*fpol);
-	case FOCUS_SET_BY_CLICK_DECOR:
-		return FP_DO_FOCUS_CLICK_CLIENT(*fpol);
 	case FOCUS_SET_BY_ENTER:
+		return FP_DO_FOCUS_ENTER(*fpol);
+	case FOCUS_SET_BY_CLICK_CLIENT:
+		return FP_DO_FOCUS_CLICK_CLIENT(*fpol);
+	case FOCUS_SET_BY_CLICK_DECOR:
 		return FP_DO_FOCUS_CLICK_DECOR(*fpol);
 	case FOCUS_SET_BY_PROGRAM:
 		return FP_DO_FOCUS_BY_PROGRAM(*fpol);
 	case FOCUS_SET_BY_FUNCTION:
 		return FP_DO_FOCUS_BY_FUNCTION(*fpol);
+	case FOCUS_SET_FORCE:
+		return 1;
 	default:
 		/* bug!!! */
 		abort();
@@ -149,5 +151,5 @@ unsigned do_override_grab_focus : 1;
 unsigned do_close_releases_focus : 1;
 unsigned do_close_releases_focus_transient : 1;
 unsigned do_override_release_focus : 1;
-/*!!!*/unsigned do_sort_windowlist_by : 1;
+unsigned do_sort_windowlist_by : 1;
 #endif

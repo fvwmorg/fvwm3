@@ -3243,7 +3243,7 @@ void CaptureAllWindows(Bool is_recapture)
 			}
 			if (t)
 			{
-				SetFocusWindow(t, False, True);
+				SetFocusWindow(t, True, FOCUS_SET_FORCE);
 			}
 		}
 	}

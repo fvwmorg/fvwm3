@@ -150,7 +150,9 @@ typedef enum
 	FOCUS_SET_BY_CLICK_DECOR,
 	FOCUS_SET_BY_ENTER,
 	FOCUS_SET_BY_PROGRAM,
-	FOCUS_SET_BY_FUNCTION
+	FOCUS_SET_BY_FUNCTION,
+	/* used internally to restore the focus after certain actions */
+	FOCUS_SET_FORCE
 } fpol_set_focus_by_t;
 
 typedef struct

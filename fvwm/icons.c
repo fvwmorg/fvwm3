@@ -1642,7 +1642,7 @@ void DeIconify(FvwmWindow *fw)
 	if (fw == sf)
 	{
 		/* take away the focus before mapping */
-		DeleteFocus(False, True);
+		DeleteFocus(True);
 	}
 	/* now de-iconify transients */
 	for (t = Scr.FvwmRoot.next; t != NULL; t = t->next)
@@ -1764,13 +1764,13 @@ void DeIconify(FvwmWindow *fw)
 		 * state */
 		if (!FP_DO_UNFOCUS_LEAVE(FW_FOCUS_POLICY(fw)))
 		{
-			SetFocusWindow(fw, False, True);
+			SetFocusWindow(fw, True, FOCUS_SET_FORCE);
 		}
 	}
-	else if (FP_DO_FOCUS_CLICK_CLIENT(FW_FOCUS_POLICY(fw)) ||
-		 FP_DO_FOCUS_CLICK_DECOR(FW_FOCUS_POLICY(fw)))
+	else if (FP_DO_SORT_WINDOWLIST_BY(FW_FOCUS_POLICY(fw)) ==
+		 FPOL_SORT_WL_BY_OPEN)
 	{
-		SetFocusWindow(fw, True, True);
+		SetFocusWindow(fw, True, FOCUS_SET_FORCE);
 	}
 	GNOME_SetWinArea(fw);
 

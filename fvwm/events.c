@@ -380,16 +380,20 @@ void HandleButtonPress(void)
 		 * given focus by fvwm, but the window might want to take focus
 		 * itself, and SetFocus will tell it to do so in this case
 		 * instead of giving it focus. */
-		SetFocusWindow(Fw, True, True);
+		SetFocusWindow(Fw, True, FOCUS_SET_BY_CLICK_CLIENT);
 	}
 	/* click to focus stuff goes here */
 	else if (Fw && HAS_CLICK_FOCUS(Fw) && Fw != Scr.Ungrabbed)
 	{
 		unsigned was_already_focused;
 
+		context = GetContext(Fw, &Event, &PressedW);
 		if (!is_focused)
 		{
-			SetFocusWindow(Fw, True, True);
+			SetFocusWindow(
+				Fw, True, (context == C_WINDOW) ?
+				FOCUS_SET_BY_CLICK_CLIENT :
+				FOCUS_SET_BY_CLICK_DECOR);
 			was_already_focused = 0;
 		}
 		else
@@ -398,7 +402,7 @@ void HandleButtonPress(void)
 		}
 		/* RBW - 12/09/.1999- I'm not sure we need to check both cases,
 		 * but I'll leave this as is for now.  */
-		if (!focus_query_click_to_raise(Fw, is_focused, True))
+		if (focus_query_click_to_raise(Fw, is_focused, True))
 		{
 			/* We can't raise the window immediately because the
 			 * action bound to the click might be "Lower" or
@@ -409,7 +413,6 @@ void HandleButtonPress(void)
 		}
 		do_regrab_buttons = True;
 
-		context = GetContext(Fw, &Event, &PressedW);
 		if (!IS_ICONIFIED(Fw) && context == C_WINDOW)
 		{
 			if (Fw && IS_SCHEDULED_FOR_RAISE(Fw))
@@ -1463,11 +1466,11 @@ ENTER_DBG((stderr, "en: exit: found LeaveNotify\n"));
 			if (lf && lf != &Scr.FvwmRoot &&
 			    !FP_DO_UNFOCUS_LEAVE(FW_FOCUS_POLICY(lf)))
 			{
-				SetFocusWindow(lf, True, True);
+				SetFocusWindow(lf, True, FOCUS_SET_FORCE);
 			}
 			else if (lf != &Scr.FvwmRoot)
 			{
-				ForceDeleteFocus(1);
+				ForceDeleteFocus();
 			}
 			else
 			{
@@ -1479,7 +1482,7 @@ ENTER_DBG((stderr, "en: exit: found LeaveNotify\n"));
 		else if (!(sf = get_focus_window()) ||
 			 FP_DO_UNFOCUS_LEAVE(FW_FOCUS_POLICY(sf)))
 		{
-			DeleteFocus(True, True);
+			DeleteFocus(True);
 		}
 		if (Scr.ColormapFocus == COLORMAP_FOLLOWS_MOUSE)
 		{
@@ -1567,12 +1570,12 @@ ENTER_DBG((stderr, "en: exit: found LeaveNotify\n"));
 	if (sf && Fw != sf && FP_DO_UNFOCUS_LEAVE(FW_FOCUS_POLICY(sf)))
 	{
 ENTER_DBG((stderr, "en: delete focus\n"));
-		DeleteFocus(True, True);
+		DeleteFocus(True);
 	}
 	if (FP_DO_FOCUS_ENTER(FW_FOCUS_POLICY(Fw)))
 	{
 ENTER_DBG((stderr, "en: set mousey focus\n"));
-		SetFocusWindow(Fw, True, True);
+		SetFocusWindow(Fw, True, FOCUS_SET_BY_ENTER);
 	}
 	else if (focus_is_focused(Fw) && focus_does_accept_input_focus(Fw))
 	{
@@ -1580,7 +1583,7 @@ ENTER_DBG((stderr, "en: set mousey focus\n"));
 		 * focused fvwm window.  Motif apps may lose the input focus
 		 * otherwise.  But do not try to refresh the focus of
 		 * applications that want to handle it themselves. */
-		FOCUS_SET(FW_W(Fw));
+		focus_force_refresh_focus(Fw);
 	}
 	else if (sf != Fw && !fpol_query_allow_user_focus(&FW_FOCUS_POLICY(Fw)))
 	{
@@ -1936,7 +1939,7 @@ ENTER_DBG((stderr, "ln: *** lgw = 0x%08x\n", (int)Fw));
 				set_last_screen_focus_window(sf);
 				if (sf != NULL)
 				{
-					DeleteFocus(True, True);
+					DeleteFocus(True);
 				}
 				if (Scr.Hilite != NULL)
 				{
@@ -2042,7 +2045,7 @@ void HandleMapNotify(void)
 	if (is_on_this_page &&
 	    focus_query_open_grab_focus(Fw, get_focus_window()) == True)
 	{
-		SetFocusWindow(Fw, True, True);
+		SetFocusWindow(Fw, True, FOCUS_SET_FORCE);
 	}
 	border_draw_decorations(
 		Fw, PART_ALL, (Fw == get_focus_window()) ? True : False, True,
@@ -2228,7 +2231,8 @@ void HandleMapRequestKeepRaised(
 				}
 				if (do_grab_focus)
 				{
-					SetFocusWindow(Fw, True, True);
+					SetFocusWindow(
+						Fw, True, FOCUS_SET_FORCE);
 				}
 				else
 				{

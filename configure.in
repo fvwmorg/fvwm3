@@ -89,7 +89,7 @@ if test "$no_x" = "yes"; then
   echo "sure the X11 development package is installed on your system."
   echo "If it is definitely installed, try setting the include and library"
   echo "paths with the --x-include and --x-libraries options of configure."
-  echo "Fvwm can not be compiled without the X11 development environment"
+  echo "Fvwm can not be compiled without the X11 development environment."
   echo
   echo "Aborting."
   echo
