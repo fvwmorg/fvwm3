@@ -6536,12 +6536,12 @@ be used if you want to change the fvwm default behavior.
 .TP
 .B Focus policy
 .I ClickToFocus
-instructs fvwm to give the focus to the window when it is clicked
+instructs fvwm to give the focus to a window when it is clicked
 in.  The default
 .I MouseFocus
 (or its alias
 .IR FocusFollowsMouse )
-tells fvwm to give the window the focus as soon as the pointer
+tells fvwm to give a window the focus as soon as the pointer
 enters the window, and take it away when the pointer leaves the
 window.
 .I SloppyFocus
@@ -6560,10 +6560,10 @@ latter are used again.  For example, once !FPGrabFocus has been
 used, using ClickToFocus does not restore FPGrabFocus.
 
 The focus model can be augmented with several additional options.
-In fvwm-2.5.3 and later, there is a large number of advanced
-option beginning with "FP" or "!FP".  These options shall replace
+In fvwm-2.5.3 and later, there are a large number of advanced
+options beginning with "FP" or "!FP".  These options shall replace
 the older options one day and are described first.  Using any of
-this new options may limit compatibility with older releases.  In
+these new options may limit compatibility with older releases.  In
 general, options beginning with "FP" turn a feature on, while
 those beginning with "!FP" turn it off.
 
@@ -6571,16 +6571,16 @@ those beginning with "!FP" turn it off.
 
 With
 .IR FPEnterToFocus ,
-when the pointer enters the window it receives focus.
+when the pointer enters a window it receives focus.
 
 With
 .IR FPLeaveToUnfocus
-the window loses focus when the pointer leaves it.
+a window loses focus when the pointer leaves it.
 
 With
 .IR FPClickToFocus ", " FPClickDecorToFocus " or "
 .IR FPClickIconToFocus ,
-the window reveices focus when the inside of the window or the
+a window receives focus when the inside of the window or the
 decorations or its icon is clicked.
 
 The
@@ -6589,19 +6589,19 @@ style allows windows to take the focus themselves.
 
 The
 .IR !FPFocusByFunction
-style forbids that the window receives the focus via the
+style forbids that a window receives the focus via the
 .BR Focus " and " FlipFocus
 commands.
 
 The
 .IR FPFocusByFunctionWarpPointer
-style controls if the pointer is warped to the selected window
+style controls if the pointer is warped to a selected window
 when the
 .B Focus
 command is used.
 
 .I FPLenient
-allows to force focus upon windows that do not want it, like
+allows focus on windows that do not want it, like
 .BR FvwmPager
 or xclock.
 
@@ -6621,12 +6621,12 @@ to use no modifiers ("N").
 
 With the
 .IR FPPassFocusClick
-style, the click that was used to focus the window is passed to
+style, the click that was used to focus a window is passed to
 the application.
 
 With the
 .IR FPAllowFocusClickFunction
-style, the click that was used to focus the window can also
+style, the click that was used to focus a window can also
 trigger a normal action that was bound to the window with the
 .B Mouse
 command).
@@ -6640,7 +6640,7 @@ normally.  This is useful to select text in a terminal window with
 the mouse without raising the window.  However, mouse bindings on
 the client window are not guaranteed to work anymore (see
 .B Mouse
-command.  Note that this style forces that the initial click is
+command).  This style forces the initial click to be
 passed to the application.  The distance that the pointer must be
 moved to trigger this is controlled by the
 .B MoveThreshold
