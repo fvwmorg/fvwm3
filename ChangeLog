@@ -1,3 +1,10 @@
+1999-05-17 Hippo
+
+	* libs/ModGraph.{h,c}: new structure Background: contains useful stuff
+	* libs/Graphics.c: new functions CreateStretch{X,Y,}Pixmap()
+	* fvwm/{{lots.c},screen.h} use Background struct.
+	* modules/Fvwm{Ident,Scroll,Buttons}: use Background Struct
+
 Sun May 16 10:22:00 1999  Steve Robbins  <steve@nyongwa.montreal.qc.ca>
 
 	* fvwm/events.c (My_XNextEvent): update select function call, and

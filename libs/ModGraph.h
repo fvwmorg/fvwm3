@@ -21,23 +21,20 @@
 #define DEFGRAPHLEN 16 /* length of above string */
 #define DEFGRAPHNUM 9 /* number of items sent */
 
-typedef union _BG {
-  Pixel pixel;
+typedef struct _Background {
+  union {
+    unsigned long word;
+    struct {
+      Bool is_pixmap : 1;
+      Bool stretch_h : 1;
+      Bool stretch_v : 1;
+      unsigned int w : 12;
+      unsigned int h : 12;
+    } bits;
+  } type;
   Pixmap pixmap;
-} BG;
-
-typedef struct _BGbits {
-  Bool is_pixmap : 1;
-  Bool stretch_h : 1;
-  Bool stretch_v : 1;
-  unsigned int w : 12;
-  unsigned int h : 12;
-} BGbits;
-
-typedef union _BGtype {
-  unsigned long word;
-  BGbits bits;
-} BGtype;
+  unsigned int depth;
+} Background;
 
 typedef struct GraphicsThing {
   Bool create_drawGC : 1;
@@ -48,10 +45,8 @@ typedef struct GraphicsThing {
   Bool useFvwmLook : 1;
   Visual *viz;
   Colormap cmap;
-  unsigned int depth;
   GC drawGC;
-  BGtype bgtype;
-  BG bg;
+  Background *bg;
   GC foreGC;
   GC reliefGC;
   GC shadowGC;
@@ -62,6 +57,6 @@ Graphics *CreateGraphics(void);
 void InitGraphics(Display *dpy, Graphics *graphics);
 Bool ParseGraphics(Display *dpy, char *line, Graphics *graphics);
 void SetWindowBackground(Display *dpy, Window win, int width, int height,
-			 BG *bg, BGtype *bgtype);
+			 Background *background, GC gc);
 
 #endif

@@ -286,12 +286,10 @@ typedef struct ScreenInfo
   GC StdShadowGC;
   Bool usingDefaultVisual;
   Visual *viz;
-  unsigned int depth;
   Colormap cmap;
-  /* these next two define the dewfault background, used by modules that have
+  /* this structure defines the default background, used by modules that have
    * been converted to share fvwm's visuals. see libs/ModGraph.h */
-  BGtype bgtype;
-  BG bg;
+  Background *bg;
 
   GC DrawGC;			/* GC to draw lines for move and resize */
   Picture *DrawPicture;

@@ -605,7 +605,7 @@ int main(int argc, char **argv)
   UberButton->swallow = 1; /* the panel is shown */
 
   ParseOptions(UberButton);
-  SavePictureCMap(Dpy, G->viz, G->cmap, G->depth); /* store the cmap */
+  SavePictureCMap(Dpy, G->viz, G->cmap, G->bg->depth); /* store cmap */
 
   for (CurrentPanel = MainPanel, LastPanel = NULL;
        CurrentPanel != NULL;
@@ -1370,7 +1370,7 @@ void CreateWindow(button_info *ub,int maxx,int maxy)
   xswa.border_pixel = 0;
   xswa.background_pixmap = None;
   MyWindow = XCreateWindow(Dpy,Root,mysizehints.x,mysizehints.y,
-			   mysizehints.width,mysizehints.height,0,G->depth,
+			   mysizehints.width,mysizehints.height,0,G->bg->depth,
 			   InputOutput,G->viz,
 			   CWColormap|CWBackPixmap|CWBorderPixel,&xswa);
 
@@ -1378,7 +1378,7 @@ void CreateWindow(button_info *ub,int maxx,int maxy)
   fprintf(stderr,"colors...");
 # endif
   if (!(ub->c->flags&b_FvwmLook)) {
-    if(G->depth < 2) {
+    if(G->bg->depth < 2) {
       back_pix = GetColor("white");
       fore_pix = GetColor("black");
       hilite_pix = back_pix;
@@ -1396,7 +1396,7 @@ void CreateWindow(button_info *ub,int maxx,int maxy)
     }
   } else {
     SetWindowBackground(Dpy,MyWindow,mysizehints.width,mysizehints.height,
-			&(G->bg), &(G->bgtype));
+			G->bg, G->foreGC);
   }
 
 
@@ -1484,7 +1484,7 @@ int PleaseAllocColor(XColor *color)
   attr.closeness=40000; /* value used by fvwm and fvwmlib */
   attr.visual = G->viz;
   attr.colormap = G->cmap;
-  attr.depth = G->depth;
+  attr.depth = G->bg->depth;
 
   if(XpmCreateImageFromData(Dpy,xpm,&dummy1,&dummy2,&attr)!=XpmSuccess)
     {
@@ -1709,8 +1709,7 @@ void process_message(unsigned long type,unsigned long *body)
 	  SetWindowBackground(Dpy, MyWindow, UberButton->c->ButtonWidth
 			      * UberButton->c->num_columns,
 			      UberButton->c->ButtonHeight
-			      * UberButton->c->num_rows, &(G->bg),
-			      &(G->bgtype));
+			      * UberButton->c->num_rows, G->bg, G->foreGC);
       }
       break;
     default:

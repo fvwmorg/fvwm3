@@ -1313,7 +1313,7 @@ void SetHiColor(F_CMD_ARGS)
 
   action = GetNextToken(action,&hifore);
   GetNextToken(action,&hiback);
-  if(Scr.depth > 2)
+  if(Scr.bg->depth > 2)
   {
     if(hifore)
     {
@@ -1789,7 +1789,7 @@ static void ApplyDefaultFontAndColors(void)
     Scr.SizeStringWidth = XTextWidth(Scr.StdFont.font, " +8888 x +8888 ", 15);
     wid = Scr.SizeStringWidth + 2 * SIZE_HINDENT;
     hei = Scr.StdFont.height + 2 * SIZE_VINDENT;
-    SetWindowBackground(dpy, Scr.SizeWindow, wid, hei, &Scr.bg, &Scr.bgtype);
+    SetWindowBackground(dpy, Scr.SizeWindow, wid, hei, Scr.bg, Scr.StdGC);
     if(Scr.gs.EmulateMWM)
     {
       XMoveResizeWindow(dpy,Scr.SizeWindow,
@@ -1841,10 +1841,10 @@ void SetDefaultBackground(F_CMD_ARGS)
 
   /* no args mean restore what was set with DefaultColors */
   if (!type) {
-    if (Scr.bgtype.bits.is_pixmap)
-      XFreePixmap(dpy, Scr.bg.pixmap);
-    Scr.bg.pixel = Scr.StdColors.back;
-    Scr.bgtype.word = 0;
+    if (Scr.bg->type.bits.is_pixmap)
+      XFreePixmap(dpy, Scr.bg->pixmap);
+    Scr.bg->pixmap = (Pixmap)Scr.StdColors.back;
+    Scr.bg->type.word = 0;
   } else {
     if (!rest) {
       fvwm_msg(WARN, "DefaultBackground", "not enough arguments");
@@ -1855,22 +1855,22 @@ void SetDefaultBackground(F_CMD_ARGS)
     if (StrEquals(type, "TiledPixmap") || StrEquals(type, "Pixmap")) {
       Picture *pic = CachePicture(dpy, Scr.NoFocusWin, NULL, rest, Scr.ColorLimit);
 
-      if (pic && pic->depth == Scr.depth) {
+      if (pic && pic->depth == Scr.bg->depth) {
 	Pixmap newpixmap = XCreatePixmap(dpy, Scr.NoFocusWin, pic->width,
-					 pic->height, Scr.depth);
+					 pic->height, Scr.bg->depth);
 
 	XCopyArea(dpy, pic->picture, newpixmap, Scr.StdGC, 0, 0, pic->width,
 		  pic->height, 0, 0);
-	if (Scr.bgtype.bits.is_pixmap)
-	  XFreePixmap(dpy, Scr.bg.pixmap);
-	Scr.bg.pixmap = newpixmap;
-	Scr.bgtype.bits.w = pic->width;
-	Scr.bgtype.bits.h = pic->height;
-	Scr.bgtype.bits.is_pixmap = True;
+	if (Scr.bg->type.bits.is_pixmap)
+	  XFreePixmap(dpy, Scr.bg->pixmap);
+	Scr.bg->pixmap = newpixmap;
+	Scr.bg->type.bits.w = pic->width;
+	Scr.bg->type.bits.h = pic->height;
+	Scr.bg->type.bits.is_pixmap = True;
 	if (StrEquals(type, "Pixmap"))
-	  Scr.bgtype.bits.stretch_h = Scr.bgtype.bits.stretch_v = True;
+	  Scr.bg->type.bits.stretch_h = Scr.bg->type.bits.stretch_v = True;
 	else
-	  Scr.bgtype.bits.stretch_h = Scr.bgtype.bits.stretch_v = False;
+	  Scr.bg->type.bits.stretch_h = Scr.bg->type.bits.stretch_v = False;
       } else {
         fvwm_msg(WARN, "DefaultBackground", "Couldn't load pixmap %s\n", rest);
       }
@@ -1910,8 +1910,8 @@ void SetDefaultColors(F_CMD_ARGS)
       Scr.StdColors.back = GetColor(back);
       Scr.StdRelief.fore = GetHilite(Scr.StdColors.back);
       Scr.StdRelief.back = GetShadow(Scr.StdColors.back);
-      if (!Scr.bgtype.bits.is_pixmap)
-        Scr.bg.pixel = Scr.StdColors.back;
+      if (!Scr.bg->type.bits.is_pixmap)
+        Scr.bg->pixmap = (Pixmap)Scr.StdColors.back;
     }
   free(fore);
   free(back);
@@ -3979,7 +3979,7 @@ void SetColorLimit(F_CMD_ARGS)
    * dynamically changeable ones are odd numbered */
   if (!(Scr.viz->class & 1))
     return;
-  if (Scr.depth > 20) {               /* if more than 20 bit color */
+  if (Scr.bg->depth > 20) {               /* if more than 20 bit color */
     return;                             /* ignore the limit */
   }
   if (GetIntegerArguments(action, NULL, &val, 1) != 1)

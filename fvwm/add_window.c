@@ -499,7 +499,7 @@ FvwmWindow *AddWindow(Window w, FvwmWindow *ReuseWin)
   /* create windows */
 
   /* mono screens use a stipple pixmap to get greys */
-  if(Scr.depth < 2) {
+  if(Scr.bg->depth < 2) {
     valuemask_save = CWBackPixmap;
     if(IS_STICKY(tmp_win))
       attributes.background_pixmap = Scr.sticky_gray_pixmap;
@@ -535,7 +535,7 @@ FvwmWindow *AddWindow(Window w, FvwmWindow *ReuseWin)
   /* create the frame window, child of root, grandparent of client */
   tmp_win->frame = XCreateWindow(dpy, Scr.Root, tmp_win->frame_g.x,
 				 tmp_win->frame_g.y, tmp_win->frame_g.width,
-				 tmp_win->frame_g.height, 0, Scr.depth,
+				 tmp_win->frame_g.height, 0, Scr.bg->depth,
 				 InputOutput, Scr.viz, valuemask, &attributes);
 
 #if defined(PIXMAP_BUTTONS) && defined(BORDERSTYLE)

@@ -183,6 +183,18 @@ Bool GetResourceString(XrmDatabase db, const char *resource,
 void RelieveRectangle(Display *dpy, Window win, int x,int y,int w,int h,
 		      GC ReliefGC, GC ShadowGC, int line_width);
 
+Pixmap CreateStretchXPixmap(Display *dpy, Pixmap src, unsigned int src_width,
+			    unsigned int src_height, unsigned int src_depth,
+			    unsigned int dest_width, GC gc);
+
+Pixmap CreateStretchYPixmap(Display *dpy, Pixmap src, unsigned int src_width,
+			    unsigned int src_height, unsigned int src_depth,
+			    unsigned int dest_height, GC gc);
+
+Pixmap CreateStretchPixmap(Display *dpy, Pixmap src, unsigned int src_width,
+			    unsigned int src_height, unsigned int src_depth,
+			    unsigned int dest_width, unsigned int dest_height,
+			    GC gc);
 
 /***********************************************************************
  * Key and mouse bindings

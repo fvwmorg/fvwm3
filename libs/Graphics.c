@@ -63,3 +63,69 @@ void RelieveRectangle(Display *dpy, Window win, int x,int y,int w,int h,
   XDrawSegments(dpy, win, ReliefGC, seg, i);
   free(seg);
 }
+
+/****************************************************************************
+ *
+ * Creates a pixmap that is a horizontally stretched version of the input
+ * pixmap
+ ****************************************************************************/
+
+Pixmap CreateStretchXPixmap(Display *dpy, Pixmap src, unsigned int src_width,
+			    unsigned int src_height, unsigned int src_depth,
+			    unsigned int dest_width, GC gc)
+{
+  Pixmap pixmap;
+  int i;
+  
+  pixmap = XCreatePixmap(dpy, src, dest_width, src_height, src_depth);
+  if (pixmap)
+    for (i = 1; i <= dest_width; i++)
+      XCopyArea(dpy, src, pixmap, gc, ((i * src_width) / dest_width) - 1, 0,
+		1, src_height, i, 0);
+  
+  return pixmap;
+}
+/****************************************************************************
+ *
+ * Creates a pixmap that is a vertically stretched version of the input
+ * pixmap
+ ****************************************************************************/
+
+Pixmap CreateStretchYPixmap(Display *dpy, Pixmap src, unsigned int src_width,
+			    unsigned int src_height, unsigned int src_depth,
+			    unsigned int dest_height, GC gc)
+{
+  Pixmap pixmap;
+  int i;
+  
+  pixmap = XCreatePixmap(dpy, src, src_width, dest_height, src_depth);
+  if (pixmap)
+    for (i = 1; i <= dest_height; i++)
+      XCopyArea(dpy, src, pixmap, gc, 0, ((i * src_height) / dest_height) - 1,
+		src_width, 1, 0, i);
+  
+  return pixmap;
+}
+/****************************************************************************
+ *
+ * Creates a pixmap that is a stretched version of the input
+ * pixmap
+ ****************************************************************************/
+
+Pixmap CreateStretchPixmap(Display *dpy, Pixmap src, unsigned int src_width,
+			    unsigned int src_height, unsigned int src_depth,
+			    unsigned int dest_width, unsigned int dest_height,
+			    GC gc)
+{
+  Pixmap pixmap = None, temp_pixmap;
+  
+  temp_pixmap = CreateStretchXPixmap(dpy, src, src_width, src_height, src_depth,
+				     dest_width, gc);
+  if (temp_pixmap) {
+    pixmap = CreateStretchYPixmap(dpy, temp_pixmap, dest_width, src_height,
+				  src_depth, dest_height, gc);
+    XFreePixmap(dpy, temp_pixmap);
+  }
+  
+  return pixmap;
+}

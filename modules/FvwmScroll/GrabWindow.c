@@ -98,21 +98,21 @@ void CreateWindow(int x,int y, int w, int h)
   attributes.background_pixmap = None;
   attributes.border_pixel = 0;
   main_win = XCreateWindow(dpy, Root, mysizehints.x, mysizehints.y,
-			   mysizehints.width, mysizehints.height, 0, G->depth,
+			   mysizehints.width, mysizehints.height, 0, G->bg->depth,
 			   InputOutput, G->viz,
 			   CWColormap | CWBackPixmap | CWBorderPixel,
 			   &attributes);
 
   if (!G->useFvwmLook) {
     InitPictureCMap(dpy, main_win);
-    G->bgtype.bits.is_pixmap = False;
-    G->bg.pixel = GetColor(BackColor);
-    hilite_pix = GetHilite(G->bg.pixel);
-    shadow_pix = GetShadow(G->bg.pixel);
+    G->bg->type.bits.is_pixmap = False;
+    G->bg->pixmap = (Pixmap)GetColor(BackColor);
+    hilite_pix = GetHilite((Pixel)G->bg->pixmap);
+    shadow_pix = GetShadow((Pixel)G->bg->pixmap);
   }
 
   SetWindowBackground(dpy, main_win, mysizehints.width, mysizehints.height,
-		      &(G->bg), &(G->bgtype));
+		      G->bg, G->shadowGC);
   XSetWMProtocols(dpy,main_win,&wm_del_win,1);
 
   XSetWMNormalHints(dpy,main_win,&mysizehints);
@@ -122,7 +122,7 @@ void CreateWindow(int x,int y, int w, int h)
   holder_win = XCreateWindow(dpy, main_win, PAD_WIDTH3, PAD_WIDTH3,
 			     mysizehints.width - BAR_WIDTH - PAD_WIDTH3,
 			     mysizehints.height - BAR_WIDTH - PAD_WIDTH3,
-			     0, G->depth, InputOutput, G->viz,
+			     0, G->bg->depth, InputOutput, G->viz,
 			     CWColormap | CWBackPixmap | CWBorderPixel,
 			     &attributes);
   XMapWindow(dpy,holder_win);
@@ -524,7 +524,7 @@ void Loop(Window target)
       if (tline != NULL && (strlen(tline) > 1)) {
         if(strncasecmp(tline, DEFGRAPHSTR, DEFGRAPHLEN)==0) {
           if (ParseGraphics(dpy, tline, G)) {
-            SetWindowBackground(dpy, main_win, tw, th, &(G->bg), &(G->bgtype));
+            SetWindowBackground(dpy, main_win, tw, th, G->bg, G->shadowGC);
           }
         }
       }
