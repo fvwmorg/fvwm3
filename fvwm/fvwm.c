@@ -1453,12 +1453,12 @@ void InitVariables(void)
   Scr.DefaultDecor.tag = "Default";
 #endif
 
-  Scr.WindowShadeScrolls = True;
-  Scr.SmartPlacementIsClever = False;
-  Scr.ClickToFocusPassesClick = True;
-  Scr.ClickToFocusRaises = True;
-  Scr.MouseFocusClickRaises = False;
-  Scr.StipledTitles = False;
+  Scr.go.WindowShadeScrolls = True;
+  Scr.go.SmartPlacementIsClever = False;
+  Scr.go.ClickToFocusPassesClick = True;
+  Scr.go.ClickToFocusRaises = True;
+  Scr.go.MouseFocusClickRaises = False;
+  Scr.go.StipledTitles = False;
 
   /*  RBW - 11/02/1998    */
   Scr.go.ModifyUSP                          =  True;

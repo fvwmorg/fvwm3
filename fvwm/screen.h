@@ -322,18 +322,18 @@ typedef struct ScreenInfo
   ** some additional global options which will probably become window
   ** specific options later on:
   */
-  int WindowShadeScrolls;
-  int SmartPlacementIsClever;
-  int ClickToFocusPassesClick;
-  int ClickToFocusRaises;
-  int MouseFocusClickRaises;
-  int StipledTitles;
   struct
   {
     Bool ModifyUSP : 1;                          /* - RBW - 11/02/1998  */
     Bool CaptureHonorsStartsOnPage : 1;          /* - RBW - 11/02/1998  */
     Bool RecaptureHonorsStartsOnPage : 1;        /* - RBW - 11/02/1998  */
     Bool ActivePlacementHonorsStartsOnPage : 1;  /* - RBW - 11/02/1998  */
+    Bool SmartPlacementIsClever : 1;
+    Bool ClickToFocusPassesClick : 1;
+    Bool ClickToFocusRaises : 1;
+    Bool MouseFocusClickRaises : 1;
+    Bool StipledTitles : 1a;
+    Bool WindowShadeScrolls : 1;
   } go; /* global options */
   struct
   {

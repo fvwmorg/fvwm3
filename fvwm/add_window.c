@@ -754,7 +754,7 @@ FvwmWindow *AddWindow(Window w, FvwmWindow *ReuseWin)
 			&a,&b,&JunkChild);
   tmp_win->xdiff -= a;
   tmp_win->ydiff -= b;
-  if((tmp_win->flags & ClickToFocus) || Scr.MouseFocusClickRaises)
+  if((tmp_win->flags & ClickToFocus) || Scr.go.MouseFocusClickRaises)
     {
      /* need to grab all buttons for window that we are about to
       * unhighlight */

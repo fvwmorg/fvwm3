@@ -83,9 +83,10 @@ SaveGlobalState(FILE *f)
 	  Scr.SnapAttraction, Scr.SnapMode, Scr.SnapGridX, Scr.SnapGridY);
   fprintf(f, "  [MISC] %i %i %i %i %i %i %i %i %i\n",
 	  Scr.ClickTime, Scr.ColormapFocus,
-	  Scr.ColorLimit, Scr.SmartPlacementIsClever,
-	  Scr.ClickToFocusPassesClick, Scr.ClickToFocusRaises,
-	  Scr.MouseFocusClickRaises, Scr.StipledTitles, Scr.WindowShadeScrolls);
+	  Scr.ColorLimit, Scr.go.SmartPlacementIsClever,
+	  Scr.go.ClickToFocusPassesClick, Scr.go.ClickToFocusRaises,
+	  Scr.go.MouseFocusClickRaises, Scr.go.StipledTitles,
+	  Scr.go.WindowShadeScrolls);
   fprintf(f, "  [STYLE] %i %i %i %i %i %i\n",
 	  Scr.go.ModifyUSP, Scr.go.CaptureHonorsStartsOnPage,
 	  Scr.go.RecaptureHonorsStartsOnPage,
@@ -149,12 +150,12 @@ LoadGlobalState(char *filename)
                Scr.ClickTime = i1;
                Scr.ColormapFocus = i2;
                Scr.ColorLimit = i3;
-               Scr.SmartPlacementIsClever = i4;
-               Scr.ClickToFocusPassesClick = i5;
-               Scr.ClickToFocusRaises = i6;
-               Scr.MouseFocusClickRaises = i7;
-               Scr.StipledTitles = i8;
-               Scr.WindowShadeScrolls = i9;
+               Scr.go.SmartPlacementIsClever = i4;
+               Scr.go.ClickToFocusPassesClick = i5;
+               Scr.go.ClickToFocusRaises = i6;
+               Scr.go.MouseFocusClickRaises = i7;
+               Scr.go.StipledTitles = i8;
+               Scr.go.WindowShadeScrolls = i9;
              }
            else if (!strcmp(s1, "[STYLE]"))
              {

@@ -78,7 +78,7 @@ int SmartPlacement(FvwmWindow *t,
   FvwmWindow *test_window;
   int stickyx, stickyy;
 
-  if (Scr.SmartPlacementIsClever) /* call clever placement instead? */
+  if (Scr.go.SmartPlacementIsClever) /* call clever placement instead? */
   {
 /*  RBW - 11/02/1998  */
     CleverPlacement(t,x,y,pdeltax,pdeltay);

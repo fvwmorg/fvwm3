@@ -507,7 +507,7 @@ void WindowShade(F_CMD_ARGS)
 
     if (shade_anim_steps != 0) {
       h = tmp_win->title_height+tmp_win->boundary_width;
-      if (Scr.WindowShadeScrolls)
+      if (Scr.go.WindowShadeScrolls)
         XMoveWindow(dpy, tmp_win->w, 0, - (new_height-h));
       y = h - new_height;
       old_h = tmp_win->frame_height;
@@ -517,7 +517,7 @@ void WindowShade(F_CMD_ARGS)
                       new_width - 2 * tmp_win->boundary_width,
                       max(h - 2 * tmp_win->boundary_width 
                           - tmp_win->title_height, 1));
-        if (Scr.WindowShadeScrolls)
+        if (Scr.go.WindowShadeScrolls)
           XMoveWindow(dpy, tmp_win->w, 0, y);
         tmp_win->frame_height = h;
         /* way too flickery
@@ -547,7 +547,7 @@ void WindowShade(F_CMD_ARGS)
     y = 0;
     old_h = tmp_win->frame_height;
     while (h > tmp_win->title_height+tmp_win->boundary_width) {
-      if (Scr.WindowShadeScrolls)
+      if (Scr.go.WindowShadeScrolls)
         XMoveWindow(dpy, tmp_win->w, 0, y);
         XResizeWindow(dpy, tmp_win->frame, tmp_win->frame_width, h);
         XResizeWindow(dpy, tmp_win->Parent,
@@ -565,7 +565,7 @@ void WindowShade(F_CMD_ARGS)
         y-=step;
       }
       tmp_win->frame_height = old_h;
-      if (Scr.WindowShadeScrolls)
+      if (Scr.go.WindowShadeScrolls)
         XMoveWindow(dpy, tmp_win->w, 0, 0);
     }
     SetupFrame(tmp_win, tmp_win->frame_x, tmp_win->frame_y,
@@ -5021,51 +5021,51 @@ void SetGlobalOptions(F_CMD_ARGS)
        action?action:"(NULL)"); */
     if (StrEquals(opt,"WINDOWSHADESHRINKS"))
     {
-      Scr.WindowShadeScrolls = False;
+      Scr.go.WindowShadeScrolls = False;
     }
     else if (StrEquals(opt,"WINDOWSHADESCROLLS"))
     {
-      Scr.WindowShadeScrolls = True;
+      Scr.go.WindowShadeScrolls = True;
     }
     else if (StrEquals(opt,"SMARTPLACEMENTISREALLYSMART"))
     {
-      Scr.SmartPlacementIsClever = True;
+      Scr.go.SmartPlacementIsClever = True;
     }
     else if (StrEquals(opt,"SMARTPLACEMENTISNORMAL"))
     {
-      Scr.SmartPlacementIsClever = False;
+      Scr.go.SmartPlacementIsClever = False;
     }
     else if (StrEquals(opt,"CLICKTOFOCUSDOESNTPASSCLICK"))
     {
-      Scr.ClickToFocusPassesClick = False;
+      Scr.go.ClickToFocusPassesClick = False;
     }
     else if (StrEquals(opt,"CLICKTOFOCUSPASSESCLICK"))
     {
-      Scr.ClickToFocusPassesClick = True;
+      Scr.go.ClickToFocusPassesClick = True;
     }
     else if (StrEquals(opt,"CLICKTOFOCUSDOESNTRAISE"))
     {
-      Scr.ClickToFocusRaises = False;
+      Scr.go.ClickToFocusRaises = False;
     }
     else if (StrEquals(opt,"CLICKTOFOCUSRAISES"))
     {
-      Scr.ClickToFocusRaises = True;
+      Scr.go.ClickToFocusRaises = True;
     }
     else if (StrEquals(opt,"MOUSEFOCUSCLICKDOESNTRAISE"))
     {
-      Scr.MouseFocusClickRaises = False;
+      Scr.go.MouseFocusClickRaises = False;
     }
     else if (StrEquals(opt,"MOUSEFOCUSCLICKRAISES"))
     {
-      Scr.MouseFocusClickRaises = True;
+      Scr.go.MouseFocusClickRaises = True;
     }
     else if (StrEquals(opt,"NOSTIPLEDTITLES"))
     {
-      Scr.StipledTitles = False;
+      Scr.go.StipledTitles = False;
     }
     else if (StrEquals(opt,"STIPLEDTITLES"))
     {
-      Scr.StipledTitles = True;
+      Scr.go.StipledTitles = True;
     }
          /*  RBW - 11/14/1998 - I'll eventually remove these. */
 /*

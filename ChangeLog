@@ -1,3 +1,7 @@
+1999-03-25  Hippo
+
+	* fvwm/screen.h: moved 6 globalopts ints into Scr.go bitfield
+
 1999-03-23  Dominik Vogt  <dominik_vogt@gmx.de>
 
 	* fvwm/events.c (HandleButtonPress): fixed border drawing and button

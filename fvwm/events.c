@@ -1157,7 +1157,7 @@ void HandleButtonPress()
      (!MaskUsedModifiers(Event.xbutton.state)))
   {
     SetFocus(Tmp_win->w,Tmp_win,1);
-    if (Scr.ClickToFocusRaises ||
+    if (Scr.go.ClickToFocusRaises ||
 	((Event.xany.window != Tmp_win->w)&&
 	 (Event.xbutton.subwindow != Tmp_win->w)&&
 	 (Event.xany.window != Tmp_win->Parent)&&
@@ -1172,7 +1172,7 @@ void HandleButtonPress()
     {
       XSync(dpy,0);
       /* pass click event to just clicked to focus window? */
-      if (Scr.ClickToFocusPassesClick)
+      if (Scr.go.ClickToFocusPassesClick)
 	XAllowEvents(dpy,ReplayPointer,CurrentTime);
       else /* don't pass click to just focused window */
 	XAllowEvents(dpy,AsyncPointer,CurrentTime);
@@ -1182,7 +1182,7 @@ void HandleButtonPress()
   }
   else if ((Tmp_win) && !(Tmp_win->flags & ClickToFocus) &&
            (Event.xbutton.window == Tmp_win->frame) &&
-	   Scr.MouseFocusClickRaises)
+	   Scr.go.MouseFocusClickRaises)
   {
     if (Tmp_win != Scr.LastWindowRaised &&
         MaskUsedModifiers(Event.xbutton.state) == 0 &&

@@ -931,7 +931,7 @@ void SetTitleBar (FvwmWindow *t,Bool onoroff, Bool NewTitle)
                      t->name, strlen(t->name));
   }
   /* now, draw lines in title bar if it's a sticky window */
-  if(t->flags & STICKY || Scr.StipledTitles)
+  if(t->flags & STICKY || Scr.go.StipledTitles)
   {
     /* an odd number of lines every 4 pixels */
     int num = (int)(t->title_height/8) * 2 - 1;
