@@ -1329,8 +1329,16 @@ fprintf(stderr, "cre: cn_count = %d\n", cn_count);
 			gravity_resize(Fw->hints.win_gravity, &new_g, 0, dh);
 		}
 
-		if ((cre->value_mask & CWX) || (cre->value_mask & CWY) || dw ||
-		    dh)
+		if (new_g.x == Fw->frame_g.x && new_g.y == Fw->frame_g.y &&
+		    new_g.width == Fw->frame_g.width &&
+		    new_g.height == Fw->frame_g.height)
+		{
+			/* Window will not be moved or resized; send a
+			 * synthetic ConfigureNotify. */
+			do_send_event = True;
+		}
+		else if ((cre->value_mask & CWX) || (cre->value_mask & CWY) ||
+		    dw || dh)
 		{
 			if (IS_SHADED(Fw))
 			{
