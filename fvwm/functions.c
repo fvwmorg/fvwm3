@@ -819,9 +819,12 @@ void ExecuteFunction(char *Action, FvwmWindow *tmp_win, XEvent *eventp,
   taction = expaction + skip;
   j = 0;
   action = SkipNTokens(taction, 1);
-  if (expand_cmd == EXPAND_COMMAND && func_depth <= 1)
+  if (expand_cmd == EXPAND_COMMAND)
   {
-    must_free_string = set_repeat_data(expaction, REPEAT_COMMAND, bif);
+    if (func_depth <= 1)
+      must_free_string = set_repeat_data(expaction, REPEAT_COMMAND, bif);
+    else
+      must_free_string = True;
   }
   if (bif)
   {
