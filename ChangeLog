@@ -1,5 +1,15 @@
 2002-11-01  Dominik Vogt  <dominik.vogt@gmx.de>
 
+	* fvwm/functable.c (func_table):
+	* fvwm/commands.h:
+	* fvwm/style.c (style_parse_one_style_option):
+	(parse_and_set_window_style):
+	(__style_command):
+	(CMD_Style):
+	(CMD_FocusStyle):
+	added a new command FocusStyle as a shorthand for
+	"Style * FP..., FP..."
+
 	* fvwm/builtins.c (__parse_vector_line_one_coord):
 	(__parse_vector_line):
 	(ReadDecorFace):

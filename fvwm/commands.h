@@ -76,6 +76,7 @@ enum
 	F_EXEC,
 	F_EXEC_SETUP,
 	F_FAKE_CLICK,
+	F_FOCUSSTYLE,
 	F_FUNCTION,
 	F_GLOBAL_OPTS,
 	F_GOTO_DESK,
@@ -270,6 +271,7 @@ void CMD_ExecUseShell(F_CMD_ARGS);
 void CMD_FakeClick(F_CMD_ARGS);
 void CMD_FlipFocus(F_CMD_ARGS);
 void CMD_Focus(F_CMD_ARGS);
+void CMD_FocusStyle(F_CMD_ARGS);
 void CMD_Function(F_CMD_ARGS);
 void CMD_GlobalOpts(F_CMD_ARGS);
 #ifdef GNOME

@@ -137,6 +137,7 @@ const func_type func_table[] =
 		FUNC_NEEDS_WINDOW, CRS_SELECT, ButtonRelease),
 	CMD_ENT("focus", CMD_Focus, F_FOCUS,
 		FUNC_NEEDS_WINDOW, CRS_SELECT, ButtonRelease),
+	CMD_ENT("focusstyle", CMD_FocusStyle, F_FOCUSSTYLE, 0, 0, 0),
 	CMD_ENT("function", CMD_Function, F_FUNCTION, 0, 0, 0),
 	CMD_ENT("globalopts", CMD_GlobalOpts, F_GLOBAL_OPTS, 0, 0, 0),
 #ifdef GNOME

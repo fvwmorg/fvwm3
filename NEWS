@@ -11,6 +11,9 @@ Changes in developement release 2.5.5 (not released yet)
 
 * Added a pixel offset to vecto button definitions.
 
+* New command FocusStyle as a shorthand for setting the FP...
+  styles with the Style command.
+
 -------------------------------------------------------------------
 
 Changes in alpha release 2.5.4 (20-Oct-2002)

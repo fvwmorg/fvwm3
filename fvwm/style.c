@@ -1761,9 +1761,9 @@ static void style_parse_icon_fill_style(
 	return;
 }
 
-
 static Bool style_parse_one_style_option(
-	char *token, char *rest, window_style *ps, icon_boxes **cur_ib)
+	char *token, char *rest, char *prefix, window_style *ps,
+	icon_boxes **cur_ib)
 {
 	window_style *add_style;
 	/* work area for button number */
@@ -1775,16 +1775,28 @@ static Bool style_parse_one_style_option(
 	int spargs = 0;
 	Bool found;
 	int on;
+	char *token_l = NULL;
 
 	found = True;
-	if (token[0] == '!')
+	on = 1;
+	while (token[0] == '!')
 	{
-		on = 0;
+		on ^= 1;
 		token++;
 	}
-	else
+	if (prefix != NULL && *prefix != 0)
 	{
-		on = 1;
+		int l;
+
+		l = strlen(prefix);
+		if (strncasecmp(token, prefix, l) != 0)
+		{
+			/* add missing prefix */
+			token_l = (char *)safemalloc(l + strlen(token) + 1);
+			strcpy(token_l, prefix);
+			strcat(token_l, token);
+			token = token_l;
+		}
 	}
 	switch (tolower(token[0]))
 	{
@@ -1841,7 +1853,7 @@ static Bool style_parse_one_style_option(
 			else
 			{
 				fvwm_msg(
-					ERR, "CMD_Style",
+					ERR, "style_parse_on_estyle_option",
 					"Style BackColor requires color"
 					" argument");
 			}
@@ -1862,7 +1874,7 @@ static Bool style_parse_one_style_option(
 			else
 			{
 				fvwm_msg(
-					ERR, "CMD_Style",
+					ERR, "style_parse_one_style_option",
 					"Style BorderWidth requires width"
 					" argument");
 			}
@@ -1971,7 +1983,7 @@ static Bool style_parse_one_style_option(
 			if (token == NULL)
 			{
 				fvwm_msg(
-					ERR, "CMD_Style",
+					ERR, "style_parse_one_style_option",
 					"Color Style requires a color"
 					" argument");
 				break;
@@ -2040,7 +2052,7 @@ static Bool style_parse_one_style_option(
 			if (!token)
 			{
 				fvwm_msg(
-					ERR, "CMD_Style",
+					ERR, "style_parse_one_style_option",
 					"Color Style called with incomplete"
 					" color argument.");
 				break;
@@ -2245,7 +2257,7 @@ static Bool style_parse_one_style_option(
 			else
 			{
 				fvwm_msg(
-					ERR, "CMD_Style",
+					ERR, "style_parse_one_style_option",
 					"ForeColor Style needs color argument");
 			}
 		}
@@ -2371,7 +2383,7 @@ static Bool style_parse_one_style_option(
 			else
 			{
 				fvwm_msg(
-					ERR, "CMD_Style",
+					ERR, "style_parse_one_style_option",
 					"HandleWidth Style needs width"
 					" argument");
 			}
@@ -2393,7 +2405,7 @@ static Bool style_parse_one_style_option(
 			else
 			{
 				fvwm_msg(
-					ERR, "CMD_Style",
+					ERR, "style_parse_one_style_option",
 					"HilightFore Style needs color"
 					" argument");
 			}
@@ -2415,7 +2427,7 @@ static Bool style_parse_one_style_option(
 			else
 			{
 				fvwm_msg(
-					ERR, "CMD_Style",
+					ERR, "style_parse_one_style_option",
 					"HilightBack Style needs color"
 					" argument");
 			}
@@ -2582,7 +2594,7 @@ static Bool style_parse_one_style_option(
 			*val = -1;
 			if (GetIntegerArguments(rest, NULL, val, 1) && *val < 0)
 			{
-				fvwm_msg(ERR, "CMD_Style",
+				fvwm_msg(ERR, "style_parse_one_style_option",
 					 "Layer must be positive or zero.");
 			}
 			if (*val < 0)
@@ -2671,7 +2683,7 @@ static Bool style_parse_one_style_option(
 			}
 			else
 			{
-				fvwm_msg(ERR, "CMD_Style",
+				fvwm_msg(ERR, "style_parse_one_style_option",
 					 "MiniIcon Style requires an Argument");
 			}
 		}
@@ -2891,7 +2903,7 @@ static Bool style_parse_one_style_option(
 			}
 			else
 			{
-				fvwm_msg(ERR, "CMD_Style",
+				fvwm_msg(ERR, "style_parse_one_style_option",
 					 "NoButton Style requires an argument");
 			}
 		}
@@ -2963,7 +2975,7 @@ static Bool style_parse_one_style_option(
 			if (bad)
 			{
 				fvwm_msg(
-					ERR, "CMD_Style",
+					ERR, "style_parse_one_style_option",
 					"Bad argument to"
 					" PlacementOverlapPenalties: %s", rest);
 				break;
@@ -2999,7 +3011,7 @@ static Bool style_parse_one_style_option(
 			if (bad)
 			{
 				fvwm_msg(
-					ERR, "CMD_Style",
+					ERR, "style_parse_one_style_option",
 					"Bad argument to PlacementOverlap"
 					"PercentagePenalties: %s", rest);
 				break;
@@ -3202,7 +3214,7 @@ static Bool style_parse_one_style_option(
 			}
 			else
 			{
-				fvwm_msg(ERR,"CMD_Style",
+				fvwm_msg(ERR,"style_parse_one_style_option",
 					 "bad StartsOnDesk arg: %s", rest);
 			}
 		}
@@ -3245,7 +3257,7 @@ static Bool style_parse_one_style_option(
 			}
 			if (spargs < 1 || spargs > 3)
 			{
-				fvwm_msg(ERR, "CMD_Style",
+				fvwm_msg(ERR, "style_parse_one_style_option",
 					 "bad StartsOnPage args: %s", rest);
 			}
 			else
@@ -3448,7 +3460,7 @@ static Bool style_parse_one_style_option(
 			token = PeekToken(rest, &rest);
 			if (!token)
 			{
-				fvwm_msg(ERR, "CMD_Style",
+				fvwm_msg(ERR, "style_parse_one_style_option",
 					 "UseStyle needs an argument");
 				break;
 			}
@@ -3469,7 +3481,7 @@ static Bool style_parse_one_style_option(
 			if (!hit)
 			{
 				fvwm_msg(
-					ERR, "CMD_Style",
+					ERR, "style_parse_one_style_option",
 					"UseStyle: %s style not found", token);
 			}
 		}
@@ -3603,12 +3615,16 @@ static Bool style_parse_one_style_option(
 		found = False;
 		break;
 	}
+	if (token_l != NULL)
+	{
+		free(token_l);
+	}
 
 	return found;
 }
 
 static
-void parse_and_set_window_style(char *action, window_style *ps)
+void parse_and_set_window_style(char *action, char *prefix, window_style *ps)
 {
 	char *line;
 	char *option;
@@ -3640,13 +3656,14 @@ void parse_and_set_window_style(char *action, window_style *ps)
 		/* It might make more sense to capture the whole word, fix its
 		 * case, and use strcmp, but there aren't many caseless compares
 		 * because of this "switch" on the first letter. */
-		found = style_parse_one_style_option(token, rest, ps, &cur_ib);
+		found = style_parse_one_style_option(
+			token, rest, prefix, ps, &cur_ib);
 
 		if (found == False)
 		{
 			fvwm_msg(
-				ERR, "CMD_Style", "Bad style option: %s",
-				option);
+				ERR, "style_parse_and_set_window_style",
+				"Bad style option: %s", option);
 			/* Can't return here since all malloced memory will be
 			 * lost. Ignore rest of line instead. */
 			/* No, I think we /can/ return here. In fact, /not/
@@ -3659,6 +3676,86 @@ void parse_and_set_window_style(char *action, window_style *ps)
 		}
 		free(option);
 	} /* end while still stuff on command */
+
+	return;
+}
+
+/* Process a style command.  First built up in a temp area.
+ * If valid, added to the list in a malloced area.
+ *
+ *                    *** Important note ***
+ *
+ * Remember that *all* styles need a flag, flag_mask and change_mask.
+ * It is not enough to add the code for new styles in this function.
+ * There *must* be corresponding code in handle_new_window_style()
+ * and merge_styles() too.  And don't forget that allocated memory
+ * must be freed in ProcessDestroyStyle().
+ */
+
+static void __style_command(F_CMD_ARGS, char *prefix)
+{
+	/* temp area to build name list */
+	window_style *ps;
+
+	ps = (window_style *)safemalloc(sizeof(window_style));
+	/* init temp window_style area */
+	memset(ps, 0, sizeof(window_style));
+	/* init default focus policy */
+	fpol_init_default_fp(&S_FOCUS_POLICY(SCF(*ps)));
+	/* mark style as changed */
+	ps->has_style_changed = 1;
+	/* set global flag */
+	Scr.flags.do_need_window_update = 1;
+	/* default StartsOnPage behavior for initial capture */
+	ps->flags.capture_honors_starts_on_page = 1;
+
+	/* parse style name */
+	action = GetNextToken(action, &SGET_NAME(*ps));
+	/* in case there was no argument! */
+	if (SGET_NAME(*ps) == NULL)
+	{
+		free(ps);
+		return;
+	}
+	if (action == NULL)
+	{
+		free(SGET_NAME(*ps));
+		free(ps);
+		return;
+	}
+
+	parse_and_set_window_style(action, prefix, ps);
+
+	/* capture default icons */
+	if (StrEquals(SGET_NAME(*ps), "*"))
+	{
+		if (ps->flags.has_icon == 1)
+		{
+			if (Scr.DefaultIcon)
+			{
+				free(Scr.DefaultIcon);
+			}
+			Scr.DefaultIcon = SGET_ICON_NAME(*ps);
+			ps->flags.has_icon = 0;
+			ps->flag_mask.has_icon = 0;
+			ps->change_mask.has_icon = 1;
+			SSET_ICON_NAME(*ps, NULL);
+		}
+	}
+	if (last_style_in_list &&
+	    strcmp(SGET_NAME(*ps), SGET_NAME(*last_style_in_list)) == 0)
+	{
+		/* merge with previous style */
+		merge_styles(last_style_in_list, ps, True);
+		free_style(ps);
+		free(ps);
+	}
+	else
+	{
+		/* add temp name list to list */
+		add_style_to_list(ps);
+		cleanup_style_defaults(ps);
+	}
 
 	return;
 }
@@ -4355,81 +4452,16 @@ void update_window_color_hi_style(FvwmWindow *fw, window_style *pstyle)
 
 /* ---------------------------- builtin commands ---------------------------- */
 
-/* Process a style command.  First built up in a temp area.
- * If valid, added to the list in a malloced area.
- *
- *                    *** Important note ***
- *
- * Remember that *all* styles need a flag, flag_mask and change_mask.
- * It is not enough to add the code for new styles in this function.
- * There *must* be corresponding code in handle_new_window_style()
- * and merge_styles() too.  And don't forget that allocated memory
- * must be freed in ProcessDestroyStyle().
- */
 void CMD_Style(F_CMD_ARGS)
 {
-	/* temp area to build name list */
-	window_style *ps;
+	__style_command(F_PASS_ARGS, NULL);
 
-	ps = (window_style *)safemalloc(sizeof(window_style));
-	/* init temp window_style area */
-	memset(ps, 0, sizeof(window_style));
-	/* init default focus policy */
-	fpol_init_default_fp(&S_FOCUS_POLICY(SCF(*ps)));
-	/* mark style as changed */
-	ps->has_style_changed = 1;
-	/* set global flag */
-	Scr.flags.do_need_window_update = 1;
-	/* default StartsOnPage behavior for initial capture */
-	ps->flags.capture_honors_starts_on_page = 1;
+	return;
+}
 
-	/* parse style name */
-	action = GetNextToken(action, &SGET_NAME(*ps));
-	/* in case there was no argument! */
-	if (SGET_NAME(*ps) == NULL)
-	{
-		free(ps);
-		return;
-	}
-	if (action == NULL)
-	{
-		free(SGET_NAME(*ps));
-		free(ps);
-		return;
-	}
-
-	parse_and_set_window_style(action, ps);
-
-	/* capture default icons */
-	if (StrEquals(SGET_NAME(*ps), "*"))
-	{
-		if (ps->flags.has_icon == 1)
-		{
-			if (Scr.DefaultIcon)
-			{
-				free(Scr.DefaultIcon);
-			}
-			Scr.DefaultIcon = SGET_ICON_NAME(*ps);
-			ps->flags.has_icon = 0;
-			ps->flag_mask.has_icon = 0;
-			ps->change_mask.has_icon = 1;
-			SSET_ICON_NAME(*ps, NULL);
-		}
-	}
-	if (last_style_in_list &&
-	    strcmp(SGET_NAME(*ps), SGET_NAME(*last_style_in_list)) == 0)
-	{
-		/* merge with previous style */
-		merge_styles(last_style_in_list, ps, True);
-		free_style(ps);
-		free(ps);
-	}
-	else
-	{
-		/* add temp name list to list */
-		add_style_to_list(ps);
-		cleanup_style_defaults(ps);
-	}
+void CMD_FocusStyle(F_CMD_ARGS)
+{
+	__style_command(F_PASS_ARGS, "FP");
 
 	return;
 }

@@ -5496,6 +5496,47 @@ option is enabled.
 
 .SS THE STYLE COMMAND (CONTROLLING WINDOW STYLES)
 
+For readability, the commands in this section are not sorted
+alphabetically.  The description of the
+.B Style
+command can be found at the end of this section.
+
+.TP
+.BI "FocusStyle " "stylename options"
+works exactly like the
+.B Style
+command, but accepts only the focus policy related styles
+beginning with "FP".  The prefix can be removed, but at the cost
+of a little bit of time.
+.B FocusStyle
+is meant to make the configuration file more readable.  Example:
+.EX
+FocusStyle * EnterToFocus, !LeaveToUnfocus
+.EE
+is equivalent to
+.EX
+Style * FPEnterToFocus, !FPLeaveToUnfocus
+.EE
+
+.TP
+.BI "DestroyStyle " style
+deletes the style named
+.IR style .
+The changes take effect immediately.  Note that
+.I style
+is not a wild-carded search string, but rather a case-sensitive
+string that should exactly match the original
+.B Style
+command.
+
+Destroying style "*" can be done, but isn't really to be
+recommended. For example:
+.EX
+DestroyStyle Application*
+.EE
+This removes all settings for the style named "Application*", NOT
+all styles starting with "Application".
+
 .TP
 .BI "UpdateStyles"
 All pending updates of all windows' styles and looks are applied
@@ -7151,25 +7192,6 @@ allows only the FvwmPager module icon to exist:
 Style * NoIcon
 Style FvwmPager Icon
 .EE
-
-.TP
-.BI "DestroyStyle " style
-Deletes the style named
-.IR style .
-The changes take effect immediately.  Note that
-.I style
-is not a wild-carded search string, but rather a case-sensitive
-string that should exactly match the original
-.B Style
-command.
-
-Destroying style "*" can be done, but isn't really to be
-recommended. For example:
-.EX
-DestroyStyle Application*
-.EE
-This removes all settings for the style named "Application*", NOT
-all styles starting with "Application".
 
 .SS OTHER COMMANDS CONTROLLING WINDOW STYLES
 
