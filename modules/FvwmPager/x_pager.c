@@ -19,6 +19,9 @@
 #include <X11/Xproto.h>
 #include <X11/Xatom.h>
 #include <X11/Intrinsic.h>
+#ifdef SHAPE 
+#include <X11/extensions/shape.h>
+#endif
 
 #include "libs/fvwmlib.h"
 #include "fvwm/fvwm.h"
@@ -34,9 +37,17 @@ extern Pixel win_back_pix, win_fore_pix, win_hi_back_pix, win_hi_fore_pix;
 extern int window_w, window_h,window_x,window_y,usposition,uselabel,xneg,yneg;
 extern int StartIconic;
 extern int MiniIcons;
+extern int LabelsBelow;
+#ifdef SHAPE
+extern int ShapeLabels;
+#endif
 extern int ShowBalloons, ShowPagerBalloons, ShowIconBalloons;
 extern char *BalloonFormatString;
 extern char *WindowLabelFormat;
+
+extern Picture *PixmapBack;
+extern Picture *HilightPixmap;
+extern int HilightDesks;
 
 extern int icon_w, icon_h, icon_x, icon_y;
 XFontStruct *font, *windowFont;
@@ -145,6 +156,15 @@ void initialize_pager(void)
   else
     label_h = 0;
 
+
+#ifdef SHAPE
+  /* Check that shape extension exists. */
+   if (ShapeLabels)		
+     {
+       int s1, s2;
+       ShapeLabels = (XShapeQueryExtension (dpy, &s1, &s2) ? 1 : 0);
+     }
+#endif
 
   if(smallFont!= NULL)
     {
@@ -347,12 +367,13 @@ void initialize_pager(void)
       x = w*i;
       y = 0;
 
-      valuemask = (CWBackPixel | CWBorderPixel | CWEventMask);
-#if 0
-      attributes.background_pixel = back_pix;
-#else
-      attributes.background_pixel = GetColor(Desks[i].Dcolor);
-#endif
+      valuemask = (CWBorderPixel | CWEventMask);
+      valuemask |= CWBackPixel;
+
+      attributes.background_pixel = 
+	(Desks[i].Dcolor ? GetColor(Desks[i].Dcolor) : back_pix);
+
+
       attributes.border_pixel = fore_pix;
       attributes.event_mask = (ExposureMask | ButtonReleaseMask);
       Desks[i].title_w = XCreateWindow(dpy,Scr.Pager_w, x, y, w, h,1,
@@ -363,23 +384,65 @@ void initialize_pager(void)
       attributes.event_mask = (ExposureMask | ButtonReleaseMask |
 			       ButtonPressMask |ButtonMotionMask);
       desk_h = window_h - label_h;
+
+      valuemask &= ~(CWBackPixel);
+
+
+      if (Desks[i].bgPixmap)
+	{
+	  valuemask |= CWBackPixmap;
+	  attributes.background_pixmap = Desks[i].bgPixmap->picture;
+	} 
+      else if (Desks[i].Dcolor)
+	{
+	  valuemask |= CWBackPixel;
+	  attributes.background_pixel = GetColor(Desks[i].Dcolor);
+	}
+      else if (PixmapBack)
+	{
+	  valuemask |= CWBackPixmap;
+	  attributes.background_pixmap = PixmapBack->picture;
+	}
+      else 
+	{
+	  valuemask |= CWBackPixel;
+	  attributes.background_pixel = back_pix;
+	}
+
+
       Desks[i].w = XCreateWindow(dpy,Desks[i].title_w, x, y, w, desk_h ,1,
 				 CopyFromParent,
 				 InputOutput,CopyFromParent,
-				 valuemask,&attributes);
+				 valuemask, &attributes);
 
 
-      attributes.event_mask = 0;
-      attributes.background_pixel = hi_pix;
+      if (HilightDesks) 
+	{
+	  valuemask &= ~(CWBackPixel | CWBackPixmap);
 
-      w = (window_w - n)/(n+1);
-      h = (window_h - label_h - m)/(m+1);
-      Desks[i].CPagerWin=XCreateWindow(dpy,Desks[i].w,-1000, -1000, w, h,0,
-				       CopyFromParent,
-				       InputOutput,CopyFromParent,
-				       valuemask,
-				       &attributes);
-      XMapRaised(dpy,Desks[i].CPagerWin);
+	  attributes.event_mask = 0;
+
+	  if (HilightPixmap) 
+	    {
+	      valuemask |= CWBackPixmap;
+	      attributes.background_pixmap = HilightPixmap->picture;
+	    }
+	  else
+	    {
+	      valuemask |= CWBackPixel;
+	      attributes.background_pixel = hi_pix;
+	    }
+      
+	  w = (window_w - n)/(n+1);
+	  h = (window_h - label_h - m)/(m+1);
+	  Desks[i].CPagerWin=XCreateWindow(dpy,Desks[i].w,-1000, -1000, w, h,0,
+					   CopyFromParent,
+					   InputOutput,CopyFromParent,
+					   valuemask,
+					   &attributes);
+	  XMapRaised(dpy,Desks[i].CPagerWin);
+	}
+
       XMapRaised(dpy,Desks[i].w);
       XMapRaised(dpy,Desks[i].title_w);
     }
@@ -492,6 +555,60 @@ void initialize_pager(void)
     ShowBalloons = ShowPagerBalloons;
   } /* ShowBalloons */
 }
+
+
+#ifdef SHAPE
+void UpdateWindowShape ()
+{
+  int i, j, cnt, shape_count, x_pos, y_pos;
+  XRectangle *shape;
+
+  if (!ShapeLabels || !uselabel || label_h<=0)
+    return;
+
+  shape_count =
+    ndesks + ((Scr.CurrentDesk < desk1 || Scr.CurrentDesk >desk2) ? 0 : 1);
+  
+  shape = alloca (shape_count * sizeof (XRectangle));
+
+  if (shape == NULL)
+    return;
+
+  cnt = 0;
+  y_pos = (LabelsBelow ? 0 : label_h);
+
+  for (i = 0; i < Rows; ++i) 
+    {
+      x_pos = 0;
+      for (j = 0; j < Columns; ++j)
+	{
+	  if (cnt < ndesks)
+	    {
+	      shape[cnt].x = x_pos;
+	      shape[cnt].y = y_pos;
+	      shape[cnt].width = desk_w + 1;
+	      shape[cnt].height = desk_h + 2;
+	      
+	      if (cnt == Scr.CurrentDesk - desk1)
+		{
+		  shape[ndesks].x = x_pos;
+		  shape[ndesks].y = 
+		    (LabelsBelow ? y_pos + desk_h + 2 : y_pos - label_h);
+		  shape[ndesks].width = desk_w;
+		  shape[ndesks].height = label_h + 2;
+		}
+	    }
+	  ++cnt;
+	  x_pos += desk_w + 1;
+	}
+      y_pos += desk_h + 2 + label_h;
+    }
+
+  XShapeCombineRectangles (dpy, Scr.Pager_w, ShapeBounding, 0, 0,
+			   shape, shape_count, ShapeSet, 0);
+}
+
+#endif
 
 
 
@@ -742,16 +859,21 @@ void ReConfigure(void)
 
 	  if(i<ndesks)
 	    {
+	      int y_pos;
 	      XMoveResizeWindow(dpy,Desks[i].title_w,
 				(desk_w+1)*j-1,(desk_h+label_h+1)*k-1,
 				desk_w,desk_h+label_h);
-	      XMoveResizeWindow(dpy,Desks[i].w,-1,label_h - 1,
+	      y_pos = (LabelsBelow ? 0 : label_h - 1);
+	      XMoveResizeWindow(dpy,Desks[i].w,-1, y_pos,
 				desk_w,desk_h);
-	      if(i == Scr.CurrentDesk - desk1)
-		XMoveResizeWindow(dpy, Desks[i].CPagerWin, x,y,w,h);
-	      else
-		XMoveResizeWindow(dpy, Desks[i].CPagerWin, -1000,-100,w,h);
-
+	      if (HilightDesks) 
+		{
+		  if(i == Scr.CurrentDesk - desk1)
+		    XMoveResizeWindow(dpy, Desks[i].CPagerWin, x,y,w,h);
+		  else
+		    XMoveResizeWindow(dpy, Desks[i].CPagerWin, -1000,-100,w,h);
+		}
+	      
 	      XClearArea(dpy,Desks[i].w, 0, 0, desk_w,
 			 desk_h,True);
 	      if(uselabel)
@@ -781,13 +903,16 @@ void MovePage(void)
   y = (desk_h-m)*Scr.Vy/(Scr.VyMax+Scr.MyDisplayHeight) +m1;
   for(i=0;i<ndesks;i++)
     {
-      if(i == Scr.CurrentDesk - desk1)
+      if (HilightDesks)
 	{
-	  XMoveWindow(dpy, Desks[i].CPagerWin, x,y);
-	  XLowerWindow(dpy,Desks[i].CPagerWin);
+	  if(i == Scr.CurrentDesk - desk1)
+	    {
+	      XMoveWindow(dpy, Desks[i].CPagerWin, x,y);
+	      XLowerWindow(dpy,Desks[i].CPagerWin);
+	    }
+	  else
+	    XMoveWindow(dpy, Desks[i].CPagerWin, -1000,-1000);
 	}
-      else
-	XMoveWindow(dpy, Desks[i].CPagerWin, -1000,-1000);
     }
   DrawIconGrid(1);
 
@@ -867,7 +992,7 @@ void ReConfigureIcons(void)
  ****************************************************************************/
 void DrawGrid(int i, int erase)
 {
-  int y, y1, y2, x, x1, x2,d,hor_off,w;
+  int y, y1, y2, x, x1, x2,d,hor_off,ver_off,w;
   int MaxW,MaxH;
   char str[15], *ptr;
 
@@ -896,17 +1021,17 @@ void DrawGrid(int i, int erase)
       XDrawLine(dpy,Desks[i].w,DashedGC,x1,y1,x2,y1);
       y += Scr.MyDisplayHeight;
     }
-  if((Scr.CurrentDesk - desk1)  == i)
+  if(((Scr.CurrentDesk - desk1)  == i) && !ShapeLabels)
     {
       if(uselabel)
 	XFillRectangle(dpy,Desks[i].title_w,HiliteGC,
-		       0,0,desk_w,label_h -1);
+		       0,(LabelsBelow ? desk_h : 0),desk_w,label_h -1);
     }
   else
     {
       if(uselabel && erase)
 	XClearArea(dpy,Desks[i].title_w,
-		   0,0,desk_w,label_h - 1,False);
+		   0,(LabelsBelow ? desk_h : 0),desk_w,label_h - 1,False);
     }
 
   d = desk1+i;
@@ -921,13 +1046,18 @@ void DrawGrid(int i, int erase)
   if((w<= desk_w)&&(uselabel))
     {
       hor_off = (desk_w -w)/2;
+      ver_off = (LabelsBelow ? desk_h + font->ascent + 1 : font->ascent + 1);
       if(i == (Scr.CurrentDesk - desk1))
-	XDrawString (dpy, Desks[i].title_w,rvGC,hor_off,font->ascent +1 ,
-		     ptr, strlen(ptr));
+	XDrawString (dpy, Desks[i].title_w, rvGC, hor_off, ver_off,
+		     ptr, strlen (ptr));
       else
-	XDrawString (dpy, Desks[i].title_w,NormalGC,hor_off,font->ascent+1  ,
-		     ptr, strlen(ptr));
+	XDrawString (dpy, Desks[i].title_w, NormalGC, hor_off, ver_off,
+		     ptr, strlen (ptr));
     }
+#ifdef SHAPE
+  UpdateWindowShape ();
+#endif
+
 }
 
 
@@ -939,8 +1069,32 @@ void DrawIconGrid(int erase)
   MaxW = (Scr.VxMax + Scr.MyDisplayWidth);
   MaxH = Scr.VyMax + Scr.MyDisplayHeight;
 
-  if(erase)
-    XClearWindow(dpy,icon_win);
+  if(erase) 
+    {
+      int tmp=(Scr.CurrentDesk - desk1);
+
+      if ((tmp < 0) || (tmp >= ndesks)) 
+	{
+	  if (PixmapBack) 
+	    XSetWindowBackgroundPixmap(dpy, icon_win,PixmapBack->picture);
+	  else 
+	    XSetWindowBackground(dpy, icon_win, back_pix);
+	} 
+      else 
+	{
+	  if (Desks[tmp].bgPixmap)
+	    XSetWindowBackgroundPixmap(dpy, icon_win,Desks[tmp].bgPixmap->picture);
+	  else if (Desks[tmp].Dcolor)
+	    XSetWindowBackground(dpy, icon_win, GetColor(Desks[tmp].Dcolor));
+	  else if (PixmapBack)
+	    XSetWindowBackgroundPixmap(dpy, icon_win, PixmapBack->picture);
+	  else 
+	    XSetWindowBackground(dpy, icon_win, back_pix);
+	}
+
+      XClearWindow(dpy,icon_win);
+    }
+
   x = Scr.MyDisplayWidth;
   y1 = 0;
   y2 = icon_h;
@@ -970,9 +1124,18 @@ void DrawIconGrid(int erase)
   x = (icon_w-n)* Scr.Vx/(Scr.VxMax+Scr.MyDisplayWidth) +n1;
   y = (icon_h-m)*Scr.Vy/(Scr.VyMax+Scr.MyDisplayHeight) +m1;
 
-  XFillRectangle(dpy,icon_win,HiliteGC,
-		 x,y,w,h);
-
+  if (HilightDesks) 
+    {
+      if (HilightPixmap) 
+	{
+	  XCopyArea (dpy, HilightPixmap->picture, icon_win,
+		     HiliteGC, 0, 0, w, h, x, y);
+	} 
+      else 
+	{
+	  XFillRectangle (dpy, icon_win, HiliteGC, x, y, w, h);
+	}
+    }
 }
 
 

@@ -145,6 +145,21 @@ Causes the pager to start iconified.
 Causes the pager to start normally.  Useful for cancelling the effect
 of the \fIStartIconic\fP option.
 
+.IP "*FvwmPagerLabelsBelow"
+Causes the pager to draw desk labels below the corresponding desk.
+
+.IP "*FvwmPagerLabelsAbove"
+Causes the pager to draw desk labels above the corresponding desk.
+Useful for cancelling the effect of the \fILabelsBelow\fP option.
+
+.IP "*FvwmPagerShapeLabels"
+Causes the pager to hide the labels of all but the current desk. This
+turns off label hilighting.
+
+.IP "*FvwmPagerNoShapeLabels"
+Causes the pager to show the labels of all visible desks. 
+Useful for cancelling the effect of the \fIShapeLabels\fP option.
+
 .IP "*FvwmPagerFont \fIfont-name\fP"
 Specified a font to use to label the desktops.  If \fIfont_name\fP is
 "none" then no desktop labels will be displayed.
@@ -165,6 +180,17 @@ Specifies the background color for the window.
 .IP "*FvwmPagerHilight \fIcolor\fP"
 The active page and desk label will be highlighted by using this
 background pattern instead of the normal background.
+
+.IP "*FvwmPagerHilightPixmap \fIpixmap\fP"
+The active page will be highlighted by using this background pattern
+instead of the normal background.
+
+.IP "*FvwmPagerDeskHilight"
+Hilight the active page with the current hilight color/pixmap. Useful
+for cancelling the effect of the \fINoDeskHilight\fP option.
+
+.IP "*FvwmPagerNoDeskHilight"
+Don't hilight the active page.
 
 .IP "*FvwmPagerWindowColors \fIfore back hiFore hiBack\fP"
 Change the normal/highlight colors of the windows. \fIfore\fP and
@@ -197,6 +223,18 @@ When Iconified, the pager uses the color specified by *FvwmPagerBack.
 \fBTIP:\fP	Try using *FvwmPagerDeskColor in conjunction with
 FvwmCpp (or FvwmM4) and FvwmBacker to assign identical
 colors to your various desktops and the pager representations.
+
+.IP "*FvwmPagerPixmap \fIpixmap\fP"
+Use \fIpixmap\fP as background for the pager.
+
+.IP "*FvwmPagerDeskPixmap \fIdesk pixmap\fP"
+Assigns the pixmap \fIcolor\fP to desk \fIdesk\fP (or the current desk if
+desk is "*") in the pager window. This replaces the background pixmap for
+the particular \fIdesk\fP.  
+.sp
+\fBTIP:\fP Try using *FvwmPagerDeskPixmap in conjunction with FvwmCpp
+(or FvwmM4) and FvwmBacker to assign identical pixmaps to your various
+desktops and the pager representations.
 
 .IP "*FvwmPagerDeskTopScale \fInumber\fP"
 If the geometry is not specified, then a desktop reduction factor is

@@ -1,6 +1,7 @@
 Changes in alpha release 2.3.0 (February 1999)
 
 * Fvwm2 can now "take over" from a running (ICCCM 2 compliant) wm.
+* FvwmPager can now handle pixmaps as desk backgrounds.
 
 * Layer information is displayed in WindowList.
 

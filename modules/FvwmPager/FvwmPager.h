@@ -89,8 +89,7 @@ typedef struct desk_info
   Window w;
   Window title_w;
   Window CPagerWin;
-  int x;
-  int y;
+  Picture *bgPixmap;		/* Pixmap used as background. */
   char *Dcolor;
   char *label;
 } DeskInfo;
@@ -101,6 +100,7 @@ typedef struct pager_string_list
   int desk;
   char *Dcolor;
   char *label;
+  Picture *bgPixmap;		/* Pixmap used as background. */
 } PagerStringList;
 
 #define ON 1

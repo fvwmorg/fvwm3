@@ -37,8 +37,9 @@
 #include <X11/Intrinsic.h>
 
 #include "fvwm/module.h"
-
 #include "libs/fvwmlib.h"
+#include "libs/ModParse.h"
+
 #include "FvwmPager.h"
 #include "fvwm/fvwm.h"
 
@@ -66,11 +67,20 @@ char *PagerBack = NULL;
 char *font_string = NULL;
 char *smallFont = NULL;
 char *HilightC = NULL;
+
+Picture *HilightPixmap = NULL;
+int HilightDesks = 1;
+
 char *WindowBack = NULL;
 char *WindowFore = NULL;
 char *WindowHiBack = NULL;
 char *WindowHiFore = NULL;
 char *WindowLabelFormat = NULL;
+
+Picture *PixmapBack = NULL;
+
+char *IconPath = NULL;
+char *PixmapPath = NULL;
 
 int ShowBalloons = 0, ShowPagerBalloons = 0, ShowIconBalloons = 0;
 char *BalloonTypeString = NULL;
@@ -89,6 +99,10 @@ int xneg = 0, yneg = 0;
 extern DeskInfo *Desks;
 int StartIconic = 0;
 int MiniIcons = 0;
+int LabelsBelow = 0;
+#ifdef SHAPE
+int ShapeLabels = 0;
+#endif
 int Rows = -1, Columns = -1;
 int desk1=0, desk2 =0;
 int ndesks = 0;
@@ -97,7 +111,7 @@ Pixel win_fore_pix = -1;
 Pixel win_hi_back_pix = -1;
 Pixel win_hi_fore_pix = -1;
 char fAlwaysCurrentDesk = 0;
-PagerStringList string_list = { NULL, 0, NULL, NULL };
+PagerStringList string_list = { NULL, 0, NULL, NULL, NULL };
 
 static volatile sig_atomic_t isTerminated = False;
 
@@ -190,24 +204,13 @@ int main(int argc, char **argv)
       fAlwaysCurrentDesk = 1;
     }
 
-  PagerFore = strdup("black");
-  PagerBack = strdup("white");
-  WindowLabelFormat = strdup("%i");
-  font_string = strdup("fixed");
-  HilightC = strdup("black");
-  BalloonFont = strdup("fixed");
-  BalloonBorderColor = strdup("black");
-  BalloonTypeString = strdup("%i");
-  BalloonFormatString = strdup("%i");
   Desks = (DeskInfo *)safemalloc(ndesks*sizeof(DeskInfo));
   for(i=0;i<ndesks;i++)
     {
       sprintf(line,"Desk %d",i+desk1);
       CopyString(&Desks[i].label,line);
-      CopyString(&Desks[i].Dcolor,PagerBack);
-#ifdef DEBUG
-      fprintf(stderr,"[main]: Desks[%d].Dcolor == %s\n",i,Desks[i].Dcolor);
-#endif /* DEBUG */
+      Desks[i].Dcolor = NULL;
+      Desks[i].bgPixmap = NULL;
     }
 
   /* Initialize X connection */
@@ -228,6 +231,12 @@ int main(int argc, char **argv)
       exit(1);
     }
   Scr.d_depth = DefaultDepth(dpy, Scr.screen);
+
+  InitPictureCMap(dpy, Scr.Root);
+
+#ifdef DEBUG
+  fprintf(stderr,"[main]: Connection to X server established.\n");
+#endif
 
   SetMessageMask(fd,
                  M_ADD_WINDOW|
@@ -256,6 +265,33 @@ int main(int argc, char **argv)
 #ifdef DEBUG
   fprintf(stderr,"[main]: back from calling ParseOptions, calling init pager\n");
 #endif
+
+  if (PagerFore == NULL)
+    PagerFore = strdup("black");
+
+  if (PagerBack == NULL)
+    PagerBack = strdup("white");
+
+  if (WindowLabelFormat == NULL)
+    WindowLabelFormat = strdup("%i");
+
+  if (font_string == NULL)
+    font_string = strdup("fixed");
+
+  if ((HilightC == NULL) && (HilightPixmap == NULL)) 
+    HilightDesks = 0;
+
+  if (BalloonFont == NULL)
+    BalloonFont = strdup("fixed");
+
+  if (BalloonBorderColor == NULL)
+    BalloonBorderColor = strdup("black");
+
+  if (BalloonTypeString == NULL)
+    BalloonTypeString = strdup("%i");
+
+  if (BalloonFormatString == NULL)
+    BalloonFormatString = strdup("%i");
 
   /* open a pager window */
   initialize_pager();
@@ -645,24 +681,58 @@ void list_new_desk(unsigned long *body)
 	}
       XStoreName(dpy, Scr.Pager_w, Desks[0].label);
       XSetIconName(dpy, Scr.Pager_w, Desks[0].label);
+
+
+      if (Desks[0].bgPixmap != NULL)
+	{	      
+	  DestroyPicture(dpy, Desks[0].bgPixmap);
+	  Desks[0].bgPixmap = NULL;
+	}
+
       if (Desks[0].Dcolor != NULL)
-	{
-	  free(Desks[0].Dcolor);
+	{	      
+	  free (Desks[0].Dcolor);
 	  Desks[0].Dcolor = NULL;
 	}
+
+      if (item->next != NULL && item->next->bgPixmap != NULL) 
+	{
+	  Desks[0].bgPixmap = item->next->bgPixmap;
+	  Desks[0].bgPixmap->count++; 
+	  XSetWindowBackgroundPixmap(dpy, Desks[0].w, Desks[0].bgPixmap->picture);
+	} 
+      else if (item->next != NULL && item->next->Dcolor != NULL)
+	{
+	  CopyString(&Desks[0].Dcolor, item->next->Dcolor);
+	  XSetWindowBackground(dpy, Desks[0].w, GetColor(Desks[0].Dcolor));
+	}
+      else if (PixmapBack != NULL)
+	{
+	  Desks[0].bgPixmap = PixmapBack;
+	  Desks[0].bgPixmap->count++; 
+	  XSetWindowBackgroundPixmap(dpy, Desks[0].w, Desks[0].bgPixmap->picture);
+	}
+      else 
+	{
+	  CopyString(&Desks[0].Dcolor, PagerBack);
+	  XSetWindowBackground(dpy, Desks[0].w, GetColor(Desks[0].Dcolor));
+	}
+      
+
       if (item->next != NULL && item->next->Dcolor != NULL)
 	{
 	  CopyString(&Desks[0].Dcolor, item->next->Dcolor);
+	  XSetWindowBackground(dpy, Desks[0].title_w, GetColor(Desks[0].Dcolor));
 	}
-      else
+      else 
 	{
-	  /* Use default title if not specified by user. */
 	  CopyString(&Desks[0].Dcolor, PagerBack);
+	  XSetWindowBackground(dpy, Desks[0].title_w, GetColor(Desks[0].Dcolor));
 	}
-      XSetWindowBackground(dpy, Desks[0].w, GetColor(Desks[0].Dcolor));
-      XClearWindow(dpy, Desks[0].w);
-    }
 
+      XClearWindow(dpy, Desks[0].w);
+      XClearWindow(dpy, Desks[0].title_w);
+    }
   MovePage();
 
   DrawGrid(oldDesk - desk1,1);
@@ -719,7 +789,7 @@ void list_lower(unsigned long *body)
     {
       if(t->PagerView != None)
 	XLowerWindow(dpy,t->PagerView);
-      if((t->desk - desk1>=0)&&(t->desk - desk1<ndesks))
+      if (HilightDesks && (t->desk - desk1>=0) && (t->desk - desk1<ndesks))
 	XLowerWindow(dpy,Desks[t->desk - desk1].CPagerWin);
       XLowerWindow(dpy,t->IconView);
     }
@@ -1042,6 +1112,41 @@ void ParseOptions(void)
       char *tline2;
 
       resource_string = arg1 = arg2 = NULL;
+      
+      if (MatchToken(tline, "IconPath")) {
+	  char *tmp;
+
+	  if (IconPath != NULL) {
+	      free(IconPath);
+	      IconPath = NULL;
+	  }
+	  
+	  free(GetArgument(&tline));
+	  CopyString(&IconPath, tline);
+
+#ifdef DEBUG
+	  fprintf(stderr, "[ParseOptions]: IconPath = %s\n", IconPath);
+#endif
+	  continue;
+      }
+
+      if (MatchToken(tline, "PixmapPath")) {
+	  char *tmp;
+
+	  if (PixmapPath != NULL) {
+	      free(PixmapPath);
+	      PixmapPath = NULL;
+	  }
+
+	  free(GetArgument(&tline));
+	  CopyString(&PixmapPath, tline);
+
+#ifdef DEBUG
+	  fprintf(stderr, "[ParseOptions]: PixmapPath = %s\n", PixmapPath);
+#endif
+	  continue;
+      }
+
       tline2 = GetModuleResource(tline, &resource, MyName);
       if (!resource)
         continue;
@@ -1173,16 +1278,6 @@ void ParseOptions(void)
 	      if (PagerBack)
 		free(PagerBack);
 	      CopyString(&PagerBack,arg1);
-	      for (n=0;n<ndesks;n++)
-		{
-		  free(Desks[n].Dcolor);
-		  CopyString(&Desks[n].Dcolor,PagerBack);
-#ifdef DEBUG
-		  fprintf(stderr,
-			  "[ParseOptions]: Back Desks[%d].Dcolor == %s\n",
-			  n,Desks[n].Dcolor);
-#endif
-		}
 	    }
 	}
       else if (StrEquals(resource, "DeskColor"))
@@ -1228,6 +1323,122 @@ void ParseOptions(void)
 	      free(Desks[desk - desk1].Dcolor);
 	      CopyString(&Desks[desk - desk1].Dcolor, arg2);
 	    }
+	}      
+      else if (StrEquals(resource, "DeskPixmap"))
+	{
+	  if (StrEquals(arg1, "*"))
+	    {
+	      desk = Scr.CurrentDesk;
+	    }
+	  else
+	    {
+	      desk = desk1;
+	      sscanf(arg1,"%d",&desk);
+	    }
+	  if (fAlwaysCurrentDesk)
+	    {
+	      PagerStringList *item;
+
+	      item = FindDeskStrings(desk);
+	      
+	      if (item->next != NULL)
+		{
+		  if (item->next->bgPixmap != NULL)
+		    {
+		      DestroyPicture(dpy, item->next->bgPixmap);
+		      item->next->bgPixmap = NULL;
+		    }
+		  item->next->bgPixmap = CachePicture (dpy, Scr.Root,
+						       IconPath, PixmapPath,
+						       arg2, 0);
+		}
+	      else
+		{
+		  /* new Dcolor and desktop */
+		  item = NewPagerStringItem(item, desk);
+		  item->bgPixmap = CachePicture (dpy, Scr.Root,
+						 IconPath, PixmapPath,
+						 arg2, 0);
+		}
+	      if (desk == Scr.CurrentDesk)
+		{
+		  if (Desks[0].bgPixmap != NULL)
+		    {
+		      DestroyPicture(dpy, Desks[0].bgPixmap);
+		      Desks[0].bgPixmap = NULL;
+		    }
+		  
+		  Desks[0].bgPixmap = CachePicture (dpy, Scr.Root,
+						    IconPath, PixmapPath,
+						    arg2, 0);
+		}
+	    }
+	  else if((desk >= desk1)&&(desk <=desk2))
+	    {
+	      int dNr = desk - desk1;
+
+	      if (Desks[dNr].bgPixmap != NULL)
+		{
+		  DestroyPicture(dpy, Desks[dNr].bgPixmap);
+		  Desks[dNr].bgPixmap = NULL;
+		}
+	      Desks[dNr].bgPixmap = CachePicture (dpy, Scr.Root,
+						  IconPath, PixmapPath,
+						  arg2, 0);
+	    }
+
+#ifdef DEBUG
+		  fprintf(stderr,
+			  "[ParseOptions]: Desk %d: bgPixmap = %s\n",
+			  desk, arg2);
+#endif
+	}
+      else if (StrEquals(resource, "Pixmap"))
+	{
+	  if(Scr.d_depth > 1)
+	    {
+	      if (PixmapBack) {
+		DestroyPicture (dpy, PixmapBack);
+		PixmapBack = NULL;
+	      }
+
+	      PixmapBack = CachePicture (dpy, Scr.Root,
+					 IconPath, PixmapPath,
+					 arg1, 0);
+#ifdef DEBUG
+		  fprintf(stderr,
+			  "[ParseOptions]: Global: bgPixmap = %s\n", arg1);
+#endif
+
+	    }
+	}
+      else if (StrEquals(resource, "HilightPixmap"))
+	{
+	  if(Scr.d_depth > 1)
+	    {
+	      if (HilightPixmap) {
+		DestroyPicture (dpy, HilightPixmap);
+		HilightPixmap = NULL;
+	      }
+
+	      HilightPixmap = CachePicture (dpy, Scr.Root,
+					    IconPath, PixmapPath,
+					    arg1, 0);
+
+#ifdef DEBUG
+		  fprintf(stderr,
+			  "[ParseOptions]: HilightPixmap = %s\n", arg1);
+#endif
+
+	    }
+	}
+      else if (StrEquals(resource, "DeskHilight"))
+	{
+	  HilightDesks = 1;
+	}       
+      else if (StrEquals(resource, "NoDeskHilight"))
+	{
+	  HilightDesks = 0;
 	}
       else if (StrEquals(resource, "Hilight"))
 	{
@@ -1257,6 +1468,28 @@ void ParseOptions(void)
 	{
 	  StartIconic = 1;
 	}
+      else if (StrEquals(resource, "NoStartIconic"))
+	{
+	  StartIconic = 0;
+	}
+      else if (StrEquals(resource, "LabelsBelow"))
+	{
+	  LabelsBelow = 1;
+	}
+      else if (StrEquals(resource, "LabelsAbove"))
+	{
+	  LabelsBelow = 0;
+	}
+#ifdef SHAPE
+      else if (StrEquals(resource, "ShapeLabels"))
+	{
+	  ShapeLabels = 1;
+	}
+      else if (StrEquals(resource, "NoShapeLabels"))
+	{
+	  ShapeLabels = 0;
+	}
+#endif
       else if (StrEquals(resource, "Rows"))
 	{
 	  sscanf(arg1,"%d",&Rows);
@@ -1404,6 +1637,7 @@ PagerStringList *NewPagerStringItem(PagerStringList *last, int desk)
   newitem->next = NULL;
   newitem->label = NULL;
   newitem->Dcolor = NULL;
+  newitem->bgPixmap = NULL;
 
   return newitem;
 }
