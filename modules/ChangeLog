@@ -1,3 +1,9 @@
+2002-05-10  Mikhael Goikhman  <migo@homemail.com>
+
+	* FvwmPager/x_pager.c:
+	fixed incorrect initial positions of subwindows in CxRxNxM pager;
+	still only the first desk is drawn fully for now
+
 2002-05-09  olicha  <olivier.chapuis@free.fr>
 
 	* */*:

@@ -612,10 +612,10 @@ void initialize_pager(void)
 
   for(i=0;i<ndesks;i++)
   {
-    w = window_w / Rows;
-    h = window_h / Columns;
-    x = (w + 1) * (i % Rows);
-    y = (h + 1) * (i % Columns);
+    w = window_w / Columns;
+    h = window_h / Rows;
+    x = (w + 1) * (i % Columns);
+    y = (h + 1) * (i / Columns);
 
     /* create the GC for desk labels */
     gcv.foreground = (Desks[i].colorset < 0) ? fore_pix
@@ -693,6 +693,7 @@ void initialize_pager(void)
       1, CopyFromParent, InputOutput, CopyFromParent, valuemask, &attributes);
     attributes.event_mask = (ExposureMask | ButtonReleaseMask |
 			     ButtonPressMask |ButtonMotionMask);
+    /* or just: desk_h = h - label_h; */
     desk_h = (window_h - Rows * label_h - Rows + 1) / Rows;
 
     valuemask &= ~(CWBackPixel);
@@ -763,8 +764,8 @@ void initialize_pager(void)
 	  : Colorset[Desks[i].highcolorset].bg;
       }
 
-      w = (window_w - n)/(n+1);
-      h = (window_h - label_h - m)/(m+1);
+      w = w / (n + 1);
+      h = desk_h / (m + 1);
       Desks[i].CPagerWin=XCreateWindow(dpy, Desks[i].w, -32768, -32768, w, h, 0,
 				       CopyFromParent, InputOutput,
 				       CopyFromParent, valuemask, &attributes);
