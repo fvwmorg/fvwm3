@@ -1953,18 +1953,18 @@ void CMD_Resize(F_CMD_ARGS)
 
   if (IS_SHADED(tmp_win))
   {
-    if (HAS_BOTTOM_TITLE(tmp_win))
-      drag->height = tmp_win->frame_g.height;
+    drag->x = tmp_win->normal_g.x;
+    drag->y = tmp_win->normal_g.y;
+    if (was_maximized)
+    {
+      drag->width = tmp_win->max_g.width;
+      drag->height = tmp_win->max_g.height;
+    }
     else
     {
-      if (was_maximized)
-	drag->height = tmp_win->max_g.height;
-      else
-	drag->height = tmp_win->normal_g.height;
+      drag->width = tmp_win->normal_g.width;
+      drag->height = tmp_win->normal_g.height;
     }
-    drag->x = tmp_win->frame_g.x;
-    drag->y = tmp_win->frame_g.y;
-    drag->width = tmp_win->frame_g.width;
   }
   else
   {
