@@ -141,25 +141,27 @@ void move_window_doit(XEvent *eventp,Window w,FvwmWindow *tmp_win,
   if (fMoveToPage)
     {
       fAnimated = FALSE;
-      if (GetTwoArguments(action, &page_x, &page_y, &unit_x, &unit_y) != 2)
+      FinalX = x % Scr.MyDisplayWidth;
+      FinalY = y % Scr.MyDisplayHeight;
+      if (GetTwoArguments(action, &page_x, &page_y, &unit_x, &unit_y) == 2)
 	{
-	  fvwm_msg(ERR,"move_window_doit","MoveToPage requires two arguments");
-	  return;
+	  if (unit_x != Scr.MyDisplayWidth || unit_y != Scr.MyDisplayHeight)
+	    {
+	      fvwm_msg(ERR,"move_window_doit",
+		       "MoveToPage arguments should be unitless");
+	    }
+	  if (page_x < 0 || page_y < 0 ||
+	      page_x*Scr.MyDisplayWidth > Scr.VxMax ||
+	      page_y*Scr.MyDisplayHeight > Scr.VyMax)
+	    {
+	      fvwm_msg(ERR,"move_window_doit",
+		       "MoveToPage: invalid page number");
+	      return;
+	    }
+	  tmp_win->flags &= ~STICKY;
+	  FinalX += page_x*Scr.MyDisplayWidth - Scr.Vx;
+	  FinalY += page_y*Scr.MyDisplayHeight - Scr.Vy;
 	}
-      if (unit_x != Scr.MyDisplayWidth || unit_y != Scr.MyDisplayHeight)
-	{
-	  fvwm_msg(ERR,"move_window_doit",
-		   "MoveToPage arguments should be unitless");
-	}
-      if (page_x < 0 || page_y < 0 || page_x*Scr.MyDisplayWidth > Scr.VxMax ||
-	  page_y*Scr.MyDisplayHeight > Scr.VyMax)
-	{
-	  fvwm_msg(ERR,"move_window_doit","MoveToPage: invalid page number");
-	  return;
-	}
-      tmp_win->flags &= ~STICKY;
-      FinalX = (x % Scr.MyDisplayWidth) + page_x*Scr.MyDisplayWidth - Scr.Vx;
-      FinalY = (y % Scr.MyDisplayHeight) + page_y*Scr.MyDisplayHeight - Scr.Vy;
     }
   else
     {

@@ -593,6 +593,9 @@ MenuStatus MenuInteraction(MenuRoot *menu,MenuRoot *menuPrior,
   Bool fPopdown = FALSE;
   Bool fPopup   = FALSE;
   Bool fDoMenu  = FALSE;
+  Bool fMotionFirst = FALSE;
+  Bool fReleaseFirst = FALSE;
+  Bool fFakedMotion = FALSE;
 
   mops.flags = 0;
   /* remember where the pointer was so we can tell if it has moved */
@@ -606,6 +609,7 @@ MenuStatus MenuInteraction(MenuRoot *menu,MenuRoot *menuPrior,
       if (fForceReposition) {
 	Event.type = MotionNotify;
 	Event.xmotion.time = lastTimestamp;
+	fFakedMotion = TRUE;
 	fForceReposition = FALSE;
       } else if (DELAY_POPUP_MENUS) {
 	while (XCheckMaskEvent(dpy,
@@ -619,6 +623,7 @@ MenuStatus MenuInteraction(MenuRoot *menu,MenuRoot *menuPrior,
 	    /* fake a motion event, and set fDoPopupNow */
 	    Event.type = MotionNotify;
 	    Event.xmotion.time = lastTimestamp;
+	    fFakedMotion = TRUE;
 	    fDoPopupNow = TRUE;
 	    break;
 	  }
@@ -644,7 +649,8 @@ MenuStatus MenuInteraction(MenuRoot *menu,MenuRoot *menuPrior,
 	  mi = FindEntry(&x_offset);
 	  /* hold the menu up when the button is released 
 	     for the first time if released OFF of the menu */
-	  if(fSticks) {
+	  if(fSticks && !fMotionFirst) {
+	    fReleaseFirst = TRUE;
 	    fSticks = FALSE;
 	    continue;
 	    /* break; */
@@ -696,6 +702,9 @@ MenuStatus MenuInteraction(MenuRoot *menu,MenuRoot *menuPrior,
 	    }
 	  }
 	  mi = FindEntry(&x_offset);
+	  if (!fReleaseFirst && !fFakedMotion)
+	    fMotionFirst = TRUE;
+	  fFakedMotion = FALSE;
 	  break;
 	  
 	case Expose:
@@ -1080,7 +1089,6 @@ Bool FPopupMenu (MenuRoot *menu, MenuRoot *menuPrior, int x, int y,
 	    menu->width +1;
       }
   } /* if (pops->flags & MENU_HAS_POSHINTS) */
-
   x_overlap = DoMenusOverlap(menuPrior, x, y,menu->width,menu->height, 3);
   /* clip to screen */
   if (x + menu->width > Scr.MyDisplayWidth - 2)
@@ -1166,7 +1174,7 @@ Bool FPopupMenu (MenuRoot *menu, MenuRoot *menuPrior, int x, int y,
 	  fUseLeft = TRUE;
 	else
 	  fUseLeft = FALSE;
-	x = (fUseLeft) ? TRUE : FALSE;
+	x = (fUseLeft) ? left_x : right_x;
       } /* else if (USING_MWM_MENUS || USING_WIN_MENUS) */
     } /* if (x_clipped_overlap && ...) */
     
@@ -1909,7 +1917,8 @@ void MakeMenu(MenuRoot *mr)
 	cur = cur_prev;
 
 	/* And add the entry pointing to the new menu */
-	AddToMenu(mr,"More&...",szMenuContinuationActionAndName,FALSE /* no pixmap scan */);
+	AddToMenu(mr,"More&...",szMenuContinuationActionAndName,
+		  FALSE /* no pixmap scan */, FALSE);
 	MakeMenu(menuContinuation);
 
 	}
@@ -2173,7 +2182,8 @@ MenuRoot *FollowMenuContinuations(MenuRoot *mr, MenuRoot **pmrPrior )
  *       so built in window list can handle windows w/ * and % in title.
  *
  ***********************************************************************/
-void AddToMenu(MenuRoot *menu, char *item, char *action, Bool fPixmapsOk)
+void AddToMenu(MenuRoot *menu, char *item, char *action, Bool fPixmapsOk,
+	       Bool fNoPlus)
 {
   MenuItem *tmp;
   char *start,*end;
@@ -2181,10 +2191,8 @@ void AddToMenu(MenuRoot *menu, char *item, char *action, Bool fPixmapsOk)
 
   /* Just returning will probably cause a coredump somewhere else, so I think
      we should continue with a default! */
-  /*
-   *  if(item == NULL)
-   *     return;
-   */
+  if ((item == NULL || *item == 0) && fNoPlus)
+    return;
   /* empty items screw up our menu when painted, so we replace them with a
      separator */
   if (item == NULL || *item == 0) item = "";

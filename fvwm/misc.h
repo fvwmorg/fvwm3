@@ -219,7 +219,7 @@ extern void       LowerWindow(FvwmWindow *t);
 extern Bool       GrabEm(int);
 extern void       UngrabEm(void);
 extern MenuRoot   *NewMenuRoot(char *name, int function_or_popup);
-extern void       AddToMenu(MenuRoot *, char *, char *, Bool);
+extern void       AddToMenu(MenuRoot *, char *, char *, Bool, Bool);
 extern void       MakeMenu(MenuRoot *);
 extern void       CaptureAllWindows(void);
 extern void       SetTimer(int);

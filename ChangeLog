@@ -1,3 +1,21 @@
+1998-11-04  Dominik Vogt <dominik_vogt@hp.com>
+
+	* fvwm/fvwm2.1: 
+	* fvwm/builtins.c (stick_function): 
+	* fvwm/move.c (move_window_doit):
+	Change for 'Stick' to allow to make windows sticky that are on
+	a different screen.
+
+	* modules/FvwmAudio/FvwmAudio.c: 
+	* modules/FvwmEvent/FvwmEvent.c: Fixed rplay build problem
+
+	* modules/FvwmEvent/Makefile.in (mkinstalldirs):
+	Added missing rplay library to link options
+
+	* fvwm/menus.c (FPopupMenu):
+	Fixed broken left menus with mwm/noanimation style when near the
+	right edge of screen.
+
 1998-11-04  Dan Espen  <dane@mk.bellcore.com>
 
 	* TODO: Renamed TO-DO to standard name TODO
@@ -11,19 +29,22 @@ Wed Nov  4 11:09:11 1998  Steve Robbins  <steve@nyongwa.montreal.qc.ca>
 
 	* DEVELOPERS: replaces README.autoconf.
 
-1998-11-04  /users/domivogt  <dominik_vogt@hp.com>
+1998-11-04  Dominik Vogt  <dominik_vogt@hp.com>
 
 	* fvwm/events.c (HandlePropertyNotify): Fixed the fix
 	* for TransientFor Bug
 
 	* extras/fvwmperl/*: Added correct copyright notices.
 
-1998-11-03  /users/domivogt  <dominik_vogt@hp.com>
+1998-11-03  Dominik Vogt  <dominik_vogt@hp.com>
 
-	* fvwm/misc.c (GetPositionArguments): Added MkLinux fix
-	* from Mike Tilstra
+	* fvwm/events.c (HandlePropertyNotify):
+	Added bugfix for TransientFor problem by Duane Guingrich.
 
 	* TO-DO (Cleanups): Updated the TO-DO list
+
+	* fvwm/misc.c (GetPositionArguments):
+	Added MkLinux fix from Mike Tilstra
 
 Tue Nov  2 00:35:30 1998  Dominik Vogt  <dominik_vogt@hp.com>
 
@@ -33,7 +54,7 @@ Tue Nov  2 00:35:30 1998  Dominik Vogt  <dominik_vogt@hp.com>
 	* fvwm/move.c
 	* fvwm/placement.c
 	* fvwm/resize.c:
-	* fixed XBell bug
+	fixed XBell bug
 
 Tue Nov  2 00:35:30 1998  Dominik Vogt  <dominik_vogt@hp.com>
 
@@ -44,11 +65,11 @@ Tue Nov  2 00:35:30 1998  Dominik Vogt  <dominik_vogt@hp.com>
 	* modules/FvwmButtons/button.c
 	* modules/FvwmButtons/draw.c
 	* modules/FvwmButtons/parse.c:
-	* Left/Right/Center option for buttons, did some cleanup
+	Left/Right/Center option for buttons, did some cleanup
 
 Tue Nov  2 00:35:30 1998  Dominik Vogt  <dominik_vogt@hp.com>
 
-	* cleaned up lots of files for lclint
+	cleaned up lots of files for lclint
 
 Sun Nov  1 12:52:59 1998  Steve Robbins  <steve@nyongwa.montreal.qc.ca>
 

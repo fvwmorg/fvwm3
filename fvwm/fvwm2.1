@@ -1514,13 +1514,15 @@ The arguments are the same as for the \fPDesk\P command. MoveToDesk
 does the same as the WindowsDesk command.
 
 
-.IP "MoveToPage \fIx y\fP"
+.IP "MoveToPage [\fIx y\fP]"
 Moves the selected window to another page (x,y). The upper left page is
 (0,0), the upper right is (M,0), where M is one less than the current
 number of horizontal pages specified in the DeskTopSize command.  The
 lower left page is (0,N), and the lower right page is (M,N), where N
 is the desktop's vertical size as specified in the DeskTopSize
-command.
+command. If \fIx\fP and \fIy\fP are not given, the window is moved to
+the current page (a window that has the focus but is off-screen can
+be retrieved with this).
 
 
 .IP "Nop"

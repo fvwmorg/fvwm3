@@ -91,14 +91,14 @@
 /*
  * rplay includes:
  */
+#include "config.h"
+#include "../../fvwm/module.h"
+#include "../../libs/fvwmlib.h"     
+
 #ifdef HAVE_RPLAY
 #include <rplay.h>
 #undef M_ERROR /* Solaris fix */
 #endif
-
-#include "config.h"
-#include "../../fvwm/module.h"
-#include "../../libs/fvwmlib.h"     
 
 #define BUILTIN_STARTUP		MAX_MESSAGES
 #define BUILTIN_SHUTDOWN	MAX_MESSAGES+1

@@ -95,6 +95,10 @@
 #include <unistd.h>
 #include <ctype.h>
 
+#include "config.h"
+#include "../../fvwm/module.h"
+#include "../../libs/fvwmlib.h"
+
 /*
  * rplay includes:
  */
@@ -102,10 +106,6 @@
 #include <rplay.h>
 #undef M_ERROR /* Solaris fix */
 #endif
-
-#include "config.h"
-#include "../../fvwm/module.h"
-#include "../../libs/fvwmlib.h"
 
 #include "Parse.h"
 

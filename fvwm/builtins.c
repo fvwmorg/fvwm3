@@ -493,7 +493,7 @@ void add_item_to_menu(XEvent *eventp,Window w,FvwmWindow *tmp_win,
   free(token);
   rest = GetNextToken(rest,&item);
 
-  AddToMenu(mr, item,rest,TRUE /* pixmap scan */);
+  AddToMenu(mr, item,rest,TRUE /* pixmap scan */, TRUE);
   free(item);
   
   MakeMenu(mr);
@@ -519,7 +519,7 @@ void add_another_item(XEvent *eventp,Window w,FvwmWindow *tmp_win,
 	  return;
       rest = GetNextToken(action,&item);
       
-      AddToMenu(mr, item,rest,TRUE /* pixmap scan */);
+      AddToMenu(mr, item,rest,TRUE /* pixmap scan */, FALSE);
       free(item);
       
       MakeMenu(mr);
@@ -576,7 +576,7 @@ void add_item_to_func(XEvent *eventp,Window w,FvwmWindow *tmp_win,
     free(token);
   rest = GetNextToken(rest,&item);
 
-  AddToMenu(mr, item,rest,FALSE);
+  AddToMenu(mr, item,rest,FALSE,FALSE);
   free(item);
   
   return;
@@ -924,6 +924,7 @@ void stick_function(XEvent *eventp,Window w,FvwmWindow *tmp_win,
   else
   {
     tmp_win->flags |=STICKY;
+    move_window_doit(eventp, w, tmp_win, context, "", Module, FALSE, TRUE);
   }
   BroadcastConfig(M_CONFIGURE_WINDOW,tmp_win);
   SetTitleBar(tmp_win,(Scr.Hilite==tmp_win),True);

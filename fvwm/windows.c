@@ -176,7 +176,7 @@ void do_windowList(XEvent *eventp,Window w,FvwmWindow *tmp_win,
     sprintf(tlabel,"Desk: %d",desk);
   }
   mr=NewMenuRoot(tlabel,0);
-  AddToMenu(mr, tlabel, "TITLE",FALSE);
+  AddToMenu(mr, tlabel, "TITLE", FALSE, FALSE);
 
   next_desk = 0;
 
@@ -302,7 +302,7 @@ void do_windowList(XEvent *eventp,Window w,FvwmWindow *tmp_win,
           sprintf(tlabel,"WindowListFunc %ld",t->w);
 	}
 	free(tfunc);
-        AddToMenu(mr, t_hot, tlabel, FALSE);
+        AddToMenu(mr, t_hot, tlabel, FALSE, FALSE);
 #ifdef MINI_ICONS
         /* Add the title pixmap */
         if (t->mini_icon) {
