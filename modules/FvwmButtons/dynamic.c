@@ -278,7 +278,7 @@ void parse_message_line(char *line)
 		{
 			char *option_pair;
 			int option;
-			char *value0, *value, *value2;
+			char *value0, *value;
 
 			/* parse option and value and give diagnostics */
 			rest = GetQuotedString(
