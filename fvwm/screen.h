@@ -370,7 +370,7 @@ typedef struct ScreenInfo
   FvwmWindow *focus_in_pending_window;
   int EdgeScrollX;              /* #pixels to scroll on screen edge */
   int EdgeScrollY;              /* #pixels to scroll on screen edge */
-  unsigned char buttons2grab;   /* buttons to grab in click to focus mode */
+  unsigned short buttons2grab;  /* buttons to grab in click to focus mode */
   int NumBoxes;
   int cascade_x;                /* values used for CascadePlacement */
   int cascade_y;

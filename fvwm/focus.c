@@ -856,6 +856,7 @@ static void __focus_grab_buttons(FvwmWindow *fw, Bool client_entered)
 		return;
 	}
 	grab_buttons = Scr.buttons2grab;
+fprintf(stderr,"btg %d, nemb %d\n", grab_buttons, NUMBER_OF_EXTENDED_MOUSE_BUTTONS);
 	do_grab_window = focus_query_grab_buttons(fw, client_entered);
 	if (do_grab_window == True)
 	{

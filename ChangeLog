@@ -1,5 +1,11 @@
 2002-10-21  Dominik Vogt  <dominik.vogt@gmx.de>
 
+	* fvwm/bindings.c (binding_cmd):
+	(bind_get_bound_button_contexts):
+	(ParseBinding):
+	* fvwm/screen.h (ScreenInfo):
+	fixed mouse bindings with buttons > 5
+
 	* fvwm/menuitem.c (menuitem_paint):
 	* fvwm/menustyle.c (menustyle_parse_style):
 	(menustyle_parse_style):
@@ -23,7 +29,7 @@
 	(PictureAllocColorTable):
 	(PictureDitherByDefault):
 	(PictureUseBWOnly):
-	(PictureInitColors):
+	(PictureIitColors):
 	(PicturePrintColorInfo):
 	* libs/PictureUtils.h:
 	Allows -color-limit to work with any visual and depth for testing

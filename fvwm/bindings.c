@@ -161,32 +161,8 @@ static void activate_binding(
 	return;
 }
 
-static void binding_cmd(F_CMD_ARGS, BindingType type, Bool do_grab_root)
-{
-	Binding *b;
-	int count;
-	unsigned char btg = Scr.buttons2grab;
-
-	count = ParseBinding(
-		dpy, &Scr.AllBindings, action, type, &Scr.nr_left_buttons,
-		&Scr.nr_right_buttons, &btg, do_grab_root,
-		Scr.flags.silent_functions);
-	if (btg != Scr.buttons2grab)
-	{
-		Scr.flags.do_need_window_update = 1;
-		Scr.flags.has_mouse_binding_changed = 1;
-		Scr.buttons2grab = btg;
-	}
-	for (b = Scr.AllBindings; count > 0; count--, b = b->NextBinding)
-	{
-		activate_binding(b, type, True, do_grab_root);
-	}
-
-	return;
-}
-
 static int bind_get_bound_button_contexts(
-	Binding **pblist, int button, unsigned char *buttons_grabbed)
+	Binding **pblist, unsigned short *buttons_grabbed)
 {
 	int bcontext = 0;
 	Binding *b;
@@ -205,14 +181,14 @@ static int bind_get_bound_button_contexts(
 		if ((b->Context & (C_WINDOW | C_EWMH_DESKTOP)) &&
 		    buttons_grabbed != NULL)
 		{
-			if (button == 0)
+			if (b->Button_Key == 0)
 			{
 				*buttons_grabbed |=
 					((1 << NUMBER_OF_MOUSE_BUTTONS) - 1);
 			}
 			else
 			{
-				*buttons_grabbed |= (1 << (button - 1));
+				*buttons_grabbed |= (1 << (b->Button_Key - 1));
 			}
 		}
 		if (b->Context != C_ALL && (b->Context & (C_LALL | C_RALL)))
@@ -223,13 +199,11 @@ static int bind_get_bound_button_contexts(
 
 	return bcontext;
 }
-/* ---------------------------- interface functions ------------------------- */
-
 /* Parses a mouse or key binding */
-int ParseBinding(
+static int ParseBinding(
 	Display *dpy, Binding **pblist, char *tline, BindingType type,
 	int *nr_left_buttons, int *nr_right_buttons,
-	unsigned char *buttons_grabbed, Bool do_ungrab_root, Bool is_silent)
+	unsigned short *buttons_grabbed, Bool do_ungrab_root, Bool is_silent)
 {
 	char *action, context_string[20], modifier_string[20], *ptr, *token;
 	char key_string[201] = "";
@@ -447,7 +421,7 @@ int ParseBinding(
 			int bcontext;
 
 			bcontext = bind_get_bound_button_contexts(
-				pblist, button, buttons_grabbed);
+				pblist, buttons_grabbed);
 			update_nr_buttons(
 				bcontext, nr_left_buttons, nr_right_buttons,
 				True);
@@ -488,6 +462,32 @@ int ParseBinding(
 
 	return rc;
 }
+
+static void binding_cmd(F_CMD_ARGS, BindingType type, Bool do_grab_root)
+{
+	Binding *b;
+	int count;
+	unsigned short btg = Scr.buttons2grab;
+
+	count = ParseBinding(
+		dpy, &Scr.AllBindings, action, type, &Scr.nr_left_buttons,
+		&Scr.nr_right_buttons, &btg, do_grab_root,
+		Scr.flags.silent_functions);
+	if (btg != Scr.buttons2grab)
+	{
+		Scr.flags.do_need_window_update = 1;
+		Scr.flags.has_mouse_binding_changed = 1;
+		Scr.buttons2grab = btg;
+	}
+	for (b = Scr.AllBindings; count > 0; count--, b = b->NextBinding)
+	{
+		activate_binding(b, type, True, do_grab_root);
+	}
+
+	return;
+}
+
+/* ---------------------------- interface functions ------------------------- */
 
 /* Removes all unused modifiers from in_modifiers */
 unsigned int MaskUsedModifiers(unsigned int in_modifiers)

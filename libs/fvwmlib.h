@@ -413,7 +413,7 @@ typedef struct Binding
 {
   BindingType type;       /* Is it a mouse, key, or stroke binding */
   STROKE_CODE(void *Stroke_Seq;) /* stroke sequence */
-  int Button_Key;         /* Mouse Button number of Keycode */
+  int Button_Key;         /* Mouse Button number or Keycode */
   char *key_name;         /* In case of keycode, give the key_name too */
   int Context;            /* Contex is Fvwm context, ie titlebar, frame, etc */
   int Modifier;           /* Modifiers for keyboard state */
