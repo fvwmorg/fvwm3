@@ -1,3 +1,17 @@
+2001-06-30  Mikhael Goikhman  <migo@homemail.com>
+
+	* fvwm/fvwm2:
+	minor corrections
+
+	* sample.fvwmrc/system.fvwm2rc-sample-95:
+	Fixed several problems like position hints in WindowList should
+	go before other args, invisible menu Greyed color, SelectOnRelease
+	in the skipped window listing and text rewordings.
+	In addition, some parts of Setup95 were based on earlier fvwm-themes,
+	since then these parts are changed, so update some of them here too.
+	This includes renaming desktop component to globalfeel, some changes
+	in menus and more minor cleanups. It's still messy enough, but ok...
+
 2001-06-29  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* fvwm/stack.c (is_on_top_of_layer_ignore_rom):

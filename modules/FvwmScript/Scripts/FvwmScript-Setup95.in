@@ -166,7 +166,7 @@ Property
  Position 10 10
  Flags NoReliefString
  Type ItemDraw
- Title {This Script creates configuration files (.fvwm2rc, bindings, decorations, desktop, functions, menus,}
+ Title {This Script creates configuration files (.fvwm2rc, bindings, decorations, functions, globalfeel,}
 Main
  Case message of
   SingleClic :
@@ -179,7 +179,7 @@ Property
  Position 10 30
  Flags NoReliefString
  Type ItemDraw
- Title {modules, startup, styles, iconstyles) and copies them to your FVWM_USERDIR directory:}
+ Title {menus, modules, startup, styles, iconstyles) and copies them to your FVWM_USERDIR directory:}
 Main
  Case message of
   SingleClic :

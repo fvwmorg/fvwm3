@@ -9,7 +9,7 @@
 #
 # Then, run the "Setup 95 Script" from the root menu. This creates
 # and installs the following configuration files: .fvwm2rc, bindings,
-# decorations, desktop, functions, menus, modules, startup, styles,
+# decorations, functions, globalfeel, menus, modules, startup, styles,
 # iconstyles.
 # If perl is not installed on your machine (my god), only one file is
 # installed: .fvwm2rc (and this configuration should work). Some instructions
@@ -109,11 +109,11 @@
 #
 # Summary:
 #
-# 1.  Module path and Image paths. (In this file)
+# 1.  Module and Image paths. (In this file)
 # 2.  Root cursor, Windows Decoration and Menus Style. (In decorations)
-# 3.  Set up the Major operating modes. (In desktop)
-# 4.  Miscenallous Major operating mode. (In desktop)
-# 5.  Stuff to do at start-up and on restart (In startup).
+# 3.  Set up the Major operating modes. (In globalfeel)
+# 4.  Miscellaneous Major operating mode. (In globalfeel)
+# 5.  Stuff to do at start-up and on restart. (In startup)
 # 6.  Set applications dependent styles. (In styles)
 # 7.  Set applications Mini Icons and Icons. (In iconstyles)
 # 8.  Define some complex functions. (In functions)
@@ -127,7 +127,7 @@
 
 #-----------------------------------------------------------------------------#
 #
-# 1. Module paths and Image paths
+# 1. Module and Image paths
 # These paths are colon-separated lists, just like regular unix PATH
 #
 #-----------------------------------------------------------------------------#
@@ -258,38 +258,37 @@ MenuStyle * ActiveFore white, HilightBack Blue4
 #MenuStyle * ActiveFore black, HilightBack grey85
 #MenuStyle * Hilight3DThick
 
+MenuStyle * Greyed grey60  # default is invisible on backgroud grey80
 MenuStyle * VerticalItemSpacing 2 4, VerticalTitleSpacing 2 4
 
-#WIN 4
-MenuStyle winops win
+CopyMenuStyle * winops
+
+#WIN 1
 MenuStyle winops font -*-times-medium-r-*-*-14-*-*-*-*-*-*-*
-MenuStyle winops Foreground black, Background grey80
-MenuStyle winops ActiveFore white, HilightBack Blue4
-#FVWM 6
-#MenuStyle winops fvwm
+#FVWM 2
 #MenuStyle winops font -*-times-bold-r-*-*-12-*-*-*-*-*-*-*
-#MenuStyle winops Foreground black, Background grey80
-#MenuStyle winops ActiveFore black, HilightBack grey85
 #MenuStyle winops TitleWarpOff
 
 MenuStyle winops VerticalItemSpacing 1 2, VerticalTitleSpacing 1 2
 
-#SEG desktop
+#SEG globalfeel
 #-----------------------------------------------------------------------------#
 #
 # 3. Set up the major operating modes
 #
 #-----------------------------------------------------------------------------#
 
-# WARNING!!!!!
-# If you use Settings-->Configuration-->Base Config to configure your
-# major operating modes then all the commands in this section are
-# overridden by the last line of this section. So, either comment the
-# last line of this section or you can remove all the lines of this
-# section but the last one.
-# If you use Base Config and application dependent styles that are set in
-# this section use the styles file to define these applications dependent
-# styles. This way Base Config will not destroy your application specific
+# WARNING!!!
+#
+# If you use (or ever used) Settings-->Configuration-->Base Config
+# to configure your major operating modes then all commands in this
+# section 3 are overridden by the last line of this section (PipeRead).
+# So, you can comment the last line of this section.
+# Or, instead, you can remove all the lines of this section but the last one.
+#
+# If you use Base Config and this section has some application dependent
+# styles, a suggested solution is to move them to the styles file.
+# This way Base Config does not destroy your application specific
 # styles when you use it.
 
 #WIN 1  To have more WIN-like behavior
@@ -340,9 +339,9 @@ Style * NoPPosition
 
 Style * GrabFocusOff
 
-# If you have use Base Config, then the next line overrides this section
-# with the setting you define! In this case you can replace the next line
-# by "Read .FvwmBaseConfig" and remove all the other lines of this section.
+# If you ever used Base Config, then the next line overrides this section
+# with the settings you defined! In this case you may replace the whole
+# section 3 by one command "Read .FvwmBaseConfig".
 PipeRead '[ ! -f $FVWM_USERDIR/.FvwmBaseConfig ] || echo Read .FvwmBaseConfig'
 
 #----------------------------------------------------------------------------#
@@ -387,8 +386,7 @@ BusyCursor DynamicMenu True, Read True
 #------------------------------------------------------------------------------
 
 #
-# FVWM has a command for bogus applications. Here an example with
-# KFM
+# FVWM has a command for bogus applications. Here an example with KFM
 #
 
 #KFM_ICONS 1 uncomment the next line if you use the KFM "icons"
@@ -1190,7 +1188,7 @@ AddToFunc ShowLayers I Exec F=$FVWM_USERDIR; T=$F/.tmp-layers; echo -e "A StaysO
 # Button 2 gives the Window Ops menu
 # Button 3 gives the WindowList (like TwmWindows)
 # I use the AnyModifier (A) option for the modifier field, so you can hold down
-# any shift-control-whatever combination you want!
+# any Shift-Ctrl-whatever combination you want!
 # Moreover on a window the same bindings are defined with the Alt modifier
 #------------------------------------------------------------------------------
 
@@ -1200,12 +1198,12 @@ AddToFunc ShowLayers I Exec F=$FVWM_USERDIR; T=$F/.tmp-layers; echo -e "A StaysO
 Mouse 1		R   	A       Menu Utilities mouse -1p -1p
 Mouse 2		R    	A       Menu Window mouse -1p -1p
 Mouse 3         R       A       WindowList mouse -1p -1p
-Mouse 3         R       C       WindowList OnlyListSkip mouse -1p -1p
+Mouse 3         R       C       WindowList mouse -1p -1p OnlyListSkip
 
 Mouse 1		W   	M       Menu Utilities mouse -1p -1p
 Mouse 2		W    	M       Menu Window mouse -1p -1p
 Mouse 3         W       M       WindowList mouse -1p -1p
-Mouse 3         W       CM      WindowList OnlyListSkip mouse -1p -1p
+Mouse 3         W       CM      WindowList mouse -1p -1p OnlyListSkip
 
 
 #G_SESSION 3 bind Shift Mouse * to gnomebutton
@@ -1275,7 +1273,7 @@ Mouse 3         6       A       All ($c) WindowShade On
 #------------------------------------------------------------------------------
 
 #------------------------------------------------------------------------------
-# press arrow + shift anywhere, and scroll by 1 page
+# press arrow + Shift anywhere, and scroll by 1 page
 #------------------------------------------------------------------------------
 
 Key Left	A	S	Scroll -100 0
@@ -1284,7 +1282,7 @@ Key Up		A	S	Scroll +0   -100
 Key Down	A	S	Scroll +0   +100
 
 #------------------------------------------------------------------------------
-# press arrow + meta key, and scroll by 1/10 of a page
+# press arrow + Alt key, and scroll by 1/10 of a page
 #------------------------------------------------------------------------------
 
 Key Left	A	M	Scroll -10 +0
@@ -1302,7 +1300,7 @@ Key Up		A	MC	CursorMove +0   -1
 Key Down	A	MC	CursorMove +0   +1
 
 #------------------------------------------------------------------------------
-# press shift arrow + Shift-meta key, and move the pointer by 1/10 of a page
+# press arrow + Shift-Alt key, and move the pointer by 1/10 of a page
 #------------------------------------------------------------------------------
 
 Key Left	A	SM	CursorMove -10 +0
@@ -1322,20 +1320,20 @@ Key Prior	A       CM      Desk  +1 0 0 3
 Key Prior	R       M       Desk  +1 0 0 3
 
 #------------------------------------------------------------------------------
-# Alt-shift-Fx window operations
+# Alt-Shift-Fx window operations
 #------------------------------------------------------------------------------
 Key F4		A	MS	Close
-Key F5		A	MS	Move
-Key F6		A	MS	Resize
-Key F7		A	MS	Iconify
-Key F8		A	MS	Shade
-Key F9		A	MS	Stick
+Key F5		A	MS	RaiseLower
+Key F6		A	MS	All (Iconic) Raise  # originally Restore
+Key F7		A	MS	Move
+Key F8		A	MS	Resize
+Key F9		A	MS	Iconify
 Key F10		A	MS	Maximize 100 100
 Key F11		A	MS	FvwmIdent
-Key F11		A	MS	All (Iconic) Raise
+Key F12		A	MS	FvwmConsole
 
 #------------------------------------------------------------------------------
-# The menus via Alt-shift-Fx
+# The menus via Alt-Shift-Fx
 #------------------------------------------------------------------------------
 Key F1		A	MS	Menu Utilities mouse -1p -1p
 Key F2		A	MS	Menu Window mouse -1p -1p
@@ -1347,13 +1345,14 @@ Key F3		A	MS	WindowList mouse -1p -1p
 #------------------------------------------------------------------------------
 
 DestroyFunc my_dbltab2
-AddToFunc my_dbltab2 I WindowListFunc $w
+AddToFunc   my_dbltab2
++ I WindowListFunc $w
 DestroyFunc my_dbltab_prev
-AddToFunc my_dbltab_prev I Prev my_dbltab2
+AddToFunc   my_dbltab_prev
++ I Prev my_dbltab2
 
-Key Tab A M	WindowList Root c c NoGeometry NoDeskSort SelectOnRelease Alt_L my_dbltab_prev
-
-Key Tab	A CM	WindowList Root c c NoGeometry OnlyListSkip
+Key Tab A M	WindowList Root c c NoGeometry, NoDeskSort, SelectOnRelease Alt_L my_dbltab_prev
+Key Tab	A CM	WindowList Root c c NoGeometry, OnlyListSkip, SelectOnRelease
 
 
 #------------------------------------------------------------------------------
@@ -1465,25 +1464,29 @@ AddToMenu    Utilities "FVWM Root Menu" Title
 #------------------------------------------------------------------------------
 DestroyMenu Shells
 AddToMenu   Shells
-+ "&Xterm	standard%mini.term.xpm%" Exec exec xterm
-+ "Xterm/&root	standard%mini.term.xpm%" Exec exec xterm -fg red -bg black -e su -l
-+ "&NXterm	standard%mini.term.xpm%" Exec exec nxterm
-+ "&Rxvt	standard%mini.term.xpm%" Exec exec rxvt
-+ "&Eterm	standard%mini.term.xpm%" Exec exec Eterm
-+ "X&iterm	standard%mini.term.xpm%" Exec exec xiterm
-+ "&Aterm	standard%mini.term.xpm%" Exec exec aterm
-+ "&Gnome Terminal	standard%mini.term.xpm%" Exec exec gnome-terminal
-+ "&Konsole	standard%mini.term.xpm%" Exec exec konsole
-+ "&Kvt	standard%mini.term.xpm%" Exec exec kvt
-+ "&Dtterm	standard%mini.term.xpm%" Exec exec /usr/bin/dtterm
++ "&Xterm	default%mini.term.xpm%" Exec exec xterm
++ "Xterm/&root	default%mini.term.xpm%" Exec exec xterm -fg violet -bg black -e su -l
++ "&NXterm	default%mini.term.xpm%" Exec exec nxterm
++ "&Rxvt	default%mini.term.xpm%" Exec exec rxvt
++ "&Eterm	default%mini.term.xpm%" Exec exec Eterm
++ "X&iterm	default%mini.term.xpm%" Exec exec xiterm
++ "&Aterm	default%mini.term.xpm%" Exec exec aterm
++ "&GNOME Term	default%mini.term.xpm%" Exec exec gnome-terminal
++ "&Konsole	default%mini.term.xpm%" Exec exec konsole
++ "&Kvt 	default%mini.term.xpm%" Exec exec kvt
++ "&Dtterm	default%mini.term.xpm%" Exec exec /usr/bin/dtterm
 + ""                                                Nop
-+ "&Xterm	80x40 (7x14 font)%mini.term.xpm%"  Exec exec xterm -n $USER@$HOST -T $USER@$HOST -geometry 80x40 -sb +sk -si -sl 2048 -j -ls -fn 7x14 -fb 7x14bold
-+ "Xterm/&root	80x40 (7x14 font)%mini.term.xpm%"  Exec exec xterm -fg red -bg black -n root  -T root  -geometry 80x40 -sb +sk -si -sl 2048 -j -ls -fn 7x14 -fb 7x14bold -e su -l
-+ "&NXterm	80x40 (7x14 font)%mini.term.xpm%"  Exec exec nxterm -n $USER -T $USER -geometry 80x40 -sb +sk -si -sl 2048 -j -ls -fn 7x14 -fb 7x14bold
-+ "&Rxvt 	80x40 (7x14 font)%mini.term.xpm%"  Exec exec rxvt -n $USER@ -T $USER -g 80x40 -fn 7x14
-+ "&Eterm	80x40 (7x14 font)%mini.term.xpm%"  Exec exec Eterm -n $USER -T $USER -g 80x40 --font 7x14
-+ "X&iterm	80x40 (7x14 font)%mini.term.xpm%"  Exec exec xiterm -n $USER -T $USER -g 80x40 --font 7x14
-+ "&Aterm	80x40 (7x14 font)%mini.term.xpm%"  Exec exec aterm -n $USER -T $USER -g 80x40 --font 7x14
++ "&Xterm	80x40 (7x14 font)%mini.term.xpm%" Exec exec xterm  -n $USER@$HOST -T $USER@$HOST -g 80x40 -sb +sk +si -sl 4096 -j -ls -fn 7x14 -fb 7x14bold
++ "Xterm/r&oot	80x40 (7x14 font)%mini.term.xpm%" Exec exec xterm  -n root@$HOST  -T root@$HOST  -g 80x40 -sb +sk +si -sl 4096 -j -ls -fn 7x14 -fb 7x14bold -fg violet -bg black -e su -l
++ "&NXterm	80x40 (7x14 font)%mini.term.xpm%" Exec exec nxterm -n $USER@$HOST -T $USER@$HOST -g 80x40 -sb +sk +si -sl 4096 -j -ls -fn 7x14 -fb 7x14bold
++ "&Rxvt 	80x40 (7x14 font)%mini.term.xpm%" Exec exec rxvt   -n $USER@$HOST -T $USER@$HOST -g 80x40 --loginShell -fn 7x14 -fb 7x14bold
++ "&Eterm	80x40 (7x14 font)%mini.term.xpm%" Exec exec Eterm  -n $USER@$HOST -T $USER@$HOST -g 80x40 --login-shell --font 7x14 --bold-font 7x14bold
++ "X&iterm 	80x40 (7x14 font)%mini.term.xpm%" Exec exec xiterm -n $USER@$HOST -T $USER@$HOST -g 80x40 -sb +sk +si -sl 4096 -ls -fn 7x14 -fb 7x14bold
++ "&Aterm	80x40 (7x14 font)%mini.term.xpm%" Exec exec aterm  -n $USER@$HOST -T $USER@$HOST -g 80x40 -sb +sk +si -sl 4096 -ls -fn 7x14 -fb 7x14bold
++ "&GNOME Term	80x40 (7x14 font)%mini.term.xpm%" Exec exec gnome-terminal --title=$USER@$HOST --geometry=80x40 --login --font=7x14
++ "&Kvt 	80x40 (7x14 font)%mini.term.xpm%" Exec exec kvt    -n $USER@$HOST -T $USER@$HOST -vt_geometry 80x40 -sl 4096 -ls -vt_font 7x14
++ "&Konsole	80x40%mini.term.xpm%"             Exec exec konsole -nowelcome -sl 4096 -ls -vt_sz 80x40
++ "&Dtterm	80x40 (7x14 font)%mini.term.xpm%" Exec exec /usr/dt/bin/dtterm -n $USER@$HOST -T $USER@$HOST -sl 4096 -ls -g 80x40 -fn 7x14 -fb 7x14bold
 + ""						Nop
 + "Remote &login	...%mini.connect.xpm%"		FvwmForm FvwmForm-Rlogin
 
@@ -1494,31 +1497,31 @@ AddToMenu   Shells
 DestroyMenu Programs
 AddToMenu   Programs
 #G_SM_G 2
-# AddToMenu Programs "&Gnome menu%mini.gnome.xpm%"	SendToModule FvwmGtk gnome-sys
+# AddToMenu Programs "&GNOME Menu%mini.gnome.xpm%"	SendToModule FvwmGtk gnome-sys
 #+ ""	Nop
 #G_SM_F 2
-#AddToMenu Programs  "&Gnome menu%mini.gnome.xpm%"	Popup gnome-sys
+#AddToMenu Programs  "&GNOME Menu%mini.gnome.xpm%"	Popup gnome-sys
 #+ ""	Nop
 #G_UM_G 2
-#AddToMenu Programs "Gnome &user%mini.gnome.xpm%"	SendToModule FvwmGtk gnome-user
+#AddToMenu Programs "GNOME &User%mini.gnome.xpm%"	SendToModule FvwmGtk gnome-user
 #+ ""	Nop
 #G_UM_F 2
-#AddToMenu Programs  "Gnome &user%mini.gnome.xpm%"	Popup gnome-user
+#AddToMenu Programs  "GNOME &User%mini.gnome.xpm%"	Popup gnome-user
 #+ ""	Nop
 #G_RHM_G 2
-#AddToMenu Programs "Gnome &RedHat%mini.gnome.xpm%"	SendToModule FvwmGtk gnome-redhat
+#AddToMenu Programs "GNOME &RedHat%mini.gnome.xpm%"	SendToModule FvwmGtk gnome-redhat
 #+ ""	Nop
 #G_RHM_F 2
-#AddToMenu Programs  "Gnome &RedHat%mini.gnome.xpm%"	Popup gnome-redhat
+#AddToMenu Programs  "GNOME &RedHat%mini.gnome.xpm%"	Popup gnome-redhat
 #+ ""	Nop
 #K_SM 2
-#AddToMenu Programs "&Kde menu%mini.kde.xpm"		Popup kde-sys
+#AddToMenu Programs "&KDE Menu%mini.kde.xpm"		Popup kde-sys
 #+ ""	Nop
 #K_UM 2
-#AddToMenu Programs "Kde &user%mini.kde.xpm"		Popup kde-user
+#AddToMenu Programs "KDE &User%mini.kde.xpm"		Popup kde-user
 #+ ""	Nop
 #CDE 2
-#AddToMenu Programs "&CDE menu%mini.folder.xpm"		Popup cde-menu
+#AddToMenu Programs "&CDE Menu%mini.folder.xpm"		Popup cde-menu
 #+ "" Nop
 AddToMenu Programs
 + "&Accessories%mini.hammer.xpm%"		Popup Accessories
@@ -1533,7 +1536,7 @@ AddToMenu Programs
 + "&Games%mini.happy.xpm%"			Popup Games
 
 #------------------------------------------------------------------------------
-#--------- KDE, CDE & Gnome "fvwm" menus
+#--------- KDE, CDE & GNOME "fvwm" menus
 
 # For more informtion man fvwm-menu-desktop
 
@@ -2058,7 +2061,7 @@ DestroyMenu Edit-Config
 AddToMenu   Edit-Config
 + "Edit .fvwm2rc%mini.edit.xpm%" Exec exec emacs $FVWM_USERDIR/.fvwm2rc
 + "Edit decorations%mini.edit.xpm%" Exec exec emacs $FVWM_USERDIR/decorations
-+ "Edit desktop%mini.edit.xpm%" Exec exec emacs $FVWM_USERDIR/desktop
++ "Edit globalfeel%mini.edit.xpm%" Exec exec emacs $FVWM_USERDIR/globalfeel
 + "Edit startup%mini.edit.xpm%" Exec exec emacs $FVWM_USERDIR/startup
 + "Edit styles%mini.edit.xpm%" Exec exec emacs $FVWM_USERDIR/styles
 + "Edit iconstyles%mini.edit.xpm%" Exec exec emacs $FVWM_USERDIR/iconstyles
@@ -2073,7 +2076,7 @@ AddToMenu   Edit-Config
 DestroyMenu Reload-Config
 AddToMenu   Reload-Config
 + "Reload decorations%mini.turn.xpm%"	Read decorations
-+ "Reload desktop%mini.turn.xpm%"	Read desktop
++ "Reload globalfeel%mini.turn.xpm%"	Read globalfeel
 + "Reload styles%mini.turn.xpm%"	Read styles
 + "Reload iconstyles && menus%mini.turn.xpm%"	ReloadIconStylesAndMenus
 + "Reload functions%mini.turn.xpm%"	Read functions
@@ -2320,30 +2323,29 @@ AddToMenu   Restart
 # The "root" windows ops menu (Mouse 2)
 
 DestroyMenu "Window"
-AddToMenu "Window" "Window Ops" Title
-+ "&Move%mini.move1.xpm%"                Move
-+ "&Resize%mini.resize3.xpm%"            Resize
-+ "R&aise%mini.raise2.xpm%"              Raise
-+ "&Lower%mini.lower2.xpm%"              Lower
-+ "(De)&Iconify%mini.iconify1.xpm%"      Iconify
-+ "(Un)&Shade%mini.shade1.xpm%"          WindowShade
-+ "(Un)S&tick%mini.stick1.xpm%"          Stick
-+ "(Un)M&aximize%mini.maximize1.xpm%"	Maximize 100 100
+AddToMenu "Window" "Window Operations" Title
++ "&Move%mini.move1.xpm%"               Move
++ "&Resize%mini.resize3.xpm%"           Resize
++ "(De)&Iconify%mini.iconify1.xpm%"     Iconify
++ "(Un)M&aximize%mini.maximize1.xpm%"   Maximize 100 100
 + "(Un)Max&wide%mini.maximize-horiz1.xpm%"	Maximize 100 0
 + "(Un)Max&tall%mini.maximize-vert1.xpm%"	Maximize   0 100
-+ ""					Nop
++ "(Un)&Shade%mini.shade1.xpm%"         WindowShade
++ "(Un)S&tick%mini.stick1.xpm%"         Stick
++ "R&aise%mini.raise2.xpm%"             Raise
++ "&Lower%mini.lower2.xpm%"             Lower
++ ""				Nop
++ "&Delete%mini.cross.xpm"		Delete
++ "&Close%mini.delete.xpm"		Close
++ "&Destroy%mini.bomb.xpm%"		Destroy
++ ""				Nop
 + "Move to &Page%mini.move1.xpm%"	Popup Move-window
 + "&Group Ops%mini.windows.xpm%"	Popup WindowGroupOps
 + "&Window Style%mini.window.xpm%"	Popup WindowStyle
 + "&Rearrange/Scroll%mini.windows.xpm%"	Popup WinRearrange
 + ""				Nop
 + "&Identify%mini.question.xpm%"	Module FvwmIdent
-+ ""				Nop
-+ "&Kill%mini.bomb.xpm%"		Destroy
-+ "&Close%mini.cross.xpm"		Delete
-+ ""                            Nop
 + "Switch &to...%mini.windows.xpm%"	WindowList
-+ "Refresh &Screen%mini.ray.xpm%"	Refresh
 
 #------------------------------------------------------------------------------
 # A trimmed down version of "Window Ops", good for binding to decorations
@@ -2351,22 +2353,19 @@ AddToMenu "Window" "Window Ops" Title
 DestroyMenu "Window-Ops2"
 AddToMenu "Window-Ops2"
 + "&Move%mini.move1.xpm%"			Move
-+ "&ReSize%mini.resize3.xpm%"			Resize
++ "&Resize%mini.resize3.xpm%"			Resize
 + "(De)&Iconify%mini.iconify1.xpm%"		Iconify
-+ "(Un)&Shade%mini.shade1.xpm%"			WindowShade
-+ "(Un)S&tick%mini.stick1.xpm%"			Stick
 + "(Un)M&aximize%mini.maximize1.xpm%"		Maximize 100 100
 + "(Un)Max&wide%mini.maximize-horiz1.xpm%"	Maximize 100 0
 + "(Un)Max&tall%mini.maximize-vert1.xpm%"	Maximize   0 100
++ "(Un)&Shade%mini.shade1.xpm%"			WindowShade
++ "(Un)S&tick%mini.stick1.xpm%"			Stick
+#+ "R&aiseLower%mini.raise2.xpm%"		RaiseLower
++ ""			Nop
++ "&Close%mini.delete.xpm"			Close
 + ""			Nop
 + "&Identify%mini.question.xpm%"		Module FvwmIdent
-+ ""			Nop
-+ "&Close%mini.cross.xpm"			Close
-+ "&Kill%mini.bomb.xpm%"			Destroy
-+ ""			Nop
-# The menu position is broken in fvwm2 or I am missing somthing ...
-+ "&Window Style%mini.window.xpm%"		Menu WindowStyle Menu
-+ "&Group Ops%mini.windows.xpm%"		Menu WindowGroupOps Menu
++ "More&...%mini.window.xpm%"			Menu Window This 0 0
 
 #------------------------------------------------------------------------------
 # A trimmed down version of "Window Ops", good for binding to TaskBar,
@@ -2381,19 +2380,19 @@ AddToMenu "Window-Ops3"
 + "(Un)&Shade%mini.shade1.xpm%"			WindowShade
 + "(Un)S&tick%mini.stick1.xpm%"			Stick
 + "(Un)M&aximize%mini.maximize1.xpm%"		Maximize 95 95
-+ "%mini.window.xpm%&Scroll&Bar (75%% scr)"	Module FvwmScroll 75p 75p
++ "%mini.window.xpm%Scroll&Bar (75%% scr)"	Module FvwmScroll 75p 75p
++ ""			Nop
++ "&Close%mini.delete.xpm"			Close
 + ""			Nop
 + "&Identify%mini.question.xpm%"		Module FvwmIdent
-+ ""			Nop
-+ "&Close%mini.cross.xpm"			Close
-+ "&Kill%mini.bomb.xpm%"			Destroy
++ "More&...%mini.window.xpm%"			Menu Window This 0 0
 
 
 #------------------------------------------------------------------------------
 # A "Move Window" menu
 
 DestroyMenu "Move-Window"
-AddToMenu "Move-Window"
+AddToMenu   "Move-Window" "Move to ..." Title
 + 'Page &1%mini.move1.xpm%'	MoveToPage 0 0
 + 'Page &2%mini.move1.xpm%'	MoveToPage 1 0
 + 'Page &3%mini.move1.xpm%'	MoveToPage 0 1
@@ -2413,9 +2412,12 @@ AddToMenu    WindowGroupOps "Group Ops" Title
 + "&DeIconify%mini.iconify1.xpm%" Pick All ($c) Iconify off
 + "&Shade%mini.shade1.xpm%"       Pick All ($c) WindowShade on
 + "&UnShade%mini.shade1.xpm%"     Pick All ($c) WindowShade off
++ "R&aise%mini.raise2.xpm%"       Pick All ($c) Raise
++ "&Lower%mini.lower2.xpm%"       Pick All ($c) Lower
 + "" Nop
-+ "&Close%mini.cross.xpm%"       Pick All ($c) Close
-+ "&Kill%mini.bomb.xpm%"	 Pick All ($c) Destroy
++ "&Delete%mini.cross.xpm"	Pick Delete
++ "&Close%mini.delete.xpm"	Pick Close
++ "&Destroy%mini.bomb.xpm%"	Pick Destroy
 + "&Quick move to ..." Title
 + 'Page &1%mini.move1.xpm%'	Pick All ($c) MoveToPage 0 0
 + 'Page &2%mini.move1.xpm%'	Pick All ($c) MoveToPage 1 0
@@ -2465,7 +2467,8 @@ AddToMenu   WinRearrange
 + "&ScrollBar (1/2 app)%mini.window.xpm%"  Module FvwmScroll 2 2
 + "%mini.window.xpm%&Scroll&Bar (75%% scr)" Module FvwmScroll 75p 75p
 + "" Nop
-+ "Arrange Icons%mini.icons.xpm%" All (CurrentDesk Iconic) RecaptureWindow
++ "&Arrange Icons%mini.icons.xpm%" All (CurrentDesk Iconic) RecaptureWindow
++ "&Refresh Screen%mini.ray.xpm%" Refresh
 
 #----------------------------------------------------------------------------
 # Use the winops menus styles for the "Windows Operations Menus"
@@ -3055,20 +3058,20 @@ DestroyModuleConfig FvwmWinList: *
 # Shift-Alt-F2: Window operations menu
 # Shift-Alt-F3: WindowList
 # Shift-Alt-F4: Close
-# Shift-Alt-F5: Move
-# Shift-Alt-F6: Resize
-# Shift-Alt-F7: Iconify
-# Shift-Alt-F8: Shade
-# Shift-Alt-F9: Stick
+# Shift-Alt-F5: RaiseLower
+# Shift-Alt-F6: Raise all Icons
+# Shift-Alt-F7: Move
+# Shift-Alt-F8: Resize
+# Shift-Alt-F9: Iconify
 # Shift-Alt-F10: Maximize
 # Shift-Alt-F11: Identify
-# Shift-Alt-F12: Raise all Icons
+# Shift-Alt-F12: Console
 #
 # Alt-Tab released at once: previous (normal) window
-# Alt-Tab: WindowList of (normal) window and warp to the selected window
+# Alt-Tab: WindowList of all normal windows and warp to the selected window
 #	   when released
 #
-# Ctrl-Alt-Tab: WindowList of the skiped window
+# Ctrl-Alt-Tab: WindowList of all skipped windows
 #
 # Stroke bindings:
 # ---------------
