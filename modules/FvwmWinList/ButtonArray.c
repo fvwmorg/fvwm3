@@ -408,7 +408,7 @@ void DoButton(Button *button, int x, int y, int w, int h, Bool clear_bg)
   Fontheight=FButtonFont->height;
 
 #ifdef HAVE_XFT
-  if (Ffont->xftfont != NULL)
+  if (Ffont->fftf.fftfont != NULL)
   {
     clear_bg = True;
   }

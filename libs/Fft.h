@@ -29,9 +29,18 @@
 /* ---------------------------- global definitions -------------------------- */
 
 #ifdef HAVE_XFT
+
 #define FftSupport 1
+#ifdef HAVE_XFT_UTF8
+#define  FftUtf8Support 1
 #else
+#define  FftUtf8Support 0
+#endif
+
+#else
+
 #define FftSupport 0
+
 #endif
 
 /* ---------------------------- global macros ------------------------------- */
@@ -50,8 +59,8 @@ typedef XftValueList FftValueList;
 typedef XftPatternElt FftPatternElt;
 typedef XftPattern FftPattern;
 typedef XftFontSet FftFontSet;
-typedef struct _FftFontStruct FftFontStruct;
-typedef struct _FftDraw FftDraw;
+typedef XftFontStruct FftFontStruct;
+typedef XftDraw FftDraw;
 typedef XftFont FftFont;
 typedef XftColor FftColor;
 typedef XftObjectSet FftObjectSet;
@@ -266,6 +275,15 @@ int FftTextWidth(FftFontType *fftf, char *str, int len);
 #define FftXlfdParse(a,b,c) XftXlfdParse(a,b,c)
 #define FftCoreOpen(a,b) XftCoreOpen(a,b)
 
+/* utf8 functions */
+#if FftUtf8Support
+#define FftDrawStringUtf8(a,b,c,d,e,f,g) XftDrawStringUtf8(a,b,c,d,e,f,g)
+#define FftTextExtentsUtf8(a,b,c,d,e) XftTextExtentsUtf8(a,b,c,d,e)
+#else
+#define FftDrawStringUtf8(a,b,c,d,e,f,g)
+#define FftTextExtentsUtf8(a,b,c,d,e)
+#endif
+
 #else
 
 #define FFT_FAMILY ""
@@ -366,6 +384,10 @@ int FftTextWidth(FftFontType *fftf, char *str, int len);
 #define FftPatternVaBuild(a,b) NULL
 #define FftXlfdParse(a,b,c) NULL
 #define FftCoreOpen(a,b) NULL
+
+/* utf8 functions */
+#define FftDrawStringUtf8(a,b,c,d,e,f,g)
+#define FftTextExtentsUtf8(a,b,c,d,e)
 
 #endif
 

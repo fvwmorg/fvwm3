@@ -1350,7 +1350,7 @@ void RedrawFrame ()
   while(item != 0 && !clear)
   {
     if ((item->type == I_TEXT || item->type == I_CHOICE) &&
-	item->header.dt_ptr->dt_Ffont->xftfont != NULL)
+	item->header.dt_ptr->dt_Ffont->fftf.fftfont != NULL)
       clear = True;
     item = item->header.next;
   }
@@ -1595,7 +1595,7 @@ void RedrawItem (Item *item, int click)
       + item->header.dt_ptr->dt_Ffont->ascent;
     item->header.dt_ptr->dt_Fstr->len = item->button.len;
 #ifdef HAVE_XFT
-    if (item->header.dt_ptr->dt_Ffont->xftfont != NULL)
+    if (item->header.dt_ptr->dt_Ffont->fftf.fftfont != NULL)
       XClearArea(dpy, item->header.win,
 		 BOX_SPC + TEXT_SPC - 1, BOX_SPC,
 		 item->header.size_x

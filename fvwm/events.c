@@ -849,7 +849,7 @@ void HandleExpose(void)
 		draw_parts = DRAW_BUTTONS;
 	}
 #ifdef HAVE_XFT
-	if (Tmp_win->title_font && Tmp_win->title_font->xftfont != NULL &&
+	if (Tmp_win->title_font && Tmp_win->title_font->fftf.fftfont != NULL &&
 	    draw_parts == DRAW_TITLE)
 	{
 	  draw_clipped_decorations(

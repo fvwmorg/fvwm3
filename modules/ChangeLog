@@ -1,3 +1,16 @@
+2002-03-10  olicha  <olivier.chapuis@free.fr>
+
+	* FvwmWinList/ButtonArray.c (DoButton):
+	* FvwmTaskBar/Goodies.c (RedrawTipWindow):
+	* FvwmPager/x_pager.c (do_label_window):
+	(DrawGrid):
+	* FvwmIdent/FvwmIdent.c (RedrawWindow):
+	* FvwmIconMan/xmanager.c (draw_button):
+	* FvwmForm/FvwmForm.c (RedrawFrame):
+	(RedrawItem):
+	* FvwmButtons/draw.c (RedrawButton): 
+	Fixed Xft related compilation failure and warning
+
 2002-03-09  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* FvwmTaskBar/FvwmTaskBar.c (main):

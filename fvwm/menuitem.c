@@ -377,7 +377,7 @@ void menuitem_paint(
 	 * Hilight the item.
 	 ***************************************************************/
 #ifdef HAVE_XFT
-	if (ST_PSTDFONT(ms)->xftfont != NULL)
+	if (ST_PSTDFONT(ms)->fftf.fftfont != NULL)
 	{
 		xft_redraw = True;
 	}

@@ -28,6 +28,9 @@
 /* Define if Xft library is used. */
 #undef HAVE_XFT
 
+/* Define if Xft library can handle utf8 encoding  */
+#undef HAVE_XFT_UTF8
+
 /* Define if stroke library is used. */
 #undef HAVE_STROKE
 

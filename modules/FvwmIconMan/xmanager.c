@@ -1443,7 +1443,7 @@ static void draw_button (WinManager *man, int button, int force)
       FwinString->y = g.text_base;
       FwinString->len = strlen(b->drawn_state.display_string);
 #ifdef HAVE_XFT
-      if (man->FButtonFont->xftfont != NULL)
+      if (man->FButtonFont->fftf.fftfont != NULL)
       {
 	while(
          FwinString->len >= 0 &&

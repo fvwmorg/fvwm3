@@ -65,7 +65,7 @@ Bool is_utf8_encoding(FftFont *f)
 {
 	int i = 0;
 	FftPatternElt *e;
-
+#ifdef HAVE_XFT_UTF8
 	while(i < f->pattern->num)
 	{
 		e = &f->pattern->elts[i];
@@ -82,6 +82,7 @@ Bool is_utf8_encoding(FftFont *f)
 		}
 		i++;
 	}
+#endif
 	return False;
 }
 
@@ -107,7 +108,7 @@ void FftGetFontWidths(
 	/* FIXME */
 	if (fftf->utf8)
 	{
-#ifdef A_SYSTEM_THAT_HAS_THIS_FUNCTION
+#ifdef HAVE_XFT_UTF8
 		FftTextExtentsUtf8(fftdpy, fftf->fftfont, "W", 1, &extents);
 #endif
 	}
@@ -186,7 +187,7 @@ void FftDrawString(
 
 	if (flf->utf8)
 	{
-#ifdef A_SYSTEM_THAT_HAS_THIS_FUNCTION
+#ifdef HAVE_XFT_UTF8
 		FftDrawStringUtf8(
 			fftdraw, &fft_fg, flf->fftfont, x, y,
 			(unsigned char *) str, len);
@@ -212,7 +213,7 @@ int FftTextWidth(FftFontType *fftf, char *str, int len)
 	/* FIXME: calculations for vertical text needed */
 	if (fftf->utf8)
 	{
-#ifdef A_SYSTEM_THAT_HAS_THIS_FUNCTION
+#ifdef HAVE_XFT_UTF8 
 		FftTextExtentsUtf8(fftdpy, fftf->fftfont, str, len, &extents);
 #endif
 	}

@@ -1442,7 +1442,7 @@ void DrawGrid(int desk, int erase)
     y += Scr.MyDisplayHeight;
   }
 #ifdef HAVE_XFT
-  if (Ffont->xftfont != NULL)
+  if (Ffont->fftf.fftfont != NULL)
     erase = True;
 #endif
   if(((Scr.CurrentDesk - desk1) == desk) && !ShapeLabels)
@@ -2341,7 +2341,7 @@ static void do_label_window(PagerWindow *t, Window w)
   if (w != None)
   {
 #ifdef HAVE_XFT
-    if (FwindowFont != NULL && FwindowFont->xftfont != NULL)
+    if (FwindowFont != NULL && FwindowFont->fftf.fftfont != NULL)
       XClearWindow(dpy, w);
 #endif
     FwinString->str = t->window_label;

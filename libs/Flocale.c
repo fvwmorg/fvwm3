@@ -503,7 +503,7 @@ void FlocaleUnloadFont(Display *dpy, FlocaleFont *flf)
 	}
 	if (FftSupport && flf->fftf.fftfont != NULL)
 	{
-		FftFontClose(dpy, flf->fftfont);
+		FftFontClose(dpy, flf->fftf.fftfont);
 	}
 	if (FlocaleMultibyteSupport && flf->fontset != NULL)
 	{

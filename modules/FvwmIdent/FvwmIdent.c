@@ -721,7 +721,7 @@ void RedrawWindow(void)
   FwinString->gc = gc;
 
 #if HAVE_XFT
-  if (Ffont->xftfont != NULL)
+  if (Ffont->fftf.fftfont != NULL)
     XClearWindow(dpy, main_win);
 #endif
 

@@ -291,7 +291,7 @@ void RedrawButton(button_info *b,int clean)
     }
   }
 #ifdef HAVE_XFT
-  if ((b->flags&b_Title) && Ffont && Ffont->xftfont != NULL)
+  if ((b->flags&b_Title) && Ffont && Ffont->fftf.fftfont != NULL)
   {
     XClearArea(Dpy, MyWindow, ix, iy, iw, ih, False);
     clean = 1;

@@ -253,11 +253,14 @@ if test "$with_xft" = "check"; then
   dnl now check for Xft (a priori it is not needed to check for XRender first)
   if test "x$have_freetype" != "xno" ; then
     $UNSET ac_cv_lib_Xft_XftFontOpen
+    $UNSET ac_cv_lib_Xft_XftDrawStringUtf8
     AC_CHECK_LIB(Xft, XftFontOpen,
       with_xft=yes; Xft_LIBS=-lXft; AC_DEFINE(HAVE_XFT),
       with_xft=no; Xft_LIBS=
       problem_xft=": Failed to detect Xft",
       [$X_LIBS $X_PRE_LIBS -lXext -lX11 $X_EXTRA_LIBS $FT2_LIBS])
+    AC_CHECK_LIB(Xft, XftDrawStringUtf8, AC_DEFINE(HAVE_XFT_UTF8),,
+                 [$X_LIBS $X_PRE_LIBS -lXext -lX11 $X_EXTRA_LIBS $FT2_LIBS])
   fi
 
 fi
