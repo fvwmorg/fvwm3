@@ -75,13 +75,6 @@ BEGIN   {
 	stdforecolor="";            dflt["stdforecolor"] = "black";
 	stdbackcolor="";            dflt["stdbackcolor"] = "grey70";
 
-	menuforecolor="";           dflt["menuforecolor"] = "black";
-	menubackcolor="";           dflt["menubackcolor"] = "grey70";
-	menustipplecolor="";        dflt["menustipplecolor"] = "grey40";
-	font="";                    dflt["font"] = "-adobe-helvetica-medium-r-*-*-18-*-*-*-*-*-iso8859-1";
-	mwmmenus="";                dflt["mwmmenus"] = "fvwm";
-	menustyle=FALSE;
-
 	inpopup=FALSE;
 	infunction=FALSE;
 	prefix="";
@@ -136,62 +129,32 @@ BEGIN   {
 
 ########## Menu Colors, Style and Font ###########
 /^[ \t]*MenuForeColor[ \t]*/	{
-        dflt["menuforecolor"]=menuforecolor=$2;
-	printf ("#!%s (new command=MenuStyle)\n", $0);
-	if (menubackcolor != "" && menuforecolor != "" && menustipplecolor != "" && font != "" && mwmmenus != "" && !menustyle) {
-           printf ("\n#Set the foreground, background and stipple color and font for menus\n");
-	   printf ("MenuStyle   %s %s %s %s %s\n", menuforecolor, menubackcolor, menustipplecolor, font, mwmmenus);
-	   menustyle=TRUE;
-	} else
-	   menustyle=FALSE;
-        next;
+	printf ("#!%s\n", $0);
+	printf ("MenuStyle * Foreground %s\n", $2);
+	next;
 }
 
 /^[ \t]*MenuBackColor[ \t]*/	{
-        dflt["menubackcolor"]=menubackcolor=$2;
-	printf ("#!%s (new command=MenuStyle)\n", $0);
-	if (menubackcolor != "" && menuforecolor != "" && menustipplecolor != "" && font != "" && mwmmenus != "" && !menustyle) {
-           printf ("\n#Set the foreground, background and stipple color and font for menus\n");
-	   printf ("MenuStyle   %s %s %s %s %s\n", menuforecolor, menubackcolor, menustipplecolor, font, mwmmenus);
-	   menustyle=TRUE;
-        } else
-	   menustyle=FALSE;
-        next;
+	printf ("#!%s\n", $0);
+	printf ("MenuStyle * Background %s\n", $2);
+	next;
 }
 
 /^[ \t]*MenuStippleColor[ \t]*/	{
-        dflt["menustipplecolor"]=menustipplecolor=$2;
-	printf ("#!%s (new command=MenuStyle)\n", $0);
-	if (menubackcolor != "" && menuforecolor != "" && menustipplecolor != "" && font != "" && mwmmenus != "" && !menustyle) {
-           printf ("\n#Set the foreground, background and stipple color and font for menus\n");
-	   printf ("MenuStyle   %s %s %s %s %s\n", menuforecolor, menubackcolor, menustipplecolor, font, mwmmenus);
-	   menustyle=TRUE;
-        } else
-	   menustyle=FALSE;
-        next;
+	printf ("#!%s\n", $0);
+	printf ("MenuStyle * Greyed %s\n", $2);
+	next;
 }
 
 /^[ \t]*MWMMenus[ \t]*/		{
-        dflt["mwmmenus"]=mwmmenus="mwm";
-	printf ("#!%s (new command=MenuStyle)\n", $0);
-	if (menubackcolor != "" && menuforecolor != "" && menustipplecolor != "" && font != "" && mwmmenus != "" && !menustyle) {
-           printf ("\n#Set the foreground, background and stipple color and font for menus\n");
-	   printf ("MenuStyle   %s %s %s %s %s\n", menuforecolor, menubackcolor, menustipplecolor, font, mwmmenus);
-	   menustyle=TRUE;
-	} else
-	   menustyle=FALSE;
+	printf ("#!%s\n", $0);
+	printf ("MenuStyle * mwm\n");
 	next;
 }
 
 /^[ \t]*Font[ \t]*/		{
-        dflt["font"]=font=$2;
-	printf ("#!%s (new command=MenuStyle)\n", $0);
-	if (menubackcolor != "" && menuforecolor != "" && menustipplecolor != "" && font != "" && mwmmenus != "" && !menustyle) {
-           printf ("\n#Set the foreground, background and stipple color and font for menus\n");
-	   printf ("MenuStyle   %s %s %s %s %s\n", menuforecolor, menubackcolor, menustipplecolor, font, mwmmenus);
-	   menustyle=TRUE;
-	} else
-	   menustyle=FALSE;
+	printf ("#!%s\n", $0);
+	printf ("MenuStyle * Font %s\n", $2);
 	next;
 }
 
@@ -552,10 +515,6 @@ BEGIN   {
 }
 
 END {
-    if (!menustyle) {
-	printf ("\n#Set the foreground, background and stipple color and font for menus\n");
-	printf ("MenuStyle   %s %s %s %s %s\n", dflt["menuforecolor"], dflt["menubackcolor"], dflt["menustipplecolor"], dflt["font"], dflt["mwmmenus"]);
-    }
     if (!hilightcolor) {
 	printf ("\n#Set the foreground and background color for selected windows\n");
 	printf ("HilightColor   %s %s\n", dflt["hiforecolor"], dflt["hibackcolor"]);

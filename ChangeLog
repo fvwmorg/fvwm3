@@ -1,3 +1,9 @@
+1999-03-14  Dominik Vogt  <dominik_vogt@gmx.de>
+
+	* utils/fvwmrc_convert: applied MenuStyle patch
+
+	* fvwm/events.c (HandleButtonPress): fixed ClickToFocus
+
 Sat Mar 13 15:12:37 1999  Steve Robbins  <steve@nyongwa.montreal.qc.ca>
 
 	* configure.in: add entry for modules/FvwmCommand/scripts/Makefile.
@@ -20,6 +26,7 @@ Sat Mar 13 11:04:48 1999  Steve Robbins  <steve@nyongwa.montreal.qc.ca>
 	* fvwm/borders.c (SetBorder): removed text following #endif, as it
 	violates the ANSI C standard (or so claims SGI cc).
 	
+>>>>>>> 1.218
 1999-03-12  Dominik Vogt  <dominik_vogt@gmx.de>
 
 	* fvwm/menus.c (DoMenusOverlap): fixed menu animation bug

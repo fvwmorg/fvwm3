@@ -68,8 +68,8 @@
 #define XUrgencyHint            (1L << 8)
 #endif
 
-unsigned int mods_used = (ShiftMask | ControlMask | Mod1Mask |
-			  Mod2Mask| Mod3Mask| Mod4Mask| Mod5Mask);
+static unsigned int mods_used = (ShiftMask | ControlMask | Mod1Mask |
+				 Mod2Mask| Mod3Mask| Mod4Mask| Mod5Mask);
 extern int menuFromFrameOrWindowOrTitlebar;
 
 extern Boolean debugging;
@@ -1131,16 +1131,14 @@ void HandleButtonPress()
 
   /* click to focus stuff goes here */
   if((Tmp_win)&&(Tmp_win->flags & ClickToFocus)&&(Tmp_win != Scr.Ungrabbed) &&
-     (Event.xbutton.state & mods_used == 0))
+     (!(Event.xbutton.state & mods_used)))
   {
     SetFocus(Tmp_win->w,Tmp_win,1);
-/* #ifdef CLICKY_MODE_1 */
     if (Scr.ClickToFocusRaises ||
 	((Event.xany.window != Tmp_win->w)&&
 	 (Event.xbutton.subwindow != Tmp_win->w)&&
 	 (Event.xany.window != Tmp_win->Parent)&&
 	 (Event.xbutton.subwindow != Tmp_win->Parent)))
-/* #endif */
     {
       RaiseWindow(Tmp_win);
     }
