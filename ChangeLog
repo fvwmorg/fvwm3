@@ -1,3 +1,31 @@
+2002-01-19  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* fvwm/events.c (HandleEnterNotify):
+	fixed EnterNotify events for icons
+
+2002-01-18  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* fvwm/*.c:
+	* fvwm/stack.c (overlap_box):
+	(overlap):
+	* fvwm/icons.c (clear_icon):
+	* fvwm/add_window.c (destroy_icon):
+	* fvwm/fvwm.h (FvwmWindow):
+	* fvwm/geometry.c (get_window_borders):
+	(get_client_geometry):
+	* libs/fvwmrect.h (struct):
+	* fvwm/functions.c (expand_extended_var):
+	implemented new extended variables cw.x, cw.y, cw.width, cw.height that
+	return the geometry of the client window
+	implemented new extended variables it.x, it.y, it.width, it.height that
+	return the geometry of the icon title
+	implemented new extended variables ip.x, ip.y, ip.width, ip.height that
+	return the geometry of the icon picture
+	implemented new extended variables i.x, i.y, i.width, i.height that
+	return the geometry of the whole icon
+	fixed $[w.height] when the window is shaded
+	cleaned up icon geometry code
+
 2002-01-17  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* fvwm/commands.h:

@@ -35,6 +35,7 @@
 #include "ewmh.h"
 #include "move_resize.h"
 #include "borders.h"
+#include "geometry.h"
 #include "icons.h"
 #include "stack.h"
 
@@ -1023,24 +1024,9 @@ void MoveViewport(int newx, int newy, Bool grab)
 	{
 	  if (IS_ICONIFIED(t))
 	  {
-	    t->icon_g.x += deltax;
-	    t->icon_xl_loc += deltax;
-	    t->icon_g.y += deltay;
-	    if(t->icon_pixmap_w != None)
-	      XMoveWindow(dpy,t->icon_pixmap_w,t->icon_g.x,
-			  t->icon_g.y);
-	    if(t->icon_title_w != None)
-	      XMoveWindow(dpy,t->icon_title_w,t->icon_g.x,
-			  t->icon_g.y+t->icon_p_height);
-	    if(!(IS_ICON_UNMAPPED(t)))
-	    {
-	      BroadcastPacket(M_ICON_LOCATION, 7,
-			      t->w, t->frame,
-			      (unsigned long)t,
-			      t->icon_g.x, t->icon_g.y,
-			      t->icon_p_width,
-			      t->icon_g.height+t->icon_p_height);
-	    }
+	    modify_icon_position(t, deltax, deltay);
+	    move_icon_to_position(t);
+	    broadcast_icon_geometry(t, False);
 	  }
 	  SetupFrame(t, t->frame_g.x+ deltax, t->frame_g.y + deltay,
 		     t->frame_g.width, t->frame_g.height, False);
@@ -1071,30 +1057,13 @@ void MoveViewport(int newx, int newy, Bool grab)
 	{
 	  if (IS_ICONIFIED(t1))
 	  {
-	    t1->icon_g.x += deltax;
-	    t1->icon_xl_loc += deltax;
-	    t1->icon_g.y += deltay;
-	    if(t1->icon_pixmap_w != None)
-	      XMoveWindow(dpy,t1->icon_pixmap_w,
-			  t1->icon_g.x,
-			  t1->icon_g.y);
-	    if(t1->icon_title_w != None)
-	      XMoveWindow(dpy,t1->icon_title_w,t1->icon_g.x,
-			  t1->icon_g.y+t1->icon_p_height);
-	    if(!IS_ICON_UNMAPPED(t1))
-	    {
-	      BroadcastPacket(M_ICON_LOCATION, 7,
-			      t1->w, t1->frame,
-			      (unsigned long)t1,
-			      t1->icon_g.x, t1->icon_g.y,
-			      t1->icon_p_width,
-			      t1->icon_g.height +
-			      t1->icon_p_height);
-	    }
+	    modify_icon_position(t1, deltax, deltay);
+	    move_icon_to_position(t1);
+	    broadcast_icon_geometry(t1, False);
 	  }
-	  SetupFrame(t1, t1->frame_g.x+ deltax,
-		     t1->frame_g.y + deltay, t1->frame_g.width,
-		     t1->frame_g.height, False);
+	  SetupFrame(
+	    t1, t1->frame_g.x + deltax, t1->frame_g.y + deltay,
+	    t1->frame_g.width, t1->frame_g.height, False);
 	}
       }
       /*  Bump to next win...	 */

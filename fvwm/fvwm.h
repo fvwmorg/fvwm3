@@ -540,13 +540,15 @@ typedef struct FvwmWindow
 
   rectangle title_g;
   short title_top_height;     /* title height/0 for top/bottom titles */
-  rectangle icon_g;           /* geometry of the icon window */
-  int icon_xl_loc;            /* icon label window x coordinate */
-  int icon_t_width;           /* width of the icon title window */
-  int icon_p_width;           /* width of the icon pixmap window */
-  int icon_p_height;          /* height of the icon pixmap window */
-  Pixmap iconPixmap;          /* pixmap for the icon */
+  struct
+  {
+     rectangle picture_w_g;   /* geometry of the icon picture window */
+     rectangle title_w_g;     /* geometry of the icon title window */
+     int title_text_width;    /* width of the text in the icon title */
+  } icon_g;
+
   int iconDepth;              /* Drawable depth for the icon */
+  Pixmap iconPixmap;          /* pixmap for the icon */
   Pixmap icon_maskPixmap;     /* pixmap for the icon mask */
   FvwmFont title_font;
   FvwmFont icon_font;

@@ -35,6 +35,7 @@
 #include "events.h"
 #include "borders.h"
 #include "virtual.h"
+#include "geometry.h"
 #include "gnome.h"
 #include "ewmh.h"
 
@@ -775,47 +776,31 @@ intersect (int x0, int y0, int w0, int h0,
 }
 
 static Bool
-overlap_box (FvwmWindow *r, int x, int y, int w, int h)
+overlap(FvwmWindow *r, FvwmWindow *s)
 {
-  if (IS_ICONIFIED(r))
-  {
-    return ((r->icon_pixmap_w) &&
-             intersect (x, y, w, h, r->icon_g.x, r->icon_g.y,
-			r->icon_p_width, r->icon_p_height)) ||
-           ((r->icon_title_w) &&
-             intersect (x, y, w, h, r->icon_xl_loc,
-			r->icon_g.y + r->icon_p_height,
-			r->icon_g.width, r->icon_g.height));
-  }
-  else
-  {
-    return intersect (x, y, w, h, r->frame_g.x, r->frame_g.y,
-                           r->frame_g.width, r->frame_g.height);
-  }
-}
+	rectangle g1;
+	rectangle g2;
+	Bool rc;
 
-static Bool
-overlap (FvwmWindow *r, FvwmWindow *s)
-{
-  if (r->Desk != s->Desk)
-  {
-    return 0;
-  }
+	if (r->Desk != s->Desk)
+	{
+		return False;
+	}
+	rc = get_visible_window_or_icon_geometry(r, &g1);
+	if (rc == False)
+	{
+		return False;
+	}
+	rc = get_visible_window_or_icon_geometry(s, &g2);
+	if (rc == False)
+	{
+		return False;
+	}
+	rc = intersect(
+		g1.x, g1.y, g1.width, g1.height,
+		g2.x, g2.y, g2.width, g2.height);
 
-  if (IS_ICONIFIED(r))
-  {
-    return ((r->icon_pixmap_w) &&
-             overlap_box (s, r->icon_g.x, r->icon_g.y,
-                             r->icon_p_width, r->icon_p_height)) ||
-           ((r->icon_title_w) &&
-             overlap_box (s, r->icon_xl_loc, r->icon_g.y + r->icon_p_height,
-                             r->icon_g.width, r->icon_g.height));
-  }
-  else
-  {
-    return overlap_box (s, r->frame_g.x, r->frame_g.y,
-                           r->frame_g.width, r->frame_g.height);
-  }
+	return rc;
 }
 
 /* return true if stacking order changed */

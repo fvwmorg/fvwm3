@@ -536,7 +536,7 @@ void setup_icon_font(
   /* adjust y position of existing icons */
   if (height)
   {
-    tmp_win->icon_g.y += height - tmp_win->icon_font.height;
+    resize_icon_title_height(tmp_win, height - tmp_win->icon_font.height);
     /* this repositions the icon even if the window is not iconified */
     DrawIconWindow(tmp_win);
   }
@@ -1345,14 +1345,7 @@ static void destroy_icon(FvwmWindow *tmp_win)
   {
     XDeleteContext(dpy, tmp_win->icon_pixmap_w, FvwmContext);
   }
-  tmp_win->icon_pixmap_w = None;
-  tmp_win->iconPixmap = None;
-  tmp_win->icon_maskPixmap = None;
-  tmp_win->icon_g.width = 0;
-  tmp_win->icon_g.height = 0;
-  tmp_win->icon_t_width = 0;
-  tmp_win->icon_p_width = 0;
-  tmp_win->icon_p_height = 0;
+  clear_icon(tmp_win);
 }
 
 void change_icon(FvwmWindow *tmp_win, window_style *pstyle)

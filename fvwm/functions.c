@@ -46,6 +46,7 @@
 #include "module_interface.h"
 #include "misc.h"
 #include "screen.h"
+#include "geometry.h"
 #include "repeat.h"
 #include "read.h"
 #include "virtual.h"
@@ -318,6 +319,22 @@ static char *function_vars[] =
   "w.y",
   "w.width",
   "w.height",
+  "cw.x",
+  "cw.y",
+  "cw.width",
+  "cw.height",
+  "it.x",
+  "it.y",
+  "it.width",
+  "it.height",
+  "ip.x",
+  "ip.y",
+  "ip.width",
+  "ip.height",
+  "i.x",
+  "i.y",
+  "i.width",
+  "i.height",
   "screen",
   "desk.name",
   NULL
@@ -377,7 +394,7 @@ static int expand_extended_var(
     }
     return pixel_to_color_string(dpy, Pcmap, pixel, target, False);
     break;
-  case 17:
+  case 33:
     if (sscanf(rest, "%d%n", &cs, &n) < 1)
       return 0;
     if (*(rest + n) != 0)
@@ -452,7 +469,6 @@ static int expand_extended_var(
     is_numeric = True;
     val = (int)(Scr.Vy / Scr.MyDisplayHeight);
     break;
-
   case 12:
   case 13:
   case 14:
@@ -461,24 +477,27 @@ static int expand_extended_var(
       return 0;
     else
     {
+      rectangle g;
+
       is_numeric = True;
+      get_unshaded_geometry(tmp_win, &g);
       switch (i)
       {
       case 12:
 	/* w.x */
-	val = tmp_win->frame_g.x;
+	val = g.x;
 	break;
       case 13:
 	/* w.y */
-	val = tmp_win->frame_g.y;
+	val = g.y;
 	break;
       case 14:
 	/* w.width */
-	val = tmp_win->frame_g.width;
+	val = g.width;
 	break;
       case 15:
 	/* w.height */
-	val = tmp_win->frame_g.height;
+	val = g.height;
 	break;
       default:
 	return 0;
@@ -486,6 +505,155 @@ static int expand_extended_var(
     }
     break;
   case 16:
+  case 17:
+  case 18:
+  case 19:
+    if (!tmp_win || IS_ICONIFIED(tmp_win) || IS_EWMH_DESKTOP(tmp_win->w))
+      return 0;
+    else
+    {
+      rectangle g;
+
+      is_numeric = True;
+      get_client_geometry(tmp_win, &g);
+      switch (i)
+      {
+      case 16:
+	/* cw.x */
+	val = g.x;
+	break;
+      case 17:
+	/* cw.y */
+	val = g.y;
+	break;
+      case 18:
+	/* cw.width */
+	val = g.width;
+	break;
+      case 19:
+	/* cw.height */
+	val = g.height;
+	break;
+      default:
+	return 0;
+      }
+    }
+    break;
+  case 20:
+  case 21:
+  case 22:
+  case 23:
+    if (!tmp_win || IS_EWMH_DESKTOP(tmp_win->w))
+      return 0;
+    else
+    {
+      rectangle g;
+
+      if (get_visible_icon_title_geometry(tmp_win, &g) == False)
+      {
+	return 0;
+      }
+      is_numeric = True;
+      switch (i)
+      {
+      case 20:
+	/* it.x */
+	val = g.x;
+	break;
+      case 21:
+	/* it.y */
+	val = g.y;
+	break;
+      case 22:
+	/* it.width */
+	val = g.width;
+	break;
+      case 23:
+	/* it.height */
+	val = g.height;
+	break;
+      default:
+	return 0;
+      }
+    }
+    break;
+  case 24:
+  case 25:
+  case 26:
+  case 27:
+    if (!tmp_win || IS_EWMH_DESKTOP(tmp_win->w))
+      return 0;
+    else
+    {
+      rectangle g;
+
+      if (get_visible_icon_picture_geometry(tmp_win, &g) == False)
+      {
+	return 0;
+      }
+      is_numeric = True;
+      switch (i)
+      {
+      case 24:
+	/* ip.x */
+	val = g.x;
+	break;
+      case 25:
+	/* ip.y */
+	val = g.y;
+	break;
+      case 26:
+	/* ip.width */
+	val = g.width;
+	break;
+      case 27:
+	/* ip.height */
+	val = g.height;
+	break;
+      default:
+	return 0;
+      }
+    }
+    break;
+  case 28:
+  case 29:
+  case 30:
+  case 31:
+    if (!tmp_win || IS_EWMH_DESKTOP(tmp_win->w))
+      return 0;
+    else
+    {
+      rectangle g;
+
+      if (get_visible_icon_geometry(tmp_win, &g) == False)
+      {
+	return 0;
+      }
+      is_numeric = True;
+      switch (i)
+      {
+      case 28:
+	/* i.x */
+	val = g.x;
+	break;
+      case 29:
+	/* i.y */
+	val = g.y;
+	break;
+      case 30:
+	/* i.width */
+	val = g.width;
+	break;
+      case 31:
+	/* i.height */
+	val = g.height;
+	break;
+      default:
+	return 0;
+      }
+    }
+    break;
+  case 32:
     /* screen */
     is_numeric = True;
     val = Scr.screen;

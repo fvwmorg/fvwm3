@@ -44,6 +44,7 @@
 #include "borders.h"
 #include "virtual.h"
 #include "stack.h"
+#include "geometry.h"
 
 static Bool lastFocusType;
 /* Last window which Fvwm gave the focus to NOT the window that really has the
@@ -158,12 +159,10 @@ static void DoSetFocus(Window w, FvwmWindow *Fw, Bool FocusByMouse, Bool NoWarp)
     if (IS_ICONIFIED(Fw))
     {
       rectangle r;
+      Bool rc;
 
-      r.x = Fw->icon_g.x;
-      r.y = Fw->icon_g.y;
-      r.width = Fw->icon_g.width;
-      r.height = Fw->icon_p_height + Fw->icon_g.height;
-      if (!IsRectangleOnThisPage(&r, Fw->Desk))
+      rc = get_visible_icon_geometry(Fw, &r);
+      if (!rc || !IsRectangleOnThisPage(&r, Fw->Desk))
       {
         Fw = NULL;
         w = Scr.NoFocusWin;
@@ -427,8 +426,16 @@ void FocusOn(FvwmWindow *t, Bool FocusByMouse, char *action)
 
     if (IS_ICONIFIED(t))
     {
-      cx = t->icon_xl_loc + t->icon_g.width/2;
-      cy = t->icon_g.y + t->icon_p_height + ICON_HEIGHT(t) / 2;
+      rectangle g;
+      Bool rc;
+
+      rc = get_visible_icon_title_geometry(t, &g);
+      if (rc == False)
+      {
+	      get_visible_icon_picture_geometry(t, &g);
+      }
+      cx = g.x + g.width / 2;
+      cy = g.y + g.height / 2;
     }
     else
     {
@@ -483,8 +490,16 @@ static void warp_to_fvwm_window(
 
   if(IS_ICONIFIED(t))
   {
-    cx = t->icon_xl_loc + t->icon_g.width/2;
-    cy = t->icon_g.y + t->icon_p_height + ICON_HEIGHT(t) / 2;
+    rectangle g;
+    Bool rc;
+
+    rc = get_visible_icon_title_geometry(t, &g);
+    if (rc == False)
+    {
+      get_visible_icon_picture_geometry(t, &g);
+    }
+    cx = g.x + g.width / 2;
+    cy = g.y + g.height / 2;
   }
   else
   {
@@ -499,8 +514,16 @@ static void warp_to_fvwm_window(
 
   if(IS_ICONIFIED(t))
   {
-    x = t->icon_xl_loc + t->icon_g.width / 2;
-    y = t->icon_g.y + t->icon_p_height + ICON_HEIGHT(t) / 2;
+    rectangle g;
+    Bool rc;
+
+    rc = get_visible_icon_title_geometry(t, &g);
+    if (rc == False)
+    {
+      get_visible_icon_picture_geometry(t, &g);
+    }
+    x = g.x + g.width / 2;
+    y = g.y + g.height / 2;
   }
   else
   {

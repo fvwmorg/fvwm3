@@ -50,6 +50,7 @@
 #include "module_interface.h"
 #include "read.h"
 #include "events.h"
+#include "geometry.h"
 #include "fvwmsignal.h"
 
 /*
@@ -1658,10 +1659,17 @@ void CMD_Send_WindowList(F_CMD_ARGS)
 		   (unsigned long)t,t->class.res_name);
 
 	  if((IS_ICONIFIED(t))&&(!IS_ICON_UNMAPPED(t)))
-	    SendPacket(*Module, M_ICONIFY, 7, t->w, t->frame,
-		       (unsigned long)t,
-		       t->icon_g.x, t->icon_g.y,
-		       t->icon_g.width, t->icon_g.height+t->icon_p_height);
+	  {
+	    rectangle r;
+	    Bool rc;
+
+	    rc = get_visible_icon_geometry(t, &r);
+	    if (rc == True)
+	    {
+	      SendPacket(*Module, M_ICONIFY, 7, t->w, t->frame,
+			 (unsigned long)t, r.x, r.y, r.width, r.height);
+	    }
+	  }
 
 	  if((IS_ICONIFIED(t))&&(IS_ICON_UNMAPPED(t)))
 	    SendPacket(*Module, M_ICONIFY, 7, t->w, t->frame,

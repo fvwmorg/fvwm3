@@ -87,7 +87,8 @@ static int SmartPlacement(
   FvwmWindow *test_window;
   int stickyx;
   int stickyy;
-  Bool do_test;
+  rectangle g;
+  Bool rc;
 
   test_x = PageLeft;
   test_y = PageTop;
@@ -119,27 +120,14 @@ static int SmartPlacement(
 	    stickyx = 0;
 	    stickyy = 0;
 	  }
-	  do_test = False;
-          if(PLACEMENT_AVOID_ICON != 0 && IS_ICONIFIED(test_window) &&
-	     !IS_ICON_UNMAPPED(test_window) && test_window->icon_title_w)
-          {
-            tw=test_window->icon_p_width;
-            th=test_window->icon_p_height+
-              test_window->icon_g.height;
-            tx = test_window->icon_g.x - stickyx;
-            ty = test_window->icon_g.y - stickyy;
-	    do_test = True;
-          }
-          else if(!IS_ICONIFIED(test_window))
-          {
-            tw = test_window->frame_g.width;
-            th = test_window->frame_g.height;
-            tx = test_window->frame_g.x - stickyx;
-            ty = test_window->frame_g.y - stickyy;
-	    do_test = True;
-          }
-	  if (do_test)
+	  rc = get_visible_window_or_icon_geometry(test_window, &g);
+	  if (rc == True &&
+	      (PLACEMENT_AVOID_ICON == 0 || !IS_ICONIFIED(test_window)))
 	  {
+	    tx = g.x - stickyx;
+	    ty = g.y - stickyy;
+	    tw = g.width;
+	    th = g.height;
             if (tx < test_x + width  && test_x < tx + tw &&
 		ty < test_y + height && test_y < ty + th)
             {
@@ -239,6 +227,8 @@ static int get_next_x(
   int stickyy;
   int start,i;
   int win_left;
+  rectangle g;
+  Bool rc;
 
   if (use_percent)
     start = 0;
@@ -279,22 +269,21 @@ static int get_next_x(
 
     if (IS_ICONIFIED(testw))
     {
-      if (y < testw->icon_p_height + testw->icon_g.height + testw->icon_g.y
-	  - stickyy &&
-	  testw->icon_g.y - stickyy < t->frame_g.height + y)
+      rc = get_visible_icon_geometry(testw, &g);
+      if (rc == True &&
+	  y < g.y + g.height - stickyy && g.y - stickyy < t->frame_g.height + y)
       {
-	win_left = PageLeft + testw->icon_g.x - stickyx - t->frame_g.width;
-	for(i=start; i <= GET_NEXT_STEP; i++)
+	win_left = PageLeft + g.x - stickyx - t->frame_g.width;
+	for (i = start; i <= GET_NEXT_STEP; i++)
 	{
-	  xtest = (win_left) + (testw->icon_p_width) *
-	    (GET_NEXT_STEP - i) /GET_NEXT_STEP;
+	  xtest = win_left + g.width * (GET_NEXT_STEP - i) / GET_NEXT_STEP;
 	  if (xtest > x)
 	    xnew = MIN(xnew, xtest);
 	}
-	win_left = PageLeft + testw->icon_g.x - stickyx;
+	win_left = PageLeft + g.x - stickyx;
 	for(i=start; i <= GET_NEXT_STEP; i++)
 	{
-	  xtest = (win_left) + (testw->icon_p_width) * i/GET_NEXT_STEP;
+	  xtest = (win_left) + g.width * i / GET_NEXT_STEP;
 	  if (xtest > x)
 	    xnew = MIN(xnew, xtest);
 	}
@@ -333,7 +322,9 @@ static int get_next_y(
   int PageBottom = screen_g->y + screen_g->height - pdeltay;
   int stickyy;
   int win_top;
-  int start,i;
+  int start;
+  int i;
+  rectangle g;
 
   if (use_percent)
     start = 0;
@@ -372,19 +363,18 @@ static int get_next_y(
 
     if (IS_ICONIFIED(testw))
     {
-      win_top = testw->icon_g.y - stickyy;
+      get_visible_icon_geometry(testw, &g);
+      win_top = g.y - stickyy;
       for(i=start; i <= GET_NEXT_STEP; i++)
       {
-	ytest = (win_top) + (testw->icon_p_height + testw->icon_g.height) *
-	  i/GET_NEXT_STEP;
+	ytest = win_top + g.height * i / GET_NEXT_STEP;
 	if (ytest > y)
 	  ynew = MIN(ynew, ytest);
       }
-      win_top = testw->icon_g.y - stickyy - t->frame_g.height;
+      win_top = g.y - stickyy - t->frame_g.height;
       for(i=start; i <= GET_NEXT_STEP; i++)
       {
-	ytest = win_top + (testw->icon_p_height + testw->icon_g.height) *
-	  (GET_NEXT_STEP - i)/GET_NEXT_STEP;
+	ytest = win_top + g.height * (GET_NEXT_STEP - i) / GET_NEXT_STEP;
 	if (ytest > y)
 	  ynew = MIN(ynew, ytest);
       }
@@ -436,6 +426,8 @@ static float test_fit(
   int PageRight  = screen_g->x + screen_g->width - pdeltax;
   int PageBottom = screen_g->y + screen_g->height - pdeltay;
   int stickyx, stickyy;
+  rectangle g;
+  Bool rc;
 
   x12 = x11 + t->frame_g.width;
   y12 = y11 + t->frame_g.height;
@@ -461,22 +453,11 @@ static float test_fit(
       stickyy = 0;
     }
 
-    if (IS_ICONIFIED(testw))
-    {
-       if (testw->icon_title_w == None || IS_ICON_UNMAPPED(testw))
-	  continue;
-       x21 = testw->icon_g.x - stickyx;
-       y21 = testw->icon_g.y - stickyy;
-       x22 = x21 + testw->icon_p_width;
-       y22 = y21 + testw->icon_p_height + testw->icon_g.height;
-    }
-    else
-    {
-       x21 = testw->frame_g.x - stickyx;
-       y21 = testw->frame_g.y - stickyy;
-       x22 = x21 + testw->frame_g.width;
-       y22 = y21 + testw->frame_g.height;
-    }
+    rc = get_visible_window_or_icon_geometry(testw, &g);
+    x21 = g.x - stickyx;
+    y21 = g.y - stickyy;
+    x22 = x21 + g.width;
+    y22 = y21 + g.height;
     if (x11 < x22 && x12 > x21 &&
 	y11 < y22 && y12 > y21)
     {

@@ -37,6 +37,7 @@
 #include "misc.h"
 #include "screen.h"
 #include "geometry.h"
+#include "module_interface.h"
 
 /************************************************************************
  *
@@ -206,6 +207,47 @@ void get_unshaded_geometry(
   }
 
   return;
+}
+
+/* returns the dimensions of the borders */
+void get_window_borders(
+	FvwmWindow *tmp_win, size_borders *borders)
+{
+	borders->top_left.width = tmp_win->boundary_width;
+	borders->bottom_right.width = tmp_win->boundary_width;
+	borders->top_left.height = tmp_win->boundary_width;
+	borders->bottom_right.height = tmp_win->boundary_width;
+	if (HAS_BOTTOM_TITLE(tmp_win))
+	{
+		borders->bottom_right.height = tmp_win->title_g.height;
+	}
+	else
+	{
+		borders->top_left.height = tmp_win->title_g.height;
+	}
+	borders->total_size.width =
+		borders->top_left.width + borders->bottom_right.width;
+	borders->total_size.height =
+		borders->top_left.height + borders->bottom_right.height;
+
+	return;
+}
+
+/* This function returns the geometry of the client window.  If the window is
+ * shaded, the unshaded geometry is used instead. */
+void get_client_geometry(
+	FvwmWindow *tmp_win, rectangle *ret_g)
+{
+	size_borders borders;
+
+	get_unshaded_geometry(tmp_win, ret_g);
+	get_window_borders(tmp_win, &borders);
+	ret_g->x += borders.top_left.width;
+	ret_g->y += borders.top_left.height;
+	ret_g->width -= borders.total_size.width;
+	ret_g->height -= borders.total_size.height;
+
+	return;
 }
 
 /* update the frame_g according to the window's normal_g or max_g and shaded
@@ -558,4 +600,252 @@ void gravity_constrain_size(
   }
   t->frame_g = old_g;
   *rect = new_g;
+}
+
+/* returns the icon title geometry if it is visible */
+Bool get_visible_icon_title_geometry(
+	FvwmWindow *tmp_win, rectangle *ret_g)
+{
+	if (HAS_NO_ICON_TITLE(tmp_win) || IS_ICON_UNMAPPED(tmp_win) ||
+	    !IS_ICONIFIED(tmp_win))
+	{
+		memset(ret_g, 0, sizeof(*ret_g));
+		return False;
+	}
+	*ret_g = tmp_win->icon_g.title_w_g;
+
+	return True;
+}
+
+/* returns the icon title geometry if it the icon title window exists */
+Bool get_icon_title_geometry(
+	FvwmWindow *tmp_win, rectangle *ret_g)
+{
+	if (HAS_NO_ICON_TITLE(tmp_win))
+	{
+		memset(ret_g, 0, sizeof(*ret_g));
+		return False;
+	}
+	*ret_g = tmp_win->icon_g.title_w_g;
+
+	return True;
+}
+
+/* returns the icon picture geometry if it is visible */
+Bool get_visible_icon_picture_geometry(
+	FvwmWindow *tmp_win, rectangle *ret_g)
+{
+	if (tmp_win->icon_g.picture_w_g.width == 0 ||
+	    IS_ICON_UNMAPPED(tmp_win) || !IS_ICONIFIED(tmp_win))
+	{
+		memset(ret_g, 0, sizeof(*ret_g));
+		return False;
+	}
+	*ret_g = tmp_win->icon_g.picture_w_g;
+
+	return True;
+}
+
+/* returns the icon picture geometry if it is exists */
+Bool get_icon_picture_geometry(
+	FvwmWindow *tmp_win, rectangle *ret_g)
+{
+	if (tmp_win->icon_g.picture_w_g.width == 0)
+	{
+		memset(ret_g, 0, sizeof(*ret_g));
+		return False;
+	}
+	*ret_g = tmp_win->icon_g.picture_w_g;
+
+	return True;
+}
+
+/* returns the icon geometry (unexpanded title plus pixmap) if it is visible */
+Bool get_visible_icon_geometry(
+	FvwmWindow *tmp_win, rectangle *ret_g)
+{
+	if (IS_ICON_UNMAPPED(tmp_win) || !IS_ICONIFIED(tmp_win))
+	{
+		memset(ret_g, 0, sizeof(*ret_g));
+		return False;
+	}
+	if (tmp_win->icon_g.picture_w_g.width > 0)
+	{
+		*ret_g = tmp_win->icon_g.picture_w_g;
+		if (!HAS_NO_ICON_TITLE(tmp_win))
+		{
+			ret_g->height += tmp_win->icon_g.title_w_g.height;
+		}
+	}
+	else if (!HAS_NO_ICON_TITLE(tmp_win))
+	{
+		*ret_g = tmp_win->icon_g.title_w_g;
+	}
+	else
+	{
+		memset(ret_g, 0, sizeof(*ret_g));
+		return False;
+	}
+
+	return True;
+}
+
+/* returns the icon geometry (unexpanded title plus pixmap) if it exists */
+Bool get_icon_geometry(
+	FvwmWindow *tmp_win, rectangle *ret_g)
+{
+	if (tmp_win->icon_g.picture_w_g.width > 0)
+	{
+		*ret_g = tmp_win->icon_g.picture_w_g;
+		if (!HAS_NO_ICON_TITLE(tmp_win))
+		{
+			ret_g->height += tmp_win->icon_g.title_w_g.height;
+		}
+	}
+	else if (!HAS_NO_ICON_TITLE(tmp_win))
+	{
+		*ret_g = tmp_win->icon_g.title_w_g;
+	}
+	else
+	{
+		memset(ret_g, 0, sizeof(*ret_g));
+		return False;
+	}
+
+	return True;
+}
+
+/* Returns the visible geometry of a window or icon.  This can be used to test
+ * if this region overlaps other windows. */
+Bool get_visible_window_or_icon_geometry(
+	FvwmWindow *tmp_win, rectangle *ret_g)
+{
+	if (IS_ICONIFIED(tmp_win))
+	{
+		return get_visible_icon_geometry(tmp_win, ret_g);
+	}
+	*ret_g = tmp_win->frame_g;
+
+	return True;
+}
+
+void move_icon_to_position(
+	FvwmWindow *tmp_win)
+{
+	if (tmp_win->icon_g.picture_w_g.width > 0)
+	{
+		XMoveWindow(
+			dpy, tmp_win->icon_pixmap_w,
+			tmp_win->icon_g.picture_w_g.x,
+			tmp_win->icon_g.picture_w_g.y);
+	}
+	if (!HAS_NO_ICON_TITLE(tmp_win))
+	{
+		XMoveWindow(
+			dpy, tmp_win->icon_title_w,
+			tmp_win->icon_g.title_w_g.x,
+			tmp_win->icon_g.title_w_g.y);
+	}
+
+	return;
+}
+
+void broadcast_icon_geometry(
+	FvwmWindow *tmp_win, Bool do_force)
+{
+	rectangle g;
+	Bool rc;
+
+	rc = get_visible_icon_geometry(tmp_win, &g);
+	if (rc == True && (!IS_ICON_UNMAPPED(tmp_win) || do_force == True))
+	{
+		BroadcastPacket(
+			M_ICON_LOCATION, 7, tmp_win->w, tmp_win->frame,
+			(unsigned long)tmp_win,
+			g.x, g.y, g.width, g.height);
+	}
+
+	return;
+}
+
+void modify_icon_position(
+	FvwmWindow *tmp_win, int dx, int dy)
+{
+	if (tmp_win->icon_g.picture_w_g.width > 0)
+	{
+		tmp_win->icon_g.picture_w_g.x += dx;
+		tmp_win->icon_g.picture_w_g.y += dy;
+	}
+	if (!HAS_NO_ICON_TITLE(tmp_win))
+	{
+		tmp_win->icon_g.title_w_g.x += dx;
+		tmp_win->icon_g.title_w_g.y += dy;
+	}
+
+	return;
+}
+
+/* set the icon position to the specified value. take care of the actual icon
+ * layout */
+void set_icon_position(
+	FvwmWindow *tmp_win, int x, int y)
+{
+	if (tmp_win->icon_g.picture_w_g.width > 0)
+	{
+		tmp_win->icon_g.picture_w_g.x = x;
+		tmp_win->icon_g.picture_w_g.y = y;
+	}
+	else
+	{
+		tmp_win->icon_g.picture_w_g.x = 0;
+		tmp_win->icon_g.picture_w_g.y = 0;
+	}
+	if (!HAS_NO_ICON_TITLE(tmp_win))
+	{
+		tmp_win->icon_g.title_w_g.x = x;
+		tmp_win->icon_g.title_w_g.y = y;
+	}
+	else
+	{
+		tmp_win->icon_g.title_w_g.x = 0;
+		tmp_win->icon_g.title_w_g.y = 0;
+	}
+	if (tmp_win->icon_g.picture_w_g.width > 0 &&
+	    !HAS_NO_ICON_TITLE(tmp_win))
+	{
+		tmp_win->icon_g.title_w_g.x -=
+			(tmp_win->icon_g.title_w_g.width -
+			 tmp_win->icon_g.picture_w_g.width) / 2;
+		tmp_win->icon_g.title_w_g.y +=
+			tmp_win->icon_g.picture_w_g.height;
+	}
+
+	return;
+}
+
+void set_icon_picture_size(
+	FvwmWindow *tmp_win, int w, int h)
+{
+	if (tmp_win->icon_g.picture_w_g.width > 0)
+	{
+		tmp_win->icon_g.picture_w_g.width = w;
+		tmp_win->icon_g.picture_w_g.height = h;
+	}
+	else
+	{
+		tmp_win->icon_g.picture_w_g.width = 0;
+		tmp_win->icon_g.picture_w_g.height = 0;
+	}
+
+	return;
+}
+
+void resize_icon_title_height(FvwmWindow *tmp_win, int dh)
+{
+	if (!HAS_NO_ICON_TITLE(tmp_win))
+	{
+		tmp_win->icon_g.title_w_g.height += dh;
+	}
+
+	return;
 }

@@ -1294,6 +1294,30 @@ or the window is iconified, the string is left as is.
 .in -.5i
 
 .in +.5i
+$[cw.x]
+$[cw.y]
+$[cw.width]
+$[cw.height]
+.in +.3i
+These work like $[w....] but return the geometry of the client
+part of the window.  In other words: the border and title of the
+window is not taken into account.
+.in -.3i
+.in -.5i
+
+.in +.5i
+$[i.x], $[it.x], $[ip.x]
+$[i.y], $[it.y], $[ip.y]
+$[i.width], $[it.width], $[ip.width]
+$[i.height], $[it.height], $[ip.height]
+.in +.3i
+These work like $[w....] but return the geometry of the icon
+($[i....]), the icon title ($[it....]) or the icon picture
+($[ip....]).
+.in -.3i
+.in -.5i
+
+.in +.5i
 $[screen]
 .in +.3i
 The screen number fvwm is running on.  Useful for setups with

@@ -25,23 +25,30 @@
 
 typedef struct
 {
-  int x;
-  int y;
-  int width;
-  int height;
+	int x;
+	int y;
+	int width;
+	int height;
 } rectangle;
 
 typedef struct
 {
-  int x;
-  int y;
+	int x;
+	int y;
 } position;
 
 typedef struct
 {
-  int width;
-  int height;
+	int width;
+	int height;
 } size_rect;
+
+typedef struct
+{
+	size_rect top_left;
+	size_rect bottom_right;
+	size_rect total_size;
+} size_borders;
 
 /* ---------------------------- exported variables (globals) ---------------- */
 

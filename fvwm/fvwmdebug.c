@@ -69,12 +69,6 @@ void DB_WI_FRAME(char *label, FvwmWindow *fw)
   return;
 }
 
-void DB_WI_ICON(char *label, FvwmWindow *fw)
-{
-  fprintf(stderr, "%s: FvwmWindow=0x%x, icon_w=0x%x, icon_pixmap_w=0x%x, icon_x_loc=%d, icon_xl_loc=%d, icon_y_loc=%d, icon_w_width=%d, icon_w_height=%d, icon_t_width=%d, icon_p_width=%d, icon_p_height=%d, icon_name=%d\n", label?label:"", fw, fw->icon_w, fw->icon_pixmap_w,fw->icon_x_loc,fw->icon_xl_loc,fw->icon_y_loc,fw->icon_w_width,fw->icon_w_height,fw->icon_t_width,fw->icon_p_width,fw->icon_p_height,fw->icon_name);
-  return;
-}
-
 void DB_WI_SIZEHINTS(char *label, FvwmWindow *fw)
 {
   fprintf(stderr, "%s: FvwmWindow=0x%x, base_width=%d, base_height=%d, width_inc=%d, height_inc=%d, min_width=%d, max_width=%d, min_height=%d, max_height=%d, win_gravity=0x%x", label?label:"", fw, fw->hints.flags, fw->hints.base_width, fw->hints.base_height, fw->hints.width_inc, fw->hints.height_inc, fw->hints.min_width, fw->hints.max_width, fw->hints.min_height, fw->hints.max_height, fw->hints.win_gravity);

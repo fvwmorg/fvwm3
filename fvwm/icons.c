@@ -68,13 +68,68 @@ static void GetBitmapFile(FvwmWindow *tmp_win);
 #ifdef XPM
 static void GetXPMFile(FvwmWindow *tmp_win);
 #endif
+static void GetIconWindow(FvwmWindow *tmp_win);
+static void GetIconBitmap(FvwmWindow *tmp_win);
 
+/* erase all traces of the last used icon in the window structure */
+void clear_icon(FvwmWindow *tmp_win)
+{
+	tmp_win->icon_pixmap_w = None;
+	tmp_win->iconPixmap = None;
+	tmp_win->icon_maskPixmap = None;
+	memset(&tmp_win->icon_g, 0, sizeof(tmp_win->icon_g));
+
+	return;
+}
+
+static void setup_icon_title_size(FvwmWindow *tmp_win)
+{
+  if (HAS_NO_ICON_TITLE(tmp_win))
+  {
+    tmp_win->icon_g.title_text_width = 0;
+    tmp_win->icon_g.title_w_g.width = 0;
+    tmp_win->icon_g.title_w_g.height = 0;
+  }
+  else
+  {
+#ifdef I18N_MB
+     tmp_win->icon_g.title_text_width =
+       XmbTextEscapement(
+	 tmp_win->icon_font.fontset, tmp_win->visible_icon_name,
+	 strlen(tmp_win->visible_icon_name));
+#else
+     tmp_win->icon_g.title_text_width =
+       XTextWidth(
+	 tmp_win->icon_font.font, tmp_win->visible_icon_name,
+	 strlen(tmp_win->visible_icon_name));
+#endif
+    tmp_win->icon_g.title_w_g.height = ICON_HEIGHT(tmp_win);
+    if (tmp_win->icon_g.picture_w_g.width == 0)
+    {
+      tmp_win->icon_g.title_w_g.width = tmp_win->icon_g.title_text_width +
+	2 * (ICON_TITLE_TEXT_GAP_COLLAPSED + ICON_RELIEF_WIDTH);
+      if (IS_STICKY(tmp_win) || IS_ICON_STICKY(tmp_win))
+      {
+	tmp_win->icon_g.title_w_g.width +=
+	  2 * (ICON_TITLE_TO_STICK_EXTRA_GAP + ICON_TITLE_STICK_MIN_WIDTH);
+      }
+    }
+    else
+    {
+      tmp_win->icon_g.title_w_g.width = tmp_win->icon_g.picture_w_g.width;
+    }
+  }
+
+  return;
+}
+
+/* Move the icon of a window by dx/dy pixels */
 /****************************************************************************
  *
  * Get the Icon for the icon window (also used by ewmh_icon)
  *
  ****************************************************************************/
-void GetIcon(FvwmWindow *tmp_win, Bool no_icon_window)
+void GetIconPicture(FvwmWindow *tmp_win, Bool no_icon_window)
 {
   char icon_order[5];
   int i;
@@ -138,9 +193,13 @@ ICON_DBG((stderr,"ciw: hint order: iwh xpm bmp iph '%s'\n", tmp_win->name));
 ICON_DBG((stderr,"ciw: hint order: iwh iph bmp xpm '%s'\n", tmp_win->name));
   }
 
-  tmp_win->icon_p_height = 0;
-  tmp_win->icon_p_width = 0;
-  for (i = 0; i < 5 && !tmp_win->icon_p_height && !tmp_win->icon_p_width; i++)
+  tmp_win->icon_g.picture_w_g.width = 0;
+  tmp_win->icon_g.picture_w_g.height = 0;
+  tmp_win->iconPixmap = None;
+  tmp_win->icon_maskPixmap = None;
+  tmp_win->icon_pixmap_w = None;
+  for (i = 0; i < 5 && tmp_win->icon_g.picture_w_g.width == 0 &&
+	 tmp_win->icon_g.picture_w_g.height == 0; i++)
   {
     switch (icon_order[i])
     {
@@ -151,7 +210,7 @@ ICON_DBG((stderr,"ciw: hint order: iwh iph bmp xpm '%s'\n", tmp_win->name));
       {
 	GetXPMFile(tmp_win);
       }
-ICON_DBG((stderr,"ciw: xpm%s used '%s'\n", (tmp_win->icon_p_height)?"":" not",tmp_win->name));
+ICON_DBG((stderr,"ciw: xpm%s used '%s'\n", (tmp_win->icon_g.picture_w_g.height)?"":" not", tmp_win->name));
 #endif /* XPM */
       break;
     case 1:
@@ -160,7 +219,7 @@ ICON_DBG((stderr,"ciw: xpm%s used '%s'\n", (tmp_win->icon_p_height)?"":" not",tm
       {
 	GetBitmapFile(tmp_win);
       }
-ICON_DBG((stderr,"ciw: bmp%s used '%s'\n", (tmp_win->icon_p_height)?"":" not",tmp_win->name));
+ICON_DBG((stderr,"ciw: bmp%s used '%s'\n", (tmp_win->icon_g.picture_w_g.height)?"":" not",tmp_win->name));
       break;
     case 2:
       /* Next, See if the app supplies its own icon window */
@@ -170,7 +229,7 @@ ICON_DBG((stderr,"ciw: bmp%s used '%s'\n", (tmp_win->icon_p_height)?"":" not",tm
       {
 	GetIconWindow(tmp_win);
       }
-ICON_DBG((stderr,"ciw: iwh%s used '%s'\n", (tmp_win->icon_p_height)?"":" not",tmp_win->name));
+ICON_DBG((stderr,"ciw: iwh%s used '%s'\n", (tmp_win->icon_g.picture_w_g.height)?"":" not",tmp_win->name));
       break;
     case 3:
       /* try an ewmh icon */
@@ -179,7 +238,7 @@ ICON_DBG((stderr,"ciw: iwh%s used '%s'\n", (tmp_win->icon_p_height)?"":" not",tm
 	if (EWMH_SetIconFromWMIcon(tmp_win, NULL, 0, False))
 	  SET_USE_EWMH_ICON(tmp_win, True);
       }
-ICON_DBG((stderr,"ciw: inh%s used '%s'\n", (tmp_win->icon_p_height)?"":" not",tmp_win->name));
+ICON_DBG((stderr,"ciw: inh%s used '%s'\n", (tmp_win->icon_g.picture_w_g.height)?"":" not",tmp_win->name));
       break;
     case 4:
       /* Finally, try to get icon bitmap from the application */
@@ -187,7 +246,7 @@ ICON_DBG((stderr,"ciw: inh%s used '%s'\n", (tmp_win->icon_p_height)?"":" not",tm
       {
 	GetIconBitmap(tmp_win);
       }
-ICON_DBG((stderr,"ciw: iph%s used '%s'\n", (tmp_win->icon_p_height)?"":" not",tmp_win->name));
+ICON_DBG((stderr,"ciw: iph%s used '%s'\n", (tmp_win->icon_g.picture_w_g.height)?"":" not",tmp_win->name));
       break;
     default:
       /* can't happen */
@@ -215,7 +274,7 @@ void CreateIconWindow(FvwmWindow *tmp_win, int def_x, int def_y)
   old_icon_w = tmp_win->icon_title_w;
   old_icon_pixmap_w = (IS_ICON_OURS(tmp_win)) ? tmp_win->icon_pixmap_w : None;
   if (!IS_ICON_OURS(tmp_win) && tmp_win->icon_pixmap_w)
-    XUnmapWindow(dpy,tmp_win->icon_pixmap_w);
+    XUnmapWindow(dpy, tmp_win->icon_pixmap_w);
   SET_ICON_OURS(tmp_win, 1);
   SET_PIXMAP_OURS(tmp_win, 0);
   SET_ICON_SHAPED(tmp_win, 0);
@@ -226,50 +285,35 @@ void CreateIconWindow(FvwmWindow *tmp_win, int def_x, int def_y)
   if (IS_ICON_SUPPRESSED(tmp_win))
     return;
 
-  GetIcon(tmp_win, False);
-
-  /* figure out the icon window size */
-  if (!HAS_NO_ICON_TITLE(tmp_win))
-  {
-    tmp_win->icon_t_width =
-      XTextWidth(tmp_win->icon_font.font, tmp_win->visible_icon_name,
-		 strlen(tmp_win->visible_icon_name));
-    tmp_win->icon_g.height = ICON_HEIGHT(tmp_win);
-  }
-  else
-  {
-    tmp_win->icon_t_width = 0;
-    tmp_win->icon_g.height = 0;
-  }
-
+  /*
+   * set up the icon picture
+   */
+  GetIconPicture(tmp_win, False);
   /* make space for relief to be drawn outside the icon */
   /* this does not happen if fvwm is using a non-default visual (with
      private colormap) and the client has supplied a pixmap (not a bitmap) */
-  if ((IS_ICON_OURS(tmp_win)) && (tmp_win->icon_p_height > 0)
+  if ((IS_ICON_OURS(tmp_win)) && (tmp_win->icon_g.picture_w_g.height > 0)
       && (Pdefault || (tmp_win->iconDepth == 1) || IS_PIXMAP_OURS(tmp_win)))
   {
-    tmp_win->icon_p_width += 2 * ICON_RELIEF_WIDTH;
-    tmp_win->icon_p_height += 2 * ICON_RELIEF_WIDTH;
+    tmp_win->icon_g.picture_w_g.width += 2 * ICON_RELIEF_WIDTH;
+    tmp_win->icon_g.picture_w_g.height += 2 * ICON_RELIEF_WIDTH;
   }
 
-  if (tmp_win->icon_p_width == 0)
-  {
-    tmp_win->icon_p_width = tmp_win->icon_t_width +
-	    2 * (ICON_TITLE_TEXT_GAP_COLLAPSED + ICON_RELIEF_WIDTH);
-    if (IS_STICKY(tmp_win) || IS_ICON_STICKY(tmp_win))
-    {
-      tmp_win->icon_p_width +=
-	2 * (ICON_TITLE_TO_STICK_EXTRA_GAP + ICON_TITLE_STICK_MIN_WIDTH);
-    }
-  }
-  tmp_win->icon_g.width = tmp_win->icon_p_width;
+  /*
+   * set up the icon title geometry
+   */
+  setup_icon_title_size(tmp_win);
 
-  tmp_win->icon_g.x = tmp_win->icon_xl_loc = def_x;
-  tmp_win->icon_g.y = def_y;
+  /*
+   * set up icon position
+   */
+  set_icon_position(tmp_win, def_x, def_y);
 
-  /* create the icon title window */
-  valuemask = CWColormap | CWBorderPixel
-    | CWBackPixel | CWCursor | CWEventMask;
+  /*
+   * create the icon title window
+   */
+  valuemask = CWColormap | CWBorderPixel | CWBackPixel | CWCursor |
+    CWEventMask;
   attributes.colormap = Pcmap;
   attributes.background_pixel = Scr.StdBack;
   attributes.cursor = Scr.FvwmCursors[CRS_DEFAULT];
@@ -281,33 +325,39 @@ void CreateIconWindow(FvwmWindow *tmp_win, int def_x, int def_y)
     {
       XDestroyWindow(dpy, tmp_win->icon_title_w);
       XDeleteContext(dpy, tmp_win->icon_title_w, FvwmContext);
+      tmp_win->icon_title_w = None;
     }
   }
   else
   {
-    if (!tmp_win->icon_title_w)
+    if (tmp_win->icon_title_w == None)
     {
       tmp_win->icon_title_w =
 	XCreateWindow(
-	  dpy, Scr.Root, def_x, def_y + tmp_win->icon_p_height,
-	  tmp_win->icon_g.width, tmp_win->icon_g.height, 0, Pdepth,
-	  InputOutput, Pvisual, valuemask, &attributes);
+	  dpy, Scr.Root, tmp_win->icon_g.title_w_g.x,
+	  tmp_win->icon_g.title_w_g.y, tmp_win->icon_g.title_w_g.width,
+	  tmp_win->icon_g.title_w_g.height, 0, Pdepth, InputOutput, Pvisual,
+	  valuemask, &attributes);
     }
     else
     {
       XMoveResizeWindow(
-	dpy, tmp_win->icon_title_w, def_x, def_y + tmp_win->icon_p_height,
-	  tmp_win->icon_g.width, tmp_win->icon_g.height);
+	dpy, tmp_win->icon_title_w, tmp_win->icon_g.title_w_g.x,
+	tmp_win->icon_g.title_w_g.y, tmp_win->icon_g.title_w_g.width,
+	tmp_win->icon_g.title_w_g.height);
     }
   }
   if (Scr.DefaultColorset >= 0)
-    SetWindowBackground(dpy, tmp_win->icon_title_w, tmp_win->icon_g.width,
-			tmp_win->icon_g.height, &Colorset[Scr.DefaultColorset],
-			Pdepth, Scr.StdGC, False);
+    SetWindowBackground(
+      dpy, tmp_win->icon_title_w, tmp_win->icon_g.title_w_g.width,
+      tmp_win->icon_g.title_w_g.height, &Colorset[Scr.DefaultColorset],
+      Pdepth, Scr.StdGC, False);
 
-  /* create a window to hold the picture */
-  if (IS_ICON_OURS(tmp_win) && tmp_win->icon_p_width > 0 &&
-      tmp_win->icon_p_height > 0)
+  /*
+   * create the icon picture window
+   */
+  if (IS_ICON_OURS(tmp_win) && tmp_win->icon_g.picture_w_g.width > 0 &&
+      tmp_win->icon_g.picture_w_g.height > 0)
   {
     /* use fvwm's visuals in these cases */
     if (Pdefault || (tmp_win->iconDepth == 1) || IS_PIXMAP_OURS(tmp_win))
@@ -316,22 +366,24 @@ void CreateIconWindow(FvwmWindow *tmp_win, int def_x, int def_y)
       {
 	tmp_win->icon_pixmap_w =
 	  XCreateWindow(
-	    dpy, Scr.Root, def_x, def_y, tmp_win->icon_p_width,
-	    tmp_win->icon_p_height, 0, Pdepth, InputOutput, Pvisual, valuemask,
-	    &attributes);
+	    dpy, Scr.Root, tmp_win->icon_g.picture_w_g.x,
+	    tmp_win->icon_g.picture_w_g.y, tmp_win->icon_g.picture_w_g.width,
+	    tmp_win->icon_g.picture_w_g.height, 0, Pdepth, InputOutput,
+	    Pvisual, valuemask, &attributes);
       }
       else
       {
 	tmp_win->icon_pixmap_w = old_icon_pixmap_w;
 	XMoveResizeWindow(
-	  dpy, tmp_win->icon_pixmap_w, def_x, def_y, tmp_win->icon_p_width,
-	  tmp_win->icon_p_height);
+	  dpy, tmp_win->icon_pixmap_w, tmp_win->icon_g.picture_w_g.x,
+	  tmp_win->icon_g.picture_w_g.y, tmp_win->icon_g.picture_w_g.width,
+	  tmp_win->icon_g.picture_w_g.height);
       }
       if (Scr.DefaultColorset >= 0)
-	SetWindowBackground(dpy, tmp_win->icon_title_w, tmp_win->icon_p_width,
-			    tmp_win->icon_p_height,
-			    &Colorset[Scr.DefaultColorset], Pdepth, Scr.StdGC,
-			    False);
+	SetWindowBackground(
+	  dpy, tmp_win->icon_title_w, tmp_win->icon_g.picture_w_g.width,
+	  tmp_win->icon_g.picture_w_g.height, &Colorset[Scr.DefaultColorset],
+	  Pdepth, Scr.StdGC, False);
     }
     else
     {
@@ -346,19 +398,20 @@ void CreateIconWindow(FvwmWindow *tmp_win, int def_x, int def_y)
       valuemask |= CWBackPixmap;
       tmp_win->icon_pixmap_w =
 	XCreateWindow(
-	  dpy, Scr.Root, def_x, def_y, tmp_win->icon_p_width,
-	  tmp_win->icon_p_height, 0, DefaultDepth(dpy, Scr.screen), InputOutput,
-	  DefaultVisual(dpy, Scr.screen), valuemask, &attributes);
+	  dpy, Scr.Root, tmp_win->icon_g.picture_w_g.x,
+	  tmp_win->icon_g.picture_w_g.y, tmp_win->icon_g.picture_w_g.width,
+	  tmp_win->icon_g.picture_w_g.height, 0, DefaultDepth(dpy, Scr.screen),
+	  InputOutput, DefaultVisual(dpy, Scr.screen), valuemask, &attributes);
     }
   }
-  else
+  else if (tmp_win->icon_pixmap_w != None)
   {
     /* client supplied icon window: select events on it */
     attributes.event_mask = XEVMASK_ICONPW;
     valuemask = CWEventMask;
     XChangeWindowAttributes(dpy, tmp_win->icon_pixmap_w, valuemask,&attributes);
   }
-  if (old_icon_pixmap_w && old_icon_pixmap_w != tmp_win->icon_pixmap_w)
+  if (old_icon_pixmap_w != None && old_icon_pixmap_w != tmp_win->icon_pixmap_w)
   {
     /* destroy the old window */
     XDestroyWindow(dpy, old_icon_pixmap_w);
@@ -386,8 +439,8 @@ void CreateIconWindow(FvwmWindow *tmp_win, int def_x, int def_y)
 
       r.x = 0;
       r.y = 0;
-      r.width = tmp_win->icon_p_width;
-      r.height = tmp_win->icon_p_height;
+      r.width = tmp_win->icon_g.picture_w_g.width;
+      r.height = tmp_win->icon_g.picture_w_g.height;
       FShapeCombineRectangles(
 	dpy, tmp_win->icon_pixmap_w, FShapeBounding, 0, 0, &r, 1, FShapeSet, 0);
     }
@@ -397,9 +450,9 @@ void CreateIconWindow(FvwmWindow *tmp_win, int def_x, int def_y)
   {
     XSaveContext(dpy, tmp_win->icon_title_w, FvwmContext, (caddr_t)tmp_win);
     XDefineCursor(dpy, tmp_win->icon_title_w, Scr.FvwmCursors[CRS_DEFAULT]);
-    GrabAllWindowKeysAndButtons(dpy, tmp_win->icon_title_w, Scr.AllBindings,
-				C_ICON, GetUnusedModifiers(),
-				Scr.FvwmCursors[CRS_DEFAULT], True);
+    GrabAllWindowKeysAndButtons(
+      dpy, tmp_win->icon_title_w, Scr.AllBindings, C_ICON, GetUnusedModifiers(),
+      Scr.FvwmCursors[CRS_DEFAULT], True);
     xwc.sibling = tmp_win->frame;
     xwc.stack_mode = Below;
     XConfigureWindow(dpy, tmp_win->icon_title_w, CWSibling|CWStackMode, &xwc);
@@ -409,13 +462,14 @@ void CreateIconWindow(FvwmWindow *tmp_win, int def_x, int def_y)
   {
     XSaveContext(dpy, tmp_win->icon_pixmap_w, FvwmContext, (caddr_t)tmp_win);
     XDefineCursor(dpy, tmp_win->icon_pixmap_w, Scr.FvwmCursors[CRS_DEFAULT]);
-    GrabAllWindowKeysAndButtons(dpy, tmp_win->icon_pixmap_w, Scr.AllBindings,
-				C_ICON, GetUnusedModifiers(),
-				Scr.FvwmCursors[CRS_DEFAULT], True);
+    GrabAllWindowKeysAndButtons(
+      dpy, tmp_win->icon_pixmap_w, Scr.AllBindings, C_ICON,
+      GetUnusedModifiers(), Scr.FvwmCursors[CRS_DEFAULT], True);
     xwc.sibling = tmp_win->frame;
     xwc.stack_mode = Below;
     XConfigureWindow(dpy,tmp_win->icon_pixmap_w,CWSibling|CWStackMode,&xwc);
   }
+
   return;
 }
 
@@ -472,9 +526,9 @@ void DrawIconWindow(FvwmWindow *tmp_win)
   {
     int x_title;
     int x_title_min = 0;
-    int w_title = tmp_win->icon_t_width;
-    int x_title_w = tmp_win->icon_xl_loc;
-    int w_title_w = tmp_win->icon_g.width;
+    int w_title = tmp_win->icon_g.title_text_width;
+    int x_title_w = tmp_win->icon_g.picture_w_g.x;
+    int w_title_w = tmp_win->icon_g.picture_w_g.width;
     int x_stipple = ICON_RELIEF_WIDTH;
     int w_title_text_gap = 0;
     int w_stipple = 0;
@@ -489,7 +543,6 @@ void DrawIconWindow(FvwmWindow *tmp_win)
       int sh;
 
       use_unexpanded_size = 0;
-      w_title = tmp_win->icon_t_width;
       w_title_text_gap = ICON_TITLE_TEXT_GAP_EXPANDED;
       x_title_min = w_title_text_gap + ICON_RELIEF_WIDTH;
       if (is_sticky)
@@ -499,7 +552,7 @@ void DrawIconWindow(FvwmWindow *tmp_win)
       }
       /* resize the icon name window */
       w_title_w = w_title + 2 * x_title_min;
-      if (w_title_w <= tmp_win->icon_p_width)
+      if (w_title_w <= tmp_win->icon_g.picture_w_g.width)
       {
 	/* the expanded title is smaller, so do not expand at all */
 	is_expanded = 0;
@@ -508,7 +561,8 @@ void DrawIconWindow(FvwmWindow *tmp_win)
       }
       else
       {
-	x_title_w = tmp_win->icon_g.x - (w_title_w - tmp_win->icon_p_width)/2;
+	x_title_w = tmp_win->icon_g.picture_w_g.x -
+	  (w_title_w - tmp_win->icon_g.picture_w_g.width) / 2;
 	FScreenGetScrRect(NULL, FSCREEN_CURRENT, &sx, &sy, &sw, &sh);
 	/* start keep label on screen. dje 8/7/97 */
 	if (x_title_w < sx) {  /* if new loc neg (off left edge) */
@@ -529,21 +583,28 @@ void DrawIconWindow(FvwmWindow *tmp_win)
       w_title_text_gap = ICON_TITLE_TEXT_GAP_COLLAPSED;
       x_title_min = w_title_text_gap + ICON_RELIEF_WIDTH;
       /* resize the icon name window */
-      w_title_w = tmp_win->icon_p_width;
-      x_title_w = tmp_win->icon_g.x;
+      if (tmp_win->icon_pixmap_w != None)
+      {
+	w_title_w = tmp_win->icon_g.picture_w_g.width;
+	x_title_w = tmp_win->icon_g.picture_w_g.x;
+      }
+      else
+      {
+	w_title_w = tmp_win->icon_g.title_w_g.width;
+	x_title_w = tmp_win->icon_g.title_w_g.x;
+      }
     }
-    tmp_win->icon_g.width = w_title_w;
-    tmp_win->icon_xl_loc = x_title_w;
+    tmp_win->icon_g.title_w_g.width = w_title_w;
+    tmp_win->icon_g.title_w_g.x = x_title_w;
 
     /* set up TitleGC for drawing the icon label */
     if (tmp_win->icon_font.font != None)
       NewFontAndColor(tmp_win->icon_font.font->fid, TextColor, BackColor);
 
-    tmp_win->icon_g.height = ICON_HEIGHT(tmp_win);
+    tmp_win->icon_g.title_w_g.height = ICON_HEIGHT(tmp_win);
     XMoveResizeWindow(
-      dpy, tmp_win->icon_title_w, x_title_w,
-      tmp_win->icon_g.y + tmp_win->icon_p_height, w_title_w,
-      ICON_HEIGHT(tmp_win));
+      dpy, tmp_win->icon_title_w, tmp_win->icon_g.title_w_g.x,
+      tmp_win->icon_g.title_w_g.y, w_title_w, ICON_HEIGHT(tmp_win));
     XSetWindowBackground(dpy, tmp_win->icon_title_w, BackColor);
     XClearWindow(dpy,tmp_win->icon_title_w);
 
@@ -582,7 +643,7 @@ void DrawIconWindow(FvwmWindow *tmp_win)
     XDrawString(dpy, tmp_win->icon_title_w,
 #endif
 		Scr.TitleGC, x_title,
-		tmp_win->icon_g.height - tmp_win->icon_font.height +
+		tmp_win->icon_g.title_w_g.height - tmp_win->icon_font.height +
 		tmp_win->icon_font.y + ICON_TITLE_VERT_TEXT_OFFSET,
 		tmp_win->visible_icon_name, strlen(tmp_win->visible_icon_name));
     RelieveRectangle(
@@ -610,19 +671,21 @@ void DrawIconWindow(FvwmWindow *tmp_win)
     }
   }
 
-  if(tmp_win->icon_pixmap_w != None)
+  if (tmp_win->icon_pixmap_w != None)
   {
-    XMoveWindow(dpy, tmp_win->icon_pixmap_w, tmp_win->icon_g.x,
-		tmp_win->icon_g.y);
+    XMoveWindow(
+	    dpy, tmp_win->icon_pixmap_w, tmp_win->icon_g.picture_w_g.x,
+	    tmp_win->icon_g.picture_w_g.y);
   }
 
   /* only relieve unshaped icons that share fvwm's visual */
   if ((tmp_win->iconPixmap != None) && !IS_ICON_SHAPED(tmp_win)
       && (Pdefault || (tmp_win->iconDepth == 1) || IS_PIXMAP_OURS(tmp_win)))
   {
-    RelieveRectangle(dpy, tmp_win->icon_pixmap_w, 0, 0,
-		     tmp_win->icon_p_width - 1, tmp_win->icon_p_height - 1,
-		     Relief, Shadow, ICON_RELIEF_WIDTH);
+    RelieveRectangle(
+      dpy, tmp_win->icon_pixmap_w, 0, 0, tmp_win->icon_g.picture_w_g.width - 1,
+      tmp_win->icon_g.picture_w_g.height - 1, Relief, Shadow,
+      ICON_RELIEF_WIDTH);
   }
 
   /* need to locate the icon pixmap */
@@ -631,22 +694,22 @@ void DrawIconWindow(FvwmWindow *tmp_win)
     if (tmp_win->iconDepth == 1)
     {
       /* it's a bitmap */
-      XCopyPlane(dpy, tmp_win->iconPixmap, tmp_win->icon_pixmap_w,
-		 Scr.TitleGC, 0, 0,
-		 tmp_win->icon_p_width - 2 * ICON_RELIEF_WIDTH,
-		 tmp_win->icon_p_height - 2 * ICON_RELIEF_WIDTH,
-		 ICON_RELIEF_WIDTH, ICON_RELIEF_WIDTH, 1);
+      XCopyPlane(
+	dpy, tmp_win->iconPixmap, tmp_win->icon_pixmap_w, Scr.TitleGC, 0, 0,
+	tmp_win->icon_g.picture_w_g.width - 2 * ICON_RELIEF_WIDTH,
+	tmp_win->icon_g.picture_w_g.height - 2 * ICON_RELIEF_WIDTH,
+	ICON_RELIEF_WIDTH, ICON_RELIEF_WIDTH, 1);
     }
     else
     {
       if (Pdefault || IS_PIXMAP_OURS(tmp_win))
       {
         /* it's a pixmap that need copying */
-	XCopyArea(dpy, tmp_win->iconPixmap, tmp_win->icon_pixmap_w,
-		  Scr.TitleGC, 0, 0,
-		  tmp_win->icon_p_width - 2 * ICON_RELIEF_WIDTH,
-		  tmp_win->icon_p_height - 2 * ICON_RELIEF_WIDTH,
-		  ICON_RELIEF_WIDTH, ICON_RELIEF_WIDTH);
+	XCopyArea(
+	  dpy, tmp_win->iconPixmap, tmp_win->icon_pixmap_w, Scr.TitleGC, 0, 0,
+	  tmp_win->icon_g.picture_w_g.width - 2 * ICON_RELIEF_WIDTH,
+	  tmp_win->icon_g.picture_w_g.height - 2 * ICON_RELIEF_WIDTH,
+	  ICON_RELIEF_WIDTH, ICON_RELIEF_WIDTH);
       }
       else
       {
@@ -655,9 +718,10 @@ void DrawIconWindow(FvwmWindow *tmp_win)
          * install the root colormap temporarily to help the Exceed server */
         if (Scr.bo.InstallRootCmap)
           InstallRootColormap();
-	XCopyArea(dpy, tmp_win->iconPixmap, tmp_win->icon_pixmap_w,
-		  DefaultGC(dpy, Scr.screen), 0, 0, tmp_win->icon_p_width,
-		  tmp_win->icon_p_height, 0, 0);
+	XCopyArea(
+	  dpy, tmp_win->iconPixmap, tmp_win->icon_pixmap_w,
+	  DefaultGC(dpy, Scr.screen), 0, 0, tmp_win->icon_g.picture_w_g.width,
+	  tmp_win->icon_g.picture_w_g.height, 0, 0);
 	if (Scr.bo.InstallRootCmap)
 	  UninstallRootColormap();
       }
@@ -668,8 +732,8 @@ void DrawIconWindow(FvwmWindow *tmp_win)
   {
     if (tmp_win->icon_title_w != None)
     {
-      XRaiseWindow (dpy, tmp_win->icon_title_w);
-      raisePanFrames ();
+      XRaiseWindow(dpy, tmp_win->icon_title_w);
+      raisePanFrames();
     }
   }
   else
@@ -702,6 +766,8 @@ void DrawIconWindow(FvwmWindow *tmp_win)
  ************************************************************************/
 void ChangeIconPixmap(FvwmWindow *tmp_win)
 {
+  rectangle g;
+
   if (!IS_ICONIFIED(tmp_win))
   {
 ICON_DBG((stderr,"hpn: postpone icon change '%s'\n", tmp_win->name));
@@ -713,12 +779,9 @@ ICON_DBG((stderr,"hpn: postpone icon change '%s'\n", tmp_win->name));
     ICON_DBG((stderr,"hpn: applying new icon '%s'\n", tmp_win->name));
     SET_ICONIFIED(tmp_win, 0);
     SET_ICON_UNMAPPED(tmp_win, 0);
-    CreateIconWindow(tmp_win, tmp_win->icon_g.x,tmp_win->icon_g.y);
-    BroadcastPacket(M_ICONIFY, 7,
-		    tmp_win->w, tmp_win->frame,
-		    (unsigned long)tmp_win,
-		    tmp_win->icon_g.x, tmp_win->icon_g.y,
-		    tmp_win->icon_g.width, tmp_win->icon_g.height);
+    get_icon_geometry(tmp_win, &g);
+    CreateIconWindow(tmp_win, g.x, g.y);
+    broadcast_icon_geometry(tmp_win, False);
     /* domivogt (15-Sep-1999): BroadcastConfig informs modules of the
      * configuration change including the iconified flag. So this
      * flag must be set here. I'm not sure if the two calls of the
@@ -754,48 +817,21 @@ ICON_DBG((stderr,"hpn: postpone icon change '%s'\n", tmp_win->name));
  ************************************************************************/
 void RedoIconName(FvwmWindow *tmp_win)
 {
-  if(IS_ICON_SUPPRESSED(tmp_win))
+  if (IS_ICON_SUPPRESSED(tmp_win))
     return;
-
-  if (tmp_win->icon_title_w == (int)NULL)
+  if (tmp_win->icon_title_w == None)
     return;
-
-  if (HAS_NO_ICON_TITLE(tmp_win))
-  {
-    tmp_win->icon_t_width = 0;
-  }
-  else
-  {
-    tmp_win->icon_t_width =
-      XTextWidth(tmp_win->icon_font.font, tmp_win->visible_icon_name,
-                 strlen(tmp_win->visible_icon_name));
-    if (!HAS_NO_ICON_TITLE(tmp_win) && tmp_win->icon_pixmap_w == None)
-    {
-      /* icon has only a title, set the fake width of the icon window
-       * appropriately */
-      tmp_win->icon_p_width = tmp_win->icon_t_width +
-	      2 * (ICON_TITLE_TEXT_GAP_COLLAPSED + ICON_RELIEF_WIDTH);
-      if (IS_STICKY(tmp_win) || IS_ICON_STICKY(tmp_win))
-      {
-	tmp_win->icon_p_width +=
-	  2 * (ICON_TITLE_TO_STICK_EXTRA_GAP + ICON_TITLE_STICK_MIN_WIDTH);
-      }
-      tmp_win->icon_g.width = tmp_win->icon_p_width;
-    }
-
-  }
+  setup_icon_title_size(tmp_win);
   /* clear the icon window, and trigger a re-draw via an expose event */
   if (IS_ICONIFIED(tmp_win))
   {
     DrawIconWindow(tmp_win);
-  }
-  if (IS_ICONIFIED(tmp_win))
+	  /*!!!*/
     XClearArea(dpy, tmp_win->icon_title_w, 0, 0, 0, 0, True);
+  }
+
   return;
 }
-
-
-
 
 /************************************************************************
  *
@@ -805,7 +841,6 @@ void RedoIconName(FvwmWindow *tmp_win)
  ************************************************************************/
 void AutoPlaceIcon(FvwmWindow *t)
 {
-  int tw,th,tx,ty;
   int base_x, base_y;
   int width,height;
   FvwmWindow *test_window;
@@ -814,9 +849,12 @@ void AutoPlaceIcon(FvwmWindow *t)
   Bool loc_ok_wrong_screen2;
   int real_x=10, real_y=10;
   int new_x, new_y;
-  Bool do_move_pixmap = False;
-  Bool do_move_title = False;
+  Bool do_move_icon = False;
 
+  if (t->icon_pixmap_w == None && t->icon_title_w == None)
+  {
+	  return;
+  }
   /* New! Put icon in same page as the center of the window */
   /* Not a good idea for StickyIcons. Neither for icons of windows that are
    * visible on the current page. */
@@ -841,10 +879,10 @@ void AutoPlaceIcon(FvwmWindow *t)
   }
   else
   {
-    base_x=((t->frame_g.x+Scr.Vx+(t->frame_g.width>>1))/Scr.MyDisplayWidth)*
-      Scr.MyDisplayWidth;
-    base_y=((t->frame_g.y+Scr.Vy+(t->frame_g.height>>1))/
-	    Scr.MyDisplayHeight)*Scr.MyDisplayHeight;
+    base_x = ((t->frame_g.x + Scr.Vx + (t->frame_g.width >> 1)) /
+      Scr.MyDisplayWidth) * Scr.MyDisplayWidth;
+    base_y= ((t->frame_g.y + Scr.Vy + (t->frame_g.height >> 1)) /
+      Scr.MyDisplayHeight) * Scr.MyDisplayHeight;
     /* limit icon position to desktop */
     if (base_x > Scr.VxMax)
       base_x = Scr.VxMax;
@@ -857,25 +895,36 @@ void AutoPlaceIcon(FvwmWindow *t)
     base_x -= Scr.Vx;
     base_y -= Scr.Vy;
   }
-  if(IS_ICON_MOVED(t))
+  if (IS_ICON_MOVED(t))
   {
+    rectangle g;
+    int dx;
+    int dy;
+
+    get_icon_geometry(t, &g);
+    dx = g.x;
+    dy = g.y;
+
     /* just make sure the icon is on this page */
-    t->icon_g.x = t->icon_g.x % Scr.MyDisplayWidth + base_x;
-    t->icon_g.y = t->icon_g.y % Scr.MyDisplayHeight + base_y;
-    if(t->icon_g.x < 0)
-      t->icon_g.x += Scr.MyDisplayWidth;
-    if(t->icon_g.y < 0)
-      t->icon_g.y += Scr.MyDisplayHeight;
-    t->icon_xl_loc = t->icon_g.x;
-    do_move_pixmap = True;
-    do_move_title = True;
+    g.x = g.x % Scr.MyDisplayWidth + base_x;
+    g.y = g.y % Scr.MyDisplayHeight + base_y;
+    if (g.x < 0)
+    {
+      g.x += Scr.MyDisplayWidth;
+    }
+    if (g.y < 0)
+    {
+      g.y += Scr.MyDisplayHeight;
+    }
+    dx = g.x - dx;
+    dy = g.y - dy;
+    modify_icon_position(t, dx, dy);
+    do_move_icon = True;
   }
   else if (USE_ICON_POSITION_HINT(t) && t->wmhints &&
 	   t->wmhints->flags & IconPositionHint)
   {
-    t->icon_g.x = t->wmhints->icon_x;
-    t->icon_g.y = t->wmhints->icon_y;
-    t->icon_xl_loc = t->icon_g.x;
+    set_icon_position(t, t->wmhints->icon_x, t->wmhints->icon_y);
   }
   /* dje 10/12/97:
      Look thru chain of icon boxes assigned to window.
@@ -888,30 +937,31 @@ void AutoPlaceIcon(FvwmWindow *t)
     int sw;
     int sh;
     fscreen_scr_arg fscr;
+    rectangle g;
 
-    t->icon_g.x = t->frame_g.x;
+    get_icon_geometry(t, &g);
+    g.x = t->frame_g.x;
     if (HAS_BOTTOM_TITLE(t))
     {
-      t->icon_g.y =
-	t->frame_g.y + t->frame_g.height - t->icon_g.height - t->icon_p_height;
+      g.y = t->frame_g.y + t->frame_g.height - g.height;
     }
     else
     {
-      t->icon_g.y = t->frame_g.y;
+      g.y = t->frame_g.y;
     }
-    fscr.xypos.x = t->icon_g.x + t->icon_g.width / 2;
-    fscr.xypos.y = t->icon_g.y + t->icon_g.height / 2;
+    fscr.xypos.x = g.x + g.width / 2;
+    fscr.xypos.y = g.y + g.height / 2;
     FScreenGetScrRect(&fscr, FSCREEN_XYPOS, &sx, &sy, &sw, &sh);
-    if (t->icon_g.x < sx)
-      t->icon_g.x = sx;
-    else if (t->icon_g.x + t->icon_g.width > sx + sw)
-      t->icon_g.x = sx + sw - t->icon_g.width;
-    if (t->icon_g.y < sy)
-      t->icon_g.y = sy;
-    else if (t->icon_g.y + t->icon_g.height + t->icon_p_height > sy + sh)
-      t->icon_g.y = sy + sh - t->icon_g.height - t->icon_p_height;
-    do_move_pixmap = True;
-    do_move_title = True;
+    if (g.x < sx)
+      g.x = sx;
+    else if (g.x + g.width > sx + sw)
+      g.x = sx + sw - g.width;
+    if (g.y < sy)
+      g.y = sy;
+    else if (g.y + g.height > sy + sh)
+      g.y = sy + sh - g.height;
+    set_icon_position(t, g.x, g.y);
+    do_move_icon = True;
   }
   else
   {
@@ -933,6 +983,7 @@ void AutoPlaceIcon(FvwmWindow *t)
     int i;                              /* index for inner/outer loop data */
     fscreen_scr_arg fscr;
     rectangle ref;
+    rectangle g;
 
     /* Hopefully this makes the following more readable. */
 #define ICONBOX_LFT icon_boxes_ptr->IconBox[0]
@@ -946,10 +997,11 @@ void AutoPlaceIcon(FvwmWindow *t)
     /* needed later */
     fscr.xypos.x = t->frame_g.x + (t->frame_g.width / 2) - base_x;
     fscr.xypos.y = t->frame_g.y + (t->frame_g.height / 2) - base_y;
+    get_icon_geometry(t, &g);
     /* unnecessary copy of width */
-    width = t->icon_p_width;
+    width = g.width;
     /* total height */
-    height = t->icon_g.height + t->icon_p_height;
+    height = g.height;
     /* no slot found yet */
     loc_ok = False;
     loc_ok_wrong_screen = False;
@@ -1131,19 +1183,18 @@ void AutoPlaceIcon(FvwmWindow *t)
 	    /* test overlap */
             if(test_window->Desk == t->Desk)
 	    {
+	      rectangle g;
+
               if((IS_ICONIFIED(test_window)) &&
                  (!IS_TRANSIENT(test_window) ||
 		  !IS_ICONIFIED_BY_PARENT(test_window)) &&
                  (test_window->icon_title_w||test_window->icon_pixmap_w) &&
                  (test_window != t)) {
-                tw=test_window->icon_p_width;
-                th=test_window->icon_p_height+
-                  test_window->icon_g.height;
-                tx = test_window->icon_g.x;
-                ty = test_window->icon_g.y;
-
-                if((tx<(real_x+width+3))&&((tx+tw+3) > real_x)&&
-                   (ty<(real_y+height+3))&&((ty+th + 3)>real_y))
+		get_icon_geometry(test_window, &g);
+                if((g.x<(real_x+width+MIN_ICON_BOX_DIST))&&
+		   ((g.x+g.width+MIN_ICON_BOX_DIST) > real_x)&&
+                   (g.y<(real_y+height+MIN_ICON_BOX_DIST))&&
+		   ((g.y+g.height + MIN_ICON_BOX_DIST)>real_y))
 		{
 		  /* don't accept this location */
                   loc_ok = False;
@@ -1164,35 +1215,19 @@ void AutoPlaceIcon(FvwmWindow *t)
         dim[1].start_at += dim[1].step;
       } /* end while room outer dimension */
     } /* end for all icon boxes, or found space */
-    if(!loc_ok && !loc_ok_wrong_screen)
+    if (!loc_ok && !loc_ok_wrong_screen)
       /* If icon never found a home just leave it */
       return;
-    t->icon_g.x = real_x;
-    t->icon_g.y = real_y;
-
-    if(t->icon_pixmap_w)
-      XMoveWindow(dpy,t->icon_pixmap_w,t->icon_g.x, t->icon_g.y);
-
-    t->icon_g.width = t->icon_p_width;
-    t->icon_xl_loc = t->icon_g.x;
-
-    do_move_title = True;
-    BroadcastPacket(M_ICON_LOCATION, 7,
-                    t->w, t->frame,
-                    (unsigned long)t,
-                    t->icon_g.x, t->icon_g.y,
-                    t->icon_p_width, t->icon_g.height+t->icon_p_height);
+    set_icon_position(t, real_x, real_y);
+    broadcast_icon_geometry(t, True);
+    do_move_icon = True;
   }
-  if (do_move_pixmap && t->icon_pixmap_w != None)
+  if (do_move_icon)
   {
-    XMoveWindow(dpy, t->icon_pixmap_w, t->icon_g.x, t->icon_g.y);
+    move_icon_to_position(t);
   }
-  if (do_move_title && t->icon_title_w != None)
-  {
-    XMoveResizeWindow(
-      dpy, t->icon_title_w, t->icon_xl_loc, t->icon_g.y+t->icon_p_height,
-      t->icon_g.width, ICON_HEIGHT(t));
-  }
+
+  return;
 }
 
 static icon_boxes *global_icon_box_ptr;
@@ -1255,22 +1290,21 @@ static void GetBitmapFile(FvwmWindow *tmp_win)
   char *path = NULL;
   int HotX,HotY;
 
+  tmp_win->icon_g.picture_w_g.width = 0;
+  tmp_win->icon_g.picture_w_g.height = 0;
   path = findImageFile(tmp_win->icon_bitmap_file, NULL, R_OK);
-
   if (path == NULL)
+  {
     return;
-  if (XReadBitmapFile(dpy, Scr.Root, path,
-		      (unsigned int *)&tmp_win->icon_p_width,
-		      (unsigned int *)&tmp_win->icon_p_height,
-		      &tmp_win->iconPixmap, &HotX, &HotY) == BitmapSuccess)
+  }
+  if (XReadBitmapFile(
+	dpy, Scr.Root, path,
+	(unsigned int *)&tmp_win->icon_g.picture_w_g.width,
+	(unsigned int *)&tmp_win->icon_g.picture_w_g.height,
+	&tmp_win->iconPixmap, &HotX, &HotY) == BitmapSuccess)
   {
     tmp_win->iconDepth = 1;
     SET_PIXMAP_OURS(tmp_win, 1);
-  }
-  else
-  {
-    tmp_win->icon_p_width = 0;
-    tmp_win->icon_p_height = 0;
   }
 
   free(path);
@@ -1289,16 +1323,19 @@ static void GetXPMFile(FvwmWindow *tmp_win)
   XpmImage my_image;
   int rc;
 
+  tmp_win->icon_g.picture_w_g.width = 0;
+  tmp_win->icon_g.picture_w_g.height = 0;
   path = findImageFile(tmp_win->icon_bitmap_file, NULL, R_OK);
-  if(path == NULL)return;
-
+  if (path == NULL)
+  {
+    return;
+  }
   xpm_attributes.visual = Pvisual;
   xpm_attributes.colormap = Pcmap;
   xpm_attributes.depth = Pdepth;
   xpm_attributes.closeness = 40000; /* Allow for "similar" colors */
   xpm_attributes.valuemask = XpmSize | XpmReturnPixels | XpmCloseness
     | XpmVisual | XpmColormap | XpmDepth;
-
   rc = XpmReadFileToXpmImage(path, &my_image, NULL);
   if (rc != XpmSuccess)
   {
@@ -1309,10 +1346,9 @@ static void GetXPMFile(FvwmWindow *tmp_win)
   }
   free(path);
   color_reduce_pixmap(&my_image,Scr.ColorLimit);
-  rc = XpmCreatePixmapFromXpmImage(dpy,Scr.NoFocusWin, &my_image,
-                                   &tmp_win->iconPixmap,
-                                   &tmp_win->icon_maskPixmap,
-                                   &xpm_attributes);
+  rc = XpmCreatePixmapFromXpmImage(
+    dpy,Scr.NoFocusWin, &my_image, &tmp_win->iconPixmap,
+    &tmp_win->icon_maskPixmap, &xpm_attributes);
   if (rc != XpmSuccess)
   {
     fvwm_msg(ERR,"GetXPMFile",
@@ -1320,8 +1356,8 @@ static void GetXPMFile(FvwmWindow *tmp_win)
     XpmFreeXpmImage(&my_image);
     return;
   }
-  tmp_win->icon_p_width = my_image.width;
-  tmp_win->icon_p_height = my_image.height;
+  tmp_win->icon_g.picture_w_g.width = my_image.width;
+  tmp_win->icon_g.picture_w_g.height = my_image.height;
   SET_PIXMAP_OURS(tmp_win, 1);
   tmp_win->iconDepth = Pdepth;
 
@@ -1330,6 +1366,7 @@ static void GetXPMFile(FvwmWindow *tmp_win)
 
   XpmFreeXpmImage(&my_image);
 
+  return;
 }
 #endif /* XPM */
 
@@ -1338,14 +1375,18 @@ static void GetXPMFile(FvwmWindow *tmp_win)
  * Looks for an application supplied icon window
  *
  ****************************************************************************/
-void GetIconWindow(FvwmWindow *tmp_win)
+static void GetIconWindow(FvwmWindow *tmp_win)
 {
+  tmp_win->icon_g.picture_w_g.width = 0;
+  tmp_win->icon_g.picture_w_g.height = 0;
+
   /* We are guaranteed that wmhints is non-null when calling this
    * routine */
   if (XGetGeometry(
 	dpy, tmp_win->wmhints->icon_window, &JunkRoot, &JunkX, &JunkY,
-	(unsigned int *)&tmp_win->icon_p_width,
-	(unsigned int *)&tmp_win->icon_p_height, &JunkBW, &JunkDepth) == 0)
+	(unsigned int *)&tmp_win->icon_g.picture_w_g.width,
+	(unsigned int *)&tmp_win->icon_g.picture_w_g.height,
+	&JunkBW, &JunkDepth) == 0)
   {
     fvwm_msg(ERR,"GetIconWindow", "Window '%s' has a bad icon window!"
 	     " Ignoring icon window.",
@@ -1355,8 +1396,8 @@ void GetIconWindow(FvwmWindow *tmp_win)
     tmp_win->wmhints->flags &= ~IconWindowHint;
     return;
   }
-  tmp_win->icon_p_width += JunkBW<<1;
-  tmp_win->icon_p_height += JunkBW<<1;
+  tmp_win->icon_g.picture_w_g.width += JunkBW<<1;
+  tmp_win->icon_g.picture_w_g.height += JunkBW<<1;
   /*
    * Now make the new window the icon window for this window,
    * and set it up to work as such (select for key presses
@@ -1376,6 +1417,8 @@ void GetIconWindow(FvwmWindow *tmp_win)
   /* Olwais screws this up, maybe others do too! */
   XReparentWindow(dpy, tmp_win->icon_pixmap_w, Scr.Root, 0,0);
   SET_ICON_OURS(tmp_win, 0);
+
+  return;
 }
 
 
@@ -1384,9 +1427,12 @@ void GetIconWindow(FvwmWindow *tmp_win)
  * Looks for an application supplied bitmap or pixmap
  *
  ****************************************************************************/
-void GetIconBitmap(FvwmWindow *tmp_win)
+static void GetIconBitmap(FvwmWindow *tmp_win)
 {
   unsigned int width, height, depth;
+
+  tmp_win->icon_g.picture_w_g.width = 0;
+  tmp_win->icon_g.picture_w_g.height = 0;
 
   /* We are guaranteed that wmhints is non-null when calling this routine */
   if (!XGetGeometry(dpy, tmp_win->wmhints->icon_pixmap, &JunkRoot,
@@ -1399,7 +1445,6 @@ void GetIconBitmap(FvwmWindow *tmp_win)
     tmp_win->wmhints->flags &= ~IconPixmapHint;
     return;
   }
-
   /* sanity check the pixmap depth, it must be the same as the root or 1 */
   if ((depth != 1) && (depth != DefaultDepth(dpy,Scr.screen)))
   {
@@ -1412,12 +1457,10 @@ void GetIconBitmap(FvwmWindow *tmp_win)
     tmp_win->wmhints->flags &= ~IconPixmapHint;
     return;
   }
-
   tmp_win->iconPixmap = tmp_win->wmhints->icon_pixmap;
-  tmp_win->icon_p_width = width;
-  tmp_win->icon_p_height = height;
+  tmp_win->icon_g.picture_w_g.width = width;
+  tmp_win->icon_g.picture_w_g.height = height;
   tmp_win->iconDepth = depth;
-
   if (FShapesSupported)
   {
     if (tmp_win->wmhints->flags & IconMaskHint)
@@ -1426,8 +1469,9 @@ void GetIconBitmap(FvwmWindow *tmp_win)
       tmp_win->icon_maskPixmap = tmp_win->wmhints->icon_mask;
     }
   }
-
   SET_PIXMAP_OURS(tmp_win, 0);
+
+  return;
 }
 
 
@@ -1492,10 +1536,7 @@ void DeIconify(FvwmWindow *tmp_win)
       {
 	rectangle r;
 
-	r.x = t->icon_g.x;
-	r.y = t->icon_g.y;
-	r.width = t->icon_g.width;
-	r.height = t->icon_p_height+t->icon_g.height;
+	get_icon_geometry(t, &r);
 	/* update absoluthe geometry in case the icon was moved over a page
 	 * boundary; the move code already takes care of keeping the frame
 	 * geometry up to date */
@@ -1517,18 +1558,12 @@ void DeIconify(FvwmWindow *tmp_win)
        * if the window has an icon, but neither a pixmap nor a title. */
       if (HAS_NO_ICON_TITLE(t) && t->icon_pixmap_w == None)
       {
-        t->icon_g.width = 0;
-        t->icon_g.height = 0;
-        t->icon_p_width = 0;
-        t->icon_p_height = 0;
+	/*!!!*/
+	memset(&tmp_win->icon_g, 0, sizeof(tmp_win->icon_g));
       }
-      if (!EWMH_GetIconGeometry(t, &icon_rect))
-      {
-	icon_rect.x = t->icon_g.x;
-	icon_rect.y = t->icon_g.y;
-	icon_rect.width = t->icon_g.width;
-	icon_rect.height = t->icon_g.height+t->icon_p_height;
-      }
+      get_icon_geometry(t, &icon_rect);
+      /* if this fails it does not overwrite icon_rect */
+      EWMH_GetIconGeometry(t, &icon_rect);
       if (t == tmp_win)
       {
 	BroadcastPacket(M_DEICONIFY, 11,
@@ -1544,9 +1579,8 @@ void DeIconify(FvwmWindow *tmp_win)
 	BroadcastPacket(M_DEICONIFY, 7,
 			t->w, t->frame,
 			(unsigned long)t,
-			t->icon_g.x, t->icon_g.y,
-			t->icon_p_width,
-			t->icon_p_height + t->icon_g.height);
+			icon_rect.x, icon_rect.y,
+			icon_rect.width, icon_rect.height);
       }
       if(t->Desk == Scr.CurrentDesk)
       {
@@ -1665,16 +1699,17 @@ void Iconify(FvwmWindow *tmp_win, int def_x, int def_y)
       }
       else
       {
+	rectangle g;
+
 	SET_ICONIFIED(t, 1);
 	SET_ICON_UNMAPPED(t, 1);
 	SET_ICONIFIED_BY_PARENT(t, 1);
-
+	get_icon_geometry(t, &g);
 	BroadcastPacket(M_ICONIFY, 7,
 			t->w, t->frame,
 			(unsigned long)t,
-			-10000, -10000,
-			t->icon_g.width,
-			t->icon_g.height+t->icon_p_height);
+			-32768, -32768,
+			g.width, g.height);
 	BroadcastConfig(M_CONFIGURE_WINDOW,t);
       }
     } /* if */
@@ -1686,36 +1721,24 @@ void Iconify(FvwmWindow *tmp_win, int def_x, int def_y)
 
   if (tmp_win->icon_title_w == None || HAS_ICON_CHANGED(tmp_win))
   {
-    if(IS_ICON_MOVED(tmp_win))
-      CreateIconWindow(tmp_win,tmp_win->icon_g.x,tmp_win->icon_g.y);
+    if (IS_ICON_MOVED(tmp_win))
+    {
+      rectangle g;
+
+      get_icon_geometry(tmp_win, &g);
+      CreateIconWindow(tmp_win, g.x, g.y);
+    }
     else
+    {
       CreateIconWindow(tmp_win, def_x, def_y);
+    }
     SET_HAS_ICON_CHANGED(tmp_win, 0);
   }
-
-  /* if no pixmap we want icon width to change to text width every iconify */
-  if (tmp_win->icon_title_w && !tmp_win->icon_pixmap_w)
+  else if (tmp_win->icon_title_w && !tmp_win->icon_pixmap_w)
   {
-    if (HAS_NO_ICON_TITLE(tmp_win))
-    {
-      tmp_win->icon_t_width = 0;
-      tmp_win->icon_p_width = 0;
-      tmp_win->icon_g.width = 0;
-    }
-    else
-    {
-      tmp_win->icon_t_width =
-        XTextWidth(tmp_win->icon_font.font,tmp_win->visible_icon_name,
-                   strlen(tmp_win->visible_icon_name));
-      tmp_win->icon_p_width = tmp_win->icon_t_width +
-	      2 * (ICON_TITLE_TEXT_GAP_COLLAPSED + ICON_RELIEF_WIDTH);
-      if (IS_STICKY(tmp_win) || IS_ICON_STICKY(tmp_win))
-      {
-	tmp_win->icon_p_width +=
-	  2 * (ICON_TITLE_TO_STICK_EXTRA_GAP + ICON_TITLE_STICK_MIN_WIDTH);
-      }
-      tmp_win->icon_g.width = tmp_win->icon_p_width;
-    }
+    /* if no pixmap we want icon width to change to text width every iconify;
+     * not necessary if the icon was created above */
+    setup_icon_title_size(tmp_win);
   }
 
   /* this condition will be true unless we restore a window to
@@ -1728,20 +1751,14 @@ void Iconify(FvwmWindow *tmp_win, int def_x, int def_y)
    * window has an icon, but neither a pixmap nor a title. */
   if (HAS_NO_ICON_TITLE(tmp_win) && tmp_win->icon_pixmap_w == None)
   {
-    tmp_win->icon_g.width = 0;
-    tmp_win->icon_g.height = 0;
-    tmp_win->icon_p_width = 0;
-    tmp_win->icon_p_height = 0;
+    /*!!!*/
+    memset(&tmp_win->icon_g, 0, sizeof(tmp_win->icon_g));
   }
   SET_ICONIFIED(tmp_win, 1);
   SET_ICON_UNMAPPED(tmp_win, 0);
-  if (!EWMH_GetIconGeometry(tmp_win, &icon_rect))
-  {
-    icon_rect.x = tmp_win->icon_g.x;
-    icon_rect.y = tmp_win->icon_g.y;
-    icon_rect.width = tmp_win->icon_g.width;
-    icon_rect.height = tmp_win->icon_g.height+tmp_win->icon_p_height;
-  }
+  get_icon_geometry(tmp_win, &icon_rect);
+  /* if this fails it does not overwrite icon_rect */
+  EWMH_GetIconGeometry(tmp_win, &icon_rect);
   BroadcastPacket(M_ICONIFY, 11,
                   tmp_win->w, tmp_win->frame,
                   (unsigned long)tmp_win,
@@ -1816,7 +1833,6 @@ void SetMapStateProp(FvwmWindow *tmp_win, int state)
 		  PropModeReplace, (unsigned char *) data, 2);
   return;
 }
-
 
 void CMD_Iconify(F_CMD_ARGS)
 {

@@ -37,6 +37,7 @@
 #include "update.h"
 #include "style.h"
 #include "focus.h"
+#include "geometry.h"
 
 
 /**********************************************************************
@@ -590,14 +591,6 @@ void CMD_All(F_CMD_ARGS)
   return;
 }
 
-static void GetDirectionReference(FvwmWindow *w, rectangle *r)
-{
-  if (IS_ICONIFIED(w))
-    *r = w->icon_g;
-  else
-    *r = w->frame_g;
-}
-
 /**********************************************************************
  * Execute a function to the closest window in the given
  * direction.
@@ -666,7 +659,7 @@ void CMD_Direction(F_CMD_ARGS)
    * Otherwise we use the pointer as a starting point. */
   if (tmp_win)
   {
-    GetDirectionReference(tmp_win, &my_g);
+    get_visible_window_or_icon_geometry(tmp_win, &my_g);
     my_cx = my_g.x + my_g.width / 2;
     my_cy = my_g.y + my_g.height / 2;
   }
@@ -699,7 +692,7 @@ void CMD_Direction(F_CMD_ARGS)
       continue;
 
     /* Calculate relative location of the window. */
-    GetDirectionReference(window, &his_g);
+    get_visible_window_or_icon_geometry(window, &his_g);
     his_g.x -= my_cx;
     his_g.y -= my_cy;
     his_cx = his_g.x + his_g.width / 2;

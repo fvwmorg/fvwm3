@@ -181,11 +181,10 @@
 #define PLACEMENT_AVOID_COVER_85           4
 #define PLACEMENT_AVOID_COVER_75           1
 
+
 /*** icon layout ***/
 /* width of the relief around the icon and icon title */
 #define ICON_RELIEF_WIDTH                  2 /* pixels */
-
-
 /* height of stick lines */
 #define ICON_TITLE_STICK_HEIGHT            WINDOW_TITLE_STICK_HEIGHT
 /* vertical distance between stick lines */
@@ -200,7 +199,8 @@
 #define ICON_TITLE_TEXT_GAP_EXPANDED       4 /* pixels */
 /* extra blank pixels if the icon is sticky */
 #define ICON_TITLE_TO_STICK_EXTRA_GAP      1 /* pixels */
-
+/* minimum distance of icons in icon box */
+#define MIN_ICON_BOX_DIST                  3 /* pixels */
 
 
 /*** general keyboard shortcuts used in move, resize, ... ***/

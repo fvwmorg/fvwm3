@@ -1092,45 +1092,50 @@ static void move_window_doit(F_CMD_ARGS, Bool do_animate, int mode)
   }
   else /* icon window */
   {
-    tmp_win->icon_g.x = FinalX;
-    tmp_win->icon_xl_loc = FinalX -
-      (tmp_win->icon_g.width - tmp_win->icon_p_width)/2;
-    tmp_win->icon_g.y = FinalY;
-    BroadcastPacket(M_ICON_LOCATION, 7,
-		    tmp_win->w, tmp_win->frame,
-		    (unsigned long)tmp_win,
-		    tmp_win->icon_g.x, tmp_win->icon_g.y,
-		    tmp_win->icon_p_width,
-		    tmp_win->icon_g.height + tmp_win->icon_p_height);
-    if (do_animate)
+    rectangle gt;
+    rectangle gp;
+    Bool has_icon_title;
+    Bool has_icon_picture;
+
+    set_icon_position(tmp_win, FinalX, FinalY);
+    broadcast_icon_geometry(tmp_win, False);
+    has_icon_title = get_visible_icon_title_geometry(tmp_win, &gt);
+    has_icon_picture = get_visible_icon_picture_geometry(tmp_win, &gp);
+    if (has_icon_picture)
     {
-      AnimatedMoveOfWindow(tmp_win->icon_title_w,-1,-1,tmp_win->icon_xl_loc,
-			   FinalY+tmp_win->icon_p_height, fWarp,-1,
-			   NULL, False);
-    }
-    else
-    {
-      XMoveWindow(dpy,tmp_win->icon_title_w, tmp_win->icon_xl_loc,
-		  FinalY+tmp_win->icon_p_height);
-      if (fWarp)
-	XWarpPointer(dpy, None, None, 0, 0, 0, 0, FinalX - x, FinalY - y);
-    }
-    if(tmp_win->icon_pixmap_w != None)
-    {
-      XMapWindow(dpy,tmp_win->icon_title_w);
       if (do_animate)
       {
-	AnimatedMoveOfWindow(tmp_win->icon_pixmap_w, -1,-1,
-			     tmp_win->icon_g.x,FinalY,fWarp,-1,
-			     NULL, False);
+	AnimatedMoveOfWindow(
+	  tmp_win->icon_pixmap_w, -1, -1, gp.x, gp.y, fWarp, -1, NULL, False);
       }
       else
       {
-	XMoveWindow(dpy, tmp_win->icon_pixmap_w, tmp_win->icon_g.x, FinalY);
+	XMoveWindow(dpy, tmp_win->icon_pixmap_w, gp.x, gp.y);
+	if (fWarp)
+	{
+	  XWarpPointer(dpy, None, None, 0, 0, 0, 0, FinalX - x, FinalY - y);
+	}
+      }
+      if (has_icon_title)
+      {
+	XMoveWindow(dpy, tmp_win->icon_title_w, gt.x, gt.y);
+	XMapWindow(dpy, tmp_win->icon_title_w);
+      }
+      XMapWindow(dpy, w);
+    }
+    else if (has_icon_title)
+    {
+      if (do_animate)
+      {
+	AnimatedMoveOfWindow(
+	  tmp_win->icon_title_w, -1, -1, gt.x, gt.y, fWarp, -1, NULL, False);
+      }
+      else
+      {
+	XMoveWindow(dpy, tmp_win->icon_title_w, gt.x, gt.y);
 	if (fWarp)
 	  XWarpPointer(dpy, None, None, 0, 0, 0, 0, FinalX - x, FinalY - y);
       }
-      XMapWindow(dpy,w);
     }
     XSync(dpy, 0);
   }
@@ -1166,6 +1171,8 @@ static void DoSnapAttract(
   int nyt,nxl,dist,closestLeft,closestRight,closestBottom,closestTop;
   rectangle self, other;
   FvwmWindow *tmp;
+  rectangle g;
+  Bool rc;
 
   /* resist based on window edges */
   closestTop = Scr.SnapAttraction;
@@ -1178,9 +1185,10 @@ static void DoSnapAttract(
   self.y = *py;
   self.width = Width;
   self.height = Height;
-  if (IS_ICONIFIED(tmp_win) && !HAS_NO_ICON_TITLE(tmp_win))
+  rc = get_visible_icon_title_geometry(tmp_win, &g);
+  if (rc == True)
   {
-    self.height += tmp_win->icon_g.height;
+    self.height += g.height;
   }
 
   /*
@@ -1223,32 +1231,7 @@ static void DoSnapAttract(
 	break;
       }
       /* get other window dimensions */
-      if (IS_ICONIFIED(tmp))
-      {
-	if (tmp->icon_p_height > 0)
-	{
-	  other.width = tmp->icon_p_width;
-	  other.height = tmp->icon_p_height;
-	}
-	else
-	{
-	  other.width = tmp->icon_g.width;
-	  other.height = tmp->icon_g.height;
-	}
-	other.x = tmp->icon_g.x;
-	other.y = tmp->icon_g.y;
-	if (!HAS_NO_ICON_TITLE(tmp))
-	{
-	  other.height += tmp->icon_g.height;
-	}
-      }
-      else
-      {
-	other.width = tmp->frame_g.width;
-	other.height = tmp->frame_g.height;
-	other.x = tmp->frame_g.x;
-	other.y = tmp->frame_g.y;
-      }
+      get_visible_window_or_icon_geometry(tmp, &other);
       /* prevent that window snaps off screen */
       if (other.x <= 0)
       {
@@ -1588,8 +1571,11 @@ Bool moveLoop(FvwmWindow *tmp_win, int XOffset, int YOffset, int Width,
 
   if (IS_ICONIFIED(tmp_win))
   {
-    orig_icon_x = tmp_win->icon_g.x;
-    orig_icon_y = tmp_win->icon_g.y;
+    rectangle g;
+
+    get_visible_icon_geometry(tmp_win, &g);
+    orig_icon_x = g.x;
+    orig_icon_y = g.y;
   }
 
   /* make a copy of the tmp_win structure for sending to the pager */
@@ -1820,15 +1806,9 @@ Bool moveLoop(FvwmWindow *tmp_win, int XOffset, int YOffset, int Width,
 	{
 	  if (IS_ICONIFIED(tmp_win))
 	  {
-	    tmp_win->icon_g.x = xl ;
-	    tmp_win->icon_xl_loc = xl -
-	      (tmp_win->icon_g.width - tmp_win->icon_p_width)/2;
-	    tmp_win->icon_g.y = yt;
-	    if(tmp_win->icon_pixmap_w != None)
-	      XMoveWindow(dpy, tmp_win->icon_pixmap_w, tmp_win->icon_g.x,yt);
-	    else if (tmp_win->icon_title_w != None)
-	      XMoveWindow(dpy, tmp_win->icon_title_w,tmp_win->icon_xl_loc,
-			  yt+tmp_win->icon_p_height);
+	    set_icon_position(tmp_win, xl, yt);
+	    move_icon_to_position(tmp_win);
+	    broadcast_icon_geometry(tmp_win, False);
 	  }
 	  else
 	  {
@@ -3065,6 +3045,8 @@ static void MaximizeHeight(
   int y11, y12, y21, y22;
   int new_y1, new_y2;
   Bool is_sticky;
+  rectangle g;
+  Bool rc;
 
   x11 = win_x;             /* Start x */
   y11 = *win_y;            /* Start y */
@@ -3082,22 +3064,15 @@ static void MaximizeHeight(
     if (cwin == win || (cwin->Desk != win->Desk && !is_sticky) ||
 	(layer_grow && cwin->layer <= win->layer))
       continue;
-    if (IS_ICONIFIED(cwin))
+    rc = get_visible_window_or_icon_geometry(cwin, &g);
+    if (rc == False)
     {
-      if(cwin->icon_title_w == None || IS_ICON_UNMAPPED(cwin))
-	continue;
-      x21 = cwin->icon_g.x;
-      y21 = cwin->icon_g.y;
-      x22 = x21 + cwin->icon_p_width;
-      y22 = y21 + cwin->icon_p_height + cwin->icon_g.height;
+      continue;
     }
-    else
-    {
-      x21 = cwin->frame_g.x;
-      y21 = cwin->frame_g.y;
-      x22 = x21 + cwin->frame_g.width;
-      y22 = y21 + cwin->frame_g.height;
-    }
+    x21 = g.x;
+    y21 = g.y;
+    x22 = y21 + g.width;
+    y22 = y21 + g.height;
     if (is_sticky)
     {
       move_sticky_window_to_same_page(
@@ -3135,6 +3110,8 @@ static void MaximizeWidth(
   int y11, y12, y21, y22;
   int new_x1, new_x2;
   Bool is_sticky;
+  rectangle g;
+  Bool rc;
 
   x11 = *win_x;            /* Start x */
   y11 = win_y;             /* Start y */
@@ -3152,22 +3129,15 @@ static void MaximizeWidth(
     if (cwin == win || (cwin->Desk != win->Desk && !is_sticky) ||
 	(layer_grow && cwin->layer <= win->layer))
       continue;
-    if (IS_ICONIFIED(cwin))
+    rc = get_visible_window_or_icon_geometry(cwin, &g);
+    if (rc == False)
     {
-      if(cwin->icon_title_w == None || IS_ICON_UNMAPPED(cwin))
-	continue;
-      x21 = cwin->icon_g.x;
-      y21 = cwin->icon_g.y;
-      x22 = x21 + cwin->icon_p_width;
-      y22 = y21 + cwin->icon_p_height + cwin->icon_g.height;
+      continue;
     }
-    else
-    {
-      x21 = cwin->frame_g.x;
-      y21 = cwin->frame_g.y;
-      x22 = x21 + cwin->frame_g.width;
-      y22 = y21 + cwin->frame_g.height;
-    }
+    x21 = g.x;
+    y21 = g.y;
+    x22 = y21 + g.width;
+    y22 = y21 + g.height;
     if (is_sticky)
     {
       move_sticky_window_to_same_page(

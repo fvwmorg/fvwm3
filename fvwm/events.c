@@ -1879,7 +1879,9 @@ void HandleEnterNotify(void)
   if (Tmp_win)
   {
     if (ewp->window != Tmp_win->frame && ewp->window != Tmp_win->Parent &&
-        ewp->window != Tmp_win->w && ewp->window != Tmp_win->decor_w)
+        ewp->window != Tmp_win->w && ewp->window != Tmp_win->decor_w &&
+	ewp->window != Tmp_win->icon_title_w &&
+	ewp->window != Tmp_win->icon_pixmap_w)
     {
       /* Ignore EnterNotify that received by any of the sub windows
        * that don't handle this event.  unclutter triggers these
@@ -2263,24 +2265,16 @@ void HandleConfigureRequest(void)
       (CWX | CWY | CWWidth | CWHeight | CWBorderWidth);
     xwc.x = cre->x;
     xwc.y = cre->y;
-    if((Tmp_win)&&((Tmp_win->icon_pixmap_w == cre->window)))
+    if (Tmp_win && Tmp_win->icon_pixmap_w == cre->window)
     {
-      Tmp_win->icon_p_height = cre->height+ cre->border_width +
-	cre->border_width;
+      set_icon_picture_size(
+	Tmp_win, cre->width + 2 * cre->border_width,
+	cre->height + 2 * cre->border_width);
     }
-    else if((Tmp_win)&&((Tmp_win->icon_title_w == cre->window)))
+    if (Tmp_win)
     {
-      Tmp_win->icon_xl_loc = cre->x;
-      Tmp_win->icon_g.x = cre->x +
-        (Tmp_win->icon_g.width - Tmp_win->icon_p_width)/2;
-      Tmp_win->icon_g.y = cre->y - Tmp_win->icon_p_height;
-      if(!IS_ICON_UNMAPPED(Tmp_win))
-        BroadcastPacket(M_ICON_LOCATION, 7,
-                        Tmp_win->w, Tmp_win->frame,
-                        (unsigned long)Tmp_win,
-                        Tmp_win->icon_g.x, Tmp_win->icon_g.y,
-                        Tmp_win->icon_p_width,
-                        Tmp_win->icon_g.height + Tmp_win->icon_p_height);
+      set_icon_position(Tmp_win, cre->x, cre->y);
+      broadcast_icon_geometry(Tmp_win, False);
     }
     xwc.width = cre->width;
     xwc.height = cre->height;
@@ -2293,15 +2287,21 @@ void HandleConfigureRequest(void)
       if (cre->window != Tmp_win->icon_pixmap_w &&
 	  Tmp_win->icon_pixmap_w != None)
       {
-	xwc.x = Tmp_win->icon_g.x;
-	xwc.y = Tmp_win->icon_g.y - Tmp_win->icon_p_height;
+	rectangle g;
+
+	get_icon_picture_geometry(Tmp_win, &g);
+	xwc.x = g.x;
+	xwc.x = g.y;
 	xwcm = cre->value_mask & (CWX | CWY);
 	XConfigureWindow(dpy, Tmp_win->icon_pixmap_w, xwcm, &xwc);
       }
       if(Tmp_win->icon_title_w != None)
       {
-	xwc.x = Tmp_win->icon_g.x;
-	xwc.y = Tmp_win->icon_g.y;
+	rectangle g;
+
+	get_icon_title_geometry(Tmp_win, &g);
+	xwc.x = g.x;
+	xwc.x = g.y;
 	xwcm = cre->value_mask & (CWX | CWY);
         XConfigureWindow(dpy, Tmp_win->icon_title_w, xwcm, &xwc);
       }

@@ -191,8 +191,8 @@ CARD32 *ewmh_SetWmIconFromPixmap(FvwmWindow *fwin,
   Pixmap mask = None;
   XImage *image;
   XImage *m_image;
-  int save_icon_p_width = 0;
-  int save_icon_p_height = 0;
+  int save_picture_w_g_width = 0;
+  int save_picture_w_g_height = 0;
   int save_icon_depth = 0;
   Pixmap save_icon_pixmap = None;
   Pixmap save_icon_mask = None;
@@ -218,24 +218,24 @@ CARD32 *ewmh_SetWmIconFromPixmap(FvwmWindow *fwin,
   }
   else
   {
-    save_icon_p_width = fwin->icon_p_width;
-    save_icon_p_height = fwin->icon_p_height;
+    save_picture_w_g_width = fwin->icon_g.picture_w_g.width;
+    save_picture_w_g_height = fwin->icon_g.picture_w_g.height;
     save_icon_depth = fwin->iconDepth;
     save_icon_pixmap = fwin->iconPixmap;
     save_icon_mask = fwin->icon_maskPixmap;
     is_pixmap_ours = IS_PIXMAP_OURS(fwin);
     is_icon_ours = IS_ICON_OURS(fwin);
     is_icon_shaped = IS_ICON_SHAPED(fwin);
-    GetIcon(fwin, True);
+    GetIconPicture(fwin, True);
     if (IS_PIXMAP_OURS(fwin))
       destroy_icon_pix = True;
     pixmap = fwin->iconPixmap;
     mask = fwin->icon_maskPixmap;
-    width = fwin->icon_p_width;
-    height = fwin->icon_p_height;
+    width = fwin->icon_g.picture_w_g.width;
+    height = fwin->icon_g.picture_w_g.height;
 
-    fwin->icon_p_width = save_icon_p_width;
-    fwin->icon_p_height = save_icon_p_height;
+    fwin->icon_g.picture_w_g.width = save_picture_w_g_width;
+    fwin->icon_g.picture_w_g.height = save_picture_w_g_height;
     fwin->iconDepth = save_icon_depth;
     fwin->iconPixmap = save_icon_pixmap;
     fwin->icon_maskPixmap = save_icon_mask;
@@ -645,13 +645,13 @@ int create_pixmap_from_ewmh_icon(unsigned char *list,
 	r = r * (1 + (red_mask / (green_mask + blue_mask + 1)))  / 256 ;
 	r = r * (green_mask + blue_mask + 1);
 	c.pixel = r + g + b;
-      } 
+      }
       else
       {
 	c.blue = list[k++] * 257;
 	c.green = list[k++] * 257;
 	c.red = list[k++] * 257;
-	
+
 	if (!XAllocColor(Pdpy, Pcmap, &c))
 	{
 	  got_all = 0;
@@ -795,12 +795,12 @@ int EWMH_SetIconFromWMIcon(FvwmWindow *fwin, CARD32 *list, unsigned int size,
   {
     fwin->iconPixmap = pixmap;
     fwin->icon_maskPixmap = mask;
-    fwin->icon_p_width = width;
-    fwin->icon_p_height = height;
+    fwin->icon_g.picture_w_g.width = width;
+    fwin->icon_g.picture_w_g.height = height;
     fwin->iconDepth = Pdepth;
     SET_PIXMAP_OURS(fwin, 1);
     if (FShapesSupported && mask)
-      SET_ICON_SHAPED(fwin, 1); 
+      SET_ICON_SHAPED(fwin, 1);
   }
   if (free_list)
     free(list);

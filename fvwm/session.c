@@ -392,6 +392,7 @@ SaveWindowStates(FILE *f)
   int wm_command_count;
   FvwmWindow *ewin;
   rectangle save_g;
+  rectangle ig;
   int i;
   int layer;
 
@@ -458,17 +459,18 @@ SaveWindowStates(FILE *f)
       save_g.x -= Scr.Vx;
       save_g.y -= Scr.Vy;
     }
+    get_visible_icon_geometry(ewin, &ig);
     fprintf(
       f, "  [GEOMETRY] %i %i %i %i %i %i %i %i %i %i %i %i %i %i %i\n",
       save_g.x, save_g.y, save_g.width, save_g.height,
       ewin->max_g.x, ewin->max_g.y, ewin->max_g.width, ewin->max_g.height,
       ewin->max_g_defect.width, ewin->max_g_defect.height,
-      ewin->icon_g.x + ((!is_icon_sticky) ? Scr.Vx : 0),
-      ewin->icon_g.y + ((!is_icon_sticky) ? Scr.Vy : 0),
+      ig.x + ((!is_icon_sticky) ? Scr.Vx : 0),
+      ig.y + ((!is_icon_sticky) ? Scr.Vy : 0),
       ewin->hints.win_gravity,
       ewin->max_offset.x, ewin->max_offset.y);
     fprintf(f, "  [DESK] %i\n", ewin->Desk);
-    /* set the layer to the default layer if the layer has been set by 
+    /* set the layer to the default layer if the layer has been set by
      * an ewmh hint */
     layer = get_layer(ewin);
     if (layer == ewin->ewmh_hint_layer && layer > 0)
@@ -831,13 +833,12 @@ MatchWinToSM(FvwmWindow *ewin, int *do_shade, int *do_max)
       set_layer(ewin, matches[i].layer);
       /* this is not enough to fight fvwms attempts to
 	 put icons on the current page */
-      ewin->icon_g.x = matches[i].icon_x;
-      ewin->icon_g.y = matches[i].icon_y;
+      set_icon_position(ewin, matches[i].icon_x, matches[i].icon_y);
       if (!IS_STICKY(&(matches[i])) &&
 	  !(IS_ICONIFIED(&(matches[i])) && IS_ICON_STICKY(&(matches[i]))))
       {
-	ewin->icon_g.x -= Scr.Vx;
-	ewin->icon_g.y -= Scr.Vy;
+	set_icon_position(
+	  ewin, matches[i].icon_x - Scr.Vx, matches[i].icon_y - Scr.Vy);
       }
       /* Note: the Modal, skip pager, skip taskbar and "stacking order" state
        * are not restored here: there are restored in EWMH_ExitStuff */

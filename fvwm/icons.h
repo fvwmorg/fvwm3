@@ -22,14 +22,13 @@
 #define ICON_HEIGHT(t) ((t)->icon_font.height + 6)
 #endif
 
-void GetIcon(FvwmWindow *tmp_win, Bool no_icon_window);
+void clear_icon(FvwmWindow *tmp_win);
+void GetIconPicture(FvwmWindow *tmp_win, Bool no_icon_window);
 void AutoPlaceIcon(FvwmWindow *);
 void ChangeIconPixmap(FvwmWindow *tmp_win);
 void RedoIconName(FvwmWindow *);
 void DrawIconWindow(FvwmWindow *);
 void CreateIconWindow(FvwmWindow *tmp_win, int def_x, int def_y);
-void GetIconWindow(FvwmWindow *tmp_win);
-void GetIconBitmap(FvwmWindow *tmp_win);
 void Iconify(FvwmWindow *, int, int);
 void DeIconify(FvwmWindow *);
 void SetMapStateProp(FvwmWindow *, int);
