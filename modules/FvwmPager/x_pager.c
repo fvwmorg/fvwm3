@@ -1694,8 +1694,8 @@ void MoveResizePagerView(PagerWindow *t)
     (Scr.VyMax + Scr.MyDisplayHeight) -2 - y +m1;
 #else
   /* calculate size based on width, height */
-  w = t->width * (desk_w - n) / (Scr.VxMax + Scr.MyDisplayWidth) - 2;
-  h = t->height * (desk_h - m) / (Scr.VyMax + Scr.MyDisplayHeight) - 2;
+  w = t->width * (desk_w - n) / (Scr.VxMax + Scr.MyDisplayWidth);
+  h = t->height * (desk_h - m) / (Scr.VyMax + Scr.MyDisplayHeight);
 #endif
 
   if (w < 1)
@@ -1729,8 +1729,8 @@ void MoveResizePagerView(PagerWindow *t)
     (Scr.VyMax + Scr.MyDisplayHeight) -2 - y +m1;
 #else
   /* calculate size based on width, height */
-  w = t->width * (icon_w - n) / (Scr.VxMax + Scr.MyDisplayWidth) - 2;
-  h = t->height * (icon_h - m) / (Scr.VyMax + Scr.MyDisplayHeight) - 2;
+  w = t->width * (icon_w - n) / (Scr.VxMax + Scr.MyDisplayWidth);
+  h = t->height * (icon_h - m) / (Scr.VyMax + Scr.MyDisplayHeight);
 #endif
 
   if (w < 1)

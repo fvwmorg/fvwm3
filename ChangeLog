@@ -1,3 +1,10 @@
+1999-08-12  Dominik Vogt  <domivogt@bvstp038.bbn.hp.com>
+
+	* fvwm/fvwm2.1 (Current): clarified condition mask (application name)
+
+	* fvwm/menus.c (OldMenuStyle): removed fprintf
+	(OldMenuStyle): removed redundant #ifdef I18N_MB
+
 1999-08-11  Mikhael Goikhman  <migo@homemail.com>
 
 	* fvwm/menus.c (size_menu_vertically): propagate missing_submenu_func

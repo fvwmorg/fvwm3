@@ -131,7 +131,7 @@ will always show up in the upper-left hand
 corner of the visible portion of the screen.  It is permissible to
 specify geometries which place windows on the virtual desktop, but off
 the screen.  For example, if the visible screen is 1000 by 1000 pixels,
-and the desktop size is 3x3, and the current viewport is at the upper
+and the desktop size is 3x3, and the currentviewport is at the upper
 left hand corner of the desktop, then invoking:
 .EX
 xterm -geometry +1000+1000
@@ -1233,8 +1233,8 @@ Performs \fIcommand\fP on the current window if it satisfies all
 "!Visible", "Raised", "!Raised", "Layer [ n ]", "Sticky", "!Sticky",
 "Maximized", "!Maximized", "Shaded", "!Shaded", "Transient", "!Transient",
 "CurrentDesk", "CurrentPage", and "CurrentPageAnyDesk".
-In addition, the condition
-may include a window name to match to.  The window name may include
+In addition, the condition may include one window name to match to.
+The window name may include
 the wildcards * and ?.  The window name, icon name, class, and
 resource will be considered when attempting to find a match.  The
 window name can begin with ! which will prevent \fIcommand\fP if any
