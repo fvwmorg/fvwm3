@@ -702,6 +702,7 @@ callback_save_yourself2(SmcConn sm_conn, SmPointer client_data)
   char *filename = NULL;
   FILE *f = NULL;
   Bool success = 0;
+  struct passwd *pwd;
 
   path = getenv ("SM_SAVE_DIR");
   if (!path)
