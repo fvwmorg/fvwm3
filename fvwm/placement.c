@@ -493,7 +493,7 @@ Bool PlaceWindow(FvwmWindow *tmp_win, unsigned long tflag,int Desk)
         else
         {
           /* couldn't grab the pointer - better do something */
-          XBell(dpy,Scr.screen);
+          XBell(dpy, 0);
           xl = 0;
           yt = 0;
         }

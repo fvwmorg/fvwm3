@@ -186,7 +186,7 @@ void ComplexFunction(XEvent *eventp,Window w,FvwmWindow *tmp_win,
 
   if(!GrabEm(SELECT))
     {
-      XBell(dpy,Scr.screen);
+      XBell(dpy, 0);
       for(i=0;i<10;i++)
 	  if(arguments[i] != NULL)free(arguments[i]);
       return;

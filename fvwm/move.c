@@ -577,7 +577,7 @@ void InteractiveMove(Window *win, FvwmWindow *tmp_win, int *FinalX, int *FinalY,
 
   if(!GrabEm(MOVE))
     {
-      XBell(dpy,Scr.screen);
+      XBell(dpy, 0);
       return;
     }
 

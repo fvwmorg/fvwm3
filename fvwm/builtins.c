@@ -73,7 +73,7 @@ int DeferExecution(XEvent *eventp, Window *w,FvwmWindow **tmp_win,
   }
   if(!GrabEm(cursor))
   {
-    XBell(dpy,Scr.screen);
+    XBell(dpy, 0);
     return True;
   }
   
@@ -119,14 +119,14 @@ int DeferExecution(XEvent *eventp, Window *w,FvwmWindow **tmp_win,
   if (*w == Scr.Root)
   {
     *context = C_ROOT;
-    XBell(dpy,Scr.screen);
+    XBell(dpy, 0);
     UngrabEm();
     return TRUE;
   }
   if (XFindContext (dpy, *w, FvwmContext, (caddr_t *)tmp_win) == XCNOENT)
   {
     *tmp_win = NULL;
-    XBell(dpy,Scr.screen);
+    XBell(dpy, 0);
     UngrabEm();
     return (TRUE);
   }
@@ -145,7 +145,7 @@ int DeferExecution(XEvent *eventp, Window *w,FvwmWindow **tmp_win,
          (original_w == (*tmp_win)->w)))
     {
       *context = C_ROOT;
-      XBell(dpy,Scr.screen);
+      XBell(dpy, 0);
       UngrabEm();
       return TRUE;
     }
@@ -328,7 +328,7 @@ void Maximize(XEvent *eventp,Window w,FvwmWindow *tmp_win,
 #endif
      )
   {
-    XBell(dpy, Scr.screen);
+    XBell(dpy, 0);
     return;
   }
   n = GetTwoArguments(action, &val1, &val2, &val1_unit, &val2_unit);
@@ -394,7 +394,7 @@ void WindowShade(XEvent *eventp,Window w,FvwmWindow *tmp_win,
 	return;
 
     if (!(tmp_win->flags & TITLE) || (tmp_win->flags & MAXIMIZED)) {
-	XBell(dpy, Scr.screen);
+	XBell(dpy, 0);
 	return;
     }
     while (isspace(*action))++action;
@@ -464,7 +464,7 @@ MenuRoot *FindPopup(char *action)
 void Bell(XEvent *eventp,Window w,FvwmWindow *tmp_win,unsigned long context,
 	  char *action, int *Module)
 {
-  XBell(dpy, Scr.screen);
+  XBell(dpy, 0);
 }
 
 
@@ -671,7 +671,7 @@ void iconify_function(XEvent *eventp,Window w,FvwmWindow *tmp_win,
   {
     if(check_allowed_function2(F_ICONIFY,tmp_win) == 0)
     {
-      XBell(dpy, Scr.screen);
+      XBell(dpy, 0);
       return;
     }
     if(val1 >=0)
@@ -716,7 +716,7 @@ void destroy_function(XEvent *eventp,Window w,FvwmWindow *tmp_win,
 
   if(check_allowed_function2(F_DESTROY,tmp_win) == 0)
   {
-    XBell(dpy, Scr.screen);
+    XBell(dpy, 0);
     return;
   }
   
@@ -736,7 +736,7 @@ void delete_function(XEvent *eventp,Window w,FvwmWindow *tmp_win,
 
   if(check_allowed_function2(F_DELETE,tmp_win) == 0)
   {
-    XBell(dpy, Scr.screen);
+    XBell(dpy, 0);
     return;
   }
   
@@ -746,7 +746,7 @@ void delete_function(XEvent *eventp,Window w,FvwmWindow *tmp_win,
     return;
   }
   else
-    XBell (dpy, Scr.screen);
+    XBell (dpy, 0);
   XSync(dpy,0);
 }
 
@@ -758,7 +758,7 @@ void close_function(XEvent *eventp,Window w,FvwmWindow *tmp_win,
 
   if(check_allowed_function2(F_CLOSE,tmp_win) == 0)
   {
-    XBell(dpy, Scr.screen);
+    XBell(dpy, 0);
     return;
   }
   
@@ -2556,7 +2556,7 @@ void ChangeDecor(XEvent *eventp,Window w,FvwmWindow *tmp_win,
 	    }
     free(item);
     if (!found) {
-	XBell(dpy,Scr.screen);
+	XBell(dpy, 0);
 	return;
     }
     old_height = tmp_win->fl->TitleHeight;

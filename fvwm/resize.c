@@ -63,7 +63,7 @@ void resize_window(XEvent *eventp,Window w,FvwmWindow *tmp_win,
 #endif
      )
     {
-      XBell(dpy, Scr.screen);
+      XBell(dpy, 0);
       return;
     }
   n = GetTwoArguments(action, &val1, &val2, &val1_unit, &val2_unit);
@@ -74,7 +74,7 @@ void resize_window(XEvent *eventp,Window w,FvwmWindow *tmp_win,
    * there's a resize on initial placement. */
   if(check_allowed_function2(F_RESIZE,tmp_win) == 0)
     {
-      XBell(dpy, Scr.screen);
+      XBell(dpy, 0);
       return;
     }
   /* can't resize icons */
@@ -109,7 +109,7 @@ void resize_window(XEvent *eventp,Window w,FvwmWindow *tmp_win,
 
   if(!GrabEm(MOVE))
     {
-      XBell(dpy,Scr.screen);
+      XBell(dpy, 0);
       return;
     }
 

@@ -186,7 +186,7 @@ MenuStatus do_menu(MenuRoot *menu, MenuRoot *menuPrior,
       /* we're a top level menu */
       mouse_moved = FALSE;
       if(!GrabEm(MENU)) { /* GrabEm specifies the cursor to use */
-	XBell(dpy,Scr.screen);
+	XBell(dpy, 0);
 	return MENU_ABORTED;
       }
       if ((pops->flags & MENU_HAS_POSHINTS) && !fIgnorePosHints) {
@@ -203,7 +203,7 @@ MenuStatus do_menu(MenuRoot *menu, MenuRoot *menuPrior,
     /* it might also move menuPrior out of the way */
     if (!FPopupMenu (menu, menuPrior, x, y, key_press /* warp */, pops)) {
       fFailedPopup = TRUE;
-      XBell (dpy, Scr.screen);
+      XBell (dpy, 0);
     }
   }
   else {
