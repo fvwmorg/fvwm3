@@ -1,3 +1,9 @@
+2002-10-06  Dan Espen  <dane@mk.telcordia.com>
+
+	* fvwm/fvwm.1.in: Dont refer to fvwm commands as
+	builtin commands.  Use "builtin", not "built in" or "built-in".
+	Other adjustments.
+
 2002-10-06  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* libs/Graphics.c (do_relieve_rectangle):

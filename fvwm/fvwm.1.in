@@ -22,11 +22,11 @@
 .\"  filenames:                         italics (.I)    .I .fvwm2rc
 .\"  command line options of fvwm cmd:  bold (.B)       .B \-cmd
 .\"  arguments of command line options: italics (.I)    .BI "\-cmd " command
-.\"  built in commands:                 bold (.B)       .B Move
-.\"  references to built in commands:   bold (.B)       .RB "See " Move
+.\"  Fvwm commands:                     bold (.B)       .B Move
+.\"  references to commands:            bold (.B)       .RB "See " Move
 .\"  references to man page sections:   bold (.B)       .RB "See " SYNOPSIS
 .\"  references to style options:       italics (.I)    .RI "See " Lenience
-.\"  built in command options:          italics (.I)    .BI "Move " "0 0"
+.\"  command options:                   italics (.I)    .BI "Move " "0 0"
 .\"  command syntax:                    bold/ita. (.BI) .BI "Move [" "x y" "]"
 .\"  environment variables:             italics (.I)    .I $DISPLAY
 .\"  key names:                         small (.SM)     .SM Tab
@@ -139,9 +139,9 @@ including moving and resizing windows, and operating the menus,
 using keyboard shortcuts.
 
 Fvwm has also blurred the distinction between configuration
-commands and built-in commands that most window-managers make.
+commands and action commands that most window-managers make.
 Configuration commands typically set fonts, colors, menu contents,
-key and mouse function bindings, while built-in commands typically
+key and mouse function bindings, while action commands
 do things like raise and lower windows.  Fvwm makes no such
 distinction, and allows, to the extent that is practical, anything
 to be changed at any time.
@@ -328,7 +328,7 @@ easily be viewed.
 The (m by n) size (i.e. number of pages) of the virtual desktops
 can be changed any time, by using the
 .B DeskTopSize
-built-in command.  All virtual desktops must be (are) the same
+command.  All virtual desktops must be (are) the same
 size.  The total number of distinct desktops does not need to be
 specified, but is limited to approximately 4 billion total. All
 windows on a range of desktops can be viewed in the
@@ -694,7 +694,7 @@ descriptors for the pipes are provided as command line arguments.
 Modules can be spawned during fvwm at any time during the X
 session by use of the
 .B Module
-built-in command.  Modules can exist for the duration of the X
+command.  Modules can exist for the duration of the X
 session, or can perform a single task and exit.  If the module is
 still active when fvwm is told to quit, then fvwm closes the
 communication pipes and waits to receive a SIGCHLD from the
@@ -705,8 +705,8 @@ simultaneously executing modules is limited by the operating
 system's maximum number of simultaneously open files, usually
 between 60 and 256.
 
-Modules simply transmit text commands to the fvwm built-in command
-engine.  Text commands are formatted just as in the case of a
+Modules simply transmit commands to the fvwm command
+engine.  Commands are formatted just as in the case of a
 mouse binding in the
 .I .fvwm2rc
 setup file.  Certain auxiliary information is also transmitted, as
@@ -927,7 +927,7 @@ The initialization configuration file is typically called
 .IR .fvwm2rc .
 By using the
 .B Read
-built-in, it is easy to read in new configuration files as you go.
+command, it is easy to read in new configuration files as you go.
 
 Lines beginning with '#' are ignored by fvwm.  Lines starting with
 \'*' are expected to contain module configuration commands (rather
@@ -938,7 +938,7 @@ this fashion are treated as a single line.  The newline itself is
 ignored.
 
 Fvwm makes no distinction between configuration commands and
-built-in commands, so anything mentioned in the built-in commands
+action commands, so anything mentioned in the Fvwm commands
 section can be placed on a line by itself for fvwm to execute as
 it reads the configuration file, or it can be placed as an
 executable command in a menu or bound to a mouse button or a
@@ -1257,10 +1257,10 @@ Almost all window manager operations can be performed from the
 keyboard so mouse-less operation should be possible.  In addition
 to scrolling around the virtual desktop by binding the
 .B Scroll
-built-in to appropriate keys,
+command to appropriate keys,
 .BR Popup ", " Move ", " Resize ", "
-and most other built-ins can be bound to keys.  Once a built in
-function is started the pointer is moved by using the up, down,
+and any other command can be bound to keys.  Once a command
+is started the pointer is moved by using the up, down,
 left, and right arrows, and the action is terminated by pressing
 return.  Holding down the
 .SM Shift
@@ -1334,9 +1334,9 @@ refer to the section
 .B CONDITIONAL COMMANDS
 below.
 
-.SH BUILT IN KEY AND MOUSE BINDINGS
+.SH BUILTIN KEY AND MOUSE BINDINGS
 
-The following commands are built-in to fvwm:
+The following commands are builtin to fvwm:
 .EX
 Key Help R A Popup MenuFvwmRoot
 Key F1 R A Popup MenuFvwmRoot
@@ -1353,7 +1353,7 @@ The
 .SM Help
 and
 .SM F1
-keys invoke a built-in menu that fvwm creates.  This is primarily
+keys invoke a builtin menu that fvwm creates.  This is primarily
 for new users that have not created their own configuration
 file. Either key on the root (background) window pops up an menu
 to help you get started.
@@ -1378,11 +1378,10 @@ list binding, use this:
 Key Tab A M -
 .EE
 
-.SH BUILT IN COMMANDS
+.SH MODULE AND FUNCTION COMMANDS
 
-Fvwm supports a set of built-in functions which can be bound to
-keyboard or mouse buttons.  If fvwm expects to find a built-in
-function in a command, but fails, it checks to see if the
+If Fvwm encounters a command that it doesn't recognize,
+it checks to see if the
 specified command should have been
 .EX
 Function (rest of command)
@@ -1400,10 +1399,12 @@ file contains the line
 .EX
 HelpMe
 .EE
-Fvwm looks for a built-in command called "HelpMe", and fails.
+Fvwm looks for an Fvwm command called "HelpMe", and fails.
 Next it looks for a user-defined complex function called "HelpMe".
-If no such user defined function exists, Fvwm tries to execute a
+If no such function exists, Fvwm tries to execute a
 module called "HelpMe".
+
+.SH DELAYED EXECUTION OF COMMANDS
 
 Note: There are many commands that affect look and feel of
 specific, some or all windows, like
@@ -1774,8 +1775,8 @@ command.
 
 .SH SCRIPTING AND COMPLEX FUNCTIONS
 
-To achieve the more complex effects, fvwm knows a number of built
-in commands to improve its scripting abilities.  Scripts can be
+To achieve the more complex effects, fvwm has a number of
+commands that improve its scripting abilities.  Scripts can be
 read from a file with
 .BR Read ,
 from the output of a command with
@@ -1797,9 +1798,9 @@ achieve the same functionality you can use the.
 .BR Read " or " PipeRead
 command instead.
 
-.SS THE LIST OF BUILTIN COMMANDS
+.SS THE LIST OF FVWM COMMANDS
 
-The commands descriptions below are grouped together in the
+The command descriptions below are grouped together in the
 following sections.  The sections are hopefully sorted in order of
 usefulness to the newcomer.
 .EX
@@ -1855,12 +1856,13 @@ Mouse 1 R A Popup Utilities
 There is no end-of-menu symbol.  Menus do not have to be defined
 in a contiguous region of the
 .I .fvwm2rc
-file.  The quoted portion in the above examples is the menu label,
+file.  The quoted (or first word)
+portion in the above examples is the menu label,
 which appears in the menu when the user pops it up.  The remaining
-portion is a built-in command which should be executed if the user
+portion is an Fvwm command which is executed if the user
 selects that menu item.  An empty menu-label ("") and the
 .B Nop
-function can be used to insert a separator into the menu.
+function are used to insert a separator into the menu.
 
 The keywords
 .IR DynamicPopUpAction " and " DynamicPopDownAction
@@ -2454,7 +2456,7 @@ value reverts the border width to the default.
 .IR Foreground " and " Background
 may have a color name as an argument.  This color is used for menu
 text or the menu's background.  You can omit the color name to
-reset these colors to the built in default.
+reset these colors to the builtin default.
 
 .I Greyed
 may have a color name as an argument.  This color is the one used
@@ -2540,7 +2542,7 @@ to the left so the sub-menu can be seen.
 .I Font
 takes a font name as an argument.  If a font by this name exists
 it is used for the text of all menu items.  If it does not exist
-or if the name is left blank the built in default is used.
+or if the name is left blank the builtin default is used.
 
 .I MenuFace
 enforces a fancy background upon the menus.  You can use the same
@@ -2596,7 +2598,7 @@ xinit to start X).
 requires one numeric argument.  This value is the delay in
 milliseconds before a sub-menu is popped up when the pointer moves
 over a menu item that has a sub-menu.  If the value is zero no
-automatic pop up is done.  If the argument is omitted the built in
+automatic pop up is done.  If the argument is omitted the builtin
 default is used. Note that the popup delay has no effect if the
 .I PopupImmediately
 option is used since sub-menus pop up immediately then.
@@ -2886,7 +2888,7 @@ that may range from -100 to +100.  The first is the gap in pixels
 above a normal menu item (or a menu title), the second is the gap
 in pixels below it.  Negative numbers do not make much sense and
 may screw up the menu completely.  If no arguments are given or
-the given arguments are invalid, the built in defaults are used:
+the given arguments are invalid, the builtin defaults are used:
 one pixel above the item or title and two below.
 
 .I SubmenusLeft
@@ -2966,7 +2968,7 @@ command.
 
 .TP
 .BI "Popup " PopupName " [" position "] [" default-action "]"
-This built-in has two purposes: to bind a menu to a key or mouse
+This command has two purposes: to bind a menu to a key or mouse
 button, and to bind a sub-menu into a menu.  The formats for the
 two purposes differ slightly.  The
 .I position
@@ -2996,7 +2998,7 @@ Mouse 3 FST N Popup "Window Ops"
 .EE
 Pop-ups can be bound to keys through the use of the
 .B Key
-built-in.  Pop-ups can be operated without using the mouse by
+command.  Pop-ups can be operated without using the mouse by
 binding to keys and operating via the up arrow, down arrow, and
 enter keys.
 .in -.25i
@@ -3199,7 +3201,7 @@ command.
 Specifies the maximum delay in milliseconds between a button press
 and a button release for the
 .B Function
-built-in to consider the action a mouse click.  The default delay
+command to consider the action a mouse click.  The default delay
 is 150 milliseconds.  Omitting the delay value resets the
 .B ClickTime
 to the default.
@@ -3239,7 +3241,7 @@ option to fvwm.
 .\"common screen that exceeds this limit would be 24 bit.
 .\"
 .\"On 8 bit displays, the default color limit is set to the size of
-.\"the built in table (about 60).  We recommend that you start with
+.\"the builtin table (about 60).  We recommend that you start with
 .\"the default value, and not include this command in your
 .\".IR .fvwm2rc .
 
@@ -3314,7 +3316,7 @@ used when the user is required to select a window
 
 .BR "DESTROY " (pirate)
 .in +.3i
-used for DESTROY, CLOSE, and DELETE built-ins
+used for DESTROY, CLOSE, and DELETE commands
 .in -.3i
 
 .BR "TOP " (top_side)
@@ -3482,7 +3484,7 @@ command.
 sets the default font to font
 .IR fontname .
 The default font is used by fvwm whenever no other font has been
-specified.  To reset the default font to the built in default,
+specified.  To reset the default font to the builtin default,
 omit the argument.  The default font is used for menus, window
 titles, icon titles as well as the geometry feedback windows
 during a move or resize operation.  To override the default font
@@ -4870,7 +4872,7 @@ you want to do something specific that you cannot do without it,
 please report this to the fvwm-workers mailing list
 (@FVWMWORKERSLIST@).  This command will be removed at some point
 in the future.  Please read the note at the end of the section
-.B "BUILT IN COMMANDS"
+.B "DELAYED EXECUTION OF COMMANDS"
 to learn about how to avoid the
 .B Recapture
 command.
@@ -5040,7 +5042,7 @@ you can find a better solution of this problem.
 
 .TP
 .BI "EdgeCommand [" direction " [" Function "]]"
-Binds a specified fvwm built-in function
+Binds a specified fvwm command
 .I Function
 to an edge of the screen. Direction may be one of
 "North", "Top", "West", "Left", "South", "Bottom", "Right"
@@ -5117,7 +5119,7 @@ Mouse 3 R A GnomeButton
 
 .TP
 .BI "Key " "Keyname Context Modifiers Function"
-Binds a keyboard key to a specified fvwm built-in function, or
+Binds a keyboard key to a specified fvwm command, or
 removes the binding if
 .I Function
 is '-'.  The syntax is the same as for a
@@ -5150,7 +5152,7 @@ that are supposed to work when the pointer is not over the window,
 fvwm assumes the pointer is over the client window (i.e. you have
 to use the 'W' modifier).
 
-The following example binds the built in window list to pop up
+The following example binds the builtin window list to pop up
 when
 .SM Alt-Ctrl-Shift-F11
 is hit, no matter where the mouse pointer is:
@@ -5200,7 +5202,7 @@ default.  To turn it on, use the
 command.
 
 .I Function
-is one of fvwm's built-in functions.
+is one of fvwm's commands.
 
 The title-bar buttons are numbered with odd numbered buttons on
 the left side of the title-bar and even numbers on the
@@ -5243,8 +5245,8 @@ PointerKey f1 a m Menu MainMenu
 
 .TP
 .BI "Stroke " "Sequence Button Context Modifiers Function"
-Binds a mouse stroke sequence to a specified fvwm built-in
-function, or removes the binding if
+Binds a mouse stroke sequence to a specified fvwm command,
+or removes the binding if
 .I Function
 is '-'.  The syntax is the same as for a
 .B Mouse
@@ -6159,7 +6161,7 @@ AddToFunc DeiconifyAndRearrange
 .EE
 And then replace all places where you call the
 .B Iconify
-builtin function to de-iconify an icon with a call to the new
+command to de-iconify an icon with a call to the new
 function.  For example replace
 .EX
 AddToFunc IconFunc
@@ -6738,19 +6740,19 @@ previously set value is deleted and the default layer is implied.
 
 .I StaysOnTop
 puts the window in the top layer.  This layer can be changed by
-the built-in command
+the command
 .BR DefaultLayers ;
 the default is 6.
 
 .I StaysPut
 puts the window in the put layer.  This layer can be changed by
-the built-in command
+the command
 .BR DefaultLayers ;
 the default is 4.
 
 .I StaysOnBottom
 puts the window in the bottom layer.  This layer can be changed by
-the built-in command
+the command
 .BR DefaultLayers ;
 the default is 2.
 
@@ -8609,7 +8611,7 @@ The keyword
 .B Function
 may be omitted if
 .I FunctionName
-does not coincide with a fvwm built-in function name
+does not coincide with an fvwm command.
 
 Warning:  Please read the comments on executing complex functions
 in the section
@@ -8722,7 +8724,7 @@ had been called.
 
 .TP
 .BI "Silent " command
-A number of built in functions require a window to operate on.  If
+A number of commands require a window to operate on.  If
 no window was selected when such a function is invoked the user is
 asked to select a window.  Sometimes this behavior is unwanted,
 for example if the function was called by a module and the window
@@ -8766,7 +8768,7 @@ started directly by fvwm.
 
 .TP
 .BI "Wait " windowname
-This built-in is intended to be used in fvwm functions only.  It
+This command is intended to be used in fvwm functions only.  It
 causes execution of a function to pause until a new window with
 the title
 .I windowname
@@ -9138,7 +9140,7 @@ WindowId $0 (Silly_Popup) Delete
 .EE
 Mostly this is useful for functions used with the
 .B WindowList
-built-in, or for selective processing of
+command, or for selective processing of
 .B FvwmEvent
 calls (as in the last example).  Returns -1 if no window with the
 given id exists.
@@ -9304,7 +9306,7 @@ possible.  See the introductory section on modules.  The keyword
 .B Module
 may be omitted if
 .I modulename
-is distinct from all built-in and function names.
+is distinct from all Fvwm commands.
 
 .TP
 .BI "ModulePath " path
