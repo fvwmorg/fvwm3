@@ -1,3 +1,4 @@
+# -*- Mode: fvwm -*-
 DestroyModuleConfig FvwmForm-Form: *
 *FvwmForm-Form: WarpPointer
 *FvwmForm-Form: Line  center
@@ -27,22 +28,48 @@ DestroyModuleConfig FvwmForm-Form: *
 *FvwmForm-Form: Input ItemBack 15 "Light Gray"
 *FvwmForm-Form: Text  "colorset:"
 *FvwmForm-Form: Input ItemColorset 5 "-1"
+
+*FvwmForm-Form: Line left
+*FvwmForm-Form: Text  "Pointer over button:    "
+*FvwmForm-Form: Input ButtonPointer 20 "hand2"
+*FvwmForm-Form: Text  " (Default hand2)"
+*FvwmForm-Form: Line left
+*FvwmForm-Form: Text  "Pointer while button in:"
+*FvwmForm-Form: Input ButtonInPointer 20 "hand1"
+*FvwmForm-Form: Text  " (Default hand1)"
+*FvwmForm-Form: Line left
+*FvwmForm-Form: Text  "Pointer over input:     "
+*FvwmForm-Form: Input InputPointer 20 "xterm"
+*FvwmForm-Form: Text  " (Default xterm)"
+
+*FvwmForm-Form: Line left
+*FvwmForm-Form: Text  "Activate buttons:"
+*FvwmForm-Form: Selection ActivateOnPress single
+*FvwmForm-Form: Choice    OnRelease off off " on release (default)"
+*FvwmForm-Form: Choice    OnPress on on " on press"
+
 *FvwmForm-Form: Line left
 *FvwmForm-Form: Message
 *FvwmForm-Form: Line         expand
 *FvwmForm-Form: Button       quit "F1 - Save & Restart This Form" F1
 *FvwmForm-Form: Command DestroyModuleConfig FvwmFormDefault: *
-*FvwmForm-Form: Command !(                                      /bin/echo \
-  "# This file last created by FvwmForm-Form on: `/bin/date`."; /bin/echo \
-  '*FvwmFormDefault: Font $(Font)'                            ; /bin/echo \
-  '*FvwmFormDefault: InputFont $(InputFont)'                  ; /bin/echo \
-  '*FvwmFormDefault: ButtonFont $(ButtonFont)'                ; /bin/echo \
-  '*FvwmFormDefault: Fore $(Fore)'                            ; /bin/echo \
-  '*FvwmFormDefault: Back $(Back)'                            ; /bin/echo \
-  '*FvwmFormDefault: Colorset $(Colorset)'                    ; /bin/echo \
-  '*FvwmFormDefault: ItemFore $(ItemFore)'                    ; /bin/echo \
-  '*FvwmFormDefault: ItemBack $(ItemBack)'                    ; /bin/echo \
-  '*FvwmFormDefault: ItemColorset $(ItemColorset)' \
+# Caution, this command is getting too long, if you add something,
+# you might have some truncation occur:
+*FvwmForm-Form: Command !(/bin/echo \
+ "# This file last created by FvwmForm-Form on: `/bin/date`."; /bin/echo \
+ '*FvwmFormDefault: Font $(Font)'            ; /bin/echo \
+ '*FvwmFormDefault: InputFont $(InputFont)'  ; /bin/echo \
+ '*FvwmFormDefault: ButtonFont $(ButtonFont)'; /bin/echo \
+ '*FvwmFormDefault: Fore $(Fore)'            ; /bin/echo \
+ '*FvwmFormDefault: Back $(Back)'            ; /bin/echo \
+ '*FvwmFormDefault: Colorset $(Colorset)'    ; /bin/echo \
+ '*FvwmFormDefault: ItemFore $(ItemFore)'    ; /bin/echo \
+ '*FvwmFormDefault: ItemBack $(ItemBack)'    ; /bin/echo \
+ '*FvwmFormDefault: ItemColorset $(ItemColorset)'       ; /bin/echo \
+ '*FvwmFormDefault: ButtonPointer $(ButtonPointer)'     ; /bin/echo \
+ '*FvwmFormDefault: ButtonInPointer $(ButtonInPointer)' ; /bin/echo \
+ '*FvwmFormDefault: InputPointer $(InputPointer)' ; /bin/echo  \
+ '*FvwmFormDefault: ActivateOnPress $(ActivateOnPress)'\
 ) > ${FVWM_USERDIR}/.FvwmForm
 *FvwmForm-Form: Command *FvwmFormDefault: Read n
 *FvwmForm-Form: Command Module FvwmForm FvwmForm-Form

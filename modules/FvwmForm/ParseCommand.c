@@ -51,6 +51,7 @@ char * ParseCommand (int dn, char *sp, char end, int *dn1, char **sp1)
   static char var[256];
   char c, x, *wp, *cp, *vp;
   int j, dn2;
+  int added_sel;
   Item *item;
 
   if (buf == 0) {                       /* if no buffer yet */
@@ -114,13 +115,17 @@ char * ParseCommand (int dn, char *sp, char end, int *dn1, char **sp1)
 	  case I_SELECT:
 	    if (x != ')')
 	      ParseCommand(dn, sp, ')', &dn2, &sp);
-	    AddChar(' ');
+            added_sel=0;
 	    for (j = 0; j < item->selection.n; j++) {
 	      if (item->selection.choices[j]->choice.on) {
-		for (cp = item->selection.choices[j]->choice.value;
-		     *cp != '\0'; cp++)
+                if (added_sel) {        /* if not first sel added */
+                  AddChar(' ');         /* insert space before next value */
+                }
+                added_sel=1;
+                for (cp = item->selection.choices[j]->choice.value;
+		     *cp != '\0'; cp++) {
 		  AddChar(*cp);
-		AddChar(' ');
+                }
 	      }
 	    }
 	    break;

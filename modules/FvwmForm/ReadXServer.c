@@ -382,16 +382,49 @@ void ReadXServer ()
 	    ToggleChoice(item);
 	  if (item->type == I_BUTTON) {
 	    RedrawItem(item, 1);        /* push button in */
-            usleep(MICRO_S_FOR_10MS);   /* make sure its visible */
-            RedrawItem(item, 0);        /* pop button out */
-            DoCommand(item);            /* execute the button command */
+            if (CF.activate_on_press) {
+              usleep(MICRO_S_FOR_10MS);   /* make sure its visible */
+              RedrawItem(item, 0);        /* pop button out */
+              DoCommand(item);            /* execute the button command */
+            } else {
+              XGrabPointer(dpy, item->header.win,
+                           False,         /* owner of events */
+                           ButtonReleaseMask, /* events to report */
+                           GrabModeAsync, /* keyboard mode */
+                           GrabModeAsync, /* pointer mode */
+                           None,          /* confine to */
+                           /* I sort of like this, the hand points in
+                              the other direction and the color is
+                              reversed. I don't know what other GUIs do,
+                              Java doesn't do anything, neither does anything
+                              else I can find...dje */
+                           CF.xc_hand1,   /* cursor */
+                           CurrentTime);
+            } /* end activate on press */
 	  }
 	  break;
 	case ButtonRelease:
-          /* There used to be logic in here to execute the button action
-             only on release.  It missed some release events, and I didn't
-             see the value to the feature.  So now buttons are handled with
-             only the press event.  dje 11/26/99. */
+          if (!CF.activate_on_press) {
+            RedrawItem(item, 0);
+            if (CF.grab_server && CF.server_grabbed) {
+              /* You have to regrab the pointer, or focus
+                 can go to another window.
+                 grab...
+              */
+              XGrabPointer(dpy, CF.frame, True, 0, GrabModeAsync, GrabModeAsync,
+                           None, None, CurrentTime);
+              XFlush(dpy);
+            } else {
+              XUngrabPointer(dpy, CurrentTime);
+              XFlush(dpy);
+            }
+            if (event.xbutton.x >= 0 &&
+                event.xbutton.x < item->header.size_x &&
+                event.xbutton.y >= 0 &&
+                event.xbutton.y < item->header.size_y) {
+              DoCommand(item);
+            }
+          }
 	  break;
 	}
       }

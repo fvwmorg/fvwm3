@@ -482,6 +482,11 @@ void fvwmlib_get_target_window(
 
 Window fvwmlib_client_window(Display *dpy, Window input);
 
+/***********************************************************************
+ * Cursor.c
+ ***********************************************************************/
+
+int fvwmCursorNameToIndex (char *cursor_name);
 
 /* Set up heap debugging library dmalloc.  */
 

@@ -1,3 +1,21 @@
+2001-10-08  Dan Espen  <dane@mk.telcordia.com>
+
+	* FvwmForm/ParseCommand.c (ParseCommand): Fix extra spaces being
+	added to selection variable values.
+
+	* FvwmForm/FvwmForm.h: 
+	* FvwmForm/FvwmForm.c: New commands ActivateOnPress, ButtonInPointer,
+	ButtonPointer, InputPointer.
+
+	* FvwmForm/FvwmForm.1: Describe new features.
+
+	* FvwmForm/FvwmForm-Form: Add ability to configure mouse pointers
+	used in FvwmForm and whether buttons activate on press or release.
+	* FvwmForm/ReadXServer.c: Make default buttons activate on release
+ 	instead of press.  Press activate is an option.
+	Add a cursor during the button down grab.
+	Make all 3 cursors configurable.
+
 2001-10-05  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* FvwmIconBox/icons.c (GetIconBitmap):

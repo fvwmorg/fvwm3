@@ -12,7 +12,7 @@
 .if n .sp 1
 .if t .sp .5
 ..
-.TH FvwmForm 1 "3 July 2001"
+.TH FvwmForm 1 "6 October 2001"
 .SH NAME
 FvwmForm - input form module for Fvwm
 .SH SYNOPSIS
@@ -132,6 +132,9 @@ An example of what this file might contain after a save is:
   *FvwmFormDefault: ItemFore green
   *FvwmFormDefault: ItemBack gray40
   *FvwmFormDefault: ItemColorset -1
+  *FvwmFormDefault: ButtonPointer hand2
+  *FvwmFormDefault: ButtonInPointer star
+  *FvwmFormDefault: InputPointer gumby
 .EE
 The commands in this file are just like any other FvwmForm
 command except that they start with "*FvwmFormDefault".
@@ -183,6 +186,8 @@ The following commands are accepted before the form is displayed:
 Back
 Button
 ButtonFont
+ButtonInPointer
+ButtonPointer
 Choice
 Command
 Colorset
@@ -191,6 +196,7 @@ Fore
 GrabServer
 Input
 InputFont
+InputPointer
 ItemBack
 ItemColorset
 ItemFore
@@ -457,7 +463,8 @@ if the choice is selected.
 If the choice is not selected, the result is a blank string.
 
 If \fIname\fP corresponds to a selection,
-the result will be a list of the selected values of all its choices.
+the result will be a list of the selected values of all its choices
+separated by spaces.
 .TP 16
 .B $(\fIname\fP?\fIstring\fP)
 If \fIname\fP is a text input field and its value is not an empty string,
@@ -480,16 +487,43 @@ preceed the right parenthesis with a backslash.
 .TP 4
 .B *FvwmForm: UseData \fIdatafile\fP \fIleading\fP
 Tells FvwmForm to read a data file and extract data from module
-commands that match the "leading" argument and an input
-or choice variable in a form.
+commands that match the "leading" argument and an input,
+choice, or selection variable in a form.
 
 This lets a form display current fvwm module configuration data.
 For an example of how this works, examine the file "FvwmForm-Rlogin"
 which is installed in read-only architecture-independent data directory,
 [PREFIX/share/fvwm] and shown below.
 
-Note that for choices, the setting of the button is represented as the
+For choices, the setting of the button is represented as the
 word "on",  all other values for a setting are treated as off.
+
+For selections, the setting of each choice button is determined
+by matching the current value of the selection against each
+choice.  Currently, this only works correctly for selections
+that allow a single choice.
+.TP 4
+.B *FvwmForm: ButtonPointer \fIpointername\fP
+Change the default mouse pointer (hand2) used when hovering over a button.
+The pointername must be one of the names defined in
+the include file X11/cursorfont.h (without the XC_ prefix).
+See DEFAULTS.
+
+.TP 4
+.B *FvwmForm: ButtonInPointer \fIpointername\fP
+Change the default mouse pointer (hand1) used
+while a button is pressed in.
+The pointername must be one of the names defined in
+the include file X11/cursorfont.h (without the XC_ prefix).
+See DEFAULTS.
+
+.TP 4
+.B *FvwmForm: InputPointer \fIpointername\fP
+Change the default mouse pointer (xterm) used
+while the pointer is over a text field.
+The pointername must be one of the names defined in
+the include file X11/cursorfont.h (without the XC_ prefix).
+See DEFAULTS.
 
 .SH EXAMPLES
 All of the following "examples" are installed in the
@@ -600,10 +634,6 @@ There are 2 forms, "FvwmForm-Talk." which executes commands,
 or sends commands to fvwm for execution, and "FvwmForm-TalkHelp."
 which is a help form.
 
-These 2 forms have names ending in a special character.  This is
-one way to make sure that commands being sent to modules are
-unique.
-
 In the help form, notice how vertical line
 spacing is changed.  Normal FvwmForm line spacing assumes text is
 intermixed with buttons, help forms require different spacing.
@@ -685,5 +715,6 @@ added unlimited font and color changing, form spacing control,
 configuration file reading, global control of appearance,
 synchronous command execution, Error message display,
 variable substitution,
+configurable pointers,
 and lots of other damage.
 No additional copyright is imposed.

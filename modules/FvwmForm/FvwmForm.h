@@ -185,15 +185,14 @@ typedef struct _form {
   char *expand_buffer;                  /* buffer to expand commands in */
   int expand_buffer_size;               /* current size */
   char have_env_var;                    /* at least one env var on cmd line */
+  Cursor xc_ibeam, xc_hand2, xc_hand1;  /* cursors */
+  int activate_on_press;                /* activate button on press */
 } Form;
 
 extern Form cur_form;                   /* current form */
 #define CF cur_form                     /* I may want to undo this... */
 
   /* Globals: */
-/* These aren't customizable as to shape or color, so for now, they aren't
-   in the "form" structure */
-extern Cursor xc_ibeam, xc_hand;
 
 /* Link list roots */
 extern Item *root_item_ptr;             /* pointer to root of item list */

@@ -53,7 +53,6 @@
 
 /* globals that are exported, keep in sync with externs in FvwmForm.h */
 Form cur_form;                   /* current form */
-Cursor xc_ibeam, xc_hand;
 
 /* Link list roots */
 Item *root_item_ptr;             /* pointer to root of item list */
@@ -160,9 +159,12 @@ typedef struct CommandTable
   char *name;
   void (*function)(char *);
 } ct;
+static void ct_ActivateOnPress(char *);
 static void ct_Back(char *);
 static void ct_Button(char *);
 static void ct_ButtonFont(char *);
+static void ct_ButtonInPointer(char *);
+static void ct_ButtonPointer(char *);
 static void ct_Choice(char *);
 static void ct_Command(char *);
 static void ct_Font(char *);
@@ -179,6 +181,7 @@ static void ct_Position(char *);
 static void ct_Read(char *);
 static void ct_Selection(char *);
 static void ct_Text(char *);
+static void ct_InputPointer(char *);
 static void ct_Title(char *);
 static void ct_UseData(char *);
 static void ct_padVText(char *);
@@ -189,9 +192,12 @@ static void ct_ItemColorset(char *);
 /* Must be in Alphabetic order (caseless) */
 static struct CommandTable ct_table[] =
 {
+  {"ActivateOnPress",ct_ActivateOnPress},
   {"Back",ct_Back},
   {"Button",ct_Button},
   {"ButtonFont",ct_ButtonFont},
+  {"ButtonInPointer",ct_ButtonInPointer},
+  {"ButtonPointer",ct_ButtonPointer},
   {"Choice",ct_Choice},
   {"Colorset",ct_Colorset},
   {"Command",ct_Command},
@@ -201,6 +207,7 @@ static struct CommandTable ct_table[] =
   {"GrabServer",ct_GrabServer},
   {"Input",ct_Input},
   {"InputFont",ct_InputFont},
+  {"InputPointer",ct_InputPointer},
   {"ItemBack",ct_ItemBack},
   {"ItemColorset",ct_ItemColorset},
   {"ItemFore",ct_ItemFore},
@@ -218,12 +225,16 @@ static struct CommandTable ct_table[] =
    read before the other form defining commands. */
 static struct CommandTable def_table[] =
 {
+  {"ActivateOnPress",ct_ActivateOnPress},
   {"Back",ct_Back},
   {"ButtonFont",ct_ButtonFont},
+  {"ButtonInPointer",ct_ButtonInPointer},
+  {"ButtonPointer",ct_ButtonPointer},
   {"Colorset",ct_Colorset},
   {"Font",ct_Font},
   {"Fore",ct_Fore},
   {"InputFont",ct_InputFont},
+  {"InputPointer",ct_InputPointer},
   {"ItemBack",ct_ItemBack},
   {"ItemColorset",ct_ItemColorset},
   {"ItemFore",ct_ItemFore},
@@ -337,6 +348,36 @@ static void AddToLine(Item *newItem)
 
 /* All the functions starting with "ct_" (command table) are called thru
    their function pointers. Arg 1 is always the rest of the command. */
+static void ct_ActivateOnPress(char *cp)
+{
+  /* arg can be "on", "off", "0", 1", "true", "false", "" */
+  char option[6];
+  int i,j;
+  if (strlen(cp) > 5) {
+    fprintf(stderr,"%s: arg for ActivateOnPress (%s) too long\n",
+            MyName+1,cp);
+    return;
+  }
+  for (i=0,j=0;i<strlen(cp);i++) {
+    if (cp[i] != ' ') {                   /* remove any spaces */
+      option[j++]=tolower(cp[i]);
+    }
+  }
+  option[j]=0;
+  if (strcmp(option,"on") == 0
+      || strcmp(option,"true") == 0
+      || strcmp(option,"1") == 0
+      || (cp == 0 || strcmp(option,"")) == 0) {
+    CF.activate_on_press = 1;
+  } else if (strcmp(option,"off") == 0
+             || strcmp(option,"false") == 0
+             || strcmp(option,"0") == 0) {
+    CF.activate_on_press = 0;
+  } else {
+    fprintf(stderr,"%s: arg for ActivateOnPress (%s/%s) invalid\n",
+            MyName+1,option,cp);
+  }
+}
 static void ct_GrabServer(char *cp)
 {
   CF.grab_server = 1;
@@ -456,12 +497,42 @@ static void ct_ButtonFont(char *cp)
   font_names[f_button] = safestrdup(cp);
   myfprintf((stderr, "ButtonFont: %s\n", font_names[f_button]));
 }
+static void ct_ButtonInPointer(char *cp)
+{
+  int cursor;
+  cursor=fvwmCursorNameToIndex(cp);
+  if (cursor == -1) {
+    fprintf(stderr,"ButtonInPointer: invalid cursor name %s\n",cp);
+  } else {
+    CF.xc_hand1 = XCreateFontCursor(dpy,cursor);
+  }
+}
+static void ct_ButtonPointer(char *cp)
+{
+  int cursor;
+  cursor=fvwmCursorNameToIndex(cp);
+  if (cursor == -1) {
+    fprintf(stderr,"ButtonPointer: invalid cursor name %s\n",cp);
+  } else {
+    CF.xc_hand2 = XCreateFontCursor(dpy,cursor);
+  }
+}
 static void ct_InputFont(char *cp)
 {
   if (font_names[f_input])
     free(font_names[f_input]);
   font_names[f_input] = safestrdup(cp);
   myfprintf((stderr, "InputFont: %s\n", font_names[f_input]));
+}
+static void ct_InputPointer(char *cp)
+{
+  int cursor;
+  cursor=fvwmCursorNameToIndex(cp);
+  if (cursor == -1) {
+    fprintf(stderr,"InputPointer: invalid cursor name %s\n",cp);
+  } else {
+    CF.xc_ibeam = XCreateFontCursor(dpy,cursor);
+  }
 }
 static void ct_Line(char *cp)
 {
@@ -831,12 +902,38 @@ static void PutDataInForm(char *cp)
           item->choice.init_on = 0;
           if (strncasecmp(cp, "on", 2) == 0) {
             item->choice.init_on = 1;   /* set default state */
+            free(var_name);             /* goto's have their uses */
+            return;
           }
         }
       }
     } /* end all items in line */
     line = line->next;                  /* go to next line */
   } while (line != &root_line);         /* do all lines */
+  /* You have a matching line, it didn't match an input field,
+     and it didn't match a choice.  I've got it, it may match a
+     selection, in which case we should use the value to
+     set the choices! */
+  for (item = root_item_ptr; item != 0;
+       item = item->header.next) {/* all items */
+    if (item->type == I_SELECT) {     /* selection is good */
+      if (strcasecmp(var_name,item->header.name) == 0) { /* match */
+        /* Now find the choices for this selection... */
+        Item *choice_ptr;
+        for (i = 0;
+             i<item->selection.n;
+             i++) {
+          choice_ptr=item->selection.choices[i];
+          /* if the choice value matches the selection */
+          if (strcmp(choice_ptr->choice.value,var_value) == 0) {
+            choice_ptr->choice.init_on = 1;
+          } else {
+            choice_ptr->choice.init_on = 0;
+          }
+        } /* end all choices */
+      } /* end match */
+    } /* end selection */
+  } /* end all items */
   free(var_name);                       /* not needed now */
 }
 static void ct_Selection(char *cp)
@@ -1496,15 +1593,22 @@ static void OpenWindows ()
     { PPosition | PSize | USPosition | USSize | PWinGravity};
   XClassHint myclasshints;
 
-  xc_ibeam = XCreateFontCursor(dpy, XC_xterm);
-  xc_hand = XCreateFontCursor(dpy, XC_hand2);
+  if (!CF.xc_ibeam) {
+    CF.xc_ibeam = XCreateFontCursor(dpy, XC_xterm);
+  }
+  if (!CF.xc_hand1) {
+    CF.xc_hand1 = XCreateFontCursor(dpy, XC_hand1);
+  }
+  if (!CF.xc_hand2) {
+    CF.xc_hand2 = XCreateFontCursor(dpy, XC_hand2);
+  }
   xcf.pixel = GetColor("White");
   XQueryColor(dpy, Pcmap, &xcf);
   xcb.pixel = CF.screen_background = (colorset < 0)
     ? GetColor(screen_background_color)
     : Colorset[colorset].bg;
   XQueryColor(dpy, Pcmap, &xcb);
-  XRecolorCursor(dpy, xc_ibeam, &xcf, &xcb);
+  XRecolorCursor(dpy, CF.xc_ibeam, &xcf, &xcb);
 
   /* the frame window first */
   if (CF.have_geom)
@@ -1573,7 +1677,7 @@ static void OpenWindows ()
 			    0, CF.screen_background,
                             item->header.dt_ptr->dt_colors[c_item_bg]);
       XSelectInput(dpy, item->header.win, ButtonPressMask | ExposureMask);
-      xswa.cursor = xc_ibeam;
+      xswa.cursor = CF.xc_ibeam;
       XChangeWindowAttributes(dpy, item->header.win, CWCursor, &xswa);
       if (itemcolorset >= 0)
       {
@@ -1592,7 +1696,7 @@ static void OpenWindows ()
 			    0, CF.screen_background,
                             item->header.dt_ptr->dt_colors[c_item_bg]);
       XSelectInput(dpy, item->header.win, ButtonPressMask | ExposureMask);
-      xswa.cursor = xc_hand;
+      xswa.cursor = CF.xc_hand2;
       XChangeWindowAttributes(dpy, item->header.win, CWCursor, &xswa);
       if (itemcolorset >= 0)
       {
@@ -1613,7 +1717,7 @@ static void OpenWindows ()
                             item->header.dt_ptr->dt_colors[c_item_bg]);
       XSelectInput(dpy, item->header.win,
 		   ButtonPressMask | ExposureMask);
-      xswa.cursor = xc_hand;
+      xswa.cursor = CF.xc_hand2;
       XChangeWindowAttributes(dpy, item->header.win, CWCursor, &xswa);
       if (itemcolorset >= 0)
       {
