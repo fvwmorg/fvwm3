@@ -463,7 +463,7 @@ MenuStatus menuShortcuts(MenuRoot *menu,XEvent *Event,MenuItem **pmiCurrent)
       return MENU_NEWITEM;
     }
     /* Do things the old way for unique hotkeys in the menu */
-    else if ( countHotkey = 1 )
+    else if ( countHotkey == 1  )
     {
       *pmiCurrent = newItem;
       if ( IS_POPUP_MENU_ITEM( newItem ) )

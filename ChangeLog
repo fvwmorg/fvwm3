@@ -1,3 +1,12 @@
+Tue Mar 30 20:54:15 1999  Steve Robbins  <steve@nyongwa.montreal.qc.ca>
+
+	* fvwm/menus.c (menuShortcuts): bugfix `if ( countHotkey = 1 )'
+	--> `if ( countHotkey == 1 )'.
+
+	* fvwm/fvwm.c (main): exit after processing -version option.  Make
+	`vizinfo' conditional on PICK_TRUECOLOR.
+	* fvwm/fvwm.c (usage): call exit().
+
 1999-03-31  Matthias Clasen  <clasen@mathematik.uni-freiburg.de>
 
 	* fvwm/virtual.c (MoveViewport): fix a typo: there was a 
@@ -53,6 +62,11 @@
 1999-03-29  Dominik Vogt  <dominik_vogt@gmx.de>
 
 	* fvwm/fvwm.c (SetRCDefaults): changed back to MouseFocus as default
+
+Mon Mar 29 01:02:40 1999  Steve Robbins  <steve@nyongwa.montreal.qc.ca>
+
+	* fvwm/fvwm2.1: removed duplicated IconPath, fixed missing italic
+	face.
 
 Sun Mar 28 22:09:12 1999  Steve Robbins  <steve@nyongwa.montreal.qc.ca>
 

@@ -155,8 +155,10 @@ int main(int argc, char **argv)
   Bool single = False;
   Bool option_error = FALSE;
   int x, y;
-  XVisualInfo vizinfo;
 
+#ifdef PICK_TRUECOLOR
+  XVisualInfo vizinfo;
+#endif
 
   g_argv = argv;
   g_argc = argc;
@@ -250,6 +252,7 @@ int main(int argc, char **argv)
     {
       fvwm_msg(INFO,"main", "Fvwm Version %s compiled on %s at %s\n",
               VERSION,__DATE__,__TIME__);
+      exit(0);
     }
     else
     {
@@ -1669,6 +1672,7 @@ void usage(void)
   fprintf(stderr,"\nFvwm Version %s Usage:\n\n",VERSION);
   fprintf(stderr,"  %s [-d dpy] [-debug] [-f config_cmd] [-s] [-blackout] [-version] [-h]\n\n",g_argv[0]);
 #endif
+  exit( 1 );
 }
 
 /****************************************************************************
