@@ -2652,11 +2652,14 @@ visually disturbing for other applications using windows not
 managed by fvwm.  Since these applications are rare it is most
 likely safe to leave this option at its default.
 
+.\"needswork  I don't understand the part about iconified in the place
+.\"of a state.
 .I EWMHIconicStateWorkaround
 is needed by EWMH compliant pagers or taskbars which use the Iconic
 WM_STATE to determine if an application is iconified in the place of the
 corresponding EWMH state. This option is needed by the current KDE2
 versions. By default this option is off.
+.\"end needswork
 
 .TP
 .BI "BusyCursor [" "Option bool" "], " ...
@@ -4884,7 +4887,7 @@ commands.
 
 The
 .I IndexedWindowName
-style cause fvwm to use as window title name a string of the form
+style causes fvwm to use window titles in the form
 .EX
 .IR name " (" i ") "
 .EE
@@ -4892,21 +4895,21 @@ where
 .I name
 is the exact window name and
 .I i
-is an integer which intends to represent the
+is an integer which represents the
 .I i "th"
 window with
 .I name
 as window name.
 .I ExactWindowName
-restor the default which is to use the exact window name.
+restores the default which is to use the exact window name.
 .I IndexedIconName
 and
 .I ExactIconName
-work exactly as the
+work the same as
 .I IndexedWindowName
 and
 .I ExactWindowName
-styles but for the icons titles.
+styles but for the icon titles.
 
 .\" +++++++++++++++ styles affecting title buttons
 .TP
@@ -5263,8 +5266,8 @@ as the fall-back method.
 
 .I MinOverlapPlacement
 automatically places new windows in a location in which the
-overlapping area in pixels of other windows is minimal.
-By default this placement policy especially tries to avoid
+overlapping area in pixels of other windows is minimized.
+By default this placement policy tries to avoid
 overlapping icons and windows on higher layers.
 This can be configured with the
 .IR PlacementOverlapPenalities
@@ -5286,30 +5289,30 @@ takes at most 6 positive or null decimal arguments:
 .EX
 .I norm ontop icon sticky below strut
 .EE
-if some remaining arguments are missing there are reseted to
-the default which is:
+if trailing arguments are missing
+the default is used which is:
 .EX
 1 5 10 1 0.05 50
 .EE
-This style allows to configure the
+This style configures the
 .IR MinOverlapPlacement " and " MinOverlapPercentPlacement
 placement policy.
 The
 .I norm
-factor concerns normal windows, the
+factor affects normal windows, the
 .I ontop
-factor concerns windows with a greater layer than the placed window, the
+factor affects windows with a greater layer than the window being placed, the
 .I icon
-factor concerns icons, the
+factor affects icons, the
 .I below
-factor concerns windows with a smaller layer than the placed window, the
+factor affects windows with a smaller layer than the window being placed, the
 .I strut
-factor concerns the complement of the EWMH working area if the placed
-window has the
+factor affects the complement of the EWMH working area if the
+window being placed has the
 .I EWMHPlacementUseWoringArea
 style and windows with an EWMH strut hint (i.e., a "please does not cover me"
-hint) if the placed window has the
-.I EWMHPlacementUseDynamicWoringArea
+hint) if the window being placed has the
+.I EWMHPlacementUseDynamicWorkingArea
 style.
 These factors represent the amount of area that these types of
 windows (or area) are counted as, when a new window
@@ -5320,31 +5323,31 @@ as much as normal windows.  So
 will cover 5 times as much area of another window before it will cover an ontop
 window.  To treat ontop windows the same as other windows, set this to 1.
 To really, really avoid putting windows under ontop windows, set this to a
-high value, say 1000. This style concerns the window already mapped and
+high value, say 1000. This style affects the window already mapped and
 not the window which is currently placed. There is one exception to this
-rule: in the case of the placed window has the
-.I EWMHPlacementUseWoringArea
+rule: in the case of the window being placed has the
+.I EWMHPlacementUseWorkingArea
 style the
 .I strut
-factor concerns the placed window.
+factor affects the placed window.
 
 .I PlacementOverlapPercentPenalities
 takes at most 4 positive or null integer arguments:
 .EX
 .I cover_100 cover_95 cover_85 cover_75
 .EE
-if some remaining arguments are missing there are reseted to the default
-which is:
+if trailing arguments are missing the defaults are used
+which are:
 .EX
 12 6 4 1
 .EE
-This style allows to configure the
+This style affects the
 .I MinOverlapPercentPlacement
-placement policy only and is similar to the
+placement policy and is similar to the
 .I PlacementOverlapPenalities
 style. The
 .I cover_xx
-factor is used when the placed window cover at least
+factor is used when the window being placed covers at least
 .I xx
 percent of the window. This factor is added to the factor determined
 by the
@@ -5735,10 +5738,10 @@ the EWMH working area is used as with
 the EWMH dynamic working area is used (the default).
 
 .I EWMHPlacementIgnoreWorkingArea
-causes fvwm to ignore the EWMH working area when it places (or place again)
+causes fvwm to ignore the EWMH working area when it places (or places again)
 a window. With
 .I EWMHPlacementUseWorkingArea
-the EWMH working area is take in account as with
+the EWMH working area is taken in account as with
 .I EWMHPlacementUseDynamicWorkingArea
 the EWMH dynamic working area is taken in account (the default).
 Note that with the
