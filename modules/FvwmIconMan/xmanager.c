@@ -35,13 +35,13 @@ extern FlocaleWinString *FwinString;
 #define STRING_CHANGED      16
 #define REDRAW_BUTTON       32
 #define GEOMETRY_CHANGED    64
-#define REDRAW_BG           128
 
 /* manager dirty bits: */
 /*      GEOMETRY_CHANGED    64 same as with button */
 #define MAPPING_CHANGED     2
 #define SHAPE_CHANGED       4
 #define REDRAW_MANAGER      8
+#define REDRAW_BG           16
 
 /* ButtonArray dirty bits: */
 #define NUM_BUTTONS_CHANGED 1

@@ -1,3 +1,11 @@
+2002-05-31  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* fvwm/events.c (GetContext):
+	fixed key bindings on decorations
+
+	* fvwm/events.h:
+	removed XEVMASK_DECORW
+
 2002-05-31  olicha  <olivier.chapuis@free.fr>
 
 	* NEWS:
@@ -27,10 +35,10 @@
 	to Xft FLAGS and LIBS
 
 	* fvwm/Makefile.am:
-	* libs/Makefile.am: 
+	* libs/Makefile.am:
 	Put $(Xft_CFLAGS) before $(X_CFLAGS) to be able to use an independent
 	Xft2 library. Removed FT2 CFLAGS and LIBS
-	
+
 2002-05-27  olicha  <olivier.chapuis@free.fr>
 
 	* acinclude.m4:

@@ -3443,8 +3443,8 @@ int GetContext(FvwmWindow *t, XEvent *e, Window *w)
 		XFindContext(dpy, e->xkey.window, FvwmContext, (caddr_t *) &t);
 		Fw = t;
 	}
-	if (e->type == ButtonPress && t && e->xkey.window == FW_W_FRAME(t) &&
-	    e->xkey.subwindow != None)
+	if ((e->type == ButtonPress || e->type == KeyPress) && t &&
+            e->xkey.window == FW_W_FRAME(t) && e->xkey.subwindow != None)
 	{
 		/* Translate frame coordinates into subwindow coordinates. */
 		e->xkey.window = e->xkey.subwindow;
@@ -3470,14 +3470,17 @@ int GetContext(FvwmWindow *t, XEvent *e, Window *w)
 	{
 		return C_ROOT;
 	}
-	if (e->xkey.subwindow != None && e->xkey.window == FW_W_PARENT(t))
-	{
-		*w = e->xkey.subwindow;
-	}
-	else
-	{
-		e->xkey.subwindow = None;
-	}
+	if (e->xkey.subwindow != None)
+        {
+                if (e->xkey.window == FW_W_PARENT(t))
+                {
+                        *w = e->xkey.subwindow;
+                }
+                else
+                {
+                        e->xkey.subwindow = None;
+                }
+        }
 	if (*w == Scr.Root)
 	{
 		return C_ROOT;

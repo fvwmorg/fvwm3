@@ -3,10 +3,16 @@
 	* FvwmTheme/FvwmTheme.1:
 	Documented fgsh and fg_alpha
 
+2002-05-29  Dave Trollope  <dave.trollope@worldnet.att.net>
+
+	* Modules/FvwmIconMan/xmanager.c:
+	Changed the REDRAW_BG from 128 to 16 and moved to manager dirty bits
+	group.
+
 2002-05-29  olicha  <olivier.chapuis@free.fr>
 
 	* FvwmForm/FvwmForm.1:
-	* FvwmForm/ReadXServer.c (ReadXServer): 
+	* FvwmForm/ReadXServer.c (ReadXServer):
 	Fixed Input cursor position for mouse click. Removed fixed font
 	requirement for InputFont
 
@@ -28,11 +34,11 @@
 	* FvwmDebug/Makefile.am:
 	* FvwmCommand/Makefile.am:
 	* FvwmPager/Makefile.am:
-	* FvwmIdent/Makefile.am: 
+	* FvwmIdent/Makefile.am:
 	* FvwmIconMan/Makefile.am:
 	* FvwmIconBox/Makefile.am:
 	* FvwmForm/Makefile.am:
-	* FvwmButtons/Makefile.am: 
+	* FvwmButtons/Makefile.am:
 	Put $(Xft_CFLAGS) before $(X_CFLAGS) to be able to use an independent
 	Xft2 library. Removed FT2 CFLAGS and LIBS.
 

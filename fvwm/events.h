@@ -23,8 +23,6 @@
 
 #define XEVMASK_FRAMEW  (SubstructureRedirectMask | VisibilityChangeMask| \
                          EnterWindowMask | LeaveWindowMask)
-#define XEVMASK_DECORW  (ExposureMask | ButtonPressMask | ButtonReleaseMask | \
-			 KeyPressMask)
 #define XEVMASK_TITLEW  (ButtonPressMask | ButtonReleaseMask | \
 			 OwnerGrabButtonMask | \
 			 ButtonMotionMask | PointerMotionMask)
