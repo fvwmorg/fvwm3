@@ -35,34 +35,6 @@ typedef struct {
 } m_new_desk_data;
 
 typedef struct {
-  Ulong app_id;
-  Ulong frame_id;
-  Ulong dbase_entry;
-  Ulong xpos;
-  Ulong ypos;
-  Ulong width;
-  Ulong height;
-  Ulong desknum;
-  Ulong dummy;
-  Ulong window_title_height;
-  Ulong window_border_width;
-  Ulong window_base_width;
-  Ulong window_base_height;
-  Ulong window_resize_width_inc;
-  Ulong window_resize_height_inc;
-  Ulong window_min_width;
-  Ulong window_min_height;
-  Ulong window_max_width_inc;
-  Ulong window_max_height_inc;
-  Ulong icon_label_id;
-  Ulong icon_pixmap_id;
-  Ulong window_gravity;
-  Ulong text_pixel;
-  Ulong back_pixel;
-  window_flags flags;
-} m_add_config_data;
-
-typedef struct {
   Ulong x, y, desknum;
 } m_new_page_data;
 
@@ -99,7 +71,7 @@ typedef struct {
 typedef union {
   m_toggle_paging_data toggle_paging_data;
   m_new_desk_data      new_desk_data;
-  m_add_config_data    add_config_data;
+  ConfigWinPacket      add_config_data;
   m_new_page_data      new_page_data;
   m_minimal_data       minimal_data;
   m_icon_data          icon_data;
@@ -230,11 +202,11 @@ static WinData *id_to_win (Ulong id)
 
 static void set_win_configuration (WinData *win, FvwmPacketBody *body)
 {
-  win->desknum = body->add_config_data.desknum;
-  win->x = body->add_config_data.xpos;
-  win->y = body->add_config_data.ypos;
-  win->width = body->add_config_data.width;
-  win->height = body->add_config_data.height;
+  win->desknum = body->add_config_data.desk;
+  win->x = body->add_config_data.frame_x;
+  win->y = body->add_config_data.frame_y;
+  win->width = body->add_config_data.frame_width;
+  win->height = body->add_config_data.frame_height;
   win->geometry_set = 1;
   memcpy(&(win->flags), &(body->add_config_data.flags), sizeof(win->flags));
 }
@@ -254,7 +226,7 @@ static void configure_colorsets (unsigned long *body)
 
 static void configure_window (FvwmPacketBody *body)
 {
-  Ulong app_id = body->add_config_data.app_id;
+  Ulong app_id = body->add_config_data.w;
   WinData *win;
   ConsoleDebug (FVWM, "configure_window: %ld\n", app_id);
 
@@ -395,7 +367,7 @@ static void new_window (FvwmPacketBody *body)
   memcpy(&(win->flags), &(body->add_config_data.flags), sizeof(win->flags));
   if (!(IS_TRANSIENT(win)))
   {
-    win->app_id = body->add_config_data.app_id;
+    win->app_id = body->add_config_data.w;
     win->app_id_set = 1;
     set_win_configuration (win, body);
 

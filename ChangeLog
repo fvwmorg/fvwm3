@@ -1,5 +1,15 @@
 2000-05-01  Michael Han  <mikehan@best.com>
 
+	* modules/FvwmIconMan/fvwm.c (set_win_configuration)
+	(configure_window):
+	(new_window):
+	Convert the add_config_data union member from m_add_config_data to
+	ConfigWinPacket from vpacket, and fix up differences between the structs
+	* modules/FvwmIdent/FvwmIdent.c (list_configure):
+	Convert from reading the packet body array to ConfigWinPacket struct
+
+2000-05-01  Michael Han  <mikehan@best.com>
+
 	* modules/FvwmPager/x_pager.c (UpdateWindowShape):
     * modules/FvwmButtons/FvwmButtons.c (change_colorset):
     * fvwm/builtins.h:

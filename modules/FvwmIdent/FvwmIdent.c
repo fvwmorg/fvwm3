@@ -287,30 +287,29 @@ void DeadPipe(int nonsense)
  ***********************************************************************/
 void list_configure(unsigned long *body)
 {
-struct ConfigWinPacket  *cfgpacket = (void *) body;
+  struct ConfigWinPacket  *cfgpacket = (void *) body;
 
-  if((app_win == (Window)body[1])||(app_win == (Window)body[0])
-     ||((body[19] != 0)&&(app_win == (Window)body[19]))
-     ||((body[19] != 0)&&(app_win == (Window)body[20])))
+  if((app_win == cfgpacket->frame)||(app_win == cfgpacket->w)
+     ||((cfgpacket->icon_w != 0)&&(app_win == cfgpacket->icon_w))
+     ||((cfgpacket->icon_pixmap_w)&&(app_win == cfgpacket->icon_pixmap_w)))
     {
-      app_win = body[1];
-      target.id = body[0];
-      target.frame = body[1];
-      target.frame_x = body[3];
-      target.frame_y = body[4];
-      target.frame_w = body[5];
-      target.frame_h = body[6];
-      target.desktop = body[7];
-      target.layer = body[8];
-/*      target.flags = body[8];  */
+      app_win = cfgpacket->frame;
+      target.id = cfgpacket->w;
+      target.frame = cfgpacket->frame;
+      target.frame_x = cfgpacket->frame_x;
+      target.frame_y = cfgpacket->frame_y;
+      target.frame_w = cfgpacket->frame_width;
+      target.frame_h = cfgpacket->frame_height;
+      target.desktop = cfgpacket->desk;
+      target.layer = cfgpacket->layer;
       memcpy(&target.flags, &(cfgpacket->flags), sizeof(cfgpacket->flags));
-      target.title_h = body[9];
-      target.border_w = body[10];
-      target.base_w = body[11];
-      target.base_h = body[12];
-      target.width_inc = body[13];
-      target.height_inc = body[14];
-      target.gravity = body[21];
+      target.title_h = cfgpacket->title_height;
+      target.border_w = cfgpacket->border_width;
+      target.base_w = cfgpacket->hints_base_width;
+      target.base_h = cfgpacket->hints_base_height;
+      target.width_inc = cfgpacket->hints_width_inc;
+      target.height_inc = cfgpacket->hints_height_inc;
+      target.gravity = cfgpacket->hints_win_gravity;
       found = 1;
     }
 
