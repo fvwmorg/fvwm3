@@ -223,6 +223,8 @@ typedef struct win_data {
   char *classname;
   char *titlename;
   char *iconname;
+  char *visible_name;
+  char *visible_icon_name;
 } WinData;
 
 typedef struct button {

@@ -262,8 +262,16 @@ void process_message(unsigned long type, const unsigned long *body)
       fprintf(output,"window name\n");
       list_window_name(body);
       break;
+    case M_VISIBLE_NAME:
+      fprintf(output,"visible window name\n");
+      list_window_name(body);
+      break;
     case M_ICON_NAME:
       fprintf(output,"icon name\n");
+      list_window_name(body);
+      break;
+    case M_VISIBLE_ICON_NAME:
+      fprintf(output,"visible icon name\n");
       list_window_name(body);
       break;
     case M_RES_CLASS:
@@ -280,6 +288,10 @@ void process_message(unsigned long type, const unsigned long *body)
     case M_ICON_LOCATION:
       fprintf(output,"icon location\n");
       list_icon(body);
+      break;
+    case M_ICON_FILE:
+      fprintf(output,"icon file\n");
+      list_window_name(body);
       break;
     case M_MAP:
       fprintf(output,"map\n");

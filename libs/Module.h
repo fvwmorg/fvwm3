@@ -92,14 +92,13 @@ typedef struct {
 #define M_MINI_ICON          (1<<23)
 #define M_WINDOWSHADE        (1<<24)
 #define M_DEWINDOWSHADE      (1<<25)
-/* The next one is not used, so we have a place for a new type (it was
- * M_LOCKONSEND which is no more needed). olicha Nov 13, 1999 */
-#define M_NOTUSED            (1<<26)
+#define M_VISIBLE_NAME       (1<<26)
 #define M_SENDCONFIG         (1<<27)
 #define M_RESTACK            (1<<28)
 #define M_ADD_WINDOW         (1<<29)
 #define M_CONFIGURE_WINDOW   (1<<30)
-#define MAX_MESSAGES         31
+#define M_VISIBLE_ICON_NAME  (1<<31)
+#define MAX_MESSAGES         32
 
 
 /**

@@ -326,6 +326,8 @@ int main(int argc, char **argv)
 #endif
 
   SetMessageMask(fd,
+		 M_VISIBLE_NAME |
+		 M_VISIBLE_ICON_NAME |
                  M_ADD_WINDOW|
                  M_CONFIGURE_WINDOW|
                  M_DESTROY_WINDOW|
@@ -339,8 +341,6 @@ int main(int argc, char **argv)
 		 M_DEICONIFY|
 		 M_RES_NAME|
 		 M_RES_CLASS|
-		 M_WINDOW_NAME|
-		 M_ICON_NAME|
 		 M_CONFIG_INFO|
 		 M_END_CONFIG_INFO|
 		 M_MINI_ICON|
@@ -540,10 +540,10 @@ void process_message( FvwmPacket* packet )
       break;
     case M_RES_CLASS:
     case M_RES_NAME:
-    case M_WINDOW_NAME:
+    case M_VISIBLE_NAME:
       list_window_name(body,type);
       break;
-    case M_ICON_NAME:
+    case M_VISIBLE_ICON_NAME:
       list_icon_name(body);
       break;
     case M_MINI_ICON:
@@ -1146,7 +1146,7 @@ void list_window_name(unsigned long *body,unsigned long type)
           free(t->res_name);
         CopyString(&t->res_name,(char *)(&body[3]));
         break;
-      case M_WINDOW_NAME:
+      case M_VISIBLE_NAME:
         if(t->window_name != NULL)
           free(t->window_name);
         CopyString(&t->window_name,(char *)(&body[3]));

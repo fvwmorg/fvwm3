@@ -1,3 +1,25 @@
+2001-12-06  olicha  <olivier.chapuis@free.fr>
+	
+	* fvwm/add_window.c (setup_window_name_count):
+	(setup_icon_name_count):
+	Better determination of the window and icon names index
+
+	* fvwm/add_window.c (AddWindow):
+	(setup_icon):
+	* fvwm/events.c (HandlePropertyNotify):
+	* fvwm/ewmh_names.c (EWMH_WMName):
+	(EWMH_WMIconName):
+	* fvwm/module_interface.{c,h} (BroadcastWindowIconNames):
+	(CMD_Send_WindowList):
+	(CMD_set_mask):
+	(CMD_set_sync_mask):
+	(CMD_set_nograb_mask):
+	* fvwm/update.c (apply_window_updates):
+	* libs/Module.h:
+	New module messages type M_VISIBLE_NAME and M_VISIBLE_ICON_NAME
+	which are send to modules with BroadcastWindowIconNames.
+	The set mask cmds use unsigned long mask and not int mask!
+
 2001-12-05  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* fvwm/ewmh.h:

@@ -341,8 +341,8 @@ int main(int argc, char **argv)
 #endif
 
   SetMessageMask(Fvwm_fd,M_ADD_WINDOW | M_CONFIGURE_WINDOW | M_DESTROY_WINDOW |
-		 M_WINDOW_NAME | M_ICON_NAME | M_RES_NAME | M_DEICONIFY |
-		 M_ICONIFY | M_END_WINDOWLIST | M_FOCUS_CHANGE |
+		 M_VISIBLE_NAME | M_VISIBLE_ICON_NAME | M_RES_NAME |
+		 M_DEICONIFY | M_ICONIFY | M_END_WINDOWLIST | M_FOCUS_CHANGE |
 		 M_CONFIG_INFO | M_END_CONFIG_INFO | M_NEW_DESK | M_SENDCONFIG
 #ifdef MINI_ICONS
 		 | M_MINI_ICON
@@ -731,10 +731,10 @@ void ProcessMessage(unsigned long type,unsigned long *body)
     break;
 #endif
 
-  case M_WINDOW_NAME:
-  case M_ICON_NAME:
-    if ((type == M_ICON_NAME   && !UseIconNames) ||
-	(type == M_WINDOW_NAME &&  UseIconNames)) break;
+  case M_VISIBLE_NAME:
+  case M_VISIBLE_ICON_NAME:
+    if ((type == M_VISIBLE_ICON_NAME   && !UseIconNames) ||
+	(type == M_VISIBLE_NAME &&  UseIconNames)) break;
     string = (char *) &body[3];
     if ((i = UpdateItemName(&windows, body[0], (char *)&body[3])) == -1)
       break;

@@ -125,8 +125,8 @@ int UWidth, UHeight;
 		       LeaveWindowMask | PointerMotionMask)
 
 unsigned long m_mask = M_CONFIGURE_WINDOW|M_ADD_WINDOW|M_DESTROY_WINDOW|
-		 M_END_WINDOWLIST| M_ICONIFY|M_DEICONIFY|M_ICON_NAME|
-		 M_RES_NAME|M_RES_CLASS|M_WINDOW_NAME|M_ICON_FILE|
+		 M_END_WINDOWLIST| M_ICONIFY|M_DEICONIFY|M_VISIBLE_ICON_NAME|
+		 M_RES_NAME|M_RES_CLASS|M_VISIBLE_NAME|M_ICON_FILE|
 		 M_DEFAULTICON|M_CONFIG_INFO|M_END_CONFIG_INFO;
 
 struct icon_info *Hilite;
@@ -2311,7 +2311,7 @@ void process_message(unsigned long type, unsigned long *body)
   case M_RES_CLASS:
     UpdateItem(type, body[0], (char *)&body[3]);
     break;
-  case M_WINDOW_NAME:
+  case M_VISIBLE_NAME:
     tmp = UpdateItem(type, body[0], (char *)&body[3]);
     if (!ready || tmp == NULL)
       break;
@@ -2338,7 +2338,7 @@ void process_message(unsigned long type, unsigned long *body)
     }
     }
     break;
-  case M_ICON_NAME:
+  case M_VISIBLE_ICON_NAME:
     tmp = UpdateItem(type, body[0], (char *)&body[3]);
     if (!ready || tmp == NULL)
     break;
@@ -2629,7 +2629,7 @@ struct icon_info *UpdateItem(unsigned long type, unsigned long id, char *item)
       strcpy(str, item);
 
       switch (type){
-      case M_ICON_NAME:
+      case M_VISIBLE_ICON_NAME:
 	if (tmp->name)
 	  free(tmp->name);
 	tmp->name = str;
@@ -2640,7 +2640,7 @@ struct icon_info *UpdateItem(unsigned long type, unsigned long id, char *item)
 	tmp->icon_file = str;
 	tmp->extra_flags &= ~DEFAULTICON;
 	return tmp;
-      case M_WINDOW_NAME:
+      case M_VISIBLE_NAME:
 	if (tmp->window_name)
 	  free(tmp->window_name);
 	tmp->window_name = str;

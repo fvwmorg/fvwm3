@@ -300,8 +300,7 @@ int EWMH_WMIconName(EWMH_CMD_ARGS)
 
   setup_visible_name(fwin, True);
   EWMH_SetVisibleName(fwin, True);
-  BroadcastName(M_ICON_NAME,fwin->w,fwin->frame,
-		(unsigned long)fwin, fwin->icon_name);
+  BroadcastWindowIconNames(fwin, False, True);
   RedoIconName(fwin);
   return 1;
 }
@@ -347,8 +346,8 @@ int EWMH_WMName(EWMH_CMD_ARGS)
   SET_NAME_CHANGED(fwin, 1);
 
   EWMH_SetVisibleName(fwin, False);
-  BroadcastName(M_WINDOW_NAME,fwin->w,fwin->frame,
-		(unsigned long)fwin, fwin->visible_name);
+  BroadcastWindowIconNames(fwin, True, False);
+
   /* fix the name in the title bar */
   if(!IS_ICONIFIED(fwin))
     DrawDecorations(fwin, DRAW_TITLE, (Scr.Hilite == fwin), True, None);
@@ -357,8 +356,7 @@ int EWMH_WMName(EWMH_CMD_ARGS)
   {
     fwin->icon_name = fwin->name;
     setup_visible_name(fwin, True);
-    BroadcastName(M_ICON_NAME,fwin->w,fwin->frame,
-		  (unsigned long)fwin,fwin->icon_name);
+    BroadcastWindowIconNames(fwin, False, True);
     EWMH_SetVisibleName(fwin, True);
     RedoIconName(fwin);
   }

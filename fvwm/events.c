@@ -447,8 +447,7 @@ fprintf(stderr, " '%s'\n", Tmp_win->name);
       Tmp_win->name = NoName;
     setup_visible_name(Tmp_win, False);
 
-    BroadcastName(M_WINDOW_NAME,Tmp_win->w,Tmp_win->frame,
-		  (unsigned long)Tmp_win,Tmp_win->name);
+    BroadcastWindowIconNames(Tmp_win, True, False);
 
     /* fix the name in the title bar */
     if(!IS_ICONIFIED(Tmp_win))
@@ -464,8 +463,7 @@ fprintf(stderr, " '%s'\n", Tmp_win->name);
     {
       Tmp_win->icon_name = Tmp_win->name;
       setup_visible_name(Tmp_win, True);
-      BroadcastName(M_ICON_NAME,Tmp_win->w,Tmp_win->frame,
-		    (unsigned long)Tmp_win, Tmp_win->icon_name);
+      BroadcastWindowIconNames(Tmp_win, False, True);
       RedoIconName(Tmp_win);
     }
     break;
@@ -536,8 +534,7 @@ fprintf(stderr, " '%s'\n", Tmp_win->name);
     }
     setup_visible_name(Tmp_win, True);
 
-    BroadcastName(M_ICON_NAME,Tmp_win->w,Tmp_win->frame,
-		  (unsigned long)Tmp_win,Tmp_win->icon_name);
+    BroadcastWindowIconNames(Tmp_win, False, True);
     RedoIconName(Tmp_win);
     EWMH_SetVisibleName(Tmp_win, True);
     break;

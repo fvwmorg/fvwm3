@@ -405,7 +405,7 @@ process_message (unsigned long type,
     case M_DESTROY_WINDOW:
       g_hash_table_remove (window_list_entries, &(body[0]));
       break;
-    case M_WINDOW_NAME:
+    case M_VISIBLE_NAME:
       {
 	window_list_entry *wle = lookup_window_list_entry (body[0]);
 	if (wle->name)
@@ -413,7 +413,7 @@ process_message (unsigned long type,
 	wle->name = safestrdup ((char*) (&body[3]));
       }
       break;
-    case M_ICON_NAME:
+    case M_VISIBLE_ICON_NAME:
       {
 	window_list_entry *wle = lookup_window_list_entry (body[0]);
 	if (wle->icon_name)
@@ -506,8 +506,8 @@ main (int argc, char **argv)
 		  M_DESTROY_WINDOW |
 		  M_CONFIGURE_WINDOW |
 		  M_NEW_DESK |
-		  M_WINDOW_NAME |
-		  M_ICON_NAME |
+		  M_VISIBLE_NAME |
+		  M_VISIBLE_ICON_NAME |
 		  M_MINI_ICON);
 
   SendText (fvwm_fd, "Send_WindowList", 0);

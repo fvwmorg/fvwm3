@@ -361,11 +361,11 @@ static char *make_display_string (WinData *win, char *format, int len)
     if (*in_p == '%') {
       switch (*(++in_p)) {
       case 'i':
-	COPY (iconname);
+	COPY (visible_icon_name);
 	break;
 
       case 't':
-	COPY (titlename);
+	COPY (visible_name);
 	break;
 
       case 'r':
@@ -723,8 +723,8 @@ void set_win_displaystring (WinData *win)
   int maxlen;
 
   if (!man || ((man->format_depend & CLASS_NAME) && !win->classname)
-      || ((man->format_depend & ICON_NAME) && !win->iconname)
-      || ((man->format_depend & TITLE_NAME) && !win->titlename)
+      || ((man->format_depend & ICON_NAME) && !win->visible_icon_name)
+      || ((man->format_depend & TITLE_NAME) && !win->visible_name)
       || ((man->format_depend & RESOURCE_NAME) && !win->resname)) {
     return;
   }

@@ -1,3 +1,25 @@
+2001-12-06  olicha  <olivier.chapuis@free.fr>
+	
+	* FvwmDebug/FvwmDebug.c:
+	Added M_VISIBLE_NAME, M_VISIBLE_ICON_NAME and M_ICON_FILE
+	
+	* FvwmGtk/FvwmGtk.c:
+	* FvwmIconBox/FvwmIconBox.c:
+	* FvwmPager/FvwmPager.c:
+	* FvwmTaskBar/FvwmTaskBar.c:
+	* FvwmWinList/FvwmWinList.c:
+	Replace M_WINDOW_NAME and M_ICON_NAME by M_VISIBLE_NAME and
+	M_VISIBLE_ICON_NAME
+
+	* FvwmIconMan/FvwmIconMan.{c,h} (main):
+	* FvwmIconMan/fvwm.c (ProcessMessage): 
+	(visible_name):
+	(visible_icon_name):
+	(icon_name):
+	(window_name):
+	* FvwmIconMan/xmanager.c (make_display_string):
+	Added M_VISIBLE_NAME and M_VISIBLE_ICON_NAME
+
 2001-11-28  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* FvwmPager/x_pager.c (DispatchEvent):

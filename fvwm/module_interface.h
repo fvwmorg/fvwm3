@@ -52,16 +52,14 @@ extern struct queue_buff_struct **pipeQueue;
  * module.c, modconf.c and event.c.  dje 10/2/98
  */
 /* this is a bit long winded to allow MAX_MESSAGE to be 32 and not get an
- * integer overflow with (1 << MAX_MESSAGES) */
-#define MAX_MASK             ((((1<<(MAX_MESSAGES-1))-1)+(1<<(MAX_MESSAGES-1)))\
-                              &~(M_NOTUSED + M_SENDCONFIG))
+ * integer overflow with (1 << MAX_MESSAGES) and even with
+ * (1<<(MAX_MESSAGES-1)) - 1 */
+#define MAX_MASK             ( (((1<<(MAX_MESSAGES-2))-1) + \
+                                (1<<(MAX_MESSAGES-2)) + \
+                                (1<<(MAX_MESSAGES-1))) & ~(M_SENDCONFIG) )
 
 
 /*
- * M_NOTUSED is not used. It was M_LOCKONSEND which is not more needed: it
- * has been replaced by a separated mask which defines on which messages
- * the fvwm-to-module communication need to be lock. olicha Nov 13 1999.
- *
  * M_SENDCONFIG for   modules to tell  fvwm that  they  want to  see each
  * module configuration command as   it is entered.  Causes  modconf.c to
  * look at each active module, find  the ones that sent M_SENDCONFIG, and
@@ -77,6 +75,7 @@ void BroadcastPacket(unsigned long event_type, unsigned long num_datum, ...);
 void BroadcastConfig(unsigned long event_type, const FvwmWindow *t);
 void BroadcastName(unsigned long event_type, unsigned long data1,
 		   unsigned long data2, unsigned long data3, const char *name);
+void BroadcastWindowIconNames(FvwmWindow *t, Bool window, Bool icon);
 void BroadcastMiniIcon(unsigned long event_type,
 		       unsigned long data1, unsigned long data2,
 		       unsigned long data3, unsigned long data4,

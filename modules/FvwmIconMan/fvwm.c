@@ -337,6 +337,29 @@ static void icon_name (FvwmPacketBody *body)
 
   copy_string (&win->iconname, (char *)name);
   ConsoleDebug (FVWM, "new icon name: %s\n", win->iconname);
+
+  ConsoleDebug (FVWM, "Exiting icon_name\n");
+}
+
+static void visible_icon_name (FvwmPacketBody *body)
+{
+  WinData *win;
+  Ulong app_id;
+  Uchar *name = body->name_data.name.name;
+
+  ConsoleDebug (FVWM, "In visible_icon_name\n");
+
+  app_id = body->name_data.app_id;
+
+  win = id_to_win (app_id);
+
+  if (win->visible_icon_name && !strcmp (win->visible_icon_name, (char *)name)) {
+    ConsoleDebug (FVWM, "No icon change: %s %s\n", win->iconname, name);
+    return;
+  }
+
+  copy_string (&win->visible_icon_name, (char *)name);
+  ConsoleDebug (FVWM, "new visible icon name: %s\n", win->visible_icon_name);
   if (change_windows_manager (win) == 0 && win->button &&
       (win->manager->format_depend & ICON_NAME)) {
     if (win->manager->sort) {
@@ -367,14 +390,40 @@ static void window_name (FvwmPacketBody *body)
   }
 
   copy_string (&win->titlename, (char *)name);
+
+  ConsoleDebug (FVWM, "Exiting window_name\n");
+}
+
+static void visible_name (FvwmPacketBody *body)
+{
+  WinData *win;
+  Ulong app_id;
+  Uchar *name = body->name_data.name.name;
+
+  ConsoleDebug (FVWM, "In visible_name\n");
+
+  app_id = body->name_data.app_id;
+
+  win = id_to_win (app_id);
+
+  /* This is necessary because bash seems to update the window title on
+     every keystroke regardless of whether anything changes */
+  if (win->visible_name && !strcmp (win->visible_name, (char *)name)) {
+    ConsoleDebug (FVWM, "No visible name change: %s %s\n",
+		  win->visible_name, name);
+    return;
+  }
+
+  copy_string (&win->visible_name, (char *)name);
   if (change_windows_manager (win) == 0 && win->button &&
       (win->manager->format_depend & TITLE_NAME)) {
     if (win->manager->sort) {
       resort_windows_button (win);
     }
   }
-  ConsoleDebug (FVWM, "Exiting window_name\n");
+  ConsoleDebug (FVWM, "Exiting visible_name\n");
 }
+
 
 static void new_window (FvwmPacketBody *body)
 {
@@ -536,9 +585,19 @@ static void ProcessMessage (Ulong type, FvwmPacketBody *body)
     window_name (body);
     break;
 
+  case M_VISIBLE_NAME:
+    ConsoleDebug (FVWM, "DEBUG::M_VISIBLE_NAME\n");
+    visible_name (body);
+    break;
+
   case M_ICON_NAME:
     ConsoleDebug (FVWM, "DEBUG::M_ICON_NAME\n");
     icon_name (body);
+    break;
+
+  case M_VISIBLE_ICON_NAME:
+    ConsoleDebug (FVWM, "DEBUG::M_VISIBLE_ICON_NAME\n");
+    visible_icon_name (body);
     break;
 
   case M_DEICONIFY:

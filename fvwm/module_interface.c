@@ -1077,7 +1077,7 @@ const FvwmWindow **t1 = &t;
 
 static unsigned long *
 make_named_packet(int *len, unsigned long event_type, const char *name,
-                  int num, ...)
+		  int num, ...)
 {
   unsigned long *body;
   va_list ap;
@@ -1142,6 +1142,22 @@ BroadcastName(unsigned long event_type,
     PositiveWrite(i, body, l*sizeof(unsigned long));
 
   free(body);
+}
+
+void
+BroadcastWindowIconNames(FvwmWindow *t, Bool window, Bool icon)
+{
+  if (window)
+  {
+    BroadcastName(M_WINDOW_NAME,t->w,t->frame,(unsigned long)t,t->name);
+    BroadcastName(M_VISIBLE_NAME,t->w,t->frame,(unsigned long)t,t->visible_name);
+  }
+  if (icon)
+  {
+    BroadcastName(M_ICON_NAME,t->w,t->frame,(unsigned long)t,t->icon_name);
+    BroadcastName(M_VISIBLE_ICON_NAME,t->w,t->frame,
+		  (unsigned long)t,t->visible_icon_name);
+  }
 }
 
 #ifdef MINI_ICONS
@@ -1587,7 +1603,10 @@ void CMD_Send_WindowList(F_CMD_ARGS)
 		   (unsigned long)t,t->name);
 	  SendName(*Module,M_ICON_NAME,t->w,t->frame,
 		   (unsigned long)t,t->icon_name);
-
+	  SendName(*Module,M_VISIBLE_NAME,t->w,t->frame,
+		   (unsigned long)t,t->visible_name);
+	  SendName(*Module,M_VISIBLE_ICON_NAME,t->w,t->frame,
+		   (unsigned long)t,t->visible_icon_name);
           if (t->icon_bitmap_file != NULL
               && t->icon_bitmap_file != Scr.DefaultIcon)
             SendName(*Module,M_ICON_FILE,t->w,t->frame,
@@ -1644,25 +1663,29 @@ void CMD_Send_WindowList(F_CMD_ARGS)
 
 void CMD_set_mask(F_CMD_ARGS)
 {
-  int val = 0;
+  unsigned long val;
 
-  GetIntegerArguments(action, NULL, &val, 1);
+  /*GetIntegerArguments(action, NULL, &val, 1);*/
+  if (!action || sscanf(action,"%lu",&val) != 1)
+    val = 0;
   PipeMask[*Module] = (unsigned long)val;
 }
 
 void CMD_set_sync_mask(F_CMD_ARGS)
 {
-  int val = 0;
+  unsigned long val;
 
-  GetIntegerArguments(action, NULL, &val, 1);
+  if (!action || sscanf(action,"%lu",&val) != 1)
+    val = 0;
   SyncMask[*Module] = (unsigned long)val;
 }
 
 void CMD_set_nograb_mask(F_CMD_ARGS)
 {
-  int val = 0;
+  unsigned long val;
 
-  GetIntegerArguments(action, NULL, &val, 1);
+  if (!action || sscanf(action,"%lu",&val) != 1)
+    val = 0;
   NoGrabMask[*Module] = (unsigned long)val;
 }
 

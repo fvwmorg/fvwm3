@@ -239,6 +239,9 @@ void setup_window_name_count(FvwmWindow *tmp_win)
   if (!tmp_win->name)
     done = True;
 
+  if (tmp_win->icon_name && strcmp(tmp_win->name, tmp_win->icon_name) == 0)
+    count = tmp_win->icon_name_count;
+
   while (!done)
   {
     done = True;
@@ -246,8 +249,10 @@ void setup_window_name_count(FvwmWindow *tmp_win)
     {
       if (t == tmp_win)
 	continue;
-      if (t->name && strcmp(t->name, tmp_win->name) == 0 &&
-	   t->name_count == count)
+      if ((t->name && strcmp(t->name, tmp_win->name) == 0 && 
+	  t->name_count == count) ||
+	  (t->icon_name && strcmp(t->icon_name, tmp_win->name) == 0 && 
+	   t->icon_name_count == count))
       {
 	count++;
 	done = False;
@@ -266,6 +271,9 @@ void setup_icon_name_count(FvwmWindow *tmp_win)
   if (!tmp_win->icon_name)
     done = True;
 
+  if (tmp_win->name && strcmp(tmp_win->name, tmp_win->icon_name) == 0)
+    count = tmp_win->name_count;
+
   while (!done)
   {
     done = True;
@@ -273,8 +281,10 @@ void setup_icon_name_count(FvwmWindow *tmp_win)
     {
       if (t == tmp_win)
 	continue;
-      if (t->icon_name && strcmp(t->icon_name, tmp_win->icon_name) == 0 &&
-	  t->icon_name_count == count)
+      if ((t->icon_name && strcmp(t->icon_name, tmp_win->icon_name) == 0 &&
+	  t->icon_name_count == count) ||
+	  (t->name && strcmp(t->name, tmp_win->icon_name) == 0 && 
+	   t->name_count == count))
       {
 	count++;
 	done = False;
@@ -1274,8 +1284,7 @@ ICON_DBG((stderr,"si: using default '%s'\n", tmp_win->name));
   tmp_win->icon_w = None;
 
   EWMH_SetVisibleName(tmp_win, True);
-  BroadcastName(M_ICON_NAME,tmp_win->w,tmp_win->frame,
-		(unsigned long)tmp_win,tmp_win->icon_name);
+  BroadcastWindowIconNames(tmp_win, False, True);
   if (tmp_win->icon_bitmap_file != NULL &&
       tmp_win->icon_bitmap_file != Scr.DefaultIcon)
     BroadcastName(M_ICON_FILE,tmp_win->w,tmp_win->frame,
@@ -1655,8 +1664,7 @@ FvwmWindow *AddWindow(Window w, FvwmWindow *ReuseWin)
 
   /****** inform modules of new window ******/
   BroadcastConfig(M_ADD_WINDOW,tmp_win);
-  BroadcastName(M_WINDOW_NAME,tmp_win->w,tmp_win->frame,
-		(unsigned long)tmp_win,tmp_win->name);
+  BroadcastWindowIconNames(tmp_win, True, False);
 
   /* these are sent and broadcast before res_{class,name} for the benefit
    * of FvwmIconBox which can't handle M_ICON_FILE after M_RES_NAME */
