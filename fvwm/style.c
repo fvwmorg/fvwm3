@@ -442,12 +442,16 @@ static void simplify_style_list(void)
   /* incremental flags set in styles with other names */
   style_flags interflags;
   style_flags dummyflags;
-  Bool has_merged = True;
+  Bool has_modified = True;
+  Bool is_merge_allowed;
+  Bool has_styles_in_between;
 
   /* repeat until nothing has been done for a complete pass */
-  while (has_merged)
+  while (has_modified)
   {
-    has_merged = False;
+    is_merge_allowed = True;
+    has_modified = False;
+    has_styles_in_between = True;
     /* Step 1:
      *   Remove styles that are completely overridden by later style
      *   definitions.  At the same time...
@@ -470,22 +474,31 @@ static void simplify_style_list(void)
             /* The style is a subset of later style definitions; nuke it */
             window_style *tmp = SGET_PREV_STYLE(*cmp);
 
+#if 0
+fprintf(stderr,"subset: removing style %s\n", SGET_NAME(*cmp));
+#endif
             remove_style_from_list(cmp, True);
             cmp = tmp;
-            has_merged = True;
+            has_modified = True;
           }
           else
           {
+            if (has_styles_in_between)
+              is_merge_allowed = False;
             /* Add the style to the set */
             blockor((char *)&sumflags, (char *)&sumflags,
                     (char *)&cmp->flag_mask, sizeof(style_flags));
-            if (!blockand((char *)&dummyflags, (char *)&sumflags,
+            if (is_merge_allowed &&
+                !blockand((char *)&dummyflags, (char *)&sumflags,
                           (char *)&interflags, sizeof(style_flags)))
             {
               window_style *tmp = SGET_PREV_STYLE(*cmp);
               window_style *prev = SGET_PREV_STYLE(*cur);
               window_style *next = SGET_NEXT_STYLE(*cur);
 
+#if 0
+fprintf(stderr,"merging %s into %s\n", SGET_NAME(*cur), SGET_NAME(*cmp));
+#endif
               /* merge cmp into cur and delete it afterwards */
               merge_styles(cmp, cur, True);
               memcpy(cur, cmp, sizeof(window_style));
@@ -494,20 +507,21 @@ static void simplify_style_list(void)
               SSET_NEXT_STYLE(*cur, next);
               /* remove the style without freeing the memory */
               remove_style_from_list(cmp, False);
-              /* release the style structure */
+                /* release the style structure */
               free(cmp);
               cmp = tmp;
-              has_merged = True;
+              has_modified = True;
             }
             else
             {
-              memset(&interflags, 0, sizeof(style_flags));
+              is_merge_allowed = False;
               cmp = SGET_PREV_STYLE(*cmp);
             }
           }
         }
         else
         {
+          has_styles_in_between = True;
           blockor((char *)&interflags, (char *)&interflags,
                   (char *)&cmp->flag_mask, sizeof(style_flags));
           cmp = SGET_PREV_STYLE(*cmp);
@@ -527,7 +541,9 @@ static void add_style_to_list(window_style *new_style)
    * used to merge duplicate entries, but that is no longer
    * appropriate since conflicting styles are possible, and the
    * last match should win! */
+#if 0
 fprintf(stderr,"adding style '%s'\n", SGET_NAME(*new_style));
+#endif
 
   if(last_style_in_list != NULL)
   {
@@ -656,14 +672,23 @@ void lookup_style(FvwmWindow *tmp_win, window_style *styles)
     /* If name/res_class/res_name match, merge */
     if (matchWildcards(SGET_NAME(*nptr),tmp_win->class.res_class) == TRUE)
     {
+#if 0
+fprintf(stderr,"c: merging style %s\n", SGET_NAME(*nptr));
+#endif
       merge_styles(styles, nptr, False);
     }
     else if (matchWildcards(SGET_NAME(*nptr),tmp_win->class.res_name) == TRUE)
     {
+#if 0
+fprintf(stderr,"r: merging style %s\n", SGET_NAME(*nptr));
+#endif
       merge_styles(styles, nptr, False);
     }
     else if (matchWildcards(SGET_NAME(*nptr),tmp_win->name) == TRUE)
     {
+#if 0
+fprintf(stderr,"n: merging style %s\n", SGET_NAME(*nptr));
+#endif
       merge_styles(styles, nptr, False);
     }
   }
