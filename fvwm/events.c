@@ -877,8 +877,8 @@ static inline int __handle_cr_on_client(
 	}
 	if (!HAS_OVERRIDE_SIZE_HINTS(fw) && (fw->hints.flags & PMinSize))
 	{
-		if (cre.width < fw->hints.max_width &&
-		    fw->hints.max_width >= BROKEN_MINSIZE_LIMIT)
+		if (cre.width < fw->hints.min_width &&
+		    fw->hints.min_width >= BROKEN_MINSIZE_LIMIT)
 		{
 			fw->hints.min_width = 1;
 			cre.value_mask |= CWWidth;
