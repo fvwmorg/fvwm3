@@ -361,9 +361,7 @@ AddToFunc Emulate-Func
 # The windows are named so the tests can access them
 AddTest "Test CreateWindows" CreateWindows-Func
 AddToFunc CreateWindows-Func
- + I Style "*" SmartPlacement
- + I Style "*" RandomPlacement
- + I Style "*" MouseFocus
+ + I Style "*" TileCascadePlacement
  + I DestroyFunc makewindows
  + I AddToFunc makewindows
  + I AddToFunc makewindows I Exec xterm -geometry 10x5+0+0 -T window1 -n window1 -e sleep 1000
@@ -856,6 +854,20 @@ AddToFunc Style-Func
  + I Style "window*" ForeColor
  + I Style "window*" BackColor
  + I Style "window*" BackColor
+# A GAP (olicha)
+ + I Style "window*" ManualPlacement
+ + I Style "window*" ManualPlacement
+ + I Style "window*" CascadePlacement
+ + I Style "window*" CascadePlacement
+ + I Style "window*" MinOverlapPlacement
+ + I Style "window*" MinOverlapPlacement
+ + I Style "window*" MinOverlapPercentPlacement
+ + I Style "window*" MinOverlapPercentPlacement
+ + I Style "window*" TileManualPlacement
+ + I Style "window*" TileManualPlacement
+ + I Style "window*" TileCascadePlacement
+ + I Style "window*" TileCascadePlacement
+
 
 AddTest "Test StyleHilightForeBack" StyleHilightForeBack-Func
 AddToFunc StyleHilightForeBack-Func
@@ -965,6 +977,18 @@ AddToFunc Style2-Func
  + I Style "window*" RandomPlacement
  + I Style "window*" ActivePlacement
  + I Style "window*" ActivePlacement
+ + I Style "window*" CascadePlacement
+ + I Style "window*" CascadePlacement
+ + I Style "window*" ManualPlacement
+ + I Style "window*" ManualPlacement
+ + I Style "window*" TileCascadePlacement
+ + I Style "window*" TileCascadePlacement
+ + I Style "window*" TileManualPlacement
+ + I Style "window*" TileManualPlacement
+ + I Style "window*" MinOverlapPlacement
+ + I Style "window*" MinOverlapPlacement
+ + I Style "window*" MinOverlapPercentPlacement
+ + I Style "window*" MinOverlapPercentPlacement
  + I Style "window*" DecorateTransient
  + I Style "window*" DecorateTransient
  + I Style "window*" NakedTransient

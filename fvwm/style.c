@@ -983,7 +983,14 @@ void ProcessNewStyle(F_CMD_ARGS)
         break;
 
       case 'c':
-        if (StrEquals(token, "CLEVERPLACEMENT"))
+	if (StrEquals(token, "CascadePlacement"))
+        {
+	  found = True;
+          ptmpstyle->flags.placement_mode = PLACE_CASCADE;
+          ptmpstyle->flag_mask.placement_mode = PLACE_MASK;
+          ptmpstyle->change_mask.placement_mode = PLACE_MASK;
+        }
+        else if (StrEquals(token, "CLEVERPLACEMENT"))
         {
 	  found = True;
           ptmpstyle->flags.placement_mode |= PLACE_CLEVER;
@@ -1704,7 +1711,28 @@ void ProcessNewStyle(F_CMD_ARGS)
         break;
 
       case 'm':
-        if (StrEquals(token, "MWMBUTTONS"))
+	if (StrEquals(token, "ManualPlacement"))
+        {
+	  found = True;
+          ptmpstyle->flags.placement_mode = PLACE_MANUAL;
+          ptmpstyle->flag_mask.placement_mode = PLACE_MASK;
+          ptmpstyle->change_mask.placement_mode = PLACE_MASK;
+        }
+	else if (StrEquals(token, "MinOverlapPlacement"))
+        {
+	  found = True;
+          ptmpstyle->flags.placement_mode = PLACE_MINOVERLAP;
+          ptmpstyle->flag_mask.placement_mode = PLACE_MASK;
+          ptmpstyle->change_mask.placement_mode = PLACE_MASK;
+        }
+	else if (StrEquals(token, "MinOverlapPercentPlacement"))
+        {
+	  found = True;
+          ptmpstyle->flags.placement_mode = PLACE_MINOVERLAPPERCENT;
+          ptmpstyle->flag_mask.placement_mode = PLACE_MASK;
+          ptmpstyle->change_mask.placement_mode = PLACE_MASK;
+        }
+        else if (StrEquals(token, "MWMBUTTONS"))
         {
 	  found = True;
 	  SFSET_HAS_MWM_BUTTONS(*ptmpstyle, 1);
@@ -2259,7 +2287,21 @@ void ProcessNewStyle(F_CMD_ARGS)
         break;
 
       case 't':
-        if (StrEquals(token, "Title"))
+	if (StrEquals(token, "TileCascadePlacement"))
+        {
+	  found = True;
+          ptmpstyle->flags.placement_mode = PLACE_TILECASCADE;
+          ptmpstyle->flag_mask.placement_mode = PLACE_MASK;
+          ptmpstyle->change_mask.placement_mode = PLACE_MASK;
+        }
+	else if (StrEquals(token, "TileManualPlacement"))
+        {
+	  found = True;
+          ptmpstyle->flags.placement_mode = PLACE_TILEMANUAL;
+          ptmpstyle->flag_mask.placement_mode = PLACE_MASK;
+          ptmpstyle->change_mask.placement_mode = PLACE_MASK;
+        }
+        else if (StrEquals(token, "Title"))
         {
 	  found = True;
           ptmpstyle->flags.has_no_title = 0;

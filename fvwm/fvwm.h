@@ -320,12 +320,28 @@ typedef struct
 {
   common_flags_type common;
   unsigned do_decorate_transient : 1;
+  /* old placement flags */
 #define PLACE_DUMB            0x0
 #define PLACE_SMART           0x1
 #define PLACE_CLEVER          0x2
 #define PLACE_CLEVERNESS_MASK 0x3
 #define PLACE_RANDOM          0x4
-#define PLACE_MASK            0x7
+  /* new placements value, try to get a minimal backward compatibility with
+  *  the old flags: Dumb+Active=Manual, Dumb+Random=Cascade, Smart+Random=
+  *  TileCascade, Smart+Active=TileManual, Random+Smart+Clever=MINOVERLAP
+  *  which is the original Clevre placement code, Active+Smart+Clever=
+  *  MINOVERLAPPERCENT which is the "new" Clever placement code and was
+  *  the original Clever placement code. Now the original placement code
+  *  said: Active/Random+Dumb+Clever=Active/Random+Dumb (with Dump Clever
+  *  is ignored); These represent the not use value: 0x2=Active+Dumb+Clever,
+  *  0x6=Random+Dumb+Clever */
+#define PLACE_MANUAL            0x0
+#define PLACE_TILEMANUAL        0x1
+#define PLACE_MINOVERLAPPERCENT 0x3
+#define PLACE_CASCADE           0x4
+#define PLACE_TILECASCADE       0x5
+#define PLACE_MINOVERLAP        0x7
+#define PLACE_MASK              0x7
   unsigned placement_mode : 3;
   unsigned do_save_under : 1;
   unsigned do_start_lowered : 1;

@@ -4208,8 +4208,9 @@ is a comma separated list containing one or more of the keywords
 .IR OLDecor " / " NoOLDecor ,
 .IR GNOMEUseHints " / " GNOMEIgnoreHints ,
 .IR StickyIcon " / " SlipperyIcon ,
-.IR SmartPlacement " / " CleverPlacement " / " DumbPlacement ,
-.IR RandomPlacement " / " ActivePlacement ,
+.IR ManualPlacement " / " CascadePlacement " / " MinOverlapPlacement " / "
+.IR MinOverlapPercentPlacement " / " TileManualPlacement " / "
+.IR TileCascadePlacement ,
 .IR DecorateTransient " / " NakedTransient ,
 .IR RaiseTransient " / " DontRaiseTransient ,
 .IR LowerTransient " / " DontLowerTransient ,
@@ -4676,34 +4677,50 @@ may be less than 100 pixels.  If you omit the parameters or
 their values are invalid, both limits are set to 32767 pixels
 (which is the default).
 
-.\" +++++++++++++++ placement and stacking policy
+.\" +++++++++++++++ Window Manager placement
 .TP
-.B Placement policy and window stacking
-
+.B Window Manager placement
 Applications can place windows at a particular spot on-screen
 either by window manager hints or a geometry specification.  When
 they do neither, then the window manager steps in to find a place
-for the window.
+for the window. Fvwm knows six ways to deal with this situation.
+The default is
+.IR TileCascadePlacement.
 
-Fvwm knows three ways to deal with this situation: smart placement,
-random placement, and interactive placement (aka active placement).
-Fvwm first tries smart placement.  If this fails (or you have specified
-.IR DumbPlacement )
-then fvwm will fall back on either random or interactive placement.
+.I TileCascadePlacement
+tries to automatically place new windows in a smart
+location - a location in which they do not overlap any other
+windows on the screen.  If no such position can be found 
+.IR CascadePlacement
+will be used as a fall-back method (see below).
+ 
+.I TileManualPlacement
+tries to automatically place new windows in a smart
+location - a location in which they do not overlap any other
+windows on the screen.  If no such position can be found 
+.IR ManualPlacement
+will be used as a fall-back method (see below).
 
-.I NoPPosition
-instructs fvwm to ignore the program specified position (PPosition hint)
-when adding new windows.  Adherence to the PPosition field is
-required for some applications, but if you don't have one of
-those its a real headache.  Many programs set this field to something
-obnoxious like 0,0 (upper left corner).
+.I MinOverlapPlacement
+automatically place new windows in a location in which they overlap other
+windows on the screen in a minimal way. Moreover, this placement policy
+especially try to avoid overlapping icons and windows on higher layers.
 
-.I NoIconPosition
-instructs fvwm to ignore the program specified icon position
-(IconPosition hint) when iconifying the window.
+.I MinOverlapPercentPlacement
+is similar to
+.IR MinOverlapPlacement
+but use a different method. First, percent is used in place of pixels
+size in the algorithm. Moreover, the algorithm try more positions and try
+to avoid complete covering of the old windows. The main difference with
+.IR MinOverlapPlacement
+is that this placement policy will strongly tries to do not completely
+cover small old windows by the new window.
 
-With
-.I ActivePlacement
+.I CascadePlacement
+automatically place new windows in ever-so-slightly random locations.
+
+.I ManualPlacement
+(aka active placement).
 the user is required to place every new window manually.  The window
 will only show as a rubber band until a place is selected manually.
 The window is placed when a mouse button or any key except
@@ -4720,14 +4737,11 @@ button 3 sets the
 .I PlacedByButton3
 condition (see
 .B Current
-command).  If you like this a lot, you will probably also want
-.IR DumbPlacement .
-See also
-.IR RandomPlacement ", " DumbPlacement ", and " SmartPlacement .
+command).
 
 Example:
 .EX
-Style * ActivePlacement, DumbPlacement
+Style * ManualPlacement
 
 *FvwmEvent: PassID
 *FvwmEvent: add_window GrowDownFunc
@@ -4743,49 +4757,48 @@ and the user presses button 3 to finish initial placement, the
 window is automatically enlarged until it hits the bottom screen
 border.
 
-.I RandomPlacement
-causes windows which would normally require user placement to be
-automatically placed in ever-so-slightly random locations.  For
-the best of all possible worlds use both
-.IR RandomPlacement ", " SmartPlacement " and " CleverPlacement .
-See also
-.IR ActivePlacement ", " SmartPlacement " and " DumbPlacement .
+.I Old placement styles
+DumpPlacement / SmartPlacement, ActivePlacement / RandomPlacement,
+SmartPlacement / SmartPlacementOff, GlobalOpts SmartPlacementIsReallySmart /
+Global SmartPlacementIsNormal are still supported but will be removed
+in the future (so does not use these style options).
+We have the following correspondance:
+.EX
+GlobalOpts SmartPlacementIsReallySmart 
+  <--> Style "*" SmartPlacement
+Global SmartPlacementIsNormal
+  <--> Style "*" SmartPlacementOff
+DumbPlacement, RandomPlacement, CleverPlacement
+  <--> CascadePlacement
+DumbPlacement, RandomPlacement, CleverPlacementOff
+  <--> CascadePlacement
+DumbPlacement, ActivePlacement, Clever Placement
+  <--> CascadePlacement
+DumbPlacement, ActivePlacement, CleverPlacementOff
+  <--> ManualPlacement
+SmartPlacement, RandomPlacement, CleverPlacementOff
+  <--> TileCascadePlacement
+SmartPlacement, ActivePlacement, CleverPlacementOff
+  <--> TileManualPlacement
+SmartPlacement, RandomPlacement, CleverPlacement
+  <--> MinOverlapPlacement
+SmartPlacement, ActivePlacement, CleverPlacement
+  <--> MinOverlapPercentPlacement
+.EE
 
-.I SmartPlacement
-tries to automatically place new windows in a smart
-location - a location in which they do not overlap any other
-windows on the screen.  If no such position can be found user
-placement or random placement (if specified) will be used as a
-fall-back method.  For the best of all possible worlds use both
-.IR RandomPlacement " and " SmartPlacement .
-See also
-.IR ActivePlacement ", " RandomPlacement ", and " DumbPlacement .
+.\" +++++++++++++++ placement options and stacking policy
+.TP
+.B Placement policy options and window stacking
+.I NoPPosition
+instructs fvwm to ignore the program specified position (PPosition hint)
+when adding new windows.  Adherence to the PPosition field is
+required for some applications, but if you don't have one of
+those its a real headache.  Many programs set this field to something
+obnoxious like 0,0 (upper left corner).
 
-.I CleverPlacement
-augments the
-.I SmartPlacement
-style so that it tries to avoid overlapping icons, sticky windows
-and windows on higher layers.  If
-.I SmartPlacement
-is not used,
-.I CleverPlacement
-has no effect.  To switch this style off again, use the
-.I CleverPlacementOff
-style.
-
-.I DumbPlacement
-is the opposite of SmartPlacement.  This means that fvwm will
-not even consider a smart window location.  It forces fvwm to
-use the selected
-.IR ActivePlacement " or " RandomPlacement
-behavior.  Note that the default is
-.IR SmartPlacement ,
-so if you really like your
-.IR ActivePlacement ,
-then specify this as well.
-.I DumbPlacement
-switches off both,
-.IR SmartPlacement " and " CleverPlacement .
+.I NoIconPosition
+instructs fvwm to ignore the program specified icon position
+(IconPosition hint) when iconifying the window.
 
 .I StartsOnDesk
 takes a numeric argument which is the desktop number on which

@@ -54,32 +54,13 @@
 #endif
 
 /*  RBW - 11/02/1998  */
-static int get_next_x(FvwmWindow *t, int x, int y, int pdeltax, int pdeltay);
-static int get_next_y(FvwmWindow *t, int y, int pdeltay);
-static float test_fit(
-  FvwmWindow *t, int x11, int y11, float aoimin, int pdeltax, int pdeltay);
-static void CleverPlacement(
-  FvwmWindow *t, int *x, int *y, int pdeltax, int pdeltay);
-
-/**/
-
-/* With the advent of layers, the meaning of ONTOP in the following
-   explanation has changed to mean any window in a higher layer. */
-
-/* The following factors represent the amount of area that these types of
- * windows are counted as.  For example, by default the area of ONTOP windows
- * is counted 5 times as much as normal windows.  So CleverPlacement will
- * cover 5 times as much area of another window before it will cover an ONTOP
- * window.  To treat ONTOP windows the same as other windows, set this to 1.
- * To really, really avoid putting windows under ONTOP windows, set this to a
- * high value, say 1000.  A value of 5 will try to avoid ONTOP windows if
- * practical, but if it saves a reasonable amount of area elsewhere, it will
- * place one there.  The same rules apply for the other "AVOID" factors.
- * (for CleverPlacement).
- * These factors are now in libs/default.h
- */
-/* #define NEW_CLEVERPLACEMENT_CODE 1 */
-#define FINAL_CLEVERPLACEMENT_CODE 1
+static int get_next_x(FvwmWindow *t, int x, int y, int pdeltax, int pdeltay,
+		      int use_percent);
+static int get_next_y(FvwmWindow *t, int y, int pdeltay, int use_percent);
+static float test_fit(FvwmWindow *t, int x11, int y11, float aoimin,
+		      int pdeltax, int pdeltay, int use_percent);
+static void CleverPlacement(FvwmWindow *t, int *x, int *y, int pdeltax, 
+			    int pdeltay, int use_percent);
 
 /*  RBW - 11/02/1998  */
 static int SmartPlacement(FvwmWindow *t,
@@ -193,7 +174,7 @@ static int SmartPlacement(FvwmWindow *t,
  * interference between the new window and the other windows is minimized */
 /*  RBW - 11/02/1998  */
 static void CleverPlacement(
-  FvwmWindow *t, int *x, int *y, int pdeltax, int pdeltay)
+  FvwmWindow *t, int *x, int *y, int pdeltax, int pdeltay, int use_percent)
 {
 /**/
   int test_x = 0,test_y = 0;
@@ -206,7 +187,7 @@ static void CleverPlacement(
 
   test_x = PageLeft;
   test_y = PageTop;
-  aoi = aoimin = test_fit(t, test_x, test_y, -1, pdeltax, pdeltay);
+  aoi = aoimin = test_fit(t, test_x, test_y, -1, pdeltax, pdeltay, use_percent);
 /**/
   xbest = test_x;
   ybest = test_y;
@@ -215,15 +196,17 @@ static void CleverPlacement(
   {
     if(aoi > 0) /* Windows interfere.  Try next x. */
     {
-      test_x = get_next_x(t, test_x, test_y, pdeltax, pdeltay);
+      test_x = get_next_x(t, test_x, test_y, pdeltax, pdeltay, use_percent);
     }
     else /* Out of room in x direction. Try next y. Reset x.*/
     {
       test_x = PageLeft;
-      test_y = get_next_y(t, test_y, pdeltay);
+      test_y = get_next_y(t, test_y, pdeltay, use_percent);
     }
-    aoi = test_fit(t, test_x, test_y, aoimin, pdeltax, pdeltay);
-    if((aoi >= 0) && (aoi < aoimin))
+    aoi = test_fit(t, test_x, test_y, aoimin, pdeltax, pdeltay, use_percent);
+    /* I've added +0.00001 because whith my machine the < test fail with
+       certain *equal* float numbers! */
+    if((aoi >= 0) && (aoi+0.00001 < aoimin))
     {
       xbest = test_x;
       ybest = test_y;
@@ -235,19 +218,15 @@ static void CleverPlacement(
 }
 
 /*  RBW - 11/02/1998  */
-static int get_next_x(FvwmWindow *t, int x, int y, int pdeltax, int pdeltay)
+static int get_next_x(FvwmWindow *t, int x, int y, int pdeltax, int pdeltay,
+		      int use_percent)
 {
 /**/
   int xnew;
   int xtest;
   FvwmWindow *testw;
   int PageRight     =  Scr.MyDisplayWidth - pdeltax;
-#ifdef NEW_CLEVERPLACEMENT_CODE
-  int minx_inc = Scr.MyDisplayWidth/20;
-#endif
-#ifdef FINAL_CLEVERPLACEMENT_CODE
-  int minx_inc = Scr.MyDisplayWidth/20;
-#endif
+  int minx_inc = (int)(Scr.MyDisplayWidth/20);
   int stickyx, stickyy;
 
   /* Test window at far right of screen */
@@ -299,28 +278,20 @@ static int get_next_x(FvwmWindow *t, int x, int y, int pdeltax, int pdeltay)
         xnew = MIN(xnew, xtest);
     }
   }
-#ifdef NEW_CLEVERPLACEMENT_CODE
-  xnew = MIN(xnew,x+minx_inc);
-#endif
-#ifdef FINAL_CLEVERPLACEMENT_CODE
-  xnew = MIN(xnew,x+minx_inc);
-#endif
+  if (use_percent)
+    xnew = MIN(xnew,x+minx_inc);
+
   return xnew;
 }
 /*  RBW - 11/02/1998  */
-static int get_next_y(FvwmWindow *t, int y, int pdeltay)
+static int get_next_y(FvwmWindow *t, int y, int pdeltay, int use_percent)
 {
 /**/
   int ynew;
   int ytest;
   FvwmWindow *testw;
   int PageBottom    =  Scr.MyDisplayHeight - pdeltay;
-#ifdef NEW_CLEVERPLACEMENT_CODE
   int miny_inc = Scr.MyDisplayHeight/20;
-#endif
-#ifdef FINAL_CLEVERPLACEMENT_CODE
-  int miny_inc = Scr.MyDisplayHeight/20;
-#endif
   int stickyy;
 
   /* Test window at far bottom of screen */
@@ -365,18 +336,15 @@ static int get_next_y(FvwmWindow *t, int y, int pdeltay)
         ynew = MIN(ynew, ytest);
     }
   }
-#ifdef NEW_CLEVERPLACEMENT_CODE
-  ynew = MIN(ynew,y+miny_inc);
-#endif
-#ifdef FINAL_CLEVERPLACEMENT_CODE
-  ynew = MIN(ynew,y+miny_inc);
-#endif
+  if (use_percent)
+    ynew = MIN(ynew,y+miny_inc);
+
   return ynew;
 }
 
 /*  RBW - 11/02/1998  */
-static float test_fit(
-  FvwmWindow *t, int x11, int y11, float aoimin, int pdeltax, int pdeltay)
+static float test_fit( FvwmWindow *t, int x11, int y11, float aoimin, 
+		       int pdeltax, int pdeltay, int use_percent)
 {
 /**/
   FvwmWindow *testw;
@@ -385,9 +353,7 @@ static float test_fit(
   int xl, xr, yt, yb; /* xleft, xright, ytop, ybottom */
   float aoi = 0;      /* area of interference */
   float anew;
-#ifdef NEW_CLEVERPLACEMENT_CODE
-  float norm_factor = 1;
-#endif
+  float cover_factor = 1;
   int avoidance_factor;
   int PageBottom    =  Scr.MyDisplayHeight - pdeltay;
   int PageRight     =  Scr.MyDisplayWidth - pdeltax;
@@ -449,32 +415,28 @@ static float test_fit(
         avoidance_factor = PLACEMENT_AVOID_STICKY;
       else
         avoidance_factor = 1;
-#ifdef NEW_CLEVERPLACEMENT_CODE
-      /* normalisation */
-      if ((x22-x21)*(y22-y21) != 0 && (x12-x11)*(y12-y11) != 0)
+
+      if (use_percent)
       {
-	anew = MAX(anew/((x22-x21)*(y22-y21)),anew/((x12-x11)*(y12-y11)))*100;
-	if (anew >= 99)
-	  norm_factor = 12;
-	else if (anew >= 95)
-	  norm_factor = 6;
-	else if (anew >= 85)
-	  norm_factor = 4;
+	/* normalisation */
+	if ((x22-x21)*(y22-y21) != 0 && (x12-x11)*(y12-y11) != 0)
+	{
+	  anew = 
+	    MAX(anew/((x22-x21)*(y22-y21)),anew/((x12-x11)*(y12-y11)))*100;
+	  if (anew >= 99)
+	    cover_factor = PLACEMENT_AVOID_COVER_99;
+	  else if (anew >= 95)
+	    cover_factor = PLACEMENT_AVOID_COVER_95;
+	  else if (anew >= 85)
+	    cover_factor = PLACEMENT_AVOID_COVER_85;
+	  else if (anew >= 75)
+	    cover_factor = PLACEMENT_AVOID_COVER_75;
+	}
+	if (avoidance_factor>1)
+	  avoidance_factor = avoidance_factor + (cover_factor>1)? cover_factor:0;
+	else
+	  avoidance_factor = cover_factor;
       }
-      anew *= norm_factor;
-      if (avoidance_factor>1)
-	avoidance_factor = avoidance_factor*6;
-#endif
-#ifdef FINAL_CLEVERPLACEMENT_CODE
-      /* normalisation */
-      if ((x22-x21)*(y22-y21) != 0 && (x12-x11)*(y12-y11) != 0)
-      {
-	float b;
-	b = MAX(anew/((x22-x21)*(y22-y21)),anew/((x12-x11)*(y12-y11)))*100;
-	if (b >= 95)
-	   avoidance_factor += 6;
-      }
-#endif
       anew *= avoidance_factor;
       aoi += anew;
       if((aoi > aoimin)&&(aoimin != -1))
@@ -565,15 +527,16 @@ Bool PlaceWindow(
      */
     if (!PPosOverride &&
 	(DO_NOT_SHOW_ON_MAP(tmp_win) &&
-	 !(SPLACEMENT_MODE(sflags) & PLACE_RANDOM) &&
+	 (SPLACEMENT_MODE(sflags) == PLACE_MANUAL ||
+	  SPLACEMENT_MODE(sflags) == PLACE_TILEMANUAL) &&
          !SACTIVE_PLACEMENT_HONORS_STARTS_ON_PAGE(sflags)))
     {
       HonorStartsOnPage  =  False;
       fvwm_msg(WARN, "PlaceWindow",
 	       "illegal style combination used: StartsOnPage/StartsOnDesk"
-	       " and SkipMapping don't work with ActivePlacement."
-	       " Putting window on current page,"
-	       " please use RandomPlacement or"
+	       " and SkipMapping don't work with ManualPlacement and"
+	       " TileeManualPlacement. Putting window on current page,"
+	       " please use an other placement style or"
 	       " ActivePlacementHonorsStartsOnPage.");
     }
   } /* if (SUSE_START_ON_DESK(sflags)) */
@@ -720,130 +683,82 @@ Bool PlaceWindow(
 
   if (use_wm_placement)
   {
-    /* Get user's window placement, unless RandomPlacement is specified */
-    if ((SPLACEMENT_MODE(sflags) & PLACE_RANDOM) ||
-	!do_allow_active_placement)
+    /* first, try various "smart" placement */
+    if (SPLACEMENT_MODE(sflags) ==  PLACE_MINOVERLAP) 
     {
-      if (SPLACEMENT_MODE(sflags) & PLACE_SMART)
-      {
-        if (SPLACEMENT_MODE(sflags) & PLACE_CLEVER)
-        {
-          CleverPlacement(tmp_win, &xl, &yt, pdeltax, pdeltay);
-          is_smartly_placed = True;
-        }
-        else
-        {
-          is_smartly_placed =
-            SmartPlacement(
-                tmp_win, tmp_win->frame_g.width, tmp_win->frame_g.height,
-                &xl, &yt, pdeltax, pdeltay);
-        }
-      }
-      if (is_smartly_placed)
-      {
-        tmp_win->attr.x = xl;
-        tmp_win->attr.y = yt;
-      }
-      else
-      {
-        /* place window in a random location */
-        if ((Scr.randomx += tmp_win->title_g.height) >
-	    Scr.MyDisplayWidth / 2)
-	{
-          Scr.randomx = tmp_win->title_g.height;
-	}
-        if ((Scr.randomy += 2 * tmp_win->title_g.height) >
-	    Scr.MyDisplayHeight / 2)
-	{
-          Scr.randomy = 2 * tmp_win->title_g.height;
-	}
-        tmp_win->attr.x = Scr.randomx - pdeltax;
-        tmp_win->attr.y = Scr.randomy - pdeltay;
-	/* patches 11/93 to try to keep the window on the
-	 * screen */
-	tmp_win->frame_g.x = tmp_win->attr.x + tmp_win->old_bw + 10;
-	tmp_win->frame_g.y = tmp_win->attr.y + tmp_win->old_bw + 10;
-
-	if(tmp_win->attr.x + tmp_win->frame_g.width >= PageRight)
-	{
-	  tmp_win->attr.x = PageRight -tmp_win->attr.width
-	    - tmp_win->old_bw - 2*tmp_win->boundary_width;
-	  Scr.randomx = 0;
-	}
-	if(tmp_win->attr.y + tmp_win->frame_g.height >= PageBottom)
-	{
-	  tmp_win->attr.y = PageBottom -tmp_win->attr.height
-	    - tmp_win->old_bw - tmp_win->title_g.height -
-	    2*tmp_win->boundary_width;
-	  Scr.randomy = 0;
-	}
-      }
-    } /* random placement */
-    else
+      CleverPlacement(tmp_win, &xl, &yt, pdeltax, pdeltay, 0);
+      is_smartly_placed = True;
+    }
+    else if (SPLACEMENT_MODE(sflags) == PLACE_MINOVERLAPPERCENT)
     {
-      /*  Must be ActivePlacement  */
+      CleverPlacement(tmp_win, &xl, &yt, pdeltax, pdeltay, 1);
+      is_smartly_placed = True;
+    }
+    else if (SPLACEMENT_MODE(sflags) == PLACE_TILEMANUAL || 
+	     SPLACEMENT_MODE(sflags) == PLACE_TILECASCADE)
+    {
+      is_smartly_placed = SmartPlacement(tmp_win, tmp_win->frame_g.width,
+					 tmp_win->frame_g.height,
+					 &xl, &yt, pdeltax, pdeltay);
+    }
+ 
+    if (is_smartly_placed)
+    {
+      /* "smart" placement succed, we have done ... */
+      tmp_win->attr.x = xl;
+      tmp_win->attr.y = yt;
+    }
+    else if (do_allow_active_placement && 
+	     (SPLACEMENT_MODE(sflags) == PLACE_MANUAL || 
+	      SPLACEMENT_MODE(sflags) == PLACE_TILEMANUAL))
+    {
+      /*  either "smart" placement fail and the second choice is a manual
+	  placement (TileManual) or we have a manual placement in any case
+	  (Manual)
+      */
       xl = -1;
       yt = -1;
 
-      if (SPLACEMENT_MODE(sflags) & PLACE_SMART)
+      if (GrabEm(CRS_POSITION, GRAB_NORMAL))
       {
-        if (SPLACEMENT_MODE(sflags) & PLACE_CLEVER)
+	/* Grabbed the pointer - continue */
+	MyXGrabServer(dpy);
+	if (XGetGeometry(dpy, tmp_win->w, &JunkRoot, &JunkX, &JunkY,
+			 (unsigned int *)&DragWidth,
+			 (unsigned int *)&DragHeight,
+			 &JunkBW,  &JunkDepth) == 0)
         {
-          CleverPlacement(tmp_win, &xl, &yt, pdeltax, pdeltay);
-          is_smartly_placed = True;
-        }
-        else
-        {
-          is_smartly_placed =
-            SmartPlacement(
-                tmp_win, tmp_win->frame_g.width, tmp_win->frame_g.height,
-                &xl, &yt, pdeltax, pdeltay);
-        }
+	  free((char *)tmp_win);
+	  MyXUngrabServer(dpy);
+	  return False;
+	}
+	DragWidth = tmp_win->frame_g.width;
+	DragHeight = tmp_win->frame_g.height;
+	
+	XMapRaised(dpy,Scr.SizeWindow);
+	if (moveLoop(tmp_win, 0, 0, DragWidth, DragHeight, &xl, &yt, False))
+	{
+	  /* resize too */
+	  rc = True;
+	}
+	else
+	{
+	  /* ok */
+	  rc = False;
+	}
+	XUnmapWindow(dpy,Scr.SizeWindow);
+	MyXUngrabServer(dpy);
+	UngrabEm(GRAB_NORMAL);
       }
-      if (!is_smartly_placed)
+      else
       {
-        if (GrabEm(CRS_POSITION, GRAB_NORMAL))
-        {
-          /* Grabbed the pointer - continue */
-          MyXGrabServer(dpy);
-          if (XGetGeometry(dpy, tmp_win->w, &JunkRoot, &JunkX, &JunkY,
-			   (unsigned int *)&DragWidth,
-			   (unsigned int *)&DragHeight,
-			   &JunkBW,  &JunkDepth) == 0)
-          {
-            free((char *)tmp_win);
-            MyXUngrabServer(dpy);
-            return False;
-          }
-          DragWidth = tmp_win->frame_g.width;
-          DragHeight = tmp_win->frame_g.height;
-
-          XMapRaised(dpy,Scr.SizeWindow);
-	  if (moveLoop(
-	    tmp_win, 0, 0, DragWidth, DragHeight, &xl, &yt, False))
-	  {
-	    /* resize too */
-	    rc = True;
-	  }
-	  else
-	  {
-	    /* ok */
-	    rc = False;
-	  }
-          XUnmapWindow(dpy,Scr.SizeWindow);
-          MyXUngrabServer(dpy);
-          UngrabEm(GRAB_NORMAL);
-        }
-        else
-        {
-          /* couldn't grab the pointer - better do something */
-          XBell(dpy, 0);
-          xl = 0;
-          yt = 0;
-        }
+	/* couldn't grab the pointer - better do something */
+	XBell(dpy, 0);
+	xl = 0;
+	yt = 0;
       }
       /* RBW - 01/24/1999  */
-      if (HonorStartsOnPage && !is_smartly_placed)
+      if (HonorStartsOnPage)
       {
         xl -= pdeltax;
         yt -= pdeltay;
@@ -851,8 +766,47 @@ Bool PlaceWindow(
       /**/
       tmp_win->attr.y = yt;
       tmp_win->attr.x = xl;
-    } /* active placement */
-  }
+    } /* Manual */
+    else
+    {
+      /*  either "smart" placement fail and the second choice is "random"
+	  placement (TileCascade) or we have a "random" placement in any case 
+	  (Cascade) or we have a crazy SPLACEMENT_MODE(sflags) value set with 
+	  the old Style Dumb/Smart, Random/Active, Smart/SmartOff (i.e.:
+	  Dumb+Random+Smart or Dumb+Active+Smart)
+      */
+      if ((Scr.randomx += tmp_win->title_g.height) >
+	  Scr.MyDisplayWidth / 2)
+      {
+	Scr.randomx = tmp_win->title_g.height;
+      }
+      if ((Scr.randomy += 2 * tmp_win->title_g.height) >
+	  Scr.MyDisplayHeight / 2)
+      {
+	Scr.randomy = 2 * tmp_win->title_g.height;
+      }
+      tmp_win->attr.x = Scr.randomx - pdeltax;
+      tmp_win->attr.y = Scr.randomy - pdeltay;
+      /* patches 11/93 to try to keep the window on the
+       * screen */
+      tmp_win->frame_g.x = tmp_win->attr.x + tmp_win->old_bw + 10;
+      tmp_win->frame_g.y = tmp_win->attr.y + tmp_win->old_bw + 10;
+      
+      if(tmp_win->attr.x + tmp_win->frame_g.width >= PageRight)
+      {
+	tmp_win->attr.x = PageRight -tmp_win->attr.width
+	  - tmp_win->old_bw - 2*tmp_win->boundary_width;
+	Scr.randomx = 0;
+      }
+      if(tmp_win->attr.y + tmp_win->frame_g.height >= PageBottom)
+      {
+	tmp_win->attr.y = PageBottom -tmp_win->attr.height
+	  - tmp_win->old_bw - tmp_win->title_g.height -
+	  2*tmp_win->boundary_width;
+	Scr.randomy = 0;
+      }
+    } /* random placement */
+  } /* use_wm_placement */
   else
   {
     /* the USPosition was specified, or the window is a transient,

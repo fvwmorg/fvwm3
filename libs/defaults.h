@@ -109,12 +109,28 @@
 #define WINDOW_FREAKED_OUT_HEIGHT      65500 /* pixels */
 
 
-/*** window placement (CleverPlacement) ***/
+/*** window placement (MinOverlap(Percent)Placement) ***/
+
+/* The following factors represent the amount of area that these types of
+ * windows are counted as.  For example, by default the area of ONTOP windows
+ * is counted 5 times as much as normal windows.  So CleverPlacement will
+ * cover 5 times as much area of another window before it will cover an ONTOP
+ * window.  To treat ONTOP windows the same as other windows, set this to 1.
+ * To really, really avoid putting windows under ONTOP windows, set this to a
+ * high value, say 1000.  A value of 5 will try to avoid ONTOP windows if
+ * practical, but if it saves a reasonable amount of area elsewhere, it will
+ * place one there.  The same rules apply for the other "AVOID" factors. */
+/* With the advent of layers, the meaning of ONTOP in the following
+   explanation has changed to mean any window in a higher layer. */
 #define PLACEMENT_AVOID_STICKY		   1
 #define PLACEMENT_AVOID_ONTOP		   5
-#define PLACEMENT_AVOID_ICON 10	  /*  Try hard no to place windows over icons */
-/*#define PLACEMENT_AVOID_ICON 0*//*  Ignore Icons.  Place windows over them  */
-
+#define PLACEMENT_AVOID_ICON               10
+/* used in MinOverlapPercentPlacement to forbid complete covering (99%, 95%
+   85% and 75%) of windows */
+#define PLACEMENT_AVOID_COVER_99           12
+#define PLACEMENT_AVOID_COVER_95           6
+#define PLACEMENT_AVOID_COVER_85           4
+#define PLACEMENT_AVOID_COVER_75           1
 
 /*** general keyboard shortcuts used in move, resize, ... ***/
 #define DEFAULT_KDB_SHORTCUT_MOVE_DISTANCE 5 /* pixels */

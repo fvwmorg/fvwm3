@@ -1,3 +1,19 @@
+2001-01-13  olicha  <olivier.chapuis@free.fr>
+
+	* fvwm/placement.c (*):
+	* fvwm/fvwm.h:
+	* fvwm/styles.c (ProcessNewStyle):
+	* fvwm/fvwm2.1:
+	* fvwm/ConfigFvwmDefaults:
+	* libs/default.h: 
+	* tests/purify/purify.fvwm2rc
+	Replace Dump/SmartPlacement, Active/RandomPlacement, 
+	SmartPlacement(Off) style by ManualPlacement / CascadePlacement / 
+	MinOverlapPlacement / MinOverlapPercentPlacement / TileManualPlacement
+	/TileCascadePlacement (The old style are still supported)
+	We have two "clever" placement algorithm: MinOverlapPlacement /
+	MinOverlapPercentPlacement
+
 2001-01-12  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* fvwm/events.c (HandleFocusIn):
