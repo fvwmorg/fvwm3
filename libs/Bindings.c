@@ -437,8 +437,19 @@ Bool __compare_binding(
 	return True;
 }
 
-/* Check if something is bound to a key or button press and return the action
- * to be executed or NULL if not. */
+// actionIsPassThru() - returns true if the action indicates that the
+// binding should be ignored by FVWM & passed through to the underlying
+// window.
+// Note: it is only meaningful to check for pass-thru actions on
+// window-specific bindings.
+Bool actionIsPassThru (const char *action)
+{
+	// action should never be NULL.
+	return (strncmp(action, "--", 2) == 0);
+}
+
+// Check if something is bound to a key or button press and return the action
+// to be executed or NULL if not.
 void *CheckBinding(
 	Binding *blist, STROKE_ARG(char *stroke)
 	int button_keycode, unsigned int modifier,unsigned int dead_modifiers,
@@ -464,7 +475,11 @@ void *CheckBinding(
 			{
 				action = b->Action;
 				if (b->windowName)
+				{
+					if (actionIsPassThru(action))
+						action = NULL;
 					break;
+				}
 			}
 		}
 	}
@@ -495,7 +510,11 @@ void *CheckTwoBindings(
 				*ret_is_second_binding = False;
 				action = b->Action;
 				if (b->windowName)
+				{
+					if (actionIsPassThru(action))
+						action = NULL;
 					break;
+				}
 			}
 		}
 		if (__compare_binding(
@@ -507,7 +526,11 @@ void *CheckTwoBindings(
 				*ret_is_second_binding = True;
 				action = b->Action;
 				if (b->windowName)
+				{
+					if (actionIsPassThru(action))
+						action = NULL;
 					break;
+				}
 			}
 		}
 	}

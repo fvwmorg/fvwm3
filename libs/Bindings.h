@@ -93,6 +93,7 @@ void GrabWindowKeyOrButton(
 KeySym FvwmStringToKeysym(Display *dpy, char *key);
 Bool bindingAppliesToWindow(Binding *binding, const XClassHint *winClass,
 	const char *winName);
+Bool actionIsPassThru (const char *action);
 
 
 #endif /* FVWMLIB_BINDINGS_H_H */

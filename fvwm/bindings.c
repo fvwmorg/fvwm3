@@ -244,7 +244,7 @@ static int ParseBinding(
 	KeySym keysym = NoSymbol;
 	int context;
 	int modifier;
-	Bool is_unbind_request = False;
+	Bool is_unbind_request = False, is_pass_thru = False;
 	int rc;
 	Bool is_binding_removed = False;
 	Binding *b;
@@ -449,8 +449,28 @@ static int ParseBinding(
 	{
 		action++;
 	}
+
+	if (action)
+	{
+		is_pass_thru = actionIsPassThru(action);
+		if (is_pass_thru)
+		{
+		    // pass-through actions indicate that the event be
+		    // allowed to pass through to the underlying window.
+		    if (windowName == NULL)
+		    {
+			    // It doesn't make sense to have a pass-through
+			    // action on global bindings.
+			    if (!is_silent)
+				    fvwm_msg(ERR, "ParseBinding",
+					    "Illegal action for global "
+					    "binding: %s", tline);
+			    return 0;
+		    }
+		}
+	}
 	/* see if it is an unbind request */
-	if (!action || action[0] == '-')
+	if (!action || (action[0] == '-' && !is_pass_thru))
 	{
 		is_unbind_request = True;
 	}

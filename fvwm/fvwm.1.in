@@ -5899,10 +5899,15 @@ the class, resource or name of the window you want the binding to apply to.
 The following example shows how the same key-binding can be used to
 perform different functions depending on the window that is focussed:
 .EX
-Key (rxvt) V A C Echo ctrl-V-in-RXVT
+Key (rxvt)  V A C Echo ctrl-V-in-RXVT
 Key (*term) V A C Echo ctrl-V-in-Term
-Key V A C Echo ctrl-V-elsewhere
+Key (*vim)  V A C --
+Key         V A C Echo ctrl-V-elsewhere
 .EE
+
+Note that a '--' action indicates that the event should not be intercepted by
+Fvwm and passed through to the underlying window instead. This is only a valid
+action for window-specific bindings.
 
 This example shows how to display the WindowList when Button 3 is
 pressed on an rxvt window:
