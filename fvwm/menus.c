@@ -4805,20 +4805,13 @@ void AddToMenu(MenuRoot *mr, char *item, char *action, Bool fPixmapsOk,
 	/* pete@tecc.co.uk */
 	scanForHotkeys(tmp, i);
 
-	if (!MI_HAS_HOTKEY(tmp))
-	{
-	  int j;
-	  for ( j = 0; j < MAX_ITEM_LABELS; j++ )
-	  {
-	    if (MI_LABEL(tmp)[j])
-	    {
-	      MI_HOTKEY_COFFSET(tmp) = 0;
-	      MI_HOTKEY_COLUMN(tmp) = j;
-	      MI_HAS_HOTKEY(tmp) = 1;
-	      MI_IS_HOTKEY_AUTOMATIC(tmp) = 1;
-	    }
-	  }
-	}
+        if (*MI_LABEL(tmp)[i] != 0)
+        {
+          MI_HOTKEY_COFFSET(tmp) = 0;
+          MI_HOTKEY_COLUMN(tmp) = i;
+          MI_HAS_HOTKEY(tmp) = 1;
+          MI_IS_HOTKEY_AUTOMATIC(tmp) = 1;
+        }
       }
       if (*(MI_LABEL(tmp)[i]))
       {

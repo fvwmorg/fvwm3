@@ -636,7 +636,6 @@ static cfunc_action_type CheckActionType(
   XEvent old_event;
   extern Time lastTimestamp;
 
-fprintf(stderr,"cat entered...\n");
   xcurrent = x;
   ycurrent = y;
   t0 = lastTimestamp;

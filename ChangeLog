@@ -1,3 +1,9 @@
+2000-02-03  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* fvwm/menus.c (AddToMenu):
+	fixed core dump in labels containing only a pixmap
+	removed some pretty stupid redundant cut-n-paste code
+
 2000-02-03  Darren Stuart Embry  <dsembr01@slug.louisville.edu>
 
 	* fvwm/menus.c (paint_item):
