@@ -23,6 +23,9 @@
 
 2003-07-08  Dominik Vogt  <dominik.vogt@gmx.de>
 
+	* fvwm/fvwm.1.in:
+	documented tear off menus
+
 	* fvwm/placement.c (PlaceWindow):
 	StartsOnPage + SkipMapping overrides PPosition
 

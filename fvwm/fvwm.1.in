@@ -1337,7 +1337,7 @@ are a space separated list of fvwm directions:
 
 .IR E ", "  East ", "      Right ", "       r ", "  Right ", "     r ", " "]"
 
-.IR S ", "  South ", "     Bottom ", "      b ", "  Down ", "      d ", " _
+.IR S ", "  South ", "     Bottom ", "      b ", "  Down ", "      d ", " "_"
 
 .IR W ", "  West ", "      Left ", "        l ", "  Left ", "      l ", " "["
 
@@ -1351,7 +1351,7 @@ are a space separated list of fvwm directions:
 
 .IR C ", " Center ", "     Centre ", " .
 
-a shadow is displayed in each given direction.
+A shadow is displayed in each given direction.
 .I All
 is equivalent to all the directions.  The default
 .I direction
@@ -1970,7 +1970,249 @@ usefulness to the newcomer.
 .EE
 
 .SS MENUS
-.\"Menus come in three flavours
+
+Before a menu can be opened, it has to be populated with menu
+items using the
+.B AddToMenu
+command and bound to a key or mouse button with the
+.BR Key ", " PointerKey " or " Mouse
+command.  This is usually done in the configuration file.
+
+Fvwm menus are extremely configurable in look and feel.  Even the
+slightest nuances can be changed to the user's liking, including
+the menu item fonts, the background, delays before popping up sub
+menus, generating menus dynamically and many other features.
+Please refer to the
+.B MenuStyle
+command to learn more.
+
+.TP
+.B Types of Menus
+
+In fvwm there are four slightly different types of menus:
+
+.I Popup menus
+can appear everywhere on the screen on their own or attached to a
+part of a window.  The
+.B Popup
+command opens popup menus.  Releasing a mouse button over a popup
+menu activates the item below the pointer and executes the
+associated action.
+
+.B Menu
+is a very similar command, but the menus it opens are slightly less
+transient.  A separate click is required to activate a menu item -
+releasing a mouse button does not activate it.
+
+.IR "Tear off" " or " "Pin up menus"
+are menus from either of the above two commands that have been
+"torn off" their context and pinned on the desktop like a normal
+window.  They are created from other menus by certain key presses
+or mouse sequences or with the
+.B TearMenuOff
+command from inside a menu.
+
+.I Sub menus
+are menus inside menus.  When a menu item that has the
+.B Popup
+command as its action is selected, the named menu is opened as an
+inferior menu to the parent.  Any type of menu can have sub menus.
+
+.TP
+.B Menu Anatomy
+
+Menus consist of any number of titles which are inactive menu
+items that usually appear at the top of the menu, normal items
+triggering various actions when selected, separator lines between
+the items, tear off bars (a horizontal broken line) that tear off
+the menu when selected, and sub menu items indicated with a
+triangle pointing left or right, depending on the direction in
+which the sub menu appears.  All the above menu items are
+optional.
+
+Additionally, if the menu is too long to fit on the screen, the
+excess menu items are put in a continuation menu and a sub menu
+with the string "More..." is placed at the bottom of the menu.
+Finally, there may be a picture running up either side of the menu
+(a "side bar").
+
+.TP
+.B Menu Navigation
+
+Menus can be navigated either with the keyboard or with the
+mouse.  Many people prefer to use the mouse, but it can be rather
+tedious.  Once you get the hang of it, keyboard navigation can be
+much faster.  While fvwm displays a menu, it can do nothing else.
+For example, new windows do not appear before the menu is closed.
+However, this is not exactly true for tear off menus.  See the
+.B Tear Off Menus
+section for details.
+
+.TP
+.B Mouse Navigation
+
+Moving the pointer over a menu selects the item below it.
+Normally this is indicated by a 3d border around the item, but not
+all parts of a menu can be selcted.  Pressing any mouse button
+while a menu is open activates the item below it.  Items of a
+popup menu are also activated by releasing a held mouse button.
+In case of an item that hides a sub menu, the sub menu is
+displayed if the pointer hovers over the item long enough or moves
+close to the triangle indicating the sub menu.  This behaviour can
+be tuned with menu styles.
+
+Clicking on a selected item activates it - what happens exactly
+depends on the type of the item.
+
+Clicking on a title, a separator, the side bar, or outside the
+menu closes the menu (exception:  tear off menus can not be closed
+this way).  Pressing mouse button 2 over a menu title or
+activating a tear off bar creates a tear off menu from the current
+menu.  Clicking on a normal menu item invokes the command that is
+bound to it, and clicking on a sub menu item either closes all
+open menus and replaces them with the sub menu or posts the menu
+(default).
+
+Posting menus is meant to ease mouse navigation.  Once a sub menu
+is posted, only items from that sub menu can be selected.  This
+can be very useful to navigate the menu if the pointer tends to
+stray off the menu.  Clicking anywhere or pressing any key unposts
+the menu and reverts back to normal operation.
+
+.TP
+.B Keyboard Navigation
+
+Just like with mouse navigation, the item below the pointer is
+selected.  This is achieved by warping the pointer to the menu
+items when necessary.  While a menu is open, all key presses are
+intercepted by the menu.  No other application can get keyboard
+input (although this is not the case for tear off menus).
+
+Items can be selected directly by pressing a hotkey that can be
+configured individually for each menu item.  The hotkey is
+indicated by underlining it in the menu item label.  With the
+.I AutomaticHotkeys
+menu style fvwm automatically assigns hotkeys to all menu items.
+
+The most basic keys to navigate through menus are the cursor keys
+(move up or down one item, enter or leave a sub menu),
+.SM Space
+(activate item) and
+.SM Escape
+(close menu).  Numerous other keys can be used to navigate through
+menus:
+
+.SM \fIEnter\fP,
+.SM \fIReturn\fP,
+.SM \fISpace\fP
+activate the current item.
+
+.SM \fIEscape\fP,
+.SM \fIDelete\fP,
+.SM \fICtrl-G\fP
+exit the current sequence of menus or destroy a tear off menu.
+
+.SM \fITab\fP,
+.SM \fIMeta-Tab\fP,
+.SM \fICursor-Down\fP,
+.SM \fICtrl-F\fP,
+.SM \fICtrl-N\fP,
+.SM \fICtrl-J\fP
+move to the next item.
+
+.SM \fIShift-Tab\fP,
+.SM \fIShift-Meta-Tab\fP,
+.SM \fICursor-Up\fP,
+.SM \fICtrl-B\fP,
+.SM \fICtrl-P\fP,
+.SM \fICtrl-K\fP
+move to the prior item.
+
+.SM \fICursor-Left\fP,
+.SM \fICtrl-B\fP
+return to the prior menu.
+
+.SM \fICursor-Right\fP,
+.SM \fICtrl-F\fP
+enter a sub menu.
+
+.SM \fICtrl-Cursor-Up\fP,
+.SM \fIShift-Ctrl-Meta-Tab\fP,
+.SM \fIPage-Up\fP
+move up five items.
+
+.SM \fICtrl-Cursor-Down\fP,
+.SM \fICtrl-Meta-Tab\,P,
+.SM \fIPage-Down\fP
+move down five items.
+
+.SM \fIHome\fP,
+.SM \fIShift-Cursor-Up\fP,
+.SM \fICtrl-A\fP
+move to the first item.
+
+.SM \fIEnd\fP,
+.SM \fIShift-Cursor-Down\fP,
+.SM \fICtrl-E\fP
+move to the last item.
+
+.SM \fIMeta-Cursor-Up\fP,
+.SM \fICtrl-Cursor-Left\fP,
+.SM \fIShift-Ctrl-Tab\fP
+move up just below the next separator.
+
+.SM \fIMeta-Cursor-Down\fP,
+.SM \fICtrl-Cursor-Right\fP,
+.SM \fICtrl-Tab\fP
+move down just below the next separator.
+
+.SM \fIInsert\fP
+opens the "More..." sub menu if any.
+
+.SM \fIBackspace\fP
+tears off the menu.
+
+.TP
+.B Tear Off Menus
+
+A tear off menu is any menu that has been "torn off" the window it
+was attached to and pinned to the root window.  There are three
+ways to tear off a menu:  click on the menu title with mouse
+button 2, press
+.SM Backspace
+in the menu or activate its tear off bar (a horizontal bar with a
+broken line).  Tear off bars must be added to the menu as any
+other item by assigning them the command
+.BR TearMenuOff .
+The window containing the menu is placed as any other window would
+be.  If you find it confusing to have your tear off menus appear
+at random positions on the screen, put this line in your
+configuration file:
+.EX
+Style fvwm_menu UsePPosition
+.EE
+
+A tear off menu is a cross breeding between a window and a menu.
+The menu is swallowed by a window and its title is stripped off
+and displayed in the window title.  The main advantage is that the
+menu becomes permanent - activating an item does not close the
+menu.  Therefore, it can be used multiple times without reopening
+it.  To destroy such a menu, close its window or press the
+.SM Escape
+key.
+
+Tear off menus behave somewhat differently than normal menus and
+windows.  They do not take the keyboard focus, but while the
+pointer is over one of them, all key presses are sent to the
+menu.  Other fvwm key bindings are disabled as long as the pointer
+is inside the tear off menu or one of its sub menus.  When the
+pointer leaves this area, all sub menus are closed immediately.
+Note that the window containing a tear off menu is never hilighted
+as if it had the focus.
+
+A tear off menu is an independent copy of the menu it originated
+from.  As such, it is not affected by adding items to that menu or
+changing its menu style.
 
 .TP
 .BI "AddToMenu " menu-name " [" menu-label " " action "]"
@@ -2069,7 +2311,7 @@ AddToFunc MakeJpgMenu
 The keyword
 .I MissingSubmenuFunction
 has a similar meaning.  It is executed whenever you try to pop up
-a sub-menu that does not exist.  With this function you can define
+a sub menu that does not exist.  With this function you can define
 and destroy menus on the fly.  You can use any command after the
 keyword, but the name of an item (that is a submenu) defined with
 .B AddToFunc
@@ -2100,7 +2342,7 @@ AddToMenu SomeMenu
 + "Root directory" Popup /
 .EE
 This is another implementation of the file browser that uses
-sub-menus for subdirectories.
+sub menus for subdirectories.
 
 Titles can be used within the menu. If you add the option
 .I top
@@ -2239,12 +2481,12 @@ DestroyMenuStyle pixamp1
 .EE
 
 .TP
-.B "Menu \fImenu-name\fP \
+".B "Menu \fImenu-name\fP \
 [\fIposition\fP\
 ] [\fIdouble-click-action\fP\
 ]"
 Causes a previously defined menu to be popped up in a sticky
-manner. That is, if the user invokes the menu with a click action
+manner.  That is, if the user invokes the menu with a click action
 instead of a drag action, the menu stays up.  The command
 .I double-click-action
 is invoked if the user double-clicks a button (or hits the key
@@ -2256,77 +2498,8 @@ double click action is not given, double clicking invokes the
 first item of the menu (but only if the pointer really was over
 the item).
 
-Several other commands affect menu operation.  See
-.BR MenuStyle " and " SetAnimation .
-When in a menu, keyboard shortcuts work as expected.  Cursor
-keystrokes are also allowed. Specifically,
-.SM Tab,
-.SM Meta-Tab,
-.SM Cursor-Down,
-.SM Ctrl-F,
-.SM Ctrl-N,
-or
-.SM Ctrl-J
-move to the next item;
-.SM Shift-Tab,
-.SM Shift-Meta-Tab,
-.SM Cursor-Up,
-.SM Ctrl-B,
-.SM Ctrl-P,
-or
-.SM Ctrl-K
-move to the prior item;
-.SM Cursor-Left
-or
-.SM Ctrl-B
-returns to the prior menu;
-.SM Cursor-Right
-or
-.SM Ctrl-F
-pop up the next menu;
-.SM Ctrl-Cursor-Up,
-.SM Shift-Ctrl-Meta-Tab
-and
-.SM Page-Up
-move up five items;
-.SM Ctrl-Cursor-Down,
-.SM Ctrl-Meta-Tab
-and
-.SM Page-Down
-move down five items, respectively;
-.SM Home,
-.SM Shift-Cursor-Up,
-.SM Ctrl-A
-or
-.SM End,
-.SM Shift-Cursor-Down,
-.SM Ctrl-E
-move to the first or last item, respectively;
-.SM Meta-Cursor-Up,
-.SM Ctrl-Cursor-Left
-or
-.SM Meta-Cursor-Down
-.SM Ctrl-Cursor-Right
-move just behind the next or previous separator;
-.SM Shift-Ctrl-Tab
-or
-.SM Ctrl-Tab
-work exactly the same;
-.SM Enter,
-.SM Return,
-or
-.SM Space
-executes the current item;
-.SM Insert
-opens the "More..." sub-menu if any;
-.SM Escape,
-.SM Delete
-or
-.SM Ctrl-G
-exit the current sequence of menus.
-
 The pointer is warped to where it was when the menu was invoked if
-it was both invoked and terminated with a keystroke.
+it was both invoked and closed with a keystroke.
 
 The
 .I position
@@ -2468,10 +2641,10 @@ AddToMenu foobar-menu
  + "first item" Popup "another menu" item \\
                 +0 -100m
 .EE
-Note that you can put a sub-menu far off the current menu so you
+Note that you can put a sub menu far off the current menu so you
 could not reach it with the mouse without leaving the menu.  If
 the pointer leaves the current menu in the general direction of
-the sub-menu the menu stays up.
+the sub menu the menu stays up.
 
 The
 .IR special-options :
@@ -2491,17 +2664,17 @@ you want it where the position arguments say, use the
 .I SelectInPlace
 option.  If you want the pointer on the title of the menu, use
 .I SelectWarp
-too. Note that these options apply only if the
+too.  Note that these options apply only if the
 .IB "PopupAsRootMenu " MenuStyle
 option is used.
 
-The pointer is warped to the title of a sub-menu whenever the
-pointer would be on an item when the sub-menu is popped up
+The pointer is warped to the title of a sub menu whenever the
+pointer would be on an item when the sub menu is popped up
 .RI ( fvwm
 menu style) or never warped to the title at all
 .RI ( Mwm " or " Win
-menu styles). You can force (forbid) warping whenever the sub-menu
-is opened with the
+menu styles).  You can force (forbid) warping whenever the
+sub menu is opened with the
 .IR WarpTitle " (" NoWarp ") option."
 
 Note that the
@@ -2577,12 +2750,12 @@ menu style or to reset the style to defined behavior.  The same
 effect can be created by setting all the other options one by one.
 
 .IR Mwm " and " Win
-style menus popup sub-menus automatically.
+style menus popup sub menus automatically.
 .I Win
 menus indicate the current menu item by changing the background to
 dark.
 .I Fvwm
-sub-menus overlap the parent menu,
+sub menus overlap the parent menu,
 .IR Mwm " and " Win
 style menus never overlap the parent menu.
 
@@ -2711,9 +2884,9 @@ The above three commands are equivalent to a thickness of 2, 1 and
 0.
 
 .IR Animation " and " AnimationOff
-turn menu animation on or off.  When animation is on, sub-menus
+turn menu animation on or off.  When animation is on, sub menus
 that don't fit on the screen cause the parent menu to be shifted
-to the left so the sub-menu can be seen.
+to the left so the sub menu can be seen.
 
 .I Font
 takes a font name as an argument.  If a font by this name exists
@@ -2756,8 +2929,8 @@ color off:
 MenuStyle <style> Hilight3DOff, HilightBackOff
 MenuStyle <style> ActiveFore <preferred color>
 .EE
-Make sure sub-menus do not overlap the parent menu. This can
-prevent menus being redrawn every time a sub-menu pops up or down.
+Make sure sub menus do not overlap the parent menu. This can
+prevent menus being redrawn every time a sub menu pops up or down.
 .EX
 MenuStyle <style> PopupOffset 1 100
 .EE
@@ -2772,15 +2945,15 @@ xinit to start X).
 
 .I PopupDelay
 requires one numeric argument.  This value is the delay in
-milliseconds before a sub-menu is popped up when the pointer moves
-over a menu item that has a sub-menu.  If the value is zero no
+milliseconds before a sub menu is popped up when the pointer moves
+over a menu item that has a sub menu.  If the value is zero no
 automatic pop up is done.  If the argument is omitted the built-in
 default is used. Note that the popup delay has no effect if the
 .I PopupImmediately
-option is used since sub-menus pop up immediately then.
+option is used since sub menus pop up immediately then.
 
 .I PopupImmediately
-makes menu items with sub-menus pop up it up as soon as the
+makes menu items with sub menus pop up it up as soon as the
 pointer enters the item.  The
 .I PopupDelay option
 is ignored then.  If
@@ -2797,14 +2970,14 @@ but determines the timeout of the
 style.
 
 .I PopdownImmediately
-makes sub-menus vanish as soon as the pointer leaves the sub-menu
+makes sub menus vanish as soon as the pointer leaves the sub menu
 and the correspondent item in the parent menu.  With the opposite
 option
 .I PopdownDelayed
-the sub-menu only pops down after the time specified with the
+the sub menu only pops down after the time specified with the
 .I PopdownDelay
 option.  This comes handy when the pointer often strays off the
-menu item when trying to move into the sub-menu.  Whenever there
+menu item when trying to move into the sub menu.  Whenever there
 is a conflict between the
 .IR PopupImmediately ", " PopupDelayed ", " PopupDelay
 styles and the
@@ -2817,9 +2990,9 @@ styles win when navigating with the keyboard.
 
 .I PopupOffset
 requires two integer arguments.  Both values affect where
-sub-menus are placed relative to the parent menu.  If both values
-are zero, the left edge of the sub-menu overlaps the left edge of
-the parent menu.  If the first value is non-zero the sub-menu is
+sub menus are placed relative to the parent menu.  If both values
+are zero, the left edge of the sub menu overlaps the left edge of
+the parent menu.  If the first value is non-zero the sub menu is
 shifted that many pixels to the right (or left if negative).  If
 the second value is non-zero the menu is moved by that many
 percent of the parent menu's width to the right or left.
@@ -2835,7 +3008,7 @@ altogether.  The default value is restored if no or an illegal
 value is given.
 
 .IR TitleWarp " and " TitleWarpOff
-affect if the pointer warps to the menu title when a sub-menu is
+affect if the pointer warps to the menu title when a sub menu is
 opened or not. Note that regardless of this setting the pointer is
 not warped if the menu does not pop up under the pointer.
 
@@ -2848,7 +3021,7 @@ left edge all the way to the right edge.  Short separators leave a
 few pixels to the edges of the menu.
 
 .IR TrianglesSolid " and " TrianglesRelief
-affect how the small triangles for sub-menus is drawn.  Solid
+affect how the small triangles for sub menus is drawn.  Solid
 triangles are filled with a color while relief triangles are
 hollow.
 
@@ -2878,14 +3051,14 @@ If the color name is omitted the side color option is switched off.
 
 .IR PopupAsRootMenu " and " PopupAsSubmenu
 change the behavior when you click on a menu item that opens a
-sub-menu. With
+sub menu. With
 .I PopupAsRootMenu
-the original menu is closed before the sub-menu appears, with
+the original menu is closed before the sub menu appears, with
 .I PopupAsSubmenu
 it is not, so you can navigate back into the
 parent menu.  Furthermore, with
 .I PopupAsSubmenu
-the sub-menu is held open (posted) regardless of where you move
+the sub menu is held open (posted) regardless of where you move
 the mouse.  Depending on your menu style this may simplify
 navigating through the menu.  Any keystroke while a menu is posted
 reverts the menu back to the normal behavior.
@@ -2893,10 +3066,10 @@ reverts the menu back to the normal behavior.
 is the default.
 
 .I RemoveSubmenus
-instructs fvwm to remove sub-menus when you move back into the
+instructs fvwm to remove sub menus when you move back into the
 parent menu.  With
 .I HoldSubmenus
-the sub-menu remains visible.  You probably want to use
+the sub menu remains visible.  You probably want to use
 .I HoldSubmenus
 if you are using the
 .I PopupDelayed
@@ -2947,7 +3120,7 @@ Inserts the mini icon.
 .in -.3i
 .BR %> " and " %<
 .in +.3i
-Insert the sub-menu triangle pointing either to the right
+Insert the sub menu triangle pointing either to the right
 .RB ( %> )
 or to the left
 .RB ( %< )
@@ -3048,7 +3221,7 @@ Is the default string used by fvwm: (side picture + 4 pixels gap)
 (beginning of the hilighted area + 1 pixel gap) (mini icon + 5p)
 (first column left aligned + 5p) (second column left aligned + 5p)
 (third column right aligned + 5p) (second mini icon + 5p) (2p +
-sub-menu triangle + 3p) (1p + end of hilighted area).
+sub menu triangle + 3p) (1p + end of hilighted area).
 .EX
 MenuStyle * ItemFormat \\
   "%.1|%3.2<%5i%5l%5l%5r%5i%1|%4s"
@@ -3069,8 +3242,8 @@ the given arguments are invalid, the built-in defaults are used:
 one pixel above the item or title and two below.
 
 .I SubmenusLeft
-mirrors the menu layout and behavior.  Sub-menus pop up to the
-left, the sub-menu triangle is drawn left and the mini icon and
+mirrors the menu layout and behavior.  Sub menus pop up to the
+left, the sub menu triangle is drawn left and the mini icon and
 side picture are drawn at the right side of the menu.  The default
 is
 .IR SubmenusRight .
@@ -3126,19 +3299,19 @@ specified.  The style option is either
 which changes the appearance and operation of the menus.
 
 .IR Mwm " and " Win
-style menus popup sub-menus automatically.
+style menus popup sub menus automatically.
 .I win
 menus indicate the current menu item by changing the background to
 black.
 .I fvwm
-sub-menus overlap the parent menu,
+sub menus overlap the parent menu,
 .IR Mwm " and " win
 style menus never overlap the parent menu.
 
 When the
 .I anim
-option is given, sub-menus that don't fit on the screen cause the
-parent menu to be shifted to the left so the sub-menu can be
+option is given, sub menus that don't fit on the screen cause the
+parent menu to be shifted to the left so the sub menu can be
 seen. See also
 .B SetAnimation
 command.
@@ -3146,7 +3319,7 @@ command.
 .TP
 .BI "Popup " PopupName " [" position "] [" default-action "]"
 This command has two purposes: to bind a menu to a key or mouse
-button, and to bind a sub-menu into a menu.  The formats for the
+button, and to bind a sub menu into a menu.  The formats for the
 two purposes differ slightly.  The
 .I position
 arguments are the same as for
@@ -3181,10 +3354,10 @@ enter keys.
 .in -.25i
 .sp
 To bind a previously defined pop-up menu to another menu, for use
-as a sub-menu:
+as a sub menu:
 .sp
 .in +.25i
-The following example defines a sub-menu "Quit-Verify" and binds
+The following example defines a sub menu "Quit-Verify" and binds
 it into a main menu, called "RootMenu":
 .EX
 AddToMenu Quit-Verify
@@ -3231,7 +3404,22 @@ menus stay up on a click action.  See the
 .B Menu
 command for an explanation of the interactive behavior of menus. A
 menu can be open up to ten times at once, so a menu may even use
-itself or any of its predecessors as a sub-menu.
+itself or any of its predecessors as a sub menu.
+
+.TP
+.BI "TearMenuOff"
+When assigned to a menu item, it inserts a tear off bar into the
+menu (a horizontal broken line).  Activating that item tears off
+the menu.  If the menu item has a label, it is shown instead of
+the broken line.  If used outside menus, this command does
+nothing.  Examples:
+.EX
+AddToMenu WindowMenu
++ I "" TearMenuOff
+
+AddToMenu RootMenu
++ I "click here to tear me off" TearMenuOff
+.EE
 
 .TP
 .BI "Title"
